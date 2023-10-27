@@ -5,9 +5,18 @@ namespace StarMath
 	std::vector<CElement*> CParseStarMathString::Parse(std::wstring& wsParseString)
 	{
 		std::wstring::iterator itStart = wsParseString.begin(),itEnd = wsParseString.end();
+
 		while(itStart != itEnd)
 		{
-			arEquation.push_back(ParsElement(itStart,itEnd));
+			CElement* pTempElement = ParsElement(itStart,itEnd);
+			if(nullptr == pTempElement)
+				break;
+			if(!arEquation.empty() && (pTempElement->GetBaseType() == TypeElement::BinOperator || pTempElement->GetBaseType() == TypeElement::SetOperations || pTempElement->GetBaseType() == TypeElement::Connection) )
+			{
+				AddLeftArgument(arEquation.back(),pTempElement);
+				arEquation.pop_back();
+			}
+			arEquation.push_back(pTempElement);
 		}
 		return arEquation;
 	}
@@ -32,6 +41,12 @@ namespace StarMath
 		{
 			pElement->SetAttribute(arAttributes);
 			pElement->Pars(itStart,itEnd);
+			if(CheckingTheNextElement(itStart,itEnd,CIndex::IsIndex))
+			{
+				CIndex* pIndex = CIndex::CreateIndex(GetElement(itStart,itEnd));
+				pIndex->SetValueIndex(ParsElement(itStart,itEnd));
+				pElement->SetIndex(pIndex);
+			}
 			return pElement;
 		}
 		else  return pElement;
@@ -47,7 +62,7 @@ namespace StarMath
 				itFirst++;
 				break;
 			}
-			else if(!m_wsElement.empty() && (*itFirst == L'{' || *itFirst == L'}' || *itFirst == L'+' || *itFirst == L'-' || *itFirst == L'/' || *itFirst == L'*' || L'^' == *itFirst || L'_' == *itFirst  || (iswdigit(*itFirst) && !iswdigit(m_wsElement.back())) || (iswalpha(*itFirst) && !iswalpha(m_wsElement.back())) || ((m_wsElement.back() != L'<' && m_wsElement.back() != L'>') && (L'<' == *itFirst || L'>' == *itFirst || L'=' == *itFirst))))
+			else if(!m_wsElement.empty() && (*itFirst == L'(' || L')' == *itFirst || *itFirst == L'{' || *itFirst == L'}' || *itFirst == L'+' || *itFirst == L'-' || *itFirst == L'/' || *itFirst == L'*' || L'^' == *itFirst || L'_' == *itFirst  || (iswdigit(*itFirst) && !iswdigit(m_wsElement.back())) || (iswalpha(*itFirst) && !iswalpha(m_wsElement.back())) || ((m_wsElement.back() != L'<' && m_wsElement.back() != L'>') && (L'<' == *itFirst || L'>' == *itFirst || L'=' == *itFirst))))
 			{
 				return m_wsElement;
 			}
@@ -68,15 +83,57 @@ namespace StarMath
 	bool CParseStarMathString::CheckingTheNextElement(std::wstring::iterator& itFirst, std::wstring::iterator& itEnd, bool (&func)(const std::wstring&))
 	{
 		std::wstring::iterator itTempVal = itFirst;
-		std::wstring wsAttributeToken = GetElement(itFirst,itEnd);
-//		while(true)
-//		{
-//			if(wsAttributeToken == L"color") wsAttributeToken = GetElement(itFirst,itEnd);
-//			wsAttributeToken = GetElement(itFirst,itEnd);
-//		}
+		std::wstring wsToken = GetElement(itFirst,itEnd);
+		TypeElement enTypeAttr = CAttribute::IsAttribute(wsToken);
+		while(enTypeAttr != TypeElement::undefine && (itFirst != itEnd))
+		{
+			wsToken = GetElement(itFirst,itEnd);
+			enTypeAttr = CAttribute::IsAttribute(wsToken);
+		}
 		itFirst = itTempVal;
-		if(func(wsAttributeToken)) return true;
+		if(func(wsToken)) return true;
 		else return false;
+	}
+	bool CParseStarMathString::MoveToNextElement(std::wstring::iterator &itStart, std::wstring::iterator &itEnd)
+	{
+		if(itStart !=itEnd)
+		{
+			std::wstring wsNextElement = CParseStarMathString::GetElement(itStart,itEnd);
+			if(L"right" == wsNextElement && (itStart!=itEnd)) wsNextElement = CParseStarMathString::GetElement(itStart,itEnd);
+			return true;
+		}
+		return false;
+	}
+	template<typename T>
+	void CParseStarMathString::SetLeft(CElement *pLeftArg, CElement *pElementWhichAdd)
+	{
+		T* pBinOpElement = dynamic_cast<T*>(pElementWhichAdd);
+		pBinOpElement->SetLeftArg(pLeftArg);
+		pElementWhichAdd = pBinOpElement;
+	}
+
+	void CParseStarMathString::AddLeftArgument(CElement *pLeftArg, CElement *pElementWhichAdd)
+	{
+		switch(pElementWhichAdd->GetBaseType())
+		{
+			case TypeElement::BinOperator:
+			{
+				SetLeft<CElementBinOperator>(pLeftArg, pElementWhichAdd);
+				break;
+			}
+			case TypeElement::SetOperations:
+			{
+				SetLeft<CElementSetOperations>(pLeftArg, pElementWhichAdd);
+				break;
+			}
+			case TypeElement::Connection:
+			{
+				SetLeft<CElementConnection>(pLeftArg,pElementWhichAdd);
+				break;
+			}
+			default:
+				break;
+		}
 	}
 //class methods CAttribute
 	CAttribute::~CAttribute()
@@ -145,7 +202,7 @@ namespace StarMath
 //class methods CElement
 	CElement::~CElement()
 	{}
-	CElement::CElement()
+	CElement::CElement(): pElementIndex(nullptr)
 	{}
 //	TypeElement CElement::GetTypeElement(const std::wstring& wsToken)
 //	{
@@ -236,6 +293,7 @@ namespace StarMath
 		{
 			return  new CElementBinOperator(TypeElement::plus);
 		}
+		else if(CElementString::IsDigit(wsToken)) return new CElementString(wsToken);
 		else if (wsToken == L"-")
 		{
 			return new CElementBinOperator(TypeElement::minus);
@@ -302,21 +360,103 @@ namespace StarMath
 		}
 		//brace
 		else if(L"{" == wsToken) return new CElementBracket(TypeElement::brace);
-//		else if(L"(" == wsToken) return TypeElement::round;
-//		else if(L"[" == wsToken) return TypeElement::square;
-//		else if(L"ldbracket" == wsToken) return TypeElement::ldbracket;
-//		else if(L"lbrace" == wsToken) return TypeElement::lbrace;
-//		else if(L"langle" == wsToken) return TypeElement::langle;
-//		else if(L"lceil" == wsToken) return TypeElement::lceil;
-//		else if(L"lfloor" == wsToken) return TypeElement::lfloor;
-//		else if(L"lline" == wsToken) return TypeElement::lline;
-//		else if(L"ldline" == wsToken) return TypeElement::ldline;
-		else if(CElementString::IsDigit(wsToken)) return new CElementString(wsToken);
+		else if(L"(" == wsToken) return new CElementBracket(TypeElement::round);
+		else if(L"[" == wsToken) return new CElementBracket(TypeElement::square);
+		else if(L"ldbracket" == wsToken) return new CElementBracket(TypeElement::ldbracket);
+		else if(L"lbrace" == wsToken) return new CElementBracket(TypeElement::lbrace);
+		else if(L"langle" == wsToken) return new CElementBracket(TypeElement::langle);
+		else if(L"lceil" == wsToken) return new CElementBracket(TypeElement::lceil);
+		else if(L"lfloor" == wsToken) return new CElementBracket(TypeElement::lfloor);
+		else if(L"lline" == wsToken) return new CElementBracket(TypeElement::lline);
+		else if(L"ldline" == wsToken) return new CElementBracket(TypeElement::ldline);
+		else if(L"intersection" == wsToken) return new CElementSetOperations(TypeElement::intersection);
+		else if(L"union" == wsToken) return new CElementSetOperations(TypeElement::Union);
+		else if(L"setminus" == wsToken) return new CElementSetOperations(TypeElement::setminus);
+		else if(L"setquoyient" == wsToken) return new CElementSetOperations(TypeElement::setquoyient);
+		else if(L"subseteq" == wsToken) return new CElementSetOperations(TypeElement::subseteq);
+		else if(L"subset" == wsToken) return new CElementSetOperations(TypeElement::subset);
+		else if(L"supset" == wsToken) return new CElementSetOperations(TypeElement::supset);
+		else if(L"supseteq" == wsToken) return new CElementSetOperations(TypeElement::supseteq);
+		else if(L"nsubset" == wsToken) return new CElementSetOperations(TypeElement::nsubset);
+		else if(L"nsubseteq" == wsToken) return new CElementSetOperations(TypeElement::nsubseteq);
+		else if(L"nsupset" == wsToken) return new CElementSetOperations(TypeElement::nsupset);
+		else if(L"nsubseteq" == wsToken) return new CElementSetOperations(TypeElement::nsubseteq);
+		else if(L"in" == wsToken) return new CElementSetOperations(TypeElement::in);
+		else if(L"notin" == wsToken) return new CElementSetOperations(TypeElement::notin);
+		else if(L"owns" == wsToken) return new CElementSetOperations(TypeElement::owns);
+		else if(L"approx" == wsToken) return new CElementConnection(TypeElement::approx);
+		else if(L"sim" == wsToken) return new CElementConnection(TypeElement::sim);
+		else if(L"simeq" == wsToken) return new CElementConnection(TypeElement::simeq);
+		else if(L"equiv" == wsToken) return new CElementConnection(TypeElement::equiv);
+		else if(L"prop" == wsToken) return new CElementConnection(TypeElement::prop);
+		else if(L"parallel" == wsToken) return new CElementConnection(TypeElement::parallel);\
+		else if(L"ortho" == wsToken) return new CElementConnection(TypeElement::ortho);
+		else if(L"divides" == wsToken) return new CElementConnection(TypeElement::divides);
+		else if(L"ndivides" == wsToken) return new CElementConnection(TypeElement::ndivides);
+		else if(L"toward" == wsToken) return new CElementConnection(TypeElement::toward);
+		else if(L"transl" == wsToken) return new CElementConnection(TypeElement::transl);
+		else if(L"transr" == wsToken) return new CElementConnection(TypeElement::transr);
+		else if(L"def" == wsToken) return new CElementConnection(TypeElement::def);
+		else if(L"=" == wsToken) return new CElementConnection(TypeElement::equals);
+		else if(L"<>" == wsToken) return new CElementConnection(TypeElement::notequals);
+		else if(L"<" == wsToken) return new CElementConnection(TypeElement::learrow);
+		else if(L"<=" == wsToken) return new CElementConnection(TypeElement::learrowequals);
+		else if(L"leslant" == wsToken) return new CElementConnection(TypeElement::leslant);
+		else if(L">" == wsToken) return new CElementConnection(TypeElement::riarrow);
+		else if(L">=" == wsToken) return new CElementConnection(TypeElement::riarrowequals);
+		else if(L"geslant" == wsToken) return new CElementConnection(TypeElement::geslant);
+		else if(L"<<" == wsToken) return new CElementConnection(TypeElement::dllearrow);
+		else if(L">>" == wsToken) return new CElementConnection(TypeElement::dlriarrow);
+		else if(L"prec" == wsToken) return new CElementConnection(TypeElement::prec);
+		else if(L"succ" == wsToken) return new CElementConnection(TypeElement::succ);
+		else if(L"preccurlyeq" == wsToken) return new CElementConnection(TypeElement::preccurlyeq);
+		else if(L"succcurlyeq" == wsToken) return new CElementConnection(TypeElement::succcurlyeq);
+		else if(L"precsim" == wsToken) return new CElementConnection(TypeElement::precsim);
+		else if(L"succsim" == wsToken) return new CElementConnection(TypeElement::succsim);
+		else if(L"nprec" == wsToken) return new CElementConnection(TypeElement::nprec);
+		else if(L"nsucc" == wsToken) return new CElementConnection(TypeElement::nsucc);
+		else if(L"dlarrow" == wsToken) return new CElementConnection(TypeElement::dlarrow);
+		else if(L"dlrarrow" == wsToken) return new CElementConnection(TypeElement::dlrarrow);
+		else if(L"drarrow" == wsToken) return new CElementConnection(TypeElement::drarrow);
+		else if(L"abs" == wsToken) return new CElementFunction(TypeElement::abs);
+		else if(L"fact" == wsToken) return new CElementFunction(TypeElement::fact);
+		else if(L"sqrt" == wsToken) return new CElementFunction(TypeElement::sqrt);
+		else if(L"sin" == wsToken) return new CElementFunction(TypeElement::sin);
+		else if(L"cos" == wsToken) return new CElementFunction(TypeElement::cos);
+		else if(L"tan" == wsToken) return new CElementFunction(TypeElement::tan);
+		else if(L"cot" == wsToken) return new CElementFunction(TypeElement::cot);
+		else if(L"sinh" == wsToken) return new CElementFunction(TypeElement::sinh);
+		else if(L"cosh" == wsToken) return new CElementFunction(TypeElement::cosh);
+		else if(L"tanh" == wsToken) return new CElementFunction(TypeElement::tanh);
+		else if(L"coth" == wsToken) return new CElementFunction(TypeElement::coth);
+		else if(L"arcsin" == wsToken) return new CElementFunction(TypeElement::arcsin);
+		else if(L"arccos" == wsToken) return new CElementFunction(TypeElement::arccos);
+		else if(L"arctan" == wsToken) return new CElementFunction(TypeElement::arctan);
+		else if(L"arccot" == wsToken) return new CElementFunction(TypeElement::arccot);
+		else if(L"arsinh" == wsToken) return new CElementFunction(TypeElement::arsinh);
+		else if(L"arcosh" == wsToken) return new CElementFunction(TypeElement::arcosh);
+		else if(L"artanh" == wsToken) return new CElementFunction(TypeElement::artanh);
+		else if(L"arcoth" == wsToken) return new CElementFunction(TypeElement::arcoth);
+		else if(L"ln" == wsToken) return new CElementFunction(TypeElement::ln);
+		else if(L"exp" == wsToken) return new CElementFunction(TypeElement::exp);
+		else if(L"log" == wsToken) return new CElementFunction(TypeElement::log);
 		else return nullptr;
 	}
 	void CElement::SetAttribute(const std::vector<CAttribute *> arAttr)
 	{
 		arElementAttributes = arAttr;
+	}
+	void CElement::SetIndex(CIndex *pIndex)
+	{
+		pElementIndex = pIndex;
+	}
+	TypeElement CElement::GetBaseType()
+	{
+		return enBaseType;
+	}
+	void CElement::SetBaseType(const TypeElement &enType)
+	{
+		enBaseType = enType;
 	}
 //class methods CElementString
 	CElementString::CElementString(const std::wstring& wsTokenString)
@@ -348,6 +488,7 @@ namespace StarMath
 	CElementBinOperator::CElementBinOperator(const TypeElement& enType)
 	{
 		enTypeBinOp = enType;
+		SetBaseType(TypeElement::BinOperator);
 	}
 	CElementBinOperator::~CElementBinOperator()
 	{
@@ -364,80 +505,56 @@ namespace StarMath
 	}
 	void CElementBinOperator::Pars(std::wstring::iterator &itStart, std::wstring::iterator &itEnd)
 	{
-		SetRightArg(CParseStarMathString::ParsElement(itStart,itEnd));
+//		нужно сделать функцию для чтения без скобок
+//		if(enTypeBinOp == TypeElement::frac)
+//		{
+
+//		}
+		CElement* pTempElement = CParseStarMathString::ParsElement(itStart,itEnd);
+		if(IsBinOperatorLowPrior() && CParseStarMathString::CheckingTheNextElement(itStart,itEnd,IsBinOperatorHightPrior))
+		{
+			CElement* pBinOp = CParseStarMathString::ParsElement(itStart,itEnd);
+			CParseStarMathString::AddLeftArgument(pTempElement,pBinOp);
+			SetRightArg(pBinOp);
+		}
+		else
+			SetRightArg(pTempElement);
 	}
 	void CElementBinOperator::SetTypeBinOP(const TypeElement &enType)
 	{
 		enTypeBinOp = enType;
 	}
-	bool CElementBinOperator::IsBinOperator(const TypeElement& enCheckType)
+	bool CElementBinOperator::IsBinOperatorHightPrior(const std::wstring& wsToken)
 	{
-		switch (enCheckType)
-		{
+		if(L"cdot" == wsToken) return true;
+		else if(L"times" == wsToken) return true;
+		else if(L"over" == wsToken) return true;
+//		else if(L"frac" == wsToken) return true;
+		else if(L"div" == wsToken) return true;
+		else if(L"multipl" == wsToken) return true;
+		else if(L"division" == wsToken) return true;
+		else if(L"odot" == wsToken) return true;
+		else if(L"otimes" == wsToken) return true;
+		else if(L"odivide" == wsToken) return true;
+		else if(L"circ" == wsToken) return true;
+		else if(L"wideslash" == wsToken) return true;
+		else if(L"widebslash" == wsToken) return true;
+	}
+	bool CElementBinOperator::IsBinOperatorLowPrior()
+	{
+		switch (enTypeBinOp) {
 		case TypeElement::plus:
 		return true;
 		case TypeElement::minus:
-		return true;
-		case TypeElement::over:
-		return true;
-		case TypeElement::multipl:
-		return true;
-		case TypeElement::division:
-		return true;
-		case TypeElement::cdot:
-		return true;
-		case TypeElement::times:
-		return true;
-		case TypeElement::frac:
-		return true;
-		case TypeElement::div:
 		return true;
 		case TypeElement::oplus:
 		return true;
 		case TypeElement::ominus:
 		return true;
-		case TypeElement::odot:
-		return true;
-		case TypeElement::otimes:
-		return true;
-		case TypeElement::odivide:
-		return true;
 		case TypeElement::circ:
-		return true;
-		case TypeElement::wideslash:
-		return true;
-		case TypeElement::widebslash:
 		return true;
 		default:
 		return false;
-		}
-	}
-	bool CElementBinOperator::IsLowPriorityBinOp(const TypeElement &enType)
-	{
-		switch (enType)
-		{
-			case TypeElement::plus:
-				 return true;
-			case TypeElement::minus:
-				 return true;
-			case TypeElement::oplus:
-				 return true;
-			case TypeElement::ominus:
-				 return true;
-			case TypeElement::circ:
-				 return true;
-			default:
-				 return false;
-		}
-	}
-	bool CElementBinOperator::IsHighPriorityBinOp(const TypeElement &enType)
-	{
-		switch(enType)
-		{
-			case TypeElement::over:
-				return true;
-			default:
-				return false;
 		}
 	}
 //class methods CElementBracket
@@ -458,17 +575,231 @@ namespace StarMath
 		if(L"}" == wsToken) return true;
 		else if(L")" == wsToken) return true;
 		else if(L"]" == wsToken) return true;
+		else if(L"rdbracket" == wsToken) return true;
+		else if(L"rbrace" == wsToken) return true;
+		else if(L"rangle" == wsToken) return true;
+		else if(L"rceil" == wsToken) return true;
+		else if(L"rfloor" == wsToken) return true;
+		else if(L"rline" == wsToken) return true;
+		else if(L"rdline" == wsToken) return true;
+		else if(L"right" == wsToken) return true;
 		else return false;
 	}
-	//нужно поправить GetElement(беру его тут + в методе ParsElement)
+	// правка if
 	void CElementBracket::Pars(std::wstring::iterator &itStart, std::wstring::iterator &itEnd)
 	{
-		std::wstring wsToken = CParseStarMathString::GetElement(itStart,itEnd) ;
-		while(L"right" != wsToken && !IsBracketClose(wsToken))
+		while(!CParseStarMathString::CheckingTheNextElement(itStart,itEnd,IsBracketClose))
 		{
-			arBrecketValue.push_back(CParseStarMathString::ParsElement(itStart,itEnd));
-			wsToken = CParseStarMathString::GetElement(itStart,itEnd);
+			CElement* pTempElement = CParseStarMathString::ParsElement(itStart,itEnd);
+			if(!arBrecketValue.empty() && (pTempElement->GetBaseType() == TypeElement::BinOperator || pTempElement->GetBaseType() == TypeElement::SetOperations) )
+			{
+				CParseStarMathString::AddLeftArgument(arBrecketValue.back(),pTempElement);
+				arBrecketValue.pop_back();
+			}
+			arBrecketValue.push_back(pTempElement);
 		}
+		//доработать()
+		if(!CParseStarMathString::MoveToNextElement(itStart,itEnd));
+	}
+//class methods CElementSpecialSymbol
+	CElementSpecialSymbol::CElementSpecialSymbol(const TypeElement &enType)
+	{
+		enTypeSpecial = enType;
+	}
+	CElementSpecialSymbol::~CElementSpecialSymbol()
+	{}
+	void CElementSpecialSymbol::Pars(std::wstring::iterator &itStart, std::wstring::iterator &itEnd)
+	{
+	}
+//class methods CElementSetOperations
+	CElementSetOperations::CElementSetOperations(const TypeElement &enType)
+	{
+		enTypeSet = enType;
+		SetBaseType(TypeElement::SetOperations);
+	}
+	CElementSetOperations::~CElementSetOperations()
+	{
+		delete pLeftArgument;
+		delete pRightArgument;
+	}
+	void CElementSetOperations::SetLeftArg(CElement *pElement)
+	{
+		pLeftArgument = pElement;
+	}
+	CElement* CElementSetOperations::GetLeftArg()
+	{
+		return pLeftArgument;
+	}
+	void CElementSetOperations::SetRightArg(CElement *pElement)
+	{
+		pRightArgument = pElement;
+	}
+	CElement* CElementSetOperations::GetRightArg()
+	{
+		return pRightArgument;
+	}
+	void CElementSetOperations::Pars(std::wstring::iterator &itStart, std::wstring::iterator &itEnd)
+	{
+		CElement* pTempElement = CParseStarMathString::ParsElement(itStart,itEnd);
+		if(CParseStarMathString::CheckingTheNextElement(itStart,itEnd,CElementBinOperator::IsBinOperatorHightPrior))
+		{
+			CElement* pBinOpElement = CParseStarMathString::ParsElement(itStart,itEnd);
+			CParseStarMathString::AddLeftArgument(pTempElement,pBinOpElement);
+			SetRightArg(pBinOpElement);
+		}
+		else SetRightArg(pTempElement);
+	}
+	bool CElementSetOperations::IsSetOperation(const std::wstring &wsToken)
+	{
+		if(L"union" == wsToken) return true;
+		else return false;
+	}
+//class methods CElementConnection
+	CElementConnection::CElementConnection(const TypeElement& enType)
+	{
+		enTypeCon = enType;
+		SetBaseType(TypeElement::Connection);
+	}
+	CElementConnection::~CElementConnection()
+	{
+		delete pLeftArgument;
+		delete pRightArgument;
+	}
+	void CElementConnection::SetRightArg(CElement *pElement)
+	{
+		pRightArgument = pElement;
+	}
+	CElement* CElementConnection::GetRightArg()
+	{
+		return pRightArgument;
+	}
+	void CElementConnection::SetLeftArg(CElement *pElement)
+	{
+		pLeftArgument = pElement;
+	}
+	CElement* CElementConnection::GetLeftArg()
+	{
+		return pLeftArgument;
+	}
+	void CElementConnection::Pars(std::wstring::iterator &itStart, std::wstring::iterator &itEnd)
+	{
+		CElement* pTempElement = CParseStarMathString::ParsElement(itStart,itEnd);
+		if(CParseStarMathString::CheckingTheNextElement(itStart,itEnd,CElementBinOperator::IsBinOperatorHightPrior))
+		{
+			CElement* pBinOp = CParseStarMathString::ParsElement(itStart,itEnd);
+			CParseStarMathString::AddLeftArgument(pTempElement,pBinOp);
+			SetRightArg(pBinOp);
+		}
+		else SetRightArg(pTempElement);
+	}
+	bool CElementConnection::IsConnection(const std::wstring& wsToken)
+	{
+		if(L"def" == wsToken) return true;
+		else return false;
+	}
+//class methods CIndex
+	CIndex::CIndex(const TypeElement& enType)
+	{
+		enTypeIndex = enType;
+	}
+	CIndex::~CIndex()
+	{
+		delete pValueIndex;
+	}
+	void CIndex::SetValueIndex(CElement *pElement)
+	{
+		pValueIndex = pElement;
+	}
+	CElement* CIndex::GetValueIndex()
+	{
+		return pValueIndex;
+	}
+	bool CIndex::IsIndex(const std::wstring &wsCheckToken)
+	{
+		if(L"^" == wsCheckToken) return true;
+		else if(L"_" == wsCheckToken) return true;
+		else if(L"lsup" == wsCheckToken) return true;
+		else if(L"lsub" == wsCheckToken) return true;
+		else if(L"csup" == wsCheckToken) return true;
+		else if(L"csub" == wsCheckToken) return true;
+		else return false;
+	}
+	CIndex* CIndex::CreateIndex(const std::wstring &wsToken)
+	{
+		if(L"^" == wsToken) return new CIndex(TypeElement::upper);
+		else if(L"_" == wsToken) return new CIndex(TypeElement::lower);
+		else if(L"lsup" == wsToken) return new CIndex(TypeElement::lsup);
+		else if(L"lsub" == wsToken) return new CIndex(TypeElement::lsub);
+		else if(L"csup" == wsToken) return new CIndex(TypeElement::csup);
+		else if(L"csub" == wsToken) return new CIndex(TypeElement::csub);
+		else return nullptr;
+	}
+//class methods CElementFunction
+	CElementFunction::CElementFunction(const TypeElement &enType)
+	{
+		enTypeFunction = enType;
+		SetBaseType(TypeElement::Function);
+	}
+	CElementFunction::~CElementFunction()
+	{
+		delete pValue;
+	}
+	void CElementFunction::SetValueFunction(CElement *pElement)
+	{
+		pValue = pElement;
+	}
+	CElement* CElementFunction::GetValueFunction()
+	{
+		return pValue;
+	}
+
+	void CElementFunction::Pars(std::wstring::iterator &itStart, std::wstring::iterator &itEnd)
+	{
+		SetValueFunction(CParseStarMathString::ParsElement(itStart,itEnd));
+	}
+//class methods CElementOperation
+	CElementOperator::CElementOperator(const TypeElement &enType)
+	{
+		enTypeOperator = enType;
+		SetBaseType(TypeElement::Operation);
+	}
+	CElementOperator::~CElementOperator()
+	{
+		delete pValueOperator;
+		delete pValueFrom;
+		delete pValueTo;
+	}
+	void CElementOperator::SetValueOperator(CElement *pElement)
+	{
+		pValueOperator = pElement;
+	}
+	CElement* CElementOperator::GetValueOperator()
+	{
+		return pValueOperator;
+	}
+	void CElementOperator::SetFromValue(CElement *pElement)
+	{
+		pValueFrom = pElement;
+	}
+	CElement* CElementOperator::GetFromValue()
+	{
+		return pValueFrom;
+	}
+	void CElementOperator::SetToValue(CElement *pElement)
+	{
+		pValueTo = pElement;
+	}
+	CElement* CElementOperator::GetToValue()
+	{
+		return pValueTo;
+	}
+	void CElementOperator::Pars(std::wstring::iterator &itStart, std::wstring::iterator &itEnd)
+	{
+		do
+		{
+			CElement* pTempElement = CParseStarMathString::ParsElement(itStart,itEnd);
+
+		}while(CParseStarMathString::CheckingTheNextElement(itStart,itEnd,CElementBinOperator::IsBinOperatorHightPrior) || CParseStarMathString::CheckingTheNextElement(itStart,itEnd,CElementSetOperations::IsSetOperation) || CParseStarMathString::CheckingTheNextElement(itStart,itEnd,CElementConnection::IsConnection));
 	}
 }
 

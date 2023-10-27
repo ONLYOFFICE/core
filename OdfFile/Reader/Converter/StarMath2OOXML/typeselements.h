@@ -7,16 +7,17 @@ enum class TypeElement{
 	//global
 	String,
 	BinOperator,
+	SetOperations,
 	Operator,
 	Bracket,
 	UnarSign,
 	Attribute,
 	SpecialSymbol,
 	Function,
-	TwoArgumentContainer,
 	Operation,
 	Index,
 	Matrix,
+	Connection,
 	//binoop
 	cdot,
 	times,
@@ -103,6 +104,7 @@ enum class TypeElement{
 	mline,
 	grid,
 	dlgrid,
+	//setopetions
 	intersection,
 	Union,
 	setminus,
@@ -118,6 +120,7 @@ enum class TypeElement{
 	in,
 	notin,
 	owns,
+	//connection
 	approx,
 	sim,
 	simeq,
@@ -152,6 +155,7 @@ enum class TypeElement{
 	dlarrow,
 	dlrarrow,
 	drarrow,
+	//
 	emptyset,
 	aleph,
 	setN,
@@ -173,6 +177,7 @@ enum class TypeElement{
 	laplace,
 	fourier,
 	backepsilon,
+	//function
 	abs,
 	fact,
 	sqrt,
@@ -196,12 +201,14 @@ enum class TypeElement{
 	ln,
 	exp,
 	log,
+	//index
 	upper,
 	lower,
 	lsup,
 	lsub,
 	csup,
 	csub,
+	//
 	binom,
 	stack,
 	matrix,

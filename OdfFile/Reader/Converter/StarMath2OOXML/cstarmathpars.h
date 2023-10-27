@@ -18,6 +18,9 @@ namespace StarMath
 	private:
 		TypeElement enTypeAttr;
 	};
+
+	class CIndex;
+
 	class CElement
 	{
 	public:
@@ -28,8 +31,27 @@ namespace StarMath
 		static CElement* CreateElement(const std::wstring& wsToken);
 		//static TypeElement GetTypeElement(const std::wstring& wsToken);
 		void SetAttribute(const std::vector<CAttribute*> arAttr);
+		void SetIndex(CIndex* pIndex);
+		void SetBaseType(const TypeElement& enType);
+		TypeElement GetBaseType();
 	private:
+		CIndex* pElementIndex;
 		std::vector<CAttribute*> arElementAttributes;
+		TypeElement enBaseType;
+	};
+
+	class CIndex
+	{
+	public:
+		CIndex(const TypeElement& enType);
+		~CIndex();
+		void SetValueIndex(CElement* pElement);
+		CElement* GetValueIndex();
+		static bool IsIndex(const std::wstring& wsCheckToken);
+		static CIndex* CreateIndex(const std::wstring& wsToken);
+	private:
+		CElement* pValueIndex;
+		TypeElement enTypeIndex;
 	};
 
 	class CElementString: public CElement
@@ -38,10 +60,10 @@ namespace StarMath
 		CElementString(const std::wstring& wsTokenString);
 		virtual ~CElementString();
 		void SetString(const std::wstring& wsTokenString);
-		void Pars(std::wstring::iterator& itStart,std::wstring::iterator& itEnd) override;
 		std::wstring GetString();
 		static bool IsDigit(const std::wstring& wsCheckToken);
 	private:
+		void Pars(std::wstring::iterator& itStart,std::wstring::iterator& itEnd) override;
 		std::wstring wsString;
 	};
 
@@ -50,19 +72,37 @@ namespace StarMath
 	public:
 		CElementBinOperator(const TypeElement& enType);
 		virtual ~CElementBinOperator();
-		void Pars(std::wstring::iterator& itStart,std::wstring::iterator& itEnd) override;
 		void SetLeftArg(CElement* pElement);
 		void SetRightArg(CElement* pElement);
 		void SetTypeBinOP(const TypeElement& enType);
 		CElement* GetRightArg();
 		CElement* GetLeftArg();
-		static bool IsBinOperator(const TypeElement& enCheckType);
+		static bool IsBinOperatorHightPrior(const std::wstring& wsToken);
 	private:
-		bool IsLowPriorityBinOp(const TypeElement& enType);
-		bool IsHighPriorityBinOp(const TypeElement& enType);
+		bool IsBinOperatorLowPrior();
+		void Pars(std::wstring::iterator& itStart,std::wstring::iterator& itEnd) override;
 		CElement* pLeftArgument;
 		CElement* pRightArgument;
 		TypeElement enTypeBinOp;
+	};
+
+	class CElementOperator: public CElement
+	{
+	public:
+		CElementOperator(const TypeElement& enType);
+		virtual ~CElementOperator();
+		void SetValueOperator(CElement* pElement);
+		CElement* GetValueOperator();
+		void SetFromValue(CElement* pElement);
+		CElement* GetFromValue();
+		void SetToValue(CElement* pElement);
+		CElement* GetToValue();
+	private:
+		void Pars(std::wstring::iterator &itStart, std::wstring::iterator &itEnd) override;
+		CElement* pValueOperator;
+		CElement* pValueFrom;
+		CElement* pValueTo;
+		TypeElement enTypeOperator;
 	};
 
 	class CElementBracket: public CElement
@@ -71,11 +111,68 @@ namespace StarMath
 		CElementBracket(const TypeElement& enType);
 		virtual ~CElementBracket();
 		void SetBracketValue(const std::vector<CElement*>& arValue);
-		void Pars(std::wstring::iterator& itStart,std::wstring::iterator& itEnd) override;
 	private:
+		void Pars(std::wstring::iterator& itStart,std::wstring::iterator& itEnd) override;
 		static bool IsBracketClose(const std::wstring& wsToken);
 		TypeElement enTypeBracket;
 		std::vector<CElement*> arBrecketValue;
+	};
+
+	class CElementSetOperations: public CElement
+	{
+	public:
+		CElementSetOperations(const TypeElement& enType);
+		virtual ~CElementSetOperations();
+		void SetLeftArg(CElement* pElement);
+		CElement* GetLeftArg();
+		void SetRightArg(CElement* pElement);
+		CElement* GetRightArg();
+		static bool IsSetOperation(const std::wstring& wsToken);
+	private:
+		void Pars(std::wstring::iterator& itStart,std::wstring::iterator& itEnd) override;
+		CElement* pLeftArgument;
+		CElement* pRightArgument;
+		TypeElement enTypeSet;
+	};
+
+	class CElementConnection: public CElement
+	{
+	public:
+		CElementConnection(const TypeElement& enType);
+		virtual ~CElementConnection();
+		void SetRightArg(CElement* pElement);
+		CElement* GetRightArg();
+		void SetLeftArg(CElement* pElement);
+		CElement* GetLeftArg();
+		static bool IsConnection(const std::wstring& wsToken);
+	private:
+		void Pars(std::wstring::iterator& itStart, std::wstring::iterator& itEnd) override;
+		CElement* pLeftArgument;
+		CElement* pRightArgument;
+		TypeElement enTypeCon;
+	};
+
+	class CElementFunction: public CElement
+	{
+	public:
+		CElementFunction(const TypeElement& enType);
+		virtual ~CElementFunction();
+		void SetValueFunction(CElement* pElement);
+		CElement* GetValueFunction();
+	private:
+		void Pars(std::wstring::iterator& itStart,std::wstring::iterator& itEnd) override;
+		CElement* pValue;
+		TypeElement enTypeFunction;
+	};
+
+	class CElementSpecialSymbol: public CElement
+	{
+	public:
+		CElementSpecialSymbol(const TypeElement& enType);
+		virtual ~CElementSpecialSymbol();
+	private:
+		void Pars(std::wstring::iterator& itStart,std::wstring::iterator& itEnd) override;
+		TypeElement enTypeSpecial;
 	};
 
 	class CParseStarMathString
@@ -85,6 +182,10 @@ namespace StarMath
 		static CElement* ParsElement(std::wstring::iterator&  itStart, std::wstring::iterator& itEnd);
 		static std::wstring GetElement(std::wstring::iterator& itStart,std::wstring::iterator& itEnd);
 		static bool CheckingTheNextElement(std::wstring::iterator& itStart,std::wstring::iterator& itEnd, bool (&func)(const std::wstring&));
+		static bool MoveToNextElement(std::wstring::iterator& itStart,std::wstring::iterator& itEnd);
+		static void AddLeftArgument(CElement* pLeftArg,CElement* pElementWhichAdd);
+		template<typename T>
+		static void SetLeft(CElement* pLeftArg, CElement* pElementWhichaAdd);
 	private:
 		std::vector<CElement*> arEquation;
 	};

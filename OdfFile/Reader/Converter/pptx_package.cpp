@@ -49,6 +49,7 @@ pptx_content_types_file::pptx_content_types_file()
     content()->add_default(L"jpg",      L"image/jpeg");
     content()->add_default(L"png",      L"image/png");
     
+    content()->add_default(L"mp3",      L"audio/mpeg");
     content()->add_default(L"wav",      L"audio/wav");
  
 	content()->add_override(L"/_rels/.rels",			L"application/vnd.openxmlformats-package.relationships+xml");

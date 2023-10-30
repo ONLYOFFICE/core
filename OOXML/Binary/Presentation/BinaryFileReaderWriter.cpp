@@ -1727,7 +1727,7 @@ namespace NSBinPptxRW
 					
 					strMediaRelsPath += mediaFile->filename().GetFilename();				
 
-					if (additionalFile.is<OOX::Video>())
+					if (additionalFile.is<OOX::Video>() || additionalFile.is<OOX::Audio>())
 					{
 						m_pWriter->WriteString(L"<Relationship Id=\"" + strRid
 							+ L"\" Type=\"http://schemas.microsoft.com/office/2007/relationships/media\" Target=\"" +

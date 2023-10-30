@@ -225,6 +225,8 @@ private:
 
 		std::map<std::wstring, std::wstring>			m_mapMasters;
 		std::map<std::wstring, std::wstring>			m_mapLayouts;
+
+		std::wstring									interactive_animation_element_id;
 		
 		void convert_slides		();
 		void convert_styles		();

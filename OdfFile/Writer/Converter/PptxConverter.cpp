@@ -1910,21 +1910,42 @@ void PptxConverter::convert(PPTX::Logic::Cond* oox_condition)
 	if (!oox_condition)
 		return;
 
+	std::wstring begin = L"0s";
+
 	if (oox_condition->delay.IsInit())
 	{
-		std::wstring begin;
+		std::wstring delay;
 		if (*oox_condition->delay == L"indefinite")
-			begin = L"next";
+			delay = L"next";
 		else
 		{
 			int ms = XmlUtils::GetInteger(*oox_condition->delay);
 			std::wstringstream ss;
 			ss << ms / 1000.0 << L"s";
-			begin = ss.str();
+			delay = ss.str();
 		}
 
-		odp_context->current_slide().set_anim_begin(begin);
+		if (!interactive_animation_element_id.empty())
+		{
+			delay = interactive_animation_element_id + L".click+" + delay;
+			interactive_animation_element_id = std::wstring();
+		}
+			
+
+		begin = delay;
 	}
+	
+	if (oox_condition->tgtEl.IsInit())
+	{
+		if (oox_condition->tgtEl->spTgt.IsInit())
+		{
+			std::wstring id = odp_context->get_mapped_identifier(oox_condition->tgtEl->spTgt->spid);
+			interactive_animation_element_id = id;
+		}	
+	}
+
+	odp_context->current_slide().set_anim_begin(begin);
+
 	//else if(oox_condition->evt.IsInit())
 	//	odp_context->current_slide().set_anim_evt();
 }

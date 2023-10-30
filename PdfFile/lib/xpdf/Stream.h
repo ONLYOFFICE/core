@@ -365,6 +365,9 @@ public:
   virtual GFileOffset getStart() { return start; }
   virtual void moveStart(int delta);
 
+  char* getBufPtr() { return bufPtr; }
+  char* getBufEnd() { return bufEnd; }
+
 private:
 
   char *buf;

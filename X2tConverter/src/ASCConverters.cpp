@@ -6210,9 +6210,7 @@ namespace NExtractTools
 		default:
 		{
 			result = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
-		}
-		break;
->>>>>>> origin/hotfix/v7.5.1
+		}break;
 		}
 
 		// delete temp dir

@@ -122,7 +122,7 @@ namespace SVG
 
 	void CMarker::Draw(IRenderer *pRenderer, const std::vector<Point> &arPoints, double dStrokeWidth) const
 	{
-		if (NULL == m_pImage || arPoints.empty() || 0. == dStrokeWidth)
+		if (NULL == m_pImage || arPoints.empty() || Equals(0., dStrokeWidth))
 			return;
 
 		double dWidth  = m_oWindow.m_oWidth.ToDouble(NSCSS::Pixel) * ((Marker_StrokeWidth == m_enUnits) ? dStrokeWidth : 1.);

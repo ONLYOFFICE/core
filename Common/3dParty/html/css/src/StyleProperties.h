@@ -87,7 +87,7 @@ namespace NSCSS
 			return *this;
 		}
 
-		bool    operator==(const CValue& oValue) const
+		bool operator==(const CValue& oValue) const
 		{
 			return m_oValue == oValue.m_oValue;
 		}
@@ -140,6 +140,9 @@ namespace NSCSS
 		std::wstring ToWString(UnitMeasure enUnitMeasure, double dPrevValue = 0.) const;
 
 		UnitMeasure GetUnitMeasure() const;
+
+		bool operator==(const double& oValue) const;
+		bool operator==(const CDigit& oDigit) const;
 
 		CDigit operator+(const CDigit& oDigit) const;
 		CDigit operator-(const CDigit& oDigit) const;

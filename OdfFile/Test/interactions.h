@@ -29,25 +29,28 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
+
+#include "common.h"
 
 #include "gtest/gtest.h"
 
-#include "entrance.h"
-#include "motion.h"
-#include "audio.h"
-#include "interactions.h"
-
-int main(int argc, char* argv[])
+class OOX2ODP_InteractionAnimationEnvironment : public OOX2ODP_AnimationEnvironment
 {
-	::testing::InitGoogleTest(&argc, argv);
+public:
+	OOX2ODP_InteractionAnimationEnvironment();
 
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationEtranceEnvironment);
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationMotionEnvironment);
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationAudioEnvironment);
-	
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_EntranceAnimationEnvironment);
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_AudioAnimationEnvironment);
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_InteractionAnimationEnvironment);
+public:
+	static cpdoccore::odf_writer::odp_conversion_context* GetContext();
 
-	return RUN_ALL_TESTS();
-}
+private:
+	static boost::shared_ptr<Oox2Odf::Converter> mConverter;
+	static cpdoccore::odf_writer::odp_conversion_context* mContext;
+};
+
+class OOX2ODP_InteractionAnimationTest : public OOX2ODP_AnimationTest
+{
+public:
+	void SetUp() override;
+	void TearDown() override {}
+};

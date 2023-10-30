@@ -71,12 +71,14 @@ const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr& ODP2OOX_
 
 const cpdoccore::oox::pptx_animation_context::Impl::_seq_animation_ptr& ODP2OOX_EntranceAnimationTest::GetMainSequence()
 {
-	return mAnimationContext->get_root_par_animation()->AnimSeq;
+	if(mAnimationContext->get_root_par_animation()->AnimSeq.size())
+		return mAnimationContext->get_root_par_animation()->AnimSeq[0];
+	return nullptr;
 }
 
 const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_array& ODP2OOX_EntranceAnimationTest::GetMainSequenceArray()
 {
-	return mAnimationContext->get_root_par_animation()->AnimSeq->AnimParArray;
+	return mAnimationContext->get_root_par_animation()->AnimSeq[0]->AnimParArray;
 }
 
 const cpdoccore::oox::pptx_animation_context::Impl::_animation_element_array& ODP2OOX_EntranceAnimationTest::GetActionArray(const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr& par)
@@ -130,7 +132,7 @@ TEST_F(ODP2OOX_EntranceAnimationTest, main_sequence)
 TEST_F(ODP2OOX_EntranceAnimationTest, main_sequence_par_animations)
 {
 	using namespace cpdoccore::oox;
-	const pptx_animation_context::Impl::_par_animation_array& par_animations = mAnimationContext->get_root_par_animation()->AnimSeq->AnimParArray;
+	const pptx_animation_context::Impl::_par_animation_array& par_animations = mAnimationContext->get_root_par_animation()->AnimSeq[0]->AnimParArray;
 
 	const std::wstring delayExp = L"indefinite";
 

@@ -1461,6 +1461,11 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring &sExt)
 		return AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS;
 	if (L".ods" == ext)
 		return AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
+	
+	if (L".ooxml" == ext)
+		return AVS_OFFICESTUDIO_FILE_OTHER_OOXML;
+	if (L".odf" == ext)
+		return AVS_OFFICESTUDIO_FILE_OTHER_ODF;
 
 	if (L".pdf" == ext)
 		return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;

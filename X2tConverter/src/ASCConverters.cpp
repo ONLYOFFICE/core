@@ -4179,6 +4179,10 @@ namespace NExtractTools
 			else
 				nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 		}
+		else if (AVS_OFFICESTUDIO_FILE_OTHER_OOXML == nFormatTo)
+		{
+			nRes = dir2zipMscrypt(sFrom, sTo, sTemp, params);
+		}
 		else if (AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatTo)
 		{
 			nRes = docx_dir2doct_bin(sFromWithChanges, sTo, sTemp, params, sDocxFile);
@@ -4461,7 +4465,11 @@ namespace NExtractTools
 		const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams &params, const std::wstring &sXlsxFile)
 	{
 		_UINT32 nRes = S_OK;
-		if (AVS_OFFICESTUDIO_FILE_OTHER_JSON == nFormatTo)
+		if (AVS_OFFICESTUDIO_FILE_OTHER_OOXML == nFormatTo)
+		{
+			nRes = dir2zipMscrypt(sFrom, sTo, sTemp, params);
+		}
+		else if (AVS_OFFICESTUDIO_FILE_OTHER_JSON == nFormatTo)
 		{
 			nRes = xlsx_dir2xlst_bin(sFrom, sTo, params, true, sXlsxFile);
 		}
@@ -4849,6 +4857,10 @@ namespace NExtractTools
 			else
 				nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 		}
+		else if (AVS_OFFICESTUDIO_FILE_OTHER_OOXML == nFormatTo)
+		{
+			nRes = dir2zipMscrypt(sFrom, sTo, sTemp, params);
+		}
 		else if (AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == nFormatTo)
 		{
 			nRes = pptx_dir2pptt_bin(sFrom, sTo, sTemp, params, sPptxFile);
@@ -5206,7 +5218,7 @@ namespace NExtractTools
 		{
 			switch (nFormatTo)
 			{
-			case AVS_OFFICESTUDIO_FILE_OTHER_TEAMLAB_INNER:
+			case AVS_OFFICESTUDIO_FILE_OTHER_OOXML:
 				nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
 				break;
 			case AVS_OFFICESTUDIO_FILE_OTHER_ODF:
@@ -6031,20 +6043,22 @@ namespace NExtractTools
 		break;
 		case TCD_DOCUMENT2:
 		{
-			oInputParams.m_bMacro = (nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM || nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM);
+			oInputParams.m_bMacro = (	nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM || nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM ||
+										nFormatTo == AVS_OFFICESTUDIO_FILE_OTHER_OOXML);
 			result = fromDocument(sFileFrom, nFormatFrom, sTempDir, oInputParams);
 		}
 		break;
 		case TCD_SPREADSHEET2:
 		{
-			oInputParams.m_bMacro = (nFormatTo == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM || nFormatTo == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM);
+			oInputParams.m_bMacro = (	nFormatTo == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM || nFormatTo == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM ||
+										nFormatTo == AVS_OFFICESTUDIO_FILE_OTHER_OOXML);
 			result = fromSpreadsheet(sFileFrom, nFormatFrom, sTempDir, oInputParams);
 		}
 		break;
 		case TCD_PRESENTATION2:
 		{
 			oInputParams.m_bMacro = (	nFormatTo == AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM || nFormatTo == AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM ||
-										nFormatTo == AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM);
+										nFormatTo == AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM || nFormatTo == AVS_OFFICESTUDIO_FILE_OTHER_OOXML);
 			result = fromPresentation(sFileFrom, nFormatFrom, sTempDir, oInputParams);
 		}
 		break;

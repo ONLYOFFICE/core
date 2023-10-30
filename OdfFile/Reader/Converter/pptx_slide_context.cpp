@@ -474,7 +474,7 @@ void pptx_slide_context::start_action(std::wstring action)
 
 	if (action == L"sound")
 	{
-		impl_->object_description_.action_.action = L"ppaction://noaction";
+		//impl_->object_description_.action_.action = L"ppaction://noaction";
 		impl_->object_description_.action_.typeRels = typeAudio;
 		impl_->object_description_.action_.highlightClick = true;
 	}

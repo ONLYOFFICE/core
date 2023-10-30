@@ -86,7 +86,7 @@ namespace XLSB
             return false;
         }
 
-        m_Ref = XLSB::RgceLoc(m_Row - 1, m_Col, true, true).toString();
+        m_Ref = XLSB::RgceLoc(m_Row, m_Col, true, true).toString();
 
         m_source = elements_.back();
         elements_.pop_back();

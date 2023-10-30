@@ -343,7 +343,7 @@ namespace Spreadsheet
 					{
 						auto pRealNum = reinterpret_cast<XLSB::ExternCellReal*>(pSource)->value.data.value;
 						m_oType.Init();
-						m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeDate);
+                        m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
 						m_oValue.Init();
 						m_oValue->m_sText = OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(pRealNum);
 					}
@@ -380,7 +380,7 @@ namespace Spreadsheet
 					{
 						auto pSt = reinterpret_cast<XLSB::ExternCellString*>(pSource)->value.value();
 						m_oType.Init();
-						m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
+                        m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeStr);
 						m_oValue.Init();
 						m_oValue->m_sText = pSt;
 					}
@@ -436,7 +436,7 @@ namespace Spreadsheet
 	void CExternalRow::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		writer.WriteString(L"<row");
-		WritingStringNullableAttrInt(L"r", m_oR, m_oR->GetValue());
+		WritingStringNullableAttrInt(L"r", m_oR, m_oR->GetValue()+1);
 		writer.WriteString(L">");
 
 		for (size_t i = 0; i < m_arrItems.size(); ++i)
@@ -1415,7 +1415,7 @@ namespace Spreadsheet
 
 		if (oReader.IsEmptyNode())
 			return;
-		
+
 		int nCurDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nCurDepth))
 		{

@@ -47,8 +47,8 @@
 	if (impl_->par_animation_levels_.size())									\
 	{																			\
 		Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();	\
-		if (back->AnimSeq)														\
-			back->AnimSeq->attribute = value;									\
+		if (back->AnimSeq.size())														\
+			back->AnimSeq.back()->attribute = value;									\
 	}
 
 namespace cpdoccore {
@@ -158,8 +158,8 @@ namespace oox {
 
 			Impl::_par_animation_ptr back = impl_->par_animation_levels_.back();
 
-			if (back->AnimSeq)
-				back->AnimSeq->AnimParArray.push_back(end);
+			if (back->AnimSeq.size())
+				back->AnimSeq.back()->AnimParArray.push_back(end);
 			else
 				back->AnimParArray.push_back(end);
 		}
@@ -171,7 +171,7 @@ namespace oox {
 	{
 		if (impl_->par_animation_levels_.size())
 		{
-			impl_->par_animation_levels_.back()->AnimSeq = boost::make_shared<Impl::_seq_animation>();
+			impl_->par_animation_levels_.back()->AnimSeq.push_back(boost::make_shared<Impl::_seq_animation>());
 		}
 	}
 
@@ -203,6 +203,11 @@ namespace oox {
 	void pptx_animation_context::set_seq_animation_end(const std::wstring& value)
 	{
 		SET_SEQ_ANIMATION_ATTRIBUTE(End, value);
+	}
+
+	void pptx_animation_context::set_seq_animation_target_element(const std::wstring& value)
+	{
+		SET_SEQ_ANIMATION_ATTRIBUTE(TargetEl, value);
 	}
 
 	void pptx_animation_context::end_seq_animation()
@@ -699,8 +704,8 @@ namespace oox {
 						for(size_t i = 0; i < AnimParArray.size(); i++)
 							AnimParArray[i]->serialize(CP_XML_STREAM());
 						
-						if (AnimSeq)
-							AnimSeq->serialize(CP_XML_STREAM());
+						for(size_t i = 0; i < AnimSeq.size(); i++)
+							AnimSeq[i]->serialize(CP_XML_STREAM());
 						
 						for (size_t i = 0; i < AnimationActionArray.size(); i++)
 							AnimationActionArray[i]->serialize(CP_XML_STREAM());
@@ -728,6 +733,24 @@ namespace oox {
 					}
 					else if (Duration)		
 						CP_XML_ATTR(L"dur",	Duration.value());
+
+					if (TargetEl)
+					{
+						CP_XML_NODE(L"p:stCondLst")
+						{
+							CP_XML_NODE(L"p:cond")
+							{
+								CP_XML_ATTR(L"evt", L"onClick");
+								CP_XML_NODE(L"p:tgtEl")
+								{
+									CP_XML_NODE(L"p:spTgt")
+									{
+										CP_XML_ATTR(L"spid", TargetEl.value());
+									}
+								}
+							}
+						}
+					}
 
 					if (AnimParArray.size())
 					{

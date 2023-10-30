@@ -76,7 +76,7 @@ namespace oox {
 				_CP_OPT(int)								Decelerate;
 
 				_par_animation_array						AnimParArray;
-				_seq_animation_ptr							AnimSeq;
+				_seq_animation_array						AnimSeq;
 				_animation_element_array					AnimationActionArray;
 
 				void serialize(std::wostream& strm) override;
@@ -90,6 +90,7 @@ namespace oox {
 				_CP_OPT(int)									Duration; // in ms
 				_CP_OPT(std::wstring)							Delay;
 				_CP_OPT(std::wstring)							End;
+				_CP_OPT(std::wstring)							TargetEl;
 
 				_par_animation_array							AnimParArray;
 
@@ -289,6 +290,7 @@ namespace oox {
 			void set_seq_animation_dur(int value);
 			void set_seq_animation_delay(const std::wstring& value);
 			void set_seq_animation_end(const std::wstring& value);
+			void set_seq_animation_target_element(const std::wstring& value);
 		void end_seq_animation();
 
 		void start_set();

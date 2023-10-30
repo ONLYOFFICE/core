@@ -335,6 +335,8 @@ static std::wstring pptx_convert_smil_begin(const std::wstring& smil_begin)
 {
 	if(smil_begin == L"next")
 		return L"indefinite";
+	if (boost::ends_with(smil_begin, L"click"))
+		return smil_begin;
 
 	std::wstring delay;
 	clockvalue delayClockvalue = clockvalue::parse(smil_begin);
@@ -482,8 +484,22 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 
 	if (common_attlist_.smil_begin_)
 	{
-		isSlideAnimation = boost::algorithm::ends_with(common_attlist_.smil_begin_.value(), L".begin");
-		if(!isSlideAnimation)
+		const std::wstring& smil_begin = common_attlist_.smil_begin_.value();
+		isSlideAnimation = boost::algorithm::ends_with(smil_begin, L".begin");
+
+		if (boost::algorithm::contains(smil_begin, L"click"))
+		{
+			std::wstring id = smil_begin.substr(0, smil_begin.find(L".click"));
+			std::wstring del = L"";
+
+			if(boost::algorithm::contains(smil_begin, L"+"))
+				del = smil_begin.substr(smil_begin.find(L"+"));
+
+			animationContext.set_seq_animation_delay(del);
+			animationContext.set_seq_animation_restart(L"whenNotActive");
+			animationContext.set_seq_animation_target_element(std::to_wstring(Context.get_slide_context().get_id(id)));
+		}
+		else if(!isSlideAnimation)
 			delay = pptx_convert_smil_begin(common_attlist_.smil_begin_.value());
 	}
 

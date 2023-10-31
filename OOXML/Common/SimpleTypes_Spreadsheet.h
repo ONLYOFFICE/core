@@ -955,6 +955,23 @@ namespace SimpleTypes
 			typeDouble		=  1
 		};
 
+		enum ETimelineStyle
+		{
+			TimelineStyleLight1 = 0,
+			TimelineStyleLight2 = 1,
+			TimelineStyleLight3 = 2,
+			TimelineStyleLight4 = 3,
+			TimelineStyleLight5 = 4,
+			TimelineStyleLight6 = 5,
+			TimelineStyleDark1 = 6,
+			TimelineStyleDark2 = 7,
+			TimelineStyleDark3 = 8,
+			TimelineStyleDark4 = 9,
+			TimelineStyleDark5 = 10,
+			TimelineStyleDark6 = 11
+		};
+		DEFINE_SIMPLE_TYPE(CTimelineStyle, ETimelineStyle, TimelineStyleLight1)
+
 		template<EDoubleOrAutomatic eDefValue = typeAuto>
 		class CDoubleOrAutomatic : public CSimpleType<EDoubleOrAutomatic, eDefValue>
 		{

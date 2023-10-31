@@ -435,7 +435,11 @@ namespace BinXlsxRW
 		CellWatches = 44,
 		CellWatch = 45,
 		CellWatchR = 46,
-		UserProtectedRanges = 47
+		UserProtectedRanges = 47,
+		TimelinesList = 48,
+		Timelines = 49,
+		Timeline = 50,
+
 	};}
 	namespace c_oSerWorksheetProtection {enum c_oSerWorksheetPropTypes
 	{
@@ -653,6 +657,21 @@ namespace BinXlsxRW
 		Ref = 4,
 		ChildChain = 5,
 		NewThread = 6
+	};}
+	namespace c_oSer_Timeline {enum c_oSer_Timeline
+	{
+		Name = 0,
+		Caption = 1,
+		Uid = 2,
+		Cache = 3,
+		ShowHeader = 4,
+		ShowTimeLevel = 5,
+		ShowSelectionLabel = 6,
+		ShowHorizontalScrollbar = 7,
+		Level = 8,
+		SelectionLevel = 9,
+		ScrollPosition = 10,
+		Style = 11
 	};}
 	namespace c_oSerCustoms {enum c_oSerCustoms
 	{

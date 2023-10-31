@@ -70,6 +70,7 @@
 #include "../../../XlsxFormat/Styles/CellStyles.h"
 #include "../../../XlsxFormat/Styles/dxf.h"
 #include "../../../XlsxFormat/Styles/TableStyles.h"
+#include "../../../XlsxFormat/Timelines/Timeline.h"
 
 #include "../../../../DesktopEditor/common/Directory.h"
 
@@ -3593,6 +3594,12 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::UserProtectedRanges);
 				WriteUserProtectedRanges(pExt->m_oUserProtectedRanges.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			else if (pExt->m_oTimelineRefs.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::TimelinesList);
+				WriteTimelines(oWorksheet, pExt->m_oTimelineRefs.get());
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 		}
@@ -7319,6 +7326,120 @@ void BinaryWorksheetTableWriter::WriteSparkline(const OOX::Spreadsheet::CSparkli
 		m_oBcw.m_oStream.WriteStringW	(oSparkline.m_oSqRef.get());
     }
 }
+void BinaryWorksheetTableWriter::WriteTimelines(OOX::Spreadsheet::CWorksheet& oWorksheet, const OOX::Spreadsheet::CTimelineRefs& oTimelines)
+{
+	int nCurPos = 0;
+	for (size_t i = 0; i < oTimelines.m_arrItems.size(); ++i)
+	{
+		if (oTimelines.m_arrItems[i] && oTimelines.m_arrItems[i]->m_oRId.IsInit())
+		{
+			smart_ptr<OOX::File> pFile = oWorksheet.Find(OOX::RId(oTimelines.m_arrItems[i]->m_oRId->GetValue()));
+			if (pFile.IsInit() && OOX::Spreadsheet::FileTypes::Timeline == pFile->type())
+			{
+				OOX::Spreadsheet::CTimelineFile* pTimelineFile = static_cast<OOX::Spreadsheet::CTimelineFile*>(pFile.GetPointer());
+				if (pTimelineFile->m_oTimelines.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Timelines);
+					WriteTimelines(pTimelineFile->m_oTimelines.GetPointer());
+					m_oBcw.WriteItemEnd(nCurPos);
+				}
+			}
+		}
+	}
+}
+void BinaryWorksheetTableWriter::WriteTimelines(OOX::Spreadsheet::CTimelines* pTimelines)
+{
+	if (!pTimelines) return;
+
+	int nCurPos = 0;
+	for (size_t i = 0; i < pTimelines->m_arrItems.size(); ++i)
+	{
+		if (pTimelines->m_arrItems[i])
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Timeline);
+			WriteTimeline(pTimelines->m_arrItems[i]);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+	}
+}
+void BinaryWorksheetTableWriter::WriteTimeline(OOX::Spreadsheet::CTimeline* pTimeline)
+{
+	if (!pTimeline) return;
+
+	if (pTimeline->m_oName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_Timeline::Name);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*pTimeline->m_oName);
+	}
+	if (pTimeline->m_oCaption.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_Timeline::Caption);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*pTimeline->m_oCaption);
+	}
+	if (pTimeline->m_oUid.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_Timeline::Uid);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*pTimeline->m_oUid);
+	}
+	if (pTimeline->m_oScrollPosition.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_Timeline::ScrollPosition);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*pTimeline->m_oScrollPosition);
+	}
+	if (pTimeline->m_oCache.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_Timeline::Cache);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*pTimeline->m_oCache);
+	}
+	if (pTimeline->m_oSelectionLevel.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_Timeline::SelectionLevel);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(*pTimeline->m_oSelectionLevel);
+	}
+	if (pTimeline->m_oLevel.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_Timeline::Level);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(*pTimeline->m_oLevel);
+	}
+	if (pTimeline->m_oShowHeader.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_Timeline::ShowHeader);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(*pTimeline->m_oShowHeader);
+	}
+	if (pTimeline->m_oShowSelectionLabel.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_Timeline::ShowSelectionLabel);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(*pTimeline->m_oShowSelectionLabel);
+	}
+	if (pTimeline->m_oShowTimeLevel.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_Timeline::ShowTimeLevel);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(*pTimeline->m_oShowTimeLevel);
+	}
+	if (pTimeline->m_oShowHorizontalScrollbar.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_Timeline::ShowHorizontalScrollbar);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(*pTimeline->m_oShowHorizontalScrollbar);
+	}
+	if (pTimeline->m_oStyle.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_Timeline::Style);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteLONG(pTimeline->m_oStyle->GetValue());
+	}
+}
+
 void BinaryWorksheetTableWriter::WriteSlicers(OOX::Spreadsheet::CWorksheet& oWorksheet, const OOX::Spreadsheet::CSlicerRefs& oSlicers)
 {
 	int nCurPos = 0;

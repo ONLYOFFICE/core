@@ -72,6 +72,7 @@
 #include "../../../XlsxFormat/WorkbookComments.h"
 #include "../../../XlsxFormat/Table/Connections.h"
 #include "../../../XlsxFormat/Controls/Controls.h"
+#include "../../../XlsxFormat/Timelines/Timeline.h"
 
 #include "../../../DocxFormat/Media/VbaProject.h"
 #include "../../../DocxFormat/Media/JsaProject.h"
@@ -4241,6 +4242,19 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
 	SEEK_TO_POS_END2();
 
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::TimelinesList);
+		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+		pOfficeArtExtension->m_oTimelineRefs.Init();
+		READ1_DEF(length, res, this->ReadTimelinesList, pOfficeArtExtension->m_oTimelineRefs.GetPointer());
+
+		pOfficeArtExtension->m_sUri = L"{7E03D99C-DC04-49d9-9315-930204A7B6E9}";
+		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"";
+
+		if (m_pCurWorksheet->m_oExtLst.IsInit() == false)
+			m_pCurWorksheet->m_oExtLst.Init();
+		m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+	SEEK_TO_POS_END2();
+
 	if (m_pCurWorksheet->m_oExtLst.IsInit())
 	{
 		oStreamWriter.WriteString(m_pCurWorksheet->m_oExtLst->toXMLWithNS(L""));
@@ -7190,6 +7204,101 @@ int BinaryWorksheetsTableReader::ReadDataValidation(BYTE type, long length, void
 	else
         res = c_oSerConstants::ReadUnknown;
     return res;
+}
+int BinaryWorksheetsTableReader::ReadTimelines(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CTimelines* pTimelines = static_cast<OOX::Spreadsheet::CTimelines*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSerWorksheetsTypes::Timeline == type)
+	{
+		OOX::Spreadsheet::CTimeline* pTimeline = new OOX::Spreadsheet::CTimeline();
+		READ2_DEF_SPREADSHEET(length, res, this->ReadTimeline, pTimeline);
+		pTimelines->m_arrItems.push_back(pTimeline);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorksheetsTableReader::ReadTimelinesList(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CTimelineRefs* pTimelineRefs = static_cast<OOX::Spreadsheet::CTimelineRefs*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSerWorksheetsTypes::Timelines == type)
+	{
+		OOX::Spreadsheet::CTimelineFile* pTimelineFile = new OOX::Spreadsheet::CTimelineFile(NULL);
+		pTimelineFile->m_oTimelines.Init();
+
+		READ1_DEF(length, res, this->ReadTimelines, pTimelineFile->m_oTimelines.GetPointer());
+
+		NSCommon::smart_ptr<OOX::File> pFile(pTimelineFile);
+		const OOX::RId oRId = m_pCurWorksheet->Add(pFile);
+
+		OOX::Spreadsheet::CTimelineRef* pTimelineRef = new OOX::Spreadsheet::CTimelineRef();
+		pTimelineRef->m_oRId.Init();
+		pTimelineRef->m_oRId->SetValue(oRId.get());
+		
+		pTimelineRefs->m_arrItems.push_back(pTimelineRef);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorksheetsTableReader::ReadTimeline(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CTimeline* pTimeline = static_cast<OOX::Spreadsheet::CTimeline*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSer_Timeline::Name == type)
+	{
+		pTimeline->m_oName = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_Timeline::Cache == type)
+	{
+		pTimeline->m_oCache = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_Timeline::Caption == type)
+	{
+		pTimeline->m_oCaption = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_Timeline::ScrollPosition == type)
+	{
+		pTimeline->m_oScrollPosition = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_Timeline::Uid == type)
+	{
+		pTimeline->m_oUid = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_Timeline::Level == type)
+	{
+		pTimeline->m_oLevel = m_oBufferedStream.GetULong();
+	}
+	else if (c_oSer_Timeline::SelectionLevel == type)
+	{
+		pTimeline->m_oSelectionLevel = m_oBufferedStream.GetULong();
+	}
+	else if (c_oSer_Timeline::ShowHeader == type)
+	{
+		pTimeline->m_oShowHeader = m_oBufferedStream.GetBool();
+	}
+	else if (c_oSer_Timeline::ShowHorizontalScrollbar == type)
+	{
+		pTimeline->m_oShowHorizontalScrollbar = m_oBufferedStream.GetBool();
+	}
+	else if (c_oSer_Timeline::ShowSelectionLabel == type)
+	{
+		pTimeline->m_oShowSelectionLabel = m_oBufferedStream.GetBool();
+	}
+	else if (c_oSer_Timeline::ShowTimeLevel == type)
+	{
+		pTimeline->m_oShowTimeLevel = m_oBufferedStream.GetBool();
+	}
+	else if (c_oSer_Timeline::Style == type)
+	{
+		pTimeline->m_oStyle.Init();
+		pTimeline->m_oStyle->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
 }
 int BinaryWorksheetsTableReader::ReadSparklines(BYTE type, long length, void* poResult)
 {

@@ -363,6 +363,9 @@ namespace BinXlsxRW
 		int ReadUserProtectedRanges(BYTE type, long length, void* poResult);
 		int ReadUserProtectedRange(BYTE type, long length, void* poResult);
 		int ReadUserProtectedRangeDesc(BYTE type, long length, void* poResult);
+		int ReadTimelinesList(BYTE type, long length, void* poResult);
+		int ReadTimelines(BYTE type, long length, void* poResult);
+		int ReadTimeline(BYTE type, long length, void* poResult);
 
 		void WriteComments();
 		void AddLineBreak(OOX::Spreadsheet::CSi& oSi);

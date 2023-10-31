@@ -57,6 +57,7 @@
 #include "Slicer/SlicerCache.h"
 #include "Slicer/Slicer.h"
 #include "NamedSheetViews/NamedSheetViews.h"
+#include "Timelines/Timeline.h"
 
 #include "Table/Table.h"
 #include "Table/QueryTable.h"
@@ -176,6 +177,10 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CCtrlPropFile( pMain, oRootPath, oFileName ));
 			else if (	oRelation.Type() == FileTypes::XlBinaryIndex)
 				return smart_ptr<OOX::File>(new UnknowTypeFile(pMain)); // ????
+			else if (	oRelation.Type() == FileTypes::Timeline)
+				return smart_ptr<OOX::File>(new CTimelineFile(pMain, oRootPath, oFileName));
+			else if (	oRelation.Type() == FileTypes::TimelineCache)
+				return smart_ptr<OOX::File>(new CTimelineCacheFile(pMain, oRootPath, oFileName));
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 		}
@@ -304,6 +309,10 @@ namespace OOX
 				return smart_ptr<OOX::File>(new WorkbookComments( pMain, oRootPath, oFileName));
 			else if (pRelation->Type() == FileTypes::XlBinaryIndex)
 				return smart_ptr<OOX::File>(new UnknowTypeFile(pMain)); // ????
+			else if (pRelation->Type() == FileTypes::Timeline)
+				return smart_ptr<OOX::File>(new CTimelineFile(pMain, oRootPath, oFileName));
+			else if (pRelation->Type() == FileTypes::TimelineCache)
+				return smart_ptr<OOX::File>(new CTimelineCacheFile(pMain, oRootPath, oFileName));
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 		}

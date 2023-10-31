@@ -94,6 +94,60 @@ namespace PdfWriter
 		AnnotIconMax          = 6
 	};
 
+	class CAction : public CDictObject
+	{
+	public:
+		std::string m_sType;
+		CAction(CXref* pXref);
+
+		void SetType(const std::wstring& wsType);
+		void SetNext(CAction* pNext);
+	};
+	class CActionResetForm : public CAction
+	{
+	public:
+		CActionResetForm(CXref* pXref);
+
+		void SetFlags(int nFlag);
+		void SetFields(const std::vector<std::wstring>& arrFileds);
+	};
+	class CActionJavaScript : public CAction
+	{
+	public:
+		CActionJavaScript(CXref* pXref);
+
+		void SetJS(const std::wstring& wsJS);
+	};
+	class CActionGoTo : public CAction
+	{
+	public:
+		CActionGoTo(CXref* pXref);
+
+		void SetDestination(CDestination* pDest);
+	};
+	class CActionURI : public CAction
+	{
+	public:
+		CActionURI(CXref* pXref);
+
+		void SetURI(const std::wstring& wsURI);
+	};
+	class CActionHide : public CAction
+	{
+	public:
+		CActionHide(CXref* pXref);
+
+		void SetH(BYTE nH);
+		void SetT(const std::vector<std::wstring>& arrT);
+	};
+	class CActionNamed : public CAction
+	{
+	public:
+		CActionNamed(CXref* pXref);
+
+		void SetN(const std::wstring& wsN);
+	};
+
 	class CAnnotation : public CDictObject
 	{
 	protected:
@@ -103,6 +157,7 @@ namespace PdfWriter
 		TRect  m_oRect;
 		double m_dPageWidth  = 0;
 		double m_dPageHeight = 0;
+		CDocument* m_pDocument;
 
 	public:
 		EDictType GetDictType() const
@@ -130,6 +185,10 @@ namespace PdfWriter
 		void SetC(const std::vector<double>& arrC);
 		// TODO AP Необходимо генерировать внешний вид аннотации как у Widget
 		virtual void CreateAP();
+		TRect GetRect() { return m_oRect; }
+		void SetXref(CXref* pXref) { m_pXref = pXref; }
+		void SetDocument(CDocument* pDocument);
+		CDocument* GetDocument();
 	};
 	class CPopupAnnotation : public CAnnotation
 	{
@@ -314,16 +373,17 @@ namespace PdfWriter
 	protected:
 		CDictObject* m_pMK;
 		CDictObject* m_pParent;
-		CDocument* m_pDocument;
+		CDictObject* m_pAA;
+		CDictObject* m_pA;
+		std::string m_sDAforAP;
 
-		CDictObject* GetObjOwnValue(const std::string& sV);
 		void CheckMK();
 
 	public:
 		CWidgetAnnotation(CXref* pXref, EAnnotType eType);
 
-		void SetDocument(CDocument* pDocument);
-		void SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrTC);
+		void SetDA(CFontDict* pFont, const double& dFontSize, const double& dFontSizeAP, const std::vector<double>& arrTC);
+		CDictObject* GetObjOwnValue(const std::string& sV);
 
 		void SetQ(const BYTE& nQ);
 		void SetH(const BYTE& nH);
@@ -336,6 +396,9 @@ namespace PdfWriter
 		void SetT (const std::wstring& wsT);
 		void SetBC(const std::vector<double>& arrBC);
 		void SetBG(const std::vector<double>& arrBG);
+		void AddAction(CAction* pAction);
+
+		std::string GetDAforAP() { return m_sDAforAP; }
 	};
 	class CButtonWidget : public CWidgetAnnotation
 	{
@@ -370,6 +433,7 @@ namespace PdfWriter
 	{
 	private:
 		EAnnotType m_nSubtype;
+		std::string m_sV;
 
 	public:
 		CTextWidget(CXref* pXref);
@@ -381,6 +445,9 @@ namespace PdfWriter
 		void SetMaxLen(const int& nMaxLen);
 		void SetV (const std::wstring& wsV);
 		void SetRV(const std::wstring& wsRV);
+
+		void CreateAP() override;
+		std::string GetV() { return m_sV; }
 	};
 	class CChoiceWidget : public CWidgetAnnotation
 	{
@@ -414,13 +481,15 @@ namespace PdfWriter
 	class CAnnotationAppearance : public CDictObject
 	{
 	public:
-		CAnnotationAppearance(CXref* pXref, const TRect& oRect);
+		CAnnotationAppearance(CXref* pXref, CAnnotation* pAnnot);
 
 		void DrawTextComment();
+		void DrawTextWidget();
 
 	private:
 		CXref*   m_pXref;
 		CStream* m_pStream;
+		CAnnotation* m_pAnnot;
 	};
 }
 #endif // _PDF_WRITER_SRC_ANNOTATION_H

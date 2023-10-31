@@ -144,6 +144,7 @@ public:
 		FormField   = 3, // Обратная совместимость для docxf
 		Annotaion   = 4,
 		DeleteAnnot = 5,
+		WidgetsInfo = 6,
 
 		Undefined   = 255
 	};

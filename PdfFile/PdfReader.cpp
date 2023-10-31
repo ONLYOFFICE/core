@@ -873,7 +873,7 @@ BYTE* CPdfReader::GetWidgets()
 	NSWasm::CData oRes;
 	oRes.SkipLen();
 
-	PdfReader::CAnnots* pAnnots = new PdfReader::CAnnots(m_pPDFDocument);
+	PdfReader::CAnnots* pAnnots = new PdfReader::CAnnots(m_pPDFDocument, m_pFontManager, m_pFontList);
 	if (pAnnots)
 		pAnnots->ToWASM(oRes);
 	RELEASEOBJECT(pAnnots);

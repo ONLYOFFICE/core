@@ -465,7 +465,7 @@
 		}
 		else if (SType == 9)
 		{
-			rec["H"] = reader.readInt();
+			rec["H"] = reader.readByte();
 			let m = reader.readInt();
 		    rec["T"] = [];
 			// array of annotation names - rec["name"]
@@ -598,17 +598,6 @@
 			let np2 = reader.readInt();
 			// this memory needs to be deleted
 			APi["retValue"] = np2 << 32 | np1;
-			let k = reader.readInt();
-			if (k != 0)
-				APi["fontInfo"] = [];
-			for (let j = 0; j < k; ++j)
-			{
-				let fontInfo = {};
-				fontInfo["text"] = reader.readString();
-				fontInfo["fontName"] = reader.readString();
-				fontInfo["fontSize"] = reader.readDouble();
-				APi["fontInfo"].push(fontInfo);
-			}
 		}
 	}
 
@@ -680,12 +669,15 @@
 			// Annot
 			readAnnot(reader, rec);
 			// Widget
+			rec["font"] = {};
+			rec["font"]["name"] = reader.readString();
+			rec["font"]["size"] = reader.readDouble();
 			let tc = reader.readInt();
 			if (tc)
 			{
-				rec["textColor"] = [];
+				rec["font"]["color"] = [];
 				for (let i = 0; i < tc; ++i)
-					rec["textColor"].push(reader.readDouble());
+					rec["font"]["color"].push(reader.readDouble());
 			}
 			// 0 - left-justified, 1 - centered, 2 - right-justified
 			rec["alignment"] = reader.readByte();
@@ -790,9 +782,9 @@
 				}
 			    if (flags & (1 << 14))
 				{
-					rec["NameOfYes"] = reader.readString();
+					rec["ExportValue"] = reader.readString();
 					if (flags & (1 << 9))
-						rec["value"] = rec["NameOfYes"];
+						rec["value"] = rec["ExportValue"];
 				}
 				// 12.7.4.2.1
 				rec["NoToggleToOff"]  = (rec["flag"] >> 14) & 1; // NoToggleToOff
@@ -854,7 +846,7 @@
 	};
 	// optional nWidget     - rec["AP"]["i"]
 	// optional sView       - N/D/R
-	// optional sButtonView - state pushbutton-annotation - Off/Yes(or rec["NameOfYes"])
+	// optional sButtonView - state pushbutton-annotation - Off/Yes(or rec["ExportValue"])
 	CFile.prototype["getInteractiveFormsAP"] = function(pageIndex, width, height, backgroundColor, nWidget, sView, sButtonView)
 	{
 		let nView = -1;

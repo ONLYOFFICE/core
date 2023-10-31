@@ -18,11 +18,9 @@ namespace NSDocxRenderer
 		double m_dRotate {0.0};
 
 	public:
-		CImage();
+		CImage() = default;
 		CImage(const CImageInfo& oInfo, const std::wstring& strDstMedia);
 		void Clear() override final;
-		void AddContent(CBaseItem* pObj) override final{};
-
-		void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
+		void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
 	};
 }

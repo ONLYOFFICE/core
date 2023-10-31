@@ -44,8 +44,12 @@ namespace NSDocxRenderer
 
 	void CPage::Clear()
 	{
+		for(auto& val : m_arConts)
+			delete val;
+		m_arConts.clear();
+
 		for(auto& val : m_arTextLine)
-				delete val;
+			delete val;
 		m_arTextLine.clear();
 
 		for(auto& val : m_arDiacriticalSymbol)
@@ -53,11 +57,11 @@ namespace NSDocxRenderer
 		m_arDiacriticalSymbol.clear();
 
 		for(auto& val : m_arImages)
-				delete val;
+			delete val;
 		m_arImages.clear();
 
 		for(auto& val : m_arShapes)
-				delete val;
+			delete val;
 		m_arShapes.clear();
 
 		for(auto& val : m_arOutputObjects)
@@ -364,7 +368,6 @@ namespace NSDocxRenderer
 
 		auto pCont = new CContText(m_pFontManager);
 
-
 		pCont->m_dLeft = dTextX;
 		pCont->m_dBaselinePos = dBaseLinePos;
 
@@ -394,10 +397,8 @@ namespace NSDocxRenderer
 		// собираем отдельно, т.к. такие символы не имею размера m_dWidth
 		if (nCount == 1 && IsDiacriticalMark(*pUnicodes))
 			m_arDiacriticalSymbol.push_back(pCont);
-
-		// остальные символы сразу добавляем в текстовые линии
 		else
-			AddContToTextLine(pCont);
+			m_arConts.push_back(pCont);
 	}
 
 	void CPage::AddContToTextLine(CContText *pCont)
@@ -435,11 +436,23 @@ namespace NSDocxRenderer
 
 	void CPage::ProcessingAndRecordingOfPageData(NSStringUtils::CStringBuilder& oWriter, LONG lPagesCount, LONG lNumberPages)
 	{
+		CreateTextLines();
 		AnalyzeCollectedShapes();
 		AnalyzeCollectedTextLines();
 		TryMergeShapes();
 		ToXml(oWriter);
 		WriteSectionToFile(lPagesCount >= lNumberPages - 1, oWriter);
+	}
+
+	void CPage::SortConts()
+	{
+	}
+
+	void CPage::CreateTextLines()
+	{
+		CBaseItem::SortTopLeft(m_arConts);
+		for(auto&& cont : m_arConts)
+			AddContToTextLine(cont);
 	}
 
 	void CPage::TryMergeShapes()
@@ -914,8 +927,8 @@ namespace NSDocxRenderer
 		//todo для увеличения производительности можно попробовать использовать другие контейнеры
 
 		CBaseItem::SortByBaseline(m_arTextLine);
-		for (size_t i = 0; i < m_arTextLine.size(); ++i)
-			CBaseItem::SortByLeft(m_arTextLine[i]->m_arConts);
+//		for(auto&& line: m_arTextLine)
+//			CBaseItem::SortByLeft(line->m_arConts);
 
 		AnalyzeDropCaps();
 		AnalyzeCollectedConts();
@@ -928,7 +941,7 @@ namespace NSDocxRenderer
 
 		SingletonInstance<CConverter>().BuildLines(m_arTextLine);
 		SingletonInstance<CConverter>().BuildParagraphes(m_dWidth, m_eTextAssociationType,
-														 CBaseItem::ElemType::etParagraph,
+														 COutputObject::eOutputType::etParagraph,
 														 m_arTextLine, m_arTables, m_arOutputObjects,
 														 m_pParagraphStyleManager);
 	}
@@ -1582,10 +1595,10 @@ namespace NSDocxRenderer
 						}
 					}
 
-					SingletonInstance<CConverter>().BuildLines(pCell->m_arTextLine);
-					SingletonInstance<CConverter>().BuildParagraphes(m_dWidth, m_eTextAssociationType, CBaseItem::ElemType::etCell,
-																	 pCell->m_arTextLine, pCell->m_arOutputObjects,
-																	 m_pParagraphStyleManager);
+//					SingletonInstance<CConverter>().BuildLines(pCell->m_arTextLine);
+//					SingletonInstance<CConverter>().BuildParagraphes(m_dWidth, m_eTextAssociationType, COutputObject::eOutputType::etCell,
+//																	 pCell->m_arTextLine, pCell->m_arOutputObjects,
+//																	 m_pParagraphStyleManager);
 
 					pRow->AddContent(pCell);
 				}
@@ -1617,7 +1630,7 @@ namespace NSDocxRenderer
 
 		for (size_t i = 0; i < m_arOutputObjects.size(); ++i)
 		{
-			if (m_arOutputObjects[i]->m_eType == CBaseItem::ElemType::etShape)
+			if (m_arOutputObjects[i]->m_eType == COutputObject::eOutputType::etShape)
 			{
 				bIsTextShapePresent = true;
 				break;
@@ -1649,14 +1662,9 @@ namespace NSDocxRenderer
 			{
 				auto pObj = m_arOutputObjects[i];
 
-				switch(pObj->m_eType)
-				{
-				case CBaseItem::ElemType::etShape:
-					dynamic_cast<CShape*>(pObj)->ToXml(oWriter);
-					break;
-				default:
-					break;
-				}
+				CShape* pSahpe = nullptr;
+				if((pSahpe = dynamic_cast<CShape*>(pObj)) != nullptr)
+					pSahpe->ToXml(oWriter);
 			}
 		}
 
@@ -1669,17 +1677,13 @@ namespace NSDocxRenderer
 		{
 			auto pObj = m_arOutputObjects[i];
 
-			switch(pObj->m_eType)
-			{
-			case CBaseItem::ElemType::etParagraph:
-				dynamic_cast<CParagraph*>(pObj)->ToXml(oWriter);
-				break;
-			case CBaseItem::ElemType::etTable:
-				dynamic_cast<CTable*>(pObj)->ToXml(oWriter);
-				break;
-			default:
-				break;
-			}
+			CParagraph* pParagraph = nullptr;
+			if((pParagraph = dynamic_cast<CParagraph*>(pObj)) != nullptr)
+				pParagraph->ToXml(oWriter);
+
+			CTable* pTable = nullptr;
+			if((pTable = dynamic_cast<CTable*>(pObj)) != nullptr)
+				pTable->ToXml(oWriter);
 		}
 	}
 

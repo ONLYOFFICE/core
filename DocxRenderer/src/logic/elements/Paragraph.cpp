@@ -4,10 +4,6 @@
 
 namespace NSDocxRenderer
 {
-	CParagraph::CParagraph(): CBaseItem(ElemType::etParagraph)
-	{
-	}
-
 	CParagraph::~CParagraph()
 	{
 		Clear();
@@ -18,7 +14,7 @@ namespace NSDocxRenderer
 		m_arLines.clear();
 	}
 
-	void CParagraph::ToXml(NSStringUtils::CStringBuilder& oWriter)
+	void CParagraph::ToXml(NSStringUtils::CStringBuilder& oWriter) const
 	{
 		if (m_bIsNotNecessaryToUse)
 		{

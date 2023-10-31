@@ -26,12 +26,12 @@ namespace NSDocxRenderer
 		double m_dTrueHeight{0};
 
 	public:
-		CTextLine();
+		CTextLine() = default;
 		virtual ~CTextLine();
 		virtual void Clear() override final;
-		virtual void AddContent(CBaseItem* pObj) override final;
-		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
-		virtual eVerticalCrossingType GetVerticalCrossingType(const CBaseItem* oSrc) noexcept  override  final;
+		virtual void AddContent(CBaseItem* pItem) override final;
+		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
+		virtual eVerticalCrossingType GetVerticalCrossingType(const CBaseItem* pItem) const noexcept override;
 
 		void CheckLineToNecessaryToUse();
 		void MergeConts();

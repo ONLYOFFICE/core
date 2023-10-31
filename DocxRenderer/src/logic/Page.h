@@ -38,8 +38,9 @@ namespace NSDocxRenderer
 		std::vector<CContText*>  m_arDiacriticalSymbol;
 		std::vector<CTextLine*>  m_arTextLine;
 		std::vector<CShape*>     m_arShapes;
+		std::vector<CContText*>	 m_arConts;
 
-		std::vector<CBaseItem*>  m_arOutputObjects;
+		std::vector<COutputObject*>  m_arOutputObjects;
 
 		std::vector<CPeak*>      m_arPeaks;
 		std::vector<CCell*>      m_arCells;
@@ -56,7 +57,6 @@ namespace NSDocxRenderer
 		bool m_bIsRecalcFontSize {true};
 		LONG m_lLastCommand = 0;
 
-	public:
 		CPage(NSFonts::IApplicationFonts* pFonts);
 		~CPage();
 		void Init(NSStructures::CFont* pFont, NSStructures::CPen* pPen, NSStructures::CBrush* pBrush,
@@ -92,9 +92,26 @@ namespace NSDocxRenderer
 		void CollectTextData(const PUINT pUnicodes, const PUINT pGids, const UINT& nCount,
 							 const double& fX, const double& fY, const double& fWidth, const double& fHeight,
 							 const double& fBaseLineOffset, const bool& bIsPDFAnalyzer);
-		void AddContToTextLine(CContText *pCont);
 
 		void ProcessingAndRecordingOfPageData(NSStringUtils::CStringBuilder& oWriter, LONG lPagesCount, LONG lNumberPages);
+
+	private:
+		void SortConts();
+		void CreateTextLines();
+		void AddContToTextLine(CContText *pCont);
+
+		void AnalyzeCollectedTextLines();
+		void AnalyzeCollectedConts();
+		void DetermineStrikeoutsUnderlinesHighlights();
+
+		void AnalyzeDropCaps();
+		void AddDiacriticalSymbols();
+		void MergeLinesByVertAlignType();
+		void DetermineTextColumns();
+
+		bool IsLineCrossingText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
+		bool IsLineBelowText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
+		bool IsItHighlightingBackground(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
 
 		void AnalyzeCollectedShapes();
 		void BuildTables();
@@ -104,24 +121,10 @@ namespace NSDocxRenderer
 		void SelectCurrentRow(const CCell *pCell);
 		void DetermineLinesType();
 
-		//Собранные для текущей страницы данные нужно проанализировать и сгруппировать, лишнее удалить
-		void AnalyzeCollectedTextLines();
-		void AnalyzeCollectedConts();
-		void DetermineStrikeoutsUnderlinesHighlights();
-		bool IsLineCrossingText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
-		bool IsLineBelowText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
-		bool IsItHighlightingBackground(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
-		void AddDiacriticalSymbols();
-		void MergeLinesByVertAlignType();
-		void DetermineTextColumns();
-		void DetermineDominantGraphics();
-
 		void TryMergeShapes();
-		void AnalyzeDropCaps();
 
-		//конвертим m_arImages, m_arShapes, m_arParagraphs в xml-строку
+		// конвертим m_arImages, m_arShapes, m_arParagraphs в xml-строку
 		void ToXml(NSStringUtils::CStringBuilder& oWriter);
-
 		void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter);
 	};
 }

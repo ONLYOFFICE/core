@@ -76,11 +76,11 @@ namespace NSDocxRenderer
 		std::vector<CBaseItem*> m_arOutputObjects;
 
 	public:
-		CCell();
+		CCell() = default;
 		virtual ~CCell();
 		virtual void Clear() override final;
-		virtual void AddContent(CBaseItem* pObj) override final;
-		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
+		virtual void AddContent(CBaseItem* pItem) override final;
+		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
 
 		void SetParameters(CPeak *pPeak, eCorners eCorner);
 	};

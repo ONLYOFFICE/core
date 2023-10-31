@@ -8,13 +8,14 @@ namespace NSDocxRenderer
 {
 	UINT CShape::m_gRelativeHeight = c_iStandartRelativeHeight;
 
-	CShape::CShape() : CBaseItem(ElemType::etShape)
+	CShape::CShape()
 	{
+		COutputObject::m_eType = COutputObject::eOutputType::etShape;
 		m_nRelativeHeight = m_gRelativeHeight;
 		m_gRelativeHeight += c_iStandartRelativeHeight;
 	}
 
-	CShape::CShape(std::shared_ptr<CImageInfo> pInfo, const std::wstring& strDstMedia) : CBaseItem(ElemType::etShape),
+	CShape::CShape(std::shared_ptr<CImageInfo> pInfo, const std::wstring& strDstMedia) :
 		m_strDstMedia(strDstMedia), m_pImageInfo(pInfo)
 	{
 		m_nRelativeHeight = m_gRelativeHeight;
@@ -35,7 +36,7 @@ namespace NSDocxRenderer
 		m_oVector.Clear();
 	}
 
-	UINT CShape::GenerateShapeId()
+	UINT CShape::GenerateShapeId() const
 	{
 		static UINT iId = 0;
 		iId++;
@@ -141,7 +142,7 @@ namespace NSDocxRenderer
 		return false;
 	}
 
-	std::wstring CShape::PathToWString()
+	std::wstring CShape::PathToWString() const
 	{
 		auto arData = m_oVector.GetData();
 
@@ -641,7 +642,7 @@ namespace NSDocxRenderer
 		}
 	}
 
-	void CShape::ToXml(NSStringUtils::CStringBuilder &oWriter)
+	void CShape::ToXml(NSStringUtils::CStringBuilder &oWriter) const
 	{
 		//todo для уменьшения размера каждого шейпа ипользовавать только то, что необходимо - для графики, текста, графика+текст
 		//todo добавить все возможные параметры/атрибуты
@@ -663,7 +664,7 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"</w:r>");
 	}
 
-	void CShape::BuildGeneralProperties(NSStringUtils::CStringBuilder &oWriter)
+	void CShape::BuildGeneralProperties(NSStringUtils::CStringBuilder &oWriter) const
 	{
 		oWriter.WriteString(L"<wp:anchor");
 		oWriter.WriteString(L" distT=\"0\""); //Определяет минимальное расстояние, которое должно сохраняться между краем
@@ -706,13 +707,10 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"\"/>");
 
 		oWriter.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>"); //Этот элемент определяет дополнительное расстояние, которое должно быть добавлено к каждому краю изображения, чтобы компенсировать любые эффекты рисования, применяемые к объекту DrawingML
-
 		oWriter.WriteString(L"<wp:wrapNone/>");
 
-		m_nShapeId = GenerateShapeId();
-
 		oWriter.WriteString(L"<wp:docPr id=\"");
-		oWriter.AddUInt(m_nShapeId);
+		oWriter.AddUInt(GenerateShapeId());
 		switch (m_eType)
 		{
 		case eShapeType::stTextBox:
@@ -748,7 +746,7 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"</wp:anchor>");
 	}
 
-	void CShape::BuildSpecificProperties(NSStringUtils::CStringBuilder &oWriter)
+	void CShape::BuildSpecificProperties(NSStringUtils::CStringBuilder &oWriter) const
 	{
 		oWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
 
@@ -774,7 +772,7 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"</a:graphic>");
 	}
 
-	void CShape::BuildShapeProperties(NSStringUtils::CStringBuilder &oWriter)
+	void CShape::BuildShapeProperties(NSStringUtils::CStringBuilder &oWriter) const
 	{
 		oWriter.WriteString(L"<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
 
@@ -798,7 +796,7 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"</a:graphicData>");
 	}
 
-	void CShape::BuildPictureProperties(NSStringUtils::CStringBuilder &oWriter)
+	void CShape::BuildPictureProperties(NSStringUtils::CStringBuilder &oWriter) const
 	{
 		oWriter.WriteString(L"<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
 
@@ -836,7 +834,7 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"</a:graphicData>");
 	}
 
-	void CShape::BuildGroupProperties(NSStringUtils::CStringBuilder &oWriter)
+	void CShape::BuildGroupProperties(NSStringUtils::CStringBuilder &oWriter) const
 	{
 		oWriter.WriteString(L"<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\">");
 		oWriter.WriteString(L"<wpg:wgp>");
@@ -854,13 +852,13 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"</a:graphicData>");
 	}
 
-	void CShape::BuildCanvasProperties(NSStringUtils::CStringBuilder &oWriter)
+	void CShape::BuildCanvasProperties(NSStringUtils::CStringBuilder &oWriter) const
 	{
 		//todo добавить реализацию
 		oWriter.WriteString(L"<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\">");
 	}
 
-	void CShape::BuildGraphicProperties(NSStringUtils::CStringBuilder &oWriter)
+	void CShape::BuildGraphicProperties(NSStringUtils::CStringBuilder &oWriter) const
 	{
 		std::wstring strPath = PathToWString();
 		//отвечает за размеры прямоугольного фрейма шейпа
@@ -960,7 +958,7 @@ namespace NSDocxRenderer
 		}
 	}
 
-	void CShape::BuildTextBox(NSStringUtils::CStringBuilder &oWriter)
+	void CShape::BuildTextBox(NSStringUtils::CStringBuilder &oWriter) const
 	{
 		if (m_eType == eShapeType::stTextBox && !m_arOutputObjects.empty())
 		{

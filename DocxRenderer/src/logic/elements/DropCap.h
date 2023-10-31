@@ -5,7 +5,7 @@
 
 namespace NSDocxRenderer
 {
-	class CDropCap : public CBaseItem
+	class CDropCap : public COutputObject
 	{
 	public:
 		size_t nLines;
@@ -15,10 +15,10 @@ namespace NSDocxRenderer
 		LONG nFontSize; // Pt * 2
 		LONG nOffset;
 
-		CDropCap() : CBaseItem(ElemType::etDropCap) {}
+//		CDropCap() : CBaseItem(ElemType::etDropCap) {}
 		~CDropCap() = default;
 
-		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override;
+		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override;
 		virtual void Clear() override {}
 	};
 }

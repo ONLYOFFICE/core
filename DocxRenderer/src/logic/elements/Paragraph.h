@@ -5,7 +5,7 @@
 
 namespace NSDocxRenderer
 {
-	class CParagraph : public CBaseItem
+	class CParagraph : public COutputObject
 	{
 	public:
 		enum TextAlignmentType
@@ -39,12 +39,10 @@ namespace NSDocxRenderer
 		std::wstring		m_wsStyleId;
 
 	public:
-		CParagraph();
+		CParagraph() : COutputObject(COutputObject::eOutputType::etParagraph) {}
 		virtual ~CParagraph();
 		virtual void Clear() override final;
-
-		virtual void AddContent(CBaseItem* pObj) override final{};
-		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
+		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
 
 		void RemoveHighlightColor();
 		void MergeLines();

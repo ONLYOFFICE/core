@@ -1,5 +1,6 @@
 #pragma once
 #include "../DesktopEditor/common/StringBuilder.h"
+#include "src/resources/Constants.h"
 #include <vector>
 
 namespace NSDocxRenderer
@@ -39,52 +40,32 @@ namespace NSDocxRenderer
 	class CBaseItem
 	{
 	public:
-		enum class ElemType
-		{
-			etContText  = 0,
-			etTextLine  = 1,
-			etParagraph = 2,
-			etImage     = 3,
-			etShape     = 4,
-			etCell      = 5,
-			etRow       = 6,
-			etTable     = 7,
-			etDropCap	= 8,
-		};
-
-		ElemType m_eType;
-
 		bool m_bIsNotNecessaryToUse {false};
 
-		//General
-		double m_dLeft {0.0};
 		double m_dTop {0.0};
-		double m_dWidth {0.0};
+		double m_dBaselinePos {0.0};
 		double m_dHeight {0.0};
 
-		//Secondary
-		double m_dBaselinePos {0.0};
+		double m_dLeft {0.0};
 		double m_dRight {0.0};
+		double m_dWidth {0.0};
 
-	public:
-		CBaseItem(const ElemType& eType): m_eType(eType) {}
-		virtual ~CBaseItem() {}
+		CBaseItem() = default;
+		virtual ~CBaseItem() = default;
+
 		virtual void Clear() = 0;
+		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const = 0;
+
+		virtual eVerticalCrossingType GetVerticalCrossingType(const CBaseItem* oSrc) const;
+		virtual eHorizontalCrossingType GetHorizontalCrossingType(const CBaseItem* oSrc) const;
+		virtual void AddContent(CBaseItem* pItem);
+
+		bool AreObjectsNoCrossingByVertically(const CBaseItem* pObj) const noexcept;
+		bool AreObjectsNoCrossingByHorizontally(const CBaseItem* pObj) const noexcept;
 
 		CBaseItem& operator=(const CBaseItem& oSrc);
 
-		virtual void AddContent(CBaseItem* pObj);
-		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) = 0;
-
-		virtual eVerticalCrossingType GetVerticalCrossingType(const CBaseItem* oSrc);
-		virtual eHorizontalCrossingType GetHorizontalCrossingType(const CBaseItem* oSrc);
-
-		bool AreObjectsNoCrossingByVertically(const CBaseItem* pObj);
-		bool AreObjectsNoCrossingByHorizontally(const CBaseItem* pObj);
-
-		double CalculateBeforeSpacing(double dPreviousBaseline);
-
-		template<typename T>
+		template <typename T>
 		static void SortByLeft(std::vector<T*>& oArray)
 		{
 			std::sort(oArray.begin(), oArray.end(), [](T* a, T* b) {
@@ -92,7 +73,7 @@ namespace NSDocxRenderer
 			});
 		}
 
-		template<typename T>
+		template <typename T>
 		static void SortByBaseline(std::vector<T*>& oArray)
 		{
 			std::sort(oArray.begin(), oArray.end(), [](T* a, T* b) {
@@ -100,8 +81,38 @@ namespace NSDocxRenderer
 			});
 		}
 
+		template <typename T>
+		static void SortTopLeft(std::vector<T*>& oArray)
+		{
+			std::sort(oArray.begin(), oArray.end(), [](T* a, T* b) {
+				if(fabs(a->m_dBaselinePos - b->m_dBaselinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
+					return a->m_dLeft < b->m_dLeft;
+				return a->m_dBaselinePos < b->m_dBaselinePos;
+			});
+		}
+
 	private:
 		bool IsCurrentLeftOfNext(const CBaseItem* oSrc);
 		bool IsCurrentAboveOfNext(const CBaseItem* oSrc);
+	};
+
+	class COutputObject : public CBaseItem
+	{
+	public:
+		enum class eOutputType
+		{
+			etAny		= 0,
+			etParagraph = 1,
+			etShape     = 2,
+			etTable     = 3
+		};
+
+		COutputObject() : m_eType(eOutputType::etAny) {}
+		COutputObject(eOutputType eType) : m_eType(eType) {}
+		virtual ~COutputObject() = default;
+
+		COutputObject& operator= (const COutputObject& oObj);
+
+		eOutputType m_eType;
 	};
 }

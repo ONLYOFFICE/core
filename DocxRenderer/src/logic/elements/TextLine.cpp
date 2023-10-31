@@ -5,14 +5,8 @@
 
 namespace NSDocxRenderer
 {
-	CTextLine::CTextLine() : CBaseItem(ElemType::etTextLine)
-	{
-	}
-
 	void CTextLine::Clear()
 	{
-		for(auto& val : m_arConts)
-				delete val;
 		m_arConts.clear();
 	}
 
@@ -21,17 +15,15 @@ namespace NSDocxRenderer
 		Clear();
 	}
 
-	void CTextLine::AddContent(CBaseItem *pObj)
+	void CTextLine::AddContent(CBaseItem *pItem)
 	{
-		CBaseItem::AddContent(pObj);
-		m_dTrueHeight = std::max(m_dTrueHeight, dynamic_cast<CContText*>(pObj)->m_dTrueHeight);
+		CBaseItem::AddContent(pItem);
+		m_dTrueHeight = std::max(m_dTrueHeight, dynamic_cast<CContText*>(pItem)->m_dTrueHeight);
 
-		if (dynamic_cast<CContText*>(pObj)->m_pCont && m_eVertAlignType == eVertAlignType::vatUnknown)
-		{
-			m_eVertAlignType = dynamic_cast<CContText*>(pObj)->m_eVertAlignType;
-		}
+		if (dynamic_cast<CContText*>(pItem)->m_pCont && m_eVertAlignType == eVertAlignType::vatUnknown)
+			m_eVertAlignType = dynamic_cast<CContText*>(pItem)->m_eVertAlignType;
 
-		m_arConts.push_back(dynamic_cast<CContText*>(pObj));
+		m_arConts.push_back(dynamic_cast<CContText*>(pItem));
 	}
 
 	void CTextLine::CheckLineToNecessaryToUse()
@@ -166,7 +158,7 @@ namespace NSDocxRenderer
 				fabs(m_pDominantShape->m_dWidth - pLine->m_pDominantShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM);
 	}
 
-	void CTextLine::ToXml(NSStringUtils::CStringBuilder& oWriter)
+	void CTextLine::ToXml(NSStringUtils::CStringBuilder& oWriter) const
 	{
 		if (m_bIsNotNecessaryToUse)
 		{
@@ -204,21 +196,23 @@ namespace NSDocxRenderer
 		pPrev->ToXml(oWriter);
 
 	}
-	eVerticalCrossingType CTextLine::GetVerticalCrossingType(const CBaseItem* oSrc) noexcept
+	eVerticalCrossingType CTextLine::GetVerticalCrossingType(const CBaseItem* pItem) const noexcept
 	{
-		if(oSrc->m_eType != ElemType::etContText)
-			return CBaseItem::GetVerticalCrossingType(oSrc);
+		const CContText* pLine = nullptr;
+		if((pLine = dynamic_cast<const CContText*>(pItem)) == nullptr)
+			return CBaseItem::GetVerticalCrossingType(pItem);
 
 		auto m_dTop_copy = m_dTop;
-		auto m_dTop_copy_src = oSrc->m_dTop;
+		auto m_dTop_copy_src = pItem->m_dTop;
 
-		m_dTop = m_dBaselinePos - m_dTrueHeight;
-		const_cast<CBaseItem*>(oSrc)->m_dTop = oSrc->m_dBaselinePos - static_cast<const CContText*>(oSrc)->m_dTrueHeight;
+		// call CBaseItem::GetVerticalCrossingType(oSrc) and not create copy, so const_cast was used
+		const_cast<CContText*>(pLine)->m_dTop = m_dBaselinePos - m_dTrueHeight;
+		const_cast<CContText*>(pLine)->m_dTop = pLine->m_dBaselinePos - pLine->m_dTrueHeight;
 
-		auto vert_cross = CBaseItem::GetVerticalCrossingType(oSrc);
+		auto vert_cross = CBaseItem::GetVerticalCrossingType(pLine);
 
-		m_dTop = m_dTop_copy;
-		const_cast<CBaseItem*>(oSrc)->m_dTop = m_dTop_copy_src;
+		const_cast<CContText*>(pLine)->m_dTop = m_dTop_copy;
+		const_cast<CContText*>(pLine)->m_dTop = m_dTop_copy_src;
 
 		return vert_cross;
 	}

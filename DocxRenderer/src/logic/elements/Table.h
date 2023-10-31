@@ -9,14 +9,14 @@ namespace NSDocxRenderer
 		std::vector<CCell*> m_arCells;
 
 	public:
-		CRow();
+		CRow() = default;
 		virtual ~CRow();
 		virtual void Clear() override final;
 		virtual void AddContent(CBaseItem* pObj) override final;
-		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final {}
+		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final {}
 	};
 
-	class CTable : public CBaseItem
+	class CTable : public COutputObject
 	{
 	public:
 		std::vector<double> m_arColumnWidths; //общее количество колонок в таблице
@@ -28,11 +28,11 @@ namespace NSDocxRenderer
 		bool                m_bIsNeedSpacing {false};
 
 	public:
-		CTable();
+		CTable() = default;
 		virtual ~CTable();
 		virtual void Clear() override final;
-		virtual void AddContent(CBaseItem* pObj) override final;
-		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
+		virtual void AddContent(CBaseItem* pItem) override final;
+		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
 
 		double CalculateBeforeSpacing(double dPreviousStringBaseline)
 		{

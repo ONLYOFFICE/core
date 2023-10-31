@@ -5,13 +5,7 @@
 
 namespace NSDocxRenderer
 {
-	CContText::CContText(CFontManager* pManager):
-		CBaseItem(ElemType::etContText), m_pManager(pManager)
-	{
-	}
-
-	CContText::CContText(const CContText& rCont):
-		CBaseItem(ElemType::etContText)
+	CContText::CContText(const CContText& rCont)
 	{
 		*this = rCont;
 	}
@@ -99,34 +93,36 @@ namespace NSDocxRenderer
 		}
 	}
 
-	eVerticalCrossingType CContText::GetVerticalCrossingType(const CBaseItem* oSrc) noexcept
+	eVerticalCrossingType CContText::GetVerticalCrossingType(const CBaseItem* pItem) const noexcept
 	{
-		if(oSrc->m_eType != ElemType::etContText)
-			return CBaseItem::GetVerticalCrossingType(oSrc);
+		const CContText* pCont = nullptr;
+		if((pCont = dynamic_cast<const CContText*>(pItem)) == nullptr)
+			return CBaseItem::GetVerticalCrossingType(pItem);
 
 		auto m_dTop_copy = m_dTop;
-		auto m_dTop_copy_src = oSrc->m_dTop;
+		auto m_dTop_copy_src = pCont->m_dTop;
 
-		m_dTop = m_dBaselinePos - m_dTrueHeight;
-		const_cast<CBaseItem*>(oSrc)->m_dTop = oSrc->m_dBaselinePos - static_cast<const CContText*>(oSrc)->m_dTrueHeight;
+		// call CBaseItem::GetVerticalCrossingType(oSrc) and not create copy, so const_cast was used
+		const_cast<CContText*>(pCont)->m_dTop = m_dBaselinePos - m_dTrueHeight;
+		const_cast<CContText*>(pCont)->m_dTop = pCont->m_dBaselinePos - pCont->m_dTrueHeight;
 
-		auto vert_cross = CBaseItem::GetVerticalCrossingType(oSrc);
+		auto vert_cross = CBaseItem::GetVerticalCrossingType(pCont);
 
 		if(vert_cross == eVerticalCrossingType::vctCurrentAboveNext &&
-				(m_dBaselinePos - oSrc->m_dTop < m_dTrueHeight * 0.3))
+				(m_dBaselinePos - pCont->m_dTop < m_dTrueHeight * 0.3))
 			vert_cross = eVerticalCrossingType::vctNoCrossingCurrentAboveNext;
 
 		if(vert_cross == eVerticalCrossingType::vctCurrentBelowNext &&
-				(oSrc->m_dBaselinePos - m_dTop < static_cast<const CContText*>(oSrc)->m_dTrueHeight * 0.3))
+				(pCont->m_dBaselinePos - m_dTop < pCont->m_dTrueHeight * 0.3))
 			vert_cross = eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
 
-		m_dTop = m_dTop_copy;
-		const_cast<CBaseItem*>(oSrc)->m_dTop = m_dTop_copy_src;
+		const_cast<CContText*>(pCont)->m_dTop = m_dTop_copy;
+		const_cast<CContText*>(pCont)->m_dTop = m_dTop_copy_src;
 
 		return vert_cross;
 	}
 
-	void CContText::ToXml(NSStringUtils::CStringBuilder& oWriter)
+	void CContText::ToXml(NSStringUtils::CStringBuilder& oWriter) const
 	{
 		if (m_bIsNotNecessaryToUse)
 		{

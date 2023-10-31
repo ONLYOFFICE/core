@@ -3,7 +3,7 @@
 
 namespace NSDocxRenderer
 {
-	void CDropCap::ToXml(NSStringUtils::CStringBuilder& oWriter)
+	void CDropCap::ToXml(NSStringUtils::CStringBuilder& oWriter) const
 	{
 		oWriter.WriteString(L"<w:p>");
 		oWriter.WriteString(L"<w:pPr>");

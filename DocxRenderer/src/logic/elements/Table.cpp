@@ -2,10 +2,6 @@
 
 namespace NSDocxRenderer
 {
-	CRow::CRow() : CBaseItem(ElemType::etTable)
-	{
-	}
-
 	CRow::~CRow()
 	{
 		Clear();
@@ -16,16 +12,10 @@ namespace NSDocxRenderer
 		m_arCells.clear();
 	}
 
-	void CRow::AddContent(CBaseItem* pObj)
+	void CRow::AddContent(CBaseItem* pItem)
 	{
-		CBaseItem::AddContent(pObj);
-
-		m_arCells.push_back(dynamic_cast<CCell*>(pObj));
-	}
-
-	CTable::CTable() : CBaseItem(ElemType::etTable)
-	{
-
+		CBaseItem::AddContent(pItem);
+		m_arCells.push_back(dynamic_cast<CCell*>(pItem));
 	}
 
 	CTable::~CTable()
@@ -38,14 +28,13 @@ namespace NSDocxRenderer
 		m_arRows.clear();
 	}
 
-	void CTable::AddContent(CBaseItem* pObj)
+	void CTable::AddContent(CBaseItem* pItem)
 	{
-		CBaseItem::AddContent(pObj);
-
-		m_arRows.push_back(dynamic_cast<CRow*>(pObj));
+		CBaseItem::AddContent(pItem);
+		m_arRows.push_back(dynamic_cast<CRow*>(pItem));
 	}
 
-	void CTable::ToXml(NSStringUtils::CStringBuilder &oWriter)
+	void CTable::ToXml(NSStringUtils::CStringBuilder &oWriter) const
 	{
 		if (m_bIsNotNecessaryToUse)
 		{

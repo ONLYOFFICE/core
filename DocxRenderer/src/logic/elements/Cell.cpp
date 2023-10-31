@@ -3,10 +3,6 @@
 
 namespace NSDocxRenderer
 {
-	CCell::CCell() : CBaseItem(ElemType::etCell)
-	{
-	}
-
 	CCell::~CCell()
 	{
 		Clear();
@@ -15,32 +11,19 @@ namespace NSDocxRenderer
 	void CCell::Clear()
 	{
 		m_arTextLine.clear();
+		for(size_t i = 0; i < m_arOutputObjects.size(); ++i)
 
-		for (size_t i = 0; i < m_arOutputObjects.size(); ++i)
-		{
-			auto pObj = m_arOutputObjects[i];
-
-			switch(pObj->m_eType)
-			{
-			case CBaseItem::ElemType::etParagraph:
-				dynamic_cast<CParagraph*>(pObj)->Clear();
-				break;
-			default:
-				pObj->Clear();
-				break;
-			}
-		}
+			m_arOutputObjects[i]->Clear();
 		m_arOutputObjects.clear();
 	}
 
-	void CCell::AddContent(CBaseItem* pObj)
+	void CCell::AddContent(CBaseItem* pItem)
 	{
-		CBaseItem::AddContent(pObj);
-
-		m_arTextLine.push_back(dynamic_cast<CTextLine*>(pObj));
+		CBaseItem::AddContent(pItem);
+		m_arTextLine.push_back(dynamic_cast<CTextLine*>(pItem));
 	}
 
-	void CCell::ToXml(NSStringUtils::CStringBuilder &oWriter)
+	void CCell::ToXml(NSStringUtils::CStringBuilder &oWriter) const
 	{
 		if (m_bIsNotNecessaryToUse)
 		{
@@ -113,14 +96,9 @@ namespace NSDocxRenderer
 			{
 				auto pObj = m_arOutputObjects[i];
 
-				switch(pObj->m_eType)
-				{
-				case CBaseItem::ElemType::etParagraph:
-					dynamic_cast<CParagraph*>(pObj)->ToXml(oWriter);
-					break;
-				default:
-					break;
-				}
+				CParagraph* pParagraph = nullptr;
+				if((pParagraph = dynamic_cast<CParagraph*>(pObj)) != nullptr)
+					pParagraph->ToXml(oWriter);
 			}
 		}
 

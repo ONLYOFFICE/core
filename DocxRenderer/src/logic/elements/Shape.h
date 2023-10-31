@@ -15,7 +15,7 @@ namespace NSDocxRenderer
 		gtNoGraphics,
 	};
 
-	class CShape : public CBaseItem
+	class CShape : public COutputObject
 	{
 	public:
 		enum class eShapeType
@@ -47,7 +47,7 @@ namespace NSDocxRenderer
 		eSimpleLineType m_eSimpleLineType {eSimpleLineType::sltUnknown};
 		eLineType       m_eLineType {eLineType::ltUnknown};
 
-		std::vector<CBaseItem*> m_arOutputObjects;
+		std::vector<COutputObject*> m_arOutputObjects;
 
 		std::shared_ptr<CImageInfo> m_pImageInfo {nullptr};
 
@@ -62,12 +62,11 @@ namespace NSDocxRenderer
 		CShape(std::shared_ptr<CImageInfo> pInfo, const std::wstring& strDstMedia);
 		virtual ~CShape();
 		virtual void Clear() override final;
-		virtual void AddContent(CBaseItem* pObj) override final{};
-		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
+		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
 
 		void SetVector(CVectorGraphics&& oVector);
 		bool TryMergeShape(CShape* pShape);
-		std::wstring PathToWString();
+		std::wstring PathToWString() const;
 		void DetermineGraphicsType(double dWidth, double dHeight, size_t nPeacks, size_t nCurves);
 		bool IsItFitLine();
 		bool IsCorrelated(const CShape* pShape);
@@ -77,18 +76,18 @@ namespace NSDocxRenderer
 		bool IsSide();
 		void DetermineLineType(CShape* pShape = nullptr, bool bIsLast = false);
 
-		void BuildGeneralProperties(NSStringUtils::CStringBuilder &oWriter);
-		void BuildSpecificProperties(NSStringUtils::CStringBuilder &oWriter);
-		void BuildShapeProperties(NSStringUtils::CStringBuilder &oWriter);
-		void BuildPictureProperties(NSStringUtils::CStringBuilder &oWriter);
-		void BuildGroupProperties(NSStringUtils::CStringBuilder &oWriter);
-		void BuildCanvasProperties(NSStringUtils::CStringBuilder &oWriter);
-		void BuildGraphicProperties(NSStringUtils::CStringBuilder &oWriter);
-		void BuildTextBox(NSStringUtils::CStringBuilder &oWriter);
+		void BuildGeneralProperties(NSStringUtils::CStringBuilder &oWriter) const;
+		void BuildSpecificProperties(NSStringUtils::CStringBuilder &oWriter) const;
+		void BuildShapeProperties(NSStringUtils::CStringBuilder &oWriter) const;
+		void BuildPictureProperties(NSStringUtils::CStringBuilder &oWriter) const;
+		void BuildGroupProperties(NSStringUtils::CStringBuilder &oWriter) const;
+		void BuildCanvasProperties(NSStringUtils::CStringBuilder &oWriter) const;
+		void BuildGraphicProperties(NSStringUtils::CStringBuilder &oWriter) const;
+		void BuildTextBox(NSStringUtils::CStringBuilder &oWriter) const;
 
 		static void ResetRelativeHeight();
 
 	private:
-		UINT GenerateShapeId();
+		UINT GenerateShapeId() const;
 	};
 }

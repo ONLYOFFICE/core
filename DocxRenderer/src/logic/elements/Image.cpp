@@ -4,16 +4,13 @@
 
 namespace NSDocxRenderer
 {
-	CImage::CImage() : CBaseItem(ElemType::etImage)
-	{
-	}
-	CImage::CImage(const CImageInfo& oInfo, const std::wstring& strDstMedia) : CBaseItem(ElemType::etImage),
-		m_oImageInfo(oInfo), m_strPath(strDstMedia)
+	CImage::CImage(const CImageInfo& oInfo, const std::wstring& strDstMedia)
+		: m_oImageInfo(oInfo), m_strPath(strDstMedia)
 	{
 	}
 	void CImage::Clear(){}
 
-	void CImage::ToXml(NSStringUtils::CStringBuilder& oWriter)
+	void CImage::ToXml(NSStringUtils::CStringBuilder& oWriter) const
 	{
 		if (m_bIsNotNecessaryToUse)
 		{

@@ -70,9 +70,9 @@ namespace NSDocxRenderer
 		}
 	}
 
-	void CConverter::BuildParagraphes(double dPageWidth, TextAssociationType eType, CBaseItem::ElemType eBaseType,
+	void CConverter::BuildParagraphes(double dPageWidth, TextAssociationType eType, COutputObject::eOutputType eBaseType,
 									  std::vector<CTextLine*>& rTextLines,
-									  std::vector<CBaseItem*>& rOutputObjects,
+									  std::vector<COutputObject*>& rOutputObjects,
 									  CParagraphStyleManager* pParagraphStyleManager)
 	{
 		std::vector<CTable*> oStubVector; //просто объект-заглушка
@@ -82,8 +82,8 @@ namespace NSDocxRenderer
 	// eBaseType == etCell или etParagraph
 	// eType == 2 - 5 из TextAssociationType
 	void CConverter::BuildParagraphes(double dPageWidth, TextAssociationType eType,
-									  CBaseItem::ElemType eBaseType, std::vector<CTextLine*>& rTextLines,
-									  std::vector<CTable*>& rTables, std::vector<CBaseItem*> &rOutputObjects,
+									  COutputObject::eOutputType eBaseType, std::vector<CTextLine*>& rTextLines,
+									  std::vector<CTable*>& rTables, std::vector<COutputObject*>& rOutputObjects,
 									  CParagraphStyleManager* pParagraphStyleManager)
 	{
 		CTextLine* pCurrLine, *pNextLine, *pNextNextLine, *pPrevLine;
@@ -95,7 +95,7 @@ namespace NSDocxRenderer
 		eVerticalCrossingType eCrossingType;
 
 		bool bIf1, bIf2, bIf3, bIf4, bIf5, bIf6, bIf7;
-		bool bIsNeedParagraphToShape = eType == TextAssociationType::tatParagraphToShape && eBaseType == CBaseItem::ElemType::etParagraph;
+		bool bIsNeedParagraphToShape = eType == TextAssociationType::tatParagraphToShape && eBaseType == COutputObject::eOutputType::etParagraph;
 
 //		CTable* pCurrTable = nullptr;
 //		size_t nTableIndex = 0;
@@ -184,14 +184,11 @@ namespace NSDocxRenderer
 //			}
 
 			dPrevBeforeSpacing = dCurrBeforeSpacing;
-			if (eBaseType == CBaseItem::ElemType::etCell && nIndex == 0)
-			{
-				dCurrBeforeSpacing = 0;
-			}
-			else
-			{
-				dCurrBeforeSpacing = pCurrLine->m_dBaselinePos - pCurrLine->m_dTrueHeight - dPreviousStringBaseline;
-			}
+//			if (eBaseType == CBaseItem::ElemType::etCell && nIndex == 0)
+//			{
+//				dCurrBeforeSpacing = 0;
+//			}
+			dCurrBeforeSpacing = pCurrLine->m_dBaselinePos - pCurrLine->m_dTrueHeight - dPreviousStringBaseline;
 			dPreviousStringBaseline = pCurrLine->m_dBaselinePos;
 
 			//Если у текущей линии есть дубликаты, то создаем из них шейпы
@@ -338,9 +335,9 @@ namespace NSDocxRenderer
 			if (pNextLine && !bIsSingleLineParagraph && bIf1 && (bIf2 || bIf3))
 			{
 				pParagraph->m_dLeft = std::min(pCurrLine->m_dLeft, pNextLine->m_dLeft);
-				pParagraph->m_dLeftBorder = eBaseType == CBaseItem::ElemType::etCell ? 0 : pParagraph->m_dLeft;
+				pParagraph->m_dLeftBorder = pParagraph->m_dLeft;
 				pParagraph->m_dRight = std::max(pCurrLine->m_dRight, pNextLine->m_dRight);
-				pParagraph->m_dRightBorder = eBaseType == CBaseItem::ElemType::etCell ? 0 : dPageWidth - pParagraph->m_dRight;
+				pParagraph->m_dRightBorder = dPageWidth - pParagraph->m_dRight;
 				pParagraph->m_dWidth = pParagraph->m_dRight - pParagraph->m_dLeft;
 				if (pParagraph->m_eTextAlignmentType != CParagraph::tatByCenter)
 				{
@@ -351,9 +348,9 @@ namespace NSDocxRenderer
 			else
 			{
 				pParagraph->m_dLeft = pCurrLine->m_dLeft;
-				pParagraph->m_dLeftBorder = eBaseType == CBaseItem::ElemType::etCell ? 0 : pParagraph->m_dLeft;
+				pParagraph->m_dLeftBorder = pParagraph->m_dLeft;
 				pParagraph->m_dRight = pCurrLine->m_dRight;
-				pParagraph->m_dRightBorder = eBaseType == CBaseItem::ElemType::etCell ? 0 : dPageWidth - pParagraph->m_dRight;
+				pParagraph->m_dRightBorder = dPageWidth - pParagraph->m_dRight;
 				pParagraph->m_dWidth = pCurrLine->m_dWidth;
 
 				pParagraph->m_bIsNeedFirstLineIndent = false;
@@ -418,9 +415,9 @@ namespace NSDocxRenderer
 						pParagraph->m_nNumLines++;
 
 						pParagraph->m_dLeft = std::min(pParagraph->m_dLeft, pNextLine->m_dLeft);
-						pParagraph->m_dLeftBorder = eBaseType == CBaseItem::ElemType::etCell ? 0 : pParagraph->m_dLeft;
+						pParagraph->m_dLeftBorder = pParagraph->m_dLeft;
 						pParagraph->m_dRight = std::max(pParagraph->m_dRight, pNextLine->m_dRight);
-						pParagraph->m_dRightBorder = eBaseType == CBaseItem::ElemType::etCell ? 0 : dPageWidth - pParagraph->m_dRight;
+						pParagraph->m_dRightBorder = dPageWidth - pParagraph->m_dRight;
 						pParagraph->m_dWidth = pParagraph->m_dRight - pParagraph->m_dLeft;
 						pParagraph->m_dBaselinePos = pNextLine->m_dBaselinePos;
 
@@ -438,7 +435,7 @@ namespace NSDocxRenderer
 						dPrevBeforeSpacing = dCurrBeforeSpacing;
 						dCurrBeforeSpacing = (pCurrLine->m_dBaselinePos - pCurrLine->m_dTrueHeight) - dPreviousStringBaseline; //pCurrLine->CalculateBeforeSpacing(dPreviousStringBaseline);
 						dPreviousStringBaseline = pCurrLine->m_dBaselinePos;
-						dCorrectionBeforeSpacing = (dCorrectionBeforeSpacing + dCurrBeforeSpacing)/2; //наверное лучше так... текст может быть уже, чем в оригинале
+						dCorrectionBeforeSpacing = (dCorrectionBeforeSpacing + dCurrBeforeSpacing) / 2; //наверное лучше так... текст может быть уже, чем в оригинале
 
 						if (pNextLine)
 						{
@@ -513,7 +510,7 @@ namespace NSDocxRenderer
 	}
 
 	void CConverter::CreateSingleLineParagraph(CTextLine *pLine, double dPageWidth,
-											   const double *pBeforeSpacing, std::vector<CBaseItem*>& rOutputObjects)
+											   const double *pBeforeSpacing, std::vector<COutputObject*>& rOutputObjects)
 	{
 		auto pParagraph = new CParagraph();
 		pParagraph->m_arLines.push_back(pLine);
@@ -542,7 +539,7 @@ namespace NSDocxRenderer
 		rOutputObjects.push_back(pParagraph);
 	}
 
-	void CConverter::CreateSingleLineShape(CTextLine *pLine, std::vector<CBaseItem *> &rOutputObjects)
+	void CConverter::CreateSingleLineShape(CTextLine *pLine, std::vector<COutputObject*>& rOutputObjects)
 	{
 		auto pParagraph = new CParagraph();
 
@@ -569,7 +566,7 @@ namespace NSDocxRenderer
 	}
 
 	void CConverter::CreateShapeFormParagraphs(CParagraph* pParagraph, bool bIsSameTypeText, double dPageWidth,
-											   std::vector<CBaseItem *> &rOutputObjects)
+											   std::vector<COutputObject*>& rOutputObjects)
 	{
 		if (!pParagraph)
 		{
@@ -579,9 +576,9 @@ namespace NSDocxRenderer
 		bool bIsShapesPresent = false;
 		CShape* pBackShape = nullptr;
 
-		for (size_t i = 0; i <  rOutputObjects.size(); ++i)
+		for (size_t i = 0; i < rOutputObjects.size(); ++i)
 		{
-			if (rOutputObjects[i]->m_eType != CBaseItem::ElemType::etShape)
+			if (rOutputObjects[i]->m_eType != COutputObject::eOutputType::etShape)
 			{
 				continue;
 			}
@@ -629,7 +626,7 @@ namespace NSDocxRenderer
 		}
 	}
 
-	void CConverter::CreateShapeFormTable(CTable* pTable, std::vector<CBaseItem *> &rOutputObjects)
+	void CConverter::CreateShapeFormTable(CTable* pTable, std::vector<COutputObject*> &rOutputObjects)
 	{
 		if (!pTable)
 		{
@@ -653,11 +650,11 @@ namespace NSDocxRenderer
 		rOutputObjects.push_back(pShape);
 	}
 
-	void CConverter::CorrectionObjectesInShapes(std::vector<CBaseItem *> &rOutputObjects, double dPageWidth)
+	void CConverter::CorrectionObjectesInShapes(std::vector<COutputObject*> &rOutputObjects, double dPageWidth)
 	{
 		for (size_t i = 0; i <  rOutputObjects.size(); ++i)
 		{
-			if (rOutputObjects[i]->m_eType != CBaseItem::ElemType::etShape)
+			if (rOutputObjects[i]->m_eType != COutputObject::eOutputType::etShape)
 			{
 				continue;
 			}
@@ -677,7 +674,7 @@ namespace NSDocxRenderer
 
 				switch(pObj->m_eType)
 				{
-				case CBaseItem::ElemType::etParagraph:
+				case COutputObject::eOutputType::etParagraph:
 				{
 					auto pParagraph = dynamic_cast<CParagraph*>(pObj);
 
@@ -690,12 +687,6 @@ namespace NSDocxRenderer
 
 					pParagraph->m_dLeftBorder = pParagraph->m_dLeft > pShape->m_dLeft ? fabs(pParagraph->m_dLeft - pShape->m_dLeft) : 0;
 					pParagraph->m_dRightBorder = pParagraph->m_dRight < pShape->m_dRight ? fabs(pShape->m_dRight - pParagraph->m_dRight) : 0;
-				}
-					break;
-				case CBaseItem::ElemType::etTable:
-				{
-					auto pTable = dynamic_cast<CTable*>(pObj);
-					//todo
 				}
 					break;
 				default:

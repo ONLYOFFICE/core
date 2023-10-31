@@ -3390,7 +3390,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			if (m_v.IsInit())
 			{
-				if (std::wstring::npos != m_v->find(' ') || std::wstring::npos != m_v->find('\n'))
+				if (std::wstring::npos != m_v->find(' ')&&(  m_v->at(0) == ' ' || m_v->at(m_v->size()-1) == ' ')
+				 || std::wstring::npos != m_v->find('\n')&&(  m_v->at(0) == '\n' || m_v->at(m_v->size()-1) == '\n'))
 					writer.WriteString(L"<c:v xml:space=\"preserve\">");
 				else
 					writer.WriteString(L"<c:v>");
@@ -5059,7 +5060,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(L">");
 			if (m_formatCode.IsInit())
 			{
-				if (std::wstring::npos != m_formatCode->find(' ') || std::wstring::npos != m_formatCode->find('\n'))
+				if (std::wstring::npos != m_formatCode->find(' ')&&(  m_formatCode->at(0) == ' ' || m_formatCode->at(m_formatCode->size()-1) == ' ')
+				 || std::wstring::npos != m_formatCode->find('\n')&&(  m_formatCode->at(0) == '\n' || m_formatCode->at(m_formatCode->size()-1) == '\n'))
 					writer.WriteString(L"<c:formatCode xml:space=\"preserve\">");
 				else
 					writer.WriteString(L"<c:formatCode>");

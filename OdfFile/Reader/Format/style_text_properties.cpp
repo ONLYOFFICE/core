@@ -1028,8 +1028,8 @@ void text_format_properties::docx_serialize(std::wostream & _rPr, fonts_containe
 
 void text_format_properties::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	oox::styles_context	& styles_context_	= Context.get_text_context().get_styles_context();
-	fonts_container & fonts_			= Context.root()->odf_context().fontContainer();	  
+	oox::styles_context	& styles_context_ = Context.get_text_context().get_styles_context();
+	fonts_container & fonts_ = Context.root()->odf_context().fontContainer();	  
 
 	drawing_serialize(styles_context_.text_style(), styles_context_.extern_node(), fonts_, styles_context_.get_current_processed_style(), styles_context_.hlinkClick());
 }

@@ -1148,6 +1148,12 @@ BYTE* CPdfFile::GetWidgets()
 		return NULL;
 	return m_pInternal->pReader->GetWidgets();
 }
+BYTE* CPdfFile::GetAnnots(int nPageIndex)
+{
+	if (!m_pInternal->pReader)
+		return NULL;
+	return m_pInternal->pReader->GetAnnots(nPageIndex);
+}
 BYTE* CPdfFile::VerifySign(const std::wstring& sFile, ICertificate* pCertificate, int nWidget)
 {
 	if (!m_pInternal->pReader)
@@ -1160,17 +1166,11 @@ BYTE* CPdfFile::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, in
 		return NULL;
 	return m_pInternal->pReader->GetAPWidget(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nWidget, sView, sButtonView);
 }
-BYTE* CPdfFile::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nButtonWidget, const char* sIconView)
+BYTE* CPdfFile::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, bool bBase64, int nButtonWidget, const char* sIconView)
 {
 	if (!m_pInternal->pReader)
 		return NULL;
-	return m_pInternal->pReader->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nButtonWidget, sIconView);
-}
-BYTE* CPdfFile::GetAnnots(int nPageIndex)
-{
-	if (!m_pInternal->pReader)
-		return NULL;
-	return m_pInternal->pReader->GetAnnots(nPageIndex);
+	return m_pInternal->pReader->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, bBase64, nButtonWidget, sIconView);
 }
 BYTE* CPdfFile::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot, const char* sView)
 {
@@ -1899,7 +1899,7 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	}
 	case IAdvancedCommand::AdvancedCommandType::FormField:
 	{
-		return m_pInternal->pWriter->AddFormField(m_pInternal->pAppFonts, (CFormFieldInfo*)command);
+		return m_pInternal->pWriter->AddFormField(m_pInternal->pAppFonts, (CFormFieldInfo*)command, m_pInternal->wsTempFolder);
 	}
 	case IAdvancedCommand::AdvancedCommandType::Annotaion:
 	{

@@ -43,9 +43,9 @@ bool CSvgFile::GetBounds(double &dX, double &dY, double &dWidth, double &dHeight
 	dWidth  = oWindow.m_oWidth .ToDouble(NSCSS::Pixel);
 	dHeight = oWindow.m_oHeight.ToDouble(NSCSS::Pixel);
 
-	if (0. == dWidth)
+	if (SVG::Equals(0., dWidth))
 		dWidth = (!m_oContainer.GetViewBox().m_oWidth.Empty()) ? m_oContainer.GetViewBox().m_oWidth.ToDouble(NSCSS::Pixel) : 300;
-	if (0. == dHeight)
+	if (SVG::Equals(0., dHeight))
 		dHeight = (!m_oContainer.GetViewBox().m_oHeight.Empty()) ? m_oContainer.GetViewBox().m_oHeight.ToDouble(NSCSS::Pixel) : 150;
 
 	return true;
@@ -132,7 +132,7 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 	double dWindowWidth  = oWindow.m_oWidth.ToDouble(NSCSS::Pixel, dViewBoxWidth);
 	double dWindowHeight = oWindow.m_oHeight.ToDouble(NSCSS::Pixel, dViewBoxHeight);
 
-	if (0. == dWindowWidth || 0. == dWindowHeight)
+	if (SVG::Equals(0., dWindowWidth) || SVG::Equals(0., dWindowHeight))
 		return false;
 
 	double oldTransform[6];

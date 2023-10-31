@@ -148,7 +148,7 @@ namespace Spreadsheet
             xlsb->ReadBin(oPath, pivotTableStream.get());
 
             if (pivotTableStream != nullptr)
-            {                 
+            {
                 //XLS::BaseObjectPtr ptr(static_cast<XLS::BaseObject*>(pivotTableStream.get()), NullDeleter());
                 //XLS::BaseObjectPtr ptr = boost::make_shared<XLS::BaseObject>(static_cast<XLS::BaseObject*>(pivotTableStream.get()));
                 m_oPivotTableDefinition = pivotTableStream;
@@ -284,7 +284,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		WritingStringNullableAttrInt(L"updatedVersion",				m_oUpdatedVersion, m_oUpdatedVersion->GetValue());
 		WritingStringNullableAttrBool2(L"useAutoFormatting",		m_oUseAutoFormatting);
 		WritingStringNullableAttrBool2(L"visualTotals",				m_oVisualTotals);
-		
+
 		writer.WriteString(L">");
 
 		if(m_oLocation.IsInit())
@@ -293,7 +293,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		if(m_oPivotFields.IsInit())
 			m_oPivotFields->toXML(writer);
 		if(m_oRowFields.IsInit())
-			m_oRowFields->toXML2(writer, L"rowFields");		
+			m_oRowFields->toXML2(writer, L"rowFields");
 		if(m_oRowItems.IsInit())
 			m_oRowItems->toXML2(writer, L"rowItems");
 		if(m_oColFields.IsInit())
@@ -304,7 +304,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			m_oPageFields->toXML(writer);
 		if(m_oDataFields.IsInit())
 			m_oDataFields->toXML(writer);
-		
+
 		if(m_oFormats.IsInit())
 			m_oFormats->toXML(writer);
 		//if(m_oConditionalFormats.IsInit())
@@ -322,7 +322,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		//	m_oRowHierarchiesUsage->toXML(writer);
 		//if(m_oColHierarchiesUsage.IsInit())
 		//	m_oColHierarchiesUsage->toXML(writer);
-			
+
 		if(m_oExtLst.IsInit())
 		{
 			writer.WriteString(m_oExtLst->toXMLWithNS(_T("")));
@@ -449,7 +449,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                 m_oDataCaption              = ptr->irstData.value();
 
            // m_oDataOnRows                   = ptr->fDefaultCompact;
-            m_oDataPosition                 = ptr->ipos4Data;
+            if(ptr->ipos4Data > 0)
+            	m_oDataPosition                 = ptr->ipos4Data;
 
             if(ptr->fDisableFList)
                 m_oDisableFieldList         = ptr->fDisableFList;
@@ -677,7 +678,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		writer.WriteString(L"<" + sName);
 		WritingStringAttrInt(L"count", (int)m_arrItems.size());
 		writer.WriteString(L">");
-		
+
         for ( size_t i = 0; i < m_arrItems.size(); ++i)
         {
             if (  m_arrItems[i] )
@@ -685,7 +686,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                 m_arrItems[i]->toXML(writer);
             }
         }
-		
+
 		writer.WriteString(L"</" + sName + L">");
 	}
 	void CColumnRowFields::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -765,7 +766,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		writer.WriteString(L"<" + sName);
 		WritingStringAttrInt(L"count", (int)m_arrItems.size());
 		writer.WriteString(L">");
-		
+
         for ( size_t i = 0; i < m_arrItems.size(); ++i)
         {
             if (  m_arrItems[i] )
@@ -773,7 +774,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                 m_arrItems[i]->toXML(writer);
             }
         }
-		
+
 		writer.WriteString(L"</" + sName + L">");
 	}
 	void CColumnRowItems::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -831,7 +832,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingStringNullableAttrInt(L"r", m_oR, m_oR->GetValue());
 			WritingStringNullableAttrString(L"t", m_oT, m_oT->ToString());
 		writer.WriteString(L">");
-        
+
 		for ( size_t i = 0; i < m_arrItems.size(); ++i)
         {
             if (  m_arrItems[i] )
@@ -959,7 +960,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		writer.WriteString(L"<dataFields");
 		WritingStringAttrInt(L"count", (int)m_arrItems.size());
 		writer.WriteString(L">");
-		
+
         for ( size_t i = 0; i < m_arrItems.size(); ++i)
         {
             if (  m_arrItems[i] )
@@ -967,7 +968,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                 m_arrItems[i]->toXML(writer);
             }
         }
-		
+
 		writer.WriteString(L"</dataFields>");
 	}
 	void CDataFields::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -1155,7 +1156,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		writer.WriteString(L"<pageFields");
 		WritingStringAttrInt(L"count", (int)m_arrItems.size());
 		writer.WriteString(L">");
-		
+
         for ( size_t i = 0; i < m_arrItems.size(); ++i)
         {
             if (  m_arrItems[i] )
@@ -1163,7 +1164,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                 m_arrItems[i]->toXML(writer);
             }
         }
-		
+
 		writer.WriteString(L"</pageFields>");
 	}
 	void CPageFields::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -1280,7 +1281,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		writer.WriteString(L"<items");
 		WritingStringAttrInt(L"count", (int)m_arrItems.size());
 		writer.WriteString(L">");
-		
+
         for ( size_t i = 0; i < m_arrItems.size(); ++i)
         {
             if (  m_arrItems[i] )
@@ -1288,7 +1289,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                 m_arrItems[i]->toXML(writer);
             }
         }
-		
+
 		writer.WriteString(L"</items>");
 	}
 	void CFieldItems::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -1474,7 +1475,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		writer.WriteString(L"<pivotFields");
 		WritingStringAttrInt(L"count", (int)m_arrItems.size());
 		writer.WriteString(L">");
-		
+
         for ( size_t i = 0; i < m_arrItems.size(); ++i)
         {
             if (  m_arrItems[i] )
@@ -1482,7 +1483,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                 m_arrItems[i]->toXML(writer);
             }
         }
-		
+
 		writer.WriteString(L"</pivotFields>");
 	}
 	void CPivotFields::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -1577,7 +1578,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingStringNullableAttrString(L"itemPageCount",m_oItemPageCount, m_oItemPageCount->ToString());
 			WritingStringNullableAttrString(L"numFmtId",	m_oNumFmtId, m_oNumFmtId->ToString());
 		writer.WriteString(L">");
-		
+
 		if(m_oAutoSortScope.IsInit())
 			m_oAutoSortScope->toXML(writer);
 
@@ -1645,8 +1646,10 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             else if(ptr->sxaxis.bRw)
                 m_oAxis = SimpleTypes::Spreadsheet::EPivotAxisType::axisRow;
             else if(ptr->sxaxis.bData)
+            {
                 m_oAxis = SimpleTypes::Spreadsheet::EPivotAxisType::axisValues;
-
+                m_oDataField = ptr->sxaxis.bData;
+            }
             if(!ptr->fCompact)
                 m_oCompact                  = ptr->fCompact;
 
@@ -1655,7 +1658,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
             if(ptr->fCount)
                 m_oCountSubtotal            = ptr->fCount;
-            //m_oDataField                    = ptr->fDrilledLevel;
+
             m_oDataSourceSort               = ptr->fTensorSort;
 
             if(ptr->fItemsDrilledByDefault)
@@ -1830,7 +1833,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"varPSubtotal", m_oVarPSubtotal )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"varSubtotal", m_oVarSubtotal )
 		WritingElement_ReadAttributes_End( oReader )
-	}		
+	}
 
 //------------------------------------
 	void CReferences::toXML(NSStringUtils::CStringBuilder& writer) const
@@ -1840,7 +1843,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		writer.WriteString(L"<references");
 		WritingStringAttrInt(L"count", (int)m_arrItems.size());
 		writer.WriteString(L">");
-		
+
         for ( size_t i = 0; i < m_arrItems.size(); ++i)
         {
             if (  m_arrItems[i] )
@@ -1848,7 +1851,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                 m_arrItems[i]->toXML(writer);
             }
         }
-		
+
 		writer.WriteString(L"</references>");
 	}
 	void CReferences::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -1912,7 +1915,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingStringNullableAttrBool2(L"varPSubtotal",		m_oVarPSubtotal);
 			WritingStringNullableAttrBool2(L"varSubtotal",		m_oVarSubtotal);
 		writer.WriteString(L">");
-	
+
 		if(m_oX.IsInit())
 		{
 			m_oX->toXML(writer);
@@ -2012,7 +2015,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		writer.WriteString(L"<formats");
 		WritingStringAttrInt(L"count", (int)m_arrItems.size());
 		writer.WriteString(L">");
-		
+
         for ( size_t i = 0; i < m_arrItems.size(); ++i)
         {
             if (  m_arrItems[i] )
@@ -2020,7 +2023,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                 m_arrItems[i]->toXML(writer);
             }
         }
-		
+
 		writer.WriteString(L"</formats>");
 	}
 	void CPivotTableFormats::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -2070,7 +2073,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingStringNullableAttrString(L"action", m_oAction, m_oAction->ToString());
 			WritingStringNullableAttrString(L"dxfId", m_oDxfId, m_oDxfId->ToString());
 		writer.WriteString(L">");
-	
+
 		if(m_oPivotArea.IsInit())
 		{
 			m_oPivotArea->toXML(writer);
@@ -2123,12 +2126,12 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingElement_ReadAttributes_Read_if		( oReader, L"action", m_oAction )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"dxfId", m_oDxfId )
 		WritingElement_ReadAttributes_End( oReader )
-	}		
+	}
 //------------------------------------
 	void CAutoSortScope::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		writer.WriteString(L"<autoSortScope>");
-	
+
 		if(m_oPivotArea.IsInit())
 		{
 			m_oPivotArea->toXML(writer);
@@ -2178,7 +2181,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingStringNullableAttrBool2(L"outline",	m_oOutline);
 			WritingStringNullableAttrString(L"offsetRef", m_oOffsetRef, *m_oOffsetRef);
 		writer.WriteString(L">");
-	
+
 		if(m_oReferences.IsInit())
 		{
 			m_oReferences->toXML(writer);
@@ -2249,7 +2252,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             if(ptr->pruleheaderdata.fLabelOnly)
                 m_oLabelOnly                = ptr->pruleheaderdata.fLabelOnly;
 
-            if(!ptr->pruleheaderdata.rfxLoc.toString().empty())
+            if(!ptr->pruleheaderdata.rfxLoc.toString().empty()
+            && (ptr->pruleheaderdata.rfxLoc.rowFirst!=0 || ptr->pruleheaderdata.rfxLoc.columnFirst!=0))
                     m_oOffsetRef            = ptr->pruleheaderdata.rfxLoc.toString();
 
             if(!ptr->pruleheaderdata.fLineMode)
@@ -2310,7 +2314,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingStringNullableAttrInt(L"rowPageCount", m_oRowPageCount, m_oRowPageCount->GetValue());
 		writer.WriteString(L"/>");
 	}
-	
+
 	void CPivotTableLocation::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -2493,8 +2497,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		if(m_oCacheSource.IsInit())
 			m_oCacheSource->toXML(writer);
 		if(m_oCacheFields.IsInit())
-			m_oCacheFields->toXML(writer);		
-			
+			m_oCacheFields->toXML(writer);
+
 		if(m_oExtLst.IsInit())
 		{
 			writer.WriteString(m_oExtLst->toXMLWithNS(_T("")));
@@ -2559,6 +2563,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                 m_oCreatedVersion           = ptr->bVerCacheCreated;
 
             m_oMinRefreshableVersion        = ptr->bVerCacheRefreshableMin;
+			if(ptr->citmGhostMax > 0)
             m_oMissingItemsLimit            = ptr->citmGhostMax;
 
             if(ptr->fOptimizeCache)
@@ -2625,7 +2630,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		writer.WriteString(L"<cacheFields");
 		WritingStringAttrInt(L"count", (int)m_arrItems.size());
 		writer.WriteString(L">");
-		
+
         for ( size_t i = 0; i < m_arrItems.size(); ++i)
         {
             if (  m_arrItems[i] )
@@ -2633,7 +2638,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                 m_arrItems[i]->toXML(writer);
             }
         }
-		
+
 		writer.WriteString(L"</cacheFields>");
 	}
 	void CPivotCacheFields::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -2694,7 +2699,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingStringNullableAttrInt(L"mappingCount", m_oMappingCount, m_oMappingCount->GetValue());
 			WritingStringNullableAttrInt(L"numFmtId", m_oNumFmtId, m_oNumFmtId->GetValue());
 		writer.WriteString(L">");
-		
+
 		if(m_oSharedItems.IsInit())
 		{
 			m_oSharedItems->toXML(writer);
@@ -2805,7 +2810,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"mappingCount", m_oMappingCount )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"uniqueList", m_oNumFmtId )
 		WritingElement_ReadAttributes_End( oReader )
-	}		
+	}
 //------------------------------------
 	void CSharedItems::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
@@ -2833,7 +2838,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                 m_arrItems[i]->toXML(writer);
             }
         }
-		
+
 		writer.WriteString(L"</sharedItems>");
 	}
 	void CSharedItems::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -3070,7 +3075,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		writer.WriteString(L"<discretePr");
 			WritingStringAttrInt(L"count", (int)m_arrItems.size());
 		writer.WriteString(L">");
-        
+
 		for ( size_t i = 0; i < m_arrItems.size(); ++i)
         {
             if (  m_arrItems[i] )
@@ -3122,7 +3127,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		writer.WriteString(L"<groupItems");
 			WritingStringAttrInt(L"count", (int)m_arrItems.size());
 		writer.WriteString(L">");
-        
+
 		for ( size_t i = 0; i < m_arrItems.size(); ++i)
         {
             if (  m_arrItems[i] )
@@ -3379,7 +3384,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"m_oEndNum", m_oEndNum )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"m_oGroupInterval", m_oGroupInterval )
 		WritingElement_ReadAttributes_End( oReader )
-	}					
+	}
 //------------------------------------
 	void CPivotCharacterValue::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
@@ -3546,7 +3551,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			if ( L"x" == sName )
 				m_arrItems.push_back(PPTX::CreatePtrXmlContent<CMemberPropertyIndex>(oReader));
 		}
-	}    
+	}
     void CPivotErrorValue::fromBin(XLS::BaseObjectPtr& obj)
     {
         ReadAttributes(obj);
@@ -4060,7 +4065,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingStringNullableAttrInt(L"connectionId", m_oConnectionId, m_oConnectionId->GetValue());
 			WritingStringNullableAttrString(L"type", m_oType, m_oType->ToString());
 		writer.WriteString(L">");
-		
+
 		if(m_oWorksheetSource.IsInit())
 		{
 			m_oWorksheetSource->toXML(writer);
@@ -4173,7 +4178,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             if(!ptr->sheetName.value().empty())
                 m_oSheet     = ptr->sheetName.value();
 
-            if(!ptr->range.toString().empty())
+            if(!ptr->range.toString().empty() && ptr->range.toString() != L"A1")
                 m_oRef       = ptr->range.toString();
 
             if(!ptr->namedRange.value().empty())
@@ -4198,7 +4203,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		writer.WriteString(L"<pages");
 			WritingStringAttrInt(L"count", (int)m_arrItems.size());
 		writer.WriteString(L">");
-        
+
 		for ( size_t i = 0; i < m_arrItems.size(); ++i)
         {
             if (  m_arrItems[i] )
@@ -4254,7 +4259,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		writer.WriteString(L"<page");
 			WritingStringAttrInt(L"count", (int)m_arrItems.size());
 		writer.WriteString(L">");
-        
+
 		for ( size_t i = 0; i < m_arrItems.size(); ++i)
         {
             if (  m_arrItems[i] )
@@ -4349,7 +4354,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		writer.WriteString(L"<rangeSets");
 			WritingStringAttrInt(L"count", (int)m_arrItems.size());
 		writer.WriteString(L">");
-        
+
 		for ( size_t i = 0; i < m_arrItems.size(); ++i)
         {
             if (  m_arrItems[i] )
@@ -4472,7 +4477,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		writer.WriteString(L"<consolidation");
 			WritingStringNullableAttrBool2(L"autoPage", m_oAutoPage);
 		writer.WriteString(L">");
-		
+
 		if(m_oPages.IsInit())
 		{
 			m_oPages->toXML(writer);
@@ -4538,7 +4543,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingStringNullableAttrInt(L"base", m_oBase, m_oBase->GetValue());
 			WritingStringNullableAttrInt(L"par", m_oPar, m_oPar->GetValue());
 		writer.WriteString(L">");
-		
+
 		if(m_oDiscretePr.IsInit())
 		{
 			m_oDiscretePr->toXML(writer);
@@ -4637,7 +4642,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             return;
         }
 		NSFile::CFileBinary::ReadAllBytes(oPath.GetPath(), &m_pData, m_nDataLength);
-		
+
 		return;
 
 		//XmlUtils::CXmlLiteReader oReader;
@@ -4729,7 +4734,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
         auto ptr = static_cast<XLSB::PIVOTCACHERECORDS*>(obj.get());
 
         if(ptr != nullptr)
-        {			
+        {
 			NSStringUtils::CStringBuilder writer;
 			writer.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
 			writer.WriteString(L"<pivotCacheRecords \
@@ -4747,7 +4752,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			while(false == ptr->m_arPIVOTCACHERECORD.empty())
             {
                 //m_arrItems.push_back(new CPivotCacheRecord(item));
-				
+
 				CPivotCacheRecord xmlItem(ptr->m_arPIVOTCACHERECORD.front());
 				xmlItem.toXML(writer);
 				ptr->m_arPIVOTCACHERECORD.erase(ptr->m_arPIVOTCACHERECORD.begin());
@@ -4777,7 +4782,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                 m_arrItems[i]->toXML(writer);
             }
         }
-		
+
 		writer.WriteString(L"</r>");
 	}
 	void CPivotCacheRecord::fromXML(XmlUtils::CXmlLiteReader& oReader)

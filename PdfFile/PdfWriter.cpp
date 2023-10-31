@@ -1077,7 +1077,7 @@ HRESULT CPdfWriter::AddLink(const double& dX, const double& dY, const double& dW
 
 	return S_OK;
 }
-HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFieldInfo* pFieldInfo)
+HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFieldInfo* pFieldInfo, const std::wstring& wsTempDirectory)
 {
 	unsigned int  unPagesCount = m_pDocument->GetPagesCount();
 	if (!m_pDocument || 0 == unPagesCount || !pFieldInfo)
@@ -1547,8 +1547,29 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 		PdfWriter::CImageDict* pImage = NULL;
 		if (wsPath.length())
 		{
-			Aggplus::CImage oImage(wsPath);
-			pImage = LoadImage(&oImage, 255);
+			Aggplus::CImage* pCImage = NULL;
+			CImageFileFormatChecker oImageFormat(wsPath);
+			if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType ||
+				_CXIMAGE_FORMAT_EMF == oImageFormat.eFileType ||
+				_CXIMAGE_FORMAT_SVM == oImageFormat.eFileType ||
+				_CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
+			{
+				MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
+				pMeta->LoadFromFile(wsPath.c_str());
+
+				double dNewW = std::max(10.0, dW) / 25.4 * 300;
+				std::wstring wsTempFile = GetTempFile(wsTempDirectory);
+				pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, dNewW);
+
+				RELEASEOBJECT(pMeta);
+
+				pCImage = new Aggplus::CImage(wsTempFile);
+			}
+			else
+				pCImage = new Aggplus::CImage(wsPath);
+
+			pImage = LoadImage(pCImage, 255);
+			RELEASEOBJECT(pCImage);
 		}
 
 		pField->SetAppearance(pImage);

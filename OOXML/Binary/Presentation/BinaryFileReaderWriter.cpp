@@ -1727,9 +1727,18 @@ namespace NSBinPptxRW
 					
 					strMediaRelsPath += mediaFile->filename().GetFilename();				
 
-					m_pWriter->WriteString(L"<Relationship Id=\"" + strRid
-						+ L"\" Type=\"" + additionalFile->type().RelationType() + L"\" Target=\"" +
-						strMediaRelsPath + L"\"" + (mediaFile->IsExternal() ? L" TargetMode=\"External\"" : L"") + L"/>");
+					if (additionalFile.is<OOX::Video>() || additionalFile.is<OOX::Audio>())
+					{
+						m_pWriter->WriteString(L"<Relationship Id=\"" + strRid
+							+ L"\" Type=\"http://schemas.microsoft.com/office/2007/relationships/media\" Target=\"" +
+							strMediaRelsPath + L"\"" + (mediaFile->IsExternal() ? L" TargetMode=\"External\"" : L"") + L"/>");
+					}
+					else
+					{
+						m_pWriter->WriteString(L"<Relationship Id=\"" + strRid
+							+ L"\" Type=\"" + additionalFile->type().RelationType() + L"\" Target=\"" +
+							strMediaRelsPath + L"\"" + (mediaFile->IsExternal() ? L" TargetMode=\"External\"" : L"") + L"/>");
+					}
 				}
 			}
 		}

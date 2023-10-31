@@ -872,7 +872,9 @@
 			nButtonView = (sButtonView == "Off" ? 0 : 1);
 
 		let res = [];
+		self.drawingFileCurrentPageIndex = pageIndex;
 		let ext = Module["_GetInteractiveFormsAP"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nWidget === undefined ? -1 : nWidget, nView, nButtonView);
+		self.drawingFileCurrentPageIndex = -1;
 		if (ext == 0)
 			return res;
 
@@ -899,9 +901,10 @@
 		Module["_free"](ext);
 		return res;
 	};
+	// optional bBase64   - true/false base64 result
 	// optional nWidget ...
 	// optional sIconView - icon - I/RI/IX
-	CFile.prototype["getButtonIcons"] = function(pageIndex, width, height, backgroundColor, nWidget, sIconView)
+	CFile.prototype["getButtonIcons"] = function(pageIndex, width, height, backgroundColor, bBase64, nWidget, sIconView)
 	{
 		let nView = -1;
 		if (sIconView)
@@ -915,7 +918,9 @@
 		}
 
 		let res = {};
-		let ext = Module["_GetButtonIcons"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nWidget === undefined ? -1 : nWidget, nView);
+		self.drawingFileCurrentPageIndex = pageIndex;
+		let ext = Module["_GetButtonIcons"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, bBase64 ? 1 : 0, nWidget === undefined ? -1 : nWidget, nView);
+		self.drawingFileCurrentPageIndex = -1;
 		if (ext == 0)
 			return res;
 
@@ -952,10 +957,18 @@
 					ViewMK["j"] = MK[MKType];
 					ViewMK["w"] = reader.readInt();
 					ViewMK["h"] = reader.readInt();
-					let np1 = reader.readInt();
-					let np2 = reader.readInt();
-					// this memory needs to be deleted
-					ViewMK["retValue"] = np2 << 32 | np1;
+					if (bBase64)
+					{
+						// base64 string with image
+						ViewMK["retValue"] = reader.readString();
+					}
+					else
+					{
+						let np1 = reader.readInt();
+						let np2 = reader.readInt();
+						// this memory needs to be deleted
+						ViewMK["retValue"] = np2 << 32 | np1;
+					}
 					res["View"].push(ViewMK);
 				}
 			}
@@ -1257,7 +1270,9 @@
 		}
 
 		let res = [];
+		self.drawingFileCurrentPageIndex = pageIndex;
 		let ext = Module["_GetAnnotationsAP"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nAnnot === undefined ? -1 : nAnnot, nView);
+		self.drawingFileCurrentPageIndex = -1;
 		if (ext == 0)
 			return res;
 

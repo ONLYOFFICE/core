@@ -17,5 +17,11 @@ base.replaceInFile("./deploy/drawingfile_ie.js", "__ATPOSTRUN__=[];", "__ATPOSTR
 base.replaceInFile("./deploy/drawingfile_ie.js", "__ATPOSTRUN__ = [];", "__ATPOSTRUN__=[function(){window[\"AscViewer\"] && window[\"AscViewer\"][\"onLoadModule\"] && window[\"AscViewer\"][\"onLoadModule\"]();}];")
 base.replaceInFile("./deploy/drawingfile_ie.js", "\"drawingfile.js.mem\"", "getMemoryPathIE(\"drawingfile.js.mem\")")
 
+base.replaceInFile("./deploy/drawingfile.js", "{credentials:\"same-origin\"}", "{credentials:\"same-origin\",mode:\"no-cors\"}")
+base.replaceInFile("./deploy/drawingfile_ie.js", "{credentials:\"same-origin\"}", "{credentials:\"same-origin\",mode:\"no-cors\"}")
+
+base.cmd_in_dir("../../../../Common/js", "python", ["./min.py", "./../../DesktopEditor/graphics/pro/js/deploy/drawingfile.js", "WHITESPACE_ONLY"])
+base.cmd_in_dir("../../../../Common/js", "python", ["./min.py", "./../../DesktopEditor/graphics/pro/js/deploy/drawingfile_ie.js", "WHITESPACE_ONLY"])
+
 # base.delete_dir("./xml")
 # base.delete_dir("./freetype-2.10.4")

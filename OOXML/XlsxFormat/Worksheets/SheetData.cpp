@@ -440,23 +440,23 @@ namespace OOX
 
 			WritingElement_ReadAttributes_EndChar( oReader )
 		}
-		_UINT32 CFormulaXLSB::getXLSBSize() const
+		_UINT32 CFormulaXLSB::getXLSBSize()
 		{
 			_UINT32 nLen = 2+4+4;
 			if(m_bIsInit)
 			{
-				nLen += 4 + 2 * m_oFormula.m_nLen;
+				nLen += 4 + m_oFormula.getUTF16Size();
 				if(m_oR1.m_nLen > 0)
 				{
-					nLen += 4 + 2 * m_oR1.m_nLen;
+					nLen += 4 + m_oR1.getUTF16Size();
 				}
 				if(m_oR2.m_nLen > 0)
 				{
-					nLen += 4 + 2 * m_oR2.m_nLen;
+					nLen += 4 + m_oR2.getUTF16Size();
 				}
 				if(m_oRef.m_nLen > 0)
 				{
-					nLen += 4 + 2 * m_oRef.m_nLen;
+					nLen += 4 + m_oRef.getUTF16Size();
 				}
 				if(m_nSi >= 0)
 				{
@@ -645,7 +645,7 @@ namespace OOX
 			{
                 case XLSB::rt_CellReal: nLen += 8; break;
                 case XLSB::rt_CellIsst: nLen += 4; break;
-                case XLSB::rt_CellSt: nLen += 4 + 2 * m_oValue.m_oValue.m_nLen;break;
+                case XLSB::rt_CellSt: nLen += 4 + m_oValue.m_oValue.getUTF16Size();break;
                 case XLSB::rt_CellError:
                 case XLSB::rt_CellBool: nLen += 1; break;
 			}

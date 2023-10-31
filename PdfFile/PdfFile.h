@@ -131,7 +131,7 @@ public:
 	BYTE* GetAnnots    (int nPageIndex = -1);
 	BYTE* VerifySign   (const std::wstring& sFile, ICertificate* pCertificate, int nWidget = -1);
 	BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget = -1, const char* sView = NULL, const char* sButtonView = NULL);
-	BYTE* GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nButtonWidget = -1, const char* sIconView = NULL);
+	BYTE* GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, bool bBase64 = false, int nButtonWidget = -1, const char* sIconView = NULL);
 	BYTE* GetAPAnnots  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot = -1, const char* sView = NULL);
 
 	// --- WRITER ---

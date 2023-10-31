@@ -43,30 +43,32 @@ namespace SVG
 		if (std::wstring::npos != unStart)
 		{
 			size_t unType = m_wsHref.find(L";base64", unStart);
-	
+
 			if (std::wstring::npos == unType)
 				return false;
-	
+
 			const std::wstring wsImageType = m_wsHref.substr(unStart + 11, unType - unStart - 11);
-	
+
 			if (L"png" != wsImageType && L"jpeg" != wsImageType)
 				return false;
 	
 			std::wstring wsImageData = m_wsHref.substr(unType + 8, m_wsHref.length() - unType - 8);
 			ulSize = NSBase64::Base64DecodeGetRequiredLength(wsImageData.length());
-	
+
 			pBuffer = new BYTE[ulSize];
-	
-			if (NULL == pBuffer)
-				return false;
 
 			NSBase64::Base64Decode(wsImageData.c_str(), wsImageData.length(), pBuffer, &(int&)ulSize);
 		}
+		#ifndef METAFILE_DISABLE_FILESYSTEM
 		else if (NSFile::CFileBinary::Exists(pFile->GetWorkingDirectory() + L'/' + m_wsHref))
 		{
 			NSFile::CFileBinary::ReadAllBytes(pFile->GetWorkingDirectory() + L'/' + m_wsHref, &pBuffer, ulSize);
 		}
-		
+		#endif
+
+		if (NULL == pBuffer)
+			return false;
+
 		CBgraFrame oBgraFrame;
 		oBgraFrame.Decode(pBuffer, ulSize);
 

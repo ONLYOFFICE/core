@@ -32,6 +32,7 @@
 
 #include <iostream>
 
+#include <boost/algorithm/string.hpp>
 #include <xml/simple_xml_writer.h>
 #include <xml/utils.h>
 
@@ -304,6 +305,11 @@ void pptx_slide_context::default_set()
 	impl_->use_image_replacement_ = false;
 }
 
+bool pptx_slide_context::is_slide_filepath(const std::wstring& filename)
+{
+	return boost::algorithm::contains(filename, L"slide") && boost::algorithm::ends_with(filename, L".xml");
+}
+
 void pptx_slide_context::set_use_image_replacement()
 {
 	impl_->use_image_replacement_ = true;
@@ -537,6 +543,9 @@ void pptx_slide_context::set_link(std::wstring link, _rels_type typeRels)
 
 		impl_->object_description_.action_.hId	= hId;
 		impl_->object_description_.action_.hRef	= link;
+
+		if (!is_slide_filepath(link))
+			impl_->object_description_.action_.action = L"";
 	}
 }
 void pptx_slide_context::end_action()

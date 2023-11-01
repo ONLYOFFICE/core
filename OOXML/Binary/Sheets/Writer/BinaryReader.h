@@ -243,6 +243,13 @@ namespace BinXlsxRW
 		int ReadConnectionTextFields(BYTE type, long length, void* poResult);
 		int ReadConnectionTextField(BYTE type, long length, void* poResult);
 		int ReadSlicerCaches(BYTE type, long length, void* poResult);
+		int ReadTimelineCaches(BYTE type, long length, void* poResult);
+		int ReadTimelineCache(BYTE type, long length, void* poResult);
+		int ReadTimelineState(BYTE type, long length, void* poResult);
+		int ReadTimelinePivotFilter(BYTE type, long length, void* poResult);
+		int ReadTimelineCachePivotTables(BYTE type, long length, void* poResult);
+		int ReadTimelineCachePivotTable(BYTE type, long length, void* poResult);
+		int ReadTimelineRange(BYTE type, long length, void* poResult);
 	};
 	class BinaryCommentReader : public Binary_CommonReader
 	{
@@ -365,7 +372,7 @@ namespace BinXlsxRW
 		int ReadUserProtectedRangeDesc(BYTE type, long length, void* poResult);
 		int ReadTimelinesList(BYTE type, long length, void* poResult);
 		int ReadTimelines(BYTE type, long length, void* poResult);
-		int ReadTimeline(BYTE type, long length, void* poResult);
+		int ReadTimeline(BYTE type, long length, void* poResult);		
 
 		void WriteComments();
 		void AddLineBreak(OOX::Spreadsheet::CSi& oSi);

@@ -2128,6 +2128,12 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 				m_oBcw.m_oStream.WriteBOOL(*pExt->m_oExternalLinksAutoRefresh);
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
+			else if (pExt->m_oTimelineCacheRefs.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::TimelineCaches);
+				WriteTimelineCaches(workbook, pExt->m_oTimelineCacheRefs.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
 		}
 	}
 //Write VbaProject
@@ -3356,10 +3362,217 @@ void BinaryWorkbookTableWriter::WriteDefinedName(const OOX::Spreadsheet::CDefine
 		m_oBcw.m_oStream.WriteStringW(*definedName.m_oComment);
 	}
 }
+void BinaryWorkbookTableWriter::WriteTimelineCaches(OOX::Spreadsheet::CWorkbook& workbook, const OOX::Spreadsheet::CTimelineCacheRefs& oTimelineCacheRefs)
+{
+	int nCurPos = 0;
+	for (size_t i = 0; i < oTimelineCacheRefs.m_arrItems.size(); ++i)
+	{
+		if (oTimelineCacheRefs.m_arrItems[i] && oTimelineCacheRefs.m_arrItems[i]->m_oRId.IsInit())
+		{
+			smart_ptr<OOX::File> pFile = workbook.Find(OOX::RId(oTimelineCacheRefs.m_arrItems[i]->m_oRId->GetValue()));
+			if (pFile.IsInit() && OOX::Spreadsheet::FileTypes::TimelineCache == pFile->type())
+			{
+				OOX::Spreadsheet::CTimelineCacheFile* pTimelineCacheFile = static_cast<OOX::Spreadsheet::CTimelineCacheFile*>(pFile.GetPointer());
+				if (pTimelineCacheFile->m_oTimelineCacheDefinition.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::TimelineCache);
+					WriteTimelineCache(pTimelineCacheFile->m_oTimelineCacheDefinition.GetPointer());
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+			}
+		}
+	}
+
+}
+void BinaryWorkbookTableWriter::WriteTimelineCache(OOX::Spreadsheet::CTimelineCacheDefinition* pTimelineCache)
+{
+	if (!pTimelineCache) return;
+
+	int nCurPos = 0;
+	if (pTimelineCache->m_oName.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelineCache::Name);
+		m_oBcw.m_oStream.WriteStringW3(*pTimelineCache->m_oName);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pTimelineCache->m_oSourceName.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelineCache::SourceName);
+		m_oBcw.m_oStream.WriteStringW3(*pTimelineCache->m_oSourceName);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pTimelineCache->m_oUid.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelineCache::Uid);
+		m_oBcw.m_oStream.WriteStringW3(*pTimelineCache->m_oUid);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pTimelineCache->m_oPivotTables.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelineCache::PivotTables);
+		WriteTimelineCachePivotTables(pTimelineCache->m_oPivotTables.GetPointer());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pTimelineCache->m_oPivotFilter.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelineCache::PivotFilter);
+		WriteTimelinePivotFilter(pTimelineCache->m_oPivotFilter.GetPointer());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pTimelineCache->m_oState.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelineCache::State);
+		WriteTimelineState(pTimelineCache->m_oState.GetPointer());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+}
+void BinaryWorkbookTableWriter::WriteTimelineState(OOX::Spreadsheet::CTimelineState* pState)
+{
+	if (!pState) return;
+
+	int nCurPos = 0;
+	if (pState->m_oName.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelineState::Name);
+		m_oBcw.m_oStream.WriteStringW3(*pState->m_oName);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pState->m_oSingleRangeFilterState.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelineState::FilterState);
+		m_oBcw.m_oStream.WriteBOOL(*pState->m_oSingleRangeFilterState);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pState->m_oPivotCacheId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelineState::PivotCacheId);
+		m_oBcw.m_oStream.WriteLONG(*pState->m_oPivotCacheId);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pState->m_oMinimalRefreshVersion.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelineState::MinimalRefreshVersion);
+		m_oBcw.m_oStream.WriteLONG(*pState->m_oMinimalRefreshVersion);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pState->m_oLastRefreshVersion.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelineState::LastRefreshVersion);
+		m_oBcw.m_oStream.WriteLONG(*pState->m_oLastRefreshVersion);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pState->m_oFilterType.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelineState::FilterType);
+		m_oBcw.m_oStream.WriteStringW3(*pState->m_oFilterType);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pState->m_oSelection.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelineState::Selection);
+		WriteTimelineRange(pState->m_oSelection.GetPointer());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pState->m_oBounds.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelineState::Bounds);
+		WriteTimelineRange(pState->m_oBounds.GetPointer());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+}
+void BinaryWorkbookTableWriter::WriteTimelineRange(OOX::Spreadsheet::CTimelineRange* pTimelineRange)
+{
+	if (!pTimelineRange) return;
+
+	if (pTimelineRange->m_oStartDate.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_TimelineRange::StartDate);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*pTimelineRange->m_oStartDate);
+	}
+	if (pTimelineRange->m_oEndDate.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_TimelineRange::EndDate);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*pTimelineRange->m_oEndDate);
+	}
+}
+void BinaryWorkbookTableWriter::WriteTimelinePivotFilter(OOX::Spreadsheet::CTimelinePivotFilter* pPivotFilter)
+{
+	if (!pPivotFilter) return;
+	
+	int nCurPos = 0;
+	if (pPivotFilter->m_oName.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelinePivotFilter::Name);
+		m_oBcw.m_oStream.WriteStringW3(*pPivotFilter->m_oName);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pPivotFilter->m_oDescription.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelinePivotFilter::Description);
+		m_oBcw.m_oStream.WriteStringW3(*pPivotFilter->m_oDescription);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pPivotFilter->m_oUseWholeDay.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelinePivotFilter::UseWholeDay);
+		m_oBcw.m_oStream.WriteBOOL(*pPivotFilter->m_oUseWholeDay);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}	
+	if (pPivotFilter->m_oId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelinePivotFilter::Id);
+		m_oBcw.m_oStream.WriteLONG(*pPivotFilter->m_oId);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pPivotFilter->m_oFld.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelinePivotFilter::Fld);
+		m_oBcw.m_oStream.WriteLONG(*pPivotFilter->m_oFld);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pPivotFilter->m_oAutoFilter.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelinePivotFilter::AutoFilter);
+		BinaryTableWriter oBinaryTableWriter(m_oBcw.m_oStream);
+		oBinaryTableWriter.WriteAutoFilter(pPivotFilter->m_oAutoFilter.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+}
+void BinaryWorkbookTableWriter::WriteTimelineCachePivotTables(OOX::Spreadsheet::CTimelineCachePivotTables* pPivotTables)
+{
+	if (!pPivotTables) return;
+	
+	int nCurPos = 0;
+	for (size_t i = 0; i < pPivotTables->m_arrItems.size(); ++i)
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelineCache::PivotTable);
+		WriteTimelineCachePivotTable(pPivotTables->m_arrItems[i]);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+}
+void BinaryWorkbookTableWriter::WriteTimelineCachePivotTable(OOX::Spreadsheet::CTimelineCachePivotTable* pPivotTable)
+{
+	if (!pPivotTable) return;
+
+	if (pPivotTable->m_oName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_TimelineCachePivotTable::Name);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*pPivotTable->m_oName);
+	}
+	if (pPivotTable->m_oTabId.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_TimelineCachePivotTable::TabId);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(*pPivotTable->m_oTabId);
+	}
+}
 void BinaryWorkbookTableWriter::WriteSlicerCaches(OOX::Spreadsheet::CWorkbook& workbook, const OOX::Spreadsheet::CSlicerCaches& oSlicerCaches)
 {
 	int nCurPos = 0;
-	for(size_t i = 0; i < oSlicerCaches.m_oSlicerCache.size(); ++i)
+	for (size_t i = 0; i < oSlicerCaches.m_oSlicerCache.size(); ++i)
 	{
 		if(oSlicerCaches.m_oSlicerCache[i].m_oRId.IsInit())
 		{

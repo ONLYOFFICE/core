@@ -1508,8 +1508,9 @@ namespace OOX
 		et_x_TimelinePivotFilter,
 		et_x_TimelineState,
 		et_x_TimelineRefs,
-		et_x_TimelineRef
-
+		et_x_TimelineRef,
+		et_x_TimelineCacheRefs,
+		et_x_TimelineCacheRef	
 
 	};
 

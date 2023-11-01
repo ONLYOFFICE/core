@@ -675,7 +675,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                 m_oDataCaption              = ptr->irstData.value();
 
            // m_oDataOnRows                   = ptr->fDefaultCompact;
-            m_oDataPosition                 = ptr->ipos4Data;
+            if(ptr->ipos4Data > 0)
+            	m_oDataPosition                 = ptr->ipos4Data;
 
             if(ptr->fDisableFList)
                 m_oDisableFieldList         = ptr->fDisableFList;
@@ -2368,8 +2369,10 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             else if(ptr->sxaxis.bRw)
                 m_oAxis = SimpleTypes::Spreadsheet::EPivotAxisType::axisRow;
             else if(ptr->sxaxis.bData)
+            {
                 m_oAxis = SimpleTypes::Spreadsheet::EPivotAxisType::axisValues;
-
+                m_oDataField = ptr->sxaxis.bData;
+            }
             if(!ptr->fCompact)
                 m_oCompact                  = ptr->fCompact;
 
@@ -2378,7 +2381,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
             if(ptr->fCount)
                 m_oCountSubtotal            = ptr->fCount;
-            //m_oDataField                    = ptr->fDrilledLevel;
+
             m_oDataSourceSort               = ptr->fTensorSort;
 
             if(ptr->fItemsDrilledByDefault)
@@ -3137,7 +3140,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             if(ptr->pruleheaderdata.fLabelOnly)
                 m_oLabelOnly                = ptr->pruleheaderdata.fLabelOnly;
 
-            if(!ptr->pruleheaderdata.rfxLoc.toString().empty())
+            if(!ptr->pruleheaderdata.rfxLoc.toString().empty()
+            && (ptr->pruleheaderdata.rfxLoc.rowFirst!=0 || ptr->pruleheaderdata.rfxLoc.columnFirst!=0))
                     m_oOffsetRef            = ptr->pruleheaderdata.rfxLoc.toString();
 
             if(!ptr->pruleheaderdata.fLineMode)
@@ -3612,6 +3616,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                 m_oCreatedVersion           = ptr->bVerCacheCreated;
 
             m_oMinRefreshableVersion        = ptr->bVerCacheRefreshableMin;
+			if(ptr->citmGhostMax > 0)
             m_oMissingItemsLimit            = ptr->citmGhostMax;
 
             if(ptr->fOptimizeCache)
@@ -5802,7 +5807,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             if(!ptr->sheetName.value().empty())
                 m_oSheet     = ptr->sheetName.value();
 
-            if(!ptr->range.toString().empty())
+            if(!ptr->range.toString().empty() && ptr->range.toString() != L"A1")
                 m_oRef       = ptr->range.toString();
 
             if(!ptr->namedRange.value().empty())

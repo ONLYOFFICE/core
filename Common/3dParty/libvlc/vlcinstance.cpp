@@ -1,4 +1,5 @@
 #include "vlcinstance.h"
+#include <algorithm>
 
 #include <iostream>
 

@@ -1057,6 +1057,7 @@ namespace OOX
                     {
                         OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
                         oExt->m_sUri = L"{725AE2AE-9491-48be-B2B4-4EB974FC3084}";
+                        oExt->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
                         oExt->m_oPivotCacheDefinitionExt = ptr->m_PCD14;
 
                         if (oExt)

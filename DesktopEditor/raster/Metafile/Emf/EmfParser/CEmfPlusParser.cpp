@@ -1329,8 +1329,7 @@ namespace MetaFile
 		oPath.LineTo(oClip.Left,  oClip.Bottom);
 		oPath.Close();
 
-		if (NULL != m_pInterpretator)
-			m_pInterpretator->PathClip(oPath, nMode, GetTransform());
+		m_pDC->GetClip()->SetPath(oPath, nMode, *GetTransform());
 
 		UpdateOutputDC();
 	}
@@ -3348,20 +3347,16 @@ namespace MetaFile
 	{
 		m_bBanEmfProcessing = true;
 
+		m_pDC->GetClip()->Reset();
 		UpdateOutputDC();
 
 		if (NULL != m_pInterpretator)
-		{
 			m_pInterpretator->HANDLE_EMFPLUS_RESETCLIP();
-			m_pInterpretator->ResetClip();
-		}
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SETCLIPPATH(unsigned short unShFlags)
 	{
 		m_bBanEmfProcessing = true;
-
-		if (NULL == m_pInterpretator) return;
 
 		BYTE uchObjectId = ExpressValue(unShFlags, 0, 7);
 
@@ -3371,35 +3366,34 @@ namespace MetaFile
 
 		BYTE uchCM = ExpressValue(unShFlags, 8, 11);
 
-		m_pInterpretator->ResetClip();
-		m_pInterpretator->PathClip(*pPath, uchCM, GetTransform());
+		m_pDC->GetClip()->Reset();
+		m_pDC->GetClip()->SetPath(*pPath, uchCM, *GetTransform());
+		UpdateOutputDC();
 
-		m_pInterpretator->HANDLE_EMFPLUS_SETCLIPPATH(unShFlags, pPath);
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMFPLUS_SETCLIPPATH(unShFlags, pPath);
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SETCLIPRECT(unsigned short unShFlags)
 	{
 		m_bBanEmfProcessing = true;
 
-		UpdateOutputDC();
-
 		short shCM = ExpressValue(unShFlags, 8, 11);
 		TEmfPlusRectF oRect;
 
 		m_oStream >> oRect;
-		
-		if (NULL == m_pInterpretator) return;
 
-		m_pInterpretator->ResetClip();
+		m_pDC->GetClip()->Reset();
 		CombineClip(oRect.ToRectD(), shCM);
-		m_pInterpretator->HANDLE_EMFPLUS_SETCLIPRECT(shCM, oRect);
+		UpdateOutputDC();
+
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMFPLUS_SETCLIPRECT(shCM, oRect);
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SETCLIPREGION(unsigned short unShFlags)
 	{
 		m_bBanEmfProcessing = true;
-
-		if (NULL == m_pInterpretator) return;
 
 		short shObjectIndex = ExpressValue(unShFlags, 0, 7);
 		short shCM = ExpressValue(unShFlags, 8, 11);
@@ -3408,7 +3402,7 @@ namespace MetaFile
 
 		if (NULL != pRegion)
 		{
-			m_pInterpretator->ResetClip();
+			m_pDC->GetClip()->Reset();
 
 			for (const CEmfPlusRegionNode* pNode : pRegion->arNodes)
 			{
@@ -3423,7 +3417,7 @@ namespace MetaFile
 						CEmfPlusRegionNodePath* pNodeRegionPath = (CEmfPlusRegionNodePath*)pNode;
 
 						if (!pNodeRegionPath->Empty())
-							m_pInterpretator->PathClip(*pNodeRegionPath->GetPath(), shCM, GetTransform());
+							m_pDC->GetClip()->SetPath(*pNodeRegionPath->GetPath(), shCM, *GetTransform());
 
 						break;
 					}
@@ -3440,15 +3434,18 @@ namespace MetaFile
 					{
 						CEmfPlusRegionNodeChild* pNodeRegionChild = (CEmfPlusRegionNodeChild*)pNode;
 
-						pNodeRegionChild->ClipRegionOnRenderer(m_pInterpretator, GetDCBounds());
+						pNodeRegionChild->DrawOnClip(*m_pDC->GetClip(), *GetTransform(), GetDCBounds());
 
 						break;
 					}
 				}
 			}
-
-			m_pInterpretator->HANDLE_EMFPLUS_SETCLIPREGION(shObjectIndex, shCM, pRegion);
 		}
+
+		UpdateOutputDC();
+
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMFPLUS_SETCLIPREGION(shObjectIndex, shCM, pRegion);
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_COMMENT()

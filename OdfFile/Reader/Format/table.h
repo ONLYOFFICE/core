@@ -410,7 +410,8 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 public:
-	bool is_present_hyperlink_;
+    bool is_AligmentWrap_;
+    bool is_present_hyperlink_;
 	bool last_cell_;
 	bool empty(bool bWithStyle = true);
 

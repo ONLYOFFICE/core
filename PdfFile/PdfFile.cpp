@@ -185,9 +185,12 @@ public:
 			return;
 
 		Object typeDict, pagesObj;
-		if (!pPagesRefObj->isRef() || !pPagesRefObj->fetch(xref, &pagesObj)   ||
-				!pagesObj.isDict()     || !pagesObj.dictLookup("Type", &typeDict) ||
-				!typeDict.isName("Pages"))
+		if (!pPagesRefObj->isRef() || !pPagesRefObj->fetch(xref, &pagesObj)->isDict())
+		{
+			pagesObj.free();
+			return;
+		}
+		if (pagesObj.dictLookup("Type", &typeDict)->isName() && !typeDict.isName("Pages"))
 		{
 			pagesObj.free();
 			typeDict.free();
@@ -204,14 +207,14 @@ public:
 			return;
 		}
 
-		PdfWriter::CPageTree* pPageT = new PdfWriter::CPageTree(pXref);
+		PdfWriter::CPageTree* pPageT = new PdfWriter::CPageTree();
 		if (!pPageT)
 		{
 			pagesObj.free();
 			RELEASEOBJECT(pXref);
 			return;
 		}
-
+		pXref->Add(pPageT, topPagesRef.gen);
 		for (int nIndex = 0; nIndex < pagesObj.dictGetLength(); ++nIndex)
 		{
 			Object oTemp;
@@ -220,13 +223,11 @@ public:
 			DictToCDictObject(&oTemp, pPageT, false, chKey);
 			oTemp.free();
 		}
-
 		pDoc->CreatePageTree(pXref, pPageT);
-		pPageT->SetRef(topPagesRef.num, topPagesRef.gen);
 		pPageT->Fix();
 
 		Object kidsArrObj;
-		if (!pagesObj.dictLookup("Kids", &kidsArrObj) || !kidsArrObj.isArray())
+		if (!pagesObj.dictLookup("Kids", &kidsArrObj)->isArray())
 		{
 			pagesObj.free();
 			kidsArrObj.free();
@@ -327,13 +328,14 @@ void CPdfFile::Close()
 			RELEASEOBJECT(pXref);
 			return;
 		}
-		pInfoDict = new PdfWriter::CInfoDict(pInfoXref);
+		pInfoDict = new PdfWriter::CInfoDict();
 		if (!pInfoDict)
 		{
 			RELEASEOBJECT(pXref);
 			RELEASEOBJECT(pInfoXref);
 			return;
 		}
+		pInfoXref->Add(pInfoDict, pInfo ? pInfo->GetGenNo() : 0);
 
 		for (int nIndex = 0; nIndex < info.dictGetLength(); ++nIndex)
 		{
@@ -343,9 +345,6 @@ void CPdfFile::Close()
 			DictToCDictObject(&oTemp, pInfoDict, true, chKey);
 			oTemp.free();
 		}
-
-		if (pInfo)
-			pInfoDict->SetRef(pInfo->GetObjId(), pInfo->GetGenNo());
 		pInfoDict->SetTime(PdfWriter::InfoModaDate);
 	}
 	info.free();
@@ -470,7 +469,7 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 		catDict.free();
 		return false;
 	}
-	PdfWriter::CCatalog* pCatalog = new PdfWriter::CCatalog(pXref, true);
+	PdfWriter::CCatalog* pCatalog = new PdfWriter::CCatalog();
 	if (!pCatalog)
 	{
 		pagesRefObj.free();
@@ -478,6 +477,7 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 		RELEASEOBJECT(pXref);
 		return false;
 	}
+	pXref->Add(pCatalog, catRef.gen);
 	for (int nIndex = 0; nIndex < catDict.dictGetLength(); ++nIndex)
 	{
 		Object oTemp;
@@ -486,7 +486,6 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 		DictToCDictObject(&oTemp, pCatalog, false, chKey);
 		oTemp.free();
 	}
-	pCatalog->SetRef(catRef.num, catRef.gen);
 	catDict.free();
 
 	// Проверка уникальности имён текущих цифровых подписей pdf
@@ -625,13 +624,14 @@ bool CPdfFile::EditPage(int nPageIndex)
 		pageObj.free();
 		return false;
 	}
-	PdfWriter::CPage* pPage = new PdfWriter::CPage(pXref, pDoc);
+	PdfWriter::CPage* pPage = new PdfWriter::CPage(pDoc);
 	if (!pPage)
 	{
 		pageObj.free();
 		RELEASEOBJECT(pXref);
 		return false;
 	}
+	pXref->Add(pPage, pPageRef.second);
 	for (int nIndex = 0; nIndex < pageObj.dictGetLength(); ++nIndex)
 	{
 		Object oTemp;
@@ -643,7 +643,6 @@ bool CPdfFile::EditPage(int nPageIndex)
 		DictToCDictObject(&oTemp, pPage, true, chKey);
 		oTemp.free();
 	}
-	pPage->SetRef(pPageRef.first, pPageRef.second);
 	pPage->Fix();
 	pageObj.free();
 
@@ -684,6 +683,56 @@ bool CPdfFile::AddPage(int nPageIndex)
 		m_pInternal->pWriter->put_Height(dHeight);
 	}
 	return bRes;
+}
+PdfWriter::CDictObject* GetWidgetParent(PDFDoc* pdfDoc, PdfWriter::CDocument* pDoc, Object* pParentRef)
+{
+	PdfWriter::CDictObject* pParent = NULL;
+
+	if (!pParentRef || !pParentRef->isRef() || !pdfDoc)
+		return pParent;
+	XRef* xref = pdfDoc->getXRef();
+	Object oParent;
+	if (!pParentRef->fetch(xref, &oParent)->isDict())
+	{
+		oParent.free();
+		return pParent;
+	}
+
+	PdfWriter::CXref* pXref = new PdfWriter::CXref(pDoc, pParentRef->getRefNum());
+	pParent = new PdfWriter::CDictObject();
+	pXref->Add(pParent, pParentRef->getRefGen());
+	if (!pDoc->EditParent(pXref, pParent, pParentRef->getRefNum()))
+	{
+		RELEASEOBJECT(pXref);
+		oParent.free();
+		return NULL;
+	}
+
+	for (int i = 0; i < oParent.dictGetLength(); ++i)
+	{
+		char* chKey = oParent.dictGetKey(i);
+		if (strcmp("Parent", chKey) == 0)
+		{
+			Object oParentRef;
+			oParent.dictGetValNF(i, &oParentRef);
+			PdfWriter::CDictObject* pParent2 = GetWidgetParent(pdfDoc, pDoc, &oParentRef);
+			if (pParent2)
+			{
+				pParent->Add("Parent", pParent2);
+				oParentRef.free();
+				continue;
+			}
+			oParentRef.free();
+		}
+		Object oTemp;
+		oParent.dictGetValNF(i, &oTemp);
+		DictToCDictObject(&oTemp, pParent, false, chKey);
+		oTemp.free();
+	}
+
+	oParent.free();
+
+	return pParent;
 }
 bool CPdfFile::EditAnnot(int nPageIndex, int nID)
 {
@@ -742,6 +791,7 @@ bool CPdfFile::EditAnnot(int nPageIndex, int nID)
 		return false;
 	}
 
+	bool bIsWidget = false;
 	PdfWriter::CAnnotation* pAnnot = NULL;
 	if (oType.isName("Text"))
 		pAnnot = new PdfWriter::CTextAnnotation(pXref);
@@ -763,6 +813,7 @@ bool CPdfFile::EditAnnot(int nPageIndex, int nID)
 		pAnnot = new PdfWriter::CPopupAnnotation(pXref);
 	else if (oType.isName("Widget"))
 	{
+		bIsWidget = true;
 		char* sName = NULL;
 		Object oFT;
 		if (oAnnot.dictLookup("FT", &oFT)->isName())
@@ -810,6 +861,7 @@ bool CPdfFile::EditAnnot(int nPageIndex, int nID)
 		RELEASEOBJECT(pXref);
 		return false;
 	}
+	pXref->Add(pAnnot, oAnnotRef.getRefGen());
 
 	for (int nIndex = 0; nIndex < oAnnot.dictGetLength(); ++nIndex)
 	{
@@ -830,12 +882,25 @@ bool CPdfFile::EditAnnot(int nPageIndex, int nID)
 			}
 			continue;
 		}
+		if (strcmp("Parent", chKey) == 0 && bIsWidget)
+		{
+			Object oParentRef;
+			oAnnot.dictGetValNF(nIndex, &oParentRef);
+			PdfWriter::CDictObject* pParent = GetWidgetParent(pPDFDocument, pDoc, &oParentRef);
+
+			if (pParent)
+			{
+				((PdfWriter::CWidgetAnnotation*)pAnnot)->SetParent(pParent);
+				oParentRef.free();
+				continue;
+			}
+			oParentRef.free();
+		}
 		Object oTemp;
 		oAnnot.dictGetValNF(nIndex, &oTemp);
 		DictToCDictObject(&oTemp, pAnnot, false, chKey);
 		oTemp.free();
 	}
-	pAnnot->SetRef(oAnnotRef.getRefNum(), oAnnotRef.getRefGen());
 	oAnnotRef.free(); oAnnot.free();
 
 	if (pDoc->EditAnnot(pXref, pAnnot, nID))
@@ -872,18 +937,33 @@ bool CPdfFile::DeleteAnnot(int nID)
 	}
 	pageRefObj.free(); pageObj.free();
 
-	Object oAnnotRef, oAnnot, oPopupRef;
+	bool bRes = false;
 	for (int i = 0; i < oAnnots.arrayGetLength(); ++i)
 	{
+		Object oAnnotRef, oAnnot;
 		if (oAnnots.arrayGetNF(i, &oAnnotRef)->isRef() && oAnnotRef.getRefNum() == nID)
-			break;
-		oAnnotRef.free();
+		{
+			bRes = m_pInternal->pWriter->m_pDocument->DeleteAnnot(oAnnotRef.getRefNum(), oAnnotRef.getRefGen());
+			if (oAnnotRef.fetch(xref, &oAnnot)->isDict())
+			{
+				Object oPopupRef;
+				if (oAnnot.dictLookupNF("Popup", &oPopupRef)->isRef())
+					m_pInternal->pWriter->m_pDocument->DeleteAnnot(oPopupRef.getRefNum(), oPopupRef.getRefGen());
+				oPopupRef.free();
+			}
+		}
+		else if (oAnnots.arrayGet(i, &oAnnot)->isDict())
+		{
+			Object oIRTRef;
+			if (oAnnot.dictLookupNF("IRT", &oIRTRef)->isRef() && oIRTRef.getRefNum() == nID)
+				DeleteAnnot(oAnnotRef.getRefNum());
+			oIRTRef.free();
+		}
+		oAnnotRef.free(); oAnnot.free();
 	}
 	oAnnots.free();
-	if (oAnnotRef.isRef() && oAnnotRef.fetch(xref, &oAnnot)->isDict() && oAnnot.dictLookupNF("Popup", &oPopupRef)->isRef())
-		m_pInternal->pWriter->m_pDocument->DeleteAnnot(oPopupRef.getRefNum());
 
-	return m_pInternal->pWriter->m_pDocument->DeleteAnnot(nID);
+	return bRes;
 }
 #endif // BUILDING_WASM_MODULE
 

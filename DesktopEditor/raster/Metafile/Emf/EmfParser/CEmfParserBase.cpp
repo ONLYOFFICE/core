@@ -1373,33 +1373,32 @@ namespace MetaFile
 		TranslatePoint(pRect->Left, pRect->Top, oBB.Left, oBB.Top);
 		TranslatePoint(pRect->Right, pRect->Bottom, oBB.Right, oBB.Bottom);
 
-		if (NULL != m_pInterpretator)
-		{
-			m_pInterpretator->HANDLE_EMR_EXCLUDECLIPRECT(oClip);
-			m_pInterpretator->ExcludeClip(oClipRect, oBB);
-		}
+		m_pDC->GetClip()->Exclude(oClipRect, oBB);
 		UpdateOutputDC();
+		
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMR_EXCLUDECLIPRECT(oClip);
 	}
 
 	void CEmfParserBase::HANDLE_EMR_EXTSELECTCLIPRGN(unsigned int &unRgnDataSize, unsigned int &unRegionMode)
 	{
 		// Тут просто сбрасываем текущий клип. Ничего не добавляем в клип, т.е. реализовать регионы с
 		// текущим интерфейсом рендерера невозможно.
+		m_pDC->GetClip()->Reset();
+		
 		if (NULL != m_pInterpretator)
-		{
 			m_pInterpretator->HANDLE_EMR_EXTSELECTCLIPRGN(unRgnDataSize, unRegionMode, m_oStream);
-			m_pInterpretator->ResetClip();
-		}
+		
 		m_oStream.Skip(m_ulRecordSize - 8);
 	}
 
 	void CEmfParserBase::HANDLE_EMR_SETMETARGN()
 	{
+		m_pDC->GetClip()->Reset();
+		
 		if (NULL != m_pInterpretator)
-		{
 			m_pInterpretator->HANDLE_EMR_SETMETARGN();
-			m_pInterpretator->ResetClip();
-		}
+		
 		UpdateOutputDC();
 	}
 
@@ -1441,11 +1440,10 @@ namespace MetaFile
 		TranslatePoint(oClip.Left, oClip.Top, oClipRect.Left, oClipRect.Top);
 		TranslatePoint(oClip.Right, oClip.Bottom, oClipRect.Right, oClipRect.Bottom);
 		
+		m_pDC->GetClip()->Intersect(oClipRect);
+		
 		if (NULL != m_pInterpretator)
-		{
 			m_pInterpretator->HANDLE_EMR_INTERSECTCLIPRECT(oClip);
-			m_pInterpretator->IntersectClip(oClipRect);
-		}
 	}
 
 	void CEmfParserBase::HANDLE_EMR_SETLAYOUT(unsigned int &unLayoutMode)

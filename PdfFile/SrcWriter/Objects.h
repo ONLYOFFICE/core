@@ -508,7 +508,7 @@ namespace PdfWriter
 		TXrefEntry* GetEntry(unsigned int unIndex) const;
 		TXrefEntry* GetEntryByObjectId(unsigned int unObjectId) const;
 		CXref*      GetXrefByObjectId(unsigned int unObjectId);
-		void        Add(CObjectBase* pObject);		
+		void        Add(CObjectBase* pObject, unsigned int unObjectGen = 0);
 		void        WriteToStream(CStream* pStream, CEncrypt* pEncrypt, bool bStream = false);
 		void        SetPrev(CXref* pPrev)
 		{

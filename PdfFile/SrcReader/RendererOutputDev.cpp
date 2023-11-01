@@ -4836,17 +4836,6 @@ namespace PdfReader
 		*pdDeviceX = dUserX * pMatrix[0] + dUserY * pMatrix[2] + pMatrix[4];
 		*pdDeviceY = dUserX * pMatrix[1] + dUserY * pMatrix[3] + pMatrix[5];
 	}
-	double ClampCoords(double v)
-	{
-		// conv_type::upscale = int (double v * 256)
-		// 2^31 - 2^8 = 8.388.608; - MaxPageSize ~= 8.380.000
-		double dMaxCoord = 8380000.0;
-		if (v > dMaxCoord)
-			v = dMaxCoord;
-		else if (v < -dMaxCoord)
-			v = -dMaxCoord;
-		return v;
-	}
 	void RendererOutputDev::DoPath(GfxState *pGState, GfxPath *pPath, double dPageHeight, double *pCTM, GfxClipMatrix* pCTM2)
 	{
 		if (m_bDrawOnlyText)
@@ -4884,21 +4873,21 @@ namespace PdfReader
 			GfxSubpath *pSubpath = pPath->getSubpath(nSubPathIndex);
 			int nPointsCount = pSubpath->getNumPoints();
 
-			m_pRenderer->PathCommandMoveTo(PDFCoordsToMM(ClampCoords(pSubpath->getX(0) + dShiftX)), PDFCoordsToMM(ClampCoords(pSubpath->getY(0) + dShiftY)));
+			m_pRenderer->PathCommandMoveTo(PDFCoordsToMM(pSubpath->getX(0) + dShiftX), PDFCoordsToMM(pSubpath->getY(0) + dShiftY));
 
 			int nCurPointIndex = 1;
 			while (nCurPointIndex < nPointsCount)
 			{
 				if (pSubpath->getCurve(nCurPointIndex))
 				{
-					m_pRenderer->PathCommandCurveTo(PDFCoordsToMM(ClampCoords(pSubpath->getX(nCurPointIndex)     + dShiftX)), PDFCoordsToMM(ClampCoords(pSubpath->getY(nCurPointIndex)     + dShiftY)),
-													PDFCoordsToMM(ClampCoords(pSubpath->getX(nCurPointIndex + 1) + dShiftX)), PDFCoordsToMM(ClampCoords(pSubpath->getY(nCurPointIndex + 1) + dShiftY)),
-													PDFCoordsToMM(ClampCoords(pSubpath->getX(nCurPointIndex + 2) + dShiftX)), PDFCoordsToMM(ClampCoords(pSubpath->getY(nCurPointIndex + 2) + dShiftY)));
+					m_pRenderer->PathCommandCurveTo(PDFCoordsToMM(pSubpath->getX(nCurPointIndex)     + dShiftX), PDFCoordsToMM(pSubpath->getY(nCurPointIndex)     + dShiftY),
+													PDFCoordsToMM(pSubpath->getX(nCurPointIndex + 1) + dShiftX), PDFCoordsToMM(pSubpath->getY(nCurPointIndex + 1) + dShiftY),
+													PDFCoordsToMM(pSubpath->getX(nCurPointIndex + 2) + dShiftX), PDFCoordsToMM(pSubpath->getY(nCurPointIndex + 2) + dShiftY));
 					nCurPointIndex += 3;
 				}
 				else
 				{
-					m_pRenderer->PathCommandLineTo(PDFCoordsToMM(ClampCoords(pSubpath->getX(nCurPointIndex) + dShiftX)), PDFCoordsToMM(ClampCoords(pSubpath->getY(nCurPointIndex) + dShiftY)));
+					m_pRenderer->PathCommandLineTo(PDFCoordsToMM(pSubpath->getX(nCurPointIndex) + dShiftX), PDFCoordsToMM(pSubpath->getY(nCurPointIndex) + dShiftY));
 					++nCurPointIndex;
 				}
 			}

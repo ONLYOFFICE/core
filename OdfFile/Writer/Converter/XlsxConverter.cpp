@@ -1700,16 +1700,16 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFileSharing *oox_file_sharing)
 {
 	if (!oox_file_sharing) return;
 
-	ods_context->settings_context()->add_config_content_item(L"IsDocumentShared", L"boolean", L"true");
-
 	if (oox_file_sharing->m_oReadOnlyRecommended.get_value_or(false))
 	{
+		ods_context->settings_context()->add_config_content_item(L"IsDocumentShared", L"boolean", L"true");
 		ods_context->settings_context()->add_config_content_item(L"LoadReadonly", L"boolean", L"true");
-	}
-	if (oox_file_sharing->m_oHashValue.IsInit() && oox_file_sharing->m_oAlgorithmName.IsInit() && 
-		oox_file_sharing->m_oSaltValue.IsInit() && oox_file_sharing->m_oSpinCount.IsInit())
-	{
-		ods_context->settings_context()->set_modify_info(oox_file_sharing->m_oAlgorithmName->ToString(), *oox_file_sharing->m_oSaltValue, *oox_file_sharing->m_oHashValue, oox_file_sharing->m_oSpinCount->GetValue());
+	
+		if (oox_file_sharing->m_oHashValue.IsInit() && oox_file_sharing->m_oAlgorithmName.IsInit() &&
+			oox_file_sharing->m_oSaltValue.IsInit() && oox_file_sharing->m_oSpinCount.IsInit())
+		{
+			ods_context->settings_context()->set_modify_info(oox_file_sharing->m_oAlgorithmName->ToString(), *oox_file_sharing->m_oSaltValue, *oox_file_sharing->m_oHashValue, oox_file_sharing->m_oSpinCount->GetValue());
+		}
 	}
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CWorkbookView *oox_book_views)

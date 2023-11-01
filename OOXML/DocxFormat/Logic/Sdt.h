@@ -81,9 +81,12 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<std::wstring > m_sPrefixMappings;
-			nullable<std::wstring > m_sStoreItemID;
-			nullable<std::wstring > m_sXPath;
+			nullable_string m_sPrefixMappings;
+			nullable_string m_sStoreItemID;
+			nullable_string m_sXPath;
+//ext w15
+			nullable_string m_sStoreItemChecksum;
+
 		};
 
 		//--------------------------------------------------------------------------------
@@ -551,8 +554,6 @@ namespace OOX
 
 			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
-
-		public:
 
 			ESdtType m_eType;
 

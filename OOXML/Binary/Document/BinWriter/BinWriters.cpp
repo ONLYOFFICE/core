@@ -8048,6 +8048,12 @@ void BinaryDocumentTableWriter::WriteSdtPrDataBinding(const ComplexTypes::Word::
 		m_oBcw.m_oStream.WriteStringW3(oDataBinding.m_sXPath.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (oDataBinding.m_sStoreItemChecksum.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::StoreItemChecksum);
+		m_oBcw.m_oStream.WriteStringW3(oDataBinding.m_sStoreItemChecksum.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void BinaryDocumentTableWriter::WriteSdtPrDate(const OOX::Logic::CDate& oDate)
 {

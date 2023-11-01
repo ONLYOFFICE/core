@@ -2,9 +2,9 @@
 #define _DOCBUILDER_COMMON_H
 
 #ifdef _MSC_VER
-#define BUILDING_DOCBUILDER __declspec(dllimport)
+#define BUILDER_DECL __declspec(dllimport)
 #else
-#define BUILDING_DOCBUILDER
+#define BUILDER_DECL
 #endif
 
 #define OFFICESTUDIO_FILE_DOCUMENT            0x0040

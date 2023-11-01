@@ -1692,11 +1692,26 @@ static bool is_sound_hlink(const std::wstring& hlink)
 {
 	const std::wstring ext = NSFile::GetFileExtention(hlink);
 	if (ext == L"wav" ||
+		ext == L"wma" ||
 		ext == L"mp3" ||
 		ext == L"ogg")
 		return true;
 
 	return false;
+}
+
+static bool is_relative_path(const std::wstring& path) 
+{
+	if (path.size() <= 0)
+		return false;
+
+	if (path.find(L"://") != std::wstring::npos)
+		return false;
+
+	if (path[0] == '/') 
+		return false;
+
+	return true;
 }
 
 void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
@@ -1755,6 +1770,7 @@ void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 				if (oox_cnvPr->hlinkClick->id.IsInit())
 				{
 					std::wstring hlink = find_link_by_id(oox_cnvPr->hlinkClick->id.get(), 2, bExternal);
+					boost::replace_all(hlink, L"\\", L"/"); // NOTE(Kamil Kerimov): Always use forward slash in odf for filepaths
 					
 					if (is_sound_hlink(hlink))
 					{
@@ -1762,7 +1778,12 @@ void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 						odf_context()->drawing_context()->add_sound(href);
 					}
 					else
+					{
+						if (is_relative_path(hlink))
+							hlink = L"../" + hlink;
 						odf_context()->drawing_context()->add_link(hlink);
+					}
+						
 
 					smart_ptr<OOX::File> file = find_file_by_id(oox_cnvPr->hlinkClick->id.get());
 					OOX::HyperLink* hyperlink = dynamic_cast<OOX::HyperLink*>(file.GetPointer());

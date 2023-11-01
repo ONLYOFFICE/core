@@ -1687,6 +1687,18 @@ void OoxConverter::convert(PPTX::Logic::NvSpPr *oox_nvSpPr)
 	convert (&oox_nvSpPr->cNvSpPr);
 	convert (&oox_nvSpPr->nvPr);
 }
+
+static bool is_sound_hlink(const std::wstring& hlink)
+{
+	const std::wstring ext = NSFile::GetFileExtention(hlink);
+	if (ext == L"wav" ||
+		ext == L"mp3" ||
+		ext == L"ogg")
+		return true;
+
+	return false;
+}
+
 void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 {
 	if (!oox_cnvPr) return;
@@ -1743,7 +1755,14 @@ void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 				if (oox_cnvPr->hlinkClick->id.IsInit())
 				{
 					std::wstring hlink = find_link_by_id(oox_cnvPr->hlinkClick->id.get(), 2, bExternal);
-					odf_context()->drawing_context()->add_link(hlink);
+					
+					if (is_sound_hlink(hlink))
+					{
+						std::wstring href = odf_context()->add_media(hlink, bExternal);
+						odf_context()->drawing_context()->add_sound(href);
+					}
+					else
+						odf_context()->drawing_context()->add_link(hlink);
 
 					smart_ptr<OOX::File> file = find_file_by_id(oox_cnvPr->hlinkClick->id.get());
 					OOX::HyperLink* hyperlink = dynamic_cast<OOX::HyperLink*>(file.GetPointer());

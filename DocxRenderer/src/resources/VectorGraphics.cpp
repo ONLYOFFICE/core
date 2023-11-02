@@ -70,7 +70,7 @@ namespace NSDocxRenderer
 	void CVectorGraphics::MoveTo(const double &x1, const double &y1)
 	{
 		Point point = {x1, y1};
-		VectorGraphicsType type = vgtMove;
+		eVectorGraphicsType type = eVectorGraphicsType::vgtMove;
 		m_arData.push_back({type, {point}});
 
 		CheckPoint(point);
@@ -79,7 +79,7 @@ namespace NSDocxRenderer
 	void CVectorGraphics::LineTo(const double &x1, const double &y1)
 	{
 		Point point = {x1, y1};
-		VectorGraphicsType type = vgtLine;
+		eVectorGraphicsType type = eVectorGraphicsType::vgtLine;
 		m_arData.push_back({type, {point}});
 
 		CheckPoint(point);
@@ -90,7 +90,7 @@ namespace NSDocxRenderer
 								  const double &x3, const double &y3)
 	{
 		std::list<Point> points = {{x1, y1}, {x2, y2}, {x3, y3}};
-		VectorGraphicsType type = vgtCurve;
+		eVectorGraphicsType type = eVectorGraphicsType::vgtCurve;
 		m_arData.push_back({type, points});
 
 		for(auto& point : points)
@@ -99,7 +99,7 @@ namespace NSDocxRenderer
 
 	void CVectorGraphics::Close()
 	{
-		VectorGraphicsType type = vgtClose;
+		eVectorGraphicsType type = eVectorGraphicsType::vgtClose;
 		m_arData.push_back({type, {}});
 	}
 

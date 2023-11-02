@@ -137,15 +137,6 @@ namespace NSDocxRenderer
 				eHType == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext);
 	}
 
-	bool CBaseItem::IsCurrentLeftOfNext(const CBaseItem* oSrc)
-	{
-		return m_dLeft < oSrc->m_dLeft;
-	}
-	bool CBaseItem::IsCurrentAboveOfNext(const CBaseItem* oSrc)
-	{
-		return m_dBaselinePos < oSrc->m_dBaselinePos;
-	}
-
 	void CBaseItem::RecalcWithNewItem(const CBaseItem* pItem)
 	{
 		m_dBaselinePos = std::max(m_dBaselinePos, pItem->m_dBaselinePos);

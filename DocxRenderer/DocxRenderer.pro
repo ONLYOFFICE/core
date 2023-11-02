@@ -28,7 +28,6 @@ HEADERS += \
     src/logic/elements/BaseItem.h \
     src/logic/elements/Cell.h \
     src/logic/elements/ContText.h \
-    src/logic/elements/Converter.h \
     src/logic/elements/DropCap.h \
     src/logic/elements/Image.h \
     src/logic/elements/Paragraph.h \
@@ -57,7 +56,6 @@ SOURCES += \
     src/logic/elements/BaseItem.cpp \
     src/logic/elements/Cell.cpp \
     src/logic/elements/ContText.cpp \
-    src/logic/elements/Converter.cpp \
     src/logic/elements/DropCap.cpp \
     src/logic/elements/Image.cpp \
     src/logic/elements/Paragraph.cpp \

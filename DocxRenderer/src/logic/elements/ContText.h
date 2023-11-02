@@ -34,7 +34,6 @@ namespace NSDocxRenderer
 	class CContText : public CBaseItem
 	{
 	public:
-
 		// utils
 		std::shared_ptr<const CFontStyle> m_pFontStyle{nullptr};
 		CFontManager* m_pManager                      {nullptr};

@@ -130,45 +130,22 @@ namespace NSDocxRenderer
 
 	void CParagraph::MergeLines()
 	{
-		auto pLine = m_arLines.front();
-
-		for(size_t i = 1; i < m_arLines.size(); ++i)
+		for(size_t i = 0; i < m_arLines.size(); ++i)
 		{
-			auto pLastCont = pLine->m_arConts.back();
+			auto& pLine = m_arLines[i];
+			auto& pLastCont = pLine->m_arConts.back();
 			size_t iNumConts = pLine->m_arConts.size() - 1;
 
 			while (!pLastCont)
 				pLastCont = pLine->m_arConts[--iNumConts];
 
-//			//Добавляем пробел в конец каждой строки
+			//Добавляем пробел в конец каждой строки
 			pLastCont->m_oText += L" ";
 			pLastCont->m_dWidth += pLine->m_arConts.back()->m_oSelectedSizes.dSpaceWidth;
-
-//			auto pNext = m_arLines[i];
-//			auto pCont = pNext->m_arConts.front();
-
-//			if (pLastCont->IsEqual(pCont))
-//			{
-//				pLastCont->m_oText += pCont->m_oText;
-//				pLastCont->m_dWidth += pCont->m_dWidth;
-//				pLastCont->m_dRight = pCont->m_dRight;
-//				pCont->m_bIsNotNecessaryToUse = true;
-//			}
-
-//			for (size_t j = 0; j < pNext->m_arConts.size(); ++j)
-//			{
-//				auto& pCont = pNext->m_arConts[j];
-//				if (!pCont->m_bIsNotNecessaryToUse)
-//				{
-//					pLine->m_arConts.push_back(pCont);
-//					pCont = nullptr;
-//				}
-//			}
-//			pNext->m_bIsNotNecessaryToUse = true;
 		}
 	}
 
-	CParagraph::TextAlignmentType CParagraph::DetermineTextAlignmentType(CTextLine* pCurrentLine, CTextLine* pNextLine, CTextLine* pNextNextLine, double dPageWidth, bool &bIsUseNextNextLine, bool &bIsSingleLineParagraph)
+	CParagraph::TextAlignmentType CParagraph::DetermineTextAlignmentType(std::shared_ptr<CTextLine> pCurrentLine, std::shared_ptr<CTextLine> pNextLine, std::shared_ptr<CTextLine> pNextNextLine, double dPageWidth, bool &bIsUseNextNextLine, bool &bIsSingleLineParagraph)
 	{
 		// поменять логику
 		if (!pCurrentLine || !pNextLine)

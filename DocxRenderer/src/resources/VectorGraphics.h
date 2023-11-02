@@ -6,7 +6,7 @@ namespace NSDocxRenderer
 	class CVectorGraphics
 	{
 	public:
-		enum VectorGraphicsType
+		enum class eVectorGraphicsType
 		{
 			vgtMove = 0,
 			vgtLine = 1,
@@ -16,13 +16,13 @@ namespace NSDocxRenderer
 
 		struct Point
 		{
-			double x = 0;
-			double y = 0;
+			double x{0};
+			double y{0};
 		};
 
 		struct PathCommand
 		{
-			VectorGraphicsType type;
+			eVectorGraphicsType type;
 			std::list<Point> points;
 		};
 

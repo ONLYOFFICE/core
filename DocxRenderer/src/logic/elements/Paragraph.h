@@ -32,7 +32,7 @@ namespace NSDocxRenderer
 		double              m_dSpaceAfter {0.0}; //в shape по умолчанию выставляется 8pt, если отсутсвует w:after
 		double              m_dLineHeight {0.0};
 
-		std::vector<CTextLine*> m_arLines;
+		std::vector<std::shared_ptr<CTextLine>> m_arLines;
 
 		size_t              m_nNumLines {0};
 
@@ -47,7 +47,7 @@ namespace NSDocxRenderer
 		void RemoveHighlightColor();
 		void MergeLines();
 
-		static TextAlignmentType DetermineTextAlignmentType(CTextLine* pCurrentLine, CTextLine* pNextLine, CTextLine* pNextNextLine,
+		static TextAlignmentType DetermineTextAlignmentType(std::shared_ptr<CTextLine> pCurrentLine, std::shared_ptr<CTextLine> pNextLine, std::shared_ptr<CTextLine> pNextNextLine,
 															double dPageWidth, bool &bIsUseNextNextLine, bool &bIsSingleLineParagraph);
 	};
 }

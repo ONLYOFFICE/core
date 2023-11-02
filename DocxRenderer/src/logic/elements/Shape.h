@@ -62,6 +62,7 @@ namespace NSDocxRenderer
 		virtual ~CShape();
 		virtual void Clear() override final;
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
+		virtual void RecalcWithNewItem(const CBaseItem* pObj) override final;
 
 		void SetVector(CVectorGraphics&& oVector);
 
@@ -69,13 +70,12 @@ namespace NSDocxRenderer
 		bool TryMergeShape(std::shared_ptr<CShape> pShape);
 		std::wstring PathToWString() const;
 		void DetermineGraphicsType(double dWidth, double dHeight, size_t nPeacks, size_t nCurves);
-		bool IsItFitLine();
-		bool IsCorrelated(const CShape* pShape);
-		void ChangeGeometryOfDesiredShape(CShape* pShape);
 
-		bool IsPeak();
-		bool IsSide();
-		void DetermineLineType(CShape* pShape = nullptr, bool bIsLast = false);
+		bool IsItFitLine() const noexcept;
+		bool IsCorrelated(std::shared_ptr<const CShape> pShape) const noexcept;
+
+		bool IsPeak() const noexcept;
+		bool IsSide() const noexcept;
 
 		void BuildGeneralProperties(NSStringUtils::CStringBuilder &oWriter) const;
 		void BuildSpecificProperties(NSStringUtils::CStringBuilder &oWriter) const;
@@ -87,6 +87,13 @@ namespace NSDocxRenderer
 		void BuildTextBox(NSStringUtils::CStringBuilder &oWriter) const;
 
 		static void ResetRelativeHeight();
+
+		// check type of line and delete not needed shape
+		// one shape in line
+		static void CheckLineType(std::shared_ptr<CShape>& pShape) noexcept;
+
+		// many shapes in line
+		static void CheckLineType(std::shared_ptr<CShape>& pFirstShape, std::shared_ptr<CShape>& pSecondShape, bool bIsLast = false) noexcept;
 
 	private:
 		UINT GenerateShapeId() const;

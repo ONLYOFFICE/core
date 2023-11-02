@@ -1,5 +1,4 @@
 #include "Page.h"
-#include "elements/Converter.h"
 #include "../resources/Constants.h"
 #include "../resources/SingletonTemplate.h"
 #include "../resources/utils.h"
@@ -340,10 +339,10 @@ namespace NSDocxRenderer
 		auto oParams = m_pFontManager->GetFontSelectParams();
 
 		m_pFontSelector->SelectFont(oParams, oMetrics, oText);
-		//_h = m_pFontManager->GetFontHeight();
+		_h = m_pFontManager->GetFontHeight();
 
 		pCont->m_dBaselinePos = dBaseLinePos;
-		pCont->m_dTop         = pCont->m_dBaselinePos - _h; // - oMetrics.dBaselineOffset;
+		pCont->m_dTop         = pCont->m_dBaselinePos - _h - oMetrics.dBaselineOffset;
 		pCont->m_dHeight      = pCont->m_dBaselinePos - pCont->m_dTop;
 
 		pCont->m_dLeft        = dTextX;
@@ -375,14 +374,14 @@ namespace NSDocxRenderer
 		{
 			auto pLine = std::make_shared<CTextLine>();
 			m_pCurrentLine = pLine.get();
-			m_pCurrentLine->RecalcWithNewItem(pCont.get());
+			m_pCurrentLine->AddCont(pCont);
 			m_arTextLines.push_back(pLine);
 			return;
 		}
 
 		if (fabs(m_pCurrentLine->m_dBaselinePos - pCont->m_dBaselinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
 		{
-			m_pCurrentLine->RecalcWithNewItem(pCont.get());
+			m_pCurrentLine->AddCont(pCont);
 			return;
 		}
 
@@ -391,14 +390,14 @@ namespace NSDocxRenderer
 			if (fabs(m_arTextLines[i]->m_dBaselinePos - pCont->m_dBaselinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
 			{
 				m_pCurrentLine = m_arTextLines[i].get();
-				m_pCurrentLine->RecalcWithNewItem(pCont);
+				m_pCurrentLine->AddCont(pCont);
 				return;
 			}
 		}
 
 		auto pLine = std::make_shared<CTextLine>();
 		m_pCurrentLine = pLine.get();
-		m_pCurrentLine->RecalcWithNewItem(pCont);
+		m_pCurrentLine->AddCont(pCont);
 		m_arTextLines.push_back(pLine);
 	}
 
@@ -414,11 +413,10 @@ namespace NSDocxRenderer
 		AnalyzeTextLines();
 
 		// merge conts in text lines
+		BuildLines();
 
 		// build paragraphs from m_arTextLines
-
-		// merge conts in paragraphes
-		// MergeContsInParagraphes
+		BuildParagraphes();
 
 		// merge shapes
 		MergeShapes();
@@ -431,7 +429,8 @@ namespace NSDocxRenderer
 
 	void CPage::BuildTextLines()
 	{
-		std::sort(m_arConts.begin(), m_arConts.end(), [] (const auto& a, const auto& b) {
+		using cont_ptr = std::shared_ptr<CContText>;
+		std::sort(m_arConts.begin(), m_arConts.end(), [] (const cont_ptr& a, const cont_ptr& b) {
 			if(fabs(a->m_dBaselinePos - b->m_dBaselinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
 				return a->m_dLeft < b->m_dLeft;
 			return a->m_dBaselinePos < b->m_dBaselinePos;
@@ -843,101 +842,97 @@ namespace NSDocxRenderer
 
 		for (size_t i = 0; i < m_arShapes.size(); ++i)
 		{
-			auto pCurrShape = m_arShapes[i];
-
-			if (pCurrShape->m_bIsNotNecessaryToUse ||
-					pCurrShape->m_dHeight > c_dMAX_LINE_HEIGHT_MM || //рассматриваем только тонкие объекты
-					(pCurrShape->m_eGraphicsType != eGraphicsType::gtRectangle &&
-					 pCurrShape->m_eGraphicsType != eGraphicsType::gtCurve))
+			auto& curr_shape = m_arShapes[i];
+			if (!curr_shape || curr_shape->m_dHeight > c_dMAX_LINE_HEIGHT_MM || // рассматриваем только тонкие объекты
+				(curr_shape->m_eGraphicsType != eGraphicsType::gtRectangle &&
+				curr_shape->m_eGraphicsType != eGraphicsType::gtCurve))
 			{
 				continue;
 			}
 
-			//Нужно собрать всю графику, которая находится на одной линии
-			std::vector<CShape*> arCurrShapes;
-			arCurrShapes.push_back(m_arShapes[i]);
+			std::vector<std::shared_ptr<CShape>> curr_shapes;
+			curr_shapes.push_back(curr_shape);
 
 			for (size_t j = i+1; j < m_arShapes.size(); ++j)
 			{
-				auto pNextShape = m_arShapes[j];
-				if (pNextShape->m_bIsNotNecessaryToUse || pCurrShape->AreObjectsNoCrossingByVertically(pNextShape)) //note значительно ускоряет работу
-				{
+				auto& next_shape = m_arShapes[j];
+				if (!next_shape || curr_shape->AreObjectsNoCrossingByVertically(next_shape.get())) // значительно ускоряет работу
 					continue;
-				}
-				bool bIf1 = pCurrShape->IsCorrelated(pNextShape);
-				//note довольно странное поведение - в зависимости от толщины линии информация о графике записывается в разные структуры
-				bool bIf2 = pCurrShape->m_oBrush.IsEqual(&pNextShape->m_oBrush);
-				bool bIf3 = pCurrShape->m_oPen.IsEqual(&pNextShape->m_oPen);
-				//линия должна быть одного размера по высоте
-				bool bIf4 = fabs(pCurrShape->m_dHeight - pNextShape->m_dHeight) < c_dGRAPHICS_ERROR_IN_LINES_MM;
-				//все должно быть на одной линии
-				bool bIf5 = fabs(pCurrShape->m_dTop - pNextShape->m_dTop) < c_dGRAPHICS_ERROR_IN_LINES_MM * 5;
+
+				bool bIf1 = curr_shape->IsCorrelated(next_shape);
+
+				// довольно странное поведение - в зависимости от толщины линии информация о графике записывается в разные структуры
+				bool bIf2 = curr_shape->m_oBrush.IsEqual(&next_shape->m_oBrush);
+				bool bIf3 = curr_shape->m_oPen.IsEqual(&next_shape->m_oPen);
+
+				// линия должна быть одного размера по высоте
+				bool bIf4 = fabs(curr_shape->m_dHeight - next_shape->m_dHeight) < c_dGRAPHICS_ERROR_IN_LINES_MM;
+
+				// все должно быть на одной линии
+				bool bIf5 = fabs(curr_shape->m_dTop - next_shape->m_dTop) < c_dGRAPHICS_ERROR_IN_LINES_MM * 5;
 
 				if (bIf1 && (bIf2 || bIf3) && bIf4 && bIf5) //все должно быть на одной линии
-				{
-					arCurrShapes.push_back(pNextShape);
-				}
+					curr_shapes.push_back(next_shape);
 			}
 
-			if (arCurrShapes.size() > 1)
+			if (curr_shapes.size() > 1)
 			{
-				//Отсортируем собранный массив по x
-				CBaseItem::SortByLeft(arCurrShapes);
-				pCurrShape = arCurrShapes[0];
+				using shape_ptr = std::shared_ptr<CShape>;
+				std::sort(curr_shapes.begin(), curr_shapes.end(), [] (const shape_ptr& a, const shape_ptr& b) {
+					return a->m_dLeft < b->m_dLeft;
+				});
 
-				//сравнение
-				for (size_t k = 1; k < arCurrShapes.size(); ++k)
+				curr_shape = curr_shapes[0];
+
+				for (size_t k = 1; k < curr_shapes.size(); ++k)
 				{
-					auto pNextShape = arCurrShapes[k];
+					auto& next_shape = curr_shapes[k];
+					CShape::CheckLineType(curr_shape, next_shape, k == curr_shapes.size() - 1);
 
-					//note логика работатет только если arCurrShapes отсортирован по m_dLeft
-					pCurrShape->DetermineLineType(pNextShape, k == arCurrShapes.size() - 1);
-
-					if (pCurrShape->m_bIsNotNecessaryToUse)
+					if(!curr_shape)
 					{
-						pCurrShape = pNextShape;
+						curr_shape = next_shape;
 						k++;
 					}
 				}
 			}
-			else if (arCurrShapes.size() == 1)
-			{
-				arCurrShapes[0]->DetermineLineType();
-			}
+			else if (curr_shapes.size() == 1)
+				CShape::CheckLineType(curr_shapes[0]);
 
-			arCurrShapes.clear();
+			curr_shapes.clear();
 		}
 	}
 
 	void CPage::AnalyzeTextLines()
 	{
-		//вся логика основана на отсортированных списках объектов
-		//todo для увеличения производительности можно попробовать использовать другие контейнеры
+		// вся логика основана на отсортированных списках объектов
 
-		CBaseItem::SortByBaseline(m_arTextLines);
-//		for(auto&& line: m_arTextLines)
-//			CBaseItem::SortByLeft(line->m_arConts);
+		using line_ptr = std::shared_ptr<CTextLine>;
+		std::sort(m_arTextLines.begin(), m_arTextLines.end(), [] (const line_ptr& a, const line_ptr& b) {
+			return a->m_dBaselinePos < b->m_dBaselinePos;
+		});
 
+		// analyze drop caps (creates shapes)
 		AnalyzeDropCaps();
+
+		// assign highlights to conts & delete shapes which is uses in highlights
 		DetermineStrikeoutsUnderlinesHighlights();
+
+		// diacritical symbols
 		AddDiacriticalSymbols();
+
+		// super/subscript
 		MergeLinesByVertAlignType();
+
+		// delete lines out of page
 		DeleteTextClipPage();
-
-		//DetermineTextColumns();
-
-		SingletonInstance<CConverter>().BuildLines(m_arTextLines);
-		SingletonInstance<CConverter>().BuildParagraphes(m_dWidth, m_eTextAssociationType,
-														 COutputObject::eOutputType::etParagraph,
-														 m_arTextLines, m_arTables, m_arOutputObjects,
-														 m_pParagraphStyleManager);
 	}
 
 	void CPage::AnalyzeDropCaps()
 	{
 		double avg_font_size = m_pParagraphStyleManager->GetAvgFontSize();
 
-		std::vector<std::pair<std::shared_ptr<CContText>, std::shared_ptr<CTextLine>>> possible_caps;
+		std::vector<std::pair<std::shared_ptr<CContText>&, std::shared_ptr<CTextLine>&>> possible_caps;
 		std::vector<std::shared_ptr<CDropCap>> drop_caps;
 
 		for(size_t i = 0; i < m_arTextLines.size(); i++)
@@ -1108,42 +1103,37 @@ namespace NSDocxRenderer
 
 	void CPage::DetermineStrikeoutsUnderlinesHighlights()
 	{
-
 		//определение различных эффектов на основании взаимного расположения символов и шейпов
 		for (size_t i = 0; i < m_arShapes.size(); ++i)
 		{
-			auto pShape = m_arShapes[i];
-
-			if (pShape->m_eGraphicsType == eGraphicsType::gtNoGraphics || pShape->m_bIsNotNecessaryToUse)
+			auto& pShape = m_arShapes[i];
+			if (!pShape || pShape->m_eGraphicsType == eGraphicsType::gtNoGraphics)
 				continue;
 
 			for (size_t j = 0; j < m_arTextLines.size(); ++j)
 			{
-				auto pCurrLine = m_arTextLines[j];
+				auto& pCurrLine = m_arTextLines[j];
 
-				if (pCurrLine->m_bIsNotNecessaryToUse ||
-						(pCurrLine->AreObjectsNoCrossingByVertically(pShape) &&
-						 (pCurrLine->m_dTop > pShape->m_dBaselinePos ||
-						  pCurrLine->m_dBaselinePos + pCurrLine->m_dHeight < pShape->m_dTop)))
+				if (!pCurrLine || (pCurrLine->AreObjectsNoCrossingByVertically(pShape.get()) &&
+					(pCurrLine->m_dTop > pShape->m_dBaselinePos ||
+					pCurrLine->m_dBaselinePos + pCurrLine->m_dHeight < pShape->m_dTop)))
 				{
 					continue;
 				}
 
 				for (size_t k = 0; k < pCurrLine->m_arConts.size(); ++k)
 				{
-					auto pCurrCont = pCurrLine->m_arConts[k];
-
-					if (pCurrCont->m_bIsNotNecessaryToUse)
-					{
+					auto& pCurrCont = pCurrLine->m_arConts[k];
+					if (!pCurrCont)
 						continue;
-					}
-					eVerticalCrossingType eVType = pCurrCont->GetVerticalCrossingType(pShape);
-					eHorizontalCrossingType eHType = pCurrCont->GetHorizontalCrossingType(pShape);
+
+					eVerticalCrossingType eVType = pCurrCont->GetVerticalCrossingType(pShape.get());
+					eHorizontalCrossingType eHType = pCurrCont->GetHorizontalCrossingType(pShape.get());
 
 					bool bIsComplicatedFigure = pShape->m_eGraphicsType != eGraphicsType::gtComplicatedFigure;
-					bool bIsLineCrossingText = IsLineCrossingText(pShape, pCurrCont, eHType);
-					bool bIsLineBelowText = IsLineBelowText(pShape, pCurrCont, eHType);
-					bool bIsItHighlightingBackground = IsItHighlightingBackground(pShape, pCurrCont, eHType);
+					bool bIsLineCrossingText = IsLineCrossingText(pShape.get(), pCurrCont.get(), eHType);
+					bool bIsLineBelowText = IsLineBelowText(pShape.get(), pCurrCont.get(), eHType);
+					bool bIsItHighlightingBackground = IsItHighlightingBackground(pShape.get(), pCurrCont.get(), eHType);
 
 					if(bIsLineCrossingText)
 					{
@@ -1169,7 +1159,7 @@ namespace NSDocxRenderer
 
 					// проверили - удаляем
 					if (bIsComplicatedFigure && (bIsLineCrossingText || bIsLineBelowText || bIsItHighlightingBackground))
-						pShape->m_bIsNotNecessaryToUse = true;
+						pShape = nullptr;
 
 					if (!bIsComplicatedFigure)
 					{
@@ -1196,7 +1186,7 @@ namespace NSDocxRenderer
 								pCurrCont->m_bIsOutlinePresent = true;
 							}
 
-							pShape->m_bIsNotNecessaryToUse = true;
+							pShape = nullptr;
 						}
 					}
 				}
@@ -1319,23 +1309,21 @@ namespace NSDocxRenderer
 
 						if ((bIf1 && bIf6) || (bIf2 && bIf7) || (bIf4 && bIf8) || (bIf5 && bIf7))
 						{
-							pCurrCont->m_oText += pDiacriticalCont->m_oText;
+							cont->m_oText += d_sym->m_oText;
 						}
 						else if (bIf3 && bIf7)
 						{
-							NSStringUtils::CStringUTF32 oText(pDiacriticalCont->m_oText);
-							oText += pCurrCont->m_oText;
-							pCurrCont->m_oText = oText;
+							NSStringUtils::CStringUTF32 oText(d_sym->m_oText);
+							oText += cont->m_oText;
+							cont->m_oText = oText;
 						}
-						pDiacriticalCont->m_bIsNotNecessaryToUse = true;
+						d_sym = nullptr;
 						isBreak = true;
 						break;
 					}
 				}
 				if (isBreak)
-				{
 					break;
-				}
 			}
 		}
 	}
@@ -1403,213 +1391,6 @@ namespace NSDocxRenderer
 		}
 	}
 
-//	void CPage::DetermineTextColumns()
-//	{
-//		std::vector<size_t> keys;
-//		std::vector<CContText*> arConts;
-//		CTable* pTable = nullptr;
-
-//		//Сначала определяем, подходят ли несколько текущих строк для распределения в таблицу
-//		//Выбирается первая строка и относительно нее проверяются все последующие строки -
-//		//сравнивается взаимное расположение символов. Если у них совпадает левая граница и таких совпадений больше 1,
-//		//то добавляем uFirstContIndex в keys.
-//		//Todo улучшить локигу определения keys
-//		for (size_t uFirstLineIndex = 0; uFirstLineIndex < m_arTextLines.size(); ++uFirstLineIndex)
-//		{
-//			auto pFirstLine = m_arTextLines[uFirstLineIndex];
-
-//			if (pFirstLine->m_bIsNotNecessaryToUse || uFirstLineIndex == m_arTextLines.size() - 1)
-//			{
-//				continue;
-//			}
-
-//			CTextLine* pFlagLine = nullptr;
-
-//			//первоначальное определение индексов pFirstLine, где могут присутствовать колонки
-//			for (size_t uFirstContIndex = 0; uFirstContIndex < pFirstLine->m_arConts.size(); ++uFirstContIndex)
-//			{
-//				auto pFirtsCont = pFirstLine->m_arConts[uFirstContIndex];
-
-//				if (pFirtsCont->m_bIsNotNecessaryToUse)
-//				{
-//					continue;
-//				}
-
-//				for (size_t uCurrLineIndex = uFirstLineIndex + 1 ; uCurrLineIndex < m_arTextLines.size(); ++uCurrLineIndex)
-//				{
-//					auto pCurrLine = m_arTextLines[uCurrLineIndex];
-
-//					if (pCurrLine->m_bIsNotNecessaryToUse)
-//					{
-//						continue;
-//					}
-
-//					auto pPrevLine = m_arTextLines[uCurrLineIndex-1];
-
-//					if (pPrevLine->m_dBaselinePos + pPrevLine->m_dHeight < pCurrLine->m_dTop)
-//					{
-//						//Нашли линию, до которой будет таблица/ряд
-//						pFlagLine = pCurrLine;
-//						break;
-//					}
-
-//					size_t numConts = arConts.size();
-
-//					for (size_t uCurrContIndex = 0; uCurrContIndex < pCurrLine->m_arConts.size(); ++uCurrContIndex)
-//					{
-//						auto pCurrCont = pCurrLine->m_arConts[uCurrContIndex];
-
-//						if (pCurrCont->m_bIsNotNecessaryToUse)
-//						{
-//							continue;
-//						}
-
-//						eHorizontalCrossingType eHType = pFirtsCont->GetHorizontalCrossingType(pCurrCont);
-
-//						if (eHType == eHorizontalCrossingType::hctLeftAndRightBordersMatch ||
-//								eHType == eHorizontalCrossingType::hctLeftBorderMatch)
-//						{
-//							//Добавили Cont-ориентир
-//							arConts.push_back(pCurrCont);
-//							break;
-//						}
-//					}
-
-//					if (numConts == arConts.size())
-//					{
-//						//не было добавления Cont, значит дальше можно не проверять
-//						break;
-//					}
-//				}
-
-//				if (arConts.size() > 2 && uFirstContIndex < pFirstLine->m_arConts.size() - 1 )
-//				{
-//					keys.push_back(uFirstContIndex);
-//					arConts.clear();
-//				}
-//			}
-
-//			size_t uLastLineIndexInCell = 0;
-
-//			//Если добавленных индексов достаточно, т.е. это похоже на 2 и более колонок, то
-//			//начинаем распределять символы из всех строк до pFlagLine по высоте и
-//			//левее символа с индексом из keys[i+1] по ширине. Все отобранные символы удаляем из линий (m_bIsNotNecessaryToUse)
-//			//Повторяем это действие, пока не пробежимся по всем keys
-//			if (keys.size() > 1)
-//			{
-//				auto pRow = new CRow();
-
-//				for (size_t i = 0; i < keys.size(); ++i)
-//				{
-//					auto pCell = new CCell();
-
-//					for (size_t uLineIndex = uFirstLineIndex; uLineIndex < m_arTextLines.size(); ++uLineIndex)
-//					{
-//						auto pCurrLine = m_arTextLines[uLineIndex];
-
-//						if (pCurrLine->m_bIsNotNecessaryToUse)
-//						{
-//							continue;
-//						}
-
-//						if (pFlagLine == pCurrLine)
-//						{
-//							uLastLineIndexInCell = std::max(uLineIndex-1, uLastLineIndexInCell);
-//							break;
-//						}
-
-//						CTextLine* pCellLine = nullptr;
-//						CContText* pFlagCont = nullptr;
-//						CContText* pFirstCont = m_arTextLines[uFirstLineIndex]->m_arConts[keys[i]];
-
-//						if (i < keys.size() - 1)
-//						{
-//							pFlagCont = m_arTextLines[uFirstLineIndex]->m_arConts[keys[i+1]];
-//						}
-
-//						for (size_t uCurrContIndex = 0; uCurrContIndex < pCurrLine->m_arConts.size(); ++uCurrContIndex)
-//						{
-//							auto pCurrCont = pCurrLine->m_arConts[uCurrContIndex];
-
-//							if (pCurrCont->m_bIsNotNecessaryToUse)
-//							{
-//								continue;
-//							}
-
-//							eHorizontalCrossingType eHTypeFirst = pFirstCont->GetHorizontalCrossingType(pCurrCont);
-
-//							if (pFlagCont)
-//							{
-//								eHorizontalCrossingType eHTypeLast = pFlagCont->GetHorizontalCrossingType(pCurrCont);
-//								if (eHTypeLast == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext &&
-//										eHTypeFirst != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext)
-//								{
-//									if (!pCellLine)
-//									{
-//										pCellLine = new CTextLine();
-//									}
-//									pCellLine->RecalcWithNewItem(new CContText(*pCurrCont));
-//									pCurrCont->m_bIsNotNecessaryToUse = true;
-//								}
-//								else
-//								{
-//									break;
-//								}
-//							}
-//							else
-//							{
-//								if (eHTypeFirst != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext)
-//								{
-//									if (!pCellLine)
-//									{
-//										pCellLine = new CTextLine();
-//									}
-//									pCellLine->RecalcWithNewItem(new CContText(*pCurrCont));
-//									pCurrCont->m_bIsNotNecessaryToUse = true;
-//								}
-//							}
-//						}
-
-//						if (pCellLine)
-//						{
-//							pCell->RecalcWithNewItem(pCellLine);
-//						}
-
-//						if (i >= keys.size() - 1)
-//						{
-//							pCurrLine->CheckLineToNecessaryToUse();
-//						}
-//					}
-
-////					SingletonInstance<CConverter>().BuildLines(pCell->m_arTextLines);
-////					SingletonInstance<CConverter>().BuildParagraphes(m_dWidth, m_eTextAssociationType, COutputObject::eOutputType::etCell,
-////																	 pCell->m_arTextLines, pCell->m_arOutputObjects,
-////																	 m_pParagraphStyleManager);
-
-//					pRow->RecalcWithNewItem(pCell);
-//				}
-
-//				if (pFlagLine)
-//				{
-//					uFirstLineIndex = uLastLineIndexInCell;
-//				}
-
-//				//todo пока добавляется в одну таблицу - добавить логику разделения на разные таблицы
-//				if (!pTable)
-//				{
-//					pTable = new CTable();
-//					m_arTables.push_back(pTable);
-//				}
-
-//				pTable->RecalcWithNewItem(pRow);
-//				pTable->CalculateColumnWidth();
-//			}
-
-//			keys.clear();
-//			arConts.clear();
-//		}
-//	}
-
 	void CPage::ToXml(NSStringUtils::CStringBuilder& oWriter)
 	{
 		bool bIsTextShapePresent = false;
@@ -1670,6 +1451,611 @@ namespace NSDocxRenderer
 //				pTable->ToXml(oWriter);
 		}
 	}
+
+	void CPage::BuildLines()
+	{
+		for (size_t i = 0; i < m_arTextLines.size(); ++i)
+		{
+			auto& pCurrLine = m_arTextLines[i];
+			if (!pCurrLine)
+				continue;
+
+			for (size_t j = 0; j < pCurrLine->m_arConts.size(); ++j)
+			{
+				auto& pCurrCont = pCurrLine->m_arConts[j];
+				if (!pCurrCont)
+					continue;
+
+				if (pCurrCont->m_iNumDuplicates > 0)
+					pCurrLine->m_iNumDuplicates = std::max(pCurrLine->m_iNumDuplicates, pCurrCont->m_iNumDuplicates);
+			}
+			pCurrLine->MergeConts();
+		}
+		DetermineDominantGraphics();
+	}
+
+	void CPage::DetermineDominantGraphics()
+	{
+		std::shared_ptr<CShape> pDominantShape = nullptr;
+
+		for (size_t i = 0; i < m_arTextLines.size(); ++i)
+		{
+			auto pLine = m_arTextLines[i];
+			if (!pLine)
+				continue;
+
+			for (size_t j = 0; j < pLine->m_arConts.size(); ++j)
+			{
+				auto pCont = pLine->m_arConts[j];
+				if (!pCont)
+					continue;
+
+				if (pCont->m_pShape && pCont->m_pShape != pDominantShape)
+				{
+					if (pCont->m_pShape->m_dLeft < pCont->m_dLeft &&
+							pCont->m_pShape->m_dRight > pCont->m_dRight)
+					{
+						if (!pDominantShape ||
+								(pCont->m_pShape->m_dLeft < pDominantShape->m_dLeft &&
+								 pCont->m_pShape->m_dRight > pDominantShape->m_dRight))
+						{
+							pDominantShape = pCont->m_pShape;
+						}
+					}
+				}
+			}
+
+			pLine->m_pDominantShape = pDominantShape;
+			pDominantShape = nullptr;
+		}
+	}
+	void CPage::BuildParagraphes()
+	{
+		std::shared_ptr<CTextLine> pCurrLine, pNextLine, pNextNextLine, pPrevLine;
+		double dCurrBeforeSpacing = 0, dNextBeforeSpacing = 0, dPrevBeforeSpacing = 0;
+		double dBeforeSpacingWithShapes = 0;
+
+		//note Все параграфы были сдвинуты на данное значение от верхнего края страницы
+		double dPreviousStringBaseline = c_dCORRECTION_FOR_FIRST_PARAGRAPH;
+		eVerticalCrossingType eCrossingType;
+
+		bool bIf1, bIf2, bIf3, bIf4, bIf5, bIf6, bIf7;
+		bool bIsNeedParagraphToShape = m_eTextAssociationType == TextAssociationType::tatParagraphToShape;
+
+		size_t nIndexForCheking = c_nAntiZero;
+
+		double avg_height = 0;
+		size_t n = 0;
+
+		for (size_t nIndex = 0; nIndex < m_arTextLines.size(); ++nIndex)
+		{
+			pCurrLine = m_arTextLines[nIndex];
+			avg_height = (avg_height / (n + 1)) * n + (pCurrLine->m_dHeight / (n + 1));
+
+			if (!pCurrLine)
+				continue;
+
+			if (m_eTextAssociationType == TextAssociationType::tatShapeLine)
+			{
+				CreateSingleLineShape(pCurrLine);
+				continue;
+			}
+
+			dPrevBeforeSpacing = dCurrBeforeSpacing;
+			dCurrBeforeSpacing = pCurrLine->m_dBaselinePos - pCurrLine->m_dHeight - dPreviousStringBaseline;
+			dPreviousStringBaseline = pCurrLine->m_dBaselinePos;
+
+			//Если у текущей линии есть дубликаты, то создаем из них шейпы
+			if (pCurrLine->m_iNumDuplicates > 0)
+			{
+				dBeforeSpacingWithShapes += dCurrBeforeSpacing + pCurrLine->m_dHeight;
+
+				auto iNumDuplicates = pCurrLine->m_iNumDuplicates;
+				CreateSingleLineShape(pCurrLine);
+				while (iNumDuplicates > 0)
+				{
+					CreateSingleLineShape(pCurrLine);
+					iNumDuplicates--;
+				}
+				continue;
+			}
+
+			if (m_eTextAssociationType == TextAssociationType::tatPlainLine)
+			{
+				CreateSingleLineParagraph(pCurrLine, m_dWidth, dCurrBeforeSpacing);
+				continue;
+			}
+
+			pNextLine = GetNextTextLine(nIndex, &nIndexForCheking);
+			if (bIsNeedParagraphToShape)
+			{
+				pPrevLine = GetPrevTextLine(nIndex);
+			}
+
+			//Если две линии пересекаются, то создаем из них шейпы
+			if (pNextLine)
+			{
+				eCrossingType = pCurrLine->GetVerticalCrossingType(pNextLine.get());
+				bool bIsPassed = false;
+				double dCurrentAdditive = 0.0;
+
+				switch (eCrossingType)
+				{
+				case eVerticalCrossingType::vctCurrentInsideNext:
+				case eVerticalCrossingType::vctCurrentBelowNext:
+					dCurrentAdditive = dCurrBeforeSpacing + pCurrLine->m_dHeight + pNextLine->m_dBaselinePos - pCurrLine->m_dBaselinePos;
+					dPreviousStringBaseline = pNextLine->m_dBaselinePos;
+					bIsPassed = true;
+					break;
+				case eVerticalCrossingType::vctCurrentOutsideNext:
+				case eVerticalCrossingType::vctCurrentAboveNext:
+				case eVerticalCrossingType::vctDublicate:
+					dCurrentAdditive = dCurrBeforeSpacing + pCurrLine->m_dHeight;
+					bIsPassed = true;
+					break;
+				default:
+					break;
+				}
+
+				if (bIsPassed)
+				{
+					CreateSingleLineShape(pCurrLine);
+					CreateSingleLineShape(pNextLine);
+
+					dBeforeSpacingWithShapes += dCurrentAdditive;
+
+					nIndex++;
+					continue;
+				}
+			}
+
+			dCurrBeforeSpacing += dBeforeSpacingWithShapes;
+			dBeforeSpacingWithShapes = 0;
+
+			bool bIsSingleLineParagraph = false;
+
+			//Логика определения параметров для DetermineTextAlignmentType
+			if (pNextLine)
+			{
+				dNextBeforeSpacing = pNextLine->m_dBaselinePos - pNextLine->m_dHeight - dPreviousStringBaseline;
+				//dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(dPreviousStringBaseline);
+
+				//Высота строк должна быть примерно одинаковой
+				bIf1 = fabs(pCurrLine->m_dHeight - pNextLine->m_dHeight) < c_dTHE_SAME_STRING_Y_PRECISION_MM;
+				//расстрояние между строк тоже одинаково
+				bIf2 = fabs(dCurrBeforeSpacing - dNextBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM;
+				//или
+				bIf3 = dCurrBeforeSpacing > dNextBeforeSpacing;
+				//нет отступа
+				bIf4 = fabs(pCurrLine->m_dLeft - pNextLine->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
+				//есть отступ
+				bIf5 = pCurrLine->m_dLeft > pNextLine->m_dLeft;
+				//совпадают правые границы
+				bIf6 = fabs(pCurrLine->m_dRight - pNextLine->m_dRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
+
+				size_t nNextIndex = nIndex+1;
+				pNextNextLine = GetNextTextLine(nNextIndex);
+
+				bIf7 = (pCurrLine->m_dWidth > pNextLine->m_dWidth * c_dCOEFFICIENT_LENGTHS_LINES_IN_PARAGRAPH) &&
+						(pNextNextLine ? pCurrLine->m_dWidth > pNextNextLine->m_dWidth * c_dCOEFFICIENT_LENGTHS_LINES_IN_PARAGRAPH : true);
+
+				if (pNextNextLine)
+				{
+					//double dNextNextBeforeSpacing = pNextNextLine->CalculateBeforeSpacing(pNextLine->m_dBaselinePos);
+					double dNextNextBeforeSpacing =	pNextNextLine->m_dBaselinePos - pNextNextLine->m_dHeight - dPreviousStringBaseline;
+					if (bIf1 && (bIf2 || bIf3))
+					{
+						if (fabs(dNextBeforeSpacing - dNextNextBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM)
+						{
+							if (fabs(pNextLine->m_dHeight - pNextNextLine->m_dHeight) >= c_dTHE_SAME_STRING_Y_PRECISION_MM)
+								pNextNextLine = nullptr;
+						}
+						else
+						{
+							if (fabs(pNextLine->m_dHeight - pNextNextLine->m_dHeight) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
+							{
+								if (fabs(dNextBeforeSpacing - dNextNextBeforeSpacing) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
+									pNextNextLine = nullptr;
+								else
+									bIsSingleLineParagraph = true;
+							}
+							else
+								pNextNextLine = nullptr;
+						}
+					}
+				}
+			}
+
+			bool bIsUseNextNextLine = true;
+			CParagraph::TextAlignmentType eTextAlignmentType = CParagraph::DetermineTextAlignmentType(
+						pCurrLine, pNextLine, pNextNextLine, m_dWidth, bIsUseNextNextLine, bIsSingleLineParagraph);
+
+			auto pParagraph = std::make_shared<CParagraph>();
+
+			pParagraph->m_dLineHeight = avg_height;
+			avg_height = 0;
+			n = 0;
+
+			pParagraph->m_eTextAlignmentType = eTextAlignmentType;
+
+			if (pNextLine && !bIsSingleLineParagraph && bIf1 && (bIf2 || bIf3))
+			{
+				pParagraph->m_dLeft = std::min(pCurrLine->m_dLeft, pNextLine->m_dLeft);
+				pParagraph->m_dLeftBorder = pParagraph->m_dLeft;
+				pParagraph->m_dRight = std::max(pCurrLine->m_dRight, pNextLine->m_dRight);
+				pParagraph->m_dRightBorder = m_dWidth - pParagraph->m_dRight;
+				pParagraph->m_dWidth = pParagraph->m_dRight - pParagraph->m_dLeft;
+				if (pParagraph->m_eTextAlignmentType != CParagraph::tatByCenter)
+				{
+					pParagraph->m_bIsNeedFirstLineIndent = pCurrLine->m_dLeft > pNextLine->m_dLeft ? true : false;
+					pParagraph->m_dFirstLine = pCurrLine->m_dLeft - pNextLine->m_dLeft;
+				}
+			}
+			else
+			{
+				pParagraph->m_dLeft = pCurrLine->m_dLeft;
+				pParagraph->m_dLeftBorder = pParagraph->m_dLeft;
+				pParagraph->m_dRight = pCurrLine->m_dRight;
+				pParagraph->m_dRightBorder = m_dWidth - pParagraph->m_dRight;
+				pParagraph->m_dWidth = pCurrLine->m_dWidth;
+
+				pParagraph->m_bIsNeedFirstLineIndent = false;
+				pParagraph->m_dFirstLine = 0;
+			}
+
+			pParagraph->m_dTop = pCurrLine->m_dBaselinePos - pCurrLine->m_dHeight;
+			pParagraph->m_dBaselinePos = pCurrLine->m_dBaselinePos;
+			pParagraph->m_dHeight = pCurrLine->m_dHeight;
+
+			//размер строк во всем параграфе
+			// pParagraph->m_dLineHeight = avg_height; //pCurrLine->m_dHeight;
+			pParagraph->m_dSpaceBefore = std::max(dCurrBeforeSpacing, 0.0);
+
+			pParagraph->m_arLines.push_back(pCurrLine);
+			pParagraph->m_nNumLines++;
+
+			if (pNextLine && !bIsSingleLineParagraph && bIf1 && (bIf2 || bIf3) && (bIf4 || bIf5 || bIf6) && bIf7)
+			{
+				pParagraph->m_arLines.push_back(pNextLine);
+				pParagraph->m_nNumLines++;
+
+				if (pCurrLine->IsShadingPresent(pNextLine.get()))
+				{
+					pParagraph->m_bIsShadingPresent = true;
+					pParagraph->m_lColorOfShadingFill = pCurrLine->m_pDominantShape->m_oBrush.Color1;
+				}
+
+				//сдвигаем рабочую точку
+				nIndex++;
+				pCurrLine = pNextLine;
+				pNextLine = GetNextTextLine(nIndex, &nIndexForCheking);
+
+				dPrevBeforeSpacing = dCurrBeforeSpacing;
+				dCurrBeforeSpacing = (pCurrLine->m_dBaselinePos - pCurrLine->m_dHeight) - dPreviousStringBaseline; //pCurrLine->CalculateBeforeSpacing(dPreviousStringBaseline);;
+				dPreviousStringBaseline = pCurrLine->m_dBaselinePos;
+				double dCorrectionBeforeSpacing = dCurrBeforeSpacing;
+
+				if (bIsUseNextNextLine)
+				{
+					if (pNextLine)
+					{
+						dNextBeforeSpacing = (pNextLine->m_dBaselinePos - pCurrLine->m_dHeight) - dPreviousStringBaseline; //pCurrLine->CalculateBeforeSpacing(dPreviousStringBaseline);;
+						eCrossingType = pCurrLine->GetVerticalCrossingType(pNextLine.get());
+
+						bIf1 = fabs(pCurrLine->m_dHeight - pNextLine->m_dHeight) < c_dTHE_SAME_STRING_Y_PRECISION_MM; //высота строк должна быть примерно одинаковой
+						bIf2 = fabs(dCurrBeforeSpacing - dNextBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM; //расстрояние между строк тоже одинаково
+						bIf3 = (eCrossingType == eVerticalCrossingType::vctUnknown ||
+								eCrossingType == eVerticalCrossingType::vctNoCrossingCurrentAboveNext ||
+								eCrossingType == eVerticalCrossingType::vctNoCrossingCurrentBelowNext);
+						bIf4 = ((pParagraph->m_eTextAlignmentType == CParagraph::tatByLeftEdge && fabs(pCurrLine->m_dLeft - pNextLine->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM) ||
+								(pParagraph->m_eTextAlignmentType == CParagraph::tatByWidth && fabs(pCurrLine->m_dLeft - pNextLine->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM && (fabs(pCurrLine->m_dRight - pNextLine->m_dRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM || pCurrLine->m_dRight > pNextLine->m_dRight)) ||
+								(pParagraph->m_eTextAlignmentType == CParagraph::tatByRightEdge && fabs(pCurrLine->m_dRight - pNextLine->m_dRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM) ||
+								(pParagraph->m_eTextAlignmentType == CParagraph::tatByCenter));
+						bIf5 = (pCurrLine->m_dWidth > pNextLine->m_dWidth * c_dCOEFFICIENT_LENGTHS_LINES_IN_PARAGRAPH);
+					}
+
+					//проверим, подходят ли следующие строчки для текущего pParagraph
+					while(pNextLine &&  bIf1 && bIf2 && bIf3 && bIf4 && bIf5)
+					{
+						pParagraph->m_arLines.push_back(pNextLine);
+						pParagraph->m_nNumLines++;
+
+						pParagraph->m_dLeft = std::min(pParagraph->m_dLeft, pNextLine->m_dLeft);
+						pParagraph->m_dLeftBorder = pParagraph->m_dLeft;
+						pParagraph->m_dRight = std::max(pParagraph->m_dRight, pNextLine->m_dRight);
+						pParagraph->m_dRightBorder = m_dWidth - pParagraph->m_dRight;
+						pParagraph->m_dWidth = pParagraph->m_dRight - pParagraph->m_dLeft;
+						pParagraph->m_dBaselinePos = pNextLine->m_dBaselinePos;
+
+						if (!pCurrLine->IsShadingPresent(pNextLine.get()))
+						{
+							pParagraph->m_bIsShadingPresent = false;
+							pParagraph->m_lColorOfShadingFill = c_iWhiteColor;
+						}
+
+						//сдвигаем рабочую точку
+						nIndex++;
+						pCurrLine = pNextLine;
+						pNextLine = GetNextTextLine(nIndex, &nIndexForCheking);
+
+						dPrevBeforeSpacing = dCurrBeforeSpacing;
+						dCurrBeforeSpacing = (pCurrLine->m_dBaselinePos - pCurrLine->m_dHeight) - dPreviousStringBaseline; //pCurrLine->CalculateBeforeSpacing(dPreviousStringBaseline);
+						dPreviousStringBaseline = pCurrLine->m_dBaselinePos;
+						dCorrectionBeforeSpacing = (dCorrectionBeforeSpacing + dCurrBeforeSpacing) / 2; //наверное лучше так... текст может быть уже, чем в оригинале
+
+						if (pNextLine)
+						{
+							dNextBeforeSpacing = (pNextLine->m_dBaselinePos - pCurrLine->m_dHeight) - dPreviousStringBaseline; //pCurrLine->CalculateBeforeSpacing(dPreviousStringBaseline);;
+							eCrossingType = pCurrLine->GetVerticalCrossingType(pNextLine.get());
+
+							bIf1 = fabs(pCurrLine->m_dHeight - pNextLine->m_dHeight) < c_dTHE_SAME_STRING_Y_PRECISION_MM; //высота строк должна быть примерно одинаковой
+							bIf2 = fabs(dCurrBeforeSpacing - dNextBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM; //расстрояние между строк тоже одинаково
+							bIf3 = (eCrossingType == eVerticalCrossingType::vctUnknown ||
+									eCrossingType == eVerticalCrossingType::vctNoCrossingCurrentAboveNext ||
+									eCrossingType == eVerticalCrossingType::vctNoCrossingCurrentBelowNext);
+							bIf4 = ((pParagraph->m_eTextAlignmentType == CParagraph::tatByLeftEdge && fabs(pCurrLine->m_dLeft - pNextLine->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM) ||
+									(pParagraph->m_eTextAlignmentType == CParagraph::tatByWidth && fabs(pCurrLine->m_dLeft - pNextLine->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM && (fabs(pCurrLine->m_dRight - pNextLine->m_dRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM || pCurrLine->m_dRight > pNextLine->m_dRight)) ||
+									(pParagraph->m_eTextAlignmentType == CParagraph::tatByRightEdge && fabs(pCurrLine->m_dRight - pNextLine->m_dRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM) ||
+									(pParagraph->m_eTextAlignmentType == CParagraph::tatByCenter));
+							bIf5 = (pCurrLine->m_dWidth > pNextLine->m_dWidth * c_dCOEFFICIENT_LENGTHS_LINES_IN_PARAGRAPH);
+						}
+					}
+				}
+
+				if (eCrossingType != eVerticalCrossingType::vctUnknown &&
+						eCrossingType != eVerticalCrossingType::vctNoCrossingCurrentAboveNext &&
+						eCrossingType != eVerticalCrossingType::vctNoCrossingCurrentBelowNext)
+				{
+					CreateSingleLineShape(pNextLine);
+					nIndex++;
+				}
+
+				//коррекция
+				pParagraph->m_dLineHeight += dCorrectionBeforeSpacing;
+				pParagraph->m_dSpaceBefore = fabs(pParagraph->m_dSpaceBefore - dCorrectionBeforeSpacing);
+
+				pParagraph->RemoveHighlightColor();
+				pParagraph->MergeLines();
+			}
+			else
+			{
+				if (pCurrLine->m_pDominantShape)
+				{
+					pParagraph->m_bIsShadingPresent = true;
+					pParagraph->m_lColorOfShadingFill = pCurrLine->m_pDominantShape->m_oBrush.Color1;
+					pParagraph->RemoveHighlightColor();
+				}
+			}
+
+			if (bIsNeedParagraphToShape)
+			{
+				bool bIsSameTypeText = pPrevLine && fabs(dPrevBeforeSpacing - dCurrBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM;
+				CreateShapeFormParagraphs(pParagraph, bIsSameTypeText);
+			}
+			else
+			{
+				pParagraph->m_wsStyleId = m_pParagraphStyleManager->GetDefaultParagraphStyleId(*pParagraph);
+				m_arOutputObjects.push_back(pParagraph);
+			}
+
+			if (nIndexForCheking != c_nAntiZero)
+			{
+				nIndex = nIndexForCheking - 1;
+				nIndexForCheking = c_nAntiZero;
+			}
+		}
+
+		if (bIsNeedParagraphToShape)
+		{
+			CorrectionObjectesInShapes(m_dWidth);
+		}
+
+		using output_ptr = std::shared_ptr<COutputObject>;
+		std::sort(m_arOutputObjects.begin(), m_arOutputObjects.end(), [] (const output_ptr& a, const output_ptr& b) {
+			return a->m_dBaselinePos < b->m_dBaselinePos;
+		});
+	}
+
+	void CPage::CreateSingleLineParagraph(std::shared_ptr<CTextLine> pLine, double dPageWidth, double pBeforeSpacing)
+	{
+		auto pParagraph = std::make_shared<CParagraph>();
+		pParagraph->m_arLines.push_back(pLine);
+
+		pParagraph->m_dLeft = pLine->m_dLeft;
+		pParagraph->m_dTop = pLine->m_dBaselinePos - pLine->m_dHeight;
+		pParagraph->m_dFirstLine = 0;
+		pParagraph->m_dRight = pLine->m_dRight;
+		pParagraph->m_dRightBorder = dPageWidth - pParagraph->m_dRight;
+		pParagraph->m_dWidth = pLine->m_dWidth;
+		pParagraph->m_dHeight = pLine->m_dHeight;
+		if (pBeforeSpacing < 0)
+		{
+			pParagraph->m_dHeight += pBeforeSpacing;
+		}
+
+		pParagraph->m_dSpaceBefore = std::max(pBeforeSpacing, 0.0);
+
+		if (pLine->m_pDominantShape)
+		{
+			pParagraph->m_bIsShadingPresent = true;
+			pParagraph->m_lColorOfShadingFill = pLine->m_pDominantShape->m_oBrush.Color1;
+			pParagraph->RemoveHighlightColor();
+		}
+
+		m_arOutputObjects.push_back(std::dynamic_pointer_cast<COutputObject>(pParagraph));
+	}
+
+	void CPage::CreateSingleLineShape(std::shared_ptr<CTextLine> pLine)
+	{
+		auto pParagraph = std::make_shared<CParagraph>();
+
+		pParagraph->m_arLines.push_back(pLine);
+		pParagraph->m_dRightBorder = 0;
+
+		if (pLine->m_pDominantShape)
+		{
+			pParagraph->m_bIsShadingPresent = true;
+			pParagraph->m_lColorOfShadingFill = pLine->m_pDominantShape->m_oBrush.Color1;
+			pParagraph->RemoveHighlightColor();
+		}
+
+		auto pShape = std::make_shared<CShape>();
+		pShape->m_arOutputObjects.push_back(pParagraph);
+		pShape->m_eType = CShape::eShapeType::stTextBox;
+		pShape->m_dLeft = pLine->m_dLeft;
+		pShape->m_dTop = pLine->m_dBaselinePos - pLine->m_dHeight;
+		pShape->m_dWidth = pLine->m_dWidth;
+		pShape->m_dHeight = pLine->m_dHeight;
+		pShape->m_bIsBehindDoc = false;
+
+		m_arOutputObjects.push_back(pShape);
+	}
+
+	void CPage::CreateShapeFormParagraphs(std::shared_ptr<CParagraph> pParagraph, bool bIsSameTypeText)
+	{
+		if (!pParagraph)
+			return;
+
+		bool bIsShapesPresent = false;
+		std::shared_ptr<CShape> pBackShape = nullptr;
+
+		for (size_t i = 0; i < m_arOutputObjects.size(); ++i)
+		{
+			if (m_arOutputObjects[i]->m_eType != COutputObject::eOutputType::etShape)
+				continue;
+
+			bIsShapesPresent = true;
+			pBackShape = std::dynamic_pointer_cast<CShape>(m_arOutputObjects[i]);
+		}
+
+		std::shared_ptr<CShape> pShape;
+		if (bIsSameTypeText && bIsShapesPresent)
+		{
+			pShape = pBackShape;
+			pShape->m_dHeight = pParagraph->m_dLineHeight * pParagraph->m_nNumLines + pParagraph->m_dSpaceBefore;
+		}
+		else
+		{
+			pShape = std::make_shared<CShape>();
+			pParagraph->m_dSpaceBefore = 0;
+			pShape->m_dHeight = pParagraph->m_dLineHeight * pParagraph->m_nNumLines;
+		}
+
+		pShape->m_dLeft = pShape->m_dLeft > 0 ? std::min(pShape->m_dLeft, pParagraph->m_dLeft) : pParagraph->m_dLeft;
+		pShape->m_dTop = pShape->m_dTop > 0 ? std::min(pShape->m_dTop, pParagraph->m_dTop) : pParagraph->m_dTop;
+		pShape->m_dRight = pShape->m_dRight > 0 ? std::max(pShape->m_dRight, pParagraph->m_dRight) : pParagraph->m_dRight;
+		pShape->m_dBaselinePos = pShape->m_dBaselinePos > 0 ? std::max(pShape->m_dBaselinePos, pParagraph->m_dBaselinePos) : pParagraph->m_dBaselinePos;
+		pShape->m_dWidth = fabs(pShape->m_dRight - pShape->m_dLeft);
+
+		pParagraph->m_dLeftBorder = 0;
+		pParagraph->m_dRightBorder = 0;
+
+		pShape->m_arOutputObjects.push_back(pParagraph);
+		pShape->m_eType = CShape::eShapeType::stTextBox;
+		pShape->m_bIsBehindDoc = false;
+
+		if (!bIsSameTypeText)
+		{
+			m_arOutputObjects.push_back(pShape);
+		}
+	}
+
+	void CPage::CorrectionObjectesInShapes(double dPageWidth)
+	{
+		for (size_t i = 0; i <  m_arOutputObjects.size(); ++i)
+		{
+			if (m_arOutputObjects[i]->m_eType != COutputObject::eOutputType::etShape)
+			{
+				continue;
+			}
+
+			auto pShape = std::dynamic_pointer_cast<CShape>(m_arOutputObjects[i]);
+
+			if (!pShape ||
+					pShape->m_eType != CShape::eShapeType::stTextBox ||
+					pShape->m_arOutputObjects.empty())
+			{
+				continue;
+			}
+
+			for (size_t j = 0; j < pShape->m_arOutputObjects.size(); ++j)
+			{
+				auto pObj = pShape->m_arOutputObjects[j];
+
+				switch(pObj->m_eType)
+				{
+				case COutputObject::eOutputType::etParagraph:
+				{
+					auto pParagraph = std::dynamic_pointer_cast<CParagraph>(m_arOutputObjects[i]);
+
+					if (pParagraph->m_dLeft > pShape->m_dLeft && pParagraph->m_nNumLines == 1)
+					{
+						pParagraph->m_bIsNeedFirstLineIndent = true;
+						pParagraph->m_dFirstLine = pParagraph->m_dLeft - pShape->m_dLeft;
+						pParagraph->m_dLeft = 0;
+					}
+
+					pParagraph->m_dLeftBorder = pParagraph->m_dLeft > pShape->m_dLeft ? fabs(pParagraph->m_dLeft - pShape->m_dLeft) : 0;
+					pParagraph->m_dRightBorder = pParagraph->m_dRight < pShape->m_dRight ? fabs(pShape->m_dRight - pParagraph->m_dRight) : 0;
+				}
+					break;
+				default:
+					break;
+				}
+
+			}
+		}
+	}
+
+	std::shared_ptr<CTextLine> CPage::GetNextTextLine(size_t& nCurrentIndex, size_t* pIndexForCheking)
+	{
+		std::shared_ptr<CTextLine> pLine;
+		for (size_t nIndex = nCurrentIndex + 1; nIndex < m_arTextLines.size(); ++nIndex)
+		{
+			pLine = m_arTextLines[nIndex];
+			bool bIf1 = pLine == nullptr;
+			bool bIf2 = pIndexForCheking && pLine->m_iNumDuplicates > 0;
+
+			if (bIf1 || bIf2)
+			{
+				if (bIf2)
+				{
+					if (*pIndexForCheking == c_nAntiZero)
+						*pIndexForCheking = nIndex;
+				}
+
+				nCurrentIndex++; //note изменяем входной индекс, чтобы не выбирать те же строки
+				pLine = nullptr;
+				continue;
+			}
+			else
+				break;
+		}
+		return pLine;
+	}
+
+	std::shared_ptr<CTextLine> CPage::GetPrevTextLine(size_t nCurrentIndex)
+	{
+		std::shared_ptr<CTextLine> pLine = nullptr;
+
+		if (nCurrentIndex)
+		{
+			for (size_t nIndex = nCurrentIndex - 1; nIndex > 0; --nIndex)
+			{
+				pLine = m_arTextLines[nIndex];
+
+				if (!pLine)
+				{
+					pLine = nullptr;
+					continue;
+				}
+				else
+					break;
+			}
+		}
+		return pLine;
+	}
+
 
 	void CPage::WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter)
 	{

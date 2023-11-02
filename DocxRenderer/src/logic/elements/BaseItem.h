@@ -63,26 +63,6 @@ namespace NSDocxRenderer
 		bool AreObjectsNoCrossingByHorizontally(const CBaseItem* pObj) const noexcept;
 
 		CBaseItem& operator=(const CBaseItem& oSrc);
-
-		template <typename T>
-		static void SortByLeft(std::vector<T*>& oArray)
-		{
-			std::sort(oArray.begin(), oArray.end(), [](T* a, T* b) {
-				return a->IsCurrentLeftOfNext(b);
-			});
-		}
-
-		template <typename T>
-		static void SortByBaseline(std::vector<T*>& oArray)
-		{
-			std::sort(oArray.begin(), oArray.end(), [](T* a, T* b) {
-				return a->IsCurrentAboveOfNext(b);
-			});
-		}
-
-	private:
-		bool IsCurrentLeftOfNext(const CBaseItem* oSrc);
-		bool IsCurrentAboveOfNext(const CBaseItem* oSrc);
 	};
 
 	class COutputObject : public CBaseItem

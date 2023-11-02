@@ -61,19 +61,19 @@ namespace NSDocxRenderer
 		for(auto& path_command : arData)
 			switch (path_command.type)
 			{
-			case CVectorGraphics::vgtMove:
+			case CVectorGraphics::eVectorGraphicsType::vgtMove:
 				nPeacks++;
 				break;
 
-			case CVectorGraphics::vgtLine:
+			case CVectorGraphics::eVectorGraphicsType::vgtLine:
 				nPeacks++;
 				break;
 
-			case CVectorGraphics::vgtCurve:
+			case CVectorGraphics::eVectorGraphicsType::vgtCurve:
 				nCurves++;
 				break;
 
-			case CVectorGraphics::vgtClose:
+			case CVectorGraphics::eVectorGraphicsType::vgtClose:
 			default:
 				break;
 			}
@@ -159,19 +159,19 @@ namespace NSDocxRenderer
 		{
 			switch (path_command.type)
 			{
-			case CVectorGraphics::vgtMove:
+			case CVectorGraphics::eVectorGraphicsType::vgtMove:
 				oWriter.WriteString(L"<a:moveTo>");
 				break;
 
-			case CVectorGraphics::vgtLine:
+			case CVectorGraphics::eVectorGraphicsType::vgtLine:
 				oWriter.WriteString(L"<a:lnTo>");
 				break;
 
-			case CVectorGraphics::vgtCurve:
+			case CVectorGraphics::eVectorGraphicsType::vgtCurve:
 				oWriter.WriteString(L"<a:cubicBezTo>");
 				break;
 
-			case CVectorGraphics::vgtClose:
+			case CVectorGraphics::eVectorGraphicsType::vgtClose:
 			default:
 				break;
 			}
@@ -190,19 +190,19 @@ namespace NSDocxRenderer
 
 			switch (path_command.type)
 			{
-			case CVectorGraphics::vgtMove:
+			case CVectorGraphics::eVectorGraphicsType::vgtMove:
 				oWriter.WriteString(L"</a:moveTo>");
 				break;
 
-			case CVectorGraphics::vgtLine:
+			case CVectorGraphics::eVectorGraphicsType::vgtLine:
 				oWriter.WriteString(L"</a:lnTo>");
 				break;
 
-			case CVectorGraphics::vgtCurve:
+			case CVectorGraphics::eVectorGraphicsType::vgtCurve:
 				oWriter.WriteString(L"</a:cubicBezTo>");
 				break;
 
-			case CVectorGraphics::vgtClose:
+			case CVectorGraphics::eVectorGraphicsType::vgtClose:
 			default:
 				break;
 			}
@@ -277,366 +277,334 @@ namespace NSDocxRenderer
 		}
 	}
 
-	bool CShape::IsItFitLine()
+	bool CShape::IsItFitLine() const noexcept
 	{
 		return (m_eGraphicsType == eGraphicsType::gtRectangle && (m_eSimpleLineType == eSimpleLineType::sltHDot || m_eSimpleLineType == eSimpleLineType::sltHDash || m_eSimpleLineType == eSimpleLineType::sltHLongDash)) ||
 				(m_eGraphicsType == eGraphicsType::gtCurve &&  m_eSimpleLineType == eSimpleLineType::sltHWave);
 	}
 
-	bool CShape::IsCorrelated(const CShape *pShape)
+	bool CShape::IsCorrelated(std::shared_ptr<const CShape> pShape) const noexcept
 	{
 		return m_eGraphicsType == pShape->m_eGraphicsType;
 	}
 
-	void CShape::ChangeGeometryOfDesiredShape(CShape *pShape)
+	void CShape::RecalcWithNewItem(const CBaseItem* pObj)
 	{
-		if (!pShape)
+		if(!pObj)
+			return;
+
+		const CShape* shape = dynamic_cast<const CShape*>(pObj);
+		if(!shape)
 		{
+			CBaseItem::RecalcWithNewItem(pObj);
 			return;
 		}
 
-		CShape* pModObject;
-		CShape* pDataObject;
-
-		if (!pShape)
+		if(m_dTop == shape->m_dTop ||
+				(m_dTop < shape->m_dTop && m_dHeight > shape->m_dHeight) ||
+				(m_dTop > shape->m_dTop && m_dHeight < shape->m_dHeight))
 		{
-			pModObject = this;
-			pDataObject = pShape;
+			m_dHeight = std::max(m_dHeight, shape->m_dHeight);
 		}
-		else if (m_bIsNotNecessaryToUse)
-		{
-			pModObject = pShape;
-			pDataObject = this;
-		}
+		else if(m_dTop < shape->m_dTop)
+			m_dHeight += shape->m_dHeight + shape->m_dTop - m_dBaselinePos;
 		else
-		{
-			return;
-		}
+			m_dHeight += shape->m_dHeight + shape->m_dBaselinePos - m_dTop;
 
-		double dModRight = pModObject->m_dLeft + pModObject->m_dWidth;
-		double dDataRight = pDataObject->m_dLeft + pDataObject->m_dWidth;
-		double dModBottom = pModObject->m_dTop + pModObject->m_dHeight;
-		double dDataBottom = pDataObject->m_dTop + pDataObject->m_dHeight;
-
-		if (pModObject->m_dTop == pDataObject->m_dTop ||
-				(pModObject->m_dTop < pDataObject->m_dTop && pModObject->m_dHeight > pDataObject->m_dHeight) ||
-				(pModObject->m_dTop > pDataObject->m_dTop && pModObject->m_dHeight < pDataObject->m_dHeight))
+		if(m_dLeft == shape->m_dLeft ||
+			(m_dLeft < shape->m_dLeft && m_dRight > shape->m_dRight) ||
+			(m_dLeft > shape->m_dLeft && m_dRight < shape->m_dRight))
 		{
-			pModObject->m_dHeight = std::max(pModObject->m_dHeight, pDataObject->m_dHeight);
+			m_dWidth = std::max(m_dWidth, shape->m_dWidth);
 		}
-		else if (pModObject->m_dTop < pDataObject->m_dTop)
-		{
-			pModObject->m_dHeight += pDataObject->m_dHeight + pDataObject->m_dTop - dModBottom;
-		}
+		else if(m_dLeft < shape->m_dLeft)
+			m_dWidth += shape->m_dWidth + shape->m_dLeft - m_dRight;
 		else
-		{
-			pModObject->m_dHeight += pDataObject->m_dHeight + dDataBottom - pModObject->m_dTop;
-		}
+			m_dWidth += shape->m_dWidth + shape->m_dRight - m_dLeft;
 
-		if (pModObject->m_dLeft == pDataObject->m_dLeft ||
-				(pModObject->m_dLeft < pDataObject->m_dLeft && dModRight > dDataRight) ||
-				(pModObject->m_dLeft > pDataObject->m_dLeft && dModRight < dDataRight))
-		{
-			pModObject->m_dWidth = std::max(pModObject->m_dWidth, pDataObject->m_dWidth);
-		}
-		else if (pModObject->m_dLeft < pDataObject->m_dLeft)
-		{
-			pModObject->m_dWidth += pDataObject->m_dWidth + pDataObject->m_dLeft - dModRight;
-		}
-		else
-		{
-			pModObject->m_dWidth += pDataObject->m_dWidth + dDataRight - pModObject->m_dLeft;
-		}
+		// m_dWidth иногда меняет знак на "-"
+		m_dHeight = fabs(m_dHeight);
+		m_dWidth = fabs(m_dWidth);
 
-		//note m_dWidth иногда меняет знак на "-"
-		pModObject->m_dHeight = fabs(pModObject->m_dHeight);
-		pModObject->m_dWidth = fabs(pModObject->m_dWidth);
-		pModObject->m_dLeft = std::min(pModObject->m_dLeft, pDataObject->m_dLeft);
-		pModObject->m_dTop = std::min(pModObject->m_dTop, pDataObject->m_dTop);
-		pModObject->m_dBaselinePos = pModObject->m_dTop + pModObject->m_dHeight;
-		pModObject->m_dRight = pModObject->m_dLeft + pModObject->m_dWidth;
+		m_dLeft = std::min(m_dLeft, shape->m_dLeft);
+		m_dTop = std::min(m_dTop, shape->m_dTop);
+
+		m_dBaselinePos = m_dTop + m_dHeight;
+		m_dRight = m_dLeft + m_dWidth;
 	}
 
-	bool CShape::IsPeak()
+	bool CShape::IsPeak() const noexcept
 	{
 		return m_eSimpleLineType == eSimpleLineType::sltHDot || m_eSimpleLineType == eSimpleLineType::sltVDot;
 	}
 
-	bool CShape::IsSide()
+	bool CShape::IsSide() const noexcept
 	{
 		return m_eSimpleLineType == eSimpleLineType::sltHLongDash || m_eSimpleLineType == eSimpleLineType::sltVLongDash;
 	}
 
-	void CShape::DetermineLineType(CShape *pShape, bool bIsLast)
+	void CShape::CheckLineType(std::shared_ptr<CShape>& pFirstShape) noexcept
 	{
-		if (!pShape)
+		if(!pFirstShape)
+			return;
+
+		if (pFirstShape->m_eLineType == eLineType::ltUnknown && pFirstShape->m_eSimpleLineType == eSimpleLineType::sltHLongDash)
+			pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltThick : eLineType::ltSingle;
+
+		else if (pFirstShape->m_eLineType == eLineType::ltUnknown && pFirstShape->m_eSimpleLineType == eSimpleLineType::sltHWave)
+			pFirstShape->m_eLineType = pFirstShape->m_oPen.Size > 0.3 ? eLineType::ltWavyHeavy : eLineType::ltWave;
+	}
+	void CShape::CheckLineType(std::shared_ptr<CShape>& pFirstShape, std::shared_ptr<CShape>& pSecondShape, bool bIsLast) noexcept
+	{
+		if(!pFirstShape || !pSecondShape)
+			return;
+
+		if (!pFirstShape->IsItFitLine() || !pSecondShape->IsItFitLine() || !pFirstShape->IsCorrelated(pSecondShape) ||
+			fabs(pFirstShape->m_dHeight - pSecondShape->m_dHeight) > c_dGRAPHICS_ERROR_IN_LINES_MM) // линия должна быть одного размера по высоте
 		{
-			//Если нашелся один шейп в линии
-			if (m_eLineType == eLineType::ltUnknown && m_eSimpleLineType == eSimpleLineType::sltHLongDash)
-			{
-				m_eLineType = m_dHeight > 0.3 ? eLineType::ltThick : eLineType::ltSingle;
-			}
-			else if (m_eLineType == eLineType::ltUnknown && m_eSimpleLineType == eSimpleLineType::sltHWave)
-			{
-				m_eLineType = m_oPen.Size > 0.3 ? eLineType::ltWavyHeavy : eLineType::ltWave;
-			}
 			return;
 		}
 
-		if (!IsItFitLine() || !pShape->IsItFitLine() || !IsCorrelated(pShape) ||
-				fabs(m_dHeight - pShape->m_dHeight) > c_dGRAPHICS_ERROR_IN_LINES_MM) //линия должна быть одного размера по высоте
+		// проверка на двойную линию
+		if(pFirstShape->m_eLineType == eLineType::ltDouble || pFirstShape->m_eLineType == eLineType::ltWavyDouble)
 		{
-			return;
-		}
-
-		//Проверка на двойную линию
-		if (m_eLineType == eLineType::ltDouble || m_eLineType == eLineType::ltWavyDouble)
-		{
-			if (m_eLineType == eLineType::ltDouble)
+			if(pFirstShape->m_eLineType == eLineType::ltDouble)
 			{
-				if (m_dTop < pShape->m_dTop)
+				if(pFirstShape->m_dTop < pSecondShape->m_dTop)
 				{
-					m_eLineType = eLineType::ltDouble;
-					pShape->m_bIsNotNecessaryToUse = true;
-					ChangeGeometryOfDesiredShape(pShape);
+					pFirstShape->m_eLineType = eLineType::ltDouble;
+					pFirstShape->RecalcWithNewItem(pSecondShape.get());
+					pSecondShape = nullptr;
 				}
 				else
 				{
-					pShape->m_eLineType = eLineType::ltDouble;
-					m_bIsNotNecessaryToUse = true;
-					ChangeGeometryOfDesiredShape(pShape);
+					pSecondShape->m_eLineType = eLineType::ltDouble;
+					pSecondShape->RecalcWithNewItem(pFirstShape.get());
+					pFirstShape = nullptr;
 				}
 			}
-			else if (m_eLineType == eLineType::ltWavyDouble)
+			else if(pFirstShape->m_eLineType == eLineType::ltWavyDouble)
 			{
-				if (m_dTop < pShape->m_dTop)
+				if(pFirstShape->m_dTop < pSecondShape->m_dTop)
 				{
-					m_eLineType = eLineType::ltWavyDouble;
-					pShape->m_bIsNotNecessaryToUse = true;
-					ChangeGeometryOfDesiredShape(pShape);
+					pFirstShape->m_eLineType = eLineType::ltWavyDouble;
+					pFirstShape->RecalcWithNewItem(pSecondShape.get());
+					pSecondShape = nullptr;
 				}
 				else
 				{
-					pShape->m_eLineType = eLineType::ltWavyDouble;
-					m_bIsNotNecessaryToUse = true;
-					ChangeGeometryOfDesiredShape(pShape);
+					pSecondShape->m_eLineType = eLineType::ltWavyDouble;
+					pSecondShape->RecalcWithNewItem(pFirstShape.get());
+					pFirstShape = nullptr;
 				}
 			}
 			return;
 		}
-		else if (fabs(m_dTop - pShape->m_dTop) < c_dGRAPHICS_ERROR_IN_LINES_MM * 5 &&
-				 fabs(m_dWidth - pShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM &&
-				 fabs(m_dLeft - pShape->m_dLeft) < c_dGRAPHICS_ERROR_IN_LINES_MM)
+		else if (fabs(pFirstShape->m_dTop - pSecondShape->m_dTop) < c_dGRAPHICS_ERROR_IN_LINES_MM * 5 &&
+				 fabs(pFirstShape->m_dWidth - pSecondShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM &&
+				 fabs(pFirstShape->m_dLeft - pSecondShape->m_dLeft) < c_dGRAPHICS_ERROR_IN_LINES_MM)
 		{
 			//Условие первого определения
-			if (m_eSimpleLineType == eSimpleLineType::sltHLongDash && pShape->m_eSimpleLineType == eSimpleLineType::sltHLongDash)
+			if (pFirstShape->m_eSimpleLineType == eSimpleLineType::sltHLongDash && pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHLongDash)
 			{
-				if (m_dTop < pShape->m_dTop)
+				if (pFirstShape->m_dTop < pSecondShape->m_dTop)
 				{
-					m_eLineType = eLineType::ltDouble;
-					pShape->m_bIsNotNecessaryToUse = true;
-					ChangeGeometryOfDesiredShape(pShape);
+					pFirstShape->m_eLineType = eLineType::ltDouble;
+					pFirstShape->RecalcWithNewItem(pSecondShape.get());
+					pSecondShape = nullptr;
 				}
 				else
 				{
-					pShape->m_eLineType = eLineType::ltDouble;
-					m_bIsNotNecessaryToUse = true;
-					ChangeGeometryOfDesiredShape(pShape);
+					pSecondShape->m_eLineType = eLineType::ltDouble;
+					pSecondShape->RecalcWithNewItem(pFirstShape.get());
+					pFirstShape = nullptr;
 				}
 			}
-			else if (m_eSimpleLineType == eSimpleLineType::sltHWave && pShape->m_eSimpleLineType == eSimpleLineType::sltHWave)
+			else if (pFirstShape->m_eSimpleLineType == eSimpleLineType::sltHWave && pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHWave)
 			{
-				if (m_dTop < pShape->m_dTop)
+				if (pFirstShape->m_dTop < pSecondShape->m_dTop)
 				{
-					m_eLineType = eLineType::ltWavyDouble;
-					pShape->m_bIsNotNecessaryToUse = true;
-					ChangeGeometryOfDesiredShape(pShape);
+					pFirstShape->m_eLineType = eLineType::ltWavyDouble;
+					pFirstShape->RecalcWithNewItem(pSecondShape.get());
+					pSecondShape = nullptr;
 				}
 				else
 				{
-					pShape->m_eLineType = eLineType::ltWavyDouble;
-					m_bIsNotNecessaryToUse = true;
-					ChangeGeometryOfDesiredShape(pShape);
+					pSecondShape->m_eLineType = eLineType::ltWavyDouble;
+					pSecondShape->RecalcWithNewItem(pFirstShape.get());
+					pFirstShape = nullptr;
 				}
 			}
 			return;
 		}
-		else if (fabs(m_dTop - pShape->m_dTop) > c_dGRAPHICS_ERROR_IN_LINES_MM)
+		else if (fabs(pFirstShape->m_dTop - pSecondShape->m_dTop) > c_dGRAPHICS_ERROR_IN_LINES_MM)
 		{
-			//все должно быть на одной линии
+			// все должно быть на одной линии
 			return;
 		}
 
-		//Теперь считаем, что графика находится на одной линии
-		if (fabs(m_dLeft + m_dWidth - pShape->m_dLeft) > c_dGRAPHICS_ERROR_IN_LINES_MM * 5)
+		// теперь считаем, что графика находится на одной линии
+		if (fabs(pFirstShape->m_dLeft +pFirstShape->m_dWidth - pSecondShape->m_dLeft) > c_dGRAPHICS_ERROR_IN_LINES_MM * 5)
 		{
-			//расстояние между объектами на одной линии должно быть небольшим
-			if (m_eLineType == eLineType::ltUnknown && m_eSimpleLineType == eSimpleLineType::sltHLongDash)
-			{
-				m_eLineType = m_dHeight > 0.3 ? eLineType::ltThick : eLineType::ltSingle;
-			}
-			else if (m_eLineType == eLineType::ltUnknown && m_eSimpleLineType == eSimpleLineType::sltHWave)
-			{
-				m_eLineType = m_oPen.Size > 0.3 ? eLineType::ltWavyHeavy : eLineType::ltWave;
-			}
+			// расстояние между объектами на одной линии должно быть небольшим
+			if (pFirstShape->m_eLineType == eLineType::ltUnknown && pFirstShape->m_eSimpleLineType == eSimpleLineType::sltHLongDash)
+				pFirstShape->m_eLineType =pFirstShape-> m_dHeight > 0.3 ? eLineType::ltThick : eLineType::ltSingle;
+
+			else if (pFirstShape->m_eLineType == eLineType::ltUnknown && pFirstShape->m_eSimpleLineType == eSimpleLineType::sltHWave)
+				pFirstShape->m_eLineType = pFirstShape->m_oPen.Size > 0.3 ? eLineType::ltWavyHeavy : eLineType::ltWave;
+
 			return;
 		}
 
 		if (bIsLast)
 		{
-			//note Если имеем всего 2 шейпа в линии, то нужно специально определять тип
-			if (m_eLineType == eLineType::ltUnknown)
+			// если имеем всего 2 шейпа в линии, то нужно специально определять тип
+			if (pFirstShape->m_eLineType == eLineType::ltUnknown)
 			{
-				switch (m_eSimpleLineType)
+				switch (pFirstShape->m_eSimpleLineType)
 				{
 				case eSimpleLineType::sltHDot:
-					if (pShape->m_eSimpleLineType == eSimpleLineType::sltHDot)
-					{
-						m_eLineType = m_dHeight > 0.3 ? eLineType::ltDottedHeavy : eLineType::ltDotted;
-					}
+					if (pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHDot)
+						pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltDottedHeavy : eLineType::ltDotted;
+
 					break;
 
 				case eSimpleLineType::sltHDash:
-					if (pShape->m_eSimpleLineType == eSimpleLineType::sltHDash)
-					{
-						m_eLineType = m_dHeight > 0.3 ? eLineType::ltDashedHeavy : eLineType::ltDash;
-					}
-					else if (pShape->m_eSimpleLineType == eSimpleLineType::sltHDot)
-					{
-						m_eLineType = m_dHeight > 0.3 ? eLineType::ltDashDotHeavy : eLineType::ltDotDash;
-					}
+					if (pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHDash)
+						pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltDashedHeavy : eLineType::ltDash;
+
+					else if (pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHDot)
+						pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltDashDotHeavy : eLineType::ltDotDash;
+
 					break;
 
 				case eSimpleLineType::sltHLongDash:
-					if (fabs(m_dLeft + m_dWidth - pShape->m_dLeft) < 0.7)
-					{
-						m_eLineType = m_dHeight > 0.3 ? eLineType::ltThick : eLineType::ltSingle;
-					}
+					if (fabs(pFirstShape->m_dLeft + pFirstShape->m_dWidth - pSecondShape->m_dLeft) < 0.7)
+						pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltThick : eLineType::ltSingle;
+
 					else
-					{
-						m_eLineType = m_dHeight > 0.3 ? eLineType::ltDashLongHeavy : eLineType::ltDashLong;
-					}
+						pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltDashLongHeavy : eLineType::ltDashLong;
+
 					break;
 
 				case eSimpleLineType::sltHWave:
-					if (pShape->m_eSimpleLineType == eSimpleLineType::sltHWave)
-					{
-						m_eLineType = m_oPen.Size > 0.3 ? eLineType::ltWavyHeavy : eLineType::ltWave;
-					}
+					if (pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHWave)
+						pFirstShape->m_eLineType = pFirstShape->m_oPen.Size > 0.3 ? eLineType::ltWavyHeavy : eLineType::ltWave;
+
 					break;
 				default:
 					break;
 				}
 			}
 
-			pShape->m_bIsNotNecessaryToUse = true;
-			ChangeGeometryOfDesiredShape(pShape);
+			pFirstShape->RecalcWithNewItem(pSecondShape.get());
+			pSecondShape = nullptr;
 			return;
 		}
 
-		bool bIsConditionPassed = false;
-
-		switch (m_eSimpleLineType)
+		bool passed = false;
+		switch (pFirstShape->m_eSimpleLineType)
 		{
 		case eSimpleLineType::sltHDot:
-			if (pShape->m_eSimpleLineType == eSimpleLineType::sltHDot)
+			if (pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHDot)
 			{
-				if ((m_eLineType == eLineType::ltUnknown || m_eLineType == eLineType::ltDotted ||
-					 m_eLineType == eLineType::ltDottedHeavy) && pShape->m_eLineType == eLineType::ltUnknown)
+				if ((pFirstShape->m_eLineType == eLineType::ltUnknown || pFirstShape->m_eLineType == eLineType::ltDotted ||
+					pFirstShape->m_eLineType == eLineType::ltDottedHeavy) && pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
-					m_eLineType = m_dHeight > 0.3 ? eLineType::ltDottedHeavy : eLineType::ltDotted;
-					bIsConditionPassed = true;
+					pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltDottedHeavy : eLineType::ltDotted;
+					passed = true;
 				}
-				else if ((m_eLineType == eLineType::ltDotDash || m_eLineType == eLineType::ltDashDotHeavy ||
-						  m_eLineType == eLineType::ltDotDotDash || m_eLineType == eLineType::ltDashDotDotHeavy) &&
-						 pShape->m_eLineType == eLineType::ltUnknown)
+				else if ((pFirstShape->m_eLineType == eLineType::ltDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotHeavy ||
+					pFirstShape->m_eLineType == eLineType::ltDotDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotDotHeavy) &&
+					pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
-					m_eLineType = m_dHeight > 0.3 ? eLineType::ltDashDotDotHeavy : eLineType::ltDotDotDash;
-					m_eSimpleLineType = eSimpleLineType::sltHDot;
-					bIsConditionPassed = true;
+					pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltDashDotDotHeavy : eLineType::ltDotDotDash;
+					pFirstShape->m_eSimpleLineType = eSimpleLineType::sltHDot;
+					passed = true;
 				}
 			}
-			else if (pShape->m_eSimpleLineType == eSimpleLineType::sltHDash)
+			else if (pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHDash)
 			{
-				if ((m_eLineType == eLineType::ltDotDash || m_eLineType == eLineType::ltDashDotHeavy) &&
-						pShape->m_eLineType == eLineType::ltUnknown)
+				if ((pFirstShape->m_eLineType == eLineType::ltDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotHeavy) &&
+					pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
-					m_eSimpleLineType = eSimpleLineType::sltHDash;
-					bIsConditionPassed = true;
+					pFirstShape->m_eSimpleLineType = eSimpleLineType::sltHDash;
+					passed = true;
 				}
-				else if ((m_eLineType == eLineType::ltDotDotDash || m_eLineType == eLineType::ltDashDotDotHeavy) &&
-						 pShape->m_eLineType == eLineType::ltUnknown)
+				else if ((pFirstShape->m_eLineType == eLineType::ltDotDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotDotHeavy) &&
+					pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
-					m_eSimpleLineType = eSimpleLineType::sltHDash;
-					bIsConditionPassed = true;
+					pFirstShape->m_eSimpleLineType = eSimpleLineType::sltHDash;
+					passed = true;
 				}
 			}
 			break;
+
 		case eSimpleLineType::sltHDash:
-			if (pShape->m_eSimpleLineType == eSimpleLineType::sltHDash)
+			if (pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHDash)
 			{
-				if ((m_eLineType == eLineType::ltUnknown || m_eLineType == eLineType::ltDash ||
-					 m_eLineType == eLineType::ltDashedHeavy) && pShape->m_eLineType == eLineType::ltUnknown)
+				if ((pFirstShape->m_eLineType == eLineType::ltUnknown || pFirstShape->m_eLineType == eLineType::ltDash ||
+					 pFirstShape->m_eLineType == eLineType::ltDashedHeavy) && pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
-					m_eLineType = m_dHeight > 0.3 ? eLineType::ltDashedHeavy : eLineType::ltDash;
-					bIsConditionPassed = true;
+					pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltDashedHeavy : eLineType::ltDash;
+					passed = true;
 				}
-				else if ((m_eLineType == eLineType::ltDotDash || m_eLineType == eLineType::ltDashDotHeavy) &&
-						 pShape->m_eLineType == eLineType::ltUnknown)
+				else if ((pFirstShape->m_eLineType == eLineType::ltDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotHeavy) &&
+						 pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
-					bIsConditionPassed = true;
+					passed = true;
 				}
 			}
-			else if (pShape->m_eSimpleLineType == eSimpleLineType::sltHDot)
+			else if (pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHDot)
 			{
-				if ((m_eLineType == eLineType::ltUnknown || m_eLineType == eLineType::ltDotDash ||
-					 m_eLineType == eLineType::ltDashDotHeavy) && pShape->m_eLineType == eLineType::ltUnknown)
+				if ((pFirstShape->m_eLineType == eLineType::ltUnknown || pFirstShape->m_eLineType == eLineType::ltDotDash ||
+					 pFirstShape->m_eLineType == eLineType::ltDashDotHeavy) && pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
-					m_eLineType = m_dHeight > 0.3 ? eLineType::ltDashDotHeavy : eLineType::ltDotDash;
-					m_eSimpleLineType = eSimpleLineType::sltHDot;
-					bIsConditionPassed = true;
+					pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltDashDotHeavy : eLineType::ltDotDash;
+					pFirstShape->m_eSimpleLineType = eSimpleLineType::sltHDot;
+					passed = true;
 				}
-				else if ((m_eLineType == eLineType::ltDotDotDash || m_eLineType == eLineType::ltDashDotDotHeavy) &&
-						 pShape->m_eLineType == eLineType::ltUnknown)
+				else if ((pFirstShape->m_eLineType == eLineType::ltDotDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotDotHeavy) &&
+						 pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
-					m_eSimpleLineType = eSimpleLineType::sltHDot;
-					bIsConditionPassed = true;
+					pFirstShape->m_eSimpleLineType = eSimpleLineType::sltHDot;
+					passed = true;
 				}
 			}
 			break;
 
 		case eSimpleLineType::sltHLongDash:
-			if (fabs(m_dLeft + m_dWidth - pShape->m_dLeft) < 0.7 ||
-					m_eLineType == eLineType::ltThick || m_eLineType == eLineType::ltSingle)
+			if (fabs(pFirstShape->m_dLeft +pFirstShape->m_dWidth - pSecondShape->m_dLeft) < 0.7 ||
+					pFirstShape->m_eLineType == eLineType::ltThick || pFirstShape->m_eLineType == eLineType::ltSingle)
 			{
-				m_eLineType = m_dHeight > 0.3 ? eLineType::ltThick : eLineType::ltSingle;
-				bIsConditionPassed = true;
+				pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltThick : eLineType::ltSingle;
+				passed = true;
 			}
-			else if ((m_eLineType == eLineType::ltUnknown || m_eLineType == eLineType::ltDashLong ||
-					  m_eLineType == eLineType::ltDashLongHeavy) && pShape->m_eLineType == eLineType::ltUnknown)
+			else if ((pFirstShape->m_eLineType == eLineType::ltUnknown || pFirstShape->m_eLineType == eLineType::ltDashLong ||
+					  pFirstShape->m_eLineType == eLineType::ltDashLongHeavy) && pSecondShape->m_eLineType == eLineType::ltUnknown)
 			{
-				m_eLineType = m_dHeight > 0.3 ? eLineType::ltDashLongHeavy : eLineType::ltDashLong;
-				bIsConditionPassed = true;
+				pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltDashLongHeavy : eLineType::ltDashLong;
+				passed = true;
 			}
 			break;
 
 		case eSimpleLineType::sltHWave:
-			if ((m_eLineType == eLineType::ltUnknown || m_eLineType == eLineType::ltWave ||
-				 m_eLineType == eLineType::ltWavyHeavy || m_eLineType == eLineType::ltWavyDouble) &&
-					pShape->m_eLineType == eLineType::ltUnknown)
+			if ((pFirstShape->m_eLineType == eLineType::ltUnknown || pFirstShape->m_eLineType == eLineType::ltWave ||
+				 pFirstShape->m_eLineType == eLineType::ltWavyHeavy || pFirstShape->m_eLineType == eLineType::ltWavyDouble) &&
+					pSecondShape->m_eLineType == eLineType::ltUnknown)
 			{
-				m_eLineType = m_oPen.Size > 0.3 ? eLineType::ltWavyHeavy : eLineType::ltWave;
-				bIsConditionPassed = true;
+				pFirstShape->m_eLineType = pFirstShape->m_oPen.Size > 0.3 ? eLineType::ltWavyHeavy : eLineType::ltWave;
+				passed = true;
 			}
 			break;
 		default:
 			break;
 		}
 
-		if (bIsConditionPassed)
+		if (passed)
 		{
-			pShape->m_bIsNotNecessaryToUse = true;
-			ChangeGeometryOfDesiredShape(pShape);
+			pFirstShape->RecalcWithNewItem(pSecondShape.get());
+			pSecondShape = nullptr;
 		}
 	}
 

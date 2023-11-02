@@ -1,5 +1,6 @@
 #pragma once
 #include "Paragraph.h"
+#include "TextLine.h"
 #include "../../resources/ImageInfo.h"
 #include "../../resources/LinesTable.h"
 #include "../../resources/VectorGraphics.h"

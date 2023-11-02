@@ -95,10 +95,9 @@ namespace NSDocxRenderer
 
 		oWriter.WriteString(L"</w:pPr>");
 
-		for(size_t i = 0; i < m_arLines.size(); ++i)
-		{
-			m_arLines[i]->ToXml(oWriter);
-		}
+		for(const auto& line : m_arLines)
+			if(line)
+				line->ToXml(oWriter);
 
 		oWriter.WriteString(L"</w:p>");
 	}
@@ -106,23 +105,19 @@ namespace NSDocxRenderer
 	void CParagraph::RemoveHighlightColor()
 	{
 		if (!m_bIsShadingPresent)
-		{
 			return;
-		}
-
 
 		for(size_t i = 0; i < m_arLines.size(); ++i)
 		{
-			auto pLine = m_arLines[i];
-			if (pLine->m_pDominantShape)
+			auto& pLine = m_arLines[i];
+			if (pLine || pLine->m_pDominantShape)
 			{
 				for (size_t j = 0; j < pLine->m_arConts.size(); ++j)
 				{
-					auto pCont = pLine->m_arConts[j];
-					if (m_lColorOfShadingFill == pCont->m_lHighlightColor)
-					{
-						pCont->m_bIsHighlightPresent = false;
-					}
+					auto& pCont = pLine->m_arConts[j];
+					if(pCont)
+						if (m_lColorOfShadingFill == pCont->m_lHighlightColor)
+							pCont->m_bIsHighlightPresent = false;
 				}
 			}
 		}
@@ -132,16 +127,16 @@ namespace NSDocxRenderer
 	{
 		for(size_t i = 0; i < m_arLines.size(); ++i)
 		{
-			auto& pLine = m_arLines[i];
-			auto& pLastCont = pLine->m_arConts.back();
+			auto pLine = m_arLines[i];
+			auto pLastCont = pLine->m_arConts.back();
 			size_t iNumConts = pLine->m_arConts.size() - 1;
 
-			while (!pLastCont)
+			while(!pLastCont)
 				pLastCont = pLine->m_arConts[--iNumConts];
 
 			//Добавляем пробел в конец каждой строки
 			pLastCont->m_oText += L" ";
-			pLastCont->m_dWidth += pLine->m_arConts.back()->m_oSelectedSizes.dSpaceWidth;
+			pLastCont->m_dWidth += pLastCont->m_oSelectedSizes.dSpaceWidth;
 		}
 	}
 

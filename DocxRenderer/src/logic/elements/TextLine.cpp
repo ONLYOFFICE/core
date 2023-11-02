@@ -1,7 +1,7 @@
 #include "TextLine.h"
+#include "../../logic/elements/Shape.h"
 #include "../../resources/Constants.h"
 #include "../../resources/utils.h"
-#include "src/logic/elements/Shape.h"
 
 namespace NSDocxRenderer
 {
@@ -35,10 +35,15 @@ namespace NSDocxRenderer
 		if (m_arConts.empty())
 			return;
 
-		auto pFirst = m_arConts.front();
-		for (size_t i = 1; i < m_arConts.size(); ++i)
+		std::shared_ptr<CContText> pFirst;
+		size_t j = 0;
+
+		for(; j < m_arConts.size() && !pFirst; ++j)
+			pFirst = m_arConts[j];
+
+		for (size_t i = j; i < m_arConts.size(); ++i)
 		{
-			auto pCurrent = m_arConts[i];
+			auto& pCurrent = m_arConts[i];
 			if (!pCurrent)
 				continue;
 
@@ -50,7 +55,7 @@ namespace NSDocxRenderer
 			bool bIsBigDelta = dDifference > dSpaceDefaultSize;
 			bool bIsVeryBigDelta = dDifference > dSpaceWideSize;
 
-			if (bIsVeryBigDelta)
+			if(bIsVeryBigDelta)
 			{
 				auto wide_space = std::make_shared<CContText>(pFirst->m_pManager);
 
@@ -86,11 +91,11 @@ namespace NSDocxRenderer
 			}
 			else if(bIsEqual)
 			{
-				if (fabs(pFirst->m_dRight - pCurrent->m_dLeft) < dSpaceDefaultSize)
+				if(!bIsBigDelta)
 				{
 					pFirst->m_oText += pCurrent->m_oText;
 				}
-				else if (bIsBigDelta)
+				else
 				{
 					pFirst->m_oText += uint32_t(' ');
 					pFirst->m_oText += pCurrent->m_oText;
@@ -170,6 +175,7 @@ namespace NSDocxRenderer
 	void CTextLine::ToXml(NSStringUtils::CStringBuilder& oWriter) const
 	{
 		for (const auto& cont : m_arConts)
-			cont->ToXml(oWriter);
+			if(cont)
+				cont->ToXml(oWriter);
 	}
 }

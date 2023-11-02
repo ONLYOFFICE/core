@@ -48,6 +48,7 @@ namespace NSDocxRenderer
 		m_arDiacriticalSymbols.clear();
 		m_arImages.clear();
 		m_arShapes.clear();
+		m_arOutputObjects.clear();
 
 		ClearTables();
 		m_pCurrentLine = nullptr;
@@ -72,7 +73,7 @@ namespace NSDocxRenderer
 	{
 		if (m_bIsDeleteTextClipPage)
 			for (auto& line : m_arTextLines)
-				if (line->m_dTop >= m_dHeight || line->m_dBaselinePos <= 0)
+				if (line && (line->m_dTop >= m_dHeight || line->m_dBaselinePos <= 0))
 					line = nullptr;
 	}
 
@@ -214,7 +215,7 @@ namespace NSDocxRenderer
 		{
 			if (!m_arShapes.empty())
 			{
-				auto pLastShape = m_arShapes.back();
+				auto& pLastShape = m_arShapes.back();
 
 				if (pLastShape->m_dLeft == dLeft &&
 						pLastShape->m_dTop == dTop &&
@@ -830,76 +831,63 @@ namespace NSDocxRenderer
 
 	void CPage::DetermineLinesType()
 	{
-		//определяются типы только горизонтальных линий.
-		//Входные данные представляют собой набор прямоугольников на одной линии
-		//При определении типа линии используется крайний левый шейп, который
-		//увеличивается в размере на ширину последующих за ним шейпов.
-		//Последующие шейпы помечаются как m_bIsNotNecessaryToUse
-
-		//todo добавить аналогичное определение для вертикальных линий
-		//нужно для определения границ таблицы
-		//note определение типов линий нужно сделать до распознования таблиц, когда линия несплошная
-
 		for (size_t i = 0; i < m_arShapes.size(); ++i)
 		{
-			auto& curr_shape = m_arShapes[i];
-			if (!curr_shape || curr_shape->m_dHeight > c_dMAX_LINE_HEIGHT_MM || // рассматриваем только тонкие объекты
-				(curr_shape->m_eGraphicsType != eGraphicsType::gtRectangle &&
-				curr_shape->m_eGraphicsType != eGraphicsType::gtCurve))
+			if (!m_arShapes[i] || m_arShapes[i]->m_dHeight > c_dMAX_LINE_HEIGHT_MM || // рассматриваем только тонкие объекты
+				(m_arShapes[i]->m_eGraphicsType != eGraphicsType::gtRectangle &&
+				m_arShapes[i]->m_eGraphicsType != eGraphicsType::gtCurve))
 			{
 				continue;
 			}
 
-			std::vector<std::shared_ptr<CShape>> curr_shapes;
-			curr_shapes.push_back(curr_shape);
+			std::vector<size_t> curr_shape_indexes;
+			curr_shape_indexes.push_back(i);
 
-			for (size_t j = i+1; j < m_arShapes.size(); ++j)
+			for (size_t j = i + 1; j < m_arShapes.size(); ++j)
 			{
-				auto& next_shape = m_arShapes[j];
-				if (!next_shape || curr_shape->AreObjectsNoCrossingByVertically(next_shape.get())) // значительно ускоряет работу
+				if (!m_arShapes[j] || m_arShapes[i]->AreObjectsNoCrossingByVertically(m_arShapes[j].get())) // значительно ускоряет работу
 					continue;
 
-				bool bIf1 = curr_shape->IsCorrelated(next_shape);
+				bool bIf1 = m_arShapes[i]->IsCorrelated(m_arShapes[j]);
 
 				// довольно странное поведение - в зависимости от толщины линии информация о графике записывается в разные структуры
-				bool bIf2 = curr_shape->m_oBrush.IsEqual(&next_shape->m_oBrush);
-				bool bIf3 = curr_shape->m_oPen.IsEqual(&next_shape->m_oPen);
+				bool bIf2 = m_arShapes[i]->m_oBrush.IsEqual(&m_arShapes[j]->m_oBrush);
+				bool bIf3 = m_arShapes[i]->m_oPen.IsEqual(&m_arShapes[j]->m_oPen);
 
 				// линия должна быть одного размера по высоте
-				bool bIf4 = fabs(curr_shape->m_dHeight - next_shape->m_dHeight) < c_dGRAPHICS_ERROR_IN_LINES_MM;
+				bool bIf4 = fabs(m_arShapes[i]->m_dHeight - m_arShapes[j]->m_dHeight) < c_dGRAPHICS_ERROR_IN_LINES_MM;
 
 				// все должно быть на одной линии
-				bool bIf5 = fabs(curr_shape->m_dTop - next_shape->m_dTop) < c_dGRAPHICS_ERROR_IN_LINES_MM * 5;
+				bool bIf5 = fabs(m_arShapes[i]->m_dBaselinePos - m_arShapes[j]->m_dBaselinePos) < c_dGRAPHICS_ERROR_IN_LINES_MM * 5;
 
-				if (bIf1 && (bIf2 || bIf3) && bIf4 && bIf5) //все должно быть на одной линии
-					curr_shapes.push_back(next_shape);
+				if (bIf1 && (bIf2 || bIf3) && bIf4 && bIf5) // все должно быть на одной линии
+					curr_shape_indexes.push_back(j);
 			}
 
-			if (curr_shapes.size() > 1)
+			if (curr_shape_indexes.size() > 1)
 			{
-				using shape_ptr = std::shared_ptr<CShape>;
-				std::sort(curr_shapes.begin(), curr_shapes.end(), [] (const shape_ptr& a, const shape_ptr& b) {
-					return a->m_dLeft < b->m_dLeft;
+				std::sort(curr_shape_indexes.begin(), curr_shape_indexes.end(), [this] (size_t a, size_t b) {
+					return m_arShapes[a]->m_dLeft < m_arShapes[b]->m_dLeft;
 				});
 
-				curr_shape = curr_shapes[0];
-
-				for (size_t k = 1; k < curr_shapes.size(); ++k)
+				size_t j = 0;
+				for (size_t k = 1; k < curr_shape_indexes.size(); ++k)
 				{
-					auto& next_shape = curr_shapes[k];
-					CShape::CheckLineType(curr_shape, next_shape, k == curr_shapes.size() - 1);
+					auto& first_shape = m_arShapes[curr_shape_indexes[j]];
+					auto& second_shape = m_arShapes[curr_shape_indexes[k]];
 
-					if(!curr_shape)
+					CShape::CheckLineType(first_shape, second_shape, k == curr_shape_indexes.size() - 1);
+					if(!m_arShapes[j])
 					{
-						curr_shape = next_shape;
+						j = k;
 						k++;
 					}
 				}
 			}
-			else if (curr_shapes.size() == 1)
-				CShape::CheckLineType(curr_shapes[0]);
+			else if (curr_shape_indexes.size() == 1)
+				CShape::CheckLineType(m_arShapes[curr_shape_indexes[0]]);
 
-			curr_shapes.clear();
+			curr_shape_indexes.clear();
 		}
 	}
 
@@ -914,6 +902,9 @@ namespace NSDocxRenderer
 
 		// analyze drop caps (creates shapes)
 		AnalyzeDropCaps();
+
+		// analyze conts in text lines
+		AnalyzeConts();
 
 		// assign highlights to conts & delete shapes which is uses in highlights
 		DetermineStrikeoutsUnderlinesHighlights();
@@ -1029,7 +1020,6 @@ namespace NSDocxRenderer
 	}
 	void CPage::AnalyzeConts()
 	{
-
 		for (size_t uCurrLineIndex = 0; uCurrLineIndex < m_arTextLines.size(); ++uCurrLineIndex)
 		{
 			auto& pCurrLine = m_arTextLines[uCurrLineIndex];
@@ -1056,23 +1046,19 @@ namespace NSDocxRenderer
 					for (size_t uNextContIndex = uNextLineIndex != uCurrLineIndex ? 0 : uCurrContIndex + 1;
 						 uNextContIndex < pNextLine->m_arConts.size(); ++uNextContIndex)
 					{
+						if (!pCurrCont)
+							break;
+
 						// берем символ во второй линии
-						auto pNextCont = pNextLine->m_arConts[uNextContIndex];
+						auto& pNextCont = pNextLine->m_arConts[uNextContIndex];
 						if (!pNextCont)
 							continue;
 
 						eVerticalCrossingType eVType = pCurrCont->GetVerticalCrossingType(pNextCont.get());
 						eHorizontalCrossingType eHType = pCurrCont->GetHorizontalCrossingType(pNextCont.get());
 
-						if (CContText::CheckFontEffects(pCurrCont, pNextCont, eVType, eHType))
-						{
-							pNextCont = nullptr;
-							if(pNextLine->IsCanBeDeleted())
-								pNextLine = nullptr;
-							break;
-						}
-
-						if (CContText::CheckVertAlignTypeBetweenConts(pCurrCont, pNextCont, eVType, eHType))
+						bool is_font_effect = CContText::CheckFontEffects(pCurrCont, pNextCont, eVType, eHType);
+						if(!is_font_effect && CContText::CheckVertAlignTypeBetweenConts(pCurrCont, pNextCont, eVType, eHType))
 						{
 							pCurrLine->SetVertAlignType(pCurrCont->m_eVertAlignType);
 							pNextLine->SetVertAlignType(pNextCont->m_eVertAlignType);
@@ -1083,88 +1069,93 @@ namespace NSDocxRenderer
 							{
 								pCurrLine->m_pLine = pNextLine;
 							}
-							break;
 						}
-
-						if (pCurrCont->IsDuplicate(pNextCont.get(), eVType))
+						else if(!is_font_effect && pCurrCont->IsDuplicate(pNextCont.get(), eVType))
 						{
 							pNextCont = nullptr;
 							pCurrCont->m_iNumDuplicates++;
-							break;
 						}
 					}
-
-					if(pNextLine->IsCanBeDeleted())
+					if(pNextLine && pNextLine->IsCanBeDeleted())
 						pNextLine = nullptr;
 				}
 			}
+			if(pCurrLine && pCurrLine->IsCanBeDeleted())
+				pCurrLine = nullptr;
 		}
 	}
 
 	void CPage::DetermineStrikeoutsUnderlinesHighlights()
 	{
-		//определение различных эффектов на основании взаимного расположения символов и шейпов
+		// определение различных эффектов на основании взаимного расположения символов и шейпов
 		for (size_t i = 0; i < m_arShapes.size(); ++i)
 		{
-			auto& pShape = m_arShapes[i];
-			if (!pShape || pShape->m_eGraphicsType == eGraphicsType::gtNoGraphics)
+			auto& shape = m_arShapes[i];
+			if (!shape || shape->m_eGraphicsType == eGraphicsType::gtNoGraphics)
 				continue;
 
 			for (size_t j = 0; j < m_arTextLines.size(); ++j)
 			{
-				auto& pCurrLine = m_arTextLines[j];
+				if(!shape)
+					break;
 
-				if (!pCurrLine || (pCurrLine->AreObjectsNoCrossingByVertically(pShape.get()) &&
-					(pCurrLine->m_dTop > pShape->m_dBaselinePos ||
-					pCurrLine->m_dBaselinePos + pCurrLine->m_dHeight < pShape->m_dTop)))
+				auto& pCurrLine = m_arTextLines[j];
+				bool shape_used = false;
+
+				if (!pCurrLine || (pCurrLine->AreObjectsNoCrossingByVertically(shape.get()) &&
+					(pCurrLine->m_dTop > shape->m_dBaselinePos ||
+					pCurrLine->m_dBaselinePos + pCurrLine->m_dHeight < shape->m_dTop)))
 				{
 					continue;
 				}
 
 				for (size_t k = 0; k < pCurrLine->m_arConts.size(); ++k)
 				{
-					auto& pCurrCont = pCurrLine->m_arConts[k];
-					if (!pCurrCont)
+					if(!shape)
+						break;
+
+					auto& curr_cont = pCurrLine->m_arConts[k];
+					if (!curr_cont)
 						continue;
 
-					eVerticalCrossingType eVType = pCurrCont->GetVerticalCrossingType(pShape.get());
-					eHorizontalCrossingType eHType = pCurrCont->GetHorizontalCrossingType(pShape.get());
+					eVerticalCrossingType eVType = curr_cont->GetVerticalCrossingType(shape.get());
+					eHorizontalCrossingType eHType = curr_cont->GetHorizontalCrossingType(shape.get());
 
-					bool bIsComplicatedFigure = pShape->m_eGraphicsType != eGraphicsType::gtComplicatedFigure;
-					bool bIsLineCrossingText = IsLineCrossingText(pShape.get(), pCurrCont.get(), eHType);
-					bool bIsLineBelowText = IsLineBelowText(pShape.get(), pCurrCont.get(), eHType);
-					bool bIsItHighlightingBackground = IsItHighlightingBackground(pShape.get(), pCurrCont.get(), eHType);
+					bool bIsNotComplicatedFigure = shape->m_eGraphicsType != eGraphicsType::gtComplicatedFigure;
+					bool bIsLineCrossingText = IsLineCrossingText(shape.get(), curr_cont.get(), eHType);
+					bool bIsLineBelowText = IsLineBelowText(shape.get(), curr_cont.get(), eHType);
+					bool bIsItHighlightingBackground = IsItHighlightingBackground(shape.get(), curr_cont.get(), eHType);
 
 					if(bIsLineCrossingText)
 					{
-						pCurrCont->m_bIsStrikeoutPresent = true;
-						if (pShape->m_eLineType == eLineType::ltDouble)
-							pCurrCont->m_bIsDoubleStrikeout = true;
+						curr_cont->m_bIsStrikeoutPresent = true;
+						if (shape->m_eLineType == eLineType::ltDouble)
+							curr_cont->m_bIsDoubleStrikeout = true;
 					}
 
 					if(bIsLineBelowText)
 					{
-						pCurrCont->m_bIsUnderlinePresent = true;
-						pCurrCont->m_eUnderlineType  = pShape->m_eLineType;
-						pCurrCont->m_lUnderlineColor = pShape->m_dHeight > 0.3 ? pShape->m_oBrush.Color1 : pShape->m_oPen.Color;
+						curr_cont->m_bIsUnderlinePresent = true;
+						curr_cont->m_eUnderlineType  = shape->m_eLineType;
+						curr_cont->m_lUnderlineColor = shape->m_dHeight > 0.3 ? shape->m_oBrush.Color1 : shape->m_oPen.Color;
 					}
 
 					if(bIsItHighlightingBackground)
 					{
 						//Удовлетворяет расположением и размером - привязываем указатель на картинку
-						pCurrCont->m_pShape = pShape;
-						pCurrCont->m_bIsHighlightPresent = true;
-						pCurrCont->m_lHighlightColor = pShape->m_oBrush.Color1;
+						curr_cont->m_pShape = shape;
+						curr_cont->m_bIsHighlightPresent = true;
+						curr_cont->m_lHighlightColor = shape->m_oBrush.Color1;
 					}
 
 					// проверили - удаляем
-					if (bIsComplicatedFigure && (bIsLineCrossingText || bIsLineBelowText || bIsItHighlightingBackground))
-						pShape = nullptr;
+					if (bIsNotComplicatedFigure && (bIsLineCrossingText || bIsLineBelowText || bIsItHighlightingBackground))
+						shape_used = true;
 
-					if (!bIsComplicatedFigure)
+					if (!bIsNotComplicatedFigure)
 					{
-						bool bIf1 = pCurrCont->m_pFontStyle->oBrush.Color1 == c_iGreyColor;
-						bool bIf2 = pCurrCont->m_bIsShadowPresent && pCurrCont->m_bIsOutlinePresent;
+						bool bIf1 = curr_cont->m_pFontStyle->oBrush.Color1 == c_iGreyColor;
+						bool bIf2 = curr_cont->m_bIsShadowPresent && curr_cont->m_bIsOutlinePresent;
 						bool bIf3 = eVType == eVerticalCrossingType::vctCurrentOutsideNext;
 						bool bIf4 = eHType == eHorizontalCrossingType::hctCurrentOutsideNext;
 						bool bIf5 = eHType == eHorizontalCrossingType::hctCurrentRightOfNext;
@@ -1173,23 +1164,24 @@ namespace NSDocxRenderer
 						{
 							if (!bIf2)
 							{
-								auto oBrush = pCurrCont->m_pFontStyle->oBrush;
-								oBrush.Color1 = pShape->m_oPen.Color;
+								auto oBrush = curr_cont->m_pFontStyle->oBrush;
+								oBrush.Color1 = shape->m_oPen.Color;
 
-								pCurrCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(oBrush,
-									pCurrCont->m_pFontStyle->wsFontName,
-									pCurrCont->m_pFontStyle->dFontSize,
-									pCurrCont->m_pFontStyle->bItalic,
-									pCurrCont->m_pFontStyle->bBold);
+								curr_cont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(oBrush,
+									curr_cont->m_pFontStyle->wsFontName,
+									curr_cont->m_pFontStyle->dFontSize,
+									curr_cont->m_pFontStyle->bItalic,
+									curr_cont->m_pFontStyle->bBold);
 
-								pCurrCont->m_bIsShadowPresent = true;
-								pCurrCont->m_bIsOutlinePresent = true;
+								curr_cont->m_bIsShadowPresent = true;
+								curr_cont->m_bIsOutlinePresent = true;
 							}
-
-							pShape = nullptr;
+							shape_used = true;
 						}
 					}
 				}
+				if(shape_used)
+					shape = nullptr;
 			}
 		}
 	}
@@ -1226,7 +1218,7 @@ namespace NSDocxRenderer
 				pShape->m_eLineType != eLineType::ltUnknown;
 
 		//Условие по вертикали
-		bool bIf2 = fabs(pShape->m_dTop - pCont->m_dBaselinePos) < pCont->m_dHeight * 0.3;
+		bool bIf2 = fabs(pShape->m_dBaselinePos - pCont->m_dBaselinePos) < pCont->m_dHeight * 0.3;
 
 		//Условие пересечения по горизонтали
 		bool bIf3 = eHType != eHorizontalCrossingType::hctUnknown &&
@@ -1354,6 +1346,8 @@ namespace NSDocxRenderer
 
 					using cont_ptr = std::shared_ptr<CContText>;
 					std::sort(pBaseLine->m_arConts.begin(), pBaseLine->m_arConts.end(), [] (const cont_ptr& a, const cont_ptr& b) {
+						if(!a || !b)
+							return false;
 						return a->m_dLeft < b->m_dLeft;
 					});
 
@@ -1382,9 +1376,10 @@ namespace NSDocxRenderer
 
 					using cont_ptr = std::shared_ptr<CContText>;
 					std::sort(line->m_arConts.begin(), line->m_arConts.end(), [] (const cont_ptr& a, const cont_ptr& b) {
+						if(!a || !b)
+							return false;
 						return a->m_dLeft < b->m_dLeft;
 					});
-
 					pSubLine = nullptr;
 				}
 			}
@@ -1413,15 +1408,14 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"<w:pPr><w:spacing w:line=\"1\" w:lineRule=\"exact\"/></w:pPr>");
 		}
 
-		for (size_t i = 0; i < m_arImages.size(); ++i)
-		{
-			m_arImages[i]->ToXml(oWriter);
-		}
+		for (const auto& image : m_arImages)
+			if(image)
+				image->ToXml(oWriter);
 
-		for (size_t i = 0; i < m_arShapes.size(); ++i)
-		{
-			m_arShapes[i]->ToXml(oWriter);
-		}
+
+		for (const auto& shape : m_arShapes)
+			if(shape)
+				shape->ToXml(oWriter);
 
 		if (bIsTextShapePresent)
 		{
@@ -1441,14 +1435,10 @@ namespace NSDocxRenderer
 
 		for (size_t i = 0; i < m_arOutputObjects.size(); ++i)
 		{
-			auto pObj = m_arOutputObjects[i];
+			auto& pObj = m_arOutputObjects[i];
 			CParagraph* pParagraph = nullptr;
 			if((pParagraph = dynamic_cast<CParagraph*>(pObj.get())) != nullptr)
 				pParagraph->ToXml(oWriter);
-
-//			CTable* pTable = nullptr;
-//			if((pTable = dynamic_cast<CTable*>(pObj)) != nullptr)
-//				pTable->ToXml(oWriter);
 		}
 	}
 
@@ -1530,11 +1520,10 @@ namespace NSDocxRenderer
 		for (size_t nIndex = 0; nIndex < m_arTextLines.size(); ++nIndex)
 		{
 			pCurrLine = m_arTextLines[nIndex];
-			avg_height = (avg_height / (n + 1)) * n + (pCurrLine->m_dHeight / (n + 1));
-
 			if (!pCurrLine)
 				continue;
 
+			avg_height = (avg_height / (n + 1)) * n + (pCurrLine->m_dHeight / (n + 1));
 			if (m_eTextAssociationType == TextAssociationType::tatShapeLine)
 			{
 				CreateSingleLineShape(pCurrLine);
@@ -1980,8 +1969,7 @@ namespace NSDocxRenderer
 
 			for (size_t j = 0; j < pShape->m_arOutputObjects.size(); ++j)
 			{
-				auto pObj = pShape->m_arOutputObjects[j];
-
+				auto& pObj = pShape->m_arOutputObjects[j];
 				switch(pObj->m_eType)
 				{
 				case COutputObject::eOutputType::etParagraph:
@@ -2013,18 +2001,13 @@ namespace NSDocxRenderer
 		for (size_t nIndex = nCurrentIndex + 1; nIndex < m_arTextLines.size(); ++nIndex)
 		{
 			pLine = m_arTextLines[nIndex];
-			bool bIf1 = pLine == nullptr;
-			bool bIf2 = pIndexForCheking && pLine->m_iNumDuplicates > 0;
+			if(pLine && (pIndexForCheking && pLine->m_iNumDuplicates > 0))
+				if (*pIndexForCheking == c_nAntiZero)
+					*pIndexForCheking = nIndex;
 
-			if (bIf1 || bIf2)
+			if (!pLine || (pIndexForCheking && pLine->m_iNumDuplicates > 0))
 			{
-				if (bIf2)
-				{
-					if (*pIndexForCheking == c_nAntiZero)
-						*pIndexForCheking = nIndex;
-				}
-
-				nCurrentIndex++; //note изменяем входной индекс, чтобы не выбирать те же строки
+				nCurrentIndex++;
 				pLine = nullptr;
 				continue;
 			}
@@ -2037,7 +2020,6 @@ namespace NSDocxRenderer
 	std::shared_ptr<CTextLine> CPage::GetPrevTextLine(size_t nCurrentIndex)
 	{
 		std::shared_ptr<CTextLine> pLine = nullptr;
-
 		if (nCurrentIndex)
 		{
 			for (size_t nIndex = nCurrentIndex - 1; nIndex > 0; --nIndex)

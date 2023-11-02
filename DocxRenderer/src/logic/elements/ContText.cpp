@@ -148,9 +148,9 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"\"/>");
 		}
 
-		if (m_bIsEmbossPresent)
+		if(m_bIsEmbossPresent)
 			oWriter.WriteString(L"<w:emboss/>");
-		else if (m_bIsEngravePresent)
+		else if(m_bIsEngravePresent)
 			oWriter.WriteString(L"<w:imprint/>");
 		else
 		{
@@ -168,7 +168,7 @@ namespace NSDocxRenderer
 				oWriter.WriteString(L"<w:strike/>");
 		}
 
-		if (m_bIsUnderlinePresent)
+		if(m_bIsUnderlinePresent)
 		{
 			oWriter.WriteString(L"<w:u w:val=");
 			oWriter.WriteString(SingletonInstance<LinesTable>().ConvertLineToString(m_eUnderlineType));
@@ -294,7 +294,7 @@ namespace NSDocxRenderer
 		//todo существует проблема неправильного определением FontEffects с физически пересекаемыми строчками - файл generaltest.pdf p.14
 		if (bIf5 && bIf6)
 		{
-			if (bIf12)
+			if (bIf12 && pFirstCont->m_bIsEmbossPresent)
 				if (bIf1 && bIf3)
 				{
 					pFirstCont->m_bIsEmbossPresent = true;
@@ -302,7 +302,7 @@ namespace NSDocxRenderer
 					return true;
 				}
 
-			if (bIf10)
+			if (bIf10 && pFirstCont->m_bIsEngravePresent)
 				if (bIf1 && bIf3)
 				{
 					pFirstCont->m_bIsEngravePresent = true;

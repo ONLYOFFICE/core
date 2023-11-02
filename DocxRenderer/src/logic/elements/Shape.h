@@ -47,8 +47,7 @@ namespace NSDocxRenderer
 		eSimpleLineType m_eSimpleLineType {eSimpleLineType::sltUnknown};
 		eLineType       m_eLineType {eLineType::ltUnknown};
 
-		std::vector<COutputObject*> m_arOutputObjects;
-
+		std::vector<std::shared_ptr<COutputObject>> m_arOutputObjects;
 		std::shared_ptr<CImageInfo> m_pImageInfo {nullptr};
 
 	private:
@@ -65,7 +64,9 @@ namespace NSDocxRenderer
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
 
 		void SetVector(CVectorGraphics&& oVector);
-		bool TryMergeShape(CShape* pShape);
+
+		// tries merge shape, return true if ok and pShape was deleted
+		bool TryMergeShape(std::shared_ptr<CShape> pShape);
 		std::wstring PathToWString() const;
 		void DetermineGraphicsType(double dWidth, double dHeight, size_t nPeacks, size_t nCurves);
 		bool IsItFitLine();

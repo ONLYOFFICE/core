@@ -16,11 +16,6 @@ namespace NSDocxRenderer
 
 	void CParagraph::ToXml(NSStringUtils::CStringBuilder& oWriter) const
 	{
-		if (m_bIsNotNecessaryToUse)
-		{
-			return;
-		}
-
 		oWriter.WriteString(L"<w:p>");
 		oWriter.WriteString(L"<w:pPr>");
 
@@ -142,39 +137,34 @@ namespace NSDocxRenderer
 			auto pLastCont = pLine->m_arConts.back();
 			size_t iNumConts = pLine->m_arConts.size() - 1;
 
-			while (pLastCont->m_bIsNotNecessaryToUse)
-			{
+			while (!pLastCont)
 				pLastCont = pLine->m_arConts[--iNumConts];
-			}
 
-			//Добавляем пробел в конец каждой строки
+//			//Добавляем пробел в конец каждой строки
 			pLastCont->m_oText += L" ";
-			pLastCont->m_bSpaceIsNotNeeded = true;
-			pLastCont->m_dWidth += pLine->m_arConts.back()->m_dSpaceWidthSelected;
+			pLastCont->m_dWidth += pLine->m_arConts.back()->m_oSelectedSizes.dSpaceWidth;
 
-			auto pNext = m_arLines[i];
-			auto pCont = pNext->m_arConts.front();
+//			auto pNext = m_arLines[i];
+//			auto pCont = pNext->m_arConts.front();
 
-			if (pLastCont->IsEqual(pCont))
-			{
-				pLastCont->m_oText += pCont->m_oText;
-				pLastCont->m_dWidth += pCont->m_dWidth;
-				pLastCont->m_dRight = pCont->m_dRight;
+//			if (pLastCont->IsEqual(pCont))
+//			{
+//				pLastCont->m_oText += pCont->m_oText;
+//				pLastCont->m_dWidth += pCont->m_dWidth;
+//				pLastCont->m_dRight = pCont->m_dRight;
+//				pCont->m_bIsNotNecessaryToUse = true;
+//			}
 
-				pLastCont->m_bSpaceIsNotNeeded = false;
-				pCont->m_bIsNotNecessaryToUse = true;
-			}
-
-			for (size_t j = 0; j < pNext->m_arConts.size(); ++j)
-			{
-				auto& pCont = pNext->m_arConts[j];
-				if (!pCont->m_bIsNotNecessaryToUse)
-				{
-					pLine->m_arConts.push_back(pCont);
-					pCont = nullptr;
-				}
-			}
-			pNext->m_bIsNotNecessaryToUse = true;
+//			for (size_t j = 0; j < pNext->m_arConts.size(); ++j)
+//			{
+//				auto& pCont = pNext->m_arConts[j];
+//				if (!pCont->m_bIsNotNecessaryToUse)
+//				{
+//					pLine->m_arConts.push_back(pCont);
+//					pCont = nullptr;
+//				}
+//			}
+//			pNext->m_bIsNotNecessaryToUse = true;
 		}
 	}
 

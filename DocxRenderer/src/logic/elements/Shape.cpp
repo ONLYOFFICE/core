@@ -29,9 +29,6 @@ namespace NSDocxRenderer
 
 	void CShape::Clear()
 	{
-		for (size_t i = 0; i < m_arOutputObjects.size(); ++i)
-			delete m_arOutputObjects[i];
-
 		m_arOutputObjects.clear();
 		m_oVector.Clear();
 	}
@@ -92,7 +89,7 @@ namespace NSDocxRenderer
 		m_dRight = m_dLeft + m_dWidth;
 	}
 
-	bool CShape::TryMergeShape(CShape* pShape)
+	bool CShape::TryMergeShape(std::shared_ptr<CShape> pShape)
 	{
 		// можно попробовать подбирать динамически, например в зависимости от размера
 		double dHorNearby = 30;
@@ -133,8 +130,9 @@ namespace NSDocxRenderer
 				 fabs(pShape->m_dBaselinePos - this->m_dBaselinePos) < dVerNearby ||
 				 fabs(pShape->m_dTop - this->m_dTop) < dVerNearby))
 		{
-			CBaseItem::AddContent(pShape);
+			CBaseItem::RecalcWithNewItem(pShape.get());
 			m_oVector.Join(std::move(pShape->m_oVector));
+			pShape = nullptr;
 
 			this->m_eGraphicsType = eGraphicsType::gtComplicatedFigure;
 			return true;
@@ -300,7 +298,7 @@ namespace NSDocxRenderer
 		CShape* pModObject;
 		CShape* pDataObject;
 
-		if (pShape->m_bIsNotNecessaryToUse)
+		if (!pShape)
 		{
 			pModObject = this;
 			pDataObject = pShape;
@@ -647,20 +645,11 @@ namespace NSDocxRenderer
 		//todo для уменьшения размера каждого шейпа ипользовавать только то, что необходимо - для графики, текста, графика+текст
 		//todo добавить все возможные параметры/атрибуты
 
-		if (m_bIsNotNecessaryToUse)
-		{
-			return;
-		}
 		oWriter.WriteString(L"<w:r>");
-
 		oWriter.WriteString(L"<w:rPr><w:noProof/></w:rPr>"); //отключение проверки орфографии
-
 		oWriter.WriteString(L"<w:drawing>");
-
 		BuildGeneralProperties(oWriter);
-
 		oWriter.WriteString(L"</w:drawing>");
-
 		oWriter.WriteString(L"</w:r>");
 	}
 

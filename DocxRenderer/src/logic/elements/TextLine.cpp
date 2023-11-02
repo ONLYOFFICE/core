@@ -5,34 +5,29 @@
 
 namespace NSDocxRenderer
 {
-	void CTextLine::Clear()
-	{
-		m_arConts.clear();
-	}
 
 	CTextLine::~CTextLine()
 	{
 		Clear();
 	}
 
-	void CTextLine::AddContent(CBaseItem *pItem)
+	void CTextLine::Clear()
 	{
-		CBaseItem::AddContent(pItem);
-		m_dTrueHeight = std::max(m_dTrueHeight, dynamic_cast<CContText*>(pItem)->m_dTrueHeight);
-
-		if (dynamic_cast<CContText*>(pItem)->m_pCont && m_eVertAlignType == eVertAlignType::vatUnknown)
-			m_eVertAlignType = dynamic_cast<CContText*>(pItem)->m_eVertAlignType;
-
-		m_arConts.push_back(dynamic_cast<CContText*>(pItem));
+		m_arConts.clear();
+	}
+	void CTextLine::AddCont(std::shared_ptr<CContText> oCont)
+	{
+		CBaseItem::RecalcWithNewItem(oCont.get());
+		m_arConts.push_back(oCont);
 	}
 
-	void CTextLine::CheckLineToNecessaryToUse()
+	bool CTextLine::IsCanBeDeleted() const
 	{
 		for (size_t i = 0; i < m_arConts.size(); ++i)
-			if (!m_arConts[i]->m_bIsNotNecessaryToUse)
-				return;
+			if (m_arConts[i])
+				return false;
 
-		m_bIsNotNecessaryToUse = true;
+		return true;
 	}
 
 	void CTextLine::MergeConts()
@@ -41,33 +36,55 @@ namespace NSDocxRenderer
 			return;
 
 		auto pFirst = m_arConts.front();
-
 		for (size_t i = 1; i < m_arConts.size(); ++i)
 		{
 			auto pCurrent = m_arConts[i];
-
-			if (pCurrent->m_bIsNotNecessaryToUse)
-			{
+			if (!pCurrent)
 				continue;
-			}
 
 			double dSpaceDefaultSize = pCurrent->CalculateThinSpace();
 			double dSpaceWideSize = pCurrent->CalculateWideSpace();
-
 			double dDifference = fabs(pCurrent->m_dLeft - pFirst->m_dRight);
 
-			//todo возможно стоит доработать логику
-			bool bIsEqual = pFirst->IsEqual(pCurrent);
+			bool bIsEqual = pFirst->IsEqual(pCurrent.get());
 			bool bIsBigDelta = dDifference > dSpaceDefaultSize;
 			bool bIsVeryBigDelta = dDifference > dSpaceWideSize;
 
 			if (bIsVeryBigDelta)
 			{
-				pFirst->m_bSpaceIsNotNeeded = false;
-				pFirst = pCurrent;
+				auto wide_space = std::make_shared<CContText>(pFirst->m_pManager);
 
+				// sets all members for wide_space except highlight things
+				auto set_base = [&pFirst, &pCurrent, &wide_space] () {
+					wide_space->m_dLeft = pFirst->m_dRight;
+					wide_space->m_dRight = pCurrent->m_dLeft;
+					wide_space->m_dWidth = wide_space->m_dRight - wide_space->m_dLeft;
+					wide_space->m_oText = L" ";
+					wide_space->m_pFontStyle = pFirst->m_pFontStyle;
+					wide_space->m_pShape = nullptr;
+					wide_space->m_pCont = nullptr;
+					wide_space->m_iNumDuplicates = 0;
+					wide_space->CalcSelected();
+				};
+
+				if(bIsEqual)
+				{
+					// assign all
+					*wide_space = *pFirst;
+
+					// then set all for wide space
+					set_base();
+				}
+				else
+					set_base();
+
+				m_arConts.insert(m_arConts.begin() + i, wide_space);
+
+				i++;
+				while(!m_arConts[i]) i++;
+				pFirst = m_arConts[i];
 			}
-			else if (bIsEqual)
+			else if(bIsEqual)
 			{
 				if (fabs(pFirst->m_dRight - pCurrent->m_dLeft) < dSpaceDefaultSize)
 				{
@@ -87,9 +104,7 @@ namespace NSDocxRenderer
 					pFirst->m_pCont = pCurrent->m_pCont;
 					pFirst->m_eVertAlignType = pCurrent->m_eVertAlignType;
 				}
-
-				pFirst->m_bSpaceIsNotNeeded = true;
-				pCurrent->m_bIsNotNecessaryToUse = true;
+				pCurrent = nullptr;
 			}
 			else
 			{
@@ -111,12 +126,6 @@ namespace NSDocxRenderer
 							pCurrent->m_dWidth += (pCurrent->m_dLeft - pFirst->m_dRight);
 						}
 					}
-
-					pFirst->m_bSpaceIsNotNeeded = true;
-				}
-				else
-				{
-					pFirst->m_bSpaceIsNotNeeded = false;
 				}
 				pFirst = pCurrent;
 			}
@@ -131,13 +140,13 @@ namespace NSDocxRenderer
 		m_dHeight = 0.0;
 		m_dBaselinePos = 0.0;
 		m_dRight = 0.0;
-		m_dTrueHeight = 0.0;
+		m_dHeight = 0.0;
 
-		for(auto&& cont : m_arConts)
-			if(!cont->m_bIsNotNecessaryToUse)
+		for(const auto& cont : m_arConts)
+			if(cont)
 			{
-				m_dTrueHeight = std::max(m_dTrueHeight, dynamic_cast<CContText*>(cont)->m_dTrueHeight);
-				CBaseItem::AddContent(cont);
+				m_dHeight = std::max(m_dHeight, dynamic_cast<CContText*>(cont.get())->m_dHeight);
+				CBaseItem::RecalcWithNewItem(cont.get());
 			}
 	}
 
@@ -160,60 +169,7 @@ namespace NSDocxRenderer
 
 	void CTextLine::ToXml(NSStringUtils::CStringBuilder& oWriter) const
 	{
-		if (m_bIsNotNecessaryToUse)
-		{
-			return;
-		}
-
-		size_t nCountConts = m_arConts.size();
-
-		if (0 == nCountConts)
-			return;
-
-		auto pPrev = m_arConts[0];
-		double dDelta = 0;
-
-		for (size_t i = 1; i < nCountConts; ++i)
-		{
-			auto pCurrent = m_arConts[i];
-
-			if (pCurrent->m_bIsNotNecessaryToUse)
-			{
-				continue;
-			}
-
-			dDelta = pCurrent->m_dLeft - pPrev->m_dRight;
-			pPrev->CalcSelectedWidth();
-			pPrev->ToXml(oWriter);
-
-			if (!(dDelta < pPrev->CalculateWideSpace() || pPrev->m_bSpaceIsNotNeeded))
-				pPrev->AddWideSpaceToXml(dDelta, oWriter, pPrev->IsEqual(pCurrent));
-
-			pPrev = pCurrent;
-		}
-
-		pPrev->CalcSelectedWidth();
-		pPrev->ToXml(oWriter);
-
-	}
-	eVerticalCrossingType CTextLine::GetVerticalCrossingType(const CBaseItem* pItem) const noexcept
-	{
-		const CContText* pLine = nullptr;
-		if((pLine = dynamic_cast<const CContText*>(pItem)) == nullptr)
-			return CBaseItem::GetVerticalCrossingType(pItem);
-
-		auto m_dTop_copy = m_dTop;
-		auto m_dTop_copy_src = pItem->m_dTop;
-
-		// call CBaseItem::GetVerticalCrossingType(oSrc) and not create copy, so const_cast was used
-		const_cast<CContText*>(pLine)->m_dTop = m_dBaselinePos - m_dTrueHeight;
-		const_cast<CContText*>(pLine)->m_dTop = pLine->m_dBaselinePos - pLine->m_dTrueHeight;
-
-		auto vert_cross = CBaseItem::GetVerticalCrossingType(pLine);
-
-		const_cast<CContText*>(pLine)->m_dTop = m_dTop_copy;
-		const_cast<CContText*>(pLine)->m_dTop = m_dTop_copy_src;
-
-		return vert_cross;
+		for (const auto& cont : m_arConts)
+			cont->ToXml(oWriter);
 	}
 }

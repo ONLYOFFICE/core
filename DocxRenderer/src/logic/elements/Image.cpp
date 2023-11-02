@@ -8,17 +8,10 @@ namespace NSDocxRenderer
 		: m_oImageInfo(oInfo), m_strPath(strDstMedia)
 	{
 	}
-	void CImage::Clear(){}
 
 	void CImage::ToXml(NSStringUtils::CStringBuilder& oWriter) const
 	{
-		if (m_bIsNotNecessaryToUse)
-		{
-			return;
-		}
-
 		oWriter.WriteString(L"<w:r><w:pict><v:shape id=\"\" type=\"\" style=\"position:absolute;");
-
 		oWriter.WriteString(L"margin-left:");
 		oWriter.AddDouble(m_dLeft, 2);
 		oWriter.WriteString(L"mm;margin-top:");

@@ -18,66 +18,88 @@ namespace NSDocxRenderer
 		vatSuperscript
 	};
 
+	// sizes in selected font
+	struct CSelectedSizes
+	{
+		double dWidth{0};
+		double dSpaceWidth{0};
+		double dHeight{0};
+
+		CSelectedSizes() = default;
+		~CSelectedSizes() = default;
+		CSelectedSizes(const CSelectedSizes& oSelectedSizes);
+		CSelectedSizes& operator=(const CSelectedSizes& oSelectedSizes);
+	};
+
 	class CContText : public CBaseItem
 	{
 	public:
-		std::shared_ptr<const CFontStyle> m_pFontStyle {nullptr};
 
-		bool   m_bIsStrikeoutPresent{false};
-		bool   m_bIsDoubleStrikeout{false};
+		// utils
+		std::shared_ptr<const CFontStyle> m_pFontStyle{nullptr};
+		CFontManager* m_pManager                      {nullptr};
 
-		bool   m_bIsHighlightPresent{false};
-		LONG   m_lHighlightColor{c_iBlackColor};
+		// background graphics
+		std::shared_ptr<CShape> m_pShape              {nullptr};
 
-		bool   m_bIsUnderlinePresent{false};
-		eLineType m_eUnderlineType{eLineType::ltUnknown};
-		LONG   m_lUnderlineColor{c_iBlackColor};
+		// super/sub script
+		std::shared_ptr<CContText> m_pCont            {nullptr};
+		eVertAlignType m_eVertAlignType               {eVertAlignType::vatUnknown};
 
-		bool   m_bIsShadowPresent{false};
-		bool   m_bIsOutlinePresent{false};
-		bool   m_bIsEmbossPresent{false};
-		bool   m_bIsEngravePresent{false};
+		// highlights
+		bool      m_bIsStrikeoutPresent    {false};
+		bool      m_bIsDoubleStrikeout     {false};
+		bool      m_bIsHighlightPresent    {false};
+		LONG      m_lHighlightColor        {c_iBlackColor};
+		bool      m_bIsUnderlinePresent    {false};
+		eLineType m_eUnderlineType         {eLineType::ltUnknown};
+		LONG      m_lUnderlineColor        {c_iBlackColor};
+		bool      m_bIsShadowPresent       {false};
+		bool      m_bIsOutlinePresent      {false};
+		bool      m_bIsEmbossPresent       {false};
+		bool      m_bIsEngravePresent      {false};
 
-		NSStringUtils::CStringUTF32 m_oText;
 
+		// sizes
 		double m_dSpaceWidthMM{0};
-		bool   m_bSpaceIsNotNeeded{false};
+		CSelectedSizes m_oSelectedSizes{};
 
-		double m_dWidthSelected{0};
-		double m_dSpaceWidthSelected{0};
-
-		eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
-
-		CFontManager* m_pManager{nullptr};
-
-		CShape* m_pShape{nullptr}; //Если не nullptr, то есть фоновая графика - можно анализировать.
-		const CContText* m_pCont{nullptr}; //Если не nullptr, то есть привязка к vatSubscript или vatSuperscript;
-
+		NSStringUtils::CStringUTF32 m_oText{};
 		UINT m_iNumDuplicates{0};
-		double m_dTrueHeight{0};
 
-	public:
+		CContText() = default;
 		CContText(CFontManager* pManager) : m_pManager(pManager) {}
 		CContText(const CContText& rCont);
 		virtual ~CContText();
+
 		virtual void Clear() override final;
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
+		virtual eVerticalCrossingType GetVerticalCrossingType(const CBaseItem* pItem) const noexcept override final;
 
-		virtual eVerticalCrossingType GetVerticalCrossingType(const CBaseItem* pItem) const noexcept  override  final;
+		// calc sizes in selected font (uses m_pFontStyle & m_pManager)
+		void CalcSelected() noexcept;
 
-		CContText& operator= (const CContText& rCont);
+		CContText& operator=(const CContText& rCont);
+		bool IsEqual(const CContText* pCont) const noexcept;
 
-		void AddWideSpaceToXml(double dSpacingMM,
-							   NSStringUtils::CStringBuilder& oWriter,
-							   bool bIsNeedSaveFormat = false);
-		bool IsEqual(const CContText* pCont);
-		UINT GetNumberOfFeatures();
-		bool IsDuplicate(CContText *pCont, eVerticalCrossingType eVType);
-		bool IsThereAreFontEffects(CContText *pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType);
-		bool IsVertAlignTypeBetweenConts(CContText* pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType);
-		void CalcSelectedWidth();
+		UINT GetNumberOfFeatures() const noexcept;
+		bool IsDuplicate(CContText *pCont, eVerticalCrossingType eVType) const noexcept;
 
-		double CalculateWideSpace();
-		double CalculateThinSpace();
+		// check font effect and delete not needed cont
+		// return true if was deleted
+		static bool CheckFontEffects
+			(std::shared_ptr<CContText>& pFirstCont,
+			std::shared_ptr<CContText>& pSecondCont,
+			eVerticalCrossingType eVType,
+			eHorizontalCrossingType eHType) noexcept;
+
+		static bool CheckVertAlignTypeBetweenConts
+			(std::shared_ptr<CContText>& pFirstCont,
+			std::shared_ptr<CContText>& pSecondCont,
+			eVerticalCrossingType eVType,
+			eHorizontalCrossingType eHType) noexcept;
+
+		double CalculateWideSpace() const noexcept;
+		double CalculateThinSpace() const noexcept;
 	};
 }

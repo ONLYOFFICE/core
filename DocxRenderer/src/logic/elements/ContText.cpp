@@ -5,6 +5,18 @@
 
 namespace NSDocxRenderer
 {
+	CSelectedSizes::CSelectedSizes(const CSelectedSizes& oSelectedSizes)
+	{
+		*this = oSelectedSizes;
+	}
+	CSelectedSizes& CSelectedSizes::operator=(const CSelectedSizes& oSelectedSizes)
+	{
+		dWidth = oSelectedSizes.dWidth;
+		dSpaceWidth = oSelectedSizes.dSpaceWidth;
+		dHeight = oSelectedSizes.dHeight;
+		return *this;
+	}
+
 	CContText::CContText(const CContText& rCont)
 	{
 		*this = rCont;
@@ -33,27 +45,20 @@ namespace NSDocxRenderer
 
 		m_bIsStrikeoutPresent = rCont.m_bIsStrikeoutPresent;
 		m_bIsDoubleStrikeout = rCont.m_bIsDoubleStrikeout;
-
 		m_bIsHighlightPresent = rCont.m_bIsHighlightPresent;
 		m_lHighlightColor = rCont.m_lHighlightColor;
-
 		m_bIsUnderlinePresent = rCont.m_bIsUnderlinePresent;
 		m_eUnderlineType = rCont.m_eUnderlineType;
 		m_lUnderlineColor = rCont.m_lUnderlineColor;
-
 		m_bIsShadowPresent = rCont.m_bIsShadowPresent;
 		m_bIsOutlinePresent = rCont.m_bIsOutlinePresent;
 		m_bIsEmbossPresent = rCont.m_bIsEmbossPresent;
 		m_bIsEngravePresent = rCont.m_bIsEngravePresent;
 
-		m_oText =rCont.m_oText;
+		m_oText = rCont.m_oText;
 
+		m_oSelectedSizes = rCont.m_oSelectedSizes;
 		m_dSpaceWidthMM = rCont.m_dSpaceWidthMM;
-		m_bSpaceIsNotNeeded = rCont.m_bSpaceIsNotNeeded;
-
-		m_dSpaceWidthSelected = rCont.m_dSpaceWidthSelected;
-		m_dWidthSelected = rCont.m_dWidthSelected;
-
 		m_eVertAlignType = rCont.m_eVertAlignType;
 
 		m_pManager = rCont.m_pManager;
@@ -66,11 +71,8 @@ namespace NSDocxRenderer
 		return *this;
 	}
 
-	void CContText::CalcSelectedWidth()
+	void CContText::CalcSelected() noexcept
 	{
-		if(m_bIsNotNecessaryToUse)
-			return;
-
 		if (!m_pFontStyle->wsFontName.empty() && !m_oText.empty())
 		{
 			// нужно перемерять...
@@ -88,8 +90,11 @@ namespace NSDocxRenderer
 
 			m_pManager->SetStringGid(0);
 			m_pManager->MeasureString(m_oText.ToStdWString(), 0, 0, dBoxX, dBoxY, dBoxWidth, dBoxHeight, CFontManager::mtPosition);
-			m_dWidthSelected = dBoxWidth;
-			m_dSpaceWidthSelected = m_pManager->GetSpaceWidthMM();
+
+			m_oSelectedSizes.dWidth = dBoxWidth;
+			m_oSelectedSizes.dHeight = dBoxHeight;
+			if(!m_oSelectedSizes.dSpaceWidth)
+				m_oSelectedSizes.dSpaceWidth = m_pManager->GetSpaceWidthMM();
 		}
 	}
 
@@ -99,39 +104,24 @@ namespace NSDocxRenderer
 		if((pCont = dynamic_cast<const CContText*>(pItem)) == nullptr)
 			return CBaseItem::GetVerticalCrossingType(pItem);
 
-		auto m_dTop_copy = m_dTop;
-		auto m_dTop_copy_src = pCont->m_dTop;
-
-		// call CBaseItem::GetVerticalCrossingType(oSrc) and not create copy, so const_cast was used
-		const_cast<CContText*>(pCont)->m_dTop = m_dBaselinePos - m_dTrueHeight;
-		const_cast<CContText*>(pCont)->m_dTop = pCont->m_dBaselinePos - pCont->m_dTrueHeight;
-
 		auto vert_cross = CBaseItem::GetVerticalCrossingType(pCont);
 
 		if(vert_cross == eVerticalCrossingType::vctCurrentAboveNext &&
-				(m_dBaselinePos - pCont->m_dTop < m_dTrueHeight * 0.3))
+				(m_dBaselinePos - pCont->m_dTop < m_dHeight * 0.3))
 			vert_cross = eVerticalCrossingType::vctNoCrossingCurrentAboveNext;
 
 		if(vert_cross == eVerticalCrossingType::vctCurrentBelowNext &&
-				(pCont->m_dBaselinePos - m_dTop < pCont->m_dTrueHeight * 0.3))
+				(pCont->m_dBaselinePos - m_dTop < pCont->m_dHeight * 0.3))
 			vert_cross = eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
-
-		const_cast<CContText*>(pCont)->m_dTop = m_dTop_copy;
-		const_cast<CContText*>(pCont)->m_dTop = m_dTop_copy_src;
 
 		return vert_cross;
 	}
 
 	void CContText::ToXml(NSStringUtils::CStringBuilder& oWriter) const
 	{
-		if (m_bIsNotNecessaryToUse)
-		{
-			return;
-		}
-
 		oWriter.WriteString(L"<w:r>");
 		oWriter.WriteString(L"<w:rPr>");
-		//oWriter.WriteString(L"<w:noProof/>");
+		oWriter.WriteString(L"<w:noProof/>");
 
 		oWriter.WriteString(L"<w:rStyle w:val=\"");
 		oWriter.WriteString(m_pFontStyle->wsFontStyleId);
@@ -141,7 +131,7 @@ namespace NSDocxRenderer
 
 		if (!m_pFontStyle->wsFontName.empty() && !m_oText.empty())
 		{
-			double dSpacing = (m_dWidth - m_dWidthSelected) / (m_oText.length());
+			double dSpacing = (m_dWidth - m_oSelectedSizes.dWidth) / (m_oText.length());
 			dSpacing *= c_dMMToDx;
 
 			//mm to points * 20
@@ -159,42 +149,29 @@ namespace NSDocxRenderer
 		}
 
 		if (m_bIsEmbossPresent)
-		{
 			oWriter.WriteString(L"<w:emboss/>");
-		}
 		else if (m_bIsEngravePresent)
-		{
 			oWriter.WriteString(L"<w:imprint/>");
-		}
 		else
 		{
 			if (m_bIsOutlinePresent)
-			{
 				oWriter.WriteString(L"<w:outline/>");
-			}
 			if (m_bIsShadowPresent)
-			{
 				oWriter.WriteString(L"<w:shadow/>");
-			}
 		}
 
 		if (m_bIsStrikeoutPresent)
 		{
 			if (m_bIsDoubleStrikeout)
-			{
 				oWriter.WriteString(L"<w:dstrike/>");
-			}
 			else
-			{
 				oWriter.WriteString(L"<w:strike/>");
-			}
 		}
 
 		if (m_bIsUnderlinePresent)
 		{
 			oWriter.WriteString(L"<w:u w:val=");
 			oWriter.WriteString(SingletonInstance<LinesTable>().ConvertLineToString(m_eUnderlineType));
-
 			if (m_lUnderlineColor != m_pFontStyle->oBrush.Color1)
 			{
 				oWriter.WriteString(L" w:color=\"");
@@ -236,109 +213,13 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"<w:vertAlign w:val=\"superscript\"/>");
 
 		oWriter.WriteString(L"</w:rPr>");
-
 		oWriter.WriteString(L"<w:t xml:space=\"preserve\">");
 		oWriter.WriteEncodeXmlString(m_oText.ToStdWString());
 		oWriter.WriteString(L"</w:t>");
-
 		oWriter.WriteString(L"</w:r>");
 	}
 
-	void CContText::AddWideSpaceToXml(double dSpacingMM,
-									  NSStringUtils::CStringBuilder& oWriter,
-									  bool bIsNeedSaveFormat)
-	{
-		oWriter.WriteString(L"<w:r><w:rPr>");
-
-		oWriter.WriteString(L"<w:rStyle w:val=\"");
-		oWriter.WriteString(m_pFontStyle->wsFontStyleId);
-		oWriter.WriteString(L"\"/>");
-
-		double dSpaceMMSize = m_dSpaceWidthMM;
-		LONG lCalculatedSpacing = static_cast<LONG>((dSpacingMM - dSpaceMMSize) * c_dMMToDx);
-
-		//note принудительно уменьшаем spacing чтобы текстовые линии не выходили за правую границу
-		lCalculatedSpacing -= 1;
-		if (lCalculatedSpacing != 0)
-		{
-			oWriter.WriteString(L"<w:spacing w:val=\"");
-			oWriter.AddInt(lCalculatedSpacing);
-			oWriter.WriteString(L"\"/>");
-		}
-
-		if (m_bIsEmbossPresent && bIsNeedSaveFormat)
-		{
-			oWriter.WriteString(L"<w:emboss/>");
-		}
-		else if (m_bIsEngravePresent && bIsNeedSaveFormat)
-		{
-			oWriter.WriteString(L"<w:imprint/>");
-		}
-		else
-		{
-			if (m_bIsOutlinePresent && bIsNeedSaveFormat)
-			{
-				oWriter.WriteString(L"<w:outline/>");
-			}
-			if (m_bIsShadowPresent && bIsNeedSaveFormat)
-			{
-				oWriter.WriteString(L"<w:shadow/>");
-			}
-		}
-
-		if (m_bIsStrikeoutPresent && bIsNeedSaveFormat)
-		{
-			if (m_bIsDoubleStrikeout)
-			{
-				oWriter.WriteString(L"<w:dstrike/>");
-			}
-			else
-			{
-				oWriter.WriteString(L"<w:strike/>");
-			}
-		}
-
-		if (m_bIsUnderlinePresent && bIsNeedSaveFormat)
-		{
-			oWriter.WriteString(L"<w:u w:val=");
-			oWriter.WriteString(SingletonInstance<LinesTable>().ConvertLineToString(m_eUnderlineType));
-
-			if (m_lUnderlineColor != m_pFontStyle->oBrush.Color1)
-			{
-				oWriter.WriteString(L" w:color=\"");
-				oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_lUnderlineColor));
-				oWriter.WriteString(L"\"");
-			}
-			oWriter.WriteString(L"/>");
-		}
-
-		if (m_bIsHighlightPresent && bIsNeedSaveFormat)
-		{
-			//note В <w:style это не работает
-			ColorTable& colorTable = SingletonInstance<ColorTable>();
-			if (colorTable.IsStandardColor(m_lHighlightColor))
-			{
-				oWriter.WriteString(L"<w:highlight w:val=\"");
-				oWriter.WriteString(colorTable.ConverColorToString(ConvertColorBGRToRGB(m_lHighlightColor)));
-			}
-			else
-			{
-				oWriter.WriteString(L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"");
-				oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_lHighlightColor));
-			}
-			oWriter.WriteString(L"\"/>");
-		}
-
-		oWriter.WriteString(L"</w:rPr>");
-
-		oWriter.WriteString(L"<w:t xml:space=\"preserve\">");
-		oWriter.WriteString(L" ");
-		oWriter.WriteString(L"</w:t>");
-
-		oWriter.WriteString(L"</w:r>");
-	}
-
-	bool CContText::IsEqual(const CContText *pCont)
+	bool CContText::IsEqual(const CContText *pCont) const noexcept
 	{
 		bool bIf1 = m_pFontStyle->wsFontStyleId == pCont->m_pFontStyle->wsFontStyleId;
 		bool bIf2 = m_bIsStrikeoutPresent == pCont->m_bIsStrikeoutPresent;
@@ -360,54 +241,31 @@ namespace NSDocxRenderer
 				bIf8 && bIf9 && bIf10 && bIf11 && bIf12 && (bIf13 || bIf14 || bIf15));
 	}
 
-	UINT CContText::GetNumberOfFeatures()
+	UINT CContText::GetNumberOfFeatures() const noexcept
 	{
 		UINT ret = 0;
-		if (m_pFontStyle->bBold)
-		{
-			ret++;
-		}
-		if (m_pFontStyle->bItalic)
-		{
-			ret++;
-		}
-		if (m_bIsStrikeoutPresent)
-		{
-			ret++;
-		}
-		if (m_bIsDoubleStrikeout)
-		{
-			ret++;
-		}
-		if (m_bIsHighlightPresent)
-		{
-			ret++;
-		}
-		if (m_bIsUnderlinePresent)
-		{
-			ret++;
-		}
-		if (m_eVertAlignType != eVertAlignType::vatUnknown)
-		{
-			ret++;
-		}
-
+		if (m_pFontStyle->bBold) ret++;
+		if (m_pFontStyle->bItalic) ret++;
+		if (m_bIsStrikeoutPresent) ret++;
+		if (m_bIsDoubleStrikeout) ret++;
+		if (m_bIsHighlightPresent) ret++;
+		if (m_bIsUnderlinePresent) ret++;
+		if (m_eVertAlignType != eVertAlignType::vatUnknown) ret++;
 		return ret;
 	}
 
-	bool CContText::IsDuplicate(CContText* pCont, eVerticalCrossingType eVType)
+	bool CContText::IsDuplicate(CContText* pCont, eVerticalCrossingType eVType) const noexcept
 	{
-		if (eVType == eVerticalCrossingType::vctDublicate &&
-				m_oText == pCont->m_oText)
-		{
-			pCont->m_bIsNotNecessaryToUse = true;
-			m_iNumDuplicates++;
+		if (eVType == eVerticalCrossingType::vctDublicate && m_oText == pCont->m_oText)
 			return true;
-		}
 		return false;
 	}
 
-	bool CContText::IsThereAreFontEffects(CContText* pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType)
+	bool CContText::CheckFontEffects
+		(std::shared_ptr<CContText>& pFirstCont,
+		std::shared_ptr<CContText>& pSecondCont,
+		eVerticalCrossingType eVType,
+		eHorizontalCrossingType eHType) noexcept
 	{
 		//Условие пересечения по вертикали
 		bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext; //текущий cont выше
@@ -418,53 +276,51 @@ namespace NSDocxRenderer
 		bool bIf4 = eHType == eHorizontalCrossingType::hctCurrentRightOfNext; //текущий cont правее
 
 		//Размеры шрифта и текст должны бать одинаковыми
-		bool bIf5 = m_pFontStyle->dFontSize == m_pFontStyle->dFontSize;
-		bool bIf6 = m_oText == pCont->m_oText;
+		bool bIf5 = pFirstCont->m_pFontStyle->dFontSize == pSecondCont->m_pFontStyle->dFontSize;
+		bool bIf6 = pFirstCont->m_oText == pSecondCont->m_oText;
 
 		//Цвет тени должен быть серым
-		bool bIf7 = m_pFontStyle->oBrush.Color1 == c_iGreyColor;
-		bool bIf8 = pCont->m_pFontStyle->oBrush.Color1 == c_iGreyColor;
-		bool bIf9 = m_pFontStyle->oBrush.Color1 == c_iBlackColor;
-		bool bIf10 = pCont->m_pFontStyle->oBrush.Color1 == c_iBlackColor;
-		bool bIf11 = m_pFontStyle->oBrush.Color1 == c_iGreyColor2;
-		bool bIf12 = pCont->m_pFontStyle->oBrush.Color1 == c_iGreyColor2;
+		bool bIf7 = pFirstCont->m_pFontStyle->oBrush.Color1 == c_iGreyColor;
+		bool bIf8 = pSecondCont->m_pFontStyle->oBrush.Color1 == c_iGreyColor;
+
+		bool bIf9 = pFirstCont->m_pFontStyle->oBrush.Color1 == c_iBlackColor;
+		bool bIf10 = pSecondCont->m_pFontStyle->oBrush.Color1 == c_iBlackColor;
+
+		bool bIf11 = pFirstCont->m_pFontStyle->oBrush.Color1 == c_iGreyColor2;
+		bool bIf12 = pSecondCont->m_pFontStyle->oBrush.Color1 == c_iGreyColor2;
 
 		//note Каждый символ с Emboss или Engrave разбиваются на 3 символа с разными цветами
 		//note Логика подобрана для конкретного примера - возможно нужно будет ее обобщить.
 		//todo существует проблема неправильного определением FontEffects с физически пересекаемыми строчками - файл generaltest.pdf p.14
 		if (bIf5 && bIf6)
 		{
-			if (m_bIsEmbossPresent && bIf12)
-			{
+			if (bIf12)
 				if (bIf1 && bIf3)
 				{
-					m_bIsEmbossPresent = true;
-					pCont->m_bIsNotNecessaryToUse = true;
+					pFirstCont->m_bIsEmbossPresent = true;
+					pSecondCont = nullptr;
 					return true;
 				}
-			}
 
-			if (m_bIsEngravePresent && bIf10)
-			{
+			if (bIf10)
 				if (bIf1 && bIf3)
 				{
-					m_bIsEngravePresent = true;
-					pCont->m_bIsNotNecessaryToUse = true;
+					pFirstCont->m_bIsEngravePresent = true;
+					pSecondCont = nullptr;
 					return true;
 				}
-			}
 
 			//Shadow
 			if (bIf1 && bIf3 && bIf8)
 			{
-				m_bIsShadowPresent = true;
-				pCont->m_bIsNotNecessaryToUse = true;
+				pFirstCont->m_bIsShadowPresent = true;
+				pSecondCont = nullptr;
 				return true;
 			}
 			else if (bIf2 && bIf4 && bIf7)
 			{
-				pCont->m_bIsShadowPresent = true;
-				m_bIsNotNecessaryToUse = true;
+				pSecondCont->m_bIsShadowPresent = true;
+				pFirstCont = nullptr;
 				return true;
 			}
 
@@ -473,85 +329,90 @@ namespace NSDocxRenderer
 			//c_iBlackColor -> c_iBlackColor -> c_iGreyColor2
 			else if (bIf1 && bIf3 && bIf9)
 			{
-				pCont->m_bIsEmbossPresent = true;
-				m_bIsNotNecessaryToUse = true;
+				pSecondCont->m_bIsEmbossPresent = true;
+				pFirstCont = nullptr;
 				return true;
 			}
 			//Engrave
 			else if (bIf1 && bIf3 && bIf11)
 			{
-				pCont->m_bIsEngravePresent = true;
-				m_bIsNotNecessaryToUse = true;
+				pSecondCont->m_bIsEngravePresent = true;
+				pFirstCont = nullptr;
 				return true;
 			}
 		}
 		return false;
 	}
 
-	bool CContText::IsVertAlignTypeBetweenConts(CContText* pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType)
+	bool CContText::CheckVertAlignTypeBetweenConts
+		(std::shared_ptr<CContText>& pFirstCont,
+		std::shared_ptr<CContText>& pSecondCont,
+		eVerticalCrossingType eVType,
+		eHorizontalCrossingType eHType) noexcept
 	{
-		//Условие пересечения по вертикали
+
 		bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext ||
-				eVType == eVerticalCrossingType::vctCurrentInsideNext;
+			eVType == eVerticalCrossingType::vctCurrentInsideNext;
+
 		bool bIf2 = eVType == eVerticalCrossingType::vctCurrentBelowNext;
-		//Условие пересечения по горизонтали
+
 		bool bIf3 = (eHType == eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext ||
-					 eHType == eHorizontalCrossingType::hctCurrentLeftOfNext) &&
-				fabs(m_dRight - pCont->m_dLeft) < c_dTHE_STRING_X_PRECISION_MM * 3;
+			eHType == eHorizontalCrossingType::hctCurrentLeftOfNext) &&
+			fabs(pFirstCont->m_dRight - pSecondCont->m_dLeft) < c_dTHE_STRING_X_PRECISION_MM * 3;
+
 		bool bIf4 = (eHType == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext ||
 					 eHType == eHorizontalCrossingType::hctCurrentRightOfNext) &&
-				fabs(m_dLeft - pCont->m_dRight) < c_dTHE_STRING_X_PRECISION_MM * 3;
+				fabs(pFirstCont->m_dLeft - pSecondCont->m_dRight) < c_dTHE_STRING_X_PRECISION_MM * 3;
+
 		//Размеры шрифта должны бать разными
-		bool bIf5 = m_pFontStyle->dFontSize * 0.7 > pCont->m_pFontStyle->dFontSize;
-		bool bIf6 = m_pFontStyle->dFontSize <  pCont->m_pFontStyle->dFontSize * 0.7;
+		bool bIf5 = pFirstCont->m_pFontStyle->dFontSize * 0.7 > pSecondCont->m_pFontStyle->dFontSize;
+		bool bIf6 = pFirstCont->m_pFontStyle->dFontSize <  pSecondCont->m_pFontStyle->dFontSize * 0.7;
 
 		if (bIf3 || bIf4)
 		{
 			if (bIf1 && bIf5)
 			{
-				pCont->m_eVertAlignType = eVertAlignType::vatSubscript;
-				pCont->m_pCont = this;
-				m_eVertAlignType = eVertAlignType::vatBase;
-				m_pCont = pCont;
+				pSecondCont->m_eVertAlignType = eVertAlignType::vatSubscript;
+				pSecondCont->m_pCont = pFirstCont;
+				pFirstCont->m_eVertAlignType = eVertAlignType::vatBase;
+				pFirstCont->m_pCont = pSecondCont;
 				return true;
 			}
 			else if (bIf2 && bIf5)
 			{
-				pCont->m_eVertAlignType = eVertAlignType::vatSuperscript;
-				pCont->m_pCont = this;
-				m_eVertAlignType = eVertAlignType::vatBase;
-				m_pCont = pCont;
+				pSecondCont->m_eVertAlignType = eVertAlignType::vatSuperscript;
+				pSecondCont->m_pCont = pFirstCont;
+				pFirstCont->m_eVertAlignType = eVertAlignType::vatBase;
+				pFirstCont->m_pCont = pSecondCont;
 				return true;
 			}
 			else if (bIf1 && bIf6)
 			{
-				m_eVertAlignType = eVertAlignType::vatSuperscript;
-				m_pCont = pCont;
-				pCont->m_eVertAlignType = eVertAlignType::vatBase;
-				pCont->m_pCont = this;
+				pFirstCont->m_eVertAlignType = eVertAlignType::vatSuperscript;
+				pFirstCont->m_pCont = pSecondCont;
+				pSecondCont->m_eVertAlignType = eVertAlignType::vatBase;
+				pSecondCont->m_pCont = pFirstCont;
 				return true;
 			}
 			else if (bIf2 && bIf6)
 			{
-				m_eVertAlignType = eVertAlignType::vatSubscript;
-				m_pCont = pCont;
-				pCont->m_eVertAlignType = eVertAlignType::vatBase;
-				pCont->m_pCont = this;
+				pFirstCont->m_eVertAlignType = eVertAlignType::vatSubscript;
+				pFirstCont->m_pCont = pSecondCont;
+				pSecondCont->m_eVertAlignType = eVertAlignType::vatBase;
+				pSecondCont->m_pCont = pFirstCont;
 				return true;
 			}
 		}
 		return false;
 	}
 
-	double CContText::CalculateWideSpace()
+	double CContText::CalculateWideSpace() const noexcept
 	{
-		//note подобранное условие - не везде хорошо работает
 		return m_dSpaceWidthMM * 3;
 	}
 
-	double CContText::CalculateThinSpace()
+	double CContText::CalculateThinSpace() const noexcept
 	{
-		//note подобранное условие - не везде хорошо работает
-		return m_dSpaceWidthMM * 0.3;
+		return m_dSpaceWidthMM * 0.35;
 	}
 }

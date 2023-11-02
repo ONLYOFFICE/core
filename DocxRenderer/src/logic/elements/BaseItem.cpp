@@ -7,12 +7,7 @@ namespace NSDocxRenderer
 	CBaseItem& CBaseItem::operator=(const CBaseItem& oSrc)
 	{
 		if (this == &oSrc)
-		{
 			return *this;
-		}
-
-//		m_eType                 = oSrc.m_eType;
-		m_bIsNotNecessaryToUse	= oSrc.m_bIsNotNecessaryToUse;
 
 		m_dLeft = oSrc.m_dLeft;
 		m_dTop = oSrc.m_dTop;
@@ -75,7 +70,6 @@ namespace NSDocxRenderer
 			return  eVerticalCrossingType::vctUnknown;
 		}
 	}
-
 	eHorizontalCrossingType CBaseItem::GetHorizontalCrossingType(const CBaseItem* oSrc) const
 	{
 		if (m_dLeft > oSrc->m_dLeft && m_dRight < oSrc->m_dRight)
@@ -135,7 +129,6 @@ namespace NSDocxRenderer
 		return (eVType == eVerticalCrossingType::vctNoCrossingCurrentAboveNext ||
 				eVType == eVerticalCrossingType::vctNoCrossingCurrentBelowNext);
 	}
-
 	bool CBaseItem::AreObjectsNoCrossingByHorizontally(const CBaseItem* pObj) const noexcept
 	{
 		eHorizontalCrossingType eHType = GetHorizontalCrossingType(pObj);
@@ -148,13 +141,12 @@ namespace NSDocxRenderer
 	{
 		return m_dLeft < oSrc->m_dLeft;
 	}
-
 	bool CBaseItem::IsCurrentAboveOfNext(const CBaseItem* oSrc)
 	{
 		return m_dBaselinePos < oSrc->m_dBaselinePos;
 	}
 
-	void CBaseItem::AddContent(CBaseItem* pItem)
+	void CBaseItem::RecalcWithNewItem(const CBaseItem* pItem)
 	{
 		m_dBaselinePos = std::max(m_dBaselinePos, pItem->m_dBaselinePos);
 

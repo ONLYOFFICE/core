@@ -15,7 +15,7 @@ namespace NSDocxRenderer
 		LONG nFontSize; // Pt * 2
 		LONG nOffset;
 
-//		CDropCap() : CBaseItem(ElemType::etDropCap) {}
+		CDropCap() = default;
 		~CDropCap() = default;
 
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override;

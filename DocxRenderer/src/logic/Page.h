@@ -8,48 +8,46 @@
 #include "styles/ParagraphStyle.h"
 #include "elements/DropCap.h"
 
-
 namespace NSDocxRenderer
 {
 	class CPage
 	{
 	public:
-		NSStructures::CFont*        m_pFont {nullptr};
-		NSStructures::CPen*         m_pPen {nullptr};
-		NSStructures::CBrush*       m_pBrush {nullptr};
-		NSStructures::CShadow*      m_pShadow {nullptr};
-		NSStructures::CEdgeText*    m_pEdgeText {nullptr};
-
-		Aggplus::CMatrix*           m_pTransform {nullptr};
-		Aggplus::CGraphicsPathSimpleConverter* m_pSimpleGraphicsConverter {nullptr};
-
-		CFontStyleManager*          m_pFontStyleManager {nullptr};
-		CParagraphStyleManager*     m_pParagraphStyleManager {nullptr};
-		CFontManager*               m_pFontManager {nullptr};
-		CFontSelector*				m_pFontSelector {nullptr};
-		CVectorGraphics             m_oVector;
-
 		double m_dWidth {0.0};
 		double m_dHeight {0.0};
 
-		LONG                     m_lCurrentCommand {0};
+		LONG m_lCurrentCommand {0};
 
-		std::vector<CShape*>     m_arImages;
-		std::vector<CContText*>  m_arDiacriticalSymbol;
-		std::vector<CTextLine*>  m_arTextLine;
-		std::vector<CShape*>     m_arShapes;
-		std::vector<CContText*>	 m_arConts;
+		NSStructures::CFont*        m_pFont      {nullptr};
+		NSStructures::CPen*         m_pPen       {nullptr};
+		NSStructures::CBrush*       m_pBrush     {nullptr};
+		NSStructures::CShadow*      m_pShadow    {nullptr};
+		NSStructures::CEdgeText*    m_pEdgeText  {nullptr};
 
-		std::vector<COutputObject*>  m_arOutputObjects;
+		Aggplus::CMatrix*                      m_pTransform              {nullptr};
+		Aggplus::CGraphicsPathSimpleConverter* m_pSimpleGraphicsConverter{nullptr};
 
-		std::vector<CPeak*>      m_arPeaks;
-		std::vector<CCell*>      m_arCells;
-		std::vector<CRow*>       m_arRows;
-		std::vector<CTable*>     m_arTables;
+		CFontStyleManager*          m_pFontStyleManager     {nullptr};
+		CParagraphStyleManager*     m_pParagraphStyleManager{nullptr};
+		CFontManager*               m_pFontManager          {nullptr};
+		CFontSelector*				m_pFontSelector         {nullptr};
+		CVectorGraphics             m_oVector;
+
+		std::vector<std::shared_ptr<CContText>>	 m_arConts;
+		std::vector<std::shared_ptr<CTextLine>>  m_arTextLines;
+		std::vector<std::shared_ptr<CContText>>  m_arDiacriticalSymbols;
+		std::vector<std::shared_ptr<CShape>>     m_arImages;
+		std::vector<std::shared_ptr<CShape>>     m_arShapes;
+
+		std::vector<std::shared_ptr<CShape>>  m_arOutputObjects;
+
+//		std::vector<CPeak*>      m_arPeaks;
+//		std::vector<CCell*>      m_arCells;
+//		std::vector<CRow*>       m_arRows;
+//		std::vector<CTable*>     m_arTables;
 
 		CTextLine*               m_pCurrentLine {nullptr};
-		CRow*                    m_pCurrentRow {nullptr};
-
+//		CRow*                    m_pCurrentRow {nullptr};
 
 		TextAssociationType      m_eTextAssociationType {TextAssociationType::tatPlainParagraph};
 
@@ -96,12 +94,14 @@ namespace NSDocxRenderer
 		void ProcessingAndRecordingOfPageData(NSStringUtils::CStringBuilder& oWriter, LONG lPagesCount, LONG lNumberPages);
 
 	private:
-		void SortConts();
-		void CreateTextLines();
-		void AddContToTextLine(CContText *pCont);
 
-		void AnalyzeCollectedTextLines();
-		void AnalyzeCollectedConts();
+		// methods to build text lines
+		void BuildTextLines();
+		void AddContToTextLine(std::shared_ptr<CContText> pCont);
+		void AddContToTextLine(std::shared_ptr<CContText>&& pCont);
+
+		void AnalyzeTextLines();
+		void AnalyzeConts();
 		void DetermineStrikeoutsUnderlinesHighlights();
 
 		void AnalyzeDropCaps();
@@ -113,15 +113,18 @@ namespace NSDocxRenderer
 		bool IsLineBelowText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
 		bool IsItHighlightingBackground(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
 
-		void AnalyzeCollectedShapes();
-		void BuildTables();
-		void CollectPeaks();
-		void CreatCells();
-		void BuildRows();
-		void SelectCurrentRow(const CCell *pCell);
+		void AnalyzeShapes();
 		void DetermineLinesType();
 
-		void TryMergeShapes();
+//		void BuildTables();
+//		void CollectPeaks();
+//		void CreatCells();
+//		void BuildRows();
+//		void SelectCurrentRow(const CCell *pCell);
+
+
+		void MergeShapes();
+		void CalcSelected();
 
 		// конвертим m_arImages, m_arShapes, m_arParagraphs в xml-строку
 		void ToXml(NSStringUtils::CStringBuilder& oWriter);

@@ -2,6 +2,7 @@
 #include "../DesktopEditor/common/StringBuilder.h"
 #include "src/resources/Constants.h"
 #include <vector>
+#include <memory>
 
 namespace NSDocxRenderer
 {
@@ -40,8 +41,6 @@ namespace NSDocxRenderer
 	class CBaseItem
 	{
 	public:
-		bool m_bIsNotNecessaryToUse {false};
-
 		double m_dTop {0.0};
 		double m_dBaselinePos {0.0};
 		double m_dHeight {0.0};
@@ -58,7 +57,7 @@ namespace NSDocxRenderer
 
 		virtual eVerticalCrossingType GetVerticalCrossingType(const CBaseItem* oSrc) const;
 		virtual eHorizontalCrossingType GetHorizontalCrossingType(const CBaseItem* oSrc) const;
-		virtual void AddContent(CBaseItem* pItem);
+		virtual void RecalcWithNewItem(const CBaseItem* pObj);
 
 		bool AreObjectsNoCrossingByVertically(const CBaseItem* pObj) const noexcept;
 		bool AreObjectsNoCrossingByHorizontally(const CBaseItem* pObj) const noexcept;
@@ -78,16 +77,6 @@ namespace NSDocxRenderer
 		{
 			std::sort(oArray.begin(), oArray.end(), [](T* a, T* b) {
 				return a->IsCurrentAboveOfNext(b);
-			});
-		}
-
-		template <typename T>
-		static void SortTopLeft(std::vector<T*>& oArray)
-		{
-			std::sort(oArray.begin(), oArray.end(), [](T* a, T* b) {
-				if(fabs(a->m_dBaselinePos - b->m_dBaselinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
-					return a->m_dLeft < b->m_dLeft;
-				return a->m_dBaselinePos < b->m_dBaselinePos;
 			});
 		}
 

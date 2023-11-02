@@ -4,6 +4,7 @@ VERSION = 1.0.0.4
 TARGET = DocxRenderer
 TEMPLATE = lib
 
+CONFIG += c++11
 CONFIG += shared
 CONFIG += plugin
 

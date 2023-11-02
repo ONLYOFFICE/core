@@ -20,7 +20,7 @@ namespace NSDocxRenderer
 	public:
 		CImage() = default;
 		CImage(const CImageInfo& oInfo, const std::wstring& strDstMedia);
-		void Clear() override final;
+		void Clear() override final {};
 		void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
 	};
 }

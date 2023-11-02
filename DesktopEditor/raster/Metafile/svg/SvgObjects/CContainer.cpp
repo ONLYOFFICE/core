@@ -13,8 +13,8 @@ namespace SVG
 	{
 		m_oWindow.m_oX     .SetValue(oNode.GetAttribute(L"x"));
 		m_oWindow.m_oY     .SetValue(oNode.GetAttribute(L"y"));
-		m_oWindow.m_oWidth .SetValue(oNode.GetAttribute(L"width"));
-		m_oWindow.m_oHeight.SetValue(oNode.GetAttribute(L"height"));
+		m_oWindow.m_oWidth .SetValue(oNode.GetAttribute(L"width"), 0, true);
+		m_oWindow.m_oHeight.SetValue(oNode.GetAttribute(L"height"), 0, true);
 
 		const std::wstring wsViewBox = oNode.GetAttribute(L"viewBox");
 
@@ -29,6 +29,8 @@ namespace SVG
 				m_oViewBox.m_oHeight = arValues[3];
 			}
 		}
+		else
+			m_oViewBox = m_oWindow;
 	}
 
 	CGraphicsContainer::CGraphicsContainer(XmlUtils::CXmlNode& oNode, CRenderedObject *pParent)

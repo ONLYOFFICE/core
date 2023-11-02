@@ -364,7 +364,7 @@ namespace NSCSS
 		if (!CUnitMeasureConverter::GetValue(wsValue, dNewValue, enNewUnitMeasure))
 			return false;
 
-		if (Percent == enNewUnitMeasure && !Empty() && unLevel > m_unLevel)
+		if (Percent == enNewUnitMeasure && !Empty() && (unLevel > m_unLevel || bHardMode))
 		{
 			m_oValue *= dNewValue / 100.;
 		}
@@ -560,6 +560,9 @@ namespace NSCSS
 
 	double CColor::GetOpacity() const
 	{
+		if (m_oOpacity.Empty())
+			return 1.;
+
 		if (Percent == m_oOpacity.GetUnitMeasure())
 			return m_oOpacity.ToDouble() / 100.;
 

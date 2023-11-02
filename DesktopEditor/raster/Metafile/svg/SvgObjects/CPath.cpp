@@ -304,8 +304,12 @@ namespace SVG
 			if ((int)(dStartAngle / 90.) == dStartAngle / 90.)
 				dEndAngle = dStartAngle + ((dSweep > 0.) ? 90. : -90.);
 			else
+			{
 				dEndAngle = copysign(ceil(std::abs(dStartAngle) / 90.), dStartAngle) * ((dSweep > 0. || dStartAngle < 0.) ? 90. : -90.);
-
+			
+				if (dStartAngle < 0. && dSweep > 0.)
+					dEndAngle += 90.;
+			}
 			if (std::abs(dAngle - dEndAngle) > std::abs(dSweep))
 				dEndAngle = dAngle + dSweep;
 
@@ -453,6 +457,7 @@ namespace SVG
 
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
+		SetOpacity(mAttributes, ushLevel, bHardMode);
 		SetMarker(mAttributes, ushLevel, bHardMode);
 
 		std::map<std::wstring, std::wstring>::const_iterator oIter = mAttributes.find(L"fill-rule");
@@ -496,6 +501,8 @@ namespace SVG
 
 		if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true))
 			nTypePath += (m_bEvenOddRule) ? c_nEvenOddFillMode : c_nWindingFillMode;
+		
+		ApplyOpacity(pRenderer, &pStyles->m_oOpacity);
 	}
 
 	bool CPath::DrawMarkers(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode) const

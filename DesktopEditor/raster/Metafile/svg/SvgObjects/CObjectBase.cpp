@@ -267,9 +267,12 @@ namespace SVG
 
 		if (mAttributes.end() != mAttributes.find(L"fill-opacity"))
 			m_oStyles.m_oFill.SetOpacity(mAttributes.at(L"fill-opacity"), ushLevel, bHardMode);
-
+	}
+	
+	void CRenderedObject::SetOpacity(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
+	{
 		if (mAttributes.end() != mAttributes.find(L"opacity"))
-			m_oStyles.m_oFill.SetOpacity(mAttributes.at(L"opacity"), ushLevel, bHardMode);
+			m_oStyles.m_oOpacity.SetValue(mAttributes.at(L"opacity"), ushLevel, bHardMode);
 	}
 
 	bool CRenderedObject::StartPath(IRenderer *pRenderer, const CSvgFile *pFile, Aggplus::CMatrix &oOldTransform, CommandeMode oMode) const
@@ -406,6 +409,14 @@ namespace SVG
 		}
 
 		pRenderer->put_BrushAlpha1(255. * pFill->GetOpacity());
+
+		return true;
+	}
+
+	bool CRenderedObject::ApplyOpacity(IRenderer *pRenderer, const NSCSS::NSProperties::CDigit *pOpacity) const
+	{
+		if (NULL == pOpacity)
+			return false;
 
 		return true;
 	}

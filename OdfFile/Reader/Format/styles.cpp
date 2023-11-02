@@ -1133,17 +1133,17 @@ void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream 
 		if (fo_page_width_)
 		{
 			int val = (int)( 0.5 + 20.0 * fo_page_width_->get_value_unit(length::pt) );
-			if (val > 31680)
-			{
-				//Context.set_settings_property(odf_reader::_property(L"UnormalWidthPage",val));
-				val =31680;//22"
-			}
+			//if (val > 31680)
+			//{
+			//	//Context.set_settings_property(odf_reader::_property(L"UnormalWidthPage",val));
+			//	val =31680;//22"
+			//}
 			w_w = std::to_wstring(val);
 		}
 		if (fo_page_height_)
 		{
 			int val = (int)( 0.5 + 20.0 * fo_page_height_->get_value_unit(length::pt));
-			if (val > 31680) val =31680;//22"
+			//if (val > 31680) val =31680;//22"
 			w_h = std::to_wstring(val);
 
 			height_page = val;

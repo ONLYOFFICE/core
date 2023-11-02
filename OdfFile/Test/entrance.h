@@ -43,10 +43,10 @@
 #include "Writer/Format/anim_elements.h"
 #include "Writer/Format/draw_page.h"
 
-class ODP2OOX_AnimationEtranceEnvironment : public ODP2OOX_AnimationEnvironment
+class ODP2OOX_AnimationEntranceEnvironment : public ODP2OOX_AnimationEnvironment
 {
 public:
-	ODP2OOX_AnimationEtranceEnvironment();
+	ODP2OOX_AnimationEntranceEnvironment();
 
 	static const cpdoccore::oox::pptx_animation_context& GetAnimationContext();
 

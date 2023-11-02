@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 {
 	::testing::InitGoogleTest(&argc, argv);
 
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationEtranceEnvironment);
+	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationEntranceEnvironment);
 	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationMotionEnvironment);
 	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationAudioEnvironment);
 	

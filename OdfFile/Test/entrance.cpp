@@ -42,10 +42,10 @@
 #include "Writer/Converter/PptxConverter.h"
 #include "Writer/Format/office_elements.h"
 
-boost::shared_ptr<cpdoccore::oox::pptx_conversion_context> ODP2OOX_AnimationEtranceEnvironment::sConverionContext;
-boost::shared_ptr<cpdoccore::odf_reader::odf_document> ODP2OOX_AnimationEtranceEnvironment::sInputOdf;
+boost::shared_ptr<cpdoccore::oox::pptx_conversion_context> ODP2OOX_AnimationEntranceEnvironment::sConverionContext;
+boost::shared_ptr<cpdoccore::odf_reader::odf_document> ODP2OOX_AnimationEntranceEnvironment::sInputOdf;
 
-ODP2OOX_AnimationEtranceEnvironment::ODP2OOX_AnimationEtranceEnvironment()
+ODP2OOX_AnimationEntranceEnvironment::ODP2OOX_AnimationEntranceEnvironment()
 	: ODP2OOX_AnimationEnvironment(
 		L"ExampleFiles" FILE_SEPARATOR_STR "entrance.odp",
 		&sInputOdf,
@@ -54,14 +54,14 @@ ODP2OOX_AnimationEtranceEnvironment::ODP2OOX_AnimationEtranceEnvironment()
 
 }
 
-const cpdoccore::oox::pptx_animation_context& ODP2OOX_AnimationEtranceEnvironment::GetAnimationContext()
+const cpdoccore::oox::pptx_animation_context& ODP2OOX_AnimationEntranceEnvironment::GetAnimationContext()
 {
 	return sConverionContext->get_slide_context().get_animation_context();
 }
 
 void ODP2OOX_EntranceAnimationTest::SetUp()
 {
-	mAnimationContext = &ODP2OOX_AnimationEtranceEnvironment::GetAnimationContext();
+	mAnimationContext = &ODP2OOX_AnimationEntranceEnvironment::GetAnimationContext();
 }
 
 const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr& ODP2OOX_EntranceAnimationTest::GetInnerPar(const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr& par)

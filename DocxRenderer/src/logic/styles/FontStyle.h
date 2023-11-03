@@ -1,8 +1,8 @@
 #pragma once
 #include <memory>
 
-#include "../DesktopEditor/graphics/structures.h"
-#include "../DesktopEditor/common/StringBuilder.h"
+#include "../../../../DesktopEditor/graphics/structures.h"
+#include "../../../../DesktopEditor/common/StringBuilder.h"
 
 
 namespace NSDocxRenderer

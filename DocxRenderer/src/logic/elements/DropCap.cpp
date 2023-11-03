@@ -12,14 +12,6 @@ namespace NSDocxRenderer
 		oWriter.AddInt(static_cast<LONG>((m_dBaselinePos - m_dTop) * c_dMMToDx));
 		oWriter.WriteString(L"\" ");
 		oWriter.WriteString(L"w:lineRule=\"exact\" />");
-//		oWriter.WriteString(L"<w:framePr w:dropCap=\"drop\" w:lines=\"");
-//		oWriter.AddInt(nLines);
-//		oWriter.WriteString(L"\" w:wrap=\"around\" w:vAnchor=\"page\" w:hAnchor=\"page\" />");
-//		oWriter.WriteString(L" w:x=\"");
-//		oWriter.AddInt(static_cast<LONG>(m_dLeft * c_dMMToDx));
-//		oWriter.WriteString(L"\" w:y=\"");
-//		oWriter.AddInt(static_cast<LONG>(m_dTop * c_dMMToDx));
-//		oWriter.WriteString(L"\" />");
 		oWriter.WriteString(L"</w:pPr>");
 		oWriter.WriteString(L"<w:r>");
 		oWriter.WriteString(L"<w:rPr>");
@@ -28,9 +20,6 @@ namespace NSDocxRenderer
 							L"\" w:eastAsia=\"" + wsFont +
 							L"\" w:cs=\"" + wsFont + L"\" />");
 
-//		oWriter.WriteString(L"<w:position w:val=\"");
-//		oWriter.AddInt(nOffset);
-//		oWriter.WriteString(L"\" />");
 		oWriter.WriteString(L"<w:sz w:val=\"");
 		oWriter.AddInt(nFontSize);
 		oWriter.WriteString(L"\" />");

@@ -2,9 +2,9 @@
 #include <list>
 #include <vector>
 
-#include "../DesktopEditor/graphics/structures.h"
-#include "../DesktopEditor/graphics/pro/Fonts.h"
-#include "../DesktopEditor/common/StringUTF32.h"
+#include "../../../../DesktopEditor/graphics/structures.h"
+#include "../../../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../../../DesktopEditor/common/StringUTF32.h"
 
 namespace NSDocxRenderer
 {
@@ -44,14 +44,14 @@ namespace NSDocxRenderer
 	struct CFontSelectParams
 	{
 		// изначальные параметры, которые могут быть нам известны
-		std::wstring wsDefaultName {L""};
-		bool bDefaultBold {false};
-		bool bDefaultItalic {false};
+		std::wstring wsDefaultName{L""};
+		bool bDefaultBold{false};
+		bool bDefaultItalic{false};
 
-		SHORT lAvgWidth {-1};
-		bool bIsFixedWidth {false};
+		SHORT lAvgWidth{-1};
+		bool bIsFixedWidth{false};
 
-		BYTE arPANOSE[10] {};
+		BYTE arPANOSE[10]{};
 		std::vector<UINT> arSignature;
 
 		CFontSelectParams() = default;

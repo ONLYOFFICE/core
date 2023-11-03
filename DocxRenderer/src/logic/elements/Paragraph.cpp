@@ -140,13 +140,16 @@ namespace NSDocxRenderer
 		}
 	}
 
-	CParagraph::TextAlignmentType CParagraph::DetermineTextAlignmentType(std::shared_ptr<CTextLine> pCurrentLine, std::shared_ptr<CTextLine> pNextLine, std::shared_ptr<CTextLine> pNextNextLine, double dPageWidth, bool &bIsUseNextNextLine, bool &bIsSingleLineParagraph)
+	CParagraph::TextAlignmentType CParagraph::DetermineTextAlignmentType(std::shared_ptr<CTextLine> pCurrentLine,
+		std::shared_ptr<CTextLine> pNextLine,
+		std::shared_ptr<CTextLine> pNextNextLine,
+		double dPageWidth,
+		bool &bIsUseNextNextLine,
+		bool &bIsSingleLineParagraph) noexcept
 	{
 		// поменять логику
 		if (!pCurrentLine || !pNextLine)
-		{
 			return tatUnknown;
-		}
 
 		double dCurrLeft = pCurrentLine->m_dLeft;
 		double dNextLeft = pNextLine->m_dLeft;

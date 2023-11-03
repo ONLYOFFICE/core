@@ -1,5 +1,5 @@
 #pragma once
-#include "../DesktopEditor/common/Types.h"
+#include "../../../DesktopEditor/common/Types.h"
 
 #define USING_DELETE_DUPLICATING_CONTS 0 // 0 - все сточки-дубликаты превращаются в shape, 1 - строчки дубликаты удаляются
 

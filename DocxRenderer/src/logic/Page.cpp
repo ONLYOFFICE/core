@@ -30,7 +30,6 @@ namespace NSDocxRenderer
 		m_pParagraphStyleManager = pParagraphStyleManager;
 
 		m_pCurrentLine = nullptr;
-//		m_pCurrentRow = nullptr;
 
 		CShape::ResetRelativeHeight();
 	}
@@ -50,18 +49,8 @@ namespace NSDocxRenderer
 		m_arShapes.clear();
 		m_arOutputObjects.clear();
 
-		ClearTables();
 		m_pCurrentLine = nullptr;
-//		m_pCurrentRow = nullptr;
 		m_oVector.Clear();
-	}
-
-	void CPage::ClearTables()
-	{
-//		m_arPeaks.clear();
-//		m_arCells.clear();
-//		m_arRows.clear();
-//		m_arTables.clear();
 	}
 
 	CPage::~CPage()
@@ -446,13 +435,16 @@ namespace NSDocxRenderer
 		if(m_arShapes.empty())
 			return;
 
+		using shape_ref_ptr_t = std::reference_wrapper<std::shared_ptr<CShape>>;
 		for(size_t i = 0; i < m_arShapes.size() - 1; i++)
 		{
-			auto& val = m_arShapes[i];
-			auto& nextVal = m_arShapes[i + 1];
+			shape_ref_ptr_t val = m_arShapes[i];
+			shape_ref_ptr_t next_val = m_arShapes[i + 1];
 
-			if(val && nextVal)
-				nextVal->TryMergeShape(val);
+			if(!val.get() || ! next_val.get())
+				continue;
+
+			next_val.get()->TryMergeShape(val.get());
 		}
 	}
 
@@ -467,367 +459,6 @@ namespace NSDocxRenderer
 		//BuildTables();
 		DetermineLinesType();
 	}
-
-//	void CPage::BuildTables()
-//	{
-//		//Графика таблиц парсится в условные 2 типа:
-//		//1 - С выделение отдельных узлов (peak) в местах пересечения линий
-//		//При этом графический шейп доходит до peak и прерывается. Каждая шейп-линия является стороной 1 ячейки
-//		//2 - Без выделения узлов - каждая линия тамблицы захватывает несколько ячеек
-
-//		//Текущая логика постороения таблиц реализовывает парсинг таблиц 1-го типа
-//		//Для реализации 2го - нужно сначала создать peak в местах пересечения линий
-//		//Основная причина почему так - нужно удалять все шейпы после парсинга
-
-//		//todo пока плохо работает для таблиц с неполными ячейками. причина - не заполнены все основные параметры (m_dTop, m_dLeft...)
-//		//todo реализовать парсинг таблиц 2-го типа
-//		//todo необходимо в созданные cells добавить содержимое из m_arTextLines по геометрическому признаку (буквы должны находится внутри ячеек)
-//		//todo зетем собрать TextLine и Paragraph для каждой ячейки
-//		//todo написать функцию и логику для добавления таблицы в шейп - нужно для режима tatParagraphToShape
-
-//		CollectPeaks();
-//		CreatCells();
-//		BuildRows();
-
-//		CTable* pCurrTable = nullptr;
-//		CRow* pFirstRow = nullptr;
-
-//		if (!m_arRows.empty())
-//		{
-//			pCurrTable = new CTable();
-//			m_arTables.push_back(pCurrTable);
-
-//			pFirstRow = m_arRows.front();
-//			pCurrTable->RecalcWithNewItem(pFirstRow);
-//		}
-
-//		for (size_t i = 1; i < m_arRows.size(); ++i)
-//		{
-//			auto pCurrRow = m_arRows[i];
-
-//			eVerticalCrossingType eVType = pFirstRow->GetVerticalCrossingType(pCurrRow);
-//			eHorizontalCrossingType eHType = pFirstRow->GetHorizontalCrossingType(pCurrRow);
-
-//			bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext;
-//			bool bIf2 = eHType == eHorizontalCrossingType::hctLeftAndRightBordersMatch;
-
-//			if (bIf1 && bIf2)
-//			{
-//				pCurrTable->RecalcWithNewItem(pCurrRow);
-//				pFirstRow = pCurrRow;
-//			}
-//			else
-//			{
-//				pCurrTable = new CTable();
-//				m_arTables.push_back(pCurrTable);
-
-//				pFirstRow = pCurrRow;
-//				pCurrTable->RecalcWithNewItem(pFirstRow);
-//			}
-//		}
-
-//		for (size_t i = 0; i < m_arTables.size(); ++i)
-//		{
-//			m_arTables[i]->CalculateColumnWidth();
-//		}
-//	}
-
-//	void CPage::CollectPeaks()
-//	{
-//		for (size_t i = 0; i< m_arShapes.size(); ++i)
-//		{
-//			auto pCurrShape = m_arShapes[i];
-
-//			if (pCurrShape->m_bIsNotNecessaryToUse)
-//			{
-//				continue;
-//			}
-
-//			//нашли вершину
-//			if (pCurrShape->IsPeak())
-//			{
-//				CPeak* pCurrPeak = nullptr;
-
-//				//ищем стороны
-//				for (size_t j = 0; j < m_arShapes.size(); ++j)
-//				{
-//					auto pNextShape = m_arShapes[j];
-
-//					if (pNextShape->m_bIsNotNecessaryToUse || !pNextShape->IsSide())
-//					{
-//						continue;
-//					}
-
-//					eVerticalCrossingType eVType = pCurrShape->GetVerticalCrossingType(pNextShape);
-//					eHorizontalCrossingType eHType = pCurrShape->GetHorizontalCrossingType(pNextShape);
-
-//					//проверяем, подходит ли сторона
-//					bool bIf1 = eVType == eVerticalCrossingType::vctTopAndBottomBordersMatch &&
-//							(eHType == eHorizontalCrossingType::hctCurrentLeftOfNext || eHType == eHorizontalCrossingType::hctCurrentRightOfNext);
-//					bool bIf2 = eHType == eHorizontalCrossingType::hctLeftAndRightBordersMatch &&
-//							(eVType == eVerticalCrossingType::vctCurrentAboveNext || eVType == eVerticalCrossingType::vctCurrentBelowNext);
-
-//					if (bIf1 || bIf2)
-//					{
-//						if (!pCurrPeak)
-//						{
-//							pCurrPeak = new CPeak(pCurrShape);
-//							pCurrShape->m_bIsNotNecessaryToUse = true;
-//							pCurrShape->m_bIsUseInTable = true;
-//							m_arPeaks.push_back(pCurrPeak);
-//						}
-
-//						if (eVType == eVerticalCrossingType::vctTopAndBottomBordersMatch)
-//						{
-//							if (eHType == eHorizontalCrossingType::hctCurrentLeftOfNext)
-//							{
-//								pCurrPeak->m_pLines[CPeak::dI] = pNextShape;
-//								pNextShape->m_bIsUseInTable = true;
-//							}
-//							else if (eHType == eHorizontalCrossingType::hctCurrentRightOfNext)
-//							{
-//								pCurrPeak->m_pLines[CPeak::dIII] = pNextShape;
-//								pNextShape->m_bIsUseInTable = true;
-//							}
-//						}
-//						if (eHType == eHorizontalCrossingType::hctLeftAndRightBordersMatch)
-//						{
-//							if (eVType == eVerticalCrossingType::vctCurrentAboveNext)
-//							{
-//								pCurrPeak->m_pLines[CPeak::dIV] = pNextShape;
-//								pNextShape->m_bIsUseInTable = true;
-//							}
-//							else if (eVType == eVerticalCrossingType::vctCurrentBelowNext)
-//							{
-//								pCurrPeak->m_pLines[CPeak::dII] = pNextShape;
-//								pNextShape->m_bIsUseInTable = true;
-//							}
-//						}
-//					}
-//				}
-//			}
-//		}
-//	}
-
-//	void CPage::CreatCells()
-//	{
-//		//Cells
-//		// II   |   I
-//		//      |
-//		//-----Peak---
-//		//      |
-//		// III  |   IV
-//		//У каждого peak может быть до 4 углов, образованных выходящими линиями - обозначения согласно рисунку
-//		CCell *pCellI, *pCellII, *pCellIII, *pCellIV;
-
-//		for (size_t i = 0; i < m_arPeaks.size(); ++i)
-//		{
-//			CPeak* pPeak = m_arPeaks[i];
-//			pCellI = nullptr; pCellII = nullptr; pCellIII = nullptr; pCellIV = nullptr;
-//			//Lines from peak
-//			// VI     II      V
-//			//         |
-//			// III <- Peak -> I
-//			//         |
-//			// VII     IV     VIII
-
-//			//Corners
-//			//Обозначение углов в ячейке
-//			// IV------III
-//			// |        |
-//			// |  Cell  |
-//			// |        |
-//			// I--------II
-
-//			bool bIsI   = pPeak->m_pLines[CPeak::dI]; //если true, то в направлении I есть линия
-//			bool bIsII  = pPeak->m_pLines[CPeak::dII];
-//			bool bIsIII = pPeak->m_pLines[CPeak::dIII];
-//			bool bIsIV  = pPeak->m_pLines[CPeak::dIV];
-
-//			//Если ячейки уже есть
-//			//todo если ячейка неполная - могут отсутсвовать некоторые основные параметры (m_dLeft...)
-//			//Скорее всего что в такой ячейке не все peak присутствуют в m_pPeaks и параметры не устанавливаются
-//			//Добавить на это проверку и просто вычислить отсутсвующие параметры из известных
-//			for (size_t j = 0; j < m_arCells.size(); ++j)
-//			{
-//				auto pSaveCell = m_arCells[j];
-//				for (size_t k = 0; k < CCell::cNumCorners; ++k)
-//				{
-//					auto pSavePeak = pSaveCell->m_pPeaks[k];
-//					if (pSavePeak)
-//					{
-//						if (pPeak->m_pLines[CPeak::dI] &&
-//								pSavePeak->m_pLines[CPeak::dIII] &&
-//								pPeak->m_pLines[CPeak::dI] == pSavePeak->m_pLines[CPeak::dIII])
-//						{
-//							if (k == CCell::cII)
-//							{
-//								pCellI = pSaveCell;
-//								pCellI->SetParameters(pPeak, CCell::cI);
-//							}
-//							else if (k == CCell::cIII)
-//							{
-//								pCellIV = pSaveCell;
-//								pCellIV->SetParameters(pPeak, CCell::cIV);
-//							}
-//						}
-
-//						if (pPeak->m_pLines[CPeak::dII] &&
-//								pSavePeak->m_pLines[CPeak::dIV] &&
-//								pPeak->m_pLines[CPeak::dII] == pSavePeak->m_pLines[CPeak::dIV])
-//						{
-//							if (k == CCell::cIII)
-//							{
-//								pCellII = pSaveCell;
-//								pCellII->SetParameters(pPeak, CCell::cII);
-//							}
-//							else if (k == CCell::cIV)
-//							{
-//								pCellI = pSaveCell;
-//								pCellI->SetParameters(pPeak, CCell::cI);
-//							}
-//						}
-
-//						if (pPeak->m_pLines[CPeak::dIII] &&
-//								pSavePeak->m_pLines[CPeak::dI] &&
-//								pPeak->m_pLines[CPeak::dIII] == pSavePeak->m_pLines[CPeak::dI])
-//						{
-//							if (k == CCell::cI)
-//							{
-//								pCellII = pSaveCell;
-//								pCellII->SetParameters(pPeak, CCell::cII);
-//							}
-//							else if (k == CCell::cIV)
-//							{
-//								pCellIII = pSaveCell;
-//								pCellIII->SetParameters(pPeak, CCell::cIII);
-//							}
-//						}
-
-//						if (pPeak->m_pLines[CPeak::dIV] &&
-//								pSavePeak->m_pLines[CPeak::dII] &&
-//								pPeak->m_pLines[CPeak::dIV] == pSavePeak->m_pLines[CPeak::dII])
-//						{
-//							if (k == CCell::cI)
-//							{
-//								pCellIV = pSaveCell;
-//								pCellIV->SetParameters(pPeak, CCell::cIV);
-//							}
-//							else if (k == CCell::cII)
-//							{
-//								pCellIII = pSaveCell;
-//								pCellIII->SetParameters(pPeak, CCell::cIII);
-//							}
-//						}
-//					}
-//				}
-//			}
-
-//			//Если ячейка еще не построена по заданным углам - создаем ячейку
-//			if (bIsI && bIsII)
-//			{
-//				if (!pCellI)
-//				{
-//					pCellI = new CCell();
-//					pCellI->SetParameters(pPeak, CCell::cI);
-//					m_arCells.push_back(pCellI);
-//				}
-//			}
-//			if (bIsII && bIsIII)
-//			{
-//				if (!pCellII)
-//				{
-//					pCellII = new CCell();
-//					pCellII->SetParameters(pPeak, CCell::cII);
-//					m_arCells.push_back(pCellII);
-//				}
-//			}
-//			if (bIsIII && bIsIV)
-//			{
-//				if (!pCellIII)
-//				{
-//					pCellIII = new CCell();
-//					pCellIII->SetParameters(pPeak, CCell::cIII);
-//					m_arCells.push_back(pCellIII);
-//				}
-//			}
-//			if (bIsIV && bIsI)
-//			{
-//				if (!pCellIV)
-//				{
-//					pCellIV = new CCell();
-//					pCellIV->SetParameters(pPeak, CCell::cIV);
-//					m_arCells.push_back(pCellIV);
-//				}
-//			}
-//		}
-
-//		//удаляем использованные шейпы
-//		for (size_t i = 0; i < m_arShapes.size(); ++i)
-//		{
-//			if (m_arShapes[i]->m_bIsUseInTable)
-//			{
-//				m_arShapes[i]->m_bIsNotNecessaryToUse = true;
-//			}
-//		}
-//	}
-
-//	void CPage::BuildRows()
-//	{
-//		//когда созданы все ячейки, собираем их в ряды
-//		for (size_t i = 0; i < m_arCells.size(); ++i)
-//		{
-//			auto pCell = m_arCells[i];
-
-//			if (pCell->m_bIsNotNecessaryToUse)
-//			{
-//				continue;
-//			}
-
-//			SelectCurrentRow(pCell);
-//			m_pCurrentRow->RecalcWithNewItem(pCell);
-//		}
-
-//		CBaseItem::SortByBaseline(m_arRows);
-//		for (size_t i = 0; i < m_arRows.size(); ++i)
-//		{
-//			CBaseItem::SortByLeft(m_arRows[i]->m_arCells);
-//		}
-//	}
-
-//	void CPage::SelectCurrentRow(const CCell *pCell)
-//	{
-//		//логика аналогична AddContToTextLine
-//		//todo c_dTHE_SAME_STRING_Y_PRECISION_MM - возможно слишком мала
-//		if (nullptr == m_pCurrentRow)
-//		{
-//			auto pRow = new CRow();
-//			m_pCurrentRow = pRow;
-//			m_pCurrentRow->m_dBaselinePos = pCell->m_dBaselinePos;
-//			m_arRows.push_back(pRow);
-//			return;
-//		}
-
-//		if (fabs(m_pCurrentRow->m_dBaselinePos - pCell->m_dBaselinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
-//		{
-//			return;
-//		}
-
-//		for (size_t i = 0; i < m_arRows.size(); ++i)
-//		{
-//			if (fabs(m_arRows[i]->m_dBaselinePos - pCell->m_dBaselinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
-//			{
-//				m_pCurrentRow = m_arRows[i];
-//				return;
-//			}
-//		}
-
-//		auto pRow = new CRow();
-//		m_pCurrentRow = pRow;
-//		m_pCurrentRow->m_dBaselinePos = pCell->m_dBaselinePos;
-//		m_arRows.push_back(pRow);
-//		return;
-//	}
 
 	void CPage::DetermineLinesType()
 	{
@@ -1218,7 +849,7 @@ namespace NSDocxRenderer
 				pShape->m_eLineType != eLineType::ltUnknown;
 
 		//Условие по вертикали
-		bool bIf2 = fabs(pShape->m_dBaselinePos - pCont->m_dBaselinePos) < pCont->m_dHeight * 0.3;
+		bool bIf2 = fabs(pShape->m_dBaselinePos - pCont->m_dBaselinePos) < pCont->m_dHeight * 0.5;
 
 		//Условие пересечения по горизонтали
 		bool bIf3 = eHType != eHorizontalCrossingType::hctUnknown &&

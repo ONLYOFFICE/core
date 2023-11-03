@@ -1,5 +1,4 @@
 #include "Shape.h"
-#include "Table.h"
 #include "../../resources/Constants.h"
 #include "../../resources/utils.h"
 #include <limits.h>
@@ -33,7 +32,7 @@ namespace NSDocxRenderer
 		m_oVector.Clear();
 	}
 
-	UINT CShape::GenerateShapeId() const
+	UINT CShape::GenerateShapeId()
 	{
 		static UINT iId = 0;
 		iId++;
@@ -89,7 +88,7 @@ namespace NSDocxRenderer
 		m_dRight = m_dLeft + m_dWidth;
 	}
 
-	bool CShape::TryMergeShape(std::shared_ptr<CShape> pShape)
+	bool CShape::TryMergeShape(std::shared_ptr<CShape>& pShape)
 	{
 		// можно попробовать подбирать динамически, например в зависимости от размера
 		double dHorNearby = 30;
@@ -119,7 +118,7 @@ namespace NSDocxRenderer
 				 fabs(pShape->m_dLeft - this->m_dRight) < dHorNearby ||
 
 				 // друг в друге тоже учитываем
-				 fabs(pShape->m_dRight - this->m_dRight) <= dHorNearby ||
+				 fabs(pShape->m_dRight - this->m_dRight) < dHorNearby ||
 				 fabs(pShape->m_dLeft - this->m_dLeft) < dHorNearby) &&
 
 				// недалеко друг от друга по вертикали
@@ -130,7 +129,7 @@ namespace NSDocxRenderer
 				 fabs(pShape->m_dBaselinePos - this->m_dBaselinePos) < dVerNearby ||
 				 fabs(pShape->m_dTop - this->m_dTop) < dVerNearby))
 		{
-			CBaseItem::RecalcWithNewItem(pShape.get());
+			RecalcWithNewItem(pShape.get());
 			m_oVector.Join(std::move(pShape->m_oVector));
 			pShape = nullptr;
 
@@ -216,7 +215,7 @@ namespace NSDocxRenderer
 		return strPath;
 	}
 
-	void CShape::DetermineGraphicsType(double dWidth, double dHeight,size_t nPeacks, size_t nCurves)
+	void CShape::DetermineGraphicsType(double dWidth, double dHeight,size_t nPeacks, size_t nCurves) noexcept
 	{
 		//note параллельно для каждой текстовой строки создается шейп, который содержит цвет фона для данного текста.
 		if ((m_bIsNoStroke && m_bIsNoFill) ||
@@ -288,51 +287,6 @@ namespace NSDocxRenderer
 		return m_eGraphicsType == pShape->m_eGraphicsType;
 	}
 
-	void CShape::RecalcWithNewItem(const CBaseItem* pObj)
-	{
-		if(!pObj)
-			return;
-
-		const CShape* shape = dynamic_cast<const CShape*>(pObj);
-		if(!shape)
-		{
-			CBaseItem::RecalcWithNewItem(pObj);
-			return;
-		}
-
-		if(m_dTop == shape->m_dTop ||
-				(m_dTop < shape->m_dTop && m_dHeight > shape->m_dHeight) ||
-				(m_dTop > shape->m_dTop && m_dHeight < shape->m_dHeight))
-		{
-			m_dHeight = std::max(m_dHeight, shape->m_dHeight);
-		}
-		else if(m_dTop < shape->m_dTop)
-			m_dHeight += shape->m_dHeight + shape->m_dTop - m_dBaselinePos;
-		else
-			m_dHeight += shape->m_dHeight + shape->m_dBaselinePos - m_dTop;
-
-		if(m_dLeft == shape->m_dLeft ||
-			(m_dLeft < shape->m_dLeft && m_dRight > shape->m_dRight) ||
-			(m_dLeft > shape->m_dLeft && m_dRight < shape->m_dRight))
-		{
-			m_dWidth = std::max(m_dWidth, shape->m_dWidth);
-		}
-		else if(m_dLeft < shape->m_dLeft)
-			m_dWidth += shape->m_dWidth + shape->m_dLeft - m_dRight;
-		else
-			m_dWidth += shape->m_dWidth + shape->m_dRight - m_dLeft;
-
-		// m_dWidth иногда меняет знак на "-"
-		m_dHeight = fabs(m_dHeight);
-		m_dWidth = fabs(m_dWidth);
-
-		m_dLeft = std::min(m_dLeft, shape->m_dLeft);
-		m_dTop = std::min(m_dTop, shape->m_dTop);
-
-		m_dBaselinePos = m_dTop + m_dHeight;
-		m_dRight = m_dLeft + m_dWidth;
-	}
-
 	bool CShape::IsPeak() const noexcept
 	{
 		return m_eSimpleLineType == eSimpleLineType::sltHDot || m_eSimpleLineType == eSimpleLineType::sltVDot;
@@ -343,7 +297,7 @@ namespace NSDocxRenderer
 		return m_eSimpleLineType == eSimpleLineType::sltHLongDash || m_eSimpleLineType == eSimpleLineType::sltVLongDash;
 	}
 
-	void CShape::CheckLineType(std::shared_ptr<CShape>& pFirstShape) noexcept
+	void CShape::CheckLineType(std::shared_ptr<CShape>& pFirstShape)
 	{
 		if(!pFirstShape)
 			return;
@@ -354,7 +308,7 @@ namespace NSDocxRenderer
 		else if (pFirstShape->m_eLineType == eLineType::ltUnknown && pFirstShape->m_eSimpleLineType == eSimpleLineType::sltHWave)
 			pFirstShape->m_eLineType = pFirstShape->m_oPen.Size > 0.3 ? eLineType::ltWavyHeavy : eLineType::ltWave;
 	}
-	void CShape::CheckLineType(std::shared_ptr<CShape>& pFirstShape, std::shared_ptr<CShape>& pSecondShape, bool bIsLast) noexcept
+	void CShape::CheckLineType(std::shared_ptr<CShape>& pFirstShape, std::shared_ptr<CShape>& pSecondShape, bool bIsLast)
 	{
 		if(!pFirstShape || !pSecondShape)
 			return;

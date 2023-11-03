@@ -1,6 +1,6 @@
 #pragma once
-#include "../DesktopEditor/common/CalculatorCRC32.h"
-#include "../DesktopEditor/raster/BgraFrame.h"
+#include "../../../../DesktopEditor/common/CalculatorCRC32.h"
+#include "../../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../resources/ImageInfo.h"
 #include <map>
 #include <memory>

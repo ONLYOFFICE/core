@@ -1,6 +1,6 @@
 #pragma once
-#include "../DesktopEditor/common/Types.h"
-#include "../DesktopEditor/common/StringUTF32.h"
+#include "../../../DesktopEditor/common/Types.h"
+#include "../../../DesktopEditor/common/StringUTF32.h"
 
 inline LONG ConvertColorBGRToRGB(LONG lBGR)
 {

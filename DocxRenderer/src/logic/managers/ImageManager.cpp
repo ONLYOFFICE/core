@@ -1,5 +1,5 @@
 #include "ImageManager.h"
-#include "../DesktopEditor/common/Directory.h"
+#include "../../../../DesktopEditor/common/Directory.h"
 
 namespace NSDocxRenderer
 {

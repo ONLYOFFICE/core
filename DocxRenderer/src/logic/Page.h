@@ -1,8 +1,7 @@
 ﻿#pragma once
-#include "../DesktopEditor/graphics/pro/Graphics.h"
+#include "../../../DesktopEditor/graphics/pro/Graphics.h"
 #include "elements/Paragraph.h"
 #include "elements/Shape.h"
-#include "elements/Table.h"
 #include "managers/FontStyleManager.h"
 #include "managers/ParagraphStyleManager.h"
 #include "styles/ParagraphStyle.h"
@@ -41,13 +40,7 @@ namespace NSDocxRenderer
 
 		std::vector<std::shared_ptr<COutputObject>>  m_arOutputObjects;
 
-//		std::vector<CPeak*>      m_arPeaks;
-//		std::vector<CCell*>      m_arCells;
-//		std::vector<CRow*>       m_arRows;
-//		std::vector<CTable*>     m_arTables;
-
 		CTextLine*               m_pCurrentLine {nullptr};
-//		CRow*                    m_pCurrentRow {nullptr};
 
 		TextAssociationType      m_eTextAssociationType {TextAssociationType::tatPlainParagraph};
 
@@ -66,7 +59,6 @@ namespace NSDocxRenderer
 		void BeginCommand(DWORD lType);
 
 		void Clear();
-		void ClearTables();
 
 		//удаляем то, что выходит за границы страницы
 		void DeleteTextClipPage();
@@ -115,12 +107,6 @@ namespace NSDocxRenderer
 
 		void AnalyzeShapes();
 		void DetermineLinesType();
-
-//		void BuildTables();
-//		void CollectPeaks();
-//		void CreatCells();
-//		void BuildRows();
-//		void SelectCurrentRow(const CCell *pCell);
 
 		void BuildLines();
 		void DetermineDominantGraphics();

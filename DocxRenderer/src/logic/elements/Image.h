@@ -11,11 +11,11 @@ namespace NSDocxRenderer
 
 		std::wstring m_strPath {L""};
 
-		bool m_bIsNoFill {true};
-		bool m_bIsNoStroke {true};
-		bool m_bIsBehindDoc {true};
+		bool m_bIsNoFill{true};
+		bool m_bIsNoStroke{true};
+		bool m_bIsBehindDoc{true};
 
-		double m_dRotate {0.0};
+		double m_dRotate{0.0};
 
 	public:
 		CImage() = default;

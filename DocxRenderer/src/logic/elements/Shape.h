@@ -31,31 +31,30 @@ namespace NSDocxRenderer
 		};
 
 	public:
-		eShapeType              m_eType {eShapeType::stUnknown};
-		CVectorGraphics			m_oVector;
-		std::wstring			m_strDstMedia;
-		NSStructures::CBrush    m_oBrush;
-		NSStructures::CPen      m_oPen;
-		double                  m_dRotate {0.0};
+		eShapeType m_eType           {eShapeType::stUnknown};
 
-		bool m_bIsNoFill {true};
-		bool m_bIsNoStroke {true};
+		NSStructures::CBrush m_oBrush{};
+		NSStructures::CPen m_oPen    {};
+
+		CVectorGraphics m_oVector    {};
+		std::wstring m_strDstMedia   {};
+
+		double m_dRotate {0.0};
+
+		bool m_bIsNoFill    {true};
+		bool m_bIsNoStroke  {true};
 		bool m_bIsBehindDoc {true};
+		bool m_bIsUseInTable{false};
 
-		bool m_bIsUseInTable {false};
-
-		eGraphicsType   m_eGraphicsType {eGraphicsType::gtUnknown};
-		eSimpleLineType m_eSimpleLineType {eSimpleLineType::sltUnknown};
-		eLineType       m_eLineType {eLineType::ltUnknown};
+		eGraphicsType m_eGraphicsType    {eGraphicsType::gtUnknown};
+		eSimpleLineType m_eSimpleLineType{eSimpleLineType::sltUnknown};
+		eLineType m_eLineType            {eLineType::ltUnknown};
 
 		std::vector<std::shared_ptr<COutputObject>> m_arOutputObjects;
-		std::shared_ptr<CImageInfo> m_pImageInfo {nullptr};
+		std::shared_ptr<CImageInfo> m_pImageInfo{nullptr};
 
 	private:
-		UINT m_nShapeId {0};
-		UINT m_nRelativeHeight {0};
 
-		static UINT m_gRelativeHeight;
 
 	public:
 		CShape();
@@ -63,14 +62,14 @@ namespace NSDocxRenderer
 		virtual ~CShape();
 		virtual void Clear() override final;
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
-		virtual void RecalcWithNewItem(const CBaseItem* pObj) override final;
 
 		void SetVector(CVectorGraphics&& oVector);
 
 		// tries merge shape, return true if ok and pShape was deleted
-		bool TryMergeShape(std::shared_ptr<CShape> pShape);
+		bool TryMergeShape(std::shared_ptr<CShape>& pShape);
+
 		std::wstring PathToWString() const;
-		void DetermineGraphicsType(double dWidth, double dHeight, size_t nPeacks, size_t nCurves);
+		void DetermineGraphicsType(double dWidth, double dHeight, size_t nPeacks, size_t nCurves) noexcept;
 
 		bool IsItFitLine() const noexcept;
 		bool IsCorrelated(std::shared_ptr<const CShape> pShape) const noexcept;
@@ -91,12 +90,16 @@ namespace NSDocxRenderer
 
 		// check type of line and delete not needed shape
 		// one shape in line
-		static void CheckLineType(std::shared_ptr<CShape>& pShape) noexcept;
+		static void CheckLineType(std::shared_ptr<CShape>& pShape);
 
 		// many shapes in line
-		static void CheckLineType(std::shared_ptr<CShape>& pFirstShape, std::shared_ptr<CShape>& pSecondShape, bool bIsLast = false) noexcept;
+		static void CheckLineType(std::shared_ptr<CShape>& pFirstShape, std::shared_ptr<CShape>& pSecondShape, bool bIsLast = false);
 
 	private:
-		UINT GenerateShapeId() const;
+		UINT m_nShapeId{0};
+		UINT m_nRelativeHeight{0};
+
+		static UINT m_gRelativeHeight;
+		static UINT GenerateShapeId();
 	};
 }

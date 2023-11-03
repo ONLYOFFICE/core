@@ -71,7 +71,7 @@ namespace NSDocxRenderer
 		return *this;
 	}
 
-	void CContText::CalcSelected() noexcept
+	void CContText::CalcSelected()
 	{
 		if (!m_pFontStyle->wsFontName.empty() && !m_oText.empty())
 		{
@@ -265,7 +265,7 @@ namespace NSDocxRenderer
 		(std::shared_ptr<CContText>& pFirstCont,
 		std::shared_ptr<CContText>& pSecondCont,
 		eVerticalCrossingType eVType,
-		eHorizontalCrossingType eHType) noexcept
+		eHorizontalCrossingType eHType)
 	{
 		//Условие пересечения по вертикали
 		bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext; //текущий cont выше
@@ -345,10 +345,10 @@ namespace NSDocxRenderer
 	}
 
 	bool CContText::CheckVertAlignTypeBetweenConts
-		(std::shared_ptr<CContText>& pFirstCont,
-		std::shared_ptr<CContText>& pSecondCont,
+		(std::shared_ptr<CContText> pFirstCont,
+		std::shared_ptr<CContText> pSecondCont,
 		eVerticalCrossingType eVType,
-		eHorizontalCrossingType eHType) noexcept
+		eHorizontalCrossingType eHType)
 	{
 
 		bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext ||

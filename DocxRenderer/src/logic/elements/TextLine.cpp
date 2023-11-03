@@ -160,11 +160,12 @@ namespace NSDocxRenderer
 		m_eVertAlignType = oType;
 		for (size_t i = 0; i < m_arConts.size(); ++i)
 		{
-			m_arConts[i]->m_eVertAlignType = oType;
+			if(m_arConts[i])
+				m_arConts[i]->m_eVertAlignType = oType;
 		}
 	}
 
-	bool CTextLine::IsShadingPresent(const CTextLine *pLine)
+	bool CTextLine::IsShadingPresent(const CTextLine *pLine) const noexcept
 	{
 		return (m_pDominantShape && pLine->m_pDominantShape &&
 				m_pDominantShape->m_oBrush.Color1 == pLine->m_pDominantShape->m_oBrush.Color1 &&

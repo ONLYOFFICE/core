@@ -1,6 +1,6 @@
 #pragma once
 #include "BaseItem.h"
-#include "../DesktopEditor/common/StringBuilder.h"
+#include "../../../../DesktopEditor/common/StringBuilder.h"
 #include "../managers/FontManager.h"
 #include "../managers/FontStyleManager.h"
 #include "../../resources/Constants.h"
@@ -46,17 +46,17 @@ namespace NSDocxRenderer
 		eVertAlignType m_eVertAlignType               {eVertAlignType::vatUnknown};
 
 		// highlights
-		bool      m_bIsStrikeoutPresent    {false};
-		bool      m_bIsDoubleStrikeout     {false};
-		bool      m_bIsHighlightPresent    {false};
-		LONG      m_lHighlightColor        {c_iBlackColor};
-		bool      m_bIsUnderlinePresent    {false};
-		eLineType m_eUnderlineType         {eLineType::ltUnknown};
-		LONG      m_lUnderlineColor        {c_iBlackColor};
-		bool      m_bIsShadowPresent       {false};
-		bool      m_bIsOutlinePresent      {false};
-		bool      m_bIsEmbossPresent       {false};
-		bool      m_bIsEngravePresent      {false};
+		bool m_bIsStrikeoutPresent{false};
+		bool m_bIsDoubleStrikeout {false};
+		bool m_bIsHighlightPresent{false};
+		LONG m_lHighlightColor    {c_iBlackColor};
+		bool m_bIsUnderlinePresent{false};
+		eLineType m_eUnderlineType{eLineType::ltUnknown};
+		LONG m_lUnderlineColor    {c_iBlackColor};
+		bool m_bIsShadowPresent   {false};
+		bool m_bIsOutlinePresent  {false};
+		bool m_bIsEmbossPresent   {false};
+		bool m_bIsEngravePresent  {false};
 
 
 		// sizes
@@ -76,7 +76,7 @@ namespace NSDocxRenderer
 		virtual eVerticalCrossingType GetVerticalCrossingType(const CBaseItem* pItem) const noexcept override final;
 
 		// calc sizes in selected font (uses m_pFontStyle & m_pManager)
-		void CalcSelected() noexcept;
+		void CalcSelected();
 
 		CContText& operator=(const CContText& rCont);
 		bool IsEqual(const CContText* pCont) const noexcept;
@@ -90,13 +90,13 @@ namespace NSDocxRenderer
 			(std::shared_ptr<CContText>& pFirstCont,
 			std::shared_ptr<CContText>& pSecondCont,
 			eVerticalCrossingType eVType,
-			eHorizontalCrossingType eHType) noexcept;
+			eHorizontalCrossingType eHType);
 
 		static bool CheckVertAlignTypeBetweenConts
-			(std::shared_ptr<CContText>& pFirstCont,
-			std::shared_ptr<CContText>& pSecondCont,
+			(std::shared_ptr<CContText> pFirstCont,
+			std::shared_ptr<CContText> pSecondCont,
 			eVerticalCrossingType eVType,
-			eHorizontalCrossingType eHType) noexcept;
+			eHorizontalCrossingType eHType);
 
 		double CalculateWideSpace() const noexcept;
 		double CalculateThinSpace() const noexcept;

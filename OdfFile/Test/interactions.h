@@ -54,3 +54,75 @@ public:
 	void SetUp() override;
 	void TearDown() override {}
 };
+
+class ODP2OOX_AnimationPlayAudioEnvironment : public ODP2OOX_AnimationEnvironment
+{
+public:
+	ODP2OOX_AnimationPlayAudioEnvironment();
+
+	static cpdoccore::oox::pptx_conversion_context& GetConversionContext();
+
+private:
+	static boost::shared_ptr<cpdoccore::odf_reader::odf_document>		sInputOdf;
+	static boost::shared_ptr<cpdoccore::oox::pptx_conversion_context>	sConverionContext;
+};
+
+class ODP2OOX_AnimationPlayAudioTest : public testing::Test
+{
+public:
+	void SetUp() override;
+	void TearDown() override
+	{ }
+
+public:
+	cpdoccore::oox::pptx_conversion_context* mConversionContext;
+};
+
+//////////////////////////////////////////////////////////////////////////
+
+class ODP2OOX_AnimationOpenDocumentEnvironment : public ODP2OOX_AnimationEnvironment
+{
+public:
+	ODP2OOX_AnimationOpenDocumentEnvironment();
+
+	static cpdoccore::oox::pptx_conversion_context& GetConversionContext();
+
+private:
+	static boost::shared_ptr<cpdoccore::odf_reader::odf_document>		sInputOdf;
+	static boost::shared_ptr<cpdoccore::oox::pptx_conversion_context>	sConverionContext;
+};
+
+class ODP2OOX_AnimationOpenDocumentTest : public testing::Test
+{
+public:
+	void SetUp() override;
+	void TearDown() override
+	{ }
+
+public:
+	cpdoccore::oox::pptx_conversion_context* mConversionContext;
+};
+
+class ODP2OOX_AnimationRunProgramEnvironment : public ODP2OOX_AnimationEnvironment
+{
+public:
+	ODP2OOX_AnimationRunProgramEnvironment();
+
+	static cpdoccore::oox::pptx_conversion_context& GetConversionContext();
+
+private:
+	static boost::shared_ptr<cpdoccore::odf_reader::odf_document>		sInputOdf;
+	static boost::shared_ptr<cpdoccore::oox::pptx_conversion_context>	sConverionContext;
+};
+
+class ODP2OOX_AnimationRunProgramTest : public testing::Test
+{
+public:
+	void SetUp() override;
+	void TearDown() override
+	{ }
+
+public:
+	cpdoccore::oox::pptx_conversion_context* mConversionContext;
+};
+

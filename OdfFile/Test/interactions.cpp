@@ -158,3 +158,240 @@ TEST_F(OOX2ODP_InteractionAnimationTest, interactive_seq_begin)
 
 	EXPECT_NE(interactive->attlist_.smil_begin_.value(), restartExp);
 }
+
+//////////////////////////////////////////////////////////////////////////
+
+boost::shared_ptr<cpdoccore::odf_reader::odf_document>		ODP2OOX_AnimationPlayAudioEnvironment::sInputOdf;
+boost::shared_ptr<cpdoccore::oox::pptx_conversion_context>	ODP2OOX_AnimationPlayAudioEnvironment::sConverionContext;
+
+ODP2OOX_AnimationPlayAudioEnvironment::ODP2OOX_AnimationPlayAudioEnvironment()
+	: ODP2OOX_AnimationEnvironment(L"ExampleFiles" FILE_SEPARATOR_STR "playAudio.odp",
+		&sInputOdf,
+		&sConverionContext)
+{
+
+}
+
+cpdoccore::oox::pptx_conversion_context& ODP2OOX_AnimationPlayAudioEnvironment::GetConversionContext()
+{
+	return *sConverionContext;
+}
+
+void ODP2OOX_AnimationPlayAudioTest::SetUp()
+{
+	mConversionContext = &ODP2OOX_AnimationPlayAudioEnvironment::GetConversionContext();
+}
+
+TEST_F(ODP2OOX_AnimationPlayAudioTest, mediaitems_size)
+{
+	ASSERT_NE(mConversionContext, nullptr);
+
+	auto items = mConversionContext->get_mediaitems()->items();
+	const size_t itemsSizeExp = 1;
+
+	EXPECT_EQ(items.size(), itemsSizeExp);
+}
+
+TEST_F(ODP2OOX_AnimationPlayAudioTest, rels_size)
+{
+	ASSERT_NE(mConversionContext, nullptr);
+
+	auto rels_ = mConversionContext->current_slide().Rels().relationships();
+	const size_t relsSizeExp = 3;
+
+	EXPECT_EQ(rels_.size(), 3);
+}
+
+TEST_F(ODP2OOX_AnimationPlayAudioTest, audio_rel_id)
+{
+	ASSERT_NE(mConversionContext, nullptr);
+
+	auto audioRel = mConversionContext->current_slide().Rels().relationships()[1];
+	const std::wstring idExp = L"hId1";
+
+	EXPECT_EQ(audioRel.id(), idExp);
+}
+
+TEST_F(ODP2OOX_AnimationPlayAudioTest, audio_rel_type)
+{
+	ASSERT_NE(mConversionContext, nullptr);
+
+	auto audioRel = mConversionContext->current_slide().Rels().relationships()[1];
+	const std::wstring typeExp = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink";
+
+	EXPECT_EQ(audioRel.type(), typeExp);
+}
+
+TEST_F(ODP2OOX_AnimationPlayAudioTest, audio_rel_target)
+{
+	ASSERT_NE(mConversionContext, nullptr);
+
+	auto audioRel = mConversionContext->current_slide().Rels().relationships()[1];
+	const std::wstring targetExp = L"../../../../X2tConverter/test/win32Test/Res/media_example.wav";
+
+	EXPECT_EQ(audioRel.target(), targetExp);
+}
+
+TEST_F(ODP2OOX_AnimationPlayAudioTest, audio_rel_target_mode)
+{
+	ASSERT_NE(mConversionContext, nullptr);
+
+	auto audioRel = mConversionContext->current_slide().Rels().relationships()[1];
+	const std::wstring targetModeExp = L"External";
+
+	EXPECT_EQ(audioRel.target_mode(), targetModeExp);
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+boost::shared_ptr<cpdoccore::odf_reader::odf_document>		ODP2OOX_AnimationOpenDocumentEnvironment::sInputOdf;
+boost::shared_ptr<cpdoccore::oox::pptx_conversion_context>	ODP2OOX_AnimationOpenDocumentEnvironment::sConverionContext;
+
+ODP2OOX_AnimationOpenDocumentEnvironment::ODP2OOX_AnimationOpenDocumentEnvironment()
+	: ODP2OOX_AnimationEnvironment(L"ExampleFiles" FILE_SEPARATOR_STR "openDocument.odp",
+		&sInputOdf,
+		&sConverionContext)
+{
+}
+
+cpdoccore::oox::pptx_conversion_context& ODP2OOX_AnimationOpenDocumentEnvironment::GetConversionContext()
+{
+	return *sConverionContext;
+}
+
+void ODP2OOX_AnimationOpenDocumentTest::SetUp()
+{
+	mConversionContext = &ODP2OOX_AnimationOpenDocumentEnvironment::GetConversionContext();
+}
+
+TEST_F(ODP2OOX_AnimationOpenDocumentTest, mediaitems_size)
+{
+	ASSERT_NE(mConversionContext, nullptr);
+
+	auto items = mConversionContext->get_mediaitems()->items();
+	const size_t itemsSizeExp = 1;
+
+	EXPECT_EQ(items.size(), itemsSizeExp);
+}
+
+TEST_F(ODP2OOX_AnimationOpenDocumentTest, rels_size)
+{
+	ASSERT_NE(mConversionContext, nullptr);
+
+	auto rels_ = mConversionContext->current_slide().Rels().relationships();
+	const size_t relsSizeExp = 3;
+
+	EXPECT_EQ(rels_.size(), 3);
+}
+
+TEST_F(ODP2OOX_AnimationOpenDocumentTest, document_rel_id)
+{
+	ASSERT_NE(mConversionContext, nullptr);
+
+	auto docRel = mConversionContext->current_slide().Rels().relationships()[1];
+	const std::wstring idExp = L"hId1";
+
+	EXPECT_EQ(docRel.id(), idExp);
+}
+
+TEST_F(ODP2OOX_AnimationOpenDocumentTest, document_rel_type)
+{
+	ASSERT_NE(mConversionContext, nullptr);
+
+	auto docRel = mConversionContext->current_slide().Rels().relationships()[1];
+	const std::wstring typeExp = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink";
+
+	EXPECT_EQ(docRel.type(), typeExp);
+}
+
+TEST_F(ODP2OOX_AnimationOpenDocumentTest, document_rel_target)
+{
+	ASSERT_NE(mConversionContext, nullptr);
+
+	auto docRel = mConversionContext->current_slide().Rels().relationships()[1];
+	const std::wstring targetExp = L"motion.odp";
+
+	EXPECT_EQ(docRel.target(), targetExp);
+}
+
+TEST_F(ODP2OOX_AnimationOpenDocumentTest, document_rel_target_mode)
+{
+	ASSERT_NE(mConversionContext, nullptr);
+
+	auto docRel = mConversionContext->current_slide().Rels().relationships()[1];
+	const std::wstring targetModeExp = L"External";
+
+	EXPECT_EQ(docRel.target_mode(), targetModeExp);
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+boost::shared_ptr<cpdoccore::odf_reader::odf_document>		ODP2OOX_AnimationRunProgramEnvironment::sInputOdf;
+boost::shared_ptr<cpdoccore::oox::pptx_conversion_context>	ODP2OOX_AnimationRunProgramEnvironment::sConverionContext;
+
+ODP2OOX_AnimationRunProgramEnvironment::ODP2OOX_AnimationRunProgramEnvironment()
+	: ODP2OOX_AnimationEnvironment(L"ExampleFiles" FILE_SEPARATOR_STR "runProgram.odp",
+		&sInputOdf,
+		&sConverionContext)
+{
+}
+
+cpdoccore::oox::pptx_conversion_context& ODP2OOX_AnimationRunProgramEnvironment::GetConversionContext()
+{
+	return *sConverionContext;
+}
+
+void ODP2OOX_AnimationRunProgramTest::SetUp()
+{
+	mConversionContext = &ODP2OOX_AnimationRunProgramEnvironment::GetConversionContext();
+}
+
+TEST_F(ODP2OOX_AnimationRunProgramTest, rels_size)
+{
+	ASSERT_NE(mConversionContext, nullptr);
+
+	auto rels_ = mConversionContext->current_slide().Rels().relationships();
+	const size_t relsSizeExp = 3;
+
+	EXPECT_EQ(rels_.size(), 3);
+}
+
+TEST_F(ODP2OOX_AnimationRunProgramTest, program_rel_id)
+{
+	ASSERT_NE(mConversionContext, nullptr);
+
+	auto programRel = mConversionContext->current_slide().Rels().relationships()[1];
+	const std::wstring idExp = L"hId1";
+
+	EXPECT_EQ(programRel.id(), idExp);
+}
+
+TEST_F(ODP2OOX_AnimationRunProgramTest, program_rel_type)
+{
+	ASSERT_NE(mConversionContext, nullptr);
+
+	auto programRel = mConversionContext->current_slide().Rels().relationships()[1];
+	const std::wstring typeExp = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink";
+
+	EXPECT_EQ(programRel.type(), typeExp);
+}
+
+TEST_F(ODP2OOX_AnimationRunProgramTest, program_rel_target)
+{
+	ASSERT_NE(mConversionContext, nullptr);
+
+	auto programRel = mConversionContext->current_slide().Rels().relationships()[1];
+	const std::wstring targetExp = L"../../../../build_tools/out/win_64/onlyoffice/core/x2t.exe";
+
+	EXPECT_EQ(programRel.target(), targetExp);
+}
+
+TEST_F(ODP2OOX_AnimationRunProgramTest, program_rel_target_mode)
+{
+	ASSERT_NE(mConversionContext, nullptr);
+
+	auto programRel = mConversionContext->current_slide().Rels().relationships()[1];
+	const std::wstring targetModeExp = L"External";
+
+	EXPECT_EQ(programRel.target_mode(), targetModeExp);
+}

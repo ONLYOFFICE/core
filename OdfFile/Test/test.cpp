@@ -44,6 +44,9 @@ int main(int argc, char* argv[])
 	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationEntranceEnvironment);
 	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationMotionEnvironment);
 	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationAudioEnvironment);
+	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationPlayAudioEnvironment);	
+	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationOpenDocumentEnvironment);
+	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationRunProgramEnvironment);
 	
 	::testing::AddGlobalTestEnvironment(new OOX2ODP_EntranceAnimationEnvironment);
 	::testing::AddGlobalTestEnvironment(new OOX2ODP_AudioAnimationEnvironment);

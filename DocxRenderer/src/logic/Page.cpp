@@ -725,14 +725,14 @@ namespace NSDocxRenderer
 			if (!shape || shape->m_eGraphicsType == eGraphicsType::gtNoGraphics)
 				continue;
 
+			bool shape_used = false;
+
 			for (size_t j = 0; j < m_arTextLines.size(); ++j)
 			{
 				if(!shape)
 					break;
 
 				auto& pCurrLine = m_arTextLines[j];
-				bool shape_used = false;
-
 				if (!pCurrLine || (pCurrLine->AreObjectsNoCrossingByVertically(shape.get()) &&
 					(pCurrLine->m_dTop > shape->m_dBaselinePos ||
 					pCurrLine->m_dBaselinePos + pCurrLine->m_dHeight < shape->m_dTop)))
@@ -811,9 +811,9 @@ namespace NSDocxRenderer
 						}
 					}
 				}
-				if(shape_used)
-					shape = nullptr;
 			}
+			if(shape_used)
+				shape = nullptr;
 		}
 	}
 

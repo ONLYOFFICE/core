@@ -395,3 +395,129 @@ TEST_F(ODP2OOX_AnimationRunProgramTest, program_rel_target_mode)
 
 	EXPECT_EQ(programRel.target_mode(), targetModeExp);
 }
+
+//////////////////////////////////////////////////////////////////////////
+
+boost::shared_ptr<Oox2Odf::Converter>			OOX2ODP_PlayAudioAnimationEnvironment::mConverter;
+cpdoccore::odf_writer::odp_conversion_context*	OOX2ODP_PlayAudioAnimationEnvironment::mContext;
+
+OOX2ODP_PlayAudioAnimationEnvironment::OOX2ODP_PlayAudioAnimationEnvironment()
+	: OOX2ODP_AnimationEnvironment(L"playAudio.pptx", &mConverter, &mContext)
+{
+}
+
+cpdoccore::odf_writer::odp_conversion_context* OOX2ODP_PlayAudioAnimationEnvironment::GetContext()
+{
+	return mContext;
+}
+
+void OOX2ODP_PlayAudioAnimationTest::SetUp()
+{
+	mContext = OOX2ODP_PlayAudioAnimationEnvironment::GetContext();
+}
+
+TEST_F(OOX2ODP_PlayAudioAnimationTest, mediaitems_size)
+{
+	ASSERT_NE(mContext, nullptr);
+
+	auto items = mContext->get_deferred_hyperlinks();
+	const size_t mediaitemsSizeExp = 1;
+
+	EXPECT_EQ(items.size(), mediaitemsSizeExp);
+}
+
+TEST_F(OOX2ODP_PlayAudioAnimationTest, mediaitem_path)
+{
+	ASSERT_NE(mContext, nullptr);
+	auto items = mContext->get_deferred_hyperlinks();
+	ASSERT_GE(items.size(), 1);
+
+	auto audioItem = items[0];
+	const std::wstring audioItemPath = L"../../../X2tConverter/test/win32Test/Res/media_example";
+
+	EXPECT_EQ(audioItem.second, audioItemPath);
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+boost::shared_ptr<Oox2Odf::Converter>			OOX2ODP_OpenDocumentAnimationEnvironment::mConverter;
+cpdoccore::odf_writer::odp_conversion_context*	OOX2ODP_OpenDocumentAnimationEnvironment::mContext;
+
+OOX2ODP_OpenDocumentAnimationEnvironment::OOX2ODP_OpenDocumentAnimationEnvironment()
+	: OOX2ODP_AnimationEnvironment(L"openDocument.pptx", &mConverter, &mContext)
+{
+}
+
+cpdoccore::odf_writer::odp_conversion_context* OOX2ODP_OpenDocumentAnimationEnvironment::GetContext()
+{
+	return mContext;
+}
+
+void OOX2ODP_OpenDocumentAnimationTest::SetUp()
+{
+	mContext = OOX2ODP_OpenDocumentAnimationEnvironment::GetContext();
+}
+
+TEST_F(OOX2ODP_OpenDocumentAnimationTest, mediaitems_size)
+{
+	ASSERT_NE(mContext, nullptr);
+
+	auto items = mContext->get_deferred_hyperlinks();
+	const size_t mediaitemsSizeExp = 1;
+
+	EXPECT_EQ(items.size(), mediaitemsSizeExp);
+}
+
+TEST_F(OOX2ODP_OpenDocumentAnimationTest, mediaitem_path)
+{
+	ASSERT_NE(mContext, nullptr);
+	auto items = mContext->get_deferred_hyperlinks();
+	ASSERT_GE(items.size(), 1);
+
+	auto audioItem = items[0];
+	const std::wstring audioItemPath = L"entrance";
+
+	EXPECT_EQ(audioItem.second, audioItemPath);
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+boost::shared_ptr<Oox2Odf::Converter>			OOX2ODP_RunProgramAnimationEnvironment::mConverter;
+cpdoccore::odf_writer::odp_conversion_context*	OOX2ODP_RunProgramAnimationEnvironment::mContext;
+
+OOX2ODP_RunProgramAnimationEnvironment::OOX2ODP_RunProgramAnimationEnvironment()
+	: OOX2ODP_AnimationEnvironment(L"runProgram.pptx", &mConverter, &mContext)
+{
+}
+
+cpdoccore::odf_writer::odp_conversion_context* OOX2ODP_RunProgramAnimationEnvironment::GetContext()
+{
+	return mContext;
+}
+
+void OOX2ODP_RunProgramAnimationTest::SetUp()
+{
+	mContext = OOX2ODP_RunProgramAnimationEnvironment::GetContext();
+}
+
+TEST_F(OOX2ODP_RunProgramAnimationTest, mediaitems_size)
+{
+	ASSERT_NE(mContext, nullptr);
+
+	auto items = mContext->get_deferred_hyperlinks();
+	const size_t mediaitemsSizeExp = 1;
+
+	EXPECT_EQ(items.size(), mediaitemsSizeExp);
+}
+
+TEST_F(OOX2ODP_RunProgramAnimationTest, mediaitem_path)
+{
+	ASSERT_NE(mContext, nullptr);
+	auto items = mContext->get_deferred_hyperlinks();
+	ASSERT_GE(items.size(), 1);
+
+	auto audioItem = items[0];
+	const std::wstring audioItemPath = L"../../../../build_tools/out/win_64/onlyoffice/core/x2t";
+
+	EXPECT_EQ(audioItem.second, audioItemPath);
+}

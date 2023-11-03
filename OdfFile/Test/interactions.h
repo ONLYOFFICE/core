@@ -55,6 +55,8 @@ public:
 	void TearDown() override {}
 };
 
+//////////////////////////////////////////////////////////////////////////
+
 class ODP2OOX_AnimationPlayAudioEnvironment : public ODP2OOX_AnimationEnvironment
 {
 public:
@@ -103,6 +105,8 @@ public:
 	cpdoccore::oox::pptx_conversion_context* mConversionContext;
 };
 
+//////////////////////////////////////////////////////////////////////////
+
 class ODP2OOX_AnimationRunProgramEnvironment : public ODP2OOX_AnimationEnvironment
 {
 public:
@@ -126,3 +130,68 @@ public:
 	cpdoccore::oox::pptx_conversion_context* mConversionContext;
 };
 
+//////////////////////////////////////////////////////////////////////////
+
+class OOX2ODP_PlayAudioAnimationEnvironment : public OOX2ODP_AnimationEnvironment
+{
+public:
+	OOX2ODP_PlayAudioAnimationEnvironment();
+
+public:
+	static cpdoccore::odf_writer::odp_conversion_context* GetContext();
+
+private:
+	static boost::shared_ptr<Oox2Odf::Converter> mConverter;
+	static cpdoccore::odf_writer::odp_conversion_context* mContext;
+};
+
+class OOX2ODP_PlayAudioAnimationTest : public OOX2ODP_AnimationTest
+{
+public:
+	void SetUp() override;
+	void TearDown() override {}
+};
+
+//////////////////////////////////////////////////////////////////////////
+
+class OOX2ODP_OpenDocumentAnimationEnvironment : public OOX2ODP_AnimationEnvironment
+{
+public:
+	OOX2ODP_OpenDocumentAnimationEnvironment();
+
+public:
+	static cpdoccore::odf_writer::odp_conversion_context* GetContext();
+
+private:
+	static boost::shared_ptr<Oox2Odf::Converter> mConverter;
+	static cpdoccore::odf_writer::odp_conversion_context* mContext;
+};
+
+class OOX2ODP_OpenDocumentAnimationTest : public OOX2ODP_AnimationTest
+{
+public:
+	void SetUp() override;
+	void TearDown() override {}
+};
+
+//////////////////////////////////////////////////////////////////////////
+
+class OOX2ODP_RunProgramAnimationEnvironment : public OOX2ODP_AnimationEnvironment
+{
+public:
+	OOX2ODP_RunProgramAnimationEnvironment();
+
+public:
+	static cpdoccore::odf_writer::odp_conversion_context* GetContext();
+
+private:
+	static boost::shared_ptr<Oox2Odf::Converter> mConverter;
+	static cpdoccore::odf_writer::odp_conversion_context* mContext;
+};
+
+class OOX2ODP_RunProgramAnimationTest : public OOX2ODP_AnimationTest
+{
+public:
+	void SetUp() override;
+	void TearDown() override {}
+};

@@ -211,6 +211,9 @@ bool DocxConverter::convertDocument()
 {
     if (!odt_context)   return false;
     if (!docx_document && !docx_flat_document) return false;
+
+	OOX::CApp* app = docx_document ? docx_document->m_pApp : docx_flat_document->m_pApp.GetPointer();
+	OOX::CCore* core = docx_document ? docx_document->m_pCore : docx_flat_document->m_pCore.GetPointer();
 		
 	odt_context->start_document();
 
@@ -218,7 +221,7 @@ bool DocxConverter::convertDocument()
 	convert_styles();
 
 	convert_settings(); 
-	convert_meta(docx_document->m_pApp, docx_document->m_pCore);
+	convert_meta(app, core);
 
 	convert_document();
 

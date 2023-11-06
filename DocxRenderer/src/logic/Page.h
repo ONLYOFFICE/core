@@ -88,9 +88,9 @@ namespace NSDocxRenderer
 	private:
 
 		// methods to build text lines
+		void BuildDiacriticalSymbols();
 		void BuildTextLines();
 		void AddContToTextLine(std::shared_ptr<CContText> pCont);
-		void AddContToTextLine(std::shared_ptr<CContText>&& pCont);
 
 		void AnalyzeTextLines();
 		void AnalyzeConts();

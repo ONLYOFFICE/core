@@ -351,11 +351,7 @@ namespace NSDocxRenderer
 		pCont->m_dSpaceWidthMM = m_pFontManager->GetSpaceWidthMM();
 		m_pParagraphStyleManager->UpdateAvgFontSize(m_pFont->Size);
 
-		// собираем отдельно, т.к. такие символы не имеют размера m_dWidth
-		if (nCount == 1 && IsDiacriticalMark(*pUnicodes))
-			m_arDiacriticalSymbols.push_back(pCont);
-		else
-			m_arConts.push_back(pCont);
+		m_arConts.push_back(pCont);
 	}
 
 	void CPage::AddContToTextLine(std::shared_ptr<CContText> pCont)
@@ -393,6 +389,9 @@ namespace NSDocxRenderer
 
 	void CPage::ProcessingAndRecordingOfPageData(NSStringUtils::CStringBuilder& oWriter, LONG lPagesCount, LONG lNumberPages)
 	{
+		// build m_arDiacriticalSymbols
+		BuildDiacriticalSymbols();
+
 		// build text lines from m_arConts
 		BuildTextLines();
 
@@ -413,21 +412,34 @@ namespace NSDocxRenderer
 
 		// calc sizes on selected fonts for m_arConts
 		CalcSelected();
+
 		ToXml(oWriter);
 		WriteSectionToFile(lPagesCount >= lNumberPages - 1, oWriter);
 	}
 
+	void CPage::BuildDiacriticalSymbols()
+	{
+		for(size_t i = 0; i < m_arConts.size(); i++)
+			if(m_arConts[i] && m_arConts[i]->m_oText.length() == 1 && IsDiacriticalMark(m_arConts[i]->m_oText[0]))
+				m_arDiacriticalSymbols.push_back(std::move(m_arConts[i]));
+
+	}
 	void CPage::BuildTextLines()
 	{
 		using cont_ptr = std::shared_ptr<CContText>;
 		std::sort(m_arConts.begin(), m_arConts.end(), [] (const cont_ptr& a, const cont_ptr& b) {
+			if(!a) return false;
+			if(!b) return true;
+
 			if(fabs(a->m_dBaselinePos - b->m_dBaselinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
 				return a->m_dLeft < b->m_dLeft;
+
 			return a->m_dBaselinePos < b->m_dBaselinePos;
 		});
 
-		for(auto&& cont : m_arConts)
-			AddContToTextLine(cont);
+		for(auto& cont : m_arConts)
+			if(cont)
+				AddContToTextLine(std::move(cont));
 	}
 
 	void CPage::MergeShapes()
@@ -450,8 +462,11 @@ namespace NSDocxRenderer
 
 	void CPage::CalcSelected()
 	{
-		for(auto& cont : m_arConts)
-			cont->CalcSelected();
+		for(auto& line : m_arTextLines)
+			if(line)
+				for(auto& cont : line->m_arConts)
+					if(cont)
+						cont->CalcSelected();
 	}
 
 	void CPage::AnalyzeShapes()
@@ -525,7 +540,6 @@ namespace NSDocxRenderer
 	void CPage::AnalyzeTextLines()
 	{
 		// вся логика основана на отсортированных списках объектов
-
 		using line_ptr = std::shared_ptr<CTextLine>;
 		std::sort(m_arTextLines.begin(), m_arTextLines.end(), [] (const line_ptr& a, const line_ptr& b) {
 			return a->m_dBaselinePos < b->m_dBaselinePos;
@@ -977,8 +991,8 @@ namespace NSDocxRenderer
 
 					using cont_ptr = std::shared_ptr<CContText>;
 					std::sort(pBaseLine->m_arConts.begin(), pBaseLine->m_arConts.end(), [] (const cont_ptr& a, const cont_ptr& b) {
-						if(!a || !b)
-							return false;
+						if(!a) return false;
+						if(!b) return true;
 						return a->m_dLeft < b->m_dLeft;
 					});
 
@@ -1007,8 +1021,8 @@ namespace NSDocxRenderer
 
 					using cont_ptr = std::shared_ptr<CContText>;
 					std::sort(line->m_arConts.begin(), line->m_arConts.end(), [] (const cont_ptr& a, const cont_ptr& b) {
-						if(!a || !b)
-							return false;
+						if(!a) return false;
+						if(!b) return true;
 						return a->m_dLeft < b->m_dLeft;
 					});
 					pSubLine = nullptr;
@@ -1090,7 +1104,7 @@ namespace NSDocxRenderer
 				if (pCurrCont->m_iNumDuplicates > 0)
 					pCurrLine->m_iNumDuplicates = std::max(pCurrLine->m_iNumDuplicates, pCurrCont->m_iNumDuplicates);
 			}
-			pCurrLine->MergeConts();
+			 pCurrLine->MergeConts();
 		}
 		DetermineDominantGraphics();
 	}

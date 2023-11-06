@@ -67,7 +67,6 @@ namespace NSDocxRenderer
 					wide_space->m_oText = L" ";
 					wide_space->m_pFontStyle = pFirst->m_pFontStyle;
 					wide_space->m_pShape = nullptr;
-					wide_space->m_pCont = nullptr;
 					wide_space->m_iNumDuplicates = 0;
 					wide_space->CalcSelected();
 				};
@@ -104,7 +103,7 @@ namespace NSDocxRenderer
 				pFirst->m_dWidth = pCurrent->m_dRight - pFirst->m_dLeft;
 				pFirst->m_dRight = pCurrent->m_dRight;
 
-				if (!pFirst->m_pCont)
+				if (pFirst->m_pCont.expired())
 				{
 					pFirst->m_pCont = pCurrent->m_pCont;
 					pFirst->m_eVertAlignType = pCurrent->m_eVertAlignType;

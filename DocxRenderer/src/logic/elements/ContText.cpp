@@ -35,9 +35,7 @@ namespace NSDocxRenderer
 	CContText& CContText::operator= (const CContText& rCont)
 	{
 		if (this == &rCont)
-		{
 			return *this;
-		}
 
 		CBaseItem::operator=(rCont);
 

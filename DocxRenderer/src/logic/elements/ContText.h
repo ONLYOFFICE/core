@@ -42,7 +42,7 @@ namespace NSDocxRenderer
 		std::shared_ptr<CShape> m_pShape              {nullptr};
 
 		// super/sub script
-		std::shared_ptr<CContText> m_pCont            {nullptr};
+		std::weak_ptr<CContText> m_pCont              {};
 		eVertAlignType m_eVertAlignType               {eVertAlignType::vatUnknown};
 
 		// highlights

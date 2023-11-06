@@ -439,7 +439,7 @@ namespace NSDocxRenderer
 
 		for(auto& cont : m_arConts)
 			if(cont)
-				AddContToTextLine(std::move(cont));
+				AddContToTextLine(cont);
 	}
 
 	void CPage::MergeShapes()

@@ -833,6 +833,9 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 		if (type == SimpleTypes::shapetypeRect && (oox_shape->txBody.IsInit() || oox_shape->oTextBoxShape.IsInit())) 
 			type = 2000;
 
+		if (type == 63) // ellipse
+			type = 1000; // custom
+
 		if (type == 2000)
 		{
 			PPTX::Logic::BodyPr *bodyPr = NULL;
@@ -1030,6 +1033,13 @@ int OoxConverter::convert(PPTX::Logic::PrstTxWarp *oox_text_preset)
 void OoxConverter::convert(PPTX::Logic::PrstGeom *oox_geom)
 {
 	if (!oox_geom) return;
+
+	if (oox_geom->prst.get() == L"ellipse")
+	{
+		odf_context()->drawing_context()->set_viewBox(21600, 21600);
+		odf_context()->drawing_context()->set_path(L"U 10800 10800 10800 10800 0 360 Z N");
+		return;
+	}
 
 	for (size_t i = 0; i < oox_geom->avLst.size(); i++)
 	{

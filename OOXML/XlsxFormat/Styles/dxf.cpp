@@ -43,6 +43,7 @@
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 
 #include "../../Common/SimpleTypes_Shared.h"
+#include <boost/algorithm/string.hpp>
 
 namespace OOX
 {
@@ -145,7 +146,14 @@ namespace OOX
 						else if ( _T("font") == sName )
 							m_oFont = oReader;
 						else if ( _T("numFmt") == sName )
+                        {
 							m_oNumFmt = oReader;
+                            if(m_oNumFmt->m_oFormatCode.IsInit())
+                                if(m_oNumFmt->m_oFormatCode.get().find(L"&quot;"))
+                                    boost::algorithm::replace_all(m_oNumFmt->m_oFormatCode.get(), L"&quot;", L"\"");
+
+
+                        }
 						else if ( _T("protection") == sName )
 							m_oProtection = oReader;
 					}

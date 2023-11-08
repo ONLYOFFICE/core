@@ -394,6 +394,8 @@ void CConditionalFormatIconSet::ReadAttributes(XLS::BaseObjectPtr& obj)
 
     if(ptr != nullptr)
     {
+        if(ptr->index < 0)
+             ptr->index = 0;
         m_oIconId = ptr->index;
 
         switch(ptr->iconSet.set)

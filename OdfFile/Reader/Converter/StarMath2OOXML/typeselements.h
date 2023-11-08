@@ -10,6 +10,7 @@ enum class TypeElement{
 	SetOperations,
 	Operator,
 	Bracket,
+	//BracketEnd,
 	UnarSign,
 	Attribute,
 	SpecialSymbol,
@@ -18,6 +19,7 @@ enum class TypeElement{
 	Index,
 	Matrix,
 	Connection,
+	Empty,
 	//binoop
 	cdot,
 	times,
@@ -39,6 +41,16 @@ enum class TypeElement{
 	//op
 	lim,
 	sum,
+	liminf,
+	limsup,
+	prod,
+	coprod,
+	Int,
+	iint,
+	iiint,
+	lint,
+	llint,
+	lllint,
 	//brace
 	brace,
 	round,
@@ -212,6 +224,21 @@ enum class TypeElement{
 	binom,
 	stack,
 	matrix,
+	//bracket close
+	rwbrace,
+	rbrace,
+	rround,
+	rsquare,
+	rdbracket,
+	rangle,
+	rceil,
+	rfloor,
+	rline,
+	rdline,
+	right,
+	//op
+	from,
+	to,
 };
 }
 #endif // TYPESELEMENTS_H

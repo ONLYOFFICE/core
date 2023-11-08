@@ -5,18 +5,45 @@
 #include <vector>
 #include <iterator>
 #include <stack>
+#include "../../../../DesktopEditor/xml/include/xmlwriter.h"
 
 namespace StarMath
 {
+	//Сlass for working with tokens (reading, defining types, passing)
+	class CStarMathReader
+	{
+	public:
+		CStarMathReader(std::wstring::iterator& itStart, std::wstring::iterator& itEnd);
+		~CStarMathReader();
+		void GetToken();
+		//getting a subtype and setting the global type of a token to variables m_enUnderType and m_enGlobalType
+		void SetTypesToken();
+		//void SkipNextElement();
+		TypeElement GetGlobalType();
+		TypeElement GetLocalType();
+		std::wstring GetString();
+		//clearing a variable m_wsToken
+		void ClearWString();
+		bool CheckIteratorPosition();
+		bool EmptyString();
+	private:
+		//The function returns a Token from a string (the iterator pointer m_itStart is on the next element)
+		std::wstring GetElement();
+		std::wstring::iterator m_itStart,m_itEnd;
+		TypeElement m_enGlobalType;
+		TypeElement m_enUnderType;
+		std::wstring m_wsToken;
+	};
+
 	class CAttribute
 	{
 	public:
 		CAttribute(const TypeElement& enType);
 		~CAttribute();
-		static TypeElement IsAttribute(const std::wstring& wsToken);
+		static TypeElement GetTypeAttribute(const std::wstring& wsToken);
 		TypeElement GetType();
 	private:
-		TypeElement enTypeAttr;
+		TypeElement m_enTypeAttr;
 	};
 
 	class CIndex;
@@ -26,18 +53,18 @@ namespace StarMath
 	public:
 		CElement();
 		virtual ~CElement();
-		virtual void Pars(std::wstring::iterator& itStart,std::wstring::iterator& itEnd) = 0;
-		//принимает подтип (over, frac и т.д) и создает нужный нам класс(внутри уже идет проверка по классам)
-		static CElement* CreateElement(const std::wstring& wsToken);
-		//static TypeElement GetTypeElement(const std::wstring& wsToken);
+		virtual void Parse(CStarMathReader* pReader) = 0;
+		//The function creates the class we need (by determining the class type by a variable m_enGlobalType from the class CStarMathReader)
+		static CElement* CreateElement(CStarMathReader* pReader);
+		virtual void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) = 0;
 		void SetAttribute(const std::vector<CAttribute*> arAttr);
 		void SetIndex(CIndex* pIndex);
 		void SetBaseType(const TypeElement& enType);
 		TypeElement GetBaseType();
 	private:
-		CIndex* pElementIndex;
-		std::vector<CAttribute*> arElementAttributes;
-		TypeElement enBaseType;
+		CIndex* m_pElementIndex;
+		std::vector<CAttribute*> m_arElementAttributes;
+		TypeElement m_enBaseType;
 	};
 
 	class CIndex
@@ -50,8 +77,8 @@ namespace StarMath
 		static bool IsIndex(const std::wstring& wsCheckToken);
 		static CIndex* CreateIndex(const std::wstring& wsToken);
 	private:
-		CElement* pValueIndex;
-		TypeElement enTypeIndex;
+		CElement* m_pValueIndex;
+		TypeElement m_enTypeIndex;
 	};
 
 	class CElementString: public CElement
@@ -61,10 +88,11 @@ namespace StarMath
 		virtual ~CElementString();
 		void SetString(const std::wstring& wsTokenString);
 		std::wstring GetString();
-		static bool IsDigit(const std::wstring& wsCheckToken);
+		static TypeElement GetDigit(const std::wstring& wsCheckToken);
 	private:
-		void Pars(std::wstring::iterator& itStart,std::wstring::iterator& itEnd) override;
-		std::wstring wsString;
+		void Parse(CStarMathReader* pReader) override;
+		void ConversionToOOXML(XmlUtils::CXmlWriter* oXmlWrite) override;
+		std::wstring m_wsString;
 	};
 
 	class CElementBinOperator: public CElement
@@ -77,13 +105,14 @@ namespace StarMath
 		void SetTypeBinOP(const TypeElement& enType);
 		CElement* GetRightArg();
 		CElement* GetLeftArg();
-		static bool IsBinOperatorHightPrior(const std::wstring& wsToken);
+		static TypeElement GetBinOperator(const std::wstring& wsToken);
 	private:
 		bool IsBinOperatorLowPrior();
-		void Pars(std::wstring::iterator& itStart,std::wstring::iterator& itEnd) override;
-		CElement* pLeftArgument;
-		CElement* pRightArgument;
-		TypeElement enTypeBinOp;
+		void Parse(CStarMathReader* pReader) override;
+		void ConversionToOOXML(XmlUtils::CXmlWriter* oXmlWrite) override;
+		CElement* m_pLeftArgument;
+		CElement* m_pRightArgument;
+		TypeElement m_enTypeBinOp;
 	};
 
 	class CElementOperator: public CElement
@@ -97,12 +126,15 @@ namespace StarMath
 		CElement* GetFromValue();
 		void SetToValue(CElement* pElement);
 		CElement* GetToValue();
+		static TypeElement GetOperator(const std::wstring& wsToken);
+		static TypeElement GetFromOrTo(const std::wstring& wsToken);
 	private:
-		void Pars(std::wstring::iterator &itStart, std::wstring::iterator &itEnd) override;
-		CElement* pValueOperator;
-		CElement* pValueFrom;
-		CElement* pValueTo;
-		TypeElement enTypeOperator;
+		void Parse(CStarMathReader* pReader) override;
+		void ConversionToOOXML(XmlUtils::CXmlWriter* oXmlWrite) override;
+		CElement* m_pValueOperator;
+		CElement* m_pValueFrom;
+		CElement* m_pValueTo;
+		TypeElement m_enTypeOperator;
 	};
 
 	class CElementBracket: public CElement
@@ -111,11 +143,13 @@ namespace StarMath
 		CElementBracket(const TypeElement& enType);
 		virtual ~CElementBracket();
 		void SetBracketValue(const std::vector<CElement*>& arValue);
+		static TypeElement GetBracketOpen(const std::wstring& wsToken);
 	private:
-		void Pars(std::wstring::iterator& itStart,std::wstring::iterator& itEnd) override;
-		static bool IsBracketClose(const std::wstring& wsToken);
-		TypeElement enTypeBracket;
-		std::vector<CElement*> arBrecketValue;
+		void Parse(CStarMathReader* pReader) override;
+		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite);
+		TypeElement GetBracketClose(const std::wstring& wsToken);
+		TypeElement m_enTypeBracket;
+		std::vector<CElement*> m_arBrecketValue;
 	};
 
 	class CElementSetOperations: public CElement
@@ -127,12 +161,13 @@ namespace StarMath
 		CElement* GetLeftArg();
 		void SetRightArg(CElement* pElement);
 		CElement* GetRightArg();
-		static bool IsSetOperation(const std::wstring& wsToken);
+		static TypeElement GetSetOperation(const std::wstring& wsToken);
 	private:
-		void Pars(std::wstring::iterator& itStart,std::wstring::iterator& itEnd) override;
-		CElement* pLeftArgument;
-		CElement* pRightArgument;
-		TypeElement enTypeSet;
+		void Parse(CStarMathReader* pReader) override;
+		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
+		CElement* m_pLeftArgument;
+		CElement* m_pRightArgument;
+		TypeElement m_enTypeSet;
 	};
 
 	class CElementConnection: public CElement
@@ -144,12 +179,13 @@ namespace StarMath
 		CElement* GetRightArg();
 		void SetLeftArg(CElement* pElement);
 		CElement* GetLeftArg();
-		static bool IsConnection(const std::wstring& wsToken);
+		static TypeElement GetConnection(const std::wstring& wsToken);
 	private:
-		void Pars(std::wstring::iterator& itStart, std::wstring::iterator& itEnd) override;
-		CElement* pLeftArgument;
-		CElement* pRightArgument;
-		TypeElement enTypeCon;
+		void Parse(CStarMathReader* pReader) override;
+		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
+		CElement* m_pLeftArgument;
+		CElement* m_pRightArgument;
+		TypeElement m_enTypeCon;
 	};
 
 	class CElementFunction: public CElement
@@ -159,10 +195,12 @@ namespace StarMath
 		virtual ~CElementFunction();
 		void SetValueFunction(CElement* pElement);
 		CElement* GetValueFunction();
+		static TypeElement GetFunction(const std::wstring& wsToken);
 	private:
-		void Pars(std::wstring::iterator& itStart,std::wstring::iterator& itEnd) override;
-		CElement* pValue;
-		TypeElement enTypeFunction;
+		void Parse(CStarMathReader* pReader) override;
+		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
+		CElement* m_pValue;
+		TypeElement m_enTypeFunction;
 	};
 
 	class CElementSpecialSymbol: public CElement
@@ -171,23 +209,20 @@ namespace StarMath
 		CElementSpecialSymbol(const TypeElement& enType);
 		virtual ~CElementSpecialSymbol();
 	private:
-		void Pars(std::wstring::iterator& itStart,std::wstring::iterator& itEnd) override;
-		TypeElement enTypeSpecial;
+		void Parse(CStarMathReader* pReader) override;
+		TypeElement m_enTypeSpecial;
 	};
 
-	class CParseStarMathString
+	class CParserStarMathString
 	{
 	public:
 		std::vector<CElement*> Parse(std::wstring& wsParseString);
-		static CElement* ParsElement(std::wstring::iterator&  itStart, std::wstring::iterator& itEnd);
-		static std::wstring GetElement(std::wstring::iterator& itStart,std::wstring::iterator& itEnd);
-		static bool CheckingTheNextElement(std::wstring::iterator& itStart,std::wstring::iterator& itEnd, bool (&func)(const std::wstring&));
-		static bool MoveToNextElement(std::wstring::iterator& itStart,std::wstring::iterator& itEnd);
+		static CElement* ParseElement(CStarMathReader* pReader);
+		//Function for adding a left argument (receives the argument itself and the element to which it needs to be added as input. Works with classes:CElementBinOperator,CElementConnection,CElementSetOperation).
 		static void AddLeftArgument(CElement* pLeftArg,CElement* pElementWhichAdd);
-		template<typename T>
-		static void SetLeft(CElement* pLeftArg, CElement* pElementWhichaAdd);
+		static CElement* ReadingWithoutBracket(CStarMathReader* pReader);
 	private:
-		std::vector<CElement*> arEquation;
+		std::vector<CElement*> m_arEquation;
 	};
 }
 

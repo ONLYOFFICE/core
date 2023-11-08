@@ -1088,8 +1088,9 @@ namespace VBA
 		}
 		stream->Align(4);
 		if (propMask.fZoom) *stream >> Zoom;
-		if (propMask.fPictureAlignment) *stream >> PictureAlignment;
-		if (propMask.fPictureSizeMode) *stream >> PictureSizeMode;
+		if (propMask.fPicture && propMask.fPictureAlignment) *stream >> PictureAlignment;
+		if (propMask.fPicture && propMask.fPictureSizeMode) *stream >> PictureSizeMode;
+		stream->Align(4);
 		if (propMask.fShapeCookie) *stream >> ShapeCookie;
 		if (propMask.fDrawBuffer) *stream >> DrawBuffer;
 //- FormExtraDataBlock		

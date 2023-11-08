@@ -501,7 +501,9 @@ void WorkBookStream::UpdateXti(XLS::GlobalWorkbookInfo* global_info_)
             GlobalWorkbookInfo::_xti val_1;
 
             val_1.iSup		= xti->iSupBook;
-            val_1.pNames	= &index_book->arNames;
+            auto namesVector = new std::vector<std::wstring>();
+            *namesVector = index_book->arNames;
+            val_1.pNames	= namesVector;
 
             if(index_book->m_source->get_type() == XLS::typeSupBookSrc)
             {

@@ -2795,7 +2795,6 @@ namespace NExtractTools
 		COfficeDocFile docFile;
 		docFile.m_sTempFolder = sTemp;
 		docFile.m_nUserLCID = (NULL != params.m_nLcid) ? *params.m_nLcid : -1;
-		;
 
 		params.m_bMacro = true;
 
@@ -5623,6 +5622,11 @@ namespace NExtractTools
 		case TCD_NON_AUTO:
 		{
 			result = AVS_FILEUTILS_ERROR_CONVERT_DETECT;
+		}
+		break;
+		case TCD_DOC2DOCT:
+		{
+			result = doc2doct(sFileFrom, sFileTo, sTempDir, oInputParams);
 		}
 		break;
 		case TCD_DOCX2DOCT:

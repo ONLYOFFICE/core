@@ -160,21 +160,26 @@ public:
 		switch(rel_info)
 		{
 			case rel_Present:
-				columnFirst = (colFirst << 2) >> 2;
-				columnLast = (colLast << 2) >> 2;
-				rowFirstRelative = 0 != (colFirst & (1 << (sizeof(ColType) * 8 - 1)));
-				columnFirstRelative = 0 != (colFirst & (1 << (sizeof(ColType) * 8 - 2)));
-				rowLastRelative = 0 != (colLast & (1 << (sizeof(ColType) * 8 - 1)));
-				columnLastRelative = 0 != (colLast & (1 << (sizeof(ColType) * 8 - 2)));
-				break;
+			{
+				columnFirst = GETBITS(colFirst, 0, sizeof(ColType) * 8 - 3);
+				columnLast = GETBITS(colLast, 0, sizeof(ColType) * 8 - 3);
+
+				columnFirstRelative = GETBIT(colFirst, sizeof(ColType) * 8 - 2);
+				rowFirstRelative = GETBIT(colFirst, sizeof(ColType) * 8 - 1);
+
+				columnLastRelative = GETBIT(colLast, sizeof(ColType) * 8 - 2);
+				rowLastRelative = GETBIT(colLast, sizeof(ColType) * 8 - 1);
+			}break;
 			case rel_Absent:
+			{
 				columnFirst = colFirst;
 				columnLast = colLast;
+				
 				rowFirstRelative = true;
 				columnFirstRelative = true;
 				rowLastRelative = true;
 				columnLastRelative = true;
-				break;
+			}break;
 		}
 	}
 
@@ -209,8 +214,10 @@ typedef CellRangeRef_T<Ref_name, unsigned short, unsigned char, rel_Absent> Ref;
 typedef CellRangeRef_T<Ref8_name, unsigned short, unsigned short, rel_Absent> Ref8;
 typedef CellRangeRef_T<Ref8U_name, unsigned short, unsigned short, rel_Absent> Ref8U;
 typedef CellRangeRef_T<RefU_name, unsigned short, unsigned char, rel_Absent> RefU;
-typedef CellRangeRef_T<Ref8U2007_name, unsigned int, unsigned int, rel_Absent> Ref8U2007;
-typedef CellRangeRef_T<RFX_name, int, int, rel_Absent> RFX;
+
+typedef CellRangeRef_T<Ref8U2007_name, _UINT32, _UINT32, rel_Absent> Ref8U2007;
+typedef CellRangeRef_T<RFX_name, _INT32, _INT32, rel_Absent> RFX;
+
 typedef CellRangeRef_T<RgceArea_name, unsigned short, unsigned short, rel_Present> RgceArea;
 typedef CellRangeRef_T<RgceAreaRel_name, short, short, rel_Present> RgceAreaRel;
 

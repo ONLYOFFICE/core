@@ -73,6 +73,14 @@ namespace OOX
 		class CTableStyle;
 		class CCellStyle;
 		class CProtection;
+		class CTimelines;
+		class CTimeline;
+		class CTimelineCacheDefinition;
+		class CTimelinePivotFilter;
+		class CTimelineState;
+		class CTimelineRange;
+		class CTimelineCachePivotTables;
+		class CTimelineCachePivotTable;
 	}
 }
 
@@ -202,6 +210,14 @@ namespace BinXlsxRW
 		void WriteDefinedName(const OOX::Spreadsheet::CDefinedName& definedName);
 		void WriteSlicerCaches(OOX::Spreadsheet::CWorkbook& workbook, const OOX::Spreadsheet::CSlicerCaches& oSlicerCaches);
 		void WriteFileSharing(const OOX::Spreadsheet::CFileSharing& fileSharing);
+		void WriteTimelineCaches(OOX::Spreadsheet::CWorkbook& workbook, const OOX::Spreadsheet::CTimelineCacheRefs& oTimelineCacheRefs);
+		void WriteTimelineCache(OOX::Spreadsheet::CTimelineCacheDefinition* pTimelineCache);
+		void WriteTimelineState(OOX::Spreadsheet::CTimelineState* pState);
+		void WriteTimelinePivotFilter(OOX::Spreadsheet::CTimelinePivotFilter* pPivotFilter);
+		void WriteTimelineCachePivotTables(OOX::Spreadsheet::CTimelineCachePivotTables* pPivotTables);
+		void WriteTimelineCachePivotTable(OOX::Spreadsheet::CTimelineCachePivotTable* pPivotTable);
+		void WriteTimelineRange(OOX::Spreadsheet::CTimelineRange* pTimelineRange);
+		
 	};
 	class BinaryPersonTableWriter
 	{
@@ -306,6 +322,9 @@ namespace BinXlsxRW
 		void WriteUserProtectedRanges(const OOX::Spreadsheet::CUserProtectedRanges& oUserProtectedRanges);
 		void WriteUserProtectedRange(const OOX::Spreadsheet::CUserProtectedRange& oUserProtectedRange);
 		void WriteUserProtectedRangeDesc(const OOX::Spreadsheet::CUserProtectedRange::_UsersGroupsDesc& desc);
+		void WriteTimelines(OOX::Spreadsheet::CWorksheet& oWorksheet, const OOX::Spreadsheet::CTimelineRefs& oTimelines);
+		void WriteTimelines(OOX::Spreadsheet::CTimelines* pTimelines);
+		void WriteTimeline(OOX::Spreadsheet::CTimeline* pTimeline);
 	};
 	class BinaryCustomsTableWriter
 	{

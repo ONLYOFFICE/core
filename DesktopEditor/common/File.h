@@ -126,6 +126,7 @@ namespace NSFile
 		static void GetUtf16StringFromUnicode_4bytes(const wchar_t* pUnicodes, LONG lCount, BYTE*& pData, int& lOutputCount, bool bIsBOM = false);
 		static void GetUtf16StringFromUnicode_4bytes2(const wchar_t* pUnicodes, LONG lCount, CStringUtf16& data);
 		static long GetUtf16SizeFromUnicode_4bytes(const wchar_t* pUnicodes, LONG lCount, bool bIsBOM = false);
+		static long GetUtf16SizeFromUnicode(const wchar_t* pUnicodes, LONG lCount, bool bIsBOM = false);
 
 		static std::wstring GetWStringFromUTF16(const CStringUtf16& data);
 		static std::wstring GetWStringFromUTF16(const unsigned short* pUtf16, LONG lCount);

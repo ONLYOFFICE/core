@@ -2614,14 +2614,6 @@ namespace Word
 		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:before-autospacing", m_oBeforeAutospacing)
 		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:after-autospacing", m_oAfterAutospacing)
 		WritingElement_ReadAttributes_End(oReader)
-
-			if (m_oLine.IsInit())
-			{
-				if (m_oLine->GetValue() < 0)
-				{
-					m_oLine->SetValue(-m_oLine->GetValue());
-				}
-			}
 	}
 
 //--------------------------------------------------------------------------------

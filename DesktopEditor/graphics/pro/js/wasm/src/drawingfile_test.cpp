@@ -1,3 +1,8 @@
+#include <iostream>
+
+#include "../../../../raster/BgraFrame.h"
+#include "../../../../raster/ImageFileFormatChecker.h"
+#include "../../../../../common/File.h"
 #include "drawingfile.cpp"
 
 unsigned char READ_BYTE(BYTE* x)
@@ -335,24 +340,34 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 		std::string sType = arrAnnots[nPathLength];
 		std::cout << "Widget type " << sType << ", ";
 
-			   // Annot
+		// Annot
 
 		ReadAnnot(pWidgets, i);
 
-			   // Widget
+		// Widget
+
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "Font: name " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+		i += nPathLength;
+
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "size " << (double)nPathLength / 100.0 << ", ";
 
 		int nTCLength = READ_INT(pWidgets + i);
 		i += 4;
 		if (nTCLength)
-			std::cout << "Text Color: ";
-		for (int j = 0; j < nTCLength; ++j)
 		{
-			nPathLength = READ_INT(pWidgets + i);
-			i += 4;
-			std::cout << (double)nPathLength / 100.0 << " ";
-		}
-		if (nTCLength)
+			std::cout << "color";
+			for (int j = 0; j < nTCLength; ++j)
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << " " << (double)nPathLength / 100.0;
+			}
 			std::cout << ", ";
+		}
 
 		std::string arrQ[] = {"left-justified", "centered", "right-justified"};
 		nPathLength = READ_BYTE(pWidgets + i);
@@ -662,25 +677,6 @@ void ReadAnnotAP(BYTE* pWidgetsAP, int& i)
 		oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res_" + std::to_wstring(nAP) + L"_" + UTF8_TO_U(sAPName) + L".png", _CXIMAGE_FORMAT_PNG);
 		oFrame.ClearNoAttack();
 		RELEASEARRAYOBJECTS(res);
-
-		int nTextSize = READ_INT(pWidgetsAP + i);
-		i += 4;
-		for (int k = 0; k < nTextSize; ++k)
-		{
-			nPathLength = READ_INT(pWidgetsAP + i);
-			i += 4;
-			std::cout << k << " Text " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
-			i += nPathLength;
-
-			nPathLength = READ_INT(pWidgetsAP + i);
-			i += 4;
-			std::cout << "Font " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
-			i += nPathLength;
-
-			nPathLength = READ_INT(pWidgetsAP + i);
-			i += 4;
-			std::cout << "Size " << (double)nPathLength / 100.0 << ", ";
-		}
 	}
 	std::cout << std::endl;
 }
@@ -691,7 +687,7 @@ void ReadAnnotAP(BYTE* pWidgetsAP, int& i)
 int main(int argc, char* argv[])
 {
 
-		   // CHECK SYSTEM FONTS
+	// CHECK SYSTEM FONTS
 	CApplicationFontsWorker oWorker;
 	oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
 	//oWorker.m_arAdditionalFolders.push_back(L"D:\\GIT\\core-fonts");
@@ -704,7 +700,7 @@ int main(int argc, char* argv[])
 		RELEASEINTERFACE(pFonts);
 	}
 
-		   // INITIALIZE FONTS
+	// INITIALIZE FONTS
 	if (true)
 	{
 		BYTE* pFontSelection = NULL;
@@ -722,7 +718,7 @@ int main(int argc, char* argv[])
 		RELEASEARRAYOBJECTS(pFontSelection);
 	}
 
-		   // OPEN FILE
+	// OPEN FILE
 	std::wstring sFilePath = NSFile::GetProcessDirectory() + L"/test.pdf";
 
 	BYTE* pFileData = NULL;
@@ -748,7 +744,7 @@ int main(int argc, char* argv[])
 		}
 	}
 
-		   // INFO
+	// INFO
 	BYTE* pInfo = GetInfo(pGrFile);
 	int nLength = READ_INT(pInfo);
 	nLength -= 4;
@@ -780,7 +776,7 @@ int main(int argc, char* argv[])
 
 	free(pInfo);
 
-		   // CMAP
+	// CMAP
 	BYTE* pCMapData = NULL;
 	if (IsNeedCMap(pGrFile))
 	{
@@ -791,7 +787,7 @@ int main(int argc, char* argv[])
 		}
 	}
 
-		   // RASTER
+	// RASTER
 	if (true && nPagesCount > 0)
 	{
 		BYTE* res = NULL;
@@ -809,7 +805,7 @@ int main(int argc, char* argv[])
 		RELEASEARRAYOBJECTS(res);
 	}
 
-		   // LINKS
+	// LINKS
 	if (false && nPagesCount > 0)
 	{
 		BYTE* pLinks = GetLinks(pGrFile, nTestPage);
@@ -845,7 +841,7 @@ int main(int argc, char* argv[])
 			free(pLinks);
 	}
 
-		   // STRUCTURE
+	// STRUCTURE
 	if (false)
 	{
 		BYTE* pStructure = GetStructure(pGrFile);
@@ -875,7 +871,7 @@ int main(int argc, char* argv[])
 			free(pStructure);
 	}
 
-		   // GLYPHS
+	// GLYPHS
 	if (false && nPagesCount > 0)
 	{
 		// TODO:
@@ -883,7 +879,7 @@ int main(int argc, char* argv[])
 		DestroyTextInfo(pGrFile);
 	}
 
-		   // INTERACTIVE FORMS
+	// INTERACTIVE FORMS
 	if (true)
 	{
 		BYTE* pWidgets = GetInteractiveFormsInfo(pGrFile);
@@ -910,7 +906,8 @@ int main(int argc, char* argv[])
 		if (pWidgetsAP)
 			free(pWidgetsAP);
 
-		BYTE* pWidgetsMK = GetButtonIcons(pGrFile, nWidth, nHeight, 0xFFFFFF, nTestPage, -1, -1);
+		int bBase64 = 1;
+		BYTE* pWidgetsMK = GetButtonIcons(pGrFile, nWidth, nHeight, 0xFFFFFF, nTestPage, bBase64, -1, -1);
 		nLength = READ_INT(pWidgetsMK);
 		i = 4;
 		nLength -= 4;
@@ -945,21 +942,46 @@ int main(int argc, char* argv[])
 				int nWidgetHeight = READ_INT(pWidgetsMK + i);
 				i += 4;
 				std::cout << "H " << nWidgetHeight << ", ";
-				unsigned long long npBgraData1 = READ_INT(pWidgetsMK + i);
-				i += 4;
-				unsigned long long npBgraData2 = READ_INT(pWidgetsMK + i);
-				i += 4;
 
-				BYTE* res = (BYTE*)(npBgraData2 << 32 | npBgraData1);
-				CBgraFrame oFrame;
-				oFrame.put_Data(res);
-				oFrame.put_Width(nWidgetWidth);
-				oFrame.put_Height(nWidgetHeight);
-				oFrame.put_Stride(4 * nWidgetWidth);
-				oFrame.put_IsRGBA(true);
-				oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res_" + std::to_wstring(nAP) + L"_MK_" + UTF8_TO_U(sMKName) + L".png", _CXIMAGE_FORMAT_PNG);
-				oFrame.ClearNoAttack();
-				RELEASEARRAYOBJECTS(res);
+				if (bBase64)
+				{
+					nPathLength = READ_INT(pWidgetsMK + i);
+					i += 4;
+					BYTE* pBase64 = pWidgetsMK + i;
+					i += nPathLength;
+
+					int nLenDst = NSBase64::Base64DecodeGetRequiredLength(nPathLength);
+					BYTE* pDataDst = new BYTE[nLenDst];
+
+					if (NSBase64::Base64Decode((const char*)pBase64, nPathLength, pDataDst, &nLenDst))
+					{
+						NSFile::CFileBinary oFile;
+						if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/res_" + std::to_wstring(nAP) + L"_MK_" + UTF8_TO_U(sMKName) + L".png"))
+						{
+							oFile.WriteFile(pDataDst, nLenDst);
+							oFile.CloseFile();
+						}
+					}
+					RELEASEARRAYOBJECTS(pDataDst);
+				}
+				else
+				{
+					unsigned long long npBgraData1 = READ_INT(pWidgetsMK + i);
+					i += 4;
+					unsigned long long npBgraData2 = READ_INT(pWidgetsMK + i);
+					i += 4;
+
+					BYTE* res = (BYTE*)(npBgraData2 << 32 | npBgraData1);
+					CBgraFrame oFrame;
+					oFrame.put_Data(res);
+					oFrame.put_Width(nWidgetWidth);
+					oFrame.put_Height(nWidgetHeight);
+					oFrame.put_Stride(4 * nWidgetWidth);
+					oFrame.put_IsRGBA(true);
+					oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res_" + std::to_wstring(nAP) + L"_MK_" + UTF8_TO_U(sMKName) + L".png", _CXIMAGE_FORMAT_PNG);
+					oFrame.ClearNoAttack();
+					RELEASEARRAYOBJECTS(res);
+				}
 			}
 			std::cout << std::endl;
 		}
@@ -968,7 +990,7 @@ int main(int argc, char* argv[])
 			free(pWidgetsMK);
 	}
 
-		   // ANNOTS
+	// ANNOTS
 	if (true)
 	{
 		BYTE* pAnnots = GetAnnotationsInfo(pGrFile, -1);
@@ -987,7 +1009,7 @@ int main(int argc, char* argv[])
 
 			ReadAnnot(pAnnots, i);
 
-				   // Markup
+			// Markup
 
 			DWORD nFlags = 0;
 			if ((nPathLength < 18 && nPathLength != 1 && nPathLength != 15) || nPathLength == 25)

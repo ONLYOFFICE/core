@@ -31,9 +31,11 @@
  */
 
 #include "PdfAnnot.h"
+#include "RendererOutputDev.h"
 #include "../lib/xpdf/TextString.h"
 #include "../lib/xpdf/Link.h"
 #include "../lib/xpdf/Annot.h"
+#include "../lib/xpdf/GfxFont.h"
 #include "../lib/goo/GList.h"
 
 #include "../../DesktopEditor/common/Types.h"
@@ -838,6 +840,94 @@ CAnnotWidget::~CAnnotWidget()
 		RELEASEOBJECT(m_arrAction[i]);
 }
 
+void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
+{
+	GfxFont* gfxFont = NULL;
+	GfxFontDict *gfxFontDict = NULL;
+
+	// Шрифт и размер шрифта - из DA
+	Ref fontID;
+	pField->getFont(&fontID, &m_dFontSize);
+	if (fontID.num > 0)
+	{
+		Object oObj, oField, oFont;
+		XRef* xref = pdfDoc->getXRef();
+		pField->getFieldRef(&oObj);
+		oObj.fetch(xref, &oField);
+		oObj.free();
+
+		bool bFindResources = false;
+
+		if (oField.dictLookup("DR", &oObj)->isDict() && oObj.dictLookup("Font", &oFont)->isDict())
+		{
+			for (int i = 0; i < oFont.dictGetLength(); ++i)
+			{
+				Object oFontRef;
+				if (oFont.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
+				{
+					bFindResources = true;
+					oFontRef.free();
+					break;
+				}
+				oFontRef.free();
+			}
+		}
+		oFont.free(); oField.free();
+
+		if (!bFindResources)
+		{
+			oObj.free();
+			AcroForm* pAcroForms = pdfDoc->getCatalog()->getForm();
+			Object* oAcroForm = pAcroForms->getAcroFormObj();
+			if (oAcroForm->isDict() && oAcroForm->dictLookup("DR", &oObj)->isDict() && oObj.dictLookup("Font", &oFont)->isDict())
+			{
+				for (int i = 0; i < oFont.dictGetLength(); ++i)
+				{
+					Object oFontRef;
+					if (oFont.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
+					{
+						bFindResources = true;
+						oFontRef.free();
+						break;
+					}
+					oFontRef.free();
+				}
+			}
+			oFont.free();
+		}
+
+		if (bFindResources)
+		{
+			Object oFontRef;
+			if (oObj.dictLookupNF("Font", &oFontRef)->isRef())
+			{
+				if (oFontRef.fetch(xref, &oFont)->isDict())
+				{
+					Ref r = oFontRef.getRef();
+					gfxFontDict = new GfxFontDict(pdfDoc->getXRef(), &r, oFont.getDict());
+					gfxFont = gfxFontDict->lookupByRef(fontID);
+				}
+				oFont.free();
+			}
+			else if (oFontRef.isDict())
+			{
+				gfxFontDict = new GfxFontDict(pdfDoc->getXRef(), NULL, oFontRef.getDict());
+				gfxFont = gfxFontDict->lookupByRef(fontID);
+			}
+			oFontRef.free();
+		}
+		oObj.free();
+	}
+
+	std::wstring wsFileName, wsFontName;
+	if (gfxFont)
+		GetFont(pdfDoc->getXRef(), pFontManager, pFontList, gfxFont, wsFileName, wsFontName);
+
+	m_sFontName = U_TO_UTF8(wsFileName);
+
+	RELEASEOBJECT(gfxFontDict);
+}
+
 //------------------------------------------------------------------------
 // Popup
 //------------------------------------------------------------------------
@@ -1348,7 +1438,7 @@ CAnnotCaret::CAnnotCaret(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CM
 // Annots
 //------------------------------------------------------------------------
 
-CAnnots::CAnnots(PDFDoc* pdfDoc)
+CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
 {
 	Object oObj1, oObj2;
 	XRef* xref = pdfDoc->getXRef();
@@ -1390,7 +1480,7 @@ CAnnots::CAnnots(PDFDoc* pdfDoc)
 		oParentRefObj.free();
 		oField.free(); oFieldRef.free();
 
-		CAnnot* pAnnot = NULL;
+		CAnnotWidget* pAnnot = NULL;
 		AcroFormFieldType oType = pField->getAcroFormFieldType();
 		switch (oType)
 		{
@@ -1424,7 +1514,10 @@ CAnnots::CAnnots(PDFDoc* pdfDoc)
 			break;
 		}
 		if (pAnnot)
+		{
+			pAnnot->SetFont(pdfDoc, pField, pFontManager, pFontList);
 			m_arrAnnots.push_back(pAnnot);
+		}
 	}
 }
 
@@ -1908,7 +2001,6 @@ CAnnotAP::~CAnnotAP()
 
 	for (int i = 0; i < m_arrAP.size(); ++i)
 	{
-		RELEASEOBJECT(m_arrAP[i]->pText);
 		RELEASEOBJECT(m_arrAP[i]);
 	}
 }
@@ -2123,7 +2215,6 @@ void CAnnotAP::WriteAppearance(unsigned int nColor, CAnnotAPView* pView)
 	}
 
 	pView->pAP = pSubMatrix;
-	pView->pText = ((GlobalParamsAdaptor*)globalParams)->GetTextFormField();
 }
 
 //------------------------------------------------------------------------
@@ -2150,19 +2241,6 @@ void CAnnotAP::ToWASM(NSWasm::CData& oRes)
 		unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
 		oRes.AddInt(npSubMatrix1);
 		oRes.AddInt(npSubMatrix >> 32);
-
-		BYTE* pTextFormField = m_arrAP[i]->pText;
-		if (pTextFormField)
-		{
-			BYTE* x = pTextFormField;
-			unsigned int nLength = x ? (x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24) : 4;
-			nLength -= 4;
-			oRes.Write(pTextFormField + 4, nLength);
-		}
-		else
-			oRes.AddInt(0);
-		RELEASEARRAYOBJECTS(pTextFormField);
-		m_arrAP[i]->pText = NULL;
 	}
 }
 
@@ -2249,6 +2327,8 @@ void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
 
 	CAnnot::ToWASM(oRes);
 
+	oRes.WriteString(m_sFontName);
+	oRes.AddDouble(m_dFontSize);
 	oRes.AddInt(m_arrTC.size());
 	for (int i = 0; i < m_arrTC.size(); ++i)
 		oRes.AddDouble(m_arrTC[i]);

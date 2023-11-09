@@ -675,4 +675,6 @@ HEADERS += \
 	../wasm/src/drawingfile.h \
 	../wasm/src/serialize.h
 
-SOURCES += ../wasm/src/drawingfile_test.cpp
+SOURCES += \
+	../wasm/src/drawingfile.cpp \
+	../wasm/src/drawingfile_test.cpp

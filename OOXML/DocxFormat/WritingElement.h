@@ -1496,7 +1496,22 @@ namespace OOX
 		et_x_SparklineGroup,
 		et_x_Sparklines,
 		et_x_Sparkline,
-		et_x_Style2003
+
+		et_x_Style2003,
+
+		et_x_TimelineCachePivotTable,
+		et_x_TimelineRange,
+		et_x_TimelineCachePivotTables,
+		et_x_Timeline,
+		et_x_Timelines,
+		et_x_TimelineCacheDefinition,
+		et_x_TimelinePivotFilter,
+		et_x_TimelineState,
+		et_x_TimelineRefs,
+		et_x_TimelineRef,
+		et_x_TimelineCacheRefs,
+		et_x_TimelineCacheRef	
+
 	};
 
 	class File;

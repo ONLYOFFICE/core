@@ -233,7 +233,9 @@ namespace BinXlsxRW
 		ExternalFileKey = 23,
 		ExternalInstanceId = 24,
 		FileSharing = 25,
-		ExternalLinksAutoRefresh = 26
+		ExternalLinksAutoRefresh = 26,
+		TimelineCaches = 27,
+		TimelineCache = 28,
 	};}
 	namespace c_oSerWorkbookProtection {enum c_oSerWorkbookProtection{
 		AlgorithmName = 0,
@@ -435,7 +437,11 @@ namespace BinXlsxRW
 		CellWatches = 44,
 		CellWatch = 45,
 		CellWatchR = 46,
-		UserProtectedRanges = 47
+		UserProtectedRanges = 47,
+		TimelinesList = 48,
+		Timelines = 49,
+		Timeline = 50,
+
 	};}
 	namespace c_oSerWorksheetProtection {enum c_oSerWorksheetPropTypes
 	{
@@ -653,6 +659,61 @@ namespace BinXlsxRW
 		Ref = 4,
 		ChildChain = 5,
 		NewThread = 6
+	};}
+	namespace c_oSer_Timeline {enum c_oSer_Timeline
+	{
+		Name = 0,
+		Caption = 1,
+		Uid = 2,
+		Cache = 3,
+		ShowHeader = 4,
+		ShowTimeLevel = 5,
+		ShowSelectionLabel = 6,
+		ShowHorizontalScrollbar = 7,
+		Level = 8,
+		SelectionLevel = 9,
+		ScrollPosition = 10,
+		Style = 11
+	};}
+	namespace c_oSer_TimelineCache {enum c_oSer_TimelineCache
+	{
+		Name = 0,
+		SourceName = 1,
+		Uid = 2,
+		PivotTables = 3,
+		PivotTable = 4,
+		State = 5,
+		PivotFilter = 6
+	};}
+	namespace c_oSer_TimelineState {enum c_oSer_TimelineState
+	{
+		Name = 0,
+		FilterState = 1,
+		PivotCacheId = 2,
+		MinimalRefreshVersion = 3,
+		LastRefreshVersion = 4,
+		FilterType = 5,
+		Selection = 6,
+		Bounds = 7
+	};}
+	namespace c_oSer_TimelinePivotFilter {enum c_oSer_TimelinePivotFilter
+	{
+		Name = 0,
+		Description = 1,
+		UseWholeDay = 2,
+		Id = 3,
+		Fld = 4,
+		AutoFilter = 5
+	};}
+	namespace c_oSer_TimelineRange {enum c_oSer_TimelineRange
+	{
+		StartDate = 0,
+		EndDate = 1
+	};}
+	namespace c_oSer_TimelineCachePivotTable {enum c_oSer_TimelineCachePivotTable
+	{
+		Name = 0,
+		TabId = 1
 	};}
 	namespace c_oSerCustoms {enum c_oSerCustoms
 	{

@@ -656,9 +656,22 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
 			return true;
 		}
 	}
+	NSFile::CFileBinary file;
+	if (!file.OpenFile(fileName))
+		return false;
+
+	unsigned char* bufferDetect = new unsigned char[4096]; // enaf !!
+	if (!bufferDetect)
+	{
+		file.CloseFile();
+		return false;
+	}
+
+	DWORD dwDetectdBytes = 0;
+	file.ReadFile(bufferDetect, MIN_SIZE_BUFFER, dwDetectdBytes);
 
 	COfficeUtils OfficeUtils(NULL);
-	if (OfficeUtils.IsArchive(fileName) == S_OK)
+	if (OfficeUtils.IsArchive(fileName) == S_OK && (false == isPdfFormatFile(bufferDetect, dwDetectdBytes, sDocumentID)))
 	{
 		if (isOOXFormatFile(fileName))
 			return true;
@@ -675,92 +688,80 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
 
 	bool bEmptyFile = false;
 	{
-		NSFile::CFileBinary file;
-		if (!file.OpenFile(fileName))
-			return false;
+		int sizeRead = (int)dwDetectdBytes;
 
-		unsigned char *buffer = new unsigned char[4096]; // enaf !!
-		if (!buffer)
-		{
-			file.CloseFile();
-			return false;
-		}
+		bEmptyFile = (dwDetectdBytes < 1);
 
-		DWORD dwReadBytes = 0;
-		file.ReadFile(buffer, MIN_SIZE_BUFFER, dwReadBytes);
-		int sizeRead = (int)dwReadBytes;
-
-		bEmptyFile = (dwReadBytes < 1);
-
-		if (isBinaryDoctFormatFile(buffer, sizeRead)) // min size - 4
+		if (isBinaryDoctFormatFile(bufferDetect, sizeRead)) // min size - 4
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_WORD;
 		}
-		else if (isBinaryXlstFormatFile(buffer, sizeRead)) // min size - 4
+		else if (isBinaryXlstFormatFile(bufferDetect, sizeRead)) // min size - 4
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET;
 		}
-		else if (isBinaryPpttFormatFile(buffer, sizeRead)) // min size - 4
+		else if (isBinaryPpttFormatFile(bufferDetect, sizeRead)) // min size - 4
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION;
 		}
-		else if (isOOXFlatFormatFile(buffer, sizeRead))
+		else if (isOOXFlatFormatFile(bufferDetect, sizeRead))
 		{
 			// nFileType;
 		}
-		else if (isRtfFormatFile(buffer, sizeRead)) // min size - 5
+		else if (isRtfFormatFile(bufferDetect, sizeRead)) // min size - 5
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF;
 		}
-		else if (isPdfFormatFile(buffer, sizeRead, sDocumentID)) // min size - 5
+		else if (isPdfFormatFile(bufferDetect, sizeRead, sDocumentID)) // min size - 5
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
 		}
-		else if (isDjvuFormatFile(buffer, sizeRead)) // min size - 8
+		else if (isDjvuFormatFile(bufferDetect, sizeRead)) // min size - 8
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU;
 		}
-		else if (isHtmlFormatFile(buffer, sizeRead, false)) // min size - 4
+		else if (isHtmlFormatFile(bufferDetect, sizeRead, false)) // min size - 4
 		{
 			long fileSize = file.GetFileSize();
 			if (fileSize > MIN_SIZE_BUFFER)
 			{
 				file.SeekFile(fileSize - MIN_SIZE_BUFFER);
-				file.ReadFile(buffer, MIN_SIZE_BUFFER, dwReadBytes);
-				int sizeRead = (int)dwReadBytes;
+				file.ReadFile(bufferDetect, MIN_SIZE_BUFFER, dwDetectdBytes);
+				int sizeRead = (int)dwDetectdBytes;
 			}
-			if (isHtmlFormatFile(buffer, sizeRead, true)) // min size - 6
+			if (isHtmlFormatFile(bufferDetect, sizeRead, true)) // min size - 6
 			{
 				nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML;
 			}
 		}
-		else if (isFB2FormatFile(buffer, sizeRead)) // min size - 11
+		else if (isFB2FormatFile(bufferDetect, sizeRead)) // min size - 11
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2;
 		}
-		else if (isOpenOfficeFlatFormatFile(buffer, sizeRead)) // min size - 78
+		else if (isOpenOfficeFlatFormatFile(bufferDetect, sizeRead)) // min size - 78
 		{
 			// nFileType
 		}
-		else if (isDocFlatFormatFile(buffer, sizeRead)) // min size - 2
+		else if (isDocFlatFormatFile(bufferDetect, sizeRead)) // min size - 2
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT; // without compaund container
 		}
-		else if (isXlsFlatFormatFile(buffer, sizeRead)) // min size - 2
+		else if (isXlsFlatFormatFile(bufferDetect, sizeRead)) // min size - 2
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS; // without compaund container
 		}
-		else if (isMultiPartsHtmlFormatFile(buffer, sizeRead))
+		else if (isMultiPartsHtmlFormatFile(bufferDetect, sizeRead))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT;
 		}
 		//------------------------------------------------------------------------------------------------
 		file.CloseFile();
 
-		if (buffer)
-			delete[] buffer;
-		buffer = NULL;
 	}
+	if (bufferDetect)
+		delete[] bufferDetect;
+	bufferDetect = NULL;
+
 	if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN)
 		return true;
 	//------------------------------------------------------------------------------------------------
@@ -1495,6 +1496,11 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring &sExt)
 		return AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS;
 	if (L".ods" == ext)
 		return AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
+	
+	if (L".ooxml" == ext)
+		return AVS_OFFICESTUDIO_FILE_OTHER_OOXML;
+	if (L".odf" == ext)
+		return AVS_OFFICESTUDIO_FILE_OTHER_ODF;
 
 	if (L".pdf" == ext)
 		return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;

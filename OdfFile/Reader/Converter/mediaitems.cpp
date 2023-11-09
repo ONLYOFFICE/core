@@ -38,6 +38,7 @@
 
 #include "../../../OOXML/Base/Base.h"
 #include "../../../OOXML/SystemUtility/File.h"
+#include "../../../OOXML/SystemUtility/SystemUtility.h"
 
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
@@ -56,7 +57,13 @@ bool is_internal(const std::wstring & uri, const std::wstring & packetRoot)
 
 	std::wstring  resultPath = packetRoot + FILE_SEPARATOR_STR + mediaPath;
 
-	return NSFile::CFileBinary::Exists(resultPath) || NSDirectory::Exists(mediaPath);
+	OOX::CPath pathRoot(packetRoot);
+	OOX::CPath pathFile(resultPath);
+
+	std::wstring testRoot = pathRoot.GetPath();
+	std::wstring testFile = pathFile.GetPath();
+
+	return (NSFile::CFileBinary::Exists(resultPath) || NSDirectory::Exists(mediaPath)) && (std::wstring::npos != testFile.find(testRoot));
 }
 
 mediaitems::item::item(std::wstring const & _href,_rels_type _type, std::wstring const & _outputName,

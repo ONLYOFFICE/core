@@ -48,14 +48,9 @@
 #include "MemoryUtils.h"
 #include "GfxClip.h"
 #include <stack>
-#ifdef BUILDING_WASM_MODULE
-#include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
-#endif
 
 namespace PdfReader
 {
-
-
 	//-------------------------------------------------------------------------------------------------------------------------------
 	struct TFontEntry
 	{
@@ -106,13 +101,14 @@ namespace PdfReader
 		CRefFontMap                         m_oFontMap;
 		NSCriticalSection::CRITICAL_SECTION m_oCS;       // Критическая секция
 	};
+
+	void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName);
 	//-------------------------------------------------------------------------------------------------------------------------------
 	template <typename T>
 	inline static double PDFCoordsToMM(T tX)
 	{
 		return  ((double)tX / 72.0) * 25.4;
 	}
-
 	//-------------------------------------------------------------------------------------------------------------------------------
 	static void FileWrite(void *pStream, char *sData, int nLen)
 	{

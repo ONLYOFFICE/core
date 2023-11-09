@@ -607,7 +607,17 @@ namespace PdfWriter
 	}
 	CAnnotation* CDocument::CreateWidgetAnnot()
 	{
-		return new CWidgetAnnotation(m_pXref, EAnnotType::AnnotWidget);
+		if (!CheckAcroForm())
+			return NULL;
+
+		CWidgetAnnotation* pWidget = new CWidgetAnnotation(m_pXref, EAnnotType::AnnotWidget);
+		if (!pWidget)
+			return NULL;
+
+		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+		ppFields->Add(pWidget);
+
+		return pWidget;
 	}
 	CAnnotation* CDocument::CreateButtonWidget()
 	{
@@ -626,6 +636,20 @@ namespace PdfWriter
 	CAnnotation* CDocument::CreateSignatureWidget()
 	{
 		return new CSignatureWidget(m_pXref);
+	}
+	CAction* CDocument::CreateAction(BYTE nType)
+	{
+		switch (nType)
+		{
+		case 1:  return new CActionGoTo(m_pXref);
+		case 6:  return new CActionURI(m_pXref);
+		case 9:  return new CActionHide(m_pXref);
+		case 10: return new CActionNamed(m_pXref);
+		case 12: return new CActionResetForm(m_pXref);
+		case 14: return new CActionJavaScript(m_pXref);
+		}
+
+		return NULL;
 	}
 	void CDocument::AddAnnotation(const int& nID, CAnnotation* pAnnot)
 	{
@@ -1215,9 +1239,11 @@ namespace PdfWriter
 		{
 			CObjectBase* pFieldsResources = m_pAcroForm->Get("DR");
 			if (pFieldsResources && pFieldsResources->GetType() == object_type_DICT)
-				m_pFieldsResources = (CResourcesDict*)pFieldsResources;
-
-			// TODO заполнить поля m_pFieldsResources
+			{
+				// TODO необходимо перенести текущие поля DR
+				m_pFieldsResources = new CResourcesDict(m_pXref, false, true);
+				m_pAcroForm->Add("DR", m_pFieldsResources);
+			}
 		}
 
 		if (pEncrypt)
@@ -1266,6 +1292,7 @@ namespace PdfWriter
 		if (!pAnnot || !EditXref(pXref))
 			return false;
 
+		pAnnot->SetXref(m_pXref);
 		m_mAnnotations[nID] = pAnnot;
 
 		return true;
@@ -1307,6 +1334,13 @@ namespace PdfWriter
 	{
 		std::map<int, CAnnotation*>::iterator p = m_mAnnotations.find(nID);
 		if (p != m_mAnnotations.end())
+			return p->second;
+		return NULL;
+	}
+	CDictObject* CDocument::GetParent(int nID)
+	{
+		std::map<int, CDictObject*>::iterator p = m_mParents.find(nID);
+		if (p != m_mParents.end())
 			return p->second;
 		return NULL;
 	}

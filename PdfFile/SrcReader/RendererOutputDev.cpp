@@ -59,6 +59,7 @@
 #ifndef BUILDING_WASM_MODULE
 #define FONTS_USE_AFM_SETTINGS
 #else
+#include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 #include "FontsWasm.h"
 #define FONTS_USE_ONLY_MEMORY_STREAMS
 #endif
@@ -83,7 +84,7 @@ namespace NSCorrectFontName
 		while (std::wstring::npos != (nPos = sName2.find(sStyle, nPos)))
 		{
 			size_t nOffset = 0;
-			if ((nPos > 0) && sName2.at(nPos - 1) == '-')
+			if ((nPos > 0) && (sName2.at(nPos - 1) == '-' || sName2.at(nPos - 1) == ','))
 			{
 				--nPos;
 				++nOffset;
@@ -96,7 +97,7 @@ namespace NSCorrectFontName
 		return bRet;
 	}
 
-	void CheckFontNamePDF(std::wstring& sName, NSFonts::CFontSelectFormat& format)
+	void CheckFontNamePDF(std::wstring& sName, NSFonts::CFontSelectFormat* format)
 	{
 		if (sName.length() > 7 && sName.at(6) == '+')
 		{
@@ -116,33 +117,46 @@ namespace NSCorrectFontName
 			}
 		}
 
-		bool bBold = false;
+		bool bBold   = false;
 		bool bItalic = false;
-
-		CheckFontNameStyle(sName, L"regular");
-		CheckFontNameStyle(sName, L"condensed");
-		CheckFontNameStyle(sName, L"condensedlight");
-		//CheckFontNameStyle(sName, L"light");
 
 		CheckFontNameStyle(sName, L"condensedbold");
 		CheckFontNameStyle(sName, L"semibold");
-		if (CheckFontNameStyle(sName, L"boldmt")) bBold = true;
-		if (CheckFontNameStyle(sName, L"bold")) bBold = true;
+		CheckFontNameStyle(sName, L"regular");
 
-		if (CheckFontNameStyle(sName, L"italicmt")) bItalic = true;
-		if (CheckFontNameStyle(sName, L"italic")) bItalic = true;
-		if (CheckFontNameStyle(sName, L"oblique")) bItalic = true;
+		CheckFontNameStyle(sName, L"ultraexpanded");
+		CheckFontNameStyle(sName, L"extraexpanded");
+		CheckFontNameStyle(sName, L"semiexpanded");
+		CheckFontNameStyle(sName, L"expanded");
 
-		if (CheckFontNameStyle(sName, L"bolditalicmt")) { bBold = true; bItalic = true; }
-		if (CheckFontNameStyle(sName, L"bolditalic")) { bBold = true; bItalic = true; }
-		if (CheckFontNameStyle(sName, L"bold_italic")) { bBold = true; bItalic = true; }
-		if (CheckFontNameStyle(sName, L"boldoblique")) { bBold = true; bItalic = true; }
+		CheckFontNameStyle(sName, L"ultracondensed");
+		CheckFontNameStyle(sName, L"extracondensed");
+		CheckFontNameStyle(sName, L"semicondensed");
+		CheckFontNameStyle(sName, L"condensedlight");
+		CheckFontNameStyle(sName, L"condensed");
+		//CheckFontNameStyle(sName, L"light");
+
+		if (CheckFontNameStyle(sName, L"bold_italic"))  { bBold = true; bItalic = true; }
 		if (CheckFontNameStyle(sName, L"bold_oblique")) { bBold = true; bItalic = true; }
 
-		if (bBold)
-			format.bBold = new INT(1);
-		if (bItalic)
-			format.bItalic = new INT(1);
+		if (CheckFontNameStyle(sName, L"boldmt")) bBold = true;
+		if (CheckFontNameStyle(sName, L"bold"))   bBold = true;
+
+		if (CheckFontNameStyle(sName, L"italicmt")) bItalic = true;
+		if (CheckFontNameStyle(sName, L"italic"))   bItalic = true;
+		if (CheckFontNameStyle(sName, L"oblique"))  bItalic = true;
+
+		//if (CheckFontNameStyle(sName, L"bolditalicmt")) { bBold = true; bItalic = true; }
+		//if (CheckFontNameStyle(sName, L"bolditalic")) { bBold = true; bItalic = true; }
+		//if (CheckFontNameStyle(sName, L"boldoblique")) { bBold = true; bItalic = true; }
+
+		if (format)
+		{
+			if (bBold)
+				format->bBold = new INT(1);
+			if (bItalic)
+				format->bItalic = new INT(1);
+		}
 	}
 }
 
@@ -867,28 +881,13 @@ namespace PdfReader
 	{
 
 	}
-	void RendererOutputDev::updateFont(GfxState *pGState)
+	void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName)
 	{
-
-
-		// Проверяем наличие списка со шрифтами
-		if (NULL == m_pFontList)
-			return;
-
-		GfxFont *pFont = pGState->getFont();
-		if (NULL == pFont)
-			return;
-
-		m_pRenderer->put_FontSize(pGState->getFontSize());
-		//m_oFont.Size = pGState->getFontSize();
-
-
-
-		std::wstring wsFileName = L"";
-		std::wstring wsFontName = L"";
+		wsFileName = L"";
+		wsFontName = L"";
 		TFontEntry *pEntry = NULL;
 		// MEMERR string dealocation pEntry
-		if (!m_pFontList->Find2((*pFont->getID()), &pEntry))
+		if (!pFontList->Find2((*pFont->getID()), &pEntry))
 		{
 			GfxFontType eFontType = pFont->getType();
 			if (fontType3 == eFontType) // FontType3 обрабатывается отдельной командой
@@ -950,14 +949,14 @@ namespace PdfReader
 
 				Object oReferenceObject, oStreamObject;
 				oReferenceObject.initRef(oEmbRef.num, oEmbRef.gen);
-				oReferenceObject.fetch(m_pXref, &oStreamObject);
+				oReferenceObject.fetch(pXref, &oStreamObject);
 				oReferenceObject.free();
 				if (!oStreamObject.isStream())
 				{
 					// Внедренный шрифт неправильно записан
 					oStreamObject.free();
 
-#ifndef BUILDING_WASM_MODULE
+#ifndef FONTS_USE_ONLY_MEMORY_STREAMS
 					fclose(pTempFile);
 
 					if (L"" != wsTempFileName)
@@ -999,7 +998,7 @@ namespace PdfReader
 						Ref *pRef = pFont->getID();
 						Object oRefObject, oFontObject;
 						oRefObject.initRef(pRef->num, pRef->gen);
-						oRefObject.fetch(m_pXref, &oFontObject);
+						oRefObject.fetch(pXref, &oFontObject);
 						oRefObject.free();
 
 						if (oFontObject.isDict())
@@ -1174,13 +1173,13 @@ namespace PdfReader
 #endif
 
 				// Загрузим сам файл со шрифтом, чтобы точно определить его тип
-				if (!m_pFontManager->LoadFontFromFile(wsFileName, 0, 10, 72, 72))
+				if (!pFontManager->LoadFontFromFile(wsFileName, 0, 10, 72, 72))
 				{
 					pEntry->bAvailable = true;
 					return;
 				}
 
-				std::wstring wsFontType = m_pFontManager->GetFontType();
+				std::wstring wsFontType = pFontManager->GetFontType();
 				if (L"TrueType" == wsFontType)
 				{
 					if (eFontType != fontType1COT   && eFontType != fontTrueType
@@ -1247,38 +1246,34 @@ namespace PdfReader
 #else
 			else if ([&oMemoryFontStream, wsFontBaseName]()
 			{
-					 const unsigned char* pData14 = NULL;
-					 unsigned int nSize14 = 0;
-					 if (PdfReader::GetBaseFont(wsFontBaseName, pData14, nSize14))
-			{
-					 oMemoryFontStream.fromBuffer((BYTE*)pData14, nSize14);
-					 return true;
-		}
-					 return false;
-		}())
+				const unsigned char* pData14 = NULL;
+				unsigned int nSize14 = 0;
+				if (PdfReader::GetBaseFont(wsFontBaseName, pData14, nSize14))
+				{
+					oMemoryFontStream.fromBuffer((BYTE*)pData14, nSize14);
+					return true;
+				}
+				return false;
+			}())
 			{
 				wsFileName = wsFontBaseName;
 				NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
 			}
 #endif
-			else if (!pFont->locateFont(m_pXref, false) ||
-					 (wsFileName = NSStrings::GetStringFromUTF32(pFont->locateFont(m_pXref, false)->path)).length() == 0)
-				//else if (0)
+			else if (!pFont->locateFont(pXref, false) ||
+					 (wsFileName = NSStrings::GetStringFromUTF32(pFont->locateFont(pXref, false)->path)).length() == 0)
 			{
-				// TODO: Сначала тут мы должны проверить, если ищется один из 14 стандартных шрифтов,
-				//       тогда мы должны вернуть путь к стандартному шрифту.
-
 				NSFonts::CFontInfo* pFontInfo = NULL;
-				if (m_pFontManager)
+				if (pFontManager)
 				{
 					Ref *pRef = pFont->getID();
 					Object oRefObject, oFontObject;
 					oRefObject.initRef(pRef->num, pRef->gen);
-					oRefObject.fetch(m_pXref, &oFontObject);
+					oRefObject.fetch(pXref, &oFontObject);
 					oRefObject.free();
 
 					NSFonts::CFontSelectFormat oFontSelect;
-					NSCorrectFontName::CheckFontNamePDF(wsFontBaseName, oFontSelect);
+					NSCorrectFontName::CheckFontNamePDF(wsFontBaseName, &oFontSelect);
 					if (oFontObject.isDict())
 					{
 						Dict *pFontDict = oFontObject.getDict();
@@ -1373,7 +1368,7 @@ namespace PdfReader
 					else
 						oFontSelect.wsName = new std::wstring(wsFontBaseName);
 
-					pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect);
+					pFontInfo = pFontManager->GetFontInfoByParams(oFontSelect);
 				}
 
 				if (pFontInfo && L"" != pFontInfo->m_wsFontPath)
@@ -1390,7 +1385,7 @@ namespace PdfReader
 						wsFileName = NSWasm::LoadFont(wsFileName, pFontInfo->m_bBold, pFontInfo->m_bItalic);
 						if (wsFileName.empty())
 						{
-							m_pFontList->Remove(*pFont->getID());
+							pFontList->Remove(*pFont->getID());
 							return;
 						}
 					}
@@ -1406,6 +1401,7 @@ namespace PdfReader
 				}
 
 				// Записываем файл с кодировкой. (Специально для перезаписи в PDF)
+				/*
 				if (c_nPDFWriter == m_lRendererType)
 				{
 					std::wstring wsExt;
@@ -1553,6 +1549,7 @@ namespace PdfReader
 						oXmlWriter.SaveToFile(wsEncodingPath);
 					}
 				}
+				*/
 			}
 			// Здесь мы грузим кодировки
 			int *pCodeToGID = NULL, *pCodeToUnicode = NULL;
@@ -1601,10 +1598,10 @@ namespace PdfReader
 					if (!ppEncoding)
 						break;
 
-					if (!m_pFontManager)
+					if (!pFontManager)
 						break;
 
-					m_pFontManager->LoadFontFromFile(wsFileName, 0, 1, 72, 72);
+					pFontManager->LoadFontFromFile(wsFileName, 0, 1, 72, 72);
 					pCodeToGID = (int *)MemUtilsMallocArray(256, sizeof(int));
 					if (!pCodeToGID)
 						break;
@@ -1616,7 +1613,7 @@ namespace PdfReader
 						char* sName = NULL;
 						if ((sName = ppEncoding[nIndex]))
 						{
-							unsigned short ushGID = m_pFontManager->GetNameIndex(AStringToWString(sName));
+							unsigned short ushGID = pFontManager->GetNameIndex(AStringToWString(sName));
 							pCodeToGID[nIndex] = ushGID;
 						}
 					}
@@ -1635,10 +1632,10 @@ namespace PdfReader
 						if (!ppEncoding)
 							break;
 
-						if (!m_pFontManager)
+						if (!pFontManager)
 							break;
 
-						m_pFontManager->LoadFontFromFile(wsFileName, 0, 1, 72, 72);
+						pFontManager->LoadFontFromFile(wsFileName, 0, 1, 72, 72);
 						pCodeToGID = (int *)MemUtilsMallocArray(256, sizeof(int));
 						if (!pCodeToGID)
 							break;
@@ -1650,7 +1647,7 @@ namespace PdfReader
 							char* sName = NULL;
 							if ((sName = ppEncoding[nIndex]))
 							{
-								unsigned short ushGID = m_pFontManager->GetNameIndex(AStringToWString(sName));
+								unsigned short ushGID = pFontManager->GetNameIndex(AStringToWString(sName));
 								pCodeToGID[nIndex] = ushGID;
 							}
 						}
@@ -1676,14 +1673,14 @@ namespace PdfReader
 					pCodeToGID = NULL;
 					nLen       = 0;
 
-					if (m_pFontManager->LoadFontFromFile(wsFileName, 0, 10, 72, 72))
+					if (pFontManager->LoadFontFromFile(wsFileName, 0, 10, 72, 72))
 					{
 						INT* pCodes = NULL;
 						nLen = 256;
 						pCodeToGID = (int*)MemUtilsMallocArray(nLen, sizeof(int));
 						for (int nCode = 0; nCode < nLen; ++nCode)
 						{
-							pCodeToGID[nCode] = m_pFontManager->GetGIDByUnicode(nCode);
+							pCodeToGID[nCode] = pFontManager->GetGIDByUnicode(nCode);
 						}
 					}
 				}
@@ -1853,7 +1850,6 @@ namespace PdfReader
 				if (L"" != wsTempFileName)
 					NSFile::CFileBinary::Remove(wsTempFileName);
 #endif
-
 				break;
 			}
 			}
@@ -1909,6 +1905,7 @@ namespace PdfReader
 			}
 
 			// Записываем файл с настройками шрифта (Специально для перезаписи в PDF)
+			/*
 			if (L"" != wsFileName && c_nPDFWriter == m_lRendererType)
 			{
 				std::wstring wsSplitFileName, wsSplitFileExt;
@@ -2903,6 +2900,7 @@ namespace PdfReader
 					oXmlWriter.SaveToFile(wsEncodingPath);
 				}
 			}
+			*/
 
 			// Обрежем индекс у FontName, если он есть
 			if (wsFontName.empty())
@@ -2945,6 +2943,22 @@ namespace PdfReader
 			wsFileName = pEntry->wsFilePath;
 			wsFontName = pEntry->wsFontName;
 		}
+	}
+	void RendererOutputDev::updateFont(GfxState *pGState)
+	{
+		// Проверяем наличие списка со шрифтами
+		if (NULL == m_pFontList)
+			return;
+
+		GfxFont *pFont = pGState->getFont();
+		if (NULL == pFont)
+			return;
+
+		m_pRenderer->put_FontSize(pGState->getFontSize());
+
+		std::wstring wsFileName = L"";
+		std::wstring wsFontName = L"";
+		GetFont(m_pXref, m_pFontManager, m_pFontList, pFont, wsFileName, wsFontName);
 
 		if (L"" != wsFileName)
 		{
@@ -4053,12 +4067,6 @@ namespace PdfReader
 						}
 					}
 				}
-			}
-			if (((GlobalParamsAdaptor*)globalParams)->getDrawFormField())
-			{
-				double dFontSize;
-				m_pRenderer->get_FontSize(&dFontSize);
-				((GlobalParamsAdaptor*)globalParams)->AddTextFormField(wsUnicodeText, sFontPath, dFontSize);
 			}
 #endif
 			m_pRenderer->CommandDrawTextEx(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));

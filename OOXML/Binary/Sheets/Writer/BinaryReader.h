@@ -193,6 +193,9 @@ namespace BinXlsxRW
 		int ReadTableCustomStyle(BYTE type, long length, void* poResult);
 		int ReadTableCustomStyleElements(BYTE type, long length, void* poResult);
 		int ReadTableCustomStyleElement(BYTE type, long length, void* poResult);
+		int ReadTimelineStyles(BYTE type, long length, void* poResult);
+		int ReadTimelineStyle(BYTE type, long length, void* poResult);
+		int ReadTimelineStyleElement(BYTE type, long length, void* poResult);
 	};
 	class BinaryWorkbookTableReader : public Binary_CommonReader
 	{

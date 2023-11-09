@@ -39,6 +39,9 @@
 #include "../../DocxFormat/Drawing/DrawingExt.h"
 #include "../../../DesktopEditor/common/File.h"
 
+#include "../../Binary/Presentation/XmlWriter.h"
+#include "../../Binary/Presentation/BinaryFileReaderWriter.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -768,6 +771,222 @@ xmlns:xr10=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision10\"
 			WritingElement_ReadAttributes_Start(oReader)
 				WritingElement_ReadAttributes_Read_if(oReader, L"r:id", m_oRId)
 			WritingElement_ReadAttributes_End(oReader)
+		}
+//-------------------------------------------------------------------------------------
+		CTimelineStyles::CTimelineStyles() {}
+		CTimelineStyles::~CTimelineStyles() {}
+		void CTimelineStyles::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
+		std::wstring CTimelineStyles::toXML() const
+		{
+			return L"";
+		}
+		EElementType CTimelineStyles::getType() const
+		{
+			return et_x_TimelineStyles;
+		}
+		void CTimelineStyles::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"defaultTimelineStyle", m_oDefaultTimelineStyle)
+			WritingElement_ReadAttributes_End(oReader)
+		}
+		void CTimelineStyles::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if (oReader.IsEmptyNode())
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nCurDepth))
+			{
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if (L"timelineStyle" == sName)
+				{
+					CTimelineStyle* pStyle = new CTimelineStyle();
+					*pStyle = oReader;
+					m_arrItems.push_back(pStyle);
+				}
+			}
+		}
+		void CTimelineStyles::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(L"<x15:timelineStyles");
+			WritingStringNullableAttrEncodeXmlString2(L"defaultTimelineStyle", m_oDefaultTimelineStyle);
+			
+			if (m_arrItems.empty())
+			{
+				writer.WriteString(L"/>");
+				return;
+			}
+			else 
+				writer.WriteString(L">");
+
+			for (size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				if (m_arrItems[i])
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+			}
+			writer.WriteString(L"</x15:timelineStyles>");
+		}
+//-------------------------------------------------------------------------------------
+		CTimelineStyle::CTimelineStyle() {}
+		CTimelineStyle::~CTimelineStyle() {}
+		void CTimelineStyle::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
+		std::wstring CTimelineStyle::toXML() const
+		{
+			return L"";
+		}
+		EElementType CTimelineStyle::getType() const
+		{
+			return et_x_TimelineStyle;
+		}
+		void CTimelineStyle::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"name", m_oName)
+			WritingElement_ReadAttributes_End(oReader)
+		}
+		void CTimelineStyle::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if (oReader.IsEmptyNode())
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nCurDepth))
+			{
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if (L"timelineStyleElement" == sName)
+				{
+					CTimelineStyleElement* pStyle = new CTimelineStyleElement();
+					*pStyle = oReader;
+					m_arrItems.push_back(pStyle);
+				}
+			}
+		}
+		void CTimelineStyle::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(L"<x15:timelineStyle");
+			WritingStringNullableAttrEncodeXmlString2(L"name", m_oName);
+
+			if (m_arrItems.empty())
+			{
+				writer.WriteString(L"/>");
+				return;
+			}
+			else
+				writer.WriteString(L">");
+
+			for (size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				if (m_arrItems[i])
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+			}
+			writer.WriteString(L"</x15:timelineStyle>");
+		}
+//--------------------------------------------------------------------------------------------------------------------------
+		CTimelineStyleElement::CTimelineStyleElement() {}
+		CTimelineStyleElement::~CTimelineStyleElement() {}
+		void CTimelineStyleElement::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
+		std::wstring CTimelineStyleElement::toXML() const
+		{
+			return L"";
+		}
+		EElementType CTimelineStyleElement::getType() const
+		{
+			return et_x_TimelineStyleElement;
+		}
+		void CTimelineStyleElement::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(L"<x15:timelineStyleElement");
+			WritingStringNullableAttrString(L"type", m_oType, m_oType->ToString());
+			WritingStringNullableAttrInt2(L"dxfId", m_oDxfId);
+			writer.WriteString(L"/>");
+		}
+		void CTimelineStyleElement::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+		}
+		void CTimelineStyleElement::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"type", m_oType)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"dxfId", m_oDxfId)
+			WritingElement_ReadAttributes_End(oReader)
+		}
+//--------------------------------------------------------------------------------------------------------------------------
+		CDrawingTimeslicer::CDrawingTimeslicer() {}
+		CDrawingTimeslicer::~CDrawingTimeslicer() {}
+		void CDrawingTimeslicer::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
+		std::wstring CDrawingTimeslicer::toXML() const
+		{
+			return L"";
+		}
+		EElementType CDrawingTimeslicer::getType() const
+		{
+			return et_x_Timeslicer;
+		}
+		void CDrawingTimeslicer::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			if (!pWriter) return;
+
+			pWriter->StartNode(L"tsle:timeslicer");
+			pWriter->StartAttributes();
+			if (m_oName.IsInit())
+				pWriter->WriteAttribute2(L"name", *m_oName);
+			pWriter->EndAttributes();
+			pWriter->EndNode(L"tsle:timeslicer");
+		}
+		void CDrawingTimeslicer::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+		}
+		void CDrawingTimeslicer::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"name", m_oName)
+			WritingElement_ReadAttributes_End(oReader)
+		}
+		void CDrawingTimeslicer::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteString2(0, m_oName);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		}
+		void CDrawingTimeslicer::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+			pReader->Skip(1); // start attributes
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+				switch (_at)
+				{
+					case 0:
+					{
+						m_oName = pReader->GetString2();					
+					}break;
+				}
+			}
+			pReader->Seek(_end_rec);
 		}
 	} //Spreadsheet
 } // namespace OOX

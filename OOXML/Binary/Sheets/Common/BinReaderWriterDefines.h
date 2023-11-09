@@ -107,7 +107,9 @@ namespace BinXlsxRW
 		CellStyles = 15,
 		CellStyle = 16,
 		SlicerStyles = 17,
-		ExtDxfs = 18
+		ExtDxfs = 18,
+		TimelineStyles = 19
+
 	};}
 	namespace c_oSerBorderTypes{enum c_oSerBorderTypes
 	{
@@ -1076,6 +1078,15 @@ namespace BinXlsxRW
 		TableStyles = 2,
 		TableStyle = 3
 	};}
+	namespace c_oSer_TimelineStyles {enum c_oSer_TimelineStyles
+	{
+		DefaultTimelineStyle = 0,
+		TimelineStyle = 2,
+		TimelineStyleName = 3,
+		TimelineStyleElement = 4,
+		TimelineStyleElementType = 5,
+		TimelineStyleElementDxfId = 6
+	};}	
 	namespace c_oSer_TableStyle{enum c_oSer_TableStyle
 	{
 		Name = 0,

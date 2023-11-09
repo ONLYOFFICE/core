@@ -1510,8 +1510,11 @@ namespace OOX
 		et_x_TimelineRefs,
 		et_x_TimelineRef,
 		et_x_TimelineCacheRefs,
-		et_x_TimelineCacheRef	
-
+		et_x_TimelineCacheRef,	
+		et_x_Timeslicer,
+		et_x_TimelineStyles,
+		et_x_TimelineStyle,
+		et_x_TimelineStyleElement
 	};
 
 	class File;

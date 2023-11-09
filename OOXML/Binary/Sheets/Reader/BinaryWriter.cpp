@@ -1130,13 +1130,71 @@ void BinaryStyleTableWriter::WriteStylesContent(OOX::Spreadsheet::CStyles& style
 				m_oBcw.m_oStream.WriteRecord2(0, pExt->m_oSlicerStyles);
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
+			else if (pExt->m_oTimelineStyles.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerStylesTypes::TimelineStyles);
+				WriteTimelineStyles(pExt->m_oTimelineStyles.GetPointer());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
 		}
+	}
+}
+void BinaryStyleTableWriter::WriteTimelineStyles(OOX::Spreadsheet::CTimelineStyles* pTimelineStyles)
+{
+	if (!pTimelineStyles) return;
+	int nCurPos = 0;
+	if (pTimelineStyles->m_oDefaultTimelineStyle.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelineStyles::DefaultTimelineStyle);
+		m_oBcw.m_oStream.WriteStringW3(*pTimelineStyles->m_oDefaultTimelineStyle);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	for (size_t i = 0; i < pTimelineStyles->m_arrItems.size(); ++i)
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelineStyles::TimelineStyle);
+		WriteTimelineStyle(pTimelineStyles->m_arrItems[i]);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+void BinaryStyleTableWriter::WriteTimelineStyle(OOX::Spreadsheet::CTimelineStyle* pTimelineStyle)
+{
+	if (!pTimelineStyle) return;
+
+	int nCurPos = 0;
+	if (pTimelineStyle->m_oName.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelineStyles::TimelineStyleName);
+		m_oBcw.m_oStream.WriteStringW3(*pTimelineStyle->m_oName);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	for (size_t i = 0; i < pTimelineStyle->m_arrItems.size(); ++i)
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelineStyles::TimelineStyleElement);
+		WriteTimelineStyleElement(pTimelineStyle->m_arrItems[i]);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+void BinaryStyleTableWriter::WriteTimelineStyleElement(OOX::Spreadsheet::CTimelineStyleElement* pTimelineStyleElement)
+{
+	if (!pTimelineStyleElement) return;
+
+	if (pTimelineStyleElement->m_oType.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_TimelineStyles::TimelineStyleElementType);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE((BYTE)pTimelineStyleElement->m_oType->GetValue());
+	}
+	if (pTimelineStyleElement->m_oDxfId.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_TimelineStyles::TimelineStyleElementDxfId);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(*pTimelineStyleElement->m_oDxfId);
 	}
 }
 void BinaryStyleTableWriter::WriteBorders(const OOX::Spreadsheet::CBorders& borders, OOX::Spreadsheet::CIndexedColors* pIndexedColors, PPTX::Theme* pTheme)
 {
 	int nCurPos = 0;
-	for(size_t i = 0, length = borders.m_arrItems.size(); i < length; ++i)
+	for (size_t i = 0, length = borders.m_arrItems.size(); i < length; ++i)
 	{
 		OOX::Spreadsheet::CBorder* pBorder = borders.m_arrItems[i];
 		nCurPos = m_oBcw.WriteItemStart(c_oSerStylesTypes::Border);

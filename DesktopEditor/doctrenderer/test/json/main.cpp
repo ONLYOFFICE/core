@@ -52,7 +52,7 @@ public:
 class CColorRGBA : public NSJSON::CObject
 {
 public:
-	NSJSON::CObject m_oRGB;
+	CColorRGB m_oRGB;
 	NSJSON::CValue m_nAlpha;
 
 public:
@@ -63,21 +63,35 @@ public:
 	}
 };
 
+class CFontFamily : public NSJSON::CObject
+{
+public:
+	NSJSON::CValue m_sFontName;
+	NSJSON::CValue m_bBold;
+	NSJSON::CValue m_bItalic;
+
+public:
+	CFontFamily()
+	{
+		addMember(&m_sFontName, "fontName");
+		addMember(&m_bBold, "bold");
+		addMember(&m_bItalic, "italic");
+	}
+};
+
 class CTextParameters : public NSJSON::CObject
 {
 public:
 	NSJSON::CValue m_nSize;
-	NSJSON::CValue m_bBold;
-	NSJSON::CValue m_sFontName;
-	NSJSON::CObject m_oColor;
+	CFontFamily m_oFont;
+	CColorRGBA m_oColor;
 	NSJSON::CObject m_oExtras;
 
 public:
 	CTextParameters()
 	{
 		addMember(&m_nSize, "size");
-		addMember(&m_bBold, "bold");
-		addMember(&m_sFontName, "fontName");
+		addMember(&m_oFont, "font");
 		addMember(&m_oColor, "color");
 		addMember(&m_oExtras, "extras");
 	}
@@ -99,9 +113,11 @@ int main()
 
 	CTextParameters oTextPr;
 	oTextPr.m_nSize = 4.2;
-	oTextPr.m_bBold = true;
-	oTextPr.m_sFontName = std::string("Times New Roman");
 	oTextPr.m_oColor = oColorRGBA;
+	oTextPr.m_oFont.m_sFontName = std::wstring(L"Times New Roman");
+	oTextPr.m_oFont.m_bBold = true;
+	// undefined member:
+//	oTextPr.m_oFont.m_bItalic = true;
 	oTextPr.m_oExtras.setNull();
 
 	JSSmart<CJSObject> jsObj = oTextPr.toJS()->toObject();

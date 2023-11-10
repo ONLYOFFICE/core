@@ -49,6 +49,11 @@
 
 namespace MetaFile
 {
+	bool Equals(double dFirst, double dSecond, double dEpsilon)
+	{
+		return std::abs(dFirst - dSecond) <= dEpsilon;
+	}
+
 	unsigned char GetLowestBit(unsigned int ulValue)
 	{
 		if (0 == ulValue)

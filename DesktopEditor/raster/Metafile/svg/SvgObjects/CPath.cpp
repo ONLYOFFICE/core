@@ -501,8 +501,6 @@ namespace SVG
 
 		if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true))
 			nTypePath += (m_bEvenOddRule) ? c_nEvenOddFillMode : c_nWindingFillMode;
-		
-		ApplyOpacity(pRenderer, &pStyles->m_oOpacity);
 	}
 
 	bool CPath::DrawMarkers(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode) const
@@ -729,7 +727,7 @@ namespace SVG
 	}
 
 	CMovingPath::CMovingPath(const CPath *pPath)
-	    : m_pPath(pPath), m_oPosition{DBL_MIN, DBL_MIN}
+	    : m_pPath(pPath), m_oPosition{0., 0.}
 	{
 		ToStart();
 	}

@@ -277,7 +277,7 @@ namespace SVG
 
 	bool CRenderedObject::StartPath(IRenderer *pRenderer, const CSvgFile *pFile, Aggplus::CMatrix &oOldTransform, CommandeMode oMode) const
 	{
-		if (NULL == pRenderer || !m_oTransformtaion.m_bDraw)
+		if (NULL == pRenderer || !m_oTransformtaion.m_bDraw || m_oStyles.m_oOpacity.Zero())
 			return false;
 
 		ApplyTransform(pRenderer, &m_oTransformtaion.m_oTransform, oOldTransform);
@@ -415,10 +415,10 @@ namespace SVG
 
 	bool CRenderedObject::ApplyOpacity(IRenderer *pRenderer, const NSCSS::NSProperties::CDigit *pOpacity) const
 	{
-		if (NULL == pOpacity)
+		if (NULL == pRenderer || NULL == pOpacity)
 			return false;
 
-		return true;
+		return false;
 	}
 
 	CAppliedObject::CAppliedObject(XmlUtils::CXmlNode &oNode)

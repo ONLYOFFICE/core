@@ -46,6 +46,8 @@
 
 namespace MetaFile
 {
+	bool Equals(double dFirst, double dSecond, double dEpsilon = DBL_EPSILON);
+
 	struct TRgbQuad
 	{
 		unsigned char r;
@@ -66,21 +68,21 @@ namespace MetaFile
 		double dRight;
 		double dBottom;
 
-		TSvgViewport() : dLeft(DBL_MAX), dTop(DBL_MAX), dRight(DBL_MIN), dBottom(DBL_MIN) {}
+		TSvgViewport() : dLeft(DBL_MAX), dTop(DBL_MAX), dRight(-DBL_MAX), dBottom(-DBL_MAX) {}
 
 		bool Empty() const
 		{
-			return DBL_MAX == dLeft || DBL_MAX == dTop || DBL_MIN == dRight || DBL_MIN == dBottom || dRight == dLeft || dBottom == dTop;
+			return Equals(DBL_MAX, dLeft) || Equals(DBL_MAX, dTop) || Equals(-DBL_MAX, dRight) || Equals(-DBL_MAX, dBottom) || Equals(dRight, dLeft) || Equals(dBottom, dTop);
 		}
 
 		double GetWidth() const
 		{
-			return (DBL_MAX == dLeft || DBL_MIN == dRight) ? 0 : dRight - dLeft;
+			return (Equals(DBL_MAX, dLeft) || Equals(-DBL_MAX, dRight)) ? 0 : dRight - dLeft;
 		}
 
 		double GetHeight() const
 		{
-			return (DBL_MAX == dTop || DBL_MIN == dBottom) ? 0 : dBottom - dTop;
+			return (Equals(DBL_MAX, dTop) || Equals(-DBL_MAX, dBottom)) ? 0 : dBottom - dTop;
 		}
 	};
 

@@ -156,7 +156,7 @@ namespace NSCSS
 	}
 
 	CDigit::CDigit()
-	    : CValue(DBL_MIN, 0, false), m_enUnitMeasure(None)
+	    : CValue(DBL_MAX, 0, false), m_enUnitMeasure(None)
 	{}
 
 	CDigit::CDigit(double dValue)
@@ -169,17 +169,17 @@ namespace NSCSS
 
 	bool CDigit::Empty() const
 	{
-		return DBL_MIN == m_oValue;
+		return DBL_MAX == m_oValue;
 	}
 
 	bool CDigit::Zero() const
 	{
-		return (std::abs(m_oValue) <= DBL_EPSILON);
+		return (std::abs(0 - m_oValue) <= DBL_EPSILON);
 	}
 
 	void CDigit::Clear()
 	{
-		m_oValue = DBL_MIN;
+		m_oValue = DBL_MAX;
 	}
 	
 	void CDigit::ConvertTo(UnitMeasure enUnitMeasure, double dPrevValue)
@@ -190,7 +190,7 @@ namespace NSCSS
 
 	int CDigit::ToInt() const
 	{
-		if (DBL_MIN == m_oValue)
+		if (DBL_MAX == m_oValue)
 			return 0;
 
 		return static_cast<int>(m_oValue + 0.5);
@@ -198,7 +198,7 @@ namespace NSCSS
 
 	double CDigit::ToDouble() const
 	{
-		if (DBL_MIN == m_oValue)
+		if (DBL_MAX == m_oValue)
 			return 0.;
 
 		return m_oValue;
@@ -206,7 +206,7 @@ namespace NSCSS
 
 	std::wstring CDigit::ToWString() const
 	{
-		if (DBL_MIN == m_oValue)
+		if (DBL_MAX == m_oValue)
 			return std::wstring();
 
 		return std::to_wstring(m_oValue);
@@ -214,7 +214,7 @@ namespace NSCSS
 
 	int CDigit::ToInt(UnitMeasure enUnitMeasure, double dPrevValue) const
 	{
-		if (DBL_MIN == m_oValue)
+		if (DBL_MAX == m_oValue)
 			return 0;
 
 		return static_cast<int>(ConvertValue(dPrevValue, enUnitMeasure) + 0.5);
@@ -222,7 +222,7 @@ namespace NSCSS
 
 	double CDigit::ToDouble(UnitMeasure enUnitMeasure, double dPrevValue) const
 	{
-		if (DBL_MIN == m_oValue)
+		if (DBL_MAX == m_oValue)
 			return 0;
 
 		return ConvertValue(dPrevValue, enUnitMeasure);
@@ -230,8 +230,8 @@ namespace NSCSS
 
 	std::wstring CDigit::ToWString(UnitMeasure enUnitMeasure, double dPrevValue) const
 	{
-		if (DBL_MIN == m_oValue)
-			return 0;
+		if (DBL_MAX == m_oValue)
+			return std::wstring();
 
 		return std::to_wstring(ConvertValue(dPrevValue, enUnitMeasure));
 	}
@@ -306,7 +306,7 @@ namespace NSCSS
 
 	CDigit &CDigit::operator+=(const CDigit &oDigit)
 	{
-		if (m_unLevel > oDigit.m_unLevel || (m_bImportant && !oDigit.m_bImportant) || DBL_MIN == oDigit.m_oValue)
+		if (m_unLevel > oDigit.m_unLevel || (m_bImportant && !oDigit.m_bImportant) || DBL_MAX == oDigit.m_oValue)
 			return *this;
 
 		m_oValue        += oDigit.ToDouble(m_enUnitMeasure);

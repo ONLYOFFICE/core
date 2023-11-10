@@ -225,11 +225,11 @@ namespace OOX
 			if (m_oFills.IsInit())
 				stylesStream->m_FILLS = m_oFills->toBin();
 
-			if (m_oBorders.IsInit())
-				stylesStream->m_BORDERS = m_oBorders->toBin();
+            if (m_oBorders.IsInit())
+                stylesStream->m_BORDERS = m_oBorders->toBin();
 
-			if (m_oCellStyleXfs.IsInit())
-				stylesStream->m_CELLSTYLEXFS = m_oCellStyleXfs->toBin();
+            if (m_oCellStyleXfs.IsInit())
+                stylesStream->m_CELLSTYLEXFS = m_oCellStyleXfs->toBin();//
 
 			if (m_oCellXfs.IsInit())
 				stylesStream->m_CELLXFS = m_oCellXfs->toBin();

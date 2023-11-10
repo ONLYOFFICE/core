@@ -534,6 +534,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		else
 			ptr->fDisplayPageFieldStyle = false;
 		if (m_oPageWrap.IsInit()) ptr->cWrapPage = m_oPageWrap->GetValue();
+		else
+			ptr->cWrapPage = 0;
 		if (m_oPivotTableStyle.IsInit()) ptr->irstTableStyle = m_oPivotTableStyle.get();
 		else
 			ptr->fDisplayTableStyle = false;
@@ -577,6 +579,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		if (m_oVacatedStyle.IsInit()) ptr->irstVacateStyle = m_oVacatedStyle.get();
 		else
 			ptr->fDisplayVacateStyle = false;
+		ptr->sxaxis4Data = 2;
+		ptr->fReenterOnLoadOnce = false;
 
 		return objectPtr;
 	}
@@ -2204,7 +2208,12 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		if(m_oAvgSubtotal.IsInit())
             ptr->fAverage = m_oAvgSubtotal.get();
-
+		
+		ptr->sxaxis.bCol = false;
+		ptr->sxaxis.bPage = false;
+		ptr->sxaxis.bRw = false;
+		ptr->sxaxis.bData = false;
+		
 		if(m_oAxis.IsInit())
 		{
 			if(m_oAxis == SimpleTypes::Spreadsheet::EPivotAxisType::axisCol)
@@ -2213,7 +2222,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				ptr->sxaxis.bPage = true;
 			else if(m_oAxis == SimpleTypes::Spreadsheet::EPivotAxisType::axisRow)
 				ptr->sxaxis.bRw = true;
-			else if(m_oAxis == SimpleTypes::Spreadsheet::EPivotAxisType::axisRow)
+			else if(m_oAxis == SimpleTypes::Spreadsheet::EPivotAxisType::axisValues)
 				ptr->sxaxis.bData = true;
 		}
 		if(m_oCompact.IsInit())

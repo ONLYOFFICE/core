@@ -36,6 +36,7 @@
 #include "../../Common/SimpleTypes_Spreadsheet.h"
 
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
+#include "../../XlsbFormat/Biff12_records/BeginCellStyleXFs.h"
 
 #include "../../../XlsbFormat/Biff12_unions/CELLSTYLEXFS.h"
 #include "../../../XlsbFormat/Biff12_unions/CELLXFS.h"
@@ -121,6 +122,8 @@ namespace OOX
 				ptr->alc = 6;
 			else if (m_oHorizontal == SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentDistributed)
 				ptr->alc = 7;
+            else
+                ptr->alc = 0;
 
 			if (m_oVertical == SimpleTypes::Spreadsheet::EVerticalAlignment::verticalalignmentTop)
 				ptr->alcV = 0;
@@ -132,6 +135,8 @@ namespace OOX
 				ptr->alcV = 3;
 			else if (m_oVertical == SimpleTypes::Spreadsheet::EVerticalAlignment::verticalalignmentDistributed)
 				ptr->alcV = 4;
+            else
+                ptr->alcV = 2;
 
 		}
 		EElementType CAligment::getType () const
@@ -370,7 +375,7 @@ namespace OOX
 		}
 		XLS::BaseObjectPtr CXfs::toBin()
 		{
-			size_t id = 1;
+            size_t id = 0;
 			auto ptr(new XLSB::XF(id, id));
 			XLS::BaseObjectPtr objectPtr(ptr);
             if(m_oBorderId.IsInit())
@@ -385,9 +390,12 @@ namespace OOX
                 ptr->fsxButton = m_oPivotButton->GetValue();
             if(m_oQuotePrefix.IsInit())
                 ptr->f123Prefix = m_oQuotePrefix->GetValue();
+			ptr->ind_xf = 0;
 
 			if (m_oXfId.IsInit())
 				ptr->ixfParent = m_oXfId->GetValue();
+			else
+				ptr->ixfParent = 65535;
             if(m_oApplyAlignment.IsInit())
                 ptr->fAtrAlc = m_oApplyAlignment->GetValue();
             if(m_oApplyBorder.IsInit())
@@ -403,6 +411,11 @@ namespace OOX
 
 			if(m_oAligment.IsInit())
 				m_oAligment->toBin(objectPtr);
+			else
+			{
+				ptr->alc = 0;
+				ptr->alcV = 2;
+			}
 			if(m_oProtection.IsInit())
 				m_oProtection->toBin(objectPtr);
 
@@ -599,10 +612,14 @@ namespace OOX
 		}
 		XLS::BaseObjectPtr CCellStyleXfs::toBin()
 		{
-			auto ptr(new XLSB::CELLSTYLEXFS);
+            auto ptr(new XLSB::CELLSTYLEXFS);
+			auto ptr1(new XLSB::BeginCellStyleXFs);
+			ptr->m_BrtBeginCellStyleXFs = XLS::BaseObjectPtr{ptr1};
 			XLS::BaseObjectPtr objectPtr(ptr);
+
 			for(auto i:m_arrItems)
 				ptr->m_arBrtXF.push_back(i->toBin());
+			ptr1->cxfs = ptr->m_arBrtXF.size();
 			return objectPtr;
 		}
 		void CCellStyleXfs::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)

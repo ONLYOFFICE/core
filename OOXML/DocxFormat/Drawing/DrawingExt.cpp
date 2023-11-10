@@ -714,7 +714,7 @@ namespace OOX
 					for(auto i:m_arrExt)
 					{
 
-						if(i->m_sUri == L"{EB79DEF2-80B8-43E5-95BD-54CBDDF9020C}")
+						if(i->m_sUri == L"{EB79DEF2-80B8-43e5-95BD-54CBDDF9020C}")
 						{
 							ptr->m_STYLESHEET14 = i->m_oSlicerStyles->toBin();
 						}

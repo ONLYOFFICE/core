@@ -36,6 +36,7 @@
 #include "../../Common/SimpleTypes_Spreadsheet.h"
 
 #include "../../XlsbFormat/Biff12_records/Fill.h"
+#include "../../XlsbFormat/Biff12_records/BeginFills.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
 
 #include "../../../XlsbFormat/Biff12_unions/FILLS.h"
@@ -159,9 +160,28 @@ namespace OOX
 
 			if(m_oBgColor.IsInit())
 				ptr->brtColorBack = m_oBgColor->toColor();
-
+            else
+            {
+                ptr->brtColorBack.bAlpha = 255;
+                ptr->brtColorBack.bBlue = 0;
+                ptr->brtColorBack.bGreen = 0;
+                ptr->brtColorBack.bRed = 0;
+                ptr->brtColorBack.index = 64;
+                ptr->brtColorBack.nTintAndShade = 0;
+                ptr->brtColorBack.xColorType = 0;
+            }
 			if(m_oFgColor.IsInit())
 				ptr->brtColorFore = m_oFgColor->toColor();
+            else
+            {
+                ptr->brtColorFore.bAlpha = 255;
+                ptr->brtColorFore.bBlue = 255;
+                ptr->brtColorFore.bGreen = 255;
+                ptr->brtColorFore.bRed = 255;
+                ptr->brtColorFore.index = 64;
+                ptr->brtColorFore.nTintAndShade = 0;
+                ptr->brtColorFore.xColorType = 0;
+            }
 		}
 		EElementType CPatternFill::getType () const
 		{
@@ -289,6 +309,8 @@ namespace OOX
 			XLSB::GradientStop stop;
 			if(m_oPosition.IsInit())
 				stop.xnumPosition.data.value = m_oPosition->GetValue();
+			else
+				stop.xnumPosition.data.value = 0;
 			if(m_oColor.IsInit())
 			{
 				stop.brtColor = m_oColor->toColor();
@@ -383,16 +405,28 @@ namespace OOX
 
 			if(m_oType.IsInit())
 				ptr->iGradientType = m_oType->GetValue();
+			else
+				ptr->iGradientType = 0;
 			if(m_oDegree.IsInit())
 				ptr->xnumDegree.data.value = m_oDegree->GetValue();
+			else
+				ptr->xnumDegree.data.value = 0;
 			if(m_oLeft.IsInit())
 				ptr->xnumFillToLeft.data.value = m_oLeft->GetValue();
+			else
+				ptr->xnumFillToLeft.data.value = 0;
 			if(m_oRight.IsInit())
 				ptr->xnumFillToRight.data.value = m_oRight->GetValue();
+			else
+				ptr->xnumFillToRight.data.value = 0;
 			if(m_oTop .IsInit())
 				ptr->xnumFillToTop.data.value = m_oTop->GetValue();
+			else
+				ptr->xnumFillToTop.data.value = 0;
 			if(m_oBottom.IsInit())
 				ptr->xnumFillToBottom.data.value = m_oBottom->GetValue();
+			else
+				ptr->xnumFillToBottom.data.value = 0;
 
 			for(auto i:m_arrItems)
 			{
@@ -499,6 +533,11 @@ namespace OOX
 			{
 				m_oGradientFill->toBin(objectPtr);
 			}
+            else
+            {
+                ptr->iGradientType = 0;
+            }
+            ptr->cNumStop = 0;
 			return objectPtr;
 		}
 		EElementType CFill::getType () const
@@ -607,9 +646,13 @@ namespace OOX
 		XLS::BaseObjectPtr CFills::toBin()
 		{
 			auto ptr(new XLSB::FILLS);
+			auto ptr1(new XLSB::BeginFills);
+			ptr->m_BrtBeginFills = XLS::BaseObjectPtr{ptr1};
+
 			XLS::BaseObjectPtr objectPtr(ptr);
 			for(auto i : m_arrItems)
 				ptr->m_arBrtFill.push_back(i->toBin());
+			ptr1->cfills = ptr->m_arBrtFill.size();
 			return objectPtr;
 
 		}

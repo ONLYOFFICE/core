@@ -84,7 +84,6 @@ namespace OOX
 		{
 			auto ptr(new XLSB::TableStyleElement);
 			XLS::BaseObjectPtr objectPtr(ptr);
-
 			ptr->index = m_oDxfId->GetValue();
 			ptr->size = m_oSize->GetValue();
 
@@ -426,8 +425,11 @@ namespace OOX
 		{
 			auto ptr(new XLSB::TABLESTYLES);
 			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::BeginTableStyles);
+			ptr->m_BrtBeginTableStyles = XLS::BaseObjectPtr{ptr1};
 			for(auto i:m_arrItems)
 				 ptr->m_arTABLESTYLE.push_back(i->toBin());
+			ptr1->cts = ptr->m_arTABLESTYLE.size();
 			return objectPtr;
 		}
 		EElementType CTableStyles::getType () const

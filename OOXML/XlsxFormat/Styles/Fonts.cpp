@@ -34,6 +34,7 @@
 
 #include "../ComplexTypes_Spreadsheet.h"
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
+#include "../../XlsbFormat/Biff12_records/BeginFonts.h"
 
 #include "../../../XlsbFormat/Biff12_unions/FONTS.h"
 
@@ -517,13 +518,15 @@ namespace OOX
 		XLS::BaseObjectPtr CFonts::toBin()
 		{
 			auto ptr(new XLSB::FONTS);
+			auto ptr1(new XLSB::BeginFonts);
+			ptr->m_BrtBeginFonts = XLS::BaseObjectPtr{ptr1}; 
 			XLS::BaseObjectPtr objectPtr(ptr);
 
 			for(auto i:m_arrItems)
 			{
 				ptr->m_arBrtFont.push_back(i->toBin());
 			}
-
+			ptr1->cfonts = ptr->m_arBrtFont.size();
 			return objectPtr;
 		}
 		EElementType CFonts::getType () const

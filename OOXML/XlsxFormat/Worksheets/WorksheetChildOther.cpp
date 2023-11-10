@@ -1182,10 +1182,16 @@ namespace OOX
 			XLS::BaseObjectPtr objectPtr(ptr);
 			if(m_oActiveCell.IsInit())
 				ptr->activeCell = m_oActiveCell.get();
+			else
+				ptr->activeCell = L"A1";
 			if(m_oActiveCellId.IsInit())
 				ptr->irefAct = m_oActiveCellId->GetValue();
+			else
+				ptr->irefAct = 0;
 			if(m_oSqref.IsInit())
 				ptr->sqref = m_oSqref.get();
+			else
+				ptr->sqref = L"A1";
 			if(m_oPane.IsInit())
 			{
 				if(m_oPane == SimpleTypes::Spreadsheet::EActivePane::activepaneBottomRight)
@@ -1197,6 +1203,10 @@ namespace OOX
 				else if(m_oPane == SimpleTypes::Spreadsheet::EActivePane::activepaneTopLeft)
 					ptr->pnn_xlsb = 3;
 			}
+			else
+				ptr->pnn_xlsb = 3;
+			ptr->rwAct = 0;
+			ptr->colAct = 0;
 
 			return objectPtr;
 		}
@@ -1387,8 +1397,12 @@ namespace OOX
 					pWsView->fSelected = false;
 				if(m_oTopLeftCell.IsInit())
 					pWsView->topLeftCell = m_oTopLeftCell.get();
+				else
+					pWsView->topLeftCell = L"A1";
 				if (m_oView.IsInit())
 					pWsView->xlView = m_oView->m_eValue;
+				else
+					pWsView->xlView = 0;
 				if (m_oWindowProtection.IsInit())
 					pWsView->fWnProt = m_oWindowProtection->m_eValue;
 				else
@@ -1411,6 +1425,8 @@ namespace OOX
 					pWsView->wScaleSLV = m_oZoomScaleSheetLayoutView->m_eValue;
 				else
 					pWsView->wScaleSLV = 0;
+                pWsView->rwTop = 0;
+                pWsView->colLeft = 0;
                 if(m_oPane.IsInit())
 					ptr->m_BrtPane = m_oPane->toBin();
 

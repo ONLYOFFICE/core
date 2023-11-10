@@ -6,6 +6,10 @@ namespace NSJSON
 	{
 	}
 
+	IBaseValue::~IBaseValue()
+	{
+	}
+
 	void IBaseValue::setNull()
 	{
 		m_type = vtNull;
@@ -153,6 +157,14 @@ namespace NSJSON
 		default:
 			break;
 		}
+	}
+
+	CObject::CObject()
+	{
+	}
+
+	CObject::~CObject()
+	{
 	}
 
 	void CObject::addMember(const IBaseValue* pValue, const std::string& name)

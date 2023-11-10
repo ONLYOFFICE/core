@@ -25,6 +25,7 @@ namespace NSJSON
 
 	public:
 		IBaseValue();
+		virtual ~IBaseValue();
 
 	protected:
 		ValueType m_type;
@@ -45,7 +46,7 @@ namespace NSJSON
 		CValue(CValue&& other) = delete;
 		// TODO: move constructor and assignment operator ???
 		// TODO: constructors from value ???
-		~CValue();
+		virtual ~CValue();
 
 		CValue& operator=(const CValue& other);
 		CValue& operator=(CValue&& other) = delete;
@@ -79,6 +80,10 @@ namespace NSJSON
 	// extend this class to make custom objects serializable to JS
 	class JS_DECL CObject : public IBaseValue
 	{
+	public:
+		CObject();
+		virtual ~CObject();
+
 	public:
 		// Add member to JS object when it will be serialized
 		void addMember(const IBaseValue* pValue, const std::string& name);

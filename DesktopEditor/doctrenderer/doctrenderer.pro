@@ -23,7 +23,7 @@ core_android:DEFINES += DISABLE_MEMORY_LIMITATION
 HEADERS += \
     config.h \
     doctrenderer.h \
-    docbuilder.h
+	docbuilder.h
 
 SOURCES += \
     nativecontrol.cpp \
@@ -68,6 +68,10 @@ SOURCES += \
     embed/TextMeasurerEmbed.cpp \
     embed/HashEmbed.cpp \
     embed/Default.cpp
+
+# Serialize objects to JS
+HEADERS += json/json.h
+SOURCES += json/json.cpp
 
 include($$PWD/js_internal/js_base.pri)
 

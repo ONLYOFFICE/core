@@ -273,5 +273,12 @@ std::wstring odp_conversion_context::get_mapped_identifier(const std::wstring& i
 		return it->second;
 }
 
+void odp_conversion_context::add_page_name(const std::wstring& page_name)
+{
+	std::wstring pptx_slide_name = std::wstring(L"slide") + std::to_wstring(map_slidenames_.size() + 1);
+
+	map_slidenames_.insert(std::make_pair(pptx_slide_name, page_name));
+}
+
 }
 }

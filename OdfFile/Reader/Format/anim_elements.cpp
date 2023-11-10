@@ -42,6 +42,7 @@
 #include "../Converter/pptx_animation_context.h"
 #include "svg_parser.h"
 #include "../Converter/oox_drawing.h"
+#include "../../../Common/Network/FileTransporter/include/manager.h"
 
 #include <xml/xmlchar.h>
 #include <xml/simple_xml_writer.h>
@@ -334,6 +335,8 @@ static std::wstring pptx_convert_smil_begin(const std::wstring& smil_begin)
 {
 	if(smil_begin == L"next")
 		return L"indefinite";
+	if (boost::ends_with(smil_begin, L"click"))
+		return smil_begin;
 
 	std::wstring delay;
 	clockvalue delayClockvalue = clockvalue::parse(smil_begin);
@@ -481,8 +484,22 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 
 	if (common_attlist_.smil_begin_)
 	{
-		isSlideAnimation = boost::algorithm::ends_with(common_attlist_.smil_begin_.value(), L".begin");
-		if(!isSlideAnimation)
+		const std::wstring& smil_begin = common_attlist_.smil_begin_.value();
+		isSlideAnimation = boost::algorithm::ends_with(smil_begin, L".begin");
+
+		if (boost::algorithm::contains(smil_begin, L"click"))
+		{
+			std::wstring id = smil_begin.substr(0, smil_begin.find(L".click"));
+			std::wstring del = L"";
+
+			if(boost::algorithm::contains(smil_begin, L"+"))
+				del = smil_begin.substr(smil_begin.find(L"+"));
+
+			animationContext.set_seq_animation_delay(del);
+			animationContext.set_seq_animation_restart(L"whenNotActive");
+			animationContext.set_seq_animation_target_element(std::to_wstring(Context.get_slide_context().get_id(id)));
+		}
+		else if(!isSlideAnimation)
 			delay = pptx_convert_smil_begin(common_attlist_.smil_begin_.value());
 	}
 
@@ -1144,6 +1161,41 @@ void anim_audio::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void anim_audio::pptx_convert(oox::pptx_conversion_context & Context)
 {
+	oox::pptx_slide_context& slideContext = Context.get_slide_context();
+	oox::pptx_animation_context& animationContext = Context.get_slide_context().get_animation_context();
+	
+	animationContext.start_anim_audio();
+
+	if (audio_attlist_.xlink_href_)
+	{
+		std::wstring href = audio_attlist_.xlink_href_.value();
+
+		if (boost::algorithm::starts_with(href, L"file:///"))
+			href = href.substr(std::wstring(L"file:///").size());
+		else if (boost::algorithm::starts_with(href, L"http"))
+		{
+			const std::wstring mediaFolder = Context.root()->get_folder() + FILE_SEPARATOR_STR + L"Media";
+			if (!NSDirectory::Exists(mediaFolder))
+				NSDirectory::CreateDirectory(mediaFolder);
+
+			const std::wstring audioPath = mediaFolder + FILE_SEPARATOR_STR + NSFile::GetFileName(href);
+			ASC::CDownloadManager::DownloadExternal(href, audioPath);
+
+			href = audioPath;
+		}
+
+		const std::wstring name = NSFile::GetFileName(href);
+
+		std::wstring ref;
+		bool isInternal;
+		const std::wstring& rId = slideContext.get_mediaitems()->add_or_find_anim_audio(href, isInternal, ref);
+
+		slideContext.add_rels(true, rId, ref, oox::_rels_type::typeAudio);
+		
+		animationContext.add_anim_audio(rId, name);
+	}
+
+	animationContext.end_anim_audio();
 }
 
 ////////////////////////////////////////////////////////////////

@@ -145,6 +145,7 @@ public:
 	size_t						get_id(const std::wstring& id);
 private:
 	void default_set();
+	bool is_slide_filepath(const std::wstring& filename);
 
 	int hlinks_size_;
 

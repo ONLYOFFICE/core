@@ -55,6 +55,7 @@
 #include "../../../OOXML/PPTXFormat/Logic/Timing/AnimRot.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/AnimScale.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/Anim.h"
+#include "../../../OOXML/PPTXFormat/Logic/Timing/Audio.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/Timing.h"
 
 #include "../../../OOXML/PPTXFormat/Logic/TcBdr.h"
@@ -82,6 +83,7 @@
 
 #include "../Format/odf_text_context.h"
 #include "../Format/odf_drawing_context.h"
+#include "../Format/office_event_listeners.h"
 
 #include "../Format/styles.h"
 #include "../Format/style_presentation.h"
@@ -1146,6 +1148,27 @@ void PptxConverter::convert(PPTX::Logic::AnimScale* oox_anim_scale)
 	odp_context->current_slide().end_timing_transform();
 }
 
+void PptxConverter::convert(PPTX::Logic::Audio* oox_audio)
+{
+	if (!oox_audio)
+		return;
+
+	odp_context->current_slide().start_anim_audio();
+
+	if (oox_audio->cMediaNode.tgtEl.name.IsInit())
+	{
+		bool isExternal;
+		const std::wstring aID = oox_audio->cMediaNode.tgtEl.embed->get();
+		const std::wstring pathAudio = find_link_by_id(aID, 3, isExternal);
+
+		const std::wstring xlink = odp_context->add_media(pathAudio);
+		
+		odp_context->current_slide().set_anim_audio_xlink(xlink);
+	}
+
+	odp_context->current_slide().end_anim_audio();
+}
+
 void PptxConverter::convert_common()
 {
 	if (presentation->sldSz.IsInit())
@@ -1187,6 +1210,45 @@ std::wstring PptxConverter::convert_animation_scale_values(int x, int y)
 	ss << _x << L"," << _y;
 
 	return ss.str();
+}
+
+std::wstring PptxConverter::get_page_name(PPTX::Logic::CSld* oox_slide, _typePages type)
+{
+	if (!oox_slide)
+		return std::wstring();
+
+	std::wstring page_name;
+	if (oox_slide->attrName.IsInit())
+		page_name = oox_slide->attrName.get();
+
+	if (page_name.empty())
+	{
+		if (type == Slide)
+			page_name = L"Slide_" + std::to_wstring((int)odp_context->get_pages_count());
+	}
+
+	return page_name;
+}
+
+void PptxConverter::fill_in_deferred_hyperlinks()
+{
+	for (auto hyperlink : odp_context->get_deferred_hyperlinks())
+	{
+		cpdoccore::odf_writer::presentation_event_listener* event_listener = dynamic_cast<cpdoccore::odf_writer::presentation_event_listener*>(hyperlink.first.get());
+		const std::wstring& slidename = hyperlink.second;
+
+		if (!event_listener)
+			continue;
+
+		auto hrefIt = odp_context->map_slidenames_.find(slidename);
+		if (hrefIt == odp_context->map_slidenames_.end())
+			continue;
+
+		event_listener->attlist_.common_xlink_attlist_.href_ = std::wstring(L"#") + hrefIt->second;
+		event_listener->attlist_.common_xlink_attlist_.type_ = xlink_type::Simple;
+		event_listener->attlist_.common_xlink_attlist_.show_ = xlink_show::Embed;
+		event_listener->attlist_.common_xlink_attlist_.actuate_ = xlink_actuate::OnRequest;
+	}
 }
 
 void PptxConverter::convert_slides()
@@ -1303,7 +1365,8 @@ void PptxConverter::convert_slides()
 		
 		odp_context->current_slide().set_master_page (master_style_name);
 		odp_context->current_slide().set_layout_page (layout_style_name);
-		
+
+		odp_context->add_page_name(get_page_name(slide->cSld.GetPointer(), Slide));
 		convert_slide	(slide->cSld.GetPointer(), current_txStyles, true, bShowMasterSp, Slide);
 		convert			(slide->comments.GetPointer());
 		convert			(slide->Note.GetPointer());
@@ -1314,6 +1377,8 @@ void PptxConverter::convert_slides()
 
 		odp_context->end_slide();
 	}
+
+	fill_in_deferred_hyperlinks();
 }
 void PptxConverter::convert(PPTX::NotesMaster *oox_notes)
 {
@@ -1560,6 +1625,11 @@ void PptxConverter::convert(PPTX::Logic::TimeNodeBase *oox_time_base)
 	{
 		PPTX::Logic::AnimScale& rotate = oox_time_base->as<PPTX::Logic::AnimScale>();
 		convert(&rotate);
+	}
+	else if (oox_time_base->is<PPTX::Logic::Audio>())
+	{
+		PPTX::Logic::Audio& audio = oox_time_base->as<PPTX::Logic::Audio>();
+		convert(&audio);
 	}
 }
 void PptxConverter::convert(PPTX::Logic::EmptyTransition *oox_transition)
@@ -1823,15 +1893,15 @@ void PptxConverter::convert(PPTX::Logic::CTn *oox_time_common)
 //			convert(&oox_time_common->childTnLst->list[i]);
 //		}
 //	}
-	//if (oox_time_common->subTnLst.IsInit())
-	//{
-	//	for (size_t i = 0; i < oox_time_common->subTnLst->list.size(); i++)
-	//	{
-	//		if (oox_time_common->subTnLst->list[i].is_init() == false) continue;
+	if (oox_time_common->subTnLst.IsInit())
+	{
+		for (size_t i = 0; i < oox_time_common->subTnLst->list.size(); i++)
+		{
+			if (oox_time_common->subTnLst->list[i].is_init() == false) continue;
 
-	//		convert(&oox_time_common->subTnLst->list[i]);
-	//	}
-	//}
+			convert(&oox_time_common->subTnLst->list[i]);
+		}
+	}
 }
 
 
@@ -1840,21 +1910,42 @@ void PptxConverter::convert(PPTX::Logic::Cond* oox_condition)
 	if (!oox_condition)
 		return;
 
+	std::wstring begin = L"0s";
+
 	if (oox_condition->delay.IsInit())
 	{
-		std::wstring begin;
+		std::wstring delay;
 		if (*oox_condition->delay == L"indefinite")
-			begin = L"next";
+			delay = L"next";
 		else
 		{
 			int ms = XmlUtils::GetInteger(*oox_condition->delay);
 			std::wstringstream ss;
 			ss << ms / 1000.0 << L"s";
-			begin = ss.str();
+			delay = ss.str();
 		}
 
-		odp_context->current_slide().set_anim_begin(begin);
+		if (!interactive_animation_element_id.empty())
+		{
+			delay = interactive_animation_element_id + L".click+" + delay;
+			interactive_animation_element_id = std::wstring();
+		}
+			
+
+		begin = delay;
 	}
+	
+	if (oox_condition->tgtEl.IsInit())
+	{
+		if (oox_condition->tgtEl->spTgt.IsInit())
+		{
+			std::wstring id = odp_context->get_mapped_identifier(oox_condition->tgtEl->spTgt->spid);
+			interactive_animation_element_id = id;
+		}	
+	}
+
+	odp_context->current_slide().set_anim_begin(begin);
+
 	//else if(oox_condition->evt.IsInit())
 	//	odp_context->current_slide().set_anim_evt();
 }
@@ -2388,16 +2479,7 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 	if (current_theme && current_clrMap)
 		current_theme->SetColorMap(*current_clrMap);
 
-	std::wstring page_name;
-	if (oox_slide->attrName.IsInit())
-		page_name = oox_slide->attrName.get();
-	
-
-	if (page_name.empty())
-	{
-		if (type == Slide)
-			page_name = L"Slide_" + std::to_wstring((int)odp_context->get_pages_count());
-	}
+	std::wstring page_name = get_page_name(oox_slide, type);
 	odp_context->current_slide().set_page_name(page_name);
 
 	if (type != Notes && type != NotesMaster)

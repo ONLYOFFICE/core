@@ -106,6 +106,7 @@ private:
 	bool in_span;
 	bool in_paragraph;
 	bool in_comment;
+	bool is_predump;
 
 	odf_reader::styles_container * local_styles_ptr_;
 
@@ -186,6 +187,7 @@ void pptx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 		//}
 		//else/* (paragraph_style_name_ != styleName)*/
 		{
+			is_predump = true;
 			dump_paragraph();
 		}
 	}else
@@ -195,6 +197,7 @@ void pptx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 	}
 	paragraph_style_name_	= styleName;
 	in_paragraph			= true;
+	is_predump				= false;
 }
 
 void pptx_text_context::Impl::end_paragraph()
@@ -376,6 +379,8 @@ void pptx_text_context::Impl::write_pPr(std::wostream & strm)
 	get_styles_context().start();
 
 	int level = list_style_stack_.size() - 1;		
+	if (is_predump)
+		level--;
 
 	odf_reader::paragraph_format_properties paragraph_properties_;
 	
@@ -872,6 +877,7 @@ styles_context & pptx_text_context::get_styles_context()
 { 
 	return  impl_->get_styles_context() ; 
 }
+
 void pptx_text_context::start_field(field_type type, const std::wstring & styleName)
 {
 	impl_->start_field(type, styleName);

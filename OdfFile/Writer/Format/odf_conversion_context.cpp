@@ -141,6 +141,17 @@ double odf_conversion_context::convert_symbol_width(double val, bool add_padding
 
 	return pixels * 0.75; //* 9525. * 72.0 / (360000.0 * 2.54);
 }
+
+void odf_conversion_context::add_hyperlink(office_element_ptr& elem, const std::wstring& ref)
+{
+	hyperlinks_.push_back(std::make_pair(elem, ref));
+}
+
+std::vector<std::pair<cpdoccore::odf_writer::office_element_ptr, std::wstring>> odf_conversion_context::get_deferred_hyperlinks()
+{
+	return hyperlinks_;
+}
+
 void odf_conversion_context::set_styles_context(odf_style_context_ptr styles_context)
 {
 	if (!objects_.empty())

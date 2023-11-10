@@ -172,6 +172,9 @@ public:
 	void calculate_font_metrix(std::wstring name, double size, bool italic, bool bold);
 	double convert_symbol_width(double va, bool add_padding = false);
 
+	void add_hyperlink(office_element_ptr& elem, const std::wstring& ref);
+	std::vector<std::pair<office_element_ptr, std::wstring>> get_deferred_hyperlinks();
+
 protected:
 	std::vector<odf_text_context_ptr> text_context_;
 	std::vector<odf_drawing_context_ptr> drawing_context_;
@@ -191,6 +194,8 @@ private:
 	void process_settings	(_object & object, bool isRoot);
 	
 	int	 current_object_;
+
+	std::vector<std::pair<office_element_ptr, std::wstring>> hyperlinks_;
 };
 
 }

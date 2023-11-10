@@ -225,6 +225,8 @@ private:
 
 		std::map<std::wstring, std::wstring>			m_mapMasters;
 		std::map<std::wstring, std::wstring>			m_mapLayouts;
+
+		std::wstring									interactive_animation_element_id;
 		
 		void convert_slides		();
 		void convert_styles		();
@@ -234,6 +236,9 @@ private:
 
 		std::wstring convert_animation_formula(std::wstring formula);
 		std::wstring convert_animation_scale_values(int x, int y);
+
+		std::wstring get_page_name(PPTX::Logic::CSld* oox_slide, _typePages type);
+		void fill_in_deferred_hyperlinks();
 		
 //--------------------------------------------------------------------------------
 	};

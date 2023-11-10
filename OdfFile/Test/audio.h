@@ -29,57 +29,55 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "gtest/gtest.h"
 #include "common.h"
 
-#include <boost/shared_ptr.hpp>
-
-#include "Reader/Format/odf_document.h"
-#include "Reader/Converter/pptx_conversion_context.h"
+#include "gtest/gtest.h"
 
 #include "Writer/Converter/Oox2OdfConverter.h"
 #include "Writer/Format/odp_conversion_context.h"
 #include "Writer/Format/anim_elements.h"
 #include "Writer/Format/draw_page.h"
 
-class ODP2OOX_AnimationEntranceEnvironment : public ODP2OOX_AnimationEnvironment
+#include "Reader/Format/odf_document.h"
+#include "Reader/Converter/pptx_conversion_context.h"
+
+class ODP2OOX_AnimationAudioEnvironment : public ODP2OOX_AnimationEnvironment
 {
 public:
-	ODP2OOX_AnimationEntranceEnvironment();
+	ODP2OOX_AnimationAudioEnvironment();
 
 	static const cpdoccore::oox::pptx_animation_context& GetAnimationContext();
 
 private:
-	static boost::shared_ptr<cpdoccore::oox::pptx_conversion_context> sConverionContext;
-	static boost::shared_ptr<cpdoccore::odf_reader::odf_document> sInputOdf;
+	static boost::shared_ptr<cpdoccore::odf_reader::odf_document>		sInputOdf;
+	static boost::shared_ptr<cpdoccore::oox::pptx_conversion_context>	sConverionContext;
 };
 
-class ODP2OOX_EntranceAnimationTest : public testing::Test
+class ODP2OOX_AnimationAudioTest : public testing::Test
 {
 public:
 	void SetUp() override;
 	void TearDown() override
 	{ }
 
-	const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr&			GetInnerPar(const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr& par);
-	const cpdoccore::oox::pptx_animation_context::Impl::_seq_animation_ptr&			GetMainSequence();
-	const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_array&		GetMainSequenceArray();
-	const cpdoccore::oox::pptx_animation_context::Impl::_animation_element_array&	GetActionArray(const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr& par);
-	const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr			GetInnermostPar(const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr& par);
-	const cpdoccore::oox::pptx_animation_context::Impl::_animation_element_array&	GetAnimationActionsByIndex(size_t index);
+	const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr&				GetInnerPar(const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr& par);
+	const cpdoccore::oox::pptx_animation_context::Impl::_seq_animation_ptr&				GetMainSequence();
+	const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_array&			GetMainSequenceArray();
+	const cpdoccore::oox::pptx_animation_context::Impl::_animation_element_array&		GetActionArray(const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr& par);
+	const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr				GetInnermostPar(const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr& par);
+	const cpdoccore::oox::pptx_animation_context::Impl::_animation_element_array&		GetAnimationActionsByIndex(size_t index);
+
 
 public:
 	const cpdoccore::oox::pptx_animation_context* mAnimationContext;
 };
 
-//////////////////////////////////////////////////////////////////////////
-// OOX2ODP
-
-class OOX2ODP_EntranceAnimationEnvironment : public OOX2ODP_AnimationEnvironment
+class OOX2ODP_AudioAnimationEnvironment : public OOX2ODP_AnimationEnvironment
 {
 public:
-	OOX2ODP_EntranceAnimationEnvironment();
+	OOX2ODP_AudioAnimationEnvironment();
 
 public:
 	static cpdoccore::odf_writer::odp_conversion_context* GetContext();
@@ -89,7 +87,7 @@ private:
 	static cpdoccore::odf_writer::odp_conversion_context* mContext;
 };
 
-class OOX2ODP_EntranceAnimationTest : public OOX2ODP_AnimationTest
+class OOX2ODP_AudioAnimationTest : public OOX2ODP_AnimationTest
 {
 public:
 	void SetUp() override;

@@ -32,44 +32,24 @@
 
 #include "motion.h"
 
-#include "common.h"
+boost::shared_ptr<cpdoccore::odf_reader::odf_document>		ODP2OOX_AnimationMotionEnvironment::sInputOdf;
+boost::shared_ptr<cpdoccore::oox::pptx_conversion_context>	ODP2OOX_AnimationMotionEnvironment::sConverionContext;
 
-#include "../../DesktopEditor/common/File.h"
-#include "../../DesktopEditor/common/Directory.h"
-#include "../../OfficeUtils/src/OfficeUtils.h"
-
-
-#define CH_DIR(x) FILE_SEPARATOR_STR + _T(x)
-
-boost::shared_ptr<cpdoccore::oox::pptx_conversion_context> MotionTestEnvironment::mConverionContext;
-boost::shared_ptr<cpdoccore::odf_reader::odf_document> MotionTestEnvironment::mInputOdf;
-
-void MotionTestEnvironment::SetUp()
+ODP2OOX_AnimationMotionEnvironment::ODP2OOX_AnimationMotionEnvironment()
+	: ODP2OOX_AnimationEnvironment(L"ExampleFiles" FILE_SEPARATOR_STR "motion.odp",
+		&sInputOdf,
+		&sConverionContext)
 {
-	sExampleFilename = L"motion.odp";
-
-	std::wstring rootDir = NSFile::GetProcessDirectory() + CH_DIR("..");
-	std::wstring sExampleFilesDirectory = rootDir + CH_DIR("ExampleFiles");
-
-	sFrom = sExampleFilesDirectory + FILE_SEPARATOR_STR + sExampleFilename;
-	sTemp = rootDir + CH_DIR("tmp");
-	sTempUnpackedOdf = sTemp + CH_DIR("odf_unpacked");
-
-	NSDirectory::CreateDirectory(sTemp);
-	NSDirectory::CreateDirectory(sTempUnpackedOdf);
-
-	mInputOdf = ReadOdfDocument(sFrom, sTemp, sTempUnpackedOdf);
-	mConverionContext = Convert(mInputOdf);
 }
 
-void MotionTestEnvironment::TearDown()
+const cpdoccore::oox::pptx_animation_context& ODP2OOX_AnimationMotionEnvironment::GetAnimationContext()
 {
-	NSDirectory::DeleteDirectory(sTemp);
+	return sConverionContext->get_slide_context().get_animation_context();
 }
 
 void ODP2OOX_MotionAnimationTest::SetUp()
 {
-	mAnimationContext = &MotionTestEnvironment::GetAnimationContext();
+	mAnimationContext = &ODP2OOX_AnimationMotionEnvironment::GetAnimationContext();
 }
 
 const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr& ODP2OOX_MotionAnimationTest::GetInnerPar(const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr& par)
@@ -79,12 +59,14 @@ const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr& ODP2OOX_
 
 const cpdoccore::oox::pptx_animation_context::Impl::_seq_animation_ptr& ODP2OOX_MotionAnimationTest::GetMainSequence()
 {
-	return mAnimationContext->get_root_par_animation()->AnimSeq;
+	if(mAnimationContext->get_root_par_animation()->AnimSeq.size())
+		return mAnimationContext->get_root_par_animation()->AnimSeq[0];
+	return nullptr;
 }
 
 const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_array& ODP2OOX_MotionAnimationTest::GetMainSequenceArray()
 {
-	return mAnimationContext->get_root_par_animation()->AnimSeq->AnimParArray;
+	return GetMainSequence()->AnimParArray;
 }
 
 const cpdoccore::oox::pptx_animation_context::Impl::_animation_element_array& ODP2OOX_MotionAnimationTest::GetActionArray(const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr& par)
@@ -98,9 +80,7 @@ const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr ODP2OOX_M
 	cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr inner = par;
 
 	while (inner->AnimParArray.size())
-	{
 		inner = GetInnerPar(inner);
-	}
 
 	return inner;
 }

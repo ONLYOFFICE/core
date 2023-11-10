@@ -133,6 +133,9 @@ namespace NSJSON
 		case vtStringW:
 			ret = NSJSBase::CJSContext::createString(m_wstring);
 			break;
+		default:
+			// this will never happen
+			break;
 		}
 		return ret;
 	}
@@ -141,15 +144,6 @@ namespace NSJSON
 	{
 		switch (m_type)
 		{
-		case vtBoolean:
-			m_bool = false;
-			break;
-		case vtInteger:
-			m_int = 0;
-			break;
-		case vtDouble:
-			m_double = 0.0;
-			break;
 		case vtStringA:
 			m_string.~basic_string<char>();
 			break;

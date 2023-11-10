@@ -118,6 +118,7 @@ int main()
 	oTextPr.m_oFont.m_bBold = true;
 	// undefined member:
 //	oTextPr.m_oFont.m_bItalic = true;
+	// null member:
 	oTextPr.m_oExtras.setNull();
 
 	JSSmart<CJSObject> jsObj = oTextPr.toJS()->toObject();

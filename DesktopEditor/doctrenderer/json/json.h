@@ -8,10 +8,9 @@
 
 namespace NSJSON
 {
-	class CObject;
-	class JS_DECL CValue
+	class JS_DECL IBaseValue
 	{
-	private:
+	protected:
 		enum ValueType
 		{
 			vtUndefined,
@@ -21,8 +20,25 @@ namespace NSJSON
 			vtDouble,
 			vtStringA,
 			vtStringW,
+			vtObject
 		};
 
+	public:
+		IBaseValue();
+
+	protected:
+		ValueType m_type;
+
+	public:
+		virtual void setNull();
+		virtual bool isUndefined() const;
+		virtual bool isNull() const;
+		// Transform C++ value to JS value
+		virtual JSSmart<NSJSBase::CJSValue> toJS() const = 0;
+	};
+
+	class JS_DECL CValue : public IBaseValue
+	{
 	public:
 		CValue();
 		CValue(const CValue& other);
@@ -42,18 +58,14 @@ namespace NSJSON
 		// TODO: type cast operators ???
 
 	public:
-		void setUndefined();
-		void setNull();
-		bool isUndefined() const;
-		bool isNull() const;
+		virtual void setNull() override;
 		// Transform C++ value to JS value
-		JSSmart<NSJSBase::CJSValue> toJS() const;
+		virtual JSSmart<NSJSBase::CJSValue> toJS() const override;
 
 	private:
 		void clear();
 
 	private:
-		ValueType m_type;
 		union
 		{
 			bool m_bool;
@@ -64,17 +76,17 @@ namespace NSJSON
 		};
 	};
 
-	class JS_DECL CObject
+	// extend this class to make custom objects serializable to JS
+	class JS_DECL CObject : public IBaseValue
 	{
 	public:
-		void addMember(const CValue* pValue, const std::string& name);
-		void addMember(const CObject* pObject, const std::string& name);
+		// Add member to JS object when it will be serialized
+		void addMember(const IBaseValue* pValue, const std::string& name);
 		// Transform C++ object to JS object
-		JSSmart<NSJSBase::CJSObject> toJS() const;
+		virtual JSSmart<NSJSBase::CJSValue> toJS() const override;
 
 	private:
-		std::unordered_map<std::string, const CValue*> m_values;
-		std::unordered_map<std::string, const CObject*> m_objects;
+		std::unordered_map<std::string, const IBaseValue*> m_values;
 	};
 }
 

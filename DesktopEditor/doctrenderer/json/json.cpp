@@ -2,11 +2,30 @@
 
 namespace NSJSON
 {
-	CValue::CValue() : m_type(vtUndefined)
+	IBaseValue::IBaseValue() : m_type(vtUndefined)
 	{
 	}
 
-	CValue::CValue(const CValue& other) : m_type(other.m_type)
+	void IBaseValue::setNull()
+	{
+		m_type = vtNull;
+	}
+
+	bool IBaseValue::isUndefined() const
+	{
+		return m_type == vtUndefined;
+	}
+
+	bool IBaseValue::isNull() const
+	{
+		return m_type == vtNull;
+	}
+
+	CValue::CValue()
+	{
+	}
+
+	CValue::CValue(const CValue& other)
 	{
 		*this = other;
 	}
@@ -19,6 +38,7 @@ namespace NSJSON
 	CValue& CValue::operator=(const CValue& other)
 	{
 		clear();
+		m_type = other.m_type;
 		switch (m_type)
 		{
 		case vtBoolean:
@@ -82,26 +102,10 @@ namespace NSJSON
 		return *this;
 	}
 
-	void CValue::setUndefined()
-	{
-		clear();
-		m_type = vtUndefined;
-	}
-
 	void CValue::setNull()
 	{
 		clear();
 		m_type = vtNull;
-	}
-
-	bool CValue::isUndefined() const
-	{
-		return m_type == vtUndefined;
-	}
-
-	bool CValue::isNull() const
-	{
-		return m_type == vtNull;
 	}
 
 	JSSmart<NSJSBase::CJSValue> CValue::toJS() const
@@ -157,37 +161,27 @@ namespace NSJSON
 		}
 	}
 
-	void CObject::addMember(const CValue* pValue, const std::string& name)
+	void CObject::addMember(const IBaseValue* pValue, const std::string& name)
 	{
+		if (m_type != vtObject)
+			m_type = vtObject;
 		m_values[name] = pValue;
 	}
 
-	void CObject::addMember(const CObject* pObject, const std::string& name)
+	JSSmart<NSJSBase::CJSValue> CObject::toJS() const
 	{
-		m_objects[name] = pObject;
-	}
+		if (m_type == vtUndefined)
+			return NSJSBase::CJSContext::createUndefined();
+		if (m_type == vtNull)
+			return NSJSBase::CJSContext::createNull();
 
-	JSSmart<NSJSBase::CJSObject> CObject::toJS() const
-	{
 		JSSmart<NSJSBase::CJSObject> ret = NSJSBase::CJSContext::createObject();
-		// set values
 		for (const auto& entry : m_values)
 		{
-			if (entry.second)
-			{
-				JSSmart<NSJSBase::CJSValue> jsValue = entry.second->toJS();
-				ret->set(entry.first.c_str(), jsValue);
-			}
+			JSSmart<NSJSBase::CJSValue> jsValue = entry.second->toJS();
+			ret->set(entry.first.c_str(), jsValue);
 		}
-		// set inner objects
-		for (const auto& entry : m_objects)
-		{
-			if (entry.second)
-			{
-				JSSmart<NSJSBase::CJSObject> jsObject = entry.second->toJS();
-				ret->set(entry.first.c_str(), jsObject);
-			}
-		}
-		return ret;
+
+		return ret->toValue();
 	}
 }

@@ -53,7 +53,10 @@ pptx_table_state::pptx_table_state(pptx_conversion_context & Context,
     const std::wstring & StyleName) : context_(Context),
     table_style_(StyleName),
     current_table_column_(-1),
-    columns_spanned_num_(0)
+    columns_spanned_num_(0),
+	rows_(0),
+	current_row_(0),
+	total_columns_(0)
 {        
 }
 
@@ -75,13 +78,13 @@ std::wstring pptx_table_state::get_default_cell_style_row()
     return default_row_cell_style_name_;
 }
 
-
 void pptx_table_state::start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName)
 {
     current_table_column_ = -1;
     columns_spanned_style_ = L"";
     table_row_style_stack_.push_back(StyleName);
     default_row_cell_style_name_ = defaultCellStyleName;
+	current_row_++;
 }
 
 void pptx_table_state::end_row()
@@ -223,6 +226,36 @@ unsigned int pptx_table_state::current_rows_spanned(unsigned int Column) const
     {
         return rows_spanned_[Column].num();
     }
+}
+
+void pptx_table_state::set_rows(int rows)
+{
+	rows_ = rows;
+}
+
+int pptx_table_state::get_rows() const
+{
+	return rows_;
+}
+
+int pptx_table_state::get_current_row() const
+{
+	return current_row_;
+}
+
+void pptx_table_state::set_columns(int cols)
+{
+	total_columns_ = cols;
+}
+
+int pptx_table_state::get_columns() const
+{
+	return total_columns_;
+}
+
+void pptx_table_state::set_is_row_template(bool is_row_template)
+{
+	is_row_template_ = is_row_template;
 }
 
 struct pptx_border_edge

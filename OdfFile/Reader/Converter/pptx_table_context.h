@@ -74,9 +74,25 @@ public:
 
     void set_rows_spanned(unsigned int Column, unsigned int Val, unsigned int ColumnsSpanned, const std::wstring & Style);
     unsigned int current_rows_spanned(unsigned int Column) const;
+
+	void set_rows(int rows);
+	int get_rows() const;
+    int get_current_row() const;
+    void set_columns(int cols);
+    int get_columns() const;
+    void set_is_row_template(bool is_row_template);
     
 	std::wstring default_cell_style_name_;
+    
+    _CP_OPT(std::wstring) first_row_style_name_;
+    _CP_OPT(std::wstring) last_row_style_name_;
+    _CP_OPT(std::wstring) odd_rows_style_name_;
+    
+    _CP_OPT(std::wstring) first_column_style_name_;
+    _CP_OPT(std::wstring) last_column_style_name_;
+    _CP_OPT(std::wstring) odd_columns_style_name;
 
+    bool is_row_template_ = false;
 private:
 	pptx_conversion_context & context_;    
    
@@ -94,7 +110,10 @@ private:
 	
 	std::vector<unsigned int> columns_;
     std::vector<std::wstring> columnsDefaultCellStyleName_;
-   
+
+    unsigned int rows_;
+    unsigned int current_row_;
+    unsigned int total_columns_;
 };
 
 class pptx_table_context : boost::noncopyable
@@ -116,10 +135,10 @@ public:
         table_states_.pop_back();        
     }
 
-    std::wstring current_style() const
-    {
-        return table_states_.back().current_style();    
-    }
+	std::wstring current_style() const
+	{
+		return table_states_.back().current_style();
+	}
 
     size_t in_table() const
     {
@@ -205,14 +224,173 @@ public:
 	{
 		table_states_.back().default_cell_style_name_ = style_name;
 	}
+
+    void set_table_rows(int rows)
+    {
+        table_states_.back().set_rows(rows);
+    }
+
+    int get_table_rows() const
+    {
+        return table_states_.back().get_rows();
+    }
+
+    void set_table_columns(int cols)
+    {
+        return table_states_.back().set_columns(cols);
+    }
+
+    int get_table_columns() const 
+    {
+        return table_states_.back().get_columns();
+    }
+
+    void set_first_row_style_name(std::wstring style_name)
+    {
+        table_states_.back().first_row_style_name_ = style_name;
+    }
+
+    void set_last_row_style_name(std::wstring style_name)
+    {
+        table_states_.back().last_row_style_name_ = style_name;
+    }
+
+    void set_odd_rows_style_name(std::wstring style_name)
+    {
+        table_states_.back().odd_rows_style_name_ = style_name;
+    }
+
+    void set_first_column_style_name(std::wstring style_name)
+    {
+        table_states_.back().first_column_style_name_ = style_name;
+    }
+
+    void set_last_column_style_name(std::wstring style_name)
+    {
+        table_states_.back().last_column_style_name_ = style_name;
+    }
+
+    void set_odd_columns_style_name(std::wstring style_name)
+    {
+        table_states_.back().odd_columns_style_name = style_name;
+    }
+
+    std::wstring get_first_row_style_name()
+    {
+        return table_states_.back().first_row_style_name_.get_value_or(L"");
+    }
+
+    std::wstring get_last_row_style_name()
+    {
+        return table_states_.back().last_row_style_name_.get_value_or(L"");
+    }
+
+    std::wstring get_odd_rows_style_name()
+    {
+        return table_states_.back().odd_rows_style_name_.get_value_or(L"");
+    }
+
+    std::wstring get_first_column_style_name()
+    {
+        return table_states_.back().first_column_style_name_.get_value_or(L"");
+    }
+
+    std::wstring get_last_column_style_name()
+    {
+        return table_states_.back().last_column_style_name_.get_value_or(L"");
+    }
+
+    std::wstring get_odd_column_style_name()
+    {
+        return table_states_.back().odd_columns_style_name.get_value_or(L"");
+    }
+
 	std::wstring get_default_cell_style()
 	{
 		return table_states_.back().default_cell_style_name_;
 	}
+
+    void set_is_row_template(bool is_row_template)
+    {
+        table_states_.back().set_is_row_template(is_row_template);
+    }
+
+    bool get_is_row_template() const
+    {
+        return table_states_.back().is_row_template_;
+    }
+
+    void set_template_use_styles(
+		                        bool use_first_row_styles,
+		                        bool use_last_row_styles,
+		                        bool use_banding_rows_styles,
+		                        bool use_first_column_styles,
+		                        bool use_last_column_styles,
+                                bool use_banding_columns_styles)
+    {
+        template_use_styles_.use_first_row_styles       = use_first_row_styles;
+        template_use_styles_.use_last_row_styles        = use_last_row_styles;
+        template_use_styles_.use_banding_rows_styles    = use_banding_rows_styles;
+
+        template_use_styles_.use_first_column_styles    = use_first_column_styles;
+        template_use_styles_.use_last_column_styles     = use_last_column_styles;
+        template_use_styles_.use_banding_columns_styles = use_banding_columns_styles;
+    }
+
+    bool template_is_first_row()
+    {
+        return table_states_.back().get_current_row() == 0 && template_use_styles_.use_first_row_styles;
+    }
+
+    bool template_is_last_row()
+    {
+        return
+            table_states_.back().get_current_row() == table_states_.back().get_rows() - 1 &&
+            template_use_styles_.use_last_row_styles;
+    }
+
+    bool template_is_odd_row()
+    {
+        return 
+            table_states_.back().get_current_row() % 2 == 1 &&
+            template_use_styles_.use_banding_rows_styles;  
+    }
+
+    bool template_is_first_column()
+    {
+        return table_states_.back().current_column() == 0 &&
+            template_use_styles_.use_first_column_styles;
+    }
+
+    bool template_is_last_column()
+    {
+        return
+            table_states_.back().current_column() == table_states_.back().get_columns() - 1 &&
+            template_use_styles_.use_last_column_styles;
+    }
+
+    bool template_is_odd_column()
+    {
+        return 
+			table_states_.back().current_column() % 2 == 1 &&
+			template_use_styles_.use_banding_columns_styles;
+    }
+
 private:
 	std::wstringstream			output_stream_;
     pptx_conversion_context &	context_;
     std::vector<pptx_table_state> table_states_;
+
+    struct template_use_styles
+    {
+        bool use_first_row_styles       = false;
+        bool use_last_row_styles        = false;
+        bool use_banding_rows_styles    = false;
+
+        bool use_first_column_styles    = false;
+        bool use_last_column_styles     = false;
+        bool use_banding_columns_styles = false;
+    } template_use_styles_;
 };
 
 void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::style_instance *> & style_inst, oox::pptx_conversion_context & Context);

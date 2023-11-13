@@ -35,6 +35,12 @@ namespace NSJSON
 			}
 			ret = jsArr->toValue();
 		}
+		else if (type == IBaseValue::vtTypedArray)
+		{
+			const CTypedArray* pTypedArray = static_cast<const CTypedArray*>(pValue);
+			JSSmart<NSJSBase::CJSTypedArray> jsTypedArr = NSJSBase::CJSContext::createUint8Array(pTypedArray->m_data, pTypedArray->m_len);
+			ret = jsTypedArr->toValue();
+		}
 		else
 		{
 			// primitive type

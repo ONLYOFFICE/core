@@ -26,6 +26,7 @@ namespace NSJSON
 			vtStringA,
 			vtStringW,
 			vtArray,
+			vtTypedArray,
 			vtObject
 		};
 
@@ -109,6 +110,25 @@ namespace NSJSON
 
 	private:
 		std::vector<IBaseValue*> m_values;
+	};
+
+	class JS_DECL CTypedArray : public IBaseValue
+	{
+	public:
+		CTypedArray(BYTE* data = nullptr, int len = 0);
+		// elements get deleted on typed array destruction
+		virtual ~CTypedArray();
+
+	public:
+		BYTE* getData();
+		const BYTE* getData() const;
+		int getCount() const;
+
+		friend JSSmart<NSJSBase::CJSValue> toJS(const IBaseValue* pValue);
+
+	private:
+		BYTE* m_data;
+		int m_len;
 	};
 
 	// extend this class to make custom objects serializable to JS

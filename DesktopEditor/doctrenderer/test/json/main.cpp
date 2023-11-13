@@ -128,8 +128,15 @@ int main()
 	oTextPr.m_arrNumbers.add(new NSJSON::CValue(0));
 	NSJSON::CArray* pArray = new NSJSON::CArray();
 	pArray->add(new NSJSON::CValue(std::string("test!")));
-	pArray->addNull();
+	pArray->add(new NSJSON::CValue(3.14));
 	oTextPr.m_arrNumbers.add(pArray);
+	BYTE* pData = new BYTE[4];
+	pData[0] = 0x22;
+	pData[1] = 0x33;
+	pData[2] = 0xaa;
+	pData[3] = 0x45;
+	NSJSON::CTypedArray* pTypedArray = new NSJSON::CTypedArray(pData, 4);
+	oTextPr.m_arrNumbers.add(pTypedArray);
 
 	JSSmart<CJSObject> jsObj = toJS(&oTextPr)->toObject();
 	JSSmart<CJSObject> global = pContext->GetGlobal();

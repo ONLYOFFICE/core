@@ -201,6 +201,30 @@ namespace NSJSON
 		return m_values[index];
 	}
 
+	CTypedArray::CTypedArray(BYTE* data, int len) : IBaseValue(vtTypedArray), m_data(data), m_len(len)
+	{
+	}
+
+	CTypedArray::~CTypedArray()
+	{
+		delete[] m_data;
+	}
+
+	BYTE* CTypedArray::getData()
+	{
+		return m_data;
+	}
+
+	const BYTE* CTypedArray::getData() const
+	{
+		return m_data;
+	}
+
+	int CTypedArray::getCount() const
+	{
+		return m_len;
+	}
+
 	void CObject::addMember(const IBaseValue* pValue, const std::string& name)
 	{
 		if (m_type != vtObject)

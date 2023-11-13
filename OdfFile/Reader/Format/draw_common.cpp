@@ -381,7 +381,7 @@ void Compute_GradientFill(draw_gradient* gradient_style, oox::oox_gradient_fill_
 		}
 	}
 	
-	if (fill->style > 1)
+	if (fill->style >= 1)
 	{
 		fill->rect[0] = fill->rect[1] = 0;
 		fill->rect[2] = fill->rect[3] = 100;

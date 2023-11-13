@@ -56,6 +56,8 @@ public:
     void start_column(unsigned int repeated, const std::wstring & defaultCellStyleName);
     std::wstring get_default_cell_style_col(unsigned int column);
     std::wstring get_default_cell_style_row();
+    void set_default_cell_style_row(const std::wstring& style_name);
+    void set_default_cell_style_col(unsigned int column, const std::wstring style_name);
     
 	void start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
     void end_row();
@@ -80,9 +82,11 @@ public:
     int get_current_row() const;
     void set_columns(int cols);
     int get_columns() const;
-    void set_is_row_template(bool is_row_template);
-    
+    void set_template_row_style_name(const std::wstring style_name);
+    std::wstring get_template_row_style_name() const;
+
 	std::wstring default_cell_style_name_;
+    std::wstring template_row_style_name_;
     
     _CP_OPT(std::wstring) first_row_style_name_;
     _CP_OPT(std::wstring) last_row_style_name_;
@@ -91,8 +95,6 @@ public:
     _CP_OPT(std::wstring) first_column_style_name_;
     _CP_OPT(std::wstring) last_column_style_name_;
     _CP_OPT(std::wstring) odd_columns_style_name;
-
-    bool is_row_template_ = false;
 private:
 	pptx_conversion_context & context_;    
    
@@ -210,6 +212,11 @@ public:
         return table_states_.back().current_rows_spanned(Column);
     }
 
+    void set_default_cell_style_col(unsigned int column, std::wstring style_name)
+    {
+        table_states_.back().set_default_cell_style_col(column, style_name);
+    }
+
     std::wstring get_default_cell_style_col(unsigned int column)
     {
         return table_states_.back().get_default_cell_style_col(column);
@@ -310,14 +317,14 @@ public:
 		return table_states_.back().default_cell_style_name_;
 	}
 
-    void set_is_row_template(bool is_row_template)
+    void set_template_row_style_name(const std::wstring& style_name)
     {
-        table_states_.back().set_is_row_template(is_row_template);
+        table_states_.back().set_template_row_style_name(style_name);
     }
 
-    bool get_is_row_template() const
+    std::wstring get_template_row_style_name()
     {
-        return table_states_.back().is_row_template_;
+        return table_states_.back().get_template_row_style_name();
     }
 
     void set_template_use_styles(

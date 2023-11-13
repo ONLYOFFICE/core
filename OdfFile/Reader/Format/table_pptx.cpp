@@ -69,26 +69,17 @@ void table_table_row::pptx_convert(oox::pptx_conversion_context & Context)
 
 	const std::wstring styleName = attlist_.table_style_name_.get_value_or(L"");
 	const std::wstring defaultCellStyle = attlist_.table_default_cell_style_name_.get_value_or(L"");
-	std::wstring cellStyle = attlist_.table_default_cell_style_name_.get_value_or(L"");
 
-	bool template_is_first_or_last_row = false;
+	std::wstring template_style_name = L"";
 
 	if (Context.get_table_context().template_is_first_row())
-	{
-		cellStyle = Context.get_table_context().get_first_row_style_name();
-		template_is_first_or_last_row = true;
-	}
+		template_style_name = Context.get_table_context().get_first_row_style_name();
 	else if (Context.get_table_context().template_is_last_row())
-	{
-		cellStyle = Context.get_table_context().get_last_row_style_name();
-		template_is_first_or_last_row = true;
-	}	
+		template_style_name = Context.get_table_context().get_last_row_style_name();
 	else if (Context.get_table_context().template_is_odd_row())
-	{
-		cellStyle = Context.get_table_context().get_odd_rows_style_name();
-	}
-	
-	Context.get_table_context().set_is_row_template(template_is_first_or_last_row);
+		template_style_name = Context.get_table_context().get_odd_rows_style_name();
+
+	Context.get_table_context().set_template_row_style_name(template_style_name);
 
     for (unsigned int i = 0; i < attlist_.table_number_rows_repeated_; ++i)
     {
@@ -112,7 +103,7 @@ void table_table_row::pptx_convert(oox::pptx_conversion_context & Context)
     
 		_Wostream << L"<a:tr h=\"" << height << L"\">";
   
-        Context.get_table_context().start_row(styleName, cellStyle);
+        Context.get_table_context().start_row(styleName, defaultCellStyle);
         
 		Context.get_table_context().set_table_columns(content_.size());
 		for (size_t i = 0; i < content_.size(); i++)
@@ -383,6 +374,16 @@ void table_table_cell::pptx_convert(oox::pptx_conversion_context & Context)
 		for (unsigned int r = 0; r < attlist_.table_number_columns_repeated_; ++r)
 		{
 			Context.get_table_context().start_cell();
+
+			unsigned int current_col = Context.get_table_context().current_column();
+
+			if (Context.get_table_context().template_is_first_column())
+				Context.get_table_context().set_default_cell_style_col(current_col, Context.get_table_context().get_first_column_style_name());
+			else if(Context.get_table_context().template_is_last_column())
+				Context.get_table_context().set_default_cell_style_col(current_col, Context.get_table_context().get_last_column_style_name());
+			else if (Context.get_table_context().template_is_odd_column())
+				Context.get_table_context().set_default_cell_style_col(current_col, Context.get_table_context().get_odd_column_style_name());
+
 			CP_XML_NODE(L"a:tc")
 			{
 				std::vector<const style_instance *> style_instances;
@@ -397,29 +398,31 @@ void table_table_cell::pptx_convert(oox::pptx_conversion_context & Context)
 					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell, false);
 					if (style_inst) style_instances.push_back(style_inst);
 				}
+
 				style_name = Context.get_table_context().get_default_cell_style_col(Context.get_table_context().current_column());
 				if (!style_name.empty())
 				{
 					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell, false);
 					if (style_inst)style_instances.push_back(style_inst);
 				}
-				style_name = Context.get_table_context().get_default_cell_style_row();
-				if (!style_name.empty())
+				style_name = Context.get_table_context().get_template_row_style_name();
+				if (!style_name.empty() && !Context.get_table_context().template_is_first_column() && !Context.get_table_context().template_is_last_column())
 				{
 					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell, false);
-					if (style_inst) style_instances.push_back(style_inst);
+					if (style_inst)style_instances.push_back(style_inst);
 				}
 
-				bool is_row_template = Context.get_table_context().get_is_row_template();
+				if (!attlist_.table_style_name_.has_value())
+				{
+					style_name = Context.get_table_context().get_default_cell_style_row();
+					if (!style_name.empty())
+					{
+						style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell, false);
+						if (style_inst) style_instances.push_back(style_inst);
+					}
+				}
 
 				style_name = attlist_.table_style_name_.get_value_or(L"");
-				if (Context.get_table_context().template_is_first_column() && !is_row_template)
-					style_name = Context.get_table_context().get_first_column_style_name();
-				else if (Context.get_table_context().template_is_last_column() && !is_row_template)
-					style_name = Context.get_table_context().get_last_column_style_name();
-				else if (Context.get_table_context().template_is_odd_column() && !is_row_template)
-					style_name = Context.get_table_context().get_odd_column_style_name();
-
 				if (!style_name.empty())
 				{
 					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell, false);

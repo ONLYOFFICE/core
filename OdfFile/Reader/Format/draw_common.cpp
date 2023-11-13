@@ -592,7 +592,9 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 		}
 		if ((fill.hatch) && (props.draw_fill_color_))
 		{
-			fill.hatch->color_back_ref = props.draw_fill_color_->get_hex_value();
+			// NOTE: Do not use draw:fill-color for hatch
+			// fill.hatch->color_back_ref = props.draw_fill_color_->get_hex_value();
+			fill.hatch->color_back_ref = L"FFFFFF";
 		}	
 	}
 	if (props.draw_fill_)

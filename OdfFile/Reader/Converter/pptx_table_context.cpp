@@ -78,6 +78,19 @@ std::wstring pptx_table_state::get_default_cell_style_row()
     return default_row_cell_style_name_;
 }
 
+void pptx_table_state::set_default_cell_style_row(const std::wstring& style_name)
+{
+	default_row_cell_style_name_ = style_name;
+}
+
+void pptx_table_state::set_default_cell_style_col(unsigned int column, const std::wstring style_name)
+{
+	if (column >= columnsDefaultCellStyleName_.size())
+		return;
+
+	columnsDefaultCellStyleName_[column] = style_name;
+}
+
 void pptx_table_state::start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName)
 {
     current_table_column_ = -1;
@@ -253,9 +266,14 @@ int pptx_table_state::get_columns() const
 	return total_columns_;
 }
 
-void pptx_table_state::set_is_row_template(bool is_row_template)
+void pptx_table_state::set_template_row_style_name(const std::wstring style_name)
 {
-	is_row_template_ = is_row_template;
+	template_row_style_name_ = style_name;
+}
+
+std::wstring pptx_table_state::get_template_row_style_name() const
+{
+	return template_row_style_name_;
 }
 
 struct pptx_border_edge

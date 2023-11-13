@@ -46,8 +46,8 @@ namespace PPT
 
 	//std::wstring SSlidePersist::ToString()
 	//{
-	//    std::wstring str = _T("");
-	//	str.Format(_T("<SlideInfo PsrRef='%d' SlideID='%d' />"), m_nPsrRef, m_nSlideID);
+	//    std::wstring str = L"");
+	//	str.Format(L"<SlideInfo PsrRef='%d' SlideID='%d' />"), m_nPsrRef, m_nSlideID);
 	//	return str;
 	//}
 

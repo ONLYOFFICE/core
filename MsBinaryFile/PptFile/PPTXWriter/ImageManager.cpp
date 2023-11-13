@@ -31,16 +31,14 @@
  */
 #include "ImageManager.h"
 #include <boost/algorithm/string.hpp>
-
+#include "../../../OOXML/SystemUtility/SystemUtility.h"
 
 CMediaManager::CMediaManager() : m_lIndexNextImage(0), m_lIndexNextAudio(0), m_lIndexNextVideo(0)
 {
 }
-
 CMediaManager::~CMediaManager()
 {
 }
-
 void CMediaManager::Clear()
 {
     m_mapMedia.clear();
@@ -59,12 +57,15 @@ std::wstring CMediaManager::FindMedia(const std::wstring &strInput)
     }
     return L"";
 }
-
 void CMediaManager::SetDstMedia(const std::wstring &strDst)
 {
     m_strDstMedia = strDst;
 }
-
+void CMediaManager::SetTempMedia(const std::wstring& strSrc)
+{
+    OOX::CPath pathSrc(strSrc);
+    m_strTempMedia = pathSrc.GetPath();
+}
 std::wstring CMediaManager::GenerateVideo(const std::wstring &strInput)
 {
     return GenerateMedia(strInput, L"video", m_lIndexNextVideo, L".avi");
@@ -112,20 +113,26 @@ std::wstring CMediaManager::GenerateMedia(const std::wstring &strInput, const st
     if (-1 != nIndexExt)
         strExts = strInput.substr(nIndexExt);
 
-    if (strExts == _T(".video") || strExts == _T(".audio"))
+    if (strExts == L".video" || strExts == L".audio")
     {
         std::wstring strInput1 = strInput.substr(0, nIndexExt);
         nIndexExt = strInput1.rfind(wchar_t('.'));
         strExts =  nIndexExt < 0 ? L"" : strInput1.substr(nIndexExt);
     }
-    if (strExts == _T(".tmp") || strExts.empty()) strExts = strDefaultExt;
+    if (strExts == L".tmp" || strExts.empty()) strExts = strDefaultExt;
 
     std::wstring strMediaName = Template + std::to_wstring(++Indexer);
 
     std::wstring strOutput = m_strDstMedia + strMediaName + strExts;
-    strMediaName  = _T("../media/") + strMediaName + strExts;
+    strMediaName  = L"../media/" + strMediaName + strExts;
 
-    // теперь нужно скопировать
+    OOX::CPath pathInput(strInput); 
+    std::wstring strPathInput = pathInput.GetPath();
+    
+    if (std::wstring::npos == strPathInput.find(m_strTempMedia))
+    {
+        return L"";
+    }
     if (strOutput != strInput)
     {
         if (NSFile::CFileBinary::Copy(strInput, strOutput) == false)
@@ -145,7 +152,6 @@ void CMediaManager::WriteAudioCollection(const std::vector<PPT::CExFilesInfo> &a
     {
         auto pathAudio = GenerateAudio(audio.m_strFilePath);
     }
-
 }
 
 bool CMediaManager::IsNeedDownload(const std::wstring &strFile)
@@ -167,11 +173,11 @@ std::wstring CorrectXmlString3(const std::wstring &str)
     {
         switch(str[pos])
         {
-        case '&':  buffer.append(_T("&amp;"));      break;
-        case '\"': buffer.append(_T("&quot;"));     break;
-        case '\'': buffer.append(_T("&apos;"));     break;
-        case '<':  buffer.append(_T("&lt;"));       break;
-        case '>':  buffer.append(_T("&gt;"));       break;
+        case '&':  buffer.append(L"&amp;");      break;
+        case '\"': buffer.append(L"&quot;");     break;
+        case '\'': buffer.append(L"&apos;");     break;
+        case '<':  buffer.append(L"&lt;");       break;
+        case '>':  buffer.append(L"&gt;");       break;
         default:   buffer.append(&str[pos], 1);	break;
         }
     }
@@ -197,8 +203,8 @@ void CRelsGenerator::Clear()
 
 void CRelsGenerator::StartMaster(int nIndexTheme, int nStartLayoutIndex, int nCountLayouts)
 {
-    std::wstring str1 = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-                           <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
+    std::wstring str1 = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+                           <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">";
 
     m_oWriter.WriteString(str1);
 
@@ -217,8 +223,8 @@ void CRelsGenerator::StartMaster(int nIndexTheme, int nStartLayoutIndex, int nCo
 
 void CRelsGenerator::StartLayout(int nIndexTheme)
 {
-    std::wstring str1 = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
-                           <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
+    std::wstring str1 = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
+                           <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">";
 
     m_oWriter.WriteString(str1);
 
@@ -264,7 +270,7 @@ void CRelsGenerator::StartSlide(int nIndexLayout, int nIndexNotes)
 
 void CRelsGenerator::CloseRels()
 {
-    std::wstring str = _T("</Relationships>");
+    std::wstring str = L"</Relationships>";
     m_oWriter.WriteString(str);
 }
 

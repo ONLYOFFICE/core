@@ -152,7 +152,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 			
 			StreamUtils::StreamSkip(lOffset, pStream);
 			
-			sExt = _T(".jpg");
+			sExt = L".jpg";
 			break;
 		}
 		case RECORD_TYPE_ESCHER_BLIP_PNG:
@@ -162,7 +162,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 
 			StreamUtils::StreamSkip(lOffset, pStream);
 
-			sExt = _T(".png");
+			sExt = L".png";
 			break;
 		}
 		case RECORD_TYPE_ESCHER_BLIP_DIB:
@@ -172,7 +172,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 			
 			StreamUtils::StreamSkip(lOffset, pStream);
 		
-			sExt = _T(".bmp");
+			sExt = L".bmp";
 			break;
 		}
 		case RECORD_TYPE_ESCHER_BLIP_TIFF:
@@ -182,7 +182,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 
 			StreamUtils::StreamSkip(lOffset, pStream);
 			
-			sExt = _T(".tif");
+			sExt = L".tif";
 			break;
 		}
 		default:

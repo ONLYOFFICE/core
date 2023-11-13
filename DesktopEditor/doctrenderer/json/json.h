@@ -8,6 +8,10 @@
 
 namespace NSJSON
 {
+	class IBaseValue;
+	// Transform C++ value to JS value
+	JSSmart<NSJSBase::CJSValue> toJS(const IBaseValue* pValue);
+
 	class JS_DECL IBaseValue
 	{
 	protected:
@@ -27,15 +31,15 @@ namespace NSJSON
 		IBaseValue();
 		virtual ~IBaseValue();
 
-	protected:
-		ValueType m_type;
-
 	public:
 		virtual void setNull();
 		virtual bool isUndefined() const;
 		virtual bool isNull() const;
-		// Transform C++ value to JS value
-		virtual JSSmart<NSJSBase::CJSValue> toJS() const = 0;
+
+		friend JSSmart<NSJSBase::CJSValue> toJS(const IBaseValue* pValue);
+
+	protected:
+		ValueType m_type;
 	};
 
 	class JS_DECL CValue : public IBaseValue
@@ -60,11 +64,11 @@ namespace NSJSON
 
 	public:
 		virtual void setNull() override;
-		// Transform C++ value to JS value
-		virtual JSSmart<NSJSBase::CJSValue> toJS() const override;
 
 	private:
 		void clear();
+
+		friend JSSmart<NSJSBase::CJSValue> toJS(const IBaseValue* pValue);
 
 	private:
 		union
@@ -87,8 +91,8 @@ namespace NSJSON
 	public:
 		// Add member to JS object when it will be serialized
 		void addMember(const IBaseValue* pValue, const std::string& name);
-		// Transform C++ object to JS object
-		virtual JSSmart<NSJSBase::CJSValue> toJS() const override;
+
+		friend JSSmart<NSJSBase::CJSValue> toJS(const IBaseValue* pValue);
 
 	private:
 		std::unordered_map<std::string, const IBaseValue*> m_values;

@@ -1,6 +1,6 @@
 //#include "gtest/gtest.h"
 #include "js_internal/js_base.h"
-#include "json/json.h"
+#include "json/serialization.h""
 
 #include <iostream>
 #include <string>
@@ -121,7 +121,7 @@ int main()
 	// null member:
 	oTextPr.m_oExtras.setNull();
 
-	JSSmart<CJSObject> jsObj = oTextPr.toJS()->toObject();
+	JSSmart<CJSObject> jsObj = toJS(&oTextPr)->toObject();
 	JSSmart<CJSObject> global = pContext->GetGlobal();
 	global->set("textPr", jsObj);
 	JSSmart<CJSValue> ret = pContext->runScript("(function () { return JSON.stringify(textPr, null, 4); })();");

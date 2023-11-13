@@ -70,7 +70,10 @@ SOURCES += \
     embed/Default.cpp
 
 # Serialize objects to JS
-HEADERS += json/json.h
+HEADERS += \
+	json/json.h \
+	json/serialization.h
+
 SOURCES += json/json.cpp
 
 include($$PWD/js_internal/js_base.pri)

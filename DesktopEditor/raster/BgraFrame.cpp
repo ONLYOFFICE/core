@@ -569,7 +569,7 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 bool CBgraFrame::Encode(BYTE*& pBuffer, int& nSize, unsigned int nFileType)
 {
 	CxImage oCxImage;
-	if (!oCxImage.CreateFromArray(m_pData, m_lWidth, m_lHeight, 32, 4 * m_lWidth, (m_lStride >= 0) ? true : false))
+	if (!oCxImage.CreateFromArray(m_pData, m_lWidth, m_lHeight, 32, 4 * m_lWidth, (m_lStride >= 0) ? true : false, !m_bIsRGBA))
 		return false;
 
 	if (CXIMAGE_FORMAT_JPG == nFileType && -1 != m_dJpegSaveQuality)

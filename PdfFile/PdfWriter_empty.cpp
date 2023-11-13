@@ -130,7 +130,7 @@ HRESULT CPdfWriter::GetTransform(double* dM11, double* dM12, double* dM21, doubl
 HRESULT CPdfWriter::ResetTransform() { return 0; }
 HRESULT CPdfWriter::AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip) { return 0; }
 HRESULT CPdfWriter::AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage) { return 0; }
-HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFieldInfo* pInfo) { return 0; }
+HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFieldInfo* pInfo, const std::wstring& wsTempDirectory) { return 0; }
 HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotFieldInfo* pFieldInfo) { return 0; }
 HRESULT CPdfWriter::DrawImage1bpp(NSImages::CPixJbig2* pImageBuffer, const unsigned int& unWidth, const unsigned int& unHeight, const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }
 HRESULT CPdfWriter::EnableBrushRect(const LONG& lEnable) { return 0; }

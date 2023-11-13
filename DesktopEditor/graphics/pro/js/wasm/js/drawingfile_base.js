@@ -563,9 +563,10 @@
 			// Border Dash Pattern
 			if (rec["border"] == 2)
 			{
+				let n = reader.readInt();
 				rec["dashed"] = [];
-				rec["dashed"].push(reader.readDouble());
-				rec["dashed"].push(reader.readDouble());
+				for (let i = 0; i < n; ++i)
+					rec["dashed"].push(reader.readDouble());
 			}
 		}
 		// Date of last change - M

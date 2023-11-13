@@ -178,16 +178,13 @@ private:
 		{
 			nType = 0;
 			dWidth = 1;
-			dDashesAlternating = 3;
-			dGaps = 3;
 		}
 
 		void ToWASM(NSWasm::CData& oRes);
 
 		BYTE nType;
 		double dWidth;
-		double dDashesAlternating;
-		double dGaps;
+		std::vector<double> arrDash;
 	};
 	CBorderType* getBorder(Object* oBorder, bool bBSorBorder);
 

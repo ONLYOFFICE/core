@@ -175,7 +175,7 @@ namespace PdfWriter
 		}
 
 		void SetRect(const TRect& oRect);
-		void SetBorder(BYTE nType, double dWidth, double dDashesAlternating = 0.0, double dGaps = 0.0);
+		void SetBorder(BYTE nType, double dWidth, const std::vector<double>& arrDash);
 		void SetAnnotFlag(const int& nAnnotFlag);
 		void SetPage(CPage* pPage);
 		void SetBE(BYTE nType, const double& dBE);

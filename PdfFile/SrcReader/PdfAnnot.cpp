@@ -1922,10 +1922,13 @@ CAnnot::CBorderType* CAnnot::getBorder(Object* oBorder, bool bBSorBorder)
 		oV.free();
 		if (oBorder->dictLookup("D", &oV)->isArray())
 		{
-			Object oObj2;
-			ARR_GET_NUM(oV, 0, pBorderType->dDashesAlternating);
-			pBorderType->dGaps = pBorderType->dDashesAlternating;
-			ARR_GET_NUM(oV, 1, pBorderType->dGaps);
+			for (int j = 0; j < oV.arrayGetLength(); ++j)
+			{
+				Object oObj2;
+				if (oV.arrayGet(j, &oObj2)->isNum())
+					pBorderType->arrDash.push_back(oObj2.getNum());
+				oObj2.free();
+			}
 		}
 		oV.free();
 	}
@@ -1940,8 +1943,13 @@ CAnnot::CBorderType* CAnnot::getBorder(Object* oBorder, bool bBSorBorder)
 		if (oBorder->arrayGetLength() > 3 && oBorder->arrayGet(3, &oObj)->isArray() && oObj.arrayGetLength() > 1)
 		{
 			pBorderType->nType = annotBorderDashed;
-			ARR_GET_NUM(oObj, 0, pBorderType->dDashesAlternating);
-			ARR_GET_NUM(oObj, 1, pBorderType->dGaps);
+			for (int j = 0; j < oObj.arrayGetLength(); ++j)
+			{
+				Object oObj2;
+				if (oObj.arrayGet(j, &oObj2)->isNum())
+					pBorderType->arrDash.push_back(oObj2.getNum());
+				oObj2.free();
+			}
 		}
 		oObj.free();
 	}
@@ -2316,8 +2324,9 @@ void CAnnot::CBorderType::ToWASM(NSWasm::CData& oRes)
 	oRes.AddDouble(dWidth);
 	if (nType == annotBorderDashed)
 	{
-		oRes.AddDouble(dDashesAlternating);
-		oRes.AddDouble(dGaps);
+		oRes.AddInt(arrDash.size());
+		for (int i = 0; i < arrDash.size(); ++i)
+			oRes.AddDouble(arrDash[i]);
 	}
 }
 

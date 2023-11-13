@@ -70,6 +70,60 @@ namespace PdfWriter
 		"Check", "Checkmark", "Circle", "Comment", "Cross", "CrossHairs", "Help", "Insert", "Key", "NewParagraph", "Note", "Paragraph", "RightArrow", "RightPointer", "Star", "UpArrow", "UpLeftArrow"
 	};
 
+	void AddToVectorD(CDictObject* pObj, const std::string& sName, const std::vector<double>& arrV)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		pObj->Add(sName, pArray);
+
+		for (const double& dV : arrV)
+			pArray->Add(dV);
+	}
+	std::string AddLE(const BYTE& nLE)
+	{
+		std::string sValue;
+		switch (nLE)
+		{
+		case 0:
+		{ sValue = "Square"; break; }
+		case 1:
+		{ sValue = "Circle"; break; }
+		case 2:
+		{ sValue = "Diamond"; break; }
+		case 3:
+		{ sValue = "OpenArrow"; break; }
+		case 4:
+		{ sValue = "ClosedArrow"; break; }
+		case 5:
+		{ sValue = "None"; break; }
+		case 6:
+		{ sValue = "Butt"; break; }
+		case 7:
+		{ sValue = "ROpenArrow"; break; }
+		case 8:
+		{ sValue = "RClosedArrow"; break; }
+		case 9:
+		{ sValue = "Slash"; break; }
+		}
+
+		return sValue;
+	}
+	void AddRD(CDictObject* pObj, const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		pObj->Add("RD", pArray);
+
+		pArray->Add(dRD1);
+		pArray->Add(dRD2);
+		pArray->Add(dRD3);
+		pArray->Add(dRD4);
+	}
+
 	//----------------------------------------------------------------------------------------
 	// CAnnotation
 	//----------------------------------------------------------------------------------------
@@ -109,7 +163,7 @@ namespace PdfWriter
 			pArray->Add(oRect.fTop);
 		}
 	}
-	void CAnnotation::SetBorder(BYTE nType, double dWidth, double dDashesAlternating, double dGaps)
+	void CAnnotation::SetBorder(BYTE nType, double dWidth, const std::vector<double>& arrDash)
 	{
 		if (dWidth <= 0)
 			return;
@@ -125,15 +179,7 @@ namespace PdfWriter
 
 		EBorderSubtype eSubtype = EBorderSubtype(nType);
 		if (border_subtype_Dashed == eSubtype)
-		{
-			CArrayObject* pDash = new CArrayObject();
-			if (pDash)
-			{
-				pBorderStyleDict->Add("D", pDash);
-				pDash->Add(dDashesAlternating);
-				pDash->Add(dGaps);
-			}
-		}
+			AddToVectorD(this, "D", arrDash);
 
 		switch (eSubtype)
 		{
@@ -191,17 +237,6 @@ namespace PdfWriter
 	{
 		std::string sValue = U_TO_UTF8(wsLM);
 		Add("M", new CStringObject(sValue.c_str()));
-	}
-	void AddToVectorD(CDictObject* pObj, const std::string& sName, const std::vector<double>& arrV)
-	{
-		CArrayObject* pArray = new CArrayObject();
-		if (!pArray)
-			return;
-
-		pObj->Add(sName, pArray);
-
-		for (const double& dV : arrV)
-			pArray->Add(dV);
 	}
 	void CAnnotation::SetC(const std::vector<double>& arrC)
 	{
@@ -481,35 +516,6 @@ namespace PdfWriter
 	{
 		Add("LLO", dLLO);
 	}
-	std::string AddLE(const BYTE& nLE)
-	{
-		std::string sValue;
-		switch (nLE)
-		{
-		case 0:
-		{ sValue = "Square"; break; }
-		case 1:
-		{ sValue = "Circle"; break; }
-		case 2:
-		{ sValue = "Diamond"; break; }
-		case 3:
-		{ sValue = "OpenArrow"; break; }
-		case 4:
-		{ sValue = "ClosedArrow"; break; }
-		case 5:
-		{ sValue = "None"; break; }
-		case 6:
-		{ sValue = "Butt"; break; }
-		case 7:
-		{ sValue = "ROpenArrow"; break; }
-		case 8:
-		{ sValue = "RClosedArrow"; break; }
-		case 9:
-		{ sValue = "Slash"; break; }
-		}
-
-		return sValue;
-	}
 	void CLineAnnotation::SetLE(const BYTE& nLE1, const BYTE& nLE2)
 	{
 		CArrayObject* pArray = new CArrayObject();
@@ -596,19 +602,6 @@ namespace PdfWriter
 	{
 		std::string sValue = U_TO_UTF8(wsDS);
 		Add("DS", new CStringObject(sValue.c_str()));
-	}
-	void AddRD(CDictObject* pObj, const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
-	{
-		CArrayObject* pArray = new CArrayObject();
-		if (!pArray)
-			return;
-
-		pObj->Add("RD", pArray);
-
-		pArray->Add(dRD1);
-		pArray->Add(dRD2);
-		pArray->Add(dRD3);
-		pArray->Add(dRD4);
 	}
 	void CFreeTextAnnotation::SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
 	{

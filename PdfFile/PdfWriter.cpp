@@ -1056,7 +1056,7 @@ HRESULT CPdfWriter::AddHyperlink(const double& dX, const double& dY, const doubl
 	NSUnicodeConverter::CUnicodeConverter conv;
 	PdfWriter::CAnnotation* pAnnot = m_pDocument->CreateUriLinkAnnot(PdfWriter::TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)), conv.SASLprepToUtf8(wsUrl).c_str());
 	m_pPage->AddAnnotation(pAnnot);
-	pAnnot->SetBorder(0, 0);
+	pAnnot->SetBorder(0, 0, {});
 	return S_OK;
 }
 HRESULT CPdfWriter::AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage)
@@ -1805,9 +1805,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	if (nFlags & (1 << 4))
 	{
 		BYTE nType;
-		double dWidth, d1, d2;
-		oInfo.GetBorder(nType, dWidth, d1, d2);
-		pAnnot->SetBorder(nType, dWidth, d1, d2);
+		double dWidth;
+		std::vector<double> arrDash;
+		oInfo.GetBorder(nType, dWidth, arrDash);
+		pAnnot->SetBorder(nType, dWidth, arrDash);
 	}
 	if (nFlags & (1 << 5))
 		pAnnot->SetLM(oInfo.GetLM());
@@ -2063,6 +2064,73 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 			switch (pAction->nActionType)
 			{
+			case 1:
+			{
+				PdfWriter::CActionGoTo* ppA = (PdfWriter::CActionGoTo*)pA;
+				PdfWriter::CPage* pPageD = m_pDocument->GetPage(pAction->nInt1);
+				PdfWriter::CDestination* pDest = m_pDocument->CreateDestination(pAction->nInt1);
+				ppA->SetDestination(pDest);
+
+				switch (pAction->nKind)
+				{
+				case 0:
+				{
+					pDest->SetXYZ(pAction->dD[0], pAction->dD[1], pAction->dD[2]);
+					break;
+				}
+				case 1:
+				{
+					pDest->SetFit();
+					break;
+				}
+				case 2:
+				{
+					pDest->SetFitH(pAction->dD[1]);
+					break;
+				}
+				case 3:
+				{
+					pDest->SetFitV(pAction->dD[0]);
+					break;
+				}
+				case 4:
+				{
+					pDest->SetFitR(pAction->dD[0], pAction->dD[1], pAction->dD[2], pAction->dD[3]);
+					break;
+				}
+				case 5:
+				{
+					pDest->SetFitB();
+					break;
+				}
+				case 6:
+				{
+					pDest->SetFitBH(pAction->dD[1]);
+					break;
+				}
+				case 7:
+				{
+					pDest->SetFitBV(pAction->dD[0]);
+					break;
+				}
+				}
+			}
+			case 6:
+			{
+				PdfWriter::CActionURI* ppA = (PdfWriter::CActionURI*)pA;
+				ppA->SetURI(pAction->wsStr1);
+			}
+			case 9:
+			{
+				PdfWriter::CActionHide* ppA = (PdfWriter::CActionHide*)pA;
+				ppA->SetH(pAction->nKind);
+				ppA->SetT(pAction->arrStr);
+			}
+			case 10:
+			{
+				PdfWriter::CActionNamed* ppA = (PdfWriter::CActionNamed*)pA;
+				ppA->SetN(pAction->wsStr1);
+			}
 			case 12:
 			{
 				PdfWriter::CActionResetForm* ppA = (PdfWriter::CActionResetForm*)pA;
@@ -2824,7 +2892,7 @@ void CPdfWriter::AddLink(PdfWriter::CPage* pPage, const double& dX, const double
 	PdfWriter::CAnnotation* pAnnot = m_pDocument->CreateLinkAnnot(PdfWriter::TRect(MM_2_PT(dX), pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), pPage->GetHeight() - MM_2_PT(dY + dH)), pDestination);
 	if (pAnnot && pPage)
 		pPage->AddAnnotation(pAnnot);
-	pAnnot->SetBorder(0, 0);
+	pAnnot->SetBorder(0, 0, {});
 }
 bool CPdfWriter::IsValid()
 {

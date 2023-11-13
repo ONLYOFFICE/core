@@ -25,6 +25,16 @@ namespace NSJSON
 			}
 			ret = jsObj->toValue();
 		}
+		else if (type == IBaseValue::vtArray)
+		{
+			const CArray* pArray = static_cast<const CArray*>(pValue);
+			JSSmart<NSJSBase::CJSArray> jsArr = NSJSBase::CJSContext::createArray(0);
+			for (const IBaseValue* pArrValue : pArray->m_values)
+			{
+				jsArr->add(toJS(pArrValue).GetPointer());
+			}
+			ret = jsArr->toValue();
+		}
 		else
 		{
 			// primitive type

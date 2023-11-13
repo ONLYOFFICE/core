@@ -5,6 +5,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace NSJSON
 {
@@ -24,11 +25,13 @@ namespace NSJSON
 			vtDouble,
 			vtStringA,
 			vtStringW,
+			vtArray,
 			vtObject
 		};
 
 	public:
 		IBaseValue();
+		IBaseValue(ValueType type);
 		virtual ~IBaseValue();
 
 	public:
@@ -42,6 +45,7 @@ namespace NSJSON
 		ValueType m_type;
 	};
 
+	// for primitive values
 	class JS_DECL CValue : public IBaseValue
 	{
 	public:
@@ -49,7 +53,11 @@ namespace NSJSON
 		CValue(const CValue& other);
 		CValue(CValue&& other) = delete;
 		// TODO: move constructor and assignment operator ???
-		// TODO: constructors from value ???
+		CValue(const bool& value);
+		CValue(const int& value);
+		CValue(const double& value);
+		CValue(const std::string& str);
+		CValue(const std::wstring& wstr);
 		virtual ~CValue();
 
 		CValue& operator=(const CValue& other);
@@ -81,12 +89,34 @@ namespace NSJSON
 		};
 	};
 
+	class JS_DECL CArray : public IBaseValue
+	{
+	public:
+		CArray();
+		// elements get deleted on array destruction
+		virtual ~CArray();
+
+	public:
+		void add(IBaseValue* value);
+		void addNull();
+		void addUndefined();
+		int getCount() const;
+
+		IBaseValue* operator[](int index);
+		const IBaseValue* operator[](int index) const;
+
+		friend JSSmart<NSJSBase::CJSValue> toJS(const IBaseValue* pValue);
+
+	private:
+		std::vector<IBaseValue*> m_values;
+	};
+
 	// extend this class to make custom objects serializable to JS
 	class JS_DECL CObject : public IBaseValue
 	{
 	public:
-		CObject();
-		virtual ~CObject();
+		CObject() = default;
+		virtual ~CObject() = default;
 
 	public:
 		// Add member to JS object when it will be serialized

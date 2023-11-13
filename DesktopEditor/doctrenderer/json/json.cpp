@@ -6,6 +6,10 @@ namespace NSJSON
 	{
 	}
 
+	IBaseValue::IBaseValue(ValueType type) : m_type(type)
+	{
+	}
+
 	IBaseValue::~IBaseValue()
 	{
 	}
@@ -27,6 +31,31 @@ namespace NSJSON
 
 	CValue::CValue()
 	{
+	}
+
+	CValue::CValue(const bool& value) : IBaseValue(vtBoolean)
+	{
+		m_bool = value;
+	}
+
+	CValue::CValue(const int& value) : IBaseValue(vtInteger)
+	{
+		m_int = value;
+	}
+
+	CValue::CValue(const double& value) : IBaseValue(vtDouble)
+	{
+		m_double = value;
+	}
+
+	CValue::CValue(const std::string& str) : IBaseValue(vtStringA)
+	{
+		new (&m_string) std::string(str);
+	}
+
+	CValue::CValue(const std::wstring& wstr) : IBaseValue(vtStringW)
+	{
+		new (&m_wstring) std::wstring(wstr);
 	}
 
 	CValue::CValue(const CValue& other)
@@ -127,12 +156,49 @@ namespace NSJSON
 		}
 	}
 
-	CObject::CObject()
+	CArray::CArray() : IBaseValue(vtArray)
 	{
 	}
 
-	CObject::~CObject()
+	CArray::~CArray()
 	{
+		for (IBaseValue* pValue : m_values)
+		{
+			delete pValue;
+		}
+	}
+
+	void CArray::add(IBaseValue* value)
+	{
+		m_values.push_back(value);
+	}
+
+	void CArray::addNull()
+	{
+		CValue* pValue = new CValue();
+		pValue->setNull();
+		m_values.push_back(pValue);
+	}
+
+	void CArray::addUndefined()
+	{
+		CValue* pValue = new CValue();
+		m_values.push_back(pValue);
+	}
+
+	int CArray::getCount() const
+	{
+		return static_cast<int>(m_values.size());
+	}
+
+	IBaseValue* CArray::operator[](int index)
+	{
+		return m_values[index];
+	}
+
+	const IBaseValue* CArray::operator[](int index) const
+	{
+		return m_values[index];
 	}
 
 	void CObject::addMember(const IBaseValue* pValue, const std::string& name)

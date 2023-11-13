@@ -86,6 +86,7 @@ public:
 	CFontFamily m_oFont;
 	CColorRGBA m_oColor;
 	NSJSON::CObject m_oExtras;
+	NSJSON::CArray m_arrNumbers;
 
 public:
 	CTextParameters()
@@ -94,6 +95,7 @@ public:
 		addMember(&m_oFont, "font");
 		addMember(&m_oColor, "color");
 		addMember(&m_oExtras, "extras");
+		addMember(&m_arrNumbers, "numbers");
 	}
 };
 
@@ -120,6 +122,14 @@ int main()
 //	oTextPr.m_oFont.m_bItalic = true;
 	// null member:
 	oTextPr.m_oExtras.setNull();
+	oTextPr.m_arrNumbers.add(new NSJSON::CValue(10000));
+	oTextPr.m_arrNumbers.addNull();
+	oTextPr.m_arrNumbers.add(new NSJSON::CValue(42));
+	oTextPr.m_arrNumbers.add(new NSJSON::CValue(0));
+	NSJSON::CArray* pArray = new NSJSON::CArray();
+	pArray->add(new NSJSON::CValue(std::string("test!")));
+	pArray->addNull();
+	oTextPr.m_arrNumbers.add(pArray);
 
 	JSSmart<CJSObject> jsObj = toJS(&oTextPr)->toObject();
 	JSSmart<CJSObject> global = pContext->GetGlobal();

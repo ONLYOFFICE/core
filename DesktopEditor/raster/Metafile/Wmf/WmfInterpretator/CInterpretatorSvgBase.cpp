@@ -523,15 +523,8 @@ namespace MetaFile
 
 		double dStrokeWidth = std::fabs(pPen->GetWidth());
 
-		if (0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (pPen->GetStyle() & PS_TYPE_MASK)))
-		{
-			double dScale = m_pParser->GetDpi() / 96.;
-
-			if (0 != m_oViewport.GetWidth() && 0 != m_oSizeWindow.X)
-				dScale *= m_oViewport.GetWidth() / m_oSizeWindow.X;
-
-			dStrokeWidth = dScale / std::fabs(m_pParser->GetTransform()->M11);
-		}
+		if (PS_COSMETIC == (pPen->GetStyle() & PS_TYPE_MASK) || 0 == dStrokeWidth)
+			dStrokeWidth = m_oViewport.GetWidth() / m_oSizeWindow.X * m_pParser->GetDpi() / 96.;
 
 		arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
 
@@ -929,12 +922,11 @@ namespace MetaFile
 		if (NULL != m_pParser->GetPen())
 		{
 			dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
-
-			if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
-				dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
+	
+			if (PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK) || 0 == dStrokeWidth)
+				dStrokeWidth = m_oViewport.GetWidth() / m_oSizeWindow.X * m_pParser->GetDpi() / 96.;
 		}
-
-		if (0 != m_oViewport.GetWidth() && 0 != m_oSizeWindow.X)
+		else if (0 != m_oViewport.GetWidth() && 0 != m_oSizeWindow.X)
 			dStrokeWidth *= m_oViewport.GetWidth() / m_oSizeWindow.X;
 
 		std::wstring wsStrokeColor = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetBrush()->GetColor()) + L"," + ConvertToWString(m_pParser->GetBrush()->GetAlpha(), 0) + L")";
@@ -1021,12 +1013,11 @@ namespace MetaFile
 		if (NULL != m_pParser->GetPen())
 		{
 			dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
-
-			if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
-				dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
+	
+			if (PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK) || 0 == dStrokeWidth)
+				dStrokeWidth = m_oViewport.GetWidth() / m_oSizeWindow.X * m_pParser->GetDpi() / 96.;
 		}
-
-		if (0 != m_oViewport.GetWidth() && 0 != m_oSizeWindow.X)
+		else if (0 != m_oViewport.GetWidth() && 0 != m_oSizeWindow.X)
 			dStrokeWidth *= m_oViewport.GetWidth() / m_oSizeWindow.X;
 
 		std::wstring wsWidth  = ConvertToWString(dStrokeWidth * unWidth);

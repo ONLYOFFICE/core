@@ -1200,15 +1200,12 @@ namespace MetaFile
 
 			double dWidth = pPen->GetWidth();
 
-			if (0 == dWidth || (1 == dWidth && PS_COSMETIC == ulPenType))
+			if (PS_COSMETIC == ulPenType || 0 == dWidth)
 			{
 				double dRendererDpiX;
 				m_pRenderer->get_DpiX(&dRendererDpiX);
 
-				dWidth = 25.4 / dRendererDpiX;
-
-				if (PS_COSMETIC == ulPenType)
-					dWidth /= m_pFile->GetTransform()->M11 / (m_pFile->GetDpi() / 96.);
+				dWidth = 25.4 / 96. * m_pFile->GetDpi() / dRendererDpiX;
 
 				nStartCapStyle = nEndCapStyle = Aggplus::LineCapFlat;
 				nJoinStyle = Aggplus::LineJoinMiter;

@@ -396,16 +396,6 @@ namespace MetaFile
 			X *= scale;
 			Y *= scale;
 		}
-
-		friend bool operator!=(const TPoint<T>& oLeftRect, const TPoint<T>& oRightValue)
-		{
-			return oLeftRect.X != oRightValue.X || oLeftRect.Y != oRightValue.Y;
-		}
-		
-		friend bool operator==(const TPoint<T>& oLeftRect, const TPoint<T>& oRightValue)
-		{
-			return oLeftRect.X == oRightValue.X && oLeftRect.Y == oRightValue.Y;
-		}
 	};
 
 	typedef TPoint<int>    TPointL;
@@ -414,6 +404,17 @@ namespace MetaFile
 
 	typedef TPoint<int>    TSizeL;
 	typedef TPoint<double> TScale;
+
+	template <typename T>
+	bool operator==(const TPoint<T>& oLeftValue, const TPoint<T>& oRightValue)
+	{
+		return oLeftValue.X == oRightValue.X && oLeftValue.Y == oRightValue.Y;
+	}
+
+	bool operator==(const TPoint<double>& oLeftValue, const TPoint<double>& oRightValue)
+	{
+		return std::abs(oLeftValue.X - oRightValue.X) <= DBL_EPSILON && std::abs(oLeftValue.Y - oRightValue.Y) <= DBL_EPSILON;
+	}
 
 	template<typename T>
 	struct TRect
@@ -467,19 +468,8 @@ namespace MetaFile
 			Top    *= scale;
 			Right  *= scale;
 			Bottom *= scale;
-			
-			return *this;
-		}
 
-		friend bool operator!=(const TRect<T>& oLeftRect, const TRect<T>& oRightValue)
-		{
-			return oLeftRect.Left  != oRightValue.Left  || oLeftRect.Top    != oRightValue.Top    ||
-			       oLeftRect.Right != oRightValue.Right || oLeftRect.Bottom != oRightValue.Bottom;
-		}
-		friend bool operator==(const TRect<T>& oLeftRect, const TRect<T>& oRightValue)
-		{
-			return oLeftRect.Left  == oRightValue.Left  && oLeftRect.Top    == oRightValue.Top    &&
-			       oLeftRect.Right == oRightValue.Right && oLeftRect.Bottom == oRightValue.Bottom;
+			return *this;
 		}
 
 		bool Empty() const
@@ -520,6 +510,21 @@ namespace MetaFile
 	typedef TRect <short>  TRectS;
 	typedef TRect <double> TRectD;
 
+	template<typename T>
+	bool operator==(const TRect<T>& oLeftValue, const TRect<T>& oRightValue)
+	{
+		return oLeftValue.Left  == oRightValue.Left  && oLeftValue.Top    == oRightValue.Top    &&
+		       oLeftValue.Right == oRightValue.Right && oLeftValue.Bottom == oRightValue.Bottom;
+	}
+
+	bool operator==(const TRect <double>& oLeftValue, const TRect <double>& oRightValue)
+	{
+		return std::abs(oLeftValue.Left   - oRightValue.Right)  <= DBL_EPSILON &&
+		       std::abs(oLeftValue.Top    - oRightValue.Top)    <= DBL_EPSILON &&
+		       std::abs(oLeftValue.Right  - oRightValue.Right)  <= DBL_EPSILON &&
+		       std::abs(oLeftValue.Bottom - oRightValue.Bottom) <= DBL_EPSILON;
+	}
+
 	struct TRGBA
 	{
 		unsigned char r;
@@ -551,7 +556,7 @@ namespace MetaFile
 		TXForm();
 		TXForm(const TXForm& oXForm);
 		TXForm(double m11, double m12, double m21, double m22, double dx, double dy);
-		
+
 		void Init();
 		void Copy(const TXForm* pOther);
 		void Multiply(TXForm &oOther, unsigned int ulMode);

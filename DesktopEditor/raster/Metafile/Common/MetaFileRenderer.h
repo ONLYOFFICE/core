@@ -1200,7 +1200,7 @@ namespace MetaFile
 
 			double dWidth = pPen->GetWidth();
 
-			if (PS_COSMETIC == ulPenType || 0 == dWidth)
+			if (PS_COSMETIC == ulPenType || Equals(0, dWidth))
 			{
 				double dRendererDpiX;
 				m_pRenderer->get_DpiX(&dRendererDpiX);
@@ -1241,7 +1241,7 @@ namespace MetaFile
 
 				double dPixWidth = 0;
 
-				if (0 == pPen->GetWidth() || (1 == pPen->GetWidth() && PS_COSMETIC == ulPenType))
+				if (PS_COSMETIC == ulPenType || Equals(0, dWidth))
 				{
 					dPixWidth = dWidth;
 				}
@@ -1249,7 +1249,7 @@ namespace MetaFile
 				{
 					dPixWidth = dWidth * 25.4 / 72.;
 
-					if (1 == pPen->GetWidth() && PS_COSMETIC == ulPenType)
+					if (PS_COSMETIC == ulPenType || Equals(0, dWidth))
 						dPixWidth /= m_pFile->GetTransform()->M11 / (m_pFile->GetDpi() / 96.);
 				}
 

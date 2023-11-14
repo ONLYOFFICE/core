@@ -1183,7 +1183,6 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 	bool isBold   = m_oFont.IsBold();
 	bool isItalic = m_oFont.IsItalic();
 
-
 	if (oInfo.IsTextField())
 	{
 		const CFormFieldInfo::CTextFormPr* pPr = oInfo.GetTextFormPr();
@@ -1675,7 +1674,6 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 		pField->SetFormat(pPr->GetFormat());
 	}
 
-
 	// Выставляем имя в конце, потому что там возможно копирование настроек поля в новое родительское поле, поэтому к текущему моменту
 	// все настройки должны быть выставлены
 	if (!bRadioButton)
@@ -2019,20 +2017,22 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		PdfWriter::CWidgetAnnotation* pWidgetAnnot = (PdfWriter::CWidgetAnnotation*)pAnnot;
 
 		put_FontName(pPr->GetFontName());
-		put_FontStyle(pPr->GetFontStyle());
+		int nStyle = pPr->GetFontStyle();
+		double dFontSize = pPr->GetFontSizeAP();
+		put_FontStyle(nStyle);
 
 		if (m_bNeedUpdateTextFont)
 			UpdateFont();
 
-		// TODO почему важно добавить CFontTrueType, а не CFontCidTrueType
 		PdfWriter::CFontTrueType* pFontTT = NULL;
 		if (m_pFont)
 			pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
 
 		pWidgetAnnot->SetDocument(m_pDocument);
-		pWidgetAnnot->SetDA(pFontTT, pPr->GetFontSize(), pPr->GetFontSizeAP(), pPr->GetTC());
+		pWidgetAnnot->SetDA(pFontTT, pPr->GetFontSize(), dFontSize, pPr->GetTC());
 
-		pWidgetAnnot->SetQ(pPr->GetQ());
+		BYTE nAlign = pPr->GetQ();
+		pWidgetAnnot->SetQ(nAlign);
 		int nWidgetFlag = pPr->GetFlag();
 		pWidgetAnnot->SetFlag(nWidgetFlag);
 
@@ -2146,6 +2146,9 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			pWidgetAnnot->AddAction(pA);
 		}
 
+		bool isBold   = (nStyle & 1 ? true : false);
+		bool isItalic = (nStyle & 2 ? true : false);
+
 		if (oInfo.IsButtonWidget())
 		{
 			CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetButtonWidgetPr();
@@ -2189,14 +2192,119 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetTextWidgetPr();
 			PdfWriter::CTextWidget* pTextWidget = (PdfWriter::CTextWidget*)pAnnot;
 
+			std::wstring wsValue;
 			if (nFlags & (1 << 9))
-				pTextWidget->SetV(pPr->GetV());
+			{
+				wsValue = pPr->GetV();
+				pTextWidget->SetV(wsValue);
+			}
+			unsigned int unMaxLen = 0;
 			if (nFlags & (1 << 10))
-				pTextWidget->SetMaxLen(pPr->GetMaxLen());
+			{
+				unMaxLen = pPr->GetMaxLen();
+				pTextWidget->SetMaxLen(unMaxLen);
+			}
 			if (nWidgetFlag & (1 << 25))
 				pTextWidget->SetRV(pPr->GetRV());
 
-			pTextWidget->CreateAP();
+			// Коды, шрифты, количество
+			unsigned int unLen;
+			unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsValue, unLen);
+			unsigned short* pCodes = new unsigned short[unLen];
+			PdfWriter::CFontCidTrueType** ppFonts = new PdfWriter::CFontCidTrueType*[unLen];
+
+			for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
+			{
+				unsigned int unUnicode = pUnicodes[unIndex];
+
+				if (!m_pFont->HaveChar(unUnicode))
+				{
+					std::wstring wsFontFamily   = pAppFonts->GetFontBySymbol(unUnicode);
+					PdfWriter::CFontCidTrueType* pTempFont = GetFont(wsFontFamily, isBold, isItalic);
+					if (pTempFont)
+					{
+						pCodes[unIndex]  = pTempFont->EncodeUnicode(unUnicode);
+						ppFonts[unIndex] = pTempFont;
+						continue;
+					}
+				}
+
+				pCodes[unIndex]  = m_pFont->EncodeUnicode(unUnicode);
+				ppFonts[unIndex] = m_pFont;
+			}
+
+			double _dY = pPage->GetHeight() - dY1;
+			double _dB = pPage->GetHeight() - dY2;
+			double dMargin   = 2; // Отступ используемый в Adobe
+			double dBaseLine = dY2 - dY1; // TODO -BaseLineOffset
+			double dShiftX   = dMargin;
+
+			bool isComb = pTextWidget->IsCombFlag();
+			double dFontSize = dFontSize;
+
+			// TODO PlaceHolder заполнитель без значения
+
+			if (!isComb && pTextWidget->IsMultiLine())
+			{
+
+			}
+			else
+			{
+				double* pShifts = NULL;
+				unsigned int unShiftsCount = 0;
+
+				if (isComb)
+				{
+					// TODO для безопасности перевыставить в Ff DoNotScroll=true, DoNotSpellCheck=true, Multiline=false
+
+					unShiftsCount = unLen;
+					pShifts = new double[unShiftsCount];
+					if (pShifts && unShiftsCount)
+					{
+						// Сдвиг нулевой для comb форм и не забываем, что мы к ширине добавили 2 * dMargin
+						dShiftX = 0;
+						unsigned int unCellsCount = std::max(unShiftsCount, unMaxLen);
+						double dPrevW = 0;
+						double dCellW = (dX2 - dX1 + 2 * dMargin) / unCellsCount;
+
+						if (0 == nAlign && unShiftsCount)
+							dPrevW = (unCellsCount - unShiftsCount) * dCellW;
+
+						for (unsigned int unIndex = 0; unIndex < unShiftsCount; ++unIndex)
+						{
+							unsigned short ushCode = pCodes[unIndex];
+							double dGlyphWidth = ppFonts[unIndex]->GetGlyphWidth(ushCode) / 1000.0 * dFontSize;
+							double dTempShift = (dCellW - dGlyphWidth) / 2;
+							pShifts[unIndex] = dPrevW + dTempShift;
+							dPrevW = dCellW - dTempShift;
+						}
+					}
+				}
+				else if (0 == nAlign || 2 == nAlign)
+				{
+					double dSumWidth = 0;
+					for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
+					{
+						unsigned short ushCode = pCodes[unIndex];
+						double dLetterWidth    = ppFonts[unIndex]->GetWidth(ushCode) / 1000.0 * dFontSize;
+						dSumWidth += dLetterWidth;
+					}
+
+					if (0 == nAlign && dX2 - dX1 - dSumWidth > 0)
+						dShiftX += dX2 - dX1 - dSumWidth;
+					else if (2 == nAlign && (dX2 - dX1 - dSumWidth) / 2 > 0)
+						dShiftX += (dX2 - dX1 - dSumWidth) / 2;
+				}
+
+				// TODO переделать запись внешнего вида с CreateAP на SetAP
+				pTextWidget->SetAP(wsValue, pCodes, unLen, m_pFont, 1.0, m_oFont.GetSize(), dShiftX, dBaseLine, ppFonts, pShifts);
+				// pTextWidget->CreateAP();
+				RELEASEARRAYOBJECTS(pShifts);
+			}
+
+			RELEASEARRAYOBJECTS(pUnicodes);
+			RELEASEARRAYOBJECTS(pCodes);
+			RELEASEARRAYOBJECTS(ppFonts);
 		}
 		else if (oInfo.IsChoiceWidget())
 		{

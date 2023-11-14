@@ -159,6 +159,9 @@ namespace PdfWriter
 		double m_dPageHeight = 0;
 		CDocument* m_pDocument;
 
+		bool bHaveBorder;
+		double dBorderWidth;
+
 	public:
 		EDictType GetDictType() const
 		{
@@ -183,12 +186,15 @@ namespace PdfWriter
 		void SetNM(const std::wstring& wsNM);
 		void SetLM(const std::wstring& wsLM);
 		void SetC(const std::vector<double>& arrC);
+
 		// TODO AP Необходимо генерировать внешний вид аннотации как у Widget
 		virtual void CreateAP();
 		TRect GetRect() { return m_oRect; }
 		void SetXref(CXref* pXref) { m_pXref = pXref; }
 		void SetDocument(CDocument* pDocument);
 		CDocument* GetDocument();
+		bool HaveBorder() { return bHaveBorder; }
+		double GetBorderWidth() { return dBorderWidth; }
 	};
 	class CPopupAnnotation : public CAnnotation
 	{
@@ -377,6 +383,9 @@ namespace PdfWriter
 		CDictObject* m_pA;
 		std::string m_sDAforAP;
 
+		std::vector<double> m_arrBC;
+		std::vector<double> m_arrBG;
+
 		void CheckMK();
 
 	public:
@@ -399,6 +408,8 @@ namespace PdfWriter
 		void AddAction(CAction* pAction);
 
 		std::string GetDAforAP() { return m_sDAforAP; }
+		std::string GetBGforAP();
+		std::string GetBCforAP();
 	};
 	class CButtonWidget : public CWidgetAnnotation
 	{
@@ -447,7 +458,11 @@ namespace PdfWriter
 		void SetRV(const std::wstring& wsRV);
 
 		void CreateAP() override;
+		void SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, const double& dAlpha, double dFontSize, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts);
 		std::string GetV() { return m_sV; }
+		bool IsCombFlag();
+		bool IsMultiLine();
+		int GetMaxLen();
 	};
 	class CChoiceWidget : public CWidgetAnnotation
 	{

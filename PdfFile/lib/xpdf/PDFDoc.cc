@@ -7,6 +7,7 @@
 //========================================================================
 
 #include <aconf.h>
+#include "../../../DesktopEditor/common/Directory.h"
 
 #ifdef USE_GCC_PRAGMAS
 #pragma implementation
@@ -266,6 +267,76 @@ GBool PDFDoc::setup(GString *ownerPassword, GString *userPassword) {
 
   // check header
   checkHeader();
+
+  // TEST
+  if (false)
+  {
+	  char hdrBuf[headerSearchSize + 1];
+	  memset(hdrBuf, 0, headerSearchSize + 1);
+	  str->getBlock(hdrBuf, headerSearchSize);
+
+	  int i;
+	  for (i = 0; i < headerSearchSize - 5; ++i)
+	  {
+		  if (!strncmp(&hdrBuf[i], "%\315\312\322\251", 5))
+		  {
+			  break;
+		  }
+	  }
+
+	  if (i < headerSearchSize - 5)
+	  {
+		  Object oObj;
+		  Parser* parser = new Parser(NULL, new Lexer(NULL, str->makeSubStream(str->getStart() + i, gFalse, 0, &oObj)), gTrue);
+		  parser->getObj(&oObj, gTrue)->isInt(); oObj.free();
+		  parser->getObj(&oObj, gTrue)->isInt(); oObj.free();
+		  parser->getObj(&oObj, gTrue)->isCmd("obj"); oObj.free();
+
+		  if (parser->getObj(&oObj)->isStream())
+		  {
+			  Stream* sData = oObj.getStream();
+			  NSFile::CFileBinary oFile;
+			  if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/res.png"))
+			  {
+				  int nLength = 0;
+				  Dict* dict = sData->getDict();
+				  Object oLength;
+				  if (dict->lookup("Length", &oLength)->isInt())
+					  nLength = oLength.getInt();
+				  oLength.free();
+
+				  bool bNew = false;
+				  BYTE* pBuffer = NULL;
+				  Stream* pImage = sData->getUndecodedStream();
+				  pImage->reset();
+				  MemStream* pMemory = dynamic_cast<MemStream*>(pImage);
+				  if (pImage->getKind() == strWeird && pMemory)
+				  {
+					  if (pMemory->getBufPtr() + nLength == pMemory->getBufEnd())
+						  pBuffer = (BYTE*)pMemory->getBufPtr();
+					  else
+						  nLength = 0;
+				  }
+				  else
+				  {
+					  bNew = true;
+					  pBuffer = new BYTE[nLength];
+					  BYTE* pBufferPtr = pBuffer;
+					  for (int nI = 0; nI < nLength; ++nI)
+						  *pBufferPtr++ = (BYTE)pImage->getChar();
+				  }
+
+				  oFile.WriteFile(pBuffer, nLength);
+				  if (bNew)
+					  RELEASEARRAYOBJECTS(pBuffer);
+			  }
+			  oFile.CloseFile();
+		  }
+		  oObj.free();
+		  delete parser;
+	  }
+	  str->setPos(str->getStart());
+  }
 
   // read the xref and catalog
   if (!PDFDoc::setup2(ownerPassword, userPassword, gFalse)) {

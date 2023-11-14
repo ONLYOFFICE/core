@@ -114,6 +114,30 @@ namespace PdfWriter
 		if (!m_pTrailer)
 			return false;
 
+		// TEST
+		if (false)
+		{
+			CDictObject* pData = new CDictObject(m_pXref);
+			CMemoryStream* pStream = new CMemoryStream();
+
+			BYTE* pFileData = NULL;
+			DWORD nFileSize;
+			std::wstring sFile = NSFile::GetProcessDirectory() + L"/res0.png";
+			if (NSFile::CFileBinary::ReadAllBytes(sFile, &pFileData, nFileSize))
+			{
+				pStream->Write(pFileData, nFileSize);
+			}
+			RELEASEARRAYOBJECTS(pFileData);
+
+#ifndef FILTER_FLATE_DECODE_DISABLED
+			if (false)
+				pData->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
+
+			pData->SetStream(m_pXref, pStream);
+			pData->Add("Name", new CStringObject("res0.png"));
+		}
+
 		m_pCatalog = new CCatalog(m_pXref);
 		if (!m_pCatalog)
 			return false;

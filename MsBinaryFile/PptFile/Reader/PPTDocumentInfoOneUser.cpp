@@ -895,7 +895,7 @@ void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
             pPairTheme = m_mapMasterToTheme.begin();
         else
         {
-            throw 1;	// file format error
+            throw 1;	// 第58课时 绘制频数直方图.ppt
         }
     }
     //-----------------
@@ -1419,7 +1419,7 @@ CElementPtr CPPTUserInfo::AddNewThemePlaceholder(CTheme* pTheme, int placeholder
 
     return pElement;
 }
-void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
+void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID, bool alwaysLoad)
 {
     std::map<_UINT32, LONG>::iterator pPair = m_mapMasterToTheme.find(dwMasterID);
     if (pPair != m_mapMasterToTheme.end())
@@ -1455,12 +1455,13 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
     }
     std::vector<RoundTripCompositeMasterId12Atom*> oArrayCompId;
     pMaster->GetRecordsByType(&oArrayCompId, false, true);
-    if (0 != oArrayCompId.size())
+    if (0 != oArrayCompId.size() && !alwaysLoad)
     {
         // этот мастер - не main!!!
         // сначала загрузим все main, а потом - title
         // title нужно грузить как обычный слайд.
-        return;
+        // 第58课时 绘制频数直方图.ppt
+        return; 
     }
 
     bool bMasterColorScheme = oArraySlideAtoms[0]->m_bMasterScheme;
@@ -1675,7 +1676,18 @@ void CPPTUserInfo::LoadMasters()
         std::map<_UINT32, CRecordSlide*>::iterator pPair = m_mapMasters.find(m_arrMastersOrder[i]);
         if (pPair == m_mapMasters.end())continue;
 
-        LoadMainMaster(pPair->first);
+        LoadMainMaster(pPair->first, false);
+    }
+
+    if (m_mapMasterToTheme.empty())
+    {
+        for (size_t i = 0; i < m_arrMastersOrder.size(); i++)
+        {
+            std::map<_UINT32, CRecordSlide*>::iterator pPair = m_mapMasters.find(m_arrMastersOrder[i]);
+            if (pPair == m_mapMasters.end())continue;
+
+            LoadMainMaster(pPair->first, true);
+        }
     }
 
     for (size_t i = 0; i < m_arrMastersOrder.size(); i++)

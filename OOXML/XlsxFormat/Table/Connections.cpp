@@ -974,10 +974,14 @@ namespace OOX
 					ptr1->iCredMethod = m_oCredentials->GetValue();
 				if(m_oBackground.IsInit())
 					ptr1->fBackgroundQuery = m_oBackground.get();
+				else
+					ptr1->fBackgroundQuery = false;
 				if(m_oDeleted.IsInit())
 					ptr1->fDeleted = m_oDeleted.get();
 				if(m_oDescription.IsInit())
 					ptr1->stConnDesc = m_oDescription.get();
+				else
+					ptr1->fLoadConnectionDesc = false;
 				if(m_oInterval.IsInit())
 					ptr1->wInterval = m_oInterval.get();
 				if(m_oKeepAlive.IsInit())
@@ -988,8 +992,12 @@ namespace OOX
 					ptr1->fNewQuery = m_oNew.get();
 				if(m_oOdcFile.IsInit())
 					ptr1->stConnectionFile = m_oOdcFile.get();
+				else
+					ptr1->fLoadSourceConnectionFile = false;
 				if(m_oOnlyUseConnectionFile.IsInit())
 					ptr1->fAlwaysUseConnectionFile = m_oOnlyUseConnectionFile.get();
+				else
+					ptr1->fAlwaysUseConnectionFile = false;
 				if(m_oReconnectionMethod.IsInit())
 					ptr1->irecontype = m_oReconnectionMethod.get();
 				if(m_oRefreshedVersion.IsInit())
@@ -1004,8 +1012,12 @@ namespace OOX
 				}
 				if(m_oSingleSignOnId.IsInit())
 					ptr1->stSso = m_oSingleSignOnId.get();
+				else
+					ptr1->fLoadSSOApplicationID = false;
 				if(m_oSourceFile.IsInit())
 					ptr1->stDataFile = m_oSourceFile.get();
+				else
+					ptr1->fLoadSourceDataFile = false;
 			}
 
 			return objectPtr;

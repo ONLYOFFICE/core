@@ -133,7 +133,15 @@ namespace OOX
 			if (m_oXlm.IsInit())
                 ptr->fFutureFunction = m_oXlm->GetValue();
 			if (m_oRef.IsInit())
-                ptr->rgce = m_oRef.get();
+			{
+				auto ref = m_oRef.get();
+				auto separatorPos = ref.find(L"!");
+				if(separatorPos != std::string::npos && separatorPos != ref.size() -1)
+					ref = ref.substr(separatorPos + 1, ref.size() - separatorPos -1);
+				else if(separatorPos == ref.size() -1)
+					ref = L"";
+				ptr->rgce = ref;
+			}
 
 			return objectPtr;
 		}

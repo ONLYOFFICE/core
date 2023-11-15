@@ -135,6 +135,56 @@ namespace NSJSON
 		return *this;
 	}
 
+	bool CValue::toBool() const
+	{
+		if (m_type == vtBoolean)
+			return m_bool;
+#ifdef JSON_DEBUG
+		throw std::bad_cast();
+#endif
+		return false;
+	}
+
+	int CValue::toInt() const
+	{
+		if (m_type == vtInteger)
+			return m_int;
+#ifdef JSON_DEBUG
+		throw std::bad_cast();
+#endif
+		return 0;
+	}
+
+	double CValue::toDouble() const
+	{
+		if (m_type == vtDouble)
+			return m_double;
+#ifdef JSON_DEBUG
+		throw std::bad_cast();
+#endif
+		return 0.0;
+	}
+
+	std::string CValue::toStringA() const
+	{
+		if (m_type == vtStringA)
+			return m_string;
+#ifdef JSON_DEBUG
+		throw std::bad_cast();
+#endif
+		return std::string();
+	}
+
+	std::wstring CValue::toStringW () const
+	{
+		if (m_type == vtStringW)
+			return m_wstring;
+#ifdef JSON_DEBUG
+		throw std::bad_cast();
+#endif
+		return std::wstring();
+	}
+
 	void CValue::setNull()
 	{
 		clear();
@@ -225,10 +275,29 @@ namespace NSJSON
 		return m_len;
 	}
 
-	void CObject::addMember(const IBaseValue* pValue, const std::string& name)
+	CObject::CObject() : IBaseValue(vtObject)
 	{
-		if (m_type != vtObject)
-			m_type = vtObject;
-		m_values[name] = pValue;
+	}
+
+	CObject::~CObject()
+	{
+	}
+
+	void CObject::set(const std::string& name, IBaseValue* pValue)
+	{
+		IBaseValue*& pMapValue = m_values[name];
+		if (pMapValue)
+			delete pMapValue;
+		pMapValue = pValue;
+	}
+
+	IBaseValue* CObject::get(const std::string& name)
+	{
+		return m_values[name];
+	}
+
+	IBaseValue* CObject::operator[](const std::string& name)
+	{
+		return m_values[name];
 	}
 }

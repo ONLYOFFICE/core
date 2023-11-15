@@ -3,6 +3,8 @@
 
 #include "json.h"
 
+#include <cmath>
+
 namespace NSJSON
 {
 	static JSSmart<NSJSBase::CJSValue> toJS(const IBaseValue* pValue)
@@ -65,6 +67,75 @@ namespace NSJSON
 				break;
 			}
 		}
+
+		return ret;
+	}
+
+	static IBaseValue* fromJS(JSSmart<NSJSBase::CJSValue> jsValue)
+	{
+		if (jsValue->isUndefined())
+			return new CValue();
+
+		if (jsValue->isNull())
+		{
+			CValue* pValue = new CValue;
+			pValue->setNull();
+			return pValue;
+		}
+
+		IBaseValue* ret = nullptr;
+		if (jsValue->isObject())
+		{
+			JSSmart<NSJSBase::CJSObject> jsObj = jsValue->toObject();
+			CObject* pObject = new CObject;
+			// TODO: add CJSObject::getPropertyNames()
+			ret = pObject;
+		}
+		else if (jsValue->isArray())
+		{
+			JSSmart<NSJSBase::CJSArray> jsArr = jsValue->toArray();
+			const int len = jsArr->getCount();
+			CArray* pArray = new CArray();
+			for (int i = 0; i < len; i++)
+			{
+				JSSmart<NSJSBase::CJSValue> jsElement = jsArr->get(i);
+				pArray->add(fromJS(jsElement));
+			}
+			ret = pArray;
+		}
+		else if (jsValue->isTypedArray())
+		{
+			JSSmart<NSJSBase::CJSTypedArray> jsTypedArr = jsValue->toTypedArray();
+			const int len = jsTypedArr->getCount();
+			BYTE* data = jsTypedArr->getData().Data;
+			ret = new CTypedArray(data, len);
+		}
+		// primitives
+		else if (jsValue->isBool())
+		{
+			ret = new CValue(jsValue->toBool());
+		}
+		else if (jsValue->isNumber())
+		{
+			// TODO: this check seems redundant. Similiar to string (look further).
+			// check if number is an integer or double
+			double number = jsValue->toDouble();
+			double integral;									// integral part
+			double fractional = std::modf(number, &integral);	// fractional part
+			if (fractional == 0.0 && integral >= INT_MIN && integral <= INT_MAX)
+			{
+				ret = new CValue(static_cast<int>(integral));
+			}
+			else
+			{
+				ret = new CValue(number);
+			}
+		}
+		else if (jsValue->isString())
+		{
+			// TODO: how do we know whether string consist of char or wchar_t? Can we convert all strings to std::wstring?
+		}
+		// else ret is nullptr
 
 		return ret;
 	}

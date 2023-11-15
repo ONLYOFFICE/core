@@ -37,6 +37,7 @@
 
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 #include "../../XlsbFormat/Biff12_records/BeginCellStyleXFs.h"
+#include "../../XlsbFormat/Biff12_records/BeginCellXFs.h"
 
 #include "../../../XlsbFormat/Biff12_unions/CELLSTYLEXFS.h"
 #include "../../../XlsbFormat/Biff12_unions/CELLXFS.h"
@@ -524,9 +525,12 @@ namespace OOX
 		XLS::BaseObjectPtr CCellXfs::toBin()
 		{
 			auto ptr(new XLSB::CELLXFS);
+			auto ptr1(new XLSB::BeginCellXFs);
+			ptr->m_BrtBeginCellXFs = XLS::BaseObjectPtr{ptr1};
 			XLS::BaseObjectPtr objectPtr(ptr);
 			for(auto i:m_arrItems)
 				ptr->m_arBrtXF.push_back(i->toBin());
+			ptr1->cxfs = ptr->m_arBrtXF.size();
 			return objectPtr;
 		}
 		EElementType CCellXfs::getType () const

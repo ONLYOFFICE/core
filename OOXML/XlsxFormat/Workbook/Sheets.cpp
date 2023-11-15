@@ -84,6 +84,8 @@ namespace OOX
 				ptr->hsState = XLSB::BundleSh::ST_SheetState::HIDDEN;
 			else if(m_oState == SimpleTypes::Spreadsheet::EVisibleType::visibleVeryHidden)
 				ptr->hsState = XLSB::BundleSh::ST_SheetState::VERYHIDDEN;
+            else
+                ptr->hsState = XLSB::BundleSh::ST_SheetState::VISIBLE;
 
 			return objectPtr;
 		}

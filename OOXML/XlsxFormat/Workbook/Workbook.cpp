@@ -311,7 +311,9 @@ namespace OOX
 				ptr->m_arSUP = m_oExternalReferences->toBin();
 				workBookStream->m_EXTERNALS = XLS::BaseObjectPtr{ptr};
 			}
-			if (m_oAppName.IsInit())
+
+			/* 
+            if (m_oAppName.IsInit())
 			{
 				auto ptr(new XLSB::FileVersion);
 				ptr->stAppName = m_oAppName.get();
@@ -319,7 +321,7 @@ namespace OOX
 				ptr->stLowestEdited = L"";
 				ptr->stRupBuild = L"";
 				workBookStream->m_BrtFileVersion = XLS::BaseObjectPtr{ptr};
-			}
+			}*/
 
 			if (m_oExtLst.IsInit())
 				workBookStream->m_FRTWORKBOOK = m_oExtLst->toBinWorkBook();

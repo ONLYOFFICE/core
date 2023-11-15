@@ -41,6 +41,7 @@
 #include "../../XlsbFormat/Biff12_unions/DXF.h"
 #include "../../XlsbFormat/Biff12_unions/FRTDXF.h"
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
+#include "../../XlsbFormat/Biff12_records/BeginDXFs.h"
 
 #include "../../Common/SimpleTypes_Shared.h"
 #include <boost/algorithm/string.hpp>
@@ -321,10 +322,13 @@ namespace OOX
 		{
 			auto ptr(new XLSB::DXFS);
 			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::BeginDXFs);
+			ptr->m_BrtBeginDXFs = XLS::BaseObjectPtr{ptr1};
 			for(auto i:m_arrItems)
 			{
 				ptr->m_aruDXF.push_back(i->toBin());
 			}
+			ptr1->cdxfs = ptr->m_aruDXF.size();
 			return objectPtr;
 		}
 		void CDxfs::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)

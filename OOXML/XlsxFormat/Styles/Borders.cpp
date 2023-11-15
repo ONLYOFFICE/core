@@ -36,6 +36,7 @@
 #include "../../Common/SimpleTypes_Spreadsheet.h"
 
 #include "../../XlsbFormat/Biff12_records/Border.h"
+#include "../../XlsbFormat/Biff12_records/BeginBorders.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
 
 #include "../../../XlsbFormat/Biff12_unions/BORDERS.h"
@@ -149,7 +150,10 @@ namespace OOX
 			}
 
 			if(!m_oStyle.IsInit())
+            {
+                ptr->dg = 0x00;
 				return;
+            }
 
 			if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleNone)
 				ptr->dg = 0x00;
@@ -179,6 +183,8 @@ namespace OOX
 				ptr->dg = 0x0C;
 			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleSlantDashDot)
 				ptr->dg = 0x0D;
+            else
+                ptr->dg = 0x00;
 		}
 		bool CBorderProp::IsEmpty()
 		{
@@ -467,9 +473,12 @@ namespace OOX
 		XLS::BaseObjectPtr CBorders::toBin()
 		{
 			auto ptr(new XLSB::BORDERS);
+			auto ptr1(new XLSB::BeginBorders);
+			ptr->m_BrtBeginBorders = XLS::BaseObjectPtr{ptr1};
 			XLS::BaseObjectPtr objectPtr(ptr);
 			for(auto i:m_arrItems)
 				ptr->m_arBrtBorder.push_back(i->toBin());
+			ptr1->cborders = ptr->m_arBrtBorder.size();
 			return objectPtr;
 		}
 		EElementType CBorders::getType () const

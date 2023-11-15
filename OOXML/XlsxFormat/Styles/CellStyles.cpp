@@ -80,6 +80,8 @@ namespace OOX
 			XLS::BaseObjectPtr objectPtr(ptr);
 			if(m_oBuiltinId.IsInit())
 				ptr->fBuiltIn = m_oBuiltinId->GetValue();
+            else
+                ptr->fBuiltIn = false;
 			if (m_oCustomBuiltin.IsInit())
 				ptr->fCustom = m_oCustomBuiltin->GetValue();
             else
@@ -90,6 +92,8 @@ namespace OOX
                 ptr->fHidden = false;
 			if (m_oILevel.IsInit())
 				ptr->iLevel = m_oILevel->GetValue();
+            else
+                ptr->iLevel = 0;
 			if (m_oName.IsInit())
 				ptr->stName = m_oName.get();
 			if (m_oXfId.IsInit())

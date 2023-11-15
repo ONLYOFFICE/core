@@ -430,6 +430,8 @@ namespace OOX
 			for(auto i:m_arrItems)
 				 ptr->m_arTABLESTYLE.push_back(i->toBin());
 			ptr1->cts = ptr->m_arTABLESTYLE.size();
+			ptr1->rgchDefTableStyle = m_oDefaultTableStyle.get();
+			ptr1->rgchDefPivotStyle = m_oDefaultPivotStyle.get();
 			return objectPtr;
 		}
 		EElementType CTableStyles::getType () const

@@ -32,7 +32,9 @@ def exec_wasm(data, work, compiler_flags, wasm):
     compiler_flags.append("-DBUILDING_ASMJS_MODULE")
     compiler_flags.append("-D_ARM_ALIGN_")
 
+  compiler_flags.append("-Wno-deprecated-non-prototype")
   compiler_flags.append("-Wno-deprecated-register")
+  compiler_flags.append("-Wno-register")
 
   # arguments
   arguments = ""
@@ -146,7 +148,10 @@ for param in argv:
   if json_data["asm"]:
     flags = json_data["compiler_flags"][:]
     flags.append("-s WASM=0")
+    flags.append("--closure 0")
     flags.append("-s MIN_IE_VERSION=11")
+    # do it in min.py
+    #flags.append("--closure-args=--language_out=ECMASCRIPT5_STRICT")
     if "embed_mem_file" in json_data and (json_data["embed_mem_file"]):
       flags.append("--memory-init-file 0")
     exec_wasm(json_data, work_dir, flags, False)

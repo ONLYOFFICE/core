@@ -271,6 +271,11 @@ namespace MetaFile
 	CEmfPlusPath::CEmfPlusPath(CEmfPlusPath *pPath) : CEmfPlusObject(), CPath(*pPath)
 	{}
 
+	CEmfPlusPath::~CEmfPlusPath()
+	{
+		Clear();
+	}
+
 	EEmfPlusObjectType CEmfPlusPath::GetObjectType()
 	{
 		return ObjectTypePath;
@@ -556,5 +561,13 @@ namespace MetaFile
 	EEmfPlusObjectType CEmfPlusStringFormat::GetObjectType()
 	{
 		return ObjectTypeStringFormat;
+	}
+}
+
+namespace MetaFile
+{
+	TEmfPlusCustomLineCapData::~TEmfPlusCustomLineCapData()
+	{
+		RELEASEOBJECT(pPath);
 	}
 }

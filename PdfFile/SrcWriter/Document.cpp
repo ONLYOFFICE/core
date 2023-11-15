@@ -102,7 +102,7 @@ namespace PdfWriter
 	{
 		Close();
 	}
-    bool CDocument::CreateNew()
+	bool CDocument::CreateNew(BYTE* pMetaData, DWORD nMetaLength, const std::map<std::wstring, std::wstring>& pMetaResources)
 	{
 		Close();
 
@@ -115,27 +115,21 @@ namespace PdfWriter
 			return false;
 
 		// TEST
-		if (false)
+		if (true && pMetaData)
 		{
 			CDictObject* pData = new CDictObject(m_pXref);
+
 			CMemoryStream* pStream = new CMemoryStream();
-
-			BYTE* pFileData = NULL;
-			DWORD nFileSize;
-			std::wstring sFile = NSFile::GetProcessDirectory() + L"/res0.png";
-			if (NSFile::CFileBinary::ReadAllBytes(sFile, &pFileData, nFileSize))
-			{
-				pStream->Write(pFileData, nFileSize);
-			}
-			RELEASEARRAYOBJECTS(pFileData);
-
-#ifndef FILTER_FLATE_DECODE_DISABLED
-			if (false)
-				pData->SetFilter(STREAM_FILTER_FLATE_DECODE);
-#endif
-
+			pStream->Write(pMetaData, nMetaLength);
 			pData->SetStream(m_pXref, pStream);
-			pData->Add("Name", new CStringObject("res0.png"));
+
+			for (const auto& pMeta : pMetaResources)
+			{
+				std::string sName = U_TO_UTF8(pMeta.first);
+				std::string sData = U_TO_UTF8(pMeta.second);
+
+				pData->Add(sName, new CStringObject(sData.c_str()));
+			}
 		}
 
 		m_pCatalog = new CCatalog(m_pXref);

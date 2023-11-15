@@ -64,7 +64,7 @@ namespace Aggplus
 class CPdfWriter
 {
 public:
-	CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA = false, IRenderer* pRenderer = NULL);
+	CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA = false, IRenderer* pRenderer = NULL, BYTE* pMetaData = NULL, DWORD nMetaLength = 0, const std::map<std::wstring, std::wstring>& pMetaResources = {});
 	~CPdfWriter();
 	int          SaveToFile(const std::wstring& wsPath);
 	void         SetPassword(const std::wstring& wsPassword);

@@ -100,7 +100,7 @@ namespace PdfWriter
 		CDocument();
 		~CDocument();
 
-		bool              CreateNew();
+		bool              CreateNew(BYTE* pMetaData = NULL, DWORD nMetaLength = 0, const std::map<std::wstring, std::wstring>& pMetaResources = {});
 		void              Close();
 		bool              SaveToFile(const std::wstring& wsPath, bool bAdd = true);
 			              

@@ -1238,10 +1238,10 @@ BYTE* CPdfFile::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, in
 
 // ------------------------------------------------------------------------
 
-void CPdfFile::CreatePdf(bool isPDFA)
+void CPdfFile::CreatePdf(bool isPDFA, BYTE* pMetaData, DWORD nMetaLength, const std::map<std::wstring, std::wstring>& pMetaResources)
 {
 	RELEASEOBJECT(m_pInternal->pWriter);
-	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, isPDFA, this);
+	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, isPDFA, this, pMetaData, nMetaLength, pMetaResources);
 }
 int CPdfFile::SaveToFile(const std::wstring& wsPath)
 {

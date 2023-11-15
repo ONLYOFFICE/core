@@ -146,11 +146,19 @@ int main()
 		return 0;
 	}
 
-	if (false)
+	if (true)
     {
-        pdfFile.CreatePdf();
+		BYTE* pFileData = NULL;
+		DWORD nFileSize;
+		std::wstring sFile = NSFile::GetProcessDirectory() + L"/res0.png";
+		if (NSFile::CFileBinary::ReadAllBytes(sFile, &pFileData, nFileSize))
+			pdfFile.CreatePdf(false, pFileData, nFileSize, {});
+		else
+			pdfFile.CreatePdf();
+
         pdfFile.OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile);
 
+		RELEASEARRAYOBJECTS(pFileData);
         RELEASEINTERFACE(pApplicationFonts);
         RELEASEOBJECT(pCertificate);
         return 0;

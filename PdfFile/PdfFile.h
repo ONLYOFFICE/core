@@ -136,7 +136,7 @@ public:
 
 	// --- WRITER ---
 
-	void CreatePdf    (bool isPDFA = false);
+	void CreatePdf    (bool isPDFA = false, BYTE* pMetaData = NULL, DWORD nMetaLength = 0, const std::map<std::wstring, std::wstring>& pMetaResources = {});
 	int  SaveToFile   (const std::wstring& wsPath);
 	void RotatePage   (int nRotate);
 	void SetPassword  (const std::wstring& wsPassword);

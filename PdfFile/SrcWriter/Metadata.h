@@ -52,6 +52,23 @@ namespace PdfWriter
 
 		CMemoryStream* m_pStream;
 	};
+
+	class CStreamData : public CDictObject
+	{
+	public:
+		CStreamData(CXref* pXref, BYTE* pMetaData, DWORD nMetaLength, const std::map<std::wstring, std::wstring>& pMetaResources);
+		EDictType GetDictType() const override
+		{
+			return dict_type_STREAM;
+		}
+
+		void WriteToStream(CStream* pStream, CEncrypt* pEncrypt) override;
+		void AfterWrite(CStream* pStream) override;
+
+	private:
+		int m_nLengthBegin;
+		int m_nLengthEnd;
+	};
 }
 
 #endif // _PDF_WRITER_SRC_METADATA_H

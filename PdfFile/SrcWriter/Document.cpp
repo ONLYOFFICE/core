@@ -50,6 +50,7 @@
 #include "AcroForm.h"
 #include "Field.h"
 #include "ResourcesDictionary.h"
+#include "Metadata.h"
 
 #include "../../DesktopEditor/agg-2.4/include/agg_span_hatch.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
@@ -114,22 +115,11 @@ namespace PdfWriter
 		if (!m_pTrailer)
 			return false;
 
-		// TEST
 		if (true && pMetaData)
 		{
-			CDictObject* pData = new CDictObject(m_pXref);
-
-			CMemoryStream* pStream = new CMemoryStream();
-			pStream->Write(pMetaData, nMetaLength);
-			pData->SetStream(m_pXref, pStream);
-
-			for (const auto& pMeta : pMetaResources)
-			{
-				std::string sName = U_TO_UTF8(pMeta.first);
-				std::string sData = U_TO_UTF8(pMeta.second);
-
-				pData->Add(sName, new CStringObject(sData.c_str()));
-			}
+			CStreamData* pData = new CStreamData(m_pXref, pMetaData, nMetaLength, pMetaResources);
+			if (!pData)
+				return false;
 		}
 
 		m_pCatalog = new CCatalog(m_pXref);

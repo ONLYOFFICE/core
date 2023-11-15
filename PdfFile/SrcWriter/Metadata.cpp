@@ -32,6 +32,7 @@
 #include "Metadata.h"
 #include "Streams.h"
 #include "Info.h"
+#include "Utils.h"
 
 #include "../../DesktopEditor/common/SystemUtils.h"
 #include "../../OOXML/Base/Base.h"
@@ -163,5 +164,76 @@ namespace PdfWriter
 
 		m_pStream->WriteStr(sXML.c_str());
 	}
+	//----------------------------------------------------------------------------------------
+	// StreamData
+	//----------------------------------------------------------------------------------------
+	CStreamData::CStreamData(CXref* pXref, BYTE* pMetaData, DWORD nMetaLength, const std::map<std::wstring, std::wstring>& pMetaResources)
+	{
+		pXref->Add(this);
 
+		CMemoryStream* pStream = new CMemoryStream();
+		pStream->Write(pMetaData, nMetaLength);
+		Add("Length", 1234567890);
+		SetStream(pXref, pStream);
+
+		for (const auto& pMeta : pMetaResources)
+		{
+			if (pMeta.first == L"Length")
+				continue;
+
+			std::string sName = U_TO_UTF8(pMeta.first);
+			std::string sData = U_TO_UTF8(pMeta.second);
+
+			Add(sName, new CStringObject(sData.c_str()));
+		}
+
+		m_nLengthBegin = 0;
+		m_nLengthEnd   = 0;
+	}
+	void CStreamData::WriteToStream(CStream* pStream, CEncrypt* pEncrypt)
+	{
+		for (auto const &oIter : m_mList)
+		{
+			CObjectBase* pObject = oIter.second;
+			if (!pObject)
+				continue;
+
+			if (!pObject->IsHidden())
+			{
+				int nBegin, nEnd;
+				pStream->WriteEscapeName(oIter.first.c_str());
+				pStream->WriteChar(' ');
+				nBegin = pStream->Tell();
+				pStream->Write(pObject, pEncrypt);
+				nEnd = pStream->Tell();
+				pStream->WriteStr("\012");
+				if (oIter.first == "Length")
+				{
+					m_nLengthBegin = nBegin;
+					m_nLengthEnd   = nEnd;
+				}
+			}
+		}
+	}
+	void CStreamData::AfterWrite(CStream* pStream)
+	{
+		int nCurrent = pStream->Tell();
+
+		pStream->Seek(m_nLengthBegin, EWhenceMode::SeekSet);
+		pStream->Write(Get("Length"), NULL);
+
+		int nEnd = pStream->Tell();
+		if (nEnd < m_nLengthEnd)
+		{
+			unsigned int nLength = m_nLengthEnd - nEnd;
+			BYTE* pDifference = new BYTE[nLength];
+			MemSet(pDifference, ' ', nLength);
+
+			pStream->Write(pDifference, nLength);
+
+			RELEASEARRAYOBJECTS(pDifference);
+		}
+
+		pStream->Seek(nCurrent, EWhenceMode::SeekSet);
+	}
 }

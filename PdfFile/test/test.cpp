@@ -146,7 +146,7 @@ int main()
 		return 0;
 	}
 
-	if (false)
+	if (true)
     {
 		if (true)
 		{
@@ -154,7 +154,7 @@ int main()
 			DWORD nFileSize;
 			std::wstring sFile = NSFile::GetProcessDirectory() + L"/res0.png";
 			if (NSFile::CFileBinary::ReadAllBytes(sFile, &pFileData, nFileSize))
-				pdfFile.CreatePdf(false, pFileData, nFileSize, {});
+				pdfFile.CreatePdf(false, pFileData, nFileSize, {{L"test1", L"res1"}, {L"test2", L"res2"}});
 			else
 				pdfFile.CreatePdf();
 			RELEASEARRAYOBJECTS(pFileData);

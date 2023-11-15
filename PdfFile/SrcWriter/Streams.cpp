@@ -648,10 +648,7 @@ namespace PdfWriter
 			}
 		}
 
-		if (dict_type_SIGNATURE == pDict->GetDictType())
-			pDict->WriteSignatureToStream(this, pEncrypt);
-		else
-			pDict->WriteToStream(this, pEncrypt);
+		pDict->WriteToStream(this, pEncrypt);
 
 		pDict->Write(this);
 		WriteStr(">>");
@@ -661,7 +658,7 @@ namespace PdfWriter
 		{
 			CNumberObject* pLength = (CNumberObject*)pDict->Get("Length");			
 			// "Length" должен управляться таблицей Xref (флаг Indirect)
-			if (pLength && object_type_NUMBER == pLength->GetType() && pLength->IsIndirect())
+			if (pLength && object_type_NUMBER == pLength->GetType())
 			{
 				if (pEncrypt)
 					pEncrypt->Reset();
@@ -676,7 +673,7 @@ namespace PdfWriter
 			}
 		}
 
-		pDict->AfterWrite();
+		pDict->AfterWrite(this);
 	}
     void CStream::Write(CObjectBase* pObject, CEncrypt* pEncrypt)
 	{

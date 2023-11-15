@@ -948,6 +948,7 @@ xmlns:xr10=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision10\"
 
 			pWriter->StartNode(L"tsle:timeslicer");
 			pWriter->StartAttributes();
+			pWriter->WriteString(L" xmlns:tsle=\"http://schemas.microsoft.com/office/drawing/2012/timeslicer\"");
 			if (m_oName.IsInit())
 				pWriter->WriteAttribute2(L"name", *m_oName);
 			pWriter->EndAttributes();

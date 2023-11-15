@@ -1176,13 +1176,13 @@ namespace BinXlsxRW
 			OOX::CChartDrawing* pChartDrawing = new OOX::CChartDrawing(NULL);
 			READ1_DEF(length, res, this->ReadCT_userShapes, pChartDrawing);
 
-			OOX::CPath pathDrawingsRels = pathDrawingsRelsDir.GetPath() + FILE_SEPARATOR_STR + pChartDrawing->m_sOutputFilename + _T(".rels");
-			m_pOfficeDrawingConverter->SaveDstContentRels(pathDrawingsRels.GetPath());
-
 			if (res == c_oSerConstants::ReadOk)
 			{
 				NSCommon::smart_ptr<OOX::File> pDrawingFile(pChartDrawing);
 				pChart->Add(pDrawingFile);
+
+				OOX::CPath pathDrawingsRels = pathDrawingsRelsDir.GetPath() + FILE_SEPARATOR_STR + pChartDrawing->m_sOutputFilename + _T(".rels");
+				m_pOfficeDrawingConverter->SaveDstContentRels(pathDrawingsRels.GetPath());
 
 				unsigned int rId = 0;
 				m_pOfficeDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartUserShapes", L"../drawings/" + pChartDrawing->m_sOutputFilename, std::wstring(), &rId);

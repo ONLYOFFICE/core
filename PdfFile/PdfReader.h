@@ -71,6 +71,8 @@ public:
 	PDFDoc* GetPDFDocument() { return m_pPDFDocument; }
 	void ChangeLength(DWORD nLength);
 
+	int  HaveMetaData(const std::wstring& sFile);
+	bool GetMetaData(const std::wstring& sFile, BYTE** pMetaData, DWORD& nMetaLength, std::map<std::wstring, std::wstring>& pMetaResources);
 	BYTE* GetStructure();
 	BYTE* GetLinks(int nPageIndex);
 	BYTE* GetWidgets();

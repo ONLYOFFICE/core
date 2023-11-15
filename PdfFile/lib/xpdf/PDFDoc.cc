@@ -269,7 +269,7 @@ GBool PDFDoc::setup(GString *ownerPassword, GString *userPassword) {
   checkHeader();
 
   // TEST
-  if (false)
+  if (true)
   {
 	  char hdrBuf[headerSearchSize + 1];
 	  memset(hdrBuf, 0, headerSearchSize + 1);
@@ -296,14 +296,13 @@ GBool PDFDoc::setup(GString *ownerPassword, GString *userPassword) {
 		  {
 			  Stream* sData = oObj.getStream();
 			  NSFile::CFileBinary oFile;
-			  if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/res.png"))
+
+			  int nLength = 0;
+			  Dict* dict = sData->getDict();
+			  Object oLength;
+			  if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/res.png") && dict->lookup("Length", &oLength)->isInt())
 			  {
-				  int nLength = 0;
-				  Dict* dict = sData->getDict();
-				  Object oLength;
-				  if (dict->lookup("Length", &oLength)->isInt())
-					  nLength = oLength.getInt();
-				  oLength.free();
+				  nLength = oLength.getInt();
 
 				  bool bNew = false;
 				  BYTE* pBuffer = NULL;
@@ -331,6 +330,7 @@ GBool PDFDoc::setup(GString *ownerPassword, GString *userPassword) {
 					  RELEASEARRAYOBJECTS(pBuffer);
 			  }
 			  oFile.CloseFile();
+			  oLength.free();
 		  }
 		  oObj.free();
 		  delete parser;

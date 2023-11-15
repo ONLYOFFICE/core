@@ -666,7 +666,7 @@ namespace PdfWriter
 				WriteStr("\012stream\015\012");
 				
 				unsigned int unStartSize = Tell();
-				WriteStream(pStream, pDict->GetFilter(), pEncrypt);
+				WriteStream(pStream, pDict->GetFilter(), pDict->GetDictType() == dict_type_STREAM ? NULL : pEncrypt);
 				pLength->Set(Tell() - unStartSize);
 
 				WriteStr("\012endstream");

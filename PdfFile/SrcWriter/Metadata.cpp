@@ -204,7 +204,7 @@ namespace PdfWriter
 				pStream->WriteEscapeName(oIter.first.c_str());
 				pStream->WriteChar(' ');
 				nBegin = pStream->Tell();
-				pStream->Write(pObject, pEncrypt);
+				pStream->Write(pObject, NULL);
 				nEnd = pStream->Tell();
 				pStream->WriteStr("\012");
 				if (oIter.first == "Length")

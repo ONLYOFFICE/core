@@ -841,6 +841,8 @@ void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
         pSlide->m_oSlideShow.m_dSlideDuration = pAtom->m_nSlideTime;
         pSlide->m_oSlideShow.m_bManulClick = pAtom->m_bManualAdvance;
         pSlide->m_oSlideShow.m_bAdvClick = pAtom->m_bAutoAdvance;
+
+        pSlide->m_bHidden = pAtom->m_bHidden;
     }
 
     CSlideShowSlideInfoAtom* pAtom = &pRecordSlide->m_oSlideShowSlideInfoAtom;

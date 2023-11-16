@@ -446,6 +446,23 @@ namespace NSJSBase
 			value->Set(V8ContextFirstArg _name, v8::Number::New(isolate, _value));
 		}
 
+		virtual std::vector<std::string> getPropertyNames()
+		{
+			v8::Local<v8::Context> context = CV8Worker::GetCurrentContext();
+			v8::Local<v8::Array> names = value->GetPropertyNames(context).ToLocalChecked();
+			uint32_t len = names->Length();
+
+			std::vector<std::string> ret(len);
+			for (uint32_t i = 0; i < len; i++)
+			{
+				CJSValueV8 _value;
+				_value.value = names->Get(context, i).ToLocalChecked();
+				ret[i] = _value.toStringA();
+			}
+
+			return ret;
+		}
+
 		virtual CJSEmbedObject* getNative()
 		{
 			v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(value->GetInternalField(0));

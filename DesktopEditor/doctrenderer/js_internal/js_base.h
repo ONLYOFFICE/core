@@ -215,7 +215,7 @@ namespace NSJSBase
 		 * Returns specified property of the object.
 		 * @param name The name of a property.
 		 */
-		virtual JSSmart<CJSValue> get(const char* name)                 = 0;
+		virtual JSSmart<CJSValue> get(const char* name)         = 0;
 		/**
 		 * Sets a property of the object.
 		 * @param name The name of a property.
@@ -228,6 +228,10 @@ namespace NSJSBase
 		void set(const char* name, JSSmart<CJSValue> value);
 		void set(const char* name, JSSmart<CJSObject> value);
 
+		/**
+		 * Returns a vector containing the names of the properties of this object as strings, including properties from prototype objects.
+		 */
+		virtual std::vector<std::string> getPropertyNames()     = 0;
 		/**
 		 * Returns a pointer to the native embedded object.
 		 */
@@ -673,7 +677,7 @@ namespace NSJSBase
  *
  * NOTE: If you don't want to export certain functions from your embedded class for some reason,
  *       then add the inline comment "[noexport]" at the start of a function declaration.
- *       Also you can use `#ifdef ... #endif` blocks (see doctrenderer/test/internal/Embed.h for an example).
+ *       Also you can use `#ifdef ... #endif` blocks (see doctrenderer/test/embed/external/Embed.h for an example).
  */
 
 #endif // _CORE_EXT_JS_BASE_H_

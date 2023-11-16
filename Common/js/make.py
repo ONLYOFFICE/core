@@ -15,6 +15,7 @@ command_prefix = "" if ("windows" == base.host_platform()) else "./"
 if not base.is_dir("emsdk"):
   base.cmd("git", ["clone", "https://github.com/emscripten-core/emsdk.git"])
   os.chdir("emsdk")
+  base.cmd("git", ["checkout", "f677ef915645c09794f0ae88f21d3cba2886459f"])
   base.cmd(command_prefix + "emsdk", ["install", "latest"])
   base.cmd(command_prefix + "emsdk", ["activate", "latest"])
   os.chdir("../")
@@ -35,6 +36,10 @@ def exec_wasm(data, work, compiler_flags, wasm):
   compiler_flags.append("-Wno-deprecated-non-prototype")
   compiler_flags.append("-Wno-deprecated-register")
   compiler_flags.append("-Wno-register")
+
+  compiler_flags.append("-fvisibility=hidden")
+  #compiler_flags.append("-Wl,--no-entry")
+  #compiler_flags.append("-Wl,--strip-all")
 
   # arguments
   arguments = ""

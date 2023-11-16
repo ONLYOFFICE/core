@@ -103,6 +103,7 @@ int main()
 		}
 		oFile.CloseFile();
 	}
+	RELEASEARRAYOBJECTS(pMetaData);
 
     std::wstring wsPassword;
     bool bResult = pdfFile.LoadFromFile(wsSrcFile);

@@ -115,27 +115,37 @@ namespace PdfWriter
 		if (!m_pTrailer)
 			return false;
 
+		CStreamData* pData = NULL;
 		if (true && pMetaData)
 		{
-			CStreamData* pData = new CStreamData(m_pXref, pMetaData, nMetaLength, pMetaResources);
+			pData = new CStreamData(m_pXref, pMetaData, nMetaLength, pMetaResources);
 			if (!pData)
 				return false;
 		}
 
 		m_pCatalog = new CCatalog(m_pXref);
 		if (!m_pCatalog)
+		{
+			RELEASEOBJECT(pData);
 			return false;
+		}
 
 		m_pCatalog->SetPageMode(pagemode_UseNone);
 		m_pCatalog->SetPageLayout(pagelayout_OneColumn);
 
 		m_pPageTree = m_pCatalog->GetRoot();
 		if (!m_pPageTree)
+		{
+			RELEASEOBJECT(pData);
 			return false;
+		}
 
 		m_pInfo = new CInfoDict(m_pXref);
 		if (!m_pInfo)
+		{
+			RELEASEOBJECT(pData);
 			return false;
+		}
 
 		m_pInfo->SetTime(InfoCreationDate);
 		m_pInfo->SetTime(InfoModaDate);

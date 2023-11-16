@@ -14,9 +14,9 @@ namespace NSJSON
 {
 	class IBaseValue;
 	// Transform C++ value to JS value
-	JSSmart<NSJSBase::CJSValue> toJS(const IBaseValue* pValue);
+	static JSSmart<NSJSBase::CJSValue> toJS(const IBaseValue* pValue);
 	// Transform JS value to C++ value
-	IBaseValue* fromJS(JSSmart<NSJSBase::CJSValue> jsValue);
+	static IBaseValue* fromJS(JSSmart<NSJSBase::CJSValue> jsValue);
 
 	class JS_DECL IBaseValue
 	{

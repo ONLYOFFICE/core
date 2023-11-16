@@ -87,14 +87,21 @@ TEST_F(CGetPropertyNamesTest, inner_object)
 TEST_F(CGetPropertyNamesTest, object_with_null_and_undefined_properties)
 {
 	std::vector<std::string> result = getObjectProperties("{number: null, name: undefined, func() { return 'bar'; }}");
-	std::vector<std::string> expected = {"number", "name", "func"};
+	std::vector<std::string> expected = {"number", "func"};
+	EXPECT_TRUE(compare(result, expected)) << printInfo("Actual: ", result) << printInfo("Expected: ", expected);
+}
+
+TEST_F(CGetPropertyNamesTest, object_with_only_undefined_properties)
+{
+	std::vector<std::string> result = getObjectProperties("{foo: undefined, bar: undefined}");
+	std::vector<std::string> expected = {};
 	EXPECT_TRUE(compare(result, expected)) << printInfo("Actual: ", result) << printInfo("Expected: ", expected);
 }
 
 TEST_F(CGetPropertyNamesTest, array_as_object)
 {
 	std::vector<std::string> result = getObjectProperties("{0: 4, 1: 2, 2: undefined, 3: 'foo', 42: 'bar'}");
-	std::vector<std::string> expected = {"0", "1", "2", "3", "42"};
+	std::vector<std::string> expected = {"0", "1", "3", "42"};
 	EXPECT_TRUE(compare(result, expected)) << printInfo("Actual: ", result) << printInfo("Expected: ", expected);
 }
 

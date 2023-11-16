@@ -35,7 +35,6 @@
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/common/Path.h"
 #include "../../../OfficeUtils/src/OfficeUtils.h"
-#include "../../../OOXML/Base/Base.h"
 #include "tchar.h"
 
 
@@ -48,7 +47,7 @@ void Xlsb2XlsxConversion1::SetUp()
     filePath += L"/xlsb2xlsx/simple.xlsb";
     auto examplePath = NSDirectory::GetFolderPath(testFilesPath);
     examplePath += L"/xlsb2xlsx/simple.xlsx";
-    convertFile(filePath);
+    ConvertFile(filePath);
     PrepareFiles(filePath, examplePath, tempDirName);
 }
 
@@ -57,7 +56,7 @@ void Xlsb2XlsxConversion1::TearDown()
     NSDirectory::DeleteDirectory(tempDirName);
 }
 
-_UINT32 convertFile(std::wstring &fileName)
+_UINT32 ConvertFile(std::wstring &fileName)
 {
     auto exPos = fileName.find(L".xlsb");
     if(exPos == std::string::npos)
@@ -80,5 +79,5 @@ void PrepareFiles(std::wstring &fileName, std::wstring &exampleFileName, std::ws
 
     std::wstring sTempUnpackedXLSX = tempDirName + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
     NSDirectory::CreateDirectory(sTempUnpackedXLSX);
-    _UINT32 nRes = oCOfficeUtils.ExtractToDirectory(exampleFileName, sTempUnpackedXLSX, NULL, 0);
+    nRes = oCOfficeUtils.ExtractToDirectory(exampleFileName, sTempUnpackedXLSX, NULL, 0);
 }

@@ -29,11 +29,12 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
+#include "../../../OOXML/Base/Base.h"
 #include "gtest/gtest.h"
 #include <string>
 
 void PrepareFiles(std::wstring &fileName, std::wstring &exampleFileName, std::wstring &tempDirName);
+_UINT32 ConvertFile(std::wstring &fileName);
 
 class Xlsb2XlsxConversion1 : public ::testing::Environment {
 public:

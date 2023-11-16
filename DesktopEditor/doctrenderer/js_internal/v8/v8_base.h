@@ -452,12 +452,17 @@ namespace NSJSBase
 			v8::Local<v8::Array> names = value->GetPropertyNames(context).ToLocalChecked();
 			uint32_t len = names->Length();
 
-			std::vector<std::string> ret(len);
+			std::vector<std::string> ret;
 			for (uint32_t i = 0; i < len; i++)
 			{
+				v8::Local<v8::Value> propertyName = names->Get(context, i).ToLocalChecked();
+				v8::Local<v8::Value> propertyValue = value->Get(context, propertyName).ToLocalChecked();
+				// skip undefined properties
+				if (propertyValue->IsUndefined())
+					continue;
 				CJSValueV8 _value;
-				_value.value = names->Get(context, i).ToLocalChecked();
-				ret[i] = _value.toStringA();
+				_value.value = propertyName;
+				ret.push_back(_value.toStringA());
 			}
 
 			return ret;

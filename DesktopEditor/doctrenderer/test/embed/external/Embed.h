@@ -1,7 +1,7 @@
 #ifndef _BUILD_NATIVE_HASH_EMBED_H_
 #define _BUILD_NATIVE_HASH_EMBED_H_
 
-#include "../../js_internal/js_base.h"
+#include "js_internal/js_base.h"
 
 #define ENABLE_SUM_DEL
 #define ENABLE_GET

@@ -58,21 +58,18 @@ public:
 	void SetCMapFolder(const std::wstring& sFolder);
 	void SetCMapFile(const std::wstring& sFile);
 
+	int GetError();
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
 	void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
 	std::wstring GetInfo();
 
-	int          GetError();
-
 	NSFonts::IFontManager* GetFontManager() { return m_pFontManager; }
 	std::wstring ToXml(const std::wstring& wsXmlPath, bool isPrintStreams = false);
 	PDFDoc* GetPDFDocument() { return m_pPDFDocument; }
 	void ChangeLength(DWORD nLength);
 
-	int  HaveMetaData(const std::wstring& sFile);
-	bool GetMetaData(const std::wstring& sFile, BYTE** pMetaData, DWORD& nMetaLength, std::map<std::wstring, std::wstring>& pMetaResources);
 	BYTE* GetStructure();
 	BYTE* GetLinks(int nPageIndex);
 	BYTE* GetWidgets();

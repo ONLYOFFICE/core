@@ -84,6 +84,26 @@ int main()
     CPdfFile pdfFile(pApplicationFonts);
     pdfFile.SetTempDirectory(wsTempDir);
 
+	BYTE* pMetaData = NULL;
+	DWORD nMetaLength = 0;
+	std::map<std::wstring, std::wstring> sMetaResources;
+	if (pdfFile.GetMetaData(wsSrcFile, &pMetaData, nMetaLength, sMetaResources))
+	{
+		std::wstring sFileName;
+		std::map<std::wstring, std::wstring>::iterator it = sMetaResources.find(L"FileName");
+		if (it != sMetaResources.end())
+			sFileName = it->second;
+		if (sFileName.empty())
+			sFileName = L"res.txt";
+
+		NSFile::CFileBinary oFile;
+		if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/" + sFileName))
+		{
+			oFile.WriteFile(pMetaData, nMetaLength);
+		}
+		oFile.CloseFile();
+	}
+
     std::wstring wsPassword;
     bool bResult = pdfFile.LoadFromFile(wsSrcFile);
     if (!bResult)
@@ -154,7 +174,7 @@ int main()
 			DWORD nFileSize;
 			std::wstring sFile = NSFile::GetProcessDirectory() + L"/res0.png";
 			if (NSFile::CFileBinary::ReadAllBytes(sFile, &pFileData, nFileSize))
-				pdfFile.CreatePdf(false, pFileData, nFileSize, {{L"test1", L"res1"}, {L"test2", L"res2"}});
+				pdfFile.CreatePdf(true, pFileData, nFileSize, {{L"test1", L"res1"}, {L"test2", L"res2"}, {L"FileName", L"res1.png"}});
 			else
 				pdfFile.CreatePdf();
 			RELEASEARRAYOBJECTS(pFileData);

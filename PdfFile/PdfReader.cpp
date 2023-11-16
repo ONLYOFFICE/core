@@ -408,23 +408,6 @@ bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* dat
 
 	return true;
 }
-int CPdfReader::HaveMetaData(const std::wstring& sFile)
-{
-	// TODO в небольшом диапазоне стартовых байтов определяем имеются ли наши метаданные. И возвращает размер необходимой для чтения части дабы эти метаданные можно было извлечь
-	return 0;
-}
-bool CPdfReader::GetMetaData(const std::wstring& sFile, BYTE** pMetaData, DWORD& nMetaLength, std::map<std::wstring, std::wstring>& pMetaResources)
-{
-	BYTE* pData = NULL;
-	DWORD nLength = 0;
-	if (!NSFile::CFileBinary::ReadAllBytes(sFile, &pData, nLength))
-	{
-		RELEASEARRAYOBJECTS(pData);
-		return false;
-	}
-
-	return true;
-}
 void CPdfReader::Close()
 {
 	RELEASEOBJECT(m_pPDFDocument);

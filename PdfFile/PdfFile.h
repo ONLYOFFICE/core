@@ -110,6 +110,7 @@ public:
 	void SetCMapFile(const std::wstring& sFile);
 	void ToXml(const std::wstring& sFile, bool bSaveStreams = false);
 
+	bool GetMetaData(const std::wstring& sFile, BYTE** pMetaData, DWORD& nMetaLength, std::map<std::wstring, std::wstring>& pMetaResources);
 	virtual bool LoadFromFile  (const std::wstring& file, const std::wstring& options = L"", const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
 	virtual bool LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options = L"", const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
 	virtual NSFonts::IApplicationFonts* GetFonts();

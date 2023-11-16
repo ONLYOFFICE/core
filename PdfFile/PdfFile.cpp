@@ -36,6 +36,8 @@
 #include "../DesktopEditor/common/File.h"
 #include "../HtmlRenderer/include/HTMLRendererText.h"
 #include "lib/xpdf/PDFDoc.h"
+#include "lib/xpdf/Lexer.h"
+#include "lib/xpdf/Parser.h"
 
 #ifndef BUILDING_WASM_MODULE
 #include "OnlineOfficeBinToPdf.h"
@@ -1064,6 +1066,169 @@ void CPdfFile::ToXml(const std::wstring& sFile, bool bSaveStreams)
 	m_pInternal->pReader->ToXml(sFile, bSaveStreams);
 }
 
+bool CPdfFile::GetMetaData(const std::wstring& sFile, BYTE** pMetaData, DWORD& nMetaLength, std::map<std::wstring, std::wstring>& pMetaResources)
+{
+	NSFile::CFileBinary oFile;
+	if (!oFile.OpenFile(sFile))
+		return false;
+
+	int nBufferSize = 4096;
+	BYTE* pBuffer = new BYTE[nBufferSize];
+	if (!pBuffer)
+	{
+		oFile.CloseFile();
+		return false;
+	}
+
+	DWORD nReadBytes = 0;
+	if (!oFile.ReadFile(pBuffer, nBufferSize, nReadBytes))
+	{
+		RELEASEARRAYOBJECTS(pBuffer);
+		oFile.CloseFile();
+		return false;
+	}
+	oFile.CloseFile();
+	pBuffer[nReadBytes - 1] = '\0';
+
+	char* pFirst = strstr((char*)pBuffer, "%\315\312\322\251\015");
+
+	if (!pFirst || pFirst - (char*)pBuffer + 6 >= nReadBytes)
+	{
+		RELEASEARRAYOBJECTS(pBuffer);
+		return false;
+	}
+	pFirst += 6;
+
+	if (strncmp(pFirst, "1 0 obj\012<<\012", 11) != 0 || pFirst - (char*)pBuffer + 11 >= nReadBytes)
+	{
+		RELEASEARRAYOBJECTS(pBuffer);
+		return false;
+	}
+	int nObjBegin = pFirst - (char*)pBuffer;
+	pFirst += 11;
+
+	pFirst = strstr(pFirst, "/Length ");
+	char* pStream = strstr(pFirst, "stream\015\012");
+	if (!pFirst || !pStream || pStream < pFirst)
+	{
+		RELEASEARRAYOBJECTS(pBuffer);
+		return false;
+	}
+	pFirst  += 8;
+	pStream += 8;
+	int nStreamBegin = pStream - (char*)pBuffer;
+
+	char* pLast = strstr(pFirst, " ");
+	if (!pLast)
+	{
+		RELEASEARRAYOBJECTS(pBuffer);
+		return false;
+	}
+
+	std::string sLength = std::string(pFirst, pLast - pFirst);
+	int nStreamLength = std::stoi(sLength);
+	RELEASEARRAYOBJECTS(pBuffer);
+
+	nBufferSize = nStreamBegin + nStreamLength + 20;
+	pBuffer = new BYTE[nBufferSize];
+	if (!pBuffer)
+		return false;
+
+	nReadBytes = 0;
+	if (!oFile.OpenFile(sFile) || !oFile.ReadFile(pBuffer, nBufferSize, nReadBytes))
+	{
+		RELEASEARRAYOBJECTS(pBuffer);
+		oFile.CloseFile();
+		return false;
+	}
+	oFile.CloseFile();
+
+	Object oDictStream;
+	oDictStream.initNull();
+	BaseStream* str = new MemStream((char*)pBuffer, 0, nReadBytes, &oDictStream);
+	if (!str)
+	{
+		RELEASEARRAYOBJECTS(pBuffer);
+		return false;
+	}
+
+	Object oObj;
+	Parser* parser = new Parser(NULL, new Lexer(NULL, str->makeSubStream(str->getStart() + nObjBegin, gFalse, 0, &oObj)), gTrue);
+	if (!parser->getObj(&oObj, gTrue)->isInt())
+	{
+		RELEASEARRAYOBJECTS(pBuffer);
+		oObj.free();
+		return false;
+	}
+	oObj.free();
+	if (!parser->getObj(&oObj, gTrue)->isInt())
+	{
+		RELEASEARRAYOBJECTS(pBuffer);
+		oObj.free();
+		return false;
+	}
+	oObj.free();
+	if (!parser->getObj(&oObj, gTrue)->isCmd("obj"))
+	{
+		RELEASEARRAYOBJECTS(pBuffer);
+		oObj.free();
+		return false;
+	}
+	oObj.free();
+
+	if (!parser->getObj(&oObj)->isStream())
+	{
+		RELEASEARRAYOBJECTS(pBuffer);
+		oObj.free();
+		return false;
+	}
+
+	Stream* sData = oObj.getStream();
+	Dict* dict = sData->getDict();
+	for (int i = 0; i < dict->getLength(); ++i)
+	{
+		char* sKey = dict->getKey(i);
+		if (strcmp(sKey, "Length") == 0)
+		{
+			Object oLength;
+			dict->getVal(i, &oLength);
+			nMetaLength = oLength.getInt();
+
+			Stream* pImage = sData->getUndecodedStream();
+			pImage->reset();
+
+			*pMetaData = new BYTE[nMetaLength];
+			BYTE* pBufferPtr = *pMetaData;
+			for (int nI = 0; nI < nMetaLength; ++nI)
+				*pBufferPtr++ = (BYTE)pImage->getChar();
+
+			oLength.free();
+		}
+		else
+		{
+			std::wstring sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sKey, strlen(sKey));
+
+			Object oVal;
+			if (dict->getVal(i, &oVal)->isString())
+			{
+				TextString* sResName = new TextString(oVal.getString());
+				std::wstring sStr = NSStringExt::CConverter::GetUnicodeFromUTF32(sResName->getUnicode(), sResName->getLength());
+				RELEASEOBJECT(sResName);
+
+				pMetaResources[sName] = sStr;
+			}
+
+			oVal.free();
+		}
+	}
+
+	oObj.free();
+	delete parser;
+
+	RELEASEARRAYOBJECTS(pBuffer);
+	RELEASEOBJECT(str);
+	return true;
+}
 bool CPdfFile::LoadFromFile(const std::wstring& file, const std::wstring& options, const std::wstring& owner_password, const std::wstring& user_password)
 {
 	m_pInternal->pReader = new CPdfReader(m_pInternal->pAppFonts);

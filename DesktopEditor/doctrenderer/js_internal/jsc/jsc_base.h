@@ -133,6 +133,21 @@ namespace NSJSBase
             [value setValue:[JSValue valueWithDouble:_value inContext: getContext()] forProperty:[[NSString alloc] initWithUTF8String:name]];
         }
 
+		virtual std::vector<std::string> getPropertyNames()
+		{
+			NSArray* names = [[value toObject] allKeys];
+			uint32_t len = [names count];
+
+			std::vector<std::string> ret(len);
+			for (uint32_t i = 0; i < len; i++)
+			{
+				NSString* name = [names objectAtIndex:i];
+				ret[i] = [name stdstring];
+			}
+
+			return ret;
+		}
+
         virtual CJSEmbedObject* getNative()
         {
             id _wrapper = [value toObject];

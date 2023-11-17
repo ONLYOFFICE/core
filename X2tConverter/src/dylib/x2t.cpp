@@ -35,5 +35,9 @@
 
 int X2T_Convert(int argc, x2tchar *argv[])
 {
-    return main_lib(argc, argv);
+#if !defined(_WIN32) && !defined(_WIN64)
+	return main_lib(argc, argv);
+#else
+	return wmain_lib(argc, argv);
+#endif
 }

@@ -23,7 +23,7 @@ namespace StarMath
 		TypeElement GetLocalType();
 		std::wstring GetString();
 		//clearing a variable m_wsToken
-		void ClearWString();
+		void ClearReader();
 		bool CheckIteratorPosition();
 		bool EmptyString();
 	private:
@@ -137,6 +137,23 @@ namespace StarMath
 		TypeElement m_enTypeOperator;
 	};
 
+	class CElementGrade: public CElement
+	{
+	public:
+		CElementGrade();
+		virtual ~CElementGrade();
+		void SetValueGrade(CElement* pElement);
+		void SetValueFrom(CElement* pElement);
+		void SetValueTo(CElement* pElement);
+		static TypeElement GetGrade(const std::wstring& wsToken);
+	private:
+		void Parse(CStarMathReader* pReader) override;
+		void ConversionToOOXML(XmlUtils::CXmlWriter* oXmlWrite) override;
+		CElement* m_pValueGrade;
+		CElement* m_pValueFrom;
+		CElement* m_pValueTo;
+	};
+
 	class CElementBracket: public CElement
 	{
 	public:
@@ -146,10 +163,26 @@ namespace StarMath
 		static TypeElement GetBracketOpen(const std::wstring& wsToken);
 	private:
 		void Parse(CStarMathReader* pReader) override;
-		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite);
+		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
 		TypeElement GetBracketClose(const std::wstring& wsToken);
 		TypeElement m_enTypeBracket;
 		std::vector<CElement*> m_arBrecketValue;
+	};
+
+	class CElementBracketWithIndex: public CElement
+	{
+	public:
+		CElementBracketWithIndex(const TypeElement& enType);
+		virtual ~CElementBracketWithIndex();
+		void SetLeftArg(CElement* pElement);
+		void SetBracketValue(CElement* pElement);
+		static TypeElement GetBracketWithIndex(const std::wstring& wsToken);
+	private:
+		void Parse(CStarMathReader* pReader) override;
+		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
+		CElement* m_pLeftArg;
+		CElement* m_pValue;
+		TypeElement m_enTypeBracketWithIndex;
 	};
 
 	class CElementSetOperations: public CElement
@@ -208,9 +241,27 @@ namespace StarMath
 	public:
 		CElementSpecialSymbol(const TypeElement& enType);
 		virtual ~CElementSpecialSymbol();
+		static TypeElement GetSpecialSymbol(const std::wstring& wsToken);
 	private:
 		void Parse(CStarMathReader* pReader) override;
+		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
 		TypeElement m_enTypeSpecial;
+	};
+
+	class CElementMatrix: public CElement
+	{
+	public:
+		CElementMatrix(const TypeElement& enType);
+		virtual ~CElementMatrix();
+		void SetFirstArgument(CElement* pElement);
+		void SetSecondArgument(CElement* pElement);
+		static TypeElement GetMatrix(const std::wstring& wsToken);
+	private:
+		void Parse(CStarMathReader *pReader) override;
+		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
+		CElement* m_pFirstArgument;
+		CElement* m_pSecondArgument;
+		TypeElement m_enTypeMatrix;
 	};
 
 	class CParserStarMathString
@@ -220,6 +271,7 @@ namespace StarMath
 		static CElement* ParseElement(CStarMathReader* pReader);
 		//Function for adding a left argument (receives the argument itself and the element to which it needs to be added as input. Works with classes:CElementBinOperator,CElementConnection,CElementSetOperation).
 		static void AddLeftArgument(CElement* pLeftArg,CElement* pElementWhichAdd);
+		static bool CheckForLeftArgument(const TypeElement& enType);
 		static CElement* ReadingWithoutBracket(CStarMathReader* pReader);
 	private:
 		std::vector<CElement*> m_arEquation;

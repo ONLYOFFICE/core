@@ -10,6 +10,8 @@ enum class TypeElement{
 	SetOperations,
 	Operator,
 	Bracket,
+	BracketWithIndex,
+	Grade,
 	//BracketEnd,
 	UnarSign,
 	Attribute,
@@ -120,7 +122,7 @@ enum class TypeElement{
 	intersection,
 	Union,
 	setminus,
-	setquoyient,
+	setquotient,
 	subseteq,
 	subset,
 	supset,
@@ -167,7 +169,7 @@ enum class TypeElement{
 	dlarrow,
 	dlrarrow,
 	drarrow,
-	//
+	//SpecialSymbol
 	emptyset,
 	aleph,
 	setN,
@@ -175,6 +177,7 @@ enum class TypeElement{
 	setQ,
 	setR,
 	setC,
+	//
 	infinity,
 	partial,
 	nabla,
@@ -239,6 +242,11 @@ enum class TypeElement{
 	//op
 	from,
 	to,
+	//bracketWithIndex
+	overbrace,
+	underbrace,
+	//grade
+	evaluate,
 };
 }
 #endif // TYPESELEMENTS_H

@@ -161,5 +161,8 @@ int main(int argc, char** argv)
 	args[0] = NULL;
 	args[1] = (x2tchar*)xmlDst.c_str();
 
-	return X2T_Convert(2, args);
+	int nResultCode = X2T_Convert(2, args);
+	NSDirectory::DeleteDirectory(tmp_dir);
+
+	return nResultCode;
 }

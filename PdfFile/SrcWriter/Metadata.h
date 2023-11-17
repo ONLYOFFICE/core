@@ -56,7 +56,7 @@ namespace PdfWriter
 	class CStreamData : public CDictObject
 	{
 	public:
-		CStreamData(CXref* pXref, BYTE* pMetaData, DWORD nMetaLength, const std::map<std::wstring, std::wstring>& pMetaResources);
+		CStreamData(BYTE* pMetaData, DWORD nMetaLength);
 		EDictType GetDictType() const override
 		{
 			return dict_type_STREAM;

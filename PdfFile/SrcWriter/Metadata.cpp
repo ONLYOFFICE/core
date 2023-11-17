@@ -167,25 +167,12 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// StreamData
 	//----------------------------------------------------------------------------------------
-	CStreamData::CStreamData(CXref* pXref, BYTE* pMetaData, DWORD nMetaLength, const std::map<std::wstring, std::wstring>& pMetaResources)
+	CStreamData::CStreamData(BYTE* pMetaData, DWORD nMetaLength)
 	{
-		pXref->Add(this);
-
 		CMemoryStream* pStream = new CMemoryStream();
 		pStream->Write(pMetaData, nMetaLength);
 		Add("Length", 1234567890);
-		SetStream(pXref, pStream);
-
-		for (const auto& pMeta : pMetaResources)
-		{
-			if (pMeta.first == L"Length")
-				continue;
-
-			std::string sName = U_TO_UTF8(pMeta.first);
-			std::string sData = U_TO_UTF8(pMeta.second);
-
-			Add(sName, new CStringObject(sData.c_str()));
-		}
+		SetStream(NULL, pStream);
 
 		m_nLengthBegin = 0;
 		m_nLengthEnd   = 0;

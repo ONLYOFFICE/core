@@ -103,7 +103,7 @@ namespace PdfWriter
 	{
 		Close();
 	}
-	bool CDocument::CreateNew(BYTE* pMetaData, DWORD nMetaLength, const std::map<std::wstring, std::wstring>& pMetaResources)
+	bool CDocument::CreateNew(CStreamData* pMetaData)
 	{
 		Close();
 
@@ -115,37 +115,23 @@ namespace PdfWriter
 		if (!m_pTrailer)
 			return false;
 
-		CStreamData* pData = NULL;
-		if (true && pMetaData)
-		{
-			pData = new CStreamData(m_pXref, pMetaData, nMetaLength, pMetaResources);
-			if (!pData)
-				return false;
-		}
+		if (pMetaData)
+			m_pXref->Add(pMetaData);
 
 		m_pCatalog = new CCatalog(m_pXref);
 		if (!m_pCatalog)
-		{
-			RELEASEOBJECT(pData);
 			return false;
-		}
 
 		m_pCatalog->SetPageMode(pagemode_UseNone);
 		m_pCatalog->SetPageLayout(pagelayout_OneColumn);
 
 		m_pPageTree = m_pCatalog->GetRoot();
 		if (!m_pPageTree)
-		{
-			RELEASEOBJECT(pData);
 			return false;
-		}
 
 		m_pInfo = new CInfoDict(m_pXref);
 		if (!m_pInfo)
-		{
-			RELEASEOBJECT(pData);
 			return false;
-		}
 
 		m_pInfo->SetTime(InfoCreationDate);
 		m_pInfo->SetTime(InfoModaDate);

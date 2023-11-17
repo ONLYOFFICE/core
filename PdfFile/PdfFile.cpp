@@ -56,6 +56,7 @@
 #include "SrcWriter/Info.h"
 #include "SrcWriter/Annotation.h"
 #include "SrcWriter/ResourcesDictionary.h"
+#include "SrcWriter/Metadata.h"
 
 #define AddToObject(oVal)\
 {\
@@ -176,6 +177,7 @@ public:
 	CPdfReader* pReader;
 
 	CPdfWriter* pWriter;
+	PdfWriter::CStreamData* pMetaData;
 	LONG lClipMode;
 	bool bEdit;
 	bool bEditPage;
@@ -259,6 +261,7 @@ CPdfFile::CPdfFile(NSFonts::IApplicationFonts* pAppFonts)
 	m_pInternal->pAppFonts = pAppFonts;
 	m_pInternal->pWriter = NULL;
 	m_pInternal->pReader = NULL;
+	m_pInternal->pMetaData = NULL;
 	m_pInternal->wsPassword = L"";
 	m_pInternal->bEdit     = false;
 	m_pInternal->bEditPage = false;
@@ -267,6 +270,8 @@ CPdfFile::~CPdfFile()
 {
 	RELEASEOBJECT(m_pInternal->pWriter);
 	RELEASEOBJECT(m_pInternal->pReader);
+	if (m_pInternal->pMetaData && !m_pInternal->pMetaData->IsIndirect())
+		RELEASEOBJECT(m_pInternal->pMetaData);
 }
 NSFonts::IFontManager* CPdfFile::GetFontManager()
 {
@@ -1066,7 +1071,7 @@ void CPdfFile::ToXml(const std::wstring& sFile, bool bSaveStreams)
 	m_pInternal->pReader->ToXml(sFile, bSaveStreams);
 }
 
-bool CPdfFile::GetMetaData(const std::wstring& sFile, BYTE** pMetaData, DWORD& nMetaLength, std::map<std::wstring, std::wstring>& pMetaResources)
+bool CPdfFile::GetMetaData(const std::wstring& sFile, BYTE** pMetaData, DWORD& nMetaLength)
 {
 	NSFile::CFileBinary oFile;
 	if (!oFile.OpenFile(sFile))
@@ -1185,42 +1190,20 @@ bool CPdfFile::GetMetaData(const std::wstring& sFile, BYTE** pMetaData, DWORD& n
 
 	Stream* sData = oObj.getStream();
 	Dict* dict = sData->getDict();
-	for (int i = 0; i < dict->getLength(); ++i)
+	Object oLength;
+	if (dict->lookup("Length", &oLength)->isInt())
 	{
-		char* sKey = dict->getKey(i);
-		if (strcmp(sKey, "Length") == 0)
-		{
-			Object oLength;
-			dict->getVal(i, &oLength);
-			nMetaLength = oLength.getInt();
+		nMetaLength = oLength.getInt();
 
-			Stream* pImage = sData->getUndecodedStream();
-			pImage->reset();
+		Stream* pImage = sData->getUndecodedStream();
+		pImage->reset();
 
-			*pMetaData = new BYTE[nMetaLength];
-			BYTE* pBufferPtr = *pMetaData;
-			for (int nI = 0; nI < nMetaLength; ++nI)
-				*pBufferPtr++ = (BYTE)pImage->getChar();
-
-			oLength.free();
-		}
-		else
-		{
-			std::wstring sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sKey, strlen(sKey));
-
-			Object oVal;
-			if (dict->getVal(i, &oVal)->isString())
-			{
-				TextString* sResName = new TextString(oVal.getString());
-				std::wstring sStr = NSStringExt::CConverter::GetUnicodeFromUTF32(sResName->getUnicode(), sResName->getLength());
-				RELEASEOBJECT(sResName);
-
-				pMetaResources[sName] = sStr;
-			}
-
-			oVal.free();
-		}
+		*pMetaData = new BYTE[nMetaLength];
+		BYTE* pBufferPtr = *pMetaData;
+		for (int nI = 0; nI < nMetaLength; ++nI)
+			*pBufferPtr++ = (BYTE)pImage->getChar();
 	}
+	oLength.free();
 
 	oObj.free();
 	delete parser;
@@ -1403,10 +1386,10 @@ BYTE* CPdfFile::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, in
 
 // ------------------------------------------------------------------------
 
-void CPdfFile::CreatePdf(bool isPDFA, BYTE* pMetaData, DWORD nMetaLength, const std::map<std::wstring, std::wstring>& pMetaResources)
+void CPdfFile::CreatePdf(bool isPDFA)
 {
 	RELEASEOBJECT(m_pInternal->pWriter);
-	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, isPDFA, this, pMetaData, nMetaLength, pMetaResources);
+	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, isPDFA, this, m_pInternal->pMetaData);
 }
 int CPdfFile::SaveToFile(const std::wstring& wsPath)
 {
@@ -1425,6 +1408,15 @@ void CPdfFile::SetDocumentID(const std::wstring& wsDocumentID)
 	if (!m_pInternal->pWriter)
 		return;
 	m_pInternal->pWriter->SetDocumentID(wsDocumentID);
+}
+bool CPdfFile::SetMetaData(BYTE* pMetaData, DWORD nMetaLength)
+{
+	if (m_pInternal->pWriter)
+		return false;
+
+	RELEASEOBJECT(m_pInternal->pMetaData);
+	m_pInternal->pMetaData = new PdfWriter::CStreamData(pMetaData, nMetaLength);
+	return true;
 }
 HRESULT CPdfFile::OnlineWordToPdf(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
 {

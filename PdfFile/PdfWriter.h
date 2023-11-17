@@ -45,6 +45,7 @@
 #include "../../DesktopEditor/graphics/commands/DocInfo.h"
 #include "../../DesktopEditor/graphics/commands/FormField.h"
 #include "../../DesktopEditor/graphics/commands/AnnotField.h"
+#include "SrcWriter/Metadata.h"
 
 namespace PdfWriter
 {
@@ -64,7 +65,7 @@ namespace Aggplus
 class CPdfWriter
 {
 public:
-	CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA = false, IRenderer* pRenderer = NULL, BYTE* pMetaData = NULL, DWORD nMetaLength = 0, const std::map<std::wstring, std::wstring>& pMetaResources = {});
+	CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA = false, IRenderer* pRenderer = NULL, PdfWriter::CStreamData* pMetaData = NULL);
 	~CPdfWriter();
 	int          SaveToFile(const std::wstring& wsPath);
 	void         SetPassword(const std::wstring& wsPassword);

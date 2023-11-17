@@ -95,7 +95,7 @@ static const long c_BrushTypeRadialGradient = 8002;
 // CPdfRenderer
 //
 //----------------------------------------------------------------------------------------
-CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRenderer* pRenderer, BYTE* pMetaData, DWORD nMetaLength, const std::map<std::wstring, std::wstring>& pMetaResources) : m_oCommandManager(this)
+CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRenderer* pRenderer, PdfWriter::CStreamData* pMetaData) : m_oCommandManager(this)
 {
 	// Создаем менеджер шрифтов с собственным кэшем
 	m_pFontManager = pAppFonts->GenerateFontManager();
@@ -109,7 +109,7 @@ CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRend
 	if (isPDFA)
 		m_pDocument->SetPDFAConformanceMode(true);
 
-	if (!m_pDocument || !m_pDocument->CreateNew(pMetaData, nMetaLength, pMetaResources))
+	if (!m_pDocument || !m_pDocument->CreateNew(pMetaData))
 	{
 		SetError();
 		return;

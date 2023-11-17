@@ -36,4 +36,4 @@ base.copy_dictionaries("../../../../dictionaries", x2t_build_dir + "/dictionarie
 base.copy_file("../../../../sdkjs/pdf/src/engine/cmap.bin", x2t_build_dir + "/cmap.bin")
 
 # DoctRenderer.config
-base.generate_doctrenderer_config(x2t_build_dir + "/DoctRenderer.config", "./", "", "", "./dictionaries")
+base.generate_doctrenderer_config(x2t_build_dir + "/DoctRenderer.config", "./", "builder", "", "./dictionaries")

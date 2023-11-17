@@ -95,7 +95,7 @@ static const long c_BrushTypeRadialGradient = 8002;
 // CPdfRenderer
 //
 //----------------------------------------------------------------------------------------
-CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRenderer* pRenderer, PdfWriter::CStreamData* pMetaData) : m_oCommandManager(this)
+CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRenderer* pRenderer) : m_oCommandManager(this)
 {
 	// Создаем менеджер шрифтов с собственным кэшем
 	m_pFontManager = pAppFonts->GenerateFontManager();
@@ -109,7 +109,7 @@ CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRend
 	if (isPDFA)
 		m_pDocument->SetPDFAConformanceMode(true);
 
-	if (!m_pDocument || !m_pDocument->CreateNew(pMetaData))
+	if (!m_pDocument || !m_pDocument->CreateNew())
 	{
 		SetError();
 		return;
@@ -2326,6 +2326,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	}
 
 	return S_OK;
+}
+HRESULT CPdfWriter::AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength)
+{
+	return m_pDocument->AddMetaData(sMetaName, pMetaData, nMetaLength) ? S_OK : S_FALSE;
 }
 //----------------------------------------------------------------------------------------
 // Дополнительные функции Pdf рендерера

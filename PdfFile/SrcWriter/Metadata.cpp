@@ -167,15 +167,37 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// StreamData
 	//----------------------------------------------------------------------------------------
-	CStreamData::CStreamData(BYTE* pMetaData, DWORD nMetaLength)
+	CStreamData::CStreamData(CXref* pXref)
 	{
-		CMemoryStream* pStream = new CMemoryStream();
-		pStream->Write(pMetaData, nMetaLength);
+		pXref->Add(this);
+
+		m_pStream = new CMemoryStream();
 		Add("Length", 1234567890);
-		SetStream(NULL, pStream);
+		Add("Type", "MetaOForm");
+		SetStream(pXref, m_pStream);
 
 		m_nLengthBegin = 0;
 		m_nLengthEnd   = 0;
+	}
+	bool CStreamData::AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength)
+	{
+		if (sMetaName == L"Length")
+			return false;
+
+		CArrayObject* pArr = new CArrayObject();
+		if (!pArr)
+			return false;
+
+		std::string sKey = U_TO_UTF8(sMetaName);
+		Add(sKey, pArr);
+
+		//m_pStream1->WriteChar('\012');
+		int nCur = m_pStream->Tell();
+		pArr->Add(nCur);
+		pArr->Add((int)nMetaLength);
+		m_pStream->Write(pMetaData, nMetaLength);
+
+		return true;
 	}
 	void CStreamData::WriteToStream(CStream* pStream, CEncrypt* pEncrypt)
 	{

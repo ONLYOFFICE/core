@@ -177,7 +177,6 @@ public:
 	CPdfReader* pReader;
 
 	CPdfWriter* pWriter;
-	PdfWriter::CStreamData* pMetaData;
 	LONG lClipMode;
 	bool bEdit;
 	bool bEditPage;
@@ -261,7 +260,6 @@ CPdfFile::CPdfFile(NSFonts::IApplicationFonts* pAppFonts)
 	m_pInternal->pAppFonts = pAppFonts;
 	m_pInternal->pWriter = NULL;
 	m_pInternal->pReader = NULL;
-	m_pInternal->pMetaData = NULL;
 	m_pInternal->wsPassword = L"";
 	m_pInternal->bEdit     = false;
 	m_pInternal->bEditPage = false;
@@ -270,8 +268,6 @@ CPdfFile::~CPdfFile()
 {
 	RELEASEOBJECT(m_pInternal->pWriter);
 	RELEASEOBJECT(m_pInternal->pReader);
-	if (m_pInternal->pMetaData && !m_pInternal->pMetaData->IsIndirect())
-		RELEASEOBJECT(m_pInternal->pMetaData);
 }
 NSFonts::IFontManager* CPdfFile::GetFontManager()
 {
@@ -1071,7 +1067,7 @@ void CPdfFile::ToXml(const std::wstring& sFile, bool bSaveStreams)
 	m_pInternal->pReader->ToXml(sFile, bSaveStreams);
 }
 
-bool CPdfFile::GetMetaData(const std::wstring& sFile, BYTE** pMetaData, DWORD& nMetaLength)
+bool CPdfFile::GetMetaData(const std::wstring& sFile, const std::wstring& sMetaName, BYTE** pMetaData, DWORD& nMetaLength)
 {
 	NSFile::CFileBinary oFile;
 	if (!oFile.OpenFile(sFile))
@@ -1109,107 +1105,53 @@ bool CPdfFile::GetMetaData(const std::wstring& sFile, BYTE** pMetaData, DWORD& n
 		RELEASEARRAYOBJECTS(pBuffer);
 		return false;
 	}
-	int nObjBegin = pFirst - (char*)pBuffer;
 	pFirst += 11;
 
-	pFirst = strstr(pFirst, "/Length ");
+	std::string sMeta = U_TO_UTF8(sMetaName);
 	char* pStream = strstr(pFirst, "stream\015\012");
-	if (!pFirst || !pStream || pStream < pFirst)
+	char* pMeta = strstr(pFirst, sMeta.c_str());
+	if (!pStream || !pMeta || pStream < pMeta)
 	{
 		RELEASEARRAYOBJECTS(pBuffer);
 		return false;
 	}
-	pFirst  += 8;
 	pStream += 8;
 	int nStreamBegin = pStream - (char*)pBuffer;
+	pMeta += sMeta.length() + 3;
 
-	char* pLast = strstr(pFirst, " ");
-	if (!pLast)
+	char* pMetaLast = strstr(pMeta, " ");
+	if (!pMetaLast)
 	{
 		RELEASEARRAYOBJECTS(pBuffer);
 		return false;
 	}
+	std::string sMetaOffset = std::string(pMeta, pMetaLast - pMeta);
+	int nMetaOffset = std::stoi(sMetaOffset);
 
-	std::string sLength = std::string(pFirst, pLast - pFirst);
-	int nStreamLength = std::stoi(sLength);
-	RELEASEARRAYOBJECTS(pBuffer);
-
-	nBufferSize = nStreamBegin + nStreamLength + 20;
-	pBuffer = new BYTE[nBufferSize];
-	if (!pBuffer)
-		return false;
-
-	nReadBytes = 0;
-	if (!oFile.OpenFile(sFile) || !oFile.ReadFile(pBuffer, nBufferSize, nReadBytes))
+	pMeta = pMetaLast + 1;
+	pMetaLast = strstr(pMeta, " ");
+	if (!pMetaLast)
 	{
 		RELEASEARRAYOBJECTS(pBuffer);
+		return false;
+	}
+	std::string sMetaSize = std::string(pMeta, pMetaLast - pMeta);
+	nMetaLength = std::stoi(sMetaSize);
+
+	RELEASEARRAYOBJECTS(pBuffer);
+	*pMetaData = new BYTE[nMetaLength];
+	pBuffer = *pMetaData;
+	nReadBytes = 0;
+	if (!oFile.OpenFile(sFile) || !oFile.SeekFile(nStreamBegin + nMetaOffset) || !oFile.ReadFile(pBuffer, nMetaLength, nReadBytes))
+	{
+		RELEASEARRAYOBJECTS(pBuffer);
+		pMetaData = NULL;
 		oFile.CloseFile();
 		return false;
 	}
 	oFile.CloseFile();
+	nMetaLength = nReadBytes;
 
-	Object oDictStream;
-	oDictStream.initNull();
-	BaseStream* str = new MemStream((char*)pBuffer, 0, nReadBytes, &oDictStream);
-	if (!str)
-	{
-		RELEASEARRAYOBJECTS(pBuffer);
-		return false;
-	}
-
-	Object oObj;
-	Parser* parser = new Parser(NULL, new Lexer(NULL, str->makeSubStream(str->getStart() + nObjBegin, gFalse, 0, &oObj)), gTrue);
-	if (!parser->getObj(&oObj, gTrue)->isInt())
-	{
-		RELEASEARRAYOBJECTS(pBuffer);
-		oObj.free();
-		return false;
-	}
-	oObj.free();
-	if (!parser->getObj(&oObj, gTrue)->isInt())
-	{
-		RELEASEARRAYOBJECTS(pBuffer);
-		oObj.free();
-		return false;
-	}
-	oObj.free();
-	if (!parser->getObj(&oObj, gTrue)->isCmd("obj"))
-	{
-		RELEASEARRAYOBJECTS(pBuffer);
-		oObj.free();
-		return false;
-	}
-	oObj.free();
-
-	if (!parser->getObj(&oObj)->isStream())
-	{
-		RELEASEARRAYOBJECTS(pBuffer);
-		oObj.free();
-		return false;
-	}
-
-	Stream* sData = oObj.getStream();
-	Dict* dict = sData->getDict();
-	Object oLength;
-	if (dict->lookup("Length", &oLength)->isInt())
-	{
-		nMetaLength = oLength.getInt();
-
-		Stream* pImage = sData->getUndecodedStream();
-		pImage->reset();
-
-		*pMetaData = new BYTE[nMetaLength];
-		BYTE* pBufferPtr = *pMetaData;
-		for (int nI = 0; nI < nMetaLength; ++nI)
-			*pBufferPtr++ = (BYTE)pImage->getChar();
-	}
-	oLength.free();
-
-	oObj.free();
-	delete parser;
-
-	RELEASEARRAYOBJECTS(pBuffer);
-	RELEASEOBJECT(str);
 	return true;
 }
 bool CPdfFile::LoadFromFile(const std::wstring& file, const std::wstring& options, const std::wstring& owner_password, const std::wstring& user_password)
@@ -1389,7 +1331,7 @@ BYTE* CPdfFile::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, in
 void CPdfFile::CreatePdf(bool isPDFA)
 {
 	RELEASEOBJECT(m_pInternal->pWriter);
-	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, isPDFA, this, m_pInternal->pMetaData);
+	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, isPDFA, this);
 }
 int CPdfFile::SaveToFile(const std::wstring& wsPath)
 {
@@ -1409,14 +1351,11 @@ void CPdfFile::SetDocumentID(const std::wstring& wsDocumentID)
 		return;
 	m_pInternal->pWriter->SetDocumentID(wsDocumentID);
 }
-bool CPdfFile::SetMetaData(BYTE* pMetaData, DWORD nMetaLength)
+void CPdfFile::AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength)
 {
-	if (m_pInternal->pWriter)
-		return false;
-
-	RELEASEOBJECT(m_pInternal->pMetaData);
-	m_pInternal->pMetaData = new PdfWriter::CStreamData(pMetaData, nMetaLength);
-	return true;
+	if (!m_pInternal->pWriter)
+		return;
+	m_pInternal->pWriter->AddMetaData(sMetaName, pMetaData, nMetaLength);
 }
 HRESULT CPdfFile::OnlineWordToPdf(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
 {

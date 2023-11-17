@@ -103,7 +103,7 @@ namespace PdfWriter
 	{
 		Close();
 	}
-	bool CDocument::CreateNew(CStreamData* pMetaData)
+	bool CDocument::CreateNew()
 	{
 		Close();
 
@@ -115,8 +115,9 @@ namespace PdfWriter
 		if (!m_pTrailer)
 			return false;
 
-		if (pMetaData)
-			m_pXref->Add(pMetaData);
+		m_pMetaData = new CStreamData(m_pXref);
+		if (!m_pMetaData)
+			return false;
 
 		m_pCatalog = new CCatalog(m_pXref);
 		if (!m_pCatalog)
@@ -405,7 +406,13 @@ namespace PdfWriter
 
 		m_pCatalog->AddPageLabel(unPageNum, pPageLabel);
 	}
-    CDictObject* CDocument::CreatePageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix)
+	bool CDocument::AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength)
+	{
+		if (!m_pMetaData)
+			return false;
+		return m_pMetaData->AddMetaData(sMetaName, pMetaData, nMetaLength);
+	}
+	CDictObject* CDocument::CreatePageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix)
 	{
 		CDictObject* pLabel = new CDictObject();
 		if (!pLabel)

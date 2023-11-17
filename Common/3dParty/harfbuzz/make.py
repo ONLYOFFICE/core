@@ -42,7 +42,9 @@ if not base.is_dir("harfbuzz"):
   
   qmake_content_lines.append("SRC_DIR = $$PWD/harfbuzz/src")
   qmake_content_lines.append("")
-  qmake_content_lines.append("DEFINES += HAVE_FREETYPE")
+  qmake_content_lines.append("DEFINES += \\")
+  qmake_content_lines.append("  HAVE_FREETYPE \\")
+  qmake_content_lines.append("  HB_NO_VISIBILITY")
   qmake_content_lines.append("")
   qmake_content_lines.append("INCLUDEPATH += \\")
   qmake_content_lines.append("  $$SRC_DIR \\")

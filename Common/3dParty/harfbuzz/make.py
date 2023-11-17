@@ -22,6 +22,13 @@ def read_files(folder, addon=""):
     ret_data[i] = addon + ret_data[i]
   return ret_data
 
+def clear_module():
+  if base.is_dir("harfbuzz"):
+    base.delete_dir_with_access_error("harfbuzz")
+  return
+
+base.check_module_version("1", clear_module)
+
 # fetch harfbuzz
 if not base.is_dir("harfbuzz"):
   base.cmd("git", ["clone", "https://github.com/harfbuzz/harfbuzz.git"])

@@ -36,8 +36,6 @@
 #include "../DesktopEditor/common/File.h"
 #include "../HtmlRenderer/include/HTMLRendererText.h"
 #include "lib/xpdf/PDFDoc.h"
-#include "lib/xpdf/Lexer.h"
-#include "lib/xpdf/Parser.h"
 
 #ifndef BUILDING_WASM_MODULE
 #include "OnlineOfficeBinToPdf.h"
@@ -56,7 +54,6 @@
 #include "SrcWriter/Info.h"
 #include "SrcWriter/Annotation.h"
 #include "SrcWriter/ResourcesDictionary.h"
-#include "SrcWriter/Metadata.h"
 
 #define AddToObject(oVal)\
 {\

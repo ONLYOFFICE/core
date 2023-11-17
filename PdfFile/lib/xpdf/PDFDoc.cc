@@ -7,7 +7,6 @@
 //========================================================================
 
 #include <aconf.h>
-#include "../../../DesktopEditor/common/Directory.h"
 
 #ifdef USE_GCC_PRAGMAS
 #pragma implementation

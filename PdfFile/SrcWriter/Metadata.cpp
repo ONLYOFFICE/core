@@ -191,7 +191,6 @@ namespace PdfWriter
 		std::string sKey = U_TO_UTF8(sMetaName);
 		Add(sKey, pArr);
 
-		//m_pStream1->WriteChar('\012');
 		int nCur = m_pStream->Tell();
 		pArr->Add(nCur);
 		pArr->Add((int)nMetaLength);

@@ -72,9 +72,13 @@ SOURCES += \
 # Serialize objects to JS
 HEADERS += \
 	json/json.h \
+	json/json_p.h \
+	json/json_values.h \
 	json/serialization.h
 
-SOURCES += json/json.cpp
+SOURCES += \
+	json/json.cpp \
+	json/json_values.cpp
 
 include($$PWD/js_internal/js_base.pri)
 

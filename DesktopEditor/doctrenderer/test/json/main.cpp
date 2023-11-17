@@ -1,6 +1,7 @@
 //#include "gtest/gtest.h"
 #include "js_internal/js_base.h"
-#include "json/serialization.h"
+//#include "json/serialization.h"
+#include "json/json.h"
 
 #include <iostream>
 #include <string>
@@ -39,54 +40,49 @@ int main()
 	JSSmart<CJSContext> pContext = new CJSContext();
 	CJSContextScope scope(pContext);
 
-	// top object (declared
-	CObject oTextPr;
+	// top object with text parameters
+	CValue textPr = CValue::CreateObject();
 
-	CObject* pColorRGB = new CObject;
-	pColorRGB->set("r", new CValue(12));
-	pColorRGB->set("g", new CValue(34));
-	pColorRGB->set("b", new CValue(56));
+	CValue colorRGB = CValue::CreateObject();
+	colorRGB["r"] = 12;
+	colorRGB["g"] = 34;
+	colorRGB["b"] = 56;
 
-	CObject* pColorRGBA = new CObject;
-	pColorRGBA->set("rgb", pColorRGB);
-	pColorRGBA->set("alpha", new CValue(80));
+	CValue colorRGBA = CValue::CreateObject();
+	colorRGBA["rgb"] = colorRGB;
+	colorRGBA["alpha"] = 80;
 
-	oTextPr.set("size", new CValue(4.2));
-	oTextPr.set("color", pColorRGBA);
-	CObject* pFont = new CObject();
-	oTextPr.set("font", pFont);
-	pFont->set("fontName", new CValue(std::wstring(L"Times New Roman")));
-	pFont->set("bold", new CValue(true));
+	textPr["size"] = 4.2;
+	textPr["color"] = colorRGBA;
+	textPr["font"] = CValue::CreateObject();
+	textPr["font"]["fontName"] = L"Times New Roman";
+	textPr["font"]["bold"] = true;
 	// undefined member:
-	pFont->set("italic", new CValue());
+	textPr["font"]["italic"] = CValue::CreateUndefined();
+	// or just
+//	textPr["font"]["italic"];
 	// null member:
-	CObject* pExtras = new CObject();
-	oTextPr.set("extras", pExtras);
-	pExtras->setNull();
+	textPr["extras"] = CValue::CreateNull();
 	// array
-	CArray* pArrNumbers = new CArray();
-	oTextPr.set("numbers", pArrNumbers);
-	pArrNumbers->add(new CValue(10000));
-	// add new elements to array via object's get()
-	static_cast<CArray*>(oTextPr["numbers"])->addNull();
-	static_cast<CArray*>(oTextPr["numbers"])->add(new CValue(42));
-	static_cast<CArray*>(oTextPr["numbers"])->add(new CValue(0));
+	CValue numbers = {10000, 12, 42, 0, 147};
 	// inner array
-	CArray* pArrInner = new CArray();
-	pArrInner->add(new CValue(std::string("test!")));
-	pArrInner->add(new CValue(3.14));
-	pArrNumbers->add(pArrInner);
-	// typed array
+	CValue innerArray = {true, "abc", 3.1415926535, L"ABC", 4};
+	numbers[3] = innerArray;
+	textPr["numbers"] = numbers;
+	// create typed array
+	/*
 	BYTE* pData = new BYTE[4];
 	pData[0] = 11;
 	pData[1] = 23;
 	pData[2] = 58;
 	pData[3] = 13;
-	// typed array
-	CTypedArray* pTypedArray = new CTypedArray(pData, 4);
-	pArrInner->add(pTypedArray);
+	// add typed array
+	...
+	*/
 
-	JSSmart<CJSObject> jsObj = toJS(&oTextPr)->toObject();
+	// convert to JS
+	/*
+	JSSmart<CJSObject> jsObj = toJS(textPr)->toObject();
 	JSSmart<CJSObject> global = pContext->GetGlobal();
 	global->set("textPr", jsObj);
 	JSSmart<CJSValue> ret = pContext->runScript("(function () { return JSON.stringify(textPr, null, 4); })();");
@@ -94,6 +90,7 @@ int main()
 	{
 		std::cout << ret->toStringA() << std::endl;
 	}
+	*/
 
 	return 0;
 }

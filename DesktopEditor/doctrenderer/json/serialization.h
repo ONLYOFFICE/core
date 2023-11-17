@@ -2,12 +2,14 @@
 #define SERIALIZATION_H_
 
 #include "json.h"
+#include "json_values.h"
+#include "../js_internal/js_base.h"
 
 #include <cmath>
 
 namespace NSJSON
 {
-	static JSSmart<NSJSBase::CJSValue> toJS(const IBaseValue* pValue)
+	static JSSmart<NSJSBase::CJSValue> toJS(const CValue& pValue)
 	{
 		IBaseValue::ValueType type = pValue->m_type;
 		if (type == IBaseValue::vtUndefined)
@@ -46,7 +48,7 @@ namespace NSJSON
 		else
 		{
 			// primitive type
-			const CValue* pPrimitiveValue = static_cast<const CValue*>(pValue);
+			const CPrimitive* pPrimitiveValue = static_cast<const CPrimitive*>(pValue);
 			switch (type) {
 			case IBaseValue::vtBoolean:
 				ret = NSJSBase::CJSContext::createBool(pPrimitiveValue->m_bool);
@@ -71,14 +73,14 @@ namespace NSJSON
 		return ret;
 	}
 
-	static IBaseValue* fromJS(JSSmart<NSJSBase::CJSValue> jsValue)
+	static CValue fromJS(JSSmart<NSJSBase::CJSValue> jsValue)
 	{
 		if (jsValue->isUndefined())
-			return new CValue();
+			return new CPrimitive();
 
 		if (jsValue->isNull())
 		{
-			CValue* pValue = new CValue;
+			CPrimitive* pValue = new CPrimitive;
 			pValue->setNull();
 			return pValue;
 		}
@@ -113,7 +115,7 @@ namespace NSJSON
 		// primitives
 		else if (jsValue->isBool())
 		{
-			ret = new CValue(jsValue->toBool());
+			ret = new CPrimitive(jsValue->toBool());
 		}
 		else if (jsValue->isNumber())
 		{
@@ -124,11 +126,11 @@ namespace NSJSON
 			double fractional = std::modf(number, &integral);	// fractional part
 			if (fractional == 0.0 && integral >= INT_MIN && integral <= INT_MAX)
 			{
-				ret = new CValue(static_cast<int>(integral));
+				ret = new CPrimitive(static_cast<int>(integral));
 			}
 			else
 			{
-				ret = new CValue(number);
+				ret = new CPrimitive(number);
 			}
 		}
 		else if (jsValue->isString())

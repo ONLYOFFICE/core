@@ -27,8 +27,14 @@ void CheckFonts(const std::wstring& fontsDir, bool isUseSystem = true, const std
 	RELEASEINTERFACE(pFonts);
 }
 
+#define UNUSED_PARAM(x) (void)x
+
 int main(int argc, char** argv)
 {
+	// warnings
+	UNUSED_PARAM(argc);
+	UNUSED_PARAM(argv);
+
 	std::wstring curr_dir = NSFile::GetProcessDirectory();
 	std::wstring wsep = FILE_SEPARATOR_STR;
 
@@ -37,11 +43,113 @@ int main(int argc, char** argv)
 	std::wstring fonts_dir    = curr_dir + wsep + L"fonts";
 	std::wstring xml          = curr_dir + wsep + L"params.xml";
 
+	std::wstring tmp_dir      = NSDirectory::CreateDirectoryWithUniqueName(curr_dir);
+
 	CheckFonts(fonts_dir);
 
+	// GENERATE XML
 	NSStringUtils::CStringBuilder oBuilder;
 
-	// GENERATE XML
+	oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+	oBuilder.WriteString(L"<TaskQueueDataConvert>");
+
+	// main
+	oBuilder.WriteString(L"<m_sFileFrom>");
+	oBuilder.WriteEncodeXmlString(filename_in);
+	oBuilder.WriteString(L"</m_sFileFrom>");
+
+	oBuilder.WriteString(L"<m_sFileFrom>");
+	oBuilder.WriteEncodeXmlString(filename_out);
+	oBuilder.WriteString(L"</m_sFileFrom>");
+
+	oBuilder.WriteString(L"<m_nFormatTo>");
+	int nFormat = COfficeFileFormatChecker::GetFormatByExtension(L"." + NSFile::GetFileExtention(filename_out));
+	oBuilder.WriteString(std::to_wstring(nFormat));
+	oBuilder.WriteString(L"</m_nFormatTo>");
+
+	if (nFormat == AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA)
+		oBuilder.WriteString(L"<m_bIsPDFA>true</m_bIsPDFA>");
+
+	oBuilder.WriteString(L"<m_sThemeDir>");
+	oBuilder.WriteEncodeXmlString(curr_dir + L"/sdkjs/slide/themes");
+	oBuilder.WriteString(L"</m_sThemeDir>");
+
+	// changes
+	oBuilder.WriteString(L"<m_bFromChanges>false</m_bFromChanges>");
+
+	oBuilder.WriteString(L"<m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
+
+	// fonts
+	oBuilder.WriteString(L"<m_sFontDir>");
+	oBuilder.WriteEncodeXmlString(fonts_dir);
+	oBuilder.WriteString(L"</m_sFontDir>");
+
+	oBuilder.WriteString(L"<m_sAllFontsPath>");
+	oBuilder.WriteString(fonts_dir + L"/AllFonts.js");
+	oBuilder.WriteString(L"</m_sAllFontsPath>");
+
+	// temp directory
+	oBuilder.WriteString(L"<m_sTempDir>");
+	oBuilder.WriteEncodeXmlString(tmp_dir);
+	oBuilder.WriteString(L"</m_sTempDir>");
+
+	// encrypt
+	if (false)
+	{
+		oBuilder.WriteString(L"<m_sPassword>");
+		oBuilder.WriteEncodeXmlString(L"111");
+		oBuilder.WriteString(L"</m_sPassword>");
+
+		oBuilder.WriteString(L"<m_sSavePassword>");
+		oBuilder.WriteEncodeXmlString(L"222");
+		oBuilder.WriteString(L"</m_sSavePassword>");
+	}
+
+	// docinfo (private rooms)
+	if (false)
+	{
+		oBuilder.WriteString(L"<m_sDocumentID>");
+		oBuilder.WriteEncodeXmlString(L"{data}");
+		oBuilder.WriteString(L"</m_sDocumentID>");
+	}
+
+	// txt/csv
+	oBuilder.WriteString(L"<m_nCsvTxtEncoding>");
+	oBuilder.WriteEncodeXmlString(L"46");
+	oBuilder.WriteString(L"</m_nCsvTxtEncoding>");
+
+	oBuilder.WriteString(L"<m_nCsvDelimiter>");
+	oBuilder.WriteEncodeXmlString(L"4");
+	oBuilder.WriteString(L"</m_nCsvDelimiter>");
+
+	// js params
+	if (false)
+	{
+		oBuilder.WriteString(L"<m_sJsonParams>");
+		oBuilder.WriteString(L"{");
+		// *
+		oBuilder.WriteString(L"}");
+		oBuilder.WriteString(L"</m_sJsonParams>");
+	}
+
+	if (false)
+	{
+		// if need disable js engine cache
+		oBuilder.WriteString(L"<m_nDoctParams>1</m_nDoctParams>");
+	}
+
+	// images
+	if (true && (0 != (nFormat & AVS_OFFICESTUDIO_FILE_IMAGE)))
+	{
+		oBuilder.WriteString(L"<m_oThumbnail><first>false</first>");
+
+		if (nFormat == AVS_OFFICESTUDIO_FILE_IMAGE_JPG)
+			oBuilder.WriteString(L"<format>3</format>");
+
+		oBuilder.WriteString(L"</m_oThumbnail>");
+	}
+
+	oBuilder.WriteString(L"</TaskQueueDataConvert>");
 
 #if !defined(_WIN32) && !defined (_WIN64)
 	std::string xmlDst = U_TO_UTF8(xml);

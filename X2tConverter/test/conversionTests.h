@@ -29,20 +29,13 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "../../../OOXML/Base/Base.h"
-#include "../conversionTests.h"
 #include "gtest/gtest.h"
 #include <string>
+#include <vector>
 
-void PrepareFiles(std::wstring &fileName, std::wstring &exampleFileName, std::wstring &tempDirName);
-_UINT32 ConvertFile(std::wstring &fileName, std::vector<std::wstring> &consoleArgs);
-
-class Xlsb2XlsxConversion1 : public ::X2tConvEnv {
+class X2tConvEnv : public ::testing::Environment {
 public:
-    Xlsb2XlsxConversion1(const std::vector<std::wstring> &args) : X2tConvEnv(args){};
-    void SetUp() override;
 
-    void TearDown() override;
-
-    std::wstring tempDirName;
-};
+    X2tConvEnv(const std::vector<std::wstring> &args) : consoleArgs(args) {};
+    std::vector<std::wstring> consoleArgs;
+};  

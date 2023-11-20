@@ -36,18 +36,21 @@
 #include "../../../DesktopEditor/common/Path.h"
 #include "../../../OfficeUtils/src/OfficeUtils.h"
 #include "tchar.h"
-
+#include <cstdlib> 
+#include <locale>
+#include <codecvt>
+#include <boost/filesystem.hpp>
 
 const std::wstring testFilesPath{std::wstring{L".."} + FILE_SEPARATOR_STR + L"ExampleFiles"};
 
-
 void Xlsb2XlsxConversion1::SetUp()
 {
-    auto filePath = NSDirectory::GetFolderPath(testFilesPath);
-    filePath += L"/xlsb2xlsx/simple.xlsb";
-    auto examplePath = NSDirectory::GetFolderPath(testFilesPath);
-    examplePath += L"/xlsb2xlsx/simple.xlsx";
-    ConvertFile(filePath);
+    auto filePath = NSDirectory::GetFolderPath(testFilesPath) + FILE_SEPARATOR_STR + L"ExampleFiles" + FILE_SEPARATOR_STR + L"xlsb2xlsx" + FILE_SEPARATOR_STR;
+
+    auto examplePath = filePath;
+    filePath += L"simple1.xlsb";
+    examplePath += L"simple1.xlsx";
+    ConvertFile(filePath, consoleArgs);
     PrepareFiles(filePath, examplePath, tempDirName);
 }
 
@@ -56,22 +59,44 @@ void Xlsb2XlsxConversion1::TearDown()
     NSDirectory::DeleteDirectory(tempDirName);
 }
 
-_UINT32 ConvertFile(std::wstring &fileName)
+_UINT32 ConvertFile(std::wstring &fileName, std::vector<std::wstring> &consoleArgs)
 {
     auto exPos = fileName.find(L".xlsb");
     if(exPos == std::string::npos)
         return - 1;
     
     auto newName = fileName.substr(0, exPos);
-    newName+= L".xlsx";
+    newName+= L"Result.xlsx";
+
+    boost::filesystem::path path1 = fileName;
+    boost::filesystem::path path2 = newName;
+    path1 = boost::filesystem::absolute(path1);
+    path2 = boost::filesystem::absolute(path2);
+
+
+    auto wCommand = consoleArgs.back() + L" \"" + path1.wstring() + L"\" \"" + path2.wstring() +  L"\"";
+
+    // Создание объекта std::wstring_convert с кодировкой UTF-8
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
     ///conversion
+    // Преобразование std::wstring в std::string
+    auto  command = converter.to_bytes(wCommand);
+    
+    
+
+    int result = std::system(command.c_str());
+
     fileName = newName;
-    return 0;
+    return result;
 }
 
 void PrepareFiles(std::wstring &fileName, std::wstring &exampleFileName, std::wstring &tempDirName)
 {
     tempDirName = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetFolderPath(fileName));
+    std::wstring oldName = fileName;
+    fileName  = tempDirName + fileName.substr(fileName.rfind(FILE_SEPARATOR_STR));
+    boost::filesystem::rename(oldName, fileName);
+
     std::wstring sTempUnpackedXLSB = tempDirName + FILE_SEPARATOR_STR + _T("result_unpacked");
     NSDirectory::CreateDirectory(sTempUnpackedXLSB);
     COfficeUtils oCOfficeUtils(NULL);

@@ -29,3 +29,10 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
+#include "common.h"
+
+TEST(simpleConversion, conversionTest)
+{
+    ASSERT_TRUE(true);
+}

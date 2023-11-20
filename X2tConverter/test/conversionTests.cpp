@@ -30,9 +30,14 @@
  *
  */
 #include "gtest/gtest.h"
+#include "xlsb2xlsx/common.h"
+
 
 int wmain(int argc, wchar_t *argv[])
 {
+    std::vector<std::wstring> args;
+    args.assign(argv, argv + argc);
     ::testing::InitGoogleTest(&argc, argv);
+    ::testing::AddGlobalTestEnvironment(new Xlsb2XlsxConversion1(args));
     return RUN_ALL_TESTS();
 }

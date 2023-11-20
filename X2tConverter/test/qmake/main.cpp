@@ -167,7 +167,7 @@ int main(int argc, char** argv)
 #endif
 
 	x2tchar* args[2];
-	args[0] = (x2tchar*)curr_dir.c_str();
+	args[0] = NULL;
 	args[1] = (x2tchar*)xmlDst.c_str();
 
 	int nResultCode = X2T_Convert(2, args);

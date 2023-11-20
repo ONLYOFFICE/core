@@ -44,5 +44,5 @@ public:
 
     void TearDown() override;
 
-    std::wstring tempDirName;
+    static std::wstring tempDirName;
 };

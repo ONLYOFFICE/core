@@ -41,6 +41,8 @@
 #include <codecvt>
 #include <boost/filesystem.hpp>
 
+std::wstring Xlsb2XlsxConversion1::tempDirName = L"";
+
 const std::wstring testFilesPath{std::wstring{L".."} + FILE_SEPARATOR_STR + L"ExampleFiles"};
 
 void Xlsb2XlsxConversion1::SetUp()

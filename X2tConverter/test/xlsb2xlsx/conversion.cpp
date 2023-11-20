@@ -31,8 +31,33 @@
  */
 
 #include "common.h"
+#include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
+#include <fstream>
 
 TEST(simpleConversion, conversionTest)
 {
     ASSERT_TRUE(true);
+}
+
+TEST(simpleConversion, ContentTypesTest)
+{
+    auto tempDir = Xlsb2XlsxConversion1::tempDirName;
+    boost::filesystem::path path1(Xlsb2XlsxConversion1::tempDirName + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"[Content_Types].xml");
+    boost::filesystem::path path2(Xlsb2XlsxConversion1::tempDirName + FILE_SEPARATOR_STR +L"xlsx_unpacked"+ FILE_SEPARATOR_STR + L"[Content_Types].xml");
+    path1 = boost::filesystem::absolute(path1);
+    path2 = boost::filesystem::absolute(path2);
+    std::ifstream file1(path1.string());
+    std::ifstream file2(path2.string());
+
+    if (!file1.is_open() || !file2.is_open()) 
+    {
+        ASSERT_TRUE(false);
+    }
+
+    std::string content1((std::istreambuf_iterator<char>(file1)), std::istreambuf_iterator<char>());
+    std::string content2((std::istreambuf_iterator<char>(file2)), std::istreambuf_iterator<char>());
+
+    ASSERT_TRUE(boost::algorithm::equals(content1, content2));
+   
 }

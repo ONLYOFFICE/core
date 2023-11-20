@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 	std::wstring wsep = FILE_SEPARATOR_STR;
 
 	std::wstring filename_in  = curr_dir + wsep + L"123.docx";
-	std::wstring filename_out = curr_dir + wsep + L"123.txt";
+	std::wstring filename_out = curr_dir + wsep + L"123.pdf";
 	std::wstring fonts_dir    = curr_dir + wsep + L"fonts";
 	std::wstring xml          = curr_dir + wsep + L"params.xml";
 
@@ -58,9 +58,9 @@ int main(int argc, char** argv)
 	oBuilder.WriteEncodeXmlString(filename_in);
 	oBuilder.WriteString(L"</m_sFileFrom>");
 
-	oBuilder.WriteString(L"<m_sFileFrom>");
+	oBuilder.WriteString(L"<m_sFileTo>");
 	oBuilder.WriteEncodeXmlString(filename_out);
-	oBuilder.WriteString(L"</m_sFileFrom>");
+	oBuilder.WriteString(L"</m_sFileTo>");
 
 	oBuilder.WriteString(L"<m_nFormatTo>");
 	int nFormat = COfficeFileFormatChecker::GetFormatByExtension(L"." + NSFile::GetFileExtention(filename_out));
@@ -151,6 +151,15 @@ int main(int argc, char** argv)
 
 	oBuilder.WriteString(L"</TaskQueueDataConvert>");
 
+	// writing xml data into file
+	if(NSFile::CFileBinary::Exists(xml))
+		NSFile::CFileBinary::Remove(xml);
+
+	NSFile::CFileBinary xml_file;
+	xml_file.CreateFile(xml);
+	xml_file.WriteStringUTF8(oBuilder.GetData());
+	xml_file.CloseFile();
+
 #if !defined(_WIN32) && !defined (_WIN64)
 	std::string xmlDst = U_TO_UTF8(xml);
 #else
@@ -158,7 +167,7 @@ int main(int argc, char** argv)
 #endif
 
 	x2tchar* args[2];
-	args[0] = NULL;
+	args[0] = (x2tchar*)curr_dir.c_str();
 	args[1] = (x2tchar*)xmlDst.c_str();
 
 	int nResultCode = X2T_Convert(2, args);

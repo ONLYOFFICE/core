@@ -21,11 +21,10 @@ INCLUDEPATH += \
 
 
 HEADERS += \
-    pict.h
+    pic.h
 
 SOURCES += \
         main.cpp \
-        pic.cpp \
-        pict.c
+        pic.cpp
 
 DESTDIR = $$PWD_ROOT_DIR/build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX

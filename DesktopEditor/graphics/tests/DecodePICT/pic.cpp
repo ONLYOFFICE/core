@@ -8,12 +8,12 @@
 #include <stdint.h>
 #include <math.h>
 #include <limits.h>
-#include "pict.h"
+
 #include <iostream>
 #include <sys/stat.h>
 #include <stdarg.h>
 
-#define BackgroundColorRGBA  255,255,255,255
+#include "pic.h"
 
 static const PICTCode
   codes[] =
@@ -182,52 +182,7 @@ static const PICTCode
     /* 0xa1 */ { "LongComment", 0, "kind (word), size (word), data" }
   };
 
-NexusInfo **AcquirePixelCacheNexus()
-{
-  NexusInfo
-    **nexus_info;
-
-  ssize_t
-    i;
-
-  nexus_info=(NexusInfo **) malloc(2*sizeof(*nexus_info));
-  if (nexus_info == (NexusInfo **) NULL)
-    return (NexusInfo **) NULL;
-  *nexus_info=(NexusInfo *) malloc(2*sizeof(**nexus_info));
-  if (*nexus_info == (NexusInfo *) NULL)
-    return (NexusInfo **) NULL;
-  (void) memset(*nexus_info,0,2*sizeof(**nexus_info));
-  for (i=0; i < 2; i++)
-  {
-    nexus_info[i]=(*nexus_info+i);
-    if (i < 2)
-      nexus_info[i]->virtual_nexus=(*nexus_info+1+i);
-    nexus_info[i]->signature=0xabacadabUL;
-  }
-  return(nexus_info);
-}
-
-char *ConstantString(const char *source)
-{
-  char
-    *destination;
-
-  size_t
-    length;
-
-  length=0;
-  if (source != (char *) NULL)
-    length+=strlen(source);
-  destination=(char *) NULL;
-  if (~length >= 1UL)
-    destination=(char *) malloc(length+1UL*sizeof(*destination));
-  if (destination == (char *) NULL)
-    return NULL;
-  if (source != (char *) NULL)
-    (void) memcpy(destination,source,length*sizeof(*destination));
-  destination[length]='\0';
-  return(destination);
-}
+#define BackgroundColorRGBA  255,255,255,255
 
 int LocaleToLowercase(const int c)
 {
@@ -257,6 +212,63 @@ int LocaleCompare(const char *p,const char *q)
   }
 }
 
+void LocaleLower(char *string)
+{
+  char
+    *q;
+
+  for (q=string; *q != '\0'; q++)
+    *q=(char) LocaleToLowercase((int) *q);
+}
+
+int LocaleNCompare(const char *p,const char *q,const size_t length)
+{
+  if (p == (char *) NULL)
+    {
+      if (q == (char *) NULL)
+        return(0);
+      return(-1);
+    }
+  if (q == (char *) NULL)
+    return(1);
+  if (length == 0)
+    return(0);
+  {
+    const unsigned char
+      *s = (const unsigned char *) p,
+      *t = (const unsigned char *) q;
+
+    size_t
+      n = length;
+
+    for (n--; (*s != '\0') && (*t != '\0') && (n != 0) && ((*s == *t) ||
+      (LocaleToLowercase((int) *s) == LocaleToLowercase((int) *t))); s++, t++, n--);
+    return(LocaleToLowercase((int) *s)-LocaleToLowercase((int) *t));
+  }
+}
+
+char *ConstantString(const char *source)
+{
+  char
+    *destination;
+
+  size_t
+    length;
+
+  length=0;
+  if (source != (char *) NULL)
+    length+=strlen(source);
+  destination=(char *) NULL;
+  if (~length >= 1UL)
+    destination=(char *) malloc(length+1UL*sizeof(*destination));
+  if (destination == (char *) NULL)
+    return NULL;
+  if (source != (char *) NULL)
+    (void) memcpy(destination,source,length*sizeof(*destination));
+  destination[length]='\0';
+  return(destination);
+}
+
 int IsStringTrue(const char *value)
 {
   if (value == (const char *) NULL)
@@ -271,7 +283,6 @@ int IsStringTrue(const char *value)
     return 1;
   return 0;
 }
-
 
 size_t CopyMagickString(char *destination,const char *source,const size_t length)
 {
@@ -305,204 +316,6 @@ size_t CopyMagickString(char *destination,const char *source,const size_t length
       *q='\0';
     }
   return((size_t) (p-source));
-}
-
-LinkedListInfo *NewLinkedList(const size_t capacity)
-{
-  LinkedListInfo
-    *list_info;
-
-  list_info=(LinkedListInfo *) malloc(sizeof(*list_info));
-  (void) memset(list_info,0,sizeof(*list_info));
-  list_info->capacity=capacity == 0 ? (size_t) (~0) : capacity;
-  list_info->elements=0;
-  list_info->head=(ElementInfo *) NULL;
-  list_info->tail=(ElementInfo *) NULL;
-  list_info->next=(ElementInfo *) NULL;
-  list_info->signature=0xabacadabUL;
-  return(list_info);
-}
-
-void InitializeExceptionInfo(ExceptionInfo *exception)
-{
-  (void) memset(exception,0,sizeof(*exception));
-  exception->severity=UndefinedException;
-  exception->exceptions=(void *) NewLinkedList(0);
-  exception->signature=0xabacadabUL;
-}
-
-ExceptionInfo *AcquireExceptionInfo(void)
-{
-  ExceptionInfo
-    *exception;
-
-  exception=(ExceptionInfo *) malloc(sizeof(*exception));
-  InitializeExceptionInfo(exception);
-  exception->relinquish=1;
-  return(exception);
-}
-
-PixelChannelMap *AcquirePixelChannelMap()
-{
-  PixelChannelMap
-    *channel_map;
-
-  ssize_t
-    i;
-
-  channel_map=(PixelChannelMap *) malloc(65*sizeof(*channel_map));
-  if (channel_map == (PixelChannelMap *) NULL)
-    return (PixelChannelMap *) NULL;
-  (void) memset(channel_map,0,65*sizeof(*channel_map));
-  for (i=0; i <= 64; i++)
-    channel_map[i].channel=(PixelChannel) i;
-  return(channel_map);
-}
-
-void GetPixelInfo(const Image *image,PixelInfo *pixel)
-{
-  (void) memset(pixel,0,sizeof(*pixel));
-  pixel->storage_class=DirectClass;
-  pixel->colorspace=sRGBColorspace;
-  pixel->depth=8;
-  pixel->alpha_trait=UndefinedPixelTrait;
-  pixel->alpha=255.0;
-  if (image == (const Image *) NULL)
-    return;
-  pixel->storage_class=image->storage_class;
-  pixel->colorspace=image->colorspace;
-  pixel->alpha_trait=image->alpha_trait;
-  pixel->depth=image->m_ndepth;
-  pixel->fuzz=image->fuzz;
-}
-
-static inline void GetPixelInfoRGBA(const unsigned char red,const unsigned char green,
-  const unsigned char blue,const unsigned char alpha,PixelInfo *pixel)
-{
-  GetPixelInfo((Image *) NULL,pixel);
-  pixel->red=red;
-  pixel->green=green;
-  pixel->blue=blue;
-  pixel->alpha=alpha;
-}
-
-void AquireImage(Image* image)
-{
-    image->storage_class = UndefinedClass;
-    image->colorspace = sRGBColorspace;
-    image->gamma=1.000/2.200;
-    image->chromaticity.red_primary.x=0.6400;
-    image->chromaticity.red_primary.y=0.3300;
-    image->chromaticity.red_primary.z=0.0300;
-    image->chromaticity.green_primary.x=0.3000;
-    image->chromaticity.green_primary.y=0.6000;
-    image->chromaticity.green_primary.z=0.1000;
-    image->chromaticity.blue_primary.x=0.1500;
-    image->chromaticity.blue_primary.y=0.0600;
-    image->chromaticity.blue_primary.z=0.7900;
-    image->chromaticity.white_point.x=0.3127;
-    image->chromaticity.white_point.y=0.3290;
-    image->chromaticity.white_point.z=0.3583;
-    image->m_pctVersion = 0;
-    image->m_nHeight = 0;
-    image->m_nWidth = 0;
-    image->m_ndepth = 0;
-    image->colors = 0;
-    image->profiles = NULL;
-    image->artifacts = NULL;
-    image->fuzz = 0.0;
-    image->resolutionX = 0.0;
-    image->resolutionY = 0.0;
-    image->type = UndefinedType;
-    GetPixelInfoRGBA(BackgroundColorRGBA, &image->background_color);
-    image->alpha_trait = UndefinedPixelTrait;
-    image->ppixels = NULL;
-    image->m_nPixelsSize = 0;
-    image->nexus = (NexusInfo*) malloc(sizeof(NexusInfo));
-    image->nexus->region.height = 0;
-    image->nexus->region.width = 0;
-    image->nexus->region.x = 0;
-    image->nexus->region.y = 0;
-    image->nexus->length = 0;
-    image->nexus->authentic_pixel_cache = UndefinedPixelTrait;
-    image->nexus->pixels = NULL;
-    image->colormap = NULL;
-    image->channel_map = AcquirePixelChannelMap();
-    image->mask_trait = UndefinedPixelTrait;
-    image->taint = 0;
-}
-
-int AquireNexus(Image* image)
-{
-    if (image == (Image*) NULL)
-        return 0;
-
-    if (image->nexus == NULL)
-    {
-        image->nexus = (NexusInfo*) malloc(sizeof(NexusInfo));
-        image->nexus->region.height = 0;
-        image->nexus->region.width = 0;
-        image->nexus->region.x = 0;
-        image->nexus->region.y = 0;
-        image->nexus->length = 0;
-        image->nexus->authentic_pixel_cache = UndefinedPixelTrait;
-        image->nexus->pixels = NULL;
-    }
-    return 1;
-}
-
-SplayTreeInfo *DestroySplayTree(SplayTreeInfo *splay_tree)
-{
-  NodeInfo
-    *node;
-
-  NodeInfo
-    *active,
-    *pend;
-
-  if (splay_tree->root != (NodeInfo *) NULL)
-    {
-      for (pend=splay_tree->root; pend != (NodeInfo *) NULL; )
-      {
-        active=pend;
-        for (pend=(NodeInfo *) NULL; active != (NodeInfo *) NULL; )
-        {
-          if (active->left != (NodeInfo *) NULL)
-          {
-              free(active->left->key);
-              free(active->left->value);
-              pend=active->left;
-          }
-          if (active->right != (NodeInfo *) NULL)
-          {
-              free(active->right->key);
-              free(active->right->value);
-              pend=active->right;
-          }
-          node=active;
-          active=(NodeInfo *) node->key;
-          free(node);
-        }
-      }
-    }
-
-  free(splay_tree);
-  return(splay_tree);
-}
-
-Image *DestroyImage(Image *image)
-{
-  /*
-    Destroy image.
-  */
-  free(image->ppixels);
-  free(image->channel_map);
-  if (image->profiles != NULL)
-    DestroySplayTree(image->profiles);
-  if (image->artifacts != NULL)
-    DestroySplayTree(image->artifacts);
-  free(image);
-  return(Image *) NULL;
 }
 
 StringInfo *AcquireStringInfo(const size_t length)
@@ -567,6 +380,765 @@ StringInfo *CloneStringInfo(const StringInfo *string_info)
   return(clone_info);
 }
 
+StringInfo *DestroyStringInfo(StringInfo *string_info)
+{
+    if (string_info->datum != (unsigned char *) NULL)
+          free(string_info->datum);
+    if (string_info->name != (char *) NULL)
+      free(string_info->name);
+    if (string_info->path != (char *) NULL)
+      free(string_info->path);
+    string_info->signature=(~0xabacadabUL);
+    free(string_info);
+  return(string_info);
+}
+
+StringInfo *BlobToStringInfo(const void *blob,const size_t length)
+{
+  StringInfo
+    *string_info;
+
+  if (~length < 4096)
+      return (StringInfo*) NULL;
+
+  string_info=(StringInfo *) malloc(sizeof(*string_info));
+  (void) memset(string_info,0,sizeof(*string_info));
+  string_info->signature=0xabacadabUL;
+  if (string_info == (StringInfo*) NULL)
+    return (StringInfo*) NULL;
+  string_info->length=length;
+  string_info->datum=(unsigned char *) malloc(length+4096*sizeof(*string_info->datum));
+  if (string_info->datum == (unsigned char *) NULL)
+    {
+      string_info = DestroyStringInfo(string_info);
+      return((StringInfo *) NULL);
+    }
+  if (blob != (const void *) NULL)
+    (void) memcpy(string_info->datum,blob,length);
+  else
+    (void) memset(string_info->datum,0,length*sizeof(*string_info->datum));
+  (void) memset(string_info->datum+length,0,4096*sizeof(*string_info->datum));
+  return(string_info);
+}
+
+void DeletePixelsMemory(Image* image)
+{
+    if (image->ppixels != NULL)
+    {
+        free(image->ppixels);
+
+        image->ppixels = NULL;
+        image->m_nPixelsSize = 0;
+    }
+}
+
+PixelChannelMap *AcquirePixelChannelMap()
+{
+  PixelChannelMap
+    *channel_map;
+
+  ssize_t
+    i;
+
+  channel_map=(PixelChannelMap *) malloc(65*sizeof(*channel_map));
+  if (channel_map == (PixelChannelMap *) NULL)
+    return (PixelChannelMap *) NULL;
+  (void) memset(channel_map,0,65*sizeof(*channel_map));
+  for (i=0; i <= 64; i++)
+    channel_map[i].channel=(PixelChannel) i;
+  channel_map[RedPixelChannel].offset = 2;
+  channel_map[GreenPixelChannel].offset = 1;
+  channel_map[BluePixelChannel].offset = 0;
+  channel_map[AlphaPixelChannel].offset = 3;
+
+  return(channel_map);
+}
+
+void GetPixelInfo(Image *image,PixelInfo *pixel)
+{
+  (void) memset(pixel,0,sizeof(*pixel));
+  pixel->storage_class=DirectClass;
+  pixel->colorspace=sRGBColorspace;
+  pixel->depth=8;
+  pixel->alpha_trait=UndefinedPixelTrait;
+  pixel->alpha=255.0;
+  if (image == (const Image *) NULL)
+    return;
+  pixel->storage_class=image->storage_class;
+  pixel->colorspace=image->colorspace;
+  pixel->alpha_trait=image->alpha_trait;
+  pixel->depth=image->m_ndepth;
+  pixel->fuzz=image->fuzz;
+}
+
+void GetPixelInfoRGBA(const unsigned char red,const unsigned char green, const unsigned char blue,const unsigned char alpha,PixelInfo *pixel)
+{
+  GetPixelInfo((Image *) NULL,pixel);
+  pixel->red=red;
+  pixel->green=green;
+  pixel->blue=blue;
+  pixel->alpha=alpha;
+}
+
+unsigned char GetPixelWriteMask(const Image *image,const unsigned char *pixel)
+{
+  if (image->channel_map[WriteMaskPixelChannel].traits == UndefinedPixelTrait)
+    return((unsigned char) 255);
+  return(pixel[image->channel_map[WriteMaskPixelChannel].offset]);
+}
+
+int IsValidOffset(const ssize_t x, const size_t a)
+{
+    if (a == 0)
+        return 0;
+
+    if ((x >= (LLONG_MAX / 64 / (ssize_t) a)) ||
+            (x <= ((-LLONG_MAX - 1) / 64 / (ssize_t) a)))
+        return 0;
+    return 1;
+}
+
+int ReadPixels(Image* image, const ssize_t x, const ssize_t y, const size_t width, const size_t height, unsigned char* pixels)
+{
+    ssize_t
+            offset,
+            i;
+
+    size_t
+            extent,
+            length,
+            number_channels,
+            rows;
+
+    unsigned char
+            *q,
+            *p;
+
+    if (IsValidOffset(y, image->m_nWidth) == 0)
+        return 0;
+    offset = y * (ssize_t) image->m_nWidth;
+
+    if ((offset/ (ssize_t) image->m_nWidth) != y)
+    {
+        strcpy(image->error, "UncorrectOffset");
+
+        return 0;
+    }
+
+    offset += x;
+    number_channels = image->number_channels;
+    length = (size_t) number_channels * width * sizeof(unsigned char);
+
+    if ((length / number_channels / sizeof(unsigned char)) != width)
+    {
+        strcpy(image->error, "UncorrectLength");
+
+        return 0;
+    }
+
+    rows = height;
+    extent = length * rows;
+
+    if ((extent == 0) || ((extent/length) != rows))
+    {
+        strcpy(image->error, "UncorrectExtent");
+
+        return 0;
+    }
+
+    i = 0;
+    q = pixels;
+
+    /*
+      Read pixels from memory.
+    */
+    if ((image->m_nWidth == width) &&
+        (extent == (size_t) extent))
+      {
+        length=extent;
+        rows=1UL;
+      }
+    p = image->ppixels + image->number_channels * offset;
+    for (i=0; i < (ssize_t) rows; i++)
+    {
+      (void) memcpy(q,p,(size_t) length);
+      p += image->number_channels * image->m_nWidth;
+      q += image->number_channels * width;
+    }
+
+    if (i < rows)
+    {
+        strcpy(image->error, "Overflow");
+
+        return 0;
+    }
+
+    return 1;
+}
+
+unsigned char* GetPixels(Image* image, const ssize_t x, const ssize_t y, const size_t width, const size_t height)
+{
+    unsigned char
+            *pixels;
+
+    pixels = image->ppixels + image->number_channels * (y * image->m_nWidth + x);
+
+    if (pixels == (unsigned char *) NULL)
+      return((unsigned char *) NULL);
+
+    if (image->nexus->authentic_pixel_cache != 0)
+      return(pixels);
+
+    if (ReadPixels(image, x, y, width, height, pixels) == 0)
+    {
+        return ((unsigned char *) NULL);
+    }
+
+    return pixels;
+}
+
+static inline float PerceptibleReciprocal(const float x)
+{
+  float sign = x < (float) 0.0 ? (float) -1.0 : (float) 1.0;
+  return((sign*x) >= 1.0e-12 ? (float) 1.0/x : sign*((float) 1.0/1.0e-12));
+}
+
+
+unsigned char GetPixelChannel(const Image *image,const PixelChannel channel,const unsigned char *pixel)
+{
+  if ((size_t) channel >= 64)
+    return((unsigned char) 0);
+  if (image->channel_map[channel].traits == UndefinedPixelTrait)
+    return((unsigned char) 0);
+  return(pixel[image->channel_map[channel].offset]);
+}
+
+unsigned char GetPixelAlpha(const Image *image,const unsigned char *pixel)
+{
+  if (image->channel_map[AlphaPixelChannel].traits == UndefinedPixelTrait)
+    return (unsigned char) 0;
+  return(pixel[image->channel_map[AlphaPixelChannel].offset]);
+}
+
+void SetPixelChannel(const Image *image,const PixelChannel channel,const unsigned char Quantum,unsigned char *pixel)
+{
+  if ((size_t) channel >= 64)
+    return;
+  if (image->channel_map[channel].traits != UndefinedPixelTrait)
+    pixel[image->channel_map[channel].offset]=Quantum;
+}
+
+PixelChannel GetPixelChannelChannel(const Image *image,const ssize_t offset)
+{
+  if ((offset < 0) || (offset >= 64))
+    return(UndefinedPixelChannel);
+  return(image->channel_map[offset].channel);
+}
+
+PixelTrait GetPixelChannelTraits(const Image *image,const PixelChannel channel)
+{
+  if ((size_t) channel >= 64)
+    return(UndefinedPixelTrait);
+  return(image->channel_map[channel].traits);
+}
+
+static inline void SetPixelIndex(const Image *image,
+  const unsigned char index,unsigned char *pixel)
+{
+  if (image->channel_map[IndexPixelChannel].traits != UndefinedPixelTrait)
+    pixel[image->channel_map[IndexPixelChannel].offset]=index;
+}
+
+static inline void SetPixelAlpha(const Image *image,
+  const unsigned char alpha,unsigned char *pixel)
+{
+  if (image->channel_map[AlphaPixelChannel].traits != UndefinedPixelTrait)
+    pixel[image->channel_map[AlphaPixelChannel].offset]=alpha;
+}
+
+static inline void SetPixelRed(const Image *image,
+  const unsigned char red,unsigned char *pixel)
+{
+  pixel[image->channel_map[RedPixelChannel].offset]=red;
+}
+
+static inline void SetPixelGreen(const Image *image,
+  const unsigned char green,unsigned char *pixel)
+{
+  pixel[image->channel_map[GreenPixelChannel].offset]=green;
+}
+
+static inline void SetPixelBlue(const Image *image,
+  const unsigned char blue,unsigned char *pixel)
+{
+  pixel[image->channel_map[BluePixelChannel].offset]=blue;
+}
+
+int AquirePixelsMemory(Image* image)
+{
+    if ((image->m_nHeight == 0) || (image->m_nWidth == 0))
+    {
+        strcpy(image->error, "PixelSizeIsNull");
+
+        return 0;
+    }
+
+    if (image->m_nPixelsSize == 0)
+        image->m_nPixelsSize = image->m_nHeight * image->m_nWidth * image->number_channels;
+
+    if (image->ppixels == NULL)
+        image->ppixels = (unsigned char*) malloc(image->m_nPixelsSize);
+    else
+        image->ppixels = (unsigned char*) realloc(image->ppixels, image->m_nPixelsSize);
+
+    return 1;
+}
+
+int SetImageAlpha(Image* image, const unsigned char Alpha)
+{
+    int
+            status,
+            y;
+
+    if (AquirePixelsMemory(image) == 0)
+        return 0;
+
+    image->alpha_trait = BlendPixelTrait;
+    status = 1;
+    for (y = 0; y < image->m_nHeight; y++)
+    {
+        unsigned char
+                *q;
+
+        int
+                x;
+
+        if (status == 0)
+            continue;
+        q = image->ppixels + image->number_channels * (y * image->m_nWidth);
+        if (q == (unsigned char*) NULL)
+        {
+            status = 0;
+            continue;
+        }
+        for (x = 0; x < image->m_nWidth; x++)
+        {
+            if (GetPixelWriteMask(image, q) > (255 / 2))
+                SetPixelAlpha(image, Alpha, q);
+            q += image->number_channels;
+        }
+    }
+
+    return status;
+}
+
+int AquireImageColormap(Image* image, const size_t colors)
+{
+    ssize_t
+            i;
+
+    if (image == (Image*) NULL)
+        return 0;
+
+    if (colors > 256UL)
+    {
+        image->colors = 0;
+        strcpy(image->error, "UnableToCreateColormap");
+
+        return 0;
+    }
+
+    if (colors > 1)
+        image->colors = colors;
+    else
+        image->colors = 1;
+    if (image->colormap == (PixelInfo*) NULL)
+        image->colormap = (PixelInfo*) malloc((image->colors + 1) * sizeof(image->colormap));
+    else
+        image->colormap = (PixelInfo*) realloc(image->colormap, (image->colors + 1) * sizeof(image->colormap));
+
+    if (image->colormap == (PixelInfo*) NULL)
+    {
+        image->colors = 0;
+        strcpy(image->error, "MemoryAllocationFailed");
+
+        return 0;
+    }
+
+    for (i = 0; i < image->colors; i++)
+    {
+        double
+                pixel;
+
+        GetPixelInfo(image, image->colormap+i);
+        if (colors - 1 > 1)
+            pixel = ((double) i * (255 / (colors - 1)));
+        else
+            pixel = ((double) i * 255);
+
+        image->colormap[i].red = pixel;
+        image->colormap[i].green = pixel;
+        image->colormap[i].blue = pixel;
+        image->colormap[i].alpha = 255.0;
+        image->colormap[i].alpha_trait = BlendPixelTrait;
+    }
+    image->storage_class=PseudoClass;
+    return 1;
+}
+
+static inline int IsRGBColorspace(const ColorspaceType colorspace)
+{
+  if ((colorspace == RGBColorspace) || (colorspace == scRGBColorspace) ||
+      (colorspace == LinearGRAYColorspace))
+    return 1;
+  return 0;
+}
+
+
+static inline int IsGrayColorspace(
+  const ColorspaceType colorspace)
+{
+  if ((colorspace == LinearGRAYColorspace) || (colorspace == GRAYColorspace))
+    return 1;
+  return 0;
+}
+
+int SetImageColorspace(Image *image, const ColorspaceType colorspace)
+{
+  ImageType
+    type;
+
+  if (image->colorspace == colorspace)
+    return 1;
+  image->colorspace=colorspace;
+  image->gamma=1.000/2.200;
+  (void) memset(&image->chromaticity,0,sizeof(image->chromaticity));
+  type=image->type;
+  if (IsGrayColorspace(colorspace) != 0)
+    {
+      if (colorspace == LinearGRAYColorspace)
+        image->gamma=1.000;
+      type=GrayscaleType;
+    }
+  else
+    if ((IsRGBColorspace(colorspace) != 0) ||
+        (colorspace == XYZColorspace) || (colorspace == xyYColorspace))
+      image->gamma=1.000;
+    else
+      {
+        image->chromaticity.red_primary.x=0.6400;
+        image->chromaticity.red_primary.y=0.3300;
+        image->chromaticity.red_primary.z=0.0300;
+        image->chromaticity.green_primary.x=0.3000;
+        image->chromaticity.green_primary.y=0.6000;
+        image->chromaticity.green_primary.z=0.1000;
+        image->chromaticity.blue_primary.x=0.1500;
+        image->chromaticity.blue_primary.y=0.0600;
+        image->chromaticity.blue_primary.z=0.7900;
+        image->chromaticity.white_point.x=0.3127;
+        image->chromaticity.white_point.y=0.3290;
+        image->chromaticity.white_point.z=0.3583;
+      }
+  if (image->ppixels == (unsigned char*) NULL)
+      return 0;
+  image->type=type;
+  return 1;
+}
+
+ssize_t CastDoubleToLong(const double x)
+{
+  if (floor(x) > ((double) LLONG_MAX-1))
+    {
+      return((ssize_t) LLONG_MAX);
+    }
+  if (ceil(x) < ((double) LLONG_MIN+1))
+    {
+      return((ssize_t) LLONG_MIN);
+    }
+  return((ssize_t) x);
+}
+
+int Clamp(double x, double min, double max) {
+    if (x < min) {
+        return min;
+    } else if (x > max) {
+        return max;
+    } else {
+        return x;
+    }
+}
+
+static inline int CopyPixel(const Image *image,
+  const unsigned char *source,unsigned char *destination)
+{
+  ssize_t
+    i;
+
+  if (source == (const unsigned char *) NULL)
+    {
+      destination[RedPixelChannel]=(unsigned char) (Clamp(image->background_color.red, 0.0f, 255.0f) + 0.5f);
+      destination[GreenPixelChannel]=(unsigned char) (Clamp(image->background_color.green, 0.0f, 255.0f) + 0.5f);
+      destination[BluePixelChannel]=(unsigned char) (Clamp(image->background_color.blue, 0.0f, 255.0f) + 0.5f);
+      destination[BlackPixelChannel]=(unsigned char) (Clamp(image->background_color.black, 0.0f, 255.0f) + 0.5f);
+      destination[AlphaPixelChannel]=(unsigned char) (Clamp(image->background_color.alpha, 0.0f, 255.0f) + 0.5f);
+      return 0;
+    }
+  for (i=0; i < 4; i++)
+  {
+    PixelChannel channel = GetPixelChannelChannel(image,i);
+    destination[channel]=source[i];
+  }
+  return 1;
+}
+
+int GetOneVirtualPixel(Image *image,const ssize_t x,const ssize_t y,unsigned char *pixel)
+{
+  const unsigned char
+    *p;
+
+  (void) memset(pixel,0,64*sizeof(*pixel));
+  p = image->ppixels + image->number_channels * (y * 1UL + x);
+  return(CopyPixel(image,p,pixel));
+}
+
+void AquireImage(Image* image)
+{
+    image->storage_class = DirectClass;
+    image->colorspace = sRGBColorspace;
+    image->gamma=1.000/2.200;
+    image->chromaticity.red_primary.x=0.6400;
+    image->chromaticity.red_primary.y=0.3300;
+    image->chromaticity.red_primary.z=0.0300;
+    image->chromaticity.green_primary.x=0.3000;
+    image->chromaticity.green_primary.y=0.6000;
+    image->chromaticity.green_primary.z=0.1000;
+    image->chromaticity.blue_primary.x=0.1500;
+    image->chromaticity.blue_primary.y=0.0600;
+    image->chromaticity.blue_primary.z=0.7900;
+    image->chromaticity.white_point.x=0.3127;
+    image->chromaticity.white_point.y=0.3290;
+    image->chromaticity.white_point.z=0.3583;
+    image->m_pctVersion = 0;
+    image->m_nHeight = 0;
+    image->m_nWidth = 0;
+    image->m_ndepth = 8;
+    image->colors = 0;
+    image->profiles = NULL;
+    image->artifacts = NULL;
+    image->fuzz = 0.0;
+    image->resolutionX = 0.0;
+    image->resolutionY = 0.0;
+    image->type = UndefinedType;
+    GetPixelInfoRGBA(BackgroundColorRGBA, &image->background_color);
+    image->alpha_trait = UndefinedPixelTrait;
+    image->ppixels = NULL;
+    image->m_nPixelsSize = 0;
+    image->nexus = (NexusInfo*) malloc(sizeof(NexusInfo));
+    image->nexus->region.height = 0;
+    image->nexus->region.width = 0;
+    image->nexus->region.x = 0;
+    image->nexus->region.y = 0;
+    image->nexus->length = 0;
+    image->nexus->authentic_pixel_cache = UndefinedPixelTrait;
+    image->nexus->pixels = NULL;
+    image->colormap = NULL;
+    image->channel_map = AcquirePixelChannelMap();
+    image->mask_trait = UndefinedPixelTrait;
+    image->taint = 0;
+    image->number_channels = 4;
+}
+
+size_t GetSize(FILE* file)
+{
+    ssize_t
+            file_discription;
+
+    struct stat
+            st;
+
+    file_discription = fileno(file);
+    if (fstat(file_discription, &st) == 0)
+        return st.st_size;
+
+    return(0);
+}
+
+int Read(FILE* file, const int length, void* data)
+{
+    if (!file) return 0;
+    if (data == NULL) return 0;
+    unsigned char* q;
+    q = (unsigned char*) data;
+    return fread(q, 1, length, file);
+}
+
+int ReadByte(FILE* file)
+{
+    return getc(file);
+}
+
+const void *ReadBlobStream(FILE* file, const size_t length, void *data, ssize_t* count)
+{
+    *count = Read(file, length, (unsigned char*) data);
+    return data;
+}
+
+unsigned short ReadShortValue(FILE* file)
+{
+    unsigned short
+            value;
+
+    unsigned char
+            buffer[2];
+
+    const unsigned char
+            *p;
+
+    ssize_t
+            count;
+
+    *buffer='\0';
+
+    p = (const unsigned char*) ReadBlobStream(file, 2, buffer, &count);
+    if (count != 2)
+    {
+        return(EOF);
+    }
+    value = (unsigned short) ((*p++) << 8);
+    value |= (unsigned short) (*p++);
+    return ((unsigned short) (value & 0xffff));
+}
+
+signed short ReadSignedShortValue(FILE* file)
+{
+    union
+    {
+        unsigned short unsigned_value;
+
+        signed short signed_value;
+    } Quantum;
+
+    Quantum.unsigned_value = ReadShortValue(file);
+    return (Quantum.signed_value);
+}
+
+unsigned int ReadLongValue(FILE* file)
+{
+    const unsigned char
+            *p;
+
+    unsigned int
+            value;
+
+    int
+            count;
+    unsigned char
+            buffer[4];
+
+    *buffer='\0';
+    count = Read(file, 4, buffer);
+
+    if (count != 4)
+    {
+        return(EOF);
+    }
+
+    p = (const unsigned char*) buffer;
+
+    value=(unsigned int) (*p++) << 24;
+    value|=(unsigned int) (*p++) << 16;
+    value|=(unsigned int) (*p++) << 8;
+    value|=(unsigned int) (*p++);
+
+    return value;
+}
+
+int ReadRectangle(FILE* file, PICTrectangle *frame)
+{
+    frame->top = (short) ReadShortValue(file);
+    frame->left = (short) ReadShortValue(file);
+    frame->bottom = (short) ReadShortValue(file);
+    frame->right = (short) ReadShortValue(file);
+
+    if (feof(file) != 0)
+    {
+        return 0;
+    }
+
+    if (frame->bottom < frame->top)
+    {
+        return 0;
+    }
+
+    if (frame->right < frame->left)
+    {
+        return 0;
+    }
+
+    return 1;
+}
+
+int ReadPixmap(FILE* file,PICTPixmap *pixmap)
+{
+  pixmap->version=(short) ReadShortValue(file);
+  pixmap->pack_type=(short) ReadShortValue(file);
+  pixmap->pack_size=ReadLongValue(file);
+  pixmap->horizontal_resolution=1UL*ReadShortValue(file);
+  (void) ReadShortValue(file);
+  pixmap->vertical_resolution=1UL*ReadShortValue(file);
+  (void) ReadShortValue(file);
+  pixmap->pixel_type=(short) ReadShortValue(file);
+  pixmap->bits_per_pixel=(short) ReadShortValue(file);
+  pixmap->component_count=(short) ReadShortValue(file);
+  pixmap->component_size=(short) ReadShortValue(file);
+  pixmap->plane_bytes=ReadLongValue(file);
+  pixmap->table=ReadLongValue(file);
+  pixmap->reserved=ReadLongValue(file);
+  if ((feof(file) != 0) || (pixmap->bits_per_pixel <= 0) ||
+      (pixmap->bits_per_pixel > 32) || (pixmap->component_count <= 0) ||
+      (pixmap->component_count > 4) || (pixmap->component_size <= 0))
+    return(0);
+  return(1);
+}
+
+SplayTreeInfo *DestroySplayTree(SplayTreeInfo *splay_tree)
+{
+  NodeInfo
+    *node;
+
+  NodeInfo
+    *active,
+    *pend;
+
+  if (splay_tree->root != (NodeInfo *) NULL)
+    {
+      for (pend=splay_tree->root; pend != (NodeInfo *) NULL; )
+      {
+        active=pend;
+        for (pend=(NodeInfo *) NULL; active != (NodeInfo *) NULL; )
+        {
+          if (active->left != (NodeInfo *) NULL)
+          {
+              free(active->left->key);
+              free(active->left->value);
+              pend=active->left;
+          }
+          if (active->right != (NodeInfo *) NULL)
+          {
+              free(active->right->key);
+              free(active->right->value);
+              pend=active->right;
+          }
+          node=active;
+          active=(NodeInfo *) node->key;
+          free(node);
+        }
+      }
+    }
+
+  free(splay_tree);
+  return(splay_tree);
+}
 
 SplayTreeInfo *NewSplayTree(int (*compare)(const void *,const void *))
 {
@@ -956,795 +1528,6 @@ SplayTreeInfo *CloneSplayTree(SplayTreeInfo *splay_tree, void *(*clone_key)(void
   return(clone_tree);
 }
 
-Image* CloneImage(const Image* image, const size_t colums, const size_t rows)
-{
-    if (image == (const Image*) NULL)
-    {
-        return((Image*) NULL);
-    }
-
-    Image* clone_image = new Image;
-
-    AquireImage(clone_image);
-
-    clone_image->storage_class = image->storage_class;
-    clone_image->fuzz = image->fuzz;
-    clone_image->colorspace = image->colorspace;
-    clone_image->chromaticity.blue_primary = image->chromaticity.blue_primary;
-    clone_image->chromaticity.green_primary = image->chromaticity.green_primary;
-    clone_image->chromaticity.red_primary = image->chromaticity.red_primary;
-    clone_image->chromaticity.white_point = image->chromaticity.white_point;
-    clone_image->gamma = image->gamma;
-    clone_image->m_nHeight = image->m_nHeight;
-    clone_image->m_nHeight = rows;
-    clone_image->m_nWidth = colums;
-    clone_image->m_nPixelsSize = image->m_nPixelsSize;
-    clone_image->resolutionX = image->resolutionX;
-    clone_image->resolutionY = image->resolutionY;
-    if (image->ppixels != NULL)
-    {
-        clone_image->ppixels = (unsigned char*) malloc(clone_image->m_nPixelsSize * sizeof(unsigned char));
-        memcpy(clone_image->ppixels, image->ppixels, clone_image->m_nPixelsSize * sizeof(unsigned char));
-    }
-    clone_image->alpha_trait = image->alpha_trait;
-    clone_image->background_color.blue = image->background_color.blue;
-    clone_image->background_color.green = image->background_color.green;
-    clone_image->background_color.red = image->background_color.red;
-
-    if (image->nexus != NULL)
-    {
-        clone_image->nexus = (NexusInfo*) malloc(sizeof(NexusInfo));
-        clone_image->nexus->region.height = image->nexus->region.height;
-        clone_image->nexus->region.width = image->nexus->region.width;
-        clone_image->nexus->region.x = image->nexus->region.x;
-        clone_image->nexus->region.y = image->nexus->region.y;
-        clone_image->nexus->length = image->nexus->length;
-        clone_image->nexus->authentic_pixel_cache = image->nexus->authentic_pixel_cache;
-        clone_image->nexus->pixels = (unsigned char*) malloc(clone_image->nexus->length * sizeof(unsigned char));
-        memcpy(clone_image->nexus->pixels, image->nexus->pixels, clone_image->nexus->length);
-    }
-
-    clone_image->colors = image->colors;
-    if (image->colormap != NULL)
-    {
-        clone_image->colormap = (PixelInfo*) malloc((clone_image->colors + 1) * sizeof(*clone_image->colormap));
-        memcpy(clone_image->colormap, image->colormap, clone_image->colors * sizeof(*clone_image->colormap));
-    }
-    if (image->channel_map != NULL)
-    {
-        clone_image->channel_map = (PixelChannelMap*) malloc(65 * sizeof (image->channel_map));
-        memcpy(clone_image->channel_map, image->channel_map, 65 * sizeof (image->channel_map));
-    }
-
-    if (image->profiles != NULL)
-        clone_image->profiles = CloneSplayTree(image->profiles, (void *(*)(void *)) ConstantString,(void *(*)(void *)) CloneStringInfo);
-    if (image->artifacts != NULL)
-        clone_image->artifacts = CloneSplayTree(image->artifacts, (void *(*)(void *)) ConstantString,(void *(*)(void *)) CloneStringInfo);
-
-    clone_image->mask_trait = image->mask_trait;
-    clone_image->taint = image->taint;
-
-    return clone_image;
-}
-
-ImageInfo *CloneImageInfo(const ImageInfo *image_info)
-{
-  ImageInfo
-    *clone_info;
-
-  clone_info=(ImageInfo*) malloc(sizeof (ImageInfo*));
-  if (image_info == (ImageInfo *) NULL)
-    return(clone_info);
-  clone_info->temporary=image_info->temporary;
-  clone_info->adjoin=image_info->adjoin;
-  clone_info->antialias=image_info->antialias;
-  clone_info->scene=image_info->scene;
-  clone_info->number_scenes=image_info->number_scenes;
-  clone_info->depth=image_info->depth;
-  if (image_info->size != (char *) NULL)
-    (void) CloneString(&clone_info->size,image_info->size);
-  if (image_info->extract != (char *) NULL)
-    (void) CloneString(&clone_info->extract,image_info->extract);
-  if (image_info->scenes != (char *) NULL)
-    (void) CloneString(&clone_info->scenes,image_info->scenes);
-  if (image_info->page != (char *) NULL)
-    (void) CloneString(&clone_info->page,image_info->page);
-  clone_info->quality=image_info->quality;
-  if (image_info->sampling_factor != (char *) NULL)
-    (void) CloneString(&clone_info->sampling_factor,
-      image_info->sampling_factor);
-  if (image_info->server_name != (char *) NULL)
-    (void) CloneString(&clone_info->server_name,image_info->server_name);
-  if (image_info->font != (char *) NULL)
-    (void) CloneString(&clone_info->font,image_info->font);
-  if (image_info->texture != (char *) NULL)
-    (void) CloneString(&clone_info->texture,image_info->texture);
-  if (image_info->density != (char *) NULL)
-    (void) CloneString(&clone_info->density,image_info->density);
-  clone_info->pointsize=image_info->pointsize;
-  clone_info->fuzz=image_info->fuzz;
-  clone_info->matte_color=image_info->matte_color;
-  clone_info->background_color=image_info->background_color;
-  clone_info->border_color=image_info->border_color;
-  clone_info->transparent_color=image_info->transparent_color;
-  clone_info->dither=image_info->dither;
-  clone_info->monochrome=image_info->monochrome;
-  clone_info->colorspace=image_info->colorspace;
-  clone_info->ping=image_info->ping;
-  clone_info->verbose=image_info->verbose;
-  clone_info->client_data=image_info->client_data;
-  if (image_info->profile != (void *) NULL)
-    clone_info->profile=(void *) CloneStringInfo((StringInfo *)
-      image_info->profile);
-  clone_info->blob=(void *) image_info->blob;
-  clone_info->length=image_info->length;
-  (void) CopyMagickString(clone_info->magick,image_info->magick,
-    4096);
-  (void) CopyMagickString(clone_info->unique,image_info->unique,
-    4096);
-  (void) CopyMagickString(clone_info->filename,image_info->filename,
-    4096);
-  clone_info->options=CloneSplayTree((SplayTreeInfo *) image_info->options,
-          (void *(*)(void *)) ConstantString,(void *(*)(void *)) ConstantString);
-  clone_info->signature=image_info->signature;
-  return(clone_info);
-}
-
-unsigned char GetPixelWriteMask(const Image *image,const unsigned char *pixel)
-{
-  if (image->channel_map[WriteMaskPixelChannel].traits == UndefinedPixelTrait)
-    return((unsigned char) 255);
-  return(pixel[image->channel_map[WriteMaskPixelChannel].offset]);
-}
-
-void SetPixelAlpha(const Image *image, const unsigned char alpha, unsigned char *pixel)
-{
-  if (image->channel_map[AlphaPixelChannel].traits != UndefinedPixelTrait)
-    pixel[image->channel_map[AlphaPixelChannel].offset]=alpha;
-}
-
-void SetPixelIndex(const Image *image,
-  const unsigned char index,unsigned char *pixel)
-{
-  if (image->channel_map[IndexPixelChannel].traits != UndefinedPixelTrait)
-    pixel[image->channel_map[IndexPixelChannel].offset]=index;
-}
-
-void SetPixelRed(const Image *image,
-  const unsigned char red, unsigned char *pixel)
-{
-  pixel[image->channel_map[RedPixelChannel].offset]=red;
-}
-
-void SetPixelGreen(const Image *image,
-  const unsigned char green, unsigned char *pixel)
-{
-  pixel[image->channel_map[GreenPixelChannel].offset]=green;
-}
-
-void SetPixelBlue(const Image *image,
-  const unsigned blue, unsigned char *pixel)
-{
-  pixel[image->channel_map[BluePixelChannel].offset]=blue;
-}
-
-int IsValidOffset(const ssize_t x, const size_t a)
-{
-    if (a == 0)
-        return 0;
-
-    if ((x >= (LLONG_MAX / 64 / (ssize_t) a)) ||
-            (x <= ((-LLONG_MAX - 1) / 64 / (ssize_t) a)))
-        return 0;
-    return 1;
-}
-
-int ReadPixels(Image* image, NexusInfo* nexus)
-{
-    ssize_t
-            offset,
-            y;
-
-    size_t
-            extent,
-            length,
-            number_channels,
-            rows;
-
-    unsigned char
-            *q,
-            *p;
-
-    if (IsValidOffset(nexus->region.y, image->m_nWidth))
-        return 0;
-    offset = nexus->region.y * (ssize_t) image->m_nWidth;
-
-    if ((offset/ (ssize_t) image->m_nWidth) != nexus->region.y)
-    {
-        strcpy(image->error, "UncorrectOffset");
-
-        return 0;
-    }
-
-    offset += nexus->region.x;
-    number_channels = 4;
-    length = (size_t) 4 * nexus->region.width * sizeof(unsigned char);
-
-    if ((length / 4 / sizeof(unsigned char)) != nexus->region.width)
-    {
-        strcpy(image->error, "UncorrectLength");
-
-        return 0;
-    }
-
-    rows = nexus->region.height;
-    extent = length * rows;
-
-    if ((extent == 0) || ((extent/length) != rows))
-    {
-        strcpy(image->error, "UncorrectExtent");
-
-        return 0;
-    }
-
-    y = 0;
-    q = nexus->pixels;
-
-    /*
-      Read pixels from memory.
-    */
-    if ((image->m_nWidth == nexus->region.width) &&
-        (extent == (size_t) extent))
-      {
-        length=extent;
-        rows=1UL;
-      }
-    p = image->ppixels + 4 * offset;
-    for (y=0; y < (ssize_t) rows; y++)
-    {
-      (void) memcpy(q,p,(size_t) length);
-      p += 4 * image->m_nWidth;
-      q += 4 * nexus->region.width;
-    }
-
-    if (y < rows)
-    {
-        strcpy(image->error, "Overflow");
-
-        return 0;
-    }
-
-    return 1;
-}
-
-static unsigned char *SetPixelCacheNexusPixels(Image* image, const ssize_t x, const ssize_t y, const size_t width, const size_t height, NexusInfo* nexus_info)
-{
-    (void) memset(&nexus_info->region,0,sizeof(nexus_info->region));
-
-    if ((width == 0) || (height == 0))
-       {
-         strcpy(image->error, "NoPixelsDefinedInCache");
-
-         return((unsigned char *) NULL);
-       }
-    if ((IsValidOffset(x,width) == 0) ||
-          (IsValidOffset(y,height) == 0))
-        {
-          strcpy(image->error, "InvalidPixel");
-          return((unsigned char *) NULL);
-        }
-
-    if (((x >= 0) && (y >= 0) &&
-        (((ssize_t) height+y-1) < (ssize_t) image->m_nHeight)) &&
-        (((x == 0) && (width == image->m_nWidth)) || ((height == 1) &&
-        (((ssize_t) width+x-1) < (ssize_t) image->m_nWidth))))
-      {
-        ssize_t
-          offset;
-
-        /*
-          Pixels are accessed directly from memory.
-        */
-        if (IsValidOffset(y,image->m_nWidth) == 0)
-          return((unsigned char *) NULL);
-        offset=y*(ssize_t) image->m_nWidth+x;
-        nexus_info->pixels=image->ppixels+4*offset;
-        nexus_info->region.width=width;
-        nexus_info->region.height=height;
-        nexus_info->region.x=x;
-        nexus_info->region.y=y;
-        nexus_info->authentic_pixel_cache = 1;
-        return(nexus_info->pixels);
-      }
-
-    return (unsigned char*) NULL;
-}
-
-unsigned char* QueuePixels(Image* image, const ssize_t x, const ssize_t y, const size_t width, const size_t height)
-{
-    ssize_t
-            offset;
-
-    size_t
-            number_pixels;
-
-    unsigned char
-            *pixels;
-
-    if (image->ppixels == NULL)
-    {
-        strcpy(image->error, "NotPixelsMemory");
-
-        return NULL;
-    }
-
-    if ((image->m_nHeight == 0) ||
-            (image->m_nWidth == 0) ||
-            (x < 0) ||
-            (y < 0) ||
-            (x >= (ssize_t) image->m_nWidth) ||
-            (y >= (ssize_t) image->m_nHeight))
-    {
-        strcpy(image->error, "PixelsAreNotAuthentic");
-
-        return NULL;
-    }
-
-    if (IsValidOffset(y, image->m_nWidth) == 0)
-    {
-        strcpy(image->error, "UnValidOffset");
-
-        return NULL;
-    }
-
-    offset = y * (ssize_t) image->m_nWidth + x;
-
-    if (offset < 0)
-    {
-        strcpy(image->error, "NegativeOffset");
-
-        return NULL;
-    }
-
-    number_pixels = (size_t) image->m_nHeight * image->m_nWidth;
-    offset += ((ssize_t) height - 1) * (ssize_t) image->m_nWidth + (ssize_t) width - 1;
-    if ((size_t) offset >= number_pixels)
-    {
-        strcpy(image->error, "NumberPixelsIsLowerThanOffset");
-
-        return NULL;
-    }
-
-    /*
-      Return pixel cache.
-    */
-
-    pixels = SetPixelCacheNexusPixels(image, x, y, width, height, image->nexus);
-
-    return pixels;
-}
-
-unsigned char* GetPixels(Image* image, const ssize_t x, const ssize_t y, const size_t width, const size_t height)
-{
-    unsigned char
-            *pixels;
-
-    pixels = QueuePixels(image, x, y, width, height);
-
-    if (pixels == (unsigned char *) NULL)
-      return((unsigned char *) NULL);
-
-    if (image->nexus->authentic_pixel_cache != 0)
-      return(pixels);
-
-    if (ReadPixels(image, image->nexus) == 0)
-    {
-        return ((unsigned char *) NULL);
-    }
-
-    return pixels;
-}
-
-int SyncAuthenticPixels(Image *image)
-{
-    ssize_t
-      offset,
-      y;
-
-    size_t
-      extent,
-      length,
-      rows;
-
-    const unsigned char
-      *p;
-
-    unsigned char
-      *q;
-
-    if (IsValidOffset(image->nexus->region.y,image->m_nWidth) == 0)
-      return(0);
-    offset=image->nexus->region.y*(ssize_t) image->m_nWidth+image->nexus->region.x;
-    length=(size_t) 4*image->nexus->region.width*sizeof(unsigned char);
-    extent=length*image->nexus->region.height;
-    rows=image->nexus->region.height;
-    y=0;
-    p=image->nexus->pixels;
-
-    /*
-      Write pixels to memory.
-    */
-    if (image->m_nWidth == image->nexus->region.width)
-      {
-        length=extent;
-        rows=1UL;
-      }
-    q=image->ppixels+(ssize_t) 4* offset;
-    for (y=0; y < (ssize_t) rows; y++)
-    {
-      (void) memcpy(q,p,(size_t) length);
-      p+=4*image->nexus->region.width;
-      q+=4*image->m_nWidth;
-    }
-    return 1;
-}
-
-int AquirePixelsMemory(Image* image)
-{
-    if ((image->m_nHeight == 0) || (image->m_nWidth == 0))
-    {
-        strcpy(image->error, "PixelSizeIsNull");
-
-        return 0;
-    }
-
-    if (image->m_nPixelsSize == 0)
-        image->m_nPixelsSize = image->m_nHeight * image->m_nWidth * 4;
-
-    if (image->ppixels == NULL)
-    {
-        image->ppixels = (unsigned char*) malloc(image->m_nPixelsSize);
-
-//        if (!image->ppixels)
-//        {
-//            strcpy(image->error, "Can't allocate memory");
-
-//            return 0;
-//        }
-
-//        memset(image->ppixels, 0, image->m_nPixelsSize);
-    }
-    else
-    {
-        image->ppixels = (unsigned char*) realloc(image->ppixels, image->m_nPixelsSize);
-
-//        if (!image->ppixels)
-//        {
-//            strcpy(image->error, "Can't reallocate memory");
-
-//            return 0;
-//        }
-
-//        memset(image->ppixels, 0, image->m_nPixelsSize);
-    }
-
-    return 1;
-}
-
-static int WritePixelCachePixels(Image* image)
-{
-  ssize_t
-    offset;
-
-  size_t
-    extent,
-    length;
-
-  const unsigned char
-    *p;
-
-  ssize_t
-    y;
-
-  size_t
-    rows;
-
-  if (image->nexus->authentic_pixel_cache != 0)
-    return(1);
-  if (IsValidOffset(image->nexus->region.y,image->m_nWidth) == 0)
-    return(0);
-  offset=image->nexus->region.y*(ssize_t) image->m_nWidth+
-    image->nexus->region.x;
-  length=(size_t) 4*image->nexus->region.width*
-    sizeof(unsigned char);
-  extent=length*image->nexus->region.height;
-  rows=image->nexus->region.height;
-  y=0;
-  p=image->nexus->pixels;
-
-  unsigned char
-    *q;
-
-  /*
-    Write pixels to memory.
-  */
-  if ((image->m_nWidth == image->nexus->region.width) &&
-      (extent == (size_t) ((size_t) extent)))
-    {
-      length=extent;
-      rows=1UL;
-    }
-  q=image->ppixels+(ssize_t) 4*
-    offset;
-  for (y=0; y < (ssize_t) rows; y++)
-  {
-    (void) memcpy(q,p,(size_t) length);
-    p+=4*image->nexus->region.width;
-    q+=4*image->m_nWidth;
-  }
-
-  if (y < (ssize_t) rows)
-    {
-      return(0);
-    }
-
-  return(1);
-}
-
-int SyncCacheViewAuthenticPixels(Image* image)
-{
-    int
-      status;
-
-    /*
-      Transfer pixels to the cache.
-    */
-    if (image->ppixels == (unsigned char*) NULL)
-      return 0;
-
-    if (image->mask_trait != UpdatePixelTrait)
-      {
-        return 0;
-      }
-    if (image->nexus->authentic_pixel_cache != 0)
-      {
-        if (image->taint == 0)
-          image->taint=1;
-        return(1);
-      }
-    status=WritePixelCachePixels(image);
-    if ((status != 0) && (image->taint == 0))
-      image->taint=1;
-    return(status);
-}
-
-int SetImageAlpha(Image* image, const unsigned char Alpha)
-{
-    int
-            status,
-            y;
-
-    if (AquireNexus(image) == 0)
-        return 0;
-
-    if (AquirePixelsMemory(image) == 0)
-        return 0;
-
-    image->alpha_trait = BlendPixelTrait;
-    status = 1;
-    for (y = 0; y < image->m_nHeight; y++)
-    {
-        unsigned char
-                *q;
-
-        int
-                x;
-
-        if (status == 0)
-            continue;
-        q = GetPixels(image, 0, y, image->m_nWidth, 1);
-        if (q == (unsigned char*) NULL)
-        {
-            status = 0;
-            continue;
-        }
-        for (x = 0; image->m_nWidth; x++)
-        {
-            if (GetPixelWriteMask(image, q) > (225 / 2))
-                    SetPixelAlpha(image, Alpha, q);
-            q += 4;
-        }
-
-        if (SyncCacheViewAuthenticPixels(image) == 0)
-          status=0;
-    }
-
-    return status;
-}
-
-int AquireImageColormap(Image* image, const size_t colors)
-{
-    ssize_t
-            i;
-
-    if (image == (Image*) NULL)
-        return 0;
-
-    if (colors > 256UL)
-    {
-        image->colors = 0;
-        strcpy(image->error, "UnableToCreateColormap");
-
-        return 0;
-    }
-
-    if (colors > 1)
-        image->colors = colors;
-    else
-        image->colors = 1;
-    if (image->colormap == (PixelInfo*) NULL)
-        image->colormap = (PixelInfo*) malloc((image->colors + 1) * sizeof(image->colormap));
-    else
-        image->colormap = (PixelInfo*) realloc(image->colormap, (image->colors + 1) * sizeof(image->colormap));
-
-    if (image->colormap == (PixelInfo*) NULL)
-    {
-        image->colors = 0;
-        strcpy(image->error, "MemoryAllocationFailed");
-
-        return 0;
-    }
-
-    for (i = 0; i < image->colors; i++)
-    {
-        double
-                pixel;
-
-        GetPixelInfo(image, image->colormap+i);
-        if (colors - 1 > 1)
-            pixel = ((double) i * (255 / (colors - 1)));
-        else
-            pixel = ((double) i * 255);
-
-        image->colormap[i].red = pixel;
-        image->colormap[i].green = pixel;
-        image->colormap[i].blue = pixel;
-        image->colormap[i].alpha = 255.0;
-        image->colormap[i].alpha_trait = BlendPixelTrait;
-    }
-    image->storage_class=PseudoClass;
-    return 1;
-}
-
-void DeletePixelsMemory(Image* image)
-{
-    if (image->ppixels != NULL)
-    {
-        free(image->ppixels);
-
-        image->ppixels = NULL;
-        image->m_nPixelsSize = 0;
-    }
-}
-
-StringInfo *DestroyStringInfo(StringInfo *string_info)
-{
-    if (string_info->datum != (unsigned char *) NULL)
-          free(string_info->datum);
-    if (string_info->name != (char *) NULL)
-      free(string_info->name);
-    if (string_info->path != (char *) NULL)
-      free(string_info->path);
-    string_info->signature=(~0xabacadabUL);
-    free(string_info);
-  return(string_info);
-}
-
-size_t GetSize(FILE* file)
-{
-    ssize_t
-            file_discription;
-
-    struct stat
-            st;
-
-    file_discription = fileno(file);
-    if (fstat(file_discription, &st) == 0)
-        return st.st_size;
-
-    return(0);
-}
-
-ssize_t FormatLocaleStringList(char *string,
-  const size_t length,const char *format,va_list operands)
-{
-  ssize_t
-    n;
-
-  n=(ssize_t) vsprintf(string,format,operands);
-
-  if (n < 0)
-    string[length-1]='\0';
-  return(n);
-}
-
-ssize_t FormatLocaleString(char *string, const size_t length,const char *format,...)
-{
-  ssize_t
-    n;
-
-  va_list
-    operands;
-
-  va_start(operands,format);
-  n=FormatLocaleStringList(string,length,format,operands);
-  va_end(operands);
-  return(n);
-}
-
-StringInfo *BlobToStringInfo(const void *blob,const size_t length)
-{
-  StringInfo
-    *string_info;
-
-  if (~length < 4096)
-      return (StringInfo*) NULL;
-
-  string_info=(StringInfo *) malloc(sizeof(*string_info));
-  (void) memset(string_info,0,sizeof(*string_info));
-  string_info->signature=0xabacadabUL;
-  if (string_info == (StringInfo*) NULL)
-    return (StringInfo*) NULL;
-  string_info->length=length;
-  string_info->datum=(unsigned char *) malloc(length+4096*sizeof(*string_info->datum));
-  if (string_info->datum == (unsigned char *) NULL)
-    {
-      string_info = DestroyStringInfo(string_info);
-      return((StringInfo *) NULL);
-    }
-  if (blob != (const void *) NULL)
-    (void) memcpy(string_info->datum,blob,length);
-  else
-    (void) memset(string_info->datum,0,length*sizeof(*string_info->datum));
-  (void) memset(string_info->datum+length,0,4096*sizeof(*string_info->datum));
-  return(string_info);
-}
-
-void LocaleLower(char *string)
-{
-  char
-    *q;
-
-  for (q=string; *q != '\0'; q++)
-    *q=(char) LocaleToLowercase((int) *q);
-}
-
-int LocaleNCompare(const char *p,const char *q,const size_t length)
-{
-  if (p == (char *) NULL)
-    {
-      if (q == (char *) NULL)
-        return(0);
-      return(-1);
-    }
-  if (q == (char *) NULL)
-    return(1);
-  if (length == 0)
-    return(0);
-  {
-    const unsigned char
-      *s = (const unsigned char *) p,
-      *t = (const unsigned char *) q;
-
-    size_t
-      n = length;
-
-    for (n--; (*s != '\0') && (*t != '\0') && (n != 0) && ((*s == *t) ||
-      (LocaleToLowercase((int) *s) == LocaleToLowercase((int) *t))); s++, t++, n--);
-    return(LocaleToLowercase((int) *s)-LocaleToLowercase((int) *t));
-  }
-}
-
 int CompareSplayTreeString(const void *target,const void *source)
 {
   const char
@@ -1756,8 +1539,7 @@ int CompareSplayTreeString(const void *target,const void *source)
   return(LocaleCompare(p,q));
 }
 
-const void *GetValueFromSplayTree(SplayTreeInfo *splay_tree,
-  const void *key)
+const void *GetValueFromSplayTree(SplayTreeInfo *splay_tree, const void *key)
 {
   int
     compare;
@@ -1777,6 +1559,18 @@ const void *GetValueFromSplayTree(SplayTreeInfo *splay_tree,
   if (compare != 0)
       return((void *) NULL);
   value=splay_tree->root->value;
+  return(value);
+}
+
+const void *GetRootValueFromSplayTree(SplayTreeInfo *splay_tree)
+{
+  const void
+    *value;
+
+  value=(const void *) NULL;
+  if (splay_tree->root != (NodeInfo *) NULL)
+    value=splay_tree->root->value;
+
   return(value);
 }
 
@@ -1946,234 +1740,7 @@ int SetImageProfileInternal(Image *image,const char *name,const StringInfo *prof
   return(status);
 }
 
-int Read(FILE* file, const int length, void* data)
-{
-    if (!file) return 0;
-    if (data == NULL) return 0;
-    unsigned char* q;
-    q = (unsigned char*) data;
-    return fread(q, 1, length, file);
-}
-
-int ReadByte(FILE* file)
-{
-    return getc(file);
-}
-
-const void *ReadBlobStream(FILE* file, const size_t length, void *data, ssize_t* count)
-{
-    *count = Read(file, length, (unsigned char*) data);
-    return data;
-}
-
-unsigned short ReadShortValue(FILE* file)
-{
-    unsigned short
-            value;
-
-    unsigned char
-            buffer[2];
-
-    const unsigned char
-            *p;
-
-    ssize_t
-            count;
-
-    *buffer='\0';
-//    count = Read(file, 2, buffer);
-
-
-
-    p = (const unsigned char*) ReadBlobStream(file, 2, buffer, &count);
-    if (count != 2)
-    {
-        return(EOF);
-    }
-    value = (unsigned short) ((*p++) << 8);
-    value |= (unsigned short) (*p++);
-    return ((unsigned short) (value & 0xffff));
-}
-
-signed short ReadSignedShortValue(FILE* file)
-{
-    union
-    {
-        unsigned short unsigned_value;
-
-        signed short signed_value;
-    } Quantum;
-
-    Quantum.unsigned_value = ReadShortValue(file);
-    return (Quantum.signed_value);
-}
-
-unsigned int ReadLongValue(FILE* file)
-{
-    const unsigned char
-            *p;
-
-    unsigned int
-            value;
-
-    int
-            count;
-    unsigned char
-            buffer[4];
-
-    *buffer='\0';
-    count = Read(file, 4, buffer);
-
-    if (count != 4)
-    {
-        return(EOF);
-    }
-
-    p = (const unsigned char*) buffer;
-
-    value=(unsigned int) (*p++) << 24;
-    value|=(unsigned int) (*p++) << 16;
-    value|=(unsigned int) (*p++) << 8;
-    value|=(unsigned int) (*p++);
-
-    return value;
-}
-
-int ReadRectangle(FILE* file, PICTrectangle *frame)
-{
-    frame->top = (short) ReadShortValue(file);
-    frame->left = (short) ReadShortValue(file);
-    frame->bottom = (short) ReadShortValue(file);
-    frame->right = (short) ReadShortValue(file);
-
-    if (feof(file) != 0)
-    {
-        return 0;
-    }
-
-//    if (((frame->bottom | frame->top |
-//          frame->left | frame->right) & 0x8000) != 0)
-//    {
-//        return 0;
-//    }
-
-    if (frame->bottom < frame->top)
-    {
-        return 0;
-    }
-
-    if (frame->right < frame->left)
-    {
-        return 0;
-    }
-
-    return 1;
-}
-
-int ReadPixmap(FILE* file,PICTPixmap *pixmap)
-{
-  pixmap->version=(short) ReadShortValue(file);
-  pixmap->pack_type=(short) ReadShortValue(file);
-  pixmap->pack_size=ReadLongValue(file);
-  pixmap->horizontal_resolution=1UL*ReadShortValue(file);
-  (void) ReadShortValue(file);
-  pixmap->vertical_resolution=1UL*ReadShortValue(file);
-  (void) ReadShortValue(file);
-  pixmap->pixel_type=(short) ReadShortValue(file);
-  pixmap->bits_per_pixel=(short) ReadShortValue(file);
-  pixmap->component_count=(short) ReadShortValue(file);
-  pixmap->component_size=(short) ReadShortValue(file);
-  pixmap->plane_bytes=ReadLongValue(file);
-  pixmap->table=ReadLongValue(file);
-  pixmap->reserved=ReadLongValue(file);
-  if ((feof(file) != 0) || (pixmap->bits_per_pixel <= 0) ||
-      (pixmap->bits_per_pixel > 32) || (pixmap->component_count <= 0) ||
-      (pixmap->component_count > 4) || (pixmap->component_size <= 0))
-    return(0);
-  return(1);
-}
-
-static inline float PerceptibleReciprocal(const float x)
-{
-  float sign = x < (float) 0.0 ? (float) -1.0 : (float) 1.0;
-  return((sign*x) >= 1.0e-12 ? (float) 1.0/x : sign*((float) 1.0/1.0e-12));
-}
-
-
-static inline unsigned char GetPixelChannel(const Image *image,
-  const PixelChannel channel,const unsigned char *pixel)
-{
-  if ((size_t) channel >= 64)
-    return((unsigned char) 0);
-  if (image->channel_map[channel].traits == UndefinedPixelTrait)
-    return((unsigned char) 0);
-  return(pixel[image->channel_map[channel].offset]);
-}
-
-static inline unsigned char GetPixelAlpha(const Image *image,
-  const unsigned char *pixel)
-{
-  if (image->channel_map[AlphaPixelChannel].traits == UndefinedPixelTrait)
-    return (unsigned char) 0;
-  return(pixel[image->channel_map[AlphaPixelChannel].offset]);
-}
-
-int IsOffsetOverflow(const ssize_t x,const ssize_t y)
-{
-  if (((y > 0) && (x > (LLONG_MAX-y))) ||
-      ((y < 0) && (x < (LLONG_MIN-y))))
-    return 0;
-  return 1;
-}
-
-static inline void SetPixelChannel(const Image *image,
-  const PixelChannel channel,const unsigned char Quantum,
-  unsigned char *pixel)
-{
-  if ((size_t) channel >= 64)
-    return;
-  if (image->channel_map[channel].traits != UndefinedPixelTrait)
-    pixel[image->channel_map[channel].offset]=Quantum;
-}
-
-static inline PixelChannel GetPixelChannelChannel(
-  const Image *image,const ssize_t offset)
-{
-  if ((offset < 0) || (offset >= 64))
-    return(UndefinedPixelChannel);
-  return(image->channel_map[offset].channel);
-}
-
-static inline PixelTrait GetPixelChannelTraits(
-  const Image *image,const PixelChannel channel)
-{
-  if ((size_t) channel >= 64)
-    return(UndefinedPixelTrait);
-  return(image->channel_map[channel].traits);
-}
-
-static inline unsigned char GetPixelReadMask(const Image *image,
-  const unsigned char *pixel)
-{
-  if (image->channel_map[ReadMaskPixelChannel].traits == UndefinedPixelTrait)
-    return((unsigned char) 255);
-  return(pixel[image->channel_map[ReadMaskPixelChannel].offset]);
-}
-
-const void *GetRootValueFromSplayTree(SplayTreeInfo *splay_tree)
-{
-  const void
-    *value;
-
-  value=(const void *) NULL;
-  if (splay_tree->root != (NodeInfo *) NULL)
-    value=splay_tree->root->value;
-
-  return(value);
-}
-
-const char *GetImageArtifact(const Image *image,
-  const char *artifact)
+const char *GetImageArtifact(const Image *image,const char *artifact)
 {
   const char
     *p;
@@ -2193,167 +1760,103 @@ const char *GetImageArtifact(const Image *image,
   return(p);
 }
 
-static inline int IsRGBColorspace(const ColorspaceType colorspace)
+Image *DestroyImage(Image *image)
 {
-  if ((colorspace == RGBColorspace) || (colorspace == scRGBColorspace) ||
-      (colorspace == LinearGRAYColorspace))
-    return 1;
-  return 0;
-}
-
-
-static inline int IsGrayColorspace(
-  const ColorspaceType colorspace)
-{
-  if ((colorspace == LinearGRAYColorspace) || (colorspace == GRAYColorspace))
-    return 1;
-  return 0;
-}
-
-const unsigned char *GetVirtualPixelCacheNexus(Image *image,const ssize_t x,const ssize_t y,const size_t columns,const size_t rows,NexusInfo *nexus_info)
-{
-  ssize_t
-    offset;
-
-  size_t
-    length,
-    number_pixels;
-
-  unsigned char
-    *pixels;
-
   /*
-    Acquire pixels.
+    Destroy image.
   */
-  pixels=SetPixelCacheNexusPixels(image,x,y,columns,rows,image->nexus);
-  if (pixels == (unsigned char *) NULL)
-    return((const unsigned char *) NULL);
-  if (IsValidOffset(nexus_info->region.y,image->m_nWidth) == 0)
-    return((const unsigned char *) NULL);
-  offset=nexus_info->region.y*(ssize_t) image->m_nWidth;
-  if (IsOffsetOverflow(offset,nexus_info->region.x) == 0)
-    return((const unsigned char *) NULL);
-  offset+=nexus_info->region.x;
-  length=(size_t) (nexus_info->region.height-1L)*image->m_nWidth+
-    nexus_info->region.width-1L;
-  number_pixels=(size_t) image->m_nWidth*image->m_nHeight;
-  if ((offset >= 0) && (((size_t) offset+length) < number_pixels))
-    if ((x >= 0) && ((x+(ssize_t) columns-1) < (ssize_t) image->m_nWidth) &&
-        (y >= 0) && ((y+(ssize_t) rows-1) < (ssize_t) image->m_nHeight))
-      {
-        int
-          status;
-
-        /*
-          Pixel request is inside cache extents.
-        */
-        status=ReadPixels(image,nexus_info);
-        if (status == 0)
-          return((const unsigned char *) NULL);
-        return(pixels);
-      }
-  return (unsigned char *) NULL;
+  free(image->ppixels);
+  free(image->channel_map);
+  if (image->profiles != NULL)
+    DestroySplayTree(image->profiles);
+  if (image->artifacts != NULL)
+    DestroySplayTree(image->artifacts);
+  free(image);
+  return(Image *) NULL;
 }
 
-int SetImageColorspace(Image *image, const ColorspaceType colorspace)
+Image* CloneImage(const Image* image, const size_t colums, const size_t rows)
 {
-  ImageType
-    type;
-
-  if (image->colorspace == colorspace)
-    return 1;
-  image->colorspace=colorspace;
-  image->gamma=1.000/2.200;
-  (void) memset(&image->chromaticity,0,sizeof(image->chromaticity));
-  type=image->type;
-  if (IsGrayColorspace(colorspace) != 0)
+    if (image == (const Image*) NULL)
     {
-      if (colorspace == LinearGRAYColorspace)
-        image->gamma=1.000;
-      type=GrayscaleType;
+        return((Image*) NULL);
     }
-  else
-    if ((IsRGBColorspace(colorspace) != 0) ||
-        (colorspace == XYZColorspace) || (colorspace == xyYColorspace))
-      image->gamma=1.000;
-    else
-      {
-        image->chromaticity.red_primary.x=0.6400;
-        image->chromaticity.red_primary.y=0.3300;
-        image->chromaticity.red_primary.z=0.0300;
-        image->chromaticity.green_primary.x=0.3000;
-        image->chromaticity.green_primary.y=0.6000;
-        image->chromaticity.green_primary.z=0.1000;
-        image->chromaticity.blue_primary.x=0.1500;
-        image->chromaticity.blue_primary.y=0.0600;
-        image->chromaticity.blue_primary.z=0.7900;
-        image->chromaticity.white_point.x=0.3127;
-        image->chromaticity.white_point.y=0.3290;
-        image->chromaticity.white_point.z=0.3583;
-      }
-  if (image->ppixels == (unsigned char*) NULL)
-      return 0;
-  image->type=type;
-  return 1;
+
+    Image* clone_image = new Image;
+
+    AquireImage(clone_image);
+
+    clone_image->storage_class = image->storage_class;
+    clone_image->fuzz = image->fuzz;
+    clone_image->colorspace = image->colorspace;
+    clone_image->chromaticity.blue_primary = image->chromaticity.blue_primary;
+    clone_image->chromaticity.green_primary = image->chromaticity.green_primary;
+    clone_image->chromaticity.red_primary = image->chromaticity.red_primary;
+    clone_image->chromaticity.white_point = image->chromaticity.white_point;
+    clone_image->gamma = image->gamma;
+    clone_image->m_nHeight = image->m_nHeight;
+    if (rows != 0)
+        clone_image->m_nHeight = rows;
+    clone_image->m_nWidth = image->m_nWidth;
+    if (colums != 0)
+        clone_image->m_nWidth = colums;
+    clone_image->number_channels = image->number_channels;
+    clone_image->m_nPixelsSize = clone_image->number_channels * clone_image->m_nHeight * clone_image->m_nWidth;
+    clone_image->resolutionX = image->resolutionX;
+    clone_image->resolutionY = image->resolutionY;
+    if (image->ppixels != NULL)
+    {
+        clone_image->ppixels = (unsigned char*) malloc(clone_image->m_nPixelsSize * sizeof(unsigned char));
+        memcpy(clone_image->ppixels, image->ppixels, clone_image->m_nPixelsSize * sizeof(unsigned char));
+    }
+    clone_image->alpha_trait = image->alpha_trait;
+    clone_image->background_color.blue = image->background_color.blue;
+    clone_image->background_color.green = image->background_color.green;
+    clone_image->background_color.red = image->background_color.red;
+
+    if (image->nexus != NULL)
+    {
+        clone_image->nexus = (NexusInfo*) malloc(sizeof(NexusInfo));
+        clone_image->nexus->region.height = image->nexus->region.height;
+        clone_image->nexus->region.width = image->nexus->region.width;
+        clone_image->nexus->region.x = image->nexus->region.x;
+        clone_image->nexus->region.y = image->nexus->region.y;
+        clone_image->nexus->length = image->nexus->length;
+        clone_image->nexus->authentic_pixel_cache = image->nexus->authentic_pixel_cache;
+        clone_image->nexus->pixels = (unsigned char*) malloc(clone_image->nexus->length * sizeof(unsigned char));
+        memcpy(clone_image->nexus->pixels, image->nexus->pixels, clone_image->nexus->length);
+    }
+
+    clone_image->colors = image->colors;
+    if (image->colormap != NULL)
+    {
+        clone_image->colormap = (PixelInfo*) malloc((clone_image->colors + 1) * sizeof(*clone_image->colormap));
+        memcpy(clone_image->colormap, image->colormap, clone_image->colors * sizeof(*clone_image->colormap));
+    }
+    if (image->channel_map != NULL)
+    {
+        clone_image->channel_map = (PixelChannelMap*) malloc(65 * sizeof (image->channel_map));
+        memcpy(clone_image->channel_map, image->channel_map, 65 * sizeof (image->channel_map));
+    }
+
+    if (image->profiles != NULL)
+        clone_image->profiles = CloneSplayTree(image->profiles, (void *(*)(void *)) ConstantString,(void *(*)(void *)) CloneStringInfo);
+    if (image->artifacts != NULL)
+        clone_image->artifacts = CloneSplayTree(image->artifacts, (void *(*)(void *)) ConstantString,(void *(*)(void *)) CloneStringInfo);
+
+    clone_image->mask_trait = image->mask_trait;
+    clone_image->taint = image->taint;
+
+    return clone_image;
 }
 
-static inline ssize_t CastDoubleToLong(const double x)
+static inline unsigned char GetPixelReadMask(const Image *image,
+  const unsigned char *pixel)
 {
-  if (floor(x) > ((double) LLONG_MAX-1))
-    {
-      return((ssize_t) LLONG_MAX);
-    }
-  if (ceil(x) < ((double) LLONG_MIN+1))
-    {
-      return((ssize_t) LLONG_MIN);
-    }
-  return((ssize_t) x);
+  if (image->channel_map[ReadMaskPixelChannel].traits == UndefinedPixelTrait)
+    return((unsigned char) 255);
+  return(pixel[image->channel_map[ReadMaskPixelChannel].offset]);
 }
-
-int Clamp(double x, double min, double max) {
-    if (x < min) {
-        return min;
-    } else if (x > max) {
-        return max;
-    } else {
-        return x;
-    }
-}
-
-static inline int CopyPixel(const Image *image,
-  const unsigned char *source,unsigned char *destination)
-{
-  ssize_t
-    i;
-
-  if (source == (const unsigned char *) NULL)
-    {
-      destination[RedPixelChannel]=(unsigned char) (Clamp(image->background_color.red, 0.0f, 255.0f) + 0.5f);
-      destination[GreenPixelChannel]=(unsigned char) (Clamp(image->background_color.green, 0.0f, 255.0f) + 0.5f);
-      destination[BluePixelChannel]=(unsigned char) (Clamp(image->background_color.blue, 0.0f, 255.0f) + 0.5f);
-      destination[BlackPixelChannel]=(unsigned char) (Clamp(image->background_color.black, 0.0f, 255.0f) + 0.5f);
-      destination[AlphaPixelChannel]=(unsigned char) (Clamp(image->background_color.alpha, 0.0f, 255.0f) + 0.5f);
-      return 0;
-    }
-  for (i=0; i < 4; i++)
-  {
-    PixelChannel channel = GetPixelChannelChannel(image,i);
-    destination[channel]=source[i];
-  }
-  return 1;
-}
-
-int GetOneVirtualPixel(Image *image,const ssize_t x,const ssize_t y,unsigned char *pixel)
-{
-  const unsigned char
-    *p;
-
-  (void) memset(pixel,0,64*sizeof(*pixel));
-  p=GetVirtualPixelCacheNexus(image,x,y,1UL,1UL,image->nexus);
-  return(CopyPixel(image,p,pixel));
-}
-
-
 
 int CompositeImage(Image *image, const Image *composite, const int clip_to_self,const ssize_t x_offset,const ssize_t y_offset)
 {
@@ -2423,9 +1926,6 @@ int CompositeImage(Image *image, const Image *composite, const int clip_to_self,
 
       for (y=0; y < (ssize_t) source_image->m_nHeight; y++)
       {
-        int
-          sync;
-
         const unsigned char
           *p;
 
@@ -2448,14 +1948,13 @@ int CompositeImage(Image *image, const Image *composite, const int clip_to_self,
         {
           ssize_t
             i;
-
-          if (GetPixelReadMask(source_image,p) <= (255/2))
+            if (GetPixelReadMask(source_image, p) <= (255/2))
             {
-              p+=4;
-              q+=4;
+              p+=source_image->number_channels;
+              q+=image->number_channels;
               continue;
             }
-          for (i=0; i < 4; i++)
+          for (i=0; i < source_image->number_channels; i++)
           {
             PixelChannel channel = GetPixelChannelChannel(source_image,i);
             PixelTrait source_traits = GetPixelChannelTraits(source_image,
@@ -2466,12 +1965,10 @@ int CompositeImage(Image *image, const Image *composite, const int clip_to_self,
               continue;
             SetPixelChannel(image,channel,p[i],q);
           }
-          p+=4;
-          q+=4;
+          p+=source_image->number_channels;
+          q+=image->number_channels;
         }
-        sync=SyncAuthenticPixels(image);
-        if (sync == 0)
-          status=0;
+        memcpy(image->ppixels + image->number_channels * (y * image->m_nWidth), source_image->ppixels + source_image->number_channels * ((y + y_offset) * source_image->m_nWidth + x_offset), source_image->number_channels * source_image->m_nWidth * sizeof(unsigned char));
       }
       source_image=DestroyImage(source_image);
       return(status);
@@ -2526,7 +2023,7 @@ int CompositeImage(Image *image, const Image *composite, const int clip_to_self,
           }
         pixels=p;
         if (x_offset < 0)
-          p-=CastDoubleToLong((double) x_offset*4);
+          p-=CastDoubleToLong((double) x_offset*source_image->number_channels);
       }
     q=GetPixels(image,0,y,image->m_nWidth,1);
     if (q == (unsigned char *) NULL)
@@ -2562,7 +2059,7 @@ int CompositeImage(Image *image, const Image *composite, const int clip_to_self,
         {
           if (x < x_offset)
             {
-              q+=4;
+              q+=image->number_channels;
               continue;
             }
           if ((x-(double) x_offset) >= (double) source_image->m_nWidth)
@@ -2582,7 +2079,7 @@ int CompositeImage(Image *image, const Image *composite, const int clip_to_self,
           (void) GetOneVirtualPixel(source_image,
             CastDoubleToLong(x-(double) x_offset),
             CastDoubleToLong(y-(double) y_offset),source);
-          for (i=0; i < 4; i++)
+          for (i=0; i < image->number_channels; i++)
           {
             double
               pixel = 0.0;
@@ -2600,7 +2097,7 @@ int CompositeImage(Image *image, const Image *composite, const int clip_to_self,
             q[i]=clamp != 0 ? (unsigned char) (pixel + 0.5f) :
               (unsigned char) (Clamp(pixel, 0.0f, 255.0f) + 0.5f);
           }
-          q+=4;
+          q+=image->number_channels;
           continue;
         }
       /*
@@ -2611,7 +2108,7 @@ int CompositeImage(Image *image, const Image *composite, const int clip_to_self,
       Sa = (1.0/255.0)*(double) GetPixelAlpha(source_image,p);
       Da = (1.0/255.0)*(double) GetPixelAlpha(image,q);
       alpha = 1.0;
-      for (i=0; i < 4; i++)
+      for (i=0; i < image->number_channels; i++)
       {
         double
           pixel = 0.0;
@@ -2669,14 +2166,12 @@ int CompositeImage(Image *image, const Image *composite, const int clip_to_self,
         q[i]=clamp != 0 ? (unsigned char) (pixel + 0.5f) :
           (unsigned char) (Clamp(pixel, 0.0f, 255.0f) + 0.5f);
       }
-      p+=4;
-      channels=4;
+      p+=source_image->number_channels;
+      channels=source_image->number_channels;
       if (p >= (pixels+channels*source_image->m_nWidth))
         p=pixels;
-      q+=4;
+      q+=image->number_channels;
     }
-    if (SyncAuthenticPixels(image) == 0)
-      status=0;
   }
   if (canvas_image != (Image * ) NULL)
     canvas_image=DestroyImage(canvas_image);
@@ -2774,16 +2269,6 @@ int DecodeHeader(FILE* hFile, Image* image)
    if ((vers == 0x02FF) && (vers2 == 0x0C00))
    {
        image->m_pctVersion = 2;
-//       if ((frame.left < 0) || (frame.right < 0) || (frame.top < 0) ||
-//           (frame.bottom < 0) || (frame.left >= frame.right) ||
-//           (frame.top >= frame.bottom))
-//       {
-//            strcpy(image->error, "ImproperImageHeader");
-
-//            return 0;
-//       }
-//       image->m_nWidth=(size_t) (frame.right-frame.left);
-//       image->m_nHeight=(size_t) (frame.bottom-frame.top);
        vers3 = (short) ReadShortValue(hFile);
 
        if (vers3 == -1)
@@ -2958,7 +2443,7 @@ static unsigned char *DecodeImage(FILE *blob,Image *image,
     }
   else
     if (bits_per_pixel == 32)
-      width*=4/*image->alpha_trait ? 4 : 3*/;
+      width*=image->alpha_trait ? 4 : 3;
   if (bytes_per_line == 0)
     bytes_per_line=width;
   row_bytes=(size_t) (image->m_nWidth | 0x8000);
@@ -2990,7 +2475,7 @@ static unsigned char *DecodeImage(FILE *blob,Image *image,
       */
       for (y=0; y < (ssize_t) image->m_nHeight; y++)
       {
-        q=pixels+y*(ssize_t) width*4;
+        q=pixels+y*(ssize_t) width*image->number_channels;
         number_pixels=bytes_per_line;
         count=Read(blob,(size_t) number_pixels,scanline);
         if (count != (ssize_t) number_pixels)
@@ -3109,12 +2594,12 @@ int DecodePICT(const char* filepath, Image* image)
         return 0;
     }
 
-//    if (hFile == NULL)
-//    {
-//        strcpy(image->error, "FileError");
+    if (hFile == NULL)
+    {
+        strcpy(image->error, "FileError");
 
-//        return 0;
-//    }
+        return 0;
+    }
 
     pixmap.bits_per_pixel=0;
     pixmap.component_count=0;
@@ -3277,7 +2762,6 @@ int DecodePICT(const char* filepath, Image* image)
                 {
                     DeletePixelsMemory(image);
                     fclose(hFile);
-
                     strcpy(image->error, "InsufficientImageDataInFile");
 
                     return 0;
@@ -3451,7 +2935,6 @@ int DecodePICT(const char* filepath, Image* image)
                     if (tile_image->alpha_trait != UndefinedPixelTrait)
                       (void) SetImageAlpha(tile_image, 255);
                 }
-
                 if ((code != 0x9a) && (code != 0x9b))
                 {
                     /*
@@ -3569,15 +3052,6 @@ int DecodePICT(const char* filepath, Image* image)
                     return 0;
                 }
 
-//                std::wstring fres = L"res.png";
-//                FILE* hFres;
-
-//                _wfopen_s(&hFres, fres.c_str(), L"wb");
-
-//                size_t count = fwrite(pixels, 1, extent, hFres);
-
-//                fclose(hFres);
-
                 /*
                   Convert PICT tile image to pixel packets.
                 */
@@ -3595,8 +3069,7 @@ int DecodePICT(const char* filepath, Image* image)
 
                       return 0;
                     }
-//                  q=QueuePixels(tile_image,0,y,tile_image->m_nWidth,1);
-                  q = tile_image->ppixels + 4 * (y * tile_image->m_nWidth);
+                  q = tile_image->ppixels + tile_image->number_channels * (y * tile_image->m_nWidth);
                   if (q == (unsigned char *) NULL)
                     break;
                   for (x=0; x < tile_image->m_nWidth; x++)
@@ -3655,16 +3128,14 @@ int DecodePICT(const char* filepath, Image* image)
                                 return 0;
                               }
                               SetPixelAlpha(tile_image,*p,q);
-                              SetPixelRed(tile_image,*(p+tile_image->m_nWidth),q);
+                              SetPixelRed(tile_image,*(p+1*tile_image->m_nWidth),q);
                               SetPixelGreen(tile_image,*(p+2*tile_image->m_nWidth),q);
                               SetPixelBlue(tile_image,*(p+3*tile_image->m_nWidth),q);
                             }
                       }
                     p++;
-                    q+=4;
+                    q+=tile_image->number_channels;
                   }
-//                  if (SyncAuthenticPixels(tile_image) == 0)
-//                    break;
                   if ((tile_image->storage_class == DirectClass) &&
                       (pixmap.bits_per_pixel != 16))
                     {
@@ -3674,32 +3145,12 @@ int DecodePICT(const char* filepath, Image* image)
                     }
                 }
 
-//                std::wstring fres1 = L"res11.png";
-//                FILE* hFres1;
-
-//                _wfopen_s(&hFres1, fres1.c_str(), L"wb");
-
-//                size_t count2 = fwrite(tile_image->ppixels, 1, image->m_nHeight * image->m_nWidth * 4, hFres1);
-
-//                fclose(hFres);
-
                 free(pixels);
                 if ((jpeg == 0) && (feof(hFile) == 0))
                   if ((code == 0x9a) || (code == 0x9b) ||
                       ((bytes_per_line & 0x8000) != 0))
                     (void) CompositeImage(image,tile_image,1,(ssize_t) destination.left,(ssize_t)destination.top);
-                memcpy(image->ppixels, tile_image->ppixels, 4 * tile_image->m_nHeight * tile_image->m_nWidth * sizeof(unsigned char));
                 tile_image=DestroyImage(tile_image);
-
-//                std::wstring fres2 = L"res3.png";
-//                FILE* hFres2;
-
-//                _wfopen_s(&hFres2, fres2.c_str(), L"wb");
-
-//                size_t count23 = fwrite(image->ppixels, 1, image->m_nHeight * image->m_nWidth * 4, hFres2);
-
-//                fclose(hFres);
-
                 break;
             }
             case 0xa1:

@@ -4017,7 +4017,7 @@ namespace PdfReader
 			}
 		}
 
-		if (nRenderMode == 0 || nRenderMode == 4 || nRenderMode == 6)
+		if (nRenderMode == 0 || nRenderMode == 4 || nRenderMode == 6 || (m_bDrawOnlyText && nRenderMode == 2))
 		{
 #ifdef BUILDING_WASM_MODULE
 			std::wstring sFontPath;

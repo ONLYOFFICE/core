@@ -36,63 +36,11 @@
 #include "Types.h"
 #include "Pages.h"
 #include "Document.h"
+#include "Field.h"
 
 namespace PdfWriter
 {
 	class CDestination;
-
-	enum EBorderSubtype
-	{
-		border_subtype_Solid,
-		border_subtype_Beveled,
-		border_subtype_Dashed,
-		border_subtype_Inset,
-		border_subtype_Underlined
-	};
-	enum EAnnotType
-	{
-		AnnotUnknown        = -1,
-		AnnotText           = 0,
-		AnnotLink           = 1,
-		AnnotSound          = 2,
-		AnnotFreeText       = 3,
-		AnnotStamp          = 4,
-		AnnotSquare         = 5,
-		AnnotCircle         = 6,
-		AnnotStrikeOut      = 7,
-		AnnotHighLight      = 8,
-		AnnotUnderline      = 9,
-		AnnotInk            = 10,
-		AnnotFileAttachment = 11,
-		AnnotPopup          = 12,
-		AnnotLine           = 13,
-		AnnotSquiggly       = 14,
-		AnnotPolygon        = 15,
-		AnnotPolyLine       = 16,
-		AnnotCaret          = 17,
-		AnnotWidget         = 18
-	};
-	enum EAnnotHighlightMode
-	{
-		AnnotNoHighlight = 0,
-		AnnotInvertBox,
-		AnnotInvertBorder,
-		AnnotDownAppearance,
-		AnnotHighlightModeEOF
-	};
-	enum EAnnotIcon
-	{
-		AnnotIconComment      = 0,
-		AnnotIconKey          = 1,
-		AnnotIconNote         = 2,
-		AnnotIconHelp         = 3,
-		AnnotIconNewParagraph = 4,
-		AnnotIconParagraph    = 5,
-		AnnotIconInsert       = 6,
-
-		AnnotIconMin          = 0,
-		AnnotIconMax          = 6
-	};
 
 	class CAction : public CDictObject
 	{
@@ -159,6 +107,9 @@ namespace PdfWriter
 		double m_dPageHeight = 0;
 		CDocument* m_pDocument;
 
+		bool bHaveBorder;
+		double dBorderWidth;
+
 	public:
 		EDictType GetDictType() const
 		{
@@ -183,12 +134,13 @@ namespace PdfWriter
 		void SetNM(const std::wstring& wsNM);
 		void SetLM(const std::wstring& wsLM);
 		void SetC(const std::vector<double>& arrC);
-		// TODO AP Необходимо генерировать внешний вид аннотации как у Widget
-		virtual void CreateAP();
-		TRect GetRect() { return m_oRect; }
+
+		TRect& GetRect() { return m_oRect; }
 		void SetXref(CXref* pXref) { m_pXref = pXref; }
 		void SetDocument(CDocument* pDocument);
 		CDocument* GetDocument();
+		bool HaveBorder() { return bHaveBorder; }
+		double GetBorderWidth() { return dBorderWidth; }
 	};
 	class CPopupAnnotation : public CAnnotation
 	{
@@ -223,7 +175,6 @@ namespace PdfWriter
 
 		void SetIRTID(CAnnotation* pAnnot);
 		CPopupAnnotation* CreatePopup();
-		virtual void CreateAP() override;
 	};
 	class CLinkAnnotation : public CAnnotation
 	{
@@ -252,7 +203,7 @@ namespace PdfWriter
 		void SetState(BYTE nState);
 		void SetStateModel(BYTE nStateModel);
 
-		void CreateAP() override;
+		void SetAP();
 	};
 	class CUriLinkAnnotation : public CAnnotation
 	{
@@ -377,6 +328,9 @@ namespace PdfWriter
 		CDictObject* m_pA;
 		std::string m_sDAforAP;
 
+		std::vector<double> m_arrBC;
+		std::vector<double> m_arrBG;
+
 		void CheckMK();
 
 	public:
@@ -399,6 +353,8 @@ namespace PdfWriter
 		void AddAction(CAction* pAction);
 
 		std::string GetDAforAP() { return m_sDAforAP; }
+		std::string GetBGforAP();
+		std::string GetBCforAP();
 	};
 	class CButtonWidget : public CWidgetAnnotation
 	{
@@ -434,6 +390,7 @@ namespace PdfWriter
 	private:
 		EAnnotType m_nSubtype;
 		std::string m_sV;
+		CAnnotAppearance* m_pAppearance;
 
 	public:
 		CTextWidget(CXref* pXref);
@@ -446,8 +403,14 @@ namespace PdfWriter
 		void SetV (const std::wstring& wsV);
 		void SetRV(const std::wstring& wsRV);
 
-		void CreateAP() override;
+		void SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, const TRgb& oColor, const double& dAlpha, double dFontSize, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts);
+		void StartAP(CFontDict* pFont, const double& dFontSize, const double& dAlpha);
+		void AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts = NULL, const double* pShifts = NULL);
+		void EndAP();
 		std::string GetV() { return m_sV; }
+		bool IsCombFlag();
+		bool IsMultiLine();
+		int GetMaxLen();
 	};
 	class CChoiceWidget : public CWidgetAnnotation
 	{
@@ -476,20 +439,6 @@ namespace PdfWriter
 		{
 			return m_nSubtype;
 		}
-	};
-
-	class CAnnotationAppearance : public CDictObject
-	{
-	public:
-		CAnnotationAppearance(CXref* pXref, CAnnotation* pAnnot);
-
-		void DrawTextComment();
-		void DrawTextWidget();
-
-	private:
-		CXref*   m_pXref;
-		CStream* m_pStream;
-		CAnnotation* m_pAnnot;
 	};
 }
 #endif // _PDF_WRITER_SRC_ANNOTATION_H

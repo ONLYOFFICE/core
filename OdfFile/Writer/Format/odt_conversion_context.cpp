@@ -63,11 +63,11 @@ namespace utils
 
 double calculate_size_font_symbols(std::wstring str_test, std::wstring font_name, double font_size, NSFonts::IApplicationFonts *appFonts)
 {
-    std::pair<float,float> appr = _graphics_utils_::calculate_size_symbol_asc(font_name, font_size, false, false, appFonts);
+    std::pair<double, double> appr = _graphics_utils_::calculate_size_symbol_asc(font_name, font_size, false, false, appFonts);
 	
 	if (appr.first < 0.01 || appr.second < 0.01)
 	{
-        appr.first = _graphics_utils_::calculate_size_symbol_win(font_name, font_size, false, false, str_test);
+        appr = _graphics_utils_::calculate_size_symbol_win(font_name, font_size, false, false, str_test);
 		//appr_px = ((int)(appr_px+0.5) + 2*(int)appr_px)/3.;
 	}
 

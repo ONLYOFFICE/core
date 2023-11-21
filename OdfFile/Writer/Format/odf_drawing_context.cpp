@@ -2454,8 +2454,9 @@ void odf_drawing_context::set_line_dash_preset(int style)
 			impl_->current_graphic_properties->draw_stroke_=line_style(line_style::Solid);		break;
 	}
 }
-void odf_drawing_context::set_text_properties(style_text_properties *text_properties)
+void odf_drawing_context::set_text_properties(text_format_properties* text_properties)
 {
+	if (!text_properties) return;
 	if (impl_->current_drawing_state_.elements_.empty()) return;
 
 	if (!impl_->current_text_properties)
@@ -2463,29 +2464,35 @@ void odf_drawing_context::set_text_properties(style_text_properties *text_proper
 		draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
 		if (draw)
 		{
-			if(!draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
+			if (!draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
 			{
-				impl_->styles_context_->create_style(L"", style_family::Paragraph, true, false, -1);		
-			
-				office_element_ptr & style_shape_elm = impl_->styles_context_->last_state()->get_office_element();
+				impl_->styles_context_->create_style(L"", style_family::Paragraph, true, false, -1);
+
+				office_element_ptr& style_shape_elm = impl_->styles_context_->last_state()->get_office_element();
 				style* style_ = dynamic_cast<style*>(style_shape_elm.get());
 				if (style_)
 				{
 					impl_->current_text_properties = style_->content_.add_get_style_text_properties();
 					draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_ = style_->style_name_;
-					
+
 					if (!impl_->current_level_.empty())
 						impl_->current_level_.back().text_properties = impl_->current_text_properties;
 				}
 			}
 			else
-			{
-				//??? find by name
+			{	//todooo - см set_parent_text_style (контент контроли)
 			}
 		}
 	}
 	if (impl_->current_text_properties)
-		impl_->current_text_properties->apply_from(text_properties->content_);
+		impl_->current_text_properties->apply_from(*text_properties);
+}
+void odf_drawing_context::set_text_properties(style_text_properties *text_properties)
+{
+	if (!text_properties) return;
+	if (impl_->current_drawing_state_.elements_.empty()) return;
+
+	set_text_properties(&text_properties->content_);
 }
 void odf_drawing_context::set_paragraph_properties(paragraph_format_properties *paragraph_properties)
 {
@@ -3118,6 +3125,36 @@ void odf_drawing_context::set_text_box_tableframe(bool val)
 
 	impl_->current_drawing_state_.text_box_tableframe_ = val;
 
+}
+void odf_drawing_context::set_parent_text_style(std::wstring style_name)
+{
+	if (impl_->current_drawing_state_.elements_.empty()) return;
+
+	if (!impl_->current_text_properties)
+	{
+		draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
+		if (draw)
+		{
+			impl_->styles_context_->create_style(L"", style_family::Paragraph, true, false, -1);
+
+			office_element_ptr& style_shape_elm = impl_->styles_context_->last_state()->get_office_element();
+			style* style_ = dynamic_cast<style*>(style_shape_elm.get());
+			if (style_)
+			{
+				style_->style_parent_style_name_ = style_name;
+
+				impl_->current_text_properties = style_->content_.add_get_style_text_properties();
+				draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_ = style_->style_name_;
+
+				if (!impl_->current_level_.empty())
+					impl_->current_level_.back().text_properties = impl_->current_text_properties;
+			}
+		}
+	}
+	else
+	{
+
+	}
 }
 void odf_drawing_context::set_parent_style(std::wstring style_name)
 {

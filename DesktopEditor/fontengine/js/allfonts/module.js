@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,18 +29,46 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <string>
+(function(window, undefined) {
 
-namespace NSFonts
+window['AscFonts'] = window['AscFonts'] || {};
+let AscFonts = window['AscFonts'];
+
+//string_utf8
+
+//module
+
+AscFonts.checkSystemFonts = async function()
 {
-	class IApplicationFonts;
-}
-
-namespace _graphics_utils_
-{
-    bool GetResolution(const wchar_t* fileName, double & Width, double &Height);
-	std::pair<double, double> calculate_size_symbol_win(std::wstring name, double size, bool italic, bool bold, std::wstring test_str = L"");
-	std::pair<double, double> calculate_size_symbol_asc(std::wstring name, double size, bool italic, bool bold , NSFonts::IApplicationFonts *appFonts);
+	self.queryLocalFonts()
+		.then(async function (fonts) {
+            AscFonts.systemFonts = fonts;
+            Module["_parseSystemFonts"](fonts.length);
+        })
+        .catch(function (err) {
+            console.error(err.name, err.message);
+        });
 };
+
+AscFonts.getSystemFont = async function(index)
+{
+	let buffer = await (await AscFonts.systemFonts[index].blob()).arrayBuffer();
+	let array8 = new Uint8Array(buffer);
+	var pointer = Module["_malloc"](array8.length);
+	Module["HEAP8"].set(array8, pointer);
+	return Module["_createFontBinary"](index, pointer, array8.length);
+
+	AscFonts.systemFonts[index].blob()
+		.then(async function (blob) {
+			let buffer = await blob.arrayBuffer();
+			let array8 = new Uint8Array(buffer);
+
+			var pointer = Module["_malloc"](array8.length);
+			Module["HEAP8"].set(array8, pointer);
+			
+			return Module["_createFontBinary"](index, pointer, array8.length);
+		});
+};
+
+})(window, undefined);

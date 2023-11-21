@@ -654,10 +654,10 @@ namespace OOX
 							doc->m_arrSections.push_back(section);
 						}
 						doc->m_arrSections.back().sect = m_oSectPr.GetPointer();
-						doc->m_arrSections.back().end_elm = doc->m_arrItems.size(); 
+						doc->m_arrSections.back().end_elm = doc->m_arrItems.size() + 1;  // порядок выше - сначала читаем, потом добавляем
 						
 						OOX::CDocument::_section section;
-						section.start_elm = doc->m_arrItems.size(); 
+						section.start_elm = doc->m_arrItems.size() + 1;
 						doc->m_arrSections.push_back(section);
 					}
 //------------------------------------------------------------------------------------

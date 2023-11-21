@@ -1546,6 +1546,8 @@ namespace PPT
         oWriter.WriteString(std::wstring(L"<p:sld xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\""));
         if (!pSlide->m_bShowMasterShapes)
             oWriter.WriteString(std::wstring(L" showMasterSp=\"0\""));
+        if (pSlide->m_bHidden)
+            oWriter.WriteString(std::wstring(L" show=\"0\""));
         oWriter.WriteString(std::wstring(L">"));
 
         oWriter.WriteString(std::wstring(L"<p:cSld"));

@@ -1,0 +1,41 @@
+{
+	"name": "allfonts",
+	"res_folder": "./deploy",
+	"wasm": true,
+	"asm": false,
+	"run_before": "before.py",
+	"run_after": "after.py",
+	"base_js_content": "./module.js",
+
+	"compiler_flags": [
+		"-O3",
+		"-fexceptions",
+		"-Wno-unused-command-line-argument",
+		"-s ALLOW_MEMORY_GROWTH=1",
+		"-s FILESYSTEM=0",
+		"-s ENVIRONMENT='web'",
+		"-s LLD_REPORT_UNDEFINED",
+		"-s ASYNCIFY"
+	],
+	"exported_functions": [
+		"_malloc",
+		"_free",
+
+		"_parseSystemFonts",
+		"_createFontBinary",
+		"_deleteFontBinary"
+	],
+	"include_path": [
+	],
+	"define": [
+		"__linux__", "_LINUX", "UNIX", "_QT"
+	],
+	"compile_files_array": [
+	{
+		"folder": "./src",
+		"files": [
+			"main.cpp"
+		]
+	}
+	]
+}

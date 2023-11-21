@@ -533,6 +533,9 @@ enum ElementType
 	typeFormItem,
 	typeFormOption,
 
+	typeContentControl,
+	typeListItem,
+
 	typeDrawPage,    
 	typePresentationFooterDecl,
 	typePresentationDateTimeDecl,

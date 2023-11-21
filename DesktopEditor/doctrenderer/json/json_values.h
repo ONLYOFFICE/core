@@ -87,7 +87,7 @@ namespace NSJSON
 
 	public:
 		int getCount() const;
-		CValue get(int index);
+		CValue& get(int index);
 
 	private:
 		std::vector<CValue> m_values;
@@ -118,7 +118,8 @@ namespace NSJSON
 		~CObject();
 
 	public:
-		CValue get(const std::string& name);
+		CValue& get(const std::string& name);
+		std::vector<std::string> getPropertyNames();
 
 	private:
 		storage_t m_values;

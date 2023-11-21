@@ -216,10 +216,10 @@ namespace NSJSON
 
 	int CArray::getCount() const
 	{
-		return static_cast<int>(m_values.size());
+		return (int)m_values.size();
 	}
 
-	CValue CArray::get(int index)
+	CValue& CArray::get(int index)
 	{
 		return m_values[index];
 	}
@@ -251,8 +251,19 @@ namespace NSJSON
 	{
 	}
 
-	CValue CObject::get(const std::string& name)
+	CValue& CObject::get(const std::string& name)
 	{
 		return m_values[name];
+	}
+
+	std::vector<std::string> CObject::getPropertyNames()
+	{
+		std::vector<std::string> ret;
+		for (const storage_t::value_type& entry : m_values)
+		{
+			if (!entry.second.IsUndefined())
+				ret.push_back(entry.first);
+		}
+		return ret;
 	}
 }

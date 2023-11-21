@@ -1,9 +1,9 @@
 #ifndef JSON_H_
 #define JSON_H_
 
-#include <string>
 #include <initializer_list>
-#include <memory>
+#include <string>
+#include <vector>
 
 #ifdef JSBASE_NO_USE_DYNAMIC_LIBRARY
 #define JSON_DECL
@@ -19,14 +19,18 @@
 namespace NSJSON
 {
 	typedef unsigned char BYTE;
-
-	class CValueContainer;
+	
+	class CTypedValueContainer;
 	// Main class for storing values.
 	// This class provide interface to work with each type of values.
 	class JSON_DECL CValue
 	{
 	public:
 		CValue();
+		CValue(const CValue& other);
+		~CValue();
+
+		CValue& operator=(const CValue& other);
 
 	public:
 		// TYPE CHECKS
@@ -114,15 +118,6 @@ namespace NSJSON
 		CValue(const wchar_t* value);
 		CValue(const std::wstring& value);
 
-		// Assigns primitive
-		CValue& operator=(bool value);
-		CValue& operator=(int value);
-		CValue& operator=(double value);
-		CValue& operator=(const char* value);
-		CValue& operator=(const std::string& value);
-		CValue& operator=(const wchar_t* value);
-		CValue& operator=(const std::wstring& value);
-
 		// FUNCTIONS FOR WORKING WITH ARRAYS
 		/**
 		 * Gets lengths of the array/typed array.
@@ -185,7 +180,7 @@ namespace NSJSON
 		/**
 		 * Gets a property of this object.
 		 * @param name The name of the property.
-		 * @returns the value of the object's property. If current value is not an object returns undefined value.
+		 * @returns the value of the object's property. If current value is not an object, returns undefined value.
 		 */
 		const CValue Get(const char* name) const;
 		CValue Get(const char* name);
@@ -193,6 +188,12 @@ namespace NSJSON
 		// operators [] works the same way as Get(name)
 		const CValue operator[](const char* name) const;
 		CValue operator[](const char* name);
+
+		/**
+		 * Retrieves all property names from current object.
+		 * @returns a vector containing the names of the properties of this object as strings. If current value is not an object, returns an empty vector.
+		 */
+		std::vector<std::string> GetPropertyNames() const;
 
 		/**
 		 * Creates and returns empty object.
@@ -210,7 +211,7 @@ namespace NSJSON
 		static CValue CreateNull();
 
 	private:
-		std::shared_ptr<CValueContainer> m_internal;
+		CTypedValueContainer* m_internal;
 	};
 }
 

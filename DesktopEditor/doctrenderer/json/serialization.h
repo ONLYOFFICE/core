@@ -9,65 +9,57 @@
 
 namespace NSJSON
 {
-	static JSSmart<NSJSBase::CJSValue> toJS(const CValue& pValue)
+	static JSSmart<NSJSBase::CJSValue> toJS(const CValue& value)
 	{
-		IBaseValue::ValueType type = pValue->m_type;
-		if (type == IBaseValue::vtUndefined)
+		if (value.IsUndefined())
 			return NSJSBase::CJSContext::createUndefined();
-		if (type == IBaseValue::vtNull)
+		if (value.IsNull())
 			return NSJSBase::CJSContext::createNull();
 
 		JSSmart<NSJSBase::CJSValue> ret;
-		if (type == IBaseValue::vtObject)
+		if (value.IsObject())
 		{
-			const CObject* pObject = static_cast<const CObject*>(pValue);
 			JSSmart<NSJSBase::CJSObject> jsObj = NSJSBase::CJSContext::createObject();
-			for (const auto& entry : pObject->m_values)
+			std::vector<std::string> properties = value.GetPropertyNames();
+			for (const std::string& name : properties)
 			{
-				JSSmart<NSJSBase::CJSValue> jsValue = toJS(entry.second);
-				jsObj->set(entry.first.c_str(), jsValue);
+				JSSmart<NSJSBase::CJSValue> jsValue = toJS(value[name.c_str()]);
+				jsObj->set(name.c_str(), jsValue);
 			}
 			ret = jsObj->toValue();
 		}
-		else if (type == IBaseValue::vtArray)
+		else if (value.IsArray())
 		{
-			const CArray* pArray = static_cast<const CArray*>(pValue);
-			JSSmart<NSJSBase::CJSArray> jsArr = NSJSBase::CJSContext::createArray(0);
-			for (const IBaseValue* pArrValue : pArray->m_values)
+			const int len = value.GetCount();
+			JSSmart<NSJSBase::CJSArray> jsArr = NSJSBase::CJSContext::createArray(len);
+			for (int i = 0; i < len; i++)
 			{
-				jsArr->add(toJS(pArrValue).GetPointer());
+				jsArr->set(i, toJS(value[i]).GetPointer());
 			}
 			ret = jsArr->toValue();
 		}
-		else if (type == IBaseValue::vtTypedArray)
+		else if (value.IsTypedArray())
 		{
-			const CTypedArray* pTypedArray = static_cast<const CTypedArray*>(pValue);
-			JSSmart<NSJSBase::CJSTypedArray> jsTypedArr = NSJSBase::CJSContext::createUint8Array(pTypedArray->m_data, pTypedArray->m_len);
+			// TODO:
+			/*
+			JSSmart<NSJSBase::CJSTypedArray> jsTypedArr = NSJSBase::CJSContext::createUint8Array(value.GetData(), value.GetCount());
 			ret = jsTypedArr->toValue();
+			*/
+			ret = NSJSBase::CJSContext::createUndefined();
 		}
 		else
 		{
-			// primitive type
-			const CPrimitive* pPrimitiveValue = static_cast<const CPrimitive*>(pValue);
-			switch (type) {
-			case IBaseValue::vtBoolean:
-				ret = NSJSBase::CJSContext::createBool(pPrimitiveValue->m_bool);
-				break;
-			case IBaseValue::vtInteger:
-				ret = NSJSBase::CJSContext::createInt(pPrimitiveValue->m_int);
-				break;
-			case IBaseValue::vtDouble:
-				ret = NSJSBase::CJSContext::createDouble(pPrimitiveValue->m_double);
-				break;
-			case IBaseValue::vtStringA:
-				ret = NSJSBase::CJSContext::createString(pPrimitiveValue->m_string);
-				break;
-			case IBaseValue::vtStringW:
-				ret = NSJSBase::CJSContext::createString(pPrimitiveValue->m_wstring);
-				break;
-			default:
-				break;
-			}
+			// primitive types
+			if (value.IsBool())
+				ret = NSJSBase::CJSContext::createBool((bool)value);
+			else if (value.IsInt())
+				ret = NSJSBase::CJSContext::createInt((int)value);
+			else if (value.IsDouble())
+				ret = NSJSBase::CJSContext::createDouble((double)value);
+			else if (value.IsStringA())
+				ret = NSJSBase::CJSContext::createString((std::string)value);
+			else
+				ret = NSJSBase::CJSContext::createString((std::wstring)value);
 		}
 
 		return ret;
@@ -75,6 +67,7 @@ namespace NSJSON
 
 	static CValue fromJS(JSSmart<NSJSBase::CJSValue> jsValue)
 	{
+		/*
 		if (jsValue->isUndefined())
 			return new CPrimitive();
 
@@ -138,8 +131,9 @@ namespace NSJSON
 			// TODO: how do we know whether string consist of char or wchar_t? Can we convert all strings to std::wstring?
 		}
 		// else ret is nullptr
+		*/
 
-		return ret;
+		return CValue();
 	}
 }
 

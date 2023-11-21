@@ -1,7 +1,6 @@
 //#include "gtest/gtest.h"
 #include "js_internal/js_base.h"
-//#include "json/serialization.h"
-#include "json/json.h"
+#include "json/serialization.h"
 
 #include <iostream>
 #include <string>
@@ -40,7 +39,7 @@ int main()
 	JSSmart<CJSContext> pContext = new CJSContext();
 	CJSContextScope scope(pContext);
 
-	// top object with text parameters
+	// top object with some text parameters
 	CValue textPr = CValue::CreateObject();
 
 	CValue colorRGB = CValue::CreateObject();
@@ -53,6 +52,10 @@ int main()
 	colorRGBA["alpha"] = 80;
 
 	textPr["size"] = 4.2;
+	// CValue behaves as reference, when it was initialized with value returned from Get() (or operator[]) of objects & arrays.
+	CValue name = textPr["name"];
+	// from now on, name - is a reference to the property "name" of textPr. Changing it will affect this object property:
+	name = "Foo";
 	textPr["color"] = colorRGBA;
 	textPr["font"] = CValue::CreateObject();
 	textPr["font"]["fontName"] = L"Times New Roman";
@@ -81,7 +84,6 @@ int main()
 	*/
 
 	// convert to JS
-	/*
 	JSSmart<CJSObject> jsObj = toJS(textPr)->toObject();
 	JSSmart<CJSObject> global = pContext->GetGlobal();
 	global->set("textPr", jsObj);
@@ -90,7 +92,6 @@ int main()
 	{
 		std::cout << ret->toStringA() << std::endl;
 	}
-	*/
 
 	return 0;
 }

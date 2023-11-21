@@ -1064,6 +1064,93 @@ void CPdfFile::ToXml(const std::wstring& sFile, bool bSaveStreams)
 	m_pInternal->pReader->ToXml(sFile, bSaveStreams);
 }
 
+bool CPdfFile::GetMetaData(const std::wstring& sFile, const std::wstring& sMetaName, BYTE** pMetaData, DWORD& nMetaLength)
+{
+	NSFile::CFileBinary oFile;
+	if (!oFile.OpenFile(sFile))
+		return false;
+
+	int nBufferSize = 4096;
+	BYTE* pBuffer = new BYTE[nBufferSize];
+	if (!pBuffer)
+	{
+		oFile.CloseFile();
+		return false;
+	}
+
+	DWORD nReadBytes = 0;
+	if (!oFile.ReadFile(pBuffer, nBufferSize, nReadBytes))
+	{
+		RELEASEARRAYOBJECTS(pBuffer);
+		oFile.CloseFile();
+		return false;
+	}
+	oFile.CloseFile();
+	pBuffer[nReadBytes - 1] = '\0';
+
+	char* pFirst = strstr((char*)pBuffer, "%\315\312\322\251\015");
+
+	if (!pFirst || pFirst - (char*)pBuffer + 6 >= nReadBytes)
+	{
+		RELEASEARRAYOBJECTS(pBuffer);
+		return false;
+	}
+	pFirst += 6;
+
+	if (strncmp(pFirst, "1 0 obj\012<<\012", 11) != 0 || pFirst - (char*)pBuffer + 11 >= nReadBytes)
+	{
+		RELEASEARRAYOBJECTS(pBuffer);
+		return false;
+	}
+	pFirst += 11;
+
+	std::string sMeta = U_TO_UTF8(sMetaName);
+	char* pStream = strstr(pFirst, "stream\015\012");
+	char* pMeta = strstr(pFirst, sMeta.c_str());
+	if (!pStream || !pMeta || pStream < pMeta)
+	{
+		RELEASEARRAYOBJECTS(pBuffer);
+		return false;
+	}
+	pStream += 8;
+	int nStreamBegin = pStream - (char*)pBuffer;
+	pMeta += sMeta.length() + 3;
+
+	char* pMetaLast = strstr(pMeta, " ");
+	if (!pMetaLast)
+	{
+		RELEASEARRAYOBJECTS(pBuffer);
+		return false;
+	}
+	std::string sMetaOffset = std::string(pMeta, pMetaLast - pMeta);
+	int nMetaOffset = std::stoi(sMetaOffset);
+
+	pMeta = pMetaLast + 1;
+	pMetaLast = strstr(pMeta, " ");
+	if (!pMetaLast)
+	{
+		RELEASEARRAYOBJECTS(pBuffer);
+		return false;
+	}
+	std::string sMetaSize = std::string(pMeta, pMetaLast - pMeta);
+	nMetaLength = std::stoi(sMetaSize);
+
+	RELEASEARRAYOBJECTS(pBuffer);
+	*pMetaData = new BYTE[nMetaLength];
+	pBuffer = *pMetaData;
+	nReadBytes = 0;
+	if (!oFile.OpenFile(sFile) || !oFile.SeekFile(nStreamBegin + nMetaOffset) || !oFile.ReadFile(pBuffer, nMetaLength, nReadBytes))
+	{
+		RELEASEARRAYOBJECTS(pBuffer);
+		pMetaData = NULL;
+		oFile.CloseFile();
+		return false;
+	}
+	oFile.CloseFile();
+	nMetaLength = nReadBytes;
+
+	return true;
+}
 bool CPdfFile::LoadFromFile(const std::wstring& file, const std::wstring& options, const std::wstring& owner_password, const std::wstring& user_password)
 {
 	m_pInternal->pReader = new CPdfReader(m_pInternal->pAppFonts);
@@ -1260,6 +1347,12 @@ void CPdfFile::SetDocumentID(const std::wstring& wsDocumentID)
 	if (!m_pInternal->pWriter)
 		return;
 	m_pInternal->pWriter->SetDocumentID(wsDocumentID);
+}
+void CPdfFile::AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength)
+{
+	if (!m_pInternal->pWriter)
+		return;
+	m_pInternal->pWriter->AddMetaData(sMetaName, pMetaData, nMetaLength);
 }
 HRESULT CPdfFile::OnlineWordToPdf(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
 {

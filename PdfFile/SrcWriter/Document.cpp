@@ -50,6 +50,7 @@
 #include "AcroForm.h"
 #include "Field.h"
 #include "ResourcesDictionary.h"
+#include "Metadata.h"
 
 #include "../../DesktopEditor/agg-2.4/include/agg_span_hatch.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
@@ -102,7 +103,7 @@ namespace PdfWriter
 	{
 		Close();
 	}
-    bool CDocument::CreateNew()
+	bool CDocument::CreateNew()
 	{
 		Close();
 
@@ -112,6 +113,10 @@ namespace PdfWriter
 
 		m_pTrailer = m_pXref->GetTrailer();
 		if (!m_pTrailer)
+			return false;
+
+		m_pMetaData = new CStreamData(m_pXref);
+		if (!m_pMetaData)
 			return false;
 
 		m_pCatalog = new CCatalog(m_pXref);
@@ -401,7 +406,13 @@ namespace PdfWriter
 
 		m_pCatalog->AddPageLabel(unPageNum, pPageLabel);
 	}
-    CDictObject* CDocument::CreatePageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix)
+	bool CDocument::AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength)
+	{
+		if (!m_pMetaData)
+			return false;
+		return m_pMetaData->AddMetaData(sMetaName, pMetaData, nMetaLength);
+	}
+	CDictObject* CDocument::CreatePageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix)
 	{
 		CDictObject* pLabel = new CDictObject();
 		if (!pLabel)

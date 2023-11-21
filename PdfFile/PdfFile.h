@@ -110,6 +110,7 @@ public:
 	void SetCMapFile(const std::wstring& sFile);
 	void ToXml(const std::wstring& sFile, bool bSaveStreams = false);
 
+	bool GetMetaData(const std::wstring& sFile, const std::wstring& sMetaName, BYTE** pMetaData, DWORD& nMetaLength);
 	virtual bool LoadFromFile  (const std::wstring& file, const std::wstring& options = L"", const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
 	virtual bool LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options = L"", const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
 	virtual NSFonts::IApplicationFonts* GetFonts();
@@ -143,6 +144,7 @@ public:
 	void SetDocumentID(const std::wstring& wsDocumentID);
 	void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
 	void SetDocumentInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords);
+	void AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength);
 
 	HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams = NULL);
 	HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams = NULL);

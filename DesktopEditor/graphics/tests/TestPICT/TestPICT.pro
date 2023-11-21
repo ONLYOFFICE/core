@@ -1,3 +1,6 @@
+#CONFIG += c++11 cmdline
+
+#SOURCES += \
 QT       -= core
 
 QT       -= gui
@@ -18,13 +21,6 @@ GRAPHICS_AGG_PATH = $$PWD/../../../agg-2.4
 INCLUDEPATH += \
     $$GRAPHICS_AGG_PATH/include
 
-
-
-HEADERS += \
-    pic.h
-
-SOURCES += \
-        main.cpp \
-        pic.cpp
+SOURCES += main.cpp
 
 DESTDIR = $$PWD_ROOT_DIR/build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX

@@ -1,6 +1,20 @@
 #ifndef PIC_H
 #define PIC_H
 
+#include <cstdlib>
+#include <cstring>
+#include <cctype>
+#include <cstdio>
+#include <cstddef>
+
+#include <stdio.h>
+#include <stdint.h>
+#include <math.h>
+#include <limits.h>
+
+#include <sys/stat.h>
+#include <stdarg.h>
+
 typedef long long ssize_t ;
 
 typedef enum
@@ -418,9 +432,10 @@ typedef struct
 
     char
       error[256];
-}Image;
+}ImagePICT;
 
-int DecodePICT(const char* filepath, Image* image);
-void AquireImage(Image* image);
+int DecodePICT(FILE* hFile, ImagePICT* image);
+void AquireImage(ImagePICT* image);
+ImagePICT *DestroyImage(ImagePICT *image);
 
 #endif // PIC_H

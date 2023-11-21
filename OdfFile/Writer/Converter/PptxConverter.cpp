@@ -945,13 +945,13 @@ void PptxConverter::convert(PPTX::Logic::Anim* oox_anim)
 
 		for (size_t i = 0; i < oox_anim->tavLst->list.size(); i++)
 		{
-			if (oox_anim->tavLst->list[i].tm.IsInit())
-			{
-				if (i > 0) 
-					ss_tm << L";";
+			if (i > 0) 
+				ss_tm << L";";
 
+			if (oox_anim->tavLst->list[i].tm.IsInit())
 				ss_tm << boost::lexical_cast<double>(*oox_anim->tavLst->list[i].tm) / 100000.0;
-			}
+			else
+				ss_tm << 0;
 			
 			if (oox_anim->tavLst->list[i].val.IsInit())
 			{

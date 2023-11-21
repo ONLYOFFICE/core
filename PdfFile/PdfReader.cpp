@@ -883,6 +883,121 @@ BYTE* CPdfReader::GetWidgets()
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
+BYTE* CPdfReader::GetWidgetFonts()
+{
+	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
+		return NULL;
+
+	AcroForm* pAcroForms = m_pPDFDocument->getCatalog()->getForm();
+	XRef* xref = m_pPDFDocument->getXRef();
+	if (!pAcroForms || !xref)
+		return NULL;
+
+	NSWasm::CData oRes;
+	oRes.SkipLen();
+
+	Object oObj1, oObj2;
+
+	for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
+	{
+		AcroFormField* pField = pAcroForms->getField(i);
+		Object oFieldRef, oField;
+		if (!pField || !pField->getFieldRef(&oFieldRef)->isRef() || !oFieldRef.fetch(xref, &oField)->isDict())
+		{
+			oField.free(); oFieldRef.free();
+			continue;
+		}
+
+		GfxFont* gfxFont = NULL;
+		GfxFontDict *gfxFontDict = NULL;
+
+		// Шрифт и размер шрифта - из DA
+		Ref fontID;
+		double dFontSize = 0;
+		pField->getFont(&fontID, &dFontSize);
+		if (fontID.num > 0)
+		{
+			Object oObj, oField, oFont;
+			pField->getFieldRef(&oObj);
+			oObj.fetch(xref, &oField);
+			oObj.free();
+
+			bool bFindResources = false;
+
+			if (oField.dictLookup("DR", &oObj)->isDict() && oObj.dictLookup("Font", &oFont)->isDict())
+			{
+				for (int i = 0; i < oFont.dictGetLength(); ++i)
+				{
+					Object oFontRef;
+					if (oFont.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
+					{
+						bFindResources = true;
+						oFontRef.free();
+						break;
+					}
+					oFontRef.free();
+				}
+			}
+			oFont.free(); oField.free();
+
+			if (!bFindResources)
+			{
+				oObj.free();
+				Object* oAcroForm = pAcroForms->getAcroFormObj();
+				if (oAcroForm->isDict() && oAcroForm->dictLookup("DR", &oObj)->isDict() && oObj.dictLookup("Font", &oFont)->isDict())
+				{
+					for (int i = 0; i < oFont.dictGetLength(); ++i)
+					{
+						Object oFontRef;
+						if (oFont.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
+						{
+							bFindResources = true;
+							oFontRef.free();
+							break;
+						}
+						oFontRef.free();
+					}
+				}
+				oFont.free();
+			}
+
+			if (bFindResources)
+			{
+				Object oFontRef;
+				if (oObj.dictLookupNF("Font", &oFontRef)->isRef())
+				{
+					if (oFontRef.fetch(xref, &oFont)->isDict())
+					{
+						Ref r = oFontRef.getRef();
+						gfxFontDict = new GfxFontDict(xref, &r, oFont.getDict());
+						gfxFont = gfxFontDict->lookupByRef(fontID);
+					}
+					oFont.free();
+				}
+				else if (oFontRef.isDict())
+				{
+					gfxFontDict = new GfxFontDict(xref, NULL, oFontRef.getDict());
+					gfxFont = gfxFontDict->lookupByRef(fontID);
+				}
+				oFontRef.free();
+			}
+			oObj.free();
+		}
+
+		std::wstring wsFileName, wsFontName;
+		if (gfxFont)
+			GetFont(xref, m_pFontManager, m_pFontList, gfxFont, wsFileName, wsFontName);
+
+		std::string m_sFontName = U_TO_UTF8(wsFileName);
+
+		RELEASEOBJECT(gfxFontDict);
+	}
+
+	oRes.WriteLen();
+	BYTE* bRes = oRes.GetBuffer();
+	oRes.ClearWithoutAttack();
+	return bRes;
+}
 BYTE* CPdfReader::VerifySign(const std::wstring& sFile, ICertificate* pCertificate, int nWidget)
 {
 	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())

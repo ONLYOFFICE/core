@@ -651,10 +651,11 @@ void ReadAnnotAP(BYTE* pWidgetsAP, int& i)
 
 	int nAPLength = READ_INT(pWidgetsAP + i);
 	i += 4;
+	if (nAPLength > 0)
+		std::cout << "APName ";
 
 	for (int j = 0; j < nAPLength; ++j)
 	{
-		std::cout << std::endl;
 		nPathLength = READ_INT(pWidgetsAP + i);
 		i += 4;
 		std::string sAPName = std::string((char*)(pWidgetsAP + i), nPathLength);
@@ -665,7 +666,7 @@ void ReadAnnotAP(BYTE* pWidgetsAP, int& i)
 		sAPName += nPathLength ? ("." + std::string((char*)(pWidgetsAP + i), nPathLength)) : "";
 		i += nPathLength;
 
-		std::cout << "APName " << sAPName << ", ";
+		std::cout << sAPName << ", ";
 		unsigned long long npBgraData1 = READ_INT(pWidgetsAP + i);
 		i += 4;
 		unsigned long long npBgraData2 = READ_INT(pWidgetsAP + i);
@@ -774,7 +775,7 @@ int main(int argc, char* argv[])
 			std::cout << " Page " << nTestPage << " width " << nWidth << " height " << nHeight << " dpi " << dpi << " rotate " << rotate << std::endl;
 
 			nLength = READ_INT(pInfo + nPagesCount * 16 + 12);
-			std::cout << "json "<< std::string((char*)(pInfo + nPagesCount * 16 + 16), nLength) << std::endl;;
+			std::cout << "json "<< std::string((char*)(pInfo + nPagesCount * 16 + 16), nLength) << std::endl << std::endl;
 		}
 	}
 
@@ -886,9 +887,33 @@ int main(int argc, char* argv[])
 	// INTERACTIVE FORMS
 	if (true)
 	{
+		BYTE* pFonts = GetInteractiveFormsFontsID(pGrFile);
+		nLength = READ_INT(pFonts);
+		int i = 4;
+		nLength -= 4;
+
+		while (i < nLength)
+		{
+			int nFontsLength = READ_INT(pFonts + i);
+			i += 4;
+			std::cout << "Fonts";
+
+			for (int j = 0; j < nFontsLength; ++j)
+			{
+				int nPathLength = READ_INT(pFonts + i);
+				i += 4;
+				std::cout << " " << std::string((char*)(pFonts + i), nPathLength);
+				i += nPathLength;
+			}
+			std::cout << std::endl;
+		}
+
+		if (pFonts)
+			free(pFonts);
+
 		BYTE* pWidgets = GetInteractiveFormsInfo(pGrFile);
 		nLength = READ_INT(pWidgets);
-		int i = 4;
+		i = 4;
 		nLength -= 4;
 
 		if (i < nLength)

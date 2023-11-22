@@ -30,19 +30,12 @@
  *
  */
 #include "../../../OOXML/Base/Base.h"
-#include "../conversionTests.h"
-#include "gtest/gtest.h"
 #include <string>
+#include <vector>
 
-void PrepareFiles(std::wstring &fileName, std::wstring &exampleFileName, std::wstring &tempDirName);
-_UINT32 ConvertFile(std::wstring &fileName, std::vector<std::wstring> &consoleArgs);
+void PrepareFiles(const std::wstring &fileName, const std::wstring &exampleFileName, const std::wstring &tempDirName);
+_UINT32 ConvertFile(const std::wstring &fileName);
+std::wstring GetWorkDir();
+std::wstring CreateParamsFile(const std::wstring &pathFrom, const std::wstring &pathTo, const std::wstring &FontsDir, const std::wstring &TempDir);
+void CheckFonts(const std::wstring& fontsDir, bool isUseSystem = true, const std::vector<std::wstring>& addtitionalFontsDirs = {});
 
-class Xlsb2XlsxConversion1 : public ::X2tConvEnv {
-public:
-    Xlsb2XlsxConversion1(const std::vector<std::wstring> &args) : X2tConvEnv(args){};
-    void SetUp() override;
-
-    void TearDown() override;
-
-    static std::wstring tempDirName;
-};

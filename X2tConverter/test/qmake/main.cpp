@@ -3,29 +3,7 @@
 #include "../../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 #include "../../../Common/OfficeFileFormatChecker.h"
 #include "../../src/dylib/x2t.h"
-
-void CheckFonts(const std::wstring& fontsDir, bool isUseSystem = true, const std::vector<std::wstring>& addtitionalFontsDirs = {})
-{
-	CApplicationFontsWorker fonts_worker;
-
-	fonts_worker.m_sDirectory = fontsDir;
-	if (!NSDirectory::Exists(fonts_worker.m_sDirectory))
-		NSDirectory::CreateDirectory(fonts_worker.m_sDirectory);
-
-	fonts_worker.m_bIsUseSystemFonts = isUseSystem;
-
-	for (const auto& additional : addtitionalFontsDirs)
-	{
-		std::wstring sFolder = additional;
-		if (0 == sFolder.find(L"."))
-			sFolder = NSFile::GetProcessDirectory() + FILE_SEPARATOR_STR + sFolder;
-		fonts_worker.m_arAdditionalFolders.push_back(sFolder);
-	}
-
-	fonts_worker.m_bIsNeedThumbnails = false;
-	NSFonts::IApplicationFonts* pFonts = fonts_worker.Check();
-	RELEASEINTERFACE(pFonts);
-}
+#include "common.h"
 
 #define UNUSED_PARAM(x) (void)x
 

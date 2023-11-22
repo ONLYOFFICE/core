@@ -123,6 +123,24 @@ namespace PdfWriter
 		pArray->Add(dRD3);
 		pArray->Add(dRD4);
 	}
+	std::string GetColor(const std::vector<double>& arr, bool bCaps)
+	{
+		std::string sDA;
+		for (double dColoc : arr)
+		{
+			sDA.append(std::to_string(dColoc));
+			sDA.append(" ");
+		}
+		if (arr.size() == 3)
+			sDA.append(bCaps ? "RG" : "rg");
+		else if (arr.size() == 4)
+			sDA.append(bCaps ? "K" : "k");
+		else if (arr.size() == 1)
+			sDA.append(bCaps ? "G" : "g");
+		else
+			sDA.append(bCaps ? "SC" : "sc");
+		return sDA;
+	}
 
 	//----------------------------------------------------------------------------------------
 	// CAnnotation
@@ -137,6 +155,8 @@ namespace PdfWriter
 
 		// Для PDFA нужно, чтобы 0, 1, 4 биты были выключены, а второй включен
 		Add("F", 4);
+
+		bHaveBorder = false;
 	}
 	void CAnnotation::SetRect(const TRect& oRect)
 	{
@@ -179,7 +199,7 @@ namespace PdfWriter
 
 		EBorderSubtype eSubtype = EBorderSubtype(nType);
 		if (border_subtype_Dashed == eSubtype)
-			AddToVectorD(this, "D", arrDash);
+			AddToVectorD(pBorderStyleDict, "D", arrDash);
 
 		switch (eSubtype)
 		{
@@ -189,6 +209,9 @@ namespace PdfWriter
 		case border_subtype_Inset:      pBorderStyleDict->Add("S", "I"); break;
 		case border_subtype_Underlined: pBorderStyleDict->Add("S", "U"); break;
 		}
+
+		bHaveBorder = true;
+		dBorderWidth = dWidth;
 	}
 	void CAnnotation::SetAnnotFlag(const int& nAnnotFlag)
 	{
@@ -250,10 +273,6 @@ namespace PdfWriter
 	{
 		return m_pDocument;
 	}
-	void CAnnotation::CreateAP()
-	{
-
-	}
 	//----------------------------------------------------------------------------------------
 	// CMarkupAnnotation
 	//----------------------------------------------------------------------------------------
@@ -309,10 +328,6 @@ namespace PdfWriter
 	void CMarkupAnnotation::SetIRTID(CAnnotation* pAnnot)
 	{
 		Add("IRT", pAnnot);
-	}
-	void CMarkupAnnotation::CreateAP()
-	{
-
 	}
 	//----------------------------------------------------------------------------------------
 	// CLinkAnnotation
@@ -412,13 +427,13 @@ namespace PdfWriter
 
 		Add("StateModel", new CStringObject(sValue.c_str()));
 	}
-	void CTextAnnotation::CreateAP()
+	void CTextAnnotation::SetAP()
 	{
 		switch (m_nName)
 		{
 		case 3:
 		{
-			CAnnotationAppearance* pAP = new CAnnotationAppearance(m_pXref, this);
+			CAnnotAppearanceObject* pAP = new CAnnotAppearanceObject(m_pXref, this);
 			Add("AP", pAP);
 
 			pAP->DrawTextComment();
@@ -779,21 +794,7 @@ namespace PdfWriter
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
 		const char* sFontName = pFieldsResources->GetFontName(pFont);
 
-		std::string sDA;
-		for (double dColoc : arrTC)
-		{
-			sDA.append(std::to_string(dColoc));
-			sDA.append(" ");
-		}
-		if (arrTC.size() == 3)
-			sDA.append("rg");
-		else if (arrTC.size() == 4)
-			sDA.append("k");
-		else if (arrTC.size() == 1)
-			sDA.append("g");
-		else
-			sDA.append("sc");
-
+		std::string sDA = GetColor(arrTC, false);
 		if (sFontName)
 		{
 			sDA.append(" /");
@@ -894,11 +895,13 @@ namespace PdfWriter
 	{
 		CheckMK();
 		AddToVectorD(m_pMK, "BC", arrBC);
+		m_arrBC = arrBC;
 	}
 	void CWidgetAnnotation::SetBG(const std::vector<double>& arrBG)
 	{
 		CheckMK();
 		AddToVectorD(m_pMK, "BG", arrBG);
+		m_arrBG = arrBG;
 	}
 	void CWidgetAnnotation::AddAction(CAction* pAction)
 	{
@@ -927,6 +930,14 @@ namespace PdfWriter
 		}
 
 		m_pAA->Add(pAction->m_sType.c_str(), pAction);
+	}
+	std::string CWidgetAnnotation::GetBGforAP()
+	{
+		return GetColor(m_arrBG, false);
+	}
+	std::string CWidgetAnnotation::GetBCforAP()
+	{
+		return GetColor(m_arrBC, true);
 	}
 	//----------------------------------------------------------------------------------------
 	// CButtonWidget
@@ -1108,16 +1119,75 @@ namespace PdfWriter
 		std::string sValue = U_TO_UTF8(wsRV);
 		Add("RV", new CStringObject(sValue.c_str()));
 	}
-	void CTextWidget::CreateAP()
+	void CTextWidget::SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, const TRgb& oColor, const double& dAlpha, double dFontSize, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts)
 	{
-		CAnnotationAppearance* pAPN = new CAnnotationAppearance(m_pXref, this);
+		m_pAppearance = new CAnnotAppearance(m_pXref, this);
+		if (!m_pAppearance)
+			return;
+		Add("AP", m_pAppearance);
 
-		CDictObject* pAP = new CDictObject();
-		pAP->Add("N", pAPN);
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
+		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
 
-		Add("AP", pAP);
+		const char* sExtGrStateName = NULL;
+		if (fabs(dAlpha - 1.0) > 0.001)
+		{
+			CExtGrState* pExtGrState = m_pDocument->GetFillAlpha(dAlpha);
+			sExtGrStateName = pFieldsResources->GetExtGrStateName(pExtGrState);
+		}
 
-		pAPN->DrawTextWidget();
+		pNormal->DrawSimpleText(wsValue, pCodes, unCount, pFont, dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), ppFonts, pShifts);
+	}
+	void CTextWidget::StartAP(CFontDict* pFont, const double& dFontSize, const double& dAlpha)
+	{
+		m_pAppearance = new CAnnotAppearance(m_pXref, this);
+		if (!m_pAppearance)
+			return;
+
+		Add("AP", m_pAppearance);
+
+		CAnnotAppearanceObject* pNormal  = m_pAppearance->GetNormal();
+		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
+
+		const char* sExtGrStateName = NULL;
+		if (fabs(dAlpha - 1.0) > 0.001)
+		{
+			CExtGrState* pExtGrState = m_pDocument->GetFillAlpha(dAlpha);
+			sExtGrStateName = pFieldsResources->GetExtGrStateName(pExtGrState);
+		}
+
+		pNormal->StartDrawText(pFont, dFontSize, 0, 0, 0, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
+	}
+	void CTextWidget::AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts, const double* pShifts)
+	{
+		if (!m_pAppearance)
+			return;
+
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
+		pNormal->DrawTextLine(dX, dY, pCodes, unCodesCount, ppFonts, pShifts);
+	}
+	void CTextWidget::EndAP()
+	{
+		if (!m_pAppearance)
+			return;
+
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
+		pNormal->EndDrawText();
+	}
+	bool CTextWidget::IsCombFlag()
+	{
+		int nFlags = ((CNumberObject*)Get("Ff"))->Get();
+		return (nFlags & (1 << 24));
+	}
+	bool CTextWidget::IsMultiLine()
+	{
+		int nFlags = ((CNumberObject*)Get("Ff"))->Get();
+		return (nFlags & (1 << 12));
+	}
+	int CTextWidget::GetMaxLen()
+	{
+		CNumberObject* oMaxLen = m_pParent ? (CNumberObject*)m_pParent->Get("MaxLen") : (CNumberObject*)Get("MaxLen");
+		return oMaxLen ? oMaxLen->Get() : 0;
 	}
 	//----------------------------------------------------------------------------------------
 	// CChoiceWidget
@@ -1174,87 +1244,21 @@ namespace PdfWriter
 	CSignatureWidget::CSignatureWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
 	{
 	}
-	//----------------------------------------------------------------------------------------
-	// CAnnotationAppearance
-	//----------------------------------------------------------------------------------------
-	CAnnotationAppearance::CAnnotationAppearance(CXref* pXref, CAnnotation* pAnnot)
-	{
-		m_pXref   = pXref;
-		m_pStream = new CMemoryStream();
-		m_pAnnot = pAnnot;
-
-		SetStream(m_pXref, m_pStream);
-
-		Add("Type", "XObject");
-		Add("Subtype", "Form");
-
-		Add("Resources", pAnnot->GetDocument()->GetFieldsResources());
-	}
-	void CAnnotationAppearance::DrawTextComment()
-	{
-		CArrayObject* pArray = new CArrayObject();
-		if (!pArray)
-			return;
-
-		Add("BBox", pArray);
-		pArray->Add(0);
-		pArray->Add(0);
-		pArray->Add(20);
-		pArray->Add(20);
-
-		m_pStream->WriteStr("");
-	}
+	/*
 	void CAnnotationAppearance::DrawTextWidget()
 	{
-		CArrayObject* pArray = new CArrayObject();
-		if (!pArray)
-			return;
-
-		TRect oRect = m_pAnnot->GetRect();
-
-		Add("BBox", pArray);
-		pArray->Add(0);
-		pArray->Add(0);
-		pArray->Add(oRect.fRight - oRect.fLeft);
-		pArray->Add(oRect.fTop - oRect.fBottom);
-
 		CTextWidget* pAnnot = (CTextWidget*)m_pAnnot;
-		m_pStream->WriteStr("Tx BMC\012");
-		// TODO если имеется фоновый цвет
-		double dBorderSize = 0;
-		double dBorderSize2  = 0;
-		// TODO если имеется граница
-		m_pStream->WriteStr("q\012");
-		m_pStream->WriteReal(dBorderSize);
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(dBorderSize);
-		m_pStream->WriteChar(' ');
 
-		m_pStream->WriteReal(std::max(oRect.fRight - oRect.fLeft - dBorderSize2, 0.0));
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(std::max(oRect.fTop - oRect.fBottom - dBorderSize2, 0.0));
-		m_pStream->WriteStr(" re\012W\012n\012BT\012");
 
-		std::string sFontInfo = pAnnot->GetDAforAP();
-		if (sFontInfo.empty())
-		{
-			CDictObject* pOwner = pAnnot->GetObjOwnValue("DA");
-			if (pOwner)
-			{
-				CStringObject* pDA = dynamic_cast<CStringObject*>(pOwner->Get("DA"));
-				if (pDA)
-					sFontInfo = std::string((const char*)pDA->GetString());
-			}
-		}
-		if (!sFontInfo.empty())
-			m_pStream->WriteStr(sFontInfo.c_str());
 
 		// TODO потребуется смещение Y-координаты в зависимости от размеров области и размеров шрифта
 		// TODO требуется запись юникод значений, т.е необходимо писать по глифам
-		m_pStream->WriteStr(" 2 6.548 Td (");
-		m_pStream->WriteStr(pAnnot->GetV().c_str());
-		m_pStream->WriteStr(") Tj ET\012Q\012EMC\012");
+		m_pStream->WriteStr(" 2 6.548 Td\012");
+		std::string sV = pAnnot->GetV();
+		m_pStream->WriteEscapeText((BYTE*)sV.c_str(), sV.length());
+		m_pStream->WriteStr(" Tj\012ET\012Q\012EMC\012");
 	}
+	*/
 	//----------------------------------------------------------------------------------------
 	// CAction
 	//----------------------------------------------------------------------------------------

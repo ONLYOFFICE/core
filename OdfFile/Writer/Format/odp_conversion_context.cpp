@@ -259,18 +259,16 @@ std::wstring odp_conversion_context::map_indentifier(std::wstring id)
 
 std::wstring odp_conversion_context::get_mapped_identifier(const std::wstring& id)
 {
-	const int page_index = slide_context_.page_index();
-	if (page_index < 0 || page_index >= map_identifiers_.size())
-		return L"";
+	for (int i = map_identifiers_.size() - 1; i >= 0 ; i--)
+	{
+		const IdentifierMap& map = map_identifiers_[i];
+		const IdentifierMap::const_iterator it = map.find(id);
 
-	IdentifierMap& map = map_identifiers_[page_index];
+		if (it != map.end())
+			return it->second;
+	}
 
-	std::unordered_map<std::wstring, std::wstring>::const_iterator it = map.find(id);
-
-	if (it == map.end())
-		return L"";
-	else
-		return it->second;
+	return std::wstring();
 }
 
 void odp_conversion_context::add_page_name(const std::wstring& page_name)

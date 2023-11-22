@@ -694,6 +694,17 @@ void OoxConverter::convert(PPTX::Logic::NvGrpSpPr *oox_nvGrpSpPr)
 	if (oox_nvGrpSpPr->cNvPr.descr.IsInit())
 		odf_context()->drawing_context()->set_description(oox_nvGrpSpPr->cNvPr.descr.get());
 
+	if (oox_nvGrpSpPr->cNvPr.id != -1)
+	{
+		cpdoccore::odf_writer::odp_conversion_context* odp_context =
+			dynamic_cast<cpdoccore::odf_writer::odp_conversion_context*>(odf_context());
+		if (odp_context)
+		{
+			const std::wstring xml_id = odp_context->map_indentifier(std::to_wstring(oox_nvGrpSpPr->cNvPr.id));
+			odf_context()->drawing_context()->set_group_xml_id(xml_id);
+		}
+	}
+
 	convert(&oox_nvGrpSpPr->cNvGrpSpPr);
 	convert(&oox_nvGrpSpPr->nvPr);
 }
@@ -1732,10 +1743,6 @@ void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 
 	if (oox_cnvPr->id != -1)
 	{
-#if 0
-		const std::wstring xml_id = odf_context()->map_indentifier(std::to_wstring(oox_cnvPr->id));
-		odf_context()->drawing_context()->set_xml_id(xml_id);
-#else 
 		cpdoccore::odf_writer::odp_conversion_context* odp_context =
 			dynamic_cast<cpdoccore::odf_writer::odp_conversion_context*>(odf_context());
 		if (odp_context)
@@ -1743,7 +1750,6 @@ void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 			const std::wstring xml_id = odp_context->map_indentifier(std::to_wstring(oox_cnvPr->id));
 			odf_context()->drawing_context()->set_xml_id(xml_id);
 		}
-#endif
 	}
 
 	if (oox_cnvPr->descr.IsInit())

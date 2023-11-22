@@ -419,7 +419,7 @@ void odf_drawing_context::start_group()
 	
 	if (group == NULL)return;
 
-	//если группа топовая - то данные если не записать - сотруться
+	//если группа топовая - то данные если не записать - сотрутся
 	if (!impl_->current_drawing_state_.name_.empty())
 		group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_ = impl_->current_drawing_state_.name_;
 	else
@@ -2115,6 +2115,18 @@ void odf_drawing_context::set_group_name(const std::wstring & name)
 	if ( !name.empty() )
 		group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_ = name;
 }
+
+void odf_drawing_context::set_group_xml_id(const std::wstring& xml_id)
+{
+	if (impl_->group_list_.empty())
+		return;
+
+	draw_g* group = dynamic_cast<draw_g*>(impl_->current_group_->elm.get());
+
+	if (!xml_id.empty())
+		group->xml_id_ = xml_id;
+}
+
 void odf_drawing_context::set_group_flip_H(bool bVal)
 {
 	if ( impl_->group_list_.empty() )return;

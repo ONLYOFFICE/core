@@ -1359,8 +1359,9 @@
 	};
 	CFile.prototype["getFontByID"] = function(ID)
 	{
+		let res = null;
 		if (ID === undefined)
-			return null;
+			return res;
 		
 		let idBuffer = ID.toUtf8();
 		let idPointer = Module["_malloc"](idBuffer.length);
@@ -1368,13 +1369,13 @@
 
 		let ext = Module["_GetFontBinary"](idPointer);
 		if (ext == 0)
-			return null;
+			return res;
 		
 		let lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
 		if (lenArray == null)
 		{
 			Module["_free"](ext);
-			return null;
+			return res;
 		}
 
 		let len = lenArray[0];
@@ -1382,13 +1383,12 @@
 		if (len <= 0)
 		{
 			Module["_free"](ext);
-			return null;
+			return res;
 		}
 
 		let buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
 		let reader = new CBinaryReader(buffer, 0, len);
 		
-		let res = null;
 		while (reader.isValid())
 		{
 			let nFontLength = reader.readInt();

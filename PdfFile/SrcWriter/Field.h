@@ -34,6 +34,7 @@
 
 #include "Objects.h"
 #include "Types.h"
+#include "Annotation.h"
 #include "../../DesktopEditor/graphics/commands/FormField.h"
 
 namespace PdfWriter
@@ -48,60 +49,6 @@ namespace PdfWriter
 	class CImageDict;
 	class CFontCidTrueType;
 	class CSignatureDict;
-	class CAnnotation;
-
-	enum EBorderSubtype
-	{
-		border_subtype_Solid,
-		border_subtype_Beveled,
-		border_subtype_Dashed,
-		border_subtype_Inset,
-		border_subtype_Underlined
-	};
-	enum EAnnotType
-	{
-		AnnotUnknown        = -1,
-		AnnotText           = 0,
-		AnnotLink           = 1,
-		AnnotSound          = 2,
-		AnnotFreeText       = 3,
-		AnnotStamp          = 4,
-		AnnotSquare         = 5,
-		AnnotCircle         = 6,
-		AnnotStrikeOut      = 7,
-		AnnotHighLight      = 8,
-		AnnotUnderline      = 9,
-		AnnotInk            = 10,
-		AnnotFileAttachment = 11,
-		AnnotPopup          = 12,
-		AnnotLine           = 13,
-		AnnotSquiggly       = 14,
-		AnnotPolygon        = 15,
-		AnnotPolyLine       = 16,
-		AnnotCaret          = 17,
-		AnnotWidget         = 18
-	};
-	enum EAnnotHighlightMode
-	{
-		AnnotNoHighlight = 0,
-		AnnotInvertBox,
-		AnnotInvertBorder,
-		AnnotDownAppearance,
-		AnnotHighlightModeEOF
-	};
-	enum EAnnotIcon
-	{
-		AnnotIconComment      = 0,
-		AnnotIconKey          = 1,
-		AnnotIconNote         = 2,
-		AnnotIconHelp         = 3,
-		AnnotIconNewParagraph = 4,
-		AnnotIconParagraph    = 5,
-		AnnotIconInsert       = 6,
-
-		AnnotIconMin          = 0,
-		AnnotIconMax          = 6
-	};
 
 	class CFieldBase : public CDictObject
 	{
@@ -330,8 +277,7 @@ namespace PdfWriter
 	class CAnnotAppearance : public CDictObject
 	{
 	public:
-		CAnnotAppearance(CXref* pXRef, CFieldBase*  pField);
-		CAnnotAppearance(CXref* pXRef, CAnnotation* pAnnot);
+		CAnnotAppearance(CXref* pXRef, CFieldBase* pField);
 
 		CAnnotAppearanceObject* GetNormal();
 		CAnnotAppearanceObject* GetRollover();
@@ -344,7 +290,6 @@ namespace PdfWriter
 		CAnnotAppearanceObject* m_pRollover;
 		CAnnotAppearanceObject* m_pDown;
 		CFieldBase*             m_pField;
-		CAnnotation*            m_pAnnot;
 	};
 
 	class CCheckBoxAnnotAppearance : public CDictObject
@@ -370,8 +315,7 @@ namespace PdfWriter
 	class CAnnotAppearanceObject : public CDictObject
 	{
 	public:
-		CAnnotAppearanceObject(CXref* pXRef, CFieldBase*  pField);
-		CAnnotAppearanceObject(CXref* pXRef, CAnnotation* pAnnot);
+		CAnnotAppearanceObject(CXref* pXRef, CFieldBase* pField);
 		void DrawSimpleText(const std::wstring& wsText, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0, double dR = 0.0, double dG = 0.0, double dB = 0.0, const char* sExtGrStateName = NULL, double dW = 1.0, double dH = 1.0, CFontCidTrueType** ppFonts = NULL, double* pShifts = NULL);
 		void DrawPicture(const char* sImageName = NULL, const double& dX = 0.0, const double& dY = 0.0, const double& dW = 0.0, const double& dH = 0.0, const bool& bRespectBorder = false);
 		void StartDrawText(CFontDict* pFont, const double& dFontSize, const double& dR, const double& dG, const double& dB, const char* sExtGStateName, const double& dWidth, const double& dHeight);
@@ -379,10 +323,7 @@ namespace PdfWriter
 		void DrawTextLine(const double &dX, const double &dY, const std::wstring& wsText);
 		void EndDrawText();
 
-		void DrawTextComment();
-
 	private:
-		void Init(CXref* pXref, CResourcesDict* pResources, TRect* pRect);
 
 		CXref*      m_pXref;
 		CStream*    m_pStream;
@@ -392,8 +333,6 @@ namespace PdfWriter
 		bool        m_bStart;
 		CFontDict*  m_pFont;
 		double      m_dFontSize;
-
-		CAnnotation* m_pAnnot;
 	};
 
 }

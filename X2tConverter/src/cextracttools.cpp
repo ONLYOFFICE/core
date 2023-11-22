@@ -539,7 +539,8 @@ namespace NExtractTools
 		return oBuilder.GetData();
 	}
 	std::wstring getDoctXml(
-		NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, NSDoctRenderer::DoctRendererFormat::FormatFile eToType, const std::wstring& sTFileSrc, const std::wstring& sPdfBinFile,
+		NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, NSDoctRenderer::DoctRendererFormat::FormatFile eToType,
+		const std::wstring& sTFileSrc, const std::wstring& sPdfBinFile,
 		const std::wstring& sImagesDirectory, const std::wstring& sThemeDir, int nTopIndex, const std::wstring& sMailMerge, const InputParams& params)
 	{
 		NSStringUtils::CStringBuilder oBuilder;
@@ -621,8 +622,8 @@ namespace NExtractTools
 		return oBuilder.GetData();
 	}
 	_UINT32 apply_changes(
-		const std::wstring& sBinFrom, const std::wstring& sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, const std::wstring& sThemeDir, std::wstring& sBinTo,
-		const InputParams& params)
+		const std::wstring& sBinFrom, const std::wstring& sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, std::wstring& sBinTo,
+		const InputParams& params, const ConvertParams& convertParams)
 	{
 		std::wstring sBinDir = NSDirectory::GetFolderPath(sBinFrom);
 		std::wstring sChangesDir = sBinDir + FILE_SEPARATOR_STR + L"changes";
@@ -637,7 +638,7 @@ namespace NExtractTools
 			int nChangeIndex = -1;
 			while (true)
 			{
-				std::wstring sXml = getDoctXml(eType, eType, sBinFrom, sBinTo, sImagesDirectory, sThemeDir, nChangeIndex, L"", params);
+				std::wstring sXml = getDoctXml(eType, eType, sBinFrom, sBinTo, sImagesDirectory, convertParams.m_sThemesDir, nChangeIndex, L"", params);
 				std::wstring sResult;
 				oDoctRenderer.Execute(sXml, sResult);
 				bool bContinue = false;

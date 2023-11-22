@@ -46,197 +46,245 @@ namespace NExtractTools
 {
 	class InputParams;
 	class InputParamsMailMerge;
+	class ConvertParams;
 } // namespace NExtractTools
 namespace NExtractTools
 {
-	_UINT32 docx2doct_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 docx2doct(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 docx_dir2doct(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params, const std::wstring &sDocxFile);
-	_UINT32 docx_dir2doct_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params, const std::wstring &sDocxFile);
-	_UINT32 doct_bin2docx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams &params);
-	_UINT32 doct_bin2docx_dir(const std::wstring &sFrom, const std::wstring &sToResult, const std::wstring &sTo, const std::wstring &sThemeDir, InputParams &params);
-	_UINT32 doct2docx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams &params);
+	#define DECLARE_CONVERT_FUNC(name) _UINT32 name(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 
-	_UINT32 docxflat2doct(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 docxflat2doct_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 docxflat2odt(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 docxflat2docx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-
-	_UINT32 package2ooxml(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 package2ooxml_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 package2bin_t(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 package2bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-
-	_UINT32 dotm2docm(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 dotm2docm_dir(const std::wstring &sFrom, const std::wstring &sTo, InputParams &params);
-	_UINT32 dotx2docx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 dotx2docx_dir(const std::wstring &sFrom, const std::wstring &sTo, InputParams &params);
-	_UINT32 docm2docx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 docm2docx_dir(const std::wstring &sFrom, const std::wstring &sTo, InputParams &params);
-	_UINT32 dotm2docx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 dotm2docx_dir(const std::wstring &sFrom, const std::wstring &sTo, InputParams &params);
-
-	_UINT32 xlsx2xlst(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 xlsx2xlst_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 xlsxflat2xlst(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 xlsxflat2xlst_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 xlsxflat2xlsx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 xlsxflat2xlsx_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 xlsx_dir2xlst(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params, bool bXmlOptions, const std::wstring &sXlsxFile);
-	_UINT32 xlsx_dir2xlst_bin(const std::wstring &sFrom, const std::wstring &sTo, InputParams &params, bool bXmlOptions, const std::wstring &sXlsxFile);
-	_UINT32 xlst_bin2xlsx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams &params);
-	_UINT32 xlst_bin2xlsx_dir(const std::wstring &sFrom, const std::wstring &sToResult, const std::wstring &sTo, const std::wstring &sThemeDir, InputParams &params);
-	_UINT32 xlst2xlsx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams &params);
-
-	_UINT32 xltx2xlsx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 xltx2xlsx_dir(const std::wstring &sFrom, const std::wstring &sTo, InputParams &params);
-	_UINT32 xltm2xlsm(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 xltm2xlsm_dir(const std::wstring &sFrom, const std::wstring &sTo, InputParams &params);
-	_UINT32 xlsm2xlsx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 xlsm2xlsx_dir(const std::wstring &sFrom, const std::wstring &sTo, InputParams &params);
-	_UINT32 xltm2xlsx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 xltm2xlsx_dir(const std::wstring &sFrom, const std::wstring &sTo, InputParams &params);
-	_UINT32 xlsb2xlsx_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 xlsx2xlsb(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 xlsx_dir2xlsb(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-
-	_UINT32 pptx2pptt_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 pptx_dir2pptt(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params, const std::wstring &sPptxFile);
-	_UINT32 pptx_dir2pptt_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params, const std::wstring &sPptxFile);
-	_UINT32 pptx2pptt(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 pptt_bin2pptx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams &params);
-	_UINT32 pptt_bin2pptx_dir(const std::wstring &sFrom, const std::wstring &sToResult, const std::wstring &sTo, const std::wstring &sThemeDir, InputParams &params);
-	_UINT32 pptt2pptx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams &params);
-
-	_UINT32 xml2xlsx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 xml2xlsx_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-
-	_UINT32 csv2xlst(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 csv2xlsx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 csv2xlsx_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 csv2xlst_bin(const std::wstring &sFrom, const std::wstring &sTo, InputParams &params);
-	_UINT32 xlst2csv(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 xlsx_dir2csv(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 xlsx2csv(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 xlst_bin2csv(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-
-	_UINT32 bin2pdf(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams &params);
-
-	_UINT32 ppsx2pptx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 ppsx2pptx_dir(const std::wstring &sFrom, const std::wstring &sTo, InputParams &params);
-	_UINT32 potx2pptx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 potx2pptx_dir(const std::wstring &sFrom, const std::wstring &sTo, InputParams &params);
-	_UINT32 ppsm2pptx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 ppsm2pptx_dir(const std::wstring &sFrom, const std::wstring &sTo, InputParams &params);
-	_UINT32 potm2pptm(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 potm2pptm_dir(const std::wstring &sFrom, const std::wstring &sTo, InputParams &params);
-	_UINT32 ppsm2pptm(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 ppsm2pptm_dir(const std::wstring &sFrom, const std::wstring &sTo, InputParams &params);
-	_UINT32 pptm2pptx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 pptm2pptx_dir(const std::wstring &sFrom, const std::wstring &sTo, InputParams &params);
-	_UINT32 potm2pptx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 potm2pptx_dir(const std::wstring &sFrom, const std::wstring &sTo, InputParams &params);
-
-	_UINT32 ppt2pptx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 ppt2pptx_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 ppt2pptt_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 ppt2pptt(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 ppt2pptm(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 ppt2pptm_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-
-	_UINT32 rtf2docx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 rtf2docx_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 rtf2doct(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 rtf2doct_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 docx2rtf(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 docx_dir2rtf(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 doct2rtf(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams &params);
-	_UINT32 doct_bin2rtf(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams &params);
-
-	_UINT32 doc2docx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 doc2docx_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 doc2doct(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 doc2doct_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 docx_dir2doc(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 doc2docm(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 doc2docm_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-
-	_UINT32 xls2xlsx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 xls2xlsx_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 xls2xlst(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 xls2xlst_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 xls2xlsm(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 xls2xlsm_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-
-	_UINT32 txt2docx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 txt2docx_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 txt2doct(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 txt2doct_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 docx_dir2txt(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-
-	_UINT32 odf2oox(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 odf2oox_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 odf2oot(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 odf2oot_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-
-	_UINT32 odf_flat2oox(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 odf_flat2oox_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 odf_flat2oot(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 odf_flat2oot_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-
-	_UINT32 docx2odt(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 docx_dir2odt(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params, bool bTemplate);
-	_UINT32 xlsx2ods(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 xlsx_dir2ods(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params, bool bTemplate);
-	_UINT32 pptx2odp(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 pptx_dir2odp(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params, bool bTemplate);
-
-	_UINT32 fromMscrypt(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 fromMitcrypt(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 mscrypt2oox(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 mitcrypt2oox(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 mscrypt2oot(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 mscrypt2oot_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 mitcrypt2oot_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-
-	_UINT32 oox2mscrypt(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-
-	_UINT32 msVbaProject2dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-
-	_UINT32 html2doct_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 html2doct(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 html2docx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-
-	//-------------------------------------------------------------------------------------------------------------------------------------------------
+	// zip
 	_UINT32 dir2zip(const std::wstring &sFrom, const std::wstring &sTo, bool bSorted = false, int method = 8 /*Z_DEFLATED*/, short level = -1, bool bDateTime = false);
 	_UINT32 dir2zipMscrypt(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
 	_UINT32 zip2dir(const std::wstring &sFrom, const std::wstring &sTo);
 
-	_UINT32 convertmailmerge(const InputParamsMailMerge &oMailMergeSend, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams &params);
+	// crypt
+	DECLARE_CONVERT_FUNC(mscrypt2oot);
+	DECLARE_CONVERT_FUNC(mscrypt2oot_bin);
+	DECLARE_CONVERT_FUNC(mitcrypt2oox);
+	DECLARE_CONVERT_FUNC(mitcrypt2oot_bin);
+	DECLARE_CONVERT_FUNC(mscrypt2oox);
+	DECLARE_CONVERT_FUNC(oox2mscrypt);
+	DECLARE_CONVERT_FUNC(fromMscrypt);
+	DECLARE_CONVERT_FUNC(fromMitcrypt);
 
-	_UINT32 fromDocxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams &params, const std::wstring &sDocxFile);
-	_UINT32 fromDoctBin(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams &params);
-	_UINT32 fromDocument(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTemp, InputParams &params);
+	DECLARE_CONVERT_FUNC(msVbaProject2dir);
 
-	_UINT32 fromXlsxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams &params, const std::wstring &sXlsxFile);
-	_UINT32 fromXlsbXlsxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams &params, const std::wstring &sXlsxFile);
-	_UINT32 fromXlstBin(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams &params);
-	_UINT32 fromSpreadsheet(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTemp, InputParams &params);
+	// docx
+	DECLARE_CONVERT_FUNC(docx2doct_bin);
+	DECLARE_CONVERT_FUNC(docx2doct);
+	DECLARE_CONVERT_FUNC(docx_dir2doct);
+	DECLARE_CONVERT_FUNC(docx_dir2doct_bin);
+	DECLARE_CONVERT_FUNC(doct_bin2docx);
+	DECLARE_CONVERT_FUNC(doct_bin2docx_dir);
+	DECLARE_CONVERT_FUNC(doct2docx);
 
-	_UINT32 fromPptxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams &params, const std::wstring &sPptxFile);
-	_UINT32 fromPpttBin(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams &params);
-	_UINT32 fromPresentation(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTemp, InputParams &params);
+	DECLARE_CONVERT_FUNC(docxflat2doct);
+	DECLARE_CONVERT_FUNC(docxflat2doct_bin);
+	DECLARE_CONVERT_FUNC(docxflat2odt);
+	DECLARE_CONVERT_FUNC(docxflat2docx);
 
-	_UINT32 fromT(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams &params);
-	_UINT32 fromCrossPlatform(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams &params);
-	_UINT32 fromCanvasPdf(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams &params);
+	DECLARE_CONVERT_FUNC(package2ooxml);
+	DECLARE_CONVERT_FUNC(package2ooxml_dir);
+	DECLARE_CONVERT_FUNC(package2bin_t);
+	DECLARE_CONVERT_FUNC(package2bin);
 
-	_UINT32 fromInputParams(InputParams &oInputParams);
-	_UINT32 detectMacroInFile(InputParams &oInputParams);
+	DECLARE_CONVERT_FUNC(dotm2docm);
+	DECLARE_CONVERT_FUNC(dotm2docm_dir);
+	DECLARE_CONVERT_FUNC(dotx2docx);
+	DECLARE_CONVERT_FUNC(dotx2docx_dir);
+	DECLARE_CONVERT_FUNC(docm2docx);
+	DECLARE_CONVERT_FUNC(docm2docx_dir);
+	DECLARE_CONVERT_FUNC(dotm2docx);
+	DECLARE_CONVERT_FUNC(dotm2docx_dir);
+
+	// xlsx
+	DECLARE_CONVERT_FUNC(xlsx2xlst);
+	DECLARE_CONVERT_FUNC(xlsx2xlst_bin);
+	DECLARE_CONVERT_FUNC(xlsxflat2xlst);
+	DECLARE_CONVERT_FUNC(xlsxflat2xlst_bin);
+	DECLARE_CONVERT_FUNC(xlsxflat2xlsx);
+	DECLARE_CONVERT_FUNC(xlsxflat2xlsx_dir);
+	DECLARE_CONVERT_FUNC(xlsx_dir2xlst);
+	DECLARE_CONVERT_FUNC(xlsx_dir2xlst_bin);
+	DECLARE_CONVERT_FUNC(xlst_bin2xlsx);
+	DECLARE_CONVERT_FUNC(xlst_bin2xlsx_dir);
+	DECLARE_CONVERT_FUNC(xlst2xlsx);
+
+	DECLARE_CONVERT_FUNC(xltx2xlsx);
+	DECLARE_CONVERT_FUNC(xltx2xlsx_dir);
+	DECLARE_CONVERT_FUNC(xltm2xlsm);
+	DECLARE_CONVERT_FUNC(xltm2xlsm_dir);
+	DECLARE_CONVERT_FUNC(xlsm2xlsx);
+	DECLARE_CONVERT_FUNC(xlsm2xlsx_dir);
+	DECLARE_CONVERT_FUNC(xltm2xlsx);
+	DECLARE_CONVERT_FUNC(xltm2xlsx_dir);
+	DECLARE_CONVERT_FUNC(xlsb2xlsx_dir);
+
+	// pptx
+	DECLARE_CONVERT_FUNC(pptx2pptt_bin);
+	DECLARE_CONVERT_FUNC(pptx_dir2pptt);
+	DECLARE_CONVERT_FUNC(pptx_dir2pptt_bin);
+	DECLARE_CONVERT_FUNC(pptx2pptt);
+	DECLARE_CONVERT_FUNC(pptt_bin2pptx);
+	DECLARE_CONVERT_FUNC(pptt_bin2pptx_dir);
+	DECLARE_CONVERT_FUNC(pptt2pptx);
+
+	DECLARE_CONVERT_FUNC(ppsx2pptx);
+	DECLARE_CONVERT_FUNC(ppsx2pptx_dir);
+	DECLARE_CONVERT_FUNC(potx2pptx);
+	DECLARE_CONVERT_FUNC(potx2pptx_dir);
+	DECLARE_CONVERT_FUNC(ppsm2pptx);
+	DECLARE_CONVERT_FUNC(ppsm2pptx_dir);
+	DECLARE_CONVERT_FUNC(potm2pptm);
+	DECLARE_CONVERT_FUNC(potm2pptm_dir);
+	DECLARE_CONVERT_FUNC(ppsm2pptm);
+	DECLARE_CONVERT_FUNC(ppsm2pptm_dir);
+	DECLARE_CONVERT_FUNC(pptm2pptx);
+	DECLARE_CONVERT_FUNC(pptm2pptx_dir);
+	DECLARE_CONVERT_FUNC(potm2pptx);
+	DECLARE_CONVERT_FUNC(potm2pptx_dir);
+
+	// doc
+	DECLARE_CONVERT_FUNC(doc2docx);
+	DECLARE_CONVERT_FUNC(doc2docx_dir);
+	DECLARE_CONVERT_FUNC(doc2doct);
+	DECLARE_CONVERT_FUNC(doc2doct_bin);
+	DECLARE_CONVERT_FUNC(docx_dir2doc);
+	DECLARE_CONVERT_FUNC(doc2docm);
+	DECLARE_CONVERT_FUNC(doc2docm_dir);
+
+	// rtf
+	DECLARE_CONVERT_FUNC(rtf2docx);
+	DECLARE_CONVERT_FUNC(rtf2docx_dir);
+	DECLARE_CONVERT_FUNC(rtf2doct);
+	DECLARE_CONVERT_FUNC(rtf2doct_bin);
+	DECLARE_CONVERT_FUNC(docx2rtf);
+	DECLARE_CONVERT_FUNC(docx_dir2rtf);
+	DECLARE_CONVERT_FUNC(doct2rtf);
+	DECLARE_CONVERT_FUNC(doct_bin2rtf);
+
+	// txt
+	DECLARE_CONVERT_FUNC(txt2docx);
+	DECLARE_CONVERT_FUNC(txt2docx_dir);
+	DECLARE_CONVERT_FUNC(txt2doct);
+	DECLARE_CONVERT_FUNC(txt2doct_bin);
+	DECLARE_CONVERT_FUNC(docx2txt);
+	DECLARE_CONVERT_FUNC(docx_dir2txt);
+
+	// html
+	DECLARE_CONVERT_FUNC(html2doct_bin);
+	DECLARE_CONVERT_FUNC(html_zip2doct_bin);
+	DECLARE_CONVERT_FUNC(html_zip2doct);
+	DECLARE_CONVERT_FUNC(html2doct);
+	DECLARE_CONVERT_FUNC(html2docx);
+	DECLARE_CONVERT_FUNC(html_zip2docx);
+
+	DECLARE_CONVERT_FUNC(html2docx_dir);
+	DECLARE_CONVERT_FUNC(html_zip2docx_dir);
+
+	DECLARE_CONVERT_FUNC(doct_bin2html);
+	DECLARE_CONVERT_FUNC(doct_bin2html_zip);
+
+	// mht
+	DECLARE_CONVERT_FUNC(mht2docx_dir);
+
+	// epub
+	DECLARE_CONVERT_FUNC(epub2docx_dir);
+	DECLARE_CONVERT_FUNC(doct_bin2epub);
+
+	// fb2
+	DECLARE_CONVERT_FUNC(fb2docx_dir);
+	DECLARE_CONVERT_FUNC(fb2docx);
+	DECLARE_CONVERT_FUNC(doct_bin2fb);
+
+	// ppt
+	DECLARE_CONVERT_FUNC(ppt2pptx);
+	DECLARE_CONVERT_FUNC(ppt2pptx_dir);
+	DECLARE_CONVERT_FUNC(ppt2pptt_bin);
+	DECLARE_CONVERT_FUNC(ppt2pptt);
+	DECLARE_CONVERT_FUNC(ppt2pptm);
+	DECLARE_CONVERT_FUNC(ppt2pptm_dir);
+
+	// csv
+	DECLARE_CONVERT_FUNC(csv2xlst);
+	DECLARE_CONVERT_FUNC(csv2xlsx);
+	DECLARE_CONVERT_FUNC(csv2xlsx_dir);
+	DECLARE_CONVERT_FUNC(csv2xlst_bin);
+	DECLARE_CONVERT_FUNC(xlst2csv);
+	DECLARE_CONVERT_FUNC(xlsx_dir2csv);
+	DECLARE_CONVERT_FUNC(xlsx2csv);
+	DECLARE_CONVERT_FUNC(xlst_bin2csv);
+
+	// xls
+	DECLARE_CONVERT_FUNC(xls2xlsx);
+	DECLARE_CONVERT_FUNC(xls2xlsx_dir);
+	DECLARE_CONVERT_FUNC(xls2xlst);
+	DECLARE_CONVERT_FUNC(xls2xlst_bin);
+	DECLARE_CONVERT_FUNC(xls2xlsm);
+	DECLARE_CONVERT_FUNC(xls2xlsm_dir);
+
+	// xml => xlsx
+	DECLARE_CONVERT_FUNC(xml2xlsx);
+	DECLARE_CONVERT_FUNC(xml2xlsx_dir);
+
+	// odf
+	DECLARE_CONVERT_FUNC(odf2oox);
+	DECLARE_CONVERT_FUNC(odf2oox_dir);
+	DECLARE_CONVERT_FUNC(odf2oot);
+	DECLARE_CONVERT_FUNC(odf2oot_bin);
+
+	DECLARE_CONVERT_FUNC(odf_flat2oox);
+	DECLARE_CONVERT_FUNC(odf_flat2oox_dir);
+	DECLARE_CONVERT_FUNC(odf_flat2oot);
+	DECLARE_CONVERT_FUNC(odf_flat2oot_bin);
+
+	DECLARE_CONVERT_FUNC(docx2odt);
+	DECLARE_CONVERT_FUNC(docx_dir2odt);
+	DECLARE_CONVERT_FUNC(xlsx2ods);
+	DECLARE_CONVERT_FUNC(xlsx_dir2ods);
+	DECLARE_CONVERT_FUNC(pptx2odp);
+	DECLARE_CONVERT_FUNC(pptx_dir2odp);
+
+	DECLARE_CONVERT_FUNC(otf2odf);
+
+	// pdf/image
+	DECLARE_CONVERT_FUNC(bin2pdf);
+	_UINT32 bin2Image(unsigned char* pBuffer, long lBufferLen, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams);
+	DECLARE_CONVERT_FUNC(bin2imageBase64);
+
+	// using NSDoctRenderer::DoctRendererFormat::FormatFile
+	// DECLARE_CONVERT_FUNC(doct_bin2pdf);
+	// DECLARE_CONVERT_FUNC(doct_bin2image);
+
+	//-------------------------------------------------------------------------------------------------------------------------------------------------
+	_UINT32 convertmailmerge(const InputParamsMailMerge& oMailMergeSend, const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams);
+
+	_UINT32 fromDocxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, InputParams& params, ConvertParams& convertParams);
+	_UINT32 fromDoctBin(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, InputParams& params, ConvertParams& convertParams);
+	_UINT32 fromDocument(const std::wstring &sFrom, int nFormatFrom, InputParams& params, ConvertParams& convertParams);
+
+	_UINT32 fromXlsxDir    (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, InputParams& params, ConvertParams& convertParams);
+	_UINT32 fromXlsbXlsxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, InputParams& params, ConvertParams& convertParams);
+	_UINT32 fromXlstBin    (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, InputParams& params, ConvertParams& convertParams);
+	_UINT32 fromSpreadsheet(const std::wstring &sFrom, int nFormatFrom, InputParams& params, ConvertParams& convertParams);
+
+	_UINT32 fromPptxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, InputParams& params, ConvertParams& convertParams);
+	_UINT32 fromPpttBin(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, InputParams& params, ConvertParams& convertParams);
+	_UINT32 fromPresentation(const std::wstring &sFrom, int nFormatFrom, InputParams& params, ConvertParams& convertParams);
+
+	_UINT32 fromT(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, InputParams& params, ConvertParams& convertParams);
+
+	_UINT32 fromCrossPlatform(const std::wstring& sFrom, int nFormatFrom, const std::wstring& sTo, int nFormatTo, InputParams& params, ConvertParams& convertParams);
+	_UINT32 fromCanvasPdf(const std::wstring& sFrom, int nFormatFrom, const std::wstring& sTo, int nFormatTo, InputParams& params, ConvertParams& convertParams);
+
+	_UINT32 fromDraw(const std::wstring& sFrom, int nFormatFrom, InputParams& params, ConvertParams& convertParams);
+
+	_UINT32 fromInputParams(InputParams& oInputParams);
+	_UINT32 detectMacroInFile(InputParams& oInputParams);
 
 	void createJSCaches();
 
-	X2T_DECL_EXPORT _UINT32 FromFile(const std::wstring &file);
-	X2T_DECL_EXPORT _UINT32 FromXml(const std::wstring &xml);
+	X2T_DECL_EXPORT _UINT32 FromFile(const std::wstring& file);
+	X2T_DECL_EXPORT _UINT32 FromXml(const std::wstring& xml);
 } // namespace NExtractTools
 #endif // ASCCONVERTERS_H

@@ -457,6 +457,32 @@ namespace NExtractTools
 		}
 	};
 
+	class ConvertParams
+	{
+	public:
+		std::wstring m_sTempDir;
+		std::wstring m_sThemesDir;
+
+		std::wstring m_sEditorWithChanges;
+
+		// [docx_dir2doct_bin, docx_dir2doct, pptx_dir2pptt_bin, pptx_dir2ppt] methods
+		std::wstring m_sTempParamOOXMLFile;
+
+		// for doct_bin2docx_dir, xlst_bin2xlsx_dir
+		std::wstring m_sTempResultOOXMLDirectory;
+
+		// xlsx_dir2xlst_bin
+		bool m_bTempIsXmlOptions = false;
+
+		bool m_bIsTemplate = false;
+		bool m_bIsPaid = false;
+
+		std::wstring m_sMediaDirectory;
+		std::wstring m_sInternalMediaDirectory;
+
+		std::string m_sPrintPages;
+	};
+
 	class InputParams
 	{
 	public:
@@ -1440,7 +1466,7 @@ namespace NExtractTools
 		NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, NSDoctRenderer::DoctRendererFormat::FormatFile eToType, const std::wstring& sTFileSrc, const std::wstring& sPdfBinFile,
 		const std::wstring& sImagesDirectory, const std::wstring& sThemeDir, int nTopIndex, const std::wstring& sMailMerge, const InputParams& params);
 	_UINT32 apply_changes(
-		const std::wstring& sBinFrom, const std::wstring& sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, const std::wstring& sThemeDir, std::wstring& sBinTo,
-		const InputParams& params);
+		const std::wstring& sBinFrom, const std::wstring& sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, std::wstring& sBinTo,
+		const InputParams& params, const ConvertParams& convertParams);
 } // namespace NExtractTools
 #endif // CEXTRACTTOOLS_H

@@ -292,6 +292,7 @@ namespace MetaFile
 	public:
 		CEmfPlusPath();
 		CEmfPlusPath(CEmfPlusPath* pPath);
+		virtual ~CEmfPlusPath();
 		virtual EEmfPlusObjectType GetObjectType() override;
 
 		TRectD GetBounds() const;

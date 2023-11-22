@@ -291,7 +291,7 @@ namespace MetaFile
 		CEmfPlusPath*  pPath;
 
 		TEmfPlusCustomLineCapData() : pPath(NULL) {};
-		virtual ~TEmfPlusCustomLineCapData() { RELEASEOBJECT(pPath) };
+		virtual ~TEmfPlusCustomLineCapData();
 
 		CustomLineCapDataType GetType() const override
 		{

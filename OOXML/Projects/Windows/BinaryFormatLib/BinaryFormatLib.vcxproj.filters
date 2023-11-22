@@ -60,9 +60,6 @@
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\BinaryWriter.cpp">
       <Filter>Sheets\Writer</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Binary\Sheets\Reader\ChartFromToBinary.cpp">
-      <Filter>Sheets\Writer</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\CommonWriter.cpp">
       <Filter>Sheets\Writer</Filter>
     </ClCompile>
@@ -159,6 +156,9 @@
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\CellFormatController\DigitReader.cpp">
       <Filter>Sheets\Reader\CellFormat</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\ChartFromToBinary.cpp">
+      <Filter>Sheets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Binary\Document\DocWrapper\ChartWriter.h">
@@ -233,9 +233,6 @@
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\BinaryWriter.h">
       <Filter>Sheets\Writer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Binary\Sheets\Reader\ChartFromToBinary.h">
-      <Filter>Sheets\Writer</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\CommonWriter.h">
       <Filter>Sheets\Writer</Filter>
     </ClInclude>
@@ -307,6 +304,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\CellFormatController\DigitReader.h">
       <Filter>Sheets\Reader\CellFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\ChartFromToBinary.h">
+      <Filter>Sheets</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

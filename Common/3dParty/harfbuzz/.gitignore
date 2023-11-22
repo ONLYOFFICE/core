@@ -1,2 +1,3 @@
 harfbuzz/
 harfbuzz.pri
+module.version

@@ -53,6 +53,7 @@ class odf_text_context;
 
 class graphic_format_properties;
 class paragraph_format_properties;
+class text_format_properties;
 
 class style_text_properties;
 class style_graphic_properties;
@@ -74,7 +75,8 @@ public:
 	void clear				();
 	void set_styles_context	(odf_style_context_ptr styles_context);//для embedded 
 
-	void set_parent_style	(std::wstring style_name);
+	void set_parent_style(std::wstring style_name);
+	void set_parent_text_style(std::wstring style_name);
 
 	void set_header_state		(bool Val);
 	void set_footer_state		(bool Val);
@@ -124,6 +126,7 @@ public:
 		void set_group_flip_V	(bool bVal);
 		void set_group_z_order	(int Val);
 		void set_group_name		(const std::wstring & name);
+		void set_group_xml_id	(const std::wstring& xml_id);
 
 		void set_group_rotate	(int iVal);
 		void set_group_size		(_CP_OPT(double) cx, _CP_OPT(double) cy, _CP_OPT(double) change_cx, _CP_OPT(double) change_cy);
@@ -154,6 +157,7 @@ public:
 	void set_graphic_properties		(style_graphic_properties *graphic_properties);	
 	void set_paragraph_properties	(paragraph_format_properties *paragraph_properties);
 	void set_text_properties		(style_text_properties *text_properties);
+	void set_text_properties		(text_format_properties* text_properties);
 	
 	void start_text_box					();
 		void set_text_box_min_size		(bool val);

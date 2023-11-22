@@ -62,8 +62,8 @@ namespace OOX
 		void CTimelineCachePivotTable::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
 			writer.WriteString(L"<pivotTable");
-			WritingStringNullableAttrEncodeXmlString2(L"name", m_oName);
 			WritingStringNullableAttrInt2(L"tabId", m_oTabId);
+			WritingStringNullableAttrEncodeXmlString2(L"name", m_oName);
 			writer.WriteString(L"/>");
 		}
 		void CTimelineCachePivotTable::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -182,9 +182,9 @@ namespace OOX
 		{
 			writer.WriteString(L"<timeline");
 				WritingStringNullableAttrEncodeXmlString2(L"name", m_oName);
-				WritingStringNullableAttrEncodeXmlString2(L"caption", m_oCaption);
 				WritingStringNullableAttrEncodeXmlString2(L"xr10:uid", m_oUid);
 				WritingStringNullableAttrEncodeXmlString2(L"cache", m_oCache);
+				WritingStringNullableAttrEncodeXmlString2(L"caption", m_oCaption);
 				WritingStringNullableAttrInt2(L"level", m_oLevel);
 				WritingStringNullableAttrInt2(L"selectionLevel", m_oSelectionLevel);
 				WritingStringNullableAttrEncodeXmlString2(L"scrollPosition", m_oScrollPosition);
@@ -301,12 +301,12 @@ xmlns:xr10=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision10\"
 		{
 			writer.WriteString(L"<state");
 
+			WritingStringNullableAttrInt2(L"minimalRefreshVersion", m_oMinimalRefreshVersion);
+			WritingStringNullableAttrInt2(L"lastRefreshVersion", m_oLastRefreshVersion);
+			WritingStringNullableAttrInt2(L"pivotCacheId", m_oPivotCacheId);
 			WritingStringNullableAttrEncodeXmlString2(L"name", m_oName);
 			WritingStringNullableAttrEncodeXmlString2(L"filterType", m_oFilterType);
 			WritingStringNullableAttrBool2(L"singleRangeFilterState", m_oSingleRangeFilterState);
-			WritingStringNullableAttrInt2(L"pivotCacheId", m_oPivotCacheId);
-			WritingStringNullableAttrInt2(L"minimalRefreshVersion", m_oMinimalRefreshVersion);
-			WritingStringNullableAttrInt2(L"lastRefreshVersion", m_oLastRefreshVersion);
 			writer.WriteString(L">");
 
 			if (m_oSelection.IsInit())
@@ -441,8 +441,8 @@ mc:Ignorable=\"xr10\" \
 xmlns:xr10=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision10\"");
 
 			WritingStringNullableAttrEncodeXmlString2(L"name", m_oName);
-			WritingStringNullableAttrEncodeXmlString2(L"sourceName", m_oSourceName);
 			WritingStringNullableAttrEncodeXmlString2(L"xr10:uid", m_oUid);
+			WritingStringNullableAttrEncodeXmlString2(L"sourceName", m_oSourceName);
 
 			writer.WriteString(L">");
 
@@ -948,6 +948,7 @@ xmlns:xr10=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision10\"
 
 			pWriter->StartNode(L"tsle:timeslicer");
 			pWriter->StartAttributes();
+			pWriter->WriteString(L" xmlns:tsle=\"http://schemas.microsoft.com/office/drawing/2012/timeslicer\"");
 			if (m_oName.IsInit())
 				pWriter->WriteAttribute2(L"name", *m_oName);
 			pWriter->EndAttributes();

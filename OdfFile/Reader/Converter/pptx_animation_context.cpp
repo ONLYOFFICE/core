@@ -47,9 +47,20 @@
 	if (impl_->par_animation_levels_.size())									\
 	{																			\
 		Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();	\
-		if (back->AnimSeq.size())														\
-			back->AnimSeq.back()->attribute = value;									\
+		if (back->AnimSeq.size())												\
+			back->AnimSeq.back()->attribute = value;							\
 	}
+
+#define END_BEHAVIOUR_ELEMENT(element_description)								\
+	if (impl_->par_animation_levels_.size())									\
+	{																			\
+		Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();	\
+		if(impl_->element_description->ShapeID &&								\
+			*impl_->element_description->ShapeID != 0)							\
+			back->AnimationActionArray.push_back(impl_->element_description);	\
+	}																			\
+	impl_->element_description = nullptr
+
 
 namespace cpdoccore {
 namespace oox {
@@ -156,6 +167,11 @@ namespace oox {
 			if (!impl_->par_animation_levels_.size())
 				return;
 
+			if (!end->AnimationActionArray.size() &&
+				!end->AnimParArray.size()  &&
+				!end->AnimSeq.size())
+				return;
+			
 			Impl::_par_animation_ptr back = impl_->par_animation_levels_.back();
 
 			if (back->AnimSeq.size())
@@ -269,12 +285,7 @@ namespace oox {
 
 	void pptx_animation_context::end_set()
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->AnimationActionArray.push_back(impl_->set_description_);
-		}
-		impl_->set_description_ = nullptr;
+		END_BEHAVIOUR_ELEMENT(set_description_);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -306,12 +317,8 @@ namespace oox {
 
 	void pptx_animation_context::end_anim_effect()
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->AnimationActionArray.push_back(impl_->anim_effect_description_);
-		}
-		impl_->anim_effect_description_ = nullptr;
+
+		END_BEHAVIOUR_ELEMENT(anim_effect_description_);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -368,12 +375,7 @@ namespace oox {
 
 	void pptx_animation_context::end_animate_motion()
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->AnimationActionArray.push_back(impl_->animate_motion_description_);
-		}
-		impl_->animate_motion_description_ = nullptr;
+		END_BEHAVIOUR_ELEMENT(animate_motion_description_);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -446,12 +448,7 @@ namespace oox {
 
 	void pptx_animation_context::end_animate()
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->AnimationActionArray.push_back(impl_->anim_description_);
-		}
-		impl_->anim_description_ = nullptr;
+		END_BEHAVIOUR_ELEMENT(anim_description_);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -493,12 +490,7 @@ namespace oox {
 
 	void pptx_animation_context::end_animate_color()
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->AnimationActionArray.push_back(impl_->anim_clr_description_);
-		}
-		impl_->anim_clr_description_ = nullptr;
+		END_BEHAVIOUR_ELEMENT(anim_clr_description_);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -545,12 +537,7 @@ namespace oox {
 
 	void pptx_animation_context::end_animate_scale()
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->AnimationActionArray.push_back(impl_->anim_scale_description_);
-		}
-		impl_->anim_scale_description_ = nullptr;
+		END_BEHAVIOUR_ELEMENT(anim_scale_description_);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -592,12 +579,7 @@ namespace oox {
 
 	void pptx_animation_context::end_animate_rotate()
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->AnimationActionArray.push_back(impl_->anim_rotate_description_);
-		}
-		impl_->anim_rotate_description_ = nullptr;
+		END_BEHAVIOUR_ELEMENT(anim_rotate_description_);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -625,6 +607,17 @@ namespace oox {
 
 	void pptx_animation_context::serialize(std::wostream& strm)
 	{
+		if (!impl_->root_animation_element_)
+			return;
+
+		if (!impl_->root_animation_element_->AnimationActionArray.size() &&
+			!impl_->root_animation_element_->AnimParArray.size())
+		{
+			if (!impl_->root_animation_element_->AnimSeq.size() ||
+				!impl_->root_animation_element_->AnimSeq.back()->AnimParArray.size())
+				return;
+		}
+
 		CP_XML_WRITER(strm)
 		{
 			CP_XML_NODE(L"p:timing")
@@ -699,16 +692,19 @@ namespace oox {
 						}
 					}
 					
-					CP_XML_NODE(L"p:childTnLst")
+					if (AnimParArray.size() || AnimSeq.size() || AnimationActionArray.size())
 					{
-						for(size_t i = 0; i < AnimParArray.size(); i++)
-							AnimParArray[i]->serialize(CP_XML_STREAM());
-						
-						for(size_t i = 0; i < AnimSeq.size(); i++)
-							AnimSeq[i]->serialize(CP_XML_STREAM());
-						
-						for (size_t i = 0; i < AnimationActionArray.size(); i++)
-							AnimationActionArray[i]->serialize(CP_XML_STREAM());
+						CP_XML_NODE(L"p:childTnLst")
+						{
+							for (size_t i = 0; i < AnimParArray.size(); i++)
+								AnimParArray[i]->serialize(CP_XML_STREAM());
+
+							for (size_t i = 0; i < AnimSeq.size(); i++)
+								AnimSeq[i]->serialize(CP_XML_STREAM());
+
+							for (size_t i = 0; i < AnimationActionArray.size(); i++)
+								AnimationActionArray[i]->serialize(CP_XML_STREAM());
+						}
 					}
 				}
 			}

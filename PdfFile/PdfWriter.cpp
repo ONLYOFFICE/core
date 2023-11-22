@@ -1183,7 +1183,6 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 	bool isBold   = m_oFont.IsBold();
 	bool isItalic = m_oFont.IsItalic();
 
-
 	if (oInfo.IsTextField())
 	{
 		const CFormFieldInfo::CTextFormPr* pPr = oInfo.GetTextFormPr();
@@ -1674,7 +1673,6 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 
 		pField->SetFormat(pPr->GetFormat());
 	}
-
 
 	// Выставляем имя в конце, потому что там возможно копирование настроек поля в новое родительское поле, поэтому к текущему моменту
 	// все настройки должны быть выставлены
@@ -2218,6 +2216,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	}
 
 	return S_OK;
+}
+HRESULT CPdfWriter::AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength)
+{
+	return m_pDocument->AddMetaData(sMetaName, pMetaData, nMetaLength) ? S_OK : S_FALSE;
 }
 //----------------------------------------------------------------------------------------
 // Дополнительные функции Pdf рендерера

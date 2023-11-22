@@ -103,15 +103,13 @@ int wmain_lib(int argc, wchar_t *argv[])
 	if (NSStringExt::FromHumanReadableByteCount(sMemoryLimit, nMemoryLimit) && nMemoryLimit > 0)
 		limit_memory((size_t)nMemoryLimit);
 #endif
-	std::wstring sArg1, sArg2, sExePath;
+	std::wstring sArg1, sArg2;
 
 #if !defined(_WIN32) && !defined(_WIN64)
-	sExePath = utf8_to_unicode(argv[0]);
 	sArg1 = utf8_to_unicode(argv[1]);
 	if (argc >= 3)
 		sArg2 = utf8_to_unicode(argv[2]);
 #else
-	sExePath = std::wstring(argv[0]);
 	sArg1 = std::wstring(argv[1]);
 	if (argc >= 3)
 		sArg2 = std::wstring(argv[2]);

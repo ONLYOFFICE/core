@@ -15,6 +15,7 @@ command_prefix = "" if ("windows" == base.host_platform()) else "./"
 if not base.is_dir("emsdk"):
   base.cmd("git", ["clone", "https://github.com/emscripten-core/emsdk.git"])
   os.chdir("emsdk")
+  base.cmd("git", ["checkout", "f677ef915645c09794f0ae88f21d3cba2886459f"])
   base.cmd(command_prefix + "emsdk", ["install", "latest"])
   base.cmd(command_prefix + "emsdk", ["activate", "latest"])
   os.chdir("../")
@@ -32,7 +33,13 @@ def exec_wasm(data, work, compiler_flags, wasm):
     compiler_flags.append("-DBUILDING_ASMJS_MODULE")
     compiler_flags.append("-D_ARM_ALIGN_")
 
+  compiler_flags.append("-Wno-deprecated-non-prototype")
   compiler_flags.append("-Wno-deprecated-register")
+  compiler_flags.append("-Wno-register")
+
+  compiler_flags.append("-fvisibility=hidden")
+  #compiler_flags.append("-Wl,--no-entry")
+  #compiler_flags.append("-Wl,--strip-all")
 
   # arguments
   arguments = ""
@@ -146,7 +153,10 @@ for param in argv:
   if json_data["asm"]:
     flags = json_data["compiler_flags"][:]
     flags.append("-s WASM=0")
+    flags.append("--closure 0")
     flags.append("-s MIN_IE_VERSION=11")
+    # do it in min.py
+    #flags.append("--closure-args=--language_out=ECMASCRIPT5_STRICT")
     if "embed_mem_file" in json_data and (json_data["embed_mem_file"]):
       flags.append("--memory-init-file 0")
     exec_wasm(json_data, work_dir, flags, False)

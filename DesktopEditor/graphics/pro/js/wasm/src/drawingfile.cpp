@@ -57,8 +57,11 @@ WASM_EXPORT void SetFontBinary(char* path, BYTE* data, int size)
 		pStorage->Add(UTF8_TO_U(sPathA), data, size, true);
 	}
 }
-WASM_EXPORT void GetFontBinary(char* path, BYTE*& data, int& size)
+WASM_EXPORT BYTE* GetFontBinary(char* path)
 {
+	NSWasm::CData oRes;
+	oRes.SkipLen();
+
 	NSFonts::IFontsMemoryStorage* pStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
 	if (pStorage)
 	{
@@ -66,11 +69,26 @@ WASM_EXPORT void GetFontBinary(char* path, BYTE*& data, int& size)
 		NSFonts::IFontStream* pStream = pStorage->Get(UTF8_TO_U(sPathA));
 		if (pStream)
 		{
-			long lLength = 0;
-			pStream->GetMemory(data, lLength);
-			size = lLength;
+			BYTE* pData = NULL;
+			LONG lLength = 0;
+			pStream->GetMemory(pData, lLength);
+
+			if (pData)
+			{
+				oRes.AddInt(lLength);
+
+				unsigned long long npSubMatrix = (unsigned long long)pData;
+				unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
+				oRes.AddInt(npSubMatrix1);
+				oRes.AddInt(npSubMatrix >> 32);
+			}
 		}
 	}
+
+	oRes.WriteLen();
+	BYTE* bRes = oRes.GetBuffer();
+	oRes.ClearWithoutAttack();
+	return bRes;
 }
 WASM_EXPORT int IsFontBinaryExist(char* path)
 {

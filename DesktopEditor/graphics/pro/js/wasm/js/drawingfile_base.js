@@ -845,6 +845,41 @@
 		Module["_free"](ext);
 		return res;
 	};
+	CFile.prototype["getInteractiveFormsFonts"] = function()
+	{
+		let res = [];
+		let ext = Module["_GetInteractiveFormsFonts"](this.nativeFile);
+		if (ext == 0)
+			return res;
+
+		let lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
+		if (lenArray == null)
+		{
+			Module["_free"](ext);
+			return res;
+		}
+
+		let len = lenArray[0];
+		len -= 4;
+		if (len <= 0)
+		{
+			Module["_free"](ext);
+			return res;
+		}
+
+		let buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
+		let reader = new CBinaryReader(buffer, 0, len);
+		
+		while (reader.isValid())
+		{
+			let n = reader.readInt();
+			for (let i = 0; i < n; ++i)
+				res.push(reader.readString());
+		}
+		
+		Module["_free"](ext);
+		return res;
+	};
 	// optional nWidget     - rec["AP"]["i"]
 	// optional sView       - N/D/R
 	// optional sButtonView - state pushbutton-annotation - Off/Yes(or rec["ExportValue"])
@@ -1320,6 +1355,53 @@
 		}
 
 		Module["_free"](str);
+		return res;
+	};
+	CFile.prototype["getFontByID"] = function(ID)
+	{
+		if (ID === undefined)
+			return null;
+		
+		let idBuffer = ID.toUtf8();
+		let idPointer = Module["_malloc"](idBuffer.length);
+		Module["HEAP8"].set(idBuffer, idPointer);
+
+		let ext = Module["_GetFontBinary"](idPointer);
+		if (ext == 0)
+			return null;
+		
+		let lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
+		if (lenArray == null)
+		{
+			Module["_free"](ext);
+			return null;
+		}
+
+		let len = lenArray[0];
+		len -= 4;
+		if (len <= 0)
+		{
+			Module["_free"](ext);
+			return null;
+		}
+
+		let buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
+		let reader = new CBinaryReader(buffer, 0, len);
+		
+		let res = null;
+		while (reader.isValid())
+		{
+			let nFontLength = reader.readInt();
+			let np1 = reader.readInt();
+			let np2 = reader.readInt();
+			let pFontPoint = np2 << 32 | np1;
+			
+			res = new Uint8Array(Module["HEAP8"].buffer, pFontPoint, nFontLength);
+		}
+		
+		Module["_free"](idPointer);
+		Module["_free"](ext);
+		
 		return res;
 	};
 

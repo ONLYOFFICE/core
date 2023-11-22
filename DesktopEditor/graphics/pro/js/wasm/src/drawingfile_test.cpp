@@ -887,7 +887,7 @@ int main(int argc, char* argv[])
 	// INTERACTIVE FORMS
 	if (true)
 	{
-		BYTE* pFonts = GetInteractiveFormsFontsID(pGrFile);
+		BYTE* pFonts = GetInteractiveFormsFonts(pGrFile);
 		nLength = READ_INT(pFonts);
 		int i = 4;
 		nLength -= 4;
@@ -902,8 +902,32 @@ int main(int argc, char* argv[])
 			{
 				int nPathLength = READ_INT(pFonts + i);
 				i += 4;
-				std::cout << " " << std::string((char*)(pFonts + i), nPathLength);
+				std::string sFontName = std::string((char*)(pFonts + i), nPathLength);
+				std::cout << " " << sFontName;
 				i += nPathLength;
+
+				BYTE* pFont = GetFontBinary((char*)sFontName.c_str());
+				int nLength2 = READ_INT(pFont);
+				int i2 = 4;
+				nLength2 -= 4;
+
+				while (i2 < nLength2)
+				{
+					int nFontLength = READ_INT(pFont + i2);
+					i2 += 4;
+
+					unsigned long long npFont1 = READ_INT(pFont + i2);
+					i2 += 4;
+					unsigned long long npFont2 = READ_INT(pFont + i2);
+					i2 += 4;
+
+					BYTE* res = (BYTE*)(npFont2 << 32 | npFont1);
+
+					NSFile::CFileBinary oFile;
+					if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/font" + std::to_wstring(j) + L".txt"))
+						oFile.WriteFile(res, nFontLength);
+					oFile.CloseFile();
+				}
 			}
 			std::cout << std::endl;
 		}

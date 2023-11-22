@@ -124,6 +124,7 @@ public:
 		void set_group_flip_V	(bool bVal);
 		void set_group_z_order	(int Val);
 		void set_group_name		(const std::wstring & name);
+		void set_group_xml_id	(const std::wstring& xml_id);
 
 		void set_group_rotate	(int iVal);
 		void set_group_size		(_CP_OPT(double) cx, _CP_OPT(double) cy, _CP_OPT(double) change_cx, _CP_OPT(double) change_cy);

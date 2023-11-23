@@ -41,6 +41,7 @@
 
 #include "../../OOXML/Base/Base.h"
 #include <string>
+#include <functional>
 
 namespace NExtractTools
 {
@@ -51,11 +52,23 @@ namespace NExtractTools
 namespace NExtractTools
 {
 	#define DECLARE_CONVERT_FUNC(name) _UINT32 name(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
+	typedef std::function<_UINT32(const std::wstring&, const std::wstring&, InputParams&, ConvertParams&)> CONVERT_FUNC;
 
 	// zip
-	_UINT32 dir2zip(const std::wstring &sFrom, const std::wstring &sTo, bool bSorted = false, int method = 8 /*Z_DEFLATED*/, short level = -1, bool bDateTime = false);
-	_UINT32 dir2zipMscrypt(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params);
-	_UINT32 zip2dir(const std::wstring &sFrom, const std::wstring &sTo);
+	_UINT32 dir2zip(const std::wstring& sFrom, const std::wstring& sTo, bool bSorted = false, int method = 8 /*Z_DEFLATED*/, short level = -1, bool bDateTime = false);
+	_UINT32 zip2dir(const std::wstring& sFrom, const std::wstring& sTo);
+	DECLARE_CONVERT_FUNC(dir2zipMscrypt);
+
+	// Convertations:
+	// doct, xlst, pptt             - archive [doct, xlst, pptt]
+	// doct_bin, xlst_bin, pptt_bin - not archive [doct, xlst, pptt: Editor.bin + media...]
+
+	namespace NSCommon
+	{
+		// type: "doct", "xlst", "pptt"
+		_UINT32 ooxml2oot(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams,
+						  const std::wstring& type, CONVERT_FUNC func);
+	}
 
 	// crypt
 	DECLARE_CONVERT_FUNC(mscrypt2oot);
@@ -71,9 +84,10 @@ namespace NExtractTools
 
 	// docx
 	DECLARE_CONVERT_FUNC(docx2doct_bin);
+	DECLARE_CONVERT_FUNC(docx_dir2doct_bin);
 	DECLARE_CONVERT_FUNC(docx2doct);
 	DECLARE_CONVERT_FUNC(docx_dir2doct);
-	DECLARE_CONVERT_FUNC(docx_dir2doct_bin);
+
 	DECLARE_CONVERT_FUNC(doct_bin2docx);
 	DECLARE_CONVERT_FUNC(doct_bin2docx_dir);
 	DECLARE_CONVERT_FUNC(doct2docx);

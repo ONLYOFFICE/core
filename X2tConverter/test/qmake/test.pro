@@ -13,7 +13,8 @@ HEADERS += $$X2T_DIR/src/dylib/x2t.h
 SOURCES += $$X2T_DIR/src/dylib/x2t.cpp
 
 SOURCES += main.cpp\
-common.cpp
+           common.cpp\
+           ../xlsb2xlsx/conversion.cpp
 
 HEADERS += common.h
 

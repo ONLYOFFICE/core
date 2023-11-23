@@ -30,10 +30,47 @@
  *
  */
 
-#include "common.h"
+#include "../qmake/common.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <fstream>
+#include "gtest/gtest.h"
+
+
+
+class SimpleTests1 : public ::testing::Test 
+{
+public:
+
+    static void SetUpTestCase() 
+    {
+        
+        tempDir = GetWorkDir();
+        auto fontsDir = tempDir + FILE_SEPARATOR_STR + L"fonst";
+        boost::filesystem::path rootPath = std::wstring{L".."} + FILE_SEPARATOR_STR;
+        rootPath =boost::filesystem::absolute(rootPath.wstring() + rootPath.wstring() + rootPath.wstring()+ rootPath.wstring());
+        boost::filesystem::path filePath = rootPath.wstring() +L"X2tConverter" + FILE_SEPARATOR_STR + L"test" + FILE_SEPARATOR_STR +L"ExampleFiles" 
+            + FILE_SEPARATOR_STR + L"xlsb2xlsx" +   FILE_SEPARATOR_STR + L"simple1.xlsb";
+         boost::filesystem::path examplePath = rootPath.wstring() +L"X2tConverter" + FILE_SEPARATOR_STR + L"test" + FILE_SEPARATOR_STR +L"ExampleFiles" 
+            + FILE_SEPARATOR_STR + L"xlsb2xlsx" +   FILE_SEPARATOR_STR + L"simple1.xlsx";
+        
+        std::wstring resultPath =  tempDir + FILE_SEPARATOR_STR + L"result.xlsx";
+        CheckFonts(fontsDir);
+
+        auto paramsPath = CreateParamsFile(filePath.wstring(), resultPath, fontsDir, tempDir);
+        ConvertFile(paramsPath);
+        PrepareFiles(resultPath, examplePath.wstring(), tempDir);
+    }
+
+
+    static void TearDownTestCase() 
+    {
+        RemoveWorkDir(tempDir);
+    }
+
+    static std::wstring tempDir;
+};
+std::wstring SimpleTests1::tempDir = L"";
 
 _UINT32 readFiles(const std::wstring &filePath, const std::wstring &examplePath, std::wstring &fileContent, std::wstring &exampleContent )
 {
@@ -55,23 +92,28 @@ _UINT32 readFiles(const std::wstring &filePath, const std::wstring &examplePath,
     return 0;
 }
 
-TEST(simpleConversion, ContentTypesTest)
+TEST_F(SimpleTests1, conversionTest)
 {
-    auto tempDir = Xlsb2XlsxConversion1::tempDirName;
-    std::wstring path1(Xlsb2XlsxConversion1::tempDirName + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"[Content_Types].xml");
-    std::wstring path2(Xlsb2XlsxConversion1::tempDirName + FILE_SEPARATOR_STR +L"xlsx_unpacked"+ FILE_SEPARATOR_STR + L"[Content_Types].xml");
+    ASSERT_TRUE(true);
+}
+
+TEST_F(SimpleTests1, ContentTypesTest)
+{
+    auto tempDir = SimpleTests1::tempDir;
+    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"[Content_Types].xml");
+    std::wstring path2(tempDir + FILE_SEPARATOR_STR + L"example_unpacked"+ FILE_SEPARATOR_STR + L"[Content_Types].xml");
     std::wstring content1;
     std::wstring content2;
     ASSERT_EQ(readFiles(path1, path2, content1, content2), 0);
     ASSERT_TRUE(boost::algorithm::equals(content1, content2));
 }
 
-TEST(simpleConversion, WorkbookTest)
+TEST_F(SimpleTests1, WorkbookTest)
 {
-    auto tempDir = Xlsb2XlsxConversion1::tempDirName;
-    std::wstring path1(Xlsb2XlsxConversion1::tempDirName + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+    auto tempDir = SimpleTests1::tempDir;
+    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
         FILE_SEPARATOR_STR + L"workbook.xml");
-    std::wstring path2(Xlsb2XlsxConversion1::tempDirName + FILE_SEPARATOR_STR +L"xlsx_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
         FILE_SEPARATOR_STR + L"workbook.xml");
     std::wstring content1;
     std::wstring content2;
@@ -79,12 +121,12 @@ TEST(simpleConversion, WorkbookTest)
     ASSERT_TRUE(boost::algorithm::equals(content1, content2));
 }
 
-TEST(simpleConversion, StylesTest)
+TEST_F(SimpleTests1, StylesTest)
 {
-    auto tempDir = Xlsb2XlsxConversion1::tempDirName;
-    std::wstring path1(Xlsb2XlsxConversion1::tempDirName + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+    auto tempDir = SimpleTests1::tempDir;
+    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
         FILE_SEPARATOR_STR + L"styles.xml");
-    std::wstring path2(Xlsb2XlsxConversion1::tempDirName + FILE_SEPARATOR_STR +L"xlsx_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
         FILE_SEPARATOR_STR + L"styles.xml");
     std::wstring content1;
     std::wstring content2;
@@ -92,12 +134,12 @@ TEST(simpleConversion, StylesTest)
     ASSERT_TRUE(boost::algorithm::equals(content1, content2));
 }
 
-TEST(simpleConversion, SharedStringsTest)
+TEST_F(SimpleTests1, SharedStringsTest)
 {
-    auto tempDir = Xlsb2XlsxConversion1::tempDirName;
-    std::wstring path1(Xlsb2XlsxConversion1::tempDirName + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+    auto tempDir = SimpleTests1::tempDir;
+    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
         FILE_SEPARATOR_STR + L"sharedStrings.xml");
-    std::wstring path2(Xlsb2XlsxConversion1::tempDirName + FILE_SEPARATOR_STR +L"xlsx_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
         FILE_SEPARATOR_STR + L"sharedStrings.xml");
     std::wstring content1;
     std::wstring content2;
@@ -105,12 +147,12 @@ TEST(simpleConversion, SharedStringsTest)
     ASSERT_TRUE(boost::algorithm::equals(content1, content2));
 }
 
-TEST(simpleConversion, WorksheetsTest)
+TEST_F(SimpleTests1, WorksheetsTest)
 {
-    auto tempDir = Xlsb2XlsxConversion1::tempDirName;
-    std::wstring path1(Xlsb2XlsxConversion1::tempDirName + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+    auto tempDir = SimpleTests1::tempDir;
+    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
         FILE_SEPARATOR_STR + L"worksheets" + FILE_SEPARATOR_STR + L"sheet1.xml");
-    std::wstring path2(Xlsb2XlsxConversion1::tempDirName + FILE_SEPARATOR_STR +L"xlsx_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
         FILE_SEPARATOR_STR + L"worksheets" + FILE_SEPARATOR_STR + L"sheet1.xml");
     std::wstring content1;
     std::wstring content2;

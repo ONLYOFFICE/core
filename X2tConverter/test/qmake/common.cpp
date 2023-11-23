@@ -49,11 +49,15 @@
 std::wstring GetWorkDir()
 {
     std::wstring curDir = NSFile::GetProcessDirectory();
-    auto tempDirName = NSDirectory::CreateDirectoryWithUniqueName(curDir);
-    return curDir + FILE_SEPARATOR_STR + tempDirName;
+    return NSDirectory::CreateDirectoryWithUniqueName(curDir);
 }
 
-_UINT32 ConvertFile(const std::wstring &fileName)
+void RemoveWorkDir(const std::wstring &dir)
+{
+    NSDirectory::DeleteDirectory(dir);
+}
+
+int ConvertFile(const std::wstring &fileName)
 {
     x2tchar* args[2];
 	args[0] = NULL;

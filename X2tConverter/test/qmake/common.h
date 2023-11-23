@@ -34,8 +34,9 @@
 #include <vector>
 
 void PrepareFiles(const std::wstring &fileName, const std::wstring &exampleFileName, const std::wstring &tempDirName);
-_UINT32 ConvertFile(const std::wstring &fileName);
+int ConvertFile(const std::wstring &fileName);
 std::wstring GetWorkDir();
+void RemoveWorkDir(const std::wstring &dir);
 std::wstring CreateParamsFile(const std::wstring &pathFrom, const std::wstring &pathTo, const std::wstring &FontsDir, const std::wstring &TempDir);
 void CheckFonts(const std::wstring& fontsDir, bool isUseSystem = true, const std::vector<std::wstring>& addtitionalFontsDirs = {});
 

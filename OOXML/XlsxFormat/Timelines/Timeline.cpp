@@ -454,6 +454,10 @@ xmlns:xr10=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision10\"
 			{
 				m_oState->toXML(writer);
 			}
+			if (m_oPivotFilter.IsInit())
+			{
+				m_oPivotFilter->toXML(writer);
+			}
 			writer.WriteString(L"</timelineCacheDefinition>");
 		}
 		void CTimelineCacheDefinition::fromXML(XmlUtils::CXmlLiteReader& oReader)

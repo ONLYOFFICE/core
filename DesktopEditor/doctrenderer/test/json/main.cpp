@@ -51,11 +51,18 @@ int main()
 	colorRGBA["rgb"] = colorRGB;
 	colorRGBA["alpha"] = 80;
 
-	textPr["size"] = 4.2;
-	// CValue behaves as reference, when it was initialized with value returned from Get() (or operator[]) of objects & arrays.
-	CValue name = textPr["name"];
+	// CValueRef behaves as reference
+	CValueRef name = textPr["name"];
 	// from now on, name - is a reference to the property "name" of textPr. Changing it will affect this object property:
 	name = "Foo";
+	// Also you can chain references
+	CValueRef name3 = name;
+	name3 = "FooBar";	// this change applies to textPr["name"]
+	// The same but with CValue wouldnt' work:
+	CValue name2 = textPr["name"];
+	name2 = "Bar";		// this change doesn't affect the property "name" of textPr
+
+	textPr["size"] = 4.2;
 	textPr["color"] = colorRGBA;
 	textPr["font"] = CValue::CreateObject();
 	textPr["font"]["fontName"] = L"Times New Roman";

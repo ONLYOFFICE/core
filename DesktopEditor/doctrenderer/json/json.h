@@ -2,6 +2,7 @@
 #define JSON_H_
 
 #include <initializer_list>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -20,17 +21,21 @@ namespace NSJSON
 {
 	typedef unsigned char BYTE;
 	
-	class CTypedValueContainer;
-	// Main class for storing values.
+	class CValue;
+	class CValueRef;
+	class CTypedValue;
+	// Main value interface.
 	// This class provide interface to work with each type of values.
-	class JSON_DECL CValue
+	class JSON_DECL IValue
 	{
-	public:
-		CValue();
-		CValue(const CValue& other);
-		~CValue();
+	protected:
+		IValue();
+		IValue(const std::shared_ptr<CTypedValue>& internal);
+		virtual ~IValue();
 
-		CValue& operator=(const CValue& other);
+		// Disable copy for this class (implemented in heirs)
+		IValue(const IValue& other) = delete;
+		IValue& operator=(const IValue& other) = delete;
 
 	public:
 		// TYPE CHECKS
@@ -109,15 +114,17 @@ namespace NSJSON
 		operator std::string() const;
 		operator std::wstring() const;
 
+	protected:
 		// Creates a value from primitive types
-		CValue(bool value);
-		CValue(int value);
-		CValue(double value);
-		CValue(const char* value);
-		CValue(const std::string& value);
-		CValue(const wchar_t* value);
-		CValue(const std::wstring& value);
+		IValue(bool value);
+		IValue(int value);
+		IValue(double value);
+		IValue(const char* value);
+		IValue(const std::string& value);
+		IValue(const wchar_t* value);
+		IValue(const std::wstring& value);
 
+	public:
 		// FUNCTIONS FOR WORKING WITH ARRAYS
 		/**
 		 * Gets lengths of the array/typed array.
@@ -130,13 +137,71 @@ namespace NSJSON
 		 * @param index The index of the array value.
 		 * @returns the value in the array. If current value is not an array, returns undefined value.
 		 */
-		const CValue Get(int index) const;
-		CValue Get(int index);
+		const CValueRef Get(int index) const;
+		CValueRef Get(int index);
 
 		// operators [] works the same way as Get(index)
-		const CValue operator[](int index) const;
-		CValue operator[](int index);
+		const CValueRef operator[](int index) const;
+		CValueRef operator[](int index);
 
+	protected:
+		// create array from initializer list
+		IValue(std::initializer_list<CValue> elements);
+
+	public:
+		// FUNCTIONS FOR WORKING WITH TYPED ARRAYS
+		/**
+		 * Gets data of typed array.
+		 * @return the pointer to memory, allocated for this typed array. If current value is not a typed array, returns nullptr.
+		 */
+		const BYTE* GetData() const;
+		BYTE* GetData();
+
+		// FUNCTIONS FOR WORKING WITH OBJECTS
+		/**
+		 * Gets a property of this object.
+		 * @param name The name of the property.
+		 * @returns the value of the object's property. If current value is not an object, returns undefined value.
+		 */
+		const CValueRef Get(const char* name) const;
+		CValueRef Get(const char* name);
+
+		// operators [] works the same way as Get(name)
+		const CValueRef operator[](const char* name) const;
+		CValueRef operator[](const char* name);
+
+		/**
+		 * Retrieves all property names from current object.
+		 * @returns a vector containing the names of the properties of this object as strings. If current value is not an object, returns an empty vector.
+		 */
+		std::vector<std::string> GetPropertyNames() const;
+
+	protected:
+		std::shared_ptr<CTypedValue> m_internal;
+	};
+
+	// Main value implementation
+	class JSON_DECL CValue : public IValue
+	{
+	public:
+		CValue();
+		CValue(const CValue& other);
+		CValue(const CValueRef& ref);
+		~CValue();
+
+		CValue& operator=(const CValue& other);
+		CValue& operator=(const CValueRef& ref);
+
+		// PRIMITIVES CONSTRUCTORS
+		CValue(bool value);
+		CValue(int value);
+		CValue(double value);
+		CValue(const char* value);
+		CValue(const std::string& value);
+		CValue(const wchar_t* value);
+		CValue(const std::wstring& value);
+
+		// ARRAY CONSTRUCTORS
 		/**
 		 * Creates an array with initializer list syntax (CValue arr = {1, 2, 3}).
 		 * @param elements The elements of an array as an std::initializer_list.
@@ -148,14 +213,7 @@ namespace NSJSON
 		 */
 		static CValue CreateArray(int count);
 
-		// FUNCTIONS FOR WORKING WITH TYPED ARRAYS
-		/**
-		 * Gets data of typed array.
-		 * @return the pointer to memory, allocated for this typed array. If current value is not a typed array, returns nullptr.
-		 */
-		const BYTE* GetData() const;
-		BYTE* GetData();
-
+		// TYPED ARRAY
 		/**
 		 * Creates and returns new typed array.
 		 * @param data The pointer to binary data. The pointer should be acquired with AllocTypedArray()!
@@ -176,25 +234,7 @@ namespace NSJSON
 		 */
 		static void FreeTypedArray(BYTE* data, size_t size);
 
-		// FUNCTIONS FOR WORKING WITH OBJECTS
-		/**
-		 * Gets a property of this object.
-		 * @param name The name of the property.
-		 * @returns the value of the object's property. If current value is not an object, returns undefined value.
-		 */
-		const CValue Get(const char* name) const;
-		CValue Get(const char* name);
-
-		// operators [] works the same way as Get(name)
-		const CValue operator[](const char* name) const;
-		CValue operator[](const char* name);
-
-		/**
-		 * Retrieves all property names from current object.
-		 * @returns a vector containing the names of the properties of this object as strings. If current value is not an object, returns an empty vector.
-		 */
-		std::vector<std::string> GetPropertyNames() const;
-
+		// OBJECT CONSTRUCTOR
 		/**
 		 * Creates and returns empty object.
 		 */
@@ -210,8 +250,22 @@ namespace NSJSON
 		 */
 		static CValue CreateNull();
 
-	private:
-		CTypedValueContainer* m_internal;
+		friend class CValueRef;
+	};
+
+	// Main value reference implementation
+	class JSON_DECL CValueRef : public IValue
+	{
+	public:
+		CValueRef();
+		CValueRef(const CValueRef& other);
+		CValueRef(const CValue& value);
+		~CValueRef();
+
+		CValueRef& operator=(const CValueRef& other);
+		CValueRef& operator=(const CValue& value);
+
+		friend class CValue;
 	};
 }
 

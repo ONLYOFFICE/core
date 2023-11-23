@@ -8,41 +8,261 @@ namespace NSJSON
 	{
 	}
 
-	CTypedValueContainer::CTypedValueContainer() : m_typedValue(new CTypedValue()), m_isReference(false)
+	CTypedValue::CTypedValue(IBaseValue* value, ValueType type) : m_value(value), m_type(type)
 	{
 	}
 
-	CTypedValueContainer::CTypedValueContainer(const CTypedValueContainer& other) : CTypedValueContainer()
-	{
-		*this = other;
-	}
-
-	CTypedValueContainer& CTypedValueContainer::operator=(const CTypedValueContainer& other)
-	{
-		if (other.m_isReference)
-		{
-			// set pointer to the other's typed value
-			m_typedValue = other.m_typedValue;
-		}
-		else
-		{
-			// copy typed value without changing pointer to it
-			*m_typedValue = *other.m_typedValue;
-		}
-		return *this;
-	}
-
-	CValue::CValue() : m_internal(new CTypedValueContainer())
+	CTypedValue::~CTypedValue()
 	{
 	}
 
-	CValue::CValue(const CValue& other) : m_internal(new CTypedValueContainer(*other.m_internal))
+
+	IValue::IValue() : m_internal(new CTypedValue())
+	{
+	}
+
+	IValue::IValue(const std::shared_ptr<CTypedValue>& internal) : m_internal(internal)
+	{
+	}
+
+	IValue::~IValue()
+	{
+	}
+
+	bool IValue::IsUndefined() const
+	{
+		return m_internal->m_type == CTypedValue::vtUndefined;
+	}
+
+	bool IValue::IsNull() const
+	{
+		return m_internal->m_type == CTypedValue::vtNull;
+	}
+
+	bool IValue::IsBool() const
+	{
+		return (m_internal->m_type == CTypedValue::vtPrimitive &&
+				static_cast<CPrimitive*>(m_internal->m_value.get())->isBool());
+	}
+
+	bool IValue::IsInt() const
+	{
+		return (m_internal->m_type == CTypedValue::vtPrimitive &&
+				static_cast<CPrimitive*>(m_internal->m_value.get())->isInt());
+	}
+
+	bool IValue::IsDouble() const
+	{
+		return (m_internal->m_type == CTypedValue::vtPrimitive &&
+				static_cast<CPrimitive*>(m_internal->m_value.get())->isDouble());
+	}
+
+	bool IValue::IsStringA() const
+	{
+		return (m_internal->m_type == CTypedValue::vtPrimitive &&
+				static_cast<CPrimitive*>(m_internal->m_value.get())->isStringA());
+	}
+
+	bool IValue::IsStringW() const
+	{
+		return (m_internal->m_type == CTypedValue::vtPrimitive &&
+				static_cast<CPrimitive*>(m_internal->m_value.get())->isStringW());
+	}
+
+	bool IValue::IsArray() const
+	{
+		return m_internal->m_type == CTypedValue::vtArray;
+	}
+
+	bool IValue::IsTypedArray() const
+	{
+		return m_internal->m_type == CTypedValue::vtTypedArray;
+	}
+
+	bool IValue::IsObject() const
+	{
+		return m_internal->m_type == CTypedValue::vtObject;
+	}
+
+	bool IValue::ToBool() const
+	{
+		if (m_internal->m_type != CTypedValue::vtPrimitive)
+			return false;
+		return static_cast<CPrimitive*>(m_internal->m_value.get())->toBool();
+	}
+
+	int IValue::ToInt() const
+	{
+		if (m_internal->m_type != CTypedValue::vtPrimitive)
+			return 0;
+		return static_cast<CPrimitive*>(m_internal->m_value.get())->toInt();
+	}
+
+	double IValue::ToDouble() const
+	{
+		if (m_internal->m_type != CTypedValue::vtPrimitive)
+			return 0.0;
+		return static_cast<CPrimitive*>(m_internal->m_value.get())->toDouble();
+	}
+
+	std::string IValue::ToStringA() const
+	{
+		if (m_internal->m_type != CTypedValue::vtPrimitive)
+			return "";
+		return static_cast<CPrimitive*>(m_internal->m_value.get())->toStringA();
+	}
+
+	std::wstring IValue::ToStringW() const
+	{
+		if (m_internal->m_type != CTypedValue::vtPrimitive)
+			return L"";
+		return static_cast<CPrimitive*>(m_internal->m_value.get())->toStringW();
+	}
+
+	IValue::operator bool() const
+	{
+		return ToBool();
+	}
+
+	IValue::operator int() const
+	{
+		return ToInt();
+	}
+
+	IValue::operator double() const
+	{
+		return ToDouble();
+	}
+
+	IValue::operator std::string() const
+	{
+		return ToStringA();
+	}
+
+	IValue::operator std::wstring() const
+	{
+		return ToStringW();
+	}
+
+	IValue::IValue(bool value) : m_internal(new CTypedValue(new CPrimitive(value), CTypedValue::vtPrimitive))
+	{
+	}
+
+	IValue::IValue(int value) : m_internal(new CTypedValue(new CPrimitive(value), CTypedValue::vtPrimitive))
+	{
+	}
+
+	IValue::IValue(double value) : m_internal(new CTypedValue(new CPrimitive(value), CTypedValue::vtPrimitive))
+	{
+	}
+
+	IValue::IValue(const char* value) : m_internal(new CTypedValue(new CPrimitive(std::string(value)), CTypedValue::vtPrimitive))
+	{
+	}
+
+	IValue::IValue(const std::string& value) : m_internal(new CTypedValue(new CPrimitive(value), CTypedValue::vtPrimitive))
+	{
+	}
+
+	IValue::IValue(const wchar_t* value) : m_internal(new CTypedValue(new CPrimitive(std::wstring(value)), CTypedValue::vtPrimitive))
+	{
+	}
+
+	IValue::IValue(const std::wstring& value) : m_internal(new CTypedValue(new CPrimitive(value), CTypedValue::vtPrimitive))
+	{
+	}
+
+	int IValue::GetCount() const
+	{
+		if (m_internal->m_type != CTypedValue::vtArray)
+			return 0;
+		return static_cast<CArray*>(m_internal->m_value.get())->getCount();
+	}
+
+	const CValueRef IValue::Get(int index) const
+	{
+		if (m_internal->m_type != CTypedValue::vtArray)
+			return CValue();
+		if (index < 0 || index >= GetCount())
+			return CValue();
+		return static_cast<CArray*>(m_internal->m_value.get())->get(index);
+	}
+
+	CValueRef IValue::Get(int index)
+	{
+		return static_cast<const IValue&>(*this).Get(index);
+	}
+
+	const CValueRef IValue::operator[](int index) const
+	{
+		return Get(index);
+	}
+
+	CValueRef IValue::operator[](int index)
+	{
+		return Get(index);
+	}
+
+	IValue::IValue(std::initializer_list<CValue> elements) : m_internal(new CTypedValue(new CArray(elements), CTypedValue::vtArray))
+	{
+	}
+
+	const BYTE* IValue::GetData() const
+	{
+		if (m_internal->m_type != CTypedValue::vtTypedArray)
+			return nullptr;
+		return static_cast<CTypedArray*>(m_internal->m_value.get())->getData();
+	}
+
+	BYTE* IValue::GetData()
+	{
+		return const_cast<BYTE*>(static_cast<const CValue&>(*this).GetData());
+	}
+
+	const CValueRef IValue::Get(const char* name) const
+	{
+		if (m_internal->m_type != CTypedValue::vtObject)
+			return CValue();
+		return static_cast<CObject*>(m_internal->m_value.get())->get(name);
+	}
+
+	CValueRef IValue::Get(const char* name)
+	{
+		return static_cast<const IValue&>(*this).Get(name);
+	}
+
+	const CValueRef IValue::operator[](const char* name) const
+	{
+		return Get(name);
+	}
+
+	CValueRef IValue::operator[](const char* name)
+	{
+		return Get(name);
+	}
+
+	std::vector<std::string> IValue::GetPropertyNames() const
+	{
+		if (m_internal->m_type != CTypedValue::vtObject)
+			return {};
+		return static_cast<CObject*>(m_internal->m_value.get())->getPropertyNames();
+	}
+
+
+	CValue::CValue() : IValue()
+	{
+	}
+
+	CValue::CValue(const CValue& other) : IValue(std::make_shared<CTypedValue>(*other.m_internal))
+	{
+	}
+
+	CValue::CValue(const CValueRef& ref) : IValue(std::make_shared<CTypedValue>(*ref.m_internal))
 	{
 	}
 
 	CValue::~CValue()
 	{
-		delete m_internal;
 	}
 
 	CValue& CValue::operator=(const CValue& other)
@@ -51,223 +271,50 @@ namespace NSJSON
 		return *this;
 	}
 
-	bool CValue::IsUndefined() const
+	CValue& CValue::operator=(const CValueRef& ref)
 	{
-		return m_internal->m_typedValue->m_type == CTypedValue::vtUndefined;
+		*m_internal = *ref.m_internal;
+		return *this;
 	}
 
-	bool CValue::IsNull() const
+	CValue::CValue(bool value) : IValue(value)
 	{
-		return m_internal->m_typedValue->m_type == CTypedValue::vtNull;
 	}
 
-	bool CValue::IsBool() const
+	CValue::CValue(int value) : IValue(value)
 	{
-		return (m_internal->m_typedValue->m_type == CTypedValue::vtPrimitive &&
-				static_cast<CPrimitive*>(m_internal->m_typedValue->m_value.get())->isBool());
 	}
 
-	bool CValue::IsInt() const
+	CValue::CValue(double value) : IValue(value)
 	{
-		return (m_internal->m_typedValue->m_type == CTypedValue::vtPrimitive &&
-				static_cast<CPrimitive*>(m_internal->m_typedValue->m_value.get())->isInt());
 	}
 
-	bool CValue::IsDouble() const
+	CValue::CValue(const char* value) : IValue(value)
 	{
-		return (m_internal->m_typedValue->m_type == CTypedValue::vtPrimitive &&
-				static_cast<CPrimitive*>(m_internal->m_typedValue->m_value.get())->isDouble());
 	}
 
-	bool CValue::IsStringA() const
+	CValue::CValue(const std::string& value) : IValue(value)
 	{
-		return (m_internal->m_typedValue->m_type == CTypedValue::vtPrimitive &&
-				static_cast<CPrimitive*>(m_internal->m_typedValue->m_value.get())->isStringA());
 	}
 
-	bool CValue::IsStringW() const
+	CValue::CValue(const wchar_t* value) : IValue(value)
 	{
-		return (m_internal->m_typedValue->m_type == CTypedValue::vtPrimitive &&
-				static_cast<CPrimitive*>(m_internal->m_typedValue->m_value.get())->isStringW());
 	}
 
-	bool CValue::IsArray() const
+	CValue::CValue(const std::wstring& value) : IValue(value)
 	{
-		return m_internal->m_typedValue->m_type == CTypedValue::vtArray;
 	}
 
-	bool CValue::IsTypedArray() const
+	CValue::CValue(std::initializer_list<CValue> elements) : IValue(elements)
 	{
-		return m_internal->m_typedValue->m_type == CTypedValue::vtTypedArray;
-	}
-
-	bool CValue::IsObject() const
-	{
-		return m_internal->m_typedValue->m_type == CTypedValue::vtObject;
-	}
-
-	bool CValue::ToBool() const
-	{
-		if (m_internal->m_typedValue->m_type != CTypedValue::vtPrimitive)
-			return false;
-		return static_cast<CPrimitive*>(m_internal->m_typedValue->m_value.get())->toBool();
-	}
-
-	int CValue::ToInt() const
-	{
-		if (m_internal->m_typedValue->m_type != CTypedValue::vtPrimitive)
-			return 0;
-		return static_cast<CPrimitive*>(m_internal->m_typedValue->m_value.get())->toInt();
-	}
-
-	double CValue::ToDouble() const
-	{
-		if (m_internal->m_typedValue->m_type != CTypedValue::vtPrimitive)
-			return 0.0;
-		return static_cast<CPrimitive*>(m_internal->m_typedValue->m_value.get())->toDouble();
-	}
-
-	std::string CValue::ToStringA() const
-	{
-		if (m_internal->m_typedValue->m_type != CTypedValue::vtPrimitive)
-			return "";
-		return static_cast<CPrimitive*>(m_internal->m_typedValue->m_value.get())->toStringA();
-	}
-
-	std::wstring CValue::ToStringW() const
-	{
-		if (m_internal->m_typedValue->m_type != CTypedValue::vtPrimitive)
-			return L"";
-		return static_cast<CPrimitive*>(m_internal->m_typedValue->m_value.get())->toStringW();
-	}
-
-	CValue::operator bool() const
-	{
-		return ToBool();
-	}
-
-	CValue::operator int() const
-	{
-		return ToInt();
-	}
-
-	CValue::operator double() const
-	{
-		return ToDouble();
-	}
-
-	CValue::operator std::string() const
-	{
-		return ToStringA();
-	}
-
-	CValue::operator std::wstring() const
-	{
-		return ToStringW();
-	}
-
-	CValue::CValue(bool value) : CValue()
-	{
-		m_internal->m_typedValue->m_value = std::make_shared<CPrimitive>(value);
-		m_internal->m_typedValue->m_type = CTypedValue::vtPrimitive;
-	}
-
-	CValue::CValue(int value) : CValue()
-	{
-		m_internal->m_typedValue->m_value = std::make_shared<CPrimitive>(value);
-		m_internal->m_typedValue->m_type = CTypedValue::vtPrimitive;
-	}
-
-	CValue::CValue(double value) : CValue()
-	{
-		m_internal->m_typedValue->m_value = std::make_shared<CPrimitive>(value);
-		m_internal->m_typedValue->m_type = CTypedValue::vtPrimitive;
-	}
-
-	CValue::CValue(const char* value) : CValue()
-	{
-		m_internal->m_typedValue->m_value = std::make_shared<CPrimitive>(std::string(value));
-		m_internal->m_typedValue->m_type = CTypedValue::vtPrimitive;
-	}
-
-	CValue::CValue(const std::string& value) : CValue()
-	{
-		m_internal->m_typedValue->m_value = std::make_shared<CPrimitive>(value);
-		m_internal->m_typedValue->m_type = CTypedValue::vtPrimitive;
-	}
-
-	CValue::CValue(const wchar_t* value) : CValue()
-	{
-		m_internal->m_typedValue->m_value = std::make_shared<CPrimitive>(std::wstring(value));
-		m_internal->m_typedValue->m_type = CTypedValue::vtPrimitive;
-	}
-
-	CValue::CValue(const std::wstring& value) : CValue()
-	{
-		m_internal->m_typedValue->m_value = std::make_shared<CPrimitive>(value);
-		m_internal->m_typedValue->m_type = CTypedValue::vtPrimitive;
-	}
-
-	int CValue::GetCount() const
-	{
-		if (m_internal->m_typedValue->m_type != CTypedValue::vtArray)
-			return 0;
-		return static_cast<CArray*>(m_internal->m_typedValue->m_value.get())->getCount();
-	}
-
-	const CValue CValue::Get(int index) const
-	{
-		if (m_internal->m_typedValue->m_type != CTypedValue::vtArray)
-			return CValue();
-		// don't set reference mode, because this is a const method
-		return static_cast<CArray*>(m_internal->m_typedValue->m_value.get())->get(index);
-	}
-
-	CValue CValue::Get(int index)
-	{
-		if (m_internal->m_typedValue->m_type != CTypedValue::vtArray)
-			return CValue();
-		CValue& value = static_cast<CArray*>(m_internal->m_typedValue->m_value.get())->get(index);
-		value.m_internal->m_isReference = true;
-		return value;
-	}
-
-	const CValue CValue::operator[](int index) const
-	{
-		return Get(index);
-	}
-
-	CValue CValue::operator[](int index)
-	{
-		CValue ret = Get(index);
-		ret.m_internal->m_isReference = true;
-		return ret;
-	}
-
-	CValue::CValue(std::initializer_list<CValue> elements) : CValue()
-	{
-		m_internal->m_typedValue->m_value = std::make_shared<CArray>(elements);
-		m_internal->m_typedValue->m_type = CTypedValue::vtArray;
 	}
 
 	CValue CValue::CreateArray(int count)
 	{
 		CValue ret;
-		ret.m_internal->m_typedValue->m_value = std::make_shared<CArray>(count);
-		ret.m_internal->m_typedValue->m_type = CTypedValue::vtArray;
+		ret.m_internal->m_value = std::make_shared<CArray>(count);
+		ret.m_internal->m_type = CTypedValue::vtArray;
 		return ret;
-	}
-
-	const BYTE* CValue::GetData() const
-	{
-		if (m_internal->m_typedValue->m_type != CTypedValue::vtTypedArray)
-			return nullptr;
-		return static_cast<CTypedArray*>(m_internal->m_typedValue->m_value.get())->getData();
-	}
-
-	BYTE* CValue::GetData()
-	{
-		return const_cast<BYTE*>(static_cast<const CValue&>(*this).GetData());
 	}
 
 	CValue CValue::CreateTypedArray(BYTE* data, int count, bool isExternalize)
@@ -287,47 +334,11 @@ namespace NSJSON
 		// TODO:
 	}
 
-	const CValue CValue::Get(const char* name) const
-	{
-		if (m_internal->m_typedValue->m_type != CTypedValue::vtObject)
-			return CValue();
-		// don't set reference mode, because this is a const method
-		return static_cast<CObject*>(m_internal->m_typedValue->m_value.get())->get(name);
-	}
-
-	CValue CValue::Get(const char* name)
-	{
-		if (m_internal->m_typedValue->m_type != CTypedValue::vtObject)
-			return CValue();
-		CValue& value = static_cast<CObject*>(m_internal->m_typedValue->m_value.get())->get(name);
-		value.m_internal->m_isReference = true;
-		return value;
-	}
-
-	const CValue CValue::operator[](const char* name) const
-	{
-		return Get(name);
-	}
-
-	CValue CValue::operator[](const char* name)
-	{
-		CValue ret = Get(name);
-		ret.m_internal->m_isReference = true;
-		return ret;
-	}
-
-	std::vector<std::string> CValue::GetPropertyNames() const
-	{
-		if (m_internal->m_typedValue->m_type != CTypedValue::vtObject)
-			return {};
-		return static_cast<CObject*>(m_internal->m_typedValue->m_value.get())->getPropertyNames();
-	}
-
 	CValue CValue::CreateObject()
 	{
 		CValue ret;
-		ret.m_internal->m_typedValue->m_value = std::make_shared<CObject>();
-		ret.m_internal->m_typedValue->m_type = CTypedValue::vtObject;
+		ret.m_internal->m_value = std::make_shared<CObject>();
+		ret.m_internal->m_type = CTypedValue::vtObject;
 		return ret;
 	}
 
@@ -339,7 +350,37 @@ namespace NSJSON
 	CValue CValue::CreateNull()
 	{
 		CValue ret;
-		ret.m_internal->m_typedValue->m_type = CTypedValue::vtNull;
+		ret.m_internal->m_type = CTypedValue::vtNull;
 		return ret;
+	}
+
+	CValueRef::CValueRef() : IValue()
+	{
+	}
+
+	CValueRef::CValueRef(const CValueRef& other) : IValue(other.m_internal)
+	{
+	}
+
+	CValueRef::CValueRef(const CValue& value) : IValue(value.m_internal)
+	{
+	}
+
+	CValueRef::~CValueRef()
+	{
+	}
+
+	CValueRef& CValueRef::operator=(const CValueRef& other)
+	{
+		// not reassign the pointer, but copy its content!
+		*m_internal = *other.m_internal;
+		return *this;
+	}
+
+	CValueRef& CValueRef::operator=(const CValue& value)
+	{
+		// not reassign the pointer, but copy its content!
+		*m_internal = *value.m_internal;
+		return *this;
 	}
 }

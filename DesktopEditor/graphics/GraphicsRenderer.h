@@ -351,6 +351,9 @@ public:
 
 	// alpha mask methods
 	void SetAlphaMask(Aggplus::CAlphaMask* pAlphaMask);
+	
+	// layer methods
+	void SetLayerOpacity(double dOpacity);
 
 	// smart methods
 	void drawHorLine(BYTE align, double y, double x, double r, double penW)

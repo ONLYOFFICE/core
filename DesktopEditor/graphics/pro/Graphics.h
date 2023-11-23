@@ -121,6 +121,9 @@ namespace NSGraphics
 		//alpha mask methods
 		virtual void SetAlphaMask(Aggplus::CAlphaMask* pAlphaMask) = 0;
 
+		//layer methods
+		virtual void SetLayerOpacity(double dOpacity) = 0;
+
 		// smart methods
 		virtual void drawHorLine(BYTE align, double y, double x, double r, double penW) = 0;
 		virtual void drawHorLine2(BYTE align, double y, double x, double r, double penW) = 0;

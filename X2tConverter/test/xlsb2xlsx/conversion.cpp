@@ -36,7 +36,23 @@
 #include <fstream>
 #include "gtest/gtest.h"
 
+void processTestFile(const std::wstring &tempDir, const std::wstring &testFile, const std::wstring &resultFile, const std::wstring &exampleFile)
+{
+        auto fontsDir = tempDir + FILE_SEPARATOR_STR + L"fonst";
+        boost::filesystem::path rootPath = std::wstring{L".."} + FILE_SEPARATOR_STR;
+        rootPath =boost::filesystem::absolute(rootPath.wstring() + rootPath.wstring() + rootPath.wstring()+ rootPath.wstring());
+        boost::filesystem::path filePath = rootPath.wstring() +L"X2tConverter" + FILE_SEPARATOR_STR + L"test" + FILE_SEPARATOR_STR +L"ExampleFiles" 
+            + FILE_SEPARATOR_STR + L"xlsb2xlsx" +   FILE_SEPARATOR_STR + testFile;
+         boost::filesystem::path examplePath = rootPath.wstring() +L"X2tConverter" + FILE_SEPARATOR_STR + L"test" + FILE_SEPARATOR_STR +L"ExampleFiles" 
+            + FILE_SEPARATOR_STR + L"xlsb2xlsx" +   FILE_SEPARATOR_STR + exampleFile;
+        
+        std::wstring resultPath =  tempDir + FILE_SEPARATOR_STR + resultFile;
+        CheckFonts(fontsDir);
 
+        auto paramsPath = CreateParamsFile(filePath.wstring(), resultPath, fontsDir, tempDir);
+        ConvertFile(paramsPath);
+        PrepareFiles(resultPath, examplePath.wstring(), tempDir);
+}
 
 class SimpleTests1 : public ::testing::Test 
 {
@@ -46,20 +62,7 @@ public:
     {
         
         tempDir = GetWorkDir();
-        auto fontsDir = tempDir + FILE_SEPARATOR_STR + L"fonst";
-        boost::filesystem::path rootPath = std::wstring{L".."} + FILE_SEPARATOR_STR;
-        rootPath =boost::filesystem::absolute(rootPath.wstring() + rootPath.wstring() + rootPath.wstring()+ rootPath.wstring());
-        boost::filesystem::path filePath = rootPath.wstring() +L"X2tConverter" + FILE_SEPARATOR_STR + L"test" + FILE_SEPARATOR_STR +L"ExampleFiles" 
-            + FILE_SEPARATOR_STR + L"xlsb2xlsx" +   FILE_SEPARATOR_STR + L"simple1.xlsb";
-         boost::filesystem::path examplePath = rootPath.wstring() +L"X2tConverter" + FILE_SEPARATOR_STR + L"test" + FILE_SEPARATOR_STR +L"ExampleFiles" 
-            + FILE_SEPARATOR_STR + L"xlsb2xlsx" +   FILE_SEPARATOR_STR + L"simple1.xlsx";
-        
-        std::wstring resultPath =  tempDir + FILE_SEPARATOR_STR + L"result.xlsx";
-        CheckFonts(fontsDir);
-
-        auto paramsPath = CreateParamsFile(filePath.wstring(), resultPath, fontsDir, tempDir);
-        ConvertFile(paramsPath);
-        PrepareFiles(resultPath, examplePath.wstring(), tempDir);
+        processTestFile(tempDir, L"simple1.xlsb", L"result.xlsx", L"simple1.xlsx");
     }
 
 
@@ -70,7 +73,28 @@ public:
 
     static std::wstring tempDir;
 };
+class SimpleTests2 : public ::testing::Test 
+{
+public:
+
+    static void SetUpTestCase() 
+    {
+        
+        tempDir = GetWorkDir();
+        processTestFile(tempDir, L"simple2.xlsb", L"result.xlsx", L"simple2.xlsx");
+    }
+
+
+    static void TearDownTestCase() 
+    {
+        RemoveWorkDir(tempDir);
+    }
+
+    static std::wstring tempDir;
+};
+
 std::wstring SimpleTests1::tempDir = L"";
+std::wstring SimpleTests2::tempDir = L"";
 
 _UINT32 readFiles(const std::wstring &filePath, const std::wstring &examplePath, std::wstring &fileContent, std::wstring &exampleContent )
 {
@@ -92,10 +116,7 @@ _UINT32 readFiles(const std::wstring &filePath, const std::wstring &examplePath,
     return 0;
 }
 
-TEST_F(SimpleTests1, conversionTest)
-{
-    ASSERT_TRUE(true);
-}
+
 
 TEST_F(SimpleTests1, ContentTypesTest)
 {
@@ -159,3 +180,67 @@ TEST_F(SimpleTests1, WorksheetsTest)
     ASSERT_EQ(readFiles(path1, path2, content1, content2), 0);
     ASSERT_TRUE(boost::algorithm::equals(content1, content2));
 }
+
+TEST_F(SimpleTests2, ContentTypesTest)
+{
+    auto tempDir = SimpleTests2::tempDir;
+    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"[Content_Types].xml");
+    std::wstring path2(tempDir + FILE_SEPARATOR_STR + L"example_unpacked"+ FILE_SEPARATOR_STR + L"[Content_Types].xml");
+    std::wstring content1;
+    std::wstring content2;
+    ASSERT_EQ(readFiles(path1, path2, content1, content2), 0);
+    ASSERT_TRUE(boost::algorithm::equals(content1, content2));
+}
+
+TEST_F(SimpleTests2, WorkbookTest)
+{
+    auto tempDir = SimpleTests2::tempDir;
+    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"workbook.xml");
+    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"workbook.xml");
+    std::wstring content1;
+    std::wstring content2;
+    ASSERT_EQ(readFiles(path1, path2, content1, content2), 0);
+    ASSERT_TRUE(boost::algorithm::equals(content1, content2));
+}
+
+TEST_F(SimpleTests2, StylesTest)
+{
+    auto tempDir = SimpleTests2::tempDir;
+    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"styles.xml");
+    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"styles.xml");
+    std::wstring content1;
+    std::wstring content2;
+    ASSERT_EQ(readFiles(path1, path2, content1, content2), 0);
+    ASSERT_TRUE(boost::algorithm::equals(content1, content2));
+}
+
+TEST_F(SimpleTests2, SharedStringsTest)
+{
+    auto tempDir = SimpleTests2::tempDir;
+    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"sharedStrings.xml");
+    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"sharedStrings.xml");
+    std::wstring content1;
+    std::wstring content2;
+    ASSERT_EQ(readFiles(path1, path2, content1, content2), 0);
+    ASSERT_TRUE(boost::algorithm::equals(content1, content2));
+}
+
+TEST_F(SimpleTests2, WorksheetsTest)
+{
+    auto tempDir = SimpleTests2::tempDir;
+    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"worksheets" + FILE_SEPARATOR_STR + L"sheet1.xml");
+    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"worksheets" + FILE_SEPARATOR_STR + L"sheet1.xml");
+    std::wstring content1;
+    std::wstring content2;
+    ASSERT_EQ(readFiles(path1, path2, content1, content2), 0);
+    ASSERT_TRUE(boost::algorithm::equals(content1, content2));
+}
+

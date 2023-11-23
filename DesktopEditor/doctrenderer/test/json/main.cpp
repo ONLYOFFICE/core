@@ -80,15 +80,14 @@ int main()
 	numbers[3] = innerArray;
 	textPr["numbers"] = numbers;
 	// create typed array
-	/*
-	BYTE* pData = new BYTE[4];
+	BYTE* pData = CValue::AllocTypedArray(4);
 	pData[0] = 11;
 	pData[1] = 23;
 	pData[2] = 58;
 	pData[3] = 13;
 	// add typed array
-	...
-	*/
+	CValue typedArr = CValue::CreateTypedArray(pData, 4, false);
+	textPr["typedArr"] = typedArr;
 
 	// convert to JS
 	JSSmart<CJSObject> jsObj = toJS(textPr)->toObject();

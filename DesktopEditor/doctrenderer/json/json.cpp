@@ -2,6 +2,9 @@
 #include "json_p.h"
 #include "json_values.h"
 
+// for working with typed arrays: Alloc() and Free()
+#include "js_base.h"
+
 namespace NSJSON
 {
 	CTypedValue::CTypedValue() : m_type(vtUndefined)
@@ -174,9 +177,12 @@ namespace NSJSON
 
 	int IValue::GetCount() const
 	{
-		if (m_internal->m_type != CTypedValue::vtArray)
+		if (m_internal->m_type == CTypedValue::vtArray)
+			return static_cast<CArray*>(m_internal->m_value.get())->getCount();
+		else if (m_internal->m_type == CTypedValue::vtTypedArray)
+			return static_cast<CTypedArray*>(m_internal->m_value.get())->getCount();
+		else
 			return 0;
-		return static_cast<CArray*>(m_internal->m_value.get())->getCount();
 	}
 
 	const CValueRef IValue::Get(int index) const
@@ -319,19 +325,20 @@ namespace NSJSON
 
 	CValue CValue::CreateTypedArray(BYTE* data, int count, bool isExternalize)
 	{
-		// TODO:
-		return CValue();
+		CValue ret;
+		ret.m_internal->m_value = std::make_shared<CTypedArray>(data, count, isExternalize);
+		ret.m_internal->m_type = CTypedValue::vtTypedArray;
+		return ret;
 	}
 
 	BYTE* CValue::AllocTypedArray(size_t size)
 	{
-		// TODO:
-		return nullptr;
+		return NSJSBase::NSAllocator::Alloc(size);
 	}
 
 	void CValue::FreeTypedArray(BYTE* data, size_t size)
 	{
-		// TODO:
+		NSJSBase::NSAllocator::Free(data, size);
 	}
 
 	CValue CValue::CreateObject()

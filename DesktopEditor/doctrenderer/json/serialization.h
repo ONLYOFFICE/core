@@ -2,7 +2,7 @@
 #define SERIALIZATION_H_
 
 #include "json.h"
-#include "json_values.h"
+//#include "json_values.h"
 #include "../js_internal/js_base.h"
 
 #include <cmath>
@@ -40,12 +40,8 @@ namespace NSJSON
 		}
 		else if (value.IsTypedArray())
 		{
-			// TODO:
-			/*
-			JSSmart<NSJSBase::CJSTypedArray> jsTypedArr = NSJSBase::CJSContext::createUint8Array(value.GetData(), value.GetCount());
+			JSSmart<NSJSBase::CJSTypedArray> jsTypedArr = NSJSBase::CJSContext::createUint8Array(const_cast<BYTE*>(value.GetData()), value.GetCount());
 			ret = jsTypedArr->toValue();
-			*/
-			ret = NSJSBase::CJSContext::createUndefined();
 		}
 		else
 		{

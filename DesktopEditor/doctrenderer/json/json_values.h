@@ -96,7 +96,7 @@ namespace NSJSON
 	class CTypedArray : public IBaseValue
 	{
 	public:
-		CTypedArray(BYTE* data = nullptr, int len = 0);
+		CTypedArray(BYTE* data, int len, bool isExternalize = true);
 		~CTypedArray();
 
 	public:
@@ -106,6 +106,7 @@ namespace NSJSON
 	private:
 		BYTE* m_data;
 		int m_len;
+		bool m_isExternalize;
 	};
 
 	class CObject : public IBaseValue

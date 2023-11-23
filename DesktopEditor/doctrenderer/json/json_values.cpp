@@ -224,13 +224,16 @@ namespace NSJSON
 		return m_values[index];
 	}
 
-	CTypedArray::CTypedArray(BYTE* data, int len) : m_data(data), m_len(len)
+	CTypedArray::CTypedArray(BYTE* data, int len, bool isExternalize) : m_data(data), m_len(len), m_isExternalize(isExternalize)
 	{
 	}
 
 	CTypedArray::~CTypedArray()
 	{
-		// TODO:
+		if (!m_isExternalize)
+		{
+			CValue::FreeTypedArray(m_data, m_len);
+		}
 	}
 
 	BYTE* CTypedArray::getData()

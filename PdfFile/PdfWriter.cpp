@@ -2246,8 +2246,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				ppFonts[unIndex] = m_pFont;
 			}
 
-			double _dY = pPage->GetHeight() - dY1;
-			double _dB = pPage->GetHeight() - dY2;
 			double dMargin   = 2; // Отступ используемый в Adobe
 			double dBaseLine = dY2 - dY1; // TODO -BaseLineOffset
 			double dShiftX   = dMargin;

@@ -5002,15 +5002,8 @@ namespace NExtractTools
 	   }
 	   else if (AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT == nFormatFrom)
        {
-		   if (params.m_bMacro)
-		   {
-			   nRes = ppt2pptm_dir(sFrom, sPptxDir, sTemp, params);
-		   }
-		   else
-		   {
-			   nRes = ppt2pptx_dir(sFrom, sPptxDir, sTemp, params);
-		   }
-	   }
+           nRes = ppt2pptx_dir(sFrom, sPptxDir, sTemp, params);
+       }
        else if (AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP == nFormatFrom || AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP == nFormatFrom)
        {
            nRes = odf2oox_dir(sFrom, sPptxDir, sTemp, params);

@@ -48,7 +48,8 @@ namespace NExtractTools
 	class InputParams;
 	class InputParamsMailMerge;
 	class ConvertParams;
-} // namespace NExtractTools
+}
+
 namespace NExtractTools
 {
 	#define DECLARE_CONVERT_FUNC(name) _UINT32 name(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
@@ -58,17 +59,6 @@ namespace NExtractTools
 	_UINT32 dir2zip(const std::wstring& sFrom, const std::wstring& sTo, bool bSorted = false, int method = 8 /*Z_DEFLATED*/, short level = -1, bool bDateTime = false);
 	_UINT32 zip2dir(const std::wstring& sFrom, const std::wstring& sTo);
 	DECLARE_CONVERT_FUNC(dir2zipMscrypt);
-
-	// Convertations:
-	// doct, xlst, pptt             - archive [doct, xlst, pptt]
-	// doct_bin, xlst_bin, pptt_bin - not archive [doct, xlst, pptt: Editor.bin + media...]
-
-	namespace NSCommon
-	{
-		// type: "doct", "xlst", "pptt"
-		_UINT32 ooxml2oot(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams,
-						  const std::wstring& type, CONVERT_FUNC func);
-	}
 
 	// crypt
 	DECLARE_CONVERT_FUNC(mscrypt2oot);
@@ -168,22 +158,22 @@ namespace NExtractTools
 	DECLARE_CONVERT_FUNC(doc2docm_dir);
 
 	// rtf
-	DECLARE_CONVERT_FUNC(rtf2docx);
 	DECLARE_CONVERT_FUNC(rtf2docx_dir);
-	DECLARE_CONVERT_FUNC(rtf2doct);
-	DECLARE_CONVERT_FUNC(rtf2doct_bin);
-	DECLARE_CONVERT_FUNC(docx2rtf);
 	DECLARE_CONVERT_FUNC(docx_dir2rtf);
-	DECLARE_CONVERT_FUNC(doct2rtf);
+	DECLARE_CONVERT_FUNC(rtf2doct_bin);
 	DECLARE_CONVERT_FUNC(doct_bin2rtf);
+	DECLARE_CONVERT_FUNC(rtf2docx);
+	DECLARE_CONVERT_FUNC(docx2rtf);
+	DECLARE_CONVERT_FUNC(rtf2doct);
+	DECLARE_CONVERT_FUNC(doct2rtf);
 
 	// txt
-	DECLARE_CONVERT_FUNC(txt2docx);
 	DECLARE_CONVERT_FUNC(txt2docx_dir);
-	DECLARE_CONVERT_FUNC(txt2doct);
-	DECLARE_CONVERT_FUNC(txt2doct_bin);
-	DECLARE_CONVERT_FUNC(docx2txt);
 	DECLARE_CONVERT_FUNC(docx_dir2txt);
+	DECLARE_CONVERT_FUNC(txt2doct_bin);
+	DECLARE_CONVERT_FUNC(txt2docx);
+	DECLARE_CONVERT_FUNC(txt2doct);
+	DECLARE_CONVERT_FUNC(docx2txt);
 
 	// html
 	DECLARE_CONVERT_FUNC(html2doct_bin);
@@ -300,5 +290,5 @@ namespace NExtractTools
 
 	X2T_DECL_EXPORT _UINT32 FromFile(const std::wstring& file);
 	X2T_DECL_EXPORT _UINT32 FromXml(const std::wstring& xml);
-} // namespace NExtractTools
+}
 #endif // ASCCONVERTERS_H

@@ -99,5 +99,15 @@ int main()
 		std::cout << ret->toStringA() << std::endl;
 	}
 
+	// Test fromJS() on the same object:
+	CValue textPr2 = fromJS(jsObj->toValue());
+	JSSmart<CJSObject> jsObj2 = toJS(textPr2)->toObject();
+	global->set("textPr2", jsObj2);
+	ret = pContext->runScript("(function () { return JSON.stringify(textPr2, null, 4); })();");
+	if (ret.IsInit())
+	{
+		std::cout << ret->toStringA() << std::endl;
+	}
+
 	return 0;
 }

@@ -63,73 +63,65 @@ namespace NSJSON
 
 	static CValue fromJS(JSSmart<NSJSBase::CJSValue> jsValue)
 	{
-		/*
 		if (jsValue->isUndefined())
-			return new CPrimitive();
-
+			return CValue::CreateUndefined();
 		if (jsValue->isNull())
-		{
-			CPrimitive* pValue = new CPrimitive;
-			pValue->setNull();
-			return pValue;
-		}
+			return CValue::CreateNull();
 
-		IBaseValue* ret = nullptr;
-		if (jsValue->isObject())
-		{
-			JSSmart<NSJSBase::CJSObject> jsObj = jsValue->toObject();
-			CObject* pObject = new CObject;
-			// TODO: add CJSObject::getPropertyNames()
-			ret = pObject;
-		}
-		else if (jsValue->isArray())
+		CValue ret;
+
+		if (jsValue->isArray())
 		{
 			JSSmart<NSJSBase::CJSArray> jsArr = jsValue->toArray();
 			const int len = jsArr->getCount();
-			CArray* pArray = new CArray();
+			ret = CValue::CreateArray(len);
 			for (int i = 0; i < len; i++)
 			{
 				JSSmart<NSJSBase::CJSValue> jsElement = jsArr->get(i);
-				pArray->add(fromJS(jsElement));
+				ret[i] = fromJS(jsElement);
 			}
-			ret = pArray;
 		}
 		else if (jsValue->isTypedArray())
 		{
 			JSSmart<NSJSBase::CJSTypedArray> jsTypedArr = jsValue->toTypedArray();
 			const int len = jsTypedArr->getCount();
 			BYTE* data = jsTypedArr->getData().Data;
-			ret = new CTypedArray(data, len);
+			ret = CValue::CreateTypedArray(data, len);
+		}
+		else if (jsValue->isObject())
+		{
+			JSSmart<NSJSBase::CJSObject> jsObj = jsValue->toObject();
+			std::vector<std::string> properties = jsObj->getPropertyNames();
+			ret = CValue::CreateObject();
+			for (const std::string& name : properties)
+			{
+				JSSmart<NSJSBase::CJSValue> jsPropertyValue = jsObj->get(name.c_str());
+				ret[name.c_str()] = fromJS(jsPropertyValue);
+			}
 		}
 		// primitives
 		else if (jsValue->isBool())
 		{
-			ret = new CPrimitive(jsValue->toBool());
+			ret = CValue(jsValue->toBool());
 		}
 		else if (jsValue->isNumber())
 		{
-			// TODO: this check seems redundant. Similiar to string (look further).
 			// check if number is an integer or double
 			double number = jsValue->toDouble();
 			double integral;									// integral part
 			double fractional = std::modf(number, &integral);	// fractional part
 			if (fractional == 0.0 && integral >= INT_MIN && integral <= INT_MAX)
-			{
-				ret = new CPrimitive(static_cast<int>(integral));
-			}
+				ret = (int)integral;
 			else
-			{
-				ret = new CPrimitive(number);
-			}
+				ret = number;
 		}
 		else if (jsValue->isString())
 		{
-			// TODO: how do we know whether string consist of char or wchar_t? Can we convert all strings to std::wstring?
+			// convert all strings to std::wstring, cause in JS all strings are encoded in UTF-16
+			ret = jsValue->toStringW();
 		}
-		// else ret is nullptr
-		*/
 
-		return CValue();
+		return ret;
 	}
 }
 

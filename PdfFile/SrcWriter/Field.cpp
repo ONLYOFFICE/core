@@ -1631,8 +1631,8 @@ namespace PdfWriter
 		Add("BBox", pArray);
 		pArray->Add(0);
 		pArray->Add(0);
-		pArray->Add(pRect->fRight - pRect->fLeft);
-		pArray->Add(pRect->fBottom - pRect->fTop);
+		pArray->Add(fabs(pRect->fRight - pRect->fLeft));
+		pArray->Add(fabs(pRect->fBottom - pRect->fTop));
 	}
 	CAnnotAppearanceObject::CAnnotAppearanceObject(CXref* pXref, CFieldBase* pField)
 	{
@@ -1833,6 +1833,9 @@ namespace PdfWriter
 			dBorderSize2  = dBorderSize * 2;
 			m_pStream->WriteReal(dBorderSize);
 			m_pStream->WriteStr(" w\0120 j\0120 J\012");
+
+			if (m_pAnnot && m_pAnnot->GetBorderType() == 2)
+				m_pStream->WriteStr(m_pAnnot->GetBorderDash().c_str());
 
 			m_pStream->WriteReal(dBorderSize_2);
 			m_pStream->WriteChar(' ');

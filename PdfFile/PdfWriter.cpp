@@ -1689,8 +1689,7 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 }
 HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotFieldInfo* pFieldInfo)
 {
-	unsigned int  unPagesCount = m_pDocument->GetPagesCount();
-	if (!m_pDocument || 0 == unPagesCount || !pFieldInfo)
+	if (!m_pDocument || 0 == m_pDocument->GetPagesCount() || !pFieldInfo)
 		return S_OK;
 
 	CAnnotFieldInfo& oInfo = *pFieldInfo;

@@ -98,6 +98,24 @@ namespace PdfWriter
 
 	class CAnnotation : public CDictObject
 	{
+	private:
+		struct CBorderType
+		{
+			CBorderType()
+			{
+				bHave  = false;
+				nType  = 0;
+				dWidth = 0;
+			}
+
+			bool bHave;
+			BYTE nType;
+			double dWidth;
+			std::vector<double> arrDash;
+		};
+
+		CBorderType m_oBorder;
+
 	protected:
 		CAnnotation(CXref* pXref, EAnnotType eType);
 
@@ -106,9 +124,6 @@ namespace PdfWriter
 		double m_dPageWidth  = 0;
 		double m_dPageHeight = 0;
 		CDocument* m_pDocument;
-
-		bool bHaveBorder;
-		double dBorderWidth;
 
 	public:
 		EDictType GetDictType() const
@@ -139,8 +154,10 @@ namespace PdfWriter
 		void SetXref(CXref* pXref) { m_pXref = pXref; }
 		void SetDocument(CDocument* pDocument);
 		CDocument* GetDocument();
-		bool HaveBorder() { return bHaveBorder; }
-		double GetBorderWidth() { return dBorderWidth; }
+		bool HaveBorder() { return m_oBorder.bHave; }
+		BYTE GetBorderType() { return m_oBorder.nType; }
+		double GetBorderWidth() { return m_oBorder.dWidth; }
+		std::string GetBorderDash();
 	};
 	class CPopupAnnotation : public CAnnotation
 	{

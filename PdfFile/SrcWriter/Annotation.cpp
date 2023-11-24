@@ -155,8 +155,6 @@ namespace PdfWriter
 
 		// Для PDFA нужно, чтобы 0, 1, 4 биты были выключены, а второй включен
 		Add("F", 4);
-
-		bHaveBorder = false;
 	}
 	void CAnnotation::SetRect(const TRect& oRect)
 	{
@@ -185,9 +183,6 @@ namespace PdfWriter
 	}
 	void CAnnotation::SetBorder(BYTE nType, double dWidth, const std::vector<double>& arrDash)
 	{
-		if (dWidth <= 0)
-			return;
-
 		CDictObject* pBorderStyleDict = new CDictObject();
 		if (!pBorderStyleDict)
 			return;
@@ -210,8 +205,10 @@ namespace PdfWriter
 		case border_subtype_Underlined: pBorderStyleDict->Add("S", "U"); break;
 		}
 
-		bHaveBorder = true;
-		dBorderWidth = dWidth;
+		m_oBorder.bHave = true;
+		m_oBorder.nType = nType;
+		m_oBorder.dWidth = dWidth;
+		m_oBorder.arrDash = arrDash;
 	}
 	void CAnnotation::SetAnnotFlag(const int& nAnnotFlag)
 	{
@@ -272,6 +269,17 @@ namespace PdfWriter
 	CDocument* CAnnotation::GetDocument()
 	{
 		return m_pDocument;
+	}
+	std::string CAnnotation::GetBorderDash()
+	{
+		std::string sRes = "[";
+		for (double dColoc : m_oBorder.arrDash)
+		{
+			sRes.append(" ");
+			sRes.append(std::to_string(dColoc));
+		}
+		sRes.append(" ] 0 d\012");
+		return sRes;
 	}
 	//----------------------------------------------------------------------------------------
 	// CMarkupAnnotation
@@ -806,7 +814,7 @@ namespace PdfWriter
 		sDA.append(std::to_string(dFontSize));
 		m_sDAforAP.append(std::to_string(dFontSizeAP));
 		sDA.append(" Tf");
-		m_sDAforAP.append(" Tf");
+		m_sDAforAP.append(" Tf\012");
 
 		Add("DA", new CStringObject(sDA.c_str()));
 	}
@@ -933,11 +941,11 @@ namespace PdfWriter
 	}
 	std::string CWidgetAnnotation::GetBGforAP()
 	{
-		return GetColor(m_arrBG, false);
+		return GetColor(m_arrBG, false) + "\012";
 	}
 	std::string CWidgetAnnotation::GetBCforAP()
 	{
-		return GetColor(m_arrBC, true);
+		return GetColor(m_arrBC, true) + "\012";
 	}
 	//----------------------------------------------------------------------------------------
 	// CButtonWidget

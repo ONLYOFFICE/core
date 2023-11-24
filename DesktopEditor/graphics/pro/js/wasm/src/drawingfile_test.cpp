@@ -924,7 +924,7 @@ int main(int argc, char* argv[])
 					BYTE* res = (BYTE*)(npFont2 << 32 | npFont1);
 
 					NSFile::CFileBinary oFile;
-					if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/font" + std::to_wstring(j) + L".txt"))
+					if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/font" + std::to_wstring(j) + L".ttf"))
 						oFile.WriteFile(res, nFontLength);
 					oFile.CloseFile();
 				}

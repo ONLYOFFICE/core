@@ -2,7 +2,6 @@
 #define SERIALIZATION_H_
 
 #include "json.h"
-//#include "json_values.h"
 #include "../js_internal/js_base.h"
 
 #include <cmath>
@@ -17,18 +16,7 @@ namespace NSJSON
 			return NSJSBase::CJSContext::createNull();
 
 		JSSmart<NSJSBase::CJSValue> ret;
-		if (value.IsObject())
-		{
-			JSSmart<NSJSBase::CJSObject> jsObj = NSJSBase::CJSContext::createObject();
-			std::vector<std::string> properties = value.GetPropertyNames();
-			for (const std::string& name : properties)
-			{
-				JSSmart<NSJSBase::CJSValue> jsValue = toJS(value[name.c_str()]);
-				jsObj->set(name.c_str(), jsValue);
-			}
-			ret = jsObj->toValue();
-		}
-		else if (value.IsArray())
+		if (value.IsArray())
 		{
 			const int len = value.GetCount();
 			JSSmart<NSJSBase::CJSArray> jsArr = NSJSBase::CJSContext::createArray(len);
@@ -42,6 +30,17 @@ namespace NSJSON
 		{
 			JSSmart<NSJSBase::CJSTypedArray> jsTypedArr = NSJSBase::CJSContext::createUint8Array(const_cast<BYTE*>(value.GetData()), value.GetCount());
 			ret = jsTypedArr->toValue();
+		}
+		else if (value.IsObject())
+		{
+			JSSmart<NSJSBase::CJSObject> jsObj = NSJSBase::CJSContext::createObject();
+			std::vector<std::string> properties = value.GetPropertyNames();
+			for (const std::string& name : properties)
+			{
+				JSSmart<NSJSBase::CJSValue> jsValue = toJS(value[name.c_str()]);
+				jsObj->set(name.c_str(), jsValue);
+			}
+			ret = jsObj->toValue();
 		}
 		else
 		{

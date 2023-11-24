@@ -133,6 +133,9 @@ public:
 
 	pptx_table_context	& get_table_context()	{ return pptx_table_context_; }
 
+	void add_page_name(const std::wstring& page_name);
+	const std::vector<std::wstring>& get_page_names() const;
+
     mediaitems_ptr & get_mediaitems() { return pptx_slide_context_.get_mediaitems(); }
 
     //void start_hyperlink(const std::wstring & styleName);
@@ -171,6 +174,8 @@ private:
 	std::vector<pptx_xml_slideMaster_ptr>	slideMasters_;
 	std::vector<pptx_xml_slideLayout_ptr>	slideLayouts_;
 	std::vector<pptx_xml_theme_ptr>			themes_;
+
+	std::vector<std::wstring> page_names_;
 	
 	pptx_xml_slideNotesMaster_ptr			slideNotesMaster_;
 	pptx_xml_authors_comments_ptr			authors_comments_;
@@ -180,8 +185,6 @@ private:
 	std::wstring current_layout_page_name_;
 
     pptx_comments_context_handle comments_context_handle_;
-
-
 };
 
 }

@@ -1361,10 +1361,78 @@ int BinaryStyleTableReader::ReadStyleTableContent(BYTE type, long length, void* 
 			m_oStyles.m_oExtLst.Init();
 		m_oStyles.m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
 	}
+	else if (c_oSerStylesTypes::TimelineStyles == type)
+	{
+		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+		pOfficeArtExtension->m_oTimelineStyles.Init();
+		pOfficeArtExtension->m_sUri = L"{9260A510-F301-46a8-8635-F512D64BE5F5}";
+		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"";
+
+		READ1_DEF(length, res, this->ReadTimelineStyles, pOfficeArtExtension->m_oTimelineStyles.GetPointer());
+
+		if (m_oStyles.m_oExtLst.IsInit() == false)
+			m_oStyles.m_oExtLst.Init();
+		m_oStyles.m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
-};
+}
+int BinaryStyleTableReader::ReadTimelineStyles(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CTimelineStyles* pTimelineStyles = static_cast<OOX::Spreadsheet::CTimelineStyles*>(poResult);
+
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSer_TimelineStyles::DefaultTimelineStyle == type)
+	{
+		pTimelineStyles->m_oDefaultTimelineStyle = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_TimelineStyles::TimelineStyle == type)
+	{
+		pTimelineStyles->m_arrItems.push_back(new OOX::Spreadsheet::CTimelineStyle());
+		READ1_DEF(length, res, this->ReadTimelineStyle, pTimelineStyles->m_arrItems.back());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryStyleTableReader::ReadTimelineStyle(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CTimelineStyle* pTimelineStyle = static_cast<OOX::Spreadsheet::CTimelineStyle*>(poResult);
+
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSer_TimelineStyles::TimelineStyleName == type)
+	{
+		pTimelineStyle->m_oName = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_TimelineStyles::TimelineStyle == type)
+	{
+		pTimelineStyle->m_arrItems.push_back(new OOX::Spreadsheet::CTimelineStyleElement());
+		READ2_DEF_SPREADSHEET(length, res, this->ReadTimelineStyleElement, pTimelineStyle->m_arrItems.back());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryStyleTableReader::ReadTimelineStyleElement(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CTimelineStyleElement* pTimelineStyleElement = static_cast<OOX::Spreadsheet::CTimelineStyleElement*>(poResult);
+	
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSer_TimelineStyles::TimelineStyleElementType == type)
+	{
+		pTimelineStyleElement->m_oType.Init();
+		pTimelineStyleElement->m_oType->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else if (c_oSer_TimelineStyles::TimelineStyleElementDxfId == type)
+	{
+		pTimelineStyleElement->m_oDxfId = m_oBufferedStream.GetLong();
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+
 int BinaryStyleTableReader::ReadBorders(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;

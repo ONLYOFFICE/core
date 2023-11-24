@@ -880,9 +880,12 @@ void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
 	}
 
 	if (  drawing_state->type == external_items::typeImage ||
-		( drawing_state->type == external_items::typeShape && drawing_state->shape_id == msosptPictureFrame ))
+		( drawing_state->type == external_items::typeShape))
 	{
-		drawing_state->type = external_items::typeImage;
+		if (drawing_state->shape_id == msosptPictureFrame)
+		{
+			drawing_state->type = external_items::typeImage;
+		}
 
 		if (!drawing_state->fill.picture_target.empty())
 			drawing_state->fill.texture_target = drawing_state->fill.picture_target;

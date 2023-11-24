@@ -694,6 +694,17 @@ void OoxConverter::convert(PPTX::Logic::NvGrpSpPr *oox_nvGrpSpPr)
 	if (oox_nvGrpSpPr->cNvPr.descr.IsInit())
 		odf_context()->drawing_context()->set_description(oox_nvGrpSpPr->cNvPr.descr.get());
 
+	if (oox_nvGrpSpPr->cNvPr.id != -1)
+	{
+		cpdoccore::odf_writer::odp_conversion_context* odp_context =
+			dynamic_cast<cpdoccore::odf_writer::odp_conversion_context*>(odf_context());
+		if (odp_context)
+		{
+			const std::wstring xml_id = odp_context->map_indentifier(std::to_wstring(oox_nvGrpSpPr->cNvPr.id));
+			odf_context()->drawing_context()->set_group_xml_id(xml_id);
+		}
+	}
+
 	convert(&oox_nvGrpSpPr->cNvGrpSpPr);
 	convert(&oox_nvGrpSpPr->nvPr);
 }
@@ -832,6 +843,9 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 
 		if (type == SimpleTypes::shapetypeRect && (oox_shape->txBody.IsInit() || oox_shape->oTextBoxShape.IsInit())) 
 			type = 2000;
+
+		if (type == 63) // ellipse
+			type = 1000; // custom
 
 		if (type == 2000)
 		{
@@ -1030,6 +1044,13 @@ int OoxConverter::convert(PPTX::Logic::PrstTxWarp *oox_text_preset)
 void OoxConverter::convert(PPTX::Logic::PrstGeom *oox_geom)
 {
 	if (!oox_geom) return;
+
+	if (oox_geom->prst.get() == L"ellipse")
+	{
+		odf_context()->drawing_context()->set_viewBox(21600, 21600);
+		odf_context()->drawing_context()->set_path(L"U 10800 10800 10800 10800 0 360 Z N");
+		return;
+	}
 
 	for (size_t i = 0; i < oox_geom->avLst.size(); i++)
 	{
@@ -1687,6 +1708,33 @@ void OoxConverter::convert(PPTX::Logic::NvSpPr *oox_nvSpPr)
 	convert (&oox_nvSpPr->cNvSpPr);
 	convert (&oox_nvSpPr->nvPr);
 }
+
+static bool is_sound_hlink(const std::wstring& hlink)
+{
+	const std::wstring ext = NSFile::GetFileExtention(hlink);
+	if (ext == L"wav" ||
+		ext == L"wma" ||
+		ext == L"mp3" ||
+		ext == L"ogg")
+		return true;
+
+	return false;
+}
+
+static bool is_relative_path(const std::wstring& path) 
+{
+	if (path.size() <= 0)
+		return false;
+
+	if (path.find(L"://") != std::wstring::npos)
+		return false;
+
+	if (path[0] == '/') 
+		return false;
+
+	return true;
+}
+
 void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 {
 	if (!oox_cnvPr) return;
@@ -1695,10 +1743,6 @@ void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 
 	if (oox_cnvPr->id != -1)
 	{
-#if 0
-		const std::wstring xml_id = odf_context()->map_indentifier(std::to_wstring(oox_cnvPr->id));
-		odf_context()->drawing_context()->set_xml_id(xml_id);
-#else 
 		cpdoccore::odf_writer::odp_conversion_context* odp_context =
 			dynamic_cast<cpdoccore::odf_writer::odp_conversion_context*>(odf_context());
 		if (odp_context)
@@ -1706,7 +1750,6 @@ void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 			const std::wstring xml_id = odp_context->map_indentifier(std::to_wstring(oox_cnvPr->id));
 			odf_context()->drawing_context()->set_xml_id(xml_id);
 		}
-#endif
 	}
 
 	if (oox_cnvPr->descr.IsInit())
@@ -1743,8 +1786,31 @@ void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 				if (oox_cnvPr->hlinkClick->id.IsInit())
 				{
 					std::wstring hlink = find_link_by_id(oox_cnvPr->hlinkClick->id.get(), 2, bExternal);
+					boost::replace_all(hlink, L"\\", L"/"); // NOTE(Kamil Kerimov): Always use forward slash in odf for filepaths
 					
-					odf_context()->drawing_context()->add_link(hlink);	
+					if (is_sound_hlink(hlink))
+					{
+						std::wstring href = odf_context()->add_media(hlink, bExternal);
+						odf_context()->drawing_context()->add_sound(href);
+					}
+					else
+					{
+						if (is_relative_path(hlink))
+							hlink = L"../" + hlink;
+						odf_context()->drawing_context()->add_link(hlink);
+					}
+						
+
+					smart_ptr<OOX::File> file = find_file_by_id(oox_cnvPr->hlinkClick->id.get());
+					OOX::HyperLink* hyperlink = dynamic_cast<OOX::HyperLink*>(file.GetPointer());
+
+					if (hyperlink)
+					{
+						odf_context()->add_hyperlink(
+							odf_context()->drawing_context()->get_current_element(),
+							hyperlink->Uri().GetBasename()
+						);
+					}
 				}
 			odf_context()->drawing_context()->end_action();
 		}
@@ -2039,6 +2105,19 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 			odf_context()->drawing_context()->set_paragraph_properties(paragraph_properties);
 	}	
 
+	std::vector<PPTX::Logic::RunElem>::iterator runIt = std::find_if_not(oox_paragraph->RunElems.begin(), oox_paragraph->RunElems.end(),
+		[](const PPTX::Logic::RunElem& r) {
+			return !r.is<PPTX::Logic::Run>();
+		});
+	if (runIt != oox_paragraph->RunElems.end())
+	{
+		const PPTX::Logic::Run& run = runIt->as<PPTX::Logic::Run>();
+		if (!run.HasText())
+			list_present = false;
+	}
+	else 
+		list_present = false;
+
 	//if (oox_paragraph->RunElems.empty() && list_present) list_present = false; // ms не обозначает присутствие списка, libra - показывает значек
 	
 	while ((int)odf_context()->text_context()->list_state_.levels.size() > list_level)
@@ -2090,10 +2169,19 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 	}
 	odf_context()->text_context()->start_paragraph(styled);
 
-	for (size_t i=0; i< oox_paragraph->RunElems.size(); i++)
+	if (oox_paragraph->RunElems.size() > 0)
 	{
-		convert(&oox_paragraph->RunElems[i].as<OOX::WritingElement>());
+		for (size_t i = 0; i < oox_paragraph->RunElems.size(); i++)
+		{
+			convert(&oox_paragraph->RunElems[i].as<OOX::WritingElement>());
+		}
 	}
+	else
+	{
+		odf_context()->text_context()->start_span(true);
+		odf_context()->text_context()->end_span();
+	}
+	
 	odf_context()->text_context()->end_paragraph();
 
 	//if(list_present)
@@ -2457,6 +2545,33 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::t
 	}
 
 }
+static std::vector<std::wstring> split_tabs(const std::wstring& text)
+{
+	std::vector<std::wstring> result;
+	std::wstringstream ss;
+	const wchar_t tabChar = L'\t';
+
+	for (const auto& c : text)
+	{
+		if (c == tabChar)
+		{
+			if (!ss.str().empty())
+			{
+				result.push_back(ss.str());
+				ss.str(std::wstring());
+			}
+				
+			result.push_back(L"\t");
+		}
+		else
+			ss << c;
+	}
+
+	if(!ss.str().empty())
+		result.push_back(ss.str());
+
+	return result;
+}
 void OoxConverter::convert(PPTX::Logic::Run *oox_run)
 {
 	if (!oox_run) return;
@@ -2507,7 +2622,16 @@ void OoxConverter::convert(PPTX::Logic::Run *oox_run)
 	}
 	else
 	{
-		text_context->add_text_content( oox_run->GetText());
+		const std::wstring& text = oox_run->GetText();
+		std::vector<std::wstring> tabSplit = split_tabs(text);
+
+		for (const std::wstring& str : tabSplit)
+		{
+			if (str == L"\t")
+				text_context->add_tab();
+			else 
+				text_context->add_text_content(str);
+		}
 	}
 	text_context->end_span();
 }

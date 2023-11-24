@@ -49,10 +49,8 @@ CAnnotFieldInfo::CAnnotFieldInfo() : IAdvancedCommand(AdvancedCommandType::Annot
 	m_pBE.first  = 0;
 	m_pBE.second = 0.0;
 
-	m_oBorder.nType              = 0;
-	m_oBorder.dWidth             = 0.0;
-	m_oBorder.dDashesAlternating = 0.0;
-	m_oBorder.dGaps              = 0.0;
+	m_oBorder.nType  = 0;
+	m_oBorder.dWidth = 0.0;
 
 	m_pMarkupPr       = NULL;
 	m_pTextPr         = NULL;
@@ -215,12 +213,11 @@ void CAnnotFieldInfo::GetBounds(double& dX1, double& dY1, double& dX2, double& d
 	dX2 = m_dX2;
 	dY2 = m_dY2;
 }
-void CAnnotFieldInfo::GetBorder(BYTE& nType, double& dWidth, double& dDashesAlternating, double& dGaps)
+void CAnnotFieldInfo::GetBorder(BYTE& nType, double& dWidth, std::vector<double>& arrDash)
 {
 	nType = m_oBorder.nType;
 	dWidth = m_oBorder.dWidth;
-	dDashesAlternating = m_oBorder.dDashesAlternating;
-	dGaps = m_oBorder.dGaps;
+	arrDash = m_oBorder.arrDash;
 }
 
 // Common
@@ -460,13 +457,9 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 	{
 		m_oBorder.nType = pReader->ReadByte();
 		m_oBorder.dWidth = pReader->ReadDouble();
-		m_oBorder.dDashesAlternating = 0.0;
-		m_oBorder.dGaps = 0.0;
-		if (m_oBorder.nType == 2)
-		{
-			m_oBorder.dDashesAlternating = pReader->ReadDouble();
-			m_oBorder.dGaps = pReader->ReadDouble();
-		}
+		int n = pReader->ReadInt();
+		for (int i = 0; i < n; ++i)
+			m_oBorder.arrDash.push_back(pReader->ReadDouble());
 	}
 	if (nFlags & (1 << 5))
 		m_wsLM = pReader->ReadString();

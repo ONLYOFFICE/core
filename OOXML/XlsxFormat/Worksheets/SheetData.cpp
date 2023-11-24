@@ -923,7 +923,7 @@ namespace OOX
 			WritingStringNullableAttrInt(L"si", m_oSi, m_oSi->GetValue());
 			WritingStringNullableAttrBool(L"bx", m_oBx);
 			writer.WriteString(_T(">"));
-			writer.WriteEncodeXmlString(m_sText);
+			writer.WriteEncodeXmlStringHHHH(m_sText);
 			writer.WriteString(_T("</f>"));
 		}
 		void CFormula::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream)

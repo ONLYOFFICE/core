@@ -143,7 +143,7 @@ public:
     void LoadMasters();
 
     void LoadNoMainMaster	(_UINT32 dwMasterID);
-    void LoadMainMaster		(_UINT32 dwMasterID);
+    void LoadMainMaster		(_UINT32 dwMasterID, bool alwaysLoad);
 
     void LoadMaster(_typeMaster type, CRecordSlide* pMaster, CSlideInfo *& pMasterWrapper, CThemePtr & pTheme);
 

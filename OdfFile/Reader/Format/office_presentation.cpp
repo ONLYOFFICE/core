@@ -92,6 +92,18 @@ void office_presentation::add_attributes( const xml::attributes_wc_ptr & Attribu
 {
 }
 
+void office_presentation::collect_page_names(oox::pptx_conversion_context& Context)
+{
+	for (size_t i = 0; i < pages_.size(); i++)
+	{
+		draw_page* page = dynamic_cast<draw_page*>(pages_[i].get());
+		if (!page)
+			continue;
+
+		Context.add_page_name(page->get_draw_name());
+	}
+}
+
 void office_presentation::docx_convert(oox::docx_conversion_context & Context)
 {
     Context.start_office_text();
@@ -150,6 +162,8 @@ void office_presentation::pptx_convert(oox::pptx_conversion_context & Context)
 
 	if (sequences_)
 		sequences_->pptx_convert(Context);
+
+	collect_page_names(Context);
 
 	for (size_t i = 0; i < pages_.size(); i++)
     {

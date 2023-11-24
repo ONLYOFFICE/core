@@ -90,6 +90,7 @@ namespace PdfWriter
 	class CSignatureField;
 	class CDateTimeField;
 	class CFieldBase;
+	class CStreamData;
 	//----------------------------------------------------------------------------------------
 	// CDocument
 	//----------------------------------------------------------------------------------------
@@ -125,6 +126,7 @@ namespace PdfWriter
 		void              AddPageLabel(unsigned int unPageIndex, EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
 		COutline*         CreateOutline(COutline* pParent, const char* sTitle);
 		CDestination*     CreateDestination(unsigned int unPageIndex);
+		bool              AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength);
 					      
 		CExtGrState*      GetExtGState(double dAlphaStroke = -1, double dAlphaFill = -1, EBlendMode eMode = blendmode_Unknown, int nStrokeAdjustment = -1);
 		CExtGrState*      GetStrokeAlpha(double dAlpha);
@@ -247,6 +249,7 @@ namespace PdfWriter
 		CInfoDict*                         m_pInfo;
 		CDictObject*                       m_pTrailer;
 		CDictObject*                       m_pResources;
+		CStreamData*                       m_pMetaData;
 		bool                               m_bEncrypt;
 		CEncryptDict*                      m_pEncryptDict;
 		std::vector<TSignatureInfo>        m_vSignatures;

@@ -242,13 +242,17 @@ void ReadAnnot(BYTE* pWidgets, int& i)
 
 		if (nBorderType == 2)
 		{
-			nPathLength = READ_INT(pWidgets + i);
+			int nDash = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << "Dash Pattern " << (double)nPathLength / 100.0 << " ";
+			std::cout << "Dash Pattern";
 
-			nPathLength = READ_INT(pWidgets + i);
-			i += 4;
-			std::cout << (double)nPathLength / 100.0 << ", ";
+			for (int j = 0; j < nDash; ++j)
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << " " << (double)nPathLength / 100.0;
+			}
+			std::cout << ", ";
 		}
 	}
 	if (nFlags & (1 << 5))

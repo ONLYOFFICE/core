@@ -81,6 +81,9 @@ namespace OOX
 		class CTimelineRange;
 		class CTimelineCachePivotTables;
 		class CTimelineCachePivotTable;
+		class CTimelineStyle;
+		class CTimelineStyles;
+		class CTimelineStyleElement;
 	}
 }
 
@@ -153,6 +156,9 @@ namespace BinXlsxRW
 		void WriteTableStyle(const OOX::Spreadsheet::CTableStyle& oTableStyle);
 		void WriteTableStyleElements(const std::vector<OOX::Spreadsheet::CTableStyleElement *>& aTableStyles);
 		void WriteTableStyleElement(const OOX::Spreadsheet::CTableStyleElement& oTableStyleElement);
+		void WriteTimelineStyles(OOX::Spreadsheet::CTimelineStyles* pTimelineStyles);
+		void WriteTimelineStyle(OOX::Spreadsheet::CTimelineStyle* pTimelineStyle);
+		void WriteTimelineStyleElement(OOX::Spreadsheet::CTimelineStyleElement* pTimelineStyleElement);
 	};
 	class BinarySharedStringTableWriter
 	{

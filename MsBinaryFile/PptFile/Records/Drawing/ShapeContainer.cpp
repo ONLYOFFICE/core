@@ -2508,7 +2508,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
         }
     }
 
-    if ((_T("") != strText) && 0 == pTextSettings->m_arParagraphs.size())
+    if ((L"" != strText) && 0 == pTextSettings->m_arParagraphs.size())
     {
         // значит никаких своих настроек нету. Значит просто пустые свои настройки
         std::vector<CTextPFRunRecord> oArrayPF;

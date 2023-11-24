@@ -17,6 +17,7 @@ if (len(params) > 1):
 
 base.cmd("java", ["-jar", "../../../sdkjs/build/node_modules/google-closure-compiler-java/compiler.jar", 
                   "--compilation_level", compilation_level,
+                  "--language_out", "ECMASCRIPT5_STRICT",
                   "--js_output_file", file_path_min,
                   "--js", file_path])
 

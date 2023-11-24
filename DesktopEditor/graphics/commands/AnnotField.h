@@ -380,8 +380,7 @@ private:
 	{
 		BYTE   nType;
 		double dWidth;
-		double dDashesAlternating;
-		double dGaps;
+		std::vector<double> arrDash;
 	};
 
 public:
@@ -392,7 +391,7 @@ public:
 	bool IsValid() const;
 
 	void GetBounds(double& dX1, double& dY1, double& dX2, double& dY2) const;
-	void   GetBorder(BYTE& nType, double& dWidth, double& dDashesAlternating, double& dGaps);
+	void   GetBorder(BYTE& nType, double& dWidth, std::vector<double>& arrDash);
 	int    GetFlag()      const { return m_nFlag; }
 	int    GetID()        const { return m_nID; }
 	int    GetAnnotFlag() const { return m_nAnnotFlag; }

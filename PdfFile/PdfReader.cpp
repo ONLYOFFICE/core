@@ -1043,11 +1043,34 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 			if (sIconView && strcmp(sIconView, arrMKName[j]) != 0)
 				continue;
 			std::string sMKName(arrMKName[j]);
-			Object oStr;
+			Object oStr, oStrRef;
+			int nView;
 			if (!oMK.dictLookup(sMKName.c_str(), &oStr)->isStream())
 			{
 				oStr.free();
-				continue;
+
+				Object oIF;
+				if (!oMK.dictLookup("IF", &oIF)->isDict())
+				{
+					oIF.free();
+					continue;
+				}
+				oIF.free();
+
+				Object oAP;
+				if (!pField->fieldLookup("AP", &oAP)->isDict() || !oAP.dictLookup("N", &oStr)->isStream())
+				{
+					oAP.free(); oStr.free();
+					continue;
+				}
+				oAP.dictLookupNF("N", &oStrRef);
+				nView = oStrRef.getRefNum();
+				oAP.free();
+			}
+			else
+			{
+				oMK.dictLookupNF(sMKName.c_str(), &oStrRef);
+				nView = oStrRef.getRefNum();
 			}
 
 			if (bFirst)
@@ -1276,13 +1299,10 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 			// else
 			if (bImage)
 			{
-				oStr.free(); oResources.free();
+				oStr.free(); oStrRef.free(); oResources.free();
 				continue;
 			}
 
-			Object oStrRef;
-			oMK.dictLookupNF(sMKName.c_str(), &oStrRef);
-			int nView = oStrRef.getRefNum();
 			oRes.AddInt(nView);
 			if (std::find(arrUniqueImage.begin(), arrUniqueImage.end(), nView) != arrUniqueImage.end())
 			{
@@ -1352,6 +1372,7 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 			pFrame->put_Width(nWidth);
 			pFrame->put_Height(nHeight);
 			pFrame->put_Stride(4 * nWidth);
+			pFrame->put_IsRGBA(true);
 
 			NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
 			pRenderer->SetFontManager(m_pFontManager);
@@ -1392,6 +1413,7 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 				oRes.WriteString((BYTE*)cData64, nData64Dst);
 
 				RELEASEARRAYOBJECTS(cData64);
+				RELEASEARRAYOBJECTS(pPngBuffer);
 			}
 			else
 			{

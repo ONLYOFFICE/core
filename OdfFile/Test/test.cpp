@@ -34,12 +34,26 @@
 
 #include "entrance.h"
 #include "motion.h"
+#include "audio.h"
+#include "interactions.h"
 
 int main(int argc, char* argv[])
 {
 	::testing::InitGoogleTest(&argc, argv);
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_EntranceTestEnvironment);
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_EntranceAnimationTestEnvironment);
-	::testing::AddGlobalTestEnvironment(new MotionTestEnvironment);
+
+	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationEntranceEnvironment);
+	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationMotionEnvironment);
+	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationAudioEnvironment);
+	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationPlayAudioEnvironment);	
+	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationOpenDocumentEnvironment);
+	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationRunProgramEnvironment);
+	
+	::testing::AddGlobalTestEnvironment(new OOX2ODP_EntranceAnimationEnvironment);
+	::testing::AddGlobalTestEnvironment(new OOX2ODP_AudioAnimationEnvironment);
+	::testing::AddGlobalTestEnvironment(new OOX2ODP_InteractionAnimationEnvironment);
+	::testing::AddGlobalTestEnvironment(new OOX2ODP_PlayAudioAnimationEnvironment);
+	::testing::AddGlobalTestEnvironment(new OOX2ODP_OpenDocumentAnimationEnvironment);
+	::testing::AddGlobalTestEnvironment(new OOX2ODP_RunProgramAnimationEnvironment);
+	
 	return RUN_ALL_TESTS();
 }

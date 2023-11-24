@@ -298,7 +298,6 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionMethods(CTimelineRef)
-			WritingElement_XlsbConstructors(CTimelineRef)
 
 			CTimelineRef();
 			virtual ~CTimelineRef();
@@ -309,11 +308,9 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void fromBin(XLS::BaseObjectPtr& obj) {}
 
 			virtual EElementType getType() const;
 		private:
-			void ReadAttributes(XLS::BaseObjectPtr& obj) {}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
 			nullable<SimpleTypes::CRelationshipId> m_oRId;
@@ -323,7 +320,6 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionMethods(CTimelineRefs)
-			WritingElement_XlsbConstructors(CTimelineRefs)
 			CTimelineRefs();
 			virtual ~CTimelineRefs();
 
@@ -333,8 +329,6 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			void fromBin(XLS::BaseObjectPtr& obj) {}
-
 			virtual EElementType getType() const;
 		};	
 //------------------------------------------------------------------------------------------------------------------------
@@ -342,7 +336,6 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionMethods(CTimelineCacheRef)
-			WritingElement_XlsbConstructors(CTimelineCacheRef)
 
 			CTimelineCacheRef();
 			virtual ~CTimelineCacheRef();
@@ -353,11 +346,9 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void fromBin(XLS::BaseObjectPtr& obj) {}
 
 			virtual EElementType getType() const;
 		private:
-			void ReadAttributes(XLS::BaseObjectPtr& obj) {}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
 			nullable<SimpleTypes::CRelationshipId> m_oRId;
@@ -367,7 +358,6 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionMethods(CTimelineCacheRefs)
-			WritingElement_XlsbConstructors(CTimelineCacheRefs)
 			CTimelineCacheRefs();
 			virtual ~CTimelineCacheRefs();
 
@@ -377,9 +367,95 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			void fromBin(XLS::BaseObjectPtr& obj) {}
+			virtual EElementType getType() const;
+		};
+//---------------------------------------------------------------------------------------------------------------------------		
+		class CDrawingTimeslicer : public WritingElement
+		{
+		public:
+			WritingElement_AdditionMethods(CDrawingTimeslicer)
+			CDrawingTimeslicer();
+			virtual ~CDrawingTimeslicer();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const {}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			virtual EElementType getType() const;
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		public:
+			nullable_string m_oName;
+		};
+//----------------------------------------------------------------------------------------------------------------------------		
+		class CTimelineStyleElement : public WritingElement
+		{
+		public:
+			WritingElement_AdditionMethods(CTimelineStyleElement)
+			CTimelineStyleElement();
+			virtual ~CTimelineStyleElement();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType() const;
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		public:
+			nullable<SimpleTypes::Spreadsheet::CTimelineStyleType> m_oType;
+			nullable_uint m_oDxfId;
+		};
+		class CTimelineStyle : public WritingElementWithChilds<CTimelineStyleElement>
+		{
+		public:
+			WritingElement_AdditionMethods(CTimelineStyle)
+			
+			CTimelineStyle();
+			virtual ~CTimelineStyle();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType() const;
+			
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		public:
+			nullable_string m_oName;
+		};
+		class CTimelineStyles : public WritingElementWithChilds<CTimelineStyle>
+		{
+		public:
+			WritingElement_AdditionMethods(CTimelineStyles)
+			CTimelineStyles();
+			virtual ~CTimelineStyles();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType() const;
+			
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		public:
+			nullable_string m_oDefaultTimelineStyle;
 		};
 	} //Spreadsheet
 } // namespace OOX

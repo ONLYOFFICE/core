@@ -190,6 +190,10 @@ const std::wstring CVbaReader::convert()
 				{
 					std::wstring streamName = ProjectStreamObject->DesignerModules[i] + L"/VBFrame";
 					CVbaFileStreamPtr strmVBFrame = vbaProject_file_->getNamedStream(streamName);
+					if (!strmVBFrame)
+					{
+						continue;
+					}
 					strmVBFrame->CodePage = code_page_;
 					
 					VBA::VBFrameObjectPtr VBFrameObject = VBA::VBFrameObjectPtr(new VBA::VBFrameObject(strmVBFrame));

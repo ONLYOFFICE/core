@@ -216,7 +216,7 @@ private:
 
 	std::wstring	current_master_page_;
 	
-	odf_controls_context					controls_context_;	
+	odf_controls_context				controls_context_;	
 
 	std::vector<odf_element_state>		current_root_elements_; // for section, if needed
 	std::vector<odt_section_state>		sections_;

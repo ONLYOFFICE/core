@@ -38,7 +38,10 @@
 #include "Table/Table.h"
 #include "SmartArt.h"
 #include "Pic.h"
+
 #include "../../XlsxFormat/Slicer/SlicerCacheExt.h"
+#include "../../XlsxFormat/Timelines/Timeline.h"
+
 #include "../../DocxFormat/Logic/RunContent.h"
 
 namespace PPTX
@@ -104,6 +107,7 @@ namespace PPTX
 			nullable<ChartRec>		chartRec;
 			nullable<OOX::Spreadsheet::CDrawingSlicer>		slicer;
 			nullable<OOX::Spreadsheet::CDrawingSlicer>		slicerExt;
+			nullable<OOX::Spreadsheet::CDrawingTimeslicer>	timeslicer;
 
 			nullable<OOX::Logic::CContentPart>				contentPart;
 

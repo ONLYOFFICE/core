@@ -254,17 +254,42 @@ namespace PdfWriter
     CSignatureDict::~CSignatureDict()
     {
     }
-    void CSignatureDict::SetByteRange(int nLen1, int nOffset2)
-    {
-        m_nLen1 = nLen1;
-        m_nOffset2 = nOffset2;
-    }
-    void CSignatureDict::ByteRangeOffset(int nBegin, int nEnd)
-    {
-        m_nByteRangeBegin = nBegin;
-        m_nByteRangeEnd   = nEnd;
-    }
-    void CSignatureDict::WriteToStream(CStream* pStream, int nFileEnd)
+	void CSignatureDict::WriteToStream(CStream* pStream, CEncrypt* pEncrypt)
+	{
+		for (auto const &oIter : m_mList)
+		{
+			CObjectBase* pObject = oIter.second;
+			if (!pObject)
+				continue;
+
+			if (pObject->IsHidden())
+			{
+				// ничего не делаем
+			}
+			else
+			{
+				int nBegin, nEnd;
+				pStream->WriteEscapeName(oIter.first.c_str());
+				pStream->WriteChar(' ');
+				nBegin = pStream->Tell();
+				// Цифровая подпись не шифруется
+				pStream->Write(pObject, oIter.first == "Contents" ? NULL : pEncrypt);
+				nEnd = pStream->Tell();
+				pStream->WriteStr("\012");
+				if (oIter.first == "Contents")
+				{
+					m_nLen1  = nBegin;
+					m_nOffset2 = nEnd;
+				}
+				if (oIter.first == "ByteRange")
+				{
+					m_nByteRangeBegin = nBegin;
+					m_nByteRangeEnd   = nEnd;
+				}
+			}
+		}
+	}
+	void CSignatureDict::WriteToStream(CStream* pStream, int nFileEnd)
     {
         // Запись ByteRange
         if (m_nByteRangeBegin > 0 && m_nByteRangeEnd > 0 && m_nByteRangeBegin < m_nByteRangeEnd && m_nByteRangeEnd < nFileEnd)

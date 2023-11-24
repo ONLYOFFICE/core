@@ -224,6 +224,7 @@ namespace OOX
 										*m_sUri == L"{56B9EC1D-385E-4148-901F-78D8002777C0}" ||
 										*m_sUri == L"{7E03D99C-DC04-49d9-9315-930204A7B6E9}" ||
 										*m_sUri == L"{D0CA8CA8-9F24-4464-BF8E-62219DCF47F9}" ||
+										*m_sUri == L"{9260A510-F301-46a8-8635-F512D64BE5F5}" ||
 										*m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))
 			{
 				int nCurDepth = oReader.GetDepth();
@@ -271,6 +272,10 @@ namespace OOX
 					else if (sName == L"timelineCacheRefs")
 					{
 						m_oTimelineCacheRefs = oReader;
+					}
+					else if (sName == L"timelineStyles")
+					{
+						m_oTimelineStyles = oReader;
 					}
 					else if (sName == L"slicerList")
 					{
@@ -432,6 +437,12 @@ namespace OOX
 			{
 				NSStringUtils::CStringBuilder writer;
 				m_oTimelineCacheRefs->toXML(writer);
+				sResult += writer.GetData().c_str();
+			}
+			if (m_oTimelineStyles.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				m_oTimelineStyles->toXML(writer);
 				sResult += writer.GetData().c_str();
 			}
 			if (m_oAltTextTable.IsInit())

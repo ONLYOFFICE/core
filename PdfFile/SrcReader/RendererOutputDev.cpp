@@ -3911,9 +3911,9 @@ namespace PdfReader
 			return;
 		}
 
-		double *pCTM      = pGState->getCTM();
-		double *pTm       = pGState->getTextMat();
-		GfxFont *pFont     = pGState->getFont();
+		double* pCTM   = pGState->getCTM();
+		double* pTm    = pGState->getTextMat();
+		GfxFont* pFont = pGState->getFont();
 
 		double pNewTm[6], arrMatrix[6];
 
@@ -3925,8 +3925,8 @@ namespace PdfReader
 		{
 			m_pRenderer->put_FontSize(dOldSize * dTextScale);
 
-			pNewTm[0] =  pTm[0] * dITextScale;
-			pNewTm[1] =  pTm[1] * dITextScale;
+			pNewTm[0] =  pTm[0] * dITextScale * pGState->getHorizScaling();
+			pNewTm[1] =  pTm[1] * dITextScale * pGState->getHorizScaling();
 			pNewTm[2] = -pTm[2] * dITextScale;
 			pNewTm[3] = -pTm[3] * dITextScale;
 			pNewTm[4] =  dX;
@@ -3936,8 +3936,8 @@ namespace PdfReader
 		{
 			m_pRenderer->put_FontSize(-dOldSize * dTextScale);
 
-			pNewTm[0] = pTm[0] * dITextScale;
-			pNewTm[1] = pTm[1] * dITextScale;
+			pNewTm[0] = pTm[0] * dITextScale * pGState->getHorizScaling();
+			pNewTm[1] = pTm[1] * dITextScale * pGState->getHorizScaling();
 			pNewTm[2] = pTm[2] * dITextScale;
 			pNewTm[3] = pTm[3] * dITextScale;
 			pNewTm[4] = dX;
@@ -4017,7 +4017,7 @@ namespace PdfReader
 			}
 		}
 
-		if (nRenderMode == 0 || nRenderMode == 4 || nRenderMode == 6)
+		if (nRenderMode == 0 || nRenderMode == 4 || nRenderMode == 6 || (m_bDrawOnlyText && nRenderMode == 2))
 		{
 #ifdef BUILDING_WASM_MODULE
 			std::wstring sFontPath;

@@ -3234,6 +3234,62 @@ namespace SimpleTypes
 			}
 			return L"unselectedItemWithData";
 		}
+		
+		ETimelineStyleType CTimelineStyleType::FromString(const std::wstring& sValue)
+		{
+			if (L"selectionLabel" == sValue)
+				this->m_eValue = timelineStyle_selectionLabel;
+			else if (L"timeLevel" == sValue)
+				this->m_eValue = timelineStyle_timeLevel;
+			else if (L"periodLabel1" == sValue)
+				this->m_eValue = timelineStyle_periodLabel1;
+			else if (L"periodLabel2" == sValue)
+				this->m_eValue = timelineStyle_periodLabel2;
+			else if (L"selectedTimeBlock" == sValue)
+				this->m_eValue = timelineStyle_selectedTimeBlock;
+			else if (L"unselectedTimeBlock" == sValue)
+				this->m_eValue = timelineStyle_unselectedTimeBlock;
+			else if (L"selectedTimeBlockSpace" == sValue)
+				this->m_eValue = timelineStyle_selectedTimeBlockSpace;
+			else
+				this->m_eValue = timelineStyle_selectionLabel;
+			return this->m_eValue;
+		}
 
+		ETimelineStyleType CTimelineStyleType::FromStringA(const char* sValue)
+		{
+			if (strcmp("selectionLabel", sValue) == 0)
+				this->m_eValue = timelineStyle_selectionLabel;
+			else if (strcmp("timeLevel", sValue) == 0)
+				this->m_eValue = timelineStyle_timeLevel;
+			else if (strcmp("periodLabel1", sValue) == 0)
+				this->m_eValue = timelineStyle_periodLabel1;
+			else if (strcmp("periodLabel2", sValue) == 0)
+				this->m_eValue = timelineStyle_periodLabel2;
+			else if (strcmp("selectedTimeBlock", sValue) == 0)
+				this->m_eValue = timelineStyle_selectedTimeBlock;
+			else if (strcmp("unselectedTimeBlock", sValue) == 0)
+				this->m_eValue = timelineStyle_unselectedTimeBlock;
+			else if (strcmp("selectedTimeBlockSpace", sValue) == 0)
+				this->m_eValue = timelineStyle_selectedTimeBlockSpace;
+			else
+				this->m_eValue = timelineStyle_selectionLabel;
+			return this->m_eValue;
+		}
+
+		std::wstring CTimelineStyleType::ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case timelineStyle_selectionLabel: return L"selectionLabel"; break;
+			case timelineStyle_timeLevel: return L"timeLevel"; break;
+			case timelineStyle_periodLabel1: return L"periodLabel1"; break;
+			case timelineStyle_periodLabel2: return L"periodLabel2"; break;
+			case timelineStyle_selectedTimeBlock: return L"selectedTimeBlock"; break;
+			case timelineStyle_unselectedTimeBlock: return L"unselectedTimeBlock"; break;
+			case timelineStyle_selectedTimeBlockSpace: return L"selectedTimeBlockSpace"; break;
+			}
+			return L"unselectedItemWithData";
+		}
 	}// Spreadsheet
 } // SimpleTypes

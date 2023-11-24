@@ -108,7 +108,7 @@ namespace PPT
         {
             if (NULL == pAudioElem)
             {
-                m_strFile			= _T("");
+                m_strFile			= L"";
 
                 m_dStartTime		= 0.0;
                 m_dEndTime			= -1.0;
@@ -149,7 +149,7 @@ namespace PPT
     public:
         void CalculateDuration()
         {
-            if (0.0 < m_dAudioDuration || _T("") == m_strFile)
+            if (0.0 < m_dAudioDuration || L"" == m_strFile)
                 return;
         }
     };
@@ -260,7 +260,7 @@ namespace PPT
 
         std::wstring GetAudioOverlay()
         {
-            std::wstring strRes = _T("");
+            std::wstring strRes;
 
             size_t nCount = m_arParts.size();
 

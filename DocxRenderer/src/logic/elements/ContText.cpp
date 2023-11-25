@@ -66,6 +66,9 @@ namespace NSDocxRenderer
 
 		m_iNumDuplicates = rCont.m_iNumDuplicates;
 
+		m_dTopWithAscent = rCont.m_dTopWithAscent;
+		m_dBotWithDescent = rCont.m_dBotWithDescent;
+
 		return *this;
 	}
 
@@ -96,23 +99,50 @@ namespace NSDocxRenderer
 		}
 	}
 
-	eVerticalCrossingType CContText::GetVerticalCrossingType(const CBaseItem* pItem) const noexcept
+	eVerticalCrossingType CContText::GetVerticalCrossingType(const CContText* pCont) const noexcept
 	{
-		const CContText* pCont = nullptr;
-		if((pCont = dynamic_cast<const CContText*>(pItem)) == nullptr)
-			return CBaseItem::GetVerticalCrossingType(pItem);
+		const double& this_top = m_dTopWithAscent;
+		const double& this_bot = m_dBotWithDescent;
 
-		auto vert_cross = CBaseItem::GetVerticalCrossingType(pCont);
+		const double& other_top = pCont->m_dTopWithAscent;
+		const double& other_bot = pCont->m_dBotWithDescent;
 
-		if(vert_cross == eVerticalCrossingType::vctCurrentAboveNext &&
-				(m_dBaselinePos - pCont->m_dTop < m_dHeight * 0.3))
-			vert_cross = eVerticalCrossingType::vctNoCrossingCurrentAboveNext;
+		if (this_top > other_top && this_bot < other_bot)
+			return eVerticalCrossingType::vctCurrentInsideNext;
 
-		if(vert_cross == eVerticalCrossingType::vctCurrentBelowNext &&
-				(pCont->m_dBaselinePos - m_dTop < pCont->m_dHeight * 0.3))
-			vert_cross = eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
+		else if (this_top < other_top && this_bot > other_bot)
+			return  eVerticalCrossingType::vctCurrentOutsideNext;
 
-		return vert_cross;
+		else if (this_top < other_top && this_bot < other_bot &&
+				 (this_bot >= other_top || fabs(this_bot - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
+			return  eVerticalCrossingType::vctCurrentAboveNext;
+
+		else if (this_top > other_top && this_bot > other_bot &&
+				(this_top <= other_bot || fabs(this_top - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
+			return  eVerticalCrossingType::vctCurrentBelowNext;
+
+		else if (this_top == other_top && this_bot == other_bot &&
+				 m_dLeft == pCont->m_dLeft && m_dRight == pCont->m_dRight)
+			return  eVerticalCrossingType::vctDublicate;
+
+		else if (fabs(this_top - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
+				 fabs(this_bot - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
+			return  eVerticalCrossingType::vctTopAndBottomBordersMatch;
+
+		else if (fabs(this_top - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
+			return  eVerticalCrossingType::vctTopBorderMatch;
+
+		else if (fabs(this_bot - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
+			return  eVerticalCrossingType::vctBottomBorderMatch;
+
+		else if (this_bot < other_top)
+			return  eVerticalCrossingType::vctNoCrossingCurrentAboveNext;
+
+		else if (this_top > other_bot)
+			return  eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
+
+		else
+			return  eVerticalCrossingType::vctUnknown;
 	}
 
 	void CContText::ToXml(NSStringUtils::CStringBuilder& oWriter) const

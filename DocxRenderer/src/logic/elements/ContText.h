@@ -63,6 +63,9 @@ namespace NSDocxRenderer
 		double m_dSpaceWidthMM{0};
 		CSelectedSizes m_oSelectedSizes{};
 
+		double m_dTopWithAscent{0};
+		double m_dBotWithDescent{0};
+
 		NSStringUtils::CStringUTF32 m_oText{};
 		UINT m_iNumDuplicates{0};
 
@@ -73,7 +76,7 @@ namespace NSDocxRenderer
 
 		virtual void Clear() override final;
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
-		virtual eVerticalCrossingType GetVerticalCrossingType(const CBaseItem* pItem) const noexcept override final;
+		virtual eVerticalCrossingType GetVerticalCrossingType(const CContText* pItem) const noexcept;
 
 		// calc sizes in selected font (uses m_pFontStyle & m_pManager)
 		void CalcSelected();

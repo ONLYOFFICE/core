@@ -341,13 +341,21 @@ namespace NSDocxRenderer
 
 		pCont->m_oText        = oText;
 
+		double font_size = m_pFont->Size;
+		double em_height = oMetrics.dEmHeight;
+		double ratio = font_size / em_height * c_dPixToMM;
+
+		pCont->m_dTopWithAscent = pCont->m_dBaselinePos - (oMetrics.dAscent * ratio) - oMetrics.dBaselineOffset;
+		pCont->m_dBotWithDescent = pCont->m_dBaselinePos + (oMetrics.dDescent * ratio) - oMetrics.dBaselineOffset;
+
 		// первичное получение стиля для текущего символа
 		// при дальнейшем анализе может измениться
 		pCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(*m_pBrush,
-																		m_pFontSelector->GetSelectedName(),
-																		m_pFont->Size,
-																		m_pFontSelector->IsSelectedItalic(),
-																		m_pFontSelector->IsSelectedBold());
+			m_pFontSelector->GetSelectedName(),
+			m_pFont->Size,
+			m_pFontSelector->IsSelectedItalic(),
+			m_pFontSelector->IsSelectedBold());
+
 		pCont->m_dSpaceWidthMM = m_pFontManager->GetSpaceWidthMM();
 		m_pParagraphStyleManager->UpdateAvgFontSize(m_pFont->Size);
 
@@ -763,7 +771,7 @@ namespace NSDocxRenderer
 					if (!curr_cont)
 						continue;
 
-					eVerticalCrossingType eVType = curr_cont->GetVerticalCrossingType(shape.get());
+					eVerticalCrossingType eVType = curr_cont->CBaseItem::GetVerticalCrossingType(shape.get());
 					eHorizontalCrossingType eHType = curr_cont->GetHorizontalCrossingType(shape.get());
 
 					bool bIsNotComplicatedFigure = shape->m_eGraphicsType != eGraphicsType::gtComplicatedFigure;

@@ -27,11 +27,16 @@ namespace NSDocxRenderer
 
 		UINT m_iNumDuplicates {0};
 
+		double m_dTopWithMaxAscent{0};
+		double m_dBotWithMaxDescent{0};
+
 	public:
 		CTextLine() = default;
 		virtual ~CTextLine();
 		virtual void Clear() override final;
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
+		virtual void RecalcWithNewItem(const CContText* pCont);
+		virtual eVerticalCrossingType GetVerticalCrossingType(const CTextLine* pLine) const noexcept;
 
 		void AddCont(std::shared_ptr<CContText> pCont);
 		void MergeConts();

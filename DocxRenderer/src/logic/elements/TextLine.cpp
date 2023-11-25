@@ -17,7 +17,7 @@ namespace NSDocxRenderer
 	}
 	void CTextLine::AddCont(std::shared_ptr<CContText> oCont)
 	{
-		CBaseItem::RecalcWithNewItem(oCont.get());
+		RecalcWithNewItem(oCont.get());
 		m_arConts.push_back(oCont);
 	}
 
@@ -148,10 +148,62 @@ namespace NSDocxRenderer
 
 		for(const auto& cont : m_arConts)
 			if(cont)
-			{
-				m_dHeight = std::max(m_dHeight, dynamic_cast<CContText*>(cont.get())->m_dHeight);
-				CBaseItem::RecalcWithNewItem(cont.get());
-			}
+				RecalcWithNewItem(cont.get());
+	}
+
+	eVerticalCrossingType CTextLine::GetVerticalCrossingType(const CTextLine* pLine) const noexcept
+	{
+		const double& this_top = m_dTopWithMaxAscent;
+		const double& this_bot = m_dBotWithMaxDescent;
+
+		const double& other_top = pLine->m_dTopWithMaxAscent;
+		const double& other_bot = pLine->m_dBotWithMaxDescent;
+
+		if (this_top > other_top && this_bot < other_bot)
+			return eVerticalCrossingType::vctCurrentInsideNext;
+
+		else if (this_top < other_top && this_bot > other_bot)
+			return  eVerticalCrossingType::vctCurrentOutsideNext;
+
+		else if (this_top < other_top && this_bot < other_bot &&
+				 (this_bot >= other_top || fabs(this_bot - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
+			return  eVerticalCrossingType::vctCurrentAboveNext;
+
+		else if (this_top > other_top && this_bot > other_bot &&
+				(this_top <= other_bot || fabs(this_top - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
+			return  eVerticalCrossingType::vctCurrentBelowNext;
+
+		else if (this_top == other_top && this_bot == other_bot &&
+				 m_dLeft == pLine->m_dLeft && m_dRight == pLine->m_dRight)
+			return  eVerticalCrossingType::vctDublicate;
+
+		else if (fabs(this_top - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
+				 fabs(this_bot - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
+			return  eVerticalCrossingType::vctTopAndBottomBordersMatch;
+
+		else if (fabs(this_top - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
+			return  eVerticalCrossingType::vctTopBorderMatch;
+
+		else if (fabs(this_bot - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
+			return  eVerticalCrossingType::vctBottomBorderMatch;
+
+		else if (this_bot < other_top)
+			return  eVerticalCrossingType::vctNoCrossingCurrentAboveNext;
+
+		else if (this_top > other_bot)
+			return  eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
+
+		else
+			return  eVerticalCrossingType::vctUnknown;
+	}
+
+	void CTextLine::RecalcWithNewItem(const CContText* pCont)
+	{
+		CBaseItem::RecalcWithNewItem(pCont);
+		if (m_dTopWithMaxAscent == 0.0) m_dTopWithMaxAscent = pCont->m_dTopWithAscent;
+		else m_dTopWithMaxAscent = std::min(m_dTopWithMaxAscent, pCont->m_dTopWithAscent);
+
+		m_dBotWithMaxDescent = std::max(m_dBotWithMaxDescent, pCont->m_dBotWithDescent);
 	}
 
 	void CTextLine::SetVertAlignType(const eVertAlignType& oType)

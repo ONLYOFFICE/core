@@ -35,29 +35,54 @@ const { readFile, writeFile } = require("node:fs/promises");
 
 async function startTest() {
   let args = process.argv.slice(2);
-  if (args.length < 2) {
-    console.error(`missing arguments.USAGE: ${process.argv[0]} "inCsv" "outJson"`);
+  if (args.length < 3) {
+    console.error(`missing arguments.USAGE: ${process.argv[0]} "in-time.csv" "in-date.csv" "out.json"`);
     return;
   }
   console.info("test started");
 
   let missing = [];
-  let duplicates = [];
+  let duplicates = {};
   let unique = {};
-  let res = [];
-  res.push('{');
-  let text = await readFile(args[0], {encoding: 'utf8'});
-  let lines = text.split('\n');
-  for (let i = 0; i < lines.length; ++i) {
-    let elem = lines[i];
-    elem = elem.replace(/[\r\,]*$/, "");
-    const found = elem.match(/\[\$-([A-F0-9]*)\]/g);
+
+  let outLineMap = {};
+  let outDates = {};
+  let outTimes = {};
+  let textDate = await readFile(args[0], {encoding: 'utf8'});
+  let linesDate = textDate.split('\n');
+  let textTime = await readFile(args[1], {encoding: 'utf8'});
+  let linesTime = textTime.split('\n');
+  for (let i = 0; i < linesDate.length && i < linesTime.length; ++i) {
+    // console.log(i)
+    outLineMap[i] = 0;
+    let lineDate = linesDate[i];
+    lineDate = lineDate.replace(/[\r\,]*$/, "");
+    lineDate = lineDate.replace(/\\/g, '\\\\');
+    lineDate = lineDate.replace(/\"\"\"/g, '"\\"');
+    lineDate = lineDate.replace(/\"\"/g, '\\"');
+    let lineTime = linesTime[i];
+    lineTime = lineTime.replace(/[\r\,]*$/, "");
+    lineTime = lineTime.replace(/\\/g, '\\\\');
+    lineTime = lineTime.replace(/\"\"\"/g, '"\\"');
+    lineTime = lineTime.replace(/\"\"/g, '\\"');
+
+    let found = lineDate.match(/\[\$-([A-F0-9]*)\]/g);
+    if (!found) {
+      found = lineTime.match(/\[\$-([A-F0-9]*)\]/g);
+    } else {
+      let foundTime = lineTime.match(/\[\$-([A-F0-9]*)\]/g);
+      if (foundTime) {
+        found = found.concat(foundTime);
+      }
+    }
     if (found) {
       let LCID = 0;
+      let LCIDOrigin = 0;
       for (let j = 0; j < found.length; ++j) {
         let test = parseInt(found[j].substring(3), 16) & 0xFFFF;
         if (test > 0) {
           LCID = test;
+          LCIDOrigin = found[j]
           if(!unique[LCID]) {
             break;
           }
@@ -67,9 +92,11 @@ async function startTest() {
       if(LCID > 0) {
         if(!unique[LCID]) {
           unique[LCID] = 1;
-          res.push(`${LCID}:[${elem}],`);
+          outLineMap[i] = LCID;
+          outDates[LCID] = JSON.parse(`[${lineDate}]`);
+          outTimes[LCID] = JSON.parse(`[${lineTime}]`);
         } else {
-          duplicates.push(i);
+          duplicates[i] = LCID + "-" + LCIDOrigin;
         }
       } else {
         missing.push(i);
@@ -78,11 +105,14 @@ async function startTest() {
       missing.push(i);
     }
   }
-  res.push('}');
+  let res = [];
+  res.push(JSON.stringify(outLineMap, null, 2));
+  res.push(JSON.stringify(outDates, null, 2));
+  res.push(JSON.stringify(outTimes, null, 2));
   res.push('missing:' + JSON.stringify(missing));
-  res.push('duplicates:' + JSON.stringify(duplicates));
+  res.push('duplicate_line_to_lcid:' + JSON.stringify(duplicates, null, 2));
 
-  await writeFile(args[1], res.join('\n'), {encoding: 'utf8'});
+  await writeFile(args[2], res.join('\n'), {encoding: 'utf8'});
 
   console.info("test finished");
 }

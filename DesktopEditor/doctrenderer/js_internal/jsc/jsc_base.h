@@ -117,9 +117,9 @@ namespace NSJSBase
             return _value;
         }
 
-        virtual void set(const char* name, CJSValue* value_param)
+		virtual void set(const char* name, JSSmart<CJSValue> value_param)
         {
-            CJSValueJSC* _value = static_cast<CJSValueJSC*>(value_param);
+			CJSValueJSC* _value = static_cast<CJSValueJSC*>(value_param.GetPointer());
             [value setValue:_value->value forProperty:[[NSString alloc] initWithUTF8String:name]];
         }
 
@@ -219,20 +219,15 @@ namespace NSJSBase
             return _value;
         }
 
-        virtual void set(const int& index, CJSValue* value_param)
+		virtual void set(const int& index, JSSmart<CJSValue> value_param)
         {
-            CJSValueJSC* _value = static_cast<CJSValueJSC*>(value_param);
+			CJSValueJSC* _value = static_cast<CJSValueJSC*>(value_param.GetPointer());
             [value setValue:_value->value atIndex:index];
         }
 
-        virtual void add(CJSValue* value_param)
+		virtual void add(JSSmart<CJSValue> value_param)
         {
             set(getCount(), value_param);
-        }
-
-        virtual void set(const int& index, const bool& _value)
-        {
-            [value setValue:[JSValue valueWithBool:_value inContext : getContext()] atIndex:index];
         }
 
         virtual void set(const int& index, const int& _value)

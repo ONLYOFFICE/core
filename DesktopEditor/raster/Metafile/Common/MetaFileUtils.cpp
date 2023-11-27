@@ -1097,7 +1097,10 @@ namespace MetaFile
 
 	std::wstring ConvertToWString(double dValue, int nAccuracy)
 	{
-		int nNewAccuracy = (-1 != nAccuracy) ? nAccuracy : GetMinAccuracy(dValue);
+		int nNewAccuracy = (-1 < nAccuracy) ? nAccuracy : GetMinAccuracy(dValue);
+
+		if (0 == nNewAccuracy)
+			return std::to_wstring((int)dValue);
 
 		std::wstringstream owsStream;
 		owsStream << std::fixed << std::setprecision(nNewAccuracy) << dValue;

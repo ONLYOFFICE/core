@@ -83,7 +83,7 @@ namespace MetaFile
 		}
 
 		if (1 != dXScale || 1 != dYScale)
-			m_pXmlWriter->WriteAttribute(L"transform", L"matrix(" + std::to_wstring(dXScale) + L",0,0," + std::to_wstring(dYScale) + L',' + ConvertToWString(dXTranslate) + L',' + ConvertToWString(dYTranslate) + L')');
+			m_pXmlWriter->WriteAttribute(L"transform", L"matrix(" + ConvertToWString(dXScale) + L",0,0," + ConvertToWString(dYScale) + L',' + ConvertToWString(dXTranslate) + L',' + ConvertToWString(dYTranslate) + L')');
 
 		m_pXmlWriter->WriteNodeEnd(L"svg", true, false);
 	}
@@ -936,10 +936,10 @@ namespace MetaFile
 
 		if (4 == arVertex.size())
 		{
-			arAttributes.push_back({L"x",      std::to_wstring(std::min(arVertex[0].nX, arVertex[1].nX))});
-			arAttributes.push_back({L"y",      std::to_wstring(std::min(arVertex[0].nY, arVertex[2].nY))});
-			arAttributes.push_back({L"width",  std::to_wstring(std::abs(arVertex[1].nX - arVertex[0].nX))});
-			arAttributes.push_back({L"height", std::to_wstring(std::abs(arVertex[2].nY - arVertex[0].nY))});
+			arAttributes.push_back({L"x",      ConvertToWString(std::min(arVertex[0].nX, arVertex[1].nX))});
+			arAttributes.push_back({L"y",      ConvertToWString(std::min(arVertex[0].nY, arVertex[2].nY))});
+			arAttributes.push_back({L"width",  ConvertToWString(std::abs(arVertex[1].nX - arVertex[0].nX))});
+			arAttributes.push_back({L"height", ConvertToWString(std::abs(arVertex[2].nY - arVertex[0].nY))});
 			WriteNode(L"rect" , arAttributes);
 		}
 		else if (3 == arVertex.size())

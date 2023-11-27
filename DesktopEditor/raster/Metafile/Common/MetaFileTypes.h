@@ -396,7 +396,29 @@ namespace MetaFile
 			X *= scale;
 			Y *= scale;
 		}
+		
+		bool operator==(const TPoint<T>& oPoint) const
+		{
+			return X == oPoint.X && Y == oPoint.Y;
+		}
+		
+		bool operator!=(const TPoint<T>& oPoint) const
+		{
+			return X != oPoint.X || Y != oPoint.Y;
+		}
 	};
+
+	template<>
+	bool TPoint<double>::operator==(const TPoint<double>& oPoint) const
+	{
+		return std::abs(X - oPoint.X) <= DBL_EPSILON && std::abs(Y - oPoint.Y) <= DBL_EPSILON;
+	}
+
+	template<>
+	bool TPoint<double>::operator!=(const TPoint<double>& oPoint) const 
+	{
+		return std::abs(X - oPoint.X) > DBL_EPSILON || std::abs(Y - oPoint.Y) > DBL_EPSILON;
+	}
 
 	typedef TPoint<int>    TPointL;
 	typedef TPoint<short>  TPointS;
@@ -404,17 +426,6 @@ namespace MetaFile
 
 	typedef TPoint<int>    TSizeL;
 	typedef TPoint<double> TScale;
-
-	template <typename T>
-	bool operator==(const TPoint<T>& oLeftValue, const TPoint<T>& oRightValue)
-	{
-		return oLeftValue.X == oRightValue.X && oLeftValue.Y == oRightValue.Y;
-	}
-
-	bool operator==(const TPoint<double>& oLeftValue, const TPoint<double>& oRightValue)
-	{
-		return std::abs(oLeftValue.X - oRightValue.X) <= DBL_EPSILON && std::abs(oLeftValue.Y - oRightValue.Y) <= DBL_EPSILON;
-	}
 
 	template<typename T>
 	struct TRect
@@ -504,26 +515,41 @@ namespace MetaFile
 			Right  = pOther->Right;
 			Bottom = pOther->Bottom;
 		}
+		
+		bool operator==(const TRect<T>& oRect) const
+		{
+			return Left  == oRect.Left  && Top    == oRect.Top    &&
+			       Right == oRect.Right && Bottom == oRect.Bottom;
+		}
+		
+		bool operator!=(const TRect<T>& oRect) const
+		{
+			return Left  != oRect.Left  || Top    != oRect.Top    ||
+			       Right != oRect.Right || Bottom != oRect.Bottom;
+		}
 	};
 
+	template<>
+	bool TRect<double>::operator==(const TRect<double>& oRect) const
+	{
+		return std::abs(Left   - oRect.Right)  <= DBL_EPSILON &&
+		       std::abs(Top    - oRect.Top)    <= DBL_EPSILON &&
+		       std::abs(Right  - oRect.Right)  <= DBL_EPSILON &&
+		       std::abs(Bottom - oRect.Bottom) <= DBL_EPSILON;
+	}
+	
+	template<>
+	bool TRect<double>::operator!=(const TRect<double>& oRect) const
+	{
+		return std::abs(Left   - oRect.Right)  > DBL_EPSILON ||
+		       std::abs(Top    - oRect.Top)    > DBL_EPSILON ||
+		       std::abs(Right  - oRect.Right)  > DBL_EPSILON ||
+		       std::abs(Bottom - oRect.Bottom) > DBL_EPSILON;
+	}
+	
 	typedef TRect <int>    TRectL;
 	typedef TRect <short>  TRectS;
 	typedef TRect <double> TRectD;
-
-	template<typename T>
-	bool operator==(const TRect<T>& oLeftValue, const TRect<T>& oRightValue)
-	{
-		return oLeftValue.Left  == oRightValue.Left  && oLeftValue.Top    == oRightValue.Top    &&
-		       oLeftValue.Right == oRightValue.Right && oLeftValue.Bottom == oRightValue.Bottom;
-	}
-
-	bool operator==(const TRect <double>& oLeftValue, const TRect <double>& oRightValue)
-	{
-		return std::abs(oLeftValue.Left   - oRightValue.Right)  <= DBL_EPSILON &&
-		       std::abs(oLeftValue.Top    - oRightValue.Top)    <= DBL_EPSILON &&
-		       std::abs(oLeftValue.Right  - oRightValue.Right)  <= DBL_EPSILON &&
-		       std::abs(oLeftValue.Bottom - oRightValue.Bottom) <= DBL_EPSILON;
-	}
 
 	struct TRGBA
 	{

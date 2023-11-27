@@ -19,7 +19,7 @@ namespace MetaFile
 
 	const std::map<int, std::wstring> mHatchStyles =
 	{
-	    { HS_HORIZONTAL,      L"HORIZONTAL"},
+	    { HS_HORIZONTAL,       L"HORIZONTAL"},
 	    { HS_VERTICAL,         L"VERTICAL"},
 	    { HS_FDIAGONAL,        L"FDIAGONAL"},
 	    { HS_BDIAGONAL,        L"BDIAGONAL"},
@@ -98,6 +98,12 @@ namespace MetaFile
 
 	void CInterpretatorSvgBase::UpdateSize()
 	{
+		if (Equals(0., m_oSizeWindow.X) && !Equals(0., m_oViewport.GetWidth()))
+			m_oSizeWindow.X =  m_oViewport.GetWidth();
+
+		if (Equals(0., m_oSizeWindow.Y) && !Equals(0., m_oViewport.GetHeight()))
+			m_oSizeWindow.Y =  m_oViewport.GetHeight();
+
 		if (0 != m_oSizeWindow.X && 0 == m_oSizeWindow.Y)
 			m_oSizeWindow.Y = m_oSizeWindow.X * (m_oViewport.GetHeight() / m_oViewport.GetWidth());
 		else if (0 == m_oSizeWindow.X && 0 != m_oSizeWindow.Y)
@@ -521,10 +527,7 @@ namespace MetaFile
 			default: arAttributes.push_back({L"stroke", L"rgb(" + INTCOLOR_TO_RGB(pPen->GetColor()) + L')'}); break;
 		}
 
-		double dStrokeWidth = std::fabs(pPen->GetWidth());
-
-		if (PS_COSMETIC == (pPen->GetStyle() & PS_TYPE_MASK) || 0 == dStrokeWidth)
-			dStrokeWidth = m_oViewport.GetWidth() / m_oSizeWindow.X * m_pParser->GetDpi() / 96.;
+		double dStrokeWidth = CalculatePenWidth();
 
 		arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
 
@@ -756,13 +759,13 @@ namespace MetaFile
 
 		m_bUpdatedClip = true;
 	}
-	
+
 	bool CInterpretatorSvgBase::OpenClip()
 	{
 		CloseClip();
 		
 		CClip *pClip = m_pParser->GetClip();
-		
+
 		if (NULL == pClip || pClip->Empty()) 
 			return false;
 
@@ -770,7 +773,7 @@ namespace MetaFile
 
 		WriteNodeBegin(L"g", {{L"clip-path", L"url(#" + m_oClip.GetClipId() + L')'}});
 		m_oClip.BeginClip();
-		
+
 		return true;
 	}
 	
@@ -917,19 +920,12 @@ namespace MetaFile
 		if (NULL == m_pParser || NULL == m_pParser->GetBrush())
 			return std::wstring();
 
-		double dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
+		double dStrokeWidth  = 1. / m_pParser->GetTransform()->M11;
 
 		if (NULL != m_pParser->GetPen())
-		{
-			dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
-	
-			if (PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK) || 0 == dStrokeWidth)
-				dStrokeWidth = m_oViewport.GetWidth() / m_oSizeWindow.X * m_pParser->GetDpi() / 96.;
-		}
-		else if (0 != m_oViewport.GetWidth() && 0 != m_oSizeWindow.X)
-			dStrokeWidth *= m_oViewport.GetWidth() / m_oSizeWindow.X;
+			dStrokeWidth = CalculatePenWidth();
 
-		std::wstring wsStrokeColor = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetBrush()->GetColor()) + L"," + ConvertToWString(m_pParser->GetBrush()->GetAlpha(), 0) + L")";
+		std::wstring wsStrokeColor = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetBrush()->GetColor()) + L"," + std::to_wstring(m_pParser->GetBrush()->GetAlpha()) + L")";
 		std::wstring wsBgColor;
 
 		if (TRANSPARENT != m_pParser->GetTextBgMode())
@@ -1008,17 +1004,10 @@ namespace MetaFile
 
 		std::wstring wsImageDataW = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pImageData, (LONG)nImageSize);
 
-		double dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
+		double dStrokeWidth  = 1. / m_pParser->GetTransform()->M11;
 
 		if (NULL != m_pParser->GetPen())
-		{
-			dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
-	
-			if (PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK) || 0 == dStrokeWidth)
-				dStrokeWidth = m_oViewport.GetWidth() / m_oSizeWindow.X * m_pParser->GetDpi() / 96.;
-		}
-		else if (0 != m_oViewport.GetWidth() && 0 != m_oSizeWindow.X)
-			dStrokeWidth *= m_oViewport.GetWidth() / m_oSizeWindow.X;
+			dStrokeWidth = CalculatePenWidth();
 
 		std::wstring wsWidth  = ConvertToWString(dStrokeWidth * unWidth);
 		std::wstring wsHeight = ConvertToWString(dStrokeWidth * unHeight);
@@ -1138,6 +1127,21 @@ namespace MetaFile
 		}
 
 		return std::wstring();
+	}
+	
+	double CInterpretatorSvgBase::CalculatePenWidth() const
+	{
+		double dPenWidth = 1.;
+
+		if (NULL != m_pParser->GetPen())
+		{
+			dPenWidth = std::fabs(m_pParser->GetPen()->GetWidth());
+
+			if (PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK) || Equals(0., dPenWidth))
+				dPenWidth = m_oViewport.GetWidth() / m_oSizeWindow.X * m_pParser->GetDpi() / 96.;
+		}
+
+		return dPenWidth;
 	}
 
 	CHatchGenerator::CHatchGenerator()

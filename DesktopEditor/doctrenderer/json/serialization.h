@@ -22,7 +22,7 @@ namespace NSJSON
 			JSSmart<NSJSBase::CJSArray> jsArr = NSJSBase::CJSContext::createArray(len);
 			for (int i = 0; i < len; i++)
 			{
-				jsArr->set(i, toJS(value[i]).GetPointer());
+				jsArr->set(i, toJS(value[i]));
 			}
 			ret = jsArr->toValue();
 		}

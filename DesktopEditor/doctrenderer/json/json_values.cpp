@@ -125,7 +125,7 @@ namespace NSJSON
 		if (m_type == ptDouble)
 			return m_double;
 		if (m_type == ptInteger)
-			return (double)m_double;
+			return (double)m_int;
 #ifdef JSON_DEBUG
 		throw std::bad_cast();
 #endif

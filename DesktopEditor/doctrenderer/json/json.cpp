@@ -318,6 +318,9 @@ namespace NSJSON
 	CValue CValue::CreateArray(int count)
 	{
 		CValue ret;
+		if (count < 0)
+			return ret;
+
 		ret.m_internal->m_value = std::make_shared<CArray>(count);
 		ret.m_internal->m_type = CTypedValue::vtArray;
 		return ret;
@@ -326,6 +329,9 @@ namespace NSJSON
 	CValue CValue::CreateTypedArray(BYTE* data, int count, bool isExternalize)
 	{
 		CValue ret;
+		if (count <= 0)
+			return ret;
+
 		ret.m_internal->m_value = std::make_shared<CTypedArray>(data, count, isExternalize);
 		ret.m_internal->m_type = CTypedValue::vtTypedArray;
 		return ret;

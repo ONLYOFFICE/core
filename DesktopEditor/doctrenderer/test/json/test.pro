@@ -14,7 +14,15 @@ CORE_3DPARTY_DIR = $$CORE_ROOT_DIR/Common/3dParty
 PWD_ROOT_DIR = $$PWD
 
 include($$CORE_ROOT_DIR/Common/base.pri)
-#include($$CORE_3DPARTY_DIR/googletest/googletest.pri)
+
+# Comment to inspect simple usage example
+# Uncomment to run google tests
+CONFIG += json_google_test
+
+json_google_test {
+	include($$CORE_3DPARTY_DIR/googletest/googletest.pri)
+	DEFINES += JSON_GOOGLE_TEST
+}
 
 DESTDIR = $$PWD/build
 

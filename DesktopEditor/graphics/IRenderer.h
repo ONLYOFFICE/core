@@ -357,6 +357,9 @@ public:
 
 	virtual HRESULT IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedCommandType& type) { return S_FALSE; }
 	virtual HRESULT AdvancedCommand(IAdvancedCommand* command) { return S_FALSE; }
+
+	// graphics layer settings
+	virtual HRESULT put_LayerOpacity(double dValue) { return S_FALSE; }
 };
 
 #define PROPERTY_RENDERER(NameBase, Name, Type)    \

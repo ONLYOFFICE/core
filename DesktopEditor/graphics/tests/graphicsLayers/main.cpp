@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 	pRasterRenderer->PathCommandStart();
 
 	// Отрисовываем основной слой
-	pRasterRenderer->PathCommandRect(50, 200, 300, 300);
+	pRasterRenderer->PathCommandRect(50, 200, 600, 300);
 
 	pRasterRenderer->put_BrushAlpha1(255);
 	pRasterRenderer->put_BrushColor1(RGB_TO_INT(255, 0, 0)); // красный
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 	pRasterRenderer->put_PenColor(RGB_TO_INT(0, 0, 255));
 	pRasterRenderer->put_PenSize(40);
 
-	pRasterRenderer->SetLayerOpacity(0.5);
+	pRasterRenderer->put_LayerOpacity(0.5);
 
 	pRasterRenderer->DrawPath(c_nWindingFillMode | c_nStroke);
 
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 	pRasterRenderer->put_PenColor(RGB_TO_INT(255, 0, 0));
 	pRasterRenderer->put_PenSize(40);
 
-	pRasterRenderer->SetLayerOpacity(1);
+	pRasterRenderer->put_LayerOpacity(1);
 
 	pRasterRenderer->DrawPath(c_nWindingFillMode | c_nStroke);
 

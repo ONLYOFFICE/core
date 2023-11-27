@@ -1416,9 +1416,9 @@ void CGraphicsRenderer::SetAlphaMask(Aggplus::CAlphaMask* pAlphaMask)
 	m_pRenderer->SetAlphaMask(pAlphaMask);
 }
 
-void CGraphicsRenderer::SetLayerOpacity(double dOpacity)
+HRESULT CGraphicsRenderer::put_LayerOpacity(double dValue)
 {
-	m_pRenderer->SetLayerOpacity(dOpacity);
+	return m_pRenderer->SetLayerOpacity(dValue);
 }
 
 void CGraphicsRenderer::put_GlobalAlphaEnabled(const bool& bEnabled, const double& dVal)

@@ -686,6 +686,27 @@ void ReadAnnotAP(BYTE* pWidgetsAP, int& i)
 	std::cout << std::endl;
 }
 
+void ReadFileAttachment(BYTE* pAnnots, int& i, int n)
+{
+	std::cout << "EF FileAttachment" << n << ".txt, ";
+	int nFileLength = READ_INT(pAnnots + i);
+	i += 4;
+
+	unsigned long long npFile1 = READ_INT(pAnnots + i);
+	i += 4;
+	unsigned long long npFile2 = READ_INT(pAnnots + i);
+	i += 4;
+
+	BYTE* res = (BYTE*)(npFile2 << 32 | npFile1);
+
+	NSFile::CFileBinary oFile;
+	if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/FileAttachment" + std::to_wstring(n) + L".txt"))
+		oFile.WriteFile(res, nFileLength);
+	oFile.CloseFile();
+
+	RELEASEARRAYOBJECTS(res);
+}
+
 #include "../../../../../fontengine/ApplicationFontsWorker.h"
 #include "../../../../../common/Directory.h"
 
@@ -1441,6 +1462,97 @@ int main(int argc, char* argv[])
 					i += 1;
 					std::string arrSy[] = {"None", "P", "S"};
 					std::cout << "Sy " << arrSy[nPathLength] << ", ";
+				}
+			}
+			else if (sType == "FileAttachment")
+			{
+				if (nFlags & (1 << 15))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "Name " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 16))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "FS " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 17))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "F " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 18))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "UF " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 19))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "DOS " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 20))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "Mac " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 21))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "Unix " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 22))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "ID " << std::string((char*)(pAnnots + i), nPathLength);
+					i += nPathLength;
+
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << " " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 23))
+					std::cout << "V true, ";
+				else
+					std::cout << "V false, ";
+				if (nFlags & (1 << 24))
+				{
+					int nFlag = READ_INT(pAnnots + i);
+					i += 4;
+
+					if (nFlag & (1 << 0))
+						ReadFileAttachment(pAnnots, i, 0);
+					if (nFlag & (1 << 1))
+						ReadFileAttachment(pAnnots, i, 1);
+					if (nFlag & (1 << 2))
+						ReadFileAttachment(pAnnots, i, 2);
+					if (nFlag & (1 << 3))
+						ReadFileAttachment(pAnnots, i, 3);
+					if (nFlag & (1 << 4))
+						ReadFileAttachment(pAnnots, i, 4);
+				}
+				if (nFlags & (1 << 26))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "Desc " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
 				}
 			}
 

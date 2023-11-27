@@ -61,6 +61,15 @@ oObj.free();\
 		put = oObj2.getNum();\
 	oObj2.free();\
 }
+#define WRITE_EF(EF) \
+{ \
+	oRes.AddInt(EF->nLength); \
+	unsigned long long npSubMatrix = (unsigned long long)EF->pFile; \
+	unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF; \
+	oRes.AddInt(npSubMatrix1); \
+	oRes.AddInt(npSubMatrix >> 32); \
+	EF->bFree = false; \
+}
 
 TextString* getName(Object* oField)
 {
@@ -411,6 +420,28 @@ BYTE getLE(Object* oObj)
 		nLE = 9;
 
 	return nLE;
+}
+CAnnotFileAttachment::CEmbeddedFile* getEF(Object* oObj)
+{
+	CAnnotFileAttachment::CEmbeddedFile* pRes = new CAnnotFileAttachment::CEmbeddedFile();
+
+	Object oObj2;
+	Dict* pImDict = oObj->streamGetDict();
+	if (pImDict->lookup("Length", &oObj2)->isInt())
+		pRes->nLength = oObj2.getInt();
+	oObj2.free();
+	if (pImDict->lookup("DL", &oObj2)->isInt())
+		pRes->nLength = oObj2.getInt();
+	oObj2.free();
+
+	Stream* pImage = oObj->getStream();
+	pImage->reset();
+	pRes->pFile = new BYTE[pRes->nLength];
+	BYTE* pBufferPtr = pRes->pFile;
+	for (int nI = 0; nI < pRes->nLength; ++nI)
+		*pBufferPtr++ = (BYTE)pImage->getChar();
+
+	return pRes;
 }
 
 //------------------------------------------------------------------------
@@ -1409,7 +1440,7 @@ CAnnotCaret::CAnnotCaret(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CM
 	oAnnotRef->fetch(pXref, &oAnnot);
 
 	// 16 - Различия Rect и фактического размера - RD
-	if (oAnnot.dictLookup("RD", &oObj)->isArray())
+	if (oAnnot.dictLookup("RD", &oObj)->isArray() && oObj.arrayGetLength() == 4)
 	{
 		m_unFlags |= (1 << 15);
 		ARR_GET_NUM(oObj, 0, m_pRD[0]);
@@ -1432,6 +1463,132 @@ CAnnotCaret::CAnnotCaret(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CM
 	oObj.free();
 
 	oAnnot.free();
+}
+
+//------------------------------------------------------------------------
+// FileAttachment
+//------------------------------------------------------------------------
+
+CAnnotFileAttachment::CAnnotFileAttachment(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
+{
+	m_pEF = NULL;
+
+	Object oAnnot, oObj, oObj2;
+	XRef* pXref = pdfDoc->getXRef();
+	oAnnotRef->fetch(pXref, &oAnnot);
+
+	// 16 - Иконка - Name
+	if (oAnnot.dictLookup("Name", &oObj)->isName())
+	{
+		m_unFlags |= (1 << 15);
+		m_sName = oObj.getName();
+	}
+	oObj.free();
+
+	Object oFS;
+	if (!oAnnot.dictLookup("FS", &oFS)->isDict())
+	{
+		oFS.free(); oAnnot.free();
+		return;
+	}
+
+	// 17 - Файловая система - FS
+	if (oFS.dictLookup("FS", &oObj)->isName())
+	{
+		m_unFlags |= (1 << 16);
+		m_sFS = oObj.getName();
+	}
+	oObj.free();
+
+	// 18 - Спецификация файла - F
+	DICT_LOOKUP_STRING(oFS.dictLookup, "F", 17, m_sF);
+
+	// 19 - Спецификация файла - UF
+	DICT_LOOKUP_STRING(oFS.dictLookup, "UF", 18, m_sUF);
+
+	// 20 - Спецификация файла - DOS
+	DICT_LOOKUP_STRING(oFS.dictLookup, "DOS", 19, m_sDOS);
+
+	// 21 - Спецификация файла - Mac
+	DICT_LOOKUP_STRING(oFS.dictLookup, "Mac", 20, m_sMac);
+
+	// 22 - Спецификация файла - Unix
+	DICT_LOOKUP_STRING(oFS.dictLookup, "Unix", 21, m_sUnix);
+
+	// 23 - Идентификатор файла - ID
+	if (oFS.dictLookup("ID", &oObj)->isArray() && oObj.arrayGetLength() == 2)
+	{
+		m_unFlags |= (1 << 22);
+		if (oObj.arrayGet(0, &oObj2)->isString())
+		{
+			TextString* s = new TextString(oObj2.getString());
+			m_sID.first = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+			delete s;
+		}
+		oObj2.free();
+		if (oObj.arrayGet(1, &oObj2)->isString())
+		{
+			TextString* s = new TextString(oObj2.getString());
+			m_sID.second = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+			delete s;
+		}
+		oObj2.free();
+	}
+	oObj.free();
+
+	// 24 - Изменчивость файла - V
+	if (oFS.dictLookup("V", &oObj)->isBool() && oObj.getBool())
+		m_unFlags |= (1 << 23);
+	oObj.free();
+
+	// 25 - Встроенные файловые потоки - EF
+	Object oEF;
+	if (oFS.dictLookup("EF", &oEF)->isDict())
+	{
+		m_unFlags |= (1 << 24);
+		m_pEF = new CEmbeddedFiles();
+		if (oEF.dictLookup("F", &oObj)->isStream())
+			m_pEF->m_pF = getEF(&oObj);
+		oObj.free();
+		if (oEF.dictLookup("UF", &oObj)->isStream())
+			m_pEF->m_pUF = getEF(&oObj);
+		oObj.free();
+		if (oEF.dictLookup("DOS", &oObj)->isStream())
+			m_pEF->m_pDOS = getEF(&oObj);
+		oObj.free();
+		if (oEF.dictLookup("Mac", &oObj)->isStream())
+			m_pEF->m_pMac = getEF(&oObj);
+		oObj.free();
+		if (oEF.dictLookup("Unix", &oObj)->isStream())
+			m_pEF->m_pUnix = getEF(&oObj);
+		oObj.free();
+	}
+	oEF.free();
+
+	// 26 - Встроенные файловые потоки - RF
+	Object oRF;
+	if (oFS.dictLookup("RF", &oRF)->isDict())
+	{
+		m_unFlags |= (1 << 25);
+	}
+	oRF.free();
+
+	// 27 - Описание файла - Desc
+	DICT_LOOKUP_STRING(oFS.dictLookup, "Desc", 26, m_sDesc);
+
+	// 28 - Коллекция - Cl
+	if (oFS.dictLookup("Cl", &oObj)->isDict())
+	{
+		m_unFlags |= (1 << 27);
+	}
+	oObj.free();
+
+	oFS.free(); oAnnot.free();
+}
+
+CAnnotFileAttachment::~CAnnotFileAttachment()
+{
+	RELEASEOBJECT(m_pEF);
 }
 
 //------------------------------------------------------------------------
@@ -2735,5 +2892,73 @@ void CAnnotCaret::ToWASM(NSWasm::CData& oRes)
 	}
 	if (m_unFlags & (1 << 16))
 		oRes.WriteBYTE(m_nSy);
+}
+
+void CAnnotFileAttachment::ToWASM(NSWasm::CData& oRes)
+{
+	oRes.WriteBYTE(16); // FileAttachment
+
+	CMarkupAnnot::ToWASM(oRes);
+
+	if (m_unFlags & (1 << 15))
+		oRes.WriteString(m_sName);
+	if (m_unFlags & (1 << 16))
+		oRes.WriteString(m_sFS);
+	if (m_unFlags & (1 << 17))
+		oRes.WriteString(m_sF);
+	if (m_unFlags & (1 << 18))
+		oRes.WriteString(m_sUF);
+	if (m_unFlags & (1 << 19))
+		oRes.WriteString(m_sDOS);
+	if (m_unFlags & (1 << 20))
+		oRes.WriteString(m_sMac);
+	if (m_unFlags & (1 << 21))
+		oRes.WriteString(m_sUnix);
+	if (m_unFlags & (1 << 22))
+	{
+		oRes.WriteString(m_sID.first);
+		oRes.WriteString(m_sID.second);
+	}
+	if (m_unFlags & (1 << 24))
+	{
+		int nFlag = 0;
+		int nPos = oRes.GetSize();
+		oRes.AddInt(nFlag);
+		// Освобождение памяти необходимо вызвать с js стороны
+		if (m_pEF->m_pF)
+		{
+			nFlag |= (1 << 0);
+			WRITE_EF(m_pEF->m_pF);
+		}
+		if (m_pEF->m_pUF)
+		{
+			nFlag |= (1 << 1);
+			WRITE_EF(m_pEF->m_pUF);
+		}
+		if (m_pEF->m_pDOS)
+		{
+			nFlag |= (1 << 2);
+			WRITE_EF(m_pEF->m_pDOS);
+		}
+		if (m_pEF->m_pMac)
+		{
+			nFlag |= (1 << 3);
+			WRITE_EF(m_pEF->m_pMac);
+		}
+		if (m_pEF->m_pUnix)
+		{
+			nFlag |= (1 << 4);
+			WRITE_EF(m_pEF->m_pUnix);
+		}
+		oRes.AddInt(nFlag, nPos);
+	}
+	if (m_unFlags & (1 << 25))
+	{
+	}
+	if (m_unFlags & (1 << 26))
+		oRes.WriteString(m_sDesc);
+	if (m_unFlags & (1 << 27))
+	{
+	}
 }
 }

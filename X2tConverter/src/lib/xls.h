@@ -91,6 +91,6 @@ namespace NExtractTools
 
 	_UINT32 xls2xlst(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		return NSCommon::ooxml2oot(sFrom, sTo, params, convertParams, L"xlst", xls2xlst_bin);
+		return NSCommon::format2oot(sFrom, sTo, params, convertParams, L"xlst", xls2xlst_bin);
 	}
 }

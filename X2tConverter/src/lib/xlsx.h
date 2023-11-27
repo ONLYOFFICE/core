@@ -40,7 +40,7 @@ namespace NExtractTools
 {
 	_UINT32 xlsx2xlst(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		return NSCommon::ooxml2oot(sFrom, sTo, params, convertParams, L"xlst", xlsx2xlst_bin);
+		return NSCommon::format2oot(sFrom, sTo, params, convertParams, L"xlst", xlsx2xlst_bin);
 	}
 	_UINT32 xlsx2xlst_bin(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
@@ -97,7 +97,7 @@ namespace NExtractTools
 	}
 	_UINT32 xlsxflat2xlst(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		return NSCommon::ooxml2oot(sFrom, sTo, params, convertParams, L"xlst", xlsxflat2xlst_bin);
+		return NSCommon::format2oot(sFrom, sTo, params, convertParams, L"xlst", xlsxflat2xlst_bin);
 	}
 	_UINT32 xlsxflat2xlst_bin(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
@@ -125,7 +125,7 @@ namespace NExtractTools
 	}
 	_UINT32 xlsx_dir2xlst(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		return NSCommon::ooxml2oot(sFrom, sTo, params, convertParams, L"xlst", xlsx_dir2xlst_bin);
+		return NSCommon::format2oot(sFrom, sTo, params, convertParams, L"xlst", xlsx_dir2xlst_bin);
 	}
 	_UINT32 xlsx_dir2xlst_bin(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
@@ -231,7 +231,7 @@ namespace NExtractTools
 	}
 	_UINT32 xlst2xlsx(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		return NSCommon::oot2ooxml(sFrom, sTo, params, convertParams, L"xlst", xlst_bin2xlsx);
+		return NSCommon::oot2format(sFrom, sTo, params, convertParams, L"xlst", xlst_bin2xlsx);
 	}
 
 	_UINT32 xltx2xlsx(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
@@ -260,58 +260,7 @@ namespace NExtractTools
 	}
 	_UINT32 xlsm2xlsx_dir(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		COfficeUtils oCOfficeUtils(NULL);
-		if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTo, NULL, 0))
-		{
-			std::wstring sContentTypesPath = combinePath(sTo, L"[Content_Types].xml");
-			if (NSFile::CFileBinary::Exists(sContentTypesPath))
-			{
-				std::wstring sData;
-				if (NSFile::CFileBinary::ReadAllTextUtf8(sContentTypesPath, sData))
-				{
-					std::wstring sCTFrom = L"application/vnd.ms-excel.sheet.macroEnabled.main+xml";
-					std::wstring sCTTo = L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml";
-					sData = string_replaceAll(sData, sCTFrom, sCTTo);
-
-					sCTFrom = L"<Override PartName=\"/xl/vbaProject.bin\" ContentType=\"application/vnd.ms-office.vbaProject\"/>";
-					sData = string_replaceAll(sData, sCTFrom, L"");
-
-					sCTFrom = L"<Default Extension=\"bin\" ContentType=\"application/vnd.ms-office.vbaProject\"/>";
-					sData = string_replaceAll(sData, sCTFrom, L"");
-
-					if (NSFile::CFileBinary::SaveToFile(sContentTypesPath, sData, true) == false)
-					{
-						return AVS_FILEUTILS_ERROR_CONVERT;
-					}
-				}
-			}
-			std::wstring sWorkbookRelsPath = sTo + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"_rels" + FILE_SEPARATOR_STR + L"workbook.xml.rels";
-			if (NSFile::CFileBinary::Exists(sWorkbookRelsPath))
-			{
-				std::wstring sData;
-				if (NSFile::CFileBinary::ReadAllTextUtf8(sWorkbookRelsPath, sData))
-				{
-					size_t pos = sData.find(L"vbaProject.bin");
-					if (pos != std::wstring::npos)
-					{
-						size_t pos1 = sData.rfind(L"<", pos);
-						size_t pos2 = sData.find(L">", pos);
-
-						if (pos1 != std::wstring::npos && pos2 != std::wstring::npos)
-						{
-							sData.erase(sData.begin() + pos1, sData.begin() + pos2 + 1);
-						}
-					}
-					if (NSFile::CFileBinary::SaveToFile(sWorkbookRelsPath, sData, true) == false)
-					{
-						return AVS_FILEUTILS_ERROR_CONVERT;
-					}
-				}
-			}
-			std::wstring sVbaProjectPath = sTo + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"vbaProject.bin";
-			NSFile::CFileBinary::Remove(sVbaProjectPath);
-		}
-		return 0;
+		return NSCommon::ooxmlm2ooml_dir(sFrom, sTo, params, convertParams, NSCommon::OOXML_DOCUMENT_TYPE::Sheet, NSCommon::OOXML_DOCUMENT_SUBTYPE::Main);
 	}
 	_UINT32 xltm2xlsx(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{

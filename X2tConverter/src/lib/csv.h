@@ -141,14 +141,14 @@ namespace NExtractTools
 	}
 	_UINT32 csv2xlsx(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		return NSCommon::ooxml2format(sFrom, sTo, params, convertParams, L"xlsx", csv2xlsx_dir);
+		return NSCommon::format2ooxml(sFrom, sTo, params, convertParams, L"xlsx", csv2xlsx_dir);
 	}
 
 	_UINT32 csv2xlst(const std::wstring &sFrom, const std::wstring &sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		return NSCommon::ooxml2oot(sFrom, sTo, params, convertParams, L"xlst", csv2xlst_bin);
+		return NSCommon::format2oot(sFrom, sTo, params, convertParams, L"xlst", csv2xlst_bin);
 	}
-	// TODO: return NSCommon::oot2ooxml(sFrom, sTo, params, convertParams, L"doct", doct_bin2rtf);
+	// TODO: return NSCommon::oot2format(sFrom, sTo, params, convertParams, L"doct", doct_bin2rtf);
 	_UINT32 xlst2csv(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
 		std::wstring sCSV = sTo;
@@ -156,7 +156,7 @@ namespace NExtractTools
 		std::wstring sTempXlstFileEditor = combinePath(sTempUnpackedXLST, L"Editor.bin");
 		NSDirectory::CreateDirectory(sTempUnpackedXLST);
 
-			   // unzip xlst to folder
+		// unzip xlst to folder
 		COfficeUtils oCOfficeUtils(NULL);
 		if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedXLST, NULL, 0))
 			return AVS_FILEUTILS_ERROR_CONVERT;

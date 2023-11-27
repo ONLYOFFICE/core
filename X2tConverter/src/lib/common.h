@@ -115,7 +115,7 @@ namespace NExtractTools
 		return res;
 	}
 
-		   // Add record to [Content_Types].xml
+	// Add record to [Content_Types].xml
 	_UINT32 addContentType(const std::wstring& sDir, const std::wstring& sCT)
 	{
 		_UINT32 nRes = 0;
@@ -133,7 +133,7 @@ namespace NExtractTools
 		return nRes;
 	}
 
-		   // Replace record to [Content_Types].xml
+	// Replace record to [Content_Types].xml
 	_UINT32 replaceContentType(const std::wstring& sDir, const std::wstring& sCTFrom, const std::wstring& sCTTo)
 	{
 		_UINT32 nRes = 0;
@@ -163,6 +163,7 @@ namespace NExtractTools
 		return (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTo, NULL, 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 	}
 
+	// compress ooxml directory to archive and encrypt if needed.
 	_UINT32 dir2zipMscrypt(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
 		_UINT32 nRes = S_OK;
@@ -207,14 +208,18 @@ namespace NExtractTools
 			Show     = 2
 		};
 
-		_UINT32 ooxml2oot(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams,
-						  const std::wstring& type, CONVERT_FUNC func)
+		// convert any format to internal format
+		// 1) create temp directory with name prefix
+		// 2) convert to internal format with func2dir method
+		// 3) compress to zip archive
+		_UINT32 format2oot(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams,
+						   const std::wstring& prefix, CONVERT_FUNC func2dir)
 		{
-			std::wstring sOOTDir        = combinePath(convertParams.m_sTempDir, type + L"_unpacked");
+			std::wstring sOOTDir        = combinePath(convertParams.m_sTempDir, prefix + L"_unpacked");
 			std::wstring sOOTFileEditor = combinePath(sOOTDir, L"Editor.bin");
 			NSDirectory::CreateDirectory(sOOTDir);
 
-			_UINT32 nRes = func(sFrom, sOOTFileEditor, params, convertParams);
+			_UINT32 nRes = func2dir(sFrom, sOOTFileEditor, params, convertParams);
 
 			if (SUCCEEDED_X2T(nRes))
 			{
@@ -225,14 +230,18 @@ namespace NExtractTools
 			return nRes;
 		}
 
-		_UINT32 oot2ooxml(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams,
-						  const std::wstring& type, CONVERT_FUNC func)
+		// convert internal format to any format
+		// 1) create temp directory with name prefix
+		// 2) extract internal format to directory [1]
+		// 3) convert to any format with func method
+		_UINT32 oot2format(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams,
+						   const std::wstring& prefix, CONVERT_FUNC func)
 		{
-			std::wstring sOOTDir        = combinePath(convertParams.m_sTempDir, type + L"_unpacked");
+			std::wstring sOOTDir        = combinePath(convertParams.m_sTempDir, prefix + L"_unpacked");
 			std::wstring sOOTFileEditor = combinePath(sOOTDir, L"Editor.bin");
 			NSDirectory::CreateDirectory(sOOTDir);
 
-				   // unzip doct to folder
+			// unzip doct to folder
 			COfficeUtils oCOfficeUtils(NULL);
 			if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sOOTDir, NULL, 0))
 				return AVS_FILEUTILS_ERROR_CONVERT;
@@ -240,10 +249,16 @@ namespace NExtractTools
 			return func(sOOTFileEditor, sTo, params, convertParams);
 		}
 
+		// convert ooxml format to another ooxml format
+		// 1) create temp directory with name prefix
+		// 2) extract sFrom format to directory [1]
+		// 3) convert to ooxml format with func method
+		// 4) compress ooxml format to archive
+		// example: docm => docx
 		_UINT32 ooxml2ooxml(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams,
-							const std::wstring& type, CONVERT_FUNC func)
+							const std::wstring& prefix, CONVERT_FUNC func)
 		{
-			std::wstring sUnpackedResult = combinePath(convertParams.m_sTempDir, type + L"_unpacked");
+			std::wstring sUnpackedResult = combinePath(convertParams.m_sTempDir, prefix + L"_unpacked");
 			NSDirectory::CreateDirectory(sUnpackedResult);
 
 			_UINT32 nRes = func(sFrom, sUnpackedResult, params, convertParams);
@@ -255,6 +270,7 @@ namespace NExtractTools
 			return nRes;
 		}
 
+		// extract zip file to folder and replace content type
 		_UINT32 ooxml2ooxml_replace_content_type(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams,
 												 const std::wstring& sSourceCT, const std::wstring& sDestCT)
 		{
@@ -276,6 +292,8 @@ namespace NExtractTools
 			return AVS_FILEUTILS_ERROR_CONVERT;
 		}
 
+		// remove macroses from ooxml directory
+		// differences: main/template/show, document/sheet/slide
 		_UINT32 ooxmlm_dir2ooxml_dir(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams,
 									 const OOXML_DOCUMENT_TYPE& type, const OOXML_DOCUMENT_SUBTYPE& documentType)
 		{
@@ -401,6 +419,7 @@ namespace NExtractTools
 			return 0;
 		}
 
+		// extract ooxml file with macroses to folder and remove macroses
 		_UINT32 ooxmlm2ooml_dir(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams,
 								const OOXML_DOCUMENT_TYPE& type, const OOXML_DOCUMENT_SUBTYPE& documentType)
 		{
@@ -412,43 +431,27 @@ namespace NExtractTools
 			return 0;
 		}
 
+		// convert any format to ooxml format
+		// 1) create temp directory with name prefix
+		// 2) convert to ooxml directory [1] with funcDir method
+		// 3) compress to ooxml format and encrypt it if needed
 		_UINT32 format2ooxml(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams,
-							 const std::wstring& type, CONVERT_FUNC func2dir)
+							 const std::wstring& prefix, CONVERT_FUNC func2dir, bool bIsCrypt = true)
 		{
-			std::wstring sOOXMLDir = combinePath(convertParams.m_sTempDir, type + L"_unpacked");
+			std::wstring sOOXMLDir = combinePath(convertParams.m_sTempDir, prefix + L"_unpacked");
 			NSDirectory::CreateDirectory(sOOXMLDir);
 
 			_UINT32 hRes = func2dir(sFrom, sOOXMLDir, params, convertParams);
 
 			if (SUCCEEDED_X2T(hRes))
 			{
-				hRes = dir2zipMscrypt(sOOXMLDir, sTo, params, convertParams);
-			}
-			else if (AVS_ERROR_DRM == hRes)
-			{
-				if (!params.getDontSaveAdditional())
+				if (bIsCrypt)
+					hRes = dir2zipMscrypt(sOOXMLDir, sTo, params, convertParams);
+				else
 				{
-					copyOrigin(sFrom, *params.m_sFileTo);
+					COfficeUtils oCOfficeUtils(NULL);
+					hRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sOOXMLDir, sTo, true)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 				}
-				return AVS_FILEUTILS_ERROR_CONVERT_DRM;
-			}
-			else if (AVS_ERROR_PASSWORD == hRes)
-			{
-				return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
-			}
-			return hRes;
-		}
-		_UINT32 format2ooxml_compress(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams,
-									  const std::wstring& type, CONVERT_FUNC func_format2dir)
-		{
-			std::wstring sOOXMLDir = combinePath(convertParams.m_sTempDir, type + L"_unpacked");
-			NSDirectory::CreateDirectory(sOOXMLDir);
-
-			_UINT32 hRes = func_format2dir(sFrom, sOOXMLDir, params, convertParams);
-			if (SUCCEEDED_X2T(hRes))
-			{
-				COfficeUtils oCOfficeUtils(NULL);
-				hRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sOOXMLDir, sTo, true)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 			}
 			else if (AVS_ERROR_DRM == hRes)
 			{
@@ -465,10 +468,14 @@ namespace NExtractTools
 			return hRes;
 		}
 
+		// convert ooxml file to any format
+		// 1) create temp directory with name prefix
+		// 2) extract ooxml to directory [1]
+		// 3) convert directory to any format with func_dir2format method
 		_UINT32 ooxml2format(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams,
-							 const std::wstring& type, CONVERT_FUNC func_dir2format)
+							 const std::wstring& prefix, CONVERT_FUNC func_dir2format)
 		{
-			std::wstring sOOXMLDir = combinePath(convertParams.m_sTempDir, type + L"_unpacked");
+			std::wstring sOOXMLDir = combinePath(convertParams.m_sTempDir, prefix + L"_unpacked");
 			NSDirectory::CreateDirectory(sOOXMLDir);
 
 			COfficeUtils oCOfficeUtils(NULL);

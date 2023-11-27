@@ -78,7 +78,7 @@ namespace NExtractTools
 	}
 	_UINT32 odf2oot(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		return NSCommon::ooxml2oot(sFrom, sTo, params, convertParams, L"doct", odf2oot_bin);
+		return NSCommon::format2oot(sFrom, sTo, params, convertParams, L"doct", odf2oot_bin);
 	}
 	_UINT32 odf2oot_bin(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
@@ -165,7 +165,7 @@ namespace NExtractTools
 	}
 	_UINT32 odf_flat2oot(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		return NSCommon::ooxml2oot(sFrom, sTo, params, convertParams, L"doct", odf_flat2oot_bin);
+		return NSCommon::format2oot(sFrom, sTo, params, convertParams, L"doct", odf_flat2oot_bin);
 	}
 	_UINT32 odf_flat2oot_bin(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{

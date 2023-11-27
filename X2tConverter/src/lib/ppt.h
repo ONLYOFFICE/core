@@ -98,6 +98,6 @@ namespace NExtractTools
 
 	_UINT32 ppt2pptt(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		return NSCommon::ooxml2oot(sFrom, sTo, params, convertParams, L"pptt", ppt2pptt_bin);
+		return NSCommon::format2oot(sFrom, sTo, params, convertParams, L"pptt", ppt2pptt_bin);
 	}
 }

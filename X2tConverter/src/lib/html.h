@@ -63,11 +63,11 @@ namespace NExtractTools
 	}
 	_UINT32 html2doct(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		return NSCommon::ooxml2oot(sFrom, sTo, params, convertParams, L"doct", html2doct_bin);
+		return NSCommon::format2oot(sFrom, sTo, params, convertParams, L"doct", html2doct_bin);
 	}
 	_UINT32 html_zip2doct(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		return NSCommon::ooxml2oot(sFrom, sTo, params, convertParams, L"doct", html_zip2doct_bin);
+		return NSCommon::format2oot(sFrom, sTo, params, convertParams, L"doct", html_zip2doct_bin);
 	}
 	_UINT32 html2docx(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{

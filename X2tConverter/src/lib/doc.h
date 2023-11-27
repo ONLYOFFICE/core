@@ -127,10 +127,10 @@ namespace NExtractTools
 	}
 	_UINT32 doc2doct(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		return NSCommon::ooxml2oot(sFrom, sTo, params, convertParams, L"doct", doc2doct_bin);
+		return NSCommon::format2oot(sFrom, sTo, params, convertParams, L"doct", doc2doct_bin);
 	}
 	_UINT32 doc2docm(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		return NSCommon::format2ooxml_compress(sFrom, sTo, params, convertParams, L"docx", doc2docx_dir);
+		return NSCommon::format2ooxml(sFrom, sTo, params, convertParams, L"docx", doc2docx_dir, false);
 	}
 }

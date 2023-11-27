@@ -70,7 +70,7 @@ namespace NExtractTools
 	}
 	_UINT32 pptx_dir2pptt(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		return NSCommon::ooxml2oot(sFrom, sTo, params, convertParams, L"pptt", pptx_dir2pptt_bin);
+		return NSCommon::format2oot(sFrom, sTo, params, convertParams, L"pptt", pptx_dir2pptt_bin);
 	}
 	_UINT32 pptx_dir2pptt_bin(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
@@ -101,7 +101,7 @@ namespace NExtractTools
 	}
 	_UINT32 pptx2pptt(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		return NSCommon::ooxml2oot(sFrom, sTo, params, convertParams, L"pptt", pptx2pptt_bin);
+		return NSCommon::format2oot(sFrom, sTo, params, convertParams, L"pptt", pptx2pptt_bin);
 	}
 	_UINT32 pptt_bin2pptx(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
@@ -180,7 +180,7 @@ namespace NExtractTools
 	}
 	_UINT32 pptt2pptx(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		return NSCommon::oot2ooxml(sFrom, sTo, params, convertParams, L"pptt", pptt_bin2pptx);
+		return NSCommon::oot2format(sFrom, sTo, params, convertParams, L"pptt", pptt_bin2pptx);
 	}
 
 	_UINT32 ppsx2pptx(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)

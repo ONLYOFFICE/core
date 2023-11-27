@@ -83,7 +83,7 @@ namespace NExtractTools
 			m_oCDocxSerializer.setIsNoBase64(params.getIsNoBase64());
 			m_oCDocxSerializer.setFontDir(params.getFontPath());
 
-				   // bool bRes = m_oCDocxSerializer.saveToFile (sResDoct, sSrcDocx, sTemp);
+			// bool bRes = m_oCDocxSerializer.saveToFile (sResDoct, sSrcDocx, sTemp);
 			nRes = m_oCDocxSerializer.saveToFile(sTo, sFrom, params.getXmlOptions(), convertParams.m_sTempDir) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
 		// clear tmp param for this method
@@ -92,11 +92,11 @@ namespace NExtractTools
 	}
 	_UINT32 docx2doct(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		return NSCommon::ooxml2oot(sFrom, sTo, params, convertParams, L"doct", docx2doct_bin);
+		return NSCommon::format2oot(sFrom, sTo, params, convertParams, L"doct", docx2doct_bin);
 	}
 	_UINT32 docx_dir2doct(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		return NSCommon::ooxml2oot(sFrom, sTo, params, convertParams, L"doct", docx_dir2doct_bin);
+		return NSCommon::format2oot(sFrom, sTo, params, convertParams, L"doct", docx_dir2doct_bin);
 	}
 	_UINT32 doct_bin2docx(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
@@ -185,13 +185,13 @@ namespace NExtractTools
 	}
 	_UINT32 doct2docx(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		return NSCommon::oot2ooxml(sFrom, sTo, params, convertParams, L"doct", doct_bin2docx);
+		return NSCommon::oot2format(sFrom, sTo, params, convertParams, L"doct", doct_bin2docx);
 	}
 
-		   // docx flat
+	// docx flat
 	_UINT32 docxflat2doct(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		return NSCommon::ooxml2oot(sFrom, sTo, params, convertParams, L"doct", docxflat2doct_bin);
+		return NSCommon::format2oot(sFrom, sTo, params, convertParams, L"doct", docxflat2doct_bin);
 	}
 	_UINT32 docxflat2doct_bin(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
@@ -201,7 +201,7 @@ namespace NExtractTools
 		m_oCDocxSerializer.setIsNoBase64(params.getIsNoBase64());
 		m_oCDocxSerializer.setFontDir(params.getFontPath());
 
-			   // bool bRes = m_oCDocxSerializer.saveToFile (sResDoct, sSrcDocx, sTemp);
+		// bool bRes = m_oCDocxSerializer.saveToFile (sResDoct, sSrcDocx, sTemp);
 		_UINT32 nRes = m_oCDocxSerializer.saveToFile(sTo, sFrom, params.getXmlOptions(), convertParams.m_sTempDir) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
 		return nRes;
@@ -226,24 +226,14 @@ namespace NExtractTools
 		return nRes;
 	}
 
-		   // packageooxml
+	// packageooxml
 	_UINT32 package2ooxml(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		std::wstring sResultOoxmlDir = combinePath(convertParams.m_sTempDir, L"ooxml_unpacked");
-		NSDirectory::CreateDirectory(sResultOoxmlDir);
-
-		_UINT32 nRes = package2ooxml_dir(sFrom, sResultOoxmlDir, params, convertParams);
-
-		if (SUCCEEDED_X2T(nRes))
-		{
-			nRes = dir2zipMscrypt(sResultOoxmlDir, sTo, params, convertParams);
-		}
-
-		return nRes;
+		return NSCommon::format2ooxml(sFrom, sTo, params, convertParams, L"ooxml", package2ooxml_dir);
 	}
 	_UINT32 package2bin_t(const std::wstring &sFrom, const std::wstring &sTo, InputParams &params, ConvertParams& convertParams)
 	{
-		return NSCommon::ooxml2oot(sFrom, sTo, params, convertParams, L"bin_t", package2bin);
+		return NSCommon::format2oot(sFrom, sTo, params, convertParams, L"bin_t", package2bin);
 	}
 	_UINT32 package2bin(const std::wstring &sFrom, const std::wstring &sTo, InputParams &params, ConvertParams& convertParams)
 	{
@@ -302,7 +292,7 @@ namespace NExtractTools
 		return nRes;
 	}
 
-		   // docm/dotx
+	// docm/dotx
 	_UINT32 dotm2docm(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
 		return NSCommon::ooxml2ooxml(sFrom, sTo, params, convertParams, L"docm", dotm2docm_dir);

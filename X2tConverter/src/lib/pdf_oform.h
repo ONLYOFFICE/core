@@ -126,15 +126,17 @@ namespace NExtractTools
 		if (NULL == pData)
 			return AVS_FILEUTILS_ERROR_CONVERT;
 
+		_UINT32 nRes = 0;
 		NSFile::CFileBinary oFile;
 		if (oFile.CreateFile(sTo))
 		{
 			bool bIsOk = oFile.WriteFile(pData, dwDataSize);
 			oFile.CloseFile();
-			return bIsOk ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+			nRes = bIsOk ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
 
-		return AVS_FILEUTILS_ERROR_CONVERT;
+		RELEASEARRAYOBJECTS(pData);
+		return nRes;
 	}
 	_UINT32 docx2pdfoform(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{

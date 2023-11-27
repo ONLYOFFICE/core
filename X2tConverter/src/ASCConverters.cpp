@@ -609,6 +609,10 @@ namespace NExtractTools
 			{
 				nRes = mht2docx_dir(sFrom, sDocxDir, params, convertParams);
 			}
+			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF == nFormatFrom)
+			{
+				nRes = pdfoform2docx_dir(sFrom, sDocxDir, params, convertParams);
+			}
 			else
 				nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 			if (SUCCEEDED_X2T(nRes))

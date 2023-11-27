@@ -31,4 +31,4 @@
  */
 #pragma once
 
-static const char* g_format_oform_pdf_meta_tag = "ONLYOFFICE FORM";
+static const char* g_format_oform_pdf_meta_tag = "ONLYOFFICEFORM";

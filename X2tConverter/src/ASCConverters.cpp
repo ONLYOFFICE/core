@@ -50,6 +50,7 @@
 #include "lib/odf.h"
 
 #include "lib/pdf_image.h"
+#include "lib/pdf_oform.h"
 
 #include "../../DesktopEditor/doctrenderer/docbuilder.h"
 #include "../../MsBinaryFile/Common/Vba/VbaReader.h"

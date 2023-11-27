@@ -642,6 +642,11 @@ void odf_chart_context::set_view3D(int rotX, int rotY, int depthPercent, int per
 		if (impl_->current_level_.back().chart_properties)
 		{
 			impl_->current_level_.back().chart_properties->right_angled_axes_ = angAx;
+
+			if (!angAx)
+			{
+				plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.projection_ = L"perspective";
+			}
 		}
 	}
 }

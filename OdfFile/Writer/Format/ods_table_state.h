@@ -552,6 +552,8 @@ private:
 	std::vector<ods_hyperlink_state> hyperlinks_;
 	std::map<unsigned int, ods_shared_formula_state> shared_formulas_;
 
+	std::map<std::wstring, std::wstring> mapTabled; // for formula used ... perhaps
+
 	std::vector<table_part_state> table_parts_;
 
 	std::vector<data_validation_state> data_validations_;

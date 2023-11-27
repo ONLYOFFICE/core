@@ -425,9 +425,9 @@ namespace NSJSBase
 			return _value;
 		}
 
-		virtual void set(const char* name, CJSValue* value_param)
+		virtual void set(const char* name, JSSmart<CJSValue> value_param)
 		{
-			CJSValueV8* _value = static_cast<CJSValueV8*>(value_param);
+			CJSValueV8* _value = static_cast<CJSValueV8*>(value_param.GetPointer());
 			v8::Local<v8::String> _name = CreateV8String(CV8Worker::GetCurrent(), name);
 			value->Set(V8ContextFirstArg _name, _value->value);
 		}
@@ -552,21 +552,16 @@ namespace NSJSBase
 			return _value;
 		}
 
-		virtual void set(const int& index, CJSValue* value_param)
+		virtual void set(const int& index, JSSmart<CJSValue> value_param)
 		{
-			CJSValueV8* _value = static_cast<CJSValueV8*>(value_param);
+			CJSValueV8* _value = static_cast<CJSValueV8*>(value_param.GetPointer());
 			value->Set(V8ContextFirstArg index, _value->value);
 		}
 
-		virtual void add(CJSValue* value_param)
+		virtual void add(JSSmart<CJSValue> value_param)
 		{
-			CJSValueV8* _value = static_cast<CJSValueV8*>(value_param);
+			CJSValueV8* _value = static_cast<CJSValueV8*>(value_param.GetPointer());
 			value->Set(V8ContextFirstArg getCount(), _value->value);
-		}
-
-		virtual void set(const int& index, const bool& _value)
-		{
-			value->Set(V8ContextFirstArg index, v8::Boolean::New(CV8Worker::GetCurrent(), _value));
 		}
 
 		virtual void set(const int& index, const int& _value)

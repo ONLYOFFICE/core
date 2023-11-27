@@ -221,11 +221,10 @@ namespace NSJSBase
 		 * @param name The name of a property.
 		 * @param value The value of a property.
 		 */
-		virtual void set(const char* name, CJSValue* value)     = 0;
+		virtual void set(const char* name, JSSmart<CJSValue> value) = 0;
 		virtual void set(const char* name, const int& value)    = 0;
 		virtual void set(const char* name, const double& value) = 0;
-		// Common funcs
-		void set(const char* name, JSSmart<CJSValue> value);
+		// Common function
 		void set(const char* name, JSSmart<CJSObject> value);
 
 		/**
@@ -273,8 +272,7 @@ namespace NSJSBase
 		 * @param index The index of the array value.
 		 * @param value The array value to be set.
 		 */
-		virtual void set(const int& index, CJSValue* value)     = 0;
-		virtual void set(const int& index, const bool& value)   = 0;
+		virtual void set(const int& index, JSSmart<CJSValue> value) = 0;
 		virtual void set(const int& index, const int& value)    = 0;
 		virtual void set(const int& index, const double& value) = 0;
 
@@ -282,7 +280,7 @@ namespace NSJSBase
 		 * Add the specified value to the array.
 		 * @param value The value to be added.
 		 */
-		virtual void add(CJSValue* value)                       = 0;
+		virtual void add(JSSmart<CJSValue> value)               = 0;
 		/**
 		 * Add null to the array.
 		 */

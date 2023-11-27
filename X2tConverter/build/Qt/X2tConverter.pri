@@ -94,7 +94,8 @@ HEADERS += \
 	\
 	../../src/lib/odf.h \
 	\
-	../../src/lib/pdf_image.h
+	../../src/lib/pdf_image.h \
+	../../src/lib/pdf_oform.h
 
 #vbaformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lVbaFormatLib

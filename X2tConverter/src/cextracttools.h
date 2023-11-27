@@ -475,6 +475,9 @@ namespace NExtractTools
 		std::wstring m_sInternalMediaDirectory;
 
 		std::string m_sPrintPages;
+
+		std::wstring m_sPdfOformMetaName;
+		std::wstring m_sPdfOformMetaData;
 	};
 
 	class InputParams

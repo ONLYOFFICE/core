@@ -311,6 +311,10 @@ namespace NExtractTools
 					nRes = dir2zipMscrypt(sFromWithChanges, sTo, params, convertParams);
 				}
 			}
+			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF == nFormatTo)
+			{
+				nRes = docx_dir2pdfoform(sFromWithChanges, sTo, params, convertParams);
+			}
 			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC == nFormatTo)
 			{
 				nRes = docx_dir2doc(sFromWithChanges, sTo, params, convertParams);
@@ -435,6 +439,10 @@ namespace NExtractTools
 			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
 			nRes = doct_bin2pdf(eFromType, sFrom, sTo, params, convertParams);
 		}
+		else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF == nFormatTo)
+		{
+			nRes = doct_bin2pdfoform(sFrom, sTo, params, convertParams);
+		}
 		else if (0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
 		{
 			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
@@ -508,7 +516,9 @@ namespace NExtractTools
 			std::wstring sDocxDir = combinePath(convertParams.m_sTempDir, L"docx_unpacked");
 			NSDirectory::CreateDirectory(sDocxDir);
 
-			if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatFrom || AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM == nFormatFrom || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF == nFormatFrom)
+			if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatFrom ||
+				AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM == nFormatFrom ||
+				AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF == nFormatFrom)
 			{
 				sDocxFile = sFrom;
 				convertParams.m_sTempParamOOXMLFile = sDocxFile;

@@ -226,6 +226,19 @@ namespace NExtractTools
 			if (false == password.empty())
 				pdfWriter.SetPassword(password);
 
+			if (!convertParams.m_sPdfOformMetaName.empty() && !convertParams.m_sPdfOformMetaData.empty())
+			{
+				BYTE* pFileMetaData = NULL;
+				DWORD nFileMetaSize = 0;
+
+				if (NSFile::CFileBinary::ReadAllBytes(convertParams.m_sPdfOformMetaData, &pFileMetaData, nFileMetaSize))
+				{
+					pdfWriter.AddMetaData(convertParams.m_sPdfOformMetaName, pFileMetaData, nFileMetaSize);
+				}
+
+				RELEASEARRAYOBJECTS(pFileMetaData);
+			}
+
 			int nReg = (convertParams.m_bIsPaid == false) ? 0 : 1;
 			nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sPdfBinFile, sTo, &oBufferParams)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 			RELEASEOBJECT(pApplicationFonts);

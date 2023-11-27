@@ -260,6 +260,15 @@ namespace NExtractTools
 	// DECLARE_CONVERT_FUNC(doct_bin2pdf);
 	// DECLARE_CONVERT_FUNC(doct_bin2image);
 
+	DECLARE_CONVERT_FUNC(pdfoform2docx_dir);
+	DECLARE_CONVERT_FUNC(docx_dir2pdfoform);
+	DECLARE_CONVERT_FUNC(pdfoform2doct_bin);
+	DECLARE_CONVERT_FUNC(doct_bin2pdfoform);
+	DECLARE_CONVERT_FUNC(pdfoform2docx);
+	DECLARE_CONVERT_FUNC(docx2pdfoform);
+	DECLARE_CONVERT_FUNC(pdfoform2doct);
+	DECLARE_CONVERT_FUNC(doct2pdfoform);
+
 	//-------------------------------------------------------------------------------------------------------------------------------------------------
 	_UINT32 convertmailmerge(const InputParamsMailMerge& oMailMergeSend, const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams);
 

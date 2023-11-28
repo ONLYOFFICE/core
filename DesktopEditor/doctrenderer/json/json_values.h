@@ -7,9 +7,6 @@
 
 #include "json.h"
 
-// uncomment to see debug output and exceptions
-//#define JSON_DEBUG
-
 namespace NSJSON
 {
 	class IBaseValue
@@ -32,14 +29,16 @@ namespace NSJSON
 		};
 
 	public:
-		CPrimitive();
-		CPrimitive(const CPrimitive& other);
 		CPrimitive(bool value);
 		CPrimitive(int value);
 		CPrimitive(double value);
 		CPrimitive(const std::string& str);
 		CPrimitive(const std::wstring& wstr);
 		~CPrimitive();
+
+		// disable copy
+		CPrimitive(const CPrimitive& other) = delete;
+		CPrimitive& operator=(const CPrimitive& other) = delete;
 
 		// type check
 		bool isBool() const;
@@ -54,17 +53,6 @@ namespace NSJSON
 		double toDouble() const;
 		std::string toStringA() const;
 		std::wstring toStringW() const;
-
-		// setters
-		void set(const CPrimitive& other);
-		void set(bool value);
-		void set(int value);
-		void set(double value);
-		void set(const std::string& str);
-		void set(const std::wstring& wstr);
-
-	private:
-		void clear();
 
 	private:
 		union

@@ -187,7 +187,10 @@ public:
 			else
 			{
 				if (makeExpects)
+				{
+					EXPECT_TRUE(value.IsStringW());
 					EXPECT_TRUE(jsValue->isString());
+				}
 				if (!jsValue->isString())
 					return false;
 
@@ -444,12 +447,27 @@ TEST_F(CJSONTest, references)
 	ref = 10;
 	EXPECT_EQ((int)val, 10);
 	EXPECT_EQ((int)ref, 10);
+	// CValue from CValueRef
+	CValue val2 = ref;
+	val2 = 12;
+	EXPECT_EQ((int)val2, 12);
+	EXPECT_EQ((int)ref, 10);
+	EXPECT_EQ((int)val, 10);
+	// chaining CValueRef-s
 	CValueRef ref2 = ref;
 	val = "foo";
 	EXPECT_EQ((std::string)ref, "foo");
 	EXPECT_EQ((std::string)ref2, "foo");
 	val = {1, 2, 3};
 	EXPECT_EQ((int)ref[1], 2);
+	// CValue assignment to CValueRef
+	val2 = ref2;
+	EXPECT_EQ((int)val2[0], 1);
+	val2 = true;
+	EXPECT_EQ((bool)val2, true);
+	EXPECT_TRUE(ref.IsArray());
+	EXPECT_TRUE(ref2.IsArray());
+	// CValueRef from operator[]
 	CValueRef ref3 = val[2];
 	ref3 = ref2[0];
 	EXPECT_EQ((int)val[2], 1);
@@ -465,6 +483,8 @@ TEST_F(CJSONTest, constants)
 	EXPECT_EQ((int)ref, 10);
 	// const references saves its const properties
 	const CValueRef ref2 = ref;
+	// you can't do that:
+	// ref2 = 100;
 	EXPECT_EQ((int)ref2, 10);
 }
 
@@ -476,10 +496,60 @@ TEST_F(CJSONTest, wrong_usage)
 	EXPECT_TRUE(val.GetPropertyNames().empty());
 	EXPECT_EQ(val.GetCount(), 0);
 	EXPECT_EQ(val.GetData(), nullptr);
-	EXPECT_EQ(val.ToStringA(), "");
-	EXPECT_EQ(val.ToStringW(), L"");
-	EXPECT_EQ(val.ToBool(), false);
 	EXPECT_DOUBLE_EQ(val.ToDouble(), 42.0);
+#ifdef JSON_DEBUG
+	EXPECT_THROW((bool)val, std::bad_cast);
+	EXPECT_THROW((std::string)val, std::bad_cast);
+	EXPECT_THROW((std::wstring)val, std::bad_cast);
+#else
+	EXPECT_EQ((bool)val, false);
+	EXPECT_EQ((std::string)val, "");
+	EXPECT_EQ((std::wstring)val, L"");
+#endif
+
+	val = 3.1415926535;
+	EXPECT_EQ((int)val, 3);
+
+	val = "test";
+#ifdef JSON_DEBUG
+	EXPECT_THROW((bool)val, std::bad_cast);
+	EXPECT_THROW((int)val, std::bad_cast);
+	EXPECT_THROW((double)val, std::bad_cast);
+	EXPECT_THROW((std::wstring)val, std::bad_cast);
+#else
+	EXPECT_EQ((bool)val, false);
+	EXPECT_EQ((int)val, 0);
+	EXPECT_EQ((double)val, 0.0);
+	EXPECT_EQ((std::wstring)val, L"");
+#endif
+
+	val = L"тест";
+#ifdef JSON_DEBUG
+	EXPECT_THROW((bool)val, std::bad_cast);
+	EXPECT_THROW((int)val, std::bad_cast);
+	EXPECT_THROW((double)val, std::bad_cast);
+	EXPECT_THROW((std::string)val, std::bad_cast);
+#else
+	EXPECT_EQ((bool)val, false);
+	EXPECT_EQ((int)val, 0);
+	EXPECT_EQ((double)val, 0.0);
+	EXPECT_EQ((std::string)val, "");
+#endif
+
+	val = CValue::CreateObject();
+#ifdef JSON_DEBUG
+	EXPECT_THROW((bool)val, std::bad_cast);
+	EXPECT_THROW((int)val, std::bad_cast);
+	EXPECT_THROW((double)val, std::bad_cast);
+	EXPECT_THROW((std::string)val, std::bad_cast);
+	EXPECT_THROW((std::wstring)val, std::bad_cast);
+#else
+	EXPECT_EQ((bool)val, false);
+	EXPECT_EQ((int)val, 0);
+	EXPECT_EQ((double)val, 0.0);
+	EXPECT_EQ((std::string)val, "");
+	EXPECT_EQ((std::wstring)val, L"");
+#endif
 }
 
 #else

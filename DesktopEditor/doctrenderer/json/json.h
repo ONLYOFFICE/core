@@ -17,6 +17,9 @@
 #endif
 #endif
 
+// uncomment to enable exceptions throwing
+//#define JSON_DEBUG
+
 namespace NSJSON
 {
 	typedef unsigned char BYTE;
@@ -257,7 +260,6 @@ namespace NSJSON
 	class JSON_DECL CValueRef : public IValue
 	{
 	public:
-		CValueRef();
 		CValueRef(const CValueRef& other);
 		CValueRef(const CValue& value);
 		~CValueRef();

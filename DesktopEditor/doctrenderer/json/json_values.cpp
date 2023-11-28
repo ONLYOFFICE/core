@@ -10,10 +10,6 @@ namespace NSJSON
 	{
 	}
 
-	CPrimitive::CPrimitive()
-	{
-	}
-
 	CPrimitive::CPrimitive(bool value) : m_type(ptBoolean)
 	{
 		m_bool = value;
@@ -39,36 +35,17 @@ namespace NSJSON
 		new (&m_wstring) std::wstring(wstr);
 	}
 
-	CPrimitive::CPrimitive(const CPrimitive& other)
-	{
-		this->set(other);
-	}
-
 	CPrimitive::~CPrimitive()
 	{
-		clear();
-	}
-
-	void CPrimitive::set(const CPrimitive& other)
-	{
-		clear();
-		m_type = other.m_type;
 		switch (m_type)
 		{
-		case ptBoolean:
-			m_bool = other.m_bool;
-			break;
-		case ptInteger:
-			m_int = other.m_int;
-			break;
-		case ptDouble:
-			m_double = other.m_double;
-			break;
 		case ptStringA:
-			new (&m_string) std::string(other.m_string);
+			m_string.~basic_string<char>();
 			break;
 		case ptStringW:
-			new (&m_wstring) std::wstring(other.m_wstring);
+			m_wstring.~basic_string<wchar_t>();
+			break;
+		default:
 			break;
 		}
 	}
@@ -150,56 +127,6 @@ namespace NSJSON
 		throw std::bad_cast();
 #endif
 		return L"";
-	}
-
-	void CPrimitive::set(bool value)
-	{
-		clear();
-		m_type = ptBoolean;
-		m_bool = value;
-	}
-
-	void CPrimitive::set(int value)
-	{
-		clear();
-		m_type = ptInteger;
-		m_int = value;
-	}
-
-	void CPrimitive::set(double value)
-	{
-		clear();
-		m_type = ptDouble;
-		m_double = value;
-	}
-
-	void CPrimitive::set(const std::string& str)
-	{
-		clear();
-		m_type = ptStringA;
-		new (&m_string) std::string(str);
-	}
-
-	void CPrimitive::set(const std::wstring& wstr)
-	{
-		clear();
-		m_type = ptStringW;
-		new (&m_wstring) std::wstring(wstr);
-	}
-
-	void CPrimitive::clear()
-	{
-		switch (m_type)
-		{
-		case ptStringA:
-			m_string.~basic_string<char>();
-			break;
-		case ptStringW:
-			m_wstring.~basic_string<wchar_t>();
-			break;
-		default:
-			break;
-		}
 	}
 
 	CArray::CArray(int count) : m_values(count)

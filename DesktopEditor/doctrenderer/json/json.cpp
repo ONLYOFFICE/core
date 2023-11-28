@@ -90,35 +90,60 @@ namespace NSJSON
 	bool IValue::ToBool() const
 	{
 		if (m_internal->m_type != CTypedValue::vtPrimitive)
+		{
+#ifdef JSON_DEBUG
+			throw std::bad_cast();
+#endif
 			return false;
+		}
 		return static_cast<CPrimitive*>(m_internal->m_value.get())->toBool();
 	}
 
 	int IValue::ToInt() const
 	{
 		if (m_internal->m_type != CTypedValue::vtPrimitive)
+		{
+#ifdef JSON_DEBUG
+			throw std::bad_cast();
+#endif
 			return 0;
+		}
 		return static_cast<CPrimitive*>(m_internal->m_value.get())->toInt();
 	}
 
 	double IValue::ToDouble() const
 	{
 		if (m_internal->m_type != CTypedValue::vtPrimitive)
+		{
+#ifdef JSON_DEBUG
+			throw std::bad_cast();
+#endif
 			return 0.0;
+		}
 		return static_cast<CPrimitive*>(m_internal->m_value.get())->toDouble();
 	}
 
 	std::string IValue::ToStringA() const
 	{
 		if (m_internal->m_type != CTypedValue::vtPrimitive)
+		{
+#ifdef JSON_DEBUG
+			throw std::bad_cast();
+#endif
 			return "";
+		}
 		return static_cast<CPrimitive*>(m_internal->m_value.get())->toStringA();
 	}
 
 	std::wstring IValue::ToStringW() const
 	{
 		if (m_internal->m_type != CTypedValue::vtPrimitive)
+		{
+#ifdef JSON_DEBUG
+			throw std::bad_cast();
+#endif
 			return L"";
+		}
 		return static_cast<CPrimitive*>(m_internal->m_value.get())->toStringW();
 	}
 
@@ -365,10 +390,6 @@ namespace NSJSON
 		CValue ret;
 		ret.m_internal->m_type = CTypedValue::vtNull;
 		return ret;
-	}
-
-	CValueRef::CValueRef() : IValue()
-	{
 	}
 
 	CValueRef::CValueRef(const CValueRef& other) : IValue(other.m_internal)

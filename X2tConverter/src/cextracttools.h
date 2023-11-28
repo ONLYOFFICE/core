@@ -459,10 +459,10 @@ namespace NExtractTools
 
 		std::wstring m_sEditorWithChanges;
 
-		// [docx_dir2doct_bin, docx_dir2doct, pptx_dir2pptt_bin, pptx_dir2ppt] methods
+		// [docx_dir2doct_bin, xlsx_dir2xlst_bin, pptx_dir2pptt_bin] methods
 		std::wstring m_sTempParamOOXMLFile;
 
-		// for doct_bin2docx_dir, xlst_bin2xlsx_dir
+		// for doct_bin2docx_dir, xlst_bin2xlsx_dir, pptt_bin2pptx_dir
 		std::wstring m_sTempResultOOXMLDirectory;
 
 		// xlsx_dir2xlst_bin

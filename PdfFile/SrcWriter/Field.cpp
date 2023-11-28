@@ -1913,20 +1913,7 @@ namespace PdfWriter
 		else
 		{
 			CWidgetAnnotation* pAnnot = (CWidgetAnnotation*)m_pAnnot;
-
-			std::string sFontInfo = pAnnot->GetDAforAP();
-			if (sFontInfo.empty())
-			{
-				CDictObject* pOwner = pAnnot->GetObjOwnValue("DA");
-				if (pOwner)
-				{
-					CStringObject* pDA = dynamic_cast<CStringObject*>(pOwner->Get("DA"));
-					if (pDA)
-						sFontInfo = std::string((const char*)pDA->GetString());
-				}
-			}
-			if (!sFontInfo.empty())
-				m_pStream->WriteStr(sFontInfo.c_str());
+			m_pStream->WriteStr(pAnnot->GetDAforAP(pFont).c_str());
 		}
 
 		m_bStart = true;

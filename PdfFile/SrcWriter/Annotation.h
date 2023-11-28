@@ -343,8 +343,9 @@ namespace PdfWriter
 		CDictObject* m_pParent;
 		CDictObject* m_pAA;
 		CDictObject* m_pA;
-		std::string m_sDAforAP;
 
+		double m_dFontSizeAP;
+		std::vector<double> m_arrTC;
 		std::vector<double> m_arrBC;
 		std::vector<double> m_arrBG;
 
@@ -369,7 +370,7 @@ namespace PdfWriter
 		void SetBG(const std::vector<double>& arrBG);
 		void AddAction(CAction* pAction);
 
-		std::string GetDAforAP() { return m_sDAforAP; }
+		std::string GetDAforAP(CFontDict* pFont);
 		std::string GetBGforAP();
 		std::string GetBCforAP();
 	};

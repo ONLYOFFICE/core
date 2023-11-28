@@ -1278,8 +1278,7 @@ namespace Aggplus
 
 		BYTE *pBuffer = new BYTE[unWidth * unHeight * m_frame_buffer.pix_size];
 
-		for (unsigned long unIndex = 0; unIndex < unWidth * unHeight * m_frame_buffer.pix_size; unIndex += 4)
-			((BYTE*)pBuffer)[unIndex + pixfmt_type::order_type::A] = 0x00;
+		memset(pBuffer, 0x00, unWidth * unHeight * m_frame_buffer.pix_size);
 
 		m_frame_buffer.create(unWidth, unHeight, false, nStride, pBuffer);
 

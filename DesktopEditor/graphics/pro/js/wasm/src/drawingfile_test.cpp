@@ -359,6 +359,10 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 		i += 4;
 		std::cout << "size " << (double)nPathLength / 100.0 << ", ";
 
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "style " << nPathLength << ", ";
+
 		int nTCLength = READ_INT(pWidgets + i);
 		i += 4;
 		if (nTCLength)

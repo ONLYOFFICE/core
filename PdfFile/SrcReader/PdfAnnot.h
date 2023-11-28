@@ -224,6 +224,7 @@ protected:
 private:
 	unsigned int m_unR; // Поворот аннотации относительно страницы - R
 	unsigned int m_unRefNumParent; // Номер ссылки на объект родителя
+	unsigned int m_unFontStyle; // Стиль шрифта - из DA
 	double m_dFontSize; // Размер шрифта - из DA
 	std::vector<double> m_arrTC; // Цвет текста - из DA
 	std::vector<double> m_arrBC; // Цвет границ - BC

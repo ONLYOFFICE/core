@@ -673,6 +673,7 @@
 			rec["font"] = {};
 			rec["font"]["name"] = reader.readString();
 			rec["font"]["size"] = reader.readDouble();
+			rec["font"]["style"] = reader.readInt();
 			let tc = reader.readInt();
 			if (tc)
 			{

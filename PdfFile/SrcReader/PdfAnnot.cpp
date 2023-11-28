@@ -956,6 +956,14 @@ void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFont
 
 	m_sFontName = U_TO_UTF8(wsFileName);
 
+	bool bBold = false, bItalic = false;
+	CheckFontStylePDF(wsFontName, bBold, bItalic);
+	m_unFontStyle = 0;
+	if ((gfxFont && gfxFont->isBold()) || bBold)
+		m_unFontStyle |= (1 << 0);
+	if ((gfxFont && gfxFont->isItalic()) || bItalic)
+		m_unFontStyle |= (1 << 1);
+
 	RELEASEOBJECT(gfxFontDict);
 }
 
@@ -1698,6 +1706,7 @@ void CAnnots::getParents(XRef* xref, Object* oFieldRef)
 	if (!pAnnotParent || !oFieldRef->fetch(xref, &oField)->isDict())
 	{
 		oField.free();
+		RELEASEOBJECT(pAnnotParent);
 		return;
 	}
 
@@ -2495,6 +2504,7 @@ void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
 
 	oRes.WriteString(m_sFontName);
 	oRes.AddDouble(m_dFontSize);
+	oRes.AddInt(m_unFontStyle);
 	oRes.AddInt(m_arrTC.size());
 	for (int i = 0; i < m_arrTC.size(); ++i)
 		oRes.AddDouble(m_arrTC[i]);

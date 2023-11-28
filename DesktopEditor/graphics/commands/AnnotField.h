@@ -478,7 +478,7 @@ private:
 
 class GRAPHICS_DECL CWidgetsInfo : public IAdvancedCommand
 {
-private:
+public:
 	struct CParent
 	{
 		int nID;
@@ -488,9 +488,12 @@ private:
 		std::wstring sV;
 		std::wstring sDV;
 	};
-public:
+
 	CWidgetsInfo();
 	virtual ~CWidgetsInfo();
+
+	const std::vector<std::wstring>&  GetCO() const { return m_arrCO; }
+	const std::vector<CParent*>& GetParents() const { return m_arrParents; }
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 

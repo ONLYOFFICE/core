@@ -1022,6 +1022,10 @@ bool CPdfFile::DeleteAnnot(int nID)
 
 	return bRes;
 }
+bool CPdfFile::EditWidgets()
+{
+	return true;
+}
 #endif // BUILDING_WASM_MODULE
 
 // ------------------------------------------------------------------------
@@ -2079,7 +2083,10 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	case IAdvancedCommand::AdvancedCommandType::WidgetsInfo:
 	{
 		CWidgetsInfo* pCommand = (CWidgetsInfo*)command;
-
+#ifndef BUILDING_WASM_MODULE
+		if (m_pInternal->bEdit && EditWidgets())
+			return m_pInternal->pWriter->EditWidgetParents(pCommand);
+#endif
 		return S_OK;
 	}
 	default:

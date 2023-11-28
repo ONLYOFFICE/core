@@ -2446,6 +2446,38 @@ HRESULT CPdfWriter::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2
 	m_pPage->GrRestore();
 	return S_OK;
 }
+HRESULT CPdfWriter::EditWidgetParents(CWidgetsInfo* pFieldInfo)
+{
+	if (!m_pDocument || 0 == m_pDocument->GetPagesCount() || !pFieldInfo)
+		return S_OK;
+
+	if (!m_pDocument->EditCO(pFieldInfo->GetCO()))
+		return S_FALSE;
+
+	std::vector<CWidgetsInfo::CParent*> arrParents = pFieldInfo->GetParents();
+	for (CWidgetsInfo::CParent* pParent : arrParents)
+	{
+		PdfWriter::CDictObject* pParentObj = m_pDocument->GetParent(pParent->nID);
+		if (!pParentObj)
+			continue;
+
+		int nFlags = pParent->nFlags;
+		if (nFlags & (1 << 0))
+			pParentObj->Add("T", new PdfWriter::CStringObject((U_TO_UTF8(pParent->sName)).c_str()));
+		if (nFlags & (1 << 1))
+			pParentObj->Add("V", new PdfWriter::CStringObject((U_TO_UTF8(pParent->sV)).c_str()));
+		if (nFlags & (1 << 2))
+			pParentObj->Add("DV", new PdfWriter::CStringObject((U_TO_UTF8(pParent->sDV)).c_str()));
+		if (nFlags & (1 << 3))
+		{
+			PdfWriter::CDictObject* pParentObj2 = m_pDocument->GetParent(pParent->nParentID);
+			if (pParentObj2)
+				pParentObj->Add("Parent", pParentObj2);
+		}
+	}
+
+	return S_OK;
+}
 bool CPdfWriter::EditPage(PdfWriter::CPage* pNewPage)
 {
 	if (!IsValid())

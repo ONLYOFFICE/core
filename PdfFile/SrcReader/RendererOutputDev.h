@@ -103,6 +103,7 @@ namespace PdfReader
 	};
 
 	void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName);
+	void CheckFontStylePDF(std::wstring& sName, bool& bBold, bool& bItalic);
 	//-------------------------------------------------------------------------------------------------------------------------------
 	template <typename T>
 	inline static double PDFCoordsToMM(T tX)

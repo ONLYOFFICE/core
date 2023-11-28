@@ -1355,6 +1355,25 @@ namespace PdfWriter
 			return p->second;
 		return NULL;
 	}
+	bool CDocument::EditCO(const std::vector<std::wstring>& arrCO)
+	{
+		if (arrCO.empty() || !CheckAcroForm())
+			return false;
+
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return false;
+
+		m_pAcroForm->Add("CO", pArray);
+
+		for (const std::wstring& CO : arrCO)
+		{
+			std::string sCO = U_TO_UTF8(CO);
+			pArray->Add(new CStringObject(sCO.c_str()));
+		}
+
+		return true;
+	}
 	CPage* CDocument::AddPage(int nPageIndex)
 	{
 		if (!m_pPageTree)

@@ -779,6 +779,13 @@ static inline int IsRGBColorspace(const ColorspaceType colorspace)
   return 0;
 }
 
+static inline int IssRGBColorspace(
+  const ColorspaceType colorspace)
+{
+  if ((colorspace == sRGBColorspace) || (colorspace == TransparentColorspace))
+    return 1;
+  return 0;
+}
 
 static inline int IsGrayColorspace(
   const ColorspaceType colorspace)
@@ -829,6 +836,33 @@ int SetImageColorspace(ImagePICT *image, const ColorspaceType colorspace)
   image->type=type;
   return 1;
 }
+
+//int TransformImageColorspace(ImagePICT *image,const ColorspaceType colorspace)
+//{
+//  int
+//    status;
+
+//  if (image->colorspace == colorspace)
+//    return(SetImageColorspace(image,colorspace));
+//  if (colorspace == UndefinedColorspace)
+//    return(SetImageColorspace(image,colorspace));
+//  /*
+//    Convert the reference image from an alternate colorspace to sRGB.
+//  */
+//  if (IssRGBColorspace(colorspace) != 0)
+//    return(TransformsRGBImage(image,exception));
+//  status=1;
+//  if (IssRGBColorspace(image->colorspace) == 0)
+//    status=TransformsRGBImage(image,exception);
+//  if (status == 0)
+//    return(status);
+//  /*
+//    Convert the reference image from sRGB to an alternate colorspace.
+//  */
+//  if (sRGBTransformImage(image,colorspace,exception) == 0)
+//    status=0;
+//  return(status);
+//}
 
 ssize_t CastDoubleToLong(const double x)
 {
@@ -1752,10 +1786,6 @@ ImagePICT *DestroyImage(ImagePICT *image)
   */
   free(image->ppixels);
   free(image->channel_map);
-  if (image->profiles != NULL)
-    DestroySplayTree(image->profiles);
-  if (image->artifacts != NULL)
-    DestroySplayTree(image->artifacts);
   free(image);
   return(ImagePICT *) NULL;
 }
@@ -2169,10 +2199,7 @@ int DecodeHeader(FILE* hFile, ImagePICT* image)
 {
    unsigned char
            header[4];
-   short
-           vers,
-           vers2,
-           vers3;
+
    unsigned char
            skip[1];
 
@@ -2213,11 +2240,13 @@ int DecodeHeader(FILE* hFile, ImagePICT* image)
 
            if (c == 0x11)
            {
-               vers = (short) ReadShortValue(hFile);
-               vers2 = (short) ReadShortValue(hFile);
+               ssize_t version = ReadByte(hFile);
 
-               if ((vers == 0x02FF) && (vers2 == 0x0C00))
+               if (version == 2)
                {
+                   ssize_t version2 = ReadByte(hFile);
+                   if (version2 != 0xff)
+                       return 0;
                    image->m_pctVersion = 2;
                    if ((frame.left < 0) || (frame.right < 0) || (frame.top < 0) ||
                        (frame.bottom < 0) || (frame.left >= frame.right) ||
@@ -2231,6 +2260,22 @@ int DecodeHeader(FILE* hFile, ImagePICT* image)
                    image->m_nHeight=(size_t) (frame.bottom-frame.top);
 
                    return 1;
+               }
+               else if (version == 1)
+               {
+                  image->m_pctVersion = 1;
+                  if ((frame.left < 0) || (frame.right < 0) || (frame.top < 0) ||
+                      (frame.bottom < 0) || (frame.left >= frame.right) ||
+                      (frame.top >= frame.bottom))
+                  {
+                       strcpy(image->error, "ImproperImageHeader");
+
+                       return 0;
+                  }
+                  image->m_nWidth=(size_t) (frame.right-frame.left);
+                  image->m_nHeight=(size_t) (frame.bottom-frame.top);
+
+                  return 1;
                }
                else
                {
@@ -2248,57 +2293,26 @@ int DecodeHeader(FILE* hFile, ImagePICT* image)
        }
    }
 
-   vers = (short) ReadShortValue(hFile);
-   vers2 = (short) ReadShortValue(hFile);
+   ssize_t version = ReadByte(hFile);
 
-   if ((vers == 0x02FF) && (vers2 == 0x0C00))
+   if (version == 2)
    {
+       ssize_t version2 = ReadByte(hFile);
+       if (version2 != 0xff)
+           return 0;
        image->m_pctVersion = 2;
-       vers3 = (short) ReadShortValue(hFile);
 
-       if (vers3 == -1)
-       {
-           if ((frame.left < 0) || (frame.right < 0) || (frame.top < 0) ||
-                 (frame.bottom < 0) || (frame.left >= frame.right) ||
-                 (frame.top >= frame.bottom))
-           {
-               strcpy(image->error, "ImproperImageHeader");
-
-               return 0;
-           }
-
-           image->m_nWidth = (size_t) (frame.right - frame.left);
-           image->m_nHeight=(size_t) (frame.bottom-frame.top);
-       }
-       else if (vers3 == -2)
-       {
-           (void) ReadShortValue(hFile);
-
-           if (ReadRectangle(hFile, &frame) == 0)
-           {
-               strcpy(image->error, "ImproperImageHeader");
-
-               return 0;
-           }
-
-           if ((frame.left < 0) || (frame.right < 0) || (frame.top < 0) ||
-                 (frame.bottom < 0) || (frame.left >= frame.right) ||
-                 (frame.top >= frame.bottom))
-           {
-               strcpy(image->error, "ImproperImageHeader");
-
-               return 0;
-           }
-
-           image->m_nWidth = (size_t) (frame.right - frame.left);
-           image->m_nHeight=(size_t) (frame.bottom-frame.top);
-       }
-       else
+       if ((frame.left < 0) || (frame.right < 0) || (frame.top < 0) ||
+             (frame.bottom < 0) || (frame.left >= frame.right) ||
+             (frame.top >= frame.bottom))
        {
            strcpy(image->error, "ImproperImageHeader");
 
            return 0;
        }
+
+       image->m_nWidth = (size_t) (frame.right - frame.left);
+       image->m_nHeight=(size_t) (frame.bottom-frame.top);
    }
    else
    {
@@ -2850,7 +2864,7 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                 size_t
                   k;
 
-                int
+                ssize_t
                   bytes_per_line;
 
                 unsigned char
@@ -2861,7 +2875,7 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                 */
                 bytes_per_line = 0;
                 if ((code != 0x9a) && (code != 0x9b))
-                  bytes_per_line= (int) ReadShortValue(hFile);
+                  bytes_per_line= (ssize_t) ReadShortValue(hFile);
                 else
                   {
                     (void) ReadShortValue(hFile);
@@ -3250,7 +3264,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
         if (((code >= 0xb0) && (code <= 0xcf)) ||
             ((code >= 0x8000) && (code <= 0x80ff)))
           continue;
-
         if ((code == 0xff) || (code == 0xffff))
           continue;
         if (((code >= 0xd0) && (code <= 0xfe)) ||

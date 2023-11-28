@@ -36,6 +36,13 @@
 
 namespace NExtractTools
 {
+	inline std::wstring GetMetaTag()
+	{
+		return NSFile::CUtf8Converter::GetUnicodeFromCharPtr(g_format_oform_pdf_meta_tag,
+															 (LONG)strlen(g_format_oform_pdf_meta_tag));
+
+	}
+
 	_UINT32 pdfoform2docx_dir(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
 		std::wstring sTempDocx = combinePath(convertParams.m_sTempDir, L"meta.docx");
@@ -70,7 +77,7 @@ namespace NExtractTools
 		if (!SUCCEEDED_X2T(nRes))
 			return nRes;
 
-		convertParams.m_sPdfOformMetaName = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(g_format_oform_pdf_meta_tag, strlen(g_format_oform_pdf_meta_tag));
+		convertParams.m_sPdfOformMetaName = GetMetaTag();
 		convertParams.m_sPdfOformMetaData = sDocxMeta;
 
 		nRes = doct_bin2pdf(NSDoctRenderer::DoctRendererFormat::DOCT, sDoctMeta, sTo, params, convertParams);
@@ -104,7 +111,7 @@ namespace NExtractTools
 		if (!SUCCEEDED_X2T(nRes))
 			return nRes;
 
-		convertParams.m_sPdfOformMetaName = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(g_format_oform_pdf_meta_tag, strlen(g_format_oform_pdf_meta_tag));
+		convertParams.m_sPdfOformMetaName = GetMetaTag();
 		convertParams.m_sPdfOformMetaData = sDocxMeta;
 
 		nRes = doct_bin2pdf(NSDoctRenderer::DoctRendererFormat::DOCT, sFrom, sTo, params, convertParams);
@@ -120,7 +127,7 @@ namespace NExtractTools
 		BYTE* pData = NULL;
 		DWORD dwDataSize = 0;
 
-		std::wstring sMetaName = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(g_format_oform_pdf_meta_tag, strlen(g_format_oform_pdf_meta_tag));
+		std::wstring sMetaName = GetMetaTag();
 		CPdfFile::GetMetaData(sFrom, sMetaName, &pData, dwDataSize);
 
 		if (NULL == pData)

@@ -1178,7 +1178,14 @@ namespace NExtractTools
 		}
 		else if (AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT == nFormatFrom)
 		{
-			nRes = ppt2pptx_dir(sFrom, sPptxDir, params, convertParams);
+			if (params.m_bMacro)
+			{
+				nRes = ppt2pptm_dir(sFrom, sPptxDir, params, convertParams);
+			}
+			else
+			{
+				nRes = ppt2pptx_dir(sFrom, sPptxDir, params, convertParams);
+			}
 		}
 		else if (AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP == nFormatFrom || AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP == nFormatFrom)
 		{

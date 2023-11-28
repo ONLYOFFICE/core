@@ -49,8 +49,8 @@ namespace NExtractTools
 		docFile.m_nUserLCID = (NULL != params.m_nLcid) ? *params.m_nLcid : -1;
 
 		params.m_bMacro = false;
-
 		_UINT32 hRes = docFile.LoadFromFile(sFrom, sTo, params.getPassword(), params.m_bMacro);
+
 		if (AVS_ERROR_DRM == hRes)
 		{
 			if (!params.getDontSaveAdditional())

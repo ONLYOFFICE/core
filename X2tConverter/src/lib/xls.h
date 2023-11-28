@@ -39,7 +39,7 @@ namespace NExtractTools
 {
 	_UINT32 xls2xlsm_dir_macro(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams, const bool& bIsMacro)
 	{
-		params.m_bMacro = true;
+		params.m_bMacro = bIsMacro;
 
 		int lcid = (NULL != params.m_nLcid) ? *params.m_nLcid : -1;
 

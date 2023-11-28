@@ -42,7 +42,7 @@ namespace NExtractTools
 		COfficePPTFile pptFile;
 		pptFile.put_TempDirectory(convertParams.m_sTempDir);
 
-		params.m_bMacro = false;
+		params.m_bMacro = bIsMacro;
 		long nRes = pptFile.LoadFromFile(sFrom, sTo, params.getPassword(), params.m_bMacro);
 		nRes = processEncryptionError(nRes, sFrom, params);
 		return nRes;

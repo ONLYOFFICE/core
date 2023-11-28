@@ -1200,19 +1200,23 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr1->itmtype = XLSB::PivotItemType::PITDATA;
 		}
 
-		auto ptr2(new XLSB::ISXVIS(size));
-		ptr2->_cisxvis = size;
+		if(ptr1->cisxvis > 0)
+		{
 
-		ptr->m_ISXVIS = XLS::BaseObjectPtr{ptr2};
-		auto ptr3(new XLSB::BeginISXVIs(size));
-		ptr3->_cisxvis = size;
-		ptr2->m_BrtBeginISXVIs = XLS::BaseObjectPtr{ptr3};
+			auto ptr2(new XLSB::ISXVIS(size));
+			ptr2->_cisxvis = size;
 
-		for(auto i:m_arrItems)
-            if(i->m_oV.IsInit())
-                ptr3->rgisxvis.push_back(i->m_oV->GetValue());
-			else
-				ptr3->rgisxvis.push_back(0);
+			ptr->m_ISXVIS = XLS::BaseObjectPtr{ptr2};
+			auto ptr3(new XLSB::BeginISXVIs(size));
+			ptr3->_cisxvis = size;
+			ptr2->m_BrtBeginISXVIs = XLS::BaseObjectPtr{ptr3};
+
+			for(auto i:m_arrItems)
+				if(i->m_oV.IsInit())
+					ptr3->rgisxvis.push_back(i->m_oV->GetValue());
+				else
+					ptr3->rgisxvis.push_back(0);
+		}
 		return objectPtr;
 	}
     void CColumnRowItem::fromBin(XLS::BaseObjectPtr& obj)
@@ -2202,12 +2206,18 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		if(m_oAllDrilled.IsInit())
         	ptr->fDrilledLevel = m_oAllDrilled.get();
+		else
+			ptr->fDrilledLevel = false;
 
 		if(m_oAutoShow.IsInit())
             ptr->fAutoShow = m_oAutoShow.get();
+		else
+			ptr->fAutoShow = false;
 
 		if(m_oAvgSubtotal.IsInit())
             ptr->fAverage = m_oAvgSubtotal.get();
+		else
+			ptr->fAverage = false;
 		
 		ptr->sxaxis.bCol = false;
 		ptr->sxaxis.bPage = false;
@@ -2225,34 +2235,79 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			else if(m_oAxis == SimpleTypes::Spreadsheet::EPivotAxisType::axisValues)
 				ptr->sxaxis.bData = true;
 		}
+        else
+            ptr->sxaxis.bData = true;
 		if(m_oCompact.IsInit())
             ptr->fCompact = m_oCompact.get();
+		else
+			ptr->fCompact = false;
 
 		if(m_oCountASubtotal.IsInit())
 			ptr->fCounta = m_oCountASubtotal.get();
+		else
+			ptr->fCounta = false;
 
 		if(m_oCountSubtotal.IsInit())
 			ptr->fCount = m_oCountSubtotal.get();
+		else
+			ptr->fCount = false;
 		if(m_oDataField.IsInit())
 			ptr->fDrilledLevel = m_oDataField.get();
+		else
+			ptr->fDrilledLevel = false;
 		if(m_oDataSourceSort.IsInit())
 			ptr->fTensorSort = m_oDataSourceSort.get();
+		else
+			ptr->fTensorSort = false;
 		if(m_oDefaultAttributeDrillState.IsInit())
 			ptr->fItemsDrilledByDefault = m_oDefaultAttributeDrillState.get();
+		else
+			ptr->fItemsDrilledByDefault = false;
 		if(m_oDefaultSubtotal.IsInit())
 			ptr->fDefault = m_oDefaultSubtotal.get();
+		else
+			ptr->fDefault = false;
 		if(m_oDragOff.IsInit())
 			ptr->fDragToHide = m_oDragOff.get();
+		else
+			ptr->fDragToHide = false;
 
-		if (m_oDragToCol.IsInit()) ptr->fDragToColumn = m_oDragToCol.get();
-		if (m_oDragToData.IsInit()) ptr->fDragToData = m_oDragToData.get();
-		if (m_oDragToPage.IsInit()) ptr->fDragToPage = m_oDragToPage.get();
-		if (m_oDragToRow.IsInit()) ptr->fDragToRow = m_oDragToRow.get();
-		if (m_oHiddenLevel.IsInit()) ptr->fHiddenLvl = m_oHiddenLevel.get();
-		if (m_oHideNewItems.IsInit()) ptr->fHideNewItems = m_oHideNewItems.get();
-		if (m_oIncludeNewItemsInFilter.IsInit()) ptr->fFilterInclusive = m_oIncludeNewItemsInFilter.get();
-		if (m_oInsertBlankRow.IsInit()) ptr->fInsertBlankRow = m_oInsertBlankRow.get();
-		if (m_oInsertPageBreak.IsInit()) ptr->fPageBreaksBetweenItems = m_oInsertPageBreak.get();
+		if (m_oDragToCol.IsInit()) 
+			ptr->fDragToColumn = m_oDragToCol.get();
+		else
+			ptr->fDragToColumn = false;
+		if (m_oDragToData.IsInit()) 
+			ptr->fDragToData = m_oDragToData.get();
+		else
+			ptr->fDragToData = false;
+		if (m_oDragToPage.IsInit()) 
+			ptr->fDragToPage = m_oDragToPage.get();
+		else
+			ptr->fDragToPage = false;
+		if (m_oDragToRow.IsInit()) 
+			ptr->fDragToRow = m_oDragToRow.get();
+		else
+			ptr->fDragToRow = false;
+		if (m_oHiddenLevel.IsInit()) 
+			ptr->fHiddenLvl = m_oHiddenLevel.get();
+		else
+			ptr->fHiddenLvl = false;
+		if (m_oHideNewItems.IsInit()) 
+			ptr->fHideNewItems = m_oHideNewItems.get();
+		else
+			ptr->fHideNewItems = false;
+		if (m_oIncludeNewItemsInFilter.IsInit()) 
+			ptr->fFilterInclusive = m_oIncludeNewItemsInFilter.get();
+		else
+			ptr->fFilterInclusive = false;
+		if (m_oInsertBlankRow.IsInit()) 
+			ptr->fInsertBlankRow = m_oInsertBlankRow.get();
+		else
+			ptr->fInsertBlankRow = false;
+		if (m_oInsertPageBreak.IsInit()) 
+			ptr->fPageBreaksBetweenItems = m_oInsertPageBreak.get();
+		else
+			ptr->fPageBreaksBetweenItems = false;
 
 		if(m_oItemPageCount.IsInit())
             ptr->citmAutoShow = m_oItemPageCount->GetValue();
@@ -2261,15 +2316,23 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		if(m_oMaxSubtotal.IsInit())
 			ptr->fMax = m_oMaxSubtotal.get();
+		else
+			ptr->fMax = false;
 
 		if(m_oMeasureFilter.IsInit())
 			ptr->fHasAdvFilter = m_oMeasureFilter.get();
+		else
+			ptr->fHasAdvFilter = false;
 
 		if(m_oMinSubtotal.IsInit())
 			ptr->fMin = m_oMinSubtotal.get();
+		else
+			ptr->fMin = false;
 
 		if(m_oMultipleItemSelectionAllowed.IsInit())
 			ptr->fEnableMultiplePageItems = m_oMultipleItemSelectionAllowed.get();
+		else
+			ptr->fEnableMultiplePageItems = false;
 
 		if(m_oName.IsInit())
 			ptr->irstName = m_oName.get();
@@ -2279,17 +2342,23 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		if (m_oNonAutoSortDefault.IsInit())
 			ptr->fNotAutoSortDft = m_oNonAutoSortDefault.get();
+		else 
+			ptr->fNotAutoSortDft = false;
 
 		if (m_oNumFmtId.IsInit())
 			ptr->ifmt = m_oNumFmtId->GetValue();
 		else
-			ptr->ifmt = 0;
+            ptr->ifmt = 0;
 
 		if (m_oOutline.IsInit())
 			ptr->fOutline = m_oOutline.get();
+		else
+			ptr->fOutline = false;
 
 		if (m_oProductSubtotal.IsInit())
 			ptr->fProduct = m_oProductSubtotal.get();
+		else
+			ptr->fProduct = false;
 
 		if (m_oRankBy.IsInit())
 			ptr->isxdiAutoShow = m_oRankBy->GetValue();
@@ -2298,21 +2367,33 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		if (m_oServerField.IsInit())
 			ptr->fServerBased = m_oServerField.get();
+        else
+            ptr->fServerBased = false;
 
 		if (m_oShowAll.IsInit())
 			ptr->fShowAllItems = m_oShowAll.get();
+		else
+			ptr->fShowAllItems = false;
 
 		if (m_oShowDropDowns.IsInit())
 			ptr->fHideDD = !m_oShowDropDowns.get();
+        else
+            ptr->fHideDD = false;
 
 		if (m_oShowPropAsCaption.IsInit())
 			ptr->fMemPropDisplayInCaption = m_oShowPropAsCaption.get();
+        else
+            ptr->fMemPropDisplayInCaption = false;
 
 		if (m_oShowPropCell.IsInit())
 			ptr->fMemPropDisplayInReport = m_oShowPropCell.get();
+        else
+            ptr->fMemPropDisplayInReport = false;
 
 		if (m_oShowPropTip.IsInit())
 			ptr->fMemPropDisplayInTip = m_oShowPropTip.get();
+		else
+			ptr->fMemPropDisplayInTip = false;
 		if(m_oSortType.IsInit())
 		{
 			if(m_oSortType->GetValue() != SimpleTypes::Spreadsheet::EFieldSortType::sortManual)
@@ -2325,9 +2406,13 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		if (m_oStdDevPSubtotal.IsInit())
 			ptr->fStdevp = m_oStdDevPSubtotal.get();
+        else
+            ptr->fStdevp = false;
 
 		if (m_oStdDevSubtotal.IsInit())
 			ptr->fStdev = m_oStdDevSubtotal.get();
+        else
+            ptr->fStdev = false;
 
 		if (m_oSubtotalCaption.IsInit())
 			ptr->irstSub.value() = m_oSubtotalCaption.get();
@@ -2336,12 +2421,18 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		if (m_oSubtotalTop.IsInit())
 			ptr->fSubtotalAtTop = !m_oSubtotalTop.get();
+        else
+            ptr->fSubtotalAtTop = false;
 
 		if (m_oSumSubtotal.IsInit())
 			ptr->fSum = m_oSumSubtotal.get();
+		else
+			ptr->fSum = false;
 
 		if (m_oTopAutoShow.IsInit())
 			ptr->fTopAutoShow = !m_oTopAutoShow.get();
+        else
+            ptr->fTopAutoShow = false;
 
 		if (m_oUniqueMemberProperty.IsInit())
 			ptr->irstMemberPropertyCaption = m_oUniqueMemberProperty.get();
@@ -2350,9 +2441,13 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		if (m_oVarPSubtotal.IsInit())
 			ptr->fVarp = m_oVarPSubtotal.get();
+        else
+            ptr->fVarp = false;
 
 		if (m_oVarSubtotal.IsInit())
 			ptr->fVar = m_oVarSubtotal.get();
+		else
+			ptr->fVar = false;
 
 		return objectPtr;
 	}
@@ -3530,7 +3625,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		if (m_oMinRefreshableVersion.IsInit())
 			ptr->bVerCacheRefreshableMin = m_oMinRefreshableVersion->GetValue();
-
+		else 
+			ptr->bVerCacheRefreshableMin = 0;
 		if (m_oMissingItemsLimit.IsInit())
 			ptr->citmGhostMax = m_oMissingItemsLimit->GetValue();
 		else
@@ -3836,18 +3932,25 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		if (m_oDatabaseField.IsInit())
 			ptr->fSrcField = m_oDatabaseField.get();
 		else
-			ptr->fSrcField = false;
+            ptr->fSrcField = true;
 
 		if (m_oServerField.IsInit())
 			ptr->fServerBased = m_oServerField.get();
+		else
+			ptr->fServerBased = false;
 
 		if (m_oFormula.IsInit())
 			ptr->fldFmla = m_oFormula.get();
 		else
+		{
 			ptr->fLoadFmla = false;
+			ptr->fldFmla.cSxName = 0;
+		}
 
 		if (m_oHierarchy.IsInit())
 			ptr->ihdb = m_oHierarchy.get();
+		else
+			ptr->ihdb = 0;
 
 		if (m_oMemberPropertyField.IsInit())
 			ptr->fOlapMemPropField = m_oMemberPropertyField.get();
@@ -3861,16 +3964,28 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		if (m_oSqlType.IsInit())
 			ptr->wTypeSql = m_oSqlType.get();
+		else
+			ptr->wTypeSql = 0;
 
 		if (m_oUniqueList.IsInit())
 			ptr->fCantGetUniqueItems = !m_oUniqueList.get();
+		else
+			ptr->fCantGetUniqueItems = false;
 
 		if (m_oLevel.IsInit())
 			ptr->isxtl = m_oLevel->GetValue();
+		else
+			ptr->isxtl = 0;
 		if(m_oMappingCount.IsInit())
 			ptr->cIsxtmps = m_oMappingCount->GetValue();
+		else
+			ptr->cIsxtmps = 0;
 		if(m_oNumFmtId.IsInit())
 			ptr->ifmt = m_oNumFmtId->GetValue();
+		else
+            ptr->ifmt = 0xFFFFFFFF;
+		
+		ptr->cbRgisxtmp = 0;
 
 		return objectPtr;
 	}
@@ -4104,25 +4219,44 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		if(m_oContainsBlank.IsInit())
 		  	ptr->fHasBlankItem = m_oContainsBlank.get();
+        else
+            ptr->fHasBlankItem = false;
 		if(m_oContainsDate.IsInit())
             ptr->fDateInField = m_oContainsDate.get();
+        else
+            ptr->fDateInField = false;
 		if(m_oContainsInteger.IsInit())
             ptr->fIntField = m_oContainsInteger.get();
+        else
+            ptr->fIntField = false;
 		if(m_oContainsMixedTypes.IsInit())
             ptr->fMixedTypesIgnoringBlanks = m_oContainsMixedTypes.get();
+        else
+            ptr->fMixedTypesIgnoringBlanks = false;
 		if(m_oContainsNonDate.IsInit())
 			ptr->fNonDates = m_oContainsNonDate.get();
+        else
+            ptr->fNonDates = false;
 		if(m_oContainsNumber.IsInit())
 			ptr->fNumField = m_oContainsNumber.get();
+        else
+            ptr->fNumField = false;
 		if(m_oContainsSemiMixedTypes.IsInit())
 			ptr->fTextEtcField = m_oContainsSemiMixedTypes.get();
-
+        else
+            ptr->fTextEtcField = false;
         if(m_oContainsString.IsInit())
 			ptr->fHasTextItem = m_oContainsString.get();
+        else
+            ptr->fHasTextItem = false;
 		if(m_oLongText.IsInit())
 			ptr->fHasLongTextItem = m_oLongText.get();
+        else
+            ptr->fHasLongTextItem = false;
 		if(m_oCount.IsInit())
 			ptr->citems = m_oCount->GetValue();
+		else
+			ptr->citems = 0;
 		if(m_oMinDate.IsInit() && m_oMaxDate.IsInit())
 		{
 			ptr->xnumMin.data.value = std::stod(m_oMinDate->GetValue());
@@ -5717,7 +5851,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				ptr1->iSrcType = 0x00000003;
 		}
 		if(m_oConnectionId.IsInit())
-			ptr1->dwConnID = m_oConnectionId->GetValue();
+            ptr1->dwConnID = m_oConnectionId->GetValue();
+        else
+            ptr1->dwConnID = 0;
 
 		if(m_oWorksheetSource.IsInit())
 			ptr->m_PCDSRANGE = m_oWorksheetSource->toBin();

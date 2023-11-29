@@ -3391,9 +3391,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSparklines *sparklines)
 	ods_context->current_table()->start_sparklines();
 		for (size_t i = 0; i < sparklines->m_arrItems.size(); ++i)
 		{
+			if (!sparklines->m_arrItems[i]) continue;
 			ods_context->current_table()->start_sparkline();
-				ods_context->current_table()->set_sparkline_range(*sparklines->m_arrItems[i]->m_oRef);
-				ods_context->current_table()->set_sparkline_cell(*sparklines->m_arrItems[i]->m_oSqRef);
+				if (sparklines->m_arrItems[i]->m_oRef.IsInit())
+					ods_context->current_table()->set_sparkline_range(*sparklines->m_arrItems[i]->m_oRef);
+				if (sparklines->m_arrItems[i]->m_oSqRef.IsInit())
+					ods_context->current_table()->set_sparkline_cell(*sparklines->m_arrItems[i]->m_oSqRef);
 			ods_context->current_table()->end_sparkline();
 		}
 	ods_context->current_table()->end_sparklines();

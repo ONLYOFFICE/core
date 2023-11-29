@@ -179,9 +179,8 @@ void TablePropertiesMapping::Apply(IVisitable* visited)
 			}
 		}break;
 		case sprmTCellPadding:
-		case sprmTCellPaddingDefault:
 		case sprmTCellPaddingOuter:
-		{//default cell padding (margin)
+		{//cell padding (margin)
 			unsigned char grfbrc = iter->Arguments[2];
 			short wMar = FormatUtils::BytesToInt16(iter->Arguments, 4, iter->argumentsSize);
 			std::wstring strValue = FormatUtils::IntToWideString(wMar);

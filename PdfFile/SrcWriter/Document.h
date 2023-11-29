@@ -191,7 +191,7 @@ namespace PdfWriter
 		CDictObject*      GetParent(int nID);
 		CPage*            GetCurPage() { return m_pCurPage; }
 		void              SetCurPage(CPage* pPage) { m_pCurPage = pPage; }
-		bool              EditCO(const std::vector<std::wstring>& arrCO);
+		bool              EditCO(const std::vector<int>& arrCO);
 	private:		  
 					  
 		char*             GetTTFontTag();

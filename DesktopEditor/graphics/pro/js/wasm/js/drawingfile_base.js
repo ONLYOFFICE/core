@@ -637,8 +637,7 @@
 		if (k > 0)
 			res["CO"] = [];
 		for (let i = 0; i < k; ++i)
-			// array of annotation names - rec["name"]
-			res["CO"].push(reader.readString());
+			res["CO"].push(reader.readInt());
 		
 		k = reader.readInt();
 		if (k > 0)
@@ -1276,6 +1275,96 @@
 				// 0 - None, 1 - P, 2 - S
 				if (flags & (1 << 16))
 					rec["Sy"] = reader.readByte();
+			}
+			else if (rec["Type"] == 16)
+			{
+				if (flags & (1 << 15))
+					rec["Icon"] = reader.readString();
+				if (flags & (1 << 16))
+					rec["FS"] = reader.readString();
+				if (flags & (1 << 17))
+				{
+					rec["F"] = {};
+					rec["F"]["FileName"] = reader.readString();
+				}
+				if (flags & (1 << 18))
+				{
+					rec["UF"] = {};
+					rec["UF"]["FileName"] = reader.readString();
+				}
+				if (flags & (1 << 19))
+				{
+					rec["DOS"] = {};
+					rec["DOS"]["FileName"] = reader.readString();
+				}
+				if (flags & (1 << 20))
+				{
+					rec["Mac"] = {};
+					rec["Mac"]["FileName"] = reader.readString();
+				}
+				if (flags & (1 << 21))
+				{
+					rec["Unix"] = {};
+					rec["Unix"]["FileName"] = reader.readString();
+				}
+				if (flags & (1 << 22))
+				{
+					rec["ID"] = [];
+					rec["ID"].push(reader.readString());
+					rec["ID"].push(reader.readString());
+				}
+				rec["V"] = flags & (1 << 23);
+				if (flags & (1 << 24))
+				{
+					let flag = reader.readInt();
+					if (flag & (1 << 0))
+					{
+						let n = reader.readInt();
+						let np1 = reader.readInt();
+						let np2 = reader.readInt();
+						let pPoint = np2 << 32 | np1;
+						rec["F"]["File"] = new Uint8Array(Module["HEAP8"].buffer, pPoint, n);
+						Module["_free"](pPoint);
+					}
+					if (flag & (1 << 1))
+					{
+						let n = reader.readInt();
+						let np1 = reader.readInt();
+						let np2 = reader.readInt();
+						let pPoint = np2 << 32 | np1;
+						rec["UF"]["File"] = new Uint8Array(Module["HEAP8"].buffer, pPoint, n);
+						Module["_free"](pPoint);
+					}
+					if (flag & (1 << 2))
+					{
+						let n = reader.readInt();
+						let np1 = reader.readInt();
+						let np2 = reader.readInt();
+						let pPoint = np2 << 32 | np1;
+						rec["DOS"]["File"] = new Uint8Array(Module["HEAP8"].buffer, pPoint, n);
+						Module["_free"](pPoint);
+					}
+					if (flag & (1 << 3))
+					{
+						let n = reader.readInt();
+						let np1 = reader.readInt();
+						let np2 = reader.readInt();
+						let pPoint = np2 << 32 | np1;
+						rec["Mac"]["File"] = new Uint8Array(Module["HEAP8"].buffer, pPoint, n);
+						Module["_free"](pPoint);
+					}
+					if (flag & (1 << 4))
+					{
+						let n = reader.readInt();
+						let np1 = reader.readInt();
+						let np2 = reader.readInt();
+						let pPoint = np2 << 32 | np1;
+						rec["Unix"]["File"] = new Uint8Array(Module["HEAP8"].buffer, pPoint, n);
+						Module["_free"](pPoint);
+					}
+				}
+				if (flags & (1 << 26))
+					rec["Desc"] = reader.readString();
 			}
 			res.push(rec);
 		}

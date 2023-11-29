@@ -564,7 +564,7 @@ private:
 
 	void getParents(XRef* xref, Object* oFieldRef);
 
-	std::vector<std::string> m_arrCO; // Порядок вычислений - CO
+	std::vector<int> m_arrCO; // Порядок вычислений - CO
 	std::vector<CAnnotParent*> m_arrParents; // Родительские Fields
 	std::vector<CAnnot*> m_arrAnnots;
 };

@@ -1615,14 +1615,8 @@ CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList 
 	{
 		for (int j = 0; j < oObj1.arrayGetLength(); ++j)
 		{
-			oObj1.arrayGet(j, &oObj2);
-			TextString* s = getName(&oObj2);
-			if (s)
-			{
-				std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-				m_arrCO.push_back(sStr);
-				delete s;
-			}
+			if (oObj1.arrayGetNF(j, &oObj2)->isRef())
+				m_arrCO.push_back(oObj2.getRefNum());
 			oObj2.free();
 		}
 	}
@@ -2423,7 +2417,7 @@ void CAnnots::ToWASM(NSWasm::CData& oRes)
 	// Порядок вычислений - CO
 	oRes.AddInt(m_arrCO.size());
 	for (int i = 0; i < m_arrCO.size(); ++i)
-		oRes.WriteString(m_arrCO[i]);
+		oRes.AddInt(m_arrCO[i]);
 
 	// Родительские Fields
 	oRes.AddInt(m_arrParents.size());

@@ -1355,9 +1355,45 @@ namespace PdfWriter
 			return p->second;
 		return NULL;
 	}
-	bool CDocument::EditCO(const std::vector<std::wstring>& arrCO)
+	/*
+	bool FindCO(const std::string& sCO, int nPos, CArrayObject* ppFields)
 	{
-		if (arrCO.empty() || !CheckAcroForm())
+		for (int i = 0; i < ppFields->GetCount(); ++i)
+		{
+			CObjectBase* pObj = ppFields->Get(i);
+			if (!pObj || pObj->GetType() != object_type_DICT)
+				continue;
+
+			CDictObject* pDictObj = (CDictObject*)pObj;
+			pObj = pDictObj->Get("T");
+			if (!pObj || pObj->GetType() != object_type_STRING)
+				continue;
+
+			CStringObject* pStrObj = (CStringObject*)pObj;
+			const char* cStr = (const char*)pStrObj->GetString();
+			int nLength = sCO.length() - nPos;
+			if (pStrObj->GetLength() < nLength)
+				nLength = pStrObj->GetLength();
+			if (strncmp(sCO.c_str() + nPos, cStr, nLength) != 0)
+				continue;
+
+			if (nPos + nLength == sCO.length())
+				return true;
+
+			CArrayObject* pKids = dynamic_cast<CArrayObject*>(pDictObj->Get("Kids"));
+			if (pKids && FindCO(sCO, nPos + nLength, pKids))
+				return true;
+		}
+
+		return false;
+	}
+	*/
+	bool CDocument::EditCO(const std::vector<int>& arrCO)
+	{
+		if (arrCO.empty())
+			return true;
+
+		if (!CheckAcroForm())
 			return false;
 
 		CArrayObject* pArray = new CArrayObject();
@@ -1366,10 +1402,54 @@ namespace PdfWriter
 
 		m_pAcroForm->Add("CO", pArray);
 
-		for (const std::wstring& CO : arrCO)
+
+
+		for (int CO : arrCO)
 		{
+			CDictObject* pObj = GetParent(CO);
+			if (pObj)
+				pArray->Add(pObj);
+			else
+			{
+				CAnnotation* pAnnot = m_mAnnotations[CO];
+				if (pAnnot)
+					pArray->Add(pAnnot);
+			}
+			/*
+			CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
 			std::string sCO = U_TO_UTF8(CO);
+			int nPos = 0;
+
+			FindCO(sCO, nPos, ppFields);
+
+			for (int i = 0; i < ppFields->GetCount(); ++i)
+			{
+				CObjectBase* pObj = ppFields->Get(i);
+				if (!pObj || pObj->GetType() != object_type_DICT)
+					continue;
+
+				CDictObject* pDictObj = (CDictObject*)pObj;
+				pObj = pDictObj->Get("T");
+				if (!pObj || pObj->GetType() != object_type_STRING)
+					continue;
+
+				CStringObject* pStrObj = (CStringObject*)pObj;
+				const char* cStr = (const char*)pStrObj->GetString();
+				int nLength = sCO.length() - nPos;
+				if (pStrObj->GetLength() < nLength)
+					nLength = pStrObj->GetLength();
+				if (strncmp(sCO.c_str() + nPos, cStr, nLength) != 0)
+					continue;
+
+				CArrayObject* pKids = dynamic_cast<CArrayObject*>(m_pAcroForm->Get("Kids"));
+				if (pKids)
+				{
+
+				}
+			}
+
 			pArray->Add(new CStringObject(sCO.c_str()));
+			*/
 		}
 
 		return true;

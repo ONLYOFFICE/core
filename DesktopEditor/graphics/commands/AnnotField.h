@@ -492,13 +492,13 @@ public:
 	CWidgetsInfo();
 	virtual ~CWidgetsInfo();
 
-	const std::vector<std::wstring>&  GetCO() const { return m_arrCO; }
+	const std::vector<int>& GetCO() const { return m_arrCO; }
 	const std::vector<CParent*>& GetParents() const { return m_arrParents; }
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 
 private:
-	std::vector<std::wstring> m_arrCO;
+	std::vector<int> m_arrCO;
 	std::vector<CParent*> m_arrParents;
 };
 

@@ -805,7 +805,7 @@ bool CWidgetsInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafil
 {
 	int n = pReader->ReadInt();
 	for (int i = 0; i < n; ++i)
-		m_arrCO.push_back(pReader->ReadString());
+		m_arrCO.push_back(pReader->ReadInt());
 
 	n = pReader->ReadInt();
 	for (int i = 0; i < n; ++i)

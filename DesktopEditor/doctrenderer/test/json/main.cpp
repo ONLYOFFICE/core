@@ -353,6 +353,7 @@ TEST_F(CJSONTest, array_from_static_method)
 	jsArr->set(2, CJSContext::createArray(2));
 	jsArr->get(2)->toArray()->set(0, CJSContext::createBool(true));
 	jsArr->get(2)->toArray()->set(1, CJSContext::createDouble(2.5));
+	jsArr->set(3, CJSContext::createUndefined());
 	EXPECT_TRUE(compare(arr, jsArr->toValue()));
 	arr[1] = 41;
 	EXPECT_FALSE(compare(arr, jsArr->toValue(), false));
@@ -371,6 +372,7 @@ TEST_F(CJSONTest, array_from_initializer_list)
 	jsArr->set(2, CJSContext::createArray(2));
 	jsArr->get(2)->toArray()->set(0, CJSContext::createBool(true));
 	jsArr->get(2)->toArray()->set(1, CJSContext::createDouble(2.5));
+	jsArr->set(3, CJSContext::createUndefined());
 	EXPECT_TRUE(compare(arr, jsArr->toValue()));
 	arr[1] = 41;
 	EXPECT_FALSE(compare(arr, jsArr->toValue(), false));

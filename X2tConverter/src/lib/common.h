@@ -357,8 +357,8 @@ namespace NExtractTools
 					{
 						if (OOXML_DOCUMENT_SUBTYPE::Main == documentType)
 						{
-							std::wstring sCTFrom = _T("application/vnd.ms-powerpoint.presentation.macroEnabled.main+xml");
-							std::wstring sCTTo = _T("application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml");
+							sCTFrom = _T("application/vnd.ms-powerpoint.presentation.macroEnabled.main+xml");
+							sCTTo = _T("application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml");
 						}
 						else if (OOXML_DOCUMENT_SUBTYPE::Template == documentType)
 						{

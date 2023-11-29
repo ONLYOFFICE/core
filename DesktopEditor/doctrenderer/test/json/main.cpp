@@ -164,11 +164,21 @@ public:
 
 				double val = (double)value;
 				double jsVal = jsValue->toDouble();
-				// strict check without tolerance
-				if (makeExpects)
-					EXPECT_EQ(val, jsVal);
-				if (val != jsVal)
-					return false;
+				if (!std::isnan(val))
+				{
+					// strict check without tolerance
+					if (makeExpects)
+						EXPECT_EQ(val, jsVal);
+					if (val != jsVal)
+						return false;
+				}
+				else
+				{
+					if (makeExpects)
+						EXPECT_TRUE(std::isnan(jsVal));
+					if (!std::isnan(jsVal))
+						return false;
+				}
 			}
 			else if (value.IsStringA())
 			{
@@ -215,6 +225,8 @@ public:
 public:
 	JSSmart<CJSContext> m_pContext;
 };
+
+// --------- CValue basic functinality tests ----------
 
 TEST_F(CJSONTest, undefined_from_default_constructor)
 {
@@ -418,6 +430,17 @@ TEST_F(CJSONTest, typed_array_negative_size)
 	CValue::FreeTypedArray(data, 10);
 }
 
+TEST_F(CJSONTest, typed_array_copy)
+{
+	BYTE* data = CValue::AllocTypedArray(10);
+	CValue typedArr = CValue::CreateTypedArray(data, 10, false);
+	{
+		CValue typedArr2 = typedArr;
+		typedArr2.GetData()[4] = 0x42;
+	}
+	EXPECT_EQ(typedArr.GetData()[4], 0x42);
+}
+
 TEST_F(CJSONTest, object)
 {
 	CValue obj = CValue::CreateObject();
@@ -476,15 +499,15 @@ TEST_F(CJSONTest, references)
 TEST_F(CJSONTest, constants)
 {
 	const CValue val = 42;
-	// you can't change constant value explicitly, but you can do it using references:
+	// NOTE: you can't change constant value explicitly, but you can do it using references:
 	CValueRef ref = val;
 	ref = 10;
 	EXPECT_EQ((int)val, 10);
 	EXPECT_EQ((int)ref, 10);
-	// const references saves its const properties
+	// NOTE: const references saves its const properties
 	const CValueRef ref2 = ref;
 	// you can't do that:
-	// ref2 = 100;
+//	ref2 = 100;
 	EXPECT_EQ((int)ref2, 10);
 }
 
@@ -550,6 +573,237 @@ TEST_F(CJSONTest, wrong_usage)
 	EXPECT_EQ((std::string)val, "");
 	EXPECT_EQ((std::wstring)val, L"");
 #endif
+}
+
+// ----------- toJS() tests -----------
+
+TEST_F(CJSONTest, toJS_undefined)
+{
+	CValue val;
+	JSSmart<CJSValue> jsVal = toJS(val);
+	EXPECT_TRUE(compare(val, jsVal));
+}
+
+TEST_F(CJSONTest, toJS_null)
+{
+	CValue val = CValue::CreateNull();
+	JSSmart<CJSValue> jsVal = toJS(val);
+	EXPECT_TRUE(compare(val, jsVal));
+}
+
+TEST_F(CJSONTest, toJS_typed_arrays)
+{
+	BYTE* data = CValue::AllocTypedArray(4);
+	data[0] = 0x1A;
+	data[1] = 0x54;
+	data[2] = 0xFE;
+	data[3] = 0xFF;
+	CValue typedArr = CValue::CreateTypedArray(data, 4, false);
+	JSSmart<CJSValue> jsTypedArr = toJS(typedArr);
+	// NOTE: BE CAREFUL WHEN CALLLING toJS() MULTIPLE TIMES WITH THE SAME TYPED ARRAY!
+	// second typed array will NOT be initialized properly, since there is another `CJSTypedArray` containing this memory!
+//	JSSmart<CJSValue> jsTypedArr2 = toJS(typedArr);
+	EXPECT_TRUE(compare(typedArr, jsTypedArr));
+}
+
+TEST_F(CJSONTest, toJS_arrays)
+{
+	BYTE* data = CValue::AllocTypedArray(4);
+	data[0] = 0x1A;
+	data[1] = 0x54;
+	data[2] = 0xFE;
+	data[3] = 0xFF;
+	CValue typedArr = CValue::CreateTypedArray(data, 4, false);
+
+	// can't add typed array to this inner array (see test above), only to external array
+	CValue arrInner = {true, 42, L"тест функции toJS()", 2.71828, CValue(), "abc de f", L"test"};
+	CValue arr = {0, arrInner, arrInner, CValue::CreateNull(), arrInner, CValue::CreateArray(4), typedArr};
+
+	JSSmart<CJSValue> jsArr = toJS(arr);
+	EXPECT_TRUE(compare(arr, jsArr));
+}
+
+TEST_F(CJSONTest, toJS_arrays_circular)
+{
+	// NOTE: BE CAREFULL WHEN CREATING CIRCULAR REFERENCE DEPENDENCY IN YOUR ARRAY OR OBJECT!
+	CValue arr = CValue::CreateArray(2);
+	CValueRef ref = arr;
+	arr[0] = 3;
+	arr[1] = ref;
+	// or simply:
+//	arr[1] = arr;
+
+	EXPECT_EQ((int)arr[0], 3);
+	EXPECT_EQ((int)arr[1][0], 3);
+	EXPECT_EQ((int)arr[1][1][1][1][1][1][1][1][1][1][0], 3);
+	EXPECT_TRUE(arr[1][1][1][1].IsArray());
+	// here you will get stack overflow, because each inner array reference will be transformed to a new copy of `CJSArray`
+//	JSSmart<CJSValue> jsArr = toJS(arr);
+
+	// keep only 2 inner recursions
+	CValue arrRec = arr[1][1];
+	arrRec[1] = 42;
+	EXPECT_TRUE(arr[1].IsInt());
+
+	JSSmart<CJSValue> jsArr = toJS(arr);
+	EXPECT_TRUE(compare(arr, jsArr));
+}
+
+TEST_F(CJSONTest, toJS_objects)
+{
+	CValue obj = CValue::CreateObject();
+	obj["name"] = L"Foo";
+	obj["parameters"] = CValue::CreateObject();
+	CValueRef parameters = obj["parameters"];
+	parameters["size"] = 42;
+	parameters["arr"] = {CValue::CreateNull(), CValue::CreateArray(0), {42, L"тест функции toJS()", 2.71828}, CValue::CreateObject(), CValue(), "abc de f", L"test"};
+	parameters["0"] = 0;
+
+	BYTE* data = CValue::AllocTypedArray(4);
+	data[0] = 0x1A;
+	data[1] = 0x54;
+	data[2] = 0xFE;
+	data[3] = 0xFF;
+	CValue typedArr = CValue::CreateTypedArray(data, 4, false);
+	obj["typed"] = typedArr;
+	// NOTE: you can create property even without a name (like in JS)
+	obj[""] = "Bar";
+
+	JSSmart<CJSValue> jsObj = toJS(obj);
+	EXPECT_TRUE(compare(obj, jsObj));
+}
+
+// ----------- fromJS() tests -----------
+
+TEST_F(CJSONTest, fromJS_undefined)
+{
+	JSSmart<CJSValue> jsVal = CJSContext::createUndefined();
+	CValue val = fromJS(jsVal);
+	EXPECT_TRUE(compare(val, jsVal));
+}
+
+TEST_F(CJSONTest, fromJS_null)
+{
+	JSSmart<CJSValue> jsVal = CJSContext::createNull();
+	CValue val = fromJS(jsVal);
+	EXPECT_TRUE(compare(val, jsVal));
+}
+
+TEST_F(CJSONTest, fromJS_and_toJS_edge_numbers)
+{
+	JSSmart<CJSArray> jsVal = CJSContext::createArray(16);
+	jsVal->set(0,  INT_MIN);
+	jsVal->set(1,  INT_MAX);
+	jsVal->set(2,  0);
+	jsVal->set(3,  42);
+	jsVal->set(4,  0.0);
+	jsVal->set(5,  3.1415926535);
+	jsVal->set(6,  42.0);
+	jsVal->set(7,  (double)INT_MIN);
+	jsVal->set(8,  (double)INT_MAX);
+	jsVal->set(9,  std::pow(2.0, 31) - 1);
+	jsVal->set(10, std::pow(2.0, 31));
+	jsVal->set(11, -std::pow(2.0, 31));
+	jsVal->set(12, -std::pow(2.0, 31) - 1);
+	jsVal->set(13, INFINITY);
+	jsVal->set(14, NAN);
+	jsVal->set(15, -INFINITY);
+
+	CValue val = fromJS(jsVal->toValue());
+	EXPECT_TRUE(compare(val, jsVal->toValue()));
+	EXPECT_TRUE(val[0].IsInt());		// INT_MIN
+	EXPECT_TRUE(val[1].IsInt());		// INT_MAX
+	EXPECT_TRUE(val[2].IsInt());		// 0
+	EXPECT_TRUE(val[3].IsInt());		// 42
+	EXPECT_TRUE(val[4].IsInt());		// 0.0
+	EXPECT_TRUE(val[5].IsDouble());		// 3.1415926535
+	EXPECT_TRUE(val[6].IsInt());		// 42.0
+	EXPECT_TRUE(val[7].IsInt());		// (double)INT_MIN
+	EXPECT_TRUE(val[8].IsInt());		// (double)INT_MAX
+	EXPECT_TRUE(val[9].IsInt());		// 2^31 - 1 == INT_MAX
+	EXPECT_TRUE(val[10].IsDouble());	// 2^31
+	EXPECT_TRUE(val[11].IsInt());		// -2^31    == INT_MIN
+	EXPECT_TRUE(val[12].IsDouble());	// -2^31 - 1
+	EXPECT_TRUE(val[13].IsDouble());	// inf
+	EXPECT_TRUE(val[14].IsDouble());	// NaN
+	EXPECT_TRUE(val[15].IsDouble());	// -inf
+
+	JSSmart<CJSValue> jsVal2 = toJS(val);
+	EXPECT_TRUE(compare(val, jsVal2));
+}
+
+TEST_F(CJSONTest, fromJS_typed_arrays)
+{
+	BYTE* data = NSAllocator::Alloc(4);
+	data[0] = 0x1A;
+	data[1] = 0x54;
+	data[2] = 0xFE;
+	data[3] = 0xFF;
+	JSSmart<CJSValue> jsTypedArr = CJSContext::createUint8Array(data, 4, false);
+	CValue typedArr = fromJS(jsTypedArr);
+	EXPECT_TRUE(compare(typedArr, jsTypedArr));
+}
+
+TEST_F(CJSONTest, fromJS_arrays)
+{
+	BYTE* data = NSAllocator::Alloc(4);
+	data[0] = 0x1A;
+	data[1] = 0x54;
+	data[2] = 0xFE;
+	data[3] = 0xFF;
+	JSSmart<CJSValue> jsTypedArr = CJSContext::createUint8Array(data, 4, false);
+	JSSmart<CJSArray> jsArrInner = CJSContext::createArray(0);
+	jsArrInner->add_bool(true);
+	jsArrInner->add_int(42);
+	jsArrInner->add_string(L"тест функции fromJS()");
+	jsArrInner->add_double(2.71828);
+	jsArrInner->add_undefined();
+	jsArrInner->add_stringa("abc de f");
+	jsArrInner->add_string(L"test");
+	JSSmart<CJSArray> jsArr = CJSContext::createArray(0);
+	jsArr->add_int(0);
+	jsArr->add(jsArrInner->toValue());
+	jsArr->add(jsArrInner->toValue());
+	jsArr->add_null();
+	jsArr->add(jsArrInner->toValue());
+	jsArr->add(CJSContext::createArray(4));
+	jsArr->add(jsTypedArr);
+
+	CValue arr = fromJS(jsArr->toValue());
+	EXPECT_TRUE(compare(arr, jsArr->toValue()));
+}
+
+TEST_F(CJSONTest, fromJS_objects)
+{
+	JSSmart<CJSObject> jsObj = CJSContext::createObject();
+	jsObj->set("name", CJSContext::createString(L"Foo"));
+
+	JSSmart<CJSObject> jsParam = CJSContext::createObject();
+	jsParam->set("size", 42);
+	jsParam->set("arr", CJSContext::createArray(0));
+
+	JSSmart<CJSArray> jsArr = jsParam->get("arr")->toArray();
+	jsArr->add_null();
+	jsArr->add(CJSContext::createArray(0));
+	jsArr->add(CJSContext::createArray(3));
+	jsArr->get(2)->toArray()->set(0, 42);
+	jsArr->get(2)->toArray()->set(1, CJSContext::createString(L"тест функции fromJS()"));
+	jsArr->get(2)->toArray()->set(2, 2.71828);
+	jsArr->add(CJSContext::createObject());
+	jsArr->add_undefined();
+	jsArr->add_stringa("abc de f");
+	jsArr->add_bool(true);
+	jsParam->set("0", 0);
+
+	BYTE* data = NSAllocator::Alloc(4);
+	data[0] = 0x1A;
+	data[1] = 0x54;
+	data[2] = 0xFE;
+	data[3] = 0xFF;
+	JSSmart<CJSValue> jsTypedArr = CJSContext::createUint8Array(data, 4, false);
+
+	CValue obj = fromJS(jsObj->toValue());
+	EXPECT_TRUE(compare(obj, jsObj->toValue()));
 }
 
 #else

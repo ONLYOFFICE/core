@@ -16,7 +16,29 @@ namespace NSJSON
 			return NSJSBase::CJSContext::createNull();
 
 		JSSmart<NSJSBase::CJSValue> ret;
-		if (value.IsArray())
+		// handle primitive types first, as they are most commonly used
+		if (value.IsBool())
+		{
+			ret = NSJSBase::CJSContext::createBool((bool)value);
+		}
+		else if (value.IsInt())
+		{
+			ret = NSJSBase::CJSContext::createInt((int)value);
+		}
+		else if (value.IsDouble())
+		{
+			ret = NSJSBase::CJSContext::createDouble((double)value);
+		}
+		else if (value.IsStringA())
+		{
+			ret = NSJSBase::CJSContext::createString((std::string)value);
+		}
+		else if (value.IsStringW())
+		{
+			ret = NSJSBase::CJSContext::createString((std::wstring)value);
+		}
+		// arrays
+		else if (value.IsArray())
 		{
 			const int len = value.GetCount();
 			JSSmart<NSJSBase::CJSArray> jsArr = NSJSBase::CJSContext::createArray(len);
@@ -26,12 +48,14 @@ namespace NSJSON
 			}
 			ret = jsArr->toValue();
 		}
+		// typed arrays
 		else if (value.IsTypedArray())
 		{
 			JSSmart<NSJSBase::CJSTypedArray> jsTypedArr = NSJSBase::CJSContext::createUint8Array(const_cast<BYTE*>(value.GetData()), value.GetCount());
 			ret = jsTypedArr->toValue();
 		}
-		else if (value.IsObject())
+		// objects (there is no need for IsObject())
+		else
 		{
 			JSSmart<NSJSBase::CJSObject> jsObj = NSJSBase::CJSContext::createObject();
 			std::vector<std::string> properties = value.GetPropertyNames();
@@ -41,20 +65,6 @@ namespace NSJSON
 				jsObj->set(name.c_str(), jsValue);
 			}
 			ret = jsObj->toValue();
-		}
-		else
-		{
-			// primitive types
-			if (value.IsBool())
-				ret = NSJSBase::CJSContext::createBool((bool)value);
-			else if (value.IsInt())
-				ret = NSJSBase::CJSContext::createInt((int)value);
-			else if (value.IsDouble())
-				ret = NSJSBase::CJSContext::createDouble((double)value);
-			else if (value.IsStringA())
-				ret = NSJSBase::CJSContext::createString((std::string)value);
-			else
-				ret = NSJSBase::CJSContext::createString((std::wstring)value);
 		}
 
 		return ret;
@@ -68,8 +78,38 @@ namespace NSJSON
 			return CValue::CreateNull();
 
 		CValue ret;
-
-		if (jsValue->isArray())
+		// handle primitive types first, as they are most commonly used
+		if (jsValue->isBool())
+		{
+			ret = CValue(jsValue->toBool());
+		}
+		else if (jsValue->isNumber())
+		{
+			double number = jsValue->toDouble();
+			if (std::isfinite(number))
+			{
+				// check if number is an integer or double
+				double integral;									// integral part
+				double fractional = std::modf(number, &integral);	// fractional part
+				// TODO: this may not work for non-32 bit integers
+				if (fractional == 0.0 && integral >= INT_MIN && integral <= INT_MAX)
+					ret = (int)integral;
+				else
+					ret = number;
+			}
+			else
+			{
+				// handle NaN, inf, -inf
+				ret = number;
+			}
+		}
+		else if (jsValue->isString())
+		{
+			// convert all strings to std::wstring, because in JS all strings are encoded in UTF-16
+			ret = jsValue->toStringW();
+		}
+		// arrays
+		else if (jsValue->isArray())
 		{
 			JSSmart<NSJSBase::CJSArray> jsArr = jsValue->toArray();
 			const int len = jsArr->getCount();
@@ -80,6 +120,7 @@ namespace NSJSON
 				ret[i] = fromJS(jsElement);
 			}
 		}
+		// typed arrays
 		else if (jsValue->isTypedArray())
 		{
 			JSSmart<NSJSBase::CJSTypedArray> jsTypedArr = jsValue->toTypedArray();
@@ -87,6 +128,7 @@ namespace NSJSON
 			BYTE* data = jsTypedArr->getData().Data;
 			ret = CValue::CreateTypedArray(data, len);
 		}
+		// objects
 		else if (jsValue->isObject())
 		{
 			JSSmart<NSJSBase::CJSObject> jsObj = jsValue->toObject();
@@ -98,27 +140,7 @@ namespace NSJSON
 				ret[name.c_str()] = fromJS(jsPropertyValue);
 			}
 		}
-		// primitives
-		else if (jsValue->isBool())
-		{
-			ret = CValue(jsValue->toBool());
-		}
-		else if (jsValue->isNumber())
-		{
-			// check if number is an integer or double
-			double number = jsValue->toDouble();
-			double integral;									// integral part
-			double fractional = std::modf(number, &integral);	// fractional part
-			if (fractional == 0.0 && integral >= INT_MIN && integral <= INT_MAX)
-				ret = (int)integral;
-			else
-				ret = number;
-		}
-		else if (jsValue->isString())
-		{
-			// convert all strings to std::wstring, cause in JS all strings are encoded in UTF-16
-			ret = jsValue->toStringW();
-		}
+		// else the type is not supported and will be converted as undefined value
 
 		return ret;
 	}

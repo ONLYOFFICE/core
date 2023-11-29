@@ -293,7 +293,7 @@ namespace NSJSBase
     CJSValue* CJSContext::createString(const char* value, const int& len)
     {
         CJSValueJSC* _value = new CJSValueJSC();
-        _value->value = [NSString stringWithUtf8Buffer:value length:(size_t)((len == -1) ? strlen(value) : len)];
+		_value->value = [JSValue valueWithObject:[NSString stringWithUtf8Buffer:value length:(size_t)((len == -1) ? strlen(value) : len)] inContext:NSJSBase::CJSContextPrivate::GetCurrentContext()];
         return _value;
     }
 
@@ -306,14 +306,14 @@ namespace NSJSBase
     CJSValue* CJSContext::createString(const std::string& value)
     {
         CJSValueJSC* _value = new CJSValueJSC();
-        _value->value = [NSString stringWithAString:value];
+		_value->value = [JSValue valueWithObject:[NSString stringWithAString:value] inContext:NSJSBase::CJSContextPrivate::GetCurrentContext()];
         return _value;
     }
 
     CJSValue* CJSContext::createString(const std::wstring& value)
     {
         CJSValueJSC* _value = new CJSValueJSC();
-        _value->value = [NSString stringWithWString:value];
+		_value->value = [JSValue valueWithObject:[NSString stringWithWString:value] inContext:NSJSBase::CJSContextPrivate::GetCurrentContext()];
         return _value;
     }
 

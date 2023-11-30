@@ -9,7 +9,7 @@ TEMPLATE = app
 
 CONFIG += core_static_link_libstd
 
-CORE_ROOT_DIR = $$PWD/../../../../../core
+CORE_ROOT_DIR = $$PWD/../../../../../../core
 PWD_ROOT_DIR = $$PWD
 
 include($$CORE_ROOT_DIR/Common/base.pri)
@@ -18,7 +18,7 @@ include($$CORE_ROOT_DIR/DesktopEditor/doctrenderer/js_internal/js_base_embed.pri
 ############### destination path ###############
 DESTDIR = $$PWD/build
 ################################################
-INCLUDEPATH += ../..
+INCLUDEPATH += $$CORE_ROOT_DIR/DesktopEditor/doctrenderer
 
 DEFINES += CURR_DIR=\\\"$$PWD_ROOT_DIR\\\"
 

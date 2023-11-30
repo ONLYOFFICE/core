@@ -103,10 +103,6 @@ std::wstring CreateParamsFile(const std::wstring &pathFrom, const std::wstring &
 	if (nFormat == AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA)
 		oBuilder.WriteString(L"<m_bIsPDFA>true</m_bIsPDFA>");
 
-	oBuilder.WriteString(L"<m_sThemeDir>");
-	oBuilder.WriteEncodeXmlString(L"/sdkjs/slide/themes");
-	oBuilder.WriteString(L"</m_sThemeDir>");
-
 	// changes
 	oBuilder.WriteString(L"<m_bFromChanges>false</m_bFromChanges>");
 
@@ -116,7 +112,6 @@ std::wstring CreateParamsFile(const std::wstring &pathFrom, const std::wstring &
 	oBuilder.WriteString(L"<m_sTempDir>");
 	oBuilder.WriteEncodeXmlString(TempDir);
 	oBuilder.WriteString(L"</m_sTempDir>");
-
 
 	// txt/csv
 	oBuilder.WriteString(L"<m_nCsvTxtEncoding>");

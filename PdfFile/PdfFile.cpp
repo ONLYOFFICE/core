@@ -1022,8 +1022,24 @@ bool CPdfFile::DeleteAnnot(int nID)
 
 	return bRes;
 }
-bool CPdfFile::EditWidgets()
+bool CPdfFile::EditWidgets(IAdvancedCommand* pCommand)
 {
+	CWidgetsInfo* pFieldInfo = (CWidgetsInfo*)pCommand;
+
+	PDFDoc* pPDFDocument = m_pInternal->pReader->GetPDFDocument();
+	PdfWriter::CDocument* pDoc = m_pInternal->pWriter->m_pDocument;
+
+	std::vector<CWidgetsInfo::CParent*> arrParents = pFieldInfo->GetParents();
+	for (CWidgetsInfo::CParent* pParent : arrParents)
+	{
+
+		Object oParentRef;
+		// TODO узнать gen родителя
+		oParentRef.initRef(pParent->nID, 0);
+		GetWidgetParent(pPDFDocument, pDoc, &oParentRef);
+		oParentRef.free();
+	}
+
 	return true;
 }
 #endif // BUILDING_WASM_MODULE
@@ -2084,7 +2100,7 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	{
 		CWidgetsInfo* pCommand = (CWidgetsInfo*)command;
 #ifndef BUILDING_WASM_MODULE
-		if (m_pInternal->bEdit && EditWidgets())
+		if (m_pInternal->bEdit && EditWidgets(pCommand))
 			return m_pInternal->pWriter->EditWidgetParents(pCommand);
 #endif
 		return S_OK;

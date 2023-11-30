@@ -281,7 +281,7 @@ TEST_F(CPdfFileTest, EditPdf)
 
 TEST_F(CPdfFileTest, EditPdfFromBase64)
 {
-	// GTEST_SKIP();
+	GTEST_SKIP();
 
 	LoadFromFile();
 	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
@@ -314,6 +314,36 @@ TEST_F(CPdfFileTest, EditPdfFromBase64)
 	pdfFile->AddToPdfFromBinary(pBuffer, nBufferLen, NULL);
 
 	RELEASEARRAYOBJECTS(pBuffer);
+	RELEASEARRAYOBJECTS(pFileContent);
+
+	pdfFile->Close();
+}
+
+TEST_F(CPdfFileTest, EditPdfFrom)
+{
+	// GTEST_SKIP();
+
+	LoadFromFile();
+	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
+
+	// чтение и конвертации бинарника
+	NSFile::CFileBinary oFile;
+	ASSERT_TRUE(oFile.OpenFile(NSFile::GetProcessDirectory() + L"/changes0.json"));
+
+	DWORD dwFileSize = oFile.GetFileSize();
+	BYTE* pFileContent = new BYTE[dwFileSize];
+	if (!pFileContent)
+	{
+		oFile.CloseFile();
+		FAIL();
+	}
+
+	DWORD dwReaded;
+	EXPECT_TRUE(oFile.ReadFile(pFileContent, dwFileSize, dwReaded));
+	oFile.CloseFile();
+
+	pdfFile->AddToPdfFromBinary(pFileContent, dwReaded, NULL);
+
 	RELEASEARRAYOBJECTS(pFileContent);
 
 	pdfFile->Close();

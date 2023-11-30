@@ -219,6 +219,8 @@ struct odf_drawing_state
 
 		flipH_ = flipV_ = false;
 
+		draw_type_ = boost::none;
+
 	}
 	std::vector<odf_element_state>	elements_;
 
@@ -229,6 +231,8 @@ struct odf_drawing_state
 
 	_CP_OPT(double) cx_;
 	_CP_OPT(double) cy_;
+
+	_CP_OPT(std::wstring) draw_type_;
 
 	bool flipH_;
 	bool flipV_;
@@ -1107,6 +1111,10 @@ void odf_drawing_context::end_shape()
 		{
 			text_shape = true;
 		}
+		else if (impl_->current_drawing_state_.draw_type_)
+		{
+			sub_type = *impl_->current_drawing_state_.draw_type_;
+		}
 		//else
 		//{
 		//	sub_type = L"polyline";
@@ -1702,6 +1710,11 @@ void odf_drawing_context::add_handle (std::wstring x, std::wstring y, std::wstri
 	if (!minY.empty())	h.y_minimum= minY;
 
 	impl_->current_drawing_state_.oox_shape_->handles.push_back(h);
+}
+
+void odf_drawing_context::set_draw_type(const std::wstring& draw_type)
+{
+	impl_->current_drawing_state_.draw_type_ = draw_type;
 }
 
 void odf_drawing_context::add_formula (std::wstring name, std::wstring fmla)

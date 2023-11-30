@@ -797,6 +797,8 @@ TEST_F(CJSONTest, fromJS_objects)
 	jsArr->add_bool(true);
 	jsParam->set("0", 0);
 
+	jsObj->set("parameters", jsParam);
+
 	BYTE* data = NSAllocator::Alloc(4);
 	data[0] = 0x1A;
 	data[1] = 0x54;
@@ -804,8 +806,70 @@ TEST_F(CJSONTest, fromJS_objects)
 	data[3] = 0xFF;
 	JSSmart<CJSValue> jsTypedArr = CJSContext::createUint8Array(data, 4, false);
 
+	jsObj->set("typed", jsTypedArr);
+	jsObj->set("", CJSContext::createString("Bar"));
+
 	CValue obj = fromJS(jsObj->toValue());
 	EXPECT_TRUE(compare(obj, jsObj->toValue()));
+}
+
+TEST_F(CJSONTest, serialization_with_script)
+{
+	JSSmart<CJSValue> jsObj = m_pContext->runScript(
+		"(() => {"
+		"	let obj = {};"
+		"	obj['name'] = 'Foo';"
+		"	obj['parameters'] = { size: 42, arr: [null, [], [42, 'test', 2.71828], {}, undefined, 'abc de f', ''], 0: 0, typedArr: { data: null, count: 0 } };"
+		"	obj[''] = 'Bar';"
+		"	return obj;"
+		"})();"
+	);
+
+	CValue obj = fromJS(jsObj);
+
+	EXPECT_EQ(obj["name"].ToStringW(), L"Foo");
+	EXPECT_EQ(obj[""].ToStringW(), L"Bar");
+	EXPECT_EQ((double)obj["parameters"]["arr"][2][0], 42);
+	EXPECT_TRUE(obj["parameters"]["arr"][4].IsUndefined());
+	EXPECT_EQ((int)obj["parameters"]["0"], 0);
+	EXPECT_TRUE(obj["parameters"]["typedArr"]["data"].IsNull());
+
+	EXPECT_TRUE(compare(obj, jsObj));
+
+	// function test() returns 0 if all checks have passed and number of failed check otherwise
+	m_pContext->runScript(
+		"function test(obj) {"
+		"	if (obj['name'] !== 'Foo')"
+		"		return 1;"
+		"	if (obj[''] !== 'Bar')"
+		"		return 2;"
+		"	if (obj['parameters']['arr'][2][0] !== 42)"
+		"		return 3;"
+		"	if (obj['parameters']['arr'][4] === undefined)"
+		"		return 4;"
+		"	if (obj['parameters']['0'] === 0)"
+		"		return 5;"
+		"	if (obj['parameters']['typedArr']['data'] === null)"
+		"		return 6;"
+		"	return 0;"
+//		"	return JSON.stringify(obj, null, 4);"
+		"}"
+	);
+
+	JSSmart<CJSObject> global = m_pContext->GetGlobal();
+	JSSmart<CJSValue> args[1];
+	args[0] = toJS(obj);
+
+	JSSmart<CJSValue> jsCheckResult = global->call_func("test", 1, args);
+
+	EXPECT_TRUE(jsCheckResult->isNumber());
+//	EXPECT_EQ(jsCheckResult->toInt32(), 0);
+
+
+//	EXPECT_TRUE(jsCheckResult->isString());
+//	std::cout << jsCheckResult->toStringA() << std::endl;
+
+	EXPECT_TRUE(compare(obj, args[0]));
 }
 
 #else

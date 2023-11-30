@@ -967,6 +967,7 @@ void process_build_object::visit(chart_plot_area& val)
 	if (attr_3d.transform_)		object_odf_context_.plot_area_.properties_->push_back(_property(L"transform", attr_3d.transform_.get()) );
 	if (attr_3d.distance_)		object_odf_context_.plot_area_.properties_->push_back(_property(L"distance", attr_3d.distance_->get_value_unit(length::pt)) );
 	if (attr_3d.focal_length_)	object_odf_context_.plot_area_.properties_->push_back(_property(L"focal", attr_3d.focal_length_->get_value_unit(length::pt)) );
+	if (attr_3d.projection_)	object_odf_context_.plot_area_.properties_->push_back(_property(L"perspective", *attr_3d.projection_ == L"perspective"));
 }
 
 void process_build_object::visit(chart_axis& val)

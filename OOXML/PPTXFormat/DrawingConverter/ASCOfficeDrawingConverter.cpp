@@ -427,18 +427,27 @@ namespace NS_DWC_Common
 
 	BYTE getOpacityFromString(const std::wstring opacityStr)
 	{
-		BYTE alpha;
-		if (opacityStr.find(L"f") != -1)
+		BYTE alpha = 0xff;
+		
+		if (opacityStr.find(L"f") != std::wstring::npos)
+		{
 			alpha = (BYTE)(XmlUtils::GetDouble(opacityStr) / 65536 * 256);
+		}
 		else
 		{
-			if (0 == opacityStr.find(L"."))
+			if (opacityStr.find(L"%") != std::wstring::npos)
+			{
+				alpha = (BYTE)(XmlUtils::GetDouble(opacityStr.substr(0, opacityStr.length() - 1)) / 100. * 256);
+			}
+			else if (0 == opacityStr.find(L"."))
 			{
 				std::wstring str = L"0" + opacityStr;
 				alpha = (BYTE)(XmlUtils::GetDouble(str) * 256);
 			}
 			else
+			{
 				alpha = (BYTE)(XmlUtils::GetDouble(opacityStr) * 256);
+			}
 		}
 		return alpha;
 	}

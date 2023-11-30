@@ -62,13 +62,40 @@ DEPENDPATH += $$PWD/../../../OOXML/Binary/Document
 
 ##############################################################################################################
 
-SOURCES +=  ../../src/cextracttools.cpp \
-            ../../../Common/OfficeFileFormatChecker2.cpp \
-            ../../src/ASCConverters.cpp
-HEADERS +=  ../../src/cextracttools.h \
-            ../../../Common/OfficeFileFormatChecker.h \
-            ../../src/ASCConverters.h
+SOURCES += \
+	../../../Common/OfficeFileFormatChecker2.cpp \
+	../../src/cextracttools.cpp \
+	../../src/ASCConverters.cpp
 
+HEADERS += \
+	../../../Common/OfficeFileFormatChecker.h \
+	../../src/cextracttools.h \
+	../../src/ASCConverters.h
+
+HEADERS += \
+	../../src/lib/common.h \
+	\
+	../../src/lib/crypt.h \
+	\
+	../../src/lib/docx.h \
+	../../src/lib/pptx.h \
+	../../src/lib/xlsx.h \
+	\
+	../../src/lib/doc.h \
+	../../src/lib/rtf.h \
+	../../src/lib/txt.h \
+	\
+	../../src/lib/ppt.h \
+	\
+	../../src/lib/xls.h \
+	../../src/lib/csv.h \
+	\
+	../../src/lib/html.h \
+	\
+	../../src/lib/odf.h \
+	\
+	../../src/lib/pdf_image.h \
+	../../src/lib/pdf_oform.h
 
 #vbaformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lVbaFormatLib

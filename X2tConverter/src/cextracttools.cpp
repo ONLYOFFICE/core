@@ -29,14 +29,54 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "cextracttools.h"
 #include "../../DesktopEditor/common/Directory.h"
-#include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/StringBuilder.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
+#include "cextracttools.h"
 
 namespace NExtractTools
 {
+	// utils
+	std::wstring string_replaceAll(std::wstring str, const std::wstring& from, const std::wstring& to)
+	{
+		size_t start_pos = 0;
+		while ((start_pos = str.find(from, start_pos)) != std::wstring::npos)
+		{
+			str.replace(start_pos, from.length(), to);
+			start_pos += to.length();
+		}
+		return str;
+	}
+	bool compare_string_by_length(const std::wstring& x, const std::wstring& y)
+	{
+		if (!x.empty() && !y.empty())
+		{
+			if (x.length() == y.length())
+				return x.compare(y) <= 0;
+			else
+				return ((int)(x.length()) - (int)(y.length())) <= 0;
+		}
+		else
+		{
+			if (!x.empty())
+				return false;
+			else if (!y.empty())
+				return true;
+		}
+		return true;
+	}
+
+	int getReturnErrorCode(_UINT32 nDefine)
+	{
+		return 0 == nDefine ? 0 : nDefine - AVS_ERROR_FIRST - AVS_FILEUTILS_ERROR_FIRST;
+	}
+
+	bool copyOrigin(const std::wstring& sFileFrom, const std::wstring& sFileTo)
+	{
+		size_t nIndex = sFileFrom.rfind('.');
+		return NSFile::CFileBinary::Copy(sFileFrom, NSSystemPath::GetDirectoryName(sFileTo) + FILE_SEPARATOR_STR + L"origin" + sFileFrom.substr(nIndex));
+	}
+
 	const TConversionDirection getConversionDirectionFromExt(const std::wstring& sFile1, const std::wstring& sFile2)
 	{
 		TConversionDirection res = TCD_ERROR;
@@ -52,7 +92,7 @@ namespace NExtractTools
 		}
 
 		// check for directory (unzip task)
-		int nSeparator2Pos = sFile2.rfind(L'/');
+		size_t nSeparator2Pos = sFile2.rfind(L'/');
 		if (std::wstring::npos == nSeparator2Pos)
 		{
 			nSeparator2Pos = sFile2.rfind(L'\\');
@@ -524,6 +564,164 @@ namespace NExtractTools
 
 		return res;
 	}
+	const TConversionDirection getConversionDirection(const std::wstring& sArg3)
+	{
+		TConversionDirection res = TCD_ERROR;
+		if (0 == sArg3.compare(_T("auto")))
+		{
+			res = TCD_AUTO;
+		}
+		else if (0 == sArg3.compare(_T("docx2doct")))
+		{
+			res = TCD_DOCX2DOCT;
+		}
+		else if (0 == sArg3.compare(_T("docxflat2doct")))
+		{
+			res = TCD_DOCXFLAT2DOCT;
+		}
+		else if (0 == sArg3.compare(_T("doct2docx")))
+		{
+			res = TCD_DOCT2DOCX;
+		}
+		else if (0 == sArg3.compare(_T("docx2doct_bin")))
+		{
+			res = TCD_DOCX2DOCT_BIN;
+		}
+		else if (0 == sArg3.compare(_T("doct_bin2docx")))
+		{
+			res = TCD_DOCT_BIN2DOCX;
+		}
+		else if (0 == sArg3.compare(_T("xslx2xlst")))
+		{
+			res = TCD_XLSX2XLST;
+		}
+		else if (0 == sArg3.compare(_T("xslt2xlsx")))
+		{
+			res = TCD_XLST2XLSX;
+		}
+		else if (0 == sArg3.compare(_T("xslx2xlst_bin")))
+		{
+			res = TCD_XLSX2XLST_BIN;
+		}
+		else if (0 == sArg3.compare(_T("xslt_bin2xlsx")))
+		{
+			res = TCD_XLST_BIN2XLSX;
+		}
+		else if (0 == sArg3.compare(_T("pptx2pptt")))
+		{
+			res = TCD_PPTX2PPTT;
+		}
+		else if (0 == sArg3.compare(_T("pptt2pptx")))
+		{
+			res = TCD_PPTT2PPTX;
+		}
+		else if (0 == sArg3.compare(_T("pptx2pptt_bin")))
+		{
+			res = TCD_PPTX2PPTT_BIN;
+		}
+		else if (0 == sArg3.compare(_T("pptt_bin2pptx")))
+		{
+			res = TCD_PPTT_BIN2PPTX;
+		}
+		else if (0 == sArg3.compare(_T("zip2dir")))
+		{
+			res = TCD_ZIPDIR;
+		}
+		else if (0 == sArg3.compare(_T("dir2zip")))
+		{
+			res = TCD_UNZIPDIR;
+		}
+		else if (0 == sArg3.compare(_T("csv2xlsx")))
+		{
+			res = TCD_CSV2XLSX;
+		}
+		else if (0 == sArg3.compare(_T("csv2xlst")))
+		{
+			res = TCD_CSV2XLST;
+		}
+		else if (0 == sArg3.compare(_T("xlsx2csv")))
+		{
+			res = TCD_XLSX2CSV;
+		}
+		else if (0 == sArg3.compare(_T("xlst2csv")))
+		{
+			res = TCD_XLST2CSV;
+		}
+		else if (0 == sArg3.compare(_T("bin2pdf")))
+		{
+			res = TCD_BIN2PDF;
+		}
+		else if (0 == sArg3.compare(_T("bin2t")))
+		{
+			res = TCD_BIN2T;
+		}
+		else if (0 == sArg3.compare(_T("t2bin")))
+		{
+			res = TCD_T2BIN;
+		}
+		else if (0 == sArg3.compare(_T("ppsx2pptx")))
+		{
+			res = TCD_PPSX2PPTX;
+		}
+		else if (0 == sArg3.compare(_T("potx2pptx")))
+		{
+			res = TCD_POTX2PPTX;
+		}
+		else if (0 == sArg3.compare(_T("potm2pptm")))
+		{
+			res = TCD_POTM2PPTM;
+		}
+		else if (0 == sArg3.compare(_T("xltx2xlsx")))
+		{
+			res = TCD_XLTX2XLSX;
+		}
+		else if (0 == sArg3.compare(_T("xltm2xlsm")))
+		{
+			res = TCD_XLTM2XLSM;
+		}
+		else if (0 == sArg3.compare(_T("dotx2docx")))
+		{
+			res = TCD_DOTX2DOCX;
+		}
+		else if (0 == sArg3.compare(_T("dotm2docm")))
+		{
+			res = TCD_DOTM2DOCM;
+		}
+		else if (0 == sArg3.compare(_T("ppt2pptx")))
+		{
+			res = TCD_PPT2PPTX;
+		}
+		else if (0 == sArg3.compare(_T("ppt2pptm")))
+		{
+			res = TCD_PPT2PPTM;
+		}
+		else if (0 == sArg3.compare(_T("doc2docx")))
+		{
+			res = TCD_DOC2DOCX;
+		}
+		else if (0 == sArg3.compare(_T("doc2docm")))
+		{
+			res = TCD_DOC2DOCM;
+		}
+		else if (0 == sArg3.compare(_T("rtf2docx")))
+		{
+			res = TCD_RTF2DOCX;
+		}
+		else if (0 == sArg3.compare(_T("docx2rtf")))
+		{
+			res = TCD_DOCX2RTF;
+		}
+		else if (0 == sArg3.compare(_T("txt2docx")))
+		{
+			res = TCD_TXT2DOCX;
+		}
+		else if (0 == sArg3.compare(_T("docx2txt")))
+		{
+			res = TCD_DOCX2TXT;
+		}
+		return res;
+	}
+
 	std::wstring getMailMergeXml(const std::wstring& sJsonPath, int nRecordFrom, int nRecordTo, const std::wstring& sField)
 	{
 		NSStringUtils::CStringBuilder oBuilder;
@@ -538,9 +736,15 @@ namespace NExtractTools
 		oBuilder.WriteString(L"\" />");
 		return oBuilder.GetData();
 	}
+
 	std::wstring getDoctXml(
-		NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, NSDoctRenderer::DoctRendererFormat::FormatFile eToType, const std::wstring& sTFileSrc, const std::wstring& sPdfBinFile,
-		const std::wstring& sImagesDirectory, const std::wstring& sThemeDir, int nTopIndex, const std::wstring& sMailMerge, const InputParams& params)
+		NSDoctRenderer::DoctRendererFormat::FormatFile eFromType,
+		NSDoctRenderer::DoctRendererFormat::FormatFile eToType,
+		const std::wstring& sTFileSrc, const std::wstring& sPdfBinFile,
+		const std::wstring& sImagesDirectory, const std::wstring& sThemeDir,
+		int nTopIndex,
+		const std::wstring& sMailMerge,
+		const InputParams& params)
 	{
 		NSStringUtils::CStringBuilder oBuilder;
 		oBuilder.WriteString(L"<Settings><SrcFileType>");
@@ -620,9 +824,12 @@ namespace NExtractTools
 		oBuilder.WriteString(L"</Settings>");
 		return oBuilder.GetData();
 	}
+
 	_UINT32 apply_changes(
-		const std::wstring& sBinFrom, const std::wstring& sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, const std::wstring& sThemeDir, std::wstring& sBinTo,
-		const InputParams& params)
+		const std::wstring& sBinFrom, const std::wstring& sToResult,
+		NSDoctRenderer::DoctRendererFormat::FormatFile eType,
+		std::wstring& sBinTo,
+		const InputParams& params, const ConvertParams& convertParams)
 	{
 		std::wstring sBinDir = NSDirectory::GetFolderPath(sBinFrom);
 		std::wstring sChangesDir = sBinDir + FILE_SEPARATOR_STR + L"changes";
@@ -637,7 +844,7 @@ namespace NExtractTools
 			int nChangeIndex = -1;
 			while (true)
 			{
-				std::wstring sXml = getDoctXml(eType, eType, sBinFrom, sBinTo, sImagesDirectory, sThemeDir, nChangeIndex, L"", params);
+				std::wstring sXml = getDoctXml(eType, eType, sBinFrom, sBinTo, sImagesDirectory, convertParams.m_sThemesDir, nChangeIndex, L"", params);
 				std::wstring sResult;
 				oDoctRenderer.Execute(sXml, sResult);
 				bool bContinue = false;
@@ -646,11 +853,11 @@ namespace NExtractTools
 					std::wcerr << L"DoctRenderer:" << sResult << std::endl;
 					params.m_bOutputConvertCorrupted = true;
 					int nErrorIndex = -1;
-					int nErrorIndexStart = sResult.find(L"index");
+					size_t nErrorIndexStart = sResult.find(L"index");
 					if (-1 != nErrorIndexStart)
 					{
 						nErrorIndexStart = sResult.find(L"\"", nErrorIndexStart + 1);
-						int nErrorIndexEnd = sResult.find(L"\"", nErrorIndexStart + 1);
+						size_t nErrorIndexEnd = sResult.find(L"\"", nErrorIndexStart + 1);
 						nErrorIndex = XmlUtils::GetInteger(sResult.substr(nErrorIndexStart + 1, nErrorIndexEnd - nErrorIndexStart - 1));
 					}
 					if (nErrorIndex > 0 && nChangeIndex != nErrorIndex)
@@ -693,6 +900,7 @@ namespace NExtractTools
 			sBinTo = sBinFrom;
 		return 0;
 	}
+
 	bool InputParams::checkInputLimits()
 	{
 		std::wstring& sFrom = *this->m_sFileFrom;

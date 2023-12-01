@@ -66,6 +66,7 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromBin(XLS::BaseObjectPtr& obj);
+			void toBin(XLS::BaseObjectPtr& obj);
 
 			virtual EElementType getType () const;
 
@@ -103,6 +104,7 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromBin(XLS::BaseObjectPtr& obj);
+			void toBin(XLS::BaseObjectPtr& obj);
 
 			virtual EElementType getType () const;
 
@@ -134,6 +136,7 @@ namespace OOX
 			virtual EElementType getType () const;
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
@@ -157,7 +160,7 @@ namespace OOX
 
 			nullable<CAligment>								m_oAligment;
 			nullable<CProtection>							m_oProtection;
-			
+
 		};
 
 		class CCellXfs  : public WritingElementWithChilds<CXfs>
@@ -174,6 +177,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
+			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType () const;
 
@@ -202,6 +206,7 @@ namespace OOX
 			virtual EElementType getType () const;
 
 			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
+			XLS::BaseObjectPtr toBin();
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);

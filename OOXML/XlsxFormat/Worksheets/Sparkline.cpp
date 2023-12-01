@@ -393,6 +393,65 @@ namespace OOX
 				m_oSparklines = obj;
 			}
 		}
+		XLS::BaseObjectPtr CSparklineGroup::toBin()
+		{
+			auto ptr1(new XLSB::SPARKLINEGROUP);
+			XLS::BaseObjectPtr objectPtr(ptr1);
+
+			auto ptr(new XLSB::BeginSparklineGroup);
+			ptr1->m_BrtBeginSparklineGroup = XLS::BaseObjectPtr{ptr};
+
+			ptr->dManualMax.data.value = m_oManualMax->GetValue();
+			ptr->dManualMin.data.value = m_oManualMin->GetValue();
+			ptr->dLineWeight.data.value = m_oLineWeight->GetValue();
+			ptr->isltype = static_cast<decltype(ptr->isltype)>(m_oType->GetValue());
+			ptr->fDateAxis = m_oDateAxis->GetValue();
+			ptr->fShowEmptyCellAsZero = (m_oDisplayEmptyCellsAs == OOX::Spreadsheet::ST_DispBlanksAs::st_dispblanksasZERO) ? 0x01 : 0x00;
+			ptr->fMarkers = m_oMarkers->GetValue();
+			ptr->fHigh = m_oHigh->GetValue();
+			ptr->fLow = m_oLow->GetValue();
+			ptr->fFirst = m_oFirst->GetValue();
+			ptr->fLast = m_oLast->GetValue();
+			ptr->fNegative = m_oNegative->GetValue();
+			ptr->fAxis = m_oDisplayXAxis->GetValue();
+			ptr->fDisplayHidden = m_oDisplayHidden->GetValue();
+			ptr->fRTL = m_oRightToLeft->GetValue();
+
+			if(m_oMaxAxisType == SimpleTypes::Spreadsheet::ESparklineAxisMinMax::Individual)
+				ptr->fIndividualAutoMax = true;
+
+
+				if(m_oColorSeries.IsInit())
+					ptr->brtcolorSeries =  m_oColorSeries->toColor();
+
+				if(m_oColorNegative.IsInit())
+				ptr->brtcolorNegative = m_oColorNegative->toColor();
+
+				if(m_oColorAxis.IsInit())
+				ptr->brtcolorAxis = m_oColorAxis->toColor();
+
+				if(m_oColorMarkers.IsInit())
+				ptr->brtcolorMarkers = m_oColorMarkers->toColor();
+
+				if(m_oColorFirst.IsInit())
+					ptr->brtcolorFirst = m_oColorFirst->toColor();
+
+				if(m_oColorLast.IsInit())
+					ptr->brtcolorLast = m_oColorLast->toColor();
+
+				if(m_oColorHigh.IsInit())
+					ptr->brtcolorHigh = m_oColorHigh->toColor();
+
+				if(m_oColorLow.IsInit())
+					ptr->brtcolorLow = m_oColorLow->toColor();
+
+				if(ptr->FRTheader.rgFormulas.array.size() > 0)
+				{
+					ptr->FRTheader.rgFormulas.array[0].formula = m_oRef.get();
+				}
+
+			return objectPtr;
+		}
 		EElementType CSparklineGroup::getType () const
 		{
 			return et_x_SparklineGroup;
@@ -555,6 +614,14 @@ namespace OOX
 				for(auto &sparklineGroup : ptr->m_arSPARKLINEGROUP)
 					m_arrItems.push_back(new CSparklineGroup(sparklineGroup));
 			}
+		}
+		XLS::BaseObjectPtr CSparklineGroups::toBin()
+		{
+			auto ptr(new XLSB::SPARKLINEGROUPS);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			for(auto i:m_arrItems)
+				ptr->m_arSPARKLINEGROUP.push_back(i->toBin());
+			return objectPtr;
 		}
 		EElementType CSparklineGroups::getType () const
 		{

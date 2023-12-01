@@ -82,6 +82,64 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		XLS::BaseObjectPtr CCalcPr::toBin()
+		{
+			auto ptr(new XLSB::CalcProp);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+            if(m_oCalcId.IsInit())
+                ptr->recalcID = m_oCalcId->GetValue();
+            else
+                ptr->recalcID = 0;
+            if(m_oCalcMode.IsInit())
+                ptr->fAutoRecalc = m_oCalcMode->GetValue();
+            else
+                ptr->fAutoRecalc = 1;
+            if(m_oFullCalcOnLoad.IsInit())
+                ptr->fFullCalcOnLoad = m_oFullCalcOnLoad->GetValue();
+            else
+                ptr->fFullCalcOnLoad = false;
+            if(m_oRefMode.IsInit())
+                ptr->fRefA1 = !m_oRefMode->GetValue();
+            if(m_oIterate.IsInit())
+                ptr->fIter = m_oIterate->GetValue();
+			else
+				ptr->fIter = 0;
+            if(m_oIterateCount.IsInit())
+                ptr->cCalcCount = m_oIterateCount->GetValue();
+			else
+                ptr->cCalcCount = 0;
+            if(m_oIterateDelta.IsInit())
+                ptr->xnumDelta.data.value = m_oIterateDelta->GetValue();
+			else
+                ptr->xnumDelta.data.value = 0;
+            if(m_oFullPrecision.IsInit())
+                ptr->fFullPrec = m_oFullPrecision->GetValue();
+			else
+                ptr->fFullPrec = true;
+            if(m_oCalcCompleted.IsInit())
+                ptr->fSomeUncalced = m_oCalcCompleted->GetValue();
+			else
+				ptr->fSomeUncalced = false;
+            if(m_oCalcOnSave.IsInit())
+                ptr->fSaveRecalc = m_oCalcOnSave->GetValue();
+			else
+                ptr->fSaveRecalc = true;
+            if(m_oConcurrentCalc.IsInit())
+                ptr->fMTREnabled = m_oConcurrentCalc->GetValue();
+			else
+                ptr->fMTREnabled = true;
+            if(m_oConcurrentManualCount.IsInit())
+                ptr->cUserThreadCount = m_oConcurrentManualCount->GetValue();
+			else
+				ptr->cUserThreadCount = 1;
+            if(m_oForceFullCalc.IsInit())
+                ptr->fNoDeps = m_oForceFullCalc->GetValue();
+			else
+				ptr->fNoDeps = false;
+
+			return objectPtr;
+		}
 		EElementType CCalcPr::getType () const
 		{
 			return et_x_CalcPr;

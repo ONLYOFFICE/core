@@ -202,6 +202,20 @@ namespace OOX
 				}
 			}
 		}
+		XLS::BaseObjectPtr CControl::toBin()
+		{
+			auto ptr(new XLSB::ActiveX);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if (m_oShapeId.IsInit())
+				ptr->shapeId = m_oShapeId->GetValue();
+
+			if (!m_oName.IsInit())
+				ptr->strName = m_oName.get();
+
+			if (!m_oRid.IsInit())
+				ptr->strRelID.value = m_oRid->GetValue();
+			return objectPtr;
+		}
 		void CControl::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
@@ -334,6 +348,18 @@ namespace OOX
 				}
 			}
 
+		}
+		XLS::BaseObjectPtr CControls::toBin()
+		{
+			auto ptr(new XLSB::ACTIVEXCONTROLS);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			for(auto i:m_mapControls)
+			{
+				ptr->m_arBrtActiveX.push_back(i.second->toBin());
+			}
+
+			return objectPtr;
 		}
 
 		CListItem::CListItem() {}

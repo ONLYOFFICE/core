@@ -1349,7 +1349,7 @@ namespace NSBinPptxRW
 	{
 		if (m_lPosition > 0)
 		{
-			CFileBinary::WriteFile(m_pStreamData, m_lPosition);
+            //CFileBinary::WriteFile(m_pStreamData, m_lPosition);
 		}
 		m_lPositionFlushed += m_lPosition;
 		m_lPosition = 0;

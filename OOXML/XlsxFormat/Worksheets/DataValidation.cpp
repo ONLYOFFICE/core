@@ -193,6 +193,84 @@ namespace OOX
 
 			return result1 || result2;
 		}
+		XLS::BaseObjectPtr CDataValidation::toBin()
+		{
+			auto ptr(new XLSB::DVal);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			if (m_oType == SimpleTypes::Spreadsheet::EDataValidationType::validationTypeNone)
+				ptr->valType = XLS::typeDvNone;
+			else if (m_oType == SimpleTypes::Spreadsheet::EDataValidationType::validationTypeWhole)
+				ptr->valType = XLS::typeDvWhole;
+			else if (m_oType == SimpleTypes::Spreadsheet::EDataValidationType::validationTypeDecimal)
+				ptr->valType = XLS::typeDvDecimal;
+			else if (m_oType == SimpleTypes::Spreadsheet::EDataValidationType::validationTypeList)
+				ptr->valType = XLS::typeDvList;
+			else if (m_oType == SimpleTypes::Spreadsheet::EDataValidationType::validationTypeDate)
+				ptr->valType = XLS::typeDvDate;
+			else if (m_oType == SimpleTypes::Spreadsheet::EDataValidationType::validationTypeTime)
+				ptr->valType = XLS::typeDvTime;
+			else if (m_oType == SimpleTypes::Spreadsheet::EDataValidationType::validationTypeTextLength)
+				ptr->valType = XLS::typeDvTextLength;
+			else if (m_oType == SimpleTypes::Spreadsheet::EDataValidationType::validationTypeCustom)
+				ptr->valType = XLS::typeDvCustom;
+
+			ptr->fAllowBlank = m_oAllowBlank->GetValue();
+			if(m_oError.IsInit())
+				ptr->Error = m_oError.get();
+
+			if (m_oErrorTitle.IsInit())
+				ptr->ErrorTitle = m_oErrorTitle.get();
+
+			if (m_oPrompt.IsInit())
+				ptr->Prompt = m_oPrompt.get();
+
+			if (m_oPromptTitle.IsInit())
+				ptr->PromptTitle = m_oPromptTitle.get();
+
+			ptr->errStyle = m_oErrorStyle->GetValue();
+
+			if(m_oImeMode == SimpleTypes::Spreadsheet::EDataValidationImeMode::imeModeOn)
+			{
+				ptr->mdImeMode = 0x01;
+			}
+			else if(m_oImeMode == SimpleTypes::Spreadsheet::EDataValidationImeMode::imeModeOff)
+			{
+				ptr->mdImeMode = 0x02;
+			}
+			else
+			{
+				ptr->mdImeMode = m_oImeMode->GetValue();
+			}
+
+			if (m_oOperator == SimpleTypes::Spreadsheet::EDataValidationOperator::operatorBetween)
+				ptr->typOperator = XLS::_typOperatorDv::operatorDvBetween;
+			else if (m_oOperator == SimpleTypes::Spreadsheet::EDataValidationOperator::operatorNotBetween)
+				ptr->typOperator = XLS::_typOperatorDv::operatorDvNotBetween;
+			else if (m_oOperator == SimpleTypes::Spreadsheet::EDataValidationOperator::operatorEqual)
+				ptr->typOperator = XLS::_typOperatorDv::operatorDvEquals;
+			else if (m_oOperator == SimpleTypes::Spreadsheet::EDataValidationOperator::operatorNotEqual)
+				ptr->typOperator = XLS::_typOperatorDv::operatorDvNotEquals;
+			else if (m_oOperator == SimpleTypes::Spreadsheet::EDataValidationOperator::operatorGreaterThan)
+				ptr->typOperator = XLS::_typOperatorDv::operatorDvGreaterThan;
+			else if (m_oOperator == SimpleTypes::Spreadsheet::EDataValidationOperator::operatorLessThan)
+				ptr->typOperator = XLS::_typOperatorDv::operatorDvLessThan;
+			else if (m_oOperator == SimpleTypes::Spreadsheet::EDataValidationOperator::operatorGreaterThanOrEqual)
+				ptr->typOperator = XLS::_typOperatorDv::operatorDvGreaterThanOrEqual;
+			else if (m_oOperator == SimpleTypes::Spreadsheet::EDataValidationOperator::operatorLessThanOrEqual)
+				ptr->typOperator = XLS::_typOperatorDv::operatorDvLessThanOrEqual;
+
+			ptr->fSuppressCombo = m_oShowDropDown->GetValue();
+			ptr->fShowErrorMsg = m_oShowErrorMessage->GetValue();
+			ptr->fShowInputMsg = m_oShowInputMessage->GetValue();
+
+			ptr->sqrfx.strValue = m_oSqRef.get();
+
+			ptr->formula1 = m_oFormula1->m_sText;
+			ptr->formula2 = m_oFormula2->m_sText;
+
+			return objectPtr;
+		}
 		void CDataValidation::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
@@ -496,6 +574,26 @@ namespace OOX
 				}
 			}
 			m_oCount = m_arrItems.size();
+		}
+        XLS::BaseObjectPtr CDataValidations::toBin()
+    	{
+			XLS::BaseObjectPtr objectPtr;
+			auto ptr(new XLSB::DVALS);
+			objectPtr = XLS::BaseObjectPtr{ptr};
+
+			auto beginPtr(new XLSB::BeginDVals);
+			ptr->m_BrtBeginDVals = XLS::BaseObjectPtr{beginPtr};
+			beginPtr->dVals.idvMac =  m_oCount.get() ;
+			beginPtr->dVals.fWnClosed = m_oDisablePrompts->GetValue();
+			beginPtr->dVals.xLeft = m_oXWindow->GetValue();
+			beginPtr->dVals.yTop = m_oYWindow->GetValue();
+
+			for(auto i:m_arrItems)
+			{
+				ptr->m_arBrtDVal.push_back(i->toBin());
+			}
+
+			return objectPtr;
 		}
 		void CDataValidations::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{

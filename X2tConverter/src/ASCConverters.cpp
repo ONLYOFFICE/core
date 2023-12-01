@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -1970,9 +1970,12 @@ namespace NExtractTools
 		{
 			result = fromDraw(sFileFrom, nFormatFrom, oInputParams, oConvertParams);
 		}break;
+		case TCD_XLSX2XLSB:
+		{
+			result = xlsx2xlsb(sFileFrom, sFileTo, oInputParams, oConvertParams);
+		}break;
 		// TCD_FB22DOCT,
 		// TCD_FB22DOCT_BIN,
-
 		// TCD_EPUB2DOCX,
 		// TCD_EPUB2DOCT,
 		// TCD_EPUB2DOCT_BIN,

@@ -64,6 +64,7 @@
 
 #include "Color.h"
 #include "Matrix.h"
+#include "GraphicsLayer.h"
 #include "GraphicsPath.h"
 #include "AlphaMask.h"
 #include "Clip.h"
@@ -71,6 +72,7 @@
 #include "Image.h"
 #include "../fontengine/FontManager.h"
 
+#include <stack>
 #include <vector>
 
 #if defined(_WIN32) || defined (_WIN64)
@@ -281,6 +283,8 @@ protected:
 
 	CAlphaMask* m_pAlphaMask;
 
+	std::stack<CGraphicsLayer*> m_arLayers;
+
 	agg::svg::frame_buffer_rgba<blender_type>       m_frame_buffer;
 	agg::svg::rasterizer                            m_rasterizer;
 
@@ -401,6 +405,15 @@ public:
 	Status CreateAlphaMask();
 	Status ResetAlphaMask();
 	Status StartApplyingAlphaMask();
+
+	//Работа со слоями
+	Status AddLayer(CGraphicsLayer* pGraphicsLayer);
+	Status CreateLayer();
+	Status BlendLayer();
+	Status RemoveLayer();
+	
+	Status SetLayerSettings(const TGraphicsLayerSettings& oSettings);
+	Status SetLayerOpacity(double dOpacity);
 
 	void CalculateFullTransform();
 	bool IsClip();

@@ -63,6 +63,13 @@ SOURCES += \
     ./../AlphaMask_private.cpp \
 	./../AlphaMask.cpp
 
+# grapgics layer
+HEADERS += \
+	./../GraphicsLayer.h
+
+SOURCES += \
+	./../GraphicsLayer.cpp
+
 SOURCES += \
     $$GRAPHICS_AGG_PATH/src/agg_arc.cpp \
 	$$GRAPHICS_AGG_PATH/src/agg_bezier_arc.cpp \

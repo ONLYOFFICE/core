@@ -1049,6 +1049,7 @@ void OoxConverter::convert(PPTX::Logic::PrstGeom *oox_geom)
 	{
 		odf_context()->drawing_context()->set_viewBox(21600, 21600);
 		odf_context()->drawing_context()->set_path(L"U 10800 10800 10800 10800 0 360 Z N");
+		odf_context()->drawing_context()->set_draw_type(L"circle");
 		return;
 	}
 

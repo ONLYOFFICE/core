@@ -208,6 +208,7 @@ public:
 	void set_textarea		(std::wstring l, std::wstring t, std::wstring r, std::wstring b);
 	void add_handle			(std::wstring x, std::wstring y, std::wstring refX, std::wstring refY,
 							std::wstring minX, std::wstring maxX, std::wstring minY, std::wstring maxY);
+	void set_draw_type		(const std::wstring& draw_type);
 	
 	void set_viewBox		(double W, double H);
 

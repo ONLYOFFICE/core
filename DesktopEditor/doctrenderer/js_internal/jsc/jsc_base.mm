@@ -205,7 +205,8 @@ namespace NSJSBase
 	}
 	CJSContext::~CJSContext()
 	{
-		m_internal->context = nil;
+		if (m_internal->context)
+			Dispose();
 		RELEASEOBJECT(m_internal);
 	}
 

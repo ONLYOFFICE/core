@@ -2103,6 +2103,12 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 
 		if (odf_context()->drawing_context()->is_wordart())
 			odf_context()->drawing_context()->set_paragraph_properties(paragraph_properties);
+
+		if (styled && odf_context()->drawing_context()->is_placeholder())
+		{
+			odf_writer::odf_style_state_ptr state = odf_context()->text_context()->get_styles_context()->last_state(odf_types::style_family::Paragraph);
+			odf_context()->drawing_context()->set_placeholder_style(state->get_name());
+		}
 	}	
 
 	std::vector<PPTX::Logic::RunElem>::iterator runIt = std::find_if_not(oox_paragraph->RunElems.begin(), oox_paragraph->RunElems.end(),

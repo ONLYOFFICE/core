@@ -131,6 +131,8 @@ public:
 	};
 	std::vector<_layout> content;
 
+    std::map<std::wstring, size_t> mapUsed;
+
 	std::pair<int,std::wstring> add_or_find(const std::wstring & layout_name,const std::wstring & master_name);
 };
 class presentation_masters_instance
@@ -145,6 +147,7 @@ public:
 		std::vector<presentation_layouts_instance::_layout> layouts;
 	};
 	std::vector<_master> content;
+    std::map<std::wstring, size_t> mapUsed;
 
 	void add_layout_to(const std::wstring & master_name,presentation_layouts_instance::_layout & layout);
 	
@@ -238,9 +241,9 @@ class page_layout_container
 public:
     typedef std::vector<page_layout_instance_ptr>	instances_array;
 
-    void add_page_layout(const style_page_layout * StylePageLayout);
-    void add_master_page(const std::wstring & StyleName, const std::wstring & PageLayoutName,style_master_page* MasterPage);
-	void add_presentation_page_layout(const std::wstring & StyleName, style_presentation_page_layout* StylePageLayout);
+    void add_page_layout(const style_page_layout *stylePageLayout);
+    void add_master_page(const std::wstring & StyleName, const std::wstring & PageLayoutName, style_master_page* MasterPage);
+	void add_presentation_page_layout(const std::wstring & styleName, style_presentation_page_layout *stylePageLayout);
 	
 	const std::wstring page_layout_name_by_style(const std::wstring & StyleName) const;
   
@@ -265,13 +268,13 @@ private:
     instances_array instances_;
     std::vector<style_master_page*> master_pages_;
    
-	boost::unordered_map<std::wstring, int> page_layout_names_;
+    std::map<std::wstring, int> page_layout_names_;
     std::vector<std::wstring> master_page_names_array_;
-    boost::unordered_map<std::wstring, std::wstring> master_page_names_;
+    std::map<std::wstring, std::wstring> master_page_names_;
     
-    boost::unordered_map<std::wstring, int> master_page_names_2_;    
+    std::map<std::wstring, int> master_page_names_2_;
 
-	boost::unordered_map<std::wstring, int> presentation_page_layout_names_;
+	std::map<std::wstring, int> presentation_page_layout_names_;
 
 	odf_reader::text_linenumbering_configuration *linenumberingcConfiguration = NULL;
 };

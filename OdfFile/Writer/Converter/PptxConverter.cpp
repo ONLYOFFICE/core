@@ -216,6 +216,7 @@ bool PptxConverter::convertDocument()
 
 	//convert_meta(app_ptr.GetPointer(), core_ptr.GetPointer()); -> привести к OOX::...
 
+	convert_masters_and_layouts();
 	convert_slides();
 
 	//удалим уже ненужный документ pptx 
@@ -1211,7 +1212,6 @@ std::wstring PptxConverter::convert_animation_scale_values(int x, int y)
 
 	return ss.str();
 }
-
 std::wstring PptxConverter::get_page_name(PPTX::Logic::CSld* oox_slide, _typePages type)
 {
 	if (!oox_slide)
@@ -1248,6 +1248,38 @@ void PptxConverter::fill_in_deferred_hyperlinks()
 		event_listener->attlist_.common_xlink_attlist_.type_ = xlink_type::Simple;
 		event_listener->attlist_.common_xlink_attlist_.show_ = xlink_show::Embed;
 		event_listener->attlist_.common_xlink_attlist_.actuate_ = xlink_actuate::OnRequest;
+	}
+}
+
+
+void PptxConverter::convert_masters_and_layouts()
+{
+	for (size_t iMaster = 0; iMaster < presentation->sldMasterIdLst.size(); ++iMaster)
+	{
+		smart_ptr<PPTX::SlideMaster> slideMaster = ((*presentation)[presentation->sldMasterIdLst[iMaster].rid.get()]).smart_dynamic_cast<PPTX::SlideMaster>();
+
+		if (slideMaster.IsInit() == false)
+			continue;
+
+		for (size_t iLayout = 0; iLayout < slideMaster->sldLayoutIdLst.size(); ++iLayout)
+		{
+			std::wstring rId = slideMaster->sldLayoutIdLst[iLayout].rid.get();
+			smart_ptr<PPTX::SlideLayout> slideLayout = ((*slideMaster)[rId]).smart_dynamic_cast<PPTX::SlideLayout>();
+
+			if (false == slideLayout.IsInit()) continue;
+			
+			std::map<std::wstring, std::wstring>::iterator pFind = m_mapLayouts.find(slideLayout->m_sOutputFilename);
+			if (pFind == m_mapLayouts.end())
+			{
+				odp_context->start_layout_slide();
+					convert_layout(&slideLayout->cSld);
+				odp_context->end_layout_slide();
+
+				std::wstring layout_style_name = odp_context->page_layout_context()->get_local_styles_context()->last_state(odf_types::style_family::PresentationPageLayout)->get_name();
+
+				m_mapLayouts.insert(std::make_pair(slideLayout->m_sOutputFilename, layout_style_name));
+			}
+		}
 	}
 }
 
@@ -1339,7 +1371,7 @@ void PptxConverter::convert_slides()
 			}
 			pFind = m_mapLayouts.find(slide->Layout->m_sOutputFilename);
 			if (pFind == m_mapLayouts.end())
-			{
+			{//сюда уже не попадет - выше
 				odp_context->start_layout_slide();
 					convert_layout(&slide->Layout->cSld);
 				odp_context->end_layout_slide();
@@ -2666,7 +2698,7 @@ void PptxConverter::convert_layout(PPTX::Logic::CSld *oox_slide)
 				odf_writer::office_element_ptr elm;
 				create_element(L"presentation", L"placeholder", elm, odp_context);
 
-				odf_context()->drawing_context()->start_drawing();			
+				odf_context()->drawing_context()->start_drawing();
 				odf_context()->drawing_context()->start_element(elm);
 					
 				odf_context()->drawing_context()->set_placeholder_type(type);
@@ -2675,6 +2707,7 @@ void PptxConverter::convert_layout(PPTX::Logic::CSld *oox_slide)
 					odf_context()->drawing_context()->set_placeholder_id(*pShape->nvSpPr.nvPr.ph->idx);
 
 				OoxConverter::convert(pShape->spPr.xfrm.GetPointer());
+				OoxConverter::convert(pShape->txBody.GetPointer());
 
 				odf_context()->drawing_context()->end_element();			
 				odf_context()->drawing_context()->end_drawing();

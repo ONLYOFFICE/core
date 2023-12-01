@@ -103,6 +103,8 @@ namespace OOX
 					castedPtr->fPhonetic = m_oPhonetic->ToBool();
 				if(m_oStyle.IsInit())
 					castedPtr->ixfeXLSB = m_oStyle->m_eValue;
+                else
+                    castedPtr->ixfeXLSB = 0;
 
 				if (m_oWidth.IsInit())
 				{

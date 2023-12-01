@@ -319,7 +319,7 @@ namespace Spreadsheet
             if(m_oQueryTableFieldId.IsInit())
                 ptr1->idqsif = m_oQueryTableFieldId->GetValue();
             else
-                ptr1->idqsif = 0xFFFFFFFF;
+                ptr1->idqsif = 0;
 
             if(m_oTotalsRowLabel.IsInit())
                 ptr1->stTotal = m_oTotalsRowLabel.get();

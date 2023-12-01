@@ -605,7 +605,9 @@
 	CFile.prototype["getInteractiveFormsInfo"] = function()
 	{
 		let res = {};
+		self.drawingFileCurrentPageIndex = 0;
 		let ext = Module["_GetInteractiveFormsInfo"](this.nativeFile);
+		self.drawingFileCurrentPageIndex = -1;
 		if (ext == 0)
 			return res;
 

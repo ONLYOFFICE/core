@@ -118,5 +118,97 @@ namespace StarMath {
 		pXmlWrite->WriteNodeEnd(L"m:ctrlPr", false,false);
 		pXmlWrite->WriteNodeEnd(L"m:funcPr",false,false);
 	}
+
+	void CConversionSMtoOOXML::PropertiesDPr(XmlUtils::CXmlWriter *pXmlWrite, const TypeElement &enTypeBracket)
+	{
+		pXmlWrite->WriteNodeBegin(L"m:dPr",false);
+		switch(enTypeBracket)
+		{
+			case TypeElement::langle:
+				BracketTypeNotation(L"\u2329",L"\u232A",pXmlWrite);
+				break;
+			case TypeElement::square:
+				BracketTypeNotation(L"\u005B",L"\u005D",pXmlWrite);
+				break;
+			case TypeElement::ldbracket:
+				BracketTypeNotation(L"\u27E6",L"\u27E7",pXmlWrite);
+				break;
+			case TypeElement::lbrace:
+				BracketTypeNotation(L"\u007B",L"\u007D",pXmlWrite);
+				break;
+			case TypeElement::lceil:
+				BracketTypeNotation(L"\u23A1",L"\u23A4",pXmlWrite);
+				break;
+			case TypeElement::lfloor:
+				BracketTypeNotation(L"\u23A3",L"\u23A6",pXmlWrite);
+				break;
+			case TypeElement::lline:
+				BracketTypeNotation(L"\u23AA",L"\u23AA",pXmlWrite);
+				break;
+			case TypeElement::ldline:
+				BracketTypeNotation(L"\u2016",L"\u2016",pXmlWrite);
+				break;
+		}
+		pXmlWrite->WriteNodeBegin(L"m:ctrlPr");
+		StandartProperties(pXmlWrite);
+		pXmlWrite->WriteNodeEnd(L"m:ctrlPr",false,false);
+		pXmlWrite->WriteNodeEnd(L"m:dPr",false,false);
+	}
+	void CConversionSMtoOOXML::BracketTypeNotation(const std::wstring &wsOpenBracket, const std::wstring &wsCloseBracket, XmlUtils::CXmlWriter *pXmlWrite)
+	{
+		pXmlWrite->WriteNodeBegin(L"m:begChr", true);
+		pXmlWrite->WriteAttribute(L"m:val",wsOpenBracket);
+		pXmlWrite->WriteNodeEnd(L"w",true,true);
+		pXmlWrite->WriteNodeBegin(L"m:endChr", true);
+		pXmlWrite->WriteAttribute(L"m:val", wsCloseBracket);
+		pXmlWrite->WriteNodeEnd(L"w",true,true);
+	}
+	void CConversionSMtoOOXML::PropertiesMPr(XmlUtils::CXmlWriter *pXmlWrite, const TypeElement &enTypeMatrix)
+	{
+		pXmlWrite->WriteNodeBegin(L"m:mPr",false);
+		pXmlWrite->WriteNodeBegin(L"m:mcs",false);
+		pXmlWrite->WriteNodeBegin(L"m:mc",false);
+		pXmlWrite->WriteNodeBegin(L"m:mcPr",false);
+		pXmlWrite->WriteNodeBegin(L"m:count",true);
+		switch(enTypeMatrix)
+		{
+			case TypeElement::matrix:
+				pXmlWrite->WriteAttribute(L"m:val",L"2");
+				break;
+			default:
+				pXmlWrite->WriteAttribute(L"m:val",L"1");
+				break;
+		}
+		pXmlWrite->WriteNodeEnd(L"w",true,true);
+		pXmlWrite->WriteNodeBegin(L"m:mcJc",true);
+		pXmlWrite->WriteAttribute(L"m:val",L"center");
+		pXmlWrite->WriteNodeEnd(L"w",true,true);
+		pXmlWrite->WriteNodeEnd(L"m:mcPr",false,false);
+		pXmlWrite->WriteNodeEnd(L"m:mc",false,false);
+		pXmlWrite->WriteNodeEnd(L"m:mcs",false,false);
+		pXmlWrite->WriteNodeBegin(L"m:ctrlPr",false);
+		StandartProperties(pXmlWrite);
+		pXmlWrite->WriteNodeEnd(L"m:ctrlPr",false,false);
+		pXmlWrite->WriteNodeEnd(L"m:mPr",false,false);
+	}
+	void CConversionSMtoOOXML::BlocGrade(XmlUtils::CXmlWriter *pXmlWrite,CElement* pValueGrade)
+	{
+		pXmlWrite->WriteNodeBegin(L"m:d",false);
+		pXmlWrite->WriteNodeBegin(L"m:dPr",false);
+		pXmlWrite->WriteNodeBegin(L"m:begChr",true);
+		pXmlWrite->WriteAttribute(L"m:val",L"");
+		pXmlWrite->WriteNodeEnd(L"w",true,true);
+		pXmlWrite->WriteNodeBegin(L"m:endChr",true);
+		pXmlWrite->WriteAttribute(L"m:val",L"\u23AA");
+		pXmlWrite->WriteNodeEnd(L"w",true,true);
+		pXmlWrite->WriteNodeBegin(L"m:ctrlPr",false);
+		StandartProperties(pXmlWrite);
+		pXmlWrite->WriteNodeEnd(L"m:ctrlPr",false);
+		pXmlWrite->WriteNodeEnd(L"m:dPr",false,false);
+		pXmlWrite->WriteNodeBegin(L"m:e",false);
+		pValueGrade->ConversionToOOXML(pXmlWrite);
+		pXmlWrite->WriteNodeEnd(L"m:e",false,false);
+		pXmlWrite->WriteNodeEnd(L"m:d",false,false);
+	}
 }
 

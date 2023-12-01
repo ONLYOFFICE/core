@@ -19,6 +19,12 @@ namespace StarMath
 			}
 			m_arEquation.push_back(pTempElement);
 		}
+		if(!pReader->EmptyString())
+		{
+			CElement* pTempElement = ParseElement(pReader);
+			if(nullptr != pTempElement)
+					m_arEquation.push_back(pTempElement);
+		}
 		return m_arEquation;
 	}
 
@@ -47,12 +53,6 @@ namespace StarMath
 			pElement->SetAttribute(arAttributes);
 			pReader->ClearReader();
 			pElement->Parse(pReader);
-//			if(CheckingTheNextElement(itStart,itEnd,CIndex::IsIndex))
-//			{
-//				CIndex* pIndex = CIndex::CreateIndex(GetElement(itStart,itEnd));
-//				pIndex->SetValueIndex(ParseElement(itStart,itEnd));
-//				pElement->SetIndex(pIndex);
-//			}
 			return pElement;
 		}
 		else  return pElement;
@@ -89,6 +89,11 @@ namespace StarMath
 				SetLeft<CElementBracketWithIndex>(pLeftArg,pElementWhichAdd);
 				break;
 			}
+			case TypeElement::Index:
+			{
+				SetLeft<CElementIndex>(pLeftArg,pElementWhichAdd);
+				break;
+			}
 			default:
 				break;
 		}
@@ -106,7 +111,7 @@ namespace StarMath
 				CParserStarMathString::AddLeftArgument(pFirstTempElement,pSecondTempElement);
 			}
 			pFirstTempElement = pSecondTempElement;
-			if(pReader->GetGlobalType() == TypeElement::Empty)
+			if(pReader->EmptyString())
 			{
 				pReader->GetToken();
 				pReader->SetTypesToken();
@@ -125,6 +130,8 @@ namespace StarMath
 			case TypeElement::SetOperations:
 				return true;
 			case TypeElement::BracketWithIndex:
+				return true;
+			case TypeElement::Index:
 				return true;
 			default:
 				return false;
@@ -201,92 +208,9 @@ namespace StarMath
 		{
 			delete pTemp;
 		}
-		delete m_pElementIndex;
 	}
-	CElement::CElement(): m_pElementIndex(nullptr)
+	CElement::CElement()
 	{}
-//	TypeElement CElement::GetTypeElement(const std::wstring& wsToken)
-//	{
-//			if (wsToken == L"+")
-//			{
-//				return  TypeElement::plus;
-//			}
-//			else if (wsToken == L"-")
-//			{
-//				return  TypeElement::minus;
-//			}
-//			else if (wsToken == L"*")
-//			{
-//				return  TypeElement::multipl;
-//			}
-//			else if (wsToken == L"/")
-//			{
-//				return  TypeElement::division;
-//			}
-//			else if (wsToken == L"over")
-//			{
-//				return  TypeElement::over;
-//			}
-//			else if (wsToken == L"cdot")
-//			{
-//				return  TypeElement::cdot;
-//			}
-//			else if (wsToken == L"times")
-//			{
-//				return  TypeElement::times;
-//			}
-//			else if (wsToken == L"frac")
-//			{
-//				return  TypeElement::frac;
-//			}
-//			else if (wsToken == L"div")
-//			{
-//				return  TypeElement::div;
-//			}
-//			else if (wsToken == L"oplus")
-//			{
-//				return  TypeElement::oplus;
-//			}
-//			else if (wsToken == L"ominus")
-//			{
-//				return  TypeElement::ominus;
-//			}
-//			else if (wsToken == L"odot")
-//			{
-//				return  TypeElement::odot;
-//			}
-//			else if (wsToken == L"otimes")
-//			{
-//				return  TypeElement::otimes;
-//			}
-//			else if (wsToken == L"odivide")
-//			{
-//				return  TypeElement::odivide;
-//			}
-//			else if (wsToken == L"circ")
-//			{
-//				return  TypeElement::circ;
-//			}
-//			else if (wsToken == L"wideslash")
-//			{
-//				return  TypeElement::wideslash;
-//			}
-//			else if (wsToken == L"widebslash")
-//			{
-//				return  TypeElement::widebslash;
-//			}
-//			else if(L"{" == wsToken) return TypeElement::brace;
-//			else if(L"(" == wsToken) return TypeElement::round;
-//			else if(L"[" == wsToken) return TypeElement::square;
-//			else if(L"ldbracket" == wsToken) return TypeElement::ldbracket;
-//			else if(L"lbrace" == wsToken) return TypeElement::lbrace;
-//			else if(L"langle" == wsToken) return TypeElement::langle;
-//			else if(L"lceil" == wsToken) return TypeElement::lceil;
-//			else if(L"lfloor" == wsToken) return TypeElement::lfloor;
-//			else if(L"lline" == wsToken) return TypeElement::lline;
-//			else if(L"ldline" == wsToken) return TypeElement::ldline;
-//			else return TypeElement::undefine;
-//	}
 	CElement* CElement::CreateElement(CStarMathReader* pReader)
 	{
 		switch (pReader->GetGlobalType()) {
@@ -312,6 +236,8 @@ namespace StarMath
 				return new CElementMatrix(pReader->GetLocalType());
 			case TypeElement::SpecialSymbol:
 				return new CElementSpecialSymbol(pReader->GetLocalType());
+			case TypeElement::Index:
+				return new CElementIndex(pReader->GetLocalType());
 			default:
 				return nullptr;
 		}
@@ -320,11 +246,7 @@ namespace StarMath
 	{
 		m_arElementAttributes = arAttr;
 	}
-	void CElement::SetIndex(CIndex *pIndex)
-	{
-		m_pElementIndex = pIndex;
-	}
-	TypeElement CElement::GetBaseType()
+	const TypeElement& CElement::GetBaseType()
 	{
 		return m_enBaseType;
 	}
@@ -363,6 +285,8 @@ namespace StarMath
 	}
 	TypeElement CElementString::GetDigit(const std::wstring &wsToken)
 	{
+		if(wsToken.empty()) return TypeElement::undefine;
+
 		for(wchar_t cOneElement: wsToken)
 		{
 			if(!isdigit(cOneElement) ||  L'\0' == cOneElement) return TypeElement::undefine;
@@ -400,7 +324,7 @@ namespace StarMath
 			CElement* pTempElement = CParserStarMathString::ParseElement(pReader);
 			pReader->GetToken();
 			pReader->SetTypesToken();
-			if(IsBinOperatorLowPrior() && pReader->GetGlobalType() == TypeElement::BinOperator || pReader->GetGlobalType() == TypeElement::BracketWithIndex)
+			if(IsBinOperatorLowPrior() && pReader->GetGlobalType() == TypeElement::BinOperator || pReader->GetGlobalType() == TypeElement::BracketWithIndex || pReader->GetGlobalType() == TypeElement::Index)
 			{
 				CElement* pBinOp = CParserStarMathString::ParseElement(pReader);
 				CParserStarMathString::AddLeftArgument(pTempElement,pBinOp);
@@ -566,6 +490,10 @@ namespace StarMath
 		else if(L"right" == wsToken) return TypeElement::right;
 		else return TypeElement::undefine;
 	}
+	std::vector<CElement*> CElementBracket::GetBracketValue()
+	{
+		return m_arBrecketValue;
+	}
 	void CElementBracket::Parse(CStarMathReader* pReader)
 	{
 		pReader->GetToken();
@@ -599,6 +527,25 @@ namespace StarMath
 	}
 	void CElementBracket::ConversionToOOXML(XmlUtils::CXmlWriter *pXmlWrite)
 	{
+		if(m_enTypeBracket != TypeElement::brace)
+		{
+			pXmlWrite->WriteNodeBegin(L"m:d",false);
+			CConversionSMtoOOXML::PropertiesDPr(pXmlWrite,m_enTypeBracket);
+			pXmlWrite->WriteNodeBegin(L"m:e",false);
+			for(CElement* oTemp:m_arBrecketValue)
+			{
+				oTemp->ConversionToOOXML(pXmlWrite);
+			}
+			pXmlWrite->WriteNodeEnd(L"m:e",false,false);
+			pXmlWrite->WriteNodeEnd(L"m:d",false,false);
+		}
+		else
+		{
+			for(CElement* oTemp:m_arBrecketValue)
+			{
+				oTemp->ConversionToOOXML(pXmlWrite);
+			}
+		}
 
 	}
 //class methods CElementSpecialSymbol
@@ -614,7 +561,9 @@ namespace StarMath
 	}
 	TypeElement CElementSpecialSymbol::GetSpecialSymbol(const std::wstring &wsToken)
 	{
-		if(L"emptyset" == wsToken) return TypeElement::emptyset;
+		if(L"#" == wsToken) return TypeElement::grid;
+		else if(L"##" == wsToken) return TypeElement::transition;
+		else if(L"emptyset" == wsToken) return TypeElement::emptyset;
 		else if(L"aleph" == wsToken) return TypeElement::aleph;
 		else if(L"setN" == wsToken) return TypeElement::setN;
 		else if(L"setZ" == wsToken) return TypeElement::setZ;
@@ -624,7 +573,13 @@ namespace StarMath
 		else return TypeElement::undefine;
 	}
 	void CElementSpecialSymbol::ConversionToOOXML(XmlUtils::CXmlWriter *pXmlWrite)
-	{}
+	{
+		if(m_enTypeSpecial == TypeElement::transition)
+		{
+			pXmlWrite->WriteNodeEnd(L"m:mr",false,false);
+			pXmlWrite->WriteNodeBegin(L"m:mr",false);
+		}
+	}
 //class methods CElementSetOperations
 	CElementSetOperations::CElementSetOperations(const TypeElement &enType): m_pRightArgument(nullptr), m_pLeftArgument(nullptr)
 	{
@@ -657,7 +612,7 @@ namespace StarMath
 		CElement* pTempElement = CParserStarMathString::ParseElement(pReader);
 		pReader->GetToken();
 		pReader->SetTypesToken();
-		if(pReader->GetGlobalType() == TypeElement::BinOperator || pReader->GetGlobalType() == TypeElement::BracketWithIndex)
+		if(pReader->GetGlobalType() == TypeElement::BinOperator || pReader->GetGlobalType() == TypeElement::BracketWithIndex || pReader->GetGlobalType() == TypeElement::Index)
 		{
 			CElement* pBinOpElement = CParserStarMathString::ParseElement(pReader);
 			CParserStarMathString::AddLeftArgument(pTempElement,pBinOpElement);
@@ -776,7 +731,7 @@ namespace StarMath
 		CElement* pTempElement = CParserStarMathString::ParseElement(pReader);
 		pReader->GetToken();
 		pReader->SetTypesToken();
-		if(pReader->GetGlobalType() == TypeElement::BinOperator || pReader->GetGlobalType() == TypeElement::BracketWithIndex)
+		if(pReader->GetGlobalType() == TypeElement::BinOperator || pReader->GetGlobalType() == TypeElement::BracketWithIndex || pReader->GetGlobalType() == TypeElement::Index)
 		{
 			CElement* pBinOp = CParserStarMathString::ParseElement(pReader);
 			CParserStarMathString::AddLeftArgument(pTempElement,pBinOp);
@@ -935,41 +890,93 @@ namespace StarMath
 		else return TypeElement::undefine;
 }
 //class methods CIndex
-	CIndex::CIndex(const TypeElement& enType): m_pValueIndex(nullptr)
+	CElementIndex::CElementIndex(const TypeElement& enType): m_pValueIndex(nullptr),m_pValue(nullptr)
 	{
 		m_enTypeIndex = enType;
+		SetBaseType(TypeElement::Index);
 	}
-	CIndex::~CIndex()
+	CElementIndex::~CElementIndex()
 	{
 		delete m_pValueIndex;
+		delete m_pValue;
 	}
-	void CIndex::SetValueIndex(CElement *pElement)
+	void CElementIndex::SetValueIndex(CElement *pElement)
 	{
 		m_pValueIndex = pElement;
 	}
-	CElement* CIndex::GetValueIndex()
+	void CElementIndex::SetLeftArg(CElement *pElement)
+	{
+		m_pValue = pElement;
+	}
+	CElement* CElementIndex::GetValueIndex()
 	{
 		return m_pValueIndex;
 	}
-	bool CIndex::IsIndex(const std::wstring &wsCheckToken)
+	TypeElement CElementIndex::GetIndex(const std::wstring &wsCheckToken)
 	{
-		if(L"^" == wsCheckToken) return true;
-		else if(L"_" == wsCheckToken) return true;
-		else if(L"lsup" == wsCheckToken) return true;
-		else if(L"lsub" == wsCheckToken) return true;
-		else if(L"csup" == wsCheckToken) return true;
-		else if(L"csub" == wsCheckToken) return true;
-		else return false;
+		if(L"^" == wsCheckToken) return TypeElement::upper;
+		else if(L"_" == wsCheckToken) return TypeElement::lower;
+		else if(L"lsup" == wsCheckToken) return TypeElement::lsup;
+		else if(L"lsub" == wsCheckToken) return TypeElement::lsub;
+		else if(L"csup" == wsCheckToken) return TypeElement::csup;
+		else if(L"csub" == wsCheckToken) return TypeElement::csub;
+		else return TypeElement::undefine;
 	}
-	CIndex* CIndex::CreateIndex(const std::wstring &wsToken)
+	void CElementIndex::Parse(CStarMathReader *pReader)
 	{
-		if(L"^" == wsToken) return new CIndex(TypeElement::upper);
-		else if(L"_" == wsToken) return new CIndex(TypeElement::lower);
-		else if(L"lsup" == wsToken) return new CIndex(TypeElement::lsup);
-		else if(L"lsub" == wsToken) return new CIndex(TypeElement::lsub);
-		else if(L"csup" == wsToken) return new CIndex(TypeElement::csup);
-		else if(L"csub" == wsToken) return new CIndex(TypeElement::csub);
-		else return nullptr;
+		SetValueIndex(CParserStarMathString::ParseElement(pReader));
+	}
+	void CElementIndex::ConversionToOOXML(XmlUtils::CXmlWriter *pXmlWrite)
+	{
+		if(m_enTypeIndex == TypeElement::upper || m_enTypeIndex == TypeElement::lower)
+		{
+			std::wstring wsNameNodeIndex;
+			switch(m_enTypeIndex)
+			{
+				case TypeElement::upper:
+					wsNameNodeIndex = L"m:sSup";
+					break;
+				case TypeElement::lower:
+					wsNameNodeIndex = L"m:sSub";
+					break;
+			}
+			pXmlWrite->WriteNodeBegin(wsNameNodeIndex,false);
+			pXmlWrite->WriteNodeBegin(wsNameNodeIndex+L"Pr",false);
+			pXmlWrite->WriteNodeBegin(L"m:ctrlPr",false);
+			CConversionSMtoOOXML::StandartProperties(pXmlWrite);
+			pXmlWrite->WriteNodeEnd(L"m:ctrlPr",false,false);
+			pXmlWrite->WriteNodeEnd(wsNameNodeIndex+L"Pr",false,false);
+			CConversionSMtoOOXML::BlockRecording(L"m:e",m_pValue,pXmlWrite);
+			switch(m_enTypeIndex)
+			{
+				case TypeElement::upper:
+					CConversionSMtoOOXML::BlockRecording(L"m:sup",m_pValueIndex,pXmlWrite);
+					break;
+				case TypeElement::lower:
+					CConversionSMtoOOXML::BlockRecording(L"m:sub",m_pValueIndex,pXmlWrite);
+					break;
+			}
+			pXmlWrite->WriteNodeEnd(wsNameNodeIndex,false,false);
+		}
+		else if(m_enTypeIndex == TypeElement::lsub || TypeElement::lsup == m_enTypeIndex)
+		{
+			pXmlWrite->WriteNodeBegin(L"m:sPre",false);
+			pXmlWrite->WriteNodeBegin(L"m:sPrePr",false);
+			pXmlWrite->WriteNodeBegin(L"m:ctrlPr",false);
+			CConversionSMtoOOXML::StandartProperties(pXmlWrite);
+			pXmlWrite->WriteNodeEnd(L"m:ctrlPr",false,false);
+			pXmlWrite->WriteNodeEnd(L"m:sPrePr",false,false);
+			if(m_enTypeIndex==TypeElement::lsup)
+			{
+				CConversionSMtoOOXML::BlockRecording(L"m:sup",m_pValueIndex,pXmlWrite);
+			}
+			else if(m_enTypeIndex == TypeElement::lsub)
+			{
+				CConversionSMtoOOXML::BlockRecording(L"m:sub",m_pValueIndex,pXmlWrite);
+			}
+			CConversionSMtoOOXML::BlockRecording(L"m:e",m_pValue,pXmlWrite);
+			pXmlWrite->WriteNodeEnd(L"m:sPre",false,false);
+		}
 	}
 //class methods CElementFunction
 	CElementFunction::CElementFunction(const TypeElement &enType): m_pValue(nullptr)
@@ -992,8 +999,17 @@ namespace StarMath
 
 	void CElementFunction::Parse(CStarMathReader* pReader)
 	{
-		SetValueFunction(CParserStarMathString::ParseElement(pReader));
-		pReader->ClearReader();
+		CElement* pTemp = CParserStarMathString::ParseElement(pReader);
+		pReader->GetToken();
+		pReader->SetTypesToken();
+		if(pReader->GetGlobalType() == TypeElement::BinOperator || pReader->GetGlobalType() == TypeElement::Index)
+		{
+			 CElement* pBinOp = CParserStarMathString::ParseElement(pReader);
+			 CParserStarMathString::AddLeftArgument(pTemp,pBinOp);
+			 pTemp = pBinOp;
+		}
+		SetValueFunction(pTemp);
+		//pReader->ClearReader();
 	}
 	void CElementFunction::ConversionToOOXML(XmlUtils::CXmlWriter *pXmlWrite)
 	{
@@ -1205,6 +1221,7 @@ namespace StarMath
 			if(m_wsToken == L"left") m_wsToken = GetElement();
 			else if(L"right" == m_wsToken ) m_wsToken = GetElement();
 		}
+		//std::wcout<<m_wsToken << std::endl;
 	}
 	void CStarMathReader::SetTypesToken()
 	{
@@ -1230,6 +1247,12 @@ namespace StarMath
 		if(m_enUnderType != TypeElement::undefine)
 		{
 			m_enGlobalType = TypeElement::Grade;
+			return;
+		}
+		m_enUnderType = CElementIndex::GetIndex(m_wsToken);
+		if(m_enUnderType != TypeElement::undefine)
+		{
+			m_enGlobalType = TypeElement::Index;
 			return;
 		}
 		m_enUnderType=CElementMatrix::GetMatrix(m_wsToken);
@@ -1304,13 +1327,6 @@ namespace StarMath
 	{
 		return m_wsToken;
 	}
-//	void CStarMathReader::SkipNextElement()
-//	{
-//		if(m_itStart !=m_itEnd)
-//		{
-//			std::wstring wsNextElement = CParserStarMathString::GetElement(m_itStart,m_itEnd);
-//		}
-//	}
 	void CStarMathReader::ClearReader()
 	{
 		m_wsToken.clear();
@@ -1337,11 +1353,11 @@ namespace StarMath
 				m_itStart++;
 				break;
 			}
-			else if(!m_wsElement.empty() && (*m_itStart == L'(' || L')' == *m_itStart || *m_itStart == L'{' || *m_itStart == L'}' || *m_itStart == L'+' || *m_itStart == L'-' || *m_itStart == L'/' || *m_itStart == L'*' || L'^' == *m_itStart || L'_' == *m_itStart  || (iswdigit(*m_itStart) && !iswdigit(m_wsElement.back())) || (iswalpha(*m_itStart) && !iswalpha(m_wsElement.back())) || ((m_wsElement.back() != L'<' && m_wsElement.back() != L'>') && (L'<' == *m_itStart || L'>' == *m_itStart || L'=' == *m_itStart))))
+			else if(!m_wsElement.empty() && (*m_itStart == L'[' || *m_itStart == L']' ||  *m_itStart == L'(' || L')' == *m_itStart || *m_itStart == L'{' || *m_itStart == L'}' || *m_itStart == L'+' || *m_itStart == L'-' || *m_itStart == L'/' || *m_itStart == L'*' || L'^' == *m_itStart || L'_' == *m_itStart  || (iswdigit(*m_itStart) && !iswdigit(m_wsElement.back())) || (iswalpha(*m_itStart) && !iswalpha(m_wsElement.back())) || ((m_wsElement.back() != L'<' && m_wsElement.back() != L'>') && (L'<' == *m_itStart || L'>' == *m_itStart || L'=' == *m_itStart))))
 			{
 				return m_wsElement;
 			}
-			else if(((*m_itStart == L'{' || *m_itStart == L'}' || *m_itStart == L'+' || *m_itStart == L'-' || *m_itStart == L'/' || *m_itStart == L'*' || L'^' == *m_itStart || L'_' == *m_itStart || L'=' == *m_itStart ) && m_wsElement.empty()) || (!m_wsElement.empty() && ((m_wsElement.back() == L'<' && (L'=' == *m_itStart || L'<' == *m_itStart || L'>' == *m_itStart)) || (m_wsElement.back() == L'>' && (L'>' == *m_itStart || L'=' == *m_itStart)) ) ) )
+			else if(((*m_itStart == L'{' || *m_itStart == L'}' || *m_itStart == L'+' || *m_itStart == L'-' || *m_itStart == L'/' || *m_itStart == L'*' || L'^' == *m_itStart || L'_' == *m_itStart || L'=' == *m_itStart || *m_itStart == L'[' || *m_itStart == L']') && m_wsElement.empty()) || (!m_wsElement.empty() && ((m_wsElement.back() == L'<' && (L'=' == *m_itStart || L'<' == *m_itStart || L'>' == *m_itStart)) || (m_wsElement.back() == L'>' && (L'>' == *m_itStart || L'=' == *m_itStart)) ) ) )
 			{
 				m_wsElement.push_back(*m_itStart);
 				m_itStart++;
@@ -1429,9 +1445,50 @@ namespace StarMath
 			SetValueTo(CParserStarMathString::ParseElement(pReader));
 		}
 	}
-	void CElementGrade::ConversionToOOXML(XmlUtils::CXmlWriter *oXmlWrite)
+	void CElementGrade::ConversionToOOXML(XmlUtils::CXmlWriter *pXmlWrite)
 	{
-
+		if(m_pValueFrom == nullptr && m_pValueTo == nullptr)
+		{
+			CConversionSMtoOOXML::BlocGrade(pXmlWrite,m_pValueGrade);
+		}
+		else
+		{
+			std::wstring wsNodeGrade;
+			if(m_pValueFrom != nullptr && m_pValueTo == nullptr)
+			{
+				wsNodeGrade = L"m:sSub";
+			}
+			else if(m_pValueFrom == nullptr && m_pValueTo != nullptr)
+			{
+				wsNodeGrade = L"m:sSup";
+			}
+			else if(m_pValueFrom != nullptr && m_pValueTo != nullptr)
+			{
+				wsNodeGrade  = L"m:sSubSup";
+			}
+			pXmlWrite->WriteNodeBegin(wsNodeGrade,false);
+			pXmlWrite->WriteNodeBegin(wsNodeGrade + L"Pr",false);
+			pXmlWrite->WriteNodeBegin(L"m:ctrlPr",false);
+			CConversionSMtoOOXML::StandartProperties(pXmlWrite);
+			pXmlWrite->WriteNodeEnd(L"m:ctrlPr",false,false);
+			pXmlWrite->WriteNodeEnd(wsNodeGrade + L"Pr",false,false);
+			pXmlWrite->WriteNodeBegin(L"m:e",false);
+			CConversionSMtoOOXML::BlocGrade(pXmlWrite,m_pValueGrade);
+			pXmlWrite->WriteNodeEnd(L"m:e",false,false);
+			if(m_pValueFrom != nullptr)
+			{
+				pXmlWrite->WriteNodeBegin(L"m:sub",false);
+				m_pValueFrom->ConversionToOOXML(pXmlWrite);
+				pXmlWrite->WriteNodeEnd(L"m:sub",false,false);
+			}
+			if(m_pValueTo != nullptr)
+			{
+				pXmlWrite->WriteNodeBegin(L"m:sup",false);
+				m_pValueTo->ConversionToOOXML(pXmlWrite);
+				pXmlWrite->WriteNodeEnd(L"m:sup",false,false);
+			}
+			pXmlWrite->WriteNodeEnd(wsNodeGrade,false,false);
+		}
 	}
 	TypeElement CElementGrade::GetGrade(const std::wstring &wsToken)
 	{
@@ -1478,7 +1535,56 @@ namespace StarMath
 	}
 	void CElementMatrix::ConversionToOOXML(XmlUtils::CXmlWriter *pXmlWrite)
 	{
-
+		pXmlWrite->WriteNodeBegin(L"m:m",false);
+		CConversionSMtoOOXML::PropertiesMPr(pXmlWrite,m_enTypeMatrix);
+		pXmlWrite->WriteNodeBegin(L"m:mr",false);
+		switch(m_enTypeMatrix)
+		{
+			case TypeElement::matrix:
+			{
+				CElementBracket* pTempBracket = dynamic_cast<CElementBracket*>(m_pFirstArgument);
+				std::vector<CElement*> pTempValue = pTempBracket->GetBracketValue();
+				for(CElement* pOneElement:pTempValue)
+				{
+					if(pOneElement->GetBaseType() != TypeElement::SpecialSymbol && pOneElement->GetBaseType()!= TypeElement::undefine)
+					{
+						pXmlWrite->WriteNodeBegin(L"m:e",false);
+						pOneElement->ConversionToOOXML(pXmlWrite);
+						pXmlWrite->WriteNodeEnd(L"m:e",false,false);
+					}
+					else if(pOneElement->GetBaseType() != TypeElement::undefine)
+						pOneElement->ConversionToOOXML(pXmlWrite);
+				}
+				break;
+			}
+			case TypeElement::stack:
+			{
+				CElementBracket* pTempBracket = dynamic_cast<CElementBracket*>(m_pFirstArgument);
+				std::vector<CElement*> pTempValue = pTempBracket->GetBracketValue();
+				for(CElement* pOneElement:pTempValue)
+				{
+					if(pOneElement->GetBaseType() != TypeElement::SpecialSymbol)
+					{
+						pXmlWrite->WriteNodeBegin(L"m:e",false);
+						pOneElement->ConversionToOOXML(pXmlWrite);
+						pXmlWrite->WriteNodeEnd(L"m:e",false,false);
+						pXmlWrite->WriteNodeEnd(L"m:mr",false,false);
+						pXmlWrite->WriteNodeBegin(L"m:mr",false);
+					}
+				}
+				break;
+			}
+			case TypeElement::binom:
+			{
+				CConversionSMtoOOXML::BlockRecording(L"m:e",m_pFirstArgument,pXmlWrite);
+				pXmlWrite->WriteNodeEnd(L"m:mr",false,false);
+				pXmlWrite->WriteNodeBegin(L"m:mr",false);
+				CConversionSMtoOOXML::BlockRecording(L"m:e",m_pSecondArgument,pXmlWrite);
+				break;
+			}
+		}
+		pXmlWrite->WriteNodeEnd(L"m:mr",false,false);
+		pXmlWrite->WriteNodeEnd(L"m:m",false,false);
 	}
 }
 

@@ -46,8 +46,6 @@ namespace StarMath
 		TypeElement m_enTypeAttr;
 	};
 
-	class CIndex;
-
 	class CElement
 	{
 	public:
@@ -58,26 +56,27 @@ namespace StarMath
 		static CElement* CreateElement(CStarMathReader* pReader);
 		virtual void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) = 0;
 		void SetAttribute(const std::vector<CAttribute*> arAttr);
-		void SetIndex(CIndex* pIndex);
 		void SetBaseType(const TypeElement& enType);
-		TypeElement GetBaseType();
+		const TypeElement& GetBaseType();
 	private:
-		CIndex* m_pElementIndex;
 		std::vector<CAttribute*> m_arElementAttributes;
 		TypeElement m_enBaseType;
 	};
 
-	class CIndex
+	class CElementIndex: public CElement
 	{
 	public:
-		CIndex(const TypeElement& enType);
-		~CIndex();
+		CElementIndex(const TypeElement& enType);
+		virtual ~CElementIndex();
 		void SetValueIndex(CElement* pElement);
+		void SetLeftArg(CElement* pElement);
 		CElement* GetValueIndex();
-		static bool IsIndex(const std::wstring& wsCheckToken);
-		static CIndex* CreateIndex(const std::wstring& wsToken);
+		static TypeElement GetIndex(const std::wstring& wsCheckToken);
 	private:
+		void Parse(CStarMathReader* pReader) override;
+		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
 		CElement* m_pValueIndex;
+		CElement* m_pValue;
 		TypeElement m_enTypeIndex;
 	};
 
@@ -148,7 +147,7 @@ namespace StarMath
 		static TypeElement GetGrade(const std::wstring& wsToken);
 	private:
 		void Parse(CStarMathReader* pReader) override;
-		void ConversionToOOXML(XmlUtils::CXmlWriter* oXmlWrite) override;
+		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
 		CElement* m_pValueGrade;
 		CElement* m_pValueFrom;
 		CElement* m_pValueTo;
@@ -161,9 +160,10 @@ namespace StarMath
 		virtual ~CElementBracket();
 		void SetBracketValue(const std::vector<CElement*>& arValue);
 		static TypeElement GetBracketOpen(const std::wstring& wsToken);
+		std::vector<CElement*> GetBracketValue();
 	private:
 		void Parse(CStarMathReader* pReader) override;
-		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
+		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;//
 		TypeElement GetBracketClose(const std::wstring& wsToken);
 		TypeElement m_enTypeBracket;
 		std::vector<CElement*> m_arBrecketValue;

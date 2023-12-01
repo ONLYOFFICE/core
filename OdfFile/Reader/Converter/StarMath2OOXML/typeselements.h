@@ -116,7 +116,6 @@ enum class TypeElement{
 	lavender,
 	//color(without rgb and hex)
 	mline,
-	grid,
 	dlgrid,
 	//setopetions
 	intersection,
@@ -177,6 +176,8 @@ enum class TypeElement{
 	setQ,
 	setR,
 	setC,
+	grid,
+	transition,
 	//
 	infinity,
 	partial,

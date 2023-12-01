@@ -16,9 +16,13 @@ namespace StarMath {
 		static void PropertiesNaryPr(const std::wstring& wsTypeOperator,bool bEmptySub,bool bEmptySup,XmlUtils::CXmlWriter* pXmlWrite);
 		static void PropertiesFuncPr(XmlUtils::CXmlWriter* pXmlWrite);
 		static void BlockRecording(const std::wstring& wsNameBlock,CElement* CValueBlock,XmlUtils::CXmlWriter* pXmlWrite);
+		static void PropertiesDPr(XmlUtils::CXmlWriter* pXmlWrite,const TypeElement& enTypeBracket);
+		static void PropertiesMPr(XmlUtils::CXmlWriter* pXmlWrite,const TypeElement& enTypeMatrix);
+		static void BlocGrade(XmlUtils::CXmlWriter* pXmlWrite,CElement* pValueGrade);
 		void EndConversion();
 		std::wstring GetOOXML() ;
 	private:
+		static void BracketTypeNotation(const std::wstring& wsOpenBracket,const std::wstring& wsCloseBracket, XmlUtils::CXmlWriter* pXmlWrite);
 		XmlUtils::CXmlWriter* m_oXmlWrite;
 	};
 }

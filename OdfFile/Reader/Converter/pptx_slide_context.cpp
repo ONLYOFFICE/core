@@ -322,11 +322,11 @@ void pptx_slide_context::set_placeHolder_type(std::wstring typeHolder)
 	if (typeHolder == L"dt")	impl_->date_time	= true;
 	if (typeHolder == L"sldNum")impl_->slideNum		= true;
 
-	impl_->object_description_.additional_.push_back(odf_reader::_property(L"PlaceHolderType",typeHolder));
+	impl_->object_description_.additional_.push_back(odf_reader::_property(L"PlaceHolderType", typeHolder));
 }
 void pptx_slide_context::set_placeHolder_idx(int idx)
 {
-	impl_->object_description_.additional_.push_back(odf_reader::_property(L"PlaceHolderIdx",idx));
+	impl_->object_description_.additional_.push_back(odf_reader::_property(L"PlaceHolderIdx", idx));
 }
 
 void pptx_slide_context::set_rect(double width_pt, double height_pt, double x_pt, double y_pt)
@@ -1012,7 +1012,7 @@ void pptx_slide_context::serialize_objects(std::wostream & strm)
 			}
 		}
 	}
-	//process_drawings();
+	process_drawings();
 	impl_->get_drawings()->serialize(strm);   
 }
 

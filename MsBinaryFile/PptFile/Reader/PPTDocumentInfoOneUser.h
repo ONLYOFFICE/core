@@ -76,6 +76,8 @@ public:
     // перевод id мастера в индекс темы/шаблона
     std::map<_UINT32, LONG> m_mapMasterToTheme;
 
+    std::map<_UINT32, LONG> m_mapRealUsedMaster;
+
     // original id -> natural id
     std::map<_UINT32, _UINT32>  m_mapMasterOriginalIds;
 
@@ -139,6 +141,8 @@ public:
 
     void LoadSlide(_UINT32 dwSlideID, CSlide* pSlide);
     void LoadNotes(_UINT32 dwNotesID, CSlide* pSlide);
+
+    void TestSlide(_UINT32 dwSlideID);
 
     void LoadMasters();
 

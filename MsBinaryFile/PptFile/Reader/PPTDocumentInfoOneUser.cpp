@@ -546,7 +546,10 @@ void CPPTUserInfo::FromDocument()
 
     if (0 != oArrayHeadersFootersInfo.size())
     {
-        for (int i = 0; i < 3; i++) m_PlaceholdersReplaceString[i] = oArrayHeadersFootersInfo[0]->m_HeadersFootersString[i];
+        for (int i = 0; i < 3; i++)
+        {
+            m_PlaceholdersReplaceString[i] = oArrayHeadersFootersInfo[0]->m_HeadersFootersString[i];
+        }
 
         if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom)
         {
@@ -574,6 +577,18 @@ void CPPTUserInfo::FromDocument()
     m_bRtl = (oArrayDoc[0]->m_bRightToLeft != 0);
     m_bShowComments = (oArrayDoc[0]->m_bShowComments != 0);
 
+    for (size_t i = 0; i < m_arrSlidesOrder.size(); i++)
+    {
+        std::map<_UINT32, CRecordSlide*>::iterator pPair = m_mapSlides.find(m_arrSlidesOrder[i]);
+
+        if (pPair == m_mapSlides.end())
+            continue;
+
+        LoadSlideFromPrevUsers(pPair->first);
+
+        TestSlide(pPair->first);
+    }
+    
     LoadMasters();
 
     double DurationSlide = PPT_DEFAULT_SLIDE_DURATION;
@@ -804,8 +819,33 @@ void CPPTUserInfo::LoadNotes(_UINT32 dwNoteID, CSlide* pNotes)
         }
     }
 }
+void CPPTUserInfo::TestSlide(_UINT32 dwSlideID)
+{
+    std::map<_UINT32, CRecordSlide*>::iterator pPairSlide = m_mapSlides.find(dwSlideID);
 
+    if (pPairSlide == m_mapSlides.end()) return;
 
+    CRecordSlide* pRecordSlide = pPairSlide->second;
+    if (NULL == pRecordSlide) return;
+
+    std::vector<CRecordSlideAtom*> oArraySlideAtoms;
+    pRecordSlide->GetRecordsByType(&oArraySlideAtoms, false, true);
+    if (0 == oArraySlideAtoms.size())
+    {
+        // ошибка!!!
+        return;
+    }
+    std::map<_UINT32, LONG>::iterator pFind = m_mapRealUsedMaster.find(oArraySlideAtoms[0]->m_nMasterIDRef);
+
+    if (pFind == m_mapRealUsedMaster.end())
+    {
+        m_mapRealUsedMaster.insert(std::make_pair(oArraySlideAtoms[0]->m_nMasterIDRef, 1));
+    }
+    else
+    {
+        pFind->second++;
+    }
+}
 void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
 {
     std::map<_UINT32, CRecordSlide*>::iterator pPairSlide = m_mapSlides.find(dwSlideID);
@@ -1673,9 +1713,10 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID, bool alwaysLoad)
 
 void CPPTUserInfo::LoadMasters()
 {
-    for (size_t i = 0; i < m_arrMastersOrder.size(); i++)
+    //for (size_t i = 0; i < m_arrMastersOrder.size(); i++)
+    for (auto master : m_mapRealUsedMaster)
     {
-        std::map<_UINT32, CRecordSlide*>::iterator pPair = m_mapMasters.find(m_arrMastersOrder[i]);
+        std::map<_UINT32, CRecordSlide*>::iterator pPair = m_mapMasters.find(master.first/*m_arrMastersOrder[i]*/);
         if (pPair == m_mapMasters.end())continue;
 
         LoadMainMaster(pPair->first, false);
@@ -1683,9 +1724,10 @@ void CPPTUserInfo::LoadMasters()
 
     if (m_mapMasterToTheme.empty())
     {
-        for (size_t i = 0; i < m_arrMastersOrder.size(); i++)
+       // for (size_t i = 0; i < m_arrMastersOrder.size(); i++)
+        for (auto master : m_mapRealUsedMaster)
         {
-            std::map<_UINT32, CRecordSlide*>::iterator pPair = m_mapMasters.find(m_arrMastersOrder[i]);
+            std::map<_UINT32, CRecordSlide*>::iterator pPair = m_mapMasters.find(master.first/*m_arrMastersOrder[i]*/);
             if (pPair == m_mapMasters.end())continue;
 
             LoadMainMaster(pPair->first, true);

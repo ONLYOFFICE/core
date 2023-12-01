@@ -68,6 +68,7 @@ public:
 
 	_CP_OPT(odf_types::presentation_class) presentation_object_;
 
+    _CP_OPT(std::wstring) text_style_name_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(presentation_placeholder);

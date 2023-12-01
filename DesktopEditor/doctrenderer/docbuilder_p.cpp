@@ -492,12 +492,12 @@ namespace NSDoctRenderer
 			if (oParent->isArray())
 			{
 				JSSmart<CJSArray> oParentArray = oParent->toArray();
-				oParentArray->set(m_internal->m_parent->m_parent_index, m_internal->m_value.GetPointer());
+				oParentArray->set(m_internal->m_parent->m_parent_index, m_internal->m_value);
 			}
 			else if (oParent->isObject() && !m_internal->m_parent->m_parent_prop_name.empty())
 			{
 				JSSmart<CJSObject> oParentObject = oParent->toObject();
-				oParentObject->set(m_internal->m_parent->m_parent_prop_name.c_str(), m_internal->m_value.GetPointer());
+				oParentObject->set(m_internal->m_parent->m_parent_prop_name.c_str(), m_internal->m_value);
 			}
 		}
 
@@ -729,7 +729,7 @@ namespace NSDoctRenderer
 		std::string sPropA = U_TO_UTF8(sProp);
 
 		value.m_internal->CheckNative();
-		m_internal->m_value->toObject()->set(sPropA.c_str(), value.m_internal->m_value.GetPointer());
+		m_internal->m_value->toObject()->set(sPropA.c_str(), value.m_internal->m_value);
 	}
 	void CDocBuilderValue::SetProperty(const wchar_t* name, CDocBuilderValue value)
 	{
@@ -742,7 +742,7 @@ namespace NSDoctRenderer
 
 		JSSmart<CJSArray> array = m_internal->m_value->toArray();
 		value.m_internal->CheckNative();
-		array->set(index, value.m_internal->m_value.GetPointer());
+		array->set(index, value.m_internal->m_value);
 	}
 
 	// primitives

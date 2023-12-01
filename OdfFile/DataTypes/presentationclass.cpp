@@ -95,8 +95,8 @@ std::wstring presentation_class::get_type_ms()
         case title:
 			res = L"title";
 			break;
-   //     case subtitle:
-			//res = L"subTitle";
+        case subtitle:
+			res = L"body";
 			break;
 		case graphic:
 			res = L"body";
@@ -125,7 +125,6 @@ std::wstring presentation_class::get_type_ms()
 		case page_number:
 			res = L"sldNum";
 			break;
-        case subtitle:
 		case notes:
 		case handout:
         case outline:

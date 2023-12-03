@@ -51,10 +51,11 @@ int main(int argc, char *argv[])
 	pRasterRenderer->EndCommand(c_nPathType);
 
 	// Отрисовываем второй слой
+	pRasterRenderer->BeginCommand(c_nLayerType);
+
 	pRasterRenderer->BeginCommand(c_nPathType);
 	pRasterRenderer->PathCommandStart();
 
-	pRasterRenderer->BeginCommand(c_nLayerType);
 	pRasterRenderer->PathCommandRect(300, 300, 300, 300);
 
 	pRasterRenderer->put_BrushAlpha1(255);
@@ -72,10 +73,11 @@ int main(int argc, char *argv[])
 	pRasterRenderer->EndCommand(c_nPathType);
 
 	//Отрисовываем третий слой
+	pRasterRenderer->BeginCommand(c_nLayerType);
+
 	pRasterRenderer->BeginCommand(c_nPathType);
 	pRasterRenderer->PathCommandStart();
 
-	pRasterRenderer->BeginCommand(c_nLayerType);
 	pRasterRenderer->PathCommandRect(500, 400, 300, 300);
 
 	pRasterRenderer->put_BrushAlpha1(150);

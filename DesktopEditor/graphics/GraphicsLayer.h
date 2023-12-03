@@ -42,13 +42,16 @@ namespace Aggplus
 			value_type* pDstBuffer = NULL;
 			BYTE uchAlpha;
 
-			for (unsigned int unY = 0; unY < oSrc.height(); ++unY)
+			unsigned int unSrcW = oSrc.width();
+			unsigned int unSrcH = oSrc.height();
+
+			for (unsigned int unY = 0; unY < unSrcH; ++unY)
 			{
 				pDstBuffer = oSrc.row_ptr(unY);
-				for (unsigned int unX = 0; unX < oSrc.width(); ++unX)
+				for (unsigned int unX = 0; unX < unSrcW; ++unX)
 				{
 					uchAlpha = (pSrcBuffer[order_type::A] * ((value_type)(m_oSettings.m_dOpacity * 255.)) + 1) >> 8;
-					if(uchAlpha)
+					if (uchAlpha)
 					{
 						if(uchAlpha == SrcPixelFormatRenderer::base_mask)
 						{

@@ -10,8 +10,7 @@ namespace Aggplus
 
 	CGraphicsLayer::~CGraphicsLayer()
 	{
-		if (!m_bExternalBuffer)
-			RELEASEARRAYOBJECTS(m_pBuffer);
+		ClearBuffer();
 	}
 
 	bool CGraphicsLayer::Empty() const
@@ -27,6 +26,14 @@ namespace Aggplus
 	void CGraphicsLayer::SetDefaultSettings()
 	{
 		m_oSettings.m_dOpacity = 1.;
+	}
+	
+	void CGraphicsLayer::ClearBuffer(bool bDeleteData)
+	{
+		if (bDeleteData && !m_bExternalBuffer)
+			RELEASEARRAYOBJECTS(m_pBuffer);
+
+		m_pBuffer = NULL;
 	}
 
 	void CGraphicsLayer::SetSettings(const TGraphicsLayerSettings &oSettings)

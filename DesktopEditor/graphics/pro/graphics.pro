@@ -56,11 +56,9 @@ SOURCES += \
 
 # alpha mask
 HEADERS += \
-	./../AlphaMask_private.h \
 	./../AlphaMask.h
 
 SOURCES += \
-	./../AlphaMask_private.cpp \
 	./../AlphaMask.cpp
 
 # grapgics layer

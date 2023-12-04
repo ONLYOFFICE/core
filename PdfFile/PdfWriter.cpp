@@ -2155,10 +2155,9 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 			if (nFlags & (1 << 14))
 				pButtonWidget->SetAP_N_Yes(pPr->GetAP_N_Yes());
-			pButtonWidget->SetV(nFlags & (1 << 9));
-			int nIFFlags = pPr->GetIFFlag();
-			pButtonWidget->SetIFFlag(nIFFlags);
-			if (nWidgetType == 27)
+			pButtonWidget->SetV(((bool)(nFlags >> 9) & 1));
+
+			if (nWidgetType == 27) // button
 			{
 				if (nFlags & (1 << 10))
 					pButtonWidget->SetCA(pPr->GetCA());
@@ -2166,24 +2165,43 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 					pButtonWidget->SetRC(pPr->GetRC());
 				if (nFlags & (1 << 12))
 					pButtonWidget->SetAC(pPr->GetAC());
-			}
-			else
-				pButtonWidget->SetS(pPr->GetS());
 
-			if (nFlags & (1 << 13))
-				pButtonWidget->SetTP(pPr->GetTP());
-			if (nIFFlags & (1 << 0))
-			{
-				if (nIFFlags & (1 << 1))
-					pButtonWidget->SetSW(pPr->GetSW());
-				if (nIFFlags & (1 << 2))
-					pButtonWidget->SetS(pPr->GetS());
-				if (nIFFlags & (1 << 3))
+				if (nFlags & (1 << 13))
+					pButtonWidget->SetTP(pPr->GetTP());
+
+				int nIFFlags = pPr->GetIFFlag();
+				pButtonWidget->SetIFFlag(nIFFlags);
+				if (nIFFlags & (1 << 0))
 				{
-					double d1, d2;
-					pPr->GetA(d1, d2);
-					pButtonWidget->SetA(d1, d2);
+					if (nIFFlags & (1 << 1))
+						pButtonWidget->SetSW(pPr->GetSW());
+					if (nIFFlags & (1 << 2))
+						pButtonWidget->SetS(pPr->GetS());
+					if (nIFFlags & (1 << 3))
+					{
+						double d1, d2;
+						pPr->GetA(d1, d2);
+						pButtonWidget->SetA(d1, d2);
+					}
 				}
+			}
+			else // radiobutton и checkbox
+			{
+				std::wstring wsValue = pButtonWidget->SetStyle(pPr->GetStyle());
+
+				// ВНЕШНИЙ ВИД
+				// TODO сейчас редактирование внешних видов форм не происходит
+				bool bSwitch = true;
+				if (bSwitch && pButtonWidget->Get("AP"))
+				{
+					pButtonWidget->SwitchAP();
+					return S_OK;
+				}
+
+				double dMargin = 2;
+				double dBaseLine = dY2 - dY1 - dFontSize - dMargin;
+				// TODO цвет шрифта
+				pButtonWidget->SetAP(wsValue, m_pFont, {}, dFontSize, 0, dBaseLine);
 			}
 		}
 		else if (oInfo.IsTextWidget())
@@ -2206,6 +2224,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			if (nWidgetFlag & (1 << 25))
 				pTextWidget->SetRV(pPr->GetRV());
 
+			// ВНЕШНИЙ ВИД
 			// Коды, шрифты, количество
 			unsigned int unLen;
 			unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsValue, unLen);
@@ -2358,6 +2377,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				}
 
 				double dBaseLine = dY2 - dY1 - dFontSize - dMargin; // TODO -BaseLineOffset
+				// TODO цвет шрифта
 				pTextWidget->SetAP(wsValue, pCodes, unLen, m_pFont, {}, 1.0, m_oFont.GetSize(), dShiftX, dBaseLine, ppFonts, pShifts);
 				RELEASEARRAYOBJECTS(pShifts);
 			}

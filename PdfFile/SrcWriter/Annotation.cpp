@@ -230,6 +230,7 @@ namespace PdfWriter
 			return;
 
 		Add("BE", pBEDict);
+		pBEDict->Add("I", dBE);
 
 		std::string sValue;
 		switch (nType)
@@ -238,10 +239,10 @@ namespace PdfWriter
 		{ sValue = "S"; break; }
 		case 1:
 		{ sValue = "C"; break; }
+		default: { return; }
 		}
 
 		pBEDict->Add("S", sValue.c_str());
-		pBEDict->Add("I", dBE);
 	}
 	void CAnnotation::SetContents(const std::wstring& wsText)
 	{
@@ -419,6 +420,7 @@ namespace PdfWriter
 		{ sValue = "Completed"; break; }
 		case 6:
 		{ sValue = "None"; break; }
+		default: { return; }
 		}
 
 		Add("State", new CStringObject(sValue.c_str()));
@@ -434,6 +436,7 @@ namespace PdfWriter
 		{ sValue = "Marked"; break; }
 		case 1:
 		{ sValue = "Review"; break; }
+		default: { return; }
 		}
 
 		Add("StateModel", new CStringObject(sValue.c_str()));
@@ -513,6 +516,7 @@ namespace PdfWriter
 		{ sValue = "LineDimension"; break; }
 		case 1:
 		{ sValue = "LineArrow"; break; }
+		default: { return; }
 		}
 
 		Add("IT", sValue.c_str());
@@ -526,6 +530,7 @@ namespace PdfWriter
 		{ sValue = "Inline"; break; }
 		case 1:
 		{ sValue = "Top"; break; }
+		default: { return; }
 		}
 
 		Add("CP", sValue.c_str());
@@ -616,6 +621,7 @@ namespace PdfWriter
 		{ sValue = "FreeTextCallout"; break; }
 		case 2:
 		{ sValue = "FreeTextTypeWriter"; break; }
+		default: { return; }
 		}
 
 		Add("IT", sValue.c_str());
@@ -661,6 +667,7 @@ namespace PdfWriter
 		{ m_nSubtype = AnnotUnderline; break; }
 		case 10:
 		{ m_nSubtype = AnnotSquiggly; break; }
+		default:
 		case 11:
 		{ m_nSubtype = AnnotStrikeOut; break; }
 		}
@@ -691,6 +698,7 @@ namespace PdfWriter
 		{
 		case 4:
 		{ m_nSubtype = AnnotSquare; break; }
+		default:
 		case 5:
 		{ m_nSubtype = AnnotCircle; break; }
 		}
@@ -723,6 +731,7 @@ namespace PdfWriter
 		{ sValue = "PolyLineDimension"; break; }
 		case 2:
 		{ sValue = "PolygonDimension"; break; }
+		default: { return; }
 		}
 
 		Add("IT", sValue.c_str());
@@ -733,6 +742,7 @@ namespace PdfWriter
 		{
 		case 6:
 		{ m_nSubtype = AnnotPolygon; break; }
+		default:
 		case 7:
 		{ m_nSubtype = AnnotPolyLine; break; }
 		}
@@ -784,6 +794,7 @@ namespace PdfWriter
 		{ sValue = "P"; break; }
 		case 1:
 		{ sValue = "None"; break; }
+		default: { return; }
 		}
 
 		Add("IT", sValue.c_str());
@@ -800,6 +811,7 @@ namespace PdfWriter
 		m_pAA     = NULL;
 		m_pA      = NULL;
 		m_dFontSizeAP = 0;
+		m_pAppearance = NULL;
 	}
 	void CWidgetAnnotation::SetDA(CFontDict* pFont, const double& dFontSize, const double& dFontSizeAP, const std::vector<double>& arrTC)
 	{
@@ -864,6 +876,7 @@ namespace PdfWriter
 		{ sValue = "P"; break; }
 		case 3:
 		{ sValue = "O"; break; }
+		default: { return; }
 		}
 
 		Add("H", sValue.c_str());
@@ -990,22 +1003,10 @@ namespace PdfWriter
 	}
 	void CButtonWidget::SetV(bool bV)
 	{
-		CDictObject* pOwner = GetObjOwnValue("V");
-		if (!pOwner)
-		{
-			if (m_pParent)
-			{
-				if (bV)
-					m_pParent->Add("V", m_sAP_N_Yes.c_str());
-			}
-			else
-				Add("V", (bV ? m_sAP_N_Yes.c_str() : "Off"));
-		}
-		else if (bV)
-			pOwner->Add("V", m_sAP_N_Yes.c_str());
+		if (m_pParent && bV)
+			m_pParent->Add("V", m_sAP_N_Yes.c_str());
 
-		// TODO
-		// Add("AS", (bV ? m_sAP_N_Yes.c_str() : "Off"));
+		Add("V", (bV ? m_sAP_N_Yes.c_str() : "Off"));
 	}
 	void CButtonWidget::SetDV(const std::wstring& wsDV)
 	{
@@ -1023,6 +1024,7 @@ namespace PdfWriter
 		{ sValue = "P"; break; }
 		case 1:
 		{ sValue = "A"; break; }
+		default: { return; }
 		}
 
 		m_pIF->Add("S", sValue.c_str());
@@ -1046,19 +1048,18 @@ namespace PdfWriter
 		{ sValue = "B"; break; }
 		case 3:
 		{ sValue = "S"; break; }
+		default: { return; }
 		}
 
 		m_pIF->Add("SW", sValue.c_str());
 	}
-	void CButtonWidget::SetStyle(const BYTE& nStyle)
+	std::wstring CButtonWidget::SetStyle(const BYTE& nStyle)
 	{
 		CheckMK();
 
 		std::string sValue;
 		switch (nStyle)
 		{
-		case 0:
-		{ sValue = "4"; break; }
 		case 1:
 		{ sValue = "8"; break; }
 		case 2:
@@ -1069,9 +1070,14 @@ namespace PdfWriter
 		{ sValue = "H"; break; }
 		case 5:
 		{ sValue = "n"; break; }
+		default:
+		case 0:
+		{ sValue = "4"; break; }
 		}
 
 		m_pMK->Add("CA", new CStringObject(sValue.c_str()));
+
+		return UTF8_TO_U(sValue);
 	}
 	void CButtonWidget::SetIFFlag(const int& nIFFlag)
 	{
@@ -1117,6 +1123,21 @@ namespace PdfWriter
 	{
 		std::string sValue = U_TO_UTF8(wsAP_N_Yes);
 		m_sAP_N_Yes = sValue;
+	}
+	void CButtonWidget::SwitchAP()
+	{
+		Add("AS", Get("V"));
+	}
+	void CButtonWidget::SetAP(const std::wstring& wsValue, CFontDict* pFont, const TRgb& oColor, double dFontSize, double dX, double dY)
+	{
+		m_pAppearance = new CAnnotAppearance(m_pXref, this);
+		if (!m_pAppearance)
+			return;
+		Add("AP", m_pAppearance);
+
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
+
+		pNormal->DrawSimpleText(wsValue, NULL, 0, pFont, dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), NULL, NULL);
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextWidget

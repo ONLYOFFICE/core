@@ -1292,6 +1292,12 @@ BYTE* CPdfFile::GetWidgets()
 		return NULL;
 	return m_pInternal->pReader->GetWidgets();
 }
+BYTE* CPdfFile::GetWidgetFonts()
+{
+	if (!m_pInternal->pReader)
+		return NULL;
+	return m_pInternal->pReader->GetWidgetFonts();
+}
 BYTE* CPdfFile::GetAnnots(int nPageIndex)
 {
 	if (!m_pInternal->pReader)

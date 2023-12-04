@@ -457,9 +457,12 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 	{
 		m_oBorder.nType = pReader->ReadByte();
 		m_oBorder.dWidth = pReader->ReadDouble();
-		int n = pReader->ReadInt();
-		for (int i = 0; i < n; ++i)
-			m_oBorder.arrDash.push_back(pReader->ReadDouble());
+		if (m_oBorder.nType == 2)
+		{
+			int n = pReader->ReadInt();
+			for (int i = 0; i < n; ++i)
+				m_oBorder.arrDash.push_back(pReader->ReadDouble());
+		}
 	}
 	if (nFlags & (1 << 5))
 		m_wsLM = pReader->ReadString();

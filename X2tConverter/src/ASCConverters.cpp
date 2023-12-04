@@ -529,6 +529,14 @@ namespace NExtractTools
 					nRes = apply_changes(sFrom, sTo, NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT, sDocxFile, params, convertParams);
 				}
 				nRes = zip2dir(sDocxFile, sDocxDir);
+
+				if (false == SUCCEEDED_X2T(nRes))
+				{
+					if (NSDirectory::GetFilesCount(sDocxDir, true) > 3)
+					{
+						nRes = 0;
+					}
+				}
 			}
 			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatFrom)
 			{
@@ -540,6 +548,13 @@ namespace NExtractTools
 				else
 				{
 					nRes = zip2dir(sFrom, sDocxDir);
+				}
+				if (false == SUCCEEDED_X2T(nRes))
+				{
+					if (NSDirectory::GetFilesCount(sDocxDir, true) > 3)
+					{
+						nRes = 0;
+					}
 				}
 			}
 			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX == nFormatFrom)

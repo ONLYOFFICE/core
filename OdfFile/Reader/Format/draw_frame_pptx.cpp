@@ -77,7 +77,7 @@ void draw_g::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_frame::pptx_convert_placeHolder(oox::pptx_conversion_context & Context)
 {
-	Context.get_slide_context().set_property(_property(L"no_rect",true));
+	Context.get_slide_context().set_property(_property(L"no_rect", true));
 	pptx_convert(Context);
 }
 void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)

@@ -57,6 +57,39 @@ WASM_EXPORT void SetFontBinary(char* path, BYTE* data, int size)
 		pStorage->Add(UTF8_TO_U(sPathA), data, size, true);
 	}
 }
+WASM_EXPORT BYTE* GetFontBinary(char* path)
+{
+	NSWasm::CData oRes;
+	oRes.SkipLen();
+
+	NSFonts::IFontsMemoryStorage* pStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+	if (pStorage)
+	{
+		std::string sPathA(path);
+		NSFonts::IFontStream* pStream = pStorage->Get(UTF8_TO_U(sPathA));
+		if (pStream)
+		{
+			BYTE* pData = NULL;
+			LONG lLength = 0;
+			pStream->GetMemory(pData, lLength);
+
+			if (pData)
+			{
+				oRes.AddInt(lLength);
+
+				unsigned long long npSubMatrix = (unsigned long long)pData;
+				unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
+				oRes.AddInt(npSubMatrix1);
+				oRes.AddInt(npSubMatrix >> 32);
+			}
+		}
+	}
+
+	oRes.WriteLen();
+	BYTE* bRes = oRes.GetBuffer();
+	oRes.ClearWithoutAttack();
+	return bRes;
+}
 WASM_EXPORT int IsFontBinaryExist(char* path)
 {
 	NSFonts::IFontsMemoryStorage* pStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
@@ -155,6 +188,10 @@ WASM_EXPORT BYTE* GetStructure(CGraphicsFileDrawing* pGraphics)
 WASM_EXPORT BYTE* GetInteractiveFormsInfo(CGraphicsFileDrawing* pGraphics)
 {
 	return pGraphics->GetInteractiveFormsInfo();
+}
+WASM_EXPORT BYTE* GetInteractiveFormsFonts(CGraphicsFileDrawing* pGraphics)
+{
+	return pGraphics->GetWidgetFontsID();
 }
 WASM_EXPORT BYTE* GetInteractiveFormsAP(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget, int nView, int nButtonView)
 {

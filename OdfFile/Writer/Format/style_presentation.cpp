@@ -58,7 +58,7 @@ void presentation_placeholder::serialize(std::wostream & strm)
 			CP_XML_ATTR_OPT(L"svg:width", svg_width_);
 			CP_XML_ATTR_OPT(L"svg:x", svg_x_);
 			CP_XML_ATTR_OPT(L"svg:y", svg_y_);
-
+			CP_XML_ATTR_OPT(L"draw:text-style-name", text_style_name_);
 		}
 	}
 }

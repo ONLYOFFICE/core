@@ -191,7 +191,7 @@ void odp_slide_context::start_table_row (bool styled)
 
 	if (styled)
 	{
-		styles_context_->create_style(L"",odf_types::style_family::TableRow, true, false, -1);
+		styles_context_->create_style(L"", odf_types::style_family::TableRow, true, false, -1);
 		
 		odf_style_state_ptr style_state = styles_context_->last_state(style_family::TableRow);
 		if (style_state)

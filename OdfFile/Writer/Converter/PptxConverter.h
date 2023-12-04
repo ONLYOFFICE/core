@@ -228,11 +228,12 @@ private:
 
 		std::wstring									interactive_animation_element_id;
 		
-		void convert_slides		();
-		void convert_styles		();
-		void convert_settings	();
-		void convert_layouts	();
-		void convert_common		();
+		void convert_slides ();
+		void convert_styles ();
+		void convert_settings ();
+		void convert_layouts ();
+		void convert_common	 ();
+		void convert_masters_and_layouts();
 
 		std::wstring convert_animation_formula(std::wstring formula);
 		std::wstring convert_animation_scale_values(int x, int y);

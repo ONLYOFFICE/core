@@ -86,6 +86,7 @@ namespace Aggplus
 			BYTE* pSrcBuffer = m_pBuffer;
 			value_type* pDstBuffer = NULL;
 			BYTE* pSrcAlphaMaskBuffer = pAlphaMaskBuffer;
+			BYTE uchAlpha;
 
 			unsigned int unSrcW = oSrc.width();
 			unsigned int unSrcH = oSrc.height();
@@ -95,10 +96,19 @@ namespace Aggplus
 				pDstBuffer = oSrc.row_ptr(unY);
 				for (unsigned int unX = 0; unX < unSrcW; ++unX)
 				{
-					pDstBuffer[order_type::R] = pSrcBuffer[order_type::R];
-					pDstBuffer[order_type::G] = pSrcBuffer[order_type::G];
-					pDstBuffer[order_type::B] = pSrcBuffer[order_type::B];
-					pDstBuffer[order_type::A] = ((SrcPixelFormatRenderer::base_mask + (value_type)m_oSettings.m_dOpacity * pSrcBuffer[order_type::A] * AlphaMaskFunction::calculate(pSrcAlphaMaskBuffer)) >> 8);;
+					uchAlpha = ((SrcPixelFormatRenderer::base_mask + (value_type)m_oSettings.m_dOpacity * pSrcBuffer[order_type::A] * AlphaMaskFunction::calculate(pSrcAlphaMaskBuffer)) >> 8);
+
+					if(uchAlpha == SrcPixelFormatRenderer::base_mask)
+					{
+						pDstBuffer[order_type::R] = pSrcBuffer[order_type::R];
+						pDstBuffer[order_type::G] = pSrcBuffer[order_type::G];
+						pDstBuffer[order_type::B] = pSrcBuffer[order_type::B];
+						pDstBuffer[order_type::A] = SrcPixelFormatRenderer::base_mask;
+					}
+					else
+					{
+						SrcPixelFormatRenderer::blender_type::blend_pix(pDstBuffer, pSrcBuffer[order_type::R], pSrcBuffer[order_type::G], pSrcBuffer[order_type::B], uchAlpha);
+					}
 
 					pSrcBuffer          += nStep;
 					pDstBuffer          += nStep;

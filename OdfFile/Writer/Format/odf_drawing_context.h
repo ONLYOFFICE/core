@@ -151,6 +151,7 @@ public:
 	bool change_text_box_2_wordart();
 	bool is_wordart();
 	bool is_text_box();
+	bool is_placeholder();
 	
 	graphic_format_properties* get_graphic_properties();
 
@@ -158,6 +159,8 @@ public:
 	void set_paragraph_properties	(paragraph_format_properties *paragraph_properties);
 	void set_text_properties		(style_text_properties *text_properties);
 	void set_text_properties		(text_format_properties* text_properties);
+
+	void set_placeholder_style(const std::wstring& style_name);
 	
 	void start_text_box					();
 		void set_text_box_min_size		(bool val);
@@ -205,6 +208,7 @@ public:
 	void set_textarea		(std::wstring l, std::wstring t, std::wstring r, std::wstring b);
 	void add_handle			(std::wstring x, std::wstring y, std::wstring refX, std::wstring refY,
 							std::wstring minX, std::wstring maxX, std::wstring minY, std::wstring maxY);
+	void set_draw_type		(const std::wstring& draw_type);
 	
 	void set_viewBox		(double W, double H);
 

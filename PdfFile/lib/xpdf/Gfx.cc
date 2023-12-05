@@ -4161,10 +4161,10 @@ GBool Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
     obj1.free();
     dict->lookup("W", &obj1);
   }
-  if (!obj1.isInt()) {
+  if (!obj1.isNum()) {
     goto err2;
   }
-  width = obj1.getInt();
+  width = obj1.getNum();
   obj1.free();
   if (width <= 0) {
     goto err1;
@@ -4174,10 +4174,10 @@ GBool Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
     obj1.free();
     dict->lookup("H", &obj1);
   }
-  if (!obj1.isInt()) {
+  if (!obj1.isNum()) {
     goto err2;
   }
-  height = obj1.getInt();
+  height = obj1.getNum();
   obj1.free();
   if (height <= 0) {
     goto err1;
@@ -4345,26 +4345,26 @@ GBool Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
 	obj1.free();
 	maskDict->lookup("W", &obj1);
       }
-      if (!obj1.isInt()) {
+      if (!obj1.isNum()) {
 	delete colorMap;
 	maskObj.free();
 	smaskObj.free();
 	goto err2;
       }
-      maskWidth = obj1.getInt();
+      maskWidth = obj1.getNum();
       obj1.free();
       maskDict->lookup("Height", &obj1);
       if (obj1.isNull()) {
 	obj1.free();
 	maskDict->lookup("H", &obj1);
       }
-      if (!obj1.isInt()) {
+      if (!obj1.isNum()) {
 	delete colorMap;
 	maskObj.free();
 	smaskObj.free();
 	goto err2;
       }
-      maskHeight = obj1.getInt();
+      maskHeight = obj1.getNum();
       obj1.free();
       if (maskWidth <= 0 || maskHeight <= 0) {
 	delete colorMap;
@@ -4493,26 +4493,26 @@ GBool Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
 	obj1.free();
 	maskDict->lookup("W", &obj1);
       }
-      if (!obj1.isInt()) {
+      if (!obj1.isNum()) {
 	delete colorMap;
 	maskObj.free();
 	smaskObj.free();
 	goto err2;
       }
-      maskWidth = obj1.getInt();
+      maskWidth = obj1.getNum();
       obj1.free();
       maskDict->lookup("Height", &obj1);
       if (obj1.isNull()) {
 	obj1.free();
 	maskDict->lookup("H", &obj1);
       }
-      if (!obj1.isInt()) {
+      if (!obj1.isNum()) {
 	delete colorMap;
 	maskObj.free();
 	smaskObj.free();
 	goto err2;
       }
-      maskHeight = obj1.getInt();
+      maskHeight = obj1.getNum();
       obj1.free();
       if (maskWidth <= 0 || maskHeight <= 0) {
 	delete colorMap;

@@ -685,6 +685,12 @@ void ReadAnnotAP(BYTE* pWidgetsAP, int& i)
 		oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res_" + std::to_wstring(nAP) + L"_" + UTF8_TO_U(sAPName) + L".png", _CXIMAGE_FORMAT_PNG);
 		oFrame.ClearNoAttack();
 		RELEASEARRAYOBJECTS(res);
+
+		nPathLength = READ_BYTE(pWidgetsAP + i);
+		i += 1;
+		std::string arrBlendMode[] = { "Normal", "Multiply", "Screen", "Overlay", "Darken", "Lighten", "ColorDodge", "ColorBurn", "HardLight",
+									   "SoftLight", "Difference", "Exclusion", "Hue", "Saturation", "Color", "Luminosity" };
+		std::cout << "Type " << arrBlendMode[nPathLength] << ", ";
 	}
 	std::cout << std::endl;
 }

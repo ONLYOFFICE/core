@@ -126,11 +126,13 @@ public:
 private:
 	struct CAnnotAPView final
 	{
+		BYTE nBlendMode;
 		std::string sAPName;
 		std::string sASName;
 		BYTE* pAP;
 	};
 	void WriteAppearance(unsigned int nColor, CAnnotAPView* pView);
+	BYTE GetBlendMode();
 
 	unsigned int m_unRefNum; // Номер ссылки на объект
 	double m_dx1, m_dy1, m_dx2, m_dy2;

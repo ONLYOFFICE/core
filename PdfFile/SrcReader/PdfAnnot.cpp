@@ -2284,7 +2284,7 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 	{
 		if (sView && strcmp(sView, arrAPName[j]) != 0)
 			continue;
-		CAnnotAPView* pView = NULL;
+
 		Object oObj;
 		if (oAP->dictLookup(arrAPName[j], &oObj)->isDict())
 		{
@@ -2297,7 +2297,7 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 					if (strcmp(sButtonView, "Yes") == 0 && strcmp(oObj.dictGetKey(k), "Off") == 0)
 						continue;
 				}
-				pView = new CAnnotAPView();
+				CAnnotAPView* pView = new CAnnotAPView();
 				pView->sAPName = arrAPName[j];
 				pView->sASName = oObj.dictGetKey(k);
 				if ((oType == acroFormFieldRadioButton || oType == acroFormFieldCheckbox) && pView->sASName != "Off")
@@ -2305,20 +2305,21 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 				m_pRenderer->SetCoordTransformOffset(-m_dx1 * m_dWScale + 1 + m_dWTale / 2, m_dy2 * m_dHScale - nRasterH + 1 + m_dHTale / 2);
 				DrawAppearance(pdfDoc, nPageIndex + 1, pField, m_gfx, arrAPName[j], pView->sASName.c_str());
 				WriteAppearance(nBackgroundColor, pView);
+				pView->nBlendMode = GetBlendMode();
+				m_arrAP.push_back(pView);
 			}
 		}
 		else if (!oObj.isNull())
 		{
-			pView = new CAnnotAPView();
+			CAnnotAPView* pView = new CAnnotAPView();
 			pView->sAPName = arrAPName[j];
 			m_pRenderer->SetCoordTransformOffset(-m_dx1 * m_dWScale + 1 + m_dWTale / 2, m_dy2 * m_dHScale - nRasterH + 1 + m_dHTale / 2);
 			DrawAppearance(pdfDoc, nPageIndex + 1, pField, m_gfx, arrAPName[j], NULL);
 			WriteAppearance(nBackgroundColor, pView);
+			pView->nBlendMode = GetBlendMode();
+			m_arrAP.push_back(pView);
 		}
 		oObj.free();
-
-		if (pView)
-			m_arrAP.push_back(pView);
 	}
 
 	((GlobalParamsAdaptor*)globalParams)->setDrawFormField(false);
@@ -2356,11 +2357,10 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 			RELEASEOBJECT(annot);
 
 			WriteAppearance(nBackgroundColor, pView);
+			pView->nBlendMode = GetBlendMode();
+			m_arrAP.push_back(pView);
 		}
 		oObj.free();
-
-		if (pView)
-			m_arrAP.push_back(pView);
 	}
 	oAnnot.free();
 
@@ -2383,6 +2383,11 @@ void CAnnotAP::WriteAppearance(unsigned int nColor, CAnnotAPView* pView)
 	}
 
 	pView->pAP = pSubMatrix;
+}
+
+BYTE CAnnotAP::GetBlendMode()
+{
+	return 0;
 }
 
 //------------------------------------------------------------------------
@@ -2409,6 +2414,8 @@ void CAnnotAP::ToWASM(NSWasm::CData& oRes)
 		unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
 		oRes.AddInt(npSubMatrix1);
 		oRes.AddInt(npSubMatrix >> 32);
+
+		oRes.WriteBYTE(m_arrAP[i]->nBlendMode);
 	}
 }
 

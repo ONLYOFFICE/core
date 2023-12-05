@@ -7572,6 +7572,12 @@ void BinaryWorksheetTableWriter::WriteDataValidation(const OOX::Spreadsheet::CDa
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 		m_oBcw.m_oStream.WriteStringW(oDataValidation.m_oFormula2->m_sText);
     }
+	if (oDataValidation.m_oList.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::List);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*oDataValidation.m_oList);
+	}
 }
 void BinaryWorksheetTableWriter::WriteSparklines(const OOX::Spreadsheet::CSparklines& oSparklines)
 {

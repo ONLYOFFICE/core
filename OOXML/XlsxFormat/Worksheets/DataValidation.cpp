@@ -155,6 +155,18 @@ namespace OOX
 			}
 			else
 			{
+				if (m_oList.IsInit())
+				{
+					writer.WriteString(L"<mc:AlternateContent \
+xmlns:x12ac=\"http://schemas.microsoft.com/office/spreadsheetml/2011/1/ac\" \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\">");
+
+					writer.WriteString(L"<mc:Choice Requires=\"x12ac\">");
+					writer.WriteString(L"<x12ac:list>" + *m_oList + L"</x12ac:list>");
+					writer.WriteString(L"</mc:Choice>");
+
+					writer.WriteString(L"<mc:Fallback>");
+				}
 				if (m_oFormula1.IsInit())
 				{
 					writer.WriteString(L"<formula1>");
@@ -167,11 +179,18 @@ namespace OOX
 					writer.WriteString(m_oFormula2->m_sText);
 					writer.WriteString(L"</formula2>");
 				}
+				if (m_oList.IsInit())
+				{
+					writer.WriteString(L"</mc:Fallback>");
+					writer.WriteString(L"</mc:AlternateContent>");
+				}
 			}
 			writer.WriteString(L"</" + node_name + L">");
 		}
 		bool CDataValidation::IsExtended()
 		{
+			if (m_oList.IsInit()) return false;
+
 			bool result1 = true, result2 = true;
 			if (m_oFormula1.IsInit())
 			{

@@ -146,6 +146,8 @@ namespace OOX
 			{
 				XLSB::Color col;
 				col.xColorType = 0;
+                col.nTintAndShade = 0;
+                col.index = 0;
 				ptr->brtColor = col;
 			}
 

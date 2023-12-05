@@ -246,8 +246,8 @@ namespace OOX
 			if (m_oColors.IsInit())
 				stylesStream->m_COLORPALETTE = m_oColors->toBin();
 
-			if (m_oExtLst.IsInit())
-				stylesStream->m_FRTSTYLESHEET = m_oExtLst->toBinStyles();
+            if (m_oExtLst.IsInit())
+                stylesStream->m_FRTSTYLESHEET = m_oExtLst->toBinStyles();
 			return objectPtr;
 		}
 		void CStyles::read(const CPath& oPath)

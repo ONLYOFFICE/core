@@ -142,7 +142,7 @@ TEST_F(XlsbSimpleTests1, WorkbookTest)
     ASSERT_EQ(fileContent, exampleContent);
 }
 
-TEST_F(XlsbSimpleTests1, DISABLED_StylesTest)
+TEST_F(XlsbSimpleTests1, StylesTest)
 {
    auto tempDir = XlsbSimpleTests1::tempDir;
     std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 

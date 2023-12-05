@@ -50,6 +50,8 @@
 #include "../../XlsbFormat/Biff12_unions/TABLESLICERCACHEIDS.h"
 #include "../../XlsbFormat/Biff12_unions/TABLESLICERCACHEID.h"
 #include "../../XlsbFormat/Biff12_records/TableSlicerCacheID.h"
+#include "../../XlsbFormat/Biff12_records/FRTBegin.h"
+#include "../../XlsbFormat/Biff12_structures/FRTProductVersion.h"
 
 #include "../../Binary/Presentation/XmlWriter.h"
 #include "../../Binary/Presentation/BinReaderWriterDefines.h"
@@ -1129,6 +1131,12 @@ void CSlicerStyles::fromBin(XLS::BaseObjectPtr &obj)
 XLS::BaseObjectPtr CSlicerStyles::toBin()
 {
 	auto ptr(new XLSB::STYLESHEET14);
+    auto ptr1(new XLSB::FRTBegin);
+	ptr->m_BrtFRTBegin = XLS::BaseObjectPtr{ptr1};
+	XLSB::FRTProductVersion version;
+	version.product = 0;
+	version.version = 0;
+	ptr1->productVersion = version;
 	XLS::BaseObjectPtr objectPtr(ptr);
 	auto slicerStyle(new XLSB::SLICERSTYLES);
 	ptr->m_SLICERSTYLES = XLS::BaseObjectPtr {slicerStyle};

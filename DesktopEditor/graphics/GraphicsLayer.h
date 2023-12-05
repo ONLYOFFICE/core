@@ -5,11 +5,13 @@
 #include "./config.h"
 #include "../common/IGrObject.h"
 
+#include <iostream>
+
 namespace Aggplus
 {
 	struct TGraphicsLayerSettings
 	{
-		double m_dOpacity;
+		BYTE m_uchOpacity;
 	};
 
 	class GRAPHICS_DECL CGraphicsLayer : public IGrObject
@@ -28,6 +30,7 @@ namespace Aggplus
 		const TGraphicsLayerSettings& GetSettings() const;
 
 		void SetOpacity(double dOpacity);
+		void SetOpacity(BYTE uchOpacity);
 
 		template <class SrcPixelFormatRenderer>
 		void BlendTo(SrcPixelFormatRenderer& oSrc)
@@ -51,7 +54,7 @@ namespace Aggplus
 				pDstBuffer = oSrc.row_ptr(unY);
 				for (unsigned int unX = 0; unX < unSrcW; ++unX)
 				{
-					uchAlpha = (pSrcBuffer[order_type::A] * ((value_type)(m_oSettings.m_dOpacity * 255.)) + 1) >> 8;
+					uchAlpha = (SrcPixelFormatRenderer::base_mask + m_oSettings.m_uchOpacity * pSrcBuffer[order_type::A]) >> 8;
 					if (uchAlpha)
 					{
 						if(uchAlpha == SrcPixelFormatRenderer::base_mask)
@@ -96,7 +99,7 @@ namespace Aggplus
 				pDstBuffer = oSrc.row_ptr(unY);
 				for (unsigned int unX = 0; unX < unSrcW; ++unX)
 				{
-					uchAlpha = ((SrcPixelFormatRenderer::base_mask + (value_type)m_oSettings.m_dOpacity * pSrcBuffer[order_type::A] * AlphaMaskFunction::calculate(pSrcAlphaMaskBuffer)) >> 8);
+					uchAlpha = ((SrcPixelFormatRenderer::base_mask + m_oSettings.m_uchOpacity * pSrcBuffer[order_type::A] * AlphaMaskFunction::calculate(pSrcAlphaMaskBuffer)) >> 16);
 
 					if(uchAlpha == SrcPixelFormatRenderer::base_mask)
 					{

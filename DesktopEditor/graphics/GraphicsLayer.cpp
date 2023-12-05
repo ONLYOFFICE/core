@@ -1,4 +1,5 @@
 #include "GraphicsLayer.h"
+#include <cmath>
 
 namespace Aggplus
 {
@@ -25,7 +26,7 @@ namespace Aggplus
 
 	void CGraphicsLayer::SetDefaultSettings()
 	{
-		m_oSettings.m_dOpacity = 1.;
+		m_oSettings.m_uchOpacity = 255;
 	}
 	
 	void CGraphicsLayer::ClearBuffer(bool bDeleteData)
@@ -49,9 +50,16 @@ namespace Aggplus
 	void CGraphicsLayer::SetOpacity(double dOpacity)
 	{
 		if (dOpacity > 1. || dOpacity < 0.)
-			m_oSettings.m_dOpacity = 1.;
+			m_oSettings.m_uchOpacity = 255;
 		else
-			m_oSettings.m_dOpacity = dOpacity;
+		{
+			m_oSettings.m_uchOpacity = ceil(255 * dOpacity);
+		}
+	}
+	
+	void CGraphicsLayer::SetOpacity(BYTE uchOpacity)
+	{
+		m_oSettings.m_uchOpacity = uchOpacity;
 	}
 }
 

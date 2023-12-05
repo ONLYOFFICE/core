@@ -36,7 +36,7 @@
 #include <fstream>
 #include "gtest/gtest.h"
 
-namespace xlsbTests
+namespace xlsb2xlsxTests
 {
 void processTestFile(const std::wstring &tempDir, const std::wstring &testFile, const std::wstring &resultFile, const std::wstring &exampleFile)
 {
@@ -128,68 +128,68 @@ TEST_F(XlsbSimpleTests1, ContentTypesTest)
     ASSERT_EQ(readBinaryFiles(path1, path2, fileContent, exampleContent), 0);
     ASSERT_EQ(fileContent, exampleContent);
 }
+
+TEST_F(XlsbSimpleTests1, WorkbookTest)
+{
+    auto tempDir = XlsbSimpleTests1::tempDir;
+    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"workbook.bin");
+    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"workbook.bin");
+    std::vector<char> fileContent;
+    std::vector<char> exampleContent;
+    ASSERT_EQ(readBinaryFiles(path1, path2, fileContent, exampleContent), 0);
+    ASSERT_EQ(fileContent, exampleContent);
+}
+
+TEST_F(XlsbSimpleTests1, DISABLED_StylesTest)
+{
+   auto tempDir = XlsbSimpleTests1::tempDir;
+    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"styles.bin");
+    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"styles.bin");
+    std::vector<char> fileContent;
+    std::vector<char> exampleContent;
+    ASSERT_EQ(readBinaryFiles(path1, path2, fileContent, exampleContent), 0);
+    ASSERT_EQ(fileContent, exampleContent);
+}
+
+TEST_F(XlsbSimpleTests1, SharedStringsTest)
+{
+   auto tempDir = XlsbSimpleTests1::tempDir;
+    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"sharedStrings.bin");
+    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"sharedStrings.bin");
+    std::vector<char> fileContent;
+    std::vector<char> exampleContent;
+    ASSERT_EQ(readBinaryFiles(path1, path2, fileContent, exampleContent), 0);
+    ASSERT_EQ(fileContent, exampleContent);
+}
+
+TEST_F(XlsbSimpleTests1, WorksheetsTest)
+{
+   auto tempDir = XlsbSimpleTests1::tempDir;
+    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"worksheets" + FILE_SEPARATOR_STR + L"sheet1.bin");
+    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"worksheets" + FILE_SEPARATOR_STR + L"sheet1.bin");
+    std::vector<char> fileContent;
+    std::vector<char> exampleContent;
+    ASSERT_EQ(readBinaryFiles(path1, path2, fileContent, exampleContent), 0);
+    ASSERT_EQ(fileContent, exampleContent);
+}
 /*
-TEST_F(SimpleTests1, WorkbookTest)
-{
-    auto tempDir = SimpleTests1::tempDir;
-    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
-        FILE_SEPARATOR_STR + L"workbook.xml");
-    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
-        FILE_SEPARATOR_STR + L"workbook.xml");
-    std::wstring content1;
-    std::wstring content2;
-    ASSERT_EQ(readFiles(path1, path2, content1, content2), 0);
-    ASSERT_TRUE(boost::algorithm::equals(content1, content2));
-}
-
-TEST_F(SimpleTests1, StylesTest)
-{
-    auto tempDir = SimpleTests1::tempDir;
-    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
-        FILE_SEPARATOR_STR + L"styles.xml");
-    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
-        FILE_SEPARATOR_STR + L"styles.xml");
-    std::wstring content1;
-    std::wstring content2;
-    ASSERT_EQ(readFiles(path1, path2, content1, content2), 0);
-    ASSERT_TRUE(boost::algorithm::equals(content1, content2));
-}
-
-TEST_F(SimpleTests1, SharedStringsTest)
-{
-    auto tempDir = SimpleTests1::tempDir;
-    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
-        FILE_SEPARATOR_STR + L"sharedStrings.xml");
-    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
-        FILE_SEPARATOR_STR + L"sharedStrings.xml");
-    std::wstring content1;
-    std::wstring content2;
-    ASSERT_EQ(readFiles(path1, path2, content1, content2), 0);
-    ASSERT_TRUE(boost::algorithm::equals(content1, content2));
-}
-
-TEST_F(SimpleTests1, WorksheetsTest)
-{
-    auto tempDir = SimpleTests1::tempDir;
-    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
-        FILE_SEPARATOR_STR + L"worksheets" + FILE_SEPARATOR_STR + L"sheet1.xml");
-    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
-        FILE_SEPARATOR_STR + L"worksheets" + FILE_SEPARATOR_STR + L"sheet1.xml");
-    std::wstring content1;
-    std::wstring content2;
-    ASSERT_EQ(readFiles(path1, path2, content1, content2), 0);
-    ASSERT_TRUE(boost::algorithm::equals(content1, content2));
-}
-
 TEST_F(SimpleTests2, ContentTypesTest)
 {
     auto tempDir = SimpleTests2::tempDir;
     std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"[Content_Types].xml");
     std::wstring path2(tempDir + FILE_SEPARATOR_STR + L"example_unpacked"+ FILE_SEPARATOR_STR + L"[Content_Types].xml");
-    std::wstring content1;
-    std::wstring content2;
-    ASSERT_EQ(readFiles(path1, path2, content1, content2), 0);
-    ASSERT_TRUE(boost::algorithm::equals(content1, content2));
+    std::vector<char> fileContent;
+    std::vector<char> exampleContent;
+    ASSERT_EQ(readBinaryFiles(path1, path2, fileContent, exampleContent), 0);
+    ASSERT_EQ(fileContent, exampleContent);
 }
 
 TEST_F(SimpleTests2, WorkbookTest)
@@ -199,10 +199,10 @@ TEST_F(SimpleTests2, WorkbookTest)
         FILE_SEPARATOR_STR + L"workbook.xml");
     std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
         FILE_SEPARATOR_STR + L"workbook.xml");
-    std::wstring content1;
-    std::wstring content2;
-    ASSERT_EQ(readFiles(path1, path2, content1, content2), 0);
-    ASSERT_TRUE(boost::algorithm::equals(content1, content2));
+    std::vector<char> fileContent;
+    std::vector<char> exampleContent;
+    ASSERT_EQ(readBinaryFiles(path1, path2, fileContent, exampleContent), 0);
+    ASSERT_EQ(fileContent, exampleContent);
 }
 
 TEST_F(SimpleTests2, StylesTest)
@@ -212,10 +212,10 @@ TEST_F(SimpleTests2, StylesTest)
         FILE_SEPARATOR_STR + L"styles.xml");
     std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
         FILE_SEPARATOR_STR + L"styles.xml");
-    std::wstring content1;
-    std::wstring content2;
-    ASSERT_EQ(readFiles(path1, path2, content1, content2), 0);
-    ASSERT_TRUE(boost::algorithm::equals(content1, content2));
+    std::vector<char> fileContent;
+    std::vector<char> exampleContent;
+    ASSERT_EQ(readBinaryFiles(path1, path2, fileContent, exampleContent), 0);
+    ASSERT_EQ(fileContent, exampleContent);
 }
 
 TEST_F(SimpleTests2, SharedStringsTest)
@@ -225,10 +225,10 @@ TEST_F(SimpleTests2, SharedStringsTest)
         FILE_SEPARATOR_STR + L"sharedStrings.xml");
     std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
         FILE_SEPARATOR_STR + L"sharedStrings.xml");
-    std::wstring content1;
-    std::wstring content2;
-    ASSERT_EQ(readFiles(path1, path2, content1, content2), 0);
-    ASSERT_TRUE(boost::algorithm::equals(content1, content2));
+    std::vector<char> fileContent;
+    std::vector<char> exampleContent;
+    ASSERT_EQ(readBinaryFiles(path1, path2, fileContent, exampleContent), 0);
+    ASSERT_EQ(fileContent, exampleContent);
 }
 
 TEST_F(SimpleTests2, WorksheetsTest)
@@ -238,10 +238,10 @@ TEST_F(SimpleTests2, WorksheetsTest)
         FILE_SEPARATOR_STR + L"worksheets" + FILE_SEPARATOR_STR + L"sheet1.xml");
     std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
         FILE_SEPARATOR_STR + L"worksheets" + FILE_SEPARATOR_STR + L"sheet1.xml");
-    std::wstring content1;
-    std::wstring content2;
-    ASSERT_EQ(readFiles(path1, path2, content1, content2), 0);
-    ASSERT_TRUE(boost::algorithm::equals(content1, content2));
+    std::vector<char> fileContent;
+    std::vector<char> exampleContent;
+    ASSERT_EQ(readBinaryFiles(path1, path2, fileContent, exampleContent), 0);
+    ASSERT_EQ(fileContent, exampleContent);
 }
 */
 }

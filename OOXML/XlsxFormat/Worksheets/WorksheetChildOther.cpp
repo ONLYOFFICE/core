@@ -1795,7 +1795,10 @@ namespace OOX
 				auto ptr(new XLSB::WsProp);
 				objectPtr = XLS::BaseObjectPtr{ptr};
 
-				ptr->strName.value = m_oCodeName.get();
+				if(m_oCodeName.IsInit())
+					ptr->strName.value = m_oCodeName.get();
+				else
+					ptr->strName.value = L"";
 
 				ptr->fCondFmtCalc = m_oEnableFormatConditionsCalculation->GetValue();
 				ptr->fFilterMode = m_oFilterMode->GetValue();
@@ -1807,8 +1810,8 @@ namespace OOX
 
 				if (m_oSyncRef.IsInit())
 					ptr->syncRef = m_oSyncRef.get();
-
-				ptr->brtcolorTab = m_oTabColor->toColor();
+				if(m_oTabColor.IsInit())
+					ptr->brtcolorTab = m_oTabColor->toColor();
 			}
 
 			return objectPtr;

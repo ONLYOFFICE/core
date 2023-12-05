@@ -479,6 +479,8 @@ namespace OOX
 			{
 				ptr.nTintAndShade = m_oTint->GetValue() * 32767.0;
 			}
+            else
+                ptr.nTintAndShade = 0;
 			return ptr;
 		}
 		XLS::BaseObjectPtr CColor::toBin()
@@ -514,6 +516,8 @@ namespace OOX
 			{
 				ptr->nTintAndShade = m_oTint->GetValue() * 32767.0;
 			}
+            else
+                ptr->nTintAndShade = 0;
 			return objectPtr;
 		}
 		EElementType CColor::getType () const

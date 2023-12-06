@@ -945,6 +945,12 @@ XLS::BaseObjectPtr CSlicerRefs::toBin()
 {
 	auto ptr(new XLSB::SLICERSEX);
 	XLS::BaseObjectPtr objectPtr(ptr);
+    auto ptr1(new XLSB::FRTBegin);
+    ptr->m_BrtFRTBegin = XLS::BaseObjectPtr{ptr1};
+    XLSB::FRTProductVersion version;
+    version.product = 0;
+    version.version = 0;
+    ptr1->productVersion = version;
 
 	for(auto i:m_oSlicer)
 	{
@@ -956,6 +962,12 @@ XLS::BaseObjectPtr CSlicerRefs::toBinTable()
 {
 	auto ptr(new XLSB::TABLESLICERSEX);
 	XLS::BaseObjectPtr objectPtr(ptr);
+    auto ptr1(new XLSB::FRTBegin);
+    ptr->m_BrtFRTBegin = XLS::BaseObjectPtr{ptr1};
+    XLSB::FRTProductVersion version;
+    version.product = 0;
+    version.version = 0;
+    ptr1->productVersion = version;
 
 	for(auto i:m_oSlicer)
 	{

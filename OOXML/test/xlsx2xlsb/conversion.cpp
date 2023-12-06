@@ -204,44 +204,57 @@ TEST_F(XlsbSimpleTests2, WorkbookTest)
     ASSERT_EQ(readBinaryFiles(path1, path2, fileContent, exampleContent), 0);
     ASSERT_EQ(fileContent, exampleContent);
 }
-/*
-TEST_F(SimpleTests2, StylesTest)
+
+TEST_F(XlsbSimpleTests2, StylesTest)
 {
-    auto tempDir = SimpleTests2::tempDir;
+    auto tempDir = XlsbSimpleTests2::tempDir;
     std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
-        FILE_SEPARATOR_STR + L"styles.xml");
+        FILE_SEPARATOR_STR + L"styles.bin");
     std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
-        FILE_SEPARATOR_STR + L"styles.xml");
+        FILE_SEPARATOR_STR + L"styles.bin");
     std::vector<char> fileContent;
     std::vector<char> exampleContent;
     ASSERT_EQ(readBinaryFiles(path1, path2, fileContent, exampleContent), 0);
     ASSERT_EQ(fileContent, exampleContent);
 }
 
-TEST_F(SimpleTests2, SharedStringsTest)
+TEST_F(XlsbSimpleTests2, SharedStringsTest)
 {
-    auto tempDir = SimpleTests2::tempDir;
+    auto tempDir = XlsbSimpleTests2::tempDir;
     std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
-        FILE_SEPARATOR_STR + L"sharedStrings.xml");
+        FILE_SEPARATOR_STR + L"sharedStrings.bin");
     std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
-        FILE_SEPARATOR_STR + L"sharedStrings.xml");
+        FILE_SEPARATOR_STR + L"sharedStrings.bin");
     std::vector<char> fileContent;
     std::vector<char> exampleContent;
     ASSERT_EQ(readBinaryFiles(path1, path2, fileContent, exampleContent), 0);
     ASSERT_EQ(fileContent, exampleContent);
 }
 
-TEST_F(SimpleTests2, WorksheetsTest)
+TEST_F(XlsbSimpleTests2, Worksheet1Test)
 {
-    auto tempDir = SimpleTests2::tempDir;
+    auto tempDir = XlsbSimpleTests2::tempDir;
     std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
-        FILE_SEPARATOR_STR + L"worksheets" + FILE_SEPARATOR_STR + L"sheet1.xml");
+        FILE_SEPARATOR_STR + L"worksheets" + FILE_SEPARATOR_STR + L"sheet1.bin");
     std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
-        FILE_SEPARATOR_STR + L"worksheets" + FILE_SEPARATOR_STR + L"sheet1.xml");
+        FILE_SEPARATOR_STR + L"worksheets" + FILE_SEPARATOR_STR + L"sheet1.bin");
     std::vector<char> fileContent;
     std::vector<char> exampleContent;
     ASSERT_EQ(readBinaryFiles(path1, path2, fileContent, exampleContent), 0);
     ASSERT_EQ(fileContent, exampleContent);
 }
-*/
+
+TEST_F(XlsbSimpleTests2, Worksheet2Test)
+{
+    auto tempDir = XlsbSimpleTests2::tempDir;
+    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"worksheets" + FILE_SEPARATOR_STR + L"sheet2.bin");
+    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"worksheets" + FILE_SEPARATOR_STR + L"sheet2.bin");
+    std::vector<char> fileContent;
+    std::vector<char> exampleContent;
+    ASSERT_EQ(readBinaryFiles(path1, path2, fileContent, exampleContent), 0);
+    ASSERT_EQ(fileContent, exampleContent);
+}
+
 }

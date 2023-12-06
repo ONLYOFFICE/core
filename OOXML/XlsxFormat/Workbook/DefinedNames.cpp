@@ -91,7 +91,7 @@ namespace OOX
 			if(m_oFunction.IsInit())
                 ptr->fFunc = m_oFunction->GetValue();
             else
-                ptr->fFunc = 0xFFFFFFFF;
+                ptr->fFunc = false;
 			if(m_oFunctionGroupId.IsInit())
                 ptr->fGrp = m_oFunctionGroupId->GetValue();
 
@@ -113,8 +113,12 @@ namespace OOX
                 ptr->name = 0xFFFFFFFF;
 			if (m_oPublishToServer.IsInit())
                 ptr->fPublished = m_oPublishToServer->GetValue();
+			else
+				ptr->fPublished = false;
 			if (m_oShortcutKey.IsInit())
                 ptr->chKey = std::stoi(m_oShortcutKey.get());
+			else
+				ptr->chKey = 0;
 
 			if (m_oVbProcedure.IsInit())
                 ptr->fOB = m_oVbProcedure->GetValue();
@@ -130,8 +134,12 @@ namespace OOX
 
 			if (m_oWorkbookParameter.IsInit())
                 ptr->fWorkbookParam = m_oWorkbookParameter->GetValue();
+			else
+				ptr->fWorkbookParam = false;
 			if (m_oXlm.IsInit())
                 ptr->fFutureFunction = m_oXlm->GetValue();
+			else
+				ptr->fFutureFunction = false;
 			if (m_oRef.IsInit())
 			{
 				auto ref = m_oRef.get();
@@ -141,8 +149,15 @@ namespace OOX
 				else if(separatorPos == ref.size() -1)
 					ref = L"";
 				ptr->rgce = ref;
+				if(m_oRef.get() == L"#N/A")
+				{
+					ptr->rgce.rgce.sequence.at(0)->offset_in_record = 35;
+					ptr->rgce.rgce.sequence.at(0)->size_of_struct = 2;
+					ptr->rgce.rgce.cce = 2;
+				}
 			}
-
+            ptr->fCalcExp = true;
+			ptr->fBuiltin = false;
 			return objectPtr;
 		}
 		void CDefinedName::fromBin(XLS::BaseObjectPtr& obj)

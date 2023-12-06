@@ -149,12 +149,6 @@ namespace OOX
 				else if(separatorPos == ref.size() -1)
 					ref = L"";
 				ptr->rgce = ref;
-				if(m_oRef.get() == L"#N/A")
-				{
-					ptr->rgce.rgce.sequence.at(0)->offset_in_record = 35;
-					ptr->rgce.rgce.sequence.at(0)->size_of_struct = 2;
-					ptr->rgce.rgce.cce = 2;
-				}
 			}
             ptr->fCalcExp = true;
 			ptr->fBuiltin = false;

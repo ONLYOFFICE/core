@@ -274,7 +274,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 	i += 4;
 	if (nCOLength > 0)
 		std::cout << "CO ";
-	for (DWORD j = 0; j < nCOLength; ++j)
+	for (int j = 0; j < nCOLength; ++j)
 	{
 		int nPathLength = READ_INT(pWidgets + i);
 		i += 4;
@@ -284,7 +284,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 	if (nCOLength > 0)
 		std::cout << std::endl;
 
-		   // Parents
+	// Parents
 
 	int nParentsLength = READ_INT(pWidgets + i);
 	i += 4;
@@ -349,29 +349,6 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 		ReadAnnot(pWidgets, i);
 
 		// Widget
-
-		nPathLength = READ_INT(pWidgets + i);
-		i += 4;
-		std::cout << "Font: name " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-		i += nPathLength;
-
-		nPathLength = READ_INT(pWidgets + i);
-		i += 4;
-		std::cout << "size " << (double)nPathLength / 100.0 << ", ";
-
-		int nTCLength = READ_INT(pWidgets + i);
-		i += 4;
-		if (nTCLength)
-		{
-			std::cout << "color";
-			for (int j = 0; j < nTCLength; ++j)
-			{
-				nPathLength = READ_INT(pWidgets + i);
-				i += 4;
-				std::cout << " " << (double)nPathLength / 100.0;
-			}
-			std::cout << ", ";
-		}
 
 		std::string arrQ[] = {"left-justified", "centered", "right-justified"};
 		nPathLength = READ_BYTE(pWidgets + i);
@@ -463,7 +440,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			i += nPathLength;
 		}
 
-			   //Action
+		//Action
 
 		int nActLength = READ_INT(pWidgets + i);
 		i += 4;
@@ -479,7 +456,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 		}
 		std::cout << std::endl;
 
-			   // Widget types
+		// Widget types
 
 		if (sType == "checkbox" || sType == "radiobutton" || sType == "button")
 		{
@@ -623,7 +600,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			if (nFlags & (1 << 9))
 				std::cout << "SIG, ";
 		}
-		std::cout << std::endl;
+		std::cout << std::endl << std::endl;
 	}
 }
 
@@ -684,6 +661,94 @@ void ReadAnnotAP(BYTE* pWidgetsAP, int& i)
 		RELEASEARRAYOBJECTS(res);
 	}
 	std::cout << std::endl;
+}
+
+void ReadInteractiveFormsFonts(CGraphicsFileDrawing* pGrFile, int nType, int nPageIndex)
+{
+	BYTE* pFonts = GetInteractiveFormsFonts(pGrFile, nType, nPageIndex);
+	int nLength = READ_INT(pFonts);
+	int i = 4;
+	nLength -= 4;
+
+	while (i < nLength)
+	{
+		int nFontsLength = READ_INT(pFonts + i);
+		i += 4;
+		std::cout << "Fonts";
+
+		for (int j = 0; j < nFontsLength; ++j)
+		{
+			std::string sFontName;
+			if (nType == 3)
+			{
+				int nPathLength = READ_INT(pFonts + i);
+				i += 4;
+				std::cout << " AP " << nPathLength << ", ";
+
+				nPathLength = READ_INT(pFonts + i);
+				i += 4;
+				sFontName = std::string((char*)(pFonts + i), nPathLength);
+				std::cout << "Font: name " << sFontName;
+				i += nPathLength;
+
+				nPathLength = READ_INT(pFonts + i);
+				i += 4;
+				std::cout << " size " << (double)nPathLength / 100.0 << ", ";
+
+				int nTCLength = READ_INT(pFonts + i);
+				i += 4;
+				if (nTCLength)
+				{
+					std::cout << "color";
+					for (int j = 0; j < nTCLength; ++j)
+					{
+						nPathLength = READ_INT(pFonts + i);
+						i += 4;
+						std::cout << " " << (double)nPathLength / 100.0;
+					}
+					std::cout << ", ";
+				}
+			}
+			else
+			{
+				int nPathLength = READ_INT(pFonts + i);
+				i += 4;
+				sFontName = std::string((char*)(pFonts + i), nPathLength);
+				std::cout << " " << sFontName;
+				i += nPathLength;
+			}
+
+			BYTE* pFont = GetFontBinary((char*)sFontName.c_str());
+			int nLength2 = READ_INT(pFont);
+			int i2 = 4;
+			nLength2 -= 4;
+
+			while (i2 < nLength2)
+			{
+				int nFontLength = READ_INT(pFont + i2);
+				i2 += 4;
+
+				unsigned long long npFont1 = READ_INT(pFont + i2);
+				i2 += 4;
+				unsigned long long npFont2 = READ_INT(pFont + i2);
+				i2 += 4;
+
+				BYTE* res = (BYTE*)(npFont2 << 32 | npFont1);
+
+				NSFile::CFileBinary oFile;
+				if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/font" + std::to_wstring(j) + L".txt"))
+					oFile.WriteFile(res, nFontLength);
+				oFile.CloseFile();
+			}
+
+			if (pFont)
+				free(pFont);
+		}
+		std::cout << std::endl;
+	}
+
+	if (pFonts)
+		free(pFonts);
 }
 
 #include "../../../../../fontengine/ApplicationFontsWorker.h"
@@ -887,57 +952,14 @@ int main(int argc, char* argv[])
 	// INTERACTIVE FORMS
 	if (true)
 	{
-		BYTE* pFonts = GetInteractiveFormsFonts(pGrFile);
-		nLength = READ_INT(pFonts);
-		int i = 4;
-		nLength -= 4;
-
-		while (i < nLength)
-		{
-			int nFontsLength = READ_INT(pFonts + i);
-			i += 4;
-			std::cout << "Fonts";
-
-			for (int j = 0; j < nFontsLength; ++j)
-			{
-				int nPathLength = READ_INT(pFonts + i);
-				i += 4;
-				std::string sFontName = std::string((char*)(pFonts + i), nPathLength);
-				std::cout << " " << sFontName;
-				i += nPathLength;
-
-				BYTE* pFont = GetFontBinary((char*)sFontName.c_str());
-				int nLength2 = READ_INT(pFont);
-				int i2 = 4;
-				nLength2 -= 4;
-
-				while (i2 < nLength2)
-				{
-					int nFontLength = READ_INT(pFont + i2);
-					i2 += 4;
-
-					unsigned long long npFont1 = READ_INT(pFont + i2);
-					i2 += 4;
-					unsigned long long npFont2 = READ_INT(pFont + i2);
-					i2 += 4;
-
-					BYTE* res = (BYTE*)(npFont2 << 32 | npFont1);
-
-					NSFile::CFileBinary oFile;
-					if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/font" + std::to_wstring(j) + L".txt"))
-						oFile.WriteFile(res, nFontLength);
-					oFile.CloseFile();
-				}
-			}
-			std::cout << std::endl;
-		}
-
-		if (pFonts)
-			free(pFonts);
+		ReadInteractiveFormsFonts(pGrFile, 1, -1);
+		ReadInteractiveFormsFonts(pGrFile, 2, -1);
+		ReadInteractiveFormsFonts(pGrFile, 3, nTestPage);
+		std::cout << std::endl;
 
 		BYTE* pWidgets = GetInteractiveFormsInfo(pGrFile);
 		nLength = READ_INT(pWidgets);
-		i = 4;
+		int i = 4;
 		nLength -= 4;
 
 		if (i < nLength)

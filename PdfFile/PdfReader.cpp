@@ -41,6 +41,7 @@
 
 #include "SrcReader/Adaptors.h"
 #include "SrcReader/PdfAnnot.h"
+#include "Resources/BaseFonts.h"
 
 #include "lib/xpdf/PDFDoc.h"
 #include "lib/xpdf/PDFCore.h"
@@ -883,7 +884,7 @@ BYTE* CPdfReader::GetWidgets()
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
-BYTE* CPdfReader::GetWidgetFonts()
+BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts, int nPageIndex)
 {
 	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
 		return NULL;
@@ -907,6 +908,9 @@ BYTE* CPdfReader::GetWidgetFonts()
 		if (!pField)
 			continue;
 
+		if (nPageIndex >= 0 && pField->getPageNum() != nPageIndex + 1)
+			continue;
+
 		// Шрифт и размер шрифта - из DA
 		Ref fontID;
 		double dFontSize = 0;
@@ -916,6 +920,7 @@ BYTE* CPdfReader::GetWidgetFonts()
 
 		Object oObj, oField, oFont;
 		pField->getFieldRef(&oObj);
+		int nRefNum = oObj.getRefNum();
 		oObj.fetch(xref, &oField);
 		oObj.free();
 
@@ -981,16 +986,42 @@ BYTE* CPdfReader::GetWidgetFonts()
 		}
 		oObj.free();
 
-		std::wstring wsFileName, wsFontName;
-		if (gfxFont)
-			GetFont(xref, m_pFontManager, m_pFontList, gfxFont, wsFileName, wsFontName);
 
-		if (wsFileName.length() > 17 && wsFileName.substr(0, 17) == L"storage_internal_")
+		if (gfxFont)
 		{
-			std::string sFileName = U_TO_UTF8(wsFileName);
-			oRes.WriteString(sFileName);
-			nFontsID++;
-			arrFontsRef.push_back(fontID.num);
+			Ref oEmbRef;
+			const unsigned char* pData14 = NULL;
+			unsigned int nSize14 = 0;
+			std::wstring wsFileName, wsFontName;
+			if ((nTypeFonts == 1 && gfxFont->getEmbeddedFontID(&oEmbRef)) ||
+				(nTypeFonts == 2 && PdfReader::GetBaseFont(NSStrings::GetStringFromUTF32(gfxFont->getName()), pData14, nSize14)))
+			{
+				GetFont(xref, m_pFontManager, m_pFontList, gfxFont, wsFileName, wsFontName);
+
+				std::string sFileName = U_TO_UTF8(wsFileName);
+				oRes.WriteString(sFileName);
+				nFontsID++;
+				arrFontsRef.push_back(fontID.num);
+			}
+			else if (nTypeFonts == 3 && nPageIndex >= 0)
+			{
+				GetFont(xref, m_pFontManager, m_pFontList, gfxFont, wsFileName, wsFontName);
+
+				oRes.AddInt(nRefNum);
+				oRes.WriteString(U_TO_UTF8(wsFileName));
+				oRes.AddDouble(dFontSize);
+
+				// Цвет текста - из DA
+				int nSpace;
+				GList *arrColors = pField->getColorSpace(&nSpace);
+				oRes.AddInt(nSpace);
+				for (int j = 0; j < nSpace; ++j)
+					oRes.AddDouble(*(double*)arrColors->get(j));
+				deleteGList(arrColors, double);
+
+				nFontsID++;
+				arrFontsRef.push_back(fontID.num);
+			}
 		}
 
 		RELEASEOBJECT(gfxFontDict);

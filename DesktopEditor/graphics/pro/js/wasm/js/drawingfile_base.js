@@ -601,6 +601,64 @@
 			APi["retValue"] = np2 << 32 | np1;
 		}
 	}
+	function getWidgetFonts(type, pageIndex)
+	{
+		let res = [];
+		let ext = Module["_GetInteractiveFormsFonts"](this.nativeFile, type, pageIndex);
+		if (ext == 0)
+			return res;
+
+		let lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
+		if (lenArray == null)
+		{
+			Module["_free"](ext);
+			return res;
+		}
+
+		let len = lenArray[0];
+		len -= 4;
+		if (len <= 0)
+		{
+			Module["_free"](ext);
+			return res;
+		}
+
+		let buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
+		let reader = new CBinaryReader(buffer, 0, len);
+		
+		while (reader.isValid())
+		{
+			let n = reader.readInt();
+			for (let i = 0; i < n; ++i)
+			{
+				if (type == 3)
+				{
+					let rec = {};
+					rec["AP"] = {};
+					// number for relations with AP
+					rec["AP"]["i"] = reader.readInt();
+	
+					rec["font"] = {};
+					rec["font"]["name"] = reader.readString();
+					rec["font"]["size"] = reader.readDouble();
+					let tc = reader.readInt();
+					if (tc)
+					{
+						rec["font"]["color"] = [];
+						for (let i = 0; i < tc; ++i)
+							rec["font"]["color"].push(reader.readDouble());
+					}
+	
+					res.push(rec);
+				}
+				else
+					res.push(reader.readString());
+			}
+		}
+		
+		Module["_free"](ext);
+		return res;
+	}
 
 	CFile.prototype["getInteractiveFormsInfo"] = function()
 	{
@@ -670,16 +728,6 @@
 			// Annot
 			readAnnot(reader, rec);
 			// Widget
-			rec["font"] = {};
-			rec["font"]["name"] = reader.readString();
-			rec["font"]["size"] = reader.readDouble();
-			let tc = reader.readInt();
-			if (tc)
-			{
-				rec["font"]["color"] = [];
-				for (let i = 0; i < tc; ++i)
-					rec["font"]["color"].push(reader.readDouble());
-			}
 			// 0 - left-justified, 1 - centered, 2 - right-justified
 			rec["alignment"] = reader.readByte();
 			rec["flag"] = reader.readInt();
@@ -845,40 +893,20 @@
 		Module["_free"](ext);
 		return res;
 	};
-	CFile.prototype["getInteractiveFormsFonts"] = function()
+	CFile.prototype["getInteractiveFormsEmbeddedFonts"] = function()
 	{
-		let res = [];
-		let ext = Module["_GetInteractiveFormsFonts"](this.nativeFile);
-		if (ext == 0)
-			return res;
-
-		let lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
-		if (lenArray == null)
-		{
-			Module["_free"](ext);
-			return res;
-		}
-
-		let len = lenArray[0];
-		len -= 4;
-		if (len <= 0)
-		{
-			Module["_free"](ext);
-			return res;
-		}
-
-		let buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
-		let reader = new CBinaryReader(buffer, 0, len);
-		
-		while (reader.isValid())
-		{
-			let n = reader.readInt();
-			for (let i = 0; i < n; ++i)
-				res.push(reader.readString());
-		}
-		
-		Module["_free"](ext);
-		return res;
+		return getWidgetFonts(1, -1);
+	}
+	CFile.prototype["getInteractiveFormsStandardFonts"] = function()
+	{
+		return getWidgetFonts(2, -1);
+	}
+	CFile.prototype["getInteractiveFormsFonts"] = function(pageIndex)
+	{
+		self.drawingFileCurrentPageIndex = pageIndex;
+		let pRes = getWidgetFonts(3, pageIndex);
+		self.drawingFileCurrentPageIndex = -1;
+		return pRes;
 	};
 	// optional nWidget     - rec["AP"]["i"]
 	// optional sView       - N/D/R

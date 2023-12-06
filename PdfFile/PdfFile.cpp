@@ -1292,11 +1292,23 @@ BYTE* CPdfFile::GetWidgets()
 		return NULL;
 	return m_pInternal->pReader->GetWidgets();
 }
-BYTE* CPdfFile::GetWidgetFonts()
+BYTE* CPdfFile::GetWidgetEmbeddedFonts()
 {
 	if (!m_pInternal->pReader)
 		return NULL;
-	return m_pInternal->pReader->GetWidgetFonts();
+	return m_pInternal->pReader->GetWidgetFonts(1);
+}
+BYTE* CPdfFile::GetWidgetStandardFonts()
+{
+	if (!m_pInternal->pReader)
+		return NULL;
+	return m_pInternal->pReader->GetWidgetFonts(2);
+}
+BYTE* CPdfFile::GetWidgetFonts(int nPageIndex)
+{
+	if (!m_pInternal->pReader)
+		return NULL;
+	return m_pInternal->pReader->GetWidgetFonts(3, nPageIndex);
 }
 BYTE* CPdfFile::GetAnnots(int nPageIndex)
 {

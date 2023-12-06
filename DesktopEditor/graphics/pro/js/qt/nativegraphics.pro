@@ -78,6 +78,7 @@ HEADERS += \
 	../../../structures.h \
 	../../../shading_info.h \
 	../../../GraphicsRenderer.h \
+	../../../GraphicsLayer.h \
 	\
 	../../../../fontengine/ApplicationFonts.h \
 	../../../../fontengine/FontFile.h \
@@ -115,6 +116,7 @@ SOURCES += \
 	../../../Graphics.cpp \
 	../../../GraphicsRenderer.cpp \
 	../../../Image.cpp \
+	../../../GraphicsLayer.cpp \
 	\
 	../../../../fontengine/ApplicationFonts.cpp \
 	../../../../fontengine/FontFile.cpp \

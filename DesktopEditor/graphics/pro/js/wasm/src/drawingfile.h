@@ -123,10 +123,17 @@ public:
 			return ((CPdfFile*)pReader)->GetWidgets();
 		return NULL;
 	}
-	BYTE* GetWidgetFontsID()
+	BYTE* GetWidgetFonts(int nTypeFonts, int nPageIndex = -1)
 	{
 		if (nType == 0)
-			return ((CPdfFile*)pReader)->GetWidgetFonts();
+		{
+			if (nTypeFonts == 1)
+				return ((CPdfFile*)pReader)->GetWidgetEmbeddedFonts();
+			if (nTypeFonts == 2)
+				return ((CPdfFile*)pReader)->GetWidgetStandardFonts();
+			if (nTypeFonts == 3)
+				return ((CPdfFile*)pReader)->GetWidgetFonts(nPageIndex);
+		}
 		return NULL;
 	}
 	BYTE* GetAnnots(int nPageIndex = -1)

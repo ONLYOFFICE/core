@@ -1691,9 +1691,24 @@ int GetFormulaType2(const WCHAR& c1, const WCHAR& c2)
 	return 0;
 }
 
+static std::wstring replace_textarea(std::wstring textarea_coord)
+{
+	XmlUtils::replace_all(textarea_coord, L"t", L"top");
+	XmlUtils::replace_all(textarea_coord, L"l", L"left");
+	XmlUtils::replace_all(textarea_coord, L"r", L"right");
+	XmlUtils::replace_all(textarea_coord, L"b", L"bottom");
+
+	return textarea_coord;
+}
+
 void odf_drawing_context::set_textarea (std::wstring l, std::wstring t, std::wstring r, std::wstring b)
 {
 	if (!impl_->current_drawing_state_.oox_shape_) return;
+
+	l = replace_textarea(l);
+	t = replace_textarea(t);
+	r = replace_textarea(r);
+	b = replace_textarea(b);
 
 	impl_->current_drawing_state_.oox_shape_->text_areas = l + L" " + t + L" " + r + L" " + b;
 
@@ -1824,8 +1839,8 @@ void odf_drawing_context::add_formula (std::wstring name, std::wstring fmla)
 	}
 
 	XmlUtils::replace_all(odf_fmla, L"gd", L"?f");
-	XmlUtils::replace_all(odf_fmla, L"h", L"logheight");
-	XmlUtils::replace_all(odf_fmla, L"w", L"logwidth");
+	XmlUtils::replace_all(odf_fmla, L"h", L"(bottom-top)");
+	XmlUtils::replace_all(odf_fmla, L"w", L"(right-left)");
 	XmlUtils::replace_all(odf_fmla, L"adj", L"$");
 	//XmlUtils::replace_all(name, L"gd", L"f");
 

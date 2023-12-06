@@ -1310,6 +1310,12 @@ BYTE* CPdfFile::GetWidgetFonts(int nPageIndex)
 		return NULL;
 	return m_pInternal->pReader->GetWidgetFonts(3, nPageIndex);
 }
+std::wstring CPdfFile::GetFontPath(const std::wstring& wsFontName)
+{
+	if (!m_pInternal->pReader)
+		return L"";
+	return m_pInternal->pReader->GetFontPath(wsFontName);
+}
 BYTE* CPdfFile::GetAnnots(int nPageIndex)
 {
 	if (!m_pInternal->pReader)

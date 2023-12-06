@@ -412,6 +412,7 @@ bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* dat
 void CPdfReader::Close()
 {
 	RELEASEOBJECT(m_pPDFDocument);
+	m_mFonts.clear();
 }
 
 int CPdfReader::GetError()
@@ -681,6 +682,13 @@ obj1.free();
 	sRes += bTagged ? L"true}" : L"false}";
 
 	return sRes;
+}
+std::wstring CPdfReader::GetFontPath(const std::wstring& wsFontName)
+{
+	std::map<std::wstring, std::wstring>::const_iterator oIter = m_mFonts.find(wsFontName);
+	if (oIter != m_mFonts.end())
+		return oIter->second;
+	return L"";
 }
 void getBookmars(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)
 {
@@ -993,22 +1001,34 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts, int nPageIndex)
 			const unsigned char* pData14 = NULL;
 			unsigned int nSize14 = 0;
 			std::wstring wsFileName, wsFontName;
+			std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
 			if ((nTypeFonts == 1 && gfxFont->getEmbeddedFontID(&oEmbRef)) ||
-				(nTypeFonts == 2 && PdfReader::GetBaseFont(NSStrings::GetStringFromUTF32(gfxFont->getName()), pData14, nSize14)))
+				(nTypeFonts == 2 && PdfReader::GetBaseFont(wsFontBaseName, pData14, nSize14)))
 			{
-				GetFont(xref, m_pFontManager, m_pFontList, gfxFont, wsFileName, wsFontName);
+				PdfReader::GetFont(xref, m_pFontManager, m_pFontList, gfxFont, wsFileName, wsFontName);
 
-				std::string sFileName = U_TO_UTF8(wsFileName);
+				std::string sFileName = U_TO_UTF8(wsFontName);
 				oRes.WriteString(sFileName);
 				nFontsID++;
 				arrFontsRef.push_back(fontID.num);
+				m_mFonts[wsFontName] = wsFileName;
 			}
 			else if (nTypeFonts == 3 && nPageIndex >= 0)
 			{
-				GetFont(xref, m_pFontManager, m_pFontList, gfxFont, wsFileName, wsFontName);
+				if (gfxFont->getEmbeddedFontID(&oEmbRef) || PdfReader::GetBaseFont(wsFontBaseName, pData14, nSize14))
+					PdfReader::GetFont(xref, m_pFontManager, m_pFontList, gfxFont, wsFileName, wsFontName);
+				else if (!gfxFont->locateFont(xref, false) || (wsFileName = NSStrings::GetStringFromUTF32(gfxFont->locateFont(xref, false)->path)).length() == 0)
+				{
+					NSFonts::CFontInfo* pFontInfo = PdfReader::GetFontByParams(xref, m_pFontManager, gfxFont, wsFontBaseName);
+					if (pFontInfo && L"" != pFontInfo->m_wsFontPath)
+					{
+						wsFileName = pFontInfo->m_wsFontPath;
+						wsFontName = pFontInfo->m_wsFontName;
+					}
+				}
 
 				oRes.AddInt(nRefNum);
-				oRes.WriteString(U_TO_UTF8(wsFileName));
+				oRes.WriteString(U_TO_UTF8(wsFontName));
 				oRes.AddDouble(dFontSize);
 
 				// Цвет текста - из DA
@@ -1021,6 +1041,7 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts, int nPageIndex)
 
 				nFontsID++;
 				arrFontsRef.push_back(fontID.num);
+				m_mFonts[wsFontName] = wsFileName;
 			}
 		}
 

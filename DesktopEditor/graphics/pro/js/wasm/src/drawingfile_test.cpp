@@ -678,6 +678,7 @@ void ReadInteractiveFormsFonts(CGraphicsFileDrawing* pGrFile, int nType, int nPa
 
 		for (int j = 0; j < nFontsLength; ++j)
 		{
+			std::cout << std::endl;
 			std::string sFontName;
 			if (nType == 3)
 			{
@@ -693,7 +694,7 @@ void ReadInteractiveFormsFonts(CGraphicsFileDrawing* pGrFile, int nType, int nPa
 
 				nPathLength = READ_INT(pFonts + i);
 				i += 4;
-				std::cout << " size " << (double)nPathLength / 100.0 << ", ";
+				std::cout << ", size " << (double)nPathLength / 100.0 << ", ";
 
 				int nTCLength = READ_INT(pFonts + i);
 				i += 4;
@@ -708,17 +709,18 @@ void ReadInteractiveFormsFonts(CGraphicsFileDrawing* pGrFile, int nType, int nPa
 					}
 					std::cout << ", ";
 				}
+				continue;
 			}
 			else
 			{
 				int nPathLength = READ_INT(pFonts + i);
 				i += 4;
 				sFontName = std::string((char*)(pFonts + i), nPathLength);
-				std::cout << " " << sFontName;
+				std::cout << " " << sFontName << " ";
 				i += nPathLength;
 			}
 
-			BYTE* pFont = GetFontBinary((char*)sFontName.c_str());
+			BYTE* pFont = GetFontBinary(pGrFile, (char*)sFontName.c_str());
 			int nLength2 = READ_INT(pFont);
 			int i2 = 4;
 			nLength2 -= 4;
@@ -739,6 +741,8 @@ void ReadInteractiveFormsFonts(CGraphicsFileDrawing* pGrFile, int nType, int nPa
 				if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/font" + std::to_wstring(j) + L".txt"))
 					oFile.WriteFile(res, nFontLength);
 				oFile.CloseFile();
+
+				std::cout << "font" << j << ".txt";
 			}
 
 			if (pFont)

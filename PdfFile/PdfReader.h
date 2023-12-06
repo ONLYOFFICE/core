@@ -64,6 +64,7 @@ public:
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
 	void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
 	std::wstring GetInfo();
+	std::wstring GetFontPath(const std::wstring& wsFontName);
 
 	NSFonts::IFontManager* GetFontManager() { return m_pFontManager; }
 	std::wstring ToXml(const std::wstring& wsXmlPath, bool isPrintStreams = false);
@@ -88,6 +89,7 @@ private:
 	PdfReader::CFontList*  m_pFontList;
 	DWORD              m_nFileLength;
 	int                m_eError;
+	std::map<std::wstring, std::wstring> m_mFonts;
 };
 
 #endif // _PDF_READER_H

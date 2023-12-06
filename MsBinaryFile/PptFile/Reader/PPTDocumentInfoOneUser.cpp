@@ -2634,7 +2634,7 @@ void CPPTUserInfo::AddAudioTransition(_UINT32 refID, CTransition* pTransition, c
 
     std::vector<CRecordSoundCollectionContainer*> sound;
     m_oDocument.GetRecordsByType(&sound, false);
-    if (sound.empty() || sound[0]->m_arRecords.size() < refID)
+    if (sound.empty() || sound[0]->m_arRecords.size() <= refID)
         return;
 
     auto audio = dynamic_cast<CRecordSoundContainer*>(sound[0]->m_arRecords[refID]);

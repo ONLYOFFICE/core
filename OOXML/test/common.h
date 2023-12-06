@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,67 +29,13 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
+#include "../../../OOXML/Base/Base.h"
+#include <string>
+#include <vector>
 
-#include "IVisitable.h"
-#include "Global.h"
+void PrepareFiles(const std::wstring &fileName, const std::wstring &exampleFileName, const std::wstring &tempDirName);
+int ConvertFile(const std::wstring &fileName);
+std::wstring GetWorkDir();
+void RemoveWorkDir(const std::wstring &dir);
+std::wstring CreateParamsFile(const std::wstring &pathFrom, const std::wstring &pathTo, const std::wstring &TempDir);
 
-namespace DocFileFormat
-{
-	typedef enum _BorderType
-	{
-		none = 0,
-		single,
-		thick,
-		Double,
-		unused,
-		hairline,
-		dotted,
-		dashed,
-		dotDash,
-		dotDotDash,
-		triple,
-		thinThickSmallGap,
-		thickThinSmallGap,
-		thinThickThinSmallGap,
-		thinThickMediumGap,
-		thickThinMediumGap,
-		thinThickThinMediumGap,
-		thinThickLargeGap,
-		thickThinLargeGap,
-		thinThickThinLargeGap,
-		wave,
-		doubleWave,
-		dashSmallGap,
-		dashDotStroked,
-		threeDEmboss,
-		threeDEngrave
-	} BorderType;
-
-	class BorderCode: public IVisitable
-	{
-		friend class DocumentMapping;
-		friend class PropertiesMapping;
-		friend class VMLPictureMapping;
-
-	private:
-		int cv;
-		unsigned char dptLineWidth;
-		unsigned char brcType;
-		std::wstring ico;
-		int dptSpace;
-		bool fShadow;
-		bool fFrame;
-		bool fNil;
-
-	public:
-		std::wstring getColor();
-		BorderCode();
-
-		BorderCode( unsigned char* bytes, int size );
-		BorderCode( const BorderCode& bc );
-
-		bool operator == ( const BorderCode& bc );
-		bool operator != ( const BorderCode& bc );
-	};
-}

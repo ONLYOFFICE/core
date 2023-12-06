@@ -105,7 +105,9 @@ namespace Aggplus
 #endif
 
 		m_dDpiTile = -1;
-		
+
+		m_pAlphaMask = NULL;
+
 		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
 		m_nBlendMode = agg::comp_op_src_over;
 
@@ -146,7 +148,9 @@ namespace Aggplus
 #endif
 
 		m_dDpiTile = -1;
-		
+
+		m_pAlphaMask = NULL;
+
 		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
 		m_nBlendMode = agg::comp_op_src_over;
 
@@ -161,6 +165,12 @@ namespace Aggplus
 #endif
 
 		RELEASEINTERFACE(m_pAlphaMask);
+
+		while (!m_arLayers.empty())
+		{
+			RELEASEINTERFACE(m_arLayers.top());
+			m_arLayers.pop();
+		}
 	}
 
 	INT CGraphics::IsDib()
@@ -1240,6 +1250,105 @@ namespace Aggplus
 	Status CGraphics::StartApplyingAlphaMask()
 	{
 		m_pAlphaMask->m_internal->StartApplying();
+		return Ok;
+	}
+	
+	Status CGraphics::AddLayer(CGraphicsLayer *pGraphicsLayer)
+	{
+		if (NULL == pGraphicsLayer || pGraphicsLayer->Empty())
+			return InvalidParameter;
+
+		m_arLayers.push(pGraphicsLayer);
+		pGraphicsLayer->AddRef();
+
+		int nStride                 = m_frame_buffer.ren_buf().stride();
+		const unsigned int unWidth  = m_frame_buffer.ren_buf().width();
+		const unsigned int unHeight = m_frame_buffer.ren_buf().height();
+
+		m_frame_buffer.create(unWidth, unHeight, false, nStride, pGraphicsLayer->GetBuffer());
+
+		return Ok;
+	}
+	
+	Status CGraphics::CreateLayer()
+	{
+		int nStride                 = m_frame_buffer.ren_buf().stride();
+		const unsigned int unWidth  = m_frame_buffer.ren_buf().width();
+		const unsigned int unHeight = m_frame_buffer.ren_buf().height();
+
+		BYTE *pBuffer = new BYTE[unWidth * unHeight * m_frame_buffer.pix_size];
+
+		memset(pBuffer, 0x00, unWidth * unHeight * m_frame_buffer.pix_size);
+
+		m_frame_buffer.create(unWidth, unHeight, false, nStride, pBuffer);
+
+		m_arLayers.push(new CGraphicsLayer(pBuffer, false));
+		return Ok;
+	}
+	
+	Status CGraphics::BlendLayer()
+	{
+		if (m_arLayers.empty())
+			return WrongState;
+
+		CGraphicsLayer *pCurrentGraphicsLayer = m_arLayers.top();
+		m_arLayers.pop();
+
+		BYTE* pBuffer = NULL;
+
+		if (!m_arLayers.empty())
+			pBuffer = m_arLayers.top()->GetBuffer();
+		else
+			pBuffer = m_pPixels;
+
+		if (NULL == pBuffer)
+		{
+			RELEASEINTERFACE(pCurrentGraphicsLayer);
+			return WrongState;
+		}
+
+		agg::rendering_buffer *pRenBuffer = &GetRenderingBuffer();
+
+		pRenBuffer->attach(pBuffer, m_frame_buffer.ren_buf().width(), m_frame_buffer.ren_buf().height(), pRenBuffer->stride());
+
+		pCurrentGraphicsLayer->BlendTo(m_frame_buffer.pixfmt());
+
+		RELEASEINTERFACE(pCurrentGraphicsLayer);
+		return Ok;
+	}
+	
+	Status CGraphics::RemoveLayer()
+	{
+		if (m_arLayers.empty())
+			return WrongState;
+
+		CGraphicsLayer *pCurrentGraphicsLayer = m_arLayers.top();
+		m_arLayers.pop();
+
+		RELEASEINTERFACE(pCurrentGraphicsLayer);
+		return Ok;
+	}
+	
+	Status CGraphics::SetLayerSettings(const TGraphicsLayerSettings &oSettings)
+	{
+		if (m_arLayers.empty())
+			return WrongState;
+
+		m_arLayers.top()->SetSettings(oSettings);
+
+		return Ok;
+	}
+	
+	Status CGraphics::SetLayerOpacity(double dOpacity)
+	{
+		if (dOpacity < 0. || dOpacity > 1.)
+			return InvalidParameter;
+		
+		if (m_arLayers.empty())
+			return WrongState;
+
+		m_arLayers.top()->SetOpacity(dOpacity);
+		
 		return Ok;
 	}
 

@@ -31,6 +31,7 @@
 		"_GetLinks",
 		"_GetStructure",
 		"_GetInteractiveFormsInfo",
+		"_GetInteractiveFormsFonts",
 		"_GetInteractiveFormsAP",
 		"_GetButtonIcons",
 		"_GetAnnotationsInfo",
@@ -39,6 +40,7 @@
 		"_InitializeFontsBase64",
 		"_InitializeFontsRanges",
 		"_SetFontBinary",
+		"_GetFontBinary",
 		"_IsFontBinaryExist",
 		"_DestroyTextInfo",
 		"_IsNeedCMap",
@@ -119,7 +121,7 @@
 	},
 	{
 		"folder": "../../",
-		"files": ["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "pro/pro_Fonts.cpp", "pro/pro_Image.cpp", "Graphics.cpp", "Brush.cpp", "BaseThread.cpp", "GraphicsPath.cpp", "Image.cpp", "Matrix.cpp", "Clip.cpp", "TemporaryCS.cpp", "AlphaMask.cpp", "AlphaMask_private.cpp", "commands/DocInfo.cpp", "commands/AnnotField.cpp", "commands/FormField.cpp"]
+		"files": ["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "pro/pro_Fonts.cpp", "pro/pro_Image.cpp", "Graphics.cpp", "Brush.cpp", "BaseThread.cpp", "GraphicsPath.cpp", "Image.cpp", "Matrix.cpp", "Clip.cpp", "TemporaryCS.cpp", "AlphaMask.cpp", "AlphaMask_private.cpp", "GraphicsLayer.cpp", "commands/DocInfo.cpp", "commands/AnnotField.cpp", "commands/FormField.cpp"]
 	},
 	{
 		"folder": "../../../fontengine/",

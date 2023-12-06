@@ -1384,8 +1384,10 @@ void odf_drawing_context::end_area_properties()
 }
 void odf_drawing_context::start_line_properties(bool reset)
 {
+	if (!impl_->current_graphic_properties) return;
+
 	impl_->current_drawing_part_ = Line;
-	if (reset)
+	if (reset )
 		impl_->current_graphic_properties->draw_stroke_ = boost::none;
 }
 void odf_drawing_context::end_line_properties()
@@ -1419,7 +1421,7 @@ void odf_drawing_context::set_hidden (bool bVal)
 }
 void odf_drawing_context::set_opacity(double percent_)
 {
-	if (!impl_->current_graphic_properties)return;
+	if (!impl_->current_graphic_properties) return;
 
 	switch(impl_->current_drawing_part_)
 	{

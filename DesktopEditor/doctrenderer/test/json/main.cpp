@@ -216,12 +216,6 @@ public:
 		return true;
 	}
 
-	JSSmart<CJSObject> getObject(const std::string& objLiteral)
-	{
-		JSSmart<CJSObject> jsObj = m_pContext->runScript("(() => { return " + objLiteral + ";})();")->toObject();
-		return jsObj;
-	}
-
 public:
 	JSSmart<CJSContext> m_pContext;
 };
@@ -845,14 +839,13 @@ TEST_F(CJSONTest, serialization_with_script)
 		"		return 2;"
 		"	if (obj['parameters']['arr'][2][0] !== 42)"
 		"		return 3;"
-		"	if (obj['parameters']['arr'][4] === undefined)"
+		"	if (obj['parameters']['arr'][4] !== undefined)"
 		"		return 4;"
-		"	if (obj['parameters']['0'] === 0)"
+		"	if (obj['parameters']['0'] !== 0)"
 		"		return 5;"
-		"	if (obj['parameters']['typedArr']['data'] === null)"
+		"	if (obj['parameters']['typedArr']['data'] !== null)"
 		"		return 6;"
 		"	return 0;"
-//		"	return JSON.stringify(obj, null, 4);"
 		"}"
 	);
 
@@ -863,11 +856,7 @@ TEST_F(CJSONTest, serialization_with_script)
 	JSSmart<CJSValue> jsCheckResult = global->call_func("test", 1, args);
 
 	EXPECT_TRUE(jsCheckResult->isNumber());
-//	EXPECT_EQ(jsCheckResult->toInt32(), 0);
-
-
-//	EXPECT_TRUE(jsCheckResult->isString());
-//	std::cout << jsCheckResult->toStringA() << std::endl;
+	EXPECT_EQ(jsCheckResult->toInt32(), 0);
 
 	EXPECT_TRUE(compare(obj, args[0]));
 }

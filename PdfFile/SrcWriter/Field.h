@@ -35,7 +35,7 @@
 #include "Objects.h"
 #include "Types.h"
 #include "Annotation.h"
-#include "../../DesktopEditor/graphics/FormField.h"
+#include "../../DesktopEditor/graphics/commands/FormField.h"
 
 namespace PdfWriter
 {

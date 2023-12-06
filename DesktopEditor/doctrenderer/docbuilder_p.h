@@ -61,6 +61,8 @@
 #include "../fontengine/ApplicationFontsWorker.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
+#include "../common/ProcessEnv.h"
+
 #ifdef CreateFile
 #undef CreateFile
 #endif
@@ -753,6 +755,11 @@ namespace NSDoctRenderer
 			oBuilder.WriteString(L"<m_bIsNoBase64>true</m_bIsNoBase64>");
 			oBuilder.WriteString(L"<m_sThemeDir>./sdkjs/slide/themes</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
 			oBuilder.WriteString(sParams);
+
+			std::string sOptions = NSProcessEnv::Save();
+			if (!sOptions.empty())
+				oBuilder.WriteString(UTF8_TO_U(sOptions));
+
 			oBuilder.WriteString(L"</TaskQueueDataConvert>");
 
 			std::wstring sXmlConvert = oBuilder.GetData();
@@ -1081,6 +1088,10 @@ namespace NSDoctRenderer
 			oBuilder.WriteString(L"<m_sTempDir>");
 			oBuilder.WriteEncodeXmlString(sDstTmpDir);
 			oBuilder.WriteString(L"</m_sTempDir>");
+
+			std::string sOptions = NSProcessEnv::Save();
+			if (!sOptions.empty())
+				oBuilder.WriteString(UTF8_TO_U(sOptions));
 
 			oBuilder.WriteString(L"</TaskQueueDataConvert>");
 

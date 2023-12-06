@@ -30,6 +30,9 @@ You need to create an xml configuration file. It must contain:
 	# (non-required) trough conversion (format) -> (*t format) -> (output formats) (default - 0). Directory with *t files - outputDirectory/_t.
 	<troughConversion> </troughConversion>
 
+	# (non-required) save environment vars to x2t (for example "X2T_MEMORY_LIMIT") (default - 0). 
+	<saveEnvironment> </saveEnvironment>
+
 	# (non-required) timestamp in report file name (default - 1)
 	<timestamp> </timestamp>
 

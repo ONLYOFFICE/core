@@ -73,6 +73,17 @@ namespace OOX
 		class CTableStyle;
 		class CCellStyle;
 		class CProtection;
+		class CTimelines;
+		class CTimeline;
+		class CTimelineCacheDefinition;
+		class CTimelinePivotFilter;
+		class CTimelineState;
+		class CTimelineRange;
+		class CTimelineCachePivotTables;
+		class CTimelineCachePivotTable;
+		class CTimelineStyle;
+		class CTimelineStyles;
+		class CTimelineStyleElement;
 	}
 }
 
@@ -145,6 +156,9 @@ namespace BinXlsxRW
 		void WriteTableStyle(const OOX::Spreadsheet::CTableStyle& oTableStyle);
 		void WriteTableStyleElements(const std::vector<OOX::Spreadsheet::CTableStyleElement *>& aTableStyles);
 		void WriteTableStyleElement(const OOX::Spreadsheet::CTableStyleElement& oTableStyleElement);
+		void WriteTimelineStyles(OOX::Spreadsheet::CTimelineStyles* pTimelineStyles);
+		void WriteTimelineStyle(OOX::Spreadsheet::CTimelineStyle* pTimelineStyle);
+		void WriteTimelineStyleElement(OOX::Spreadsheet::CTimelineStyleElement* pTimelineStyleElement);
 	};
 	class BinarySharedStringTableWriter
 	{
@@ -202,6 +216,14 @@ namespace BinXlsxRW
 		void WriteDefinedName(const OOX::Spreadsheet::CDefinedName& definedName);
 		void WriteSlicerCaches(OOX::Spreadsheet::CWorkbook& workbook, const OOX::Spreadsheet::CSlicerCaches& oSlicerCaches);
 		void WriteFileSharing(const OOX::Spreadsheet::CFileSharing& fileSharing);
+		void WriteTimelineCaches(OOX::Spreadsheet::CWorkbook& workbook, const OOX::Spreadsheet::CTimelineCacheRefs& oTimelineCacheRefs);
+		void WriteTimelineCache(OOX::Spreadsheet::CTimelineCacheDefinition* pTimelineCache);
+		void WriteTimelineState(OOX::Spreadsheet::CTimelineState* pState);
+		void WriteTimelinePivotFilter(OOX::Spreadsheet::CTimelinePivotFilter* pPivotFilter);
+		void WriteTimelineCachePivotTables(OOX::Spreadsheet::CTimelineCachePivotTables* pPivotTables);
+		void WriteTimelineCachePivotTable(OOX::Spreadsheet::CTimelineCachePivotTable* pPivotTable);
+		void WriteTimelineRange(OOX::Spreadsheet::CTimelineRange* pTimelineRange);
+		
 	};
 	class BinaryPersonTableWriter
 	{
@@ -306,6 +328,9 @@ namespace BinXlsxRW
 		void WriteUserProtectedRanges(const OOX::Spreadsheet::CUserProtectedRanges& oUserProtectedRanges);
 		void WriteUserProtectedRange(const OOX::Spreadsheet::CUserProtectedRange& oUserProtectedRange);
 		void WriteUserProtectedRangeDesc(const OOX::Spreadsheet::CUserProtectedRange::_UsersGroupsDesc& desc);
+		void WriteTimelines(OOX::Spreadsheet::CWorksheet& oWorksheet, const OOX::Spreadsheet::CTimelineRefs& oTimelines);
+		void WriteTimelines(OOX::Spreadsheet::CTimelines* pTimelines);
+		void WriteTimeline(OOX::Spreadsheet::CTimeline* pTimeline);
 	};
 	class BinaryCustomsTableWriter
 	{

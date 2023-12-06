@@ -1,4 +1,4 @@
-﻿using docbuilder_net;
+using docbuilder_net;
 
 using OfficeFileTypes = docbuilder_net.FileTypes;
 using CValue = docbuilder_net.CDocBuilderValue;
@@ -38,12 +38,16 @@ namespace Test
 
             CValue oApi = oGlobal["Api"];
             CValue oDocument = oApi.Call("GetDocument");
-            CValue oParagraph = oApi.Call("CreateParagraph");
-            CValue oContent = oContext.CreateArray(1);
+            CValue oParagraph1 = oApi.Call("CreateParagraph");
 
-            oParagraph.Call("SetSpacingAfter", 1000, false);
-            oParagraph.Call("AddText", "Hello from .net!");
-            oContent[0] = oParagraph;
+            oParagraph1.Call("SetSpacingAfter", 1000, false);
+            oParagraph1.Call("AddText", "Hello from .net!");
+
+            CValue oParagraph2 = oApi.Call("CreateParagraph");
+            oParagraph2.Call("AddText", "Goodbye!");
+
+            CValue oContent = new CValue[] { oParagraph1, oParagraph2 };
+
             oDocument.Call("InsertContent", oContent);
 
             oBuilder.SaveFile(doctype, resultPath);

@@ -68,6 +68,7 @@ public:
 
 	_CP_OPT(odf_types::presentation_class) presentation_object_;
 
+    _CP_OPT(std::wstring) text_style_name_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(presentation_placeholder);
@@ -100,8 +101,8 @@ public:
    
 	void apply_from(const drawing_page_properties & Other);
 
-	odf_types::common_draw_fill_attlist		common_draw_fill_attlist_;
-	anim_transition_filter_attlist			anim_transition_filter_attlist_;
+	odf_types::common_draw_fill_attlist		        common_draw_fill_attlist_;
+    odf_types::anim_transition_filter_attlist		anim_transition_filter_attlist_;
 
 	_CP_OPT(odf_types::length_or_percent)	draw_fill_image_height_;
 	_CP_OPT(odf_types::length_or_percent)	draw_fill_image_width_;

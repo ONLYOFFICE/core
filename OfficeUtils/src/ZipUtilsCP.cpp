@@ -839,12 +839,13 @@ namespace ZLibZipUtils
 	int UnzipToDir(unzFile uf, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password, bool opt_extract_without_path, bool clearOutputDirectory )
 	{
 		int err = -1;
-		if(NSDirectory::Exists(unzipDir))
-			err = 0;
-
+		
 		if ( uf != NULL && unzipDir != NULL )
 		{
-			if ( clearOutputDirectory )
+            if (NSDirectory::Exists(unzipDir))
+                err = 0;
+
+            if ( clearOutputDirectory )
 			{
 				ClearDirectory( unzipDir );
 			}

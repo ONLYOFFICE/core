@@ -1028,8 +1028,8 @@ void text_format_properties::docx_serialize(std::wostream & _rPr, fonts_containe
 
 void text_format_properties::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	oox::styles_context	& styles_context_	= Context.get_text_context().get_styles_context();
-	fonts_container & fonts_			= Context.root()->odf_context().fontContainer();	  
+	oox::styles_context	& styles_context_ = Context.get_text_context().get_styles_context();
+	fonts_container & fonts_ = Context.root()->odf_context().fontContainer();	  
 
 	drawing_serialize(styles_context_.text_style(), styles_context_.extern_node(), fonts_, styles_context_.get_current_processed_style(), styles_context_.hlinkClick());
 }
@@ -1252,11 +1252,12 @@ void text_format_properties::docx_convert(oox::docx_conversion_context & Context
     bool needProcessFontSize = true;
 
     // 17.3.2.42
-	if (Context.get_drop_cap_context().state() == 2)
-	{
-		_rPr << L"<w:position w:val=\"-" << (2+Context.get_drop_cap_context().Scale*2-3)*2 << "\"/> ";//формула ачуметь !! - подбор вручную
-	}
-	else if (style_text_position_)
+	//if (Context.get_drop_cap_context().state() == 2)
+	//{
+	//	_rPr << L"<w:position w:val=\"-" << (2+Context.get_drop_cap_context().Scale*2-3)*2 << "\"/> ";//формула ачуметь !! - подбор вручную
+	//}
+	//else
+		if (style_text_position_)
     {
         bool noNeedSize = false;
         if (style_text_position_->get_type() == text_position::Sub)

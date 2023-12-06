@@ -183,7 +183,6 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CPageTree::CPageTree(CXref* pXref)
 	{
-		m_pXref = pXref;
 		pXref->Add(this);
 
 		m_pPages = new CArrayObject();
@@ -193,11 +192,8 @@ namespace PdfWriter
 		Add("Kids", m_pPages);
 		Add("Count", m_pCount);
 	}
-	CPageTree::CPageTree(CXref* pXref, bool bEmpty)
+	CPageTree::CPageTree()
 	{
-		m_pXref = pXref;
-		pXref->Add(this);
-
 		m_pPages = NULL;
 		m_pCount = NULL;
 	}
@@ -314,9 +310,9 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CPage
 	//----------------------------------------------------------------------------------------
-	CPage::CPage(CXref* pXref, CDocument* pDocument)
+	CPage::CPage(CDocument* pDocument)
 	{
-		Init(pXref, pDocument);
+		Init(pDocument);
 	}
 	void CPage::Fix()
 	{
@@ -431,7 +427,8 @@ namespace PdfWriter
 	}
 	CPage::CPage(CXref* pXref, CPageTree* pParent, CDocument* pDocument)
 	{
-		Init(pXref, pDocument);
+		pXref->Add(this);
+		Init(pDocument);
 
 		m_pContents = new CArrayObject();
 		CDictObject* pContent = new CDictObject(pXref);
@@ -454,11 +451,8 @@ namespace PdfWriter
 			pGrState = pPrev;
 		}
 	}
-	void CPage::Init(CXref* pXref, CDocument* pDocument)
+	void CPage::Init(CDocument* pDocument)
 	{
-		pXref->Add(this);
-
-		m_pXref     = pXref;
 		m_pDocument = pDocument;
 		m_eGrMode   = grmode_PAGE;
 		m_pGrState  = new CGrState(NULL);
@@ -547,7 +541,10 @@ namespace PdfWriter
 		// Если объект Resources нулевой, тогда ищем Resources у родительского объекта рекурсивно
 		if (!pObject)
 		{
-			CPageTree* pPageTree = (CPageTree*)Get("Parent");
+			CPageTree* pPageTree = NULL;
+			CObjectBase* pObj = Get("Parent");
+			if (pObj->GetType() == object_type_DICT)
+				pPageTree = (CPageTree*)pObj;
 			while (pPageTree)
 			{
 				pObject = Get("Resources");
@@ -1125,7 +1122,7 @@ namespace PdfWriter
 
 		return sKey;
 	}
-    void CPage::AddAnnotation(CDictObject* pAnnot)
+	void CPage::AddAnnotation(CDictObject* pAnnot)
 	{
 		CArrayObject* pArray = (CArrayObject*)Get("Annots");
 		if (!pArray)
@@ -1138,6 +1135,25 @@ namespace PdfWriter
 	    }
 	
 	    return pArray->Add(pAnnot);
+	}
+	bool CPage::DeleteAnnotation(unsigned int nID)
+	{
+		CArrayObject* pArray = (CArrayObject*)Get("Annots");
+		if (!pArray)
+			return false;
+
+		for (int i = 0; i < pArray->GetCount(); i++)
+		{
+			CObjectBase* pObj = pArray->Get(i, false);
+			if (pObj->GetType() == object_type_PROXY && ((CProxyObject*)pObj)->Get()->GetObjId() == nID)
+			{
+				CObjectBase* pDelete = pArray->Remove(i);
+				RELEASEOBJECT(pDelete);
+				return true;
+				break;
+			}
+		}
+		return false;
 	}
     void CPage::BeginText()
 	{

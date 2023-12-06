@@ -46,14 +46,14 @@ namespace Global
         L"FF0000",//L"red",
         L"FFFF00",//L"yellow",
         L"FFFFFF",//L"white",
-        L"darkBlue",
-        L"darkCyan",
-        L"darkGreen",
-        L"darkMagenta",
-        L"darkRed",
-        L"darkYellow",
-        L"darkGray",
-        L"lightGray"
+        L"000080", //darkBlue
+        L"008080", //darkCyan
+        L"008000", //darkGreen
+        L"800080", //darkMagenta
+        L"800000", //darkRed
+        L"808000", //darkYellow
+        L"808080", //darkGray
+        L"C0C0C0" //lightGray
 	};
 	static const wchar_t ColorNameIdentifier[17][12] = 
 	{

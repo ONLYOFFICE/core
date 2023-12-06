@@ -126,6 +126,7 @@ enum ElementType
     typeTextList,
     typeTextListItem,
     typeTextListHeader,
+	typeTextOrderedList,
     typeTextNumber,
     typeTextSoftPageBreak,
     typeTextSection,
@@ -532,6 +533,9 @@ enum ElementType
 	typeFormItem,
 	typeFormOption,
 
+	typeContentControl,
+	typeListItem,
+
 	typeDrawPage,    
 	typePresentationFooterDecl,
 	typePresentationDateTimeDecl,
@@ -543,6 +547,11 @@ enum ElementType
 	typeAnimAudio,
 	typeAnimCommand,
 	typeAnimIterate,
+	typeAnimSet,
+	typeAnimAnimate,
+	typeAnimAnimateTransform,
+	typeAnimAnimateMotion,
+	typeAnimAnimateColor,
 
 	typeStyleGraphicPropertis,
 	typeStyleDrawGradient,

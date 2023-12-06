@@ -41,6 +41,7 @@ function onLoadFontsModule(window, undefined)
 	AscFonts.TT_INTERPRETER_VERSION_40 = 40;
 
 	AscFonts.CopyStreamToMemory = AscFonts["CopyStreamToMemory"];
+	AscFonts.GetUint8ArrayFromPointer = AscFonts["GetUint8ArrayFromPointer"];
 
 	AscFonts.AllocString2 = AscFonts["AllocString"];
 	AscFonts.AllocString = function(size)
@@ -80,7 +81,6 @@ function onLoadFontsModule(window, undefined)
 	AscFonts.Hyphen_LoadDictionary = AscFonts["Hyphen_LoadDictionary"];
 	AscFonts.Hyphen_CheckDictionary = AscFonts["Hyphen_CheckDictionary"];
 	AscFonts.Hyphen_Word = AscFonts["Hyphen_Word"];
-
 
 	AscFonts.CreateNativeStreamByIndex = function(stream_index)
 	{
@@ -441,9 +441,9 @@ function onLoadFontsModule(window, undefined)
 		this.codePoints       = codePointsBuffer;
 		this.codePointsCount  =  0
 	}
-	CCodePointsCalculator.prototype.start = function()
+	CCodePointsCalculator.prototype.start = function(startCluster)
 	{
-		this.currentCluster = 0;
+		this.currentCluster   = startCluster;
 		this.currentCodePoint = 0;
 		this.codePointsCount  = 0;
 	}
@@ -452,10 +452,14 @@ function onLoadFontsModule(window, undefined)
 		this.currentCodePoint += this.codePointsCount;
 
 		let nCodePointsCount = 0;
-
+		
 		if (cluster < this.currentCluster)
 		{
-			// TODO: RTL
+			while (this.currentCluster > cluster)
+			{
+				this.currentCluster -= this.clusterBuffer[this.currentCodePoint + nCodePointsCount];
+				++nCodePointsCount;
+			}
 		}
 		else
 		{
@@ -562,9 +566,12 @@ function onLoadFontsModule(window, undefined)
 		let retObj = AscFonts.HB_ShapeText(fontFile, STRING_POINTER, features, script, direction, language, READER);
 		if (retObj["error"])
 			return;
-
-		CODEPOINTS_CALCULATOR.start();
-		let prevCluster = -1, type, flags, gid, cluster, x_advance, y_advance, x_offset, y_offset, codePoints;
+		
+		let isRtl = direction === AscFonts.HB_DIRECTION.HB_DIRECTION_RTL;
+		
+		CODEPOINTS_CALCULATOR.start(isRtl ? CLUSTER_MAX : 0);
+		let prevCluster = -1;
+		let type, flags, gid, cluster, x_advance, y_advance, x_offset, y_offset;
 		let isLigature = false;
 		let nWidth     = 0;
 		let reader = READER;
@@ -579,10 +586,10 @@ function onLoadFontsModule(window, undefined)
 			y_advance = reader.readInt();
 			x_offset  = reader.readInt();
 			y_offset  = reader.readInt();
-
+			
 			if (cluster !== prevCluster && -1 !== prevCluster)
 			{
-				CODEPOINTS_CALCULATOR.calculate(cluster);
+				CODEPOINTS_CALCULATOR.calculate(isRtl ? prevCluster : cluster);
 				textShaper.FlushGrapheme(AscFonts.GetGrapheme(CODEPOINTS_CALCULATOR), nWidth, CODEPOINTS_CALCULATOR.getCount(), isLigature);
 				nWidth = 0;
 			}
@@ -597,9 +604,10 @@ function onLoadFontsModule(window, undefined)
 			AscFonts.AddGlyphToGrapheme(gid, x_advance, y_advance, x_offset, y_offset);
 			nWidth += x_advance * COEF;
 		}
-		CODEPOINTS_CALCULATOR.calculate(CLUSTER_MAX);
+		
+		CODEPOINTS_CALCULATOR.calculate(isRtl ? 0 : CLUSTER_MAX);
 		textShaper.FlushGrapheme(AscFonts.GetGrapheme(CODEPOINTS_CALCULATOR), nWidth, CODEPOINTS_CALCULATOR.getCount(), isLigature);
-
+		
 		retObj["free"]();
 	};
 
@@ -679,7 +687,7 @@ function onLoadFontsModule(window, undefined)
 	function ZLib()
 	{
 		/** @suppress {checkVars} */
-		this.engine = new AscCommon["CZLibEngineJS"]();
+		this.engine = window["NATIVE_EDITOR_ENJINE"] ? CreateEmbedObject("CZipEmbed") : new AscCommon["CZLibEngineJS"]();
 		this.files = [];
 	}
 	/**
@@ -763,8 +771,9 @@ function onLoadFontsModule(window, undefined)
 	};
 
 	AscCommon.ZLib = ZLib;
-	AscCommon.ZLib.prototype.isModuleInit = true;
-	window.AscCommon.CZLibEngineJS.prototype.isModuleInit = true;
+
+	if (AscCommon["CZLibEngineJS"])
+		AscCommon["CZLibEngineJS"].prototype["isModuleInit"] = true;
 
 	window.nativeZlibEngine = new ZLib();
 
@@ -841,6 +850,13 @@ function onLoadFontsModule(window, undefined)
 		{
 			var xhr = new XMLHttpRequest();
 			let urlDictionaries = "../../../../dictionaries/";
+			if (window["AscDesktopEditor"] && window["AscDesktopEditor"]["getDictionariesPath"])
+			{
+				let urlDesktop = window["AscDesktopEditor"]["getDictionariesPath"]();
+				if ("" !== urlDesktop)
+					urlDictionaries = urlDesktop;
+			}
+			
 			let url = urlDictionaries + langName + "/hyph_" + langName + ".dic";
 
 			xhr.open('GET', url, true);

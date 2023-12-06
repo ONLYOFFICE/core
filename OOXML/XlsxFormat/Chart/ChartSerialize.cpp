@@ -1401,7 +1401,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(L">");
 			if (m_oddHeader.IsInit())
 			{
-				if (std::wstring::npos != m_oddHeader->find(' ') || std::wstring::npos != m_oddHeader->find('\n'))
+				if (std::wstring::npos != m_oddHeader->find(' ')&&(  m_oddHeader->at(0) == ' ' || m_oddHeader->at(m_oddHeader->size()-1) == ' ')
+				 || std::wstring::npos != m_oddHeader->find('\n')&&(  m_oddHeader->at(0) == '\n' || m_oddHeader->at(m_oddHeader->size()-1) == '\n'))
 					writer.WriteString(L"<c:oddHeader xml:space=\"preserve\">");
 				else
 					writer.WriteString(L"<c:oddHeader>");
@@ -1410,7 +1411,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			if (m_oddFooter.IsInit())
 			{
-				if (std::wstring::npos != m_oddFooter->find(' ') || std::wstring::npos != m_oddFooter->find('\n'))
+				if (std::wstring::npos != m_oddFooter->find(' ')&&(  m_oddFooter->at(0) == ' ' || m_oddFooter->at(m_oddFooter->size()-1) == ' ')
+				 || std::wstring::npos != m_oddFooter->find('\n')&&(  m_oddFooter->at(0) == '\n' || m_oddFooter->at(m_oddFooter->size()-1) == '\n'))
 					writer.WriteString(L"<c:oddFooter xml:space=\"preserve\">");
 				else
 					writer.WriteString(L"<c:oddFooter>");
@@ -1419,7 +1421,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			if (m_evenHeader.IsInit())
 			{
-				if (std::wstring::npos != m_evenHeader->find(' ') || std::wstring::npos != m_evenHeader->find('\n'))
+				if (std::wstring::npos != m_evenHeader->find(' ')&&(  m_evenHeader->at(0) == ' ' || m_evenHeader->at(m_evenHeader->size()-1) == ' ')
+				 || std::wstring::npos != m_evenHeader->find('\n')&&(  m_evenHeader->at(0) == '\n' || m_evenHeader->at(m_evenHeader->size()-1) == '\n'))
 					writer.WriteString(L"<c:evenHeader xml:space=\"preserve\">");
 				else
 					writer.WriteString(L"<c:evenHeader>");
@@ -1428,7 +1431,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			if ( m_evenFooter.IsInit())
 			{
-				if (std::wstring::npos != m_evenFooter->find(' ') || std::wstring::npos != m_evenFooter->find('\n'))
+				if (std::wstring::npos != m_evenFooter->find(' ')&&(  m_evenFooter->at(0) == ' ' || m_evenFooter->at(m_evenFooter->size()-1) == ' ')
+				 || std::wstring::npos != m_evenFooter->find('\n')&&(  m_evenFooter->at(0) == '\n' || m_evenFooter->at(m_evenFooter->size()-1) == '\n'))
 					writer.WriteString(L"<c:evenFooter xml:space=\"preserve\">");
 				else
 					writer.WriteString(L"<c:evenFooter>");
@@ -1437,7 +1441,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			if (m_firstHeader.IsInit())
 			{
-				if (std::wstring::npos != m_firstHeader->find(' ') || std::wstring::npos != m_firstHeader->find('\n'))
+				if (std::wstring::npos != m_firstHeader->find(' ')&&(  m_firstHeader->at(0) == ' ' || m_firstHeader->at(m_firstHeader->size()-1) == ' ')
+				 || std::wstring::npos != m_firstHeader->find('\n')&&(  m_firstHeader->at(0) == '\n' || m_firstHeader->at(m_firstHeader->size()-1) == '\n'))
 					writer.WriteString(L"<c:firstHeader xml:space=\"preserve\">");
 				else
 					writer.WriteString(L"<c:firstHeader>");
@@ -1446,7 +1451,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			if (m_firstFooter.IsInit())
 			{
-				if (std::wstring::npos != m_firstFooter->find(' ') || std::wstring::npos != m_firstFooter->find('\n'))
+				if (std::wstring::npos != m_firstFooter->find(' ')&&(  m_firstFooter->at(0) == ' ' || m_firstFooter->at(m_firstFooter->size()-1) == ' ')
+				 || std::wstring::npos != m_firstFooter->find('\n')&&(  m_firstFooter->at(0) == '\n' || m_firstFooter->at(m_firstFooter->size()-1) == '\n'))
 					writer.WriteString(L"<c:firstFooter xml:space=\"preserve\">");
 				else
 					writer.WriteString(L"<c:firstFooter>");
@@ -2520,7 +2526,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(L">");
 			if (m_f.IsInit())
 			{
-				if (std::wstring::npos != m_f->find(' ') || std::wstring::npos != m_f->find('\n'))
+				if (std::wstring::npos != m_f->find(' ')&&(  m_f->at(0) == ' ' || m_f->at(m_f->size()-1) == ' ')
+				 || std::wstring::npos != m_f->find('\n')&&(  m_f->at(0) == '\n' || m_f->at(m_f->size()-1) == '\n'))
 					writer.WriteString(L"<c:f xml:space=\"preserve\">");
 				else
 					writer.WriteString(L"<c:f>");
@@ -2642,7 +2649,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			
 			if (m_v.IsInit())
 			{
-				if (std::wstring::npos != m_v->find(' ') || std::wstring::npos != m_v->find('\n'))
+				if (std::wstring::npos != m_v->find(' ')&&(  m_v->at(0) == ' ' || m_v->at(m_v->size()-1) == ' ')
+				 || std::wstring::npos != m_v->find('\n')&&(  m_v->at(0) == '\n' || m_v->at(m_v->size()-1) == '\n'))
 					writer.WriteString(L"<c:v xml:space=\"preserve\">");
 				else
 					writer.WriteString(L"<c:v>");
@@ -3390,7 +3398,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			if (m_v.IsInit())
 			{
-				if (std::wstring::npos != m_v->find(' ') || std::wstring::npos != m_v->find('\n'))
+				if (std::wstring::npos != m_v->find(' ')&&(  m_v->at(0) == ' ' || m_v->at(m_v->size()-1) == ' ')
+				 || std::wstring::npos != m_v->find('\n')&&(  m_v->at(0) == '\n' || m_v->at(m_v->size()-1) == '\n'))
 					writer.WriteString(L"<c:v xml:space=\"preserve\">");
 				else
 					writer.WriteString(L"<c:v>");
@@ -3893,7 +3902,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 						}
 						else
 						{
-							if (std::wstring::npos != pTypeVal->find(' ') || std::wstring::npos != pTypeVal->find('\n'))
+							if (std::wstring::npos != pTypeVal->find(' ')&&(  pTypeVal->at(0) == ' ' || pTypeVal->at(pTypeVal->size()-1) == ' ')
+				 			|| std::wstring::npos != pTypeVal->find('\n')&&(  pTypeVal->at(0) == '\n' || pTypeVal->at(pTypeVal->size()-1) == '\n'))
 								writer.WriteString(L"<c:separator xml:space=\"preserve\">");
 							else
 								writer.WriteString(L"<c:separator>");
@@ -4398,7 +4408,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 					}
 					else
 					{
-						if (std::wstring::npos != pTypeVal->find(' ') || std::wstring::npos != pTypeVal->find('\n'))
+						if (std::wstring::npos != pTypeVal->find(' ')&&(  pTypeVal->at(0) == ' ' || pTypeVal->at(pTypeVal->size()-1) == ' ')
+				 			|| std::wstring::npos != pTypeVal->find('\n')&&(  pTypeVal->at(0) == '\n' || pTypeVal->at(pTypeVal->size()-1) == '\n'))
 							writer.WriteString(L"<c:separator xml:space=\"preserve\">");
 						else
 							writer.WriteString(L"<c:separator>");
@@ -4689,7 +4700,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			
 			if (m_name.IsInit())
 			{
-				if (std::wstring::npos != m_name->find(' ') || std::wstring::npos != m_name->find('\n'))
+				if (std::wstring::npos != m_name->find(' ')&&(  m_name->at(0) == ' ' || m_name->at(m_name->size()-1) == ' ')
+				 			|| std::wstring::npos != m_name->find('\n')&&(  m_name->at(0) == '\n' || m_name->at(m_name->size()-1) == '\n'))
 					writer.WriteString(L"<c:name xml:space=\"preserve\">");
 				else
 					writer.WriteString(L"<c:name>");
@@ -5059,7 +5071,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(L">");
 			if (m_formatCode.IsInit())
 			{
-				if (std::wstring::npos != m_formatCode->find(' ') || std::wstring::npos != m_formatCode->find('\n'))
+				if (std::wstring::npos != m_formatCode->find(' ')&&(  m_formatCode->at(0) == ' ' || m_formatCode->at(m_formatCode->size()-1) == ' ')
+				 || std::wstring::npos != m_formatCode->find('\n')&&(  m_formatCode->at(0) == '\n' || m_formatCode->at(m_formatCode->size()-1) == '\n'))
 					writer.WriteString(L"<c:formatCode xml:space=\"preserve\">");
 				else
 					writer.WriteString(L"<c:formatCode>");
@@ -5124,7 +5137,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(L">");
 			if (m_v.IsInit())
 			{
-				if (std::wstring::npos != m_v->find(' ') || std::wstring::npos != m_v->find('\n'))
+				if (std::wstring::npos != m_v->find(' ')&&(  m_v->at(0) == ' ' || m_v->at(m_v->size()-1) == ' ')
+				 || std::wstring::npos != m_v->find('\n')&&(  m_v->at(0) == '\n' || m_v->at(m_v->size()-1) == '\n'))
 					writer.WriteString(L"<c:v xml:space=\"preserve\">");
 				else
 					writer.WriteString(L"<c:v>");
@@ -5185,7 +5199,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			
 			if (m_f.IsInit())
 			{
-				if (std::wstring::npos != m_f->find(' ') || std::wstring::npos != m_f->find('\n'))
+				if (std::wstring::npos != m_f->find(' ')&&(  m_f->at(0) == ' ' || m_f->at(m_f->size()-1) == ' ')
+				 || std::wstring::npos != m_f->find('\n')&&(  m_f->at(0) == '\n' || m_f->at(m_f->size()-1) == '\n'))
 					writer.WriteString(L"<c:f xml:space=\"preserve\">");
 				else
 					writer.WriteString(L"<c:f>");
@@ -5353,7 +5368,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			
 			if (m_f.IsInit())
 			{
-				if (std::wstring::npos != m_f->find(' ') || std::wstring::npos != m_f->find('\n'))
+				if (std::wstring::npos != m_f->find(' ')&&(  m_f->at(0) == ' ' || m_f->at(m_f->size()-1) == ' ')
+				 			|| std::wstring::npos != m_f->find('\n')&&(  m_f->at(0) == '\n' || m_f->at(m_f->size()-1) == '\n'))
 					writer.WriteString(L"<c:f xml:space=\"preserve\">");
 				else
 					writer.WriteString(L"<c:f>");
@@ -9483,7 +9499,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			
 			if (m_name.IsInit())
 			{
-				if (std::wstring::npos != m_name->find(' ') || std::wstring::npos != m_name->find('\n'))
+				if (std::wstring::npos != m_name->find(' ')&&(  m_name->at(0) == ' ' || m_name->at(m_name->size()-1) == ' ')
+				 			|| std::wstring::npos != m_name->find('\n')&&(  m_name->at(0) == '\n' || m_name->at(m_name->size()-1) == '\n'))
 					writer.WriteString(L"<c:name xml:space=\"preserve\">");
 				else
 					writer.WriteString(L"<c:name>");

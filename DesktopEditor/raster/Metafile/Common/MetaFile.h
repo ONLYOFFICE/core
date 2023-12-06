@@ -32,10 +32,10 @@
 #ifndef _METAFILE_COMMON_METAFILE_H
 #define _METAFILE_COMMON_METAFILE_H
 
+#include "CClip.h"
 #include "MetaFileTypes.h"
 #include "MetaFileUtils.h"
 #include "MetaFileObjects.h"
-#include "MetaFileClip.h"
 
 #include "../../../graphics/pro/Fonts.h"
 
@@ -59,7 +59,8 @@ namespace MetaFile
 		
 		virtual void         PlayMetaFile() = 0;
 		virtual void         ClearFile() {/*Нельзя делать чисто виртуальной, потому что вызывается в деструкторе*/}
-		virtual TRect*       GetDCBounds() = 0;
+		virtual TRectL*      GetDCBounds() = 0;
+		virtual CClip*       GetClip() = 0;
 		virtual double       GetPixelHeight() = 0;
 		virtual double       GetPixelWidth() = 0;
 		virtual int          GetTextColor() = 0;
@@ -75,7 +76,6 @@ namespace MetaFile
 		virtual TXForm*      GetTransform(int iGraphicsMode = GM_ADVANCED) = 0;
 		virtual unsigned int GetMiterLimit() = 0;
 		virtual unsigned int GetRop2Mode() = 0;
-		virtual IClip*       GetClip() = 0;
 		virtual int          GetCharSpace() = 0;
 		virtual bool         IsWindowFlippedY() = 0;
 		virtual bool         IsWindowFlippedX() = 0;
@@ -83,6 +83,7 @@ namespace MetaFile
 		virtual double       GetDpi() = 0;
 		virtual IRegion*     GetRegion() = 0;
 		virtual unsigned int GetArcDirection() = 0;
+		virtual CPath*       GetPath() = 0;
 
 		bool ReadFromBuffer(BYTE* pBuffer, unsigned int unSize, const bool& bIsExternal = true)
 		{

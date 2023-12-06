@@ -651,35 +651,6 @@ namespace PdfWriter
 			}
 		}
 	}
-    void CDictObject::WriteSignatureToStream(CStream* pStream, CEncrypt* pEncrypt)
-	{
-		for (auto const &oIter : m_mList)
-		{
-			CObjectBase* pObject = oIter.second;
-			if (!pObject)
-				continue;
-
-			if (pObject->IsHidden())
-			{
-				// ничего не делаем
-			}
-			else
-			{
-				int nBegin, nEnd;
-				pStream->WriteEscapeName(oIter.first.c_str());
-				pStream->WriteChar(' ');
-				nBegin = pStream->Tell();
-				// Цифровая подпись не шифруется
-				pStream->Write(pObject, oIter.first == "Contents" ? NULL : pEncrypt);
-				nEnd = pStream->Tell();
-				pStream->WriteStr("\012");
-				if (oIter.first == "Contents")
-					((CSignatureDict*)this)->SetByteRange(nBegin, nEnd);
-				if (oIter.first == "ByteRange")
-					((CSignatureDict*)this)->ByteRangeOffset(nBegin, nEnd);
-			}
-		}
-	}
     void CDictObject::SetStream(CXref* pXref, CStream* pStream)
 	{
 		if (m_pStream)
@@ -842,7 +813,7 @@ namespace PdfWriter
 
 		return NULL;
 	}
-    void CXref::Add(CObjectBase* pObject)
+	void CXref::Add(CObjectBase* pObject, unsigned int unObjectGen)
 	{
 		if (!pObject)
 			return;
@@ -856,7 +827,6 @@ namespace PdfWriter
 			return;
 		}
 
-
 		// В случае ошибки r объектe нужно применить dispose
 		TXrefEntry* pEntry = new TXrefEntry;
 		if (NULL == pEntry)
@@ -869,7 +839,7 @@ namespace PdfWriter
 
 		pEntry->nEntryType   = IN_USE_ENTRY;
 		pEntry->unByteOffset = 0;
-		pEntry->unGenNo      = 0;
+		pEntry->unGenNo      = unObjectGen;
 		pEntry->pObject      = pObject;
 		pObject->SetRef(m_unStartOffset + m_arrEntries.size() - 1, pEntry->unGenNo);
 		pObject->SetIndirect();

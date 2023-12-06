@@ -72,8 +72,8 @@ public:
 	void start_base_style(const std::wstring baseStyleName, const odf_types::style_family::type baseStyleType);
 	void end_base_style();
 
-	void ApplyTextProperties		(std::wstring style, std::wstring para_style, odf_reader::text_format_properties & propertiesOut);
-	void ApplyParagraphProperties	(std::wstring para_style, odf_reader::paragraph_format_properties & propertiesOut);
+	void ApplyTextProperties		(std::wstring style, std::wstring para_style, odf_reader::text_format_properties & propertiesOut, bool inStyle = false);
+	void ApplyParagraphProperties	(std::wstring para_style, odf_reader::paragraph_format_properties & propertiesOut, bool inStyle = false);
 	
 	void ApplyListProperties (odf_reader::paragraph_format_properties & propertiesOut, int Level);
 	odf_reader::style_list_level_properties* ApplyListProperties (odf_reader::paragraph_format_properties & propertiesOut, odf_reader::text_list_style* text_list_style, int Level);
@@ -106,6 +106,7 @@ private:
 	bool in_span;
 	bool in_paragraph;
 	bool in_comment;
+	bool is_predump;
 
 	odf_reader::styles_container * local_styles_ptr_;
 
@@ -186,6 +187,7 @@ void pptx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 		//}
 		//else/* (paragraph_style_name_ != styleName)*/
 		{
+			is_predump = true;
 			dump_paragraph();
 		}
 	}else
@@ -195,6 +197,7 @@ void pptx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 	}
 	paragraph_style_name_	= styleName;
 	in_paragraph			= true;
+	is_predump				= false;
 }
 
 void pptx_text_context::Impl::end_paragraph()
@@ -243,7 +246,7 @@ void pptx_text_context::Impl::end_hyperlink(std::wstring hId)
 	dump_run();
 	hyperlink_hId = L"";
 }
-void pptx_text_context::Impl::ApplyTextProperties(std::wstring style_name, std::wstring para_style_name, odf_reader::text_format_properties & propertiesOut)
+void pptx_text_context::Impl::ApplyTextProperties(std::wstring style_name, std::wstring para_style_name, odf_reader::text_format_properties & propertiesOut, bool inStyle)
 {
 	std::vector<const odf_reader::style_instance *> instances;
 
@@ -254,17 +257,17 @@ void pptx_text_context::Impl::ApplyTextProperties(std::wstring style_name, std::
 	
 	if (local_styles_ptr_)
 	{
-		para_style		= local_styles_ptr_->style_by_name			(para_style_name, odf_types::style_family::Paragraph, false/*process_headers_footers_*/);
-		text_style		= local_styles_ptr_->style_by_name			(style_name, odf_types::style_family::Text, false/*process_headers_footers_*/);
+		para_style		= local_styles_ptr_->style_by_name			(para_style_name, odf_types::style_family::Paragraph, inStyle);
+		text_style		= local_styles_ptr_->style_by_name			(style_name, odf_types::style_family::Text, inStyle);
 		defaultStyle	= local_styles_ptr_->style_default_by_type	(odf_types::style_family::Text);
-		baseStyle		= local_styles_ptr_->style_by_name			(base_style_name_, base_style_family_, false/*process_headers_footers_*/);
+		baseStyle		= local_styles_ptr_->style_by_name			(base_style_name_, base_style_family_, inStyle);
 	}
 	else
 	{
-		para_style		= odf_context_.styleContainer().style_by_name			(para_style_name, odf_types::style_family::Paragraph, false/*process_headers_footers_*/);
-		text_style		= odf_context_.styleContainer().style_by_name			(style_name, odf_types::style_family::Text, false/*process_headers_footers_*/);
+		para_style		= odf_context_.styleContainer().style_by_name			(para_style_name, odf_types::style_family::Paragraph, inStyle);
+		text_style		= odf_context_.styleContainer().style_by_name			(style_name, odf_types::style_family::Text, inStyle);
 		defaultStyle	= odf_context_.styleContainer().style_default_by_type	(odf_types::style_family::Text);
-		baseStyle		= odf_context_.styleContainer().style_by_name			(base_style_name_, base_style_family_, false/*process_headers_footers_*/);
+		baseStyle		= odf_context_.styleContainer().style_by_name			(base_style_name_, base_style_family_, inStyle);
 	}
 	if	(defaultStyle)	instances.push_back(defaultStyle);
 	if	(baseStyle)		instances.push_back(baseStyle);
@@ -340,7 +343,7 @@ void pptx_text_context::Impl::ApplyListProperties(odf_reader::paragraph_format_p
 	
 }
 
-void pptx_text_context::Impl::ApplyParagraphProperties(std::wstring style_name, odf_reader::paragraph_format_properties & propertiesOut)
+void pptx_text_context::Impl::ApplyParagraphProperties(std::wstring style_name, odf_reader::paragraph_format_properties & propertiesOut, bool inStyle)
 {
 	std::vector<const odf_reader::style_instance *> instances;
 
@@ -350,15 +353,15 @@ void pptx_text_context::Impl::ApplyParagraphProperties(std::wstring style_name, 
 	
 	if (local_styles_ptr_)
 	{
-		style			= local_styles_ptr_->style_by_name			(style_name, odf_types::style_family::Paragraph, false/*process_headers_footers_*/);
+		style			= local_styles_ptr_->style_by_name			(style_name, odf_types::style_family::Paragraph, inStyle);
 		defaultStyle	= local_styles_ptr_->style_default_by_type	(odf_types::style_family::Paragraph);
-		baseStyle		= local_styles_ptr_->style_by_name			(base_style_name_, base_style_family_, false/*process_headers_footers_*/);
+		baseStyle		= local_styles_ptr_->style_by_name			(base_style_name_, base_style_family_, inStyle);
 	}
 	else
 	{
-		style			= odf_context_.styleContainer().style_by_name			(style_name, odf_types::style_family::Paragraph, false/*process_headers_footers_*/);
+		style			= odf_context_.styleContainer().style_by_name			(style_name, odf_types::style_family::Paragraph, inStyle);
 		defaultStyle	= odf_context_.styleContainer().style_default_by_type	(odf_types::style_family::Paragraph);
-		baseStyle		= odf_context_.styleContainer().style_by_name			(base_style_name_, base_style_family_,false/*process_headers_footers_*/);
+		baseStyle		= odf_context_.styleContainer().style_by_name			(base_style_name_, base_style_family_, inStyle);
 	}
 
 	if (defaultStyle)	instances.push_back(defaultStyle);
@@ -376,16 +379,19 @@ void pptx_text_context::Impl::write_pPr(std::wostream & strm)
 	get_styles_context().start();
 
 	int level = list_style_stack_.size() - 1;		
+	if (is_predump)
+		level--;
 
 	odf_reader::paragraph_format_properties paragraph_properties_;
 	
-	ApplyParagraphProperties	(paragraph_style_name_,	paragraph_properties_);
+	ApplyParagraphProperties	(paragraph_style_name_,	paragraph_properties_, process_layouts_);
 	ApplyListProperties			(paragraph_properties_, level);//выравнивания листа накатим на свойства параграфа
 
 	paragraph_properties_.pptx_convert(pptx_context_);	
 	
-	const std::wstring & paragraphAttr  = get_styles_context().paragraph_attr().str();	
+	const std::wstring& paragraphAttr = get_styles_context().paragraph_attr().str();
 	const std::wstring & paragraphNodes = get_styles_context().paragraph_nodes().str();
+
 
 	if (level < 0 && paragraphAttr.length() < 1 && !paragraphNodes.empty()) return;
 	
@@ -402,10 +408,15 @@ void pptx_text_context::Impl::write_pPr(std::wostream & strm)
 	strm << ">";
 		strm << paragraphNodes;
 
-		if (level >= 0 )
-		 {
+		if (process_layouts_)
+		{
+			odf_reader::text_format_properties text_properties_;
+			ApplyTextProperties(L"", paragraph_style_name_, text_properties_, process_layouts_);
 			
-
+			text_properties_.oox_serialize(strm, true, odf_context_.fontContainer(), true);
+		}
+		if (level >= 0 )
+		{
 			strm << get_styles_context().list_style().str();
 		}
 	strm << L"</a:pPr>";
@@ -441,7 +452,7 @@ std::wstring pptx_text_context::Impl::dump_paragraph(/*bool last*/)
 
     std::wstring str_run = run_.str();
 
-	if (str_run.length() > 0 || paragraph_style_name_.length() > 0)
+	if (false == str_run.empty() || false == paragraph_style_name_.empty() || (false == base_style_name_.empty() && process_layouts_))
 	{
 		CP_XML_WRITER(paragraph_)
 		{
@@ -866,6 +877,7 @@ styles_context & pptx_text_context::get_styles_context()
 { 
 	return  impl_->get_styles_context() ; 
 }
+
 void pptx_text_context::start_field(field_type type, const std::wstring & styleName)
 {
 	impl_->start_field(type, styleName);

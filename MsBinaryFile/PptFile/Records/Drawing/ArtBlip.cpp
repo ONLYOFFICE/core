@@ -94,7 +94,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 			if		(0x0216 == oHeader.RecInstance)	lOffset = 16;
 			else if (0x0217 == oHeader.RecInstance)	lOffset = 32;
 
-			//StreamUtils::StreamSkip(lOffset, pStream);
+			StreamUtils::StreamSkip(lOffset, pStream);
 
 			lOffset += 34;
 
@@ -152,7 +152,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 			
 			StreamUtils::StreamSkip(lOffset, pStream);
 			
-			sExt = _T(".jpg");
+			sExt = L".jpg";
 			break;
 		}
 		case RECORD_TYPE_ESCHER_BLIP_PNG:
@@ -162,7 +162,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 
 			StreamUtils::StreamSkip(lOffset, pStream);
 
-			sExt = _T(".png");
+			sExt = L".png";
 			break;
 		}
 		case RECORD_TYPE_ESCHER_BLIP_DIB:
@@ -172,7 +172,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 			
 			StreamUtils::StreamSkip(lOffset, pStream);
 		
-			sExt = _T(".bmp");
+			sExt = L".bmp";
 			break;
 		}
 		case RECORD_TYPE_ESCHER_BLIP_TIFF:
@@ -182,7 +182,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 
 			StreamUtils::StreamSkip(lOffset, pStream);
 			
-			sExt = _T(".tif");
+			sExt = L".tif";
 			break;
 		}
 		default:
@@ -226,8 +226,9 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 			if (std::string::npos != (lOffset2 = test.find("GIF89")))
 			{//gif in png chuncks - todooo from read header, chunks ....
 				sExt = L".gif";
-				lOffset -= lOffset2;
-			}			
+				lOffset += lOffset2;
+			}
+			else lOffset2 = 0;
 		}
 
 		std::wstring strFile = L"Image " + std::to_wstring(nImagesCount + 1) + sExt;

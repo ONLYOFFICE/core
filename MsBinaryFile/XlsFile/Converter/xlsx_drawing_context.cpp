@@ -879,32 +879,42 @@ void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
 		current_drawing_states->back()->child_anchor.cy = bottom - top;
 	}
 
-	if (  drawing_state->type == external_items::typeImage ||
-		( drawing_state->type == external_items::typeShape && drawing_state->shape_id == msosptPictureFrame ))
+	if (  drawing_state->type == external_items::typeImage || drawing_state->type == external_items::typeShape )
 	{
-		drawing_state->type = external_items::typeImage;
+		if (drawing_state->shape_id == msosptPictureFrame)
+		{
+			drawing_state->type = external_items::typeImage;
+		}
 
 		if (!drawing_state->fill.picture_target.empty())
 			drawing_state->fill.texture_target = drawing_state->fill.picture_target;
 
+		bool isIternal = false;
 		if (!drawing_state->fill.texture_target.empty())
 		{
-			bool isIternal = false;
-			drawing_state->objectId = handle_.impl_->get_mediaitems().find_image( drawing_state->fill.texture_target, isIternal);
-			
+			drawing_state->objectId = handle_.impl_->get_mediaitems().find_image(drawing_state->fill.texture_target, isIternal);
+		}
+
+		if (drawing_state->type == external_items::typeImage)
+		{
 			serialize_pic(drawing_state);
+		}
+		else
+		{
+			serialize_shape(drawing_state);
+		}
 		
+		if (!drawing_state->fill.texture_target.empty())
+		{
 			if (drawing_state->vml_HF_mode_)
 			{
-				vml_HF_rels_->add(isIternal, drawing_state->objectId , drawing_state->fill.texture_target, drawing_state->type);
+				vml_HF_rels_->add(isIternal, drawing_state->objectId, drawing_state->fill.texture_target, drawing_state->type);
 			}
 			else
 			{
-				rels_->add(isIternal, drawing_state->objectId , drawing_state->fill.texture_target, drawing_state->type);
+				rels_->add(isIternal, drawing_state->objectId, drawing_state->fill.texture_target, drawing_state->type);
 			}
 		}
-		else 
-			drawing_state->type = external_items::typeShape;
 	}
 	if ( drawing_state->type == external_items::typeChart )
 	{
@@ -926,10 +936,10 @@ void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
 	
 		context_.get_comments_context().end_comment();
 	}
-	if ( drawing_state->type == external_items::typeShape)
-	{
-		serialize_shape(drawing_state);
-	}
+	//if ( drawing_state->type == external_items::typeShape)
+	//{
+	//	serialize_shape(drawing_state);
+	//}
 	if ( drawing_state->type == external_items::typeOleObject )
 	{
 		serialize_shape(drawing_state);
@@ -1686,7 +1696,8 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 				}
 				if (!is_lined_shape(drawing_state))
 				{
-					if (false == drawing_state->xmlFillAlternative.empty()) //Family budget (monthly)1.xls
+					if (false == drawing_state->xmlFillAlternative.empty() && 
+						std::wstring::npos == drawing_state->xmlFillAlternative.find(L"r:emb")) //Family budget (monthly)1.xls
 					{
 						CP_XML_STREAM() << drawing_state->xmlFillAlternative;
 					}

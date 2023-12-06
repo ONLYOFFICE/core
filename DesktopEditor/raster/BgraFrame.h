@@ -91,8 +91,9 @@ public:
 
 	void SetJpegQuality(const double& value);
 
-	bool OpenFile(const std::wstring& strFileName, unsigned int nFileType = 0);	//0 - detect
-    bool GetSpecializedGIFInfo(const std::wstring& strFileName, unsigned int nFileType = 0);
+    bool GetSpecializedGIFInfo(const std::wstring& strFileName, unsigned int nFileType = 0); 
+
+	bool OpenFile(const std::wstring& strFileName, unsigned int nFileType = 0, const bool& bIsOrientationRemove = false); //0 - detect
 
 	bool SaveFile(const std::wstring& strFileName, unsigned int nFileType);
     bool SaveGetInsideFromFile(const std::wstring& strFileName);
@@ -105,6 +106,8 @@ public:
 	bool ReColorPatternImage(const std::wstring& strFileName, unsigned int rgbColorBack, unsigned int rgbColorFore);
 
 	void FromImage(IGrObject* pGraphics, bool bIsCopy = true);
+
+	static bool RemoveOrientation(const std::wstring& sFile);
 };
 
 #endif

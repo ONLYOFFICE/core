@@ -861,6 +861,48 @@ namespace NSFile
 		GetUtf16StringFromUnicode_4bytes(pUnicodes, lCount, data.Data, data.Length);
 	}
 
+	long CUtf8Converter::GetUtf16SizeFromUnicode_4bytes(const wchar_t* pUnicodes, LONG lCount, bool bIsBOM)
+	{
+		long sizeUtf16 = 0;
+		if (bIsBOM)
+		{
+			sizeUtf16 += 3;
+		}
+
+		const wchar_t* pEnd = pUnicodes + lCount;
+		const wchar_t* pCur = pUnicodes;
+
+		while (pCur < pEnd)
+		{
+			unsigned int code = (unsigned int)*pCur++;
+			if (code <= 0xFFFF)
+			{
+				sizeUtf16 += 2;
+			}
+			else
+			{
+				sizeUtf16 += 4;
+			}
+		}
+		return sizeUtf16;
+	}
+    long  CUtf8Converter::GetUtf16SizeFromUnicode(const wchar_t* pUnicodes, LONG lCount, bool bIsBOM)
+	{
+		if (sizeof(wchar_t) == 4)
+		{
+            return GetUtf16SizeFromUnicode_4bytes(pUnicodes, lCount, bIsBOM);
+		}
+		else
+		{
+			long sizeUtf16 = 2 * lCount;
+			if (bIsBOM)
+			{
+				sizeUtf16 += 3;
+			}
+			return sizeUtf16;
+		}
+	}
+
 	std::wstring CUtf8Converter::GetWStringFromUTF16(const CStringUtf16& data)
 	{
 		if (0 == data.Length)

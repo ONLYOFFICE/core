@@ -29,7 +29,7 @@ namespace SVG
 
 	void CLine::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
 	{
-		if (Apply(pRenderer, &pStyles->m_oStroke, true))
+            if (ApplyStroke(pRenderer, &pStyles->m_oStroke, true))
 			nTypePath += c_nStroke;
 	}
 }

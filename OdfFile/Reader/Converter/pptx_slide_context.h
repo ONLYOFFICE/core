@@ -32,6 +32,7 @@
 #pragma once
 
 #include "pptx_drawings.h"
+#include "pptx_animation_context.h"
 #include <string>
 
 namespace cpdoccore {
@@ -66,6 +67,7 @@ public:
 	void set_rotate		(double angle, bool translate = false);
 
 	void set_name		(std::wstring const & name);
+	void set_id			(std::wstring const & id);
 	void set_anchor		(std::wstring anchor, double x_pt, double y_pt);
 	void set_property	(odf_reader::_property p);
 	std::vector<odf_reader::_property> & get_properties();
@@ -74,6 +76,12 @@ public:
 	
 	void set_is_line_shape(bool val);
 	void set_is_connector_shape(bool val);
+
+	void set_connector_start_shape			(const std::wstring& startShape);
+	void set_connector_end_shape			(const std::wstring& endShape);
+	void set_connector_start_glue_point		(int gluePoint);
+	void set_connector_end_glue_point		(int gluePoint);
+	void set_connector_draw_type			(const std::wstring& drawType);
 
 	void set_placeHolder_type	(std::wstring typeHolder);
 	void set_placeHolder_idx	(int idx);
@@ -131,10 +139,17 @@ public:
 	
 	void set_page_number();
 	void set_date_time();
+
+	pptx_animation_context &	get_animation_context() { return pptx_animation_context_; }
+	void						generate_id(const std::wstring& id);
+	size_t						get_id(const std::wstring& id);
 private:
 	void default_set();
+	bool is_slide_filepath(const std::wstring& filename);
 
 	int hlinks_size_;
+
+	pptx_animation_context		pptx_animation_context_;
 	
     class Impl;
     _CP_PTR(Impl) impl_;

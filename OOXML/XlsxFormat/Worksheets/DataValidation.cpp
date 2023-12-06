@@ -102,74 +102,95 @@ namespace OOX
 			toXML2(writer, false);
 		}
 		void CDataValidation::toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const
-	{
-		std::wstring node_name = bExtendedWrite ? L"x14:dataValidation" : L"dataValidation";
+		{
+			if (!m_oSqRef.IsInit())  return;
 
-		writer.WriteString(L"<" + node_name);
+			std::wstring node_name = bExtendedWrite ? L"x14:dataValidation" : L"dataValidation";
+
+			writer.WriteString(L"<" + node_name);
 			if (bExtendedWrite)
 			{
 				if (false == m_oUuid.IsInit())
 				{
 					m_oUuid = L"{" + XmlUtils::GenerateGuid() + L"}";
 				}
-				WritingStringNullableAttrString	(L"xr:uid",	m_oUuid, m_oUuid.get());
+				WritingStringNullableAttrString(L"xr:uid", m_oUuid, m_oUuid.get());
 			}
 			else
 			{
 				WritingStringNullableAttrString(L"sqref", m_oSqRef, m_oSqRef.get());
 			}
-			WritingStringNullableAttrString				(L"type",			m_oType,			m_oType->ToString());
-			WritingStringNullableAttrInt				(L"allowBlank",		m_oAllowBlank,		m_oAllowBlank->GetValue());
-			WritingStringNullableAttrEncodeXmlStringHHHH(L"error",			m_oError,			m_oError.get());
-			WritingStringNullableAttrString				(L"errorStyle",		m_oErrorStyle,		m_oErrorStyle->ToString());
-			WritingStringNullableAttrEncodeXmlStringHHHH(L"errorTitle",		m_oErrorTitle,		m_oErrorTitle.get());
-			WritingStringNullableAttrString				(L"imeMode",		m_oImeMode,			m_oImeMode->ToString());
-			WritingStringNullableAttrString				(L"operator",		m_oOperator,		m_oOperator->ToString());
-			WritingStringNullableAttrEncodeXmlStringHHHH(L"prompt",			m_oPrompt,			m_oPrompt.get());
-			WritingStringNullableAttrEncodeXmlStringHHHH(L"promptTitle",	m_oPromptTitle,		m_oPromptTitle.get());
-			WritingStringNullableAttrInt				(L"showDropDown",	m_oShowDropDown,	m_oShowDropDown->GetValue());
-			WritingStringNullableAttrInt				(L"showErrorMessage",m_oShowErrorMessage,m_oShowErrorMessage->GetValue());
-			WritingStringNullableAttrInt				(L"showInputMessage",m_oShowInputMessage,m_oShowInputMessage->GetValue());
-		writer.WriteString(L">");
+			WritingStringNullableAttrString(L"type", m_oType, m_oType->ToString());
+			WritingStringNullableAttrInt(L"allowBlank", m_oAllowBlank, m_oAllowBlank->GetValue());
+			WritingStringNullableAttrEncodeXmlStringHHHH(L"error", m_oError, m_oError.get());
+			WritingStringNullableAttrString(L"errorStyle", m_oErrorStyle, m_oErrorStyle->ToString());
+			WritingStringNullableAttrEncodeXmlStringHHHH(L"errorTitle", m_oErrorTitle, m_oErrorTitle.get());
+			WritingStringNullableAttrString(L"imeMode", m_oImeMode, m_oImeMode->ToString());
+			WritingStringNullableAttrString(L"operator", m_oOperator, m_oOperator->ToString());
+			WritingStringNullableAttrEncodeXmlStringHHHH(L"prompt", m_oPrompt, m_oPrompt.get());
+			WritingStringNullableAttrEncodeXmlStringHHHH(L"promptTitle", m_oPromptTitle, m_oPromptTitle.get());
+			WritingStringNullableAttrInt(L"showDropDown", m_oShowDropDown, m_oShowDropDown->GetValue());
+			WritingStringNullableAttrInt(L"showErrorMessage", m_oShowErrorMessage, m_oShowErrorMessage->GetValue());
+			WritingStringNullableAttrInt(L"showInputMessage", m_oShowInputMessage, m_oShowInputMessage->GetValue());
+			writer.WriteString(L">");
 
-		if (bExtendedWrite)
-		{
-			if (m_oFormula1.IsInit())
+			if (bExtendedWrite)
 			{
-				writer.WriteString(L"<x14:formula1>");
+				if (m_oFormula1.IsInit())
+				{
+					writer.WriteString(L"<x14:formula1>");
 					m_oFormula1->toXML2(writer, true);
-				writer.WriteString(L"</x14:formula1>");
-			}
-			if (m_oFormula2.IsInit())
-			{
-				writer.WriteString(L"<x14:formula2>");
+					writer.WriteString(L"</x14:formula1>");
+				}
+				if (m_oFormula2.IsInit())
+				{
+					writer.WriteString(L"<x14:formula2>");
 					m_oFormula2->toXML2(writer, true);
-				writer.WriteString(L"</x14:formula2>");
+					writer.WriteString(L"</x14:formula2>");
+				}
+				if (m_oSqRef.IsInit())
+				{
+					writer.WriteString(L"<xm:sqref>" + m_oSqRef.get() + L"</xm:sqref>");
+				}
 			}
-			if (m_oSqRef.IsInit())
+			else
 			{
-				writer.WriteString(L"<xm:sqref>" + m_oSqRef.get() + L"</xm:sqref>");
-			}
-		}
-		else
-		{
-			if (m_oFormula1.IsInit())
-			{
-				writer.WriteString(L"<formula1>");
+				if (m_oList.IsInit())
+				{
+					writer.WriteString(L"<mc:AlternateContent \
+xmlns:x12ac=\"http://schemas.microsoft.com/office/spreadsheetml/2011/1/ac\" \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\">");
+
+					writer.WriteString(L"<mc:Choice Requires=\"x12ac\">");
+					writer.WriteString(L"<x12ac:list>" + *m_oList + L"</x12ac:list>");
+					writer.WriteString(L"</mc:Choice>");
+
+					writer.WriteString(L"<mc:Fallback>");
+				}
+				if (m_oFormula1.IsInit())
+				{
+					writer.WriteString(L"<formula1>");
 					writer.WriteString(m_oFormula1->m_sText);
-				writer.WriteString(L"</formula1>");
-			}
-			if (m_oFormula2.IsInit())
-			{
-				writer.WriteString(L"<formula2>");
+					writer.WriteString(L"</formula1>");
+				}
+				if (m_oFormula2.IsInit())
+				{
+					writer.WriteString(L"<formula2>");
 					writer.WriteString(m_oFormula2->m_sText);
-				writer.WriteString(L"</formula2>");
+					writer.WriteString(L"</formula2>");
+				}
+				if (m_oList.IsInit())
+				{
+					writer.WriteString(L"</mc:Fallback>");
+					writer.WriteString(L"</mc:AlternateContent>");
+				}
 			}
+			writer.WriteString(L"</" + node_name + L">");
 		}
-		writer.WriteString(L"</" + node_name + L">");
-	}
 		bool CDataValidation::IsExtended()
 		{
+			if (m_oList.IsInit()) return false;
+
 			bool result1 = true, result2 = true;
 			if (m_oFormula1.IsInit())
 			{
@@ -472,7 +493,9 @@ namespace OOX
 
 					for(auto &dval : ptr->m_arBrtDVal)
 					{
-						m_arrItems.push_back(new CDataValidation(dval));
+                        auto validation(new CDataValidation(dval));
+                        if(validation->m_oType.IsInit())
+                            m_arrItems.push_back(validation);
 					}
 				}
 			}
@@ -485,10 +508,13 @@ namespace OOX
 
 					for(auto &dval14 : ptr->m_arBrtDVal14)
 					{
-						m_arrItems.push_back(new CDataValidation(dval14));
+                        auto validation(new CDataValidation(dval14));
+                        if(validation->m_oType.IsInit())
+                            m_arrItems.push_back(validation);
 					}
 				}
 			}
+			m_oCount = m_arrItems.size();
 		}
 		void CDataValidations::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -506,7 +532,7 @@ namespace OOX
 				auto ptr = static_cast<XLSB::BeginDVals*>(obj.get());
 				if(ptr != nullptr)
 				{
-					m_oCount            = ptr->dVals.idvMac;
+					//m_oCount            = ptr->dVals.idvMac;
 					m_oDisablePrompts   = ptr->dVals.fWnClosed;
 					m_oXWindow          = ptr->dVals.xLeft;
 					m_oYWindow          = ptr->dVals.yTop;

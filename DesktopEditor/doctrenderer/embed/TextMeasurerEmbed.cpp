@@ -237,37 +237,27 @@ JSSmart<CJSValue> CTextMeasurerEmbed::Hyphen_Word(JSSmart<CJSValue> lang, JSSmar
 	if (!result)
 		return CJSContext::createNull();
 
-	int nCount = 0;
-	char* tmp = result;
-
-	while (*tmp != 0)
-	{
-		if (1 == (*tmp & 1))
-			++nCount;
-		++tmp;
-	}
-
-	if (0 == nCount)
-		return CJSContext::createNull();
-
-	CJSArray* ret = CJSContext::createArray(nCount);
-	nCount = 0;
+	int count = 0;
 	int pos = 0;
-
-	int posUnicode = 0;
-	int posUtf8 = 0;
 
 	while (result[pos] != 0)
 	{
 		if (1 == (result[pos] & 1))
-		{
-			while (posUtf8 <= pos)
-			{
-				++posUnicode;
-				posUtf8 += GetUtf8SymbolLen(curUnicode[posUtf8]);
-			}
-			ret->set(nCount++, CJSContext::createInt(posUnicode));
-		}
+			++count;
+		++pos;
+	}
+
+	if (0 == count)
+		return CJSContext::createNull();
+
+	CJSArray* ret = CJSContext::createArray(count);
+
+	pos = 0;
+	count = 0;
+	while (result[pos] != 0)
+	{
+		if (1 == (result[pos] & 1))
+			ret->set(count++, CJSContext::createInt(pos + 1));
 		pos++;
 	}
 

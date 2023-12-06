@@ -1221,5 +1221,188 @@ void form_item::add_text(const std::wstring & Text)
 	text_ = Text;
 }
 
+// loext:content-control
+//----------------------------------------------------------------------------------
+const wchar_t* loext_content_control::ns = L"loext";
+const wchar_t* loext_content_control::name = L"content-control";
+
+void loext_content_control::add_attributes(const xml::attributes_wc_ptr& Attributes)
+{
+	CP_APPLY_ATTR(L"loext:alias", alias);
+	CP_APPLY_ATTR(L"loext:tag", tag);
+	CP_APPLY_ATTR(L"loext:lock", lock);
+	CP_APPLY_ATTR(L"loext:showing-place-holder", showing_place_holder);
+	CP_APPLY_ATTR(L"loext:id", id);
+	CP_APPLY_ATTR(L"loext:tab-index", tab_index);
+	CP_APPLY_ATTR(L"loext:checked", checked);
+	CP_APPLY_ATTR(L"loext:checkedState", checked_state);
+	CP_APPLY_ATTR(L"loext:uncheckedState", unchecked_state);
+	CP_APPLY_ATTR(L"loext:date-format", date_format);
+	CP_APPLY_ATTR(L"loext:date-language", date_language);
+	CP_APPLY_ATTR(L"loext:current-date", current_date);
+	CP_APPLY_ATTR(L"loext:date-rfc-language-tag", date_rfc_language);
+
+	CP_APPLY_ATTR(L"loext:checkbox", checkbox);
+	CP_APPLY_ATTR(L"loext:picture", picture);
+	CP_APPLY_ATTR(L"loext:date", date);
+	CP_APPLY_ATTR(L"loext:dropdown", dropdown);
+	CP_APPLY_ATTR(L"loext:combobox", combobox);
+	CP_APPLY_ATTR(L"loext:plain-text", plain_text);
+}
+void loext_content_control::add_text(const std::wstring& Text)
+{
+	text = Text;
+}
+void loext_content_control::add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name)
+{
+	CP_CREATE_ELEMENT(content);
+}
+void loext_content_control::docx_convert(oox::docx_conversion_context& Context)
+{
+	office_element_ptr_array content_text;
+
+	Context.finish_run();
+	Context.output_stream() << L"<w:sdt>";
+	Context.output_stream() << L"<w:sdtPr>";
+	{
+		if (alias)
+		{
+			Context.output_stream() << L"<w:alias w:val=\"" + XmlUtils::EncodeXmlString(*alias) + L"\"/>";
+		}
+		
+		Context.output_stream() << L"<w15:appearance w15:val=\"boundingBox\"/>";
+		
+		if (lock)
+		{
+			Context.output_stream() << L"<w:lock w:val=\"" + (*lock) + L"\"/>";
+		}	
+		if (tag)
+		{
+			Context.output_stream() << L"<w:tag w:val=\"" + XmlUtils::EncodeXmlString(*tag) + L"\"/>";
+		}
+		if (id)
+		{
+			Context.output_stream() << L"<w:id w:val=\"" + std::to_wstring(*id) + L"\"/>";
+		}
+		if (tab_index)
+		{
+			Context.output_stream() << L"<w:tabIndex w:val=\"" + std::to_wstring(*tab_index) + L"\"/>";
+		}
+		if (showing_place_holder)
+		{
+			Context.output_stream() << L"<w:showingPlcHdr/>";
+		}
+
+//----------------------	
+		if (plain_text)
+		{
+			Context.output_stream() << L"<w:text/>";
+		}
+		else if (picture)
+		{
+			Context.output_stream() << L"<w:picture/>";
+			content_text = content;
+		}
+		else if (dropdown || combobox)
+		{
+			if (dropdown) Context.output_stream() << L"<w:dropDownList>";
+			else if (combobox) Context.output_stream() << L"<w:comboBox>";
+
+			for (size_t i = 0; i < content.size(); i++)
+			{
+				loext_list_item* item = dynamic_cast<loext_list_item*>(content[i].get());
+				if (item)
+				{
+					Context.output_stream() << L"<w:listItem";
+					if (item->display_text)
+					{
+						Context.output_stream() << L" w:displayText=\"" << XmlUtils::EncodeXmlString(*item->display_text) + L"\"";
+					}
+					if (item->value)
+					{
+						Context.output_stream() << L" w:value=\"" << XmlUtils::EncodeXmlString(*item->value) << L"\"";
+					}
+					Context.output_stream() << L"/>";
+				}
+				else
+				{
+					content_text.push_back(content[i]);
+				}
+			}
+			if (dropdown) Context.output_stream() << L"</w:dropDownList>";
+			else if (combobox) Context.output_stream() << L"</w:comboBox>";
+		}
+		else if (checkbox)
+		{
+			Context.output_stream() << L"<w14:checkbox>";
+			Context.output_stream() << L"<w14:checked" + (checked ? (L" w14:val=\"" + std::to_wstring(*checked ? 1 : 0) + L"\"/>") : L"/>");
+			if (checked_state)
+			{
+				Context.output_stream() << L"<w14:checkedState w14:val=\"" + XmlUtils::EncodeXmlString(*checked_state) + L"\"/>";
+			}
+			if (unchecked_state)
+			{
+				Context.output_stream() << L"<w14:uncheckedState w14:val=\"" + XmlUtils::EncodeXmlString(*unchecked_state) + L"\"/>";
+			}
+			Context.output_stream() << L"</w14:checkbox>";
+			content_text = content;
+		}
+		else if (date)
+		{
+			Context.output_stream() << L"<w:date" + (current_date ? (L" w:fullDate=\"" + *current_date + L"\">") : L">");	
+			if (date_format)
+			{
+				Context.output_stream() << L"<w:dateFormat w:val=\"" + *date_format + L"\"/>";
+			}
+			if (date_rfc_language)
+			{
+				Context.output_stream() << L"<w:lid w:val=\"" + *date_rfc_language + L"\"/>";
+			}
+			//Context.output_stream() << L"<w:storeMappedDataAs w:val=\"dateTime\"/>";			
+			Context.output_stream() << L"<w:calendar w:val=\"gregorian\"/>";
+
+			Context.output_stream() << L"</w:date>";
+			content_text = content;
+		}
+	}
+	Context.output_stream() << L"</w:sdtPr>";
+	Context.output_stream() << L"<w:sdtContent>";
+	{
+		if (false == content_text.empty())
+		{
+			for (size_t i = 0; i < content_text.size(); i++)
+			{
+				content_text[i]->docx_convert(Context);
+			}
+		}
+		else
+		{
+			Context.add_new_run(L"");
+			Context.output_stream() << L"<w:t xml:space=\"preserve\">";
+			if (false == text.empty())
+			{
+				Context.output_stream() << XmlUtils::EncodeXmlString(text);
+			}
+			else
+			{
+				Context.output_stream() << L"Select item";
+			}
+			Context.output_stream() << L"</w:t>";
+			Context.finish_run();
+		}
+	}
+	Context.output_stream() << L"</w:sdtContent>";
+	Context.output_stream() << L"</w:sdt>";
+}
+// loext:list-item
+//----------------------------------------------------------------------------------
+const wchar_t* loext_list_item::ns = L"loext";
+const wchar_t* loext_list_item::name = L"list-item";
+
+void loext_list_item::add_attributes(const xml::attributes_wc_ptr& Attributes)
+{
+	CP_APPLY_ATTR(L"loext:display-text", display_text);
+	CP_APPLY_ATTR(L"loext:value", value);
+}
 }
 }

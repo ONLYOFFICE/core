@@ -763,7 +763,7 @@ void CSlicerCaches::toXML(NSStringUtils::CStringBuilder& writer, const std::wstr
 	writer.StartNode(sPrefix + sName);
 	writer.StartAttributes();
 	std::wstring sChildPrefix;
-	if(sPrefix.length() > 0 && L"x14:" != sPrefix)
+    if(sPrefix.length() > 0 && L"x14:" == sPrefix)
 	{
 		sChildPrefix = L"x14:";
 		writer.WriteAttribute(L"xmlns:x14", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");

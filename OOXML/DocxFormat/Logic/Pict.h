@@ -119,8 +119,9 @@ namespace OOX
 			nullable<OOX::Logic::CControl>	m_oControl;
 			nullable<OOX::Logic::CBinData>	m_oBinData;
 
-			nullable<OOX::Vml::CShapeType>	m_oShapeType;
-			nullable<OOX::WritingElement>	m_oShapeElement;
+			nullable<OOX::Vml::CShapeType> m_oShapeType;
+			nullable<OOX::WritingElement> m_oShapeElement;
+			nullable<OOX::VmlOffice::COLEObject> m_oOLEObject;
 			
 			// TO DO: Добавить класс, читающий movie
 		};

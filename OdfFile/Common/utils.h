@@ -41,6 +41,6 @@ namespace NSFonts
 namespace _graphics_utils_
 {
     bool GetResolution(const wchar_t* fileName, double & Width, double &Height);
-    double calculate_size_symbol_win(std::wstring name, double size, bool italic, bool bold, std::wstring test_str = L"");
-	std::pair<float,float> calculate_size_symbol_asc(std::wstring name, double size, bool italic, bool bold , NSFonts::IApplicationFonts *appFonts);
+	std::pair<double, double> calculate_size_symbol_win(std::wstring name, double size, bool italic, bool bold, std::wstring test_str = L"");
+	std::pair<double, double> calculate_size_symbol_asc(std::wstring name, double size, bool italic, bool bold , NSFonts::IApplicationFonts *appFonts);
 };

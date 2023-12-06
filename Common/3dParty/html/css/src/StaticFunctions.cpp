@@ -172,6 +172,8 @@ namespace NS_STATIC_FUNCTIONS
 	std::wstring RemoveSpaces(std::wstring &wsString)
 	{
 		std::wstring::const_iterator ciStart = std::find_if_not(wsString.begin(), wsString.end(), std::iswspace);
+		if (ciStart == wsString.end())
+			return L"";
 		std::wstring::const_reverse_iterator criEnd = std::find_if_not(wsString.rbegin(),wsString.rend(), std::iswspace);
 		return std::wstring(ciStart, criEnd.base());
 	}

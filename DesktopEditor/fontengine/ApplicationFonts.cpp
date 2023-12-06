@@ -1534,9 +1534,30 @@ void CFontList::Add(NSFonts::CFontInfo* pInfo)
 	int nCount = m_pList.size();
 	for ( int nIndex = 0; nIndex < nCount; ++nIndex )
 	{
-		if (m_pList[nIndex]->IsEquals(pInfo))
+		if (m_pList[nIndex]->m_wsFontName == pInfo->m_wsFontName &&
+			m_pList[nIndex]->m_bBold      == pInfo->m_bBold &&
+			m_pList[nIndex]->m_bItalic    == pInfo->m_bItalic)
 		{
-			RELEASEOBJECT(pInfo);
+			bool bReplace = false;
+			NSFonts::CFontInfo* pOldInfo = m_pList[nIndex];
+			if (pInfo->m_bBold && pInfo->m_bItalic)
+				bReplace = !NSFonts::CFontInfo::IsStyleBoldItalic(pOldInfo->m_wsStyle);
+			else if (pInfo->m_bBold)
+				bReplace = !NSFonts::CFontInfo::IsStyleBold(pOldInfo->m_wsStyle);
+			else if (pInfo->m_bItalic)
+				bReplace = !NSFonts::CFontInfo::IsStyleItalic(pOldInfo->m_wsStyle);
+			else
+				bReplace = !NSFonts::CFontInfo::IsStyleRegular(pOldInfo->m_wsStyle);
+
+			if (bReplace)
+			{
+				m_pList[nIndex] = pInfo;
+				RELEASEOBJECT(pOldInfo);
+			}
+			else
+			{
+				RELEASEOBJECT(pInfo);
+			}
 			return;
 		}
 	}

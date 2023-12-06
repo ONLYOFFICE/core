@@ -149,24 +149,31 @@ public:
 		ColType col;
 		record >> rw >> col;
 		row = rw;
+		
 		fQuoted = false;
 		switch(rel_info)
 		{
 			case rel_Present:
-				column = (col << 2) >> 2;
-				rowRelative = 0 != (col & (1 << (sizeof(ColType) * 8 - 1)));
-				colRelative = 0 != (col & (1 << (sizeof(ColType) * 8 - 2)));
-				break;
+			{
+				column = GETBITS(col, 0, sizeof(ColType) * 8 - 3);
+				
+				colRelative = GETBIT(col, sizeof(ColType) * 8 - 2);
+				rowRelative = GETBIT(col, sizeof(ColType) * 8 - 1);
+			}break;
 			case rel_Absent:
+			{
 				column = col;
+				
 				rowRelative = true;
 				colRelative = true;
-				break;
+			}break;
 			case rel_PresentQuoted:
-				column = (col << 2) >> 2;
-				colRelative = rowRelative = 0 != (col & (1 << (sizeof(ColType) * 8 - 1)));
-				fQuoted = 0 != (col & (1 << (sizeof(ColType) * 8 - 2)));
-				break;
+			{
+				column = GETBITS(col, 0, sizeof(ColType) * 8 - 3);
+				
+				fQuoted = GETBIT(col, sizeof(ColType) * 8 - 2);
+				colRelative = rowRelative = GETBIT(col, sizeof(ColType) * 8 - 1);
+			}break;
 		}
 	}
 

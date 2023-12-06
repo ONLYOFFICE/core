@@ -737,6 +737,8 @@ void process_build_object::ApplyChartProperties(std::wstring style, chart_format
 		}
 		if (!properties) return;
 
+		propertiesOut->common_rotation_angle_attlist_.apply_from(properties->content_.common_rotation_angle_attlist_);
+
 		for (size_t i = 0; i < properties->content_.size(); i++)
 		{
 			propertiesOut->push_back(properties->content_[i]);
@@ -871,6 +873,7 @@ void process_build_object::visit(chart_title& val)
 	}
 	ApplyTextProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.text_properties_);
 	ApplyGraphicProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.graphic_properties_, t.fill_);
+	ApplyChartProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.properties_);
 
 ///////////////////////////////////////////////////////////////////////////////////////
 	if (val.attlist_.common_draw_position_attlist_.svg_x_)
@@ -964,6 +967,7 @@ void process_build_object::visit(chart_plot_area& val)
 	if (attr_3d.transform_)		object_odf_context_.plot_area_.properties_->push_back(_property(L"transform", attr_3d.transform_.get()) );
 	if (attr_3d.distance_)		object_odf_context_.plot_area_.properties_->push_back(_property(L"distance", attr_3d.distance_->get_value_unit(length::pt)) );
 	if (attr_3d.focal_length_)	object_odf_context_.plot_area_.properties_->push_back(_property(L"focal", attr_3d.focal_length_->get_value_unit(length::pt)) );
+	if (attr_3d.projection_)	object_odf_context_.plot_area_.properties_->push_back(_property(L"perspective", *attr_3d.projection_ == L"perspective"));
 }
 
 void process_build_object::visit(chart_axis& val)
@@ -1158,7 +1162,7 @@ void process_build_object::visit(table_table_row & val)
 }
 void process_build_object::visit(table_table_column& val)
 {
-    const unsigned int columnsRepeated = val.table_table_column_attlist_.table_number_columns_repeated_;
+    const unsigned int columnsRepeated = val.attlist_.table_number_columns_repeated_;
   
 	visit_column(columnsRepeated);
 }

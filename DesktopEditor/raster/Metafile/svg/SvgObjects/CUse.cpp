@@ -27,13 +27,21 @@ namespace SVG
 
 	bool CUse::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles* pOtherStyles) const
 	{
-		if (NULL == pRenderer || !m_oStyles.m_bDraw)
+		if (NULL == pRenderer || !m_oTransformtaion.m_bDraw)
 			return false;
+		
+		Aggplus::CMatrix oTransform;
+		
+		if (!StartPath(pRenderer, pFile, oTransform))
+			return false;
+		
+		double dM11, dM12, dM21, dM22, dDx, dDy;
+		pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dDx, &dDy);
 
-		double dM11, dM12, dM21, dM22, dRx, dRy;
-		pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
+		Aggplus::CMatrix oNewTransform(dM11, dM12, dM21, dM22, dDx, dDy);
+		oNewTransform.Translate(m_oX.ToDouble(NSCSS::Pixel), m_oY.ToDouble(NSCSS::Pixel));
 
-		pRenderer->SetTransform(dM11, dM12, dM21, dM22, dRx + m_oX.ToDouble(NSCSS::Pixel) * dM11, dRy + m_oY.ToDouble(NSCSS::Pixel) * dM22);
+		pRenderer->SetTransform(oNewTransform.sx(), oNewTransform.shy(), oNewTransform.shx(), oNewTransform.sy(), oNewTransform.tx(), oNewTransform.ty());
 
 		const CRenderedObject *pFoundObj = dynamic_cast<CRenderedObject*>(m_pFile->GetMarkedObject(m_wsHref));
 
@@ -48,7 +56,8 @@ namespace SVG
 			else
 				pFoundObj->Draw(pRenderer, pFile, oMode, &m_oStyles);
 		}
-		pRenderer->SetTransform(dM11, dM12, dM21, dM22, dRx, dRy);
+		
+		EndPath(pRenderer, pFile, oTransform);
 
 		return true;
 	}

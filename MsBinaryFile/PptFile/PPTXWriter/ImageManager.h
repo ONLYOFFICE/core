@@ -50,6 +50,7 @@ private:
 	long									m_lIndexNextImage;
 
 	std::wstring							m_strDstMedia;
+    std::wstring							m_strTempMedia;
 
 public:
     CMediaManager();
@@ -57,6 +58,7 @@ public:
     void Clear();
     std::wstring FindMedia(const std::wstring& strInput);
     void SetDstMedia(const std::wstring& strDst);
+    void SetTempMedia(const std::wstring& strSrc);
     std::wstring GenerateVideo(const std::wstring& strInput);
     std::wstring GenerateAudio(const std::wstring& strInput);
     std::wstring GenerateImage(const std::wstring& strInput);

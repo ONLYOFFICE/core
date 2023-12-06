@@ -498,17 +498,13 @@ namespace DocFileFormat
 
 		{//borders color		
 			if (pict->brcTop)
-				m_pXmlWriter->WriteAttribute( L"o:bordertopcolor", 
-					pict->brcTop->ico.empty() ? FormatUtils::IntToFormattedWideString(pict->brcTop->cv, L"#%06x") : pict->brcTop->ico);
+				m_pXmlWriter->WriteAttribute( L"o:bordertopcolor", pict->brcTop->getColor());
 			if (pict->brcLeft)
-				m_pXmlWriter->WriteAttribute( L"o:borderleftcolor", 
-					pict->brcTop->ico.empty() ? FormatUtils::IntToFormattedWideString(pict->brcLeft->cv, L"#%06x") : pict->brcLeft->ico);
+				m_pXmlWriter->WriteAttribute( L"o:borderleftcolor", pict->brcLeft->getColor());
 			if (pict->brcBottom)
-				m_pXmlWriter->WriteAttribute( L"o:borderbottomcolor", 
-					pict->brcTop->ico.empty() ? FormatUtils::IntToFormattedWideString(pict->brcBottom->cv, L"#%06x") : pict->brcBottom->ico);
+				m_pXmlWriter->WriteAttribute( L"o:borderbottomcolor", pict->brcBottom->getColor());
 			if (pict->brcRight)
-				m_pXmlWriter->WriteAttribute( L"o:borderrightcolor", 
-					pict->brcTop->ico.empty() ? FormatUtils::IntToFormattedWideString(pict->brcRight->cv, L"#%06x") : pict->brcRight->ico);
+				m_pXmlWriter->WriteAttribute( L"o:borderrightcolor", pict->brcRight->getColor());
 
 		}
 		m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );

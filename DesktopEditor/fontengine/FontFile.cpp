@@ -106,7 +106,7 @@ FT_Error FT_Load_Glyph_Wrapper( FT_Face   face,
 	FT_Err_Invalid_Stream_Handle          = 0x28;
 	*/
 
-	if ((bHintsSupport == TRUE) && (nErr > 0x10 && nErr < 0x28))
+	if ((bHintsSupport == TRUE) && (nErr > 0x10 && nErr < 0x28 || nErr == 131))
 	{
 		int nErr2 = FT_Load_Glyph(face, glyph_index, 40970);
 

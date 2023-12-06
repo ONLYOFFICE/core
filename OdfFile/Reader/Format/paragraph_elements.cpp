@@ -200,7 +200,7 @@ void text::xlsx_convert(oox::xlsx_conversion_context & Context)
 }
 void text::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    Context.get_text_context().add_text(text_);
+	Context.get_text_context().add_text(text_);
 }
 office_element_ptr text::create(const std::wstring & Text)
 {

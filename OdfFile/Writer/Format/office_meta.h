@@ -67,6 +67,10 @@ public:
     static const wchar_t * name;
     static const ElementType type = typeOfficeMetaInitialCreator;
 	
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(meta_initial_creator);
@@ -78,6 +82,10 @@ public:
 	static const wchar_t * name;
 	static const ElementType type = typeOfficeMetaKeyword;
 
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(meta_keyword);
@@ -89,6 +97,10 @@ public:
 	static const wchar_t * name;
 	static const ElementType type = typeOfficeMetaCreationDate;
 
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(meta_creation_date);
@@ -100,6 +112,10 @@ public:
 	static const wchar_t * name;
 	static const ElementType type = typeOfficeMetaGenerator;
 
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(meta_generator);
@@ -111,6 +127,10 @@ public:
 	static const wchar_t * name;
 	static const ElementType type = typeOfficeMetaTemplate;
 
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(meta_template);
@@ -122,6 +142,10 @@ public:
 	static const wchar_t * name;
 	static const ElementType type = typeOfficeMetaEditingCycles;
 
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(meta_editing_cycles);
@@ -134,6 +158,10 @@ public:
 	static const wchar_t * name;
 	static const ElementType type = typeDcCreator;
 
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(dc_creator);
@@ -145,6 +173,10 @@ public:
 	static const wchar_t * name;
 	static const ElementType type = typeDcDescription;
 
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(dc_description);
@@ -156,6 +188,10 @@ public:
 	static const wchar_t * name;
 	static const ElementType type = typeDcLanguage;
 
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(dc_language);
@@ -167,6 +203,10 @@ public:
 	static const wchar_t * name;
 	static const ElementType type = typeDcDate;
 
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(dc_date);
@@ -178,6 +218,10 @@ public:
 	static const wchar_t * name;
 	static const ElementType type = typeDcTitle;
 
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(dc_title);
@@ -189,6 +233,10 @@ public:
 	static const wchar_t * name;
 	static const ElementType type = typeDcSubject;
 
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(dc_subject);

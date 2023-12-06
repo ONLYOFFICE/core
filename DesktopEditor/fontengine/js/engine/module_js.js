@@ -68,6 +68,11 @@ AscFonts.CopyStreamToMemory = function(data, size)
 	return fontStreamPointer;
 };
 
+AscFonts.GetUint8ArrayFromPointer = function(pointer, size)
+{
+	return new Uint8Array(Module["HEAP8"].buffer, pointer, size);
+};
+
 function CShapeString(size)
 {
 	this.size = size;
@@ -566,52 +571,22 @@ AscFonts.Hyphen_LoadDictionary = function(lang, data)
 	return (result === 0) ? true : false;
 };
 
-function GetUtf8SymbolLen(c)
-{
-	if (0x00 == (c & 0x80))
-		return 1;
-	else if (0x00 == (c & 0x20))
-		return 2;
-	else if (0x00 == (c & 0x10))
-		return 3;
-	else if (0x00 == (c & 0x0F))
-		return 4;
-	else if (0x00 == (c & 0x08))
-		return 4;
-	else if (0x00 == (c & 0x04))
-		return 5;
-	return 6;
-}
-
 AscFonts.Hyphen_Word = function(lang, word)
 {
-	let wordPointer = word.toUtf8Pointer();
+	let wordPointer = word.toUtf8Pointer(true);
 	let wordLen = wordPointer.length;
 	let hyphens = [];
 
 	if (wordPointer) 
 	{
-		const ptr = Module._hyphenWord(hyphenApplication, lang, wordPointer.ptr, wordLen);
-		
-		let curUnicode = new Uint8ClampedArray(Module["HEAP8"].buffer, wordPointer.ptr, wordLen);
-		let posUnicode = 0;
-		let posUtf8 = 0;
-
+		let ptr = Module._hyphenWord(hyphenApplication, lang, wordPointer.ptr, wordLen);
 		let vector = new Uint8ClampedArray(Module["HEAP8"].buffer, ptr, wordLen + 5);
 
 		let pos = 0;
 		while (vector[pos] != 0)
 		{
 			if (1 === (vector[pos] & 1))
-			{
-				while (posUtf8 < pos)
-				{
-					++posUnicode;
-					posUtf8 += GetUtf8SymbolLen(curUnicode[posUtf8]);
-				}				
-				hyphens.push(posUnicode);
-			}
-
+				hyphens.push(pos+1);			
 			pos++;
 		}
 

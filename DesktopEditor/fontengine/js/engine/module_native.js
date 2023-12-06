@@ -54,6 +54,11 @@ AscFonts.CopyStreamToMemory = function(data, size)
 	return data;
 };
 
+AscFonts.GetUint8ArrayFromPointer = function(pointer, size)
+{
+	return pointer;
+};
+
 function CShapeString(size)
 {
 	this.size = size;

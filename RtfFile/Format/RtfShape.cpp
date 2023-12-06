@@ -1208,10 +1208,20 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nGroupLeft && PROP_DEF != m_nGroupTop )
         sResult += L" coordorigin=\"" + std::to_wstring(m_nGroupLeft) + L"," + std::to_wstring(m_nGroupTop) + L"\"";
 	
-	if( PROP_DEF != m_nGroupLeft && PROP_DEF != m_nGroupTop && PROP_DEF != m_nGroupRight && PROP_DEF != m_nGroupBottom)
-        sResult += L" coordsize=\"" + std::to_wstring(m_nGroupRight - m_nGroupLeft) + L"," + std::to_wstring(m_nGroupBottom - m_nGroupTop) + L"\"";
-	else if ( PROP_DEF != m_nGeoLeft && PROP_DEF != m_nGeoTop && PROP_DEF != m_nGeoRight && PROP_DEF != m_nGeoBottom)
-        sResult += L" coordsize=\"" + std::to_wstring(m_nGeoRight - m_nGeoLeft) + L"," + std::to_wstring(m_nGeoBottom - m_nGeoTop) + L"\"";
+	if (PROP_DEF != m_nGroupRight && PROP_DEF != m_nGroupBottom)
+	{
+		sResult += L" coordsize=\"" + std::to_wstring(m_nGroupRight - (PROP_DEF != m_nGroupLeft ? m_nGroupLeft : 0)) + L"," 
+									+ std::to_wstring(m_nGroupBottom - (PROP_DEF != m_nGroupTop ? m_nGroupTop : 0)) + L"\"";
+	}
+	else if (PROP_DEF != m_nGeoRight && PROP_DEF != m_nGeoBottom)
+	{
+		sResult += L" coordsize=\"" + std::to_wstring(m_nGeoRight - (PROP_DEF != m_nGeoLeft ? m_nGeoLeft : 0)) + L"," 
+									+ std::to_wstring(m_nGeoBottom - (PROP_DEF != m_nGeoTop ? m_nGeoTop : 0)) + L"\"";
+	}
+	else
+	{
+		sResult;
+	}
 
 	if (oRenderParameter.nType !=  RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2)
 	{

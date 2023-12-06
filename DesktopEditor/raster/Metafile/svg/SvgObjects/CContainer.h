@@ -72,6 +72,7 @@ namespace SVG
 		friend class CGradient;
 		friend class CClipPath;
 		friend class CTextPath;
+		friend class CLinearGradient;
 		friend class CGraphicsContainer;
 	};
 

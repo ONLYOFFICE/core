@@ -114,7 +114,6 @@
 	],
 	"compile_files_array": [
 	{
-		"name": "f",
 		"folder": "./../../graphics/pro/js/freetype-2.10.4/src",
 		"files": [
 			"base/ftdebug.c",
@@ -159,7 +158,6 @@
 		]
 	},
 	{
-		"name": "h",
 		"folder": "./../../../Common/3dParty/harfbuzz/harfbuzz/src",
 		"files": [
 			"hb-aat-layout.cc",
@@ -168,10 +166,13 @@
 			"hb-buffer-serialize.cc",
 			"hb-buffer-verify.cc",
 			"hb-buffer.cc",
+			"hb-cairo-utils.cc",
+			"hb-cairo.cc",
 			"hb-common.cc",
 			"hb-coretext.cc",
 			"hb-directwrite.cc",
 			"hb-draw.cc",
+			"hb-face-builder.cc",
 			"hb-face.cc",
 			"hb-fallback-shape.cc",
 			"hb-font.cc",
@@ -194,23 +195,26 @@
 			"hb-ot-meta.cc",
 			"hb-ot-metrics.cc",
 			"hb-ot-name.cc",
-			"hb-ot-shape-complex-arabic.cc",
-			"hb-ot-shape-complex-default.cc",
-			"hb-ot-shape-complex-hangul.cc",
-			"hb-ot-shape-complex-hebrew.cc",
-			"hb-ot-shape-complex-indic-table.cc",
-			"hb-ot-shape-complex-indic.cc",
-			"hb-ot-shape-complex-khmer.cc",
-			"hb-ot-shape-complex-myanmar.cc",
-			"hb-ot-shape-complex-syllabic.cc",
-			"hb-ot-shape-complex-thai.cc",
-			"hb-ot-shape-complex-use.cc",
-			"hb-ot-shape-complex-vowel-constraints.cc",
 			"hb-ot-shape-fallback.cc",
 			"hb-ot-shape-normalize.cc",
 			"hb-ot-shape.cc",
+			"hb-ot-shaper-arabic.cc",
+			"hb-ot-shaper-default.cc",
+			"hb-ot-shaper-hangul.cc",
+			"hb-ot-shaper-hebrew.cc",
+			"hb-ot-shaper-indic-table.cc",
+			"hb-ot-shaper-indic.cc",
+			"hb-ot-shaper-khmer.cc",
+			"hb-ot-shaper-myanmar.cc",
+			"hb-ot-shaper-syllabic.cc",
+			"hb-ot-shaper-thai.cc",
+			"hb-ot-shaper-use.cc",
+			"hb-ot-shaper-vowel-constraints.cc",
 			"hb-ot-tag.cc",
 			"hb-ot-var.cc",
+			"hb-outline.cc",
+			"hb-paint-extents.cc",
+			"hb-paint.cc",
 			"hb-set.cc",
 			"hb-shape-plan.cc",
 			"hb-shape.cc",
@@ -221,76 +225,75 @@
 			"hb-subset-cff1.cc",
 			"hb-subset-cff2.cc",
 			"hb-subset-input.cc",
+			"hb-subset-instancer-solver.cc",
 			"hb-subset-plan.cc",
+			"hb-subset-repacker.cc",
 			"hb-subset.cc",
 			"hb-ucd.cc",
 			"hb-unicode.cc",
-			"hb-uniscribe.cc"
+			"hb-uniscribe.cc",
+			"hb-wasm-api.cc",
+			"hb-wasm-shape.cc",
+			"graph/gsubgpos-context.cc"
 		]
 	},
 	{
-		"name": "z",
 		"folder": "../../../OfficeUtils/src/zlib-1.2.11/",
 		"files": ["adler32.c", "crc32.c", "deflate.c", "infback.c", "inffast.c", "inflate.c", "inftrees.c", "trees.c", "zutil.c", "compress.c"]
 	},	
 	{
-		"name": "own",
 		"folder": "cpp",
 		"files": ["text.cpp"]
 	},
 	{
-		"name": "w",
 		"folder": "./../../graphics/pro/js/wasm/src/lib",
 		"files": ["wasm_jmp.cpp"]
 	},
 	{
-		"name": "z1",
 		"folder": "../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip/",
 		"files": ["unzip.c", "ioapi.c", "zip.c", "ioapibuf.c"]
 	},
 	{
-		"name": "z2",
 		"folder": "../../../OfficeUtils/js",
 		"files": ["../src/ZipBuffer.cpp", "wasm/src/base.cpp", "../src/zlib_addon.c"]
 	},
 
 	{
-		"name": "r",
 		"folder": "../../",
 		"files": ["graphics/Image.cpp", "raster/BgraFrame.cpp", "raster/ImageFileFormatChecker.cpp"]
 	},
 	{
-		"name": "ras",
 		"folder": "../../graphics/pro/js/qt/raster",
 		"files": ["pro_Fonts_empty.cpp", "pro_Graphics_empty.cpp", "raster.cpp"]
 	},
 	{
-		"name": "ci",
 		"folder": "../../cximage/CxImage/",
 		"files": ["ximaenc.cpp", "ximaexif.cpp", "ximage.cpp", "ximainfo.cpp", "ximajpg.cpp", "ximalpha.cpp", "ximapal.cpp", "ximasel.cpp", "xmemfile.cpp", "ximapng.cpp", "ximabmp.cpp", "ximatran.cpp", "ximatif.cpp", "tif_xfile.cpp", "ximajas.cpp", "ximagif.cpp", "ximaico.cpp", "ximatga.cpp", "ximapcx.cpp", "ximawbmp.cpp", "ximamng.cpp", "ximapsd.cpp", "ximaska.cpp", "ximaraw.cpp"]
 	},
 	{
-		"name": "j",
 		"folder": "../../cximage/jpeg/",
 		"files": ["jerror.c", "jdmarker.c", "jdapimin.c", "jdmaster.c", "jdapistd.c", "jcomapi.c", "jutils.c", "jdinput.c", "jdmainct.c", "jmemmgr.c", "jquant1.c", "jquant2.c", "jdmerge.c", "jdcolor.c", "jdsample.c", "jdpostct.c", "jddctmgr.c", "jdarith.c", "jdhuff.c", "jdcoefct.c", "jmemnobs.c", "jidctint.c", "jidctfst.c", "jidctflt.c", "jaricom.c", "jcapimin.c", "jcparam.c", "jcapistd.c", "jcinit.c", "jcmaster.c", "jccolor.c", "jcmarker.c", "jcsample.c", "jcprepct.c", "jcdctmgr.c", "jcarith.c", "jchuff.c", "jccoefct.c", "jcmainct.c", "jfdctint.c", "jfdctfst.c", "jfdctflt.c"]
 	},
 	{
-		"name": "pn",
 		"folder": "../../cximage/png/",
 		"files": ["pngread.c", "pngmem.c", "pngerror.c", "png.c", "pngrio.c", "pngtrans.c", "pngget.c", "pngrutil.c", "pngrtran.c", "pngset.c", "pngwrite.c", "pngwio.c", "pngwutil.c", "pngwtran.c"]
 	},
 	{
-		"name": "t",
 		"folder": "../../cximage/tiff/",
 		"files": ["tif_close.c", "tif_dir.c", "tif_aux.c", "tif_getimage.c", "tif_strip.c", "tif_open.c", "tif_tile.c", "tif_error.c", "tif_read.c", "tif_flush.c", "tif_dirinfo.c", "tif_compress.c", "tif_warning.c", "tif_swab.c", "tif_color.c", "tif_dirread.c", "tif_write.c", "tif_codec.c", "tif_luv.c", "tif_dirwrite.c", "tif_dumpmode.c", "tif_fax3.c", "tif_ojpeg.c", "tif_jpeg.c", "tif_next.c", "tif_thunder.c", "tif_packbits.c", "tif_lzw.c", "tif_zip.c", "tif_fax3sm.c", "tif_predict.c"]
 	},	
 	{
-		"name": "mm",
 		"folder": "../../raster/Metafile/",
-		"files": ["MetaFile.cpp", "Common/MetaFileTypes.cpp", "Common/MetaFileUtils.cpp", "Common/CPathConverter.cpp"]
+		"files": [
+			"MetaFile.cpp", 
+			"Common/MetaFileTypes.cpp", 
+			"Common/MetaFileUtils.cpp", 
+			"Common/CPathConverter.cpp",
+			"Common/CPath.cpp",
+			"Common/CClip.cpp"
+		]
 	},
 	{
-		"name": "emf",
 		"folder": "../../raster/Metafile/Emf/",
 		"files": [
 			"EmfInterpretator/CEmfInterpretator.cpp",
@@ -300,14 +303,13 @@
 			"EmfParser/CEmfParser.cpp",
 			"EmfParser/CEmfParserBase.cpp",
 			"EmfParser/CEmfPlusParser.cpp",
-			"EmfClip.cpp",
 			"EmfObjects.cpp",
-			"EmfPath.cpp",
+			"EmfPlusObjects.cpp",
 			"EmfPlayer.cpp",
-			"EmfFile.cpp"]
+			"EmfFile.cpp"
+		]
 	},
 	{
-		"name": "wmf",
 		"folder": "../../raster/Metafile/Wmf/",
 		"files": [
 			"WmfInterpretator/CInterpretatorSvgBase.cpp",
@@ -316,12 +318,11 @@
 			"WmfInterpretator/CWmfInterpretator.cpp",
 			"WmfParser/CWmfParser.cpp",
 			"WmfParser/CWmfParserBase.cpp",
-			"WmfClip.cpp",
 			"WmfObjects.cpp",
-			"WmfPlayer.cpp"]
+			"WmfPlayer.cpp"
+		]
 	},
 	{
-		"name": "co",
 		"folder": "../../common/",
 		"files": [
 			"File.cpp",
@@ -332,12 +333,10 @@
 		]
 	},
 	{
-		"name": "h_e",
 		"folder": "./..",
 		"files": ["TextHyphen.cpp"]
 	},
 	{
-		"name": "h_m",
 		"folder": "./../../../Common/3dParty/hyphen/js/src",
 		"files": ["hyphen.cpp"]
 	}

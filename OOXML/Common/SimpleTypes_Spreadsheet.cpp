@@ -533,8 +533,8 @@ namespace SimpleTypes
 				case 5:this->m_eValue = fontfamilyDecorative; break;
 				default:this->m_eValue = fontfamilyNotApplicable;
 				}
-				return this->m_eValue;
 			}
+			return this->m_eValue;
 		}
 
 		std::wstring CFontFamily::ToString  () const
@@ -2172,6 +2172,45 @@ namespace SimpleTypes
 
 			}
 		}
+		ETimelineStyle CTimelineStyle::FromString(const std::wstring& sValue)
+		{
+			if (L"TimelineStyleLight1" == sValue) this->m_eValue = TimelineStyleLight1;
+			else if (L"TimelineStyleLight2" == sValue) this->m_eValue = TimelineStyleLight2;
+			else if (L"TimelineStyleLight3" == sValue) this->m_eValue = TimelineStyleLight3;
+			else if (L"TimelineStyleLight4" == sValue) this->m_eValue = TimelineStyleLight4;
+			else if (L"TimelineStyleLight5" == sValue) this->m_eValue = TimelineStyleLight5;
+			else if (L"TimelineStyleLight6" == sValue) this->m_eValue = TimelineStyleLight6;
+			else if (L"TimelineStyleDark1" == sValue) this->m_eValue = TimelineStyleDark1;
+			else if (L"TimelineStyleDark2" == sValue) this->m_eValue = TimelineStyleDark2;
+			else if (L"TimelineStyleDark3" == sValue) this->m_eValue = TimelineStyleDark3;
+			else if (L"TimelineStyleDark4" == sValue) this->m_eValue = TimelineStyleDark4;
+			else if (L"TimelineStyleDark5" == sValue) this->m_eValue = TimelineStyleDark5;
+			else if (L"TimelineStyleDark6" == sValue) this->m_eValue = TimelineStyleDark6;
+			else this->m_eValue = TimelineStyleLight1;
+
+			return this->m_eValue;
+		}
+
+		std::wstring CTimelineStyle::ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case TimelineStyleLight1: return L"TimelineStyleLight1"; break;
+			case TimelineStyleLight2: return L"TimelineStyleLight2"; break;
+			case TimelineStyleLight3: return L"TimelineStyleLight3"; break;
+			case TimelineStyleLight4: return L"TimelineStyleLight4"; break;
+			case TimelineStyleLight5: return L"TimelineStyleLight5"; break;
+			case TimelineStyleLight6: return L"TimelineStyleLight6"; break;
+			case TimelineStyleDark1: return L"TimelineStyleDark1"; break;
+			case TimelineStyleDark2: return L"TimelineStyleDark2"; break;
+			case TimelineStyleDark3: return L"TimelineStyleDark3"; break;
+			case TimelineStyleDark4: return L"TimelineStyleDark4"; break;
+			case TimelineStyleDark5: return L"TimelineStyleDark5"; break;
+			case TimelineStyleDark6: return L"TimelineStyleDark6"; break;
+			default: return L"A1";
+
+			}
+		}
 
 		template<>
 		CDoubleOrAutomatic<typeAuto>::CDoubleOrAutomatic() : m_dValue(0){}
@@ -2409,9 +2448,9 @@ namespace SimpleTypes
 			switch(this->m_eValue)
 			{
 			case layoutNone_ :		return L"none";
-			case layoutOverlapping:	return L"banner";
+			case layoutOverlapping:	return L"overlapping";
 			case layoutBanner :
-			default :				return L"overlapping";
+			default :				return L"banner";
 			}
 		}
 
@@ -2666,7 +2705,7 @@ namespace SimpleTypes
 			case axisCol:		return L"axisCol";
 			case axisPage:		return L"axisPage";
 			case axisRow:		return L"axisRow";
-			case axisValues:	return L"countNums";
+            case axisValues:	return L"axisValues";
 			default :			return L"";
 			}
 		}
@@ -3195,6 +3234,62 @@ namespace SimpleTypes
 			}
 			return L"unselectedItemWithData";
 		}
+		
+		ETimelineStyleType CTimelineStyleType::FromString(const std::wstring& sValue)
+		{
+			if (L"selectionLabel" == sValue)
+				this->m_eValue = timelineStyle_selectionLabel;
+			else if (L"timeLevel" == sValue)
+				this->m_eValue = timelineStyle_timeLevel;
+			else if (L"periodLabel1" == sValue)
+				this->m_eValue = timelineStyle_periodLabel1;
+			else if (L"periodLabel2" == sValue)
+				this->m_eValue = timelineStyle_periodLabel2;
+			else if (L"selectedTimeBlock" == sValue)
+				this->m_eValue = timelineStyle_selectedTimeBlock;
+			else if (L"unselectedTimeBlock" == sValue)
+				this->m_eValue = timelineStyle_unselectedTimeBlock;
+			else if (L"selectedTimeBlockSpace" == sValue)
+				this->m_eValue = timelineStyle_selectedTimeBlockSpace;
+			else
+				this->m_eValue = timelineStyle_selectionLabel;
+			return this->m_eValue;
+		}
 
+		ETimelineStyleType CTimelineStyleType::FromStringA(const char* sValue)
+		{
+			if (strcmp("selectionLabel", sValue) == 0)
+				this->m_eValue = timelineStyle_selectionLabel;
+			else if (strcmp("timeLevel", sValue) == 0)
+				this->m_eValue = timelineStyle_timeLevel;
+			else if (strcmp("periodLabel1", sValue) == 0)
+				this->m_eValue = timelineStyle_periodLabel1;
+			else if (strcmp("periodLabel2", sValue) == 0)
+				this->m_eValue = timelineStyle_periodLabel2;
+			else if (strcmp("selectedTimeBlock", sValue) == 0)
+				this->m_eValue = timelineStyle_selectedTimeBlock;
+			else if (strcmp("unselectedTimeBlock", sValue) == 0)
+				this->m_eValue = timelineStyle_unselectedTimeBlock;
+			else if (strcmp("selectedTimeBlockSpace", sValue) == 0)
+				this->m_eValue = timelineStyle_selectedTimeBlockSpace;
+			else
+				this->m_eValue = timelineStyle_selectionLabel;
+			return this->m_eValue;
+		}
+
+		std::wstring CTimelineStyleType::ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case timelineStyle_selectionLabel: return L"selectionLabel"; break;
+			case timelineStyle_timeLevel: return L"timeLevel"; break;
+			case timelineStyle_periodLabel1: return L"periodLabel1"; break;
+			case timelineStyle_periodLabel2: return L"periodLabel2"; break;
+			case timelineStyle_selectedTimeBlock: return L"selectedTimeBlock"; break;
+			case timelineStyle_unselectedTimeBlock: return L"unselectedTimeBlock"; break;
+			case timelineStyle_selectedTimeBlockSpace: return L"selectedTimeBlockSpace"; break;
+			}
+			return L"unselectedItemWithData";
+		}
 	}// Spreadsheet
 } // SimpleTypes

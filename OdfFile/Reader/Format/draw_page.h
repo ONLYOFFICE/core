@@ -69,6 +69,8 @@ public:
 
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
+    std::wstring get_draw_name() const;
+
 private:
 	void pptx_convert_placeHolder(oox::pptx_conversion_context & Context, std::wstring styleName, odf_types::presentation_class::type PresentationClass);
 

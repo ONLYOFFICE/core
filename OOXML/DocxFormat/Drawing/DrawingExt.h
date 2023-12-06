@@ -57,6 +57,9 @@ namespace OOX
 		class CT_DLbl;
 		class CSeriesFiltering;
 		class CUserProtectedRanges;
+		class CTimelineRefs;
+		class CTimelineCacheRefs;
+		class CTimelineStyles;
 	}
 
 	namespace Drawing
@@ -144,6 +147,10 @@ namespace OOX
             nullable<OOX::Spreadsheet::CSlicerCaches>               m_oSlicerCaches;
             nullable<OOX::Spreadsheet::CSlicerCaches>               m_oSlicerCachesExt;
             nullable<OOX::Spreadsheet::CSlicerStyles>               m_oSlicerStyles;
+
+			nullable<OOX::Spreadsheet::CTimelineRefs>				m_oTimelineRefs;
+			nullable<OOX::Spreadsheet::CTimelineCacheRefs>			m_oTimelineCacheRefs;
+			nullable<OOX::Spreadsheet::CTimelineStyles>				m_oTimelineStyles;
 
             nullable<OOX::Spreadsheet::CPivotCacheDefinitionExt>    m_oPivotCacheDefinitionExt;
 

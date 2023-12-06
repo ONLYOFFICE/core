@@ -64,6 +64,10 @@ namespace OOX
 			checkBufferSize(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8BufferSize(nLen));
 			NSFile::CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH((const BYTE*)sVal, nLen, m_sBuffer, m_nLen);
 		}
+		LONG CStringXLSB::getUTF16Size()
+		{
+			return NSFile::CUtf8Converter::GetUtf16SizeFromUnicode(m_sBuffer, m_nLen);
+		}
 		void CStringXLSB::checkBufferSize(_UINT32 nRequired)
 		{
 			if(nRequired > m_nSize)

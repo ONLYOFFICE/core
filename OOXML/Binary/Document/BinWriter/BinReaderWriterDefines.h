@@ -1269,7 +1269,7 @@ extern int g_nCurFormatVersion;
 		FormPrLabel = 46,
 		FormPrHelpText = 47,
 		FormPrRequired = 48,
-		CheckboxGroupKey = 59,
+		CheckboxGroupKey = 49,
 		TextFormPr = 50,
 		TextFormPrComb = 51,
 		TextFormPrCombWidth = 52,
@@ -1292,6 +1292,7 @@ extern int g_nCurFormatVersion;
 		TextFormPrFormatType    = 80,
 		TextFormPrFormatVal     = 81,
 		TextFormPrFormatSymbols = 82,	
+		StoreItemChecksum = 85,
 		ComplexFormPr     = 90,
 		ComplexFormPrType = 91,
 		OformMaster = 92

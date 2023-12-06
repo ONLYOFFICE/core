@@ -1711,7 +1711,7 @@ bool OOXrPrReader::Parse( ReaderParameter oParam, RtfCharProperty& oOutputProper
 	}
 	if ( m_ooxRunProps->m_oTextOutline.IsInit())
 	{
-		unsigned int nColor = 0; //black
+		unsigned long nColor = 0; //black
 		_CP_OPT(double) opacity;
 
 		OOXShapeReader::Parse(oParam, &m_ooxRunProps->m_oTextOutline->Fill, nColor, opacity);
@@ -1722,7 +1722,7 @@ bool OOXrPrReader::Parse( ReaderParameter oParam, RtfCharProperty& oOutputProper
 	}
 	if ( m_ooxRunProps->m_oTextFill.is_init())
 	{
-		unsigned int nColor = 0; //black
+		unsigned long nColor = 0; //black
 		_CP_OPT(double) opacity;
 		
 		OOXShapeReader::Parse(oParam, &m_ooxRunProps->m_oTextFill, nColor, opacity);

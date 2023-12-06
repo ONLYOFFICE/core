@@ -678,7 +678,7 @@ CSvmPen* CSvmDC::GetPen()
 {
 	return m_pPen;
 }
-CSvmClip* CSvmDC::GetClip()
+CClip* CSvmDC::GetClip()
 {
 	return NULL;;
 	//return &m_oClip;

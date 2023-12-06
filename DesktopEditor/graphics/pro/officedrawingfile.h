@@ -77,12 +77,14 @@ public:
                                            bool bIsFlip = false,
                                            NSFonts::IFontManager* pFonts = NULL,
                                            int nBackgroundColor = 0xFFFFFF,
-                                           bool bIsDarkMode = false);
+                                           bool bIsDarkMode = false,
+                                           int nBackgroundOpacity = 0xFF);
     virtual void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW = -1, const int nRasterH = -1,
                                  bool bIsFlip = false,
                                  NSFonts::IFontManager* pFonts = NULL,
                                  int nBackgroundColor = 0xFFFFFF,
-                                 bool bIsDarkMode = false);
+                                 bool bIsDarkMode = false,
+                                 int nBackgroundOpacity = 0xFF);
 
     // Common methods for viewer
     virtual std::wstring GetInfo() = 0;

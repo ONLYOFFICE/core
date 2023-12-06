@@ -42,6 +42,11 @@
 #include <vector>
 #include <math.h>
 
+#include "../../DesktopEditor/graphics/commands/DocInfo.h"
+#include "../../DesktopEditor/graphics/commands/FormField.h"
+#include "../../DesktopEditor/graphics/commands/AnnotField.h"
+#include "SrcWriter/Metadata.h"
+
 namespace PdfWriter
 {
 	class CDocument;
@@ -189,7 +194,9 @@ public:
 	//----------------------------------------------------------------------------------------
 	HRESULT AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip);
 	HRESULT AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage);
-	HRESULT AddFormField(NSFonts::IApplicationFonts* pAppFonts, IFormField* pFiledInfo);
+	HRESULT AddFormField (NSFonts::IApplicationFonts* pAppFonts, CFormFieldInfo* pFieldInfo, const std::wstring& wsTempDirectory);
+	HRESULT AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotFieldInfo* pFieldInfo);
+	HRESULT AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength);
 	//----------------------------------------------------------------------------------------
 	// Дополнительные функции Pdf рендерера
 	//----------------------------------------------------------------------------------------
@@ -207,7 +214,6 @@ public:
 	bool EditClose();
 	void PageRotate(int nRotate);
 	void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
-
 
 	PdfWriter::CDocument* m_pDocument;
 	PdfWriter::CPage*     m_pPage;

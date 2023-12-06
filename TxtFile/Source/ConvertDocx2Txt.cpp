@@ -650,10 +650,8 @@ namespace Docx2Txt
 						sTarget += L"#" + *pHyperlink->m_sAnchor;
 					}
 
-					for (size_t j = 0; j < pHyperlink->m_arrItems.size(); ++j)
-					{
-						convert(pHyperlink->m_arrItems, arDisplay, true, pDocument, pNumbering, pStyles);
-					}
+					convert(pHyperlink->m_arrItems, arDisplay, true, pDocument, pNumbering, pStyles);
+
 					for (size_t j = 0; j < arDisplay.size(); ++j)
 						line += arDisplay[j];
 

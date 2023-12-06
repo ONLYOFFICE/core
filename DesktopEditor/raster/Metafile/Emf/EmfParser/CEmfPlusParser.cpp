@@ -155,10 +155,10 @@ namespace MetaFile
 	};
 
 	CEmfPlusParser::CEmfPlusParser(CEmfInterpretatorBase *pEmfInterpretator, const TEmfHeader& oHeader)
-	    : m_bBanEmfProcessing(false),
+		: m_bBanEmfProcessing(false),
 		  m_unLogicalDpiX(96),
 		  m_unLogicalDpiY(96),
-	      m_dUnitKoef(1)
+		  m_dUnitKoef(1)
 	{
 		m_oHeader = oHeader;
 
@@ -318,7 +318,7 @@ namespace MetaFile
 			LOGGING(L"Skip: " << nNeedSkip)
 
 			m_ulRecordSize = 0;
-		}while(m_oStream.CanRead() > 12 && !m_bEof);
+		}while(m_oStream.CanRead() >= 12 && !m_bEof);
 
 		if (!CheckError())
 			m_oStream.SeekToStart();
@@ -511,26 +511,23 @@ namespace MetaFile
 		{
 		case BrushTypeSolidColor:
 		{
-			pEmfPlusBrush->Style = BS_SOLID;
-
-			m_oStream >> pEmfPlusBrush->Color;
-
+			pEmfPlusBrush->unStyle = BS_SOLID;
+			m_oStream >> pEmfPlusBrush->oColor;
 			break;
 		}
 		case BrushTypeHatchFill:
 		{
-			pEmfPlusBrush->Style = BS_HATCHED;
-
-			m_oStream >> pEmfPlusBrush->Hatch;
-			m_oStream >> pEmfPlusBrush->Color;
-			m_oStream >> pEmfPlusBrush->ColorBack;
+			pEmfPlusBrush->unStyle = BS_HATCHED;
+			m_oStream >> pEmfPlusBrush->unHatch;
+			m_oStream >> pEmfPlusBrush->oColor;
+			m_oStream >> pEmfPlusBrush->oColorBack;
 
 			break;
 		}
 		case BrushTypeTextureFill:
 		{
 			// TODO: так как на данный момент нельзя регулировать повторение заливки, то будет отрисовывать изображение при самой заливки
-			pEmfPlusBrush->Style = BS_PATTERN;
+			pEmfPlusBrush->unStyle = BS_PATTERN;
 
 			unsigned int unBrushDataFlags, unSkip = 16;
 
@@ -555,7 +552,7 @@ namespace MetaFile
 			std::wstring wsImagePath;
 
 			if (SaveImage(oImage, wsImagePath))
-				pEmfPlusBrush->DibPatternPath = wsImagePath;
+				pEmfPlusBrush->wsDibPatternPath = wsImagePath;
 
 			m_ulRecordSize += unSkip;
 			break;
@@ -564,7 +561,7 @@ namespace MetaFile
 		{
 //			pEmfPlusBrush->Style = BS_PATHGRADIENT;
 			//TODO: пока что данная кисть будет радиальной, но в дальнейшем необходимо реализовать все возможности данной кисти
-			pEmfPlusBrush->Style = BS_RADIALGRADIENT;
+			pEmfPlusBrush->unStyle = BS_RADIALGRADIENT;
 
 			unsigned int unBrushDataFlags;
 
@@ -572,15 +569,15 @@ namespace MetaFile
 
 			m_oStream.Skip(4); //WrapMode
 
-			m_oStream >> pEmfPlusBrush->Color;
-			m_oStream >> pEmfPlusBrush->CenterPoint;
+			m_oStream >> pEmfPlusBrush->oColor;
+			m_oStream >> pEmfPlusBrush->oCenterPoint;
 
 			unsigned int unCountColors;
 
 			m_oStream >> unCountColors;
 
 			if (unCountColors > 0)
-				m_oStream >> pEmfPlusBrush->ColorBack;
+				m_oStream >> pEmfPlusBrush->oColorBack;
 
 			m_oStream.Skip((unCountColors - 1) * 4);
 
@@ -596,12 +593,12 @@ namespace MetaFile
 
 					if (NULL != pPath)
 					{
-						TRectD oRect = pPath->ConvertToRect();
+						TRectD oRect = pPath->GetBounds();
 
-						pEmfPlusBrush->RectF.dX      = oRect.dLeft;
-						pEmfPlusBrush->RectF.dY      = oRect.dTop;
-						pEmfPlusBrush->RectF.dWidth  = oRect.dRight - oRect.dLeft;
-						pEmfPlusBrush->RectF.dHeight = oRect.dBottom - oRect.dTop;
+						pEmfPlusBrush->oRectF.dX      = oRect.Left;
+						pEmfPlusBrush->oRectF.dY      = oRect.Top;
+						pEmfPlusBrush->oRectF.dWidth  = oRect.Right - oRect.Left;
+						pEmfPlusBrush->oRectF.dHeight = oRect.Bottom - oRect.Top;
 
 						delete pPath;
 					}
@@ -636,8 +633,8 @@ namespace MetaFile
 
 				if (1 < unPositionCount)
 				{
-					pEmfPlusBrush->ColorBack = arBlendColors[0];
-					pEmfPlusBrush->Color     = arBlendColors.back();
+					pEmfPlusBrush->oColorBack = arBlendColors[0];
+					pEmfPlusBrush->oColor     = arBlendColors.back();
 				}
 			}
 
@@ -646,14 +643,14 @@ namespace MetaFile
 		case BrushTypeLinearGradient:
 		{
 			//TODO: реализовать
-			pEmfPlusBrush->Style = BS_LINEARGRADIENT;
+			pEmfPlusBrush->unStyle = BS_LINEARGRADIENT;
 
 			m_oStream.Skip(8); // BrushDataFlags, WrapMode
 
 			//				m_oStream >> pEmfPlusBrush->RectF;
 			m_oStream.Skip(16);
-			m_oStream >> pEmfPlusBrush->Color;
-			m_oStream >> pEmfPlusBrush->ColorBack;
+			m_oStream >> pEmfPlusBrush->oColor;
+			m_oStream >> pEmfPlusBrush->oColorBack;
 
 			break;
 		}
@@ -694,7 +691,7 @@ namespace MetaFile
 
 		m_oStream >> unFlags;
 		m_oStream >> unUnitType;
-		m_oStream >> pEmfPlusPen->Width;
+		m_oStream >> pEmfPlusPen->dWidth;
 
 		if (unFlags & PEN_DATA_TRANSFORM)
 			m_oStream.Skip(24); // TransformMatrix (24 bytes) - EmfPlusTransformMatrix object
@@ -706,9 +703,9 @@ namespace MetaFile
 
 			switch (nStartCap)
 			{
-			case 0:	pEmfPlusPen->Style |= PS_STARTCAP_MASK & PS_STARTCAP_FLAT;   break;
-			case 1: pEmfPlusPen->Style |= PS_STARTCAP_MASK & PS_STARTCAP_SQUARE; break;
-			case 2: pEmfPlusPen->Style |= PS_STARTCAP_MASK & PS_STARTCAP_ROUND;  break;
+				case 0:	pEmfPlusPen->unStyle |= PS_STARTCAP_MASK & PS_STARTCAP_FLAT;   break;
+				case 1: pEmfPlusPen->unStyle |= PS_STARTCAP_MASK & PS_STARTCAP_SQUARE; break;
+				case 2: pEmfPlusPen->unStyle |= PS_STARTCAP_MASK & PS_STARTCAP_ROUND;  break;
 			}
 		}
 		if (unFlags & PEN_DATA_ENDCAP)
@@ -719,9 +716,9 @@ namespace MetaFile
 
 			switch (nEndCap)
 			{
-			case 0:	pEmfPlusPen->Style |= PS_ENDCAP_MASK & PS_ENDCAP_FLAT;	 break;
-			case 1: pEmfPlusPen->Style |= PS_ENDCAP_MASK & PS_ENDCAP_SQUARE; break;
-			case 2: pEmfPlusPen->Style |= PS_ENDCAP_MASK & PS_ENDCAP_ROUND;  break;
+				case 0:	pEmfPlusPen->unStyle |= PS_ENDCAP_MASK & PS_ENDCAP_FLAT;   break;
+				case 1: pEmfPlusPen->unStyle |= PS_ENDCAP_MASK & PS_ENDCAP_SQUARE; break;
+				case 2: pEmfPlusPen->unStyle |= PS_ENDCAP_MASK & PS_ENDCAP_ROUND;  break;
 			}
 		}
 		if (unFlags & PEN_DATA_JOIN)
@@ -732,14 +729,14 @@ namespace MetaFile
 
 			switch (nJoin)
 			{
-			case 0:	pEmfPlusPen->Style |= PS_JOIN_MASK & PS_JOIN_MITER;   break;
-			case 1: pEmfPlusPen->Style |= PS_JOIN_MASK & PS_JOIN_BEVEL;   break;
-			case 2: pEmfPlusPen->Style |= PS_JOIN_MASK & PS_ENDCAP_ROUND; break;
+				case 0:	pEmfPlusPen->unStyle |= PS_JOIN_MASK & PS_JOIN_MITER;   break;
+				case 1: pEmfPlusPen->unStyle |= PS_JOIN_MASK & PS_JOIN_BEVEL;   break;
+				case 2: pEmfPlusPen->unStyle |= PS_JOIN_MASK & PS_ENDCAP_ROUND; break;
 			}
 		}
 		if (unFlags & PEN_DATA_MITERLIMIT)
 		{
-			m_oStream >> pEmfPlusPen->MiterLimit;
+			m_oStream >> pEmfPlusPen->dMiterLimit;
 		}
 		if (unFlags & PEN_DATA_LINESTYLE)
 		{
@@ -747,7 +744,7 @@ namespace MetaFile
 
 			m_oStream >> nLineStyle;
 
-			pEmfPlusPen->Style |= PS_STYLE_MASK & nLineStyle;
+			pEmfPlusPen->unStyle |= PS_STYLE_MASK & nLineStyle;
 		}
 		if (unFlags & PEN_DATA_DASHEDLINECAP)
 		{
@@ -759,32 +756,32 @@ namespace MetaFile
 			{
 			case 0:
 			{
-				pEmfPlusPen->Style |= (PS_STARTCAP_MASK & PS_STARTCAP_FLAT) |
-						(PS_ENDCAP_MASK   & PS_STARTCAP_FLAT);
+				pEmfPlusPen->unStyle |= (PS_STARTCAP_MASK & PS_STARTCAP_FLAT) |
+				(PS_ENDCAP_MASK   & PS_STARTCAP_FLAT);
 				break;
 			}
 			case 2:
 			{
-				pEmfPlusPen->Style |= (PS_STARTCAP_MASK & PS_STARTCAP_ROUND) |
-						(PS_ENDCAP_MASK   & PS_STARTCAP_ROUND);
+				pEmfPlusPen->unStyle |= (PS_STARTCAP_MASK & PS_STARTCAP_ROUND) |
+				(PS_ENDCAP_MASK   & PS_STARTCAP_ROUND);
 				break;
 			}
 			}
 		}
 		if (unFlags & PEN_DATA_DASHEDLINEOFFSET)
 		{
-			m_oStream >> pEmfPlusPen->DashOffset;
+			m_oStream >> pEmfPlusPen->dDashOffset;
 		}
 		if (unFlags & PEN_DATA_DASHEDLINE)
 		{
-			m_oStream >> pEmfPlusPen->SizeDash;
+			m_oStream >> pEmfPlusPen->unSizeDash;
 
-			pEmfPlusPen->DataDash = new double[pEmfPlusPen->SizeDash];
+			pEmfPlusPen->pDataDash = new double[pEmfPlusPen->unSizeDash];
 
-			if (NULL != pEmfPlusPen->DataDash)
+			if (NULL != pEmfPlusPen->pDataDash)
 			{
-				for (unsigned int unIndex = 0; unIndex < pEmfPlusPen->SizeDash; ++unIndex)
-					m_oStream >> pEmfPlusPen->DataDash[unIndex];
+				for (unsigned int unIndex = 0; unIndex < pEmfPlusPen->unSizeDash; ++unIndex)
+					m_oStream >> pEmfPlusPen->pDataDash[unIndex];
 			}
 		}
 		if (unFlags & PEN_DATA_NONCENTER)
@@ -824,7 +821,7 @@ namespace MetaFile
 					pLineCapData->pPath = ReadPath();
 				}
 
-				pEmfPlusPen->LineStartCapData = pLineCapData;
+				pEmfPlusPen->pLineStartCapData = pLineCapData;
 			}
 			else if (CustomLineCapDataTypeAdjustableArrow == nType)
 			{
@@ -832,7 +829,7 @@ namespace MetaFile
 
 				m_oStream >> *pLineCapData;
 
-				pEmfPlusPen->LineStartCapData = pLineCapData;
+				pEmfPlusPen->pLineStartCapData = pLineCapData;
 			}
 
 			m_oStream.Skip(unCustomStartCapSize - (m_oStream.Tell() - unStart));
@@ -864,7 +861,7 @@ namespace MetaFile
 					pLineCapData->pPath = ReadPath();
 				}
 
-				pEmfPlusPen->LineEndCapData = pLineCapData;
+				pEmfPlusPen->pLineEndCapData = pLineCapData;
 			}
 			else if (CustomLineCapDataTypeAdjustableArrow == nType)
 			{
@@ -872,13 +869,13 @@ namespace MetaFile
 
 				m_oStream >> *pLineCapData;
 
-				pEmfPlusPen->LineEndCapData = pLineCapData;
+				pEmfPlusPen->pLineEndCapData = pLineCapData;
 			}
 
 			m_oStream.Skip(unCustomEndCapSize - (m_oStream.Tell() - unStart));
 		}
 
-		pEmfPlusPen->Brush = ReadBrush();
+		pEmfPlusPen->pBrush = ReadBrush();
 
 		return pEmfPlusPen;
 	}
@@ -969,21 +966,21 @@ namespace MetaFile
 			std::vector<TEmfPlusPoint> arPoints     = ReadPoints<TEmfPlusPoint>(unPathPointCount);
 			std::vector<char> arPointTypes          = ReadPointTypes(unPathPointCount);
 
-			pPath->MoveTo(arPoints[0].x, arPoints[0].y);
+			pPath->MoveTo(arPoints[0].X, arPoints[0].Y);
 
 			for (unsigned int unIndex = 1; unIndex < unPathPointCount; ++unIndex)
 			{
 				switch (arPointTypes[unIndex] & 0xf)
 				{
-				case PathPointTypeStart:  pPath->MoveTo(arPoints[unIndex].x, arPoints[unIndex].y); break;
-				case PathPointTypeLine:   pPath->LineTo(arPoints[unIndex].x, arPoints[unIndex].y); break;
+				case PathPointTypeStart:  pPath->MoveTo(arPoints[unIndex].X, arPoints[unIndex].Y); break;
+				case PathPointTypeLine:   pPath->LineTo(arPoints[unIndex].X, arPoints[unIndex].Y); break;
 				case PathPointTypeBezier:
 				{
 					if (unIndex + 2 >= unPathPointCount) break;
 
-					pPath->CurveTo(arPoints[unIndex + 0].x, arPoints[unIndex + 0].y,
-					               arPoints[unIndex + 1].x, arPoints[unIndex + 1].y,
-					               arPoints[unIndex + 2].x, arPoints[unIndex + 2].y);
+					pPath->CurveTo(arPoints[unIndex + 0].X, arPoints[unIndex + 0].Y,
+					               arPoints[unIndex + 1].X, arPoints[unIndex + 1].Y,
+					               arPoints[unIndex + 2].X, arPoints[unIndex + 2].Y);
 					unIndex += 2;
 					break;
 				}
@@ -1326,13 +1323,14 @@ namespace MetaFile
 	void CEmfPlusParser::CombineClip(TRectD oClip, int nMode)
 	{
 		CEmfPlusPath oPath;
-		oPath.MoveTo(oClip.dLeft,	oClip.dTop);
-		oPath.LineTo(oClip.dRight,	oClip.dTop);
-		oPath.LineTo(oClip.dRight,	oClip.dBottom);
-		oPath.LineTo(oClip.dLeft,	oClip.dBottom);
+		oPath.MoveTo(oClip.Left,  oClip.Top);
+		oPath.LineTo(oClip.Right, oClip.Top);
+		oPath.LineTo(oClip.Right, oClip.Bottom);
+		oPath.LineTo(oClip.Left,  oClip.Bottom);
 		oPath.Close();
 
-		m_pDC->GetClip()->SetPath(&oPath, nMode, GetTransform());
+		m_pDC->GetClip()->SetPath(oPath, nMode, *GetTransform());
+
 		UpdateOutputDC();
 	}
 
@@ -1376,30 +1374,30 @@ namespace MetaFile
 		return true;
 	}
 
-	BYTE* GetClipedImage(const BYTE* pBuffer, LONG lWidth, LONG lHeight, TRect& oNewRect)
+	BYTE* GetClipedImage(const BYTE* pBuffer, LONG lWidth, LONG lHeight, TRectL& oNewRect)
 	{
 		if (NULL == pBuffer ||
-			oNewRect.nLeft < 0 || oNewRect.nRight  < 0 ||
-			oNewRect.nTop  < 0 || oNewRect.nBottom < 0)
+			oNewRect.Left < 0 || oNewRect.Right  < 0 ||
+			oNewRect.Top  < 0 || oNewRect.Bottom < 0)
 			return NULL;
 
-		if (lHeight < (oNewRect.nBottom - oNewRect.nTop))
-			oNewRect.nBottom = oNewRect.nTop + lHeight;
+		if (lHeight < (oNewRect.Bottom - oNewRect.Top))
+			oNewRect.Bottom = oNewRect.Top + lHeight;
 
-		if (lWidth < (oNewRect.nRight - oNewRect.nLeft))
-			oNewRect.nRight = oNewRect.nLeft + lWidth;
+		if (lWidth < (oNewRect.Right - oNewRect.Left))
+			oNewRect.Right = oNewRect.Left + lWidth;
 
-		if (lHeight == (oNewRect.nBottom - oNewRect.nTop) &&
-			lWidth  == (oNewRect.nRight  - oNewRect.nLeft))
+		if (lHeight == (oNewRect.Bottom - oNewRect.Top) &&
+			lWidth  == (oNewRect.Right  - oNewRect.Left))
 			return NULL;
 
 		int nBeginX, nBeginY, nEndX, nEndY;
 
-		nBeginX = (std::min)(oNewRect.nLeft, oNewRect.nRight);
-		nBeginY = (std::min)(oNewRect.nTop,  oNewRect.nBottom);
+		nBeginX = (std::min)(oNewRect.Left, oNewRect.Right);
+		nBeginY = (std::min)(oNewRect.Top,  oNewRect.Bottom);
 
-		nEndX   = (std::max)(oNewRect.nLeft, oNewRect.nRight);
-		nEndY   = (std::max)(oNewRect.nTop,  oNewRect.nBottom);
+		nEndX   = (std::max)(oNewRect.Left, oNewRect.Right);
+		nEndY   = (std::max)(oNewRect.Top,  oNewRect.Bottom);
 
 		int nWidth = nEndX - nBeginX;
 		int nHeight = nEndY - nBeginY;
@@ -1455,7 +1453,7 @@ namespace MetaFile
 	}
 
 	void CEmfPlusParser::DrawImagePoints(unsigned int unImageIndex, unsigned int unImageAttributeIndex,
-										 const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints)
+	                                     const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints)
 	{
 		if (NULL == m_pInterpretator)
 			return;
@@ -1507,10 +1505,10 @@ namespace MetaFile
 
 				pGrRenderer->SetFontManager(GetFontManager());
 
-				TEmfRectL *pEmfBounds = oEmfParser.GetBounds();
+				TRectL *pEmfBounds = oEmfParser.GetBounds();
 
-				int nWidth = fabs(pEmfBounds->lRight - pEmfBounds->lLeft);
-				int nHeight = fabs(pEmfBounds->lBottom - pEmfBounds->lTop);
+				int nWidth = fabs(pEmfBounds->Right - pEmfBounds->Left);
+				int nHeight = fabs(pEmfBounds->Bottom - pEmfBounds->Top);
 
 				double dWidth  = 25.4 * nWidth / 72;
 				double dHeight = 25.4 * nHeight / 72;
@@ -1554,20 +1552,20 @@ namespace MetaFile
 
 				FlipYImage(pPixels, lWidth, lHeight); //Проверить на примерах, где WrapMode != WrapModeTileFlipXY
 
-				TRect oClipRect;
+				TRectL oClipRect;
 
-				oClipRect.nLeft   = oSrcRect.dX;
-				oClipRect.nTop    = oSrcRect.dY;
-				oClipRect.nRight  = oSrcRect.dX + oSrcRect.dWidth;
-				oClipRect.nBottom = oSrcRect.dY + oSrcRect.dHeight;
+				oClipRect.Left   = oSrcRect.dX;
+				oClipRect.Top    = oSrcRect.dY;
+				oClipRect.Right  = oSrcRect.dX + oSrcRect.dWidth;
+				oClipRect.Bottom = oSrcRect.dY + oSrcRect.dHeight;
 
 				BYTE* pNewBuffer = GetClipedImage(pPixels, lWidth, lHeight, oClipRect);
 
-				unsigned int unWidth  = std::min(((unsigned int)fabs(oClipRect.nRight - oClipRect.nLeft)), ((unsigned int)lWidth ));
-				unsigned int unHeight = std::min(((unsigned int)fabs(oClipRect.nBottom - oClipRect.nTop)), ((unsigned int)lHeight));
+				unsigned int unWidth  = std::min(((unsigned int)fabs(oClipRect.Right - oClipRect.Left)), ((unsigned int)lWidth ));
+				unsigned int unHeight = std::min(((unsigned int)fabs(oClipRect.Bottom - oClipRect.Top)), ((unsigned int)lHeight));
 
 				m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X - m_pDC->GetPixelWidth(), arPoints[2].Y - arPoints[0].Y - m_pDC->GetPixelHeight(),
-						(NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
+				                             (NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
 
 				RELEASEINTERFACE(pGrRenderer);
 				RELEASEARRAYOBJECTS(pNewBuffer);
@@ -1582,27 +1580,27 @@ namespace MetaFile
 
 				TRectD oRect;
 
-				oRect.dLeft   = arPoints[0].X;
-				oRect.dTop    = arPoints[0].Y;
-				oRect.dRight  = arPoints[1].X - m_pDC->GetPixelWidth();
-				oRect.dBottom = arPoints[2].Y - m_pDC->GetPixelHeight();
+				oRect.Left   = arPoints[0].X;
+				oRect.Top    = arPoints[0].Y;
+				oRect.Right  = arPoints[1].X - m_pDC->GetPixelWidth();
+				oRect.Bottom = arPoints[2].Y - m_pDC->GetPixelHeight();
 
 				TRectD oTempSrcRect;
 
-				TEmfRectL *pEmfBounds = oEmfParser.GetBounds();
+				TRectL *pEmfBounds = oEmfParser.GetBounds();
 
-				oTempSrcRect = oSrcRect.GetRectD();
-				oTempSrcRect.dLeft   -= pEmfBounds->lLeft;
-				oTempSrcRect.dRight  -= pEmfBounds->lLeft + GetPixelWidth();
-				oTempSrcRect.dTop    -= pEmfBounds->lTop;
-				oTempSrcRect.dBottom -= pEmfBounds->lTop  + GetPixelHeight();
+				oTempSrcRect = oSrcRect.ToRectD();
+				oTempSrcRect.Left   -= pEmfBounds->Left;
+				oTempSrcRect.Right  -= pEmfBounds->Left + GetPixelWidth();
+				oTempSrcRect.Top    -= pEmfBounds->Top;
+				oTempSrcRect.Bottom -= pEmfBounds->Top  + GetPixelHeight();
 
 				TXForm oTransform;
 
 				oTransform.Copy(pXForm);
 
-				oTransform.Dx -= m_oHeader.oFramePx.lLeft;
-				oTransform.Dy -= m_oHeader.oFramePx.lTop;
+				oTransform.Dx -= m_oHeader.oFramePx.Left;
+				oTransform.Dy -= m_oHeader.oFramePx.Top;
 
 				((CEmfInterpretatorSvg*)m_pInterpretator)->IncludeSvg(((CEmfInterpretatorSvg*)oEmfParser.GetInterpretator())->GetFile(), oRect, oTempSrcRect, &oTransform);
 			}
@@ -1623,8 +1621,8 @@ namespace MetaFile
 
 				TRectD oWmfBounds = oWmfParser.GetBounds();
 
-				int nWidth = fabs(oWmfBounds.dRight - oWmfBounds.dLeft);
-				int nHeight = fabs(oWmfBounds.dBottom - oWmfBounds.dTop);
+				int nWidth = fabs(oWmfBounds.Right - oWmfBounds.Left);
+				int nHeight = fabs(oWmfBounds.Bottom - oWmfBounds.Top);
 
 				double dWidth  = 25.4 * nWidth / 72;
 				double dHeight = 25.4 * nHeight / 72;
@@ -1667,20 +1665,20 @@ namespace MetaFile
 
 				FlipYImage(pPixels, lWidth, lHeight); //Проверить на примерах, где WrapMode != WrapModeTileFlipXY
 
-				TRect oClipRect;
+				TRectL oClipRect;
 
-				oClipRect.nLeft   = oSrcRect.dX;
-				oClipRect.nTop    = oSrcRect.dY;
-				oClipRect.nRight  = oSrcRect.dX + oSrcRect.dWidth;
-				oClipRect.nBottom = oSrcRect.dY + oSrcRect.dHeight;
+				oClipRect.Left   = oSrcRect.dX;
+				oClipRect.Top    = oSrcRect.dY;
+				oClipRect.Right  = oSrcRect.dX + oSrcRect.dWidth;
+				oClipRect.Bottom = oSrcRect.dY + oSrcRect.dHeight;
 
 				BYTE* pNewBuffer = GetClipedImage(pPixels, lWidth, lHeight, oClipRect);
 
-				unsigned int unWidth  = std::min(((unsigned int)fabs(oClipRect.nRight - oClipRect.nLeft)), ((unsigned int)lWidth ));
-				unsigned int unHeight = std::min(((unsigned int)fabs(oClipRect.nBottom - oClipRect.nTop)), ((unsigned int)lHeight));
+				unsigned int unWidth  = std::min(((unsigned int)fabs(oClipRect.Right - oClipRect.Left)), ((unsigned int)lWidth ));
+				unsigned int unHeight = std::min(((unsigned int)fabs(oClipRect.Bottom - oClipRect.Top)), ((unsigned int)lHeight));
 
 				m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X - m_pDC->GetPixelWidth(), arPoints[2].Y - arPoints[0].Y - m_pDC->GetPixelHeight(),
-											 (NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
+				                             (NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
 
 				RELEASEINTERFACE(pGrRenderer);
 				RELEASEARRAYOBJECTS(pNewBuffer);
@@ -1695,28 +1693,28 @@ namespace MetaFile
 
 				TRectD oRect;
 
-				oRect.dLeft   = arPoints[0].X;
-				oRect.dTop    = arPoints[0].Y;
-				oRect.dRight  = arPoints[1].X - m_pDC->GetPixelWidth();
-				oRect.dBottom = arPoints[2].Y - m_pDC->GetPixelHeight();
+				oRect.Left   = arPoints[0].X;
+				oRect.Top    = arPoints[0].Y;
+				oRect.Right  = arPoints[1].X - m_pDC->GetPixelWidth();
+				oRect.Bottom = arPoints[2].Y - m_pDC->GetPixelHeight();
 
-				TRectD oTempSrcRect = oSrcRect.GetRectD();
+				TRectD oTempSrcRect = oSrcRect.ToRectD();
 
 				CEmfPlusImageAttributes *pImageAttributes = GetImageAttributes(unImageAttributeIndex);
 
 				if (NULL != pImageAttributes && WrapModeTileFlipY != pImageAttributes->eWrapMode && WrapModeTileFlipXY != pImageAttributes->eWrapMode)
 				{
-					double dTempValue    = oTempSrcRect.dBottom;
-					oTempSrcRect.dBottom = oTempSrcRect.dTop;
-					oTempSrcRect.dTop    = dTempValue;
+					double dTempValue    = oTempSrcRect.Bottom;
+					oTempSrcRect.Bottom = oTempSrcRect.Top;
+					oTempSrcRect.Top    = dTempValue;
 				}
 
 				TXForm oTransform;
 
 				oTransform.Copy(pXForm);
 
-				oTransform.Dx -= m_oHeader.oFramePx.lLeft;
-				oTransform.Dy -= m_oHeader.oFramePx.lTop;
+				oTransform.Dx -= m_oHeader.oFramePx.Left;
+				oTransform.Dy -= m_oHeader.oFramePx.Top;
 
 				((CWmfInterpretatorSvg*)m_pInterpretator)->IncludeSvg(((CWmfInterpretatorSvg*)oWmfParser.GetInterpretator())->GetFile(), oRect, oTempSrcRect, &oTransform);
 			}
@@ -1753,17 +1751,17 @@ namespace MetaFile
 			FlipYImage(pBytes, unWidth, unHeight);
 		}
 
-		TRect oClipRect;
+		TRectL oClipRect;
 
-		oClipRect.nLeft   = oSrcRect.dX;
-		oClipRect.nTop    = oSrcRect.dY;
-		oClipRect.nRight  = (oSrcRect.dX + oSrcRect.dWidth);
-		oClipRect.nBottom = (oSrcRect.dY + oSrcRect.dHeight);
+		oClipRect.Left   = oSrcRect.dX;
+		oClipRect.Top    = oSrcRect.dY;
+		oClipRect.Right  = (oSrcRect.dX + oSrcRect.dWidth);
+		oClipRect.Bottom = (oSrcRect.dY + oSrcRect.dHeight);
 
 		BYTE* pNewBuffer = GetClipedImage(pBytes, unWidth, unHeight, oClipRect);
 
 		m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X, arPoints[2].Y - arPoints[0].Y,
-				(NULL != pNewBuffer) ? pNewBuffer : pBytes, fabs(oClipRect.nRight - oClipRect.nLeft), fabs(oClipRect.nBottom - oClipRect.nTop));
+				(NULL != pNewBuffer) ? pNewBuffer : pBytes, fabs(oClipRect.Right - oClipRect.Left), fabs(oClipRect.Bottom - oClipRect.Top));
 
 		if (!bExternalBuffer)
 			RELEASEARRAYOBJECTS(pBytes);
@@ -1857,7 +1855,7 @@ namespace MetaFile
 		if ((unShFlags >>(11)) & 1 )
 		{
 			//Определен флаг P (С игнорируется)
-			Read_EMFPLUS_DRAWBEZIERS_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
+			//Read_EMFPLUS_DRAWBEZIERS_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
 		}
 		else if ((unShFlags >>(14)) & 1 )
 		{
@@ -1918,7 +1916,7 @@ namespace MetaFile
 		if ((unShFlags >>(11)) & 1 )
 		{
 			//Определен флаг P (С игнорируется)
-			Read_EMFPLUS_DRAWCLOSEDCURVE_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
+			//Read_EMFPLUS_DRAWCLOSEDCURVE_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
 		}
 		else if ((unShFlags >>(14)) & 1 )
 		{
@@ -1965,8 +1963,8 @@ namespace MetaFile
 
 		for (unsigned int unIndex = 1; unIndex < unCount; unIndex += 3)
 			CurveTo(arConvertedPoints[unIndex + 0].X, arConvertedPoints[unIndex + 0].Y,
-					arConvertedPoints[unIndex + 1].X, arConvertedPoints[unIndex + 1].Y,
-					arConvertedPoints[unIndex + 2].X, arConvertedPoints[unIndex + 2].Y);
+			        arConvertedPoints[unIndex + 1].X, arConvertedPoints[unIndex + 1].Y,
+			        arConvertedPoints[unIndex + 2].X, arConvertedPoints[unIndex + 2].Y);
 
 		ClosePath();
 
@@ -2018,8 +2016,8 @@ namespace MetaFile
 
 		for (unsigned int unIndex = 1; unIndex < unCountPoints; unIndex += 3)
 			CurveTo(arConvertedPoints[unIndex + 0].X, arConvertedPoints[unIndex + 0].Y,
-					arConvertedPoints[unIndex + 1].X, arConvertedPoints[unIndex + 1].Y,
-					arConvertedPoints[unIndex + 2].X, arConvertedPoints[unIndex + 2].Y);
+			        arConvertedPoints[unIndex + 1].X, arConvertedPoints[unIndex + 1].Y,
+			        arConvertedPoints[unIndex + 2].X, arConvertedPoints[unIndex + 2].Y);
 
 		DrawPath(true, false);
 
@@ -2072,8 +2070,8 @@ namespace MetaFile
 		std::vector<TPointD> arDPoints(arGlyphPos.size());
 		for (unsigned int unIndex = 0; unIndex < arGlyphPos.size(); ++unIndex)
 		{
-			arDPoints[unIndex].x = arGlyphPos[unIndex].X;
-			arDPoints[unIndex].y = arGlyphPos[unIndex].Y;
+			arDPoints[unIndex].X = arGlyphPos[unIndex].X;
+			arDPoints[unIndex].Y = arGlyphPos[unIndex].Y;
 		}
 
 		CEmfPlusFont *pFont = GetFont(shOgjectIndex);
@@ -2085,14 +2083,14 @@ namespace MetaFile
 
 		if ((unShFlags >>(15)) & 1 )//BrushId = Color
 		{
-			TEmfColor oColor;
+			TRGBA oColor;
 
 			oColor.b = (unBrushId >> 0)  & 0xFF;
 			oColor.g = (unBrushId >> 8)  & 0xFF;
 			oColor.r = (unBrushId >> 16) & 0xFF;
 			oColor.a = (unBrushId >> 24) & 0xFF;
 
-			TEmfColor oTextColor = m_pDC->GetTextColor();
+			TRGBA oTextColor = m_pDC->GetTextColor();
 
 			m_pDC->SetTextColor(oColor);
 
@@ -2107,14 +2105,14 @@ namespace MetaFile
 
 			if (NULL == pBrush) return;
 
-			TEmfColor oColor;
+			TRGBA oColor;
 
-			oColor.b = pBrush->Color.chBlue;
-			oColor.g = pBrush->Color.chGreen;
-			oColor.r = pBrush->Color.chRed;
-			oColor.a = pBrush->Color.chAlpha;
+			oColor.b = pBrush->oColor.chBlue;
+			oColor.g = pBrush->oColor.chGreen;
+			oColor.r = pBrush->oColor.chRed;
+			oColor.a = pBrush->oColor.chAlpha;
 
-			TEmfColor oTextColor = m_pDC->GetTextColor();
+			TRGBA oTextColor = m_pDC->GetTextColor();
 
 			m_pDC->SetTextColor(oColor);
 
@@ -2153,25 +2151,25 @@ namespace MetaFile
 
 		if (NULL == pEmfPlusPen) return;
 
-		if (NULL != pEmfPlusPen->Brush)
-			m_pDC->SetBrush(pEmfPlusPen->Brush);
+		if (NULL != pEmfPlusPen->pBrush)
+			m_pDC->SetBrush(pEmfPlusPen->pBrush);
 
 		m_pDC->SetPen(pEmfPlusPen);
 
-		TEmfRectL oBox = oRect.GetRectL();
+		TRectL oBox = oRect.ToRectL();
 
 		if (m_pDC->GetArcDirection() == AD_COUNTERCLOCKWISE)
-			ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, 0, 360);
+			ArcTo(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, 0, 360);
 		else
-			ArcTo(oBox.lLeft, oBox.lBottom, oBox.lRight, oBox.lTop, 0, 360);
+			ArcTo(oBox.Left, oBox.Bottom, oBox.Right, oBox.Top, 0, 360);
 
 		DrawPath(true, false);
 
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMFPLUS_DRAWELLIPSE(shObjectID, GetConvertedRectangle(oRect));
 
-		if (NULL != pEmfPlusPen->Brush)
-			m_pDC->RemoveBrush(pEmfPlusPen->Brush);
+		if (NULL != pEmfPlusPen->pBrush)
+			m_pDC->RemoveBrush(pEmfPlusPen->pBrush);
 
 		m_pDC->RemovePen(pEmfPlusPen);
 	}
@@ -2218,7 +2216,7 @@ namespace MetaFile
 		if ((unShFlags >>(11)) & 1 )
 		{
 			//Определен флаг P (С игнорируется)
-			Read_EMFPLUS_DRAWIMAGEPOINTS_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
+			//Read_EMFPLUS_DRAWIMAGEPOINTS_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
 		}
 		else if ((unShFlags >>(14)) & 1 )
 		{
@@ -2263,7 +2261,7 @@ namespace MetaFile
 		if ((unShFlags >>(11)) & 1 )
 		{
 			//Определен флаг P (С игнорируется)
-			Read_EMFPLUS_DRAWLINES_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
+			//Read_EMFPLUS_DRAWLINES_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
 		}
 		else if ((unShFlags >>(14)) & 1 )
 		{
@@ -2301,16 +2299,16 @@ namespace MetaFile
 
 		m_pDC->SetPen(pEmfPlusPen);
 
-		if (NULL != pEmfPlusPen->Brush)
-			m_pDC->SetBrush(pEmfPlusPen->Brush);
+		if (NULL != pEmfPlusPen->pBrush)
+			m_pDC->SetBrush(pEmfPlusPen->pBrush);
 
 		DrawLines(GetConvertedPoints(arPoints), ((unShFlags >>(13)) & 1));
 
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMFPLUS_DRAWLINES(shOgjectIndex, GetConvertedPoints(arPoints));
 
-		if (NULL != pEmfPlusPen->Brush)
-			m_pDC->RemoveBrush(pEmfPlusPen->Brush);
+		if (NULL != pEmfPlusPen->pBrush)
+			m_pDC->RemoveBrush(pEmfPlusPen->pBrush);
 
 		m_pDC->RemovePen(pEmfPlusPen);
 
@@ -2334,22 +2332,22 @@ namespace MetaFile
 
 			m_pDC->SetPen(pEmfPlusPen);
 
-			if (NULL != pEmfPlusPen->Brush)
-				m_pDC->SetBrush(pEmfPlusPen->Brush);
+			if (NULL != pEmfPlusPen->pBrush)
+				m_pDC->SetBrush(pEmfPlusPen->pBrush);
 
 			CPathConverter oPathConverter;
-			CEmfPath oNewPath, oLineCapPath;
+			CPath oNewPath, oLineCapPath;
 
 			oPathConverter.GetUpdatedPath(oNewPath, oLineCapPath, *pPath, *pEmfPlusPen);
 
-			oNewPath.DrawWithoutClean(m_pInterpretator, true, false);
-			oLineCapPath.DrawWithoutClean(m_pInterpretator, false, true);
+			oNewPath.DrawOn(m_pInterpretator, true, false);
+			oLineCapPath.DrawOn(m_pInterpretator, false, true);
 
 			if (NULL != m_pInterpretator)
 				m_pInterpretator->HANDLE_EMFPLUS_DRAWPATH(shOgjectIndex, unPenId, &oNewPath);
 
-			if (NULL != pEmfPlusPen->Brush)
-				m_pDC->RemoveBrush(pEmfPlusPen->Brush);
+			if (NULL != pEmfPlusPen->pBrush)
+				m_pDC->RemoveBrush(pEmfPlusPen->pBrush);
 
 			m_pDC->RemovePen(pEmfPlusPen);
 		}
@@ -2411,8 +2409,8 @@ namespace MetaFile
 
 		m_pDC->SetPen(pEmfPlusPen);
 
-		if (NULL != pEmfPlusPen->Brush)
-			m_pDC->SetBrush(pEmfPlusPen->Brush);
+		if (NULL != pEmfPlusPen->pBrush)
+			m_pDC->SetBrush(pEmfPlusPen->pBrush);
 
 		std::vector<TEmfPlusRectF> arRects(unCount);
 		T oTempRect;
@@ -2427,8 +2425,8 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMFPLUS_DRAWRECTS(shPenIndex, arRects);
 
-		if (NULL != pEmfPlusPen->Brush)
-			m_pDC->RemoveBrush(pEmfPlusPen->Brush);
+		if (NULL != pEmfPlusPen->pBrush)
+			m_pDC->RemoveBrush(pEmfPlusPen->pBrush);
 
 		m_pDC->RemovePen(pEmfPlusPen);
 	}
@@ -2506,14 +2504,14 @@ namespace MetaFile
 
 		if ((unShFlags >>(15)) & 1 )//BrushId = Color
 		{
-			TEmfColor oColor;
+			TRGBA oColor;
 
 			oColor.b = (unBrushId >> 0)  & 0xFF;
 			oColor.g = (unBrushId >> 8)  & 0xFF;
 			oColor.r = (unBrushId >> 16) & 0xFF;
 			oColor.a = (unBrushId >> 24) & 0xFF;
 
-			TEmfColor oTextColor = m_pDC->GetTextColor();
+			TRGBA oTextColor = m_pDC->GetTextColor();
 
 			m_pDC->SetTextColor(oColor);
 
@@ -2530,14 +2528,14 @@ namespace MetaFile
 
 			if (NULL == pBrush) return;
 
-			TEmfColor oColor;
+			TRGBA oColor;
 
-			oColor.b = pBrush->Color.chBlue;
-			oColor.g = pBrush->Color.chGreen;
-			oColor.r = pBrush->Color.chRed;
-			oColor.a = pBrush->Color.chAlpha;
+			oColor.b = pBrush->oColor.chBlue;
+			oColor.g = pBrush->oColor.chGreen;
+			oColor.r = pBrush->oColor.chRed;
+			oColor.a = pBrush->oColor.chAlpha;
 
-			TEmfColor oTextColor = m_pDC->GetTextColor();
+			TRGBA oTextColor = m_pDC->GetTextColor();
 
 			m_pDC->SetTextColor(oColor);
 
@@ -2561,7 +2559,7 @@ namespace MetaFile
 		if ((unShFlags >>(11)) & 1 )
 		{
 			//Определен флаг P (С игнорируется)
-			Read_EMFPLUS_FILLCLOSEDCURVE_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
+			//Read_EMFPLUS_FILLCLOSEDCURVE_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
 		}
 		else if ((unShFlags >>(14)) & 1 )
 		{
@@ -2616,23 +2614,23 @@ namespace MetaFile
 		m_oStream >> unBrushId;
 		m_oStream >> oRect;
 
-		TEmfRectL oBox = oRect.GetRectL();
+		TRectL oBox = oRect.ToRectL();
 
 		if ((unShFlags >>(15)) & 1 )//BrushId = Color
 		{
 			CEmfPlusBrush oBrush;
 
-			oBrush.Color.chBlue     = (unBrushId >> 0)  & 0xFF;
-			oBrush.Color.chGreen    = (unBrushId >> 8)  & 0xFF;
-			oBrush.Color.chRed      = (unBrushId >> 16) & 0xFF;
-			oBrush.Color.chAlpha    = (unBrushId >> 24) & 0xFF;
+			oBrush.oColor.chBlue     = (unBrushId >> 0)  & 0xFF;
+			oBrush.oColor.chGreen    = (unBrushId >> 8)  & 0xFF;
+			oBrush.oColor.chRed      = (unBrushId >> 16) & 0xFF;
+			oBrush.oColor.chAlpha    = (unBrushId >> 24) & 0xFF;
 
 			m_pDC->SetBrush(&oBrush);
 
 			if (m_pDC->GetArcDirection() == AD_COUNTERCLOCKWISE)
-				ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, 0, 360);
+				ArcTo(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, 0, 360);
 			else
-				ArcTo(oBox.lLeft, oBox.lBottom, oBox.lRight, oBox.lTop, 0, 360);
+				ArcTo(oBox.Left, oBox.Bottom, oBox.Right, oBox.Top, 0, 360);
 
 			DrawPath(false, true);
 
@@ -2650,9 +2648,9 @@ namespace MetaFile
 			m_pDC->SetBrush(pBrush);
 
 			if (m_pDC->GetArcDirection() == AD_COUNTERCLOCKWISE)
-				ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, 0, 360);
+				ArcTo(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, 0, 360);
 			else
-				ArcTo(oBox.lLeft, oBox.lBottom, oBox.lRight, oBox.lTop, 0, 360);
+				ArcTo(oBox.Left, oBox.Bottom, oBox.Right, oBox.Top, 0, 360);
 
 			DrawPath(false, true);
 
@@ -2677,14 +2675,15 @@ namespace MetaFile
 		if ((unShFlags >>(15)) & 1 )//BrushId = Color
 		{
 			CEmfPlusBrush oBrush;
-			oBrush.Color.chBlue     = (unBrushId >> 0)  & 0xFF;
-			oBrush.Color.chGreen    = (unBrushId >> 8)  & 0xFF;
-			oBrush.Color.chRed      = (unBrushId >> 16) & 0xFF;
-			oBrush.Color.chAlpha    = (unBrushId >> 24) & 0xFF;
+			
+			oBrush.oColor.chBlue  = (unBrushId >> 0)  & 0xFF;
+			oBrush.oColor.chGreen = (unBrushId >> 8)  & 0xFF;
+			oBrush.oColor.chRed   = (unBrushId >> 16) & 0xFF;
+			oBrush.oColor.chAlpha = (unBrushId >> 24) & 0xFF;
 
 			m_pDC->SetBrush(&oBrush);
 
-			pPath->DrawWithoutClean(m_pInterpretator, false, true);
+			pPath->DrawOn(m_pInterpretator, false, true);
 
 			if (NULL != m_pInterpretator)
 				m_pInterpretator->HANDLE_EMFPLUS_FILLPATH(shOgjectIndex, unBrushId, pPath);
@@ -2699,7 +2698,7 @@ namespace MetaFile
 
 			m_pDC->SetBrush(pBrush);
 
-			pPath->DrawWithoutClean(m_pInterpretator, false, true);
+			pPath->DrawOn(m_pInterpretator, false, true);
 
 			if (NULL != m_pInterpretator)
 				m_pInterpretator->HANDLE_EMFPLUS_FILLPATH(shOgjectIndex, unBrushId, pPath);
@@ -2733,7 +2732,7 @@ namespace MetaFile
 		m_oStream >> oRect;
 
 		if (NULL != m_pInterpretator)
-			    m_pInterpretator->HANDLE_EMFPLUS_FILLPIE(unBrushId, dStartAngle, dSweepAngle, GetConvertedRectangle(oRect));
+			m_pInterpretator->HANDLE_EMFPLUS_FILLPIE(unBrushId, dStartAngle, dSweepAngle, GetConvertedRectangle(oRect));
 
 		//TODO: реализовать
 	}
@@ -2743,7 +2742,7 @@ namespace MetaFile
 		if ((unShFlags >>(11)) & 1 )
 		{
 			//Определен флаг P (С игнорируется)
-			Read_EMFPLUS_FILLPOLYGON_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
+			//Read_EMFPLUS_FILLPOLYGON_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
 		}
 		else if ((unShFlags >>(14)) & 1 )
 		{
@@ -2781,10 +2780,10 @@ namespace MetaFile
 		{
 			CEmfPlusBrush oBrush;
 
-			oBrush.Color.chBlue     = (unBrushId >> 0)  & 0xFF;
-			oBrush.Color.chGreen    = (unBrushId >> 8)  & 0xFF;
-			oBrush.Color.chRed      = (unBrushId >> 16) & 0xFF;
-			oBrush.Color.chAlpha    = (unBrushId >> 24) & 0xFF;
+			oBrush.oColor.chBlue     = (unBrushId >> 0)  & 0xFF;
+			oBrush.oColor.chGreen    = (unBrushId >> 8)  & 0xFF;
+			oBrush.oColor.chRed      = (unBrushId >> 16) & 0xFF;
+			oBrush.oColor.chAlpha    = (unBrushId >> 24) & 0xFF;
 
 			m_pDC->SetBrush(&oBrush);
 
@@ -2858,10 +2857,10 @@ namespace MetaFile
 		{
 			CEmfPlusBrush oBrush;
 
-			oBrush.Color.chBlue     = (unBrushId >> 0)  & 0xFF;
-			oBrush.Color.chGreen    = (unBrushId >> 8)  & 0xFF;
-			oBrush.Color.chRed      = (unBrushId >> 16) & 0xFF;
-			oBrush.Color.chAlpha    = (unBrushId >> 24) & 0xFF;
+			oBrush.oColor.chBlue     = (unBrushId >> 0)  & 0xFF;
+			oBrush.oColor.chGreen    = (unBrushId >> 8)  & 0xFF;
+			oBrush.oColor.chRed      = (unBrushId >> 16) & 0xFF;
+			oBrush.oColor.chAlpha    = (unBrushId >> 24) & 0xFF;
 
 			m_pDC->SetBrush(&oBrush);
 
@@ -3368,7 +3367,8 @@ namespace MetaFile
 		BYTE uchCM = ExpressValue(unShFlags, 8, 11);
 
 		m_pDC->GetClip()->Reset();
-		m_pDC->GetClip()->SetPath(pPath, uchCM, GetTransform());
+		m_pDC->GetClip()->SetPath(*pPath, uchCM, *GetTransform());
+		UpdateOutputDC();
 
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMFPLUS_SETCLIPPATH(unShFlags, pPath);
@@ -3384,7 +3384,7 @@ namespace MetaFile
 		m_oStream >> oRect;
 
 		m_pDC->GetClip()->Reset();
-		CombineClip(oRect.GetRectD(), shCM);
+		CombineClip(oRect.ToRectD(), shCM);
 		UpdateOutputDC();
 
 		if (NULL != m_pInterpretator)
@@ -3417,7 +3417,7 @@ namespace MetaFile
 						CEmfPlusRegionNodePath* pNodeRegionPath = (CEmfPlusRegionNodePath*)pNode;
 
 						if (!pNodeRegionPath->Empty())
-							m_pDC->GetClip()->SetPath(pNodeRegionPath->GetPath(), shCM, GetTransform());
+							m_pDC->GetClip()->SetPath(*pNodeRegionPath->GetPath(), shCM, *GetTransform());
 
 						break;
 					}
@@ -3426,7 +3426,7 @@ namespace MetaFile
 						CEmfPlusRegionNodeRectF* pNodeRegionRectF = (CEmfPlusRegionNodeRectF*)pNode;
 
 						if (!pNodeRegionRectF->Empty())
-							CombineClip(pNodeRegionRectF->GetRect()->GetRectD(), shCM);
+							CombineClip(pNodeRegionRectF->GetRect()->ToRectD(), shCM);
 
 						break;
 					}
@@ -3434,16 +3434,18 @@ namespace MetaFile
 					{
 						CEmfPlusRegionNodeChild* pNodeRegionChild = (CEmfPlusRegionNodeChild*)pNode;
 
-						pNodeRegionChild->ClipRegionOnRenderer(m_pInterpretator, GetDCBounds());
+						pNodeRegionChild->DrawOnClip(*m_pDC->GetClip(), *GetTransform(), GetDCBounds());
 
 						break;
 					}
 				}
 			}
-
-			if (NULL != m_pInterpretator)
-				m_pInterpretator->HANDLE_EMFPLUS_SETCLIPREGION(shObjectIndex, shCM, pRegion);
 		}
+
+		UpdateOutputDC();
+
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMFPLUS_SETCLIPREGION(shObjectIndex, shCM, pRegion);
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_COMMENT()
@@ -3496,21 +3498,11 @@ namespace MetaFile
 
 		std::vector<TEmfPlusPointF> arConvertdPoints(arPoints.size());
 
-		if (typeid (TEmfPlusPointR) == typeid (T))
-		{
-			arConvertdPoints[0] = reinterpret_cast<TEmfPlusPointR&>(arPoints[0]);
-
-			for (unsigned int unIndex = 1; unIndex < arPoints.size(); ++unIndex)
-				arConvertdPoints[unIndex] = arConvertdPoints[unIndex - 1] + reinterpret_cast<TEmfPlusPointR&>(arPoints[unIndex]);
-
-			return arConvertdPoints;
-			//TODO: реализовать при встрече примера
-		}
-		else if (typeid (TEmfPlusPoint) == typeid (T))
+		if (typeid (TEmfPlusPoint) == typeid (T))
 		{
 			for (unsigned int unIndex = 0; unIndex < arPoints.size(); ++unIndex)
-				arConvertdPoints[unIndex] = reinterpret_cast<TEmfPlusPoint&>(arPoints[unIndex]);
-
+				arConvertdPoints[unIndex].Set((TEmfPlusPoint&)arPoints[unIndex]);
+			
 			return arConvertdPoints;
 		}
 		else if (typeid (TEmfPlusPointF) == typeid (T))

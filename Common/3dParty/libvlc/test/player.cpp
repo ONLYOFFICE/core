@@ -75,9 +75,7 @@ void Mwindow::initUI()
 	QObject::connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(changePosition(int)));
 
 	/* A timer to update the sliders */
-	QTimer *timer = new QTimer(this);
-	connect(timer, SIGNAL(timeout()), this, SLOT(updateInterface()));
-	timer->start(100);
+	connect(vlcPlayer, SIGNAL(positionChanged(float)), this, SLOT(updateInterface(float)));
 
 	/* Central Widgets */
 	QWidget *centralWidget = new QWidget;
@@ -118,7 +116,7 @@ void Mwindow::openFile()
 	QString sFile = QFileDialog::getOpenFileName(this, tr("Load a file"));
 
 	/* Create a new Media */
-	CVlcMedia* pMedia = new CVlcMedia(vlcPlayer->m_pVlcInstance, sFile, false);
+	CVlcMedia* pMedia = new CVlcMedia(GetVlcInstance(), sFile, false);
 
 	/* Open media and start playback */
 	vlcPlayer->open(pMedia);
@@ -135,16 +133,16 @@ void Mwindow::play()
 	if (!vlcPlayer)
 		return;
 
-	if (libvlc_media_player_is_playing(vlcPlayer->m_pVlcPlayer))
+	if (vlcPlayer->isPlaying())
 	{
 		/* Pause */
-		libvlc_media_player_pause(vlcPlayer->m_pVlcPlayer);
+		vlcPlayer->pause();
 		playBut->setText("Play");
 	}
 	else
 	{
 		/* Play again */
-		libvlc_media_player_play(vlcPlayer->m_pVlcPlayer);
+		vlcPlayer->play();
 		playBut->setText("Pause");
 	}
 }
@@ -158,21 +156,18 @@ int Mwindow::changeVolume(int vol)
 
 void Mwindow::changePosition(int pos)
 { /* Called on position slider change */
-
-	libvlc_media_player_set_position(vlcPlayer->m_pVlcPlayer, (float)pos / 1000.0);
+	vlcPlayer->setPosition(static_cast<float>(pos) / 1000.0);
 }
 
-void Mwindow::updateInterface()
+void Mwindow::updateInterface(float fNewPos)
 { // Update interface and check if song is finished
-
 	if (!vlcPlayer)
 		return;
 
 	/* update the timeline */
-	float pos = libvlc_media_player_get_position(vlcPlayer->m_pVlcPlayer);
-	slider->setValue((int)(pos * 1000.0));
+	slider->setValue(static_cast<int>(fNewPos * 1000.0));
 
-	/* Stop the media */
+	/* Stop the media if needed */
 	if (vlcPlayer->getState() == libvlc_Ended)
 		this->stop();
 }

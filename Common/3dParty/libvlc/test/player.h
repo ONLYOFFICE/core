@@ -26,7 +26,7 @@ private slots:
 
 	int changeVolume(int);
 	void changePosition(int);
-	void updateInterface();
+	void updateInterface(float);
 
 protected:
 	virtual void closeEvent(QCloseEvent *);

@@ -322,7 +322,7 @@ namespace PPTX
 			{
 				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(dataFilepathImageA, dX, dY, dW, dH, additionalPath, additionalType);
 			}
-			if (!dataFilepathImage.empty())
+			else if (!dataFilepathImage.empty())
 			{
 				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(dataFilepathImage, dX, dY, dW, dH, additionalPath, additionalType);
 			}

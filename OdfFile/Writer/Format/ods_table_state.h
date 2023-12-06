@@ -330,6 +330,7 @@ public:
 		void set_table_protection_protected_cells(bool Val);
 
     void add_column(office_element_ptr & elm, unsigned int repeated, office_element_ptr & style);
+		void set_column_width_sym(double width);
 		void set_column_width(double width);
 		void set_column_optimal_width(bool val);
 		void set_column_hidden(bool val);
@@ -490,6 +491,7 @@ public:
     int dimension_columns;
     int dimension_row;
 
+	double defaut_column_width_sym_ = 0;
 	double defaut_column_width_;
 	double defaut_row_height_;
 
@@ -549,6 +551,8 @@ private:
 	
 	std::vector<ods_hyperlink_state> hyperlinks_;
 	std::map<unsigned int, ods_shared_formula_state> shared_formulas_;
+
+	std::map<std::wstring, std::wstring> mapTabled; // for formula used ... perhaps
 
 	std::vector<table_part_state> table_parts_;
 

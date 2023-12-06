@@ -874,6 +874,12 @@ XLS::BaseObjectPtr CSlicerCaches::toBin()
 XLS::BaseObjectPtr CSlicerCaches::toBinTable()
 {
 	auto ptr(new XLSB::TABLESLICERCACHEIDS);
+	auto ptr1(new XLSB::FRTBegin);
+	ptr->m_BrtFRTBegin = XLS::BaseObjectPtr{ptr1};
+	XLSB::FRTProductVersion version;
+	version.product = 0;
+	version.version = 0;
+	ptr1->productVersion = version;
 	XLS::BaseObjectPtr objectPtr(ptr);
 	for(auto i:m_oSlicerCache)
 	{

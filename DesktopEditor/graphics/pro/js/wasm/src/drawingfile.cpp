@@ -155,9 +155,9 @@ WASM_EXPORT BYTE* GetInteractiveFormsInfo(CGraphicsFileDrawing* pGraphics)
 {
 	return pGraphics->GetInteractiveFormsInfo();
 }
-WASM_EXPORT BYTE* GetInteractiveFormsFonts(CGraphicsFileDrawing* pGraphics, int nType, int nPageIndex)
+WASM_EXPORT BYTE* GetInteractiveFormsFonts(CGraphicsFileDrawing* pGraphics, int nType)
 {
-	return pGraphics->GetWidgetFonts(nType, nPageIndex);
+	return pGraphics->GetWidgetFonts(nType);
 }
 WASM_EXPORT BYTE* GetInteractiveFormsAP(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget, int nView, int nButtonView)
 {

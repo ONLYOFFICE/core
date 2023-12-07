@@ -131,7 +131,6 @@ public:
 	BYTE* GetWidgets();
 	BYTE* GetWidgetEmbeddedFonts();
 	BYTE* GetWidgetStandardFonts();
-	BYTE* GetWidgetFonts(int nPageIndex = -1);
 	BYTE* GetAnnots    (int nPageIndex = -1);
 	BYTE* VerifySign   (const std::wstring& sFile, ICertificate* pCertificate, int nWidget = -1);
 	BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget  = -1, const char* sView  = NULL, const char* sBView = NULL);

@@ -210,6 +210,8 @@ class CAnnotWidget : public CAnnot
 public:
 	virtual ~CAnnotWidget();
 
+	void SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CFontList *pFontList);
+
 protected:
 	CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField);
 
@@ -222,6 +224,8 @@ protected:
 private:
 	unsigned int m_unR; // Поворот аннотации относительно страницы - R
 	unsigned int m_unRefNumParent; // Номер ссылки на объект родителя
+	double m_dFontSize; // Размер шрифта - из DA
+	std::vector<double> m_arrTC; // Цвет текста - из DA
 	std::vector<double> m_arrBC; // Цвет границ - BC
 	std::vector<double> m_arrBG; // Цвет фона - BG
 	std::vector<CAction*> m_arrAction; // Действия
@@ -231,6 +235,8 @@ private:
 	std::string m_sDS; // Строка стиля по умолчанию - DS
 	std::string m_sDV; // Значение по-умолчанию - DV
 	std::string m_sT; // Частичное имя поля - T
+	std::string m_sFontName; // Имя шрифта - из DA
+	std::string m_sActualFontName; // Имя замененного шрифта
 };
 
 class CAnnotWidgetBtn final : public CAnnotWidget

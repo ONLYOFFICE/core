@@ -892,7 +892,7 @@ BYTE* CPdfReader::GetWidgets()
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
-BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts, int nPageIndex)
+BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
 {
 	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
 		return NULL;
@@ -916,9 +916,6 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts, int nPageIndex)
 		if (!pField)
 			continue;
 
-		if (nPageIndex >= 0 && pField->getPageNum() != nPageIndex + 1)
-			continue;
-
 		// Шрифт и размер шрифта - из DA
 		Ref fontID;
 		double dFontSize = 0;
@@ -928,7 +925,6 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts, int nPageIndex)
 
 		Object oObj, oField, oFont;
 		pField->getFieldRef(&oObj);
-		int nRefNum = oObj.getRefNum();
 		oObj.fetch(xref, &oField);
 		oObj.free();
 
@@ -994,17 +990,16 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts, int nPageIndex)
 		}
 		oObj.free();
 
-
 		if (gfxFont)
 		{
 			Ref oEmbRef;
 			const unsigned char* pData14 = NULL;
 			unsigned int nSize14 = 0;
-			std::wstring wsFileName, wsFontName;
 			std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
 			if ((nTypeFonts == 1 && gfxFont->getEmbeddedFontID(&oEmbRef)) ||
 				(nTypeFonts == 2 && PdfReader::GetBaseFont(wsFontBaseName, pData14, nSize14)))
 			{
+				std::wstring wsFileName, wsFontName;
 				PdfReader::GetFont(xref, m_pFontManager, m_pFontList, gfxFont, wsFileName, wsFontName);
 
 				std::string sFileName = U_TO_UTF8(wsFontName);
@@ -1013,38 +1008,7 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts, int nPageIndex)
 				arrFontsRef.push_back(fontID.num);
 				m_mFonts[wsFontName] = wsFileName;
 			}
-			else if (nTypeFonts == 3 && nPageIndex >= 0)
-			{
-				if (gfxFont->getEmbeddedFontID(&oEmbRef) || PdfReader::GetBaseFont(wsFontBaseName, pData14, nSize14))
-					PdfReader::GetFont(xref, m_pFontManager, m_pFontList, gfxFont, wsFileName, wsFontName);
-				else if (!gfxFont->locateFont(xref, false) || (wsFileName = NSStrings::GetStringFromUTF32(gfxFont->locateFont(xref, false)->path)).length() == 0)
-				{
-					NSFonts::CFontInfo* pFontInfo = PdfReader::GetFontByParams(xref, m_pFontManager, gfxFont, wsFontBaseName);
-					if (pFontInfo && L"" != pFontInfo->m_wsFontPath)
-					{
-						wsFileName = pFontInfo->m_wsFontPath;
-						wsFontName = pFontInfo->m_wsFontName;
-					}
-				}
-
-				oRes.AddInt(nRefNum);
-				oRes.WriteString(U_TO_UTF8(wsFontName));
-				oRes.AddDouble(dFontSize);
-
-				// Цвет текста - из DA
-				int nSpace;
-				GList *arrColors = pField->getColorSpace(&nSpace);
-				oRes.AddInt(nSpace);
-				for (int j = 0; j < nSpace; ++j)
-					oRes.AddDouble(*(double*)arrColors->get(j));
-				deleteGList(arrColors, double);
-
-				nFontsID++;
-				arrFontsRef.push_back(fontID.num);
-				m_mFonts[wsFontName] = wsFileName;
-			}
 		}
-
 		RELEASEOBJECT(gfxFontDict);
 	}
 

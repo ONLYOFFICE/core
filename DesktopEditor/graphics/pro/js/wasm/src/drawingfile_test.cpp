@@ -350,6 +350,29 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 
 		// Widget
 
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "Font: name " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+		i += nPathLength;
+
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "size " << (double)nPathLength / 100.0 << ", ";
+
+		int nTCLength = READ_INT(pWidgets + i);
+		i += 4;
+		if (nTCLength)
+		{
+			std::cout << "color";
+			for (int j = 0; j < nTCLength; ++j)
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << " " << (double)nPathLength / 100.0;
+			}
+			std::cout << ", ";
+		}
+
 		std::string arrQ[] = {"left-justified", "centered", "right-justified"};
 		nPathLength = READ_BYTE(pWidgets + i);
 		i += 1;
@@ -376,6 +399,13 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "DS " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
+		}
+		if (nFlags & (1 << 2))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Actual font " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 			i += nPathLength;
 		}
 		if (nFlags & (1 << 3))
@@ -663,9 +693,9 @@ void ReadAnnotAP(BYTE* pWidgetsAP, int& i)
 	std::cout << std::endl;
 }
 
-void ReadInteractiveFormsFonts(CGraphicsFileDrawing* pGrFile, int nType, int nPageIndex)
+void ReadInteractiveFormsFonts(CGraphicsFileDrawing* pGrFile, int nType)
 {
-	BYTE* pFonts = GetInteractiveFormsFonts(pGrFile, nType, nPageIndex);
+	BYTE* pFonts = GetInteractiveFormsFonts(pGrFile, nType);
 	int nLength = READ_INT(pFonts);
 	int i = 4;
 	nLength -= 4;
@@ -679,46 +709,12 @@ void ReadInteractiveFormsFonts(CGraphicsFileDrawing* pGrFile, int nType, int nPa
 		for (int j = 0; j < nFontsLength; ++j)
 		{
 			std::cout << std::endl;
-			std::string sFontName;
-			if (nType == 3)
-			{
-				int nPathLength = READ_INT(pFonts + i);
-				i += 4;
-				std::cout << " AP " << nPathLength << ", ";
 
-				nPathLength = READ_INT(pFonts + i);
-				i += 4;
-				sFontName = std::string((char*)(pFonts + i), nPathLength);
-				std::cout << "Font: name " << sFontName;
-				i += nPathLength;
-
-				nPathLength = READ_INT(pFonts + i);
-				i += 4;
-				std::cout << ", size " << (double)nPathLength / 100.0 << ", ";
-
-				int nTCLength = READ_INT(pFonts + i);
-				i += 4;
-				if (nTCLength)
-				{
-					std::cout << "color";
-					for (int j = 0; j < nTCLength; ++j)
-					{
-						nPathLength = READ_INT(pFonts + i);
-						i += 4;
-						std::cout << " " << (double)nPathLength / 100.0;
-					}
-					std::cout << ", ";
-				}
-				continue;
-			}
-			else
-			{
-				int nPathLength = READ_INT(pFonts + i);
-				i += 4;
-				sFontName = std::string((char*)(pFonts + i), nPathLength);
-				std::cout << " " << sFontName << " ";
-				i += nPathLength;
-			}
+			int nPathLength = READ_INT(pFonts + i);
+			i += 4;
+			std::string sFontName = std::string((char*)(pFonts + i), nPathLength);
+			std::cout << " " << sFontName << " ";
+			i += nPathLength;
 
 			BYTE* pFont = GetFontBinary(pGrFile, (char*)sFontName.c_str());
 			int nLength2 = READ_INT(pFont);
@@ -956,9 +952,8 @@ int main(int argc, char* argv[])
 	// INTERACTIVE FORMS
 	if (true)
 	{
-		ReadInteractiveFormsFonts(pGrFile, 1, -1);
-		ReadInteractiveFormsFonts(pGrFile, 2, -1);
-		ReadInteractiveFormsFonts(pGrFile, 3, nTestPage);
+		ReadInteractiveFormsFonts(pGrFile, 1);
+		ReadInteractiveFormsFonts(pGrFile, 2);
 		std::cout << std::endl;
 
 		BYTE* pWidgets = GetInteractiveFormsInfo(pGrFile);

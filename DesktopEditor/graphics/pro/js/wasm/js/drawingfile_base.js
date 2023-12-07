@@ -601,10 +601,10 @@
 			APi["retValue"] = np2 << 32 | np1;
 		}
 	}
-	function getWidgetFonts(type, pageIndex)
+	function getWidgetFonts(type)
 	{
 		let res = [];
-		let ext = Module["_GetInteractiveFormsFonts"](this.nativeFile, type, pageIndex);
+		let ext = Module["_GetInteractiveFormsFonts"](this.nativeFile, type);
 		if (ext == 0)
 			return res;
 
@@ -630,30 +630,7 @@
 		{
 			let n = reader.readInt();
 			for (let i = 0; i < n; ++i)
-			{
-				if (type == 3)
-				{
-					let rec = {};
-					rec["AP"] = {};
-					// number for relations with AP
-					rec["AP"]["i"] = reader.readInt();
-	
-					rec["font"] = {};
-					rec["font"]["name"] = reader.readString();
-					rec["font"]["size"] = reader.readDouble();
-					let tc = reader.readInt();
-					if (tc)
-					{
-						rec["font"]["color"] = [];
-						for (let i = 0; i < tc; ++i)
-							rec["font"]["color"].push(reader.readDouble());
-					}
-	
-					res.push(rec);
-				}
-				else
-					res.push(reader.readString());
-			}
+				res.push(reader.readString());
 		}
 		
 		Module["_free"](ext);
@@ -728,6 +705,16 @@
 			// Annot
 			readAnnot(reader, rec);
 			// Widget
+			rec["font"] = {};
+			rec["font"]["name"] = reader.readString();
+			rec["font"]["size"] = reader.readDouble();
+			let tc = reader.readInt();
+			if (tc)
+			{
+				rec["font"]["color"] = [];
+				for (let i = 0; i < tc; ++i)
+					rec["font"]["color"].push(reader.readDouble());
+			}
 			// 0 - left-justified, 1 - centered, 2 - right-justified
 			rec["alignment"] = reader.readByte();
 			rec["flag"] = reader.readInt();
@@ -742,6 +729,9 @@
 			// Default style string (CSS2 format) - DS
 			if (flags & (1 << 1))
 				rec["defaultStyle"] = reader.readString();
+			// Actual font
+			if (flags & (1 << 2))
+				rec["font"]["actual"] = reader.readString();
 			// Selection mode - H
 			// 0 - none, 1 - invert, 2 - push, 3 - outline
 			if (flags & (1 << 3))
@@ -895,19 +885,12 @@
 	};
 	CFile.prototype["getInteractiveFormsEmbeddedFonts"] = function()
 	{
-		return getWidgetFonts(1, -1);
+		return getWidgetFonts(1);
 	}
 	CFile.prototype["getInteractiveFormsStandardFonts"] = function()
 	{
-		return getWidgetFonts(2, -1);
+		return getWidgetFonts(2);
 	}
-	CFile.prototype["getInteractiveFormsFonts"] = function(pageIndex)
-	{
-		self.drawingFileCurrentPageIndex = pageIndex;
-		let pRes = getWidgetFonts(3, pageIndex);
-		self.drawingFileCurrentPageIndex = -1;
-		return pRes;
-	};
 	// optional nWidget     - rec["AP"]["i"]
 	// optional sView       - N/D/R
 	// optional sButtonView - state pushbutton-annotation - Off/Yes(or rec["ExportValue"])

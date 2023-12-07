@@ -163,7 +163,7 @@ public:
 			return ((CPdfFile*)pReader)->GetWidgets();
 		return NULL;
 	}
-	BYTE* GetWidgetFonts(int nTypeFonts, int nPageIndex = -1)
+	BYTE* GetWidgetFonts(int nTypeFonts)
 	{
 		if (nType == 0)
 		{
@@ -171,8 +171,6 @@ public:
 				return ((CPdfFile*)pReader)->GetWidgetEmbeddedFonts();
 			if (nTypeFonts == 2)
 				return ((CPdfFile*)pReader)->GetWidgetStandardFonts();
-			if (nTypeFonts == 3)
-				return ((CPdfFile*)pReader)->GetWidgetFonts(nPageIndex);
 		}
 		return NULL;
 	}

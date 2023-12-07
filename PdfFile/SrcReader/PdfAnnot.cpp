@@ -37,6 +37,7 @@
 #include "../lib/xpdf/Annot.h"
 #include "../lib/xpdf/GfxFont.h"
 #include "../lib/goo/GList.h"
+#include "../Resources/BaseFonts.h"
 
 #include "../../DesktopEditor/common/Types.h"
 #include "../../DesktopEditor/common/StringExt.h"
@@ -678,6 +679,13 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 	oObj.fetch(xref, &oField);
 	oObj.free();
 
+	// Цвет текста - из DA
+	int nSpace;
+	GList *arrColors = pField->getColorSpace(&nSpace);
+	for (int j = 0; j < nSpace; ++j)
+		m_arrTC.push_back(*(double*)arrColors->get(j));
+	deleteGList(arrColors, double);
+
 	// Выравнивание текста - Q
 	m_nQ = 0;
 	if (pField->fieldLookup("Q", &oObj)->isInt())
@@ -831,6 +839,112 @@ CAnnotWidget::~CAnnotWidget()
 {
 	for (int i = 0; i < m_arrAction.size(); ++i)
 		RELEASEOBJECT(m_arrAction[i]);
+}
+
+void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
+{
+	// Шрифт и размер шрифта - из DA
+	Ref fontID;
+	pField->getFont(&fontID, &m_dFontSize);
+	if (fontID.num <= 0)
+		return;
+
+	XRef* xref = pdfDoc->getXRef();
+	Object oObj, oField, oFont;
+	pField->getFieldRef(&oObj);
+	oObj.fetch(xref, &oField);
+	oObj.free();
+
+	bool bFindResources = false;
+
+	if (oField.dictLookup("DR", &oObj)->isDict() && oObj.dictLookup("Font", &oFont)->isDict())
+	{
+		for (int i = 0; i < oFont.dictGetLength(); ++i)
+		{
+			Object oFontRef;
+			if (oFont.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
+			{
+				bFindResources = true;
+				oFontRef.free();
+				break;
+			}
+			oFontRef.free();
+		}
+	}
+	oFont.free(); oField.free();
+
+	if (!bFindResources)
+	{
+		oObj.free();
+		AcroForm* pAcroForms = pdfDoc->getCatalog()->getForm();
+		Object* oAcroForm = pAcroForms->getAcroFormObj();
+		if (oAcroForm->isDict() && oAcroForm->dictLookup("DR", &oObj)->isDict() && oObj.dictLookup("Font", &oFont)->isDict())
+		{
+			for (int i = 0; i < oFont.dictGetLength(); ++i)
+			{
+				Object oFontRef;
+				if (oFont.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
+				{
+					bFindResources = true;
+					oFontRef.free();
+					break;
+				}
+				oFontRef.free();
+			}
+		}
+		oFont.free();
+	}
+
+	GfxFont* gfxFont = NULL;
+	GfxFontDict *gfxFontDict = NULL;
+	if (bFindResources)
+	{
+		Object oFontRef;
+		if (oObj.dictLookupNF("Font", &oFontRef)->isRef())
+		{
+			if (oFontRef.fetch(xref, &oFont)->isDict())
+			{
+				Ref r = oFontRef.getRef();
+				gfxFontDict = new GfxFontDict(pdfDoc->getXRef(), &r, oFont.getDict());
+				gfxFont = gfxFontDict->lookupByRef(fontID);
+			}
+			oFont.free();
+		}
+		else if (oFontRef.isDict())
+		{
+			gfxFontDict = new GfxFontDict(pdfDoc->getXRef(), NULL, oFontRef.getDict());
+			gfxFont = gfxFontDict->lookupByRef(fontID);
+		}
+		oFontRef.free();
+	}
+	oObj.free();
+
+	// 3 - Актуальный шрифт
+	std::wstring wsFileName, wsFontName;
+	if (gfxFont)
+	{
+		Ref oEmbRef;
+		const unsigned char* pData14 = NULL;
+		unsigned int nSize14 = 0;
+		std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
+		if (gfxFont->getEmbeddedFontID(&oEmbRef) || GetBaseFont(wsFontBaseName, pData14, nSize14))
+			GetFont(pdfDoc->getXRef(), pFontManager, pFontList, gfxFont, wsFileName, wsFontName);
+		else if (!gfxFont->locateFont(xref, false) || (wsFileName = NSStrings::GetStringFromUTF32(gfxFont->locateFont(xref, false)->path)).length() == 0)
+		{
+			std::wstring wsFBN = wsFontBaseName;
+			NSFonts::CFontInfo* pFontInfo = PdfReader::GetFontByParams(xref, pFontManager, gfxFont, wsFBN);
+			if (pFontInfo && !pFontInfo->m_wsFontPath.empty())
+			{
+				wsFileName = pFontInfo->m_wsFontPath;
+				wsFontName = wsFontBaseName;
+				m_unFlags |= (1 << 2);
+				m_sActualFontName = U_TO_UTF8(pFontInfo->m_wsFontName);
+			}
+		}
+	}
+
+	m_sFontName = U_TO_UTF8(wsFontName);
+	RELEASEOBJECT(gfxFontDict);
 }
 
 //------------------------------------------------------------------------
@@ -1419,7 +1533,10 @@ CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList 
 			break;
 		}
 		if (pAnnot)
+		{
+			pAnnot->SetFont(pdfDoc, pField, pFontManager, pFontList);
 			m_arrAnnots.push_back(pAnnot);
+		}
 	}
 }
 
@@ -2238,6 +2355,11 @@ void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
 
 	CAnnot::ToWASM(oRes);
 
+	oRes.WriteString(m_sFontName);
+	oRes.AddDouble(m_dFontSize);
+	oRes.AddInt(m_arrTC.size());
+	for (int i = 0; i < m_arrTC.size(); ++i)
+		oRes.AddDouble(m_arrTC[i]);
 	oRes.WriteBYTE(m_nQ);
 	oRes.AddInt(m_unFieldFlag);
 	oRes.AddInt(m_unFlags);
@@ -2245,6 +2367,8 @@ void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
 		oRes.WriteString(m_sTU);
 	if (m_unFlags & (1 << 1))
 		oRes.WriteString(m_sDS);
+	if (m_unFlags & (1 << 2))
+		oRes.WriteString(m_sActualFontName);
 	if (m_unFlags & (1 << 3))
 		oRes.WriteBYTE(m_nH);
 	if (m_unFlags & (1 << 5))

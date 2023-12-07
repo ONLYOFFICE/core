@@ -457,7 +457,6 @@ namespace MetaFile
 			m_oViewport.y = shY;
 		}
 
-		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
 	void CWmfDC::SetWindowExt(short shW, short shH)
@@ -508,7 +507,6 @@ namespace MetaFile
 			m_oWindow.y = shY;
 		}
 
-		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
 	void CWmfDC::SetViewportExt(short shW, short shH)
@@ -545,7 +543,7 @@ namespace MetaFile
 	}
 	bool CWmfDC::UpdatePixelMetrics()
 	{
-		if (1 >= m_oWindow.w || 1 >= m_oViewport.w)
+		if (1 >= std::abs(m_oWindow.w) || 1 >= std::abs(m_oViewport.w))
 			return false;
 
 		unsigned short ushMapMode = m_ushMapMode;

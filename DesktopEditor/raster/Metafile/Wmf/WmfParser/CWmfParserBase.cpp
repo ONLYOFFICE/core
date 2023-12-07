@@ -747,14 +747,14 @@ namespace MetaFile
 
 					if (NULL != pNewBuffer)
 					{
-						m_pInterpretator->DrawBitmap(dX, dY, fabs(dX1 - dX), fabs(dY1 - dY), pNewBuffer, std::abs(oClip.Right - oClip.Left), std::abs(oClip.Bottom - oClip.Top));
+						m_pInterpretator->DrawBitmap(dX, dY, dX1 - dX, dY1 - dY, pNewBuffer, std::abs(oClip.Right - oClip.Left), std::abs(oClip.Bottom - oClip.Top));
 						delete[] pNewBuffer;
 					}
 					else
-						m_pInterpretator->DrawBitmap(dX, dY, fabs(dX1 - dX), fabs(dY1 - dY), pBgra, unWidth, unHeight);
+						m_pInterpretator->DrawBitmap(dX, dY, dX1 - dX, dY1 - dY, pBgra, unWidth, unHeight);
 				}
 				else
-					m_pInterpretator->DrawBitmap(dX, dY, fabs(dX1 - dX), fabs(dY1 - dY), pBgra, unWidth, unHeight);
+					m_pInterpretator->DrawBitmap(dX, dY, dX1 - dX, dY1 - dY, pBgra, unWidth, unHeight);
 			}
 
 			if (pBgra)

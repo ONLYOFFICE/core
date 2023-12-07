@@ -1272,9 +1272,9 @@ CAnnotSquareCircle::CAnnotSquareCircle(PDFDoc* pdfDoc, Object* oAnnotRef, int nP
 	{
 		m_unFlags |= (1 << 15);
 		ARR_GET_NUM(oObj, 0, m_pRD[0]);
-		ARR_GET_NUM(oObj, 1, m_pRD[1]);
+		ARR_GET_NUM(oObj, 1, m_pRD[3]);
 		ARR_GET_NUM(oObj, 2, m_pRD[2]);
-		ARR_GET_NUM(oObj, 3, m_pRD[3]);
+		ARR_GET_NUM(oObj, 3, m_pRD[1]);
 	}
 	oObj.free();
 
@@ -1390,9 +1390,9 @@ CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex
 	{
 		m_unFlags |= (1 << 15);
 		ARR_GET_NUM(oObj, 0, m_pRD[0]);
-		ARR_GET_NUM(oObj, 1, m_pRD[1]);
+		ARR_GET_NUM(oObj, 1, m_pRD[3]);
 		ARR_GET_NUM(oObj, 2, m_pRD[2]);
-		ARR_GET_NUM(oObj, 3, m_pRD[3]);
+		ARR_GET_NUM(oObj, 3, m_pRD[1]);
 	}
 	oObj.free();
 
@@ -1452,9 +1452,9 @@ CAnnotCaret::CAnnotCaret(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CM
 	{
 		m_unFlags |= (1 << 15);
 		ARR_GET_NUM(oObj, 0, m_pRD[0]);
-		ARR_GET_NUM(oObj, 1, m_pRD[1]);
+		ARR_GET_NUM(oObj, 1, m_pRD[3]);
 		ARR_GET_NUM(oObj, 2, m_pRD[2]);
-		ARR_GET_NUM(oObj, 3, m_pRD[3]);
+		ARR_GET_NUM(oObj, 3, m_pRD[1]);
 	}
 	oObj.free();
 

@@ -771,6 +771,16 @@ namespace OOX
 						ptr->m_SLICERCACHEBOOKPIVOTTABLES = XLS::BaseObjectPtr{ptr1};
 						auto ptr2(new XLSB::SlicerCacheBookPivotTables);
 						ptr1->m_BrtSlicerCacheBookPivotTables = XLS::BaseObjectPtr{ptr2};
+						
+						auto ptr3(new XLSB::FRTBegin);
+						ptr1->m_BrtFRTBegin = XLS::BaseObjectPtr{ptr3};
+						XLSB::FRTProductVersion version;
+						version.product = 0;
+						version.version = 0x0F03;
+						ptr3->productVersion = version;
+						
+						
+
 						for(auto j:i->m_oSlicerCachePivotTables)
 						{
 							XLSB::SlicerCachePivotTable table;
@@ -781,12 +791,28 @@ namespace OOX
 					if(i->m_sUri == L"{2F2917AC-EB37-4324-AD4E-5DD8C200BD13}")
 					{
 						auto ptr1(new XLSB::TABLESLICERCACHE);
+
+						auto ptr2(new XLSB::FRTBegin);
+						ptr1->m_BrtFRTBegin = XLS::BaseObjectPtr{ptr2};
+						XLSB::FRTProductVersion version;
+						version.product = 0;
+						version.version = 0x0F03;
+						ptr2->productVersion = version;
+
 						ptr->m_TABLESLICERCACHE = XLS::BaseObjectPtr{ptr1};
 						ptr1->m_BrtBeginTableSlicerCache = i->m_oTableSlicerCache->toBin();
 					}
 					if(i->m_sUri == L"{470722E0-AACD-4C17-9CDC-17EF765DBC7E}")
 					{
 						auto ptr1(new XLSB::SLICERCACHECROSSFILTEREXT);
+						
+						auto ptr2(new XLSB::FRTBegin);
+						ptr1->m_BrtFRTBegin = XLS::BaseObjectPtr{ptr2};
+						XLSB::FRTProductVersion version;
+						version.product = 0;
+						version.version = 0;
+						ptr2->productVersion = version;
+
 						ptr->m_SLICERCACHECROSSFILTEREXT = XLS::BaseObjectPtr{ptr1};
 						ptr1->m_BrtSlicerCacheHideItemsWithNoData = i->m_oSlicerCacheHideItemsWithNoData->toBin();
 					}

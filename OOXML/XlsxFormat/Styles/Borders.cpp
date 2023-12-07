@@ -148,6 +148,7 @@ namespace OOX
 				col.xColorType = 0;
                 col.nTintAndShade = 0;
                 col.index = 0;
+				col.fValidRGB = true;
 				ptr->brtColor = col;
 			}
 

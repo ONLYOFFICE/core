@@ -257,4 +257,29 @@ TEST_F(XlsbSimpleTests2, Worksheet2Test)
     ASSERT_EQ(fileContent, exampleContent);
 }
 
+TEST_F(XlsbSimpleTests2, CommentsTest)
+{
+   auto tempDir = XlsbSimpleTests2::tempDir;
+    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"comments2.bin");
+    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"comments2.bin");
+    std::vector<char> fileContent;
+    std::vector<char> exampleContent;
+    ASSERT_EQ(readBinaryFiles(path1, path2, fileContent, exampleContent), 0);
+    ASSERT_EQ(fileContent, exampleContent);
+}
+
+TEST_F(XlsbSimpleTests2, TablesTest)
+{
+    auto tempDir = XlsbSimpleTests2::tempDir;
+    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"tables" + FILE_SEPARATOR_STR + L"table2.bin");
+    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"tables" + FILE_SEPARATOR_STR + L"table2.bin");
+    std::vector<char> fileContent;
+    std::vector<char> exampleContent;
+    ASSERT_EQ(readBinaryFiles(path1, path2, fileContent, exampleContent), 0);
+    ASSERT_EQ(fileContent, exampleContent);
+}
 }

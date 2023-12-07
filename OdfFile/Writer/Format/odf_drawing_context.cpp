@@ -1179,7 +1179,14 @@ void odf_drawing_context::end_shape()
 					enhanced->attlist_.draw_glue_points_	= shape_define->glue_points;
 					enhanced->attlist_.draw_sub_view_size_	= shape_define->sub_view_size;
 
-					if (impl_->current_drawing_state_.oox_shape_ && !impl_->current_drawing_state_.oox_shape_->modifiers.empty())
+					enhanced->attlist_.draw_path_stretchpoint_x_ = shape_define->path_stretchpoint_x;
+					enhanced->attlist_.draw_path_stretchpoint_y_ = shape_define->path_stretchpoint_y;
+
+					if (!shape_define->modifiers.empty())
+					{
+						enhanced->attlist_.draw_modifiers_ = shape_define->modifiers;
+					}
+					else if (impl_->current_drawing_state_.oox_shape_ && !impl_->current_drawing_state_.oox_shape_->modifiers.empty())
 					{
 						enhanced->attlist_.draw_modifiers_ = impl_->current_drawing_state_.oox_shape_->modifiers;
 					}

@@ -1236,7 +1236,7 @@ namespace Aggplus
 	{
 		return CreateLayer();
 	}
-	
+
 	Status CGraphics::EndCreatingAlphaMask()
 	{
 		if (m_arLayers.empty())
@@ -1282,23 +1282,25 @@ namespace Aggplus
 
 		return Ok;
 	}
-	
+
 	Status CGraphics::CreateLayer()
 	{
 		int nStride                 = m_frame_buffer.ren_buf().stride();
 		const unsigned int unWidth  = m_frame_buffer.ren_buf().width();
 		const unsigned int unHeight = m_frame_buffer.ren_buf().height();
 
-		BYTE *pBuffer = new BYTE[unWidth * unHeight * m_frame_buffer.pix_size];
+		UINT unSize = unWidth * unHeight * m_frame_buffer.pix_size;
 
-		memset(pBuffer, 0x00, unWidth * unHeight * m_frame_buffer.pix_size);
+		BYTE *pBuffer = new BYTE[unSize];
+
+		memset(pBuffer, 0x00, unSize);
 
 		m_frame_buffer.create(unWidth, unHeight, false, nStride, pBuffer);
 
 		m_arLayers.push(new CGraphicsLayer(pBuffer, false));
 		return Ok;
 	}
-	
+
 	Status CGraphics::BlendLayer()
 	{
 		if (m_arLayers.empty())
@@ -1326,14 +1328,14 @@ namespace Aggplus
 			pCurrentGraphicsLayer->BlendTo(m_frame_buffer.pixfmt());
 		else
 		{
-			switch((int)m_pAlphaMask->GetDataType())
+			switch(m_pAlphaMask->GetDataType())
 			{
-				case (int)EMaskDataType::ImageBuffer:
+				case EMaskDataType::ImageBuffer:
 				{
 					pCurrentGraphicsLayer->BlendTo<agg::rgb_to_gray_mask_u8<2, 1, 0>>(m_frame_buffer.pixfmt(), m_pAlphaMask->GetBuffer(), m_pAlphaMask->GetStep());
 					break;
 				}
-				case (int)EMaskDataType::AlphaBuffer:
+				case EMaskDataType::AlphaBuffer:
 				{
 					pCurrentGraphicsLayer->BlendTo<agg::one_component_mask_u8>(m_frame_buffer.pixfmt(), m_pAlphaMask->GetBuffer(), m_pAlphaMask->GetStep());
 					break;
@@ -1366,17 +1368,17 @@ namespace Aggplus
 
 		return Ok;
 	}
-	
+
 	Status CGraphics::SetLayerOpacity(double dOpacity)
 	{
 		if (dOpacity < 0. || dOpacity > 1.)
 			return InvalidParameter;
-		
+
 		if (m_arLayers.empty())
 			return WrongState;
 
 		m_arLayers.top()->SetOpacity(dOpacity);
-		
+
 		return Ok;
 	}
 

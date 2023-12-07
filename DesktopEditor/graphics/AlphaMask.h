@@ -20,11 +20,11 @@ namespace Aggplus
 		CAlphaMask();
 		CAlphaMask(BYTE* pBuffer, EMaskDataType eDataType, bool bExternalBuffer = true);
 		virtual ~CAlphaMask();
-		
+
 		BYTE*         GetBuffer();
 		EMaskDataType GetDataType() const;
 		UINT          GetStep() const;
-		
+
 		Status Create(UINT unWidth, UINT unHeight, EMaskDataType eDataType);
 		Status LoadFromBuffer(BYTE* pBuffer, EMaskDataType eDataType, bool bExternalBuffer = true);
 	private:

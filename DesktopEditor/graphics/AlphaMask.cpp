@@ -43,10 +43,14 @@ namespace Aggplus
 		m_enDataType      = eDataType;
 		m_bExternalBuffer = false;
 
-		m_pBuffer = new BYTE[unWidth * unHeight * GetStep()];
+		UINT unSize = unWidth * unHeight * GetStep();
+		
+		m_pBuffer = new BYTE[unSize];
 
 		if (NULL == m_pBuffer)
 			return OutOfMemory;
+
+		memset(m_pBuffer, 0x00, unSize);
 
 		return Ok;
 	}

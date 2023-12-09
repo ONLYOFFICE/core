@@ -3,7 +3,6 @@
 #include "../../../../../common/Base64.h"
 
 #include "drawingfile.h"
-#include "serialize.h"
 
 #ifdef _WIN32
 #define WASM_EXPORT __declspec(dllexport)
@@ -56,39 +55,6 @@ WASM_EXPORT void SetFontBinary(char* path, BYTE* data, int size)
 		std::string sPathA(path);
 		pStorage->Add(UTF8_TO_U(sPathA), data, size, true);
 	}
-}
-WASM_EXPORT BYTE* GetFontBinary(char* path)
-{
-	NSWasm::CData oRes;
-	oRes.SkipLen();
-
-	NSFonts::IFontsMemoryStorage* pStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
-	if (pStorage)
-	{
-		std::string sPathA(path);
-		NSFonts::IFontStream* pStream = pStorage->Get(UTF8_TO_U(sPathA));
-		if (pStream)
-		{
-			BYTE* pData = NULL;
-			LONG lLength = 0;
-			pStream->GetMemory(pData, lLength);
-
-			if (pData)
-			{
-				oRes.AddInt(lLength);
-
-				unsigned long long npSubMatrix = (unsigned long long)pData;
-				unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
-				oRes.AddInt(npSubMatrix1);
-				oRes.AddInt(npSubMatrix >> 32);
-			}
-		}
-	}
-
-	oRes.WriteLen();
-	BYTE* bRes = oRes.GetBuffer();
-	oRes.ClearWithoutAttack();
-	return bRes;
 }
 WASM_EXPORT int IsFontBinaryExist(char* path)
 {
@@ -189,9 +155,9 @@ WASM_EXPORT BYTE* GetInteractiveFormsInfo(CGraphicsFileDrawing* pGraphics)
 {
 	return pGraphics->GetInteractiveFormsInfo();
 }
-WASM_EXPORT BYTE* GetInteractiveFormsFonts(CGraphicsFileDrawing* pGraphics)
+WASM_EXPORT BYTE* GetInteractiveFormsFonts(CGraphicsFileDrawing* pGraphics, int nType)
 {
-	return pGraphics->GetWidgetFontsID();
+	return pGraphics->GetWidgetFonts(nType);
 }
 WASM_EXPORT BYTE* GetInteractiveFormsAP(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget, int nView, int nButtonView)
 {
@@ -238,6 +204,11 @@ WASM_EXPORT BYTE* GetAnnotationsAP(CGraphicsFileDrawing* pGraphics, int nRasterW
 		sView = "R";
 
 	return pGraphics->GetAPAnnots(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nAnnot, sView);
+}
+WASM_EXPORT BYTE* GetFontBinary(CGraphicsFileDrawing* pGraphics, char* path)
+{
+	std::string sPathA(path);
+	return pGraphics->GetFont(UTF8_TO_U(sPathA));
 }
 WASM_EXPORT void DestroyTextInfo(CGraphicsFileDrawing* pGraphics)
 {

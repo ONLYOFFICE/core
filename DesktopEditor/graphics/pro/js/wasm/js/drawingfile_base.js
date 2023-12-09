@@ -51,8 +51,6 @@
 
 	//module
 
-	self.drawingFileCurrentPageIndex = -1;
-	self.fontStreams = {};
 	self.drawingFile = null;
 
 	function CBinaryReader(data, start, size)
@@ -139,6 +137,14 @@
 		this.dataSize += valueUtf8.length;
 	};
 
+	var UpdateFontsSource = {
+		Undefined   : 0,
+		Page        : 1,
+		Annotation  : 2,
+		Forms       : 4,
+		ButtonIcons : 8
+	};
+
 	function CFile()
 	{
 		this.nativeFile = 0;
@@ -148,6 +154,10 @@
 		this.pages = [];
 		this.info = null;
 		this._isNeedPassword = false;
+
+		// for async fonts loader
+		this.fontPageIndex = -1;
+		this.fontStreams = {};
 	}
 
 	CFile.prototype["loadFromData"] = function(arrayBuffer)
@@ -252,6 +262,7 @@
 			rec["Dpi"] = reader.readInt();
 			rec["Rotate"] = reader.readInt();
 			rec.fonts = [];
+			rec.fontsUpdateType = UpdateFontsSource.Undefined;
 			rec.text = null;
 			this.pages.push(rec);
 		}
@@ -305,9 +316,9 @@
 			return null;
 		}
 
-		self.drawingFileCurrentPageIndex = pageIndex;
+		this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Page);
 		let retValue = Module["_GetPixmap"](this.nativeFile, pageIndex, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor);
-		self.drawingFileCurrentPageIndex = -1;
+		this.unlockPageNumForFontsLoader();
 
 		if (this.pages[pageIndex].fonts.length > 0)
 		{
@@ -325,12 +336,12 @@
 			return null;
 		}
 
-		self.drawingFileCurrentPageIndex = pageIndex;
+		this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Page);
 		let retValue = Module["_GetGlyphs"](this.nativeFile, pageIndex);
 		// there is no need to delete the result; this buffer is used as a text buffer 
 		// for text commands on other pages. After receiving ALL text pages, 
 		// you need to call destroyTextInfo()
-		self.drawingFileCurrentPageIndex = -1;
+		this.unlockPageNumForFontsLoader();
 
 		if (this.pages[pageIndex].fonts.length > 0)
 		{
@@ -345,8 +356,8 @@
 		let len = lenArray[0];
 		len -= 20;
 
-		if (self.drawingFile.onUpdateStatistics)
-			self.drawingFile.onUpdateStatistics(lenArray[1], lenArray[2], lenArray[3], lenArray[4]);
+		if (this.onUpdateStatistics)
+			this.onUpdateStatistics(lenArray[1], lenArray[2], lenArray[3], lenArray[4]);
 
 		if (len <= 0)
 		{
@@ -911,9 +922,9 @@
 			nButtonView = (sButtonView == "Off" ? 0 : 1);
 
 		let res = [];
-		self.drawingFileCurrentPageIndex = pageIndex;
+		this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Forms);
 		let ext = Module["_GetInteractiveFormsAP"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nWidget === undefined ? -1 : nWidget, nView, nButtonView);
-		self.drawingFileCurrentPageIndex = -1;
+		this.unlockPageNumForFontsLoader();
 		if (ext == 0)
 			return res;
 
@@ -957,9 +968,9 @@
 		}
 
 		let res = {};
-		self.drawingFileCurrentPageIndex = pageIndex;
+		this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.ButtonIcons);
 		let ext = Module["_GetButtonIcons"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, bBase64 ? 1 : 0, nWidget === undefined ? -1 : nWidget, nView);
-		self.drawingFileCurrentPageIndex = -1;
+		this.unlockPageNumForFontsLoader();
 		if (ext == 0)
 			return res;
 
@@ -1309,9 +1320,9 @@
 		}
 
 		let res = [];
-		self.drawingFileCurrentPageIndex = pageIndex;
+		this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Annotation);
 		let ext = Module["_GetAnnotationsAP"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nAnnot === undefined ? -1 : nAnnot, nView);
-		self.drawingFileCurrentPageIndex = -1;
+		this.unlockPageNumForFontsLoader();
 		if (ext == 0)
 			return res;
 
@@ -1424,6 +1435,16 @@
 	{
 		Module["_free"](pointer);
 	};
+
+	CFile.prototype.lockPageNumForFontsLoader = function(pageIndex, type)
+	{
+		this.fontPageIndex = pageIndex;
+		this.pages[pageIndex].fontsUpdateType |= type;
+	};
+	CFile.prototype.unlockPageNumForFontsLoader = function()
+	{
+		this.fontPageIndex = -1;
+	};
 	
 	self["AscViewer"]["CDrawingFile"] = CFile;
 	self["AscViewer"]["InitializeFonts"] = function(basePath) {
@@ -1479,6 +1500,10 @@
 	}
 
 	self["AscViewer"]["CheckStreamId"] = function(data, status) {
+		let drawingFile = self.drawingFile;
+		if (!drawingFile)
+			return;
+
 		let lenArray = new Int32Array(Module["HEAP8"].buffer, data, 4);
 		let len = lenArray[0];
 		len -= 4;
@@ -1504,14 +1529,10 @@
 		}
 		else
 		{
-			self.fontStreams[fileId] = self.fontStreams[fileId] || {};
-			self.fontStreams[fileId].pages = self.fontStreams[fileId].pages || [];
-			addToArrayAsDictionary(self.fontStreams[fileId].pages, self.drawingFileCurrentPageIndex);
-
-			if (self.drawingFile)
-			{
-				addToArrayAsDictionary(self.drawingFile.pages[self.drawingFileCurrentPageIndex].fonts, fileId);
-			}
+			drawingFile.fontStreams[fileId] = drawingFile.fontStreams[fileId] || {};
+			drawingFile.fontStreams[fileId].pages = drawingFile.fontStreams[fileId].pages || [];
+			addToArrayAsDictionary(drawingFile.fontStreams[fileId].pages, drawingFile.fontPageIndex);
+			addToArrayAsDictionary(drawingFile.pages[drawingFile.fontPageIndex].fonts, fileId);
 
 			// font can be loading in editor
 			if (undefined === file.externalCallback)
@@ -1520,12 +1541,18 @@
 				file.externalCallback = function() {
 					fontToMemory(_t, true);
 
-					let pages = self.fontStreams[fileId].pages;
-					delete self.fontStreams[fileId];
-					let pagesRepaint = [];
+					let pages = drawingFile.fontStreams[fileId].pages;
+					delete drawingFile.fontStreams[fileId];
+
+					let pagesRepaint_Page        = [];
+					let pagesRepaint_Annotation  = [];
+					let pagesRepaint_Forms       = [];
+					let pagesRepaint_ButtonIcons = [];
+
 					for (let i = 0, len = pages.length; i < len; i++)
 					{
-						let pageObj = self.drawingFile.pages[pages[i]];
+						let pageNum = pages[i];
+						let pageObj = drawingFile.pages[pageNum];
 						let fonts = pageObj.fonts;
 						
 						for (let j = 0, len_fonts = fonts.length; j < len_fonts; j++)
@@ -1536,15 +1563,36 @@
 								break;
 							}
 						}
+
 						if (0 == fonts.length)
-							pagesRepaint.push(pages[i]);
+						{
+							if (pageObj.fontsUpdateType & UpdateFontsSource.Page)
+								pagesRepaint_Page.push(pageNum);
+
+							if (pageObj.fontsUpdateType & UpdateFontsSource.Annotation)
+								pagesRepaint_Annotation.push(pageNum);
+
+							if (pageObj.fontsUpdateType & UpdateFontsSource.Forms)
+								pagesRepaint_Forms.push(pageNum);
+
+							if (pageObj.fontsUpdateType & UpdateFontsSource.ButtonIcons)
+								pagesRepaint_ButtonIcons.push(pageNum);
+
+							pageObj.fontsUpdateType = UpdateFontsSource.Undefined;
+						}
 					}
 
-					if (pagesRepaint.length > 0)
-					{
-						if (self.drawingFile.onRepaintPages)
-							self.drawingFile.onRepaintPages(pagesRepaint);
-					}
+					if (pagesRepaint_Page.length > 0 && drawingFile.onRepaintPages)
+						drawingFile.onRepaintPages(pagesRepaint_Page);
+
+					if (pagesRepaint_Annotation.length > 0 && drawingFile.onRepaintAnnotations)
+						drawingFile.onRepaintAnnotations(pagesRepaint_Annotation);
+
+					if (pagesRepaint_Forms.length > 0 && drawingFile.onRepaintForms)
+						drawingFile.onRepaintForms(pagesRepaint_Forms);
+
+					if (pagesRepaint_ButtonIcons.length > 0 && drawingFile.onRepaintButtonIcons)
+						drawingFile.onRepaintButtonIcons(pagesRepaint_ButtonIcons);
 
 					delete _t.externalCallback;
 				};

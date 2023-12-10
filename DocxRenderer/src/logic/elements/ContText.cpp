@@ -167,7 +167,7 @@ namespace NSDocxRenderer
 		}
 
 		//note принудительно уменьшаем spacing чтобы текстовые линии не выходили за правую границу
-		lCalculatedSpacing -= 2;
+		lCalculatedSpacing -= 1;
 
 		if (lCalculatedSpacing != 0)
 		{
@@ -244,6 +244,7 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"<w:t xml:space=\"preserve\">");
 		oWriter.WriteEncodeXmlString(m_oText.ToStdWString());
 		oWriter.WriteString(L"</w:t>");
+		if (m_bIsAddBrEnd) oWriter.WriteString(L"<w:br/>");
 		oWriter.WriteString(L"</w:r>");
 	}
 

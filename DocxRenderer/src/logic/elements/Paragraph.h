@@ -11,9 +11,9 @@ namespace NSDocxRenderer
 		enum TextAlignmentType
 		{
 			tatUnknown,
-			tatByLeftEdge,
+			tatByLeft,
 			tatByCenter,
-			tatByRightEdge,
+			tatByRight,
 			tatByWidth
 		};
 
@@ -33,8 +33,6 @@ namespace NSDocxRenderer
 		double m_dLineHeight {0.0};
 
 		std::vector<std::shared_ptr<CTextLine>> m_arLines;
-
-		size_t m_nNumLines {0};
 		std::wstring m_wsStyleId;
 
 	public:
@@ -45,12 +43,5 @@ namespace NSDocxRenderer
 
 		void RemoveHighlightColor();
 		void MergeLines();
-
-		static TextAlignmentType DetermineTextAlignmentType(std::shared_ptr<CTextLine> pCurrentLine,
-			std::shared_ptr<CTextLine> pNextLine,
-			std::shared_ptr<CTextLine> pNextNextLine,
-			double dPageWidth,
-			bool &bIsUseNextNextLine,
-			bool &bIsSingleLineParagraph) noexcept;
 	};
 }

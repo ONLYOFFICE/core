@@ -72,13 +72,13 @@ namespace NSDocxRenderer
 		case tatByCenter:
 			oWriter.WriteString(L"<w:jc w:val=\"center\"/>");
 			break;
-		case tatByRightEdge:
+		case tatByRight:
 			oWriter.WriteString(L"<w:jc w:val=\"end\"/>");
 			break;
 		case tatByWidth:
 			oWriter.WriteString(L"<w:jc w:val=\"both\"/>");
 			break;
-		case tatByLeftEdge:
+		case tatByLeft:
 			oWriter.WriteString(L"<w:jc w:val=\"begin\"/>");
 			break;
 		case tatUnknown:
@@ -125,7 +125,7 @@ namespace NSDocxRenderer
 
 	void CParagraph::MergeLines()
 	{
-		for(size_t i = 0; i < m_arLines.size(); ++i)
+		for(size_t i = 0; i < m_arLines.size() - 1; ++i)
 		{
 			auto pLine = m_arLines[i];
 			auto pLastCont = pLine->m_arConts.back();
@@ -134,129 +134,8 @@ namespace NSDocxRenderer
 			while(!pLastCont)
 				pLastCont = pLine->m_arConts[--iNumConts];
 
-			//Добавляем пробел в конец каждой строки
-			pLastCont->m_oText += L" ";
-			pLastCont->m_dWidth += pLastCont->m_oSelectedSizes.dSpaceWidth;
+			// добавляем br в конец каждой строки
+			pLastCont->m_bIsAddBrEnd = true;
 		}
-	}
-
-	CParagraph::TextAlignmentType CParagraph::DetermineTextAlignmentType(std::shared_ptr<CTextLine> pCurrentLine,
-		std::shared_ptr<CTextLine> pNextLine,
-		std::shared_ptr<CTextLine> pNextNextLine,
-		double dPageWidth,
-		bool &bIsUseNextNextLine,
-		bool &bIsSingleLineParagraph) noexcept
-	{
-		// поменять логику
-		if (!pCurrentLine || !pNextLine)
-			return tatUnknown;
-
-		double dCurrLeft = pCurrentLine->m_dLeft;
-		double dNextLeft = pNextLine->m_dLeft;
-		double dNextNextLeft = pNextNextLine ? pNextNextLine->m_dLeft : 0;
-
-		double dCurrRight = pCurrentLine->m_dRight;
-		double dNextRight = pNextLine->m_dRight;
-		double dNextNextRight = pNextNextLine ? pNextNextLine->m_dRight : 0;
-
-		bool bIf1 = fabs(dCurrLeft - dNextLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
-		bool bIf2 = pNextNextLine && fabs(dNextLeft - dNextNextLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
-		bool bIf3 = dCurrLeft != dNextLeft && dCurrLeft > dNextLeft;
-
-		bool bIf4 = fabs(dCurrRight - dNextRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
-		bool bIf5 = fabs(dNextRight - dNextNextRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
-
-		bool bIf6 = fabs(dCurrLeft + pCurrentLine->m_dWidth/2 - dNextLeft - pNextLine->m_dWidth/2) < 0.5;
-		bool bIf7 = pNextNextLine && fabs(dNextLeft + pNextLine->m_dWidth/2 - dNextNextLeft - pNextNextLine->m_dWidth/2) < 0.5;
-
-		if (pNextNextLine)
-		{
-			if (bIf1 && bIf2)
-			{
-				if (bIf4)
-				{
-					return tatByWidth;
-				}
-				else
-				{
-					return tatByLeftEdge;
-				}
-			}
-			else if (bIf3 && bIf2)
-			{
-				if (bIf4)
-				{
-					return tatByWidth;
-				}
-				else
-				{
-					return tatByLeftEdge;
-				}
-			}
-			else if (bIf4 && bIf5 && !(bIf1 && !bIf2 && dNextLeft > dNextNextLeft))
-			{
-				return tatByRightEdge;
-			}
-			else if (!bIf1 && !bIf2 && bIf3 && dNextLeft < dNextNextLeft && (bIf4 || dCurrRight > dNextRight))
-			{
-				bIsUseNextNextLine = false;
-				return tatByWidth;
-			}
-			else if (bIf1 && !bIf2 && dNextLeft > dNextNextLeft && (bIf4 || dCurrRight < dNextRight))
-			{
-				bIsSingleLineParagraph = true;
-				return tatByWidth;
-			}
-			else if (!bIf1 && !bIf2 && !bIf4 && !bIf5 && bIf6 && bIf7)
-			{
-				return tatByCenter;
-			}
-			else
-			{
-				return tatByWidth;
-			}
-		}
-		else
-		{
-			if (bIf4)
-			{
-				if (bIf1)
-				{
-					return tatByWidth;
-				}
-				else if (bIf3 && dCurrLeft < dNextLeft)
-				{
-					return tatByRightEdge;
-				}
-				else
-				{
-					return tatByWidth;
-				}
-			}
-			else if (dCurrRight > dNextRight)
-			{
-				if (bIf1 || bIf3)
-				{
-					return tatByWidth;
-				}
-				else
-				{
-					return tatByCenter;
-				}
-			}
-			else if (dCurrRight < dNextRight)
-			{
-				if (bIf1)
-				{
-					return tatByLeftEdge;
-				}
-				else if (bIf3 && bIf6)
-				{
-					return tatByCenter;
-				}
-			}
-		}
-
-		return tatUnknown;
 	}
 }

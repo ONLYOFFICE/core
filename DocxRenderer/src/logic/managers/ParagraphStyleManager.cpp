@@ -30,7 +30,7 @@ namespace NSDocxRenderer
 
 	std::wstring CParagraphStyleManager::GetDefaultParagraphStyleId(const CParagraph& oParagraph) const noexcept
 	{
-		if(oParagraph.m_nNumLines > 1) return L"Normal";
+		if(oParagraph.m_arLines.size() > 1) return L"Normal";
 
 		bool isHeading = true;
 		for(auto& val : oParagraph.m_arLines[0]->m_arConts)

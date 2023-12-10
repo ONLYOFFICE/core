@@ -69,6 +69,8 @@ namespace NSDocxRenderer
 		NSStringUtils::CStringUTF32 m_oText{};
 		UINT m_iNumDuplicates{0};
 
+		bool m_bIsAddBrEnd{false};
+
 		CContText() = default;
 		CContText(CFontManager* pManager) : m_pManager(pManager) {}
 		CContText(const CContText& rCont);

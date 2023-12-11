@@ -41,7 +41,7 @@ HEADERS += \
 SOURCES += \
     $$PWD/../../graphics/Image.cpp \
     $$PWD/../../raster/BgraFrame.cpp \
-	$$PWD/../../raster/ImageFileFormatChecker.cpp
+        $$PWD/../../raster/ImageFileFormatChecker.cpp
 
 SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jpeg/wrtarga.c \
@@ -272,6 +272,10 @@ SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/raster/Jp2/J2kFile.cpp \
     $$LIB_GRAPHICS_PRI_PATH/raster/Jp2/Reader.cpp \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/JBig2File.cpp
+
+SOURCES += \
+    $$LIB_GRAPHICS_PRI_PATH/raster/PICT/PICFile.cpp \
+    $$LIB_GRAPHICS_PRI_PATH/raster/PICT/pic.cpp
 
 SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jasper/base/jas_cm.c \

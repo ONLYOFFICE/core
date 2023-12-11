@@ -72,13 +72,13 @@ namespace DocFileFormat
 		
 			//read the bytes of the STSHI        
 			tableReader.Seek( ( fib->m_FibWord97.fcStshf + 2 ), 0/*STREAM_SEEK_SET*/ );
-			unsigned char* stshi = tableReader.ReadBytes( cbStshi, true );
+			unsigned char* stshi_data = tableReader.ReadBytes( cbStshi, true );
 
 			//parses STSHI
-			this->stshi = new StyleSheetInformation( stshi, cbStshi );
-			RELEASEARRAYOBJECTS( stshi );
+			stshi = new StyleSheetInformation(stshi_data, cbStshi );
+			RELEASEARRAYOBJECTS(stshi_data);
 
-			for ( int i = 0; i < this->stshi->cstd; i++ )
+			for ( unsigned short i = 0; i < stshi->cstd; i++ )
 			{
 				//get the cbStd
 				unsigned short cbStd = tableReader.ReadUInt16();
@@ -89,7 +89,7 @@ namespace DocFileFormat
 					unsigned char* std = tableReader.ReadBytes( cbStd, true );
 
 					//parse the STD bytes
-					Styles->push_back( new StyleSheetDescription( std, cbStd, (int)this->stshi->cbSTDBaseInFile, dataStream, fib->m_nWordVersion) );
+					Styles->push_back( new StyleSheetDescription( std, cbStd, (int)stshi->cbSTDBaseInFile, dataStream, fib->m_nWordVersion) );
 
 					RELEASEARRAYOBJECTS( std );
 				}

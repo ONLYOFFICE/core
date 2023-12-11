@@ -95,6 +95,7 @@ public:
 	bool isHtmlFormatFile(unsigned char* pBuffer, int dwBytes, bool testCloseTag);
 	bool isMultiPartsHtmlFormatFile(unsigned char* pBuffer, int dwBytes);
 	bool isPdfFormatFile(unsigned char* pBuffer, int dwBytes, std::wstring& documentID);
+	bool isPdfOformFormatFile(unsigned char* pBuffer, int dwBytes);
 	bool isOpenOfficeFlatFormatFile(unsigned char* pBuffer, int dwBytes);
 
 	bool isBinaryDoctFormatFile(unsigned char* pBuffer, int dwBytes);

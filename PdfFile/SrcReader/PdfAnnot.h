@@ -239,6 +239,7 @@ private:
 	std::string m_sDV; // Значение по-умолчанию - DV
 	std::string m_sT; // Частичное имя поля - T
 	std::string m_sFontName; // Имя шрифта - из DA
+	std::string m_sActualFontName; // Имя замененного шрифта
 };
 
 class CAnnotWidgetBtn final : public CAnnotWidget

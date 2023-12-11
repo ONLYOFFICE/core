@@ -889,6 +889,118 @@ namespace PdfReader
 	{
 
 	}
+	NSFonts::CFontInfo* GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontManager, GfxFont* pFont, std::wstring& wsFontBaseName)
+	{
+		NSFonts::CFontInfo* pFontInfo = NULL;
+		if (!pFontManager)
+			return pFontInfo;
+
+		Ref *pRef = pFont->getID();
+		Object oRefObject, oFontObject;
+		oRefObject.initRef(pRef->num, pRef->gen);
+		oRefObject.fetch(pXref, &oFontObject);
+		oRefObject.free();
+
+		NSFonts::CFontSelectFormat oFontSelect;
+		CheckFontNamePDF(wsFontBaseName, &oFontSelect);
+		if (oFontObject.isDict())
+		{
+			Dict *pFontDict = oFontObject.getDict();
+			Object oFontDescriptor;
+			if (pFontDict->lookup("FontDescriptor", &oFontDescriptor)->isDict())
+			{
+				Object oDictItem;
+				// FontName
+				oFontDescriptor.dictLookup("FontName", &oDictItem);
+				if (oDictItem.isName())
+					oFontSelect.wsName = AStringToPWString(oDictItem.getName());
+				else
+					oFontSelect.wsName = new std::wstring(wsFontBaseName);
+				oDictItem.free();
+
+				// FontFamily
+				oFontDescriptor.dictLookup("FontFamily", &oDictItem);
+				oDictItem.free();
+
+				// FontStretch
+				oFontDescriptor.dictLookup("FontStretch", &oDictItem);
+				oDictItem.free();
+
+				// FontWeight
+				oFontDescriptor.dictLookup("FontWeight", &oDictItem);
+				oDictItem.free();
+
+				// FontBBox
+				oFontDescriptor.dictLookup("FontBBox", &oDictItem);
+				oDictItem.free();
+
+				// ItalicAngle
+				oFontDescriptor.dictLookup("ItalicAngle", &oDictItem);
+				if (oDictItem.isInt() && 0 != oDictItem.getInt())
+				{
+					if (oFontSelect.bItalic) RELEASEOBJECT(oFontSelect.bItalic);
+					oFontSelect.bItalic = new INT(1);
+				}
+				oDictItem.free();
+
+				// Ascent
+				oFontDescriptor.dictLookup("Ascent", &oDictItem);
+				if (oDictItem.isInt()) oFontSelect.shAscent = new SHORT(oDictItem.getInt());
+				oDictItem.free();
+
+				// Leading
+				oFontDescriptor.dictLookup("Leading", &oDictItem);
+				if (oDictItem.isInt()) oFontSelect.shLineGap = new SHORT(oDictItem.getInt());
+				oDictItem.free();
+
+				// CapHeight
+				oFontDescriptor.dictLookup("CapHeight", &oDictItem);
+				if (oDictItem.isInt()) oFontSelect.shCapHeight = new SHORT(oDictItem.getInt());
+				oDictItem.free();
+
+				// XHeight
+				oFontDescriptor.dictLookup("XHeight", &oDictItem);
+				if (oDictItem.isInt()) oFontSelect.shXHeight = new SHORT(oDictItem.getInt());
+				oDictItem.free();
+
+				// StemV
+				oFontDescriptor.dictLookup("StemV", &oDictItem);
+				if (oDictItem.isInt()) oFontSelect.usWeight = new USHORT(sqrt(abs(oDictItem.getNum() - 50.5)) * 65);
+				oDictItem.free();
+
+				// StemH
+				oFontDescriptor.dictLookup("StemH", &oDictItem);
+				oDictItem.free();
+
+				// Descent
+				oFontDescriptor.dictLookup("Descent", &oDictItem);
+				if (oDictItem.isInt()) oFontSelect.shDescent = new SHORT(oDictItem.getInt());
+				oDictItem.free();
+
+				// AvgWidth
+				oFontDescriptor.dictLookup("AvgWidth", &oDictItem);
+				if (oDictItem.isInt()) oFontSelect.shAvgCharWidth = new SHORT(oDictItem.getInt());
+				oDictItem.free();
+
+				// MaxWidth
+				oFontDescriptor.dictLookup("MaxWidth", &oDictItem);
+				oDictItem.free();
+
+				// MissingWidth
+				oFontDescriptor.dictLookup("MissingWidth", &oDictItem);
+				oDictItem.free();
+
+			}
+			else
+				oFontSelect.wsName = new std::wstring(wsFontBaseName);
+			oFontDescriptor.free();
+		}
+		else
+			oFontSelect.wsName = new std::wstring(wsFontBaseName);
+
+		pFontInfo = pFontManager->GetFontInfoByParams(oFontSelect);
+		return pFontInfo;
+	}
 	void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName)
 	{
 		wsFileName = L"";
@@ -1271,113 +1383,7 @@ namespace PdfReader
 			else if (!pFont->locateFont(pXref, false) ||
 					 (wsFileName = NSStrings::GetStringFromUTF32(pFont->locateFont(pXref, false)->path)).length() == 0)
 			{
-				NSFonts::CFontInfo* pFontInfo = NULL;
-				if (pFontManager)
-				{
-					Ref *pRef = pFont->getID();
-					Object oRefObject, oFontObject;
-					oRefObject.initRef(pRef->num, pRef->gen);
-					oRefObject.fetch(pXref, &oFontObject);
-					oRefObject.free();
-
-					NSFonts::CFontSelectFormat oFontSelect;
-					CheckFontNamePDF(wsFontBaseName, &oFontSelect);
-					if (oFontObject.isDict())
-					{
-						Dict *pFontDict = oFontObject.getDict();
-						Object oFontDescriptor;
-						if (pFontDict->lookup("FontDescriptor", &oFontDescriptor)->isDict())
-						{
-							Object oDictItem;
-							// FontName
-							oFontDescriptor.dictLookup("FontName", &oDictItem);
-							if (oDictItem.isName())
-								oFontSelect.wsName = AStringToPWString(oDictItem.getName());
-							else
-								oFontSelect.wsName = new std::wstring(wsFontBaseName);
-							oDictItem.free();
-
-							// FontFamily
-							oFontDescriptor.dictLookup("FontFamily", &oDictItem);
-							oDictItem.free();
-
-							// FontStretch
-							oFontDescriptor.dictLookup("FontStretch", &oDictItem);
-							oDictItem.free();
-
-							// FontWeight
-							oFontDescriptor.dictLookup("FontWeight", &oDictItem);
-							oDictItem.free();
-
-							// FontBBox
-							oFontDescriptor.dictLookup("FontBBox", &oDictItem);
-							oDictItem.free();
-
-							// ItalicAngle
-							oFontDescriptor.dictLookup("ItalicAngle", &oDictItem);
-							if (oDictItem.isInt() && 0 != oDictItem.getInt())
-							{
-								if (oFontSelect.bItalic) RELEASEOBJECT(oFontSelect.bItalic);
-								oFontSelect.bItalic = new INT(1);
-							}
-							oDictItem.free();
-
-							// Ascent
-							oFontDescriptor.dictLookup("Ascent", &oDictItem);
-							if (oDictItem.isInt()) oFontSelect.shAscent = new SHORT(oDictItem.getInt());
-							oDictItem.free();
-
-							// Leading
-							oFontDescriptor.dictLookup("Leading", &oDictItem);
-							if (oDictItem.isInt()) oFontSelect.shLineGap = new SHORT(oDictItem.getInt());
-							oDictItem.free();
-
-							// CapHeight
-							oFontDescriptor.dictLookup("CapHeight", &oDictItem);
-							if (oDictItem.isInt()) oFontSelect.shCapHeight = new SHORT(oDictItem.getInt());
-							oDictItem.free();
-
-							// XHeight
-							oFontDescriptor.dictLookup("XHeight", &oDictItem);
-							if (oDictItem.isInt()) oFontSelect.shXHeight = new SHORT(oDictItem.getInt());
-							oDictItem.free();
-
-							// StemV
-							oFontDescriptor.dictLookup("StemV", &oDictItem);
-							oDictItem.free();
-
-							// StemH
-							oFontDescriptor.dictLookup("StemH", &oDictItem);
-							oDictItem.free();
-
-							// Descent
-							oFontDescriptor.dictLookup("Descent", &oDictItem);
-							if (oDictItem.isInt()) oFontSelect.shDescent = new SHORT(oDictItem.getInt());
-							oDictItem.free();
-
-							// AvgWidth
-							oFontDescriptor.dictLookup("AvgWidth", &oDictItem);
-							if (oDictItem.isInt()) oFontSelect.shAvgCharWidth = new SHORT(oDictItem.getInt());
-							oDictItem.free();
-
-							// MaxWidth
-							oFontDescriptor.dictLookup("MaxWidth", &oDictItem);
-							oDictItem.free();
-
-							// MissingWidth
-							oFontDescriptor.dictLookup("MissingWidth", &oDictItem);
-							oDictItem.free();
-
-						}
-						else
-							oFontSelect.wsName = new std::wstring(wsFontBaseName);
-						oFontDescriptor.free();
-					}
-					else
-						oFontSelect.wsName = new std::wstring(wsFontBaseName);
-
-					pFontInfo = pFontManager->GetFontInfoByParams(oFontSelect);
-				}
+				NSFonts::CFontInfo* pFontInfo = GetFontByParams(pXref, pFontManager, pFont, wsFontBaseName);
 
 				if (pFontInfo && L"" != pFontInfo->m_wsFontPath)
 				{

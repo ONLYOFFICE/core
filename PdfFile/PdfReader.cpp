@@ -41,6 +41,7 @@
 
 #include "SrcReader/Adaptors.h"
 #include "SrcReader/PdfAnnot.h"
+#include "Resources/BaseFonts.h"
 
 #include "lib/xpdf/PDFDoc.h"
 #include "lib/xpdf/PDFCore.h"
@@ -411,6 +412,7 @@ bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* dat
 void CPdfReader::Close()
 {
 	RELEASEOBJECT(m_pPDFDocument);
+	m_mFonts.clear();
 }
 
 int CPdfReader::GetError()
@@ -681,6 +683,13 @@ obj1.free();
 
 	return sRes;
 }
+std::wstring CPdfReader::GetFontPath(const std::wstring& wsFontName)
+{
+	std::map<std::wstring, std::wstring>::const_iterator oIter = m_mFonts.find(wsFontName);
+	if (oIter != m_mFonts.end())
+		return oIter->second;
+	return L"";
+}
 void getBookmars(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)
 {
 	int nLengthTitle = pOutlineItem->getTitleLength();
@@ -883,7 +892,7 @@ BYTE* CPdfReader::GetWidgets()
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
-BYTE* CPdfReader::GetWidgetFonts()
+BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
 {
 	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
 		return NULL;
@@ -981,18 +990,25 @@ BYTE* CPdfReader::GetWidgetFonts()
 		}
 		oObj.free();
 
-		std::wstring wsFileName, wsFontName;
 		if (gfxFont)
-			GetFont(xref, m_pFontManager, m_pFontList, gfxFont, wsFileName, wsFontName);
-
-		if (wsFileName.length() > 17 && wsFileName.substr(0, 17) == L"storage_internal_")
 		{
-			std::string sFileName = U_TO_UTF8(wsFileName);
-			oRes.WriteString(sFileName);
-			nFontsID++;
-			arrFontsRef.push_back(fontID.num);
-		}
+			Ref oEmbRef;
+			const unsigned char* pData14 = NULL;
+			unsigned int nSize14 = 0;
+			std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
+			if ((nTypeFonts == 1 && gfxFont->getEmbeddedFontID(&oEmbRef)) ||
+				(nTypeFonts == 2 && PdfReader::GetBaseFont(wsFontBaseName, pData14, nSize14)))
+			{
+				std::wstring wsFileName, wsFontName;
+				PdfReader::GetFont(xref, m_pFontManager, m_pFontList, gfxFont, wsFileName, wsFontName);
 
+				std::string sFileName = U_TO_UTF8(wsFontName);
+				oRes.WriteString(sFileName);
+				nFontsID++;
+				arrFontsRef.push_back(fontID.num);
+				m_mFonts[wsFontName] = wsFileName;
+			}
+		}
 		RELEASEOBJECT(gfxFontDict);
 	}
 

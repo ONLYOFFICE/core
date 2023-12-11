@@ -47,7 +47,7 @@
 namespace cpdoccore { 
 namespace odf_writer {
 
-class presentation_placeholder : public office_element_impl<presentation_placeholder>
+class presentation_placeholder : public office_element_impl<presentation_placeholder> //draw_base ??
 {
 public:
     static const wchar_t * ns;
@@ -55,22 +55,20 @@ public:
 
     static const ElementType type = typeStylePresentationPlaceholder;
 
-    
-
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child){}
 
 	virtual void serialize(std::wostream & strm);
- 
+
 	_CP_OPT(odf_types::length)	svg_x_;
     _CP_OPT(odf_types::length)	svg_y_;
     _CP_OPT(odf_types::length)	svg_width_;
     _CP_OPT(odf_types::length)	svg_height_;
 
 	_CP_OPT(odf_types::presentation_class) presentation_object_;
-
+//additional
+	_CP_OPT(std::wstring) text_style_name_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(presentation_placeholder);
 
 //----------------------------------------------------------------------------------

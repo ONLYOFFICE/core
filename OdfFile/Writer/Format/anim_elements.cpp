@@ -64,7 +64,7 @@ void anim_par::add_child_element( const office_element_ptr & child_element)
 	ElementType type_ = child_element->get_type();
 
 	if (type_ == typeAnimPar)
-		anim_par_ = child_element;
+		anim_par_.push_back(child_element);
 	else if (type_ == typeAnimSeq)
 		anim_seq_array_.push_back(child_element);
 	else
@@ -79,9 +79,11 @@ void anim_par::serialize(std::wostream & _Wostream)
 			attlist_.serialize(CP_GET_XML_NODE());
 			par_attlist_.serialize(CP_GET_XML_NODE());
 
-			if (anim_par_)
-				anim_par_->serialize(CP_XML_STREAM());
-			
+			for (size_t i = 0; i < anim_par_.size(); i++)
+			{
+				anim_par_[i]->serialize(CP_XML_STREAM());
+			}
+
 			for (size_t i = 0; i < anim_seq_array_.size(); i++)
 			{
 				anim_seq_array_[i]->serialize(CP_XML_STREAM());

@@ -1312,11 +1312,23 @@ BYTE* CPdfFile::GetWidgets()
 		return NULL;
 	return m_pInternal->pReader->GetWidgets();
 }
-BYTE* CPdfFile::GetWidgetFonts()
+BYTE* CPdfFile::GetWidgetEmbeddedFonts()
 {
 	if (!m_pInternal->pReader)
 		return NULL;
-	return m_pInternal->pReader->GetWidgetFonts();
+	return m_pInternal->pReader->GetWidgetFonts(1);
+}
+BYTE* CPdfFile::GetWidgetStandardFonts()
+{
+	if (!m_pInternal->pReader)
+		return NULL;
+	return m_pInternal->pReader->GetWidgetFonts(2);
+}
+std::wstring CPdfFile::GetFontPath(const std::wstring& wsFontName)
+{
+	if (!m_pInternal->pReader)
+		return L"";
+	return m_pInternal->pReader->GetFontPath(wsFontName);
 }
 BYTE* CPdfFile::GetAnnots(int nPageIndex)
 {

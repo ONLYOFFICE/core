@@ -173,29 +173,23 @@ namespace DocFileFormat
 				if ( stk == table_style )
 				{
 					//first upx is TAPX; second PAPX, third CHPX
-					switch ( i )
+					switch (i)
 					{
-					case 0:
+						case 0:
 						{
-							//todooo не реализовано
-							//RELEASEOBJECT( tapx );
-							//tapx = new TablePropertyExceptions( upxBytes, cbUPX,  dataStream, nWordVersion); 
-						}
-						break;
-
-					case 1:
+							RELEASEOBJECT(tapx);
+							tapx = new TablePropertyExceptions(upxBytes, cbUPX, nWordVersion);
+						}break;
+						case 1:
 						{
-							RELEASEOBJECT( papx );
-							papx = new ParagraphPropertyExceptions( upxBytes, cbUPX, dataStream, nWordVersion);
-						}
-						break;
-
-					case 2: 
+							RELEASEOBJECT(papx);
+							papx = new ParagraphPropertyExceptions(upxBytes, cbUPX, dataStream, nWordVersion);
+						}break;
+						case 2:
 						{
-							RELEASEOBJECT( chpx ); 
-							chpx = new CharacterPropertyExceptions( upxBytes, cbUPX , nWordVersion); 
-						}
-						break;
+							RELEASEOBJECT(chpx);
+							chpx = new CharacterPropertyExceptions(upxBytes, cbUPX, nWordVersion);
+						}break;
 					}
 				}
 				else if ( stk == paragraph_style )

@@ -80,7 +80,7 @@ namespace NSCustomVML
 				break;
 			case 0xb300: // arcto
 				m_eRuler = ODRAW::rtArc;
-				m_nCount = 2;
+				m_nCount = 0;
 				break;
 			case 0xac00:
 			case 0xaa00: // nofill

@@ -990,7 +990,14 @@ void ods_table_state::set_cell_spanned(int spanned_cols, int spanned_rows)
 }
 void ods_table_state::set_cell_formula(std::wstring & formula)
 {
-	if (formula.empty())return;
+	if (formula.empty()) return;
+
+	//todooo used tabled columns in formula - TableName[TableColumn]
+	for (size_t i = 0; i < table_parts_.size(); ++i)
+	{
+		if (std::wstring::npos != formula.find(table_parts_[i].name + L"["))
+			return;
+	}
 
 	ods_conversion_context* ods_context = dynamic_cast<ods_conversion_context*>(context_);
 	

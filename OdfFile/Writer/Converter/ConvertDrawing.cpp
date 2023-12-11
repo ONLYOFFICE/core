@@ -694,6 +694,17 @@ void OoxConverter::convert(PPTX::Logic::NvGrpSpPr *oox_nvGrpSpPr)
 	if (oox_nvGrpSpPr->cNvPr.descr.IsInit())
 		odf_context()->drawing_context()->set_description(oox_nvGrpSpPr->cNvPr.descr.get());
 
+	if (oox_nvGrpSpPr->cNvPr.id != -1)
+	{
+		cpdoccore::odf_writer::odp_conversion_context* odp_context =
+			dynamic_cast<cpdoccore::odf_writer::odp_conversion_context*>(odf_context());
+		if (odp_context)
+		{
+			const std::wstring xml_id = odp_context->map_indentifier(std::to_wstring(oox_nvGrpSpPr->cNvPr.id));
+			odf_context()->drawing_context()->set_group_xml_id(xml_id);
+		}
+	}
+
 	convert(&oox_nvGrpSpPr->cNvGrpSpPr);
 	convert(&oox_nvGrpSpPr->nvPr);
 }
@@ -1038,6 +1049,7 @@ void OoxConverter::convert(PPTX::Logic::PrstGeom *oox_geom)
 	{
 		odf_context()->drawing_context()->set_viewBox(21600, 21600);
 		odf_context()->drawing_context()->set_path(L"U 10800 10800 10800 10800 0 360 Z N");
+		odf_context()->drawing_context()->set_draw_type(L"circle");
 		return;
 	}
 
@@ -1732,10 +1744,6 @@ void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 
 	if (oox_cnvPr->id != -1)
 	{
-#if 0
-		const std::wstring xml_id = odf_context()->map_indentifier(std::to_wstring(oox_cnvPr->id));
-		odf_context()->drawing_context()->set_xml_id(xml_id);
-#else 
 		cpdoccore::odf_writer::odp_conversion_context* odp_context =
 			dynamic_cast<cpdoccore::odf_writer::odp_conversion_context*>(odf_context());
 		if (odp_context)
@@ -1743,7 +1751,6 @@ void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 			const std::wstring xml_id = odp_context->map_indentifier(std::to_wstring(oox_cnvPr->id));
 			odf_context()->drawing_context()->set_xml_id(xml_id);
 		}
-#endif
 	}
 
 	if (oox_cnvPr->descr.IsInit())
@@ -2097,6 +2104,12 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 
 		if (odf_context()->drawing_context()->is_wordart())
 			odf_context()->drawing_context()->set_paragraph_properties(paragraph_properties);
+
+		if (styled && odf_context()->drawing_context()->is_placeholder())
+		{
+			odf_writer::odf_style_state_ptr state = odf_context()->text_context()->get_styles_context()->last_state(odf_types::style_family::Paragraph);
+			odf_context()->drawing_context()->set_placeholder_style(state->get_name());
+		}
 	}	
 
 	std::vector<PPTX::Logic::RunElem>::iterator runIt = std::find_if_not(oox_paragraph->RunElems.begin(), oox_paragraph->RunElems.end(),

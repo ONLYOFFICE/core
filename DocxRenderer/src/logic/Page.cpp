@@ -648,17 +648,12 @@ namespace NSDocxRenderer
 			oFont.Size = static_cast<double>(drop_cap->nFontSize) / 2.0;
 			m_pFontManager->LoadFontByName(oFont);
 
-			double box_X;
-			double box_Y;
-			double box_W;
-			double box_H;
+			auto metrics = m_pFontManager->GetFontMetrics();
+			auto h = m_pFontManager->GetFontHeight();
 
-			m_pFontManager->SetStringGid(0);
-			m_pFontManager->MeasureString(drop_cap->wsText, 0, 0, box_X, box_Y, box_W, box_H, CFontManager::mtPosition);
-
-			shape->m_dBaselinePos = drop_cap->m_dBaselinePos;
-			shape->m_dHeight = box_H;
-			shape->m_dTop = drop_cap->m_dBaselinePos - shape->m_dHeight;
+			shape->m_dTop = drop_cap->m_dTop;
+			shape->m_dBaselinePos = drop_cap->m_dTop + h;
+			shape->m_dHeight = shape->m_dBaselinePos - shape->m_dTop;
 
 			shape->m_dRight = drop_cap->m_dRight;
 			shape->m_dLeft = drop_cap->m_dLeft;
@@ -1289,19 +1284,29 @@ namespace NSDocxRenderer
 		}
 
 		// alignment check
-		for (size_t index = 1; index < ar_positions.size() - 1; ++index)
+		bool is_first_line = false;
+		for (size_t index = 0; index < ar_positions.size() - 1; ++index)
 		{
 			Position position_top;
 			Position position_bot;
 
 			position_bot = ar_positions[index];
-			position_top = ar_positions[index - 1];
+			if (index == 0)
+				position_top = position_bot;
+			else
+				position_top = ar_positions[index - 1];
 
-			bool is_good = position_top.left == position_bot.left || position_top.right == position_bot.right || position_top.center == position_bot.center;
+			if (index == 0 || ar_delims[index - 1])
+				is_first_line = true;
+			else
+				is_first_line = false;
+
+			if (is_first_line && !position_bot.right && m_arTextLines[index + 1]->m_dLeft < m_arTextLines[index]->m_dLeft)
+				position_bot.left = true;
+
 			bool is_unknown = !(position_bot.left || position_bot.right || position_bot.center);
-
-			if (!is_good || is_unknown)
-				ar_delims[index - 1] = true;
+			if (is_unknown)
+				ar_delims[index] = true;
 		}
 
 		// lamda to setup and add paragpraph
@@ -1329,12 +1334,19 @@ namespace NSDocxRenderer
 			if (paragraph->m_arLines.size() > 1)
 			{
 				Position position_curr = {true, true, true};
+				bool first_left = false;
+
 				for (size_t index = 1; index < paragraph->m_arLines.size(); ++index)
 				{
 					auto& curr_line = paragraph->m_arLines[index];
 					auto& prev_line = paragraph->m_arLines[index - 1];
 
-					position_curr.left &= fabs(curr_line->m_dLeft - prev_line->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
+					// indent check
+					if (index == 1)
+						first_left = fabs(curr_line->m_dLeft - prev_line->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
+					else
+						position_curr.left &= fabs(curr_line->m_dLeft - prev_line->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
+
 					position_curr.right &= fabs(curr_line->m_dRight - prev_line->m_dRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
 
 					auto center_curr = curr_line->m_dLeft + curr_line->m_dWidth / 2;
@@ -1350,6 +1362,13 @@ namespace NSDocxRenderer
 					paragraph->m_eTextAlignmentType = CParagraph::tatByRight;
 				else if (position_curr.center)
 					paragraph->m_eTextAlignmentType = CParagraph::tatByCenter;
+
+				// indent check
+				if (paragraph->m_eTextAlignmentType == CParagraph::tatByLeft && !first_left)
+				{
+					paragraph->m_bIsNeedFirstLineIndent = true;
+					paragraph->m_dFirstLine = paragraph->m_arLines[0]->m_dLeft - paragraph->m_dLeft;
+				}
 			}
 
 			if (ar_paragraphs.empty())
@@ -1397,11 +1416,12 @@ namespace NSDocxRenderer
 	std::shared_ptr<CShape> CPage::CreateSingleLineShape(std::shared_ptr<CTextLine> pLine)
 	{
 		auto pParagraph = std::make_shared<CParagraph>();
+
 		pParagraph->m_arLines.push_back(pLine);
 		pParagraph->m_dLeft = pLine->m_dLeft;
 		pParagraph->m_dTop = pLine->m_dTop;
 		pParagraph->m_dBaselinePos = pLine->m_dBaselinePos;
-		pParagraph->m_dWidth = pLine->m_dWidth;
+		pParagraph->m_dWidth = pLine->m_dWidth * 1.05; // чтобы текст точно уместился
 		pParagraph->m_dHeight = pLine->m_dHeight;
 		pParagraph->m_dRight = pLine->m_dRight;
 

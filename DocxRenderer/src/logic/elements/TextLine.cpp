@@ -35,6 +35,13 @@ namespace NSDocxRenderer
 		if (m_arConts.empty())
 			return;
 
+		using cont_ptr_t = std::shared_ptr<CContText>;
+		std::sort(m_arConts.begin(), m_arConts.end(), [] (const cont_ptr_t& a, const cont_ptr_t& b) {
+			if (!a) return false;
+			if (!b) return true;
+			return a->m_dLeft < b->m_dLeft;
+		});
+
 		std::shared_ptr<CContText> pFirst;
 		size_t j = 0;
 

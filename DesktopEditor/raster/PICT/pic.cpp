@@ -354,8 +354,7 @@ StringInfo *AcquireStringInfo(const size_t length)
 
 char *CloneString(char **destination,const char *source)
 {
-  size_t
-    length;
+  size_t length;
 
   if (source == (const char *) NULL)
     {
@@ -365,34 +364,34 @@ char *CloneString(char **destination,const char *source)
     }
   if (*destination == (char *) NULL)
     {
-      *destination=(char*) malloc((strlen(source) + 4096) * sizeof (*destination));
-      (void) memcpy(destination,source,strlen(source)*sizeof(**destination));
-      destination[strlen(source)]='\0';
+      *destination=(char*) malloc((strlen(source) + 4096)/* * sizeof (*destination)*/);
+
+      memcpy(*destination,source,strlen(source)/**sizeof(**destination)*/);
+      (*destination)[strlen(source)]='\0';
       return(*destination);
     }
   length=strlen(source);
   if (~length < 4096)
     return NULL;
   free(*destination);
-  *destination = (char*) malloc((length+4096)*sizeof (**destination));
+  *destination = (char*) malloc((length+4096)/**sizeof (**destination)*/);
   if (*destination == (char *) NULL)
     return NULL;
   if (length != 0)
-    (void) memcpy(*destination,source,length*sizeof(**destination));
+    memcpy(*destination,source,length/**sizeof(**destination)*/);
   (*destination)[length]='\0';
   return(*destination);
 }
 
 StringInfo *CloneStringInfo(const StringInfo *string_info)
 {
-  StringInfo
-    *clone_info;
+  StringInfo    *clone_info;
 
   clone_info=AcquireStringInfo(string_info->length);
-  (void) CloneString(&clone_info->path,string_info->path);
-  (void) CloneString(&clone_info->name,string_info->name);
+  CloneString(&clone_info->path,string_info->path);
+  CloneString(&clone_info->name,string_info->name);
   if (string_info->length != 0)
-    (void) memcpy(clone_info->datum,string_info->datum,string_info->length+1);
+    memcpy(clone_info->datum,string_info->datum,string_info->length+1);
   return(clone_info);
 }
 

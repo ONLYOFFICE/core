@@ -22,8 +22,8 @@ namespace NSDocxRenderer
 		AssumedTextAlignmentType m_eAlignmentType{atatUnknown};
 		eVertAlignType m_eVertAlignType          {eVertAlignType::vatUnknown};
 
-		std::shared_ptr<CTextLine> m_pLine       {nullptr};  // если не nullptr, то есть привязка к vatSubscript или vatSuperscript;
-		std::shared_ptr<CShape> m_pDominantShape {nullptr};
+		std::shared_ptr<CTextLine> m_pLine;
+		std::shared_ptr<CShape>  m_pDominantShape {nullptr};
 
 		UINT m_iNumDuplicates {0};
 

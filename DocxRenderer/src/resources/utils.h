@@ -1,4 +1,7 @@
 #pragma once
+
+#include <type_traits>
+
 #include "../../../DesktopEditor/common/Types.h"
 #include "../../../DesktopEditor/common/StringUTF32.h"
 
@@ -54,4 +57,22 @@ inline short little_endian_2_big_endian( short s )
 inline int little_endian_2_big_endian( int i )
 {
 	return ( ( i & 0xff ) << 24 ) + ( ( i & 0xff00 ) << 8 ) + ( ( i & 0xff0000 ) >> 8 ) + ( ( i >> 24 ) & 0xff );
+}
+
+// перемещает nullptr в конец и возвращает итератор, после которого начинаются nullptr
+template<typename It>
+It MoveNullptr(It start, It end)
+{
+	It left = start, right = end - 1;
+	for (;;)
+	{
+		while (!*right && left < right) right--;
+		while (*left && left < right) left++;
+		if (left >= right) break;
+		std::swap(*left, *right);
+	}
+	if (*right)
+		++right;
+
+	return right;
 }

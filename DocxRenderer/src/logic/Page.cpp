@@ -470,11 +470,9 @@ namespace NSDocxRenderer
 
 	void CPage::CalcSelected()
 	{
-		for(auto& line : m_arTextLines)
-			if(line)
-				for(auto& cont : line->m_arConts)
-					if(cont)
-						cont->CalcSelected();
+		for (auto& cont : m_arConts)
+			if (cont)
+				cont->CalcSelected();
 	}
 
 	void CPage::AnalyzeShapes()
@@ -548,8 +546,8 @@ namespace NSDocxRenderer
 	void CPage::AnalyzeTextLines()
 	{
 		// вся логика основана на отсортированных списках объектов
-		using line_ptr = std::shared_ptr<CTextLine>;
-		std::sort(m_arTextLines.begin(), m_arTextLines.end(), [] (const line_ptr& a, const line_ptr& b) {
+		using line_ptr_t = std::shared_ptr<CTextLine>;
+		std::sort(m_arTextLines.begin(), m_arTextLines.end(), [] (const line_ptr_t& a, const line_ptr_t& b) {
 			return a->m_dBaselinePos < b->m_dBaselinePos;
 		});
 
@@ -721,6 +719,7 @@ namespace NSDocxRenderer
 									 pNextLine->m_eVertAlignType == eVertAlignType::vatSubscript))
 							{
 								pCurrLine->m_pLine = pNextLine;
+								pNextLine->m_pLine = pCurrLine;
 							}
 						}
 						else if(!is_font_effect && pCurrCont->IsDuplicate(pNextCont.get(), eVType))
@@ -980,60 +979,24 @@ namespace NSDocxRenderer
 			if (!line)
 				continue;
 
-			if (line->m_eVertAlignType == eVertAlignType::vatSuperscript)
+			if (line->m_eVertAlignType == eVertAlignType::vatSuperscript
+					|| line->m_eVertAlignType == eVertAlignType::vatSubscript)
 			{
-				auto& pBaseLine = line->m_pLine;
-				if (pBaseLine)
+				std::shared_ptr<CTextLine>& base_line = line->m_pLine;
+				if (base_line)
 				{
 					for (auto& pCont : line->m_arConts)
 					{
-						if (pBaseLine->m_dLeft > pCont->m_dLeft)
-							pBaseLine->m_dLeft = pCont->m_dLeft;
-						if (pBaseLine->m_dRight < pCont->m_dRight)
-							pBaseLine->m_dRight = pCont->m_dRight;
+						if (base_line->m_dLeft > pCont->m_dLeft)
+							base_line->m_dLeft = pCont->m_dLeft;
+						if (base_line->m_dRight < pCont->m_dRight)
+							base_line->m_dRight = pCont->m_dRight;
 
-						pBaseLine->m_dWidth = pBaseLine->m_dRight - pBaseLine->m_dLeft;
-						pBaseLine->m_arConts.push_back(pCont);
+						base_line->m_dWidth = base_line->m_dRight - base_line->m_dLeft;
+						base_line->m_arConts.push_back(pCont);
 						pCont = nullptr;
 					}
-
-					using cont_ptr = std::shared_ptr<CContText>;
-					std::sort(pBaseLine->m_arConts.begin(), pBaseLine->m_arConts.end(), [] (const cont_ptr& a, const cont_ptr& b) {
-						if(!a) return false;
-						if(!b) return true;
-						return a->m_dLeft < b->m_dLeft;
-					});
-
 					line = nullptr;
-				}
-			}
-			else if (line->m_eVertAlignType == eVertAlignType::vatBase)
-			{
-				auto& pSubLine = line->m_pLine;
-				if (pSubLine)
-				{
-					for (auto& pCont : pSubLine->m_arConts)
-					{
-						if (pCont == nullptr)
-							continue;
-
-						if (line->m_dLeft > pCont->m_dLeft)
-							line->m_dLeft = pCont->m_dLeft;
-						if (line->m_dRight < pCont->m_dRight)
-							line->m_dRight = pCont->m_dRight;
-
-						line->m_dWidth = line->m_dRight - line->m_dLeft;
-						line->m_arConts.push_back(pCont);
-						pCont = nullptr;
-					}
-
-					using cont_ptr = std::shared_ptr<CContText>;
-					std::sort(line->m_arConts.begin(), line->m_arConts.end(), [] (const cont_ptr& a, const cont_ptr& b) {
-						if(!a) return false;
-						if(!b) return true;
-						return a->m_dLeft < b->m_dLeft;
-					});
-					pSubLine = nullptr;
 				}
 			}
 		}
@@ -1189,25 +1152,25 @@ namespace NSDocxRenderer
 			}
 
 			// если линия пересекается с другим шейпом
-			bool next = false;
-			for (auto& shape : m_arShapes)
-			{
-				if (!shape)
-					continue;
+//			bool next = false;
+//			for (auto& shape : m_arShapes)
+//			{
+//				if (!shape)
+//					continue;
 
-				auto h_type = curr_line->GetHorizontalCrossingType(shape.get());
-				auto v_type = curr_line->CBaseItem::GetVerticalCrossingType(shape.get());
+//				auto h_type = curr_line->GetHorizontalCrossingType(shape.get());
+//				auto v_type = curr_line->CBaseItem::GetVerticalCrossingType(shape.get());
 
-				if (!no_crossing(h_type, v_type))
-				{
-					m_arShapes.push_back(CreateSingleLineShape(curr_line));
-					curr_line = nullptr;
-					next = true;
-					break;
-				}
-			}
-			if (next)
-				continue;
+//				if (!no_crossing(h_type, v_type))
+//				{
+//					m_arShapes.push_back(CreateSingleLineShape(curr_line));
+//					curr_line = nullptr;
+//					next = true;
+//					break;
+//				}
+//			}
+//			if (next)
+//				continue;
 
 			// если линия пересекается с предыдущей линией
 			if (index && m_arTextLines[index - 1])
@@ -1222,6 +1185,7 @@ namespace NSDocxRenderer
 
 				if (!no_crossing(h_type, v_type))
 				{
+					m_arShapes.push_back(CreateSingleLineShape(prev_line));
 					m_arShapes.push_back(CreateSingleLineShape(curr_line));
 					prev_line = nullptr;
 					curr_line = nullptr;
@@ -1233,19 +1197,15 @@ namespace NSDocxRenderer
 		if(m_arTextLines.empty())
 			return;
 
-		// переметим nullptr в конец и удалим
-		auto&& left = m_arTextLines.begin(), right = m_arTextLines.end() - 1;
-		for (;;)
-		{
-			while (!*right && left < right) right--;
-			while (*left && left < right) left++;
-			if (left >= right) break;
-			std::swap(left, right);
-		}
-		if (*right)
-			++right;
-		if (right != m_arTextLines.end())
-			m_arTextLines.erase(right, m_arTextLines.end());
+		// переместим nullptr в конец и удалим
+		auto right = MoveNullptr(m_arTextLines.begin(), m_arTextLines.end());
+		m_arTextLines.erase(right, m_arTextLines.end());
+
+		using line_ptr_t = std::shared_ptr<CTextLine>;
+		std::sort(m_arTextLines.begin(), m_arTextLines.end(), [] (const line_ptr_t& a, const line_ptr_t& b) {
+			return a->m_dBaselinePos < b->m_dBaselinePos;
+		});
+
 
 		// todo обработать все TextAssociationType
 		// параграф будет набиваться строчками
@@ -1263,7 +1223,6 @@ namespace NSDocxRenderer
 		// ar_spacing[index]- расстояние строки до строки снизу
 		// если 0.0 - строка последняя
 		std::vector<double> ar_spacings(m_arTextLines.size(), 0.0);
-
 
 		// совпадает ли left, right, center со строкой ниже
 		struct Position {
@@ -1288,8 +1247,8 @@ namespace NSDocxRenderer
 			auto& right_curr = m_arTextLines[index]->m_dRight;
 			auto& right_next = m_arTextLines[index + 1]->m_dRight;
 
-			auto center_curr = (m_arTextLines[index]->m_dRight - m_arTextLines[index]->m_dLeft) / 2;
-			auto center_next = (m_arTextLines[index + 1]->m_dRight - m_arTextLines[index + 1]->m_dLeft) / 2;
+			auto center_curr = (m_arTextLines[index]->m_dLeft + m_arTextLines[index]->m_dWidth) / 2;
+			auto center_next = (m_arTextLines[index + 1]->m_dLeft + m_arTextLines[index + 1]->m_dWidth) / 2;
 
 			if (fabs(center_curr - center_next) < c_dCENTER_POSITION_ERROR_MM)
 				ar_positions[index].center = true;
@@ -1317,6 +1276,16 @@ namespace NSDocxRenderer
 				ar_delims[index - 1] = true;
 			else if (spacing_top < spacing_bot)
 				ar_delims[index] = true;
+		}
+
+		// width check (слишком большая разница в ширине)
+		for (size_t index = 1; index < ar_spacings.size(); ++index)
+		{
+			double width_diff = fabs(m_arTextLines[index - 1]->m_dWidth - m_arTextLines[index]->m_dWidth);
+			bool big_diff = width_diff > std::min(m_arTextLines[index - 1]->m_dWidth, m_arTextLines[index - 1]->m_dWidth) * 3;
+
+			if (big_diff && !ar_delims[index])
+				ar_delims[index - 1] = true;
 		}
 
 		// alignment check
@@ -1352,7 +1321,36 @@ namespace NSDocxRenderer
 			paragraph->m_dLineHeight = paragraph->m_dHeight / paragraph->m_arLines.size();
 			paragraph->m_bIsNeedFirstLineIndent = false;
 			paragraph->m_dFirstLine = 0;
+			paragraph->m_wsStyleId = m_pParagraphStyleManager->GetDefaultParagraphStyleId(*paragraph);
+
 			paragraph->MergeLines();
+
+			// setting TextAlignmentType
+			if (paragraph->m_arLines.size() > 1)
+			{
+				Position position_curr = {true, true, true};
+				for (size_t index = 1; index < paragraph->m_arLines.size(); ++index)
+				{
+					auto& curr_line = paragraph->m_arLines[index];
+					auto& prev_line = paragraph->m_arLines[index - 1];
+
+					position_curr.left &= fabs(curr_line->m_dLeft - prev_line->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
+					position_curr.right &= fabs(curr_line->m_dRight - prev_line->m_dRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
+
+					auto center_curr = curr_line->m_dLeft + curr_line->m_dWidth / 2;
+					auto center_prev = prev_line->m_dLeft + prev_line->m_dWidth / 2;
+
+					position_curr.center &= fabs(center_curr - center_prev) < c_dCENTER_POSITION_ERROR_MM;
+				}
+				if (position_curr.left && position_curr.right)
+					paragraph->m_eTextAlignmentType = CParagraph::tatByWidth;
+				else if (position_curr.left)
+					paragraph->m_eTextAlignmentType = CParagraph::tatByLeft;
+				else if (position_curr.right)
+					paragraph->m_eTextAlignmentType = CParagraph::tatByRight;
+				else if (position_curr.center)
+					paragraph->m_eTextAlignmentType = CParagraph::tatByCenter;
+			}
 
 			if (ar_paragraphs.empty())
 				paragraph->m_dSpaceBefore = paragraph->m_dTop + c_dCORRECTION_FOR_FIRST_PARAGRAPH;
@@ -1373,9 +1371,15 @@ namespace NSDocxRenderer
 			paragraph->m_arLines.push_back(curr_line);
 		};
 
-		// на основе ar_delims разбиваем на параграфы
+		// на основе ar_delims разбиваем на параграфы + IsShadingPresent
 		for (size_t index = 0; index < ar_delims.size(); ++index)
 		{
+			if (m_arTextLines[index]->m_pDominantShape)
+			{
+				paragraph->m_bIsShadingPresent = true;
+				paragraph->m_lColorOfShadingFill = m_arTextLines[index]->m_pDominantShape->m_oBrush.Color1;
+				paragraph->RemoveHighlightColor();
+			}
 			add_line(m_arTextLines[index]);
 			if (ar_delims[index] || index == ar_delims.size() - 1)
 				add_paragraph();
@@ -1390,41 +1394,16 @@ namespace NSDocxRenderer
 			m_arOutputObjects.push_back(std::move(p));
 	}
 
-	void CPage::CreateSingleLineParagraph(std::shared_ptr<CTextLine> pLine, double pBeforeSpacing)
-	{
-		auto pParagraph = std::make_shared<CParagraph>();
-		pParagraph->m_arLines.push_back(pLine);
-
-		pParagraph->m_dLeft = pLine->m_dLeft;
-		pParagraph->m_dTop = pLine->m_dBaselinePos - pLine->m_dHeight;
-		pParagraph->m_dFirstLine = 0;
-		pParagraph->m_dRight = pLine->m_dRight;
-		pParagraph->m_dRightBorder = m_dWidth - pParagraph->m_dRight;
-		pParagraph->m_dWidth = pLine->m_dWidth;
-		pParagraph->m_dHeight = pLine->m_dHeight;
-		if (pBeforeSpacing < 0)
-		{
-			pParagraph->m_dHeight += pBeforeSpacing;
-		}
-
-		pParagraph->m_dSpaceBefore = std::max(pBeforeSpacing, 0.0);
-
-		if (pLine->m_pDominantShape)
-		{
-			pParagraph->m_bIsShadingPresent = true;
-			pParagraph->m_lColorOfShadingFill = pLine->m_pDominantShape->m_oBrush.Color1;
-			pParagraph->RemoveHighlightColor();
-		}
-
-		m_arOutputObjects.push_back(std::dynamic_pointer_cast<COutputObject>(pParagraph));
-	}
-
 	std::shared_ptr<CShape> CPage::CreateSingleLineShape(std::shared_ptr<CTextLine> pLine)
 	{
 		auto pParagraph = std::make_shared<CParagraph>();
-
 		pParagraph->m_arLines.push_back(pLine);
-		pParagraph->m_dRightBorder = 0;
+		pParagraph->m_dLeft = pLine->m_dLeft;
+		pParagraph->m_dTop = pLine->m_dTop;
+		pParagraph->m_dBaselinePos = pLine->m_dBaselinePos;
+		pParagraph->m_dWidth = pLine->m_dWidth;
+		pParagraph->m_dHeight = pLine->m_dHeight;
+		pParagraph->m_dRight = pLine->m_dRight;
 
 		if (pLine->m_pDominantShape)
 		{
@@ -1436,10 +1415,13 @@ namespace NSDocxRenderer
 		auto pShape = std::make_shared<CShape>();
 		pShape->m_arOutputObjects.push_back(pParagraph);
 		pShape->m_eType = CShape::eShapeType::stTextBox;
-		pShape->m_dLeft = pLine->m_dLeft;
-		pShape->m_dTop = pLine->m_dBaselinePos - pLine->m_dHeight;
-		pShape->m_dWidth = pLine->m_dWidth;
-		pShape->m_dHeight = pLine->m_dHeight;
+
+		pShape->m_dLeft = pParagraph->m_dLeft;
+		pShape->m_dTop = pParagraph->m_dTop;
+		pShape->m_dBaselinePos = pParagraph->m_dBaselinePos;
+		pShape->m_dWidth = pParagraph->m_dWidth;
+		pShape->m_dHeight = pParagraph->m_dHeight;
+		pShape->m_dRight = pParagraph->m_dRight;
 		pShape->m_bIsBehindDoc = false;
 
 		return pShape;
@@ -1493,96 +1475,6 @@ namespace NSDocxRenderer
 			m_arOutputObjects.push_back(pShape);
 		}
 	}
-
-	void CPage::CorrectionObjectesInShapes(double dPageWidth)
-	{
-		for (size_t i = 0; i <  m_arOutputObjects.size(); ++i)
-		{
-			if (m_arOutputObjects[i]->m_eType != COutputObject::eOutputType::etShape)
-			{
-				continue;
-			}
-
-			auto pShape = std::dynamic_pointer_cast<CShape>(m_arOutputObjects[i]);
-
-			if (!pShape ||
-					pShape->m_eType != CShape::eShapeType::stTextBox ||
-					pShape->m_arOutputObjects.empty())
-			{
-				continue;
-			}
-
-			for (size_t j = 0; j < pShape->m_arOutputObjects.size(); ++j)
-			{
-				auto& pObj = pShape->m_arOutputObjects[j];
-				switch(pObj->m_eType)
-				{
-				case COutputObject::eOutputType::etParagraph:
-				{
-					auto pParagraph = std::dynamic_pointer_cast<CParagraph>(m_arOutputObjects[i]);
-
-					if (pParagraph->m_dLeft > pShape->m_dLeft && pParagraph->m_arLines.size() == 1)
-					{
-						pParagraph->m_bIsNeedFirstLineIndent = true;
-						pParagraph->m_dFirstLine = pParagraph->m_dLeft - pShape->m_dLeft;
-						pParagraph->m_dLeft = 0;
-					}
-
-					pParagraph->m_dLeftBorder = pParagraph->m_dLeft > pShape->m_dLeft ? fabs(pParagraph->m_dLeft - pShape->m_dLeft) : 0;
-					pParagraph->m_dRightBorder = pParagraph->m_dRight < pShape->m_dRight ? fabs(pShape->m_dRight - pParagraph->m_dRight) : 0;
-				}
-					break;
-				default:
-					break;
-				}
-
-			}
-		}
-	}
-
-	std::shared_ptr<CTextLine> CPage::GetNextTextLine(size_t& nCurrentIndex, size_t* pIndexForCheking)
-	{
-		std::shared_ptr<CTextLine> pLine;
-		for (size_t nIndex = nCurrentIndex + 1; nIndex < m_arTextLines.size(); ++nIndex)
-		{
-			pLine = m_arTextLines[nIndex];
-			if(pLine && (pIndexForCheking && pLine->m_iNumDuplicates > 0))
-				if (*pIndexForCheking == c_nAntiZero)
-					*pIndexForCheking = nIndex;
-
-			if (!pLine || (pIndexForCheking && pLine->m_iNumDuplicates > 0))
-			{
-				nCurrentIndex++;
-				pLine = nullptr;
-				continue;
-			}
-			else
-				break;
-		}
-		return pLine;
-	}
-
-	std::shared_ptr<CTextLine> CPage::GetPrevTextLine(size_t nCurrentIndex)
-	{
-		std::shared_ptr<CTextLine> pLine = nullptr;
-		if (nCurrentIndex)
-		{
-			for (size_t nIndex = nCurrentIndex - 1; nIndex > 0; --nIndex)
-			{
-				pLine = m_arTextLines[nIndex];
-
-				if (!pLine)
-				{
-					pLine = nullptr;
-					continue;
-				}
-				else
-					break;
-			}
-		}
-		return pLine;
-	}
-
 
 	void CPage::WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter)
 	{

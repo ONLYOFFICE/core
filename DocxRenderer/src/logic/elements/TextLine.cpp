@@ -134,6 +134,14 @@ namespace NSDocxRenderer
 				pFirst = pCurrent;
 			}
 		}
+
+		auto right = MoveNullptr(m_arConts.begin(), m_arConts.end());
+		m_arConts.erase(right, m_arConts.end());
+
+		using cont_ptr_t = std::shared_ptr<CContText>;
+		std::sort(m_arConts.begin(), m_arConts.end(), [] (const cont_ptr_t& a, const cont_ptr_t& b) {
+			return a->m_dLeft < b->m_dLeft;
+		});
 	}
 
 	void CTextLine::RecalcSizes()

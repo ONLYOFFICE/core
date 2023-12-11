@@ -493,7 +493,13 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 
 		if (sType == "checkbox" || sType == "radiobutton" || sType == "button")
 		{
-			std::cout << (nFlags & (1 << 9) ? "Yes" : "Off") << ", ";
+			if (nFlags & (1 << 9))
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "Value " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
+			}
 
 			int nIFFlag = READ_INT(pWidgets + i);
 			i += 4;

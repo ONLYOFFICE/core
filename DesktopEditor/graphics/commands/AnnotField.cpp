@@ -675,7 +675,9 @@ void CAnnotFieldInfo::CWidgetAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader
 	for (int i = 0; i < n; ++i)
 		m_arrTC.push_back(pReader->ReadDouble());
 
-	m_nQ = pReader->ReadByte();
+	m_nQ = 0;
+	if (nType != 29 && nType != 28)
+		m_nQ = pReader->ReadByte();
 	int nWidgetFlag = pReader->ReadInt();
 	m_nFlag = nWidgetFlag;
 
@@ -730,6 +732,8 @@ void CAnnotFieldInfo::CWidgetAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader
 }
 void CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, BYTE nType, int nFlags)
 {
+	if (nFlags & (1 << 9))
+		m_wsV = pReader->ReadString();
 	int nIFFlags = pReader->ReadInt();
 	m_nIFFlag = nIFFlags;
 	if (nType == 27)

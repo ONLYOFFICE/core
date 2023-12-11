@@ -357,6 +357,7 @@ namespace PdfWriter
 
 		void SetDA(CFontDict* pFont, const double& dFontSize, const double& dFontSizeAP, const std::vector<double>& arrTC);
 		CDictObject* GetObjOwnValue(const std::string& sV);
+		CObjectBase* GetObjValue(const std::string& sV);
 
 		void SetQ(const BYTE& nQ);
 		void SetH(const BYTE& nH);
@@ -391,7 +392,7 @@ namespace PdfWriter
 			return m_nSubtype;
 		}
 
-		void SetV(bool bV);
+		void SetV(const std::wstring& wsV);
 		void SetDV(const std::wstring& wsDV) override;
 		void SetS(const BYTE& nS);
 		void SetTP(const BYTE& nTP);
@@ -404,7 +405,7 @@ namespace PdfWriter
 		void SetAC(const std::wstring& wsAC);
 		void SetAP_N_Yes(const std::wstring& wsAP_N_Yes);
 
-		void SwitchAP();
+		void SwitchAP(const std::string& sV);
 		void SetAP(const std::wstring& wsValue, CFontDict* pFont, const TRgb& oColor, double dFontSize, double dX, double dY);
 	};
 	class CTextWidget : public CWidgetAnnotation

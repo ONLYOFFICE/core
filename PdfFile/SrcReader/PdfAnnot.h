@@ -254,6 +254,7 @@ private:
 	BYTE m_nSW;
 	BYTE m_nS;
 	unsigned int m_unIFFlag;
+	std::string m_sV;
 	std::string m_sCA;
 	std::string m_sRC;
 	std::string m_sAC;

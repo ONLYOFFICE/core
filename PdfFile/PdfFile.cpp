@@ -120,7 +120,7 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, 
 		PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
 		AddToObject(pArray)
 
-				for (int nIndex = 0; nIndex < obj->arrayGetLength(); ++nIndex)
+		for (int nIndex = 0; nIndex < obj->arrayGetLength(); ++nIndex)
 		{
 			obj->arrayGetNF(nIndex, &oTemp);
 			DictToCDictObject(&oTemp, pArray, bBinary, "");
@@ -923,8 +923,6 @@ bool CPdfFile::EditAnnot(int nPageIndex, int nID)
 	for (int nIndex = 0; nIndex < oAnnot.dictGetLength(); ++nIndex)
 	{
 		char* chKey = oAnnot.dictGetKey(nIndex);
-		if (strcmp("AP", chKey) == 0)
-			continue;
 		if (strcmp("Popup", chKey) == 0)
 		{
 			Object oPopupRef;
@@ -945,11 +943,28 @@ bool CPdfFile::EditAnnot(int nPageIndex, int nID)
 			oAnnot.dictGetValNF(nIndex, &oParentRef);
 			PdfWriter::CDictObject* pParent = GetWidgetParent(pPDFDocument, pDoc, &oParentRef);
 
-			if (pParent)
+			if (!pParent)
 			{
-				((PdfWriter::CWidgetAnnotation*)pAnnot)->SetParent(pParent);
 				oParentRef.free();
 				continue;
+			}
+
+			((PdfWriter::CWidgetAnnotation*)pAnnot)->SetParent(pParent);
+			PdfWriter::CArrayObject* pKids = dynamic_cast<PdfWriter::CArrayObject*>(pParent->Get("Kids"));
+			if (!pKids)
+			{
+				oParentRef.free();
+				continue;
+			}
+
+			for (int i = 0; i < pKids->GetCount(); ++i)
+			{
+				PdfWriter::CObjectBase* pKid = pKids->Get(i);
+				if (pKid->GetObjId() == oAnnotRef.getRefNum())
+				{
+					pKids->Insert(pKid, pAnnot, true);
+					break;
+				}
 			}
 			oParentRef.free();
 		}
@@ -1032,11 +1047,15 @@ bool CPdfFile::EditWidgets(IAdvancedCommand* pCommand)
 	std::vector<CWidgetsInfo::CParent*> arrParents = pFieldInfo->GetParents();
 	for (CWidgetsInfo::CParent* pParent : arrParents)
 	{
+		PdfWriter::CDictObject* pDParent = pDoc->GetParent(pParent->nID);
+		if (pDParent)
+			continue;
 
 		Object oParentRef;
 		// TODO узнать gen родителя
 		oParentRef.initRef(pParent->nID, 0);
 		GetWidgetParent(pPDFDocument, pDoc, &oParentRef);
+		// TODO перевыставить детей
 		oParentRef.free();
 	}
 

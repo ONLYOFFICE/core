@@ -454,20 +454,24 @@ CAnnotWidgetBtn::CAnnotWidgetBtn(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot
 	m_unIFFlag = 0;
 
 	Object oObj;
+	Object oFieldRef, oField;
+	pField->getFieldRef(&oFieldRef);
+	oFieldRef.fetch(pdfDoc->getXRef(), &oField);
+	oFieldRef.free();
 
 	// Значение поля - V
-	int nValueLength;
-	Unicode* pValue = pField->getValue(&nValueLength);
-	std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(pValue, nValueLength);
-	gfree(pValue);
+	if (oField.dictLookup("V", &oObj))
+	{
+		m_sV = getValue(&oObj);
+		if (!m_sV.empty())
+			m_unFlags |= (1 << 9);
+	}
+	oObj.free();
+	oField.free();
 
 	if (pField->fieldLookup("AS", &oObj)->isName())
-		sValue = oObj.getName();
+		m_sV = oObj.getName();
 	oObj.free();
-
-	// 10 - Включено
-	if (sValue != "Off")
-		m_unFlags |= (1 << 9);
 
 	Object oMK;
 	AcroFormFieldType oType = pField->getAcroFormFieldType();
@@ -2667,6 +2671,8 @@ void CAnnotWidgetBtn::ToWASM(NSWasm::CData& oRes)
 {
 	CAnnotWidget::ToWASM(oRes);
 
+	if (m_unFlags & (1 << 9))
+		oRes.WriteString(m_sV);
 	oRes.AddInt(m_unIFFlag);
 	if (m_nType == 27)
 	{

@@ -63,6 +63,7 @@ public:
 			BYTE GetStyle()  const { return m_nStyle; }
 			int  GetIFFlag() const { return m_nIFFlag; }
 			void GetA(double& dA1, double& dA2) const { dA1 = m_dA1; dA2 = m_dA2; }
+			const std::wstring& GetV()  const { return m_wsV; }
 			const std::wstring& GetCA() const { return m_wsCA; }
 			const std::wstring& GetRC() const { return m_wsRC; }
 			const std::wstring& GetAC() const { return m_wsAC; }
@@ -77,6 +78,7 @@ public:
 			BYTE m_nStyle;
 			int m_nIFFlag;
 			double m_dA1, m_dA2;
+			std::wstring m_wsV;
 			std::wstring m_wsCA;
 			std::wstring m_wsRC;
 			std::wstring m_wsAC;

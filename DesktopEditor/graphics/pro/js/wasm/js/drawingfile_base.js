@@ -791,7 +791,8 @@
 			// Widget types
 			if (rec["type"] == 29 || rec["type"] == 28 || rec["type"] == 27)
 			{
-				rec["value"] = (flags & (1 << 9)) ? "Yes" : "Off";
+				if (flags & (1 << 9))
+					rec["value"] = reader.readString();
 				let IFflags = reader.readInt();
 				// MK
 				if (rec["type"] == 27)
@@ -834,11 +835,7 @@
 					rec["IF"]["FB"] = (IFflags >> 4) & 1;
 				}
 			    if (flags & (1 << 14))
-				{
 					rec["ExportValue"] = reader.readString();
-					if (flags & (1 << 9))
-						rec["value"] = rec["ExportValue"];
-				}
 				// 12.7.4.2.1
 				rec["NoToggleToOff"]  = (rec["flag"] >> 14) & 1; // NoToggleToOff
 				rec["radiosInUnison"] = (rec["flag"] >> 25) & 1; // RadiosInUnison

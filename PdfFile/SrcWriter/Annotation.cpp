@@ -851,6 +851,25 @@ namespace PdfWriter
 		}
 		return NULL;
 	}
+	CObjectBase* CWidgetAnnotation::GetObjValue(const std::string& sV)
+	{
+		CObjectBase* pRes = Get(sV);
+		if (pRes)
+			return pRes;
+		CDictObject* pParent = m_pParent;
+		while (pParent)
+		{
+			pRes = pParent->Get(sV);
+			if (pRes)
+				return pRes;
+			CObjectBase* pParent2 = pParent->Get("Parent");
+			if (pParent2 && pParent2->GetType() == object_type_DICT)
+				pParent = (CDictObject*)pParent2;
+			else
+				return NULL;
+		}
+		return NULL;
+	}
 	void CWidgetAnnotation::CheckMK()
 	{
 		if (!m_pMK)
@@ -1001,12 +1020,15 @@ namespace PdfWriter
 			m_pMK->Add("IF", m_pIF);
 		}
 	}
-	void CButtonWidget::SetV(bool bV)
+	void CButtonWidget::SetV(const std::wstring& wsV)
 	{
-		if (m_pParent && bV)
-			m_pParent->Add("V", m_sAP_N_Yes.c_str());
-
-		Add("V", (bV ? m_sAP_N_Yes.c_str() : "Off"));
+		std::string sV = U_TO_UTF8(wsV);
+		CDictObject* pOwner = GetObjOwnValue("V");
+		if (!pOwner)
+			pOwner = GetObjOwnValue("FT");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("V", new CStringObject(sV.c_str(), true));
 	}
 	void CButtonWidget::SetDV(const std::wstring& wsDV)
 	{
@@ -1124,9 +1146,9 @@ namespace PdfWriter
 		std::string sValue = U_TO_UTF8(wsAP_N_Yes);
 		m_sAP_N_Yes = sValue;
 	}
-	void CButtonWidget::SwitchAP()
+	void CButtonWidget::SwitchAP(const std::string& sV)
 	{
-		Add("AS", Get("V"));
+		Add("AS", sV == m_sAP_N_Yes ? sV.c_str() : "Off");
 	}
 	void CButtonWidget::SetAP(const std::wstring& wsValue, CFontDict* pFont, const TRgb& oColor, double dFontSize, double dX, double dY)
 	{

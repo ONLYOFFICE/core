@@ -2031,7 +2031,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		pWidgetAnnot->SetDA(pFontTT, pPr->GetFontSize(), dFontSize, pPr->GetTC());
 
 		BYTE nAlign = pPr->GetQ();
-		pWidgetAnnot->SetQ(nAlign);
+		if (nWidgetType != 28 && nWidgetType != 29)
+			pWidgetAnnot->SetQ(nAlign);
 		int nWidgetFlag = pPr->GetFlag();
 		pWidgetAnnot->SetFlag(nWidgetFlag);
 
@@ -2155,7 +2156,12 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 			if (nFlags & (1 << 14))
 				pButtonWidget->SetAP_N_Yes(pPr->GetAP_N_Yes());
-			pButtonWidget->SetV(((bool)(nFlags >> 9) & 1));
+			std::wstring wsValue;
+			if (nFlags & (1 << 9))
+			{
+				wsValue = pPr->GetV();
+				pButtonWidget->SetV(wsValue);
+			}
 
 			if (nWidgetType == 27) // button
 			{
@@ -2190,11 +2196,9 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				std::wstring wsValue = pButtonWidget->SetStyle(pPr->GetStyle());
 
 				// ВНЕШНИЙ ВИД
-				// TODO сейчас редактирование внешних видов форм не происходит
-				bool bSwitch = true;
-				if (bSwitch && pButtonWidget->Get("AP"))
+				if (pButtonWidget->Get("AP") && !wsValue.empty())
 				{
-					pButtonWidget->SwitchAP();
+					pButtonWidget->SwitchAP(U_TO_UTF8(wsValue));
 					return S_OK;
 				}
 
@@ -2485,7 +2489,22 @@ HRESULT CPdfWriter::EditWidgetParents(CWidgetsInfo* pFieldInfo)
 		if (nFlags & (1 << 0))
 			pParentObj->Add("T", new PdfWriter::CStringObject((U_TO_UTF8(pParent->sName)).c_str()));
 		if (nFlags & (1 << 1))
-			pParentObj->Add("V", new PdfWriter::CStringObject((U_TO_UTF8(pParent->sV)).c_str()));
+		{
+			std::string sV = U_TO_UTF8(pParent->sV);
+			pParentObj->Add("V", new PdfWriter::CStringObject(sV.c_str()));
+
+			PdfWriter::CObjectBase* pKids = pParentObj->Get("Kids");
+			if (pKids && pKids->GetType() == PdfWriter::object_type_ARRAY)
+			{
+				PdfWriter::CArrayObject* pAKids = (PdfWriter::CArrayObject*)pKids;
+				for (int i = 0; i < pAKids->GetCount(); ++i)
+				{
+					PdfWriter::CButtonWidget* pKid = dynamic_cast<PdfWriter::CButtonWidget*>(pAKids->Get(i));
+					if (pKid)
+						pKid->SwitchAP(sV);
+				}
+			}
+		}
 		if (nFlags & (1 << 2))
 			pParentObj->Add("DV", new PdfWriter::CStringObject((U_TO_UTF8(pParent->sDV)).c_str()));
 		if (nFlags & (1 << 3))

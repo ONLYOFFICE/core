@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2023
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
+ * street, Riga, Latvia, EU, LV-1050.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #include "pic.h"
 
 static const PICTCode
@@ -17,8 +48,8 @@ static const PICTCode
     /* 0x0b */ { "OvSize", 4, "oval size (point)" },
     /* 0x0c */ { "Origin", 4, "dh, dv (word)" },
     /* 0x0d */ { "TxSize", 2, "text size (word)" },
-    /* 0x0e */ { "FgColor", 4, "foreground color (ssize_tword)" },
-    /* 0x0f */ { "BkColor", 4, "background color (ssize_tword)" },
+    /* 0x0e */ { "FgColor", 4, "foreground color (long longword)" },
+    /* 0x0f */ { "BkColor", 4, "background color (long longword)" },
     /* 0x10 */ { "TxRatio", 8, "numerator (point), denominator (point)" },
     /* 0x11 */ { "Version", 1, "version (byte)" },
     /* 0x12 */ { "BkPixPat", 0, "color background pattern" },
@@ -323,8 +354,7 @@ StringInfo *AcquireStringInfo(const size_t length)
 
 char *CloneString(char **destination,const char *source)
 {
-  size_t
-    length;
+  size_t length;
 
   if (source == (const char *) NULL)
     {
@@ -334,34 +364,34 @@ char *CloneString(char **destination,const char *source)
     }
   if (*destination == (char *) NULL)
     {
-      *destination=(char*) malloc((strlen(source) + 4096) * sizeof (*destination));
-      (void) memcpy(destination,source,strlen(source)*sizeof(**destination));
-      destination[strlen(source)]='\0';
+      *destination=(char*) malloc((strlen(source) + 4096)/* * sizeof (*destination)*/);
+
+      memcpy(*destination,source,strlen(source)/**sizeof(**destination)*/);
+      (*destination)[strlen(source)]='\0';
       return(*destination);
     }
   length=strlen(source);
   if (~length < 4096)
     return NULL;
   free(*destination);
-  *destination = (char*) malloc((length+4096)*sizeof (**destination));
+  *destination = (char*) malloc((length+4096)/**sizeof (**destination)*/);
   if (*destination == (char *) NULL)
     return NULL;
   if (length != 0)
-    (void) memcpy(*destination,source,length*sizeof(**destination));
+    memcpy(*destination,source,length/**sizeof(**destination)*/);
   (*destination)[length]='\0';
   return(*destination);
 }
 
 StringInfo *CloneStringInfo(const StringInfo *string_info)
 {
-  StringInfo
-    *clone_info;
+  StringInfo    *clone_info;
 
   clone_info=AcquireStringInfo(string_info->length);
-  (void) CloneString(&clone_info->path,string_info->path);
-  (void) CloneString(&clone_info->name,string_info->name);
+  CloneString(&clone_info->path,string_info->path);
+  CloneString(&clone_info->name,string_info->name);
   if (string_info->length != 0)
-    (void) memcpy(clone_info->datum,string_info->datum,string_info->length+1);
+    memcpy(clone_info->datum,string_info->datum,string_info->length+1);
   return(clone_info);
 }
 
@@ -422,7 +452,7 @@ PixelChannelMap *AcquirePixelChannelMap()
   PixelChannelMap
     *channel_map;
 
-  ssize_t
+  long long
     i;
 
   channel_map=(PixelChannelMap *) malloc(65*sizeof(*channel_map));
@@ -472,20 +502,20 @@ unsigned char GetPixelWriteMask(const ImagePICT *image,const unsigned char *pixe
   return(pixel[image->channel_map[WriteMaskPixelChannel].offset]);
 }
 
-int IsValidOffset(const ssize_t x, const size_t a)
+int IsValidOffset(const long long x, const size_t a)
 {
     if (a == 0)
         return 0;
 
-    if ((x >= (LLONG_MAX / 64 / (ssize_t) a)) ||
-            (x <= ((-LLONG_MAX - 1) / 64 / (ssize_t) a)))
+    if ((x >= (LLONG_MAX / 64 / (long long) a)) ||
+            (x <= ((-LLONG_MAX - 1) / 64 / (long long) a)))
         return 0;
     return 1;
 }
 
-int ReadPixels(ImagePICT* image, const ssize_t x, const ssize_t y, const size_t width, const size_t height, unsigned char* pixels)
+int ReadPixels(ImagePICT* image, const long long x, const long long y, const size_t width, const size_t height, unsigned char* pixels)
 {
-    ssize_t
+    long long
             offset,
             i;
 
@@ -501,9 +531,9 @@ int ReadPixels(ImagePICT* image, const ssize_t x, const ssize_t y, const size_t 
 
     if (IsValidOffset(y, image->m_nWidth) == 0)
         return 0;
-    offset = y * (ssize_t) image->m_nWidth;
+    offset = y * (long long) image->m_nWidth;
 
-    if ((offset/ (ssize_t) image->m_nWidth) != y)
+    if ((offset/ (long long) image->m_nWidth) != y)
     {
         strcpy(image->error, "UncorrectOffset");
 
@@ -544,7 +574,7 @@ int ReadPixels(ImagePICT* image, const ssize_t x, const ssize_t y, const size_t 
         rows=1UL;
       }
     p = image->ppixels + image->number_channels * offset;
-    for (i=0; i < (ssize_t) rows; i++)
+    for (i=0; i < (long long) rows; i++)
     {
       (void) memcpy(q,p,(size_t) length);
       p += image->number_channels * image->m_nWidth;
@@ -561,7 +591,7 @@ int ReadPixels(ImagePICT* image, const ssize_t x, const ssize_t y, const size_t 
     return 1;
 }
 
-unsigned char* GetPixels(ImagePICT* image, const ssize_t x, const ssize_t y, const size_t width, const size_t height)
+unsigned char* GetPixels(ImagePICT* image, const long long x, const long long y, const size_t width, const size_t height)
 {
     unsigned char
             *pixels;
@@ -613,7 +643,7 @@ void SetPixelChannel(const ImagePICT *image,const PixelChannel channel,const uns
     pixel[image->channel_map[channel].offset]=Quantum;
 }
 
-PixelChannel GetPixelChannelChannel(const ImagePICT *image,const ssize_t offset)
+PixelChannel GetPixelChannelChannel(const ImagePICT *image,const long long offset)
 {
   if ((offset < 0) || (offset >= 64))
     return(UndefinedPixelChannel);
@@ -719,7 +749,7 @@ int SetImageAlpha(ImagePICT* image, const unsigned char Alpha)
 
 int AquireImageColormap(ImagePICT* image, const size_t colors)
 {
-    ssize_t
+    long long
             i;
 
     if (image == (ImagePICT*) NULL)
@@ -864,17 +894,17 @@ int SetImageColorspace(ImagePICT *image, const ColorspaceType colorspace)
 //  return(status);
 //}
 
-ssize_t CastDoubleToLong(const double x)
+long long CastDoubleToLong(const double x)
 {
   if (floor(x) > ((double) LLONG_MAX-1))
     {
-      return((ssize_t) LLONG_MAX);
+      return((long long) LLONG_MAX);
     }
   if (ceil(x) < ((double) LLONG_MIN+1))
     {
-      return((ssize_t) LLONG_MIN);
+      return((long long) LLONG_MIN);
     }
-  return((ssize_t) x);
+  return((long long) x);
 }
 
 int Clamp(double x, double min, double max) {
@@ -890,7 +920,7 @@ int Clamp(double x, double min, double max) {
 static inline int CopyPixel(const ImagePICT *image,
   const unsigned char *source,unsigned char *destination)
 {
-  ssize_t
+  long long
     i;
 
   if (source == (const unsigned char *) NULL)
@@ -910,7 +940,7 @@ static inline int CopyPixel(const ImagePICT *image,
   return 1;
 }
 
-int GetOneVirtualPixel(ImagePICT *image,const ssize_t x,const ssize_t y,unsigned char *pixel)
+int GetOneVirtualPixel(ImagePICT *image,const long long x,const long long y,unsigned char *pixel)
 {
   const unsigned char
     *p;
@@ -969,7 +999,7 @@ void AquireImage(ImagePICT* image)
 
 size_t GetSize(FILE* file)
 {
-    ssize_t
+    long long
             file_discription;
 
     struct stat
@@ -996,7 +1026,7 @@ int ReadByte(FILE* file)
     return getc(file);
 }
 
-const void *ReadBlobStream(FILE* file, const size_t length, void *data, ssize_t* count)
+const void *ReadBlobStream(FILE* file, const size_t length, void *data, long long* count)
 {
     *count = Read(file, length, (unsigned char*) data);
     return data;
@@ -1013,7 +1043,7 @@ unsigned short ReadShortValue(FILE* file)
     const unsigned char
             *p;
 
-    ssize_t
+    long long
             count;
 
     *buffer='\0';
@@ -1304,7 +1334,7 @@ int IterateOverSplayTree(SplayTreeInfo *splay_tree,
   NodeInfo
     **nodes;
 
-  ssize_t
+  long long
     i;
 
   NodeInfo
@@ -1643,7 +1673,7 @@ void WriteTo8BimProfile(ImagePICT *image,const char *name, const StringInfo *pro
   StringInfo
     *profile_8bim;
 
-  ssize_t
+  long long
     count;
 
   unsigned char
@@ -1685,10 +1715,10 @@ void WriteTo8BimProfile(ImagePICT *image,const char *name, const StringInfo *pro
     if (p > (datum+length-4))
       break;
     p=ReadResourceLong(p,&value);
-    count=(ssize_t) value;
+    count=(long long) value;
     if ((count & 0x01) != 0)
       count++;
-    if ((count < 0) || (p > (datum+length-count)) || (count > (ssize_t) length))
+    if ((count < 0) || (p > (datum+length-count)) || (count > (long long) length))
       break;
     if (id != profile_id)
       p+=count;
@@ -1698,7 +1728,7 @@ void WriteTo8BimProfile(ImagePICT *image,const char *name, const StringInfo *pro
           extent,
           offset;
 
-        ssize_t
+        long long
           extract_extent;
 
         StringInfo
@@ -1715,7 +1745,7 @@ void WriteTo8BimProfile(ImagePICT *image,const char *name, const StringInfo *pro
         else
           {
             offset=(size_t) (p-datum);
-            extract_extent=(ssize_t) profile->length;
+            extract_extent=(long long) profile->length;
             if ((extract_extent & 0x01) != 0)
               extract_extent++;
             extract_profile=AcquireStringInfo(offset+(size_t) extract_extent+
@@ -1873,7 +1903,7 @@ static inline unsigned char GetPixelReadMask(const ImagePICT *image,
   return(pixel[image->channel_map[ReadMaskPixelChannel].offset]);
 }
 
-int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_to_self,const ssize_t x_offset,const ssize_t y_offset)
+int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_to_self,const long long x_offset,const long long y_offset)
 {
 #define CompositeImageTag  "Composite/Image"
 
@@ -1892,7 +1922,7 @@ int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_
     compose_sync,
     status;
 
-  ssize_t
+  long long
     progress;
 
   double
@@ -1904,7 +1934,7 @@ int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_
     source_dissolve,
     threshold;
 
-  ssize_t
+  long long
     y;
 
   image->storage_class = DirectClass;
@@ -1932,14 +1962,14 @@ int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_
   source_dissolve=1.0;
   threshold=0.05f;
 
-  if (!((x_offset < 0) || (y_offset < 0)) && !((x_offset+(ssize_t) source_image->m_nWidth) > (ssize_t) image->m_nWidth) && !((y_offset+(ssize_t) source_image->m_nHeight) > (ssize_t) image->m_nHeight))
+  if (!((x_offset < 0) || (y_offset < 0)) && !((x_offset+(long long) source_image->m_nWidth) > (long long) image->m_nWidth) && !((y_offset+(long long) source_image->m_nHeight) > (long long) image->m_nHeight))
     {
       if ((source_image->alpha_trait == UndefinedPixelTrait) &&
           (image->alpha_trait != UndefinedPixelTrait))
         (void) SetImageAlpha(source_image, (const unsigned char) 255);
       status = 1;
 
-      for (y=0; y < (ssize_t) source_image->m_nHeight; y++)
+      for (y=0; y < (long long) source_image->m_nHeight; y++)
       {
         const unsigned char
           *p;
@@ -1947,7 +1977,7 @@ int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_
         unsigned char
           *q;
 
-        ssize_t
+        long long
           x;
 
         if (status == 0)
@@ -1959,9 +1989,9 @@ int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_
             status=0;
             continue;
           }
-        for (x=0; x < (ssize_t) source_image->m_nWidth; x++)
+        for (x=0; x < (long long) source_image->m_nWidth; x++)
         {
-          ssize_t
+          long long
             i;
             if (GetPixelReadMask(source_image, p) <= (255/2))
             {
@@ -1995,7 +2025,7 @@ int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_
   status=1;
   progress=0;
   midpoint=128.0;
-  for (y=0; y < (ssize_t) image->m_nHeight; y++)
+  for (y=0; y < (long long) image->m_nHeight; y++)
   {
     const unsigned char
       *pixels;
@@ -2010,7 +2040,7 @@ int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_
     unsigned char
       *q;
 
-    ssize_t
+    long long
       x;
 
     if (status == 0)
@@ -2048,7 +2078,7 @@ int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_
       }
     GetPixelInfo(image,&canvas_pixel);
     GetPixelInfo(source_image,&source_pixel);
-    for (x=0; x < (ssize_t) image->m_nHeight; x++)
+    for (x=0; x < (long long) image->m_nHeight; x++)
     {
       double
         gamma = 0.0;
@@ -2067,7 +2097,7 @@ int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_
       size_t
         channels;
 
-      ssize_t
+      long long
         i;
 
       if (clip_to_self != 0)
@@ -2240,11 +2270,11 @@ int DecodeHeader(FILE* hFile, ImagePICT* image)
 
            if (c == 0x11)
            {
-               ssize_t version = ReadByte(hFile);
+               long long version = ReadByte(hFile);
 
                if (version == 2)
                {
-                   ssize_t version2 = ReadByte(hFile);
+                   long long version2 = ReadByte(hFile);
                    if (version2 != 0xff)
                        return 0;
                    image->m_pctVersion = 2;
@@ -2293,11 +2323,11 @@ int DecodeHeader(FILE* hFile, ImagePICT* image)
        }
    }
 
-   ssize_t version = ReadByte(hFile);
+   long long version = ReadByte(hFile);
 
    if (version == 2)
    {
-       ssize_t version2 = ReadByte(hFile);
+       long long version2 = ReadByte(hFile);
        if (version2 != 0xff)
            return 0;
        image->m_pctVersion = 2;
@@ -2332,7 +2362,7 @@ static const unsigned char *UnpackScanline(
   const unsigned char
     *p;
 
-  ssize_t
+  long long
     i;
 
   unsigned char
@@ -2348,7 +2378,7 @@ static const unsigned char *UnpackScanline(
       return(pixels);
     case 4:
     {
-      for (i=0; i < (ssize_t) *bytes_per_line; i++)
+      for (i=0; i < (long long) *bytes_per_line; i++)
       {
         *q++=(*p >> 4) & 0xff;
         *q++=(*p & 15);
@@ -2359,7 +2389,7 @@ static const unsigned char *UnpackScanline(
     }
     case 2:
     {
-      for (i=0; i < (ssize_t) *bytes_per_line; i++)
+      for (i=0; i < (long long) *bytes_per_line; i++)
       {
         *q++=(*p >> 6) & 0x03;
         *q++=(*p >> 4) & 0x03;
@@ -2372,7 +2402,7 @@ static const unsigned char *UnpackScanline(
     }
     case 1:
     {
-      for (i=0; i < (ssize_t) *bytes_per_line; i++)
+      for (i=0; i < (long long) *bytes_per_line; i++)
       {
         *q++=(*p >> 7) & 0x01;
         *q++=(*p >> 6) & 0x01;
@@ -2405,7 +2435,7 @@ static unsigned char *DecodeImage(FILE *blob,ImagePICT *image,
   const unsigned char
     *p;
 
-  ssize_t
+  long long
     i;
 
   unsigned char
@@ -2418,7 +2448,7 @@ static unsigned char *DecodeImage(FILE *blob,ImagePICT *image,
     scanline_length,
     width;
 
-  ssize_t
+  long long
     count,
     j,
     y;
@@ -2472,12 +2502,12 @@ static unsigned char *DecodeImage(FILE *blob,ImagePICT *image,
       /*
         Pixels are already uncompressed.
       */
-      for (y=0; y < (ssize_t) image->m_nHeight; y++)
+      for (y=0; y < (long long) image->m_nHeight; y++)
       {
-        q=pixels+y*(ssize_t) width*image->number_channels;
+        q=pixels+y*(long long) width*image->number_channels;
         number_pixels=bytes_per_line;
         count=Read(blob,(size_t) number_pixels,scanline);
-        if (count != (ssize_t) number_pixels)
+        if (count != (long long) number_pixels)
           {
             status=0;
             break;
@@ -2498,9 +2528,9 @@ static unsigned char *DecodeImage(FILE *blob,ImagePICT *image,
   /*
     Uncompress RLE pixels into uncompressed pixel buffer.
   */
-  for (y=0; y < (ssize_t) image->m_nHeight; y++)
+  for (y=0; y < (long long) image->m_nHeight; y++)
   {
-    q=pixels+y*(ssize_t) width;
+    q=pixels+y*(long long) width;
     if (bytes_per_line > 200)
       scanline_length=ReadShortValue(blob);
     else
@@ -2511,22 +2541,22 @@ static unsigned char *DecodeImage(FILE *blob,ImagePICT *image,
         break;
       }
     count=Read(blob,scanline_length,scanline);
-    if (count != (ssize_t) scanline_length)
+    if (count != (long long) scanline_length)
       {
         status=0;
         break;
       }
-    for (j=0; j < (ssize_t) scanline_length; )
+    for (j=0; j < (long long) scanline_length; )
       if ((scanline[j] & 0x80) == 0)
         {
           length=(size_t) ((scanline[j] & 0xff)+1);
           number_pixels=length*bytes_per_pixel;
           p=UnpackScanline(scanline+j+1,bits_per_pixel,unpack_buffer,
             &number_pixels);
-          if ((size_t) (q-pixels+(ssize_t) number_pixels) <= *extent)
+          if ((size_t) (q-pixels+(long long) number_pixels) <= *extent)
             (void) memcpy(q,p,(size_t) number_pixels);
           q+=number_pixels;
-          j+=(ssize_t) (length*bytes_per_pixel+1);
+          j+=(long long) (length*bytes_per_pixel+1);
         }
       else
         {
@@ -2534,13 +2564,13 @@ static unsigned char *DecodeImage(FILE *blob,ImagePICT *image,
           number_pixels=bytes_per_pixel;
           p=UnpackScanline(scanline+j+1,bits_per_pixel,unpack_buffer,
             &number_pixels);
-          for (i=0; i < (ssize_t) length; i++)
+          for (i=0; i < (long long) length; i++)
           {
-            if ((size_t) (q-pixels+(ssize_t) number_pixels) <= *extent)
+            if ((size_t) (q-pixels+(long long) number_pixels) <= *extent)
               (void) memcpy(q,p,(size_t) number_pixels);
             q+=number_pixels;
           }
-          j+=(ssize_t) bytes_per_pixel+1;
+          j+=(long long) bytes_per_pixel+1;
         }
   }
   free(scanline);
@@ -2551,7 +2581,7 @@ static unsigned char *DecodeImage(FILE *blob,ImagePICT *image,
 
 int DecodePICT(FILE* hFile, ImagePICT* image)
 {
-    ssize_t
+    long long
             flags,
             i,
             j,
@@ -2754,7 +2784,7 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                 image->resolutionY = 1.0 * pixmap.vertical_resolution;
 
                 (void) ReadLongValue(hFile);
-                flags=(ssize_t) ReadShortValue(hFile);
+                flags=(long long) ReadShortValue(hFile);
                 length=ReadShortValue(hFile);
 
                 if (length > GetSize(hFile))
@@ -2864,7 +2894,7 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                 size_t
                   k;
 
-                ssize_t
+                long long
                   bytes_per_line;
 
                 unsigned char
@@ -2875,7 +2905,7 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                 */
                 bytes_per_line = 0;
                 if ((code != 0x9a) && (code != 0x9b))
-                  bytes_per_line= (ssize_t) ReadShortValue(hFile);
+                  bytes_per_line= (long long) ReadShortValue(hFile);
                 else
                   {
                     (void) ReadShortValue(hFile);
@@ -2943,7 +2973,7 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                     if ((bytes_per_line & 0x8000) != 0)
                     {
                         (void) ReadLongValue(hFile);
-                        flags = (ssize_t) ReadShortValue(hFile);
+                        flags = (long long) ReadShortValue(hFile);
                         tile_image->colors = 1UL * ReadShortValue(hFile) + 1;
                     }
                     status = AquireImageColormap(tile_image, tile_image->colors);
@@ -2970,7 +3000,7 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                       }
                     else
                       {
-                        for (i=0; i < (ssize_t) tile_image->colors; i++)
+                        for (i=0; i < (long long) tile_image->colors; i++)
                         {
                           tile_image->colormap[i].red=((double) 255 - tile_image->colormap[i].red);
                           tile_image->colormap[i].green=((double) 255 - tile_image->colormap[i].green);
@@ -3055,7 +3085,7 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                   Convert PICT tile image to pixel packets.
                 */
                 p = pixels;
-                for (y=0; y < (ssize_t) tile_image->m_nHeight; y++)
+                for (y=0; y < (long long) tile_image->m_nHeight; y++)
                 {
                   if (p > (pixels+extent+image->m_nWidth))
                     {
@@ -3075,21 +3105,21 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                   {
                     if (tile_image->storage_class == PseudoClass)
                       {
-                        if ((index > 0) && (index <= (ssize_t) image->colors))
+                        if ((index > 0) && (index <= (long long) image->colors))
                             index=(unsigned char) *p;
                         SetPixelIndex(tile_image,index,q);
                         SetPixelRed(tile_image,
-                          tile_image->colormap[(ssize_t) index].red,q);
+                          tile_image->colormap[(long long) index].red,q);
                         SetPixelGreen(tile_image,
-                          tile_image->colormap[(ssize_t) index].green,q);
+                          tile_image->colormap[(long long) index].green,q);
                         SetPixelBlue(tile_image,
-                          tile_image->colormap[(ssize_t) index].blue,q);
+                          tile_image->colormap[(long long) index].blue,q);
                       }
                     else
                       {
                         if (pixmap.bits_per_pixel == 16)
                           {
-                            i=(ssize_t) (*p++);
+                            i=(long long) (*p++);
                             k=(size_t) (*p);
                             SetPixelRed(tile_image,(unsigned char) ((i & 0x7c) << 1),q);
                             SetPixelGreen(tile_image,(unsigned char) ((size_t) ((i & 0x03) << 6) |((k & 0xe0) >> 2)),q);
@@ -3138,7 +3168,7 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                   if ((tile_image->storage_class == DirectClass) &&
                       (pixmap.bits_per_pixel != 16))
                     {
-                      p+=(pixmap.component_count-1)*(ssize_t) tile_image->m_nWidth;
+                      p+=(pixmap.component_count-1)*(long long) tile_image->m_nWidth;
                       if (p < pixels)
                         break;
                     }
@@ -3148,7 +3178,7 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                 if ((jpeg == 0) && (feof(hFile) == 0))
                   if ((code == 0x9a) || (code == 0x9b) ||
                       ((bytes_per_line & 0x8000) != 0))
-                    (void) CompositeImage(image,tile_image,1,(ssize_t) destination.left,(ssize_t)destination.top);
+                    (void) CompositeImage(image,tile_image,1,(long long) destination.left,(long long)destination.top);
                 tile_image=DestroyImage(tile_image);
                 break;
             }
@@ -3246,7 +3276,7 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                 if (codes[code].length == -1)
                   (void) ReadShortValue(hFile);
                 else
-                  for (i=0; i < (ssize_t) codes[code].length; i++)
+                  for (i=0; i < (long long) codes[code].length; i++)
                     if (ReadByte(hFile) == EOF)
                       break;
             }
@@ -3282,7 +3312,7 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
 
                 return 0;
             }
-            for (i=0; i < (ssize_t) length; i++)
+            for (i=0; i < (long long) length; i++)
               if (ReadByte(hFile) == EOF)
                 break;
             continue;
@@ -3302,7 +3332,7 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
 
                 return 0;
             }
-            for (i=0; i < (ssize_t) length; i++)
+            for (i=0; i < (long long) length; i++)
               if (ReadByte(hFile) == EOF)
                 break;
             continue;

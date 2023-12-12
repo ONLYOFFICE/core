@@ -63,7 +63,8 @@ SOURCES += \
 
 # grapgics layer
 HEADERS += \
-	./../GraphicsLayer.h
+	./../GraphicsLayer.h \
+	./../GraphicsLayerBlend.h
 
 SOURCES += \
 	./../GraphicsLayer.cpp

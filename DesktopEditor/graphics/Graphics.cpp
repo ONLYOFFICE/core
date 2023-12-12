@@ -1325,19 +1325,19 @@ namespace Aggplus
 		m_frame_buffer.ren_buf().attach(pBuffer, m_frame_buffer.ren_buf().width(), m_frame_buffer.ren_buf().height(), m_frame_buffer.ren_buf().stride());
 
 		if (NULL == m_pAlphaMask)
-			pCurrentGraphicsLayer->BlendTo(m_frame_buffer.pixfmt());
+			Aggplus::BlendTo(pCurrentGraphicsLayer, m_frame_buffer.pixfmt());
 		else
 		{
 			switch(m_pAlphaMask->GetDataType())
 			{
 				case EMaskDataType::ImageBuffer:
 				{
-					pCurrentGraphicsLayer->BlendTo<agg::rgb_to_gray_mask_u8<2, 1, 0>>(m_frame_buffer.pixfmt(), m_pAlphaMask->GetBuffer(), m_pAlphaMask->GetStep());
+					Aggplus::BlendTo<agg::rgb_to_gray_mask_u8<2, 1, 0>>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pAlphaMask->GetBuffer(), m_pAlphaMask->GetStep());
 					break;
 				}
 				case EMaskDataType::AlphaBuffer:
 				{
-					pCurrentGraphicsLayer->BlendTo<agg::one_component_mask_u8>(m_frame_buffer.pixfmt(), m_pAlphaMask->GetBuffer(), m_pAlphaMask->GetStep());
+					Aggplus::BlendTo<agg::one_component_mask_u8>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pAlphaMask->GetBuffer(), m_pAlphaMask->GetStep());
 					break;
 				}
 			}

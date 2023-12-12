@@ -64,7 +64,7 @@
 
 #include "Color.h"
 #include "Matrix.h"
-#include "GraphicsLayer.h"
+#include "GraphicsLayerBlend.h"
 #include "GraphicsPath.h"
 #include "AlphaMask.h"
 #include "Clip.h"

@@ -612,10 +612,10 @@
 			APi["retValue"] = np2 << 32 | np1;
 		}
 	}
-	function getWidgetFonts(type)
+	function getWidgetFonts(nativeFile, type)
 	{
 		let res = [];
-		let ext = Module["_GetInteractiveFormsFonts"](this.nativeFile, type);
+		let ext = Module["_GetInteractiveFormsFonts"](nativeFile, type);
 		if (ext == 0)
 			return res;
 
@@ -896,12 +896,12 @@
 	};
 	CFile.prototype["getInteractiveFormsEmbeddedFonts"] = function()
 	{
-		return getWidgetFonts(1);
-	}
+		return getWidgetFonts(this.nativeFile, 1);
+	};
 	CFile.prototype["getInteractiveFormsStandardFonts"] = function()
 	{
-		return getWidgetFonts(2);
-	}
+		return getWidgetFonts(this.nativeFile, 2);
+	};
 	// optional nWidget     - rec["AP"]["i"]
 	// optional sView       - N/D/R
 	// optional sButtonView - state pushbutton-annotation - Off/Yes(or rec["ExportValue"])

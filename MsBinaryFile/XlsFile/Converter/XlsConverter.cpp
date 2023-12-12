@@ -1049,21 +1049,21 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 	}
 	else if (type_ext == L"pict")
 	{
-		NSFile::CFileBinary file;
-		std::wstring tempPICT = file.CreateTempFileWithUniqueName(xls_global_info->tempDirectory, L"pct");
-		if (file.CreateFileW(tempPICT))
-		{
-			file.WriteFile((BYTE*)data, size);
-			file.CloseFile();
-		}
+		//NSFile::CFileBinary file;
+		//std::wstring tempPICT = file.CreateTempFileWithUniqueName(xls_global_info->tempDirectory, L"pct");
+		//if (file.CreateFileW(tempPICT))
+		//{
+		//	file.WriteFile((BYTE*)data, size);
+		//	file.CloseFile();
+		//}
 		CBgraFrame bgraFrame;
 
-		if (bgraFrame.OpenFile(tempPICT))
+		if (bgraFrame.Decode((BYTE*)data, size))
 		{
 			file_name += L".png";
 			bgraFrame.SaveFile(xlsx_context->get_mediaitems().media_path() + file_name, 4); // png
 		}
-		NSFile::CFileBinary::Remove(tempPICT);
+		//NSFile::CFileBinary::Remove(tempPICT);
 	}
 	else
 	{

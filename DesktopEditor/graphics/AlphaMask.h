@@ -8,45 +8,29 @@
 
 namespace Aggplus
 {
-	enum StatusAlphaMask
-	{
-		EmptyAlphaMask,
-		GenerationAlphaMask,
-		ApplyingAlphaMask
-	};
-
-	enum AMaskDataType
+	enum class EMaskDataType
 	{
 		ImageBuffer,
 		AlphaBuffer
 	};
 
-	class CAlphaMask_private;
 	class GRAPHICS_DECL CAlphaMask : public IGrObject
 	{
 	public:
 		CAlphaMask();
+		CAlphaMask(BYTE* pBuffer, EMaskDataType eDataType, bool bExternalBuffer = true);
 		virtual ~CAlphaMask();
 
-		StatusAlphaMask GetStatus()   const;
-		AMaskDataType   GetDataType() const;
+		BYTE*         GetBuffer();
+		EMaskDataType GetDataType() const;
+		UINT          GetStep() const;
 
-		void Clear();
-
-		Status CreateImageBuffer(UINT unWidth, UINT unHeight);
-		Status CreateAlphaBuffer(UINT unWidth, UINT unHeight);
-
-		Status LoadFromAlphaBuffer(BYTE* pBuffer, UINT unWidth, UINT unHeight, bool bExternalBuffer = true);
-		Status LoadFromImageBuffer(BYTE* pBuffer, UINT unWidth, UINT unHeight, bool bExternalBuffer = true);
-
-		Status LoadFromFile(const std::wstring& wsFilePath);
-		Status LoadFromImage(IGrObject* pGrObject, bool bCopy = true);
-
-		BYTE* GetMask();
-
-		CAlphaMask& operator=(const CAlphaMask& oAlphaMask);
-	public:
-		CAlphaMask_private *m_internal;
+		Status Create(UINT unWidth, UINT unHeight, EMaskDataType eDataType);
+		Status LoadFromBuffer(BYTE* pBuffer, EMaskDataType eDataType, bool bExternalBuffer = true);
+	private:
+		BYTE         *m_pBuffer;
+		EMaskDataType m_enDataType;
+		bool          m_bExternalBuffer;
 	};
 }
 

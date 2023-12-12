@@ -7468,6 +7468,10 @@ int BinaryWorksheetsTableReader::ReadDataValidation(BYTE type, long length, void
         pDataValidation->m_oFormula2.Init();
         pDataValidation->m_oFormula2->m_sText = m_oBufferedStream.GetString4(length);
     }
+	else if (c_oSer_DataValidation::List == type)
+	{
+		pDataValidation->m_oList = m_oBufferedStream.GetString4(length);
+	}
 	else
         res = c_oSerConstants::ReadUnknown;
     return res;

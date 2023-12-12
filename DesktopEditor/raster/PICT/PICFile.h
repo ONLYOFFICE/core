@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,63 +29,17 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
+#ifndef PICFILE_H
+#define PICFILE_H
 
-#include <vector>
-#include <string>
+#include "../BgraFrame.h"
 
-#include <CPSharedPtr.h>
-#include <CPOptional.h>
+namespace PICT {
+    class GRAPHICS_DECL CPictFile {
+    public:
+        bool Open(CBgraFrame* pFrame, const std::wstring& strFileName, bool isRGBA);
+        bool Open(CBgraFrame* pFrame, BYTE* pBuffer, int nSize, bool isRGBA);
+    };
+}
 
-namespace cpdoccore
-{
-
-	class oox_shape;
-	typedef _CP_PTR(oox_shape) oox_shape_ptr;
-
-	class oox_shape
-	{
-	public:
-		static oox_shape_ptr create(int ooxPrstGeomType);
-
-		oox_shape();
-
-		struct _equation
-		{
-			std::wstring name;
-			std::wstring formula;
-
-		};
-		struct _handle
-		{		
-			_CP_OPT(std::wstring) position;	
-
-			_CP_OPT(std::wstring) y_minimum;
-			_CP_OPT(std::wstring) y_maximum;
-			_CP_OPT(std::wstring) x_minimum;
-			_CP_OPT(std::wstring) x_maximum;
-			_CP_OPT(std::wstring) r_minimum;
-			_CP_OPT(std::wstring) r_maximum;
-
-			_CP_OPT(bool) handle_swiched;
-		};
-
-        void add(std::wstring name,std::wstring frmla);
-
-		std::vector<_equation>	equations;
-		std::vector<_handle>	handles;		
-		
-		std::wstring			enhanced_path;
-		std::wstring			modifiers;
-		std::wstring			text_areas;
-
-		_CP_OPT(std::wstring)	view_box;
-		_CP_OPT(std::wstring)	sub_view_size;
-		_CP_OPT(std::wstring)	glue_points;
-
-		std::wstring path_stretchpoint_x;
-		std::wstring path_stretchpoint_y;
-
-		std::wstring			odf_type_name;
-	};
-};
+#endif // PICFILE_H

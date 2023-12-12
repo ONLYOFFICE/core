@@ -1269,7 +1269,8 @@ namespace BinXlsxRW
 		ShowInputMessage = 16,
 		SqRef = 17,
 		Formula1 = 18,
-		Formula2 = 19
+		Formula2 = 19,
+		List = 20
 	};}
 	namespace c_oSer_SheetView{enum c_oSer_SheetView
 	{

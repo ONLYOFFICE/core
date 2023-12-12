@@ -436,8 +436,6 @@ std::wstring PPT::CShapeWriter::ConvertShadow(CShadow	& shadow)
     std::wstring strSY;
     if (shadow.ScaleYToY < 1 || shadow.ScaleYToY > 1)
     {
-        if (shadow.ScaleYToX < 1)shadow.ScaleYToY = -shadow.ScaleYToY;
-
         strSY = L" sy=\"" + std::to_wstring((int)(shadow.ScaleYToY * 100000)) + L"\"";
     }
     std::wstring strSX;

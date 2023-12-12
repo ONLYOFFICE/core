@@ -64,7 +64,7 @@
 
 #include "Color.h"
 #include "Matrix.h"
-#include "GraphicsLayer.h"
+#include "GraphicsLayerBlend.h"
 #include "GraphicsPath.h"
 #include "AlphaMask.h"
 #include "Clip.h"
@@ -402,9 +402,9 @@ public:
 
 	//Работа с альфа-маской
 	Status SetAlphaMask(CAlphaMask* pAlphaMask);
-	Status CreateAlphaMask();
+	Status StartCreatingAlphaMask();
+	Status EndCreatingAlphaMask();
 	Status ResetAlphaMask();
-	Status StartApplyingAlphaMask();
 
 	//Работа со слоями
 	Status AddLayer(CGraphicsLayer* pGraphicsLayer);
@@ -432,9 +432,6 @@ protected:
 	void render_scanlines(Rasterizer& ras, Renderer& ren);
     template<class Renderer>
     void render_scanlines_alpha(Renderer& ren, BYTE Alpha);
-
-	agg::rendering_buffer& GetRenderingBuffer();
-	base_renderer_type&    GetRendererBase();
 
 	void DoFillPathSolid(CColor dwColor);
 	void DoFillPathGradient(CBrushLinearGradient *pBrush);

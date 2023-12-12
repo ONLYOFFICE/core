@@ -481,7 +481,6 @@ namespace MetaFile
 	{
 		m_oWindow.x += shX;
 		m_oWindow.y += shY;
-		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
 	void CWmfDC::SetWindowScale(double dX, double dY)
@@ -531,7 +530,7 @@ namespace MetaFile
 	{
 		m_oViewport.x += shX;
 		m_oViewport.y += shY;
-		UpdatePixelMetrics();
+//		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
 	void CWmfDC::SetViewportScale(double dX, double dY)
@@ -591,6 +590,9 @@ namespace MetaFile
 
 	void CWmfDC::FixIsotropic()
 	{
+		if (m_oViewport.w == m_oWindow.w && m_oViewport.h == m_oWindow.h)
+			return;
+
 		double dXDim = std::fabs((double)m_oViewport.w / m_oWindow.w);
 		double dYDim = std::fabs((double)m_oViewport.h / m_oWindow.h);
 

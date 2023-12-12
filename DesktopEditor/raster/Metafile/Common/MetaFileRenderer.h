@@ -207,6 +207,16 @@ namespace MetaFile
 			m_dScaleY = m_dH / std::fabs((double)(nB - nT));
 		}
 
+		double GetScaleX() const
+		{
+			return m_dScaleX;
+		}
+
+		double GetScaleY() const
+		{
+			return m_dScaleY;
+		}
+
 		void Begin()
 		{
 			UpdateScale();

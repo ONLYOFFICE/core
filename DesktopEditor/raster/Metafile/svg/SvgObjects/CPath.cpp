@@ -490,7 +490,7 @@ namespace SVG
 	}
 
 	void CPath::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
-	{	
+	{
 		if (ApplyStroke(pRenderer, &pStyles->m_oStroke))
 			nTypePath += c_nStroke;
 

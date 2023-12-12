@@ -796,7 +796,7 @@ HRESULT CGraphicsRenderer::BeginCommand(const DWORD& lType)
 		}
 	case c_nMaskType:
 		{
-			m_pRenderer->CreateAlphaMask();
+			m_pRenderer->StartCreatingAlphaMask();
 			break;
 		}
 	case c_nLayerType:
@@ -835,7 +835,7 @@ HRESULT CGraphicsRenderer::EndCommand(const DWORD& lType)
 		}
 	case c_nMaskType:
 		{
-			m_pRenderer->StartApplyingAlphaMask();
+			m_pRenderer->EndCreatingAlphaMask();
 			break;
 		}
 	case c_nResetMaskType:
@@ -845,7 +845,7 @@ HRESULT CGraphicsRenderer::EndCommand(const DWORD& lType)
 		}
 	case c_nLayerType:
 		{
-            m_pRenderer->BlendLayer();
+			m_pRenderer->BlendLayer();
 			break;
 		}
 	default:
@@ -1411,7 +1411,7 @@ void CGraphicsRenderer::CreateFlip(BYTE* pPixels, const Aggplus::CDoubleRect& oR
 	m_pRenderer->SetPageUnit(Aggplus::UnitMillimeter);
 }
 
-void CGraphicsRenderer::SetAlphaMask(Aggplus::CAlphaMask* pAlphaMask)
+void CGraphicsRenderer::SetAlphaMask(Aggplus::CAlphaMask *pAlphaMask)
 {
 	m_pRenderer->SetAlphaMask(pAlphaMask);
 }

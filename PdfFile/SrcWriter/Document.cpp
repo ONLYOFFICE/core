@@ -630,9 +630,13 @@ namespace PdfWriter
 
 		return pWidget;
 	}
-	CAnnotation* CDocument::CreateButtonWidget()
+	CAnnotation* CDocument::CreatePushButtonWidget()
 	{
-		return new CButtonWidget(m_pXref);
+		return new CPushButtonWidget(m_pXref);
+	}
+	CAnnotation* CDocument::CreateCheckBoxWidget()
+	{
+		return new CCheckBoxWidget(m_pXref);
 	}
 	CAnnotation* CDocument::CreateTextWidget()
 	{
@@ -1402,8 +1406,6 @@ namespace PdfWriter
 
 		m_pAcroForm->Add("CO", pArray);
 
-
-
 		for (int CO : arrCO)
 		{
 			CDictObject* pObj = GetParent(CO);
@@ -1453,6 +1455,23 @@ namespace PdfWriter
 		}
 
 		return true;
+	}
+	void CDocument::UpdateButtonImg(const std::vector<PdfWriter::CImageDict*>& arrButtonImg)
+	{
+		for (auto it = m_mAnnotations.begin(); it != m_mAnnotations.end(); it++)
+		{
+			CAnnotation* pAnnot = it->second;
+			if (pAnnot->GetAnnotationType() != AnnotWidget || ((CWidgetAnnotation*)pAnnot)->GetWidgetType() != WidgetPushbutton)
+				continue;
+
+			CPushButtonWidget* pPBWidget = (CPushButtonWidget*)pAnnot;
+			if (pPBWidget->m_nI >= 0)
+				pPBWidget->SetI(arrButtonImg[pPBWidget->m_nI]);
+			if (pPBWidget->m_nRI >= 0)
+				pPBWidget->SetRI(arrButtonImg[pPBWidget->m_nRI]);
+			if (pPBWidget->m_nIX >= 0)
+				pPBWidget->SetIX(arrButtonImg[pPBWidget->m_nIX]);
+		}
 	}
 	CPage* CDocument::AddPage(int nPageIndex)
 	{

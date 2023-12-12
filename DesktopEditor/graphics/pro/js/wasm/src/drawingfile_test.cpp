@@ -491,7 +491,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 
 		// Widget types
 
-		if (sType == "checkbox" || sType == "radiobutton" || sType == "button")
+		if (sType == "button")
 		{
 			if (nFlags & (1 << 9))
 			{
@@ -504,36 +504,26 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			int nIFFlag = READ_INT(pWidgets + i);
 			i += 4;
 
-			if (sType == "button")
+			if (nFlags & (1 << 10))
 			{
-				if (nFlags & (1 << 10))
-				{
-					nPathLength = READ_INT(pWidgets + i);
-					i += 4;
-					std::cout << "CA " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-					i += nPathLength;
-				}
-				if (nFlags & (1 << 11))
-				{
-					nPathLength = READ_INT(pWidgets + i);
-					i += 4;
-					std::cout << "RC " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-					i += nPathLength;
-				}
-				if (nFlags & (1 << 12))
-				{
-					nPathLength = READ_INT(pWidgets + i);
-					i += 4;
-					std::cout << "AC " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-					i += nPathLength;
-				}
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "CA " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
 			}
-			else
+			if (nFlags & (1 << 11))
 			{
-				std::string arrStyle[] = {"check", "cross", "diamond", "circle", "star", "square"};
-				nPathLength = READ_BYTE(pWidgets + i);
-				i += 1;
-				std::cout << "Style " << arrStyle[nPathLength] << ", ";
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "RC " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
+			}
+			if (nFlags & (1 << 12))
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "AC " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
 			}
 			if (nFlags & (1 << 13))
 			{
@@ -570,6 +560,22 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 				}
 				std::cout << "FB " << (nIFFlag & (1 << 4)) << ", ";
 			}
+		}
+		else if (sType == "checkbox" || sType == "radiobutton")
+		{
+			if (nFlags & (1 << 9))
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "Value " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
+			}
+
+			std::string arrStyle[] = {"check", "cross", "diamond", "circle", "star", "square"};
+			nPathLength = READ_BYTE(pWidgets + i);
+			i += 1;
+			std::cout << "Style " << arrStyle[nPathLength] << ", ";
+
 			if (nFlags & (1 << 14))
 			{
 				nPathLength = READ_INT(pWidgets + i);

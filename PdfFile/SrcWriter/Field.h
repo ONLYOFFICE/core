@@ -81,6 +81,17 @@ namespace PdfWriter
 		AnnotCaret          = 17,
 		AnnotWidget         = 18
 	};
+	enum EWidgetType
+	{
+		WidgetUnknown     = 26,
+		WidgetPushbutton  = 27,
+		WidgetRadiobutton = 28,
+		WidgetCheckbox    = 29,
+		WidgetText        = 30,
+		WidgetCombobox    = 31,
+		WidgetListbox     = 32,
+		WisgetSignature   = 33
+	};
 	enum EAnnotHighlightMode
 	{
 		AnnotNoHighlight = 0,

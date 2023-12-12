@@ -2673,31 +2673,36 @@ void CAnnotWidgetBtn::ToWASM(NSWasm::CData& oRes)
 
 	if (m_unFlags & (1 << 9))
 		oRes.WriteString(m_sV);
-	oRes.AddInt(m_unIFFlag);
 	if (m_nType == 27)
 	{
+		oRes.AddInt(m_unIFFlag);
 		if (m_unFlags & (1 << 10))
 			oRes.WriteString(m_sCA);
 		if (m_unFlags & (1 << 11))
 			oRes.WriteString(m_sRC);
 		if (m_unFlags & (1 << 12))
 			oRes.WriteString(m_sAC);
+		if (m_unFlags & (1 << 13))
+			oRes.WriteBYTE(m_nTP);
+		if (m_unIFFlag & (1 << 0))
+		{
+			if (m_unIFFlag & (1 << 1))
+				oRes.WriteBYTE(m_nSW);
+			if (m_unIFFlag & (1 << 2))
+				oRes.WriteBYTE(m_nS);
+			if (m_unIFFlag & (1 << 3))
+			{
+				oRes.AddDouble(m_dA1);
+				oRes.AddDouble(m_dA2);
+			}
+		}
 	}
 	else
-		oRes.WriteBYTE(m_nStyle);
-	if (m_unFlags & (1 << 13))
-		oRes.WriteBYTE(m_nTP);
-	if (m_unIFFlag & (1 << 1))
-		oRes.WriteBYTE(m_nSW);
-	if (m_unIFFlag & (1 << 2))
-		oRes.WriteBYTE(m_nS);
-	if (m_unIFFlag & (1 << 3))
 	{
-		oRes.AddDouble(m_dA1);
-		oRes.AddDouble(m_dA2);
+		oRes.WriteBYTE(m_nStyle);
+		if (m_unFlags & (1 << 14))
+			oRes.WriteString(m_sAP_N_Yes);
 	}
-	if (m_unFlags & (1 << 14))
-		oRes.WriteString(m_sAP_N_Yes);
 }
 
 void CAnnotWidgetTx::ToWASM(NSWasm::CData& oRes)

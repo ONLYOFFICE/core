@@ -62,6 +62,9 @@ public:
 			BYTE GetSW() const { return m_nSW; }
 			BYTE GetStyle()  const { return m_nStyle; }
 			int  GetIFFlag() const { return m_nIFFlag; }
+			int  GetI()      const { return m_nI; }
+			int  GetRI()     const { return m_nRI; }
+			int  GetIX()     const { return m_nIX; }
 			void GetA(double& dA1, double& dA2) const { dA1 = m_dA1; dA2 = m_dA2; }
 			const std::wstring& GetV()  const { return m_wsV; }
 			const std::wstring& GetCA() const { return m_wsCA; }
@@ -77,6 +80,9 @@ public:
 			BYTE m_nSW;
 			BYTE m_nStyle;
 			int m_nIFFlag;
+			int m_nI;
+			int m_nRI;
+			int m_nIX;
 			double m_dA1, m_dA2;
 			std::wstring m_wsV;
 			std::wstring m_wsCA;
@@ -495,12 +501,14 @@ public:
 	virtual ~CWidgetsInfo();
 
 	const std::vector<int>& GetCO() const { return m_arrCO; }
+	const std::vector<std::wstring>& GetButtonImg() const { return m_arrButtonImg; }
 	const std::vector<CParent*>& GetParents() const { return m_arrParents; }
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 
 private:
 	std::vector<int> m_arrCO;
+	std::vector<std::wstring> m_arrButtonImg;
 	std::vector<CParent*> m_arrParents;
 };
 

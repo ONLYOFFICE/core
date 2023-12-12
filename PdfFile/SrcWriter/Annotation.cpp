@@ -34,6 +34,7 @@
 #include "Utils.h"
 #include "ResourcesDictionary.h"
 #include "Streams.h"
+#include "Image.h"
 
 #include "../../DesktopEditor/common/File.h"
 
@@ -1002,15 +1003,23 @@ namespace PdfWriter
 		return GetColor(m_arrBC, true) + "\012";
 	}
 	//----------------------------------------------------------------------------------------
-	// CButtonWidget
+	// CPushButtonWidget
 	//----------------------------------------------------------------------------------------
-	CButtonWidget::CButtonWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
+	CPushButtonWidget::CPushButtonWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
 	{
 		Add("FT", "Btn");
 
 		m_pIF = NULL;
+		m_nI  = -1;
+		m_nRI = -1;
+		m_nIX = -1;
+		m_nScaleType = 0;
+		m_bRespectBorders = false;
+		m_bConstantProportions = true;
+		m_dShiftX = 0.5;
+		m_dShiftY = 0.5;
 	}
-	void CButtonWidget::CheckIF()
+	void CPushButtonWidget::CheckIF()
 	{
 		CheckMK();
 
@@ -1020,7 +1029,7 @@ namespace PdfWriter
 			m_pMK->Add("IF", m_pIF);
 		}
 	}
-	void CButtonWidget::SetV(const std::wstring& wsV)
+	void CPushButtonWidget::SetV(const std::wstring& wsV)
 	{
 		std::string sV = U_TO_UTF8(wsV);
 		CDictObject* pOwner = GetObjOwnValue("V");
@@ -1030,13 +1039,15 @@ namespace PdfWriter
 			pOwner = this;
 		pOwner->Add("V", new CStringObject(sV.c_str(), true));
 	}
-	void CButtonWidget::SetDV(const std::wstring& wsDV)
+	void CPushButtonWidget::SetDV(const std::wstring& wsDV)
 	{
 		std::string sValue = U_TO_UTF8(wsDV);
 		Add("DV", sValue.c_str());
 	}
-	void CButtonWidget::SetS(const BYTE& nS)
+	void CPushButtonWidget::SetS(const BYTE& nS)
 	{
+		m_bConstantProportions = !nS;
+
 		CheckIF();
 
 		std::string sValue;
@@ -1051,12 +1062,14 @@ namespace PdfWriter
 
 		m_pIF->Add("S", sValue.c_str());
 	}
-	void CButtonWidget::SetTP(const BYTE& nTP)
+	void CPushButtonWidget::SetTP(const BYTE& nTP)
 	{
 		Add("TP", (int)nTP);
 	}
-	void CButtonWidget::SetSW(const BYTE& nSW)
+	void CPushButtonWidget::SetSW(const BYTE& nSW)
 	{
+		m_nScaleType = nSW;
+
 		CheckIF();
 
 		std::string sValue;
@@ -1075,7 +1088,212 @@ namespace PdfWriter
 
 		m_pIF->Add("SW", sValue.c_str());
 	}
-	std::wstring CButtonWidget::SetStyle(const BYTE& nStyle)
+	void CPushButtonWidget::SetIFFlag(const int& nIFFlag)
+	{
+		CheckIF();
+
+		m_bRespectBorders = (nIFFlag & (1 << 4)) ? false : true;
+		m_pIF->Add("FB", !m_bRespectBorders);
+	}
+	void CPushButtonWidget::SetI(const int& nI)
+	{
+		m_nI = nI;
+	}
+	void CPushButtonWidget::SetRI(const int& nRI)
+	{
+		m_nRI = nRI;
+	}
+	void CPushButtonWidget::SetIX(const int& nIX)
+	{
+		m_nIX = nIX;
+	}
+	void CPushButtonWidget::SetA(const double& dA1, const double& dA2)
+	{
+		m_dShiftX = dA1;
+		m_dShiftY = dA2;
+
+		CheckIF();
+
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		m_pIF->Add("A", pArray);
+
+		pArray->Add(dA1);
+		pArray->Add(dA2);
+	}
+	void CPushButtonWidget::SetCA(const std::wstring& wsCA)
+	{
+		CheckMK();
+
+		std::string sValue = U_TO_UTF8(wsCA);
+		m_pMK->Add("CA", new CStringObject(sValue.c_str()));
+	}
+	void CPushButtonWidget::SetRC(const std::wstring& wsRC)
+	{
+		CheckMK();
+
+		std::string sValue = U_TO_UTF8(wsRC);
+		m_pMK->Add("RC", new CStringObject(sValue.c_str()));
+	}
+	void CPushButtonWidget::SetAC(const std::wstring& wsAC)
+	{
+		CheckMK();
+
+		std::string sValue = U_TO_UTF8(wsAC);
+		m_pMK->Add("AC", new CStringObject(sValue.c_str()));
+	}
+	void CPushButtonWidget::SetAP(CImageDict* pImage)
+	{
+		CAnnotAppearance* pAppearance = new CAnnotAppearance(m_pXref, this);
+		Add("AP", pAppearance);
+
+		CAnnotAppearanceObject* pNormal = pAppearance->GetNormal();
+		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
+
+		std::string sDA = "0.909 0.941 0.992 rg";
+		Add("DA", new CStringObject(sDA.c_str()));
+
+		if (pImage)
+		{
+			TRect oRect = GetRect();
+
+			double dH = fabs(oRect.fTop - oRect.fBottom);
+			double dW = fabs(oRect.fRight - oRect.fLeft);
+
+			// TODO нужно ли преобразование?
+			double dOriginW = pImage->GetWidth() * 72 / 96.0;
+			double dOriginH = pImage->GetHeight() * 72 / 96.0;
+
+			bool bNeedScale = (0 == m_nScaleType
+				|| (2 == m_nScaleType && (dOriginH > dH || dOriginW > dW))
+				|| (3 == m_nScaleType && dOriginH < dH && dOriginW < dW));
+
+			double dDstW = dOriginW;
+			double dDstH = dOriginH;
+			double dDstX = 0;
+			double dDstY = 0;
+
+			if (m_bRespectBorders && HaveBorder())
+			{
+				double dBorderSize = GetBorderWidth();
+				dDstX += 2 * dBorderSize;
+				dDstY += 2 * dBorderSize;
+				dH -= 4 * dBorderSize;
+				dW -= 4 * dBorderSize;
+			}
+
+			if (bNeedScale)
+			{
+				if (!m_bConstantProportions)
+				{
+					dDstH = dH;
+					dDstW = dW;
+				}
+				else
+				{
+					double dScaleKoef = fmin(dW / dOriginW, dH / dOriginH);
+					dDstW = dScaleKoef * dOriginW;
+					dDstH = dScaleKoef * dOriginH;
+				}
+			}
+
+			dDstX += (dW - dDstW) * m_dShiftX;
+			dDstY += (dH - dDstH) * m_dShiftY;
+
+			CXObject* pForm = new CXObject();
+			CStream* pStream = new CMemoryStream();
+			pForm->SetStream(m_pXref, pStream);
+
+#ifndef FILTER_FLATE_DECODE_DISABLED
+			if (m_pDocument->GetCompressionMode() & COMP_TEXT)
+				pForm->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
+			CArrayObject* pBBox = new CArrayObject();
+			pForm->Add("BBox", pBBox);
+			pBBox->Add(0);
+			pBBox->Add(0);
+			pBBox->Add(dOriginW);
+			pBBox->Add(dOriginH);
+			pForm->Add("FormType", 1);
+			CArrayObject* pFormMatrix = new CArrayObject();
+			pForm->Add("Matrix", pFormMatrix);
+			pFormMatrix->Add(1);
+			pFormMatrix->Add(0);
+			pFormMatrix->Add(0);
+			pFormMatrix->Add(1);
+			pFormMatrix->Add(0);
+			pFormMatrix->Add(0);
+			pForm->Add("Name", "FRM");
+
+			CDictObject* pFormRes = new CDictObject();
+			CArrayObject* pFormResProcset = new CArrayObject();
+			pFormRes->Add("ProcSet", pFormResProcset);
+			pFormResProcset->Add(new CNameObject("PDF"));
+			pFormResProcset->Add(new CNameObject("ImageC"));
+			CDictObject* pFormResXObject = new CDictObject();
+			pFormRes->Add("XObject", pFormResXObject);
+			pFormResXObject->Add("Img", pImage);
+			pForm->Add("Resources", pFormRes);
+
+			pForm->Add("Subtype", "Form");
+			pForm->Add("Type", "XObject");
+
+			pStream->WriteStr("q\012");
+			pStream->WriteReal(dOriginW);
+			pStream->WriteStr(" 0 0 ");
+			pStream->WriteReal(dOriginH);
+			pStream->WriteStr(" 0 0 cm\012/Img Do\012Q");
+
+			pFieldsResources->AddXObjectWithName("FRM", pForm);
+			pNormal->DrawPicture("FRM", dDstX, dDstY, dDstW / dOriginW, dDstH / dOriginH, m_bRespectBorders);
+		}
+		else
+		{
+			pNormal->DrawPicture();
+		}
+	}
+	void CPushButtonWidget::SetI(CImageDict* pI)
+	{
+		SetAP(pI);
+	}
+	void CPushButtonWidget::SetRI(CImageDict* pI)
+	{
+		SetAP(pI);
+	}
+	void CPushButtonWidget::SetIX(CImageDict* pI)
+	{
+		SetAP(pI);
+	}
+	//----------------------------------------------------------------------------------------
+	// CCheckBoxWidget
+	//----------------------------------------------------------------------------------------
+	CCheckBoxWidget::CCheckBoxWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
+	{
+		Add("FT", "Btn");
+		m_nSubtype = WidgetRadiobutton;
+	}
+	void CCheckBoxWidget::SetV(const std::wstring& wsV)
+	{
+		std::string sV = U_TO_UTF8(wsV);
+		CDictObject* pOwner = GetObjOwnValue("V");
+		if (!pOwner)
+			pOwner = GetObjOwnValue("FT");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("V", new CStringObject(sV.c_str(), true));
+	}
+	void CCheckBoxWidget::SetDV(const std::wstring& wsDV)
+	{
+		std::string sValue = U_TO_UTF8(wsDV);
+		Add("DV", sValue.c_str());
+	}
+	void CCheckBoxWidget::SetSubtype(const BYTE& nSubtype)
+	{
+		m_nSubtype = (EWidgetType)nSubtype;
+	}
+	std::wstring CCheckBoxWidget::SetStyle(const BYTE& nStyle)
 	{
 		CheckMK();
 
@@ -1101,56 +1319,16 @@ namespace PdfWriter
 
 		return UTF8_TO_U(sValue);
 	}
-	void CButtonWidget::SetIFFlag(const int& nIFFlag)
-	{
-		CheckIF();
-
-		m_pIF->Add("FB", (nIFFlag & (1 << 4)) ? true : false);
-	}
-	void CButtonWidget::SetA(const double& dA1, const double& dA2)
-	{
-		CheckIF();
-
-		CArrayObject* pArray = new CArrayObject();
-		if (!pArray)
-			return;
-
-		m_pIF->Add("A", pArray);
-
-		pArray->Add(dA1);
-		pArray->Add(dA2);
-	}
-	void CButtonWidget::SetCA(const std::wstring& wsCA)
-	{
-		CheckMK();
-
-		std::string sValue = U_TO_UTF8(wsCA);
-		m_pMK->Add("CA", new CStringObject(sValue.c_str()));
-	}
-	void CButtonWidget::SetRC(const std::wstring& wsRC)
-	{
-		CheckMK();
-
-		std::string sValue = U_TO_UTF8(wsRC);
-		m_pMK->Add("RC", new CStringObject(sValue.c_str()));
-	}
-	void CButtonWidget::SetAC(const std::wstring& wsAC)
-	{
-		CheckMK();
-
-		std::string sValue = U_TO_UTF8(wsAC);
-		m_pMK->Add("AC", new CStringObject(sValue.c_str()));
-	}
-	void CButtonWidget::SetAP_N_Yes(const std::wstring& wsAP_N_Yes)
+	void CCheckBoxWidget::SetAP_N_Yes(const std::wstring& wsAP_N_Yes)
 	{
 		std::string sValue = U_TO_UTF8(wsAP_N_Yes);
 		m_sAP_N_Yes = sValue;
 	}
-	void CButtonWidget::SwitchAP(const std::string& sV)
+	void CCheckBoxWidget::SwitchAP(const std::string& sV)
 	{
 		Add("AS", sV == m_sAP_N_Yes ? sV.c_str() : "Off");
 	}
-	void CButtonWidget::SetAP(const std::wstring& wsValue, CFontDict* pFont, const TRgb& oColor, double dFontSize, double dX, double dY)
+	void CCheckBoxWidget::SetAP(const std::wstring& wsValue, CFontDict* pFont, double dFontSize, double dX, double dY)
 	{
 		m_pAppearance = new CAnnotAppearance(m_pXref, this);
 		if (!m_pAppearance)
@@ -1159,7 +1337,7 @@ namespace PdfWriter
 
 		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
 
-		pNormal->DrawSimpleText(wsValue, NULL, 0, pFont, dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), NULL, NULL);
+		pNormal->DrawSimpleText(wsValue, NULL, 0, pFont, dFontSize, dX, dY, 0, 0, 0, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), NULL, NULL);
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextWidget
@@ -1192,7 +1370,7 @@ namespace PdfWriter
 		std::string sValue = U_TO_UTF8(wsRV);
 		Add("RV", new CStringObject(sValue.c_str()));
 	}
-	void CTextWidget::SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, const TRgb& oColor, const double& dAlpha, double dFontSize, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts)
+	void CTextWidget::SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, const double& dAlpha, double dFontSize, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts)
 	{
 		m_pAppearance = new CAnnotAppearance(m_pXref, this);
 		if (!m_pAppearance)
@@ -1209,7 +1387,7 @@ namespace PdfWriter
 			sExtGrStateName = pFieldsResources->GetExtGrStateName(pExtGrState);
 		}
 
-		pNormal->DrawSimpleText(wsValue, pCodes, unCount, pFont, dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), ppFonts, pShifts);
+		pNormal->DrawSimpleText(wsValue, pCodes, unCount, pFont, dFontSize, dX, dY, 0, 0, 0, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), ppFonts, pShifts);
 	}
 	void CTextWidget::StartAP(CFontDict* pFont, const double& dFontSize, const double& dAlpha)
 	{

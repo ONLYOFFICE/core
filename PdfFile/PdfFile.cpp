@@ -898,7 +898,37 @@ bool CPdfFile::EditAnnot(int nPageIndex, int nID)
 		if (sName)
 		{
 			if (strcmp("Btn", sName) == 0)
-				pAnnot = new PdfWriter::CButtonWidget(pXref);
+			{
+				bool bPushButton = false;
+				oFT.free();
+				int nFf = 0;
+				if (oAnnot.dictLookup("Ff", &oFT)->isInt())
+					nFf = oFT.getInt();
+				if (!nFf)
+				{
+					Object oParent, oParent2;
+					oAnnot.dictLookup("Parent", &oParent);
+					while (oParent.isDict())
+					{
+						if (oParent.dictLookup("Ff", &oFT)->isInt())
+						{
+							nFf = oFT.getInt();
+							break;
+						}
+						oFT.free();
+						oParent.dictLookup("Parent", &oParent2);
+						oParent.free();
+						oParent = oParent2;
+					}
+					oParent.free();
+				}
+
+				bPushButton = (bool)((nFf >> 16) & 1);
+				if (bPushButton)
+					pAnnot = new PdfWriter::CPushButtonWidget(pXref);
+				else
+					pAnnot = new PdfWriter::CCheckBoxWidget(pXref);
+			}
 			else if (strcmp("Tx", sName) == 0)
 				pAnnot = new PdfWriter::CTextWidget(pXref);
 			else if (strcmp("Ch", sName) == 0)
@@ -2132,7 +2162,7 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 		CWidgetsInfo* pCommand = (CWidgetsInfo*)command;
 #ifndef BUILDING_WASM_MODULE
 		if (m_pInternal->bEdit && EditWidgets(pCommand))
-			return m_pInternal->pWriter->EditWidgetParents(pCommand);
+			return m_pInternal->pWriter->EditWidgetParents(m_pInternal->pAppFonts, pCommand, m_pInternal->wsTempFolder);
 #endif
 		return S_OK;
 	}

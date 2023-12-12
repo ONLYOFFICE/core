@@ -354,6 +354,14 @@ namespace PdfWriter
 
 	public:
 		CWidgetAnnotation(CXref* pXref, EAnnotType eType);
+		EAnnotType GetAnnotationType() const override
+		{
+			return AnnotWidget;
+		}
+		virtual EWidgetType GetWidgetType() const
+		{
+			return WidgetUnknown;
+		}
 
 		void SetDA(CFontDict* pFont, const double& dFontSize, const double& dFontSizeAP, const std::vector<double>& arrTC);
 		CDictObject* GetObjOwnValue(const std::string& sV);
@@ -376,20 +384,23 @@ namespace PdfWriter
 		std::string GetBGforAP();
 		std::string GetBCforAP();
 	};
-	class CButtonWidget : public CWidgetAnnotation
+	class CPushButtonWidget : public CWidgetAnnotation
 	{
 	private:
-		EAnnotType m_nSubtype;
+		bool m_bRespectBorders;
+		bool m_bConstantProportions;
+		BYTE m_nScaleType;
+		double m_dShiftX;
+		double m_dShiftY;
 		CDictObject* m_pIF;
-		std::string m_sAP_N_Yes;
 
 		void CheckIF();
 
 	public:
-		CButtonWidget(CXref* pXref);
-		EAnnotType GetAnnotationType() const override
+		CPushButtonWidget(CXref* pXref);
+		virtual EWidgetType GetWidgetType() const override
 		{
-			return m_nSubtype;
+			return WidgetPushbutton;
 		}
 
 		void SetV(const std::wstring& wsV);
@@ -397,16 +408,42 @@ namespace PdfWriter
 		void SetS(const BYTE& nS);
 		void SetTP(const BYTE& nTP);
 		void SetSW(const BYTE& nSW);
-		std::wstring SetStyle(const BYTE& nStyle);
 		void SetIFFlag(const int& nIFFlag);
+		void SetI(const int& nI);
+		void SetRI(const int& nRI);
+		void SetIX(const int& nIX);
 		void SetA(const double& dA1, const double& dA2);
 		void SetCA(const std::wstring& wsCA);
 		void SetRC(const std::wstring& wsRC);
 		void SetAC(const std::wstring& wsAC);
+		void SetI(CImageDict* pI);
+		void SetRI(CImageDict* pRI);
+		void SetIX(CImageDict* pIX);
+
+		void SetAP(CImageDict* pImage);
+		int m_nI, m_nRI, m_nIX;
+	};
+	class CCheckBoxWidget : public CWidgetAnnotation
+	{
+	private:
+		EWidgetType m_nSubtype;
+		std::string m_sAP_N_Yes;
+
+	public:
+		CCheckBoxWidget(CXref* pXref);
+		virtual EWidgetType GetWidgetType() const override
+		{
+			return m_nSubtype;
+		}
+
+		void SetV(const std::wstring& wsV);
+		void SetDV(const std::wstring& wsDV) override;
+		void SetSubtype(const BYTE& nSubtype);
+		std::wstring SetStyle(const BYTE& nStyle);
 		void SetAP_N_Yes(const std::wstring& wsAP_N_Yes);
 
 		void SwitchAP(const std::string& sV);
-		void SetAP(const std::wstring& wsValue, CFontDict* pFont, const TRgb& oColor, double dFontSize, double dX, double dY);
+		void SetAP(const std::wstring& wsValue, CFontDict* pFont, double dFontSize, double dX, double dY);
 	};
 	class CTextWidget : public CWidgetAnnotation
 	{
@@ -416,16 +453,12 @@ namespace PdfWriter
 
 	public:
 		CTextWidget(CXref* pXref);
-		EAnnotType GetAnnotationType() const override
-		{
-			return m_nSubtype;
-		}
 
 		void SetMaxLen(const int& nMaxLen);
 		void SetV (const std::wstring& wsV);
 		void SetRV(const std::wstring& wsRV);
 
-		void SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, const TRgb& oColor, const double& dAlpha, double dFontSize, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts);
+		void SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, const double& dAlpha, double dFontSize, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts);
 		void StartAP(CFontDict* pFont, const double& dFontSize, const double& dAlpha);
 		void AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts = NULL, const double* pShifts = NULL);
 		void EndAP();
@@ -441,10 +474,6 @@ namespace PdfWriter
 
 	public:
 		CChoiceWidget(CXref* pXref);
-		EAnnotType GetAnnotationType() const override
-		{
-			return m_nSubtype;
-		}
 
 		void SetTI(const int& nTI);
 		void SetV(const std::wstring& wsV);

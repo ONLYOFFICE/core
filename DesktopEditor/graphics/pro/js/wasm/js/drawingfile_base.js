@@ -789,27 +789,20 @@
 				readAction(reader, rec["AA"][AAType]);
 			}
 			// Widget types
-			if (rec["type"] == 29 || rec["type"] == 28 || rec["type"] == 27)
+			if (rec["type"] == 27)
 			{
 				if (flags & (1 << 9))
 					rec["value"] = reader.readString();
 				let IFflags = reader.readInt();
-				// MK
-				if (rec["type"] == 27)
-				{
-					// Header - СA
-					if (flags & (1 << 10))
-						rec["caption"] = reader.readString();
-					// Rollover header - RC
-					if (flags & (1 << 11))
-						rec["rolloverCaption"] = reader.readString();
-					// Alternate header - AC
-					if (flags & (1 << 12))
-						rec["alternateCaption"] = reader.readString();
-				}
-				else
-					// 0 - check, 1 - cross, 2 - diamond, 3 - circle, 4 - star, 5 - square
-					rec["style"] = reader.readByte();
+				// Header - СA
+				if (flags & (1 << 10))
+					rec["caption"] = reader.readString();
+				// Rollover header - RC
+				if (flags & (1 << 11))
+					rec["rolloverCaption"] = reader.readString();
+				// Alternate header - AC
+				if (flags & (1 << 12))
+					rec["alternateCaption"] = reader.readString();
 				// Header position - TP
 				if (flags & (1 << 13))
 					// 0 - textOnly, 1 - iconOnly, 2 - iconTextV, 3 - textIconV, 4 - iconTextH, 5 - textIconH, 6 - overlay
@@ -834,6 +827,13 @@
 					}
 					rec["IF"]["FB"] = (IFflags >> 4) & 1;
 				}
+			}
+			else if (rec["type"] == 29 || rec["type"] == 28)
+			{
+				if (flags & (1 << 9))
+					rec["value"] = reader.readString();
+				// 0 - check, 1 - cross, 2 - diamond, 3 - circle, 4 - star, 5 - square
+				rec["style"] = reader.readByte();
 			    if (flags & (1 << 14))
 					rec["ExportValue"] = reader.readString();
 				// 12.7.4.2.1

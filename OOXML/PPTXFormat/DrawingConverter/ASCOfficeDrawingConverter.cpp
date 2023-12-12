@@ -5029,36 +5029,53 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 		nullable_string sColor2;
         XmlMacroReadAttributeBase(oNodeFill, L"color2", sColor2);
 		
+		nullable_string sOpacity2;
+		XmlMacroReadAttributeBase(oNodeFill, L"o:opacity2", sOpacity2);
+
 		nullable_string sFocus;
         XmlMacroReadAttributeBase(oNodeFill, L"focus", sFocus);
-		//
+
+		nullable<SimpleTypes::Vml::CVml_Vector2D_Percentage> oFocusPosition;
+		XmlMacroReadAttributeBase(oNodeFill, L"focusposition", oFocusPosition);
+		
         if (sType.is_init() && (*sType == L"gradient" || *sType == L"gradientradial" || *sType == L"gradientRadial"))
 		{
 			PPTX::Logic::GradFill* pGradFill = new PPTX::Logic::GradFill();
             pGradFill->m_namespace = L"a";
 		
+			PPTX::Logic::Gs Gs_;
+			Gs_.color.Color = new PPTX::Logic::SrgbClr();
+
 			if (sColor.is_init())
 			{
 				ODRAW::CColor color;
 				if (NS_DWC_Common::getColorFromString(*sColor, color))
 				{
-					PPTX::Logic::Gs Gs_;
-					Gs_.color.Color = new PPTX::Logic::SrgbClr();
-					Gs_.color.Color->SetRGB(color.R, color.G, color.B);
-
-					Gs_.pos = 0;
-					pGradFill->GsLst.push_back(Gs_);
-
 					R = color.R;
 					G = color.G;
 					B = color.B;
 				}
 			}
-			if (sColor2.is_init())
+			Gs_.color.Color->SetRGB(R, G, B);
+			if (sOpacity.is_init())
+			{
+				BYTE lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity);
+
+				PPTX::Logic::ColorModifier oMod;
+				oMod.name = L"alpha";
+				int nA = (int)(lAlpha * 100000.0 / 255.0);
+				oMod.val = nA;
+				Gs_.color.Color->Modifiers.push_back(oMod);
+			}
+			Gs_.pos = 0;
+			pGradFill->GsLst.push_back(Gs_);
+
+			if (sColor2.is_init() || sOpacity2.is_init())
 			{
 				PPTX::Logic::Gs Gs_;
 				Gs_.color.Color = new PPTX::Logic::SrgbClr();
-                if (sColor2->find(L"fill") != -1)
+
+				if (sColor2.is_init() && (std::wstring::npos != sColor2->find(L"fill")))
 				{
                     std::wstring sColorEffect = *sColor2;
                     if (sColorEffect.length() > 5)
@@ -5072,12 +5089,24 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 				else
 				{
 					ODRAW::CColor color;
-					if (NS_DWC_Common::getColorFromString(*sColor2, color))
+					if (sColor2.is_init() && NS_DWC_Common::getColorFromString(*sColor2, color))
 					{
-						Gs_.color.Color->SetRGB(color.R, color.G, color.B);
+						R = color.R;
+						G = color.G;
+						B = color.B;
 					}
+					Gs_.color.Color->SetRGB(R, G, B);
 				}
+				if (sOpacity2.is_init())
+				{
+					BYTE lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity2);
 
+					PPTX::Logic::ColorModifier oMod;
+					oMod.name = L"alpha";
+					int nA = (int)(lAlpha * 100000.0 / 255.0);
+					oMod.val = nA;
+					Gs_.color.Color->Modifiers.push_back(oMod);
+				}
 				Gs_.pos = 100 * 1000;
 				pGradFill->GsLst.push_back( Gs_ );
 			}
@@ -5093,17 +5122,30 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 				pGradFill->GsLst.push_back( Gs_ );
 			}
 			//todooo method
-			if (sRotate.is_init())
+
+			if (oFocusPosition.is_init() && (*sType == L"gradientradial" || *sType == L"gradientRadial"))
 			{
-				pGradFill->lin = new PPTX::Logic::Lin();
-				pGradFill->lin->scaled = 1;
-
-				if (*sRotate == L"l") pGradFill->lin->ang = 0   * 60000;
-				if (*sRotate == L"t") pGradFill->lin->ang = 90  * 60000;
-				if (*sRotate == L"b") pGradFill->lin->ang = 270 * 60000;
-				if (*sRotate == L"r") pGradFill->lin->ang = 180 * 60000;
+				pGradFill->path.Init();
+				pGradFill->path->path = 2;
+				pGradFill->path->rect.Init();
+				pGradFill->path->rect->b = XmlUtils::ToString(100 - int(oFocusPosition->GetY() * 100)) + L"%";
+				pGradFill->path->rect->t = XmlUtils::ToString(int(oFocusPosition->GetY() * 100)) + L"%";
+				pGradFill->path->rect->l = XmlUtils::ToString(oFocusPosition->GetX() * 100) + L"%";
+				pGradFill->path->rect->r = XmlUtils::ToString(100 - int(oFocusPosition->GetX() * 100)) + L"%";
 			}
+			else
+			{
+				if (sRotate.is_init())
+				{
+					pGradFill->lin = new PPTX::Logic::Lin();
+					pGradFill->lin->scaled = 1;
 
+					if (*sRotate == L"l") pGradFill->lin->ang = 0 * 60000;
+					if (*sRotate == L"t") pGradFill->lin->ang = 90 * 60000;
+					if (*sRotate == L"b") pGradFill->lin->ang = 270 * 60000;
+					if (*sRotate == L"r") pGradFill->lin->ang = 180 * 60000;
+				}
+			}
 			pSpPr->Fill.m_type = PPTX::Logic::UniFill::gradFill;
 			pSpPr->Fill.Fill = pGradFill;
 		}	

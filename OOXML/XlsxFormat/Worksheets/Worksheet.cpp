@@ -236,6 +236,40 @@ namespace OOX
 			if(m_bIsChartSheet)
 			{
 				XLSB::ChartSheetStreamPtr chartSheetStream(new XLSB::ChartSheetStream);
+
+				if (m_oPageMargins.IsInit())
+					chartSheetStream->m_BrtMargins = m_oPageMargins->toBin();
+				if (m_oHeaderFooter.IsInit())
+					chartSheetStream->m_HEADERFOOTER = m_oHeaderFooter->toBin();
+				if (m_oDrawing.IsInit())
+					chartSheetStream->m_BrtDrawing = m_oDrawing->toBin();
+                if (m_oLegacyDrawing.IsInit())
+					chartSheetStream->m_BrtLegacyDrawing = m_oLegacyDrawing->toBin();
+				if (m_oLegacyDrawingHF.IsInit())
+					chartSheetStream->m_BrtLegacyDrawingHF = m_oLegacyDrawingHF->toBin();
+                if (m_oPicture.IsInit())
+					chartSheetStream->m_BrtBkHim = m_oPicture->toBin();
+
+				if (m_oSheetViews.IsInit())
+					chartSheetStream->m_CSVIEWS = m_oSheetViews->toBin();
+                
+				if (m_oPageSetup.IsInit())
+					chartSheetStream->m_BrtCsPageSetup = m_oPageSetup->toBinCs();
+
+				if(m_oSheetProtection.IsInit())
+				{
+					if (m_oSheetProtection->m_oAlgorithmName.IsInit())
+						chartSheetStream->m_BrtCsProtectionIso = m_oSheetProtection->toBinCS();
+					else if(m_oSheetProtection->m_oPassword.IsInit())
+						chartSheetStream->m_BrtCsProtection = m_oSheetProtection->toBinCS();
+				}
+
+				if (m_oSheetPr.IsInit())
+                {
+                    if(m_oSheetPr->m_oCodeName.IsInit())
+                        chartSheetStream->m_BrtCsProp = m_oSheetPr->toBinCs();
+                }
+
 				return chartSheetStream;
 			}
 			else
@@ -830,6 +864,8 @@ mc:Ignorable=\"x14ac\">");
 			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
 			if ((xlsb) && (xlsb->m_bWriteToXlsb))
 			{
+				if(m_bIsChartSheet)
+					return OOX::SpreadsheetBin::FileTypes::ChartsheetsBin;
 				return OOX::SpreadsheetBin::FileTypes::WorksheetBin;
 			}
 			return m_bIsChartSheet?OOX::Spreadsheet::FileTypes::Chartsheets:OOX::Spreadsheet::FileTypes::Worksheet;

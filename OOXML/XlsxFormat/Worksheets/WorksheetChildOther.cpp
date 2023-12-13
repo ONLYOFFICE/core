@@ -557,117 +557,115 @@ namespace OOX
 		}
 		XLS::BaseObjectPtr CPageSetup::toBin()
 		{
-			if(m_oErrors.IsInit() || m_oScale.IsInit())
+			auto ptr(new XLSB::PageSetup);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_oBlackAndWhite.IsInit())
+				ptr->fNoColor  = m_oBlackAndWhite->m_eValue;
+			if (ptr->fNoColor && m_oCellComments.IsInit())
 			{
-				auto ptr(new XLSB::PageSetup);
-				XLS::BaseObjectPtr objectPtr(ptr);
-				if(m_oBlackAndWhite.IsInit())
-					ptr->fNoColor  = m_oBlackAndWhite->m_eValue;
-				if (ptr->fNoColor && m_oCellComments.IsInit())
-				{
-					if (m_oCellComments == SimpleTypes::Spreadsheet::ECellComments::cellcommentsAtEnd)
-						ptr->fNotes = true;
-					else if(m_oCellComments == SimpleTypes::Spreadsheet::ECellComments::cellcommentsAsDisplayed)
-						ptr->fNotes = false;
-				}
+				if (m_oCellComments == SimpleTypes::Spreadsheet::ECellComments::cellcommentsAtEnd)
+					ptr->fNotes = true;
+				else if(m_oCellComments == SimpleTypes::Spreadsheet::ECellComments::cellcommentsAsDisplayed)
+					ptr->fNotes = false;
+			}
 
-				if (m_oCopies.IsInit())
-					ptr->iCopies = m_oCopies->m_eValue;
+			if (m_oCopies.IsInit())
+				ptr->iCopies = m_oCopies->m_eValue;
 
-				if (m_oDraft.IsInit())
-					ptr->fDraft = m_oDraft->m_eValue;
+			if (m_oDraft.IsInit())
+				ptr->fDraft = m_oDraft->m_eValue;
 
-				if (m_oErrors.IsInit())
-					ptr->iErrors = m_oErrors->m_eValue;
+			if (m_oErrors.IsInit())
+				ptr->iErrors = m_oErrors->m_eValue;
 
-				if (m_oFirstPageNumber.IsInit())
-					ptr->iPageStart = m_oFirstPageNumber->m_eValue;
+			if (m_oFirstPageNumber.IsInit())
+				ptr->iPageStart = m_oFirstPageNumber->m_eValue;
 
-				if (m_oFitToHeight.IsInit())
-					ptr->iFitHeight = m_oFitToHeight->m_eValue;
+			if (m_oFitToHeight.IsInit())
+				ptr->iFitHeight = m_oFitToHeight->m_eValue;
 
-				if (m_oFitToWidth.IsInit())
-					ptr->iFitWidth = m_oFitToWidth->m_eValue;
+			if (m_oFitToWidth.IsInit())
+				ptr->iFitWidth = m_oFitToWidth->m_eValue;
 
-				if (m_oHorizontalDpi.IsInit())
-					ptr->iRes = m_oHorizontalDpi->m_eValue;
+			if (m_oHorizontalDpi.IsInit())
+				ptr->iRes = m_oHorizontalDpi->m_eValue;
 
-				if (m_oRId.IsInit())
-					ptr->szRelID = m_oRId->GetValue();
+			if (m_oRId.IsInit())
+				ptr->szRelID = m_oRId->GetValue();
 
+			if (m_oOrientation == SimpleTypes::EPageOrientation::pageorientLandscape)
+				ptr->fLandscape = true;
+			else
+				ptr->fLandscape = false;
+
+			if ( m_oPageOrder == SimpleTypes::Spreadsheet::EPageOrder::pageorderOverThenDown)
+				ptr->fLeftToRight = true;
+			else
+				ptr->fLeftToRight = false;
+
+			if (m_oPaperSize.IsInit())
+				ptr->iPaperSize = m_oPaperSize->m_eValue;
+
+			if (m_oScale.IsInit())
+				ptr->iScale = m_oScale->m_eValue;
+
+			if (m_oUseFirstPageNumber.IsInit())
+				ptr->fUsePage = m_oUseFirstPageNumber->m_eValue;
+
+			if (m_oVerticalDpi.IsInit())
+				ptr->iVRes = m_oVerticalDpi->m_eValue;
+
+			return objectPtr;
+		}
+		XLS::BaseObjectPtr CPageSetup::toBinCs()
+		{
+			auto ptr(new XLSB::CsPageSetup);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			if(m_oBlackAndWhite.IsInit())
+				ptr->fNoColor  = m_oBlackAndWhite->m_eValue;
+			if (ptr->fNoColor)
+			{
+				if (m_oCellComments == SimpleTypes::Spreadsheet::ECellComments::cellcommentsAtEnd)
+					ptr->fNotes = true;
+				else if(m_oCellComments == SimpleTypes::Spreadsheet::ECellComments::cellcommentsAsDisplayed)
+					ptr->fNotes = false;
+			}
+
+			if (m_oCopies.IsInit())
+				ptr->iCopies = m_oCopies->m_eValue;
+
+			if (m_oDraft.IsInit())
+				ptr->fDraft = m_oDraft->m_eValue;
+
+			if (m_oFirstPageNumber.IsInit())
+				ptr->iPageStart = m_oFirstPageNumber->m_eValue;
+
+			if (m_oHorizontalDpi.IsInit())
+				ptr->iRes = m_oHorizontalDpi->m_eValue;
+
+			if (m_oRId.IsInit())
+				ptr->szRelID = m_oRId->GetValue();
+
+			if (m_oOrientation.IsInit())
+			{
 				if (m_oOrientation == SimpleTypes::EPageOrientation::pageorientLandscape)
 					ptr->fLandscape = true;
 				else
 					ptr->fLandscape = false;
-
-				if ( m_oPageOrder == SimpleTypes::Spreadsheet::EPageOrder::pageorderOverThenDown)
-					ptr->fLeftToRight = true;
-				else
-					ptr->fLeftToRight = false;
-
-				if (m_oPaperSize.IsInit())
-					ptr->iPaperSize = m_oPaperSize->m_eValue;
-
-				if (m_oScale.IsInit())
-					ptr->iScale = m_oScale->m_eValue;
-
-				if (m_oUseFirstPageNumber.IsInit())
-					ptr->fUsePage = m_oUseFirstPageNumber->m_eValue;
-
-				if (m_oVerticalDpi.IsInit())
-					ptr->iVRes = m_oVerticalDpi->m_eValue;
-
-				return objectPtr;
 			}
-			else
-			{
-				auto ptr(new XLSB::CsPageSetup);
-				XLS::BaseObjectPtr objectPtr(ptr);
 
-				if(m_oBlackAndWhite.IsInit())
-					ptr->fNoColor  = m_oBlackAndWhite->m_eValue;
-				if (ptr->fNoColor)
-				{
-					if (m_oCellComments == SimpleTypes::Spreadsheet::ECellComments::cellcommentsAtEnd)
-						ptr->fNotes = true;
-					else if(m_oCellComments == SimpleTypes::Spreadsheet::ECellComments::cellcommentsAsDisplayed)
-						ptr->fNotes = false;
-				}
+			if (m_oPaperSize.IsInit())
+				ptr->iPaperSize = m_oPaperSize->m_eValue;
 
-				if (m_oCopies.IsInit())
-					ptr->iCopies = m_oCopies->m_eValue;
+			if (m_oUseFirstPageNumber.IsInit())
+				ptr->fUsePage = m_oUseFirstPageNumber->m_eValue;
 
-				if (m_oDraft.IsInit())
-					ptr->fDraft = m_oDraft->m_eValue;
-
-				if (m_oFirstPageNumber.IsInit())
-					ptr->iPageStart = m_oFirstPageNumber->m_eValue;
-
-				if (m_oHorizontalDpi.IsInit())
-					ptr->iRes = m_oHorizontalDpi->m_eValue;
-
-				if (m_oRId.IsInit())
-					ptr->szRelID = m_oRId->GetValue();
-
-				if (m_oOrientation.IsInit())
-				{
-					if (m_oOrientation == SimpleTypes::EPageOrientation::pageorientLandscape)
-						ptr->fLandscape = true;
-					else
-						ptr->fLandscape = false;
-				}
-
-				if (m_oPaperSize.IsInit())
-					ptr->iPaperSize = m_oPaperSize->m_eValue;
-
-				if (m_oUseFirstPageNumber.IsInit())
-					ptr->fUsePage = m_oUseFirstPageNumber->m_eValue;
-
-				if (m_oVerticalDpi.IsInit())
-					ptr->iVRes = m_oVerticalDpi->m_eValue;
-				return objectPtr;
-			}
+			if (m_oVerticalDpi.IsInit())
+				ptr->iVRes = m_oVerticalDpi->m_eValue;
+			return objectPtr;
 		}
+
 		EElementType CPageSetup::getType() const
 		{
 			return et_x_PageSetup;
@@ -1435,19 +1433,19 @@ namespace OOX
 					ptr->m_arBrtSel.push_back(i->toBin());
 				}
 				return castedPtr;
-            /*}
-			else
-			{
-				auto pWsView(new XLSB::BeginCsView);
-				XLS::BaseObjectPtr castedPtr(pWsView);
-				if(m_oTabSelected.IsInit())
+           
+		}
+		XLS::BaseObjectPtr CSheetView::toBinCs()
+		{
+			auto pWsView(new XLSB::BeginCsView);
+			XLS::BaseObjectPtr castedPtr(pWsView);
+			if(m_oTabSelected.IsInit())
 				pWsView->fSelected = m_oTabSelected->m_eValue;
-				if(m_oWorkbookViewId.IsInit())
+			if(m_oWorkbookViewId.IsInit())
 				pWsView->iWbkView = m_oWorkbookViewId->m_eValue;
-				if(m_oZoomScale.IsInit())
+			if(m_oZoomScale.IsInit())
 				pWsView->wScale = m_oZoomScale->m_eValue;
-				return castedPtr;
-            }*/
+			return castedPtr;
 		}
 		EElementType CSheetView::getType() const
 		{
@@ -1591,23 +1589,19 @@ namespace OOX
 		XLS::BaseObjectPtr CSheetViews::toBin()
 		{
 			auto view = m_arrItems.back();
-            //if(view->m_oView.IsInit() || view->m_oTopLeftCell.IsInit() || view->m_oTopLeftCell.IsInit())
-            //{
+
 				auto castedPtr(new XLSB::WSVIEWS2);
 				XLS::BaseObjectPtr ptr(castedPtr);
 				for(auto i:m_arrItems)
 					castedPtr->m_arWSVIEW2.push_back(i->toBin());
 				return ptr;
-            //}
-            /*
-			else
-			{
-				auto castedPtr(new XLSB::CSVIEWS);
-				XLS::BaseObjectPtr ptr(castedPtr);
-				for(auto i:m_arrItems)
-					castedPtr->m_arCSVIEW.push_back(i->toBin());
-				return ptr;
-            }*/
+		}
+		XLS::BaseObjectPtr CSheetViews::toBinCs()
+		{
+			auto ptr(new XLSB::CSVIEWS);
+			for(auto i:m_arrItems)
+				ptr->m_arCSVIEW.push_back(i->toBinCs());
+			return XLS::BaseObjectPtr{ptr};
 		}
 		EElementType CSheetViews::getType() const
 		{
@@ -1816,6 +1810,19 @@ namespace OOX
 
 			return objectPtr;
 		}
+		XLS::BaseObjectPtr CSheetPr::toBinCs()
+		{
+			auto ptr(new XLSB::CsProp);
+
+			if(m_oCodeName.IsInit())
+				ptr->strName = m_oCodeName.get();
+			if(m_oPublished.IsInit())
+				ptr->fPublish = m_oPublished->GetValue();
+			if(m_oTabColor.IsInit())
+				ptr->brtcolorTab = m_oTabColor->toColor();
+			return XLS::BaseObjectPtr{ptr};
+		}
+		
 		void CSheetPr::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			if (obj->get_type() == XLS::typeWsProp)
@@ -2691,6 +2698,68 @@ namespace OOX
 
 				return castedPtr;
 			}
+		}
+		XLS::BaseObjectPtr CSheetProtection::toBinCS()
+		{
+			XLS::BaseObjectPtr objectPtr;
+			if(m_oPassword.IsInit())
+			{
+				auto ptr(new XLSB::CsProtection);
+				objectPtr =  XLS::BaseObjectPtr{ptr};
+				ptr->protpwd = std::stoul(m_oPassword.get());
+				if(m_oObjects.IsInit())
+					ptr->fObjects  = m_oObjects->GetValue();
+				else
+					ptr->fObjects = false;
+				if(m_oSheet.IsInit())
+					ptr->fLocked = m_oSheet->GetValue();
+				else
+					ptr->fObjects = false;
+			}
+			else
+			{
+				auto ptr(new XLSB::CsProtectionIso);
+				objectPtr =  XLS::BaseObjectPtr{ptr};
+				
+				if(m_oAlgorithmName.IsInit())
+					ptr->ipdPasswordData.szAlgName = m_oAlgorithmName->GetValue();
+				else
+					ptr->ipdPasswordData.szAlgName = false;
+				if(m_oSpinCount.IsInit())
+					ptr->dwSpinCount = m_oSpinCount->GetValue();
+				else
+					ptr->dwSpinCount = 0;
+					
+				if(m_oHashValue.IsInit())
+				{
+					byte * temp = ptr->ipdPasswordData.rgbHash.rgbData.data();
+					auto tempSize = 0;
+					NSFile::CBase64Converter::CBase64Converter::Decode(std::string{m_oHashValue.get().begin(),
+						m_oHashValue.get().end()}.c_str(), m_oHashValue.get().size(), temp, tempSize);
+					ptr->ipdPasswordData.rgbHash.cbLength = tempSize;
+				}
+
+				if(m_oSaltValue.IsInit())
+				{
+					byte * temp2 = ptr->ipdPasswordData.rgbSalt.rgbData.data();
+					auto tempSize2 = 0;
+					NSFile::CBase64Converter::Decode(std::string{m_oSaltValue.get().begin(),
+						m_oSaltValue.get().end()}.c_str(), m_oSaltValue.get().size(), temp2, tempSize2);
+					ptr->ipdPasswordData.rgbSalt.cbLength = tempSize2;
+				}
+
+				if(m_oObjects.IsInit())
+					ptr->fObjects  = m_oObjects->GetValue();
+				else
+					ptr->fObjects = false;
+				if(m_oSheet.IsInit())
+					ptr->fLocked = m_oSheet->GetValue();
+				else
+					ptr->fObjects = false;
+				
+			}
+
+			return objectPtr;
 		}
 		EElementType CSheetProtection::getType() const
 		{

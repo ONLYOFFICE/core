@@ -448,9 +448,30 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		XLSB::Color CColor::GetDefaultColor()
+		{
+			XLSB::Color ptr;
+
+			ptr.bAlpha = 0;
+            ptr.bBlue = 0;
+            ptr.bGreen = 0;
+            ptr.bRed = 0;
+
+			ptr.xColorType = 0;
+			ptr.nTintAndShade = 0;
+			ptr.index = 0;
+			ptr.fValidRGB = true;
+
+			return ptr;
+		}
 		XLSB::Color CColor::toColor()
 		{
 			XLSB::Color ptr;
+
+            ptr.bAlpha = 0;
+            ptr.bBlue = 0;
+            ptr.bGreen = 0;
+            ptr.bRed = 0;
 
 			if(m_oAuto.IsInit())
 			{
@@ -467,13 +488,14 @@ namespace OOX
 					ptr.index = m_oThemeColor->GetValue();
 					ptr.xColorType = 3;
 			}
-			else
+            else if(m_oRgb.IsInit())
 			{
 				ptr.bAlpha = m_oRgb->Get_A();
 				ptr.bBlue = m_oRgb->Get_B();
 				ptr.bGreen = m_oRgb->Get_G();
 				ptr.bRed = m_oRgb->Get_R();
 			}
+
 
 			if ( m_oTint.IsInit())
 			{
@@ -488,6 +510,11 @@ namespace OOX
 			auto ptr(new XLSB::Color);
 
 			XLS::BaseObjectPtr objectPtr(ptr);
+
+            ptr->bAlpha = 0;
+            ptr->bAlpha = 0;
+            ptr->bAlpha = 0;
+            ptr->bAlpha = 0;
 
 			if(m_oAuto.IsInit())
 			{

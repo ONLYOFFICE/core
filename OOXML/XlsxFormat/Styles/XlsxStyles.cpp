@@ -229,7 +229,7 @@ namespace OOX
                 stylesStream->m_BORDERS = m_oBorders->toBin();
 
             if (m_oCellStyleXfs.IsInit())
-                stylesStream->m_CELLSTYLEXFS = m_oCellStyleXfs->toBin();//
+                stylesStream->m_CELLSTYLEXFS = m_oCellStyleXfs->toBin();
 
 			if (m_oCellXfs.IsInit())
 				stylesStream->m_CELLXFS = m_oCellXfs->toBin();

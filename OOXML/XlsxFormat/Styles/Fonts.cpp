@@ -252,9 +252,7 @@ namespace OOX
 				ptr->brtColor = m_oColor->toColor();
 			else
 			{
-				XLSB::Color col;
-				col.xColorType = 0;
-				ptr->brtColor = col;
+                ptr->brtColor = m_oColor->GetDefaultColor();
 			}
 
 			if(m_oScheme.IsInit())

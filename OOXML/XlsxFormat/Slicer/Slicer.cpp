@@ -189,14 +189,22 @@ XLS::BaseObjectPtr CSlicer::toBin()
 
 	if(m_oStartItem.IsInit())
 		ptr->dwStartSlicerItem = m_oStartItem.get();
+	else
+		ptr->dwStartSlicerItem = 0;
 	if(m_oColumnCount.IsInit())
 		ptr->dwColumnCount = m_oColumnCount.get();
+	else
+		ptr->dwColumnCount = 1;
 	if(m_oShowCaption.IsInit())
 		ptr->fCaptionVisible = m_oShowCaption.get();
 	if(m_oLevel.IsInit())
 		ptr->dwLevel = m_oLevel.get();
+	else
+	 	ptr->dwLevel = 0;
 	if(m_oLockedPosition.IsInit())
 		ptr->fLockedPosition = m_oLockedPosition.get();
+    else
+        ptr->fLockedPosition = false;
 	if(m_oRowHeight.IsInit())
 		ptr->dxRowHeight = m_oRowHeight.get();
 

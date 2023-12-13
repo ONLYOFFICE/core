@@ -101,6 +101,8 @@ namespace OOX
                 ptr->helpTopic = 0xFFFFFFFF;
 			if(m_oHidden.IsInit())
                 ptr->fHidden = m_oHidden->GetValue();
+            else
+                ptr->fHidden = false;
 
 			if (m_oLocalSheetId.IsInit())
 				ptr->itab = m_oLocalSheetId->GetValue();

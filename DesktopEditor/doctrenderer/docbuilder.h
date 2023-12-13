@@ -546,7 +546,7 @@ namespace NSDoctRenderer
 	 * 3) The builder object methods cannot be called with the JS variables. Wrap them with the jsValue instruction if necessary:
 	 * var jsVar = "123.docx";
 	 * builder.SaveFile("docx", jsVar); // Incorrect
-	 * builder.SaveFile("docx", jsValue(jsVar)); // Correct
+	 * builder.SaveFile("docx", "jsValue(jsVar)"); // Correct
 	 *
 	 * 4) For convenience, format types are replaced with strings.
 	 * For example, builder.CreateFile("docx"); is the same as CDocBuilder.CreateFile(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX);

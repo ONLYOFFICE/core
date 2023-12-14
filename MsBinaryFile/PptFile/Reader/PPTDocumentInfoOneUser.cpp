@@ -1713,27 +1713,23 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID, bool alwaysLoad)
 
 void CPPTUserInfo::LoadMasters()
 {
-    //for (size_t i = 0; i < m_arrMastersOrder.size(); i++)
-    for (auto master : m_mapRealUsedMaster)
+    for (size_t i = 0; i < m_arrMastersOrder.size(); i++)
     {
-        std::map<_UINT32, CRecordSlide*>::iterator pPair = m_mapMasters.find(master.first/*m_arrMastersOrder[i]*/);
+        std::map<_UINT32, CRecordSlide*>::iterator pPair = m_mapMasters.find(m_arrMastersOrder[i]);
         if (pPair == m_mapMasters.end())continue;
 
         LoadMainMaster(pPair->first, false);
     }
-
     if (m_mapMasterToTheme.empty())
     {
-       // for (size_t i = 0; i < m_arrMastersOrder.size(); i++)
         for (auto master : m_mapRealUsedMaster)
         {
-            std::map<_UINT32, CRecordSlide*>::iterator pPair = m_mapMasters.find(master.first/*m_arrMastersOrder[i]*/);
+            std::map<_UINT32, CRecordSlide*>::iterator pPair = m_mapMasters.find(master.first);
             if (pPair == m_mapMasters.end())continue;
 
             LoadMainMaster(pPair->first, true);
         }
     }
-
     for (size_t i = 0; i < m_arrMastersOrder.size(); i++)
     {
         std::map<_UINT32, CRecordSlide*>::iterator pPair = m_mapMasters.find(m_arrMastersOrder[i]);

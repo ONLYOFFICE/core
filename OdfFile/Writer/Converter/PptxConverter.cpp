@@ -791,7 +791,7 @@ void PptxConverter::convert(PPTX::Logic::AnimEffect* oox_anim_effect)
 		std::wstring filter = *oox_anim_effect->filter;
 		std::wstring subtype = L"";
 
-		smil_transition_type odfType;
+		_CP_OPT(smil_transition_type) odfType = boost::none;
 		std::wstring odfSubtype = L"";
 		bool odfReversed = false;
 
@@ -912,13 +912,19 @@ void PptxConverter::convert(PPTX::Logic::AnimEffect* oox_anim_effect)
 			else if (subtype == L"down")	{ odfReversed = true;	odfSubtype = L"fromBottom"; }
 			else if (subtype == L"up")		{ odfReversed = false;	odfSubtype = L"fromTop"; }
 		}
+		else if (filter == L"image")
+		{
+			odfType = boost::none;
+		}
 		else
 		{
 			odfType = smil_transition_type::fade;
 			odfReversed = false;
 		}
 
-		odp_context->current_slide().set_anim_transition_filter_type(odfType);
+		if(odfType)
+			odp_context->current_slide().set_anim_transition_filter_type(odfType.value());
+
 		if(!odfSubtype.empty())
 			odp_context->current_slide().set_anim_transition_filter_subtype(odfSubtype);
 		if(odfReversed)

@@ -1122,7 +1122,7 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 	}
 
 	std::wstring filter = convert_filter();
-	std::wstring transition = L"in";
+	_CP_OPT(std::wstring) transition;
 	_CP_OPT(int) time;
 	size_t shapeId = 0;
 
@@ -1133,8 +1133,7 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 
 	if (filter_attlist_.smil_mode_)
 	{
-		if (filter_attlist_.smil_mode_.value() == L"out")
-			transition = L"out";
+		transition = filter_attlist_.smil_mode_.value();
 	}
 
 	if (common_attlist_.smil_target_element_)
@@ -1144,8 +1143,8 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 
 	animationContext.start_anim_effect();
 	animationContext.set_anim_effect_filter(filter);
-	animationContext.set_anim_effect_transition(transition);
-	if (time) animationContext.set_anim_effect_duration(time.value());
+	if(transition)	animationContext.set_anim_effect_transition(transition.value());
+	if (time)		animationContext.set_anim_effect_duration(time.value());
 	animationContext.set_anim_effect_shape_id(shapeId);
 	animationContext.end_anim_effect();
 }
@@ -1260,6 +1259,15 @@ void anim_set::pptx_convert(oox::pptx_conversion_context& Context)
 			to_value = L"hidden";
 		else if (set_attlist_.smil_to_.value() == L"solid")
 			to_value = L"solid";
+
+		try
+		{
+			to_value = std::to_wstring(boost::lexical_cast<double>(set_attlist_.smil_to_.value()));
+		}
+		catch (const boost::bad_lexical_cast& e)
+		{
+			// Ignore
+		}
 	}
 
 	oox::pptx_animation_context& animationContext = Context.get_slide_context().get_animation_context();

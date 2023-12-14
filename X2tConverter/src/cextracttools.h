@@ -952,7 +952,10 @@ namespace NExtractTools
 					if (nFormatFrom != FileFormatChecker.nFileType && FileFormatChecker.nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN)
 					{
 						nFormatFrom = FileFormatChecker.nFileType;
-						changeFormatFrom(nFormatFrom, FileFormatChecker.bMacroEnabled);
+						*m_nFormatFrom = nFormatFrom;
+						// changeFormatFrom(nFormatFrom, FileFormatChecker.bMacroEnabled); // - неверно - чекер не определяет ТОЧНО наличие макросов.
+						// Это только при открытии файла
+						// После открытия нужно проверять параметр m_bMacro
 					}
 				}
 				eRes = processDownloadFile();

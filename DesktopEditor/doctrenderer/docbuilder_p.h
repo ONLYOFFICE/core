@@ -427,6 +427,7 @@ public:
 
 	bool OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath, CV8Params* pParams = NULL);
 	bool SaveFileWithChanges(int type, const std::wstring& _path, const std::wstring& sJsonParams = L"");
+	bool InitVariables();
 };
 
 namespace NSDoctRenderer
@@ -1291,7 +1292,11 @@ namespace NSDoctRenderer
 
 			Init();
 
-			CheckWorker();
+			bool bRes = CheckWorker();
+
+			if (!bRes && m_pWorker && m_bJavascriptBeforeEditor)
+				m_pWorker->InitVariables();
+
 			return m_pWorker->ExecuteCommand(command, retValue);
 		}
 

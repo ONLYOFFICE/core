@@ -6,7 +6,6 @@ import org.apache.tools.ant.taskdefs.condition.Os
 plugins {
     id("com.android.library")
     kotlin("android")
-    id("maven-publish")
 }
 
 apply {
@@ -15,26 +14,26 @@ apply {
 
 val keystore = extra.get("getKeystore") as org.codehaus.groovy.runtime.MethodClosure
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            groupId = PublishEditors.groupId
-            artifactId = PublishEditors.x2tId
-            version = PublishEditors.version
-            artifact("$buildDir/outputs/aar/lib${artifactId}-release.aar")
-        }
-    }
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("${PublishEditors.publishUrl}/")
-            credentials {
-                username = (keystore() as? java.util.Properties)?.getProperty("git_user_name") ?: ""
-                password = (keystore() as? java.util.Properties)?.getProperty("git_token") ?: ""
-            }
-        }
-    }
-}
+//publishing {
+//    publications {
+//        create<MavenPublication>("maven") {
+//            groupId = PublishEditors.groupId
+//            artifactId = PublishEditors.x2tId
+//            version = PublishEditors.version
+//            artifact("${layout.buildDirectory}/outputs/aar/lib${artifactId}-release.aar")
+//        }
+//    }
+//    repositories {
+//        maven {
+//            name = "GitHubPackages"
+//            url = uri("${PublishEditors.publishUrl}/")
+//            credentials {
+//                username = (keystore() as? java.util.Properties)?.getProperty("git_user_name") ?: ""
+//                password = (keystore() as? java.util.Properties)?.getProperty("git_token") ?: ""
+//            }
+//        }
+//    }
+//}
 
 android {
 
@@ -49,7 +48,6 @@ android {
 
     defaultConfig {
         minSdk = AppDependency.MIN_SDK_VERSION
-        targetSdk = AppDependency.TARGET_SDK_VERSION
 
         buildConfigField("String", "LIB_X2T", "\"${extra.get("NAME_LIB")}\"")
 

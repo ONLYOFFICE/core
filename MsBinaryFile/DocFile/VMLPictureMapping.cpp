@@ -590,7 +590,6 @@ namespace DocFileFormat
 			{
 				case Global::msoblipEMF:
 				case Global::msoblipWMF:
-				case Global::msoblipPICT:
 				{
 					MetafilePictBlip* metaBlip = static_cast<MetafilePictBlip*>(oBlipEntry->Blip);
 					if (metaBlip)
@@ -616,12 +615,33 @@ namespace DocFileFormat
 						if (NSFile::CFileBinary::ReadAllBytes(file_name, &pData, nData))
 						{
 							m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), 
-								boost::shared_array<unsigned char>(pData), nData, oBlipEntry->btWin32));
-							
-							break;
+								boost::shared_array<unsigned char>(pData), nData, oBlipEntry->btWin32));	
 						}
-					}				
-				}
+						NSFile::CFileBinary::Remove(file_name);
+					}
+				}break;
+				case Global::msoblipPICT:
+				{
+					BitmapBlip* bitBlip = static_cast<BitmapBlip*>(oBlipEntry->Blip);
+					if (bitBlip)
+					{
+						CBgraFrame bgraFrame;
+						if (bgraFrame.Decode(bitBlip->m_pvBits, bitBlip->pvBitsSize))
+						{
+							std::wstring file_name = m_context->_doc->m_sTempFolder + FILE_SEPARATOR_STR + L"tmp_image";
+							bgraFrame.SaveFile(file_name, 4); // png
+
+							unsigned char* pData = NULL;
+							DWORD nData = 0;
+							if (NSFile::CFileBinary::ReadAllBytes(file_name, &pData, nData))
+							{
+								m_context->_docx->ImagesList.push_back(ImageFileStructure(L".png",
+									boost::shared_array<unsigned char>(pData), nData, oBlipEntry->btWin32));
+							}
+							NSFile::CFileBinary::Remove(file_name);
+						}
+					}
+				}break;
 				case Global::msoblipJPEG:
 				case Global::msoblipCMYKJPEG:
 				case Global::msoblipPNG:

@@ -1121,9 +1121,9 @@ void xlsx_drawing_context::serialize_vml_shape(_drawing_state_ptr & drawing_stat
 			CP_XML_NODE(L"v:fill")
 			{
 				CP_XML_ATTR(L"color", std::wstring(L"#") + drawing_state->fill.color.sRGB);
-				if (drawing_state->fill.opacity > 0.00001)
+				if (drawing_state->fill.color.opacity > 0.00001)
 				{
-					CP_XML_ATTR(L"opacity", drawing_state->fill.opacity * 65536);
+					CP_XML_ATTR(L"opacity", drawing_state->fill.color.opacity * 65536);
 				}			
 				bool  isIternal = false;
 				std::wstring rId = handle_.impl_->get_mediaitems().find_image( drawing_state->fill.texture_target, isIternal);
@@ -1144,9 +1144,9 @@ void xlsx_drawing_context::serialize_vml_shape(_drawing_state_ptr & drawing_stat
 				else if (drawing_state->fill.type == fillGradient || drawing_state->fill.type == fillGradientOne)
 				{
 					CP_XML_ATTR(L"color2", std::wstring(L"#") + drawing_state->fill.color2.sRGB);
-					if (drawing_state->fill.opacity2 > 0.00001)
+					if (drawing_state->fill.color2.opacity > 0.00001)
 					{
-						CP_XML_ATTR(L"opacity2", drawing_state->fill.opacity2 * 65536);
+						CP_XML_ATTR(L"opacity2", drawing_state->fill.color2.opacity * 65536);
 					}
 					CP_XML_ATTR(L"type", L"gradient");
 				}
@@ -1983,7 +1983,7 @@ void xlsx_drawing_context::serialize_fill(std::wostream & stream, _drawing_state
 //------------ 
 	if (fill.color.index >= 0 || !fill.color.sRGB.empty())
 	{
-		serialize_solid_fill(stream, fill.color, fill.opacity);
+		serialize_solid_fill(stream, fill.color, fill.color.opacity);
 	}
 	else serialize_none_fill(stream);
 }
@@ -2073,7 +2073,7 @@ void xlsx_drawing_context::serialize_gradient_fill(std::wostream & stream, _draw
 						CP_XML_NODE(L"a:gs")
 						{
 							CP_XML_ATTR(L"pos",  (int)(fill.colorsPosition[i].first * 100000));
-							serialize_color(CP_XML_STREAM(), fill.colorsPosition[i].second);
+							serialize_color(CP_XML_STREAM(), fill.colorsPosition[i].second, fill.colorsPosition[i].second.opacity);
 							//проверить что если тут индексы то они берутся с программных а не с юзерских (см как ниже)
 						}
 					}
@@ -2084,13 +2084,13 @@ void xlsx_drawing_context::serialize_gradient_fill(std::wostream & stream, _draw
 					{
 						fill.color.bScheme = false; // по общим индексам
 						CP_XML_ATTR(L"pos", 0);
-						serialize_color(CP_XML_STREAM(), fill.color, fill.opacity);
+						serialize_color(CP_XML_STREAM(), fill.color, fill.color.opacity);
 					}
 					CP_XML_NODE(L"a:gs")
 					{
 						fill.color2.bScheme = false; // по общим индексам
 						CP_XML_ATTR(L"pos", 100000);
-						serialize_color(CP_XML_STREAM(), fill.color2, fill.opacity2);
+						serialize_color(CP_XML_STREAM(), fill.color2, fill.color2.opacity);
 					}
 				}
 			}
@@ -3154,8 +3154,8 @@ void xlsx_drawing_context::set_fill_opacity	(double val, bool background)
 	if (current_drawing_states == NULL) return;
 	if (current_drawing_states->empty()) return;
 	
-	if (background)	current_drawing_states->back()->fill.opacity2	= val;
-	else			current_drawing_states->back()->fill.opacity	= val;
+	if (background)	current_drawing_states->back()->fill.color2.opacity	= val;
+	else			current_drawing_states->back()->fill.color.opacity	= val;
 }
 void xlsx_drawing_context::add_fill_colors(double position, const std::wstring & col)
 {

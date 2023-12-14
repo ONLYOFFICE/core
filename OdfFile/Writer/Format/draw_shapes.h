@@ -323,6 +323,9 @@ public:
 	_CP_OPT(std::wstring)		draw_text_path_scale_;
 
 	_CP_OPT(int)				draw_text_rotate_angle_;
+
+	_CP_OPT(std::wstring)		draw_path_stretchpoint_x_;
+	_CP_OPT(std::wstring)		draw_path_stretchpoint_y_;
 	
 	void serialize(CP_ATTR_NODE);   
 };

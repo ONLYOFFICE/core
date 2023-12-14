@@ -476,9 +476,8 @@ namespace NSCustomVML
         }
 		bool CCustomVML::IsCustom()
         {
-			//return (m_bIsVerticesPresent && m_bIsPathPresent);
-			return (m_bIsVerticesPresent && !m_arVertices.empty() && (m_bIsPathPresent || !m_arSegments.empty()));
-        }
+			return ((m_bIsVerticesPresent || !m_arVertices.empty()) && (m_bIsPathPresent || !m_arSegments.empty()));
+		}
 		void CCustomVML::SetPath(ODRAW::RulesType ePath)
         {
             m_ePath = ePath;

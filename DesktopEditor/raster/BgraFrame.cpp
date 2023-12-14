@@ -40,6 +40,10 @@
 #include "JBig2/source/JBig2File.h"
 #endif
 
+#if CXIMAGE_SUPPORT_PIC
+#include "PICT/PICFile.h"
+#endif
+
 #include <cmath>
 #define BGRA_FRAME_CXIMAGE_MAX_MEMORY 67108864 // 256Mb (*4 channel)
 
@@ -439,6 +443,14 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
 	}
 #endif
 
+#if CXIMAGE_SUPPORT_PIC
+    if (CXIMAGE_FORMAR_PIC == m_nFileType)
+    {
+        PICT::CPictFile PIC;
+        return PIC.Open(this, strFileName, !m_bIsRGBA);
+    }
+#endif
+
 	NSFile::CFileBinary oFile;
 	if (!oFile.OpenFile(strFileName))
 		return false;
@@ -512,6 +524,14 @@ bool CBgraFrame::Decode(BYTE* pBuffer, int nSize, unsigned int nFileType)
 		Jpeg2000::CJ2kFile oJ2;
 		return oJ2.Open(this, pBuffer, nSize, std::wstring(L""), !m_bIsRGBA);
 	}
+#endif
+
+#if CXIMAGE_SUPPORT_PIC
+    if (CXIMAGE_FORMAR_PIC == m_nFileType)
+    {
+        PICT::CPictFile PIC;
+        return PIC.Open(this, pBuffer, nSize, !m_bIsRGBA);
+    }
 #endif
 
 	CxImage img;

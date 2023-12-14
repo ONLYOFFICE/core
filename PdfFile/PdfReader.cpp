@@ -1183,6 +1183,11 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 			int nView;
 			if (!oMK.dictLookup(sMKName.c_str(), &oStr)->isStream())
 			{
+				if (oStr.isNull())
+				{
+					oStr.free();
+					continue;
+				}
 				oStr.free();
 
 				Object oIF;

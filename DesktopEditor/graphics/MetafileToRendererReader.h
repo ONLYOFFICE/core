@@ -174,6 +174,11 @@ namespace NSOnlineOfficeBinToPdf
 			int len = 2 * ReadUShort();
 			return ReadString16(len);
 		}
+		inline std::string ReadStringA()
+		{
+			int len = ReadInt();
+			return std::string((char*)m_cur, len);
+		}
 		inline void SkipString16(int len)
 		{
 			Skip(len);

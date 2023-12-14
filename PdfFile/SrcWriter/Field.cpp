@@ -1666,24 +1666,32 @@ namespace PdfWriter
 			return;
 
 		double dW = 0, dH = 0;
-		if (m_pField)
+		if (m_pField || m_pAnnot)
 		{
-			TRect oRect = m_pField->GetRect();
+			TRect oRect = m_pField ? m_pField->GetRect() : m_pAnnot->GetRect();
 			dW = fabs(oRect.fRight - oRect.fLeft);
 			dH = fabs(oRect.fBottom - oRect.fTop);
 		}
 
 		m_pStream->WriteStr("q\012");
 
-		if (m_pField->HaveShd())
+		if ((m_pField && m_pField->HaveShd()) || (m_pAnnot && m_pAnnot->Get("BG")))
 		{
-			TRgb oColor = m_pField->GetShdColor();
-			m_pStream->WriteReal(oColor.r);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(oColor.g);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(oColor.b);
-			m_pStream->WriteStr(" rg\012");
+			if (m_pField)
+			{
+				TRgb oColor = m_pField->GetShdColor();
+				m_pStream->WriteReal(oColor.r);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(oColor.g);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(oColor.b);
+				m_pStream->WriteStr(" rg\012");
+			}
+			else
+			{
+				CWidgetAnnotation* pAnnot = (CWidgetAnnotation*)m_pAnnot;
+				m_pStream->WriteStr(pAnnot->GetBGforAP().c_str());
+			}
 
 			m_pStream->WriteStr("1 0 0 1 0 0 cm\012");
 			m_pStream->WriteStr("0 0 ");
@@ -1702,18 +1710,25 @@ namespace PdfWriter
 			m_pStream->WriteStr(" re\012f\012");
 		}
 
-		if (m_pField->HaveBorder())
+		if ((m_pField && m_pField->HaveBorder()) || (m_pAnnot && m_pAnnot->HaveBorder()))
 		{
-			TRgb oColor = m_pField->GetBorderColor();
+			if (m_pField)
+			{
+				TRgb oColor = m_pField->GetBorderColor();
+				m_pStream->WriteReal(oColor.r);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(oColor.g);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(oColor.b);
+				m_pStream->WriteStr(" RG\012");
+			}
+			else
+			{
+				CWidgetAnnotation* pAnnot = (CWidgetAnnotation*)m_pAnnot;
+				m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
+			}
 
-			m_pStream->WriteReal(oColor.r);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(oColor.g);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(oColor.b);
-			m_pStream->WriteStr(" RG\012");
-
-			double dBorderSize   = m_pField->GetBorderSize();
+			double dBorderSize   = m_pField ? m_pField->GetBorderSize() : m_pAnnot->GetBorderWidth();
 			double dBorderSize_2 = dBorderSize / 2;
 			m_pStream->WriteReal(dBorderSize);
 			m_pStream->WriteStr(" w\0120 j\0120 J\012");
@@ -1752,7 +1767,6 @@ namespace PdfWriter
 
 		if (sImageName)
 		{
-
 			m_pStream->WriteReal(dImageW);
 			m_pStream->WriteStr(" 0 0 ");
 			m_pStream->WriteReal(dImageH);

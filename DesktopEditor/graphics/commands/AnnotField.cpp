@@ -32,6 +32,7 @@
 
 #include "./AnnotField.h"
 #include "../MetafileToRenderer.h"
+#include "../../common/File.h"
 
 CAnnotFieldInfo::CAnnotFieldInfo() : IAdvancedCommand(AdvancedCommandType::Annotaion)
 {
@@ -840,7 +841,10 @@ bool CWidgetsInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafil
 
 	n = pReader->ReadInt();
 	for (int i = 0; i < n; ++i)
-		m_arrButtonImg.push_back(pCorrector->GetImagePath(pReader->ReadString()));
+	{
+		std::string sImagePath = pReader->ReadStringA();
+		m_arrButtonImg.push_back(pCorrector->GetImagePath(UTF8_TO_U(sImagePath)));
+	}
 
 	return true;
 }

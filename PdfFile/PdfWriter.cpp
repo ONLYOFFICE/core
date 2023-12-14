@@ -1707,7 +1707,13 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		pPage->AddAnnotation(pAnnot);
 	}
 
-	BYTE nWidgetType = 0;
+	BYTE nWidgetType =  0;
+	if (oInfo.IsWidget())
+	{
+		CAnnotFieldInfo::CWidgetAnnotPr* pPr = oInfo.GetWidgetAnnotPr();
+		nWidgetType = pPr->GetType();
+	}
+
 	if (!pAnnot)
 	{
 		if (oInfo.IsText())
@@ -1731,9 +1737,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 		if (oInfo.IsWidget())
 		{
-			CAnnotFieldInfo::CWidgetAnnotPr* pPr = oInfo.GetWidgetAnnotPr();
-			nWidgetType = pPr->GetType();
-
 			switch (nWidgetType)
 			{
 			case 26:
@@ -2035,7 +2038,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		pWidgetAnnot->SetDA(pFontTT, pPr->GetFontSize(), dFontSize, pPr->GetTC());
 
 		BYTE nAlign = pPr->GetQ();
-		if (nWidgetType != 28 && nWidgetType != 29)
+		if (nWidgetType != 27 && nWidgetType != 28 && nWidgetType != 29)
 			pWidgetAnnot->SetQ(nAlign);
 		int nWidgetFlag = pPr->GetFlag();
 		pWidgetAnnot->SetFlag(nWidgetFlag);

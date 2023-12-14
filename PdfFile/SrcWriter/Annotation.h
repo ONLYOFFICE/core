@@ -98,7 +98,9 @@ namespace PdfWriter
 
 	class CAnnotation : public CDictObject
 	{
-	private:
+	protected:
+		CAnnotation(CXref* pXref, EAnnotType eType);
+
 		struct CBorderType
 		{
 			CBorderType()
@@ -115,9 +117,6 @@ namespace PdfWriter
 		};
 
 		CBorderType m_oBorder;
-
-	protected:
-		CAnnotation(CXref* pXref, EAnnotType eType);
 
 		CXref* m_pXref;
 		TRect  m_oRect;
@@ -370,7 +369,7 @@ namespace PdfWriter
 		void SetQ(const BYTE& nQ);
 		void SetH(const BYTE& nH);
 		void SetR(const int& nR);
-		void SetFlag    (const int& nFlag);
+		virtual void SetFlag (const int& nFlag);
 		void SetParent(CDictObject* pParent);
 		void SetTU(const std::wstring& wsTU);
 		void SetDS(const std::wstring& wsDS);
@@ -409,6 +408,7 @@ namespace PdfWriter
 		void SetTP(const BYTE& nTP);
 		void SetSW(const BYTE& nSW);
 		void SetIFFlag(const int& nIFFlag);
+		virtual void SetFlag (const int& nFlag) override;
 		void SetI(const int& nI);
 		void SetRI(const int& nRI);
 		void SetIX(const int& nIX);
@@ -420,7 +420,7 @@ namespace PdfWriter
 		void SetRI(CImageDict* pRI);
 		void SetIX(CImageDict* pIX);
 
-		void SetAP(CImageDict* pImage);
+		CXObject* SetAP(CImageDict* pImage);
 		int m_nI, m_nRI, m_nIX;
 	};
 	class CCheckBoxWidget : public CWidgetAnnotation

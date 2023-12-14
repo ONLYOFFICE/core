@@ -1064,7 +1064,9 @@ namespace PdfWriter
 	}
 	void CPushButtonWidget::SetTP(const BYTE& nTP)
 	{
-		Add("TP", (int)nTP);
+		CheckMK();
+
+		m_pMK->Add("TP", (int)nTP);
 	}
 	void CPushButtonWidget::SetSW(const BYTE& nSW)
 	{
@@ -1094,6 +1096,12 @@ namespace PdfWriter
 
 		m_bRespectBorders = (nIFFlag & (1 << 4)) ? false : true;
 		m_pIF->Add("FB", !m_bRespectBorders);
+	}
+	void CPushButtonWidget::SetFlag(const int& nFlag)
+	{
+		int nFlags = nFlag;
+		nFlags |= (1 << 16);
+		CWidgetAnnotation::SetFlag(nFlags);
 	}
 	void CPushButtonWidget::SetI(const int& nI)
 	{
@@ -1144,8 +1152,15 @@ namespace PdfWriter
 		std::string sValue = U_TO_UTF8(wsAC);
 		m_pMK->Add("AC", new CStringObject(sValue.c_str()));
 	}
-	void CPushButtonWidget::SetAP(CImageDict* pImage)
+	CXObject* CPushButtonWidget::SetAP(CImageDict* pImage)
 	{
+		if (!m_oBorder.bHave)
+		{
+			m_oBorder.bHave = true;
+			m_oBorder.nType = 1;
+			m_oBorder.dWidth = 1;
+		}
+
 		CAnnotAppearance* pAppearance = new CAnnotAppearance(m_pXref, this);
 		Add("AP", pAppearance);
 
@@ -1155,6 +1170,8 @@ namespace PdfWriter
 		std::string sDA = "0.909 0.941 0.992 rg";
 		Add("DA", new CStringObject(sDA.c_str()));
 
+		CXObject* pForm = NULL;
+
 		if (pImage)
 		{
 			TRect oRect = GetRect();
@@ -1162,9 +1179,8 @@ namespace PdfWriter
 			double dH = fabs(oRect.fTop - oRect.fBottom);
 			double dW = fabs(oRect.fRight - oRect.fLeft);
 
-			// TODO нужно ли преобразование?
-			double dOriginW = pImage->GetWidth() * 72 / 96.0;
-			double dOriginH = pImage->GetHeight() * 72 / 96.0;
+			double dOriginW = pImage->GetWidth();
+			double dOriginH = pImage->GetHeight();
 
 			bool bNeedScale = (0 == m_nScaleType
 				|| (2 == m_nScaleType && (dOriginH > dH || dOriginW > dW))
@@ -1202,7 +1218,7 @@ namespace PdfWriter
 			dDstX += (dW - dDstW) * m_dShiftX;
 			dDstY += (dH - dDstH) * m_dShiftY;
 
-			CXObject* pForm = new CXObject();
+			pForm = new CXObject();
 			CStream* pStream = new CMemoryStream();
 			pForm->SetStream(m_pXref, pStream);
 
@@ -1253,18 +1269,38 @@ namespace PdfWriter
 		{
 			pNormal->DrawPicture();
 		}
+
+		return pForm;
 	}
 	void CPushButtonWidget::SetI(CImageDict* pI)
 	{
-		SetAP(pI);
+		CXObject* pForm = SetAP(pI);
+		if (!pForm)
+			return;
+
+		CheckMK();
+
+		m_pMK->Add("I", pForm);
 	}
 	void CPushButtonWidget::SetRI(CImageDict* pI)
 	{
-		SetAP(pI);
+		CXObject* pForm = SetAP(pI);
+		if (!pForm)
+			return;
+
+		CheckMK();
+
+		m_pMK->Add("RI", pForm);
 	}
 	void CPushButtonWidget::SetIX(CImageDict* pI)
 	{
-		SetAP(pI);
+		CXObject* pForm = SetAP(pI);
+		if (!pForm)
+			return;
+
+		CheckMK();
+
+		m_pMK->Add("IX", pForm);
 	}
 	//----------------------------------------------------------------------------------------
 	// CCheckBoxWidget

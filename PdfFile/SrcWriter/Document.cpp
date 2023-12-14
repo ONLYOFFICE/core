@@ -1359,39 +1359,6 @@ namespace PdfWriter
 			return p->second;
 		return NULL;
 	}
-	/*
-	bool FindCO(const std::string& sCO, int nPos, CArrayObject* ppFields)
-	{
-		for (int i = 0; i < ppFields->GetCount(); ++i)
-		{
-			CObjectBase* pObj = ppFields->Get(i);
-			if (!pObj || pObj->GetType() != object_type_DICT)
-				continue;
-
-			CDictObject* pDictObj = (CDictObject*)pObj;
-			pObj = pDictObj->Get("T");
-			if (!pObj || pObj->GetType() != object_type_STRING)
-				continue;
-
-			CStringObject* pStrObj = (CStringObject*)pObj;
-			const char* cStr = (const char*)pStrObj->GetString();
-			int nLength = sCO.length() - nPos;
-			if (pStrObj->GetLength() < nLength)
-				nLength = pStrObj->GetLength();
-			if (strncmp(sCO.c_str() + nPos, cStr, nLength) != 0)
-				continue;
-
-			if (nPos + nLength == sCO.length())
-				return true;
-
-			CArrayObject* pKids = dynamic_cast<CArrayObject*>(pDictObj->Get("Kids"));
-			if (pKids && FindCO(sCO, nPos + nLength, pKids))
-				return true;
-		}
-
-		return false;
-	}
-	*/
 	bool CDocument::EditCO(const std::vector<int>& arrCO)
 	{
 		if (arrCO.empty())
@@ -1417,41 +1384,6 @@ namespace PdfWriter
 				if (pAnnot)
 					pArray->Add(pAnnot);
 			}
-			/*
-			CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-			std::string sCO = U_TO_UTF8(CO);
-			int nPos = 0;
-
-			FindCO(sCO, nPos, ppFields);
-
-			for (int i = 0; i < ppFields->GetCount(); ++i)
-			{
-				CObjectBase* pObj = ppFields->Get(i);
-				if (!pObj || pObj->GetType() != object_type_DICT)
-					continue;
-
-				CDictObject* pDictObj = (CDictObject*)pObj;
-				pObj = pDictObj->Get("T");
-				if (!pObj || pObj->GetType() != object_type_STRING)
-					continue;
-
-				CStringObject* pStrObj = (CStringObject*)pObj;
-				const char* cStr = (const char*)pStrObj->GetString();
-				int nLength = sCO.length() - nPos;
-				if (pStrObj->GetLength() < nLength)
-					nLength = pStrObj->GetLength();
-				if (strncmp(sCO.c_str() + nPos, cStr, nLength) != 0)
-					continue;
-
-				CArrayObject* pKids = dynamic_cast<CArrayObject*>(m_pAcroForm->Get("Kids"));
-				if (pKids)
-				{
-
-				}
-			}
-
-			pArray->Add(new CStringObject(sCO.c_str()));
-			*/
 		}
 
 		return true;

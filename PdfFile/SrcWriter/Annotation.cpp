@@ -1543,21 +1543,6 @@ namespace PdfWriter
 	CSignatureWidget::CSignatureWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
 	{
 	}
-	/*
-	void CAnnotationAppearance::DrawTextWidget()
-	{
-		CTextWidget* pAnnot = (CTextWidget*)m_pAnnot;
-
-
-
-		// TODO потребуется смещение Y-координаты в зависимости от размеров области и размеров шрифта
-		// TODO требуется запись юникод значений, т.е необходимо писать по глифам
-		m_pStream->WriteStr(" 2 6.548 Td\012");
-		std::string sV = pAnnot->GetV();
-		m_pStream->WriteEscapeText((BYTE*)sV.c_str(), sV.length());
-		m_pStream->WriteStr(" Tj\012ET\012Q\012EMC\012");
-	}
-	*/
 	//----------------------------------------------------------------------------------------
 	// CAction
 	//----------------------------------------------------------------------------------------

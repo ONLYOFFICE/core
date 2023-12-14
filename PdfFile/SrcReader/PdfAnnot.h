@@ -126,11 +126,13 @@ public:
 private:
 	struct CAnnotAPView final
 	{
+		BYTE nBlendMode;
 		std::string sAPName;
 		std::string sASName;
 		BYTE* pAP;
 	};
 	void WriteAppearance(unsigned int nColor, CAnnotAPView* pView);
+	BYTE GetBlendMode();
 
 	unsigned int m_unRefNum; // Номер ссылки на объект
 	double m_dx1, m_dy1, m_dx2, m_dy2;
@@ -224,6 +226,7 @@ protected:
 private:
 	unsigned int m_unR; // Поворот аннотации относительно страницы - R
 	unsigned int m_unRefNumParent; // Номер ссылки на объект родителя
+	unsigned int m_unFontStyle; // Стиль шрифта - из DA
 	double m_dFontSize; // Размер шрифта - из DA
 	std::vector<double> m_arrTC; // Цвет текста - из DA
 	std::vector<double> m_arrBC; // Цвет границ - BC
@@ -251,6 +254,7 @@ private:
 	BYTE m_nSW;
 	BYTE m_nS;
 	unsigned int m_unIFFlag;
+	std::string m_sV;
 	std::string m_sCA;
 	std::string m_sRC;
 	std::string m_sAC;
@@ -475,6 +479,62 @@ private:
 };
 
 //------------------------------------------------------------------------
+// PdfReader::CAnnotFileAttachment
+//------------------------------------------------------------------------
+
+class CAnnotFileAttachment final : public CMarkupAnnot
+{
+public:
+	CAnnotFileAttachment(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+	virtual ~CAnnotFileAttachment();
+
+	void ToWASM(NSWasm::CData& oRes) override;
+
+	struct CEmbeddedFile
+	{
+		BYTE* pFile;
+		int nLength;
+		bool bFree;
+
+		CEmbeddedFile() : pFile(NULL), nLength(0), bFree(true) {}
+		~CEmbeddedFile() { if (bFree) RELEASEARRAYOBJECTS(pFile); }
+	};
+
+	struct CEmbeddedFiles
+	{
+		CEmbeddedFile* m_pF;
+		CEmbeddedFile* m_pUF;
+		CEmbeddedFile* m_pDOS;
+		CEmbeddedFile* m_pMac;
+		CEmbeddedFile* m_pUnix;
+
+		CEmbeddedFiles() : m_pF(NULL), m_pUF(NULL), m_pDOS(NULL), m_pMac(NULL), m_pUnix(NULL) {}
+		~CEmbeddedFiles()
+		{
+			RELEASEOBJECT(m_pF);
+			RELEASEOBJECT(m_pUF);
+			RELEASEOBJECT(m_pDOS);
+			RELEASEOBJECT(m_pMac);
+			RELEASEOBJECT(m_pUnix);
+		}
+	};
+
+private:
+	std::string m_sName; // Иконка
+	std::string m_sFS;   // Файловая система
+	std::string m_sDesc; // Описание файла
+	std::string m_sF;    // Спецификация файла (обратная совместимость)
+	std::string m_sUF;   // Спецификация файла (кросс-платформенная и межъязыковая совместимость)
+	std::string m_sDOS;  // Спецификация файла DOS
+	std::string m_sMac;  // Спецификация файла Mac
+	std::string m_sUnix; // Спецификация файла Unix
+	std::pair<std::string, std::string> m_sID; // Идентификатор файла
+	CEmbeddedFiles* m_pEF; // EF содержит F/UF/DOS/Mac/Unix со ссылками на встроенные файловые потоки по соответствующим спецификациях
+	// TODO RF содержит F/UF/DOS/Mac/Unix с массивами связанных файлов по соответствующим спецификациях
+	// TODO Cl коллекция для создания пользовательского интерфейса
+};
+
+//------------------------------------------------------------------------
 // PdfReader::CAnnots
 //------------------------------------------------------------------------
 
@@ -508,7 +568,7 @@ private:
 
 	void getParents(XRef* xref, Object* oFieldRef);
 
-	std::vector<std::string> m_arrCO; // Порядок вычислений - CO
+	std::vector<int> m_arrCO; // Порядок вычислений - CO
 	std::vector<CAnnotParent*> m_arrParents; // Родительские Fields
 	std::vector<CAnnot*> m_arrAnnots;
 };

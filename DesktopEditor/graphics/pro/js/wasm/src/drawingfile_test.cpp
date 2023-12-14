@@ -278,8 +278,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 	{
 		int nPathLength = READ_INT(pWidgets + i);
 		i += 4;
-		std::cout << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-		i += nPathLength;
+		std::cout << nPathLength << ", ";
 	}
 	if (nCOLength > 0)
 		std::cout << std::endl;
@@ -358,6 +357,10 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 		nPathLength = READ_INT(pWidgets + i);
 		i += 4;
 		std::cout << "size " << (double)nPathLength / 100.0 << ", ";
+
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "style " << nPathLength << ", ";
 
 		int nTCLength = READ_INT(pWidgets + i);
 		i += 4;
@@ -488,43 +491,39 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 
 		// Widget types
 
-		if (sType == "checkbox" || sType == "radiobutton" || sType == "button")
+		if (sType == "button")
 		{
-			std::cout << (nFlags & (1 << 9) ? "Yes" : "Off") << ", ";
+			if (nFlags & (1 << 9))
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "Value " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
+			}
 
 			int nIFFlag = READ_INT(pWidgets + i);
 			i += 4;
 
-			if (sType == "button")
+			if (nFlags & (1 << 10))
 			{
-				if (nFlags & (1 << 10))
-				{
-					nPathLength = READ_INT(pWidgets + i);
-					i += 4;
-					std::cout << "CA " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-					i += nPathLength;
-				}
-				if (nFlags & (1 << 11))
-				{
-					nPathLength = READ_INT(pWidgets + i);
-					i += 4;
-					std::cout << "RC " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-					i += nPathLength;
-				}
-				if (nFlags & (1 << 12))
-				{
-					nPathLength = READ_INT(pWidgets + i);
-					i += 4;
-					std::cout << "AC " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-					i += nPathLength;
-				}
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "CA " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
 			}
-			else
+			if (nFlags & (1 << 11))
 			{
-				std::string arrStyle[] = {"check", "cross", "diamond", "circle", "star", "square"};
-				nPathLength = READ_BYTE(pWidgets + i);
-				i += 1;
-				std::cout << "Style " << arrStyle[nPathLength] << ", ";
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "RC " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
+			}
+			if (nFlags & (1 << 12))
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "AC " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
 			}
 			if (nFlags & (1 << 13))
 			{
@@ -561,6 +560,22 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 				}
 				std::cout << "FB " << (nIFFlag & (1 << 4)) << ", ";
 			}
+		}
+		else if (sType == "checkbox" || sType == "radiobutton")
+		{
+			if (nFlags & (1 << 9))
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "Value " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
+			}
+
+			std::string arrStyle[] = {"check", "cross", "diamond", "circle", "star", "square"};
+			nPathLength = READ_BYTE(pWidgets + i);
+			i += 1;
+			std::cout << "Style " << arrStyle[nPathLength] << ", ";
+
 			if (nFlags & (1 << 14))
 			{
 				nPathLength = READ_INT(pWidgets + i);
@@ -689,8 +704,35 @@ void ReadAnnotAP(BYTE* pWidgetsAP, int& i)
 		oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res_" + std::to_wstring(nAP) + L"_" + UTF8_TO_U(sAPName) + L".png", _CXIMAGE_FORMAT_PNG);
 		oFrame.ClearNoAttack();
 		RELEASEARRAYOBJECTS(res);
+
+		nPathLength = READ_BYTE(pWidgetsAP + i);
+		i += 1;
+		std::string arrBlendMode[] = { "Normal", "Multiply", "Screen", "Overlay", "Darken", "Lighten", "ColorDodge", "ColorBurn", "HardLight",
+									   "SoftLight", "Difference", "Exclusion", "Hue", "Saturation", "Color", "Luminosity" };
+		std::cout << "Type " << arrBlendMode[nPathLength] << ", ";
 	}
 	std::cout << std::endl;
+}
+
+void ReadFileAttachment(BYTE* pAnnots, int& i, int n)
+{
+	std::cout << "EF FileAttachment" << n << ".txt, ";
+	int nFileLength = READ_INT(pAnnots + i);
+	i += 4;
+
+	unsigned long long npFile1 = READ_INT(pAnnots + i);
+	i += 4;
+	unsigned long long npFile2 = READ_INT(pAnnots + i);
+	i += 4;
+
+	BYTE* res = (BYTE*)(npFile2 << 32 | npFile1);
+
+	NSFile::CFileBinary oFile;
+	if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/FileAttachment" + std::to_wstring(n) + L".txt"))
+		oFile.WriteFile(res, nFileLength);
+	oFile.CloseFile();
+
+	RELEASEARRAYOBJECTS(res);
 }
 
 void ReadInteractiveFormsFonts(CGraphicsFileDrawing* pGrFile, int nType)
@@ -1462,6 +1504,97 @@ int main(int argc, char* argv[])
 					i += 1;
 					std::string arrSy[] = {"None", "P", "S"};
 					std::cout << "Sy " << arrSy[nPathLength] << ", ";
+				}
+			}
+			else if (sType == "FileAttachment")
+			{
+				if (nFlags & (1 << 15))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "Name " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 16))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "FS " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 17))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "F " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 18))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "UF " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 19))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "DOS " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 20))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "Mac " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 21))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "Unix " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 22))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "ID " << std::string((char*)(pAnnots + i), nPathLength);
+					i += nPathLength;
+
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << " " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 23))
+					std::cout << "V true, ";
+				else
+					std::cout << "V false, ";
+				if (nFlags & (1 << 24))
+				{
+					int nFlag = READ_INT(pAnnots + i);
+					i += 4;
+
+					if (nFlag & (1 << 0))
+						ReadFileAttachment(pAnnots, i, 0);
+					if (nFlag & (1 << 1))
+						ReadFileAttachment(pAnnots, i, 1);
+					if (nFlag & (1 << 2))
+						ReadFileAttachment(pAnnots, i, 2);
+					if (nFlag & (1 << 3))
+						ReadFileAttachment(pAnnots, i, 3);
+					if (nFlag & (1 << 4))
+						ReadFileAttachment(pAnnots, i, 4);
+				}
+				if (nFlags & (1 << 26))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "Desc " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
 				}
 			}
 

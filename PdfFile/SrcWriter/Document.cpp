@@ -630,9 +630,13 @@ namespace PdfWriter
 
 		return pWidget;
 	}
-	CAnnotation* CDocument::CreateButtonWidget()
+	CAnnotation* CDocument::CreatePushButtonWidget()
 	{
-		return new CButtonWidget(m_pXref);
+		return new CPushButtonWidget(m_pXref);
+	}
+	CAnnotation* CDocument::CreateCheckBoxWidget()
+	{
+		return new CCheckBoxWidget(m_pXref);
 	}
 	CAnnotation* CDocument::CreateTextWidget()
 	{
@@ -1354,6 +1358,64 @@ namespace PdfWriter
 		if (p != m_mParents.end())
 			return p->second;
 		return NULL;
+	}
+	bool CDocument::EditCO(const std::vector<int>& arrCO)
+	{
+		if (arrCO.empty())
+			return true;
+
+		if (!CheckAcroForm())
+			return false;
+
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return false;
+
+		m_pAcroForm->Add("CO", pArray);
+
+		for (int CO : arrCO)
+		{
+			CDictObject* pObj = GetParent(CO);
+			if (pObj)
+				pArray->Add(pObj);
+			else
+			{
+				CAnnotation* pAnnot = m_mAnnotations[CO];
+				if (pAnnot)
+					pArray->Add(pAnnot);
+			}
+		}
+
+		return true;
+	}
+	void CDocument::UpdateButtonImg(const std::vector<PdfWriter::CImageDict*>& arrButtonImg)
+	{
+		for (auto it = m_mAnnotations.begin(); it != m_mAnnotations.end(); it++)
+		{
+			CAnnotation* pAnnot = it->second;
+			if (pAnnot->GetAnnotationType() != AnnotWidget || ((CWidgetAnnotation*)pAnnot)->GetWidgetType() != WidgetPushbutton)
+				continue;
+
+			CPushButtonWidget* pPBWidget = (CPushButtonWidget*)pAnnot;
+			if (pPBWidget->m_nI >= 0)
+			{
+				std::string sFrmName = "FRM" + std::to_string(it->first) + "I";
+				std::string sImgName = "Img" + std::to_string(pPBWidget->m_nI);
+				pPBWidget->SetI(arrButtonImg[pPBWidget->m_nI], sImgName.c_str(), sFrmName.c_str());
+			}
+			if (pPBWidget->m_nRI >= 0)
+			{
+				std::string sFrmName = "FRM" + std::to_string(it->first) + "RI";
+				std::string sImgName = "Img" + std::to_string(pPBWidget->m_nRI);
+				pPBWidget->SetRI(arrButtonImg[pPBWidget->m_nRI], sImgName.c_str(), sFrmName.c_str());
+			}
+			if (pPBWidget->m_nIX >= 0)
+			{
+				std::string sFrmName = "FRM" + std::to_string(it->first) + "IX";
+				std::string sImgName = "Img" + std::to_string(pPBWidget->m_nIX);
+				pPBWidget->SetIX(arrButtonImg[pPBWidget->m_nIX], sImgName.c_str(), sFrmName.c_str());
+			}
+		}
 	}
 	CPage* CDocument::AddPage(int nPageIndex)
 	{

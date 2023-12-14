@@ -70,7 +70,7 @@
 #define OO_INLINE inline
 #endif
 
-namespace NSCorrectFontName
+namespace PdfReader
 {
 	bool CheckFontNameStyle(std::wstring& sName, const std::wstring& sStyle)
 	{
@@ -97,7 +97,7 @@ namespace NSCorrectFontName
 		return bRet;
 	}
 
-	void CheckFontNamePDF(std::wstring& sName, NSFonts::CFontSelectFormat* format)
+	void CheckFontStylePDF(std::wstring& sName, bool& bBold, bool& bItalic)
 	{
 		if (sName.length() > 7 && sName.at(6) == '+')
 		{
@@ -117,8 +117,8 @@ namespace NSCorrectFontName
 			}
 		}
 
-		bool bBold   = false;
-		bool bItalic = false;
+		bBold   = false;
+		bItalic = false;
 
 		CheckFontNameStyle(sName, L"condensedbold");
 		CheckFontNameStyle(sName, L"semibold");
@@ -149,6 +149,14 @@ namespace NSCorrectFontName
 		//if (CheckFontNameStyle(sName, L"bolditalicmt")) { bBold = true; bItalic = true; }
 		//if (CheckFontNameStyle(sName, L"bolditalic")) { bBold = true; bItalic = true; }
 		//if (CheckFontNameStyle(sName, L"boldoblique")) { bBold = true; bItalic = true; }
+	}
+
+	void CheckFontNamePDF(std::wstring& sName, NSFonts::CFontSelectFormat* format)
+	{
+		bool bBold   = false;
+		bool bItalic = false;
+
+		CheckFontStylePDF(sName, bBold, bItalic);
 
 		if (format)
 		{
@@ -894,7 +902,7 @@ namespace PdfReader
 		oRefObject.free();
 
 		NSFonts::CFontSelectFormat oFontSelect;
-		NSCorrectFontName::CheckFontNamePDF(wsFontBaseName, &oFontSelect);
+		CheckFontNamePDF(wsFontBaseName, &oFontSelect);
 		if (oFontObject.isDict())
 		{
 			Dict *pFontDict = oFontObject.getDict();

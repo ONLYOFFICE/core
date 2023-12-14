@@ -32,6 +32,7 @@
 
 #include "./AnnotField.h"
 #include "../MetafileToRenderer.h"
+#include "../../common/File.h"
 
 CAnnotFieldInfo::CAnnotFieldInfo() : IAdvancedCommand(AdvancedCommandType::Annotaion)
 {
@@ -675,7 +676,9 @@ void CAnnotFieldInfo::CWidgetAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader
 	for (int i = 0; i < n; ++i)
 		m_arrTC.push_back(pReader->ReadDouble());
 
-	m_nQ = pReader->ReadByte();
+	m_nQ = 0;
+	if (nType != 29 && nType != 28 && nType != 27)
+		m_nQ = pReader->ReadByte();
 	int nWidgetFlag = pReader->ReadInt();
 	m_nFlag = nWidgetFlag;
 
@@ -730,36 +733,47 @@ void CAnnotFieldInfo::CWidgetAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader
 }
 void CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, BYTE nType, int nFlags)
 {
-	int nIFFlags = pReader->ReadInt();
-	m_nIFFlag = nIFFlags;
 	if (nType == 27)
 	{
+		m_nIFFlag = pReader->ReadInt();
+
 		if (nFlags & (1 << 10))
 			m_wsCA = pReader->ReadString();
 		if (nFlags & (1 << 11))
 			m_wsRC = pReader->ReadString();
 		if (nFlags & (1 << 12))
 			m_wsAC = pReader->ReadString();
+		if (nFlags & (1 << 13))
+			m_nTP = pReader->ReadByte();
+
+		if (m_nIFFlag & (1 << 0))
+		{
+			if (m_nIFFlag & (1 << 1))
+				m_nSW = pReader->ReadByte();
+			if (m_nIFFlag & (1 << 2))
+				m_nS = pReader->ReadByte();
+			if (m_nIFFlag & (1 << 3))
+			{
+				m_dA1 = pReader->ReadDouble();
+				m_dA2 = pReader->ReadDouble();
+			}
+		}
+
+		if (m_nIFFlag & (1 << 5))
+			m_nI = pReader->ReadInt();
+		if (m_nIFFlag & (1 << 6))
+			m_nRI = pReader->ReadInt();
+		if (m_nIFFlag & (1 << 7))
+			m_nIX = pReader->ReadInt();
 	}
 	else
-		m_nStyle = pReader->ReadByte();
-
-	if (nFlags & (1 << 13))
-		m_nTP = pReader->ReadByte();
-	if (nIFFlags & (1 << 0))
 	{
-		if (nIFFlags & (1 << 1))
-			m_nSW = pReader->ReadByte();
-		if (nIFFlags & (1 << 2))
-			m_nS = pReader->ReadByte();
-		if (nIFFlags & (1 << 3))
-		{
-			m_dA1 = pReader->ReadDouble();
-			m_dA2 = pReader->ReadDouble();
-		}
+		if (nFlags & (1 << 9))
+			m_wsV = pReader->ReadString();
+		m_nStyle = pReader->ReadByte();
+		if (nFlags & (1 << 14))
+			m_wsAP_N_Yes = pReader->ReadString();
 	}
-	if (nFlags & (1 << 14))
-		m_wsAP_N_Yes = pReader->ReadString();
 }
 void CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags, int nWidgetFlag)
 {
@@ -805,7 +819,7 @@ bool CWidgetsInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafil
 {
 	int n = pReader->ReadInt();
 	for (int i = 0; i < n; ++i)
-		m_arrCO.push_back(pReader->ReadString());
+		m_arrCO.push_back(pReader->ReadInt());
 
 	n = pReader->ReadInt();
 	for (int i = 0; i < n; ++i)
@@ -823,6 +837,13 @@ bool CWidgetsInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafil
 		if (nFlags & (1 << 3))
 			pParent->nParentID = pReader->ReadInt();
 		m_arrParents.push_back(pParent);
+	}
+
+	n = pReader->ReadInt();
+	for (int i = 0; i < n; ++i)
+	{
+		std::string sImagePath = pReader->ReadStringA();
+		m_arrButtonImg.push_back(pCorrector->GetImagePath(UTF8_TO_U(sImagePath)));
 	}
 
 	return true;

@@ -610,6 +610,9 @@
 			let np2 = reader.readInt();
 			// this memory needs to be deleted
 			APi["retValue"] = np2 << 32 | np1;
+			// 0 - Normal, 1 - Multiply, 2 - Screen, 3 - Overlay, 4 - Darken, 5 - Lighten, 6 - ColorDodge, 7 - ColorBurn, 8 - HardLight,
+			// 9 - SoftLight, 10 - Difference, 11 - Exclusion, 12 - Hue, 13 - Saturation, 14 - Color, 15 - Luminosity
+			APi["BlendMode"] = reader.readByte();
 		}
 	}
 	function getWidgetFonts(nativeFile, type)
@@ -683,8 +686,7 @@
 		if (k > 0)
 			res["CO"] = [];
 		for (let i = 0; i < k; ++i)
-			// array of annotation names - rec["name"]
-			res["CO"].push(reader.readString());
+			res["CO"].push(reader.readInt());
 		
 		k = reader.readInt();
 		if (k > 0)
@@ -719,6 +721,7 @@
 			rec["font"] = {};
 			rec["font"]["name"] = reader.readString();
 			rec["font"]["size"] = reader.readDouble();
+			rec["font"]["style"] = reader.readInt();
 			let tc = reader.readInt();
 			if (tc)
 			{
@@ -786,26 +789,20 @@
 				readAction(reader, rec["AA"][AAType]);
 			}
 			// Widget types
-			if (rec["type"] == 29 || rec["type"] == 28 || rec["type"] == 27)
+			if (rec["type"] == 27)
 			{
-				rec["value"] = (flags & (1 << 9)) ? "Yes" : "Off";
+				if (flags & (1 << 9))
+					rec["value"] = reader.readString();
 				let IFflags = reader.readInt();
-				// MK
-				if (rec["type"] == 27)
-				{
-					// Header - СA
-					if (flags & (1 << 10))
-						rec["caption"] = reader.readString();
-					// Rollover header - RC
-					if (flags & (1 << 11))
-						rec["rolloverCaption"] = reader.readString();
-					// Alternate header - AC
-					if (flags & (1 << 12))
-						rec["alternateCaption"] = reader.readString();
-				}
-				else
-					// 0 - check, 1 - cross, 2 - diamond, 3 - circle, 4 - star, 5 - square
-					rec["style"] = reader.readByte();
+				// Header - СA
+				if (flags & (1 << 10))
+					rec["caption"] = reader.readString();
+				// Rollover header - RC
+				if (flags & (1 << 11))
+					rec["rolloverCaption"] = reader.readString();
+				// Alternate header - AC
+				if (flags & (1 << 12))
+					rec["alternateCaption"] = reader.readString();
 				// Header position - TP
 				if (flags & (1 << 13))
 					// 0 - textOnly, 1 - iconOnly, 2 - iconTextV, 3 - textIconV, 4 - iconTextH, 5 - textIconH, 6 - overlay
@@ -830,12 +827,15 @@
 					}
 					rec["IF"]["FB"] = (IFflags >> 4) & 1;
 				}
+			}
+			else if (rec["type"] == 29 || rec["type"] == 28)
+			{
+				if (flags & (1 << 9))
+					rec["value"] = reader.readString();
+				// 0 - check, 1 - cross, 2 - diamond, 3 - circle, 4 - star, 5 - square
+				rec["style"] = reader.readByte();
 			    if (flags & (1 << 14))
-				{
 					rec["ExportValue"] = reader.readString();
-					if (flags & (1 << 9))
-						rec["value"] = rec["ExportValue"];
-				}
 				// 12.7.4.2.1
 				rec["NoToggleToOff"]  = (rec["flag"] >> 14) & 1; // NoToggleToOff
 				rec["radiosInUnison"] = (rec["flag"] >> 25) & 1; // RadiosInUnison
@@ -1297,6 +1297,96 @@
 				// 0 - None, 1 - P, 2 - S
 				if (flags & (1 << 16))
 					rec["Sy"] = reader.readByte();
+			}
+			else if (rec["Type"] == 16)
+			{
+				if (flags & (1 << 15))
+					rec["Icon"] = reader.readString();
+				if (flags & (1 << 16))
+					rec["FS"] = reader.readString();
+				if (flags & (1 << 17))
+				{
+					rec["F"] = {};
+					rec["F"]["FileName"] = reader.readString();
+				}
+				if (flags & (1 << 18))
+				{
+					rec["UF"] = {};
+					rec["UF"]["FileName"] = reader.readString();
+				}
+				if (flags & (1 << 19))
+				{
+					rec["DOS"] = {};
+					rec["DOS"]["FileName"] = reader.readString();
+				}
+				if (flags & (1 << 20))
+				{
+					rec["Mac"] = {};
+					rec["Mac"]["FileName"] = reader.readString();
+				}
+				if (flags & (1 << 21))
+				{
+					rec["Unix"] = {};
+					rec["Unix"]["FileName"] = reader.readString();
+				}
+				if (flags & (1 << 22))
+				{
+					rec["ID"] = [];
+					rec["ID"].push(reader.readString());
+					rec["ID"].push(reader.readString());
+				}
+				rec["V"] = flags & (1 << 23);
+				if (flags & (1 << 24))
+				{
+					let flag = reader.readInt();
+					if (flag & (1 << 0))
+					{
+						let n = reader.readInt();
+						let np1 = reader.readInt();
+						let np2 = reader.readInt();
+						let pPoint = np2 << 32 | np1;
+						rec["F"]["File"] = new Uint8Array(Module["HEAP8"].buffer, pPoint, n);
+						Module["_free"](pPoint);
+					}
+					if (flag & (1 << 1))
+					{
+						let n = reader.readInt();
+						let np1 = reader.readInt();
+						let np2 = reader.readInt();
+						let pPoint = np2 << 32 | np1;
+						rec["UF"]["File"] = new Uint8Array(Module["HEAP8"].buffer, pPoint, n);
+						Module["_free"](pPoint);
+					}
+					if (flag & (1 << 2))
+					{
+						let n = reader.readInt();
+						let np1 = reader.readInt();
+						let np2 = reader.readInt();
+						let pPoint = np2 << 32 | np1;
+						rec["DOS"]["File"] = new Uint8Array(Module["HEAP8"].buffer, pPoint, n);
+						Module["_free"](pPoint);
+					}
+					if (flag & (1 << 3))
+					{
+						let n = reader.readInt();
+						let np1 = reader.readInt();
+						let np2 = reader.readInt();
+						let pPoint = np2 << 32 | np1;
+						rec["Mac"]["File"] = new Uint8Array(Module["HEAP8"].buffer, pPoint, n);
+						Module["_free"](pPoint);
+					}
+					if (flag & (1 << 4))
+					{
+						let n = reader.readInt();
+						let np1 = reader.readInt();
+						let np2 = reader.readInt();
+						let pPoint = np2 << 32 | np1;
+						rec["Unix"]["File"] = new Uint8Array(Module["HEAP8"].buffer, pPoint, n);
+						Module["_free"](pPoint);
+					}
+				}
+				if (flags & (1 << 26))
+					rec["Desc"] = reader.readString();
 			}
 			res.push(rec);
 		}

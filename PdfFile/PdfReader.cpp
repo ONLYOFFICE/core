@@ -1183,6 +1183,11 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 			int nView;
 			if (!oMK.dictLookup(sMKName.c_str(), &oStr)->isStream())
 			{
+				if (oStr.isNull())
+				{
+					oStr.free();
+					continue;
+				}
 				oStr.free();
 
 				Object oIF;
@@ -1650,6 +1655,10 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 		else if (sType == "Ink")
 		{
 			pAnnot = new PdfReader::CAnnotInk(pdfDoc, &oAnnotRef, nPageIndex);
+		}
+		else if (sType == "FileAttachment")
+		{
+			pAnnot = new PdfReader::CAnnotFileAttachment(pdfDoc, &oAnnotRef, nPageIndex);
 		}
 		// else if (sType == "Popup")
 		// {

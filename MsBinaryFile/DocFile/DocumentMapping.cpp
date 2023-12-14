@@ -383,7 +383,7 @@ namespace DocFileFormat
 		RELEASEOBJECT(chpxFcs);
 		RELEASEOBJECT(chpxs);
 		
-		return cpEnd++;
+		return cpEnd;
 
 		return (std::max)(cp, cpEnd); //ralph_scovile.doc
 	}

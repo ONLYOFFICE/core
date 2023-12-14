@@ -95,6 +95,21 @@ namespace DocFileFormat
 		m_pMetaHeader		= pHeader;
 		m_lMetaHeaderSize	= lSize;
 	}
+	void CMetaFileBuffer::AddData(BYTE* pBuf, LONG lBuf)
+	{
+		BYTE *pMetaFile = new BYTE[lBuf + m_lMetaFileSize];
+		if (m_pMetaFile)
+			memcpy(pMetaFile, m_pMetaFile, m_lMetaFileSize);
+		if (pBuf)
+			memcpy(pMetaFile + m_lMetaFileSize, pBuf, lBuf);
+
+		if (m_pMetaFile)
+			delete[]m_pMetaFile;
+
+		m_pMetaFile = pMetaFile;
+		m_lMetaFileSize += lBuf;
+	}
+
 	void CMetaFileBuffer::SetData(BYTE* pCompress, LONG lCompressSize, LONG lUncompressSize, bool bIsCompressed)
 	{
 		if (!bIsCompressed)
@@ -126,6 +141,18 @@ namespace DocFileFormat
 				m_lMetaFileSize = 0;
 			}
 		}
+	}
+	bool CMetaFileBuffer::isWMV()
+	{
+		if (!m_pMetaFile) return false;
+		if (m_lMetaFileSize < 3) return false;
+
+		for (int i = 0; i < (std::min)((int)m_lMetaFileSize, 1024) - 2; ++i)
+		{
+			if (m_pMetaFile[i] == 'W' && m_pMetaFile[i + 1] == 'M')
+				return true;
+		}
+		return false;
 	}
 	int CMetaFileBuffer::ToBuffer(BYTE *& Data)
 	{
@@ -205,6 +232,18 @@ namespace DocFileFormat
 		oMetaHeader.compression	= m_fCompression;
 		oMetaHeader.filter		= m_fFilter;
 
+		oMetaFile.SetData(m_pvBits, oMetaHeader.cbSave, oMetaHeader.cbSize, 0 == oMetaHeader.compression);
+
+		//if (sz - m_cbSave > m_cb)
+		//{
+		//	oMetaFile.AddData(m_pvBits + m_cbSave, sz - m_cbSave);
+		//}
+
+		//if (oMetaFile.isWMV())
+		//{
+		//	typeCode = 0xf01b;
+		//}
+
 		if (typeCode == 0xf01b)
 		{
 			oMetaFile.m_sExtension	= L".wmf";
@@ -220,10 +259,8 @@ namespace DocFileFormat
 		}
 		if (typeCode == 0xf01c)
 		{
-			oMetaFile.m_sExtension	= L".pcz";
-			//decompress???
+			oMetaFile.m_sExtension	= L".pct";
 		}
-		oMetaFile.SetData(m_pvBits, oMetaHeader.cbSave, oMetaHeader.cbSize, 0 == oMetaHeader.compression);
 	}
 
 	MetafilePictBlip::~MetafilePictBlip()

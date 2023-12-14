@@ -9,6 +9,12 @@ namespace SVG
 		: CRenderedObject(NSCSS::CNode(wsName, L"", L""))
 	{}
 
+	CGraphicsContainer::~CGraphicsContainer()
+	{
+		for (CRenderedObject* pObject : m_arObjects)
+			pObject->m_pParent = NULL;
+	}
+
 	void CGraphicsContainer::SetData(XmlUtils::CXmlNode &oNode)
 	{
 		m_oWindow.m_oX     .SetValue(oNode.GetAttribute(L"x"));

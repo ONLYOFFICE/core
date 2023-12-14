@@ -212,6 +212,7 @@ namespace NSCSS
 		static TRGB ConvertHEXtoRGB(const std::wstring& wsValue);
 		static std::wstring ConvertRGBtoHEX(const TRGB& oValue);
 		static std::wstring CutURL(const std::wstring& wsValue);
+		void SetEmpty(unsigned int unLevel = 0);
 	public:
 		CColor();
 

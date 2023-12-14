@@ -438,6 +438,14 @@ namespace NSCSS
 
 		return wsCopyValue.substr(unBegin + 2, wsCopyValue.find(L')') - unBegin - 2);
 	}
+	
+	void CColor::SetEmpty(unsigned int unLevel)
+	{
+		m_oValue.Clear();
+		m_oValue.m_enType = ColorEmpty;
+		m_unLevel    = unLevel;
+		m_bImportant = false;
+	}
 
 	CColor::CColor()
 		: CValue({}, 0, false), m_oOpacity(1.)
@@ -450,11 +458,8 @@ namespace NSCSS
 
 		if (wsValue.empty())
 		{
-			m_oValue.Clear();
-			m_oValue.m_enType = ColorEmpty;
-			m_unLevel    = unLevel;
-			m_bImportant = false;
-			return true;
+			SetEmpty(unLevel);
+			return false;
 		}
 
 		std::wstring wsNewValue(wsValue);
@@ -494,14 +499,26 @@ namespace NSCSS
 			if (std::wstring::npos == unEnd)
 				return false;
 
-			std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsNewValue.substr(4, unEnd - 3), false, L" (),");
+			std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsNewValue.substr(4, unEnd - 4), false, L" (),");
 
 			if (3 > arValues.size())
 				return false;
 
-			m_oValue.SetRGB(NS_STATIC_FUNCTIONS::ReadDouble(arValues[0]),
-			                NS_STATIC_FUNCTIONS::ReadDouble(arValues[1]),
-			                NS_STATIC_FUNCTIONS::ReadDouble(arValues[2]));
+			INT nRed   = std::ceil(NS_STATIC_FUNCTIONS::CalculatePersentage(arValues[0], 255));
+			INT nGreen = std::ceil(NS_STATIC_FUNCTIONS::CalculatePersentage(arValues[1], 255));
+			INT nBlue  = std::ceil(NS_STATIC_FUNCTIONS::CalculatePersentage(arValues[2], 255));
+
+			if (nRed < 0 || nGreen < 0 || nBlue < 0)
+			{
+				SetEmpty(unLevel);
+				return false;
+			}
+
+			if (255 < nRed)   nRed   = 255;
+			if (255 < nGreen) nGreen = 255;
+			if (255 < nBlue)  nBlue  = 255;
+
+			m_oValue.SetRGB(nRed, nGreen, nBlue);
 
 			if (wsNewValue.substr(0, 4) == L"rgba" && 4 == arValues.size())
 				m_oOpacity.SetValue(arValues[3], unLevel, bHardMode);

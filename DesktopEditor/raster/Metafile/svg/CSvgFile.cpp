@@ -10,7 +10,9 @@ CSvgFile::CSvgFile()
 {}
 
 CSvgFile::~CSvgFile()
-{}
+{
+	Clear();
+}
 
 bool CSvgFile::ReadFromBuffer(BYTE *pBuffer, unsigned int unSize)
 {
@@ -69,6 +71,7 @@ bool CSvgFile::MarkObject(SVG::CObject *pObject)
 	if (NULL == pObject || pObject->GetId().empty())
 		return false;
 
+	pObject->AddRef();
 	m_mMarkedObjects[pObject->GetId()] = pObject;
 
 	return true;
@@ -181,11 +184,8 @@ void CSvgFile::Clear()
 	m_oContainer.Clear();
 	m_oSvgCalculator.Clear();
 
-	for (MarkedMap::iterator oIter = m_mMarkedObjects.begin(); oIter != m_mMarkedObjects.end(); ++oIter)
-	{
-		if (SVG::AppliedObject == oIter->second->GetType())
-			delete oIter->second;
-	}
+	for (MarkedMap::reference oIter : m_mMarkedObjects)
+		RELEASEINTERFACE(oIter.second);
 
 	m_mMarkedObjects.clear();
 }

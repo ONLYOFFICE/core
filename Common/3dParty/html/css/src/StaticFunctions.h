@@ -25,6 +25,8 @@ namespace NSCSS
 		std::map<std::wstring, std::wstring> GetRules(const std::wstring& wsStyles);
 
 		std::wstring RemoveSpaces(std::wstring& wsString);
+		
+		double CalculatePersentage(const std::wstring& wsValue, double dRelativeValue);
 	}
 
 	#define SWITCH(str)  switch(SWITCH_CASE::str_hash_for_switch(str))

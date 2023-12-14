@@ -80,7 +80,7 @@ namespace SVG
 			pRenderer->PathCommandClose();
 		}
 
-		EndPath(pRenderer, pFile, oOldTransform, oMode);
+		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles);
 
 		return true;
 	}

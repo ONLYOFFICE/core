@@ -653,6 +653,21 @@ namespace oox {
 		return impl_->root_animation_element_;
 	}
 
+	static _CP_OPT(std::wstring) serialize_duration(const _CP_OPT(int) duration)
+	{
+		_CP_OPT(std::wstring) res = boost::none;
+
+		if (duration)
+		{
+			if (*duration == -1)
+				res = L"indefinite";
+			else
+				res = std::to_wstring(duration.value());
+		}
+
+		return res;
+	}
+
 	void pptx_animation_context::Impl::_par_animation::serialize(std::wostream& strm)
 	{
 		CP_XML_WRITER(strm)
@@ -727,8 +742,10 @@ namespace oox {
 						CP_XML_ATTR(L"nodeType", PresentationNodeType.value());
 						CP_XML_ATTR(L"dur", L"indefinite");
 					}
-					else if (Duration)		
-						CP_XML_ATTR(L"dur",	Duration.value());
+					else
+					{
+						CP_XML_ATTR_OPT(L"dur", serialize_duration(Duration));
+					}						
 
 					if (TargetEl)
 					{
@@ -796,9 +813,9 @@ namespace oox {
 				{
 					CP_XML_NODE(L"p:cTn")
 					{
-						CP_XML_ATTR_OPT(L"dur"	, Duration);
-						CP_XML_ATTR_OPT(L"fill"	, Fill);
-						
+						CP_XML_ATTR_OPT(L"dur", serialize_duration(Duration));
+						CP_XML_ATTR_OPT(L"fill", Fill);
+
 						if (Delay)
 						{
 							CP_XML_NODE(L"p:stCondLst")
@@ -861,7 +878,7 @@ namespace oox {
 					{
 						CP_XML_NODE(L"p:cTn")
 						{
-							CP_XML_ATTR(L"dur", Duration.value());
+							CP_XML_ATTR_OPT(L"dur", serialize_duration(Duration));
 						}
 					}
 					if (ShapeID)
@@ -926,8 +943,7 @@ namespace oox {
 					
 					CP_XML_NODE(L"p:cTn")
 					{
-						int duration = Duration ? Duration.value() : 1;
-						CP_XML_ATTR(L"dur", duration);
+						CP_XML_ATTR_OPT(L"dur", serialize_duration(Duration));
 
 						if (AutoReverse)
 						{
@@ -1007,8 +1023,7 @@ namespace oox {
 				{
 					CP_XML_NODE(L"p:cTn")
 					{
-						int duration = Duration ? Duration.value() : 1;
-						CP_XML_ATTR(L"dur", duration);
+						CP_XML_ATTR_OPT(L"dur", serialize_duration(Duration));
 						CP_XML_ATTR(L"fill", L"hold");
 
 						CP_XML_NODE(L"p:stCondLst")
@@ -1065,8 +1080,7 @@ namespace oox {
 				{
 					CP_XML_NODE(L"p:cTn")
 					{
-						int duration = Duration ? Duration.value() : 1;
-						CP_XML_ATTR(L"dur", duration);
+						CP_XML_ATTR_OPT(L"dur", serialize_duration(Duration));
 
 						if (AutoReverse)	CP_XML_ATTR(L"autoRev", AutoReverse.value());
 						if (Fill)			CP_XML_ATTR(L"fill", Fill.value());
@@ -1123,8 +1137,7 @@ namespace oox {
 				{
 					CP_XML_NODE(L"p:cTn")
 					{
-						int duration = Duration ? Duration.value() : 1;
-						CP_XML_ATTR(L"dur", duration);
+						CP_XML_ATTR_OPT(L"dur", serialize_duration(Duration));
 
 						if (AutoReverse)	CP_XML_ATTR(L"autoRev", AutoReverse.value());
 						if (Fill)			CP_XML_ATTR(L"fill", Fill.value());

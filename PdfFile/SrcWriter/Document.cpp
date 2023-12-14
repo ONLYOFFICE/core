@@ -1466,11 +1466,23 @@ namespace PdfWriter
 
 			CPushButtonWidget* pPBWidget = (CPushButtonWidget*)pAnnot;
 			if (pPBWidget->m_nI >= 0)
-				pPBWidget->SetI(arrButtonImg[pPBWidget->m_nI]);
+			{
+				std::string sFrmName = "FRM" + std::to_string(it->first) + "I";
+				std::string sImgName = "Img" + std::to_string(pPBWidget->m_nI);
+				pPBWidget->SetI(arrButtonImg[pPBWidget->m_nI], sImgName.c_str(), sFrmName.c_str());
+			}
 			if (pPBWidget->m_nRI >= 0)
-				pPBWidget->SetRI(arrButtonImg[pPBWidget->m_nRI]);
+			{
+				std::string sFrmName = "FRM" + std::to_string(it->first) + "RI";
+				std::string sImgName = "Img" + std::to_string(pPBWidget->m_nRI);
+				pPBWidget->SetRI(arrButtonImg[pPBWidget->m_nRI], sImgName.c_str(), sFrmName.c_str());
+			}
 			if (pPBWidget->m_nIX >= 0)
-				pPBWidget->SetIX(arrButtonImg[pPBWidget->m_nIX]);
+			{
+				std::string sFrmName = "FRM" + std::to_string(it->first) + "IX";
+				std::string sImgName = "Img" + std::to_string(pPBWidget->m_nIX);
+				pPBWidget->SetIX(arrButtonImg[pPBWidget->m_nIX], sImgName.c_str(), sFrmName.c_str());
+			}
 		}
 	}
 	CPage* CDocument::AddPage(int nPageIndex)

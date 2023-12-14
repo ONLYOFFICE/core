@@ -416,11 +416,11 @@ namespace PdfWriter
 		void SetCA(const std::wstring& wsCA);
 		void SetRC(const std::wstring& wsRC);
 		void SetAC(const std::wstring& wsAC);
-		void SetI(CImageDict* pI);
-		void SetRI(CImageDict* pRI);
-		void SetIX(CImageDict* pIX);
+		void SetI(CImageDict* pI, const char* pImgName, const char* pFrmName);
+		void SetRI(CImageDict* pRI, const char* pImgName, const char* pFrmName);
+		void SetIX(CImageDict* pIX, const char* pImgName, const char* pFrmName);
 
-		CXObject* SetAP(CImageDict* pImage);
+		CXObject* SetAP(CImageDict* pImage, const char* pImgName, const char* pFrmName);
 		int m_nI, m_nRI, m_nIX;
 	};
 	class CCheckBoxWidget : public CWidgetAnnotation

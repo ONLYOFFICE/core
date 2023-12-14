@@ -1152,7 +1152,7 @@ namespace PdfWriter
 		std::string sValue = U_TO_UTF8(wsAC);
 		m_pMK->Add("AC", new CStringObject(sValue.c_str()));
 	}
-	CXObject* CPushButtonWidget::SetAP(CImageDict* pImage)
+	CXObject* CPushButtonWidget::SetAP(CImageDict* pImage, const char* pImgName, const char* pFrmName)
 	{
 		if (!m_oBorder.bHave)
 		{
@@ -1241,7 +1241,10 @@ namespace PdfWriter
 			pFormMatrix->Add(1);
 			pFormMatrix->Add(0);
 			pFormMatrix->Add(0);
-			pForm->Add("Name", "FRM");
+			if (pFrmName)
+				pForm->Add("Name", pFrmName);
+			else
+				pForm->Add("Name", "FRM");
 
 			CDictObject* pFormRes = new CDictObject();
 			CArrayObject* pFormResProcset = new CArrayObject();
@@ -1250,7 +1253,11 @@ namespace PdfWriter
 			pFormResProcset->Add(new CNameObject("ImageC"));
 			CDictObject* pFormResXObject = new CDictObject();
 			pFormRes->Add("XObject", pFormResXObject);
-			pFormResXObject->Add("Img", pImage);
+
+			if (pImgName)
+				pFormResXObject->Add(pImgName, pImage);
+			else
+				pFormResXObject->Add("Img", pImage);
 			pForm->Add("Resources", pFormRes);
 
 			pForm->Add("Subtype", "Form");
@@ -1260,10 +1267,15 @@ namespace PdfWriter
 			pStream->WriteReal(dOriginW);
 			pStream->WriteStr(" 0 0 ");
 			pStream->WriteReal(dOriginH);
-			pStream->WriteStr(" 0 0 cm\012/Img Do\012Q");
+			pStream->WriteStr(" 0 0 cm\012/");
+			if (pImgName)
+				pStream->WriteStr(pImgName);
+			else
+				pStream->WriteStr("Img");
+			pStream->WriteStr(" Do\012Q");
 
-			pFieldsResources->AddXObjectWithName("FRM", pForm);
-			pNormal->DrawPicture("FRM", dDstX, dDstY, dDstW / dOriginW, dDstH / dOriginH, m_bRespectBorders);
+			pFieldsResources->AddXObjectWithName(pFrmName ? pFrmName : "FRM", pForm);
+			pNormal->DrawPicture(pFrmName ? pFrmName : "FRM", dDstX, dDstY, dDstW / dOriginW, dDstH / dOriginH, m_bRespectBorders);
 		}
 		else
 		{
@@ -1272,9 +1284,9 @@ namespace PdfWriter
 
 		return pForm;
 	}
-	void CPushButtonWidget::SetI(CImageDict* pI)
+	void CPushButtonWidget::SetI(CImageDict* pI, const char* pImgName, const char* pFrmName)
 	{
-		CXObject* pForm = SetAP(pI);
+		CXObject* pForm = SetAP(pI, pImgName, pFrmName);
 		if (!pForm)
 			return;
 
@@ -1282,9 +1294,9 @@ namespace PdfWriter
 
 		m_pMK->Add("I", pForm);
 	}
-	void CPushButtonWidget::SetRI(CImageDict* pI)
+	void CPushButtonWidget::SetRI(CImageDict* pI, const char* pImgName, const char* pFrmName)
 	{
-		CXObject* pForm = SetAP(pI);
+		CXObject* pForm = SetAP(pI, pImgName, pFrmName);
 		if (!pForm)
 			return;
 
@@ -1292,9 +1304,9 @@ namespace PdfWriter
 
 		m_pMK->Add("RI", pForm);
 	}
-	void CPushButtonWidget::SetIX(CImageDict* pI)
+	void CPushButtonWidget::SetIX(CImageDict* pI, const char* pImgName, const char* pFrmName)
 	{
-		CXObject* pForm = SetAP(pI);
+		CXObject* pForm = SetAP(pI, pImgName, pFrmName);
 		if (!pForm)
 			return;
 

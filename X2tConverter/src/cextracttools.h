@@ -953,8 +953,10 @@ namespace NExtractTools
 					{
 						nFormatFrom = FileFormatChecker.nFileType;
 						*m_nFormatFrom = nFormatFrom;
-						// changeFormatFrom(nFormatFrom, FileFormatChecker.bMacroEnabled); // - неверно - чекер не определяет ТОЧНО наличие макросов.
-						// Это только при открытии файла
+						
+						// changeFormatFrom(nFormatFrom, FileFormatChecker.bMacroEnabled); 
+						// - неверно - чекер не определяет ТОЧНО наличие макросов.
+						// только при открытии файла
 						// После открытия нужно проверять параметр m_bMacro
 					}
 				}

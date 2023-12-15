@@ -170,13 +170,16 @@ namespace NS_STATIC_FUNCTIONS
 		return mRules;
 	}
 
-	std::wstring RemoveSpaces(std::wstring &wsString)
+	void RemoveSpaces(std::wstring &wsString)
 	{
 		std::wstring::const_iterator ciStart = std::find_if_not(wsString.begin(), wsString.end(), std::iswspace);
+
 		if (ciStart == wsString.end())
-			return L"";
+			return wsString.clear();
+
 		std::wstring::const_reverse_iterator criEnd = std::find_if_not(wsString.rbegin(),wsString.rend(), std::iswspace);
-		return std::wstring(ciStart, criEnd.base());
+
+		wsString = std::wstring(ciStart, criEnd.base());
 	}
 	
 	double CalculatePersentage(const std::wstring &wsValue, double dRelativeValue)

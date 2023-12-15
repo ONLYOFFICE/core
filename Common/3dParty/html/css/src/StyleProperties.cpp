@@ -2086,7 +2086,9 @@ namespace NSCSS
 			if ((*iWord).empty())
 				continue;
 
-			return m_oFamily.SetValue(NSCSS::NS_STATIC_FUNCTIONS::RemoveSpaces(*iWord), unLevel, bHardMode);
+			NSCSS::NS_STATIC_FUNCTIONS::RemoveSpaces(*iWord);
+
+			return m_oFamily.SetValue(*iWord, unLevel, bHardMode);
 		}
 
 		return false;

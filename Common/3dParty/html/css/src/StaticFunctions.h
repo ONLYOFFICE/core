@@ -24,7 +24,7 @@ namespace NSCSS
 		std::vector<unsigned short int> GetWeightSelector(const std::wstring& sSelector);
 		std::map<std::wstring, std::wstring> GetRules(const std::wstring& wsStyles);
 
-		std::wstring RemoveSpaces(std::wstring& wsString);
+		void RemoveSpaces(std::wstring& wsString);
 		
 		double CalculatePersentage(const std::wstring& wsValue, double dRelativeValue);
 	}

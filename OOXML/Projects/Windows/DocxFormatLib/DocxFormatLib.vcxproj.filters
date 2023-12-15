@@ -82,6 +82,9 @@
     <Filter Include="XlsxFormat\Controls">
       <UniqueIdentifier>{f45ba67d-ffc8-49ea-8b3a-a0477f13042e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="XlsxFormat\Timelines">
+      <UniqueIdentifier>{34deda6e-7347-49f2-be67-d088cdd469db}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Base\Base.h">
@@ -532,6 +535,9 @@
     <ClInclude Include="..\..\..\DocxFormat\UnknowTypeFile.h" />
     <ClInclude Include="..\..\..\DocxFormat\VmlDrawing.h" />
     <ClInclude Include="..\..\..\DocxFormat\WritingElement.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Timelines\Timeline.h">
+      <Filter>XlsxFormat\Timelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Base\codecvt.cpp">
@@ -938,6 +944,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\DocxFormat\External\ExternalHyperLink.cpp">
       <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsxFormat\Timelines\Timeline.cpp">
+      <Filter>XlsxFormat\Timelines</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

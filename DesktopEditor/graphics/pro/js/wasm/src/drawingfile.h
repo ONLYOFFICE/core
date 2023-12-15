@@ -1,13 +1,13 @@
 #ifndef _WASM_GRAPHICS_
 #define _WASM_GRAPHICS_
 
-#include "../../../../GraphicsRenderer.h"
-#include "../../../../pro/Graphics.h"
+#include "../../../../../common/File.h"
 #include "../../../../pro/officedrawingfile.h"
 #include "../../../../../../XpsFile/XpsFile.h"
 #include "../../../../../../DjVuFile/DjVu.h"
 #include "../../../../../../PdfFile/PdfFile.h"
 #include "../../../../../../HtmlRenderer/include/HTMLRendererText.h"
+#include "serialize.h"
 
 class CGraphicsFileDrawing
 {
@@ -96,6 +96,13 @@ public:
 		nHeight   = dHeight;
 		nPageDpiX = dPageDpiX;
 	}
+	std::wstring GetFont(const std::wstring& sFontName)
+	{
+		std::wstring sFontFile;
+		if (nType == 0)
+			sFontFile = ((CPdfFile*)pReader)->GetFontPath(sFontName);
+		return sFontFile;
+	}
 	BYTE* GetPage(int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
 	{
 		return pReader->ConvertToPixels(nPageIndex, nRasterW, nRasterH, true, pFontManager, nBackgroundColor, (nBackgroundColor == 0xFFFFFF) ? false : true);
@@ -124,25 +131,36 @@ public:
 			return ((CPdfFile*)pReader)->GetWidgets();
 		return NULL;
 	}
+	BYTE* GetWidgetFonts(int nTypeFonts)
+	{
+		if (nType == 0)
+		{
+			if (nTypeFonts == 1)
+				return ((CPdfFile*)pReader)->GetWidgetEmbeddedFonts();
+			if (nTypeFonts == 2)
+				return ((CPdfFile*)pReader)->GetWidgetStandardFonts();
+		}
+		return NULL;
+	}
 	BYTE* GetAnnots(int nPageIndex = -1)
 	{
 		if (nType == 0)
 			return ((CPdfFile*)pReader)->GetAnnots(nPageIndex);
 		return NULL;
 	}
-	BYTE* GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget = -1, const char* sView = NULL, const char* sButtonView = NULL)
+	BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget  = -1, const char* sView  = NULL, const char* sBView = NULL)
 	{
 		if (nType == 0)
-			return ((CPdfFile*)pReader)->GetAPWidget(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nWidget, sView, sButtonView);
+			return ((CPdfFile*)pReader)->GetAPWidget(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nWidget, sView, sBView);
 		return NULL;
 	}
-	BYTE* GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, bool bBase64 = false, int nButtonWidget = -1, const char* sIconView = NULL)
+	BYTE* GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, bool bBase64, int nBWidget = -1, const char* sIView = NULL)
 	{
 		if (nType == 0)
-			return ((CPdfFile*)pReader)->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, bBase64, nButtonWidget, sIconView);
+			return ((CPdfFile*)pReader)->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, bBase64, nBWidget, sIView);
 		return NULL;
 	}
-	BYTE* GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot = -1, const char* sView = NULL)
+	BYTE* GetAPAnnots  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot   = -1, const char* sView  = NULL)
 	{
 		if (nType == 0)
 			return ((CPdfFile*)pReader)->GetAPAnnots(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nAnnot, sView);

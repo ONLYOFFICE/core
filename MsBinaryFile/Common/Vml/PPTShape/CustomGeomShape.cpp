@@ -80,7 +80,7 @@ namespace NSCustomVML
 				break;
 			case 0xb300: // arcto
 				m_eRuler = ODRAW::rtArc;
-				m_nCount = 2;
+				m_nCount = 0;
 				break;
 			case 0xac00:
 			case 0xaa00: // nofill
@@ -476,9 +476,8 @@ namespace NSCustomVML
         }
 		bool CCustomVML::IsCustom()
         {
-			//return (m_bIsVerticesPresent && m_bIsPathPresent);
-			return (m_bIsVerticesPresent && !m_arVertices.empty() && (m_bIsPathPresent || !m_arSegments.empty()));
-        }
+			return ((m_bIsVerticesPresent || !m_arVertices.empty()) && (m_bIsPathPresent || !m_arSegments.empty()));
+		}
 		void CCustomVML::SetPath(ODRAW::RulesType ePath)
         {
             m_ePath = ePath;

@@ -199,6 +199,11 @@ namespace NSDoctRenderer
 		 * Creates a null value. This method returns the current context and calls its CreateNull method.
 		 */
 		static CDocBuilderValue CreateNull();
+		/**
+		 * Please use CDocBuilderContext::CreateArray
+		 * Creates an array. This method returns the current context and calls its CreateArray method.
+		 */
+		static CDocBuilderValue CreateArray(const int& length);
 
 	public:
 		/**
@@ -541,7 +546,7 @@ namespace NSDoctRenderer
 	 * 3) The builder object methods cannot be called with the JS variables. Wrap them with the jsValue instruction if necessary:
 	 * var jsVar = "123.docx";
 	 * builder.SaveFile("docx", jsVar); // Incorrect
-	 * builder.SaveFile("docx", jsValue(jsVar)); // Correct
+	 * builder.SaveFile("docx", "jsValue(jsVar)"); // Correct
 	 *
 	 * 4) For convenience, format types are replaced with strings.
 	 * For example, builder.CreateFile("docx"); is the same as CDocBuilder.CreateFile(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX);

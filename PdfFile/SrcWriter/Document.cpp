@@ -50,6 +50,7 @@
 #include "AcroForm.h"
 #include "Field.h"
 #include "ResourcesDictionary.h"
+#include "Metadata.h"
 
 #include "../../DesktopEditor/agg-2.4/include/agg_span_hatch.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
@@ -102,7 +103,7 @@ namespace PdfWriter
 	{
 		Close();
 	}
-    bool CDocument::CreateNew()
+	bool CDocument::CreateNew()
 	{
 		Close();
 
@@ -112,6 +113,10 @@ namespace PdfWriter
 
 		m_pTrailer = m_pXref->GetTrailer();
 		if (!m_pTrailer)
+			return false;
+
+		m_pMetaData = new CStreamData(m_pXref);
+		if (!m_pMetaData)
 			return false;
 
 		m_pCatalog = new CCatalog(m_pXref);
@@ -401,7 +406,13 @@ namespace PdfWriter
 
 		m_pCatalog->AddPageLabel(unPageNum, pPageLabel);
 	}
-    CDictObject* CDocument::CreatePageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix)
+	bool CDocument::AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength)
+	{
+		if (!m_pMetaData)
+			return false;
+		return m_pMetaData->AddMetaData(sMetaName, pMetaData, nMetaLength);
+	}
+	CDictObject* CDocument::CreatePageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix)
 	{
 		CDictObject* pLabel = new CDictObject();
 		if (!pLabel)
@@ -607,11 +618,25 @@ namespace PdfWriter
 	}
 	CAnnotation* CDocument::CreateWidgetAnnot()
 	{
-		return new CWidgetAnnotation(m_pXref, EAnnotType::AnnotWidget);
+		if (!CheckAcroForm())
+			return NULL;
+
+		CWidgetAnnotation* pWidget = new CWidgetAnnotation(m_pXref, EAnnotType::AnnotWidget);
+		if (!pWidget)
+			return NULL;
+
+		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+		ppFields->Add(pWidget);
+
+		return pWidget;
 	}
-	CAnnotation* CDocument::CreateButtonWidget()
+	CAnnotation* CDocument::CreatePushButtonWidget()
 	{
-		return new CButtonWidget(m_pXref);
+		return new CPushButtonWidget(m_pXref);
+	}
+	CAnnotation* CDocument::CreateCheckBoxWidget()
+	{
+		return new CCheckBoxWidget(m_pXref);
 	}
 	CAnnotation* CDocument::CreateTextWidget()
 	{
@@ -626,6 +651,20 @@ namespace PdfWriter
 	CAnnotation* CDocument::CreateSignatureWidget()
 	{
 		return new CSignatureWidget(m_pXref);
+	}
+	CAction* CDocument::CreateAction(BYTE nType)
+	{
+		switch (nType)
+		{
+		case 1:  return new CActionGoTo(m_pXref);
+		case 6:  return new CActionURI(m_pXref);
+		case 9:  return new CActionHide(m_pXref);
+		case 10: return new CActionNamed(m_pXref);
+		case 12: return new CActionResetForm(m_pXref);
+		case 14: return new CActionJavaScript(m_pXref);
+		}
+
+		return NULL;
 	}
 	void CDocument::AddAnnotation(const int& nID, CAnnotation* pAnnot)
 	{
@@ -1215,9 +1254,11 @@ namespace PdfWriter
 		{
 			CObjectBase* pFieldsResources = m_pAcroForm->Get("DR");
 			if (pFieldsResources && pFieldsResources->GetType() == object_type_DICT)
-				m_pFieldsResources = (CResourcesDict*)pFieldsResources;
-
-			// TODO заполнить поля m_pFieldsResources
+			{
+				// TODO необходимо перенести текущие поля DR
+				m_pFieldsResources = new CResourcesDict(m_pXref, false, true);
+				m_pAcroForm->Add("DR", m_pFieldsResources);
+			}
 		}
 
 		if (pEncrypt)
@@ -1266,6 +1307,7 @@ namespace PdfWriter
 		if (!pAnnot || !EditXref(pXref))
 			return false;
 
+		pAnnot->SetXref(m_pXref);
 		m_mAnnotations[nID] = pAnnot;
 
 		return true;
@@ -1309,6 +1351,71 @@ namespace PdfWriter
 		if (p != m_mAnnotations.end())
 			return p->second;
 		return NULL;
+	}
+	CDictObject* CDocument::GetParent(int nID)
+	{
+		std::map<int, CDictObject*>::iterator p = m_mParents.find(nID);
+		if (p != m_mParents.end())
+			return p->second;
+		return NULL;
+	}
+	bool CDocument::EditCO(const std::vector<int>& arrCO)
+	{
+		if (arrCO.empty())
+			return true;
+
+		if (!CheckAcroForm())
+			return false;
+
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return false;
+
+		m_pAcroForm->Add("CO", pArray);
+
+		for (int CO : arrCO)
+		{
+			CDictObject* pObj = GetParent(CO);
+			if (pObj)
+				pArray->Add(pObj);
+			else
+			{
+				CAnnotation* pAnnot = m_mAnnotations[CO];
+				if (pAnnot)
+					pArray->Add(pAnnot);
+			}
+		}
+
+		return true;
+	}
+	void CDocument::UpdateButtonImg(const std::vector<PdfWriter::CImageDict*>& arrButtonImg)
+	{
+		for (auto it = m_mAnnotations.begin(); it != m_mAnnotations.end(); it++)
+		{
+			CAnnotation* pAnnot = it->second;
+			if (pAnnot->GetAnnotationType() != AnnotWidget || ((CWidgetAnnotation*)pAnnot)->GetWidgetType() != WidgetPushbutton)
+				continue;
+
+			CPushButtonWidget* pPBWidget = (CPushButtonWidget*)pAnnot;
+			if (pPBWidget->m_nI >= 0)
+			{
+				std::string sFrmName = "FRM" + std::to_string(it->first) + "I";
+				std::string sImgName = "Img" + std::to_string(pPBWidget->m_nI);
+				pPBWidget->SetI(arrButtonImg[pPBWidget->m_nI], sImgName.c_str(), sFrmName.c_str());
+			}
+			if (pPBWidget->m_nRI >= 0)
+			{
+				std::string sFrmName = "FRM" + std::to_string(it->first) + "RI";
+				std::string sImgName = "Img" + std::to_string(pPBWidget->m_nRI);
+				pPBWidget->SetRI(arrButtonImg[pPBWidget->m_nRI], sImgName.c_str(), sFrmName.c_str());
+			}
+			if (pPBWidget->m_nIX >= 0)
+			{
+				std::string sFrmName = "FRM" + std::to_string(it->first) + "IX";
+				std::string sImgName = "Img" + std::to_string(pPBWidget->m_nIX);
+				pPBWidget->SetIX(arrButtonImg[pPBWidget->m_nIX], sImgName.c_str(), sFrmName.c_str());
+			}
+		}
 	}
 	CPage* CDocument::AddPage(int nPageIndex)
 	{

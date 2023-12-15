@@ -41,6 +41,7 @@
 
 #include "SrcReader/Adaptors.h"
 #include "SrcReader/PdfAnnot.h"
+#include "Resources/BaseFonts.h"
 
 #include "lib/xpdf/PDFDoc.h"
 #include "lib/xpdf/PDFCore.h"
@@ -411,6 +412,7 @@ bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* dat
 void CPdfReader::Close()
 {
 	RELEASEOBJECT(m_pPDFDocument);
+	m_mFonts.clear();
 }
 
 int CPdfReader::GetError()
@@ -681,6 +683,13 @@ obj1.free();
 
 	return sRes;
 }
+std::wstring CPdfReader::GetFontPath(const std::wstring& wsFontName)
+{
+	std::map<std::wstring, std::wstring>::const_iterator oIter = m_mFonts.find(wsFontName);
+	if (oIter != m_mFonts.end())
+		return oIter->second;
+	return L"";
+}
 void getBookmars(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)
 {
 	int nLengthTitle = pOutlineItem->getTitleLength();
@@ -873,10 +882,137 @@ BYTE* CPdfReader::GetWidgets()
 	NSWasm::CData oRes;
 	oRes.SkipLen();
 
-	PdfReader::CAnnots* pAnnots = new PdfReader::CAnnots(m_pPDFDocument);
+	PdfReader::CAnnots* pAnnots = new PdfReader::CAnnots(m_pPDFDocument, m_pFontManager, m_pFontList);
 	if (pAnnots)
 		pAnnots->ToWASM(oRes);
 	RELEASEOBJECT(pAnnots);
+
+	oRes.WriteLen();
+	BYTE* bRes = oRes.GetBuffer();
+	oRes.ClearWithoutAttack();
+	return bRes;
+}
+BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
+{
+	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
+		return NULL;
+
+	AcroForm* pAcroForms = m_pPDFDocument->getCatalog()->getForm();
+	XRef* xref = m_pPDFDocument->getXRef();
+	if (!pAcroForms || !xref)
+		return NULL;
+
+	NSWasm::CData oRes;
+	oRes.SkipLen();
+
+	int nFontsID = 0;
+	int nFontsPos = oRes.GetSize();
+	oRes.AddInt(nFontsID);
+
+	std::vector<int> arrFontsRef;
+	for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
+	{
+		AcroFormField* pField = pAcroForms->getField(i);
+		if (!pField)
+			continue;
+
+		// Шрифт и размер шрифта - из DA
+		Ref fontID;
+		double dFontSize = 0;
+		pField->getFont(&fontID, &dFontSize);
+		if (fontID.num < 0 || std::find(arrFontsRef.begin(), arrFontsRef.end(), fontID.num) != arrFontsRef.end())
+			continue;
+
+		Object oObj, oField, oFont;
+		pField->getFieldRef(&oObj);
+		oObj.fetch(xref, &oField);
+		oObj.free();
+
+		bool bFindResources = false;
+		if (oField.dictLookup("DR", &oObj)->isDict() && oObj.dictLookup("Font", &oFont)->isDict())
+		{
+			for (int i = 0; i < oFont.dictGetLength(); ++i)
+			{
+				Object oFontRef;
+				if (oFont.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
+				{
+					bFindResources = true;
+					oFontRef.free();
+					break;
+				}
+				oFontRef.free();
+			}
+		}
+		oFont.free(); oField.free();
+
+		if (!bFindResources)
+		{
+			oObj.free();
+			Object* oAcroForm = pAcroForms->getAcroFormObj();
+			if (oAcroForm->isDict() && oAcroForm->dictLookup("DR", &oObj)->isDict() && oObj.dictLookup("Font", &oFont)->isDict())
+			{
+				for (int i = 0; i < oFont.dictGetLength(); ++i)
+				{
+					Object oFontRef;
+					if (oFont.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
+					{
+						bFindResources = true;
+						oFontRef.free();
+						break;
+					}
+					oFontRef.free();
+				}
+			}
+			oFont.free();
+		}
+
+		GfxFont* gfxFont = NULL;
+		GfxFontDict *gfxFontDict = NULL;
+		if (bFindResources)
+		{
+			Object oFontRef;
+			if (oObj.dictLookupNF("Font", &oFontRef)->isRef())
+			{
+				if (oFontRef.fetch(xref, &oFont)->isDict())
+				{
+					Ref r = oFontRef.getRef();
+					gfxFontDict = new GfxFontDict(xref, &r, oFont.getDict());
+					gfxFont = gfxFontDict->lookupByRef(fontID);
+				}
+				oFont.free();
+			}
+			else if (oFontRef.isDict())
+			{
+				gfxFontDict = new GfxFontDict(xref, NULL, oFontRef.getDict());
+				gfxFont = gfxFontDict->lookupByRef(fontID);
+			}
+			oFontRef.free();
+		}
+		oObj.free();
+
+		if (gfxFont)
+		{
+			Ref oEmbRef;
+			const unsigned char* pData14 = NULL;
+			unsigned int nSize14 = 0;
+			std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
+			if ((nTypeFonts == 1 && gfxFont->getEmbeddedFontID(&oEmbRef)) ||
+				(nTypeFonts == 2 && PdfReader::GetBaseFont(wsFontBaseName, pData14, nSize14)))
+			{
+				std::wstring wsFileName, wsFontName;
+				PdfReader::GetFont(xref, m_pFontManager, m_pFontList, gfxFont, wsFileName, wsFontName);
+
+				std::string sFileName = U_TO_UTF8(wsFontName);
+				oRes.WriteString(sFileName);
+				nFontsID++;
+				arrFontsRef.push_back(fontID.num);
+				m_mFonts[wsFontName] = wsFileName;
+			}
+		}
+		RELEASEOBJECT(gfxFontDict);
+	}
+
+	oRes.AddInt(nFontsID, nFontsPos);
 
 	oRes.WriteLen();
 	BYTE* bRes = oRes.GetBuffer();
@@ -1043,11 +1179,39 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 			if (sIconView && strcmp(sIconView, arrMKName[j]) != 0)
 				continue;
 			std::string sMKName(arrMKName[j]);
-			Object oStr;
+			Object oStr, oStrRef;
+			int nView;
 			if (!oMK.dictLookup(sMKName.c_str(), &oStr)->isStream())
 			{
+				if (oStr.isNull())
+				{
+					oStr.free();
+					continue;
+				}
 				oStr.free();
-				continue;
+
+				Object oIF;
+				if (!oMK.dictLookup("IF", &oIF)->isDict())
+				{
+					oIF.free();
+					continue;
+				}
+				oIF.free();
+
+				Object oAP;
+				if (!pField->fieldLookup("AP", &oAP)->isDict() || !oAP.dictLookup("N", &oStr)->isStream())
+				{
+					oAP.free(); oStr.free();
+					continue;
+				}
+				oAP.dictLookupNF("N", &oStrRef);
+				nView = oStrRef.getRefNum();
+				oAP.free();
+			}
+			else
+			{
+				oMK.dictLookupNF(sMKName.c_str(), &oStrRef);
+				nView = oStrRef.getRefNum();
 			}
 
 			if (bFirst)
@@ -1276,13 +1440,10 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 			// else
 			if (bImage)
 			{
-				oStr.free(); oResources.free();
+				oStr.free(); oStrRef.free(); oResources.free();
 				continue;
 			}
 
-			Object oStrRef;
-			oMK.dictLookupNF(sMKName.c_str(), &oStrRef);
-			int nView = oStrRef.getRefNum();
 			oRes.AddInt(nView);
 			if (std::find(arrUniqueImage.begin(), arrUniqueImage.end(), nView) != arrUniqueImage.end())
 			{
@@ -1352,6 +1513,7 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 			pFrame->put_Width(nWidth);
 			pFrame->put_Height(nHeight);
 			pFrame->put_Stride(4 * nWidth);
+			pFrame->put_IsRGBA(true);
 
 			NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
 			pRenderer->SetFontManager(m_pFontManager);
@@ -1392,6 +1554,7 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 				oRes.WriteString((BYTE*)cData64, nData64Dst);
 
 				RELEASEARRAYOBJECTS(cData64);
+				RELEASEARRAYOBJECTS(pPngBuffer);
 			}
 			else
 			{
@@ -1492,6 +1655,10 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 		else if (sType == "Ink")
 		{
 			pAnnot = new PdfReader::CAnnotInk(pdfDoc, &oAnnotRef, nPageIndex);
+		}
+		else if (sType == "FileAttachment")
+		{
+			pAnnot = new PdfReader::CAnnotFileAttachment(pdfDoc, &oAnnotRef, nPageIndex);
 		}
 		// else if (sType == "Popup")
 		// {

@@ -331,7 +331,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 			if ((dStrokeWidth) && (*dStrokeWidth >= 0) && fill != ns + L":noFill")
 			{
 				int val = dStrokeWidth.get() * 12700;	//in emu (1 pt = 12700)
-				if (val < 10)	val = 12700;
+				if (val < 10)	val = 0;
 				
 				CP_XML_ATTR2(ns_att + L"w", val);
 				if (color.length()<1)color = L"729FCF";
@@ -590,9 +590,20 @@ void _oox_drawing::serialize_bodyPr(std::wostream & strm, const std::wstring & n
 
 			if (inGroup == false)
 			{
-				_CP_OPT(int)	iWrap;
-				odf_reader::GetProperty(prop, L"text-wrap"	, iWrap);
-				if ((iWrap) && (*iWrap == 0)) CP_XML_ATTR(L"wrap", L"none");
+				_CP_OPT(bool) bAutoGrowWidth;
+				odf_reader::GetProperty(prop, L"auto-grow-width", bAutoGrowWidth);
+				if (bAutoGrowWidth)
+				{
+					if (*bAutoGrowWidth == true)
+						CP_XML_ATTR(L"wrap", L"none");
+				}
+				else
+				{
+					_CP_OPT(int)	iWrap;
+					odf_reader::GetProperty(prop, L"text-wrap", iWrap);
+					if ((iWrap) && (*iWrap == 0))
+						CP_XML_ATTR(L"wrap", L"none");
+				}
 			}
 
 			_CP_OPT(int) iAlign, iVert;
@@ -702,7 +713,7 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 
 	CP_XML_WRITER(strm)
     {
-		if (sub_type == 6 || sub_type == 8 || sub_type == 14)
+		if ((sub_type == 6 || sub_type == 8 || sub_type == 14) && !connector)
 		{
 			CP_XML_NODE(L"a:custGeom")
 			{        
@@ -758,9 +769,15 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 		{
 			if (shapeGeomPreset.empty())
 			{
-				shapeGeomPreset	= L"rect";
-				sub_type	= 2;
+				shapeGeomPreset = L"rect";
+				sub_type = 2;
 			}
+
+			if (connector)
+			{
+				shapeGeomPreset = connector_prst;
+			}
+
 			CP_XML_NODE(L"a:prstGeom")//автофигура
 			{        
 				CP_XML_ATTR(L"prst", shapeGeomPreset);

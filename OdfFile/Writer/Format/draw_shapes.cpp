@@ -435,6 +435,9 @@ void draw_enhanced_geometry_attlist::serialize(CP_ATTR_NODE)
 	CP_XML_ATTR_OPT(L"draw:text-path-mode",					draw_text_path_mode_);
 	CP_XML_ATTR_OPT(L"draw:text-path-scale",				draw_text_path_scale_);
 	CP_XML_ATTR_OPT(L"draw:text-path-same-letter-heights",	draw_text_path_same_letter_heights_);
+
+	CP_XML_ATTR_OPT(L"draw:path-stretchpoint-x",			draw_path_stretchpoint_x_);
+	CP_XML_ATTR_OPT(L"draw:path-stretchpoint-y",			draw_path_stretchpoint_y_);
 }
 //-------------------------------------------------------------------------------------------
 // draw:enhanced_geometry

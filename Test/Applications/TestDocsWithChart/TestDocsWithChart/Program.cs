@@ -63,7 +63,8 @@ namespace TestDocsWithChart
             //getGradientPos();
             //getCAFiles();
             //getSlicerFiles();
-            getNamedSheetView();
+            //getNamedSheetView();
+            getExternalMasters();
         }
         static void getFilesPivot()
         {
@@ -437,7 +438,30 @@ namespace TestDocsWithChart
                 catch { }
             }
         }
-        
+        static void getExternalMasters()
+        {
+            string sDirInput = @"D:\Files\xlsx-testers";
+            string sDirOutput = @"D:\Files\external-masters";
+            String[] allfiles = System.IO.Directory.GetFiles(sDirInput, "*.*", System.IO.SearchOption.AllDirectories);
+            for (var i = 0; i < allfiles.Length; ++i)
+            {
+                string file = allfiles[i];
+                try
+                {
+                    ZipArchive zip = ZipFile.OpenRead(file);
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (entry.FullName.Contains("externalLink"))
+                        {
+                            System.IO.File.Copy(file, Path.Combine(sDirOutput, Path.GetFileName(file)), true);
+                            break;
+                        }
+                    }
+                }
+                catch { }
+            }
+        }
+
 
         static void getFilesConditional()
         {

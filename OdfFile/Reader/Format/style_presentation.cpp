@@ -31,58 +31,74 @@
  */
 
 #include "style_presentation.h"
+#include "odfcontext.h"
+#include "odf_document.h"
 
 #include <iostream>
 #include <xml/simple_xml_writer.h>
 
-namespace cpdoccore { 
+#include "calcs_styles.h"
+
+namespace cpdoccore {
 
 	using namespace odf_types;
 
-namespace odf_reader {
+	namespace odf_reader {
 
-const wchar_t * presentation_placeholder::ns	= L"presentation";
-const wchar_t * presentation_placeholder::name	= L"placeholder";
+		const wchar_t* presentation_placeholder::ns = L"presentation";
+		const wchar_t* presentation_placeholder::name = L"placeholder";
 
-void presentation_placeholder::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-	CP_APPLY_ATTR(L"presentation:object", presentation_object_);
-	
-	CP_APPLY_ATTR(L"svg:height", svg_height_);
-	CP_APPLY_ATTR(L"svg:width", svg_width_);
-	CP_APPLY_ATTR(L"svg:x", svg_x_);
-	CP_APPLY_ATTR(L"svg:y", svg_y_);
+		void presentation_placeholder::add_attributes(const xml::attributes_wc_ptr& Attributes)
+		{
+			CP_APPLY_ATTR(L"presentation:object", presentation_object_);
 
-}
+			CP_APPLY_ATTR(L"svg:height", svg_height_);
+			CP_APPLY_ATTR(L"svg:width", svg_width_);
+			CP_APPLY_ATTR(L"svg:x", svg_x_);
+			CP_APPLY_ATTR(L"svg:y", svg_y_);
 
-void presentation_placeholder::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
-    CP_NOT_APPLICABLE_ELM();
-}
+			CP_APPLY_ATTR(L"draw:text-style-name", text_style_name_);
+		}
 
-void presentation_placeholder::pptx_convert(oox::pptx_conversion_context & Context)
-{
-	double cx = svg_width_.get_value_or(length(0)).get_value_unit(length::pt);
-	double cy = svg_height_.get_value_or(length(0)).get_value_unit(length::pt);
+		void presentation_placeholder::add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name)
+		{
+			CP_NOT_APPLICABLE_ELM();
+		}
 
-	//пока не понятно что значит отрицательная ширина ...
-	cx = fabs(cx);
-	cy = fabs(cy);
-	
-	double x = svg_x_.get_value_or(length(0)).get_value_unit(length::pt);
-	double y = svg_y_.get_value_or(length(0)).get_value_unit(length::pt);
+		void presentation_placeholder::pptx_convert(oox::pptx_conversion_context& Context)
+		{
+			double cx = svg_width_.get_value_or(length(0)).get_value_unit(length::pt);
+			double cy = svg_height_.get_value_or(length(0)).get_value_unit(length::pt);
 
-	Context.get_slide_context().start_shape(2);//rect
-	Context.get_slide_context().set_name(L"place_holder");
+			//пока не понятно что значит отрицательная ширина ...
+			cx = fabs(cx);
+			cy = fabs(cy);
 
-	Context.get_slide_context().set_rect(cx,cy,x,y);
-	if (presentation_object_)
-	{
-		Context.get_slide_context().set_placeHolder_type(presentation_object_->get_type_ms());
-	}
+			double x = svg_x_.get_value_or(length(0)).get_value_unit(length::pt);
+			double y = svg_y_.get_value_or(length(0)).get_value_unit(length::pt);
 
-	Context.get_slide_context().end_shape();
-}
+			Context.get_slide_context().start_shape(2);//rect
+			Context.get_slide_context().set_name(L"place_holder");
+
+			if (text_style_name_ && !text_style_name_->empty())
+			{
+				Context.get_text_context().start_base_style(*text_style_name_, odf_types::style_family::Paragraph);
+			}
+			Context.get_slide_context().set_rect(cx, cy, x, y);
+			if (presentation_object_)
+			{
+				Context.get_slide_context().set_placeHolder_type(presentation_object_->get_type_ms());
+				Context.get_slide_context().set_property(_property(L"no_rect", true));
+			}
+			std::wstring text_content_ = Context.get_text_context().end_object();
+
+			if (!text_content_.empty())
+			{
+				Context.get_slide_context().set_property(_property(L"text-content", text_content_));
+			}
+			Context.get_text_context().end_base_style();
+			Context.get_slide_context().end_shape();
+		}
 //-------------------------------------------------------------------------------------------------
 const wchar_t * presentation_sound::ns		= L"presentation";
 const wchar_t * presentation_sound::name	= L"sound";
@@ -99,7 +115,7 @@ void presentation_sound::add_child_element( xml::sax * Reader, const std::wstrin
 
 void presentation_sound::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	Context.get_slide_context().set_link(xlink_attlist_.href_.get_value_or(L""), oox::typeAudio);
+	Context.get_slide_context().set_link(xlink_attlist_.href_.get_value_or(L""), oox::typeHyperlink);
 }
 //-------------------------------------------------------------------------------------------------
 const wchar_t * style_drawing_page_properties::ns	= L"style";

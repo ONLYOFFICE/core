@@ -97,6 +97,8 @@ public:
 	void add_text_file_name	(const std::wstring &text);
  	void add_text_sheet_name(const std::wstring &text);
    
+	std::wstring get_current_style_name();
+
 	void set_symbol_font	(const std::wstring & font);
  	void set_symbol_text	(int sym);
    

@@ -70,9 +70,11 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
     const unsigned int z_index		= common_draw_attlist_.draw_z_index_.get_value_or(0);
     const std::wstring name			= common_draw_attlist_.draw_name_.get_value_or(L"");
     const std::wstring textStyleName = common_draw_attlist_.draw_text_style_name_.get_value_or(L"");
+	const std::wstring xmlId		= common_draw_attlist_.draw_id_.get_value_or(L"");
 
  ///////////////////////////////////////////	
 	Context.get_slide_context().set_name(name);
+	Context.get_slide_context().set_id(xmlId);
 	
 	const _CP_OPT(length) svg_widthVal =  common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_;    
     const _CP_OPT(length) svg_heightVal = common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_;
@@ -293,6 +295,8 @@ void draw_connector::reset_svg_attributes()
 	{
 		common_draw_attlists_.position_.svg_x_	 = draw_line_attlist_.svg_x2_;
 		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = length(x1-x2, length::pt);
+
+		additional_.push_back(_property(L"flipH", true));
 		
 	}else
 	{
@@ -304,12 +308,23 @@ void draw_connector::reset_svg_attributes()
 		common_draw_attlists_.position_.svg_y_	 = draw_line_attlist_.svg_y2_;
 		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(y1-y2, length::pt);
 
+		additional_.push_back(_property(L"flipV", true));
+
 	}else
 	{
 		common_draw_attlists_.position_.svg_y_	 = draw_line_attlist_.svg_y1_;
 		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(y2-y1, length::pt);
 	}
 }
+
+int pptx_convert_glue_point(int gluePoint)
+{
+	if (gluePoint < 4)
+		return 4 - gluePoint;
+
+	return gluePoint - 4;
+}
+
 void draw_connector::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	if (draw_connector_attlist_.draw_type_)
@@ -326,7 +341,47 @@ void draw_connector::pptx_convert(oox::pptx_conversion_context & Context)
 	Context.get_slide_context().start_shape(sub_type_);
 
 	common_pptx_convert(Context);
+
+	if(draw_connector_attlist_.draw_start_shape_)
+		Context.get_slide_context().set_connector_start_shape(draw_connector_attlist_.draw_start_shape_.value());
+	if (draw_connector_attlist_.draw_end_shape_)
+		Context.get_slide_context().set_connector_end_shape(draw_connector_attlist_.draw_end_shape_.value());
+	if(draw_connector_attlist_.draw_start_glue_point_)
+		Context.get_slide_context().set_connector_start_glue_point(pptx_convert_glue_point(draw_connector_attlist_.draw_start_glue_point_.value()));
+	if (draw_connector_attlist_.draw_end_glue_point_)
+		Context.get_slide_context().set_connector_end_glue_point(pptx_convert_glue_point(draw_connector_attlist_.draw_end_glue_point_.value()));
+
+
+	int connector_size = 5;
+	if (draw_connector_attlist_.svg_d_)
+	{
+		std::vector<::svg_path::_polyline> polylines;
+		bool closed, stroked;
+		::svg_path::parseSvgD(polylines, draw_connector_attlist_.svg_d_.value(), false, closed, stroked);
+
+		const int v = polylines.size() - 1;
+		const int min = 2;
+		const int max = 5;
+		connector_size = v < min ? min : (v > max ? max : v); // clamp(v, min, max)
+	}
 	
+	std::wstring drawType = draw_connector_attlist_.draw_type_.get_value_or(L"standart");
+	std::wstring pptx_prst;
+
+	if (drawType == L"curve")
+		pptx_prst = L"curvedConnector" + std::to_wstring(connector_size);
+	else if (drawType == L"lines")
+		pptx_prst = L"bentConnector" + std::to_wstring(connector_size);
+	else if (drawType == L"line")
+		pptx_prst = L"straightConnector1";
+	else if (drawType == L"standart")
+		pptx_prst = L"bentConnector" + std::to_wstring(connector_size);
+	else
+		pptx_prst = L"straightConnector1";
+
+	Context.get_slide_context().set_connector_draw_type(pptx_prst);
+		
+
 //перебъем заливку .. 
 	oox::_oox_fill fill;
 	fill.type = 0;

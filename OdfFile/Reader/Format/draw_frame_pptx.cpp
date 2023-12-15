@@ -77,7 +77,7 @@ void draw_g::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_frame::pptx_convert_placeHolder(oox::pptx_conversion_context & Context)
 {
-	Context.get_slide_context().set_property(_property(L"no_rect",true));
+	Context.get_slide_context().set_property(_property(L"no_rect", true));
 	pptx_convert(Context);
 }
 void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
@@ -92,8 +92,10 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 		const unsigned int z_index = common_draw_attlist_.draw_z_index_.get_value_or(0);
 		const std::wstring name = common_draw_attlist_.draw_name_.get_value_or(L"");
 		const std::wstring textStyleName = common_draw_attlist_.draw_text_style_name_.get_value_or(L"");
+		const std::wstring drawId = common_draw_attlist_.draw_id_.get_value_or(L"");
 
 		Context.get_slide_context().set_name(name);
+		Context.get_slide_context().set_id(drawId);
 		//////////////////////////////////////////////////////////////////////////
 		const _CP_OPT(length) svg_widthVal = common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_;
 		const _CP_OPT(length) svg_heightVal = common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_;

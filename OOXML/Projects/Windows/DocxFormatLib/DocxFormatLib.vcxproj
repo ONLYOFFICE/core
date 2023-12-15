@@ -377,6 +377,7 @@
     <ClInclude Include="..\..\..\XlsxFormat\Table\Connections.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Table\QueryTable.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Table\Table.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Timelines\Timeline.h" />
     <ClInclude Include="..\..\..\XlsxFormat\WorkbookComments.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\BookViews.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\CalcPr.h" />
@@ -534,6 +535,7 @@
     <ClCompile Include="..\..\..\XlsxFormat\Table\Autofilter.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Table\Connections.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Table\Tables.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Timelines\Timeline.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\BookViews.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\CalcPr.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\DefinedNames.cpp" />

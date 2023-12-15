@@ -412,6 +412,26 @@ bool CImageFileFormatChecker::isIpodFile(BYTE* pBuffer,DWORD dwBytes)
 
 	return false;
 }
+
+bool CImageFileFormatChecker::isPicFile(BYTE *pBuffer, DWORD dwBytes)
+{
+    if (dwBytes < 12)
+        return false;
+
+    if (memcmp(pBuffer, "PICT", 4) == 0)
+        return true;
+
+    if (memcmp(pBuffer + 10, "\000\021\002\377\014\000", 6) == 0)
+        return true;
+
+    if (dwBytes < 528)
+        return false;
+
+    if (memcmp(pBuffer + 522, "\000\021\002\377\014\000", 6) == 0)
+        return true;
+
+    return false;
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool CImageFileFormatChecker::isImageFile(std::wstring& fileName)
 {
@@ -530,6 +550,10 @@ bool CImageFileFormatChecker::isImageFile(std::wstring& fileName)
 	{
 		eFileType = _CXIMAGE_FORMAT_UNKNOWN;
 	}
+    else if (isPicFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_PIC;
+    }
 	///////////////////////////////////////////////////////////////////////
 	delete [] buffer;
 
@@ -641,7 +665,11 @@ bool CImageFileFormatChecker::isImageFile(BYTE* buffer, DWORD sizeRead)
 	{
 		eFileType = _CXIMAGE_FORMAT_UNKNOWN;
 	}
-	///////////////////////////////////////////////////////////////////////
+    if (isPicFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_PIC;
+    }
+    ///////////////////////////////////////////////////////////////////////
 	if (eFileType) return true;
 	return false;
 }

@@ -177,6 +177,21 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\ASCConverters.h" />
     <ClInclude Include="..\..\src\cextracttools.h" />
+    <ClInclude Include="..\..\src\lib\common.h" />
+    <ClInclude Include="..\..\src\lib\crypt.h" />
+    <ClInclude Include="..\..\src\lib\csv.h" />
+    <ClInclude Include="..\..\src\lib\doc.h" />
+    <ClInclude Include="..\..\src\lib\docx.h" />
+    <ClInclude Include="..\..\src\lib\html.h" />
+    <ClInclude Include="..\..\src\lib\odf.h" />
+    <ClInclude Include="..\..\src\lib\pdf_image.h" />
+    <ClInclude Include="..\..\src\lib\pdf_oform.h" />
+    <ClInclude Include="..\..\src\lib\ppt.h" />
+    <ClInclude Include="..\..\src\lib\pptx.h" />
+    <ClInclude Include="..\..\src\lib\rtf.h" />
+    <ClInclude Include="..\..\src\lib\txt.h" />
+    <ClInclude Include="..\..\src\lib\xls.h" />
+    <ClInclude Include="..\..\src\lib\xlsx.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\3dParty\cryptopp\vs2019\cryptlib.vcxproj">

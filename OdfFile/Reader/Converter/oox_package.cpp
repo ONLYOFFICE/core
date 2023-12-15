@@ -382,7 +382,7 @@ void media::write(const std::wstring & RootPath)
 
     for (size_t i = 0; i < items.size(); i++ )
     {
-        if (items[i].mediaInternal && items[i].valid && (	items[i].type == typeImage || 
+        if (items[i].valid && (	items[i].type == typeImage || 
 															items[i].type == typeMedia ||
 															items[i].type == typeAudio ||
 															items[i].type == typeVideo ))

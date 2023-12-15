@@ -598,6 +598,52 @@ void form_item::serialize(std::wostream & _Wostream)
 		}
 	}
 }
+// loext:content-control
+//----------------------------------------------------------------------------------
+const wchar_t* loext_content_control::ns = L"loext";
+const wchar_t* loext_content_control::name = L"content-control";
 
+void loext_content_control::create_child_element(const std::wstring& Ns, const std::wstring& Name)
+{
+	CP_CREATE_ELEMENT(content);
+}
+void loext_content_control::add_child_element(const office_element_ptr& child_element)
+{
+	content.push_back(child_element);
+}
+void loext_content_control::serialize(std::wostream& _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			CP_XML_ATTR(L"loext:alias", alias);
+			CP_XML_ATTR(L"loext:tag", tag);
+			CP_XML_ATTR(L"loext:lock", lock);
+			CP_XML_ATTR(L"loext:showing-place-holder", showing_place_holder);
+			CP_XML_ATTR(L"loext:id", id);
+			CP_XML_ATTR(L"loext:tab-index", tab_index);
+			CP_XML_ATTR(L"loext:checked", checked);
+			CP_XML_ATTR(L"loext:checkedState", checked_state);
+			CP_XML_ATTR(L"loext:uncheckedState", unchecked_state);
+			CP_XML_ATTR(L"loext:date-format", date_format);
+			CP_XML_ATTR(L"loext:date-language", date_language);
+			CP_XML_ATTR(L"loext:current-date", current_date);
+			CP_XML_ATTR(L"loext:date-rfc-language-tag", date_rfc_language);
+
+			CP_XML_ATTR(L"loext:checkbox", checkbox);
+			CP_XML_ATTR(L"loext:picture", picture);
+			CP_XML_ATTR(L"loext:date", date);
+			CP_XML_ATTR(L"loext:dropdown", dropdown);
+			CP_XML_ATTR(L"loext:combobox", combobox);
+			CP_XML_ATTR(L"loext:plain-text", plain_text);
+
+			for (size_t i = 0; i < content.size(); i++)
+			{
+				content[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
 }
 }

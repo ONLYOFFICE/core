@@ -1047,6 +1047,24 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 			}
 		}
 	}
+	else if (type_ext == L"pict")
+	{
+		//NSFile::CFileBinary file;
+		//std::wstring tempPICT = file.CreateTempFileWithUniqueName(xls_global_info->tempDirectory, L"pct");
+		//if (file.CreateFileW(tempPICT))
+		//{
+		//	file.WriteFile((BYTE*)data, size);
+		//	file.CloseFile();
+		//}
+		CBgraFrame bgraFrame;
+
+		if (bgraFrame.Decode((BYTE*)data, size))
+		{
+			file_name += L".png";
+			bgraFrame.SaveFile(xlsx_context->get_mediaitems().media_path() + file_name, 4); // png
+		}
+		//NSFile::CFileBinary::Remove(tempPICT);
+	}
 	else
 	{
 		file_name += type_ext;
@@ -1144,7 +1162,7 @@ void XlsConverter::convert(XLS::IMDATA * imdata)
 
 	if (imdata->cf == 0x09 && imdata->env == 0x01)	type_image = L".wmf";
 	if ((imdata->cf == 0x09 || imdata->cf == 0x02)
-							&& imdata->env == 0x02)	type_image = L".pict";
+							&& imdata->env == 0x02)	type_image = L"pict";
 	if (imdata->cf == 0x09)							type_image = L"dib_data";
 	if (imdata->cf == 0x0e)							type_image = L"";			//native aka unknown
 

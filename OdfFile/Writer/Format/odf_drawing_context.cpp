@@ -195,11 +195,12 @@ struct odf_drawing_state
 		fill_color_			= boost::none;
 		name_				= L"";
 		description_		= L"";
+		xml_id_				= L"";
 		hidden_				= false;
 		z_order_			= -1;
 		
-		presentation_class_			= boost::none;
-		presentation_placeholder_	= boost::none;
+		presentation_class_ = boost::none;
+		presentation_placeholder_id_ = boost::none;
 
 		rotateAngle_		= boost::none;
 		text_rotateAngle_	= boost::none;
@@ -218,6 +219,8 @@ struct odf_drawing_state
 
 		flipH_ = flipV_ = false;
 
+		draw_type_ = boost::none;
+
 	}
 	std::vector<odf_element_state>	elements_;
 
@@ -229,11 +232,14 @@ struct odf_drawing_state
 	_CP_OPT(double) cx_;
 	_CP_OPT(double) cy_;
 
+	_CP_OPT(std::wstring) draw_type_;
+
 	bool flipH_;
 	bool flipV_;
 
 	std::wstring	name_;
 	std::wstring	description_;
+	std::wstring	xml_id_;
 	int				z_order_;
 	bool			hidden_;
 
@@ -242,7 +248,7 @@ struct odf_drawing_state
 	_CP_OPT(int)			text_rotateAngle_;
 	
 	_CP_OPT(presentation_class)	presentation_class_;
-	_CP_OPT(std::wstring)		presentation_placeholder_;
+	_CP_OPT(std::wstring)		presentation_placeholder_id_;
 
 	std::wstring				program_;
 	std::wstring				replacement_;
@@ -415,9 +421,9 @@ void odf_drawing_context::start_group()
 	if (false == impl_->current_level_.empty())
 		impl_->current_level_.back().elm->add_child_element(group_elm);
 	
-	if (group == NULL)return;
+	if (group == NULL) return;
 
-	//если группа топовая - то данные если не записать - сотруться
+	//если группа топовая - то данные если не записать - сотрутся
 	if (!impl_->current_drawing_state_.name_.empty())
 		group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_ = impl_->current_drawing_state_.name_;
 	else
@@ -428,6 +434,8 @@ void odf_drawing_context::start_group()
 	//	group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_ = impl_->current_drawing_state_.description_;
 	if (impl_->current_drawing_state_.hidden_)
 		group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_ = L"printer";
+	if (!impl_->current_drawing_state_.xml_id_.empty())
+		group->xml_id_ = impl_->current_drawing_state_.xml_id_;
 	
 	impl_->current_drawing_state_.z_order_	= -1;
 
@@ -591,7 +599,7 @@ void odf_drawing_context::end_drawing()
 	draw_base* draw = impl_->current_drawing_state_.elements_.empty() ? NULL : dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[index].elm.get());
 	if (draw)
 	{
-		if (impl_->current_drawing_state_.presentation_class_ || impl_->current_drawing_state_.presentation_placeholder_)
+		if (impl_->current_drawing_state_.presentation_class_ || impl_->current_drawing_state_.presentation_placeholder_id_)
 		{
 			_CP_OPT(std::wstring) draw_layer;
 			if (impl_->is_presentation_.get() > 0)
@@ -623,6 +631,8 @@ void odf_drawing_context::end_drawing()
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_z_index_ = impl_->current_drawing_state_.z_order_;
 		if (impl_->current_drawing_state_.hidden_)
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_ = L"printer";
+		if (!impl_->current_drawing_state_.xml_id_.empty())
+			draw->xml_id_ = impl_->current_drawing_state_.xml_id_;
 
 		std::wstring strTransform;
 
@@ -689,7 +699,7 @@ void odf_drawing_context::end_drawing()
 		draw->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_		= impl_->current_drawing_state_.svg_width_;
 	}
 ///////////////////////////////////////////////////////
-	presentation_placeholder * placeholder = impl_->current_drawing_state_.elements_.empty() ? NULL : dynamic_cast<presentation_placeholder*>(impl_->current_drawing_state_.elements_[index].elm.get());
+	presentation_placeholder *placeholder = impl_->current_drawing_state_.elements_.empty() ? NULL : dynamic_cast<presentation_placeholder*>(impl_->current_drawing_state_.elements_[index].elm.get());
 	if (placeholder)
 	{
 		placeholder->presentation_object_	= impl_->current_drawing_state_.presentation_class_;
@@ -880,6 +890,14 @@ bool odf_drawing_context::is_wordart()
 {
 	if (impl_->current_drawing_state_.oox_shape_preset_ > 2000 && impl_->current_drawing_state_.oox_shape_preset_ < 3000)
 		return true;	
+
+	return false;
+}
+
+bool odf_drawing_context::is_placeholder()
+{
+	if (!impl_->current_level_.empty() && typeStylePresentationPlaceholder == impl_->current_level_[0].elm->get_type())
+		return true;
 
 	return false;
 }
@@ -1101,6 +1119,10 @@ void odf_drawing_context::end_shape()
 		{
 			text_shape = true;
 		}
+		else if (impl_->current_drawing_state_.draw_type_)
+		{
+			sub_type = *impl_->current_drawing_state_.draw_type_;
+		}
 		//else
 		//{
 		//	sub_type = L"polyline";
@@ -1157,7 +1179,14 @@ void odf_drawing_context::end_shape()
 					enhanced->attlist_.draw_glue_points_	= shape_define->glue_points;
 					enhanced->attlist_.draw_sub_view_size_	= shape_define->sub_view_size;
 
-					if (impl_->current_drawing_state_.oox_shape_ && !impl_->current_drawing_state_.oox_shape_->modifiers.empty())
+					enhanced->attlist_.draw_path_stretchpoint_x_ = shape_define->path_stretchpoint_x;
+					enhanced->attlist_.draw_path_stretchpoint_y_ = shape_define->path_stretchpoint_y;
+
+					if (!shape_define->modifiers.empty())
+					{
+						enhanced->attlist_.draw_modifiers_ = shape_define->modifiers;
+					}
+					else if (impl_->current_drawing_state_.oox_shape_ && !impl_->current_drawing_state_.oox_shape_->modifiers.empty())
 					{
 						enhanced->attlist_.draw_modifiers_ = impl_->current_drawing_state_.oox_shape_->modifiers;
 					}
@@ -1304,7 +1333,7 @@ void odf_drawing_context::end_frame()
 	end_element();
 }
 /////////////////////
-void odf_drawing_context::start_element(office_element_ptr elm, office_element_ptr  style_elm)
+void odf_drawing_context::start_element(office_element_ptr elm, office_element_ptr style_elm)
 {
     size_t level = impl_->current_level_.size();
 	
@@ -1362,8 +1391,10 @@ void odf_drawing_context::end_area_properties()
 }
 void odf_drawing_context::start_line_properties(bool reset)
 {
+	if (!impl_->current_graphic_properties) return;
+
 	impl_->current_drawing_part_ = Line;
-	if (reset)
+	if (reset )
 		impl_->current_graphic_properties->draw_stroke_ = boost::none;
 }
 void odf_drawing_context::end_line_properties()
@@ -1397,7 +1428,7 @@ void odf_drawing_context::set_hidden (bool bVal)
 }
 void odf_drawing_context::set_opacity(double percent_)
 {
-	if (!impl_->current_graphic_properties)return;
+	if (!impl_->current_graphic_properties) return;
 
 	switch(impl_->current_drawing_part_)
 	{
@@ -1454,7 +1485,7 @@ void odf_drawing_context::set_placeholder_id (std::wstring val)
 {
 	if (!impl_->is_presentation_) return;
 
-	impl_->current_drawing_state_.presentation_placeholder_ = val;
+	impl_->current_drawing_state_.presentation_placeholder_id_ = val;
 }
 void odf_drawing_context::set_placeholder_type (int val)
 {
@@ -1491,6 +1522,12 @@ void odf_drawing_context::set_placeholder_type (int val)
 	}
 	//todooo draw_layer for master for sldnum, datetime ...
 }
+
+void odf_drawing_context::set_xml_id(const std::wstring& xml_id)
+{
+	impl_->current_drawing_state_.xml_id_ = xml_id;
+}
+
 void odf_drawing_context::set_group_fill()
 {
 	if (!impl_->current_graphic_properties) return;
@@ -1663,9 +1700,24 @@ int GetFormulaType2(const WCHAR& c1, const WCHAR& c2)
 	return 0;
 }
 
+static std::wstring replace_textarea(std::wstring textarea_coord)
+{
+	XmlUtils::replace_all(textarea_coord, L"t", L"top");
+	XmlUtils::replace_all(textarea_coord, L"l", L"left");
+	XmlUtils::replace_all(textarea_coord, L"r", L"right");
+	XmlUtils::replace_all(textarea_coord, L"b", L"bottom");
+
+	return textarea_coord;
+}
+
 void odf_drawing_context::set_textarea (std::wstring l, std::wstring t, std::wstring r, std::wstring b)
 {
 	if (!impl_->current_drawing_state_.oox_shape_) return;
+
+	l = replace_textarea(l);
+	t = replace_textarea(t);
+	r = replace_textarea(r);
+	b = replace_textarea(b);
 
 	impl_->current_drawing_state_.oox_shape_->text_areas = l + L" " + t + L" " + r + L" " + b;
 
@@ -1690,6 +1742,11 @@ void odf_drawing_context::add_handle (std::wstring x, std::wstring y, std::wstri
 	if (!minY.empty())	h.y_minimum= minY;
 
 	impl_->current_drawing_state_.oox_shape_->handles.push_back(h);
+}
+
+void odf_drawing_context::set_draw_type(const std::wstring& draw_type)
+{
+	impl_->current_drawing_state_.draw_type_ = draw_type;
 }
 
 void odf_drawing_context::add_formula (std::wstring name, std::wstring fmla)
@@ -1791,8 +1848,8 @@ void odf_drawing_context::add_formula (std::wstring name, std::wstring fmla)
 	}
 
 	XmlUtils::replace_all(odf_fmla, L"gd", L"?f");
-	XmlUtils::replace_all(odf_fmla, L"h", L"logheight");
-	XmlUtils::replace_all(odf_fmla, L"w", L"logwidth");
+	XmlUtils::replace_all(odf_fmla, L"h", L"(bottom-top)");
+	XmlUtils::replace_all(odf_fmla, L"w", L"(right-left)");
 	XmlUtils::replace_all(odf_fmla, L"adj", L"$");
 	//XmlUtils::replace_all(name, L"gd", L"f");
 
@@ -2103,6 +2160,18 @@ void odf_drawing_context::set_group_name(const std::wstring & name)
 	if ( !name.empty() )
 		group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_ = name;
 }
+
+void odf_drawing_context::set_group_xml_id(const std::wstring& xml_id)
+{
+	if (impl_->group_list_.empty())
+		return;
+
+	draw_g* group = dynamic_cast<draw_g*>(impl_->current_group_->elm.get());
+
+	if (!xml_id.empty())
+		group->xml_id_ = xml_id;
+}
+
 void odf_drawing_context::set_group_flip_H(bool bVal)
 {
 	if ( impl_->group_list_.empty() )return;
@@ -2442,8 +2511,9 @@ void odf_drawing_context::set_line_dash_preset(int style)
 			impl_->current_graphic_properties->draw_stroke_=line_style(line_style::Solid);		break;
 	}
 }
-void odf_drawing_context::set_text_properties(style_text_properties *text_properties)
+void odf_drawing_context::set_text_properties(text_format_properties* text_properties)
 {
+	if (!text_properties) return;
 	if (impl_->current_drawing_state_.elements_.empty()) return;
 
 	if (!impl_->current_text_properties)
@@ -2451,29 +2521,45 @@ void odf_drawing_context::set_text_properties(style_text_properties *text_proper
 		draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
 		if (draw)
 		{
-			if(!draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
+			if (!draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
 			{
-				impl_->styles_context_->create_style(L"", style_family::Paragraph, true, false, -1);		
-			
-				office_element_ptr & style_shape_elm = impl_->styles_context_->last_state()->get_office_element();
+				impl_->styles_context_->create_style(L"", style_family::Paragraph, true, false, -1);
+
+				office_element_ptr& style_shape_elm = impl_->styles_context_->last_state()->get_office_element();
 				style* style_ = dynamic_cast<style*>(style_shape_elm.get());
 				if (style_)
 				{
 					impl_->current_text_properties = style_->content_.add_get_style_text_properties();
 					draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_ = style_->style_name_;
-					
+
 					if (!impl_->current_level_.empty())
 						impl_->current_level_.back().text_properties = impl_->current_text_properties;
 				}
 			}
 			else
-			{
-				//??? find by name
+			{	//todooo - см set_parent_text_style (контент контроли)
 			}
 		}
 	}
 	if (impl_->current_text_properties)
-		impl_->current_text_properties->apply_from(text_properties->content_);
+		impl_->current_text_properties->apply_from(*text_properties);
+}
+void odf_drawing_context::set_text_properties(style_text_properties *text_properties)
+{
+	if (!text_properties) return;
+	if (impl_->current_drawing_state_.elements_.empty()) return;
+
+	set_text_properties(&text_properties->content_);
+}
+void odf_drawing_context::set_placeholder_style(const std::wstring& style_name)
+{
+	if (impl_->current_drawing_state_.elements_.empty()) return;
+
+	presentation_placeholder* placeholder = dynamic_cast<presentation_placeholder*>(impl_->current_drawing_state_.elements_[0].elm.get());
+	if (placeholder)
+	{
+		placeholder->text_style_name_ = style_name;
+	}
 }
 void odf_drawing_context::set_paragraph_properties(paragraph_format_properties *paragraph_properties)
 {
@@ -2484,7 +2570,7 @@ void odf_drawing_context::set_paragraph_properties(paragraph_format_properties *
 		draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
 		if (draw)
 		{
-			if(!draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
+			if (!draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
 			{
 				impl_->styles_context_->create_style(L"", style_family::Paragraph, true, false, -1);		
 			
@@ -2649,7 +2735,7 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 	if (draw)
 	{
 		style* style_ = NULL;
-		if(!draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
+		if (!draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
 		{
 			impl_->styles_context_->create_style(L"", style_family::Paragraph, true, false, -1);		
 		
@@ -2984,16 +3070,18 @@ void odf_drawing_context::start_action(std::wstring value)
 		}
 		else if (std::wstring::npos != value.find(L"hlinksldjump"))
 		{
-			event_->attlist_.presentation_action_ = L"previous-page";
+			event_->attlist_.presentation_action_ = L"show";
 		}
 		else if (std::wstring::npos != value.find(L"macro"))
 		{
 		}
 		else if (std::wstring::npos != value.find(L"hlinkfile"))
 		{
+			event_->attlist_.presentation_action_ = L"show";
 		}
 		else if (std::wstring::npos != value.find(L"hlinkpres"))
 		{
+			event_->attlist_.presentation_action_ = L"show";
 		}
 		else
 		{//hyperlink
@@ -3104,6 +3192,36 @@ void odf_drawing_context::set_text_box_tableframe(bool val)
 
 	impl_->current_drawing_state_.text_box_tableframe_ = val;
 
+}
+void odf_drawing_context::set_parent_text_style(std::wstring style_name)
+{
+	if (impl_->current_drawing_state_.elements_.empty()) return;
+
+	if (!impl_->current_text_properties)
+	{
+		draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
+		if (draw)
+		{
+			impl_->styles_context_->create_style(L"", style_family::Paragraph, true, false, -1);
+
+			office_element_ptr& style_shape_elm = impl_->styles_context_->last_state()->get_office_element();
+			style* style_ = dynamic_cast<style*>(style_shape_elm.get());
+			if (style_)
+			{
+				style_->style_parent_style_name_ = style_name;
+
+				impl_->current_text_properties = style_->content_.add_get_style_text_properties();
+				draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_ = style_->style_name_;
+
+				if (!impl_->current_level_.empty())
+					impl_->current_level_.back().text_properties = impl_->current_text_properties;
+			}
+		}
+	}
+	else
+	{
+
+	}
 }
 void odf_drawing_context::set_parent_style(std::wstring style_name)
 {

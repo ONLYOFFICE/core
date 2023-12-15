@@ -34,18 +34,18 @@
 #include "../../Common/Vml/PPTShape/Ppt2PptxShapeConverter.h"
 
 #ifndef DISABLE_FILE_DOWNLOADER
-    #include "../../../Common/Network/FileTransporter/include/FileTransporter.h"
-	#include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../../Common/Network/FileTransporter/include/FileTransporter.h"
+#include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 #endif
 
 std::wstring PPT::CImageElement::DownloadImage(const std::wstring& strFile)
 {
 #ifndef DISABLE_FILE_DOWNLOADER
-    NSNetwork::NSFileTransport::CFileDownloader oDownloader(strFile, true);
-	if ( oDownloader.DownloadSync() )
+	NSNetwork::NSFileTransport::CFileDownloader oDownloader(strFile, true);
+	if (oDownloader.DownloadSync())
 	{
 		m_strImageFileName = oDownloader.GetFilePath();
-		
+
 		CImageFileFormatChecker checker;
 		if (false == checker.isImageFile(m_strImageFileName))
 		{
@@ -53,7 +53,7 @@ std::wstring PPT::CImageElement::DownloadImage(const std::wstring& strFile)
 		}
 	}
 #endif
-    return m_strImageFileName;
+	return m_strImageFileName;
 }
 void PPT::CShapeElement::CalculateColor(CColor& oColor, CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
 {
@@ -61,11 +61,11 @@ void PPT::CShapeElement::CalculateColor(CColor& oColor, CSlide* pSlide, CTheme* 
 	if (-1 == oColor.m_lSchemeIndex)
 		return;
 
-    std::vector<CColor>* pArray = NULL;
+	std::vector<CColor>* pArray = NULL;
 
-    if (pTheme) pArray = &pTheme->m_arColorScheme;
+	if (pTheme) pArray = &pTheme->m_arColorScheme;
 
-    if ((NULL != pLayout) && (!pLayout->m_bUseThemeColorScheme))
+	if ((NULL != pLayout) && (!pLayout->m_bUseThemeColorScheme))
 		pArray = &pLayout->m_arColorScheme;
 
 	if (NULL != pSlide)
@@ -74,13 +74,13 @@ void PPT::CShapeElement::CalculateColor(CColor& oColor, CSlide* pSlide, CTheme* 
 			pArray = &pSlide->m_arColorScheme;
 	}
 
-    if ((0 > oColor.m_lSchemeIndex) || ((pArray) && (oColor.m_lSchemeIndex >= (LONG)pArray->size())))
+	if ((0 > oColor.m_lSchemeIndex) || ((pArray) && (oColor.m_lSchemeIndex >= (LONG)pArray->size())))
 		return;
 
-    if (pArray)
-    {
-        oColor = pArray->at(oColor.m_lSchemeIndex);
-    }
+	if (pArray)
+	{
+		oColor = pArray->at(oColor.m_lSchemeIndex);
+	}
 	oColor.m_lSchemeIndex = lOldIndex;
 }
 
@@ -108,7 +108,7 @@ void PPT::CShapeElement::SetupTextProperties(CSlide* pSlide, CTheme* pTheme, CLa
 		for (size_t i = 0; i < nCountCFs; ++i)
 		{
 			CTextCFRun* pRun = &pAttributes->m_arParagraphs[nIndex].m_arSpans[i].m_oRun;
-			
+
 			if (pRun->Color.is_init())
 			{
 				int nColorIndex = (int)pRun->Color->m_lSchemeIndex;
@@ -149,22 +149,22 @@ bool PPT::CShapeElement::SetUpTextPlaceholder(std::wstring newText)
 	bool result = false;
 	PPT::CTextAttributesEx* pText = &m_pShape->m_oText;
 
-	for (size_t p = 0 ; p < pText->m_arParagraphs.size(); p++) //тут по всем -> 1-(33).ppt
+	for (size_t p = 0; p < pText->m_arParagraphs.size(); p++) //тут по всем -> 1-(33).ppt
 	{
-		if (pText->m_arParagraphs[p].m_arSpans.size() >0)//??? по всем?
+		if (pText->m_arParagraphs[p].m_arSpans.size() > 0)//??? по всем?
 		{
 			int pos = (int)pText->m_arParagraphs[p].m_arSpans[0].m_strText.find(L"*");
-			
+
 			if (pos >= 0)
 			{
 				CSpan first = pText->m_arParagraphs[p].m_arSpans[0];
 				CSpan last = pText->m_arParagraphs[p].m_arSpans[0];
-				
-				first.m_strText	= pText->m_arParagraphs[p].m_arSpans[0].m_strText.substr(0, pos);
-				last.m_strText	= pText->m_arParagraphs[p].m_arSpans[0].m_strText.substr(pos + 1);
+
+				first.m_strText = pText->m_arParagraphs[p].m_arSpans[0].m_strText.substr(0, pos);
+				last.m_strText = pText->m_arParagraphs[p].m_arSpans[0].m_strText.substr(pos + 1);
 
 				pText->m_arParagraphs[p].m_arSpans[0].m_strText = newText;
-				pText->m_arParagraphs[p].m_arSpans[0].m_bField	= true;
+				pText->m_arParagraphs[p].m_arSpans[0].m_bField = true;
 
 				if (last.m_strText.empty() == false)
 					pText->m_arParagraphs[p].m_arSpans.insert(pText->m_arParagraphs[p].m_arSpans.begin() + 1, last);
@@ -280,13 +280,13 @@ namespace PPT
 	{
 		if (bIsNamespace)
 		{
-			return _T("<a:prstGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" prst=\"rect\"><a:avLst/></a:prstGeom>");
+			return L"<a:prstGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" prst=\"rect\"><a:avLst/></a:prstGeom>";
 		}
-		return _T("<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>");
+		return L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>";
 
-		std::wstring strXmlPPTX = bIsNamespace ? _T("<a:custGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">") : _T("<a:custGeom>");
+		std::wstring strXmlPPTX = bIsNamespace ? L"<a:custGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">" : L"<a:custGeom>";
 
-		strXmlPPTX += _T("</a:custGeom>");
+		strXmlPPTX += L"</a:custGeom>";
 		return strXmlPPTX;
 	}
 
@@ -305,7 +305,7 @@ namespace PPT
 
 		m_bShapePreset = false;
 
-	}	
+	}
 	CShapeElement::CShapeElement::CShapeElement() : CElement()
 	{
 		m_lShapeType = 0x1000;
@@ -327,10 +327,10 @@ namespace PPT
 	//virtual void NormalizeCoordsByMetric()
 	//{
 	//	CElement::NormalizeCoordsByMetric();
-	
+
 	//	double dScaleX				= (double)m_oMetric.m_lUnitsHor / m_oMetric.m_lMillimetresHor;
 	//	double dScaleY				= (double)m_oMetric.m_lUnitsVer	/ m_oMetric.m_lMillimetresVer;
-	
+
 	//	m_pShape->m_oText.m_oBounds.left		= (int)(dScaleX * m_pShape->m_oText.m_oBounds.left);
 	//	m_pShape->m_oText.m_oBounds.right	= (int)(dScaleX * m_pShape->m_oText.m_oBounds.right);
 	//	m_pShape->m_oText.m_oBounds.top		= (int)(dScaleY * m_pShape->m_oText.m_oBounds.top);
@@ -373,7 +373,7 @@ namespace PPT
 		if (NULL == pPPTShape)
 		{
 			// такого быть не может
-			return _T("");
+			return L"";
 		}
 
 		NSGuidesVML::CFormParam pParamCoef;
@@ -389,27 +389,27 @@ namespace PPT
 		{
 			if (bIsNamespace)
 			{
-				return _T("<a:prstGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" prst=\"rect\"><a:avLst/></a:prstGeom>");
+				return L"<a:prstGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" prst=\"rect\"><a:avLst/></a:prstGeom>";
 			}
-			return _T("<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>");
+			return L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>";
 		}
 		else if (pPPTShape->m_eType == PPTShapes::sptCLine)
 		{
 			if (bIsNamespace)
 			{
-				return _T("<a:prstGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" prst=\"line\"><a:avLst/></a:prstGeom>");
+				return L"<a:prstGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" prst=\"line\"><a:avLst/></a:prstGeom>";
 			}
-			return _T("<a:prstGeom prst=\"line\"><a:avLst/></a:prstGeom>");
+			return L"<a:prstGeom prst=\"line\"><a:avLst/></a:prstGeom>";
 		}
 		else if (pPPTShape->m_eType == PPTShapes::sptCEllipse)
 		{
 			if (bIsNamespace)
 			{
-				return _T("<a:prstGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" prst=\"ellipse\"><a:avLst/></a:prstGeom>");
+				return L"<a:prstGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" prst=\"ellipse\"><a:avLst/></a:prstGeom>";
 			}
-			return _T("<a:prstGeom prst=\"ellipse\"><a:avLst/></a:prstGeom>");
+			return L"<a:prstGeom prst=\"ellipse\"><a:avLst/></a:prstGeom>";
 		}
-		std::wstring strXmlPPTX = bIsNamespace ? _T("<a:custGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">") : _T("<a:custGeom>");
+		std::wstring strXmlPPTX = bIsNamespace ? L"<a:custGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">" : L"<a:custGeom>";
 
 		CFormulaConverter pFormulaConverter;
 
@@ -454,40 +454,40 @@ namespace PPT
 
 			//adj----------------------------
 			if (pFormulaConverter.m_oAdjRes.GetSize() == 0)
-				strXmlPPTX += _T("<a:avLst/>");
+				strXmlPPTX += L"<a:avLst/>";
 			else
-				strXmlPPTX += _T("<a:avLst>") + pFormulaConverter.m_oAdjRes.GetXmlString() + _T("</a:avLst>");
+				strXmlPPTX += L"<a:avLst>" + pFormulaConverter.m_oAdjRes.GetXmlString() + L"</a:avLst>";
 
 			//guids--------------------------
 			if (pFormulaConverter.m_oGuidsRes.GetSize() == 0)
-				strXmlPPTX += _T("<a:gdLst>") + pFormulaConverter.m_oCoef.GetXmlString() + _T("</a:gdLst>");
+				strXmlPPTX += L"<a:gdLst>" + pFormulaConverter.m_oCoef.GetXmlString() + L"</a:gdLst>";
 			else
-				strXmlPPTX += _T("<a:gdLst>") + pFormulaConverter.m_oCoef.GetXmlString() + pFormulaConverter.m_oGuidsRes.GetXmlString() + _T("</a:gdLst>");
+				strXmlPPTX += L"<a:gdLst>" + pFormulaConverter.m_oCoef.GetXmlString() + pFormulaConverter.m_oGuidsRes.GetXmlString() + L"</a:gdLst>";
 
 			//handles---------------------------
 			if (pFormulaConverter.m_oHandleRes.GetSize() == 0)
-				strXmlPPTX += _T("<a:ahLst/>");
+				strXmlPPTX += L"<a:ahLst/>";
 			else
-				strXmlPPTX += _T("<a:ahLst>") + pFormulaConverter.m_oHandleRes.GetXmlString() + _T("</a:ahLst>");
+				strXmlPPTX += L"<a:ahLst>" + pFormulaConverter.m_oHandleRes.GetXmlString() + L"</a:ahLst>";
 
 			//connectors-------------------------
-			strXmlPPTX += _T("<a:cxnLst/>");
+			strXmlPPTX += L"<a:cxnLst/>";
 
 			//textRect---------------------------
 			if (pFormulaConverter.m_oTextRect.GetSize() != 0)
 				strXmlPPTX += pFormulaConverter.m_oTextRect.GetXmlString();
 
 			//path------------------------------
-			strXmlPPTX += _T("<a:pathLst>");
+			strXmlPPTX += L"<a:pathLst>";
 			strXmlPPTX += pFormulaConverter.m_oPathRes.GetXmlString();
-			strXmlPPTX += _T("</a:pathLst>");
+			strXmlPPTX += L"</a:pathLst>";
 		}
 		else
 		{
-			return _T("<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>");
+			return L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>";
 		}
 
-		strXmlPPTX += _T("</a:custGeom>");
+		strXmlPPTX += L"</a:custGeom>";
 		return strXmlPPTX;
 	}
 
@@ -604,12 +604,12 @@ namespace PPT
 	int CTableElement::GetWidth()const
 	{
 		double multip = m_bAnchorEnabled ? 1587.5 : 1;
-		return round(m_rcAnchor.GetWidth()  * multip);
+		return round(m_rcAnchor.GetWidth() * multip);
 	}
 	int CTableElement::GetHeight()const
 	{
 		double multip = m_bAnchorEnabled ? 1587.5 : 1;
-		return round(m_rcAnchor.GetHeight()  * multip);
+		return round(m_rcAnchor.GetHeight() * multip);
 	}
 	std::wstring CTableElement::ConvertPPTShapeToPPTX(bool bIsNamespace)
 	{

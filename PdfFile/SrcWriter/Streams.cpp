@@ -311,7 +311,7 @@ namespace PdfWriter
 		{
 			BYTE nChar = (BYTE)*sTxt++;
 
-			if ((isDictValue && NEEDS_ESCAPE_DICTVALUE(nChar)) || (!isDictValue && NEEDS_ESCAPE(nChar)))
+			if ((isDictValue && NEEDS_ESCAPE_DICTVALUE(nChar)) || (!isDictValue && NEEDS_ESCAPE_STR(nChar)))
 			{
 				sBuf[nIndex++] = '\\';
 				sBuf[nIndex++] = 0x30 + (nChar >> 6);
@@ -648,10 +648,7 @@ namespace PdfWriter
 			}
 		}
 
-		if (dict_type_SIGNATURE == pDict->GetDictType())
-			pDict->WriteSignatureToStream(this, pEncrypt);
-		else
-			pDict->WriteToStream(this, pEncrypt);
+		pDict->WriteToStream(this, pEncrypt);
 
 		pDict->Write(this);
 		WriteStr(">>");
@@ -661,7 +658,7 @@ namespace PdfWriter
 		{
 			CNumberObject* pLength = (CNumberObject*)pDict->Get("Length");			
 			// "Length" должен управляться таблицей Xref (флаг Indirect)
-			if (pLength && object_type_NUMBER == pLength->GetType() && pLength->IsIndirect())
+			if (pLength && object_type_NUMBER == pLength->GetType())
 			{
 				if (pEncrypt)
 					pEncrypt->Reset();
@@ -669,14 +666,14 @@ namespace PdfWriter
 				WriteStr("\012stream\015\012");
 				
 				unsigned int unStartSize = Tell();
-				WriteStream(pStream, pDict->GetFilter(), pEncrypt);
+				WriteStream(pStream, pDict->GetFilter(), pDict->GetDictType() == dict_type_STREAM ? NULL : pEncrypt);
 				pLength->Set(Tell() - unStartSize);
 
 				WriteStr("\012endstream");
 			}
 		}
 
-		pDict->AfterWrite();
+		pDict->AfterWrite(this);
 	}
     void CStream::Write(CObjectBase* pObject, CEncrypt* pEncrypt)
 	{

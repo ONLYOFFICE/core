@@ -1056,7 +1056,7 @@ HRESULT CPdfWriter::AddHyperlink(const double& dX, const double& dY, const doubl
 	NSUnicodeConverter::CUnicodeConverter conv;
 	PdfWriter::CAnnotation* pAnnot = m_pDocument->CreateUriLinkAnnot(PdfWriter::TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)), conv.SASLprepToUtf8(wsUrl).c_str());
 	m_pPage->AddAnnotation(pAnnot);
-	pAnnot->SetBorder(0, 0);
+	pAnnot->SetBorder(0, 0, {});
 	return S_OK;
 }
 HRESULT CPdfWriter::AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage)
@@ -1182,7 +1182,6 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 
 	bool isBold   = m_oFont.IsBold();
 	bool isItalic = m_oFont.IsItalic();
-
 
 	if (oInfo.IsTextField())
 	{
@@ -1675,7 +1674,6 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 		pField->SetFormat(pPr->GetFormat());
 	}
 
-
 	// Выставляем имя в конце, потому что там возможно копирование настроек поля в новое родительское поле, поэтому к текущему моменту
 	// все настройки должны быть выставлены
 	if (!bRadioButton)
@@ -1691,8 +1689,7 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 }
 HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotFieldInfo* pFieldInfo)
 {
-	unsigned int  unPagesCount = m_pDocument->GetPagesCount();
-	if (!m_pDocument || 0 == unPagesCount || !pFieldInfo)
+	if (!m_pDocument || 0 == m_pDocument->GetPagesCount() || !pFieldInfo)
 		return S_OK;
 
 	CAnnotFieldInfo& oInfo = *pFieldInfo;
@@ -1710,7 +1707,13 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		pPage->AddAnnotation(pAnnot);
 	}
 
-	BYTE nWidgetType = 0;
+	BYTE nWidgetType =  0;
+	if (oInfo.IsWidget())
+	{
+		CAnnotFieldInfo::CWidgetAnnotPr* pPr = oInfo.GetWidgetAnnotPr();
+		nWidgetType = pPr->GetType();
+	}
+
 	if (!pAnnot)
 	{
 		if (oInfo.IsText())
@@ -1734,9 +1737,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 		if (oInfo.IsWidget())
 		{
-			CAnnotFieldInfo::CWidgetAnnotPr* pPr = oInfo.GetWidgetAnnotPr();
-			nWidgetType = pPr->GetType();
-
 			switch (nWidgetType)
 			{
 			case 26:
@@ -1745,10 +1745,14 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				break;
 			}
 			case 27:
+			{
+				pAnnot = m_pDocument->CreatePushButtonWidget();
+				break;
+			}
 			case 28:
 			case 29:
 			{
-				pAnnot = m_pDocument->CreateButtonWidget();
+				pAnnot = m_pDocument->CreateCheckBoxWidget();
 				break;
 			}
 			case 30:
@@ -1805,9 +1809,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	if (nFlags & (1 << 4))
 	{
 		BYTE nType;
-		double dWidth, d1, d2;
-		oInfo.GetBorder(nType, dWidth, d1, d2);
-		pAnnot->SetBorder(nType, dWidth, d1, d2);
+		double dWidth;
+		std::vector<double> arrDash;
+		oInfo.GetBorder(nType, dWidth, arrDash);
+		pAnnot->SetBorder(nType, dWidth, arrDash);
 	}
 	if (nFlags & (1 << 5))
 		pAnnot->SetLM(oInfo.GetLM());
@@ -1863,103 +1868,139 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			pMarkupAnnot->SetRT(pPr->GetRT());
 		if (nFlags & (1 << 7))
 			pMarkupAnnot->SetSubj(pPr->GetSubj());
-	}
 
-	if (oInfo.IsText())
-	{
-		CAnnotFieldInfo::CTextAnnotPr* pPr = oInfo.GetTextAnnotPr();
-		PdfWriter::CTextAnnotation* pTextAnnot = (PdfWriter::CTextAnnotation*)pAnnot;
-
-		pTextAnnot->SetOpen(pPr->IsOpen());
-		if (nFlags & (1 << 16))
-			pTextAnnot->SetName(pPr->GetName());
-		if (nFlags & (1 << 17))
-			pTextAnnot->SetStateModel(pPr->GetStateModel());
-		if (nFlags & (1 << 18))
-			pTextAnnot->SetState(pPr->GetState());
-	}
-	else if (oInfo.IsInk())
-	{
-		CAnnotFieldInfo::CInkAnnotPr* pPr = oInfo.GetInkAnnotPr();
-		PdfWriter::CInkAnnotation* pInkAnnot = (PdfWriter::CInkAnnotation*)pAnnot;
-
-		pInkAnnot->SetInkList(pPr->GetInkList());
-	}
-	else if (oInfo.IsLine())
-	{
-		CAnnotFieldInfo::CLineAnnotPr* pPr = oInfo.GetLineAnnotPr();
-		PdfWriter::CLineAnnotation* pLineAnnot = (PdfWriter::CLineAnnotation*)pAnnot;
-
-		double dLX1, dLY1, dLX2, dLY2;
-		pPr->GetL(dLX1, dLY1, dLX2, dLY2);
-		pLineAnnot->SetL(dLX1, dLY1, dLX2, dLY2);
-
-		if (nFlags & (1 << 15))
+		if (oInfo.IsText())
 		{
-			BYTE nLE1, nLE2;
-			pPr->GetLE(nLE1, nLE2);
-			pLineAnnot->SetLE(nLE1, nLE2);
-		}
-		if (nFlags & (1 << 16))
-			pLineAnnot->SetIC(pPr->GetIC());
-		if (nFlags & (1 << 17))
-			pLineAnnot->SetLL(pPr->GetLL());
-		if (nFlags & (1 << 18))
-			pLineAnnot->SetLLE(pPr->GetLLE());
-		pLineAnnot->SetCap(pPr->IsCap());
-		if (nFlags & (1 << 20))
-			pLineAnnot->SetIT(pPr->GetIT());
-		if (nFlags & (1 << 21))
-			pLineAnnot->SetLLO(pPr->GetLLO());
-		if (nFlags & (1 << 22))
-			pLineAnnot->SetCP(pPr->GetCP());
-		if (nFlags & (1 << 23))
-		{
-			double dCO1, dCO2;
-			pPr->GetCO(dCO1, dCO2);
-			pLineAnnot->SetCO(dCO1, dCO2);
-		}
-	}
-	else if (oInfo.IsTextMarkup())
-	{
-		CAnnotFieldInfo::CTextMarkupAnnotPr* pPr = oInfo.GetTextMarkupAnnotPr();
-		PdfWriter::CTextMarkupAnnotation* pTextMarkupAnnot = (PdfWriter::CTextMarkupAnnotation*)pAnnot;
+			CAnnotFieldInfo::CTextAnnotPr* pPr = oInfo.GetTextAnnotPr();
+			PdfWriter::CTextAnnotation* pTextAnnot = (PdfWriter::CTextAnnotation*)pAnnot;
 
-		pTextMarkupAnnot->SetSubtype(pPr->GetSubtype());
-		pTextMarkupAnnot->SetQuadPoints(pPr->GetQuadPoints());
-	}
-	else if (oInfo.IsSquareCircle())
-	{
-		CAnnotFieldInfo::CSquareCircleAnnotPr* pPr = oInfo.GetSquareCircleAnnotPr();
-		PdfWriter::CSquareCircleAnnotation* pSquareCircleAnnot = (PdfWriter::CSquareCircleAnnotation*)pAnnot;
-
-		pSquareCircleAnnot->SetSubtype(pPr->GetSubtype());
-		if (nFlags & (1 << 15))
-		{
-			double dRD1, dRD2, dRD3, dRD4;
-			pPr->GetRD(dRD1, dRD2, dRD3, dRD4);
-			pSquareCircleAnnot->SetRD(dRD1, dRD2, dRD3, dRD4);
+			pTextAnnot->SetOpen(pPr->IsOpen());
+			if (nFlags & (1 << 16))
+				pTextAnnot->SetName(pPr->GetName());
+			if (nFlags & (1 << 17))
+				pTextAnnot->SetStateModel(pPr->GetStateModel());
+			if (nFlags & (1 << 18))
+				pTextAnnot->SetState(pPr->GetState());
 		}
-		if (nFlags & (1 << 16))
-			pSquareCircleAnnot->SetIC(pPr->GetIC());
-	}
-	else if (oInfo.IsPolygonLine())
-	{
-		CAnnotFieldInfo::CPolygonLineAnnotPr* pPr = oInfo.GetPolygonLineAnnotPr();
-		PdfWriter::CPolygonLineAnnotation* pPolygonLineAnnot = (PdfWriter::CPolygonLineAnnotation*)pAnnot;
-
-		pPolygonLineAnnot->SetVertices(pPr->GetVertices());
-		pPolygonLineAnnot->SetSubtype(pPr->GetSubtype());
-		if (nFlags & (1 << 15))
+		else if (oInfo.IsInk())
 		{
-			BYTE nLE1, nLE2;
-			pPr->GetLE(nLE1, nLE2);
-			pPolygonLineAnnot->SetLE(nLE1, nLE2);
+			CAnnotFieldInfo::CInkAnnotPr* pPr = oInfo.GetInkAnnotPr();
+			PdfWriter::CInkAnnotation* pInkAnnot = (PdfWriter::CInkAnnotation*)pAnnot;
+
+			pInkAnnot->SetInkList(pPr->GetInkList());
 		}
-		if (nFlags & (1 << 16))
-			pPolygonLineAnnot->SetIC(pPr->GetIC());
-		if (nFlags & (1 << 20))
-			pPolygonLineAnnot->SetIT(pPr->GetIT());
+		else if (oInfo.IsLine())
+		{
+			CAnnotFieldInfo::CLineAnnotPr* pPr = oInfo.GetLineAnnotPr();
+			PdfWriter::CLineAnnotation* pLineAnnot = (PdfWriter::CLineAnnotation*)pAnnot;
+
+			double dLX1, dLY1, dLX2, dLY2;
+			pPr->GetL(dLX1, dLY1, dLX2, dLY2);
+			pLineAnnot->SetL(dLX1, dLY1, dLX2, dLY2);
+
+			if (nFlags & (1 << 15))
+			{
+				BYTE nLE1, nLE2;
+				pPr->GetLE(nLE1, nLE2);
+				pLineAnnot->SetLE(nLE1, nLE2);
+			}
+			if (nFlags & (1 << 16))
+				pLineAnnot->SetIC(pPr->GetIC());
+			if (nFlags & (1 << 17))
+				pLineAnnot->SetLL(pPr->GetLL());
+			if (nFlags & (1 << 18))
+				pLineAnnot->SetLLE(pPr->GetLLE());
+			pLineAnnot->SetCap(pPr->IsCap());
+			if (nFlags & (1 << 20))
+				pLineAnnot->SetIT(pPr->GetIT());
+			if (nFlags & (1 << 21))
+				pLineAnnot->SetLLO(pPr->GetLLO());
+			if (nFlags & (1 << 22))
+				pLineAnnot->SetCP(pPr->GetCP());
+			if (nFlags & (1 << 23))
+			{
+				double dCO1, dCO2;
+				pPr->GetCO(dCO1, dCO2);
+				pLineAnnot->SetCO(dCO1, dCO2);
+			}
+		}
+		else if (oInfo.IsTextMarkup())
+		{
+			CAnnotFieldInfo::CTextMarkupAnnotPr* pPr = oInfo.GetTextMarkupAnnotPr();
+			PdfWriter::CTextMarkupAnnotation* pTextMarkupAnnot = (PdfWriter::CTextMarkupAnnotation*)pAnnot;
+
+			pTextMarkupAnnot->SetSubtype(pPr->GetSubtype());
+			pTextMarkupAnnot->SetQuadPoints(pPr->GetQuadPoints());
+		}
+		else if (oInfo.IsSquareCircle())
+		{
+			CAnnotFieldInfo::CSquareCircleAnnotPr* pPr = oInfo.GetSquareCircleAnnotPr();
+			PdfWriter::CSquareCircleAnnotation* pSquareCircleAnnot = (PdfWriter::CSquareCircleAnnotation*)pAnnot;
+
+			pSquareCircleAnnot->SetSubtype(pPr->GetSubtype());
+			if (nFlags & (1 << 15))
+			{
+				double dRD1, dRD2, dRD3, dRD4;
+				pPr->GetRD(dRD1, dRD2, dRD3, dRD4);
+				pSquareCircleAnnot->SetRD(dRD1, dRD2, dRD3, dRD4);
+			}
+			if (nFlags & (1 << 16))
+				pSquareCircleAnnot->SetIC(pPr->GetIC());
+		}
+		else if (oInfo.IsPolygonLine())
+		{
+			CAnnotFieldInfo::CPolygonLineAnnotPr* pPr = oInfo.GetPolygonLineAnnotPr();
+			PdfWriter::CPolygonLineAnnotation* pPolygonLineAnnot = (PdfWriter::CPolygonLineAnnotation*)pAnnot;
+
+			pPolygonLineAnnot->SetVertices(pPr->GetVertices());
+			pPolygonLineAnnot->SetSubtype(pPr->GetSubtype());
+			if (nFlags & (1 << 15))
+			{
+				BYTE nLE1, nLE2;
+				pPr->GetLE(nLE1, nLE2);
+				pPolygonLineAnnot->SetLE(nLE1, nLE2);
+			}
+			if (nFlags & (1 << 16))
+				pPolygonLineAnnot->SetIC(pPr->GetIC());
+			if (nFlags & (1 << 20))
+				pPolygonLineAnnot->SetIT(pPr->GetIT());
+		}
+		else if (oInfo.IsFreeText())
+		{
+			CAnnotFieldInfo::CFreeTextAnnotPr* pPr = oInfo.GetFreeTextAnnotPr();
+			PdfWriter::CFreeTextAnnotation* pFreeTextAnnot = (PdfWriter::CFreeTextAnnotation*)pAnnot;
+
+			pFreeTextAnnot->SetQ(pPr->GetQ());
+			if (nFlags & (1 << 15))
+			{
+				double dRD1, dRD2, dRD3, dRD4;
+				pPr->GetRD(dRD1, dRD2, dRD3, dRD4);
+				pFreeTextAnnot->SetRD(dRD1, dRD2, dRD3, dRD4);
+			}
+			if (nFlags & (1 << 16))
+				pFreeTextAnnot->SetCL(pPr->GetCL());
+			if (nFlags & (1 << 17))
+				pFreeTextAnnot->SetDS(pPr->GetDS());
+			if (nFlags & (1 << 18))
+				pFreeTextAnnot->SetLE(pPr->GetLE());
+			if (nFlags & (1 << 20))
+				pFreeTextAnnot->SetIT(pPr->GetIT());
+		}
+		else if (oInfo.IsCaret())
+		{
+			CAnnotFieldInfo::CCaretAnnotPr* pPr = oInfo.GetCaretAnnotPr();
+			PdfWriter::CCaretAnnotation* pCaretAnnot = (PdfWriter::CCaretAnnotation*)pAnnot;
+
+			if (nFlags & (1 << 15))
+			{
+				double dRD1, dRD2, dRD3, dRD4;
+				pPr->GetRD(dRD1, dRD2, dRD3, dRD4);
+				pCaretAnnot->SetRD(dRD1, dRD2, dRD3, dRD4);
+			}
+			if (nFlags & (1 << 16))
+				pCaretAnnot->SetSy(pPr->GetSy());
+		}
+
 	}
 	else if (oInfo.IsPopup())
 	{
@@ -1976,50 +2017,29 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pPopupAnnot->SetParentID(pParentAnnot);
 		}
 	}
-	else if (oInfo.IsFreeText())
-	{
-		CAnnotFieldInfo::CFreeTextAnnotPr* pPr = oInfo.GetFreeTextAnnotPr();
-		PdfWriter::CFreeTextAnnotation* pFreeTextAnnot = (PdfWriter::CFreeTextAnnotation*)pAnnot;
-
-		pFreeTextAnnot->SetQ(pPr->GetQ());
-		if (nFlags & (1 << 15))
-		{
-			double dRD1, dRD2, dRD3, dRD4;
-			pPr->GetRD(dRD1, dRD2, dRD3, dRD4);
-			pFreeTextAnnot->SetRD(dRD1, dRD2, dRD3, dRD4);
-		}
-		if (nFlags & (1 << 16))
-			pFreeTextAnnot->SetCL(pPr->GetCL());
-		if (nFlags & (1 << 17))
-			pFreeTextAnnot->SetDS(pPr->GetDS());
-		if (nFlags & (1 << 18))
-			pFreeTextAnnot->SetLE(pPr->GetLE());
-		if (nFlags & (1 << 20))
-			pFreeTextAnnot->SetIT(pPr->GetIT());
-	}
-	else if (oInfo.IsCaret())
-	{
-		CAnnotFieldInfo::CCaretAnnotPr* pPr = oInfo.GetCaretAnnotPr();
-		PdfWriter::CCaretAnnotation* pCaretAnnot = (PdfWriter::CCaretAnnotation*)pAnnot;
-
-		if (nFlags & (1 << 15))
-		{
-			double dRD1, dRD2, dRD3, dRD4;
-			pPr->GetRD(dRD1, dRD2, dRD3, dRD4);
-			pCaretAnnot->SetRD(dRD1, dRD2, dRD3, dRD4);
-		}
-		if (nFlags & (1 << 16))
-			pCaretAnnot->SetSy(pPr->GetSy());
-	}
-
-	if (oInfo.IsWidget())
+	else if (oInfo.IsWidget())
 	{
 		CAnnotFieldInfo::CWidgetAnnotPr* pPr = oInfo.GetWidgetAnnotPr();
 		PdfWriter::CWidgetAnnotation* pWidgetAnnot = (PdfWriter::CWidgetAnnotation*)pAnnot;
 
-		// TODO
-		pWidgetAnnot->SetDA(NULL, 0, pPr->GetTC());
-		pWidgetAnnot->SetQ(pPr->GetQ());
+		put_FontName(pPr->GetFontName());
+		int nStyle = pPr->GetFontStyle();
+		double dFontSize = pPr->GetFontSizeAP();
+		put_FontStyle(nStyle);
+
+		if (m_bNeedUpdateTextFont)
+			UpdateFont();
+
+		PdfWriter::CFontTrueType* pFontTT = NULL;
+		if (m_pFont)
+			pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
+
+		pWidgetAnnot->SetDocument(m_pDocument);
+		pWidgetAnnot->SetDA(pFontTT, pPr->GetFontSize(), dFontSize, pPr->GetTC());
+
+		BYTE nAlign = pPr->GetQ();
+		if (nWidgetType != 27 && nWidgetType != 28 && nWidgetType != 29)
+			pWidgetAnnot->SetQ(nAlign);
 		int nWidgetFlag = pPr->GetFlag();
 		pWidgetAnnot->SetFlag(nWidgetFlag);
 
@@ -2041,42 +2061,165 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		if (nFlags & (1 << 18))
 			pWidgetAnnot->SetT(pPr->GetT());
 
+		const std::vector<CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget*> arrActions = pPr->GetActions();
+		for (CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget* pAction : arrActions)
+		{
+			PdfWriter::CAction* pA = (PdfWriter::CAction*)m_pDocument->CreateAction(pAction->nActionType);
+			if (!pA)
+				continue;
+			pA->SetType(pAction->wsType);
+
+			switch (pAction->nActionType)
+			{
+			case 1:
+			{
+				PdfWriter::CActionGoTo* ppA = (PdfWriter::CActionGoTo*)pA;
+				PdfWriter::CPage* pPageD = m_pDocument->GetPage(pAction->nInt1);
+				PdfWriter::CDestination* pDest = m_pDocument->CreateDestination(pAction->nInt1);
+				ppA->SetDestination(pDest);
+
+				switch (pAction->nKind)
+				{
+				case 0:
+				{
+					pDest->SetXYZ(pAction->dD[0], pAction->dD[1], pAction->dD[2]);
+					break;
+				}
+				case 1:
+				{
+					pDest->SetFit();
+					break;
+				}
+				case 2:
+				{
+					pDest->SetFitH(pAction->dD[1]);
+					break;
+				}
+				case 3:
+				{
+					pDest->SetFitV(pAction->dD[0]);
+					break;
+				}
+				case 4:
+				{
+					pDest->SetFitR(pAction->dD[0], pAction->dD[1], pAction->dD[2], pAction->dD[3]);
+					break;
+				}
+				case 5:
+				{
+					pDest->SetFitB();
+					break;
+				}
+				case 6:
+				{
+					pDest->SetFitBH(pAction->dD[1]);
+					break;
+				}
+				case 7:
+				{
+					pDest->SetFitBV(pAction->dD[0]);
+					break;
+				}
+				}
+			}
+			case 6:
+			{
+				PdfWriter::CActionURI* ppA = (PdfWriter::CActionURI*)pA;
+				ppA->SetURI(pAction->wsStr1);
+			}
+			case 9:
+			{
+				PdfWriter::CActionHide* ppA = (PdfWriter::CActionHide*)pA;
+				ppA->SetH(pAction->nKind);
+				ppA->SetT(pAction->arrStr);
+			}
+			case 10:
+			{
+				PdfWriter::CActionNamed* ppA = (PdfWriter::CActionNamed*)pA;
+				ppA->SetN(pAction->wsStr1);
+			}
+			case 12:
+			{
+				PdfWriter::CActionResetForm* ppA = (PdfWriter::CActionResetForm*)pA;
+				ppA->SetFlags(pAction->nInt1);
+				ppA->SetFields(pAction->arrStr);
+			}
+			case 14:
+			{
+				PdfWriter::CActionJavaScript* ppA = (PdfWriter::CActionJavaScript*)pA;
+				ppA->SetJS(pAction->wsStr1);
+			}
+			}
+			pWidgetAnnot->AddAction(pA);
+		}
+
+		bool isBold   = (nStyle & 1 ? true : false);
+		bool isItalic = (nStyle & 2 ? true : false);
+
 		if (oInfo.IsButtonWidget())
 		{
-			CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetButtonWidgetPr();
-			PdfWriter::CButtonWidget* pButtonWidget = (PdfWriter::CButtonWidget*)pAnnot;
-
-			if (nFlags & (1 << 14))
-				pButtonWidget->SetAP_N_Yes(pPr->GetAP_N_Yes());
-			pButtonWidget->SetV(nFlags & (1 << 9));
-			int nIFFlags = pPr->GetIFFlag();
-			pButtonWidget->SetIFFlag(nIFFlags);
 			if (nWidgetType == 27)
 			{
+				CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetButtonWidgetPr();
+				PdfWriter::CPushButtonWidget* pButtonWidget = (PdfWriter::CPushButtonWidget*)pAnnot;
+
 				if (nFlags & (1 << 10))
 					pButtonWidget->SetCA(pPr->GetCA());
 				if (nFlags & (1 << 11))
 					pButtonWidget->SetRC(pPr->GetRC());
 				if (nFlags & (1 << 12))
 					pButtonWidget->SetAC(pPr->GetAC());
+				if (nFlags & (1 << 13))
+					pButtonWidget->SetTP(pPr->GetTP());
+
+				int nIFFlags = pPr->GetIFFlag();
+				pButtonWidget->SetIFFlag(nIFFlags);
+				if (nIFFlags & (1 << 0))
+				{
+					if (nIFFlags & (1 << 1))
+						pButtonWidget->SetSW(pPr->GetSW());
+					if (nIFFlags & (1 << 2))
+						pButtonWidget->SetS(pPr->GetS());
+					if (nIFFlags & (1 << 3))
+					{
+						double d1, d2;
+						pPr->GetA(d1, d2);
+						pButtonWidget->SetA(d1, d2);
+					}
+				}
+
+				if (nIFFlags & (1 << 5))
+					pButtonWidget->SetI(pPr->GetI());
+				if (nIFFlags & (1 << 6))
+					pButtonWidget->SetRI(pPr->GetRI());
+				if (nIFFlags & (1 << 7))
+					pButtonWidget->SetIX(pPr->GetIX());
 			}
 			else
-				pButtonWidget->SetS(pPr->GetS());
-
-			if (nFlags & (1 << 13))
-				pButtonWidget->SetTP(pPr->GetTP());
-			if (nIFFlags & (1 << 0))
 			{
-				if (nIFFlags & (1 << 1))
-					pButtonWidget->SetSW(pPr->GetSW());
-				if (nIFFlags & (1 << 2))
-					pButtonWidget->SetS(pPr->GetS());
-				if (nIFFlags & (1 << 3))
+				CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetButtonWidgetPr();
+				PdfWriter::CCheckBoxWidget* pButtonWidget = (PdfWriter::CCheckBoxWidget*)pAnnot;
+
+				pButtonWidget->SetSubtype(nWidgetType);
+				if (nFlags & (1 << 14))
+					pButtonWidget->SetAP_N_Yes(pPr->GetAP_N_Yes());
+				if (nFlags & (1 << 9))
+					pButtonWidget->SetV(pPr->GetV());
+
+				std::wstring wsValue = pButtonWidget->SetStyle(pPr->GetStyle());
+
+				// ВНЕШНИЙ ВИД
+				// Если изменился текущий внешний вид
+				if (pButtonWidget->Get("AP") && !wsValue.empty())
 				{
-					double d1, d2;
-					pPr->GetA(d1, d2);
-					pButtonWidget->SetA(d1, d2);
+					pButtonWidget->SwitchAP(U_TO_UTF8(wsValue));
+					return S_OK;
 				}
+
+				double dMargin = 2;
+				double dBaseLine = dY2 - dY1 - dFontSize - dMargin;
+				// TODO цвет шрифта
+				pButtonWidget->SetAP(wsValue, m_pFont, dFontSize, 0, dBaseLine);
 			}
 		}
 		else if (oInfo.IsTextWidget())
@@ -2084,12 +2227,182 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetTextWidgetPr();
 			PdfWriter::CTextWidget* pTextWidget = (PdfWriter::CTextWidget*)pAnnot;
 
+			std::wstring wsValue;
 			if (nFlags & (1 << 9))
-				pTextWidget->SetV(pPr->GetV());
+			{
+				wsValue = pPr->GetV();
+				pTextWidget->SetV(wsValue);
+			}
+			unsigned int unMaxLen = 0;
 			if (nFlags & (1 << 10))
-				pTextWidget->SetMaxLen(pPr->GetMaxLen());
+			{
+				unMaxLen = pPr->GetMaxLen();
+				pTextWidget->SetMaxLen(unMaxLen);
+			}
 			if (nWidgetFlag & (1 << 25))
 				pTextWidget->SetRV(pPr->GetRV());
+
+			// ВНЕШНИЙ ВИД
+			// Коды, шрифты, количество
+			unsigned int unLen;
+			unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsValue, unLen);
+			if (!pUnicodes)
+				return S_FALSE;
+			unsigned short* pCodes = new unsigned short[unLen];
+			if (!pCodes)
+			{
+				RELEASEARRAYOBJECTS(pUnicodes);
+				return S_FALSE;
+			}
+			PdfWriter::CFontCidTrueType** ppFonts = new PdfWriter::CFontCidTrueType*[unLen];
+			if (!ppFonts)
+			{
+				RELEASEARRAYOBJECTS(pUnicodes);
+				RELEASEARRAYOBJECTS(pCodes);
+				return S_FALSE;
+			}
+
+			for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
+			{
+				unsigned int unUnicode = pUnicodes[unIndex];
+
+				if (!m_pFont->HaveChar(unUnicode))
+				{
+					std::wstring wsFontFamily   = pAppFonts->GetFontBySymbol(unUnicode);
+					PdfWriter::CFontCidTrueType* pTempFont = GetFont(wsFontFamily, isBold, isItalic);
+					if (pTempFont)
+					{
+						pCodes[unIndex]  = pTempFont->EncodeUnicode(unUnicode);
+						ppFonts[unIndex] = pTempFont;
+						continue;
+					}
+				}
+
+				pCodes[unIndex]  = m_pFont->EncodeUnicode(unUnicode);
+				ppFonts[unIndex] = m_pFont;
+			}
+
+			double dMargin = 2; // Отступ используемый в Adobe
+			double dShiftX = dMargin;
+
+			bool isComb = pTextWidget->IsCombFlag();
+
+			// TODO PlaceHolder заполнитель без значения
+
+			if (!isComb && pTextWidget->IsMultiLine())
+			{
+				unsigned short* pCodes2 = new unsigned short[unLen];
+				unsigned int* pWidths   = new unsigned int[unLen];
+
+				unsigned short ushSpaceCode   = 0xFFFF;
+				unsigned short ushNewLineCode = 0xFFFE;
+				for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
+				{
+					unsigned short ushCode = 0;
+					if (0x0020 == pUnicodes[unIndex])
+						ushCode = ushSpaceCode;
+					else if (0x000D == pUnicodes[unIndex] || 0x000A == pUnicodes[unIndex])
+						ushCode = ushNewLineCode;
+
+					pCodes2[unIndex] = ushCode;
+					pWidths[unIndex] = ppFonts[unIndex]->GetWidth(pCodes[unIndex]);
+				}
+
+				m_oLinesManager.Init(pCodes2, pWidths, unLen, ushSpaceCode, ushNewLineCode, pFontTT->GetLineHeight(), pFontTT->GetAscent());
+
+				// TODO Автоподбор размера шрифта dFontSize
+				if (!dFontSize)
+					dFontSize = m_oLinesManager.ProcessAutoFit(dX2 - dX1, (dY2 - dY1 - 3 * dMargin));
+
+				double dLineHeight = pFontTT->GetLineHeight() * dFontSize / 1000.0;
+
+				m_oLinesManager.CalculateLines(dFontSize, dX2 - dX1);
+
+				pTextWidget->StartAP(m_pFont, dFontSize, 1.0);
+
+				unsigned int unLinesCount = m_oLinesManager.GetLinesCount();
+				double dLineShiftY = dY2 - dY1 - pFontTT->GetLineHeight() * dFontSize / 1000.0 - dMargin;
+				for (unsigned int unIndex = 0; unIndex < unLinesCount; ++unIndex)
+				{
+					unsigned int unLineStart = m_oLinesManager.GetLineStartPos(unIndex);
+					double dLineShiftX = dShiftX;
+					double dLineWidth = m_oLinesManager.GetLineWidth(unIndex, dFontSize);
+					if (2 == nAlign)
+						dLineShiftX += (dX2 - dX1 - dLineWidth);
+					else if (1 == nAlign)
+						dLineShiftX += (dX2 - dX1 - dLineWidth) / 2;
+
+					int nInLineCount = m_oLinesManager.GetLineEndPos(unIndex) - m_oLinesManager.GetLineStartPos(unIndex);
+					if (nInLineCount > 0)
+						pTextWidget->AddLineToAP(dLineShiftX, dLineShiftY, pCodes + unLineStart, nInLineCount, ppFonts + unLineStart, NULL);
+
+					dLineShiftY -= dLineHeight;
+				}
+
+				pTextWidget->EndAP();
+
+				m_oLinesManager.Clear();
+
+				RELEASEARRAYOBJECTS(pCodes2);
+				RELEASEARRAYOBJECTS(pWidths);
+			}
+			else
+			{
+				double* pShifts = NULL;
+				unsigned int unShiftsCount = 0;
+
+				if (isComb)
+				{
+					// TODO для безопасности перевыставить в Ff DoNotScroll=true, DoNotSpellCheck=true, Multiline=false
+
+					unShiftsCount = unLen;
+					pShifts = new double[unShiftsCount];
+					if (pShifts && unShiftsCount)
+					{
+						// Сдвиг нулевой для comb форм и не забываем, что мы к ширине добавили 2 * dMargin
+						dShiftX = 0;
+						unsigned int unCellsCount = std::max(unShiftsCount, unMaxLen);
+						double dPrevW = 0;
+						double dCellW = (dX2 - dX1 + 2 * dMargin) / unCellsCount;
+
+						if (2 == nAlign && unShiftsCount)
+							dPrevW = (unCellsCount - unShiftsCount) * dCellW;
+
+						for (unsigned int unIndex = 0; unIndex < unShiftsCount; ++unIndex)
+						{
+							unsigned short ushCode = pCodes[unIndex];
+							double dGlyphWidth = ppFonts[unIndex]->GetGlyphWidth(ushCode) / 1000.0 * dFontSize;
+							double dTempShift = (dCellW - dGlyphWidth) / 2;
+							pShifts[unIndex] = dPrevW + dTempShift;
+							dPrevW = dCellW - dTempShift;
+						}
+					}
+				}
+				else if (2 == nAlign || 1 == nAlign)
+				{
+					double dSumWidth = 0;
+					for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
+					{
+						unsigned short ushCode = pCodes[unIndex];
+						double dLetterWidth    = ppFonts[unIndex]->GetWidth(ushCode) / 1000.0 * dFontSize;
+						dSumWidth += dLetterWidth;
+					}
+
+					if (2 == nAlign && dX2 - dX1 - dSumWidth > 0)
+						dShiftX += dX2 - dX1 - dSumWidth;
+					else if (1 == nAlign && (dX2 - dX1 - dSumWidth) / 2 > 0)
+						dShiftX += (dX2 - dX1 - dSumWidth) / 2;
+				}
+
+				double dBaseLine = dY2 - dY1 - dFontSize - dMargin; // TODO -BaseLineOffset
+				// TODO цвет шрифта
+				pTextWidget->SetAP(wsValue, pCodes, unLen, m_pFont, 1.0, m_oFont.GetSize(), dShiftX, dBaseLine, ppFonts, pShifts);
+				RELEASEARRAYOBJECTS(pShifts);
+			}
+
+			RELEASEARRAYOBJECTS(pUnicodes);
+			RELEASEARRAYOBJECTS(pCodes);
+			RELEASEARRAYOBJECTS(ppFonts);
 		}
 		else if (oInfo.IsChoiceWidget())
 		{
@@ -2111,6 +2424,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	}
 
 	return S_OK;
+}
+HRESULT CPdfWriter::AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength)
+{
+	return m_pDocument->AddMetaData(sMetaName, pMetaData, nMetaLength) ? S_OK : S_FALSE;
 }
 //----------------------------------------------------------------------------------------
 // Дополнительные функции Pdf рендерера
@@ -2165,6 +2482,98 @@ HRESULT CPdfWriter::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2
 	pPdfImage->LoadMask(pMaskBuffer, unMaskWidth, unMaskHeight);
 	m_pPage->DrawImage(pPdfImage, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY - dH), MM_2_PT(dW), MM_2_PT(dH));
 	m_pPage->GrRestore();
+	return S_OK;
+}
+HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWidgetsInfo* pFieldInfo, const std::wstring& wsTempDirectory)
+{
+	if (!m_pDocument || 0 == m_pDocument->GetPagesCount() || !pFieldInfo)
+		return S_OK;
+
+	if (!m_pDocument->EditCO(pFieldInfo->GetCO()))
+		return S_FALSE;
+
+	std::vector<CWidgetsInfo::CParent*> arrParents = pFieldInfo->GetParents();
+	for (CWidgetsInfo::CParent* pParent : arrParents)
+	{
+		PdfWriter::CDictObject* pParentObj = m_pDocument->GetParent(pParent->nID);
+		if (!pParentObj)
+			continue;
+
+		int nFlags = pParent->nFlags;
+		if (nFlags & (1 << 0))
+			pParentObj->Add("T", new PdfWriter::CStringObject((U_TO_UTF8(pParent->sName)).c_str()));
+		if (nFlags & (1 << 1))
+		{
+			std::string sV = U_TO_UTF8(pParent->sV);
+			pParentObj->Add("V", new PdfWriter::CStringObject(sV.c_str()));
+
+			PdfWriter::CObjectBase* pKids = pParentObj->Get("Kids");
+			if (pKids && pKids->GetType() == PdfWriter::object_type_ARRAY)
+			{
+				PdfWriter::CArrayObject* pAKids = (PdfWriter::CArrayObject*)pKids;
+				for (int i = 0; i < pAKids->GetCount(); ++i)
+				{
+					PdfWriter::CObjectBase* pObj = pAKids->Get(i);
+					if (pObj->GetType() != PdfWriter::object_type_DICT ||
+						((PdfWriter::CDictObject*)pObj)->GetDictType() != PdfWriter::dict_type_ANNOTATION ||
+						((PdfWriter::CAnnotation*)pObj)->GetAnnotationType() != PdfWriter::AnnotWidget ||
+						((PdfWriter::CWidgetAnnotation*)pObj)->GetWidgetType() != PdfWriter::WidgetCheckbox)
+						continue;
+					PdfWriter::CCheckBoxWidget* pKid = dynamic_cast<PdfWriter::CCheckBoxWidget*>(pObj);
+					if (pKid)
+						pKid->SwitchAP(sV);
+				}
+			}
+		}
+		if (nFlags & (1 << 2))
+			pParentObj->Add("DV", new PdfWriter::CStringObject((U_TO_UTF8(pParent->sDV)).c_str()));
+		if (nFlags & (1 << 3))
+		{
+			PdfWriter::CDictObject* pParentObj2 = m_pDocument->GetParent(pParent->nParentID);
+			if (pParentObj2)
+				pParentObj->Add("Parent", pParentObj2);
+		}
+	}
+
+	std::vector<std::wstring> arrBI = pFieldInfo->GetButtonImg();
+	std::vector<PdfWriter::CImageDict*> arrImg;
+	for (int i = 0; i < arrBI.size(); ++i)
+	{
+		std::wstring wsPath = arrBI[i];
+		if (wsPath.empty())
+		{
+			arrImg.push_back(NULL);
+			continue;
+		}
+
+		Aggplus::CImage* pCImage = NULL;
+		CImageFileFormatChecker oImageFormat(wsPath);
+		if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType ||
+			_CXIMAGE_FORMAT_EMF == oImageFormat.eFileType ||
+			_CXIMAGE_FORMAT_SVM == oImageFormat.eFileType ||
+			_CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
+		{
+			MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
+			pMeta->LoadFromFile(wsPath.c_str());
+
+			double dNewW = 10.0 / 25.4 * 300;
+			std::wstring wsTempFile = GetTempFile(wsTempDirectory);
+			pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, dNewW);
+
+			RELEASEOBJECT(pMeta);
+
+			pCImage = new Aggplus::CImage(wsTempFile);
+		}
+		else
+			pCImage = new Aggplus::CImage(wsPath);
+
+		PdfWriter::CImageDict* pImage = LoadImage(pCImage, 255);
+		RELEASEOBJECT(pCImage);
+
+		arrImg.push_back(pImage);
+	}
+	m_pDocument->UpdateButtonImg(arrImg);
+
 	return S_OK;
 }
 bool CPdfWriter::EditPage(PdfWriter::CPage* pNewPage)
@@ -2785,7 +3194,7 @@ void CPdfWriter::AddLink(PdfWriter::CPage* pPage, const double& dX, const double
 	PdfWriter::CAnnotation* pAnnot = m_pDocument->CreateLinkAnnot(PdfWriter::TRect(MM_2_PT(dX), pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), pPage->GetHeight() - MM_2_PT(dY + dH)), pDestination);
 	if (pAnnot && pPage)
 		pPage->AddAnnotation(pAnnot);
-	pAnnot->SetBorder(0, 0);
+	pAnnot->SetBorder(0, 0, {});
 }
 bool CPdfWriter::IsValid()
 {

@@ -104,6 +104,7 @@ public:
 	void end_table					();    
 	
 	odp_page_state & state();
+	int				 page_index();
 
 private:
 

@@ -643,16 +643,16 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 				m_valScaling = new CValScaling;
 				m_valScaling->fromXML(oReader);
 			}
-			//else if(_T("majorGridlines") == sName)
-			//{
-			//	m_majorGridlines = new CT_ChartLines;
-			//	m_majorGridlines->fromXML(oReader);
-			//}
-			//else if(_T("minorGridlines") == sName)
-			//{
-			//	m_minorGridlines = new CT_ChartLines;
-			//	m_minorGridlines->fromXML(oReader);
-			//}
+			else if(_T("majorGridlines") == sName)
+			{
+				m_majorGridlines = new CGridlines;
+				m_majorGridlines->fromXML(oReader);
+			}
+			else if(_T("minorGridlines") == sName)
+			{
+				m_minorGridlines = new CGridlines;
+				m_minorGridlines->fromXML(oReader);
+			}
 			else if(_T("title") == sName)
 			{
 				m_title = oReader;
@@ -662,16 +662,16 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			//	m_numFmt = new CT_NumFmt;
 			//	m_numFmt->fromXML(oReader);
 			//}
-			//else if(_T("majorTickMark") == sName)
-			//{
-			//	m_majorTickMark = new CT_TickMark;
-			//	m_majorTickMark->fromXML(oReader);
-			//}
-			//else if(_T("minorTickMark") == sName)
-			//{
-			//	m_minorTickMark = new CT_TickMark;
-			//	m_minorTickMark->fromXML(oReader);
-			//}
+			else if(_T("majorTickMark") == sName)
+			{
+				m_majorTickMarks = new CTickMarks;
+				m_majorTickMarks->fromXML(oReader);
+			}
+			else if(_T("minorTickMark") == sName)
+			{
+				m_minorTickMarks = new CTickMarks;
+				m_minorTickMarks->fromXML(oReader);
+			}
 			else if(_T("tickLabels") == sName)
 			{
 				m_tickLabels = true;

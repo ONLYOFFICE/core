@@ -165,7 +165,8 @@ SOURCES += \
 	../../../XlsxFormat/Slicer/SlicerCache.cpp \
 	../../../XlsxFormat/Slicer/SlicerCacheExt.cpp \
 	../../../XlsxFormat/Slicer/Slicer.cpp \
-	../../../XlsxFormat/NamedSheetViews/NamedSheetViews.cpp \
+        ../../../XlsxFormat/Timelines/Timeline.cpp \
+        ../../../XlsxFormat/NamedSheetViews/NamedSheetViews.cpp \
 	../../../XlsxFormat/Pivot/PivotCacheDefinitionExt.cpp \
 	../../../XlsxFormat/Workbook/Workbook.cpp \
 	../../../XlsxFormat/Workbook/BookViews.cpp \
@@ -337,7 +338,8 @@ HEADERS += \
 	../../../XlsxFormat/Worksheets/Worksheet.h \
 	../../../XlsxFormat/Worksheets/WorksheetChildOther.h \
 	../../../XlsxFormat/Controls/Controls.h \
-	../../../XlsxFormat/Common.h \
+        ../../../XlsxFormat/Timelines/Timeline.h \
+        ../../../XlsxFormat/Common.h \
 	../../../XlsxFormat/CommonInclude.h \
 	../../../XlsxFormat/ComplexTypes_Spreadsheet.h \
 	../../../XlsxFormat/FileFactory_Spreadsheet.h \

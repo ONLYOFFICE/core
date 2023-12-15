@@ -64,7 +64,8 @@ namespace odf_writer {
 		bool		 italic = false;
 		bool		 bold = false;
 
-		double		 approx_symbol_size = 0;//in pt
+		double		 approx_symbol_width = 0;//in pt
+		double		 approx_symbol_height = 0;//in pt
 	};
 //----------------------------------------------------------------------
 	class office_element;
@@ -169,9 +170,13 @@ public:
 		void add_tab(_CP_OPT(int) type, _CP_OPT(odf_types::length) length, _CP_OPT(int) leader);
 	void end_tabs();
 
-	void calculate_font_metrix(std::wstring name, double size, bool italic, bool bold);
+	void calculate_font_metrix(std::wstring name, double size, bool italic, bool bold, bool recalc = false);
 	double convert_symbol_width(double va, bool add_padding = false);
 
+	void add_hyperlink(office_element_ptr& elem, const std::wstring& ref);
+	std::vector<std::pair<office_element_ptr, std::wstring>> get_deferred_hyperlinks();
+
+	std::pair<double, double> font_metrix() { return std::make_pair(font_metrix_.approx_symbol_width, font_metrix_.approx_symbol_height); }
 protected:
 	std::vector<odf_text_context_ptr> text_context_;
 	std::vector<odf_drawing_context_ptr> drawing_context_;
@@ -191,6 +196,8 @@ private:
 	void process_settings	(_object & object, bool isRoot);
 	
 	int	 current_object_;
+
+	std::vector<std::pair<office_element_ptr, std::wstring>> hyperlinks_;
 };
 
 }

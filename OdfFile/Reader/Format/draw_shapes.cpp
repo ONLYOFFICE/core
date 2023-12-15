@@ -978,6 +978,11 @@ void draw_connector_attlist::add_attributes( const xml::attributes_wc_ptr & Attr
     CP_APPLY_ATTR(L"svg:d",			svg_d_);
     CP_APPLY_ATTR(L"svg:viewBox",	svg_viewbox_);	
     CP_APPLY_ATTR(L"draw:type",		draw_type_);
+
+	CP_APPLY_ATTR(L"draw:start-shape"		, draw_start_shape_);
+	CP_APPLY_ATTR(L"draw:end-shape"			, draw_end_shape_);
+	CP_APPLY_ATTR(L"draw:start-glue-point"	, draw_start_glue_point_);
+	CP_APPLY_ATTR(L"draw:end-glue-point"	, draw_end_glue_point_);
 }
 //-------------------------------------------------------------------------------------------
 // draw:connector

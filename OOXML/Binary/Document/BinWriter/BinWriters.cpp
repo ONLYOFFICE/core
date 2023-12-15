@@ -8048,6 +8048,12 @@ void BinaryDocumentTableWriter::WriteSdtPrDataBinding(const ComplexTypes::Word::
 		m_oBcw.m_oStream.WriteStringW3(oDataBinding.m_sXPath.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (oDataBinding.m_sStoreItemChecksum.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::StoreItemChecksum);
+		m_oBcw.m_oStream.WriteStringW3(oDataBinding.m_sStoreItemChecksum.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void BinaryDocumentTableWriter::WriteSdtPrDate(const OOX::Logic::CDate& oDate)
 {
@@ -8695,7 +8701,7 @@ void BinarySettingsTableWriter::WriteSettingsContent(OOX::CSettings& oSettings, 
 		m_oBcw.m_oStream.WriteBOOL(oSettings.m_oAutoHyphenation->m_oVal.ToBool());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (oSettings.m_oHyphenationZone.IsInit())
+	if (oSettings.m_oHyphenationZone.IsInit() && oSettings.m_oHyphenationZone->m_oVal.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::HyphenationZone);
 		m_oBcw.m_oStream.WriteLONG(oSettings.m_oHyphenationZone->m_oVal->ToTwips());

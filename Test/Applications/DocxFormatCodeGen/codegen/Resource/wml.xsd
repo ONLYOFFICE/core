@@ -821,14 +821,16 @@
   </xsd:complexType>
   <xsd:complexType name="CT_BookmarkRange">
     <xsd:attribute name="id" type="xsd:int" use="required"/>
-        <xsd:attribute name="displacedByCustomXml" type="ST_DisplacedByCustomXml" use="optional"/>
-        <xsd:attribute name="colFirst" type="xsd:int" use="optional"/>
-        <xsd:attribute name="colLast" type="xsd:int" use="optional"/>
-  </xsd:complexType>
-  <xsd:complexType name="CT_Bookmark">
+    <xsd:attribute name="displacedByCustomXml" type="ST_DisplacedByCustomXml" use="optional"/>
     <xsd:attribute name="colFirst" type="xsd:int" use="optional"/>
     <xsd:attribute name="colLast" type="xsd:int" use="optional"/>
+  </xsd:complexType>
+  <xsd:complexType name="CT_Bookmark">
     <xsd:attribute name="name" type="s:ST_String" use="required"/>
+    <xsd:attribute name="id" type="xsd:int" use="required"/>
+    <xsd:attribute name="displacedByCustomXml" type="ST_DisplacedByCustomXml" use="optional"/>
+    <xsd:attribute name="colFirst" type="xsd:int" use="optional"/>
+    <xsd:attribute name="colLast" type="xsd:int" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_MoveBookmark">
     <xsd:attribute name="colFirst" type="xsd:int" use="optional"/>

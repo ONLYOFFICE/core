@@ -60,6 +60,10 @@ void paragraph_attrs::add_attributes( const xml::attributes_wc_ptr & Attributes 
 
     text_cond_style_name_ = Attributes->get_val< std::wstring >(L"text:cond-style-name").get_value_or(L"");
     
+    xml_id_ = Attributes->get_val< std::wstring >(L"xml:id").get_value_or(L"");
+    if(!xml_id_)
+        xml_id_ = Attributes->get_val< std::wstring >(L"text:id").get_value_or(L"");
+    
 }
 
 

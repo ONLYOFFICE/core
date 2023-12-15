@@ -3742,9 +3742,9 @@ namespace SimpleTypes
 
 	ETblLayoutType CTblLayoutType::FromString(const std::wstring &sValue)
 	{
-		if      ( (L"autofit") == sValue ) this->m_eValue = tbllayouttypeAutofit;
-		else if ( (L"fixed")   == sValue ) this->m_eValue = tbllayouttypeFixed;
-		else                                this->m_eValue = tbllayouttypeAutofit;
+		if (L"autofit" == sValue) this->m_eValue = tbllayouttypeAutofit;
+		else if (L"fixed" == sValue || L"Fixed" == sValue) this->m_eValue = tbllayouttypeFixed;
+		else this->m_eValue = tbllayouttypeAutofit;
 
 		return this->m_eValue;
 	}

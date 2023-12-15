@@ -56,20 +56,21 @@ namespace odf_writer {
 
 	namespace utils
 	{
-
 		void calculate_size_font_symbols(_font_metrix & metrix, NSFonts::IApplicationFonts *appFonts)
 		{
 			std::pair<float, float> appr = _graphics_utils_::calculate_size_symbol_asc(metrix.font_name, metrix.font_size, metrix.italic, metrix.bold, appFonts);
 
 			if (appr.first < 0.01 || appr.second < 0.01)
-			{
-				appr.first = _graphics_utils_::calculate_size_symbol_win(metrix.font_name, metrix.font_size, false/*metrix.italic*/, false/*metrix.bold*/);
+			{				
+				appr = _graphics_utils_::calculate_size_symbol_win(metrix.font_name, metrix.font_size, false/*metrix.italic*/, false/*metrix.bold*/);
+				appr.first = 
 				appr.first = ((int)(appr.first + 0.5) + 2 * (int)appr.first) / 3.;
 			}
 
 			if (appr.first > 0)
 			{
-				metrix.approx_symbol_size = (int)appr.first;
+				metrix.approx_symbol_width = (int)appr.first;
+				metrix.approx_symbol_height = (int)appr.second;
 				metrix.IsCalc = true;
 			}
 
@@ -109,9 +110,9 @@ void odf_conversion_context::set_fonts_directory(const std::wstring & fontsPath)
     if (applicationFonts_)
         applicationFonts_->InitializeFromFolder(fontsPath);
 }
-void odf_conversion_context::calculate_font_metrix(std::wstring name, double size, bool italic, bool bold)
+void odf_conversion_context::calculate_font_metrix(std::wstring name, double size, bool italic, bool bold, bool recalc)
 {
-	if (font_metrix_.IsCalc) return;
+	if (font_metrix_.IsCalc && !recalc) return;
 
 	if (size < 1)
 		size = 12;
@@ -131,16 +132,27 @@ double odf_conversion_context::convert_symbol_width(double val, bool add_padding
 	
 	//if (add_padding)
 	{
-		val = ((int)((val * font_metrix_.approx_symbol_size + 5) / font_metrix_.approx_symbol_size * 256)) / 256.;
+		val = ((int)((val * font_metrix_.approx_symbol_width + 5) / font_metrix_.approx_symbol_width * 256)) / 256.;
 	}
 
-	double pixels = (int)(((256. * val + ((int)(128. / font_metrix_.approx_symbol_size))) / 256.) * font_metrix_.approx_symbol_size); //in pixels
+	double pixels = (int)(((256. * val + ((int)(128. / font_metrix_.approx_symbol_width))) / 256.) * font_metrix_.approx_symbol_width); //in pixels
 
 	// to back
-	//double back = (int((pixels /*/ 0.75*/ - 5) / font_metrix_.approx_symbol_size * 100. + 0.5)) / 100.;// *0.98; // * 9525. * 72.0 / (360000.0 * 2.54);
+	//double back = (int((pixels /*/ 0.75*/ - 5) / font_metrix_.approx_symbol_width * 100. + 0.5)) / 100.;// *0.98; // * 9525. * 72.0 / (360000.0 * 2.54);
 
 	return pixels * 0.75; //* 9525. * 72.0 / (360000.0 * 2.54);
 }
+
+void odf_conversion_context::add_hyperlink(office_element_ptr& elem, const std::wstring& ref)
+{
+	hyperlinks_.push_back(std::make_pair(elem, ref));
+}
+
+std::vector<std::pair<cpdoccore::odf_writer::office_element_ptr, std::wstring>> odf_conversion_context::get_deferred_hyperlinks()
+{
+	return hyperlinks_;
+}
+
 void odf_conversion_context::set_styles_context(odf_style_context_ptr styles_context)
 {
 	if (!objects_.empty())
@@ -396,7 +408,7 @@ void odf_conversion_context::end_math()
 	
 	end_object();
 
-	calculate_font_metrix(math_context_.font, math_context_.size, false, false); // смотреть по формуле - перевычислять только если есть изменения это шрифт и кегль	
+	calculate_font_metrix(math_context_.font, math_context_.size, false, false, true); // смотреть по формуле - перевычислять только если есть изменения это шрифт и кегль	
 
 	double h = math_context_.lvl_max - math_context_.lvl_min;
 	if (math_context_.lvl_min < 0) h += 1;

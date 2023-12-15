@@ -53,7 +53,6 @@ HEADERS += \
 	../../../Matrix_private.h \
 	../../../GraphicsPath.h \
 	../../../GraphicsPath_private.h \
-	../../../AlphaMask_private.h \
 	../../../AlphaMask.h \
 	\
 	../../../../raster/BgraFrame.h \
@@ -66,6 +65,7 @@ HEADERS += \
 	../../../../raster/Metafile/Common/MetaFileObjects.h \
 	../../../../raster/Metafile/Common/MetaFileRenderer.h \
 	../../../../raster/Metafile/Common/MetaFileUtils.h \
+	../../../../raster/PICT/PICTFile.h \
 	\
 	../../../ArrowHead.h \
 	../../../Brush.h \
@@ -78,6 +78,7 @@ HEADERS += \
 	../../../structures.h \
 	../../../shading_info.h \
 	../../../GraphicsRenderer.h \
+	../../../GraphicsLayer.h \
 	\
 	../../../../fontengine/ApplicationFonts.h \
 	../../../../fontengine/FontFile.h \
@@ -103,11 +104,12 @@ HEADERS += \
 SOURCES += \
 	../../../Matrix.cpp \
 	../../../GraphicsPath.cpp \
-	../../../AlphaMask_private.cpp \
 	../../../AlphaMask.cpp \
 	../../../../raster/BgraFrame.cpp \
 	../../../../raster/ImageFileFormatChecker.cpp \
 	../../../../raster/Metafile/MetaFile.cpp \
+	../../../../raster/PICT/PICFile.cpp \
+	../../../../raster/PICT/pic.cpp \
 	\
 	../../../ArrowHead.cpp \
 	../../../Brush.cpp \
@@ -115,6 +117,7 @@ SOURCES += \
 	../../../Graphics.cpp \
 	../../../GraphicsRenderer.cpp \
 	../../../Image.cpp \
+	../../../GraphicsLayer.cpp \
 	\
 	../../../../fontengine/ApplicationFonts.cpp \
 	../../../../fontengine/FontFile.cpp \
@@ -675,4 +678,6 @@ HEADERS += \
 	../wasm/src/drawingfile.h \
 	../wasm/src/serialize.h
 
-SOURCES += ../wasm/src/drawingfile_test.cpp
+SOURCES += \
+	../wasm/src/drawingfile.cpp \
+	../wasm/src/drawingfile_test.cpp

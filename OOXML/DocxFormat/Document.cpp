@@ -229,25 +229,34 @@ namespace OOX
 		if (pos != std::wstring::npos) fileName = fileName.substr(0, pos);
 
 		CDocx* docx = dynamic_cast<CDocx*>(pMain);
-		if (docx && fileName == L"document")
+		if (docx)
 		{
-			if (type == OOX::FileTypes::Document)
+			OOX::CDocument* current = NULL;
+			if (type == OOX::FileTypes::Document || type == FileTypes::DocumentMacro)
 			{
-				docx->m_oMain.document = this;
-			}
-			else if (type == FileTypes::DocumentMacro)
-			{
-				docx->m_oMain.document = this;
-				m_bMacroEnabled = true;
+				current = docx->m_oMain.document;
 			}
 			else if (type == OOX::FileTypes::GlossaryDocument)
 			{
-				docx->m_oGlossary.document = this;
-				docx->m_bGlossaryRead = true;
+				current = docx->m_oGlossary.document;
 			}
-			else
+
+			if (std::wstring::npos != fileName.find(L"document") || !current)
 			{
-				//???
+				if (type == OOX::FileTypes::Document)
+				{
+					docx->m_oMain.document = this;
+				}
+				else if (type == FileTypes::DocumentMacro)
+				{
+					docx->m_oMain.document = this;
+					m_bMacroEnabled = true;
+				}
+				else if (type == OOX::FileTypes::GlossaryDocument)
+				{
+					docx->m_oGlossary.document = this;
+					docx->m_bGlossaryRead = true;
+				}
 			}
 		}
 
@@ -343,18 +352,18 @@ namespace OOX
 				m_oSectPr = new Logic::CSectionProperty( document );
 				m_oSectPr->fromXML(oReader);
 //-------------------------------------------------------------------------
-				OOX::CDocx *docx = dynamic_cast<OOX::CDocx*>(document);
-				if (docx)
+				OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(document);
+				OOX::CDocument* document = docx ? (docx->m_bGlossaryRead ? docx->m_oGlossary.document : (docx->m_oMain.document ? docx->m_oMain.document : this)) : this;
+
+				if (document)
 				{
-					OOX::CDocument *doc = docx->m_bGlossaryRead ? docx->m_oGlossary.document : docx->m_oMain.document;
-					
-					if (doc->m_arrSections.empty())
+					if (document->m_arrSections.empty())
 					{
 						OOX::CDocument::_section section;
-						doc->m_arrSections.push_back(section);
+						document->m_arrSections.push_back(section);
 					}
-					doc->m_arrSections.back().sect = m_oSectPr.GetPointer();
-					doc->m_arrSections.back().end_elm = doc->m_arrItems.size(); //активный рутовый еще не добавлен
+					document->m_arrSections.back().sect = m_oSectPr.GetPointer();
+					document->m_arrSections.back().end_elm = document->m_arrItems.size(); //активный рутовый еще не добавлен
 				}
 //-------------------------------------------------------------------------
 			}

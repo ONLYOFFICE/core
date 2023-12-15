@@ -146,9 +146,10 @@ namespace NSOnlineOfficeBinToPdf
 
 	enum class AddCommandType
 	{
-		EditPage = 0, // Annotation
+		EditPage   = 0, // ранее Annotation
 		AddPage    = 1,
 		RemovePage = 2,
+		WidgetInfo = 3,
 		Undefined  = 255
 	};
 
@@ -172,13 +173,12 @@ namespace NSOnlineOfficeBinToPdf
 		{
 			int nLen = oReader.ReadInt();
 			AddCommandType CommandType = (AddCommandType)oReader.ReadByte();
-			int nPageNum = oReader.ReadInt();
+			int nPageNum = 0;
+			if (CommandType != AddCommandType::WidgetInfo)
+				nPageNum = oReader.ReadInt();
 
 			if (nPageNum < 0)
-			{
-				// ошибка в бинарнике
 				return false;
-			}
 
 			switch (CommandType)
 			{
@@ -194,6 +194,12 @@ namespace NSOnlineOfficeBinToPdf
 			case AddCommandType::RemovePage:
 			{
 				// TODO: version 7.6+
+				break;
+			}
+			case AddCommandType::WidgetInfo:
+			{
+				NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(oReader.GetCurrentBuffer(), (LONG)(nLen - 5) , &oCorrector);
+				oReader.Skip(nLen - 5);
 				break;
 			}
 			default:

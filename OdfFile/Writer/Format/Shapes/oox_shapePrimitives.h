@@ -1347,28 +1347,29 @@ class oox_shape_Triangle : public oox_shape
 public:
 	oox_shape_Triangle()
 	{
-		odf_type_name	=L"ooxml-triangle";
+		odf_type_name	=L"isosceles-triangle";
 
-		enhanced_path	= L"M 0 ?f6 L ?f2 0 ?f7 ?f6 Z N";
-		text_areas		= L"?f1 ?f5 ?f4 ?f6";
-		view_box		= L"0 0 0 0";
-		modifiers		= L"50000";
+		enhanced_path	= L"M ?f0 0 L 21600 21600 0 21600 Z N";
+		text_areas		= L"?f1 10800 ?f2 18000 ?f3 7200 ?f4 21600";
+		view_box		= L"0 0 21600 21600";
+		modifiers		= L"10800";
+		glue_points		= L"?f0 0 ?f1 10800 0 21600 10800 21600 21600 21600 ?f7 10800";
 		
-		add(L"f0", L"if(0-$0 ,0,if(100000-$0 ,$0 ,100000))");
-		add(L"f1", L"logwidth*?f0 /200000");
-		add(L"f2", L"logwidth*?f0 /100000");
-		add(L"f3", L"logwidth/2");
-		add(L"f4", L"?f1 +?f3 -0");
-		add(L"f5", L"logheight/2");
-		add(L"f6", L"logheight");
-		add(L"f7", L"logwidth");
+		add(L"f0", L"$0 ");
+		add(L"f1", L"$0 /2");
+		add(L"f2", L"?f1 +10800");
+		add(L"f3", L"$0 *2/3");
+		add(L"f4", L"?f3 +7200");
+		add(L"f5", L"21600-?f0 ");
+		add(L"f6", L"?f5 /2");
+		add(L"f7", L"21600-?f6 ");
 
 /////////////////////////////////////////////////////////
 		_handle h;
 
-		h.position = L"?f2 0";
+		h.position = L"$0 top";
 		h.x_minimum = L"0";
-		h.x_maximum = L"100000";
+		h.x_maximum = L"21600";
 		handles.push_back(h);
 	}
 };

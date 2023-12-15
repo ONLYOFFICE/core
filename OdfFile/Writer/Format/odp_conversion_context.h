@@ -89,10 +89,26 @@ public:
 	void start_note(bool bMaster = false);
 	void end_note();
 
-	std::map<std::wstring, table_style_state> map_table_styles_;
+	int next_id();
+	std::wstring map_indentifier(std::wstring id);
+	std::wstring get_mapped_identifier(const std::wstring& id);
+
+	void add_page_name(const std::wstring& page_name);
+
+	std::map<std::wstring, table_style_state>	map_table_styles_;
+
+	// NOTE(Kamil Kerimov): Key - PPTX identifier, value - ODP identifier
+	using IdentifierMap = std::unordered_map<std::wstring, std::wstring>;
+	std::vector<IdentifierMap> map_identifiers_;
+
+	// NOTE(Kamil Kerimov): Key - slide name in pptx (e.g. slide1.xml), Value - slide name in odp (e.g. "This is a title")
+	using SlidenameMap = std::unordered_map<std::wstring, std::wstring>;
+	SlidenameMap map_slidenames_;
 private:
 	odp_slide_context			slide_context_;
 	office_presentation*		root_presentation_;
+
+	int rId_;
 };
 
 

@@ -66,28 +66,10 @@ const int linerule_Exact   = 2;
 const int orientation_Portrait  = 0x00;
 const int orientation_Landscape = 0x01;
 
-const int numbering_numfmt_None        = 0x0000;
-const int numbering_numfmt_Bullet      = 0x1001;
-const int numbering_numfmt_Decimal     = 0x2002;
-const int numbering_numfmt_LowerRoman  = 0x2003;
-const int numbering_numfmt_UpperRoman  = 0x2004;
-const int numbering_numfmt_LowerLetter = 0x2005;
-const int numbering_numfmt_UpperLetter = 0x2006;
-const int numbering_numfmt_DecimalZero = 0x2007;
-
-const int numbering_suff_Tab     = 1;
-const int numbering_suff_Space   = 2;
-const int numbering_suff_Nothing = 3;
-
 const int tblwidth_Auto = 0x00;
 const int tblwidth_Mm   = 0x01;
 const int tblwidth_Nil  = 0x02;
 const int tblwidth_Pct  = 0x03;
-
-const int fontstyle_mask_regular = 1;
-const int fontstyle_mask_italic = 2;
-const int fontstyle_mask_bold = 4;
-const int fontstyle_mask_bolditalic = 8;
 
 const int styletype_Character = 0x01;
 const int styletype_Numbering = 0x02;

@@ -1478,8 +1478,8 @@
 		let idBuffer = ID.toUtf8();
 		let idPointer = Module["_malloc"](idBuffer.length);
 		Module["HEAP8"].set(idBuffer, idPointer);
-
-		let ext = Module["_GetFontBinary"](idPointer);
+		let ext = Module["_GetFontBinary"](this.nativeFile, idPointer);
+		Module["_free"](idPointer);
 		if (ext == 0)
 			return res;
 		
@@ -1510,8 +1510,7 @@
 			
 			res = new Uint8Array(Module["HEAP8"].buffer, pFontPoint, nFontLength);
 		}
-		
-		Module["_free"](idPointer);
+
 		Module["_free"](ext);
 		
 		return res;

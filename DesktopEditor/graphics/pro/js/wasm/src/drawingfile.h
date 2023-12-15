@@ -96,44 +96,12 @@ public:
 		nHeight   = dHeight;
 		nPageDpiX = dPageDpiX;
 	}
-	BYTE* GetFont(const std::wstring& sFontName)
+	std::wstring GetFont(const std::wstring& sFontName)
 	{
 		std::wstring sFontFile;
 		if (nType == 0)
 			sFontFile = ((CPdfFile*)pReader)->GetFontPath(sFontName);
-
-		if (sFontFile.empty())
-			return NULL;
-
-		NSWasm::CData oRes;
-		oRes.SkipLen();
-
-		NSFonts::IFontsMemoryStorage* pStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
-		if (pStorage)
-		{
-			NSFonts::IFontStream* pStream = pStorage->Get(sFontFile);
-			if (pStream)
-			{
-				BYTE* pData = NULL;
-				LONG lLength = 0;
-				pStream->GetMemory(pData, lLength);
-
-				if (pData)
-				{
-					oRes.AddInt(lLength);
-
-					unsigned long long npSubMatrix = (unsigned long long)pData;
-					unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
-					oRes.AddInt(npSubMatrix1);
-					oRes.AddInt(npSubMatrix >> 32);
-				}
-			}
-		}
-
-		oRes.WriteLen();
-		BYTE* bRes = oRes.GetBuffer();
-		oRes.ClearWithoutAttack();
-		return bRes;
+		return sFontFile;
 	}
 	BYTE* GetPage(int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
 	{

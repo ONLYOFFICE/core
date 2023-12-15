@@ -636,7 +636,7 @@ namespace NExtractTools
 				std::wstring sFileToCurrent = *params.m_sFileTo;
 				params.changeFormatFrom(*params.m_nFormatFrom, params.m_bMacro);
 
-				nRes = fromDocxDir(sDocxDir, sTo, nFormatTo, params, convertParams);
+				nRes = fromDocxDir(sDocxDir, *params.m_sFileTo, nFormatTo, params, convertParams);
 			}
 		}
 		return nRes;
@@ -974,7 +974,7 @@ namespace NExtractTools
 				std::wstring sFileToCurrent = *params.m_sFileTo;
 				params.changeFormatFrom(*params.m_nFormatFrom, params.m_bMacro);
 
-				nRes = fromXlsxDir(sXlsxDir, sTo, nFormatTo, params, convertParams);
+				nRes = fromXlsxDir(sXlsxDir, *params.m_sFileTo, nFormatTo, params, convertParams);
 			}
 		}
 		return nRes;
@@ -1249,7 +1249,7 @@ namespace NExtractTools
 			std::wstring sFileToCurrent = *params.m_sFileTo;
 			params.changeFormatFrom(*params.m_nFormatFrom, params.m_bMacro);
 
-			nRes = fromPptxDir(sPptxDir, sTo, nFormatTo, params, convertParams);
+			nRes = fromPptxDir(sPptxDir, *params.m_sFileTo, nFormatTo, params, convertParams);
 		}
 		return nRes;
 	}

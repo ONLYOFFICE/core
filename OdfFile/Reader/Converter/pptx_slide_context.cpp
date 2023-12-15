@@ -1012,7 +1012,6 @@ void pptx_slide_context::serialize_objects(std::wostream & strm)
 			}
 		}
 	}
-	process_drawings();
 	impl_->get_drawings()->serialize(strm);   
 }
 

@@ -47,6 +47,7 @@
 #include <xml/xmlchar.h>
 #include <xml/simple_xml_writer.h>
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 #include <unordered_map>
 #include <vector>
 
@@ -333,7 +334,9 @@ static std::wstring pptx_convert_animation_function(std::wstring animation_funct
 
 static std::wstring pptx_convert_smil_begin(const std::wstring& smil_begin)
 {
-	if(smil_begin == L"next")
+	if (smil_begin == L"next")
+		return L"indefinite";
+	else if (smil_begin == L"indefinite")
 		return L"indefinite";
 	if (boost::ends_with(smil_begin, L"click"))
 		return smil_begin;
@@ -1159,12 +1162,15 @@ void anim_audio::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	audio_attlist_.add_attributes(Attributes);
 }
 
+static bool is_absolute_path(const std::wstring& path) {
+	boost::filesystem::path p(path);
+	return p.is_absolute();
+}
+
 void anim_audio::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	oox::pptx_slide_context& slideContext = Context.get_slide_context();
 	oox::pptx_animation_context& animationContext = Context.get_slide_context().get_animation_context();
-	
-	animationContext.start_anim_audio();
 
 	if (audio_attlist_.xlink_href_)
 	{
@@ -1184,18 +1190,30 @@ void anim_audio::pptx_convert(oox::pptx_conversion_context & Context)
 			href = audioPath;
 		}
 
-		const std::wstring name = NSFile::GetFileName(href);
+		std::wstring relative_href = href;
+		if (!is_absolute_path(href))
+		{
+			relative_href = Context.root()->get_folder() + FILE_SEPARATOR_STR + href;
+		}
 
-		std::wstring ref;
-		bool isInternal;
-		const std::wstring& rId = slideContext.get_mediaitems()->add_or_find_anim_audio(href, isInternal, ref);
+		if (NSFile::CFileBinary::Exists(relative_href))
+		{
+			const std::wstring name = NSFile::GetFileName(href);
 
-		slideContext.add_rels(true, rId, ref, oox::_rels_type::typeAudio);
-		
-		animationContext.add_anim_audio(rId, name);
+			std::wstring ref;
+			bool isInternal;
+			const std::wstring& rId = slideContext.get_mediaitems()->add_or_find_anim_audio(href, isInternal, ref);
+
+			slideContext.add_rels(true, rId, ref, oox::_rels_type::typeAudio);
+
+			animationContext.start_anim_audio();
+
+			animationContext.add_anim_audio(rId, name);
+
+			animationContext.end_anim_audio();
+		}
 	}
 
-	animationContext.end_anim_audio();
 }
 
 ////////////////////////////////////////////////////////////////

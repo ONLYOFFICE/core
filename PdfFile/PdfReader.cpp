@@ -776,59 +776,89 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 
 	nPageIndex++;
 
+	Page* pPage = m_pPDFDocument->getCatalog()->getPage(nPageIndex);
+	if (!pPage)
+		return NULL;
+
 	NSWasm::CPageLink oLinks;
-	double height = m_pPDFDocument->getPageCropHeight(nPageIndex);
 
 	// Гиперссылка
 	Links* pLinks = m_pPDFDocument->getLinks(nPageIndex);
-	if (!pLinks)
-		return NULL;
-
-	int num = pLinks->getNumLinks();
-	for (int i = 0; i < num; i++)
+	if (pLinks)
 	{
-		Link* pLink = pLinks->getLink(i);
-		if (!pLink)
-			continue;
+		PDFRectangle* cropBox = pPage->getCropBox();
 
-		GString* str = NULL;
-		double x1 = 0.0, y1 = 0.0, x2 = 0.0, y2 = 0.0, dy = 0.0;
-		pLink->getRect(&x1, &y1, &x2, &y2);
-		y1 = height - y1;
-		y2 = height - y2;
-
-		LinkAction* pLinkAction = pLink->getAction();
-		if (!pLinkAction)
-			continue;
-		LinkActionKind kind = pLinkAction->getKind();
-		if (kind == actionGoTo)
+		int num = pLinks->getNumLinks();
+		for (int i = 0; i < num; i++)
 		{
-			str = ((LinkGoTo*)pLinkAction)->getNamedDest();
-			LinkDest* pLinkDest = str ? m_pPDFDocument->findDest(str) : ((LinkGoTo*)pLinkAction)->getDest()->copy();
-			if (pLinkDest)
+			Link* pLink = pLinks->getLink(i);
+			if (!pLink)
+				continue;
+
+			GString* str = NULL;
+			double x1 = 0.0, y1 = 0.0, x2 = 0.0, y2 = 0.0, dy = 0.0;
+			pLink->getRect(&x1, &y1, &x2, &y2);
+			x1 = x1 - cropBox->x1;
+			y1 = cropBox->y2 - y1;
+			x2 = x2 - cropBox->x1;
+			y2 = cropBox->y2 - y2;
+
+			LinkAction* pLinkAction = pLink->getAction();
+			if (!pLinkAction)
+				continue;
+			LinkActionKind kind = pLinkAction->getKind();
+			if (kind == actionGoTo)
 			{
-				int pg;
-				if (pLinkDest->isPageRef())
+				str = ((LinkGoTo*)pLinkAction)->getNamedDest();
+				LinkDest* pLinkDest = str ? m_pPDFDocument->findDest(str) : ((LinkGoTo*)pLinkAction)->getDest()->copy();
+				if (pLinkDest)
 				{
-					Ref pageRef = pLinkDest->getPageRef();
-					pg = m_pPDFDocument->findPage(pageRef.num, pageRef.gen);
+					int pg;
+					if (pLinkDest->isPageRef())
+					{
+						Ref pageRef = pLinkDest->getPageRef();
+						pg = m_pPDFDocument->findPage(pageRef.num, pageRef.gen);
+					}
+					else
+						pg = pLinkDest->getPageNum();
+					std::string sLink = "#" + std::to_string(pg - 1);
+					str = new GString(sLink.c_str());
+					dy  = m_pPDFDocument->getPageCropHeight(pg) - pLinkDest->getTop();
 				}
 				else
-					pg = pLinkDest->getPageNum();
+					str = NULL;
+				RELEASEOBJECT(pLinkDest);
+			}
+			else if (kind == actionURI)
+				str = ((LinkURI*)pLinkAction)->getURI()->copy();
+			else if (kind == actionNamed)
+			{
+				str = ((LinkNamed*)pLinkAction)->getName();
+				int pg = 1;
+				if (!str->cmp("NextPage"))
+				{
+					pg = nPageIndex + 1;
+					if (pg > m_pPDFDocument->getNumPages())
+						pg = m_pPDFDocument->getNumPages();
+				}
+				else if (!str->cmp("PrevPage"))
+				{
+					pg = nPageIndex - 1;
+					if (pg < 1)
+						pg = 1;
+				}
+				else if (!str->cmp("LastPage"))
+					pg = m_pPDFDocument->getNumPages();
+
 				std::string sLink = "#" + std::to_string(pg - 1);
 				str = new GString(sLink.c_str());
-				dy  = m_pPDFDocument->getPageCropHeight(pg) - pLinkDest->getTop();
 			}
-			else
-				str = NULL;
-			RELEASEOBJECT(pLinkDest);
-		}
-		else if (kind == actionURI)
-			str = ((LinkURI*)pLinkAction)->getURI()->copy();
 
-		oLinks.m_arLinks.push_back({str ? std::string(str->getCString(), str->getLength()) : "", dy, x1, y2, x2 - x1, y1 - y2});
-		RELEASEOBJECT(str);
+			oLinks.m_arLinks.push_back({str ? std::string(str->getCString(), str->getLength()) : "", dy, x1, y2, x2 - x1, y1 - y2});
+			RELEASEOBJECT(str);
+		}
 	}
+
 	RELEASEOBJECT(pLinks);
 
 	int nRotate = 0;

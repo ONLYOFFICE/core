@@ -9,6 +9,40 @@
 
 namespace StarMath
 {
+	class CStarMathReader;
+
+	class CAttribute
+	{
+	public:
+		CAttribute();
+		~CAttribute();
+		static TypeElement GetTypeColorAttribute(const std::wstring& wsToken);
+		static TypeElement GetTypeFontAttribute(const std::wstring& wsToken);
+		bool GetBold();
+		bool GetItal();
+		bool GetPhantom();
+		bool GetStrike();
+		unsigned int GetSize();
+		std::wstring GetColor();
+		bool EmptyColor();
+		void ParseFontAttribute(const TypeElement& enTypeFont,CStarMathReader* pReader);
+		void ParseColorAttribute(const std::wstring& wsToken,CStarMathReader* pReader);
+	private:
+		void SetSize(const unsigned int& iSize);
+		void SetBold();
+		void SetItal();
+		void SetPhantom();
+		void SetStrike();
+		void SetColor(const TypeElement& enColor);
+		void SetFont(const TypeElement& enFont);
+		std::wstring m_wsColor;
+		bool m_bBold;
+		bool m_bItal;
+		bool m_bPhantom;
+		bool m_bStrike;
+		unsigned int m_iSize;
+		std::wstring m_wsNameFont;
+	};
 	//Сlass for working with tokens (reading, defining types, passing)
 	class CStarMathReader
 	{
@@ -26,6 +60,11 @@ namespace StarMath
 		void ClearReader();
 		bool CheckIteratorPosition();
 		bool EmptyString();
+		void SetAttribute(CAttribute* pAttribute);
+		void SetAttributeTemp(CAttribute* pAttribute);
+		CAttribute* GetAttributeTemp();
+		CAttribute* GetAttribute();
+		void ClearAttributeTemp();
 	private:
 		//The function returns a Token from a string (the iterator pointer m_itStart is on the next element)
 		std::wstring GetElement();
@@ -33,17 +72,8 @@ namespace StarMath
 		TypeElement m_enGlobalType;
 		TypeElement m_enUnderType;
 		std::wstring m_wsToken;
-	};
-
-	class CAttribute
-	{
-	public:
-		CAttribute(const TypeElement& enType);
-		~CAttribute();
-		static TypeElement GetTypeAttribute(const std::wstring& wsToken);
-		TypeElement GetType();
-	private:
-		TypeElement m_enTypeAttr;
+		CAttribute* m_pAttribute;
+		CAttribute* m_pAttributeTemp;
 	};
 
 	class CElement
@@ -55,11 +85,12 @@ namespace StarMath
 		//The function creates the class we need (by determining the class type by a variable m_enGlobalType from the class CStarMathReader)
 		static CElement* CreateElement(CStarMathReader* pReader);
 		virtual void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) = 0;
-		void SetAttribute(const std::vector<CAttribute*> arAttr);
+		void SetAttribute(CAttribute* pAttribute);
 		void SetBaseType(const TypeElement& enType);
+		CAttribute* GetAttribute();
 		const TypeElement& GetBaseType();
 	private:
-		std::vector<CAttribute*> m_arElementAttributes;
+		CAttribute* m_pAttribute;
 		TypeElement m_enBaseType;
 	};
 
@@ -264,6 +295,20 @@ namespace StarMath
 		TypeElement m_enTypeMatrix;
 	};
 
+	class CElementDiacriticalMark: public CElement
+	{
+	public:
+		CElementDiacriticalMark(const TypeElement& enType);
+		virtual ~CElementDiacriticalMark();
+		void SetValueMark(CElement* pValue);
+		static TypeElement GetMark(const std::wstring& wsToken);
+	private:
+		void Parse(CStarMathReader* pReader) override;
+		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
+		CElement* m_pValueMark;
+		TypeElement m_enTypeMark;
+	};
+
 	class CParserStarMathString
 	{
 	public:
@@ -272,7 +317,7 @@ namespace StarMath
 		//Function for adding a left argument (receives the argument itself and the element to which it needs to be added as input. Works with classes:CElementBinOperator,CElementConnection,CElementSetOperation).
 		static void AddLeftArgument(CElement* pLeftArg,CElement* pElementWhichAdd);
 		static bool CheckForLeftArgument(const TypeElement& enType);
-		static CElement* ReadingWithoutBracket(CStarMathReader* pReader);
+		static CElement* ReadingWithoutBracket(CStarMathReader* pReader,CAttribute* pAttribute);
 	private:
 		std::vector<CElement*> m_arEquation;
 	};

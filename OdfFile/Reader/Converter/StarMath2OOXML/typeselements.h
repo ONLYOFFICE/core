@@ -12,6 +12,7 @@ enum class TypeElement{
 	Bracket,
 	BracketWithIndex,
 	Grade,
+	Mark,
 	//BracketEnd,
 	UnarSign,
 	Attribute,
@@ -67,6 +68,10 @@ enum class TypeElement{
 	//attribute
 	ital,
 	bold,
+	phantom,
+	overstrike,
+	size,
+	font,
 	//top element
 	acute,
 	breve,
@@ -84,11 +89,12 @@ enum class TypeElement{
 	widevec,
 	widetilde,
 	overline,
-	overstrike,
 	wideharpoon,
 	widehat,
 	underline,//top elements
 	color,
+	hex,
+	rgb,
 	black,
 	green,
 	aqua,

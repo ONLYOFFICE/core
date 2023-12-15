@@ -741,6 +741,14 @@ namespace OOX
 		XLS::BaseObjectPtr COfficeArtExtensionList::toBinPivotCache()
 		{
 			auto ptr(new XLSB::FRTPIVOTCACHEDEF);
+
+			auto ptr1(new XLSB::FRTBegin);
+			XLSB::FRTProductVersion version;
+			version.product = 0;
+			version.version = 0x0F03;
+			ptr1->productVersion = version;
+			ptr->m_BrtFRTBegin = XLS::BaseObjectPtr{ptr1};
+
 			XLS::BaseObjectPtr objectPtr(ptr);
 
 				if (!m_arrExt.empty())

@@ -106,6 +106,7 @@ namespace oox {
 				_CP_OPT(int)									Duration; // in ms
 				_CP_OPT(std::wstring)							Delay;
 				_CP_OPT(std::wstring)							End;
+				_CP_OPT(std::wstring)							AutoRev;
 				_CP_OPT(std::wstring)							Fill;
 				_CP_OPT(size_t)									ShapeID;
 				_CP_OPT(std::wstring)							AttributeName;
@@ -150,6 +151,18 @@ namespace oox {
 			typedef shared_ptr<_anim_clr>::Type					_anim_clr_ptr;
 			struct _anim_clr : _animation_element
 			{
+				struct color
+				{
+					enum type
+					{
+						rgb,
+						hsl
+					} type_;
+
+					int v1, v2, v3;
+				};
+
+
 				_CP_OPT(std::wstring)							PresentationNodeType;
 				_CP_OPT(std::wstring)							Direction;
 				_CP_OPT(std::wstring)							Restart;
@@ -158,10 +171,12 @@ namespace oox {
 				_CP_OPT(std::wstring)							End;
 
 				_CP_OPT(std::wstring)							Fill;
+				_CP_OPT(bool)									AutoRev;
 				_CP_OPT(size_t)									ShapeID;
 				_CP_OPT(std::wstring)							AttributeName;
 				_CP_OPT(std::wstring)							Delay;
 				_CP_OPT(std::wstring)							ToValue;
+				_CP_OPT(color)									ByValue;
 				_CP_OPT(std::wstring)							ColorSpace;
 
 				void serialize(std::wostream& strm) override;
@@ -216,8 +231,9 @@ namespace oox {
 				_CP_OPT(std::wstring)							Fill;
 				_CP_OPT(vec2)									From;
 				_CP_OPT(vec2)									To;
-				//_CP_OPT(std::wstring)							By;
+				_CP_OPT(vec2)									By;
 				_CP_OPT(std::wstring)							Delay;
+				_CP_OPT(std::wstring)							AttributeName;
 				_CP_OPT(bool)									AutoReverse;
 
 				void serialize(std::wostream& strm) override;
@@ -231,6 +247,7 @@ namespace oox {
 				_CP_OPT(int)									Duration; // in ms
 				_CP_OPT(std::wstring)							Fill;
 				_CP_OPT(int)									By;
+				_CP_OPT(std::wstring)							AttributeName;
 				_CP_OPT(std::wstring)							Delay;
 				_CP_OPT(bool)									AutoReverse;
 
@@ -299,6 +316,7 @@ namespace oox {
 			void set_set_duration(int value);
 			void set_set_delay(const std::wstring& value);
 			void set_set_end(const std::wstring& value);
+			void set_set_auto_rev(const std::wstring& value);
 			void set_set_fill(const std::wstring& value);
 			void set_set_shape_id(size_t value);
 			void set_set_attribute_name(const std::wstring& value);
@@ -341,10 +359,14 @@ namespace oox {
 		
 		void start_animate_color();
 			void set_animate_color_color_space(const std::wstring& value);
+			void set_animate_color_dir(const std::wstring& value);
 			void set_animate_color_duration(int value);
 			void set_animate_color_delay(const std::wstring& value);
+			void set_animate_color_fill(const std::wstring& value);
+			void set_animate_color_auto_rev(bool value);
 			void set_animate_color_attribute_name(const std::wstring& value);
 			void set_animate_color_to_value(const std::wstring& value);
+			void set_animate_color_by_value(const std::wstring& value);
 			void set_animate_color_shape_id(size_t value);
 		void end_animate_color();
 
@@ -354,7 +376,9 @@ namespace oox {
 			void set_animate_scale_fill(const std::wstring& value);
 			void set_animate_scale_from(int x, int y);
 			void set_animate_scale_to(int x, int y);
+			void set_animate_scale_by(int x, int y);
 			void set_animate_scale_delay(const std::wstring& value);
+			void set_animate_scale_attribute_name(const std::wstring& value);
 			void set_animate_scale_auto_reverse(bool value);
 		void end_animate_scale();
 
@@ -363,6 +387,7 @@ namespace oox {
 			void set_animate_rotate_duration(int value);
 			void set_animate_rotate_fill(const std::wstring& value);
 			void set_animate_rotate_by(int value);
+			void set_animate_rotate_attribute_name(const std::wstring& value);
 			void set_animate_rotate_delay(const std::wstring& value);
 			void set_animate_rotate_auto_reverse(bool value);
 		void end_animate_rotate();

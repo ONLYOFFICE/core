@@ -83,6 +83,7 @@ namespace cpdoccore { namespace odf_types {
 		else if (tmp == L"charunderline")		return smil_attribute_name(charUnderline);
 		else if (tmp == L"charweight")			return smil_attribute_name(charWeight);
 		else if (tmp == L"color")				return smil_attribute_name(color);
+		else if (tmp == L"fill")				return smil_attribute_name(fill);
 		else if (tmp == L"fillcolor")			return smil_attribute_name(fillColor);
 		else if (tmp == L"fillstyle")			return smil_attribute_name(fillStyle);
 		else if (tmp == L"fillon")				return smil_attribute_name(fillOn);

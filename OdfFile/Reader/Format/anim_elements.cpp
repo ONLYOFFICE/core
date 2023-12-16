@@ -1382,15 +1382,15 @@ const wchar_t* anim_animate_color::name = L"animateColor";
 
 void anim_animate_color::pptx_convert(oox::pptx_conversion_context& Context)
 {
-	_CP_OPT(std::wstring) colorSpace = L"rgb";
+	_CP_OPT(std::wstring) colorSpace = std::wstring(L"rgb");
 	_CP_OPT(int) duration;
 	_CP_OPT(std::wstring) delay;
 	_CP_OPT(std::wstring) attributeName;
 	_CP_OPT(std::wstring) toValue;
 	_CP_OPT(std::wstring) byValue;
-	_CP_OPT(std::wstring) fill = L"hold";
+	_CP_OPT(std::wstring) fill = std::wstring(L"hold");
 	_CP_OPT(bool)		  autoRev = false;
-	_CP_OPT(std::wstring) dir = L"cw"; // clockwise (cw)
+	_CP_OPT(std::wstring) dir = std::wstring(L"cw"); // clockwise (cw)
 	size_t				  shapeID = 0;
 
 	if (animate_color_attlist_.anim_color_interpolation_)

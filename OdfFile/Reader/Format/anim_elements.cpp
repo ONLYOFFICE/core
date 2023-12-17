@@ -1180,17 +1180,17 @@ void anim_audio::pptx_convert(oox::pptx_conversion_context & Context)
 
 		if (boost::algorithm::starts_with(href, L"file:///"))
 			href = href.substr(std::wstring(L"file:///").size());
-		else if (boost::algorithm::starts_with(href, L"http"))
-		{
-			const std::wstring mediaFolder = Context.root()->get_folder() + FILE_SEPARATOR_STR + L"Media";
-			if (!NSDirectory::Exists(mediaFolder))
-				NSDirectory::CreateDirectory(mediaFolder);
+		//else if (boost::algorithm::starts_with(href, L"http"))
+		//{
+		//	const std::wstring mediaFolder = Context.root()->get_folder() + FILE_SEPARATOR_STR + L"Media";
+		//	if (!NSDirectory::Exists(mediaFolder))
+		//		NSDirectory::CreateDirectory(mediaFolder);
 
-			const std::wstring audioPath = mediaFolder + FILE_SEPARATOR_STR + NSFile::GetFileName(href);
-			ASC::CDownloadManager::DownloadExternal(href, audioPath);
+		//	const std::wstring audioPath = mediaFolder + FILE_SEPARATOR_STR + NSFile::GetFileName(href);
+		//	ASC::CDownloadManager::DownloadExternal(href, audioPath);
 
-			href = audioPath;
-		}
+		//	href = audioPath;
+		//}
 
 		std::wstring relative_href = href;
 		if (slideContext.get_mediaitems()->is_internal_path(href, Context.root()->get_folder()))

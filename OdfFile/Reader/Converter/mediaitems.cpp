@@ -101,6 +101,10 @@ void mediaitems::set_font_directory(std::wstring pathFonts)
     if (applicationFonts_)
         applicationFonts_->InitializeFromFolder(pathFonts);
 }
+bool mediaitems::is_internal_path(const std::wstring& uri, const std::wstring& packetRoot)
+{
+	return 	is_internal(uri, packetRoot);
+}
 
 std::wstring mediaitems::add_or_find(const std::wstring & href, _rels_type type, bool & isInternal, _rels_type_place type_place)
 {

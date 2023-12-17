@@ -83,6 +83,8 @@ public:
 	size_t count_activeX;
 	size_t count_control;
 
+	bool is_internal_path(const std::wstring& uri, const std::wstring& packetRoot);
+
 	void set_font_directory(std::wstring pathFonts);
 	NSFonts::IApplicationFonts *applicationFonts() {return applicationFonts_;}
 

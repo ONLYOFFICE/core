@@ -47,7 +47,7 @@
 #include <xml/xmlchar.h>
 #include <xml/simple_xml_writer.h>
 #include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
+//#include <boost/filesystem.hpp>
 #include <unordered_map>
 #include <vector>
 
@@ -1164,10 +1164,10 @@ void anim_audio::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	audio_attlist_.add_attributes(Attributes);
 }
 
-static bool is_absolute_path(const std::wstring& path) {
-	boost::filesystem::path p(path);
-	return p.is_absolute();
-}
+//static bool is_absolute_path(const std::wstring& path) {
+//	boost::filesystem::path p(path);
+//	return p.is_absolute();
+//}
 
 void anim_audio::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -1193,7 +1193,7 @@ void anim_audio::pptx_convert(oox::pptx_conversion_context & Context)
 		}
 
 		std::wstring relative_href = href;
-		if (!is_absolute_path(href))
+		if (slideContext.get_mediaitems()->is_internal_path(href, Context.root()->get_folder()))
 		{
 			relative_href = Context.root()->get_folder() + FILE_SEPARATOR_STR + href;
 		}

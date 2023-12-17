@@ -634,7 +634,7 @@ namespace NExtractTools
 			if (SUCCEEDED_X2T(nRes))
 			{
 				std::wstring sFileToCurrent = *params.m_sFileTo;
-				params.changeFormatFrom(*params.m_nFormatFrom, params.m_bMacro);
+				params.changeFormatFromPost(*params.m_nFormatFrom, params.m_bMacro);
 
 				nRes = fromDocxDir(sDocxDir, *params.m_sFileTo, nFormatTo, params, convertParams);
 			}
@@ -972,7 +972,7 @@ namespace NExtractTools
 			if (SUCCEEDED_X2T(nRes))
 			{
 				std::wstring sFileToCurrent = *params.m_sFileTo;
-				params.changeFormatFrom(*params.m_nFormatFrom, params.m_bMacro);
+				params.changeFormatFromPost(*params.m_nFormatFrom, params.m_bMacro);
 
 				nRes = fromXlsxDir(sXlsxDir, *params.m_sFileTo, nFormatTo, params, convertParams);
 			}
@@ -1247,7 +1247,7 @@ namespace NExtractTools
 		if (SUCCEEDED_X2T(nRes))
 		{
 			std::wstring sFileToCurrent = *params.m_sFileTo;
-			params.changeFormatFrom(*params.m_nFormatFrom, params.m_bMacro);
+			params.changeFormatFromPost(*params.m_nFormatFrom, params.m_bMacro);
 
 			nRes = fromPptxDir(sPptxDir, *params.m_sFileTo, nFormatTo, params, convertParams);
 		}

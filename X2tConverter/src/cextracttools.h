@@ -954,10 +954,7 @@ namespace NExtractTools
 						nFormatFrom = FileFormatChecker.nFileType;
 						*m_nFormatFrom = nFormatFrom;
 						
-						// changeFormatFrom(nFormatFrom, FileFormatChecker.bMacroEnabled); 
-						// - неверно - чекер не определяет ТОЧНО наличие макросов.
-						// только при открытии файла
-						// После открытия нужно проверять параметр m_bMacro
+						 changeFormatFromPrev(nFormatFrom); 
 					}
 				}
 				eRes = processDownloadFile();
@@ -1137,8 +1134,7 @@ namespace NExtractTools
 			}
 			return nRes;
 		}
-
-		void changeFormatFrom(int formatFrom, bool bMacroEnabled)
+		void changeFormatFromPrev(int formatFrom)
 		{
 			*m_nFormatFrom = formatFrom;
 			int toFormat = *m_nFormatTo;
@@ -1159,6 +1155,47 @@ namespace NExtractTools
 				}
 			}
 			else if (AVS_OFFICESTUDIO_FILE_OTHER_OOXML == toFormat || AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
+			{
+				if (AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == formatFrom || AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom))
+				{
+					if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
+					}
+				}
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == formatFrom || AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & formatFrom))
+				{
+					if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
+					}
+				}
+				else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == formatFrom)
+				{
+					return;
+				}
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_WORD == formatFrom || AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom))
+				{
+					if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
+					}
+				}
+				size_t nIndex = m_sFileTo->rfind('.');
+				COfficeFileFormatChecker FileFormatChecker;
+				if (-1 != nIndex)
+					m_sFileTo->replace(nIndex, std::wstring::npos, FileFormatChecker.GetExtensionByType(toFormat));
+				else
+					m_sFileTo->append(FileFormatChecker.GetExtensionByType(toFormat));
+			}
+			*m_nFormatTo = toFormat;
+		}
+		void changeFormatFromPost(int formatFrom, bool bMacroEnabled)
+		{
+			*m_nFormatFrom = formatFrom;
+			int toFormat = *m_nFormatTo;
+
+			if (AVS_OFFICESTUDIO_FILE_OTHER_OOXML == toFormat || AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
 			{
 				if (AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == formatFrom || AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom))
 				{

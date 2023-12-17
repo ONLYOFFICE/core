@@ -638,7 +638,9 @@ namespace DocFileFormat
 							DWORD nData = 0;
 							if (NSFile::CFileBinary::ReadAllBytes(file_name, &pData, nData))
 							{
-								m_context->_docx->ImagesList.push_back(ImageFileStructure(L".png",
+								oBlipEntry->btWin32 = Global::msoblipPNG;
+								
+								m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32),
 									boost::shared_array<unsigned char>(pData), nData, oBlipEntry->btWin32));
 							}
 							NSFile::CFileBinary::Remove(file_name);

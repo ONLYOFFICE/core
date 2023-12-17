@@ -68,6 +68,8 @@ namespace NExtractTools
 		if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedOdf, NULL, 0))
 		{
 			nRes = ConvertODF2OOXml(sTempUnpackedOdf, sTo, params.getFontPath(), convertParams.m_sTempDir, params.getPassword());
+
+			params.m_bMacro = false; // todooo сделать поддержку макросов odf
 			nRes = processEncryptionError(nRes, sFrom, params);
 		}
 		else
@@ -95,6 +97,9 @@ namespace NExtractTools
 			NSDirectory::CreateDirectory(sTempUnpackedOox);
 
 			nRes = ConvertODF2OOXml(sTempUnpackedOdf, sTempUnpackedOox, params.getFontPath(), convertParams.m_sTempDir, params.getPassword());
+			
+			params.m_bMacro = false; // todooo сделать поддержку макросов odf
+			
 			nRes = processEncryptionError(nRes, sFrom, params);
 			if (SUCCEEDED_X2T(nRes))
 			{
@@ -160,6 +165,8 @@ namespace NExtractTools
 	_UINT32 odf_flat2oox_dir(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
 		_UINT32 nRes = ConvertODF2OOXml(sFrom, sTo, params.getFontPath(), convertParams.m_sTempDir, params.getPassword());
+		params.m_bMacro = false; // todooo сделать поддержку макросов odf
+		
 		nRes = processEncryptionError(nRes, sFrom, params);
 		return nRes;
 	}
@@ -173,6 +180,8 @@ namespace NExtractTools
 		NSDirectory::CreateDirectory(sTempUnpackedOox);
 
 		_UINT32 nRes = ConvertODF2OOXml(sFrom, sTempUnpackedOox, params.getFontPath(), convertParams.m_sTempDir, params.getPassword());
+		params.m_bMacro = false; // todooo сделать поддержку макросов odf
+
 		nRes = processEncryptionError(nRes, sFrom, params);
 		if (SUCCEEDED_X2T(nRes))
 		{

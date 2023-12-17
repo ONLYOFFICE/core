@@ -199,7 +199,7 @@ namespace NExtractTools
 
 			if (OfficeFileFormatChecker.isOfficeFile(sResultDecryptFile))
 			{
-				params.changeFormatFrom(OfficeFileFormatChecker.nFileType, OfficeFileFormatChecker.bMacroEnabled);
+				params.changeFormatFromPrev(OfficeFileFormatChecker.nFileType);
 				switch (OfficeFileFormatChecker.nFileType)
 				{
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:

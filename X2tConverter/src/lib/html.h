@@ -79,6 +79,8 @@ namespace NExtractTools
 	}
 	_UINT32 html_array2docx_dir(const std::vector<std::wstring> &arFiles, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
+		params.m_bMacro = false;
+
 		CHtmlFile2 oFile;
 		oFile.SetTmpDirectory(convertParams.m_sTempDir);
 		return (S_OK == oFile.OpenBatchHtml(arFiles, sTo)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;

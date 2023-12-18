@@ -1507,11 +1507,21 @@ namespace MetaFile
 
 				TRectL *pEmfBounds = oEmfParser.GetBounds();
 
-				int nWidth = fabs(pEmfBounds->Right - pEmfBounds->Left);
-				int nHeight = fabs(pEmfBounds->Bottom - pEmfBounds->Top);
+				CMetaFileRenderer* pMetaFileRenderer = (CMetaFileRenderer*)(((CEmfInterpretatorRender*)m_pInterpretator)->GetRenderer());
 
-				double dWidth  = 25.4 * nWidth / 72;
-				double dHeight = 25.4 * nHeight / 72;
+				double dScaleX = pMetaFileRenderer->GetScaleX();
+				double dScaleY = pMetaFileRenderer->GetScaleY();
+
+				double dWidth  = fabs(pEmfBounds->Right - pEmfBounds->Left) * dScaleX;
+				double dHeight = fabs(pEmfBounds->Bottom - pEmfBounds->Top) * dScaleY;
+
+				const double dKoef = 96. / 25.4;
+
+				dScaleX *= dKoef;
+				dScaleY *= dKoef;
+
+				int nWidth  = dWidth  * dKoef;
+				int nHeight = dHeight * dKoef;
 
 				BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
 
@@ -1520,7 +1530,7 @@ namespace MetaFile
 
 				unsigned int alfa = 0xffffff;
 				//дефолтный тон должен быть прозрачным, а не белым
-				//memset(pBgraData, 0xff, nWidth * nHeight * 4);
+//				memset(pBgraData, 0x00, nWidth * nHeight * 4);
 				for (int i = 0; i < nWidth * nHeight; i++)
 				{
 					((unsigned int*)pBgraData)[i] = alfa;
@@ -1530,7 +1540,7 @@ namespace MetaFile
 				oFrame.put_Data(pBgraData);
 				oFrame.put_Width(nWidth);
 				oFrame.put_Height(nHeight);
-				oFrame.put_Stride(-4 * nWidth);
+				oFrame.put_Stride(4 * nWidth);
 
 				pGrRenderer->CreateFromBgraFrame(&oFrame);
 				pGrRenderer->SetSwapRGB(false);
@@ -1550,14 +1560,14 @@ namespace MetaFile
 
 				BYTE* pPixels = oFrame.get_Data();
 
-				FlipYImage(pPixels, lWidth, lHeight); //Проверить на примерах, где WrapMode != WrapModeTileFlipXY
+				//FlipYImage(pPixels, lWidth, lHeight); //Проверить на примерах, где WrapMode != WrapModeTileFlipXY
 
 				TRectL oClipRect;
 
-				oClipRect.Left   = oSrcRect.dX;
-				oClipRect.Top    = oSrcRect.dY;
-				oClipRect.Right  = oSrcRect.dX + oSrcRect.dWidth;
-				oClipRect.Bottom = oSrcRect.dY + oSrcRect.dHeight;
+				oClipRect.Left   = oSrcRect.dX * dScaleX;
+				oClipRect.Top    = oSrcRect.dY * dScaleY;
+				oClipRect.Right  = (oSrcRect.dX + oSrcRect.dWidth)  * dScaleX;
+				oClipRect.Bottom = (oSrcRect.dY + oSrcRect.dHeight) * dScaleY;
 
 				BYTE* pNewBuffer = GetClipedImage(pPixels, lWidth, lHeight, oClipRect);
 
@@ -1621,11 +1631,21 @@ namespace MetaFile
 
 				TRectD oWmfBounds = oWmfParser.GetBounds();
 
-				int nWidth = fabs(oWmfBounds.Right - oWmfBounds.Left);
-				int nHeight = fabs(oWmfBounds.Bottom - oWmfBounds.Top);
+				CMetaFileRenderer* pMetaFileRenderer = (CMetaFileRenderer*)(((CEmfInterpretatorRender*)m_pInterpretator)->GetRenderer());				
 
-				double dWidth  = 25.4 * nWidth / 72;
-				double dHeight = 25.4 * nHeight / 72;
+				double dScaleX = pMetaFileRenderer->GetScaleX();
+				double dScaleY = pMetaFileRenderer->GetScaleY();
+
+				double dWidth  = fabs(oWmfBounds.Right - oWmfBounds.Left) * dScaleX;
+				double dHeight = fabs(oWmfBounds.Bottom - oWmfBounds.Top) * dScaleY;
+
+				const double dKoef = 96. / 25.4;
+
+				dScaleX *= dKoef;
+				dScaleY *= dKoef;
+
+				int nWidth  = dWidth  * dKoef;
+				int nHeight = dHeight * dKoef;
 
 				BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
 
@@ -1644,7 +1664,7 @@ namespace MetaFile
 				oFrame.put_Data(pBgraData);
 				oFrame.put_Width(nWidth);
 				oFrame.put_Height(nHeight);
-				oFrame.put_Stride(-4 * nWidth);
+				oFrame.put_Stride(4 * nWidth);
 
 				pGrRenderer->CreateFromBgraFrame(&oFrame);
 				pGrRenderer->SetSwapRGB(false);
@@ -1663,7 +1683,7 @@ namespace MetaFile
 
 				BYTE* pPixels = oFrame.get_Data();
 
-				FlipYImage(pPixels, lWidth, lHeight); //Проверить на примерах, где WrapMode != WrapModeTileFlipXY
+				//FlipYImage(pPixels, lWidth, lHeight); //Проверить на примерах, где WrapMode != WrapModeTileFlipXY
 
 				TRectL oClipRect;
 

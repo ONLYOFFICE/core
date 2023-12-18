@@ -965,7 +965,12 @@ namespace PdfReader
 
 				// StemV
 				oFontDescriptor.dictLookup("StemV", &oDictItem);
-				if (oDictItem.isInt()) oFontSelect.usWeight = new USHORT(sqrt(abs(oDictItem.getNum() - 50.5)) * 65);
+				if (oDictItem.isNum())
+				{
+					double dStemV = oDictItem.getNum();
+					if (dStemV > 50.5)
+						oFontSelect.usWeight = new USHORT(sqrt(oDictItem.getNum() - 50.5) * 65);
+				}
 				oDictItem.free();
 
 				// StemH

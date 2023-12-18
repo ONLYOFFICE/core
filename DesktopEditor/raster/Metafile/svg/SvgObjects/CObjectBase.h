@@ -5,6 +5,7 @@
 #include "../../../../../Common/3dParty/html/css/src/StaticFunctions.h"
 #include "../../../../xml/include/xmlutils.h"
 #include "../../../../graphics/IRenderer.h"
+#include "../../../common/IGrObject.h"
 #include "../SvgTypes.h"
 
 class CSvgFile;
@@ -15,6 +16,7 @@ namespace SVG
 	{
 		SvgColor     m_oFill;
 		TStroke      m_oStroke;
+		SvgDigit     m_oOpacity;
 
 		TSvgStyles& operator+=(const TSvgStyles& oSvgStyles);
 	};
@@ -34,7 +36,7 @@ namespace SVG
 		AppliedObject
 	};
 
-	class CObject
+	class CObject : public IGrObject
 	{
 	public:
 		CObject(const NSCSS::CNode& oData);
@@ -120,6 +122,7 @@ namespace SVG
 
 		bool ApplyStroke(IRenderer* pRenderer, const TStroke* pStroke, bool bUseDefault = false) const;
 		bool ApplyFill(IRenderer* pRenderer, const SvgColor* pFill, const CSvgFile *pFile, bool bUseDefault = false) const;
+		bool ApplyOpacity(IRenderer* pRenderer, const SvgDigit* pOpacity) const;
 
 		friend class CUse;
 		friend class CLine;

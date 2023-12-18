@@ -950,8 +950,12 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
 		Ref fontID;
 		double dFontSize = 0;
 		pField->getFont(&fontID, &dFontSize);
-		if (fontID.num < 0 || std::find(arrFontsRef.begin(), arrFontsRef.end(), fontID.num) != arrFontsRef.end())
+		if (std::find(arrFontsRef.begin(), arrFontsRef.end(), fontID.num) != arrFontsRef.end())
 			continue;
+
+		bool bFindFont = true;
+		if (fontID.num < 0)
+			bFindFont = false;
 
 		Object oObj, oField, oFont;
 		pField->getFieldRef(&oObj);
@@ -964,11 +968,16 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
 			for (int i = 0; i < oFont.dictGetLength(); ++i)
 			{
 				Object oFontRef;
-				if (oFont.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
+				if (oFont.dictGetValNF(i, &oFontRef)->isRef())
 				{
-					bFindResources = true;
-					oFontRef.free();
-					break;
+					if (!bFindFont)
+						fontID = oFontRef.getRef();
+					if (oFontRef.getRef() == fontID)
+					{
+						bFindResources = true;
+						oFontRef.free();
+						break;
+					}
 				}
 				oFontRef.free();
 			}
@@ -984,11 +993,16 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
 				for (int i = 0; i < oFont.dictGetLength(); ++i)
 				{
 					Object oFontRef;
-					if (oFont.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
+					if (oFont.dictGetValNF(i, &oFontRef)->isRef())
 					{
-						bFindResources = true;
-						oFontRef.free();
-						break;
+						if (!bFindFont)
+							fontID = oFontRef.getRef();
+						if (oFontRef.getRef() == fontID)
+						{
+							bFindResources = true;
+							oFontRef.free();
+							break;
+						}
 					}
 					oFontRef.free();
 				}

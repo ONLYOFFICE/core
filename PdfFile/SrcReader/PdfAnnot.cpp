@@ -881,8 +881,9 @@ void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFont
 	// Шрифт и размер шрифта - из DA
 	Ref fontID;
 	pField->getFont(&fontID, &m_dFontSize);
-	if (fontID.num <= 0)
-		return;
+	bool bFindFont = true;
+	if (fontID.num < 0)
+		bFindFont = false;
 
 	XRef* xref = pdfDoc->getXRef();
 	Object oObj, oField, oFont;
@@ -897,11 +898,16 @@ void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFont
 		for (int i = 0; i < oFont.dictGetLength(); ++i)
 		{
 			Object oFontRef;
-			if (oFont.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
+			if (oFont.dictGetValNF(i, &oFontRef)->isRef())
 			{
-				bFindResources = true;
-				oFontRef.free();
-				break;
+				if (!bFindFont)
+					fontID = oFontRef.getRef();
+				if (oFontRef.getRef() == fontID)
+				{
+					bFindResources = true;
+					oFontRef.free();
+					break;
+				}
 			}
 			oFontRef.free();
 		}
@@ -918,11 +924,16 @@ void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFont
 			for (int i = 0; i < oFont.dictGetLength(); ++i)
 			{
 				Object oFontRef;
-				if (oFont.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
+				if (oFont.dictGetValNF(i, &oFontRef)->isRef())
 				{
-					bFindResources = true;
-					oFontRef.free();
-					break;
+					if (!bFindFont)
+						fontID = oFontRef.getRef();
+					if (oFontRef.getRef() == fontID)
+					{
+						bFindResources = true;
+						oFontRef.free();
+						break;
+					}
 				}
 				oFontRef.free();
 			}

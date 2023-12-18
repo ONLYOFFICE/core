@@ -1566,6 +1566,7 @@ public:
 CApplicationFontsWorker::CApplicationFontsWorker()
 {
 	m_bIsUseSystemFonts = true;
+	m_bIsUseSystemUserFonts = true;
 	m_bIsNeedThumbnails = true;
 	m_bIsUseOpenType    = true;
 	m_bIsUseAllVersions = false;
@@ -1658,7 +1659,7 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
 	std::vector<std::wstring> strFontsW_Cur;
 
 	if (m_bIsUseSystemFonts)
-		strFontsW_CurSrc = pApplicationF->GetSetupFontFiles();
+		strFontsW_CurSrc = pApplicationF->GetSetupFontFiles(m_bIsUseSystemUserFonts);
 
 	for (std::vector<std::wstring>::iterator i = m_arAdditionalFolders.begin(); i != m_arAdditionalFolders.end(); i++)
 	{

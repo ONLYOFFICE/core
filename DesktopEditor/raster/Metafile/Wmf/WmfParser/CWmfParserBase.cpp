@@ -217,7 +217,6 @@ namespace MetaFile
 	void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput, const wchar_t *wsFilePath)
 	{
 		RELEASEOBJECT(m_pInterpretator);
-
 	}
 
 	TRectD CWmfParserBase::GetBounds()
@@ -747,14 +746,14 @@ namespace MetaFile
 
 					if (NULL != pNewBuffer)
 					{
-						m_pInterpretator->DrawBitmap(dX, dY, fabs(dX1 - dX), fabs(dY1 - dY), pNewBuffer, std::abs(oClip.Right - oClip.Left), std::abs(oClip.Bottom - oClip.Top));
+						m_pInterpretator->DrawBitmap(dX, dY, dX1 - dX, dY1 - dY, pNewBuffer, std::abs(oClip.Right - oClip.Left), std::abs(oClip.Bottom - oClip.Top));
 						delete[] pNewBuffer;
 					}
 					else
-						m_pInterpretator->DrawBitmap(dX, dY, fabs(dX1 - dX), fabs(dY1 - dY), pBgra, unWidth, unHeight);
+						m_pInterpretator->DrawBitmap(dX, dY, dX1 - dX, dY1 - dY, pBgra, unWidth, unHeight);
 				}
 				else
-					m_pInterpretator->DrawBitmap(dX, dY, fabs(dX1 - dX), fabs(dY1 - dY), pBgra, unWidth, unHeight);
+					m_pInterpretator->DrawBitmap(dX, dY, dX1 - dX, dY1 - dY, pBgra, unWidth, unHeight);
 			}
 
 			if (pBgra)
@@ -849,7 +848,7 @@ namespace MetaFile
 			m_pDC->SetViewportOrg(m_oRect.Left, m_oRect.Top);
 			m_pDC->SetViewportExt(m_oRect.Right - m_oRect.Left, m_oRect.Bottom - m_oRect.Top);
 
-			if (0 != m_oPlaceable.ushInch)
+			if (IsPlaceable() && 0 != m_oPlaceable.ushInch)
 			{
 				double dScale = 1440. / m_oPlaceable.ushInch;
 				m_pDC->SetWindowScale(dScale, dScale);
@@ -1487,6 +1486,13 @@ namespace MetaFile
 
 		m_pDC->SetWindowOff(shXOffset, shYOffset);
 		UpdateOutputDC();
+
+		if (NULL == m_pInterpretator)
+		{
+			TWmfWindow *pWindow = m_pDC->GetWindow();
+			RegisterPoint(pWindow->x             , pWindow->y             );
+			RegisterPoint(pWindow->x + pWindow->w, pWindow->y + pWindow->h);
+		}
 	}
 
 	void CWmfParserBase::HANDLE_META_RESTOREDC()
@@ -1661,6 +1667,12 @@ namespace MetaFile
 
 		m_pDC->SetWindowExt(shX, shY);
 		UpdateOutputDC();
+
+		if (NULL == m_pInterpretator)
+		{
+			TWmfWindow *pWindow = m_pDC->GetWindow();
+			RegisterPoint(pWindow->x + pWindow->w, pWindow->y + pWindow->h);
+		}
 	}
 
 	void CWmfParserBase::HANDLE_META_SETWINDOWORG(short shX, short shY)
@@ -1670,6 +1682,13 @@ namespace MetaFile
 
 		m_pDC->SetWindowOrg(shX, shY);
 		UpdateOutputDC();
+
+		if (NULL == m_pInterpretator)
+		{
+			TWmfWindow *pWindow = m_pDC->GetWindow();
+			RegisterPoint(pWindow->x             , pWindow->y             );
+			RegisterPoint(pWindow->x + pWindow->w, pWindow->y + pWindow->h);
+		}
 	}
 
 	void CWmfParserBase::HANDLE_META_ESCAPE(unsigned short ushEscapeFunction, unsigned short ushByteCount)

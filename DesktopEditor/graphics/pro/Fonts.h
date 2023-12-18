@@ -784,7 +784,7 @@ namespace NSFonts
 		virtual void InitializeFromBin(BYTE* pData, unsigned int nLen) = 0;
 		virtual void InitializeRanges(unsigned char* data) = 0;
 
-		virtual std::vector<std::wstring> GetSetupFontFiles() = 0;
+		virtual std::vector<std::wstring> GetSetupFontFiles(const bool& bIsUseUserFonts = true) = 0;
 		virtual void InitializeFromArrayFiles(std::vector<std::wstring>& files, int nFlag = 0) = 0;
 
 #if defined(_WIN32) || defined(_WIN64)

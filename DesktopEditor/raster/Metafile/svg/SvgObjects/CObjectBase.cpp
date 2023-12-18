@@ -423,6 +423,14 @@ namespace SVG
 		return true;
 	}
 
+	bool CRenderedObject::ApplyOpacity(IRenderer *pRenderer, const NSCSS::NSProperties::CDigit *pOpacity) const
+	{
+		if (NULL == pRenderer || NULL == pOpacity)
+			return false;
+
+		return false;
+	}
+
 	CAppliedObject::CAppliedObject(XmlUtils::CXmlNode &oNode)
 		: CObject(oNode)
 	{}

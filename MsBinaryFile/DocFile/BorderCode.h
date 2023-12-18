@@ -73,7 +73,7 @@ namespace DocFileFormat
 		friend class VMLPictureMapping;
 
 	private:
-		int cv;
+		_UINT32 cv;
 		unsigned char dptLineWidth;
 		unsigned char brcType;
 		std::wstring ico;

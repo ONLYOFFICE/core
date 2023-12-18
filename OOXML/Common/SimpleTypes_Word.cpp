@@ -1820,6 +1820,12 @@ namespace SimpleTypes
 				m_unG = oPresetColorVal.Get_G();
 				m_unB = oPresetColorVal.Get_B();
 			}
+			else if (8 <= sValue.length())
+			{
+				this->m_eValue = hexcolorRGB;
+				m_sValue = sValue.substr(2, 6);
+				Parse();
+			}
 			else if ( 6 <= sValue.length() )
 			{
 				this->m_eValue = hexcolorRGB;

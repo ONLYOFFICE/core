@@ -2163,14 +2163,22 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetButtonWidgetPr();
 				PdfWriter::CPushButtonWidget* pButtonWidget = (PdfWriter::CPushButtonWidget*)pAnnot;
 
+				std::wstring wsValue;
 				if (nFlags & (1 << 10))
-					pButtonWidget->SetCA(pPr->GetCA());
+				{
+					wsValue = pPr->GetCA();
+					pButtonWidget->SetCA(wsValue);
+				}
 				if (nFlags & (1 << 11))
 					pButtonWidget->SetRC(pPr->GetRC());
 				if (nFlags & (1 << 12))
 					pButtonWidget->SetAC(pPr->GetAC());
+				BYTE nTP = 0;
 				if (nFlags & (1 << 13))
-					pButtonWidget->SetTP(pPr->GetTP());
+				{
+					nTP = pPr->GetTP();
+					pButtonWidget->SetTP(nTP);
+				}
 
 				int nIFFlags = pPr->GetIFFlag();
 				pButtonWidget->SetIFFlag(nIFFlags);
@@ -2194,6 +2202,75 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 					pButtonWidget->SetRI(pPr->GetRI());
 				if (nIFFlags & (1 << 7))
 					pButtonWidget->SetIX(pPr->GetIX());
+
+				// ВНЕШНИЙ ВИД
+				// Caption
+				if (wsValue.empty())
+					return S_OK;
+
+				unsigned int unLen;
+				unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsValue, unLen);
+				if (!pUnicodes)
+					return S_FALSE;
+				unsigned short* pCodes = new unsigned short[unLen];
+				if (!pCodes)
+				{
+					RELEASEARRAYOBJECTS(pUnicodes);
+					return S_FALSE;
+				}
+				PdfWriter::CFontCidTrueType** ppFonts = new PdfWriter::CFontCidTrueType*[unLen];
+				if (!ppFonts)
+				{
+					RELEASEARRAYOBJECTS(pUnicodes);
+					RELEASEARRAYOBJECTS(pCodes);
+					return S_FALSE;
+				}
+
+				for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
+				{
+					unsigned int unUnicode = pUnicodes[unIndex];
+
+					if (!m_pFont->HaveChar(unUnicode))
+					{
+						std::wstring wsFontFamily   = pAppFonts->GetFontBySymbol(unUnicode);
+						PdfWriter::CFontCidTrueType* pTempFont = GetFont(wsFontFamily, isBold, isItalic);
+						if (pTempFont)
+						{
+							pCodes[unIndex]  = pTempFont->EncodeUnicode(unUnicode);
+							ppFonts[unIndex] = pTempFont;
+							continue;
+						}
+					}
+
+					pCodes[unIndex]  = m_pFont->EncodeUnicode(unUnicode);
+					ppFonts[unIndex] = m_pFont;
+				}
+
+				double dMargin = 2; // Отступ используемый в Adobe
+				double dShiftX = dMargin;
+				double dBaseLine = (dY2 - dY1 - dFontSize + dMargin) / 2.0;
+
+				double dSumWidth = 0;
+				for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
+				{
+					unsigned short ushCode = pCodes[unIndex];
+					double dLetterWidth    = ppFonts[unIndex]->GetWidth(ushCode) / 1000.0 * dFontSize;
+					dSumWidth += dLetterWidth;
+				}
+
+				switch (nTP)
+				{
+				case 0:
+				{
+					dShiftX += (dX2 - dX1 - dSumWidth) / 2;
+				}
+				}
+
+				pButtonWidget->SetCaptionAP(pCodes, unLen, dShiftX, dBaseLine, ppFonts);
+
+				RELEASEARRAYOBJECTS(pUnicodes);
+				RELEASEARRAYOBJECTS(pCodes);
+				RELEASEARRAYOBJECTS(ppFonts);
 			}
 			else
 			{

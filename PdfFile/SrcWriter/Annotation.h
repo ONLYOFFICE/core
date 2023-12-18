@@ -391,9 +391,12 @@ namespace PdfWriter
 		BYTE m_nScaleType;
 		double m_dShiftX;
 		double m_dShiftY;
+		std::wstring m_wsCA;
 		CDictObject* m_pIF;
+		std::string m_sCaptionForAP;
 
 		void CheckIF();
+
 
 	public:
 		CPushButtonWidget(CXref* pXref);
@@ -416,11 +419,10 @@ namespace PdfWriter
 		void SetCA(const std::wstring& wsCA);
 		void SetRC(const std::wstring& wsRC);
 		void SetAC(const std::wstring& wsAC);
-		void SetI(CImageDict* pI, const char* pImgName, const char* pFrmName);
-		void SetRI(CImageDict* pRI, const char* pImgName, const char* pFrmName);
-		void SetIX(CImageDict* pIX, const char* pImgName, const char* pFrmName);
 
-		CXObject* SetAP(CImageDict* pImage, const char* pImgName, const char* pFrmName);
+		void SetAP(CImageDict* pImage, const std::string& sAP, const std::string& sImgName, const std::string& sFrmName);
+		void SetCaptionAP(unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts);
+
 		int m_nI, m_nRI, m_nIX;
 	};
 	class CCheckBoxWidget : public CWidgetAnnotation

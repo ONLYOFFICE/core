@@ -1613,12 +1613,13 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	void CAnnotAppearanceObject::Init(CXref* pXref, CResourcesDict* pResources, TRect* pRect)
 	{
-		m_pXref     = pXref;
+		m_pXref     = pXref ? pXref : NULL;
 		m_pStream   = new CMemoryStream();
 		m_pFont     = NULL;
 		m_dFontSize = 10.0;
 
-		SetStream(m_pXref, m_pStream);
+		if (m_pXref)
+			SetStream(m_pXref, m_pStream);
 
 		Add("Type", "XObject");
 		Add("Subtype", "Form");

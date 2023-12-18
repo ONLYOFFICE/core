@@ -3,6 +3,7 @@
 #include "StaticFunctions.h"
 #include "ConstValues.h"
 #include <cfloat>
+#include <cmath>
 #include <wchar.h>
 
 namespace NSCSS

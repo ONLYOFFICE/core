@@ -515,17 +515,26 @@ namespace NSDirectory
 	}
 	std::wstring GetFolderPath(const std::wstring& wsFolderPath)
 	{
-		int n1 = (int)wsFolderPath.rfind('\\');
-		if (n1 < 0)
-		{
-			n1 = (int)wsFolderPath.rfind('/');
-			if (n1 < 0)
-			{
-				return L"";
-			}
-			return wsFolderPath.substr(0, n1);
-		}
-		return wsFolderPath.substr(0, n1);
+#ifdef _WIN32
+        std::wstring::size_type nPos1 = wsFolderPath.rfind('\\');
+#else
+        std::wstring::size_type nPos1 = std::wstring::npos;
+#endif
+        std::wstring::size_type nPos2 = wsFolderPath.rfind('/');
+        std::wstring::size_type nPos = std::wstring::npos;
+
+        if (nPos1 != std::wstring::npos)
+        {
+            nPos = nPos1;
+            if (nPos2 != std::wstring::npos && nPos2 > nPos)
+                nPos = nPos2;
+        }
+        else
+            nPos = nPos2;
+
+        if (nPos == std::wstring::npos)
+            return wsFolderPath;
+        return wsFolderPath.substr(0, nPos);
 	}
 	std::wstring CreateTempFileWithUniqueName (const std::wstring & strFolderPathRoot, std::wstring Prefix)
 	{

@@ -207,6 +207,16 @@ namespace MetaFile
 			m_dScaleY = m_dH / std::fabs((double)(nB - nT));
 		}
 
+		double GetScaleX() const
+		{
+			return m_dScaleX;
+		}
+
+		double GetScaleY() const
+		{
+			return m_dScaleY;
+		}
+
 		void Begin()
 		{
 			UpdateScale();
@@ -1200,15 +1210,12 @@ namespace MetaFile
 
 			double dWidth = pPen->GetWidth();
 
-			if (0 == dWidth || (1 == dWidth && PS_COSMETIC == ulPenType))
+			if (PS_COSMETIC == ulPenType || Equals(0, dWidth))
 			{
 				double dRendererDpiX;
 				m_pRenderer->get_DpiX(&dRendererDpiX);
 
-				dWidth = 25.4 / dRendererDpiX;
-
-				if (PS_COSMETIC == ulPenType)
-					dWidth /= m_pFile->GetTransform()->M11 / (m_pFile->GetDpi() / 96.);
+				dWidth = 25.4 / 96. * m_pFile->GetDpi() / dRendererDpiX;
 
 				nStartCapStyle = nEndCapStyle = Aggplus::LineCapFlat;
 				nJoinStyle = Aggplus::LineJoinMiter;
@@ -1244,7 +1251,7 @@ namespace MetaFile
 
 				double dPixWidth = 0;
 
-				if (0 == pPen->GetWidth() || (1 == pPen->GetWidth() && PS_COSMETIC == ulPenType))
+				if (PS_COSMETIC == ulPenType || Equals(0, dWidth))
 				{
 					dPixWidth = dWidth;
 				}
@@ -1252,7 +1259,7 @@ namespace MetaFile
 				{
 					dPixWidth = dWidth * 25.4 / 72.;
 
-					if (1 == pPen->GetWidth() && PS_COSMETIC == ulPenType)
+					if (PS_COSMETIC == ulPenType || Equals(0, dWidth))
 						dPixWidth /= m_pFile->GetTransform()->M11 / (m_pFile->GetDpi() / 96.);
 				}
 

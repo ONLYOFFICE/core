@@ -16,20 +16,22 @@ namespace SVG
 	{
 	public:
 		CContainer(){}
-		~CContainer()
+		virtual ~CContainer()
 		{
 			Clear();
 		}
 
-		void Clear()
+		virtual void Clear()
 		{
 			for (TypeObject* pObject : m_arObjects)
-				delete pObject;
+				RELEASEINTERFACE(pObject);
+
+			m_arObjects.clear();
 		}
 
 		bool Empty() const
 		{
-		return m_arObjects.empty();
+			return m_arObjects.empty();
 		}
 
 		virtual bool AddObject(TypeObject* pObject)
@@ -82,7 +84,8 @@ namespace SVG
 		CGraphicsContainer(const std::wstring& wsName = L"GraphicsContainer");
 		CGraphicsContainer(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
 		CGraphicsContainer(double dWidth, double dHeight, XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
-		CGraphicsContainer(const CGraphicsContainer& oGraphicsContainer);
+
+		virtual ~CGraphicsContainer();
 
 		void SetData(XmlUtils::CXmlNode& oNode);
 

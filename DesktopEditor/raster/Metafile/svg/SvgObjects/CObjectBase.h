@@ -5,6 +5,7 @@
 #include "../../../../../Common/3dParty/html/css/src/StaticFunctions.h"
 #include "../../../../xml/include/xmlutils.h"
 #include "../../../../graphics/IRenderer.h"
+#include "../../../common/IGrObject.h"
 #include "../SvgTypes.h"
 
 class CSvgFile;
@@ -15,6 +16,7 @@ namespace SVG
 	{
 		SvgColor     m_oFill;
 		TStroke      m_oStroke;
+		SvgDigit     m_oOpacity;
 
 		TSvgStyles& operator+=(const TSvgStyles& oSvgStyles);
 	};
@@ -34,7 +36,7 @@ namespace SVG
 		AppliedObject
 	};
 
-	class CObject
+	class CObject : public IGrObject
 	{
 	public:
 		CObject(const NSCSS::CNode& oData);
@@ -112,6 +114,7 @@ namespace SVG
 
 		void SetStroke(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetFill(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
+		void SetOpacity(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 
 		bool StartPath(IRenderer* pRenderer, const CSvgFile *pFile, Aggplus::CMatrix& oOldTransform, CommandeMode oMode = CommandeModeDraw) const;
 		void EndPath(IRenderer* pRenderer, const CSvgFile *pFile, const Aggplus::CMatrix& oOldTransform, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL) const;
@@ -120,6 +123,7 @@ namespace SVG
 
 		bool ApplyStroke(IRenderer* pRenderer, const TStroke* pStroke, bool bUseDefault = false) const;
 		bool ApplyFill(IRenderer* pRenderer, const SvgColor* pFill, const CSvgFile *pFile, bool bUseDefault = false) const;
+		bool ApplyOpacity(IRenderer* pRenderer, const SvgDigit* pOpacity) const;
 
 		friend class CUse;
 		friend class CLine;

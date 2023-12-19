@@ -783,6 +783,8 @@ void CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::Read(NSOnlineOfficeBinToPdf
 		m_nMaxLen = pReader->ReadInt();
 	if (nWidgetFlag & (1 << 25))
 		m_wsRV = pReader->ReadString();
+	if (nFlags & (1 << 12))
+		m_wsAPV = pReader->ReadString();
 }
 void CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags)
 {
@@ -800,6 +802,8 @@ void CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr::Read(NSOnlineOfficeBinToP
 	}
 	if (nFlags & (1 << 11))
 		m_nTI = pReader->ReadInt();
+	if (nFlags & (1 << 12))
+		m_wsAPV = pReader->ReadString();
 }
 
 CAnnotFieldDelete::CAnnotFieldDelete() : IAdvancedCommand(AdvancedCommandType::DeleteAnnot) {}

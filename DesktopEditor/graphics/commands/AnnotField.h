@@ -95,8 +95,9 @@ public:
 		{
 		public:
 			int GetMaxLen() const { return m_nMaxLen; }
-			const std::wstring& GetV()  const { return m_wsV; }
-			const std::wstring& GetRV() const { return m_wsRV; }
+			const std::wstring& GetV()   const { return m_wsV; }
+			const std::wstring& GetRV()  const { return m_wsRV; }
+			const std::wstring& GetAPV() const { return m_wsAPV; }
 
 			void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags, int nWidgetFlag);
 
@@ -104,13 +105,15 @@ public:
 			int m_nMaxLen;
 			std::wstring m_wsV;
 			std::wstring m_wsRV;
+			std::wstring m_wsAPV;
 		};
 
 		class CChoiceWidgetPr
 		{
 		public:
 			int GetTI() const { return m_nTI; }
-			const std::wstring& GetV() const { return m_wsV; }
+			const std::wstring& GetV()   const { return m_wsV; }
+			const std::wstring& GetAPV() const { return m_wsAPV; }
 			const std::vector< std::pair<std::wstring, std::wstring> >& GetOpt() const { return m_arrOpt; }
 
 			void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
@@ -118,6 +121,7 @@ public:
 		private:
 			int m_nTI;
 			std::wstring m_wsV;
+			std::wstring m_wsAPV;
 			std::vector< std::pair<std::wstring, std::wstring> > m_arrOpt;
 		};
 

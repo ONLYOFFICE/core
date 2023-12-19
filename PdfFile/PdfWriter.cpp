@@ -2001,6 +2001,9 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pCaretAnnot->SetSy(pPr->GetSy());
 		}
 
+		// TODO
+		// ВНЕШНИЙ ВИД
+		pMarkupAnnot->RemoveAP();
 	}
 	else if (oInfo.IsPopup())
 	{
@@ -2318,6 +2321,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			}
 			if (nWidgetFlag & (1 << 25))
 				pTextWidget->SetRV(pPr->GetRV());
+			if (nFlags & (1 << 12))
+				wsValue = pPr->GetAPV();
 
 			// ВНЕШНИЙ ВИД
 			// Коды, шрифты, количество
@@ -2486,12 +2491,20 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetChoiceWidgetPr();
 			PdfWriter::CChoiceWidget* pChoiceWidget = (PdfWriter::CChoiceWidget*)pAnnot;
 
+			std::wstring wsValue;
 			if (nFlags & (1 << 9))
-				pChoiceWidget->SetV(pPr->GetV());
+			{
+				wsValue = pPr->GetV();
+				pChoiceWidget->SetV(wsValue);
+			}
 			if (nFlags & (1 << 10))
 				pChoiceWidget->SetOpt(pPr->GetOpt());
 			if (nFlags & (1 << 11))
 				pChoiceWidget->SetTI(pPr->GetTI());
+			if (nFlags & (1 << 12))
+				wsValue = pPr->GetAPV();
+
+			pChoiceWidget->Remove("AP");
 		}
 		else if (oInfo.IsSignatureWidget())
 		{

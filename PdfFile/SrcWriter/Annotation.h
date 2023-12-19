@@ -189,6 +189,7 @@ namespace PdfWriter
 		void SetCD(const std::wstring& wsCD);
 		void SetSubj(const std::wstring& wsSubj);
 
+		void RemoveAP();
 		void SetIRTID(CAnnotation* pAnnot);
 		CPopupAnnotation* CreatePopup();
 	};
@@ -464,7 +465,6 @@ namespace PdfWriter
 		void StartAP(CFontDict* pFont, const double& dFontSize, const double& dAlpha);
 		void AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts = NULL, const double* pShifts = NULL);
 		void EndAP();
-		std::string GetV() { return m_sV; }
 		bool IsCombFlag();
 		bool IsMultiLine();
 		int GetMaxLen();

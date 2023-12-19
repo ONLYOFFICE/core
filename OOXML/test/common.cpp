@@ -95,14 +95,6 @@ std::wstring CreateParamsFile(const std::wstring &pathFrom, const std::wstring &
 	oBuilder.WriteEncodeXmlString(pathTo);
 	oBuilder.WriteString(L"</m_sFileTo>");
 
-	oBuilder.WriteString(L"<m_nFormatTo>");
-	int nFormat = COfficeFileFormatChecker::GetFormatByExtension(L"." + NSFile::GetFileExtention(pathTo));
-	oBuilder.WriteString(std::to_wstring(nFormat));
-	oBuilder.WriteString(L"</m_nFormatTo>");
-
-	if (nFormat == AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA)
-		oBuilder.WriteString(L"<m_bIsPDFA>true</m_bIsPDFA>");
-
 	// changes
 	oBuilder.WriteString(L"<m_bFromChanges>false</m_bFromChanges>");
 

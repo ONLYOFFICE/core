@@ -62,6 +62,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BiffStructure& obj);
+			void toBin(XLS::BiffStructure* obj);
 			virtual EElementType getType () const;
 
 		private:
@@ -88,6 +89,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BiffStructure& obj, std::wstring& str);
+			std::wstring toBin(XLS::BiffStructure* obj);
 			virtual EElementType getType () const;
 
 		private:

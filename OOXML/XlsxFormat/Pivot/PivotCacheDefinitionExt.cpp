@@ -54,6 +54,16 @@ void CPivotCacheDefinitionExt::fromXML(XmlUtils::CXmlLiteReader& oReader)
         return;
     oReader.ReadTillEnd();
 }
+XLS::BaseObjectPtr CPivotCacheDefinitionExt::toBin()
+{
+    auto ptr(new XLSB::PCD14);
+    XLS::BaseObjectPtr objectPtr(ptr);
+    auto ptr1(new XLSB::BeginPCD14);
+    ptr->m_BrtBeginPCD14 = XLS::BaseObjectPtr{ptr1};
+    if(m_oPivotCacheId.IsInit())
+        ptr1->icacheId = m_oPivotCacheId.get();
+    return objectPtr;
+}
 void CPivotCacheDefinitionExt::fromBin(XLS::BaseObjectPtr& obj)
 {
     if(obj->get_type() == XLS::typePCD14)

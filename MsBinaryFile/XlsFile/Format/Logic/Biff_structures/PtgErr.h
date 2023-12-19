@@ -49,6 +49,7 @@ public:
 
 	
 	virtual void loadFields(CFRecord& record);
+    void writeFields(CFRecord& record) override;
 	
 
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false);

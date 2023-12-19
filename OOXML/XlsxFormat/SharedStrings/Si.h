@@ -63,6 +63,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BiffStructure& obj, bool flagIsComment = false);
+			XLS::BaseObjectPtr toBin() const;
 
 			void fromXLSBExt (NSBinPptxRW::CBinaryFileReader& oStream);
 			void toXLSBExt (NSBinPptxRW::CXlsbBinaryWriter& oStream);

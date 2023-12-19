@@ -34,7 +34,7 @@ namespace NSJSON
 	protected:
 		IValue();
 		IValue(const std::shared_ptr<CTypedValue>& internal);
-		virtual ~IValue();
+		~IValue();
 
 		// Disable copy for this class (implemented in heirs)
 		IValue(const IValue& other) = delete;

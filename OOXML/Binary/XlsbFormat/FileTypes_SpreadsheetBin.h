@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "../DocxFormat/FileType.h"
+#include "../../DocxFormat/FileType.h"
 
 
 namespace OOX
@@ -39,10 +39,10 @@ namespace OOX
 	namespace SpreadsheetBin
 	{
 		namespace FileTypes
-		{			
+		{
 
 			const FileType WorkbookBin			(L"xl", L"workbook.bin",
-													L"application/vnd.ms-excel.main",
+													L"application/vnd.ms-excel.sheet.binary.macroEnabled.main",
 													L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");
 
 			const FileType SharedStringsBin		(L"", L"sharedStrings.bin",

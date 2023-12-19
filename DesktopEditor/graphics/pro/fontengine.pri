@@ -3,7 +3,7 @@ include(freetype.pri)
 FONT_ENGINE_PATH = $$PWD/../../fontengine
 
 HEADERS += \
-    $$PWD/Fonts.h \
+	$$PWD/Fonts.h \
 	$$FONT_ENGINE_PATH/ApplicationFonts.h \
 	$$FONT_ENGINE_PATH/FontFile.h \
 	$$FONT_ENGINE_PATH/FontPath.h \
@@ -12,7 +12,7 @@ HEADERS += \
 	$$FONT_ENGINE_PATH/FontConverter.h
 
 SOURCES += \
-    $$FONT_ENGINE_PATH/ApplicationFonts.cpp \
+	$$FONT_ENGINE_PATH/ApplicationFonts.cpp \
 	$$FONT_ENGINE_PATH/FontFile.cpp \
 	$$FONT_ENGINE_PATH/FontManager.cpp \
 	$$FONT_ENGINE_PATH/FontPath.cpp \
@@ -34,7 +34,7 @@ SOURCES += $$FONT_ENGINE_PATH/TextShaper.cpp
 include($$PWD/textshaper.pri)
 
 enable_support_shaper {
-    include($$PWD/../../../Common/3dParty/harfbuzz/harfbuzz.pri)
+	include($$PWD/../../../Common/3dParty/harfbuzz/harfbuzz.pri)
 }
 # -------------------------------------------------
 
@@ -46,14 +46,14 @@ SOURCES += $$FONT_ENGINE_PATH/TextHyphen.cpp
 # -------------------------------------------------
 
 core_ios {
-    LIBS += -framework Foundation
+	LIBS += -framework Foundation
 }
 
 SOURCES += $$PWD/pro_Fonts.cpp
 
 support_font_converter {
 SOURCES += \
-    $$FONT_ENGINE_PATH/fontconverter/StringExt.cpp \
+	$$FONT_ENGINE_PATH/fontconverter/StringExt.cpp \
 	$$FONT_ENGINE_PATH/fontconverter/Hash.cpp \
 	$$FONT_ENGINE_PATH/fontconverter/FontConverter.cpp \
 	$$FONT_ENGINE_PATH/fontconverter/FontFileEncodings.cpp \

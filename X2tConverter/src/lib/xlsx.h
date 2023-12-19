@@ -300,6 +300,34 @@ namespace NExtractTools
 		return nRes;
 	}
 
+	_UINT32 xlsx_dir2xlsb(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
+	{
+		std::wstring sTempUnpackedXLSX = combinePath(convertParams.m_sTempDir, L"xlsx_unpacked");
+		NSDirectory::CreateDirectory(sTempUnpackedXLSX);
+
+		COfficeUtils oCOfficeUtils(NULL);
+		_UINT32 nRes = oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedXLSX, NULL, 0);
+		if(!SUCCEEDED_X2T(nRes))
+			return nRes;
+
+
+        const OOX::CPath oox_path(sTempUnpackedXLSX);
+
+		OOX::Spreadsheet::CXlsb oXlsb;
+		oXlsb.m_bWriteToXlsb = true;
+		oXlsb.Read(oox_path);
+
+		
+
+		OOX::CContentTypes oContentTypes;
+		nRes = oXlsb.WriteBin(sTo, oContentTypes) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
+
+		return nRes;
+	}
+    _UINT32 xlsx2xlsb(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
+    {
+		return NSCommon::ooxml2ooxml(sFrom, sTo, params, convertParams, L"xlsb", xlsx_dir2xlsb);
+    }
 	_UINT32 xml2xlsx(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
 		return NSCommon::format2ooxml(sFrom, sTo, params, convertParams, L"xlsx", xml2xlsx_dir);

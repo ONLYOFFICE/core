@@ -30,6 +30,8 @@
  *
  */
 #include "Xlsb.h"
+#include "../DocxFormat/App.h"
+#include "../DocxFormat/Core.h"
 
 #include "../XlsxFormat/Workbook/Workbook.h"
 #include "../XlsxFormat/SharedStrings/SharedStrings.h"
@@ -60,12 +62,12 @@ using namespace XLS;
 OOX::Spreadsheet::CXlsb::~CXlsb()
 {
 
-}	
+}
 void OOX::Spreadsheet::CXlsb::init()
 {
 	workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
 	xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, nullptr));
-	xls_global_info->Version = 0x0800;    
+	xls_global_info->Version = 0x0800;
     m_binaryReader = boost::shared_ptr<NSBinPptxRW::CBinaryFileReader>(new NSBinPptxRW::CBinaryFileReader);
 	m_binaryWriter = boost::shared_ptr<NSBinPptxRW::CXlsbBinaryWriter>(new NSBinPptxRW::CXlsbBinaryWriter);
 	m_bWriteToXlsx = false;
@@ -93,7 +95,18 @@ bool OOX::Spreadsheet::CXlsb::ReadBin(const CPath& oFilePath, XLS::BaseObject* o
 
     return true;
 }
+bool OOX::Spreadsheet::CXlsb::WriteBin(const CPath& oDirPath, OOX::CContentTypes& oContentTypes)
+{
+    if (NULL == m_pWorkbook)
+        return false;
 
+    m_bWriteToXlsb = true;
+
+    IFileContainer::Write(oDirPath / L"", OOX::CPath(_T("")), oContentTypes);
+
+    oContentTypes.Write(oDirPath);
+    return true;
+}
 bool OOX::Spreadsheet::CXlsb::WriteBin(const CPath& oFilePath, XLS::BaseObject* objStream)
 {
 	if (m_binaryWriter->CreateFileW(oFilePath.GetPath()) == false)
@@ -102,7 +115,8 @@ bool OOX::Spreadsheet::CXlsb::WriteBin(const CPath& oFilePath, XLS::BaseObject* 
 	XLS::StreamCacheWriterPtr writer(new XLS::BinaryStreamCacheWriter(m_binaryWriter, xls_global_info));
 	XLS::BinWriterProcessor proc(writer, objStream);
 	proc.mandatory(*objStream);
-	m_binaryWriter->WriteFile(m_binaryWriter->GetBuffer(), (static_cast<NSBinPptxRW::CBinaryFileWriter*>(m_binaryWriter.get()))->GetPosition());
+
+    m_binaryWriter->WriteFile(m_binaryWriter->GetBuffer(), (static_cast<NSBinPptxRW::CBinaryFileWriter*>(m_binaryWriter.get()))->GetPosition());
 	m_binaryWriter->CloseFile();
 
 	return true;
@@ -168,7 +182,7 @@ void OOX::Spreadsheet::CXlsb::ReadSheetData()
 
 		if(dataFindPair != m_mapSheetNameSheetData.end())
 			dataPosition = dataFindPair->second;
-		else 
+		else
 			continue;
 
         NSFile::CFileBinary oFile;
@@ -273,10 +287,10 @@ void OOX::Spreadsheet::CXlsb::PrepareTableFormula()
 
                                 for(size_t i = 0, length = oTableColumns->m_arrItems.size(); i < length; ++i)
                                 {
-                                    auto& oTableColumn = oTableColumns->m_arrItems[i];                                   
+                                    auto& oTableColumn = oTableColumns->m_arrItems[i];
 
                                     if(oTableColumn->m_oCalculatedColumnFormula.IsInit())
-                                    {                                       
+                                    {
                                        lambdaFormula(oTableColumn->m_oCalculatedColumnFormula.get());
                                     }
                                     if(oTableColumn->m_oTotalsRowFormula.IsInit())

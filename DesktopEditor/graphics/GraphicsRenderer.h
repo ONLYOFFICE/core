@@ -350,7 +350,7 @@ public:
 	inline double GetPixH() { return m_pRenderer->GetPixH(); }
 
 	// alpha mask methods
-	void SetAlphaMask(Aggplus::CAlphaMask* pAlphaMask);
+        void SetAlphaMask(Aggplus::CAlphaMask* pAlphaMask);
 
 	// layer methods
 	HRESULT put_LayerOpacity(double dValue);

@@ -20,6 +20,10 @@
 // uncomment to enable exceptions throwing
 //#define JSON_DEBUG
 
+#ifdef JSON_DEBUG
+#include <stdexcept>
+#endif
+
 namespace NSJSON
 {
 	typedef unsigned char BYTE;

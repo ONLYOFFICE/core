@@ -34,7 +34,7 @@
 
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../XlsbFormat/Biff12_records/MergeCell.h"
-#include "../../XlsbFormat\Biff12_unions\MERGECELLS.h"
+#include "../../XlsbFormat/Biff12_unions/MERGECELLS.h"
 
 namespace OOX
 {

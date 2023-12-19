@@ -35,7 +35,7 @@
 
 #include "../../Common/SimpleTypes_Shared.h"
 
-#include "..\..\XlsbFormat\Biff12_unions\HLINKS.h"
+#include "../../XlsbFormat/Biff12_unions/HLINKS.h"
 
 namespace OOX
 {

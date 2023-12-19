@@ -34,6 +34,7 @@ include(X2tConverter.pri)
 	core_windows {
 		!build_xp {
 			CONFIG -= embed_manifest_exe
+			QMAKE_MANIFEST = $$PWD/x2t.exe.manifest
 			OTHER_FILES += $$PWD/x2t.exe.manifest
 		}
 	}

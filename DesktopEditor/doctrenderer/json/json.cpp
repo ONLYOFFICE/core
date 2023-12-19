@@ -209,19 +209,39 @@ namespace NSJSON
 	int IValue::GetCount() const
 	{
 		if (m_internal->m_type == CTypedValue::vtArray)
+		{
 			return static_cast<CArray*>(m_internal->m_value.get())->getCount();
+		}
 		else if (m_internal->m_type == CTypedValue::vtTypedArray)
+		{
 			return static_cast<CTypedArray*>(m_internal->m_value.get())->getCount();
+		}
 		else
+		{
+#ifdef JSON_DEBUG
+			throw std::bad_cast();
+#endif
 			return 0;
+		}
 	}
 
 	const CValueRef IValue::Get(int index) const
 	{
 		if (m_internal->m_type != CTypedValue::vtArray)
-			return CValue();
+		{
+#ifdef JSON_DEBUG
+			throw std::bad_cast();
+#endif
+			return CValue();	
+		}
+
 		if (index < 0 || index >= GetCount())
+		{
+#ifdef JSON_DEBUG
+			throw std::out_of_range("std::out_of_range");
+#endif
 			return CValue();
+		}
 		return static_cast<CArray*>(m_internal->m_value.get())->get(index);
 	}
 
@@ -247,7 +267,12 @@ namespace NSJSON
 	const BYTE* IValue::GetData() const
 	{
 		if (m_internal->m_type != CTypedValue::vtTypedArray)
+		{
+#ifdef JSON_DEBUG
+			throw std::bad_cast();
+#endif
 			return nullptr;
+		}
 		return static_cast<CTypedArray*>(m_internal->m_value.get())->getData();
 	}
 
@@ -259,7 +284,12 @@ namespace NSJSON
 	const CValueRef IValue::Get(const char* name) const
 	{
 		if (m_internal->m_type != CTypedValue::vtObject)
+		{
+#ifdef JSON_DEBUG
+			throw std::bad_cast();
+#endif
 			return CValue();
+		}
 		return static_cast<CObject*>(m_internal->m_value.get())->get(name);
 	}
 
@@ -281,7 +311,12 @@ namespace NSJSON
 	std::vector<std::string> IValue::GetPropertyNames() const
 	{
 		if (m_internal->m_type != CTypedValue::vtObject)
+		{
+#ifdef JSON_DEBUG
+			throw std::bad_cast();
+#endif
 			return {};
+		}
 		return static_cast<CObject*>(m_internal->m_value.get())->getPropertyNames();
 	}
 

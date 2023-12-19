@@ -571,6 +571,27 @@ TEST_F(CJSONTest, wrong_usage)
 #endif
 }
 
+TEST_F(CJSONTest, is_init)
+{
+	CValue val;
+	EXPECT_FALSE(val.IsInit());
+	val = CValue::CreateNull();
+	EXPECT_FALSE(val.IsInit());
+	val = 42;
+	EXPECT_TRUE(val.IsInit());
+	CValue val2 = val;
+	val2 = CValue::CreateUndefined();
+	EXPECT_TRUE(val.IsInit());
+	EXPECT_FALSE(val2.IsInit());
+	CValueRef ref = val;
+	ref = CValue::CreateUndefined();
+	EXPECT_FALSE(val.IsInit());
+	EXPECT_FALSE(ref.IsInit());
+	ref = 3;
+	EXPECT_TRUE(val.IsInit());
+	EXPECT_TRUE(ref.IsInit());
+}
+
 // ----------- toJS() tests -----------
 
 TEST_F(CJSONTest, toJS_undefined)

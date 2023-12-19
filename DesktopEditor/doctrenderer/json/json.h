@@ -51,6 +51,10 @@ namespace NSJSON
 		 */
 		bool IsNull() const;
 		/**
+		 * Returns true if the value is not undefined or null.
+		 */
+		bool IsInit() const;
+		/**
 		 * Returns true if the value is a boolean value.
 		 */
 		bool IsBool() const;

@@ -42,6 +42,12 @@ namespace NSJSON
 		return m_internal->m_type == CTypedValue::vtNull;
 	}
 
+	bool IValue::IsInit() const
+	{
+		// the same as (m_internal->m_type != CTypedValue::vtUndefined && m_internal->m_type != CTypedValue::vtNull) but a little bit faster
+		return m_internal->m_value.get() != nullptr;
+	}
+
 	bool IValue::IsBool() const
 	{
 		return (m_internal->m_type == CTypedValue::vtPrimitive &&

@@ -63,8 +63,13 @@ struct preset_id_maping
 	int							OOX_PresetID;
 };
 
-// TODO: replace with unordered_map??
-static const preset_id_maping g_preset_id_map[] = {
+struct preset_subtype_maping
+{
+	int							OOX_PresetID;
+	std::wstring 				ODF_PresetID;	
+};
+
+static const preset_id_maping s_preset_id_map[] = {
 	{ preset_id::type::ooo_entrance_appear				, 1 },
 	{ preset_id::type::ooo_entrance_fly_in				, 2 },
 	{ preset_id::type::ooo_entrance_venetian_blinds		, 3 },
@@ -271,6 +276,31 @@ static const preset_id_maping g_preset_id_map[] = {
 	{ preset_id::type::none								, 0 },
 };
 
+static const preset_subtype_maping s_preset_subtype_maping[] =
+{
+	{  1,  L"from-top" },
+	{  2,  L"from-right" },
+	{  3,  L"from-top-right" },
+	{  4,  L"from-bottom" },
+	{  5,  L"horizontal" },
+	{  6,  L"from-bottom-right" },
+	{  8,  L"from-left" },
+	{  9,  L"from-top-left" },
+	{ 10,  L"vertical" },
+	{ 12,  L"from-bottom-left" },
+	{ 16,  L"in" },
+	{ 21,  L"vertical-in" },
+	{ 26,  L"horizontal-in" },
+	{ 32,  L"out" },
+	{ 36,  L"out-from-screen-center" },
+	{ 37,  L"vertical-out" },
+	{ 42,  L"horizontal-out" },
+	{ 272, L"in-slightly" },
+	{ 288, L"out-slightly" },
+	{ 528, L"in-from-screen-center" },
+	{ 0, L""}
+};
+
 static std::wstring pptx_convert_smil_attribute_name(const odf_types::smil_attribute_name& smil_attribute_name_)
 {
 	using namespace odf_types;
@@ -445,6 +475,76 @@ void anim_par::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	par_attlist_.add_attributes(Attributes);
 }
 
+static _CP_OPT(int) pptx_convert_preset_subtype(const std::wstring& preset_class_, const int preset_id_, const std::wstring& preset_subtype_)
+{
+	_CP_OPT(int) pptx_preset_subtype;
+
+	if ((preset_class_ == L"entr") || (preset_class_ == L"exit"))
+	{
+		// skip "wheel" preset id
+		if (preset_id_ != 21)
+		{
+			switch (preset_id_)
+			{
+			case 5:
+			{
+				if (preset_subtype_ == L"downward")
+					pptx_preset_subtype = 5;
+				else if (preset_subtype_ == L"across")
+					pptx_preset_subtype = 10;
+			}
+			break;
+			case 17:
+			{
+				if (preset_subtype_ == L"across")
+					pptx_preset_subtype = 10;
+			}
+			break;
+			case 18:
+			{
+				if (preset_subtype_ == L"right-to-top")
+					pptx_preset_subtype = 3;
+				else if (preset_subtype_ == L"right-to-bottom")
+					pptx_preset_subtype = 6;
+				else if (preset_subtype_ == L"left-to-top")
+					pptx_preset_subtype = 9;
+				else if (preset_subtype_ == L"left-to-bottom")
+					pptx_preset_subtype = 12;
+			}
+			break;
+			}
+		}
+
+		if (!pptx_preset_subtype)
+		{
+			const preset_subtype_maping* p = s_preset_subtype_maping;
+			while (p->OOX_PresetID != 0)
+			{
+				if (preset_subtype_ == p->ODF_PresetID)
+				{
+					pptx_preset_subtype = p->OOX_PresetID;
+					break;
+				}
+				p++;
+			}
+		}
+	}
+
+	if (!pptx_preset_subtype)
+	{
+		try
+		{
+			pptx_preset_subtype = boost::lexical_cast<int>(preset_subtype_);
+		}
+		catch (const boost::bad_lexical_cast& e)
+		{
+			pptx_preset_subtype = boost::none;
+		}
+	}
+
+	return pptx_preset_subtype;
+}
+
 void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	oox::pptx_animation_context & animationContext = Context.get_slide_context().get_animation_context();
@@ -459,7 +559,7 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 
 	_CP_OPT(std::wstring)	presentationPresetClass;
 	_CP_OPT(int)			presentationPresetId;
-	_CP_OPT(std::wstring)	presentationPresetPresetSubType;
+	_CP_OPT(int)			presentationPresetPresetSubType;
 
 	bool isSlideAnimation = false; // NOTE: Анимация применяется к самому слайду, а не элементу на слайде
 
@@ -540,7 +640,13 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 			break;
 		default:
 			presentationPresetClass = L"custom";
-		}			
+		}
+
+		if (par_attlist_.presentation_preset_sub_type_ &&  presentationPresetId)
+			presentationPresetPresetSubType = pptx_convert_preset_subtype(
+				*presentationPresetClass, 
+				*presentationPresetId, 
+				*par_attlist_.presentation_preset_sub_type_);
 	}
 
 	if (common_attlist_.smil_fill_)
@@ -567,17 +673,18 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 	{
 		animationContext.start_par_animation();
 
-		if (presentationNodeType)		animationContext.set_par_animation_presentation_node_type(presentationNodeType.value());
-		if (direction)					animationContext.set_par_animation_direction(direction.value());
-		if (restart)					animationContext.set_par_animation_restart(restart.value());
-		if (duration)					animationContext.set_par_animation_duration(duration.value());
-		if (delay)						animationContext.set_par_animation_delay(delay.value());
-		if (end)						animationContext.set_par_animation_end(end.value());
-		if (presentationPresetClass)	animationContext.set_par_animation_preset_class(presentationPresetClass.value());
-		if (presentationPresetId)		animationContext.set_par_animation_preset_id(presentationPresetId.value());
-		if (fill)						animationContext.set_par_animation_fill(fill.value());
-		if (accelerate)					animationContext.set_par_animation_accelerate(accelerate.value());
-		if (decelerate)					animationContext.set_par_animation_decelerate(decelerate.value());
+		if (presentationNodeType)				animationContext.set_par_animation_presentation_node_type(presentationNodeType.value());
+		if (direction)							animationContext.set_par_animation_direction(direction.value());
+		if (restart)							animationContext.set_par_animation_restart(restart.value());
+		if (duration)							animationContext.set_par_animation_duration(duration.value());
+		if (delay)								animationContext.set_par_animation_delay(delay.value());
+		if (end)								animationContext.set_par_animation_end(end.value());
+		if (presentationPresetClass)			animationContext.set_par_animation_preset_class(presentationPresetClass.value());
+		if (presentationPresetId)				animationContext.set_par_animation_preset_id(presentationPresetId.value());
+		if (presentationPresetPresetSubType)	animationContext.set_par_animation_preset_subtype(presentationPresetPresetSubType.value());
+		if (fill)								animationContext.set_par_animation_fill(fill.value());
+		if (accelerate)							animationContext.set_par_animation_accelerate(accelerate.value());
+		if (decelerate)							animationContext.set_par_animation_decelerate(decelerate.value());
 	}
 	
 	animationContext.set_is_slide_animation(isSlideAnimation);
@@ -617,10 +724,10 @@ boost::optional<int> anim_par::pptx_convert_preset_id()
 	{
 		preset_id::type presetID = par_attlist_.presentation_preset_id_.value().get_type();
 
-		for (size_t i = 0; g_preset_id_map[i].ODF_PresetID != preset_id::type::none; i++)
+		for (size_t i = 0; s_preset_id_map[i].ODF_PresetID != preset_id::type::none; i++)
 		{
-			if (g_preset_id_map[i].ODF_PresetID == presetID)
-				return g_preset_id_map[i].OOX_PresetID;
+			if (s_preset_id_map[i].ODF_PresetID == presetID)
+				return s_preset_id_map[i].OOX_PresetID;
 		}
 
 		return 0;

@@ -111,7 +111,7 @@ namespace DocFileFormat
 		}
 		else
 		{
-			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(newObject->xszFtn), bytes, (int)( strEnd - strStart ), ENCODING_UTF16 );
+			newObject->xszFtn = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)(bytes), (strEnd - strStart) / 2);
 		}
 
 		if (newObject->xszFtn.length() > 0)
@@ -145,7 +145,7 @@ namespace DocFileFormat
 			}
 			else
 			{
-				FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(newObject->xszAlt), bytes, (int)( strEnd - strStart ), ENCODING_UTF16 );
+				newObject->xszAlt = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)(bytes), (strEnd - strStart) / 2);
 			}
 			RELEASEARRAYOBJECTS( bytes );
 		 }

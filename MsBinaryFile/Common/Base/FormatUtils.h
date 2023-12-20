@@ -56,6 +56,7 @@
 #include "../../../DesktopEditor/common/Types.h"
 #include "../../../OOXML/Base/unicode_util.h"
 #include "../../../UnicodeConverter/UnicodeConverter.h"
+#include "../../../DesktopEditor/common/File.h"
 
 #include <boost/format.hpp>
 

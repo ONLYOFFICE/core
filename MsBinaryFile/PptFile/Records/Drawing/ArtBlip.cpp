@@ -227,7 +227,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 		try
 		{
 			CBgraFrame bgraFrame;
-			if (newData && bgraFrame.OpenFile(m_pCommonInfo->tempPath + FILE_SEPARATOR_STR + strFile))
+			if (bgraFrame.OpenFile(m_pCommonInfo->tempPath + FILE_SEPARATOR_STR + strFile))
 			{
 				NSFile::CFileBinary::Remove(m_pCommonInfo->tempPath + FILE_SEPARATOR_STR + strFile);
 

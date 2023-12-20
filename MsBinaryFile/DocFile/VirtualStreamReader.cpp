@@ -204,7 +204,7 @@ std::wstring VirtualStreamReader::ReadXst()
 		int xstzSize = DocFileFormat::FormatUtils::BytesToInt16( cch, 0, cchSize ) * 2;
 		xstz = ReadBytes(xstzSize, true);
 
-		DocFileFormat::FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &wstrResult, xstz, xstzSize, ENCODING_UTF16 );
+		wstrResult = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)(xstz), xstzSize / 2);
 	}
 
 	RELEASEARRAYOBJECTS(xstz);
@@ -228,7 +228,7 @@ std::wstring VirtualStreamReader::ReadLengthPrefixedUnicodeString()
 		//dont read the terminating zero
 		unsigned char* stringBytes = ReadBytes( ( cch * 2 ), true );
 
-		DocFileFormat::FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &result, stringBytes, ( ( cch * 2 ) - 2 ), ENCODING_UTF16 );
+		result = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)(stringBytes), cch - 1);
 
 		RELEASEARRAYOBJECTS( stringBytes );
 	}

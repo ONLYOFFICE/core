@@ -188,15 +188,8 @@ namespace DocFileFormat
 			stream->seek(pcd.fc);
 			stream->read(bytes, cb);
 
-			if (pcd.code_page == ENCODING_UTF16)
-			{
-				std::wstring sText = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)(bytes), cb / 2);
-				std::copy(sText.begin(), sText.end(), std::back_inserter(*piecePairs));
-			}
-			else
-			{
-				FormatUtils::GetSTLCollectionFromBytes<std::vector<wchar_t> >(piecePairs, bytes, cb, pcd.code_page);
-			}
+			FormatUtils::GetSTLCollectionFromBytes<std::vector<wchar_t> >(piecePairs, bytes, cb, pcd.code_page);
+
 			RELEASEARRAYOBJECTS(bytes);
 		}
 

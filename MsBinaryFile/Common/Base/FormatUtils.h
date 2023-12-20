@@ -577,31 +577,25 @@ namespace DocFileFormat
 			{
 				int i = 0;
 #if !defined(_WIN32) && !defined(_WIN64)
-               size /= 2;
-               ConversionResult eUnicodeConversionResult;
-               UTF32 *pStrUtf32 = new UTF32 [size + 1];
+				int nCount = size / 2;
+				unsigned short* pShort = (unsigned short*)bytes;
 
-               memset ((void *) pStrUtf32, 0, sizeof (UTF32) * (size + 1));
-
-               const   UTF16 *pStrUtf16_Conv = (const UTF16 *) bytes;
-                       UTF32 *pStrUtf32_Conv =                 pStrUtf32;
-
-    eUnicodeConversionResult = ConvertUTF16toUTF32 ( &pStrUtf16_Conv
-                                               , &pStrUtf16_Conv[size]
-                                               , &pStrUtf32_Conv
-                                               , &pStrUtf32 [size]
-                                               , strictConversion);
-
-                if (conversionOK != eUnicodeConversionResult)
-                {
-                    delete [] pStrUtf32; pStrUtf32 = NULL;
-                    return false;
-                }
-                for (long i=0; i < size; i++)
-                {
-                    STLCollection->push_back(pStrUtf32[i]);
-                }
-                if (pStrUtf32) delete [] pStrUtf32;
+				int nCurrent = 0;
+				while (nCurrent < nCount)
+				{
+					//if (*pShort < 0xD800 || *pShort > 0xDBFF)
+					{
+						STLCollection->push_back((wchar_t)(*pShort));
+						++pShort;
+						++nCurrent;
+					}
+					//else
+					//{
+					//	*pWCurrent = (wchar_t)(((((pShort[0] - 0xD800) & 0x03FF) << 10) | ((pShort[1] - 0xDC00) & 0x03FF)) + 0x10000);
+					//	pShort += 2;
+					//	nCurrent += 2;
+					//}
+				}
 #else
                 while ( i < size )
 				{

@@ -117,9 +117,6 @@ namespace PdfReader
 			}
 		}
 
-		bBold   = false;
-		bItalic = false;
-
 		CheckFontNameStyle(sName, L"condensedbold");
 		CheckFontNameStyle(sName, L"semibold");
 		CheckFontNameStyle(sName, L"regular");

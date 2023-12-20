@@ -323,9 +323,38 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 		}
 		if (nFlags & (1 << 3))
 		{
+			int nILength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "I";
+
+			for (int j = 0; j < nILength; ++j)
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << " " << nPathLength;
+			}
+			std::cout << ", ";
+		}
+		if (nFlags & (1 << 4))
+		{
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Parent " << nPathLength;
+		}
+		if (nFlags & (1 << 5))
+		{
+			int nILength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "V";
+
+			for (int j = 0; j < nILength; ++j)
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << " " << std::string((char*)(pWidgets + i), nPathLength);
+				i += nPathLength;
+			}
+			std::cout << ", ";
 		}
 
 		std::cout << std::endl;
@@ -417,6 +446,13 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			nPathLength = READ_BYTE(pWidgets + i);
 			i += 1;
 			std::cout << "Highlight " << arrHighlighting[nPathLength] << ", ";
+		}
+		if (nFlags & (1 << 4))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Font key " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
 		}
 		if (nFlags & (1 << 5))
 		{
@@ -638,6 +674,33 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 				nPathLength = READ_INT(pWidgets + i);
 				i += 4;
 				std::cout << "TI " << nPathLength << ", ";
+			}
+			if (nFlags & (1 << 12))
+			{
+				int nILength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "I";
+				for (int j = 0; j < nILength; ++j)
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << " " << nPathLength;
+				}
+				std::cout << ", ";
+			}
+			if (nFlags & (1 << 13))
+			{
+				int nILength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "Value";
+				for (int j = 0; j < nILength; ++j)
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << " " << std::string((char*)(pWidgets + i), nPathLength);
+					i += nPathLength;
+				}
+				std::cout << ", ";
 			}
 		}
 		else if (sType == "signature")

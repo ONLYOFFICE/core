@@ -238,6 +238,7 @@ private:
 	std::string m_sDS; // Строка стиля по умолчанию - DS
 	std::string m_sDV; // Значение по-умолчанию - DV
 	std::string m_sT; // Частичное имя поля - T
+	std::string m_sFontKey; // Уникальный идентификатор шрифта
 	std::string m_sFontName; // Имя шрифта - из DA
 	std::string m_sActualFontName; // Имя замененного шрифта
 };
@@ -282,6 +283,8 @@ public:
 	void ToWASM(NSWasm::CData& oRes) override;
 private:
 	std::string m_sV;
+	std::vector<std::string> m_arrV;
+	std::vector<int> m_arrI;
 	std::vector< std::pair<std::string, std::string> > m_arrOpt;
 	unsigned int m_unTI;
 };
@@ -561,6 +564,8 @@ private:
 		unsigned int unFlags;
 		unsigned int unRefNum; // Номер ссылки на объект
 		unsigned int unRefNumParent; // Номер ссылки на объект родителя
+		std::vector<int> arrI;
+		std::vector<std::string> arrV;
 		std::string sT;
 		std::string sV;
 		std::string sDV;

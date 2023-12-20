@@ -817,6 +817,11 @@ namespace PdfWriter
 		m_pA      = NULL;
 		m_dFontSizeAP = 0;
 		m_pAppearance = NULL;
+		m_nSubtype = WidgetUnknown;
+	}
+	void CWidgetAnnotation::SetSubtype(const BYTE& nSubtype)
+	{
+		m_nSubtype = (EWidgetType)nSubtype;
 	}
 	void CWidgetAnnotation::SetDA(CFontDict* pFont, const double& dFontSize, const double& dFontSizeAP, const std::vector<double>& arrTC)
 	{
@@ -1330,10 +1335,6 @@ namespace PdfWriter
 		std::string sValue = U_TO_UTF8(wsDV);
 		Add("DV", sValue.c_str());
 	}
-	void CCheckBoxWidget::SetSubtype(const BYTE& nSubtype)
-	{
-		m_nSubtype = (EWidgetType)nSubtype;
-	}
 	std::wstring CCheckBoxWidget::SetStyle(const BYTE& nStyle)
 	{
 		CheckMK();
@@ -1487,6 +1488,13 @@ namespace PdfWriter
 	CChoiceWidget::CChoiceWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
 	{
 		Add("FT", "Ch");
+	}
+	void CChoiceWidget::SetFlag(const int& nFlag)
+	{
+		int nFlags = nFlag;
+		if (m_nSubtype == WidgetCombobox)
+			nFlags |= (1 << 17);
+		CWidgetAnnotation::SetFlag(nFlags);
 	}
 	void CChoiceWidget::SetTI(const int& nTI)
 	{

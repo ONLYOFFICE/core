@@ -950,12 +950,8 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
 		Ref fontID;
 		double dFontSize = 0;
 		pField->getFont(&fontID, &dFontSize);
-		if (std::find(arrFontsRef.begin(), arrFontsRef.end(), fontID.num) != arrFontsRef.end())
+		if (fontID.num < 0 || std::find(arrFontsRef.begin(), arrFontsRef.end(), fontID.num) != arrFontsRef.end())
 			continue;
-
-		bool bFindFont = true;
-		if (fontID.num < 0)
-			bFindFont = false;
 
 		Object oObj, oField, oFont;
 		pField->getFieldRef(&oObj);
@@ -968,16 +964,11 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
 			for (int i = 0; i < oFont.dictGetLength(); ++i)
 			{
 				Object oFontRef;
-				if (oFont.dictGetValNF(i, &oFontRef)->isRef())
+				if (oFont.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
 				{
-					if (!bFindFont)
-						fontID = oFontRef.getRef();
-					if (oFontRef.getRef() == fontID)
-					{
-						bFindResources = true;
-						oFontRef.free();
-						break;
-					}
+					bFindResources = true;
+					oFontRef.free();
+					break;
 				}
 				oFontRef.free();
 			}
@@ -993,16 +984,11 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
 				for (int i = 0; i < oFont.dictGetLength(); ++i)
 				{
 					Object oFontRef;
-					if (oFont.dictGetValNF(i, &oFontRef)->isRef())
+					if (oFont.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
 					{
-						if (!bFindFont)
-							fontID = oFontRef.getRef();
-						if (oFontRef.getRef() == fontID)
-						{
-							bFindResources = true;
-							oFontRef.free();
-							break;
-						}
+						bFindResources = true;
+						oFontRef.free();
+						break;
 					}
 					oFontRef.free();
 				}
@@ -1014,23 +1000,23 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
 		GfxFontDict *gfxFontDict = NULL;
 		if (bFindResources)
 		{
-			Object oFontRef;
-			if (oObj.dictLookupNF("Font", &oFontRef)->isRef())
+			Object oFontsRef;
+			if (oObj.dictLookupNF("Font", &oFontsRef)->isRef())
 			{
-				if (oFontRef.fetch(xref, &oFont)->isDict())
+				if (oFontsRef.fetch(xref, &oFont)->isDict())
 				{
-					Ref r = oFontRef.getRef();
+					Ref r = oFontsRef.getRef();
 					gfxFontDict = new GfxFontDict(xref, &r, oFont.getDict());
 					gfxFont = gfxFontDict->lookupByRef(fontID);
 				}
 				oFont.free();
 			}
-			else if (oFontRef.isDict())
+			else if (oFontsRef.isDict())
 			{
-				gfxFontDict = new GfxFontDict(xref, NULL, oFontRef.getDict());
+				gfxFontDict = new GfxFontDict(xref, NULL, oFontsRef.getDict());
 				gfxFont = gfxFontDict->lookupByRef(fontID);
 			}
-			oFontRef.free();
+			oFontsRef.free();
 		}
 		oObj.free();
 

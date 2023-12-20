@@ -2044,6 +2044,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		if (nWidgetType != 27 && nWidgetType != 28 && nWidgetType != 29)
 			pWidgetAnnot->SetQ(nAlign);
 		int nWidgetFlag = pPr->GetFlag();
+		pWidgetAnnot->SetSubtype(nWidgetType);
 		pWidgetAnnot->SetFlag(nWidgetFlag);
 
 		int nFlags = pPr->GetFlags();
@@ -2280,7 +2281,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetButtonWidgetPr();
 				PdfWriter::CCheckBoxWidget* pButtonWidget = (PdfWriter::CCheckBoxWidget*)pAnnot;
 
-				pButtonWidget->SetSubtype(nWidgetType);
 				if (nFlags & (1 << 14))
 					pButtonWidget->SetAP_N_Yes(pPr->GetAP_N_Yes());
 				if (nFlags & (1 << 9))

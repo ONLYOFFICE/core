@@ -287,8 +287,9 @@ namespace NExtractTools
 	}
 	_UINT32 package2ooxml_dir(const std::wstring &sFrom, const std::wstring &sTo, InputParams &params, ConvertParams& convertParams)
 	{
-		BinDocxRW::CDocxSerializer m_oCDocxSerializer;
+		params.m_bMacro = false;
 
+		BinDocxRW::CDocxSerializer m_oCDocxSerializer;
 		_UINT32 nRes = m_oCDocxSerializer.unpackageFile(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
 		return nRes;

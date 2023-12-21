@@ -1202,12 +1202,17 @@ namespace NExtractTools
 						toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
 					}
 				}
-				size_t nIndex = m_sFileTo->rfind('.');
 				COfficeFileFormatChecker FileFormatChecker;
-				if (-1 != nIndex)
-					m_sFileTo->replace(nIndex, std::wstring::npos, FileFormatChecker.GetExtensionByType(toFormat));
-				else
-					m_sFileTo->append(FileFormatChecker.GetExtensionByType(toFormat));
+				std::wstring sNewExt = FileFormatChecker.GetExtensionByType(toFormat);
+				
+				size_t nIndex = m_sFileTo->rfind('.');
+				if (false == sNewExt.empty())
+				{
+					if (std::wstring::npos != nIndex)
+						m_sFileTo->replace(nIndex, std::wstring::npos, sNewExt);
+					else
+						m_sFileTo->append(sNewExt);
+				}
 			}
 			*m_nFormatTo = toFormat;
 		}

@@ -162,4 +162,34 @@ namespace MetaFile
 		dX = _dX * M11 + _dY * M21 + Dx;
 		dY = _dX * M12 + _dY * M22 + Dy;
 	}
+
+	template<>
+	bool TPoint<double>::operator==(const TPoint<double>& oPoint) const
+	{
+		return std::abs(X - oPoint.X) <= DBL_EPSILON && std::abs(Y - oPoint.Y) <= DBL_EPSILON;
+	}
+
+	template<>
+	bool TPoint<double>::operator!=(const TPoint<double>& oPoint) const
+	{
+		return std::abs(X - oPoint.X) > DBL_EPSILON || std::abs(Y - oPoint.Y) > DBL_EPSILON;
+	}
+
+	template<>
+	bool TRect<double>::operator==(const TRect<double>& oRect) const
+	{
+		return std::abs(Left   - oRect.Right)  <= DBL_EPSILON &&
+			   std::abs(Top    - oRect.Top)    <= DBL_EPSILON &&
+			   std::abs(Right  - oRect.Right)  <= DBL_EPSILON &&
+			   std::abs(Bottom - oRect.Bottom) <= DBL_EPSILON;
+	}
+
+	template<>
+	bool TRect<double>::operator!=(const TRect<double>& oRect) const
+	{
+		return std::abs(Left   - oRect.Right)  > DBL_EPSILON ||
+			   std::abs(Top    - oRect.Top)    > DBL_EPSILON ||
+			   std::abs(Right  - oRect.Right)  > DBL_EPSILON ||
+			   std::abs(Bottom - oRect.Bottom) > DBL_EPSILON;
+	}
 }

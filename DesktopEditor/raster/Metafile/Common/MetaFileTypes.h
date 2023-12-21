@@ -33,6 +33,7 @@
 #define _METAFILE_COMMON_METAFILETYPES_H
 
 #include <string>
+#include <cfloat>
 #include "../../../common/StringExt.h"
 
 #ifndef BYTE
@@ -409,16 +410,10 @@ namespace MetaFile
 	};
 
 	template<>
-	bool TPoint<double>::operator==(const TPoint<double>& oPoint) const
-	{
-		return std::abs(X - oPoint.X) <= DBL_EPSILON && std::abs(Y - oPoint.Y) <= DBL_EPSILON;
-	}
+	bool TPoint<double>::operator==(const TPoint<double>& oPoint) const;
 
 	template<>
-	bool TPoint<double>::operator!=(const TPoint<double>& oPoint) const 
-	{
-		return std::abs(X - oPoint.X) > DBL_EPSILON || std::abs(Y - oPoint.Y) > DBL_EPSILON;
-	}
+	bool TPoint<double>::operator!=(const TPoint<double>& oPoint) const;
 
 	typedef TPoint<int>    TPointL;
 	typedef TPoint<short>  TPointS;
@@ -530,22 +525,10 @@ namespace MetaFile
 	};
 
 	template<>
-	bool TRect<double>::operator==(const TRect<double>& oRect) const
-	{
-		return std::abs(Left   - oRect.Right)  <= DBL_EPSILON &&
-		       std::abs(Top    - oRect.Top)    <= DBL_EPSILON &&
-		       std::abs(Right  - oRect.Right)  <= DBL_EPSILON &&
-		       std::abs(Bottom - oRect.Bottom) <= DBL_EPSILON;
-	}
-	
+	bool TRect<double>::operator==(const TRect<double>& oRect) const;
+
 	template<>
-	bool TRect<double>::operator!=(const TRect<double>& oRect) const
-	{
-		return std::abs(Left   - oRect.Right)  > DBL_EPSILON ||
-		       std::abs(Top    - oRect.Top)    > DBL_EPSILON ||
-		       std::abs(Right  - oRect.Right)  > DBL_EPSILON ||
-		       std::abs(Bottom - oRect.Bottom) > DBL_EPSILON;
-	}
+	bool TRect<double>::operator!=(const TRect<double>& oRect) const;
 	
 	typedef TRect <int>    TRectL;
 	typedef TRect <short>  TRectS;

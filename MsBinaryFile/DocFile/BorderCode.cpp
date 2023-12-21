@@ -50,7 +50,8 @@ namespace DocFileFormat
 		{
 			//it's a border code of Word 2000/2003
 			cv = FormatUtils::BytesToInt32( bytes, 0, size );
-			
+			cv = cv & 0x00ffffff;
+
 			ico = std::wstring( Global::ColorIdentifier[0] );
 
 			dptLineWidth = bytes[4];

@@ -592,7 +592,7 @@ namespace DocFileFormat
 					else
 					{
 						STLCollection->push_back((wchar_t)(((((pShort[0] - 0xD800) & 0x03FF) << 10) | ((pShort[1] - 0xDC00) & 0x03FF)) + 0x10000));
-						STLCollection->push_back((wchar_t)L"");
+						STLCollection->push_back((wchar_t)0);
 						pShort += 2;
 						nCurrent += 2;
 					}

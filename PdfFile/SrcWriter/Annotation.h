@@ -189,6 +189,7 @@ namespace PdfWriter
 		void SetCD(const std::wstring& wsCD);
 		void SetSubj(const std::wstring& wsSubj);
 
+		void RemoveAP();
 		void SetIRTID(CAnnotation* pAnnot);
 		CPopupAnnotation* CreatePopup();
 	};
@@ -338,6 +339,7 @@ namespace PdfWriter
 	class CWidgetAnnotation : public CAnnotation
 	{
 	protected:
+		EWidgetType m_nSubtype;
 		CDictObject* m_pMK;
 		CDictObject* m_pParent;
 		CDictObject* m_pAA;
@@ -357,11 +359,12 @@ namespace PdfWriter
 		{
 			return AnnotWidget;
 		}
-		virtual EWidgetType GetWidgetType() const
+		EWidgetType GetWidgetType() const
 		{
-			return WidgetUnknown;
+			return m_nSubtype;
 		}
 
+		void SetSubtype(const BYTE& nSubtype);
 		void SetDA(CFontDict* pFont, const double& dFontSize, const double& dFontSizeAP, const std::vector<double>& arrTC);
 		CDictObject* GetObjOwnValue(const std::string& sV);
 		CObjectBase* GetObjValue(const std::string& sV);
@@ -391,16 +394,14 @@ namespace PdfWriter
 		BYTE m_nScaleType;
 		double m_dShiftX;
 		double m_dShiftY;
+		std::wstring m_wsCA;
 		CDictObject* m_pIF;
+		std::string m_sCaptionForAP;
 
 		void CheckIF();
 
 	public:
 		CPushButtonWidget(CXref* pXref);
-		virtual EWidgetType GetWidgetType() const override
-		{
-			return WidgetPushbutton;
-		}
 
 		void SetV(const std::wstring& wsV);
 		void SetDV(const std::wstring& wsDV) override;
@@ -416,29 +417,22 @@ namespace PdfWriter
 		void SetCA(const std::wstring& wsCA);
 		void SetRC(const std::wstring& wsRC);
 		void SetAC(const std::wstring& wsAC);
-		void SetI(CImageDict* pI, const char* pImgName, const char* pFrmName);
-		void SetRI(CImageDict* pRI, const char* pImgName, const char* pFrmName);
-		void SetIX(CImageDict* pIX, const char* pImgName, const char* pFrmName);
 
-		CXObject* SetAP(CImageDict* pImage, const char* pImgName, const char* pFrmName);
+		void SetAP(CImageDict* pImage, const std::string& sAP, const std::string& sImgName, const std::string& sFrmName);
+		void SetCaptionAP(unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts);
+
 		int m_nI, m_nRI, m_nIX;
 	};
 	class CCheckBoxWidget : public CWidgetAnnotation
 	{
 	private:
-		EWidgetType m_nSubtype;
 		std::string m_sAP_N_Yes;
 
 	public:
 		CCheckBoxWidget(CXref* pXref);
-		virtual EWidgetType GetWidgetType() const override
-		{
-			return m_nSubtype;
-		}
 
 		void SetV(const std::wstring& wsV);
 		void SetDV(const std::wstring& wsDV) override;
-		void SetSubtype(const BYTE& nSubtype);
 		std::wstring SetStyle(const BYTE& nStyle);
 		void SetAP_N_Yes(const std::wstring& wsAP_N_Yes);
 
@@ -448,7 +442,6 @@ namespace PdfWriter
 	class CTextWidget : public CWidgetAnnotation
 	{
 	private:
-		EAnnotType m_nSubtype;
 		std::string m_sV;
 
 	public:
@@ -462,34 +455,34 @@ namespace PdfWriter
 		void StartAP(CFontDict* pFont, const double& dFontSize, const double& dAlpha);
 		void AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts = NULL, const double* pShifts = NULL);
 		void EndAP();
-		std::string GetV() { return m_sV; }
 		bool IsCombFlag();
 		bool IsMultiLine();
 		int GetMaxLen();
 	};
 	class CChoiceWidget : public CWidgetAnnotation
 	{
-	private:
-		EAnnotType m_nSubtype;
-
 	public:
 		CChoiceWidget(CXref* pXref);
 
+		virtual void SetFlag (const int& nFlag) override;
 		void SetTI(const int& nTI);
 		void SetV(const std::wstring& wsV);
+		void SetI(const std::vector<int>& arrI);
+		void SetV(const std::vector<std::wstring>& arrV);
 		void SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt);
+
+		void SetFont(CFontCidTrueType* pFont, double dFontSize, bool bBold, bool bItalic);
+		void SetTextAppearance(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0, CFontCidTrueType** ppFonts = NULL, double* pShifts = NULL);
+
+		CFontCidTrueType* m_pFont;
+		double m_dFontSize;
+		bool m_bBold;
+		bool m_bItalic;
 	};
 	class CSignatureWidget : public CWidgetAnnotation
 	{
-	private:
-		EAnnotType m_nSubtype;
-
 	public:
 		CSignatureWidget(CXref* pXref);
-		EAnnotType GetAnnotationType() const override
-		{
-			return m_nSubtype;
-		}
 	};
 }
 #endif // _PDF_WRITER_SRC_ANNOTATION_H

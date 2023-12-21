@@ -391,6 +391,9 @@ namespace PdfWriter
 		void EndDrawText();
 
 		void DrawTextComment();
+		CStream* GetStream() { return m_pStream; }
+
+		bool        m_bStart;
 
 	private:
 		void Init(CXref* pXref, CResourcesDict* pResources, TRect* pRect);
@@ -400,7 +403,6 @@ namespace PdfWriter
 		CFieldBase* m_pField;
 		double      m_dCurX;
 		double      m_dCurY;
-		bool        m_bStart;
 		CFontDict*  m_pFont;
 		double      m_dFontSize;
 

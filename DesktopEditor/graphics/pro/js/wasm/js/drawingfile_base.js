@@ -703,7 +703,21 @@
 			if (flags & (1 << 2))
 				rec["defaultValue"] = reader.readString();
 			if (flags & (1 << 3))
+			{
+				let n = reader.readInt();
+				rec["curIdxs"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["curIdxs"].push(reader.readInt());
+			}
+			if (flags & (1 << 4))
 				rec["Parent"] = reader.readInt();
+			if (flags & (1 << 5))
+			{
+				let n = reader.readInt();
+				rec["value"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["value"].push(reader.readString());
+			}
 			res["Parents"].push(rec);
 		}
 
@@ -750,6 +764,9 @@
 			// 0 - none, 1 - invert, 2 - push, 3 - outline
 			if (flags & (1 << 3))
 				rec["highlight"] = reader.readByte();
+			// Font key
+			if (flags & (1 << 4))
+				rec["font"]["key"] = reader.readString();
 			// Border color - BC. Even if the border is not specified by BS/Border, 
 			// then if BC is present, a default border is provided (solid, thickness 1). 
 			// If the text annotation has MaxLen, borders appear for each character
@@ -877,6 +894,20 @@
 				}
 				if (flags & (1 << 11))
 					rec["TI"] = reader.readInt();
+				if (flags & (1 << 12))
+				{
+					let n = reader.readInt();
+					rec["curIdxs"] = [];
+					for (let i = 0; i < n; ++i)
+						rec["curIdxs"].push(reader.readInt());
+				}
+				if (flags & (1 << 13))
+				{
+					let n = reader.readInt();
+					rec["value"] = [];
+					for (let i = 0; i < n; ++i)
+						rec["value"].push(reader.readString());
+				}
 				// 12.7.4.4
 				rec["editable"]          = (rec["flag"] >> 18) & 1; // Edit
 				rec["multipleSelection"] = (rec["flag"] >> 21) & 1; // MultiSelect

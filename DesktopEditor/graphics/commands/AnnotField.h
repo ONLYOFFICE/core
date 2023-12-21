@@ -95,8 +95,9 @@ public:
 		{
 		public:
 			int GetMaxLen() const { return m_nMaxLen; }
-			const std::wstring& GetV()  const { return m_wsV; }
-			const std::wstring& GetRV() const { return m_wsRV; }
+			const std::wstring& GetV()   const { return m_wsV; }
+			const std::wstring& GetRV()  const { return m_wsRV; }
+			const std::wstring& GetAPV() const { return m_wsAPV; }
 
 			void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags, int nWidgetFlag);
 
@@ -104,13 +105,17 @@ public:
 			int m_nMaxLen;
 			std::wstring m_wsV;
 			std::wstring m_wsRV;
+			std::wstring m_wsAPV;
 		};
 
 		class CChoiceWidgetPr
 		{
 		public:
 			int GetTI() const { return m_nTI; }
-			const std::wstring& GetV() const { return m_wsV; }
+			const std::wstring& GetV()                 const { return m_wsV; }
+			const std::wstring& GetAPV()               const { return m_wsAPV; }
+			const std::vector<int>& GetI()             const { return m_arrI; }
+			const std::vector<std::wstring>& GetArrV() const { return m_arrV; }
 			const std::vector< std::pair<std::wstring, std::wstring> >& GetOpt() const { return m_arrOpt; }
 
 			void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
@@ -118,6 +123,9 @@ public:
 		private:
 			int m_nTI;
 			std::wstring m_wsV;
+			std::wstring m_wsAPV;
+			std::vector<int> m_arrI;
+			std::vector<std::wstring> m_arrV;
 			std::vector< std::pair<std::wstring, std::wstring> > m_arrOpt;
 		};
 
@@ -162,6 +170,7 @@ public:
 		const std::wstring& GetDV() const { return m_wsDV; }
 		const std::wstring& GetT()  const { return m_wsT; }
 		const std::wstring& GetFontName()  const { return m_wsFN; }
+		const std::wstring& GetFontKey()   const { return m_wsFK; }
 		const std::vector<double>& GetTC() const { return m_arrTC; }
 		const std::vector<double>& GetBC() const { return m_arrBC; }
 		const std::vector<double>& GetBG() const { return m_arrBG; }
@@ -190,6 +199,7 @@ public:
 		std::wstring m_wsDV;
 		std::wstring m_wsT;
 		std::wstring m_wsFN;
+		std::wstring m_wsFK;
 		std::vector<double> m_arrTC;
 		std::vector<double> m_arrBC;
 		std::vector<double> m_arrBG;
@@ -495,6 +505,8 @@ public:
 		std::wstring sName;
 		std::wstring sV;
 		std::wstring sDV;
+		std::vector<int> arrI;
+		std::vector<std::wstring> arrV;
 	};
 
 	CWidgetsInfo();

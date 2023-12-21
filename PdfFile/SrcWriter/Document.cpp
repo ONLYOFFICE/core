@@ -1401,19 +1401,19 @@ namespace PdfWriter
 			{
 				std::string sFrmName = "FRM" + std::to_string(it->first) + "I";
 				std::string sImgName = "Img" + std::to_string(pPBWidget->m_nI);
-				pPBWidget->SetI(arrButtonImg[pPBWidget->m_nI], sImgName.c_str(), sFrmName.c_str());
+				pPBWidget->SetAP(arrButtonImg[pPBWidget->m_nI], "I", sImgName, sFrmName);
 			}
 			if (pPBWidget->m_nRI >= 0)
 			{
 				std::string sFrmName = "FRM" + std::to_string(it->first) + "RI";
 				std::string sImgName = "Img" + std::to_string(pPBWidget->m_nRI);
-				pPBWidget->SetRI(arrButtonImg[pPBWidget->m_nRI], sImgName.c_str(), sFrmName.c_str());
+				pPBWidget->SetAP(arrButtonImg[pPBWidget->m_nRI], "RI", sImgName, sFrmName);
 			}
 			if (pPBWidget->m_nIX >= 0)
 			{
 				std::string sFrmName = "FRM" + std::to_string(it->first) + "IX";
 				std::string sImgName = "Img" + std::to_string(pPBWidget->m_nIX);
-				pPBWidget->SetIX(arrButtonImg[pPBWidget->m_nIX], sImgName.c_str(), sFrmName.c_str());
+				pPBWidget->SetAP(arrButtonImg[pPBWidget->m_nIX], "IX", sImgName, sFrmName);
 			}
 		}
 	}

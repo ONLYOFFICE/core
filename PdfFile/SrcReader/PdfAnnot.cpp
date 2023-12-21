@@ -36,6 +36,8 @@
 #include "../lib/xpdf/Link.h"
 #include "../lib/xpdf/Annot.h"
 #include "../lib/xpdf/GfxFont.h"
+#include "../lib/xpdf/Lexer.h"
+#include "../lib/xpdf/Parser.h"
 #include "../lib/goo/GList.h"
 #include "../Resources/BaseFonts.h"
 
@@ -336,7 +338,7 @@ CAction* getAction(PDFDoc* pdfDoc, Object* oAction)
 	RELEASEOBJECT(oAct);
 	return pRes;
 };
-std::string getValue(Object* oV)
+std::string getValue(Object* oV, bool bArray = true)
 {
 	std::string sRes;
 	if (oV->isName())
@@ -355,7 +357,7 @@ std::string getValue(Object* oV)
 			}
 			oContents.free();
 		}
-		else if (oV->isArray())
+		else if (bArray && oV->isArray())
 		{
 			Object oContents;
 			if (oV->arrayGet(0, &oContents)->isString())
@@ -628,12 +630,11 @@ CAnnotWidgetCh::CAnnotWidgetCh(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnotWi
 	// 10 - Значение
 	if (oField.dictLookup("V", &oObj))
 	{
-		m_sV = getValue(&oObj);
+		m_sV = getValue(&oObj, false);
 		if (!m_sV.empty())
 			m_unFlags |= (1 << 9);
 	}
 	oObj.free();
-	oField.free();
 
 	Object oOpt;
 	// 11 - Список значений
@@ -688,6 +689,40 @@ CAnnotWidgetCh::CAnnotWidgetCh(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnotWi
 		m_unTI = oObj.getInt();
 	}
 	oObj.free();
+
+	// 13 - Выбранные индексы - I
+	if (oField.dictLookup("I", &oOpt)->isArray())
+	{
+		m_unFlags |= (1 << 12);
+		int nILength = oOpt.arrayGetLength();
+		for (int j = 0; j < nILength; ++j)
+		{
+			if (oOpt.arrayGet(j, &oObj)->isInt())
+				m_arrI.push_back(oObj.getInt());
+			oObj.free();
+		}
+	}
+	oOpt.free();
+
+	// 14 - Массив значений
+	if (oField.dictLookup("V", &oOpt)->isArray())
+	{
+		m_unFlags |= (1 << 13);
+		int nVLength = oOpt.arrayGetLength();
+		for (int j = 0; j < nVLength; ++j)
+		{
+			if (oOpt.arrayGet(j, &oObj)->isString())
+			{
+				TextString* s = new TextString(oObj.getString());
+				m_arrV.push_back(NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength()));
+				delete s;
+			}
+			oObj.free();
+		}
+	}
+	oOpt.free();
+
+	oField.free();
 }
 
 CAnnotWidgetSig::CAnnotWidgetSig(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnotWidget(pdfDoc, pField)
@@ -881,121 +916,182 @@ void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFont
 	// Шрифт и размер шрифта - из DA
 	Ref fontID;
 	pField->getFont(&fontID, &m_dFontSize);
-	bool bFindFont = true;
+	bool bFullFont = true;
 	if (fontID.num < 0)
-		bFindFont = false;
+		bFullFont = false;
 
-	XRef* xref = pdfDoc->getXRef();
-	Object oObj, oField, oFont;
-	pField->getFieldRef(&oObj);
-	oObj.fetch(xref, &oField);
-	oObj.free();
-
+	Object oR, oFonts, oFontRef;
 	bool bFindResources = false;
 
-	if (oField.dictLookup("DR", &oObj)->isDict() && oObj.dictLookup("Font", &oFont)->isDict())
+	if (bFullFont && pField->fieldLookup("DR", &oR)->isDict() && oR.dictLookup("Font", &oFonts)->isDict())
 	{
-		for (int i = 0; i < oFont.dictGetLength(); ++i)
+		for (int i = 0; i < oFonts.dictGetLength(); ++i)
 		{
-			Object oFontRef;
-			if (oFont.dictGetValNF(i, &oFontRef)->isRef())
+			if (oFonts.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
 			{
-				if (!bFindFont)
-					fontID = oFontRef.getRef();
-				if (oFontRef.getRef() == fontID)
-				{
-					bFindResources = true;
-					oFontRef.free();
-					break;
-				}
+				m_sFontKey = oFonts.dictGetKey(i);
+				bFindResources = true;
+				break;
 			}
 			oFontRef.free();
 		}
 	}
-	oFont.free(); oField.free();
 
-	if (!bFindResources)
+	if (bFullFont && !bFindResources)
 	{
-		oObj.free();
+		oR.free(); oFonts.free();
 		AcroForm* pAcroForms = pdfDoc->getCatalog()->getForm();
 		Object* oAcroForm = pAcroForms->getAcroFormObj();
-		if (oAcroForm->isDict() && oAcroForm->dictLookup("DR", &oObj)->isDict() && oObj.dictLookup("Font", &oFont)->isDict())
+		if (oAcroForm->isDict() && oAcroForm->dictLookup("DR", &oR)->isDict() && oR.dictLookup("Font", &oFonts)->isDict())
 		{
-			for (int i = 0; i < oFont.dictGetLength(); ++i)
+			for (int i = 0; i < oFonts.dictGetLength(); ++i)
 			{
-				Object oFontRef;
-				if (oFont.dictGetValNF(i, &oFontRef)->isRef())
+				if (oFonts.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
 				{
-					if (!bFindFont)
-						fontID = oFontRef.getRef();
-					if (oFontRef.getRef() == fontID)
-					{
-						bFindResources = true;
-						oFontRef.free();
-						break;
-					}
+					m_sFontKey = oFonts.dictGetKey(i);
+					bFindResources = true;
+					break;
 				}
 				oFontRef.free();
 			}
 		}
-		oFont.free();
 	}
+
+	Object oAP, oN;
+	XRef* xref = pdfDoc->getXRef();
+	if (!bFullFont && pField->fieldLookup("AP", &oAP)->isDict() && oAP.dictLookup("N", &oN)->isStream())
+	{
+		Parser* parser = new Parser(xref, new Lexer(xref, &oN), gFalse);
+
+		bool bFindFont = false;
+		Object oObj1, oObj2, oObj3;
+		parser->getObj(&oObj1);
+		while (!oObj1.isEOF())
+		{
+			if (oObj1.isName())
+			{
+				parser->getObj(&oObj2);
+				if (oObj2.isEOF())
+					break;
+				if (oObj2.isNum())
+				{
+					Object oObj3;
+					parser->getObj(&oObj3);
+					if (oObj3.isEOF())
+						break;
+					if (oObj3.isCmd("Tf"))
+					{
+						bFindFont = true;
+						break;
+					}
+				}
+			}
+			if (oObj2.isName())
+			{
+				oObj1.free();
+				oObj2.copy(&oObj1);
+				oObj2.free(); oObj3.free();
+				continue;
+			}
+			if (oObj3.isName())
+			{
+				oObj1.free();
+				oObj3.copy(&oObj1);
+				oObj3.free(); oObj2.free();
+				continue;
+			}
+			oObj1.free(); oObj2.free(); oObj3.free();
+
+			parser->getObj(&oObj1);
+		}
+
+		if (bFindFont && oObj1.isName())
+		{
+			Dict* pNDict = oN.streamGetDict();
+			if (pNDict->lookup("Resources", &oR)->isDict() && oR.dictLookup("Font", &oFonts)->isDict() && oFonts.dictLookupNF(oObj1.getName(), &oFontRef)->isRef())
+			{
+				bFindResources = true;
+				fontID = oFontRef.getRef();
+			}
+		}
+
+		oObj1.free(); oObj2.free(); oObj3.free();
+		RELEASEOBJECT(parser);
+	}
+	oAP.free(); oN.free();
 
 	GfxFont* gfxFont = NULL;
 	GfxFontDict *gfxFontDict = NULL;
 	if (bFindResources)
 	{
-		Object oFontRef;
-		if (oObj.dictLookupNF("Font", &oFontRef)->isRef())
-		{
-			if (oFontRef.fetch(xref, &oFont)->isDict())
-			{
-				Ref r = oFontRef.getRef();
-				gfxFontDict = new GfxFontDict(pdfDoc->getXRef(), &r, oFont.getDict());
-				gfxFont = gfxFontDict->lookupByRef(fontID);
-			}
-			oFont.free();
-		}
-		else if (oFontRef.isDict())
-		{
-			gfxFontDict = new GfxFontDict(pdfDoc->getXRef(), NULL, oFontRef.getDict());
-			gfxFont = gfxFontDict->lookupByRef(fontID);
-		}
-		oFontRef.free();
+		Ref r = oFontRef.getRef();
+		gfxFontDict = new GfxFontDict(xref, &r, oFonts.getDict());
+		gfxFont = gfxFontDict->lookupByRef(fontID);
 	}
-	oObj.free();
+	oR.free(); oFonts.free(); oFontRef.free();
+
+	m_unFontStyle = 0;
 
 	// 3 - Актуальный шрифт
-	std::wstring wsFileName, wsFontName;
+	bool bBold = false, bItalic = false;
 	if (gfxFont)
 	{
 		Ref oEmbRef;
 		const unsigned char* pData14 = NULL;
 		unsigned int nSize14 = 0;
 		std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
-		if (gfxFont->getEmbeddedFontID(&oEmbRef) || GetBaseFont(wsFontBaseName, pData14, nSize14))
-			GetFont(pdfDoc->getXRef(), pFontManager, pFontList, gfxFont, wsFileName, wsFontName);
-		else if (!gfxFont->locateFont(xref, false) || (wsFileName = NSStrings::GetStringFromUTF32(gfxFont->locateFont(xref, false)->path)).length() == 0)
+		if (bFullFont && (gfxFont->getEmbeddedFontID(&oEmbRef) || GetBaseFont(wsFontBaseName, pData14, nSize14)))
+		{
+			std::wstring wsFileName, wsFontName;
+			GetFont(xref, pFontManager, pFontList, gfxFont, wsFileName, wsFontName);
+
+			m_sFontName = U_TO_UTF8(wsFontName);
+			CheckFontStylePDF(wsFontName, bBold, bItalic);
+			if (!bBold)
+				bBold = gfxFont->isBold();
+			if (!bItalic)
+				bItalic = gfxFont->isItalic();
+		}
+		else if (!gfxFont->locateFont(xref, false) || NSStrings::GetStringFromUTF32(gfxFont->locateFont(xref, false)->path).length() == 0)
 		{
 			std::wstring wsFBN = wsFontBaseName;
-			NSFonts::CFontInfo* pFontInfo = PdfReader::GetFontByParams(xref, pFontManager, gfxFont, wsFBN);
+			NSFonts::CFontInfo* pFontInfo = GetFontByParams(xref, pFontManager, gfxFont, wsFBN);
 			if (pFontInfo && !pFontInfo->m_wsFontPath.empty())
 			{
-				wsFileName = pFontInfo->m_wsFontPath;
-				wsFontName = wsFontBaseName;
+				if (wsFontBaseName.length() > 7 && wsFontBaseName.at(6) == '+')
+				{
+					bool bIsRemove = true;
+					for (int nIndex = 0; nIndex < 6; nIndex++)
+					{
+						wchar_t nChar = wsFontBaseName.at(nIndex);
+						if (nChar < 'A' || nChar > 'Z')
+						{
+							bIsRemove = false;
+							break;
+						}
+					}
+					if (bIsRemove)
+						wsFontBaseName.erase(0, 7);
+				}
+
+				m_sFontName = U_TO_UTF8(wsFontBaseName);
 				m_unFlags |= (1 << 2);
 				m_sActualFontName = U_TO_UTF8(pFontInfo->m_wsFontName);
+				if (pFontInfo->m_bBold)
+					bBold = true;
+				if (pFontInfo->m_bItalic)
+					bItalic = true;
 			}
 		}
 	}
 
-	m_sFontName = U_TO_UTF8(wsFontName);
-	bool bBold = false, bItalic = false;
-	CheckFontStylePDF(wsFontName, bBold, bItalic);
-	m_unFontStyle = 0;
-	if ((gfxFont && gfxFont->isBold()) || bBold)
+	// 5 - Уникальный идентификатор шрифта
+	if (!m_sFontKey.empty())
+		m_unFlags |= (1 << 4);
+
+	if (bBold)
 		m_unFontStyle |= (1 << 0);
-	if ((gfxFont && gfxFont->isItalic()) || bItalic)
+	if (bItalic)
 		m_unFontStyle |= (1 << 1);
 
 	RELEASEOBJECT(gfxFontDict);
@@ -1740,41 +1836,71 @@ void CAnnots::getParents(XRef* xref, Object* oFieldRef)
 
 	pAnnotParent->unRefNum = oFieldRef->getRefNum();
 
-	Object oT;
-	if (oField.dictLookup("T", &oT)->isString())
+	Object oObj;
+	if (oField.dictLookup("T", &oObj)->isString())
 	{
-		TextString* s = new TextString(oT.getString());
+		TextString* s = new TextString(oObj.getString());
 		std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
 		pAnnotParent->unFlags |= (1 << 0);
 		pAnnotParent->sT = sStr;
 		delete s;
 	}
-	oT.free();
+	oObj.free();
 
-	Object oV;
-	if (oField.dictLookup("V", &oV))
+	if (oField.dictLookup("V", &oObj))
 	{
-		pAnnotParent->sV = getValue(&oV);
+		pAnnotParent->sV = getValue(&oObj, false);
 		if (!pAnnotParent->sV.empty())
 			pAnnotParent->unFlags |= (1 << 1);
-	}
-	oV.free();
 
-	Object oDV;
-	if (oField.dictLookup("DV", &oDV))
+		if (oObj.isArray())
+		{
+			pAnnotParent->unFlags |= (1 << 5);
+			int nVLength = oObj.arrayGetLength();
+			for (int j = 0; j < nVLength; ++j)
+			{
+				Object oObj2;
+				if (oObj.arrayGet(j, &oObj2)->isString())
+				{
+					TextString* s = new TextString(oObj2.getString());
+					pAnnotParent->arrV.push_back(NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength()));
+					delete s;
+				}
+				oObj2.free();
+			}
+		}
+	}
+	oObj.free();
+
+	if (oField.dictLookup("DV", &oObj))
 	{
-		pAnnotParent->sDV = getValue(&oDV);
+		pAnnotParent->sDV = getValue(&oObj);
 		if (!pAnnotParent->sDV.empty())
 			pAnnotParent->unFlags |= (1 << 2);
 	}
-	oDV.free();
+	oObj.free();
+
+	Object oI;
+	if (oField.dictLookup("I", &oI)->isArray())
+	{
+		int nILength = oI.arrayGetLength();
+		for (int j = 0; j < nILength; ++j)
+		{
+			if (oI.arrayGet(j, &oObj)->isInt())
+				pAnnotParent->arrI.push_back(oObj.getInt());
+			oObj.free();
+		}
+		if (!pAnnotParent->arrI.empty())
+			pAnnotParent->unFlags |= (1 << 3);
+	}
+	oI.free();
 
 	m_arrParents.push_back(pAnnotParent);
 
 	Object oParentRefObj;
 	if (oField.dictLookupNF("Parent", &oParentRefObj)->isRef())
 	{
-		pAnnotParent->unFlags |= (1 << 3);
+		pAnnotParent->unFlags |= (1 << 4);
 		pAnnotParent->unRefNumParent = oParentRefObj.getRefNum();
 		getParents(xref, &oParentRefObj);
 	}
@@ -2481,7 +2607,19 @@ void CAnnots::CAnnotParent::ToWASM(NSWasm::CData& oRes)
 	if (unFlags & (1 << 2))
 		oRes.WriteString(sDV);
 	if (unFlags & (1 << 3))
+	{
+		oRes.AddInt((unsigned int)arrI.size());
+		for (int i = 0; i < arrI.size(); ++i)
+			oRes.AddInt(arrI[i]);
+	}
+	if (unFlags & (1 << 4))
 		oRes.AddInt(unRefNumParent);
+	if (unFlags & (1 << 5))
+	{
+		oRes.AddInt((unsigned int)arrV.size());
+		for (int i = 0; i < arrV.size(); ++i)
+			oRes.WriteString(arrV[i]);
+	}
 }
 
 void CAnnot::ToWASM(NSWasm::CData& oRes)
@@ -2554,6 +2692,8 @@ void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
 		oRes.WriteString(m_sActualFontName);
 	if (m_unFlags & (1 << 3))
 		oRes.WriteBYTE(m_nH);
+	if (m_unFlags & (1 << 4))
+		oRes.WriteString(m_sFontKey);
 	if (m_unFlags & (1 << 5))
 	{
 		oRes.AddInt(m_arrBC.size());
@@ -2745,6 +2885,18 @@ void CAnnotWidgetCh::ToWASM(NSWasm::CData& oRes)
 	}
 	if (m_unFlags & (1 << 11))
 		oRes.AddInt(m_unTI);
+	if (m_unFlags & (1 << 12))
+	{
+		oRes.AddInt(m_arrI.size());
+		for (int i = 0; i < m_arrI.size(); ++i)
+			oRes.AddInt(m_arrI[i]);
+	}
+	if (m_unFlags & (1 << 13))
+	{
+		oRes.AddInt(m_arrV.size());
+		for (int i = 0; i < m_arrV.size(); ++i)
+			oRes.WriteString(m_arrV[i]);
+	}
 }
 
 void CAnnotWidgetSig::ToWASM(NSWasm::CData& oRes)

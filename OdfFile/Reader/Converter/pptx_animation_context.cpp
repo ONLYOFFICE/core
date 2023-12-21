@@ -144,6 +144,11 @@ namespace oox {
 		SET_PAR_ANIMATION_ATTRIBUTE(PresetID, value);
 	}
 
+	void pptx_animation_context::set_par_animation_preset_subtype(int value)
+	{
+		SET_PAR_ANIMATION_ATTRIBUTE(PresetSubtype, value);
+	}
+
 	void pptx_animation_context::set_par_animation_fill(const std::wstring& value)
 	{
 		SET_PAR_ANIMATION_ATTRIBUTE(Fill, value);
@@ -763,6 +768,7 @@ namespace oox {
 				{
 					CP_XML_ATTR_OPT(L"presetClass"	, PresetClass);
 					CP_XML_ATTR_OPT(L"presetID"		, PresetID);
+					CP_XML_ATTR_OPT(L"presetSubtype", PresetSubtype);
 					CP_XML_ATTR_OPT(L"fill"			, Fill);
 					CP_XML_ATTR_OPT(L"accel"		, Accelerate);
 					CP_XML_ATTR_OPT(L"decel"		, Decelerate);

@@ -290,6 +290,18 @@ void odp_page_state::set_anim_auto_reverse(bool val)
 	anim_levels.back().attlist->smil_auto_reverse_ = val;
 }
 
+void odp_page_state::set_anim_subtype(const std::wstring& val)
+{
+	if (anim_levels.empty())		return;
+	if (!anim_levels.back().attlist)return;
+
+	anim_par* animate = dynamic_cast<anim_par*>(anim_levels.back().elm.get());
+	if (!animate)
+		return;
+
+	anim_levels.back().par_attlist->presentation_preset_sub_type_ = val;
+}
+
 void odp_page_state::set_anim_animation_formula(const std::wstring& val)
 {
 	if (anim_levels.empty())		return;

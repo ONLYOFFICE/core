@@ -71,6 +71,7 @@ namespace oox {
 				_CP_OPT(std::wstring)						End;
 				_CP_OPT(std::wstring)						PresetClass;
 				_CP_OPT(int)								PresetID;
+				_CP_OPT(int)								PresetSubtype;
 				_CP_OPT(std::wstring)						Fill;
 				_CP_OPT(int)								Accelerate;
 				_CP_OPT(int)								Decelerate;
@@ -295,6 +296,7 @@ namespace oox {
 			void set_par_animation_end(const std::wstring& value);
 			void set_par_animation_preset_class(const std::wstring& value);
 			void set_par_animation_preset_id(int value);
+			void set_par_animation_preset_subtype(int value);
 			void set_par_animation_fill(const std::wstring& value);
 			void set_par_animation_accelerate(int value);
 			void set_par_animation_decelerate(int value);

@@ -583,18 +583,19 @@ namespace DocFileFormat
 				int nCurrent = 0;
 				while (nCurrent < nCount)
 				{
-					//if (*pShort < 0xD800 || *pShort > 0xDBFF)
+					if (*pShort < 0xD800 || *pShort > 0xDBFF)
 					{
 						STLCollection->push_back((wchar_t)(*pShort));
 						++pShort;
 						++nCurrent;
 					}
-					//else
-					//{
-					//	*pWCurrent = (wchar_t)(((((pShort[0] - 0xD800) & 0x03FF) << 10) | ((pShort[1] - 0xDC00) & 0x03FF)) + 0x10000);
-					//	pShort += 2;
-					//	nCurrent += 2;
-					//}
+					else
+					{
+						STLCollection->push_back((wchar_t)(((((pShort[0] - 0xD800) & 0x03FF) << 10) | ((pShort[1] - 0xDC00) & 0x03FF)) + 0x10000));
+						STLCollection->push_back((wchar_t)L'');
+						pShort += 2;
+						nCurrent += 2;
+					}
 				}
 #else
                 while ( i < size )

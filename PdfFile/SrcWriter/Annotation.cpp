@@ -809,8 +809,6 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CWidgetAnnotation::CWidgetAnnotation(CXref* pXref, EAnnotType eType) : CAnnotation(pXref, eType)
 	{
-		Add("Ff", 0);
-
 		m_pMK     = NULL;
 		m_pParent = NULL;
 		m_pAA     = NULL;
@@ -1487,14 +1485,32 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CChoiceWidget::CChoiceWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
 	{
-		Add("FT", "Ch");
+		m_pFont = NULL;
+		m_dFontSize = 10.0;
+		m_bBold   = false;
+		m_bItalic = false;
 	}
 	void CChoiceWidget::SetFlag(const int& nFlag)
 	{
+		// TODO
+		Remove("AP");
+
 		int nFlags = nFlag;
 		if (m_nSubtype == WidgetCombobox)
 			nFlags |= (1 << 17);
-		CWidgetAnnotation::SetFlag(nFlags);
+
+		CDictObject* pOwner = GetObjOwnValue("Ff");
+		if (!pOwner)
+			pOwner = GetObjOwnValue("FT");
+		else
+		{
+			int nFlags2 = ((CNumberObject*)(pOwner->Get("Ff")))->Get();
+			if (nFlags2 & (1 << 19))
+				nFlags |= (1 << 19);
+		}
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("Ff", nFlags);
 	}
 	void CChoiceWidget::SetTI(const int& nTI)
 	{
@@ -1510,13 +1526,38 @@ namespace PdfWriter
 			pOwner = this;
 		pOwner->Add("V", new CStringObject(sValue.c_str()));
 	}
+	void CChoiceWidget::SetI(const std::vector<int>& arrI)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("I", pArray);
+
+		for (int i = 0; i < arrI.size(); ++i)
+			pArray->Add(arrI[i]);
+	}
+	void CChoiceWidget::SetV(const std::vector<std::wstring>& arrV)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("V", pArray);
+
+		for (int i = 0; i < arrV.size(); ++i)
+			pArray->Add(new PdfWriter::CStringObject(U_TO_UTF8(arrV[i]).c_str()));
+	}
 	void CChoiceWidget::SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt)
 	{
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
 			return;
 
-		Add("Opt", pArray);
+		CDictObject* pOwner = GetObjOwnValue("Opt");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("Opt", pArray);
 
 		for (const std::pair<std::wstring, std::wstring>& PV : arrOpt)
 		{
@@ -1537,6 +1578,26 @@ namespace PdfWriter
 				pArray2->Add(new CStringObject(sValue.c_str()));
 			}
 		}
+	}
+	void CChoiceWidget::SetFont(CFontCidTrueType* pFont, double dFontSize, bool bBold, bool bItalic)
+	{
+		m_pFont = pFont;
+		m_dFontSize = dFontSize;
+		m_bBold     = bBold;
+		m_bItalic   = bItalic;
+	}
+	void CChoiceWidget::SetTextAppearance(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, double dFontSize, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts)
+	{
+		return;
+		CAnnotAppearance* pAppearance = new CAnnotAppearance(m_pXref, this);
+		Add("AP", pAppearance);
+
+		CAnnotAppearanceObject* pNormal = pAppearance->GetNormal();
+
+		if (dY == -1)
+			dY = fabs(m_oRect.fTop - m_oRect.fBottom) - dFontSize - 2;
+
+		pNormal->DrawSimpleText(wsValue, pCodes, unCount, pFont, dFontSize, dX, dY, 0, 0, 0, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), ppFonts, pShifts);
 	}
 	//----------------------------------------------------------------------------------------
 	// CSignatureWidget

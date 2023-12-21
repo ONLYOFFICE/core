@@ -467,7 +467,17 @@ namespace PdfWriter
 		virtual void SetFlag (const int& nFlag) override;
 		void SetTI(const int& nTI);
 		void SetV(const std::wstring& wsV);
+		void SetI(const std::vector<int>& arrI);
+		void SetV(const std::vector<std::wstring>& arrV);
 		void SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt);
+
+		void SetFont(CFontCidTrueType* pFont, double dFontSize, bool bBold, bool bItalic);
+		void SetTextAppearance(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0, CFontCidTrueType** ppFonts = NULL, double* pShifts = NULL);
+
+		CFontCidTrueType* m_pFont;
+		double m_dFontSize;
+		bool m_bBold;
+		bool m_bItalic;
 	};
 	class CSignatureWidget : public CWidgetAnnotation
 	{

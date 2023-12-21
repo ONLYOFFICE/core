@@ -688,6 +688,8 @@ void CAnnotFieldInfo::CWidgetAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader
 		m_wsTU = pReader->ReadString();
 	if (nFlags & (1 << 1))
 		m_wsDS = pReader->ReadString();
+	if (nFlags & (1 << 2))
+		m_wsFK = pReader->ReadString();
 	if (nFlags & (1 << 3))
 		m_nH = pReader->ReadByte();
 	if (nFlags & (1 << 5))
@@ -797,13 +799,25 @@ void CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr::Read(NSOnlineOfficeBinToP
 		{
 			std::wstring s1 = pReader->ReadString();
 			std::wstring s2 = pReader->ReadString();
-			m_arrOpt.push_back(std::make_pair(s2, s1));
+			m_arrOpt.push_back(std::make_pair(s1, s2));
 		}
 	}
 	if (nFlags & (1 << 11))
 		m_nTI = pReader->ReadInt();
 	if (nFlags & (1 << 12))
 		m_wsAPV = pReader->ReadString();
+	if (nFlags & (1 << 13))
+	{
+		int n = pReader->ReadInt();
+		for (int i = 0; i < n; ++i)
+			m_arrV.push_back(pReader->ReadString());
+	}
+	if (nFlags & (1 << 14))
+	{
+		int n = pReader->ReadInt();
+		for (int i = 0; i < n; ++i)
+			m_arrI.push_back(pReader->ReadInt());
+	}
 }
 
 CAnnotFieldDelete::CAnnotFieldDelete() : IAdvancedCommand(AdvancedCommandType::DeleteAnnot) {}
@@ -839,7 +853,19 @@ bool CWidgetsInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafil
 		if (nFlags & (1 << 2))
 			pParent->sDV   = pReader->ReadString();
 		if (nFlags & (1 << 3))
+		{
+			int n = pReader->ReadInt();
+			for (int i = 0; i < n; ++i)
+				pParent->arrI.push_back(pReader->ReadInt());
+		}
+		if (nFlags & (1 << 4))
 			pParent->nParentID = pReader->ReadInt();
+		if (nFlags & (1 << 5))
+		{
+			int n = pReader->ReadInt();
+			for (int i = 0; i < n; ++i)
+				pParent->arrV.push_back(pReader->ReadString());
+		}
 		m_arrParents.push_back(pParent);
 	}
 

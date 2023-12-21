@@ -17,6 +17,8 @@ namespace SVG
 
 	void CGraphicsContainer::SetData(XmlUtils::CXmlNode &oNode)
 	{
+		SetNodeData(oNode);
+
 		m_oWindow.m_oX     .SetValue(oNode.GetAttribute(L"x"));
 		m_oWindow.m_oY     .SetValue(oNode.GetAttribute(L"y"));
 		m_oWindow.m_oWidth .SetValue(oNode.GetAttribute(L"width"), 0, true);

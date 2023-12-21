@@ -62,9 +62,11 @@ namespace SVG
 		bool ApplyTransform(IRenderer* pRenderer, const SvgTransform* pTransform, Aggplus::CMatrix& oOldMatrix) const;
 		bool ApplyClip(IRenderer* pRenderer, const TClip* pClip, const CSvgFile *pFile, const TBounds& oBounds) const;
 		bool ApplyMask(IRenderer* pRenderer, const SvgColor* pMask, const CSvgFile *pFile, const TBounds& oBounds) const;
-		
+
 		bool ApplyDef(IRenderer* pRenderer, const CSvgFile *pFile, const std::wstring& wsUrl, const TBounds& oBounds) const;
-		
+
+		void SetNodeData(XmlUtils::CXmlNode& oNode);
+
 		friend class CRenderedObject;
 		friend class CAppliedObject;
 
@@ -79,6 +81,7 @@ namespace SVG
 		friend class CPolygon;
 		friend class CEllipse;
 		friend class CPolyline;
+		friend class CGraphicsContainer;
 
 		friend class CClipPath;
 

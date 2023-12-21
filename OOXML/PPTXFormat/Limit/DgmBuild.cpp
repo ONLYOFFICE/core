@@ -50,12 +50,18 @@ namespace PPTX
 		}
 		unsigned char DgmBuild::GetBYTECode() const
 		{
-			//not using yet
+			if (L"bg" == m_strValue)	return 0;
+			if (L"sp" == m_strValue)	return 1;
 			return 0;
 		}
 		void DgmBuild::SetBYTECode(const unsigned char& src)
 		{
-			//not using yet
+			switch (src)
+			{
+			case 0:		m_strValue = L"bg";		break;
+			case 1:		m_strValue = L"sp";		break;
+			default:	m_strValue = L"sp";
+			}
 		}
 	} // namespace Limit
 } // namespace PPTX

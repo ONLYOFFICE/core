@@ -52,12 +52,22 @@ namespace PPTX
 		}
 		unsigned char AnimationDgmBuild::GetBYTECode() const
 		{
-			//not using yet
+			if (L"allAtOnce" == m_strValue)	return 0;
+			if (L"lvlAtOnce" == m_strValue)	return 1;
+			if (L"lvlOne" == m_strValue)	return 2;
+			if (L"one" == m_strValue)		return 3;
 			return 0;
 		}
 		void AnimationDgmBuild::SetBYTECode(const unsigned char& src)
 		{
-			//not using yet
+			switch (src)
+			{
+			case 0:		m_strValue = L"allAtOnce";	break;
+			case 1:		m_strValue = L"lvlAtOnce";	break;
+			case 2:		m_strValue = L"lvlOne";		break;
+			case 3:		m_strValue = L"one";		break;
+			default:	m_strValue = L"allAtOnce";
+			}
 		}
 	} // namespace Limit
 } // namespace PPTX

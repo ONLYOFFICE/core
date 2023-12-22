@@ -141,8 +141,7 @@
 		Undefined   : 0,
 		Page        : 1,
 		Annotation  : 2,
-		Forms       : 4,
-		ButtonIcons : 8
+		Forms       : 4
 	};
 
 	function CFile()
@@ -157,6 +156,7 @@
 
 		// for async fonts loader
 		this.fontPageIndex = -1;
+		this.fontPageUpdateType = UpdateFontsSource.Undefined;
 		this.fontStreams = {};
 	}
 
@@ -999,9 +999,7 @@
 		}
 
 		let res = {};
-		this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.ButtonIcons);
 		let ext = Module["_GetButtonIcons"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, bBase64 ? 1 : 0, nWidget === undefined ? -1 : nWidget, nView);
-		this.unlockPageNumForFontsLoader();
 		if (ext == 0)
 			return res;
 
@@ -1559,11 +1557,12 @@
 	CFile.prototype.lockPageNumForFontsLoader = function(pageIndex, type)
 	{
 		this.fontPageIndex = pageIndex;
-		this.pages[pageIndex].fontsUpdateType |= type;
+		this.fontPageUpdateType = type;		
 	};
 	CFile.prototype.unlockPageNumForFontsLoader = function()
 	{
 		this.fontPageIndex = -1;
+		drawingFile.fontPageUpdateType = UpdateFontsSource.Undefined;
 	};
 	
 	self["AscViewer"]["CDrawingFile"] = CFile;
@@ -1654,6 +1653,8 @@
 			addToArrayAsDictionary(drawingFile.fontStreams[fileId].pages, drawingFile.fontPageIndex);
 			addToArrayAsDictionary(drawingFile.pages[drawingFile.fontPageIndex].fonts, fileId);
 
+			drawingFile.pages[drawingFile.fontPageIndex].fontsUpdateType |= drawingFile.fontPageUpdateType;
+
 			// font can be loading in editor
 			if (undefined === file.externalCallback)
 			{
@@ -1667,7 +1668,6 @@
 					let pagesRepaint_Page        = [];
 					let pagesRepaint_Annotation  = [];
 					let pagesRepaint_Forms       = [];
-					let pagesRepaint_ButtonIcons = [];
 
 					for (let i = 0, len = pages.length; i < len; i++)
 					{
@@ -1695,9 +1695,6 @@
 							if (pageObj.fontsUpdateType & UpdateFontsSource.Forms)
 								pagesRepaint_Forms.push(pageNum);
 
-							if (pageObj.fontsUpdateType & UpdateFontsSource.ButtonIcons)
-								pagesRepaint_ButtonIcons.push(pageNum);
-
 							pageObj.fontsUpdateType = UpdateFontsSource.Undefined;
 						}
 					}
@@ -1710,9 +1707,6 @@
 
 					if (pagesRepaint_Forms.length > 0 && drawingFile.onRepaintForms)
 						drawingFile.onRepaintForms(pagesRepaint_Forms);
-
-					if (pagesRepaint_ButtonIcons.length > 0 && drawingFile.onRepaintButtonIcons)
-						drawingFile.onRepaintButtonIcons(pagesRepaint_ButtonIcons);
 
 					delete _t.externalCallback;
 				};

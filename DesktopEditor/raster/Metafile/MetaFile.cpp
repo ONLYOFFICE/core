@@ -145,7 +145,7 @@ namespace MetaFile
 		double dWidth  = 25.4 * nWidth / 96;
 		double dHeight = 25.4 * nHeight / 96;
 
-		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+		BYTE* pBgraData = new(std::nothrow) BYTE[nWidth * nHeight * 4];
 		if (!pBgraData)
 			return;
 

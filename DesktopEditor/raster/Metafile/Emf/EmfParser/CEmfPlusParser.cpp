@@ -1523,7 +1523,7 @@ namespace MetaFile
 				int nWidth  = dWidth  * dKoef;
 				int nHeight = dHeight * dKoef;
 
-				BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+				BYTE* pBgraData = new(std::nothrow) BYTE[nWidth * nHeight * 4];
 
 				if (!pBgraData)
 					return;
@@ -1647,7 +1647,7 @@ namespace MetaFile
 				int nWidth  = dWidth  * dKoef;
 				int nHeight = dHeight * dKoef;
 
-				BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+				BYTE* pBgraData = new(std::nothrow) BYTE[nWidth * nHeight * 4];
 
 				if (!pBgraData)
 					return;

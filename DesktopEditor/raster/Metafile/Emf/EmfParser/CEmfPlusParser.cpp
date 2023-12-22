@@ -1509,19 +1509,23 @@ namespace MetaFile
 
 				CMetaFileRenderer* pMetaFileRenderer = (CMetaFileRenderer*)(((CEmfInterpretatorRender*)m_pInterpretator)->GetRenderer());
 
-				double dScaleX = pMetaFileRenderer->GetScaleX();
-				double dScaleY = pMetaFileRenderer->GetScaleY();
-
-				double dWidth  = fabs(pEmfBounds->Right - pEmfBounds->Left) * dScaleX;
-				double dHeight = fabs(pEmfBounds->Bottom - pEmfBounds->Top) * dScaleY;
-
 				const double dKoef = 96. / 25.4;
 
-				dScaleX *= dKoef;
-				dScaleY *= dKoef;
+				const int nParentWidth  = pMetaFileRenderer->GetWidth()  * dKoef;
+				const int nParentHeight = pMetaFileRenderer->GetHeight() * dKoef;
 
-				int nWidth  = dWidth  * dKoef;
-				int nHeight = dHeight * dKoef;
+				int nWidth  = abs(pEmfBounds->Right - pEmfBounds->Left) * pMetaFileRenderer->GetScaleX();
+				int nHeight = abs(pEmfBounds->Bottom - pEmfBounds->Top) * pMetaFileRenderer->GetScaleY();
+
+				double dScale = 1.;
+
+				if (nWidth > nParentWidth || nHeight > nParentHeight)
+				{
+					dScale = std::min((double)nParentWidth / (double)nWidth, (double)nParentHeight / (double)nHeight);
+
+					nWidth  *= dScale;
+					nHeight *= dScale;
+				}
 
 				BYTE* pBgraData = new(std::nothrow) BYTE[nWidth * nHeight * 4];
 
@@ -1535,6 +1539,9 @@ namespace MetaFile
 				{
 					((unsigned int*)pBgraData)[i] = alfa;
 				}
+
+				double dWidth  = nWidth / dKoef;
+				double dHeight = nWidth / dKoef;
 
 				CBgraFrame oFrame;
 				oFrame.put_Data(pBgraData);
@@ -1564,10 +1571,10 @@ namespace MetaFile
 
 				TRectL oClipRect;
 
-				oClipRect.Left   = oSrcRect.dX * dScaleX;
-				oClipRect.Top    = oSrcRect.dY * dScaleY;
-				oClipRect.Right  = (oSrcRect.dX + oSrcRect.dWidth)  * dScaleX;
-				oClipRect.Bottom = (oSrcRect.dY + oSrcRect.dHeight) * dScaleY;
+				oClipRect.Left   = oSrcRect.dX * dScale;
+				oClipRect.Top    = oSrcRect.dY * dScale;
+				oClipRect.Right  = (oSrcRect.dX + oSrcRect.dWidth) * dScale;
+				oClipRect.Bottom = (oSrcRect.dY + oSrcRect.dHeight) * dScale;
 
 				BYTE* pNewBuffer = GetClipedImage(pPixels, lWidth, lHeight, oClipRect);
 
@@ -1633,19 +1640,23 @@ namespace MetaFile
 
 				CMetaFileRenderer* pMetaFileRenderer = (CMetaFileRenderer*)(((CEmfInterpretatorRender*)m_pInterpretator)->GetRenderer());				
 
-				double dScaleX = pMetaFileRenderer->GetScaleX();
-				double dScaleY = pMetaFileRenderer->GetScaleY();
-
-				double dWidth  = fabs(oWmfBounds.Right - oWmfBounds.Left) * dScaleX;
-				double dHeight = fabs(oWmfBounds.Bottom - oWmfBounds.Top) * dScaleY;
-
 				const double dKoef = 96. / 25.4;
 
-				dScaleX *= dKoef;
-				dScaleY *= dKoef;
+				const int nParentWidth  = pMetaFileRenderer->GetWidth()  * dKoef;
+				const int nParentHeight = pMetaFileRenderer->GetHeight() * dKoef;
 
-				int nWidth  = dWidth  * dKoef;
-				int nHeight = dHeight * dKoef;
+				int nWidth  = abs(oWmfBounds.Right - oWmfBounds.Left) * pMetaFileRenderer->GetScaleX();
+				int nHeight = abs(oWmfBounds.Bottom - oWmfBounds.Top) * pMetaFileRenderer->GetScaleY();
+
+				double dScale = 1.;
+
+				if (nWidth > nParentWidth || nHeight > nParentHeight)
+				{
+					dScale = std::min((double)nParentWidth / (double)nWidth, (double)nParentHeight / (double)nHeight);
+
+					nWidth  *= dScale;
+					nHeight *= dScale;
+				}
 
 				BYTE* pBgraData = new(std::nothrow) BYTE[nWidth * nHeight * 4];
 
@@ -1659,6 +1670,9 @@ namespace MetaFile
 				{
 					((unsigned int*)pBgraData)[i] = alfa;
 				}
+
+				double dWidth  = nWidth / dKoef;
+				double dHeight = nWidth / dKoef;
 
 				CBgraFrame oFrame;
 				oFrame.put_Data(pBgraData);
@@ -1687,10 +1701,10 @@ namespace MetaFile
 
 				TRectL oClipRect;
 
-				oClipRect.Left   = oSrcRect.dX;
-				oClipRect.Top    = oSrcRect.dY;
-				oClipRect.Right  = oSrcRect.dX + oSrcRect.dWidth;
-				oClipRect.Bottom = oSrcRect.dY + oSrcRect.dHeight;
+				oClipRect.Left   = oSrcRect.dX * dScale;
+				oClipRect.Top    = oSrcRect.dY * dScale;
+				oClipRect.Right  = (oSrcRect.dX + oSrcRect.dWidth) * dScale;
+				oClipRect.Bottom = (oSrcRect.dY + oSrcRect.dHeight) * dScale;
 
 				BYTE* pNewBuffer = GetClipedImage(pPixels, lWidth, lHeight, oClipRect);
 

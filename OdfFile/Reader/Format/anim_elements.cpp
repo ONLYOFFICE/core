@@ -322,7 +322,7 @@ static std::wstring pptx_convert_smil_attribute_name(const odf_types::smil_attri
 	case smil_attribute_name::lineColor:		return L"";
 	case smil_attribute_name::lineStyle:		return L"";
 	case smil_attribute_name::opacity:			return L"style.opacity";
-	case smil_attribute_name::rotate:			return L"r";
+	case smil_attribute_name::rotate:			return L"style.rotation";
 	case smil_attribute_name::stroke:			return L"stroke.on";
 	case smil_attribute_name::strokeColor:		return L"stroke.color";
 	case smil_attribute_name::skewX:			return L"xshear";

@@ -451,7 +451,7 @@ namespace PdfWriter
 		void SetV (const std::wstring& wsV);
 		void SetRV(const std::wstring& wsRV);
 
-		void SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, const double& dAlpha, double dFontSize, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts);
+		void SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, double dFontSize, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts);
 		void StartAP(CFontDict* pFont, const double& dFontSize, const double& dAlpha);
 		void AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts = NULL, const double* pShifts = NULL);
 		void EndAP();

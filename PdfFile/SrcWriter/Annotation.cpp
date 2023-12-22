@@ -1411,24 +1411,21 @@ namespace PdfWriter
 		std::string sValue = U_TO_UTF8(wsRV);
 		Add("RV", new CStringObject(sValue.c_str()));
 	}
-	void CTextWidget::SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, const double& dAlpha, double dFontSize, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts)
+	void CTextWidget::SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, double dFontSize, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts)
 	{
+		if (!m_oBorder.bHave && m_pMK && m_pMK->Get("BC"))
+		{
+			m_oBorder.bHave = true;
+			m_oBorder.nType = 1;
+			m_oBorder.dWidth = 1;
+		}
+
 		m_pAppearance = new CAnnotAppearance(m_pXref, this);
 		if (!m_pAppearance)
 			return;
 		Add("AP", m_pAppearance);
-
 		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
-		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
-
-		const char* sExtGrStateName = NULL;
-		if (fabs(dAlpha - 1.0) > 0.001)
-		{
-			CExtGrState* pExtGrState = m_pDocument->GetFillAlpha(dAlpha);
-			sExtGrStateName = pFieldsResources->GetExtGrStateName(pExtGrState);
-		}
-
-		pNormal->DrawSimpleText(wsValue, pCodes, unCount, pFont, dFontSize, dX, dY, 0, 0, 0, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), ppFonts, pShifts);
+		pNormal->DrawSimpleText(wsValue, pCodes, unCount, pFont, dFontSize, dX, dY, 0, 0, 0, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), ppFonts, pShifts);
 	}
 	void CTextWidget::StartAP(CFontDict* pFont, const double& dFontSize, const double& dAlpha)
 	{

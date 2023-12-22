@@ -1950,7 +1950,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			wsFontKey = pPr->GetFontKey();
 
 		std::wstring wsFontName = pPr->GetFontName();
-		if (wsFontName == L"Times-Roman")
+		if (wsFontName == L"Times-Roman" || wsFontName == L"Times-Bold" || wsFontName == L"Times-BoldItalic" || wsFontName == L"Times-Italic")
 			wsFontName = L"Times New Roman";
 
 		put_FontName(wsFontName);
@@ -2244,11 +2244,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			}
 
 			double dMargin = 2; // Отступ используемый в Adobe
-			double dShiftX = dMargin;
-
 			bool isComb = pTextWidget->IsCombFlag();
-
-			// TODO PlaceHolder заполнитель без значения
 
 			if (!isComb && pTextWidget->IsMultiLine())
 			{
@@ -2286,7 +2282,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				for (unsigned int unIndex = 0; unIndex < unLinesCount; ++unIndex)
 				{
 					unsigned int unLineStart = m_oLinesManager.GetLineStartPos(unIndex);
-					double dLineShiftX = dShiftX;
+					double dLineShiftX = dMargin;
 					double dLineWidth = m_oLinesManager.GetLineWidth(unIndex, dFontSize);
 					if (2 == nAlign)
 						dLineShiftX += (dX2 - dX1 - dLineWidth);
@@ -2311,16 +2307,14 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			{
 				double* pShifts = NULL;
 				unsigned int unShiftsCount = 0;
+				double dShiftX = dMargin;
 
 				if (isComb)
 				{
-					// TODO для безопасности перевыставить в Ff DoNotScroll=true, DoNotSpellCheck=true, Multiline=false
-
 					unShiftsCount = unLen;
 					pShifts = new double[unShiftsCount];
 					if (pShifts && unShiftsCount)
 					{
-						// Сдвиг нулевой для comb форм и не забываем, что мы к ширине добавили 2 * dMargin
 						dShiftX = 0;
 						unsigned int unCellsCount = std::max(unShiftsCount, unMaxLen);
 						double dPrevW = 0;
@@ -2339,7 +2333,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 						}
 					}
 				}
-				else if (2 == nAlign || 1 == nAlign)
+				else if (1 == nAlign || 2 == nAlign)
 				{
 					double dSumWidth = 0;
 					for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
@@ -2356,7 +2350,23 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				}
 
 				double dBaseLine = dY2 - dY1 - dFontSize - dMargin;
-				pTextWidget->SetAP(wsValue, pCodes, unLen, m_pFont, 1.0, m_oFont.GetSize(), dShiftX, dBaseLine, ppFonts, pShifts);
+				if (pFontTT)
+				{
+					double dKoef = dFontSize / pFontTT->m_dUnitsPerEm;
+					double dHeight = pFontTT->m_dHeight * dKoef;
+					double dDescent = std::abs(pFontTT->m_dDescent * dKoef);
+					double dAscent = dHeight - dDescent;
+					dBaseLine = dAscent;
+					double dMidPoint = dAscent - pFontTT->m_dMinY * dKoef + dAscent - pFontTT->m_dMaxY * dKoef;
+					double dDiff = (dY2 - dY1 - dMidPoint) / 2.0;
+					dBaseLine += dDiff;
+					dBaseLine = dY2 - dY1 - dBaseLine;
+					dBaseLine = (dY2 - dY1 - (pFontTT->m_dMaxY - pFontTT->m_dMinY) * dKoef) / 2.0;
+					dBaseLine = (dY2 - dY1 - dAscent) / 2.0;
+					dBaseLine = (dY2 - dY1 - dMidPoint) / 2.0;
+				}
+
+				pTextWidget->SetAP(wsValue, pCodes, unLen, m_pFont, m_oFont.GetSize(), dShiftX, dBaseLine, ppFonts, pShifts);
 				RELEASEARRAYOBJECTS(pShifts);
 			}
 

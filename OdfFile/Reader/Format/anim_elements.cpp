@@ -903,11 +903,13 @@ std::wstring anim_transitionFilter::convert_filter()
 				pptx_subtype = L"upRight";
 			break;
 		case smil_transition_type::slideWipe:
-			filter = L"slide";
+			filter = L"wipe";
 			if (subtype)
 			{
-				if (subtype.value() == L"fromRight")			pptx_subtype = L"fromRight";
-				else											pptx_subtype = L"fromLeft";
+				if (subtype.value() == L"fromLeft")					pptx_subtype = L"left";
+				else if (subtype.value() == L"fromTop")				pptx_subtype = L"up";
+				else if (subtype.value() == L"fromRight")			pptx_subtype = L"right";
+				else if (subtype.value() == L"fromBottom")			pptx_subtype = L"down";
 			}
 			break;
 		case smil_transition_type::fade:

@@ -472,7 +472,7 @@ namespace PdfWriter
 		void SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt);
 
 		void SetFont(CFontCidTrueType* pFont, double dFontSize, bool bBold, bool bItalic);
-		void SetTextAppearance(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0, CFontCidTrueType** ppFonts = NULL, double* pShifts = NULL);
+		void SetTextAppearance(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, double dX = 0.0, double dY = 0.0, CFontCidTrueType** ppFonts = NULL);
 
 		CFontCidTrueType* m_pFont;
 		double m_dFontSize;

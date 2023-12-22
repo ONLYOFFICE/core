@@ -750,7 +750,7 @@ TEST(SMConvectorTest,FunctionSinh)
 	StarMath::CParserStarMathString oTemp;
 	StarMath::CConversionSMtoOOXML oTest;
 	oTest.StartConversion(oTemp.Parse(wsString));
-	std::wstring wsXmlString = L"<m:oMathPara><m:oMath><m:func><m:funcPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr></m:ctrlPr></m:funcPr><m:fName><m:r><m:rPr><m:sty m:val=\"p\" /></m:rPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>sinh</m:t></m:r></m:fName><m:e><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>2</m:t></m:r></m:e></m:func><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>\u2283</m:t></m:r><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>3</m:t></m:r></m:oMath></m:oMathPara>";
+	std::wstring wsXmlString = L"<m:oMathPara><m:oMath><m:func><m:funcPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr></m:ctrlPr></m:funcPr><m:fName><m:r><m:rPr><m:sty m:val=\"p\" /></m:rPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>sinh</m:t></m:r></m:fName><m:e><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>2</m:t></m:r><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>\u2283</m:t></m:r><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>3</m:t></m:r></m:e></m:func></m:oMath></m:oMathPara>";
 	EXPECT_EQ(oTest.GetOOXML(),wsXmlString);
 }
 
@@ -850,7 +850,7 @@ TEST(SMConvectorTest,FunctionArtanhArcoth)
 	StarMath::CParserStarMathString oTemp;
 	StarMath::CConversionSMtoOOXML oTest;
 	oTest.StartConversion(oTemp.Parse(wsString));
-	std::wstring wsXmlString = L"<m:oMathPara><m:oMath><m:func><m:funcPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr></m:ctrlPr></m:funcPr><m:fName><m:r><m:rPr><m:sty m:val=\"p\" /></m:rPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>arcoth</m:t></m:r></m:fName><m:e><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>30</m:t></m:r></m:e></m:func><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>\u2282</m:t></m:r><m:func><m:funcPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr></m:ctrlPr></m:funcPr><m:fName><m:r><m:rPr><m:sty m:val=\"p\" /></m:rPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>artanh</m:t></m:r></m:fName><m:e><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>27</m:t></m:r></m:e></m:func></m:oMath></m:oMathPara>";
+	std::wstring wsXmlString = L"<m:oMathPara><m:oMath><m:func><m:funcPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr></m:ctrlPr></m:funcPr><m:fName><m:r><m:rPr><m:sty m:val=\"p\" /></m:rPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>arcoth</m:t></m:r></m:fName><m:e><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>30</m:t></m:r><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>\u2282</m:t></m:r><m:func><m:funcPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr></m:ctrlPr></m:funcPr><m:fName><m:r><m:rPr><m:sty m:val=\"p\" /></m:rPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>artanh</m:t></m:r></m:fName><m:e><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>27</m:t></m:r></m:e></m:func></m:e></m:func></m:oMath></m:oMathPara>";
 	EXPECT_EQ(oTest.GetOOXML(),wsXmlString);
 }
 
@@ -940,7 +940,7 @@ TEST(SMConvectorTest,OperatorLllint)
 	StarMath::CParserStarMathString oTemp;
 	StarMath::CConversionSMtoOOXML oTest;
 	oTest.StartConversion(oTemp.Parse(wsString));
-	std::wstring wsXmlString = L"<m:oMathPara><m:oMath><m:nary><m:naryPr><m:chr m:val=\"\u2230\" /><m:limLoc m:val=\"undOvr\" /><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"FF0000\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr></m:ctrlPr></m:naryPr><m:sub><m:f><m:fPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"FF0000\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr></m:ctrlPr></m:fPr><m:num><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"000080\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr><m:t>2</m:t></m:r></m:num><m:den><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"DC143C\" /></w:rPr><m:t>10</m:t></m:r></m:den></m:f></m:sub><m:sup><m:d><m:dPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"00FF00\" /></w:rPr></m:ctrlPr></m:dPr><m:e><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"00FF00\" /></w:rPr><m:t>2</m:t></m:r><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"FFA500\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr><m:t>+3</m:t></m:r></m:e></m:d></m:sup><m:e><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"FF0000\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr><m:t>100</m:t></m:r></m:e></m:nary></m:oMath></m:oMathPara>";
+	std::wstring wsXmlString = L"<m:oMathPara><m:oMath><m:nary><m:naryPr><m:chr m:val=\"\u2230\" /><m:limLoc m:val=\"undOvr\" /><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"FF0000\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr></m:ctrlPr></m:naryPr><m:sub><m:f><m:fPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"FF0000\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr></m:ctrlPr></m:fPr><m:num><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"000080\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr><m:t>2</m:t></m:r></m:num><m:den><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"DC143C\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr><m:t>10</m:t></m:r></m:den></m:f></m:sub><m:sup><m:d><m:dPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"00FF00\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr></m:ctrlPr></m:dPr><m:e><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"00FF00\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr><m:t>2</m:t></m:r><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"FFA500\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr><m:t>+3</m:t></m:r></m:e></m:d></m:sup><m:e><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"FF0000\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr><m:t>100</m:t></m:r></m:e></m:nary></m:oMath></m:oMathPara>";
 	EXPECT_EQ(oTest.GetOOXML(),wsXmlString);
 }
 
@@ -950,11 +950,31 @@ TEST(SMConvectorTest,BracketLdlineAttribute)
 	StarMath::CParserStarMathString oTemp;
 	StarMath::CConversionSMtoOOXML oTest;
 	oTest.StartConversion(oTemp.Parse(wsString));
-	std::wstring wsXmlString = L"<m:oMathPara><m:oMath><m:d><m:dPr><m:begChr m:val=\"\u2016\" /><m:endChr m:val=\"\u2016\" /><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"00FF00\" /></w:rPr></m:ctrlPr></m:dPr><m:e><m:f><m:fPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"00FF00\" /></w:rPr></m:ctrlPr></m:fPr><m:num><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"000080\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr><m:t>10</m:t></m:r></m:num><m:den><m:acc><m:accPr><m:chr m:val=\"\u0307\" /><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"800080\" /></w:rPr></m:ctrlPr></m:accPr><m:e><m:acc><m:accPr><m:chr m:val=\"\u0332\" /><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"800080\" /></w:rPr></m:ctrlPr></m:accPr><m:e><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"800080\" /></w:rPr><m:t>100</m:t></m:r></m:e></m:acc></m:e></m:acc></m:den></m:f><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"FFA500\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /><m:sty m:val=\"i\" /><w:i /></w:rPr><m:t>+3</m:t></m:r></m:e></m:d><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>+10</m:t></m:r></m:oMath></m:oMathPara>";
+	std::wstring wsXmlString = L"<m:oMathPara><m:oMath><m:d><m:dPr><m:begChr m:val=\"\u2016\" /><m:endChr m:val=\"\u2016\" /><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"00FF00\" /></w:rPr></m:ctrlPr></m:dPr><m:e><m:f><m:fPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"00FF00\" /></w:rPr></m:ctrlPr></m:fPr><m:num><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"000080\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr><m:t>10</m:t></m:r></m:num><m:den><m:acc><m:accPr><m:chr m:val=\"\u0307\" /><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"800080\" /></w:rPr></m:ctrlPr></m:accPr><m:e><m:acc><m:accPr><m:chr m:val=\"\u0332\" /><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"800080\" /></w:rPr></m:ctrlPr></m:accPr><m:e><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"800080\" /></w:rPr><m:t>100</m:t></m:r></m:e></m:acc></m:e></m:acc></m:den></m:f><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"FFA500\" /><m:sty m:val=\"bi\" /></w:rPr><m:t>+3</m:t></m:r></m:e></m:d><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>+</m:t></m:r><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><m:sty m:val=\"bi\" /></w:rPr><m:t>10</m:t></m:r></m:oMath></m:oMathPara>";
 	EXPECT_EQ(oTest.GetOOXML(),wsXmlString);
 }
 
-//TEST(SMConvectorTest,FunctionCos)
+TEST(SMConvectorTest,Example11)
+{
+	std::wstring wsString = L"f(x) = sum from { n=0 } to { infinity } { {f^{(n)}(x_0) } over { fact{n} } (x-x_0)^n }";
+	StarMath::CParserStarMathString oTemp;
+	StarMath::CConversionSMtoOOXML oTest;
+	oTest.StartConversion(oTemp.Parse(wsString));
+	std::wstring wsXmlString = L"<m:oMathPara><m:oMath><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>f</m:t></m:r><m:d><m:dPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr></m:ctrlPr></m:dPr><m:e><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>x</m:t></m:r></m:e></m:d><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>=</m:t></m:r><m:nary><m:naryPr><m:chr m:val=\"\u2211\" /><m:limLoc m:val=\"undOvr\" /><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr></m:ctrlPr></m:naryPr><m:sub><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>n</m:t></m:r><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>=</m:t></m:r><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>0</m:t></m:r></m:sub><m:sup><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>\u221E</m:t></m:r></m:sup><m:e><m:f><m:fPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr></m:ctrlPr></m:fPr><m:num><m:sSup><m:sSupPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr></m:ctrlPr></m:sSupPr><m:e><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>f</m:t></m:r></m:e><m:sup><m:d><m:dPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr></m:ctrlPr></m:dPr><m:e><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>n</m:t></m:r></m:e></m:d></m:sup></m:sSup><m:d><m:dPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr></m:ctrlPr></m:dPr><m:e><m:sSub><m:sSubPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr></m:ctrlPr></m:sSubPr><m:e><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>x</m:t></m:r></m:e><m:sub><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>0</m:t></m:r></m:sub></m:sSub></m:e></m:d></m:num><m:den><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>n</m:t></m:r><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>\u0021</m:t></m:r></m:den></m:f><m:sSup><m:sSupPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr></m:ctrlPr></m:sSupPr><m:e><m:d><m:dPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr></m:ctrlPr></m:dPr><m:e><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>x</m:t></m:r><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>-</m:t></m:r><m:sSub><m:sSubPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr></m:ctrlPr></m:sSubPr><m:e><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>x</m:t></m:r></m:e><m:sub><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>0</m:t></m:r></m:sub></m:sSub></m:e></m:d></m:e><m:sup><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /></w:rPr><m:t>n</m:t></m:r></m:sup></m:sSup></m:e></m:nary></m:oMath></m:oMathPara>";
+	EXPECT_EQ(oTest.GetOOXML(),wsXmlString);
+}
+
+TEST(SMConvectorTest,AttributeGrade)
+{
+	std::wstring wsString = L"color green bold evaluate {E = color black m c^ color yellow 2} from {color crimson b over color teal   a} to color navy overstrike infinity";
+	StarMath::CParserStarMathString oTemp;
+	StarMath::CConversionSMtoOOXML oTest;
+	oTest.StartConversion(oTemp.Parse(wsString));
+	std::wstring wsXmlString = L"<m:oMathPara><m:oMath><m:sSubSup><m:sSubSupPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"00FF00\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr></m:ctrlPr></m:sSubSupPr><m:e><m:d><m:dPr><m:begChr m:val=\"\" /><m:endChr m:val=\"\u23AA\" /><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"00FF00\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr></m:ctrlPr></m:dPr><m:e><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"00FF00\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr><m:t>E</m:t></m:r><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"00FF00\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr><m:t>=</m:t></m:r><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"000000\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr><m:t>m</m:t></m:r><m:sSup><m:sSupPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"00FF00\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr></m:ctrlPr></m:sSupPr><m:e><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"00FF00\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr><m:t>c</m:t></m:r></m:e><m:sup><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"FFFF00\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr><m:t>2</m:t></m:r></m:sup></m:sSup></m:e></m:d></m:e><m:sub><m:f><m:fPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"00FF00\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr></m:ctrlPr></m:fPr><m:num><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"DC143C\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr><m:t>b</m:t></m:r></m:num><m:den><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"008080\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /></w:rPr><m:t>a</m:t></m:r></m:den></m:f></m:sub><m:sup><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"40\" /><w:szCs w:val=\"40\" /><w:color w:val=\"000080\" /><m:sty m:val=\"b\" /><w:b /><w:bCs /><w:strike /></w:rPr><m:t>\u221E</m:t></m:r></m:sup></m:sSubSup></m:oMath></m:oMathPara>";
+	EXPECT_EQ(oTest.GetOOXML(),wsXmlString);
+}
+
+//TEST(SMConvectorTest,AttributeMatrix)
 //{
 //	std::wstring wsString = L"";
 //	StarMath::CParserStarMathString oTemp;
@@ -964,55 +984,7 @@ TEST(SMConvectorTest,BracketLdlineAttribute)
 //	EXPECT_EQ(oTest.GetOOXML(),wsXmlString);
 //}
 
-//TEST(SMConvectorTest,FunctionCos)
-//{
-//	std::wstring wsString = L"";
-//	StarMath::CParserStarMathString oTemp;
-//	StarMath::CConversionSMtoOOXML oTest;
-//	oTest.StartConversion(oTemp.Parse(wsString));
-//	std::wstring wsXmlString = L"";
-//	EXPECT_EQ(oTest.GetOOXML(),wsXmlString);
-//}
 
-//TEST(SMConvectorTest,FunctionCos)
-//{
-//	std::wstring wsString = L"";
-//	StarMath::CParserStarMathString oTemp;
-//	StarMath::CConversionSMtoOOXML oTest;
-//	oTest.StartConversion(oTemp.Parse(wsString));
-//	std::wstring wsXmlString = L"";
-//	EXPECT_EQ(oTest.GetOOXML(),wsXmlString);
-//}
-
-//TEST(SMConvectorTest,FunctionCos)
-//{
-//	std::wstring wsString = L"";
-//	StarMath::CParserStarMathString oTemp;
-//	StarMath::CConversionSMtoOOXML oTest;
-//	oTest.StartConversion(oTemp.Parse(wsString));
-//	std::wstring wsXmlString = L"";
-//	EXPECT_EQ(oTest.GetOOXML(),wsXmlString);
-//}
-
-//TEST(SMConvectorTest,FunctionCos)
-//{
-//	std::wstring wsString = L"";
-//	StarMath::CParserStarMathString oTemp;
-//	StarMath::CConversionSMtoOOXML oTest;
-//	oTest.StartConversion(oTemp.Parse(wsString));
-//	std::wstring wsXmlString = L"";
-//	EXPECT_EQ(oTest.GetOOXML(),wsXmlString);
-//}
-
-//TEST(SMConvectorTest,FunctionCos)
-//{
-//	std::wstring wsString = L"";
-//	StarMath::CParserStarMathString oTemp;
-//	StarMath::CConversionSMtoOOXML oTest;
-//	oTest.StartConversion(oTemp.Parse(wsString));
-//	std::wstring wsXmlString = L"";
-//	EXPECT_EQ(oTest.GetOOXML(),wsXmlString);
-//}
 
 
 

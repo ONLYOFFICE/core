@@ -148,7 +148,11 @@ namespace VBA
 	std::wstring readStringPadding(CVbaFileStreamPtr stream, _UINT32 & size)
 	{
 		if (!stream) return L"";
-
+        auto realSize = GETBITS(size, 0, 30);
+        if(realSize > stream->getDataSize() - stream->GetDataPos())
+        {
+            return L"";
+        }
 		std::wstring result = readString(stream->getDataCurrent(), size);
 
 		_INT32 count_padding = 4 - (size % 4);
@@ -1317,7 +1321,7 @@ namespace VBA
 			*stream >> RowSourceLengthAndCompression;
 		}
 //SiteExtraDataBlock
-		if (propMask.fName && NameLengthAndCompression > 0)
+        if (propMask.fName && NameLengthAndCompression > 0)
 		{
 			Name = readStringPadding(stream, NameLengthAndCompression);
 		}
@@ -1369,7 +1373,10 @@ namespace VBA
 		*stream >> CountOfSites >> CountOfBytes;		
 		
 		_UINT32 pos1 = stream->GetDataPos();
-
+        if(CountOfBytes > (stream->getDataSize() - stream->GetDataPos()))
+		{
+			return;
+		}
 		int countSites = 0;
 		for (_UINT16 i = 0; i < CountOfSites; ++i)
 		{

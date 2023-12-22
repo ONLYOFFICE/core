@@ -558,7 +558,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 		}
 		
 		std::wstring result;
-
+        if(stream->GetPosition() + size > stream->GetSize())
+            return result;
 		unsigned char* pData = stream->ReadBytes(size, true);
 		if (pData)
 		{

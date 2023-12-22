@@ -33,6 +33,7 @@
 #include "Pages.h"
 #include "Utils.h"
 #include "ResourcesDictionary.h"
+#include "FontCidTT.h"
 #include "Streams.h"
 #include "Image.h"
 
@@ -1586,7 +1587,7 @@ namespace PdfWriter
 		m_bBold     = bBold;
 		m_bItalic   = bItalic;
 	}
-	void CChoiceWidget::SetTextAppearance(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, double dFontSize, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts)
+	void CChoiceWidget::SetTextAppearance(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts)
 	{
 		return;
 		CAnnotAppearance* pAppearance = new CAnnotAppearance(m_pXref, this);
@@ -1595,9 +1596,9 @@ namespace PdfWriter
 		CAnnotAppearanceObject* pNormal = pAppearance->GetNormal();
 
 		if (dY == -1)
-			dY = fabs(m_oRect.fTop - m_oRect.fBottom) - dFontSize - 2;
+			dY = fabs(m_oRect.fTop - m_oRect.fBottom) - m_dFontSize - 2;
 
-		pNormal->DrawSimpleText(wsValue, pCodes, unCount, pFont, dFontSize, dX, dY, 0, 0, 0, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), ppFonts, pShifts);
+		pNormal->DrawSimpleText(wsValue, pCodes, unCount, m_pFont, m_dFontSize, dX, dY, 0, 0, 0, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), ppFonts, NULL);
 	}
 	//----------------------------------------------------------------------------------------
 	// CSignatureWidget

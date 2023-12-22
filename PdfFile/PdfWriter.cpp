@@ -1188,46 +1188,18 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 		const CFormFieldInfo::CTextFormPr* pPr = oInfo.GetTextFormPr();
 		std::wstring wsValue = pPr->GetTextValue();
 
-		unsigned int unLen;
-		unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsValue, unLen);
-		if (!pUnicodes)
-			return S_FALSE;
-
-		unsigned short* pCodes = new unsigned short[unLen];
-		if (!pCodes)
-		{
-			RELEASEARRAYOBJECTS(pUnicodes);
-			return S_FALSE;
-		}
-
-		PdfWriter::CFontCidTrueType** ppFonts = new PdfWriter::CFontCidTrueType*[unLen];
-		if (!ppFonts)
+		unsigned int unLen = 0;
+		unsigned int* pUnicodes = NULL;
+		unsigned short* pCodes  = NULL;
+		PdfWriter::CFontCidTrueType** ppFonts = NULL;
+		bool bFont = GetFontData(pAppFonts, wsValue, m_pFont, isBold, isItalic, pUnicodes, unLen, pCodes, ppFonts);
+		if (!bFont)
 		{
 			RELEASEARRAYOBJECTS(pUnicodes);
 			RELEASEARRAYOBJECTS(pCodes);
+			RELEASEARRAYOBJECTS(ppFonts);
 			return S_FALSE;
 		}
-
-		for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
-		{
-			unsigned int unUnicode = pUnicodes[unIndex];
-
-			if (!m_pFont->HaveChar(unUnicode))
-			{
-				std::wstring wsFontFamily   = pAppFonts->GetFontBySymbol(unUnicode);
-				PdfWriter::CFontCidTrueType* pTempFont = GetFont(wsFontFamily, isBold, isItalic);
-				if (pTempFont)
-				{
-					pCodes[unIndex]  = pTempFont->EncodeUnicode(unUnicode);
-					ppFonts[unIndex] = pTempFont;
-					continue;
-				}
-			}
-
-			pCodes[unIndex]  = m_pFont->EncodeUnicode(unUnicode);
-			ppFonts[unIndex] = m_pFont;
-		}
-
 		PdfWriter::CTextField* pField = dynamic_cast<PdfWriter::CTextField*>(pFieldBase);
 		if (!pField)
 		{
@@ -1407,43 +1379,17 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 		const CFormFieldInfo::CDropDownFormPr* pPr = oInfo.GetDropDownPr();
 		std::wstring wsValue = pPr->GetTextValue();
 
-		unsigned int unLen;
-		unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsValue, unLen);
-		if (!pUnicodes)
-			return S_FALSE;
-
-		unsigned short* pCodes = new unsigned short[unLen];
-		if (!pCodes)
-		{
-			RELEASEARRAYOBJECTS(pUnicodes);
-			return S_FALSE;
-		}
-
-		PdfWriter::CFontCidTrueType** ppFonts = new PdfWriter::CFontCidTrueType*[unLen];
-		if (!ppFonts)
+		unsigned int unLen = 0;
+		unsigned int* pUnicodes = NULL;
+		unsigned short* pCodes  = NULL;
+		PdfWriter::CFontCidTrueType** ppFonts = NULL;
+		bool bFont = GetFontData(pAppFonts, wsValue, m_pFont, isBold, isItalic, pUnicodes, unLen, pCodes, ppFonts);
+		if (!bFont)
 		{
 			RELEASEARRAYOBJECTS(pUnicodes);
 			RELEASEARRAYOBJECTS(pCodes);
+			RELEASEARRAYOBJECTS(ppFonts);
 			return S_FALSE;
-		}
-
-		for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
-		{
-			unsigned int unUnicode = pUnicodes[unIndex];
-
-			if (!m_pFont->HaveChar(unUnicode))
-			{
-				std::wstring wsFontFamily   = pAppFonts->GetFontBySymbol(unUnicode);
-				PdfWriter::CFontCidTrueType* pTempFont = GetFont(wsFontFamily, isBold, isItalic);
-				if (pTempFont)
-				{
-					pCodes[unIndex]  = pTempFont->EncodeUnicode(unUnicode);
-					ppFonts[unIndex] = pTempFont;
-					continue;
-				}
-			}
-			pCodes[unIndex]  = m_pFont->EncodeUnicode(unUnicode);
-			ppFonts[unIndex] = m_pFont;
 		}
 
 		PdfWriter::CChoiceField* pField = dynamic_cast<PdfWriter::CChoiceField*>(pFieldBase);
@@ -1606,43 +1552,17 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 		
 		std::wstring wsValue = pPr->GetValue();
 		
-		unsigned int unLen;
-		unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsValue, unLen);
-		if (!pUnicodes)
-			return S_FALSE;
-		
-		unsigned short* pCodes = new unsigned short[unLen];
-		if (!pCodes)
-		{
-			RELEASEARRAYOBJECTS(pUnicodes);
-			return S_FALSE;
-		}
-		
-		PdfWriter::CFontCidTrueType** ppFonts = new PdfWriter::CFontCidTrueType*[unLen];
-		if (!ppFonts)
+		unsigned int unLen = 0;
+		unsigned int* pUnicodes = NULL;
+		unsigned short* pCodes  = NULL;
+		PdfWriter::CFontCidTrueType** ppFonts = NULL;
+		bool bFont = GetFontData(pAppFonts, wsValue, m_pFont, isBold, isItalic, pUnicodes, unLen, pCodes, ppFonts);
+		if (!bFont)
 		{
 			RELEASEARRAYOBJECTS(pUnicodes);
 			RELEASEARRAYOBJECTS(pCodes);
+			RELEASEARRAYOBJECTS(ppFonts);
 			return S_FALSE;
-		}
-		
-		for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
-		{
-			unsigned int unUnicode = pUnicodes[unIndex];
-			
-			if (!m_pFont->HaveChar(unUnicode))
-			{
-				std::wstring wsFontFamily   = pAppFonts->GetFontBySymbol(unUnicode);
-				PdfWriter::CFontCidTrueType* pTempFont = GetFont(wsFontFamily, isBold, isItalic);
-				if (pTempFont)
-				{
-					pCodes[unIndex]  = pTempFont->EncodeUnicode(unUnicode);
-					ppFonts[unIndex] = pTempFont;
-					continue;
-				}
-			}
-			pCodes[unIndex]  = m_pFont->EncodeUnicode(unUnicode);
-			ppFonts[unIndex] = m_pFont;
 		}
 		
 		PdfWriter::CDateTimeField* pField = dynamic_cast<PdfWriter::CDateTimeField*>(pFieldBase);
@@ -2221,42 +2141,17 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				if (wsValue.empty())
 					return S_OK;
 
-				unsigned int unLen;
-				unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsValue, unLen);
-				if (!pUnicodes)
-					return S_FALSE;
-				unsigned short* pCodes = new unsigned short[unLen];
-				if (!pCodes)
-				{
-					RELEASEARRAYOBJECTS(pUnicodes);
-					return S_FALSE;
-				}
-				PdfWriter::CFontCidTrueType** ppFonts = new PdfWriter::CFontCidTrueType*[unLen];
-				if (!ppFonts)
+				unsigned int unLen = 0;
+				unsigned int* pUnicodes = NULL;
+				unsigned short* pCodes  = NULL;
+				PdfWriter::CFontCidTrueType** ppFonts = NULL;
+				bool bFont = GetFontData(pAppFonts, wsValue, m_pFont, isBold, isItalic, pUnicodes, unLen, pCodes, ppFonts);
+				if (!bFont)
 				{
 					RELEASEARRAYOBJECTS(pUnicodes);
 					RELEASEARRAYOBJECTS(pCodes);
+					RELEASEARRAYOBJECTS(ppFonts);
 					return S_FALSE;
-				}
-
-				for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
-				{
-					unsigned int unUnicode = pUnicodes[unIndex];
-
-					if (!m_pFont->HaveChar(unUnicode))
-					{
-						std::wstring wsFontFamily   = pAppFonts->GetFontBySymbol(unUnicode);
-						PdfWriter::CFontCidTrueType* pTempFont = GetFont(wsFontFamily, isBold, isItalic);
-						if (pTempFont)
-						{
-							pCodes[unIndex]  = pTempFont->EncodeUnicode(unUnicode);
-							ppFonts[unIndex] = pTempFont;
-							continue;
-						}
-					}
-
-					pCodes[unIndex]  = m_pFont->EncodeUnicode(unUnicode);
-					ppFonts[unIndex] = m_pFont;
 				}
 
 				double dMargin = 2; // Отступ используемый в Adobe
@@ -2335,42 +2230,17 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 			// ВНЕШНИЙ ВИД
 			// Коды, шрифты, количество
-			unsigned int unLen;
-			unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsValue, unLen);
-			if (!pUnicodes)
-				return S_FALSE;
-			unsigned short* pCodes = new unsigned short[unLen];
-			if (!pCodes)
-			{
-				RELEASEARRAYOBJECTS(pUnicodes);
-				return S_FALSE;
-			}
-			PdfWriter::CFontCidTrueType** ppFonts = new PdfWriter::CFontCidTrueType*[unLen];
-			if (!ppFonts)
+			unsigned int unLen = 0;
+			unsigned int* pUnicodes = NULL;
+			unsigned short* pCodes  = NULL;
+			PdfWriter::CFontCidTrueType** ppFonts = NULL;
+			bool bFont = GetFontData(pAppFonts, wsValue, m_pFont, isBold, isItalic, pUnicodes, unLen, pCodes, ppFonts);
+			if (!bFont)
 			{
 				RELEASEARRAYOBJECTS(pUnicodes);
 				RELEASEARRAYOBJECTS(pCodes);
+				RELEASEARRAYOBJECTS(ppFonts);
 				return S_FALSE;
-			}
-
-			for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
-			{
-				unsigned int unUnicode = pUnicodes[unIndex];
-
-				if (!m_pFont->HaveChar(unUnicode))
-				{
-					std::wstring wsFontFamily   = pAppFonts->GetFontBySymbol(unUnicode);
-					PdfWriter::CFontCidTrueType* pTempFont = GetFont(wsFontFamily, isBold, isItalic);
-					if (pTempFont)
-					{
-						pCodes[unIndex]  = pTempFont->EncodeUnicode(unUnicode);
-						ppFonts[unIndex] = pTempFont;
-						continue;
-					}
-				}
-
-				pCodes[unIndex]  = m_pFont->EncodeUnicode(unUnicode);
-				ppFonts[unIndex] = m_pFont;
 			}
 
 			double dMargin = 2; // Отступ используемый в Adobe
@@ -2519,48 +2389,13 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			pChoiceWidget->SetFont(m_pFont, m_oFont.GetSize(), isBold, isItalic);
 
 			// ВНЕШНИЙ ВИД
-			unsigned int unLen;
-			unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsValue, unLen);
-			if (!pUnicodes)
-				return S_OK;
-
-			unsigned short* pCodes = new unsigned short[unLen];
-			if (!pCodes)
-			{
-				RELEASEARRAYOBJECTS(pUnicodes);
-				return S_FALSE;
-			}
-
-			PdfWriter::CFontCidTrueType** ppFonts = new PdfWriter::CFontCidTrueType*[unLen];
-			if (!ppFonts)
-			{
-				RELEASEARRAYOBJECTS(pUnicodes);
-				RELEASEARRAYOBJECTS(pCodes);
-				return S_FALSE;
-			}
-
-			for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
-			{
-				unsigned int unUnicode = pUnicodes[unIndex];
-
-				if (!m_pFont->HaveChar(unUnicode))
-				{
-					std::wstring wsFontFamily   = pAppFonts->GetFontBySymbol(unUnicode);
-					PdfWriter::CFontCidTrueType* pTempFont = GetFont(wsFontFamily, isBold, isItalic);
-					if (pTempFont)
-					{
-						pCodes[unIndex]  = pTempFont->EncodeUnicode(unUnicode);
-						ppFonts[unIndex] = pTempFont;
-						continue;
-					}
-				}
-				pCodes[unIndex]  = m_pFont->EncodeUnicode(unUnicode);
-				ppFonts[unIndex] = m_pFont;
-			}
-
-			double dMargin = 2; // Отступ используемый в Adobe
-			double dBaseLine = dY2 - dY1 - dFontSize - dMargin;
-			pChoiceWidget->SetTextAppearance(wsValue, pCodes, unLen, m_pFont, m_oFont.GetSize(), 0, dBaseLine, ppFonts);
+			unsigned int unLen = 0;
+			unsigned int* pUnicodes = NULL;
+			unsigned short* pCodes  = NULL;
+			PdfWriter::CFontCidTrueType** ppFonts = NULL;
+			bool bFont = GetFontData(pAppFonts, wsValue, m_pFont, isBold, isItalic, pUnicodes, unLen, pCodes, ppFonts);
+			if (bFont)
+				pChoiceWidget->SetTextAppearance(wsValue, pCodes, unLen, 0, dY2 - dY1 - dFontSize - 2, ppFonts);
 
 			RELEASEARRAYOBJECTS(pUnicodes);
 			RELEASEARRAYOBJECTS(pCodes);
@@ -2684,47 +2519,13 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 
 						wsValue = pParent->sV;
 						// ВНЕШНИЙ ВИД
-						unsigned int unLen;
-						unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsValue, unLen);
-						if (!pUnicodes)
-							return S_OK;
-
-						unsigned short* pCodes = new unsigned short[unLen];
-						if (!pCodes)
-						{
-							RELEASEARRAYOBJECTS(pUnicodes);
-							return S_FALSE;
-						}
-
-						PdfWriter::CFontCidTrueType** ppFonts = new PdfWriter::CFontCidTrueType*[unLen];
-						if (!ppFonts)
-						{
-							RELEASEARRAYOBJECTS(pUnicodes);
-							RELEASEARRAYOBJECTS(pCodes);
-							return S_FALSE;
-						}
-
-						PdfWriter::CFontCidTrueType* pFont = pKid->m_pFont;
-						for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
-						{
-							unsigned int unUnicode = pUnicodes[unIndex];
-
-							if (!pFont->HaveChar(unUnicode))
-							{
-								std::wstring wsFontFamily   = pAppFonts->GetFontBySymbol(unUnicode);
-								PdfWriter::CFontCidTrueType* pTempFont = GetFont(wsFontFamily, pKid->m_bBold, pKid->m_bItalic);
-								if (pTempFont)
-								{
-									pCodes[unIndex]  = pTempFont->EncodeUnicode(unUnicode);
-									ppFonts[unIndex] = pTempFont;
-									continue;
-								}
-							}
-							pCodes[unIndex]  = pFont->EncodeUnicode(unUnicode);
-							ppFonts[unIndex] = pFont;
-						}
-
-						pKid->SetTextAppearance(wsValue, pCodes, unLen, pFont, pKid->m_dFontSize, 0, -1, ppFonts);
+						unsigned int unLen = 0;
+						unsigned int* pUnicodes = NULL;
+						unsigned short* pCodes  = NULL;
+						PdfWriter::CFontCidTrueType** ppFonts = NULL;
+						bool bFont = GetFontData(pAppFonts, wsValue, pKid->m_pFont, pKid->m_bBold, pKid->m_bItalic, pUnicodes, unLen, pCodes, ppFonts);
+						if (bFont)
+							pKid->SetTextAppearance(wsValue, pCodes, unLen, 0, -1, ppFonts);
 
 						RELEASEARRAYOBJECTS(pUnicodes);
 						RELEASEARRAYOBJECTS(pCodes);
@@ -3128,6 +2929,49 @@ PdfWriter::CFontCidTrueType* CPdfWriter::GetFont(const std::wstring& wsFontName,
 
 	GetFontPath(wsFontName, bBold, bItalic, wsFontPath, lFaceIndex);
 	return GetFont(wsFontPath, lFaceIndex);
+}
+bool CPdfWriter::GetFontData(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsValue, PdfWriter::CFontCidTrueType* pFont, bool bBold, bool bItalic,
+							 unsigned int*& pUnicodes, unsigned int& unLen, unsigned short*& pCodes, PdfWriter::CFontCidTrueType**& ppFonts)
+{
+	pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsValue, unLen);
+	if (!pUnicodes)
+		return false;
+
+	pCodes = new unsigned short[unLen];
+	if (!pCodes)
+	{
+		RELEASEARRAYOBJECTS(pUnicodes);
+		return false;
+	}
+
+	ppFonts = new PdfWriter::CFontCidTrueType*[unLen];
+	if (!ppFonts)
+	{
+		RELEASEARRAYOBJECTS(pUnicodes);
+		RELEASEARRAYOBJECTS(pCodes);
+		return false;
+	}
+
+	for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
+	{
+		unsigned int unUnicode = pUnicodes[unIndex];
+
+		if (!pFont->HaveChar(unUnicode))
+		{
+			std::wstring wsFontFamily = pAppFonts->GetFontBySymbol(unUnicode);
+			PdfWriter::CFontCidTrueType* pTempFont = GetFont(wsFontFamily, bBold, bItalic);
+			if (pTempFont)
+			{
+				pCodes[unIndex]  = pTempFont->EncodeUnicode(unUnicode);
+				ppFonts[unIndex] = pTempFont;
+				continue;
+			}
+		}
+		pCodes[unIndex]  = pFont->EncodeUnicode(unUnicode);
+		ppFonts[unIndex] = pFont;
+	}
+
+	return true;
 }
 void CPdfWriter::UpdateTransform()
 {

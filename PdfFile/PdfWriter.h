@@ -229,6 +229,8 @@ private:
 	bool GetFontPath(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, std::wstring& wsFontPath, LONG& lFaceIndex);
 	PdfWriter::CFontCidTrueType* GetFont(const std::wstring& wsFontPath, const LONG& lFontIndex);
 	PdfWriter::CFontCidTrueType* GetFont(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic);
+	bool GetFontData(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsValue, PdfWriter::CFontCidTrueType* pFont, bool bBold, bool bItalic,
+					 unsigned int*& pUnicodes, unsigned int& unLen, unsigned short*& pCodes, PdfWriter::CFontCidTrueType**& ppFonts);
 	void UpdateTransform();
 	void UpdatePen();
 	void UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory);

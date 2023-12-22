@@ -1618,7 +1618,7 @@ void anim_animate::pptx_convert(oox::pptx_conversion_context& Context)
 		keyTimes = pptx_convert_smil_key_times(animate_attlist_.smil_key_times_.value());
 
 	if (animate_attlist_.anim_formula_)
-		formula = animate_attlist_.anim_formula_.value();
+		formula = pptx_convert_animation_function(animate_attlist_.anim_formula_.value());
 
 	if (animate_attlist_.smil_from_)
 		from = pptx_convert_animation_function(animate_attlist_.smil_from_.value());

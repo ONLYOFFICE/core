@@ -325,13 +325,18 @@ std::wstring CVbaReader::convertObject(const std::wstring & name, unsigned int c
 					{
 						for (size_t i = 0; i < FormControlStream->SiteData->Sites.size(); ++i)
 						{
+							if (strmObject->getDataSize() < nextStreamPositionEmbedded)
+								break;
 							VBA::OleSiteConcreteControlPtr & site = FormControlStream->SiteData->Sites[i];
 							if (site->ObjectStreamSize && strmObject)
 							{
-								site->Object = VBA::ActiveXObjectPtr(OOX::ActiveXObject::Create(*site->ClsidCacheIndex));
+								site->Object = VBA::ActiveXObjectPtr(OOX::ActiveXObject::Create(site->ClsidCacheIndex ? *site->ClsidCacheIndex : 0));
 
-								site->Object->Parse(strmObject->getData() + nextStreamPositionEmbedded, *site->ObjectStreamSize);
-								nextStreamPositionEmbedded += *site->ObjectStreamSize;
+								if (site->ObjectStreamSize)
+								{
+									site->Object->Parse(strmObject->getData() + nextStreamPositionEmbedded, *site->ObjectStreamSize);
+									nextStreamPositionEmbedded += *site->ObjectStreamSize;
+								}
 							}
 
 							CP_XML_NODE(L"Site")

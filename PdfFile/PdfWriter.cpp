@@ -2243,8 +2243,14 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				return S_FALSE;
 			}
 
-			double dMargin = 2; // Отступ используемый в Adobe
 			bool isComb = pTextWidget->IsCombFlag();
+
+			if (!pTextWidget->HaveBorder())
+				pAnnot->SetBorder(1, 1, {});
+			double dShiftBorder = pTextWidget->GetBorderWidth();
+			BYTE nType = pTextWidget->GetBorderType();
+			if (nType == 1 || nType == 3)
+				dShiftBorder *= 2;
 
 			if (!isComb && pTextWidget->IsMultiLine())
 			{
@@ -2267,10 +2273,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 				m_oLinesManager.Init(pCodes2, pWidths, unLen, ushSpaceCode, ushNewLineCode, pFontTT->GetLineHeight(), pFontTT->GetAscent());
 
-				// TODO Автоподбор размера шрифта dFontSize
-				if (!dFontSize)
-					dFontSize = m_oLinesManager.ProcessAutoFit(dX2 - dX1, (dY2 - dY1 - 3 * dMargin));
-
 				double dLineHeight = pFontTT->GetLineHeight() * dFontSize / 1000.0;
 
 				m_oLinesManager.CalculateLines(dFontSize, dX2 - dX1);
@@ -2278,16 +2280,16 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pTextWidget->StartAP(m_pFont, dFontSize, 1.0);
 
 				unsigned int unLinesCount = m_oLinesManager.GetLinesCount();
-				double dLineShiftY = dY2 - dY1 - pFontTT->GetLineHeight() * dFontSize / 1000.0 - dMargin;
+				double dLineShiftY = dY2 - dY1 - pFontTT->GetLineHeight() * dFontSize / 1000.0 - dShiftBorder;
 				for (unsigned int unIndex = 0; unIndex < unLinesCount; ++unIndex)
 				{
 					unsigned int unLineStart = m_oLinesManager.GetLineStartPos(unIndex);
-					double dLineShiftX = dMargin;
+					double dLineShiftX = dShiftBorder * 2;
 					double dLineWidth = m_oLinesManager.GetLineWidth(unIndex, dFontSize);
 					if (2 == nAlign)
-						dLineShiftX += (dX2 - dX1 - dLineWidth);
+						dLineShiftX = dX2 - dX1 - dLineWidth - dShiftBorder * 2;
 					else if (1 == nAlign)
-						dLineShiftX += (dX2 - dX1 - dLineWidth) / 2;
+						dLineShiftX = (dX2 - dX1 - dLineWidth) / 2;
 
 					int nInLineCount = m_oLinesManager.GetLineEndPos(unIndex) - m_oLinesManager.GetLineStartPos(unIndex);
 					if (nInLineCount > 0)
@@ -2307,7 +2309,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			{
 				double* pShifts = NULL;
 				unsigned int unShiftsCount = 0;
-				double dShiftX = dMargin;
+				double dShiftX = dShiftBorder * 2;
 
 				if (isComb)
 				{
@@ -2318,7 +2320,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 						dShiftX = 0;
 						unsigned int unCellsCount = std::max(unShiftsCount, unMaxLen);
 						double dPrevW = 0;
-						double dCellW = (dX2 - dX1 + 2 * dMargin) / unCellsCount;
+						double dCellW = (dX2 - dX1 + 2 * dShiftBorder) / unCellsCount;
 
 						if (2 == nAlign && unShiftsCount)
 							dPrevW = (unCellsCount - unShiftsCount) * dCellW;
@@ -2344,12 +2346,12 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 					}
 
 					if (2 == nAlign && dX2 - dX1 - dSumWidth > 0)
-						dShiftX += dX2 - dX1 - dSumWidth;
+						dShiftX = dX2 - dX1 - dSumWidth - dShiftBorder * 2;
 					else if (1 == nAlign && (dX2 - dX1 - dSumWidth) / 2 > 0)
-						dShiftX += (dX2 - dX1 - dSumWidth) / 2;
+						dShiftX = (dX2 - dX1 - dSumWidth) / 2;
 				}
 
-				double dBaseLine = dY2 - dY1 - dFontSize - dMargin;
+				double dBaseLine = dY2 - dY1 - dFontSize - dShiftBorder;
 				if (pFontTT)
 				{
 					double dKoef = dFontSize / pFontTT->m_dUnitsPerEm;
@@ -2361,9 +2363,9 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 					double dDiff = (dY2 - dY1 - dMidPoint) / 2.0;
 					dBaseLine += dDiff;
 					dBaseLine = dY2 - dY1 - dBaseLine;
-					dBaseLine = (dY2 - dY1 - (pFontTT->m_dMaxY - pFontTT->m_dMinY) * dKoef) / 2.0;
-					dBaseLine = (dY2 - dY1 - dAscent) / 2.0;
-					dBaseLine = (dY2 - dY1 - dMidPoint) / 2.0;
+					// dBaseLine = (dY2 - dY1 - (pFontTT->m_dMaxY - pFontTT->m_dMinY) * dKoef) / 2.0;
+					// dBaseLine = (dY2 - dY1 - dAscent) / 2.0;
+					// dBaseLine = (dY2 - dY1 - dMidPoint) / 2.0;
 				}
 
 				pTextWidget->SetAP(wsValue, pCodes, unLen, m_pFont, m_oFont.GetSize(), dShiftX, dBaseLine, ppFonts, pShifts);

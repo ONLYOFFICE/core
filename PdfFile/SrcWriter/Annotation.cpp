@@ -1413,13 +1413,6 @@ namespace PdfWriter
 	}
 	void CTextWidget::SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, double dFontSize, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts)
 	{
-		if (!m_oBorder.bHave && m_pMK && m_pMK->Get("BC"))
-		{
-			m_oBorder.bHave = true;
-			m_oBorder.nType = 1;
-			m_oBorder.dWidth = 1;
-		}
-
 		m_pAppearance = new CAnnotAppearance(m_pXref, this);
 		if (!m_pAppearance)
 			return;

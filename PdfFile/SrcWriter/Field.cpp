@@ -1820,12 +1820,103 @@ namespace PdfWriter
 			m_pStream->WriteStr("Q\012");
 		}
 
-		double dBorderSize   = 0;
-		double dBorderSize_2 = 0;
-		double dBorderSize2  = 0;
+		double dBorderSize       = 0;
+		double dBorderSizeStyle  = 0;
 		if ((m_pField && m_pField->HaveBorder()) || (m_pAnnot && m_pAnnot->HaveBorder()))
 		{
 			m_pStream->WriteStr("q\012");
+
+			dBorderSize      = m_pField ? m_pField->GetBorderSize() : m_pAnnot->GetBorderWidth();
+			dBorderSizeStyle = dBorderSize;
+
+			BYTE nType = 0;
+			if (m_pAnnot)
+			{
+				nType = m_pAnnot->GetBorderType();
+				switch (nType)
+				{
+				case 1: // Beveled
+				case 3: // Inset
+				{
+					dBorderSizeStyle *= 2;
+
+					m_pStream->WriteStr(nType == 1 ? "1 g\012" : "0.501953 g\012");
+
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteStr(" m\012");
+
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dHeight - dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(dWidth - dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dHeight - dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(dWidth - 2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dHeight - 2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dHeight - 2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteStr("f\012");
+
+					m_pStream->WriteStr("0.75293 g\012");
+
+					m_pStream->WriteReal(dWidth - dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dHeight - dBorderSize);
+					m_pStream->WriteStr(" m\012");
+
+					m_pStream->WriteReal(dWidth - dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(dWidth - 2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(dWidth - 2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dHeight - 2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteStr("f\012");
+					break;
+				}
+				case 2: // Dashed
+				{
+					m_pStream->WriteStr(m_pAnnot->GetBorderDash().c_str());
+					break;
+				}
+				default: break;
+				}
+			}
 
 			if (m_pField)
 			{
@@ -1843,18 +1934,12 @@ namespace PdfWriter
 				m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
 			}
 
-			dBorderSize   = m_pField ? m_pField->GetBorderSize() : m_pAnnot->GetBorderWidth();
-			dBorderSize_2 = dBorderSize / 2;
-			dBorderSize2  = dBorderSize * 2;
 			m_pStream->WriteReal(dBorderSize);
 			m_pStream->WriteStr(" w\0120 j\0120 J\012");
 
-			if (m_pAnnot && m_pAnnot->GetBorderType() == 2)
-				m_pStream->WriteStr(m_pAnnot->GetBorderDash().c_str());
-
-			m_pStream->WriteReal(dBorderSize_2);
+			m_pStream->WriteReal(dBorderSize / 2);
 			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(dBorderSize_2);
+			m_pStream->WriteReal(dBorderSize / 2);
 			m_pStream->WriteChar(' ');
 			m_pStream->WriteReal(std::max(dWidth - dBorderSize, 0.0));
 			m_pStream->WriteChar(' ');
@@ -1863,7 +1948,7 @@ namespace PdfWriter
 
 			CTextField* pTextField = dynamic_cast<CTextField*>(m_pField);
 			CTextWidget* pAnnot = dynamic_cast<CTextWidget*>(m_pAnnot);
-			if ((pTextField && pTextField->IsCombFlag()) || (pAnnot && pAnnot->IsCombFlag()))
+			if ((pTextField && pTextField->IsCombFlag()) || (pAnnot && pAnnot->IsCombFlag() && (nType == 0 || nType == 2)))
 			{
 				int nMaxLen = pTextField ? pTextField->GetMaxLen() : pAnnot->GetMaxLen();
 				if (nMaxLen > 1)
@@ -1893,13 +1978,13 @@ namespace PdfWriter
 
 		m_pStream->WriteStr("q\012");
 
-		m_pStream->WriteReal(dBorderSize);
+		m_pStream->WriteReal(dBorderSizeStyle);
 		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(dBorderSize);
+		m_pStream->WriteReal(dBorderSizeStyle);
 		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(std::max(dWidth - dBorderSize2, 0.0));
+		m_pStream->WriteReal(std::max(dWidth - dBorderSizeStyle * 2, 0.0));
 		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(std::max(dHeight - dBorderSize2, 0.0));
+		m_pStream->WriteReal(std::max(dHeight - dBorderSizeStyle * 2, 0.0));
 		m_pStream->WriteStr(" re\012W\012n\012");
 
 		m_pStream->WriteStr("BT\012");

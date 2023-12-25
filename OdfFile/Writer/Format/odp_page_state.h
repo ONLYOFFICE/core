@@ -147,6 +147,8 @@ public:
 		void set_anim_target_element(const std::wstring& val);
 		void set_anim_auto_reverse	(bool val);
 		void set_anim_subtype		(const std::wstring& val);
+		void set_anim_accelerate	(double val);
+		void set_anim_decelerate	(double val);
 
 		void set_anim_animation_formula(const std::wstring& val);
 		void set_anim_animation_keytimes(const odf_types::smil_key_times& val);

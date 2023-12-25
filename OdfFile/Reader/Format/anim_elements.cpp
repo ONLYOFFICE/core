@@ -442,10 +442,10 @@ static std::vector<std::wstring> pptx_convert_smil_values(const odf_types::smil_
 	{
 		std::wstring value = values[i];
 		
-		boost::replace_all(value, L"x", L"#ppt_x");
-		boost::replace_all(value, L"y", L"#ppt_y");
-		boost::replace_all(value, L"width", L"#ppt_w");
-		boost::replace_all(value, L"height", L"#ppt_h");
+		boost::replace_all(value, L"x", L"ppt_x");
+		boost::replace_all(value, L"y", L"ppt_y");
+		boost::replace_all(value, L"width", L"ppt_w");
+		boost::replace_all(value, L"height", L"ppt_h");
 
 		result.push_back(value);
 	}
@@ -463,6 +463,12 @@ static std::wstring pptx_convert_smil_fill(const odf_types::smil_fill& smil_fill
 		case smil_fill::type::_transition:	return L"transition";
 		case smil_fill::type::_auto:		return durationSpecified ? L"remove" : L"freeze";
 	}
+}
+
+static int pptx_convert_acceleration(double acceleration)
+{
+	const int pptx_multiplier = 100000;
+	return static_cast<int>(acceleration * pptx_multiplier);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1034,7 +1040,22 @@ std::wstring anim_transitionFilter::convert_filter()
 	}
 
 	if (pptx_subtype)
+	{
+		if (filter_attlist_.smil_direction_
+			&& filter_attlist_.smil_direction_.value() == L"reverse")
+		{
+			if (pptx_subtype.value() == L"in")
+				pptx_subtype = L"out";
+			else if (pptx_subtype.value() == L"out")
+				pptx_subtype = L"in";
+			else if(pptx_subtype.value() == L"inHorizontal")
+				pptx_subtype = L"outHorizontal";
+			else if (pptx_subtype.value() == L"outHorizontal")
+				pptx_subtype = L"inHorizontal";
+		}
 		filter += L"(" + pptx_subtype.value() + L")";
+	}
+		
 
 	return filter;
 }
@@ -1239,20 +1260,29 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 	std::wstring filter = convert_filter();
 	_CP_OPT(std::wstring) transition;
 	_CP_OPT(int) time;
+	_CP_OPT(std::wstring) delay;
+	_CP_OPT(int)	acceleration;
+	_CP_OPT(int)	deceleration;
+
 	size_t shapeId = 0;
 
 	if (common_attlist_.smil_dur_)
-	{
 		time = common_attlist_.smil_dur_->get_value();
-	}
-
+	
 	if (filter_attlist_.smil_mode_)
-	{
 		transition = filter_attlist_.smil_mode_.value();
-	}
 
 	if (common_attlist_.smil_target_element_)
 		shapeId = Context.get_slide_context().get_id(common_attlist_.smil_target_element_.value());
+
+	if (common_attlist_.smil_begin_)
+		delay = pptx_convert_smil_begin(common_attlist_.smil_begin_.value());
+
+	if (common_attlist_.smil_accelerate_)
+		acceleration = pptx_convert_acceleration(common_attlist_.smil_accelerate_.value());
+
+	if (common_attlist_.smil_decelerate_)
+		deceleration = pptx_convert_acceleration(common_attlist_.smil_decelerate_.value());
 
 	oox::pptx_animation_context& animationContext = Context.get_slide_context().get_animation_context();
 
@@ -1260,6 +1290,9 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 	animationContext.set_anim_effect_filter(filter);
 	if(transition)	animationContext.set_anim_effect_transition(transition.value());
 	if (time)		animationContext.set_anim_effect_duration(time.value());
+	if (delay)		animationContext.set_anim_effect_delay(delay.value());
+	if (acceleration)animationContext.set_anim_effect_accel(acceleration.value());
+	if (deceleration)animationContext.set_anim_effect_decel(deceleration.value());
 	animationContext.set_anim_effect_shape_id(shapeId);
 	animationContext.end_anim_effect();
 }

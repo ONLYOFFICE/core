@@ -120,7 +120,7 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, 
 		PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
 		AddToObject(pArray)
 
-				for (int nIndex = 0; nIndex < obj->arrayGetLength(); ++nIndex)
+		for (int nIndex = 0; nIndex < obj->arrayGetLength(); ++nIndex)
 		{
 			obj->arrayGetNF(nIndex, &oTemp);
 			DictToCDictObject(&oTemp, pArray, bBinary, "");
@@ -898,7 +898,37 @@ bool CPdfFile::EditAnnot(int nPageIndex, int nID)
 		if (sName)
 		{
 			if (strcmp("Btn", sName) == 0)
-				pAnnot = new PdfWriter::CButtonWidget(pXref);
+			{
+				bool bPushButton = false;
+				oFT.free();
+				int nFf = 0;
+				if (oAnnot.dictLookup("Ff", &oFT)->isInt())
+					nFf = oFT.getInt();
+				if (!nFf)
+				{
+					Object oParent, oParent2;
+					oAnnot.dictLookup("Parent", &oParent);
+					while (oParent.isDict())
+					{
+						if (oParent.dictLookup("Ff", &oFT)->isInt())
+						{
+							nFf = oFT.getInt();
+							break;
+						}
+						oFT.free();
+						oParent.dictLookup("Parent", &oParent2);
+						oParent.free();
+						oParent = oParent2;
+					}
+					oParent.free();
+				}
+
+				bPushButton = (bool)((nFf >> 16) & 1);
+				if (bPushButton)
+					pAnnot = new PdfWriter::CPushButtonWidget(pXref);
+				else
+					pAnnot = new PdfWriter::CCheckBoxWidget(pXref);
+			}
 			else if (strcmp("Tx", sName) == 0)
 				pAnnot = new PdfWriter::CTextWidget(pXref);
 			else if (strcmp("Ch", sName) == 0)
@@ -923,8 +953,6 @@ bool CPdfFile::EditAnnot(int nPageIndex, int nID)
 	for (int nIndex = 0; nIndex < oAnnot.dictGetLength(); ++nIndex)
 	{
 		char* chKey = oAnnot.dictGetKey(nIndex);
-		if (strcmp("AP", chKey) == 0)
-			continue;
 		if (strcmp("Popup", chKey) == 0)
 		{
 			Object oPopupRef;
@@ -945,11 +973,28 @@ bool CPdfFile::EditAnnot(int nPageIndex, int nID)
 			oAnnot.dictGetValNF(nIndex, &oParentRef);
 			PdfWriter::CDictObject* pParent = GetWidgetParent(pPDFDocument, pDoc, &oParentRef);
 
-			if (pParent)
+			if (!pParent)
 			{
-				((PdfWriter::CWidgetAnnotation*)pAnnot)->SetParent(pParent);
 				oParentRef.free();
 				continue;
+			}
+
+			((PdfWriter::CWidgetAnnotation*)pAnnot)->SetParent(pParent);
+			PdfWriter::CArrayObject* pKids = dynamic_cast<PdfWriter::CArrayObject*>(pParent->Get("Kids"));
+			if (!pKids)
+			{
+				oParentRef.free();
+				continue;
+			}
+
+			for (int i = 0; i < pKids->GetCount(); ++i)
+			{
+				PdfWriter::CObjectBase* pKid = pKids->Get(i);
+				if (pKid->GetObjId() == oAnnotRef.getRefNum())
+				{
+					pKids->Insert(pKid, pAnnot, true);
+					break;
+				}
 			}
 			oParentRef.free();
 		}
@@ -1021,6 +1066,30 @@ bool CPdfFile::DeleteAnnot(int nID)
 	oAnnots.free();
 
 	return bRes;
+}
+bool CPdfFile::EditWidgets(IAdvancedCommand* pCommand)
+{
+	CWidgetsInfo* pFieldInfo = (CWidgetsInfo*)pCommand;
+
+	PDFDoc* pPDFDocument = m_pInternal->pReader->GetPDFDocument();
+	PdfWriter::CDocument* pDoc = m_pInternal->pWriter->m_pDocument;
+
+	std::vector<CWidgetsInfo::CParent*> arrParents = pFieldInfo->GetParents();
+	for (CWidgetsInfo::CParent* pParent : arrParents)
+	{
+		PdfWriter::CDictObject* pDParent = pDoc->GetParent(pParent->nID);
+		if (pDParent)
+			continue;
+
+		Object oParentRef;
+		// TODO узнать gen родителя
+		oParentRef.initRef(pParent->nID, 0);
+		GetWidgetParent(pPDFDocument, pDoc, &oParentRef);
+		// TODO перевыставить детей
+		oParentRef.free();
+	}
+
+	return true;
 }
 #endif // BUILDING_WASM_MODULE
 
@@ -2091,7 +2160,10 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	case IAdvancedCommand::AdvancedCommandType::WidgetsInfo:
 	{
 		CWidgetsInfo* pCommand = (CWidgetsInfo*)command;
-
+#ifndef BUILDING_WASM_MODULE
+		if (m_pInternal->bEdit && EditWidgets(pCommand))
+			return m_pInternal->pWriter->EditWidgetParents(m_pInternal->pAppFonts, pCommand, m_pInternal->wsTempFolder);
+#endif
 		return S_OK;
 	}
 	default:

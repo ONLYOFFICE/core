@@ -39,6 +39,7 @@
 #include "Font.h"
 #include "Info.h"
 #include "EncryptDictionary.h"
+#include "Annotation.h"
 
 #include <algorithm>
 #include <math.h>
@@ -1518,8 +1519,21 @@ namespace PdfWriter
 	{
 		m_pXref  = pXref;
 		m_pField = pField;
+		m_pAnnot = NULL;
 
 		m_pNormal   = new CAnnotAppearanceObject(pXref, pField);
+		m_pRollover = NULL;
+		m_pDown     = NULL;
+
+		Add("N", m_pNormal);
+	}
+	CAnnotAppearance::CAnnotAppearance(CXref* pXref, CAnnotation* pAnnot)
+	{
+		m_pXref  = pXref;
+		m_pAnnot = pAnnot;
+		m_pField = NULL;
+
+		m_pNormal   = new CAnnotAppearanceObject(pXref, pAnnot);
 		m_pRollover = NULL;
 		m_pDown     = NULL;
 
@@ -1533,7 +1547,10 @@ namespace PdfWriter
 	{
 		if (!m_pRollover)
 		{
-			m_pRollover = new CAnnotAppearanceObject(m_pXref, m_pField);
+			if (m_pField)
+				m_pRollover = new CAnnotAppearanceObject(m_pXref, m_pField);
+			else if (m_pAnnot)
+				m_pRollover = new CAnnotAppearanceObject(m_pXref, m_pAnnot);
 			Add("R", m_pRollover);
 		}
 
@@ -1543,7 +1560,10 @@ namespace PdfWriter
 	{
 		if (!m_pDown)
 		{
-			m_pDown = new CAnnotAppearanceObject(m_pXref, m_pField);
+			if (m_pField)
+				m_pDown = new CAnnotAppearanceObject(m_pXref, m_pField);
+			else if (m_pAnnot)
+				m_pDown = new CAnnotAppearanceObject(m_pXref, m_pAnnot);
 			Add("D", m_pDown);
 		}
 
@@ -1591,20 +1611,19 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CAnnotAppearanceObject
 	//----------------------------------------------------------------------------------------
-	CAnnotAppearanceObject::CAnnotAppearanceObject(CXref* pXref, CFieldBase* pField)
+	void CAnnotAppearanceObject::Init(CXref* pXref, CResourcesDict* pResources, TRect* pRect)
 	{
-		m_pXref     = pXref;
+		m_pXref     = pXref ? pXref : NULL;
 		m_pStream   = new CMemoryStream();
-		m_pField    = pField;
 		m_pFont     = NULL;
 		m_dFontSize = 10.0;
 
-		SetStream(m_pXref, m_pStream);
+		if (m_pXref)
+			SetStream(m_pXref, m_pStream);
 
 		Add("Type", "XObject");
 		Add("Subtype", "Form");
-
-		TRect oRect = pField->GetRect();
+		Add("Resources", pResources);
 
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
@@ -1613,14 +1632,20 @@ namespace PdfWriter
 		Add("BBox", pArray);
 		pArray->Add(0);
 		pArray->Add(0);
-		pArray->Add(oRect.fRight - oRect.fLeft);
-		pArray->Add(oRect.fBottom - oRect.fTop);
-
-		Add("Resources", pField->GetResourcesDict());
-
-#ifndef FILTER_FLATE_DECODE_DISABLED
-		//SetFilter(STREAM_FILTER_FLATE_DECODE);
-#endif
+		pArray->Add(fabs(pRect->fRight - pRect->fLeft));
+		pArray->Add(fabs(pRect->fBottom - pRect->fTop));
+	}
+	CAnnotAppearanceObject::CAnnotAppearanceObject(CXref* pXref, CFieldBase* pField)
+	{
+		Init(pXref, pField->GetResourcesDict(), &pField->GetRect());
+		m_pField = pField;
+		m_pAnnot = NULL;
+	}
+	CAnnotAppearanceObject::CAnnotAppearanceObject(CXref* pXRef, CAnnotation* pAnnot)
+	{
+		Init(pXRef, pAnnot->GetDocument()->GetFieldsResources(), &pAnnot->GetRect());
+		m_pAnnot = pAnnot;
+		m_pField = NULL;
 	}
 	void CAnnotAppearanceObject::DrawSimpleText(const std::wstring& wsText, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, double dFontSize, double dX, double dY, double dR, double dG, double dB, const char* sExtGStateName, double dWidth, double dHeight, CFontCidTrueType** ppFonts, double* pShifts)
 	{
@@ -1642,24 +1667,32 @@ namespace PdfWriter
 			return;
 
 		double dW = 0, dH = 0;
-		if (m_pField)
+		if (m_pField || m_pAnnot)
 		{
-			TRect oRect = m_pField->GetRect();
+			TRect oRect = m_pField ? m_pField->GetRect() : m_pAnnot->GetRect();
 			dW = fabs(oRect.fRight - oRect.fLeft);
 			dH = fabs(oRect.fBottom - oRect.fTop);
 		}
 
 		m_pStream->WriteStr("q\012");
 
-		if (m_pField->HaveShd())
+		if ((m_pField && m_pField->HaveShd()) || (m_pAnnot && m_pAnnot->Get("BG")))
 		{
-			TRgb oColor = m_pField->GetShdColor();
-			m_pStream->WriteReal(oColor.r);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(oColor.g);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(oColor.b);
-			m_pStream->WriteStr(" rg\012");
+			if (m_pField)
+			{
+				TRgb oColor = m_pField->GetShdColor();
+				m_pStream->WriteReal(oColor.r);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(oColor.g);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(oColor.b);
+				m_pStream->WriteStr(" rg\012");
+			}
+			else
+			{
+				CWidgetAnnotation* pAnnot = (CWidgetAnnotation*)m_pAnnot;
+				m_pStream->WriteStr(pAnnot->GetBGforAP().c_str());
+			}
 
 			m_pStream->WriteStr("1 0 0 1 0 0 cm\012");
 			m_pStream->WriteStr("0 0 ");
@@ -1678,18 +1711,25 @@ namespace PdfWriter
 			m_pStream->WriteStr(" re\012f\012");
 		}
 
-		if (m_pField->HaveBorder())
+		if ((m_pField && m_pField->HaveBorder()) || (m_pAnnot && m_pAnnot->HaveBorder()))
 		{
-			TRgb oColor = m_pField->GetBorderColor();
+			if (m_pField)
+			{
+				TRgb oColor = m_pField->GetBorderColor();
+				m_pStream->WriteReal(oColor.r);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(oColor.g);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(oColor.b);
+				m_pStream->WriteStr(" RG\012");
+			}
+			else
+			{
+				CWidgetAnnotation* pAnnot = (CWidgetAnnotation*)m_pAnnot;
+				m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
+			}
 
-			m_pStream->WriteReal(oColor.r);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(oColor.g);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(oColor.b);
-			m_pStream->WriteStr(" RG\012");
-
-			double dBorderSize   = m_pField->GetBorderSize();
+			double dBorderSize   = m_pField ? m_pField->GetBorderSize() : m_pAnnot->GetBorderWidth();
 			double dBorderSize_2 = dBorderSize / 2;
 			m_pStream->WriteReal(dBorderSize);
 			m_pStream->WriteStr(" w\0120 j\0120 J\012");
@@ -1728,7 +1768,6 @@ namespace PdfWriter
 
 		if (sImageName)
 		{
-
 			m_pStream->WriteReal(dImageW);
 			m_pStream->WriteStr(" 0 0 ");
 			m_pStream->WriteReal(dImageH);
@@ -1746,23 +1785,31 @@ namespace PdfWriter
 	}	
 	void CAnnotAppearanceObject::StartDrawText(CFontDict* pFont, const double& dFontSize, const double& dR, const double& dG, const double& dB, const char* sExtGStateName, const double& dWidth, const double& dHeight)
 	{
-		CResourcesDict* pResources = m_pField->GetResourcesDict();
+		CResourcesDict* pResources = dynamic_cast<CResourcesDict*>(Get("Resources"));
 		if (!m_pStream || !pFont || !pResources)
 			return;
 
 		m_pStream->WriteEscapeName("Tx");
 		m_pStream->WriteStr(" BMC\012");
 
-		if (m_pField->HaveShd())
+		if ((m_pField && m_pField->HaveShd()) || (m_pAnnot && m_pAnnot->Get("BG")))
 		{
 			m_pStream->WriteStr("q\012");
-			TRgb oColor = m_pField->GetShdColor();
-			m_pStream->WriteReal(oColor.r);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(oColor.g);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(oColor.b);
-			m_pStream->WriteStr(" rg\012");
+			if (m_pField)
+			{
+				TRgb oColor = m_pField->GetShdColor();
+				m_pStream->WriteReal(oColor.r);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(oColor.g);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(oColor.b);
+				m_pStream->WriteStr(" rg\012");
+			}
+			else
+			{
+				CWidgetAnnotation* pAnnot = (CWidgetAnnotation*)m_pAnnot;
+				m_pStream->WriteStr(pAnnot->GetBGforAP().c_str());
+			}
 
 			m_pStream->WriteStr("1 0 0 1 0 0 cm\012");
 			m_pStream->WriteStr("0 0 ");
@@ -1776,23 +1823,34 @@ namespace PdfWriter
 		double dBorderSize   = 0;
 		double dBorderSize_2 = 0;
 		double dBorderSize2  = 0;
-		if (m_pField && m_pField->HaveBorder())
+		if ((m_pField && m_pField->HaveBorder()) || (m_pAnnot && m_pAnnot->HaveBorder()))
 		{
-			TRgb oColor = m_pField->GetBorderColor();
 			m_pStream->WriteStr("q\012");
 
-			m_pStream->WriteReal(oColor.r);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(oColor.g);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(oColor.b);
-			m_pStream->WriteStr(" RG\012");
+			if (m_pField)
+			{
+				TRgb oColor = m_pField->GetBorderColor();
+				m_pStream->WriteReal(oColor.r);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(oColor.g);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(oColor.b);
+				m_pStream->WriteStr(" RG\012");
+			}
+			else
+			{
+				CWidgetAnnotation* pAnnot = (CWidgetAnnotation*)m_pAnnot;
+				m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
+			}
 
-			dBorderSize   = m_pField->GetBorderSize();
+			dBorderSize   = m_pField ? m_pField->GetBorderSize() : m_pAnnot->GetBorderWidth();
 			dBorderSize_2 = dBorderSize / 2;
 			dBorderSize2  = dBorderSize * 2;
 			m_pStream->WriteReal(dBorderSize);
 			m_pStream->WriteStr(" w\0120 j\0120 J\012");
+
+			if (m_pAnnot && m_pAnnot->GetBorderType() == 2)
+				m_pStream->WriteStr(m_pAnnot->GetBorderDash().c_str());
 
 			m_pStream->WriteReal(dBorderSize_2);
 			m_pStream->WriteChar(' ');
@@ -1804,9 +1862,10 @@ namespace PdfWriter
 			m_pStream->WriteStr(" re\012S\012");
 
 			CTextField* pTextField = dynamic_cast<CTextField*>(m_pField);
-			if (pTextField && pTextField->IsCombFlag())
+			CTextWidget* pAnnot = dynamic_cast<CTextWidget*>(m_pAnnot);
+			if ((pTextField && pTextField->IsCombFlag()) || (pAnnot && pAnnot->IsCombFlag()))
 			{
-				int nMaxLen = pTextField->GetMaxLen();
+				int nMaxLen = pTextField ? pTextField->GetMaxLen() : pAnnot->GetMaxLen();
 				if (nMaxLen > 1)
 				{
 					double dStep = dWidth / nMaxLen;
@@ -1845,33 +1904,39 @@ namespace PdfWriter
 
 		m_pStream->WriteStr("BT\012");
 
-		m_pStream->WriteReal(dR);
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(dG);
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(dB);
-		m_pStream->WriteStr(" rg\012");
-
-		if (sExtGStateName)
+		m_dFontSize = std::min(1000.0, std::max(0.0, dFontSize));
+		if (m_pField)
 		{
-			m_pStream->WriteEscapeName(sExtGStateName);
-			m_pStream->WriteStr(" gs\012");
+			m_pStream->WriteReal(dR);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dG);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dB);
+			m_pStream->WriteStr(" rg\012");
+
+			if (sExtGStateName)
+			{
+				m_pStream->WriteEscapeName(sExtGStateName);
+				m_pStream->WriteStr(" gs\012");
+			}
+
+			m_pStream->WriteEscapeName(pResources->GetFontName(pFont));
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(m_dFontSize);
+			m_pStream->WriteStr(" Tf\012");
+		}
+		else
+		{
+			CWidgetAnnotation* pAnnot = (CWidgetAnnotation*)m_pAnnot;
+			m_pStream->WriteStr(pAnnot->GetDAforAP(pFont).c_str());
 		}
 
-		double _dFontSize = std::min(1000.0, std::max(0.0, dFontSize));
-
-		m_pStream->WriteEscapeName(pResources->GetFontName(pFont));
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(_dFontSize);
-		m_pStream->WriteStr(" Tf\012");
-
-		m_bStart    = true;
-		m_pFont     = pFont;
-		m_dFontSize = _dFontSize;
+		m_bStart = true;
+		m_pFont  = pFont;
 	}
 	void CAnnotAppearanceObject::DrawTextLine(const double& dX, const double& dY, const unsigned short* pCodes, const unsigned int& unCount, CFontCidTrueType** ppFonts, const double* pShifts)
 	{
-		CResourcesDict* pResources = m_pField->GetResourcesDict();
+		CResourcesDict* pResources = dynamic_cast<CResourcesDict*>(Get("Resources"));
 		if (!pResources)
 			return;
 
@@ -1993,5 +2058,19 @@ namespace PdfWriter
 	{
 		m_pStream->WriteStr("ET\012");
 		m_pStream->WriteStr("Q\012EMC\012");
+	}
+	void CAnnotAppearanceObject::DrawTextComment()
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("BBox", pArray);
+		pArray->Add(0);
+		pArray->Add(0);
+		pArray->Add(20);
+		pArray->Add(20);
+
+		m_pStream->WriteStr("");
 	}
 }

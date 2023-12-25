@@ -63,13 +63,9 @@ namespace DocFileFormat
 			this->cchFollowingPunct = FormatUtils::BytesToInt16( bytes, 2, size );
 			this->cchLeadingPunct = FormatUtils::BytesToInt16( bytes, 4, size );
 
-			unsigned char fpunctBytes[202];
-			memcpy( fpunctBytes, ( bytes + 6 ), 202 );
-			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(this->rgxchFPunct), fpunctBytes, 202, ENCODING_UTF16 );
+			this->rgxchFPunct = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)(bytes + 6), 202 / 2);
+			this->rgxchLPunct = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)(bytes + 208), 102 / 2);
 
-			unsigned char lpunctBytes[102];
-			memcpy( lpunctBytes, ( bytes + 208 ), 102 );
-			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(this->rgxchLPunct), lpunctBytes, 102, ENCODING_UTF16 );
 		}
 		else
 		{

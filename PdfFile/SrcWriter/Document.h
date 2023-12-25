@@ -145,7 +145,8 @@ namespace PdfWriter
 		CAnnotation*      CreateFreeTextAnnot();
 		CAnnotation*      CreateCaretAnnot();
 		CAnnotation*      CreateWidgetAnnot();
-		CAnnotation*      CreateButtonWidget();
+		CAnnotation*      CreatePushButtonWidget();
+		CAnnotation*      CreateCheckBoxWidget();
 		CAnnotation*      CreateTextWidget();
 		CAnnotation*      CreateChoiceWidget();
 		CAnnotation*      CreateSignatureWidget();
@@ -191,6 +192,8 @@ namespace PdfWriter
 		CDictObject*      GetParent(int nID);
 		CPage*            GetCurPage() { return m_pCurPage; }
 		void              SetCurPage(CPage* pPage) { m_pCurPage = pPage; }
+		bool              EditCO(const std::vector<int>& arrCO);
+		void              UpdateButtonImg(const std::vector<PdfWriter::CImageDict*>& arrButtonImg);
 	private:		  
 					  
 		char*             GetTTFontTag();

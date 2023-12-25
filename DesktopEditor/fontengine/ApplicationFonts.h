@@ -345,7 +345,7 @@ public:
 	void InitializeFromBin(BYTE* pData, unsigned int nLen);
 	void InitializeRanges(unsigned char* data);
 
-	std::vector<std::wstring> GetSetupFontFiles();
+	std::vector<std::wstring> GetSetupFontFiles(const bool& bIsUseUserFonts = true);
 	void InitializeFromArrayFiles(std::vector<std::wstring>& files, int nFlag = 0);
 
 #if defined(_WIN32) || defined (_WIN64)

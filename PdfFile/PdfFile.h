@@ -99,6 +99,7 @@ public:
 	bool AddPage    (int nPageIndex);
 	bool EditAnnot  (int nPageIndex, int nID);
 	bool DeleteAnnot(int nID);
+	bool EditWidgets(IAdvancedCommand* pCommand);
 #endif
 
 	// --- READER ---

@@ -791,7 +791,7 @@ void PptxConverter::convert(PPTX::Logic::AnimEffect* oox_anim_effect)
 		std::wstring filter = *oox_anim_effect->filter;
 		std::wstring subtype = L"";
 
-		smil_transition_type odfType;
+		_CP_OPT(smil_transition_type) odfType = boost::none;
 		std::wstring odfSubtype = L"";
 		bool odfReversed = false;
 
@@ -912,13 +912,19 @@ void PptxConverter::convert(PPTX::Logic::AnimEffect* oox_anim_effect)
 			else if (subtype == L"down")	{ odfReversed = true;	odfSubtype = L"fromBottom"; }
 			else if (subtype == L"up")		{ odfReversed = false;	odfSubtype = L"fromTop"; }
 		}
+		else if (filter == L"image")
+		{
+			odfType = boost::none;
+		}
 		else
 		{
 			odfType = smil_transition_type::fade;
 			odfReversed = false;
 		}
 
-		odp_context->current_slide().set_anim_transition_filter_type(odfType);
+		if(odfType)
+			odp_context->current_slide().set_anim_transition_filter_type(odfType.value());
+
 		if(!odfSubtype.empty())
 			odp_context->current_slide().set_anim_transition_filter_subtype(odfSubtype);
 		if(odfReversed)
@@ -1841,6 +1847,99 @@ void PptxConverter::convert(PPTX::Logic::ZoomTransition *oox_transition)
 	odp_context->current_slide().set_transition_type(11);
 }
 
+struct preset_subtype_maping
+{
+	int							OOX_PresetSubtype;
+	std::wstring				ODF_PresetSubtype;
+};
+
+static const preset_subtype_maping s_preset_subtype_maping[] =
+{
+	{   1,  L"from-top" },
+	{   2,  L"from-right" },
+	{   3,  L"from-top-right" },
+	{   4,  L"from-bottom" },
+	{   5,  L"horizontal" },
+	{   6,  L"from-bottom-right" },
+	{   8,  L"from-left" },
+	{   9,  L"from-top-left" },
+	{  10,  L"vertical" },
+	{  12,  L"from-bottom-left" },
+	{  16,  L"in" },
+	{  21,  L"vertical-in" },
+	{  26,  L"horizontal-in" },
+	{  32,  L"out" },
+	{  36,  L"out-from-screen-center" },
+	{  37,  L"vertical-out" },
+	{  42,  L"horizontal-out" },
+	{  272, L"in-slightly" },
+	{  288, L"out-slightly" },
+	{  528, L"in-from-screen-center" },
+	{  0,   L"" }
+};
+
+static std::wstring convert_subtype(PPTX::Limit::TLPresetClass preset_class_, int preset_id_, int preset_subtype_)
+{
+	std::wstring subtype;
+
+	const unsigned char entrance_bytecode	= 1;
+	const unsigned char exit_bytecode		= 2;
+
+	if ((preset_class_.GetBYTECode() == entrance_bytecode) || (preset_class_.GetBYTECode() == exit_bytecode))
+	{
+		// skip wheel effect
+		if (preset_id_ != 21)
+		{
+			if (preset_id_ == 5)
+			{
+				// checkerboard
+				switch (preset_subtype_)
+				{
+				case  5: subtype = L"downward"; break;
+				case 10: subtype = L"across"; break;
+				}
+			}
+			else if (preset_id_ == 17)
+			{
+				// stretch
+				if (preset_subtype_ == 10)
+					subtype = L"across";
+			}
+			else if (preset_id_ == 18)
+			{
+				// strips
+				switch (preset_subtype_)
+				{
+				case 3: subtype = L"right-to-top"; break;
+				case 6: subtype = L"right-to-bottom"; break;
+				case 9: subtype = L"left-to-top"; break;
+				case 12: subtype = L"left-to-bottom"; break;
+				}
+			}
+
+			if (subtype.empty())
+			{
+				const preset_subtype_maping* p = s_preset_subtype_maping;
+
+				while (p->OOX_PresetSubtype != 0)
+				{
+					if (p->OOX_PresetSubtype == preset_subtype_)
+					{
+						subtype = p->ODF_PresetSubtype;
+						break;
+					}
+					p++;
+				}
+			}
+		}
+	}
+
+	if (subtype.empty() && preset_subtype_ != 0)
+		return std::to_wstring(preset_subtype_);
+
+	return subtype;
+}
+
 void PptxConverter::convert(PPTX::Logic::CTn *oox_time_common)
 {
 	if (!oox_time_common) return;
@@ -1875,9 +1974,22 @@ void PptxConverter::convert(PPTX::Logic::CTn *oox_time_common)
 	if (oox_time_common->presetClass.IsInit())
 	{
 		convert(*oox_time_common->presetClass);
-		if(oox_time_common->presetID.IsInit())
+		if (oox_time_common->presetID.IsInit())
+		{
 			convert(*oox_time_common->presetClass, *oox_time_common->presetID);
+
+			if (oox_time_common->presetSubtype.IsInit())
+			{
+				const std::wstring odf_subtype = convert_subtype(
+					*oox_time_common->presetClass,
+					*oox_time_common->presetID,
+					*oox_time_common->presetSubtype);
+				if(!odf_subtype.empty())
+					odp_context->current_slide().set_anim_subtype(odf_subtype);
+			}
+		}
 	}
+	
 	
 
 	//nullable<CondLst>			stCondLst;

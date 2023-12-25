@@ -39,6 +39,8 @@ namespace NExtractTools
 {
 	_UINT32 txt2docx_dir(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
+		params.m_bMacro = false; 
+
 		CTxtXmlFile txtFile;
 		std::wstring xml_options = params.getXmlOptions();
 		return txtFile.txt_LoadFromFile(sFrom, sTo, xml_options);
@@ -55,6 +57,7 @@ namespace NExtractTools
 		NSDirectory::CreateDirectory(sResultDocxDir);
 
 		CTxtXmlFile txtFile;
+		params.m_bMacro = false;
 
 		_UINT32 nRes = txtFile.txt_LoadFromFile(sFrom, sResultDocxDir, params.getXmlOptions());
 		if (SUCCEEDED_X2T(nRes))

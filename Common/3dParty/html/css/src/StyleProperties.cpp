@@ -3,6 +3,7 @@
 #include "StaticFunctions.h"
 #include "ConstValues.h"
 #include <cfloat>
+#include <cmath>
 #include <wchar.h>
 
 namespace NSCSS
@@ -156,7 +157,7 @@ namespace NSCSS
 	}
 
 	CDigit::CDigit()
-	    : CValue(DBL_MIN, 0, false), m_enUnitMeasure(None)
+	    : CValue(DBL_MAX, 0, false), m_enUnitMeasure(None)
 	{}
 
 	CDigit::CDigit(double dValue)
@@ -169,17 +170,17 @@ namespace NSCSS
 
 	bool CDigit::Empty() const
 	{
-		return DBL_MIN == m_oValue;
+		return DBL_MAX == m_oValue;
 	}
 
 	bool CDigit::Zero() const
 	{
-		return (std::abs(m_oValue) <= DBL_EPSILON);
+		return (std::abs(0 - m_oValue) <= DBL_EPSILON);
 	}
 
 	void CDigit::Clear()
 	{
-		m_oValue = DBL_MIN;
+		m_oValue = DBL_MAX;
 	}
 	
 	void CDigit::ConvertTo(UnitMeasure enUnitMeasure, double dPrevValue)
@@ -190,7 +191,7 @@ namespace NSCSS
 
 	int CDigit::ToInt() const
 	{
-		if (DBL_MIN == m_oValue)
+		if (DBL_MAX == m_oValue)
 			return 0;
 
 		return static_cast<int>(m_oValue + 0.5);
@@ -198,7 +199,7 @@ namespace NSCSS
 
 	double CDigit::ToDouble() const
 	{
-		if (DBL_MIN == m_oValue)
+		if (DBL_MAX == m_oValue)
 			return 0.;
 
 		return m_oValue;
@@ -206,7 +207,7 @@ namespace NSCSS
 
 	std::wstring CDigit::ToWString() const
 	{
-		if (DBL_MIN == m_oValue)
+		if (DBL_MAX == m_oValue)
 			return std::wstring();
 
 		return std::to_wstring(m_oValue);
@@ -214,7 +215,7 @@ namespace NSCSS
 
 	int CDigit::ToInt(UnitMeasure enUnitMeasure, double dPrevValue) const
 	{
-		if (DBL_MIN == m_oValue)
+		if (DBL_MAX == m_oValue)
 			return 0;
 
 		return static_cast<int>(ConvertValue(dPrevValue, enUnitMeasure) + 0.5);
@@ -222,7 +223,7 @@ namespace NSCSS
 
 	double CDigit::ToDouble(UnitMeasure enUnitMeasure, double dPrevValue) const
 	{
-		if (DBL_MIN == m_oValue)
+		if (DBL_MAX == m_oValue)
 			return 0;
 
 		return ConvertValue(dPrevValue, enUnitMeasure);
@@ -230,8 +231,8 @@ namespace NSCSS
 
 	std::wstring CDigit::ToWString(UnitMeasure enUnitMeasure, double dPrevValue) const
 	{
-		if (DBL_MIN == m_oValue)
-			return 0;
+		if (DBL_MAX == m_oValue)
+			return std::wstring();
 
 		return std::to_wstring(ConvertValue(dPrevValue, enUnitMeasure));
 	}
@@ -306,7 +307,7 @@ namespace NSCSS
 
 	CDigit &CDigit::operator+=(const CDigit &oDigit)
 	{
-		if (m_unLevel > oDigit.m_unLevel || (m_bImportant && !oDigit.m_bImportant) || DBL_MIN == oDigit.m_oValue)
+		if (m_unLevel > oDigit.m_unLevel || (m_bImportant && !oDigit.m_bImportant) || DBL_MAX == oDigit.m_oValue)
 			return *this;
 
 		m_oValue        += oDigit.ToDouble(m_enUnitMeasure);
@@ -364,7 +365,7 @@ namespace NSCSS
 		if (!CUnitMeasureConverter::GetValue(wsValue, dNewValue, enNewUnitMeasure))
 			return false;
 
-		if (Percent == enNewUnitMeasure && !Empty() && unLevel > m_unLevel)
+		if (Percent == enNewUnitMeasure && !Empty() && (unLevel > m_unLevel || bHardMode))
 		{
 			m_oValue *= dNewValue / 100.;
 		}
@@ -438,6 +439,14 @@ namespace NSCSS
 
 		return wsCopyValue.substr(unBegin + 2, wsCopyValue.find(L')') - unBegin - 2);
 	}
+	
+	void CColor::SetEmpty(unsigned int unLevel)
+	{
+		m_oValue.Clear();
+		m_oValue.m_enType = ColorEmpty;
+		m_unLevel    = unLevel;
+		m_bImportant = false;
+	}
 
 	CColor::CColor()
 		: CValue({}, 0, false), m_oOpacity(1.)
@@ -450,11 +459,8 @@ namespace NSCSS
 
 		if (wsValue.empty())
 		{
-			m_oValue.Clear();
-			m_oValue.m_enType = ColorEmpty;
-			m_unLevel    = unLevel;
-			m_bImportant = false;
-			return true;
+			SetEmpty(unLevel);
+			return false;
 		}
 
 		std::wstring wsNewValue(wsValue);
@@ -494,14 +500,26 @@ namespace NSCSS
 			if (std::wstring::npos == unEnd)
 				return false;
 
-			std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsNewValue.substr(4, unEnd - 3), false, L" (),");
+			std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsNewValue.substr(4, unEnd - 4), false, L" (),");
 
 			if (3 > arValues.size())
 				return false;
 
-			m_oValue.SetRGB(NS_STATIC_FUNCTIONS::ReadDouble(arValues[0]),
-			                NS_STATIC_FUNCTIONS::ReadDouble(arValues[1]),
-			                NS_STATIC_FUNCTIONS::ReadDouble(arValues[2]));
+			INT nRed   = std::ceil(NS_STATIC_FUNCTIONS::CalculatePersentage(arValues[0], 255));
+			INT nGreen = std::ceil(NS_STATIC_FUNCTIONS::CalculatePersentage(arValues[1], 255));
+			INT nBlue  = std::ceil(NS_STATIC_FUNCTIONS::CalculatePersentage(arValues[2], 255));
+
+			if (nRed < 0 || nGreen < 0 || nBlue < 0)
+			{
+				SetEmpty(unLevel);
+				return false;
+			}
+
+			if (255 < nRed)   nRed   = 255;
+			if (255 < nGreen) nGreen = 255;
+			if (255 < nBlue)  nBlue  = 255;
+
+			m_oValue.SetRGB(nRed, nGreen, nBlue);
 
 			if (wsNewValue.substr(0, 4) == L"rgba" && 4 == arValues.size())
 				m_oOpacity.SetValue(arValues[3], unLevel, bHardMode);
@@ -560,6 +578,9 @@ namespace NSCSS
 
 	double CColor::GetOpacity() const
 	{
+		if (m_oOpacity.Empty())
+			return 1.;
+
 		if (Percent == m_oOpacity.GetUnitMeasure())
 			return m_oOpacity.ToDouble() / 100.;
 
@@ -2066,7 +2087,9 @@ namespace NSCSS
 			if ((*iWord).empty())
 				continue;
 
-			return m_oFamily.SetValue(NSCSS::NS_STATIC_FUNCTIONS::RemoveSpaces(*iWord), unLevel, bHardMode);
+			NSCSS::NS_STATIC_FUNCTIONS::RemoveSpaces(*iWord);
+
+			return m_oFamily.SetValue(*iWord, unLevel, bHardMode);
 		}
 
 		return false;

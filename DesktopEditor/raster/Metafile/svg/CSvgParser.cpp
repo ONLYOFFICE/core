@@ -152,7 +152,7 @@ namespace SVG
 		else if (L"image" == wsElementName)
 			pObject = new CImage(oElement, pParent);
 		else if (L"use" == wsElementName)
-			pObject = new CUse(oElement, pParent, pFile);
+			pObject = new CUse(oElement, pParent);
 		else if (L"text" == wsElementName)
 		{
 			pObject = CText::Create(oElement, pParent, m_pFontManager);

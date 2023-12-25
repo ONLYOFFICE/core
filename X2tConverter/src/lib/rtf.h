@@ -39,6 +39,8 @@ namespace NExtractTools
 {
 	_UINT32 rtf2docx_dir(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
+		params.m_bMacro = false;
+		
 		RtfConvertationManager rtfConvert;
 
 		rtfConvert.m_sTempFolder = convertParams.m_sTempDir;
@@ -60,6 +62,8 @@ namespace NExtractTools
 
 	_UINT32 rtf2doct_bin(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
+		params.m_bMacro = false;
+
 		std::wstring sResultDocxDir = combinePath(convertParams.m_sTempDir, L"docx_unpacked");
 		NSDirectory::CreateDirectory(sResultDocxDir);
 

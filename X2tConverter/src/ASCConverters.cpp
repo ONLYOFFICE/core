@@ -630,9 +630,16 @@ namespace NExtractTools
 			}
 			else
 				nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+			
 			if (SUCCEEDED_X2T(nRes))
 			{
-				nRes = fromDocxDir(sDocxDir, sTo, nFormatTo, params, convertParams);
+				std::wstring sFileToCurrent = *params.m_sFileTo;
+				params.changeFormatFromPost(*params.m_nFormatFrom, params.m_bMacro);
+
+				if (NULL != params.m_nFormatTo)
+					nFormatTo = *params.m_nFormatTo;
+
+				nRes = fromDocxDir(sDocxDir, *params.m_sFileTo, nFormatTo, params, convertParams);
 			}
 		}
 		return nRes;
@@ -964,9 +971,16 @@ namespace NExtractTools
 			}
 			else
 				nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+			
 			if (SUCCEEDED_X2T(nRes))
 			{
-				nRes = fromXlsxDir(sXlsxDir, sTo, nFormatTo, params, convertParams);
+				std::wstring sFileToCurrent = *params.m_sFileTo;
+				params.changeFormatFromPost(*params.m_nFormatFrom, params.m_bMacro);
+
+				if (NULL != params.m_nFormatTo)
+					nFormatTo = *params.m_nFormatTo;
+				
+				nRes = fromXlsxDir(sXlsxDir, *params.m_sFileTo, nFormatTo, params, convertParams);
 			}
 		}
 		return nRes;
@@ -1235,9 +1249,16 @@ namespace NExtractTools
 		}
 		else
 			nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+		
 		if (SUCCEEDED_X2T(nRes))
 		{
-			nRes = fromPptxDir(sPptxDir, sTo, nFormatTo, params, convertParams);
+			std::wstring sFileToCurrent = *params.m_sFileTo;
+			params.changeFormatFromPost(*params.m_nFormatFrom, params.m_bMacro);
+
+			if (NULL != params.m_nFormatTo)
+				nFormatTo = *params.m_nFormatTo;
+
+			nRes = fromPptxDir(sPptxDir, *params.m_sFileTo, nFormatTo, params, convertParams);
 		}
 		return nRes;
 	}
@@ -2010,7 +2031,6 @@ namespace NExtractTools
 #ifndef BUILD_X2T_AS_LIBRARY_DYLIB
 		NSDoctRenderer::CDocBuilder::Dispose();
 #endif
-
 		if (SUCCEEDED_X2T(result) && oInputParams.m_bOutputConvertCorrupted)
 		{
 			return AVS_FILEUTILS_ERROR_CONVERT_CORRUPTED;

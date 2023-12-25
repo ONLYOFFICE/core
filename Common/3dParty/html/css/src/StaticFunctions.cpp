@@ -100,7 +100,8 @@ namespace NS_STATIC_FUNCTIONS
 			unEnd = wsLine.find_first_of(wsDelimiters, unStart);
 		}
 
-		arWords.emplace_back(wsLine.data() + unStart);
+		if (std::wstring::npos != unStart)
+			arWords.emplace_back(wsLine.data() + unStart);
 
 		return arWords;
 	}
@@ -169,13 +170,27 @@ namespace NS_STATIC_FUNCTIONS
 		return mRules;
 	}
 
-	std::wstring RemoveSpaces(std::wstring &wsString)
+	void RemoveSpaces(std::wstring &wsString)
 	{
 		std::wstring::const_iterator ciStart = std::find_if_not(wsString.begin(), wsString.end(), std::iswspace);
+
 		if (ciStart == wsString.end())
-			return L"";
+			return wsString.clear();
+
 		std::wstring::const_reverse_iterator criEnd = std::find_if_not(wsString.rbegin(),wsString.rend(), std::iswspace);
-		return std::wstring(ciStart, criEnd.base());
+
+		wsString = std::wstring(ciStart, criEnd.base());
 	}
+	
+	double CalculatePersentage(const std::wstring &wsValue, double dRelativeValue)
+	{
+		double dValue = ReadDouble(wsValue);
+
+		if (std::wstring::npos != wsValue.find(L'%'))
+			return dValue / 100. * dRelativeValue;
+
+		return dValue;
+	}
+	
 }
 }

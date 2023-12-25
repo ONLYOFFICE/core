@@ -54,12 +54,27 @@ namespace PPTX
 		}
 		unsigned char ChartBuild::GetBYTECode() const
 		{
-			//not using yet
+			if (L"allPts" == m_strValue)		return 0;
+			if (L"category" == m_strValue)		return 1;
+			if (L"gridLegend" == m_strValue)	return 2;
+			if (L"ptInCategory" == m_strValue)	return 3;
+			if (L"ptInSeries" == m_strValue)	return 4;
+			if (L"series" == m_strValue)		return 5;
+
 			return 0;
 		}
 		void ChartBuild::SetBYTECode(const unsigned char& src)
 		{
-			//not using yet
+			switch (src)
+			{
+			case 0:		m_strValue = L"allPts";			break;
+			case 1:		m_strValue = L"category";		break;
+			case 2:		m_strValue = L"gridLegend";		break;
+			case 3:		m_strValue = L"ptInCategory";	break;
+			case 4:		m_strValue = L"ptInSeries";		break;
+			case 5:		m_strValue = L"series";			break;
+			default:	m_strValue = L"allPts";
+			}
 		}
 	} // namespace Limit
 } // namespace PPTX

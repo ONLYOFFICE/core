@@ -1,4 +1,5 @@
 #include "AlphaMask.h"
+#include <string.h>
 
 namespace Aggplus
 {

@@ -590,7 +590,6 @@ namespace DocFileFormat
 			{
 				case Global::msoblipEMF:
 				case Global::msoblipWMF:
-				case Global::msoblipPICT:
 				{
 					MetafilePictBlip* metaBlip = static_cast<MetafilePictBlip*>(oBlipEntry->Blip);
 					if (metaBlip)
@@ -616,12 +615,43 @@ namespace DocFileFormat
 						if (NSFile::CFileBinary::ReadAllBytes(file_name, &pData, nData))
 						{
 							m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), 
-								boost::shared_array<unsigned char>(pData), nData, oBlipEntry->btWin32));
-							
-							break;
+								boost::shared_array<unsigned char>(pData), nData, oBlipEntry->btWin32));	
 						}
-					}				
-				}
+						NSFile::CFileBinary::Remove(file_name);
+					}
+				}break;
+				case Global::msoblipPICT:
+				{
+					MetafilePictBlip* metaBlip = static_cast<MetafilePictBlip*>(oBlipEntry->Blip);
+					if (metaBlip)
+					{
+						unsigned char* newData = NULL;
+						unsigned int newDataSize = metaBlip->oMetaFile.ToBuffer(newData);
+
+						CBgraFrame bgraFrame;
+						if (bgraFrame.Decode(newData, newDataSize))
+						{
+							std::wstring file_name = m_context->_doc->m_sTempFolder + FILE_SEPARATOR_STR + L"tmp_image";
+							bgraFrame.SaveFile(file_name, 4); // png
+
+							unsigned char* pData = NULL;
+							DWORD nData = 0;
+							if (NSFile::CFileBinary::ReadAllBytes(file_name, &pData, nData))
+							{
+								oBlipEntry->btWin32 = Global::msoblipPNG;
+								
+								m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32),
+									boost::shared_array<unsigned char>(pData), nData, oBlipEntry->btWin32));
+							}
+							NSFile::CFileBinary::Remove(file_name);
+						}
+						else
+						{
+							m_context->_docx->ImagesList.push_back(ImageFileStructure(metaBlip->oMetaFile.m_sExtension,
+								newData, newDataSize, oBlipEntry->btWin32));
+						}
+					}
+				}break;
 				case Global::msoblipJPEG:
 				case Global::msoblipCMYKJPEG:
 				case Global::msoblipPNG:
@@ -675,7 +705,7 @@ namespace DocFileFormat
 			return std::wstring(L".wmf");
 
 		case Global::msoblipPICT:
-			return std::wstring(L".pcz");
+			return std::wstring(L".pct");
 
 		default:
 			return std::wstring(L".png");

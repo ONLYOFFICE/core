@@ -114,10 +114,12 @@ namespace NExtractTools
 	}
 	_UINT32 xlsxflat2xlsx_dir(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
+		params.m_bMacro = false;
 		BinXlsxRW::CXlsxSerializer oCXlsxSerializer;
 
 		oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
 		oCXlsxSerializer.setFontDir(params.getFontPath());
+		oCXlsxSerializer.setMacroEnabled(params.m_bMacro);
 
 		_UINT32 nRes = oCXlsxSerializer.xml2Xlsx(sFrom, sTo, params.getXmlOptions());
 
@@ -240,6 +242,7 @@ namespace NExtractTools
 	}
 	_UINT32 xltx2xlsx_dir(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
+		params.m_bMacro = false;
 		return NSCommon::ooxml2ooxml_replace_content_type(sFrom, sTo, params, convertParams,
 														  L"application/vnd.openxmlformats-officedocument.spreadsheetml.template.main+xml",
 														  L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml");

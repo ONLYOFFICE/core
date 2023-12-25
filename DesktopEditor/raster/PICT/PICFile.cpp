@@ -117,7 +117,9 @@ bool CPictFile::Open(CBgraFrame *pFrame, BYTE *pBuffer, int nSize, bool isRGBA)
     AquireImage(pImage);
 
     oFile.WriteFile(pBuffer, nSize);
-    oFile.SetPosition(0);
+    oFile.CloseFile();
+
+    oFile.OpenFile(sTmpFile);
 
     bool status = false;
     if (DecodePICT(oFile.GetFileNative(), pImage))

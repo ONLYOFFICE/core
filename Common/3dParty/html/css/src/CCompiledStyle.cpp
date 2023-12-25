@@ -460,9 +460,6 @@ namespace NSCSS
 			{
 				sValue += *iWord;
 
-				if (L' ' == sValue.front())
-					sValue.erase(0, 1);
-
 				if (!sValue.empty() && ((*iWord).back() == L';' || iWord == (arWords.end() - 1)))
 				{
 					if (sValue.back() == L';')
@@ -470,6 +467,10 @@ namespace NSCSS
 
 					std::transform(sProperty.begin(), sProperty.end(), sProperty.begin(), tolower);
 					std::transform(sValue.begin(), sValue.end(), sValue.begin(), tolower);
+
+					NS_STATIC_FUNCTIONS::RemoveSpaces(sProperty);
+					NS_STATIC_FUNCTIONS::RemoveSpaces(sValue);
+
 					AddPropSel(sProperty, sValue, unLevel, bHardMode);
 					sProperty.clear();
 					sValue.clear();

@@ -41,6 +41,8 @@ namespace NExtractTools
 {
 	_UINT32 csv2xlsx_dir(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
+		params.m_bMacro = false;
+
 		OOX::Spreadsheet::CXlsx oXlsx;
 
 		BYTE fileType;
@@ -88,6 +90,8 @@ namespace NExtractTools
 
 	_UINT32 csv2xlst_bin(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
+		params.m_bMacro = false;
+
 		// Save to file (from temp dir)
 		BinXlsxRW::CXlsxSerializer oCXlsxSerializer;
 

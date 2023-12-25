@@ -46,7 +46,7 @@
 #include "../../Common/SimpleTypes_Shared.h"
 #include <boost/algorithm/string.hpp>
 
-#include "../../../XlsbFormat/Biff12_unions/DXFS.h"
+#include "../../XlsbFormat/Biff12_unions/DXFS.h"
 
 namespace OOX
 {

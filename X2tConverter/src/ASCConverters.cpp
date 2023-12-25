@@ -799,6 +799,10 @@ namespace NExtractTools
 		{
 			nRes = xlst_bin2csv(sFrom, sTo, params, convertParams);
 		}
+		else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB == nFormatTo)
+		{
+			nRes = xlst_bin2xlsb(sFrom, sTo, params, convertParams);
+		}
 		else if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
 		{
 			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::XLST;
@@ -1534,6 +1538,13 @@ namespace NExtractTools
 			oInputParams.m_bMacro = true;
 			oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM);
 			result = xlst2xlsx(sFileFrom, sFileTo, oInputParams, oConvertParams);
+		}
+		break;
+		case TCD_XLST2XLSB:
+		{
+			oInputParams.m_bMacro = true;
+			oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB);
+			result = xlst2xlsb(sFileFrom, sFileTo, oInputParams, oConvertParams);
 		}
 		break;
 		case TCD_XLST2XLTX:

@@ -39,7 +39,7 @@
 #include "../../XlsbFormat/Biff12_records/BeginBorders.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
 
-#include "../../../XlsbFormat/Biff12_unions/BORDERS.h"
+#include "../../XlsbFormat/Biff12_unions/BORDERS.h"
 
 namespace OOX
 {

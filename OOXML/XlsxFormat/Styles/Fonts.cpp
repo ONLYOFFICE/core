@@ -36,7 +36,7 @@
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 #include "../../XlsbFormat/Biff12_records/BeginFonts.h"
 
-#include "../../../XlsbFormat/Biff12_unions/FONTS.h"
+#include "../../XlsbFormat/Biff12_unions/FONTS.h"
 
 namespace OOX
 {

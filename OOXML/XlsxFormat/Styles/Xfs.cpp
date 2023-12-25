@@ -39,8 +39,8 @@
 #include "../../XlsbFormat/Biff12_records/BeginCellStyleXFs.h"
 #include "../../XlsbFormat/Biff12_records/BeginCellXFs.h"
 
-#include "../../../XlsbFormat/Biff12_unions/CELLSTYLEXFS.h"
-#include "../../../XlsbFormat/Biff12_unions/CELLXFS.h"
+#include "../../XlsbFormat/Biff12_unions/CELLSTYLEXFS.h"
+#include "../../XlsbFormat/Biff12_unions/CELLXFS.h"
 
 namespace OOX
 {

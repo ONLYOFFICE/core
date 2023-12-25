@@ -36,7 +36,7 @@
 #include "../../XlsbFormat/Biff12_unions/ACFMT.h"
 
 #include "../../Common/SimpleTypes_Shared.h"
-#include "../../../XlsbFormat/Biff12_unions/FMTS.h"
+#include "../../XlsbFormat/Biff12_unions/FMTS.h"
 
 namespace OOX
 {

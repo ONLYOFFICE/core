@@ -857,28 +857,28 @@ std::wstring anim_transitionFilter::convert_filter()
 				if (subtype.value() == L"rectangle")
 				{
 					filter = L"box";
-					pptx_subtype = L"in";
+					pptx_subtype = L"out";
 				}
 				else if (subtype.value() == L"diamond")
 				{
 					filter = L"diamond";
-					pptx_subtype = L"in";
+					pptx_subtype = L"out";
 				}
 				else
 				{
 					filter = L"box";
-					pptx_subtype = L"in";
+					pptx_subtype = L"out";
 				}
 			}
 			else
 			{
 				filter = L"box";
-				pptx_subtype = L"in";
+				pptx_subtype = L"out";
 			}
 			break;
 		case smil_transition_type::ellipseWipe:
 			filter = L"circle";
-			pptx_subtype = L"in";
+			pptx_subtype = L"out";
 			break;
 		case smil_transition_type::pinWheelWipe:
 			filter = L"wheel";

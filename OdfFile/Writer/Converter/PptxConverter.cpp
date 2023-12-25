@@ -1880,7 +1880,7 @@ static const preset_subtype_maping s_preset_subtype_maping[] =
 
 static std::wstring convert_subtype(PPTX::Limit::TLPresetClass preset_class_, int preset_id_, int preset_subtype_)
 {
-	std::wstring subtype;
+	_CP_OPT(std::wstring) subtype;
 
 	const unsigned char entrance_bytecode	= 1;
 	const unsigned char exit_bytecode		= 2;
@@ -1897,6 +1897,7 @@ static std::wstring convert_subtype(PPTX::Limit::TLPresetClass preset_class_, in
 				{
 				case  5: subtype = L"downward"; break;
 				case 10: subtype = L"across"; break;
+				default: subtype = boost::none;
 				}
 			}
 			else if (preset_id_ == 17)
@@ -1914,10 +1915,20 @@ static std::wstring convert_subtype(PPTX::Limit::TLPresetClass preset_class_, in
 				case 6: subtype = L"right-to-bottom"; break;
 				case 9: subtype = L"left-to-top"; break;
 				case 12: subtype = L"left-to-bottom"; break;
+				default: subtype = boost::none;
+				}
+			}
+			else if (preset_id_ == 6)
+			{
+				switch (preset_subtype_)
+				{
+				case 16: subtype = L"out"; break;
+				case 32: subtype = L"in"; break;
+				default: subtype = boost::none;
 				}
 			}
 
-			if (subtype.empty())
+			if (!subtype)
 			{
 				const preset_subtype_maping* p = s_preset_subtype_maping;
 
@@ -1934,10 +1945,16 @@ static std::wstring convert_subtype(PPTX::Limit::TLPresetClass preset_class_, in
 		}
 	}
 
-	if (subtype.empty() && preset_subtype_ != 0)
+	if (!subtype && preset_subtype_ != 0)
 		return std::to_wstring(preset_subtype_);
 
-	return subtype;
+	return subtype.get_value_or(std::to_wstring(preset_subtype_));
+}
+
+static double convert_acceleration(int acceleration)
+{
+	const double odf_multiplier = 100000.0;
+	return acceleration / odf_multiplier;
 }
 
 void PptxConverter::convert(PPTX::Logic::CTn *oox_time_common)
@@ -1989,7 +2006,11 @@ void PptxConverter::convert(PPTX::Logic::CTn *oox_time_common)
 			}
 		}
 	}
-	
+	if (oox_time_common->accel.IsInit())
+		odp_context->current_slide().set_anim_accelerate(convert_acceleration(*oox_time_common->accel));
+	if (oox_time_common->decel.IsInit())
+		odp_context->current_slide().set_anim_decelerate(convert_acceleration(*oox_time_common->decel));
+
 	
 
 	//nullable<CondLst>			stCondLst;

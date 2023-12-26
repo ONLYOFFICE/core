@@ -98,9 +98,7 @@ void presentation_event_listener::add_child_element( xml::sax * Reader, const st
         CP_NOT_APPLICABLE_ELM();
 }
 void presentation_event_listener::pptx_convert(oox::pptx_conversion_context & Context)
-{
-	Context.get_slide_context().start_action(attlist_.presentation_action_.get_value_or(L""));
-	
+{	
 	if (attlist_.xlink_attlist_.href_)
 	{
 		std::wstring href = *attlist_.xlink_attlist_.href_;
@@ -124,19 +122,18 @@ void presentation_event_listener::pptx_convert(oox::pptx_conversion_context & Co
 
 		if (!found)
 		{
+			Context.get_slide_context().start_action(attlist_.presentation_action_.get_value_or(L""));
+
 			if (boost::algorithm::starts_with(href, L"../"))
 				href = href.substr(std::wstring(L"../").size());
 			Context.get_slide_context().set_link(href, oox::_rels_type::typeHyperlink);
-		}
-			
-	}
-		
 
-	if (presentation_sound_)
-	{
-		presentation_sound_->pptx_convert(Context);
+			if (presentation_sound_)
+				presentation_sound_->pptx_convert(Context);
+
+			Context.get_slide_context().end_action();
+		}			
 	}
-	Context.get_slide_context().end_action();
 }
 
 // script:event-listener

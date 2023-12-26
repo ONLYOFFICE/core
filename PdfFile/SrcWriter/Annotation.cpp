@@ -810,13 +810,18 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CWidgetAnnotation::CWidgetAnnotation(CXref* pXref, EAnnotType eType) : CAnnotation(pXref, eType)
 	{
-		m_pMK     = NULL;
-		m_pParent = NULL;
-		m_pAA     = NULL;
-		m_pA      = NULL;
-		m_dFontSizeAP = 0;
+		m_pMK         = NULL;
+		m_pParent     = NULL;
+		m_pAA         = NULL;
+		m_pA          = NULL;
 		m_pAppearance = NULL;
-		m_nSubtype = WidgetUnknown;
+		m_pFont       = NULL;
+		m_dFontSizeAP = 0;
+		m_nQ          = 0;
+		m_dFontSize   = 10.0;
+		m_bBold       = false;
+		m_bItalic     = false;
+		m_nSubtype    = WidgetUnknown;
 	}
 	void CWidgetAnnotation::SetSubtype(const BYTE& nSubtype)
 	{
@@ -842,6 +847,13 @@ namespace PdfWriter
 
 		m_arrTC = arrTC;
 		m_dFontSizeAP = dFontSizeAP;
+	}
+	void CWidgetAnnotation::SetFont(CFontCidTrueType* pFont, double dFontSize, bool bBold, bool bItalic)
+	{
+		m_pFont = pFont;
+		m_dFontSize = dFontSize;
+		m_bBold     = bBold;
+		m_bItalic   = bItalic;
 	}
 	CDictObject* CWidgetAnnotation::GetObjOwnValue(const std::string& sV)
 	{
@@ -890,6 +902,7 @@ namespace PdfWriter
 	void CWidgetAnnotation::SetQ(const BYTE& nQ)
 	{
 		Add("Q", (int)nQ);
+		m_nQ = nQ;
 	}
 	void CWidgetAnnotation::SetH(const BYTE& nH)
 	{
@@ -1466,7 +1479,7 @@ namespace PdfWriter
 		int nFlags = ((CNumberObject*)Get("Ff"))->Get();
 		return (nFlags & (1 << 12));
 	}
-	int CTextWidget::GetMaxLen()
+	unsigned int CTextWidget::GetMaxLen()
 	{
 		CNumberObject* oMaxLen = m_pParent ? (CNumberObject*)m_pParent->Get("MaxLen") : (CNumberObject*)Get("MaxLen");
 		return oMaxLen ? oMaxLen->Get() : 0;
@@ -1476,10 +1489,6 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CChoiceWidget::CChoiceWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
 	{
-		m_pFont = NULL;
-		m_dFontSize = 10.0;
-		m_bBold   = false;
-		m_bItalic = false;
 	}
 	void CChoiceWidget::SetFlag(const int& nFlag)
 	{
@@ -1569,13 +1578,6 @@ namespace PdfWriter
 				pArray2->Add(new CStringObject(sValue.c_str()));
 			}
 		}
-	}
-	void CChoiceWidget::SetFont(CFontCidTrueType* pFont, double dFontSize, bool bBold, bool bItalic)
-	{
-		m_pFont = pFont;
-		m_dFontSize = dFontSize;
-		m_bBold     = bBold;
-		m_bItalic   = bItalic;
 	}
 	void CChoiceWidget::SetTextAppearance(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts)
 	{

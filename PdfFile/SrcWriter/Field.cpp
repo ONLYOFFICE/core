@@ -1937,14 +1937,29 @@ namespace PdfWriter
 			m_pStream->WriteReal(dBorderSize);
 			m_pStream->WriteStr(" w\0120 j\0120 J\012");
 
-			m_pStream->WriteReal(dBorderSize / 2);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(dBorderSize / 2);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(std::max(dWidth - dBorderSize, 0.0));
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(std::max(dHeight - dBorderSize, 0.0));
-			m_pStream->WriteStr(" re\012S\012");
+			if (nType == 4) // Underline
+			{
+				m_pStream->WriteInt(0);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(dBorderSize / 2);
+				m_pStream->WriteStr(" m\012");
+
+				m_pStream->WriteReal(dWidth);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(dBorderSize / 2);
+				m_pStream->WriteStr(" l\012S\012");
+			}
+			else
+			{
+				m_pStream->WriteReal(dBorderSize / 2);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(dBorderSize / 2);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(std::max(dWidth - dBorderSize, 0.0));
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(std::max(dHeight - dBorderSize, 0.0));
+				m_pStream->WriteStr(" re\012S\012");
+			}
 
 			CTextField* pTextField = dynamic_cast<CTextField*>(m_pField);
 			CTextWidget* pAnnot = dynamic_cast<CTextWidget*>(m_pAnnot);

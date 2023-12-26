@@ -46,6 +46,7 @@
 #include "../../DesktopEditor/graphics/commands/FormField.h"
 #include "../../DesktopEditor/graphics/commands/AnnotField.h"
 #include "SrcWriter/Metadata.h"
+#include "SrcWriter/Annotation.h"
 
 namespace PdfWriter
 {
@@ -242,6 +243,7 @@ private:
 	unsigned char* EncodeString(const unsigned int* pUnicodes, const unsigned int& unUnicodesCount, const unsigned int* pGIDs = NULL);
 	unsigned char* EncodeGID(const unsigned int& unGID, const unsigned int* pUnicodes, const unsigned int& unUnicodesCount);
 	std::wstring GetDownloadFile(const std::wstring& sUrl, const std::wstring& wsTempDirectory);
+	void DrawTextWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CTextWidget* pTextWidget, const std::wstring& wsValue, PdfWriter::CFontTrueType* pFontTT = NULL);
 
 private:
 	NSFonts::IFontManager*       m_pFontManager;

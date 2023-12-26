@@ -54,6 +54,7 @@
 #include "SrcWriter/Info.h"
 #include "SrcWriter/Annotation.h"
 #include "SrcWriter/ResourcesDictionary.h"
+#include "SrcWriter/Streams.h"
 
 #define AddToObject(oVal)\
 {\
@@ -1440,6 +1441,191 @@ void CPdfFile::AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD
 	if (!m_pInternal->pWriter)
 		return;
 	m_pInternal->pWriter->AddMetaData(sMetaName, pMetaData, nMetaLength);
+}
+HRESULT CPdfFile::ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword)
+{
+	RELEASEOBJECT(m_pInternal->pWriter);
+	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this, false);
+
+	PDFDoc* pPDFDocument = m_pInternal->pReader->GetPDFDocument();
+	if (!pPDFDocument)
+		return S_FALSE;
+
+	XRef* xref = pPDFDocument->getXRef();
+	if (!xref)
+		return S_FALSE;
+	Object* trailerDict = xref->getTrailerDict();
+	if (!trailerDict)
+		return S_FALSE;
+
+	PdfWriter::CDocument* pDoc = m_pInternal->pWriter->m_pDocument;
+	PdfWriter::CXref* pXref   = new PdfWriter::CXref(pDoc, 0);
+	PdfWriter::CXref* m_pXref = new PdfWriter::CXref(pDoc, xref->getNumObjects()); // Для новых объектов
+	if (!xref || !pDoc || !pXref || !m_pXref)
+	{
+		RELEASEOBJECT(pXref);
+		RELEASEOBJECT(m_pXref);
+		return S_FALSE;
+	}
+	pXref->SetPrev(m_pXref);
+
+	for (int i = 0; i < xref->getSize(); ++i)
+	{
+		XRefEntry* pEntry = xref->getEntry(i);
+		if (pEntry->type == xrefEntryFree)
+			continue;
+
+		if (i != pXref->GetSizeXRef())
+		{
+			PdfWriter::CXref* pXref2 = new PdfWriter::CXref(pDoc, i);
+			pXref2->SetPrev(pXref);
+			pXref = pXref2;
+		}
+
+		Object oTemp;
+		xref->fetch(i, pEntry->gen, &oTemp);
+		PdfWriter::CObjectBase* pObj = NULL;
+
+		switch (oTemp.getType())
+		{
+		case objBool:
+		{
+			pObj = new PdfWriter::CBoolObject(oTemp.getBool());
+			break;
+		}
+		case objInt:
+		{
+			pObj = new PdfWriter::CNumberObject(oTemp.getInt());
+			break;
+		}
+		case objReal:
+		{
+			pObj = new PdfWriter::CRealObject(oTemp.getReal());
+			break;
+		}
+		case objString:
+		{
+			TextString* s = new TextString(oTemp.getString());
+			std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+			pObj = new PdfWriter::CStringObject(sValue.c_str());
+			delete s;
+			break;
+		}
+		case objName:
+		{
+			pObj = new PdfWriter::CNameObject(oTemp.getName());
+			break;
+		}
+		case objNull:
+		{
+			pObj = new PdfWriter::CNullObject();
+			break;
+		}
+		case objArray:
+		{
+			pObj = new PdfWriter::CArrayObject();
+
+			for (int nIndex = 0; nIndex < oTemp.arrayGetLength(); ++nIndex)
+			{
+				Object oT;
+				oTemp.arrayGetNF(nIndex, &oT);
+				DictToCDictObject(&oT, pObj, false, "");
+				oT.free();
+			}
+			break;
+		}
+		case objDict:
+		{
+			pObj = new PdfWriter::CDictObject();
+
+			for (int nIndex = 0; nIndex < oTemp.dictGetLength(); ++nIndex)
+			{
+				Object oT;
+				char* chKey = oTemp.dictGetKey(nIndex);
+				oTemp.dictGetValNF(nIndex, &oT);
+				DictToCDictObject(&oT, pObj, false, chKey);
+				oT.free();
+			}
+			break;
+		}
+		case objRef:
+		{
+			PdfWriter::CObjectBase* pBase = new PdfWriter::CObjectBase();
+			pBase->SetRef(oTemp.getRefNum(), oTemp.getRefGen());
+			pObj = new PdfWriter::CProxyObject(pBase, true);
+			break;
+		}
+		case objStream:
+		{
+			Dict* pDict = oTemp.streamGetDict();
+			Object oObjStm;
+			if (pDict->lookup("Type", &oObjStm)->isName("ObjStm"))
+			{
+				oObjStm.free();
+				break;
+			}
+			oObjStm.free();
+
+			PdfWriter::CDictObject* pDObj = new PdfWriter::CDictObject();
+			pObj = pDObj;
+
+			int nLength = 0;
+			for (int nIndex = 0; nIndex < pDict->getLength(); ++nIndex)
+			{
+				Object oT;
+				char* chKey = pDict->getKey(nIndex);
+				if (strcmp("Length", chKey) == 0)
+				{
+					Object oLength;
+					nLength = pDict->getVal(nIndex, &oLength)->isInt() ? oLength.getInt() : 0;
+					oLength.free();
+					continue;
+				}
+				pDict->getValNF(nIndex, &oT);
+				DictToCDictObject(&oT, pObj, false, chKey);
+				oT.free();
+			}
+
+			PdfWriter::CStream* pStream = new PdfWriter::CMemoryStream();
+			pDObj->SetStream(m_pXref, pStream, false);
+
+			Stream* pImage = oTemp.getStream()->getUndecodedStream();
+			pImage->reset();
+			for (int nI = 0; nI < nLength; ++nI)
+				pStream->WriteChar(pImage->getChar());
+			break;
+		}
+		case objNone:
+		case objCmd:
+		case objError:
+		case objEOF:
+		default:
+			break;
+		}
+		oTemp.free();
+
+		if (pObj)
+			pXref->Add(pObj);
+	}
+
+	PdfWriter::CDictObject* pTrailer = pXref->GetTrailer();
+	for (int nIndex = 0; nIndex < trailerDict->dictGetLength(); ++nIndex)
+	{
+		Object oTemp;
+		char* chKey = trailerDict->dictGetKey(nIndex);
+		if (strcmp("Root", chKey) == 0 || strcmp("Info", chKey) == 0)
+		{
+			trailerDict->dictGetValNF(nIndex, &oTemp);
+			DictToCDictObject(&oTemp, pTrailer, true, chKey);
+		}
+		oTemp.free();
+	}
+
+	bool bRes = pDoc->SaveNewWithPassword(pXref, m_pXref, wsPath, wsPassword, wsPassword, pTrailer);
+
+	RELEASEOBJECT(pXref);
+
+	return bRes ? S_OK : S_FALSE;
 }
 HRESULT CPdfFile::OnlineWordToPdf(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
 {

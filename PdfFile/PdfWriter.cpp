@@ -94,7 +94,7 @@ static const long c_BrushTypeRadialGradient = 8002;
 // CPdfRenderer
 //
 //----------------------------------------------------------------------------------------
-CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRenderer* pRenderer) : m_oCommandManager(this)
+CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRenderer* pRenderer, bool bCreate) : m_oCommandManager(this)
 {
 	// Создаем менеджер шрифтов с собственным кэшем
 	m_pFontManager = pAppFonts->GenerateFontManager();
@@ -108,7 +108,7 @@ CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRend
 	if (isPDFA)
 		m_pDocument->SetPDFAConformanceMode(true);
 
-	if (!m_pDocument || !m_pDocument->CreateNew())
+	if (!m_pDocument || (bCreate && !m_pDocument->CreateNew()))
 	{
 		SetError();
 		return;

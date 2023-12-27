@@ -538,7 +538,7 @@ static _CP_OPT(int) pptx_convert_preset_subtype(const std::wstring& preset_class
 		}
 		catch (const boost::bad_lexical_cast& e)
 		{
-			pptx_preset_subtype = boost::none;
+			pptx_preset_subtype = 0;
 		}
 	}
 
@@ -642,11 +642,13 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 			presentationPresetClass = L"custom";
 		}
 
-		if (par_attlist_.presentation_preset_sub_type_ &&  presentationPresetId)
+		if (par_attlist_.presentation_preset_sub_type_ && presentationPresetId)
 			presentationPresetPresetSubType = pptx_convert_preset_subtype(
 				*presentationPresetClass, 
 				*presentationPresetId, 
 				*par_attlist_.presentation_preset_sub_type_);
+		else
+			presentationPresetPresetSubType = 0;
 	}
 
 	if (common_attlist_.smil_fill_)

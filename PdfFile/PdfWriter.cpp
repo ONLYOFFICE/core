@@ -2430,9 +2430,11 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 			arrImg.push_back(NULL);
 			continue;
 		}
+		std::wstring sTempImagePath = GetDownloadFile(wsPath, wsTempDirectory);
+		std::wstring wsImagePath = sTempImagePath.empty() ? wsPath : sTempImagePath;
 
 		Aggplus::CImage* pCImage = NULL;
-		CImageFileFormatChecker oImageFormat(wsPath);
+		CImageFileFormatChecker oImageFormat(wsImagePath);
 		if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType ||
 			_CXIMAGE_FORMAT_EMF == oImageFormat.eFileType ||
 			_CXIMAGE_FORMAT_SVM == oImageFormat.eFileType ||
@@ -2450,7 +2452,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 			pCImage = new Aggplus::CImage(wsTempFile);
 		}
 		else
-			pCImage = new Aggplus::CImage(wsPath);
+			pCImage = new Aggplus::CImage(wsImagePath);
 
 		PdfWriter::CImageDict* pImage = LoadImage(pCImage, 255);
 		RELEASEOBJECT(pCImage);

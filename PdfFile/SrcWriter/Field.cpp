@@ -1789,10 +1789,14 @@ namespace PdfWriter
 		if (!m_pStream || !pFont || !pResources)
 			return;
 
+		CWidgetAnnotation* pAnnot = NULL;
+		if (m_pAnnot)
+			pAnnot = (CWidgetAnnotation*)m_pAnnot;
+
 		m_pStream->WriteEscapeName("Tx");
 		m_pStream->WriteStr(" BMC\012");
 
-		if ((m_pField && m_pField->HaveShd()) || (m_pAnnot && m_pAnnot->Get("BG")))
+		if ((m_pField && m_pField->HaveShd()) || (pAnnot && pAnnot->HaveBG()))
 		{
 			m_pStream->WriteStr("q\012");
 			if (m_pField)
@@ -1806,10 +1810,7 @@ namespace PdfWriter
 				m_pStream->WriteStr(" rg\012");
 			}
 			else
-			{
-				CWidgetAnnotation* pAnnot = (CWidgetAnnotation*)m_pAnnot;
 				m_pStream->WriteStr(pAnnot->GetBGforAP().c_str());
-			}
 
 			m_pStream->WriteStr("1 0 0 1 0 0 cm\012");
 			m_pStream->WriteStr("0 0 ");
@@ -1822,17 +1823,17 @@ namespace PdfWriter
 
 		double dBorderSize       = 0;
 		double dBorderSizeStyle  = 0;
-		if ((m_pField && m_pField->HaveBorder()) || (m_pAnnot && m_pAnnot->HaveBorder()))
+		if ((m_pField && m_pField->HaveBorder()) || (pAnnot && pAnnot->HaveBorder()))
 		{
 			m_pStream->WriteStr("q\012");
 
-			dBorderSize      = m_pField ? m_pField->GetBorderSize() : m_pAnnot->GetBorderWidth();
+			dBorderSize      = m_pField ? m_pField->GetBorderSize() : pAnnot->GetBorderWidth();
 			dBorderSizeStyle = dBorderSize;
 
 			BYTE nType = 0;
-			if (m_pAnnot)
+			if (pAnnot)
 			{
-				nType = m_pAnnot->GetBorderType();
+				nType = pAnnot->GetBorderType();
 				switch (nType)
 				{
 				case 1: // Beveled
@@ -1874,7 +1875,10 @@ namespace PdfWriter
 
 					m_pStream->WriteStr("f\012");
 
-					m_pStream->WriteStr("0.75293 g\012");
+					if (nType == 1 && pAnnot->HaveBG())
+						m_pStream->WriteStr(pAnnot->GetBGforAP(-0.25).c_str());
+					else
+						m_pStream->WriteStr("0.75293 g\012");
 
 					m_pStream->WriteReal(dWidth - dBorderSize);
 					m_pStream->WriteChar(' ');
@@ -1911,7 +1915,7 @@ namespace PdfWriter
 				}
 				case 2: // Dashed
 				{
-					m_pStream->WriteStr(m_pAnnot->GetBorderDash().c_str());
+					m_pStream->WriteStr(pAnnot->GetBorderDash().c_str());
 					break;
 				}
 				default: break;
@@ -1929,10 +1933,7 @@ namespace PdfWriter
 				m_pStream->WriteStr(" RG\012");
 			}
 			else
-			{
-				CWidgetAnnotation* pAnnot = (CWidgetAnnotation*)m_pAnnot;
 				m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
-			}
 
 			m_pStream->WriteReal(dBorderSize);
 			m_pStream->WriteStr(" w\0120 j\0120 J\012");
@@ -2026,10 +2027,7 @@ namespace PdfWriter
 			m_pStream->WriteStr(" Tf\012");
 		}
 		else
-		{
-			CWidgetAnnotation* pAnnot = (CWidgetAnnotation*)m_pAnnot;
 			m_pStream->WriteStr(pAnnot->GetDAforAP(pFont).c_str());
-		}
 
 		m_bStart = true;
 		m_pFont  = pFont;

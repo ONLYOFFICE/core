@@ -125,7 +125,7 @@ namespace PdfWriter
 		pArray->Add(dRD3);
 		pArray->Add(dRD4);
 	}
-	std::string GetColor(const std::vector<double>& arr, bool bCaps)
+	std::string GetColor(const std::vector<double>& arr, bool bCaps, double dDiff = 0)
 	{
 		if (arr.empty())
 			return bCaps ? "1 G" : "1 g";
@@ -133,7 +133,7 @@ namespace PdfWriter
 		std::string sDA;
 		for (double dColoc : arr)
 		{
-			sDA.append(std::to_string(dColoc));
+			sDA.append(std::to_string(dColoc + dDiff));
 			sDA.append(" ");
 		}
 		if (arr.size() == 3)
@@ -843,6 +843,9 @@ namespace PdfWriter
 		sDA.append(std::to_string(dFontSize));
 		sDA.append(" Tf");
 
+		CDictObject* pOwner = GetObjOwnValue("DA");
+		if (pOwner)
+			pOwner->Remove("DA");
 		Add("DA", new CStringObject(sDA.c_str()));
 
 		m_arrTC = arrTC;
@@ -901,7 +904,10 @@ namespace PdfWriter
 	}
 	void CWidgetAnnotation::SetQ(const BYTE& nQ)
 	{
-		Add("Q", (int)nQ);
+		CDictObject* pOwner = GetObjOwnValue("Q");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("Q", (int)nQ);
 		m_nQ = nQ;
 	}
 	void CWidgetAnnotation::SetH(const BYTE& nH)
@@ -930,7 +936,10 @@ namespace PdfWriter
 	}
 	void CWidgetAnnotation::SetFlag(const int& nFlag)
 	{
-		Add("Ff", nFlag);
+		CDictObject* pOwner = GetObjOwnValue("Ff");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("Ff", nFlag);
 	}
 	void CWidgetAnnotation::SetParent(CDictObject* pParent)
 	{
@@ -942,20 +951,34 @@ namespace PdfWriter
 	void CWidgetAnnotation::SetTU(const std::wstring& wsTU)
 	{
 		std::string sValue = U_TO_UTF8(wsTU);
-		Add("TU", new CStringObject(sValue.c_str()));
+		CDictObject* pOwner = GetObjOwnValue("TU");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("TU", new CStringObject(sValue.c_str()));
 	}
 	void CWidgetAnnotation::SetDS(const std::wstring& wsDS)
 	{
-
+		std::string sValue = U_TO_UTF8(wsDS);
+		CDictObject* pOwner = GetObjOwnValue("DS");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("DS", new CStringObject(sValue.c_str(), true));
 	}
 	void CWidgetAnnotation::SetDV(const std::wstring& wsDV)
 	{
-
+		std::string sValue = U_TO_UTF8(wsDV);
+		CDictObject* pOwner = GetObjOwnValue("DV");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("DV", new CStringObject(sValue.c_str(), true));
 	}
 	void CWidgetAnnotation::SetT(const std::wstring& wsT)
 	{
 		std::string sValue = U_TO_UTF8(wsT);
-		Add("T", new CStringObject(sValue.c_str()));
+		CDictObject* pOwner = GetObjOwnValue("T");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("T", new CStringObject(sValue.c_str(), true));
 	}
 	void CWidgetAnnotation::SetBC(const std::vector<double>& arrBC)
 	{
@@ -978,7 +1001,7 @@ namespace PdfWriter
 		{
 			CDictObject* pOwner = GetObjOwnValue(pAction->m_sType);
 			if (!pOwner)
-				pOwner = m_pParent ? m_pParent : this;
+				pOwner = this;
 
 			pOwner->Add(pAction->m_sType.c_str(), pAction);
 			return;
@@ -1015,9 +1038,9 @@ namespace PdfWriter
 
 		return sDA;
 	}
-	std::string CWidgetAnnotation::GetBGforAP()
+	std::string CWidgetAnnotation::GetBGforAP(double dDiff)
 	{
-		return GetColor(m_arrBG, false) + "\012";
+		return GetColor(m_arrBG, false, dDiff) + "\012";
 	}
 	std::string CWidgetAnnotation::GetBCforAP()
 	{
@@ -1329,7 +1352,6 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CCheckBoxWidget::CCheckBoxWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
 	{
-		Add("FT", "Btn");
 		m_nSubtype = WidgetRadiobutton;
 	}
 	void CCheckBoxWidget::SetV(const std::wstring& wsV)
@@ -1403,10 +1425,10 @@ namespace PdfWriter
 	{
 		if (nMaxLen > 0)
 		{
-			if (m_pParent)
-				m_pParent->Add("MaxLen", nMaxLen);
-			else
-				Add("MaxLen", nMaxLen);
+			CDictObject* pOwner = GetObjOwnValue("MaxLen");
+			if (!pOwner)
+				pOwner = this;
+			pOwner->Add("MaxLen", nMaxLen);
 		}
 	}
 	void CTextWidget::SetV(const std::wstring& wsV)
@@ -1414,15 +1436,16 @@ namespace PdfWriter
 		m_sV = U_TO_UTF8(wsV);
 		CDictObject* pOwner = GetObjOwnValue("V");
 		if (!pOwner)
-			pOwner = GetObjOwnValue("FT");
-		if (!pOwner)
 			pOwner = this;
 		pOwner->Add("V", new CStringObject(m_sV.c_str(), true));
 	}
 	void CTextWidget::SetRV(const std::wstring& wsRV)
 	{
 		std::string sValue = U_TO_UTF8(wsRV);
-		Add("RV", new CStringObject(sValue.c_str()));
+		CDictObject* pOwner = GetObjOwnValue("RV");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("RV", new CStringObject(sValue.c_str()));
 	}
 	void CTextWidget::SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, double dFontSize, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts)
 	{
@@ -1471,17 +1494,17 @@ namespace PdfWriter
 	}
 	bool CTextWidget::IsCombFlag()
 	{
-		int nFlags = ((CNumberObject*)Get("Ff"))->Get();
+		int nFlags = ((CNumberObject*)GetObjValue("Ff"))->Get();
 		return (nFlags & (1 << 24));
 	}
 	bool CTextWidget::IsMultiLine()
 	{
-		int nFlags = ((CNumberObject*)Get("Ff"))->Get();
+		int nFlags = ((CNumberObject*)GetObjValue("Ff"))->Get();
 		return (nFlags & (1 << 12));
 	}
 	unsigned int CTextWidget::GetMaxLen()
 	{
-		CNumberObject* oMaxLen = m_pParent ? (CNumberObject*)m_pParent->Get("MaxLen") : (CNumberObject*)Get("MaxLen");
+		CNumberObject* oMaxLen = (CNumberObject*)GetObjValue("MaxLen");
 		return oMaxLen ? oMaxLen->Get() : 0;
 	}
 	//----------------------------------------------------------------------------------------

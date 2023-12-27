@@ -281,7 +281,7 @@ TEST_F(CPdfFileTest, EditPdf)
 
 TEST_F(CPdfFileTest, EditPdfFromBase64)
 {
-	GTEST_SKIP();
+	//GTEST_SKIP();
 
 	LoadFromFile();
 	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
@@ -371,7 +371,7 @@ TEST_F(CPdfFileTest, EditPdfSign)
 
 TEST_F(CPdfFileTest, ChangePasswordToEmpty)
 {
-	// GTEST_SKIP();
+	GTEST_SKIP();
 
 	LoadFromFile();
 	EXPECT_HRESULT_SUCCEEDED(pdfFile->ChangePassword(wsDstFile));

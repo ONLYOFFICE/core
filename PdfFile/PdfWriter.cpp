@@ -2224,7 +2224,9 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				wsValue = pPr->GetAPV();
 
 			// ВНЕШНИЙ ВИД
-			DrawTextWidget(pAppFonts, pTextWidget, wsValue, pFontTT);
+			pTextWidget->SetFont(m_pFont, dFontSize, isBold, isItalic);
+			if (!wsValue.empty())
+				DrawTextWidget(pAppFonts, pTextWidget, wsValue);
 		}
 		else if (oInfo.IsChoiceWidget())
 		{
@@ -2346,7 +2348,6 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		if (!pParentObj)
 			continue;
 
-		std::wstring wsValue;
 		std::vector<std::wstring> arrValue;
 
 		int nFlags = pParent->nFlags;
@@ -2379,7 +2380,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 					{
 						PdfWriter::CChoiceWidget* pKid = dynamic_cast<PdfWriter::CChoiceWidget*>(pObj);
 
-						wsValue = pParent->sV;
+						std::wstring wsValue = pParent->sV;
 						// ВНЕШНИЙ ВИД
 						unsigned int unLen = 0;
 						unsigned int* pUnicodes = NULL;
@@ -2392,6 +2393,11 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 						RELEASEARRAYOBJECTS(pUnicodes);
 						RELEASEARRAYOBJECTS(pCodes);
 						RELEASEARRAYOBJECTS(ppFonts);
+					}
+					if (nType == PdfWriter::WidgetText)
+					{
+						PdfWriter::CTextWidget* pKid = dynamic_cast<PdfWriter::CTextWidget*>(pObj);
+						DrawTextWidget(pAppFonts, pKid, pParent->sV);
 					}
 				}
 			}
@@ -3223,13 +3229,14 @@ std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl, const std::ws
 
 	return L"";
 }
-void CPdfWriter::DrawTextWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CTextWidget* pTextWidget, const std::wstring& wsValue, PdfWriter::CFontTrueType* pFontTT)
+void CPdfWriter::DrawTextWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CTextWidget* pTextWidget, const std::wstring& wsValue)
 {
 	if (!pAppFonts || !pTextWidget || wsValue.empty())
 		return;
 	PdfWriter::CFontCidTrueType* pFont = pTextWidget->GetFont();
 	if (!pFont)
 		return;
+	PdfWriter::CFontTrueType* pFontTT = m_pDocument->CreateTrueTypeFont(pFont);
 
 	double dFontSize = pTextWidget->GetFontSize();
 	bool isBold   = pTextWidget->GetFontIsBold();
@@ -3329,9 +3336,14 @@ void CPdfWriter::DrawTextWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter
 				dShiftX = 0;
 				unsigned int unCellsCount = std::max(unShiftsCount, pTextWidget->GetMaxLen());
 				double dPrevW = 0;
-				double dCellW = (dWidth + 2 * dShiftBorder) / unCellsCount;
+				double dCellW = dWidth / unCellsCount;
 
-				if (2 == nAlign && unShiftsCount)
+				if (1 == nAlign)
+				{
+					unsigned int unCells = (unCellsCount - unShiftsCount) / 2;
+					dPrevW = unCells * dCellW;
+				}
+				if (2 == nAlign)
 					dPrevW = (unCellsCount - unShiftsCount) * dCellW;
 
 				for (unsigned int unIndex = 0; unIndex < unShiftsCount; ++unIndex)
@@ -3360,19 +3372,20 @@ void CPdfWriter::DrawTextWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter
 				dShiftX = (dWidth - dSumWidth) / 2;
 		}
 
-		double dBaseLine = dHeight - dFontSize - dShiftBorder;
+		double dBaseLine = (dHeight - dFontSize) / 2.0 - dShiftBorder;
 		if (pFontTT)
 		{
 			double dKoef = dFontSize / pFontTT->m_dUnitsPerEm;
-			double dHeight = pFontTT->m_dHeight * dKoef;
-			double dDescent = std::abs(pFontTT->m_dDescent * dKoef);
-			double dAscent = dHeight - dDescent;
-			dBaseLine = dAscent;
-			double dMidPoint = dAscent - pFontTT->m_dMinY * dKoef + dAscent - pFontTT->m_dMaxY * dKoef;
-			double dDiff = (dHeight - dMidPoint) / 2.0;
-			dBaseLine += dDiff;
-			dBaseLine = dHeight - dBaseLine;
+			double dHeightF = pFontTT->m_dHeight * dKoef;
+			// double dDescent = std::abs(pFontTT->m_dDescent * dKoef);
+			// double dAscent = dHeightF - dDescent;
+			// dBaseLine = dAscent;
+			// double dMidPoint = dAscent - pFontTT->m_dMinY * dKoef + dAscent - pFontTT->m_dMaxY * dKoef;
+			// double dDiff = (dHeightF - dMidPoint) / 2.0;
+			// dBaseLine += dDiff;
+			//dBaseLine = dHeight / 2.0 - dBaseLine + dShiftBorder;
 			// dBaseLine = (dHeight - (pFontTT->m_dMaxY - pFontTT->m_dMinY) * dKoef) / 2.0;
+			dBaseLine = (dHeight - dHeightF) / 2.0;
 			// dBaseLine = (dHeight - dAscent) / 2.0;
 			// dBaseLine = (dHeight - dMidPoint) / 2.0;
 		}

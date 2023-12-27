@@ -392,12 +392,13 @@ namespace PdfWriter
 		void AddAction(CAction* pAction);
 
 		std::string GetDAforAP(CFontDict* pFont);
-		std::string GetBGforAP();
+		std::string GetBGforAP(double dDiff = 0);
 		std::string GetBCforAP();
 		CFontCidTrueType* GetFont() { return m_pFont; }
 		double GetFontSize()   { return m_dFontSize; }
 		bool GetFontIsBold()   { return m_bBold; }
 		bool GetFontIsItalic() { return m_bItalic; }
+		bool HaveBG() { return !m_arrBG.empty(); }
 		BYTE GetQ() { return m_nQ; }
 	};
 	class CPushButtonWidget : public CWidgetAnnotation

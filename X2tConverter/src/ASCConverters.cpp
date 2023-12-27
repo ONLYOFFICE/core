@@ -769,6 +769,10 @@ namespace NExtractTools
 				convertParams.m_bIsTemplate = false;
 				nRes = xlsx_dir2ods(sFrom, sTo, params, convertParams);
 			}
+			else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB == nFormatTo)
+			{
+				nRes = xlsx_dir2xlsb(sFrom, sTo, params, convertParams);
+			}
 			// else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatTo)
 			//{
 			//	nRes = xlsx_dir2csv(sFrom, sTo, sTemp, params);

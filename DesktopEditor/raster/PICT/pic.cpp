@@ -199,6 +199,7 @@ static const PICTCode
   };
 
 #define BackgroundColorRGBA  255,255,255,255
+#define TransparentAlpha ((unsigned char) 0)
 
 int LocaleToLowercase(const int c)
 {
@@ -465,6 +466,7 @@ PixelChannelMap *AcquirePixelChannelMap()
   channel_map[GreenPixelChannel].offset = 1;
   channel_map[BluePixelChannel].offset = 0;
   channel_map[AlphaPixelChannel].offset = 3;
+  channel_map[IndexPixelChannel].offset = 5;
 
   return(channel_map);
 }
@@ -601,9 +603,6 @@ unsigned char* GetPixels(ImagePICT* image, const long long x, const long long y,
     if (pixels == (unsigned char *) NULL)
       return((unsigned char *) NULL);
 
-    if (image->nexus->authentic_pixel_cache != 0)
-      return(pixels);
-
     if (ReadPixels(image, x, y, width, height, pixels) == 0)
     {
         return ((unsigned char *) NULL);
@@ -698,8 +697,7 @@ int AquirePixelsMemory(ImagePICT* image)
         return 0;
     }
 
-    if (image->m_nPixelsSize == 0)
-        image->m_nPixelsSize = image->m_nHeight * image->m_nWidth * image->number_channels;
+    image->m_nPixelsSize = image->m_nHeight * image->m_nWidth * image->number_channels;
 
     if (image->ppixels == NULL)
         image->ppixels = (unsigned char*) malloc(image->m_nPixelsSize);
@@ -719,6 +717,7 @@ int SetImageAlpha(ImagePICT* image, const unsigned char Alpha)
         return 0;
 
     image->alpha_trait = BlendPixelTrait;
+    image->channel_map[AlphaPixelChannel].traits = UpdatePixelTrait;
     status = 1;
     for (y = 0; y < image->m_nHeight; y++)
     {
@@ -758,6 +757,7 @@ int AquireImageColormap(ImagePICT* image, const size_t colors)
     if (colors > 256UL)
     {
         image->colors = 0;
+        image->storage_class = DirectClass;
         strcpy(image->error, "UnableToCreateColormap");
 
         return 0;
@@ -768,13 +768,14 @@ int AquireImageColormap(ImagePICT* image, const size_t colors)
     else
         image->colors = 1;
     if (image->colormap == (PixelInfo*) NULL)
-        image->colormap = (PixelInfo*) malloc((image->colors + 1) * sizeof(image->colormap));
+        image->colormap = (PixelInfo*) malloc((image->colors + 1) * sizeof(*image->colormap));
     else
-        image->colormap = (PixelInfo*) realloc(image->colormap, (image->colors + 1) * sizeof(image->colormap));
+        image->colormap = (PixelInfo*) realloc(image->colormap, (image->colors + 1) * sizeof(*image->colormap));
 
     if (image->colormap == (PixelInfo*) NULL)
     {
         image->colors = 0;
+        image->storage_class = DirectClass;
         strcpy(image->error, "MemoryAllocationFailed");
 
         return 0;
@@ -867,33 +868,6 @@ int SetImageColorspace(ImagePICT *image, const ColorspaceType colorspace)
   return 1;
 }
 
-//int TransformImageColorspace(ImagePICT *image,const ColorspaceType colorspace)
-//{
-//  int
-//    status;
-
-//  if (image->colorspace == colorspace)
-//    return(SetImageColorspace(image,colorspace));
-//  if (colorspace == UndefinedColorspace)
-//    return(SetImageColorspace(image,colorspace));
-//  /*
-//    Convert the reference image from an alternate colorspace to sRGB.
-//  */
-//  if (IssRGBColorspace(colorspace) != 0)
-//    return(TransformsRGBImage(image,exception));
-//  status=1;
-//  if (IssRGBColorspace(image->colorspace) == 0)
-//    status=TransformsRGBImage(image,exception);
-//  if (status == 0)
-//    return(status);
-//  /*
-//    Convert the reference image from sRGB to an alternate colorspace.
-//  */
-//  if (sRGBTransformImage(image,colorspace,exception) == 0)
-//    status=0;
-//  return(status);
-//}
-
 long long CastDoubleToLong(const double x)
 {
   if (floor(x) > ((double) LLONG_MAX-1))
@@ -905,6 +879,24 @@ long long CastDoubleToLong(const double x)
       return((long long) LLONG_MIN);
     }
   return((long long) x);
+}
+
+static inline unsigned char ClampPixel(const double pixel)
+{
+    if (pixel < 0.0)
+        return ((unsigned char) 0);
+    if (pixel >= 255.0)
+        return ((unsigned char) 255);
+    return ((unsigned char) (pixel));
+}
+
+static inline unsigned char ClampToQuantum(const double pixel)
+{
+    if ((isnan(pixel) != 0) || (pixel <= 0.0))
+        return ((unsigned char) 0);
+    if (pixel >= 255.0)
+        return (unsigned char) 255;
+    return ((unsigned char) (pixel));
 }
 
 int Clamp(double x, double min, double max) {
@@ -946,7 +938,7 @@ int GetOneVirtualPixel(ImagePICT *image,const long long x,const long long y,unsi
     *p;
 
   (void) memset(pixel,0,64*sizeof(*pixel));
-  p = image->ppixels + image->number_channels * (y * 1UL + x);
+  p = GetPixels(image, x, y, 1UL, 1UL);
   return(CopyPixel(image,p,pixel));
 }
 
@@ -982,14 +974,6 @@ void AquireImage(ImagePICT* image)
     image->alpha_trait = UndefinedPixelTrait;
     image->ppixels = NULL;
     image->m_nPixelsSize = 0;
-    image->nexus = (NexusInfo*) malloc(sizeof(NexusInfo));
-    image->nexus->region.height = 0;
-    image->nexus->region.width = 0;
-    image->nexus->region.x = 0;
-    image->nexus->region.y = 0;
-    image->nexus->length = 0;
-    image->nexus->authentic_pixel_cache = UndefinedPixelTrait;
-    image->nexus->pixels = NULL;
     image->colormap = NULL;
     image->channel_map = AcquirePixelChannelMap();
     image->mask_trait = UndefinedPixelTrait;
@@ -1816,7 +1800,7 @@ ImagePICT *DestroyImage(ImagePICT *image)
   */
   free(image->ppixels);
   free(image->channel_map);
-  free(image);
+  delete image;
   return(ImagePICT *) NULL;
 }
 
@@ -1846,31 +1830,14 @@ ImagePICT* CloneImage(const ImagePICT* image, const size_t colums, const size_t 
     if (colums != 0)
         clone_image->m_nWidth = colums;
     clone_image->number_channels = image->number_channels;
-    clone_image->m_nPixelsSize = clone_image->number_channels * clone_image->m_nHeight * clone_image->m_nWidth;
+    clone_image->m_nPixelsSize = image->m_nPixelsSize;
+    clone_image->ppixels = NULL;
     clone_image->resolutionX = image->resolutionX;
     clone_image->resolutionY = image->resolutionY;
-    if (image->ppixels != NULL)
-    {
-        clone_image->ppixels = (unsigned char*) malloc(clone_image->m_nPixelsSize * sizeof(unsigned char));
-        memcpy(clone_image->ppixels, image->ppixels, clone_image->m_nPixelsSize * sizeof(unsigned char));
-    }
     clone_image->alpha_trait = image->alpha_trait;
     clone_image->background_color.blue = image->background_color.blue;
     clone_image->background_color.green = image->background_color.green;
     clone_image->background_color.red = image->background_color.red;
-
-    if (image->nexus != NULL)
-    {
-        clone_image->nexus = (NexusInfo*) malloc(sizeof(NexusInfo));
-        clone_image->nexus->region.height = image->nexus->region.height;
-        clone_image->nexus->region.width = image->nexus->region.width;
-        clone_image->nexus->region.x = image->nexus->region.x;
-        clone_image->nexus->region.y = image->nexus->region.y;
-        clone_image->nexus->length = image->nexus->length;
-        clone_image->nexus->authentic_pixel_cache = image->nexus->authentic_pixel_cache;
-        clone_image->nexus->pixels = (unsigned char*) malloc(clone_image->nexus->length * sizeof(unsigned char));
-        memcpy(clone_image->nexus->pixels, image->nexus->pixels, clone_image->nexus->length);
-    }
 
     clone_image->colors = image->colors;
     if (image->colormap != NULL)
@@ -1942,6 +1909,9 @@ int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_
   if (image->ppixels == (unsigned char*) NULL)
     return 0;
   source_image=CloneImage(composite,0,0);
+  if (!AquirePixelsMemory(source_image))
+      return 0;
+  (void) memcpy(source_image->ppixels, composite->ppixels, source_image->m_nPixelsSize);
   if (source_image == (const ImagePICT *) NULL)
     return 0;
   (void) SetImageColorspace(source_image,image->colorspace);
@@ -1961,6 +1931,16 @@ int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_
   percent_chroma=100.0;
   source_dissolve=1.0;
   threshold=0.05f;
+
+  image->channel_map[RedPixelChannel].traits = UpdatePixelTrait;
+  image->channel_map[GreenPixelChannel].traits = UpdatePixelTrait;
+  image->channel_map[BluePixelChannel].traits = UpdatePixelTrait;
+  image->channel_map[AlphaPixelChannel].traits = UpdatePixelTrait;
+
+  source_image->channel_map[RedPixelChannel].traits = CopyPixelTrait;
+  source_image->channel_map[GreenPixelChannel].traits = CopyPixelTrait;
+  source_image->channel_map[BluePixelChannel].traits = CopyPixelTrait;
+  source_image->channel_map[AlphaPixelChannel].traits = CopyPixelTrait;
 
   if (!((x_offset < 0) || (y_offset < 0)) && !((x_offset+(long long) source_image->m_nWidth) > (long long) image->m_nWidth) && !((y_offset+(long long) source_image->m_nHeight) > (long long) image->m_nHeight))
     {
@@ -2013,7 +1993,6 @@ int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_
           p+=source_image->number_channels;
           q+=image->number_channels;
         }
-        memcpy(image->ppixels + image->number_channels * (y * image->m_nWidth), source_image->ppixels + source_image->number_channels * ((y + y_offset) * source_image->m_nWidth + x_offset), source_image->number_channels * source_image->m_nWidth * sizeof(unsigned char));
       }
       source_image=DestroyImage(source_image);
       return(status);
@@ -2022,6 +2001,7 @@ int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_
   /*
     Composite image.
   */
+
   status=1;
   progress=0;
   midpoint=128.0;
@@ -2060,7 +2040,7 @@ int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_
     if ((y >= y_offset) &&
         ((y-(double) y_offset) < (double) source_image->m_nHeight))
       {
-        p=GetPixels(source_image,0,CastDoubleToLong(y-(double) y_offset),source_image->m_nWidth,1);
+        p=GetPixels(source_image,0,y-y_offset,source_image->m_nWidth,1);
         if (p == (const unsigned char *) NULL)
           {
             status=0;
@@ -2068,7 +2048,7 @@ int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_
           }
         pixels=p;
         if (x_offset < 0)
-          p-=CastDoubleToLong((double) x_offset*source_image->number_channels);
+          p-=x_offset*source_image->number_channels;
       }
     q=GetPixels(image,0,y,image->m_nWidth,1);
     if (q == (unsigned char *) NULL)
@@ -2078,7 +2058,7 @@ int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_
       }
     GetPixelInfo(image,&canvas_pixel);
     GetPixelInfo(source_image,&source_pixel);
-    for (x=0; x < (long long) image->m_nHeight; x++)
+    for (x=0; x < (long long) image->m_nWidth; x++)
     {
       double
         gamma = 0.0;
@@ -2121,13 +2101,10 @@ int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_
               Sc: source color.
               Dc: canvas color.
           */
-          (void) GetOneVirtualPixel(source_image,
-            CastDoubleToLong(x-(double) x_offset),
-            CastDoubleToLong(y-(double) y_offset),source);
           for (i=0; i < image->number_channels; i++)
           {
             double
-              pixel = 0.0;
+              pixel = 0;
 
             PixelChannel channel = GetPixelChannelChannel(image,i);
             PixelTrait traits = GetPixelChannelTraits(image,channel);
@@ -2136,11 +2113,14 @@ int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_
             if ((traits == UndefinedPixelTrait) ||
                 (source_traits == UndefinedPixelTrait))
               continue;
-
-            pixel=0.0;
-
-            q[i]=clamp != 0 ? (unsigned char) (pixel + 0.5f) :
-              (unsigned char) (Clamp(pixel, 0.0f, 255.0f) + 0.5f);
+//////////////////////////////////////////////////////////////////////////
+            if (channel == AlphaPixelChannel)
+                pixel =  TransparentAlpha;
+            else
+                pixel=0;
+/////////////////////////////////////////////////////////////////////////
+            q[i]=clamp != 0 ? ClampPixel(pixel) :
+              ClampToQuantum(pixel);
           }
           q+=image->number_channels;
           continue;
@@ -2150,9 +2130,12 @@ int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_
           Sa:  normalized source alpha.
           Da:  normalized canvas alpha.
       */
-      Sa = (1.0/255.0)*(double) GetPixelAlpha(source_image,p);
-      Da = (1.0/255.0)*(double) GetPixelAlpha(image,q);
+      Sa = (1.0/255.0)* GetPixelAlpha(source_image,p);
+      Sa = Sa == 0 ? 1 : Sa;
+      Da = (1.0/255.0)* GetPixelAlpha(image,q);
+///////////////////////////////////////////////////////////////////////
       alpha = 1.0;
+//////////////////////////////////////////////////////////////////////
       for (i=0; i < image->number_channels; i++)
       {
         double
@@ -2169,11 +2152,11 @@ int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_
             /*
               Set alpha channel.
             */
-
-             pixel=(double) 255.0*Sa;
-
-             q[i]=clamp != 0 ? (unsigned char) (pixel + 0.5f) :
-               (unsigned char) (Clamp(pixel, 0.0f, 255.0f) + 0.5f);
+/////////////////////////////////////////////////////////////////////
+             pixel=255.0*Sa;
+////////////////////////////////////////////////////////////////////
+             q[i]=clamp != 0 ? ClampPixel(pixel) :
+               ClampToQuantum(pixel);
             continue;
           }
         if (source_traits == UndefinedPixelTrait)
@@ -2182,14 +2165,14 @@ int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_
           Sc: source color.
           Dc: canvas color.
         */
-        Sc=(double) GetPixelChannel(source_image,channel,p);
-        Dc=(double) q[i];
+        Sc= GetPixelChannel(source_image,channel,p);
+        Dc=q[i];
         if ((traits & CopyPixelTrait) != 0)
           {
             /*
               Copy channel.
             */
-            q[i]=(unsigned char) (Clamp(Dc, 0.0f, 255.0f) + 0.5f);
+            q[i]=ClampToQuantum(Dc);
             continue;
           }
         /*
@@ -2201,15 +2184,15 @@ int CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip_
         Dca=(1.0/255.0)*Da*Dc;
         SaSca=Sa*PerceptibleReciprocal(Sca);
         DcaDa=Dca*PerceptibleReciprocal(Da);
-
+/////////////////////////////////////////////////////////////////////
         gamma=PerceptibleReciprocal(alpha);
-
+////////////////////////////////////////////////////////////////////
         pixel=Dc;
-
-        pixel=(double) 255.0*Sca;
-
-        q[i]=clamp != 0 ? (unsigned char) (pixel + 0.5f) :
-          (unsigned char) (Clamp(pixel, 0.0f, 255.0f) + 0.5f);
+///////////////////////////////////////////////////////////////////
+        pixel=255.0*Sca;
+//////////////////////////////////////////////////////////////////
+        q[i]=clamp != 0 ? ClampPixel(pixel) :
+          ClampToQuantum(pixel);
       }
       p+=source_image->number_channels;
       channels=source_image->number_channels;
@@ -2615,14 +2598,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
     StringInfo
             *profile;
 
-//    FILE* hFile;
-//    if(fopen_s(&hFile, filepath, "rb") != 0)
-//    {
-//        strcpy(image->error, "FileError");
-
-//        return 0;
-//    }
-
     if (hFile == NULL)
     {
         strcpy(image->error, "FileError");
@@ -2635,15 +2610,11 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
 
     if (!DecodeHeader(hFile, image))
     {
-//        fclose(hFile);
-
         return 0;
     }
 
     if (feof(hFile) != 0)
     {
-//        fclose(hFile);
-
         strcpy(image->error, "EOFfile");
 
         return 0;
@@ -2657,8 +2628,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
 
     if (!AquirePixelsMemory(image))
     {
-//        fclose(hFile);
-
         return 0;
     }
 
@@ -2686,8 +2655,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                 length = ReadShortValue(hFile);
                 if (length > GetSize(hFile))
                 {
-//                    fclose(hFile);
-
                     strcpy(image->error, "InsufficientImageDataInFile");
 
                     return 0;
@@ -2709,8 +2676,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
 
                 if (!AquirePixelsMemory(image))
                 {
-//                    fclose(hFile);
-
                     return 0;
                 }
                 break;
@@ -2743,7 +2708,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                 if (pattern != 1)
                 {
                     DeletePixelsMemory(image);
-//                    fclose(hFile);
 
                     strcpy(image->error, "UnknownPatternType");
 
@@ -2754,7 +2718,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                 if (length > GetSize(hFile))
                 {
                     DeletePixelsMemory(image);
-//                    fclose(hFile);
 
                     strcpy(image->error, "InsufficientImageDataInFile");
 
@@ -2763,7 +2726,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                 if (ReadRectangle(hFile, &frame) == 0)
                 {
                     DeletePixelsMemory(image);
-//                    fclose(hFile);
 
                     strcpy(image->error, "ImproperImageHeader");
 
@@ -2772,7 +2734,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                 if (ReadPixmap(hFile, &pixmap) == 0)
                 {
                     DeletePixelsMemory(image);
-//                    fclose(hFile);
 
                     strcpy(image->error, "ImproperImageHeader");
 
@@ -2790,7 +2751,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                 if (length > GetSize(hFile))
                 {
                     DeletePixelsMemory(image);
-//                    fclose(hFile);
                     strcpy(image->error, "InsufficientImageDataInFile");
 
                     return 0;
@@ -2828,7 +2788,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                       if (scanline_length > GetSize(hFile))
                       {
                           DeletePixelsMemory(image);
-//                          fclose(hFile);
 
                           strcpy(image->error, "InsufficientImageDataInFile");
 
@@ -2866,7 +2825,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                 if (length > GetSize(hFile))
                 {
                     DeletePixelsMemory(image);
-//                    fclose(hFile);
 
                     strcpy(image->error, "InsufficientImageDataInFile");
 
@@ -2915,7 +2873,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                 if (ReadRectangle(hFile, &frame) == 0)
                 {
                     DeletePixelsMemory(image);
-//                    fclose(hFile);
 
                     strcpy(image->error, "ImproperImageHeader");
 
@@ -2929,7 +2886,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                 if (tile_image == (ImagePICT*) NULL)
                 {
                     DeletePixelsMemory(image);
-//                    fclose(hFile);
 
                     strcpy(image->error, "ImproperImageHeader");
 
@@ -2938,7 +2894,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                 if (!AquirePixelsMemory(tile_image))
                 {
                     DeletePixelsMemory(image);
-//                    fclose(hFile);
 
                     return 0;
                 }
@@ -2950,7 +2905,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                     {
                         DeletePixelsMemory(image);
                         DeletePixelsMemory(tile_image);
-//                        fclose(hFile);
 
                         strcpy(image->error, "ImproperImageHeader");
 
@@ -2981,7 +2935,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                     {
                         DeletePixelsMemory(image);
                         DeletePixelsMemory(tile_image);
-//                        fclose(hFile);
 
                         return 0;
                     }
@@ -2993,18 +2946,18 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                           k = ReadShortValue(hFile) % tile_image->colors;
                           if ((flags & 0x8000) != 0)
                             k = (size_t) i;
-                          tile_image->colormap[k].red = (unsigned char) 257.0 * ReadShortValue(hFile);
-                          tile_image->colormap[k].green = (unsigned char) 257.0 * ReadShortValue(hFile);
-                          tile_image->colormap[k].blue = (unsigned char) 257.0 * ReadShortValue(hFile);
+                          tile_image->colormap[k].blue = (unsigned char) ReadShortValue(hFile)/* + 128U / 257U*/;
+                          tile_image->colormap[k].green = (unsigned char) ReadShortValue(hFile)/* + 128U / 257U*/;
+                          tile_image->colormap[k].red = (unsigned char) ReadShortValue(hFile)/* + 128U / 257U*/;
                         }
                       }
                     else
                       {
                         for (i=0; i < (long long) tile_image->colors; i++)
                         {
-                          tile_image->colormap[i].red=((double) 255 - tile_image->colormap[i].red);
+                          tile_image->colormap[i].blue=((double) 255 - tile_image->colormap[i].red);
                           tile_image->colormap[i].green=((double) 255 - tile_image->colormap[i].green);
-                          tile_image->colormap[i].blue=((double) 255 - tile_image->colormap[i].blue);
+                          tile_image->colormap[i].red=((double) 255 - tile_image->colormap[i].blue);
                         }
                       }
                 }
@@ -3012,7 +2965,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                 {
                     DeletePixelsMemory(image);
                     DeletePixelsMemory(tile_image);
-//                    fclose(hFile);
 
                     strcpy(image->error, "EOFfile");
 
@@ -3023,7 +2975,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                 {
                     DeletePixelsMemory(image);
                     DeletePixelsMemory(tile_image);
-//                    fclose(hFile);
 
                     strcpy(image->error, "ImproperImageHeader");
 
@@ -3034,7 +2985,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                 {
                     DeletePixelsMemory(image);
                     DeletePixelsMemory(tile_image);
-//                    fclose(hFile);
 
                     strcpy(image->error, "ImproperImageHeader");
 
@@ -3053,7 +3003,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                     {
                         DeletePixelsMemory(image);
                         DeletePixelsMemory(tile_image);
-//                        fclose(hFile);
 
                         strcpy(image->error, "InsufficientImageDataInFile");
 
@@ -3074,7 +3023,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                 {
                     DeletePixelsMemory(image);
                     DeletePixelsMemory(tile_image);
-//                    fclose(hFile);
 
                     strcpy(image->error, "UnableToUncompressImage");
 
@@ -3092,7 +3040,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                       free(pixels);
                       DeletePixelsMemory(image);
                       DeletePixelsMemory(tile_image);
-//                      fclose(hFile);
 
                       strcpy(image->error, "NotEnoughPixelData");
 
@@ -3105,8 +3052,10 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                   {
                     if (tile_image->storage_class == PseudoClass)
                       {
-                        if ((index > 0) && (index <= (long long) image->colors))
-                            index=(unsigned char) *p;
+                        if (((long long) *p < 0) || ((long long) *p >= (long long) tile_image->colors))
+                            index=0;
+                        else
+                            index=(long long) *p;
                         SetPixelIndex(tile_image,index,q);
                         SetPixelRed(tile_image,
                           tile_image->colormap[(long long) index].red,q);
@@ -3133,7 +3082,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                                 free(pixels);
                                 DeletePixelsMemory(image);
                                 DeletePixelsMemory(tile_image);
-//                                fclose(hFile);
 
                                 strcpy(image->error, "NotEnoughPixelData");
 
@@ -3150,7 +3098,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                                 free(pixels);
                                 DeletePixelsMemory(image);
                                 DeletePixelsMemory(tile_image);
-//                                fclose(hFile);
 
                                 strcpy(image->error, "NotEnoughPixelData");
 
@@ -3173,6 +3120,13 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                         break;
                     }
                 }
+
+                if (tile_image->storage_class == PseudoClass)
+                    (void) SetImageAlpha(tile_image, 255);
+                else if (pixmap.bits_per_pixel == 16)
+                    (void) SetImageAlpha(tile_image, 255);
+                else if (tile_image->alpha_trait == UndefinedPixelTrait)
+                    (void) SetImageAlpha(tile_image, 255);
 
                 free(pixels);
                 if ((jpeg == 0) && (feof(hFile) == 0))
@@ -3198,7 +3152,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                 if ((size_t) length > GetSize(hFile))
                 {
                     DeletePixelsMemory(image);
-//                    fclose(hFile);
 
                     strcpy(image->error, "InsufficientImageDataInFile");
 
@@ -3215,7 +3168,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                     free(info);
 
                     DeletePixelsMemory(image);
-//                    fclose(hFile);
 
                     strcpy(image->error, "UnableToReadImageData");
 
@@ -3235,7 +3187,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                         free(info);
 
                         DeletePixelsMemory(image);
-//                        fclose(hFile);
 
                         strcpy(image->error, "MemoryAllocationFailed");
 
@@ -3254,7 +3205,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                         free(info);
 
                         DeletePixelsMemory(image);
-//                        fclose(hFile);
 
                         strcpy(image->error, "MemoryAllocationFailed");
 
@@ -3306,7 +3256,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
             if (length > GetSize(hFile))
             {
                 DeletePixelsMemory(image);
-//                fclose(hFile);
 
                 strcpy(image->error, "ImproperImageHeader");
 
@@ -3326,7 +3275,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
             if (length > GetSize(hFile))
             {
                 DeletePixelsMemory(image);
-//                fclose(hFile);
 
                 strcpy(image->error, "ImproperImageHeader");
 
@@ -3338,7 +3286,6 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
             continue;
           }
     }
-//    fclose(hFile);
     return 1;
 }
 

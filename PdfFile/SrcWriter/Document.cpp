@@ -218,10 +218,10 @@ namespace PdfWriter
 			m_pFreeTypeLibrary = NULL;
 		}
 	}
-    bool CDocument::SaveToFile(const std::wstring& wsPath, bool bAdd)
+	bool CDocument::SaveToFile(const std::wstring& wsPath)
 	{
 		CFileStream* pStream = new CFileStream();
-		if (!pStream || !pStream->OpenFile(wsPath, bAdd))
+		if (!pStream || !pStream->OpenFile(wsPath, true))
 			return false;
 
 		if (m_pJbig2)
@@ -263,6 +263,32 @@ namespace PdfWriter
 		}
 
 		m_pXref->WriteToStream(pStream, pEncrypt);
+	}
+	bool CDocument::SaveNewWithPassword(CXref* pXref, CXref* _pXref, const std::wstring& wsPath, const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword, CDictObject* pTrailer)
+	{
+		if (!pXref || !pTrailer || !_pXref)
+			return false;
+		m_pTrailer = pTrailer;
+
+		CEncrypt* pEncrypt = NULL;
+		if (!wsOwnerPassword.empty())
+		{
+			m_pEncryptDict = new CEncryptDict(_pXref);
+			m_pEncryptDict->SetPasswords(wsOwnerPassword, wsUserPassword);
+			m_pTrailer->Add("Encrypt", m_pEncryptDict);
+
+			pEncrypt = m_pEncryptDict->GetEncrypt();
+			PrepareEncryption();
+		}
+
+		CFileStream* pStream = new CFileStream();
+		if (!pStream || !pStream->OpenFile(wsPath, true))
+			return false;
+		pStream->WriteStr(c_sPdfHeader);
+
+		pXref->WriteToStream(pStream, pEncrypt);
+
+		return true;
 	}
     void CDocument::PrepareEncryption()
 	{

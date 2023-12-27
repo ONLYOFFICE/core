@@ -1547,6 +1547,20 @@ int main(int argc, char* argv[])
 					std::string arrIT[] = {"FreeText", "FreeTextCallout", "FreeTextTypeWriter"};
 					std::cout << "IT " << arrIT[nPathLength] << ", ";
 				}
+				if (nFlags & (1 << 21))
+				{
+					int nCLLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "C from DA:";
+
+					for (int j = 0; j < nCLLength; ++j)
+					{
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << " " << (double)nPathLength / 100.0;
+					}
+					std::cout << ", ";
+				}
 			}
 			else if (sType == "Caret")
 			{

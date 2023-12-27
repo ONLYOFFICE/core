@@ -462,6 +462,7 @@ private:
 	BYTE m_nLE; // Стиль окончания линии
 	std::string m_sDS; // Строка стиля по умолчанию - DS
 	double m_pRD[4]{}; // Различия Rect и фактического размера
+	std::vector<double> m_arrCFromDA; // Цвет границы
 	std::vector<double> m_arrCL; // Координаты выноски
 };
 

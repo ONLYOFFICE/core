@@ -446,6 +446,27 @@ CAnnotFileAttachment::CEmbeddedFile* getEF(Object* oObj)
 
 	return pRes;
 }
+GList* tokenize(GString *s)
+{
+  GList *toks;
+  int i, j;
+
+  toks = new GList();
+  i = 0;
+  while (i < s->getLength()) {
+	while (i < s->getLength() && Lexer::isSpace(s->getChar(i))) {
+	  ++i;
+	}
+	if (i < s->getLength()) {
+	  for (j = i + 1;
+	   j < s->getLength() && !Lexer::isSpace(s->getChar(j));
+	   ++j) ;
+	  toks->append(new GString(s, i, j - i));
+	  i = j;
+	}
+  }
+  return toks;
+}
 
 //------------------------------------------------------------------------
 // Widget
@@ -1561,6 +1582,46 @@ CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex
 			m_nIT = 1;
 		else if (oObj.isName("FreeTextTypeWriter"))
 			m_nIT = 2;
+	}
+	oObj.free();
+
+	// 22 - Назначение аннотации - IT
+	if (oAnnot.dictLookup("DA", &oObj)->isString())
+	{
+		m_unFlags |= (1 << 21);
+		int nSpace;
+		GList *arrColors = new GList();
+
+		// parse the default appearance string
+		GList* daToks = tokenize(oObj.getString());
+		for (int i = 1; i < daToks->getLength(); ++i) {
+
+		  // handle the g operator
+		  if (!((GString *)daToks->get(i))->cmp("g")) {
+		arrColors->append(new double(atof(((GString *)daToks->get(i - 1))->getCString())));
+		break;
+
+		  // handle the rg operator
+		  } else if (i >= 3 && !((GString *)daToks->get(i))->cmp("rg")) {
+		arrColors->append(new double(atof(((GString *)daToks->get(i - 3))->getCString())));
+		arrColors->append(new double(atof(((GString *)daToks->get(i - 2))->getCString())));
+		arrColors->append(new double(atof(((GString *)daToks->get(i - 1))->getCString())));
+		break;
+		  } else if (i >= 4 && !((GString *)daToks->get(i))->cmp("k")) {
+		arrColors->append(new double(atof(((GString *)daToks->get(i - 4))->getCString())));
+		arrColors->append(new double(atof(((GString *)daToks->get(i - 3))->getCString())));
+		arrColors->append(new double(atof(((GString *)daToks->get(i - 2))->getCString())));
+		arrColors->append(new double(atof(((GString *)daToks->get(i - 1))->getCString())));
+		break;
+		  }
+		}
+		deleteGList(daToks, GString);
+
+		nSpace = arrColors->getLength();
+
+		for (int j = 0; j < nSpace; ++j)
+			m_arrCFromDA.push_back(*(double*)arrColors->get(j));
+		deleteGList(arrColors, double);
 	}
 	oObj.free();
 
@@ -3083,6 +3144,12 @@ void CAnnotFreeText::ToWASM(NSWasm::CData& oRes)
 		oRes.WriteBYTE(m_nLE);
 	if (m_unFlags & (1 << 20))
 		oRes.WriteBYTE(m_nIT);
+	if (m_unFlags & (1 << 21))
+	{
+		oRes.AddInt((unsigned int)m_arrCFromDA.size());
+		for (int i = 0; i < m_arrCFromDA.size(); ++i)
+			oRes.AddDouble(m_arrCFromDA[i]);
+	}
 }
 
 void CAnnotCaret::ToWASM(NSWasm::CData& oRes)

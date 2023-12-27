@@ -589,7 +589,6 @@ namespace PdfWriter
 		// Добавляем запись Filter
 		if (pDict->GetStream())
 		{
-			pDict->Remove("Filter");
 			unsigned int unFilter = pDict->GetFilter();
 			if (STREAM_FILTER_NONE != unFilter)
 			{

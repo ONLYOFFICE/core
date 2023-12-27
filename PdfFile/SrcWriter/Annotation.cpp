@@ -125,7 +125,7 @@ namespace PdfWriter
 		pArray->Add(dRD3);
 		pArray->Add(dRD4);
 	}
-	std::string GetColor(const std::vector<double>& arr, bool bCaps)
+	std::string GetColor(const std::vector<double>& arr, bool bCaps, double dDiff = 0)
 	{
 		if (arr.empty())
 			return bCaps ? "1 G" : "1 g";
@@ -133,7 +133,7 @@ namespace PdfWriter
 		std::string sDA;
 		for (double dColoc : arr)
 		{
-			sDA.append(std::to_string(dColoc));
+			sDA.append(std::to_string(dColoc + dDiff));
 			sDA.append(" ");
 		}
 		if (arr.size() == 3)
@@ -810,13 +810,18 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CWidgetAnnotation::CWidgetAnnotation(CXref* pXref, EAnnotType eType) : CAnnotation(pXref, eType)
 	{
-		m_pMK     = NULL;
-		m_pParent = NULL;
-		m_pAA     = NULL;
-		m_pA      = NULL;
-		m_dFontSizeAP = 0;
+		m_pMK         = NULL;
+		m_pParent     = NULL;
+		m_pAA         = NULL;
+		m_pA          = NULL;
 		m_pAppearance = NULL;
-		m_nSubtype = WidgetUnknown;
+		m_pFont       = NULL;
+		m_dFontSizeAP = 0;
+		m_nQ          = 0;
+		m_dFontSize   = 10.0;
+		m_bBold       = false;
+		m_bItalic     = false;
+		m_nSubtype    = WidgetUnknown;
 	}
 	void CWidgetAnnotation::SetSubtype(const BYTE& nSubtype)
 	{
@@ -838,10 +843,20 @@ namespace PdfWriter
 		sDA.append(std::to_string(dFontSize));
 		sDA.append(" Tf");
 
+		CDictObject* pOwner = GetObjOwnValue("DA");
+		if (pOwner)
+			pOwner->Remove("DA");
 		Add("DA", new CStringObject(sDA.c_str()));
 
 		m_arrTC = arrTC;
 		m_dFontSizeAP = dFontSizeAP;
+	}
+	void CWidgetAnnotation::SetFont(CFontCidTrueType* pFont, double dFontSize, bool bBold, bool bItalic)
+	{
+		m_pFont = pFont;
+		m_dFontSize = dFontSize;
+		m_bBold     = bBold;
+		m_bItalic   = bItalic;
 	}
 	CDictObject* CWidgetAnnotation::GetObjOwnValue(const std::string& sV)
 	{
@@ -889,7 +904,11 @@ namespace PdfWriter
 	}
 	void CWidgetAnnotation::SetQ(const BYTE& nQ)
 	{
-		Add("Q", (int)nQ);
+		CDictObject* pOwner = GetObjOwnValue("Q");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("Q", (int)nQ);
+		m_nQ = nQ;
 	}
 	void CWidgetAnnotation::SetH(const BYTE& nH)
 	{
@@ -917,7 +936,10 @@ namespace PdfWriter
 	}
 	void CWidgetAnnotation::SetFlag(const int& nFlag)
 	{
-		Add("Ff", nFlag);
+		CDictObject* pOwner = GetObjOwnValue("Ff");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("Ff", nFlag);
 	}
 	void CWidgetAnnotation::SetParent(CDictObject* pParent)
 	{
@@ -929,20 +951,34 @@ namespace PdfWriter
 	void CWidgetAnnotation::SetTU(const std::wstring& wsTU)
 	{
 		std::string sValue = U_TO_UTF8(wsTU);
-		Add("TU", new CStringObject(sValue.c_str()));
+		CDictObject* pOwner = GetObjOwnValue("TU");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("TU", new CStringObject(sValue.c_str()));
 	}
 	void CWidgetAnnotation::SetDS(const std::wstring& wsDS)
 	{
-
+		std::string sValue = U_TO_UTF8(wsDS);
+		CDictObject* pOwner = GetObjOwnValue("DS");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("DS", new CStringObject(sValue.c_str(), true));
 	}
 	void CWidgetAnnotation::SetDV(const std::wstring& wsDV)
 	{
-
+		std::string sValue = U_TO_UTF8(wsDV);
+		CDictObject* pOwner = GetObjOwnValue("DV");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("DV", new CStringObject(sValue.c_str(), true));
 	}
 	void CWidgetAnnotation::SetT(const std::wstring& wsT)
 	{
 		std::string sValue = U_TO_UTF8(wsT);
-		Add("T", new CStringObject(sValue.c_str()));
+		CDictObject* pOwner = GetObjOwnValue("T");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("T", new CStringObject(sValue.c_str(), true));
 	}
 	void CWidgetAnnotation::SetBC(const std::vector<double>& arrBC)
 	{
@@ -965,7 +1001,7 @@ namespace PdfWriter
 		{
 			CDictObject* pOwner = GetObjOwnValue(pAction->m_sType);
 			if (!pOwner)
-				pOwner = m_pParent ? m_pParent : this;
+				pOwner = this;
 
 			pOwner->Add(pAction->m_sType.c_str(), pAction);
 			return;
@@ -1002,9 +1038,9 @@ namespace PdfWriter
 
 		return sDA;
 	}
-	std::string CWidgetAnnotation::GetBGforAP()
+	std::string CWidgetAnnotation::GetBGforAP(double dDiff)
 	{
-		return GetColor(m_arrBG, false) + "\012";
+		return GetColor(m_arrBG, false, dDiff) + "\012";
 	}
 	std::string CWidgetAnnotation::GetBCforAP()
 	{
@@ -1316,7 +1352,6 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CCheckBoxWidget::CCheckBoxWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
 	{
-		Add("FT", "Btn");
 		m_nSubtype = WidgetRadiobutton;
 	}
 	void CCheckBoxWidget::SetV(const std::wstring& wsV)
@@ -1390,10 +1425,10 @@ namespace PdfWriter
 	{
 		if (nMaxLen > 0)
 		{
-			if (m_pParent)
-				m_pParent->Add("MaxLen", nMaxLen);
-			else
-				Add("MaxLen", nMaxLen);
+			CDictObject* pOwner = GetObjOwnValue("MaxLen");
+			if (!pOwner)
+				pOwner = this;
+			pOwner->Add("MaxLen", nMaxLen);
 		}
 	}
 	void CTextWidget::SetV(const std::wstring& wsV)
@@ -1401,34 +1436,25 @@ namespace PdfWriter
 		m_sV = U_TO_UTF8(wsV);
 		CDictObject* pOwner = GetObjOwnValue("V");
 		if (!pOwner)
-			pOwner = GetObjOwnValue("FT");
-		if (!pOwner)
 			pOwner = this;
 		pOwner->Add("V", new CStringObject(m_sV.c_str(), true));
 	}
 	void CTextWidget::SetRV(const std::wstring& wsRV)
 	{
 		std::string sValue = U_TO_UTF8(wsRV);
-		Add("RV", new CStringObject(sValue.c_str()));
+		CDictObject* pOwner = GetObjOwnValue("RV");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("RV", new CStringObject(sValue.c_str()));
 	}
-	void CTextWidget::SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, const double& dAlpha, double dFontSize, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts)
+	void CTextWidget::SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, double dFontSize, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts)
 	{
 		m_pAppearance = new CAnnotAppearance(m_pXref, this);
 		if (!m_pAppearance)
 			return;
 		Add("AP", m_pAppearance);
-
 		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
-		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
-
-		const char* sExtGrStateName = NULL;
-		if (fabs(dAlpha - 1.0) > 0.001)
-		{
-			CExtGrState* pExtGrState = m_pDocument->GetFillAlpha(dAlpha);
-			sExtGrStateName = pFieldsResources->GetExtGrStateName(pExtGrState);
-		}
-
-		pNormal->DrawSimpleText(wsValue, pCodes, unCount, pFont, dFontSize, dX, dY, 0, 0, 0, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), ppFonts, pShifts);
+		pNormal->DrawSimpleText(wsValue, pCodes, unCount, pFont, dFontSize, dX, dY, 0, 0, 0, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), ppFonts, pShifts);
 	}
 	void CTextWidget::StartAP(CFontDict* pFont, const double& dFontSize, const double& dAlpha)
 	{
@@ -1468,17 +1494,17 @@ namespace PdfWriter
 	}
 	bool CTextWidget::IsCombFlag()
 	{
-		int nFlags = ((CNumberObject*)Get("Ff"))->Get();
+		int nFlags = ((CNumberObject*)GetObjValue("Ff"))->Get();
 		return (nFlags & (1 << 24));
 	}
 	bool CTextWidget::IsMultiLine()
 	{
-		int nFlags = ((CNumberObject*)Get("Ff"))->Get();
+		int nFlags = ((CNumberObject*)GetObjValue("Ff"))->Get();
 		return (nFlags & (1 << 12));
 	}
-	int CTextWidget::GetMaxLen()
+	unsigned int CTextWidget::GetMaxLen()
 	{
-		CNumberObject* oMaxLen = m_pParent ? (CNumberObject*)m_pParent->Get("MaxLen") : (CNumberObject*)Get("MaxLen");
+		CNumberObject* oMaxLen = (CNumberObject*)GetObjValue("MaxLen");
 		return oMaxLen ? oMaxLen->Get() : 0;
 	}
 	//----------------------------------------------------------------------------------------
@@ -1486,10 +1512,6 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CChoiceWidget::CChoiceWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
 	{
-		m_pFont = NULL;
-		m_dFontSize = 10.0;
-		m_bBold   = false;
-		m_bItalic = false;
 	}
 	void CChoiceWidget::SetFlag(const int& nFlag)
 	{
@@ -1579,13 +1601,6 @@ namespace PdfWriter
 				pArray2->Add(new CStringObject(sValue.c_str()));
 			}
 		}
-	}
-	void CChoiceWidget::SetFont(CFontCidTrueType* pFont, double dFontSize, bool bBold, bool bItalic)
-	{
-		m_pFont = pFont;
-		m_dFontSize = dFontSize;
-		m_bBold     = bBold;
-		m_bItalic   = bItalic;
 	}
 	void CChoiceWidget::SetTextAppearance(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts)
 	{

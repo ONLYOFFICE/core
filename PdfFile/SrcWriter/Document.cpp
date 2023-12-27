@@ -288,6 +288,7 @@ namespace PdfWriter
 
 		pXref->WriteToStream(pStream, pEncrypt);
 
+		delete pStream;
 		return true;
 	}
     void CDocument::PrepareEncryption()

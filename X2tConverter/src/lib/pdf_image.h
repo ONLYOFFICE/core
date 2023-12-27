@@ -743,8 +743,8 @@ namespace NExtractTools
 						if (sFrom != sFromSrc)
 						{
 							NSFile::CFileBinary::Remove(sFrom);
-							sFrom = sCurrentTmp;
 						}
+						sFrom = sCurrentTmp;
 					}
 				}
 
@@ -759,9 +759,10 @@ namespace NExtractTools
 					oPdfPages.SetTempDirectory(convertParams.m_sTempDir);
 
 					std::wstring sPassword = params.getPassword();
-					if (oPdfPages.LoadFromFile(sFrom.c_str(), L"", sPassword, sPassword) && oPdfPages.EditPdf(sCurrentTmp))
+					if (oPdfPages.LoadFromFile(sFrom.c_str(), L"", sPassword, sPassword))
 					{
 						oPdfPages.ChangePassword(sCurrentTmp, params.getSavePassword());
+						oPdfPages.Close();
 					}
 					else
 					{
@@ -773,8 +774,8 @@ namespace NExtractTools
 						if (sFrom != sFromSrc)
 						{
 							NSFile::CFileBinary::Remove(sFrom);
-							sFrom = sCurrentTmp;
 						}
+						sFrom = sCurrentTmp;
 					}
 				}
 

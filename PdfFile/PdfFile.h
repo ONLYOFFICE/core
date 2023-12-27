@@ -100,6 +100,7 @@ public:
 	bool EditAnnot  (int nPageIndex, int nID);
 	bool DeleteAnnot(int nID);
 	bool EditWidgets(IAdvancedCommand* pCommand);
+	HRESULT ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword = L"");
 #endif
 
 	// --- READER ---
@@ -150,7 +151,6 @@ public:
 	void SetDocumentInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords);
 	void AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength);
 
-	HRESULT ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword = L"");
 	HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams = NULL);
 	HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams = NULL);
 	HRESULT AddToPdfFromBinary(BYTE* pBuffer, unsigned int nLen, CConvertFromBinParams* pParams = NULL);

@@ -302,6 +302,22 @@ void odp_page_state::set_anim_subtype(const std::wstring& val)
 	anim_levels.back().par_attlist->presentation_preset_sub_type_ = val;
 }
 
+void odp_page_state::set_anim_accelerate(double val)
+{
+	if (anim_levels.empty())		return;
+	if (!anim_levels.back().attlist)return;
+
+	anim_levels.back().attlist->smil_accelerate_ = val;
+}
+
+void odp_page_state::set_anim_decelerate(double val)
+{
+	if (anim_levels.empty())		return;
+	if (!anim_levels.back().attlist)return;
+
+	anim_levels.back().attlist->smil_decelerate_ = val;
+}
+
 void odp_page_state::set_anim_animation_formula(const std::wstring& val)
 {
 	if (anim_levels.empty())		return;

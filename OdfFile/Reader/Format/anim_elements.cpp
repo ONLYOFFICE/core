@@ -304,37 +304,39 @@ static const preset_subtype_maping s_preset_subtype_maping[] =
 static _CP_OPT(std::wstring) pptx_convert_smil_attribute_name(const odf_types::smil_attribute_name& smil_attribute_name_)
 {
 	using namespace odf_types;
+	
+	_CP_OPT(std::wstring) result;
 
 	switch (smil_attribute_name_.get_type())
 	{
-	case smil_attribute_name::charColor:		return boost::none;
-	case smil_attribute_name::charFontName:		return boost::none;
-	case smil_attribute_name::charHeight:		return boost::none;
-	case smil_attribute_name::charPosture:		return boost::none;
-	case smil_attribute_name::charUnderline:	return boost::none;
-	case smil_attribute_name::charWeight:		return boost::none;
-	case smil_attribute_name::color:			return L"style.color";
-	case smil_attribute_name::fill:				return L"fill.type";
-	case smil_attribute_name::fillColor:		return L"fillcolor";
-	case smil_attribute_name::fillStyle:		return boost::none;
-	case smil_attribute_name::fillOn:			return L"fill.on";
-	case smil_attribute_name::height:			return L"ppt_h";
-	case smil_attribute_name::lineColor:		return boost::none;
-	case smil_attribute_name::lineStyle:		return boost::none;
-	case smil_attribute_name::opacity:			return L"style.opacity";
-	case smil_attribute_name::rotate:			return L"style.rotation";
-	case smil_attribute_name::stroke:			return L"stroke.on";
-	case smil_attribute_name::strokeColor:		return L"stroke.color";
-	case smil_attribute_name::skewX:			return L"xshear";
-	case smil_attribute_name::skewY:			return boost::none;
-	case smil_attribute_name::visibility:		return L"style.visibility";
-	case smil_attribute_name::width:			return L"ppt_w";
-	case smil_attribute_name::x:				return L"ppt_x";
-	case smil_attribute_name::y:				return L"ppt_y";
-	case smil_attribute_name::dim:				return L"ppt_c";
+	case smil_attribute_name::charColor:		result = boost::none;
+	case smil_attribute_name::charFontName:		result = boost::none;
+	case smil_attribute_name::charHeight:		result = boost::none;
+	case smil_attribute_name::charPosture:		result = boost::none;
+	case smil_attribute_name::charUnderline:	result = boost::none;
+	case smil_attribute_name::charWeight:		result = boost::none;
+	case smil_attribute_name::color:			result = L"style.color";
+	case smil_attribute_name::fill:				result = L"fill.type";
+	case smil_attribute_name::fillColor:		result = L"fillcolor";
+	case smil_attribute_name::fillStyle:		result = boost::none;
+	case smil_attribute_name::fillOn:			result = L"fill.on";
+	case smil_attribute_name::height:			result = L"ppt_h";
+	case smil_attribute_name::lineColor:		result = boost::none;
+	case smil_attribute_name::lineStyle:		result = boost::none;
+	case smil_attribute_name::opacity:			result = L"style.opacity";
+	case smil_attribute_name::rotate:			result = L"style.rotation";
+	case smil_attribute_name::stroke:			result = L"stroke.on";
+	case smil_attribute_name::strokeColor:		result = L"stroke.color";
+	case smil_attribute_name::skewX:			result = L"xshear";
+	case smil_attribute_name::skewY:			result = boost::none;
+	case smil_attribute_name::visibility:		result = L"style.visibility";
+	case smil_attribute_name::width:			result = L"ppt_w";
+	case smil_attribute_name::x:				result = L"ppt_x";
+	case smil_attribute_name::y:				result = L"ppt_y";
+	case smil_attribute_name::dim:				result = L"ppt_c";
 	}
 
-	return boost::none;
+	return result;
 }
 
 static std::wstring pptx_convert_presentation_node_type(const odf_types::presentation_node_type& presentation_node_type_)
@@ -461,7 +463,9 @@ static std::wstring pptx_convert_smil_fill(const odf_types::smil_fill& smil_fill
 		case smil_fill::type::_freeze:		return L"freeze";
 		case smil_fill::type::_hold:		return L"hold";
 		case smil_fill::type::_transition:	return L"transition";
-		case smil_fill::type::_auto:		return durationSpecified ? L"remove" : L"freeze";
+		case smil_fill::type::_auto:		
+		default:
+											return durationSpecified ? L"remove" : L"freeze";
 	}
 }
 

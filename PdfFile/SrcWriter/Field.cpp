@@ -2003,6 +2003,25 @@ namespace PdfWriter
 		m_pStream->WriteReal(std::max(dHeight - dBorderSizeStyle * 2, 0.0));
 		m_pStream->WriteStr(" re\012W\012n\012");
 
+		if (pAnnot && pAnnot->GetWidgetType() == WidgetListbox)
+		{
+			CChoiceWidget* pAnnot = dynamic_cast<CChoiceWidget*>(m_pAnnot);
+			double dBaseLine = pAnnot->GetListBoxHeight();
+			std::vector<int> arrIndex = pAnnot->GetListBoxIndex();
+			m_pStream->WriteStr("0.60 0.75 0.85 rg\012");
+			for (int i = 0; i < arrIndex.size(); ++i)
+			{
+				m_pStream->WriteReal(dBorderSizeStyle);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(std::max(dHeight - dBorderSizeStyle - dBaseLine * (double)(arrIndex[i] + 1), 0.0));
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(std::max(dWidth - dBorderSizeStyle * 2.0, 0.0));
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(dBaseLine);
+				m_pStream->WriteStr(" re\012f\012");
+			}
+		}
+
 		m_pStream->WriteStr("BT\012");
 
 		m_dFontSize = std::min(1000.0, std::max(0.0, dFontSize));

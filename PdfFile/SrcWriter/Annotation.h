@@ -399,7 +399,13 @@ namespace PdfWriter
 		bool GetFontIsBold()   { return m_bBold; }
 		bool GetFontIsItalic() { return m_bItalic; }
 		bool HaveBG() { return !m_arrBG.empty(); }
+		bool HaveBC() { return !m_arrBC.empty(); }
 		BYTE GetQ() { return m_nQ; }
+
+		void SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts);
+		void StartAP();
+		void AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts = NULL, const double* pShifts = NULL);
+		void EndAP();
 	};
 	class CPushButtonWidget : public CWidgetAnnotation
 	{
@@ -466,16 +472,17 @@ namespace PdfWriter
 		void SetV (const std::wstring& wsV);
 		void SetRV(const std::wstring& wsRV);
 
-		void SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, double dFontSize, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts);
-		void StartAP(CFontDict* pFont, const double& dFontSize, const double& dAlpha);
-		void AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts = NULL, const double* pShifts = NULL);
-		void EndAP();
 		bool IsCombFlag();
 		bool IsMultiLine();
 		unsigned int GetMaxLen();
 	};
 	class CChoiceWidget : public CWidgetAnnotation
 	{
+	private:
+		std::vector< std::pair<std::wstring, std::wstring> > m_arrOpt;
+		double m_dHeight;
+		int m_nTI;
+		std::vector<int> m_arrIndex;
 	public:
 		CChoiceWidget(CXref* pXref);
 
@@ -486,7 +493,11 @@ namespace PdfWriter
 		void SetV(const std::vector<std::wstring>& arrV);
 		void SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt);
 
-		void SetTextAppearance(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, double dX = 0.0, double dY = 0.0, CFontCidTrueType** ppFonts = NULL);
+		std::wstring GetValue(const std::wstring& wsValue);
+		void SetListBoxHeight(double dHeight) { m_dHeight = dHeight; }
+		double GetListBoxHeight() { return m_dHeight; }
+		std::vector<int> GetListBoxIndex() { return m_arrIndex; }
+		int GetTI() { return m_nTI; }
 	};
 	class CSignatureWidget : public CWidgetAnnotation
 	{

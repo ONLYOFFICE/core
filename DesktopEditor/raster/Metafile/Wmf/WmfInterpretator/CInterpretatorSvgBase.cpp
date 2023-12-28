@@ -444,6 +444,105 @@ namespace MetaFile
 			m_pXmlWriter->WriteNodeEnd(L"g");
 	}
 
+	void CInterpretatorSvgBase::DrawBitmap(double dX, double dY, double dW, double dH, BYTE *pBuffer, unsigned int unWidth, unsigned int unHeight)
+	{
+		if (NULL == pBuffer || Equals(0., dW) || Equals(0., dH) || 0 == unWidth || 0 == unHeight)
+			return;
+
+		TXForm oTransform;
+		oTransform.Copy(m_pParser->GetTransform());
+
+		if (dW < 0 || dH < 0)
+		{
+			double dKx = 1, dKy = 1, dShiftKoefX = 0, dShiftKoefY = 0;
+			if (dW < 0)
+			{
+				dKx = -1;
+				dShiftKoefX = 2 * dX + dW;
+
+				dW = -dW;
+				dX -= dW;
+			}
+
+			if (dH < 0)
+			{
+				dKy = -1;
+				dShiftKoefY = 2 * dY + dH;
+
+				dH = -dH;
+				dY -= dH;
+			}
+
+			oTransform.Dx  += dShiftKoefX * oTransform.M11 + dShiftKoefY * oTransform.M21;
+			oTransform.Dy  += dShiftKoefX * oTransform.M12 + dShiftKoefY * oTransform.M22;
+			oTransform.M11 *= dKx;
+			oTransform.M12 *= dKx;
+			oTransform.M21 *= dKy;
+			oTransform.M22 *= dKy;
+		}
+
+		if (1 == unWidth && 1 == unHeight)
+		{
+			NodeAttributes arAttributes = {{L"x",      ConvertToWString(dX)},
+			                               {L"y",      ConvertToWString(dY)},
+			                               {L"width",  ConvertToWString(dW)},
+			                               {L"height", ConvertToWString(dH)},
+			                               {L"fill",   CalculateColor(pBuffer[2], pBuffer[1], pBuffer[0], 255)}};
+
+			AddTransform(arAttributes, &oTransform);
+
+			WriteNode(L"rect", arAttributes);
+
+			return;
+		}
+
+		CBgraFrame  oFrame;
+
+		oFrame.put_Data(pBuffer);
+		oFrame.put_Width(unWidth);
+		oFrame.put_Height(unHeight);
+
+		BYTE* pNewBuffer = NULL;
+		int nNewSize = 0;
+
+		if (!oFrame.Encode(pNewBuffer, nNewSize, 4))
+		{
+			oFrame.put_Data(NULL);
+			return;
+		}
+
+		oFrame.put_Data(NULL);
+
+		if (0 < nNewSize)
+		{
+			int nImageSize = NSBase64::Base64EncodeGetRequiredLength(nNewSize);
+			unsigned char* ucValue = new unsigned char[nImageSize];
+
+			if (NULL == ucValue)
+				return;
+
+			NSBase64::Base64Encode(pNewBuffer, nNewSize, ucValue, &nImageSize);
+			std::wstring wsValue(ucValue, ucValue + nImageSize);
+
+			RELEASEARRAYOBJECTS(ucValue);
+
+			NodeAttributes arAttributes = {{L"x",      ConvertToWString(dX)},
+			                               {L"y",      ConvertToWString(dY)},
+			                               {L"width",  ConvertToWString(dW)},
+			                               {L"height", ConvertToWString(dH)},
+			                               {L"preserveAspectRatio", L"xMinYMin slice"},
+			                               {L"xlink:href", L"data:image/png;base64," + wsValue}};
+
+			AddTransform(arAttributes, &oTransform);
+			AddClip();
+
+			WriteNode(L"image", arAttributes);
+		}
+
+		if (NULL != pNewBuffer)
+			delete [] pNewBuffer;
+	}
+
 	void CInterpretatorSvgBase::ResetClip()
 	{
 		m_oClip.Reset();

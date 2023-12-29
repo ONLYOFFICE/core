@@ -1806,21 +1806,34 @@ namespace OOX
 			{
 				case SimpleTypes::Spreadsheet::celltypeNumber:
 					{
-						auto pCellRk = new(XLSB::CellRk);
-						if( m_oValue->m_sText.find('.') == std::string::npos)
+						if(m_oValue.IsInit())
 						{
-							pCellRk->value.fInt = 1;
-							pCellRk->value.fX100 = 0;
-							pCellRk->value.num = std::stoi(m_oValue->m_sText);
+							auto pCellRk = new(XLSB::CellRk);
+							if( m_oValue->m_sText.find('.') == std::string::npos)
+							{
+								pCellRk->value.fInt = 1;
+								pCellRk->value.fX100 = 0;
+								pCellRk->value.num = std::stoi(m_oValue->m_sText);
+							}
+							else
+							{
+								pCellRk->value.fInt = 0;
+								pCellRk->value.fX100 = 1;
+								pCellRk->value.num = std::stod(m_oValue->m_sText) * 100;
+							}
+							oCell = &pCellRk->cell;
+							pSource = pCellRk;
 						}
 						else
 						{
-							pCellRk->value.fInt = 0;
-							pCellRk->value.fX100 = 1;
-							pCellRk->value.num = std::stod(m_oValue->m_sText) * 100;
+							auto pCellblank = new(XLSB::CellBlank);
+							oCell = &pCellblank->cell;
+                            oCell->fPhShow = false;
+							pSource = pCellblank;
 						}
-						oCell = &pCellRk->cell;
-						pSource = pCellRk;
+						
+						
+						
 					}
 					break;
 				case SimpleTypes::Spreadsheet::celltypeError:
@@ -2053,7 +2066,16 @@ namespace OOX
 					pSHRFMLACELL->m_source = m_oFormula->toBin();
 				}
 			}
-			oCell->column = m_oCol.get();
+			if(m_oCol.IsInit())
+				oCell->column = m_oCol.get();
+			else if(m_oRef.IsInit())
+				{
+					std::wstring strRef(m_oRef.get().begin(), m_oRef.get().end());
+					XLS::CellRef reference(strRef);
+					oCell->column = reference.getColumn();
+				}
+            else 
+                oCell->column = 0;
 			if(m_oShowPhonetic.IsInit())
             	oCell->fPhShow =  m_oShowPhonetic->GetValue();
 			else

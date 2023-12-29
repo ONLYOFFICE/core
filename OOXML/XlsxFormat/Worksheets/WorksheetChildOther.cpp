@@ -1342,8 +1342,6 @@ namespace OOX
 		}
 		XLS::BaseObjectPtr CSheetView::toBin()
 		{
-            //if(m_oView.IsInit() || m_oTopLeftCell.IsInit() || m_oTopLeftCell.IsInit())
-            //{
 				auto ptr(new XLSB::WSVIEW2);
 				XLS::BaseObjectPtr castedPtr(ptr);
 				auto pWsView(new XLSB::BeginWsView);
@@ -1588,8 +1586,6 @@ namespace OOX
 		}
 		XLS::BaseObjectPtr CSheetViews::toBin()
 		{
-			auto view = m_arrItems.back();
-
 				auto castedPtr(new XLSB::WSVIEWS2);
 				XLS::BaseObjectPtr ptr(castedPtr);
 				for(auto i:m_arrItems)

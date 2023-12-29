@@ -1,13 +1,58 @@
 #include "CImage.h"
 
-#include "CStyle.h"
-#include "CContainer.h"
 #include "../CSvgFile.h"
 #include "../../graphics/Image.h"
 #include "../../../BgraFrame.h"
 
+#include <stack>
+
 namespace SVG
 {
+	std::wstring ShortenPath(const std::wstring& wsPath)
+	{
+		std::stack<std::wstring> arStack;
+		std::wstring wsToken;
+		std::wstring wsNewPath;
+		
+		std::function<void()> checkToken = [&]()
+		{
+			if (L".." == wsToken)
+			{
+				if (!arStack.empty() && L".." != arStack.top())
+					arStack.pop();
+				else
+					arStack.push(wsToken);
+			}
+			else if (L"." != wsToken && !wsToken.empty())
+				arStack.push(wsToken);
+
+			wsToken.clear();
+		};
+
+		for (size_t i = 0; i < wsPath.size(); ++i) 
+		{
+			if (L'/' == wsPath[i] || L'\\' == wsPath[i])
+				checkToken();
+			else
+				wsToken += wsPath[i];
+		}
+
+		checkToken();
+
+		if (arStack.empty())
+			return std::wstring();
+
+		while (!arStack.empty()) 
+		{
+			wsNewPath = arStack.top() + L'/' + wsNewPath;
+			arStack.pop();
+		}
+
+		wsNewPath.pop_back();
+
+		return wsNewPath;
+	}
+
 	CImage::CImage(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent)
 		: CRenderedObject(oNode, pParent)
 	{
@@ -59,10 +104,16 @@ namespace SVG
 
 			NSBase64::Base64Decode(wsImageData.c_str(), wsImageData.length(), pBuffer, &(int&)ulSize);
 		}
+
 		#ifndef METAFILE_DISABLE_FILESYSTEM
-		else if (NSFile::CFileBinary::Exists(pFile->GetWorkingDirectory() + L'/' + m_wsHref))
+		std::wstring wsFilePath = ShortenPath(m_wsHref);
+
+		if (!wsFilePath.empty() && L'.' != wsFilePath[0])
 		{
-			NSFile::CFileBinary::ReadAllBytes(pFile->GetWorkingDirectory() + L'/' + m_wsHref, &pBuffer, ulSize);
+			wsFilePath = pFile->GetWorkingDirectory() + L'/' + wsFilePath;
+
+			if (!NSFile::CFileBinary::Exists(wsFilePath) || !NSFile::CFileBinary::ReadAllBytes(wsFilePath, &pBuffer, ulSize))
+				return false;
 		}
 		#endif
 

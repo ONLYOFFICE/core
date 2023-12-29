@@ -71,7 +71,7 @@ namespace PdfWriter
 	public:
 		CActionGoTo(CXref* pXref);
 
-		void SetDestination(CDestination* pDest);
+		void SetDestination(CArrayObject* pDest);
 	};
 	class CActionURI : public CAction
 	{
@@ -184,7 +184,7 @@ namespace PdfWriter
 			return true;
 		}
 
-		void SetRT(const BYTE& nRT);
+		void SetRT(BYTE nRT);
 		void SetCA(const double& dCA);
 		void SetT(const std::wstring& wsT);
 		void SetRC(const std::wstring& wsRC);
@@ -254,12 +254,12 @@ namespace PdfWriter
 		}
 
 		void SetCap(bool bCap);
-		void SetIT(const BYTE& nIT);
-		void SetCP(const BYTE& nCP);
+		void SetIT(BYTE nIT);
+		void SetCP(BYTE nCP);
 		void SetLL(const double& dLL);
 		void SetLLE(const double& dLLE);
 		void SetLLO(const double& dLLO);
-		void SetLE(const BYTE& nLE1, const BYTE& nLE2);
+		void SetLE(BYTE nLE1, BYTE nLE2);
 		void SetL(const double& dL1, const double& dL2, const double& dL3, const double& dL4);
 		void SetCO(const double& dCO1, const double& dCO2);
 		void SetIC(const std::vector<double>& arrIC);
@@ -275,7 +275,7 @@ namespace PdfWriter
 			return m_nSubtype;
 		}
 
-		void SetSubtype(const BYTE& nSubtype);
+		void SetSubtype(BYTE nSubtype);
 		void SetQuadPoints(const std::vector<double>& arrQuadPoints);
 	};
 	class CSquareCircleAnnotation : public CMarkupAnnotation
@@ -289,7 +289,7 @@ namespace PdfWriter
 			return m_nSubtype;
 		}
 
-		void SetSubtype(const BYTE& nSubtype);
+		void SetSubtype(BYTE nSubtype);
 		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4);
 		void SetIC(const std::vector<double>& arrIC);
 	};
@@ -304,9 +304,9 @@ namespace PdfWriter
 			return m_nSubtype;
 		}
 
-		void SetIT(const BYTE& nIT);
-		void SetSubtype(const BYTE& nSubtype);
-		void SetLE(const BYTE& nLE1, const BYTE& nLE2);
+		void SetIT(BYTE nIT);
+		void SetSubtype(BYTE nSubtype);
+		void SetLE(BYTE nLE1, BYTE nLE2);
 		void SetIC(const std::vector<double>& arrIC);
 		void SetVertices(const std::vector<double>& arrVertices);
 	};
@@ -319,9 +319,9 @@ namespace PdfWriter
 			return AnnotFreeText;
 		}
 
-		void SetQ(const BYTE& nQ);
-		void SetIT(const BYTE& nIT);
-		void SetLE(const BYTE& nLE);
+		void SetQ(BYTE nQ);
+		void SetIT(BYTE nIT);
+		void SetLE(BYTE nLE);
 		void SetDS(const std::wstring& wsDS);
 		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4);
 		void SetCL(const std::vector<double>& arrCL);
@@ -335,7 +335,7 @@ namespace PdfWriter
 			return AnnotCaret;
 		}
 
-		void SetSy(const BYTE& nSy);
+		void SetSy(BYTE nSy);
 		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4);
 	};
 	class CWidgetAnnotation : public CAnnotation
@@ -372,14 +372,14 @@ namespace PdfWriter
 			return m_nSubtype;
 		}
 
-		void SetSubtype(const BYTE& nSubtype);
+		void SetSubtype(BYTE nSubtype);
 		void SetDA(CFontDict* pFont, const double& dFontSize, const double& dFontSizeAP, const std::vector<double>& arrTC);
 		void SetFont(CFontCidTrueType* pFont, double dFontSize, bool bBold, bool bItalic);
 		CDictObject* GetObjOwnValue(const std::string& sV);
 		CObjectBase* GetObjValue(const std::string& sV);
 
-		void SetQ(const BYTE& nQ);
-		void SetH(const BYTE& nH);
+		void SetQ(BYTE nQ);
+		void SetH(BYTE nH);
 		void SetR(const int& nR);
 		virtual void SetFlag (const int& nFlag);
 		void SetParent(CDictObject* pParent);
@@ -425,9 +425,9 @@ namespace PdfWriter
 		CPushButtonWidget(CXref* pXref);
 
 		void SetV(const std::wstring& wsV);
-		void SetS(const BYTE& nS);
-		void SetTP(const BYTE& nTP);
-		void SetSW(const BYTE& nSW);
+		void SetS(BYTE nS);
+		void SetTP(BYTE nTP);
+		void SetSW(BYTE nSW);
 		void SetIFFlag(const int& nIFFlag);
 		virtual void SetFlag (const int& nFlag) override;
 		void SetI(const int& nI);
@@ -452,8 +452,9 @@ namespace PdfWriter
 		CCheckBoxWidget(CXref* pXref);
 
 		void SetV(const std::wstring& wsV);
-		std::wstring SetStyle(const BYTE& nStyle);
+		std::wstring SetStyle(BYTE nStyle);
 		void SetAP_N_Yes(const std::wstring& wsAP_N_Yes);
+		virtual void SetFlag (const int& nFlag);
 
 		void SwitchAP(const std::string& sV);
 	};

@@ -2007,7 +2007,9 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			{
 				PdfWriter::CActionGoTo* ppA = (PdfWriter::CActionGoTo*)pA;
 				PdfWriter::CPage* pPageD = m_pDocument->GetPage(pAction->nInt1);
-				PdfWriter::CDestination* pDest = m_pDocument->CreateDestination(pAction->nInt1);
+				PdfWriter::CDestination* pDest = m_pDocument->CreateDestination(pPageD);
+				if (!pDest)
+					break;
 				ppA->SetDestination(pDest);
 
 				switch (pAction->nKind)
@@ -2053,33 +2055,39 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 					break;
 				}
 				}
+				break;
 			}
 			case 6:
 			{
 				PdfWriter::CActionURI* ppA = (PdfWriter::CActionURI*)pA;
 				ppA->SetURI(pAction->wsStr1);
+				break;
 			}
 			case 9:
 			{
 				PdfWriter::CActionHide* ppA = (PdfWriter::CActionHide*)pA;
 				ppA->SetH(pAction->nKind);
 				ppA->SetT(pAction->arrStr);
+				break;
 			}
 			case 10:
 			{
 				PdfWriter::CActionNamed* ppA = (PdfWriter::CActionNamed*)pA;
 				ppA->SetN(pAction->wsStr1);
+				break;
 			}
 			case 12:
 			{
 				PdfWriter::CActionResetForm* ppA = (PdfWriter::CActionResetForm*)pA;
 				ppA->SetFlags(pAction->nInt1);
 				ppA->SetFields(pAction->arrStr);
+				break;
 			}
 			case 14:
 			{
 				PdfWriter::CActionJavaScript* ppA = (PdfWriter::CActionJavaScript*)pA;
 				ppA->SetJS(pAction->wsStr1);
+				break;
 			}
 			}
 			pWidgetAnnot->AddAction(pA);
@@ -3125,7 +3133,7 @@ void CPdfWriter::AddLink(PdfWriter::CPage* pPage, const double& dX, const double
 	if (!pPage || !pDestPage)
 		return;
 
-	PdfWriter::CDestination* pDestination = m_pDocument->CreateDestination(unDestPage);
+	PdfWriter::CDestination* pDestination = m_pDocument->CreateDestination(pDestPage);
 	if (!pDestination)
 		return;
 

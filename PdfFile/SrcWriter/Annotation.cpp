@@ -297,7 +297,7 @@ namespace PdfWriter
 	CMarkupAnnotation::CMarkupAnnotation(CXref* pXref, EAnnotType eType) : CAnnotation(pXref, eType)
 	{
 	}
-	void CMarkupAnnotation::SetRT(const BYTE& nRT)
+	void CMarkupAnnotation::SetRT(BYTE nRT)
 	{
 		Add("RT", nRT ? "Group" : "R");
 	}
@@ -517,7 +517,7 @@ namespace PdfWriter
 	{
 		Add("Open", new CBoolObject(bCap));
 	}
-	void CLineAnnotation::SetIT(const BYTE& nIT)
+	void CLineAnnotation::SetIT(BYTE nIT)
 	{
 		std::string sValue;
 		switch (nIT)
@@ -531,7 +531,7 @@ namespace PdfWriter
 
 		Add("IT", sValue.c_str());
 	}
-	void CLineAnnotation::SetCP(const BYTE& nCP)
+	void CLineAnnotation::SetCP(BYTE nCP)
 	{
 		std::string sValue;
 		switch (nCP)
@@ -557,7 +557,7 @@ namespace PdfWriter
 	{
 		Add("LLO", dLLO);
 	}
-	void CLineAnnotation::SetLE(const BYTE& nLE1, const BYTE& nLE2)
+	void CLineAnnotation::SetLE(BYTE nLE1, BYTE nLE2)
 	{
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
@@ -616,11 +616,11 @@ namespace PdfWriter
 	CFreeTextAnnotation::CFreeTextAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotFreeText)
 	{
 	}
-	void CFreeTextAnnotation::SetQ(const BYTE& nQ)
+	void CFreeTextAnnotation::SetQ(BYTE nQ)
 	{
 		Add("Q", (int)nQ);
 	}
-	void CFreeTextAnnotation::SetIT(const BYTE& nIT)
+	void CFreeTextAnnotation::SetIT(BYTE nIT)
 	{
 		std::string sValue;
 		switch (nIT)
@@ -636,7 +636,7 @@ namespace PdfWriter
 
 		Add("IT", sValue.c_str());
 	}
-	void CFreeTextAnnotation::SetLE(const BYTE& nLE)
+	void CFreeTextAnnotation::SetLE(BYTE nLE)
 	{
 		Add("LE", AddLE(nLE).c_str());
 	}
@@ -667,7 +667,7 @@ namespace PdfWriter
 	{
 		m_nSubtype = AnnotHighLight;
 	}
-	void CTextMarkupAnnotation::SetSubtype(const BYTE& nSubtype)
+	void CTextMarkupAnnotation::SetSubtype(BYTE nSubtype)
 	{
 		switch (nSubtype)
 		{
@@ -702,7 +702,7 @@ namespace PdfWriter
 	{
 		m_nSubtype = AnnotSquare;
 	}
-	void CSquareCircleAnnotation::SetSubtype(const BYTE& nSubtype)
+	void CSquareCircleAnnotation::SetSubtype(BYTE nSubtype)
 	{
 		switch (nSubtype)
 		{
@@ -730,7 +730,7 @@ namespace PdfWriter
 	{
 		m_nSubtype = AnnotPolygon;
 	}
-	void CPolygonLineAnnotation::SetIT(const BYTE& nIT)
+	void CPolygonLineAnnotation::SetIT(BYTE nIT)
 	{
 		std::string sValue;
 		switch (nIT)
@@ -746,7 +746,7 @@ namespace PdfWriter
 
 		Add("IT", sValue.c_str());
 	}
-	void CPolygonLineAnnotation::SetSubtype(const BYTE& nSubtype)
+	void CPolygonLineAnnotation::SetSubtype(BYTE nSubtype)
 	{
 		switch (nSubtype)
 		{
@@ -759,7 +759,7 @@ namespace PdfWriter
 
 		Add("Subtype", c_sAnnotTypeNames[(int)m_nSubtype]);
 	}
-	void CPolygonLineAnnotation::SetLE(const BYTE& nLE1, const BYTE& nLE2)
+	void CPolygonLineAnnotation::SetLE(BYTE nLE1, BYTE nLE2)
 	{
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
@@ -795,7 +795,7 @@ namespace PdfWriter
 	{
 		AddRD(this, dRD1, dRD2, dRD3, dRD4);
 	}
-	void CCaretAnnotation::SetSy(const BYTE& nSy)
+	void CCaretAnnotation::SetSy(BYTE nSy)
 	{
 		std::string sValue;
 		switch (nSy)
@@ -827,7 +827,7 @@ namespace PdfWriter
 		m_bItalic     = false;
 		m_nSubtype    = WidgetUnknown;
 	}
-	void CWidgetAnnotation::SetSubtype(const BYTE& nSubtype)
+	void CWidgetAnnotation::SetSubtype(BYTE nSubtype)
 	{
 		m_nSubtype = (EWidgetType)nSubtype;
 	}
@@ -906,7 +906,7 @@ namespace PdfWriter
 			Add("MK", m_pMK);
 		}
 	}
-	void CWidgetAnnotation::SetQ(const BYTE& nQ)
+	void CWidgetAnnotation::SetQ(BYTE nQ)
 	{
 		CDictObject* pOwner = GetObjOwnValue("Q");
 		if (!pOwner)
@@ -914,7 +914,7 @@ namespace PdfWriter
 		pOwner->Add("Q", (int)nQ);
 		m_nQ = nQ;
 	}
-	void CWidgetAnnotation::SetH(const BYTE& nH)
+	void CWidgetAnnotation::SetH(BYTE nH)
 	{
 		std::string sValue;
 		switch (nH)
@@ -1115,7 +1115,7 @@ namespace PdfWriter
 			pOwner = this;
 		pOwner->Add("V", new CStringObject(sV.c_str(), true));
 	}
-	void CPushButtonWidget::SetS(const BYTE& nS)
+	void CPushButtonWidget::SetS(BYTE nS)
 	{
 		m_bConstantProportions = !nS;
 
@@ -1133,13 +1133,13 @@ namespace PdfWriter
 
 		m_pIF->Add("S", sValue.c_str());
 	}
-	void CPushButtonWidget::SetTP(const BYTE& nTP)
+	void CPushButtonWidget::SetTP(BYTE nTP)
 	{
 		CheckMK();
 
 		m_pMK->Add("TP", (int)nTP);
 	}
-	void CPushButtonWidget::SetSW(const BYTE& nSW)
+	void CPushButtonWidget::SetSW(BYTE nSW)
 	{
 		m_nScaleType = nSW;
 
@@ -1389,7 +1389,7 @@ namespace PdfWriter
 			pOwner = this;
 		pOwner->Add("V", new CStringObject(sV.c_str(), true));
 	}
-	std::wstring CCheckBoxWidget::SetStyle(const BYTE& nStyle)
+	std::wstring CCheckBoxWidget::SetStyle(BYTE nStyle)
 	{
 		CheckMK();
 
@@ -1423,6 +1423,13 @@ namespace PdfWriter
 	void CCheckBoxWidget::SwitchAP(const std::string& sV)
 	{
 		Add("AS", sV == m_sAP_N_Yes ? sV.c_str() : "Off");
+	}
+	void CCheckBoxWidget::SetFlag(const int& nFlag)
+	{
+		int nFlags = nFlag;
+		if (m_nSubtype == WidgetRadiobutton)
+			nFlags |= (1 << 15);
+		CWidgetAnnotation::SetFlag(nFlags);
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextWidget
@@ -1687,7 +1694,7 @@ namespace PdfWriter
 	{
 		Add("S", "GoTo");
 	}
-	void CActionGoTo::SetDestination(CDestination* pDest)
+	void CActionGoTo::SetDestination(CArrayObject* pDest)
 	{
 		Add("D", pDest);
 	}
@@ -1712,7 +1719,17 @@ namespace PdfWriter
 	}
 	void CActionHide::SetT(const std::vector<std::wstring>& arrT)
 	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
 
+		Add("T", pArray);
+
+		for (const std::wstring& A : arrT)
+		{
+			std::string sValue = U_TO_UTF8(A);
+			pArray->Add(new CStringObject(sValue.c_str()));
+		}
 	}
 	//----------------------------------------------------------------------------------------
 	CActionNamed::CActionNamed(CXref* pXref) : CAction(pXref)

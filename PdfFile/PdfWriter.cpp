@@ -2184,12 +2184,16 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetButtonWidgetPr();
 				PdfWriter::CCheckBoxWidget* pButtonWidget = (PdfWriter::CCheckBoxWidget*)pAnnot;
 
+				std::wstring wsValue;
 				if (nFlags & (1 << 14))
 					pButtonWidget->SetAP_N_Yes(pPr->GetAP_N_Yes());
 				if (nFlags & (1 << 9))
-					pButtonWidget->SetV(pPr->GetV());
+				{
+					wsValue = pPr->GetV();
+					pButtonWidget->SetV(wsValue);
+				}
 
-				std::wstring wsValue = pButtonWidget->SetStyle(pPr->GetStyle());
+				std::wstring wsStyleValue = pButtonWidget->SetStyle(pPr->GetStyle());
 
 				// ВНЕШНИЙ ВИД
 				// Если изменился текущий внешний вид
@@ -2201,8 +2205,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 				double dMargin = 2;
 				double dBaseLine = dY2 - dY1 - dFontSize - dMargin;
-				// TODO цвет шрифта
-				pButtonWidget->SetAP(wsValue, m_pFont, dFontSize, 0, dBaseLine);
+				pButtonWidget->SetAP(wsStyleValue, m_pFont, dFontSize, 0, dBaseLine);
 			}
 		}
 		else if (oInfo.IsTextWidget())
@@ -2360,7 +2363,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 						((PdfWriter::CAnnotation*)pObj)->GetAnnotationType() != PdfWriter::AnnotWidget)
 						continue;
 					PdfWriter::EWidgetType nType = ((PdfWriter::CWidgetAnnotation*)pObj)->GetWidgetType();
-					if (nType == PdfWriter::WidgetCheckbox)
+					if (nType == PdfWriter::WidgetCheckbox || nType == PdfWriter::WidgetRadiobutton)
 					{
 						PdfWriter::CCheckBoxWidget* pKid = dynamic_cast<PdfWriter::CCheckBoxWidget*>(pObj);
 						if (pKid)
@@ -3370,21 +3373,7 @@ void CPdfWriter::DrawTextWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter
 
 		double dBaseLine = (dHeight - dFontSize) / 2.0 - dShiftBorder;
 		if (pFontTT)
-		{
-			double dKoef = dFontSize / pFontTT->m_dUnitsPerEm;
-			double dHeightF = pFontTT->m_dHeight * dKoef;
-			// double dDescent = std::abs(pFontTT->m_dDescent * dKoef);
-			// double dAscent = dHeightF - dDescent;
-			// dBaseLine = dAscent;
-			// double dMidPoint = dAscent - pFontTT->m_dMinY * dKoef + dAscent - pFontTT->m_dMaxY * dKoef;
-			// double dDiff = (dHeightF - dMidPoint) / 2.0;
-			// dBaseLine += dDiff;
-			//dBaseLine = dHeight / 2.0 - dBaseLine + dShiftBorder;
-			// dBaseLine = (dHeight - (pFontTT->m_dMaxY - pFontTT->m_dMinY) * dKoef) / 2.0;
-			dBaseLine = (dHeight - dHeightF) / 2.0;
-			// dBaseLine = (dHeight - dAscent) / 2.0;
-			// dBaseLine = (dHeight - dMidPoint) / 2.0;
-		}
+			dBaseLine = (dHeight - pFontTT->m_dHeight * dFontSize / pFontTT->m_dUnitsPerEm) / 2.0 + std::abs(pFontTT->m_dDescent * dFontSize / pFontTT->m_dUnitsPerEm);
 
 		pTextWidget->SetAP(wsValue, pCodes, unLen, dShiftX, dBaseLine, ppFonts, pShifts);
 		RELEASEARRAYOBJECTS(pShifts);
@@ -3402,6 +3391,8 @@ void CPdfWriter::DrawChoiceWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 	if (!pFont)
 		return;
 	PdfWriter::CFontTrueType* pFontTT = m_pDocument->CreateTrueTypeFont(pFont);
+	if (!pFontTT)
+		return;
 	double dFontSize = pChoiceWidget->GetFontSize();
 	bool isBold      = pChoiceWidget->GetFontIsBold();
 	bool isItalic    = pChoiceWidget->GetFontIsItalic();
@@ -3416,11 +3407,9 @@ void CPdfWriter::DrawChoiceWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 	if (nType == 1 || nType == 3)
 		dShiftBorder *= 2;
 
-
-
 	if (pChoiceWidget->GetWidgetType() == PdfWriter::WidgetCombobox)
 	{
-		std::wstring wsValue = arrValue.back();
+		std::wstring wsValue = pChoiceWidget->GetValue(arrValue.back());
 		unsigned int unLen = 0;
 		unsigned int* pUnicodes = NULL;
 		unsigned short* pCodes  = NULL;
@@ -3455,7 +3444,7 @@ void CPdfWriter::DrawChoiceWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 
 		double dBaseLine = (dHeight - dFontSize) / 2.0 - dShiftBorder;
 		if (pFontTT)
-			dBaseLine = (dHeight - pFontTT->m_dHeight * dFontSize / pFontTT->m_dUnitsPerEm) / 2.0;
+			dBaseLine = (dHeight - pFontTT->m_dHeight * dFontSize / pFontTT->m_dUnitsPerEm) / 2.0 + std::abs(pFontTT->m_dDescent * dFontSize / pFontTT->m_dUnitsPerEm);
 
 		pChoiceWidget->SetAP(wsValue, pCodes, unLen, dShiftX, dBaseLine, ppFonts, NULL);
 
@@ -3465,7 +3454,7 @@ void CPdfWriter::DrawChoiceWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 	}
 	else // ListBox
 	{
-		std::wstring wsValue = pChoiceWidget->GetValue(arrValue.front());
+		std::wstring wsValue = pChoiceWidget->SetListBoxIndex(arrValue);
 		unsigned int unLen = 0;
 		unsigned int* pUnicodes = NULL;
 		unsigned short* pCodes  = NULL;
@@ -3498,15 +3487,21 @@ void CPdfWriter::DrawChoiceWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 
 		m_oLinesManager.Init(pCodes2, pWidths, unLen, ushSpaceCode, ushNewLineCode, pFontTT->GetLineHeight(), pFontTT->GetAscent());
 
-		double dLineHeight = pFontTT->GetLineHeight() * dFontSize / 1000.0;
-
 		m_oLinesManager.CalculateLines(dFontSize, dWidth);
 
-		pChoiceWidget->SetListBoxHeight(pFontTT->m_dHeight * dFontSize / pFontTT->m_dUnitsPerEm);
+		double dKoef = dFontSize / pFontTT->m_dUnitsPerEm;
+		double dLineHeight = pFontTT->m_dHeight * dKoef;
+		pChoiceWidget->SetListBoxHeight(dLineHeight);
 		pChoiceWidget->StartAP();
 
+		// double dKoef = dFontSize / pFontTT->m_dUnitsPerEm;
+		// double dDescent = std::abs(pFontTT->m_dDescent * dFontSize / pFontTT->m_dUnitsPerEm);
+		// double dAscent = dLineHeight - dDescent;
+		// double dMidPoint = dAscent - pFontTT->m_dMinY * dKoef + dAscent - pFontTT->m_dMaxY * dKoef;
+		// double dDiff = dLineHeight - dMidPoint;
+		double dLineShiftY = dHeight - dShiftBorder - dLineHeight + std::abs(pFontTT->m_dDescent * dKoef);
+
 		unsigned int unLinesCount = m_oLinesManager.GetLinesCount();
-		double dLineShiftY = dHeight - pFontTT->GetLineHeight() * dFontSize / 1000.0 - dShiftBorder;
 		for (unsigned int unIndex = 0; unIndex < unLinesCount; ++unIndex)
 		{
 			unsigned int unLineStart = m_oLinesManager.GetLineStartPos(unIndex);

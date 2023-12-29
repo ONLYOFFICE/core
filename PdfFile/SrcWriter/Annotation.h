@@ -385,7 +385,7 @@ namespace PdfWriter
 		void SetParent(CDictObject* pParent);
 		void SetTU(const std::wstring& wsTU);
 		void SetDS(const std::wstring& wsDS);
-		virtual void SetDV(const std::wstring& wsDV);
+		void SetDV(const std::wstring& wsDV);
 		void SetT (const std::wstring& wsT);
 		void SetBC(const std::vector<double>& arrBC);
 		void SetBG(const std::vector<double>& arrBG);
@@ -425,7 +425,6 @@ namespace PdfWriter
 		CPushButtonWidget(CXref* pXref);
 
 		void SetV(const std::wstring& wsV);
-		void SetDV(const std::wstring& wsDV) override;
 		void SetS(const BYTE& nS);
 		void SetTP(const BYTE& nTP);
 		void SetSW(const BYTE& nSW);
@@ -453,7 +452,6 @@ namespace PdfWriter
 		CCheckBoxWidget(CXref* pXref);
 
 		void SetV(const std::wstring& wsV);
-		void SetDV(const std::wstring& wsDV) override;
 		std::wstring SetStyle(const BYTE& nStyle);
 		void SetAP_N_Yes(const std::wstring& wsAP_N_Yes);
 
@@ -493,11 +491,11 @@ namespace PdfWriter
 		void SetV(const std::vector<std::wstring>& arrV);
 		void SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt);
 
-		std::wstring GetValue(const std::wstring& wsValue);
+		std::wstring GetValue(const std::wstring& wsExportV);
 		void SetListBoxHeight(double dHeight) { m_dHeight = dHeight; }
 		double GetListBoxHeight() { return m_dHeight; }
+		std::wstring SetListBoxIndex(const std::vector<std::wstring>& arrV);
 		std::vector<int> GetListBoxIndex() { return m_arrIndex; }
-		int GetTI() { return m_nTI; }
 	};
 	class CSignatureWidget : public CWidgetAnnotation
 	{

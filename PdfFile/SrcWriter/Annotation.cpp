@@ -1087,8 +1087,6 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CPushButtonWidget::CPushButtonWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
 	{
-		Add("FT", "Btn");
-
 		m_pIF = NULL;
 		m_nI  = -1;
 		m_nRI = -1;
@@ -1114,15 +1112,8 @@ namespace PdfWriter
 		std::string sV = U_TO_UTF8(wsV);
 		CDictObject* pOwner = GetObjOwnValue("V");
 		if (!pOwner)
-			pOwner = GetObjOwnValue("FT");
-		if (!pOwner)
 			pOwner = this;
 		pOwner->Add("V", new CStringObject(sV.c_str(), true));
-	}
-	void CPushButtonWidget::SetDV(const std::wstring& wsDV)
-	{
-		std::string sValue = U_TO_UTF8(wsDV);
-		Add("DV", sValue.c_str());
 	}
 	void CPushButtonWidget::SetS(const BYTE& nS)
 	{
@@ -1216,7 +1207,7 @@ namespace PdfWriter
 		CheckMK();
 
 		std::string sValue = U_TO_UTF8(wsCA);
-		m_pMK->Add("CA", new CStringObject(sValue.c_str()));
+		m_pMK->Add("CA", new CStringObject(sValue.c_str(), true));
 		m_wsCA = wsCA;
 	}
 	void CPushButtonWidget::SetRC(const std::wstring& wsRC)
@@ -1224,14 +1215,14 @@ namespace PdfWriter
 		CheckMK();
 
 		std::string sValue = U_TO_UTF8(wsRC);
-		m_pMK->Add("RC", new CStringObject(sValue.c_str()));
+		m_pMK->Add("RC", new CStringObject(sValue.c_str(), true));
 	}
 	void CPushButtonWidget::SetAC(const std::wstring& wsAC)
 	{
 		CheckMK();
 
 		std::string sValue = U_TO_UTF8(wsAC);
-		m_pMK->Add("AC", new CStringObject(sValue.c_str()));
+		m_pMK->Add("AC", new CStringObject(sValue.c_str(), true));
 	}
 	void CPushButtonWidget::SetAP(CImageDict* pImage, const std::string& sAP, const std::string& sImgName, const std::string& sFrmName)
 	{
@@ -1395,15 +1386,8 @@ namespace PdfWriter
 		std::string sV = U_TO_UTF8(wsV);
 		CDictObject* pOwner = GetObjOwnValue("V");
 		if (!pOwner)
-			pOwner = GetObjOwnValue("FT");
-		if (!pOwner)
 			pOwner = this;
 		pOwner->Add("V", new CStringObject(sV.c_str(), true));
-	}
-	void CCheckBoxWidget::SetDV(const std::wstring& wsDV)
-	{
-		std::string sValue = U_TO_UTF8(wsDV);
-		Add("DV", sValue.c_str());
 	}
 	std::wstring CCheckBoxWidget::SetStyle(const BYTE& nStyle)
 	{
@@ -1481,7 +1465,7 @@ namespace PdfWriter
 		CDictObject* pOwner = GetObjOwnValue("RV");
 		if (!pOwner)
 			pOwner = this;
-		pOwner->Add("RV", new CStringObject(sValue.c_str()));
+		pOwner->Add("RV", new CStringObject(sValue.c_str(), true));
 	}
 	bool CTextWidget::IsCombFlag()
 	{
@@ -1504,7 +1488,7 @@ namespace PdfWriter
 	CChoiceWidget::CChoiceWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
 	{
 		m_dHeight = 0;
-		m_nTI = 0;
+		m_nTI = -1;
 	}
 	void CChoiceWidget::SetFlag(const int& nFlag)
 	{
@@ -1537,7 +1521,7 @@ namespace PdfWriter
 		CDictObject* pOwner = GetObjOwnValue("V");
 		if (!pOwner)
 			pOwner = this;
-		pOwner->Add("V", new CStringObject(sValue.c_str()));
+		pOwner->Add("V", new CStringObject(sValue.c_str(), true));
 	}
 	void CChoiceWidget::SetI(const std::vector<int>& arrI)
 	{
@@ -1565,7 +1549,7 @@ namespace PdfWriter
 		pOwner->Add("V", pArray);
 
 		for (int i = 0; i < arrV.size(); ++i)
-			pArray->Add(new PdfWriter::CStringObject(U_TO_UTF8(arrV[i]).c_str()));
+			pArray->Add(new PdfWriter::CStringObject(U_TO_UTF8(arrV[i]).c_str(), true));
 	}
 	void CChoiceWidget::SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt)
 	{
@@ -1584,7 +1568,7 @@ namespace PdfWriter
 			if (PV.first.empty())
 			{
 				std::string sValue = U_TO_UTF8(PV.second);
-				pArray->Add(new CStringObject(sValue.c_str()));
+				pArray->Add(new CStringObject(sValue.c_str(), true));
 			}
 			else
 			{
@@ -1592,31 +1576,64 @@ namespace PdfWriter
 				pArray->Add(pArray2);
 
 				std::string sValue = U_TO_UTF8(PV.first);
-				pArray2->Add(new CStringObject(sValue.c_str()));
+				pArray2->Add(new CStringObject(sValue.c_str(), true));
 
 				sValue = U_TO_UTF8(PV.second);
-				pArray2->Add(new CStringObject(sValue.c_str()));
+				pArray2->Add(new CStringObject(sValue.c_str(), true));
 			}
 		}
 	}
-	std::wstring CChoiceWidget::GetValue(const std::wstring& wsValue)
+	std::wstring CChoiceWidget::GetValue(const std::wstring& wsExportV)
+	{
+		for (int i = 0; i < m_arrOpt.size(); ++i)
+		{
+			if (( m_arrOpt[i].first.empty() && m_arrOpt[i].second == wsExportV) ||
+				(!m_arrOpt[i].first.empty() && m_arrOpt[i].first  == wsExportV))
+				return m_arrOpt[i].second;
+		}
+		return L"";
+	}
+	std::wstring CChoiceWidget::SetListBoxIndex(const std::vector<std::wstring>& arrV)
 	{
 		std::wstring sRes;
 		int i = 0;
-		if (!m_nTI)
+		if (m_nTI < 0)
 		{
+			// Ищем верхний элемент отрисовки
 			for (; i < m_arrOpt.size(); ++i)
 			{
-				if (( m_arrOpt[i].first.empty() && m_arrOpt[i].second == wsValue) ||
-					(!m_arrOpt[i].first.empty() && m_arrOpt[i].first  == wsValue))
+				if (( m_arrOpt[i].first.empty() && m_arrOpt[i].second == arrV.front()) ||
+					(!m_arrOpt[i].first.empty() && m_arrOpt[i].first  == arrV.front()))
+				{
+					m_nTI = i;
 					break;
+				}
 			}
 		}
 		else
 			i = m_nTI;
 
+		if (m_nTI < 0)
+			return L"";
+
 		for (; i < m_arrOpt.size(); ++i)
 			sRes += (m_arrOpt[i].second + L"\n");
+		i = m_nTI;
+
+		for (const std::wstring& sV : arrV)
+		{
+			for (int j = i; j < m_arrOpt.size(); ++j)
+			{
+				if (( m_arrOpt[j].first.empty() && m_arrOpt[j].second == sV) ||
+					(!m_arrOpt[j].first.empty() && m_arrOpt[j].first  == sV))
+				{
+					m_arrIndex.push_back(j - m_nTI);
+					i = j + 1;
+					break;
+				}
+			}
+		}
+
 		if (!sRes.empty())
 		{
 			sRes.pop_back();

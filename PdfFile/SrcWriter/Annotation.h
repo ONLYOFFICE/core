@@ -385,7 +385,7 @@ namespace PdfWriter
 		void SetParent(CDictObject* pParent);
 		void SetTU(const std::wstring& wsTU);
 		void SetDS(const std::wstring& wsDS);
-		virtual void SetDV(const std::wstring& wsDV);
+		void SetDV(const std::wstring& wsDV);
 		void SetT (const std::wstring& wsT);
 		void SetBC(const std::vector<double>& arrBC);
 		void SetBG(const std::vector<double>& arrBG);
@@ -399,7 +399,13 @@ namespace PdfWriter
 		bool GetFontIsBold()   { return m_bBold; }
 		bool GetFontIsItalic() { return m_bItalic; }
 		bool HaveBG() { return !m_arrBG.empty(); }
+		bool HaveBC() { return !m_arrBC.empty(); }
 		BYTE GetQ() { return m_nQ; }
+
+		void SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts);
+		void StartAP();
+		void AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts = NULL, const double* pShifts = NULL);
+		void EndAP();
 	};
 	class CPushButtonWidget : public CWidgetAnnotation
 	{
@@ -419,7 +425,6 @@ namespace PdfWriter
 		CPushButtonWidget(CXref* pXref);
 
 		void SetV(const std::wstring& wsV);
-		void SetDV(const std::wstring& wsDV) override;
 		void SetS(const BYTE& nS);
 		void SetTP(const BYTE& nTP);
 		void SetSW(const BYTE& nSW);
@@ -447,12 +452,10 @@ namespace PdfWriter
 		CCheckBoxWidget(CXref* pXref);
 
 		void SetV(const std::wstring& wsV);
-		void SetDV(const std::wstring& wsDV) override;
 		std::wstring SetStyle(const BYTE& nStyle);
 		void SetAP_N_Yes(const std::wstring& wsAP_N_Yes);
 
 		void SwitchAP(const std::string& sV);
-		void SetAP(const std::wstring& wsValue, CFontDict* pFont, double dFontSize, double dX, double dY);
 	};
 	class CTextWidget : public CWidgetAnnotation
 	{
@@ -466,16 +469,17 @@ namespace PdfWriter
 		void SetV (const std::wstring& wsV);
 		void SetRV(const std::wstring& wsRV);
 
-		void SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, double dFontSize, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts);
-		void StartAP(CFontDict* pFont, const double& dFontSize, const double& dAlpha);
-		void AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts = NULL, const double* pShifts = NULL);
-		void EndAP();
 		bool IsCombFlag();
 		bool IsMultiLine();
 		unsigned int GetMaxLen();
 	};
 	class CChoiceWidget : public CWidgetAnnotation
 	{
+	private:
+		std::vector< std::pair<std::wstring, std::wstring> > m_arrOpt;
+		double m_dHeight;
+		int m_nTI;
+		std::vector<int> m_arrIndex;
 	public:
 		CChoiceWidget(CXref* pXref);
 
@@ -486,7 +490,11 @@ namespace PdfWriter
 		void SetV(const std::vector<std::wstring>& arrV);
 		void SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt);
 
-		void SetTextAppearance(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, double dX = 0.0, double dY = 0.0, CFontCidTrueType** ppFonts = NULL);
+		std::wstring GetValue(const std::wstring& wsExportV);
+		void SetListBoxHeight(double dHeight) { m_dHeight = dHeight; }
+		double GetListBoxHeight() { return m_dHeight; }
+		std::wstring SetListBoxIndex(const std::vector<std::wstring>& arrV);
+		std::vector<int> GetListBoxIndex() { return m_arrIndex; }
 	};
 	class CSignatureWidget : public CWidgetAnnotation
 	{

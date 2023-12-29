@@ -244,6 +244,7 @@ private:
 	unsigned char* EncodeGID(const unsigned int& unGID, const unsigned int* pUnicodes, const unsigned int& unUnicodesCount);
 	std::wstring GetDownloadFile(const std::wstring& sUrl, const std::wstring& wsTempDirectory);
 	void DrawTextWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CTextWidget* pTextWidget, const std::wstring& wsValue);
+	void DrawChoiceWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CChoiceWidget* pChoiceWidget, const std::vector<std::wstring>& arrValue);
 
 private:
 	NSFonts::IFontManager*       m_pFontManager;

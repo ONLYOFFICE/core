@@ -2204,7 +2204,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 					return S_OK;
 				}
 
-				if (!wsValue.empty())
+				if (!wsStyleValue.empty())
 				{
 					double dMargin = 2;
 					double dBaseLine = dY2 - dY1 - dFontSize - dMargin;

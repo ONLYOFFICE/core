@@ -1424,17 +1424,6 @@ namespace PdfWriter
 	{
 		Add("AS", sV == m_sAP_N_Yes ? sV.c_str() : "Off");
 	}
-	void CCheckBoxWidget::SetAP(const std::wstring& wsValue, CFontDict* pFont, double dFontSize, double dX, double dY)
-	{
-		m_pAppearance = new CAnnotAppearance(m_pXref, this);
-		if (!m_pAppearance)
-			return;
-		Add("AP", m_pAppearance);
-
-		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
-
-		pNormal->DrawSimpleText(wsValue, NULL, 0, pFont, dFontSize, dX, dY, 0, 0, 0, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), NULL, NULL);
-	}
 	//----------------------------------------------------------------------------------------
 	// CTextWidget
 	//----------------------------------------------------------------------------------------

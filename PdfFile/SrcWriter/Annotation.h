@@ -456,7 +456,6 @@ namespace PdfWriter
 		void SetAP_N_Yes(const std::wstring& wsAP_N_Yes);
 
 		void SwitchAP(const std::string& sV);
-		void SetAP(const std::wstring& wsValue, CFontDict* pFont, double dFontSize, double dX, double dY);
 	};
 	class CTextWidget : public CWidgetAnnotation
 	{

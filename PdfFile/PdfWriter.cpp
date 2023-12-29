@@ -2197,15 +2197,19 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 				// ВНЕШНИЙ ВИД
 				// Если изменился текущий внешний вид
-				if (pButtonWidget->Get("AP") && !wsValue.empty())
+				if (pButtonWidget->Get("AP"))
 				{
-					pButtonWidget->SwitchAP(U_TO_UTF8(wsValue));
+					if (!wsValue.empty())
+						pButtonWidget->SwitchAP(U_TO_UTF8(wsValue));
 					return S_OK;
 				}
 
-				double dMargin = 2;
-				double dBaseLine = dY2 - dY1 - dFontSize - dMargin;
-				pButtonWidget->SetAP(wsStyleValue, m_pFont, dFontSize, 0, dBaseLine);
+				if (!wsValue.empty())
+				{
+					double dMargin = 2;
+					double dBaseLine = dY2 - dY1 - dFontSize - dMargin;
+					pButtonWidget->SetAP(wsStyleValue, NULL, 0, 0, dBaseLine, NULL, NULL);
+				}
 			}
 		}
 		else if (oInfo.IsTextWidget())

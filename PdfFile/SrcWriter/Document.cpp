@@ -481,12 +481,8 @@ namespace PdfWriter
 
 		return new COutline(pParent, sTitle, m_pXref);
 	}
-    CDestination* CDocument::CreateDestination(unsigned int unPageIndex)
+	CDestination* CDocument::CreateDestination(CPage* pPage)
 	{
-		if (unPageIndex >= m_pPageTree->GetCount())
-			return NULL;
-
-		CPage* pPage = m_pPageTree->GetPage(unPageIndex);
 		if (pPage)
 			return new CDestination(pPage, m_pXref);
 		return NULL;

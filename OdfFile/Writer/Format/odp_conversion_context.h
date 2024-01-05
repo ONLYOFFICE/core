@@ -59,6 +59,7 @@ public:
 	virtual void end_document();
 
 	void start_slide();
+	void hide_slide();
 	void end_slide();
 
 	size_t get_pages_count();

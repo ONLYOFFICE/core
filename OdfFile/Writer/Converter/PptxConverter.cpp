@@ -1412,6 +1412,9 @@ void PptxConverter::convert_slides()
 		convert			(slide->transition.GetPointer());
 		convert			(slide->timing.GetPointer());
 
+		if (!bShow)
+			odp_context->hide_slide();
+
 
 		odp_context->end_slide();
 	}

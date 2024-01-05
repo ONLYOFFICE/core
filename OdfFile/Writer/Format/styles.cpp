@@ -109,6 +109,13 @@ text_format_properties* style_content::get_text_properties()
 		return &(style_text->content_);
 	return NULL;
 }
+drawing_page_properties* style_content::get_drawing_page_properties()
+{
+	style_drawing_page_properties* style_page  = dynamic_cast<style_drawing_page_properties*>(style_drawing_page_properties_.get());
+	if (style_page)
+		return &(style_page->content_);
+	return NULL;
+}
 graphic_format_properties * style_content::add_get_style_graphic_properties()
 {
 	if (!style_graphic_properties_)

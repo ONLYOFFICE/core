@@ -83,6 +83,8 @@ public:
 		void set_page_id		(int id);
 		void set_page_style		(office_element_ptr & _style);
 		void set_page_duration	(int id);
+
+		void hide_page();
 		
 		void set_master_page(std::wstring name);
 		void set_layout_page(std::wstring name);

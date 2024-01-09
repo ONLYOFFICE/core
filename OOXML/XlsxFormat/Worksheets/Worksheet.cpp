@@ -49,7 +49,7 @@
 #include "../../XlsbFormat/Biff12_unions/HLINKS.h"
 #include "../../XlsbFormat/Biff12_unions/MERGECELLS.h"
 
-#include "../../binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
+#include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 
 namespace OOX
 {

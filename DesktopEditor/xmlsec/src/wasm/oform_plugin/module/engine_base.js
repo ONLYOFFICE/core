@@ -177,13 +177,13 @@
 		let saltPtr = salt.toUtf8Pointer();
 		let passwordNewPtr = passwordNew.toUtf8Pointer();
 		
-		let privateKeyEnc = Module["_Crypto_ChangePassword"](privateKeyPtr.ptr, saltPtr.ptr, version, passwordNewPtr.ptr);
+		let privateKeyEncPtr = Module["_Crypto_ChangePassword"](privateKeyPtr.ptr, saltPtr.ptr, version, passwordNewPtr.ptr);
 
 		privateKeyPtr.free();
 		saltPtr.free();
 		passwordNewPtr.free();
 
-		return pointerToString(privateKeyEnc, true);
+		return pointerToString(privateKeyEncPtr, true);
 	};
 
 	CryptoJS.prototype.setMasterPassword = function(password)

@@ -214,7 +214,7 @@
 		let dataPtr = Module["_malloc"](data.length);
 		Module["HEAP8"].set(dataPtr, data);
 		
-		let buffer = Module["_AES_Decode"](version, saltPtr.ptr, dataPtr, data.length);
+		let buffer = Module["_AES_Decode"](version, 0, saltPtr.ptr, dataPtr, data.length);
 		
 		saltPtr.free();
 		Module["_free"](dataPtr);
@@ -228,6 +228,18 @@
 
 		Module["_MemoryBlockDestroy"](buffer);
 		return result;
+	};
+	CryptoJS.prototype.aesDecryptString = function(version, salt, data) 
+	{
+		let saltPtr = salt.toUtf8Pointer();
+		let dataPtr = data.toUtf8Pointer();
+		
+		let result = Module["_AES_Decode"](version, 0, saltPtr.ptr, dataPtr.ptr, dataPtr.length);
+		
+		saltPtr.free();
+		dataPtr.free();
+
+		return pointerToString(result, true);
 	};
 	CryptoJS.prototype.aesDecryptBase64 = function(version, salt, data) 
 	{
@@ -248,7 +260,7 @@
 		let dataPtr = Module["_malloc"](data.length);
 		Module["HEAP8"].set(data, dataPtr);
 		
-		let buffer = Module["_AES_Encode"](version, saltPtr.ptr, dataPtr, data.length);
+		let buffer = Module["_AES_Encode"](version, 0, saltPtr.ptr, dataPtr, data.length);
 		
 		saltPtr.free();
 		Module["_free"](dataPtr);
@@ -263,12 +275,24 @@
 		Module["_MemoryBlockDestroy"](buffer);
 		return result;
 	};
+	CryptoJS.prototype.aesEncryptString = function(version, salt, data) 
+	{
+		let saltPtr = salt.toUtf8Pointer();
+		let dataPtr = data.toUtf8Pointer();
+		
+		let result = Module["_AES_Encode"](version, 0, saltPtr.ptr, dataPtr.ptr, dataPtr.length);
+		
+		saltPtr.free();
+		dataPtr.free();
+
+		return pointerToString(result, true);
+	};
 	CryptoJS.prototype.aesEncryptBase64 = function(version, salt, data) 
 	{
 		let saltPtr = salt.toUtf8Pointer();
 		let dataPtr = data.toUtf8Pointer();
 		
-		let result = Module["_AES_EncodeBase64"](version, saltPtr, dataPtr);
+		let result = Module["_AES_EncodeBase64"](version, 0, saltPtr, dataPtr);
 		
 		saltPtr.free();
 		dataPtr.free();

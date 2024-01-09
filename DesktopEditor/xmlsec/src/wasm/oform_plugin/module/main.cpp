@@ -234,12 +234,13 @@ WASM_EXPORT void SetMasterPassword(const char* password)
 }
 
 // AES - decode/encode with master password (g_master_password)
-WASM_EXPORT NSOpenSSL::CMemoryData* AES_Decode(int version, const char* salt, const unsigned char* data, const int& data_len)
+WASM_EXPORT NSOpenSSL::CMemoryData* AES_Decode(int version, const char* password, const char* salt, const unsigned char* data, const int& data_len)
 {
-	if (g_master_password.empty())
+	std::string pass = (NULL == password) ? g_master_password : std::string(password);
+	if (pass.empty())
 		return NULL;
 
-	unsigned char* key = NSOpenSSL::PBKDF2_desktop_GCM(g_master_password, std::string(salt));
+	unsigned char* key = NSOpenSSL::PBKDF2_desktop_GCM(pass, std::string(salt));
 	if (!key)
 		return NULL;
 
@@ -255,14 +256,14 @@ WASM_EXPORT NSOpenSSL::CMemoryData* AES_Decode(int version, const char* salt, co
 	return buffer;
 }
 
-WASM_EXPORT char* AES_DecodeBase64(int version, const char* salt, const char* data_base64)
+WASM_EXPORT char* AES_DecodeBase64(int version, const char* password, const char* salt, const char* data_base64)
 {
 	unsigned char* data = NULL;
 	int data_len = 0;
 	if (!NSFile::CBase64Converter::Decode(data_base64, (int)strlen(data_base64), data, data_len))
 		return NULL;
 
-	NSOpenSSL::CMemoryData* buffer = AES_Decode(version, salt, data, data_len);
+	NSOpenSSL::CMemoryData* buffer = AES_Decode(version, password, salt, data, data_len);
 	if (!buffer)
 		return NULL;
 
@@ -271,12 +272,13 @@ WASM_EXPORT char* AES_DecodeBase64(int version, const char* salt, const char* da
 	return MemoryBlockToBase64(buffer, true);
 }
 
-WASM_EXPORT NSOpenSSL::CMemoryData* AES_Encode(int version, const char* salt, const unsigned char* data, const int& data_len)
+WASM_EXPORT NSOpenSSL::CMemoryData* AES_Encode(int version, const char* password, const char* salt, const unsigned char* data, const int& data_len)
 {
-	if (g_master_password.empty())
+	std::string pass = (NULL == password) ? g_master_password : std::string(password);
+	if (pass.empty())
 		return NULL;
 
-	unsigned char* key = NSOpenSSL::PBKDF2_desktop_GCM(g_master_password, std::string(salt));
+	unsigned char* key = NSOpenSSL::PBKDF2_desktop_GCM(pass, std::string(salt));
 	if (!key)
 		return NULL;
 
@@ -292,14 +294,14 @@ WASM_EXPORT NSOpenSSL::CMemoryData* AES_Encode(int version, const char* salt, co
 	return buffer;
 }
 
-WASM_EXPORT char* AES_EncodeBase64(int version, const char* salt, const char* data_base64)
+WASM_EXPORT char* AES_EncodeBase64(int version, const char* password, const char* salt, const char* data_base64)
 {
 	unsigned char* data = NULL;
 	int data_len = 0;
 	if (!NSFile::CBase64Converter::Decode(data_base64, (int)strlen(data_base64), data, data_len))
 		return NULL;
 
-	NSOpenSSL::CMemoryData* buffer = AES_Encode(version, salt, data, data_len);
+	NSOpenSSL::CMemoryData* buffer = AES_Encode(version, password, salt, data, data_len);
 	if (!buffer)
 		return NULL;
 
@@ -319,7 +321,7 @@ WASM_EXPORT NSOpenSSL::CMemoryData* DecryptWithPrivateKey(const int version, con
 										  encoded_private_key, encoded_private_key_len))
 		return NULL;
 
-	NSOpenSSL::CMemoryData* buffer = AES_Decode(NULL, salt, encoded_private_key, encoded_private_key_len);
+	NSOpenSSL::CMemoryData* buffer = AES_Decode(NULL, salt, NULL, encoded_private_key, encoded_private_key_len);
 	delete [] encoded_private_key;
 
 	if (!buffer)
@@ -421,7 +423,7 @@ WASM_EXPORT char* Crypto_Sign(const char* encoded_private_key_base64, const char
 										  encoded_private_key, encoded_private_key_len))
 		return NULL;
 
-	NSOpenSSL::CMemoryData* buffer = AES_Decode(version, salt, encoded_private_key, encoded_private_key_len);
+	NSOpenSSL::CMemoryData* buffer = AES_Decode(version, salt, NULL, encoded_private_key, encoded_private_key_len);
 	delete [] encoded_private_key;
 
 	if (!buffer)
@@ -447,7 +449,7 @@ WASM_EXPORT char* Crypto_ChangePassword(const char* encoded_private_key_base64, 
 	if (!NSFile::CBase64Converter::Decode(encoded_private_key_base64, (int)strlen(encoded_private_key_base64), private_key_enc, private_key_enc_len))
 		return NULL;
 
-	NSOpenSSL::CMemoryData* buffer = AES_Decode(NULL, salt, private_key_enc, private_key_enc_len);
+	NSOpenSSL::CMemoryData* buffer = AES_Decode(version, NULL, salt, private_key_enc, private_key_enc_len);
 	delete [] private_key_enc;
 
 	if (!buffer)
@@ -456,7 +458,7 @@ WASM_EXPORT char* Crypto_ChangePassword(const char* encoded_private_key_base64, 
 	std::string sOldPassword = g_master_password;
 	g_master_password = std::string(password_new);
 
-	NSOpenSSL::CMemoryData* bufferResult = AES_Encode(version, salt, buffer->Data, (int)buffer->Size);
+	NSOpenSSL::CMemoryData* bufferResult = AES_Encode(version, NULL, salt, buffer->Data, (int)buffer->Size);
 	buffer->Free();
 	delete buffer;
 

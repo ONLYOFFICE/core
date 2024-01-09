@@ -152,13 +152,13 @@ namespace OOX
 				if (m_oName.IsInit())
 					ptr->rangeProtectionTitleSDRel.rgchTitle = m_oName.get();
 
-				byte * temp = ptr->ipdPasswordData.rgbHash.rgbData.data();
+				BYTE * temp = ptr->ipdPasswordData.rgbHash.rgbData.data();
 				auto tempSize = 0;
 				NSFile::CBase64Converter::CBase64Converter::Decode(std::string{m_oHashValue.get().begin(),
 					m_oHashValue.get().end()}.c_str(), m_oHashValue.get().size(), temp, tempSize);
 				ptr->ipdPasswordData.rgbHash.cbLength = tempSize;
 
-				byte * temp2 = ptr->ipdPasswordData.rgbSalt.rgbData.data();
+				BYTE* temp2 = ptr->ipdPasswordData.rgbSalt.rgbData.data();
 				auto tempSize2 = 0;
 				NSFile::CBase64Converter::Decode(std::string{m_oSaltValue.get().begin(),
 					m_oSaltValue.get().end()}.c_str(), m_oSaltValue.get().size(), temp2, tempSize2);
@@ -2632,7 +2632,7 @@ namespace OOX
 					ptr->dwSpinCount = m_oSpinCount->GetValue();
 				if(m_oHashValue.IsInit())
 				{
-				byte * temp = ptr->ipdPasswordData.rgbHash.rgbData.data();
+				BYTE * temp = ptr->ipdPasswordData.rgbHash.rgbData.data();
 				auto tempSize = 0;
 				NSFile::CBase64Converter::CBase64Converter::Decode(std::string{m_oHashValue.get().begin(),
 					m_oHashValue.get().end()}.c_str(), m_oHashValue.get().size(), temp, tempSize);
@@ -2641,7 +2641,7 @@ namespace OOX
 
 				if(m_oSaltValue.IsInit())
 				{
-					byte * temp2 = ptr->ipdPasswordData.rgbSalt.rgbData.data();
+					BYTE * temp2 = ptr->ipdPasswordData.rgbSalt.rgbData.data();
 					auto tempSize2 = 0;
 					NSFile::CBase64Converter::Decode(std::string{m_oSaltValue.get().begin(),
 						m_oSaltValue.get().end()}.c_str(), m_oSaltValue.get().size(), temp2, tempSize2);
@@ -2732,7 +2732,7 @@ namespace OOX
 					
 				if(m_oHashValue.IsInit())
 				{
-					byte * temp = ptr->ipdPasswordData.rgbHash.rgbData.data();
+					BYTE * temp = ptr->ipdPasswordData.rgbHash.rgbData.data();
 					auto tempSize = 0;
 					NSFile::CBase64Converter::CBase64Converter::Decode(std::string{m_oHashValue.get().begin(),
 						m_oHashValue.get().end()}.c_str(), m_oHashValue.get().size(), temp, tempSize);
@@ -2741,7 +2741,7 @@ namespace OOX
 
 				if(m_oSaltValue.IsInit())
 				{
-					byte * temp2 = ptr->ipdPasswordData.rgbSalt.rgbData.data();
+					BYTE * temp2 = ptr->ipdPasswordData.rgbSalt.rgbData.data();
 					auto tempSize2 = 0;
 					NSFile::CBase64Converter::Decode(std::string{m_oSaltValue.get().begin(),
 						m_oSaltValue.get().end()}.c_str(), m_oSaltValue.get().size(), temp2, tempSize2);

@@ -109,9 +109,9 @@ namespace OOX
             else
                 ptr->fCheckCompat = false;
 			if(m_oCodeName.IsInit())
-			ptr->strName.value = m_oCodeName->GetValue();
+				ptr->strName.value = m_oCodeName->GetValue();
 			else
-			ptr->strName.value = false;
+				ptr->strName.value = false;
 			if(m_oDate1904.IsInit())
                 ptr->f1904 = m_oDate1904->GetValue();
             else

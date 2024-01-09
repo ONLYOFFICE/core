@@ -72,27 +72,19 @@ public:
 	}
 
 public:
-	std::string Sign(unsigned char* pData, unsigned int nSize)
+
+	virtual bool Sign(unsigned char* pData, unsigned int nSize, unsigned char*& pDataDst, unsigned int& nSizeDst)
 	{
 		NSOpenSSL::CMemoryData data = NSOpenSSL::Sign(pData, (int)nSize, m_pem_key);
 		if (!data.Data)
-			return "";
+			return false;
 
-		char* pBase64 = NULL;
-		int nBase64Len = 0;
-		NSFile::CBase64Converter::Encode(data.Data, (int)data.Size, pBase64, nBase64Len, NSBase64::B64_BASE64_FLAG_NONE);
+		nSizeDst = (unsigned int)data.Size;
+		pDataDst = new BYTE[nSizeDst];
+		memcpy(pDataDst, data.Data, nSizeDst);
 
 		data.Free();
-
-		std::string sReturn(pBase64, nBase64Len);
-		delete[] pBase64;
-
-		return sReturn;
-	}
-
-	virtual std::string Sign(const std::string& sXml)
-	{
-		return Sign((BYTE*)sXml.c_str(), (unsigned int)sXml.length());
+		return true;
 	}
 
 	virtual bool SignPKCS7(unsigned char* pData, unsigned int nSize,

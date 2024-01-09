@@ -189,9 +189,125 @@ WASM_EXPORT void Crypto_DestroyCertificate(void* cert)
 
 #endif
 
+WASM_EXPORT void MemoryBlockDestroy(NSOpenSSL::CMemoryData* block)
+{
+	delete block;
+}
+WASM_EXPORT unsigned char* MemoryBlockGetData(NSOpenSSL::CMemoryData* block)
+{
+	return block->Data;
+}
+WASM_EXPORT int MemoryBlockGetSize(NSOpenSSL::CMemoryData* block)
+{
+	return (int)block->Size;
+}
+WASM_EXPORT char* MemoryBlockToBase64(NSOpenSSL::CMemoryData* block)
+{
+	int nLenDst = NSBase64::Base64EncodeGetRequiredLength((int)block->Size, NSBase64::B64_BASE64_FLAG_NOCRLF);
+	unsigned char* pDataDst = NSOpenSSL::openssl_alloc(nLenDst + 1);
+
+	if (FALSE == NSBase64::Base64Encode(block->Data, (int)block->Size, pDataDst, &nLenDst, NSBase64::B64_BASE64_FLAG_NOCRLF))
+	{
+		NSOpenSSL::openssl_free(pDataDst);
+		return NULL;
+	}
+
+	pDataDst[nLenDst] = 0;
+	return (char*)pDataDst;
+}
+
+std::string g_master_password = "";
+
+// methods for private rooms
+WASM_EXPORT void SetMasterPassword(const char* password)
+{
+	g_master_password = std::string(password);
+}
+
+// AES
+WASM_EXPORT NSOpenSSL::CMemoryData* AES_Decode(char* alg, const char* salt, const unsigned char* data, const int& data_len)
+{
+	if (g_master_password.empty())
+		return NULL;
+
+	unsigned char* key = NSOpenSSL::PBKDF2_desktop_GCM(g_master_password, std::string(salt));
+	if (!key)
+		return NULL;
+
+	NSOpenSSL::CMemoryData* buffer = new NSOpenSSL::CMemoryData();
+	NSOpenSSL::AES_Decrypt_desktop_GCM(key, data, data_len, *buffer);
+	NSOpenSSL::openssl_free(key);
+
+	if (!buffer->Data)
+	{
+		delete buffer;
+		buffer = NULL;
+	}
+	return buffer;
+}
+
+WASM_EXPORT char* AES_DecodeBase64(char* alg, const char* salt, const char* data)
+{
+	unsigned char* pDataDst = NULL;
+	int nLenDst = 0;
+	if (!NSFile::CBase64Converter::Decode(data, (int)strlen(data), pDataDst, nLenDst))
+		return NULL;
+
+	NSOpenSSL::CMemoryData* buffer = AES_Decode(alg, salt, pDataDst, nLenDst);
+	if (!buffer)
+		return NULL;
+
+	delete [] pDataDst;
+
+	char* pResult = MemoryBlockToBase64(buffer);
+	delete buffer;
+
+	return pResult;
+}
+
+WASM_EXPORT NSOpenSSL::CMemoryData* AES_Encode(char* alg, const char* salt, const unsigned char* data, const int& data_len)
+{
+	if (g_master_password.empty())
+		return NULL;
+
+	unsigned char* key = NSOpenSSL::PBKDF2_desktop_GCM(g_master_password, std::string(salt));
+	if (!key)
+		return NULL;
+
+	NSOpenSSL::CMemoryData* buffer = new NSOpenSSL::CMemoryData();
+	NSOpenSSL::AES_Encrypt_desktop_GCM(key, data, data_len, *buffer);
+	NSOpenSSL::openssl_free(key);
+
+	if (!buffer->Data)
+	{
+		delete buffer;
+		buffer = NULL;
+	}
+	return buffer;
+}
+
+WASM_EXPORT char* AES_EncodeBase64(char* alg, const char* salt, const char* data)
+{
+	unsigned char* pDataDst = NULL;
+	int nLenDst = 0;
+	if (!NSFile::CBase64Converter::Decode(data, (int)strlen(data), pDataDst, nLenDst))
+		return NULL;
+
+	NSOpenSSL::CMemoryData* buffer = AES_Encode(alg, salt, pDataDst, nLenDst);
+	if (!buffer)
+		return NULL;
+
+	delete [] pDataDst;
+
+	char* pResult = MemoryBlockToBase64(buffer);
+	delete buffer;
+
+	return pResult;
+}
+
 // methods for oform signatures
 // создаем ключи, приватный шифруем паролем, результат - две base64 строки
-WASM_EXPORT char* Crypto_CreateKeys(const char* alg, const char* password, const char* salt)
+WASM_EXPORT char* Crypto_CreateKeys(const char* alg, const char* salt)
 {
 	std::string publicKey;
 	std::string privateKey;
@@ -200,7 +316,7 @@ WASM_EXPORT char* Crypto_CreateKeys(const char* alg, const char* password, const
 		return NULL;
 
 	std::string privateKeyEnc;
-	NSOpenSSL::AES_Encrypt_desktop_GCM(password, privateKey, privateKeyEnc, salt);
+	NSOpenSSL::AES_Encrypt_desktop_GCM(g_master_password, privateKey, privateKeyEnc, salt);
 
 	char* pDataPublicBase64 = NULL;
 	int nDataPublicBase64Len = 0;
@@ -219,9 +335,9 @@ WASM_EXPORT char* Crypto_CreateKeys(const char* alg, const char* password, const
 	return result;
 }
 
-WASM_EXPORT char* Crypto_Sign(const char* privateKeyEnc, const char* password, const char* salt, const char* data, int dataLen)
+WASM_EXPORT char* Crypto_Sign(const char* privateKeyEnc, const char* salt, const char* data, int dataLen)
 {
-	std::string sPrivateKey = NSInternal::DecodePrivateKey(std::string(privateKeyEnc), std::string(password), std::string(salt));
+	std::string sPrivateKey = NSInternal::DecodePrivateKey(std::string(privateKeyEnc), g_master_password, std::string(salt));
 	if (sPrivateKey.empty())
 		return NULL;
 
@@ -278,7 +394,9 @@ int main()
 		std::string sPassword = "qwerty";
 		std::string sPasswordNew = "qwerty2";
 
-		char* pGeneratedKeys = Crypto_CreateKeys("ed25519", sPassword.c_str(), sSalt.c_str());
+		SetMasterPassword(sPassword.c_str());
+
+		char* pGeneratedKeys = Crypto_CreateKeys("ed25519", sSalt.c_str());
 		if (NULL == pGeneratedKeys)
 			return 1;
 
@@ -298,7 +416,7 @@ int main()
 
 		std::string sSignData = "hello world!";
 
-		char* pSignData = Crypto_Sign(sPrivateKeyEnc.c_str(), sPassword.c_str(), sSalt.c_str(), sSignData.c_str(), (int)sSignData.length());
+		char* pSignData = Crypto_Sign(sPrivateKeyEnc.c_str(), sSalt.c_str(), sSignData.c_str(), (int)sSignData.length());
 		std::string sSignature(pSignData);
 
 		Crypto_Free(pSignData);

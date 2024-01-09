@@ -2165,27 +2165,27 @@ void PptxConverter::convert(PPTX::Logic::TableProperties *oox_table_pr)
 			if (!table_style.default_.empty())
 				odp_context->slide_context()->table_context()->set_default_cell_properties(table_style.default_);
 			
-			if (oox_table_pr->FirstRow.is_init() && !table_style.first_row_.empty())
+			if (oox_table_pr->FirstRow.get_value_or(false) && !table_style.first_row_.empty())
 			{
 				odp_context->slide_context()->table_context()->set_first_row_cell_properties(table_style.first_row_);
 			}
-			if (oox_table_pr->FirstCol.is_init() && !table_style.first_col_.empty())
+			if (oox_table_pr->FirstCol.get_value_or(false) && !table_style.first_col_.empty())
 			{
 				odp_context->slide_context()->table_context()->set_first_col_cell_properties(table_style.first_col_);
 			}
-			if (oox_table_pr->BandRow.is_init() && !table_style.band_row_.empty())
+			if (oox_table_pr->BandRow.get_value_or(false) && !table_style.band_row_.empty())
 			{
 				odp_context->slide_context()->table_context()->set_band_row_cell_properties(table_style.band_row_);
 			}
-			if (oox_table_pr->BandCol.is_init() && !table_style.band_col_.empty())
+			if (oox_table_pr->BandCol.get_value_or(false) && !table_style.band_col_.empty())
 			{
 				odp_context->slide_context()->table_context()->set_band_col_cell_properties(table_style.band_col_);
 			}
-			if (oox_table_pr->LastRow.is_init() && !table_style.last_row_.empty())
+			if (oox_table_pr->LastRow.get_value_or(false) && !table_style.last_row_.empty())
 			{
 				odp_context->slide_context()->table_context()->set_last_row_cell_properties(table_style.last_row_);
 			}
-			if (oox_table_pr->LastCol.is_init() && !table_style.last_col_.empty())
+			if (oox_table_pr->LastCol.get_value_or(false) && !table_style.last_col_.empty())
 			{
 				odp_context->slide_context()->table_context()->set_last_col_cell_properties(table_style.last_col_);
 			}

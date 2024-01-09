@@ -8,7 +8,7 @@
 
     function toBase64(buf)
 	{
-		if(typeof buf === "string") 
+		if (typeof buf === "string")
 		{
 			let old = buf;
 			buf = [];
@@ -80,31 +80,47 @@
 		return byteArray;
 	}
 
+	function pointerToString(ptr, isDestroy)
+	{
+		if (0 === ptr)
+			return "";
+
+		let end = ptr;
+		let heap = Module["HEAP8"];
+		while (heap[end] !== 0)
+			++end;
+
+		let res = "".fromUtf8(heap, ptr, end - ptr);
+
+		if (isDestroy === true)
+			Module["_Crypto_Free"](ptr);
+
+		return res;
+	}
+
     function CryptoJS()
 	{
 		this.isModuleInit = false;
 	};
+
 	CryptoJS.prototype.onLoad = function()
 	{
 		this.isModuleInit = true;
 	};
 
-	CryptoJS.prototype.generateKeys = function(password, salt)
+	CryptoJS.prototype.generateKeys = function(alg)
 	{
 		if (!this.isModuleInit)
 			return null;
 
-		if (!salt)
-			salt = toBase64(random(32));
+		let salt = this.createSalt();
 
-		let algPtr = "ed25519".toUtf8Pointer();
-		let passwordPtr = password.toUtf8Pointer();
+		let algPtr  = alg.toUtf8Pointer();
 		let saltPtr = salt.toUtf8Pointer();
 
-		let keys = Module["_Crypto_CreateKeys"](algPtr.ptr, passwordPtr.ptr, saltPtr.ptr);
+		let keys = Module["_Crypto_CreateKeys"](algPtr.ptr, saltPtr.ptr);
 
 		algPtr.free();
-		passwordPtr.free();
 		saltPtr.free();
 
 		if (keys === 0)
@@ -127,81 +143,202 @@
 		Module["_Crypto_Free"](keys);
 
 		return {
-			"salt" : salt,
+			"salt"       : salt,
 			"privateKey" : privateKey,
-			"publicKey" : publicKey
+			"publicKey"  : publicKey
 		};
 	};
 
-	CryptoJS.prototype.sign = function(privateKey, password, salt, xml)
+	CryptoJS.prototype.sign = function(privateKeyEnc, salt, version, xml)
 	{
 		if (!this.isModuleInit)
 			return null;
 
-		let privateKeyPtr = privateKey.toUtf8Pointer();
-		let passwordPtr = password.toUtf8Pointer();
+		let privateKeyPtr = privateKeyEnc.toUtf8Pointer();
 		let saltPtr = salt.toUtf8Pointer();
 		let xmlPtr = xml.toUtf8Pointer();
 
-		let signData = Module["_Crypto_Sign"](privateKeyPtr.ptr, passwordPtr.ptr, saltPtr.ptr, 
-			xmlPtr.ptr, xmlPtr.length);
+		let signData = Module["_Crypto_Sign"](privateKeyPtr.ptr, saltPtr.ptr, 
+			version, xmlPtr.ptr, xmlPtr.length);
 
 		privateKeyPtr.free();
-		passwordPtr.free();
 		saltPtr.free();
 		xmlPtr.free();
 
-		if (signData === 0)
-			return null;
-
-		let heap = Module["HEAP8"];
-
-		let currentStart = signData;
-		let currentEnd = currentStart;
-		while (heap[currentEnd] != 0)
-			currentEnd++;
-		
-		let signString = "".fromUtf8(heap, currentStart, currentEnd - currentStart);
-
-		Module["_Crypto_Free"](signData);
-		return signString;
+		return pointerToString(signData, true);
 	};
 
-	CryptoJS.prototype.changePassword = function(privateKey, passwordOld, passwordNew, salt)
+	CryptoJS.prototype.changePassword = function(privateKeyEnc, salt, version, passwordNew)
 	{
 		if (!this.isModuleInit)
 			return null;
 
-		let privateKeyPtr = privateKey.toUtf8Pointer();
-		let passwordOldPtr = passwordOld.toUtf8Pointer();
-		let passwordNewPtr = passwordNew.toUtf8Pointer();
+		let privateKeyPtr = privateKeyEnc.toUtf8Pointer();
 		let saltPtr = salt.toUtf8Pointer();
-
-		let privateKeyEnc = Module["_Crypto_ChangePassword"](privateKeyPtr.ptr, 
-			passwordOldPtr.ptr, passwordNewPtr.ptr, saltPtr.ptr);
+		let passwordNewPtr = passwordNew.toUtf8Pointer();
+		
+		let privateKeyEnc = Module["_Crypto_ChangePassword"](privateKeyPtr.ptr, saltPtr.ptr, version, passwordNewPtr.ptr);
 
 		privateKeyPtr.free();
-		passwordOldPtr.free();
+		saltPtr.free();
 		passwordNewPtr.free();
-		saltPtr.free();	
 
-		if (privateKeyEnc === 0)
-			return null;
+		return pointerToString(privateKeyEnc, true);
+	};
 
-		let heap = Module["HEAP8"];
+	CryptoJS.prototype.setMasterPassword = function(password)
+	{
+		let passwordPtr = password.toUtf8Pointer();
+		Module["_SetMasterPassword"](passwordPtr);
+		Module["_Crypto_Free"](passwordPtr);
+	};
 
-		let currentStart = privateKeyEnc;
-		let currentEnd = currentStart;
-		while (heap[currentEnd] != 0)
-			currentEnd++;
+	CryptoJS.prototype.createSalt = function()
+	{
+		return toBase64(random(32));
+	};
+
+	CryptoJS.prototype.generateSignKeys = function()
+	{
+		return this.generateKeys("ed25519");
+	};
+
+	CryptoJS.prototype.generateCryptKeys = function()
+	{
+		return this.generateKeys("x25519");
+	};
+
+	CryptoJS.prototype.aesDecrypt = function(version, salt, data) 
+	{
+		let saltPtr = salt.toUtf8Pointer();
+		let dataPtr = Module["_malloc"](data.length);
+		Module["HEAP8"].set(dataPtr, data);
 		
-		let privateKeyString = "".fromUtf8(heap, currentStart, currentEnd - currentStart);
+		let buffer = Module["_AES_Decode"](version, saltPtr.ptr, dataPtr, data.length);
+		
+		saltPtr.free();
+		Module["_free"](dataPtr);
 
-		Module["_Crypto_Free"](privateKeyEnc);
-		return privateKeyString;
+		if (!buffer)
+			return null;		
+
+		let result = new Uint8Array(Module["HEAPU8"].buffer, 
+			Module["_MemoryBlockGetData"](buffer), 
+			Module["_MemoryBlockGetSize"](buffer));
+
+		Module["_MemoryBlockDestroy"](buffer);
+		return result;
+	};
+	CryptoJS.prototype.aesDecryptBase64 = function(version, salt, data) 
+	{
+		let saltPtr = salt.toUtf8Pointer();
+		let dataPtr = data.toUtf8Pointer();
+		
+		let result = Module["_AES_DecodeBase64"](version, saltPtr.ptr, dataPtr.ptr);
+		
+		saltPtr.free();
+		dataPtr.free();
+
+		return pointerToString(result, true);
+	};
+
+	CryptoJS.prototype.aesEncrypt = function(version, salt, data) 
+	{
+		let saltPtr = salt.toUtf8Pointer();
+		let dataPtr = Module["_malloc"](data.length);
+		Module["HEAP8"].set(data, dataPtr);
+		
+		let buffer = Module["_AES_Encode"](version, saltPtr.ptr, dataPtr, data.length);
+		
+		saltPtr.free();
+		Module["_free"](dataPtr);
+
+		if (!buffer)
+			return null;		
+
+		let result = new Uint8Array(Module["HEAPU8"].buffer, 
+			Module["_MemoryBlockGetData"](buffer), 
+			Module["_MemoryBlockGetSize"](buffer));
+
+		Module["_MemoryBlockDestroy"](buffer);
+		return result;
+	};
+	CryptoJS.prototype.aesEncryptBase64 = function(version, salt, data) 
+	{
+		let saltPtr = salt.toUtf8Pointer();
+		let dataPtr = data.toUtf8Pointer();
+		
+		let result = Module["_AES_EncodeBase64"](version, saltPtr, dataPtr);
+		
+		saltPtr.free();
+		dataPtr.free();
+
+		return pointerToString(result, true);
+	};
+
+	// Crypt/Decrypt 
+	CryptoJS.prototype.decryptWithPrivateKey = function(version, privateKeyEnc, salt, data)
+	{
+		let keyEncPtr = privateKeyEnc.toUtf8Pointer();
+		let saltPtr = salt.toUtf8Pointer();
+		let buffer = null;
+
+		if (typeof data === "string")
+		{
+			let dataPtr = data.toUtf8Pointer();
+			buffer = Module["_DecryptWithPrivateKeyBase64"](version, keyEncPtr.ptr, saltPtr.ptr, data.ptr, data.length);
+			dataPtr.free();
+		}
+		else
+		{
+			let dataPtr = Module["_malloc"](data.length);
+			Module["HEAP8"].set(data, dataPtr);
+			buffer = Module["_DecryptWithPrivateKey"](version, keyEncPtr.ptr, saltPtr.ptr, dataPtr, data.length);
+			Module["_free"](dataPtr);
+		}
+
+		keyEncPtr.free();
+		return pointerToString(buffer, true);
+	};
+
+	CryptoJS.prototype.cryptWithPublicKey = function(version, publicKey, data)
+	{
+		let keyPtr = publicKey.toUtf8Pointer();
+		let buffer = null;
+
+		if (typeof data === "string")
+		{
+			let dataPtr = data.toUtf8Pointer();
+			buffer = Module["_EncryptWithPublicKeyBase64"](version, keyPtr.ptr, data.ptr, data.length);
+			dataPtr.free();
+		}
+		else
+		{
+			let dataPtr = Module["_malloc"](data.length);
+			Module["HEAP8"].set(data, dataPtr);
+			buffer = Module["_EncryptWithPublicKey"](version, keyPtr.ptr, dataPtr, data.length);
+			Module["_free"](dataPtr);
+		}
+
+		keyPtr.free();
+		return pointerToString(buffer, true);
 	};
 
 	window.cryptoJS = new CryptoJS();
+
+	window.CryptoJS = {
+		
+		Version : {
+			"1" : 0,
+			"Error" : 1
+		},
+
+		Algorithm : {
+			ED25519 : "ed25519",
+			X25519  : "x25519",
+		}
+
+	};
 
     //module
 

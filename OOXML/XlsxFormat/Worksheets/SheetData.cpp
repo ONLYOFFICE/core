@@ -1825,8 +1825,9 @@ namespace OOX
 					{
 						if(m_oValue->m_sText.size() < 17)
 						{
-							double tempVal = std::stod(m_oValue->m_sText);
-							if(!isnan(tempVal))
+							wchar_t *tail;
+							double tempVal = std::wcstod(m_oValue->m_sText.c_str(), &tail);
+                            if(*tail == L'\0')
 							{
 								m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
 								isReal = true;
@@ -1834,8 +1835,9 @@ namespace OOX
 						}
 						else
 						{
-							long double tempVal = std::stold(m_oValue->m_sText);
-							if(!isnan(tempVal))
+							wchar_t *tail;
+							long double tempVal = std::wcstold(m_oValue->m_sText.c_str(), &tail);
+							if(*tail == L'\0')
 								if(tempVal <= DBL_MAX)
 								{
 									m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
@@ -1845,13 +1847,14 @@ namespace OOX
 					}
 					else if((m_oValue->m_sText.find(L"E") == std::string::npos || m_oValue->m_sText.find(L"E") == m_oValue->m_sText.rfind(L"E")))
 					{
-						long double tempVal = std::stold(m_oValue->m_sText);
-							if(!isnan(tempVal))
-								if(tempVal <= DBL_MAX)
-								{
-									m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
-									isReal = true;
-								}
+						wchar_t *tail;
+						long double tempVal = std::wcstold(m_oValue->m_sText.c_str(), &tail);
+						if(*tail == L'\0')
+							if(tempVal <= DBL_MAX)
+							{
+								m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+								isReal = true;
+							}
 					}
 					
 				}

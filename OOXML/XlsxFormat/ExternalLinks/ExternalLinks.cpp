@@ -65,7 +65,7 @@
 #include "../../XlsbFormat/Biff12_records/SupName.h"
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalWorkbookInfo.h"
-#include "../../binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
+#include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 #include <string>
 
 namespace OOX

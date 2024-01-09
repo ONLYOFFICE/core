@@ -38,7 +38,7 @@
 
 #include "../../DocxFormat/Drawing/DrawingExt.h"
 
-#include "../../binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
+#include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 
 namespace OOX
 {

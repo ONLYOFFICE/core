@@ -59,7 +59,7 @@
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
 
-#include "../../binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
+#include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 namespace OOX
 {
 namespace Spreadsheet

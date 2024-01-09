@@ -1796,44 +1796,90 @@ namespace OOX
 			XLSB::SHRFMLACELL* pSHRFMLACELL = nullptr;
 			BiffRecord* pSource = nullptr;
 			XLSB::Cell* oCell;
+			bool isReal = false;
 
 			if(!m_oType.IsInit())
 			{
 				m_oType.Init();
-				m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+				m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeStr);
+				if(m_oValue.IsInit())
+				{
+					if(m_oValue->m_sText == L"TRUE" || m_oValue->m_sText == L"FALSE")
+						m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeBool);
+					else if(std::all_of(m_oValue->m_sText.begin(), m_oValue->m_sText.end(), [](const char c) { return std::isdigit(c); }) && m_oValue->m_sText.size() <= 10)
+					{
+						if(m_oValue->m_sText.size() < 10)
+						{
+							m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+						}
+						else if(m_oValue->m_sText.size() == 10)
+						{
+							_INT64 tempVal = std::stoll(m_oValue->m_sText);
+							if(tempVal < MAXINT32 && tempVal > MININT32)
+								m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+						}
+					}
+					
+					if((m_oValue->m_sText.find(L".") == std::string::npos || m_oValue->m_sText.find(L".") == m_oValue->m_sText.rfind(L".")) 
+						&& m_oValue->m_sText.size() <=17)
+					{
+						if(m_oValue->m_sText.size() < 17)
+						{
+							double tempVal = std::stod(m_oValue->m_sText);
+							if(!isnan(tempVal))
+							{
+								m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+								isReal = true;
+							}
+						}
+						else
+						{
+							long double tempVal = std::stold(m_oValue->m_sText);
+							if(!isnan(tempVal))
+								if(tempVal <= DBL_MAX)
+								{
+									m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+									isReal = true;
+								}
+						}
+					}
+					else if((m_oValue->m_sText.find(L"E") == std::string::npos || m_oValue->m_sText.find(L"E") == m_oValue->m_sText.rfind(L"E")))
+					{
+						long double tempVal = std::stold(m_oValue->m_sText);
+							if(!isnan(tempVal))
+								if(tempVal <= DBL_MAX)
+								{
+									m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+									isReal = true;
+								}
+					}
+					
+				}
 			}
 			switch (m_oType->GetValue())
 			{
 				case SimpleTypes::Spreadsheet::celltypeNumber:
 					{
-						if(m_oValue.IsInit())
+						if(!isReal)
 						{
 							auto pCellRk = new(XLSB::CellRk);
-							if( m_oValue->m_sText.find('.') == std::string::npos)
-							{
-								pCellRk->value.fInt = 1;
-								pCellRk->value.fX100 = 0;
-								pCellRk->value.num = std::stoi(m_oValue->m_sText);
-							}
-							else
-							{
-								pCellRk->value.fInt = 0;
-								pCellRk->value.fX100 = 1;
-								pCellRk->value.num = std::stod(m_oValue->m_sText) * 100;
-							}
+							pCellRk->value.fInt = 1;
+							pCellRk->value.fX100 = 0;
+							pCellRk->value.num = std::stoi(m_oValue->m_sText);
+							
+							
 							oCell = &pCellRk->cell;
 							pSource = pCellRk;
 						}
-						else
+						else if(isReal)
 						{
-							auto pCellblank = new(XLSB::CellBlank);
-							oCell = &pCellblank->cell;
-                            oCell->fPhShow = false;
-							pSource = pCellblank;
+							auto pCellReal = new(XLSB::CellReal);
+							
+							pCellReal->value.data.value = std::stod(m_oValue->m_sText);
+							
+							oCell = &pCellReal->cell;
+							pSource = pCellReal;
 						}
-						
-						
-						
 					}
 					break;
 				case SimpleTypes::Spreadsheet::celltypeError:
@@ -1987,23 +2033,33 @@ namespace OOX
 				case SimpleTypes::Spreadsheet::celltypeInlineStr:
 				case SimpleTypes::Spreadsheet::celltypeStr:
 					{
-						if(m_oFormula.IsInit())
+						if(m_oValue.IsInit())
 						{
-							auto str(new XLSB::FmlaString);
-							if(m_oValue.IsInit())
-								str->value = m_oValue->m_sText;
-							oCell = &str->cell;
+							if(m_oFormula.IsInit())
+							{
+								auto str(new XLSB::FmlaString);
+								if(m_oValue.IsInit())
+									str->value = m_oValue->m_sText;
+								oCell = &str->cell;
 
-							pSource = str;
+								pSource = str;
 
+							}
+							else
+							{
+								auto str(new XLSB::CellSt);
+								if(m_oValue.IsInit())
+									str->value = m_oValue->m_sText;
+								oCell = &str->cell;
+								pSource = str;
+							}
 						}
 						else
 						{
-							auto str(new XLSB::CellSt);
-							if(m_oValue.IsInit())
-								str->value = m_oValue->m_sText;
-							oCell = &str->cell;
-							pSource = str;
+							auto pCellblank = new(XLSB::CellBlank);
+							oCell = &pCellblank->cell;
+                            oCell->fPhShow = false;
+							pSource = pCellblank;
 						}
 					}
 					break;

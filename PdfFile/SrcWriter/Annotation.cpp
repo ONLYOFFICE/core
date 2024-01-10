@@ -1091,6 +1091,7 @@ namespace PdfWriter
 		m_nI  = -1;
 		m_nRI = -1;
 		m_nIX = -1;
+		m_nTP = 0;
 		m_nScaleType = 0;
 		m_bRespectBorders = false;
 		m_bConstantProportions = true;
@@ -1138,6 +1139,7 @@ namespace PdfWriter
 		CheckMK();
 
 		m_pMK->Add("TP", (int)nTP);
+		m_nTP = nTP;
 	}
 	void CPushButtonWidget::SetSW(BYTE nSW)
 	{
@@ -1226,24 +1228,13 @@ namespace PdfWriter
 	}
 	void CPushButtonWidget::SetAP(CImageDict* pImage, const std::string& sAP, const std::string& sImgName, const std::string& sFrmName)
 	{
-		if (!m_oBorder.bHave)
-		{
-			m_oBorder.bHave = true;
-			m_oBorder.nType = 1;
-			m_oBorder.dWidth = 1;
-		}
-
-		if (!m_pAppearance)
-			m_pAppearance = new CAnnotAppearance(m_pXref, this);
+		m_pAppearance = new CAnnotAppearance(m_pXref, this);
 		if (!m_pAppearance)
 			return;
 		Add("AP", m_pAppearance);
 
 		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
-
-		std::string sDA = "0.909 0.941 0.992 rg";
-		Add("DA", new CStringObject(sDA.c_str()));
 
 		CXObject* pForm = NULL;
 

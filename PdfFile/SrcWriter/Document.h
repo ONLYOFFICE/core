@@ -194,7 +194,7 @@ namespace PdfWriter
 		CPage*            GetCurPage() { return m_pCurPage; }
 		void              SetCurPage(CPage* pPage) { m_pCurPage = pPage; }
 		bool              EditCO(const std::vector<int>& arrCO);
-		void              UpdateButtonImg(const std::vector<PdfWriter::CImageDict*>& arrButtonImg);
+		const std::map<int, CAnnotation*>& GetAnnots() { return m_mAnnotations; }
 	private:		  
 					  
 		char*             GetTTFontTag();

@@ -413,6 +413,7 @@ namespace PdfWriter
 		bool m_bRespectBorders;
 		bool m_bConstantProportions;
 		BYTE m_nScaleType;
+		BYTE m_nTP;
 		double m_dShiftX;
 		double m_dShiftY;
 		std::wstring m_wsCA;
@@ -440,6 +441,8 @@ namespace PdfWriter
 
 		void SetAP(CImageDict* pImage, const std::string& sAP, const std::string& sImgName, const std::string& sFrmName);
 		void SetCaptionAP(unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts);
+		const std::wstring& GetCA() { return m_wsCA; }
+		BYTE GetTP() { return m_nTP; }
 
 		int m_nI, m_nRI, m_nIX;
 	};

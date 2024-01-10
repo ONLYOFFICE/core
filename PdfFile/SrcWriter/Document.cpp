@@ -1411,35 +1411,6 @@ namespace PdfWriter
 
 		return true;
 	}
-	void CDocument::UpdateButtonImg(const std::vector<PdfWriter::CImageDict*>& arrButtonImg)
-	{
-		for (auto it = m_mAnnotations.begin(); it != m_mAnnotations.end(); it++)
-		{
-			CAnnotation* pAnnot = it->second;
-			if (pAnnot->GetAnnotationType() != AnnotWidget || ((CWidgetAnnotation*)pAnnot)->GetWidgetType() != WidgetPushbutton)
-				continue;
-
-			CPushButtonWidget* pPBWidget = (CPushButtonWidget*)pAnnot;
-			if (pPBWidget->m_nI >= 0)
-			{
-				std::string sFrmName = "FRM" + std::to_string(it->first) + "I";
-				std::string sImgName = "Img" + std::to_string(pPBWidget->m_nI);
-				pPBWidget->SetAP(arrButtonImg[pPBWidget->m_nI], "I", sImgName, sFrmName);
-			}
-			if (pPBWidget->m_nRI >= 0)
-			{
-				std::string sFrmName = "FRM" + std::to_string(it->first) + "RI";
-				std::string sImgName = "Img" + std::to_string(pPBWidget->m_nRI);
-				pPBWidget->SetAP(arrButtonImg[pPBWidget->m_nRI], "RI", sImgName, sFrmName);
-			}
-			if (pPBWidget->m_nIX >= 0)
-			{
-				std::string sFrmName = "FRM" + std::to_string(it->first) + "IX";
-				std::string sImgName = "Img" + std::to_string(pPBWidget->m_nIX);
-				pPBWidget->SetAP(arrButtonImg[pPBWidget->m_nIX], "IX", sImgName, sFrmName);
-			}
-		}
-	}
 	CPage* CDocument::AddPage(int nPageIndex)
 	{
 		if (!m_pPageTree)

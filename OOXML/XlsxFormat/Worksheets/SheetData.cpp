@@ -1797,6 +1797,8 @@ namespace OOX
 			BiffRecord* pSource = nullptr;
 			XLSB::Cell* oCell;
 			bool isReal = false;
+			_INT32 intCache = 0;
+			double realCache = 0;
 
 			if(!m_oType.IsInit())
 			{
@@ -1810,13 +1812,17 @@ namespace OOX
 					{
 						if(m_oValue->m_sText.size() < 10)
 						{
+							intCache = std::stoi(m_oValue->m_sText);
 							m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
 						}
 						else if(m_oValue->m_sText.size() == 10)
 						{
 							_INT64 tempVal = std::stoll(m_oValue->m_sText);
 							if(tempVal < MAXINT32 && tempVal > MININT32)
+							{	
+								intCache = tempVal;
 								m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+							}
 						}
 					}
 					
@@ -1831,6 +1837,7 @@ namespace OOX
 							{
 								m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
 								isReal = true;
+								realCache = tempVal;
 							}
 						}
 						else
@@ -1838,9 +1845,10 @@ namespace OOX
 							wchar_t *tail;
 							long double tempVal = std::wcstold(m_oValue->m_sText.c_str(), &tail);
 							if(*tail == L'\0')
-								if(tempVal <= DBL_MAX)
+								if(tempVal <= DBL_MAX && tempVal >= DBL_MIN)
 								{
 									m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+									realCache = tempVal;
 									isReal = true;
 								}
 						}
@@ -1853,6 +1861,7 @@ namespace OOX
 							if(tempVal <= DBL_MAX)
 							{
 								m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+								realCache = tempVal;
 								isReal = true;
 							}
 					}
@@ -1868,7 +1877,7 @@ namespace OOX
 							auto pCellRk = new(XLSB::CellRk);
 							pCellRk->value.fInt = 1;
 							pCellRk->value.fX100 = 0;
-							pCellRk->value.num = std::stoi(m_oValue->m_sText);
+							pCellRk->value.num = intCache;
 							
 							
 							oCell = &pCellRk->cell;
@@ -1878,7 +1887,7 @@ namespace OOX
 						{
 							auto pCellReal = new(XLSB::CellReal);
 							
-							pCellReal->value.data.value = std::stod(m_oValue->m_sText);
+							pCellReal->value.data.value = realCache;
 							
 							oCell = &pCellReal->cell;
 							pSource = pCellReal;

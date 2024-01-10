@@ -189,8 +189,31 @@
 	CryptoJS.prototype.setMasterPassword = function(password)
 	{
 		let passwordPtr = password.toUtf8Pointer();
-		Module["_SetMasterPassword"](passwordPtr);
-		Module["_Crypto_Free"](passwordPtr);
+		Module["_SetMasterPassword"](passwordPtr.ptr);
+		passwordPtr.free();
+	};
+
+	CryptoJS.prototype.setAesPassword = function(password)
+	{
+		let passwordPtr = password.toUtf8Pointer();
+		Module["_SetAesPassword"](passwordPtr.ptr, 0);
+		passwordPtr.free();
+	};
+
+	CryptoJS.prototype.aesDecryptChanges = function(version, data)
+	{
+		let dataPtr = data.toUtf8Pointer();
+		let result = Module["_AES_Decode2"](version, dataPtr.ptr, dataPtr.length);
+		passwordPtr.free();
+		return pointerToString(result, true);
+	};
+
+	CryptoJS.prototype.aesEncryptChanges = function(version, data)
+	{
+		let dataPtr = data.toUtf8Pointer();
+		let result = Module["_AES_Encode2"](version, dataPtr.ptr, dataPtr.length);
+		passwordPtr.free();
+		return pointerToString(result, true);
 	};
 
 	CryptoJS.prototype.createSalt = function()

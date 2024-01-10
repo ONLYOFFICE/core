@@ -1,0 +1,27 @@
+{
+    "name" : "PrivateRoom",
+    "guid" : "asc.{F2402876-659F-47FB-A646-67B49F2B5715}",
+
+    "variations" : [
+        {
+            "description" : "onlychain",
+            "url"         : "index.html",
+
+            "icons"           : ["icon.png", "icon@2x.png", "icon.png", "icon@2x.png"],
+            "isViewer"        : true,
+            "EditorsSupport"  : ["word", "cell", "slide"],
+
+            "isVisual"        : false,
+            "isModal"         : false,
+            "isInsideMode"    : false,
+
+            "initDataType"    : "desktop",
+            "initData"        : "encryption",
+			"cryptoMode"      : "2",
+
+            "isUpdateOleOnResize" : false,
+
+            "buttons"         : []
+        }
+    ]
+}

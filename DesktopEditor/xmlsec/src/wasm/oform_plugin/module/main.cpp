@@ -226,11 +226,26 @@ char* MemoryBlockToBase64(NSOpenSSL::CMemoryData* block, bool destroy = false)
 }
 
 std::string g_master_password = "";
+BYTE* g_aes_key = NULL;
 
 // methods for private rooms
 WASM_EXPORT void SetMasterPassword(const char* password)
 {
 	g_master_password = std::string(password);
+}
+
+WASM_EXPORT void SetAesPassword(const char* password, const char* salt)
+{
+	if (NULL != g_aes_key)
+		NSOpenSSL::openssl_free(g_aes_key);
+	g_aes_key = NULL;
+
+	if (NULL == password)
+		return;
+
+	std::string sPassword = std::string(password);
+
+	g_aes_key = NSOpenSSL::PBKDF2_desktop_GCM(std::string(password), salt ? std::string(salt) : "");
 }
 
 // AES - decode/encode with master password (g_master_password)
@@ -272,6 +287,29 @@ WASM_EXPORT char* AES_DecodeBase64(int version, const char* password, const char
 	return MemoryBlockToBase64(buffer, true);
 }
 
+WASM_EXPORT NSOpenSSL::CMemoryData* AES_Decode2(int version, const unsigned char* data, const int& data_len)
+{
+	unsigned char* input_ptr = NULL;
+	int input_ptr_len = 0;
+	bool bBase64 = NSFile::CBase64Converter::Decode((char*)data, data_len, input_ptr, input_ptr_len);
+	if (!bBase64)
+		return NULL;
+
+	NSOpenSSL::CMemoryData buffer;
+	bool bResult = AES_Decrypt_desktop_GCM(g_aes_key, input_ptr, input_ptr_len, buffer);
+
+	RELEASEARRAYOBJECTS(input_ptr);
+
+	if (!bResult)
+		return NULL;
+
+	NSOpenSSL::CMemoryData* result = new NSOpenSSL::CMemoryData();
+	result->Data = buffer.Data;
+	result->Size = buffer.Size;
+
+	return result;
+}
+
 WASM_EXPORT NSOpenSSL::CMemoryData* AES_Encode(int version, const char* password, const char* salt, const unsigned char* data, const int& data_len)
 {
 	std::string pass = (NULL == password) ? g_master_password : std::string(password);
@@ -308,6 +346,43 @@ WASM_EXPORT char* AES_EncodeBase64(int version, const char* password, const char
 	delete [] data;
 
 	return MemoryBlockToBase64(buffer, true);
+}
+
+WASM_EXPORT NSOpenSSL::CMemoryData* AES_Encode2(int version, const unsigned char* data, const int& data_len)
+{
+	NSOpenSSL::CMemoryData buffer;
+	bool bResult = AES_Encrypt_desktop_GCM(g_aes_key, data, data_len, buffer);
+
+	if (!bResult)
+		return NULL;
+
+	int data_len_base64 = NSBase64::Base64EncodeGetRequiredLength((int)buffer.Size, NSBase64::B64_BASE64_FLAG_NOCRLF);
+	char* data_base64 = (char*)NSOpenSSL::openssl_alloc(data_len_base64);
+
+	if (!data_base64)
+	{
+		buffer.Free();
+		return NULL;
+	}
+
+	if (!NSBase64::Base64Encode(buffer.Data, (int)buffer.Size, (BYTE*)data_base64, &data_len_base64, NSBase64::B64_BASE64_FLAG_NOCRLF))
+	{
+		buffer.Free();
+		NSOpenSSL::openssl_free((unsigned char*)data_base64);
+		return NULL;
+	}
+
+	if (!NSFile::CBase64Converter::Encode(buffer.Data, (int)buffer.Size, data_base64, data_len_base64, NSBase64::B64_BASE64_FLAG_NOCRLF))
+	{
+		buffer.Free();
+		return NULL;
+	}
+
+	NSOpenSSL::CMemoryData* result = new NSOpenSSL::CMemoryData();
+	result->Data = (unsigned char*)data_base64;
+	result->Size = (size_t)data_len_base64;
+
+	return result;
 }
 
 // Crypt/Decrypt

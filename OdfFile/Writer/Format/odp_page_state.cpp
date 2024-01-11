@@ -92,6 +92,19 @@ void odp_page_state::set_page_duration(int id)
 	page_properties_->content_.presentation_page_duration_  = id;
 }
 
+void odp_page_state::hide_page()
+{
+	style* office_page_style_ = dynamic_cast<style*>(page_style_elm_.get());
+	if (!office_page_style_)
+		return;
+
+	drawing_page_properties* page_props = office_page_style_->content_.get_drawing_page_properties();
+	if (!page_props)
+		return;
+
+	page_props->presentation_visibility_ = presentation_visibility::hidden;
+}
+
 void odp_page_state::set_layout_page(std::wstring name)
 {
 	if (name.empty())return;
@@ -300,6 +313,22 @@ void odp_page_state::set_anim_subtype(const std::wstring& val)
 		return;
 
 	anim_levels.back().par_attlist->presentation_preset_sub_type_ = val;
+}
+
+void odp_page_state::set_anim_accelerate(double val)
+{
+	if (anim_levels.empty())		return;
+	if (!anim_levels.back().attlist)return;
+
+	anim_levels.back().attlist->smil_accelerate_ = val;
+}
+
+void odp_page_state::set_anim_decelerate(double val)
+{
+	if (anim_levels.empty())		return;
+	if (!anim_levels.back().attlist)return;
+
+	anim_levels.back().attlist->smil_decelerate_ = val;
 }
 
 void odp_page_state::set_anim_animation_formula(const std::wstring& val)

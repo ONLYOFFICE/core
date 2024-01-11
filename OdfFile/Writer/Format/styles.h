@@ -94,6 +94,7 @@ class graphic_format_properties;
 class paragraph_format_properties;
 class chart_format_properties;
 class text_format_properties;
+class drawing_page_properties;
 
 class style_content : noncopyable
 {
@@ -108,6 +109,7 @@ public:
 	paragraph_format_properties*	get_paragraph_properties();
 	chart_format_properties*		get_chart_properties();
 	text_format_properties*			get_text_properties();
+    drawing_page_properties*        get_drawing_page_properties();
 //add & get
 	graphic_format_properties*		add_get_style_graphic_properties();
 	text_format_properties*			add_get_style_text_properties();

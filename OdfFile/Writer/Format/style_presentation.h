@@ -42,6 +42,7 @@
 #include "../../DataTypes/common_attlists.h"
 #include "../../DataTypes/animation_attlists.h"
 #include "../../DataTypes/presentationclass.h"
+#include "../../DataTypes/presentationvisibility.h"
 #include "../../DataTypes/drawfill.h"
 
 namespace cpdoccore { 
@@ -118,12 +119,13 @@ public:
 	_CP_OPT(bool)							presentation_display_header_;
 	_CP_OPT(odf_types::clockvalue)			presentation_page_duration_;
 
+	_CP_OPT(odf_types::presentation_visibility)		presentation_visibility_;
+
 	office_element_ptr						presentation_sound_;
 	
 	//presentation:background-objects-visible
 	//presentation:background-visible
 	//style:repeat
-	//presentation:visibility
 	//draw:background-size
 
 };

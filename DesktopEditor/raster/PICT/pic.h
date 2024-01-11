@@ -371,8 +371,6 @@ typedef struct
 
     PixelTrait  alpha_trait;
 
-    NexusInfo* nexus;
-
     PixelChannelMap* channel_map;
 
     PixelTrait  mask_trait;

@@ -406,10 +406,22 @@ std::wstring odf_table_context::get_default_cell_properties()
 	else if (impl_->current_table().count_rows && impl_->current_table().current_row == *impl_->current_table().count_rows && false == impl_->current_table().last_row_cell_properties.empty())
 	{
 		default_cell_props = impl_->current_table().last_row_cell_properties;
-	}	
+	}
+	else if (impl_->current_table().current_column == 0 && false == impl_->current_table().first_col_cell_properties.empty())
+	{
+		default_cell_props = impl_->current_table().first_col_cell_properties;
+	}
+	else if (impl_->current_table().count_cols && (impl_->current_table().current_column + 1) == *impl_->current_table().count_cols && false == impl_->current_table().last_col_cell_properties.empty())
+	{
+		default_cell_props = impl_->current_table().last_col_cell_properties;
+	}
 	else if (impl_->current_table().current_row % 2 == 0 && false == impl_->current_table().band_row_cell_properties.empty())
 	{
 		default_cell_props = impl_->current_table().band_row_cell_properties;
+	}
+	else if (impl_->current_table().current_column % 2 == 1 && false == impl_->current_table().band_col_cell_properties.empty())
+	{
+		default_cell_props = impl_->current_table().band_col_cell_properties;
 	}
 
 	return default_cell_props;

@@ -72,6 +72,12 @@ namespace PdfWriter
 			return fontTrueType;
 		}
 
+		double m_dUnitsPerEm;
+		double m_dHeight;
+		double m_dDescent;
+		double m_dMaxY;
+		double m_dMinY;
+
 	private:
 
 		void BeforeWrite();

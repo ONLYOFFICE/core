@@ -301,40 +301,42 @@ static const preset_subtype_maping s_preset_subtype_maping[] =
 	{ 0, L""}
 };
 
-static std::wstring pptx_convert_smil_attribute_name(const odf_types::smil_attribute_name& smil_attribute_name_)
+static _CP_OPT(std::wstring) pptx_convert_smil_attribute_name(const odf_types::smil_attribute_name& smil_attribute_name_)
 {
 	using namespace odf_types;
+	
+	_CP_OPT(std::wstring) result;
 
 	switch (smil_attribute_name_.get_type())
 	{
-	case smil_attribute_name::charColor:		return L"";
-	case smil_attribute_name::charFontName:		return L"";
-	case smil_attribute_name::charHeight:		return L"";
-	case smil_attribute_name::charPosture:		return L"";
-	case smil_attribute_name::charUnderline:	return L"";
-	case smil_attribute_name::charWeight:		return L"";
-	case smil_attribute_name::color:			return L"style.color";
-	case smil_attribute_name::fill:				return L"fill.type";
-	case smil_attribute_name::fillColor:		return L"fillcolor";
-	case smil_attribute_name::fillStyle:		return L"";
-	case smil_attribute_name::fillOn:			return L"fill.on";
-	case smil_attribute_name::height:			return L"ppt_h";
-	case smil_attribute_name::lineColor:		return L"";
-	case smil_attribute_name::lineStyle:		return L"";
-	case smil_attribute_name::opacity:			return L"style.opacity";
-	case smil_attribute_name::rotate:			return L"r";
-	case smil_attribute_name::stroke:			return L"stroke.on";
-	case smil_attribute_name::strokeColor:		return L"stroke.color";
-	case smil_attribute_name::skewX:			return L"xshear";
-	case smil_attribute_name::skewY:			return L"";
-	case smil_attribute_name::visibility:		return L"style.visibility";
-	case smil_attribute_name::width:			return L"ppt_w";
-	case smil_attribute_name::x:				return L"ppt_x";
-	case smil_attribute_name::y:				return L"ppt_y";
-	case smil_attribute_name::dim:				return L"ppt_c";
+	case smil_attribute_name::charColor:		result = boost::none;
+	case smil_attribute_name::charFontName:		result = boost::none;
+	case smil_attribute_name::charHeight:		result = boost::none;
+	case smil_attribute_name::charPosture:		result = boost::none;
+	case smil_attribute_name::charUnderline:	result = boost::none;
+	case smil_attribute_name::charWeight:		result = boost::none;
+	case smil_attribute_name::color:			result = L"style.color";
+	case smil_attribute_name::fill:				result = L"fill.type";
+	case smil_attribute_name::fillColor:		result = L"fillcolor";
+	case smil_attribute_name::fillStyle:		result = boost::none;
+	case smil_attribute_name::fillOn:			result = L"fill.on";
+	case smil_attribute_name::height:			result = L"ppt_h";
+	case smil_attribute_name::lineColor:		result = boost::none;
+	case smil_attribute_name::lineStyle:		result = boost::none;
+	case smil_attribute_name::opacity:			result = L"style.opacity";
+	case smil_attribute_name::rotate:			result = L"style.rotation";
+	case smil_attribute_name::stroke:			result = L"stroke.on";
+	case smil_attribute_name::strokeColor:		result = L"stroke.color";
+	case smil_attribute_name::skewX:			result = L"xshear";
+	case smil_attribute_name::skewY:			result = boost::none;
+	case smil_attribute_name::visibility:		result = L"style.visibility";
+	case smil_attribute_name::width:			result = L"ppt_w";
+	case smil_attribute_name::x:				result = L"ppt_x";
+	case smil_attribute_name::y:				result = L"ppt_y";
+	case smil_attribute_name::dim:				result = L"ppt_c";
 	}
 
-	return L"";
+	return result;
 }
 
 static std::wstring pptx_convert_presentation_node_type(const odf_types::presentation_node_type& presentation_node_type_)
@@ -442,10 +444,10 @@ static std::vector<std::wstring> pptx_convert_smil_values(const odf_types::smil_
 	{
 		std::wstring value = values[i];
 		
-		boost::replace_all(value, L"x", L"#ppt_x");
-		boost::replace_all(value, L"y", L"#ppt_y");
-		boost::replace_all(value, L"width", L"#ppt_w");
-		boost::replace_all(value, L"height", L"#ppt_h");
+		boost::replace_all(value, L"x", L"ppt_x");
+		boost::replace_all(value, L"y", L"ppt_y");
+		boost::replace_all(value, L"width", L"ppt_w");
+		boost::replace_all(value, L"height", L"ppt_h");
 
 		result.push_back(value);
 	}
@@ -461,8 +463,16 @@ static std::wstring pptx_convert_smil_fill(const odf_types::smil_fill& smil_fill
 		case smil_fill::type::_freeze:		return L"freeze";
 		case smil_fill::type::_hold:		return L"hold";
 		case smil_fill::type::_transition:	return L"transition";
-		case smil_fill::type::_auto:		return durationSpecified ? L"remove" : L"freeze";
+		case smil_fill::type::_auto:		
+		default:
+											return durationSpecified ? L"remove" : L"freeze";
 	}
+}
+
+static int pptx_convert_acceleration(double acceleration)
+{
+	const int pptx_multiplier = 100000;
+	return static_cast<int>(acceleration * pptx_multiplier);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -538,7 +548,7 @@ static _CP_OPT(int) pptx_convert_preset_subtype(const std::wstring& preset_class
 		}
 		catch (const boost::bad_lexical_cast& e)
 		{
-			pptx_preset_subtype = boost::none;
+			pptx_preset_subtype = 0;
 		}
 	}
 
@@ -642,11 +652,13 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 			presentationPresetClass = L"custom";
 		}
 
-		if (par_attlist_.presentation_preset_sub_type_ &&  presentationPresetId)
+		if (par_attlist_.presentation_preset_sub_type_ && presentationPresetId)
 			presentationPresetPresetSubType = pptx_convert_preset_subtype(
 				*presentationPresetClass, 
 				*presentationPresetId, 
 				*par_attlist_.presentation_preset_sub_type_);
+		else
+			presentationPresetPresetSubType = 0;
 	}
 
 	if (common_attlist_.smil_fill_)
@@ -851,28 +863,28 @@ std::wstring anim_transitionFilter::convert_filter()
 				if (subtype.value() == L"rectangle")
 				{
 					filter = L"box";
-					pptx_subtype = L"in";
+					pptx_subtype = L"out";
 				}
 				else if (subtype.value() == L"diamond")
 				{
 					filter = L"diamond";
-					pptx_subtype = L"in";
+					pptx_subtype = L"out";
 				}
 				else
 				{
 					filter = L"box";
-					pptx_subtype = L"in";
+					pptx_subtype = L"out";
 				}
 			}
 			else
 			{
 				filter = L"box";
-				pptx_subtype = L"in";
+				pptx_subtype = L"out";
 			}
 			break;
 		case smil_transition_type::ellipseWipe:
 			filter = L"circle";
-			pptx_subtype = L"in";
+			pptx_subtype = L"out";
 			break;
 		case smil_transition_type::pinWheelWipe:
 			filter = L"wheel";
@@ -903,11 +915,13 @@ std::wstring anim_transitionFilter::convert_filter()
 				pptx_subtype = L"upRight";
 			break;
 		case smil_transition_type::slideWipe:
-			filter = L"slide";
+			filter = L"wipe";
 			if (subtype)
 			{
-				if (subtype.value() == L"fromRight")			pptx_subtype = L"fromRight";
-				else											pptx_subtype = L"fromLeft";
+				if (subtype.value() == L"fromLeft")					pptx_subtype = L"left";
+				else if (subtype.value() == L"fromTop")				pptx_subtype = L"up";
+				else if (subtype.value() == L"fromRight")			pptx_subtype = L"right";
+				else if (subtype.value() == L"fromBottom")			pptx_subtype = L"down";
 			}
 			break;
 		case smil_transition_type::fade:
@@ -1032,7 +1046,22 @@ std::wstring anim_transitionFilter::convert_filter()
 	}
 
 	if (pptx_subtype)
+	{
+		if (filter_attlist_.smil_direction_
+			&& filter_attlist_.smil_direction_.value() == L"reverse")
+		{
+			if (pptx_subtype.value() == L"in")
+				pptx_subtype = L"out";
+			else if (pptx_subtype.value() == L"out")
+				pptx_subtype = L"in";
+			else if(pptx_subtype.value() == L"inHorizontal")
+				pptx_subtype = L"outHorizontal";
+			else if (pptx_subtype.value() == L"outHorizontal")
+				pptx_subtype = L"inHorizontal";
+		}
 		filter += L"(" + pptx_subtype.value() + L")";
+	}
+		
 
 	return filter;
 }
@@ -1237,20 +1266,29 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 	std::wstring filter = convert_filter();
 	_CP_OPT(std::wstring) transition;
 	_CP_OPT(int) time;
+	_CP_OPT(std::wstring) delay;
+	_CP_OPT(int)	acceleration;
+	_CP_OPT(int)	deceleration;
+
 	size_t shapeId = 0;
 
 	if (common_attlist_.smil_dur_)
-	{
 		time = common_attlist_.smil_dur_->get_value();
-	}
-
+	
 	if (filter_attlist_.smil_mode_)
-	{
 		transition = filter_attlist_.smil_mode_.value();
-	}
 
 	if (common_attlist_.smil_target_element_)
 		shapeId = Context.get_slide_context().get_id(common_attlist_.smil_target_element_.value());
+
+	if (common_attlist_.smil_begin_)
+		delay = pptx_convert_smil_begin(common_attlist_.smil_begin_.value());
+
+	if (common_attlist_.smil_accelerate_)
+		acceleration = pptx_convert_acceleration(common_attlist_.smil_accelerate_.value());
+
+	if (common_attlist_.smil_decelerate_)
+		deceleration = pptx_convert_acceleration(common_attlist_.smil_decelerate_.value());
 
 	oox::pptx_animation_context& animationContext = Context.get_slide_context().get_animation_context();
 
@@ -1258,6 +1296,9 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 	animationContext.set_anim_effect_filter(filter);
 	if(transition)	animationContext.set_anim_effect_transition(transition.value());
 	if (time)		animationContext.set_anim_effect_duration(time.value());
+	if (delay)		animationContext.set_anim_effect_delay(delay.value());
+	if (acceleration)animationContext.set_anim_effect_accel(acceleration.value());
+	if (deceleration)animationContext.set_anim_effect_decel(deceleration.value());
 	animationContext.set_anim_effect_shape_id(shapeId);
 	animationContext.end_anim_effect();
 }
@@ -1616,7 +1657,7 @@ void anim_animate::pptx_convert(oox::pptx_conversion_context& Context)
 		keyTimes = pptx_convert_smil_key_times(animate_attlist_.smil_key_times_.value());
 
 	if (animate_attlist_.anim_formula_)
-		formula = animate_attlist_.anim_formula_.value();
+		formula = pptx_convert_animation_function(animate_attlist_.anim_formula_.value());
 
 	if (animate_attlist_.smil_from_)
 		from = pptx_convert_animation_function(animate_attlist_.smil_from_.value());

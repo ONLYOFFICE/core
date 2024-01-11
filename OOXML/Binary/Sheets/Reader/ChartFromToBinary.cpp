@@ -12639,7 +12639,7 @@ namespace BinXlsxRW
 		}
 		if (pVal->m_overflow.IsInit())
 		{
-			if (pVal->m_underflow->GetValue() == SimpleTypes::Spreadsheet::typeAuto)
+			if (pVal->m_overflow->GetValue() == SimpleTypes::Spreadsheet::typeAuto)
 			{
 				int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartExBinningOVERAUTO);
 				m_oBcw.m_oStream.WriteBYTE(pVal->m_overflow->GetValue());

@@ -46,6 +46,7 @@
 #include "../../DesktopEditor/graphics/commands/FormField.h"
 #include "../../DesktopEditor/graphics/commands/AnnotField.h"
 #include "SrcWriter/Metadata.h"
+#include "SrcWriter/Annotation.h"
 
 namespace PdfWriter
 {
@@ -65,7 +66,7 @@ namespace Aggplus
 class CPdfWriter
 {
 public:
-	CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA = false, IRenderer* pRenderer = NULL);
+	CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA = false, IRenderer* pRenderer = NULL, bool bCreate = true);
 	~CPdfWriter();
 	int          SaveToFile(const std::wstring& wsPath);
 	void         SetPassword(const std::wstring& wsPassword);
@@ -242,6 +243,8 @@ private:
 	unsigned char* EncodeString(const unsigned int* pUnicodes, const unsigned int& unUnicodesCount, const unsigned int* pGIDs = NULL);
 	unsigned char* EncodeGID(const unsigned int& unGID, const unsigned int* pUnicodes, const unsigned int& unUnicodesCount);
 	std::wstring GetDownloadFile(const std::wstring& sUrl, const std::wstring& wsTempDirectory);
+	void DrawTextWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CTextWidget* pTextWidget, const std::wstring& wsValue);
+	void DrawChoiceWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CChoiceWidget* pChoiceWidget, const std::vector<std::wstring>& arrValue);
 
 private:
 	NSFonts::IFontManager*       m_pFontManager;

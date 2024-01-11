@@ -122,6 +122,9 @@ namespace oox {
 			{
 				_CP_OPT(std::wstring)							Filter;
 				_CP_OPT(std::wstring)							Transition;
+				_CP_OPT(std::wstring)							Delay;
+				_CP_OPT(int)									Accel;
+				_CP_OPT(int)									Decel;
 				_CP_OPT(int)									Duration; // in ms
 				_CP_OPT(size_t)									ShapeID;
 
@@ -329,6 +332,9 @@ namespace oox {
 			void set_anim_effect_filter(const std::wstring& value);
 			void set_anim_effect_transition(const std::wstring& value);
 			void set_anim_effect_duration(int value);
+			void set_anim_effect_delay(const std::wstring& value);
+			void set_anim_effect_accel(int value);
+			void set_anim_effect_decel(int value);
 			void set_anim_effect_shape_id(size_t value);
 		void end_anim_effect();
 

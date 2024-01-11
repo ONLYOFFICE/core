@@ -1134,6 +1134,12 @@
 			// Text
 			if (rec["Type"] == 0)
 			{
+				// Bachground color - C->IC
+				if (rec["C"])
+				{
+					rec["IC"] = rec["C"];
+					delete rec["C"];
+				}
 				rec["Open"] = (flags >> 15) & 1;
 				// icon - Name
 				// 0 - Check, 1 - Checkmark, 2 - Circle, 3 - Comment, 4 - Cross, 5 - CrossHairs, 6 - Help, 7 - Insert, 8 - Key, 9 - NewParagraph, 10 - Note, 11 - Paragraph, 12 - RightArrow, 13 - RightPointer, 14 - Star, 15 - UpArrow, 16 - UpLeftArrow
@@ -1283,6 +1289,12 @@
 			// FreeText
 			else if (rec["Type"] == 2)
 			{
+				// Bachground color - C->IC
+				if (rec["C"])
+				{
+					rec["IC"] = rec["C"];
+					delete rec["C"];
+				}
 				// 0 - left-justified, 1 - centered, 2 - right-justified
 				rec["alignment"] = reader.readByte();
 				// Rect and RD differences
@@ -1311,6 +1323,14 @@
 				// 0 - FreeText, 1 - FreeTextCallout, 2 - FreeTextTypeWriter
 				if (flags & (1 << 20))
 					rec["IT"] = reader.readByte();
+				// Border color - from DA (write to C)
+				if (flags & (1 << 21))
+				{
+					let n = reader.readInt();
+					rec["C"] = [];
+					for (let i = 0; i < n; ++i)
+						rec["C"].push(reader.readDouble());
+				}
 			}
 			// Caret
 			else if (rec["Type"] == 13)
@@ -1327,6 +1347,7 @@
 				if (flags & (1 << 16))
 					rec["Sy"] = reader.readByte();
 			}
+			// FileAttachment
 			else if (rec["Type"] == 16)
 			{
 				if (flags & (1 << 15))

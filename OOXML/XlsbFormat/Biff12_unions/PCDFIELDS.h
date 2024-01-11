@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalWorkbookInfo.h"
 
 namespace XLSB
 {
@@ -53,6 +54,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_BrtBeginPCDFields;
         std::vector<XLS::BaseObjectPtr>	 m_arPCDFIELD;
 		bool			                 m_bBrtEndPCDFields;
+        XLS::GlobalWorkbookInfoPtr global_info;
 
     };
 

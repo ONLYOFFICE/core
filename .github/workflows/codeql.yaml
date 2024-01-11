@@ -5,6 +5,10 @@ on:
       - 'master'
       - 'release/**'
       - 'hotfix/**'
+    paths-ignore:
+      - '**/README.md'
+      - '**/LICENSE'
+      - '.github/**'
   #pull_request:
   #  branches: 
   #    - 'master'

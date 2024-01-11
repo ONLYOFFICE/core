@@ -91,6 +91,7 @@ namespace PdfWriter
 	class CDateTimeField;
 	class CFieldBase;
 	class CStreamData;
+	class CXObject;
 	//----------------------------------------------------------------------------------------
 	// CDocument
 	//----------------------------------------------------------------------------------------
@@ -155,6 +156,7 @@ namespace PdfWriter
 		CAction*          CreateAction(BYTE nType);
 					      
 		CImageDict*       CreateImage();
+		CXObject*         CreateForm(CImageDict* pImage, const std::string& sName);
 		CFont14*          CreateFont14(EStandard14Fonts eType);
 		CFontCidTrueType* CreateCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
 		CFontCidTrueType* FindCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);

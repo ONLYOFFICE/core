@@ -245,7 +245,7 @@ private:
 	std::wstring GetDownloadFile(const std::wstring& sUrl, const std::wstring& wsTempDirectory);
 	void DrawTextWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CTextWidget* pTextWidget, const std::wstring& wsValue);
 	void DrawChoiceWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CChoiceWidget* pChoiceWidget, const std::vector<std::wstring>& arrValue);
-	void DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CPushButtonWidget* pButtonWidget, PdfWriter::CImageDict* pImage, const std::string& sAP, const std::string& sImgName, const std::string& sFrmName);
+	void DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CPushButtonWidget* pButtonWidget, PdfWriter::CXObject* pFormI, PdfWriter::CXObject* pFormRI, PdfWriter::CXObject* pFormIX);
 
 private:
 	NSFonts::IFontManager*       m_pFontManager;

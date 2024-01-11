@@ -1714,6 +1714,101 @@ namespace PdfWriter
 
 		if ((m_pField && m_pField->HaveBorder()) || (pAnnot && pAnnot->HaveBorder()))
 		{
+			double dBorderSize = m_pField ? m_pField->GetBorderSize() : pAnnot->GetBorderWidth();
+			double dBorderSizeStyle = dBorderSize;
+
+			BYTE nType = 0;
+			if (pAnnot)
+			{
+				nType = pAnnot->GetBorderType();
+				switch (nType)
+				{
+				case 1: // Beveled
+				case 3: // Inset
+				{
+					dBorderSizeStyle *= 2;
+
+					m_pStream->WriteStr(nType == 1 ? "1 g\012" : "0.501953 g\012");
+
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteStr(" m\012");
+
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dH - dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(dW - dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dH - dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(dW - 2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dH - 2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dH - 2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteStr("f\012");
+
+					if (nType == 1 && pAnnot->HaveBG())
+						m_pStream->WriteStr(pAnnot->GetBGforAP(-0.25).c_str());
+					else
+						m_pStream->WriteStr("0.75293 g\012");
+
+					m_pStream->WriteReal(dW - dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dH - dBorderSize);
+					m_pStream->WriteStr(" m\012");
+
+					m_pStream->WriteReal(dW - dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(dW - 2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(dW - 2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dH - 2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteStr("f\012");
+					break;
+				}
+				case 2: // Dashed
+				{
+					m_pStream->WriteStr(pAnnot->GetBorderDash().c_str());
+					break;
+				}
+				default: break;
+				}
+			}
+
 			if (m_pField)
 			{
 				TRgb oColor = m_pField->GetBorderColor();
@@ -1727,19 +1822,32 @@ namespace PdfWriter
 			else
 				m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
 
-			double dBorderSize   = m_pField ? m_pField->GetBorderSize() : pAnnot->GetBorderWidth();
-			double dBorderSize_2 = dBorderSize / 2;
 			m_pStream->WriteReal(dBorderSize);
 			m_pStream->WriteStr(" w\0120 j\0120 J\012");
 
-			m_pStream->WriteReal(dBorderSize_2);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(dBorderSize_2);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(fmax(dW - dBorderSize, 0.0));
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(fmax(dH - dBorderSize, 0.0));
-			m_pStream->WriteStr(" re\012S\012");
+			if (nType == 4) // Underline
+			{
+				m_pStream->WriteInt(0);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(dBorderSize / 2);
+				m_pStream->WriteStr(" m\012");
+
+				m_pStream->WriteReal(dW);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(dBorderSize / 2);
+				m_pStream->WriteStr(" l\012S\012");
+			}
+			else
+			{
+				m_pStream->WriteReal(dBorderSize / 2);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(dBorderSize / 2);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(std::max(dW - dBorderSize, 0.0));
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(std::max(dH - dBorderSize, 0.0));
+				m_pStream->WriteStr(" re\012S\012");
+			}
 
 			if (bRespectBorder && sImageName)
 			{

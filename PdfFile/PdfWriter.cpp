@@ -3531,7 +3531,12 @@ void CPdfWriter::DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 	unsigned short* pCodes  = NULL;
 	PdfWriter::CFontCidTrueType** ppFonts = NULL;
 	std::wstring wsValue = pButtonWidget->GetCA();
-	if (!wsValue.empty())
+	BYTE nTP = pButtonWidget->GetTP();
+
+	if (!pButtonWidget->HaveBorder() && pButtonWidget->HaveBC())
+		pButtonWidget->SetBorder(0, 1, {});
+
+	if (!wsValue.empty() && nTP != 1)
 	{
 		PdfWriter::CFontCidTrueType* pFont = pButtonWidget->GetFont();
 		if (!pFont)
@@ -3542,8 +3547,6 @@ void CPdfWriter::DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 		bool isItalic    = pButtonWidget->GetFontIsItalic();
 		double dHeight   = pButtonWidget->GetHeight();
 
-		if (!pButtonWidget->HaveBorder() && pButtonWidget->HaveBC())
-			pButtonWidget->SetBorder(0, 1, {});
 		double dShiftBorder = pButtonWidget->GetBorderWidth();
 		BYTE nType = pButtonWidget->GetBorderType();
 		if (nType == 1 || nType == 3)

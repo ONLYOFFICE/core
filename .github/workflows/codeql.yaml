@@ -1,5 +1,4 @@
-
-name: "Scanner"
+name: "CodeQL Scanner"
 on:
   push:
     branches: 

@@ -508,10 +508,6 @@ namespace MetaFile
 		m_oSvmFile.Close();
 	#endif
 
-	#ifdef METAFILE_SUPPORT_SVG
-		m_oSvgFile.Close();
-	#endif
-
 		m_lType  = 0;
 	}
 

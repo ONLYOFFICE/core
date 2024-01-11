@@ -408,7 +408,8 @@ public:
 	}
 	virtual bool exists(const std::wstring& path)
 	{
-		return NSFile::CFileBinary::Exists(getFullFilePath(path));
+		std::wstring full = getFullFilePath(path);
+		return NSFile::CFileBinary::Exists(full) && !NSDirectory::Exists(full);
 	}
 	virtual void remove(const std::wstring& path)
 	{

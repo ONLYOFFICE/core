@@ -74,7 +74,7 @@ namespace XPS
 				// Нужно подменить первые 32 байта файла
 				if (IFolder::iftFolder == pFolder->getType())
 				{
-					if (!NSFile::CFileBinary::Exists(wsFontPath) && NSDirectory::Exists(wsFontPath))
+					if (NSDirectory::Exists(wsFontPath))
 					{
 						IFolder::CBuffer* buffer = NULL;;
 						pFolder->readFileWithChunks(wsFontPath, buffer);

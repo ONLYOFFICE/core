@@ -153,12 +153,6 @@ namespace MetaFile
 		if (oNewClipRect.Top > oNewClipRect.Bottom)
 			std::swap(oNewClipRect.Top, oNewClipRect.Bottom);
 
-		NodeAttributes arNodeAttributes;
-
-		AddTransform(arNodeAttributes, pTransform);
-
-		WriteNodeBegin(L"g", arNodeAttributes);
-
 		wsNewSvg.erase(unFirstPos, unSecondPos - unFirstPos);
 
 		std::wstring wsClip = L"x=\"" + ConvertToWString(oRect.Left) + L"\" y=\"" + ConvertToWString(oRect.Top) + L"\" " +
@@ -167,8 +161,12 @@ namespace MetaFile
 
 		wsNewSvg.insert(unFirstPos, wsClip);
 
-		m_pXmlWriter->WriteString(wsNewSvg);
+		NodeAttributes arNodeAttributes;
 
+		AddTransform(arNodeAttributes, pTransform);
+
+		WriteNodeBegin(L"g", arNodeAttributes);
+		m_pXmlWriter->WriteString(wsNewSvg);
 		WriteNodeEnd(L"g");
 	}
 

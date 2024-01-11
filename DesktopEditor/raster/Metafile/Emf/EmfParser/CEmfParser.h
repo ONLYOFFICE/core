@@ -20,11 +20,8 @@ namespace MetaFile
 
 		void            ClearFile()                                 override;
 
-		EmfParserType   GetType()				                    override;
+		EmfParserType   GetType()                                   override;
 		void            SetStream(BYTE* pBuf, unsigned int unSize);
-
-	public:
-		virtual void SetInterpretator(IOutputDevice* pOutput) override;
 
 	private:
 		CEmfPlusParser  *m_pEmfPlusParser;

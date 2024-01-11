@@ -261,7 +261,17 @@ namespace MetaFile
 				oBB.Bottom = m_oBoundingBox.Bottom;
 			}
 
-			return oBB;
+			const double dFileDpi = GetDpi();
+			const double dRendererDpi = 96;
+
+			if (Equals(dFileDpi, dRendererDpi) && !Equals(0, dFileDpi))
+				return oBB;
+
+			TRectD oNewBB(oBB);
+
+			oNewBB *= dRendererDpi / dFileDpi;
+
+			return TRectL(oNewBB);
 		}
 		else
 			return m_oBoundingBox;
@@ -1749,14 +1759,9 @@ namespace MetaFile
 					m_oEscapeBuffer.Clear();
 					return;
 				}
-				
-				m_oBoundingBox = *oEmfParser.GetBounds();
 
 				if (NULL == m_pInterpretator)
-				{
-					m_oEscapeBuffer.Clear();
-					return HANDLE_META_EOF();
-				}
+					HANDLE_META_EOF();
 				else if (InterpretatorType::Render == m_pInterpretator->GetType())
 				{
 					CMetaFileRenderer oEmfOut(&oEmfParser, ((CWmfInterpretatorRender*)m_pInterpretator)->GetRenderer());
@@ -1778,13 +1783,13 @@ namespace MetaFile
 
 					TRectD oCurrentRect = GetBounds();
 
-					double dScaleX = std::abs((oCurrentRect.Right - oCurrentRect.Left) / (m_oBoundingBox.Right - m_oBoundingBox.Left));
-					double dScaleY = std::abs((oCurrentRect.Bottom - oCurrentRect.Top) / (m_oBoundingBox.Bottom - m_oBoundingBox.Top));
+					const double dScaleX = std::abs((oCurrentRect.Right - oCurrentRect.Left) / (m_oBoundingBox.Right - m_oBoundingBox.Left));
+					const double dScaleY = std::abs((oCurrentRect.Bottom - oCurrentRect.Top) / (m_oBoundingBox.Bottom - m_oBoundingBox.Top));
 
 					pXmlWriter->WriteNodeBegin(L"g", true);
 
-					if (0 != dScaleX || 0 != dScaleY)
-						pXmlWriter->WriteAttribute(L"transform", L"scale(" + std::to_wstring(dScaleX) + L',' + std::to_wstring(dScaleY) + L')');
+					if (!Equals(1., dScaleX) || !Equals(1., dScaleY))
+						pXmlWriter->WriteAttribute(L"transform", L"scale(" + ConvertToWString(dScaleX) + L',' + ConvertToWString(dScaleY) + L')');
 
 					pXmlWriter->WriteNodeEnd(L"g", true, false);
 

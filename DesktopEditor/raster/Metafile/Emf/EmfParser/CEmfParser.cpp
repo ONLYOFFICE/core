@@ -249,13 +249,6 @@ namespace MetaFile
 		m_oStream.SetStream(pBuf, unSize);
 	}
 
-	void CEmfParser::SetInterpretator(IOutputDevice* pOutput)
-	{
-		CEmfParserBase::SetInterpretator(pOutput);
-		if (m_pEmfPlusParser)
-			RELEASEOBJECT(m_pEmfPlusParser);
-	}
-
 	bool CEmfParser::ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight)
 	{
 		int lHeaderOffset         = offBmi - ulSkip;
@@ -1542,11 +1535,14 @@ namespace MetaFile
 					TRectD oWmfRect = oWmfParser.GetBounds();
 					TRectL *pCurentRect = GetBounds();
 
-					double dScaleX = std::abs((pCurentRect->Right - pCurentRect->Left) / (oWmfRect.Right - oWmfRect.Left));
-					double dScaleY = std::abs((pCurentRect->Bottom - pCurentRect->Top) / (oWmfRect.Bottom - oWmfRect.Top));
+					const double dScaleX = std::abs((pCurentRect->Right - pCurentRect->Left) / (oWmfRect.Right - oWmfRect.Left));
+					const double dScaleY = std::abs((pCurentRect->Bottom - pCurentRect->Top) / (oWmfRect.Bottom - oWmfRect.Top));
 
 					pXmlWriter->WriteNodeBegin(L"g", true);
-					pXmlWriter->WriteAttribute(L"transform", L"scale(" + ConvertToWString(dScaleX) + L',' + ConvertToWString(dScaleY) + L')');
+
+					if (!Equals(1., dScaleX) || !Equals(1., dScaleY))
+						pXmlWriter->WriteAttribute(L"transform", L"scale(" + ConvertToWString(dScaleX) + L',' + ConvertToWString(dScaleY) + L')');
+
 					pXmlWriter->WriteNodeEnd(L"g", true, false);
 
 					((CWmfInterpretatorSvg*)oWmfParser.GetInterpretator())->SetXmlWriter(pXmlWriter);

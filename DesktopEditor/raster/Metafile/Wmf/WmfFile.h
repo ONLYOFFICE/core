@@ -71,7 +71,7 @@ namespace MetaFile
 		{
 			if (NULL != m_pParser)
 			{
-                NSFonts::IFontManager* pFont = m_pParser->GetFontManager();
+				NSFonts::IFontManager* pFont = m_pParser->GetFontManager();
 
 				delete m_pParser;
 				m_pParser = new CWmfParser();

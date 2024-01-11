@@ -436,7 +436,7 @@ GFileOffset XRef::getStartXref() {
       break;
     }
     nTry++;
-  } while (n == xrefSearchSize);
+  } while (str->getPos() > 0);
 
   // read last xrefSearchSize bytes
 

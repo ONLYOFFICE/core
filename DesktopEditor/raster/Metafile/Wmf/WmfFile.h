@@ -131,9 +131,9 @@ namespace MetaFile
 			m_pParser->SetInterpretator(pOutput, wsFilePath);
 		}
 
-		TRectD GetBounds()
+		TRectL* GetBounds()
 		{
-			return m_pParser->GetBounds();
+			return m_pParser->GetDCBounds();
 		}
 	private:
 

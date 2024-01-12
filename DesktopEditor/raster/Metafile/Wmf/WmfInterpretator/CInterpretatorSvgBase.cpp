@@ -165,9 +165,13 @@ namespace MetaFile
 
 		AddTransform(arNodeAttributes, pTransform);
 
-		WriteNodeBegin(L"g", arNodeAttributes);
+		if (!arNodeAttributes.empty())
+			WriteNodeBegin(L"g", arNodeAttributes);
+
 		m_pXmlWriter->WriteString(wsNewSvg);
-		WriteNodeEnd(L"g");
+
+		if (!arNodeAttributes.empty())
+			WriteNodeEnd(L"g");
 	}
 
 	void CInterpretatorSvgBase::WriteNode(const std::wstring &wsNodeName, const NodeAttributes &arAttributes, const std::wstring &wsValueNode)
@@ -528,7 +532,6 @@ namespace MetaFile
 			                               {L"y",      ConvertToWString(dY)},
 			                               {L"width",  ConvertToWString(dW)},
 			                               {L"height", ConvertToWString(dH)},
-			                               {L"preserveAspectRatio", L"xMinYMin slice"},
 			                               {L"xlink:href", L"data:image/png;base64," + wsValue}};
 
 			AddTransform(arAttributes, &oTransform);

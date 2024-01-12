@@ -1602,12 +1602,12 @@ namespace MetaFile
 			oRect.Right  = arPoints[1].X - m_pDC->GetPixelWidth();
 			oRect.Bottom = arPoints[2].Y - m_pDC->GetPixelHeight();
 
-			TRectD oTempSrcRect{oSrcRect.ToRectD()};
-			
-			oTempSrcRect.Left   -= pFileBounds->Left;
-			oTempSrcRect.Right  -= pFileBounds->Left + GetPixelWidth();
-			oTempSrcRect.Top    -= pFileBounds->Top;
-			oTempSrcRect.Bottom -= pFileBounds->Top  + GetPixelHeight();
+			TRectD oTempSrcRect;
+
+			oTempSrcRect.Left   = oSrcRect.dX - pFileBounds->Left;
+			oTempSrcRect.Top    = oSrcRect.dY - pFileBounds->Top;
+			oTempSrcRect.Right  = oTempSrcRect.Left + ((dFileWidth  > oSrcRect.dWidth)  ? oSrcRect.dWidth  - GetPixelWidth()  : dFileWidth);
+			oTempSrcRect.Bottom = oTempSrcRect.Top  + ((dFileHeight > oSrcRect.dHeight) ? oSrcRect.dHeight - GetPixelHeight() : dFileHeight);
 
 			TXForm oTransform;
 

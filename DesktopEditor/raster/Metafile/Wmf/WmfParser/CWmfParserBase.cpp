@@ -267,11 +267,12 @@ namespace MetaFile
 			if (Equals(dFileDpi, dRendererDpi) && !Equals(0, dFileDpi))
 				return oBB;
 
-			TRectD oNewBB(oBB);
+			oBB.Left   = std::round(oBB.Left   * dRendererDpi / dFileDpi);
+			oBB.Top    = std::round(oBB.Top    * dRendererDpi / dFileDpi);
+			oBB.Right  = std::round(oBB.Right  * dRendererDpi / dFileDpi);
+			oBB.Bottom = std::round(oBB.Bottom * dRendererDpi / dFileDpi);
 
-			oNewBB *= dRendererDpi / dFileDpi;
-
-			return TRectL(oNewBB);
+			return oBB;
 		}
 		else
 			return m_oBoundingBox;
@@ -1761,7 +1762,12 @@ namespace MetaFile
 				}
 
 				if (NULL == m_pInterpretator)
+				{
+					if (!IsPlaceable())
+						m_oBoundingBox = *oEmfParser.GetDCBounds();
+
 					HANDLE_META_EOF();
+				}
 				else if (InterpretatorType::Render == m_pInterpretator->GetType())
 				{
 					CMetaFileRenderer oEmfOut(&oEmfParser, ((CWmfInterpretatorRender*)m_pInterpretator)->GetRenderer());
@@ -1773,31 +1779,31 @@ namespace MetaFile
 				}
 				else if (InterpretatorType::Svg == m_pInterpretator->GetType())
 				{
-					double dWidth, dHeight;
-
-					((CWmfInterpretatorSvg*)m_pInterpretator)->GetSize(dWidth, dHeight);
-
-					((CEmfParserBase*)&oEmfParser)->SetInterpretator(InterpretatorType::Svg, dWidth, dHeight);
+					((CEmfParserBase*)&oEmfParser)->SetInterpretator(InterpretatorType::Svg);
 
 					XmlUtils::CXmlWriter *pXmlWriter = ((CWmfInterpretatorSvg*)GetInterpretator())->GetXmlWriter();
 
-					TRectD oCurrentRect = GetBounds();
+					TRectL *pEmfRect    = oEmfParser.GetDCBounds();
+					TRectL *pCurentRect = GetDCBounds();
 
-					const double dScaleX = std::abs((oCurrentRect.Right - oCurrentRect.Left) / (m_oBoundingBox.Right - m_oBoundingBox.Left));
-					const double dScaleY = std::abs((oCurrentRect.Bottom - oCurrentRect.Top) / (m_oBoundingBox.Bottom - m_oBoundingBox.Top));
+					const double dScaleX = std::abs((pCurentRect->Right - pCurentRect->Left) / (pEmfRect->Right  - pEmfRect->Left));
+					const double dScaleY = std::abs((pCurentRect->Bottom - pCurentRect->Top) / (pEmfRect->Bottom - pEmfRect->Top));
 
-					pXmlWriter->WriteNodeBegin(L"g", true);
+					const bool bAddGElement = !Equals(1., dScaleX) || !Equals(1., dScaleY);
 
-					if (!Equals(1., dScaleX) || !Equals(1., dScaleY))
+					if (bAddGElement)
+					{
+						pXmlWriter->WriteNodeBegin(L"g", true);
 						pXmlWriter->WriteAttribute(L"transform", L"scale(" + ConvertToWString(dScaleX) + L',' + ConvertToWString(dScaleY) + L')');
-
-					pXmlWriter->WriteNodeEnd(L"g", true, false);
+						pXmlWriter->WriteNodeEnd(L"g", true, false);
+					}
 
 					((CEmfInterpretatorSvg*)oEmfParser.GetInterpretator())->SetXmlWriter(pXmlWriter);
 
 					oEmfParser.PlayFile();
 
-					pXmlWriter->WriteNodeEnd(L"g", false, false);
+					if (bAddGElement)
+						pXmlWriter->WriteNodeEnd(L"g", false, false);
 
 					HANDLE_META_EOF();
 				}

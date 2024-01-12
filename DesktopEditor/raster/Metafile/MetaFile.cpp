@@ -523,11 +523,11 @@ namespace MetaFile
 		#ifdef METAFILE_SUPPORT_WMF_EMF
 			case c_lMetaWmf:
 			{
-				const TRectD& oRect = m_oWmfFile.GetBounds();
-				*pdX = oRect.Left;
-				*pdY = oRect.Top;
-				*pdW = oRect.Right - oRect.Left;
-				*pdH = oRect.Bottom - oRect.Top;
+				TRectL* pRect = m_oWmfFile.GetBounds();
+				*pdX = pRect->Left;
+				*pdY = pRect->Top;
+				*pdW = pRect->Right - pRect->Left;
+				*pdH = pRect->Bottom - pRect->Top;
 				break;
 			}
 			case c_lMetaEmf:

@@ -147,4 +147,28 @@ namespace MetaFile
 	{
 		return m_pMetaFileRenderer;
 	}
+	
+	void CWmfInterpretatorRender::HANDLE_META_EXCLUDECLIPRECT(short shLeft, short shTop, short shRight, short shBottom)
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->NeedUpdateClip();
+	}
+	
+	void CWmfInterpretatorRender::HANDLE_META_INTERSECTCLIPRECT(short shLeft, short shTop, short shRight, short shBottom)
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->NeedUpdateClip();
+	}
+	
+	void CWmfInterpretatorRender::HANDLE_META_OFFSETCLIPRGN(short shOffsetX, short shOffsetY)
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->NeedUpdateClip();
+	}
+	
+	void CWmfInterpretatorRender::HANDLE_META_RESTOREDC()
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->NeedUpdateClip();
+	}
 }

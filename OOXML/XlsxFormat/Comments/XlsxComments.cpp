@@ -219,8 +219,12 @@ namespace OOX
 				ptr1->rfx = m_oRef->GetValue();
 			if(m_oAuthorId.IsInit())
 				ptr1->iauthor = m_oAuthorId->GetValue();
+            else
+                ptr1->iauthor = 0;
 			if(m_oUid.IsInit())
 				ptr1->guid = m_oUid->ToString();
+            else
+                ptr1->guid = L"";
             if(m_oText.IsInit())
 			{
 				auto type = m_oText->getType();

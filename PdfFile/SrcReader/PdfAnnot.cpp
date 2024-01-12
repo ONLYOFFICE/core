@@ -932,55 +932,13 @@ CAnnotWidget::~CAnnotWidget()
 		RELEASEOBJECT(m_arrAction[i]);
 }
 
-void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
+bool GetFontFromAP(PDFDoc* pdfDoc, AcroFormField* pField, Object* oR, Object* oFonts, Object* oFontRef, std::string& sFontKey)
 {
-	// Шрифт и размер шрифта - из DA
-	Ref fontID;
-	pField->getFont(&fontID, &m_dFontSize);
-	bool bFullFont = true;
-	if (fontID.num < 0)
-		bFullFont = false;
-
-	Object oR, oFonts, oFontRef;
 	bool bFindResources = false;
-
-	if (bFullFont && pField->fieldLookup("DR", &oR)->isDict() && oR.dictLookup("Font", &oFonts)->isDict())
-	{
-		for (int i = 0; i < oFonts.dictGetLength(); ++i)
-		{
-			if (oFonts.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
-			{
-				m_sFontKey = oFonts.dictGetKey(i);
-				bFindResources = true;
-				break;
-			}
-			oFontRef.free();
-		}
-	}
-
-	if (bFullFont && !bFindResources)
-	{
-		oR.free(); oFonts.free();
-		AcroForm* pAcroForms = pdfDoc->getCatalog()->getForm();
-		Object* oAcroForm = pAcroForms->getAcroFormObj();
-		if (oAcroForm->isDict() && oAcroForm->dictLookup("DR", &oR)->isDict() && oR.dictLookup("Font", &oFonts)->isDict())
-		{
-			for (int i = 0; i < oFonts.dictGetLength(); ++i)
-			{
-				if (oFonts.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
-				{
-					m_sFontKey = oFonts.dictGetKey(i);
-					bFindResources = true;
-					break;
-				}
-				oFontRef.free();
-			}
-		}
-	}
 
 	Object oAP, oN;
 	XRef* xref = pdfDoc->getXRef();
-	if (!bFullFont && pField->fieldLookup("AP", &oAP)->isDict() && oAP.dictLookup("N", &oN)->isStream())
+	if (pField->fieldLookup("AP", &oAP)->isDict() && oAP.dictLookup("N", &oN)->isStream())
 	{
 		Parser* parser = new Parser(xref, new Lexer(xref, &oN), gFalse);
 
@@ -1029,17 +987,138 @@ void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFont
 		if (bFindFont && oObj1.isName())
 		{
 			Dict* pNDict = oN.streamGetDict();
-			if (pNDict->lookup("Resources", &oR)->isDict() && oR.dictLookup("Font", &oFonts)->isDict() && oFonts.dictLookupNF(oObj1.getName(), &oFontRef)->isRef())
-			{
-				bFindResources = true;
-				fontID = oFontRef.getRef();
-			}
+			bFindResources = pNDict->lookup("Resources", oR)->isDict() && oR->dictLookup("Font", oFonts)->isDict() && oFonts->dictLookupNF(oObj1.getName(), oFontRef)->isRef();
+			sFontKey = oObj1.getName();
 		}
 
 		oObj1.free(); oObj2.free(); oObj3.free();
 		RELEASEOBJECT(parser);
 	}
 	oAP.free(); oN.free();
+
+	return bFindResources;
+}
+void GetFontData()
+{
+	/*
+	GfxFont* gfxFont = NULL;
+	GfxFontDict *gfxFontDict = NULL;
+	Ref r = oFontRef.getRef();
+	gfxFontDict = new GfxFontDict(xref, &r, oFonts.getDict());
+	gfxFont = gfxFontDict->lookupByRef(fontID);
+
+	m_unFontStyle = 0;
+
+	// 3 - Актуальный шрифт
+	bool bBold = false, bItalic = false;
+	if (gfxFont)
+	{
+		Ref oEmbRef;
+		const unsigned char* pData14 = NULL;
+		unsigned int nSize14 = 0;
+		std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
+		if (bFullFont && (gfxFont->getEmbeddedFontID(&oEmbRef) || GetBaseFont(wsFontBaseName, pData14, nSize14)))
+		{
+			std::wstring wsFileName, wsFontName;
+			GetFont(xref, pFontManager, pFontList, gfxFont, wsFileName, wsFontName);
+
+			m_sFontName = U_TO_UTF8(wsFontName);
+			CheckFontStylePDF(wsFontName, bBold, bItalic);
+			if (!bBold)
+				bBold = gfxFont->isBold();
+			if (!bItalic)
+				bItalic = gfxFont->isItalic();
+		}
+		else if (!bFullFont || !gfxFont->locateFont(xref, false) || NSStrings::GetStringFromUTF32(gfxFont->locateFont(xref, false)->path).length() == 0)
+		{
+			std::wstring wsFBN = wsFontBaseName;
+			NSFonts::CFontInfo* pFontInfo = GetFontByParams(xref, pFontManager, gfxFont, wsFBN);
+			if (pFontInfo && !pFontInfo->m_wsFontPath.empty())
+			{
+				if (wsFontBaseName.length() > 7 && wsFontBaseName.at(6) == '+')
+				{
+					bool bIsRemove = true;
+					for (int nIndex = 0; nIndex < 6; nIndex++)
+					{
+						wchar_t nChar = wsFontBaseName.at(nIndex);
+						if (nChar < 'A' || nChar > 'Z')
+						{
+							bIsRemove = false;
+							break;
+						}
+					}
+					if (bIsRemove)
+						wsFontBaseName.erase(0, 7);
+				}
+
+				m_sFontName = U_TO_UTF8(wsFontBaseName);
+				m_unFlags |= (1 << 2);
+				m_sActualFontName = U_TO_UTF8(pFontInfo->m_wsFontName);
+				if (pFontInfo->m_bBold)
+					bBold = true;
+				if (pFontInfo->m_bItalic)
+					bItalic = true;
+			}
+		}
+	}
+	RELEASEOBJECT(gfxFontDict);
+	*/
+}
+
+void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
+{
+	// Шрифт и размер шрифта - из DA
+	Ref fontID;
+	pField->getFont(&fontID, &m_dFontSize);
+	bool bFullFont = true;
+	if (fontID.num < 0)
+		bFullFont = false;
+
+	Object oR, oFonts, oFontRef;
+	bool bFindResources = false;
+
+	if (bFullFont && pField->fieldLookup("DR", &oR)->isDict() && oR.dictLookup("Font", &oFonts)->isDict())
+	{
+		for (int i = 0; i < oFonts.dictGetLength(); ++i)
+		{
+			if (oFonts.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
+			{
+				m_sFontKey = oFonts.dictGetKey(i);
+				bFindResources = true;
+				break;
+			}
+			oFontRef.free();
+		}
+	}
+
+	if (bFullFont && !bFindResources)
+	{
+		oR.free(); oFonts.free();
+		AcroForm* pAcroForms = pdfDoc->getCatalog()->getForm();
+		Object* oAcroForm = pAcroForms->getAcroFormObj();
+		if (oAcroForm->isDict() && oAcroForm->dictLookup("DR", &oR)->isDict() && oR.dictLookup("Font", &oFonts)->isDict())
+		{
+			for (int i = 0; i < oFonts.dictGetLength(); ++i)
+			{
+				if (oFonts.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
+				{
+					m_sFontKey = oFonts.dictGetKey(i);
+					bFindResources = true;
+					break;
+				}
+				oFontRef.free();
+			}
+		}
+	}
+
+	Object oAP, oN;
+	XRef* xref = pdfDoc->getXRef();
+	if (!bFullFont)
+	{
+		bFindResources = GetFontFromAP(pdfDoc, pField, &oR, &oFonts, &oFontRef, m_sFontKey);
+		if (bFindResources)
+			fontID = oFontRef.getRef();
+	}
 
 	GfxFont* gfxFont = NULL;
 	GfxFontDict *gfxFontDict = NULL;
@@ -1073,7 +1152,7 @@ void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFont
 			if (!bItalic)
 				bItalic = gfxFont->isItalic();
 		}
-		else if (!gfxFont->locateFont(xref, false) || NSStrings::GetStringFromUTF32(gfxFont->locateFont(xref, false)->path).length() == 0)
+		else if (!bFullFont || !gfxFont->locateFont(xref, false) || NSStrings::GetStringFromUTF32(gfxFont->locateFont(xref, false)->path).length() == 0)
 		{
 			std::wstring wsFBN = wsFontBaseName;
 			NSFonts::CFontInfo* pFontInfo = GetFontByParams(xref, pFontManager, gfxFont, wsFBN);
@@ -1105,6 +1184,7 @@ void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFont
 			}
 		}
 	}
+	RELEASEOBJECT(gfxFontDict);
 
 	// 5 - Уникальный идентификатор шрифта
 	if (!m_sFontKey.empty())
@@ -1114,8 +1194,20 @@ void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFont
 		m_unFontStyle |= (1 << 0);
 	if (bItalic)
 		m_unFontStyle |= (1 << 1);
+}
+void CAnnotWidget::SetButtonFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
+{
+	// Неполноценный шрифт во внешнем виде pushbutton
+	Ref fontID;
+	Object oR, oFonts, oFontRef;
 
-	RELEASEOBJECT(gfxFontDict);
+	if (!GetFontFromAP(pdfDoc, pField, &oR, &oFonts, &oFontRef, m_sFontKey))
+	{
+		oR.free(); oFonts.free(); oFontRef.free();
+		return;
+	}
+
+	fontID = oFontRef.getRef();
 }
 
 //------------------------------------------------------------------------
@@ -1866,6 +1958,8 @@ CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList 
 		if (pAnnot)
 		{
 			pAnnot->SetFont(pdfDoc, pField, pFontManager, pFontList);
+			if (pField->getAcroFormFieldType() == acroFormFieldPushbutton)
+				pAnnot->SetButtonFont(pdfDoc, pField, pFontManager, pFontList);
 			m_arrAnnots.push_back(pAnnot);
 		}
 	}

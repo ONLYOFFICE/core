@@ -213,6 +213,7 @@ public:
 	virtual ~CAnnotWidget();
 
 	void SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CFontList *pFontList);
+	void SetButtonFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CFontList *pFontList);
 
 protected:
 	CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField);

@@ -130,7 +130,11 @@ namespace OOX
 				{
 					ptr->sortOn = 3;
 				}
-
+                else
+                {
+                    ptr->sortOn = 0;
+                }
+                ptr->stSslist = L"";
 				return objectPtr;
 			}
 			EElementType CSortCondition::getType () const
@@ -295,8 +299,12 @@ namespace OOX
 					beginSortState->rfx = m_oRef->GetValue();
 				if(m_oCaseSensitive.IsInit())
 					beginSortState->fCaseSensitive = m_oCaseSensitive->GetValue();
+                else
+                    beginSortState->fCaseSensitive = false;
 				if(m_oColumnSort.IsInit())
 					beginSortState->fCol = m_oColumnSort->GetValue();
+                else
+                    beginSortState->fCol = false;
 				if(m_oSortMethod == SimpleTypes::Spreadsheet::ESortMethod::sortmethodStroke)
 					beginSortState->fAltMethod = true;
 				else
@@ -308,6 +316,7 @@ namespace OOX
 				{
 					sortConds->m_arSORTCOND.push_back(i->toBin());
 				}
+                beginSortState->cconditions = sortConds->m_arSORTCOND.size();
 
 				return objectPtr;
 			}

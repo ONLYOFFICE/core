@@ -462,9 +462,9 @@ PixelChannelMap *AcquirePixelChannelMap()
   (void) memset(channel_map,0,65*sizeof(*channel_map));
   for (i=0; i <= 64; i++)
     channel_map[i].channel=(PixelChannel) i;
-  channel_map[RedPixelChannel].offset = 2;
+  channel_map[RedPixelChannel].offset = 0;
   channel_map[GreenPixelChannel].offset = 1;
-  channel_map[BluePixelChannel].offset = 0;
+  channel_map[BluePixelChannel].offset = 2;
   channel_map[AlphaPixelChannel].offset = 3;
   channel_map[IndexPixelChannel].offset = 5;
 
@@ -2514,7 +2514,7 @@ static unsigned char *DecodeImage(FILE *blob,ImagePICT *image,
   for (y=0; y < (long long) image->m_nHeight; y++)
   {
     q=pixels+y*(long long) width;
-    if (bytes_per_line > 200)
+    if (bytes_per_line > 250)
       scanline_length=ReadShortValue(blob);
     else
       scanline_length=(size_t) ReadByte(blob);
@@ -2558,7 +2558,10 @@ static unsigned char *DecodeImage(FILE *blob,ImagePICT *image,
   }
   free(scanline);
   if (status == 0)
-    free(pixels);
+  {
+     free(pixels);
+     pixels = NULL;
+  }
   return(pixels);
 }
 
@@ -2946,18 +2949,18 @@ int DecodePICT(FILE* hFile, ImagePICT* image)
                           k = ReadShortValue(hFile) % tile_image->colors;
                           if ((flags & 0x8000) != 0)
                             k = (size_t) i;
-                          tile_image->colormap[k].blue = (unsigned char) ReadShortValue(hFile)/* + 128U / 257U*/;
-                          tile_image->colormap[k].green = (unsigned char) ReadShortValue(hFile)/* + 128U / 257U*/;
                           tile_image->colormap[k].red = (unsigned char) ReadShortValue(hFile)/* + 128U / 257U*/;
+                          tile_image->colormap[k].green = (unsigned char) ReadShortValue(hFile)/* + 128U / 257U*/;
+                          tile_image->colormap[k].blue = (unsigned char) ReadShortValue(hFile)/* + 128U / 257U*/;
                         }
                       }
                     else
                       {
                         for (i=0; i < (long long) tile_image->colors; i++)
                         {
-                          tile_image->colormap[i].blue=((double) 255 - tile_image->colormap[i].red);
-                          tile_image->colormap[i].green=((double) 255 - tile_image->colormap[i].green);
                           tile_image->colormap[i].red=((double) 255 - tile_image->colormap[i].blue);
+                          tile_image->colormap[i].green=((double) 255 - tile_image->colormap[i].green);
+                          tile_image->colormap[i].blue=((double) 255 - tile_image->colormap[i].red);
                         }
                       }
                 }

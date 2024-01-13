@@ -67,9 +67,9 @@ bool ImageToFrame(ImagePICT* pImage, CBgraFrame* pFrame, bool isRGBA)
         unsigned char* q = pImage->ppixels + pImage->number_channels * (i * pImage->m_nWidth);
         for (size_t j = 0; j < pImage->m_nWidth; j++)
         {
-            pBufferPtr[indR] = *(q + 2);
-            pBufferPtr[indG] = *(q + 1);
-            pBufferPtr[indB] = *q;
+            pBufferPtr[indR] = * q;
+            pBufferPtr[indG] = * (q + 1);
+            pBufferPtr[indB] = * (q + 2);
             pBufferPtr[3] = *(q + 3);
             q += 4;
             pBufferPtr += 4;

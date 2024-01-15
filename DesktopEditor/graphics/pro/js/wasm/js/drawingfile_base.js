@@ -795,6 +795,8 @@
 				rec["Parent"] = reader.readInt();
 			if (flags & (1 << 18))
 				rec["name"] = reader.readString();
+			if (flags & (1 << 19))
+				rec["font"]["AP"] = reader.readString();
 			// Action
 			let nAction = reader.readInt();
 			if (nAction > 0)

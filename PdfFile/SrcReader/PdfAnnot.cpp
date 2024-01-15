@@ -998,71 +998,74 @@ bool GetFontFromAP(PDFDoc* pdfDoc, AcroFormField* pField, Object* oR, Object* oF
 
 	return bFindResources;
 }
-void GetFontData()
+std::wstring GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList *pFontList, Object* oFonts, Object* oFontRef, int nTypeFonts, std::string& sFontName, std::string& sActualFontName, bool& bBold, bool& bItalic)
 {
-	/*
+	XRef* xref = pdfDoc->getXRef();
+
 	GfxFont* gfxFont = NULL;
 	GfxFontDict *gfxFontDict = NULL;
-	Ref r = oFontRef.getRef();
-	gfxFontDict = new GfxFontDict(xref, &r, oFonts.getDict());
-	gfxFont = gfxFontDict->lookupByRef(fontID);
+	gfxFontDict = new GfxFontDict(xref, NULL, oFonts->getDict());
+	gfxFont = gfxFontDict->lookupByRef(oFontRef->getRef());
 
-	m_unFontStyle = 0;
-
-	// 3 - Актуальный шрифт
-	bool bBold = false, bItalic = false;
-	if (gfxFont)
+	bBold = false, bItalic = false;
+	if (!gfxFont)
 	{
-		Ref oEmbRef;
-		const unsigned char* pData14 = NULL;
-		unsigned int nSize14 = 0;
-		std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
-		if (bFullFont && (gfxFont->getEmbeddedFontID(&oEmbRef) || GetBaseFont(wsFontBaseName, pData14, nSize14)))
-		{
-			std::wstring wsFileName, wsFontName;
-			GetFont(xref, pFontManager, pFontList, gfxFont, wsFileName, wsFontName);
+		RELEASEOBJECT(gfxFontDict);
+		return L"";
+	}
 
-			m_sFontName = U_TO_UTF8(wsFontName);
-			CheckFontStylePDF(wsFontName, bBold, bItalic);
-			if (!bBold)
-				bBold = gfxFont->isBold();
-			if (!bItalic)
-				bItalic = gfxFont->isItalic();
-		}
-		else if (!bFullFont || !gfxFont->locateFont(xref, false) || NSStrings::GetStringFromUTF32(gfxFont->locateFont(xref, false)->path).length() == 0)
+	Ref oEmbRef;
+	const unsigned char* pData14 = NULL;
+	unsigned int nSize14 = 0;
+	std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
+	std::wstring wsFileName;
+
+	if (((nTypeFonts & 1) && gfxFont->getEmbeddedFontID(&oEmbRef)) || ((nTypeFonts & 2) && GetBaseFont(wsFontBaseName, pData14, nSize14)))
+	{
+		std::wstring wsFontName;
+		GetFont(xref, pFontManager, pFontList, gfxFont, wsFileName, wsFontName);
+
+		sFontName = U_TO_UTF8(wsFontName);
+		CheckFontStylePDF(wsFontName, bBold, bItalic);
+		if (!bBold)
+			bBold = gfxFont->isBold();
+		if (!bItalic)
+			bItalic = gfxFont->isItalic();
+	}
+	else if (nTypeFonts & 4)
+	{
+		std::wstring wsFBN = wsFontBaseName;
+		NSFonts::CFontInfo* pFontInfo = GetFontByParams(xref, pFontManager, gfxFont, wsFBN);
+		if (pFontInfo && !pFontInfo->m_wsFontPath.empty())
 		{
-			std::wstring wsFBN = wsFontBaseName;
-			NSFonts::CFontInfo* pFontInfo = GetFontByParams(xref, pFontManager, gfxFont, wsFBN);
-			if (pFontInfo && !pFontInfo->m_wsFontPath.empty())
+			if (wsFontBaseName.length() > 7 && wsFontBaseName.at(6) == '+')
 			{
-				if (wsFontBaseName.length() > 7 && wsFontBaseName.at(6) == '+')
+				bool bIsRemove = true;
+				for (int nIndex = 0; nIndex < 6; nIndex++)
 				{
-					bool bIsRemove = true;
-					for (int nIndex = 0; nIndex < 6; nIndex++)
+					wchar_t nChar = wsFontBaseName.at(nIndex);
+					if (nChar < 'A' || nChar > 'Z')
 					{
-						wchar_t nChar = wsFontBaseName.at(nIndex);
-						if (nChar < 'A' || nChar > 'Z')
-						{
-							bIsRemove = false;
-							break;
-						}
+						bIsRemove = false;
+						break;
 					}
-					if (bIsRemove)
-						wsFontBaseName.erase(0, 7);
 				}
-
-				m_sFontName = U_TO_UTF8(wsFontBaseName);
-				m_unFlags |= (1 << 2);
-				m_sActualFontName = U_TO_UTF8(pFontInfo->m_wsFontName);
-				if (pFontInfo->m_bBold)
-					bBold = true;
-				if (pFontInfo->m_bItalic)
-					bItalic = true;
+				if (bIsRemove)
+					wsFontBaseName.erase(0, 7);
 			}
+
+			wsFileName = pFontInfo->m_wsFontPath;
+			sFontName  = U_TO_UTF8(wsFontBaseName);
+			sActualFontName = U_TO_UTF8(pFontInfo->m_wsFontName);
+			if (pFontInfo->m_bBold)
+				bBold = true;
+			if (pFontInfo->m_bItalic)
+				bItalic = true;
 		}
 	}
+
 	RELEASEOBJECT(gfxFontDict);
-	*/
+	return wsFileName;
 }
 
 void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
@@ -1111,85 +1114,23 @@ void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFont
 		}
 	}
 
-	Object oAP, oN;
-	XRef* xref = pdfDoc->getXRef();
 	if (!bFullFont)
-	{
 		bFindResources = GetFontFromAP(pdfDoc, pField, &oR, &oFonts, &oFontRef, m_sFontKey);
-		if (bFindResources)
-			fontID = oFontRef.getRef();
-	}
 
-	GfxFont* gfxFont = NULL;
-	GfxFontDict *gfxFontDict = NULL;
+	bool bBold = false, bItalic = false;
 	if (bFindResources)
-	{
-		Ref r = oFontRef.getRef();
-		gfxFontDict = new GfxFontDict(xref, &r, oFonts.getDict());
-		gfxFont = gfxFontDict->lookupByRef(fontID);
-	}
+		GetFontData(pdfDoc, pFontManager, pFontList, &oFonts, &oFontRef, bFullFont ? 7 : 4, m_sFontName, m_sActualFontName, bBold, bItalic);
 	oR.free(); oFonts.free(); oFontRef.free();
 
-	m_unFontStyle = 0;
-
 	// 3 - Актуальный шрифт
-	bool bBold = false, bItalic = false;
-	if (gfxFont)
-	{
-		Ref oEmbRef;
-		const unsigned char* pData14 = NULL;
-		unsigned int nSize14 = 0;
-		std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
-		if (bFullFont && (gfxFont->getEmbeddedFontID(&oEmbRef) || GetBaseFont(wsFontBaseName, pData14, nSize14)))
-		{
-			std::wstring wsFileName, wsFontName;
-			GetFont(xref, pFontManager, pFontList, gfxFont, wsFileName, wsFontName);
-
-			m_sFontName = U_TO_UTF8(wsFontName);
-			CheckFontStylePDF(wsFontName, bBold, bItalic);
-			if (!bBold)
-				bBold = gfxFont->isBold();
-			if (!bItalic)
-				bItalic = gfxFont->isItalic();
-		}
-		else if (!bFullFont || !gfxFont->locateFont(xref, false) || NSStrings::GetStringFromUTF32(gfxFont->locateFont(xref, false)->path).length() == 0)
-		{
-			std::wstring wsFBN = wsFontBaseName;
-			NSFonts::CFontInfo* pFontInfo = GetFontByParams(xref, pFontManager, gfxFont, wsFBN);
-			if (pFontInfo && !pFontInfo->m_wsFontPath.empty())
-			{
-				if (wsFontBaseName.length() > 7 && wsFontBaseName.at(6) == '+')
-				{
-					bool bIsRemove = true;
-					for (int nIndex = 0; nIndex < 6; nIndex++)
-					{
-						wchar_t nChar = wsFontBaseName.at(nIndex);
-						if (nChar < 'A' || nChar > 'Z')
-						{
-							bIsRemove = false;
-							break;
-						}
-					}
-					if (bIsRemove)
-						wsFontBaseName.erase(0, 7);
-				}
-
-				m_sFontName = U_TO_UTF8(wsFontBaseName);
-				m_unFlags |= (1 << 2);
-				m_sActualFontName = U_TO_UTF8(pFontInfo->m_wsFontName);
-				if (pFontInfo->m_bBold)
-					bBold = true;
-				if (pFontInfo->m_bItalic)
-					bItalic = true;
-			}
-		}
-	}
-	RELEASEOBJECT(gfxFontDict);
+	if (!m_sActualFontName.empty())
+		m_unFlags |= (1 << 2);
 
 	// 5 - Уникальный идентификатор шрифта
 	if (!m_sFontKey.empty())
 		m_unFlags |= (1 << 4);
 
+	m_unFontStyle = 0;
 	if (bBold)
 		m_unFontStyle |= (1 << 0);
 	if (bItalic)
@@ -1198,7 +1139,6 @@ void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFont
 void CAnnotWidget::SetButtonFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
 {
 	// Неполноценный шрифт во внешнем виде pushbutton
-	Ref fontID;
 	Object oR, oFonts, oFontRef;
 
 	if (!GetFontFromAP(pdfDoc, pField, &oR, &oFonts, &oFontRef, m_sFontKey))
@@ -1207,7 +1147,12 @@ void CAnnotWidget::SetButtonFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts:
 		return;
 	}
 
-	fontID = oFontRef.getRef();
+	bool bBold = false, bItalic = false;
+	GetFontData(pdfDoc, pFontManager, pFontList, &oFonts, &oFontRef, 3, m_sButtonFontName, m_sButtonFontName, bBold, bItalic);
+	if (!m_sButtonFontName.empty())
+		m_unFlags |= (1 << 19);
+
+	oR.free(); oFonts.free(); oFontRef.free();
 }
 
 //------------------------------------------------------------------------
@@ -2869,6 +2814,8 @@ void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
 		oRes.AddInt(m_unRefNumParent);
 	if (m_unFlags & (1 << 18))
 		oRes.WriteString(m_sT);
+	if (m_unFlags & (1 << 19))
+		oRes.WriteString(m_sButtonFontName);
 	oRes.AddInt(m_arrAction.size());
 	for (int i = 0; i < m_arrAction.size(); ++i)
 	{

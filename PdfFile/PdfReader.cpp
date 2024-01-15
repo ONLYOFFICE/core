@@ -946,6 +946,27 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
 		if (!pField)
 			continue;
 
+		if (pField->getAcroFormFieldType() == acroFormFieldPushbutton)
+		{
+			std::string sFontKey;
+			Object oR, oFonts, oFontRef;
+			if (PdfReader::GetFontFromAP(m_pPDFDocument, pField, &oR, &oFonts, &oFontRef, sFontKey))
+			{
+				std::string sFontName;
+				bool bBold = false, bItalic = false;
+				std::wstring wsFileName = PdfReader::GetFontData(m_pPDFDocument, m_pFontManager, m_pFontList, &oFonts, &oFontRef, nTypeFonts, sFontName, sFontName, bBold, bItalic);
+
+				if (!sFontName.empty())
+				{
+					oRes.WriteString(sFontName);
+					nFontsID++;
+					arrFontsRef.push_back(oFontRef.getRefNum());
+					m_mFonts[UTF8_TO_U(sFontName)] = wsFileName;
+				}
+			}
+			oR.free(); oFonts.free(); oFontRef.free();
+		}
+
 		// Шрифт и размер шрифта - из DA
 		Ref fontID;
 		double dFontSize = 0;
@@ -953,93 +974,53 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
 		if (fontID.num < 0 || std::find(arrFontsRef.begin(), arrFontsRef.end(), fontID.num) != arrFontsRef.end())
 			continue;
 
-		Object oObj, oField, oFont;
-		pField->getFieldRef(&oObj);
-		oObj.fetch(xref, &oField);
-		oObj.free();
-
+		Object oR, oFonts, oFontRef;
 		bool bFindResources = false;
-		if (oField.dictLookup("DR", &oObj)->isDict() && oObj.dictLookup("Font", &oFont)->isDict())
+		if (pField->fieldLookup("DR", &oR)->isDict() && oR.dictLookup("Font", &oFonts)->isDict())
 		{
-			for (int i = 0; i < oFont.dictGetLength(); ++i)
+			for (int i = 0; i < oFonts.dictGetLength(); ++i)
 			{
-				Object oFontRef;
-				if (oFont.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
+				if (oFonts.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
 				{
 					bFindResources = true;
-					oFontRef.free();
 					break;
 				}
 				oFontRef.free();
 			}
 		}
-		oFont.free(); oField.free();
 
 		if (!bFindResources)
 		{
-			oObj.free();
+			oR.free(); oFonts.free();
 			Object* oAcroForm = pAcroForms->getAcroFormObj();
-			if (oAcroForm->isDict() && oAcroForm->dictLookup("DR", &oObj)->isDict() && oObj.dictLookup("Font", &oFont)->isDict())
+			if (oAcroForm->isDict() && oAcroForm->dictLookup("DR", &oR)->isDict() && oR.dictLookup("Font", &oFonts)->isDict())
 			{
-				for (int i = 0; i < oFont.dictGetLength(); ++i)
+				for (int i = 0; i < oFonts.dictGetLength(); ++i)
 				{
-					Object oFontRef;
-					if (oFont.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
+					if (oFonts.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
 					{
 						bFindResources = true;
-						oFontRef.free();
 						break;
 					}
 					oFontRef.free();
 				}
 			}
-			oFont.free();
 		}
 
-		GfxFont* gfxFont = NULL;
-		GfxFontDict *gfxFontDict = NULL;
+		std::string sFontName;
+		std::wstring wsFileName;
+		bool bBold = false, bItalic = false;
 		if (bFindResources)
-		{
-			Object oFontsRef;
-			if (oObj.dictLookupNF("Font", &oFontsRef)->isRef())
-			{
-				if (oFontsRef.fetch(xref, &oFont)->isDict())
-				{
-					Ref r = oFontsRef.getRef();
-					gfxFontDict = new GfxFontDict(xref, &r, oFont.getDict());
-					gfxFont = gfxFontDict->lookupByRef(fontID);
-				}
-				oFont.free();
-			}
-			else if (oFontsRef.isDict())
-			{
-				gfxFontDict = new GfxFontDict(xref, NULL, oFontsRef.getDict());
-				gfxFont = gfxFontDict->lookupByRef(fontID);
-			}
-			oFontsRef.free();
-		}
-		oObj.free();
+			wsFileName = PdfReader::GetFontData(m_pPDFDocument, m_pFontManager, m_pFontList, &oFonts, &oFontRef, nTypeFonts, sFontName, sFontName, bBold, bItalic);
 
-		if (gfxFont)
+		if (!sFontName.empty())
 		{
-			Ref oEmbRef;
-			const unsigned char* pData14 = NULL;
-			unsigned int nSize14 = 0;
-			std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
-			if ((nTypeFonts == 1 && gfxFont->getEmbeddedFontID(&oEmbRef)) ||
-				(nTypeFonts == 2 && PdfReader::GetBaseFont(wsFontBaseName, pData14, nSize14)))
-			{
-				std::wstring wsFileName, wsFontName;
-				PdfReader::GetFont(xref, m_pFontManager, m_pFontList, gfxFont, wsFileName, wsFontName);
-
-				std::string sFileName = U_TO_UTF8(wsFontName);
-				oRes.WriteString(sFileName);
-				nFontsID++;
-				arrFontsRef.push_back(fontID.num);
-				m_mFonts[wsFontName] = wsFileName;
-			}
+			oRes.WriteString(sFontName);
+			nFontsID++;
+			arrFontsRef.push_back(oFontRef.getRefNum());
+			m_mFonts[UTF8_TO_U(sFontName)] = wsFileName;
 		}
-		RELEASEOBJECT(gfxFontDict);
+		oR.free(); oFonts.free(); oFontRef.free();
 	}
 
 	oRes.AddInt(nFontsID, nFontsPos);

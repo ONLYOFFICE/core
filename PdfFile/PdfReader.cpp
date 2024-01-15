@@ -946,11 +946,17 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
 		if (!pField)
 			continue;
 
+		// Шрифт и размер шрифта - из DA
+		Ref fontID;
+		double dFontSize = 0;
+		pField->getFont(&fontID, &dFontSize);
+
 		if (pField->getAcroFormFieldType() == acroFormFieldPushbutton)
 		{
 			std::string sFontKey;
 			Object oR, oFonts, oFontRef;
-			if (PdfReader::GetFontFromAP(m_pPDFDocument, pField, &oR, &oFonts, &oFontRef, sFontKey))
+			if (PdfReader::GetFontFromAP(m_pPDFDocument, pField, &oR, &oFonts, &oFontRef, sFontKey) &&
+				std::find(arrFontsRef.begin(), arrFontsRef.end(), oFontRef.getRefNum()) == arrFontsRef.end())
 			{
 				std::string sFontName;
 				bool bBold = false, bItalic = false;
@@ -962,15 +968,17 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
 					nFontsID++;
 					arrFontsRef.push_back(oFontRef.getRefNum());
 					m_mFonts[UTF8_TO_U(sFontName)] = wsFileName;
+
+					if (fontID.num == oFontRef.getRefNum())
+					{
+						oR.free(); oFonts.free(); oFontRef.free();
+						continue;
+					}
 				}
 			}
 			oR.free(); oFonts.free(); oFontRef.free();
 		}
 
-		// Шрифт и размер шрифта - из DA
-		Ref fontID;
-		double dFontSize = 0;
-		pField->getFont(&fontID, &dFontSize);
 		if (fontID.num < 0 || std::find(arrFontsRef.begin(), arrFontsRef.end(), fontID.num) != arrFontsRef.end())
 			continue;
 

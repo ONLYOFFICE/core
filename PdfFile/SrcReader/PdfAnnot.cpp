@@ -1119,7 +1119,7 @@ void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFont
 
 	bool bBold = false, bItalic = false;
 	if (bFindResources)
-		GetFontData(pdfDoc, pFontManager, pFontList, &oFonts, &oFontRef, bFullFont ? 7 : 4, m_sFontName, m_sActualFontName, bBold, bItalic);
+		GetFontData(pdfDoc, pFontManager, pFontList, &oFonts, &oFontRef, bFullFont ? 7 : 6, m_sFontName, m_sActualFontName, bBold, bItalic);
 	oR.free(); oFonts.free(); oFontRef.free();
 
 	// 3 - Актуальный шрифт

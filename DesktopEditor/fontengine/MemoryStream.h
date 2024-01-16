@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -255,7 +255,7 @@ namespace NSMemoryStream
 		{
 			int nLen2 = nLen << 1;
 			CheckBufferSize(nLen2 + sizeof(INT));
-			WriteLONG(nLen);
+			WriteLONG(nLen2);
 			WriteStringTruncate2(pData, nLen2);
 		}
 

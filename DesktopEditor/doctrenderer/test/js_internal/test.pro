@@ -13,6 +13,7 @@ CORE_ROOT_DIR = $$PWD/../../../../../core
 CORE_3DPARTY_DIR = $$CORE_ROOT_DIR/Common/3dParty
 PWD_ROOT_DIR = $$PWD
 
+#CONFIG += build_xp
 include($$CORE_ROOT_DIR/Common/base.pri)
 
 # Comment to inspect custom main

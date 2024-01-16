@@ -159,7 +159,7 @@ TEST_F(CJSONStringifyTest, undefined)
 {
 	JSSmart<CJSValue> jsValue = CJSContext::createUndefined();
 	std::string sRes = m_pContext->JSON_Stringify(jsValue);
-	EXPECT_TRUE(sRes.empty());
+	EXPECT_EQ(sRes, "");
 }
 
 TEST_F(CJSONStringifyTest, null)
@@ -226,7 +226,6 @@ TEST_F(CJSONStringifyTest, typed_arrays)
 
 	std::string sRes = m_pContext->JSON_Stringify(jsTypedArr->toValue());
 	EXPECT_EQ(sRes, "{\"0\":26,\"1\":84,\"2\":254,\"3\":255}");
-	NSAllocator::Free(data, 4);
 }
 
 TEST_F(CJSONStringifyTest, empty_object)

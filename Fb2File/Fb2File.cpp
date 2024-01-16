@@ -1551,65 +1551,27 @@ public:
 						m_oTitleInfo.m_sKeywords = EncodeXmlString(sAtrContent);
 				}
 			}
-			else if (sName == L"h1")
+			else if (sName == L"h1" || sName == L"h2" || sName == L"h3" || sName == L"h4" || sName == L"h5" || sName == L"h6")
 			{
-				if (!m_bInTable)
-					oXml.WriteString(L"<section><title><p>");
-				m_bInP = true;
+				bool bInH = false;
+				int nH = 0;
+				if (!m_bInTable && !m_bInP)
+				{
+					nH = stoi(sName.substr(1));
+					for (int i = 0; i < nH; ++i)
+						oXml.WriteString(L"<section>");
+					oXml.WriteString(L"<title><p>");
+					bInH = true;
+					m_bInP = true;
+				}
 				readStream(oXml);
-				m_bInP = false;
-				if (!m_bInTable)
-					oXml.WriteString(L"</p></title></section>");
-			}
-			else if (sName == L"h2")
-			{
-				if (!m_bInTable)
-					oXml.WriteString(L"<section><section><title><p>");
-				m_bInP = true;
-				readStream(oXml);
-				m_bInP = false;
-				if (!m_bInTable)
-					oXml.WriteString(L"</p></title></section></section>");
-			}
-			else if (sName == L"h3")
-			{
-				if (!m_bInTable)
-					oXml.WriteString(L"<section><section><section><title><p>");
-				m_bInP = true;
-				readStream(oXml);
-				m_bInP = false;
-				if (!m_bInTable)
-					oXml.WriteString(L"</p></title></section></section></section>");
-			}
-			else if (sName == L"h4")
-			{
-				if (!m_bInTable)
-					oXml.WriteString(L"<section><section><section><section><title><p>");
-				m_bInP = true;
-				readStream(oXml);
-				m_bInP = false;
-				if (!m_bInTable)
-					oXml.WriteString(L"</p></title></section></section></section></section>");
-			}
-			else if (sName == L"h5")
-			{
-				if (!m_bInTable)
-					oXml.WriteString(L"<section><section><section><section><section><title><p>");
-				m_bInP = true;
-				readStream(oXml);
-				m_bInP = false;
-				if (!m_bInTable)
-					oXml.WriteString(L"</p></title></section></section></section></section></section>");
-			}
-			else if (sName == L"h6")
-			{
-				if (!m_bInTable)
-					oXml.WriteString(L"<section><section><section><section><section><section><title><p>");
-				m_bInP = true;
-				readStream(oXml);
-				m_bInP = false;
-				if (!m_bInTable)
-					oXml.WriteString(L"</p></title></section></section></section></section></section></section>");
+				if (bInH)
+				{
+					oXml.WriteString(L"</p></title>");
+					for (int i = 0; i < nH; ++i)
+						oXml.WriteString(L"</section>");
+					m_bInP = false;
+				}
 			}
 			else if (sName == L"span")
 			{

@@ -387,6 +387,25 @@ namespace NSJSBase
 		return _value;
 	}
 
+	std::string CJSContext::JSON_Stringify(JSSmart<CJSValue> value)
+	{
+		CJSValueJSC* _value = static_cast<CJSValueJSC*>(value.GetPointer());
+		JSStringRef ret = JSValueCreateJSONString(m_internal->context.JSGlobalContextRef, _value->value.JSValueRef, 0, nullptr);
+		if (ret == nullptr)
+			return "";
+
+		const size_t nBufferSize = JSStringGetMaximumUTF8CStringSize(ret);
+		char* buffer = new char[nBufferSize];
+		if (buffer == nullptr)
+			return "";
+
+		JSStringGetUTF8CString(ret, buffer, nBufferSize);
+		std::string sRet(buffer);
+		delete[] buffer;
+
+		return sRet;
+	}
+
 	void CJSContext::MoveToThread(ASC_THREAD_ID* id)
 	{
 		if (CGlobalContext::GetInstance().RegisterContext(m_internal, id))

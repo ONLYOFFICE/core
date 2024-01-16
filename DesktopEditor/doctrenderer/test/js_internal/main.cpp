@@ -1,11 +1,17 @@
-#include "gtest/gtest.h"
-
 #include "js_internal/js_base.h"
 
+#ifdef JS_INTERNAL_GOOGLE_TEST
+#include "gtest/gtest.h"
 #include <algorithm>
+#else
+#include <iostream>
+#endif
 
 using namespace NSJSBase;
 
+#ifdef JS_INTERNAL_GOOGLE_TEST
+// CJSObject::getPropertyNames() tests
+// run with "--gtest_filter=CGetPropertyNamesTest.*" to run only this test suite
 class CGetPropertyNamesTest : public testing::Test
 {
 public:
@@ -122,3 +128,190 @@ TEST_F(CGetPropertyNamesTest, object_with_prototype)
 	std::vector<std::string> expected2 = {"name", "greet"};
 	EXPECT_TRUE(compare(result2, expected2)) << printInfo("Actual: ", result2) << printInfo("Expected: ", expected2);
 }
+
+// CJSContext::JSON_Stringify() tests
+// run with "--gtest_filter=CJSONStringifyTest.*" to run only this test suite
+class CJSONStringifyTest : public testing::Test
+{
+public:
+	void SetUp() override
+	{
+		// create and enter context
+		m_pContext = new CJSContext();
+		m_pContext->Enter();
+	}
+
+	void TearDown() override
+	{
+		m_pContext->Exit();
+	}
+
+	JSSmart<CJSObject> createObject(const std::string& objLiteral)
+	{
+		return m_pContext->runScript("(() => { return " + objLiteral + ";})();")->toObject();
+	}
+
+public:
+	JSSmart<CJSContext> m_pContext;
+};
+
+TEST_F(CJSONStringifyTest, undefined)
+{
+	JSSmart<CJSValue> jsValue = CJSContext::createUndefined();
+	std::string sRes = m_pContext->JSON_Stringify(jsValue);
+	EXPECT_TRUE(sRes.empty());
+}
+
+TEST_F(CJSONStringifyTest, null)
+{
+	JSSmart<CJSValue> jsValue = CJSContext::createNull();
+	std::string sRes = m_pContext->JSON_Stringify(jsValue);
+	EXPECT_EQ(sRes, "null");
+}
+
+TEST_F(CJSONStringifyTest, numbers)
+{
+	JSSmart<CJSValue> jsValue = CJSContext::createInt(42);
+	std::string sRes = m_pContext->JSON_Stringify(jsValue);
+	EXPECT_EQ(sRes, "42");
+
+	jsValue = CJSContext::createUInt(7);
+	sRes = m_pContext->JSON_Stringify(jsValue);
+	EXPECT_EQ(sRes, "7");
+
+	jsValue = CJSContext::createDouble(3.1415926535);
+	sRes = m_pContext->JSON_Stringify(jsValue);
+	EXPECT_EQ(sRes, "3.1415926535");
+}
+
+TEST_F(CJSONStringifyTest, strings)
+{
+	JSSmart<CJSValue> jsValue = CJSContext::createString("");
+	std::string sRes = m_pContext->JSON_Stringify(jsValue);
+	EXPECT_EQ(sRes, "\"\"");
+
+	jsValue = CJSContext::createString("foo bar");
+	sRes = m_pContext->JSON_Stringify(jsValue);
+	EXPECT_EQ(sRes, "\"foo bar\"");
+}
+
+TEST_F(CJSONStringifyTest, arrays)
+{
+	JSSmart<CJSArray> jsArr = CJSContext::createArray(0);
+	std::string sRes = m_pContext->JSON_Stringify(jsArr->toValue());
+	EXPECT_EQ(sRes, "[]");
+
+	jsArr = CJSContext::createArray(4);
+	jsArr->set(0, 42);
+	// inner array
+	JSSmart<CJSArray> jsArrInner = CJSContext::createArray(2);
+	jsArrInner->set(0, CJSContext::createString("foo"));
+	jsArrInner->set(1, CJSContext::createDouble(2.71828));
+	jsArr->set(1, jsArrInner->toValue());
+
+	jsArr->set(2, CJSContext::createNull());
+	jsArr->set(3, CJSContext::createUndefined());
+	sRes = m_pContext->JSON_Stringify(jsArr->toValue());
+	EXPECT_EQ(sRes, "[42,[\"foo\",2.71828],null,null]");
+}
+
+TEST_F(CJSONStringifyTest, typed_arrays)
+{
+	BYTE* data = NSAllocator::Alloc(4);
+	data[0] = 0x1A;
+	data[1] = 0x54;
+	data[2] = 0xFE;
+	data[3] = 0xFF;
+	JSSmart<CJSTypedArray> jsTypedArr = CJSContext::createUint8Array(data, 4, false);
+
+	std::string sRes = m_pContext->JSON_Stringify(jsTypedArr->toValue());
+	EXPECT_EQ(sRes, "{\"0\":26,\"1\":84,\"2\":254,\"3\":255}");
+	NSAllocator::Free(data, 4);
+}
+
+TEST_F(CJSONStringifyTest, empty_object)
+{
+	JSSmart<CJSObject> jsObj = CJSContext::createObject();
+	std::string sRes = m_pContext->JSON_Stringify(jsObj->toValue());
+	EXPECT_EQ(sRes, "{}");
+
+	jsObj->set("number", CJSContext::createInt(42));
+	jsObj->set("name", CJSContext::createString("foo"));
+	sRes = m_pContext->JSON_Stringify(jsObj->toValue());
+	EXPECT_EQ(sRes, "{\"number\":42,\"name\":\"foo\"}");
+}
+
+TEST_F(CJSONStringifyTest, normal_object)
+{
+	JSSmart<CJSObject> jsObj = createObject("{number: 42, name: 'foo', arr: [1, 'abc', 2, 3], func() { return 'bar'; }}");
+	std::string sRes = m_pContext->JSON_Stringify(jsObj->toValue());
+	EXPECT_EQ(sRes, "{\"number\":42,\"name\":\"foo\",\"arr\":[1,\"abc\",2,3]}");
+}
+
+TEST_F(CJSONStringifyTest, only_one_function_in_object)
+{
+	JSSmart<CJSObject> jsObj = createObject("{add(a, b) { return a + b; }}");
+	std::string sRes = m_pContext->JSON_Stringify(jsObj->toValue());
+	EXPECT_EQ(sRes, "{}");
+}
+
+TEST_F(CJSONStringifyTest, inner_object)
+{
+	JSSmart<CJSObject> jsObj = createObject("{inner: {number: 42, name: 'foo'}, own: 'bar'}");
+	std::string sRes = m_pContext->JSON_Stringify(jsObj->toValue());
+	EXPECT_EQ(sRes, "{\"inner\":{\"number\":42,\"name\":\"foo\"},\"own\":\"bar\"}");
+}
+
+TEST_F(CJSONStringifyTest, object_with_null_and_undefined_properties)
+{
+	JSSmart<CJSObject> jsObj = createObject("{number: null, name: undefined, func() { return 'bar'; }}");
+	std::string sRes = m_pContext->JSON_Stringify(jsObj->toValue());
+	EXPECT_EQ(sRes, "{\"number\":null}");
+}
+
+TEST_F(CJSONStringifyTest, object_with_only_undefined_properties)
+{
+	JSSmart<CJSObject> jsObj = createObject("{foo: undefined, bar: undefined}");
+	std::string sRes = m_pContext->JSON_Stringify(jsObj->toValue());
+	EXPECT_EQ(sRes, "{}");
+}
+
+TEST_F(CJSONStringifyTest, array_as_object)
+{
+	JSSmart<CJSObject> jsObj = createObject("{0: 4, 1: 2, 2: undefined, 3: 'foo', 42: 'bar'}");
+	std::string sRes = m_pContext->JSON_Stringify(jsObj->toValue());
+	EXPECT_EQ(sRes, "{\"0\":4,\"1\":2,\"3\":\"foo\",\"42\":\"bar\"}");
+}
+
+TEST_F(CJSONStringifyTest, object_with_prototype)
+{
+	m_pContext->runScript(
+		"var personPrototype = { age: 42, greet() { return 'Hello, world!'; } };"
+		"function Person(name) { this.name = name; }"
+	);
+
+	JSSmart<CJSObject> jsObj = m_pContext->runScript("new Person('Foo');")->toObject();
+	std::string sRes = m_pContext->JSON_Stringify(jsObj->toValue());
+	EXPECT_EQ(sRes, "{\"name\":\"Foo\"}");
+
+	m_pContext->runScript("Object.assign(Person.prototype, personPrototype);");
+	sRes = m_pContext->JSON_Stringify(jsObj->toValue());
+	// expect the same result, because JSON.stringify does not preserve any of the not-owned properties of the object
+	EXPECT_EQ(sRes, "{\"name\":\"Foo\"}");
+}
+
+#else
+int main()
+{
+	JSSmart<CJSContext> pContext = new CJSContext();
+	CJSContextScope scope(pContext);
+
+	JSSmart<CJSObject> jsObj = CJSContext::createObject();
+	jsObj->set("number", CJSContext::createInt(42));
+	jsObj->set("name", CJSContext::createString("foo"));
+
+	std::cout << pContext->JSON_Stringify(jsObj->toValue()) << std::endl;
+
+	return 0;
+}
+#endif	// JS_INTERNAL_GOOGLE_TEST

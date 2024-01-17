@@ -2100,13 +2100,23 @@ namespace PdfWriter
 
 		m_pStream->WriteStr("q\012");
 
-		m_pStream->WriteReal(dBorderSizeStyle);
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(dBorderSizeStyle);
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(std::max(dWidth - dBorderSizeStyle * 2, 0.0));
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(std::max(dHeight - dBorderSizeStyle * 2, 0.0));
+		if (pAnnot && pAnnot->GetWidgetType() == WidgetPushbutton && !((CPushButtonWidget*)pAnnot)->GetRespectBorder())
+		{
+			m_pStream->WriteStr("0 0 ");
+			m_pStream->WriteReal(std::max(dWidth, 0.0));
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(std::max(dHeight, 0.0));
+		}
+		else
+		{
+			m_pStream->WriteReal(dBorderSizeStyle);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dBorderSizeStyle);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(std::max(dWidth - dBorderSizeStyle * 2, 0.0));
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(std::max(dHeight - dBorderSizeStyle * 2, 0.0));
+		}
 		m_pStream->WriteStr(" re\012W\012n\012");
 
 		if (pAnnot && pAnnot->GetWidgetType() == WidgetListbox)
@@ -2129,10 +2139,6 @@ namespace PdfWriter
 				m_pStream->WriteReal(dBaseLine);
 				m_pStream->WriteStr(" re\012f\012");
 			}
-		}
-		if (pAnnot && pAnnot->GetWidgetType() == WidgetPushbutton)
-		{
-
 		}
 
 		m_pStream->WriteStr("BT\012");

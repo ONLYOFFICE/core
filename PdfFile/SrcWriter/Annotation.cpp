@@ -219,6 +219,12 @@ namespace PdfWriter
 		m_oBorder.dWidth = dWidth;
 		m_oBorder.arrDash = arrDash;
 	}
+	void CAnnotation::SetEmptyBorder()
+	{
+		m_oBorder.bHave = true;
+		m_oBorder.nType = 0;
+		m_oBorder.dWidth = 1;
+	}
 	void CAnnotation::SetAnnotFlag(const int& nAnnotFlag)
 	{
 		Add("F", nAnnotFlag);
@@ -1218,6 +1224,7 @@ namespace PdfWriter
 
 		std::string sValue = U_TO_UTF8(wsRC);
 		m_pMK->Add("RC", new CStringObject(sValue.c_str(), true));
+		m_wsRC = wsRC;
 	}
 	void CPushButtonWidget::SetAC(const std::wstring& wsAC)
 	{
@@ -1225,19 +1232,20 @@ namespace PdfWriter
 
 		std::string sValue = U_TO_UTF8(wsAC);
 		m_pMK->Add("AC", new CStringObject(sValue.c_str(), true));
+		m_wsAC = wsAC;
 	}
-	void CPushButtonWidget::SetAP(CXObject* pForm, const std::string& sAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts)
+	void CPushButtonWidget::SetAP(CXObject* pForm, BYTE nAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, double dLineW, double dLineH, CFontCidTrueType** ppFonts)
 	{
 		m_pAppearance = new CAnnotAppearance(m_pXref, this);
 		if (!m_pAppearance)
 			return;
 
 		CAnnotAppearanceObject* pAppearance = NULL;
-		if (sAP == "I")
+		if (nAP == 0)
 			pAppearance = m_pAppearance->GetNormal();
-		else if (sAP == "RI")
+		else if (nAP == 1)
 			pAppearance = m_pAppearance->GetRollover();
-		else if (sAP == "IX")
+		else if (nAP == 2)
 			pAppearance = m_pAppearance->GetDown();
 		if (!pAppearance)
 			return;
@@ -1245,10 +1253,12 @@ namespace PdfWriter
 
 		if (pForm)
 		{
-			TRect oRect = GetRect();
-
-			double dH = fabs(oRect.fTop - oRect.fBottom);
-			double dW = fabs(oRect.fRight - oRect.fLeft);
+			double dH = fabs(m_oRect.fTop - m_oRect.fBottom);
+			double dW = fabs(m_oRect.fRight - m_oRect.fLeft);
+			if (m_nTP == 2 || m_nTP == 3)
+				dH -= dLineH;
+			if (m_nTP == 4 || m_nTP == 5)
+				dW -= dLineW;
 
 			double dOriginW = pForm->GetWidth();
 			double dOriginH = pForm->GetHeight();
@@ -1261,10 +1271,16 @@ namespace PdfWriter
 			double dDstH = dOriginH;
 			double dDstX = 0;
 			double dDstY = 0;
+			if (m_nTP == 2 || m_nTP == 3)
+				dDstY += dLineH;
+			if (m_nTP == 4 || m_nTP == 5)
+				dDstX += dLineW;
 
-			if (m_bRespectBorders && HaveBorder())
+			if (m_bRespectBorders && m_oBorder.bHave)
 			{
-				double dBorderSize = GetBorderWidth();
+				double dBorderSize = m_oBorder.dWidth;
+				if (m_oBorder.nType == 1 || m_oBorder.nType == 3)
+					dBorderSize *= 2;
 				dDstX += 2 * dBorderSize;
 				dDstY += 2 * dBorderSize;
 				dH -= 4 * dBorderSize;
@@ -1292,19 +1308,24 @@ namespace PdfWriter
 			pAppearance->DrawPicture(pForm->GetName().c_str(), dDstX, dDstY, dDstW / dOriginW, dDstH / dOriginH, m_bRespectBorders);
 		}
 		else
-			pAppearance->DrawPicture();
+			pAppearance->StartDrawText(m_pFont, m_dFontSize, 0, 0, 0, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
 
 		if (pCodes)
 		{
 			CStream* pStream = pAppearance->GetStream();
-			pStream->WriteStr("\012q\012BT\012");
+			if (pForm)
+				pStream->WriteStr("\012q\012BT\012");
 			pAppearance->DrawTextLine(dX, dY, pCodes, unCount, ppFonts, NULL);
-			pStream->WriteStr("ET\012Q\012");
+			if (pForm)
+				pStream->WriteStr("ET\012Q\012");
+			else
+				pAppearance->EndDrawText();
 		}
 
 		if (pForm)
 		{
 			CheckMK();
+			std::string sAP = nAP == 0 ? "I" : (nAP == 1 ? "RI" : "IX");
 			m_pMK->Add(sAP, pForm);
 		}
 	}

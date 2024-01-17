@@ -141,6 +141,7 @@ namespace PdfWriter
 
 		void SetRect(const TRect& oRect);
 		void SetBorder(BYTE nType, double dWidth, const std::vector<double>& arrDash);
+		void SetEmptyBorder();
 		void SetAnnotFlag(const int& nAnnotFlag);
 		void SetPage(CPage* pPage);
 		void SetBE(BYTE nType, const double& dBE);
@@ -417,8 +418,9 @@ namespace PdfWriter
 		double m_dShiftX;
 		double m_dShiftY;
 		std::wstring m_wsCA;
+		std::wstring m_wsRC;
+		std::wstring m_wsAC;
 		CDictObject* m_pIF;
-		std::string m_sCaptionForAP;
 
 		void CheckIF();
 
@@ -439,9 +441,12 @@ namespace PdfWriter
 		void SetRC(const std::wstring& wsRC);
 		void SetAC(const std::wstring& wsAC);
 
-		void SetAP(CXObject* pForm, const std::string& sAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts);
+		void SetAP(CXObject* pForm, BYTE nAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, double dLineW, double dLineH, CFontCidTrueType** ppFonts);
 		const std::wstring& GetCA() { return m_wsCA; }
+		const std::wstring& GetRC() { return m_wsRC; }
+		const std::wstring& GetAC() { return m_wsAC; }
 		BYTE GetTP() { return m_nTP; }
+		bool GetRespectBorder() { return m_bRespectBorders; }
 
 		int m_nI, m_nRI, m_nIX;
 	};

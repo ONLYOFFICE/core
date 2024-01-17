@@ -325,14 +325,15 @@ std::wstring CVbaReader::convertObject(const std::wstring & name, unsigned int c
 					{
 						for (size_t i = 0; i < FormControlStream->SiteData->Sites.size(); ++i)
 						{
-							if (strmObject->getDataSize() < nextStreamPositionEmbedded)
-								break;
-							VBA::OleSiteConcreteControlPtr & site = FormControlStream->SiteData->Sites[i];
-							if (site->ObjectStreamSize && strmObject)
+							VBA::OleSiteConcreteControlPtr& site = FormControlStream->SiteData->Sites[i];
+							if (!site)
+								continue;
+
+							if (strmObject)
 							{
 								site->Object = VBA::ActiveXObjectPtr(OOX::ActiveXObject::Create(site->ClsidCacheIndex ? *site->ClsidCacheIndex : 0));
-
-								if (site->ObjectStreamSize)
+								
+								if (strmObject->getDataSize() > nextStreamPositionEmbedded)
 								{
 									site->Object->Parse(strmObject->getData() + nextStreamPositionEmbedded, *site->ObjectStreamSize);
 									nextStreamPositionEmbedded += *site->ObjectStreamSize;

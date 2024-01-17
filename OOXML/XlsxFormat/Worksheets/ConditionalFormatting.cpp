@@ -1713,7 +1713,6 @@ XLS::BaseObjectPtr CConditionalFormattingRule::toBin()
     auto ptr(new XLSB::CFRULE(cellRef));
     XLS::BaseObjectPtr objPtr(ptr);
 
-    auto beginRule(new XLSB::BeginCFRule(cellRef));
     ptr->m_BrtBeginCFRule = WriteAttributes();
 
     if(m_oColorScale.IsInit())
@@ -1768,6 +1767,7 @@ XLS::BaseObjectPtr CConditionalFormattingRule::WriteAttributes()
     {
         ptr->rgce1 = m_arrFormula.front()->m_sText;
         m_arrFormula.erase(m_arrFormula.begin());
+        ptr->cbFmla1 = 1;
     }
     else
     {
@@ -1777,6 +1777,7 @@ XLS::BaseObjectPtr CConditionalFormattingRule::WriteAttributes()
     {
         ptr->rgce2 = m_arrFormula.front()->m_sText;
         m_arrFormula.erase(m_arrFormula.begin());
+        ptr->cbFmla2 = 1;
     }
     else
     {
@@ -1786,6 +1787,7 @@ XLS::BaseObjectPtr CConditionalFormattingRule::WriteAttributes()
     {
         ptr->rgce3 = m_arrFormula.front()->m_sText;
         m_arrFormula.erase(m_arrFormula.begin());
+        ptr->cbFmla3 = 1;
     }
     else
     {
@@ -1814,6 +1816,7 @@ if (m_oType == SimpleTypes::Spreadsheet::ECfType::cellIs)
     else if (m_oOperator == SimpleTypes::Spreadsheet::ECfOperator::Operator_lessThanOrEqual)
         ptr->iParam = XLSB::CFOper::CF_OPER_LE;
     ptr->iType = XLSB::CFType::CF_TYPE_CELLIS;
+    ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_EXPR;
 }
 
 if (m_oType == SimpleTypes::Spreadsheet::ECfType::expression)
@@ -1927,19 +1930,23 @@ else if (m_oType == SimpleTypes::Spreadsheet::ECfType::duplicateValues)
 else if (m_oType == SimpleTypes::Spreadsheet::ECfType::colorScale)
 {
     ptr->iType = XLSB::CFType::CF_TYPE_GRADIENT;
+    ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_GRADIENT;
 }
 else if (m_oType == SimpleTypes::Spreadsheet::ECfType::dataBar)
 {
     ptr->iType = XLSB::CFType::CF_TYPE_DATABAR;
+    ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_DATABAR;
 }
 else if (m_oType == SimpleTypes::Spreadsheet::ECfType::iconSet)
 {
     ptr->iType = XLSB::CFType::CF_TYPE_MULTISTATE;
+    ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_MULTISTATE;
 }
 else if (m_oType == SimpleTypes::Spreadsheet::ECfType::top10)
 {
     ptr->iType = XLSB::CFType::CF_TYPE_FILTER;
     ptr->iParam = m_oRank->GetValue();
+    ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_FILTER;
 }
 
     return objectPtr;

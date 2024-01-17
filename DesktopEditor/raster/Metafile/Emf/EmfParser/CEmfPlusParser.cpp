@@ -919,6 +919,9 @@ namespace MetaFile
 
 		m_oStream >> unLength;
 
+		if (unLength > 15) // 30 байта / 2 (размер ushort) = 15 символов максимальная длина имени Unicode шрифта
+			unLength = 15;
+
 		unsigned short* pString = new unsigned short[unLength + 1];
 		if (pString)
 		{

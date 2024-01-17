@@ -1220,7 +1220,7 @@ namespace MetaFile
 
 			double dWidth = pPen->GetWidth();
 
-			if (Equals(0, dWidth) || PS_COSMETIC == ulPenType)
+			if (Equals(0, dWidth) || (Equals(1, dWidth) && PS_COSMETIC == ulPenType))
 			{
 				double dRendererDpiX;
 				m_pRenderer->get_DpiX(&dRendererDpiX);

@@ -333,7 +333,7 @@ std::wstring CVbaReader::convertObject(const std::wstring & name, unsigned int c
 							{
 								site->Object = VBA::ActiveXObjectPtr(OOX::ActiveXObject::Create(site->ClsidCacheIndex ? *site->ClsidCacheIndex : 0));
 								
-								if (strmObject->getDataSize() > nextStreamPositionEmbedded)
+								if (strmObject->getDataSize() > nextStreamPositionEmbedded && site->ObjectStreamSize)
 								{
 									site->Object->Parse(strmObject->getData() + nextStreamPositionEmbedded, *site->ObjectStreamSize);
 									nextStreamPositionEmbedded += *site->ObjectStreamSize;

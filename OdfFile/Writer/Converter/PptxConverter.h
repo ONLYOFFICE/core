@@ -117,6 +117,10 @@ namespace cpdoccore
 		class odf_conversion_context;
 		class odt_conversion_context;
 		class odp_conversion_context;
+
+		class graphic_format_properties;
+		class style_table_cell_properties;
+		class paragraph_format_properties;
 	}
 }
 
@@ -212,6 +216,8 @@ private:
 		void convert(const PPTX::Limit::TLNodeType&			oox_note_type);
 		void convert(const PPTX::Limit::TLPresetClass&		oox_preset_class);
 		void convert(const PPTX::Limit::TLPresetClass&		oox_preset_class, int preset_id);
+		void convert(odf_writer::graphic_format_properties* graphic_props, odf_writer::style_table_cell_properties* table_cell_props);
+		void convert(odf_writer::paragraph_format_properties* paragraph_props, odf_writer::style_table_cell_properties* table_cell_props);
 
 		PPTX::Document									*pptx_document;
 		PPTX::Presentation								*presentation;

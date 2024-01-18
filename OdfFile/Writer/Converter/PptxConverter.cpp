@@ -349,6 +349,9 @@ std::wstring PptxConverter::convert(PPTX::Logic::TablePartStyle* style, const st
 		odp_context->drawing_context()->start_line_properties();
 			convert(style->tcStyle->tcBdr.GetPointer(), style_state->get_paragraph_properties());
 		odp_context->drawing_context()->end_line_properties();		
+
+		convert(style_state->get_graphic_properties(), style_state->get_table_cell_properties());
+		convert(style_state->get_paragraph_properties(), style_state->get_table_cell_properties());
 	}
 	convert(style->tcTxStyle.GetPointer(), style_state->get_text_properties());
 
@@ -1174,6 +1177,43 @@ void PptxConverter::convert(PPTX::Logic::Audio* oox_audio)
 	}
 
 	odp_context->current_slide().end_anim_audio();
+}
+
+void PptxConverter::convert(odf_writer::graphic_format_properties* graphic_props, odf_writer::style_table_cell_properties* table_cell_props)
+{
+	if (!graphic_props)
+		return;
+	if (!table_cell_props)
+		return;
+
+	using namespace odf_types;
+
+	if(graphic_props->common_draw_fill_attlist_.draw_fill_color_)
+		table_cell_props->content_.common_background_color_attlist_.fo_background_color_ = background_color(*graphic_props->common_draw_fill_attlist_.draw_fill_color_);
+
+	odf_types::color color_ = graphic_props->svg_stroke_color_.get_value_or(odf_types::color(L"#FFFFFF"));
+	// odf_types::draw_fill draw_fill_ = graphic_props->common_draw_fill_attlist_.draw_fill_.get_value_or(draw_fill(draw_fill::solid));
+	odf_types::length length_ = graphic_props->svg_stroke_width_.get_value_or(length(1, length::pt)).get_length();
+
+	table_cell_props->content_.common_border_attlist_.fo_border_bottom_ = odf_types::border_style(color_, border_style::solid, length_);
+}
+
+void PptxConverter::convert(odf_writer::paragraph_format_properties* paragraph_props, odf_writer::style_table_cell_properties* table_cell_props)
+{
+	if (!paragraph_props)
+		return;
+	if (!table_cell_props)
+		return;
+
+	if (paragraph_props->common_border_attlist_.fo_border_)
+	{
+		table_cell_props->content_.common_border_attlist_.fo_border_left_	= *paragraph_props->common_border_attlist_.fo_border_;
+		table_cell_props->content_.common_border_attlist_.fo_border_top_	= *paragraph_props->common_border_attlist_.fo_border_;
+		table_cell_props->content_.common_border_attlist_.fo_border_right_	= *paragraph_props->common_border_attlist_.fo_border_;
+		table_cell_props->content_.common_border_attlist_.fo_border_bottom_ = *paragraph_props->common_border_attlist_.fo_border_;
+	}
+	else 
+		table_cell_props->content_.common_border_attlist_ = paragraph_props->common_border_attlist_;		
 }
 
 void PptxConverter::convert_common()

@@ -390,6 +390,12 @@ namespace PdfWriter
 		void DrawTextLine(const double &dX, const double &dY, const std::wstring& wsText);
 		void EndDrawText();
 
+		void StartDraw(const double& dWidth, const double& dHeight);
+		void StartText(CFontDict* pFont, const double& dFontSize);
+		void DrawPictureInline(const char* sImageName, const double& dX, const double& dY, const double& dW, const double& dH, const bool& bRespectBorder);
+		void EndText();
+		void EndDraw();
+
 		void DrawTextComment();
 		CStream* GetStream() { return m_pStream; }
 
@@ -397,6 +403,9 @@ namespace PdfWriter
 
 	private:
 		void Init(CXref* pXref, CResourcesDict* pResources, TRect* pRect);
+
+		void DrawBackground(const double& dWidth, const double& dHeight);
+		void DrawBorder(const double& dWidth, const double& dHeight);
 
 		CXref*      m_pXref;
 		CStream*    m_pStream;

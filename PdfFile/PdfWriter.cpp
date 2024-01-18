@@ -3556,7 +3556,12 @@ void CPdfWriter::DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 		wsValue = pButtonWidget->GetAC();
 
 	if (!pButtonWidget->HaveBorder())
-		pButtonWidget->SetEmptyBorder();
+	{
+		if (pButtonWidget->HaveBC())
+			pButtonWidget->SetBorder(0, 1, {});
+		else
+			pButtonWidget->SetEmptyBorder();
+	}
 
 	if (!wsValue.empty() && nTP != 1)
 	{
@@ -3576,7 +3581,8 @@ void CPdfWriter::DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 			dShiftBorder *= 2;
 		if (dShiftBorder == 0)
 			dShiftBorder = 1;
-		if (!pButtonWidget->GetRespectBorder())
+		bool bRespectBorder = pButtonWidget->GetRespectBorder();
+		if (!bRespectBorder)
 			dShiftBorder = 0;
 
 		bool bFont = GetFontData(pAppFonts, wsValue, pFont, isBold, isItalic, pUnicodes, unLen, pCodes, ppFonts);
@@ -3598,34 +3604,32 @@ void CPdfWriter::DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 		if (pFontTT)
 		{
 			double dKoef = dFontSize / pFontTT->m_dUnitsPerEm;
-			dLineH = pFontTT->m_dHeight * dKoef;
+			// TODO что-то между m_dMaxY-m_dMinY и m_dHeight, но не просто среднее
+			dLineH = (pFontTT->m_dMaxY + std::abs(pFontTT->m_dMinY) + pFontTT->m_dHeight) / 2.0 * dKoef;
+			// dLineH = (pFontTT->m_dMaxY + std::abs(pFontTT->m_dMinY)) * dKoef;
+			// dLineH = pFontTT->m_dHeight * dKoef;
+			// double dLineHeight = pFontTT->m_dHeight * dKoef;
+			// double dDescent = std::abs(pFontTT->m_dDescent * dKoef);
+			// double dAscent1 = pFontTT->m_dAscent * dKoef;
+			// double dAscent = dLineHeight - dDescent;
+			// double dMidPoint = dAscent - pFontTT->m_dMinY * dKoef + dAscent - pFontTT->m_dMaxY * dKoef;
+			// double dDiff = dLineHeight - dMidPoint;
 
 			if (nTP == 0 || nTP == 2 || nTP == 3 || nTP == 6)
 				dShiftX = (dWidth - dLineW) / 2;
 			else if (nTP == 4)
-				dShiftX = dWidth - dLineW - dShiftBorder * 2;
+				dShiftX = dWidth - dLineW - dShiftBorder * 1.5;
 			else if (nTP == 5)
-				dShiftX = dShiftBorder * 2;
+				dShiftX = dShiftBorder * 2.5;
 
-			if (nTP == 0 || nTP == 4 || nTP == 5 || nTP == 6)
-				dShiftY = (dHeight - dLineH) / 2.0 + std::abs(pFontTT->m_dDescent * dKoef);
+			if (nTP == 0 || nTP == 6)
+				dShiftY = (dHeight - dLineH) / 2 + std::abs(pFontTT->m_dMinY * dKoef);
 			else if (nTP == 3)
-				dShiftY = dHeight - dShiftBorder * 2 - dLineH + std::abs(pFontTT->m_dDescent * dKoef);
+				dShiftY = dHeight - dShiftBorder * 2.5 - dLineH + std::abs(pFontTT->m_dMinY * dKoef);
 			else if (nTP == 2)
-			{
-				// double dLineHeight = pFontTT->m_dHeight * dKoef;
-				// double dDescent = std::abs(pFontTT->m_dDescent * dKoef);
-				// double dAscent1 = pFontTT->m_dAscent * dKoef;
-				// double dAscent = dLineHeight - dDescent;
-				// double dMin = pFontTT->m_dMinY * dKoef;
-				// double dMax = pFontTT->m_dMaxY * dKoef;
-				// double dMidPoint = dAscent - pFontTT->m_dMinY * dKoef + dAscent - pFontTT->m_dMaxY * dKoef;
-				// double dDiff = dLineHeight - dMidPoint;
-				// dShiftY = dLineHeight / 2.0;
-				// dShiftY = dShiftY + dDescent;
-				// Find! PERFECT!!!
 				dShiftY = dShiftBorder * 2 + std::abs(pFontTT->m_dMinY * dKoef);
-			}
+			else if (nTP == 4 || nTP == 5)
+				dShiftY = (dHeight - dLineH) / 2 + std::abs(pFontTT->m_dMinY * dKoef);
 		}
 	}
 

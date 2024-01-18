@@ -221,7 +221,6 @@ namespace PdfWriter
 	}
 	void CAnnotation::SetEmptyBorder()
 	{
-		m_oBorder.bHave = true;
 		m_oBorder.nType = 0;
 		m_oBorder.dWidth = 1;
 	}
@@ -1251,14 +1250,15 @@ namespace PdfWriter
 			return;
 		Add("AP", m_pAppearance);
 
+		double dHeight = fabs(m_oRect.fTop - m_oRect.fBottom);
+		double dWidth  = fabs(m_oRect.fRight - m_oRect.fLeft);
+
+		pAppearance->StartDraw(dWidth, dHeight);
+
 		if (pForm)
 		{
-			double dH = fabs(m_oRect.fTop - m_oRect.fBottom);
-			double dW = fabs(m_oRect.fRight - m_oRect.fLeft);
-			if (m_nTP == 2 || m_nTP == 3)
-				dH -= dLineH;
-			if (m_nTP == 4 || m_nTP == 5)
-				dW -= dLineW;
+			double dH = dHeight;
+			double dW = dWidth;
 
 			double dOriginW = pForm->GetWidth();
 			double dOriginH = pForm->GetHeight();
@@ -1267,20 +1267,32 @@ namespace PdfWriter
 				|| (2 == m_nScaleType && (dOriginH > dH || dOriginW > dW))
 				|| (3 == m_nScaleType && dOriginH < dH && dOriginW < dW));
 
+			double dBorderSize = m_oBorder.dWidth;
+			if (m_oBorder.nType == 1 || m_oBorder.nType == 3)
+				dBorderSize *= 2;
+
 			double dDstW = dOriginW;
 			double dDstH = dOriginH;
 			double dDstX = 0;
 			double dDstY = 0;
-			if (m_nTP == 2 || m_nTP == 3)
-				dDstY += dLineH;
-			if (m_nTP == 4 || m_nTP == 5)
-				dDstX += dLineW;
 
-			if (m_bRespectBorders && m_oBorder.bHave)
+			if (m_nTP == 2)
 			{
-				double dBorderSize = m_oBorder.dWidth;
-				if (m_oBorder.nType == 1 || m_oBorder.nType == 3)
-					dBorderSize *= 2;
+				dH -= (dLineH + dBorderSize);
+				dDstY += (dLineH + dBorderSize);
+			}
+			if (m_nTP == 3)
+				dH -= (dLineH + dBorderSize);
+			if (m_nTP == 4)
+				dW -= (dLineW + dBorderSize);
+			if (m_nTP == 5)
+			{
+				dW -= (dLineW + dBorderSize);
+				dDstX += (dLineW + dBorderSize);
+			}
+
+			if (m_bRespectBorders)
+			{
 				dDstX += 2 * dBorderSize;
 				dDstY += 2 * dBorderSize;
 				dH -= 4 * dBorderSize;
@@ -1305,29 +1317,21 @@ namespace PdfWriter
 			dDstX += (dW - dDstW) * m_dShiftX;
 			dDstY += (dH - dDstH) * m_dShiftY;
 
-			pAppearance->DrawPicture(pForm->GetName().c_str(), dDstX, dDstY, dDstW / dOriginW, dDstH / dOriginH, m_bRespectBorders);
-		}
-		else
-			pAppearance->StartDrawText(m_pFont, m_dFontSize, 0, 0, 0, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
+			pAppearance->DrawPictureInline(pForm->GetName().c_str(), dDstX, dDstY, dDstW / dOriginW, dDstH / dOriginH, m_bRespectBorders);
 
-		if (pCodes)
-		{
-			CStream* pStream = pAppearance->GetStream();
-			if (pForm)
-				pStream->WriteStr("\012q\012BT\012");
-			pAppearance->DrawTextLine(dX, dY, pCodes, unCount, ppFonts, NULL);
-			if (pForm)
-				pStream->WriteStr("ET\012Q\012");
-			else
-				pAppearance->EndDrawText();
-		}
-
-		if (pForm)
-		{
 			CheckMK();
 			std::string sAP = nAP == 0 ? "I" : (nAP == 1 ? "RI" : "IX");
 			m_pMK->Add(sAP, pForm);
 		}
+
+		if (pCodes)
+		{
+			pAppearance->StartText(m_pFont, m_dFontSize);
+			pAppearance->DrawTextLine(dX, dY, pCodes, unCount, ppFonts, NULL);
+			pAppearance->EndText();
+		}
+
+		pAppearance->EndDraw();
 	}
 	//----------------------------------------------------------------------------------------
 	// CCheckBoxWidget

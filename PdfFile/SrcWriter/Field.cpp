@@ -2170,6 +2170,262 @@ namespace PdfWriter
 		m_bStart = true;
 		m_pFont  = pFont;
 	}
+	void CAnnotAppearanceObject::StartDraw(const double& dWidth, const double& dHeight)
+	{
+		CWidgetAnnotation* pAnnot = dynamic_cast<CWidgetAnnotation*>(m_pAnnot);
+		if (!m_pStream || !pAnnot)
+			return;
+
+		DrawBackground(dWidth, dHeight);
+		DrawBorder(dWidth, dHeight);
+
+		m_pStream->WriteStr("q\012");
+
+		double dBorderSize = pAnnot->GetBorderWidth();
+		BYTE nType = pAnnot->GetBorderType();
+		if (nType == 1 || nType == 3)
+			dBorderSize *= 2;
+
+		if (pAnnot->GetWidgetType() == WidgetPushbutton && !((CPushButtonWidget*)pAnnot)->GetRespectBorder())
+			dBorderSize = 0;
+
+		m_pStream->WriteReal(dBorderSize);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dBorderSize);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(std::max(dWidth  - dBorderSize * 2, 0.0));
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(std::max(dHeight - dBorderSize * 2, 0.0));
+		m_pStream->WriteStr(" re\012W\012n\012");
+
+		if (pAnnot && pAnnot->GetWidgetType() == WidgetListbox)
+		{
+			CChoiceWidget* pAnnot = dynamic_cast<CChoiceWidget*>(m_pAnnot);
+			double dBaseLine = pAnnot->GetListBoxHeight();
+			std::vector<int> arrIndex = pAnnot->GetListBoxIndex();
+			m_pStream->WriteStr("0.60 0.75 0.85 rg\012");
+			for (int i = 0; i < arrIndex.size(); ++i)
+			{
+				double dH = dHeight - dBorderSize - dBaseLine * (double)(arrIndex[i] + 1);
+				if (dH < 0)
+					break;
+				m_pStream->WriteReal(dBorderSize);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(dH);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(std::max(dWidth - dBorderSize * 2.0, 0.0));
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(dBaseLine);
+				m_pStream->WriteStr(" re\012f\012");
+			}
+		}
+	}
+	void CAnnotAppearanceObject::StartText(CFontDict* pFont, const double& dFontSize)
+	{
+		CWidgetAnnotation* pAnnot  = dynamic_cast<CWidgetAnnotation*>(m_pAnnot);
+		if (!m_pStream || !pAnnot)
+			return;
+
+		m_dFontSize = std::min(1000.0, std::max(0.0, dFontSize));
+		m_pFont  = pFont;
+		m_bStart = true;
+
+		m_pStream->WriteStr("BT\012");
+		m_pStream->WriteStr(pAnnot->GetDAforAP(pFont).c_str());
+	}
+	void CAnnotAppearanceObject::DrawPictureInline(const char* sImageName, const double& dX, const double& dY, const double& dW, const double& dH, const bool& bRespectBorder)
+	{
+		CWidgetAnnotation* pAnnot  = dynamic_cast<CWidgetAnnotation*>(m_pAnnot);
+		if (!m_pStream || !pAnnot || !sImageName)
+			return;
+
+		m_pStream->WriteStr("q\012");
+
+		if (bRespectBorder)
+		{
+			TRect oRect = pAnnot->GetRect();
+			double dWidth  = fabs(oRect.fRight - oRect.fLeft);
+			double dHeight = fabs(oRect.fBottom - oRect.fTop);
+
+			double dBorderSize = pAnnot->GetBorderWidth();
+			BYTE nType = pAnnot->GetBorderType();
+			if (nType == 1 || nType == 3)
+				dBorderSize *= 2;
+
+			m_pStream->WriteReal(2 * dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(2 * dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(fmax(dWidth  - 4 * dBorderSize, 0.0));
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(fmax(dHeight - 4 * dBorderSize, 0.0));
+			m_pStream->WriteStr(" re\012W\012n\012");
+		}
+
+		m_pStream->WriteReal(dW);
+		m_pStream->WriteStr(" 0 0 ");
+		m_pStream->WriteReal(dH);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dX);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dY);
+		m_pStream->WriteStr(" cm\012");
+
+		m_pStream->WriteEscapeName(sImageName);
+		m_pStream->WriteStr(" Do\012");
+
+		m_pStream->WriteStr("Q\012");
+	}
+	void CAnnotAppearanceObject::EndText()
+	{
+		m_pStream->WriteStr("ET\012");
+	}
+	void CAnnotAppearanceObject::EndDraw()
+	{
+		m_pStream->WriteStr("Q\012");
+	}
+	void CAnnotAppearanceObject::DrawBackground(const double& dWidth, const double& dHeight)
+	{
+		CWidgetAnnotation* pAnnot  = dynamic_cast<CWidgetAnnotation*>(m_pAnnot);
+		if (!pAnnot || !pAnnot->HaveBG())
+			return;
+
+		m_pStream->WriteStr("q\012");
+		m_pStream->WriteStr(pAnnot->GetBGforAP().c_str());
+		m_pStream->WriteStr("1 0 0 1 0 0 cm\012");
+		m_pStream->WriteStr("0 0 ");
+		m_pStream->WriteReal(fmax(dWidth, 0.0));
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(fmax(dHeight, 0.0));
+		m_pStream->WriteStr(" re\012f\012");
+		m_pStream->WriteStr("Q\012");
+	}
+	void CAnnotAppearanceObject::DrawBorder(const double& dWidth, const double& dHeight)
+	{
+		CWidgetAnnotation* pAnnot  = dynamic_cast<CWidgetAnnotation*>(m_pAnnot);
+		if (!pAnnot || !pAnnot->HaveBorder())
+			return;
+
+		m_pStream->WriteStr("q\012");
+
+		double dBorderSize = pAnnot->GetBorderWidth();
+		BYTE nType = pAnnot->GetBorderType();
+
+		switch (nType)
+		{
+		case 1: // Beveled
+		case 3: // Inset
+		{
+			m_pStream->WriteStr(nType == 1 ? "1 g\012" : "0.501953 g\012");
+
+			m_pStream->WriteReal(dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dBorderSize);
+			m_pStream->WriteStr(" m\012");
+
+			m_pStream->WriteReal(dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dHeight - dBorderSize);
+			m_pStream->WriteStr(" l\012");
+
+			m_pStream->WriteReal(dWidth - dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dHeight - dBorderSize);
+			m_pStream->WriteStr(" l\012");
+
+			m_pStream->WriteReal(dWidth - 2 * dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dHeight - 2 * dBorderSize);
+			m_pStream->WriteStr(" l\012");
+
+			m_pStream->WriteReal(2 * dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dHeight - 2 * dBorderSize);
+			m_pStream->WriteStr(" l\012");
+
+			m_pStream->WriteReal(2 * dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(2 * dBorderSize);
+			m_pStream->WriteStr(" l\012");
+
+			m_pStream->WriteStr("f\012");
+
+			if (nType == 1 && pAnnot->HaveBG())
+				m_pStream->WriteStr(pAnnot->GetBGforAP(-0.25).c_str());
+			else
+				m_pStream->WriteStr("0.75293 g\012");
+
+			m_pStream->WriteReal(dWidth - dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dHeight - dBorderSize);
+			m_pStream->WriteStr(" m\012");
+
+			m_pStream->WriteReal(dWidth - dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dBorderSize);
+			m_pStream->WriteStr(" l\012");
+
+			m_pStream->WriteReal(dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dBorderSize);
+			m_pStream->WriteStr(" l\012");
+
+			m_pStream->WriteReal(2 * dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(2 * dBorderSize);
+			m_pStream->WriteStr(" l\012");
+
+			m_pStream->WriteReal(dWidth - 2 * dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(2 * dBorderSize);
+			m_pStream->WriteStr(" l\012");
+
+			m_pStream->WriteReal(dWidth - 2 * dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dHeight - 2 * dBorderSize);
+			m_pStream->WriteStr(" l\012");
+
+			m_pStream->WriteStr("f\012");
+			break;
+		}
+		case 2: // Dashed
+		{
+			m_pStream->WriteStr(pAnnot->GetBorderDash().c_str());
+			break;
+		}
+		default: break;
+		}
+
+		m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
+		m_pStream->WriteReal(dBorderSize);
+		m_pStream->WriteStr(" w\0120 j\0120 J\012");
+
+		if (nType == 4) // Underline
+		{
+			m_pStream->WriteInt(0);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dBorderSize / 2);
+			m_pStream->WriteStr(" m\012");
+
+			m_pStream->WriteReal(dWidth);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dBorderSize / 2);
+			m_pStream->WriteStr(" l\012S\012");
+		}
+		else
+		{
+			m_pStream->WriteReal(dBorderSize / 2);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dBorderSize / 2);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(std::max(dWidth - dBorderSize, 0.0));
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(std::max(dHeight - dBorderSize, 0.0));
+			m_pStream->WriteStr(" re\012S\012");
+		}
+
+		m_pStream->WriteStr("Q\012");
+	}
 	void CAnnotAppearanceObject::DrawTextLine(const double& dX, const double& dY, const unsigned short* pCodes, const unsigned int& unCount, CFontCidTrueType** ppFonts, const double* pShifts)
 	{
 		CResourcesDict* pResources = dynamic_cast<CResourcesDict*>(Get("Resources"));

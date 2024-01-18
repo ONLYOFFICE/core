@@ -41,6 +41,13 @@ enum class TypeElement{
 	circ,
 	wideslash,
 	widebslash,
+	//logic
+	And,
+	Or,
+	neg,
+	//unary
+	plus_minus,
+	minus_plus,
 	//op
 	lim,
 	sum,
@@ -184,7 +191,8 @@ enum class TypeElement{
 	setC,
 	grid,
 	transition,
-	//
+	emptiness,
+	interval,
 	infinity,
 	partial,
 	nabla,

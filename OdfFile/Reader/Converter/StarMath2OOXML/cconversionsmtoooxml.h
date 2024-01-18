@@ -16,7 +16,7 @@ namespace StarMath {
 		static void PropertiesMFPR(bool bType,const std::wstring& wsType, XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute);
 		static void PropertiesNaryPr(const TypeElement& enTypeOp,bool bEmptySub,bool bEmptySup,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute);
 		static void PropertiesFuncPr(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute);
-		static void BlockRecording(const std::wstring& wsNameBlock,CElement* CValueBlock,XmlUtils::CXmlWriter* pXmlWrite);
+		static void BlockRecording(const std::wstring& wsNameBlock,CElement* pValueBlock,XmlUtils::CXmlWriter* pXmlWrite);
 		static void PropertiesDPr(XmlUtils::CXmlWriter* pXmlWrite,const TypeElement& enTypeBracket,CAttribute* pAttribute);
 		static void PropertiesMPr(XmlUtils::CXmlWriter* pXmlWrite,const TypeElement& enTypeMatrix,CAttribute* pAttribute);
 		static void NodeGrade(XmlUtils::CXmlWriter* pXmlWrite,CElement* pValueGrade,CAttribute* pAttribute);
@@ -25,6 +25,7 @@ namespace StarMath {
 		static void WriteLimLocNode(const std::wstring& wsTypeLimLock,XmlUtils::CXmlWriter* pXmlWrite);
 		static void WriteRPrFName(const TypeElement& enTypeOp,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute);
 		static void WriteStyNode(XmlUtils::CXmlWriter* pXmlWrite,const std::wstring& wsAttributeNode);
+		static void WritePreserveBlock(XmlUtils::CXmlWriter* pXmlWrite, CAttribute *pAttribute);
 		void EndConversion();
 		std::wstring GetOOXML();
 	private:

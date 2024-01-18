@@ -158,10 +158,11 @@ namespace StarMath {
 		WriteCtrlPrNode(pXmlWrite,pAttribute);
 		pXmlWrite->WriteNodeEnd(L"m:naryPr",false,false);
 	}
-	void CConversionSMtoOOXML::BlockRecording(const std::wstring &wsNameBlock, CElement *CValueBlock,XmlUtils::CXmlWriter* pXmlWrite)
+	void CConversionSMtoOOXML::BlockRecording(const std::wstring &wsNameBlock, CElement *pValueBlock,XmlUtils::CXmlWriter* pXmlWrite)
 	{
 		pXmlWrite->WriteNodeBegin(wsNameBlock,false);
-		CValueBlock->ConversionToOOXML(pXmlWrite);
+		if(pValueBlock != nullptr)
+			pValueBlock->ConversionToOOXML(pXmlWrite);
 		pXmlWrite->WriteNodeEnd(wsNameBlock,false,false);
 	}
 	std::wstring CConversionSMtoOOXML::GetOOXML()
@@ -323,6 +324,16 @@ namespace StarMath {
 		pXmlWrite->WriteNodeBegin(L"m:sty", true);
 		pXmlWrite->WriteAttribute(L"m:val",wsAttributeNode);
 		pXmlWrite->WriteNodeEnd(L"w",true,true);
+	}
+	void CConversionSMtoOOXML::WritePreserveBlock(XmlUtils::CXmlWriter *pXmlWrite,CAttribute* pAttribute)
+	{
+		pXmlWrite->WriteNodeBegin(L"m:r",false);
+		StandartProperties(pXmlWrite,pAttribute);
+		pXmlWrite->WriteNodeBegin(L"m:t",true);
+		pXmlWrite->WriteAttribute(L"xml:space",L"preserve");
+		pXmlWrite->WriteNodeEnd(L"w",true,false);
+		pXmlWrite->WriteNodeEnd(L"m:t",false,false);
+		pXmlWrite->WriteNodeEnd(L"m:r",false,false);
 	}
 }
 

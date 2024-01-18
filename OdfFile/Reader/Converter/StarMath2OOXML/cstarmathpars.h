@@ -101,13 +101,14 @@ namespace StarMath
 		void SetValueIndex(CElement* pElement);
 		void SetLeftArg(CElement* pElement);
 		CElement* GetValueIndex();
+		CElement* GetLeftArg();
 		static TypeElement GetIndex(const std::wstring& wsCheckToken);
 	private:
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
 		CElement* m_pValueIndex;
-		CElement* m_pValue;
+		CElement* m_pLeftArg;
 		TypeElement m_enTypeIndex;
 	};
 
@@ -213,6 +214,7 @@ namespace StarMath
 		virtual ~CElementBracketWithIndex();
 		void SetLeftArg(CElement* pElement);
 		void SetBracketValue(CElement* pElement);
+		CElement* GetLeftArg();
 		static TypeElement GetBracketWithIndex(const std::wstring& wsToken);
 	private:
 		void SetAttribute(CAttribute* pAttribute) override;
@@ -285,11 +287,13 @@ namespace StarMath
 		static TypeElement GetSpecialSymbol(const std::wstring& wsToken);
 		void SetValue(CElement* pValue);
 	private:
+		void SetWsTypeSymbol();
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
 		CElement* m_pValue;
 		TypeElement m_enTypeSpecial;
+		std::wstring m_wsType;
 	};
 
 	class CElementMatrix: public CElement
@@ -330,9 +334,9 @@ namespace StarMath
 		std::vector<CElement*> Parse(std::wstring& wsParseString);
 		static CElement* ParseElement(CStarMathReader* pReader);
 		//Function for adding a left argument (receives the argument itself and the element to which it needs to be added as input. Works with classes:CElementBinOperator,CElementConnection,CElementSetOperation).
-		static void AddLeftArgument(CElement* pLeftArg,CElement* pElementWhichAdd);
+		static bool AddLeftArgument(CElement* pLeftArg,CElement* pElementWhichAdd);
 		static bool CheckForLeftArgument(const TypeElement& enType);
-		static CElement* ReadingWithoutBracket(CStarMathReader* pReader,CAttribute* pAttribute);
+		static CElement* ReadingWithoutBracket(CStarMathReader* pReader);
 	private:
 		std::vector<CElement*> m_arEquation;
 	};

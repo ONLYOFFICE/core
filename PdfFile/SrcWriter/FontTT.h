@@ -75,6 +75,7 @@ namespace PdfWriter
 		double m_dUnitsPerEm;
 		double m_dHeight;
 		double m_dDescent;
+		double m_dAscent;
 		double m_dMaxY;
 		double m_dMinY;
 

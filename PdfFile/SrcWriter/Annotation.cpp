@@ -219,6 +219,11 @@ namespace PdfWriter
 		m_oBorder.dWidth = dWidth;
 		m_oBorder.arrDash = arrDash;
 	}
+	void CAnnotation::SetEmptyBorder()
+	{
+		m_oBorder.nType = 0;
+		m_oBorder.dWidth = 1;
+	}
 	void CAnnotation::SetAnnotFlag(const int& nAnnotFlag)
 	{
 		Add("F", nAnnotFlag);
@@ -1091,6 +1096,7 @@ namespace PdfWriter
 		m_nI  = -1;
 		m_nRI = -1;
 		m_nIX = -1;
+		m_nTP = 0;
 		m_nScaleType = 0;
 		m_bRespectBorders = false;
 		m_bConstantProportions = true;
@@ -1138,6 +1144,7 @@ namespace PdfWriter
 		CheckMK();
 
 		m_pMK->Add("TP", (int)nTP);
+		m_nTP = nTP;
 	}
 	void CPushButtonWidget::SetSW(BYTE nSW)
 	{
@@ -1216,6 +1223,7 @@ namespace PdfWriter
 
 		std::string sValue = U_TO_UTF8(wsRC);
 		m_pMK->Add("RC", new CStringObject(sValue.c_str(), true));
+		m_wsRC = wsRC;
 	}
 	void CPushButtonWidget::SetAC(const std::wstring& wsAC)
 	{
@@ -1223,52 +1231,68 @@ namespace PdfWriter
 
 		std::string sValue = U_TO_UTF8(wsAC);
 		m_pMK->Add("AC", new CStringObject(sValue.c_str(), true));
+		m_wsAC = wsAC;
 	}
-	void CPushButtonWidget::SetAP(CImageDict* pImage, const std::string& sAP, const std::string& sImgName, const std::string& sFrmName)
+	void CPushButtonWidget::SetAP(CXObject* pForm, BYTE nAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, double dLineW, double dLineH, CFontCidTrueType** ppFonts)
 	{
-		if (!m_oBorder.bHave)
-		{
-			m_oBorder.bHave = true;
-			m_oBorder.nType = 1;
-			m_oBorder.dWidth = 1;
-		}
+		m_pAppearance = new CAnnotAppearance(m_pXref, this);
+		if (!m_pAppearance)
+			return;
 
-		if (!m_pAppearance)
-			m_pAppearance = new CAnnotAppearance(m_pXref, this);
-		if (!m_pAppearance)
+		CAnnotAppearanceObject* pAppearance = NULL;
+		if (nAP == 0)
+			pAppearance = m_pAppearance->GetNormal();
+		else if (nAP == 1)
+			pAppearance = m_pAppearance->GetRollover();
+		else if (nAP == 2)
+			pAppearance = m_pAppearance->GetDown();
+		if (!pAppearance)
 			return;
 		Add("AP", m_pAppearance);
 
-		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
-		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
+		double dHeight = fabs(m_oRect.fTop - m_oRect.fBottom);
+		double dWidth  = fabs(m_oRect.fRight - m_oRect.fLeft);
 
-		std::string sDA = "0.909 0.941 0.992 rg";
-		Add("DA", new CStringObject(sDA.c_str()));
+		pAppearance->StartDraw(dWidth, dHeight);
 
-		CXObject* pForm = NULL;
-
-		if (pImage)
+		if (pForm)
 		{
-			TRect oRect = GetRect();
+			double dH = dHeight;
+			double dW = dWidth;
 
-			double dH = fabs(oRect.fTop - oRect.fBottom);
-			double dW = fabs(oRect.fRight - oRect.fLeft);
-
-			double dOriginW = pImage->GetWidth();
-			double dOriginH = pImage->GetHeight();
+			double dOriginW = pForm->GetWidth();
+			double dOriginH = pForm->GetHeight();
 
 			bool bNeedScale = (0 == m_nScaleType
 				|| (2 == m_nScaleType && (dOriginH > dH || dOriginW > dW))
 				|| (3 == m_nScaleType && dOriginH < dH && dOriginW < dW));
+
+			double dBorderSize = m_oBorder.dWidth;
+			if (m_oBorder.nType == 1 || m_oBorder.nType == 3)
+				dBorderSize *= 2;
 
 			double dDstW = dOriginW;
 			double dDstH = dOriginH;
 			double dDstX = 0;
 			double dDstY = 0;
 
-			if (m_bRespectBorders && HaveBorder())
+			if (m_nTP == 2)
 			{
-				double dBorderSize = GetBorderWidth();
+				dH -= (dLineH + dBorderSize);
+				dDstY += (dLineH + dBorderSize);
+			}
+			if (m_nTP == 3)
+				dH -= (dLineH + dBorderSize);
+			if (m_nTP == 4)
+				dW -= (dLineW + dBorderSize);
+			if (m_nTP == 5)
+			{
+				dW -= (dLineW + dBorderSize);
+				dDstX += (dLineW + dBorderSize);
+			}
+
+			if (m_bRespectBorders)
+			{
 				dDstX += 2 * dBorderSize;
 				dDstY += 2 * dBorderSize;
 				dH -= 4 * dBorderSize;
@@ -1293,86 +1317,21 @@ namespace PdfWriter
 			dDstX += (dW - dDstW) * m_dShiftX;
 			dDstY += (dH - dDstH) * m_dShiftY;
 
-			pForm = new CXObject();
-			CStream* pStream = new CMemoryStream();
-			pForm->SetStream(m_pXref, pStream);
+			pAppearance->DrawPictureInline(pForm->GetName().c_str(), dDstX, dDstY, dDstW / dOriginW, dDstH / dOriginH, m_bRespectBorders);
 
-#ifndef FILTER_FLATE_DECODE_DISABLED
-			if (m_pDocument->GetCompressionMode() & COMP_TEXT)
-				pForm->SetFilter(STREAM_FILTER_FLATE_DECODE);
-#endif
-			CArrayObject* pBBox = new CArrayObject();
-			pForm->Add("BBox", pBBox);
-			pBBox->Add(0);
-			pBBox->Add(0);
-			pBBox->Add(dOriginW);
-			pBBox->Add(dOriginH);
-			pForm->Add("FormType", 1);
-			CArrayObject* pFormMatrix = new CArrayObject();
-			pForm->Add("Matrix", pFormMatrix);
-			pFormMatrix->Add(1);
-			pFormMatrix->Add(0);
-			pFormMatrix->Add(0);
-			pFormMatrix->Add(1);
-			pFormMatrix->Add(0);
-			pFormMatrix->Add(0);
-			pForm->Add("Name", sFrmName.c_str());
-
-			CDictObject* pFormRes = new CDictObject();
-			CArrayObject* pFormResProcset = new CArrayObject();
-			pFormRes->Add("ProcSet", pFormResProcset);
-			pFormResProcset->Add(new CNameObject("PDF"));
-			pFormResProcset->Add(new CNameObject("ImageC"));
-			CDictObject* pFormResXObject = new CDictObject();
-			pFormRes->Add("XObject", pFormResXObject);
-
-			pFormResXObject->Add(sImgName, pImage);
-			pForm->Add("Resources", pFormRes);
-
-			pForm->Add("Subtype", "Form");
-			pForm->Add("Type", "XObject");
-
-			pStream->WriteStr("q\012");
-			pStream->WriteReal(dOriginW);
-			pStream->WriteStr(" 0 0 ");
-			pStream->WriteReal(dOriginH);
-			pStream->WriteStr(" 0 0 cm\012/");
-			pStream->WriteStr(sImgName.c_str());
-			pStream->WriteStr(" Do\012Q");
-
-			pFieldsResources->AddXObjectWithName(sFrmName.c_str(), pForm);
-			pNormal->DrawPicture(sFrmName.c_str(), dDstX, dDstY, dDstW / dOriginW, dDstH / dOriginH, m_bRespectBorders);
-		}
-		else
-			pNormal->DrawPicture();
-
-		if (!m_sCaptionForAP.empty())
-			pNormal->GetStream()->WriteStr(m_sCaptionForAP.c_str());
-
-		if (pForm)
-		{
 			CheckMK();
+			std::string sAP = nAP == 0 ? "I" : (nAP == 1 ? "RI" : "IX");
 			m_pMK->Add(sAP, pForm);
 		}
-	}
-	void CPushButtonWidget::SetCaptionAP(unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts)
-	{
-		m_sCaptionForAP.append("\012q\012BT\012");
 
-		CAnnotAppearanceObject* pNormal = new CAnnotAppearanceObject(NULL, this);
-		pNormal->m_bStart = true;
-		pNormal->DrawTextLine(dX, dY, pCodes, unCount, ppFonts, NULL);
+		if (pCodes)
+		{
+			pAppearance->StartText(m_pFont, m_dFontSize);
+			pAppearance->DrawTextLine(dX, dY, pCodes, unCount, ppFonts, NULL);
+			pAppearance->EndText();
+		}
 
-		CStream* pStream = pNormal->GetStream();
-		pStream->Seek(0, SeekSet);
-		unsigned int nBufferSize = pStream->Size();
-		BYTE* pBuffer = new BYTE[nBufferSize];
-		pStream->Read(pBuffer, NULL);
-		m_sCaptionForAP.append((char*)pBuffer, nBufferSize);
-		RELEASEARRAYOBJECTS(pBuffer);
-		RELEASEOBJECT(pNormal);
-
-		m_sCaptionForAP.append("ET\012Q\012");
+		pAppearance->EndDraw();
 	}
 	//----------------------------------------------------------------------------------------
 	// CCheckBoxWidget

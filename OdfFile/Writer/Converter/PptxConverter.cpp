@@ -1017,6 +1017,7 @@ void PptxConverter::convert(PPTX::Logic::AnimMotion* oox_anim_motion)
 		return;
 
 	odp_context->current_slide().start_timing_motion();
+	odp_context->current_slide().set_anim_attribute_name(odf_types::smil_attribute_name::x);
 
 	convert(&oox_anim_motion->cBhvr);
 
@@ -1103,26 +1104,26 @@ void PptxConverter::convert(PPTX::Logic::AnimRot* oox_anim_rot)
 	if (!oox_anim_rot)
 		return;
 
-	odp_context->current_slide().start_timing_transform();
-	odp_context->current_slide().set_anim_transform_type(odf_types::svg_type::rotate);
+	odp_context->current_slide().start_timing_anim();
+	odp_context->current_slide().set_anim_animation_type(odf_types::svg_type::rotate);
 
 	convert(&oox_anim_rot->cBhvr);
 
 	const double odp_mulipyer = 60000.0;
 	if (oox_anim_rot->from.IsInit())
 	{
-		odp_context->current_slide().set_anim_transform_from(std::to_wstring(*oox_anim_rot->from / odp_mulipyer));
+		odp_context->current_slide().set_anim_animation_from(std::to_wstring(*oox_anim_rot->from / odp_mulipyer));
 	}
 	if (oox_anim_rot->to.IsInit())
 	{
-		odp_context->current_slide().set_anim_transform_to(std::to_wstring(*oox_anim_rot->to / odp_mulipyer));
+		odp_context->current_slide().set_anim_animation_to(std::to_wstring(*oox_anim_rot->to / odp_mulipyer));
 	}
 	if (oox_anim_rot->by.IsInit())
 	{
-		odp_context->current_slide().set_anim_transform_by(std::to_wstring(*oox_anim_rot->by / odp_mulipyer));
+		odp_context->current_slide().set_anim_animation_by(std::to_wstring(*oox_anim_rot->by / odp_mulipyer));
 	}
 
-	odp_context->current_slide().end_timing_transform();
+	odp_context->current_slide().end_timing_anim();
 }
 
 void PptxConverter::convert(PPTX::Logic::AnimScale* oox_anim_scale)
@@ -1258,6 +1259,7 @@ std::wstring PptxConverter::convert_animation_scale_values(int x, int y)
 
 	return ss.str();
 }
+
 std::wstring PptxConverter::get_page_name(PPTX::Logic::CSld* oox_slide, _typePages type)
 {
 	if (!oox_slide)
@@ -1446,11 +1448,11 @@ void PptxConverter::convert_slides()
 
 		odp_context->add_page_name(get_page_name(slide->cSld.GetPointer(), Slide));
 		convert_slide	(slide->cSld.GetPointer(), current_txStyles, true, bShowMasterSp, Slide);
+		convert			(slide->timing.GetPointer());
 		convert			(slide->comments.GetPointer());
 		convert			(slide->Note.GetPointer());
 		
 		convert			(slide->transition.GetPointer());
-		convert			(slide->timing.GetPointer());
 
 		if (!bShow)
 			odp_context->hide_slide();

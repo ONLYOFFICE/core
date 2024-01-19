@@ -158,6 +158,7 @@ public:
 		void set_anim_animation_by(const std::wstring& val);
 		void set_anim_animation_from(const std::wstring& val);
 		void set_anim_animation_to(const std::wstring& val);
+		void set_anim_animation_type(const odf_types::svg_type& val);
 
 		void set_anim_transition_filter_mode(const std::wstring& val);
 		void set_anim_transition_filter_type(const odf_types::smil_transition_type& val);

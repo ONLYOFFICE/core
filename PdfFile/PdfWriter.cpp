@@ -3581,6 +3581,7 @@ void CPdfWriter::DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 			dShiftBorder *= 2;
 		if (dShiftBorder == 0)
 			dShiftBorder = 1;
+		double dShiftRespectBorder = dShiftBorder / 2;
 		bool bRespectBorder = pButtonWidget->GetRespectBorder();
 		if (!bRespectBorder)
 			dShiftBorder = 0;
@@ -3618,18 +3619,16 @@ void CPdfWriter::DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 			if (nTP == 0 || nTP == 2 || nTP == 3 || nTP == 6)
 				dShiftX = (dWidth - dLineW) / 2;
 			else if (nTP == 4)
-				dShiftX = dWidth - dLineW - dShiftBorder * 1.5;
+				dShiftX = dWidth - dLineW - dShiftBorder * 2 + dShiftRespectBorder;
 			else if (nTP == 5)
-				dShiftX = dShiftBorder * 2.5;
+				dShiftX = dShiftBorder * 2 + dShiftRespectBorder;
 
-			if (nTP == 0 || nTP == 6)
+			if (nTP == 0 || nTP == 6 || nTP == 4 || nTP == 5)
 				dShiftY = (dHeight - dLineH) / 2 + std::abs(pFontTT->m_dMinY * dKoef);
 			else if (nTP == 3)
-				dShiftY = dHeight - dShiftBorder * 2.5 - dLineH + std::abs(pFontTT->m_dMinY * dKoef);
+				dShiftY = dHeight - dShiftBorder * 2 - dShiftRespectBorder - dLineH + std::abs(pFontTT->m_dMinY * dKoef);
 			else if (nTP == 2)
 				dShiftY = dShiftBorder * 2 + std::abs(pFontTT->m_dMinY * dKoef);
-			else if (nTP == 4 || nTP == 5)
-				dShiftY = (dHeight - dLineH) / 2 + std::abs(pFontTT->m_dMinY * dKoef);
 		}
 	}
 

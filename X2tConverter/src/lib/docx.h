@@ -162,7 +162,10 @@ namespace NExtractTools
 
 		BinDocxRW::CDocxSerializer m_oCDocxSerializer;
 
-		m_oCDocxSerializer.setOFormEnabled(params.m_nFormatTo && (*params.m_nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM || *params.m_nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF));
+		m_oCDocxSerializer.setOFormEnabled(params.m_nFormatTo &&
+										  (*params.m_nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM ||
+										   *params.m_nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF ||
+										   *params.m_nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF));
 		m_oCDocxSerializer.setMacroEnabled(params.m_bMacro);
 		m_oCDocxSerializer.setIsNoBase64(params.getIsNoBase64());
 		m_oCDocxSerializer.setFontDir(params.getFontPath());

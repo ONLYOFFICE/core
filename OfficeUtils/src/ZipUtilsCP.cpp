@@ -217,28 +217,6 @@ namespace ZLibZipUtils
 
 	/*========================================================================================================*/
 
-	/* change_file_date : change the date/time of a file
-	 filename : the filename of the file where date/time must be modified
-	 dosdate : the new date at the MSDos format (4 bytes)
-	 tmu_date : the SAME new date at the tm_unz format */
-	static void change_file_date( const wchar_t *filename, uLong dosdate, tm_unz tmu_date )
-	{
-#if defined(_WIN32) || defined (_WIN64)
-		HANDLE hFile;
-		FILETIME ftm,ftLocal,ftCreate,ftLastAcc,ftLastWrite;
-
-		hFile = CreateFileW(filename,GENERIC_READ | GENERIC_WRITE,
-							0,NULL,OPEN_EXISTING,0,NULL);
-		GetFileTime(hFile,&ftCreate,&ftLastAcc,&ftLastWrite);
-		DosDateTimeToFileTime((WORD)(dosdate>>16),(WORD)dosdate,&ftLocal);
-		LocalFileTimeToFileTime(&ftLocal,&ftm);
-		SetFileTime(hFile,&ftm,&ftLastAcc,&ftm);
-		CloseHandle(hFile);
-#endif
-	}
-
-	/*========================================================================================================*/
-
 	static void replace_all(std::string& subject, const std::string& search, const std::string& replace)
 	{
 		size_t pos = 0;
@@ -380,13 +358,22 @@ namespace ZLibZipUtils
 							break;
 						}
 				}
+				// ?
 				while (err>0);
-
-				//close вызовется в oFile
-
 				if (err==0)
 				{
-					change_file_date(write_filename, file_info.dosDate, file_info.tmu_date);
+					oFile.CloseFile();
+
+					struct tm time;
+					memset(&time, 0, sizeof(struct tm));
+					time.tm_sec = file_info.tmu_date.tm_sec;
+					time.tm_min = file_info.tmu_date.tm_min;
+					time.tm_hour = file_info.tmu_date.tm_hour;
+					time.tm_mday = file_info.tmu_date.tm_mday;
+					time.tm_mon = file_info.tmu_date.tm_mon + 1;
+					time.tm_year = file_info.tmu_date.tm_year;
+
+					NSFile::CFileBinary::SetTime(write_filename, &time);
 				}
 			}
 
@@ -568,16 +555,24 @@ namespace ZLibZipUtils
 
 		zip_fileinfo zinfo;
 		zinfo.dosDate = zinfo.external_fa = zinfo.internal_fa = 0;
-		zinfo.tmz_date.tm_sec = zinfo.tmz_date.tm_min = zinfo.tmz_date.tm_hour = 0;
-		zinfo.tmz_date.tm_mday = 1;
-		zinfo.tmz_date.tm_mon = 0;
-		zinfo.tmz_date.tm_year = 1980;
 
 		zip_fileinfo* zi_new = zi ? zi : &zinfo;
-		if (bDateTime )
+
+		if (bDateTime)
 		{
-			zi_new->dosDate = oFile.GetDateTime(file_name);
+			struct tm edited;
+			bool ok = NSFile::CFileBinary::GetTime(file_name, &edited);
+			if (ok)
+			{
+				zi_new->tmz_date.tm_sec = edited.tm_sec;
+				zi_new->tmz_date.tm_min = edited.tm_min;
+				zi_new->tmz_date.tm_hour = edited.tm_hour;
+				zi_new->tmz_date.tm_mday = edited.tm_mday;
+				zi_new->tmz_date.tm_mon = edited.tm_mon - 1;
+				zi_new->tmz_date.tm_year = edited.tm_year;
+			}
 		}
+
 		if(oFile.OpenFile(file_name))
 		{
 			DWORD dwSizeRead;
@@ -726,9 +721,24 @@ namespace ZLibZipUtils
 
 			zip_fileinfo zinfo;
 			zinfo.external_fa = zinfo.internal_fa = 0;
-			zinfo.dosDate = bDateTime ? oFile.GetDateTime(inputFile) : 0;
+			zinfo.dosDate = 0;
 
-			if(oFile.OpenFile(inputFile))
+			if (bDateTime)
+			{
+				struct tm edited;
+				bool ok = NSFile::CFileBinary::GetTime(inputFile, &edited);
+				if (ok)
+				{
+					zinfo.tmz_date.tm_sec = edited.tm_sec;
+					zinfo.tmz_date.tm_min = edited.tm_min;
+					zinfo.tmz_date.tm_hour = edited.tm_hour;
+					zinfo.tmz_date.tm_mday = edited.tm_mday;
+					zinfo.tmz_date.tm_mon = edited.tm_mon - 1;
+					zinfo.tmz_date.tm_year = edited.tm_year;
+				}
+			}
+
+			if (oFile.OpenFile(inputFile))
 			{
 				DWORD dwSizeRead;
 				BYTE* pData = new BYTE[oFile.GetFileSize()];

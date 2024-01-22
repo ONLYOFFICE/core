@@ -2262,8 +2262,6 @@ void PptxConverter::convert(PPTX::Logic::Table *oox_table)
 	
 	convert(oox_table->tableProperties.GetPointer());
 
-	odp_context->slide_context()->start_table_columns();
-
 	for (size_t i = 0; i < oox_table->TableCols.size(); i++)
 	{
 		double width = -1;
@@ -2274,7 +2272,6 @@ void PptxConverter::convert(PPTX::Logic::Table *oox_table)
 		odp_context->slide_context()->add_table_column(width);
 
 	}
-	odp_context->slide_context()->end_table_columns();	
 
 	odp_context->slide_context()->table_context()->set_table_size(oox_table->TableCols.size(), oox_table->TableRows.size());
 

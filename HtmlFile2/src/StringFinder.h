@@ -43,7 +43,7 @@ namespace NSStringFinder
 		boost::algorithm::trim(sValue);
 		return sValue;
 	}
-	
+
 	template <typename StringType>
 	StringType FindPropety(const StringType& sString, const StringType& sProperty, const std::vector<StringType>& arDelimiters, const std::vector<StringType>& arEndings, const size_t& unStarting, size_t& unEndPosition)
 	{
@@ -90,14 +90,14 @@ namespace NSStringFinder
 	}
 
 	template <typename StringType>
-	StringType FindPropety(const StringType& sString, const StringType& sProperty, const std::vector<StringType>& arDelimiters, const std::vector<StringType>& arEndings, const size_t& unStarting)
+	StringType FindPropety(const StringType& sString, const StringType& sProperty, const std::vector<StringType>& arDelimiters, const std::vector<StringType>& arEndings, const size_t& unStarting = 0)
 	{
 		size_t unTempEnding = 0;
 		return FindPropety(sString, sProperty, arDelimiters, arEndings, unStarting, unTempEnding);
 	}
 
-	template <typename StringType>
-	void CutInside(StringType& sString, const StringType& sLeftEdge, const StringType& sRightEdge)
+	template <typename StringType, typename StringEndgeType>
+	void CutInside(StringType& sString, const StringEndgeType& sLeftEdge, const StringEndgeType& sRightEdge)
 	{
 		typedef const boost::iterator_range<typename StringType::const_iterator> StringRange;
 
@@ -117,16 +117,42 @@ namespace NSStringFinder
 		sString = StringType{itFoundBegin.end(), itFoundEnd.begin()};
 	}
 
-	template <typename StringType>
-	void CutInside(StringType& sString, const StringType& sEdge)
+	template <typename StringType, typename StringEdgeType>
+	void CutInside(StringType& sString, const StringEdgeType& sEdge)
 	{
 		CutInside(sString, sEdge, sEdge);
 	}
 
-	template <typename StringType>
-	bool Equals(const StringType& sFirstString, const StringType& sSecondString)
+	template <typename StringFirstType, typename StringSecondType>
+	bool Equals(const StringFirstType& sFirstString, const StringSecondType& sSecondString)
 	{
 		return boost::iequals(sFirstString, sSecondString);
+	}
+
+	template <typename StringFirstType, typename StringSecondType>
+	bool EqualOf(const StringFirstType& sFirstString, const std::vector<StringSecondType>& arStrings)
+	{
+		for (const StringFirstType& sString : arStrings)
+			if (boost::iequals(sFirstString, sString))
+				return true;
+
+		return false;
+	}
+
+	template <typename StringFirstType, typename StringSecondType>
+	bool EqualOf(const StringFirstType& sFirstString, const std::initializer_list<StringSecondType>& arStrings)
+	{
+		for (const StringFirstType& sString : arStrings)
+			if (boost::iequals(sFirstString, sString))
+				return true;
+
+		return false;
+	}
+
+	template <typename StringType, typename StringValueType>
+	bool Find(const StringType& sString, const StringValueType& sValue)
+	{
+		return !boost::algorithm::ifind_first(sString, sValue).empty();
 	}
 }
 

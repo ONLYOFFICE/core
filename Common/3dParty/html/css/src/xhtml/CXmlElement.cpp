@@ -364,22 +364,22 @@ std::wstring CXmlElement::ConvertPStyle(bool bIsLite) const
 
 			case CSSProperties::ParagraphProperties::P_TopBorder:
 			{
-				sPBdr += L"<w:top" + oItem.second + L"/>";
+				sPBdr += L"<w:top " + oItem.second + L"/>";
 				break;
 			}
 			case CSSProperties::ParagraphProperties::P_LeftBorder:
 			{
-				sPBdr += L"<w:left" + oItem.second + L"/>";
+				sPBdr += L"<w:left " + oItem.second + L"/>";
 				break;
 			}
 			case CSSProperties::ParagraphProperties::P_BottomBorder:
 			{
-				sPBdr += L"<w:bottom" + oItem.second + L"/>";
+				sPBdr += L"<w:bottom " + oItem.second + L"/>";
 				break;
 			}
 			case CSSProperties::ParagraphProperties::P_RightBorder:
 			{
-				sPBdr += L"<w:right" + oItem.second + L"/>";
+				sPBdr += L"<w:right " + oItem.second + L"/>";
 				break;
 			}
 			case CSSProperties::ParagraphProperties::P_KeepLines:

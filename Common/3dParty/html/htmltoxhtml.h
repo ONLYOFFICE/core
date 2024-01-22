@@ -40,29 +40,15 @@ static std::wstring htmlToXhtml(std::string& sFileContent, bool bNeedConvert)
 	// Распознование кодировки
 	if (bNeedConvert)
 	{
-		size_t posEncoding = sFileContent.find("charset=");
-		if (posEncoding == std::string::npos)
-			posEncoding = sFileContent.find("encoding=");
-		if (posEncoding != std::string::npos)
-		{
-			posEncoding = sFileContent.find("=", posEncoding) + 1;
-			char quoteSymbol = '\"';
-			if(sFileContent[posEncoding] == '\"' || sFileContent[posEncoding] == '\'')
-			{
-				quoteSymbol = sFileContent[posEncoding];
-				posEncoding += 1;
-			}
+		std::string sEncoding = NSStringFinder::FindPropety<std::string>(sFileContent, "charset", "\"", "\"");
 
-			size_t posEnd = sFileContent.find(quoteSymbol, posEncoding);
-			if (std::string::npos != posEnd)
-			{
-				std::string sEncoding = sFileContent.substr(posEncoding, posEnd - posEncoding);
-				if (sEncoding != "utf-8" && sEncoding != "UTF-8")
-				{
-					NSUnicodeConverter::CUnicodeConverter oConverter;
-					sFileContent = U_TO_UTF8(oConverter.toUnicode(sFileContent, sEncoding.c_str()));
-				}
-			}
+		if (sEncoding.empty())
+			sEncoding = NSStringFinder::FindPropety<std::string>(sFileContent, "encoding", "\"", "\"");
+		
+		if (!sEncoding.empty() && !NSStringFinder::Equals<std::string>("utf-8", sEncoding))
+		{
+			NSUnicodeConverter::CUnicodeConverter oConverter;
+			sFileContent = U_TO_UTF8(oConverter.toUnicode(sFileContent, sEncoding.c_str()));
 		}
 	}
 
@@ -121,7 +107,7 @@ static std::string Base64ToString(const std::string& sContent, const std::string
 	if (TRUE == NSBase64::Base64Decode(sContent.c_str(), nSrcLen, pData, &nDecodeLen))
 	{
 		std::wstring sConvert;
-		if(!sCharset.empty() && sCharset != "utf-8" && sCharset != "UTF-8")
+		if(!sCharset.empty() && NSStringFinder::Equals<std::string>("utf-8", sCharset))
 		{
 			NSUnicodeConverter::CUnicodeConverter oConverter;
 			sConvert = oConverter.toUnicode(reinterpret_cast<char *>(pData), (unsigned)nDecodeLen, sCharset.data());
@@ -209,8 +195,8 @@ static std::string QuotedPrintableDecode(const std::string& sContent, std::strin
 	return sRes.GetData();
 }
 
-static void ReadMht(std::string& sFileContent, size_t& nFound, size_t& nNextFound, const std::string& sBoundary,
-					std::map<std::string, std::string>& sRes, NSStringUtils::CStringBuilderA& oRes)
+static void ReadMht(std::string& sFileContent, size_t& nFound, size_t& nNextFound, 
+                    std::map<std::string, std::string>& sRes, NSStringUtils::CStringBuilderA& oRes)
 {
 	// Content
 	size_t nContentTag = sFileContent.find("\n\n", nFound);
@@ -253,7 +239,7 @@ static void ReadMht(std::string& sFileContent, size_t& nFound, size_t& nNextFoun
 
 	// charset
 	std::string sCharset = NSStringFinder::FindPropety<std::string>(sFileContent, "charset", {"="}, {";", "\\n", "\\r"}, nFound);
-	NSStringFinder::CutInside(sCharset, std::string("\""));
+	NSStringFinder::CutInside<std::string>(sCharset, "\"");
 
 	// Content-Location
 	std::string sContentLocation = NSStringFinder::FindPropety<std::string>(sFileContent, "content-location", {":"}, {";", "\\n", "\\r"}, nFound);
@@ -262,7 +248,7 @@ static void ReadMht(std::string& sFileContent, size_t& nFound, size_t& nNextFoun
 	{
 		// Content-ID
 		std::string sContentID = NSStringFinder::FindPropety<std::string>(sFileContent, "content-id", {":"}, {";", "\\n", "\\r"}, nFound);
-		NSStringFinder::CutInside(sCharset, std::string("<"), std::string(">"));
+		NSStringFinder::CutInside<std::string>(sCharset, "<", ">");
 
 		if (!sContentID.empty())
 			sContentLocation = "cid:" + sContentID;
@@ -289,53 +275,52 @@ static void ReadMht(std::string& sFileContent, size_t& nFound, size_t& nNextFoun
 	}
 	std::string sContent = sFileContent.substr(nContentTag, nTagEnd - nContentTag);
 
-	// Удаляем лишнее
-	sFileContent.erase(0, nNextFound);
-	nFound = sFileContent.find(sBoundary);
-
 	std::wstring sExtention = NSFile::GetFileExtention(UTF8_TO_U(sName));
-	std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
+//	std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
 	// Основной документ
-	if (NSStringFinder::Equals(sContentType, std::string("multipart/alternative")))
+	if (NSStringFinder::Equals(sContentType, "multipart/alternative"))
 		oRes.WriteString(mhtTohtml(sContent));
-	else if((sContentType.find("text") != std::string::npos && (sExtention.empty() || sExtention == L"htm" || sExtention == L"html" || sExtention
-																== L"xhtml" || sExtention == L"css")) || (sContentType == "application/octet-stream" && (sContentLocation.find("css") !=
-																																						 std::string::npos)))
+	else if ((NSStringFinder::Find(sContentType, "text") && (sExtention.empty() || NSStringFinder::EqualOf(sExtention, {L"htm", L"html", L"xhtml", L"css"}))) 
+	          || (NSStringFinder::Equals(sContentType, "application/octet-stream") && NSStringFinder::Find(sContentLocation, "css")))
 	{
 		// Стили заключаются в тэг <style>
-		if(sContentType == "text/css" || sExtention == L"css" || sContentLocation.find("css") != std::string::npos)
+		const bool bAddTagStyle = NSStringFinder::Equals(sContentType, "text/css") || NSStringFinder::Equals(sExtention, L"css") || NSStringFinder::Find(sContentLocation, "css");
+
+		if (bAddTagStyle)
 			oRes.WriteString("<style>");
-		if(sContentEncoding == "Base64" || sContentEncoding == "base64")
+
+		if (NSStringFinder::Equals(sContentEncoding, "base64"))
 			oRes.WriteString(Base64ToString(sContent, sCharset));
-		else if(sContentEncoding == "8bit" || sContentEncoding == "7bit" || sContentEncoding.empty())
+		else if (NSStringFinder::EqualOf(sContentEncoding, {"8bit", "7bit"}) || sContentEncoding.empty())
 		{
-			if (!NSStringFinder::Equals(sCharset, std::string("utf-8")) && !sCharset.empty())
+			if (!NSStringFinder::Equals(sCharset, "utf-8") && !sCharset.empty())
 			{
 				NSUnicodeConverter::CUnicodeConverter oConverter;
 				sContent = U_TO_UTF8(oConverter.toUnicode(sContent, sCharset.data()));
 			}
 			oRes.WriteString(sContent);
 		}
-		else if (NSStringFinder::Equals(sContentEncoding, std::string("quoted-printable")))
+		else if (NSStringFinder::Equals(sContentEncoding, "quoted-printable"))
 		{
 			sContent = QuotedPrintableDecode(sContent, sCharset);
-			if (!NSStringFinder::Equals(sCharset, std::string("utf-8")) && !sCharset.empty())
+			if (!NSStringFinder::Equals(sCharset, "utf-8") && !sCharset.empty())
 			{
 				NSUnicodeConverter::CUnicodeConverter oConverter;
 				sContent = U_TO_UTF8(oConverter.toUnicode(sContent, sCharset.data()));
 			}
 			oRes.WriteString(sContent);
 		}
-		if(sContentType == "text/css" || sExtention == L"css" || sContentLocation.find("css") != std::string::npos)
+
+		if(bAddTagStyle)
 			oRes.WriteString("</style>");
 	}
 	// Картинки
-	else if((sContentType.find("image") != std::string::npos || sExtention == L"gif" || sContentType == "application/octet-stream") &&
-			(sContentEncoding == "Base64" || sContentEncoding == "base64"))
+	else if ((NSStringFinder::Find(sContentType, "image") || NSStringFinder::Equals(sExtention, L"gif") || NSStringFinder::Equals(sContentType, "application/octet-stream")) && 
+			  NSStringFinder::Equals(sContentEncoding, "base64"))
 	{
-		if(sExtention == L"ico" || sContentType.find("ico") != std::string::npos)
+		if (NSStringFinder::Equals(sExtention, L"ico") || NSStringFinder::Find(sContentType, "ico"))
 			sContentType = "image/jpg";
-		else if(sExtention == L"gif")
+		else if(NSStringFinder::Equals(sExtention, L"gif"))
 			sContentType = "image/gif";
 		int nSrcLen = (int)sContent.length();
 		int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
@@ -351,39 +336,39 @@ static std::string mhtTohtml(std::string& sFileContent)
 	std::map<std::string, std::string> sRes;
 	NSStringUtils::CStringBuilderA oRes;
 
-	// Поиск boundary
-	std::string sBoundary = NSStringFinder::FindPropety<std::string>(sFileContent, "boundary", {"="}, {"\\r","\\n"}, 0);
-
 	size_t nFound = 0;
+	// Поиск boundary
+	std::string sBoundary = NSStringFinder::FindPropety<std::string>(sFileContent, "boundary", {"="}, {"\\r", "\\n", "\""}, 0, nFound);
+
 	if (sBoundary.empty())
 	{
 		size_t nFoundEnd = sFileContent.length();
 		nFound = 0;
-		ReadMht(sFileContent, nFound, nFoundEnd, "no", sRes, oRes);
+		ReadMht(sFileContent, nFound, nFoundEnd, sRes, oRes);
 		return oRes.GetData();
 	}
 
 	NSStringFinder::CutInside<std::string>(sBoundary, "\"");
 
-	size_t nFoundEnd = 0;
+	size_t nFoundEnd{nFound};
+
+	sBoundary = "--" + sBoundary;
 	size_t nBoundaryLength = sBoundary.length();
 
-	// Удаляем лишнее
-	nFound = sFileContent.find(sBoundary, nFoundEnd);
-	sFileContent.erase(0, nFound);
+	nFound = sFileContent.find(sBoundary, nFound) + nBoundaryLength;
 
 	// Цикл по boundary
-	nFound = 0;
 	while(nFound != std::string::npos)
 	{
-		// Выход по --boundary--
-		if(sFileContent[nFound + nBoundaryLength + 1] == '-')
-			break;
-		nFoundEnd = sFileContent.find(sBoundary, nFound + nBoundaryLength);
+		nFoundEnd = sFileContent.find(sBoundary + "--", nFound + nBoundaryLength);
 		if(nFoundEnd == std::string::npos)
 			break;
-		ReadMht(sFileContent, nFound, nFoundEnd, sBoundary, sRes, oRes);
+
+		ReadMht(sFileContent, nFound, nFoundEnd, sRes, oRes);
+
+		nFound = sFileContent.find(sBoundary, nFoundEnd + nBoundaryLength);;
 	}
+
 	std::string sFile = oRes.GetData();
 	for(const std::pair<std::string, std::string>& item : sRes)
 	{

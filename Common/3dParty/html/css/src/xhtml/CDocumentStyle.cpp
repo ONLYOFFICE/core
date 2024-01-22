@@ -355,69 +355,87 @@ namespace NSCSS
 		{
 			if (oStyle.m_oBorder.EqualSides())
 			{
-				const std::wstring sBorderColor = oStyle.m_oBorder.GetLeftBorder().GetColor().ToWString();
-				const std::wstring sBorderStyle = oStyle.m_oBorder.GetLeftBorder().GetStyle().ToWString();
-				const std::wstring sBorderWidth = oStyle.m_oBorder.GetLeftBorder().GetWidth().ToWString();
-
-				const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"0\" w:sz=\"" +
-				                                              sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
-
-				oXmlElement.AddPropertiesInP(PProperties::P_TopBorder, sBorder);
-				oXmlElement.AddPropertiesInP(PProperties::P_LeftBorder, sBorder);
-				oXmlElement.AddPropertiesInP(PProperties::P_BottomBorder, sBorder);
-				oXmlElement.AddPropertiesInP(PProperties::P_RightBorder, sBorder);
+				SetBorderStyle(oStyle, oXmlElement, PProperties::P_TopBorder);
+				SetBorderStyle(oStyle, oXmlElement, PProperties::P_LeftBorder);
+				SetBorderStyle(oStyle, oXmlElement, PProperties::P_BottomBorder);
+				SetBorderStyle(oStyle, oXmlElement, PProperties::P_RightBorder);
 			}
 			else
 			{
 				if (!oStyle.m_oBorder.GetTopBorder().Empty())
-				{
-					const std::wstring sBorderColor = oStyle.m_oBorder.GetTopBorder().GetColor().ToWString();
-					const std::wstring sBorderStyle = oStyle.m_oBorder.GetTopBorder().GetStyle().ToWString();
-					const std::wstring sBorderWidth = oStyle.m_oBorder.GetTopBorder().GetWidth().ToWString();
-
-					const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
-					                                              sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
-
-					oXmlElement.AddPropertiesInP(PProperties::P_TopBorder, sBorder);
-				}
+					SetBorderStyle(oStyle, oXmlElement, PProperties::P_TopBorder);
 
 				if (!oStyle.m_oBorder.GetRightBorder().Empty())
-				{
-					const std::wstring sBorderColor = oStyle.m_oBorder.GetRightBorder().GetColor().ToWString();
-					const std::wstring sBorderStyle = oStyle.m_oBorder.GetRightBorder().GetStyle().ToWString();
-					const std::wstring sBorderWidth = oStyle.m_oBorder.GetRightBorder().GetWidth().ToWString();
-
-					const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
-					                                              sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
-
-					oXmlElement.AddPropertiesInP(PProperties::P_RightBorder, sBorder);
-				}
+					SetBorderStyle(oStyle, oXmlElement, PProperties::P_RightBorder);
 
 				if (!oStyle.m_oBorder.GetBottomBorder().Empty())
-				{
-					const std::wstring sBorderColor = oStyle.m_oBorder.GetBottomBorder().GetColor().ToWString();
-					const std::wstring sBorderStyle = oStyle.m_oBorder.GetBottomBorder().GetStyle().ToWString();
-					const std::wstring sBorderWidth = oStyle.m_oBorder.GetBottomBorder().GetWidth().ToWString();
-
-					const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
-					                                              sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
-
-					oXmlElement.AddPropertiesInP(PProperties::P_BottomBorder, sBorder);
-				}
+					SetBorderStyle(oStyle, oXmlElement, PProperties::P_BottomBorder);
 
 				if (!oStyle.m_oBorder.GetLeftBorder().Empty())
-				{
-					const std::wstring sBorderColor = oStyle.m_oBorder.GetLeftBorder().GetColor().ToWString();
-					const std::wstring sBorderStyle = oStyle.m_oBorder.GetLeftBorder().GetStyle().ToWString();
-					const std::wstring sBorderWidth = oStyle.m_oBorder.GetLeftBorder().GetWidth().ToWString();
-
-					const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
-					                                              sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
-
-					oXmlElement.AddPropertiesInP(PProperties::P_LeftBorder, sBorder);
-				}
+					SetBorderStyle(oStyle, oXmlElement, PProperties::P_LeftBorder);
 			}
 		}
+	}
+
+	void CDocumentStyle::SetAllBorderStyle(const CCompiledStyle &oStyle, CXmlElement &oXmlElement)
+	{
+		const std::wstring wsBorder = CalculateBorderStyle(oStyle.m_oBorder.GetLeftBorder());
+
+		oXmlElement.AddPropertiesInP(PProperties::P_TopBorder,    wsBorder);
+		oXmlElement.AddPropertiesInP(PProperties::P_RightBorder,  wsBorder);
+		oXmlElement.AddPropertiesInP(PProperties::P_BottomBorder, wsBorder);
+		oXmlElement.AddPropertiesInP(PProperties::P_LeftBorder,   wsBorder);
+	}
+
+	void CDocumentStyle::SetBorderStyle(const CCompiledStyle &oStyle, CXmlElement &oXmlElement, const PProperties &enBorderProperty)
+	{
+		const NSCSS::NSProperties::CBorderSide* pBorder = NULL;
+
+		switch(enBorderProperty)
+		{
+			case PProperties::P_BottomBorder:
+			{
+				pBorder = &oStyle.m_oBorder.GetBottomBorder();
+				break;
+			}
+			case PProperties::P_LeftBorder:
+			{
+				pBorder = &oStyle.m_oBorder.GetLeftBorder();
+				break;
+			}
+			case PProperties::P_RightBorder:
+			{
+				pBorder = &oStyle.m_oBorder.GetRightBorder();
+				break;
+			}
+			case PProperties::P_TopBorder:
+			{
+				pBorder = &oStyle.m_oBorder.GetTopBorder();
+				break;
+			}
+			default:
+				return;
+		}
+
+		oXmlElement.AddPropertiesInP(enBorderProperty, CalculateBorderStyle(*pBorder));
+	}
+
+	std::wstring CDocumentStyle::CalculateBorderStyle(const NSProperties::CBorderSide &oBorder)
+	{
+		std::wstring wsColor = oBorder.GetColor().ToWString();
+		std::wstring wsStyle = oBorder.GetStyle().ToWString();
+		std::wstring wsWidth = oBorder.GetWidth().ToWString();
+
+		if (wsColor.empty())
+			wsColor = L"auto";
+
+		if (wsStyle.empty())
+			wsStyle = L"single";
+
+		if (wsWidth.empty())
+			wsWidth = L"1";
+
+		return L"w:color=\"" + wsColor + L"\" w:space=\"0\" w:sz=\"" + wsWidth + L"\" w:val=\"" + wsStyle + L"\"";
 	}
 
 	void CDocumentStyle::SetRStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement)

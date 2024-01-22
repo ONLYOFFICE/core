@@ -490,7 +490,7 @@ public:
 		const std::string sContentType = NSStringFinder::FindPropety<std::string>(xml_string, "content-type", ":", ";");
 		bool bRes = false;
 
-		if(NSStringFinder::Equals(sContentType, std::string("multipart/related")))
+		if(NSStringFinder::Equals(sContentType, "multipart/related"))
 		{
 			BYTE* pData;
 			DWORD nLength;
@@ -1377,37 +1377,26 @@ private:
 		{
 			if (oStyle.m_oBorder.EqualSides())
 			{
-				std::wstring sColor = oStyle.m_oBorder.GetBottomBorder().GetColor().ToWString();
-				std::wstring sSz    = oStyle.m_oBorder.GetBottomBorder().GetWidth().ToWString();
-				std::wstring sStyle = oStyle.m_oBorder.GetBottomBorder().GetStyle().ToWString();
-
-				sBorders =  L"<w:top w:val=\""      + sStyle + L"\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
-							L"<w:left w:val=\""     + sStyle + L"\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
-							L"<w:bottom w:val=\""   + sStyle + L"\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
-							L"<w:right w:val=\""    + sStyle + L"\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
-							L"<w:insideH w:val=\""  + sStyle + L"\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
-							L"<w:insideV w:val=\""  + sStyle + L"\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>";
+				const std::wstring wsBorderStyle = NSCSS::CDocumentStyle::CalculateBorderStyle(oStyle.m_oBorder.GetLeftBorder());
+				
+				sBorders = L"<w:top "     + wsBorderStyle + L"/>" +
+				           L"<w:left "    + wsBorderStyle + L"/>" +
+				           L"<w:bottom "  + wsBorderStyle + L"/>" +
+				           L"<w:right "   + wsBorderStyle + L"/>" +
+				           L"<w:insideH " + wsBorderStyle + L"/>" +
+				           L"<w:insideV " + wsBorderStyle + L"/>";
 			}
 			else
 			{
-				std::wstring sColorLeftSide     = oStyle.m_oBorder.GetLeftBorder().GetColor().ToWString();
-				std::wstring sSzLeftSide        = oStyle.m_oBorder.GetLeftBorder().GetWidth().ToWString();
-				std::wstring sStyleLeftSide     = oStyle.m_oBorder.GetLeftBorder().GetStyle().ToWString();
-				std::wstring sColorTopSide      = oStyle.m_oBorder.GetTopBorder().GetColor().ToWString();
-				std::wstring sSzTopSide         = oStyle.m_oBorder.GetTopBorder().GetWidth().ToWString();
-				std::wstring sStyleTopSide      = oStyle.m_oBorder.GetTopBorder().GetStyle().ToWString();
-				std::wstring sColorRightSide    = oStyle.m_oBorder.GetRightBorder().GetColor().ToWString();
-				std::wstring sSzRightSide       = oStyle.m_oBorder.GetRightBorder().GetWidth().ToWString();
-				std::wstring sStyleRightSide    = oStyle.m_oBorder.GetRightBorder().GetStyle().ToWString();
-				std::wstring sColorBottomSide   = oStyle.m_oBorder.GetBottomBorder().GetColor().ToWString();
-				std::wstring sSzBottomSide      = oStyle.m_oBorder.GetBottomBorder().GetWidth().ToWString();
-				std::wstring sStyleBottomSide   = oStyle.m_oBorder.GetBottomBorder().GetColor().ToWString();
-
-				sBorders =  L"<w:left w:val=\""     + sStyleLeftSide    + L"\" w:color=\"" + sColorLeftSide    + L"\" w:sz=\"" + sSzLeftSide   + L"\" w:space=\"0\"/>" +
-							L"<w:top w:val=\""      + sStyleTopSide     + L"\" w:color=\"" + sColorTopSide     + L"\" w:sz=\"" + sSzTopSide    + L"\" w:space=\"0\"/>" +
-							L"<w:right w:val=\""    + sStyleRightSide   + L"\" w:color=\"" + sColorRightSide   + L"\" w:sz=\"" + sSzRightSide  + L"\" w:space=\"0\"/>" +
-							L"<w:bottom w:val=\""   + sStyleBottomSide  + L"\" w:color=\"" + sColorBottomSide  + L"\" w:sz=\"" + sSzBottomSide + L"\" w:space=\"0\"/>";
-
+				const std::wstring wsTopBorderStyle    = NSCSS::CDocumentStyle::CalculateBorderStyle(oStyle.m_oBorder.GetTopBorder());
+				const std::wstring wsLeftBorderStyle   = NSCSS::CDocumentStyle::CalculateBorderStyle(oStyle.m_oBorder.GetLeftBorder());
+				const std::wstring wsBottomBorderStyle = NSCSS::CDocumentStyle::CalculateBorderStyle(oStyle.m_oBorder.GetBottomBorder());
+				const std::wstring wsRightBorderStyle  = NSCSS::CDocumentStyle::CalculateBorderStyle(oStyle.m_oBorder.GetRightBorder());
+				
+				sBorders = L"<w:top "     + wsTopBorderStyle    + L"/>" +
+				           L"<w:left "    + wsLeftBorderStyle   + L"/>" +
+				           L"<w:bottom "  + wsBottomBorderStyle + L"/>" +
+				           L"<w:right "   + wsRightBorderStyle  + L"/>";
 			}
 		}
 

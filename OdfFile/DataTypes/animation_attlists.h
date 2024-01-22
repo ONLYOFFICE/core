@@ -136,6 +136,7 @@ public:
 	_CP_OPT(std::wstring)			smil_by_;
 	_CP_OPT(smil_additive)			smil_additive_;
 	_CP_OPT(Bool)					smil_auto_reverse_;
+	_CP_OPT(svg_type)				svg_type_;
 
 };
 

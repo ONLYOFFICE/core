@@ -189,6 +189,7 @@ namespace odf_types {
 		CP_APPLY_ATTR(L"smil:autoReverse", smil_auto_reverse_);
 		CP_APPLY_ATTR(L"smil:additive", smil_additive_);
 		CP_APPLY_ATTR(L"anim:formula", anim_formula_);
+		CP_APPLY_ATTR(L"svg:type", svg_type_);
 	}
 
 	void anim_animate_attlist::apply_from(const anim_animate_attlist& Other)
@@ -202,6 +203,7 @@ namespace odf_types {
 		_CP_APPLY_PROP2(smil_by_);
 		_CP_APPLY_PROP2(smil_additive_);
 		_CP_APPLY_PROP2(smil_auto_reverse_);
+		_CP_APPLY_PROP2(svg_type_);
 	}
 
 	void anim_animate_attlist::serialize(CP_ATTR_NODE)
@@ -215,6 +217,7 @@ namespace odf_types {
 		CP_XML_ATTR_OPT(L"smil:by",						smil_by_);
 		CP_XML_ATTR_OPT(L"smil:additive",				smil_additive_);
 		CP_XML_ATTR_OPT(L"smil:autoReverse",			smil_auto_reverse_);
+		CP_XML_ATTR_OPT(L"svg:type",					svg_type_);
 	}
 
 	void anim_animate_transform_attlist::add_attributes(const xml::attributes_wc_ptr& Attributes)

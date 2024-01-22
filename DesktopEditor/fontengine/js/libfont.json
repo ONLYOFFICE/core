@@ -263,6 +263,10 @@
 		"files": ["graphics/Image.cpp", "raster/BgraFrame.cpp", "raster/ImageFileFormatChecker.cpp"]
 	},
 	{
+		"folder": "../../raster/",
+		"files": ["PICT/PICFile.cpp", "PICT/pic.cpp"]
+	},
+	{
 		"folder": "../../graphics/pro/js/qt/raster",
 		"files": ["pro_Fonts_empty.cpp", "pro_Graphics_empty.cpp", "raster.cpp"]
 	},

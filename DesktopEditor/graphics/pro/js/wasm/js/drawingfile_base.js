@@ -563,7 +563,7 @@
 			let n = reader.readInt();
 			rec["C"] = [];
 			for (let i = 0; i < n; ++i)
-				rec["C"].push(reader.readDouble());
+				rec["C"].push(reader.readDouble2());
 		}
 		// Border/BS
 		if (flags & (1 << 4))
@@ -741,7 +741,7 @@
 			{
 				rec["font"]["color"] = [];
 				for (let i = 0; i < tc; ++i)
-					rec["font"]["color"].push(reader.readDouble());
+					rec["font"]["color"].push(reader.readDouble2());
 			}
 			// 0 - left-justified, 1 - centered, 2 - right-justified
 			rec["alignment"] = reader.readByte();
@@ -775,7 +775,7 @@
 				let n = reader.readInt();
 				rec["BC"] = [];
 				for (let i = 0; i < n; ++i)
-					rec["BC"].push(reader.readDouble());
+					rec["BC"].push(reader.readDouble2());
 			}
 			// Rotate an annotation relative to the page - R
 			if (flags & (1 << 6))
@@ -786,7 +786,7 @@
 				let n = reader.readInt();
 				rec["BG"] = [];
 				for (let i = 0; i < n; ++i)
-					rec["BG"].push(reader.readDouble());
+					rec["BG"].push(reader.readDouble2());
 			}
 			// Default value - DV
 			if (flags & (1 << 8))
@@ -1178,7 +1178,7 @@
 					let n = reader.readInt();
 					rec["IC"] = [];
 					for (let i = 0; i < n; ++i)
-						rec["IC"].push(reader.readDouble());
+						rec["IC"].push(reader.readDouble2());
 				}
 				// LL
 				if (flags & (1 << 17))
@@ -1246,7 +1246,7 @@
 					let n = reader.readInt();
 					rec["IC"] = [];
 					for (let i = 0; i < n; ++i)
-						rec["IC"].push(reader.readDouble());
+						rec["IC"].push(reader.readDouble2());
 				}
 			}
 			// Polygon, PolyLine
@@ -1270,7 +1270,7 @@
 					let n = reader.readInt();
 					rec["IC"] = [];
 					for (let i = 0; i < n; ++i)
-						rec["IC"].push(reader.readDouble());
+						rec["IC"].push(reader.readDouble2());
 				}
 				// IT
 				// 0 - PolygonCloud, 1 - PolyLineDimension, 2 - PolygonDimension
@@ -1331,7 +1331,7 @@
 					let n = reader.readInt();
 					rec["C"] = [];
 					for (let i = 0; i < n; ++i)
-						rec["C"].push(reader.readDouble());
+						rec["C"].push(reader.readDouble2());
 				}
 			}
 			// Caret

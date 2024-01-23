@@ -907,6 +907,13 @@ namespace PdfWriter
 	{
 		if (!m_pMK)
 		{
+			CObjectBase* pMK = Get("MK");
+			if (pMK && pMK->GetType() == object_type_DICT)
+			{
+				m_pMK = (CDictObject*)pMK;
+				return;
+			}
+
 			m_pMK = new CDictObject();
 			Add("MK", m_pMK);
 		}
@@ -1235,9 +1242,36 @@ namespace PdfWriter
 	}
 	void CPushButtonWidget::SetAP(CXObject* pForm, BYTE nAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, double dLineW, double dLineH, CFontCidTrueType** ppFonts)
 	{
-		m_pAppearance = new CAnnotAppearance(m_pXref, this);
 		if (!m_pAppearance)
-			return;
+		{
+			m_pAppearance = new CAnnotAppearance(m_pXref, this);
+			CObjectBase* pAP = Get("AP");
+			if (pAP && pAP->GetType() == object_type_DICT)
+			{
+				CDictObject* pDAP = (CDictObject*)pAP;
+				CObjectBase* pAPi = pDAP->Get("N");
+				if (pAPi)
+				{
+					CProxyObject* pNewAPi = new CProxyObject(pAPi->Copy(), true);
+					pNewAPi->Get()->SetRef(pAPi->GetObjId(), pAPi->GetGenNo());
+					m_pAppearance->Add("N", pNewAPi);
+				}
+				pAPi = pDAP->Get("D");
+				if (pAPi)
+				{
+					CProxyObject* pNewAPi = new CProxyObject(pAPi->Copy(), true);
+					pNewAPi->Get()->SetRef(pAPi->GetObjId(), pAPi->GetGenNo());
+					m_pAppearance->Add("D", pNewAPi);
+				}
+				pAPi = pDAP->Get("R");
+				if (pAPi)
+				{
+					CProxyObject* pNewAPi = new CProxyObject(pAPi->Copy(), true);
+					pNewAPi->Get()->SetRef(pAPi->GetObjId(), pAPi->GetGenNo());
+					m_pAppearance->Add("R", pNewAPi);
+				}
+			}
+		}
 
 		CAnnotAppearanceObject* pAppearance = NULL;
 		if (nAP == 0)

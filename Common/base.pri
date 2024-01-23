@@ -229,6 +229,14 @@ core_linux {
 		QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN\'"
 		QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN/system\'"
 		QMAKE_LFLAGS += -Wl,--disable-new-dtags
+
+		!disable_rpath_addon {
+			RUN_PATH_ADDON = $$(RUN_PATH_ADDON)
+			!isEmpty(RUN_PATH_ADDON){
+				RUN_PATH_ADDON_ARRAY = $$split(RUN_PATH_ADDON, ";;")
+				for(rpath_item, RUN_PATH_ADDON_ARRAY):QMAKE_LFLAGS += "-Wl,-rpath,\'$$rpath_item\'"
+			}
+		}
 	}
 }
 

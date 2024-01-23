@@ -16,6 +16,7 @@ CSvgFile::~CSvgFile()
 
 bool CSvgFile::ReadFromBuffer(BYTE *pBuffer, unsigned int unSize)
 {
+	Clear();
 	return false;
 }
 
@@ -23,17 +24,9 @@ bool CSvgFile::OpenFromFile(const std::wstring &wsFile)
 {
 	Clear();
 
+	m_wsWorkingDirectory = NSFile::GetDirectoryName(wsFile);
+
 	return m_oParser.LoadFromFile(wsFile, &m_oContainer, this);
-}
-
-bool CSvgFile::Load(const std::wstring &wsContent)
-{
-	return false;
-}
-
-void CSvgFile::Close()
-{
-
 }
 
 bool CSvgFile::GetBounds(double &dX, double &dY, double &dWidth, double &dHeight) const
@@ -95,6 +88,11 @@ SVG::CObject *CSvgFile::GetMarkedObject(const std::wstring &wsId) const
 		return oConstIter->second;
 
 	return NULL;
+}
+
+std::wstring CSvgFile::GetWorkingDirectory() const
+{
+	return m_wsWorkingDirectory;
 }
 
 void CSvgFile::AddStyles(const std::wstring &wsStyles)
@@ -188,4 +186,5 @@ void CSvgFile::Clear()
 		RELEASEINTERFACE(oIter.second);
 
 	m_mMarkedObjects.clear();
+	m_wsWorkingDirectory.clear();
 }

@@ -123,8 +123,6 @@ namespace MetaFile
 		std::wstring CreateDibPatternStyle(IBrush *pBrush);
 		std::wstring CreatePatternStyle(IBrush *pBrush);
 		std::wstring CreateGradient(IBrush *pBrush);
-
-		double CalculatePenWidth() const;
 	private:
 		TSvgViewport         m_oViewport;
 		TPointD              m_oSizeWindow;

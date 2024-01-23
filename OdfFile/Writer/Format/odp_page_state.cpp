@@ -403,6 +403,18 @@ void odp_page_state::set_anim_animation_to(const std::wstring& val)
 	anim_levels.back().animate_attlist->smil_to_ = val;
 }
 
+void odp_page_state::set_anim_animation_type(const odf_types::svg_type& val)
+{
+	if (anim_levels.empty())		return;
+	if (!anim_levels.back().attlist)return;
+
+	anim_animate* animate = dynamic_cast<anim_animate*>(anim_levels.back().elm.get());
+	if (!animate)
+		return;
+
+	anim_levels.back().animate_attlist->svg_type_ = val;
+}
+
 void odp_page_state::set_anim_transition_filter_mode(const std::wstring& val)
 {
 	if (anim_levels.empty())		return;

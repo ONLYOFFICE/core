@@ -20,9 +20,7 @@ namespace MetaFile
 	{}
 
 	CEmfInterpretatorSvg::~CEmfInterpretatorSvg()
-	{
-
-	}
+	{}
 
 	void CEmfInterpretatorSvg::CreateConditional(IMetaFileBase *pParser)
 	{
@@ -56,43 +54,42 @@ namespace MetaFile
 
 		UpdateSize();
 
-		if (m_oViewport.GetWidth() != 0)
-			m_pXmlWriter->WriteAttribute(L"width", ConvertToWString(m_oViewport.GetWidth()));
-
-		if (m_oViewport.GetHeight() != 0)
-			m_pXmlWriter->WriteAttribute(L"height", ConvertToWString(m_oViewport.GetHeight()));
-
-		double dXScale = 1, dYScale = 1, dXTranslate = 0, dYTranslate = 0;
+		double dXScale = 1., dYScale = 1.;
 
 		if (0 != m_oSizeWindow.X)
-		{
 			dXScale = m_oSizeWindow.X / m_oViewport.GetWidth();
-			dXTranslate = m_oViewport.GetWidth() / 2 * std::abs(dXScale - 1);
-
-			if (dXScale < 1)
-				dXTranslate = -dXTranslate;
-		}
 
 		if (0 != m_oSizeWindow.Y)
-		{
 			dYScale = m_oSizeWindow.Y / m_oViewport.GetHeight();
-			dYTranslate = m_oViewport.GetHeight() / 2 * std::abs(dYScale - 1);
 
-			if (dYScale < 1)
-				dYTranslate = -dYTranslate;
-		}
+		if (m_oViewport.GetWidth() != 0)
+			m_pXmlWriter->WriteAttribute(L"width", ConvertToWString(m_oViewport.GetWidth() * dXScale));
 
-		if (1 != dXScale || 1 != dYScale)
-			m_pXmlWriter->WriteAttribute(L"transform", L"matrix(" + ConvertToWString(dXScale) + L",0,0," + ConvertToWString(dYScale) + L',' + ConvertToWString(dXTranslate) + L',' + ConvertToWString(dYTranslate) + L')');
+		if (m_oViewport.GetHeight() != 0)
+			m_pXmlWriter->WriteAttribute(L"height", ConvertToWString(m_oViewport.GetHeight() * dYScale));
 
 		m_pXmlWriter->WriteNodeEnd(L"svg", true, false);
+
+		if (!Equals(1., dXScale) || !Equals(1., dYScale))
+		{
+			m_pXmlWriter->WriteNodeBegin(L"g", true);
+
+			m_pXmlWriter->WriteAttribute(L"transform", L"scale(" + ConvertToWString(dXScale) + L',' + ConvertToWString(dYScale) + L')');
+
+			m_pXmlWriter->WriteNodeEnd(L"g", true, false);
+		}
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_EOF()
 	{
 		CloseClip();
+
 		if (!m_wsDefs.empty())
 			m_pXmlWriter->WriteString(L"<defs>" + m_wsDefs + L"</defs>");
+
+		if (!Equals(m_oSizeWindow.X, m_oViewport.GetWidth()) || !Equals(m_oSizeWindow.Y, m_oViewport.GetHeight()))
+			m_pXmlWriter->WriteNodeEnd(L"g", false, false);
+
 		m_pXmlWriter->WriteNodeEnd(L"svg", false, false);
 	}
 
@@ -1393,11 +1390,11 @@ namespace MetaFile
 			m_pParser->GetTransform()->Apply(oTempRect.Left,  oTempRect.Top);
 			m_pParser->GetTransform()->Apply(oTempRect.Right, oTempRect.Bottom);
 
-			wsValue +=	L"M "  + ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Top) +
-			            L" L " + ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Top) + L' ' +
-			                     ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Bottom) + L' ' +
-			                     ConvertToWString(oTempRect.Left)	+ L',' + ConvertToWString(oTempRect.Bottom) + L' ' +
-			                     ConvertToWString(oTempRect.Left)	+ L',' + ConvertToWString(oTempRect.Top) + L' ';
+			wsValue += L"M "  + ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Top)    +
+			           L" L " + ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Top)    + L' ' +
+			                    ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Bottom) + L' ' +
+			                    ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Bottom) + L' ' +
+			                    ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Top)    + L' ';
 		}
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};

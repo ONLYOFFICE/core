@@ -1734,19 +1734,24 @@ namespace NSBinPptxRW
 					if (m_pManager->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX)	strMediaRelsPath = L"media/";		
 					else														strMediaRelsPath = L"../media/";
 					
-					strMediaRelsPath += mediaFile->filename().GetFilename();				
+					const std::wstring filename = mediaFile->filename().GetFilename();
 
-					if (additionalFile.is<OOX::Video>() || additionalFile.is<OOX::Audio>())
+					if (!filename.empty())
 					{
-						m_pWriter->WriteString(L"<Relationship Id=\"" + strRid
-							+ L"\" Type=\"http://schemas.microsoft.com/office/2007/relationships/media\" Target=\"" +
-							strMediaRelsPath + L"\"" + (mediaFile->IsExternal() ? L" TargetMode=\"External\"" : L"") + L"/>");
-					}
-					else
-					{
-						m_pWriter->WriteString(L"<Relationship Id=\"" + strRid
-							+ L"\" Type=\"" + additionalFile->type().RelationType() + L"\" Target=\"" +
-							strMediaRelsPath + L"\"" + (mediaFile->IsExternal() ? L" TargetMode=\"External\"" : L"") + L"/>");
+						strMediaRelsPath += filename;
+
+						if (additionalFile.is<OOX::Video>() || additionalFile.is<OOX::Audio>())
+						{
+							m_pWriter->WriteString(L"<Relationship Id=\"" + strRid
+								+ L"\" Type=\"http://schemas.microsoft.com/office/2007/relationships/media\" Target=\"" +
+								strMediaRelsPath + L"\"" + (mediaFile->IsExternal() ? L" TargetMode=\"External\"" : L"") + L"/>");
+						}
+						else
+						{
+							m_pWriter->WriteString(L"<Relationship Id=\"" + strRid
+								+ L"\" Type=\"" + additionalFile->type().RelationType() + L"\" Target=\"" +
+								strMediaRelsPath + L"\"" + (mediaFile->IsExternal() ? L" TargetMode=\"External\"" : L"") + L"/>");
+						}
 					}
 				}
 			}

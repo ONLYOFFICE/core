@@ -698,6 +698,71 @@ namespace PdfWriter
 	{
 		return new CImageDict(m_pXref, this);
 	}
+	CXObject* CDocument::CreateForm(CImageDict* pImage, const std::string& sName)
+	{
+		if (!pImage)
+			return NULL;
+
+		std::string sFrmName = "FRM" + sName;
+		std::string sImgName = "Img" + sName;
+
+		CXObject* pForm = new CXObject();
+		CStream* pStream = new CMemoryStream();
+		pForm->SetStream(m_pXref, pStream);
+
+#ifndef FILTER_FLATE_DECODE_DISABLED
+		if (m_unCompressMode & COMP_TEXT)
+			pForm->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
+		double dOriginW = pImage->GetWidth();
+		double dOriginH = pImage->GetHeight();
+		pForm->SetWidth(dOriginW);
+		pForm->SetHeight(dOriginH);
+
+		CArrayObject* pBBox = new CArrayObject();
+		pForm->Add("BBox", pBBox);
+		pBBox->Add(0);
+		pBBox->Add(0);
+		pBBox->Add(dOriginW);
+		pBBox->Add(dOriginH);
+		pForm->Add("FormType", 1);
+		CArrayObject* pFormMatrix = new CArrayObject();
+		pForm->Add("Matrix", pFormMatrix);
+		pFormMatrix->Add(1);
+		pFormMatrix->Add(0);
+		pFormMatrix->Add(0);
+		pFormMatrix->Add(1);
+		pFormMatrix->Add(0);
+		pFormMatrix->Add(0);
+		pForm->Add("Name", sFrmName.c_str());
+		pForm->SetName(sFrmName);
+
+		CDictObject* pFormRes = new CDictObject();
+		CArrayObject* pFormResProcset = new CArrayObject();
+		pFormRes->Add("ProcSet", pFormResProcset);
+		pFormResProcset->Add(new CNameObject("PDF"));
+		pFormResProcset->Add(new CNameObject("ImageC"));
+		CDictObject* pFormResXObject = new CDictObject();
+		pFormRes->Add("XObject", pFormResXObject);
+
+		pFormResXObject->Add(sImgName, pImage);
+		pForm->Add("Resources", pFormRes);
+
+		pForm->Add("Subtype", "Form");
+		pForm->Add("Type", "XObject");
+
+		pStream->WriteStr("q\012");
+		pStream->WriteReal(dOriginW);
+		pStream->WriteStr(" 0 0 ");
+		pStream->WriteReal(dOriginH);
+		pStream->WriteStr(" 0 0 cm\012/");
+		pStream->WriteStr(sImgName.c_str());
+		pStream->WriteStr(" Do\012Q");
+
+		GetFieldsResources()->AddXObjectWithName(sFrmName.c_str(), pForm);
+
+		return pForm;
+	}
     CFont14* CDocument::CreateFont14(EStandard14Fonts eType)
 	{
 		return new CFont14(m_pXref, this, eType);
@@ -1410,35 +1475,6 @@ namespace PdfWriter
 		}
 
 		return true;
-	}
-	void CDocument::UpdateButtonImg(const std::vector<PdfWriter::CImageDict*>& arrButtonImg)
-	{
-		for (auto it = m_mAnnotations.begin(); it != m_mAnnotations.end(); it++)
-		{
-			CAnnotation* pAnnot = it->second;
-			if (pAnnot->GetAnnotationType() != AnnotWidget || ((CWidgetAnnotation*)pAnnot)->GetWidgetType() != WidgetPushbutton)
-				continue;
-
-			CPushButtonWidget* pPBWidget = (CPushButtonWidget*)pAnnot;
-			if (pPBWidget->m_nI >= 0)
-			{
-				std::string sFrmName = "FRM" + std::to_string(it->first) + "I";
-				std::string sImgName = "Img" + std::to_string(pPBWidget->m_nI);
-				pPBWidget->SetAP(arrButtonImg[pPBWidget->m_nI], "I", sImgName, sFrmName);
-			}
-			if (pPBWidget->m_nRI >= 0)
-			{
-				std::string sFrmName = "FRM" + std::to_string(it->first) + "RI";
-				std::string sImgName = "Img" + std::to_string(pPBWidget->m_nRI);
-				pPBWidget->SetAP(arrButtonImg[pPBWidget->m_nRI], "RI", sImgName, sFrmName);
-			}
-			if (pPBWidget->m_nIX >= 0)
-			{
-				std::string sFrmName = "FRM" + std::to_string(it->first) + "IX";
-				std::string sImgName = "Img" + std::to_string(pPBWidget->m_nIX);
-				pPBWidget->SetAP(arrButtonImg[pPBWidget->m_nIX], "IX", sImgName, sFrmName);
-			}
-		}
 	}
 	CPage* CDocument::AddPage(int nPageIndex)
 	{

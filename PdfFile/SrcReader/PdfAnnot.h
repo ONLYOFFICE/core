@@ -207,12 +207,16 @@ private:
 // PdfReader::CWidgetAnnot
 //------------------------------------------------------------------------
 
+bool GetFontFromAP(PDFDoc* pdfDoc, AcroFormField* pField, Object* oR, Object* oFonts, Object* oFontRef, std::string& sFontKey);
+std::wstring GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList *pFontList, Object* oFonts, Object* oFontRef, int nTypeFonts, std::string& sFontName, std::string& sActualFontName, bool& bBold, bool& bItalic);
+
 class CAnnotWidget : public CAnnot
 {
 public:
 	virtual ~CAnnotWidget();
 
 	void SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CFontList *pFontList);
+	void SetButtonFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CFontList *pFontList);
 
 protected:
 	CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField);
@@ -241,6 +245,7 @@ private:
 	std::string m_sFontKey; // Уникальный идентификатор шрифта
 	std::string m_sFontName; // Имя шрифта - из DA
 	std::string m_sActualFontName; // Имя замененного шрифта
+	std::string m_sButtonFontName; // Имя шрифта кнопки
 };
 
 class CAnnotWidgetBtn final : public CAnnotWidget

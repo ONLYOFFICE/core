@@ -586,7 +586,10 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 		{
 			pEncryptDict = new PdfWriter::CEncryptDict();
 
-			Object encrypt, ID, ID1;
+			// Нужно получить словарь Encrypt БЕЗ дешифровки, поэтому времено отключаем encrypted в xref
+			xref->offEncrypted();
+
+			Object encrypt;
 			if (pTrailerDict->dictLookup("Encrypt", &encrypt) && encrypt.isDict())
 			{
 				for (int nIndex = 0; nIndex < encrypt.dictGetLength(); ++nIndex)
@@ -603,25 +606,10 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 			}
 			encrypt.free();
 
-			if (pTrailerDict->dictLookup("ID", &ID) && ID.isArray() && ID.arrayGet(0, &ID1) && ID1.isString())
-			{
-				for (int nIndex = 0; nIndex < ID1.dictGetLength(); ++nIndex)
-				{
-					Object oTemp;
-					char* chKey = ID1.dictGetKey(nIndex);
-					ID1.dictGetValNF(nIndex, &oTemp);
-					DictToCDictObject(&oTemp, pEncryptDict, true, chKey);
-					oTemp.free();
-				}
-			}
+			xref->onEncrypted();
 
-			pEncryptDict->SetRef(0, 0);
-			pEncryptDict->Fix();
 			pEncryptDict->SetPasswords(m_pInternal->wsPassword, m_pInternal->wsPassword);
 			pEncryptDict->UpdateKey(nCryptAlgorithm);
-
-			ID.free();
-			ID1.free();
 		}
 	}
 

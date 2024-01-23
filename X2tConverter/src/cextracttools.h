@@ -967,6 +967,7 @@ namespace NExtractTools
 					 nFormatTo == AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF)
 				{
 					nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF;
+					*m_nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF;
 				}
 
 				if (NULL != m_oMailMergeSend)

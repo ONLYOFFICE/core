@@ -821,8 +821,6 @@ namespace PdfWriter
 	{
 		m_pMK         = NULL;
 		m_pParent     = NULL;
-		m_pAA         = NULL;
-		m_pA          = NULL;
 		m_pAppearance = NULL;
 		m_pFont       = NULL;
 		m_dFontSizeAP = 0;
@@ -1023,18 +1021,37 @@ namespace PdfWriter
 			return;
 		}
 
-		if (!m_pAA)
+		std::string sAA = pAction->m_sType;
+		CDictObject* pAA = NULL;
+		if (m_pParent && (sAA == "K" || sAA == "F" || sAA == "V" || sAA == "C"))
 		{
-			CDictObject* pOwner = GetObjOwnValue("AA");
-			if (!pOwner)
+			pAA = (CDictObject*)m_pParent->Get("AA");
+			if (!pAA)
 			{
-				Add("AA", new CDictObject());
-				pOwner = this;
+				pAA = new CDictObject();
+				m_pParent->Add("AA", pAA);
 			}
-			m_pAA = (CDictObject*)pOwner->Get("AA");
 		}
-
-		m_pAA->Add(pAction->m_sType.c_str(), pAction);
+		else if (sAA == "E" || sAA == "X" || sAA == "D" || sAA == "U" || sAA == "Fo" || sAA == "Bl" || sAA == "PO" || sAA == "PC" || sAA == "PV" || sAA == "PI")
+		{
+			pAA = (CDictObject*)Get("AA");
+			if (!pAA)
+			{
+				pAA = new CDictObject();
+				Add("AA", pAA);
+			}
+		}
+		else
+		{
+			pAA = (CDictObject*)GetObjValue("AA");
+			if (!pAA)
+			{
+				pAA = new CDictObject();
+				Add("AA", pAA);
+			}
+		}
+		if (pAA)
+			pAA->Add(sAA.c_str(), pAction);
 	}
 	std::string CWidgetAnnotation::GetDAforAP(CFontDict* pFont)
 	{

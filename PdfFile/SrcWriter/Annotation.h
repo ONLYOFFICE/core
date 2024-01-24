@@ -345,8 +345,6 @@ namespace PdfWriter
 		EWidgetType m_nSubtype;
 		CDictObject* m_pMK;
 		CDictObject* m_pParent;
-		CDictObject* m_pAA;
-		CDictObject* m_pA;
 
 		CFontCidTrueType* m_pFont;
 		double m_dFontSize;
@@ -469,6 +467,7 @@ namespace PdfWriter
 	{
 	private:
 		std::string m_sV;
+		std::wstring m_sAPV;
 
 	public:
 		CTextWidget(CXref* pXref);
@@ -476,10 +475,12 @@ namespace PdfWriter
 		void SetMaxLen(const int& nMaxLen);
 		void SetV (const std::wstring& wsV);
 		void SetRV(const std::wstring& wsRV);
+		void SetAPV(const std::wstring& wsAPV) { m_sAPV = wsAPV; }
 
 		bool IsCombFlag();
 		bool IsMultiLine();
 		unsigned int GetMaxLen();
+		const std::wstring& GetAPV() { return m_sAPV; }
 	};
 	class CChoiceWidget : public CWidgetAnnotation
 	{

@@ -905,13 +905,15 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 
 	// Actions - AA
 	Object oAA;
-	if (pField->fieldLookup("AA", &oAA)->isDict())
+	if (oField.dictLookup("AA", &oAA)->isDict())
 	{
 		for (int j = 0; j < oAA.dictGetLength(); ++j)
 		{
 			if (oAA.dictGetVal(j, &oAction)->isDict())
 			{
 				std::string sAA(oAA.dictGetKey(j));
+				if (sAA == "K" || sAA == "F" || sAA == "V" || sAA == "C")
+					continue;
 				CAction* pA = getAction(pdfDoc, &oAction);
 				if (pA)
 				{
@@ -923,6 +925,40 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 		}
 	}
 	oAA.free();
+	Object parent, parent2;
+	if (oField.dictLookup("Parent", &parent)->isDict())
+	{
+		int depth = 0;
+		while (parent.isDict() && depth < 50)
+		{
+			if (parent.dictLookup("AA", &oAA)->isDict())
+			{
+				for (int j = 0; j < oAA.dictGetLength(); ++j)
+				{
+					if (oAA.dictGetVal(j, &oAction)->isDict())
+					{
+						std::string sAA(oAA.dictGetKey(j));
+						if (sAA == "E" || sAA == "X" || sAA == "D" || sAA == "U" || sAA == "Fo" || sAA == "Bl" || sAA == "PO" || sAA == "PC" || sAA == "PV" || sAA == "PI")
+							continue;
+						CAction* pA = getAction(pdfDoc, &oAction);
+						if (pA)
+						{
+							pA->sType = sAA;
+							m_arrAction.push_back(pA);
+						}
+					}
+					oAction.free();
+				}
+			}
+			oAA.free();
+			parent.dictLookup("Parent", &parent2);
+			parent.free();
+			parent = parent2;
+			++depth;
+		}
+	}
+	parent.free();
+
 	oField.free();
 }
 

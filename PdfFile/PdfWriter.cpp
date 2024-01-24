@@ -2205,7 +2205,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			if (nWidgetFlag & (1 << 25))
 				pTextWidget->SetRV(pPr->GetRV());
 			if (nFlags & (1 << 12))
+			{
 				wsValue = pPr->GetAPV();
+				pTextWidget->SetAPV(wsValue);
+			}
 
 			// ВНЕШНИЙ ВИД
 			pTextWidget->SetFont(m_pFont, dFontSize, isBold, isItalic);
@@ -2358,7 +2361,8 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 					if (nType == PdfWriter::WidgetText)
 					{
 						PdfWriter::CTextWidget* pKid = dynamic_cast<PdfWriter::CTextWidget*>(pObj);
-						DrawTextWidget(pAppFonts, pKid, pParent->sV);
+						if (pKid->GetAPV().empty())
+							DrawTextWidget(pAppFonts, pKid, pParent->sV);
 					}
 				}
 			}

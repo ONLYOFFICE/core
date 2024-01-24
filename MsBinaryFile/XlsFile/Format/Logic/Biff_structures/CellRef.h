@@ -180,10 +180,12 @@ public:
 	void save(CFRecord& record) override
 	{
 		RwType rw;
-		ColType col;
+        ColType col = 0;
 
 		rw = row;
-		col = column;
+        SETBITS(col, 0, 13, column);
+        SETBIT(col, 14, colRelative);
+        SETBIT(col, 15, rowRelative);
 
 		record << rw << col;
 	}

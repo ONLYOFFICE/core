@@ -1588,7 +1588,7 @@ namespace PdfWriter
 			m_pTrailer->Remove("W");
 			bNeedStreamXRef = true;
 
-			m_pLastXref->WriteToStream(pStream, pEncrypt);
+			m_pLastXref->WriteToStream(pStream, pEncrypt, bNeedStreamXRef);
 		}
 		else
 			m_pLastXref->WriteToStream(pStream, pEncrypt);

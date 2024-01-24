@@ -905,6 +905,8 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 
 	// Actions - AA
 	Object oAA;
+	Object parent, parent2;
+	bool bParent = oField.dictLookup("Parent", &parent)->isDict();
 	if (oField.dictLookup("AA", &oAA)->isDict())
 	{
 		for (int j = 0; j < oAA.dictGetLength(); ++j)
@@ -912,7 +914,7 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 			if (oAA.dictGetVal(j, &oAction)->isDict())
 			{
 				std::string sAA(oAA.dictGetKey(j));
-				if (sAA == "K" || sAA == "F" || sAA == "V" || sAA == "C")
+				if (bParent && (sAA == "K" || sAA == "F" || sAA == "V" || sAA == "C"))
 					continue;
 				CAction* pA = getAction(pdfDoc, &oAction);
 				if (pA)
@@ -925,8 +927,8 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 		}
 	}
 	oAA.free();
-	Object parent, parent2;
-	if (oField.dictLookup("Parent", &parent)->isDict())
+
+	if (bParent)
 	{
 		int depth = 0;
 		while (parent.isDict() && depth < 50)

@@ -2195,8 +2195,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			PdfWriter::CTextWidget* pTextWidget = (PdfWriter::CTextWidget*)pAnnot;
 
 			std::wstring wsValue;
+			bool bValue = false;
 			if (nFlags & (1 << 9))
 			{
+				bValue = true;
 				wsValue = pPr->GetV();
 				pTextWidget->SetV(wsValue);
 			}
@@ -2206,13 +2208,14 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pTextWidget->SetRV(pPr->GetRV());
 			if (nFlags & (1 << 12))
 			{
+				bValue = true;
 				wsValue = pPr->GetAPV();
-				pTextWidget->SetAPV(wsValue);
+				pTextWidget->SetAPV();
 			}
 
 			// ВНЕШНИЙ ВИД
 			pTextWidget->SetFont(m_pFont, dFontSize, isBold, isItalic);
-			if (!wsValue.empty())
+			if (bValue)
 				DrawTextWidget(pAppFonts, pTextWidget, wsValue);
 		}
 		else if (oInfo.IsChoiceWidget())
@@ -2361,7 +2364,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 					if (nType == PdfWriter::WidgetText)
 					{
 						PdfWriter::CTextWidget* pKid = dynamic_cast<PdfWriter::CTextWidget*>(pObj);
-						if (pKid->GetAPV().empty())
+						if (!pKid->HaveAPV())
 							DrawTextWidget(pAppFonts, pKid, pParent->sV);
 					}
 				}
@@ -3234,7 +3237,7 @@ std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl, const std::ws
 }
 void CPdfWriter::DrawTextWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CTextWidget* pTextWidget, const std::wstring& wsValue)
 {
-	if (!pAppFonts || !pTextWidget || wsValue.empty())
+	if (!pAppFonts || !pTextWidget)
 		return;
 	PdfWriter::CFontCidTrueType* pFont = pTextWidget->GetFont();
 	if (!pFont)
@@ -3263,6 +3266,7 @@ void CPdfWriter::DrawTextWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter
 	bool bFont = GetFontData(pAppFonts, wsValue, pFont, isBold, isItalic, pUnicodes, unLen, pCodes, ppFonts);
 	if (!bFont)
 	{
+		pTextWidget->SetEmptyAP();
 		RELEASEARRAYOBJECTS(pUnicodes);
 		RELEASEARRAYOBJECTS(pCodes);
 		RELEASEARRAYOBJECTS(ppFonts);
@@ -3394,7 +3398,7 @@ void CPdfWriter::DrawTextWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter
 }
 void CPdfWriter::DrawChoiceWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CChoiceWidget* pChoiceWidget, const std::vector<std::wstring>& arrValue)
 {
-	if (!pAppFonts || !pChoiceWidget || arrValue.empty())
+	if (!pAppFonts || !pChoiceWidget)
 		return;
 	PdfWriter::CFontCidTrueType* pFont = pChoiceWidget->GetFont();
 	if (!pFont)
@@ -3415,6 +3419,12 @@ void CPdfWriter::DrawChoiceWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 	BYTE nType = pChoiceWidget->GetBorderType();
 	if (nType == 1 || nType == 3)
 		dShiftBorder *= 2;
+
+	if (arrValue.empty())
+	{
+		pChoiceWidget->SetEmptyAP();
+		return;
+	}
 
 	if (pChoiceWidget->GetWidgetType() == PdfWriter::WidgetCombobox)
 	{

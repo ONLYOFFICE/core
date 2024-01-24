@@ -2499,10 +2499,6 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::t
 	{
 		text_properties->fo_text_transform_ = odf_types::text_transform(odf_types::text_transform::Capitalize);
 	}
-	if (oox_run_pr->hlinkClick.IsInit())
-	{
-		convert(oox_run_pr->hlinkClick.GetPointer());
-	}
 }
 static std::vector<std::wstring> split_tabs(const std::wstring& text)
 {
@@ -2577,6 +2573,29 @@ void OoxConverter::convert(PPTX::Logic::Run *oox_run)
 		bool bExternal = false;
 		std::wstring hlink = find_link_by_id(oox_run->rPr->hlinkClick->id.get(), 2, bExternal);
 		std::wstring location;
+
+		smart_ptr<OOX::File> file = find_file_by_id(oox_run->rPr->hlinkClick->id.get());
+		OOX::HyperLink* hyperlink = dynamic_cast<OOX::HyperLink*>(file.GetPointer());
+
+		if (hyperlink)
+			location = hyperlink->Uri().GetBasename();
+		
+		if (oox_run->rPr->hlinkClick->action.IsInit() && location.empty())
+		{
+			const std::wstring& action = *oox_run->rPr->hlinkClick->action;
+
+			if (std::wstring::npos != action.find(L"previousslide"))
+				location = L"previous-page";
+			else if (std::wstring::npos != action.find(L"nextslide"))
+				location = L"next-page";
+			else if (std::wstring::npos != action.find(L"firstslide"))
+				location = L"first-page";
+			else if (std::wstring::npos != action.find(L"lastslide"))
+				location = L"last-page";
+			else if (std::wstring::npos != action.find(L"endshow"))
+				location = L"end";
+		}
+
 		text_context->add_hyperlink(hlink, oox_run->GetText(), location);
 	}
 	else

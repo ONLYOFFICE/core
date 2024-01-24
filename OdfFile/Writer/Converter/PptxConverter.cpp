@@ -84,6 +84,7 @@
 #include "../Format/odf_text_context.h"
 #include "../Format/odf_drawing_context.h"
 #include "../Format/office_event_listeners.h"
+#include "../Format/paragraph_elements.h"
 
 #include "../Format/styles.h"
 #include "../Format/style_presentation.h"
@@ -1280,22 +1281,44 @@ std::wstring PptxConverter::get_page_name(PPTX::Logic::CSld* oox_slide, _typePag
 
 void PptxConverter::fill_in_deferred_hyperlinks()
 {
-	for (auto hyperlink : odp_context->get_deferred_hyperlinks())
+	auto links = odp_context->get_deferred_hyperlinks();
+	auto slidenames_vec = std::vector<std::pair<std::wstring, std::wstring>>(odp_context->map_slidenames_.begin(), odp_context->map_slidenames_.end());
+
+	for (size_t i = 0; i < links.size(); i++)
 	{
+		const auto& hyperlink = links[i];
+
 		cpdoccore::odf_writer::presentation_event_listener* event_listener = dynamic_cast<cpdoccore::odf_writer::presentation_event_listener*>(hyperlink.first.get());
+		cpdoccore::odf_writer::text_a*	text = dynamic_cast<cpdoccore::odf_writer::text_a*>(hyperlink.first.get());
 		const std::wstring& slidename = hyperlink.second;
 
-		if (!event_listener)
-			continue;
-
+		std::wstring href;
 		auto hrefIt = odp_context->map_slidenames_.find(slidename);
-		if (hrefIt == odp_context->map_slidenames_.end())
+		if (slidename == L"previous-page" && i > 0)
+			href = slidenames_vec[i - 1].second;
+		else if (slidename == L"next-page" && i < slidenames_vec.size() - 2)
+			href = slidenames_vec[i + 1].second;
+		else if (slidename == L"first-page")
+			href = slidenames_vec[0].second;
+		else if (slidename == L"last-page")
+			href = slidenames_vec[slidenames_vec.size() - 1].second;
+		else if (hrefIt == odp_context->map_slidenames_.end())
 			continue;
+		else
+			href = hrefIt->second;
 
-		event_listener->attlist_.common_xlink_attlist_.href_ = std::wstring(L"#") + hrefIt->second;
-		event_listener->attlist_.common_xlink_attlist_.type_ = xlink_type::Simple;
-		event_listener->attlist_.common_xlink_attlist_.show_ = xlink_show::Embed;
-		event_listener->attlist_.common_xlink_attlist_.actuate_ = xlink_actuate::OnRequest;
+		if (event_listener)
+		{
+			event_listener->attlist_.common_xlink_attlist_.href_ = std::wstring(L"#") + href;
+			event_listener->attlist_.common_xlink_attlist_.type_ = xlink_type::Simple;
+			event_listener->attlist_.common_xlink_attlist_.show_ = xlink_show::Embed;
+			event_listener->attlist_.common_xlink_attlist_.actuate_ = xlink_actuate::OnRequest;
+		}
+		else if (text)
+		{
+			text->common_xlink_attlist_.href_ = std::wstring(L"#") + href;
+			text->common_xlink_attlist_.type_ = xlink_type::Simple;
+		}
 	}
 }
 

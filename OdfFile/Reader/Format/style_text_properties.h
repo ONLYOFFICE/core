@@ -78,7 +78,7 @@ public:
 	
 	void oox_serialize			(std::wostream & stream, bool graphic, fonts_container & fonts, bool default_ = false);
     void docx_serialize			(std::wostream & stream, fonts_container & fonts);
-	void drawing_serialize		(std::wostream & stream, std::wstring node, fonts_container & fonts, const odf_reader::style_instance *current_style = NULL, std::wstring hlink = L"");
+	void drawing_serialize		(std::wostream & stream, std::wstring node, fonts_container & fonts, const odf_reader::style_instance *current_style = NULL, const oox::hyperlink_data link = {L"", L""});
 
 	void xlsx_serialize			(std::wostream & strm, oox::xlsx_conversion_context & Context);
 

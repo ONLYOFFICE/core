@@ -225,7 +225,7 @@ void ReadAnnot(BYTE* pWidgets, int& i)
 		{
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << (double)nPathLength / 100.0 << " ";
+			std::cout << (double)nPathLength / 10000.0 << " ";
 		}
 		std::cout << ", ";
 	}
@@ -400,7 +400,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			{
 				nPathLength = READ_INT(pWidgets + i);
 				i += 4;
-				std::cout << " " << (double)nPathLength / 100.0;
+				std::cout << " " << (double)nPathLength / 10000.0;
 			}
 			std::cout << ", ";
 		}
@@ -464,7 +464,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			{
 				nPathLength = READ_INT(pWidgets + i);
 				i += 4;
-				std::cout << (double)nPathLength / 100.0 << " ";
+				std::cout << (double)nPathLength / 10000.0 << " ";
 			}
 			std::cout << ", ";
 		}
@@ -484,7 +484,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			{
 				nPathLength = READ_INT(pWidgets + i);
 				i += 4;
-				std::cout << (double)nPathLength / 100.0 << " ";
+				std::cout << (double)nPathLength / 10000.0 << " ";
 			}
 			std::cout << ", ";
 		}
@@ -1317,7 +1317,7 @@ int main(int argc, char* argv[])
 					{
 						nPathLength = READ_INT(pAnnots + i);
 						i += 4;
-						std::cout << " " << (double)nPathLength / 100.0;
+						std::cout << " " << (double)nPathLength / 10000.0;
 					}
 					std::cout << ", ";
 				}
@@ -1432,7 +1432,7 @@ int main(int argc, char* argv[])
 					{
 						nPathLength = READ_INT(pAnnots + i);
 						i += 4;
-						std::cout << (double)nPathLength / 100.0 << " ";
+						std::cout << (double)nPathLength / 10000.0 << " ";
 					}
 					std::cout << ", ";
 				}
@@ -1474,7 +1474,7 @@ int main(int argc, char* argv[])
 					{
 						nPathLength = READ_INT(pAnnots + i);
 						i += 4;
-						std::cout << " " << (double)nPathLength / 100.0;
+						std::cout << " " << (double)nPathLength / 10000.0;
 					}
 					std::cout << ", ";
 				}
@@ -1564,7 +1564,7 @@ int main(int argc, char* argv[])
 					{
 						nPathLength = READ_INT(pAnnots + i);
 						i += 4;
-						std::cout << " " << (double)nPathLength / 100.0;
+						std::cout << " " << (double)nPathLength / 10000.0;
 					}
 					std::cout << ", ";
 				}

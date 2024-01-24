@@ -905,13 +905,17 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 
 	// Actions - AA
 	Object oAA;
-	if (pField->fieldLookup("AA", &oAA)->isDict())
+	Object parent, parent2;
+	bool bParent = oField.dictLookup("Parent", &parent)->isDict();
+	if (oField.dictLookup("AA", &oAA)->isDict())
 	{
 		for (int j = 0; j < oAA.dictGetLength(); ++j)
 		{
 			if (oAA.dictGetVal(j, &oAction)->isDict())
 			{
 				std::string sAA(oAA.dictGetKey(j));
+				if (bParent && (sAA == "K" || sAA == "F" || sAA == "V" || sAA == "C"))
+					continue;
 				CAction* pA = getAction(pdfDoc, &oAction);
 				if (pA)
 				{
@@ -923,6 +927,40 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 		}
 	}
 	oAA.free();
+
+	if (bParent)
+	{
+		int depth = 0;
+		while (parent.isDict() && depth < 50)
+		{
+			if (parent.dictLookup("AA", &oAA)->isDict())
+			{
+				for (int j = 0; j < oAA.dictGetLength(); ++j)
+				{
+					if (oAA.dictGetVal(j, &oAction)->isDict())
+					{
+						std::string sAA(oAA.dictGetKey(j));
+						if (sAA == "E" || sAA == "X" || sAA == "D" || sAA == "U" || sAA == "Fo" || sAA == "Bl" || sAA == "PO" || sAA == "PC" || sAA == "PV" || sAA == "PI")
+							continue;
+						CAction* pA = getAction(pdfDoc, &oAction);
+						if (pA)
+						{
+							pA->sType = sAA;
+							m_arrAction.push_back(pA);
+						}
+					}
+					oAction.free();
+				}
+			}
+			oAA.free();
+			parent.dictLookup("Parent", &parent2);
+			parent.free();
+			parent = parent2;
+			++depth;
+		}
+	}
+	parent.free();
+
 	oField.free();
 }
 
@@ -2743,7 +2781,7 @@ void CAnnot::ToWASM(NSWasm::CData& oRes)
 	{
 		oRes.AddInt((unsigned int)m_arrC.size());
 		for (int i = 0; i < m_arrC.size(); ++i)
-			oRes.AddDouble(m_arrC[i]);
+			oRes.WriteDouble(m_arrC[i]);
 	}
 	if (m_pBorder && (m_unAFlags & (1 << 4)))
 		m_pBorder->ToWASM(oRes);
@@ -2780,7 +2818,7 @@ void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
 	oRes.AddInt(m_unFontStyle);
 	oRes.AddInt(m_arrTC.size());
 	for (int i = 0; i < m_arrTC.size(); ++i)
-		oRes.AddDouble(m_arrTC[i]);
+		oRes.WriteDouble(m_arrTC[i]);
 	oRes.WriteBYTE(m_nQ);
 	oRes.AddInt(m_unFieldFlag);
 	oRes.AddInt(m_unFlags);
@@ -2798,7 +2836,7 @@ void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
 	{
 		oRes.AddInt(m_arrBC.size());
 		for (int i = 0; i < m_arrBC.size(); ++i)
-			oRes.AddDouble(m_arrBC[i]);
+			oRes.WriteDouble(m_arrBC[i]);
 	}
 	if (m_unFlags & (1 << 6))
 		oRes.AddInt(m_unR);
@@ -2806,7 +2844,7 @@ void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
 	{
 		oRes.AddInt(m_arrBG.size());
 		for (int i = 0; i < m_arrBG.size(); ++i)
-			oRes.AddDouble(m_arrBG[i]);
+			oRes.WriteDouble(m_arrBG[i]);
 	}
 	if (m_unFlags & (1 << 8))
 		oRes.WriteString(m_sDV);
@@ -3087,7 +3125,7 @@ void CAnnotLine::ToWASM(NSWasm::CData& oRes)
 	{
 		oRes.AddInt((unsigned int)m_arrIC.size());
 		for (int i = 0; i < m_arrIC.size(); ++i)
-			oRes.AddDouble(m_arrIC[i]);
+			oRes.WriteDouble(m_arrIC[i]);
 	}
 	if (m_unFlags & (1 << 17))
 		oRes.AddDouble(m_dLL);
@@ -3132,7 +3170,7 @@ void CAnnotSquareCircle::ToWASM(NSWasm::CData& oRes)
 	{
 		oRes.AddInt((unsigned int)m_arrIC.size());
 		for (int i = 0; i < m_arrIC.size(); ++i)
-			oRes.AddDouble(m_arrIC[i]);
+			oRes.WriteDouble(m_arrIC[i]);
 	}
 }
 
@@ -3155,7 +3193,7 @@ void CAnnotPolygonLine::ToWASM(NSWasm::CData& oRes)
 	{
 		oRes.AddInt((unsigned int)m_arrIC.size());
 		for (int i = 0; i < m_arrIC.size(); ++i)
-			oRes.AddDouble(m_arrIC[i]);
+			oRes.WriteDouble(m_arrIC[i]);
 	}
 	if (m_unFlags & (1 << 20))
 		oRes.WriteBYTE(m_nIT);
@@ -3189,7 +3227,7 @@ void CAnnotFreeText::ToWASM(NSWasm::CData& oRes)
 	{
 		oRes.AddInt((unsigned int)m_arrCFromDA.size());
 		for (int i = 0; i < m_arrCFromDA.size(); ++i)
-			oRes.AddDouble(m_arrCFromDA[i]);
+			oRes.WriteDouble(m_arrCFromDA[i]);
 	}
 }
 

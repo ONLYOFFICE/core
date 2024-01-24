@@ -162,4 +162,30 @@ namespace PdfWriter
 
 		m_pXObjects->Add(sXObjName, pObject);
 	}
+	void CResourcesDict::Fix()
+	{
+		// Инициализация текущего fonts
+		CObjectBase* pFonts = Get("Font");
+		if (pFonts && pFonts->GetType() == object_type_DICT)
+		{
+			m_pFonts = (CDictObject*)pFonts;
+			m_unFontsCount = m_pFonts->GetSize();
+		}
+
+		// Инициализация текущего ExtGStates
+		CObjectBase* pExtGStates = Get("ExtGState");
+		if (pExtGStates && pExtGStates->GetType() == object_type_DICT)
+		{
+			m_pExtGStates = (CDictObject*)pExtGStates;
+			m_unExtGStatesCount = m_pExtGStates->GetSize();
+		}
+
+		// Инициализация текущего XObject
+		CObjectBase* pXObject = Get("XObject");
+		if (pXObject && pXObject->GetType() == object_type_DICT)
+		{
+			m_pXObjects = (CDictObject*)pXObject;
+			m_unXObjectsCount = m_pXObjects->GetSize();
+		}
+	}
 }

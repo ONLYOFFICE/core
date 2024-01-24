@@ -746,24 +746,8 @@ namespace ZLibZipUtils
 				{
 					zipFile zf = zipOpenHelp(outputFile);
 					if (zf)
-					{
-						wstring inputFileName( inputFile );
-
-						wstring::size_type pos = 0;
-						static const wstring::size_type npos = -1;
-
-						pos = inputFileName.find_last_of( L'\\' );
-
-						wstring zipFileName;
-
-						if ( pos != npos )
-						{
-							zipFileName = wstring( ( inputFileName.begin() + pos + 1 ), inputFileName.end() );
-						}
-						else
-						{
-							zipFileName = wstring( inputFileName.begin(), inputFileName.end() );
-						}
+					{					
+						wstring zipFileName = NSFile::GetFileName(inputFile);
 						std::string zipFileNameA = codepage_issue_fixToOEM(zipFileName);
 
 						err = zipOpenNewFileInZip( zf, zipFileNameA.c_str(), &zinfo, NULL, 0, NULL, 0, NULL, method, compressionLevel );

@@ -2423,7 +2423,6 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 			arrForm.push_back(NULL);
 			continue;
 		}
-		wsPath = L"E:/test.png";
 		std::wstring sTempImagePath = GetDownloadFile(wsPath, wsTempDirectory);
 		std::wstring wsImagePath = sTempImagePath.empty() ? wsPath : sTempImagePath;
 

@@ -65,9 +65,11 @@ namespace StarMath
 		CAttribute* GetAttribute();
 		//The function returns a Token from a string (the iterator pointer m_itStart is on the next element)
 		std::wstring GetElement();
+		void FindingTheEndOfParentheses();
 	private:
-		bool CheckTokenForGetElement(const char& cToken);
-		std::wstring::iterator m_itStart,m_itEnd;
+		bool CheckTokenForGetElement(const wchar_t& cToken);
+		bool CheckIsalhpaForGetElement(const wchar_t& cToken,const wchar_t& cLastToken);
+		std::wstring::iterator m_itStart,m_itEnd,m_itEndBracket;
 		TypeElement m_enGlobalType;
 		TypeElement m_enUnderType;
 		std::wstring m_wsToken;
@@ -78,6 +80,7 @@ namespace StarMath
 	{
 	public:
 		CElement();
+		CElement(const TypeElement& enTypeBase);
 		virtual ~CElement();
 		virtual void Parse(CStarMathReader* pReader) = 0;
 		//The function creates the class we need (by determining the class type by a variable m_enGlobalType from the class CStarMathReader)
@@ -152,7 +155,7 @@ namespace StarMath
 	class CElementOperator: public CElement
 	{
 	public:
-		CElementOperator(const TypeElement& enType);
+		CElementOperator(const TypeElement& enType,const std::wstring& wsNameOp = L"");
 		virtual ~CElementOperator();
 		void SetValueOperator(CElement* pElement);
 		CElement* GetValueOperator();
@@ -160,6 +163,8 @@ namespace StarMath
 		CElement* GetFromValue();
 		void SetToValue(CElement* pElement);
 		CElement* GetToValue();
+		void SetName(const std::wstring& wsNameOp);
+		std::wstring GetName();
 		static TypeElement GetOperator(const std::wstring& wsToken);
 		static TypeElement GetFromOrTo(const std::wstring& wsToken);
 	private:
@@ -170,6 +175,7 @@ namespace StarMath
 		CElement* m_pValueFrom;
 		CElement* m_pValueTo;
 		TypeElement m_enTypeOperator;
+		std::wstring m_wsName;
 	};
 
 	class CElementGrade: public CElement
@@ -199,10 +205,10 @@ namespace StarMath
 		static TypeElement GetBracketOpen(const std::wstring& wsToken);
 		std::vector<CElement*> GetBracketValue();
 	private:
+		TypeElement GetBracketClose(const std::wstring& wsToken);
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;//
-		TypeElement GetBracketClose(const std::wstring& wsToken);
 		TypeElement m_enTypeBracket;
 		std::vector<CElement*> m_arBrecketValue;
 	};
@@ -266,16 +272,19 @@ namespace StarMath
 	class CElementFunction: public CElement
 	{
 	public:
-		CElementFunction(const TypeElement& enType);
+		CElementFunction(const TypeElement& enType, const std::wstring& wsNameFunc = L"");
 		virtual ~CElementFunction();
 		void SetValueFunction(CElement* pElement);
 		CElement* GetValueFunction();
+		void SetNameFunc(const std::wstring& wsNameFunc);
+		std::wstring GetNameFuncInString();
 		static TypeElement GetFunction(const std::wstring& wsToken);
 	private:
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
 		CElement* m_pValue;
+		std::wstring m_wsNameFunc;
 		TypeElement m_enTypeFunction;
 	};
 
@@ -284,10 +293,11 @@ namespace StarMath
 	public:
 		CElementSpecialSymbol(const TypeElement& enType);
 		virtual ~CElementSpecialSymbol();
-		static TypeElement GetSpecialSymbol(const std::wstring& wsToken);
+		static TypeElement GetSpecialSymbol(std::wstring& wsToken);
 		void SetValue(CElement* pValue);
+		const TypeElement GetType();
 	private:
-		void SetWsTypeSymbol();
+		void SetTypeSymbol();
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;

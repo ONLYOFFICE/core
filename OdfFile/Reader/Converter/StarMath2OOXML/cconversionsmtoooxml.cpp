@@ -13,7 +13,8 @@ namespace StarMath {
 		m_pXmlWrite->WriteNodeBegin(L"m:oMath",false);
 		for(CElement* oTempElement:arPars)
 		{
-			oTempElement->ConversionToOOXML(m_pXmlWrite);
+			if(oTempElement != nullptr)
+				oTempElement->ConversionToOOXML(m_pXmlWrite);
 		}
 		EndConversion();
 		NSFile::CFileBinary oFile;
@@ -292,7 +293,7 @@ namespace StarMath {
 		pXmlWrite->WriteAttribute(L"m:val",wsTypeLimLock);
 		pXmlWrite->WriteNodeEnd(L"w",true,true);
 	}
-	void CConversionSMtoOOXML::WriteRPrFName(const TypeElement &enTypeOp, XmlUtils::CXmlWriter *pXmlWrite,CAttribute* pAttribute)
+	void CConversionSMtoOOXML::WriteRPrFName(const TypeElement &enTypeOp, XmlUtils::CXmlWriter *pXmlWrite,CAttribute* pAttribute,const std::wstring& wsNameOp)
 	{
 		pXmlWrite->WriteNodeBegin(L"m:r",false);
 		pXmlWrite->WriteNodeBegin(L"m:rPr",false);
@@ -312,6 +313,9 @@ namespace StarMath {
 		break;
 		case TypeElement::limsup:
 		pXmlWrite->WriteString(L"lim sup");
+		break;
+		case TypeElement::oper:
+		pXmlWrite->WriteString(wsNameOp);
 		break;
 		default:
 		break;

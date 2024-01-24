@@ -23,7 +23,7 @@ namespace StarMath {
 		static void WriteCtrlPrNode(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute);
 		static void WriteChrNode(const std::wstring& wsTypeOp,XmlUtils::CXmlWriter* pXmlWrite);
 		static void WriteLimLocNode(const std::wstring& wsTypeLimLock,XmlUtils::CXmlWriter* pXmlWrite);
-		static void WriteRPrFName(const TypeElement& enTypeOp,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute);
+		static void WriteRPrFName(const TypeElement& enTypeOp,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const std::wstring& wsNameOp);
 		static void WriteStyNode(XmlUtils::CXmlWriter* pXmlWrite,const std::wstring& wsAttributeNode);
 		static void WritePreserveBlock(XmlUtils::CXmlWriter* pXmlWrite, CAttribute *pAttribute);
 		void EndConversion();

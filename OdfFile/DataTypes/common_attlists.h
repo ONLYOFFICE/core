@@ -608,6 +608,9 @@ public:
 
 	_CP_OPT(std::wstring)			                smil_begin_;
 	_CP_OPT(std::wstring)			                smil_end_;
+
+    _CP_OPT(double)			                        smil_accelerate_;
+    _CP_OPT(double)			                        smil_decelerate_;
 };
 
 class section_attlists

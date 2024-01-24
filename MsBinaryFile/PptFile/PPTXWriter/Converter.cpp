@@ -221,6 +221,7 @@ namespace PPT
             <Default Extension=\"xml\" ContentType=\"application/xml\"/>\
             <Default Extension=\"gif\" ContentType=\"image/gif\"/>\
             <Default Extension=\"emf\" ContentType=\"image/x-emf\"/>\
+            <Default Extension=\"pct\" ContentType=\"image/unknown\"/>\
             <Default Extension=\"wav\" ContentType=\"audio/wav\"/>\
             <Default Extension=\"wma\" ContentType=\"audio/x-ms-wma\"/>\
             <Default Extension=\"mp3\" ContentType=\"audio/unknown\"/>\

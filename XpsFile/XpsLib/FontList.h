@@ -49,7 +49,6 @@ namespace XPS
 	class CFontList
 	{
 	public:
-
 		CFontList()
 		{
 			m_oCS.InitializeCriticalSection();
@@ -62,7 +61,7 @@ namespace XPS
 		{
 			m_mList.clear();
 		}
-        void Check(const std::wstring& wsName, const std::wstring& wsFontPath, IFolder* pFolder)
+		void Check(const std::wstring& wsName, const std::wstring& wsFontPath, IFolder* pFolder)
 		{
 			m_oCS.Enter();
 			if (!Find(wsName))
@@ -72,57 +71,65 @@ namespace XPS
 				unsigned char sKey[16];
 				GetFontKey(wsName, sKey);
 
-                // Нужно подменить первые 32 байта файла
-                if (IFolder::iftFolder == pFolder->getType())
-                {
-                    NSFile::CFileBinary oFile;
-                    oFile.OpenFile(wsFontPath, true);
+				// Нужно подменить первые 32 байта файла
+				if (IFolder::iftFolder == pFolder->getType())
+				{
+					if (NSDirectory::Exists(wsFontPath))
+					{
+						IFolder::CBuffer* buffer = NULL;;
+						pFolder->readFileWithChunks(wsFontPath, buffer);
+						if (buffer)
+							delete buffer;
+					}
 
-                    unsigned char sFontData[32];
-                    DWORD dwBytesRead;
-                    oFile.ReadFile(sFontData, 32, dwBytesRead);
+					NSFile::CFileBinary oFile;
+					oFile.OpenFile(wsFontPath, true);
 
-                    for (int nIndex = 0; nIndex < 32; nIndex++)
-                        sFontData[nIndex] ^= sKey[nIndex % 16];
+					unsigned char sFontData[32];
+					DWORD dwBytesRead;
+					oFile.ReadFile(sFontData, 32, dwBytesRead);
 
-                    FILE* pFile = oFile.GetFileNative();
-                    if (pFile)
-                    {
-                        fseek(pFile, 0, SEEK_SET);
-                        fwrite(sFontData, 1, 32, pFile);
-                    }
+					for (int nIndex = 0; nIndex < 32; nIndex++)
+						sFontData[nIndex] ^= sKey[nIndex % 16];
 
-                    oFile.CloseFile();
-                }
-                else if (IFolder::iftZip == pFolder->getType())
-                {
-                    IFolder::CBuffer* buffer = NULL;
-                    pFolder->read(wsFontPath, buffer);
+					FILE* pFile = oFile.GetFileNative();
+					if (pFile)
+					{
+						fseek(pFile, 0, SEEK_SET);
+						fwrite(sFontData, 1, 32, pFile);
+					}
 
-                    if (buffer->Size >= 32)
-                    {
-                        unsigned char* sFontData = buffer->Buffer;
-                        for (int nIndex = 0; nIndex < 32; nIndex++)
-                            sFontData[nIndex] ^= sKey[nIndex % 16];
-                    }
+					oFile.CloseFile();
+				}
+				else if (IFolder::iftZip == pFolder->getType())
+				{
+					IFolder::CBuffer* buffer = NULL;
+					pFolder->readFileWithChunks(wsFontPath, buffer);
 
-                    if (NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage())
-                        NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFontPath, buffer->Buffer, buffer->Size);
+					if (buffer->Size >= 32)
+					{
+						unsigned char* sFontData = buffer->Buffer;
+						for (int nIndex = 0; nIndex < 32; nIndex++)
+							sFontData[nIndex] ^= sKey[nIndex % 16];
+					}
 
-                    RELEASEOBJECT(buffer);
-                }
+					if (NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage())
+						NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFontPath, buffer->Buffer, buffer->Size);
+
+					RELEASEOBJECT(buffer);
+				}
 			}
 			m_oCS.Leave();
 		}
-		int  GetFontId(const std::wstring& wsName)
+		int GetFontId(const std::wstring& wsName)
 		{
 			std::vector<std::wstring>::iterator oIter = std::find(m_mList.begin(), m_mList.end(), wsName);
 			if (oIter != m_mList.end())
 				return std::distance(m_mList.begin(), oIter);
 			return -1;
 		}
-	private:
 
+	private:
 		bool Find(const std::wstring& wsName)
 		{
 			std::vector<std::wstring>::iterator oIter = std::find(m_mList.begin(), m_mList.end(), wsName);
@@ -145,7 +152,7 @@ namespace XPS
 				}
 			}
 		}
-		int  GetIntegerFromHex(const std::wstring& wsString)
+		int GetIntegerFromHex(const std::wstring& wsString)
 		{
 			if (0 == wsString.size())
 				return 0;
@@ -158,9 +165,8 @@ namespace XPS
 		}
 
 	private:
-
 		NSCriticalSection::CRITICAL_SECTION m_oCS;
-		std::vector<std::wstring>         m_mList;
+		std::vector<std::wstring> m_mList;
 	};
 }
 

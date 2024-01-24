@@ -986,14 +986,16 @@ namespace NSFile
 	}
 	long CFileBinary::GetFilePosition()
 	{
-		m_lFilePosition = ftell(m_pFile);
-		
+		if (!m_pFile) return 0;
+
+		m_lFilePosition = ftell(m_pFile);		
 		return m_lFilePosition;
 	}	
 	unsigned long CFileBinary::GetPosition()
 	{
-		m_lFilePosition = ftell(m_pFile);
+		if (!m_pFile) return 0;
 
+		m_lFilePosition = ftell(m_pFile);
 		return (unsigned long)m_lFilePosition;
 	}
 

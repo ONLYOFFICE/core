@@ -889,7 +889,8 @@ void common_anim_smil_attlist::add_attributes( const xml::attributes_wc_ptr & At
     CP_APPLY_ATTR(L"smil:attributeName",        smil_attribute_name_);
     CP_APPLY_ATTR(L"smil:fill",                 smil_fill_);
     CP_APPLY_ATTR(L"smil:autoReverse",          smil_auto_reverse_);
-
+	CP_APPLY_ATTR(L"smil:accelerate",           smil_accelerate_);
+	CP_APPLY_ATTR(L"smil:decelerate",           smil_decelerate_);
 }
 void common_anim_smil_attlist::apply_from(const common_anim_smil_attlist & Other)
 {
@@ -904,6 +905,8 @@ void common_anim_smil_attlist::apply_from(const common_anim_smil_attlist & Other
     _CP_APPLY_PROP(smil_attribute_name_,    Other.smil_attribute_name_);
     _CP_APPLY_PROP(smil_fill_,              Other.smil_fill_);
     _CP_APPLY_PROP(smil_auto_reverse_,      Other.smil_auto_reverse_);
+    _CP_APPLY_PROP(smil_accelerate_,        Other.smil_accelerate_);
+    _CP_APPLY_PROP(smil_decelerate_,        Other.smil_decelerate_);
 }
 void common_anim_smil_attlist::serialize(CP_ATTR_NODE)
 {
@@ -917,6 +920,8 @@ void common_anim_smil_attlist::serialize(CP_ATTR_NODE)
 	CP_XML_ATTR_OPT(L"smil:attributeName",      smil_attribute_name_);
     CP_XML_ATTR_OPT(L"smil:fill",               smil_fill_);
     CP_XML_ATTR_OPT(L"smil:autoReverse",        smil_auto_reverse_);
+    CP_XML_ATTR_OPT(L"smil:accelerate",         smil_accelerate_);
+    CP_XML_ATTR_OPT(L"smil:decelerate",         smil_decelerate_);
 }
 void union_common_draw_attlists::serialize(CP_ATTR_NODE)
 {

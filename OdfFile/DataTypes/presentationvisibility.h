@@ -1,5 +1,5 @@
-﻿/*
- * (c) Copyright Ascensio System SIA 2010-2021
+/*
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,33 +31,39 @@
  */
 #pragma once
 
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalWorkbookInfo.h"
+#include <string>
+#include "odfattributes.h"
 
-namespace XLSB
+namespace cpdoccore { namespace odf_types {
+
+class presentation_visibility
 {
+public:
+	enum type
+	{
+		hidden,
+		visible
+	};
 
-    class PCDFIELD: public XLS::CompositeObject
-    {
-        BASE_OBJECT_DEFINE_CLASS_NAME(PCDFIELD)
-    public:
-        PCDFIELD();
-        ~PCDFIELD();
+	presentation_visibility() {}
+	presentation_visibility(type _Type) : type_(_Type)
+	{}
 
-        XLS::BaseObjectPtr clone();
+	type get_type() const
+	{
+		return type_;
+	}
 
-		const bool loadContent(XLS::BinProcessor& proc) override;
-		const bool saveContent(XLS::BinProcessor& proc) override;
+	static presentation_visibility parse(const std::wstring & Str);
 
-        XLS::BaseObjectPtr               m_BrtBeginPCDField;
-        XLS::BaseObjectPtr               m_PNAMES;
-        XLS::BaseObjectPtr               m_PCDFATBL;
-        XLS::BaseObjectPtr               m_PCDFGROUP;
-        XLS::BaseObjectPtr               m_FRTPCDFIELD;
-		bool			                 m_bBrtEndPCDField;
-        XLS::GlobalWorkbookInfoPtr global_info;
+private: 
+	type type_;
+};
 
-    };
+std::wostream& operator << (std::wostream& _Wostream, const presentation_visibility& _Val);
 
-} // namespace XLSB
+} // namespace odf_types
 
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::presentation_visibility);
+
+} // namespace cpdoccore

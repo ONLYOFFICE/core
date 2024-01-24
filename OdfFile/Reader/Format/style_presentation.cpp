@@ -151,6 +151,8 @@ void drawing_page_properties::add_attributes( const xml::attributes_wc_ptr & Att
 	CP_APPLY_ATTR(L"presentation:display-date-time",	presentation_display_date_time_);
 	CP_APPLY_ATTR(L"presentation:display-header",		presentation_display_header_);
 	CP_APPLY_ATTR(L"presentation:page-duration",		presentation_page_duration_);
+
+	CP_APPLY_ATTR(L"presentation:visibility",			presentation_visibility_);
 }
 void drawing_page_properties::apply_from(const drawing_page_properties & Other)
 {
@@ -171,6 +173,8 @@ void drawing_page_properties::apply_from(const drawing_page_properties & Other)
 	_CP_APPLY_PROP2(presentation_display_header_);
 	
 	_CP_APPLY_PROP2(presentation_page_duration_);
+
+	_CP_APPLY_PROP2(presentation_visibility_);
 
 }
 }

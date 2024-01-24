@@ -153,12 +153,6 @@ namespace MetaFile
 		if (oNewClipRect.Top > oNewClipRect.Bottom)
 			std::swap(oNewClipRect.Top, oNewClipRect.Bottom);
 
-		NodeAttributes arNodeAttributes;
-
-		AddTransform(arNodeAttributes, pTransform);
-
-		WriteNodeBegin(L"g", arNodeAttributes);
-
 		wsNewSvg.erase(unFirstPos, unSecondPos - unFirstPos);
 
 		std::wstring wsClip = L"x=\"" + ConvertToWString(oRect.Left) + L"\" y=\"" + ConvertToWString(oRect.Top) + L"\" " +
@@ -167,9 +161,17 @@ namespace MetaFile
 
 		wsNewSvg.insert(unFirstPos, wsClip);
 
+		NodeAttributes arNodeAttributes;
+
+		AddTransform(arNodeAttributes, pTransform);
+
+		if (!arNodeAttributes.empty())
+			WriteNodeBegin(L"g", arNodeAttributes);
+
 		m_pXmlWriter->WriteString(wsNewSvg);
 
-		WriteNodeEnd(L"g");
+		if (!arNodeAttributes.empty())
+			WriteNodeEnd(L"g");
 	}
 
 	void CInterpretatorSvgBase::WriteNode(const std::wstring &wsNodeName, const NodeAttributes &arAttributes, const std::wstring &wsValueNode)
@@ -444,6 +446,104 @@ namespace MetaFile
 			m_pXmlWriter->WriteNodeEnd(L"g");
 	}
 
+	void CInterpretatorSvgBase::DrawBitmap(double dX, double dY, double dW, double dH, BYTE *pBuffer, unsigned int unWidth, unsigned int unHeight)
+	{
+		if (NULL == pBuffer || Equals(0., dW) || Equals(0., dH) || 0 == unWidth || 0 == unHeight)
+			return;
+
+		TXForm oTransform;
+		oTransform.Copy(m_pParser->GetTransform());
+
+		if (dW < 0 || dH < 0)
+		{
+			double dKx = 1, dKy = 1, dShiftKoefX = 0, dShiftKoefY = 0;
+			if (dW < 0)
+			{
+				dKx = -1;
+				dShiftKoefX = 2 * dX + dW;
+
+				dW = -dW;
+				dX -= dW;
+			}
+
+			if (dH < 0)
+			{
+				dKy = -1;
+				dShiftKoefY = 2 * dY + dH;
+
+				dH = -dH;
+				dY -= dH;
+			}
+
+			oTransform.Dx  += dShiftKoefX * oTransform.M11 + dShiftKoefY * oTransform.M21;
+			oTransform.Dy  += dShiftKoefX * oTransform.M12 + dShiftKoefY * oTransform.M22;
+			oTransform.M11 *= dKx;
+			oTransform.M12 *= dKx;
+			oTransform.M21 *= dKy;
+			oTransform.M22 *= dKy;
+		}
+
+		if (1 == unWidth && 1 == unHeight)
+		{
+			NodeAttributes arAttributes = {{L"x",      ConvertToWString(dX)},
+			                               {L"y",      ConvertToWString(dY)},
+			                               {L"width",  ConvertToWString(dW)},
+			                               {L"height", ConvertToWString(dH)},
+			                               {L"fill",   CalculateColor(pBuffer[2], pBuffer[1], pBuffer[0], 255)}};
+
+			AddTransform(arAttributes, &oTransform);
+
+			WriteNode(L"rect", arAttributes);
+
+			return;
+		}
+
+		CBgraFrame  oFrame;
+
+		oFrame.put_Data(pBuffer);
+		oFrame.put_Width(unWidth);
+		oFrame.put_Height(unHeight);
+
+		BYTE* pNewBuffer = NULL;
+		int nNewSize = 0;
+
+		if (!oFrame.Encode(pNewBuffer, nNewSize, 4))
+		{
+			oFrame.put_Data(NULL);
+			return;
+		}
+
+		oFrame.put_Data(NULL);
+
+		if (0 < nNewSize)
+		{
+			int nImageSize = NSBase64::Base64EncodeGetRequiredLength(nNewSize);
+			unsigned char* ucValue = new unsigned char[nImageSize];
+
+			if (NULL == ucValue)
+				return;
+
+			NSBase64::Base64Encode(pNewBuffer, nNewSize, ucValue, &nImageSize);
+			std::wstring wsValue(ucValue, ucValue + nImageSize);
+
+			RELEASEARRAYOBJECTS(ucValue);
+
+			NodeAttributes arAttributes = {{L"x",      ConvertToWString(dX)},
+			                               {L"y",      ConvertToWString(dY)},
+			                               {L"width",  ConvertToWString(dW)},
+			                               {L"height", ConvertToWString(dH)},
+			                               {L"xlink:href", L"data:image/png;base64," + wsValue}};
+
+			AddTransform(arAttributes, &oTransform);
+			AddClip();
+
+			WriteNode(L"image", arAttributes);
+		}
+
+		if (NULL != pNewBuffer)
+			delete [] pNewBuffer;
+	}
+
 	void CInterpretatorSvgBase::ResetClip()
 	{
 		m_oClip.Reset();
@@ -527,11 +627,6 @@ namespace MetaFile
 			default: arAttributes.push_back({L"stroke", CalculateColor(pPen->GetColor(), pPen->GetAlpha())}); break;
 		}
 
-		double dStrokeWidth = CalculatePenWidth();
-
-		arAttributes.push_back({L"stroke-width",      ConvertToWString(dStrokeWidth)});
-		arAttributes.push_back({L"stroke-miterlimit", ConvertToWString(pPen->GetMiterLimit())});
-
 		unsigned int unMetaPenStyle = pPen->GetStyle();
 		unsigned int ulPenStyle     = unMetaPenStyle & PS_STYLE_MASK;
 		unsigned int ulPenStartCap  = unMetaPenStyle & PS_STARTCAP_MASK;
@@ -539,7 +634,7 @@ namespace MetaFile
 		unsigned int ulPenJoin      = unMetaPenStyle & PS_JOIN_MASK;
 
 		// svg не поддерживает разные стили для разных сторон линии
-		std::wstring wsLineCap;
+		std::wstring wsLineCap, wsLineJoin;
 
 		if (PS_ENDCAP_ROUND == ulPenEndCap)
 			wsLineCap = L"round";
@@ -554,15 +649,29 @@ namespace MetaFile
 			wsLineCap = L"square";
 		else if (PS_STARTCAP_ROUND == ulPenStartCap)
 			wsLineCap = L"round";
-
-		arAttributes.push_back({L"stroke-linecap", wsLineCap});
-
+		
 		if (PS_JOIN_MITER == ulPenJoin)
-			arAttributes.push_back({L"stroke-linejoin", L"miter"});
+			wsLineJoin = L"miter";
 		else if (PS_JOIN_BEVEL == ulPenJoin)
-			arAttributes.push_back({L"stroke-linejoin", L"bevel"});
+			wsLineJoin = L"bevel";
 		else if (PS_JOIN_ROUND == ulPenJoin)
-			arAttributes.push_back({L"stroke-linejoin", L"round"});
+			wsLineJoin = L"round";
+
+		double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
+
+		if (Equals(0, dStrokeWidth) || (Equals(1, dStrokeWidth) && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
+		{
+			dStrokeWidth = 1;
+			arAttributes.push_back({L"vector-effect", L"non-scaling-stroke"});
+
+			wsLineCap  = L"butt";
+			wsLineJoin = L"miter";
+		}
+
+		arAttributes.push_back({L"stroke-width",      ConvertToWString(dStrokeWidth)});
+		arAttributes.push_back({L"stroke-miterlimit", ConvertToWString(pPen->GetMiterLimit())});
+		arAttributes.push_back({L"stroke-linecap",    wsLineCap});
+		arAttributes.push_back({L"stroke-linejoin", wsLineJoin});
 
 		double* arDatas = NULL;
 		unsigned int unDataSize = 0;
@@ -692,12 +801,6 @@ namespace MetaFile
 			oOldTransform.Copy(pTransform);
 		else
 			oOldTransform.Copy(m_pParser->GetTransform());
-
-//		if (std::fabs(oOldTransform.M11) > MAXTRANSFORMSCALE || std::fabs(oOldTransform.M22) > MAXTRANSFORMSCALE)
-//		{
-//			oOldTransform.M11 /= std::fabs(oOldTransform.M11);
-//			oOldTransform.M22 /= std::fabs(oOldTransform.M22);
-//		}
 
 		bool bScale = false, bTranslate = false;
 
@@ -915,7 +1018,12 @@ namespace MetaFile
 		double dStrokeWidth  = 1. / m_pParser->GetTransform()->M11;
 
 		if (NULL != m_pParser->GetPen())
-			dStrokeWidth = CalculatePenWidth();
+		{
+			dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
+	
+			if (Equals(0, dStrokeWidth) || PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK))
+				dStrokeWidth = 1;
+		}
 
 		std::wstring wsStrokeColor = CalculateColor(m_pParser->GetBrush()->GetColor(), m_pParser->GetBrush()->GetAlpha());
 
@@ -995,7 +1103,12 @@ namespace MetaFile
 		double dStrokeWidth  = 1. / m_pParser->GetTransform()->M11;
 
 		if (NULL != m_pParser->GetPen())
-			dStrokeWidth = CalculatePenWidth();
+		{
+			dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
+	
+			if (Equals(0, dStrokeWidth) || PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK))
+				dStrokeWidth = 1;
+		}
 
 		std::wstring wsWidth  = ConvertToWString(dStrokeWidth * unWidth);
 		std::wstring wsHeight = ConvertToWString(dStrokeWidth * unHeight);
@@ -1075,7 +1188,7 @@ namespace MetaFile
 
 			m_wsDefs += L"<linearGradient id=\"" + wsStyleId + L"\">" +
 			            L"<stop offset=\"0%\" stop-color=\""   + CalculateColor(pBrush->GetColor(), pBrush->GetAlpha())  + L"\"/>" +
-			            L"<stop offset=\"100%\" stop-color=\"" + CalculateColor(pBrush->GetColor(), pBrush->GetAlpha2()) + L"\"/>" +
+			            L"<stop offset=\"100%\" stop-color=\"" + CalculateColor(pBrush->GetColor2(), pBrush->GetAlpha2()) + L"\"/>" +
 			            L"</linearGradient>";
 
 			return wsStyleId;
@@ -1107,29 +1220,14 @@ namespace MetaFile
 			}
 
 			m_wsDefs += L"<radialGradient id=\"" + wsStyleId + L"\"" + wsIndlude + L">" +
-						L"<stop offset=\"0%\" stop-color=\""   + CalculateColor(pBrush->GetColor(), pBrush->GetAlpha())  + L"\"/>" +
-			            L"<stop offset=\"100%\" stop-color=\"" + CalculateColor(pBrush->GetColor(), pBrush->GetAlpha2()) + L"\"/>" +
+			            L"<stop offset=\"0%\" stop-color=\""   + CalculateColor(pBrush->GetColor(),  pBrush->GetAlpha() ) + L"\"/>" +
+			            L"<stop offset=\"100%\" stop-color=\"" + CalculateColor(pBrush->GetColor2(), pBrush->GetAlpha2()) + L"\"/>" +
 			            L"</radialGradient>";
 
 			return wsStyleId;
 		}
 
 		return std::wstring();
-	}
-	
-	double CInterpretatorSvgBase::CalculatePenWidth() const
-	{
-		double dPenWidth = 1.;
-
-		if (NULL != m_pParser->GetPen())
-		{
-			dPenWidth = std::fabs(m_pParser->GetPen()->GetWidth());
-
-			if (PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK) || Equals(0., dPenWidth))
-				dPenWidth = m_oViewport.GetWidth() / m_oSizeWindow.X * m_pParser->GetDpi() / 96.;
-		}
-
-		return dPenWidth;
 	}
 
 	CHatchGenerator::CHatchGenerator()

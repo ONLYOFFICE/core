@@ -1,5 +1,5 @@
-﻿/*
- * (c) Copyright Ascensio System SIA 2010-2021
+/*
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,35 +29,44 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalWorkbookInfo.h"
+#include "presentationvisibility.h"
 
-namespace XLSB
-{
+#include <boost/algorithm/string.hpp>
 
-    class PCDFIELD: public XLS::CompositeObject
-    {
-        BASE_OBJECT_DEFINE_CLASS_NAME(PCDFIELD)
-    public:
-        PCDFIELD();
-        ~PCDFIELD();
+namespace cpdoccore { namespace odf_types {
 
-        XLS::BaseObjectPtr clone();
+	std::wostream& operator<<(std::wostream& _Wostream, const presentation_visibility& _Val)
+	{
+		switch (_Val.get_type())
+		{
+			case presentation_visibility::hidden:
+			{
+				_Wostream << L"hidden";
+			} break;
+			case presentation_visibility::visible:
+			{
+				_Wostream << L"visible";
+			} break;
+			default:
+				break;
+		}
 
-		const bool loadContent(XLS::BinProcessor& proc) override;
-		const bool saveContent(XLS::BinProcessor& proc) override;
+		return _Wostream;
+	}
 
-        XLS::BaseObjectPtr               m_BrtBeginPCDField;
-        XLS::BaseObjectPtr               m_PNAMES;
-        XLS::BaseObjectPtr               m_PCDFATBL;
-        XLS::BaseObjectPtr               m_PCDFGROUP;
-        XLS::BaseObjectPtr               m_FRTPCDFIELD;
-		bool			                 m_bBrtEndPCDField;
-        XLS::GlobalWorkbookInfoPtr global_info;
+	presentation_visibility presentation_visibility::parse(const std::wstring& Str)
+	{
+		std::wstring tmp = Str;
+		boost::algorithm::to_lower(tmp);
 
-    };
+		if (tmp == L"hidden")
+			return presentation_visibility(hidden);
+		else if (tmp == L"visible")
+			return presentation_visibility(visible);
+		
+		return presentation_visibility(visible);
+	}
 
-} // namespace XLSB
-
+} // namespace odf_types 
+} // namespace cpdoccore 

@@ -83,6 +83,8 @@ public:
 		void set_page_id		(int id);
 		void set_page_style		(office_element_ptr & _style);
 		void set_page_duration	(int id);
+
+		void hide_page();
 		
 		void set_master_page(std::wstring name);
 		void set_layout_page(std::wstring name);
@@ -147,6 +149,8 @@ public:
 		void set_anim_target_element(const std::wstring& val);
 		void set_anim_auto_reverse	(bool val);
 		void set_anim_subtype		(const std::wstring& val);
+		void set_anim_accelerate	(double val);
+		void set_anim_decelerate	(double val);
 
 		void set_anim_animation_formula(const std::wstring& val);
 		void set_anim_animation_keytimes(const odf_types::smil_key_times& val);
@@ -154,6 +158,7 @@ public:
 		void set_anim_animation_by(const std::wstring& val);
 		void set_anim_animation_from(const std::wstring& val);
 		void set_anim_animation_to(const std::wstring& val);
+		void set_anim_animation_type(const odf_types::svg_type& val);
 
 		void set_anim_transition_filter_mode(const std::wstring& val);
 		void set_anim_transition_filter_type(const odf_types::smil_transition_type& val);

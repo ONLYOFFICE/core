@@ -508,6 +508,13 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			std::cout << "Name " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 			i += nPathLength;
 		}
+		if (nFlags & (1 << 19))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Font button " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
+		}
 
 		//Action
 
@@ -1546,6 +1553,20 @@ int main(int argc, char* argv[])
 					i += 1;
 					std::string arrIT[] = {"FreeText", "FreeTextCallout", "FreeTextTypeWriter"};
 					std::cout << "IT " << arrIT[nPathLength] << ", ";
+				}
+				if (nFlags & (1 << 21))
+				{
+					int nCLLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "C from DA:";
+
+					for (int j = 0; j < nCLLength; ++j)
+					{
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << " " << (double)nPathLength / 100.0;
+					}
+					std::cout << ", ";
 				}
 			}
 			else if (sType == "Caret")

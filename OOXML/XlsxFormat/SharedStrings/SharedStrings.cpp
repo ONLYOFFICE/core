@@ -38,7 +38,7 @@
 #include "../../XlsbFormat/Biff12_unions/SHAREDSTRINGS.h"
 #include "../../XlsbFormat/Biff12_records/SSTItem.h"
 
-#include "../../binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
+#include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 
 namespace OOX
 {

@@ -39,6 +39,8 @@
 #include "../Biff_records/SXFDB.h"
 #include "../Biff_records/SxName.h"
 #include "../Biff_records/SXPair.h"
+#include "../../../../../OOXML/XlsbFormat/Biff12_records/BeginPName.h"
+
 
 namespace XLS
 {
@@ -125,6 +127,18 @@ void PtgSxName::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool f
 						}
 					}
 				}
+			}
+		}
+		else if(static_cast<XLSB::BeginPName*>(global_info->arPivotSxNames[sxIndex].name.get()))
+		{
+			auto pname = static_cast<XLSB::BeginPName*>(global_info->arPivotSxNames[sxIndex].name.get());
+			if(pname->ifdb >=0 && pname->ifdb < global_info->arPivotCacheSxNames.size())
+			{
+				_Name = global_info->arPivotCacheSxNames[pname->ifdb];
+                if (std::wstring::npos != _Name.find(L" "))
+                {
+                    _Name = L"'" + _Name + L"'";
+                }
 			}
 		}
 		ptg_stack.push(_Name);

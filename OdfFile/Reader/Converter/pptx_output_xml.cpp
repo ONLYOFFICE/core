@@ -65,10 +65,16 @@ void pptx_xml_slide::remove_timing_redundant_space()
 	strmTiming_.str(tmp);
 }
 
+void pptx_xml_slide::set_show(bool show_)
+{
+	show = show_;
+}
+
 pptx_xml_slide::pptx_xml_slide(std::wstring const & name,std::wstring const & id)
 {
 	name_ = name;
 	rId_ = id;
+	show = true;
 }
 
 pptx_xml_slide::~pptx_xml_slide()
@@ -103,6 +109,7 @@ void pptx_xml_slide::write_to(std::wostream & strm)
 			CP_XML_ATTR(L"xmlns:p14",	L"http://schemas.microsoft.com/office/powerpoint/2010/main"); 
 			CP_XML_ATTR(L"xmlns:p15",	L"http://schemas.microsoft.com/office/powerpoint/2012/main"); 
 			CP_XML_ATTR(L"xmlns:mc",	L"http://schemas.openxmlformats.org/markup-compatibility/2006");
+			CP_XML_ATTR(L"show",		show);
            
 			CP_XML_NODE(L"p:cSld")
             {

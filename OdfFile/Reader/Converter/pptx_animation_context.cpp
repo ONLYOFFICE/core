@@ -321,6 +321,21 @@ namespace oox {
 		impl_->anim_effect_description_->Duration = value;
 	}
 
+	void pptx_animation_context::set_anim_effect_delay(const std::wstring& value)
+	{
+		impl_->anim_effect_description_->Delay = value;
+	}
+
+	void pptx_animation_context::set_anim_effect_accel(int value)
+	{
+		impl_->anim_effect_description_->Accel = value;
+	}
+
+	void pptx_animation_context::set_anim_effect_decel(int value)
+	{
+		impl_->anim_effect_description_->Decel = value;
+	}
+
 	void pptx_animation_context::set_anim_effect_shape_id(size_t value)
 	{
 		impl_->anim_effect_description_->ShapeID = value;
@@ -971,6 +986,19 @@ namespace oox {
 						CP_XML_NODE(L"p:cTn")
 						{
 							CP_XML_ATTR_OPT(L"dur", serialize_duration(Duration));
+							CP_XML_ATTR_OPT(L"accel", Accel);
+							CP_XML_ATTR_OPT(L"decel", Decel);
+
+							if (Delay)
+							{
+								CP_XML_NODE(L"p:stCondLst")
+								{
+									CP_XML_NODE(L"p:cond")
+									{
+										CP_XML_ATTR(L"delay", Delay.value());
+									}
+								}
+							}
 						}
 					}
 					if (ShapeID)
@@ -1043,12 +1071,14 @@ namespace oox {
 							CP_XML_ATTR(L"autoRev", autoRev);
 						}
 
-						CP_XML_NODE(L"p:stCondLst")
+						if (Delay)
 						{
-							std::wstring delay = Delay ? Delay.value() : L"0";
-							CP_XML_NODE(L"p:cond")
+							CP_XML_NODE(L"p:stCondLst")
 							{
-								CP_XML_ATTR(L"delay", delay);
+								CP_XML_NODE(L"p:cond")
+								{
+									CP_XML_ATTR(L"delay", Delay.value());
+								}
 							}
 						}
 					}

@@ -207,6 +207,16 @@ namespace MetaFile
 			m_dScaleY = m_dH / std::fabs((double)(nB - nT));
 		}
 
+		double GetHeight() const
+		{
+			return m_dH;
+		}
+
+		double GetWidth() const
+		{
+			return m_dW;
+		}
+
 		double GetScaleX() const
 		{
 			return m_dScaleX;
@@ -1210,7 +1220,7 @@ namespace MetaFile
 
 			double dWidth = pPen->GetWidth();
 
-			if (PS_COSMETIC == ulPenType || Equals(0, dWidth))
+			if (Equals(0, dWidth) || (Equals(1, dWidth) && PS_COSMETIC == ulPenType))
 			{
 				double dRendererDpiX;
 				m_pRenderer->get_DpiX(&dRendererDpiX);
@@ -1249,53 +1259,39 @@ namespace MetaFile
 			{
 				std::vector<double> arDashPattern;
 
-				double dPixWidth = 0;
-
-				if (PS_COSMETIC == ulPenType || Equals(0, dWidth))
-				{
-					dPixWidth = dWidth;
-				}
-				else
-				{
-					dPixWidth = dWidth * 25.4 / 72.;
-
-					if (PS_COSMETIC == ulPenType || Equals(0, dWidth))
-						dPixWidth /= m_pFile->GetTransform()->M11 / (m_pFile->GetDpi() / 96.);
-				}
-
 				switch (ulPenStyle)
 				{
 					case PS_DASH:
 					{
-						arDashPattern.push_back(9 * dPixWidth);
-						arDashPattern.push_back(3 * dPixWidth);
+						arDashPattern.push_back(9 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
 
 						break;
 					}
 					case PS_DOT:
 					{
-						arDashPattern.push_back(3 * dPixWidth);
-						arDashPattern.push_back(3 * dPixWidth);
+						arDashPattern.push_back(3 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
 
 						break;
 					}
 					case PS_DASHDOT:
 					{
-						arDashPattern.push_back(9 * dPixWidth);
-						arDashPattern.push_back(3 * dPixWidth);
-						arDashPattern.push_back(3 * dPixWidth);
-						arDashPattern.push_back(3 * dPixWidth);
+						arDashPattern.push_back(9 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
 
 						break;
 					}
 					case PS_DASHDOTDOT:
 					{
-						arDashPattern.push_back(9 * dPixWidth);
-						arDashPattern.push_back(3 * dPixWidth);
-						arDashPattern.push_back(3 * dPixWidth);
-						arDashPattern.push_back(3 * dPixWidth);
-						arDashPattern.push_back(3 * dPixWidth);
-						arDashPattern.push_back(3 * dPixWidth);
+						arDashPattern.push_back(9 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
 
 						break;
 					}

@@ -35,7 +35,20 @@
 var AscFonts = window['AscFonts'];
 
 if (window["NATIVE_EDITOR_ENJINE"])
-	window.setImmediate = function(fn) { fn(); };
+{
+	var immediateArray = [];
+	window.setImmediate = function(fn) {
+		if (immediateArray)
+			immediateArray.push(fn);
+		else
+			fn();
+	};
+	window.immediateRun = function() {
+		for (var i = 0; i < immediateArray.length; i++)
+			immediateArray[i]();
+		immediateArray = undefined;
+	};
+}
 
 var setImmediate = window.setImmediate;
 
@@ -595,6 +608,8 @@ AscFonts.Hyphen_Word = function(lang, word)
 	return hyphens;
 };
 
+if (window["NATIVE_EDITOR_ENJINE"])
+	window.immediateRun();
 AscFonts.onLoadModule();
 
 })(window, undefined);

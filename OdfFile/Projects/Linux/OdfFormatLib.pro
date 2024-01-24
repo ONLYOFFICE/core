@@ -97,6 +97,7 @@ SOURCES += \
 	../../DataTypes/percentorscale.cpp \
 	../../DataTypes/presentationclass.cpp \
 	../../DataTypes/presentationnodetype.cpp \
+	../../DataTypes/presentationvisibility.cpp \
 	../../DataTypes/presetclass.cpp \
 	../../DataTypes/presetid.cpp \
 	../../DataTypes/punctuationwrap.cpp \
@@ -502,6 +503,7 @@ HEADERS += \
 	../../DataTypes/percentorscale.h \
 	../../DataTypes/presentationclass.h \
 	../../DataTypes/presentationnodetype.h \
+	../../DataTypes/presentationvisibility.h \
 	../../DataTypes/presetclass.h \
 	../../DataTypes/presetid.h \
 	../../DataTypes/punctuationwrap.h \

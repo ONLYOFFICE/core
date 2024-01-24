@@ -413,9 +413,42 @@ namespace NSJSBase
 		else
 			_value->doUndefined();
 #else
+		// TODO: Use MaybeLocal version
 		_value->value = v8::JSON::Parse(CreateV8String(CV8Worker::GetCurrent(), sTmp));
 #endif
 		return _value;
+	}
+
+	std::string CJSContext::JSON_Stringify(JSSmart<CJSValue> value)
+	{
+		// if don't return an empty string explicitly, V8 will return "undefined", which is incorrect
+		if (value->isUndefined())
+			return "";
+
+		CJSValueV8* _value = static_cast<CJSValueV8*>(value.GetPointer());
+		v8::MaybeLocal<v8::String> result;
+#ifndef V8_OS_XP
+#ifdef V8_VERSION_89_PLUS
+		result = v8::JSON::Stringify(m_internal->m_context, _value->value);
+#else
+		v8::MaybeLocal<v8::Object> json_object = _value->value->ToObject(m_internal->m_context);
+		if (json_object.IsEmpty())
+			// in case of null and other non-object values
+			result = _value->value->ToString(m_internal->m_context);
+		else
+			result = v8::JSON::Stringify(m_internal->m_context, json_object.ToLocalChecked());
+#endif
+#else
+		// there is no built-in stringifier in V8_XP, so use JSON.stringify() from JS
+		v8::Local<v8::Object> json = m_internal->m_context->Global()->Get(CreateV8String(m_internal->m_isolate, "JSON"))->ToObject();
+		v8::Local<v8::Function> stringify = json->Get(CreateV8String(m_internal->m_isolate, "stringify")).As<v8::Function>();
+		result = stringify->Call(json, 1, &_value->value)->ToString(m_internal->m_context);
+#endif
+		if (result.IsEmpty())
+			return "";
+
+		v8::String::Utf8Value data(V8IsolateFirstArg result.ToLocalChecked());
+		return std::string((char*)(*data), data.length());
 	}
 
 	void CJSContext::MoveToThread(ASC_THREAD_ID* id)

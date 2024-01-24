@@ -31,6 +31,7 @@
  */
 
 #include <xml/simple_xml_writer.h>
+#include <boost/algorithm/string.hpp>
 
 #include "oox_rels.h"
 
@@ -74,8 +75,13 @@ public:
 				}
 			}
 
-			if(!found)
-				pptx_drawing_rels_.push_back(_rel(false, d.hlinks[i].hId, d.hlinks[i].hRef, typeHyperlink));
+			if (!found)
+			{
+				oox::_rels_type type = boost::algorithm::starts_with(d.hlinks[i].hRef, L"slide") &&
+					boost::algorithm::ends_with(d.hlinks[i].hRef, L".xml") ? typeSlide : typeHyperlink;
+				pptx_drawing_rels_.push_back(_rel(false, d.hlinks[i].hId, d.hlinks[i].hRef, type));
+			}
+				
 		}
         if (!d.action.hId.empty())
         {

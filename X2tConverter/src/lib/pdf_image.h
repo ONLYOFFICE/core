@@ -812,6 +812,11 @@ namespace NExtractTools
 				RELEASEOBJECT(pReader);
 			}
 		}
+		else if (0 != (AVS_OFFICESTUDIO_FILE_CANVAS & nFormatTo) && params.needConvertToOrigin(nFormatFrom))
+		{
+			//todo remove this code. copy outside x2t
+			copyOrigin(sFrom, *params.m_sFileTo);
+		}
 		else if (0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
 		{
 			IOfficeDrawingFile *pReader = NULL;

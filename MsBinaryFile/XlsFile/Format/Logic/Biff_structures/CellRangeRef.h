@@ -189,20 +189,43 @@ public:
 		RwType rwLast;
 		ColType colFirst;
 		ColType colLast;
-
+		
+		auto version = record.getGlobalWorkbookInfo()->Version;
+		
 		rwFirst = rowFirst;
 		rwLast = rowLast;
 
-		switch (rel_info)
+		if (version < 0x0800)
 		{
-		case rel_Present:
-			colFirst = (columnFirst >> 2) << 2;
-			colLast = (columnLast >> 2) << 2;
-			break;
-		case rel_Absent:
-			colFirst = columnFirst;
-			colLast = columnLast;
-			break;
+			switch (rel_info)
+			{
+			case rel_Present:
+				colFirst = (columnFirst >> 2) << 2;
+				colLast = (columnLast >> 2) << 2;
+				break;
+			case rel_Absent:
+				colFirst = columnFirst;
+				colLast = columnLast;
+				break;
+			}
+		}
+		else
+		{
+			if(rel_info == rel_Present)
+			{
+				SETBITS(colFirst, 0, 13, columnFirst);
+				SETBIT(colFirst, 14, columnFirstRelative);
+				SETBIT(colFirst, 15, rowFirstRelative);
+
+				SETBITS(colLast, 0, 13, columnLast);
+				SETBIT(colLast, 14, columnLastRelative);
+				SETBIT(colLast, 15, rowLastRelative);
+			}
+			else if(rel_info == rel_Absent)
+			{
+				colFirst = columnFirst;
+				colLast = columnLast;
+			}
 		}
 		record << rwFirst << rwLast << colFirst << colLast;
 	}

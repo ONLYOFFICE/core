@@ -1056,7 +1056,7 @@ namespace OOX
 					m_oShowOutlineSymbols = pWsView->fDspGuts;
 					m_oShowRowColHeaders = pWsView->fDspRwColRt;
 					m_oShowRuler = pWsView->fDspRuler;
-					m_oShowWhiteSpace = pWsView->fWhitespaceHidden;
+                    m_oShowWhiteSpace = !pWsView->fWhitespaceHidden;
 					m_oShowZeros = pWsView->fDspZerosRt;
 					m_oTabSelected = pWsView->fSelected;
 					m_oTopLeftCell = pWsView->topLeftCell;

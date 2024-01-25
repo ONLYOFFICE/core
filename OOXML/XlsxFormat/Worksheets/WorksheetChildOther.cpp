@@ -444,22 +444,22 @@ namespace OOX
 			XLS::BaseObjectPtr objPtr(ptr);
 
 			if(m_oLeft.IsInit())
-				ptr->xnumLeft.data.value = std::round(m_oLeft->GetValue() * 100) / 100;
+                ptr->xnumLeft.data.value = std::round(m_oLeft->GetValue()) / 100;
 
 			if(m_oTop.IsInit())
-				ptr->xnumTop.data.value = std::round(m_oTop->GetValue() * 100) / 100;
+                ptr->xnumTop.data.value = std::round(m_oTop->GetValue()) / 100;
 
 			if(m_oRight.IsInit())
-				ptr->xnumRight.data.value = std::round(m_oRight->GetValue() * 100) / 100;
+                ptr->xnumRight.data.value = std::round(m_oRight->GetValue()) / 100;
 
 			if(m_oBottom.IsInit())
-				ptr->xnumBottom.data.value = std::round(m_oBottom->GetValue() * 100) / 100;
+                ptr->xnumBottom.data.value = std::round(m_oBottom->GetValue()) / 100;
 
 			if(m_oHeader.IsInit())
-				ptr->xnumHeader.data.value = std::round(m_oHeader->GetValue() * 100) / 100;
+                ptr->xnumHeader.data.value = std::round(m_oHeader->GetValue()) / 100;
 
 			if(m_oFooter.IsInit())
-				ptr->xnumFooter.data.value = std::round(m_oFooter->GetValue() * 100) / 100;
+                ptr->xnumFooter.data.value = std::round(m_oFooter->GetValue()) / 100;
 
 			return objPtr;
 		}
@@ -571,6 +571,8 @@ namespace OOX
 
 			if (m_oCopies.IsInit())
 				ptr->iCopies = m_oCopies->m_eValue;
+			else
+				ptr->iCopies = 1;
 
 			if (m_oDraft.IsInit())
 				ptr->fDraft = m_oDraft->m_eValue;
@@ -580,37 +582,63 @@ namespace OOX
 
 			if (m_oFirstPageNumber.IsInit())
 				ptr->iPageStart = m_oFirstPageNumber->m_eValue;
+			else
+				ptr->iPageStart = 1;
 
 			if (m_oFitToHeight.IsInit())
 				ptr->iFitHeight = m_oFitToHeight->m_eValue;
+			else
+				ptr->iFitHeight = 1;
 
 			if (m_oFitToWidth.IsInit())
 				ptr->iFitWidth = m_oFitToWidth->m_eValue;
+			else
+				ptr->iFitWidth = 1;
 
 			if (m_oHorizontalDpi.IsInit())
 				ptr->iRes = m_oHorizontalDpi->m_eValue;
+			else
+				ptr->iRes = 600;
 
 			if (m_oRId.IsInit())
 				ptr->szRelID = m_oRId->GetValue();
 
-			if (m_oOrientation == SimpleTypes::EPageOrientation::pageorientLandscape)
+            if (m_oOrientation.IsInit() && m_oOrientation->GetValue() == SimpleTypes::EPageOrientation::pageorientLandscape)
+            {
+                ptr->fPortrait = false;
 				ptr->fLandscape = true;
-			else
+            }
+            else if(m_oOrientation.IsInit())
+            {
 				ptr->fLandscape = false;
+                ptr->fPortrait = true;
+            }
+            else
+            {
+                ptr->fPortrait = false;
+                ptr->fLandscape = false;
+                ptr->fNoOrient = true;
+            }
 
-			if ( m_oPageOrder == SimpleTypes::Spreadsheet::EPageOrder::pageorderOverThenDown)
+            if (m_oPageOrder.IsInit() && m_oPageOrder->GetValue() == SimpleTypes::Spreadsheet::EPageOrder::pageorderOverThenDown)
 				ptr->fLeftToRight = true;
 			else
 				ptr->fLeftToRight = false;
 
 			if (m_oPaperSize.IsInit())
 				ptr->iPaperSize = m_oPaperSize->m_eValue;
+			else
+				ptr->iPaperSize = 9;
 
 			if (m_oScale.IsInit())
 				ptr->iScale = m_oScale->m_eValue;
+			else
+				ptr->iScale = 100;
 
 			if (m_oUseFirstPageNumber.IsInit())
 				ptr->fUsePage = m_oUseFirstPageNumber->m_eValue;
+			else
+				ptr->fUsePage = true;
 
 			if (m_oVerticalDpi.IsInit())
 				ptr->iVRes = m_oVerticalDpi->m_eValue;

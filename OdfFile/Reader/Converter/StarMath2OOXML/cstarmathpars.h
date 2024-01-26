@@ -5,11 +5,21 @@
 #include <vector>
 #include <iterator>
 #include <stack>
+#include <queue>
 #include "../../../../DesktopEditor/xml/include/xmlwriter.h"
 
 namespace StarMath
 {
 	class CStarMathReader;
+
+	struct TBaseAttribute
+	{
+		int base_font_size = 12;
+		std::wstring base_font_name;
+		int base_alignment = 1;
+		bool base_font_bold = false;
+		bool base_font_italic = false;
+	};
 
 	class CAttribute
 	{
@@ -63,17 +73,22 @@ namespace StarMath
 		bool EmptyString();
 		void SetAttribute(CAttribute* pAttribute);
 		CAttribute* GetAttribute();
+		void SetBaseAttribute(const TBaseAttribute* pAttribute);
+		CAttribute* GetBaseAttribute();
 		//The function returns a Token from a string (the iterator pointer m_itStart is on the next element)
 		std::wstring GetElement();
 		void FindingTheEndOfParentheses();
+		void IteratorNullification();
 	private:
 		bool CheckTokenForGetElement(const wchar_t& cToken);
 		bool CheckIsalhpaForGetElement(const wchar_t& cToken,const wchar_t& cLastToken);
-		std::wstring::iterator m_itStart,m_itEnd,m_itEndBracket;
+		std::wstring::iterator m_itStart,m_itEnd;
 		TypeElement m_enGlobalType;
 		TypeElement m_enUnderType;
 		std::wstring m_wsToken;
 		CAttribute* m_pAttribute;
+		CAttribute* m_pBaseAttribute;
+		std::stack<std::wstring::iterator> m_stBracket;
 	};
 
 	class CElement
@@ -203,9 +218,9 @@ namespace StarMath
 		virtual ~CElementBracket();
 		void SetBracketValue(const std::vector<CElement*>& arValue);
 		static TypeElement GetBracketOpen(const std::wstring& wsToken);
+		static TypeElement GetBracketClose(const std::wstring& wsToken);
 		std::vector<CElement*> GetBracketValue();
 	private:
-		TypeElement GetBracketClose(const std::wstring& wsToken);
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;//
@@ -341,7 +356,7 @@ namespace StarMath
 	class CParserStarMathString
 	{
 	public:
-		std::vector<CElement*> Parse(std::wstring& wsParseString);
+		std::vector<CElement*> Parse(std::wstring& wsParseString, const TBaseAttribute* pBaseAttribute = nullptr);
 		static CElement* ParseElement(CStarMathReader* pReader);
 		//Function for adding a left argument (receives the argument itself and the element to which it needs to be added as input. Works with classes:CElementBinOperator,CElementConnection,CElementSetOperation).
 		static bool AddLeftArgument(CElement* pLeftArg,CElement* pElementWhichAdd);

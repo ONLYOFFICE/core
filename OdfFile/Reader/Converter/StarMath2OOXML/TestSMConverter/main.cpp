@@ -1064,16 +1064,6 @@ TEST(SMConvectorTest,Example10)
 //	EXPECT_EQ(oTest.GetOOXML(),wsXmlString);
 //}
 
-//TEST(SMConvectorTest,Example13)
-//{
-//	std::wstring wsString = L"";
-//	StarMath::CParserStarMathString oTemp;
-//	StarMath::CConversionSMtoOOXML oTest;
-//	oTest.StartConversion(oTemp.Parse(wsString));
-//	std::wstring wsXmlString =L"";
-//	EXPECT_EQ(oTest.GetOOXML(),wsXmlString);
-//}
-
 //TEST(SMConvectorTest,AttributeMatrix)
 //{
 //	std::wstring wsString = L"";

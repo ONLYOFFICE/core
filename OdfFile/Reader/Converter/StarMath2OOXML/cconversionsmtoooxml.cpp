@@ -97,13 +97,13 @@ namespace StarMath {
 			pXmlWrite->WriteNodeEnd(L"w:rPr",false,false);
 		}
 	}
-	void CConversionSMtoOOXML::PropertiesMFPR(bool bType,const std::wstring& wsType, XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute)
+	void CConversionSMtoOOXML::PropertiesMFPR(bool bType, XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute)
 	{
 		pXmlWrite->WriteNodeBegin(L"m:fPr",false);
 		if(bType)
 		{
 			pXmlWrite->WriteNodeBegin(L"m:type",true);
-			pXmlWrite->WriteAttribute(L"m:val",wsType);
+			pXmlWrite->WriteAttribute(L"m:val",L"lin");
 			pXmlWrite->WriteNodeEnd(L"w",true,true);
 		}
 		WriteCtrlPrNode(pXmlWrite,pAttribute);

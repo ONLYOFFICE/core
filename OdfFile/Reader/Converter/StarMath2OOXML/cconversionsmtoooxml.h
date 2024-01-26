@@ -13,7 +13,7 @@ namespace StarMath {
 		CConversionSMtoOOXML();
 		void StartConversion(std::vector<CElement*> arPars);
 		static void StandartProperties(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute);
-		static void PropertiesMFPR(bool bType,const std::wstring& wsType, XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute);
+		static void PropertiesMFPR(bool bType,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute);
 		static void PropertiesNaryPr(const TypeElement& enTypeOp,bool bEmptySub,bool bEmptySup,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute);
 		static void PropertiesFuncPr(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute);
 		static void BlockRecording(const std::wstring& wsNameBlock,CElement* pValueBlock,XmlUtils::CXmlWriter* pXmlWrite);

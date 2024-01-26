@@ -718,6 +718,13 @@
 				for (let i = 0; i < n; ++i)
 					rec["value"].push(reader.readString());
 			}
+			if (flags & (1 << 6))
+			{
+				let n = reader.readInt();
+				rec["Opt"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["Opt"].push(reader.readString());
+			}
 			res["Parents"].push(rec);
 		}
 

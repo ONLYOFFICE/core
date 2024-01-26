@@ -587,6 +587,9 @@ CAnnotWidgetBtn::CAnnotWidgetBtn(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot
 	}
 	oMK.free();
 
+	Object oOpt;
+	pField->fieldLookup("Opt", &oOpt);
+
 	// 15 - Имя вкл состояния - AP - N - Yes
 	Object oNorm;
 	if (pField->fieldLookup("AP", &oObj)->isDict() && oObj.dictLookup("N", &oNorm)->isDict())
@@ -598,11 +601,41 @@ CAnnotWidgetBtn::CAnnotWidgetBtn(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot
 			{
 				m_unFlags |= (1 << 14);
 				m_sAP_N_Yes = sNormName;
+
+				int nOptI;
+				if (oOpt.isArray() && isdigit(sNormName[0]) && (nOptI = std::stoi(sNormName)) >= 0 && nOptI < oOpt.arrayGetLength())
+				{
+					Object oOptJ;
+					if (!oOpt.arrayGet(nOptI, &oOptJ) || !(oOptJ.isString() || oOptJ.isArray()))
+					{
+						oOptJ.free();
+						break;
+					}
+
+					if (oOptJ.isString())
+					{
+						TextString* s = new TextString(oOptJ.getString());
+						m_sAP_N_Yes = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+						delete s;
+					}
+					else if (oOptJ.isArray() && oOptJ.arrayGetLength() > 0)
+					{
+						Object oOptJ2;
+						if (oOptJ.arrayGet(0, &oOptJ2)->isString())
+						{
+							TextString* s = new TextString(oOptJ2.getString());
+							m_sAP_N_Yes = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+							delete s;
+						}
+						oOptJ2.free();
+					}
+					oOptJ.free();
+				}
 				break;
 			}
 		}
 	}
-	oNorm.free(); oObj.free();
+	oNorm.free(); oObj.free(); oOpt.free();
 }
 
 CAnnotWidgetTx::CAnnotWidgetTx(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnotWidget(pdfDoc, pField)
@@ -907,6 +940,9 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 	Object oAA;
 	Object parent, parent2;
 	bool bParent = oField.dictLookup("Parent", &parent)->isDict();
+	bool bAA = bParent && parent.dictLookup("AA", &oAA)->isDict();
+	oAA.free();
+
 	if (oField.dictLookup("AA", &oAA)->isDict())
 	{
 		for (int j = 0; j < oAA.dictGetLength(); ++j)
@@ -914,7 +950,7 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 			if (oAA.dictGetVal(j, &oAction)->isDict())
 			{
 				std::string sAA(oAA.dictGetKey(j));
-				if (bParent && (sAA == "K" || sAA == "F" || sAA == "V" || sAA == "C"))
+				if (bAA && (sAA == "K" || sAA == "F" || sAA == "V" || sAA == "C"))
 					continue;
 				CAction* pA = getAction(pdfDoc, &oAction);
 				if (pA)
@@ -2033,6 +2069,29 @@ void CAnnots::getParents(XRef* xref, Object* oFieldRef)
 	}
 	oI.free();
 
+	Object oOpt;
+	// 6 - Opt
+	if (oField.dictLookup("Opt", &oOpt)->isArray())
+	{
+		int nOptLength = oOpt.arrayGetLength();
+		for (int j = 0; j < nOptLength; ++j)
+		{
+			Object oOptJ;
+			if (!oOpt.arrayGet(j, &oOptJ) || !oOptJ.isString())
+			{
+				oOptJ.free();
+				continue;
+			}
+
+			TextString* s = new TextString(oOptJ.getString());
+			pAnnotParent->arrOpt.push_back(NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength()));
+			delete s;
+		}
+		if (!pAnnotParent->arrOpt.empty())
+			pAnnotParent->unFlags |= (1 << 6);
+	}
+	oOpt.free();
+
 	m_arrParents.push_back(pAnnotParent);
 
 	Object oParentRefObj;
@@ -2757,6 +2816,12 @@ void CAnnots::CAnnotParent::ToWASM(NSWasm::CData& oRes)
 		oRes.AddInt((unsigned int)arrV.size());
 		for (int i = 0; i < arrV.size(); ++i)
 			oRes.WriteString(arrV[i]);
+	}
+	if (unFlags & (1 << 6))
+	{
+		oRes.AddInt((unsigned int)arrOpt.size());
+		for (int i = 0; i < arrOpt.size(); ++i)
+			oRes.WriteString(arrOpt[i]);
 	}
 }
 

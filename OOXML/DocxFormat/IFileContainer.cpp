@@ -128,7 +128,7 @@ namespace OOX
 	{
 		const OOX::File* pFileOwner = dynamic_cast<const OOX::File*>(this);
 
-		for (boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mapContainer.begin(); pPair != m_mapContainer.end(); ++pPair)
+		for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mapContainer.begin(); pPair != m_mapContainer.end(); ++pPair)
 		{
 			smart_ptr<OOX::File>		pFile	= pPair->second;
 
@@ -232,7 +232,7 @@ namespace OOX
 	{
 		std::map<std::wstring, size_t> mNamepair;
 
-		for (boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mapContainer.begin(); pPair != m_mapContainer.end(); ++pPair)
+		for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mapContainer.begin(); pPair != m_mapContainer.end(); ++pPair)
 		{
 			smart_ptr<OOX::File>		pFile	= pPair->second;
 
@@ -283,7 +283,7 @@ namespace OOX
 
 	const bool IFileContainer::IsExist(const RId& rId) const
 	{
-        boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pFind = m_mapContainer.find(rId.get());
+        std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pFind = m_mapContainer.find(rId.get());
 		return (pFind != m_mapContainer.end());
 	}
 
@@ -306,7 +306,7 @@ namespace OOX
 	}
 	const bool IFileContainer::IsExternal(const OOX::RId& rId) const
 	{
-        boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pFind = m_mapContainer.find(rId.get());
+        std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pFind = m_mapContainer.find(rId.get());
 
 		if (pFind != m_mapContainer.end())
 		{
@@ -416,7 +416,7 @@ namespace OOX
 
 	smart_ptr<OOX::File> IFileContainer::Find(const OOX::RId& rId) const
 	{
-		boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mapContainer.find(rId.get());
+		std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mapContainer.find(rId.get());
 
 		if ( pPair != m_mapContainer.end())
 			return pPair->second;
@@ -426,7 +426,7 @@ namespace OOX
 
 	smart_ptr<OOX::File> IFileContainer::Find(const FileType& oType) const
 	{
-		for (boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mapContainer.begin(); pPair != m_mapContainer.end(); ++pPair)
+		for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mapContainer.begin(); pPair != m_mapContainer.end(); ++pPair)
 		{
 			if (pPair->second->type() == oType)
 				return pPair->second;
@@ -441,7 +441,7 @@ namespace OOX
 	}	
 	smart_ptr<OOX::File> IFileContainer::operator [](const OOX::RId rId)
 	{
-        boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pFind = m_mapContainer.find(rId.get());
+        std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pFind = m_mapContainer.find(rId.get());
 		if ( pFind != m_mapContainer.end())
 			return pFind->second;
 

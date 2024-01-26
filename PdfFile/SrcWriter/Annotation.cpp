@@ -968,7 +968,7 @@ namespace PdfWriter
 		CDictObject* pOwner = GetObjOwnValue("TU");
 		if (!pOwner)
 			pOwner = this;
-		pOwner->Add("TU", new CStringObject(sValue.c_str()));
+		pOwner->Add("TU", new CStringObject(sValue.c_str(), true));
 	}
 	void CWidgetAnnotation::SetDS(const std::wstring& wsDS)
 	{
@@ -1024,14 +1024,7 @@ namespace PdfWriter
 		std::string sAA = pAction->m_sType;
 		CDictObject* pAA = NULL;
 		if (m_pParent && (sAA == "K" || sAA == "F" || sAA == "V" || sAA == "C"))
-		{
 			pAA = (CDictObject*)m_pParent->Get("AA");
-			if (!pAA)
-			{
-				pAA = new CDictObject();
-				m_pParent->Add("AA", pAA);
-			}
-		}
 		else if (sAA == "E" || sAA == "X" || sAA == "D" || sAA == "U" || sAA == "Fo" || sAA == "Bl" || sAA == "PO" || sAA == "PC" || sAA == "PV" || sAA == "PI")
 		{
 			pAA = (CDictObject*)Get("AA");
@@ -1411,7 +1404,11 @@ namespace PdfWriter
 		CDictObject* pOwner = GetObjOwnValue("V");
 		if (!pOwner)
 			pOwner = this;
-		pOwner->Add("V", new CStringObject(sV.c_str(), true));
+
+		if (isdigit(sV[0]))
+			pOwner->Add("V", sV.c_str());
+		else
+			pOwner->Add("V", new CStringObject(sV.c_str(), true));
 	}
 	std::wstring CCheckBoxWidget::SetStyle(BYTE nStyle)
 	{
@@ -1446,7 +1443,11 @@ namespace PdfWriter
 	}
 	void CCheckBoxWidget::SwitchAP(const std::string& sV)
 	{
-		Add("AS", sV == m_sAP_N_Yes ? sV.c_str() : "Off");
+		CObjectBase* pAP, *pAPN;
+		if ((pAP = Get("AP")) && pAP->GetType() == object_type_DICT && (pAPN = ((CDictObject*)pAP)->Get("N")) && pAPN->GetType() == object_type_DICT && ((CDictObject*)pAPN)->Get(sV))
+			Add("AS", sV.c_str());
+		else
+			Add("AS", "Off");
 	}
 	void CCheckBoxWidget::SetFlag(const int& nFlag)
 	{
@@ -1701,7 +1702,7 @@ namespace PdfWriter
 		for (const std::wstring& A : arrFileds)
 		{
 			std::string sValue = U_TO_UTF8(A);
-			pArray->Add(new CStringObject(sValue.c_str()));
+			pArray->Add(new CStringObject(sValue.c_str(), true));
 		}
 	}
 	//----------------------------------------------------------------------------------------
@@ -1712,7 +1713,7 @@ namespace PdfWriter
 	void CActionJavaScript::SetJS(const std::wstring& wsJS)
 	{
 		std::string sValue = U_TO_UTF8(wsJS);
-		Add("JS", new CStringObject(sValue.c_str()));
+		Add("JS", new CStringObject(sValue.c_str(), true));
 	}
 	//----------------------------------------------------------------------------------------
 	CActionGoTo::CActionGoTo(CXref* pXref) : CAction(pXref)
@@ -1753,7 +1754,7 @@ namespace PdfWriter
 		for (const std::wstring& A : arrT)
 		{
 			std::string sValue = U_TO_UTF8(A);
-			pArray->Add(new CStringObject(sValue.c_str()));
+			pArray->Add(new CStringObject(sValue.c_str(), true));
 		}
 	}
 	//----------------------------------------------------------------------------------------

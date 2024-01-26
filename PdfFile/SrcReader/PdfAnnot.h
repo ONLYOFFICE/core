@@ -572,6 +572,7 @@ private:
 		unsigned int unRefNumParent; // Номер ссылки на объект родителя
 		std::vector<int> arrI;
 		std::vector<std::string> arrV;
+		std::vector<std::string> arrOpt;
 		std::string sT;
 		std::string sV;
 		std::string sDV;

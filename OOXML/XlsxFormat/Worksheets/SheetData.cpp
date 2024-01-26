@@ -3451,9 +3451,10 @@ namespace OOX
 
 				if (pShape->m_sId.IsInit())
 				{//mark shape as used
-					boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(pShape->m_sId.get());
+					std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(pShape->m_sId.get());
 					if (pFind != pVmlDrawing->m_mapShapes.end())
 					{
+						if (!pFind->second.bComment) continue;
 						pFind->second.bUsed = true;
 					}
 				}

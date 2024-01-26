@@ -5198,7 +5198,7 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 		std::wstring sShapeId = L"_x0000_s" + std::to_wstring(pOleObject->m_oShapeId->GetValue());
 		if (pVmlDrawing)
 		{
-            boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(sShapeId);
+			std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(sShapeId);
 			
 			if (pFind != pVmlDrawing->m_mapShapes.end())
 			{
@@ -5391,7 +5391,7 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 		
 		std::wstring sShapeId = L"_x0000_s" + std::to_wstring(pControl->m_oShapeId->GetValue());
 		OOX::Vml::CShape* pShape = NULL;
-		boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind;
+		std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind;
 		
 		if (pVmlDrawing)
 		{
@@ -5783,7 +5783,7 @@ void BinaryWorksheetTableWriter::WriteDrawings(const OOX::Spreadsheet::CWorkshee
 
 	if (NULL != pVmlDrawing)
 	{
-        boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator it = pVmlDrawing->m_mapShapes.begin();
+		std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator it = pVmlDrawing->m_mapShapes.begin();
 
         for (; it != pVmlDrawing->m_mapShapes.end(); it++)
 		{
@@ -5886,7 +5886,7 @@ void BinaryWorksheetTableWriter::WriteDrawing(const OOX::Spreadsheet::CWorksheet
 
 	if (pCellAnchor->m_sVmlSpId.IsInit() && pVmlDrawing)
 	{
-        boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(pCellAnchor->m_sVmlSpId.get2());
+		std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(pCellAnchor->m_sVmlSpId.get2());
 		
 		if (pFind != pVmlDrawing->m_mapShapes.end() && !pFind->second.bUsed)
 		{
@@ -6070,7 +6070,7 @@ void BinaryWorksheetTableWriter::WriteLegacyDrawingHFDrawings(OOX::CVmlDrawing* 
 	{
 		m_pOfficeDrawingConverter->AddShapeType(pVmlDrawing->m_arrShapeTypes[i].sXml);
 	}
-	boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator it = pVmlDrawing->m_mapShapes.begin();
+	std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator it = pVmlDrawing->m_mapShapes.begin();
 	for (; it != pVmlDrawing->m_mapShapes.end(); it++)
 	{
 		int nCurPos = m_oBcw.WriteItemStart(c_oSer_LegacyDrawingHF::Drawing);

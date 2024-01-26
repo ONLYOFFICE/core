@@ -89,6 +89,51 @@
 static const long c_BrushTypeLinearGradient = 8001;
 static const long c_BrushTypeRadialGradient = 8002;
 
+void GetMetafileRasterSize(MetaFile::IMetaFile* pMetafile, const double& dWidth, int& nW, int& nH)
+{
+	double dNewW = std::max(10.0, dWidth) / 25.4 * 300;
+
+	/* old version:
+	nW = (int)nW;
+	nH = -1;
+	return;
+	*/
+
+
+	double dX, dY, dW, dH;
+	pMetafile->GetBounds(&dX, &dY, &dW, &dH);
+
+	if (dW < 0) dW = -dW;
+	if (dH < 0) dH = -dH;
+
+	if (dW < 0.1) dW = 0.1;
+	if (dH < 0.1) dH = 0.1;
+
+	double dNewH = dNewW * dH / dW;
+
+	double dOneMaxSize = 2000;
+
+	if (dNewW > dOneMaxSize || dNewH > dOneMaxSize)
+	{
+		if (dNewW > dNewH)
+		{
+			dNewH *= (dOneMaxSize / dNewW);
+			dNewW = dOneMaxSize;
+		}
+		else
+		{
+			dW *= (dOneMaxSize / dNewH);
+			dNewH = dOneMaxSize;
+		}
+	}
+
+	if (dNewW < 1) dNewW = 1;
+	if (dNewH < 1) dNewH = 1;
+
+	nW = (int)dNewW;
+	nH = (int)dNewH;
+}
+
 //----------------------------------------------------------------------------------------
 //
 // CPdfRenderer
@@ -997,9 +1042,10 @@ HRESULT CPdfWriter::DrawImageFromFile(NSFonts::IApplicationFonts* pAppFonts, con
 		MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
 		pMeta->LoadFromFile(wsImagePath.c_str());
 
-		double dNewW = std::max(10.0, dW) / 25.4 * 300;
 		std::wstring wsTempFile = GetTempFile(wsTempDirectory);
-		pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, dNewW);
+		int nW = 0, nH = 0;
+		GetMetafileRasterSize(pMeta, dW, nW, nH);
+		pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, nW, nH);
 
 		RELEASEOBJECT(pMeta);
 
@@ -1501,9 +1547,10 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 				MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
 				pMeta->LoadFromFile(wsPath.c_str());
 
-				double dNewW = std::max(10.0, dW) / 25.4 * 300;
 				std::wstring wsTempFile = GetTempFile(wsTempDirectory);
-				pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, dNewW);
+				int nW = 0, nH = 0;
+				GetMetafileRasterSize(pMeta, dW, nW, nH);
+				pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, nW, nH);
 
 				RELEASEOBJECT(pMeta);
 
@@ -2436,9 +2483,10 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 			MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
 			pMeta->LoadFromFile(wsPath.c_str());
 
-			double dNewW = 10.0 / 25.4 * 300;
 			std::wstring wsTempFile = GetTempFile(wsTempDirectory);
-			pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, dNewW);
+			int nW = 0, nH = 0;
+			GetMetafileRasterSize(pMeta, 10, nW, nH);
+			pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, nW, nH);
 
 			RELEASEOBJECT(pMeta);
 

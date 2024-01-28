@@ -25,6 +25,7 @@
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 #include "../DesktopEditor/graphics/pro/Graphics.h"
+#include "../DesktopEditor/raster/Metafile/MetaFileCommon.h"
 #include "htmlfile2.h"
 
 #include <boost/regex.hpp>
@@ -2174,7 +2175,7 @@ private:
 		if (bLoad)
 		{
 			std::wstring sPngFile = m_sDst + L"/word/media/i" + sImageId + L".png";
-			pMetafile->ConvertToRaster(sPngFile.data(), 4, 1000);
+			MetaFile::ConvertToRasterMaxSize(pMetafile, sPngFile.data(), 4, 1000);
 		}
 		pMetafile->Release();
 		pFonts->Release();

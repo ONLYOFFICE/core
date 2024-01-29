@@ -249,6 +249,17 @@ namespace MetaFile
 
 			oBB = m_oPlaceable.oBoundingBox;
 
+			double dFileDpi = GetDpi();
+			const double dRendererDpi = 96;
+
+			if (!Equals(dFileDpi, dRendererDpi) && !Equals(0., dFileDpi))
+			{
+				oBB.Left   = std::round(oBB.Left   * dRendererDpi / dFileDpi);
+				oBB.Top    = std::round(oBB.Top    * dRendererDpi / dFileDpi);
+				oBB.Right  = std::round(oBB.Right  * dRendererDpi / dFileDpi);
+				oBB.Bottom = std::round(oBB.Bottom * dRendererDpi / dFileDpi);
+			}
+
 			// Иногда m_oPlaceable.BoundingBox задается нулевой ширины и высоты
 			if (abs(oBB.Right - oBB.Left) <= 1)
 			{
@@ -260,17 +271,6 @@ namespace MetaFile
 				oBB.Top    = m_oBoundingBox.Top;
 				oBB.Bottom = m_oBoundingBox.Bottom;
 			}
-
-			const double dFileDpi = GetDpi();
-			const double dRendererDpi = 96;
-
-			if (Equals(dFileDpi, dRendererDpi) && !Equals(0, dFileDpi))
-				return oBB;
-
-			oBB.Left   = std::round(oBB.Left   * dRendererDpi / dFileDpi);
-			oBB.Top    = std::round(oBB.Top    * dRendererDpi / dFileDpi);
-			oBB.Right  = std::round(oBB.Right  * dRendererDpi / dFileDpi);
-			oBB.Bottom = std::round(oBB.Bottom * dRendererDpi / dFileDpi);
 
 			return oBB;
 		}

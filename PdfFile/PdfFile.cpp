@@ -64,7 +64,7 @@
 	((PdfWriter::CArrayObject*)pObj)->Add(oVal);\
 }
 
-void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, const std::string& sKey)
+void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, const std::string& sKey, bool bUnicode = false)
 {
 	Object oTemp;
 	switch (obj->getType())
@@ -101,7 +101,7 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, 
 		{
 			TextString* s = new TextString(obj->getString());
 			std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-			AddToObject(new PdfWriter::CStringObject(sValue.c_str(), true))
+			AddToObject(new PdfWriter::CStringObject(sValue.c_str(), bUnicode))
 			delete s;
 		}
 		break;

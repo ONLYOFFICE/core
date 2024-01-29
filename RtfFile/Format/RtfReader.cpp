@@ -356,7 +356,7 @@ std::wstring RtfAbstractReader::ExecuteTextInternalCodePage( std::string& sCharS
 			nCodepage = oFont.m_nCodePage;
 		}
 		else if ((PROP_DEF != oFont.m_nCharset  && oFont.m_nCharset > 2)
-			&& (PROP_DEF == oDocument.m_oProperty.m_nAnsiCodePage || 0 == oDocument.m_oProperty.m_nAnsiCodePage))
+			&& (PROP_DEF == oDocument.m_oProperty.m_nAnsiCodePage || 0 == oDocument.m_oProperty.m_nAnsiCodePage || 1252 == oDocument.m_oProperty.m_nAnsiCodePage))
 		{
 			nCodepage = RtfUtility::CharsetToCodepage(oFont.m_nCharset);
 		}
@@ -386,7 +386,7 @@ std::wstring RtfAbstractReader::ExecuteTextInternalCodePage( std::string& sCharS
 	{
 		nCodepage = CP_ACP;
 	}
-	if (nCodepage == CP_ACP && oDocument.m_nUserLCID > 0)
+	if ((nCodepage == CP_ACP || nCodepage == 1252)&& oDocument.m_nUserLCID > 0)
 	{
 		nCodepage = oDocument.m_lcidConverter.get_codepage(oDocument.m_nUserLCID);
 	}

@@ -205,9 +205,9 @@ namespace PdfWriter
         CBinaryObject* pEncryptPerm = new CBinaryObject(m_pEncrypt->m_anPermEncrypt, 16);
         Add("Perms", pEncryptPerm);
     }
-    void CEncryptDict::UpdateKey(int nCryptAlgorithm)
+    bool CEncryptDict::UpdateKey(int nCryptAlgorithm)
     {
-        m_pEncrypt->MakeFileKey(nCryptAlgorithm);
+        return m_pEncrypt->MakeFileKey(nCryptAlgorithm);
     }
     //----------------------------------------------------------------------------------------
     // CSignatureDict

@@ -593,7 +593,7 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 			// Нужно получить словарь Encrypt БЕЗ дешифровки, поэтому времено отключаем encrypted в xref
 			xref->offEncrypted();
 
-			Object encrypt;
+			Object encrypt, ID, ID1;
 			if (pTrailerDict->dictLookup("Encrypt", &encrypt) && encrypt.isDict())
 			{
 				for (int nIndex = 0; nIndex < encrypt.dictGetLength(); ++nIndex)
@@ -604,16 +604,30 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 					DictToCDictObject(&oTemp, pEncryptDict, true, chKey);
 					oTemp.free();
 				}
-
-				pEncryptDict->SetRef(0, 0);
-				pEncryptDict->Fix();
 			}
+
+			if (!pEncryptDict->Get("Length"))
+				pEncryptDict->Add("Length", 40);
+
 			encrypt.free();
+
+			if (pTrailerDict->dictLookup("ID", &ID) && ID.isArray() && ID.arrayGet(0, &ID1) && ID1.isString())
+				DictToCDictObject(&ID1, pEncryptDict, true, "ID");
+			ID.free(); ID1.free();
 
 			xref->onEncrypted();
 
+			pEncryptDict->SetRef(0, 0);
+			pEncryptDict->Fix();
+
 			pEncryptDict->SetPasswords(m_pInternal->wsPassword, m_pInternal->wsPassword);
-			pEncryptDict->UpdateKey(nCryptAlgorithm);
+			if (!pEncryptDict->UpdateKey(nCryptAlgorithm))
+			{
+				pagesRefObj.free();
+				RELEASEOBJECT(pXref);
+				RELEASEOBJECT(pDRXref);
+				return false;
+			}
 		}
 	}
 

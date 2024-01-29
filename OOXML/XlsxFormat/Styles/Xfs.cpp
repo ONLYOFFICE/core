@@ -281,8 +281,12 @@ namespace OOX
 			auto ptr = static_cast<XLSB::XF*>(obj.get());
 			if(m_oHidden.IsInit())
 				ptr->fHidden = m_oHidden->GetValue();
+			else
+				ptr->fHidden = false;
 			if(m_oLocked.IsInit())
 				ptr->fLocked = m_oLocked->GetValue();
+			else
+				ptr->fLocked = true;
 		}
 		EElementType CProtection::getType () const
 		{
@@ -406,10 +410,9 @@ namespace OOX
 				ptr->alc = 0;
 				ptr->alcV = 2;
 			}
-			if(m_oProtection.IsInit())
-				m_oProtection->toBin(objectPtr);
-
-
+            if(!m_oProtection.IsInit())
+                m_oProtection.Init();
+			m_oProtection->toBin(objectPtr);
 			
 			if(m_oApplyAlignment.IsInit())
                 ptr->fAtrAlc = m_oApplyAlignment->GetValue();

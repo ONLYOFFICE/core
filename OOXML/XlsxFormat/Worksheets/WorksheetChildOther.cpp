@@ -1414,7 +1414,7 @@ namespace OOX
 				if (m_oShowZeros.IsInit())
 					pWsView->fDspZerosRt = m_oShowZeros->m_eValue;
 				else
-					pWsView->fDspZerosRt = false;
+					pWsView->fDspZerosRt = true;
 				if (m_oTabSelected.IsInit())
 					pWsView->fSelected = m_oTabSelected->m_eValue;
 				else
@@ -2595,54 +2595,88 @@ namespace OOX
 
 				if (m_oPassword.IsInit())
 					ptr->protpwd = std::stoul(m_oPassword.get());
+				else	
+					ptr->protpwd = 0;
 
 				if (m_oAutoFilter.IsInit())
 					ptr->fAutoFilter = m_oAutoFilter->GetValue();
+				else
+					ptr->fAutoFilter = false;
 
 				if (m_oDeleteColumns.IsInit())
 					ptr->fDeleteColumns = m_oDeleteColumns->GetValue();
+				else
+					ptr->fDeleteColumns= false;
 
 				if (m_oDeleteRows.IsInit())
 					ptr->fDeleteRows = m_oDeleteRows->GetValue();
+				else
+					ptr->fDeleteRows = false;
 
 				if (m_oFormatCells.IsInit())
 					ptr->fFormatCells = m_oFormatCells->GetValue();
+				else
+					ptr->fFormatCells = false;
 
 				if (m_oFormatColumns.IsInit())
 					ptr->fFormatColumns = m_oFormatColumns->GetValue();
+				else
+					ptr->fFormatColumns = false;
 
 				if (m_oFormatRows.IsInit())
 					ptr->fFormatRows = m_oFormatRows->GetValue();
+				else
+					ptr->fFormatRows = false;
 
 				if (m_oInsertColumns.IsInit())
 					ptr->fInsertColumns = m_oInsertColumns->GetValue();
+				else
+					ptr->fInsertColumns = false;
 
 				if (m_oInsertHyperlinks.IsInit())
 					ptr->fInsertHyperlinks = m_oInsertHyperlinks->GetValue();
+				else
+					ptr->fInsertHyperlinks = false;
 
 				if (m_oInsertRows.IsInit())
 					ptr->fInsertRows = m_oInsertRows->GetValue();
+				else
+					ptr->fInsertRows = false;
 
 				if (m_oObjects.IsInit())
 					ptr->fObjects = m_oObjects->GetValue();
+				else
+					ptr->fObjects = false;
 
 				if (m_oPivotTables.IsInit())
 					ptr->fPivotTables = m_oPivotTables->GetValue();
+				else
+					ptr->fPivotTables = false;
 
 				if (m_oScenarios.IsInit())
 					ptr->fScenarios = m_oScenarios->GetValue();
+				else
+					ptr->fScenarios = false;
 
 				if (m_oSelectLockedCells.IsInit())
 					ptr->fSelLockedCells = m_oSelectLockedCells->GetValue();
+				else
+					ptr->fSelLockedCells = true;
 
 				if (m_oSelectUnlockedCells.IsInit())
 					ptr->fSelUnlockedCells = m_oSelectUnlockedCells->GetValue();
+				else
+					ptr->fSelUnlockedCells = true;
 
 				if (m_oSheet.IsInit())
 					ptr->fLocked = m_oSheet->GetValue();
+				else
+					ptr->fLocked = false;
 
 				if (m_oSort.IsInit())
 					ptr->fSort = m_oSort->GetValue();
+				else
+					ptr->fSort = false;
 
 				return castedPtr;
 			}

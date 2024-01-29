@@ -185,15 +185,12 @@ public:
 
 	void save(CFRecord& record) override
 	{
-		RwType rwFirst;
-		RwType rwLast;
-		ColType colFirst;
-		ColType colLast;
+        RwType rwFirst = rowFirst;
+        RwType rwLast = rowLast;
+        ColType colFirst = 0;
+        ColType colLast = 0;
 		
 		auto version = record.getGlobalWorkbookInfo()->Version;
-		
-		rwFirst = rowFirst;
-		rwLast = rowLast;
 
 		if (version < 0x0800)
 		{

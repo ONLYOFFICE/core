@@ -301,7 +301,7 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             {
                 if(SyntaxPtg::extract_PtgArea(it, itEnd, operand_str))
                 {
-                    rgce.addPtg(found_operand = OperandPtgPtr(new PtgArea3d(ixti, operand_str, OperandPtg::ptg_VALUE, rgce.getLocation())));
+                    rgce.addPtg(found_operand = OperandPtgPtr(new PtgArea3d(ixti, operand_str, OperandPtg::ptg_REFERENCE, rgce.getLocation())));
                 }
                 else if(SyntaxPtg::extract_PtgRef(it, itEnd, operand_str))
                 {
@@ -340,7 +340,7 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
                 }
                 else
                 {
-                    found_operand = OperandPtgPtr(new PtgArea(operand_str, OperandPtg::ptg_VALUE));
+                    found_operand = OperandPtgPtr(new PtgArea(operand_str, OperandPtg::ptg_REFERENCE));
                 }
                 rgce.addPtg(found_operand);
             }

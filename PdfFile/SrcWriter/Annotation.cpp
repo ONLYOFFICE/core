@@ -121,9 +121,9 @@ namespace PdfWriter
 		pObj->Add("RD", pArray);
 
 		pArray->Add(dRD1);
-		pArray->Add(dRD2);
-		pArray->Add(dRD3);
 		pArray->Add(dRD4);
+		pArray->Add(dRD3);
+		pArray->Add(dRD2);
 	}
 	std::string GetColor(const std::vector<double>& arr, bool bCaps, double dDiff = 0)
 	{
@@ -1613,7 +1613,7 @@ namespace PdfWriter
 				(!m_arrOpt[i].first.empty() && m_arrOpt[i].first  == wsExportV))
 				return m_arrOpt[i].second;
 		}
-		return L"";
+		return wsExportV;
 	}
 	std::wstring CChoiceWidget::SetListBoxIndex(const std::vector<std::wstring>& arrV)
 	{

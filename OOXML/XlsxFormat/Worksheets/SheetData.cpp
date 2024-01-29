@@ -1799,7 +1799,7 @@ namespace OOX
 			{
 				m_oType.Init();
 				m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeStr);
-				if(m_oValue.IsInit() && !m_oFormula.IsInit())
+                if(m_oValue.IsInit())
 				{
 					if(m_oValue->m_sText == L"TRUE" || m_oValue->m_sText == L"FALSE")
 						m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeBool);
@@ -1869,23 +1869,46 @@ namespace OOX
 					{
 						if(!isReal)
 						{
-							auto pCellRk = new(XLSB::CellRk);
-							pCellRk->value.fInt = 1;
-							pCellRk->value.fX100 = 0;
-							pCellRk->value.num = intCache;
+							if(!m_oFormula.IsInit())
+							{
+								auto pCellRk = new(XLSB::CellRk);
+								pCellRk->value.fInt = 1;
+								pCellRk->value.fX100 = 0;
+								pCellRk->value.num = intCache;
+								oCell = &pCellRk->cell;
+								pSource = pCellRk;
+							}
+							else
+							{
+								auto pCellRk = new(XLSB::FmlaNum);
+							
+								pCellRk->value.data.value = intCache;
+								oCell = &pCellRk->cell;
+								pSource = pCellRk;
+							}
 							
 							
-							oCell = &pCellRk->cell;
-							pSource = pCellRk;
+							
 						}
 						else if(isReal)
 						{
+							if(!m_oFormula.IsInit())
+							{
 							auto pCellReal = new(XLSB::CellReal);
 							
 							pCellReal->value.data.value = realCache;
 							
 							oCell = &pCellReal->cell;
 							pSource = pCellReal;
+							}
+							else
+							{
+								auto pCellRk = new(XLSB::FmlaNum);
+							
+								pCellRk->value.data.value = realCache;
+								oCell = &pCellRk->cell;
+								pSource = pCellRk;
+							}
 						}
 					}
 					break;

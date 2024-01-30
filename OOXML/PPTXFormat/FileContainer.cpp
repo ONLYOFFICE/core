@@ -230,7 +230,7 @@ namespace PPTX
 	{
 		std::map<std::wstring, size_t> mNamePair;
        
-        for (boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mapContainer.begin(); pPair != m_mapContainer.end(); ++pPair)
+        for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mapContainer.begin(); pPair != m_mapContainer.end(); ++pPair)
 		{
 			smart_ptr<OOX::File>		pFile = pPair->second;
 

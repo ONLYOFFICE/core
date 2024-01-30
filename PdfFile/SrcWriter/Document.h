@@ -70,6 +70,7 @@ namespace PdfWriter
 	class CDestination;
 	class CExtGrState;
 	class CAnnotation;
+	class CAction;
 	class CImageDict;
 	class CFontDict;
 	class CFont14;
@@ -89,6 +90,8 @@ namespace PdfWriter
 	class CSignatureField;
 	class CDateTimeField;
 	class CFieldBase;
+	class CStreamData;
+	class CXObject;
 	//----------------------------------------------------------------------------------------
 	// CDocument
 	//----------------------------------------------------------------------------------------
@@ -101,7 +104,8 @@ namespace PdfWriter
 
 		bool              CreateNew();
 		void              Close();
-		bool              SaveToFile(const std::wstring& wsPath, bool bAdd = true);
+		bool              SaveToFile(const std::wstring& wsPath);
+		bool              SaveNewWithPassword(CXref* pXref, CXref* _pXref, const std::wstring& wsPath, const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword, CDictObject* pTrailer);
 			              
         void              SetPasswords(const std::wstring & wsOwnerPassword, const std::wstring & wsUserPassword);
 		void              SetPermission(unsigned int unPermission);
@@ -123,7 +127,8 @@ namespace PdfWriter
 		void              AddPageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
 		void              AddPageLabel(unsigned int unPageIndex, EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
 		COutline*         CreateOutline(COutline* pParent, const char* sTitle);
-		CDestination*     CreateDestination(unsigned int unPageIndex);
+		CDestination*     CreateDestination(CPage* pPage);
+		bool              AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength);
 					      
 		CExtGrState*      GetExtGState(double dAlphaStroke = -1, double dAlphaFill = -1, EBlendMode eMode = blendmode_Unknown, int nStrokeAdjustment = -1);
 		CExtGrState*      GetStrokeAlpha(double dAlpha);
@@ -142,13 +147,16 @@ namespace PdfWriter
 		CAnnotation*      CreateFreeTextAnnot();
 		CAnnotation*      CreateCaretAnnot();
 		CAnnotation*      CreateWidgetAnnot();
-		CAnnotation*      CreateButtonWidget();
+		CAnnotation*      CreatePushButtonWidget();
+		CAnnotation*      CreateCheckBoxWidget();
 		CAnnotation*      CreateTextWidget();
 		CAnnotation*      CreateChoiceWidget();
 		CAnnotation*      CreateSignatureWidget();
 		void              AddAnnotation(const int& nID, CAnnotation* pAnnot);
+		CAction*          CreateAction(BYTE nType);
 					      
 		CImageDict*       CreateImage();
+		CXObject*         CreateForm(CImageDict* pImage, const std::string& sName);
 		CFont14*          CreateFont14(EStandard14Fonts eType);
 		CFontCidTrueType* CreateCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
 		CFontCidTrueType* FindCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
@@ -173,6 +181,7 @@ namespace PdfWriter
 					  
 		bool              CreatePageTree(CXref* pXref, CPageTree* pPageTree);
 		bool              EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, CXref* pXref, CCatalog* pCatalog, CEncryptDict* pEncrypt, int nFormField);
+		bool              EditResources(CXref* pXref, CResourcesDict* pResources);
 		std::pair<int, int> GetPageRef(int nPageIndex);
 		bool              EditPage(CXref* pXref, CPage* pPage, int nPageIndex);
 		CPage*            AddPage(int nPageIndex);
@@ -184,8 +193,11 @@ namespace PdfWriter
 		bool              EditParent(CXref* pXref, CDictObject* pParent, int nID);
 		bool              DeleteAnnot(int nObjNum, int nObjGen);
 		CAnnotation*      GetAnnot(int nID);
+		CDictObject*      GetParent(int nID);
 		CPage*            GetCurPage() { return m_pCurPage; }
 		void              SetCurPage(CPage* pPage) { m_pCurPage = pPage; }
+		bool              EditCO(const std::vector<int>& arrCO);
+		const std::map<int, CAnnotation*>& GetAnnots() { return m_mAnnotations; }
 	private:		  
 					  
 		char*             GetTTFontTag();
@@ -244,6 +256,7 @@ namespace PdfWriter
 		CInfoDict*                         m_pInfo;
 		CDictObject*                       m_pTrailer;
 		CDictObject*                       m_pResources;
+		CStreamData*                       m_pMetaData;
 		bool                               m_bEncrypt;
 		CEncryptDict*                      m_pEncryptDict;
 		std::vector<TSignatureInfo>        m_vSignatures;

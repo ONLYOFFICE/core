@@ -86,9 +86,10 @@
 
 #include "../../../BgraFrame.h"
 
+#define MAX_PICTURE_SIZE 2000.
+
 namespace MetaFile
-{
-	static std::map<unsigned short, std::wstring> ActionNamesEmfPlus =
+{	static std::map<unsigned short, std::wstring> ActionNamesEmfPlus =
 	{
 		{0x4035, L"EMRPLUS_OFFSETCLIP"},
 		{0x4031, L"EMRPLUS_RESETCLIP"},
@@ -918,6 +919,9 @@ namespace MetaFile
 
 		m_oStream >> unLength;
 
+		if (unLength > 15) // 30 байта / 2 (размер ushort) = 15 символов максимальная длина имени Unicode шрифта
+			unLength = 15;
+
 		unsigned short* pString = new unsigned short[unLength + 1];
 		if (pString)
 		{
@@ -1410,11 +1414,10 @@ namespace MetaFile
 		{
 			for (ULONG ulPosX = nBeginX * 4; ulPosX < nEndX * 4; ulPosX += 4)
 			{
-				pNewBuffer[ulPos + 0]   = (BYTE)pBuffer[ulPosY * lWidth + ulPosX + 0];
-				pNewBuffer[ulPos + 1]   = (BYTE)pBuffer[ulPosY * lWidth + ulPosX + 1];
-				pNewBuffer[ulPos + 2]   = (BYTE)pBuffer[ulPosY * lWidth + ulPosX + 2];
-				pNewBuffer[ulPos + 3]   = (BYTE)pBuffer[ulPosY * lWidth + ulPosX + 3];
-				ulPos += 4;
+				pNewBuffer[ulPos++]   = (BYTE)pBuffer[ulPosY * lWidth + ulPosX + 0];
+				pNewBuffer[ulPos++]   = (BYTE)pBuffer[ulPosY * lWidth + ulPosX + 1];
+				pNewBuffer[ulPos++]   = (BYTE)pBuffer[ulPosY * lWidth + ulPosX + 2];
+				pNewBuffer[ulPos++]   = (BYTE)pBuffer[ulPosY * lWidth + ulPosX + 3];
 			}
 		}
 
@@ -1481,245 +1484,147 @@ namespace MetaFile
 		}
 		else if (ImageDataTypeMetafile == pImage->GetImageDataType())
 		{
-			DrawMetafile(pBuffer, unSizeBuffer, oSrcRect, arPoints, pImage->GetMetafileType(), unImageAttributeIndex);
+			switch ((int)pImage->GetMetafileType())
+			{
+				case MetafileDataTypeEmf:
+				case MetafileDataTypeEmfPlusOnly:
+				case MetafileDataTypeEmfPlusDual:
+					return DrawMetafile<CEmfParser>(pBuffer, unSizeBuffer, oSrcRect, arPoints);
+				case MetafileDataTypeWmf:
+				case MetafileDataTypeWmfPlaceable:
+					return DrawMetafile<CWmfParser>(pBuffer, unSizeBuffer, oSrcRect, arPoints);
+			}
 		}
-}
+	}
 
-	void CEmfPlusParser::DrawMetafile(BYTE *pBuffer, unsigned int unSize, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints, EEmfPlusMetafileDataType eMetafileType, unsigned int unImageAttributeIndex)
+	template<typename MetafileType>
+	void CEmfPlusParser::DrawMetafile(BYTE *pBuffer, unsigned int unSize, const TEmfPlusRectF &oSrcRect, const std::vector<TEmfPlusPointF> &arPoints)
 	{
-		if (NULL == pBuffer || 0 == unSize || MetafileDataTypeUnknown == eMetafileType)
+		if (NULL == pBuffer || 0 == unSize || 3 != arPoints.size())
 			return;
 
-		if (MetafileDataTypeEmf == eMetafileType ||
-		    MetafileDataTypeEmfPlusOnly == eMetafileType ||
-		    MetafileDataTypeEmfPlusDual == eMetafileType)
+		MetafileType oParser;
+		oParser.SetStream(pBuffer, unSize);
+		oParser.SetFontManager(GetFontManager());
+		oParser.Scan();
+
+		if (oParser.CheckError())
+			return;
+
+		const TRectL* pFileBounds = oParser.GetDCBounds();
+		const double dFileWidth  = std::abs(pFileBounds->Right  - pFileBounds->Left);
+		const double dFileHeight = std::abs(pFileBounds->Bottom - pFileBounds->Top);
+
+		const TRectL* pParentBounds = GetDCBounds();
+		const double dParentWidth   = std::abs(pParentBounds->Right  - pParentBounds->Left);
+		const double dParentHeight  = std::abs(pParentBounds->Bottom - pParentBounds->Top);
+
+		if (InterpretatorType::Render == m_pInterpretator->GetType())
 		{
-			CEmfParser oEmfParser;
-			oEmfParser.SetStream(pBuffer, unSize);
-			oEmfParser.SetFontManager(GetFontManager());
-			oEmfParser.Scan();
+			NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
 
-			if (!oEmfParser.CheckError() && InterpretatorType::Render == m_pInterpretator->GetType())
-			{
-				NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
+			pGrRenderer->SetFontManager(GetFontManager());
 
-				pGrRenderer->SetFontManager(GetFontManager());
+			double dScale = ((CEmfInterpretatorRender*)m_pInterpretator)->GetRenderer()->GetWidth() * 96. / 25.4 / dParentWidth;
 
-				TRectL *pEmfBounds = oEmfParser.GetBounds();
+			const double dMaxWidth  = std::max(MAX_PICTURE_SIZE, dParentWidth);
+			const double dMaxHeight = std::max(MAX_PICTURE_SIZE, dParentHeight); 
 
-				int nWidth = fabs(pEmfBounds->Right - pEmfBounds->Left);
-				int nHeight = fabs(pEmfBounds->Bottom - pEmfBounds->Top);
+			if (dFileWidth > dMaxWidth || dFileHeight > dMaxHeight)
+				dScale *= std::min(dMaxWidth / dFileWidth, dMaxHeight / dFileHeight);
 
-				double dWidth  = 25.4 * nWidth / 72;
-				double dHeight = 25.4 * nHeight / 72;
+			const int nWidth  = dFileWidth  * dScale;
+			const int nHeight = dFileHeight * dScale;
 
-				BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+			BYTE* pBgraData = new(std::nothrow) BYTE[nWidth * nHeight * 4];
 
-				if (!pBgraData)
-					return;
+			if (!pBgraData)
+				return;
 
-				unsigned int alfa = 0xffffff;
-				//дефолтный тон должен быть прозрачным, а не белым
-				//memset(pBgraData, 0xff, nWidth * nHeight * 4);
-				for (int i = 0; i < nWidth * nHeight; i++)
-				{
-					((unsigned int*)pBgraData)[i] = alfa;
-				}
+			unsigned int alfa = 0xffffff;
+			//дефолтный тон должен быть прозрачным, а не белым
+			//memset(pBgraData, 0x00, nWidth * nHeight * 4);
+			for (int i = 0; i < nWidth * nHeight; i++)
+				((unsigned int*)pBgraData)[i] = alfa;
 
-				CBgraFrame oFrame;
-				oFrame.put_Data(pBgraData);
-				oFrame.put_Width(nWidth);
-				oFrame.put_Height(nHeight);
-				oFrame.put_Stride(-4 * nWidth);
+			const double dWidth  = nWidth  * 25.4 / 96;
+			const double dHeight = nHeight * 25.4 / 96;
 
-				pGrRenderer->CreateFromBgraFrame(&oFrame);
-				pGrRenderer->SetSwapRGB(false);
-				pGrRenderer->put_Width(dWidth);
-				pGrRenderer->put_Height(dHeight);
+			CBgraFrame oFrame;
+			oFrame.put_Data(pBgraData);
+			oFrame.put_Width(nWidth);
+			oFrame.put_Height(nHeight);
+			oFrame.put_Stride(4 * nWidth);
 
-				pGrRenderer->BeginCommand(c_nImageType);
+			pGrRenderer->CreateFromBgraFrame(&oFrame);
+			pGrRenderer->SetSwapRGB(false);
+			pGrRenderer->put_Width(dWidth);
+			pGrRenderer->put_Height(dHeight);
 
-				CMetaFileRenderer oEmfOut(&oEmfParser, pGrRenderer, 0, 0, dWidth, dHeight);
-				oEmfParser.SetInterpretator(&oEmfOut);
+			pGrRenderer->BeginCommand(c_nImageType);
 
-				oEmfParser.PlayFile();
+			CMetaFileRenderer oEmfOut(&oParser, pGrRenderer, 0, 0, dWidth, dHeight);
+			oParser.SetInterpretator(&oEmfOut);
 
-				pGrRenderer->EndCommand(c_nImageType);
+			oParser.PlayFile();
 
-				LONG lWidth = nWidth, lHeight = nHeight;
+			pGrRenderer->EndCommand(c_nImageType);
 
-				BYTE* pPixels = oFrame.get_Data();
+			BYTE* pPixels = oFrame.get_Data();
 
-				FlipYImage(pPixels, lWidth, lHeight); //Проверить на примерах, где WrapMode != WrapModeTileFlipXY
+			TRectL oClipRect;
 
-				TRectL oClipRect;
+			oClipRect.Left   = oSrcRect.dX * dScale;
+			oClipRect.Top    = oSrcRect.dY * dScale;
+			oClipRect.Right  = (oSrcRect.dX + oSrcRect.dWidth)  * dScale;
+			oClipRect.Bottom = (oSrcRect.dY + oSrcRect.dHeight) * dScale;
 
-				oClipRect.Left   = oSrcRect.dX;
-				oClipRect.Top    = oSrcRect.dY;
-				oClipRect.Right  = oSrcRect.dX + oSrcRect.dWidth;
-				oClipRect.Bottom = oSrcRect.dY + oSrcRect.dHeight;
+			BYTE* pNewBuffer = GetClipedImage(pPixels, nWidth, nHeight, oClipRect);
 
-				BYTE* pNewBuffer = GetClipedImage(pPixels, lWidth, lHeight, oClipRect);
+			const unsigned int unWidth  = std::min(((unsigned int)fabs(oClipRect.Right - oClipRect.Left)), ((unsigned int)nWidth ));
+			const unsigned int unHeight = std::min(((unsigned int)fabs(oClipRect.Bottom - oClipRect.Top)), ((unsigned int)nHeight));
 
-				unsigned int unWidth  = std::min(((unsigned int)fabs(oClipRect.Right - oClipRect.Left)), ((unsigned int)lWidth ));
-				unsigned int unHeight = std::min(((unsigned int)fabs(oClipRect.Bottom - oClipRect.Top)), ((unsigned int)lHeight));
+			m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X - m_pDC->GetPixelWidth(), arPoints[2].Y - arPoints[0].Y - m_pDC->GetPixelHeight(),
+			                             (NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
 
-				m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X - m_pDC->GetPixelWidth(), arPoints[2].Y - arPoints[0].Y - m_pDC->GetPixelHeight(),
-				                             (NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
-
-				RELEASEINTERFACE(pGrRenderer);
-				RELEASEARRAYOBJECTS(pNewBuffer);
-			}
-			else if (!oEmfParser.CheckError() && InterpretatorType::Svg == m_pInterpretator->GetType())
-			{
-				((CEmfParserBase*)&oEmfParser)->SetInterpretator(InterpretatorType::Svg);
-
-				oEmfParser.PlayFile();
-
-				TXForm *pXForm = m_pDC->GetTransform();
-
-				TRectD oRect;
-
-				oRect.Left   = arPoints[0].X;
-				oRect.Top    = arPoints[0].Y;
-				oRect.Right  = arPoints[1].X - m_pDC->GetPixelWidth();
-				oRect.Bottom = arPoints[2].Y - m_pDC->GetPixelHeight();
-
-				TRectD oTempSrcRect;
-
-				TRectL *pEmfBounds = oEmfParser.GetBounds();
-
-				oTempSrcRect = oSrcRect.ToRectD();
-				oTempSrcRect.Left   -= pEmfBounds->Left;
-				oTempSrcRect.Right  -= pEmfBounds->Left + GetPixelWidth();
-				oTempSrcRect.Top    -= pEmfBounds->Top;
-				oTempSrcRect.Bottom -= pEmfBounds->Top  + GetPixelHeight();
-
-				TXForm oTransform;
-
-				oTransform.Copy(pXForm);
-
-				oTransform.Dx -= m_oHeader.oFramePx.Left;
-				oTransform.Dy -= m_oHeader.oFramePx.Top;
-
-				((CEmfInterpretatorSvg*)m_pInterpretator)->IncludeSvg(((CEmfInterpretatorSvg*)oEmfParser.GetInterpretator())->GetFile(), oRect, oTempSrcRect, &oTransform);
-			}
-
+			RELEASEINTERFACE(pGrRenderer);
+			RELEASEARRAYOBJECTS(pNewBuffer);
 		}
-		else if (MetafileDataTypeWmf == eMetafileType ||
-				 MetafileDataTypeWmfPlaceable ==  eMetafileType)
+		else if (InterpretatorType::Svg == m_pInterpretator->GetType())
 		{
-			CWmfParser oWmfParser;
-			oWmfParser.SetStream(pBuffer, unSize);
-			oWmfParser.SetFontManager(GetFontManager());
-			oWmfParser.Scan();
+			((MetafileType*)&oParser)->SetInterpretator(InterpretatorType::Svg);
 
-			if (!oWmfParser.CheckError() && InterpretatorType::Render == m_pInterpretator->GetType())
-			{
-				NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
-				pGrRenderer->SetFontManager(GetFontManager());
+			oParser.PlayFile();
 
-				TRectD oWmfBounds = oWmfParser.GetBounds();
+			TXForm *pXForm = m_pDC->GetTransform();
 
-				int nWidth = fabs(oWmfBounds.Right - oWmfBounds.Left);
-				int nHeight = fabs(oWmfBounds.Bottom - oWmfBounds.Top);
+			TRectD oRect;
 
-				double dWidth  = 25.4 * nWidth / 72;
-				double dHeight = 25.4 * nHeight / 72;
+			oRect.Left   = arPoints[0].X;
+			oRect.Top    = arPoints[0].Y;
+			oRect.Right  = arPoints[1].X - m_pDC->GetPixelWidth();
+			oRect.Bottom = arPoints[2].Y - m_pDC->GetPixelHeight();
 
-				BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+			TRectD oTempSrcRect;
 
-				if (!pBgraData)
-					return;
+			oTempSrcRect.Left   = oSrcRect.dX - pFileBounds->Left;
+			oTempSrcRect.Top    = oSrcRect.dY - pFileBounds->Top;
+			oTempSrcRect.Right  = oTempSrcRect.Left + ((dFileWidth  > oSrcRect.dWidth)  ? oSrcRect.dWidth  - GetPixelWidth()  : dFileWidth);
+			oTempSrcRect.Bottom = oTempSrcRect.Top  + ((dFileHeight > oSrcRect.dHeight) ? oSrcRect.dHeight - GetPixelHeight() : dFileHeight);
 
-				unsigned int alfa = 0xffffff;
-				//дефолтный тон должен быть прозрачным, а не белым
-				//memset(pBgraData, 0xff, nWidth * nHeight * 4);
-				for (int i = 0; i < nWidth * nHeight; i++)
-				{
-					((unsigned int*)pBgraData)[i] = alfa;
-				}
+			TXForm oTransform;
 
-				CBgraFrame oFrame;
-				oFrame.put_Data(pBgraData);
-				oFrame.put_Width(nWidth);
-				oFrame.put_Height(nHeight);
-				oFrame.put_Stride(-4 * nWidth);
+			oTransform.Copy(pXForm);
 
-				pGrRenderer->CreateFromBgraFrame(&oFrame);
-				pGrRenderer->SetSwapRGB(false);
-				pGrRenderer->put_Width(dWidth);
-				pGrRenderer->put_Height(dHeight);
+			oTransform.Dx -= m_oHeader.oFramePx.Left;
+			oTransform.Dy -= m_oHeader.oFramePx.Top;
 
-				pGrRenderer->BeginCommand(c_nImageType);
+			CInterpretatorSvgBase* pParserSvgInterpretator = dynamic_cast<CInterpretatorSvgBase*>(oParser.GetInterpretator());
+			CInterpretatorSvgBase *pSvgInterpretator = dynamic_cast<CInterpretatorSvgBase*>(m_pInterpretator);
 
-				CMetaFileRenderer oWmfOut(&oWmfParser, pGrRenderer, 0, 0, dWidth, dHeight);
-				oWmfParser.SetInterpretator(&oWmfOut);
-				oWmfParser.PlayFile();
-
-				pGrRenderer->EndCommand(c_nImageType);
-
-				LONG lWidth = nWidth, lHeight = nHeight;
-
-				BYTE* pPixels = oFrame.get_Data();
-
-				FlipYImage(pPixels, lWidth, lHeight); //Проверить на примерах, где WrapMode != WrapModeTileFlipXY
-
-				TRectL oClipRect;
-
-				oClipRect.Left   = oSrcRect.dX;
-				oClipRect.Top    = oSrcRect.dY;
-				oClipRect.Right  = oSrcRect.dX + oSrcRect.dWidth;
-				oClipRect.Bottom = oSrcRect.dY + oSrcRect.dHeight;
-
-				BYTE* pNewBuffer = GetClipedImage(pPixels, lWidth, lHeight, oClipRect);
-
-				unsigned int unWidth  = std::min(((unsigned int)fabs(oClipRect.Right - oClipRect.Left)), ((unsigned int)lWidth ));
-				unsigned int unHeight = std::min(((unsigned int)fabs(oClipRect.Bottom - oClipRect.Top)), ((unsigned int)lHeight));
-
-				m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X - m_pDC->GetPixelWidth(), arPoints[2].Y - arPoints[0].Y - m_pDC->GetPixelHeight(),
-				                             (NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
-
-				RELEASEINTERFACE(pGrRenderer);
-				RELEASEARRAYOBJECTS(pNewBuffer);
-			}
-			else if (!oWmfParser.CheckError() && InterpretatorType::Svg == m_pInterpretator->GetType())
-			{
-				((CWmfParserBase*)&oWmfParser)->SetInterpretator(InterpretatorType::Svg);
-
-				oWmfParser.PlayFile();
-
-				TXForm *pXForm = m_pDC->GetFinalTransform(GM_ADVANCED);
-
-				TRectD oRect;
-
-				oRect.Left   = arPoints[0].X;
-				oRect.Top    = arPoints[0].Y;
-				oRect.Right  = arPoints[1].X - m_pDC->GetPixelWidth();
-				oRect.Bottom = arPoints[2].Y - m_pDC->GetPixelHeight();
-
-				TRectD oTempSrcRect = oSrcRect.ToRectD();
-
-				CEmfPlusImageAttributes *pImageAttributes = GetImageAttributes(unImageAttributeIndex);
-
-				if (NULL != pImageAttributes && WrapModeTileFlipY != pImageAttributes->eWrapMode && WrapModeTileFlipXY != pImageAttributes->eWrapMode)
-				{
-					double dTempValue    = oTempSrcRect.Bottom;
-					oTempSrcRect.Bottom = oTempSrcRect.Top;
-					oTempSrcRect.Top    = dTempValue;
-				}
-
-				TXForm oTransform;
-
-				oTransform.Copy(pXForm);
-
-				oTransform.Dx -= m_oHeader.oFramePx.Left;
-				oTransform.Dy -= m_oHeader.oFramePx.Top;
-
-				((CWmfInterpretatorSvg*)m_pInterpretator)->IncludeSvg(((CWmfInterpretatorSvg*)oWmfParser.GetInterpretator())->GetFile(), oRect, oTempSrcRect, &oTransform);
-			}
+			if (NULL != pParserSvgInterpretator && NULL != pSvgInterpretator)
+				pSvgInterpretator->IncludeSvg(pParserSvgInterpretator->GetFile(), oRect, oTempSrcRect, &oTransform);
 		}
-		//TODO: общую часть в идеале нужно вынести
 	}
 
 	void CEmfPlusParser::DrawBitmap(BYTE *pBuffer, unsigned int unSize, unsigned int unWidth, unsigned int unHeight, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints)
@@ -2443,6 +2348,9 @@ namespace MetaFile
 
 		if (0 == unLength)
 			return;
+
+		if (2 * unLength > m_ulRecordSize - 28) // 28 = 4*3 + 4*4
+			unLength = m_ulRecordSize - 28;
 
 		m_oStream >> oRect;
 

@@ -80,7 +80,8 @@ namespace PdfWriter
 		dict_type_EXT_GSTATE   = 0x0A,
 		dict_type_EXT_GSTATE_R = 0x0B,  /* read only object */
 		dict_type_METADATA     = 0x0C,
-		dict_type_SIGNATURE    = 0x0D
+		dict_type_SIGNATURE    = 0x0D,
+		dict_type_STREAM       = 0x0E
 	} EDictType;
 
 	class CObjectBase
@@ -467,25 +468,25 @@ namespace PdfWriter
 		{
 			m_unFilter = unFiler;
 		}
-		void         SetStream(CXref* pXref, CStream* pStream);
+		void         SetStream(CXref* pXref, CStream* pStream, bool bThis = true);
 
 		virtual void      BeforeWrite(){}
 		virtual void      Write(CStream* pStream){}
-		virtual void      AfterWrite(){}
+		virtual void      AfterWrite(CStream* pStream){}
 		virtual CObjectBase* Copy(CObjectBase* pOut = NULL) const;
 		virtual EDictType GetDictType() const
 		{
 			return dict_type_UNKNOWN;
 		}
 
-		void WriteToStream(CStream* pStream, CEncrypt* pEncrypt);
-		void WriteSignatureToStream(CStream* pStream, CEncrypt* pEncrypt);
+		virtual void WriteToStream(CStream* pStream, CEncrypt* pEncrypt);
 		unsigned int GetSize() { return m_mList.size(); }
 		void FromXml(const std::wstring& sXml);
 
-	private:
-
+	protected:
 		std::map<std::string, CObjectBase*> m_mList;
+
+	private:
 		unsigned int                        m_unFilter;
 		unsigned int                        m_unPredictor;
 		CStream*                            m_pStream;

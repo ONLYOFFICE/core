@@ -3,8 +3,8 @@
 
 namespace SVG
 {
-	CUse::CUse(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent, const CSvgFile* pFile)
-	: CRenderedObject(oNode, pParent), m_pFile(pFile)
+	CUse::CUse(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent)
+		: CRenderedObject(oNode, pParent)
 	{
 		m_wsHref = oNode.GetAttribute(L"href", oNode.GetAttribute(L"xlink:href"));
 
@@ -43,7 +43,7 @@ namespace SVG
 
 		pRenderer->SetTransform(oNewTransform.sx(), oNewTransform.shy(), oNewTransform.shx(), oNewTransform.sy(), oNewTransform.tx(), oNewTransform.ty());
 
-		const CRenderedObject *pFoundObj = dynamic_cast<CRenderedObject*>(m_pFile->GetMarkedObject(m_wsHref));
+		const CRenderedObject *pFoundObj = dynamic_cast<CRenderedObject*>(pFile->GetMarkedObject(m_wsHref));
 
 		if (NULL != pFoundObj)
 		{

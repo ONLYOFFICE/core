@@ -5,6 +5,7 @@
 #include "../../../../../Common/3dParty/html/css/src/StaticFunctions.h"
 #include "../../../../xml/include/xmlutils.h"
 #include "../../../../graphics/IRenderer.h"
+#include "../../../common/IGrObject.h"
 #include "../SvgTypes.h"
 
 class CSvgFile;
@@ -15,6 +16,7 @@ namespace SVG
 	{
 		SvgColor     m_oFill;
 		TStroke      m_oStroke;
+		SvgDigit     m_oOpacity;
 
 		TSvgStyles& operator+=(const TSvgStyles& oSvgStyles);
 	};
@@ -24,6 +26,7 @@ namespace SVG
 		SvgTransform m_oTransform;
 		TClip        m_oClip;
 		SvgColor     m_oMask;
+		SvgDigit     m_oOpacity;
 		bool         m_bDraw;
 	};
 
@@ -33,7 +36,7 @@ namespace SVG
 		AppliedObject
 	};
 
-	class CObject
+	class CObject : public IGrObject
 	{
 	public:
 		CObject(const NSCSS::CNode& oData);
@@ -49,7 +52,8 @@ namespace SVG
 		void SetTransform(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetClip(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetMask(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
-		void SetDisplay(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);		
+		void SetDisplay(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
+		void SetOpacity(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		
 		std::wstring GetId() const;
 		virtual std::vector<NSCSS::CNode> GetFullPath() const;
@@ -58,9 +62,11 @@ namespace SVG
 		bool ApplyTransform(IRenderer* pRenderer, const SvgTransform* pTransform, Aggplus::CMatrix& oOldMatrix) const;
 		bool ApplyClip(IRenderer* pRenderer, const TClip* pClip, const CSvgFile *pFile, const TBounds& oBounds) const;
 		bool ApplyMask(IRenderer* pRenderer, const SvgColor* pMask, const CSvgFile *pFile, const TBounds& oBounds) const;
-		
+
 		bool ApplyDef(IRenderer* pRenderer, const CSvgFile *pFile, const std::wstring& wsUrl, const TBounds& oBounds) const;
-		
+
+		void SetNodeData(XmlUtils::CXmlNode& oNode);
+
 		friend class CRenderedObject;
 		friend class CAppliedObject;
 
@@ -75,6 +81,7 @@ namespace SVG
 		friend class CPolygon;
 		friend class CEllipse;
 		friend class CPolyline;
+		friend class CGraphicsContainer;
 
 		friend class CClipPath;
 
@@ -118,6 +125,7 @@ namespace SVG
 
 		bool ApplyStroke(IRenderer* pRenderer, const TStroke* pStroke, bool bUseDefault = false) const;
 		bool ApplyFill(IRenderer* pRenderer, const SvgColor* pFill, const CSvgFile *pFile, bool bUseDefault = false) const;
+		bool ApplyOpacity(IRenderer* pRenderer, const SvgDigit* pOpacity) const;
 
 		friend class CUse;
 		friend class CLine;

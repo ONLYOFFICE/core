@@ -59,6 +59,7 @@
 #include "../../Reader/Converter/oox_title.cpp"
 #include "../../Reader/Converter/oox_types_chart.cpp"
 #include "../../Reader/Converter/oox_rels.cpp"
+#include "../../Reader/Converter/pptx_animation_context.cpp"
 #include "../../Reader/Converter/pptx_comments.cpp"
 #include "../../Reader/Converter/pptx_comments_context.cpp"
 #include "../../Reader/Converter/pptx_conversion_context.cpp"

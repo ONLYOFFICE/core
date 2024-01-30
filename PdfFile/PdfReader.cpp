@@ -41,6 +41,7 @@
 
 #include "SrcReader/Adaptors.h"
 #include "SrcReader/PdfAnnot.h"
+#include "Resources/BaseFonts.h"
 
 #include "lib/xpdf/PDFDoc.h"
 #include "lib/xpdf/PDFCore.h"
@@ -411,6 +412,7 @@ bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* dat
 void CPdfReader::Close()
 {
 	RELEASEOBJECT(m_pPDFDocument);
+	m_mFonts.clear();
 }
 
 int CPdfReader::GetError()
@@ -681,6 +683,13 @@ obj1.free();
 
 	return sRes;
 }
+std::wstring CPdfReader::GetFontPath(const std::wstring& wsFontName)
+{
+	std::map<std::wstring, std::wstring>::const_iterator oIter = m_mFonts.find(wsFontName);
+	if (oIter != m_mFonts.end())
+		return oIter->second;
+	return L"";
+}
 void getBookmars(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)
 {
 	int nLengthTitle = pOutlineItem->getTitleLength();
@@ -767,59 +776,89 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 
 	nPageIndex++;
 
+	Page* pPage = m_pPDFDocument->getCatalog()->getPage(nPageIndex);
+	if (!pPage)
+		return NULL;
+
 	NSWasm::CPageLink oLinks;
-	double height = m_pPDFDocument->getPageCropHeight(nPageIndex);
 
 	// Гиперссылка
 	Links* pLinks = m_pPDFDocument->getLinks(nPageIndex);
-	if (!pLinks)
-		return NULL;
-
-	int num = pLinks->getNumLinks();
-	for (int i = 0; i < num; i++)
+	if (pLinks)
 	{
-		Link* pLink = pLinks->getLink(i);
-		if (!pLink)
-			continue;
+		PDFRectangle* cropBox = pPage->getCropBox();
 
-		GString* str = NULL;
-		double x1 = 0.0, y1 = 0.0, x2 = 0.0, y2 = 0.0, dy = 0.0;
-		pLink->getRect(&x1, &y1, &x2, &y2);
-		y1 = height - y1;
-		y2 = height - y2;
-
-		LinkAction* pLinkAction = pLink->getAction();
-		if (!pLinkAction)
-			continue;
-		LinkActionKind kind = pLinkAction->getKind();
-		if (kind == actionGoTo)
+		int num = pLinks->getNumLinks();
+		for (int i = 0; i < num; i++)
 		{
-			str = ((LinkGoTo*)pLinkAction)->getNamedDest();
-			LinkDest* pLinkDest = str ? m_pPDFDocument->findDest(str) : ((LinkGoTo*)pLinkAction)->getDest()->copy();
-			if (pLinkDest)
+			Link* pLink = pLinks->getLink(i);
+			if (!pLink)
+				continue;
+
+			GString* str = NULL;
+			double x1 = 0.0, y1 = 0.0, x2 = 0.0, y2 = 0.0, dy = 0.0;
+			pLink->getRect(&x1, &y1, &x2, &y2);
+			x1 = x1 - cropBox->x1;
+			y1 = cropBox->y2 - y1;
+			x2 = x2 - cropBox->x1;
+			y2 = cropBox->y2 - y2;
+
+			LinkAction* pLinkAction = pLink->getAction();
+			if (!pLinkAction)
+				continue;
+			LinkActionKind kind = pLinkAction->getKind();
+			if (kind == actionGoTo)
 			{
-				int pg;
-				if (pLinkDest->isPageRef())
+				str = ((LinkGoTo*)pLinkAction)->getNamedDest();
+				LinkDest* pLinkDest = str ? m_pPDFDocument->findDest(str) : ((LinkGoTo*)pLinkAction)->getDest()->copy();
+				if (pLinkDest)
 				{
-					Ref pageRef = pLinkDest->getPageRef();
-					pg = m_pPDFDocument->findPage(pageRef.num, pageRef.gen);
+					int pg;
+					if (pLinkDest->isPageRef())
+					{
+						Ref pageRef = pLinkDest->getPageRef();
+						pg = m_pPDFDocument->findPage(pageRef.num, pageRef.gen);
+					}
+					else
+						pg = pLinkDest->getPageNum();
+					std::string sLink = "#" + std::to_string(pg - 1);
+					str = new GString(sLink.c_str());
+					dy  = m_pPDFDocument->getPageCropHeight(pg) - pLinkDest->getTop();
 				}
 				else
-					pg = pLinkDest->getPageNum();
+					str = NULL;
+				RELEASEOBJECT(pLinkDest);
+			}
+			else if (kind == actionURI)
+				str = ((LinkURI*)pLinkAction)->getURI()->copy();
+			else if (kind == actionNamed)
+			{
+				str = ((LinkNamed*)pLinkAction)->getName();
+				int pg = 1;
+				if (!str->cmp("NextPage"))
+				{
+					pg = nPageIndex + 1;
+					if (pg > m_pPDFDocument->getNumPages())
+						pg = m_pPDFDocument->getNumPages();
+				}
+				else if (!str->cmp("PrevPage"))
+				{
+					pg = nPageIndex - 1;
+					if (pg < 1)
+						pg = 1;
+				}
+				else if (!str->cmp("LastPage"))
+					pg = m_pPDFDocument->getNumPages();
+
 				std::string sLink = "#" + std::to_string(pg - 1);
 				str = new GString(sLink.c_str());
-				dy  = m_pPDFDocument->getPageCropHeight(pg) - pLinkDest->getTop();
 			}
-			else
-				str = NULL;
-			RELEASEOBJECT(pLinkDest);
-		}
-		else if (kind == actionURI)
-			str = ((LinkURI*)pLinkAction)->getURI()->copy();
 
-		oLinks.m_arLinks.push_back({str ? std::string(str->getCString(), str->getLength()) : "", dy, x1, y2, x2 - x1, y1 - y2});
-		RELEASEOBJECT(str);
+			oLinks.m_arLinks.push_back({str ? std::string(str->getCString(), str->getLength()) : "", dy, x1, y2, x2 - x1, y1 - y2});
+			RELEASEOBJECT(str);
+		}
 	}
+
 	RELEASEOBJECT(pLinks);
 
 	int nRotate = 0;
@@ -873,10 +912,126 @@ BYTE* CPdfReader::GetWidgets()
 	NSWasm::CData oRes;
 	oRes.SkipLen();
 
-	PdfReader::CAnnots* pAnnots = new PdfReader::CAnnots(m_pPDFDocument);
+	PdfReader::CAnnots* pAnnots = new PdfReader::CAnnots(m_pPDFDocument, m_pFontManager, m_pFontList);
 	if (pAnnots)
 		pAnnots->ToWASM(oRes);
 	RELEASEOBJECT(pAnnots);
+
+	oRes.WriteLen();
+	BYTE* bRes = oRes.GetBuffer();
+	oRes.ClearWithoutAttack();
+	return bRes;
+}
+BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
+{
+	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
+		return NULL;
+
+	AcroForm* pAcroForms = m_pPDFDocument->getCatalog()->getForm();
+	XRef* xref = m_pPDFDocument->getXRef();
+	if (!pAcroForms || !xref)
+		return NULL;
+
+	NSWasm::CData oRes;
+	oRes.SkipLen();
+
+	int nFontsID = 0;
+	int nFontsPos = oRes.GetSize();
+	oRes.AddInt(nFontsID);
+
+	std::vector<int> arrFontsRef;
+	for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
+	{
+		AcroFormField* pField = pAcroForms->getField(i);
+		if (!pField)
+			continue;
+
+		// Шрифт и размер шрифта - из DA
+		Ref fontID;
+		double dFontSize = 0;
+		pField->getFont(&fontID, &dFontSize);
+
+		if (pField->getAcroFormFieldType() == acroFormFieldPushbutton)
+		{
+			std::string sFontKey;
+			Object oR, oFonts, oFontRef;
+			if (PdfReader::GetFontFromAP(m_pPDFDocument, pField, &oR, &oFonts, &oFontRef, sFontKey) &&
+				std::find(arrFontsRef.begin(), arrFontsRef.end(), oFontRef.getRefNum()) == arrFontsRef.end())
+			{
+				std::string sFontName;
+				bool bBold = false, bItalic = false;
+				std::wstring wsFileName = PdfReader::GetFontData(m_pPDFDocument, m_pFontManager, m_pFontList, &oFonts, &oFontRef, nTypeFonts, sFontName, sFontName, bBold, bItalic);
+
+				if (!sFontName.empty())
+				{
+					oRes.WriteString(sFontName);
+					nFontsID++;
+					arrFontsRef.push_back(oFontRef.getRefNum());
+					m_mFonts[UTF8_TO_U(sFontName)] = wsFileName;
+
+					if (fontID.num == oFontRef.getRefNum())
+					{
+						oR.free(); oFonts.free(); oFontRef.free();
+						continue;
+					}
+				}
+			}
+			oR.free(); oFonts.free(); oFontRef.free();
+		}
+
+		if (fontID.num < 0 || std::find(arrFontsRef.begin(), arrFontsRef.end(), fontID.num) != arrFontsRef.end())
+			continue;
+
+		Object oR, oFonts, oFontRef;
+		bool bFindResources = false;
+		if (pField->fieldLookup("DR", &oR)->isDict() && oR.dictLookup("Font", &oFonts)->isDict())
+		{
+			for (int i = 0; i < oFonts.dictGetLength(); ++i)
+			{
+				if (oFonts.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
+				{
+					bFindResources = true;
+					break;
+				}
+				oFontRef.free();
+			}
+		}
+
+		if (!bFindResources)
+		{
+			oR.free(); oFonts.free();
+			Object* oAcroForm = pAcroForms->getAcroFormObj();
+			if (oAcroForm->isDict() && oAcroForm->dictLookup("DR", &oR)->isDict() && oR.dictLookup("Font", &oFonts)->isDict())
+			{
+				for (int i = 0; i < oFonts.dictGetLength(); ++i)
+				{
+					if (oFonts.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
+					{
+						bFindResources = true;
+						break;
+					}
+					oFontRef.free();
+				}
+			}
+		}
+
+		std::string sFontName;
+		std::wstring wsFileName;
+		bool bBold = false, bItalic = false;
+		if (bFindResources)
+			wsFileName = PdfReader::GetFontData(m_pPDFDocument, m_pFontManager, m_pFontList, &oFonts, &oFontRef, nTypeFonts, sFontName, sFontName, bBold, bItalic);
+
+		if (!sFontName.empty())
+		{
+			oRes.WriteString(sFontName);
+			nFontsID++;
+			arrFontsRef.push_back(oFontRef.getRefNum());
+			m_mFonts[UTF8_TO_U(sFontName)] = wsFileName;
+		}
+		oR.free(); oFonts.free(); oFontRef.free();
+	}
+
+	oRes.AddInt(nFontsID, nFontsPos);
 
 	oRes.WriteLen();
 	BYTE* bRes = oRes.GetBuffer();
@@ -1057,8 +1212,9 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 				// Номер аннотации для сопоставления с AP
 				oRes.AddInt(oFieldRef.getRefNum());
 				oFieldRef.free();
-				nMKPos = oRes.GetSize();
+
 				// Количество иконок 1-3
+				nMKPos = oRes.GetSize();
 				oRes.AddInt(nMKLength);
 				bFirst = false;
 			}
@@ -1070,275 +1226,101 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 			Object oResources;
 			oStreamDict->lookup("Resources", &oResources);
 			Dict* oResourcesDict = oResources.isDict() ? oResources.getDict() : (Dict *)NULL;
+			oStr.free();
 
 			// Получение единственного XObject из Resources, если возможно
-			bool bImage = false;
 			Object oXObject, oIm;
-			if (oResourcesDict && oResourcesDict->lookup("XObject", &oXObject)->isDict() && oXObject.dictGetLength() == 1 && oXObject.dictGetVal(0, &oIm)->isStream())
+			if (!oResourcesDict || !oResourcesDict->lookup("XObject", &oXObject)->isDict() || oXObject.dictGetLength() != 1 || !oXObject.dictGetVal(0, &oIm)->isStream())
 			{
-				Dict *oImDict = oIm.streamGetDict();
-				Object oType, oSubtype;
-				if (oImDict->lookup("Type", &oType)->isName("XObject") && oImDict->lookup("Subtype", &oSubtype)->isName("Image"))
-				{
-					bImage = true;
-
-					Object oStrRef;
-					oXObject.dictGetValNF(0, &oStrRef);
-					int nView = oStrRef.getRefNum();
-					oRes.AddInt(nView);
-					oStrRef.free();
-					if (std::find(arrUniqueImage.begin(), arrUniqueImage.end(), nView) != arrUniqueImage.end())
-					{
-						oStr.free(); oResources.free();
-						oType.free(); oSubtype.free();
-						oXObject.free(); oIm.free();
-						oRes.WriteBYTE(0);
-						nMKLength++;
-						continue;
-					}
-					arrUniqueImage.push_back(nView);
-					oRes.WriteBYTE(1);
-
-					// Width & Height
-					Object oWidth, oHeight;
-					int nWidth  = 0;
-					int nHeight = 0;
-					if (oImDict->lookup("Width", &oWidth)->isInt() && oImDict->lookup("Height", &oHeight)->isInt())
-					{
-						nWidth  = oWidth.getInt();
-						nHeight = oHeight.getInt();
-					}
-					oRes.AddInt(nWidth);
-					oRes.AddInt(nHeight);
-					oWidth.free(); oHeight.free();
-
-					if (bBase64)
-					{
-						int nLength = 0;
-						Object oLength;
-						if (oImDict->lookup("Length", &oLength)->isInt())
-							nLength = oLength.getInt();
-						oLength.free();
-						if (oImDict->lookup("DL", &oLength)->isInt())
-							nLength = oLength.getInt();
-						oLength.free();
-
-						bool bNew = false;
-						BYTE* pBuffer = NULL;
-						Stream* pImage = oIm.getStream()->getUndecodedStream();
-						pImage->reset();
-						MemStream* pMemory = dynamic_cast<MemStream*>(pImage);
-						if (pImage->getKind() == strWeird && pMemory)
-						{
-							if (pMemory->getBufPtr() + nLength == pMemory->getBufEnd())
-								pBuffer = (BYTE*)pMemory->getBufPtr();
-							else
-								nLength = 0;
-						}
-						else
-						{
-							bNew = true;
-							pBuffer = new BYTE[nLength];
-							BYTE* pBufferPtr = pBuffer;
-							for (int nI = 0; nI < nLength; ++nI)
-								*pBufferPtr++ = (BYTE)pImage->getChar();
-						}
-
-						char* cData64 = NULL;
-						int nData64Dst = 0;
-						NSFile::CBase64Converter::Encode(pBuffer, nLength, cData64, nData64Dst, NSBase64::B64_BASE64_FLAG_NOCRLF);
-
-						oRes.WriteString((BYTE*)cData64, nData64Dst);
-
-						nMKLength++;
-						if (bNew)
-							RELEASEARRAYOBJECTS(pBuffer);
-						RELEASEARRAYOBJECTS(cData64);
-						continue;
-					}
-
-					BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
-					unsigned int nColor = (unsigned int)nBackgroundColor;
-					unsigned int nSize  = (unsigned int)(nWidth * nHeight);
-					unsigned int* pTemp = (unsigned int*)pBgraData;
-					for (unsigned int k = 0; k < nSize; ++k)
-						*pTemp++ = nColor;
-
-					int bits = 0;
-					StreamColorSpaceMode csMode = streamCSNone;
-					oIm.getStream()->getImageParams(&bits, &csMode);
-
-					if (bits == 0)
-					{
-						Object oBits;
-						if (oImDict->lookup("BitsPerComponent", &oBits)->isNull())
-						{
-							oBits.free();
-							oImDict->lookup("BPC", &oBits);
-						}
-						bits = oBits.isInt() ? oBits.getInt() : 8;
-						oBits.free();
-					}
-
-					GfxColorSpace* colorSpace = NULL;
-					Object oColorSpace;
-					if (oImDict->lookup("ColorSpace", &oColorSpace)->isNull())
-					{
-						oColorSpace.free();
-						oImDict->lookup("CS", &oColorSpace);
-					}
-					if (oColorSpace.isName())
-					{
-						// TODO
-					}
-					if (!oColorSpace.isNull())
-						colorSpace = GfxColorSpace::parse(&oColorSpace);
-					else if (csMode == streamCSDeviceGray)
-						colorSpace = GfxColorSpace::create(csDeviceGray);
-					else if (csMode == streamCSDeviceRGB)
-						colorSpace = GfxColorSpace::create(csDeviceRGB);
-					else if (csMode == streamCSDeviceCMYK)
-						colorSpace = GfxColorSpace::create(csDeviceCMYK);
-					else
-						colorSpace = NULL;
-					oColorSpace.free();
-
-					Object oDecode;
-					if (oImDict->lookup("Decode", &oDecode)->isNull())
-					{
-						oDecode.free();
-						oImDict->lookup("D", &oDecode);
-					}
-
-					GfxImageColorMap* pColorMap = new GfxImageColorMap(bits, &oDecode, colorSpace);
-					oDecode.free();
-
-					ImageStream *pImageStream = new ImageStream(oIm.getStream(), nWidth, pColorMap->getNumPixelComps(), pColorMap->getBits());
-					pImageStream->reset();
-
-					int nComps = pImageStream->getComps();
-					int nCheckWidth = std::min(nWidth, pImageStream->getVals() / nComps);
-
-					int nColorMapType = pColorMap->getFillType();
-					GfxColorComp** pColorMapLookup = pColorMap->getLookup();
-					if (!pColorMapLookup)
-						nColorMapType = 0;
-
-					for (int nY = 0; nY < nHeight; ++nY)
-					{
-						unsigned char* pLine = pImageStream->getLine();
-						unsigned char* pLineDst = pBgraData + 4 * nWidth * nY;
-
-						if (!pLine)
-						{
-							memset(pLineDst, 0, 4 * nWidth);
-							continue;
-						}
-
-						for (int nX = 0; nX < nCheckWidth; ++nX)
-						{
-							if (2 == nColorMapType)
-							{
-								pLineDst[0] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
-								pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
-								pLineDst[2] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
-							}
-							else if (1 == nColorMapType)
-							{
-								pLineDst[0] = pLineDst[1] = pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
-							}
-							else
-							{
-								GfxRGB oRGB;
-								pColorMap->getRGB(pLine, &oRGB, gfxRenderingIntentAbsoluteColorimetric);
-								pLineDst[0] = colToByte(oRGB.r);
-								pLineDst[1] = colToByte(oRGB.g);
-								pLineDst[2] = colToByte(oRGB.b);
-							}
-
-							pLineDst[3] = 255;
-							pLine += nComps;
-							pLineDst += 4;
-						}
-					}
-					delete pColorMap;
-
-					nMKLength++;
-					unsigned long long npSubMatrix = (unsigned long long)pBgraData;
-					unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
-					oRes.AddInt(npSubMatrix1);
-					oRes.AddInt(npSubMatrix >> 32);
-				}
-				oType.free(); oSubtype.free();
-			}
-			oXObject.free(); oIm.free();
-
-			// else
-			if (bImage)
-			{
-				oStr.free(); oResources.free();
+				oXObject.free(); oIm.free();
+				oResources.free();
 				continue;
 			}
+			oResources.free();
+
+			Dict *oImDict = oIm.streamGetDict();
+			Object oType, oSubtype;
+			if (!oImDict->lookup("Type", &oType)->isName("XObject") || !oImDict->lookup("Subtype", &oSubtype)->isName("Image"))
+			{
+				oType.free(); oSubtype.free();
+				oXObject.free(); oIm.free();
+				continue;
+			}
+			oType.free(); oSubtype.free();
 
 			Object oStrRef;
-			oMK.dictLookupNF(sMKName.c_str(), &oStrRef);
+			oXObject.dictGetValNF(0, &oStrRef);
 			int nView = oStrRef.getRefNum();
 			oRes.AddInt(nView);
+			oStrRef.free();
 			if (std::find(arrUniqueImage.begin(), arrUniqueImage.end(), nView) != arrUniqueImage.end())
 			{
-				oStr.free(); oStrRef.free(); oResources.free();
+				oXObject.free(); oIm.free();
 				oRes.WriteBYTE(0);
 				nMKLength++;
 				continue;
 			}
+			oXObject.free();
 			arrUniqueImage.push_back(nView);
 			oRes.WriteBYTE(1);
 
-			// BBox
-			Object bboxObj;
-			double bbox[4];
-			if (oStreamDict->lookup("BBox", &bboxObj)->isArray())
+			// Width & Height
+			Object oWidth, oHeight;
+			int nWidth  = 0;
+			int nHeight = 0;
+			if (oImDict->lookup("Width", &oWidth)->isInt() && oImDict->lookup("Height", &oHeight)->isInt())
 			{
-				for (int k = 0; k < 4; ++k)
-				{
-					Object obj1;
-					bboxObj.arrayGet(k, &obj1);
-					bbox[k] = obj1.getNum();
-					obj1.free();
-				}
+				nWidth  = oWidth.getInt();
+				nHeight = oHeight.getInt();
 			}
-			else
-			{
-				bbox[0] = 0; bbox[1] = 0;
-				bbox[2] = 0; bbox[3] = 0;
-			}
-			bboxObj.free();
-
-			// Matrix
-			double m[6];
-			Object matrixObj;
-			if (oStreamDict->lookup("Matrix", &matrixObj)->isArray())
-			{
-				for (int k = 0; k < 6; ++k)
-				{
-					Object obj1;
-					matrixObj.arrayGet(k, &obj1);
-					m[k] = obj1.getNum();
-					obj1.free();
-				}
-			}
-			else
-			{
-				m[0] = 1; m[1] = 0;
-				m[2] = 0; m[3] = 1;
-				m[4] = 0; m[5] = 0;
-			}
-			matrixObj.free();
-
-			int nWidth  = (bbox[2] > 0) ? (int)round(bbox[2] * (double)nRasterW / dWidth) : (int)((int)dWidth  * 96 / dPageDpiX);
-			int nHeight = (bbox[3] > 0) ? (int)round(bbox[3] * (double)nRasterH / dHeight): (int)((int)dHeight * 96 / dPageDpiY);
 			oRes.AddInt(nWidth);
 			oRes.AddInt(nHeight);
+			oWidth.free(); oHeight.free();
+
+			if (bBase64)
+			{
+				int nLength = 0;
+				Object oLength;
+				if (oImDict->lookup("Length", &oLength)->isInt())
+					nLength = oLength.getInt();
+				oLength.free();
+				if (oImDict->lookup("DL", &oLength)->isInt())
+					nLength = oLength.getInt();
+				oLength.free();
+
+				bool bNew = false;
+				BYTE* pBuffer = NULL;
+				Stream* pImage = oIm.getStream()->getUndecodedStream();
+				pImage->reset();
+				MemStream* pMemory = dynamic_cast<MemStream*>(pImage);
+				if (pImage->getKind() == strWeird && pMemory)
+				{
+					if (pMemory->getBufPtr() + nLength == pMemory->getBufEnd())
+						pBuffer = (BYTE*)pMemory->getBufPtr();
+					else
+						nLength = 0;
+				}
+				else
+				{
+					bNew = true;
+					pBuffer = new BYTE[nLength];
+					BYTE* pBufferPtr = pBuffer;
+					for (int nI = 0; nI < nLength; ++nI)
+						*pBufferPtr++ = (BYTE)pImage->getChar();
+				}
+
+				char* cData64 = NULL;
+				int nData64Dst = 0;
+				NSFile::CBase64Converter::Encode(pBuffer, nLength, cData64, nData64Dst, NSBase64::B64_BASE64_FLAG_NOCRLF);
+
+				oRes.WriteString((BYTE*)cData64, nData64Dst);
+
+				nMKLength++;
+				if (bNew)
+					RELEASEARRAYOBJECTS(pBuffer);
+				RELEASEARRAYOBJECTS(cData64);
+				continue;
+			}
 
 			BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
 			unsigned int nColor = (unsigned int)nBackgroundColor;
@@ -1347,65 +1329,112 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 			for (unsigned int k = 0; k < nSize; ++k)
 				*pTemp++ = nColor;
 
-			CBgraFrame* pFrame = new CBgraFrame();
-			pFrame->put_Data(pBgraData);
-			pFrame->put_Width(nWidth);
-			pFrame->put_Height(nHeight);
-			pFrame->put_Stride(4 * nWidth);
+			int bits = 0;
+			StreamColorSpaceMode csMode = streamCSNone;
+			oIm.getStream()->getImageParams(&bits, &csMode);
 
-			NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
-			pRenderer->SetFontManager(m_pFontManager);
-			pRenderer->CreateFromBgraFrame(pFrame);
-			pRenderer->SetSwapRGB(true);
-			pRenderer->put_Width (bbox[2] * 25.4 / dPageDpiX);
-			pRenderer->put_Height(bbox[3] * 25.4 / dPageDpiX);
-			if (nBackgroundColor != 0xFFFFFF)
-				pRenderer->CommandLong(c_nDarkMode, 1);
+			if (bits == 0)
+			{
+				Object oBits;
+				if (oImDict->lookup("BitsPerComponent", &oBits)->isNull())
+				{
+					oBits.free();
+					oImDict->lookup("BPC", &oBits);
+				}
+				bits = oBits.isInt() ? oBits.getInt() : 8;
+				oBits.free();
+			}
 
-			PdfReader::RendererOutputDev oRendererOut(pRenderer, m_pFontManager, m_pFontList);
-			oRendererOut.NewPDF(m_pPDFDocument->getXRef());
+			GfxColorSpace* colorSpace = NULL;
+			Object oColorSpace;
+			if (oImDict->lookup("ColorSpace", &oColorSpace)->isNull())
+			{
+				oColorSpace.free();
+				oImDict->lookup("CS", &oColorSpace);
+			}
+			if (oColorSpace.isName())
+			{
+				// TODO
+			}
+			if (!oColorSpace.isNull())
+				colorSpace = GfxColorSpace::parse(&oColorSpace);
+			else if (csMode == streamCSDeviceGray)
+				colorSpace = GfxColorSpace::create(csDeviceGray);
+			else if (csMode == streamCSDeviceRGB)
+				colorSpace = GfxColorSpace::create(csDeviceRGB);
+			else if (csMode == streamCSDeviceCMYK)
+				colorSpace = GfxColorSpace::create(csDeviceCMYK);
+			else
+				colorSpace = NULL;
+			oColorSpace.free();
 
-			// Создание Gfx
-			GBool crop = gTrue;
-			PDFRectangle box;
-			pPage->makeBox(72.0, 72.0, 0, gFalse, oRendererOut.upsideDown(), -1, -1, -1, -1, &box, &crop);
-			PDFRectangle* cropBox = pPage->getCropBox();
+			Object oDecode;
+			if (oImDict->lookup("Decode", &oDecode)->isNull())
+			{
+				oDecode.free();
+				oImDict->lookup("D", &oDecode);
+			}
 
-			Gfx* gfx = new Gfx(m_pPDFDocument, &oRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, cropBox ? cropBox : (PDFRectangle *)NULL, 0, NULL, NULL);
+			GfxImageColorMap* pColorMap = new GfxImageColorMap(bits, &oDecode, colorSpace);
+			oDecode.free();
 
-			pRenderer->SetCoordTransformOffset(0, bbox[3] * (double)nRasterH / dHeight - nRasterH);
-			gfx->drawForm(&oStrRef, oResourcesDict, m, bbox, gFalse, gFalse, gFalse, gFalse);
-			oStr.free(); oStrRef.free(); oResources.free();
+			ImageStream *pImageStream = new ImageStream(oIm.getStream(), nWidth, pColorMap->getNumPixelComps(), pColorMap->getBits());
+			pImageStream->reset();
+
+			int nComps = pImageStream->getComps();
+			int nCheckWidth = std::min(nWidth, pImageStream->getVals() / nComps);
+
+			int nColorMapType = pColorMap->getFillType();
+			GfxColorComp** pColorMapLookup = pColorMap->getLookup();
+			if (!pColorMapLookup)
+				nColorMapType = 0;
+
+			for (int nY = 0; nY < nHeight; ++nY)
+			{
+				unsigned char* pLine = pImageStream->getLine();
+				unsigned char* pLineDst = pBgraData + 4 * nWidth * nY;
+
+				if (!pLine)
+				{
+					memset(pLineDst, 0, 4 * nWidth);
+					continue;
+				}
+
+				for (int nX = 0; nX < nCheckWidth; ++nX)
+				{
+					if (2 == nColorMapType)
+					{
+						pLineDst[0] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+						pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
+						pLineDst[2] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
+					}
+					else if (1 == nColorMapType)
+					{
+						pLineDst[0] = pLineDst[1] = pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+					}
+					else
+					{
+						GfxRGB oRGB;
+						pColorMap->getRGB(pLine, &oRGB, gfxRenderingIntentAbsoluteColorimetric);
+						pLineDst[0] = colToByte(oRGB.r);
+						pLineDst[1] = colToByte(oRGB.g);
+						pLineDst[2] = colToByte(oRGB.b);
+					}
+
+					pLineDst[3] = 255;
+					pLine += nComps;
+					pLineDst += 4;
+				}
+			}
+			delete pColorMap;
 
 			nMKLength++;
+			unsigned long long npSubMatrix = (unsigned long long)pBgraData;
+			unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
+			oRes.AddInt(npSubMatrix1);
+			oRes.AddInt(npSubMatrix >> 32);
 
-			if (bBase64)
-			{
-				BYTE* pPngBuffer = NULL;
-				int nPngSize = 0;
-				pFrame->Encode(pPngBuffer, nPngSize, 4);
-
-				char* cData64 = NULL;
-				int nData64Dst = 0;
-				NSFile::CBase64Converter::Encode(pPngBuffer, nPngSize, cData64, nData64Dst, NSBase64::B64_BASE64_FLAG_NOCRLF);
-
-				oRes.WriteString((BYTE*)cData64, nData64Dst);
-
-				RELEASEARRAYOBJECTS(cData64);
-			}
-			else
-			{
-				unsigned long long npSubMatrix = (unsigned long long)pBgraData;
-				unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
-				oRes.AddInt(npSubMatrix1);
-				oRes.AddInt(npSubMatrix >> 32);
-
-				pFrame->ClearNoAttack();
-			}
-
-			delete gfx;
-			RELEASEOBJECT(pFrame);
-			RELEASEOBJECT(pRenderer);
+			oIm.free();
 		}
 		oMK.free();
 
@@ -1493,6 +1522,10 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 		{
 			pAnnot = new PdfReader::CAnnotInk(pdfDoc, &oAnnotRef, nPageIndex);
 		}
+		// else if (sType == "FileAttachment")
+		// {
+		// 	pAnnot = new PdfReader::CAnnotFileAttachment(pdfDoc, &oAnnotRef, nPageIndex);
+		// }
 		// else if (sType == "Popup")
 		// {
 		// 	pAnnot = new PdfReader::CAnnotPopup(pdfDoc, &oAnnotRef, nPageIndex);

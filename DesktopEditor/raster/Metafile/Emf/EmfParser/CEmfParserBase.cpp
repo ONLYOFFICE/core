@@ -102,8 +102,7 @@ namespace MetaFile
 					  oTEmfBitBlt.nCxDest, oTEmfBitBlt.nCyDest,
 					  pBgraBuffer, ulWidth, ulHeight);
 		}
-
-		if (m_pInterpretator)
+		else
 		{
 			if (0x00000042 == oTEmfBitBlt.unBitBltRasterOperation) // BLACKNESS
 			{
@@ -129,49 +128,19 @@ namespace MetaFile
 				ulWidth  = 1;
 				ulHeight = 1;
 			}
-			else if (0x00f00021 == oTEmfBitBlt.unBitBltRasterOperation) // PATCOPY
+			else if (0x00f00021 == oTEmfBitBlt.unBitBltRasterOperation || // PATCOPY
+			         0x005a0049 == oTEmfBitBlt.unBitBltRasterOperation || // PATINVERT
+			         0x00A000C9 == oTEmfBitBlt.unBitBltRasterOperation)   // DPA
 			{
 				CEmfLogBrushEx* pBrush = (CEmfLogBrushEx*)m_pDC->GetBrush();
 				if (pBrush)
 				{
 					// Делаем цветом кисти
 					pBgraBuffer = new BYTE[4];
-                                        pBgraBuffer[0] = pBrush->oColor.b;
-                                        pBgraBuffer[1] = pBrush->oColor.g;
-                                        pBgraBuffer[2] = pBrush->oColor.r;
+					pBgraBuffer[0] = pBrush->oColor.b;
+					pBgraBuffer[1] = pBrush->oColor.g;
+					pBgraBuffer[2] = pBrush->oColor.r;
 					pBgraBuffer[3] = 0xff;
-
-					ulWidth  = 1;
-					ulHeight = 1;
-				}
-			}
-			else if (0x005a0049 == oTEmfBitBlt.unBitBltRasterOperation) // PATINVERT
-			{
-				CEmfLogBrushEx* pBrush = (CEmfLogBrushEx*)m_pDC->GetBrush();
-				if (pBrush)
-				{
-					// Делаем цветом кисти
-					pBgraBuffer = new BYTE[4];
-                                        pBgraBuffer[0] = pBrush->oColor.b;
-                                        pBgraBuffer[1] = pBrush->oColor.g;
-                                        pBgraBuffer[2] = pBrush->oColor.r;
-					pBgraBuffer[3] = 30;
-
-					ulWidth  = 1;
-					ulHeight = 1;
-				}
-			}
-			else if (0x00A000C9 == oTEmfBitBlt.unBitBltRasterOperation) // PATINVERT
-			{
-				CEmfLogBrushEx* pBrush = (CEmfLogBrushEx*)m_pDC->GetBrush();
-				if (pBrush)
-				{
-					// Делаем цветом кисти
-					pBgraBuffer = new BYTE[4];
-                                        pBgraBuffer[0] = pBrush->oColor.b;
-                                        pBgraBuffer[1] = pBrush->oColor.g;
-                                        pBgraBuffer[2] = pBrush->oColor.r;
-					pBgraBuffer[3] = 30;
 
 					ulWidth  = 1;
 					ulHeight = 1;

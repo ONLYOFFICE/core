@@ -109,6 +109,13 @@ text_format_properties* style_content::get_text_properties()
 		return &(style_text->content_);
 	return NULL;
 }
+drawing_page_properties* style_content::get_drawing_page_properties()
+{
+	style_drawing_page_properties* style_page  = dynamic_cast<style_drawing_page_properties*>(style_drawing_page_properties_.get());
+	if (style_page)
+		return &(style_page->content_);
+	return NULL;
+}
 graphic_format_properties * style_content::add_get_style_graphic_properties()
 {
 	if (!style_graphic_properties_)
@@ -247,17 +254,17 @@ void style_content::create_child_element( const std::wstring & Ns, const std::ws
 }
 void style_content::serialize(std::wostream & strm)
 {
-	if (style_text_properties_)		style_text_properties_->serialize(strm);
-    if (style_paragraph_properties_)style_paragraph_properties_->serialize(strm);
-    if (style_section_properties_)	style_section_properties_->serialize(strm);
-    if (style_ruby_properties_)		style_ruby_properties_->serialize(strm);
-    if (style_table_properties_)	style_table_properties_->serialize(strm);
-    if (style_table_column_properties_)style_table_column_properties_->serialize(strm);
-    if (style_table_row_properties_)style_table_row_properties_->serialize(strm);
-    if (style_chart_properties_)	style_chart_properties_->serialize(strm);
-    if (style_graphic_properties_)	style_graphic_properties_->serialize(strm);
-    if (style_table_cell_properties_)style_table_cell_properties_->serialize(strm);
-	if (style_drawing_page_properties_)style_drawing_page_properties_->serialize(strm);
+	if (style_table_cell_properties_)	style_table_cell_properties_->serialize(strm);
+	if (style_graphic_properties_)		style_graphic_properties_->serialize(strm);
+	if (style_paragraph_properties_)	style_paragraph_properties_->serialize(strm);
+    if (style_section_properties_)		style_section_properties_->serialize(strm);
+    if (style_ruby_properties_)			style_ruby_properties_->serialize(strm);
+    if (style_table_properties_)		style_table_properties_->serialize(strm);
+    if (style_table_column_properties_)	style_table_column_properties_->serialize(strm);
+    if (style_table_row_properties_)	style_table_row_properties_->serialize(strm);
+    if (style_chart_properties_)		style_chart_properties_->serialize(strm);
+	if (style_drawing_page_properties_)	style_drawing_page_properties_->serialize(strm);
+	if (style_text_properties_)			style_text_properties_->serialize(strm);
 }
 
 // style:default-style

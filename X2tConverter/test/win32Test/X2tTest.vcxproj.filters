@@ -10,5 +10,55 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\ASCConverters.h" />
     <ClInclude Include="..\..\src\cextracttools.h" />
+    <ClInclude Include="..\..\src\lib\crypt.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib\common.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib\doc.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib\csv.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib\xlsx.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib\xls.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib\txt.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib\rtf.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib\pptx.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib\ppt.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib\pdf_oform.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib\pdf_image.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib\odf.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib\html.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib\docx.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="libs">
+      <UniqueIdentifier>{2c5e76c3-256a-4744-9078-f69707be4d3b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

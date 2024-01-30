@@ -58,6 +58,8 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
+    void collect_page_names(oox::pptx_conversion_context& Context);
+
 public:
 
 	office_element_ptr			tracked_changes_;

@@ -33,29 +33,7 @@ namespace SVG
 
 	CObject::CObject(XmlUtils::CXmlNode &oNode)
 	{
-		if (!oNode.IsValid())
-			return;
-
-		std::vector<std::wstring> arProperties, arValues;
-
-		oNode.GetAllAttributes(arProperties, arValues);
-
-		m_oXmlNode.m_wsName = oNode.GetName();
-
-		for (unsigned int unIndex = 0; unIndex < arProperties.size(); ++unIndex)
-		{
-			if (L"class" == arProperties[unIndex])
-			{
-				m_oXmlNode.m_wsClass = arValues[unIndex];
-				std::transform(m_oXmlNode.m_wsClass.begin(), m_oXmlNode.m_wsClass.end(), m_oXmlNode.m_wsClass.begin(), std::towlower);
-			}
-			else if (L"id" == arProperties[unIndex])
-				m_oXmlNode.m_wsId = arValues[unIndex];
-			else if (L"style" == arProperties[unIndex])
-				m_oXmlNode.m_wsStyle = arValues[unIndex];
-			else
-				m_oXmlNode.m_mAttributes.insert({arProperties[unIndex], arValues[unIndex]});
-		}
+		SetNodeData(oNode);
 	}
 
 	CObject::~CObject()
@@ -68,7 +46,7 @@ namespace SVG
 
 		SetData(NSCSS::NS_STATIC_FUNCTIONS::GetRules(wsStyles), ushLevel, bHardMode);
 	}
-	
+
 	void CObject::SetTransform(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
 		if (mAttributes.end() != mAttributes.find(L"transform"))
@@ -112,6 +90,12 @@ namespace SVG
 			m_oTransformtaion.m_bDraw = true;
 	}
 
+	void CObject::SetOpacity(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
+	{
+		if (mAttributes.end() != mAttributes.find(L"opacity"))
+			m_oTransformtaion.m_oOpacity.SetValue(mAttributes.at(L"opacity"), ushLevel, bHardMode);
+	}
+
 	bool CObject::ApplyTransform(IRenderer *pRenderer, const NSCSS::NSProperties::CTransform *pTransform, Aggplus::CMatrix& oOldMatrix) const
 	{
 		if (NULL == pRenderer || NULL == pTransform)
@@ -147,7 +131,7 @@ namespace SVG
 
 		pRenderer->BeginCommand(c_nResetClipType);
 		pRenderer->EndCommand(c_nResetClipType);
-		
+
 		return ApplyDef(pRenderer, pFile, pClip->m_oHref.ToWString(), oBounds);
 	}
 
@@ -171,7 +155,34 @@ namespace SVG
 
 		return pDefObject->Apply(pRenderer, pFile, oBounds);
 	}
-	
+
+	void CObject::SetNodeData(XmlUtils::CXmlNode &oNode)
+	{
+		if (!oNode.IsValid())
+			return;
+
+		std::vector<std::wstring> arProperties, arValues;
+
+		oNode.GetAllAttributes(arProperties, arValues);
+
+		m_oXmlNode.m_wsName = oNode.GetName();
+
+		for (unsigned int unIndex = 0; unIndex < arProperties.size(); ++unIndex)
+		{
+			if (L"class" == arProperties[unIndex])
+			{
+				m_oXmlNode.m_wsClass = arValues[unIndex];
+				std::transform(m_oXmlNode.m_wsClass.begin(), m_oXmlNode.m_wsClass.end(), m_oXmlNode.m_wsClass.begin(), std::towlower);
+			}
+			else if (L"id" == arProperties[unIndex])
+				m_oXmlNode.m_wsId = arValues[unIndex];
+			else if (L"style" == arProperties[unIndex])
+				m_oXmlNode.m_wsStyle = arValues[unIndex];
+			else
+				m_oXmlNode.m_mAttributes.insert({arProperties[unIndex], arValues[unIndex]});
+		}
+	}
+
 	std::wstring CObject::GetId() const
 	{
 		return m_oXmlNode.m_wsId;
@@ -205,9 +216,10 @@ namespace SVG
 	void CRenderedObject::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
 		SetTransform(mAttributes, ushLevel, bHardMode);
-		SetDisplay(mAttributes, ushLevel, bHardMode);
-		SetClip(mAttributes, ushLevel, bHardMode);
-		SetMask(mAttributes, ushLevel, bHardMode);
+		SetDisplay  (mAttributes, ushLevel, bHardMode);
+		SetOpacity  (mAttributes, ushLevel, bHardMode);
+		SetClip     (mAttributes, ushLevel, bHardMode);
+		SetMask     (mAttributes, ushLevel, bHardMode);
 	}
 
 	std::vector<NSCSS::CNode> CRenderedObject::GetFullPath() const
@@ -229,7 +241,8 @@ namespace SVG
 		m_oStyles.m_oStroke.m_oLineCap = Aggplus::LineJoinMiter;
 
 		m_oStyles.m_oStroke.m_oMiterlimit = 4.;
-
+		
+		m_oTransformtaion.m_oOpacity = 1.;
 		m_oTransformtaion.m_bDraw = true;
 	}
 
@@ -267,14 +280,11 @@ namespace SVG
 
 		if (mAttributes.end() != mAttributes.find(L"fill-opacity"))
 			m_oStyles.m_oFill.SetOpacity(mAttributes.at(L"fill-opacity"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"opacity"))
-			m_oStyles.m_oFill.SetOpacity(mAttributes.at(L"opacity"), ushLevel, bHardMode);
 	}
 
 	bool CRenderedObject::StartPath(IRenderer *pRenderer, const CSvgFile *pFile, Aggplus::CMatrix &oOldTransform, CommandeMode oMode) const
 	{
-		if (NULL == pRenderer || !m_oTransformtaion.m_bDraw)
+		if (NULL == pRenderer || !m_oTransformtaion.m_bDraw || Equals(0., m_oTransformtaion.m_oOpacity.ToDouble()))
 			return false;
 
 		ApplyTransform(pRenderer, &m_oTransformtaion.m_oTransform, oOldTransform);
@@ -283,6 +293,11 @@ namespace SVG
 
 		if (CommandeModeClip == oMode)
 			pRenderer->BeginCommand(c_nClipType);
+		else if (1. != m_oTransformtaion.m_oOpacity.ToDouble())
+		{
+			pRenderer->BeginCommand(c_nLayerType);
+			pRenderer->put_LayerOpacity(m_oTransformtaion.m_oOpacity.ToDouble());
+		}
 
 		pRenderer->BeginCommand(c_nPathType);
 		pRenderer->PathCommandStart();
@@ -300,7 +315,7 @@ namespace SVG
 			pRenderer->SetTransform(oOldTransform.sx(), oOldTransform.shy(), oOldTransform.shx(), oOldTransform.sy(), oOldTransform.tx(), oOldTransform.ty());
 			return;
 		}
-
+		
 		int nPathType = 0;
 
 		if (NULL == pOtherStyles)
@@ -327,6 +342,9 @@ namespace SVG
 			pRenderer->BeginCommand(c_nResetMaskType);
 			pRenderer->EndCommand(c_nResetMaskType);
 		}
+		
+		if (1. != m_oTransformtaion.m_oOpacity.ToDouble())
+			pRenderer->EndCommand(c_nLayerType);
 
 		pRenderer->SetTransform(oOldTransform.sx(), oOldTransform.shy(), oOldTransform.shx(), oOldTransform.sy(), oOldTransform.tx(), oOldTransform.ty());
 	}
@@ -408,6 +426,14 @@ namespace SVG
 		pRenderer->put_BrushAlpha1(255. * pFill->GetOpacity());
 
 		return true;
+	}
+
+	bool CRenderedObject::ApplyOpacity(IRenderer *pRenderer, const NSCSS::NSProperties::CDigit *pOpacity) const
+	{
+		if (NULL == pRenderer || NULL == pOpacity)
+			return false;
+
+		return false;
 	}
 
 	CAppliedObject::CAppliedObject(XmlUtils::CXmlNode &oNode)

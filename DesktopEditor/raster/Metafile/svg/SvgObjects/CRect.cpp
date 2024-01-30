@@ -80,17 +80,17 @@ namespace SVG
 			pRenderer->PathCommandClose();
 		}
 
-		EndPath(pRenderer, pFile, oOldTransform, oMode);
+		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles);
 
 		return true;
 	}
 
 	void CRect::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
 	{
-            if (ApplyStroke(pRenderer, &pStyles->m_oStroke))
+		if (ApplyStroke(pRenderer, &pStyles->m_oStroke))
 			nTypePath += c_nStroke;
 
-            if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true))
+		if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true))
 			nTypePath += c_nWindingFillMode;
 	}
 

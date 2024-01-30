@@ -41,7 +41,7 @@ namespace codegen
 {
     class CodeGenXmlJSCPP
     {
-        string toXmlNaspace = "w:";
+        string toXmlNaspace = "";
         Dictionary<string, GenClassPivot> m_mapProcessedClasses = new Dictionary<string, GenClassPivot>();
         string[] gc_numeric = { "Null", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine" };
         public static Dictionary<string, string> m_mapNamespaceToPrefix = new Dictionary<string, string>()

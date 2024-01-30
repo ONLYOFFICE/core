@@ -63,6 +63,7 @@
 #include "../../../OOXML/Common/SimpleTypes_Word.h"
 
 #include "../Format/odf_conversion_context.h"
+#include "../Format/odp_conversion_context.h"
 #include "../Format/odf_text_context.h"
 #include "../Format/odf_drawing_context.h"
 #include "../Format/style_text_properties.h"
@@ -153,6 +154,7 @@ void OoxConverter::convert(PPTX::Logic::NvGraphicFramePr *oox_framePr)
 {
 	if (oox_framePr == NULL) return;
 
+	convert(&oox_framePr->cNvPr);
 }
 void OoxConverter::RGB2HSL(DWORD argb, double& dH, double& dS, double& dL)
 {
@@ -416,7 +418,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 				if (pVml)
 				{	
 					std::wstring sShapeId = oox_picture->oleObject->m_sShapeId.get();
-                    boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVml->m_mapShapes.find(sShapeId);
+                    std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVml->m_mapShapes.find(sShapeId);
 
                     if (pVml->m_mapShapes.end() != pFind)
 					{
@@ -530,6 +532,7 @@ void OoxConverter::convert(PPTX::Logic::SmartArt *oox_smart_art)
 		odf_context()->drawing_context()->set_group_size (width, height, width, height);
 		odf_context()->drawing_context()->set_group_position (x, y, cx, cy);
 
+#if 0
 		odf_context()->drawing_context()->start_drawing();
 		odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeRect);
 		
@@ -552,6 +555,7 @@ void OoxConverter::convert(PPTX::Logic::SmartArt *oox_smart_art)
 		}
 		odf_context()->drawing_context()->end_shape();
 		odf_context()->drawing_context()->end_drawing();
+#endif
 
 		oox_current_child_document = oox_smart_art->m_pDrawingContainer.GetPointer();
 
@@ -689,6 +693,17 @@ void OoxConverter::convert(PPTX::Logic::NvGrpSpPr *oox_nvGrpSpPr)
 
 	if (oox_nvGrpSpPr->cNvPr.descr.IsInit())
 		odf_context()->drawing_context()->set_description(oox_nvGrpSpPr->cNvPr.descr.get());
+
+	if (oox_nvGrpSpPr->cNvPr.id != -1)
+	{
+		cpdoccore::odf_writer::odp_conversion_context* odp_context =
+			dynamic_cast<cpdoccore::odf_writer::odp_conversion_context*>(odf_context());
+		if (odp_context)
+		{
+			const std::wstring xml_id = odp_context->map_indentifier(std::to_wstring(oox_nvGrpSpPr->cNvPr.id));
+			odf_context()->drawing_context()->set_group_xml_id(xml_id);
+		}
+	}
 
 	convert(&oox_nvGrpSpPr->cNvGrpSpPr);
 	convert(&oox_nvGrpSpPr->nvPr);
@@ -828,6 +843,9 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 
 		if (type == SimpleTypes::shapetypeRect && (oox_shape->txBody.IsInit() || oox_shape->oTextBoxShape.IsInit())) 
 			type = 2000;
+
+		if (type == 63) // ellipse
+			type = 1000; // custom
 
 		if (type == 2000)
 		{
@@ -1026,6 +1044,14 @@ int OoxConverter::convert(PPTX::Logic::PrstTxWarp *oox_text_preset)
 void OoxConverter::convert(PPTX::Logic::PrstGeom *oox_geom)
 {
 	if (!oox_geom) return;
+
+	if (oox_geom->prst.get() == L"ellipse")
+	{
+		odf_context()->drawing_context()->set_viewBox(21600, 21600);
+		odf_context()->drawing_context()->set_path(L"U 10800 10800 10800 10800 0 360 Z N");
+		odf_context()->drawing_context()->set_draw_type(L"circle");
+		return;
+	}
 
 	for (size_t i = 0; i < oox_geom->avLst.size(); i++)
 	{
@@ -1683,11 +1709,49 @@ void OoxConverter::convert(PPTX::Logic::NvSpPr *oox_nvSpPr)
 	convert (&oox_nvSpPr->cNvSpPr);
 	convert (&oox_nvSpPr->nvPr);
 }
+
+static bool is_sound_hlink(const std::wstring& hlink)
+{
+	const std::wstring ext = NSFile::GetFileExtention(hlink);
+	if (ext == L"wav" ||
+		ext == L"wma" ||
+		ext == L"mp3" ||
+		ext == L"ogg")
+		return true;
+
+	return false;
+}
+
+static bool is_relative_path(const std::wstring& path) 
+{
+	if (path.size() <= 0)
+		return false;
+
+	if (path.find(L"://") != std::wstring::npos)
+		return false;
+
+	if (path[0] == '/') 
+		return false;
+
+	return true;
+}
+
 void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 {
 	if (!oox_cnvPr) return;
 
 	odf_context()->drawing_context()->set_name(oox_cnvPr->name);
+
+	if (oox_cnvPr->id != -1)
+	{
+		cpdoccore::odf_writer::odp_conversion_context* odp_context =
+			dynamic_cast<cpdoccore::odf_writer::odp_conversion_context*>(odf_context());
+		if (odp_context)
+		{
+			const std::wstring xml_id = odp_context->map_indentifier(std::to_wstring(oox_cnvPr->id));
+			odf_context()->drawing_context()->set_xml_id(xml_id);
+		}
+	}
 
 	if (oox_cnvPr->descr.IsInit())
 	{
@@ -1699,35 +1763,7 @@ void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 	}
 	if (oox_cnvPr->hlinkClick.IsInit())
 	{
-		bool bExternal = false;
-		if (odf_context()->drawing_context()->is_current_empty())
-		{
-			if (oox_cnvPr->hlinkClick->id.IsInit())
-			{
-				std::wstring hlink = find_link_by_id(oox_cnvPr->hlinkClick->id.get(), 2, bExternal);
-				
-				odf_context()->drawing_context()->start_link_object(hlink);	
-			}
-		}
-		else
-		{
-			odf_context()->drawing_context()->start_action(oox_cnvPr->hlinkClick->action.get_value_or(L""));
-
-				if (oox_cnvPr->hlinkClick->snd.IsInit())
-				{
-					std::wstring sound = find_link_by_id(oox_cnvPr->hlinkClick->snd->embed.get(), 3, bExternal);
-
-					std::wstring href = odf_context()->add_media(sound, bExternal);
-					odf_context()->drawing_context()->add_sound(href);	
-				}
-				if (oox_cnvPr->hlinkClick->id.IsInit())
-				{
-					std::wstring hlink = find_link_by_id(oox_cnvPr->hlinkClick->id.get(), 2, bExternal);
-					
-					odf_context()->drawing_context()->add_link(hlink);	
-				}
-			odf_context()->drawing_context()->end_action();
-		}
+		convert(oox_cnvPr->hlinkClick.GetPointer());
 	}
 	//nullable_string		title;
 	//nullable<Hyperlink>	hlinkHover;
@@ -2017,7 +2053,26 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 
 		if (odf_context()->drawing_context()->is_wordart())
 			odf_context()->drawing_context()->set_paragraph_properties(paragraph_properties);
+
+		if (styled && odf_context()->drawing_context()->is_placeholder())
+		{
+			odf_writer::odf_style_state_ptr state = odf_context()->text_context()->get_styles_context()->last_state(odf_types::style_family::Paragraph);
+			odf_context()->drawing_context()->set_placeholder_style(state->get_name());
+		}
 	}	
+
+	std::vector<PPTX::Logic::RunElem>::iterator runIt = std::find_if_not(oox_paragraph->RunElems.begin(), oox_paragraph->RunElems.end(),
+		[](const PPTX::Logic::RunElem& r) {
+			return !r.is<PPTX::Logic::Run>();
+		});
+	if (runIt != oox_paragraph->RunElems.end())
+	{
+		const PPTX::Logic::Run& run = runIt->as<PPTX::Logic::Run>();
+		if (!run.HasText())
+			list_present = false;
+	}
+	else 
+		list_present = false;
 
 	//if (oox_paragraph->RunElems.empty() && list_present) list_present = false; // ms не обозначает присутствие списка, libra - показывает значек
 	
@@ -2070,10 +2125,19 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 	}
 	odf_context()->text_context()->start_paragraph(styled);
 
-	for (size_t i=0; i< oox_paragraph->RunElems.size(); i++)
+	if (oox_paragraph->RunElems.size() > 0)
 	{
-		convert(&oox_paragraph->RunElems[i].as<OOX::WritingElement>());
+		for (size_t i = 0; i < oox_paragraph->RunElems.size(); i++)
+		{
+			convert(&oox_paragraph->RunElems[i].as<OOX::WritingElement>());
+		}
 	}
+	else
+	{
+		odf_context()->text_context()->start_span(true);
+		odf_context()->text_context()->end_span();
+	}
+	
 	odf_context()->text_context()->end_paragraph();
 
 	//if(list_present)
@@ -2435,7 +2499,37 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::t
 	{
 		text_properties->fo_text_transform_ = odf_types::text_transform(odf_types::text_transform::Capitalize);
 	}
+	if (oox_run_pr->hlinkClick.IsInit())
+	{
+		convert(oox_run_pr->hlinkClick.GetPointer());
+	}
+}
+static std::vector<std::wstring> split_tabs(const std::wstring& text)
+{
+	std::vector<std::wstring> result;
+	std::wstringstream ss;
+	const wchar_t tabChar = L'\t';
 
+	for (const auto& c : text)
+	{
+		if (c == tabChar)
+		{
+			if (!ss.str().empty())
+			{
+				result.push_back(ss.str());
+				ss.str(std::wstring());
+			}
+				
+			result.push_back(L"\t");
+		}
+		else
+			ss << c;
+	}
+
+	if(!ss.str().empty())
+		result.push_back(ss.str());
+
+	return result;
 }
 void OoxConverter::convert(PPTX::Logic::Run *oox_run)
 {
@@ -2487,7 +2581,16 @@ void OoxConverter::convert(PPTX::Logic::Run *oox_run)
 	}
 	else
 	{
-		text_context->add_text_content( oox_run->GetText());
+		const std::wstring& text = oox_run->GetText();
+		std::vector<std::wstring> tabSplit = split_tabs(text);
+
+		for (const std::wstring& str : tabSplit)
+		{
+			if (str == L"\t")
+				text_context->add_tab();
+			else 
+				text_context->add_text_content(str);
+		}
 	}
 	text_context->end_span();
 }
@@ -2583,6 +2686,64 @@ void OoxConverter::convert(PPTX::Logic::TextListStyle *oox_list_style)
 		OoxConverter::convert_list_level(oox_list_style->levels[i].GetPointer(), i);
 	}
 	odf_context()->styles_context()->lists_styles().end_style();
+}
+void OoxConverter::convert(PPTX::Logic::Hyperlink* oox_hyperlink)
+{
+	if (!oox_hyperlink)
+		return;
+
+	bool bExternal = false;
+	if (odf_context()->drawing_context()->is_current_empty())
+	{
+		if (oox_hyperlink->id.IsInit())
+		{
+			std::wstring hlink = find_link_by_id(oox_hyperlink->id.get(), 2, bExternal);
+
+			odf_context()->drawing_context()->start_link_object(hlink);
+		}
+	}
+	else
+	{
+		odf_context()->drawing_context()->start_action(oox_hyperlink->action.get_value_or(L""));
+
+		if (oox_hyperlink->snd.IsInit())
+		{
+			std::wstring sound = find_link_by_id(oox_hyperlink->snd->embed.get(), 3, bExternal);
+
+			std::wstring href = odf_context()->add_media(sound, bExternal);
+			odf_context()->drawing_context()->add_sound(href);
+		}
+		if (oox_hyperlink->id.IsInit())
+		{
+			std::wstring hlink = find_link_by_id(oox_hyperlink->id.get(), 2, bExternal);
+			boost::replace_all(hlink, L"\\", L"/"); // NOTE(Kamil Kerimov): Always use forward slash in odf for filepaths
+
+			if (is_sound_hlink(hlink))
+			{
+				std::wstring href = odf_context()->add_media(hlink, bExternal);
+				odf_context()->drawing_context()->add_sound(href);
+			}
+			else
+			{
+				if (is_relative_path(hlink))
+					hlink = L"../" + hlink;
+				odf_context()->drawing_context()->add_link(hlink);
+			}
+
+
+			smart_ptr<OOX::File> file = find_file_by_id(oox_hyperlink->id.get());
+			OOX::HyperLink* hyperlink = dynamic_cast<OOX::HyperLink*>(file.GetPointer());
+
+			if (hyperlink)
+			{
+				odf_context()->add_hyperlink(
+					odf_context()->drawing_context()->get_current_element(),
+					hyperlink->Uri().GetBasename()
+				);
+			}
+		}
+		odf_context()->drawing_context()->end_action();
+	}
 }
 void OoxConverter::convert(PPTX::Logic::TxBody *oox_txBody, PPTX::Logic::ShapeStyle* oox_style)
 {

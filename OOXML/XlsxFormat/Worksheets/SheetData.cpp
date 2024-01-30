@@ -923,7 +923,7 @@ namespace OOX
 			WritingStringNullableAttrInt(L"si", m_oSi, m_oSi->GetValue());
 			WritingStringNullableAttrBool(L"bx", m_oBx);
 			writer.WriteString(_T(">"));
-			writer.WriteEncodeXmlString(m_sText);
+			writer.WriteEncodeXmlStringHHHH(m_sText);
 			writer.WriteString(_T("</f>"));
 		}
 		void CFormula::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream)
@@ -3191,7 +3191,97 @@ namespace OOX
             }
         }
 //----------------------------------------------------------------------------------------
-        void CDataValidation::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		void CDataValidation::CreateElements(XmlUtils::CXmlLiteReader& oReader, int nDepth)
+		{
+			if (oReader.IsEmptyNode())
+				return;
+
+			while (oReader.ReadNextSiblingNode(nDepth))
+			{
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				if (L"formula1" == sName)
+				{
+					m_oFormula1 = oReader;
+				}
+				else if (L"formula2" == sName)
+				{
+					m_oFormula2 = oReader;
+				}
+				else if (L"list" == sName)
+				{
+					m_oList = oReader.GetText2();
+				}
+				else if (L"sqref" == sName)
+				{
+					m_oSqRef = oReader.GetText2();
+				}
+				//--------------------------------------------------- xml spreadsheet 2002
+				else if (L"Range" == sName)
+				{
+					r1c1_formula_convert::base_row = 1;
+					r1c1_formula_convert::base_col = 1;
+
+					r1c1_formula_convert convert;
+
+					m_oSqRef = convert.convert(oReader.GetText2());
+				}
+				else if (L"Type" == sName)
+				{
+					m_oType = oReader.GetText2();
+
+					m_oAllowBlank.Init();
+					m_oAllowBlank->FromBool(true);
+
+					m_oShowInputMessage.Init();
+					m_oShowInputMessage->FromBool(true);
+				}
+				else if (L"Value" == sName)
+				{
+					r1c1_formula_convert::base_row = 1;
+					r1c1_formula_convert::base_col = 1;
+
+					r1c1_formula_convert convert;
+
+					m_oFormula1 = new CDataValidationFormula(m_pMainDocument);
+					m_oFormula1->m_sText = convert.convert(oReader.GetText3());
+
+					//if (m_oFormula1->m_sText.find(L"!") == std::wstring::npos)
+					//{
+					//	CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
+					//	if (xlsx_flat)
+					//	{
+					//		CSheet *pSheet = xlsx_flat->m_pWorkbook->m_oSheets->m_arrItems.back();
+					//		if (pSheet->m_oName.IsInit())
+					//		{
+					//			m_oFormula1->m_sText = *pSheet->m_oName + L"!" + m_oFormula1->m_sText;
+					//		}
+					//	}
+					//}
+				}
+				else if (L"AlternateContent" == sName)
+				{
+					int nCurDepth = oReader.GetDepth();
+					while (oReader.ReadNextSiblingNode(nCurDepth))
+					{
+						std::wstring sName1 = oReader.GetName();
+
+						if (oReader.IsEmptyNode())
+							continue;
+
+						if (sName1 == L"mc:Choice")
+						{
+							CreateElements(oReader, oReader.GetDepth());
+						}
+						else if (sName1 == L"mc:Fallback")
+						{
+							CreateElements(oReader, oReader.GetDepth());
+						}
+					}
+
+				}
+			}
+		}
+		void CDataValidation::fromXML(XmlUtils::CXmlLiteReader& oReader)
         {
             ReadAttributes( oReader );
 
@@ -3199,65 +3289,8 @@ namespace OOX
                 return;
 
             int nCurDepth = oReader.GetDepth();
-            while (oReader.ReadNextSiblingNode(nCurDepth))
-            {
-                std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-                if (L"formula1" == sName)
-                {
-                    m_oFormula1 = oReader;
-                }
-                else if (L"formula2" == sName)
-                {
-                    m_oFormula2 = oReader;
-                }
-                else if (L"sqref" == sName)
-                {
-                    m_oSqRef = oReader.GetText2();
-                }
-        //--------------------------------------------------- xml spreadsheet 2002
-                else if (L"Range" == sName)
-                {
-                    r1c1_formula_convert::base_row = 1;
-                    r1c1_formula_convert::base_col = 1;
 
-                    r1c1_formula_convert convert;
-
-                    m_oSqRef = convert.convert(oReader.GetText2());
-                }
-                else if (L"Type" == sName)
-                {
-                    m_oType = oReader.GetText2();
-
-                    m_oAllowBlank.Init();
-                    m_oAllowBlank->FromBool(true);
-
-                    m_oShowInputMessage.Init();
-                    m_oShowInputMessage->FromBool(true);
-                }
-                else if (L"Value" == sName)
-                {
-                    r1c1_formula_convert::base_row = 1;
-                    r1c1_formula_convert::base_col = 1;
-
-                    r1c1_formula_convert convert;
-
-                    m_oFormula1 = new CDataValidationFormula(m_pMainDocument);
-                    m_oFormula1->m_sText = convert.convert(oReader.GetText3());
-
-                    //if (m_oFormula1->m_sText.find(L"!") == std::wstring::npos)
-                    //{
-                    //	CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
-                    //	if (xlsx_flat)
-                    //	{
-                    //		CSheet *pSheet = xlsx_flat->m_pWorkbook->m_oSheets->m_arrItems.back();
-                    //		if (pSheet->m_oName.IsInit())
-                    //		{
-                    //			m_oFormula1->m_sText = *pSheet->m_oName + L"!" + m_oFormula1->m_sText;
-                    //		}
-                    //	}
-                    //}
-                }
-            }
+			CreateElements(oReader, nCurDepth);
         }
 //-----------------------------------------------------------------------------------------
         void CDefinedName::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -3418,9 +3451,10 @@ namespace OOX
 
 				if (pShape->m_sId.IsInit())
 				{//mark shape as used
-					boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(pShape->m_sId.get());
+					std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(pShape->m_sId.get());
 					if (pFind != pVmlDrawing->m_mapShapes.end())
 					{
+						if (!pFind->second.bComment) continue;
 						pFind->second.bUsed = true;
 					}
 				}

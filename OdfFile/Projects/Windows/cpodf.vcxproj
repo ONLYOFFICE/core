@@ -251,6 +251,7 @@
     <ClCompile Include="..\..\Reader\Converter\oox_types_chart.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\pptx_animation_context.cpp" />
     <ClCompile Include="..\..\Reader\Converter\pptx_comments.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -662,6 +663,7 @@
     <ClInclude Include="..\..\Reader\Converter\oox_rels.h" />
     <ClInclude Include="..\..\Reader\Converter\oox_title.h" />
     <ClInclude Include="..\..\Reader\Converter\oox_types_chart.h" />
+    <ClInclude Include="..\..\Reader\Converter\pptx_animation_context.h" />
     <ClInclude Include="..\..\Reader\Converter\pptx_comments.h" />
     <ClInclude Include="..\..\Reader\Converter\pptx_comments_context.h" />
     <ClInclude Include="..\..\Reader\Converter\pptx_conversion_context.h" />

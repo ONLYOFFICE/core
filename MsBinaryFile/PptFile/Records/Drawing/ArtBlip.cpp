@@ -122,7 +122,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 			oMetaFile.SetData(pData, oMetaHeader.cbSave, oMetaHeader.cbSize, (bool)(oMetaHeader.compression != 0xFE) );
 
 		}break;
-		case RECORD_TYPE_ESCHER_BLIP_PICT://Medwoche.ppt , (483)
+		case RECORD_TYPE_ESCHER_BLIP_PICT://Medwoche.ppt , (483), synergieInspiratie.ppt
 		{
 			if		(0x0542 == oHeader.RecInstance)	lOffset = 16;
 			else if (0x0543 == oHeader.RecInstance)	lOffset = 32;
@@ -131,11 +131,10 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 
 			lOffset += 34;
 
-			oMetaFile.m_bIsValid	= TRUE;
-			oMetaFile.m_sExtension	= L".wmf";//L".pct"; - ВРЕМЕННО пока не сделана конвертация pct(pic) хоть во что нито  !!!
-			
+			sExt = L".pct";
+
 			CMetaHeader oMetaHeader;
-			oMetaHeader.FromStream(pStream, pDecryptor); //отдельно вынесенный заголовок.. "форматный" находится в блоке данных
+			oMetaHeader.FromStream(pStream, pDecryptor); 
 
 			BYTE* pData = new BYTE[oHeader.RecLen - lOffset];
 			pStream->read(pData, oHeader.RecLen - lOffset); 
@@ -152,7 +151,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 			
 			StreamUtils::StreamSkip(lOffset, pStream);
 			
-			sExt = _T(".jpg");
+			sExt = L".jpg";
 			break;
 		}
 		case RECORD_TYPE_ESCHER_BLIP_PNG:
@@ -162,7 +161,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 
 			StreamUtils::StreamSkip(lOffset, pStream);
 
-			sExt = _T(".png");
+			sExt = L".png";
 			break;
 		}
 		case RECORD_TYPE_ESCHER_BLIP_DIB:
@@ -172,7 +171,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 			
 			StreamUtils::StreamSkip(lOffset, pStream);
 		
-			sExt = _T(".bmp");
+			sExt = L".bmp";
 			break;
 		}
 		case RECORD_TYPE_ESCHER_BLIP_TIFF:
@@ -182,7 +181,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 
 			StreamUtils::StreamSkip(lOffset, pStream);
 			
-			sExt = _T(".tif");
+			sExt = L".tif";
 			break;
 		}
 		default:
@@ -210,6 +209,37 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 		}
 		m_fileName = strFile;
 	}
+	else if (oHeader.RecType == RECORD_TYPE_ESCHER_BLIP_PICT)
+	{
+		unsigned char* newData = NULL;
+		unsigned int newDataSize = oMetaFile.ToBuffer(newData);
+
+		std::wstring strFile = L"Image " + std::to_wstring(nImagesCount + 1) + sExt;
+		
+		NSFile::CFileBinary fileImage;
+		if (newData && fileImage.CreateFileW(m_pCommonInfo->tempPath + FILE_SEPARATOR_STR + strFile))
+		{
+			fileImage.WriteFile(newData, newDataSize);
+			fileImage.CloseFile();
+		}
+		if (newData)
+			delete[]newData;
+		try
+		{
+			CBgraFrame bgraFrame;
+			if (bgraFrame.OpenFile(m_pCommonInfo->tempPath + FILE_SEPARATOR_STR + strFile))
+			{
+				NSFile::CFileBinary::Remove(m_pCommonInfo->tempPath + FILE_SEPARATOR_STR + strFile);
+
+				strFile = L"Image " + std::to_wstring(nImagesCount + 1) + L".png";
+				bgraFrame.SaveFile(m_pCommonInfo->tempPath + FILE_SEPARATOR_STR + strFile, 4); // png
+			}
+		}
+		catch (...)
+		{
+		}
+		m_fileName = strFile;
+	}
 	else
 	{
 		BYTE* pImage = new BYTE[oHeader.RecLen - lOffset]; 
@@ -219,6 +249,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 		{
 			pDecryptor->Decrypt((char*)pImage, oHeader.RecLen - lOffset, 0);
 		}
+		
 		size_t lOffset2 = 0;
 		if (oHeader.RecType == RECORD_TYPE_ESCHER_BLIP_PNG)
 		{

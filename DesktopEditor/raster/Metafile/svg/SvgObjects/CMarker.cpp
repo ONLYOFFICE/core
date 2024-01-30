@@ -81,7 +81,7 @@ namespace SVG
 		if (0 == nWidth || 0 == nHeight)
 			return;
 
-		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+		BYTE* pBgraData = new(std::nothrow) BYTE[nWidth * nHeight * 4];
 
 		if (!pBgraData)
 			return;

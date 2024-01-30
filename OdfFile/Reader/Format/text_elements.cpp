@@ -462,7 +462,10 @@ void paragraph::xlsx_convert(oox::xlsx_conversion_context & Context)
 void paragraph::pptx_convert(oox::pptx_conversion_context & Context)
 {
     Context.get_text_context().start_paragraph(attrs_.text_style_name_);
-    
+	
+	if (attrs_.xml_id_ && attrs_.xml_id_.value() != L"")
+		Context.get_slide_context().set_id(attrs_.xml_id_.value());
+	
   	for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->pptx_convert(Context); 

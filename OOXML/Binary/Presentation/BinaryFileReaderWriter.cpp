@@ -479,23 +479,29 @@ namespace NSBinPptxRW
 			}break;
 			case _CXIMAGE_FORMAT_SVG:
 			{
-				strExts = L".png";
-				oPathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
-				
-				NSFonts::IApplicationFonts* appFonts = NSFonts::NSApplication::Create();
-				appFonts->Initialize();
-
-				MetaFile::IMetaFile* pSvg= MetaFile::Create(appFonts);
-				if (pSvg->LoadFromFile(strInput.c_str()))
+				try
 				{
-					double x = 0, y = 0, w = 0, h = 0;
-					pSvg->GetBounds(&x, &y, &w, &h);
-					pSvg->ConvertToRaster(oPathOutput.GetPath().c_str(), _CXIMAGE_FORMAT_PNG, w, h);
-				}
-				RELEASEOBJECT(pSvg);
-				RELEASEOBJECT(appFonts);
+					strExts = L".png";
+					oPathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
 
-				oImageManagerInfo.sFilepathImage = oPathOutput.GetPath();
+					NSFonts::IApplicationFonts* appFonts = NSFonts::NSApplication::Create();
+					appFonts->Initialize();
+
+					MetaFile::IMetaFile* pSvg = MetaFile::Create(appFonts);
+					if (pSvg->LoadFromFile(strInput.c_str()))
+					{
+						double x = 0, y = 0, w = 0, h = 0;
+						pSvg->GetBounds(&x, &y, &w, &h);
+						pSvg->ConvertToRaster(oPathOutput.GetPath().c_str(), _CXIMAGE_FORMAT_PNG, w, h);
+					}
+					RELEASEOBJECT(pSvg);
+					RELEASEOBJECT(appFonts);
+
+					oImageManagerInfo.sFilepathImage = oPathOutput.GetPath();
+				}
+				catch (...)
+				{
+				}
 			}break;
 			default:
 			{
@@ -1343,11 +1349,14 @@ namespace NSBinPptxRW
 	{
 		if (m_lPosition > 0)
 		{
-			CFileBinary::WriteFile(m_pStreamData, m_lPosition);
+			bool result = CFileBinary::WriteFile(m_pStreamData, m_lPosition);
+			if (result)
+			{
+				m_lPositionFlushed += m_lPosition;
+				m_lPosition = 0;
+				m_pStreamCur = m_pStreamData;
+			}
 		}
-		m_lPositionFlushed += m_lPosition;
-		m_lPosition = 0;
-		m_pStreamCur = m_pStreamData;
 	}
 	void CStreamBinaryWriter::WriteReserved(size_t lCount)
 	{
@@ -1725,19 +1734,24 @@ namespace NSBinPptxRW
 					if (m_pManager->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX)	strMediaRelsPath = L"media/";		
 					else														strMediaRelsPath = L"../media/";
 					
-					strMediaRelsPath += mediaFile->filename().GetFilename();				
+					const std::wstring filename = mediaFile->filename().GetFilename();
 
-					if (additionalFile.is<OOX::Video>() || additionalFile.is<OOX::Audio>())
+					if (!filename.empty())
 					{
-						m_pWriter->WriteString(L"<Relationship Id=\"" + strRid
-							+ L"\" Type=\"http://schemas.microsoft.com/office/2007/relationships/media\" Target=\"" +
-							strMediaRelsPath + L"\"" + (mediaFile->IsExternal() ? L" TargetMode=\"External\"" : L"") + L"/>");
-					}
-					else
-					{
-						m_pWriter->WriteString(L"<Relationship Id=\"" + strRid
-							+ L"\" Type=\"" + additionalFile->type().RelationType() + L"\" Target=\"" +
-							strMediaRelsPath + L"\"" + (mediaFile->IsExternal() ? L" TargetMode=\"External\"" : L"") + L"/>");
+						strMediaRelsPath += filename;
+
+						if (additionalFile.is<OOX::Video>() || additionalFile.is<OOX::Audio>())
+						{
+							m_pWriter->WriteString(L"<Relationship Id=\"" + strRid
+								+ L"\" Type=\"http://schemas.microsoft.com/office/2007/relationships/media\" Target=\"" +
+								strMediaRelsPath + L"\"" + (mediaFile->IsExternal() ? L" TargetMode=\"External\"" : L"") + L"/>");
+						}
+						else
+						{
+							m_pWriter->WriteString(L"<Relationship Id=\"" + strRid
+								+ L"\" Type=\"" + additionalFile->type().RelationType() + L"\" Target=\"" +
+								strMediaRelsPath + L"\"" + (mediaFile->IsExternal() ? L" TargetMode=\"External\"" : L"") + L"/>");
+						}
 					}
 				}
 			}

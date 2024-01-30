@@ -20,9 +20,7 @@ namespace MetaFile
 	{}
 
 	CEmfInterpretatorSvg::~CEmfInterpretatorSvg()
-	{
-
-	}
+	{}
 
 	void CEmfInterpretatorSvg::CreateConditional(IMetaFileBase *pParser)
 	{
@@ -45,10 +43,10 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_HEADER(const TEmfHeader &oTEmfHeader)
 	{
-		m_oViewport.dLeft   = oTEmfHeader.oFramePx.Left;
-		m_oViewport.dTop    = oTEmfHeader.oFramePx.Top;
-		m_oViewport.dRight  = oTEmfHeader.oFramePx.Right;
-		m_oViewport.dBottom = oTEmfHeader.oFramePx.Bottom;
+		m_oViewport.dLeft   = std::min(oTEmfHeader.oFramePx.Left, oTEmfHeader.oFramePx.Right );
+		m_oViewport.dTop    = std::min(oTEmfHeader.oFramePx.Top,  oTEmfHeader.oFramePx.Bottom);
+		m_oViewport.dRight  = std::max(oTEmfHeader.oFramePx.Left, oTEmfHeader.oFramePx.Right );
+		m_oViewport.dBottom = std::max(oTEmfHeader.oFramePx.Top,  oTEmfHeader.oFramePx.Bottom);
 
 		m_pXmlWriter->WriteNodeBegin(L"svg", true);
 		m_pXmlWriter->WriteAttribute(L"xmlns", L"http://www.w3.org/2000/svg");
@@ -56,43 +54,42 @@ namespace MetaFile
 
 		UpdateSize();
 
-		if (m_oViewport.GetWidth() != 0)
-			m_pXmlWriter->WriteAttribute(L"width", ConvertToWString(m_oViewport.GetWidth()));
-
-		if (m_oViewport.GetHeight() != 0)
-			m_pXmlWriter->WriteAttribute(L"height", ConvertToWString(m_oViewport.GetHeight()));
-
-		double dXScale = 1, dYScale = 1, dXTranslate = 0, dYTranslate = 0;
+		double dXScale = 1., dYScale = 1.;
 
 		if (0 != m_oSizeWindow.X)
-		{
 			dXScale = m_oSizeWindow.X / m_oViewport.GetWidth();
-			dXTranslate = m_oViewport.GetWidth() / 2 * std::abs(dXScale - 1);
-
-			if (dXScale < 1)
-				dXTranslate = -dXTranslate;
-		}
 
 		if (0 != m_oSizeWindow.Y)
-		{
 			dYScale = m_oSizeWindow.Y / m_oViewport.GetHeight();
-			dYTranslate = m_oViewport.GetHeight() / 2 * std::abs(dYScale - 1);
 
-			if (dYScale < 1)
-				dYTranslate = -dYTranslate;
-		}
+		if (m_oViewport.GetWidth() != 0)
+			m_pXmlWriter->WriteAttribute(L"width", ConvertToWString(m_oViewport.GetWidth() * dXScale));
 
-		if (1 != dXScale || 1 != dYScale)
-			m_pXmlWriter->WriteAttribute(L"transform", L"matrix(" + std::to_wstring(dXScale) + L",0,0," + std::to_wstring(dYScale) + L',' + ConvertToWString(dXTranslate) + L',' + ConvertToWString(dYTranslate) + L')');
+		if (m_oViewport.GetHeight() != 0)
+			m_pXmlWriter->WriteAttribute(L"height", ConvertToWString(m_oViewport.GetHeight() * dYScale));
 
 		m_pXmlWriter->WriteNodeEnd(L"svg", true, false);
+
+		if (!Equals(1., dXScale) || !Equals(1., dYScale))
+		{
+			m_pXmlWriter->WriteNodeBegin(L"g", true);
+
+			m_pXmlWriter->WriteAttribute(L"transform", L"scale(" + ConvertToWString(dXScale) + L',' + ConvertToWString(dYScale) + L')');
+
+			m_pXmlWriter->WriteNodeEnd(L"g", true, false);
+		}
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_EOF()
 	{
 		CloseClip();
+
 		if (!m_wsDefs.empty())
 			m_pXmlWriter->WriteString(L"<defs>" + m_wsDefs + L"</defs>");
+
+		if (!Equals(m_oSizeWindow.X, m_oViewport.GetWidth()) || !Equals(m_oSizeWindow.Y, m_oViewport.GetHeight()))
+			m_pXmlWriter->WriteNodeEnd(L"g", false, false);
+
 		m_pXmlWriter->WriteNodeEnd(L"svg", false, false);
 	}
 
@@ -936,10 +933,10 @@ namespace MetaFile
 
 		if (4 == arVertex.size())
 		{
-			arAttributes.push_back({L"x",      std::to_wstring(std::min(arVertex[0].nX, arVertex[1].nX))});
-			arAttributes.push_back({L"y",      std::to_wstring(std::min(arVertex[0].nY, arVertex[2].nY))});
-			arAttributes.push_back({L"width",  std::to_wstring(std::abs(arVertex[1].nX - arVertex[0].nX))});
-			arAttributes.push_back({L"height", std::to_wstring(std::abs(arVertex[2].nY - arVertex[0].nY))});
+			arAttributes.push_back({L"x",      ConvertToWString(std::min(arVertex[0].nX, arVertex[1].nX))});
+			arAttributes.push_back({L"y",      ConvertToWString(std::min(arVertex[0].nY, arVertex[2].nY))});
+			arAttributes.push_back({L"width",  ConvertToWString(std::abs(arVertex[1].nX - arVertex[0].nX))});
+			arAttributes.push_back({L"height", ConvertToWString(std::abs(arVertex[2].nY - arVertex[0].nY))});
 			WriteNode(L"rect" , arAttributes);
 		}
 		else if (3 == arVertex.size())
@@ -1161,7 +1158,7 @@ namespace MetaFile
 		int nColor = m_pParser->GetTextColor();
 
 		if (0 != nColor)
-			arNodeAttributes.push_back({L"fill", L"rgb(" + INTCOLOR_TO_RGB(nColor) + L')'});
+			arNodeAttributes.push_back({L"fill", CalculateColor(nColor, 255)});
 
 		double dFontHeight = std::fabs(pFont->GetHeight());
 
@@ -1393,11 +1390,11 @@ namespace MetaFile
 			m_pParser->GetTransform()->Apply(oTempRect.Left,  oTempRect.Top);
 			m_pParser->GetTransform()->Apply(oTempRect.Right, oTempRect.Bottom);
 
-			wsValue +=	L"M "  + ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Top) +
-			            L" L " + ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Top) + L' ' +
-			                     ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Bottom) + L' ' +
-			                     ConvertToWString(oTempRect.Left)	+ L',' + ConvertToWString(oTempRect.Bottom) + L' ' +
-			                     ConvertToWString(oTempRect.Left)	+ L',' + ConvertToWString(oTempRect.Top) + L' ';
+			wsValue += L"M "  + ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Top)    +
+			           L" L " + ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Top)    + L' ' +
+			                    ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Bottom) + L' ' +
+			                    ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Bottom) + L' ' +
+			                    ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Top)    + L' ';
 		}
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
@@ -1412,73 +1409,17 @@ namespace MetaFile
 	{
 		
 	}
-	
+
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_RESTORE(unsigned int)
 	{
 		m_bUpdatedClip = false;
 	}
 
-	void CEmfInterpretatorSvg::DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight)
+	void CEmfInterpretatorSvg::DrawBitmap(double dX, double dY, double dW, double dH, BYTE *pBuffer, unsigned int unWidth, unsigned int unHeight)
 	{
-		if (NULL == pBuffer || 0 == dW || 0 == dH || 0 == unWidth || 0 == unHeight)
-			return;
-
-		if (1 == unWidth && 1 == unHeight)
-		{
-			NodeAttributes arAttributes = {{L"x",      ConvertToWString(dX)},
-			                               {L"y",      ConvertToWString(dY)},
-			                               {L"width",  ConvertToWString(dW)},
-			                               {L"height", ConvertToWString(dH)},
-			                               {L"fill", L"rgb(" + std::to_wstring(pBuffer[2]) + L',' + std::to_wstring(pBuffer[1]) + L',' + std::to_wstring(pBuffer[0]) + L',' + std::to_wstring(pBuffer[3]) + L')'}};
-
-			AddTransform(arAttributes);
-
-			WriteNode(L"rect", arAttributes);
-
-			return;
-		}
-
-		CBgraFrame  oFrame;
-
-		oFrame.put_Data(pBuffer);
-		oFrame.put_Width(unWidth);
-		oFrame.put_Height(unHeight);
-
-		BYTE* pNewBuffer = NULL;
-		int nNewSize = 0;
-
-		oFrame.Encode(pNewBuffer, nNewSize, 4);
-		oFrame.put_Data(NULL);
-
-		if (0 < nNewSize)
-		{
-			int nImageSize = NSBase64::Base64EncodeGetRequiredLength(nNewSize);
-			unsigned char* ucValue = new unsigned char[nImageSize];
-
-			if (NULL == ucValue)
-				return;
-
-			NSBase64::Base64Encode(pNewBuffer, nNewSize, ucValue, &nImageSize);
-			std::wstring wsValue(ucValue, ucValue + nImageSize);
-
-			RELEASEARRAYOBJECTS(ucValue);
-
-			NodeAttributes arAttributes = {{L"x",      ConvertToWString(dX)},
-			                               {L"y",      ConvertToWString(dY)},
-			                               {L"width",  ConvertToWString(dW)},
-			                               {L"height", ConvertToWString(dH)},
-			                               {L"xlink:href", L"data:image/png;base64," + wsValue}};
-
-			AddTransform(arAttributes);
-			AddClip();
-
-			WriteNode(L"image", arAttributes);
-		}
-
-		if (NULL != pNewBuffer)
-			delete [] pNewBuffer;
+		CInterpretatorSvgBase::DrawBitmap(dX, dY, dW, dH, pBuffer, unWidth, unHeight);
 	}
-	
+
 	void CEmfInterpretatorSvg::ResetClip()
 	{
 		CInterpretatorSvgBase::ResetClip();

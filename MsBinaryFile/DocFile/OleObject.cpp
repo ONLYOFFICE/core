@@ -371,7 +371,8 @@ void OleObject::processLinkInfoStream( VirtualStreamReader& reader )
 
 	cch = reader.ReadInt16();
 	str = reader.ReadBytes( ( cch * 2 ), true );
-	FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &this->Link, str, ( cch * 2 ), ENCODING_UTF16 );
+
+	this->Link = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)(str), cch);
 	RELEASEARRAYOBJECTS( str );
 
 	//skip the terminating zero of the Unicode string

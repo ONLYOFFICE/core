@@ -67,6 +67,8 @@ const long c_nTableCell			= 0x2000;
 const long c_nMaskType          = 0x3000;
 const long c_nResetMaskType     = 0x4000;
 
+const long c_nLayerType         = 0x5000;
+
 const long c_nPDFTilingFill				= 0x2001;
 const long c_nPDFTilingFillIteration	= 0x2002;
 
@@ -144,6 +146,7 @@ public:
 		FormField   = 3, // Обратная совместимость для docxf
 		Annotaion   = 4,
 		DeleteAnnot = 5,
+		WidgetsInfo = 6,
 
 		Undefined   = 255
 	};
@@ -354,6 +357,9 @@ public:
 
 	virtual HRESULT IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedCommandType& type) { return S_FALSE; }
 	virtual HRESULT AdvancedCommand(IAdvancedCommand* command) { return S_FALSE; }
+
+	// graphics layer settings
+	virtual HRESULT put_LayerOpacity(double dValue) { return S_FALSE; }
 };
 
 #define PROPERTY_RENDERER(NameBase, Name, Type)    \

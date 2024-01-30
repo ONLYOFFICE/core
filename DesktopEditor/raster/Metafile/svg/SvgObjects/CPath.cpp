@@ -304,8 +304,12 @@ namespace SVG
 			if ((int)(dStartAngle / 90.) == dStartAngle / 90.)
 				dEndAngle = dStartAngle + ((dSweep > 0.) ? 90. : -90.);
 			else
+			{
 				dEndAngle = copysign(ceil(std::abs(dStartAngle) / 90.), dStartAngle) * ((dSweep > 0. || dStartAngle < 0.) ? 90. : -90.);
-
+			
+				if (dStartAngle < 0. && dSweep > 0.)
+					dEndAngle += 90.;
+			}
 			if (std::abs(dAngle - dEndAngle) > std::abs(dSweep))
 				dEndAngle = dAngle + dSweep;
 
@@ -453,6 +457,7 @@ namespace SVG
 
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
+		SetOpacity(mAttributes, ushLevel, bHardMode);
 		SetMarker(mAttributes, ushLevel, bHardMode);
 
 		std::map<std::wstring, std::wstring>::const_iterator oIter = mAttributes.find(L"fill-rule");
@@ -490,7 +495,7 @@ namespace SVG
 	}
 
 	void CPath::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
-	{	
+	{
 		if (ApplyStroke(pRenderer, &pStyles->m_oStroke))
 			nTypePath += c_nStroke;
 
@@ -722,7 +727,7 @@ namespace SVG
 	}
 
 	CMovingPath::CMovingPath(const CPath *pPath)
-	    : m_pPath(pPath), m_oPosition{DBL_MIN, DBL_MIN}
+	    : m_pPath(pPath), m_oPosition{0., 0.}
 	{
 		ToStart();
 	}

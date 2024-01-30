@@ -145,6 +145,15 @@ namespace OOX
 												L"http://schemas.microsoft.com/office/2006/relationships/xlBinaryIndex",
 												L"worksheets/binaryIndex", true);
 
+			const FileType Timeline			(L"../timelines", L"timeline.xml",
+												L"application/vnd.ms-excel.timeline+xml",
+												L"http://schemas.microsoft.com/office/2011/relationships/timeline",
+												L"timelines/timeline", true, true);
+
+			const FileType TimelineCache	(L"timelineCaches", L"timelineCache.xml",
+												L"application/vnd.ms-excel.timelineCache+xml",
+												L"http://schemas.microsoft.com/office/2011/relationships/timelineCache",
+												L"timelineCaches/timelineCache", true, true);
 			//onlyoffice workbook comments
 			const FileType WorkbookComments(L"", L"workbookComments.bin",
 												L"",

@@ -53,11 +53,6 @@
 
 namespace NExtractTools
 {
-	static const wchar_t* gc_sDoctRendererXml =
-		_T("<Settings><SrcFileType>%d</SrcFileType><DstFileType>%d</DstFileType><SrcFilePath>%ls</SrcFilePath><DstFilePath>%ls</DstFilePath><FontsDirectory>%ls</FontsDirectory><ImagesDirectory>%ls</")
-		_T("ImagesDirectory><ThemesDirectory>%ls</ThemesDirectory><Changes TopItem=\"%d\">%ls</Changes>%ls</Settings>");
-	static const wchar_t* gc_sDoctRendererMailMergeXml = _T("<MailMergeData DatabasePath=\"%ls\" Start=\"%d\" End=\"%d\" Field=\"%ls\" />");
-
 	typedef enum tagTConversionDirection
 	{
 		TCD_ERROR,
@@ -220,17 +215,17 @@ namespace NExtractTools
 		TCD_EPUB2DOCX,
 		TCD_EPUB2DOCT,
 		TCD_EPUB2DOCT_BIN,
-
-		TCD_MAILMERGE,
-		TCD_T2,
-		TCD_DOCT_BIN2,
-		TCD_XLST_BIN2,
-		TCD_PPTT_BIN2,
-		TCD_DOCUMENT2,
-		TCD_SPREADSHEET2,
-		TCD_PRESENTATION2,
-		TCD_CROSSPLATFORM2,
-		TCD_CANVAS_PDF2
+        TCD_MAILMERGE,
+        TCD_T2,
+        TCD_DOCT_BIN2,
+        TCD_XLST_BIN2,
+        TCD_PPTT_BIN2,
+        TCD_DOCUMENT2,
+        TCD_SPREADSHEET2,
+        TCD_PRESENTATION2,
+        TCD_CROSSPLATFORM2,
+        TCD_CANVAS_PDF2,
+        TCD_DRAW2
 	} TConversionDirection;
 
 	typedef enum tagTCsvDelimiter
@@ -243,13 +238,12 @@ namespace NExtractTools
 		TCSVD_SPACE = 5
 	} TCsvDelimiter;
 
-	const TConversionDirection getConversionDirectionFromExt(const std::wstring& sFile1, const std::wstring& sFile2);
+	int getReturnErrorCode(_UINT32 nDefine);
 
-	static bool copyOrigin(const std::wstring& sFileFrom, const std::wstring& sFileTo)
-	{
-		size_t nIndex = sFileFrom.rfind('.');
-		return NSFile::CFileBinary::Copy(sFileFrom, NSSystemPath::GetDirectoryName(sFileTo) + FILE_SEPARATOR_STR + _T("origin") + sFileFrom.substr(nIndex));
-	}
+	const TConversionDirection getConversionDirectionFromExt(const std::wstring& sFile1, const std::wstring& sFile2);
+	const TConversionDirection getConversionDirection(const std::wstring& sArg3);
+
+	bool copyOrigin(const std::wstring& sFileFrom, const std::wstring& sFileTo);
 
 	class InputParamsMailMerge
 	{
@@ -455,6 +449,35 @@ namespace NExtractTools
 			compressed = 0;
 			uncompressed = 0;
 		}
+	};
+
+	class ConvertParams
+	{
+	public:
+		std::wstring m_sTempDir;
+		std::wstring m_sThemesDir;
+
+		std::wstring m_sEditorWithChanges;
+
+		// [docx_dir2doct_bin, xlsx_dir2xlst_bin, pptx_dir2pptt_bin] methods
+		std::wstring m_sTempParamOOXMLFile;
+
+		// for doct_bin2docx_dir, xlst_bin2xlsx_dir, pptt_bin2pptx_dir
+		std::wstring m_sTempResultOOXMLDirectory;
+
+		// xlsx_dir2xlst_bin
+		bool m_bTempIsXmlOptions = false;
+
+		bool m_bIsTemplate = false;
+		bool m_bIsPaid = false;
+
+		std::wstring m_sMediaDirectory;
+		std::wstring m_sInternalMediaDirectory;
+
+		std::string m_sPrintPages;
+
+		std::wstring m_sPdfOformMetaName;
+		std::wstring m_sPdfOformMetaData;
 	};
 
 	class InputParams
@@ -929,12 +952,23 @@ namespace NExtractTools
 					if (nFormatFrom != FileFormatChecker.nFileType && FileFormatChecker.nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN)
 					{
 						nFormatFrom = FileFormatChecker.nFileType;
-						changeFormatFrom(nFormatFrom, FileFormatChecker.bMacroEnabled);
+						*m_nFormatFrom = nFormatFrom;
+						
+						 changeFormatFromPrev(nFormatFrom); 
 					}
 				}
 				eRes = processDownloadFile();
 				if (TCD_AUTO != eRes)
 					return eRes;
+
+				if ((nFormatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF ||
+					 nFormatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM ||
+					 nFormatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF) &&
+					 nFormatTo == AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF)
+				{
+					nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF;
+					*m_nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF;
+				}
 
 				if (NULL != m_oMailMergeSend)
 					eRes = TCD_MAILMERGE;
@@ -948,6 +982,8 @@ namespace NExtractTools
 					eRes = TCD_SPREADSHEET2;
 				else if (0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & nFormatFrom))
 					eRes = TCD_PRESENTATION2;
+				else if (0 != (AVS_OFFICESTUDIO_FILE_DRAW & nFormatFrom))
+					eRes = TCD_DRAW2;
 				else if (0 != (AVS_OFFICESTUDIO_FILE_TEAMLAB & nFormatFrom))
 					eRes = TCD_T2;
 				else if (AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatFrom)
@@ -1107,7 +1143,7 @@ namespace NExtractTools
 			}
 			return nRes;
 		}
-		void changeFormatFrom(int formatFrom, bool bMacroEnabled)
+		void changeFormatFromPrev(int formatFrom)
 		{
 			*m_nFormatFrom = formatFrom;
 			int toFormat = *m_nFormatTo;
@@ -1129,22 +1165,32 @@ namespace NExtractTools
 			}
 			else if (AVS_OFFICESTUDIO_FILE_OTHER_OOXML == toFormat || AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
 			{
-				if (AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == formatFrom || AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom))
+				if (formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF ||
+					formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT ||
+					formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML ||
+					formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT ||
+					formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB ||
+					formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2 ||
+					formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_MOBI ||
+					formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT ||
+					formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT ||
+					formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER ||
+					formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF)
+				{
+					if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
+					}
+					else
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
+					}
+				}
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == formatFrom || AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom))
 				{
 					if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
 					{
 						toFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
-					}
-					else
-					{
-						if (bMacroEnabled)
-						{
-							toFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM;
-						}
-						else
-						{
-							toFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
-						}
 					}
 				}
 				else if (AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == formatFrom || AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & formatFrom))
@@ -1152,17 +1198,6 @@ namespace NExtractTools
 					if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
 					{
 						toFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
-					}
-					else
-					{
-						if (bMacroEnabled)
-						{
-							toFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM;
-						}
-						else
-						{
-							toFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
-						}
 					}
 				}
 				else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == formatFrom)
@@ -1175,16 +1210,59 @@ namespace NExtractTools
 					{
 						toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
 					}
+				}
+				COfficeFileFormatChecker FileFormatChecker;
+				std::wstring sNewExt = FileFormatChecker.GetExtensionByType(toFormat);
+				
+				size_t nIndex = m_sFileTo->rfind('.');
+				if (false == sNewExt.empty())
+				{
+					if (std::wstring::npos != nIndex)
+						m_sFileTo->replace(nIndex, std::wstring::npos, sNewExt);
+					else
+						m_sFileTo->append(sNewExt);
+				}
+			}
+			*m_nFormatTo = toFormat;
+		}
+		void changeFormatFromPost(int formatFrom, bool bMacroEnabled)
+		{
+			*m_nFormatFrom = formatFrom;
+			int toFormat = *m_nFormatTo;
+
+			if (AVS_OFFICESTUDIO_FILE_OTHER_OOXML == toFormat)
+			{
+				if (AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == formatFrom || AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom))
+				{
+					if (bMacroEnabled)
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM;
+					}
 					else
 					{
-						if (bMacroEnabled)
-						{
-							toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM;
-						}
-						else
-						{
-							toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-						}
+						toFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
+					}
+				}
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == formatFrom || AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & formatFrom))
+				{
+					if (bMacroEnabled)
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM;
+					}
+					else
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
+					}
+				}
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_WORD == formatFrom || AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom))
+				{
+					if (bMacroEnabled)
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM;
+					}
+					else
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
 					}
 				}
 				size_t nIndex = m_sFileTo->rfind('.');
@@ -1216,229 +1294,26 @@ namespace NExtractTools
 		}
 	};
 
-	static std::wstring string_replaceAll(std::wstring str, const std::wstring& from, const std::wstring& to)
-	{
-		size_t start_pos = 0;
-		while ((start_pos = str.find(from, start_pos)) != std::wstring::npos)
-		{
-			str.replace(start_pos, from.length(), to);
-			start_pos += to.length();
-		}
-		return str;
-	}
-	static int getReturnErrorCode(_UINT32 nDefine)
-	{
-		return 0 == nDefine ? 0 : nDefine - AVS_ERROR_FIRST - AVS_FILEUTILS_ERROR_FIRST;
-	}
+	// utils
+	std::wstring string_replaceAll(std::wstring str, const std::wstring& from, const std::wstring& to);
+	bool compare_string_by_length(const std::wstring& x, const std::wstring& y);
 
-	static std::wstring getXMLOptionsFromFile(std::wstring xmlFileName)
-	{
-		std::wstring sXMLOptions;
-
-		std::wifstream options_stream;
-#if defined(_WIN32) || defined(_WIN64)
-		options_stream.open(xmlFileName.c_str());
-#else
-		options_stream.open(NSFile::CUtf8Converter::GetUtf8StringFromUnicode(xmlFileName));
-#endif
-		if (options_stream.is_open())
-		{
-			while (true)
-			{
-				std::wstring line;
-				std::getline(options_stream, line);
-
-				if (line.size() < 1)
-					break;
-				sXMLOptions += line;
-			}
-			options_stream.close();
-		}
-		return sXMLOptions;
-	}
-
-	static const TConversionDirection getConversionDirection(const std::wstring& sArg3)
-	{
-		TConversionDirection res = TCD_ERROR;
-		if (0 == sArg3.compare(_T("auto")))
-		{
-			res = TCD_AUTO;
-		}
-		else if (0 == sArg3.compare(_T("docx2doct")))
-		{
-			res = TCD_DOCX2DOCT;
-		}
-		else if (0 == sArg3.compare(_T("docxflat2doct")))
-		{
-			res = TCD_DOCXFLAT2DOCT;
-		}
-		else if (0 == sArg3.compare(_T("doct2docx")))
-		{
-			res = TCD_DOCT2DOCX;
-		}
-		else if (0 == sArg3.compare(_T("docx2doct_bin")))
-		{
-			res = TCD_DOCX2DOCT_BIN;
-		}
-		else if (0 == sArg3.compare(_T("doct_bin2docx")))
-		{
-			res = TCD_DOCT_BIN2DOCX;
-		}
-		else if (0 == sArg3.compare(_T("xslx2xlst")))
-		{
-			res = TCD_XLSX2XLST;
-		}
-		else if (0 == sArg3.compare(_T("xslt2xlsx")))
-		{
-			res = TCD_XLST2XLSX;
-		}
-		else if (0 == sArg3.compare(_T("xslx2xlst_bin")))
-		{
-			res = TCD_XLSX2XLST_BIN;
-		}
-		else if (0 == sArg3.compare(_T("xslt_bin2xlsx")))
-		{
-			res = TCD_XLST_BIN2XLSX;
-		}
-		else if (0 == sArg3.compare(_T("pptx2pptt")))
-		{
-			res = TCD_PPTX2PPTT;
-		}
-		else if (0 == sArg3.compare(_T("pptt2pptx")))
-		{
-			res = TCD_PPTT2PPTX;
-		}
-		else if (0 == sArg3.compare(_T("pptx2pptt_bin")))
-		{
-			res = TCD_PPTX2PPTT_BIN;
-		}
-		else if (0 == sArg3.compare(_T("pptt_bin2pptx")))
-		{
-			res = TCD_PPTT_BIN2PPTX;
-		}
-		else if (0 == sArg3.compare(_T("zip2dir")))
-		{
-			res = TCD_ZIPDIR;
-		}
-		else if (0 == sArg3.compare(_T("dir2zip")))
-		{
-			res = TCD_UNZIPDIR;
-		}
-		else if (0 == sArg3.compare(_T("csv2xlsx")))
-		{
-			res = TCD_CSV2XLSX;
-		}
-		else if (0 == sArg3.compare(_T("csv2xlst")))
-		{
-			res = TCD_CSV2XLST;
-		}
-		else if (0 == sArg3.compare(_T("xlsx2csv")))
-		{
-			res = TCD_XLSX2CSV;
-		}
-		else if (0 == sArg3.compare(_T("xlst2csv")))
-		{
-			res = TCD_XLST2CSV;
-		}
-		else if (0 == sArg3.compare(_T("bin2pdf")))
-		{
-			res = TCD_BIN2PDF;
-		}
-		else if (0 == sArg3.compare(_T("bin2t")))
-		{
-			res = TCD_BIN2T;
-		}
-		else if (0 == sArg3.compare(_T("t2bin")))
-		{
-			res = TCD_T2BIN;
-		}
-		else if (0 == sArg3.compare(_T("ppsx2pptx")))
-		{
-			res = TCD_PPSX2PPTX;
-		}
-		else if (0 == sArg3.compare(_T("potx2pptx")))
-		{
-			res = TCD_POTX2PPTX;
-		}
-		else if (0 == sArg3.compare(_T("potm2pptm")))
-		{
-			res = TCD_POTM2PPTM;
-		}
-		else if (0 == sArg3.compare(_T("xltx2xlsx")))
-		{
-			res = TCD_XLTX2XLSX;
-		}
-		else if (0 == sArg3.compare(_T("xltm2xlsm")))
-		{
-			res = TCD_XLTM2XLSM;
-		}
-		else if (0 == sArg3.compare(_T("dotx2docx")))
-		{
-			res = TCD_DOTX2DOCX;
-		}
-		else if (0 == sArg3.compare(_T("dotm2docm")))
-		{
-			res = TCD_DOTM2DOCM;
-		}
-		else if (0 == sArg3.compare(_T("ppt2pptx")))
-		{
-			res = TCD_PPT2PPTX;
-		}
-		else if (0 == sArg3.compare(_T("ppt2pptm")))
-		{
-			res = TCD_PPT2PPTM;
-		}
-		else if (0 == sArg3.compare(_T("doc2docx")))
-		{
-			res = TCD_DOC2DOCX;
-		}
-		else if (0 == sArg3.compare(_T("doc2docm")))
-		{
-			res = TCD_DOC2DOCM;
-		}
-		else if (0 == sArg3.compare(_T("rtf2docx")))
-		{
-			res = TCD_RTF2DOCX;
-		}
-		else if (0 == sArg3.compare(_T("docx2rtf")))
-		{
-			res = TCD_DOCX2RTF;
-		}
-		else if (0 == sArg3.compare(_T("txt2docx")))
-		{
-			res = TCD_TXT2DOCX;
-		}
-		else if (0 == sArg3.compare(_T("docx2txt")))
-		{
-			res = TCD_DOCX2TXT;
-		}
-		return res;
-	}
-
-	static bool compare_string_by_length(const std::wstring& x, const std::wstring& y)
-	{
-		if (!x.empty() && !y.empty())
-		{
-			if (x.length() == y.length())
-				return x.compare(y) <= 0;
-			else
-				return ((int)(x.length()) - (int)(y.length())) <= 0;
-		}
-		else
-		{
-			if (!x.empty())
-				return false;
-			else if (!y.empty())
-				return true;
-		}
-		return true;
-	}
 	std::wstring getMailMergeXml(const std::wstring& sJsonPath, int nRecordFrom, int nRecordTo, const std::wstring& sField);
+
 	std::wstring getDoctXml(
-		NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, NSDoctRenderer::DoctRendererFormat::FormatFile eToType, const std::wstring& sTFileSrc, const std::wstring& sPdfBinFile,
-		const std::wstring& sImagesDirectory, const std::wstring& sThemeDir, int nTopIndex, const std::wstring& sMailMerge, const InputParams& params);
-	_UINT32 apply_changes(
-		const std::wstring& sBinFrom, const std::wstring& sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, const std::wstring& sThemeDir, std::wstring& sBinTo,
+		NSDoctRenderer::DoctRendererFormat::FormatFile eFromType,
+		NSDoctRenderer::DoctRendererFormat::FormatFile eToType,
+		const std::wstring& sTFileSrc, const std::wstring& sPdfBinFile,
+		const std::wstring& sImagesDirectory, const std::wstring& sThemeDir,
+		int nTopIndex,
+		const std::wstring& sMailMerge,
 		const InputParams& params);
+
+	_UINT32 apply_changes(
+		const std::wstring& sBinFrom, const std::wstring& sToResult,
+		NSDoctRenderer::DoctRendererFormat::FormatFile eType,
+		std::wstring& sBinTo,
+		const InputParams& params, const ConvertParams& convertParams);
+
 } // namespace NExtractTools
 #endif // CEXTRACTTOOLS_H

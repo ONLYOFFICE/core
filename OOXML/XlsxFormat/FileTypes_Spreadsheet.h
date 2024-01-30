@@ -89,6 +89,10 @@ namespace OOX
 
 			extern const FileType SpreadsheetFlat;
 
+			extern const FileType Timeline;
+
+			extern const FileType TimelineCache;
+
 		} // namespace FileTypes
 	}
 } // namespace OOX

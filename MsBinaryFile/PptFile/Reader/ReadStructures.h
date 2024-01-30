@@ -180,6 +180,7 @@ public:
 
     void SetData(BYTE* pCompress, LONG lCompressSize, LONG lUncompressSize, bool bIsCompressed);
 
+    int ToBuffer(BYTE*& Data);
     void ToFile(NSFile::CFileBinary* pFile);
 };
 

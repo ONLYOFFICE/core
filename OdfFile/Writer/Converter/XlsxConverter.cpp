@@ -611,7 +611,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CLegacyDrawingHFWorksheet *oox_bac
 
 	oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(vmlDrawing.GetPointer());					
 		
-	for (boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator it = vmlDrawing->m_mapShapes.begin(); it!= vmlDrawing->m_mapShapes.end(); ++it)
+	for (std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator it = vmlDrawing->m_mapShapes.begin(); it!= vmlDrawing->m_mapShapes.end(); ++it)
 	{
 		OOX::Vml::CShape* pShape = dynamic_cast<OOX::Vml::CShape*>(it->second.pElement);
 
@@ -3173,25 +3173,25 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 		{
 			{
 				oox_table_position from = {}, to = {};
-				
-				convert(oCellAnchor->m_oFrom.GetPointer(), &from);	
+
+				convert(oCellAnchor->m_oFrom.GetPointer(), &from);
 				convert(oCellAnchor->m_oTo.GetPointer(), &to);
 
 				double x1 = 0, y1 = 0, x2 = 0, y2 = 0;
 				ods_context->current_table()->convert_position(from, x1, y1);
-				ods_context->current_table()->convert_position(to,	x2, y2);
-				
+				ods_context->current_table()->convert_position(to, x2, y2);
+
 				ods_context->drawing_context()->set_drawings_rect(x1, y1, x2 - x1, y2 - y1);
-			}		
+			}
 			ods_context->drawing_context()->start_drawing();
 			ods_context->drawing_context()->start_control(id);
-		
+
 			if (pControl->m_oName.IsInit())
 			{
 				ods_context->controls_context()->set_name(*pControl->m_oName);
 				ods_context->drawing_context()->set_name(*pControl->m_oName);
 			}
-//----------------------
+			//----------------------
 			if (oFormControlPr->m_oText.IsInit())
 			{
 				ods_context->controls_context()->set_label(*oFormControlPr->m_oText);
@@ -3199,13 +3199,13 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 			if (oFormControlPr->m_oFillColor.IsInit())
 			{
 				ods_context->drawing_context()->start_area_properties(true);
-					ods_context->drawing_context()->set_solid_fill(oFormControlPr->m_oFillColor->ToString());
+				ods_context->drawing_context()->set_solid_fill(oFormControlPr->m_oFillColor->ToString());
 				ods_context->drawing_context()->end_area_properties();
 			}
 			if (oFormControlPr->m_oBorderColor.IsInit())
 			{
 				ods_context->drawing_context()->start_line_properties();
-					ods_context->drawing_context()->set_line_color(oFormControlPr->m_oBorderColor->ToString());
+				ods_context->drawing_context()->set_line_color(oFormControlPr->m_oBorderColor->ToString());
 				ods_context->drawing_context()->end_line_properties();
 			}
 			if (oFormControlPr->m_oTextHAlign.IsInit())
@@ -3283,37 +3283,40 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 			//nullable_bool		m_oPasswordEdit;
 			//nullable<CListItems>							m_oItemLst;
 //---------------------
-			if (pControl->m_oControlPr->m_oLinkedCell.IsInit())
+			if (pControl->m_oControlPr.IsInit())
 			{
-				ods_context->controls_context()->set_linkedCell(*pControl->m_oControlPr->m_oLinkedCell);
+				if (pControl->m_oControlPr->m_oLinkedCell.IsInit())
+				{
+					ods_context->controls_context()->set_linkedCell(*pControl->m_oControlPr->m_oLinkedCell);
+				}
+				if (pControl->m_oControlPr->m_oListFillRange.IsInit())
+				{
+					ods_context->controls_context()->set_listFillRange(*pControl->m_oControlPr->m_oListFillRange);
+				}
+				if (pControl->m_oControlPr->m_oMacro.IsInit())
+				{
+					ods_context->controls_context()->set_macro(*pControl->m_oControlPr->m_oMacro);
+				}
+				if (pControl->m_oControlPr->m_oDisabled.IsInit())
+				{
+					ods_context->controls_context()->set_disabled(*pControl->m_oControlPr->m_oDisabled);
+				}
+				if (pControl->m_oControlPr->m_oPrint.IsInit())
+				{
+					ods_context->controls_context()->set_printable(*pControl->m_oControlPr->m_oPrint);
+				}
+				if (pControl->m_oControlPr->m_oLocked.IsInit())
+				{
+				}
+				//nullable_string m_oAltText;
+				//nullable_bool m_oAutoFill;
+				//nullable_bool m_oAutoLine;
+				//nullable_bool m_oAutoPict;
+				//nullable_bool m_oDde;
+				//nullable_bool m_oDefaultSize;
+				//nullable_string m_oCf;
+				//nullable_bool m_oRecalcAlways;
 			}
-			if (pControl->m_oControlPr->m_oListFillRange.IsInit())
-			{
-				ods_context->controls_context()->set_listFillRange(*pControl->m_oControlPr->m_oListFillRange);
-			}
-			if (pControl->m_oControlPr->m_oMacro.IsInit())
-			{
-				ods_context->controls_context()->set_macro(*pControl->m_oControlPr->m_oMacro);
-			}
-			if (pControl->m_oControlPr->m_oDisabled.IsInit())
-			{
-				ods_context->controls_context()->set_disabled(*pControl->m_oControlPr->m_oDisabled);
-			}
-			if (pControl->m_oControlPr->m_oPrint.IsInit())
-			{
-				ods_context->controls_context()->set_printable(*pControl->m_oControlPr->m_oPrint);
-			}
-			if (pControl->m_oControlPr->m_oLocked.IsInit())
-			{
-			}
-			//nullable_string						m_oAltText;
-			//nullable_bool							m_oAutoFill;
-			//nullable_bool							m_oAutoLine;
-			//nullable_bool							m_oAutoPict;
-			//nullable_bool							m_oDde;
-			//nullable_bool							m_oDefaultSize;
-			//nullable_string						m_oCf;
-			//nullable_bool							m_oRecalcAlways;
 //---------------------
 			ods_context->drawing_context()->end_control();
 			ods_context->drawing_context()->end_drawing();
@@ -3391,9 +3394,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSparklines *sparklines)
 	ods_context->current_table()->start_sparklines();
 		for (size_t i = 0; i < sparklines->m_arrItems.size(); ++i)
 		{
+			if (!sparklines->m_arrItems[i]) continue;
 			ods_context->current_table()->start_sparkline();
-				ods_context->current_table()->set_sparkline_range(*sparklines->m_arrItems[i]->m_oRef);
-				ods_context->current_table()->set_sparkline_cell(*sparklines->m_arrItems[i]->m_oSqRef);
+				if (sparklines->m_arrItems[i]->m_oRef.IsInit())
+					ods_context->current_table()->set_sparkline_range(*sparklines->m_arrItems[i]->m_oRef);
+				if (sparklines->m_arrItems[i]->m_oSqRef.IsInit())
+					ods_context->current_table()->set_sparkline_cell(*sparklines->m_arrItems[i]->m_oSqRef);
 			ods_context->current_table()->end_sparkline();
 		}
 	ods_context->current_table()->end_sparklines();

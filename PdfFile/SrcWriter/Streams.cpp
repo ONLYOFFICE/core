@@ -311,7 +311,7 @@ namespace PdfWriter
 		{
 			BYTE nChar = (BYTE)*sTxt++;
 
-			if ((isDictValue && NEEDS_ESCAPE_DICTVALUE(nChar)) || (!isDictValue && NEEDS_ESCAPE(nChar)))
+			if ((isDictValue && NEEDS_ESCAPE_DICTVALUE(nChar)) || (!isDictValue && NEEDS_ESCAPE_STR(nChar)))
 			{
 				sBuf[nIndex++] = '\\';
 				sBuf[nIndex++] = 0x30 + (nChar >> 6);
@@ -541,9 +541,33 @@ namespace PdfWriter
 		if (pEncrypt)
 		{
 			const BYTE* pBinary = pString->GetString();
+			unsigned int unLen = pString->GetLength();
+
 			WriteChar('<');
-			WriteBinary(pBinary, StrLen((const char*)pBinary, -1), pEncrypt);
+
+			BYTE* pNewBinary = NULL;
+			if (pString->IsUTF16())
+			{
+				std::string sUtf8((char*)pBinary, unLen);
+				std::wstring sUnicode = UTF8_TO_U(sUtf8);
+				unsigned int unLenUtf16 = 0;
+				unsigned short* pUtf16Data = NSStringExt::CConverter::GetUtf16FromUnicode(sUnicode, unLenUtf16, false);
+				unLenUtf16 *= 2;
+				unLen = unLenUtf16 + 2;
+
+				pNewBinary = new BYTE[unLenUtf16 + 2];
+				pNewBinary[0] = 0xFE;
+				pNewBinary[1] = 0xFF;
+				MemCpy(pNewBinary + 2, (BYTE*)pUtf16Data, unLenUtf16);
+				RELEASEARRAYOBJECTS(pUtf16Data);
+
+				pBinary = pNewBinary;
+			}
+
+			WriteBinary(pBinary, unLen, pEncrypt);
 			WriteChar('>');
+
+			RELEASEARRAYOBJECTS(pNewBinary);
 		}
 		else
 		{            
@@ -589,7 +613,6 @@ namespace PdfWriter
 		// Добавляем запись Filter
 		if (pDict->GetStream())
 		{
-			pDict->Remove("Filter");
 			unsigned int unFilter = pDict->GetFilter();
 			if (STREAM_FILTER_NONE != unFilter)
 			{
@@ -648,10 +671,7 @@ namespace PdfWriter
 			}
 		}
 
-		if (dict_type_SIGNATURE == pDict->GetDictType())
-			pDict->WriteSignatureToStream(this, pEncrypt);
-		else
-			pDict->WriteToStream(this, pEncrypt);
+		pDict->WriteToStream(this, pEncrypt);
 
 		pDict->Write(this);
 		WriteStr(">>");
@@ -661,7 +681,7 @@ namespace PdfWriter
 		{
 			CNumberObject* pLength = (CNumberObject*)pDict->Get("Length");			
 			// "Length" должен управляться таблицей Xref (флаг Indirect)
-			if (pLength && object_type_NUMBER == pLength->GetType() && pLength->IsIndirect())
+			if (pLength && object_type_NUMBER == pLength->GetType())
 			{
 				if (pEncrypt)
 					pEncrypt->Reset();
@@ -669,14 +689,14 @@ namespace PdfWriter
 				WriteStr("\012stream\015\012");
 				
 				unsigned int unStartSize = Tell();
-				WriteStream(pStream, pDict->GetFilter(), pEncrypt);
+				WriteStream(pStream, pDict->GetFilter(), pDict->GetDictType() == dict_type_STREAM ? NULL : pEncrypt);
 				pLength->Set(Tell() - unStartSize);
 
 				WriteStr("\012endstream");
 			}
 		}
 
-		pDict->AfterWrite();
+		pDict->AfterWrite(this);
 	}
     void CStream::Write(CObjectBase* pObject, CEncrypt* pEncrypt)
 	{

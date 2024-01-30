@@ -89,7 +89,7 @@ ods_table_state_ptr & ods_table_context::state()
 
 void ods_table_context::start_table_part(const std::wstring &name, std::wstring ref)
 {
-	if (!table_database_ranges_.root) create_element(L"table", L"database-ranges",table_database_ranges_.root,&context_);
+	if (!table_database_ranges_.root) create_element(L"table", L"database-ranges", table_database_ranges_.root, &context_);
 
 	office_element_ptr elm;
 	create_element(L"table", L"database-range",elm, &context_);
@@ -118,11 +118,17 @@ void ods_table_context::start_table_part(const std::wstring &name, std::wstring 
 	part_state.name = name;
 	part_state.ref = ref;
 
-	int r = ref.rfind(L":");
-	if (r < 0) return;//тута однозначно .. по правилам оох
+	size_t pos = ref.rfind(L"!");
+	if (pos != std::wstring::npos)
+	{
+		ref = ref.substr(pos + 1);
+	}
 
-	utils::parsing_ref (ref.substr(0, r), part_state.col_start, part_state.row_start);
-	utils::parsing_ref (ref.substr(r + 1, ref.size() - r), part_state.col_end, part_state.row_end);
+	pos = ref.rfind(L":");
+	if (pos == std::wstring::npos) return;//тута однозначно .. по правилам оох
+
+	utils::parsing_ref (ref.substr(0, pos), part_state.col_start, part_state.row_start);
+	utils::parsing_ref (ref.substr(pos + 1, ref.size() - pos), part_state.col_end, part_state.row_end);
 
 	state()->table_parts_.push_back(part_state);
 }
@@ -138,14 +144,22 @@ void ods_table_context::add_table_part_column(std::wstring name)
 	bool bQuotes = (std::wstring::npos != table_state_list_.back()->office_table_name_.find(L" "));
 
 	std::wstring ref = L"$";
-	
+	std::wstring refUse = L"$";
+
 	ref += (bQuotes ? L"'" : L"") + table_state_list_.back()->office_table_name_ + (bQuotes ? L"'" : L"") + L".";
+	refUse += (bQuotes ? L"'" : L"") + table_state_list_.back()->office_table_name_ + (bQuotes ? L"'" : L"") + L".";
 
 	ref += sCol + std::to_wstring(state()->table_parts_.back().row_start);
 	ref += L":";
 	ref += sCol + std::to_wstring(state()->table_parts_.back().row_end);
 
-	state()->table_parts_.back().columns.push_back(std::make_pair(name, ref));
+	refUse += sCol + std::to_wstring(state()->table_parts_.back().row_start + 1);
+	refUse += L":";
+	refUse += sCol + std::to_wstring(state()->table_parts_.back().row_end);
+
+	state()->mapTabled.insert(std::make_pair(name, refUse));
+
+	state()->table_parts_.back().columns.push_back(std::make_pair(name, refUse));
 }
 void ods_table_context::set_table_part_autofilter(bool val)
 {

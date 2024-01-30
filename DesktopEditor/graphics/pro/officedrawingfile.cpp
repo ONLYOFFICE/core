@@ -64,7 +64,7 @@ CBgraFrame* GetFrame(IOfficeDrawingFile* pFile, int nPageIndex, int nRasterW, in
     int nWidth  = (nRasterW > 0) ? nRasterW : ((int)dWidth  * 96 / dPageDpiX);
     int nHeight = (nRasterH > 0) ? nRasterH : ((int)dHeight * 96 / dPageDpiY);
 
-    BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+	BYTE* pBgraData = new(std::nothrow) BYTE[nWidth * nHeight * 4];
     if (!pBgraData)
     {
         RELEASEINTERFACE(pFontManager);

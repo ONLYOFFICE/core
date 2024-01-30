@@ -2,15 +2,21 @@
 
 #include "SvgObjects/CContainer.h"
 
+#define SVG_FILE_WIDTH  300
+#define SVG_FILE_HEIGHT 150
+
 CSvgFile::CSvgFile()
 	: m_oContainer(L"svg")
 {}
 
 CSvgFile::~CSvgFile()
-{}
+{
+	Clear();
+}
 
 bool CSvgFile::ReadFromBuffer(BYTE *pBuffer, unsigned int unSize)
 {
+	Clear();
 	return false;
 }
 
@@ -18,17 +24,9 @@ bool CSvgFile::OpenFromFile(const std::wstring &wsFile)
 {
 	Clear();
 
+	m_wsWorkingDirectory = NSFile::GetDirectoryName(wsFile);
+
 	return m_oParser.LoadFromFile(wsFile, &m_oContainer, this);
-}
-
-bool CSvgFile::Load(const std::wstring &wsContent)
-{
-	return false;
-}
-
-void CSvgFile::Close()
-{
-
 }
 
 bool CSvgFile::GetBounds(double &dX, double &dY, double &dWidth, double &dHeight) const
@@ -38,15 +36,15 @@ bool CSvgFile::GetBounds(double &dX, double &dY, double &dWidth, double &dHeight
 
 	SVG::TRect oWindow = m_oContainer.GetWindow();
 
-	dX      = oWindow.m_oX     .ToDouble(NSCSS::Pixel);
-	dY      = oWindow.m_oY     .ToDouble(NSCSS::Pixel);
-	dWidth  = oWindow.m_oWidth .ToDouble(NSCSS::Pixel);
-	dHeight = oWindow.m_oHeight.ToDouble(NSCSS::Pixel);
+	dX      = oWindow.m_oX     .ToDouble(NSCSS::Pixel, SVG_FILE_WIDTH);
+	dY      = oWindow.m_oY     .ToDouble(NSCSS::Pixel, SVG_FILE_HEIGHT);
+	dWidth  = oWindow.m_oWidth .ToDouble(NSCSS::Pixel, SVG_FILE_WIDTH);
+	dHeight = oWindow.m_oHeight.ToDouble(NSCSS::Pixel, SVG_FILE_HEIGHT);
 
 	if (SVG::Equals(0., dWidth))
-		dWidth = (!m_oContainer.GetViewBox().m_oWidth.Empty()) ? m_oContainer.GetViewBox().m_oWidth.ToDouble(NSCSS::Pixel) : 300;
+		dWidth = (!m_oContainer.GetViewBox().m_oWidth.Empty()) ? m_oContainer.GetViewBox().m_oWidth.ToDouble(NSCSS::Pixel) : SVG_FILE_WIDTH;
 	if (SVG::Equals(0., dHeight))
-		dHeight = (!m_oContainer.GetViewBox().m_oHeight.Empty()) ? m_oContainer.GetViewBox().m_oHeight.ToDouble(NSCSS::Pixel) : 150;
+		dHeight = (!m_oContainer.GetViewBox().m_oHeight.Empty()) ? m_oContainer.GetViewBox().m_oHeight.ToDouble(NSCSS::Pixel) : SVG_FILE_HEIGHT;
 
 	return true;
 }
@@ -66,6 +64,7 @@ bool CSvgFile::MarkObject(SVG::CObject *pObject)
 	if (NULL == pObject || pObject->GetId().empty())
 		return false;
 
+	pObject->AddRef();
 	m_mMarkedObjects[pObject->GetId()] = pObject;
 
 	return true;
@@ -91,6 +90,11 @@ SVG::CObject *CSvgFile::GetMarkedObject(const std::wstring &wsId) const
 	return NULL;
 }
 
+std::wstring CSvgFile::GetWorkingDirectory() const
+{
+	return m_wsWorkingDirectory;
+}
+
 void CSvgFile::AddStyles(const std::wstring &wsStyles)
 {
 	m_oSvgCalculator.AddStyles(wsStyles);
@@ -107,7 +111,7 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 	if (oWindow.m_oWidth.Empty() || oWindow.m_oWidth.Zero())
 	{
 		if (oViewBox.m_oWidth.Empty() || oViewBox.m_oWidth.Zero())
-			oWindow.m_oWidth =  300;
+			oWindow.m_oWidth =  SVG_FILE_WIDTH;
 		else
 		{
 			oWindow.m_oWidth = oViewBox.m_oWidth;
@@ -118,7 +122,7 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 	if (oWindow.m_oHeight.Empty() || oWindow.m_oHeight.Zero())
 	{
 		if (oViewBox.m_oHeight.Empty() || oViewBox.m_oHeight.Zero())
-			oWindow.m_oHeight =  150;
+			oWindow.m_oHeight =  SVG_FILE_HEIGHT;
 		else
 		{
 			oWindow.m_oHeight = oViewBox.m_oHeight;
@@ -126,9 +130,9 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 		}
 	}
 
-	double dViewBoxWidth  = oViewBox.m_oWidth.ToDouble(NSCSS::Pixel);
-	double dViewBoxHeight = oViewBox.m_oHeight.ToDouble(NSCSS::Pixel);
-	
+	double dViewBoxWidth  = oViewBox.m_oWidth.ToDouble(NSCSS::Pixel, SVG_FILE_WIDTH);
+	double dViewBoxHeight = oViewBox.m_oHeight.ToDouble(NSCSS::Pixel, SVG_FILE_HEIGHT);
+
 	double dWindowWidth  = oWindow.m_oWidth.ToDouble(NSCSS::Pixel, dViewBoxWidth);
 	double dWindowHeight = oWindow.m_oHeight.ToDouble(NSCSS::Pixel, dViewBoxHeight);
 
@@ -178,11 +182,9 @@ void CSvgFile::Clear()
 	m_oContainer.Clear();
 	m_oSvgCalculator.Clear();
 
-	for (MarkedMap::iterator oIter = m_mMarkedObjects.begin(); oIter != m_mMarkedObjects.end(); ++oIter)
-	{
-		if (SVG::AppliedObject == oIter->second->GetType())
-			delete oIter->second;
-	}
+	for (MarkedMap::reference oIter : m_mMarkedObjects)
+		RELEASEINTERFACE(oIter.second);
 
 	m_mMarkedObjects.clear();
+	m_wsWorkingDirectory.clear();
 }

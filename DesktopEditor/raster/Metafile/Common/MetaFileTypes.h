@@ -33,6 +33,7 @@
 #define _METAFILE_COMMON_METAFILETYPES_H
 
 #include <string>
+#include <cfloat>
 #include "../../../common/StringExt.h"
 
 #ifndef BYTE
@@ -396,17 +397,23 @@ namespace MetaFile
 			X *= scale;
 			Y *= scale;
 		}
-
-		friend bool operator!=(const TPoint<T>& oLeftRect, const TPoint<T>& oRightValue)
+		
+		bool operator==(const TPoint<T>& oPoint) const
 		{
-			return oLeftRect.X != oRightValue.X || oLeftRect.Y != oRightValue.Y;
+			return X == oPoint.X && Y == oPoint.Y;
 		}
 		
-		friend bool operator==(const TPoint<T>& oLeftRect, const TPoint<T>& oRightValue)
+		bool operator!=(const TPoint<T>& oPoint) const
 		{
-			return oLeftRect.X == oRightValue.X && oLeftRect.Y == oRightValue.Y;
+			return X != oPoint.X || Y != oPoint.Y;
 		}
 	};
+
+	template<>
+	bool TPoint<double>::operator==(const TPoint<double>& oPoint) const;
+
+	template<>
+	bool TPoint<double>::operator!=(const TPoint<double>& oPoint) const;
 
 	typedef TPoint<int>    TPointL;
 	typedef TPoint<short>  TPointS;
@@ -467,19 +474,8 @@ namespace MetaFile
 			Top    *= scale;
 			Right  *= scale;
 			Bottom *= scale;
-			
-			return *this;
-		}
 
-		friend bool operator!=(const TRect<T>& oLeftRect, const TRect<T>& oRightValue)
-		{
-			return oLeftRect.Left  != oRightValue.Left  || oLeftRect.Top    != oRightValue.Top    ||
-			       oLeftRect.Right != oRightValue.Right || oLeftRect.Bottom != oRightValue.Bottom;
-		}
-		friend bool operator==(const TRect<T>& oLeftRect, const TRect<T>& oRightValue)
-		{
-			return oLeftRect.Left  == oRightValue.Left  && oLeftRect.Top    == oRightValue.Top    &&
-			       oLeftRect.Right == oRightValue.Right && oLeftRect.Bottom == oRightValue.Bottom;
+			return *this;
 		}
 
 		bool Empty() const
@@ -514,8 +510,26 @@ namespace MetaFile
 			Right  = pOther->Right;
 			Bottom = pOther->Bottom;
 		}
+		
+		bool operator==(const TRect<T>& oRect) const
+		{
+			return Left  == oRect.Left  && Top    == oRect.Top    &&
+			       Right == oRect.Right && Bottom == oRect.Bottom;
+		}
+		
+		bool operator!=(const TRect<T>& oRect) const
+		{
+			return Left  != oRect.Left  || Top    != oRect.Top    ||
+			       Right != oRect.Right || Bottom != oRect.Bottom;
+		}
 	};
 
+	template<>
+	bool TRect<double>::operator==(const TRect<double>& oRect) const;
+
+	template<>
+	bool TRect<double>::operator!=(const TRect<double>& oRect) const;
+	
 	typedef TRect <int>    TRectL;
 	typedef TRect <short>  TRectS;
 	typedef TRect <double> TRectD;
@@ -551,7 +565,7 @@ namespace MetaFile
 		TXForm();
 		TXForm(const TXForm& oXForm);
 		TXForm(double m11, double m12, double m21, double m22, double dx, double dy);
-		
+
 		void Init();
 		void Copy(const TXForm* pOther);
 		void Multiply(TXForm &oOther, unsigned int ulMode);

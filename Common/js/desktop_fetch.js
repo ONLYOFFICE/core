@@ -45,5 +45,5 @@ if (internal_isLocal())
 }
 else
 {
-	getBinaryPromise = function() { return getBinaryPromise2(); }
+	getBinaryPromise = function() { return getBinaryPromise2.apply(undefined, arguments); }
 }

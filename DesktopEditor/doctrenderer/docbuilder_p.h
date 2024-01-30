@@ -102,6 +102,8 @@ namespace NSDoctRenderer
 			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_JPG;
 		else if (L"png" == sExt)
 			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_PNG;
+		else if (L"vsdx" == sExt)
+			nFormat = AVS_OFFICESTUDIO_FILE_DRAW_VSDX;
 		else if (L"docxf" == sExt)
 			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF;
 		else if (L"oform" == sExt)
@@ -425,6 +427,7 @@ public:
 
 	bool OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath, CV8Params* pParams = NULL);
 	bool SaveFileWithChanges(int type, const std::wstring& _path, const std::wstring& sJsonParams = L"");
+	bool InitVariables();
 };
 
 namespace NSDoctRenderer
@@ -598,6 +601,11 @@ namespace NSDoctRenderer
 				sEmptyPath = sEmptyPath + L"xlsx.bin";
 				m_nFileType = 2;
 			}
+			else if (type & AVS_OFFICESTUDIO_FILE_DRAW)
+			{
+				sEmptyPath = sEmptyPath + L"vsdx.bin";
+				m_nFileType = 7;
+			}
 			else
 				return false;
 
@@ -624,6 +632,11 @@ namespace NSDoctRenderer
 				sEmptyPath = sEmptyPath + L"new.xlsx";
 				m_nFileType = 2;
 			}
+			else if (type & AVS_OFFICESTUDIO_FILE_DRAW)
+			{
+				sEmptyPath = sEmptyPath + L"new.vsdx";
+				m_nFileType = 7;
+			}
 			else
 				return false;
 
@@ -646,6 +659,8 @@ namespace NSDoctRenderer
 				sPath += L"pptx";
 			else if (type & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
 				sPath += L"xlsx";
+			else if (type & AVS_OFFICESTUDIO_FILE_DRAW)
+				sPath += L"vsdx";
 			return this->OpenFile(sPath, L"");
 #endif
 		}
@@ -924,6 +939,8 @@ namespace NSDoctRenderer
 				m_nFileType = 1;
 			if (oChecker.nFileType & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
 				m_nFileType = 2;
+			if (oChecker.nFileType & AVS_OFFICESTUDIO_FILE_DRAW)
+				m_nFileType = 7;
 
 			int nReturnCode = ConvertToInternalFormat(m_sFileDir, sFileCopy, params);
 
@@ -1275,7 +1292,11 @@ namespace NSDoctRenderer
 
 			Init();
 
-			CheckWorker();
+			bool bRes = CheckWorker();
+
+			if (!bRes && m_pWorker && m_bJavascriptBeforeEditor)
+				m_pWorker->InitVariables();
+
 			return m_pWorker->ExecuteCommand(command, retValue);
 		}
 
@@ -1309,6 +1330,11 @@ namespace NSDoctRenderer
 			case 2:
 			{
 				arSdkFiles = &m_arXlstSDK;
+				break;
+			}
+			case 7:
+			{
+				arSdkFiles = &m_arVsdtSDK;
 				break;
 			}
 			default:
@@ -1355,6 +1381,11 @@ namespace NSDoctRenderer
 			case 2:
 			{
 				arSdkFiles = &m_arXlstSDK;
+				break;
+			}
+			case 7:
+			{
+				arSdkFiles = &m_arVsdtSDK;
 				break;
 			}
 			default:

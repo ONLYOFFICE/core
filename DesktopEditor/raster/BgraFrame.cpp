@@ -40,6 +40,10 @@
 #include "JBig2/source/JBig2File.h"
 #endif
 
+#if CXIMAGE_SUPPORT_PIC
+#include "PICT/PICFile.h"
+#endif
+
 #include <cmath>
 #define BGRA_FRAME_CXIMAGE_MAX_MEMORY 67108864 // 256Mb (*4 channel)
 
@@ -439,6 +443,14 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
 	}
 #endif
 
+#if CXIMAGE_SUPPORT_PIC
+    if (CXIMAGE_FORMAR_PIC == m_nFileType)
+    {
+        PICT::CPictFile PIC;
+        return PIC.Open(this, strFileName, !m_bIsRGBA);
+    }
+#endif
+
 	NSFile::CFileBinary oFile;
 	if (!oFile.OpenFile(strFileName))
 		return false;
@@ -514,6 +526,14 @@ bool CBgraFrame::Decode(BYTE* pBuffer, int nSize, unsigned int nFileType)
 	}
 #endif
 
+#if CXIMAGE_SUPPORT_PIC
+    if (CXIMAGE_FORMAR_PIC == m_nFileType)
+    {
+        PICT::CPictFile PIC;
+        return PIC.Open(this, pBuffer, nSize, !m_bIsRGBA);
+    }
+#endif
+
 	CxImage img;
 
 	if (!img.Decode(pBuffer, nSize, m_nFileType))
@@ -569,7 +589,7 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 bool CBgraFrame::Encode(BYTE*& pBuffer, int& nSize, unsigned int nFileType)
 {
 	CxImage oCxImage;
-	if (!oCxImage.CreateFromArray(m_pData, m_lWidth, m_lHeight, 32, 4 * m_lWidth, (m_lStride >= 0) ? true : false))
+	if (!oCxImage.CreateFromArray(m_pData, m_lWidth, m_lHeight, 32, 4 * m_lWidth, (m_lStride >= 0) ? true : false, !m_bIsRGBA))
 		return false;
 
 	if (CXIMAGE_FORMAT_JPG == nFileType && -1 != m_dJpegSaveQuality)

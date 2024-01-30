@@ -51,8 +51,6 @@
 
 	//module
 
-	self.drawingFileCurrentPageIndex = -1;
-	self.fontStreams = {};
 	self.drawingFile = null;
 
 	function CBinaryReader(data, start, size)
@@ -139,6 +137,13 @@
 		this.dataSize += valueUtf8.length;
 	};
 
+	var UpdateFontsSource = {
+		Undefined   : 0,
+		Page        : 1,
+		Annotation  : 2,
+		Forms       : 4
+	};
+
 	function CFile()
 	{
 		this.nativeFile = 0;
@@ -148,6 +153,11 @@
 		this.pages = [];
 		this.info = null;
 		this._isNeedPassword = false;
+
+		// for async fonts loader
+		this.fontPageIndex = -1;
+		this.fontPageUpdateType = UpdateFontsSource.Undefined;
+		this.fontStreams = {};
 	}
 
 	CFile.prototype["loadFromData"] = function(arrayBuffer)
@@ -252,6 +262,7 @@
 			rec["Dpi"] = reader.readInt();
 			rec["Rotate"] = reader.readInt();
 			rec.fonts = [];
+			rec.fontsUpdateType = UpdateFontsSource.Undefined;
 			rec.text = null;
 			this.pages.push(rec);
 		}
@@ -305,9 +316,9 @@
 			return null;
 		}
 
-		self.drawingFileCurrentPageIndex = pageIndex;
+		this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Page);
 		let retValue = Module["_GetPixmap"](this.nativeFile, pageIndex, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor);
-		self.drawingFileCurrentPageIndex = -1;
+		this.unlockPageNumForFontsLoader();
 
 		if (this.pages[pageIndex].fonts.length > 0)
 		{
@@ -325,12 +336,12 @@
 			return null;
 		}
 
-		self.drawingFileCurrentPageIndex = pageIndex;
+		this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Page);
 		let retValue = Module["_GetGlyphs"](this.nativeFile, pageIndex);
 		// there is no need to delete the result; this buffer is used as a text buffer 
 		// for text commands on other pages. After receiving ALL text pages, 
 		// you need to call destroyTextInfo()
-		self.drawingFileCurrentPageIndex = -1;
+		this.unlockPageNumForFontsLoader();
 
 		if (this.pages[pageIndex].fonts.length > 0)
 		{
@@ -345,8 +356,8 @@
 		let len = lenArray[0];
 		len -= 20;
 
-		if (self.drawingFile.onUpdateStatistics)
-			self.drawingFile.onUpdateStatistics(lenArray[1], lenArray[2], lenArray[3], lenArray[4]);
+		if (this.onUpdateStatistics)
+			this.onUpdateStatistics(lenArray[1], lenArray[2], lenArray[3], lenArray[4]);
 
 		if (len <= 0)
 		{
@@ -465,7 +476,7 @@
 		}
 		else if (SType == 9)
 		{
-			rec["H"] = reader.readInt();
+			rec["H"] = reader.readByte();
 			let m = reader.readInt();
 		    rec["T"] = [];
 			// array of annotation names - rec["name"]
@@ -552,7 +563,7 @@
 			let n = reader.readInt();
 			rec["C"] = [];
 			for (let i = 0; i < n; ++i)
-				rec["C"].push(reader.readDouble());
+				rec["C"].push(reader.readDouble2());
 		}
 		// Border/BS
 		if (flags & (1 << 4))
@@ -563,9 +574,10 @@
 			// Border Dash Pattern
 			if (rec["border"] == 2)
 			{
+				let n = reader.readInt();
 				rec["dashed"] = [];
-				rec["dashed"].push(reader.readDouble());
-				rec["dashed"].push(reader.readDouble());
+				for (let i = 0; i < n; ++i)
+					rec["dashed"].push(reader.readDouble());
 			}
 		}
 		// Date of last change - M
@@ -598,18 +610,45 @@
 			let np2 = reader.readInt();
 			// this memory needs to be deleted
 			APi["retValue"] = np2 << 32 | np1;
-			let k = reader.readInt();
-			if (k != 0)
-				APi["fontInfo"] = [];
-			for (let j = 0; j < k; ++j)
-			{
-				let fontInfo = {};
-				fontInfo["text"] = reader.readString();
-				fontInfo["fontName"] = reader.readString();
-				fontInfo["fontSize"] = reader.readDouble();
-				APi["fontInfo"].push(fontInfo);
-			}
+			// 0 - Normal, 1 - Multiply, 2 - Screen, 3 - Overlay, 4 - Darken, 5 - Lighten, 6 - ColorDodge, 7 - ColorBurn, 8 - HardLight,
+			// 9 - SoftLight, 10 - Difference, 11 - Exclusion, 12 - Hue, 13 - Saturation, 14 - Color, 15 - Luminosity
+			APi["BlendMode"] = reader.readByte();
 		}
+	}
+	function getWidgetFonts(nativeFile, type)
+	{
+		let res = [];
+		let ext = Module["_GetInteractiveFormsFonts"](nativeFile, type);
+		if (ext == 0)
+			return res;
+
+		let lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
+		if (lenArray == null)
+		{
+			Module["_free"](ext);
+			return res;
+		}
+
+		let len = lenArray[0];
+		len -= 4;
+		if (len <= 0)
+		{
+			Module["_free"](ext);
+			return res;
+		}
+
+		let buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
+		let reader = new CBinaryReader(buffer, 0, len);
+		
+		while (reader.isValid())
+		{
+			let n = reader.readInt();
+			for (let i = 0; i < n; ++i)
+				res.push(reader.readString());
+		}
+		
+		Module["_free"](ext);
+		return res;
 	}
 
 	CFile.prototype["getInteractiveFormsInfo"] = function()
@@ -647,8 +686,7 @@
 		if (k > 0)
 			res["CO"] = [];
 		for (let i = 0; i < k; ++i)
-			// array of annotation names - rec["name"]
-			res["CO"].push(reader.readString());
+			res["CO"].push(reader.readInt());
 		
 		k = reader.readInt();
 		if (k > 0)
@@ -665,7 +703,28 @@
 			if (flags & (1 << 2))
 				rec["defaultValue"] = reader.readString();
 			if (flags & (1 << 3))
+			{
+				let n = reader.readInt();
+				rec["curIdxs"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["curIdxs"].push(reader.readInt());
+			}
+			if (flags & (1 << 4))
 				rec["Parent"] = reader.readInt();
+			if (flags & (1 << 5))
+			{
+				let n = reader.readInt();
+				rec["value"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["value"].push(reader.readString());
+			}
+			if (flags & (1 << 6))
+			{
+				let n = reader.readInt();
+				rec["Opt"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["Opt"].push(reader.readString());
+			}
 			res["Parents"].push(rec);
 		}
 
@@ -680,12 +739,16 @@
 			// Annot
 			readAnnot(reader, rec);
 			// Widget
+			rec["font"] = {};
+			rec["font"]["name"] = reader.readString();
+			rec["font"]["size"] = reader.readDouble();
+			rec["font"]["style"] = reader.readInt();
 			let tc = reader.readInt();
 			if (tc)
 			{
-				rec["textColor"] = [];
+				rec["font"]["color"] = [];
 				for (let i = 0; i < tc; ++i)
-					rec["textColor"].push(reader.readDouble());
+					rec["font"]["color"].push(reader.readDouble2());
 			}
 			// 0 - left-justified, 1 - centered, 2 - right-justified
 			rec["alignment"] = reader.readByte();
@@ -701,10 +764,16 @@
 			// Default style string (CSS2 format) - DS
 			if (flags & (1 << 1))
 				rec["defaultStyle"] = reader.readString();
+			// Actual font
+			if (flags & (1 << 2))
+				rec["font"]["actual"] = reader.readString();
 			// Selection mode - H
 			// 0 - none, 1 - invert, 2 - push, 3 - outline
 			if (flags & (1 << 3))
 				rec["highlight"] = reader.readByte();
+			// Font key
+			if (flags & (1 << 4))
+				rec["font"]["key"] = reader.readString();
 			// Border color - BC. Even if the border is not specified by BS/Border, 
 			// then if BC is present, a default border is provided (solid, thickness 1). 
 			// If the text annotation has MaxLen, borders appear for each character
@@ -713,7 +782,7 @@
 				let n = reader.readInt();
 				rec["BC"] = [];
 				for (let i = 0; i < n; ++i)
-					rec["BC"].push(reader.readDouble());
+					rec["BC"].push(reader.readDouble2());
 			}
 			// Rotate an annotation relative to the page - R
 			if (flags & (1 << 6))
@@ -724,7 +793,7 @@
 				let n = reader.readInt();
 				rec["BG"] = [];
 				for (let i = 0; i < n; ++i)
-					rec["BG"].push(reader.readDouble());
+					rec["BG"].push(reader.readDouble2());
 			}
 			// Default value - DV
 			if (flags & (1 << 8))
@@ -733,6 +802,8 @@
 				rec["Parent"] = reader.readInt();
 			if (flags & (1 << 18))
 				rec["name"] = reader.readString();
+			if (flags & (1 << 19))
+				rec["font"]["AP"] = reader.readString();
 			// Action
 			let nAction = reader.readInt();
 			if (nAction > 0)
@@ -744,26 +815,20 @@
 				readAction(reader, rec["AA"][AAType]);
 			}
 			// Widget types
-			if (rec["type"] == 29 || rec["type"] == 28 || rec["type"] == 27)
+			if (rec["type"] == 27)
 			{
-				rec["value"] = (flags & (1 << 9)) ? "Yes" : "Off";
+				if (flags & (1 << 9))
+					rec["value"] = reader.readString();
 				let IFflags = reader.readInt();
-				// MK
-				if (rec["type"] == 27)
-				{
-					// Header - СA
-					if (flags & (1 << 10))
-						rec["caption"] = reader.readString();
-					// Rollover header - RC
-					if (flags & (1 << 11))
-						rec["rolloverCaption"] = reader.readString();
-					// Alternate header - AC
-					if (flags & (1 << 12))
-						rec["alternateCaption"] = reader.readString();
-				}
-				else
-					// 0 - check, 1 - cross, 2 - diamond, 3 - circle, 4 - star, 5 - square
-					rec["style"] = reader.readByte();
+				// Header - СA
+				if (flags & (1 << 10))
+					rec["caption"] = reader.readString();
+				// Rollover header - RC
+				if (flags & (1 << 11))
+					rec["rolloverCaption"] = reader.readString();
+				// Alternate header - AC
+				if (flags & (1 << 12))
+					rec["alternateCaption"] = reader.readString();
 				// Header position - TP
 				if (flags & (1 << 13))
 					// 0 - textOnly, 1 - iconOnly, 2 - iconTextV, 3 - textIconV, 4 - iconTextH, 5 - textIconH, 6 - overlay
@@ -788,12 +853,15 @@
 					}
 					rec["IF"]["FB"] = (IFflags >> 4) & 1;
 				}
+			}
+			else if (rec["type"] == 29 || rec["type"] == 28)
+			{
+				if (flags & (1 << 9))
+					rec["value"] = reader.readString();
+				// 0 - check, 1 - cross, 2 - diamond, 3 - circle, 4 - star, 5 - square
+				rec["style"] = reader.readByte();
 			    if (flags & (1 << 14))
-				{
-					rec["NameOfYes"] = reader.readString();
-					if (flags & (1 << 9))
-						rec["value"] = rec["NameOfYes"];
-				}
+					rec["ExportValue"] = reader.readString();
 				// 12.7.4.2.1
 				rec["NoToggleToOff"]  = (rec["flag"] >> 14) & 1; // NoToggleToOff
 				rec["radiosInUnison"] = (rec["flag"] >> 25) & 1; // RadiosInUnison
@@ -835,6 +903,20 @@
 				}
 				if (flags & (1 << 11))
 					rec["TI"] = reader.readInt();
+				if (flags & (1 << 12))
+				{
+					let n = reader.readInt();
+					rec["curIdxs"] = [];
+					for (let i = 0; i < n; ++i)
+						rec["curIdxs"].push(reader.readInt());
+				}
+				if (flags & (1 << 13))
+				{
+					let n = reader.readInt();
+					rec["value"] = [];
+					for (let i = 0; i < n; ++i)
+						rec["value"].push(reader.readString());
+				}
 				// 12.7.4.4
 				rec["editable"]          = (rec["flag"] >> 18) & 1; // Edit
 				rec["multipleSelection"] = (rec["flag"] >> 21) & 1; // MultiSelect
@@ -852,9 +934,17 @@
 		Module["_free"](ext);
 		return res;
 	};
+	CFile.prototype["getInteractiveFormsEmbeddedFonts"] = function()
+	{
+		return getWidgetFonts(this.nativeFile, 1);
+	};
+	CFile.prototype["getInteractiveFormsStandardFonts"] = function()
+	{
+		return getWidgetFonts(this.nativeFile, 2);
+	};
 	// optional nWidget     - rec["AP"]["i"]
 	// optional sView       - N/D/R
-	// optional sButtonView - state pushbutton-annotation - Off/Yes(or rec["NameOfYes"])
+	// optional sButtonView - state pushbutton-annotation - Off/Yes(or rec["ExportValue"])
 	CFile.prototype["getInteractiveFormsAP"] = function(pageIndex, width, height, backgroundColor, nWidget, sView, sButtonView)
 	{
 		let nView = -1;
@@ -872,9 +962,9 @@
 			nButtonView = (sButtonView == "Off" ? 0 : 1);
 
 		let res = [];
-		self.drawingFileCurrentPageIndex = pageIndex;
+		this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Forms);
 		let ext = Module["_GetInteractiveFormsAP"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nWidget === undefined ? -1 : nWidget, nView, nButtonView);
-		self.drawingFileCurrentPageIndex = -1;
+		this.unlockPageNumForFontsLoader();
 		if (ext == 0)
 			return res;
 
@@ -918,9 +1008,7 @@
 		}
 
 		let res = {};
-		self.drawingFileCurrentPageIndex = pageIndex;
 		let ext = Module["_GetButtonIcons"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, bBase64 ? 1 : 0, nWidget === undefined ? -1 : nWidget, nView);
-		self.drawingFileCurrentPageIndex = -1;
 		if (ext == 0)
 			return res;
 
@@ -1055,6 +1143,12 @@
 			// Text
 			if (rec["Type"] == 0)
 			{
+				// Bachground color - C->IC
+				if (rec["C"])
+				{
+					rec["IC"] = rec["C"];
+					delete rec["C"];
+				}
 				rec["Open"] = (flags >> 15) & 1;
 				// icon - Name
 				// 0 - Check, 1 - Checkmark, 2 - Circle, 3 - Comment, 4 - Cross, 5 - CrossHairs, 6 - Help, 7 - Insert, 8 - Key, 9 - NewParagraph, 10 - Note, 11 - Paragraph, 12 - RightArrow, 13 - RightPointer, 14 - Star, 15 - UpArrow, 16 - UpLeftArrow
@@ -1091,7 +1185,7 @@
 					let n = reader.readInt();
 					rec["IC"] = [];
 					for (let i = 0; i < n; ++i)
-						rec["IC"].push(reader.readDouble());
+						rec["IC"].push(reader.readDouble2());
 				}
 				// LL
 				if (flags & (1 << 17))
@@ -1159,7 +1253,7 @@
 					let n = reader.readInt();
 					rec["IC"] = [];
 					for (let i = 0; i < n; ++i)
-						rec["IC"].push(reader.readDouble());
+						rec["IC"].push(reader.readDouble2());
 				}
 			}
 			// Polygon, PolyLine
@@ -1183,7 +1277,7 @@
 					let n = reader.readInt();
 					rec["IC"] = [];
 					for (let i = 0; i < n; ++i)
-						rec["IC"].push(reader.readDouble());
+						rec["IC"].push(reader.readDouble2());
 				}
 				// IT
 				// 0 - PolygonCloud, 1 - PolyLineDimension, 2 - PolygonDimension
@@ -1204,6 +1298,12 @@
 			// FreeText
 			else if (rec["Type"] == 2)
 			{
+				// Bachground color - C->IC
+				if (rec["C"])
+				{
+					rec["IC"] = rec["C"];
+					delete rec["C"];
+				}
 				// 0 - left-justified, 1 - centered, 2 - right-justified
 				rec["alignment"] = reader.readByte();
 				// Rect and RD differences
@@ -1232,6 +1332,14 @@
 				// 0 - FreeText, 1 - FreeTextCallout, 2 - FreeTextTypeWriter
 				if (flags & (1 << 20))
 					rec["IT"] = reader.readByte();
+				// Border color - from DA (write to C)
+				if (flags & (1 << 21))
+				{
+					let n = reader.readInt();
+					rec["C"] = [];
+					for (let i = 0; i < n; ++i)
+						rec["C"].push(reader.readDouble2());
+				}
 			}
 			// Caret
 			else if (rec["Type"] == 13)
@@ -1247,6 +1355,97 @@
 				// 0 - None, 1 - P, 2 - S
 				if (flags & (1 << 16))
 					rec["Sy"] = reader.readByte();
+			}
+			// FileAttachment
+			else if (rec["Type"] == 16)
+			{
+				if (flags & (1 << 15))
+					rec["Icon"] = reader.readString();
+				if (flags & (1 << 16))
+					rec["FS"] = reader.readString();
+				if (flags & (1 << 17))
+				{
+					rec["F"] = {};
+					rec["F"]["FileName"] = reader.readString();
+				}
+				if (flags & (1 << 18))
+				{
+					rec["UF"] = {};
+					rec["UF"]["FileName"] = reader.readString();
+				}
+				if (flags & (1 << 19))
+				{
+					rec["DOS"] = {};
+					rec["DOS"]["FileName"] = reader.readString();
+				}
+				if (flags & (1 << 20))
+				{
+					rec["Mac"] = {};
+					rec["Mac"]["FileName"] = reader.readString();
+				}
+				if (flags & (1 << 21))
+				{
+					rec["Unix"] = {};
+					rec["Unix"]["FileName"] = reader.readString();
+				}
+				if (flags & (1 << 22))
+				{
+					rec["ID"] = [];
+					rec["ID"].push(reader.readString());
+					rec["ID"].push(reader.readString());
+				}
+				rec["V"] = flags & (1 << 23);
+				if (flags & (1 << 24))
+				{
+					let flag = reader.readInt();
+					if (flag & (1 << 0))
+					{
+						let n = reader.readInt();
+						let np1 = reader.readInt();
+						let np2 = reader.readInt();
+						let pPoint = np2 << 32 | np1;
+						rec["F"]["File"] = new Uint8Array(Module["HEAP8"].buffer, pPoint, n);
+						Module["_free"](pPoint);
+					}
+					if (flag & (1 << 1))
+					{
+						let n = reader.readInt();
+						let np1 = reader.readInt();
+						let np2 = reader.readInt();
+						let pPoint = np2 << 32 | np1;
+						rec["UF"]["File"] = new Uint8Array(Module["HEAP8"].buffer, pPoint, n);
+						Module["_free"](pPoint);
+					}
+					if (flag & (1 << 2))
+					{
+						let n = reader.readInt();
+						let np1 = reader.readInt();
+						let np2 = reader.readInt();
+						let pPoint = np2 << 32 | np1;
+						rec["DOS"]["File"] = new Uint8Array(Module["HEAP8"].buffer, pPoint, n);
+						Module["_free"](pPoint);
+					}
+					if (flag & (1 << 3))
+					{
+						let n = reader.readInt();
+						let np1 = reader.readInt();
+						let np2 = reader.readInt();
+						let pPoint = np2 << 32 | np1;
+						rec["Mac"]["File"] = new Uint8Array(Module["HEAP8"].buffer, pPoint, n);
+						Module["_free"](pPoint);
+					}
+					if (flag & (1 << 4))
+					{
+						let n = reader.readInt();
+						let np1 = reader.readInt();
+						let np2 = reader.readInt();
+						let pPoint = np2 << 32 | np1;
+						rec["Unix"]["File"] = new Uint8Array(Module["HEAP8"].buffer, pPoint, n);
+						Module["_free"](pPoint);
+					}
+				}
+				if (flags & (1 << 26))
+					rec["Desc"] = reader.readString();
 			}
 			res.push(rec);
 		}
@@ -1270,9 +1469,9 @@
 		}
 
 		let res = [];
-		self.drawingFileCurrentPageIndex = pageIndex;
+		this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Annotation);
 		let ext = Module["_GetAnnotationsAP"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nAnnot === undefined ? -1 : nAnnot, nView);
-		self.drawingFileCurrentPageIndex = -1;
+		this.unlockPageNumForFontsLoader();
 		if (ext == 0)
 			return res;
 
@@ -1329,6 +1528,52 @@
 		Module["_free"](str);
 		return res;
 	};
+	CFile.prototype["getFontByID"] = function(ID)
+	{
+		let res = null;
+		if (ID === undefined)
+			return res;
+		
+		let idBuffer = ID.toUtf8();
+		let idPointer = Module["_malloc"](idBuffer.length);
+		Module["HEAP8"].set(idBuffer, idPointer);
+		let ext = Module["_GetFontBinary"](this.nativeFile, idPointer);
+		Module["_free"](idPointer);
+		if (ext == 0)
+			return res;
+		
+		let lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
+		if (lenArray == null)
+		{
+			Module["_free"](ext);
+			return res;
+		}
+
+		let len = lenArray[0];
+		len -= 4;
+		if (len <= 0)
+		{
+			Module["_free"](ext);
+			return res;
+		}
+
+		let buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
+		let reader = new CBinaryReader(buffer, 0, len);
+		
+		while (reader.isValid())
+		{
+			let nFontLength = reader.readInt();
+			let np1 = reader.readInt();
+			let np2 = reader.readInt();
+			let pFontPoint = np2 << 32 | np1;
+			
+			res = new Uint8Array(Module["HEAP8"].buffer, pFontPoint, nFontLength);
+		}
+
+		Module["_free"](ext);
+		
+		return res;
+	};
 
 	CFile.prototype.memory = function()
 	{
@@ -1337,6 +1582,17 @@
 	CFile.prototype.free = function(pointer)
 	{
 		Module["_free"](pointer);
+	};
+
+	CFile.prototype.lockPageNumForFontsLoader = function(pageIndex, type)
+	{
+		this.fontPageIndex = pageIndex;
+		this.fontPageUpdateType = type;		
+	};
+	CFile.prototype.unlockPageNumForFontsLoader = function()
+	{
+		this.fontPageIndex = -1;
+		drawingFile.fontPageUpdateType = UpdateFontsSource.Undefined;
 	};
 	
 	self["AscViewer"]["CDrawingFile"] = CFile;
@@ -1393,6 +1649,10 @@
 	}
 
 	self["AscViewer"]["CheckStreamId"] = function(data, status) {
+		let drawingFile = self.drawingFile;
+		if (!drawingFile)
+			return;
+
 		let lenArray = new Int32Array(Module["HEAP8"].buffer, data, 4);
 		let len = lenArray[0];
 		len -= 4;
@@ -1418,14 +1678,12 @@
 		}
 		else
 		{
-			self.fontStreams[fileId] = self.fontStreams[fileId] || {};
-			self.fontStreams[fileId].pages = self.fontStreams[fileId].pages || [];
-			addToArrayAsDictionary(self.fontStreams[fileId].pages, self.drawingFileCurrentPageIndex);
+			drawingFile.fontStreams[fileId] = drawingFile.fontStreams[fileId] || {};
+			drawingFile.fontStreams[fileId].pages = drawingFile.fontStreams[fileId].pages || [];
+			addToArrayAsDictionary(drawingFile.fontStreams[fileId].pages, drawingFile.fontPageIndex);
+			addToArrayAsDictionary(drawingFile.pages[drawingFile.fontPageIndex].fonts, fileId);
 
-			if (self.drawingFile)
-			{
-				addToArrayAsDictionary(self.drawingFile.pages[self.drawingFileCurrentPageIndex].fonts, fileId);
-			}
+			drawingFile.pages[drawingFile.fontPageIndex].fontsUpdateType |= drawingFile.fontPageUpdateType;
 
 			// font can be loading in editor
 			if (undefined === file.externalCallback)
@@ -1434,12 +1692,17 @@
 				file.externalCallback = function() {
 					fontToMemory(_t, true);
 
-					let pages = self.fontStreams[fileId].pages;
-					delete self.fontStreams[fileId];
-					let pagesRepaint = [];
+					let pages = drawingFile.fontStreams[fileId].pages;
+					delete drawingFile.fontStreams[fileId];
+
+					let pagesRepaint_Page        = [];
+					let pagesRepaint_Annotation  = [];
+					let pagesRepaint_Forms       = [];
+
 					for (let i = 0, len = pages.length; i < len; i++)
 					{
-						let pageObj = self.drawingFile.pages[pages[i]];
+						let pageNum = pages[i];
+						let pageObj = drawingFile.pages[pageNum];
 						let fonts = pageObj.fonts;
 						
 						for (let j = 0, len_fonts = fonts.length; j < len_fonts; j++)
@@ -1450,15 +1713,30 @@
 								break;
 							}
 						}
+
 						if (0 == fonts.length)
-							pagesRepaint.push(pages[i]);
+						{
+							if (pageObj.fontsUpdateType & UpdateFontsSource.Page)
+								pagesRepaint_Page.push(pageNum);
+
+							if (pageObj.fontsUpdateType & UpdateFontsSource.Annotation)
+								pagesRepaint_Annotation.push(pageNum);
+
+							if (pageObj.fontsUpdateType & UpdateFontsSource.Forms)
+								pagesRepaint_Forms.push(pageNum);
+
+							pageObj.fontsUpdateType = UpdateFontsSource.Undefined;
+						}
 					}
 
-					if (pagesRepaint.length > 0)
-					{
-						if (self.drawingFile.onRepaintPages)
-							self.drawingFile.onRepaintPages(pagesRepaint);
-					}
+					if (pagesRepaint_Page.length > 0 && drawingFile.onRepaintPages)
+						drawingFile.onRepaintPages(pagesRepaint_Page);
+
+					if (pagesRepaint_Annotation.length > 0 && drawingFile.onRepaintAnnotations)
+						drawingFile.onRepaintAnnotations(pagesRepaint_Annotation);
+
+					if (pagesRepaint_Forms.length > 0 && drawingFile.onRepaintForms)
+						drawingFile.onRepaintForms(pagesRepaint_Forms);
 
 					delete _t.externalCallback;
 				};

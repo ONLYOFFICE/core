@@ -46,6 +46,7 @@
 #include "../../XlsxFormat/Styles/dxf.h"
 #include "../../XlsxFormat/Chart/ChartSerialize.h"
 #include "../../XlsxFormat/Worksheets/WorksheetChildOther.h"
+#include "../../XlsxFormat/Timelines/Timeline.h"
 
 #include "../Comments.h"
 
@@ -167,6 +168,8 @@ namespace OOX
 			m_oUserProtectedRanges.reset();
 			m_oChartDataLabel.reset();
 			m_oChartFiltering.reset();
+			m_oTimelineRefs.reset();
+			m_oTimelineCacheRefs.reset();
 
 			for (size_t nIndex = 0; nIndex < m_arrConditionalFormatting.size(); ++nIndex)
 			{
@@ -218,7 +221,10 @@ namespace OOX
 										*m_sUri == L"{231B7EB2-2AFC-4442-B178-5FFDF5851E7C}" ||
 										*m_sUri == L"{FCE6A71B-6B00-49CD-AB44-F6B1AE7CDE65}" ||
 										*m_sUri == L"{56B9EC1D-385E-4148-901F-78D8002777C0}" ||
-				*m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))
+										*m_sUri == L"{7E03D99C-DC04-49d9-9315-930204A7B6E9}" ||
+										*m_sUri == L"{D0CA8CA8-9F24-4464-BF8E-62219DCF47F9}" ||
+										*m_sUri == L"{9260A510-F301-46a8-8635-F512D64BE5F5}" ||
+										*m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))
 			{
 				int nCurDepth = oReader.GetDepth();
 				while (oReader.ReadNextSiblingNode(nCurDepth))
@@ -257,6 +263,18 @@ namespace OOX
 					else if (sName == L"connection")
 					{
 						m_oConnection = oReader;
+					}
+					else if (sName == L"timelineRefs")
+					{
+						m_oTimelineRefs = oReader;
+					}
+					else if (sName == L"timelineCacheRefs")
+					{
+						m_oTimelineCacheRefs = oReader;
+					}
+					else if (sName == L"timelineStyles")
+					{
+						m_oTimelineStyles = oReader;
 					}
 					else if (sName == L"slicerList")
 					{
@@ -406,7 +424,25 @@ namespace OOX
 			{
 				NSStringUtils::CStringBuilder writer;
 				m_oSparklineGroups->toXML(writer);
+				sResult += writer.GetData().c_str();
+			}
+			if (m_oTimelineRefs.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				m_oTimelineRefs->toXML(writer);
                 sResult += writer.GetData().c_str();
+			}
+			if (m_oTimelineCacheRefs.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				m_oTimelineCacheRefs->toXML(writer);
+				sResult += writer.GetData().c_str();
+			}
+			if (m_oTimelineStyles.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				m_oTimelineStyles->toXML(writer);
+				sResult += writer.GetData().c_str();
 			}
 			if (m_oAltTextTable.IsInit())
 			{

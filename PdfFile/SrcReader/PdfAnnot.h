@@ -126,12 +126,13 @@ public:
 private:
 	struct CAnnotAPView final
 	{
+		BYTE nBlendMode;
 		std::string sAPName;
 		std::string sASName;
 		BYTE* pAP;
-		BYTE* pText;
 	};
 	void WriteAppearance(unsigned int nColor, CAnnotAPView* pView);
+	BYTE GetBlendMode();
 
 	unsigned int m_unRefNum; // Номер ссылки на объект
 	double m_dx1, m_dy1, m_dx2, m_dy2;
@@ -179,16 +180,13 @@ private:
 		{
 			nType = 0;
 			dWidth = 1;
-			dDashesAlternating = 3;
-			dGaps = 3;
 		}
 
 		void ToWASM(NSWasm::CData& oRes);
 
 		BYTE nType;
 		double dWidth;
-		double dDashesAlternating;
-		double dGaps;
+		std::vector<double> arrDash;
 	};
 	CBorderType* getBorder(Object* oBorder, bool bBSorBorder);
 
@@ -209,10 +207,16 @@ private:
 // PdfReader::CWidgetAnnot
 //------------------------------------------------------------------------
 
+bool GetFontFromAP(PDFDoc* pdfDoc, AcroFormField* pField, Object* oR, Object* oFonts, Object* oFontRef, std::string& sFontKey);
+std::wstring GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList *pFontList, Object* oFonts, Object* oFontRef, int nTypeFonts, std::string& sFontName, std::string& sActualFontName, bool& bBold, bool& bItalic);
+
 class CAnnotWidget : public CAnnot
 {
 public:
 	virtual ~CAnnotWidget();
+
+	void SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CFontList *pFontList);
+	void SetButtonFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CFontList *pFontList);
 
 protected:
 	CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField);
@@ -226,6 +230,8 @@ protected:
 private:
 	unsigned int m_unR; // Поворот аннотации относительно страницы - R
 	unsigned int m_unRefNumParent; // Номер ссылки на объект родителя
+	unsigned int m_unFontStyle; // Стиль шрифта - из DA
+	double m_dFontSize; // Размер шрифта - из DA
 	std::vector<double> m_arrTC; // Цвет текста - из DA
 	std::vector<double> m_arrBC; // Цвет границ - BC
 	std::vector<double> m_arrBG; // Цвет фона - BG
@@ -236,6 +242,10 @@ private:
 	std::string m_sDS; // Строка стиля по умолчанию - DS
 	std::string m_sDV; // Значение по-умолчанию - DV
 	std::string m_sT; // Частичное имя поля - T
+	std::string m_sFontKey; // Уникальный идентификатор шрифта
+	std::string m_sFontName; // Имя шрифта - из DA
+	std::string m_sActualFontName; // Имя замененного шрифта
+	std::string m_sButtonFontName; // Имя шрифта кнопки
 };
 
 class CAnnotWidgetBtn final : public CAnnotWidget
@@ -250,6 +260,7 @@ private:
 	BYTE m_nSW;
 	BYTE m_nS;
 	unsigned int m_unIFFlag;
+	std::string m_sV;
 	std::string m_sCA;
 	std::string m_sRC;
 	std::string m_sAC;
@@ -277,6 +288,8 @@ public:
 	void ToWASM(NSWasm::CData& oRes) override;
 private:
 	std::string m_sV;
+	std::vector<std::string> m_arrV;
+	std::vector<int> m_arrI;
 	std::vector< std::pair<std::string, std::string> > m_arrOpt;
 	unsigned int m_unTI;
 };
@@ -454,6 +467,7 @@ private:
 	BYTE m_nLE; // Стиль окончания линии
 	std::string m_sDS; // Строка стиля по умолчанию - DS
 	double m_pRD[4]{}; // Различия Rect и фактического размера
+	std::vector<double> m_arrCFromDA; // Цвет границы
 	std::vector<double> m_arrCL; // Координаты выноски
 };
 
@@ -474,13 +488,69 @@ private:
 };
 
 //------------------------------------------------------------------------
+// PdfReader::CAnnotFileAttachment
+//------------------------------------------------------------------------
+
+class CAnnotFileAttachment final : public CMarkupAnnot
+{
+public:
+	CAnnotFileAttachment(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+	virtual ~CAnnotFileAttachment();
+
+	void ToWASM(NSWasm::CData& oRes) override;
+
+	struct CEmbeddedFile
+	{
+		BYTE* pFile;
+		int nLength;
+		bool bFree;
+
+		CEmbeddedFile() : pFile(NULL), nLength(0), bFree(true) {}
+		~CEmbeddedFile() { if (bFree) RELEASEARRAYOBJECTS(pFile); }
+	};
+
+	struct CEmbeddedFiles
+	{
+		CEmbeddedFile* m_pF;
+		CEmbeddedFile* m_pUF;
+		CEmbeddedFile* m_pDOS;
+		CEmbeddedFile* m_pMac;
+		CEmbeddedFile* m_pUnix;
+
+		CEmbeddedFiles() : m_pF(NULL), m_pUF(NULL), m_pDOS(NULL), m_pMac(NULL), m_pUnix(NULL) {}
+		~CEmbeddedFiles()
+		{
+			RELEASEOBJECT(m_pF);
+			RELEASEOBJECT(m_pUF);
+			RELEASEOBJECT(m_pDOS);
+			RELEASEOBJECT(m_pMac);
+			RELEASEOBJECT(m_pUnix);
+		}
+	};
+
+private:
+	std::string m_sName; // Иконка
+	std::string m_sFS;   // Файловая система
+	std::string m_sDesc; // Описание файла
+	std::string m_sF;    // Спецификация файла (обратная совместимость)
+	std::string m_sUF;   // Спецификация файла (кросс-платформенная и межъязыковая совместимость)
+	std::string m_sDOS;  // Спецификация файла DOS
+	std::string m_sMac;  // Спецификация файла Mac
+	std::string m_sUnix; // Спецификация файла Unix
+	std::pair<std::string, std::string> m_sID; // Идентификатор файла
+	CEmbeddedFiles* m_pEF; // EF содержит F/UF/DOS/Mac/Unix со ссылками на встроенные файловые потоки по соответствующим спецификациях
+	// TODO RF содержит F/UF/DOS/Mac/Unix с массивами связанных файлов по соответствующим спецификациях
+	// TODO Cl коллекция для создания пользовательского интерфейса
+};
+
+//------------------------------------------------------------------------
 // PdfReader::CAnnots
 //------------------------------------------------------------------------
 
 class CAnnots
 {
 public:
-	CAnnots(PDFDoc* pdfDoc);
+	CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList *pFontList);
 	~CAnnots();
 
 	void ToWASM(NSWasm::CData& oRes);
@@ -500,6 +570,9 @@ private:
 		unsigned int unFlags;
 		unsigned int unRefNum; // Номер ссылки на объект
 		unsigned int unRefNumParent; // Номер ссылки на объект родителя
+		std::vector<int> arrI;
+		std::vector<std::string> arrV;
+		std::vector<std::string> arrOpt;
 		std::string sT;
 		std::string sV;
 		std::string sDV;
@@ -507,7 +580,7 @@ private:
 
 	void getParents(XRef* xref, Object* oFieldRef);
 
-	std::vector<std::string> m_arrCO; // Порядок вычислений - CO
+	std::vector<int> m_arrCO; // Порядок вычислений - CO
 	std::vector<CAnnotParent*> m_arrParents; // Родительские Fields
 	std::vector<CAnnot*> m_arrAnnots;
 };

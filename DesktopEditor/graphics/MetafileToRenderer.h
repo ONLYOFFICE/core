@@ -182,6 +182,7 @@ namespace NSOnlineOfficeBinToPdf
 		ctDocInfo                       = 163,
 		ctAnnotField                    = 164,
 		ctAnnotFieldDelete              = 165,
+		ctWidgetsInfo                   = 166,
 
 		ctPageWidth                     = 200,
 		ctPageHeight                    = 201,

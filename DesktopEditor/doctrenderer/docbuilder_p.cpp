@@ -30,6 +30,7 @@
  *
  */
 #include "docbuilder_p.h"
+#include "server.h"
 
 std::wstring NSDoctRenderer::CDocBuilder_Private::m_sExternalDirectory = L"";
 
@@ -203,20 +204,10 @@ std::string GetCorrectArgument(const std::string& sInput)
 	return sResult;
 }
 
-bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath, CV8Params* pParams)
+bool CV8RealTimeWorker::InitVariables()
 {
-	LOGGER_SPEED_START();
-
 	CJSContextScope scope(m_context);
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
-
-	LOGGER_SPEED_LAP("compile");
-
-	m_context->runScript(sString, try_catch, sCachePath);
-	if(try_catch->Check())
-		return false;
-
-	LOGGER_SPEED_LAP("run");
 
 	if (true)
 	{
@@ -245,6 +236,26 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 		if (try_catch->Check())
 			return false;
 	}
+	return true;
+}
+
+bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath, CV8Params* pParams)
+{
+	LOGGER_SPEED_START();
+
+	CJSContextScope scope(m_context);
+	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
+
+	LOGGER_SPEED_LAP("compile");
+
+	m_context->runScript(sString, try_catch, sCachePath);
+	if(try_catch->Check())
+		return false;
+
+	LOGGER_SPEED_LAP("run");
+
+	if (!InitVariables())
+		return false;
 
 	NSNativeControl::CNativeControl* pNative = NULL;
 	bool bIsBreak = false;
@@ -280,6 +291,8 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 			pNative->m_strEditorType = L"document";
 		else if (1 == m_nFileType)
 			pNative->m_strEditorType = L"presentation";
+		else if (7 == m_nFileType)
+			pNative->m_strEditorType = L"draw";
 		else
 			pNative->m_strEditorType = L"spreadsheet";
 
@@ -328,6 +341,8 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path,
 		_formatDst = NSDoctRenderer::DoctRendererFormat::XLST;
 	else if (type & AVS_OFFICESTUDIO_FILE_CROSSPLATFORM)
 		_formatDst = NSDoctRenderer::DoctRendererFormat::PDF;
+	else if (type & AVS_OFFICESTUDIO_FILE_DRAW)
+		_formatDst = NSDoctRenderer::DoctRendererFormat::VSDT;
 	else if (type & AVS_OFFICESTUDIO_FILE_IMAGE)
 	{
 		_formatDst = NSDoctRenderer::DoctRendererFormat::IMAGE;
@@ -337,6 +352,7 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path,
 		case 0: { _formatDst = NSDoctRenderer::DoctRendererFormat::DOCT; break; }
 		case 1: { _formatDst = NSDoctRenderer::DoctRendererFormat::PPTT; break; }
 		case 2: { _formatDst = NSDoctRenderer::DoctRendererFormat::XLST; break; }
+		case 7: { _formatDst = NSDoctRenderer::DoctRendererFormat::VSDT; break; }
 		default:
 			break;
 		}
@@ -487,12 +503,12 @@ namespace NSDoctRenderer
 			if (oParent->isArray())
 			{
 				JSSmart<CJSArray> oParentArray = oParent->toArray();
-				oParentArray->set(m_internal->m_parent->m_parent_index, m_internal->m_value.GetPointer());
+				oParentArray->set(m_internal->m_parent->m_parent_index, m_internal->m_value);
 			}
 			else if (oParent->isObject() && !m_internal->m_parent->m_parent_prop_name.empty())
 			{
 				JSSmart<CJSObject> oParentObject = oParent->toObject();
-				oParentObject->set(m_internal->m_parent->m_parent_prop_name.c_str(), m_internal->m_value.GetPointer());
+				oParentObject->set(m_internal->m_parent->m_parent_prop_name.c_str(), m_internal->m_value);
 			}
 		}
 
@@ -724,7 +740,7 @@ namespace NSDoctRenderer
 		std::string sPropA = U_TO_UTF8(sProp);
 
 		value.m_internal->CheckNative();
-		m_internal->m_value->toObject()->set(sPropA.c_str(), value.m_internal->m_value.GetPointer());
+		m_internal->m_value->toObject()->set(sPropA.c_str(), value.m_internal->m_value);
 	}
 	void CDocBuilderValue::SetProperty(const wchar_t* name, CDocBuilderValue value)
 	{
@@ -737,7 +753,7 @@ namespace NSDoctRenderer
 
 		JSSmart<CJSArray> array = m_internal->m_value->toArray();
 		value.m_internal->CheckNative();
-		array->set(index, value.m_internal->m_value.GetPointer());
+		array->set(index, value.m_internal->m_value);
 	}
 
 	// primitives
@@ -782,6 +798,14 @@ namespace NSDoctRenderer
 	{
 		CDocBuilderValue ret;
 		ret.m_internal->CreateNull();
+		return ret;
+	}
+
+	CDocBuilderValue CDocBuilderValue::CreateArray(const int& length)
+	{
+		CDocBuilderValue ret;
+		ret.m_internal->m_context = NSJSBase::CJSContext::GetCurrent();
+		ret.m_internal->m_value = NSJSBase::CJSContext::createArray(length);
 		return ret;
 	}
 
@@ -1205,6 +1229,8 @@ namespace NSDoctRenderer
 			type = AVS_OFFICESTUDIO_FILE_PRESENTATION;
 		else if (L"xlsx" == sType)
 			type = AVS_OFFICESTUDIO_FILE_SPREADSHEET;
+		else if (L"vsdx" == sType)
+			type = AVS_OFFICESTUDIO_FILE_DRAW;
 
 		return CreateFile(type);
 	}
@@ -1420,6 +1446,8 @@ namespace NSDoctRenderer
 						bIsNoError = this->CreateFile(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX);
 					else if (L"xlsx" == _builder_params[0])
 						bIsNoError = this->CreateFile(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX);
+					else if (L"vsdx" == _builder_params[0])
+						bIsNoError = this->CreateFile(AVS_OFFICESTUDIO_FILE_DRAW_VSDX);
 				}
 				else if ("SetTmpFolder" == sFuncNum)
 					this->SetTmpFolder(_builder_params[0].c_str());
@@ -1494,6 +1522,8 @@ namespace NSDoctRenderer
 		{
 			m_pInternal->m_bIsServerSafeVersion = true;
 			m_pInternal->m_sFolderForSaveOnlyUseNames = std::wstring(value);
+
+			CServerInstance::getInstance().Enable(true);
 		}
 		else if (sParam == "--all-fonts-path")
 		{

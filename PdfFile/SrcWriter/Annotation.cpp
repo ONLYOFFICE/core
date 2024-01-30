@@ -33,7 +33,9 @@
 #include "Pages.h"
 #include "Utils.h"
 #include "ResourcesDictionary.h"
+#include "FontCidTT.h"
 #include "Streams.h"
+#include "Image.h"
 
 #include "../../DesktopEditor/common/File.h"
 
@@ -70,11 +72,87 @@ namespace PdfWriter
 		"Check", "Checkmark", "Circle", "Comment", "Cross", "CrossHairs", "Help", "Insert", "Key", "NewParagraph", "Note", "Paragraph", "RightArrow", "RightPointer", "Star", "UpArrow", "UpLeftArrow"
 	};
 
+	void AddToVectorD(CDictObject* pObj, const std::string& sName, const std::vector<double>& arrV)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		pObj->Add(sName, pArray);
+
+		for (const double& dV : arrV)
+			pArray->Add(dV);
+	}
+	std::string AddLE(const BYTE& nLE)
+	{
+		std::string sValue;
+		switch (nLE)
+		{
+		case 0:
+		{ sValue = "Square"; break; }
+		case 1:
+		{ sValue = "Circle"; break; }
+		case 2:
+		{ sValue = "Diamond"; break; }
+		case 3:
+		{ sValue = "OpenArrow"; break; }
+		case 4:
+		{ sValue = "ClosedArrow"; break; }
+		case 5:
+		{ sValue = "None"; break; }
+		case 6:
+		{ sValue = "Butt"; break; }
+		case 7:
+		{ sValue = "ROpenArrow"; break; }
+		case 8:
+		{ sValue = "RClosedArrow"; break; }
+		case 9:
+		{ sValue = "Slash"; break; }
+		}
+
+		return sValue;
+	}
+	void AddRD(CDictObject* pObj, const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		pObj->Add("RD", pArray);
+
+		pArray->Add(dRD1);
+		pArray->Add(dRD4);
+		pArray->Add(dRD3);
+		pArray->Add(dRD2);
+	}
+	std::string GetColor(const std::vector<double>& arr, bool bCaps, double dDiff = 0)
+	{
+		if (arr.empty())
+			return bCaps ? "1 G" : "1 g";
+
+		std::string sDA;
+		for (double dColoc : arr)
+		{
+			sDA.append(std::to_string(dColoc + dDiff));
+			sDA.append(" ");
+		}
+		if (arr.size() == 3)
+			sDA.append(bCaps ? "RG" : "rg");
+		else if (arr.size() == 4)
+			sDA.append(bCaps ? "K" : "k");
+		else if (arr.size() == 1)
+			sDA.append(bCaps ? "G" : "g");
+		// else
+		// 	sDA.append(bCaps ? "SC" : "sc");
+		return sDA;
+	}
+
 	//----------------------------------------------------------------------------------------
 	// CAnnotation
 	//----------------------------------------------------------------------------------------
 	CAnnotation::CAnnotation(CXref* pXref, EAnnotType eType)
 	{
+		m_pDocument = NULL;
 		m_pXref = pXref;
 
 		Add("Type", "Annot");
@@ -82,6 +160,10 @@ namespace PdfWriter
 
 		// Для PDFA нужно, чтобы 0, 1, 4 биты были выключены, а второй включен
 		Add("F", 4);
+
+		m_oBorder.bHave = false;
+		m_oBorder.nType = 0;
+		m_oBorder.dWidth = 0;
 	}
 	void CAnnotation::SetRect(const TRect& oRect)
 	{
@@ -108,7 +190,7 @@ namespace PdfWriter
 			pArray->Add(oRect.fTop);
 		}
 	}
-	void CAnnotation::SetBorder(BYTE nType, double dWidth, double dDashesAlternating, double dGaps)
+	void CAnnotation::SetBorder(BYTE nType, double dWidth, const std::vector<double>& arrDash)
 	{
 		CDictObject* pBorderStyleDict = new CDictObject();
 		if (!pBorderStyleDict)
@@ -121,15 +203,7 @@ namespace PdfWriter
 
 		EBorderSubtype eSubtype = EBorderSubtype(nType);
 		if (border_subtype_Dashed == eSubtype)
-		{
-			CArrayObject* pDash = new CArrayObject();
-			if (pDash)
-			{
-				pBorderStyleDict->Add("D", pDash);
-				pDash->Add(dDashesAlternating);
-				pDash->Add(dGaps);
-			}
-		}
+			AddToVectorD(pBorderStyleDict, "D", arrDash);
 
 		switch (eSubtype)
 		{
@@ -139,6 +213,16 @@ namespace PdfWriter
 		case border_subtype_Inset:      pBorderStyleDict->Add("S", "I"); break;
 		case border_subtype_Underlined: pBorderStyleDict->Add("S", "U"); break;
 		}
+
+		m_oBorder.bHave = true;
+		m_oBorder.nType = nType;
+		m_oBorder.dWidth = dWidth;
+		m_oBorder.arrDash = arrDash;
+	}
+	void CAnnotation::SetEmptyBorder()
+	{
+		m_oBorder.nType = 0;
+		m_oBorder.dWidth = 1;
 	}
 	void CAnnotation::SetAnnotFlag(const int& nAnnotFlag)
 	{
@@ -157,6 +241,7 @@ namespace PdfWriter
 			return;
 
 		Add("BE", pBEDict);
+		pBEDict->Add("I", dBE);
 
 		std::string sValue;
 		switch (nType)
@@ -165,10 +250,10 @@ namespace PdfWriter
 		{ sValue = "S"; break; }
 		case 1:
 		{ sValue = "C"; break; }
+		default: { return; }
 		}
 
 		pBEDict->Add("S", sValue.c_str());
-		pBEDict->Add("I", dBE);
 	}
 	void CAnnotation::SetContents(const std::wstring& wsText)
 	{
@@ -188,24 +273,28 @@ namespace PdfWriter
 		std::string sValue = U_TO_UTF8(wsLM);
 		Add("M", new CStringObject(sValue.c_str()));
 	}
-	void AddToVectorD(CDictObject* pObj, const std::string& sName, const std::vector<double>& arrV)
-	{
-		CArrayObject* pArray = new CArrayObject();
-		if (!pArray)
-			return;
-
-		pObj->Add(sName, pArray);
-
-		for (const double& dV : arrV)
-			pArray->Add(dV);
-	}
 	void CAnnotation::SetC(const std::vector<double>& arrC)
 	{
 		AddToVectorD(this, "C", arrC);
 	}
-	void CAnnotation::CreateAP()
+	void CAnnotation::SetDocument(CDocument* pDocument)
 	{
-
+		m_pDocument = pDocument;
+	}
+	CDocument* CAnnotation::GetDocument()
+	{
+		return m_pDocument;
+	}
+	std::string CAnnotation::GetBorderDash()
+	{
+		std::string sRes = "[";
+		for (double dColoc : m_oBorder.arrDash)
+		{
+			sRes.append(" ");
+			sRes.append(std::to_string(dColoc));
+		}
+		sRes.append(" ] 0 d\012");
+		return sRes;
 	}
 	//----------------------------------------------------------------------------------------
 	// CMarkupAnnotation
@@ -213,7 +302,7 @@ namespace PdfWriter
 	CMarkupAnnotation::CMarkupAnnotation(CXref* pXref, EAnnotType eType) : CAnnotation(pXref, eType)
 	{
 	}
-	void CMarkupAnnotation::SetRT(const BYTE& nRT)
+	void CMarkupAnnotation::SetRT(BYTE nRT)
 	{
 		Add("RT", nRT ? "Group" : "R");
 	}
@@ -263,9 +352,9 @@ namespace PdfWriter
 	{
 		Add("IRT", pAnnot);
 	}
-	void CMarkupAnnotation::CreateAP()
+	void CMarkupAnnotation::RemoveAP()
 	{
-
+		Remove("AP");
 	}
 	//----------------------------------------------------------------------------------------
 	// CLinkAnnotation
@@ -346,6 +435,7 @@ namespace PdfWriter
 		{ sValue = "Completed"; break; }
 		case 6:
 		{ sValue = "None"; break; }
+		default: { return; }
 		}
 
 		Add("State", new CStringObject(sValue.c_str()));
@@ -361,17 +451,18 @@ namespace PdfWriter
 		{ sValue = "Marked"; break; }
 		case 1:
 		{ sValue = "Review"; break; }
+		default: { return; }
 		}
 
 		Add("StateModel", new CStringObject(sValue.c_str()));
 	}
-	void CTextAnnotation::CreateAP()
+	void CTextAnnotation::SetAP()
 	{
 		switch (m_nName)
 		{
 		case 3:
 		{
-			CAnnotationAppearance* pAP = new CAnnotationAppearance(m_pXref, {0, 0, 20, 20});
+			CAnnotAppearanceObject* pAP = new CAnnotAppearanceObject(m_pXref, this);
 			Add("AP", pAP);
 
 			pAP->DrawTextComment();
@@ -431,7 +522,7 @@ namespace PdfWriter
 	{
 		Add("Open", new CBoolObject(bCap));
 	}
-	void CLineAnnotation::SetIT(const BYTE& nIT)
+	void CLineAnnotation::SetIT(BYTE nIT)
 	{
 		std::string sValue;
 		switch (nIT)
@@ -440,11 +531,12 @@ namespace PdfWriter
 		{ sValue = "LineDimension"; break; }
 		case 1:
 		{ sValue = "LineArrow"; break; }
+		default: { return; }
 		}
 
 		Add("IT", sValue.c_str());
 	}
-	void CLineAnnotation::SetCP(const BYTE& nCP)
+	void CLineAnnotation::SetCP(BYTE nCP)
 	{
 		std::string sValue;
 		switch (nCP)
@@ -453,6 +545,7 @@ namespace PdfWriter
 		{ sValue = "Inline"; break; }
 		case 1:
 		{ sValue = "Top"; break; }
+		default: { return; }
 		}
 
 		Add("CP", sValue.c_str());
@@ -469,36 +562,7 @@ namespace PdfWriter
 	{
 		Add("LLO", dLLO);
 	}
-	std::string AddLE(const BYTE& nLE)
-	{
-		std::string sValue;
-		switch (nLE)
-		{
-		case 0:
-		{ sValue = "Square"; break; }
-		case 1:
-		{ sValue = "Circle"; break; }
-		case 2:
-		{ sValue = "Diamond"; break; }
-		case 3:
-		{ sValue = "OpenArrow"; break; }
-		case 4:
-		{ sValue = "ClosedArrow"; break; }
-		case 5:
-		{ sValue = "None"; break; }
-		case 6:
-		{ sValue = "Butt"; break; }
-		case 7:
-		{ sValue = "ROpenArrow"; break; }
-		case 8:
-		{ sValue = "RClosedArrow"; break; }
-		case 9:
-		{ sValue = "Slash"; break; }
-		}
-
-		return sValue;
-	}
-	void CLineAnnotation::SetLE(const BYTE& nLE1, const BYTE& nLE2)
+	void CLineAnnotation::SetLE(BYTE nLE1, BYTE nLE2)
 	{
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
@@ -557,11 +621,11 @@ namespace PdfWriter
 	CFreeTextAnnotation::CFreeTextAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotFreeText)
 	{
 	}
-	void CFreeTextAnnotation::SetQ(const BYTE& nQ)
+	void CFreeTextAnnotation::SetQ(BYTE nQ)
 	{
 		Add("Q", (int)nQ);
 	}
-	void CFreeTextAnnotation::SetIT(const BYTE& nIT)
+	void CFreeTextAnnotation::SetIT(BYTE nIT)
 	{
 		std::string sValue;
 		switch (nIT)
@@ -572,11 +636,12 @@ namespace PdfWriter
 		{ sValue = "FreeTextCallout"; break; }
 		case 2:
 		{ sValue = "FreeTextTypeWriter"; break; }
+		default: { return; }
 		}
 
 		Add("IT", sValue.c_str());
 	}
-	void CFreeTextAnnotation::SetLE(const BYTE& nLE)
+	void CFreeTextAnnotation::SetLE(BYTE nLE)
 	{
 		Add("LE", AddLE(nLE).c_str());
 	}
@@ -584,19 +649,6 @@ namespace PdfWriter
 	{
 		std::string sValue = U_TO_UTF8(wsDS);
 		Add("DS", new CStringObject(sValue.c_str()));
-	}
-	void AddRD(CDictObject* pObj, const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
-	{
-		CArrayObject* pArray = new CArrayObject();
-		if (!pArray)
-			return;
-
-		pObj->Add("RD", pArray);
-
-		pArray->Add(dRD1);
-		pArray->Add(dRD2);
-		pArray->Add(dRD3);
-		pArray->Add(dRD4);
 	}
 	void CFreeTextAnnotation::SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
 	{
@@ -620,7 +672,7 @@ namespace PdfWriter
 	{
 		m_nSubtype = AnnotHighLight;
 	}
-	void CTextMarkupAnnotation::SetSubtype(const BYTE& nSubtype)
+	void CTextMarkupAnnotation::SetSubtype(BYTE nSubtype)
 	{
 		switch (nSubtype)
 		{
@@ -630,6 +682,7 @@ namespace PdfWriter
 		{ m_nSubtype = AnnotUnderline; break; }
 		case 10:
 		{ m_nSubtype = AnnotSquiggly; break; }
+		default:
 		case 11:
 		{ m_nSubtype = AnnotStrikeOut; break; }
 		}
@@ -654,12 +707,13 @@ namespace PdfWriter
 	{
 		m_nSubtype = AnnotSquare;
 	}
-	void CSquareCircleAnnotation::SetSubtype(const BYTE& nSubtype)
+	void CSquareCircleAnnotation::SetSubtype(BYTE nSubtype)
 	{
 		switch (nSubtype)
 		{
 		case 4:
 		{ m_nSubtype = AnnotSquare; break; }
+		default:
 		case 5:
 		{ m_nSubtype = AnnotCircle; break; }
 		}
@@ -681,7 +735,7 @@ namespace PdfWriter
 	{
 		m_nSubtype = AnnotPolygon;
 	}
-	void CPolygonLineAnnotation::SetIT(const BYTE& nIT)
+	void CPolygonLineAnnotation::SetIT(BYTE nIT)
 	{
 		std::string sValue;
 		switch (nIT)
@@ -692,23 +746,25 @@ namespace PdfWriter
 		{ sValue = "PolyLineDimension"; break; }
 		case 2:
 		{ sValue = "PolygonDimension"; break; }
+		default: { return; }
 		}
 
 		Add("IT", sValue.c_str());
 	}
-	void CPolygonLineAnnotation::SetSubtype(const BYTE& nSubtype)
+	void CPolygonLineAnnotation::SetSubtype(BYTE nSubtype)
 	{
 		switch (nSubtype)
 		{
 		case 6:
 		{ m_nSubtype = AnnotPolygon; break; }
+		default:
 		case 7:
 		{ m_nSubtype = AnnotPolyLine; break; }
 		}
 
 		Add("Subtype", c_sAnnotTypeNames[(int)m_nSubtype]);
 	}
-	void CPolygonLineAnnotation::SetLE(const BYTE& nLE1, const BYTE& nLE2)
+	void CPolygonLineAnnotation::SetLE(BYTE nLE1, BYTE nLE2)
 	{
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
@@ -744,7 +800,7 @@ namespace PdfWriter
 	{
 		AddRD(this, dRD1, dRD2, dRD3, dRD4);
 	}
-	void CCaretAnnotation::SetSy(const BYTE& nSy)
+	void CCaretAnnotation::SetSy(BYTE nSy)
 	{
 		std::string sValue;
 		switch (nSy)
@@ -753,6 +809,7 @@ namespace PdfWriter
 		{ sValue = "P"; break; }
 		case 1:
 		{ sValue = "None"; break; }
+		default: { return; }
 		}
 
 		Add("IT", sValue.c_str());
@@ -762,37 +819,27 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CWidgetAnnotation::CWidgetAnnotation(CXref* pXref, EAnnotType eType) : CAnnotation(pXref, eType)
 	{
-		Add("Ff", 0);
-
-		m_pMK = NULL;
-		m_pParent = NULL;
-		m_pDocument = NULL;
+		m_pMK         = NULL;
+		m_pParent     = NULL;
+		m_pAppearance = NULL;
+		m_pFont       = NULL;
+		m_dFontSizeAP = 0;
+		m_nQ          = 0;
+		m_dFontSize   = 10.0;
+		m_bBold       = false;
+		m_bItalic     = false;
+		m_nSubtype    = WidgetUnknown;
 	}
-	void CWidgetAnnotation::SetDocument(CDocument* pDocument)
+	void CWidgetAnnotation::SetSubtype(BYTE nSubtype)
 	{
-		m_pDocument = pDocument;
+		m_nSubtype = (EWidgetType)nSubtype;
 	}
-	void CWidgetAnnotation::SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrTC)
+	void CWidgetAnnotation::SetDA(CFontDict* pFont, const double& dFontSize, const double& dFontSizeAP, const std::vector<double>& arrTC)
 	{
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
-
 		const char* sFontName = pFieldsResources->GetFontName(pFont);
 
-		std::string sDA;
-		for (double dColoc : arrTC)
-		{
-			sDA.append(std::to_string(dColoc));
-			sDA.append(" ");
-		}
-		if (arrTC.size() == 3)
-			sDA.append("rg");
-		else if (arrTC.size() == 4)
-			sDA.append("k");
-		else if (arrTC.size() == 1)
-			sDA.append("g");
-		else
-			sDA.append("sc");
-
+		std::string sDA = GetColor(arrTC, false);
 		if (sFontName)
 		{
 			sDA.append(" /");
@@ -803,7 +850,20 @@ namespace PdfWriter
 		sDA.append(std::to_string(dFontSize));
 		sDA.append(" Tf");
 
-		Add("DA", new CStringObject(sDA.c_str(), false, true));
+		CDictObject* pOwner = GetObjOwnValue("DA");
+		if (pOwner)
+			pOwner->Remove("DA");
+		Add("DA", new CStringObject(sDA.c_str()));
+
+		m_arrTC = arrTC;
+		m_dFontSizeAP = dFontSizeAP;
+	}
+	void CWidgetAnnotation::SetFont(CFontCidTrueType* pFont, double dFontSize, bool bBold, bool bItalic)
+	{
+		m_pFont = pFont;
+		m_dFontSize = dFontSize;
+		m_bBold     = bBold;
+		m_bItalic   = bItalic;
 	}
 	CDictObject* CWidgetAnnotation::GetObjOwnValue(const std::string& sV)
 	{
@@ -822,19 +882,49 @@ namespace PdfWriter
 		}
 		return NULL;
 	}
+	CObjectBase* CWidgetAnnotation::GetObjValue(const std::string& sV)
+	{
+		CObjectBase* pRes = Get(sV);
+		if (pRes)
+			return pRes;
+		CDictObject* pParent = m_pParent;
+		while (pParent)
+		{
+			pRes = pParent->Get(sV);
+			if (pRes)
+				return pRes;
+			CObjectBase* pParent2 = pParent->Get("Parent");
+			if (pParent2 && pParent2->GetType() == object_type_DICT)
+				pParent = (CDictObject*)pParent2;
+			else
+				return NULL;
+		}
+		return NULL;
+	}
 	void CWidgetAnnotation::CheckMK()
 	{
 		if (!m_pMK)
 		{
+			CObjectBase* pMK = Get("MK");
+			if (pMK && pMK->GetType() == object_type_DICT)
+			{
+				m_pMK = (CDictObject*)pMK;
+				return;
+			}
+
 			m_pMK = new CDictObject();
 			Add("MK", m_pMK);
 		}
 	}
-	void CWidgetAnnotation::SetQ(const BYTE& nQ)
+	void CWidgetAnnotation::SetQ(BYTE nQ)
 	{
-		Add("Q", (int)nQ);
+		CDictObject* pOwner = GetObjOwnValue("Q");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("Q", (int)nQ);
+		m_nQ = nQ;
 	}
-	void CWidgetAnnotation::SetH(const BYTE& nH)
+	void CWidgetAnnotation::SetH(BYTE nH)
 	{
 		std::string sValue;
 		switch (nH)
@@ -847,6 +937,7 @@ namespace PdfWriter
 		{ sValue = "P"; break; }
 		case 3:
 		{ sValue = "O"; break; }
+		default: { return; }
 		}
 
 		Add("H", sValue.c_str());
@@ -859,7 +950,10 @@ namespace PdfWriter
 	}
 	void CWidgetAnnotation::SetFlag(const int& nFlag)
 	{
-		Add("Ff", nFlag);
+		CDictObject* pOwner = GetObjOwnValue("Ff");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("Ff", nFlag);
 	}
 	void CWidgetAnnotation::SetParent(CDictObject* pParent)
 	{
@@ -871,41 +965,176 @@ namespace PdfWriter
 	void CWidgetAnnotation::SetTU(const std::wstring& wsTU)
 	{
 		std::string sValue = U_TO_UTF8(wsTU);
-		Add("TU", new CStringObject(sValue.c_str()));
+		CDictObject* pOwner = GetObjOwnValue("TU");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("TU", new CStringObject(sValue.c_str(), true));
 	}
 	void CWidgetAnnotation::SetDS(const std::wstring& wsDS)
 	{
-
+		std::string sValue = U_TO_UTF8(wsDS);
+		CDictObject* pOwner = GetObjOwnValue("DS");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("DS", new CStringObject(sValue.c_str(), true));
 	}
 	void CWidgetAnnotation::SetDV(const std::wstring& wsDV)
 	{
-
+		std::string sValue = U_TO_UTF8(wsDV);
+		CDictObject* pOwner = GetObjOwnValue("DV");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("DV", new CStringObject(sValue.c_str(), true));
 	}
 	void CWidgetAnnotation::SetT(const std::wstring& wsT)
 	{
 		std::string sValue = U_TO_UTF8(wsT);
-		Add("T", new CStringObject(sValue.c_str()));
+		CDictObject* pOwner = GetObjOwnValue("T");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("T", new CStringObject(sValue.c_str(), true));
 	}
 	void CWidgetAnnotation::SetBC(const std::vector<double>& arrBC)
 	{
 		CheckMK();
 		AddToVectorD(m_pMK, "BC", arrBC);
+		m_arrBC = arrBC;
 	}
 	void CWidgetAnnotation::SetBG(const std::vector<double>& arrBG)
 	{
 		CheckMK();
 		AddToVectorD(m_pMK, "BG", arrBG);
+		m_arrBG = arrBG;
 	}
-	//----------------------------------------------------------------------------------------
-	// CButtonWidget
-	//----------------------------------------------------------------------------------------
-	CButtonWidget::CButtonWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
+	void CWidgetAnnotation::AddAction(CAction* pAction)
 	{
-		Add("FT", "Btn");
+		if (!pAction)
+			return;
 
-		m_pIF = NULL;
+		if (pAction->m_sType == "A")
+		{
+			CDictObject* pOwner = GetObjOwnValue(pAction->m_sType);
+			if (!pOwner)
+				pOwner = this;
+
+			pOwner->Add(pAction->m_sType.c_str(), pAction);
+			return;
+		}
+
+		std::string sAA = pAction->m_sType;
+		CDictObject* pAA = NULL;
+		if (m_pParent && (sAA == "K" || sAA == "F" || sAA == "V" || sAA == "C"))
+			pAA = (CDictObject*)m_pParent->Get("AA");
+		else if (sAA == "E" || sAA == "X" || sAA == "D" || sAA == "U" || sAA == "Fo" || sAA == "Bl" || sAA == "PO" || sAA == "PC" || sAA == "PV" || sAA == "PI")
+		{
+			pAA = (CDictObject*)Get("AA");
+			if (!pAA)
+			{
+				pAA = new CDictObject();
+				Add("AA", pAA);
+			}
+		}
+
+		if (!pAA)
+		{
+			pAA = (CDictObject*)GetObjValue("AA");
+			if (!pAA)
+			{
+				pAA = new CDictObject();
+				Add("AA", pAA);
+			}
+		}
+
+		if (pAA)
+			pAA->Add(sAA.c_str(), pAction);
 	}
-	void CButtonWidget::CheckIF()
+	std::string CWidgetAnnotation::GetDAforAP(CFontDict* pFont)
+	{
+		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
+		const char* sFontName = pFieldsResources->GetFontName(pFont);
+
+		std::string sDA = GetColor(m_arrTC, false);
+		if (sFontName)
+		{
+			sDA.append(" /");
+			sDA.append(sFontName);
+		}
+
+		sDA.append(" ");
+		sDA.append(std::to_string(m_dFontSizeAP));
+		sDA.append(" Tf\012");
+
+		return sDA;
+	}
+	std::string CWidgetAnnotation::GetBGforAP(double dDiff)
+	{
+		return GetColor(m_arrBG, false, dDiff) + "\012";
+	}
+	std::string CWidgetAnnotation::GetBCforAP()
+	{
+		return GetColor(m_arrBC, true) + "\012";
+	}
+	void CWidgetAnnotation::SetEmptyAP()
+	{
+		if (!m_pAppearance)
+			m_pAppearance = new CAnnotAppearance(m_pXref, this);
+		Add("AP", m_pAppearance);
+		CAnnotAppearanceObject* pAppearance = m_pAppearance->GetNormal();
+
+		double dHeight = fabs(m_oRect.fTop - m_oRect.fBottom);
+		double dWidth  = fabs(m_oRect.fRight - m_oRect.fLeft);
+
+		pAppearance->StartDraw(dWidth, dHeight);
+		pAppearance->EndDraw();
+	}
+	void CWidgetAnnotation::SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts)
+	{
+		if (!m_pAppearance)
+			m_pAppearance = new CAnnotAppearance(m_pXref, this);
+		Add("AP", m_pAppearance);
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
+		pNormal->DrawSimpleText(wsValue, pCodes, unCount, m_pFont, m_dFontSize, dX, dY, 0, 0, 0, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), ppFonts, pShifts);
+	}
+	void CWidgetAnnotation::StartAP()
+	{
+		m_pAppearance = new CAnnotAppearance(m_pXref, this);
+		if (!m_pAppearance)
+			return;
+		Add("AP", m_pAppearance);
+		CAnnotAppearanceObject* pNormal  = m_pAppearance->GetNormal();
+		pNormal->StartDrawText(m_pFont, m_dFontSize, 0, 0, 0, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
+	}
+	void CWidgetAnnotation::AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts, const double* pShifts)
+	{
+		if (!m_pAppearance)
+			return;
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
+		pNormal->DrawTextLine(dX, dY, pCodes, unCodesCount, ppFonts, pShifts);
+	}
+	void CWidgetAnnotation::EndAP()
+	{
+		if (!m_pAppearance)
+			return;
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
+		pNormal->EndDrawText();
+	}
+	//----------------------------------------------------------------------------------------
+	// CPushButtonWidget
+	//----------------------------------------------------------------------------------------
+	CPushButtonWidget::CPushButtonWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
+	{
+		m_pIF = NULL;
+		m_nI  = -1;
+		m_nRI = -1;
+		m_nIX = -1;
+		m_nTP = 0;
+		m_nScaleType = 0;
+		m_bRespectBorders = false;
+		m_bConstantProportions = true;
+		m_dShiftX = 0.5;
+		m_dShiftY = 0.5;
+	}
+	void CPushButtonWidget::CheckIF()
 	{
 		CheckMK();
 
@@ -915,32 +1144,18 @@ namespace PdfWriter
 			m_pMK->Add("IF", m_pIF);
 		}
 	}
-	void CButtonWidget::SetV(bool bV)
+	void CPushButtonWidget::SetV(const std::wstring& wsV)
 	{
+		std::string sV = U_TO_UTF8(wsV);
 		CDictObject* pOwner = GetObjOwnValue("V");
 		if (!pOwner)
-		{
-			if (m_pParent)
-			{
-				if (bV)
-					m_pParent->Add("V", m_sAP_N_Yes.c_str());
-			}
-			else
-				Add("V", (bV ? m_sAP_N_Yes.c_str() : "Off"));
-		}
-		else if (bV)
-			pOwner->Add("V", m_sAP_N_Yes.c_str());
+			pOwner = this;
+		pOwner->Add("V", new CStringObject(sV.c_str(), true));
+	}
+	void CPushButtonWidget::SetS(BYTE nS)
+	{
+		m_bConstantProportions = !nS;
 
-		// TODO
-		// Add("AS", (bV ? m_sAP_N_Yes.c_str() : "Off"));
-	}
-	void CButtonWidget::SetDV(const std::wstring& wsDV)
-	{
-		std::string sValue = U_TO_UTF8(wsDV);
-		Add("DV", sValue.c_str());
-	}
-	void CButtonWidget::SetS(const BYTE& nS)
-	{
 		CheckIF();
 
 		std::string sValue;
@@ -950,16 +1165,22 @@ namespace PdfWriter
 		{ sValue = "P"; break; }
 		case 1:
 		{ sValue = "A"; break; }
+		default: { return; }
 		}
 
 		m_pIF->Add("S", sValue.c_str());
 	}
-	void CButtonWidget::SetTP(const BYTE& nTP)
+	void CPushButtonWidget::SetTP(BYTE nTP)
 	{
-		Add("TP", (int)nTP);
+		CheckMK();
+
+		m_pMK->Add("TP", (int)nTP);
+		m_nTP = nTP;
 	}
-	void CButtonWidget::SetSW(const BYTE& nSW)
+	void CPushButtonWidget::SetSW(BYTE nSW)
 	{
+		m_nScaleType = nSW;
+
 		CheckIF();
 
 		std::string sValue;
@@ -973,41 +1194,41 @@ namespace PdfWriter
 		{ sValue = "B"; break; }
 		case 3:
 		{ sValue = "S"; break; }
+		default: { return; }
 		}
 
 		m_pIF->Add("SW", sValue.c_str());
 	}
-	void CButtonWidget::SetStyle(const BYTE& nStyle)
-	{
-		CheckMK();
-
-		std::string sValue;
-		switch (nStyle)
-		{
-		case 0:
-		{ sValue = "4"; break; }
-		case 1:
-		{ sValue = "8"; break; }
-		case 2:
-		{ sValue = "u"; break; }
-		case 3:
-		{ sValue = "l"; break; }
-		case 4:
-		{ sValue = "H"; break; }
-		case 5:
-		{ sValue = "n"; break; }
-		}
-
-		m_pMK->Add("CA", new CStringObject(sValue.c_str()));
-	}
-	void CButtonWidget::SetIFFlag(const int& nIFFlag)
+	void CPushButtonWidget::SetIFFlag(const int& nIFFlag)
 	{
 		CheckIF();
 
-		m_pIF->Add("FB", (nIFFlag & (1 << 4)) ? true : false);
+		m_bRespectBorders = (nIFFlag & (1 << 4)) ? false : true;
+		m_pIF->Add("FB", !m_bRespectBorders);
 	}
-	void CButtonWidget::SetA(const double& dA1, const double& dA2)
+	void CPushButtonWidget::SetFlag(const int& nFlag)
 	{
+		int nFlags = nFlag;
+		nFlags |= (1 << 16);
+		CWidgetAnnotation::SetFlag(nFlags);
+	}
+	void CPushButtonWidget::SetI(const int& nI)
+	{
+		m_nI = nI;
+	}
+	void CPushButtonWidget::SetRI(const int& nRI)
+	{
+		m_nRI = nRI;
+	}
+	void CPushButtonWidget::SetIX(const int& nIX)
+	{
+		m_nIX = nIX;
+	}
+	void CPushButtonWidget::SetA(const double& dA1, const double& dA2)
+	{
+		m_dShiftX = dA1;
+		m_dShiftY = dA2;
+
 		CheckIF();
 
 		CArrayObject* pArray = new CArrayObject();
@@ -1019,98 +1240,357 @@ namespace PdfWriter
 		pArray->Add(dA1);
 		pArray->Add(dA2);
 	}
-	void CButtonWidget::SetCA(const std::wstring& wsCA)
+	void CPushButtonWidget::SetCA(const std::wstring& wsCA)
 	{
 		CheckMK();
 
 		std::string sValue = U_TO_UTF8(wsCA);
-		m_pMK->Add("CA", new CStringObject(sValue.c_str()));
+		m_pMK->Add("CA", new CStringObject(sValue.c_str(), true));
+		m_wsCA = wsCA;
 	}
-	void CButtonWidget::SetRC(const std::wstring& wsRC)
+	void CPushButtonWidget::SetRC(const std::wstring& wsRC)
 	{
 		CheckMK();
 
 		std::string sValue = U_TO_UTF8(wsRC);
-		m_pMK->Add("RC", new CStringObject(sValue.c_str()));
+		m_pMK->Add("RC", new CStringObject(sValue.c_str(), true));
+		m_wsRC = wsRC;
 	}
-	void CButtonWidget::SetAC(const std::wstring& wsAC)
+	void CPushButtonWidget::SetAC(const std::wstring& wsAC)
 	{
 		CheckMK();
 
 		std::string sValue = U_TO_UTF8(wsAC);
-		m_pMK->Add("AC", new CStringObject(sValue.c_str()));
+		m_pMK->Add("AC", new CStringObject(sValue.c_str(), true));
+		m_wsAC = wsAC;
 	}
-	void CButtonWidget::SetAP_N_Yes(const std::wstring& wsAP_N_Yes)
+	void CPushButtonWidget::SetAP(CXObject* pForm, BYTE nAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, double dLineW, double dLineH, CFontCidTrueType** ppFonts)
+	{
+		if (!m_pAppearance)
+		{
+			m_pAppearance = new CAnnotAppearance(m_pXref, this);
+			CObjectBase* pAP = Get("AP");
+			if (pAP && pAP->GetType() == object_type_DICT)
+			{
+				CDictObject* pDAP = (CDictObject*)pAP;
+				CObjectBase* pAPi = pDAP->Get("N");
+				if (pAPi)
+				{
+					CProxyObject* pNewAPi = new CProxyObject(pAPi->Copy(), true);
+					pNewAPi->Get()->SetRef(pAPi->GetObjId(), pAPi->GetGenNo());
+					m_pAppearance->Add("N", pNewAPi);
+				}
+				pAPi = pDAP->Get("D");
+				if (pAPi)
+				{
+					CProxyObject* pNewAPi = new CProxyObject(pAPi->Copy(), true);
+					pNewAPi->Get()->SetRef(pAPi->GetObjId(), pAPi->GetGenNo());
+					m_pAppearance->Add("D", pNewAPi);
+				}
+				pAPi = pDAP->Get("R");
+				if (pAPi)
+				{
+					CProxyObject* pNewAPi = new CProxyObject(pAPi->Copy(), true);
+					pNewAPi->Get()->SetRef(pAPi->GetObjId(), pAPi->GetGenNo());
+					m_pAppearance->Add("R", pNewAPi);
+				}
+			}
+		}
+
+		CAnnotAppearanceObject* pAppearance = NULL;
+		if (nAP == 0)
+			pAppearance = m_pAppearance->GetNormal();
+		else if (nAP == 1)
+			pAppearance = m_pAppearance->GetRollover();
+		else if (nAP == 2)
+			pAppearance = m_pAppearance->GetDown();
+		if (!pAppearance)
+			return;
+		Add("AP", m_pAppearance);
+
+		double dHeight = fabs(m_oRect.fTop - m_oRect.fBottom);
+		double dWidth  = fabs(m_oRect.fRight - m_oRect.fLeft);
+
+		pAppearance->StartDraw(dWidth, dHeight);
+
+		if (pForm)
+		{
+			double dH = dHeight;
+			double dW = dWidth;
+
+			double dOriginW = pForm->GetWidth();
+			double dOriginH = pForm->GetHeight();
+
+			bool bNeedScale = (0 == m_nScaleType
+				|| (2 == m_nScaleType && (dOriginH > dH || dOriginW > dW))
+				|| (3 == m_nScaleType && dOriginH < dH && dOriginW < dW));
+
+			double dBorderSize = m_oBorder.dWidth;
+			if (m_oBorder.nType == 1 || m_oBorder.nType == 3)
+				dBorderSize *= 2;
+
+			double dDstW = dOriginW;
+			double dDstH = dOriginH;
+			double dDstX = 0;
+			double dDstY = 0;
+
+			if (m_nTP == 2)
+			{
+				dH -= (dLineH + dBorderSize);
+				dDstY += (dLineH + dBorderSize);
+			}
+			if (m_nTP == 3)
+				dH -= (dLineH + dBorderSize);
+			if (m_nTP == 4)
+				dW -= (dLineW + dBorderSize);
+			if (m_nTP == 5)
+			{
+				dW -= (dLineW + dBorderSize);
+				dDstX += (dLineW + dBorderSize);
+			}
+
+			if (m_bRespectBorders)
+			{
+				dDstX += 2 * dBorderSize;
+				dDstY += 2 * dBorderSize;
+				dH -= 4 * dBorderSize;
+				dW -= 4 * dBorderSize;
+			}
+
+			if (bNeedScale)
+			{
+				if (!m_bConstantProportions)
+				{
+					dDstH = dH;
+					dDstW = dW;
+				}
+				else
+				{
+					double dScaleKoef = fmin(dW / dOriginW, dH / dOriginH);
+					dDstW = dScaleKoef * dOriginW;
+					dDstH = dScaleKoef * dOriginH;
+				}
+			}
+
+			dDstX += (dW - dDstW) * m_dShiftX;
+			dDstY += (dH - dDstH) * m_dShiftY;
+
+			pAppearance->DrawPictureInline(pForm->GetName().c_str(), dDstX, dDstY, dDstW / dOriginW, dDstH / dOriginH, m_bRespectBorders);
+
+			CheckMK();
+			std::string sAP = nAP == 0 ? "I" : (nAP == 1 ? "RI" : "IX");
+			m_pMK->Add(sAP, pForm);
+		}
+
+		if (pCodes)
+		{
+			pAppearance->StartText(m_pFont, m_dFontSize);
+			pAppearance->DrawTextLine(dX, dY, pCodes, unCount, ppFonts, NULL);
+			pAppearance->EndText();
+		}
+
+		pAppearance->EndDraw();
+	}
+	//----------------------------------------------------------------------------------------
+	// CCheckBoxWidget
+	//----------------------------------------------------------------------------------------
+	CCheckBoxWidget::CCheckBoxWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
+	{
+		m_nSubtype = WidgetRadiobutton;
+	}
+	void CCheckBoxWidget::SetV(const std::wstring& wsV)
+	{
+		std::string sV = U_TO_UTF8(wsV);
+		CDictObject* pOwner = GetObjOwnValue("V");
+		if (!pOwner)
+			pOwner = this;
+
+		if (isdigit(sV[0]))
+			pOwner->Add("V", sV.c_str());
+		else
+			pOwner->Add("V", new CStringObject(sV.c_str(), true));
+	}
+	std::wstring CCheckBoxWidget::SetStyle(BYTE nStyle)
+	{
+		CheckMK();
+
+		std::string sValue;
+		switch (nStyle)
+		{
+		case 1:
+		{ sValue = "8"; break; }
+		case 2:
+		{ sValue = "u"; break; }
+		case 3:
+		{ sValue = "l"; break; }
+		case 4:
+		{ sValue = "H"; break; }
+		case 5:
+		{ sValue = "n"; break; }
+		default:
+		case 0:
+		{ sValue = "4"; break; }
+		}
+
+		m_pMK->Add("CA", new CStringObject(sValue.c_str()));
+
+		return UTF8_TO_U(sValue);
+	}
+	void CCheckBoxWidget::SetAP_N_Yes(const std::wstring& wsAP_N_Yes)
 	{
 		std::string sValue = U_TO_UTF8(wsAP_N_Yes);
 		m_sAP_N_Yes = sValue;
+	}
+	void CCheckBoxWidget::SwitchAP(const std::string& sV)
+	{
+		CObjectBase* pAP, *pAPN;
+		if ((pAP = Get("AP")) && pAP->GetType() == object_type_DICT && (pAPN = ((CDictObject*)pAP)->Get("N")) && pAPN->GetType() == object_type_DICT && ((CDictObject*)pAPN)->Get(sV))
+			Add("AS", sV.c_str());
+		else
+			Add("AS", "Off");
+	}
+	void CCheckBoxWidget::SetFlag(const int& nFlag)
+	{
+		int nFlags = nFlag;
+		if (m_nSubtype == WidgetRadiobutton)
+			nFlags |= (1 << 15);
+		CWidgetAnnotation::SetFlag(nFlags);
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextWidget
 	//----------------------------------------------------------------------------------------
 	CTextWidget::CTextWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
 	{
+		m_bAPV = false;
 	}
 	void CTextWidget::SetMaxLen(const int& nMaxLen)
 	{
 		if (nMaxLen > 0)
 		{
-			if (m_pParent)
-				m_pParent->Add("MaxLen", nMaxLen);
-			else
-				Add("MaxLen", nMaxLen);
+			CDictObject* pOwner = GetObjOwnValue("MaxLen");
+			if (!pOwner)
+				pOwner = this;
+			pOwner->Add("MaxLen", nMaxLen);
 		}
 	}
 	void CTextWidget::SetV(const std::wstring& wsV)
 	{
-		std::string sValue = U_TO_UTF8(wsV);
+		m_sV = U_TO_UTF8(wsV);
 		CDictObject* pOwner = GetObjOwnValue("V");
 		if (!pOwner)
-			pOwner = GetObjOwnValue("FT");
-		if (!pOwner)
 			pOwner = this;
-		pOwner->Add("V", new CStringObject(sValue.c_str()));
+		pOwner->Add("V", new CStringObject(m_sV.c_str(), true));
 	}
 	void CTextWidget::SetRV(const std::wstring& wsRV)
 	{
 		std::string sValue = U_TO_UTF8(wsRV);
-		Add("RV", new CStringObject(sValue.c_str()));
+		CDictObject* pOwner = GetObjOwnValue("RV");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("RV", new CStringObject(sValue.c_str(), true));
+	}
+	bool CTextWidget::IsCombFlag()
+	{
+		int nFlags = ((CNumberObject*)GetObjValue("Ff"))->Get();
+		return (nFlags & (1 << 24));
+	}
+	bool CTextWidget::IsMultiLine()
+	{
+		int nFlags = ((CNumberObject*)GetObjValue("Ff"))->Get();
+		return (nFlags & (1 << 12));
+	}
+	unsigned int CTextWidget::GetMaxLen()
+	{
+		CNumberObject* oMaxLen = (CNumberObject*)GetObjValue("MaxLen");
+		return oMaxLen ? oMaxLen->Get() : 0;
 	}
 	//----------------------------------------------------------------------------------------
 	// CChoiceWidget
 	//----------------------------------------------------------------------------------------
 	CChoiceWidget::CChoiceWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
 	{
-		Add("FT", "Ch");
+		m_dHeight = 0;
+		m_nTI = -1;
+	}
+	void CChoiceWidget::SetFlag(const int& nFlag)
+	{
+		int nFlags = nFlag;
+		if (m_nSubtype == WidgetCombobox)
+			nFlags |= (1 << 17);
+
+		CDictObject* pOwner = GetObjOwnValue("Ff");
+		if (!pOwner)
+			pOwner = this;
+		else
+		{
+			int nFlags2 = ((CNumberObject*)(pOwner->Get("Ff")))->Get();
+			if (nFlags2 & (1 << 19))
+				nFlags |= (1 << 19);
+		}
+		pOwner->Add("Ff", nFlags);
 	}
 	void CChoiceWidget::SetTI(const int& nTI)
 	{
-		Add("TI", nTI);
+		m_nTI = nTI;
+		CDictObject* pOwner = GetObjOwnValue("TI");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("TI", nTI);
 	}
 	void CChoiceWidget::SetV(const std::wstring& wsV)
 	{
 		std::string sValue = U_TO_UTF8(wsV);
 		CDictObject* pOwner = GetObjOwnValue("V");
 		if (!pOwner)
-			pOwner = GetObjOwnValue("FT");
-		if (!pOwner)
 			pOwner = this;
-		pOwner->Add("V", new CStringObject(sValue.c_str()));
+		pOwner->Add("V", new CStringObject(sValue.c_str(), true));
 	}
-	void CChoiceWidget::SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt)
+	void CChoiceWidget::SetI(const std::vector<int>& arrI)
 	{
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
 			return;
 
-		Add("Opt", pArray);
+		CDictObject* pOwner = GetObjOwnValue("I");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("I", pArray);
+
+		for (int i = 0; i < arrI.size(); ++i)
+			pArray->Add(arrI[i]);
+	}
+	void CChoiceWidget::SetV(const std::vector<std::wstring>& arrV)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		CDictObject* pOwner = GetObjOwnValue("V");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("V", pArray);
+
+		for (int i = 0; i < arrV.size(); ++i)
+			pArray->Add(new PdfWriter::CStringObject(U_TO_UTF8(arrV[i]).c_str(), true));
+	}
+	void CChoiceWidget::SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt)
+	{
+		m_arrOpt = arrOpt;
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		CDictObject* pOwner = GetObjOwnValue("Opt");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("Opt", pArray);
 
 		for (const std::pair<std::wstring, std::wstring>& PV : arrOpt)
 		{
 			if (PV.first.empty())
 			{
 				std::string sValue = U_TO_UTF8(PV.second);
-				pArray->Add(new CStringObject(sValue.c_str()));
+				pArray->Add(new CStringObject(sValue.c_str(), true));
 			}
 			else
 			{
@@ -1118,12 +1598,70 @@ namespace PdfWriter
 				pArray->Add(pArray2);
 
 				std::string sValue = U_TO_UTF8(PV.first);
-				pArray2->Add(new CStringObject(sValue.c_str()));
+				pArray2->Add(new CStringObject(sValue.c_str(), true));
 
 				sValue = U_TO_UTF8(PV.second);
-				pArray2->Add(new CStringObject(sValue.c_str()));
+				pArray2->Add(new CStringObject(sValue.c_str(), true));
 			}
 		}
+	}
+	std::wstring CChoiceWidget::GetValue(const std::wstring& wsExportV)
+	{
+		for (int i = 0; i < m_arrOpt.size(); ++i)
+		{
+			if (( m_arrOpt[i].first.empty() && m_arrOpt[i].second == wsExportV) ||
+				(!m_arrOpt[i].first.empty() && m_arrOpt[i].first  == wsExportV))
+				return m_arrOpt[i].second;
+		}
+		return wsExportV;
+	}
+	std::wstring CChoiceWidget::SetListBoxIndex(const std::vector<std::wstring>& arrV)
+	{
+		std::wstring sRes;
+		int i = 0;
+		if (m_nTI < 0)
+		{
+			// Ищем верхний элемент отрисовки
+			for (; i < m_arrOpt.size(); ++i)
+			{
+				if (( m_arrOpt[i].first.empty() && m_arrOpt[i].second == arrV.front()) ||
+					(!m_arrOpt[i].first.empty() && m_arrOpt[i].first  == arrV.front()))
+				{
+					m_nTI = i;
+					break;
+				}
+			}
+		}
+		else
+			i = m_nTI;
+
+		if (m_nTI < 0)
+			return L"";
+
+		for (; i < m_arrOpt.size(); ++i)
+			sRes += (m_arrOpt[i].second + L"\n");
+		i = m_nTI;
+
+		for (const std::wstring& sV : arrV)
+		{
+			for (int j = i; j < m_arrOpt.size(); ++j)
+			{
+				if (( m_arrOpt[j].first.empty() && m_arrOpt[j].second == sV) ||
+					(!m_arrOpt[j].first.empty() && m_arrOpt[j].first  == sV))
+				{
+					m_arrIndex.push_back(j - m_nTI);
+					i = j + 1;
+					break;
+				}
+			}
+		}
+
+		if (!sRes.empty())
+		{
+			sRes.pop_back();
+			return sRes;
+		}
+		return L"";
 	}
 	//----------------------------------------------------------------------------------------
 	// CSignatureWidget
@@ -1132,30 +1670,101 @@ namespace PdfWriter
 	{
 	}
 	//----------------------------------------------------------------------------------------
-	// CAnnotationAppearance
+	// CAction
 	//----------------------------------------------------------------------------------------
-	CAnnotationAppearance::CAnnotationAppearance(CXref* pXref, const TRect& oRect)
+	CAction::CAction(CXref* pXref)
 	{
-		m_pXref   = pXref;
-		m_pStream = new CMemoryStream();
-
-		SetStream(m_pXref, m_pStream);
-
-		Add("Type", "XObject");
-		Add("Subtype", "Form");
-
+		pXref->Add(this);
+		Add("Type", "Action");
+	}
+	void CAction::SetType(const std::wstring& wsType)
+	{
+		m_sType = U_TO_UTF8(wsType);
+	}
+	//----------------------------------------------------------------------------------------
+	CActionResetForm::CActionResetForm(CXref* pXref) : CAction(pXref)
+	{
+		Add("S", "ResetForm");
+		Add("Flags", 1);
+	}
+	void CActionResetForm::SetFlags(int nFlag)
+	{
+		Add("Flags", nFlag);
+	}
+	void CActionResetForm::SetFields(const std::vector<std::wstring>& arrFileds)
+	{
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
 			return;
 
-		Add("BBox", pArray);
-		pArray->Add(0);
-		pArray->Add(0);
-		pArray->Add(oRect.fRight - oRect.fLeft);
-		pArray->Add(oRect.fBottom - oRect.fTop);
+		Add("Fields", pArray);
+
+		for (const std::wstring& A : arrFileds)
+		{
+			std::string sValue = U_TO_UTF8(A);
+			pArray->Add(new CStringObject(sValue.c_str(), true));
+		}
 	}
-	void CAnnotationAppearance::DrawTextComment()
+	//----------------------------------------------------------------------------------------
+	CActionJavaScript::CActionJavaScript(CXref* pXref) : CAction(pXref)
 	{
-		m_pStream->WriteStr("");
+		Add("S", "JavaScript");
+	}
+	void CActionJavaScript::SetJS(const std::wstring& wsJS)
+	{
+		std::string sValue = U_TO_UTF8(wsJS);
+		Add("JS", new CStringObject(sValue.c_str(), true));
+	}
+	//----------------------------------------------------------------------------------------
+	CActionGoTo::CActionGoTo(CXref* pXref) : CAction(pXref)
+	{
+		Add("S", "GoTo");
+	}
+	void CActionGoTo::SetDestination(CArrayObject* pDest)
+	{
+		Add("D", pDest);
+	}
+	//----------------------------------------------------------------------------------------
+	CActionURI::CActionURI(CXref* pXref) : CAction(pXref)
+	{
+		Add("S", "URI");
+	}
+	void CActionURI::SetURI(const std::wstring& wsURI)
+	{
+		std::string sValue = U_TO_UTF8(wsURI);
+		Add("URI", new CStringObject(sValue.c_str(), true));
+	}
+	//----------------------------------------------------------------------------------------
+	CActionHide::CActionHide(CXref* pXref) : CAction(pXref)
+	{
+		Add("S", "Hide");
+	}
+	void CActionHide::SetH(BYTE nH)
+	{
+		Add("H", !!nH);
+	}
+	void CActionHide::SetT(const std::vector<std::wstring>& arrT)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("T", pArray);
+
+		for (const std::wstring& A : arrT)
+		{
+			std::string sValue = U_TO_UTF8(A);
+			pArray->Add(new CStringObject(sValue.c_str(), true));
+		}
+	}
+	//----------------------------------------------------------------------------------------
+	CActionNamed::CActionNamed(CXref* pXref) : CAction(pXref)
+	{
+		Add("S", "Named");
+	}
+	void CActionNamed::SetN(const std::wstring& wsN)
+	{
+		std::string sValue = U_TO_UTF8(wsN);
+		Add("N", sValue.c_str());
 	}
 }

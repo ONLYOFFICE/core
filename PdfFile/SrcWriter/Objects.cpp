@@ -651,36 +651,7 @@ namespace PdfWriter
 			}
 		}
 	}
-    void CDictObject::WriteSignatureToStream(CStream* pStream, CEncrypt* pEncrypt)
-	{
-		for (auto const &oIter : m_mList)
-		{
-			CObjectBase* pObject = oIter.second;
-			if (!pObject)
-				continue;
-
-			if (pObject->IsHidden())
-			{
-				// ничего не делаем
-			}
-			else
-			{
-				int nBegin, nEnd;
-				pStream->WriteEscapeName(oIter.first.c_str());
-				pStream->WriteChar(' ');
-				nBegin = pStream->Tell();
-				// Цифровая подпись не шифруется
-				pStream->Write(pObject, oIter.first == "Contents" ? NULL : pEncrypt);
-				nEnd = pStream->Tell();
-				pStream->WriteStr("\012");
-				if (oIter.first == "Contents")
-					((CSignatureDict*)this)->SetByteRange(nBegin, nEnd);
-				if (oIter.first == "ByteRange")
-					((CSignatureDict*)this)->ByteRangeOffset(nBegin, nEnd);
-			}
-		}
-	}
-    void CDictObject::SetStream(CXref* pXref, CStream* pStream)
+	void CDictObject::SetStream(CXref* pXref, CStream* pStream, bool bThis)
 	{
 		if (m_pStream)
 			delete m_pStream;
@@ -690,7 +661,8 @@ namespace PdfWriter
 			CNumberObject* pLength = new CNumberObject(0);
 
 			// Только stream object добавляются в таблицу xref автоматически
-			pXref->Add((CObjectBase*)this);
+			if (bThis)
+				pXref->Add((CObjectBase*)this);
 			pXref->Add((CObjectBase*)pLength);
 
 			Add("Length", (CObjectBase*)pLength);
@@ -881,7 +853,7 @@ namespace PdfWriter
 		unsigned int unMaxObjId = m_pPrev ? pPrev->m_arrEntries.size() + pPrev->m_unStartOffset : m_arrEntries.size() + m_unStartOffset;
 
 		m_pTrailer->Add("Size", unMaxObjId);
-		if (m_pPrev)
+		if (m_pPrev && pPrev->m_unAddr)
 			m_pTrailer->Add("Prev", pPrev->m_unAddr);
 
 		pStream->WriteStr("trailer\012");
@@ -945,12 +917,12 @@ namespace PdfWriter
 			CDictObject* pTrailer = m_pTrailer;
 			pTrailer->Add("Type", "XRef");
 			pTrailer->Add("Size", unMaxObjId + 1);
-			if (m_pPrev)
+			if (m_pPrev && pPrev->m_unAddr)
 				pTrailer->Add("Prev", pPrev->m_unAddr);
 			CArrayObject* pW = new CArrayObject();
 			pTrailer->Add("W",  pW);
 			pW->Add(1);
-			pW->Add(3);
+			pW->Add(4);
 			pW->Add(2);
 			CArrayObject* pIndex = new CArrayObject();
 			pTrailer->Add("Index",  pIndex);
@@ -1010,6 +982,7 @@ namespace PdfWriter
 						pTrailerStream->WriteChar('\000');
 					else if (pEntry->nEntryType == IN_USE_ENTRY)
 						pTrailerStream->WriteChar('\001');
+					pTrailerStream->WriteChar((unsigned char)(pEntry->unByteOffset >> 24));
 					pTrailerStream->WriteChar((unsigned char)(pEntry->unByteOffset >> 16));
 					pTrailerStream->WriteChar((unsigned char)(pEntry->unByteOffset >> 8));
 					pTrailerStream->WriteChar((unsigned char)(pEntry->unByteOffset));
@@ -1024,6 +997,7 @@ namespace PdfWriter
 			pIndex->Add(unEntries);
 			pIndex->Add(unEntriesSize);
 			pTrailerStream->WriteChar('\001');
+			pTrailerStream->WriteChar((unsigned char)(nStreamOffset >> 24));
 			pTrailerStream->WriteChar((unsigned char)(nStreamOffset >> 16));
 			pTrailerStream->WriteChar((unsigned char)(nStreamOffset >> 8));
 			pTrailerStream->WriteChar((unsigned char)(nStreamOffset));

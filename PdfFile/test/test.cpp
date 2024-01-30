@@ -29,256 +29,358 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
+#include "gtest/gtest.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 #include "../../DesktopEditor/xmlsec/src/include/CertificateCommon.h"
 #include "../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h"
-#include "../../DesktopEditor/graphics/commands/AnnotField.h"
 #include "../PdfFile.h"
-#include "../OnlineOfficeBinToPdf.h"
 
-void TEST(IRenderer* pRenderer)
+class CPdfFileTest : public testing::Test
 {
-    // ТЕСТОВЫЕ КОММАНДЫ
-    pRenderer->PathCommandStart();
-    pRenderer->PathCommandMoveTo(10, 10);
-    pRenderer->PathCommandLineTo(20, 20);
-    pRenderer->PathCommandCurveTo(70, 30, 30, 20, 50, 50);
-    pRenderer->PathCommandClose();
-    pRenderer->put_BrushColor1(0xFF0000);
-    pRenderer->put_PenColor(0x0000FF);
-    pRenderer->put_PenSize(1);
-    pRenderer->DrawPath(c_nStroke | c_nWindingFillMode);
-    pRenderer->PathCommandEnd();
-}
+protected:
+	static CApplicationFontsWorker* oWorker;
+	static NSFonts::IApplicationFonts* pApplicationFonts;
+	static std::wstring wsTempDir;
 
-void TEST2(IRenderer* pRenderer)
-{
-    ((CPdfFile*)pRenderer)->OnlineWordToPdf(NSFile::GetProcessDirectory() + L"/../example/pdf.bin", L"");
-}
+public:
+	CPdfFile* pdfFile;
+	std::wstring wsSrcFile;
+	std::wstring wsDstFile;
 
-void TEST3(IRenderer* pRenderer)
-{
-    ((CPdfFile*)pRenderer)->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/../example1/1/pdf.bin", L"");
-}
-
-int main()
-{
-    CApplicationFontsWorker oWorker;
-    oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
-    oWorker.m_bIsNeedThumbnails = false;
-
-    if (!NSDirectory::Exists(oWorker.m_sDirectory))
-        NSDirectory::CreateDirectory(oWorker.m_sDirectory);
-
-    NSFonts::IApplicationFonts* pApplicationFonts = oWorker.Check();
-
-    std::wstring wsSrcFile = NSFile::GetProcessDirectory() + L"/test.pdf";
-    std::wstring wsDstFile = NSFile::GetProcessDirectory() + L"/test2.pdf";
-    std::wstring wsTempDir = NSFile::GetProcessDirectory() + L"/pdftemp";
-
-    if (!NSDirectory::Exists(wsTempDir))
-        NSDirectory::CreateDirectory(wsTempDir);
-
-    CPdfFile pdfFile(pApplicationFonts);
-    pdfFile.SetTempDirectory(wsTempDir);
-
-    std::wstring wsPassword;
-    bool bResult = pdfFile.LoadFromFile(wsSrcFile);
-    if (!bResult)
-    {
-        wsPassword = L"123456";
-		bResult = pdfFile.LoadFromFile(wsSrcFile, L"", wsPassword, wsPassword);
-    }
-
-    ICertificate* pCertificate = NULL;
-	if (false)
-    {
-		std::wstring wsCertificateFile = NSFile::GetProcessDirectory() + L"/cert.pfx";
-		std::wstring wsPrivateKeyFile = L"";
-        std::string sCertificateFilePassword = "123456";
-		std::string sPrivateFilePassword = "";
-
-		pCertificate = NSCertificate::FromFiles(wsPrivateKeyFile, sPrivateFilePassword, wsCertificateFile, sCertificateFilePassword);
-
-		std::map<std::wstring, std::wstring> properties;
-		properties.insert(std::make_pair(L"DNS", L"8.8.8.8"));
-		//properties.insert(std::make_pair(L"IP Address", L"127.0.0.1"));
-		properties.insert(std::make_pair(L"email", L"sign@onlyoffice.com"));
-		//properties.insert(std::make_pair(L"phone", L"+00000000000"));
-		//std::wstring sNameTest = L"NameTest";
-		//std::wstring sValueTest = L"ValueTest";
-		//properties.insert(std::make_pair(sNameTest, sValueTest));
-
-		//pCertificate = NSCertificate::GenerateByAlg("ecdsa512", properties);
-		//pCertificate = NSCertificate::GenerateByAlg("rsa2048", properties);
-    }
-
-	if (false)
+public:
+	static void SetUpTestSuite()
 	{
-		NSFile::CFileBinary oFile;
-		if (!oFile.OpenFile(NSFile::GetProcessDirectory() + L"/pdf.bin"))
-			return 0;
+		oWorker = new CApplicationFontsWorker();
 
-		DWORD dwFileSize = oFile.GetFileSize();
-		BYTE* pFileContent = new BYTE[dwFileSize];
-		if (!pFileContent)
-		{
-			oFile.CloseFile();
-			return 0;
-		}
+		oWorker->m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
+		oWorker->m_bIsNeedThumbnails = false;
 
-		DWORD dwReaded;
-		oFile.ReadFile(pFileContent, dwFileSize, dwReaded);
-		oFile.CloseFile();
+		if (!NSDirectory::Exists(oWorker->m_sDirectory))
+			NSDirectory::CreateDirectory(oWorker->m_sDirectory);
 
-		NSOnlineOfficeBinToPdf::CMetafileToRenderterRaster imageWriter(NULL);
-		imageWriter.SetApplication(pApplicationFonts);
-		imageWriter.SetRasterFormat(4);
-		imageWriter.SetFileName(NSFile::GetProcessDirectory() + L"/res.png");
+		pApplicationFonts = oWorker->Check();
 
-		imageWriter.ConvertBuffer(pFileContent, dwFileSize);
+		wsTempDir = NSFile::GetProcessDirectory() + L"/pdftemp";
 
-		RELEASEARRAYOBJECTS(pFileContent);
+		if (!NSDirectory::Exists(wsTempDir))
+			NSDirectory::CreateDirectory(wsTempDir);
+	}
+	static void TearDownTestSuite()
+	{
 		RELEASEINTERFACE(pApplicationFonts);
-		RELEASEOBJECT(pCertificate);
-		return 0;
+		RELEASEOBJECT(oWorker);
 	}
 
-	if (false)
-    {
-        pdfFile.CreatePdf();
-        pdfFile.OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile);
-
-        RELEASEINTERFACE(pApplicationFonts);
-        RELEASEOBJECT(pCertificate);
-        return 0;
-    }
-
-	if (false)
-    {
-        double dPageDpiX, dPageDpiY, dWidth, dHeight;
-        int i = 0;
-        for (i = 0; i < pdfFile.GetPagesCount(); i++)
-        {
-            pdfFile.GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-			pdfFile.ConvertToRaster(i, NSFile::GetProcessDirectory() + L"/res" + std::to_wstring(i) + L".png", 4, dWidth, dHeight, true, pdfFile.GetFontManager());
-        }
-
-        if (pCertificate)
-        {
-            BYTE* pWidgets = pdfFile.VerifySign(wsSrcFile, pCertificate);
-            RELEASEARRAYOBJECTS(pWidgets);
-        }
-
-        RELEASEINTERFACE(pApplicationFonts);
-        RELEASEOBJECT(pCertificate);
-        return 0;
-    }
-
-	if (false)
-    {
-        pdfFile.CreatePdf(true);
-        double dPageDpiX, dPageDpiY, dWidth, dHeight;
-        pdfFile.GetPageInfo(0, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-
-        dWidth  *= 25.4 / dPageDpiX;
-        dHeight *= 25.4 / dPageDpiY;
-
-        pdfFile.NewPage();
-        pdfFile.BeginCommand(c_nPageType);
-        pdfFile.put_Width(dWidth);
-        pdfFile.put_Height(dHeight);
-        std::string sTitle = "1<2<3<4";
-		pdfFile.SetDocumentInfo(UTF8_TO_U(sTitle), L"5\"6\";7\'8\'", L"1>2>3>4", L"1&2&3&4&5");
-        //pdfFile.DrawImageFromFile(NSFile::GetProcessDirectory() + L"/test.jpg", 10, 10, 455, 200);
-        pdfFile.EndCommand(c_nPageType);
-
-        if (pCertificate)
-			pdfFile.Sign(10, 70, 50, 50, NSFile::GetProcessDirectory() + L"/test.png", pCertificate);
-        int nRes = pdfFile.SaveToFile(wsDstFile);
-
-        RELEASEINTERFACE(pApplicationFonts);
-        RELEASEOBJECT(pCertificate);
-        return 0;
-    }
-
-    if (bResult && pdfFile.EditPdf(wsDstFile))
-    {
-        if (pCertificate)
+	void LoadFromFile()
+	{
+		bool bResult = pdfFile->LoadFromFile(wsSrcFile);
+		if (!bResult)
 		{
-			if (pdfFile.EditPage(0))
-			{
-				//TEST(&pdfFile);
-				pdfFile.Sign(10, 10, 100, 100, NSFile::GetProcessDirectory() + L"/test.jpeg", pCertificate);
-			}
-        }
-		else if (true)
-		{
-			// чтение и конвертации бинарника
-			NSFile::CFileBinary oFile;
-			if (!oFile.OpenFile(NSFile::GetProcessDirectory() + L"/base64.txt"))
-				return 0;
-
-			DWORD dwFileSize = oFile.GetFileSize();
-			BYTE* pFileContent = new BYTE[dwFileSize];
-			if (!pFileContent)
-			{
-				oFile.CloseFile();
-				return 0;
-			}
-
-			DWORD dwReaded;
-			oFile.ReadFile(pFileContent, dwFileSize, dwReaded);
-			oFile.CloseFile();
-
-			int nBufferLen = NSBase64::Base64DecodeGetRequiredLength(dwFileSize);
-			BYTE* pBuffer = new BYTE[nBufferLen];
-			if (!pBuffer)
-			{
-				RELEASEARRAYOBJECTS(pFileContent);
-				return 0;
-			}
-
-			if (NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, pBuffer, &nBufferLen))
-				pdfFile.AddToPdfFromBinary(pBuffer, nBufferLen, NULL);
-
-			RELEASEARRAYOBJECTS(pBuffer);
-			RELEASEARRAYOBJECTS(pFileContent);
+			std::wstring wsPassword = L"123456";
+			bResult = pdfFile->LoadFromFile(wsSrcFile, L"", wsPassword, wsPassword);
 		}
-		else if (false)
-		{
-			if (pdfFile.EditPage(0))
-			{
-				pdfFile.EditAnnot(0, 99);
-			}
-		}
-		else
-        {
-            if (pdfFile.EditPage(0))
-            {
-				TEST(&pdfFile);
-				pdfFile.RotatePage(90);
-            }
 
-			pdfFile.DeletePage(1);
+		ASSERT_TRUE(bResult);
+	}
+	void DrawSmth()
+	{
+		pdfFile->PathCommandStart();
+		pdfFile->PathCommandMoveTo(10, 10);
+		pdfFile->PathCommandLineTo(20, 20);
+		pdfFile->PathCommandCurveTo(70, 30, 30, 20, 50, 50);
+		pdfFile->PathCommandClose();
+		pdfFile->put_BrushColor1(0xFF0000);
+		pdfFile->put_PenColor(0x0000FF);
+		pdfFile->put_PenSize(1);
+		pdfFile->DrawPath(c_nStroke | c_nWindingFillMode);
+		pdfFile->PathCommandEnd();
+	}
+	ICertificate* GetCertificate()
+	{
+		std::wstring wsCertificateFile = NSFile::GetProcessDirectory() + L"/cert.pfx";
+		std::wstring wsPrivateKeyFile  = L"";
+		std::string sCertificateFilePassword = "123456";
+		std::string sPrivateFilePassword = "";
 
-			if (pdfFile.EditPage(1))
-			{
-				TEST2(&pdfFile);
-			}
+		return NSCertificate::FromFiles(wsPrivateKeyFile, sPrivateFilePassword, wsCertificateFile, sCertificateFilePassword);
+	}
+	ICertificate* GenerateCertificateECDSA512()
+	{
+		std::map<std::wstring, std::wstring> properties;
+		properties.insert(std::make_pair(L"DNS", L"8.8.8.8"));
+		properties.insert(std::make_pair(L"email", L"sign@onlyoffice.com"));
 
-			if (pdfFile.AddPage(3))
-			{
-				TEST3(&pdfFile);
-			}
-        }
+		return NSCertificate::GenerateByAlg("ecdsa512", properties);
+	}
+	ICertificate* GenerateCertificateRSA2048()
+	{
+		std::map<std::wstring, std::wstring> properties;
+		properties.insert(std::make_pair(L"DNS", L"8.8.8.8"));
+		properties.insert(std::make_pair(L"email", L"sign@onlyoffice.com"));
 
-        pdfFile.Close();
-    }
+		return NSCertificate::GenerateByAlg("rsa2048", properties);
+	}
 
-    RELEASEINTERFACE(pApplicationFonts);
-    RELEASEOBJECT(pCertificate);
-    return 0;
+	virtual void SetUp() override
+	{
+		wsSrcFile = NSFile::GetProcessDirectory() + L"/test.pdf";
+		wsDstFile = NSFile::GetProcessDirectory() + L"/test2.pdf";
+
+		pdfFile = new CPdfFile(pApplicationFonts);
+		pdfFile->SetTempDirectory(wsTempDir);
+	}
+	virtual void TearDown() override
+	{
+		RELEASEOBJECT(pdfFile);
+	}
+};
+
+CApplicationFontsWorker* CPdfFileTest::oWorker = NULL;
+NSFonts::IApplicationFonts* CPdfFileTest::pApplicationFonts = NULL;
+std::wstring CPdfFileTest::wsTempDir;
+
+TEST_F(CPdfFileTest, GetMetaData)
+{
+	GTEST_SKIP();
+
+	BYTE* pMetaData = NULL;
+	DWORD nMetaLength = 0;
+
+	if (pdfFile->GetMetaData(wsSrcFile, L"Test0", &pMetaData, nMetaLength))
+	{
+		NSFile::CFileBinary oFile;
+		if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/resGetMetaData0.png"))
+			oFile.WriteFile(pMetaData, nMetaLength);
+		oFile.CloseFile();
+
+		EXPECT_TRUE(pMetaData);
+	}
+	RELEASEARRAYOBJECTS(pMetaData);
+
+	if (pdfFile->GetMetaData(wsSrcFile, L"Test1", &pMetaData, nMetaLength))
+	{
+		NSFile::CFileBinary oFile;
+		if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/resGetMetaData1.png"))
+			oFile.WriteFile(pMetaData, nMetaLength);
+		oFile.CloseFile();
+
+		EXPECT_TRUE(pMetaData);
+	}
+	RELEASEARRAYOBJECTS(pMetaData);
+}
+
+TEST_F(CPdfFileTest, PdfBinToPng)
+{
+	GTEST_SKIP();
+
+	NSFile::CFileBinary oFile;
+	ASSERT_TRUE(oFile.OpenFile(NSFile::GetProcessDirectory() + L"/pdf.bin"));
+
+	DWORD dwFileSize = oFile.GetFileSize();
+	BYTE* pFileContent = new BYTE[dwFileSize];
+	if (!pFileContent)
+	{
+		oFile.CloseFile();
+		FAIL();
+	}
+
+	DWORD dwReaded = 0;
+	EXPECT_TRUE(oFile.ReadFile(pFileContent, dwFileSize, dwReaded));
+	oFile.CloseFile();
+
+	NSOnlineOfficeBinToPdf::CMetafileToRenderterRaster imageWriter(NULL);
+	imageWriter.SetApplication(pApplicationFonts);
+	imageWriter.SetRasterFormat(4);
+	imageWriter.SetFileName(NSFile::GetProcessDirectory() + L"/resPdfBinToPng.png");
+
+	imageWriter.ConvertBuffer(pFileContent, dwFileSize);
+}
+
+TEST_F(CPdfFileTest, PdfFromBin)
+{
+	GTEST_SKIP();
+
+	pdfFile->CreatePdf();
+	EXPECT_HRESULT_SUCCEEDED(pdfFile->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile));
+}
+
+TEST_F(CPdfFileTest, SetMetaData)
+{
+	GTEST_SKIP();
+
+	pdfFile->CreatePdf();
+
+	BYTE* pFileData = NULL;
+	DWORD nFileSize;
+	std::wstring sFile = NSFile::GetProcessDirectory() + L"/res0.png";
+	EXPECT_TRUE(NSFile::CFileBinary::ReadAllBytes(sFile, &pFileData, nFileSize));
+	pdfFile->AddMetaData(L"Test0", pFileData, nFileSize);
+	RELEASEARRAYOBJECTS(pFileData);
+
+	sFile = NSFile::GetProcessDirectory() + L"/res1.png";
+	EXPECT_TRUE(NSFile::CFileBinary::ReadAllBytes(sFile, &pFileData, nFileSize));
+	pdfFile->AddMetaData(L"Test1", pFileData, nFileSize);
+	RELEASEARRAYOBJECTS(pFileData);
+
+	EXPECT_HRESULT_SUCCEEDED(pdfFile->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile));
+}
+
+TEST_F(CPdfFileTest, ConvertToRaster)
+{
+	GTEST_SKIP();
+
+	LoadFromFile();
+
+	double dPageDpiX, dPageDpiY, dWidth, dHeight;
+	int i = 0;
+	for (i = 0; i < pdfFile->GetPagesCount(); i++)
+	{
+		pdfFile->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+		pdfFile->ConvertToRaster(i, NSFile::GetProcessDirectory() + L"/res" + std::to_wstring(i) + L".png", 4, dWidth, dHeight, true, pdfFile->GetFontManager());
+	}
+}
+
+TEST_F(CPdfFileTest, VerifySign)
+{
+	GTEST_SKIP();
+
+	LoadFromFile();
+
+	ICertificate* pCertificate = GetCertificate();
+	ASSERT_TRUE(pCertificate);
+
+	BYTE* pWidgets = pdfFile->VerifySign(wsSrcFile, pCertificate);
+	EXPECT_TRUE(pWidgets);
+
+	RELEASEARRAYOBJECTS(pWidgets);
+	RELEASEOBJECT(pCertificate);
+}
+
+TEST_F(CPdfFileTest, EditPdf)
+{
+	GTEST_SKIP();
+
+	LoadFromFile();
+	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
+
+	EXPECT_TRUE(pdfFile->EditPage(0));
+	{
+		DrawSmth();
+		pdfFile->RotatePage(90);
+	}
+
+	pdfFile->DeletePage(1);
+
+	pdfFile->AddPage(2);
+
+	pdfFile->Close();
+}
+
+TEST_F(CPdfFileTest, EditPdfFromBase64)
+{
+	//GTEST_SKIP();
+
+	LoadFromFile();
+	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
+
+	// чтение и конвертации бинарника
+	NSFile::CFileBinary oFile;
+	ASSERT_TRUE(oFile.OpenFile(NSFile::GetProcessDirectory() + L"/base64.txt"));
+
+	DWORD dwFileSize = oFile.GetFileSize();
+	BYTE* pFileContent = new BYTE[dwFileSize];
+	if (!pFileContent)
+	{
+		oFile.CloseFile();
+		FAIL();
+	}
+
+	DWORD dwReaded;
+	EXPECT_TRUE(oFile.ReadFile(pFileContent, dwFileSize, dwReaded));
+	oFile.CloseFile();
+
+	int nBufferLen = NSBase64::Base64DecodeGetRequiredLength(dwFileSize);
+	BYTE* pBuffer = new BYTE[nBufferLen];
+	if (!pBuffer)
+	{
+		RELEASEARRAYOBJECTS(pFileContent);
+		FAIL();
+	}
+
+	EXPECT_TRUE(NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, pBuffer, &nBufferLen));
+	pdfFile->AddToPdfFromBinary(pBuffer, nBufferLen, NULL);
+
+	RELEASEARRAYOBJECTS(pBuffer);
+	RELEASEARRAYOBJECTS(pFileContent);
+
+	pdfFile->Close();
+}
+
+TEST_F(CPdfFileTest, EditPdfFromBin)
+{
+	GTEST_SKIP();
+
+	LoadFromFile();
+	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
+
+	// чтение бинарника
+	NSFile::CFileBinary oFile;
+	ASSERT_TRUE(oFile.OpenFile(NSFile::GetProcessDirectory() + L"/changes0.json"));
+
+	DWORD dwFileSize = oFile.GetFileSize();
+	BYTE* pFileContent = new BYTE[dwFileSize];
+	if (!pFileContent)
+	{
+		oFile.CloseFile();
+		FAIL();
+	}
+
+	DWORD dwReaded;
+	EXPECT_TRUE(oFile.ReadFile(pFileContent, dwFileSize, dwReaded));
+	oFile.CloseFile();
+
+	pdfFile->AddToPdfFromBinary(pFileContent, dwReaded, NULL);
+
+	RELEASEARRAYOBJECTS(pFileContent);
+
+	pdfFile->Close();
+}
+
+TEST_F(CPdfFileTest, EditPdfSign)
+{
+	GTEST_SKIP();
+
+	LoadFromFile();
+	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
+
+	ICertificate* pCertificate = GetCertificate();
+	ASSERT_TRUE(pCertificate);
+
+	EXPECT_TRUE(pdfFile->EditPage(0));
+	{
+		pdfFile->Sign(10, 10, 100, 100, NSFile::GetProcessDirectory() + L"/test.jpeg", pCertificate);
+	}
+
+	pdfFile->Close();
+
+	RELEASEOBJECT(pCertificate);
+}
+
+TEST_F(CPdfFileTest, ChangePasswordToEmpty)
+{
+	GTEST_SKIP();
+
+	LoadFromFile();
+	EXPECT_HRESULT_SUCCEEDED(pdfFile->ChangePassword(wsDstFile));
+}
+
+TEST_F(CPdfFileTest, ChangePasswordToPassword)
+{
+	GTEST_SKIP();
+
+	LoadFromFile();
+	EXPECT_HRESULT_SUCCEEDED(pdfFile->ChangePassword(wsDstFile, L"123456"));
 }

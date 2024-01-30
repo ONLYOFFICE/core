@@ -924,6 +924,7 @@ namespace NSOnlineOfficeBinToPdf
 			case ctFormField:
 			case ctAnnotField:
 			case ctAnnotFieldDelete:
+			case ctWidgetsInfo:
 			{
 				IAdvancedCommand::AdvancedCommandType eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Undefined;
 				switch (eCommand)
@@ -931,6 +932,7 @@ namespace NSOnlineOfficeBinToPdf
 				case ctFormField:        eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::FormField;   break;
 				case ctAnnotField:       eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Annotaion;   break;
 				case ctAnnotFieldDelete: eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::DeleteAnnot; break;
+				case ctWidgetsInfo:      eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::WidgetsInfo; break;
 				default:
 					break;
 				}

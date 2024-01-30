@@ -41,11 +41,23 @@ namespace PdfWriter
 	class CMemoryStream;
 	class CXObject : public CDictObject
 	{
+	private:
+		double m_dOriginW;
+		double m_dOriginH;
+		std::string m_sName;
 	public:
+		CXObject();
 		EDictType GetDictType() const
 		{
 			return dict_type_XOBJECT;
 		}
+		void SetWidth (double dW) { m_dOriginW = dW; }
+		void SetHeight(double dH) { m_dOriginH = dH; }
+		void SetName(const std::string& sName) { m_sName = sName; }
+
+		double GetWidth()  { return m_dOriginW; }
+		double GetHeight() { return m_dOriginH; }
+		const std::string& GetName() { return m_sName; }
 	};
 	//----------------------------------------------------------------------------------------
 	// CImageDict

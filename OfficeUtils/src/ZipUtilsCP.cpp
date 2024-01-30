@@ -407,21 +407,20 @@ namespace ZLibZipUtils
 
 	static int do_extract( unzFile uf, const wchar_t* unzip_dir, int opt_extract_without_path, int opt_overwrite, const char* password, const OnProgressCallback* progress )
 	{
-		uLong i;
+		uLong i, number_extract = 0;
 		unz_global_info gi;
 		int err;
 		FILE* fout=NULL;
 
 		err = unzGetGlobalInfo (uf,&gi);
 
-		for (i=0;i<gi.number_entry;i++)
+		for (i = 0; i < gi.number_entry; i++)
 		{
 			if (do_extract_currentfile(uf, unzip_dir, &opt_extract_without_path,
 									   &opt_overwrite,
-									   password) != UNZ_OK)
+									   password) == UNZ_OK)
 			{
-				err = -1;
-				break;
+				number_extract++;
 			}
 
 			if ( progress != NULL )
@@ -437,7 +436,7 @@ namespace ZLibZipUtils
 				}
 			}
 
-			if ((i+1)<gi.number_entry)
+			if ((i + 1) < gi.number_entry)
 			{
 				err = unzGoToNextFile(uf);
 				if (err!=UNZ_OK)
@@ -445,6 +444,11 @@ namespace ZLibZipUtils
 					break;
 				}
 			}
+		}
+
+		if (number_extract < 1)
+		{
+			err = -1;
 		}
 
 		if ( progress != NULL )
@@ -839,12 +843,13 @@ namespace ZLibZipUtils
 	int UnzipToDir(unzFile uf, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password, bool opt_extract_without_path, bool clearOutputDirectory )
 	{
 		int err = -1;
-		if(NSDirectory::Exists(unzipDir))
-			err = 0;
-
+		
 		if ( uf != NULL && unzipDir != NULL )
 		{
-			if ( clearOutputDirectory )
+            if (NSDirectory::Exists(unzipDir))
+                err = 0;
+
+            if ( clearOutputDirectory )
 			{
 				ClearDirectory( unzipDir );
 			}

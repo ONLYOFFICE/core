@@ -80,7 +80,7 @@ namespace MetaFile
 	}
 
 	CEmfPlusPen::CEmfPlusPen()
-		: unStyle(PS_SOLID), dWidth(1), oColor(0, 0, 0),
+		: unStyle(PS_SOLID | PS_GEOMETRIC | PS_STARTCAP_FLAT | PS_ENDCAP_FLAT | PS_JOIN_MITER), dWidth(1), oColor(0, 0, 0),
 		  pBrush(NULL), dMiterLimit(0), dDashOffset(0),
 		  pDataDash(NULL), unSizeDash(0), pLineStartCapData(NULL), pLineEndCapData(NULL) 
 	{}
@@ -270,6 +270,11 @@ namespace MetaFile
 
 	CEmfPlusPath::CEmfPlusPath(CEmfPlusPath *pPath) : CEmfPlusObject(), CPath(*pPath)
 	{}
+
+	CEmfPlusPath::~CEmfPlusPath()
+	{
+		Clear();
+	}
 
 	EEmfPlusObjectType CEmfPlusPath::GetObjectType()
 	{
@@ -556,5 +561,13 @@ namespace MetaFile
 	EEmfPlusObjectType CEmfPlusStringFormat::GetObjectType()
 	{
 		return ObjectTypeStringFormat;
+	}
+}
+
+namespace MetaFile
+{
+	TEmfPlusCustomLineCapData::~TEmfPlusCustomLineCapData()
+	{
+		RELEASEOBJECT(pPath);
 	}
 }

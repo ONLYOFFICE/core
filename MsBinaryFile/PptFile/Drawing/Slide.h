@@ -61,6 +61,7 @@ public:
     std::vector<CColor>		m_arColorScheme;
     bool					m_bUseLayoutColorScheme;
     bool					m_bShowMasterShapes;
+    bool					m_bHidden;
 
     vector_string			m_PlaceholdersReplaceString[3];
     std::wstring			m_strComment;

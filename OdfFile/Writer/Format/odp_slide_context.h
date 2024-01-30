@@ -81,6 +81,7 @@ public:
     odp_slide_context(odp_conversion_context & Context);
 
     void start_page (office_element_ptr & elm);
+	void hide_page();
     void end_page ();
 
 	void remove_page();
@@ -104,6 +105,7 @@ public:
 	void end_table					();    
 	
 	odp_page_state & state();
+	int				 page_index();
 
 private:
 

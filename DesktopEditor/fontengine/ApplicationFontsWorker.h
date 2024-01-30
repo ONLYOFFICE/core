@@ -51,6 +51,8 @@ class GRAPHICS_DECL CApplicationFontsWorker
 public:
 	// использовать ли системные шрифты
 	bool                        m_bIsUseSystemFonts;
+	bool                        m_bIsUseSystemUserFonts;
+
 	// дополнительные папки с шрифтами
 	std::vector<std::wstring>   m_arAdditionalFolders;
 

@@ -211,6 +211,9 @@ bool DocxConverter::convertDocument()
 {
     if (!odt_context)   return false;
     if (!docx_document && !docx_flat_document) return false;
+
+	OOX::CApp* app = docx_document ? docx_document->m_pApp : docx_flat_document->m_pApp.GetPointer();
+	OOX::CCore* core = docx_document ? docx_document->m_pCore : docx_flat_document->m_pCore.GetPointer();
 		
 	odt_context->start_document();
 
@@ -218,7 +221,7 @@ bool DocxConverter::convertDocument()
 	convert_styles();
 
 	convert_settings(); 
-	convert_meta(docx_document->m_pApp, docx_document->m_pCore);
+	convert_meta(app, core);
 
 	convert_document();
 
@@ -519,6 +522,8 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 	
 	_CP_OPT(double) x, y, width = 20, height = 20; 
 
+	std::wstring parent_style = odf_context()->text_context()->get_current_style_name();
+
 	if (oox_sdt->m_oSdtPr.IsInit())
 	{
 		switch(oox_sdt->m_oSdtPr->m_eType)
@@ -557,66 +562,72 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 				}
 			}break;
 		}
+
 		if (bForm)
 		{
+			_CP_OPT(double) zero = 0.;
+			odt_context->drawing_context()->set_parent_text_style(parent_style);
 			odt_context->drawing_context()->set_vertical_rel(0); //baseline
 			odt_context->drawing_context()->set_textarea_vertical_align(1);//middle
-		}
-		if (bForm && oox_sdt->m_oSdtPr->m_oDate.IsInit())
-		{
-			odt_context->controls_context()->add_property(L"Dropdown", odf_types::office_value_type::Boolean, L"true");
-			
-			if (oox_sdt->m_oSdtPr->m_oDate->m_oFullDate.IsInit())
+
+			odt_context->drawing_context()->set_textarea_padding(zero, zero, zero, zero);
+
+			if (oox_sdt->m_oSdtPr->m_oDate.IsInit())
 			{
 				odt_context->controls_context()->add_property(L"Dropdown", odf_types::office_value_type::Boolean, L"true");
-				//odt_context->controls_context()->set_value(oox_sdt->m_oSdtPr->m_oDate->m_oFullDate->ToString());
-			}
-			if ((oox_sdt->m_oSdtPr->m_oDate->m_oDateFormat.IsInit()) && 
-				(oox_sdt->m_oSdtPr->m_oDate->m_oDateFormat->m_sVal.IsInit()))
-			{
-				//odt_context->controls_context()->set_format(oox_sdt->m_oSdtPr->m_oDate->m_oDateFormat->m_sVal.get2());
-			}
-		}
-		if (bForm && oox_sdt->m_oSdtPr->m_oDropDownList.IsInit())
-		{
-			odt_context->controls_context()->set_drop_down(true);
 
-			size_t size = 0;
-			for ( size_t i = 0; i < oox_sdt->m_oSdtPr->m_oDropDownList->m_arrListItem.size(); i++ )
-			{
-				if ( oox_sdt->m_oSdtPr->m_oDropDownList->m_arrListItem[i] )
+				if (oox_sdt->m_oSdtPr->m_oDate->m_oFullDate.IsInit())
 				{
-					std::wstring val = oox_sdt->m_oSdtPr->m_oDropDownList->m_arrListItem[i]->m_sValue.get_value_or(L"");
-
-					if (val.length() > size) size = val.length();
-					odt_context->controls_context()->add_item(val);
+					odt_context->controls_context()->add_property(L"Dropdown", odf_types::office_value_type::Boolean, L"true");
+					//odt_context->controls_context()->set_value(oox_sdt->m_oSdtPr->m_oDate->m_oFullDate->ToString());
 				}
-			}		
-			width = 10. * size; //todooo sizefont
-			odt_context->drawing_context()->set_size(width, height, true);			
-		}
-		if (bForm && oox_sdt->m_oSdtPr->m_oComboBox.IsInit())
-		{
-			size_t size = 0;
-			for ( size_t i = 0; i < oox_sdt->m_oSdtPr->m_oComboBox->m_arrListItem.size(); i++ )
-			{
-				if ( oox_sdt->m_oSdtPr->m_oComboBox->m_arrListItem[i] )
+				if ((oox_sdt->m_oSdtPr->m_oDate->m_oDateFormat.IsInit()) &&
+					(oox_sdt->m_oSdtPr->m_oDate->m_oDateFormat->m_sVal.IsInit()))
 				{
-					std::wstring val = oox_sdt->m_oSdtPr->m_oComboBox->m_arrListItem[i]->m_sValue.get_value_or(L"");
-
-					if (val.length() > size) size = val.length();
-					odt_context->controls_context()->add_item(val);
+					//odt_context->controls_context()->set_format(oox_sdt->m_oSdtPr->m_oDate->m_oDateFormat->m_sVal.get2());
 				}
 			}
-			width = 10. * size; //todooo sizefont
-
-			odt_context->drawing_context()->set_size(width, height, true);
-		}
-		if (bForm && oox_sdt->m_oSdtPr->m_oCheckbox.IsInit())
-		{
-			if (oox_sdt->m_oSdtPr->m_oCheckbox->m_oChecked.IsInit())
+			if (oox_sdt->m_oSdtPr->m_oDropDownList.IsInit())
 			{
-				odt_context->controls_context()->set_check_state(oox_sdt->m_oSdtPr->m_oCheckbox->m_oChecked->m_oVal.ToBool() ? 1 : 0);
+				odt_context->controls_context()->set_drop_down(true);
+
+				size_t size = 0;
+				for (size_t i = 0; i < oox_sdt->m_oSdtPr->m_oDropDownList->m_arrListItem.size(); i++)
+				{
+					if (oox_sdt->m_oSdtPr->m_oDropDownList->m_arrListItem[i])
+					{
+						std::wstring val = oox_sdt->m_oSdtPr->m_oDropDownList->m_arrListItem[i]->m_sValue.get_value_or(L"");
+
+						if (val.length() > size) size = val.length();
+						odt_context->controls_context()->add_item(val);
+					}
+				}
+				width = 10. * size; //todooo sizefont
+				odt_context->drawing_context()->set_size(width, height, true);
+			}
+			if (oox_sdt->m_oSdtPr->m_oComboBox.IsInit())
+			{
+				size_t size = 0;
+				for (size_t i = 0; i < oox_sdt->m_oSdtPr->m_oComboBox->m_arrListItem.size(); i++)
+				{
+					if (oox_sdt->m_oSdtPr->m_oComboBox->m_arrListItem[i])
+					{
+						std::wstring val = oox_sdt->m_oSdtPr->m_oComboBox->m_arrListItem[i]->m_sValue.get_value_or(L"");
+
+						if (val.length() > size) size = val.length();
+						odt_context->controls_context()->add_item(val);
+					}
+				}
+				width = 10. * size; //todooo sizefont
+
+				odt_context->drawing_context()->set_size(width, height, true);
+			}
+			if (oox_sdt->m_oSdtPr->m_oCheckbox.IsInit())
+			{
+				if (oox_sdt->m_oSdtPr->m_oCheckbox->m_oChecked.IsInit())
+				{
+					odt_context->controls_context()->set_check_state(oox_sdt->m_oSdtPr->m_oCheckbox->m_oChecked->m_oVal.ToBool() ? 1 : 0);
+				}
 			}
 		}
 
@@ -670,9 +681,18 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 		}
 		odt_context->controls_context()->set_value(value);
 
+		if (false == value.empty())
+		{
+			odt_context->drawing_context()->set_textarea_fit_to_size(true);
+		}
+
 		if (!width)
 		{
-			width = 10. * value.length(); //todooo sizefont
+			odf_context()->calculate_font_metrix(L"Arial", current_font_size.back(), false, false, true);
+			std::pair<double, double> font_metrix = odf_context()->font_metrix();
+
+			width = font_metrix.first * value.length();
+			height = font_metrix.second + 4; 
 			odt_context->drawing_context()->set_size(width, height, true);
 		}
 	}

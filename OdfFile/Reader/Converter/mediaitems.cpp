@@ -33,6 +33,7 @@
 #include "mediaitems.h"
 
 #include <boost/regex.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include <xml/utils.h>
 
@@ -100,11 +101,63 @@ void mediaitems::set_font_directory(std::wstring pathFonts)
     if (applicationFonts_)
         applicationFonts_->InitializeFromFolder(pathFonts);
 }
+bool mediaitems::is_internal_path(const std::wstring& uri, const std::wstring& packetRoot)
+{
+	return 	is_internal(uri, packetRoot);
+}
 
 std::wstring mediaitems::add_or_find(const std::wstring & href, _rels_type type, bool & isInternal, _rels_type_place type_place)
 {
     std::wstring ref;
     return add_or_find(href, type, isInternal, ref, type_place);
+}
+
+std::wstring mediaitems::add_or_find_anim_audio(const std::wstring& href, bool& isInternal, std::wstring& ref)
+{
+	std::wstring sub_path = L"media/";
+	int number = count_audio + 1;
+
+	bool isAudioInternal;
+	const std::wstring inputFileName = create_file_name(href, _rels_type::typeAudio, isAudioInternal, number);
+
+	isInternal = is_internal(href, odf_packet_);
+
+	std::wstring inputPath = isInternal ? (odf_packet_ + FILE_SEPARATOR_STR + href) : href;
+	std::wstring outputPath = sub_path + inputFileName;
+
+	std::wstring id;
+	for (size_t i = 0; i < items_.size(); i++)
+	{
+		if (items_[i].type_place != _rels_type_place::document_place) 
+			continue;
+
+		if ((items_[i].href == inputPath && !inputPath.empty()) || (items_[i].type == _rels_type::typeAudio && inputPath.empty()))
+		{
+			id = items_[i].Id;
+			outputPath = items_[i].outputName;
+
+			items_[i].count_add++;
+			break;
+		}
+	}
+
+	if (id.empty())
+	{
+		id = std::wstring(L"aId") + std::to_wstring(count_audio + 1);
+		count_audio++;
+		
+		items_.push_back(item(
+			inputPath, 
+			_rels_type::typeAudio, 
+			XmlUtils::EncodeXmlString(outputPath), 
+			false, 
+			id, 
+			_rels_type_place::document_place
+		));
+	}
+
+	ref = outputPath;
+	return id;
 }
 
 std::wstring static get_default_file_name(_rels_type type)

@@ -628,8 +628,6 @@ public:
 	std::wstring text_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(form_item);
-}
-}
 //<form:connection-resource>7.6.2,  
 //<form:file> 13.5.5,
 //<form:formatted-text> 13.5.6, 
@@ -639,3 +637,72 @@ CP_REGISTER_OFFICE_ELEMENT2(form_item);
 //<form:image> 13.5.16, 
 //<form:number> 13.5.7,
 //<form:password> 13.5.4, 
+//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------
+//  loext:content-control
+class loext_content_control : public office_element_impl<loext_content_control>
+{
+public:
+	static const wchar_t* ns;
+	static const wchar_t* name;
+
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeContentControl;
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void docx_convert(oox::docx_conversion_context& Context);
+private:
+	virtual void add_attributes(const xml::attributes_wc_ptr& Attributes);
+	virtual void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name);
+	virtual void add_text(const std::wstring& Text);
+public:
+	_CP_OPT(std::wstring) alias;
+	_CP_OPT(std::wstring) tag;
+	_CP_OPT(std::wstring) lock;
+	_CP_OPT(bool) showing_place_holder;
+	_CP_OPT(int) id;
+	_CP_OPT(unsigned int) tab_index;
+	_CP_OPT(bool) checked;
+	_CP_OPT(std::wstring) checked_state;
+	_CP_OPT(std::wstring) unchecked_state;
+	_CP_OPT(std::wstring) date_format;
+	_CP_OPT(std::wstring) date_language;
+	_CP_OPT(std::wstring) current_date;
+	_CP_OPT(std::wstring) date_rfc_language;
+
+	_CP_OPT(bool) checkbox;
+	_CP_OPT(bool) picture;
+	_CP_OPT(bool) date;
+	_CP_OPT(bool) dropdown;
+	_CP_OPT(bool) combobox;
+	_CP_OPT(bool) plain_text;
+
+	std::wstring text;
+	office_element_ptr_array content;
+};
+CP_REGISTER_OFFICE_ELEMENT2(loext_content_control);
+//----------------------------------------------------------------------------------
+// loext:list-item
+//----------------------------------------------------------------------------------
+class loext_list_item : public office_element_impl<loext_list_item>
+{
+public:
+	static const wchar_t* ns;
+	static const wchar_t* name;
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeListItem;
+	CPDOCCORE_DEFINE_VISITABLE();
+
+private:
+	virtual void add_attributes(const xml::attributes_wc_ptr& Attributes);
+	virtual void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name) {}
+public:
+	_CP_OPT(std::wstring) display_text;
+	_CP_OPT(std::wstring) value;
+};
+CP_REGISTER_OFFICE_ELEMENT2(loext_list_item);
+}
+}

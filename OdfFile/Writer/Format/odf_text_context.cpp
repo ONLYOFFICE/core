@@ -269,6 +269,12 @@ void odf_text_context::start_paragraph(bool styled)
 	start_paragraph(paragr_elm, styled);
 
 }
+std::wstring odf_text_context::get_current_style_name()
+{
+	if (current_level_.empty()) return L"";
+
+	return current_level_.back().style_name;
+}
 void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 {
 	size_t level = current_level_.size();

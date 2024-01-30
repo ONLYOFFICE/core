@@ -55,7 +55,7 @@ namespace odf_writer {
 
 
 odp_conversion_context::odp_conversion_context(package::odf_document * outputDocument) 
-	:	odf_conversion_context (PresentationDocument, outputDocument), root_presentation_(NULL), slide_context_(*this)
+	:	odf_conversion_context (PresentationDocument, outputDocument), root_presentation_(NULL), slide_context_(*this), rId_(1)
 {
 }
 odf_text_context* odp_conversion_context::text_context()
@@ -126,6 +126,12 @@ void odp_conversion_context::start_slide()
 	
 	drawing_context()->set_presentation(0);
 }
+
+void odp_conversion_context::hide_slide()
+{
+	slide_context_.hide_page();
+}
+
 void odp_conversion_context::end_slide()
 {
 	slide_context_.end_page();
@@ -235,6 +241,48 @@ void odp_conversion_context::end_note()
 	current_slide().drawing_context()->end_drawing();
 }
 
+int odp_conversion_context::next_id()
+{
+	return rId_++;
+}
+
+std::wstring odp_conversion_context::map_indentifier(std::wstring id)
+{
+	const int page_index = slide_context_.page_index();
+	if (page_index < 0 || page_index >= map_identifiers_.size())
+		return L"";
+
+	IdentifierMap& map = map_identifiers_[page_index];
+
+	IdentifierMap::iterator it = map.find(id);
+	if (it != map.end())
+		return it->second;
+	
+	std::wstring odfId = L"id" + std::to_wstring(next_id());
+	map.insert(std::make_pair(id, odfId));
+	return odfId;
+}
+
+std::wstring odp_conversion_context::get_mapped_identifier(const std::wstring& id)
+{
+	for (int i = map_identifiers_.size() - 1; i >= 0 ; i--)
+	{
+		const IdentifierMap& map = map_identifiers_[i];
+		const IdentifierMap::const_iterator it = map.find(id);
+
+		if (it != map.end())
+			return it->second;
+	}
+
+	return std::wstring();
+}
+
+void odp_conversion_context::add_page_name(const std::wstring& page_name)
+{
+	std::wstring pptx_slide_name = std::wstring(L"slide") + std::to_wstring(map_slidenames_.size() + 1);
+
+	map_slidenames_.insert(std::make_pair(pptx_slide_name, page_name));
+}
 
 }
 }

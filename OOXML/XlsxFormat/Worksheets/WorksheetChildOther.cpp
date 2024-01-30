@@ -1408,7 +1408,7 @@ namespace OOX
 				else
 					pWsView->fDspRuler = false;
 				if (m_oShowWhiteSpace.IsInit())
-					pWsView->fWhitespaceHidden = m_oShowWhiteSpace->m_eValue;
+					pWsView->fWhitespaceHidden = !m_oShowWhiteSpace->m_eValue;
 				else
 					pWsView->fWhitespaceHidden = false;
 				if (m_oShowZeros.IsInit())

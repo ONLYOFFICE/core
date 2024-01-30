@@ -47,8 +47,14 @@ table_state::table_state(xlsx_conversion_context & Context) : drawing_context_(C
 
 table_state_ptr & xlsx_sheet_context::state()
 {
-	if (tables_state_.empty()) return table_state_ptr();
-    return tables_state_.back();
+	if (false == tables_state_.empty())
+	{
+		return tables_state_.back();
+	}
+	else
+	{
+		throw;
+	}
 }
 
 xlsx_sheet_context::xlsx_sheet_context(xlsx_conversion_context & Context) : context_(Context)
@@ -136,7 +142,8 @@ xlsx_comments_context & xlsx_sheet_context::get_comments_context()
 std::wstring xlsx_sheet_context::add_hyperlink(std::wstring const & ref, std::wstring const & target, std::wstring const & display, bool bExternal)
 {
 	if (state())
-		return state()->hyperlinks_.add( ref, target, display, bExternal);
+		return state()->hyperlinks_.add(ref, target, display, bExternal);
+	else return L"";
 }
  void xlsx_sheet_context::dump_rels_hyperlinks(rels & Rels)
 {

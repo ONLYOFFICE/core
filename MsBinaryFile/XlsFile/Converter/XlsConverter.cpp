@@ -761,7 +761,7 @@ void XlsConverter::convert(XLS::GlobalsSubstream* globals)
 
 	for (size_t i = 0 ; i < globals->m_arHFPictureDrawing.size(); i++)
 	{
-		convert((ODRAW::OfficeArtDgContainer*)globals->m_arHFPictureDrawing[i].get());
+		convert((ODRAW::OfficeArtDggContainer*)globals->m_arHFPictureDrawing[i].get());
 	}
 	globals->serialize_protection(xlsx_context->workbook_protection());
 	
@@ -1428,14 +1428,21 @@ void XlsConverter::convert(ODRAW::OfficeArtSpgrContainer * spgr)
 
 	for (size_t i = 0; i < spgr->child_records.size(); i++)
 	{
-		int type_object = 2;//rect
-
-		if (xlsx_context->get_drawing_context().start_drawing(type_object))
+		ODRAW::OfficeArtSpContainer* SpContainer = dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[i].get());
+		if (SpContainer)
 		{
-			xlsx_context->get_drawing_context().set_mode_HF(true);
-			convert(spgr->child_records[i].get());
+			ODRAW::OfficeArtFSP* fsp = dynamic_cast<ODRAW::OfficeArtFSP*>(SpContainer->m_OfficeArtFSP.get());
+			if ((fsp) && (fsp->fHaveSpt))
+			{
+				int type_object = 2;//rect
+				if (xlsx_context->get_drawing_context().start_drawing(type_object))
+				{
+					xlsx_context->get_drawing_context().set_mode_HF(true);
+					convert(spgr->child_records[i].get());
 
-			xlsx_context->get_drawing_context().end_drawing();
+					xlsx_context->get_drawing_context().end_drawing();
+				}
+			}
 		}
 	}
 }
@@ -1534,6 +1541,12 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 
 			convert(dg->m_OfficeArtSpgrContainer.get());
 		}break;
+	case XLS::typeOfficeArtDggContainer:
+	{		
+		ODRAW::OfficeArtDggContainer* dg = dynamic_cast<ODRAW::OfficeArtDggContainer*>(art);
+
+		convert(dg->m_OfficeArtBStoreContainer.get());
+	}break;
 	default:
 		break;
 	}

@@ -1338,17 +1338,6 @@ namespace PdfWriter
 		if (pAcroForm && pAcroForm->GetType() == object_type_DICT)
 			m_pAcroForm = (CDictObject*)pAcroForm;
 
-		if (m_pAcroForm)
-		{
-			CObjectBase* pFieldsResources = m_pAcroForm->Get("DR");
-			if (pFieldsResources && pFieldsResources->GetType() == object_type_DICT)
-			{
-				// TODO необходимо перенести текущие поля DR
-				m_pFieldsResources = new CResourcesDict(m_pXref, false, true);
-				m_pAcroForm->Add("DR", m_pFieldsResources);
-			}
-		}
-
 		if (pEncrypt)
 		{
 			m_pEncryptDict = pEncrypt;
@@ -1357,6 +1346,16 @@ namespace PdfWriter
 
 		m_unFormFields = nFormField;
 		m_wsFilePath = wsPath;
+		return true;
+	}
+	bool CDocument::EditResources(CXref* pXref, CResourcesDict* pResources)
+	{
+		if (!pResources || !EditXref(pXref))
+			return false;
+
+		CheckAcroForm();
+		m_pAcroForm->Add("DR", pResources);
+		m_pFieldsResources = pResources;
 		return true;
 	}
 	std::pair<int, int> CDocument::GetPageRef(int nPageIndex)

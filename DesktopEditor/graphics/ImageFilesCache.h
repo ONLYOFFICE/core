@@ -77,9 +77,31 @@ public:
 			else
 			{
 				std::wstring sTempFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"AscMetafile_");
-				pMetafile->ConvertToRaster(sTempFile.c_str(), 4, 1000, -1);
-				m_oImage.Create(sTempFile);
 
+				//pMetafile->ConvertToRaster(sTempFile.c_str(), 4, 1000, -1);
+
+				double dX, dY, dW, dH;
+				pMetafile->GetBounds(&dX, &dY, &dW, &dH);
+
+				if (dW < 0) dW = -dW;
+				if (dH < 0) dH = -dH;
+
+				double dOneMaxSize = 1000;
+
+				if (dW > dH)
+				{
+					dH *= (dOneMaxSize / dW);
+					dW = dOneMaxSize;
+				}
+				else
+				{
+					dW *= (dOneMaxSize / dH);
+					dH = dOneMaxSize;
+				}
+
+				pMetafile->ConvertToRaster(sTempFile.c_str(), 4, (int)dW, (int)dH);
+
+				m_oImage.Create(sTempFile);
 				NSFile::CFileBinary::Remove(sTempFile);
 			}
 			RELEASEINTERFACE(pMetafile);

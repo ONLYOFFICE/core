@@ -16,8 +16,6 @@ DEFINES += PDFFILE_USE_DYNAMIC_LIBRARY
 
 ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network)
 
-INCLUDEPATH += $$PWD/../Common/3dParty/openssl/openssl/include
-
 # PdfReader
 
 core_windows {

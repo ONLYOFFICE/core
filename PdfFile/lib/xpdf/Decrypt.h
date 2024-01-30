@@ -24,31 +24,20 @@
 // Decrypt
 //------------------------------------------------------------------------
 
-class Decrypt {
-public:
+namespace Decrypt {
 
   // Generate a file key.  The <fileKey> buffer must have space for at
   // least 16 bytes.  Checks <ownerPassword> and then <userPassword>
   // and returns true if either is correct.  Sets <ownerPasswordOk> if
   // the owner password was correct.  Either or both of the passwords
   // may be NULL, which is treated as an empty string.
-  static GBool makeFileKey(int encVersion, int encRevision, int keyLength,
+  GBool makeFileKey(int encVersion, int encRevision, int keyLength,
 			   GString *ownerKey, GString *userKey,
 			   GString *ownerEnc, GString *userEnc,
 			   int permissions, GString *fileID,
 			   GString *ownerPassword, GString *userPassword,
 			   Guchar *fileKey, GBool encryptMetadata,
 			   GBool *ownerPasswordOk);
-
-private:
-
-  static void r6Hash(Guchar *key, int keyLen, const char *pwd, int pwdLen,
-		     char *userKey);
-  static GBool makeFileKey2(int encVersion, int encRevision, int keyLength,
-			    GString *ownerKey, GString *userKey,
-			    int permissions, GString *fileID,
-			    GString *userPassword, Guchar *fileKey,
-			    GBool encryptMetadata);
 };
 
 //------------------------------------------------------------------------

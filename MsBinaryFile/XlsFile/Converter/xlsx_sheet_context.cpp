@@ -47,8 +47,14 @@ table_state::table_state(xlsx_conversion_context & Context) : drawing_context_(C
 
 table_state_ptr & xlsx_sheet_context::state()
 {
-	if (tables_state_.empty()) return table_state_ptr();
-    return tables_state_.back();
+	if (false == tables_state_.empty())
+	{
+		return tables_state_.back();
+	}
+	else
+	{
+		throw;
+	}
 }
 
 xlsx_sheet_context::xlsx_sheet_context(xlsx_conversion_context & Context) : context_(Context)

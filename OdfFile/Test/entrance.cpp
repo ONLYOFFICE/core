@@ -432,8 +432,8 @@ TEST_F(ODP2OOX_EntranceAnimationTest, entrance_fly_in_action_animate_1_key_point
 
 	const pptx_animation_context::Impl::_anim* animate1 = dynamic_cast<pptx_animation_context::Impl::_anim*>(actions[1].get());
 	std::vector<pptx_animation_context::Impl::_anim::_keypoint> keypointsExp;
-	keypointsExp.push_back(pptx_animation_context::Impl::_anim::_keypoint(0, L"#ppt_x", boost::none));
-	keypointsExp.push_back(pptx_animation_context::Impl::_anim::_keypoint(100000, L"#ppt_x", boost::none));
+	keypointsExp.push_back(pptx_animation_context::Impl::_anim::_keypoint(0, L"ppt_x", boost::none));
+	keypointsExp.push_back(pptx_animation_context::Impl::_anim::_keypoint(100000, L"ppt_x", boost::none));
 
 	EXPECT_EQ(animate1->KeypointArray->size(), keypointsExp.size());
 	for (size_t i = 0; i < animate1->KeypointArray->size(); i++)
@@ -513,8 +513,8 @@ TEST_F(ODP2OOX_EntranceAnimationTest, entrance_fly_in_action_animate_2_key_point
 
 	const pptx_animation_context::Impl::_anim* animate2 = dynamic_cast<pptx_animation_context::Impl::_anim*>(actions[2].get());
 	std::vector<pptx_animation_context::Impl::_anim::_keypoint> keypointsExp;
-	keypointsExp.push_back(pptx_animation_context::Impl::_anim::_keypoint(0, L"1+#ppt_h/2", boost::none));
-	keypointsExp.push_back(pptx_animation_context::Impl::_anim::_keypoint(100000, L"#ppt_y", boost::none));
+	keypointsExp.push_back(pptx_animation_context::Impl::_anim::_keypoint(0, L"1+ppt_h/2", boost::none));
+	keypointsExp.push_back(pptx_animation_context::Impl::_anim::_keypoint(100000, L"ppt_y", boost::none));
 
 	EXPECT_EQ(animate2->KeypointArray->size(), keypointsExp.size());
 	for (size_t i = 0; i < animate2->KeypointArray->size(); i++)
@@ -576,9 +576,7 @@ TEST_F(ODP2OOX_EntranceAnimationTest, entrance_venetian_blinds_anim_effect_trans
 	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
 	const pptx_animation_context::Impl::_anim_effect* animEffect = dynamic_cast<pptx_animation_context::Impl::_anim_effect*>(actions[1].get());
 
-	const std::wstring transitionExp = L"in";
-
-	EXPECT_EQ(animEffect->Transition.value(), transitionExp);
+	EXPECT_FALSE(animEffect->Transition.has_value());
 }
 
 TEST_F(ODP2OOX_EntranceAnimationTest, entrance_venetian_blinds_anim_effect_duration)

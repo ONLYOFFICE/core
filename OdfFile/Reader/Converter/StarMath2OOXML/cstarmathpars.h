@@ -37,11 +37,21 @@
 #include <vector>
 #include <iterator>
 #include <stack>
+#include <queue>
 #include "../../../../DesktopEditor/xml/include/xmlwriter.h"
 
 namespace StarMath
 {
 	class CStarMathReader;
+
+	struct TBaseAttribute
+	{
+		int base_font_size = 12;
+		std::wstring base_font_name;
+		int base_alignment = 1;
+		bool base_font_bold = false;
+		bool base_font_italic = false;
+	};
 
 	class CAttribute
 	{
@@ -95,21 +105,29 @@ namespace StarMath
 		bool EmptyString();
 		void SetAttribute(CAttribute* pAttribute);
 		CAttribute* GetAttribute();
+		void SetBaseAttribute(const TBaseAttribute* pAttribute);
+		CAttribute* GetBaseAttribute();
 		//The function returns a Token from a string (the iterator pointer m_itStart is on the next element)
 		std::wstring GetElement();
+		void FindingTheEndOfParentheses();
+		void IteratorNullification();
 	private:
-		bool CheckTokenForGetElement(const char& cToken);
+		bool CheckTokenForGetElement(const wchar_t& cToken);
+		bool CheckIsalhpaForGetElement(const wchar_t& cToken,const wchar_t& cLastToken);
 		std::wstring::iterator m_itStart,m_itEnd;
 		TypeElement m_enGlobalType;
 		TypeElement m_enUnderType;
 		std::wstring m_wsToken;
 		CAttribute* m_pAttribute;
+		CAttribute* m_pBaseAttribute;
+		std::stack<std::wstring::iterator> m_stBracket;
 	};
 
 	class CElement
 	{
 	public:
 		CElement();
+		CElement(const TypeElement& enTypeBase);
 		virtual ~CElement();
 		virtual void Parse(CStarMathReader* pReader) = 0;
 		//The function creates the class we need (by determining the class type by a variable m_enGlobalType from the class CStarMathReader)
@@ -184,7 +202,7 @@ namespace StarMath
 	class CElementOperator: public CElement
 	{
 	public:
-		CElementOperator(const TypeElement& enType);
+		CElementOperator(const TypeElement& enType,const std::wstring& wsNameOp = L"");
 		virtual ~CElementOperator();
 		void SetValueOperator(CElement* pElement);
 		CElement* GetValueOperator();
@@ -192,6 +210,8 @@ namespace StarMath
 		CElement* GetFromValue();
 		void SetToValue(CElement* pElement);
 		CElement* GetToValue();
+		void SetName(const std::wstring& wsNameOp);
+		std::wstring GetName();
 		static TypeElement GetOperator(const std::wstring& wsToken);
 		static TypeElement GetFromOrTo(const std::wstring& wsToken);
 	private:
@@ -202,6 +222,7 @@ namespace StarMath
 		CElement* m_pValueFrom;
 		CElement* m_pValueTo;
 		TypeElement m_enTypeOperator;
+		std::wstring m_wsName;
 	};
 
 	class CElementGrade: public CElement
@@ -229,12 +250,12 @@ namespace StarMath
 		virtual ~CElementBracket();
 		void SetBracketValue(const std::vector<CElement*>& arValue);
 		static TypeElement GetBracketOpen(const std::wstring& wsToken);
+		static TypeElement GetBracketClose(const std::wstring& wsToken);
 		std::vector<CElement*> GetBracketValue();
 	private:
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;//
-		TypeElement GetBracketClose(const std::wstring& wsToken);
 		TypeElement m_enTypeBracket;
 		std::vector<CElement*> m_arBrecketValue;
 	};
@@ -298,16 +319,19 @@ namespace StarMath
 	class CElementFunction: public CElement
 	{
 	public:
-		CElementFunction(const TypeElement& enType);
+		CElementFunction(const TypeElement& enType, const std::wstring& wsNameFunc = L"");
 		virtual ~CElementFunction();
 		void SetValueFunction(CElement* pElement);
 		CElement* GetValueFunction();
+		void SetNameFunc(const std::wstring& wsNameFunc);
+		std::wstring GetNameFuncInString();
 		static TypeElement GetFunction(const std::wstring& wsToken);
 	private:
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
 		CElement* m_pValue;
+		std::wstring m_wsNameFunc;
 		TypeElement m_enTypeFunction;
 	};
 
@@ -316,10 +340,11 @@ namespace StarMath
 	public:
 		CElementSpecialSymbol(const TypeElement& enType);
 		virtual ~CElementSpecialSymbol();
-		static TypeElement GetSpecialSymbol(const std::wstring& wsToken);
+		static TypeElement GetSpecialSymbol(std::wstring& wsToken);
 		void SetValue(CElement* pValue);
+		const TypeElement GetType();
 	private:
-		void SetWsTypeSymbol();
+		void SetTypeSymbol();
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
@@ -363,7 +388,7 @@ namespace StarMath
 	class CParserStarMathString
 	{
 	public:
-		std::vector<CElement*> Parse(std::wstring& wsParseString);
+		std::vector<CElement*> Parse(std::wstring& wsParseString, const TBaseAttribute* pBaseAttribute = nullptr);
 		static CElement* ParseElement(CStarMathReader* pReader);
 		//Function for adding a left argument (receives the argument itself and the element to which it needs to be added as input. Works with classes:CElementBinOperator,CElementConnection,CElementSetOperation).
 		static bool AddLeftArgument(CElement* pLeftArg,CElement* pElementWhichAdd);

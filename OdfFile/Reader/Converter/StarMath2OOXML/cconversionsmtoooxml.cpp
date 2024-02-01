@@ -44,7 +44,8 @@ namespace StarMath {
 		m_pXmlWrite->WriteNodeBegin(L"m:oMath",false);
 		for(CElement* oTempElement:arPars)
 		{
-			oTempElement->ConversionToOOXML(m_pXmlWrite);
+			if(oTempElement != nullptr)
+				oTempElement->ConversionToOOXML(m_pXmlWrite);
 		}
 		EndConversion();
 	}
@@ -126,13 +127,13 @@ namespace StarMath {
 			pXmlWrite->WriteNodeEnd(L"w:rPr",false,false);
 		}
 	}
-	void CConversionSMtoOOXML::PropertiesMFPR(bool bType,const std::wstring& wsType, XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute)
+	void CConversionSMtoOOXML::PropertiesMFPR(bool bType, XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute)
 	{
 		pXmlWrite->WriteNodeBegin(L"m:fPr",false);
 		if(bType)
 		{
 			pXmlWrite->WriteNodeBegin(L"m:type",true);
-			pXmlWrite->WriteAttribute(L"m:val",wsType);
+			pXmlWrite->WriteAttribute(L"m:val",L"lin");
 			pXmlWrite->WriteNodeEnd(L"w",true,true);
 		}
 		WriteCtrlPrNode(pXmlWrite,pAttribute);
@@ -322,7 +323,7 @@ namespace StarMath {
 		pXmlWrite->WriteAttribute(L"m:val",wsTypeLimLock);
 		pXmlWrite->WriteNodeEnd(L"w",true,true);
 	}
-	void CConversionSMtoOOXML::WriteRPrFName(const TypeElement &enTypeOp, XmlUtils::CXmlWriter *pXmlWrite,CAttribute* pAttribute)
+	void CConversionSMtoOOXML::WriteRPrFName(const TypeElement &enTypeOp, XmlUtils::CXmlWriter *pXmlWrite,CAttribute* pAttribute,const std::wstring& wsNameOp)
 	{
 		pXmlWrite->WriteNodeBegin(L"m:r",false);
 		pXmlWrite->WriteNodeBegin(L"m:rPr",false);
@@ -342,6 +343,9 @@ namespace StarMath {
 		break;
 		case TypeElement::limsup:
 		pXmlWrite->WriteString(L"lim sup");
+		break;
+		case TypeElement::oper:
+		pXmlWrite->WriteString(wsNameOp);
 		break;
 		default:
 		break;

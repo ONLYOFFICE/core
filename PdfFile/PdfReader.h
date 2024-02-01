@@ -66,10 +66,10 @@ public:
 	std::wstring GetInfo();
 	std::wstring GetFontPath(const std::wstring& wsFontName);
 
-	NSFonts::IFontManager* GetFontManager() { return m_pFontManager; }
 	std::wstring ToXml(const std::wstring& wsXmlPath, bool isPrintStreams = false);
-	PDFDoc* GetPDFDocument() { return m_pPDFDocument; }
 	void ChangeLength(DWORD nLength);
+	NSFonts::IFontManager* GetFontManager() { return m_pFontManager; }
+	PDFDoc* GetPDFDocument() { return m_pPDFDocument; }
 
 	BYTE* GetStructure();
 	BYTE* GetLinks(int nPageIndex);
@@ -82,13 +82,12 @@ public:
 	BYTE* GetAPAnnots  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot   = -1, const char* sView  = NULL);
 
 private:
-	IOfficeDrawingFile* m_pRenderer;
-	PDFDoc*            m_pPDFDocument;
-	std::wstring       m_wsTempFolder;
+	PDFDoc*                m_pPDFDocument;
+	std::wstring           m_wsTempFolder;
 	NSFonts::IFontManager* m_pFontManager;
 	PdfReader::CFontList*  m_pFontList;
-	DWORD              m_nFileLength;
-	int                m_eError;
+	DWORD                  m_nFileLength;
+	int                    m_eError;
 	std::map<std::wstring, std::wstring> m_mFonts;
 };
 

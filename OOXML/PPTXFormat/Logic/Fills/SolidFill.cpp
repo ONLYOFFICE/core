@@ -89,9 +89,9 @@ namespace PPTX
 		{
 			std::wstring strName;
 			if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
-				strName = _T("w14:solidFill");
+				strName = L"w14:solidFill";
 			else
-				strName = (_T("") == m_namespace) ? _T("solidFill") : (m_namespace + _T(":solidFill"));
+				strName = m_namespace.empty() ? L"solidFill" : (m_namespace + L":solidFill");
 
 			pWriter->StartNode(strName);
 			pWriter->EndAttributes();

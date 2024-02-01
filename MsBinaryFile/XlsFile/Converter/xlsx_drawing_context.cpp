@@ -2959,7 +2959,7 @@ void xlsx_drawing_context::set_picture_crop_right (double val)
 }
 void xlsx_drawing_context::set_picture_name(const std::wstring & str)
 {
-	//....
+	current_drawing_states->back()->fill.name = str;
 }
 void xlsx_drawing_context::set_picture_grayscale(bool val)
 {

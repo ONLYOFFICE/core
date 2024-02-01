@@ -289,6 +289,8 @@ public:
 		_CP_OPT(bool)	grayscale;
 		_CP_OPT(int)	biLevel;
 
+		std::wstring	name;
+
 		std::vector<std::pair<double, _color>> colorsPosition;
 	}fill;
 

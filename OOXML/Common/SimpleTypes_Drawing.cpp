@@ -5330,7 +5330,7 @@ namespace SimpleTypes
 		else if (L"r" == sValue) this->m_eValue = hierBranch_r;
 		else if (L"l" == sValue) this->m_eValue = hierBranch_l;
 		else if (L"std" == sValue) this->m_eValue = hierBranch_std;
-		else this->m_eValue = hierBranch_hang;
+		else this->m_eValue = hierBranch_std;
 		return this->m_eValue;
 	}
 

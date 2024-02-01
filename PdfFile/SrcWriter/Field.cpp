@@ -1936,7 +1936,17 @@ namespace PdfWriter
 
 		double dBorderSize       = 0;
 		double dBorderSizeStyle  = 0;
-		if ((m_pField && m_pField->HaveBorder()) || (pAnnot && pAnnot->HaveBorder()))
+
+		if (pAnnot && pAnnot->HaveBorder())
+		{
+			dBorderSize      = pAnnot->GetBorderWidth();
+			dBorderSizeStyle = dBorderSize;
+
+			if (pAnnot->GetBorderType() == 1 || pAnnot->GetBorderType() == 3)
+				dBorderSizeStyle *= 2;
+		}
+
+		if ((m_pField && m_pField->HaveBorder()) || (pAnnot && pAnnot->HaveBorder() && pAnnot->HaveBC()))
 		{
 			m_pStream->WriteStr("q\012");
 

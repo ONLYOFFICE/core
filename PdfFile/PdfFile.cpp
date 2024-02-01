@@ -64,7 +64,7 @@
 	((PdfWriter::CArrayObject*)pObj)->Add(oVal);\
 }
 
-void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, const std::string& sKey)
+void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, const std::string& sKey, bool bUnicode = false)
 {
 	Object oTemp;
 	switch (obj->getType())
@@ -101,7 +101,7 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, 
 		{
 			TextString* s = new TextString(obj->getString());
 			std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-			AddToObject(new PdfWriter::CStringObject(sValue.c_str()))
+			AddToObject(new PdfWriter::CStringObject(sValue.c_str(), bUnicode))
 			delete s;
 		}
 		break;
@@ -593,7 +593,7 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 			// Нужно получить словарь Encrypt БЕЗ дешифровки, поэтому времено отключаем encrypted в xref
 			xref->offEncrypted();
 
-			Object encrypt;
+			Object encrypt, ID, ID1;
 			if (pTrailerDict->dictLookup("Encrypt", &encrypt) && encrypt.isDict())
 			{
 				for (int nIndex = 0; nIndex < encrypt.dictGetLength(); ++nIndex)
@@ -604,16 +604,30 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 					DictToCDictObject(&oTemp, pEncryptDict, true, chKey);
 					oTemp.free();
 				}
-
-				pEncryptDict->SetRef(0, 0);
-				pEncryptDict->Fix();
 			}
+
+			if (!pEncryptDict->Get("Length"))
+				pEncryptDict->Add("Length", 40);
+
 			encrypt.free();
+
+			if (pTrailerDict->dictLookup("ID", &ID) && ID.isArray() && ID.arrayGet(0, &ID1) && ID1.isString())
+				DictToCDictObject(&ID1, pEncryptDict, true, "ID");
+			ID.free(); ID1.free();
 
 			xref->onEncrypted();
 
+			pEncryptDict->SetRef(0, 0);
+			pEncryptDict->Fix();
+
 			pEncryptDict->SetPasswords(m_pInternal->wsPassword, m_pInternal->wsPassword);
-			pEncryptDict->UpdateKey(nCryptAlgorithm);
+			if (!pEncryptDict->UpdateKey(nCryptAlgorithm))
+			{
+				pagesRefObj.free();
+				RELEASEOBJECT(pXref);
+				RELEASEOBJECT(pDRXref);
+				return false;
+			}
 		}
 	}
 

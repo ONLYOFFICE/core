@@ -17,20 +17,56 @@
 #include "gmempp.h"
 #include "Decrypt.h"
 
-void aes256KeyExpansion(DecryptAES256State *s,
-			       Guchar *objKey, int objKeyLen);
-void aes256DecryptBlock(DecryptAES256State *s, Guchar *in, GBool last);
-void sha256(Guchar *msg, int msgLen, Guchar *hash);
-void sha384(Guchar *msg, int msgLen, Guchar *hash);
-void sha512(Guchar *msg, int msgLen, Guchar *hash);
-void r6Hash(Guchar *key, int keyLen, const char *pwd, int pwdLen, char *userKey);
-GBool makeFileKey2(int encVersion, int encRevision, int keyLength,
-				GString *ownerKey, GString *userKey,
-				int permissions, GString *fileID,
-				GString *userPassword, Guchar *fileKey,
-				GBool encryptMetadata);
+#include "../../../Common/3dParty/openssl/openssl/crypto/sha/sha512.c"
+#include "../../../Common/3dParty/openssl/openssl/crypto/mem_clr.c"
 
-Guchar passwordPad[32] = {
+static void logBytes(char* name, unsigned char* str, int len)
+{
+	char buffer[1000];
+	int cur = 0;
+	char* name_cur = name;
+	char* buf_cur = buffer;
+
+	while (*name_cur != 0)
+	{
+		*buf_cur++ = *name_cur++;
+	}
+
+	*buf_cur++ = ':';
+	*buf_cur++ = ' ';
+	*buf_cur++ = '[';
+
+	for (int i = 0; i < len; ++i)
+	{
+		unsigned char c = str[i];
+
+		unsigned char n1 = (unsigned char)(c / 100);
+		c -= (n1 * 100);
+
+		unsigned char n2 = (unsigned char)(c / 10);
+		c -= (n2 * 10);
+
+		*buf_cur++ = (char)('0' + n1);
+		*buf_cur++ = (char)('0' + n2);
+		*buf_cur++ = (char)('0' + c);
+		*buf_cur++ = ',';
+	}
+
+	buf_cur--;
+	*buf_cur++ = ']';
+	*buf_cur++ = '\0';
+
+	printf("%s\n", buffer);
+}
+
+static void aes256KeyExpansion(DecryptAES256State *s,
+			       Guchar *objKey, int objKeyLen);
+static void aes256DecryptBlock(DecryptAES256State *s, Guchar *in, GBool last);
+static void sha256(Guchar *msg, int msgLen, Guchar *hash);
+static void sha384(Guchar *msg, int msgLen, Guchar *hash);
+static void sha512(Guchar *msg, int msgLen, Guchar *hash);
+
+static Guchar passwordPad[32] = {
   0x28, 0xbf, 0x4e, 0x5e, 0x4e, 0x75, 0x8a, 0x41,
   0x64, 0x00, 0x4e, 0x56, 0xff, 0xfa, 0x01, 0x08, 
   0x2e, 0x2e, 0x00, 0xb6, 0xd0, 0x68, 0x3e, 0x80, 
@@ -198,7 +234,7 @@ GBool Decrypt::makeFileKey(int encVersion, int encRevision, int keyLength,
   }
 }
 
-void r6Hash(Guchar *key, int keyLen, const char *pwd, int pwdLen,
+void Decrypt::r6Hash(Guchar *key, int keyLen, const char *pwd, int pwdLen,
 		     char *userKey) {
   Guchar key1[64*(127+64+48)];
   DecryptAESState state128;
@@ -236,11 +272,13 @@ void r6Hash(Guchar *key, int keyLen, const char *pwd, int pwdLen,
       keyLen = 32;
       break;
     case 1:
-      sha384(key1, n, key);
+	  //sha384(key1, n, key);
+	  SHA384(key1, n, key);
       keyLen = 48;
       break;
     case 2:
-      sha512(key1, n, key);
+	  //sha512(key1, n, key);
+	  SHA512(key1, n, key);
       keyLen = 64;
       break;
     }
@@ -253,7 +291,7 @@ void r6Hash(Guchar *key, int keyLen, const char *pwd, int pwdLen,
   }
 }
 
-GBool makeFileKey2(int encVersion, int encRevision, int keyLength,
+GBool Decrypt::makeFileKey2(int encVersion, int encRevision, int keyLength,
 			    GString *ownerKey, GString *userKey,
 			    int permissions, GString *fileID,
 			    GString *userPassword, Guchar *fileKey,
@@ -549,7 +587,7 @@ Guchar rc4DecryptByte(Guchar *state, Guchar *x, Guchar *y, Guchar c) {
 // AES decryption
 //------------------------------------------------------------------------
 
-Guchar sbox[256] = {
+static Guchar sbox[256] = {
   0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
   0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
   0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15,
@@ -568,7 +606,7 @@ Guchar sbox[256] = {
   0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 };
 
-Guchar invSbox[256] = {
+static Guchar invSbox[256] = {
   0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb,
   0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87, 0x34, 0x8e, 0x43, 0x44, 0xc4, 0xde, 0xe9, 0xcb,
   0x54, 0x7b, 0x94, 0x32, 0xa6, 0xc2, 0x23, 0x3d, 0xee, 0x4c, 0x95, 0x0b, 0x42, 0xfa, 0xc3, 0x4e,
@@ -587,7 +625,7 @@ Guchar invSbox[256] = {
   0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d
 };
 
-Guint rcon[11] = {
+static Guint rcon[11] = {
   0x00000000, // unused
   0x01000000,
   0x02000000,
@@ -601,18 +639,18 @@ Guint rcon[11] = {
   0x36000000
 };
 
-inline Guint subWord(Guint x) {
+static inline Guint subWord(Guint x) {
   return (sbox[x >> 24] << 24)
          | (sbox[(x >> 16) & 0xff] << 16)
          | (sbox[(x >> 8) & 0xff] << 8)
          | sbox[x & 0xff];
 }
 
-inline Guint rotWord(Guint x) {
+static inline Guint rotWord(Guint x) {
   return ((x << 8) & 0xffffffff) | (x >> 24);
 }
 
-inline void subBytes(Guchar *state) {
+static inline void subBytes(Guchar *state) {
   int i;
 
   for (i = 0; i < 16; ++i) {
@@ -620,7 +658,7 @@ inline void subBytes(Guchar *state) {
   }
 }
 
-inline void invSubBytes(Guchar *state) {
+static inline void invSubBytes(Guchar *state) {
   int i;
 
   for (i = 0; i < 16; ++i) {
@@ -628,7 +666,7 @@ inline void invSubBytes(Guchar *state) {
   }
 }
 
-inline void shiftRows(Guchar *state) {
+static inline void shiftRows(Guchar *state) {
   Guchar t;
 
   t = state[4];
@@ -651,7 +689,7 @@ inline void shiftRows(Guchar *state) {
   state[12] = t;
 }
 
-inline void invShiftRows(Guchar *state) {
+static inline void invShiftRows(Guchar *state) {
   Guchar t;
 
   t = state[7];
@@ -675,7 +713,7 @@ inline void invShiftRows(Guchar *state) {
 }
 
 // {02} \cdot s
-inline Guchar mul02(Guchar s) {
+static inline Guchar mul02(Guchar s) {
   Guchar s2;
 
   s2 = (Guchar)((s & 0x80) ? ((s << 1) ^ 0x1b) : (s << 1));
@@ -683,7 +721,7 @@ inline Guchar mul02(Guchar s) {
 }
 
 // {03} \cdot s
-inline Guchar mul03(Guchar s) {
+static inline Guchar mul03(Guchar s) {
   Guchar s2;
 
   s2 = (Guchar)((s & 0x80) ? ((s << 1) ^ 0x1b) : (s << 1));
@@ -691,7 +729,7 @@ inline Guchar mul03(Guchar s) {
 }
 
 // {09} \cdot s
-inline Guchar mul09(Guchar s) {
+static inline Guchar mul09(Guchar s) {
   Guchar s2, s4, s8;
 
   s2 = (Guchar)((s & 0x80) ? ((s << 1) ^ 0x1b) : (s << 1));
@@ -701,7 +739,7 @@ inline Guchar mul09(Guchar s) {
 }
 
 // {0b} \cdot s
-inline Guchar mul0b(Guchar s) {
+static inline Guchar mul0b(Guchar s) {
   Guchar s2, s4, s8;
 
   s2 = (Guchar)((s & 0x80) ? ((s << 1) ^ 0x1b) : (s << 1));
@@ -711,7 +749,7 @@ inline Guchar mul0b(Guchar s) {
 }
 
 // {0d} \cdot s
-inline Guchar mul0d(Guchar s) {
+static inline Guchar mul0d(Guchar s) {
   Guchar s2, s4, s8;
 
   s2 = (Guchar)((s & 0x80) ? ((s << 1) ^ 0x1b) : (s << 1));
@@ -721,7 +759,7 @@ inline Guchar mul0d(Guchar s) {
 }
 
 // {0e} \cdot s
-inline Guchar mul0e(Guchar s) {
+static inline Guchar mul0e(Guchar s) {
   Guchar s2, s4, s8;
 
   s2 = (Guchar)((s & 0x80) ? ((s << 1) ^ 0x1b) : (s << 1));
@@ -730,7 +768,7 @@ inline Guchar mul0e(Guchar s) {
   return s2 ^ s4 ^ s8;
 }
 
-inline void mixColumns(Guchar *state) {
+static inline void mixColumns(Guchar *state) {
   int c;
   Guchar s0, s1, s2, s3;
 
@@ -746,7 +784,7 @@ inline void mixColumns(Guchar *state) {
   }
 }
 
-inline void invMixColumns(Guchar *state) {
+static inline void invMixColumns(Guchar *state) {
   int c;
   Guchar s0, s1, s2, s3;
 
@@ -762,7 +800,7 @@ inline void invMixColumns(Guchar *state) {
   }
 }
 
-inline void invMixColumnsW(Guint *w) {
+static inline void invMixColumnsW(Guint *w) {
   int c;
   Guchar s0, s1, s2, s3;
 
@@ -778,7 +816,7 @@ inline void invMixColumnsW(Guint *w) {
   }
 }
 
-inline void addRoundKey(Guchar *state, Guint *w) {
+static inline void addRoundKey(Guchar *state, Guint *w) {
   int c;
 
   for (c = 0; c < 4; ++c) {
@@ -909,7 +947,7 @@ void aesDecryptBlock(DecryptAESState *s, Guchar *in, GBool last) {
 // AES-256 decryption
 //------------------------------------------------------------------------
 
-void aes256KeyExpansion(DecryptAES256State *s,
+static void aes256KeyExpansion(DecryptAES256State *s,
 			       Guchar *objKey, int objKeyLen) {
   Guint temp;
   int i, round;
@@ -934,7 +972,7 @@ void aes256KeyExpansion(DecryptAES256State *s,
   }
 }
 
-void aes256DecryptBlock(DecryptAES256State *s, Guchar *in, GBool last) {
+static void aes256DecryptBlock(DecryptAES256State *s, Guchar *in, GBool last) {
   int c, round, n, i;
 
   // initial state
@@ -993,27 +1031,27 @@ void aes256DecryptBlock(DecryptAES256State *s, Guchar *in, GBool last) {
 //------------------------------------------------------------------------
 
 // this works around a bug in older Sun compilers
-inline Gulong rotateLeft(Gulong x, int r) {
+static inline Gulong rotateLeft(Gulong x, int r) {
   x &= 0xffffffff;
   return ((x << r) | (x >> (32 - r))) & 0xffffffff;
 }
 
-inline Gulong md5Round1(Gulong a, Gulong b, Gulong c, Gulong d,
+static inline Gulong md5Round1(Gulong a, Gulong b, Gulong c, Gulong d,
 			       Gulong Xk, int s, Gulong Ti) {
   return b + rotateLeft((a + ((b & c) | (~b & d)) + Xk + Ti), s);
 }
 
-inline Gulong md5Round2(Gulong a, Gulong b, Gulong c, Gulong d,
+static inline Gulong md5Round2(Gulong a, Gulong b, Gulong c, Gulong d,
 			       Gulong Xk, int s, Gulong Ti) {
   return b + rotateLeft((a + ((b & d) | (c & ~d)) + Xk + Ti), s);
 }
 
-inline Gulong md5Round3(Gulong a, Gulong b, Gulong c, Gulong d,
+static inline Gulong md5Round3(Gulong a, Gulong b, Gulong c, Gulong d,
 			       Gulong Xk, int s, Gulong Ti) {
   return b + rotateLeft((a + (b ^ c ^ d) + Xk + Ti), s);
 }
 
-inline Gulong md5Round4(Gulong a, Gulong b, Gulong c, Gulong d,
+static inline Gulong md5Round4(Gulong a, Gulong b, Gulong c, Gulong d,
 			       Gulong Xk, int s, Gulong Ti) {
   return b + rotateLeft((a + (c ^ (b | ~d)) + Xk + Ti), s);
 }
@@ -1027,7 +1065,7 @@ void md5Start(MD5State *state) {
   state->msgLen = 0;
 }
 
-void md5ProcessBlock(MD5State *state) {
+static void md5ProcessBlock(MD5State *state) {
   Gulong x[16];
   Gulong a, b, c, d;
   int i;
@@ -1205,7 +1243,7 @@ void md5(Guchar *msg, int msgLen, Guchar *digest) {
 // SHA-256 hash
 //------------------------------------------------------------------------
 
-Guint sha256K[64] = {
+static Guint sha256K[64] = {
   0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
   0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
   0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
@@ -1224,35 +1262,35 @@ Guint sha256K[64] = {
   0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
 
-inline Guint rotr(Guint x, Guint n) {
+static inline Guint rotr(Guint x, Guint n) {
   return (x >> n) | (x << (32 - n));
 }
 
-inline Guint sha256Ch(Guint x, Guint y, Guint z) {
+static inline Guint sha256Ch(Guint x, Guint y, Guint z) {
   return (x & y) ^ (~x & z);
 }
 
-inline Guint sha256Maj(Guint x, Guint y, Guint z) {
+static inline Guint sha256Maj(Guint x, Guint y, Guint z) {
   return (x & y) ^ (x & z) ^ (y & z);
 }
 
-inline Guint sha256Sigma0(Guint x) {
+static inline Guint sha256Sigma0(Guint x) {
   return rotr(x, 2) ^ rotr(x, 13) ^ rotr(x, 22);
 }
 
-inline Guint sha256Sigma1(Guint x) {
+static inline Guint sha256Sigma1(Guint x) {
   return rotr(x, 6) ^ rotr(x, 11) ^ rotr(x, 25);
 }
 
-inline Guint sha256sigma0(Guint x) {
+static inline Guint sha256sigma0(Guint x) {
   return rotr(x, 7) ^ rotr(x, 18) ^ (x >> 3);
 }
 
-inline Guint sha256sigma1(Guint x) {
+static inline Guint sha256sigma1(Guint x) {
   return rotr(x, 17) ^ rotr(x, 19) ^ (x >> 10);
 }
 
-void sha256HashBlock(Guchar *blk, Guint *H) {
+static void sha256HashBlock(Guchar *blk, Guint *H) {
   Guint W[64];
   Guint a, b, c, d, e, f, g, h;
   Guint T1, T2;
@@ -1304,7 +1342,7 @@ void sha256HashBlock(Guchar *blk, Guint *H) {
   H[7] += h;
 }
 
-void sha256(Guchar *msg, int msgLen, Guchar *hash) {
+static void sha256(Guchar *msg, int msgLen, Guchar *hash) {
   Guchar blk[64];
   Guint H[8];
   int blkLen, i;
@@ -1364,7 +1402,7 @@ void sha256(Guchar *msg, int msgLen, Guchar *hash) {
 
 typedef unsigned long long SHA512Uint64;
 
-SHA512Uint64 sha512K[80] = {
+static SHA512Uint64 sha512K[80] = {
   0x428a2f98d728ae22ULL, 0x7137449123ef65cdULL,
   0xb5c0fbcfec4d3b2fULL, 0xe9b5dba58189dbbcULL,
   0x3956c25bf348b538ULL, 0x59f111f1b605d019ULL,
@@ -1407,37 +1445,37 @@ SHA512Uint64 sha512K[80] = {
   0x5fcb6fab3ad6faecULL, 0x6c44198c4a475817ULL
 };
 
-inline SHA512Uint64 rotr64(SHA512Uint64 x, Guint n) {
+static inline SHA512Uint64 rotr64(SHA512Uint64 x, Guint n) {
   return (x >> n) | (x << (64 - n));
 }
 
-inline SHA512Uint64 sha512Ch(SHA512Uint64 x, SHA512Uint64 y,
+static inline SHA512Uint64 sha512Ch(SHA512Uint64 x, SHA512Uint64 y,
 				    SHA512Uint64 z) {
   return (x & y) ^ (~x & z);
 }
 
-inline SHA512Uint64 sha512Maj(SHA512Uint64 x, SHA512Uint64 y,
+static inline SHA512Uint64 sha512Maj(SHA512Uint64 x, SHA512Uint64 y,
 				     SHA512Uint64 z) {
   return (x & y) ^ (x & z) ^ (y & z);
 }
 
-inline SHA512Uint64 sha512Sigma0(SHA512Uint64 x) {
+static inline SHA512Uint64 sha512Sigma0(SHA512Uint64 x) {
   return rotr64(x, 28) ^ rotr64(x, 34) ^ rotr64(x, 39);
 }
 
-inline SHA512Uint64 sha512Sigma1(SHA512Uint64 x) {
+static inline SHA512Uint64 sha512Sigma1(SHA512Uint64 x) {
   return rotr64(x, 14) ^ rotr64(x, 18) ^ rotr64(x, 41);
 }
 
-inline SHA512Uint64 sha512sigma0(SHA512Uint64 x) {
+static inline SHA512Uint64 sha512sigma0(SHA512Uint64 x) {
   return rotr64(x, 1) ^ rotr64(x, 8) ^ (x >> 7);
 }
 
-inline SHA512Uint64 sha512sigma1(SHA512Uint64 x) {
+static inline SHA512Uint64 sha512sigma1(SHA512Uint64 x) {
   return rotr64(x, 19) ^ rotr64(x, 61) ^ (x >> 6);
 }
 
-void sha512HashBlock(Guchar *blk, SHA512Uint64 *H) {
+static void sha512HashBlock(Guchar *blk, SHA512Uint64 *H) {
   SHA512Uint64 W[80];
   SHA512Uint64 a, b, c, d, e, f, g, h;
   SHA512Uint64 T1, T2;
@@ -1493,7 +1531,7 @@ void sha512HashBlock(Guchar *blk, SHA512Uint64 *H) {
   H[7] += h;
 }
 
-void sha512(Guchar *msg, int msgLen, Guchar *hash) {
+static void sha512(Guchar *msg, int msgLen, Guchar *hash) {
   Guchar blk[128];
   SHA512Uint64 H[8];
   int blkLen, i;
@@ -1559,7 +1597,7 @@ void sha512(Guchar *msg, int msgLen, Guchar *hash) {
   }
 }
 
-void sha384(Guchar *msg, int msgLen, Guchar *hash) {
+static void sha384(Guchar *msg, int msgLen, Guchar *hash) {
   Guchar blk[128];
   SHA512Uint64 H[8];
   int blkLen, i;

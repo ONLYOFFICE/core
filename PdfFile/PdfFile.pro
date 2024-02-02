@@ -16,7 +16,11 @@ DEFINES += PDFFILE_USE_DYNAMIC_LIBRARY
 
 ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network)
 
-INCLUDEPATH += $$PWD/../Common/3dParty/openssl/openssl/include
+#CONFIG += use_openssl_hash
+use_openssl_hash {
+    DEFINES += USE_OPENSSL_HASH
+    INCLUDEPATH += $$PWD/../Common/3dParty/openssl/openssl/include
+}
 
 # PdfReader
 

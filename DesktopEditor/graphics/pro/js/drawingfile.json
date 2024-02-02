@@ -65,7 +65,8 @@
 		"_ARM_ALIGN_", 
 		"_tcsnicmp=strncmp", "_lseek=lseek", "_getcwd=getcwd", 
 		"NO_CONSOLE_IO", "USE_EXTERNAL_JPEG2000", "USE_JPIP", "OPJ_STATIC", "FONT_ENGINE_DISABLE_FILESYSTEM",
-		"IMAGE_CHECKER_DISABLE_XML"
+		"IMAGE_CHECKER_DISABLE_XML",
+		"USE_OPENSSL_HASH"
 	],
 	"compile_files_array": [
 	{

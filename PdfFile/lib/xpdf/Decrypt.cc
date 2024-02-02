@@ -17,8 +17,13 @@
 #include "gmempp.h"
 #include "Decrypt.h"
 
+#ifdef USE_OPENSSL_HASH
 #include "../../../Common/3dParty/openssl/openssl/crypto/sha/sha512.c"
 #include "../../../Common/3dParty/openssl/openssl/crypto/mem_clr.c"
+#else
+#define SHA384 sha384
+#define SHA512 sha512
+#endif
 
 static void aes256KeyExpansion(DecryptAES256State *s,
 			       Guchar *objKey, int objKeyLen);

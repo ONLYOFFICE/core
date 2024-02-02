@@ -272,13 +272,11 @@ void Decrypt::r6Hash(Guchar *key, int keyLen, const char *pwd, int pwdLen,
       keyLen = 32;
       break;
     case 1:
-	  //sha384(key1, n, key);
-	  SHA384(key1, n, key);
+      SHA384(key1, n, key);
       keyLen = 48;
       break;
     case 2:
-	  //sha512(key1, n, key);
-	  SHA512(key1, n, key);
+      SHA512(key1, n, key);
       keyLen = 64;
       break;
     }

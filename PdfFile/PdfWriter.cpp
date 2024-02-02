@@ -1124,21 +1124,40 @@ HRESULT CPdfWriter::AddLink(const double& dX, const double& dY, const double& dW
 }
 HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFieldInfo* pFieldInfo, const std::wstring& wsTempDirectory)
 {
-	unsigned int  unPagesCount = m_pDocument->GetPagesCount();
-	if (!m_pDocument || 0 == unPagesCount || !pFieldInfo)
+	if (!m_pDocument || 0 == m_pDocument->GetPagesCount() || !pFieldInfo)
 		return S_OK;
-
-	if (m_bNeedUpdateTextFont)
-		UpdateFont();
-
-	if (!m_pFont)
-		return S_OK;
-
-	PdfWriter::CFontTrueType* pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
-	if (!pFontTT)
-		return S_OK;
-
 	CFormFieldInfo& oInfo = *pFieldInfo;
+
+	PdfWriter::CFontCidTrueType* pCheckedFont   = NULL;
+	PdfWriter::CFontCidTrueType* pUncheckedFont = NULL;
+	if (oInfo.IsCheckBox())
+	{
+		const CFormFieldInfo::CCheckBoxFormPr* pPr = oInfo.GetCheckBoxPr();
+		pCheckedFont   = GetFont(pPr->GetCheckedFontName(), false, false);
+		pUncheckedFont = GetFont(pPr->GetUncheckedFontName(), false, false);
+	}
+	if ((oInfo.IsCheckBox() && (!pCheckedFont || !pUncheckedFont)) || oInfo.IsTextField() || oInfo.IsDropDownList() || oInfo.IsDateTime())
+	{
+		if (m_bNeedUpdateTextFont)
+			UpdateFont();
+		if (!m_pFont)
+			return S_OK;
+		if (oInfo.IsCheckBox())
+		{
+			if (!pCheckedFont)
+				pCheckedFont = m_pFont;
+			if (!pUncheckedFont)
+				pUncheckedFont = m_pFont;
+		}
+	}
+
+	PdfWriter::CFontTrueType* pFontTT = NULL;
+	if (oInfo.IsTextField() || oInfo.IsDropDownList())
+	{
+		pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
+		if (!pFontTT)
+			return S_OK;
+	}
 
 	double dX, dY, dW, dH;
 	oInfo.GetBounds(dX, dY, dW, dH);
@@ -1146,7 +1165,6 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 	PdfWriter::CFieldBase* pFieldBase = NULL;
 
 	bool bRadioButton = false;
-
 	if (oInfo.IsTextField())
 	{
 		PdfWriter::CTextField* pField = m_pDocument->CreateTextField();
@@ -1504,14 +1522,6 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 
 		pFieldBase->AddPageRect(m_pPage, PdfWriter::TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
 		pField->SetValue(pPr->IsChecked());
-
-		PdfWriter::CFontCidTrueType* pCheckedFont   = GetFont(pPr->GetCheckedFontName(), false, false);
-		PdfWriter::CFontCidTrueType* pUncheckedFont = GetFont(pPr->GetUncheckedFontName(), false, false);
-		if (!pCheckedFont)
-			pCheckedFont = m_pFont;
-
-		if (!pUncheckedFont)
-			pUncheckedFont = m_pFont;
 
 		unsigned int unCheckedSymbol   = pPr->GetCheckedSymbol();
 		unsigned int unUncheckedSymbol = pPr->GetUncheckedSymbol();

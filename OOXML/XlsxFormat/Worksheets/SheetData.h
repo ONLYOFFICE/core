@@ -129,6 +129,7 @@ namespace OOX
 		struct sharedFormula
 		{
 			std::vector<std::pair<XLS::CellRef, std::wstring>> shrFmla;
+			std::vector<std::pair<XLS::CellRangeRef, XLS::CellRef>> arrfmla;
 		};
 		class CFormula : public WritingElement
 		{
@@ -241,6 +242,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadComment(XmlUtils::CXmlLiteReader& oReader, CCommentItem* pComment);
+			bool checkArrayCell(XLS::CellRef &cellref, const sharedFormula& ArrFmlas);
 
 			void AfterRead();
 	//----------- 2003

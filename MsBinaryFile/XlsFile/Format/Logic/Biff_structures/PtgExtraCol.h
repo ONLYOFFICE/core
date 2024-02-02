@@ -52,7 +52,7 @@ public:
  // No type info
 
     const std::wstring toString() const;
-private:
+
     _INT32 col;
 };
 

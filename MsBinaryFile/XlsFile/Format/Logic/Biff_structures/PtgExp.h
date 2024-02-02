@@ -53,7 +53,6 @@ public:
 
 	static const unsigned short fixed_id = 0x01;
 
-private:
 	unsigned short row;
 	unsigned short col;
 

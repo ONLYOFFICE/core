@@ -833,10 +833,10 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 			
 			CP_XML_NODE(L"numFmts")
 			{
-				CP_XML_ATTR(L"count", xls_global_info->m_arNumFormats.size());
-				for (size_t i = 0; i < xls_global_info->m_arNumFormats.size(); i++)
+				CP_XML_ATTR(L"count", xls_global_info->m_mapNumFormats.size());
+				for (std::map<_UINT16, XLS::BaseObjectPtr>::iterator it = xls_global_info->m_mapNumFormats.begin(); it != xls_global_info->m_mapNumFormats.end(); ++it)
 				{
-					XLS::Format* fmt = dynamic_cast<XLS::Format*>(xls_global_info->m_arNumFormats[i].get());
+					XLS::Format* fmt = dynamic_cast<XLS::Format*>(it->second.get());
 
 					if (fmt->ifmt < 5 || (fmt->ifmt > 8 && fmt->ifmt < 23) || (fmt->ifmt > 36 && fmt->ifmt < 41) || (fmt->ifmt > 44 && fmt->ifmt < 50))
 						continue;

@@ -688,11 +688,9 @@ std::wstring CPdfReader::GetInfo()
 std::wstring CPdfReader::GetFontPath(const std::wstring& wsFontName)
 {
 	std::map<std::wstring, std::wstring>::const_iterator oIter = m_mFonts.find(wsFontName);
-	if (oIter != m_mFonts.end())
-		return oIter->second;
-	return L"";
+	return oIter != m_mFonts.end() ? oIter->second : L"";
 }
-void getBookmars(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)
+void getBookmarks(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)
 {
 	LinkAction* pLinkAction = pOutlineItem->getAction();
 	if (!pLinkAction)
@@ -715,11 +713,18 @@ void getBookmars(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, 
 		pg = pLinkDest->getPageNum();
 	if (pg == 0)
 		pg = 1;
+
 	double dy = 0;
 	double dTop = pLinkDest->getTop();
 	double dHeight = pdfDoc->getPageCropHeight(pg);
+	if (pdfDoc->getPageRotate(pg) % 180 != 0)
+	{
+		dHeight = pdfDoc->getPageCropWidth(pg);
+		dTop = pLinkDest->getLeft();
+	}
 	if (dTop > 0 && dTop < dHeight)
 		dy = dHeight - dTop;
+
 	if (str)
 		RELEASEOBJECT(pLinkDest);
 
@@ -741,7 +746,7 @@ void getBookmars(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, 
 	{
 		OutlineItem* pOutlineItemKid = (OutlineItem*)pList->get(i);
 		if (pOutlineItemKid)
-			getBookmars(pdfDoc, pOutlineItemKid, out, level + 1);
+			getBookmarks(pdfDoc, pOutlineItemKid, out, level + 1);
 	}
 	pOutlineItem->close();
 }
@@ -762,7 +767,7 @@ BYTE* CPdfReader::GetStructure()
 	{
 		OutlineItem* pOutlineItem = (OutlineItem*)pList->get(i);
 		if (pOutlineItem)
-			getBookmars(m_pPDFDocument, pOutlineItem, oRes, 1);
+			getBookmarks(m_pPDFDocument, pOutlineItem, oRes, 1);
 	}
 	oRes.WriteLen();
 
@@ -1148,7 +1153,7 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
-BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, bool bBase64, int nButtonWidget, const char* sIconView)
+BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase64, int nButtonWidget, const char* sIconView)
 {
 	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
 		return NULL;
@@ -1204,8 +1209,6 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 				bFirst = false;
 			}
 
-			oRes.WriteString(sMKName);
-
 			// Получение единственного XObject из Resources, если возможно
 			Object oResources, oXObject, oIm;
 			if (!oStr.streamGetDict()->lookup("Resources", &oResources)->isDict() || !oResources.dictLookup("XObject", &oXObject)->isDict() || oXObject.dictGetLength() != 1 || !oXObject.dictGetVal(0, &oIm)->isStream())
@@ -1225,19 +1228,19 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 			}
 			oType.free(); oSubtype.free();
 
+			oRes.WriteString(sMKName);
 			Object oStrRef;
 			oXObject.dictGetValNF(0, &oStrRef);
 			int nView = oStrRef.getRefNum();
 			oRes.AddInt(nView);
-			oStrRef.free();
+			oStrRef.free(); oXObject.free();
 			if (std::find(arrUniqueImage.begin(), arrUniqueImage.end(), nView) != arrUniqueImage.end())
 			{
-				oXObject.free(); oIm.free();
+				oIm.free();
 				oRes.WriteBYTE(0);
 				nMKLength++;
 				continue;
 			}
-			oXObject.free();
 			arrUniqueImage.push_back(nView);
 			oRes.WriteBYTE(1);
 

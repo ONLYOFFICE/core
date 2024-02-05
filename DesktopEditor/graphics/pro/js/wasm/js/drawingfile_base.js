@@ -1008,7 +1008,7 @@
 		}
 
 		let res = {};
-		let ext = Module["_GetButtonIcons"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, bBase64 ? 1 : 0, nWidget === undefined ? -1 : nWidget, nView);
+		let ext = Module["_GetButtonIcons"](this.nativeFile, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, bBase64 ? 1 : 0, nWidget === undefined ? -1 : nWidget, nView);
 		if (ext == 0)
 			return res;
 

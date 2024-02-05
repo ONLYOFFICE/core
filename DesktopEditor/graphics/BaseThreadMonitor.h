@@ -46,7 +46,7 @@ namespace NSThreads
 		CBaseThread*  Instance;
 	};
 
-	class CBaseThreadMonitor
+	class KERNEL_DECL CBaseThreadMonitor
 	{
 	private:
 		NSCriticalSection::CRITICAL_SECTION m_oCS;
@@ -74,8 +74,7 @@ namespace NSThreads
 		CBaseThread* GetBaseThread(const ASC_THREAD_ID& nThreadId);
 		void SetReleaseHandler(std::function<void(void* initializer, CBaseThread*)> func);
 
-		void EnterCS();
-		void LeaveCS();
+		NSCriticalSection::CRITICAL_SECTION* GetCS();
 
 	private:
 		void Register(CBaseThread* pInstance);

@@ -75,6 +75,7 @@ namespace NSThreads
 
 		m_bIsInit = false;
 		m_pReceiver = NULL;
+		m_listThreads.clear();
 		return true;
 	}
 
@@ -84,13 +85,9 @@ namespace NSThreads
 		return m_bIsInit;
 	}
 
-	void CBaseThreadMonitor::EnterCS()
+	NSCriticalSection::CRITICAL_SECTION* CBaseThreadMonitor::GetCS()
 	{
-		m_oCS.Enter();
-	}
-	void CBaseThreadMonitor::LeaveCS()
-	{
-		m_oCS.Leave();
+		return &m_oCS;
 	}
 
 	CBaseThread* CBaseThreadMonitor::GetBaseThread(const ASC_THREAD_ID& nThreadId)
@@ -144,6 +141,8 @@ namespace NSThreads
 			if (i->Instance == pInstance)
 			{
 				m_listThreads.erase(i);
+				if (m_funcRelease)
+					m_funcRelease(m_pReceiver, pInstance);
 				return;
 			}
 		}

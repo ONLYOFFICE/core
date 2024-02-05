@@ -960,11 +960,11 @@ private:
 			readStream(oXml, sSelectors, oTSR);
 		}
 		// Векторная картинка
-		else if(sName == L"svg" || (sName.length() > 3 && sName.compare(sName.length() - 3, 3, L"svg") == 0))
-		{
-			wrP(oXml, sSelectors, oTS);
-			readSVG(oXml);
-		}
+//		else if(sName == L"svg" || (sName.length() > 3 && sName.compare(sName.length() - 3, 3, L"svg") == 0))
+//		{
+//			wrP(oXml, sSelectors, oTS);
+//			readSVG(oXml);
+//		}
 		else if(sName == L"input")
 			readInput(oXml, sSelectors, oTS);
 		// Игнорируются тэги выполняющие скрипт
@@ -1100,9 +1100,15 @@ private:
 				oTSP.sPStyle += L"<w:pBdr><w:left w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr>";
 				readStream(oXml, sSelectors, oTSP);
 			}
+			else if (sName == L"xml")
+			{
+				sSelectors.pop_back();
+				return;
+			}
 			// Неизвестный тэг. Выделять ли его абзацем?
 			else
 				readStream(oXml, sSelectors, oTS);
+
 			readNote(oXml, sSelectors, sNote);
 			sNote = L"";
 

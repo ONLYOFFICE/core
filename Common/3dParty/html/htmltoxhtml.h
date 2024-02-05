@@ -40,7 +40,7 @@ static std::wstring htmlToXhtml(std::string& sFileContent, bool bNeedConvert)
 	// Распознование кодировки
 	if (bNeedConvert)
 	{
-		std::string sEncoding = NSStringFinder::FindPropety<std::string>(sFileContent, "charset", "\"", "\"");
+		std::string sEncoding = NSStringFinder::FindPropety<std::string>(sFileContent, "charset", {"\"", "="}, {"\"", " "}, 0);
 
 		if (sEncoding.empty())
 			sEncoding = NSStringFinder::FindPropety<std::string>(sFileContent, "encoding", "\"", "\"");
@@ -360,7 +360,7 @@ static std::string mhtTohtml(std::string& sFileContent)
 	// Цикл по boundary
 	while(nFound != std::string::npos)
 	{
-		nFoundEnd = sFileContent.find(sBoundary + "--", nFound + nBoundaryLength);
+		nFoundEnd = sFileContent.find(sBoundary, nFound + nBoundaryLength);
 		if(nFoundEnd == std::string::npos)
 			break;
 

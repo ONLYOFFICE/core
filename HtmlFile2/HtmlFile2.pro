@@ -27,8 +27,7 @@ include($$CORE_ROOT_DIR/Common/3dParty/boost/boost.pri)
 
 ADD_DEPENDENCY(kernel, UnicodeConverter, graphics, kernel_network)
 
-SOURCES += htmlfile2.cpp \
-	./src/StringFinder.cpp
+SOURCES += htmlfile2.cpp
 
 HEADERS += htmlfile2.h \
 	./src/StringFinder.h

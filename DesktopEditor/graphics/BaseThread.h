@@ -100,6 +100,8 @@ namespace NSThreads
 #else
         static void* __ThreadProc(void* pv);
 #endif
+
+		friend class CBaseThreadMonitor;
     };
 }
 

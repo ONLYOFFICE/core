@@ -1822,7 +1822,16 @@ namespace OOX
 			_INT32 intCache = 0;
 			double realCache = 0;
 
-			XLS::CellRef cellref(m_oRow.get() -1, m_oCol.get(), 0, 0);
+            XLS::CellRef cellref;
+            if(m_oRow.IsInit() && m_oCol.IsInit())
+                cellref = XLS::CellRef(m_oRow.get() -1, m_oCol.get(), 0, 0);
+			else if(m_oRef.IsInit())
+			{
+				std::wstring wstringRef(m_oRef.get().begin(), m_oRef.get().end());
+				cellref = XLS::CellRef(wstringRef);
+			}
+			else
+				cellref = XLS::CellRef(0, 0, 0, 0);
 			auto sourceCellRef = cellref;
 
 			if(!sharedFormulas.arrfmla.empty())
@@ -2262,16 +2271,8 @@ namespace OOX
 
 				}
 			}
-			if(m_oCol.IsInit())
-				oCell->column = m_oCol.get();
-			else if(m_oRef.IsInit())
-				{
-					std::wstring strRef(m_oRef.get().begin(), m_oRef.get().end());
-					XLS::CellRef reference(strRef);
-					oCell->column = reference.getColumn();
-				}
-            else 
-                oCell->column = 0;
+
+                oCell->column = cellref.column;
 			if(m_oShowPhonetic.IsInit())
             	oCell->fPhShow =  m_oShowPhonetic->GetValue();
 			else

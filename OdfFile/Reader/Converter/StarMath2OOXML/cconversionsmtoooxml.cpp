@@ -48,6 +48,10 @@ namespace StarMath {
 				oTempElement->ConversionToOOXML(m_pXmlWrite);
 		}
 		EndConversion();
+		NSFile::CFileBinary oFile;
+		oFile.CreateFileW(L"Test.txt");
+		oFile.WriteStringUTF8(m_pXmlWrite->GetXmlString());
+		oFile.CloseFile();
 	}
 	void CConversionSMtoOOXML::StandartProperties(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute)
 	{
@@ -70,10 +74,19 @@ namespace StarMath {
 		}
 		else
 		{
+			std::wstring wsNameFont = pAttribute->GetFontName();
 			pXmlWrite->WriteNodeBegin(L"w:rPr",false);
 			pXmlWrite->WriteNodeBegin(L"w:rFonts",true);
-			pXmlWrite->WriteAttribute(L"w:hAnsi",L"Cambria Math");
-			pXmlWrite->WriteAttribute(L"w:ascii",L"Cambria Math");
+			if(!wsNameFont.empty())
+			{
+				pXmlWrite->WriteAttribute(L"w:hAnsi",wsNameFont);
+				pXmlWrite->WriteAttribute(L"w:ascii",wsNameFont);
+			}
+			else
+			{
+				pXmlWrite->WriteAttribute(L"w:hAnsi",L"Cambria Math");
+				pXmlWrite->WriteAttribute(L"w:ascii",L"Cambria Math");
+			}
 			pXmlWrite->WriteNodeEnd(L"w",true,true);
 			if(pAttribute->GetSize() == 0)
 			{
@@ -189,12 +202,23 @@ namespace StarMath {
 		WriteCtrlPrNode(pXmlWrite,pAttribute);
 		pXmlWrite->WriteNodeEnd(L"m:naryPr",false,false);
 	}
-	void CConversionSMtoOOXML::BlockRecording(const std::wstring &wsNameBlock, CElement *pValueBlock,XmlUtils::CXmlWriter* pXmlWrite)
+	void CConversionSMtoOOXML::WriteNodeConversion(const std::wstring &wsNameBlock, CElement *pValueBlock,XmlUtils::CXmlWriter* pXmlWrite)
 	{
-		pXmlWrite->WriteNodeBegin(wsNameBlock,false);
+		if(pValueBlock != nullptr)
+		{
+			pXmlWrite->WriteNodeBegin(wsNameBlock,false);
+			pValueBlock->ConversionToOOXML(pXmlWrite);
+			pXmlWrite->WriteNodeEnd(wsNameBlock,false,false);
+		}
+		else
+		{
+			pXmlWrite->WriteNodeBegin(wsNameBlock,true);
+			pXmlWrite->WriteNodeEnd(L"",true,true);
+		}
+/*		pXmlWrite->WriteNodeBegin(wsNameBlock,false);
 		if(pValueBlock != nullptr)
 			pValueBlock->ConversionToOOXML(pXmlWrite);
-		pXmlWrite->WriteNodeEnd(wsNameBlock,false,false);
+		pXmlWrite->WriteNodeEnd(wsNameBlock,false,false)*/;
 	}
 	std::wstring CConversionSMtoOOXML::GetOOXML()
 	{
@@ -368,6 +392,23 @@ namespace StarMath {
 		pXmlWrite->WriteNodeEnd(L"w",true,false);
 		pXmlWrite->WriteNodeEnd(L"m:t",false,false);
 		pXmlWrite->WriteNodeEnd(L"m:r",false,false);
+	}
+	void CConversionSMtoOOXML::WriteLimUpOrLowNode(XmlUtils::CXmlWriter *pXmlWrite,const std::wstring& wsNameNode,CElement* pValue, const TypeElement& enType,CAttribute* pAttribute,const std::wstring& wsName)
+	{
+		pXmlWrite->WriteNodeBegin(wsNameNode,false);
+		pXmlWrite->WriteNodeBegin(wsNameNode+L"Pr",false);
+		CConversionSMtoOOXML::WriteCtrlPrNode(pXmlWrite,nullptr);
+		pXmlWrite->WriteNodeEnd(wsNameNode+L"Pr",false,false);
+		pXmlWrite->WriteNodeBegin(L"m:e",false);
+		CConversionSMtoOOXML::WriteRPrFName(enType,pXmlWrite,pAttribute,wsName);
+		pXmlWrite->WriteNodeEnd(L"m:e",false,false);
+		WriteNodeConversion(L"m:lim",pValue,pXmlWrite);
+		pXmlWrite->WriteNodeEnd(wsNameNode,false,false);
+	}
+	void CConversionSMtoOOXML::ElementConversion(XmlUtils::CXmlWriter *pXmlWrite, CElement *pElement)
+	{
+		if(pElement!= nullptr)
+			pElement->ConversionToOOXML(pXmlWrite);
 	}
 }
 

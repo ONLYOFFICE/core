@@ -46,7 +46,6 @@ enum class TypeElement{
 	BracketWithIndex,
 	Grade,
 	Mark,
-	//BracketEnd,
 	UnarSign,
 	Attribute,
 	SpecialSymbol,
@@ -306,6 +305,7 @@ enum class TypeElement{
 	dotsup,
 	dotsdown,
 	dotslow,
+	newline,
 	//function
 	abs,
 	fact,

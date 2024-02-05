@@ -47,7 +47,7 @@ namespace StarMath
 	struct TBaseAttribute
 	{
 		int base_font_size = 12;
-		std::wstring base_font_name;
+		std::wstring base_font_name = L"Arial";
 		int base_alignment = 1;
 		bool base_font_bold = false;
 		bool base_font_italic = false;
@@ -66,6 +66,7 @@ namespace StarMath
 		bool GetStrike();
 		unsigned int GetSize();
 		std::wstring GetColor();
+		const std::wstring& GetFontName();
 		bool EmptyColor();
 		void ParseFontAttribute(const TypeElement& enTypeFont,CStarMathReader* pReader);
 		void ParseColorAttribute(const std::wstring& wsToken,CStarMathReader* pReader);
@@ -77,6 +78,7 @@ namespace StarMath
 		void SetColor(const TypeElement& enColor);
 		void SetColor(const std::wstring& wsColor);
 		void SetFont(const TypeElement& enFont);
+		void SetFontName(const std::wstring& wsNameFont);
 	private:
 		std::wstring m_wsColor;
 		bool m_bBold;
@@ -111,6 +113,7 @@ namespace StarMath
 		std::wstring GetElement();
 		void FindingTheEndOfParentheses();
 		void IteratorNullification();
+		void ReadingTheNextToken();
 	private:
 		bool CheckTokenForGetElement(const wchar_t& cToken);
 		bool CheckIsalhpaForGetElement(const wchar_t& cToken,const wchar_t& cLastToken);

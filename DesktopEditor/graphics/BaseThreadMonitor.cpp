@@ -48,6 +48,12 @@ namespace NSThreads
 		m_oCS.DeleteCriticalSection();
 	}
 
+	CBaseThreadMonitor& CBaseThreadMonitor::Get()
+	{
+		static CBaseThreadMonitor instance;
+		return instance;
+	}
+
 	bool CBaseThreadMonitor::Init(void* receiver)
 	{
 		CTemporaryCS oCS(&m_oCS);
@@ -55,15 +61,21 @@ namespace NSThreads
 		if (m_bIsInit)
 			return false;
 
+		m_bIsInit = true;
 		m_pReceiver = receiver;
+		return true;
 	}
 
 	bool CBaseThreadMonitor::Destroy()
 	{
 		CTemporaryCS oCS(&m_oCS);
 
+		if (!m_bIsInit)
+			return false;
+
 		m_bIsInit = false;
 		m_pReceiver = NULL;
+		return true;
 	}
 
 	bool CBaseThreadMonitor::IsInit()
@@ -83,6 +95,28 @@ namespace NSThreads
 
 	CBaseThread* CBaseThreadMonitor::GetBaseThread(const ASC_THREAD_ID& nThreadId)
 	{
+		// лист - потому что будет всегда мало записей - и то будет быстрее мапа. двигаем всегда текущий на первое место
+
+		if (m_listThreads.size() == 0)
+			return NULL;
+
+		std::list<CBaseThreadInfo>::iterator i = m_listThreads.begin();
+
+		if (i->ID == nThreadId)
+			return i->Instance;
+
+		i++;
+		while (i != m_listThreads.end())
+		{
+			if (i->ID == nThreadId)
+			{
+				m_listThreads.erase(i);
+				m_listThreads.insert(m_listThreads.begin(), *i);
+				return i->Instance;
+			}
+			i++;
+		}
+
 		return NULL;
 	}
 
@@ -94,11 +128,17 @@ namespace NSThreads
 
 	void CBaseThreadMonitor::Register(CBaseThread* pInstance)
 	{
+		CTemporaryCS oCS(&m_oCS);
+		if (!m_bIsInit)
+			return;
 		m_listThreads.push_back({NSThreads::GetCurrentThreadId(), pInstance});
 	}
 
 	void CBaseThreadMonitor::Unregister(CBaseThread* pInstance)
 	{
+		CTemporaryCS oCS(&m_oCS);
+		if (!m_bIsInit)
+			return;
 		for (std::list<CBaseThreadInfo>::iterator i = m_listThreads.begin(); i != m_listThreads.end(); i++)
 		{
 			if (i->Instance == pInstance)

@@ -35,7 +35,7 @@
 #include "BaseThread.h"
 #include "TemporaryCS.h"
 #include <functional>
-#include <list.h>
+#include <list>
 
 namespace NSThreads
 {
@@ -80,6 +80,8 @@ namespace NSThreads
 	private:
 		void Register(CBaseThread* pInstance);
 		void Unregister(CBaseThread* pInstance);
+
+		friend class CBaseThread;
 	};
 }
 

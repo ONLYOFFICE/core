@@ -196,7 +196,7 @@ void text::docx_convert(oox::docx_conversion_context & Context)
 
 void text::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    Context.get_text_context().add_text(text_);
+    Context.get_text_context()->add_text(text_);
 }
 void text::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -255,7 +255,7 @@ void s::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     std::wstringstream val;
     this->text_to_stream(val);
-    Context.get_text_context().add_text(val.str());
+    Context.get_text_context()->add_text(val.str());
 }
 void s::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -292,7 +292,7 @@ void tab::docx_convert(oox::docx_conversion_context & Context)
 
 void tab::xlsx_convert(oox::xlsx_conversion_context & Context) 
 {
-    Context.get_text_context().add_text(L"\t");
+    Context.get_text_context()->add_text(L"\t");
 }
 void tab::pptx_convert(oox::pptx_conversion_context & Context) 
 {
@@ -329,7 +329,7 @@ void line_break::docx_convert(oox::docx_conversion_context & Context)
 }
 void line_break::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    Context.get_text_context().add_text(L"\n");
+    Context.get_text_context()->add_text(L"\n");
 }
 void line_break::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -970,7 +970,7 @@ void title::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     std::wstringstream val;
     text_to_stream(val);
-    Context.get_text_context().add_text(val.str());
+    Context.get_text_context()->add_text(val.str());
 }
 void title::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -1008,7 +1008,7 @@ void subject::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     std::wstringstream val;
     this->text_to_stream(val);
-    Context.get_text_context().add_text(val.str());
+    Context.get_text_context()->add_text(val.str());
 }
 void subject::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -1043,7 +1043,7 @@ void chapter::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     std::wstringstream val;
     this->text_to_stream(val);
-    Context.get_text_context().add_text(val.str());
+    Context.get_text_context()->add_text(val.str());
 }
 void chapter::pptx_convert(oox::pptx_conversion_context & Context)
 {

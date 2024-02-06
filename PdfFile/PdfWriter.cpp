@@ -1759,15 +1759,19 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 	if (!pAnnot)
 		return S_FALSE;
-
-	pAnnot->SetPage(pPage);
-	pAnnot->SetAnnotFlag(oInfo.GetAnnotFlag());
-
 	double dX1, dY1, dX2, dY2;
-	double dPageHeight = pPage->GetHeight();
+	PdfWriter::CArrayObject* pPageBox = (PdfWriter::CArrayObject*)pPage->Get("CropBox");
+	if (!pPageBox)
+		pPageBox = (PdfWriter::CArrayObject*)pPage->Get("MediaBox");
+	PdfWriter::CObjectBase* pD = pPageBox->Get(3);
+	double dPageH = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
+	pD = pPageBox->Get(0);
+	double dPageX = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
 	oInfo.GetBounds(dX1, dY1, dX2, dY2);
-	PdfWriter::TRect oRect(dX1, dPageHeight - dY1, dX2, dPageHeight - dY2);
-	pAnnot->SetRect(oRect);
+	pAnnot->SetRect({dPageX + dX1, dPageH - dY1, dPageX + dX2, dPageH - dY2});
+
+	pAnnot->SetPage(pPage, pPage->GetWidth(), dPageH, dPageX);
+	pAnnot->SetAnnotFlag(oInfo.GetAnnotFlag());
 
 	int nFlags = oInfo.GetFlag();
 	if (nFlags & (1 << 0))
@@ -2076,11 +2080,21 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 					break;
 				ppA->SetDestination(pDest);
 
+				PdfWriter::CArrayObject* pPageBoxD = (PdfWriter::CArrayObject*)pPageD->Get("CropBox");
+				if (!pPageBoxD)
+					pPageBoxD = (PdfWriter::CArrayObject*)pPageD->Get("MediaBox");
+				if (!pPageBoxD)
+					pPageBoxD = pPageBox;
+				pD = pPageBoxD->Get(3);
+				double dPageDH = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
+				pD = pPageBoxD->Get(0);
+				double dPageDX = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
+
 				switch (pAction->nKind)
 				{
 				case 0:
 				{
-					pDest->SetXYZ(pAction->dD[0], dPageHeight - pAction->dD[1], pAction->dD[2]);
+					pDest->SetXYZ(pAction->dD[0] + dPageDX, dPageDH - pAction->dD[1], pAction->dD[2]);
 					break;
 				}
 				case 1:
@@ -2090,17 +2104,17 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				}
 				case 2:
 				{
-					pDest->SetFitH(dPageHeight - pAction->dD[1]);
+					pDest->SetFitH(dPageDH - pAction->dD[1]);
 					break;
 				}
 				case 3:
 				{
-					pDest->SetFitV(pAction->dD[0]);
+					pDest->SetFitV(pAction->dD[0] + dPageDX);
 					break;
 				}
 				case 4:
 				{
-					pDest->SetFitR(pAction->dD[0], dPageHeight - pAction->dD[1], pAction->dD[2], dPageHeight - pAction->dD[3]);
+					pDest->SetFitR(pAction->dD[0] + dPageDX, dPageDH - pAction->dD[1], pAction->dD[2] + dPageDX, dPageDH - pAction->dD[3]);
 					break;
 				}
 				case 5:
@@ -2110,12 +2124,12 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				}
 				case 6:
 				{
-					pDest->SetFitBH(dPageHeight - pAction->dD[1]);
+					pDest->SetFitBH(dPageDH - pAction->dD[1]);
 					break;
 				}
 				case 7:
 				{
-					pDest->SetFitBV(pAction->dD[0]);
+					pDest->SetFitBV(pAction->dD[0] + dPageDX);
 					break;
 				}
 				}

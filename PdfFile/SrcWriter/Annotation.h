@@ -121,7 +121,8 @@ namespace PdfWriter
 		CXref* m_pXref;
 		TRect  m_oRect;
 		double m_dPageWidth  = 0;
-		double m_dPageHeight = 0;
+		double m_dPageH = 0;
+		double m_dPageX = 0;
 		CDocument* m_pDocument;
 
 	public:
@@ -143,7 +144,7 @@ namespace PdfWriter
 		void SetBorder(BYTE nType, double dWidth, const std::vector<double>& arrDash);
 		void SetEmptyBorder();
 		void SetAnnotFlag(const int& nAnnotFlag);
-		void SetPage(CPage* pPage);
+		void SetPage(CPage* pPage, double dW = 0, double dH = 0, double dX = 0);
 		void SetBE(BYTE nType, const double& dBE);
 		void SetContents(const std::wstring& wsText);
 		void SetNM(const std::wstring& wsNM);

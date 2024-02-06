@@ -48,10 +48,6 @@ namespace StarMath {
 				oTempElement->ConversionToOOXML(m_pXmlWrite);
 		}
 		EndConversion();
-		NSFile::CFileBinary oFile;
-		oFile.CreateFileW(L"Test.txt");
-		oFile.WriteStringUTF8(m_pXmlWrite->GetXmlString());
-		oFile.CloseFile();
 	}
 	void CConversionSMtoOOXML::StandartProperties(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute)
 	{

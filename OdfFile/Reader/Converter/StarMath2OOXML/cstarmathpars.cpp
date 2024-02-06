@@ -415,11 +415,11 @@ namespace StarMath
 		{
 			pReader->GetToken();
 			if(pReader->GetString() == L"sans")
-				m_wsNameFont = L"Arial";
+				m_wsNameFont = L"Liberation Sans";
 			else if(pReader->GetString() == L"serif")
-				m_wsNameFont = L"Times New Roman";
+				m_wsNameFont = L"Liberation Serif";
 			else if(pReader->GetString() == L"fixed")
-				m_wsNameFont = L"Times New Roman";
+				m_wsNameFont = L"Liberation Mono";
 			else
 				m_wsNameFont = pReader->GetString();
 			break;

@@ -94,24 +94,8 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 	count = proc.repeated<Format>(0, 218); // Originally: proc.repeated<Format>(8, 218);
 	while(count > 0)
 	{
-		Format *fmt = dynamic_cast<Format *>(elements_.back().get());
-		if ((fmt) && (fmt->ifmt == 0xffff))
-		{
-			std::map<std::wstring, int>::iterator pFind = global_info->mapDefaultFormatCode.find(fmt->stFormat);
-			if (pFind != global_info->mapDefaultFormatCode.end())
-			{
-				fmt->ifmt_used = fmt->ifmt = pFind->second;
-			}
-			else
-			{
-				fmt->ifmt_used = fmt->ifmt = global_info->last_User_NumFmt++;
-			}
-		}
-		else
-		{
-			fmt->ifmt_used = global_info->RegisterNumFormat(fmt->ifmt, fmt->stFormat);
-		}
-		global_info->m_arNumFormats.insert(global_info->m_arNumFormats.begin(), elements_.back());
+		global_info->RegisterNumFormat(elements_.back());
+
 		elements_.pop_back();
 		count--;
 	}

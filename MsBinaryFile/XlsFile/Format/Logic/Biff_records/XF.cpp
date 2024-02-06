@@ -74,15 +74,9 @@ namespace XLS
 
 		fill.fls = GETBIT(flags2, 7) ? 1 : 0;
 //---------------------------------------------------------------------------------------------------	
-		
-		if (ifmt_index < global_info->m_arNumFormats.size() && ifmt_index != 0xff)
+		if (ifmt_index != 0xff)
 		{
-			Format* fmt = dynamic_cast<Format*>(global_info->m_arNumFormats[ifmt_index].get());
-			if (fmt)
-			{
-				format_code = fmt->stFormat;
-				ifmt = fmt->ifmt_used = global_info->RegisterNumFormat(fmt->ifmt, format_code); // return update
-			}
+			ifmt = global_info->RegisterNumFormat(ifmt_index, L""); // return update
 		}
 
 		if (font_index >= 0 && font_index < global_info->m_arFonts.size())
@@ -144,14 +138,9 @@ namespace XLS
 		border.dgRight = static_cast<unsigned char>(GETBITS(flags5, 24, 26));
 		border.icvRight = (0 != border.dgRight) ? static_cast<unsigned char>(GETBITS(flags5, 27, 31)) : 0;
 //---------------------------------------------------------------------------------------------------	
-		if (ifmt_index < global_info->m_arNumFormats.size() && ifmt_index != 0xff)
+		if (ifmt_index != 0xff)
 		{
-			Format* fmt = dynamic_cast<Format*>(global_info->m_arNumFormats[ifmt_index].get());
-			if (fmt)
-			{
-				format_code = fmt->stFormat;
-				ifmt = fmt->ifmt_used = global_info->RegisterNumFormat(fmt->ifmt, format_code); // return update
-			}
+			ifmt = global_info->RegisterNumFormat(ifmt_index, L"");
 		}
 
 		if (font_index >= 0 && font_index < global_info->m_arFonts.size())
@@ -186,6 +175,8 @@ namespace XLS
 
 		ixfParent = 0;
 		font_index = 0xffff;
+		
+		ifmt = 0xffff;
 	}
 	XF::~XF()
 	{
@@ -389,14 +380,9 @@ void XF::readFields(CFRecord& record)
 		case 2: trot = 90;		break;		// Text orientation: 90 deg counterclockwise.
 		case 3: trot = 270;		break;		// Text orientation: 90 deg clockwise.
 	}
-	if (ifmt_index < global_info->m_arNumFormats.size() && ifmt_index != 0xff)
+	if (ifmt_index != 0xff)
 	{
-		Format* fmt = dynamic_cast<Format*>(global_info->m_arNumFormats[ifmt_index].get());
-		if (fmt)
-		{
-			format_code = fmt->stFormat;
-			ifmt = fmt->ifmt_used = global_info->RegisterNumFormat(fmt->ifmt, format_code); // return update
-		}
+		ifmt = global_info->RegisterNumFormat(ifmt_index, L"");
 	}
 
 	if (font_index >= 0 && font_index < global_info->m_arFonts.size())

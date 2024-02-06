@@ -122,19 +122,19 @@ namespace NSNetwork
 					int nIndexLast = 9;
 					if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_proxy))
 					{
-						sProxy = NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_proxy);
+						sProxy = NSProcessEnv::GetStringValueA(NSProcessEnv::Converter::gc_proxy);
 						nargs[nIndexLast++] = "--proxy";
 						nargs[nIndexLast++] = sProxy.c_str();
 					}
 					if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_proxyUser))
 					{
-						sProxyIser = NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_proxyUser);
+						sProxyIser = NSProcessEnv::GetStringValueA(NSProcessEnv::Converter::gc_proxyUser);
 						nargs[nIndexLast++] = "--proxy-user";
 						nargs[nIndexLast++] = sProxyIser.c_str();
 					}
 					if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_proxyHeader))
 					{
-						sProxyHeader = NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_proxyHeader);
+						sProxyHeader = NSProcessEnv::GetStringValueA(NSProcessEnv::Converter::gc_proxyHeader);
 						nargs[nIndexLast++] = "--proxy-header";
 						nargs[nIndexLast++] = sProxyHeader.c_str();
 					}

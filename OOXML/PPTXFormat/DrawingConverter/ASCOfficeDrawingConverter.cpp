@@ -5756,7 +5756,13 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
 				oXmlWriter.WriteString(strMainProps);
 
 				bool bAddGraphicData = false;
-				if (oElem.is<PPTX::Logic::SpTree>())
+				if (oElem.is<PPTX::Logic::LockedCanvas>())
+				{
+					bAddGraphicData = true;
+					oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
+		<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/lockedCanvas\">");
+				}
+				else if (oElem.is<PPTX::Logic::SpTree>())
 				{
 					bAddGraphicData = true;
 					oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\

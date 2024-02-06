@@ -228,11 +228,12 @@ namespace PdfWriter
 	{
 		Add("F", nAnnotFlag);
 	}
-	void CAnnotation::SetPage(CPage* pPage)
+	void CAnnotation::SetPage(CPage* pPage, double dW, double dH, double dX)
 	{
 		Add("P", pPage);
-		m_dPageWidth  = pPage->GetWidth();
-		m_dPageHeight = pPage->GetHeight();
+		m_dPageWidth  = dW;
+		m_dPageH = dH;
+		m_dPageX = dX;
 	}
 	void CAnnotation::SetBE(BYTE nType, const double& dBE)
 	{
@@ -509,7 +510,7 @@ namespace PdfWriter
 			pArray->Add(pArrayI);
 
 			for (int i = 0; i < arrInk.size(); ++i)
-				pArrayI->Add(i % 2 == 0 ? arrInk[i] : (m_dPageHeight - arrInk[i]));
+				pArrayI->Add(i % 2 == 0 ? (arrInk[i] + m_dPageX) : (m_dPageH - arrInk[i]));
 		}
 	}
 	//----------------------------------------------------------------------------------------
@@ -581,10 +582,10 @@ namespace PdfWriter
 
 		Add("L", pArray);
 
-		pArray->Add(dL1);
-		pArray->Add(m_dPageHeight - dL2);
-		pArray->Add(dL3);
-		pArray->Add(m_dPageHeight - dL4);
+		pArray->Add(dL1 + m_dPageX);
+		pArray->Add(m_dPageH - dL2);
+		pArray->Add(dL3 + m_dPageX);
+		pArray->Add(m_dPageH - dL4);
 	}
 	void CLineAnnotation::SetCO(const double& dCO1, const double& dCO2)
 	{
@@ -663,7 +664,7 @@ namespace PdfWriter
 		Add("CL", pArray);
 
 		for (int i = 0; i < arrCL.size(); ++i)
-			pArray->Add(i % 2 == 0 ? arrCL[i] : (m_dPageHeight - arrCL[i]));
+			pArray->Add(i % 2 == 0 ? (arrCL[i] + m_dPageX) : (m_dPageH - arrCL[i]));
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextMarkupAnnotation
@@ -698,7 +699,7 @@ namespace PdfWriter
 		Add("QuadPoints", pArray);
 
 		for (int i = 0; i < arrQuadPoints.size(); ++i)
-			pArray->Add(i % 2 == 0 ? arrQuadPoints[i] : (m_dPageHeight - arrQuadPoints[i]));
+			pArray->Add(i % 2 == 0 ? (arrQuadPoints[i] + m_dPageX) : (m_dPageH - arrQuadPoints[i]));
 	}
 	//----------------------------------------------------------------------------------------
 	// CSquareCircleAnnotation
@@ -788,7 +789,7 @@ namespace PdfWriter
 		Add("Vertices", pArray);
 
 		for (int i = 0; i < arrVertices.size(); ++i)
-			pArray->Add(i % 2 == 0 ? arrVertices[i] : (m_dPageHeight - arrVertices[i]));
+			pArray->Add(i % 2 == 0 ? (arrVertices[i] + m_dPageX) : (m_dPageH - arrVertices[i]));
 	}
 	//----------------------------------------------------------------------------------------
 	// CCaretAnnotation

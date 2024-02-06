@@ -34,6 +34,9 @@
 #define VALUE2STR(x) VALUE_TO_STRING(x)
 #endif
 
+#define MAXCOLUMNSINTABLE 63
+#define MAXROWSINTABLE    32767
+
 std::wstring rStyle = L" a area b strong bdo bdi big br center cite dfn em i var code kbd samp tt del s font img ins u mark q rt sup small sub svg input basefont button label data object noscript output abbr time ruby progress hgroup meter span acronym ";
 
 //struct CTree
@@ -1144,8 +1147,10 @@ private:
 		std::vector<CTc> mTable;
 		int nDeath = m_oLightReader.GetDepth();
 		int i = 1; // Строка
-
-		while(m_oLightReader.ReadNextSiblingNode(nDeath))
+		
+		UINT unMaxColumns = 0;
+		
+		while(m_oLightReader.ReadNextSiblingNode(nDeath) && i < MAXROWSINTABLE)
 		{
 			// tr - строки в таблице
 			if(m_oLightReader.GetName() != L"tr")
@@ -1164,7 +1169,7 @@ private:
 				{
 					if(m_oLightReader.GetName() == L"colspan")
 						nColspan = stoi(m_oLightReader.GetText());
-					else if(m_oLightReader.GetName() == L"rowspan")
+					if(m_oLightReader.GetName() == L"rowspan")
 						nRowspan = stoi(m_oLightReader.GetText());
 				}
 				m_oLightReader.MoveToElement();
@@ -1224,6 +1229,8 @@ private:
 
 				if(nColspan != 1)
 				{
+					nColspan = std::min((MAXCOLUMNSINTABLE - j), nColspan);
+
 					oXml->WriteString(L"<w:gridSpan w:val=\"");
 					oXml->WriteString(std::to_wstring(nColspan));
 					oXml->WriteString(L"\"/>");
@@ -1236,6 +1243,7 @@ private:
 				oXml->WriteString(L"</w:tcBorders>");
 				if(nRowspan != 1)
 				{
+					nRowspan = std::min((MAXROWSINTABLE - i), nRowspan);
 					oXml->WriteString(L"<w:vMerge w:val=\"restart\"/>");
 					std::wstring sColspan = std::to_wstring(nColspan);
 					if(nRowspan == 0)
@@ -1294,7 +1302,16 @@ private:
 					it1 = std::find_if(mTable.begin(), mTable.end(), [i, j](const CTc& item){ return item.i == i && item.j == j; });
 					it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
 				}
-			} while(m_oLightReader.ReadNextSiblingNode(nTrDeath));
+			} while(m_oLightReader.ReadNextSiblingNode(nTrDeath) && j < MAXCOLUMNSINTABLE);
+
+			if (j > unMaxColumns)
+				unMaxColumns = j;
+			else
+			{
+				for (; j < unMaxColumns; ++j)
+					oXml->WriteString(L"<w:tc><w:tcPr><w:tcW w:w=\"0\" w:type=\"auto\"/><w:tcBorders><w:left w:val=\"none\" w:sz=\"4\" w:color=\"auto\" w:space=\"0\"/><w:top w:val=\"none\" w:sz=\"4\" w:color=\"auto\" w:space=\"0\"/><w:right w:val=\"none\" w:sz=\"4\" w:color=\"auto\" w:space=\"0\"/><w:bottom w:val=\"none\" w:color=\"auto\" w:sz=\"4\" w:space=\"0\"/></w:tcBorders><w:noWrap w:val=\"false\"/><w:textDirection w:val=\"lrTb\"/><w:hideMark/></w:tcPr><w:p></w:p></w:tc>");
+			}
+
 			oXml->WriteString(L"</w:tr>");
 			i++;
 		}

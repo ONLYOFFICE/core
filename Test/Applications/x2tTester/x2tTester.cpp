@@ -515,9 +515,6 @@ void Cx2tTester::Start()
 		}
 	}
 
-	if(files.size() < m_maxProc)
-		m_maxProc = files.size();
-
 	if (m_bExtract)
 	{
 		COfficeFileFormatChecker checker;
@@ -537,7 +534,7 @@ void Cx2tTester::Start()
 			if(NSDirectory::Exists(m_tempDirectory))
 				NSDirectory::DeleteDirectory(m_tempDirectory);
 
-			NSDirectory::CreateDirectories(m_tempDirectory);
+			NSDirectory::CreateDirectories(CorrectPathW(m_tempDirectory));
 
 			auto copy_inputDirectory = m_inputDirectory;
 			auto copy_outputDirectory = m_outputDirectory;
@@ -596,6 +593,9 @@ void Cx2tTester::Start()
 
 void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirectory, bool bTrough)
 {
+	if(files.size() < m_maxProc)
+		m_maxProc = files.size();
+
 	for(int i = 0; i < files.size(); i++)
 	{
 		const std::wstring& input_file = files[i];
@@ -643,8 +643,8 @@ void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirecto
 			continue;
 
 		// setup & clear output subfolder
-		while(!NSDirectory::Exists(output_files_directory))
-			NSDirectory::CreateDirectories(output_files_directory);
+		if (!NSDirectory::Exists(output_files_directory))
+			NSDirectory::CreateDirectories(CorrectPathW(output_files_directory));
 
 		std::wstring csvTxtEncodingS = m_defaultCsvTxtEndcoding;
 		std::wstring csvDelimiter = m_defaultCsvDelimiter;
@@ -694,6 +694,8 @@ void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirecto
 			NSThreads::Sleep(50);
 		} while(IsAllBusy());
 
+
+
 		m_coresCS.Enter();
 
 		// setup & start new coverter
@@ -728,6 +730,9 @@ void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirecto
 }
 void Cx2tTester::Extract(const std::vector<std::wstring>& files)
 {
+	if(files.size() < m_maxProc)
+		m_maxProc = files.size();
+
 	for (int i = 0; i < files.size(); i++)
 	{
 		const std::wstring& input_file = files[i];
@@ -1228,6 +1233,16 @@ DWORD CExtractor::ThreadProc()
 	{
 		const std::wstring& extract_ext = m_extractExts[i];
 		std::wstring output_folder = m_outputFilesDirectory + FILE_SEPARATOR_STR + extract_ext;
+
+		// output_CS start
+		m_internal->m_outputCS.Enter();
+
+		std::cout << "[" << m_currFile << "/" << m_totalFiles << "](" << i + 1 << "/" << m_extractExts.size() << ") ";
+		std::cout << "(" << m_internal->m_currentProc << " processes now) ";
+		std::cout << U_TO_UTF8(m_inputFile) << " extract " << U_TO_UTF8(extract_ext) << " ";
+
+		std::cout << std::endl;
+		m_internal->m_outputCS.Leave();
 
 		if (NSDirectory::Exists(output_folder))
 			NSDirectory::DeleteDirectory(output_folder);

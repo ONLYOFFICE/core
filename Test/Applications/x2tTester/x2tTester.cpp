@@ -1240,7 +1240,7 @@ DWORD CExtractor::ThreadProc()
 
 		std::cout << "[" << m_currFile << "/" << m_totalFiles << "](" << i + 1 << "/" << m_extractExts.size() << ") ";
 		std::cout << "(" << m_internal->m_currentProc << " processes now) ";
-		std::cout << U_TO_UTF8(m_inputFile) << " extract " << U_TO_UTF8(extract_ext) << " ";
+		std::cout << U_TO_UTF8(input_filename) << " extract " << U_TO_UTF8(extract_ext) << " ";
 
 		std::cout << std::endl;
 		m_internal->m_outputCS.Leave();

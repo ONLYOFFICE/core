@@ -465,6 +465,7 @@ void Cx2tTester::Start()
 	m_outputDirectory = CorrectPathW(m_outputDirectory);
 	m_errorsXmlDirectory = CorrectPathW(m_errorsXmlDirectory);
 	m_troughConversionDirectory = CorrectPathW(m_troughConversionDirectory);
+	m_tempDirectory = CorrectPathW(m_tempDirectory);
 
 	// setup & clear output folder
 	if(NSDirectory::Exists(m_outputDirectory))
@@ -534,7 +535,7 @@ void Cx2tTester::Start()
 			if(NSDirectory::Exists(m_tempDirectory))
 				NSDirectory::DeleteDirectory(m_tempDirectory);
 
-			NSDirectory::CreateDirectories(CorrectPathW(m_tempDirectory));
+			NSDirectory::CreateDirectories(m_tempDirectory);
 
 			auto copy_inputDirectory = m_inputDirectory;
 			auto copy_outputDirectory = m_outputDirectory;
@@ -644,7 +645,7 @@ void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirecto
 
 		// setup & clear output subfolder
 		if (!NSDirectory::Exists(output_files_directory))
-			NSDirectory::CreateDirectories(CorrectPathW(output_files_directory));
+			NSDirectory::CreateDirectories(output_files_directory);
 
 		std::wstring csvTxtEncodingS = m_defaultCsvTxtEndcoding;
 		std::wstring csvDelimiter = m_defaultCsvDelimiter;

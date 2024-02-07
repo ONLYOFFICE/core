@@ -202,7 +202,9 @@ namespace OOX
 		XLS::BaseObjectPtr CDxf::toBin()
 		{
 			auto ptr(new XLSB::DXF);
-			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::FRTDXF);
+			ptr1->m_BrtDXF = XLS::BaseObjectPtr{ptr};
+			XLS::BaseObjectPtr objectPtr(ptr1);
 			NSStringUtils::CStringBuilder writer;
 			toXML(writer);
 			XmlUtils::CXmlLiteReader oReader;
@@ -326,7 +328,9 @@ namespace OOX
 			ptr->m_BrtBeginDXFs = XLS::BaseObjectPtr{ptr1};
 			for(auto i:m_arrItems)
 			{
-				ptr->m_aruDXF.push_back(i->toBin());
+				auto udxf(new XLSB::uDXF);
+				udxf->m_BrtFRTDXF = i->toBin();
+				ptr->m_aruDXF.push_back(XLS::BaseObjectPtr{udxf});
 			}
 			ptr1->cdxfs = ptr->m_aruDXF.size();
 			return objectPtr;

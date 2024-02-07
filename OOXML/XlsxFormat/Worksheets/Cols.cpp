@@ -87,12 +87,20 @@ namespace OOX
 				XLS::BaseObjectPtr ptr(castedPtr);
 				if(m_oBestFit.IsInit())
 					castedPtr->fBestFit = m_oBestFit->ToBool();
+				else
+					castedPtr->fBestFit = false;
 				if(m_oCollapsed.IsInit())
 					castedPtr->fCollapsed = m_oCollapsed->ToBool();
+				else
+					castedPtr->fCollapsed = false;
 				if(m_oCustomWidth.IsInit())
 					castedPtr->fUserSet = m_oCustomWidth->ToBool();
+				else
+					castedPtr->fUserSet = false;
 				if(m_oHidden.IsInit())
 					castedPtr->fHidden = m_oHidden->ToBool();
+				else
+					castedPtr->fHidden = false;
 				if(m_oMax.IsInit())
 					castedPtr->colLast = m_oMax->m_eValue - 1;
 				if(m_oMin.IsInit())

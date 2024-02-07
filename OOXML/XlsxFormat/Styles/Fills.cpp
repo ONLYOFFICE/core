@@ -78,11 +78,9 @@ namespace OOX
 				else if(m_oFgColor.IsInit())
 				{
 					m_oFgColor->toXMLWithNS(writer, child_ns, L"fgColor", child_ns);
-					m_oFgColor->toXMLWithNS(writer, child_ns, L"bgColor", child_ns);
 				}
 				else if(m_oBgColor.IsInit())
 				{
-					m_oBgColor->toXMLWithNS(writer, child_ns, L"fgColor", child_ns);
 					m_oBgColor->toXMLWithNS(writer, child_ns, L"bgColor", child_ns);
 				}
 

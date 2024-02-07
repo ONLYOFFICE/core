@@ -30,13 +30,13 @@
  *
  */
 
-#if defined(__ANDROID__) && !defined (NOT_USE_PTHREAD_CANCEL)
+#if defined(__ANDROID__) && !defined(NOT_USE_PTHREAD_CANCEL)
 #include <pthread_setcanceltype.h>
 #endif
 
-#include "./BaseThread.h"
+#include "./BaseThreadMonitor.h"
 
-#if defined(_WIN32) || defined(_WIN64) ||defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN64) || defined(_WIN32_WCE)
 
 #include <winbase.h>
 
@@ -49,203 +49,230 @@
 
 namespace NSThreads
 {
-    class CThreadDescriptor
-    {
-    public:
-        CThreadDescriptor()
-        {
-        }
-        virtual ~CThreadDescriptor()
-        {
-        }
-    };
+	class CThreadDescriptor
+	{
+	public:
+		CThreadDescriptor()
+		{
+		}
+		virtual ~CThreadDescriptor()
+		{
+		}
+	};
 
-    ASC_THREAD_ID GetCurrentThreadId()
-    {
-#if defined(_WIN32) || defined (_WIN64)
-        return ::GetCurrentThreadId();
+	ASC_THREAD_ID GetCurrentThreadId()
+	{
+#if defined(_WIN32) || defined(_WIN64)
+		return ::GetCurrentThreadId();
 #else
-        return pthread_self();
+		return pthread_self();
 #endif
-    }
+	}
 
-    void Sleep(int nMilliseconds)
+	void Sleep(int nMilliseconds)
 	{
 #if defined(_WIN32) || defined(_WIN64) || defined(_WIN32_WCE)
 		::Sleep((DWORD)nMilliseconds);
 #else
 		struct timespec tim, tim2;
-        tim.tv_sec = nMilliseconds / 1000;
-        tim.tv_nsec = (nMilliseconds % 1000) * 1000000;
+		tim.tv_sec = nMilliseconds / 1000;
+		tim.tv_nsec = (nMilliseconds % 1000) * 1000000;
 
-		::nanosleep(&tim , &tim2);
+		::nanosleep(&tim, &tim2);
 #endif
 	}
 
 #if defined(_WIN32) || defined(_WIN64) || defined(_WIN32_WCE)
-    DWORD WINAPI CBaseThread::__ThreadProc(void* pv)
-    {
-        CBaseThread* pThis = (CBaseThread*)pv;
-        DWORD value = pThis->ThreadProc();
-        if (pThis->m_bIsNeedDestroy)
-            delete pThis;
-        return value;
-    }
+	DWORD WINAPI CBaseThread::__ThreadProc(void* pv)
+	{
+		CBaseThread* pThis = (CBaseThread*)pv;
 
-    class __native_thread : public CThreadDescriptor
-    {
-        friend class CBaseThread;
-    private:
-        HANDLE m_thread = nullptr;
+		CBaseThreadMonitor::Get().Register(pThis);
+		DWORD value = pThis->ThreadProc();
+		CBaseThreadMonitor::Get().Unregister(pThis);
 
-    public:
-        __native_thread() : CThreadDescriptor()
-        {
-        }
-        virtual ~__native_thread()
-        {
-            if (m_thread)
-            {
-                CloseHandle(m_thread);
-                m_thread = NULL;
-            }
-        }
-    };
+		if (pThis->m_bIsNeedDestroy)
+			delete pThis;
+		return value;
+	}
+
+	class __native_thread : public CThreadDescriptor
+	{
+		friend class CBaseThread;
+
+	private:
+		HANDLE m_thread = nullptr;
+
+	public:
+		__native_thread() : CThreadDescriptor()
+		{
+		}
+		virtual ~__native_thread()
+		{
+			if (m_thread)
+			{
+				CloseHandle(m_thread);
+				m_thread = NULL;
+			}
+		}
+	};
 #else
-    void* CBaseThread::__ThreadProc(void* pv)
-    {
+	void* CBaseThread::__ThreadProc(void* pv)
+	{
 #ifndef NOT_USE_PTHREAD_CANCEL
-        int old_thread_type;
-        pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &old_thread_type);
+		int old_thread_type;
+		pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &old_thread_type);
 #endif
 
-        CBaseThread* pThis = (CBaseThread*)pv;
-        pThis->ThreadProc();
+		CBaseThread* pThis = (CBaseThread*)pv;
 
-        if (pThis->m_bIsNeedDestroy)
-            delete pThis;
+		CBaseThreadMonitor::Get().Register(pThis);
+		DWORD value = pThis->ThreadProc();
+		CBaseThreadMonitor::Get().Unregister(pThis);
 
-        return NULL;
-    }
-    class __native_thread : public CThreadDescriptor
-    {
-        friend class CBaseThread;
-    private:
-        pthread_t m_thread;
+		if (pThis->m_bIsNeedDestroy)
+			delete pThis;
 
-    public:
-        __native_thread() : CThreadDescriptor()
-        {
-            m_thread = NULL;
-        }
-        virtual ~__native_thread()
-        {
-        }
-    };
+		return NULL;
+	}
+	class __native_thread : public CThreadDescriptor
+	{
+		friend class CBaseThread;
+
+	private:
+		pthread_t m_thread;
+
+	public:
+		__native_thread() : CThreadDescriptor()
+		{
+			m_thread = NULL;
+		}
+		virtual ~__native_thread()
+		{
+		}
+	};
 #endif
 
-    CBaseThread::CBaseThread()
-    {
-        m_hThread		= NULL;
-        m_bRunThread	= FALSE;
-        m_bSuspend		= FALSE;
+	CBaseThread::CBaseThread()
+	{
+		m_hThread = NULL;
+		m_bRunThread = FALSE;
+		m_bSuspend = FALSE;
 
-        m_lError			= 0;
-        m_lThreadPriority	= 0;
+		m_lError = 0;
+		m_lThreadPriority = 0;
 
-        m_bIsNeedDestroy = false;
-    }
-    CBaseThread::~CBaseThread()
-    {
-        Stop();
-    }
-    void CBaseThread::Start(int lPriority)
-    {
-        if (m_bRunThread)
-            return;
-        m_lError = 0;
-        m_bSuspend = FALSE;
+		m_bIsNeedDestroy = false;
+	}
+	CBaseThread::~CBaseThread()
+	{
+		Stop();
+	}
+	void CBaseThread::Start(int lPriority)
+	{
+		if (m_bRunThread)
+			return;
+		m_lError = 0;
+		m_bSuspend = FALSE;
 
-        m_hThread = new __native_thread();
+		m_hThread = new __native_thread();
 
-        m_bRunThread = TRUE;
+		m_bRunThread = TRUE;
 
-        m_bIsExit.store(false);
+		m_bIsExit.store(false);
 #if defined(_WIN32) || defined(_WIN64) || defined(_WIN32_WCE)
-        DWORD dwTemp;
-        ((__native_thread*)m_hThread)->m_thread = CreateThread(NULL, 0, &__ThreadProc, (void*)this, 0, &dwTemp);
-        SetThreadPriority(((__native_thread*)m_hThread)->m_thread, lPriority);
+		DWORD dwTemp;
+		((__native_thread*)m_hThread)->m_thread = CreateThread(NULL, 0, &__ThreadProc, (void*)this, 0, &dwTemp);
+		SetThreadPriority(((__native_thread*)m_hThread)->m_thread, lPriority);
 #else
-        pthread_create(&((__native_thread*)m_hThread)->m_thread, 0, &__ThreadProc, (void*)this);
+		pthread_create(&((__native_thread*)m_hThread)->m_thread, 0, &__ThreadProc, (void*)this);
 #endif
-        m_lThreadPriority = lPriority;
-    }
-    void CBaseThread::Suspend()
-    {
-        m_bSuspend = TRUE;
-    }
-    void CBaseThread::Resume()
-    {
-        m_bSuspend = FALSE;
-    }
-    void CBaseThread::Stop()
-    {
-        if (!m_bRunThread)
-            return;
+		m_lThreadPriority = lPriority;
+	}
+	void CBaseThread::Suspend()
+	{
+		m_bSuspend = TRUE;
+	}
+	void CBaseThread::Resume()
+	{
+		m_bSuspend = FALSE;
+	}
+	void CBaseThread::Stop()
+	{
+		if (!m_bRunThread)
+			return;
 
-        m_bIsExit.store(true);
-        m_bRunThread = FALSE;
+		m_bIsExit.store(true);
+		m_bRunThread = FALSE;
 
-        Join();
-        RELEASEOBJECT(m_hThread);
-    }
-    void CBaseThread::StopNoJoin()
-    {
-        m_bRunThread = FALSE;
-        m_bIsExit.store(true);
-        RELEASEOBJECT(m_hThread);
-    }
-    void CBaseThread::DestroyOnFinish()
-    {
-        m_bIsNeedDestroy = true;
-    }
+		Join();
+		RELEASEOBJECT(m_hThread);
+	}
+	void CBaseThread::StopNoJoin()
+	{
+		m_bRunThread = FALSE;
+		m_bIsExit.store(true);
+		RELEASEOBJECT(m_hThread);
+	}
+	void CBaseThread::DestroyOnFinish()
+	{
+		m_bIsNeedDestroy = true;
+	}
 
-    INT CBaseThread::IsSuspended() { return m_bSuspend; }
-    INT CBaseThread::IsRunned() { return m_bRunThread; }
-    int CBaseThread::GetError() { return m_lError; }
-    bool CBaseThread::isAborted() {return m_bIsExit && m_bIsExit.load();}
+	INT CBaseThread::IsSuspended()
+	{
+		return m_bSuspend;
+	}
+	INT CBaseThread::IsRunned()
+	{
+		return m_bRunThread;
+	}
+	int CBaseThread::GetError()
+	{
+		return m_lError;
+	}
+	bool CBaseThread::isAborted()
+	{
+		return m_bIsExit && m_bIsExit.load();
+	}
 
-    CThreadDescriptor* CBaseThread::GetDescriptor() { return m_hThread; }
-    int CBaseThread::GetPriority() { return m_lThreadPriority; }
+	CThreadDescriptor* CBaseThread::GetDescriptor()
+	{
+		return m_hThread;
+	}
+	int CBaseThread::GetPriority()
+	{
+		return m_lThreadPriority;
+	}
 
-    void CBaseThread::CheckSuspend()
-    {
-        while (m_bSuspend && m_bRunThread)
-            NSThreads::Sleep(10);
-    }
+	void CBaseThread::CheckSuspend()
+	{
+		while (m_bSuspend && m_bRunThread)
+			NSThreads::Sleep(10);
+	}
 
-    void CBaseThread::Join()
-    {
-        if (NULL == m_hThread)
-            return;
+	void CBaseThread::Join()
+	{
+		if (NULL == m_hThread)
+			return;
 
 #if defined(_WIN32) || defined(_WIN64) || defined(_WIN32_WCE)
-        WaitForSingleObject(((__native_thread*)m_hThread)->m_thread, INFINITE);
+		WaitForSingleObject(((__native_thread*)m_hThread)->m_thread, INFINITE);
 #else
-        pthread_join(((__native_thread*)m_hThread)->m_thread, 0);
+		pthread_join(((__native_thread*)m_hThread)->m_thread, 0);
 #endif
-    }
+	}
 
-    void CBaseThread::Cancel()
-    {
-        if (NULL == m_hThread)
-            return;
+	void CBaseThread::Cancel()
+	{
+		if (NULL == m_hThread)
+			return;
 
-         m_bIsExit.store(true);
+		m_bIsExit.store(true);
 
-         m_bRunThread = FALSE;
+		m_bRunThread = FALSE;
 
-         Join();
-         RELEASEOBJECT(m_hThread);
-    }
-}
+		Join();
+		RELEASEOBJECT(m_hThread);
+	}
+} // namespace NSThreads

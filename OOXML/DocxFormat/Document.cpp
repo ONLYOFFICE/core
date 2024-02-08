@@ -241,7 +241,7 @@ namespace OOX
 				current = docx->m_oGlossary.document;
 			}
 
-			if (std::wstring::npos != fileName.find(L"document") || !current)
+			if (/*std::wstring::npos != fileName.find(L"document")*/ fileName == L"document" || !current)
 			{
 				if (type == OOX::FileTypes::Document)
 				{

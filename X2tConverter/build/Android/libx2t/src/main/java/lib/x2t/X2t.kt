@@ -57,6 +57,9 @@ class X2t private constructor() {
         @JvmStatic
         external fun setIcuDataPath(icuDataPath: String?)
 
+        @JvmStatic
+        external fun getFileFormat(path: String): Int
+
         /*
          * Builder for converter
          * */

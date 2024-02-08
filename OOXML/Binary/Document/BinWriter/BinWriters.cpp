@@ -6418,7 +6418,7 @@ void BinaryDocumentTableWriter::WriteRunContent(std::vector<OOX::WritingElement*
 				OOX::Logic::CSym* oSym = static_cast<OOX::Logic::CSym*>(item);
 				wchar_t ch = 0x0FFF & oSym->m_oChar->GetValue();
 				std::wstring sText(&ch, 1);
-				WriteText(sText, c_oSerRunType::run);
+				WriteText(sText, c_oSerRunType::run);  // todooo определить что писать c_oSerRunType::run или c_oSerRunType::delText - 66333
 				break;
 			}
 		case OOX::et_w_delText:

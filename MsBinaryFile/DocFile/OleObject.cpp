@@ -356,7 +356,7 @@ void OleObject::processLinkInfoStream( VirtualStreamReader& reader )
 {
 	short cch = reader.ReadInt16();
 	unsigned char* str = reader.ReadBytes( cch, true );
-	FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &this->Link, str, cch, ENCODING_WINDOWS_1250 );
+	FormatUtils::GetWStringFromBytes( this->Link, str, cch, ENCODING_WINDOWS_1250 );
 	RELEASEARRAYOBJECTS( str );
     
 	//skip the terminating zero of the ANSI string

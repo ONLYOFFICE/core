@@ -107,7 +107,7 @@ namespace DocFileFormat
 
 		if (reader->nWordVersion > 0)
 		{
-			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(newObject->xszFtn), bytes, (int)( strEnd - strStart ), ENCODING_WINDOWS_1250 );
+			FormatUtils::GetWStringFromBytes(newObject->xszFtn, bytes, (int)( strEnd - strStart ), ENCODING_WINDOWS_1250 );
 		}
 		else
 		{
@@ -141,7 +141,7 @@ namespace DocFileFormat
 
 			if (reader->nWordVersion > 0)
 			{
-				FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(newObject->xszAlt), bytes, (int)( strEnd - strStart ), ENCODING_WINDOWS_1250);
+				FormatUtils::GetWStringFromBytes( newObject->xszAlt, bytes, (int)( strEnd - strStart ), ENCODING_WINDOWS_1250);
 			}
 			else
 			{

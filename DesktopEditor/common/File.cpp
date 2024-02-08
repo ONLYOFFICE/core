@@ -264,7 +264,7 @@ namespace NSFile
 				}
 
 				pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
-				lIndex += 5;
+                lIndex += 6;
 			}
 		}
 

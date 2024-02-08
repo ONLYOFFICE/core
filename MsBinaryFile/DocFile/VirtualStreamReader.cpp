@@ -194,7 +194,7 @@ std::wstring VirtualStreamReader::ReadXst()
 		int xstzSize = DocFileFormat::FormatUtils::BytesToUChar( cch, 0, cchSize ) * 1;
 		xstz = ReadBytes(xstzSize, true);
 
-		DocFileFormat::FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &wstrResult, xstz, xstzSize, ENCODING_WINDOWS_1250 );
+		DocFileFormat::FormatUtils::GetWStringFromBytes( wstrResult, xstz, xstzSize, ENCODING_WINDOWS_1250 );
 	}
 	else
 	{
@@ -272,7 +272,7 @@ std::wstring VirtualStreamReader::ReadLengthPrefixedAnsiString(unsigned int max_
 			//dont read the terminating zero
 			stringBytes = ReadBytes( cch, true );
 
-			DocFileFormat::FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &result, stringBytes, ( cch - 1 ), ENCODING_WINDOWS_1250);
+			DocFileFormat::FormatUtils::GetWStringFromBytes( result, stringBytes, ( cch - 1 ), ENCODING_WINDOWS_1250);
 
 		}
 	RELEASEARRAYOBJECTS( stringBytes );

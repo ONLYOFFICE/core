@@ -126,6 +126,7 @@ extern "C" {
                 jjniHashMap.put(env, "AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET", AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET);
                 jjniHashMap.put(env, "AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION", AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION);
                 jjniHashMap.put(env, "AVS_OFFICESTUDIO_FILE_CANVAS_PDF", AVS_OFFICESTUDIO_FILE_CANVAS_PDF);
+                jjniHashMap.put(env, "AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF", AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF);
 
                 jobject res = jjniHashMap.toJniObject(env);
                 jjniHashMap.destroy(env);
@@ -168,6 +169,10 @@ extern "C" {
         })
     }
 
+    JNI_FUNC(int, getFileFormat)(JNIEnv* env, jclass type, jstring jPath) {
+        auto path = JniBaseObjects::jstringToWString(env, jPath);
+        return GetOfficeFileFormat((wchar_t *) path.c_str());
+    }
 
 }
 

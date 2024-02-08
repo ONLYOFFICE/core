@@ -29,79 +29,59 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _BUILD_BASETHREAD_H_
-#define _BUILD_BASETHREAD_H_
+#ifndef _BUILD_BASETHREAD_MONITOR_H_
+#define _BUILD_BASETHREAD_MONITOR_H_
 
-#include "../common/Types.h"
-#include <atomic>
-
-#if defined(_WIN32) || defined(_WIN64) || defined(_WIN32_WCE)
-#include <windows.h>
-#else
-#include <pthread.h>
-#endif
-
-#if defined(_WIN32) || defined(_WIN64)
-typedef DWORD ASC_THREAD_ID;
-#else
-typedef pthread_t ASC_THREAD_ID;
-#endif
-
-#include "../../Common/kernel_config.h"
+#include "BaseThread.h"
+#include "TemporaryCS.h"
+#include <functional>
+#include <list>
 
 namespace NSThreads
 {
-	KERNEL_DECL ASC_THREAD_ID GetCurrentThreadId();
-
-	KERNEL_DECL void Sleep(int nMilliseconds);
-
-	class CThreadDescriptor;
-	class KERNEL_DECL CBaseThread
+	class CBaseThreadInfo
 	{
-	protected:
-		CThreadDescriptor* m_hThread;
-		INT m_bRunThread;
-		INT m_bSuspend;
+	public:
+		ASC_THREAD_ID ID;
+		CBaseThread*  Instance;
+	};
 
-		int m_lError;
-		int m_lThreadPriority;
+	class KERNEL_DECL CBaseThreadMonitor
+	{
+	private:
+		NSCriticalSection::CRITICAL_SECTION m_oCS;
 
-		bool m_bIsNeedDestroy;
-		std::atomic<bool> m_bIsExit{false};
+		bool m_bIsInit;
+
+		void* m_pReceiver;
+		std::function<void(void* initializer, CBaseThread*)> m_funcRelease;
+
+		std::list<CBaseThreadInfo> m_listThreads;
+
+	private:
+		CBaseThreadMonitor();
 
 	public:
-		CBaseThread();
-		virtual ~CBaseThread();
+		static CBaseThreadMonitor& Get();
+		~CBaseThreadMonitor();
 
 	public:
-		virtual void Start(int lPriority);
-		virtual void Suspend();
-		virtual void Resume();
-		virtual void Stop();
-		virtual void StopNoJoin();
-		virtual void DestroyOnFinish();
-		virtual void Cancel();
+		bool IsInit();
 
-		INT IsSuspended();
-		INT IsRunned();
-		bool isAborted();
-		int GetError();
+		bool Init(void* receiver);
+		bool Destroy();
 
-		CThreadDescriptor* GetDescriptor();
-		int GetPriority();
+		CBaseThread* GetBaseThread(const ASC_THREAD_ID& nThreadId);
+		void SetReleaseHandler(std::function<void(void* initializer, CBaseThread*)> func);
 
-		virtual void CheckSuspend();
+		NSCriticalSection::CRITICAL_SECTION* GetCS();
 
-	protected:
-		virtual void Join();
-		virtual DWORD ThreadProc() = 0;
+	private:
+		void Register(CBaseThread* pInstance);
+		void Unregister(CBaseThread* pInstance);
 
-#if defined(_WIN32) || defined(_WIN64) || defined(_WIN32_WCE)
-		static DWORD WINAPI __ThreadProc(void* pv);
-#else
-		static void* __ThreadProc(void* pv);
-#endif
+		friend class CBaseThread;
 	};
 }
 
-#endif // _BUILD_BASETHREAD_H_
+#endif // _BUILD_BASETHREAD_MONITOR_H_

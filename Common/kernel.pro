@@ -30,25 +30,27 @@ HEADERS += ./kernel_config.h
 
 # BLOCKER
 HEADERS += \
-    ./../DesktopEditor/graphics/TemporaryCS.h
+	./../DesktopEditor/graphics/TemporaryCS.h
 
 SOURCES += \
-    ./../DesktopEditor/graphics/TemporaryCS.cpp
+	./../DesktopEditor/graphics/TemporaryCS.cpp
 
 # THREAD
 core_android:DEFINES += NOT_USE_PTHREAD_CANCEL USE_FILE32API
 HEADERS += \
-    ./../DesktopEditor/graphics/BaseThread.h
+	./../DesktopEditor/graphics/BaseThread.h \
+	./../DesktopEditor/graphics/BaseThreadMonitor.h
 
 SOURCES += \
-    ./../DesktopEditor/graphics/BaseThread.cpp
+	./../DesktopEditor/graphics/BaseThread.cpp \
+	./../DesktopEditor/graphics/BaseThreadMonitor.cpp
 
 # TIMER
 HEADERS += \
-    ./../DesktopEditor/graphics/Timer.h
+	./../DesktopEditor/graphics/Timer.h
 
 SOURCES += \
-    ./../DesktopEditor/graphics/Timer.cpp
+	./../DesktopEditor/graphics/Timer.cpp
 
 # PATH
 HEADERS += ./../DesktopEditor/common/Path.h
@@ -92,11 +94,11 @@ HEADERS += ./../DesktopEditor/common/ProcessEnv.h
 SOURCES += ./../DesktopEditor/common/ProcessEnv.cpp
 
 core_windows {
-    LIBS += -lRpcrt4
-    LIBS += -lShell32
+	LIBS += -lRpcrt4
+	LIBS += -lShell32
 }
 
 core_ios {
-    OBJECTIVE_SOURCES += ./../DesktopEditor/common/File_ios.mm
-    LIBS += -framework Foundation
+	OBJECTIVE_SOURCES += ./../DesktopEditor/common/File_ios.mm
+	LIBS += -framework Foundation
 }

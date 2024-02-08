@@ -29,40 +29,36 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
+#ifndef SERVER_SETTINGS_H
+#define SERVER_SETTINGS_H
 
-#include "OfficeArtRecord.h"
-
-namespace XLS
+// class for server version (disable local files and etc)
+class CServerInstance
 {
-	class CFRecord;
-}
-
-
-namespace ODRAW
-{
-
-class OfficeArtContainer : public OfficeArtRecord
-{
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtContainer)
-public:
-	OfficeArtContainer(const unsigned char recVer, const unsigned short recType, const OfficeArtClientAnchorType anchor_type);
-
-	static const XLS::ElementType	type = XLS::typeOfficeArtContainer;
-
-	virtual void loadFields(XLS::CFRecord& record);
-
-	static OfficeArtRecordPtr loadAnyArtRecord(XLS::CFRecord& record);
-
-	OfficeArtClientAnchorType anchor_type_;
-	std::vector<OfficeArtRecordPtr> child_records;
-
 private:
-	OfficeArtRecordPtr CreateOfficeArt(unsigned short type);
+	bool m_bIsEnabled;
+	CServerInstance()
+	{
+		m_bIsEnabled = false;
+	}
 
+public:
+	static CServerInstance& getInstance()
+	{
+		static CServerInstance server;
+		return server;
+	}
+
+	void Enable(const bool& enabled)
+	{
+		m_bIsEnabled = enabled;
+	}
+
+	bool IsEnable()
+	{
+		return m_bIsEnabled;
+	}
 };
 
-typedef boost::shared_ptr<OfficeArtContainer> OfficeArtContainerPtr;
 
-
-} // namespace ODRAW
+#endif // SERVER_SETTINGS_H

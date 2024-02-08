@@ -90,11 +90,12 @@ CFRecord::CFRecord(NSFile::CFileBinary &file, GlobalWorkbookInfoPtr global_info)
 :	rdPtr(0),
 	size_(0),
 	data_(NULL),
+	type_id_(rt_EOF),
 	global_info_(global_info)
 {
 	file_ptr = file.GetFilePosition();
 	
-	if (file.GetFilePosition() + 4 < file.GetFileSize())
+	if (file.GetFilePosition() + 4 <= file.GetFileSize())
 	{
 		unsigned short size_short;
 		DWORD size_read = 0;
@@ -133,7 +134,8 @@ CFRecord::CFRecord(NSBinPptxRW::CBinaryFileReader &reader, GlobalWorkbookInfoPtr
 :	rdPtr(0),
     size_(0),
     data_(NULL),
-    global_info_(global_info)
+	type_id_(rt_EOF),
+	global_info_(global_info)
 {
     file_ptr = reinterpret_cast<std::uintptr_t>(reader.GetPointer(0)) ;
     BYTE lenght = 0;

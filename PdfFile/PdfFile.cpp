@@ -64,7 +64,7 @@
 	((PdfWriter::CArrayObject*)pObj)->Add(oVal);\
 }
 
-void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, const std::string& sKey)
+void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, const std::string& sKey, bool bUnicode = false)
 {
 	Object oTemp;
 	switch (obj->getType())
@@ -101,7 +101,7 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, 
 		{
 			TextString* s = new TextString(obj->getString());
 			std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-			AddToObject(new PdfWriter::CStringObject(sValue.c_str()))
+			AddToObject(new PdfWriter::CStringObject(sValue.c_str(), bUnicode))
 			delete s;
 		}
 		break;
@@ -400,48 +400,6 @@ void CPdfFile::RotatePage(int nRotate)
 	m_pInternal->pWriter->PageRotate(nRotate);
 }
 #ifndef BUILDING_WASM_MODULE
-PdfWriter::CDictObject* GetAcroForm(Object* oAcroForm)
-{
-	if (!oAcroForm || !oAcroForm->isDict())
-		return NULL;
-
-	PdfWriter::CDictObject* pAcroForm = new PdfWriter::CDictObject();
-
-	for (int nIndex = 0; nIndex < oAcroForm->dictGetLength(); ++nIndex)
-	{
-		Object oTemp2;
-		char* chKey = oAcroForm->dictGetKey(nIndex);
-		if (strcmp("DR", chKey) == 0)
-		{
-			oAcroForm->dictGetVal(nIndex, &oTemp2);
-			/*
-			if (!oTemp2.isDict())
-			{
-				oTemp2.free();
-				continue;
-			}
-
-			PdfWriter::CResourcesDict* pDR = new PdfWriter::CResourcesDict(NULL, true, false);
-			pAcroForm->Add(chKey, pDR);
-			for (int nIndex = 0; nIndex < oTemp2.dictGetLength(); ++nIndex)
-			{
-
-			}
-			oTemp2.free();
-			continue;
-			*/
-		}
-		else
-			oAcroForm->dictGetValNF(nIndex, &oTemp2);
-		DictToCDictObject(&oTemp2, pAcroForm, false, chKey);
-		oTemp2.free();
-	}
-
-	if (!pAcroForm->Get("Fields"))
-		pAcroForm->Add("Fields", new PdfWriter::CArrayObject());
-
-	return pAcroForm;
-}
 bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 {
 	if (wsDstFile.empty())
@@ -522,25 +480,71 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 		return false;
 	}
 	pXref->Add(pCatalog, catRef.gen);
+	PdfWriter::CResourcesDict* pDR = NULL;
+	PdfWriter::CXref* pDRXref = NULL;
 	for (int nIndex = 0; nIndex < catDict.dictGetLength(); ++nIndex)
 	{
-		Object oTemp;
+		Object oAcroForm;
 		char* chKey = catDict.dictGetKey(nIndex);
 		if (strcmp("AcroForm", chKey) == 0)
 		{
-			catDict.dictGetVal(nIndex, &oTemp);
-			PdfWriter::CDictObject* pAcroForm = GetAcroForm(&oTemp);
-			oTemp.free();
-			if (pAcroForm)
+			catDict.dictGetVal(nIndex, &oAcroForm);
+			PdfWriter::CDictObject* pAcroForm = new PdfWriter::CDictObject();
+
+			for (int nIndex = 0; nIndex < oAcroForm.dictGetLength(); ++nIndex)
 			{
-				pCatalog->Add(chKey, pAcroForm);
+				Object oTemp2;
+				char* chKey = oAcroForm.dictGetKey(nIndex);
+				if (strcmp("DR", chKey) == 0)
+				{
+					oAcroForm.dictGetVal(nIndex, &oTemp2);
+					if (!oTemp2.isDict())
+					{
+						oTemp2.free();
+						continue;
+					}
+
+					Object oDR;
+					oAcroForm.dictGetValNF(nIndex, &oDR);
+					int nDRxrefNum = oDR.isRef() ? oDR.getRefNum() : xref->getNumObjects();
+					int nDRxrefGen = oDR.isRef() ? oDR.getRefGen() : 0;
+					oDR.free();
+					pDRXref = new PdfWriter::CXref(pDoc, nDRxrefNum);
+
+					pDR = new PdfWriter::CResourcesDict(NULL, true, false);
+					pDRXref->Add(pDR, nDRxrefGen);
+
+					pAcroForm->Add(chKey, pDR);
+					for (int nIndex2 = 0; nIndex2 < oTemp2.dictGetLength(); ++nIndex2)
+					{
+						Object oTemp;
+						char* chKey = oTemp2.dictGetKey(nIndex2);
+						oTemp2.dictGetVal(nIndex2, &oTemp);
+						DictToCDictObject(&oTemp, pDR, false, chKey);
+						oTemp.free();
+					}
+					oTemp2.free();
+
+					pDR->Fix();
+					continue;
+				}
+				else
+					oAcroForm.dictGetValNF(nIndex, &oTemp2);
+				DictToCDictObject(&oTemp2, pAcroForm, false, chKey);
+				oTemp2.free();
 			}
+
+			if (!pAcroForm->Get("Fields"))
+				pAcroForm->Add("Fields", new PdfWriter::CArrayObject());
+
+			oAcroForm.free();
+			pCatalog->Add(chKey, pAcroForm);
 			continue;
 		}
 		else
-			catDict.dictGetValNF(nIndex, &oTemp);
-		DictToCDictObject(&oTemp, pCatalog, false, chKey);
-		oTemp.free();
+			catDict.dictGetValNF(nIndex, &oAcroForm);
+		DictToCDictObject(&oAcroForm, pCatalog, false, chKey);
+		oAcroForm.free();
 	}
 	catDict.free();
 
@@ -589,7 +593,7 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 			// Нужно получить словарь Encrypt БЕЗ дешифровки, поэтому времено отключаем encrypted в xref
 			xref->offEncrypted();
 
-			Object encrypt;
+			Object encrypt, ID, ID1;
 			if (pTrailerDict->dictLookup("Encrypt", &encrypt) && encrypt.isDict())
 			{
 				for (int nIndex = 0; nIndex < encrypt.dictGetLength(); ++nIndex)
@@ -600,26 +604,43 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 					DictToCDictObject(&oTemp, pEncryptDict, true, chKey);
 					oTemp.free();
 				}
-
-				pEncryptDict->SetRef(0, 0);
-				pEncryptDict->Fix();
 			}
+
+			if (!pEncryptDict->Get("Length"))
+				pEncryptDict->Add("Length", 40);
+
 			encrypt.free();
+
+			if (pTrailerDict->dictLookup("ID", &ID) && ID.isArray() && ID.arrayGet(0, &ID1) && ID1.isString())
+				DictToCDictObject(&ID1, pEncryptDict, true, "ID");
+			ID.free(); ID1.free();
 
 			xref->onEncrypted();
 
+			pEncryptDict->SetRef(0, 0);
+			pEncryptDict->Fix();
+
 			pEncryptDict->SetPasswords(m_pInternal->wsPassword, m_pInternal->wsPassword);
-			pEncryptDict->UpdateKey(nCryptAlgorithm);
+			if (!pEncryptDict->UpdateKey(nCryptAlgorithm))
+			{
+				pagesRefObj.free();
+				RELEASEOBJECT(pXref);
+				RELEASEOBJECT(pDRXref);
+				return false;
+			}
 		}
 	}
 
 	// Применение редактирования для writer
-	bool bRes = pDoc->EditPdf(wsDstFile, xref->getLastXRefPos(), xref->getNumObjects(), pXref, pCatalog, pEncryptDict, nFormField);
+	bool bRes = pDoc->EditPdf(wsDstFile, xref->getLastXRefPos(), xref->getNumObjects() + 1, pXref, pCatalog, pEncryptDict, nFormField);
 	if (bRes)
 	{
 		// Воспроизведение дерева страниц во writer
 		m_pInternal->GetPageTree(xref, &pagesRefObj);
 		m_pInternal->bEdit = true;
+
+		if (pDR && pDRXref)
+			bRes = pDoc->EditResources(pDRXref, pDR);
 	}
 	pagesRefObj.free();
 	return bRes;

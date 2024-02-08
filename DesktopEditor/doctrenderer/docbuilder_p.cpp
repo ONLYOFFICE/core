@@ -30,6 +30,7 @@
  *
  */
 #include "docbuilder_p.h"
+#include "server.h"
 
 std::wstring NSDoctRenderer::CDocBuilder_Private::m_sExternalDirectory = L"";
 
@@ -1521,6 +1522,8 @@ namespace NSDoctRenderer
 		{
 			m_pInternal->m_bIsServerSafeVersion = true;
 			m_pInternal->m_sFolderForSaveOnlyUseNames = std::wstring(value);
+
+			CServerInstance::getInstance().Enable(true);
 		}
 		else if (sParam == "--all-fonts-path")
 		{

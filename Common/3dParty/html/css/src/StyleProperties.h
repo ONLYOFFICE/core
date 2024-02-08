@@ -144,6 +144,9 @@ namespace NSCSS
 		bool operator==(const double& oValue) const;
 		bool operator==(const CDigit& oDigit) const;
 
+		bool operator!=(const double& oValue) const;
+		bool operator!=(const CDigit& oDigit) const;
+
 		CDigit operator+(const CDigit& oDigit) const;
 		CDigit operator-(const CDigit& oDigit) const;
 		CDigit operator*(const CDigit& oDigit) const;

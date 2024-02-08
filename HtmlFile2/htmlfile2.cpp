@@ -963,11 +963,11 @@ private:
 			readStream(oXml, sSelectors, oTSR);
 		}
 		// Векторная картинка
-//		else if(sName == L"svg" || (sName.length() > 3 && sName.compare(sName.length() - 3, 3, L"svg") == 0))
-//		{
-//			wrP(oXml, sSelectors, oTS);
-//			readSVG(oXml);
-//		}
+		else if(sName == L"svg" || (sName.length() > 3 && sName.compare(sName.length() - 3, 3, L"svg") == 0))
+		{
+			wrP(oXml, sSelectors, oTS);
+			readSVG(oXml);
+		}
 		else if(sName == L"input")
 			readInput(oXml, sSelectors, oTS);
 		// Игнорируются тэги выполняющие скрипт
@@ -1142,7 +1142,7 @@ private:
 		return true;
 	}
 
-	void readTr     (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, const std::wstring& sBorders)
+	void readTr     (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
 	{
 		std::vector<CTc> mTable;
 		int nDeath = m_oLightReader.GetDepth();
@@ -1168,9 +1168,9 @@ private:
 				while(m_oLightReader.MoveToNextAttribute())
 				{
 					if(m_oLightReader.GetName() == L"colspan")
-						nColspan = stoi(m_oLightReader.GetText());
-					if(m_oLightReader.GetName() == L"rowspan")
-						nRowspan = stoi(m_oLightReader.GetText());
+						nColspan = std::min((MAXCOLUMNSINTABLE - j), NSStringFinder::ToInt(m_oLightReader.GetText(), 1));
+					else if(m_oLightReader.GetName() == L"rowspan")
+						nRowspan = std::min((MAXROWSINTABLE - i), NSStringFinder::ToInt(m_oLightReader.GetText(), 1));
 				}
 				m_oLightReader.MoveToElement();
 
@@ -1180,7 +1180,7 @@ private:
 				while(it1 != mTable.end() || it2 != mTable.end())
 				{
 					oXml->WriteString(L"<w:tc><w:tcPr><w:tcBorders>");
-					oXml->WriteString(!sBorders.empty() ? sBorders : L"<w:left w:val=\"none\" w:color=\"000000\"/><w:top w:val=\"none\" w:color=\"000000\"/><w:right w:val=\"none\" w:color=\"000000\"/><w:bottom w:val=\"none\" w:color=\"000000\"/>");
+//					oXml->WriteString(!sBorders.empty() ? sBorders : L"<w:left w:val=\"none\" w:color=\"000000\"/><w:top w:val=\"none\" w:color=\"000000\"/><w:right w:val=\"none\" w:color=\"000000\"/><w:bottom w:val=\"none\" w:color=\"000000\"/>");
 					oXml->WriteString(L"</w:tcBorders><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
 					std::wstring sCol = (it1 != mTable.end() ? it1->sGridSpan : it2->sGridSpan);
 					oXml->WriteString(sCol);
@@ -1229,21 +1229,17 @@ private:
 
 				if(nColspan != 1)
 				{
-					nColspan = std::min((MAXCOLUMNSINTABLE - j), nColspan);
-
 					oXml->WriteString(L"<w:gridSpan w:val=\"");
 					oXml->WriteString(std::to_wstring(nColspan));
 					oXml->WriteString(L"\"/>");
-
-					j += nColspan - 1;
 				}
 
-				oXml->WriteString(L"<w:tcBorders>");
-				oXml->WriteString(!sBorders.empty() ? sBorders : L"<w:left w:val=\"none\" w:color=\"000000\"/><w:top w:val=\"none\" w:color=\"000000\"/><w:right w:val=\"none\" w:color=\"000000\"/><w:bottom w:val=\"none\" w:color=\"000000\"/>");
-				oXml->WriteString(L"</w:tcBorders>");
+//				oXml->WriteString(L"<w:tcBorders>");
+//				oXml->WriteString(!sBorders.empty() ? sBorders : L"<w:left w:val=\"none\" w:color=\"000000\"/><w:top w:val=\"none\" w:color=\"000000\"/><w:right w:val=\"none\" w:color=\"000000\"/><w:bottom w:val=\"none\" w:color=\"000000\"/>");
+//				oXml->WriteString(L"</w:tcBorders>");
+
 				if(nRowspan != 1)
 				{
-					nRowspan = std::min((MAXROWSINTABLE - i), nRowspan);
 					oXml->WriteString(L"<w:vMerge w:val=\"restart\"/>");
 					std::wstring sColspan = std::to_wstring(nColspan);
 					if(nRowspan == 0)
@@ -1253,24 +1249,41 @@ private:
 							mTable.push_back({k, j, sColspan});
 				}
 
+				if(nColspan != 1)
+					j += nColspan - 1;
+
 				std::wstring wsVerticalAlign = oStyle.m_oDisplay.GetVAlign().ToWString();
 
-				if (!wsVerticalAlign.empty())
+				if (wsVerticalAlign.empty())
+					oXml->WriteString(L"<w:vAlign w:val=\"center\"/>");
+				else
 					oXml->WriteString(L"<w:vAlign w:val=\"" + wsVerticalAlign + L"\"/>");
 
 				oXml->WriteString(L"<w:noWrap w:val=\"false\"/><w:textDirection w:val=\"lrTb\"/><w:hideMark/></w:tcPr>");
 				m_bWasPStyle = false;
 
+				//Оставляем только всё что не относится к таблице
+				std::vector<NSCSS::CNode> arSelectors;
+				for (const NSCSS::CNode& oItem : sSelectors)
+				{
+					if (oItem.m_wsName == L"table" || oItem.m_wsName == L"tbody" || oItem.m_wsName == L"th"    || 
+					    oItem.m_wsName == L"td"    || oItem.m_wsName == L"tr"    || oItem.m_wsName == L"thead" || 
+					    oItem.m_wsName == L"tfoot")
+						continue;
+					arSelectors.push_back(oItem);
+				}
 				// Читаем th. Ячейка заголовка таблицы. Выравнивание посередине. Выделяется полужирным
 				if(m_oLightReader.GetName() == L"th")
 				{
 					CTextSettings oTSR(oTS);
 					oTSR.sRStyle += L"<w:b/>";
-					readStream(oXml, sSelectors, oTSR);
+					readStream(oXml, arSelectors, oTSR);
 				}
 				// Читаем td. Ячейка таблицы. Выравнивание вправо
 				else if(m_oLightReader.GetName() == L"td")
-					readStream(oXml, sSelectors, oTS);
+				{
+					readStream(oXml, arSelectors, oTS);
+				}
 				sSelectors.pop_back();
 				if (m_bInP)
 				{
@@ -1293,7 +1306,7 @@ private:
 				while(it1 != mTable.end() || it2 != mTable.end())
 				{
 					oXml->WriteString(L"<w:tc><w:tcPr><w:tcBorders>");
-					oXml->WriteString(!sBorders.empty() ? sBorders : L"<w:left w:val=\"none\" w:color=\"000000\"/><w:top w:val=\"none\" w:color=\"000000\"/><w:right w:val=\"none\" w:color=\"000000\"/><w:bottom w:val=\"none\" w:color=\"000000\"/>");
+//					oXml->WriteString(!sBorders.empty() ? sBorders : L"<w:left w:val=\"none\" w:color=\"000000\"/><w:top w:val=\"none\" w:color=\"000000\"/><w:right w:val=\"none\" w:color=\"000000\"/><w:bottom w:val=\"none\" w:color=\"000000\"/>");
 					oXml->WriteString(L"</w:tcBorders><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
 					std::wstring sCol = (it1 != mTable.end() ? it1->sGridSpan : it2->sGridSpan);
 					oXml->WriteString(sCol);
@@ -1340,8 +1353,8 @@ private:
 
 		if (0 < nWidth)
 			wsTable += L"<w:tblW w:w=\"" + std::to_wstring(nWidth) + L"\" w:type=\"pct\"/>";
-		else if (m_oStylesCalculator.GetSizeDeviceWindow().m_ushWidth != 0)
-			wsTable += L"<w:tblW w:w=\"" + std::to_wstring(m_oStylesCalculator.GetSizeDeviceWindow().m_ushWidth) + L"\" w:type=\"pct\"/>";
+//		else if (m_oStylesCalculator.GetSizeDeviceWindow().m_ushWidth != 0)
+//			wsTable += L"<w:tblW w:w=\"" + std::to_wstring(m_oStylesCalculator.GetSizeDeviceWindow().m_ushWidth) + L"\" w:type=\"pct\"/>";
 		else
 			wsTable += L"<w:tblW w:w=\"0\" w:type=\"auto\"/>";
 
@@ -1362,6 +1375,36 @@ private:
 			}
 
 			sSelectors.push_back(oLastNode);
+		}
+		
+		// borders
+		if (!oStyle.m_oBorder.Empty())
+		{
+			wsTable += L"<w:tblBorders>";
+
+			if (oStyle.m_oBorder.EqualSides())
+			{
+				const std::wstring wsBorderStyle = NSCSS::CDocumentStyle::CalculateBorderStyle(oStyle.m_oBorder.GetLeftBorder());
+				
+				wsTable += L"<w:top "     + wsBorderStyle + L"/>" +
+				           L"<w:left "    + wsBorderStyle + L"/>" +
+				           L"<w:bottom "  + wsBorderStyle + L"/>" +
+				           L"<w:right "   + wsBorderStyle + L"/>";
+			}
+			else
+			{
+				const std::wstring wsTopBorderStyle    = NSCSS::CDocumentStyle::CalculateBorderStyle(oStyle.m_oBorder.GetTopBorder());
+				const std::wstring wsLeftBorderStyle   = NSCSS::CDocumentStyle::CalculateBorderStyle(oStyle.m_oBorder.GetLeftBorder());
+				const std::wstring wsBottomBorderStyle = NSCSS::CDocumentStyle::CalculateBorderStyle(oStyle.m_oBorder.GetBottomBorder());
+				const std::wstring wsRightBorderStyle  = NSCSS::CDocumentStyle::CalculateBorderStyle(oStyle.m_oBorder.GetRightBorder());
+				
+				wsTable += L"<w:top "     + wsTopBorderStyle    + L"/>" +
+				           L"<w:left "    + wsLeftBorderStyle   + L"/>" +
+				           L"<w:bottom "  + wsBottomBorderStyle + L"/>" +
+				           L"<w:right "   + wsRightBorderStyle  + L"/>";
+			}
+
+			wsTable += L"</w:tblBorders>";
 		}
 
 		if (!oStyle.m_oMargin.Empty() && (0 < oStyle.m_oMargin.GetTop().ToInt() || 0 < oStyle.m_oMargin.GetBottom().ToInt()))
@@ -1388,40 +1431,6 @@ private:
 
 		wsTable += L"<w:tblLook w:val=\"04A0\" w:noVBand=\"1\" w:noHBand=\"0\" w:lastColumn=\"0\" w:firstColumn=\"1\" w:lastRow=\"0\" w:firstRow=\"1\"/>";
 		wsTable += L"</w:tblPr>";
-
-		// borders
-		std::wstring sBorders;
-		oStyle.m_oBorder.Unblock();
-		if (oStyle.m_oBorder.Empty())
-		{
-			sBorders = L"<w:left w:val=\"none\" w:sz=\"4\" w:color=\"auto\" w:space=\"0\"/><w:top w:val=\"none\" w:sz=\"4\" w:color=\"auto\" w:space=\"0\"/><w:right w:val=\"none\" w:sz=\"4\" w:color=\"auto\" w:space=\"0\"/><w:bottom w:val=\"none\" w:color=\"auto\" w:sz=\"4\" w:space=\"0\"/>";
-		}
-		else
-		{
-			if (oStyle.m_oBorder.EqualSides())
-			{
-				const std::wstring wsBorderStyle = NSCSS::CDocumentStyle::CalculateBorderStyle(oStyle.m_oBorder.GetLeftBorder());
-				
-				sBorders = L"<w:top "     + wsBorderStyle + L"/>" +
-				           L"<w:left "    + wsBorderStyle + L"/>" +
-				           L"<w:bottom "  + wsBorderStyle + L"/>" +
-				           L"<w:right "   + wsBorderStyle + L"/>" +
-				           L"<w:insideH " + wsBorderStyle + L"/>" +
-				           L"<w:insideV " + wsBorderStyle + L"/>";
-			}
-			else
-			{
-				const std::wstring wsTopBorderStyle    = NSCSS::CDocumentStyle::CalculateBorderStyle(oStyle.m_oBorder.GetTopBorder());
-				const std::wstring wsLeftBorderStyle   = NSCSS::CDocumentStyle::CalculateBorderStyle(oStyle.m_oBorder.GetLeftBorder());
-				const std::wstring wsBottomBorderStyle = NSCSS::CDocumentStyle::CalculateBorderStyle(oStyle.m_oBorder.GetBottomBorder());
-				const std::wstring wsRightBorderStyle  = NSCSS::CDocumentStyle::CalculateBorderStyle(oStyle.m_oBorder.GetRightBorder());
-				
-				sBorders = L"<w:top "     + wsTopBorderStyle    + L"/>" +
-				           L"<w:left "    + wsLeftBorderStyle   + L"/>" +
-				           L"<w:bottom "  + wsBottomBorderStyle + L"/>" +
-				           L"<w:right "   + wsRightBorderStyle  + L"/>";
-			}
-		}
 
 		oXml->WriteString(wsTable);
 
@@ -1489,11 +1498,11 @@ private:
 				m_bWasSpace = false;
 			}
 			if(sName == L"thead")
-				readTr(&oHead, sSelectors, oTS, sBorders);
+				readTr(&oHead, sSelectors, oTS);
 			else if(sName == L"tbody")
-				readTr(&oBody, sSelectors, oTS, sBorders);
+				readTr(&oBody, sSelectors, oTS);
 			else if(sName == L"tfoot")
-				readTr(&oFoot, sSelectors, oTS, sBorders);
+				readTr(&oFoot, sSelectors, oTS);
 			sSelectors.pop_back();
 		}
 

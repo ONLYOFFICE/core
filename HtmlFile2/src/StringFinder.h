@@ -154,6 +154,34 @@ namespace NSStringFinder
 	{
 		return !boost::algorithm::ifind_first(sString, sValue).empty();
 	}
+
+	int ToInt(const std::wstring& oValue, int nMinValue = 0)
+	{
+		boost::wregex oRegex(LR"((-?\.\d+|-?\d+(\.\d+)?))");
+
+		boost::match_results<typename std::wstring::const_iterator> oResult;
+
+		if (!boost::regex_search(oValue.begin(), oValue.end(), oResult, oRegex))
+			return nMinValue;
+
+		const int nValue = std::stoi(*oResult.begin());
+
+		return (nValue >= nMinValue) ? nValue : nMinValue;
+	}
+	
+	int ToDouble(const std::wstring& oValue, double dMinValue = 0.)
+	{
+		boost::wregex oRegex(LR"((-?\.\d+|-?\d+(\.\d+)?))");
+
+		boost::match_results<typename std::wstring::const_iterator> oResult;
+
+		if (!boost::regex_search(oValue.begin(), oValue.end(), oResult, oRegex))
+			return dMinValue;
+
+		const double dValue = std::stod(*oResult.begin());
+
+		return (dValue >= dMinValue) ? dValue : dMinValue;
+	}
 }
 
 #endif // STRINGFINDER_H

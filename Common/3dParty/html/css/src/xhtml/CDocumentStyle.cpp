@@ -424,7 +424,7 @@ namespace NSCSS
 	{
 		std::wstring wsColor = oBorder.GetColor().ToWString();
 		std::wstring wsStyle = oBorder.GetStyle().ToWString();
-		std::wstring wsWidth = oBorder.GetWidth().ToWString();
+		double dWidth = oBorder.GetWidth().ToDouble(Point) * 8; // Так как значение указано в восьмых долях точки
 
 		if (wsColor.empty())
 			wsColor = L"auto";
@@ -432,10 +432,10 @@ namespace NSCSS
 		if (wsStyle.empty())
 			wsStyle = L"single";
 
-		if (wsWidth.empty())
-			wsWidth = L"1";
+		if (1 > dWidth)
+			dWidth = 1;
 
-		return L"w:color=\"" + wsColor + L"\" w:space=\"0\" w:sz=\"" + wsWidth + L"\" w:val=\"" + wsStyle + L"\"";
+		return  L"w:val=\"" + wsStyle + L"\" w:sz=\"" + std::to_wstring(static_cast<int>(dWidth)) + + L"\" w:space=\"0\" w:color=\"" + wsColor + L"\"";
 	}
 
 	void CDocumentStyle::SetRStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement)

@@ -252,6 +252,16 @@ namespace NSCSS
 		return (std::abs(oDigit.m_oValue - m_oValue) <= DBL_EPSILON);
 	}
 
+	bool CDigit::operator!=(const double &oValue) const
+	{
+		return (std::abs(oValue - m_oValue) > DBL_EPSILON);
+	}
+
+	bool CDigit::operator!=(const CDigit &oDigit) const
+	{
+		return (std::abs(oDigit.m_oValue - m_oValue) > DBL_EPSILON);
+	}
+
 	CDigit CDigit::operator+(const CDigit &oDigit) const
 	{
 		CDigit oTemp;
@@ -1343,7 +1353,12 @@ namespace NSCSS
 				wsNewValue.replace(unFoundPos, oAbsValue.first.length(), oAbsValue.second);
 		}
 
-		return m_oWidth.SetValue(wsNewValue, unLevel, bHardMode);
+		const bool bResult = m_oWidth.SetValue(wsNewValue, unLevel, bHardMode);
+
+		if (m_oWidth != 1.)
+			m_oWidth += 1.;
+
+		return bResult;
 	}
 
 	bool CBorderSide::SetStyle(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -1434,34 +1449,50 @@ namespace NSCSS
 
 	bool CBorder::SetSides(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		return m_oLeft  .SetValue(wsValue, unLevel, bHardMode) ||
-		       m_oTop   .SetValue(wsValue, unLevel, bHardMode) ||
-		       m_oRight .SetValue(wsValue, unLevel, bHardMode) ||
-		       m_oBottom.SetValue(wsValue, unLevel, bHardMode);
+		bool bResult = false;
+
+		if (m_oLeft  .SetValue(wsValue, unLevel, bHardMode)) bResult = true;
+		if (m_oTop   .SetValue(wsValue, unLevel, bHardMode)) bResult = true;
+		if (m_oRight .SetValue(wsValue, unLevel, bHardMode)) bResult = true;
+		if (m_oBottom.SetValue(wsValue, unLevel, bHardMode)) bResult = true;
+
+		return bResult;
 	}
 
 	bool CBorder::SetWidth(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		return m_oLeft  .SetWidth(wsValue, unLevel, bHardMode) ||
-		       m_oTop   .SetWidth(wsValue, unLevel, bHardMode) ||
-		       m_oRight .SetWidth(wsValue, unLevel, bHardMode) ||
-		       m_oBottom.SetWidth(wsValue, unLevel, bHardMode);
+		bool bResult = false;
+		
+		if (m_oLeft  .SetWidth(wsValue, unLevel, bHardMode)) bResult = true;
+		if (m_oTop   .SetWidth(wsValue, unLevel, bHardMode)) bResult = true;
+		if (m_oRight .SetWidth(wsValue, unLevel, bHardMode)) bResult = true;
+		if (m_oBottom.SetWidth(wsValue, unLevel, bHardMode)) bResult = true;
+
+		return bResult;
 	}
 
 	bool CBorder::SetStyle(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		return m_oLeft  .SetStyle(wsValue, unLevel, bHardMode) ||
-		       m_oTop   .SetStyle(wsValue, unLevel, bHardMode) ||
-		       m_oRight .SetStyle(wsValue, unLevel, bHardMode) ||
-		       m_oBottom.SetStyle(wsValue, unLevel, bHardMode);
+		bool bResult = false;
+		
+		if (m_oLeft  .SetStyle(wsValue, unLevel, bHardMode)) bResult = true;
+		if (m_oTop   .SetStyle(wsValue, unLevel, bHardMode)) bResult = true;
+		if (m_oRight .SetStyle(wsValue, unLevel, bHardMode)) bResult = true;
+		if (m_oBottom.SetStyle(wsValue, unLevel, bHardMode)) bResult = true;
+
+		return bResult;
 	}
 
 	bool CBorder::SetColor(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		return m_oLeft  .SetColor(wsValue, unLevel, bHardMode) ||
-		       m_oTop   .SetColor(wsValue, unLevel, bHardMode) ||
-		       m_oRight .SetColor(wsValue, unLevel, bHardMode) ||
-		       m_oBottom.SetColor(wsValue, unLevel, bHardMode);
+		bool bResult = false;
+
+		if (m_oLeft  .SetColor(wsValue, unLevel, bHardMode)) bResult = true;
+		if (m_oTop   .SetColor(wsValue, unLevel, bHardMode)) bResult = true;
+		if (m_oRight .SetColor(wsValue, unLevel, bHardMode)) bResult = true;
+		if (m_oBottom.SetColor(wsValue, unLevel, bHardMode)) bResult = true;
+
+		return bResult;
 	}
 
 	bool CBorder::SetLeftSide(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)

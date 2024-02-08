@@ -321,32 +321,48 @@ private:
 };
 
 //------------------------------------------------------------------------
-// PdfReader::CMarkupAnnot
+// PdfReader::CAnnotMarkup
 //------------------------------------------------------------------------
 
-class CMarkupAnnot : public CAnnot
+class CAnnotMarkup : public CAnnot
 {
 protected:
-	CMarkupAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+	CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+	virtual ~CAnnotMarkup();
 
 	virtual void ToWASM(NSWasm::CData& oRes) override;
 
 private:
+	struct CFontData final
+	{
+		unsigned int unFontFlags; // 0 Bold, 1 Italic, 3 зачеркнутый, 4 подчеркнутый, 5 vertical-align
+		double dFontSise;
+		double dVerticalAlign;
+		double dColor[3];
+		std::string sFontFamily;
+		std::string sText;
+
+		CFontData() : unFontFlags(4), dFontSise(10), dVerticalAlign(0), dColor{0, 0, 0} {}
+		CFontData(const CFontData& oFont);
+	};
+	BYTE ReadFontData(const std::string& sData, CFontData* pFont);
+
 	BYTE m_nRT; // Тип аннотации-ответа
+	BYTE m_nTextAlign; // Выравнивание текста в RC
 	unsigned int m_unRefNumPopup; // Номер ссылки на всплывающую аннотацию
 	unsigned int m_unRefNumIRT; // Номер ссылки на аннотацию-ответ
 	double m_dCA; // Значение непрозрачности
 	std::string m_sT; // Текстовая метка, пользователь добавивший аннотацию
-	std::string m_sRC; // Форматированный текст для отображения во всплывающем окне
 	std::string m_sCreationDate; // Дата создания
 	std::string m_sSubj; // Краткое описание
+	std::vector<CFontData*> m_arrRC; // Форматированный текст
 };
 
 //------------------------------------------------------------------------
 // PdfReader::CAnnotText
 //------------------------------------------------------------------------
 
-class CAnnotText final : public CMarkupAnnot
+class CAnnotText final : public CAnnotMarkup
 {
 public:
 	CAnnotText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
@@ -362,7 +378,7 @@ private:
 // PdfReader::CAnnotInk
 //------------------------------------------------------------------------
 
-class CAnnotInk final : public CMarkupAnnot
+class CAnnotInk final : public CAnnotMarkup
 {
 public:
 	CAnnotInk(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
@@ -377,7 +393,7 @@ private:
 // PdfReader::CAnnotLine
 //------------------------------------------------------------------------
 
-class CAnnotLine final : public CMarkupAnnot
+class CAnnotLine final : public CAnnotMarkup
 {
 public:
 	CAnnotLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
@@ -401,7 +417,7 @@ private:
 // PdfReader::CAnnotTextMarkup
 //------------------------------------------------------------------------
 
-class CAnnotTextMarkup final : public CMarkupAnnot
+class CAnnotTextMarkup final : public CAnnotMarkup
 {
 public:
 	CAnnotTextMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
@@ -417,7 +433,7 @@ private:
 // PdfReader::CAnnotSquareCircle
 //------------------------------------------------------------------------
 
-class CAnnotSquareCircle final : public CMarkupAnnot
+class CAnnotSquareCircle final : public CAnnotMarkup
 {
 public:
 	CAnnotSquareCircle(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
@@ -434,7 +450,7 @@ private:
 // PdfReader::CAnnotPolygonPolyline
 //------------------------------------------------------------------------
 
-class CAnnotPolygonLine final : public CMarkupAnnot
+class CAnnotPolygonLine final : public CAnnotMarkup
 {
 public:
 	CAnnotPolygonLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
@@ -454,7 +470,7 @@ private:
 // PdfReader::CAnnotFreeText
 //------------------------------------------------------------------------
 
-class CAnnotFreeText final : public CMarkupAnnot
+class CAnnotFreeText final : public CAnnotMarkup
 {
 public:
 	CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
@@ -475,7 +491,7 @@ private:
 // PdfReader::CAnnotCaret
 //------------------------------------------------------------------------
 
-class CAnnotCaret final : public CMarkupAnnot
+class CAnnotCaret final : public CAnnotMarkup
 {
 public:
 	CAnnotCaret(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
@@ -491,7 +507,7 @@ private:
 // PdfReader::CAnnotFileAttachment
 //------------------------------------------------------------------------
 
-class CAnnotFileAttachment final : public CMarkupAnnot
+class CAnnotFileAttachment final : public CAnnotMarkup
 {
 public:
 	CAnnotFileAttachment(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);

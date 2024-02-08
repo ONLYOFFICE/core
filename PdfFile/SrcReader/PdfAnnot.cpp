@@ -43,6 +43,7 @@
 
 #include "../../DesktopEditor/common/Types.h"
 #include "../../DesktopEditor/common/StringExt.h"
+#include "../../DesktopEditor/xml/include/xmlutils.h"
 
 namespace PdfReader
 {
@@ -1250,7 +1251,7 @@ CAnnotPopup::CAnnotPopup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CA
 // Text
 //------------------------------------------------------------------------
 
-CAnnotText::CAnnotText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
+CAnnotText::CAnnotText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex)
 {
 	Object oAnnot, oObj;
 	XRef* pXref = pdfDoc->getXRef();
@@ -1316,7 +1317,7 @@ CAnnotText::CAnnotText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMar
 // Ink
 //------------------------------------------------------------------------
 
-CAnnotInk::CAnnotInk(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
+CAnnotInk::CAnnotInk(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex)
 {
 	Object oAnnot, oObj, oObj2;
 	XRef* pXref = pdfDoc->getXRef();
@@ -1352,7 +1353,7 @@ CAnnotInk::CAnnotInk(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarku
 // Line
 //------------------------------------------------------------------------
 
-CAnnotLine::CAnnotLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
+CAnnotLine::CAnnotLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex)
 {
 	Object oAnnot, oObj, oObj2;
 	XRef* pXref = pdfDoc->getXRef();
@@ -1460,7 +1461,7 @@ CAnnotLine::CAnnotLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMar
 // TextMarkup: Highlight, Underline, Squiggly, StrikeOut
 //------------------------------------------------------------------------
 
-CAnnotTextMarkup::CAnnotTextMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
+CAnnotTextMarkup::CAnnotTextMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex)
 {
 	Object oAnnot, oObj, oObj2;
 	XRef* pXref = pdfDoc->getXRef();
@@ -1500,7 +1501,7 @@ CAnnotTextMarkup::CAnnotTextMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageI
 // Square, Circle
 //------------------------------------------------------------------------
 
-CAnnotSquareCircle::CAnnotSquareCircle(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
+CAnnotSquareCircle::CAnnotSquareCircle(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex)
 {
 	Object oAnnot, oObj, oObj2;
 	XRef* pXref = pdfDoc->getXRef();
@@ -1547,7 +1548,7 @@ CAnnotSquareCircle::CAnnotSquareCircle(PDFDoc* pdfDoc, Object* oAnnotRef, int nP
 // Polygon, PolyLine
 //------------------------------------------------------------------------
 
-CAnnotPolygonLine::CAnnotPolygonLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
+CAnnotPolygonLine::CAnnotPolygonLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex)
 {
 	Object oAnnot, oObj, oObj2;
 	XRef* pXref = pdfDoc->getXRef();
@@ -1623,7 +1624,7 @@ CAnnotPolygonLine::CAnnotPolygonLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPag
 // FreeText
 //------------------------------------------------------------------------
 
-CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
+CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex)
 {
 	Object oAnnot, oObj, oObj2;
 	XRef* pXref = pdfDoc->getXRef();
@@ -1731,7 +1732,7 @@ CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex
 // Caret
 //------------------------------------------------------------------------
 
-CAnnotCaret::CAnnotCaret(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
+CAnnotCaret::CAnnotCaret(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex)
 {
 	Object oAnnot, oObj, oObj2;
 	XRef* pXref = pdfDoc->getXRef();
@@ -1767,7 +1768,7 @@ CAnnotCaret::CAnnotCaret(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CM
 // FileAttachment
 //------------------------------------------------------------------------
 
-CAnnotFileAttachment::CAnnotFileAttachment(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
+CAnnotFileAttachment::CAnnotFileAttachment(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex)
 {
 	m_pEF = NULL;
 
@@ -2093,7 +2094,7 @@ void CAnnots::getParents(XRef* xref, Object* oFieldRef)
 // Markup
 //------------------------------------------------------------------------
 
-CMarkupAnnot::CMarkupAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnot(pdfDoc, oAnnotRef, nPageIndex)
+CAnnotMarkup::CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnot(pdfDoc, oAnnotRef, nPageIndex)
 {
 	m_unFlags = 0;
 
@@ -2120,9 +2121,61 @@ CMarkupAnnot::CMarkupAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : 
 	oObj.free();
 
 	// 3 - Форматированный текст - RC
-	m_sRC = DictLookupString(&oAnnot, "RC", 3);
+	std::string sRC = DictLookupString(&oAnnot, "RC", 3);
 	// if (oAnnot.dictLookup("RC", &oObj)->isStream())
 	// TODO streamGetBlock
+	XmlUtils::CXmlLiteReader oLightReader;
+	if (!sRC.empty() && oLightReader.FromStringA(sRC) && oLightReader.ReadNextNode() && oLightReader.GetNameA() == "body")
+	{
+		CFontData oFontBase;
+		while (oLightReader.MoveToNextAttribute())
+		{
+			if (oLightReader.GetNameA() == "style")
+			{
+				m_nTextAlign = ReadFontData(oLightReader.GetTextA(), &oFontBase);
+				break;
+			}
+		}
+		oLightReader.MoveToElement();
+
+		int nDepthP = oLightReader.GetDepth();
+		while (oLightReader.ReadNextSiblingNode2(nDepthP))
+		{
+			if (oLightReader.GetNameA() != "p")
+				continue;
+
+			int nDepthSpan = oLightReader.GetDepth();
+			if (oLightReader.IsEmptyNode() || !oLightReader.ReadNextSiblingNode2(nDepthSpan))
+				continue;
+
+			do
+			{
+				if (oLightReader.GetNameA() != "span")
+					continue;
+
+				CFontData* pFont = new CFontData(oFontBase);
+				while (oLightReader.MoveToNextAttribute())
+				{
+					if (oLightReader.GetNameA() == "style")
+					{
+						BYTE nTextAlign = ReadFontData(oLightReader.GetTextA(), pFont);
+						if (nTextAlign != 3)
+							m_nTextAlign = nTextAlign;
+						break;
+					}
+				}
+				oLightReader.MoveToElement();
+
+				pFont->sText = oLightReader.GetText2A();
+				m_arrRC.push_back(pFont);
+			} while (oLightReader.ReadNextSiblingNode2(nDepthSpan));
+		}
+	}
+	oLightReader.Clear();
+	if (m_arrRC.empty())
+		m_unFlags &= ~(1 << 3);
+	else
+		m_unFlags |= (1 << 3);
 
 	// 4 - Дата создания - CreationDate
 	m_sCreationDate = DictLookupString(&oAnnot, "CreationDate", 4);
@@ -2149,6 +2202,110 @@ CMarkupAnnot::CMarkupAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : 
 	m_sSubj = DictLookupString(&oAnnot, "Subj", 7);
 
 	oAnnot.free();
+}
+CAnnotMarkup::~CAnnotMarkup()
+{
+	for (int i = 0; i < m_arrRC.size(); ++i)
+		RELEASEOBJECT(m_arrRC[i]);
+}
+BYTE CAnnotMarkup::ReadFontData(const std::string& sData, CFontData* pFont)
+{
+	BYTE nTextAlign = 0;
+	size_t nSemicolon = 0;
+	size_t nColon = sData.find(':');
+	while (nColon != std::string::npos && nColon > nSemicolon)
+	{
+		std::string sProperty = sData.substr(nSemicolon, nColon - nSemicolon);
+		nSemicolon = sData.find(';', nSemicolon);
+		nColon++;
+		std::string sValue = sData.substr(nColon, nSemicolon - nColon);
+		nSemicolon++;
+		nColon = sData.find(':', nColon);
+
+		if (sProperty == "font-size")
+			pFont->dFontSise = std::stod(sValue);
+		else if (sProperty == "text-align")
+		{
+			// 0 start / left
+			if (sValue == "center" || sValue == "middle")
+				nTextAlign = 1;
+			else if (sValue == "right" || sValue == "end")
+				nTextAlign = 2;
+			else if (sValue == "justify")
+				nTextAlign = 3;
+		}
+		else if (sProperty == "color")
+		{
+			if (sValue[0] == '#')
+			{
+				sValue = sValue.substr(1);
+				BYTE nColor1 = 0, nColor2 = 0, nColor3 = 0;
+				if (sValue.length() == 6)
+					sscanf(sValue.c_str(), "%2hhx%2hhx%2hhx", &nColor1, &nColor2, &nColor3);
+				else if (sValue.length() == 3)
+				{
+					sscanf(sValue.c_str(), "%1hhx%1hhx%1hhx", &nColor1, &nColor2, &nColor3);
+					nColor1 *= 17;
+					nColor2 *= 17;
+					nColor3 *= 17;
+				}
+
+				pFont->dColor[0] = (double)nColor1 / 255.0;
+				pFont->dColor[1] = (double)nColor2 / 255.0;
+				pFont->dColor[2] = (double)nColor3 / 255.0;
+			}
+		}
+		else if (sProperty == "font-weight")
+		{
+			// 0 normal / 300 / 400 / 500
+			if (sValue == "normal" || sValue == "300" || sValue == "400" || sValue == "500")
+				pFont->unFontFlags &= ~(1 << 0);
+			else if (sValue == "bold" || sValue == "bolder" || sValue == "600" || sValue == "700" || sValue == "800" || sValue == "900")
+				pFont->unFontFlags |= (1 << 0);
+		}
+		else if (sProperty == "font-style")
+		{
+			// 0 normal
+			if (sValue == "normal")
+				pFont->unFontFlags &= ~(1 << 1);
+			else if (sValue == "italic" || sValue.find("oblique") != std::string::npos)
+				pFont->unFontFlags |= (1 << 1);
+		}
+		else if (sProperty == "font-family")
+			pFont->sFontFamily = sValue[0] == '\'' ? sValue.substr(1, sValue.length() - 2) : sValue;
+		else if (sProperty == "text-decoration")
+		{
+			if (sValue.find("line-through") != std::string::npos)
+				pFont->unFontFlags |= (1 << 3);
+			if (sValue.find("word") != std::string::npos || sValue.find("underline") != std::string::npos)
+				pFont->unFontFlags |= (1 << 4);
+			if (sValue.find("none") != std::string::npos)
+			{
+				pFont->unFontFlags &= ~(1 << 3);
+				pFont->unFontFlags &= ~(1 << 4);
+			}
+		}
+		else if (sProperty == "vertical-align")
+		{
+			pFont->unFontFlags |= (1 << 5);
+			pFont->dVerticalAlign = std::stod(sValue);
+			if (pFont->dVerticalAlign == 0 && sValue[0] == '-')
+				pFont->dVerticalAlign = -0.01;
+		}
+		// font-stretch
+	}
+	return nTextAlign;
+}
+CAnnotMarkup::CFontData::CFontData(const CFontData& oFont)
+{
+	unFontFlags = oFont.unFontFlags;
+	dFontSise   = oFont.dFontSise;
+	dVerticalAlign = oFont.dVerticalAlign;
+	dColor[0]   = oFont.dColor[0];
+	dColor[1]   = oFont.dColor[1];
+	dColor[2]   = oFont.dColor[2];
+	sFontFamily = oFont.sFontFamily;
+	sText       = oFont.sText;
 }
 
 //------------------------------------------------------------------------
@@ -3074,7 +3231,7 @@ void CAnnotWidgetSig::ToWASM(NSWasm::CData& oRes)
 {
 	CAnnotWidget::ToWASM(oRes);
 }
-void CMarkupAnnot::ToWASM(NSWasm::CData& oRes)
+void CAnnotMarkup::ToWASM(NSWasm::CData& oRes)
 {
 	CAnnot::ToWASM(oRes);
 
@@ -3086,7 +3243,22 @@ void CMarkupAnnot::ToWASM(NSWasm::CData& oRes)
 	if (m_unFlags & (1 << 2))
 		oRes.AddDouble(m_dCA);
 	if (m_unFlags & (1 << 3))
-		oRes.WriteString(m_sRC);
+	{
+		oRes.WriteBYTE(m_nTextAlign);
+		oRes.AddInt(m_arrRC.size());
+		for (int i = 0; i < m_arrRC.size(); ++i)
+		{
+			oRes.AddInt(m_arrRC[i]->unFontFlags);
+			if (m_arrRC[i]->unFontFlags & (1 << 5))
+				oRes.AddDouble(m_arrRC[i]->dVerticalAlign);
+			oRes.AddDouble(m_arrRC[i]->dFontSise);
+			oRes.WriteDouble(m_arrRC[i]->dColor[0]);
+			oRes.WriteDouble(m_arrRC[i]->dColor[1]);
+			oRes.WriteDouble(m_arrRC[i]->dColor[2]);
+			oRes.WriteString(m_arrRC[i]->sFontFamily);
+			oRes.WriteString(m_arrRC[i]->sText);
+		}
+	}
 	if (m_unFlags & (1 << 4))
 		oRes.WriteString(m_sCreationDate);
 	if (m_unFlags & (1 << 5))
@@ -3100,7 +3272,7 @@ void CAnnotText::ToWASM(NSWasm::CData& oRes)
 {
 	oRes.WriteBYTE(0); // Text
 
-	CMarkupAnnot::ToWASM(oRes);
+	CAnnotMarkup::ToWASM(oRes);
 
 	if (m_unFlags & (1 << 16))
 		oRes.WriteBYTE(m_nName);
@@ -3123,7 +3295,7 @@ void CAnnotInk::ToWASM(NSWasm::CData& oRes)
 {
 	oRes.WriteBYTE(14); // Ink
 
-	CMarkupAnnot::ToWASM(oRes);
+	CAnnotMarkup::ToWASM(oRes);
 
 	oRes.AddInt(m_arrInkList.size());
 	for (int i = 0; i < m_arrInkList.size(); ++i)
@@ -3137,7 +3309,7 @@ void CAnnotLine::ToWASM(NSWasm::CData& oRes)
 {
 	oRes.WriteBYTE(3); // Line
 
-	CMarkupAnnot::ToWASM(oRes);
+	CAnnotMarkup::ToWASM(oRes);
 
 	for (int i = 0; i < 4; ++i)
 		oRes.AddDouble(m_pL[i]);
@@ -3173,7 +3345,7 @@ void CAnnotTextMarkup::ToWASM(NSWasm::CData& oRes)
 {
 	oRes.WriteBYTE(m_nSubtype); // Highlight, Underline, Squiggly, StrikeOut
 
-	CMarkupAnnot::ToWASM(oRes);
+	CAnnotMarkup::ToWASM(oRes);
 
 	oRes.AddInt((unsigned int)m_arrQuadPoints.size());
 	for (int i = 0; i < m_arrQuadPoints.size(); ++i)
@@ -3183,7 +3355,7 @@ void CAnnotSquareCircle::ToWASM(NSWasm::CData& oRes)
 {
 	oRes.WriteBYTE(m_nSubtype); // Square, Circle
 
-	CMarkupAnnot::ToWASM(oRes);
+	CAnnotMarkup::ToWASM(oRes);
 
 	if (m_unFlags & (1 << 15))
 	{
@@ -3201,7 +3373,7 @@ void CAnnotPolygonLine::ToWASM(NSWasm::CData& oRes)
 {
 	oRes.WriteBYTE(m_nSubtype); // Polygon, PolyLine
 
-	CMarkupAnnot::ToWASM(oRes);
+	CAnnotMarkup::ToWASM(oRes);
 
 	oRes.AddInt((unsigned int)m_arrVertices.size());
 	for (int i = 0; i < m_arrVertices.size(); ++i)
@@ -3225,7 +3397,7 @@ void CAnnotFreeText::ToWASM(NSWasm::CData& oRes)
 {
 	oRes.WriteBYTE(2); // FreeText
 
-	CMarkupAnnot::ToWASM(oRes);
+	CAnnotMarkup::ToWASM(oRes);
 
 	oRes.WriteBYTE(m_nQ);
 	if (m_unFlags & (1 << 15))
@@ -3256,7 +3428,7 @@ void CAnnotCaret::ToWASM(NSWasm::CData& oRes)
 {
 	oRes.WriteBYTE(13); // Caret
 
-	CMarkupAnnot::ToWASM(oRes);
+	CAnnotMarkup::ToWASM(oRes);
 
 	if (m_unFlags & (1 << 15))
 	{
@@ -3270,7 +3442,7 @@ void CAnnotFileAttachment::ToWASM(NSWasm::CData& oRes)
 {
 	oRes.WriteBYTE(16); // FileAttachment
 
-	CMarkupAnnot::ToWASM(oRes);
+	CAnnotMarkup::ToWASM(oRes);
 
 	if (m_unFlags & (1 << 15))
 		oRes.WriteString(m_sName);

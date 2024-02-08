@@ -1125,7 +1125,31 @@
 					rec["CA"] = reader.readDouble();
 				// RC
 				if (flags & (1 << 3))
-					rec["RC"] = reader.readString();
+				{
+					// 0 - left, 1 - centered, 2 - right, 3 - justify
+					rec["alignment"] = reader.readByte();
+					let n = reader.readInt();
+					rec["RC"] = [];
+					for (let i = 0; i < n; ++i)
+					{
+						let oFont = {};
+						let nFontFlag = reader.readInt();
+						oFont["bold"] = (nFontFlag >> 0) & 1;
+						oFont["italic"] = (nFontFlag >> 1) & 1;
+						oFont["strikethrough"] = (nFontFlag >> 3) & 1;
+						oFont["underlined"] = (nFontFlag >> 4) & 1;
+						if (nFontFlag & (1 << 5))
+							oFont["vertical"] = reader.readDouble();
+						oFont["size"] = reader.readDouble();
+						oFont["color"] = [];
+						oFont["color"].push(reader.readDouble2());
+						oFont["color"].push(reader.readDouble2());
+						oFont["color"].push(reader.readDouble2());
+						oFont["name"] = reader.readString();
+						oFont["text"] = reader.readString();
+						rec["RC"].push(oFont);
+					}
+				}
 				// CreationDate
 				if (flags & (1 << 4))
 					rec["CreationDate"] = reader.readString();

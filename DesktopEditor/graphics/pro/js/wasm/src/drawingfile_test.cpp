@@ -1238,11 +1238,63 @@ int main(int argc, char* argv[])
 					std::cout << "CA " << (double)nPathLength / 100.0 << ", ";
 				}
 				if (nFlags & (1 << 3))
-				{
-					nPathLength = READ_INT(pAnnots + i);
+				{					
+					nPathLength = READ_BYTE(pAnnots + i);
+					i += 1;
+					std::string arrTextAlign[] = {"Left", "Center", "Right", "Justify"};
+					std::cout << "RC { text-align: " << arrTextAlign[nPathLength] << "; ";
+
+					int nFontLength = READ_INT(pAnnots + i);
 					i += 4;
-					std::cout << "RC " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
-					i += nPathLength;
+					for (int j = 0; j < nFontLength; ++j)
+					{
+						std::cout << std::endl << "span" << j << " { ";
+
+						std::cout << "font-style:";
+						int nFontFlag = READ_INT(pAnnots + i);
+						i += 4;
+						if (nFontFlag & (1 << 0))
+							std::cout << "Bold ";
+						if (nFontFlag & (1 << 1))
+							std::cout << "Italic ";
+						if (nFontFlag & (1 << 3))
+							std::cout << "Strike ";
+						if (nFontFlag & (1 << 4))
+							std::cout << "Underline ";
+						if (nFontFlag & (1 << 5))
+						{
+							nPathLength = READ_INT(pAnnots + i);
+							i += 4;
+							std::cout << "; vertical-align:" << (double)nPathLength / 100.0;
+						}
+
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << "; font-size:" << (double)nPathLength / 100.0;
+
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << "; font-color:" << (double)nPathLength / 10000.0 << " ";
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << (double)nPathLength / 10000.0 << " ";
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << (double)nPathLength / 10000.0 << "; ";
+
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << "font-family:" << std::string((char*)(pAnnots + i), nPathLength) << "; ";
+						i += nPathLength;
+
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << "text:" << std::string((char*)(pAnnots + i), nPathLength) << " ";
+						i += nPathLength;
+
+						std::cout << "} ";
+					}
+					std::cout << "}, " << std::endl;
 				}
 				if (nFlags & (1 << 4))
 				{
@@ -1697,7 +1749,7 @@ int main(int argc, char* argv[])
 				}
 			}
 
-			std::cout << std::endl;
+			std::cout << std::endl << std::endl;
 		}
 
 		if (pAnnots)

@@ -148,6 +148,9 @@ namespace VBA
 	std::wstring readStringPadding(CVbaFileStreamPtr stream, _UINT32 & size)
 	{
 		if (!stream) return L"";
+		
+		if ( GETBITS(size, 0, 30) > 0xfff)
+			return L"";
 
 		std::wstring result = readString(stream->getDataCurrent(), size);
 
@@ -1238,6 +1241,11 @@ namespace VBA
 		
 		TypeOrCount = GETBITS(flag, 0, 6);
 		fCount = GETBIT(flag, 7);
+
+		if (fCount == 1)
+		{
+			*stream >> OptionalType; // 1 - OLE control
+		}
 	}
 //------------------------------------------------------------------------------------------
 	OleSiteConcreteControl::OleSiteConcreteControl(CVbaFileStreamPtr stream) { load(stream); }
@@ -1308,10 +1316,17 @@ namespace VBA
 		{
 			*stream >> RuntimeLicKeyLengthAndCompression;
 		}
+		pos1 = stream->GetDataPos();
 		if (propMask.fControlSource)
 		{
 			*stream >> ControlSourceLengthAndCompression;
 		}
+		//pos2 = stream->GetDataPos();
+		//count_padding = 4 - ((pos2 - pos1) % 4);
+
+		//if (count_padding > 0 && count_padding < 4)
+		//	stream->skipBytes(count_padding);
+
 		if (propMask.fRowSource)
 		{
 			*stream >> RowSourceLengthAndCompression;
@@ -1366,7 +1381,10 @@ namespace VBA
 			}
 		}		
 		_UINT32 CountOfSites = 0, CountOfBytes = 0;
-		*stream >> CountOfSites >> CountOfBytes;		
+		*stream >> CountOfSites >> CountOfBytes;	
+
+		if (CountOfSites > 0xffff)
+			return;
 		
 		_UINT32 pos1 = stream->GetDataPos();
 

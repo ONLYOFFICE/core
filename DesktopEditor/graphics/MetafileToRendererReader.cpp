@@ -57,6 +57,7 @@ namespace NSOnlineOfficeBinToPdf
 		case ctAnnotField:       return Read_Command<CAnnotFieldInfo>  (this, pCorrector);
 		case ctFormField:        return Read_Command<CFormFieldInfo>   (this, pCorrector);
 		case ctAnnotFieldDelete: return Read_Command<CAnnotFieldDelete>(this, pCorrector);
+		case ctWidgetsInfo:      return Read_Command<CWidgetsInfo>     (this, pCorrector);
 		default: break;
 		}
 

@@ -138,16 +138,15 @@ namespace DocFileFormat
 		{
 			name = new unsigned char[characterCount];//characters are zero-terminated, so 1 char has 2 bytes:
 			memcpy( name, ( bytes + cbStdBase + 1 ), ( characterCount  ) );
-			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(xstzName), name, ( characterCount ), ENCODING_WINDOWS_1250 );
+			FormatUtils::GetWStringFromBytes( xstzName, name, ( characterCount ), ENCODING_WINDOWS_1250 );
 			upxOffset = cbStdBase + 1 + ( characterCount /** 2*/ ) + 1;
 		}
 		else
 		{
 			name = new unsigned char[characterCount * 2];//characters are zero-terminated, so 1 char has 2 bytes:
 			memcpy( name, ( bytes + cbStdBase + 2 ), ( characterCount * 2 ) );
-			//remove zero-termination
-			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(xstzName), name, ( characterCount * 2 ), ENCODING_UTF16 );
-			
+			xstzName = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)(name), characterCount);
+
 			//parse the UPX structs
 			upxOffset = cbStdBase + 1 + ( characterCount * 2 ) + 2;
 		}

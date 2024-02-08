@@ -15,7 +15,7 @@ namespace MetaFile
 		void SetSize(double dWidth, double dHeight);
 		void SetStyleId(unsigned int unStyleId, unsigned int unNumber);
 		void SetStroke(double dWidth, int nColor, unsigned char chAlpha = 255);
-		void SetBKColor(int nColor);
+		void SetBackground(int nColor, unsigned char chAlpha = 255);
 
 		bool GenerateHatch();
 
@@ -28,20 +28,21 @@ namespace MetaFile
 		void AddPoints(const std::vector<TPointD>& arPoints);
 
 		bool GenerateStartPattern();
-		void GenerateBK();
+		void GenerateBackground();
 		void GenerateEndPattern();
 
 		int          m_nHatchStyle;
 		unsigned int m_unNumber;
 
-		double m_dStrokeWidth;
-		int    m_nStrokeColor;
-		unsigned char m_chAlpha;
+		double        m_dStrokeWidth;
+		int           m_nStrokeColor;
+		unsigned char m_chStrokeAlpha;
 
 		double m_dWidth;
 		double m_dHeight;
 
-		int    m_nBKColor;
+		int           m_nBackgroundColor;
+		unsigned char m_chBackgroundAlpha;
 
 		NSStringUtils::CStringBuilder m_oStringBuilder;
 	};
@@ -97,6 +98,8 @@ namespace MetaFile
 		void WriteNodeEnd(const std::wstring& wsNodeName);
 		void WriteText(const std::wstring& wsText, const TPointD& oCoord, const TRectL& oBounds = TRectL(), const TPointD& oScale = TPointD(1, 1), const std::vector<double>& arDx = {});
 
+		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) override;
+
 		void ResetClip() override;
 		void IntersectClip(const TRectD& oClip) override;
 		void ExcludeClip(const TRectD& oClip, const TRectD& oBB) override;
@@ -120,7 +123,6 @@ namespace MetaFile
 		std::wstring CreateDibPatternStyle(IBrush *pBrush);
 		std::wstring CreatePatternStyle(IBrush *pBrush);
 		std::wstring CreateGradient(IBrush *pBrush);
-
 	private:
 		TSvgViewport         m_oViewport;
 		TPointD              m_oSizeWindow;
@@ -139,6 +141,9 @@ namespace MetaFile
 		friend class CEmfInterpretatorSvg;
 		friend class CWmfInterpretatorSvg;
 	};
+
+	std::wstring CalculateColor(unsigned int unColor, BYTE uchAlpha);
+	std::wstring CalculateColor(BYTE uchRed, BYTE uchGreen, BYTE uchBlue, BYTE uchAlpha);
 }
 
 #endif // CINTERPRETATORSVGBASE_H

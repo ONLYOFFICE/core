@@ -418,7 +418,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 				if (pVml)
 				{	
 					std::wstring sShapeId = oox_picture->oleObject->m_sShapeId.get();
-                    boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVml->m_mapShapes.find(sShapeId);
+                    std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVml->m_mapShapes.find(sShapeId);
 
                     if (pVml->m_mapShapes.end() != pFind)
 					{
@@ -1763,58 +1763,7 @@ void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 	}
 	if (oox_cnvPr->hlinkClick.IsInit())
 	{
-		bool bExternal = false;
-		if (odf_context()->drawing_context()->is_current_empty())
-		{
-			if (oox_cnvPr->hlinkClick->id.IsInit())
-			{
-				std::wstring hlink = find_link_by_id(oox_cnvPr->hlinkClick->id.get(), 2, bExternal);
-				
-				odf_context()->drawing_context()->start_link_object(hlink);	
-			}
-		}
-		else
-		{
-			odf_context()->drawing_context()->start_action(oox_cnvPr->hlinkClick->action.get_value_or(L""));
-
-				if (oox_cnvPr->hlinkClick->snd.IsInit())
-				{
-					std::wstring sound = find_link_by_id(oox_cnvPr->hlinkClick->snd->embed.get(), 3, bExternal);
-
-					std::wstring href = odf_context()->add_media(sound, bExternal);
-					odf_context()->drawing_context()->add_sound(href);	
-				}
-				if (oox_cnvPr->hlinkClick->id.IsInit())
-				{
-					std::wstring hlink = find_link_by_id(oox_cnvPr->hlinkClick->id.get(), 2, bExternal);
-					boost::replace_all(hlink, L"\\", L"/"); // NOTE(Kamil Kerimov): Always use forward slash in odf for filepaths
-					
-					if (is_sound_hlink(hlink))
-					{
-						std::wstring href = odf_context()->add_media(hlink, bExternal);
-						odf_context()->drawing_context()->add_sound(href);
-					}
-					else
-					{
-						if (is_relative_path(hlink))
-							hlink = L"../" + hlink;
-						odf_context()->drawing_context()->add_link(hlink);
-					}
-						
-
-					smart_ptr<OOX::File> file = find_file_by_id(oox_cnvPr->hlinkClick->id.get());
-					OOX::HyperLink* hyperlink = dynamic_cast<OOX::HyperLink*>(file.GetPointer());
-
-					if (hyperlink)
-					{
-						odf_context()->add_hyperlink(
-							odf_context()->drawing_context()->get_current_element(),
-							hyperlink->Uri().GetBasename()
-						);
-					}
-				}
-			odf_context()->drawing_context()->end_action();
-		}
+		convert(oox_cnvPr->hlinkClick.GetPointer());
 	}
 	//nullable_string		title;
 	//nullable<Hyperlink>	hlinkHover;
@@ -2550,7 +2499,6 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::t
 	{
 		text_properties->fo_text_transform_ = odf_types::text_transform(odf_types::text_transform::Capitalize);
 	}
-
 }
 static std::vector<std::wstring> split_tabs(const std::wstring& text)
 {
@@ -2625,6 +2573,29 @@ void OoxConverter::convert(PPTX::Logic::Run *oox_run)
 		bool bExternal = false;
 		std::wstring hlink = find_link_by_id(oox_run->rPr->hlinkClick->id.get(), 2, bExternal);
 		std::wstring location;
+
+		smart_ptr<OOX::File> file = find_file_by_id(oox_run->rPr->hlinkClick->id.get());
+		OOX::HyperLink* hyperlink = dynamic_cast<OOX::HyperLink*>(file.GetPointer());
+
+		if (hyperlink)
+			location = hyperlink->Uri().GetBasename();
+		
+		if (oox_run->rPr->hlinkClick->action.IsInit() && location.empty())
+		{
+			const std::wstring& action = *oox_run->rPr->hlinkClick->action;
+
+			if (std::wstring::npos != action.find(L"previousslide"))
+				location = L"previous-page";
+			else if (std::wstring::npos != action.find(L"nextslide"))
+				location = L"next-page";
+			else if (std::wstring::npos != action.find(L"firstslide"))
+				location = L"first-page";
+			else if (std::wstring::npos != action.find(L"lastslide"))
+				location = L"last-page";
+			else if (std::wstring::npos != action.find(L"endshow"))
+				location = L"end";
+		}
+
 		text_context->add_hyperlink(hlink, oox_run->GetText(), location);
 	}
 	else
@@ -2734,6 +2705,64 @@ void OoxConverter::convert(PPTX::Logic::TextListStyle *oox_list_style)
 		OoxConverter::convert_list_level(oox_list_style->levels[i].GetPointer(), i);
 	}
 	odf_context()->styles_context()->lists_styles().end_style();
+}
+void OoxConverter::convert(PPTX::Logic::Hyperlink* oox_hyperlink)
+{
+	if (!oox_hyperlink)
+		return;
+
+	bool bExternal = false;
+	if (odf_context()->drawing_context()->is_current_empty())
+	{
+		if (oox_hyperlink->id.IsInit())
+		{
+			std::wstring hlink = find_link_by_id(oox_hyperlink->id.get(), 2, bExternal);
+
+			odf_context()->drawing_context()->start_link_object(hlink);
+		}
+	}
+	else
+	{
+		odf_context()->drawing_context()->start_action(oox_hyperlink->action.get_value_or(L""));
+
+		if (oox_hyperlink->snd.IsInit())
+		{
+			std::wstring sound = find_link_by_id(oox_hyperlink->snd->embed.get(), 3, bExternal);
+
+			std::wstring href = odf_context()->add_media(sound, bExternal);
+			odf_context()->drawing_context()->add_sound(href);
+		}
+		if (oox_hyperlink->id.IsInit())
+		{
+			std::wstring hlink = find_link_by_id(oox_hyperlink->id.get(), 2, bExternal);
+			boost::replace_all(hlink, L"\\", L"/"); // NOTE(Kamil Kerimov): Always use forward slash in odf for filepaths
+
+			if (is_sound_hlink(hlink))
+			{
+				std::wstring href = odf_context()->add_media(hlink, bExternal);
+				odf_context()->drawing_context()->add_sound(href);
+			}
+			else
+			{
+				if (is_relative_path(hlink))
+					hlink = L"../" + hlink;
+				odf_context()->drawing_context()->add_link(hlink);
+			}
+
+
+			smart_ptr<OOX::File> file = find_file_by_id(oox_hyperlink->id.get());
+			OOX::HyperLink* hyperlink = dynamic_cast<OOX::HyperLink*>(file.GetPointer());
+
+			if (hyperlink)
+			{
+				odf_context()->add_hyperlink(
+					odf_context()->drawing_context()->get_current_element(),
+					hyperlink->Uri().GetBasename()
+				);
+			}
+		}
+		odf_context()->drawing_context()->end_action();
+	}
 }
 void OoxConverter::convert(PPTX::Logic::TxBody *oox_txBody, PPTX::Logic::ShapeStyle* oox_style)
 {

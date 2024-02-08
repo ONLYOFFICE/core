@@ -30,6 +30,7 @@
  *
  */
 #include "docbuilder_p.h"
+#include "server.h"
 
 std::wstring NSDoctRenderer::CDocBuilder_Private::m_sExternalDirectory = L"";
 
@@ -203,20 +204,10 @@ std::string GetCorrectArgument(const std::string& sInput)
 	return sResult;
 }
 
-bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath, CV8Params* pParams)
+bool CV8RealTimeWorker::InitVariables()
 {
-	LOGGER_SPEED_START();
-
 	CJSContextScope scope(m_context);
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
-
-	LOGGER_SPEED_LAP("compile");
-
-	m_context->runScript(sString, try_catch, sCachePath);
-	if(try_catch->Check())
-		return false;
-
-	LOGGER_SPEED_LAP("run");
 
 	if (true)
 	{
@@ -245,6 +236,26 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 		if (try_catch->Check())
 			return false;
 	}
+	return true;
+}
+
+bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath, CV8Params* pParams)
+{
+	LOGGER_SPEED_START();
+
+	CJSContextScope scope(m_context);
+	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
+
+	LOGGER_SPEED_LAP("compile");
+
+	m_context->runScript(sString, try_catch, sCachePath);
+	if(try_catch->Check())
+		return false;
+
+	LOGGER_SPEED_LAP("run");
+
+	if (!InitVariables())
+		return false;
 
 	NSNativeControl::CNativeControl* pNative = NULL;
 	bool bIsBreak = false;
@@ -1511,6 +1522,8 @@ namespace NSDoctRenderer
 		{
 			m_pInternal->m_bIsServerSafeVersion = true;
 			m_pInternal->m_sFolderForSaveOnlyUseNames = std::wstring(value);
+
+			CServerInstance::getInstance().Enable(true);
 		}
 		else if (sParam == "--all-fonts-path")
 		{

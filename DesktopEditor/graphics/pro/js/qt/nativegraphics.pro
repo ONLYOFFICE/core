@@ -27,7 +27,8 @@ INCLUDEPATH += \
 	$$CORE_ROOT_DIR/DesktopEditor/cximage/jpeg \
 	$$CORE_ROOT_DIR/DesktopEditor/cximage/png \
 	$$CORE_ROOT_DIR/DesktopEditor/freetype-2.10.4/include \
-	$$CORE_ROOT_DIR/DesktopEditor/freetype-2.10.4/include/freetype
+	$$CORE_ROOT_DIR/DesktopEditor/freetype-2.10.4/include/freetype \
+	$$CORE_ROOT_DIR/Common/3dParty/openssl/openssl/include
 
 win32 {
 DEFINES += \
@@ -53,7 +54,6 @@ HEADERS += \
 	../../../Matrix_private.h \
 	../../../GraphicsPath.h \
 	../../../GraphicsPath_private.h \
-	../../../AlphaMask_private.h \
 	../../../AlphaMask.h \
 	\
 	../../../../raster/BgraFrame.h \
@@ -66,6 +66,7 @@ HEADERS += \
 	../../../../raster/Metafile/Common/MetaFileObjects.h \
 	../../../../raster/Metafile/Common/MetaFileRenderer.h \
 	../../../../raster/Metafile/Common/MetaFileUtils.h \
+	../../../../raster/PICT/PICTFile.h \
 	\
 	../../../ArrowHead.h \
 	../../../Brush.h \
@@ -78,6 +79,7 @@ HEADERS += \
 	../../../structures.h \
 	../../../shading_info.h \
 	../../../GraphicsRenderer.h \
+	../../../GraphicsLayer.h \
 	\
 	../../../../fontengine/ApplicationFonts.h \
 	../../../../fontengine/FontFile.h \
@@ -103,11 +105,12 @@ HEADERS += \
 SOURCES += \
 	../../../Matrix.cpp \
 	../../../GraphicsPath.cpp \
-	../../../AlphaMask_private.cpp \
 	../../../AlphaMask.cpp \
 	../../../../raster/BgraFrame.cpp \
 	../../../../raster/ImageFileFormatChecker.cpp \
 	../../../../raster/Metafile/MetaFile.cpp \
+	../../../../raster/PICT/PICFile.cpp \
+	../../../../raster/PICT/pic.cpp \
 	\
 	../../../ArrowHead.cpp \
 	../../../Brush.cpp \
@@ -115,6 +118,7 @@ SOURCES += \
 	../../../Graphics.cpp \
 	../../../GraphicsRenderer.cpp \
 	../../../Image.cpp \
+	../../../GraphicsLayer.cpp \
 	\
 	../../../../fontengine/ApplicationFonts.cpp \
 	../../../../fontengine/FontFile.cpp \

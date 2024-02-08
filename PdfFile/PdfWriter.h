@@ -46,6 +46,7 @@
 #include "../../DesktopEditor/graphics/commands/FormField.h"
 #include "../../DesktopEditor/graphics/commands/AnnotField.h"
 #include "SrcWriter/Metadata.h"
+#include "SrcWriter/Annotation.h"
 
 namespace PdfWriter
 {
@@ -65,7 +66,7 @@ namespace Aggplus
 class CPdfWriter
 {
 public:
-	CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA = false, IRenderer* pRenderer = NULL);
+	CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA = false, IRenderer* pRenderer = NULL, bool bCreate = true);
 	~CPdfWriter();
 	int          SaveToFile(const std::wstring& wsPath);
 	void         SetPassword(const std::wstring& wsPassword);
@@ -214,6 +215,7 @@ public:
 	bool EditClose();
 	void PageRotate(int nRotate);
 	void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
+	HRESULT EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWidgetsInfo* pFieldInfo, const std::wstring& wsTempDirectory);
 
 	PdfWriter::CDocument* m_pDocument;
 	PdfWriter::CPage*     m_pPage;
@@ -228,6 +230,8 @@ private:
 	bool GetFontPath(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, std::wstring& wsFontPath, LONG& lFaceIndex);
 	PdfWriter::CFontCidTrueType* GetFont(const std::wstring& wsFontPath, const LONG& lFontIndex);
 	PdfWriter::CFontCidTrueType* GetFont(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic);
+	bool GetFontData(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsValue, PdfWriter::CFontCidTrueType* pFont, bool bBold, bool bItalic,
+					 unsigned int*& pUnicodes, unsigned int& unLen, unsigned short*& pCodes, PdfWriter::CFontCidTrueType**& ppFonts);
 	void UpdateTransform();
 	void UpdatePen();
 	void UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory);
@@ -239,6 +243,9 @@ private:
 	unsigned char* EncodeString(const unsigned int* pUnicodes, const unsigned int& unUnicodesCount, const unsigned int* pGIDs = NULL);
 	unsigned char* EncodeGID(const unsigned int& unGID, const unsigned int* pUnicodes, const unsigned int& unUnicodesCount);
 	std::wstring GetDownloadFile(const std::wstring& sUrl, const std::wstring& wsTempDirectory);
+	void DrawTextWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CTextWidget* pTextWidget, const std::wstring& wsValue);
+	void DrawChoiceWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CChoiceWidget* pChoiceWidget, const std::vector<std::wstring>& arrValue);
+	void DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CPushButtonWidget* pButtonWidget, BYTE nAP, PdfWriter::CXObject* pForm);
 
 private:
 	NSFonts::IFontManager*       m_pFontManager;

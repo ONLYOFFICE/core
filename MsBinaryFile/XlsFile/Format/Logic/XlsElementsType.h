@@ -717,6 +717,7 @@ enum ElementType
 	typeOfficeArtRecord = 3000,
 	typeOfficeArtBStoreContainerFileBlock,
 	typeOfficeArtDgContainer,
+	typeOfficeArtDggContainer,
 	typeOfficeArtCOLORREF,
 	typeOfficeArtFOPTE,
 	typeOfficeArtFRIT,

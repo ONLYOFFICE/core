@@ -34,6 +34,7 @@
 #include "../../../../DesktopEditor/common/File.h"
 #include "../../../../DesktopEditor/graphics/BaseThread.h"
 #include "../include/FileTransporter.h"
+#include "../../../../DesktopEditor/common/ProcessEnv.h"
 
 namespace NSNetwork
 {
@@ -240,13 +241,25 @@ namespace NSNetwork
 			{
 				m_pInternal->m_bComplete = false;
 
+				bool bIsCanUseNetwork = true;
+				if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowNetworkRequest))
+					bIsCanUseNetwork = NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowNetworkRequest);
+
 				int hrResultAll = 0;
-				if(m_pInternal->m_eLoadType == m_pInternal->DOWNLOADFILE)
-					hrResultAll = m_pInternal->DownloadFile();
-				else if(m_pInternal->m_eLoadType == m_pInternal->UPLOADFILE)
-					hrResultAll = m_pInternal->UploadFile();
-				else if(m_pInternal->m_eLoadType == m_pInternal->UPLOADDATA)
-					hrResultAll = m_pInternal->UploadData();
+
+				if (bIsCanUseNetwork)
+				{
+					if(m_pInternal->m_eLoadType == m_pInternal->DOWNLOADFILE)
+						hrResultAll = m_pInternal->DownloadFile();
+					else if(m_pInternal->m_eLoadType == m_pInternal->UPLOADFILE)
+						hrResultAll = m_pInternal->UploadFile();
+					else if(m_pInternal->m_eLoadType == m_pInternal->UPLOADDATA)
+						hrResultAll = m_pInternal->UploadData();
+				}
+				else
+				{
+					hrResultAll = 1;
+				}
 
 				if (0 == hrResultAll)
 					m_pInternal->m_bComplete = true;

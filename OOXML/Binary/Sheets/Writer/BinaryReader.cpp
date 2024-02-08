@@ -2206,7 +2206,7 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 	else if (c_oSerWorkbookTypes::FileSharing == type)
 	{
 		m_oWorkbook.m_oFileSharing.Init();
-		READ1_DEF(length, res, this->ReadFileSharing, m_oWorkbook.m_oFileSharing.GetPointer());
+		READ2_DEF_SPREADSHEET(length, res, this->ReadFileSharing, m_oWorkbook.m_oFileSharing.GetPointer());
 	}
 	else if (c_oSerWorkbookTypes::ExternalLinksAutoRefresh == type)
 	{	
@@ -8117,7 +8117,7 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 
 		if (NULL != pData)
 		{
-	// File Type
+			// File Type
 			std::wstring sDstPathCSV = sDstPath;
 			BYTE fileType;
 			UINT nCodePage;
@@ -8125,8 +8125,8 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 			BYTE saveFileType;
 
 			SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, sDelimiter, saveFileType);
-	// Делаем для CSV перебивку пути, иначе создается папка с одинаковым имеем (для rels) и файл не создается.
-			
+			// Делаем для CSV перебивку пути, иначе создается папка с одинаковым имеем (для rels) и файл не создается.
+
 			if (BinXlsxRW::c_oFileTypes::CSV == fileType)
 			{
 				sDstPath = pOfficeDrawingConverter->GetTempPath();
@@ -8135,36 +8135,55 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 
 				sDstPath = NSDirectory::CreateDirectoryWithUniqueName(sDstPath);
 			}
-			
-			OOX::Spreadsheet::CXlsx oXlsx;
-			
+
 			std::wstring themePath = sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultDirectory().GetPath();
 			std::wstring drawingsPath = sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Drawings.DefaultDirectory().GetPath();
 			std::wstring embeddingsPath = sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::FileTypes::MicrosoftOfficeUnknown.DefaultDirectory().GetPath();
 			std::wstring chartsPath = sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::FileTypes::Chart.DefaultDirectory().GetPath();
 
 			oBufferedStream.m_pRels->m_pManager->SetDstCharts(chartsPath);
-			
+
 			bResultOk = true;
-			
+
 			if (BinXlsxRW::c_oFileTypes::XLSX == fileType)
 			{
+				OOX::Spreadsheet::CXlsx oXlsx;
 				SaveParams oSaveParams(drawingsPath, embeddingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), NULL, bMacro);
-				
+
 				try
 				{
 					ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, oSaveParams, pOfficeDrawingConverter);
 				}
-				catch(...)
+				catch (...)
 				{
 					bResultOk = false;
 				}
-				
+
 				oXlsx.PrepareToWrite();
 				oXlsx.Write(sDstPath, *oSaveParams.pContentTypes);
 			}
+			else if (BinXlsxRW::c_oFileTypes::XLSB == fileType)
+			{
+				OOX::Spreadsheet::CXlsb oXlsb;
+				oXlsb.m_bWriteToXlsb = true;
+
+				SaveParams oSaveParams(drawingsPath, embeddingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), NULL, bMacro);
+
+				try
+				{
+					ReadMainTable(oXlsb, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, oSaveParams, pOfficeDrawingConverter);
+				}
+				catch (...)
+				{
+					bResultOk = false;
+				}
+
+				oXlsb.PrepareToWrite();
+				oXlsb.WriteBin(sDstPath, *oSaveParams.pContentTypes);
+			}
 			else
 			{
+				OOX::Spreadsheet::CXlsx oXlsx;
 				CSVWriter oCSVWriter;
 				
 				oCSVWriter.Init(oXlsx, nCodePage, sDelimiter, false);

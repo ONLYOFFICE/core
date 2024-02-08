@@ -126,6 +126,12 @@ void odp_conversion_context::start_slide()
 	
 	drawing_context()->set_presentation(0);
 }
+
+void odp_conversion_context::hide_slide()
+{
+	slide_context_.hide_page();
+}
+
 void odp_conversion_context::end_slide()
 {
 	slide_context_.end_page();

@@ -77,7 +77,8 @@ namespace MetaFile
 		void DrawLines(std::vector<TEmfPlusPointF> arPoints, bool bCloseFigure);
 
 		void DrawImagePoints(unsigned int unImageIndex, unsigned int unImageAttributeIndex, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints);
-		void DrawMetafile(BYTE* pBuffer, unsigned int unSize, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints, EEmfPlusMetafileDataType eMetafileType, unsigned int unImageAttributeIndex);
+		template <typename MetafileType>
+		void DrawMetafile(BYTE* pBuffer, unsigned int unSize, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints);
 		void DrawBitmap(BYTE* pBuffer, unsigned int unSize, unsigned int unWidth, unsigned int unHeight, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints);
 
 		TEmfPlusARGB ApplyImageAttributes(TEmfPlusRectF& oRectangle, const CEmfPlusImageAttributes& oImageAttributes);

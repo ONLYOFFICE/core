@@ -99,6 +99,7 @@ public:
 	virtual void remove(const std::wstring& path) = 0;
 	// работа с директориями
 	virtual void createDirectory(const std::wstring& path) = 0;
+	virtual void removeDirectory(const std::wstring& path) = 0;
 	virtual std::vector<std::wstring> getFiles(const std::wstring& path, bool recursion) = 0;
 	// финализация
 	virtual CBuffer* finalize() { return NULL; }
@@ -133,6 +134,7 @@ public:
 				{
 					return true;
 				}
+				iter++;
 			}
 		}
 
@@ -183,6 +185,70 @@ public:
 		std::string sXmlUtf8 = XmlUtils::GetUtf8FromFileContent(buffer->Buffer, (unsigned int)buffer->Size);
 		delete buffer;
 		return sXmlUtf8;
+	}
+	bool readFileWithChunks(const std::wstring& path, CBuffer*& buffer)
+	{
+		if (this->exists(path))
+			return this->read(path, buffer);
+
+		std::vector<std::wstring> arPieces = getFiles(path, false);
+		if (0 < arPieces.size())
+		{
+			std::sort(arPieces.begin(), arPieces.end(), compareAsXmlPiece);
+			std::vector<std::wstring>::iterator iter = arPieces.begin();
+			while (iter != arPieces.end())
+			{
+				std::wstring::size_type len = iter->length();
+				std::wstring::size_type pos = iter->rfind(L".piece");
+				if (std::wstring::npos != pos && ((pos + 6) == len))
+				{
+					iter++;
+					continue;
+				}
+				else
+				{
+					iter = arPieces.erase(iter);
+				}
+			}
+		}
+		if (0 == arPieces.size())
+			return false;
+
+		std::vector<CBuffer*> arBuffers;
+		DWORD dwSizeFull = 0;
+		for (std::vector<std::wstring>::iterator iter = arPieces.begin(); iter != arPieces.end(); iter++)
+		{
+			CBuffer* bufferPiece = NULL;
+			if (read(*iter, bufferPiece))
+			{
+				arBuffers.push_back(bufferPiece);
+				dwSizeFull += bufferPiece->Size;
+			}
+		}
+
+		if (0 == dwSizeFull)
+			return false;
+
+		BYTE* pData = new BYTE[dwSizeFull];
+		DWORD dwPos = 0;
+		for (std::vector<CBuffer*>::iterator iter = arBuffers.begin(); iter != arBuffers.end(); iter++)
+		{
+			CBuffer* bufferPiece = *iter;
+			DWORD dwSizeChunk = bufferPiece->Size;
+			if (dwSizeChunk != 0)
+			{
+				memcpy(pData + dwPos, bufferPiece->Buffer, dwSizeChunk);
+				dwPos += dwSizeChunk;
+			}
+			delete bufferPiece;
+		}
+		arBuffers.clear();
+
+		this->removeDirectory(path);
+		this->write(path, pData, dwSizeFull);
+
+		buffer = new CBuffer(pData, dwSizeFull, true);
+		return true;
 	}
 	std::string getFileBase64(const std::wstring& path)
 	{
@@ -343,7 +409,8 @@ public:
 	}
 	virtual bool exists(const std::wstring& path)
 	{
-		return NSFile::CFileBinary::Exists(getFullFilePath(path));
+		std::wstring full = getFullFilePath(path);
+		return NSFile::CFileBinary::Exists(full) && !NSDirectory::Exists(full);
 	}
 	virtual void remove(const std::wstring& path)
 	{
@@ -354,6 +421,12 @@ public:
 		std::wstring sPath = getFullFilePath(path);
 		if (!NSDirectory::Exists(sPath))
 			NSDirectory::CreateDirectory(sPath);
+	}
+	virtual void removeDirectory(const std::wstring& path)
+	{
+		std::wstring sPath = getFullFilePath(path);
+		if (NSDirectory::Exists(sPath))
+			NSDirectory::DeleteDirectory(sPath);
 	}
 	virtual std::vector<std::wstring> getFiles(const std::wstring& path, bool bIsRecursion)
 	{
@@ -394,8 +467,8 @@ protected:
 	{
 		std::string sPath = U_TO_UTF8(path);
 		if (!sPath.empty() && sPath[0] == '/')
-			return NSSystemPath::NormalizePath(sPath.substr(1));
-		return NSSystemPath::NormalizePath(sPath);
+			return NSSystemPath::NormalizePath(sPath.substr(1), true);
+		return NSSystemPath::NormalizePath(sPath, true);
 	}
 
 public:
@@ -473,6 +546,12 @@ public:
 	// Создавать директорию в архиве не требуется
 	virtual void createDirectory(const std::wstring& path)
 	{
+	}
+	virtual void removeDirectory(const std::wstring& path)
+	{
+		std::vector<std::wstring> arFiles = getFiles(path, true);
+		for (std::vector<std::wstring>::iterator i = arFiles.begin(); i != arFiles.end(); i++)
+			remove(*i);
 	}
 	// Возвращает вектор путей расположенных в папке
 	virtual std::vector<std::wstring> getFiles(const std::wstring& path, bool bIsRecursion)

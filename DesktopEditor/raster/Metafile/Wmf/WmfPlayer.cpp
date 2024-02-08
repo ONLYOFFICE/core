@@ -457,7 +457,6 @@ namespace MetaFile
 			m_oViewport.y = shY;
 		}
 
-		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
 	void CWmfDC::SetWindowExt(short shW, short shH)
@@ -482,7 +481,6 @@ namespace MetaFile
 	{
 		m_oWindow.x += shX;
 		m_oWindow.y += shY;
-		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
 	void CWmfDC::SetWindowScale(double dX, double dY)
@@ -508,7 +506,6 @@ namespace MetaFile
 			m_oWindow.y = shY;
 		}
 
-		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
 	void CWmfDC::SetViewportExt(short shW, short shH)
@@ -533,7 +530,7 @@ namespace MetaFile
 	{
 		m_oViewport.x += shX;
 		m_oViewport.y += shY;
-		UpdatePixelMetrics();
+//		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
 	void CWmfDC::SetViewportScale(double dX, double dY)
@@ -545,7 +542,7 @@ namespace MetaFile
 	}
 	bool CWmfDC::UpdatePixelMetrics()
 	{
-		if (1 >= m_oWindow.w || 1 >= m_oViewport.w)
+		if (1 >= std::abs(m_oWindow.w) || 1 >= std::abs(m_oViewport.w))
 			return false;
 
 		unsigned short ushMapMode = m_ushMapMode;
@@ -593,6 +590,9 @@ namespace MetaFile
 
 	void CWmfDC::FixIsotropic()
 	{
+		if (m_oViewport.w == m_oWindow.w && m_oViewport.h == m_oWindow.h)
+			return;
+
 		double dXDim = std::fabs((double)m_oViewport.w / m_oWindow.w);
 		double dYDim = std::fabs((double)m_oViewport.h / m_oWindow.h);
 

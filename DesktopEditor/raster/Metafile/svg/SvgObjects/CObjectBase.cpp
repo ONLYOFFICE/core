@@ -33,29 +33,7 @@ namespace SVG
 
 	CObject::CObject(XmlUtils::CXmlNode &oNode)
 	{
-		if (!oNode.IsValid())
-			return;
-
-		std::vector<std::wstring> arProperties, arValues;
-
-		oNode.GetAllAttributes(arProperties, arValues);
-
-		m_oXmlNode.m_wsName = oNode.GetName();
-
-		for (unsigned int unIndex = 0; unIndex < arProperties.size(); ++unIndex)
-		{
-			if (L"class" == arProperties[unIndex])
-			{
-				m_oXmlNode.m_wsClass = arValues[unIndex];
-				std::transform(m_oXmlNode.m_wsClass.begin(), m_oXmlNode.m_wsClass.end(), m_oXmlNode.m_wsClass.begin(), std::towlower);
-			}
-			else if (L"id" == arProperties[unIndex])
-				m_oXmlNode.m_wsId = arValues[unIndex];
-			else if (L"style" == arProperties[unIndex])
-				m_oXmlNode.m_wsStyle = arValues[unIndex];
-			else
-				m_oXmlNode.m_mAttributes.insert({arProperties[unIndex], arValues[unIndex]});
-		}
+		SetNodeData(oNode);
 	}
 
 	CObject::~CObject()
@@ -177,7 +155,34 @@ namespace SVG
 
 		return pDefObject->Apply(pRenderer, pFile, oBounds);
 	}
-	
+
+	void CObject::SetNodeData(XmlUtils::CXmlNode &oNode)
+	{
+		if (!oNode.IsValid())
+			return;
+
+		std::vector<std::wstring> arProperties, arValues;
+
+		oNode.GetAllAttributes(arProperties, arValues);
+
+		m_oXmlNode.m_wsName = oNode.GetName();
+
+		for (unsigned int unIndex = 0; unIndex < arProperties.size(); ++unIndex)
+		{
+			if (L"class" == arProperties[unIndex])
+			{
+				m_oXmlNode.m_wsClass = arValues[unIndex];
+				std::transform(m_oXmlNode.m_wsClass.begin(), m_oXmlNode.m_wsClass.end(), m_oXmlNode.m_wsClass.begin(), std::towlower);
+			}
+			else if (L"id" == arProperties[unIndex])
+				m_oXmlNode.m_wsId = arValues[unIndex];
+			else if (L"style" == arProperties[unIndex])
+				m_oXmlNode.m_wsStyle = arValues[unIndex];
+			else
+				m_oXmlNode.m_mAttributes.insert({arProperties[unIndex], arValues[unIndex]});
+		}
+	}
+
 	std::wstring CObject::GetId() const
 	{
 		return m_oXmlNode.m_wsId;
@@ -421,6 +426,14 @@ namespace SVG
 		pRenderer->put_BrushAlpha1(255. * pFill->GetOpacity());
 
 		return true;
+	}
+
+	bool CRenderedObject::ApplyOpacity(IRenderer *pRenderer, const NSCSS::NSProperties::CDigit *pOpacity) const
+	{
+		if (NULL == pRenderer || NULL == pOpacity)
+			return false;
+
+		return false;
 	}
 
 	CAppliedObject::CAppliedObject(XmlUtils::CXmlNode &oNode)

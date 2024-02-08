@@ -160,6 +160,22 @@ namespace MetaFile
 		return m_pMetaFileRenderer;
 	}
 	
+	double CEmfInterpretatorRender::GetScaleX() const
+	{
+		if (NULL == m_pMetaFileRenderer)
+			return 1.;
+
+		return m_pMetaFileRenderer->GetScaleX();
+	}
+
+	double CEmfInterpretatorRender::GetScaleY() const
+	{
+		if (NULL == m_pMetaFileRenderer)
+			return 1.;
+
+		return m_pMetaFileRenderer->GetScaleY();
+	}
+
 	void CEmfInterpretatorRender::HANDLE_EMR_RESTOREDC(const int &nIndexDC)
 	{
 		if (NULL != m_pMetaFileRenderer)

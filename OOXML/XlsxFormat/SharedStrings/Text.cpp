@@ -211,20 +211,22 @@ namespace OOX
 		void CText::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
 			writer.WriteString(_T("<t"));
-			if(std::wstring::npos != m_sText.find(' ') || std::wstring::npos != m_sText.find('\n'))
+			if(std::wstring::npos != m_sText.find('\x20') || std::wstring::npos != m_sText.find('\n') || std::wstring::npos != m_sText.find('\x9'))
 				writer.WriteString(_T(" xml:space=\"preserve\""));
 			writer.WriteString(_T(">"));
-			writer.WriteEncodeXmlStringHHHH(m_sText);
+			if (!m_sText.empty())
+				writer.WriteEncodeXmlStringHHHH(m_sText);
 			writer.WriteString(_T("</t>"));
 		}
 		void CText::toXML2(NSStringUtils::CStringBuilder& writer, const wchar_t* name) const
 		{
 			writer.WriteString(_T("<"));
 			writer.WriteString(name);
-			if(std::wstring::npos != m_sText.find(' ') || std::wstring::npos != m_sText.find('\n'))
+			if ((std::wstring::npos != m_sText.find('\x20') || std::wstring::npos != m_sText.find('\n') || std::wstring::npos != m_sText.find('\x9')))
 				writer.WriteString(_T(" xml:space=\"preserve\""));
 			writer.WriteString(_T(">"));
-			writer.WriteEncodeXmlStringHHHH(m_sText);
+			if (!m_sText.empty())
+				writer.WriteEncodeXmlStringHHHH(m_sText);
 			writer.WriteString(_T("</"));
 			writer.WriteString(name);
 			writer.WriteString(_T(">"));

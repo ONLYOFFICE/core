@@ -20,6 +20,10 @@
 // uncomment to enable exceptions throwing
 //#define JSON_DEBUG
 
+#ifdef JSON_DEBUG
+#include <stdexcept>
+#endif
+
 namespace NSJSON
 {
 	typedef unsigned char BYTE;
@@ -34,7 +38,7 @@ namespace NSJSON
 	protected:
 		IValue();
 		IValue(const std::shared_ptr<CTypedValue>& internal);
-		virtual ~IValue();
+		~IValue();
 
 		// Disable copy for this class (implemented in heirs)
 		IValue(const IValue& other) = delete;
@@ -50,6 +54,10 @@ namespace NSJSON
 		 * Returns true if the value is null.
 		 */
 		bool IsNull() const;
+		/**
+		 * Returns true if the value is not undefined or null.
+		 */
+		bool IsInit() const;
 		/**
 		 * Returns true if the value is a boolean value.
 		 */

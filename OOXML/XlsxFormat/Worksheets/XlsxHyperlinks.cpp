@@ -35,6 +35,8 @@
 
 #include "../../Common/SimpleTypes_Shared.h"
 
+#include "../../XlsbFormat/Biff12_unions/HLINKS.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -72,6 +74,24 @@ namespace OOX
 		void CHyperlink::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
+		}
+		XLS::BaseObjectPtr CHyperlink::toBin()
+		{
+			auto castedPtr(new XLSB::HLink);
+			XLS::BaseObjectPtr ptr(castedPtr);
+
+			if(m_oDisplay.IsInit())
+				castedPtr->display = m_oDisplay.get();
+			if(m_oRid.IsInit())
+				castedPtr->relId.value = m_oRid->GetValue();
+			if(m_oLocation.IsInit())
+				castedPtr->location = m_oLocation.get();
+			if(m_oRef.IsInit())
+				castedPtr->rfx = m_oRef.get();
+			if(m_oTooltip.IsInit())
+				castedPtr->tooltip = m_oTooltip.get();
+
+			return ptr;
 		}
 		EElementType CHyperlink::getType () const
 		{
@@ -160,6 +180,19 @@ namespace OOX
 				pHyperlink->fromBin(hyperlink);
 			}
 		}
+		XLS::BaseObjectPtr CHyperlinks::toBin()
+		{
+
+			auto castedPtr(new XLSB::HLINKS);
+			XLS::BaseObjectPtr ptr(castedPtr);
+
+			for(auto i:m_arrItems)
+			{
+				castedPtr->m_arHlinks.push_back(i->toBin());
+			}
+			return ptr;
+		}
+
 		EElementType CHyperlinks::getType () const
 			{
 				return et_x_Hyperlinks;

@@ -140,6 +140,10 @@ namespace DocFileFormat
 			cpStart = txtbxSubdocStart + m_document->TextboxBreakPlexHeader->CharacterPositions[m_nTBIndex];
 			cpEnd = txtbxSubdocStart + m_document->TextboxBreakPlexHeader->CharacterPositions[m_nTBIndex + 1];
 		}
+		else
+		{
+			cpEnd = 0x7fffffff;
+		}
 		bool bUsed = bkd ? bkd->bUsed : false;
 		_isTextBoxContent = true;
 
@@ -170,7 +174,7 @@ namespace DocFileFormat
 			else
 			{
 				//this PAPX is for a normal paragraph
-				cp = writeParagraph(cp, 0x7fffffff);
+				cp = writeParagraph(cp, cpEnd - 1);
 			}
 		}
 		_isTextBoxContent = false;

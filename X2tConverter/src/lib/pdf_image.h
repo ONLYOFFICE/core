@@ -647,7 +647,7 @@ namespace NExtractTools
 		if (!documentID.empty())
 			oPdfResult.SetDocumentID(documentID);
 
-		std::wstring password = params.getSavePassword();
+		std::wstring password = params.getPassword();
 		if (!oPdfResult.LoadFromFile(sFrom, L"", password, password))
 			return false;
 
@@ -707,10 +707,82 @@ namespace NExtractTools
 		{
 			std::string sPages = checkPrintPages(params);
 
-			if (nFormatFrom == nFormatTo && !params.getIsPDFA() && params.getPassword() == params.getSavePassword() && sPages.empty())
+			if (nFormatFrom == nFormatTo && !params.getIsPDFA())
 			{
+				if (!sPages.empty())
+				{
+					std::wstring sCurrentTmp = L"";
+					sCurrentTmp =NSFile::CFileBinary::CreateTempFileWithUniqueName(convertParams.m_sTempDir, L"PDF_");
+					if (NSFile::CFileBinary::Exists(sCurrentTmp))
+						NSFile::CFileBinary::Remove(sCurrentTmp);
+
+					CPdfFile oPdfPages(pApplicationFonts);
+					oPdfPages.SetTempDirectory(convertParams.m_sTempDir);
+
+					std::wstring sPassword = params.getPassword();
+					if (oPdfPages.LoadFromFile(sFrom.c_str(), L"", sPassword, sPassword) && oPdfPages.EditPdf(sCurrentTmp))
+					{
+						int nPagesCount = oPdfPages.GetPagesCount();
+						std::vector<bool> arPages = getPrintPages(convertParams.m_sPrintPages, nPagesCount);
+
+						for (int i = 0; i < nPagesCount; ++i)
+						{
+							if (!arPages[i])
+								oPdfPages.DeletePage(i);
+						}
+
+						oPdfPages.Close();
+					}
+					else
+					{
+						sCurrentTmp = L"";
+					}
+
+					if (!sCurrentTmp.empty())
+					{
+						if (sFrom != sFromSrc)
+						{
+							NSFile::CFileBinary::Remove(sFrom);
+						}
+						sFrom = sCurrentTmp;
+					}
+				}
+
+				if (params.getPassword() != params.getSavePassword())
+				{
+					std::wstring sCurrentTmp = L"";
+					sCurrentTmp =NSFile::CFileBinary::CreateTempFileWithUniqueName(convertParams.m_sTempDir, L"PDF_");
+					if (NSFile::CFileBinary::Exists(sCurrentTmp))
+						NSFile::CFileBinary::Remove(sCurrentTmp);
+
+					CPdfFile oPdfPages(pApplicationFonts);
+					oPdfPages.SetTempDirectory(convertParams.m_sTempDir);
+
+					std::wstring sPassword = params.getPassword();
+					if (oPdfPages.LoadFromFile(sFrom.c_str(), L"", sPassword, sPassword))
+					{
+						oPdfPages.ChangePassword(sCurrentTmp, params.getSavePassword());
+						oPdfPages.Close();
+					}
+					else
+					{
+						sCurrentTmp = L"";
+					}
+
+					if (!sCurrentTmp.empty())
+					{
+						if (sFrom != sFromSrc)
+						{
+							NSFile::CFileBinary::Remove(sFrom);
+						}
+						sFrom = sCurrentTmp;
+					}
+				}
+
 				if (sFrom == sFromSrc)
+				{
 					nRes = NSFile::CFileBinary::Copy(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+				}
 				else
 				{
 					nRes = NSFile::CFileBinary::Move(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
@@ -729,7 +801,7 @@ namespace NExtractTools
 					pdfWriter.SetDocumentID(documentID);
 
 				std::wstring password = params.getSavePassword();
-				if (false == password.empty())
+				if (!password.empty())
 					pdfWriter.SetPassword(password);
 
 				IOfficeDrawingFile *pReader = NULL;
@@ -740,27 +812,10 @@ namespace NExtractTools
 				RELEASEOBJECT(pReader);
 			}
 		}
-		else if (0 != (AVS_OFFICESTUDIO_FILE_CANVAS & nFormatTo))
+		else if (0 != (AVS_OFFICESTUDIO_FILE_CANVAS & nFormatTo) && params.needConvertToOrigin(nFormatFrom))
 		{
-			if (params.needConvertToOrigin(nFormatFrom))
-			{
-				copyOrigin(sFrom, *params.m_sFileTo);
-			}
-			else
-			{
-				std::wstring sToDir = NSSystemPath::GetDirectoryName(sTo);
-				if (!params.getDontSaveAdditional())
-				{
-					// save origin to print
-					copyOrigin(sFrom, *params.m_sFileTo);
-				}
-				NSHtmlRenderer::CASCHTMLRenderer3 oHtmlRenderer;
-				oHtmlRenderer.CreateOfficeFile(sToDir);
-				IOfficeDrawingFile *pReader = NULL;
-				nRes = PdfDjvuXpsToRenderer(&pReader, &oHtmlRenderer, sFrom, nFormatFrom, sTo, params, convertParams, pApplicationFonts);
-				oHtmlRenderer.CloseFile(params.getIsNoBase64());
-				RELEASEOBJECT(pReader);
-			}
+			//todo remove this code. copy outside x2t
+			copyOrigin(sFrom, *params.m_sFileTo);
 		}
 		else if (0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
 		{

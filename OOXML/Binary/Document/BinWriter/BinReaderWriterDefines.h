@@ -35,17 +35,8 @@ namespace BinDocxRW
 {
 const double eps     = 0.001;
 
-const int g_tabtype_left = 0;
-const int g_tabtype_right = 1;
-const int g_tabtype_center = 2;
-const int g_tabtype_clear = 3;
-
 const int border_None   = 0x0000;
 const int border_Single = 0x0001;
-
-const int heightrule_AtLeast = 0x00;
-const int heightrule_Auto    = 0x01;
-const int heightrule_Exact   = 0x02;
 
 const int align_Right   = 0;
 const int align_Left    = 1;
@@ -66,37 +57,15 @@ const int linerule_Exact   = 2;
 const int orientation_Portrait  = 0x00;
 const int orientation_Landscape = 0x01;
 
-const int numbering_numfmt_None        = 0x0000;
-const int numbering_numfmt_Bullet      = 0x1001;
-const int numbering_numfmt_Decimal     = 0x2002;
-const int numbering_numfmt_LowerRoman  = 0x2003;
-const int numbering_numfmt_UpperRoman  = 0x2004;
-const int numbering_numfmt_LowerLetter = 0x2005;
-const int numbering_numfmt_UpperLetter = 0x2006;
-const int numbering_numfmt_DecimalZero = 0x2007;
-
-const int numbering_suff_Tab     = 1;
-const int numbering_suff_Space   = 2;
-const int numbering_suff_Nothing = 3;
-
 const int tblwidth_Auto = 0x00;
 const int tblwidth_Mm   = 0x01;
 const int tblwidth_Nil  = 0x02;
 const int tblwidth_Pct  = 0x03;
 
-const int fontstyle_mask_regular = 1;
-const int fontstyle_mask_italic = 2;
-const int fontstyle_mask_bold = 4;
-const int fontstyle_mask_bolditalic = 8;
-
 const int styletype_Character = 0x01;
 const int styletype_Numbering = 0x02;
 const int styletype_Paragraph = 0x03;
 const int styletype_Table = 0x04;
-
-const int fieldstruct_none = 0;
-const int fieldstruct_toc = 1;
-const int fieldstruct_hyperlink = 2;
 
 const double g_dKoef_mm_to_pt = 72 / (2.54 * 10);
 const double g_dKoef_mm_to_twips = 20 * g_dKoef_mm_to_pt;
@@ -105,9 +74,12 @@ const double g_dKoef_mm_to_eightpoint = 8 * g_dKoef_mm_to_pt;
 const double g_dKoef_mm_to_hps = 2 * g_dKoef_mm_to_pt;
 
 const static wchar_t* g_sFormatSignature = L"DOCY";
+
 const int g_nFormatVersion = 5;
 const int g_nFormatVersionNoBase64 = 10; 
+
 extern int g_nCurFormatVersion;
+
 	namespace c_oAscWrapStyle{enum c_oSerFormat
 	{
 		Inline = 0,

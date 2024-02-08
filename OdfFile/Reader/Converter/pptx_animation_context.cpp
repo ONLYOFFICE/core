@@ -33,6 +33,7 @@
 #include "pptx_animation_context.h"
 
 #include <xml/simple_xml_writer.h>
+#include <boost/algorithm/string.hpp>
 
 #include "../../DataTypes/clockvalue.h"
 
@@ -141,6 +142,11 @@ namespace oox {
 	void pptx_animation_context::set_par_animation_preset_id(int value)
 	{
 		SET_PAR_ANIMATION_ATTRIBUTE(PresetID, value);
+	}
+
+	void pptx_animation_context::set_par_animation_preset_subtype(int value)
+	{
+		SET_PAR_ANIMATION_ATTRIBUTE(PresetSubtype, value);
 	}
 
 	void pptx_animation_context::set_par_animation_fill(const std::wstring& value)
@@ -263,6 +269,11 @@ namespace oox {
 		impl_->set_description_->End = value;
 	}
 
+	void pptx_animation_context::set_set_auto_rev(const std::wstring& value)
+	{
+		impl_->set_description_->AutoRev = value;
+	}
+
 	void pptx_animation_context::set_set_fill(const std::wstring& value)
 	{
 		impl_->set_description_->Fill = value;
@@ -308,6 +319,21 @@ namespace oox {
 	void pptx_animation_context::set_anim_effect_duration(int value)
 	{
 		impl_->anim_effect_description_->Duration = value;
+	}
+
+	void pptx_animation_context::set_anim_effect_delay(const std::wstring& value)
+	{
+		impl_->anim_effect_description_->Delay = value;
+	}
+
+	void pptx_animation_context::set_anim_effect_accel(int value)
+	{
+		impl_->anim_effect_description_->Accel = value;
+	}
+
+	void pptx_animation_context::set_anim_effect_decel(int value)
+	{
+		impl_->anim_effect_description_->Decel = value;
 	}
 
 	void pptx_animation_context::set_anim_effect_shape_id(size_t value)
@@ -463,6 +489,11 @@ namespace oox {
 		impl_->anim_clr_description_->ColorSpace = value;
 	}
 
+	void pptx_animation_context::set_animate_color_dir(const std::wstring& value)
+	{
+		impl_->anim_clr_description_->Direction = value;
+	}
+
 	void pptx_animation_context::set_animate_color_duration(int value)
 	{
 		impl_->anim_clr_description_->Duration = value;
@@ -473,6 +504,16 @@ namespace oox {
 		impl_->anim_clr_description_->Delay = value;
 	}
 
+	void pptx_animation_context::set_animate_color_fill(const std::wstring& value)
+	{
+		impl_->anim_clr_description_->Fill = value;
+	}
+
+	void pptx_animation_context::set_animate_color_auto_rev(bool value)
+	{
+		impl_->anim_clr_description_->AutoRev = value;
+	}
+
 	void pptx_animation_context::set_animate_color_attribute_name(const std::wstring& value)
 	{
 		impl_->anim_clr_description_->AttributeName = value;
@@ -481,6 +522,55 @@ namespace oox {
 	void pptx_animation_context::set_animate_color_to_value(const std::wstring& value)
 	{
 		impl_->anim_clr_description_->ToValue = value;
+	}
+
+	void pptx_animation_context::set_animate_color_by_value(const std::wstring& value)
+	{
+		impl_->anim_clr_description_->ByValue = pptx_animation_context::Impl::_anim_clr::color();
+
+		if (boost::algorithm::starts_with(value, L"#"))
+		{
+			if (value.size() != std::wstring(L"#rrggbb").size())
+				return;
+
+			const std::wstring str = value.substr(1); // Remove # character
+
+			int r = 0;
+			int g = 0;
+			int b = 0;
+
+			std::wistringstream(str.substr(0, 2)) >> std::hex >> r;
+			std::wistringstream(str.substr(2, 2)) >> std::hex >> g;
+			std::wistringstream(str.substr(4, 2)) >> std::hex >> b;
+
+			impl_->anim_clr_description_->ByValue->type_ = pptx_animation_context::Impl::_anim_clr::color::rgb;
+			impl_->anim_clr_description_->ByValue->v1 = r;
+			impl_->anim_clr_description_->ByValue->v2 = g;
+			impl_->anim_clr_description_->ByValue->v3 = b;
+		}
+		else if (boost::algorithm::starts_with(value, L"hsl"))
+		{
+			std::wstring str = value;
+			boost::algorithm::erase_all(str, L"hsl");
+			boost::algorithm::erase_all(str, L"(");
+			boost::algorithm::erase_all(str, L")");
+			boost::algorithm::erase_all(str, L"%");
+			std::vector<std::wstring> arr;
+			boost::algorithm::split(arr, str, boost::is_any_of(","));
+
+			int h = 0;
+			int s = 0;
+			int l = 0;
+
+			std::wistringstream(arr[0]) >> h;
+			std::wistringstream(arr[1]) >> s;
+			std::wistringstream(arr[2]) >> l;
+
+			impl_->anim_clr_description_->ByValue->type_ = pptx_animation_context::Impl::_anim_clr::color::hsl;
+			impl_->anim_clr_description_->ByValue->v1 = h * 60000;
+			impl_->anim_clr_description_->ByValue->v2 = s * 1000;
+			impl_->anim_clr_description_->ByValue->v3 = l * 1000;
+		}
 	}
 
 	void pptx_animation_context::set_animate_color_shape_id(size_t value)
@@ -525,9 +615,19 @@ namespace oox {
 		impl_->anim_scale_description_->To = Impl::_anim_scale::vec2(x, y);
 	}
 
+	void pptx_animation_context::set_animate_scale_by(int x, int y)
+	{
+		impl_->anim_scale_description_->By = Impl::_anim_scale::vec2(x, y);
+	}
+
 	void pptx_animation_context::set_animate_scale_delay(const std::wstring& value)
 	{
 		impl_->anim_scale_description_->Delay = value;
+	}
+
+	void pptx_animation_context::set_animate_scale_attribute_name(const std::wstring& value)
+	{
+		impl_->anim_scale_description_->AttributeName = value;
 	}
 
 	void pptx_animation_context::set_animate_scale_auto_reverse(bool value)
@@ -565,6 +665,11 @@ namespace oox {
 	void pptx_animation_context::set_animate_rotate_by(int value)
 	{
 		impl_->anim_rotate_description_->By = value;
+	}
+
+	void pptx_animation_context::set_animate_rotate_attribute_name(const std::wstring& value)
+	{
+		impl_->anim_rotate_description_->AttributeName = value;
 	}
 
 	void pptx_animation_context::set_animate_rotate_delay(const std::wstring& value)
@@ -653,6 +758,21 @@ namespace oox {
 		return impl_->root_animation_element_;
 	}
 
+	static _CP_OPT(std::wstring) serialize_duration(const _CP_OPT(int) duration)
+	{
+		_CP_OPT(std::wstring) res = boost::none;
+
+		if (duration)
+		{
+			if (*duration == -1)
+				res = L"indefinite";
+			else
+				res = std::to_wstring(duration.value());
+		}
+
+		return res;
+	}
+
 	void pptx_animation_context::Impl::_par_animation::serialize(std::wostream& strm)
 	{
 		CP_XML_WRITER(strm)
@@ -663,6 +783,7 @@ namespace oox {
 				{
 					CP_XML_ATTR_OPT(L"presetClass"	, PresetClass);
 					CP_XML_ATTR_OPT(L"presetID"		, PresetID);
+					CP_XML_ATTR_OPT(L"presetSubtype", PresetSubtype);
 					CP_XML_ATTR_OPT(L"fill"			, Fill);
 					CP_XML_ATTR_OPT(L"accel"		, Accelerate);
 					CP_XML_ATTR_OPT(L"decel"		, Decelerate);
@@ -727,8 +848,10 @@ namespace oox {
 						CP_XML_ATTR(L"nodeType", PresentationNodeType.value());
 						CP_XML_ATTR(L"dur", L"indefinite");
 					}
-					else if (Duration)		
-						CP_XML_ATTR(L"dur",	Duration.value());
+					else
+					{
+						CP_XML_ATTR_OPT(L"dur", serialize_duration(Duration));
+					}						
 
 					if (TargetEl)
 					{
@@ -796,9 +919,10 @@ namespace oox {
 				{
 					CP_XML_NODE(L"p:cTn")
 					{
-						CP_XML_ATTR_OPT(L"dur"	, Duration);
-						CP_XML_ATTR_OPT(L"fill"	, Fill);
-						
+						CP_XML_ATTR_OPT(L"dur", serialize_duration(Duration));
+						CP_XML_ATTR_OPT(L"fill", Fill);
+						CP_XML_ATTR_OPT(L"autoRev", AutoRev);
+
 						if (Delay)
 						{
 							CP_XML_NODE(L"p:stCondLst")
@@ -820,9 +944,9 @@ namespace oox {
 						}
 					}
 
-					CP_XML_NODE(L"p:attrNameLst")
+					if (AttributeName)
 					{
-						if (AttributeName)
+						CP_XML_NODE(L"p:attrNameLst")
 						{
 							CP_XML_NODE(L"p:attrName")
 							{
@@ -831,9 +955,9 @@ namespace oox {
 						}
 					}
 				}
-				CP_XML_NODE(L"p:to")
+				if (ToValue)
 				{
-					if (ToValue)
+					CP_XML_NODE(L"p:to")
 					{
 						CP_XML_NODE(L"p:strVal")
 						{
@@ -861,7 +985,20 @@ namespace oox {
 					{
 						CP_XML_NODE(L"p:cTn")
 						{
-							CP_XML_ATTR(L"dur", Duration.value());
+							CP_XML_ATTR_OPT(L"dur", serialize_duration(Duration));
+							CP_XML_ATTR_OPT(L"accel", Accel);
+							CP_XML_ATTR_OPT(L"decel", Decel);
+
+							if (Delay)
+							{
+								CP_XML_NODE(L"p:stCondLst")
+								{
+									CP_XML_NODE(L"p:cond")
+									{
+										CP_XML_ATTR(L"delay", Delay.value());
+									}
+								}
+							}
 						}
 					}
 					if (ShapeID)
@@ -926,8 +1063,7 @@ namespace oox {
 					
 					CP_XML_NODE(L"p:cTn")
 					{
-						int duration = Duration ? Duration.value() : 1;
-						CP_XML_ATTR(L"dur", duration);
+						CP_XML_ATTR_OPT(L"dur", serialize_duration(Duration));
 
 						if (AutoReverse)
 						{
@@ -935,12 +1071,14 @@ namespace oox {
 							CP_XML_ATTR(L"autoRev", autoRev);
 						}
 
-						CP_XML_NODE(L"p:stCondLst")
+						if (Delay)
 						{
-							std::wstring delay = Delay ? Delay.value() : L"0";
-							CP_XML_NODE(L"p:cond")
+							CP_XML_NODE(L"p:stCondLst")
 							{
-								CP_XML_ATTR(L"delay", delay);
+								CP_XML_NODE(L"p:cond")
+								{
+									CP_XML_ATTR(L"delay", Delay.value());
+								}
 							}
 						}
 					}
@@ -1001,19 +1139,20 @@ namespace oox {
 		{
 			CP_XML_NODE(L"p:animClr")
 			{
-				if (ColorSpace)		CP_XML_ATTR(L"clrSpc", ColorSpace.value());
+				CP_XML_ATTR_OPT(L"clrSpc", ColorSpace);
 
 				CP_XML_NODE(L"p:cBhvr")
 				{
 					CP_XML_NODE(L"p:cTn")
 					{
-						int duration = Duration ? Duration.value() : 1;
-						CP_XML_ATTR(L"dur", duration);
-						CP_XML_ATTR(L"fill", L"hold");
+						CP_XML_ATTR_OPT(L"dur", serialize_duration(Duration));
+						CP_XML_ATTR_OPT(L"fill", Fill);
+						CP_XML_ATTR_OPT(L"autoRev", AutoRev);
+						CP_XML_ATTR_OPT(L"dir", Direction);
 
-						CP_XML_NODE(L"p:stCondLst")
+						if (Delay)
 						{
-							if (Delay)
+							CP_XML_NODE(L"p:stCondLst")
 							{
 								CP_XML_NODE(L"p:cond")
 								{
@@ -1030,9 +1169,9 @@ namespace oox {
 							CP_XML_ATTR(L"spid", shapeID);
 						}
 					}
-					CP_XML_NODE(L"p:attrNameLst")
+					if (AttributeName)
 					{
-						if (AttributeName)
+						CP_XML_NODE(L"p:attrNameLst")
 						{
 							CP_XML_NODE(L"p:attrName")
 							{
@@ -1041,13 +1180,45 @@ namespace oox {
 						}
 					}
 				}
-				CP_XML_NODE(L"p:to")
+				if (ToValue)
 				{
-					if (ToValue)
+					CP_XML_NODE(L"p:to")
 					{
 						CP_XML_NODE(L"a:srgbClr")
 						{
 							CP_XML_ATTR(L"val", ToValue.value());
+						}
+					}
+				}
+
+				if (ByValue)
+				{
+					CP_XML_NODE(L"p:by")
+					{
+						switch (ByValue->type_)
+						{
+						case color::rgb:
+						{
+							CP_XML_NODE(L"a:srgbClr")
+							{
+								std::wstringstream ss;
+								ss << std::hex
+									<< ByValue->v1
+									<< ByValue->v2
+									<< ByValue->v3;
+
+								CP_XML_ATTR(L"val", ss.str());
+							}
+						} break;
+						case color::hsl:
+						{
+							CP_XML_NODE(L"p:hsl")
+							{
+								CP_XML_ATTR(L"h", ByValue->v1);
+								CP_XML_ATTR(L"s", ByValue->v2);
+								CP_XML_ATTR(L"l", ByValue->v3);
+							}
+						} break;
 						}
 					}
 				}
@@ -1065,8 +1236,7 @@ namespace oox {
 				{
 					CP_XML_NODE(L"p:cTn")
 					{
-						int duration = Duration ? Duration.value() : 1;
-						CP_XML_ATTR(L"dur", duration);
+						CP_XML_ATTR_OPT(L"dur", serialize_duration(Duration));
 
 						if (AutoReverse)	CP_XML_ATTR(L"autoRev", AutoReverse.value());
 						if (Fill)			CP_XML_ATTR(L"fill", Fill.value());
@@ -1086,6 +1256,17 @@ namespace oox {
 						{
 							size_t shapeID = ShapeID ? ShapeID.value() : 0;
 							CP_XML_ATTR(L"spid", shapeID);
+						}
+					}
+
+					if (AttributeName)
+					{
+						CP_XML_NODE(L"p:attrNameLst")
+						{
+							CP_XML_NODE(L"p:attrName")
+							{
+								CP_XML_STREAM() << AttributeName.value();
+							}
 						}
 					}
 				}
@@ -1107,6 +1288,15 @@ namespace oox {
 						CP_XML_ATTR(L"y", To->y);
 					}
 				}
+
+				if (By)
+				{
+					CP_XML_NODE(L"p:by")
+					{
+						CP_XML_ATTR(L"x", By->x);
+						CP_XML_ATTR(L"y", By->y);
+					}
+				}
 			}
 		}
 	}
@@ -1123,8 +1313,7 @@ namespace oox {
 				{
 					CP_XML_NODE(L"p:cTn")
 					{
-						int duration = Duration ? Duration.value() : 1;
-						CP_XML_ATTR(L"dur", duration);
+						CP_XML_ATTR_OPT(L"dur", serialize_duration(Duration));
 
 						if (AutoReverse)	CP_XML_ATTR(L"autoRev", AutoReverse.value());
 						if (Fill)			CP_XML_ATTR(L"fill", Fill.value());
@@ -1144,6 +1333,17 @@ namespace oox {
 						{
 							size_t shapeID = ShapeID ? ShapeID.value() : 0;
 							CP_XML_ATTR(L"spid", shapeID);
+						}
+					}
+
+					if (AttributeName)
+					{
+						CP_XML_NODE(L"p:attrNameLst")
+						{
+							CP_XML_NODE(L"p:attrName")
+							{
+								CP_XML_STREAM() << AttributeName.value();
+							}
 						}
 					}
 				}

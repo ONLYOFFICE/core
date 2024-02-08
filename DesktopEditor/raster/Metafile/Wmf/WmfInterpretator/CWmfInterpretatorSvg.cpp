@@ -30,50 +30,49 @@ namespace MetaFile
 
 		TRectL *pBounds = m_pParser->GetDCBounds();
 
-		m_oViewport.dLeft   = pBounds->Left;
-		m_oViewport.dTop    = pBounds->Top;
-		m_oViewport.dRight  = pBounds->Right;
-		m_oViewport.dBottom = pBounds->Bottom;
+		m_oViewport.dLeft   = std::min(pBounds->Left, pBounds->Right );
+		m_oViewport.dTop    = std::min(pBounds->Top,  pBounds->Bottom);
+		m_oViewport.dRight  = std::max(pBounds->Left, pBounds->Right );
+		m_oViewport.dBottom = std::max(pBounds->Top,  pBounds->Bottom);
 
 		UpdateSize();
 
-		if (m_oViewport.GetWidth() != 0)
-			m_pXmlWriter->WriteAttribute(L"width", ConvertToWString(m_oViewport.GetWidth()));
-
-		if (m_oViewport.GetHeight() != 0)
-			m_pXmlWriter->WriteAttribute(L"height", ConvertToWString(m_oViewport.GetHeight()));
-
-		double dXScale = 1, dYScale = 1, dXTranslate = 0, dYTranslate = 0;
+		double dXScale = 1., dYScale = 1.;
 
 		if (0 != m_oSizeWindow.X)
-		{
 			dXScale = m_oSizeWindow.X / m_oViewport.GetWidth();
-			dXTranslate = (m_oViewport.GetWidth()) / 2 * std::abs(dXScale - 1);
-
-			if (dXScale < 1)
-				dXTranslate = -dXTranslate;
-		}
 
 		if (0 != m_oSizeWindow.Y)
-		{
 			dYScale = m_oSizeWindow.Y / m_oViewport.GetHeight();
-			dYTranslate = (m_oViewport.GetHeight()) / 2 * std::abs(dYScale - 1);
 
-			if (dYScale < 1)
-				dYTranslate = -dYTranslate;
-		}
+		if (m_oViewport.GetWidth() != 0)
+			m_pXmlWriter->WriteAttribute(L"width", ConvertToWString(m_oViewport.GetWidth() * dXScale));
 
-		if (1 != dXScale || 1 != dYScale)
-			m_pXmlWriter->WriteAttribute(L"transform", L"matrix(" + std::to_wstring(dXScale) + L",0,0," + std::to_wstring(dYScale) + L',' + ConvertToWString(dXTranslate) + L',' + ConvertToWString(dYTranslate) + L')');
+		if (m_oViewport.GetHeight() != 0)
+			m_pXmlWriter->WriteAttribute(L"height", ConvertToWString(m_oViewport.GetHeight() * dYScale));
 
 		m_pXmlWriter->WriteNodeEnd(L"svg", true, false);
+
+		if (!Equals(1., dXScale) || !Equals(1., dYScale))
+		{
+			m_pXmlWriter->WriteNodeBegin(L"g", true);
+
+			m_pXmlWriter->WriteAttribute(L"transform", L"scale(" + ConvertToWString(dXScale) + L',' + ConvertToWString(dYScale) + L')');
+
+			m_pXmlWriter->WriteNodeEnd(L"g", true, false);
+		}
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_EOF()
 	{
 		CloseClip();
+
 		if (!m_wsDefs.empty())
 			m_pXmlWriter->WriteString(L"<defs>" + m_wsDefs + L"</defs>");
+
+		if (!Equals(m_oSizeWindow.X, m_oViewport.GetWidth()) || !Equals(m_oSizeWindow.Y, m_oViewport.GetHeight()))
+			m_pXmlWriter->WriteNodeEnd(L"g", false, false);
+
 		m_pXmlWriter->WriteNodeEnd(L"svg", false, false);
 	}
 
@@ -514,66 +513,9 @@ namespace MetaFile
 		m_bUpdatedClip = false;
 	}
 
-	void CWmfInterpretatorSvg::DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight)
+	void CWmfInterpretatorSvg::DrawBitmap(double dX, double dY, double dW, double dH, BYTE *pBuffer, unsigned int unWidth, unsigned int unHeight)
 	{
-		if (NULL == pBuffer || 0 == dW || 0 == dH || 0 == unWidth || 0 == unHeight)
-			return;
-
-		if (1 == unWidth && 1 == unHeight)
-		{
-			NodeAttributes arAttributes = {{L"x",      ConvertToWString(dX)},
-			                               {L"y",      ConvertToWString(dY)},
-			                               {L"width",  ConvertToWString(dW)},
-			                               {L"height", ConvertToWString(dH)},
-			                               {L"fill", L"rgb(" + std::to_wstring(pBuffer[2]) + L',' + std::to_wstring(pBuffer[1]) + L',' + std::to_wstring(pBuffer[0]) + L',' + std::to_wstring(pBuffer[3]) + L')'}};
-
-			AddTransform(arAttributes);
-
-			WriteNode(L"rect", arAttributes);
-
-			return;
-		}
-
-		CBgraFrame  oFrame;
-
-		oFrame.put_Data(pBuffer);
-		oFrame.put_Width(unWidth);
-		oFrame.put_Height(unHeight);
-
-		BYTE* pNewBuffer = NULL;
-		int nNewSize = 0;
-
-		oFrame.Encode(pNewBuffer, nNewSize, 4);
-		oFrame.put_Data(NULL);
-
-		if (0 < nNewSize)
-		{
-			int nImageSize = NSBase64::Base64EncodeGetRequiredLength(nNewSize);
-			unsigned char* ucValue = new unsigned char[nImageSize];
-
-			if (NULL == ucValue)
-				return;
-
-			NSBase64::Base64Encode(pNewBuffer, nNewSize, ucValue, &nImageSize);
-			std::wstring wsValue(ucValue, ucValue + nImageSize);
-
-			RELEASEARRAYOBJECTS(ucValue);
-
-			NodeAttributes arAttributes = {{L"x",      ConvertToWString(dX)},
-			                               {L"y",      ConvertToWString(dY)},
-			                               {L"width",  ConvertToWString(dW)},
-			                               {L"height", ConvertToWString(dH)},
-			                               {L"preserveAspectRatio", L"xMinYMin slice"},
-			                               {L"xlink:href", L"data:image/png;base64," + wsValue}};
-
-			AddTransform(arAttributes);
-			AddClip();
-
-			WriteNode(L"image", arAttributes);
-		}
-
-		if (NULL != pNewBuffer)
-			delete [] pNewBuffer;
+		CInterpretatorSvgBase::DrawBitmap(dX, dY, dW, dH, pBuffer, unWidth, unHeight);
 	}
 
 	void CWmfInterpretatorSvg::ResetClip()

@@ -274,7 +274,7 @@ std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, int 
         nCodePage = CP_ACP;		
 	}
 	
-	if (nCodePage == CP_ACP && pDocument->m_nUserLCID > 0)
+	if ((nCodePage == CP_ACP || nCodePage == 1252) && pDocument->m_nUserLCID > 0)
 	{
 		nCodePage = pDocument->m_lcidConverter.get_codepage(pDocument->m_nUserLCID);
 	}

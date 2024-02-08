@@ -59,6 +59,7 @@ public:
 	virtual void end_document();
 
 	void start_slide();
+	void hide_slide();
 	void end_slide();
 
 	size_t get_pages_count();
@@ -102,7 +103,7 @@ public:
 	std::vector<IdentifierMap> map_identifiers_;
 
 	// NOTE(Kamil Kerimov): Key - slide name in pptx (e.g. slide1.xml), Value - slide name in odp (e.g. "This is a title")
-	using SlidenameMap = std::unordered_map<std::wstring, std::wstring>;
+	using SlidenameMap = std::map<std::wstring, std::wstring>;
 	SlidenameMap map_slidenames_;
 private:
 	odp_slide_context			slide_context_;

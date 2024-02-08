@@ -65,16 +65,19 @@ namespace PPTX
 		}
 		std::wstring NoFill::toXML() const
 		{
-			if (_T("") == m_namespace)
+			if (m_namespace.empty())
 				return _T("<noFill/>");
-			return _T("<") + m_namespace + _T(":noFill/>");
+			return L"<" + m_namespace + L":noFill/>";
 		}
 		void NoFill::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
+			std::wstring strName;
 			if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
-				pWriter->WriteString(_T("<w14:noFill/>"));
+				strName = L"w14:noFill";
 			else
-				pWriter->WriteString(_T("<a:noFill/>"));
+				strName = m_namespace.empty() ? L"noFill" : (m_namespace + L":noFill");
+
+			pWriter->WriteString(L"<" + strName  + L"/>");
 		}
 		void NoFill::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{

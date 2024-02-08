@@ -48,6 +48,8 @@ namespace MetaFile
 
 		CMetaFileRenderer* GetRenderer() const;
 
+		double GetScaleX() const;
+		double GetScaleY() const;
 	private:
 		CMetaFileRenderer *m_pMetaFileRenderer;
 

@@ -44,11 +44,16 @@
     #define DIB_RGB_COLORS  0x00
 #endif
 
-#define MINACCURACY 2
+#define MINACCURACY 5
 #define MAXACCURACY 10
 
 namespace MetaFile
 {
+	bool Equals(double dFirst, double dSecond, double dEpsilon)
+	{
+		return std::abs(dFirst - dSecond) <= dEpsilon;
+	}
+
 	unsigned char GetLowestBit(unsigned int ulValue)
 	{
 		if (0 == ulValue)
@@ -1061,54 +1066,51 @@ namespace MetaFile
 #endif
 	}
 
-	static int GetMinAccuracy(double dValue)
-	{
-		if (dValue == (int)dValue)
-			return 0;
-
-		if (dValue < 0.)
-			dValue = -dValue;
-
-		if (dValue > 1.)
-			return MINACCURACY;
-
-		unsigned int unAccuracy = 0;
-
-		while (unAccuracy < MAXACCURACY)
-		{
-			dValue *= 10;
-
-			if (dValue >= 1.)
-				break;
-
-			++unAccuracy;
-		}
-
-		if (MAXACCURACY == unAccuracy)
-			return 0;
-		else
-			return unAccuracy + 3;
-	}
-
 	std::wstring ConvertToWString(double dValue, int nAccuracy)
 	{
-		int nNewAccuracy = (-1 != nAccuracy) ? nAccuracy : GetMinAccuracy(dValue);
+		const double dAbsValue {std::abs(dValue)};
+		const double dRemainder{dAbsValue - std::floor(dAbsValue)};
+
+		if (Equals(0., dRemainder))
+			return std::to_wstring(static_cast<int>(dValue));
+
+		if (nAccuracy < 0)
+		{
+			if (dAbsValue < 1.)
+				nAccuracy = MAXACCURACY;
+			else
+				nAccuracy = MINACCURACY;
+		}
 
 		std::wstringstream owsStream;
-		owsStream << std::fixed << std::setprecision(nNewAccuracy) << dValue;
+		owsStream << std::fixed << std::setprecision(nAccuracy) << dValue;
 
-		return owsStream.str();
+		std::wstring wsValue{owsStream.str()};
+
+		const size_t unDotPosition{wsValue.find_first_of(L'.')};
+
+		if (std::wstring::npos == unDotPosition)
+			return wsValue;
+
+		const size_t unFirstPosition{wsValue.find_first_not_of(L'0', unDotPosition + 1)};
+
+		if (std::wstring::npos == unFirstPosition)
+			return wsValue.substr(0, unDotPosition);
+
+		const size_t unLastPosition = wsValue.find_last_not_of(L'0', unFirstPosition + MINACCURACY - 1);
+
+		return wsValue.substr(0, unLastPosition + 1);
 	}
 
 	std::wstring ConvertToWString(const std::vector<double>& arValues, int nAccuracy)
 	{
-		std::wstringstream owsStream;
+		std::wstring wsValue;
 
 		for (double dValue : arValues)
-			owsStream << std::fixed << std::setprecision((-1 != nAccuracy) ? nAccuracy : GetMinAccuracy(dValue)) << dValue << L" ";
+			wsValue += ConvertToWString(dValue, nAccuracy) + L' ';
 
-		owsStream.seekp(-1, std::ios_base::end);
+		wsValue.pop_back();
 
-		return owsStream.str();
+		return wsValue;
 	}
 }

@@ -112,7 +112,7 @@ namespace ComplexTypes
 
 			if ( m_sVal.IsInit() )
 			{
-				sResult += L"w:val=\"" + *m_sVal + L"\" ";
+				sResult += L"w:val=\"" + XmlUtils::EncodeXmlString(*m_sVal, false) + L"\" ";
 			}
 			return sResult;
 		}

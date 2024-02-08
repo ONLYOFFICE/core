@@ -647,7 +647,24 @@ namespace PPTX
 		void UniFill::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
 			if (Fill.is_init())
+			{
+				if (false == m_namespace.empty())
+				{
+					PPTX::Logic::SolidFill* solid = dynamic_cast<PPTX::Logic::SolidFill*>(Fill.GetPointer());
+					if (solid) solid->m_namespace = m_namespace;
+					else
+					{
+						PPTX::Logic::GradFill* grad = dynamic_cast<PPTX::Logic::GradFill*>(Fill.GetPointer());
+						if (grad) grad->m_namespace = m_namespace;
+						else
+						{
+							PPTX::Logic::BlipFill* blip = dynamic_cast<PPTX::Logic::BlipFill*>(Fill.GetPointer());
+							if (blip) blip->m_namespace = m_namespace;
+						}
+					}
+				}
 				Fill->toXmlWriter(pWriter);
+			}
 		}
 		bool UniFill::is_init() const
 		{

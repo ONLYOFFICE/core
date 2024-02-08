@@ -67,10 +67,10 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionMethods(CListItem)
-			
+
 			CListItem();
 			virtual ~CListItem();
-			
+
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
@@ -80,7 +80,7 @@ namespace OOX
 			virtual EElementType getType () const;
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			
+
 			nullable_string	m_oVal;
 		};
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -88,10 +88,10 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionMethods(CListItems)
-			
+
 			CListItems();
 			virtual ~CListItems();
-			
+
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
@@ -101,7 +101,7 @@ namespace OOX
 			virtual EElementType getType () const;
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader){}
-			
+
 			std::vector<nullable<CListItem>> m_arrItems;
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 		};
@@ -122,7 +122,7 @@ namespace OOX
 			virtual EElementType getType () const;
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			
+
 			nullable<SimpleTypes::CUnsignedDecimalNumber>				m_oDropLines;
 			nullable<SimpleTypes::Spreadsheet::CObjectType>				m_oObjectType;
 			nullable<SimpleTypes::Spreadsheet::CChecked>				m_oChecked;
@@ -142,7 +142,7 @@ namespace OOX
 			nullable_string		m_oFmlaGroup;
 			nullable_string		m_oFmlaLink;
 			nullable_string		m_oFmlaRange;
-			nullable_string		m_oFmlaTxbx;		
+			nullable_string		m_oFmlaTxbx;
 			nullable_bool		m_oColored;
 			nullable_bool		m_oFirstButton;
 			nullable_bool		m_oHoriz;
@@ -215,9 +215,10 @@ namespace OOX
 
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void toXML2(NSStringUtils::CStringBuilder& writer, bool bControlPr) const;
-   
+
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-					void fromBin(XLS::BaseObjectPtr& obj);
+			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType () const;
 
@@ -252,9 +253,10 @@ namespace OOX
 
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			
+
 			void read(XmlUtils::CXmlLiteReader& oReader, bool bOldVersion = false);
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType () const;
 

@@ -62,7 +62,11 @@ public:
 			BYTE GetSW() const { return m_nSW; }
 			BYTE GetStyle()  const { return m_nStyle; }
 			int  GetIFFlag() const { return m_nIFFlag; }
+			int  GetI()      const { return m_nI; }
+			int  GetRI()     const { return m_nRI; }
+			int  GetIX()     const { return m_nIX; }
 			void GetA(double& dA1, double& dA2) const { dA1 = m_dA1; dA2 = m_dA2; }
+			const std::wstring& GetV()  const { return m_wsV; }
 			const std::wstring& GetCA() const { return m_wsCA; }
 			const std::wstring& GetRC() const { return m_wsRC; }
 			const std::wstring& GetAC() const { return m_wsAC; }
@@ -76,7 +80,11 @@ public:
 			BYTE m_nSW;
 			BYTE m_nStyle;
 			int m_nIFFlag;
+			int m_nI;
+			int m_nRI;
+			int m_nIX;
 			double m_dA1, m_dA2;
+			std::wstring m_wsV;
 			std::wstring m_wsCA;
 			std::wstring m_wsRC;
 			std::wstring m_wsAC;
@@ -87,8 +95,9 @@ public:
 		{
 		public:
 			int GetMaxLen() const { return m_nMaxLen; }
-			const std::wstring& GetV()  const { return m_wsV; }
-			const std::wstring& GetRV() const { return m_wsRV; }
+			const std::wstring& GetV()   const { return m_wsV; }
+			const std::wstring& GetRV()  const { return m_wsRV; }
+			const std::wstring& GetAPV() const { return m_wsAPV; }
 
 			void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags, int nWidgetFlag);
 
@@ -96,13 +105,17 @@ public:
 			int m_nMaxLen;
 			std::wstring m_wsV;
 			std::wstring m_wsRV;
+			std::wstring m_wsAPV;
 		};
 
 		class CChoiceWidgetPr
 		{
 		public:
 			int GetTI() const { return m_nTI; }
-			const std::wstring& GetV() const { return m_wsV; }
+			const std::wstring& GetV()                 const { return m_wsV; }
+			const std::wstring& GetAPV()               const { return m_wsAPV; }
+			const std::vector<int>& GetI()             const { return m_arrI; }
+			const std::vector<std::wstring>& GetArrV() const { return m_arrV; }
 			const std::vector< std::pair<std::wstring, std::wstring> >& GetOpt() const { return m_arrOpt; }
 
 			void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
@@ -110,6 +123,9 @@ public:
 		private:
 			int m_nTI;
 			std::wstring m_wsV;
+			std::wstring m_wsAPV;
+			std::vector<int> m_arrI;
+			std::vector<std::wstring> m_arrV;
 			std::vector< std::pair<std::wstring, std::wstring> > m_arrOpt;
 		};
 
@@ -154,6 +170,7 @@ public:
 		const std::wstring& GetDV() const { return m_wsDV; }
 		const std::wstring& GetT()  const { return m_wsT; }
 		const std::wstring& GetFontName()  const { return m_wsFN; }
+		const std::wstring& GetFontKey()   const { return m_wsFK; }
 		const std::vector<double>& GetTC() const { return m_arrTC; }
 		const std::vector<double>& GetBC() const { return m_arrBC; }
 		const std::vector<double>& GetBG() const { return m_arrBG; }
@@ -182,6 +199,7 @@ public:
 		std::wstring m_wsDV;
 		std::wstring m_wsT;
 		std::wstring m_wsFN;
+		std::wstring m_wsFK;
 		std::vector<double> m_arrTC;
 		std::vector<double> m_arrBC;
 		std::vector<double> m_arrBG;
@@ -478,7 +496,7 @@ private:
 
 class GRAPHICS_DECL CWidgetsInfo : public IAdvancedCommand
 {
-private:
+public:
 	struct CParent
 	{
 		int nID;
@@ -487,15 +505,22 @@ private:
 		std::wstring sName;
 		std::wstring sV;
 		std::wstring sDV;
+		std::vector<int> arrI;
+		std::vector<std::wstring> arrV;
 	};
-public:
+
 	CWidgetsInfo();
 	virtual ~CWidgetsInfo();
+
+	const std::vector<int>& GetCO() const { return m_arrCO; }
+	const std::vector<std::wstring>& GetButtonImg() const { return m_arrButtonImg; }
+	const std::vector<CParent*>& GetParents() const { return m_arrParents; }
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 
 private:
-	std::vector<std::wstring> m_arrCO;
+	std::vector<int> m_arrCO;
+	std::vector<std::wstring> m_arrButtonImg;
 	std::vector<CParent*> m_arrParents;
 };
 

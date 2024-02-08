@@ -207,6 +207,26 @@ namespace MetaFile
 			m_dScaleY = m_dH / std::fabs((double)(nB - nT));
 		}
 
+		double GetHeight() const
+		{
+			return m_dH;
+		}
+
+		double GetWidth() const
+		{
+			return m_dW;
+		}
+
+		double GetScaleX() const
+		{
+			return m_dScaleX;
+		}
+
+		double GetScaleY() const
+		{
+			return m_dScaleY;
+		}
+
 		void Begin()
 		{
 			UpdateScale();
@@ -434,7 +454,12 @@ namespace MetaFile
 				}
 				else
 				{
-					pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, 72, 72);
+					double dRendererDpiX, dRendererDpiY;
+
+					m_pRenderer->get_DpiX(&dRendererDpiX);
+					m_pRenderer->get_DpiY(&dRendererDpiY);
+
+					pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, dRendererDpiX, dRendererDpiY);
 					pFontManager->SetCharSpacing(dFontCharSpace * 72 / 25.4);
 
 					double dMmToPt = 25.4 / 72;
@@ -1200,15 +1225,12 @@ namespace MetaFile
 
 			double dWidth = pPen->GetWidth();
 
-			if (0 == dWidth || (1 == dWidth && PS_COSMETIC == ulPenType))
+			if (Equals(0, dWidth) || (Equals(1, dWidth) && PS_COSMETIC == ulPenType))
 			{
 				double dRendererDpiX;
 				m_pRenderer->get_DpiX(&dRendererDpiX);
 
-				dWidth = 25.4 / dRendererDpiX;
-
-				if (PS_COSMETIC == ulPenType)
-					dWidth /= m_pFile->GetTransform()->M11 / (m_pFile->GetDpi() / 96.);
+				dWidth = 25.4 / 96. * m_pFile->GetDpi() / dRendererDpiX;
 
 				nStartCapStyle = nEndCapStyle = Aggplus::LineCapFlat;
 				nJoinStyle = Aggplus::LineJoinMiter;
@@ -1242,53 +1264,39 @@ namespace MetaFile
 			{
 				std::vector<double> arDashPattern;
 
-				double dPixWidth = 0;
-
-				if (0 == pPen->GetWidth() || (1 == pPen->GetWidth() && PS_COSMETIC == ulPenType))
-				{
-					dPixWidth = dWidth;
-				}
-				else
-				{
-					dPixWidth = dWidth * 25.4 / 72.;
-
-					if (1 == pPen->GetWidth() && PS_COSMETIC == ulPenType)
-						dPixWidth /= m_pFile->GetTransform()->M11 / (m_pFile->GetDpi() / 96.);
-				}
-
 				switch (ulPenStyle)
 				{
 					case PS_DASH:
 					{
-						arDashPattern.push_back(9 * dPixWidth);
-						arDashPattern.push_back(3 * dPixWidth);
+						arDashPattern.push_back(9 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
 
 						break;
 					}
 					case PS_DOT:
 					{
-						arDashPattern.push_back(3 * dPixWidth);
-						arDashPattern.push_back(3 * dPixWidth);
+						arDashPattern.push_back(3 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
 
 						break;
 					}
 					case PS_DASHDOT:
 					{
-						arDashPattern.push_back(9 * dPixWidth);
-						arDashPattern.push_back(3 * dPixWidth);
-						arDashPattern.push_back(3 * dPixWidth);
-						arDashPattern.push_back(3 * dPixWidth);
+						arDashPattern.push_back(9 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
 
 						break;
 					}
 					case PS_DASHDOTDOT:
 					{
-						arDashPattern.push_back(9 * dPixWidth);
-						arDashPattern.push_back(3 * dPixWidth);
-						arDashPattern.push_back(3 * dPixWidth);
-						arDashPattern.push_back(3 * dPixWidth);
-						arDashPattern.push_back(3 * dPixWidth);
-						arDashPattern.push_back(3 * dPixWidth);
+						arDashPattern.push_back(9 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
 
 						break;
 					}

@@ -35,9 +35,12 @@
 #include "../DesktopEditor/xml/include/xmlutils.h"
 #include "../OOXML/Base/Base.h"
 #include "../OfficeUtils/src/OfficeUtils.h"
-// #if defined FILE_FORMAT_CHECKER_WITH_MACRO
-//	#include "../MsBinaryFile/PptFile/Main/PPTFormatLib.h"
-// #endif
+
+//#define FILE_FORMAT_CHECKER_WITH_MACRO
+ 
+#if defined FILE_FORMAT_CHECKER_WITH_MACRO
+	#include "../MsBinaryFile/PptFile/Main/PPTFormatLib.h"
+ #endif
 
 #include "3dParty/pole/pole.h"
 #include <algorithm>

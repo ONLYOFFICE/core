@@ -33,6 +33,7 @@
 #include <iostream>
 #include <unistd.h>
 #include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/common/ProcessEnv.h"
 
 #ifdef USE_EXTERNAL_TRANSPORT
 
@@ -96,7 +97,7 @@ namespace NSNetwork
 				{
 					std::string sProgramBinA = U_TO_UTF8(sCurlBin);
 
-					const char* nargs[10];
+					const char* nargs[16];
 					nargs[0] = sProgramBinA.c_str();
 					nargs[1] = "--url";
 					nargs[2] = sUrlA.c_str();
@@ -107,6 +108,36 @@ namespace NSNetwork
 					nargs[7] = "--connect-timeout";
 					nargs[8] = "10";
 					nargs[9] = NULL;
+					nargs[10] = NULL;
+					nargs[11] = NULL;
+					nargs[12] = NULL;
+					nargs[13] = NULL;
+					nargs[14] = NULL;
+					nargs[15] = NULL;
+
+					std::string sProxy;
+					std::string sProxyIser;
+					std::string sProxyHeader;
+
+					int nIndexLast = 9;
+					if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_proxy))
+					{
+						sProxy = NSProcessEnv::GetStringValueA(NSProcessEnv::Converter::gc_proxy);
+						nargs[nIndexLast++] = "--proxy";
+						nargs[nIndexLast++] = sProxy.c_str();
+					}
+					if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_proxyUser))
+					{
+						sProxyIser = NSProcessEnv::GetStringValueA(NSProcessEnv::Converter::gc_proxyUser);
+						nargs[nIndexLast++] = "--proxy-user";
+						nargs[nIndexLast++] = sProxyIser.c_str();
+					}
+					if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_proxyHeader))
+					{
+						sProxyHeader = NSProcessEnv::GetStringValueA(NSProcessEnv::Converter::gc_proxyHeader);
+						nargs[nIndexLast++] = "--proxy-header";
+						nargs[nIndexLast++] = sProxyHeader.c_str();
+					}
 
 					const char* nenv[3];
 					nenv[0] = "LD_PRELOAD=";

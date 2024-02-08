@@ -55,12 +55,29 @@ namespace PPTX
 		}
 		unsigned char FrameShape::GetBYTECode() const
 		{
-			//not using yet
+			if (L"frameStyle1" == m_strValue)		return 0;
+			if (L"frameStyle2" == m_strValue)		return 1;
+			if (L"frameStyle3" == m_strValue)		return 2;
+			if (L"frameStyle4" == m_strValue)		return 3;
+			if (L"frameStyle5" == m_strValue)		return 4;
+			if (L"frameStyle6" == m_strValue)		return 5;
+			if (L"frameStyle7" == m_strValue)		return 6;
+
 			return 0;
 		}
 		void FrameShape::SetBYTECode(const unsigned char& src)
 		{
-			//not using yet
+			switch (src)
+			{
+			case 0:		m_strValue = L"frameStyle1";		break;
+			case 1:		m_strValue = L"frameStyle2";		break;
+			case 2:		m_strValue = L"frameStyle3";		break;
+			case 3:		m_strValue = L"frameStyle4";		break;
+			case 4:		m_strValue = L"frameStyle5";		break;
+			case 5:		m_strValue = L"frameStyle6";		break;
+			case 6:		m_strValue = L"frameStyle7";		break;
+			default:	m_strValue = L"frameStyle1";
+			}
 		}
 	} // namespace Limit
 } // namespace PPTX

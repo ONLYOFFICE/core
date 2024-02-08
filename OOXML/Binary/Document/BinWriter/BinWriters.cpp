@@ -3122,13 +3122,7 @@ void BinaryNumberingTableWriter::WriteLevel(const OOX::Numbering::CLvl& lvl)
 		{
 			m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::lvl_Suff);
 			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-			switch(oSuff.m_oVal.get().GetValue())
-			{
-			case SimpleTypes::levelsuffixNothing: m_oBcw.m_oStream.WriteBYTE(numbering_suff_Nothing);break;
-			case SimpleTypes::levelsuffixSpace: m_oBcw.m_oStream.WriteBYTE(numbering_suff_Space);break;
-			case SimpleTypes::levelsuffixTab: m_oBcw.m_oStream.WriteBYTE(numbering_suff_Tab);break;
-			default: m_oBcw.m_oStream.WriteBYTE(numbering_suff_Tab);break;
-			}
+			m_oBcw.m_oStream.WriteBYTE((BYTE)oSuff.m_oVal->GetValue());
 		}
 	}
 	//PStyle
@@ -6424,7 +6418,7 @@ void BinaryDocumentTableWriter::WriteRunContent(std::vector<OOX::WritingElement*
 				OOX::Logic::CSym* oSym = static_cast<OOX::Logic::CSym*>(item);
 				wchar_t ch = 0x0FFF & oSym->m_oChar->GetValue();
 				std::wstring sText(&ch, 1);
-				WriteText(sText, c_oSerRunType::run);
+				WriteText(sText, c_oSerRunType::run);  // todooo определить что писать c_oSerRunType::run или c_oSerRunType::delText - 66333
 				break;
 			}
 		case OOX::et_w_delText:

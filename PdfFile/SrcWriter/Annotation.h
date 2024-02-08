@@ -36,63 +36,11 @@
 #include "Types.h"
 #include "Pages.h"
 #include "Document.h"
+#include "Field.h"
 
 namespace PdfWriter
 {
 	class CDestination;
-
-	enum EBorderSubtype
-	{
-		border_subtype_Solid,
-		border_subtype_Beveled,
-		border_subtype_Dashed,
-		border_subtype_Inset,
-		border_subtype_Underlined
-	};
-	enum EAnnotType
-	{
-		AnnotUnknown        = -1,
-		AnnotText           = 0,
-		AnnotLink           = 1,
-		AnnotSound          = 2,
-		AnnotFreeText       = 3,
-		AnnotStamp          = 4,
-		AnnotSquare         = 5,
-		AnnotCircle         = 6,
-		AnnotStrikeOut      = 7,
-		AnnotHighLight      = 8,
-		AnnotUnderline      = 9,
-		AnnotInk            = 10,
-		AnnotFileAttachment = 11,
-		AnnotPopup          = 12,
-		AnnotLine           = 13,
-		AnnotSquiggly       = 14,
-		AnnotPolygon        = 15,
-		AnnotPolyLine       = 16,
-		AnnotCaret          = 17,
-		AnnotWidget         = 18
-	};
-	enum EAnnotHighlightMode
-	{
-		AnnotNoHighlight = 0,
-		AnnotInvertBox,
-		AnnotInvertBorder,
-		AnnotDownAppearance,
-		AnnotHighlightModeEOF
-	};
-	enum EAnnotIcon
-	{
-		AnnotIconComment      = 0,
-		AnnotIconKey          = 1,
-		AnnotIconNote         = 2,
-		AnnotIconHelp         = 3,
-		AnnotIconNewParagraph = 4,
-		AnnotIconParagraph    = 5,
-		AnnotIconInsert       = 6,
-
-		AnnotIconMin          = 0,
-		AnnotIconMax          = 6
-	};
 
 	class CAction : public CDictObject
 	{
@@ -123,7 +71,7 @@ namespace PdfWriter
 	public:
 		CActionGoTo(CXref* pXref);
 
-		void SetDestination(CDestination* pDest);
+		void SetDestination(CArrayObject* pDest);
 	};
 	class CActionURI : public CAction
 	{
@@ -153,10 +101,28 @@ namespace PdfWriter
 	protected:
 		CAnnotation(CXref* pXref, EAnnotType eType);
 
+		struct CBorderType
+		{
+			CBorderType()
+			{
+				bHave  = false;
+				nType  = 0;
+				dWidth = 0;
+			}
+
+			bool bHave;
+			BYTE nType;
+			double dWidth;
+			std::vector<double> arrDash;
+		};
+
+		CBorderType m_oBorder;
+
 		CXref* m_pXref;
 		TRect  m_oRect;
 		double m_dPageWidth  = 0;
-		double m_dPageHeight = 0;
+		double m_dPageH = 0;
+		double m_dPageX = 0;
 		CDocument* m_pDocument;
 
 	public:
@@ -176,19 +142,25 @@ namespace PdfWriter
 
 		void SetRect(const TRect& oRect);
 		void SetBorder(BYTE nType, double dWidth, const std::vector<double>& arrDash);
+		void SetEmptyBorder();
 		void SetAnnotFlag(const int& nAnnotFlag);
-		void SetPage(CPage* pPage);
+		void SetPage(CPage* pPage, double dW = 0, double dH = 0, double dX = 0);
 		void SetBE(BYTE nType, const double& dBE);
 		void SetContents(const std::wstring& wsText);
 		void SetNM(const std::wstring& wsNM);
 		void SetLM(const std::wstring& wsLM);
 		void SetC(const std::vector<double>& arrC);
-		// TODO AP Необходимо генерировать внешний вид аннотации как у Widget
-		virtual void CreateAP();
-		TRect GetRect() { return m_oRect; }
+
+		TRect& GetRect() { return m_oRect; }
 		void SetXref(CXref* pXref) { m_pXref = pXref; }
 		void SetDocument(CDocument* pDocument);
 		CDocument* GetDocument();
+		bool HaveBorder()       { return m_oBorder.bHave; }
+		BYTE GetBorderType()    { return m_oBorder.nType; }
+		double GetBorderWidth() { return m_oBorder.dWidth; }
+		std::string GetBorderDash();
+		double GetWidth()  { return abs(m_oRect.fRight - m_oRect.fLeft); }
+		double GetHeight() { return abs(m_oRect.fTop - m_oRect.fBottom); }
 	};
 	class CPopupAnnotation : public CAnnotation
 	{
@@ -214,16 +186,16 @@ namespace PdfWriter
 			return true;
 		}
 
-		void SetRT(const BYTE& nRT);
+		void SetRT(BYTE nRT);
 		void SetCA(const double& dCA);
 		void SetT(const std::wstring& wsT);
 		void SetRC(const std::wstring& wsRC);
 		void SetCD(const std::wstring& wsCD);
 		void SetSubj(const std::wstring& wsSubj);
 
+		void RemoveAP();
 		void SetIRTID(CAnnotation* pAnnot);
 		CPopupAnnotation* CreatePopup();
-		virtual void CreateAP() override;
 	};
 	class CLinkAnnotation : public CAnnotation
 	{
@@ -252,7 +224,7 @@ namespace PdfWriter
 		void SetState(BYTE nState);
 		void SetStateModel(BYTE nStateModel);
 
-		void CreateAP() override;
+		void SetAP();
 	};
 	class CUriLinkAnnotation : public CAnnotation
 	{
@@ -284,12 +256,12 @@ namespace PdfWriter
 		}
 
 		void SetCap(bool bCap);
-		void SetIT(const BYTE& nIT);
-		void SetCP(const BYTE& nCP);
+		void SetIT(BYTE nIT);
+		void SetCP(BYTE nCP);
 		void SetLL(const double& dLL);
 		void SetLLE(const double& dLLE);
 		void SetLLO(const double& dLLO);
-		void SetLE(const BYTE& nLE1, const BYTE& nLE2);
+		void SetLE(BYTE nLE1, BYTE nLE2);
 		void SetL(const double& dL1, const double& dL2, const double& dL3, const double& dL4);
 		void SetCO(const double& dCO1, const double& dCO2);
 		void SetIC(const std::vector<double>& arrIC);
@@ -305,7 +277,7 @@ namespace PdfWriter
 			return m_nSubtype;
 		}
 
-		void SetSubtype(const BYTE& nSubtype);
+		void SetSubtype(BYTE nSubtype);
 		void SetQuadPoints(const std::vector<double>& arrQuadPoints);
 	};
 	class CSquareCircleAnnotation : public CMarkupAnnotation
@@ -319,7 +291,7 @@ namespace PdfWriter
 			return m_nSubtype;
 		}
 
-		void SetSubtype(const BYTE& nSubtype);
+		void SetSubtype(BYTE nSubtype);
 		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4);
 		void SetIC(const std::vector<double>& arrIC);
 	};
@@ -334,9 +306,9 @@ namespace PdfWriter
 			return m_nSubtype;
 		}
 
-		void SetIT(const BYTE& nIT);
-		void SetSubtype(const BYTE& nSubtype);
-		void SetLE(const BYTE& nLE1, const BYTE& nLE2);
+		void SetIT(BYTE nIT);
+		void SetSubtype(BYTE nSubtype);
+		void SetLE(BYTE nLE1, BYTE nLE2);
 		void SetIC(const std::vector<double>& arrIC);
 		void SetVertices(const std::vector<double>& arrVertices);
 	};
@@ -349,9 +321,9 @@ namespace PdfWriter
 			return AnnotFreeText;
 		}
 
-		void SetQ(const BYTE& nQ);
-		void SetIT(const BYTE& nIT);
-		void SetLE(const BYTE& nLE);
+		void SetQ(BYTE nQ);
+		void SetIT(BYTE nIT);
+		void SetLE(BYTE nLE);
 		void SetDS(const std::wstring& wsDS);
 		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4);
 		void SetCL(const std::vector<double>& arrCL);
@@ -365,131 +337,180 @@ namespace PdfWriter
 			return AnnotCaret;
 		}
 
-		void SetSy(const BYTE& nSy);
+		void SetSy(BYTE nSy);
 		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4);
 	};
 	class CWidgetAnnotation : public CAnnotation
 	{
 	protected:
+		EWidgetType m_nSubtype;
 		CDictObject* m_pMK;
 		CDictObject* m_pParent;
-		CDictObject* m_pAA;
-		CDictObject* m_pA;
-		std::string m_sDAforAP;
+
+		CFontCidTrueType* m_pFont;
+		double m_dFontSize;
+		bool m_bBold;
+		bool m_bItalic;
+
+		CAnnotAppearance* m_pAppearance;
+		double m_dFontSizeAP;
+		std::vector<double> m_arrTC;
+		std::vector<double> m_arrBC;
+		std::vector<double> m_arrBG;
+		BYTE m_nQ;
 
 		void CheckMK();
 
 	public:
 		CWidgetAnnotation(CXref* pXref, EAnnotType eType);
+		EAnnotType GetAnnotationType() const override
+		{
+			return AnnotWidget;
+		}
+		EWidgetType GetWidgetType() const
+		{
+			return m_nSubtype;
+		}
 
+		void SetSubtype(BYTE nSubtype);
 		void SetDA(CFontDict* pFont, const double& dFontSize, const double& dFontSizeAP, const std::vector<double>& arrTC);
+		void SetFont(CFontCidTrueType* pFont, double dFontSize, bool bBold, bool bItalic);
 		CDictObject* GetObjOwnValue(const std::string& sV);
+		CObjectBase* GetObjValue(const std::string& sV);
 
-		void SetQ(const BYTE& nQ);
-		void SetH(const BYTE& nH);
+		void SetQ(BYTE nQ);
+		void SetH(BYTE nH);
 		void SetR(const int& nR);
-		void SetFlag    (const int& nFlag);
+		virtual void SetFlag (const int& nFlag);
 		void SetParent(CDictObject* pParent);
 		void SetTU(const std::wstring& wsTU);
 		void SetDS(const std::wstring& wsDS);
-		virtual void SetDV(const std::wstring& wsDV);
+		void SetDV(const std::wstring& wsDV);
 		void SetT (const std::wstring& wsT);
 		void SetBC(const std::vector<double>& arrBC);
 		void SetBG(const std::vector<double>& arrBG);
 		void AddAction(CAction* pAction);
 
-		std::string GetDAforAP() { return m_sDAforAP; }
+		std::string GetDAforAP(CFontDict* pFont);
+		std::string GetBGforAP(double dDiff = 0);
+		std::string GetBCforAP();
+		CFontCidTrueType* GetFont() { return m_pFont; }
+		double GetFontSize()   { return m_dFontSize; }
+		bool GetFontIsBold()   { return m_bBold; }
+		bool GetFontIsItalic() { return m_bItalic; }
+		bool HaveBG() { return !m_arrBG.empty(); }
+		bool HaveBC() { return !m_arrBC.empty(); }
+		BYTE GetQ() { return m_nQ; }
+
+		void SetEmptyAP();
+		void SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts);
+		void StartAP();
+		void AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts = NULL, const double* pShifts = NULL);
+		void EndAP();
 	};
-	class CButtonWidget : public CWidgetAnnotation
+	class CPushButtonWidget : public CWidgetAnnotation
 	{
 	private:
-		EAnnotType m_nSubtype;
+		bool m_bRespectBorders;
+		bool m_bConstantProportions;
+		BYTE m_nScaleType;
+		BYTE m_nTP;
+		double m_dShiftX;
+		double m_dShiftY;
+		std::wstring m_wsCA;
+		std::wstring m_wsRC;
+		std::wstring m_wsAC;
 		CDictObject* m_pIF;
-		std::string m_sAP_N_Yes;
 
 		void CheckIF();
 
 	public:
-		CButtonWidget(CXref* pXref);
-		EAnnotType GetAnnotationType() const override
-		{
-			return m_nSubtype;
-		}
+		CPushButtonWidget(CXref* pXref);
 
-		void SetV(bool bV);
-		void SetDV(const std::wstring& wsDV) override;
-		void SetS(const BYTE& nS);
-		void SetTP(const BYTE& nTP);
-		void SetSW(const BYTE& nSW);
-		void SetStyle(const BYTE& nStyle);
+		void SetV(const std::wstring& wsV);
+		void SetS(BYTE nS);
+		void SetTP(BYTE nTP);
+		void SetSW(BYTE nSW);
 		void SetIFFlag(const int& nIFFlag);
+		virtual void SetFlag (const int& nFlag) override;
+		void SetI(const int& nI);
+		void SetRI(const int& nRI);
+		void SetIX(const int& nIX);
 		void SetA(const double& dA1, const double& dA2);
 		void SetCA(const std::wstring& wsCA);
 		void SetRC(const std::wstring& wsRC);
 		void SetAC(const std::wstring& wsAC);
+
+		void SetAP(CXObject* pForm, BYTE nAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, double dLineW, double dLineH, CFontCidTrueType** ppFonts);
+		const std::wstring& GetCA() { return m_wsCA; }
+		const std::wstring& GetRC() { return m_wsRC; }
+		const std::wstring& GetAC() { return m_wsAC; }
+		BYTE GetTP() { return m_nTP; }
+		bool GetRespectBorder() { return m_bRespectBorders; }
+
+		int m_nI, m_nRI, m_nIX;
+	};
+	class CCheckBoxWidget : public CWidgetAnnotation
+	{
+	private:
+		std::string m_sAP_N_Yes;
+
+	public:
+		CCheckBoxWidget(CXref* pXref);
+
+		void SetV(const std::wstring& wsV);
+		std::wstring SetStyle(BYTE nStyle);
 		void SetAP_N_Yes(const std::wstring& wsAP_N_Yes);
+		virtual void SetFlag (const int& nFlag);
+
+		void SwitchAP(const std::string& sV);
 	};
 	class CTextWidget : public CWidgetAnnotation
 	{
 	private:
-		EAnnotType m_nSubtype;
 		std::string m_sV;
+		bool m_bAPV;
 
 	public:
 		CTextWidget(CXref* pXref);
-		EAnnotType GetAnnotationType() const override
-		{
-			return m_nSubtype;
-		}
 
 		void SetMaxLen(const int& nMaxLen);
 		void SetV (const std::wstring& wsV);
 		void SetRV(const std::wstring& wsRV);
+		void SetAPV() { m_bAPV = true; }
 
-		void CreateAP() override;
-		std::string GetV() { return m_sV; }
+		bool IsCombFlag();
+		bool IsMultiLine();
+		unsigned int GetMaxLen();
+		bool HaveAPV() { return m_bAPV; }
 	};
 	class CChoiceWidget : public CWidgetAnnotation
 	{
 	private:
-		EAnnotType m_nSubtype;
-
+		std::vector< std::pair<std::wstring, std::wstring> > m_arrOpt;
+		double m_dHeight;
+		int m_nTI;
+		std::vector<int> m_arrIndex;
 	public:
 		CChoiceWidget(CXref* pXref);
-		EAnnotType GetAnnotationType() const override
-		{
-			return m_nSubtype;
-		}
 
+		virtual void SetFlag (const int& nFlag) override;
 		void SetTI(const int& nTI);
 		void SetV(const std::wstring& wsV);
+		void SetI(const std::vector<int>& arrI);
+		void SetV(const std::vector<std::wstring>& arrV);
 		void SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt);
+
+		std::wstring GetValue(const std::wstring& wsExportV);
+		void SetListBoxHeight(double dHeight) { m_dHeight = dHeight; }
+		double GetListBoxHeight() { return m_dHeight; }
+		std::wstring SetListBoxIndex(const std::vector<std::wstring>& arrV);
+		std::vector<int> GetListBoxIndex() { return m_arrIndex; }
 	};
 	class CSignatureWidget : public CWidgetAnnotation
 	{
-	private:
-		EAnnotType m_nSubtype;
-
 	public:
 		CSignatureWidget(CXref* pXref);
-		EAnnotType GetAnnotationType() const override
-		{
-			return m_nSubtype;
-		}
-	};
-
-	class CAnnotationAppearance : public CDictObject
-	{
-	public:
-		CAnnotationAppearance(CXref* pXref, CAnnotation* pAnnot);
-
-		void DrawTextComment();
-		void DrawTextWidget();
-
-	private:
-		CXref*   m_pXref;
-		CStream* m_pStream;
-		CAnnotation* m_pAnnot;
 	};
 }
 #endif // _PDF_WRITER_SRC_ANNOTATION_H

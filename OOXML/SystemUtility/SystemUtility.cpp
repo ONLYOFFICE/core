@@ -242,14 +242,27 @@ namespace OOX
 	}
 	std::wstring CPath::GetExtention(bool bIsPoint) const
 	{
-		int nFind = (int)m_strFilename.rfind('.');
-		if (-1 == nFind)
+		size_t nFind = m_strFilename.rfind('.');
+		if (std::wstring::npos == nFind)
 			return L"";
 
 		if (!bIsPoint)
 			++nFind;
 
 		return m_strFilename.substr(nFind);
+	}
+	void CPath::SetExtention(const std::wstring& ext)
+	{
+		size_t nFind = m_strFilename.rfind('.');
+		if (std::wstring::npos == nFind)
+		{
+			m_strFilename += L"." + ext;
+		}
+		else
+		{
+			m_strFilename = m_strFilename.substr(0, nFind + 1) + ext;
+		}
+
 	}
 	std::wstring CPath::GetDirectory(bool bIsSlash) const
 	{

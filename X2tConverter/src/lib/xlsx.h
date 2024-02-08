@@ -114,10 +114,12 @@ namespace NExtractTools
 	}
 	_UINT32 xlsxflat2xlsx_dir(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
+		params.m_bMacro = false;
 		BinXlsxRW::CXlsxSerializer oCXlsxSerializer;
 
 		oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
 		oCXlsxSerializer.setFontDir(params.getFontPath());
+		oCXlsxSerializer.setMacroEnabled(params.m_bMacro);
 
 		_UINT32 nRes = oCXlsxSerializer.xml2Xlsx(sFrom, sTo, params.getXmlOptions());
 
@@ -153,6 +155,58 @@ namespace NExtractTools
 
 		convertParams.m_sTempParamOOXMLFile = L"";
 		convertParams.m_bTempIsXmlOptions = false;
+		return nRes;
+	}
+	_UINT32 xlst_bin2xlsb_dir(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
+	{
+		_UINT32 nRes = 0;
+
+		std::wstring sTargetBin;
+		if (params.getFromChanges())
+		{
+			params.setFromChanges(false);
+			nRes = apply_changes(sFrom, sTo, NSDoctRenderer::DoctRendererFormat::FormatFile::XLST, sTargetBin, params, convertParams);
+		}
+		else
+			sTargetBin = sFrom;
+
+		BinXlsxRW::CXlsxSerializer oCXlsxSerializer;
+
+		oCXlsxSerializer.setMacroEnabled(params.m_bMacro);
+		oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
+		oCXlsxSerializer.setFontDir(params.getFontPath());
+
+		std::wstring sXmlOptions = params.getXmlOptions();
+
+		std::wstring sMediaPath; // will be filled by 'CreateXlsxFolders' method
+		std::wstring sEmbedPath; // will be filled by 'CreateXlsxFolders' method
+
+		oCXlsxSerializer.CreateXlsxFolders(sXmlOptions, convertParams.m_sTempResultOOXMLDirectory, sMediaPath, sEmbedPath);
+
+		if (SUCCEEDED_X2T(nRes))
+		{
+			nRes = oCXlsxSerializer.loadFromFile(sTargetBin, convertParams.m_sTempResultOOXMLDirectory, sXmlOptions, sMediaPath, sEmbedPath);
+		}
+		// удаляем EditorWithChanges, потому что он не в Temp
+		if (sFrom != sTargetBin)
+			NSFile::CFileBinary::Remove(sTargetBin);
+
+		convertParams.m_sTempResultOOXMLDirectory = L"";
+		return nRes;
+	}
+	_UINT32 xlst_bin2xlsb(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
+	{
+		// Extract xlsx to temp directory
+		std::wstring sResultXlsxDir = combinePath(convertParams.m_sTempDir, L"xlsb_unpacked");
+		NSDirectory::CreateDirectory(sResultXlsxDir);
+
+		convertParams.m_sTempResultOOXMLDirectory = sResultXlsxDir;
+		_UINT32 nRes = xlst_bin2xlsb_dir(sFrom, sTo, params, convertParams);
+
+		if (SUCCEEDED_X2T(nRes) && params.m_nFormatTo)
+		{
+			nRes = dir2zipMscrypt(sResultXlsxDir, sTo, params, convertParams);
+		}
 		return nRes;
 	}
 	_UINT32 xlst_bin2xlsx(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
@@ -233,13 +287,18 @@ namespace NExtractTools
 	{
 		return NSCommon::oot2format(sFrom, sTo, params, convertParams, L"xlst", xlst_bin2xlsx);
 	}
-
+	
+	_UINT32 xlst2xlsb(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
+	{
+		return NSCommon::oot2format(sFrom, sTo, params, convertParams, L"xlst", xlst_bin2xlsb);
+	}
 	_UINT32 xltx2xlsx(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
 		return NSCommon::ooxml2ooxml(sFrom, sTo, params, convertParams, L"xlsx", xltx2xlsx_dir);
 	}
 	_UINT32 xltx2xlsx_dir(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
+		params.m_bMacro = false;
 		return NSCommon::ooxml2ooxml_replace_content_type(sFrom, sTo, params, convertParams,
 														  L"application/vnd.openxmlformats-officedocument.spreadsheetml.template.main+xml",
 														  L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml");
@@ -299,7 +358,36 @@ namespace NExtractTools
 		}
 		return nRes;
 	}
+	_UINT32 xlsx_dir2xlsb_dir(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
+	{
+        const OOX::CPath oox_path(sFrom);
 
+		OOX::Spreadsheet::CXlsb oXlsb;
+		oXlsb.m_bWriteToXlsb = true;
+		oXlsb.Read(oox_path);		
+
+		OOX::CContentTypes oContentTypes;
+		_UINT32 nRes = oXlsb.WriteBin(sTo, oContentTypes) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
+
+		return nRes;
+	}
+	_UINT32 xlsx_dir2xlsb(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
+    {
+		return NSCommon::ooxml2ooxml(sFrom, sTo, params, convertParams, L"xlsb", xlsx_dir2xlsb_dir);
+    }
+	_UINT32 xlsx2xlsb(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
+	{
+		std::wstring sTempUnpackedXLSX = combinePath(convertParams.m_sTempDir, L"xlsx_unpacked");
+		NSDirectory::CreateDirectory(sTempUnpackedXLSX);
+
+		COfficeUtils oCOfficeUtils(NULL);
+		_UINT32 nRes = oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedXLSX, NULL, 0);
+		if (SUCCEEDED_X2T(nRes))
+		{
+			nRes = xlsx_dir2xlsb(sTempUnpackedXLSX, sTo, params, convertParams);
+		}
+		return nRes;
+	}
 	_UINT32 xml2xlsx(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
 		return NSCommon::format2ooxml(sFrom, sTo, params, convertParams, L"xlsx", xml2xlsx_dir);

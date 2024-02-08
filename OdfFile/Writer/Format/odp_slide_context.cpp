@@ -86,6 +86,11 @@ void odp_slide_context::start_page(office_element_ptr & elm)
 	state().drawing_context()->set_styles_context(styles_context_);
 }
 
+void odp_slide_context::hide_page()
+{
+	state().hide_page();
+}
+
 void odp_slide_context::end_page()
 {
 	state().drawing_context()->finalize(state().page_elm_);

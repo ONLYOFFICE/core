@@ -162,7 +162,10 @@ namespace NExtractTools
 
 		BinDocxRW::CDocxSerializer m_oCDocxSerializer;
 
-		m_oCDocxSerializer.setOFormEnabled(params.m_nFormatTo && (*params.m_nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM || *params.m_nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF));
+		m_oCDocxSerializer.setOFormEnabled(params.m_nFormatTo &&
+										  (*params.m_nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM ||
+										   *params.m_nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF ||
+										   *params.m_nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF));
 		m_oCDocxSerializer.setMacroEnabled(params.m_bMacro);
 		m_oCDocxSerializer.setIsNoBase64(params.getIsNoBase64());
 		m_oCDocxSerializer.setFontDir(params.getFontPath());
@@ -287,8 +290,9 @@ namespace NExtractTools
 	}
 	_UINT32 package2ooxml_dir(const std::wstring &sFrom, const std::wstring &sTo, InputParams &params, ConvertParams& convertParams)
 	{
-		BinDocxRW::CDocxSerializer m_oCDocxSerializer;
+		params.m_bMacro = false;
 
+		BinDocxRW::CDocxSerializer m_oCDocxSerializer;
 		_UINT32 nRes = m_oCDocxSerializer.unpackageFile(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
 		return nRes;

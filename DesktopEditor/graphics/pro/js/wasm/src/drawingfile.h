@@ -7,6 +7,7 @@
 #include "../../../../../../DjVuFile/DjVu.h"
 #include "../../../../../../PdfFile/PdfFile.h"
 #include "../../../../../../HtmlRenderer/include/HTMLRendererText.h"
+#include "serialize.h"
 
 class CGraphicsFileDrawing
 {
@@ -95,6 +96,13 @@ public:
 		nHeight   = dHeight;
 		nPageDpiX = dPageDpiX;
 	}
+	std::wstring GetFont(const std::wstring& sFontName)
+	{
+		std::wstring sFontFile;
+		if (nType == 0)
+			sFontFile = ((CPdfFile*)pReader)->GetFontPath(sFontName);
+		return sFontFile;
+	}
 	BYTE* GetPage(int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
 	{
 		return pReader->ConvertToPixels(nPageIndex, nRasterW, nRasterH, true, pFontManager, nBackgroundColor, (nBackgroundColor == 0xFFFFFF) ? false : true);
@@ -123,10 +131,15 @@ public:
 			return ((CPdfFile*)pReader)->GetWidgets();
 		return NULL;
 	}
-	BYTE* GetWidgetFontsID()
+	BYTE* GetWidgetFonts(int nTypeFonts)
 	{
 		if (nType == 0)
-			return ((CPdfFile*)pReader)->GetWidgetFonts();
+		{
+			if (nTypeFonts == 1)
+				return ((CPdfFile*)pReader)->GetWidgetEmbeddedFonts();
+			if (nTypeFonts == 2)
+				return ((CPdfFile*)pReader)->GetWidgetStandardFonts();
+		}
 		return NULL;
 	}
 	BYTE* GetAnnots(int nPageIndex = -1)
@@ -141,10 +154,10 @@ public:
 			return ((CPdfFile*)pReader)->GetAPWidget(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nWidget, sView, sBView);
 		return NULL;
 	}
-	BYTE* GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, bool bBase64, int nBWidget = -1, const char* sIView = NULL)
+	BYTE* GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase64, int nBWidget = -1, const char* sIView = NULL)
 	{
 		if (nType == 0)
-			return ((CPdfFile*)pReader)->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, bBase64, nBWidget, sIView);
+			return ((CPdfFile*)pReader)->GetButtonIcon(nBackgroundColor, nPageIndex, bBase64, nBWidget, sIView);
 		return NULL;
 	}
 	BYTE* GetAPAnnots  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot   = -1, const char* sView  = NULL)

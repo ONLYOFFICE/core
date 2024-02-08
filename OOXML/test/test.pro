@@ -14,7 +14,8 @@ SOURCES += $$X2T_DIR/src/dylib/x2t.cpp
 
 SOURCES += main.cpp\
            common.cpp\
-           xlsb2xlsx/conversion.cpp
+           xlsb2xlsx/conversion.cpp\
+           xlsx2xlsb/conversion.cpp\
 
 HEADERS += common.h
 

@@ -54,6 +54,7 @@
 #include "SrcWriter/Info.h"
 #include "SrcWriter/Annotation.h"
 #include "SrcWriter/ResourcesDictionary.h"
+#include "SrcWriter/Streams.h"
 
 #define AddToObject(oVal)\
 {\
@@ -63,7 +64,7 @@
 	((PdfWriter::CArrayObject*)pObj)->Add(oVal);\
 }
 
-void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, const std::string& sKey)
+void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, const std::string& sKey, bool bUnicode = false)
 {
 	Object oTemp;
 	switch (obj->getType())
@@ -100,7 +101,7 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, 
 		{
 			TextString* s = new TextString(obj->getString());
 			std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-			AddToObject(new PdfWriter::CStringObject(sValue.c_str()))
+			AddToObject(new PdfWriter::CStringObject(sValue.c_str(), bUnicode))
 			delete s;
 		}
 		break;
@@ -120,7 +121,7 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, 
 		PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
 		AddToObject(pArray)
 
-				for (int nIndex = 0; nIndex < obj->arrayGetLength(); ++nIndex)
+		for (int nIndex = 0; nIndex < obj->arrayGetLength(); ++nIndex)
 		{
 			obj->arrayGetNF(nIndex, &oTemp);
 			DictToCDictObject(&oTemp, pArray, bBinary, "");
@@ -399,48 +400,6 @@ void CPdfFile::RotatePage(int nRotate)
 	m_pInternal->pWriter->PageRotate(nRotate);
 }
 #ifndef BUILDING_WASM_MODULE
-PdfWriter::CDictObject* GetAcroForm(Object* oAcroForm)
-{
-	if (!oAcroForm || !oAcroForm->isDict())
-		return NULL;
-
-	PdfWriter::CDictObject* pAcroForm = new PdfWriter::CDictObject();
-
-	for (int nIndex = 0; nIndex < oAcroForm->dictGetLength(); ++nIndex)
-	{
-		Object oTemp2;
-		char* chKey = oAcroForm->dictGetKey(nIndex);
-		if (strcmp("DR", chKey) == 0)
-		{
-			oAcroForm->dictGetVal(nIndex, &oTemp2);
-			/*
-			if (!oTemp2.isDict())
-			{
-				oTemp2.free();
-				continue;
-			}
-
-			PdfWriter::CResourcesDict* pDR = new PdfWriter::CResourcesDict(NULL, true, false);
-			pAcroForm->Add(chKey, pDR);
-			for (int nIndex = 0; nIndex < oTemp2.dictGetLength(); ++nIndex)
-			{
-
-			}
-			oTemp2.free();
-			continue;
-			*/
-		}
-		else
-			oAcroForm->dictGetValNF(nIndex, &oTemp2);
-		DictToCDictObject(&oTemp2, pAcroForm, false, chKey);
-		oTemp2.free();
-	}
-
-	if (!pAcroForm->Get("Fields"))
-		pAcroForm->Add("Fields", new PdfWriter::CArrayObject());
-
-	return pAcroForm;
-}
 bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 {
 	if (wsDstFile.empty())
@@ -521,25 +480,71 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 		return false;
 	}
 	pXref->Add(pCatalog, catRef.gen);
+	PdfWriter::CResourcesDict* pDR = NULL;
+	PdfWriter::CXref* pDRXref = NULL;
 	for (int nIndex = 0; nIndex < catDict.dictGetLength(); ++nIndex)
 	{
-		Object oTemp;
+		Object oAcroForm;
 		char* chKey = catDict.dictGetKey(nIndex);
 		if (strcmp("AcroForm", chKey) == 0)
 		{
-			catDict.dictGetVal(nIndex, &oTemp);
-			PdfWriter::CDictObject* pAcroForm = GetAcroForm(&oTemp);
-			oTemp.free();
-			if (pAcroForm)
+			catDict.dictGetVal(nIndex, &oAcroForm);
+			PdfWriter::CDictObject* pAcroForm = new PdfWriter::CDictObject();
+
+			for (int nIndex = 0; nIndex < oAcroForm.dictGetLength(); ++nIndex)
 			{
-				pCatalog->Add(chKey, pAcroForm);
+				Object oTemp2;
+				char* chKey = oAcroForm.dictGetKey(nIndex);
+				if (strcmp("DR", chKey) == 0)
+				{
+					oAcroForm.dictGetVal(nIndex, &oTemp2);
+					if (!oTemp2.isDict())
+					{
+						oTemp2.free();
+						continue;
+					}
+
+					Object oDR;
+					oAcroForm.dictGetValNF(nIndex, &oDR);
+					int nDRxrefNum = oDR.isRef() ? oDR.getRefNum() : xref->getNumObjects();
+					int nDRxrefGen = oDR.isRef() ? oDR.getRefGen() : 0;
+					oDR.free();
+					pDRXref = new PdfWriter::CXref(pDoc, nDRxrefNum);
+
+					pDR = new PdfWriter::CResourcesDict(NULL, true, false);
+					pDRXref->Add(pDR, nDRxrefGen);
+
+					pAcroForm->Add(chKey, pDR);
+					for (int nIndex2 = 0; nIndex2 < oTemp2.dictGetLength(); ++nIndex2)
+					{
+						Object oTemp;
+						char* chKey = oTemp2.dictGetKey(nIndex2);
+						oTemp2.dictGetVal(nIndex2, &oTemp);
+						DictToCDictObject(&oTemp, pDR, false, chKey);
+						oTemp.free();
+					}
+					oTemp2.free();
+
+					pDR->Fix();
+					continue;
+				}
+				else
+					oAcroForm.dictGetValNF(nIndex, &oTemp2);
+				DictToCDictObject(&oTemp2, pAcroForm, false, chKey);
+				oTemp2.free();
 			}
+
+			if (!pAcroForm->Get("Fields"))
+				pAcroForm->Add("Fields", new PdfWriter::CArrayObject());
+
+			oAcroForm.free();
+			pCatalog->Add(chKey, pAcroForm);
 			continue;
 		}
 		else
-			catDict.dictGetValNF(nIndex, &oTemp);
-		DictToCDictObject(&oTemp, pCatalog, false, chKey);
-		oTemp.free();
+			catDict.dictGetValNF(nIndex, &oAcroForm);
+		DictToCDictObject(&oAcroForm, pCatalog, false, chKey);
+		oAcroForm.free();
 	}
 	catDict.free();
 
@@ -585,6 +590,9 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 		{
 			pEncryptDict = new PdfWriter::CEncryptDict();
 
+			// Нужно получить словарь Encrypt БЕЗ дешифровки, поэтому времено отключаем encrypted в xref
+			xref->offEncrypted();
+
 			Object encrypt, ID, ID1;
 			if (pTrailerDict->dictLookup("Encrypt", &encrypt) && encrypt.isDict())
 			{
@@ -596,41 +604,43 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 					DictToCDictObject(&oTemp, pEncryptDict, true, chKey);
 					oTemp.free();
 				}
-
-				pEncryptDict->SetRef(0, 0);
-				pEncryptDict->Fix();
 			}
+
+			if (!pEncryptDict->Get("Length"))
+				pEncryptDict->Add("Length", 40);
+
 			encrypt.free();
 
 			if (pTrailerDict->dictLookup("ID", &ID) && ID.isArray() && ID.arrayGet(0, &ID1) && ID1.isString())
-			{
-				for (int nIndex = 0; nIndex < ID1.dictGetLength(); ++nIndex)
-				{
-					Object oTemp;
-					char* chKey = ID1.dictGetKey(nIndex);
-					ID1.dictGetValNF(nIndex, &oTemp);
-					DictToCDictObject(&oTemp, pEncryptDict, true, chKey);
-					oTemp.free();
-				}
-			}
+				DictToCDictObject(&ID1, pEncryptDict, true, "ID");
+			ID.free(); ID1.free();
+
+			xref->onEncrypted();
 
 			pEncryptDict->SetRef(0, 0);
 			pEncryptDict->Fix();
-			pEncryptDict->SetPasswords(m_pInternal->wsPassword, m_pInternal->wsPassword);
-			pEncryptDict->UpdateKey(nCryptAlgorithm);
 
-			ID.free();
-			ID1.free();
+			pEncryptDict->SetPasswords(m_pInternal->wsPassword, m_pInternal->wsPassword);
+			if (!pEncryptDict->UpdateKey(nCryptAlgorithm))
+			{
+				pagesRefObj.free();
+				RELEASEOBJECT(pXref);
+				RELEASEOBJECT(pDRXref);
+				return false;
+			}
 		}
 	}
 
 	// Применение редактирования для writer
-	bool bRes = pDoc->EditPdf(wsDstFile, xref->getLastXRefPos(), xref->getNumObjects(), pXref, pCatalog, pEncryptDict, nFormField);
+	bool bRes = pDoc->EditPdf(wsDstFile, xref->getLastXRefPos(), xref->getNumObjects() + 1, pXref, pCatalog, pEncryptDict, nFormField);
 	if (bRes)
 	{
 		// Воспроизведение дерева страниц во writer
 		m_pInternal->GetPageTree(xref, &pagesRefObj);
 		m_pInternal->bEdit = true;
+
+		if (pDR && pDRXref)
+			bRes = pDoc->EditResources(pDRXref, pDR);
 	}
 	pagesRefObj.free();
 	return bRes;
@@ -898,7 +908,37 @@ bool CPdfFile::EditAnnot(int nPageIndex, int nID)
 		if (sName)
 		{
 			if (strcmp("Btn", sName) == 0)
-				pAnnot = new PdfWriter::CButtonWidget(pXref);
+			{
+				bool bPushButton = false;
+				oFT.free();
+				int nFf = 0;
+				if (oAnnot.dictLookup("Ff", &oFT)->isInt())
+					nFf = oFT.getInt();
+				if (!nFf)
+				{
+					Object oParent, oParent2;
+					oAnnot.dictLookup("Parent", &oParent);
+					while (oParent.isDict())
+					{
+						if (oParent.dictLookup("Ff", &oFT)->isInt())
+						{
+							nFf = oFT.getInt();
+							break;
+						}
+						oFT.free();
+						oParent.dictLookup("Parent", &oParent2);
+						oParent.free();
+						oParent = oParent2;
+					}
+					oParent.free();
+				}
+
+				bPushButton = (bool)((nFf >> 16) & 1);
+				if (bPushButton)
+					pAnnot = new PdfWriter::CPushButtonWidget(pXref);
+				else
+					pAnnot = new PdfWriter::CCheckBoxWidget(pXref);
+			}
 			else if (strcmp("Tx", sName) == 0)
 				pAnnot = new PdfWriter::CTextWidget(pXref);
 			else if (strcmp("Ch", sName) == 0)
@@ -923,8 +963,6 @@ bool CPdfFile::EditAnnot(int nPageIndex, int nID)
 	for (int nIndex = 0; nIndex < oAnnot.dictGetLength(); ++nIndex)
 	{
 		char* chKey = oAnnot.dictGetKey(nIndex);
-		if (strcmp("AP", chKey) == 0)
-			continue;
 		if (strcmp("Popup", chKey) == 0)
 		{
 			Object oPopupRef;
@@ -945,11 +983,28 @@ bool CPdfFile::EditAnnot(int nPageIndex, int nID)
 			oAnnot.dictGetValNF(nIndex, &oParentRef);
 			PdfWriter::CDictObject* pParent = GetWidgetParent(pPDFDocument, pDoc, &oParentRef);
 
-			if (pParent)
+			if (!pParent)
 			{
-				((PdfWriter::CWidgetAnnotation*)pAnnot)->SetParent(pParent);
 				oParentRef.free();
 				continue;
+			}
+
+			((PdfWriter::CWidgetAnnotation*)pAnnot)->SetParent(pParent);
+			PdfWriter::CArrayObject* pKids = dynamic_cast<PdfWriter::CArrayObject*>(pParent->Get("Kids"));
+			if (!pKids)
+			{
+				oParentRef.free();
+				continue;
+			}
+
+			for (int i = 0; i < pKids->GetCount(); ++i)
+			{
+				PdfWriter::CObjectBase* pKid = pKids->Get(i);
+				if (pKid->GetObjId() == oAnnotRef.getRefNum())
+				{
+					pKids->Insert(pKid, pAnnot, true);
+					break;
+				}
 			}
 			oParentRef.free();
 		}
@@ -1021,6 +1076,215 @@ bool CPdfFile::DeleteAnnot(int nID)
 	oAnnots.free();
 
 	return bRes;
+}
+bool CPdfFile::EditWidgets(IAdvancedCommand* pCommand)
+{
+	CWidgetsInfo* pFieldInfo = (CWidgetsInfo*)pCommand;
+
+	PDFDoc* pPDFDocument = m_pInternal->pReader->GetPDFDocument();
+	PdfWriter::CDocument* pDoc = m_pInternal->pWriter->m_pDocument;
+
+	std::vector<CWidgetsInfo::CParent*> arrParents = pFieldInfo->GetParents();
+	for (CWidgetsInfo::CParent* pParent : arrParents)
+	{
+		PdfWriter::CDictObject* pDParent = pDoc->GetParent(pParent->nID);
+		if (pDParent)
+			continue;
+
+		Object oParentRef;
+		// TODO узнать gen родителя
+		oParentRef.initRef(pParent->nID, 0);
+		GetWidgetParent(pPDFDocument, pDoc, &oParentRef);
+		// TODO перевыставить детей
+		oParentRef.free();
+	}
+
+	return true;
+}
+HRESULT CPdfFile::ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword)
+{
+	RELEASEOBJECT(m_pInternal->pWriter);
+	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this, false);
+
+	PDFDoc* pPDFDocument = m_pInternal->pReader->GetPDFDocument();
+	if (!pPDFDocument)
+		return S_FALSE;
+
+	XRef* xref = pPDFDocument->getXRef();
+	if (!xref)
+		return S_FALSE;
+	Object* trailerDict = xref->getTrailerDict();
+	if (!trailerDict)
+		return S_FALSE;
+
+	PdfWriter::CDocument* pDoc = m_pInternal->pWriter->m_pDocument;
+	PdfWriter::CXref* pXref   = new PdfWriter::CXref(pDoc, 0);
+	PdfWriter::CXref* m_pXref = new PdfWriter::CXref(pDoc, xref->getNumObjects()); // Для новых объектов
+	if (!xref || !pDoc || !pXref || !m_pXref)
+	{
+		RELEASEOBJECT(pXref);
+		RELEASEOBJECT(m_pXref);
+		return S_FALSE;
+	}
+	pXref->SetPrev(m_pXref);
+
+	for (int i = 0; i < xref->getSize(); ++i)
+	{
+		XRefEntry* pEntry = xref->getEntry(i);
+		if (pEntry->type == xrefEntryFree)
+			continue;
+
+		if (i != pXref->GetSizeXRef())
+		{
+			PdfWriter::CXref* pXref2 = new PdfWriter::CXref(pDoc, i);
+			pXref2->SetPrev(pXref);
+			pXref = pXref2;
+		}
+
+		Object oTemp;
+		xref->fetch(i, pEntry->gen, &oTemp);
+		PdfWriter::CObjectBase* pObj = NULL;
+
+		switch (oTemp.getType())
+		{
+		case objBool:
+		{
+			pObj = new PdfWriter::CBoolObject(oTemp.getBool());
+			break;
+		}
+		case objInt:
+		{
+			pObj = new PdfWriter::CNumberObject(oTemp.getInt());
+			break;
+		}
+		case objReal:
+		{
+			pObj = new PdfWriter::CRealObject(oTemp.getReal());
+			break;
+		}
+		case objString:
+		{
+			TextString* s = new TextString(oTemp.getString());
+			std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+			pObj = new PdfWriter::CStringObject(sValue.c_str());
+			delete s;
+			break;
+		}
+		case objName:
+		{
+			pObj = new PdfWriter::CNameObject(oTemp.getName());
+			break;
+		}
+		case objNull:
+		{
+			pObj = new PdfWriter::CNullObject();
+			break;
+		}
+		case objArray:
+		{
+			pObj = new PdfWriter::CArrayObject();
+
+			for (int nIndex = 0; nIndex < oTemp.arrayGetLength(); ++nIndex)
+			{
+				Object oT;
+				oTemp.arrayGetNF(nIndex, &oT);
+				DictToCDictObject(&oT, pObj, false, "");
+				oT.free();
+			}
+			break;
+		}
+		case objDict:
+		{
+			pObj = new PdfWriter::CDictObject();
+
+			for (int nIndex = 0; nIndex < oTemp.dictGetLength(); ++nIndex)
+			{
+				Object oT;
+				char* chKey = oTemp.dictGetKey(nIndex);
+				oTemp.dictGetValNF(nIndex, &oT);
+				DictToCDictObject(&oT, pObj, false, chKey);
+				oT.free();
+			}
+			break;
+		}
+		case objRef:
+		{
+			PdfWriter::CObjectBase* pBase = new PdfWriter::CObjectBase();
+			pBase->SetRef(oTemp.getRefNum(), oTemp.getRefGen());
+			pObj = new PdfWriter::CProxyObject(pBase, true);
+			break;
+		}
+		case objStream:
+		{
+			Dict* pDict = oTemp.streamGetDict();
+			Object oObjStm;
+			if (pDict->lookup("Type", &oObjStm)->isName("ObjStm"))
+			{
+				oObjStm.free();
+				break;
+			}
+			oObjStm.free();
+
+			PdfWriter::CDictObject* pDObj = new PdfWriter::CDictObject();
+			pObj = pDObj;
+
+			int nLength = 0;
+			for (int nIndex = 0; nIndex < pDict->getLength(); ++nIndex)
+			{
+				Object oT;
+				char* chKey = pDict->getKey(nIndex);
+				if (strcmp("Length", chKey) == 0)
+				{
+					Object oLength;
+					nLength = pDict->getVal(nIndex, &oLength)->isInt() ? oLength.getInt() : 0;
+					oLength.free();
+					continue;
+				}
+				pDict->getValNF(nIndex, &oT);
+				DictToCDictObject(&oT, pObj, false, chKey);
+				oT.free();
+			}
+
+			PdfWriter::CStream* pStream = new PdfWriter::CMemoryStream();
+			pDObj->SetStream(m_pXref, pStream, false);
+
+			Stream* pImage = oTemp.getStream()->getUndecodedStream();
+			pImage->reset();
+			for (int nI = 0; nI < nLength; ++nI)
+				pStream->WriteChar(pImage->getChar());
+			break;
+		}
+		case objNone:
+		case objCmd:
+		case objError:
+		case objEOF:
+		default:
+			break;
+		}
+		oTemp.free();
+
+		if (pObj)
+			pXref->Add(pObj);
+	}
+
+	PdfWriter::CDictObject* pTrailer = pXref->GetTrailer();
+	for (int nIndex = 0; nIndex < trailerDict->dictGetLength(); ++nIndex)
+	{
+		Object oTemp;
+		char* chKey = trailerDict->dictGetKey(nIndex);
+		if (strcmp("Root", chKey) == 0 || strcmp("Info", chKey) == 0)
+		{
+			trailerDict->dictGetValNF(nIndex, &oTemp);
+			DictToCDictObject(&oTemp, pTrailer, true, chKey);
+		}
+		oTemp.free();
+	}
+
+	bool bRes = pDoc->SaveNewWithPassword(pXref, m_pXref, wsPath, wsPassword, wsPassword, pTrailer);
+
+	RELEASEOBJECT(pXref);
+
+	return bRes ? S_OK : S_FALSE;
 }
 #endif // BUILDING_WASM_MODULE
 
@@ -1292,11 +1556,23 @@ BYTE* CPdfFile::GetWidgets()
 		return NULL;
 	return m_pInternal->pReader->GetWidgets();
 }
-BYTE* CPdfFile::GetWidgetFonts()
+BYTE* CPdfFile::GetWidgetEmbeddedFonts()
 {
 	if (!m_pInternal->pReader)
 		return NULL;
-	return m_pInternal->pReader->GetWidgetFonts();
+	return m_pInternal->pReader->GetWidgetFonts(1);
+}
+BYTE* CPdfFile::GetWidgetStandardFonts()
+{
+	if (!m_pInternal->pReader)
+		return NULL;
+	return m_pInternal->pReader->GetWidgetFonts(2);
+}
+std::wstring CPdfFile::GetFontPath(const std::wstring& wsFontName)
+{
+	if (!m_pInternal->pReader)
+		return L"";
+	return m_pInternal->pReader->GetFontPath(wsFontName);
 }
 BYTE* CPdfFile::GetAnnots(int nPageIndex)
 {
@@ -1316,11 +1592,11 @@ BYTE* CPdfFile::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, in
 		return NULL;
 	return m_pInternal->pReader->GetAPWidget(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nWidget, sView, sButtonView);
 }
-BYTE* CPdfFile::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, bool bBase64, int nButtonWidget, const char* sIconView)
+BYTE* CPdfFile::GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase64, int nButtonWidget, const char* sIconView)
 {
 	if (!m_pInternal->pReader)
 		return NULL;
-	return m_pInternal->pReader->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, bBase64, nButtonWidget, sIconView);
+	return m_pInternal->pReader->GetButtonIcon(nBackgroundColor, nPageIndex, bBase64, nButtonWidget, sIconView);
 }
 BYTE* CPdfFile::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot, const char* sView)
 {
@@ -2079,7 +2355,10 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	case IAdvancedCommand::AdvancedCommandType::WidgetsInfo:
 	{
 		CWidgetsInfo* pCommand = (CWidgetsInfo*)command;
-
+#ifndef BUILDING_WASM_MODULE
+		if (m_pInternal->bEdit && EditWidgets(pCommand))
+			return m_pInternal->pWriter->EditWidgetParents(m_pInternal->pAppFonts, pCommand, m_pInternal->wsTempFolder);
+#endif
 		return S_OK;
 	}
 	default:

@@ -7033,11 +7033,13 @@ namespace BinXlsxRW
 
 		if (c_oserct_chartExBinningBINSIZE == type)
 		{
-			pBinning->m_binSize = m_oBufferedStream.GetDoubleReal();
+			pBinning->m_binSize.Init();
+			pBinning->m_binSize->m_oVal = m_oBufferedStream.GetDoubleReal();
 		}
 		else if (c_oserct_chartExBinningBINCOUNT == type)
 		{
-			pBinning->m_binCount = m_oBufferedStream.GetLong();
+			pBinning->m_binCount.Init();
+			pBinning->m_binCount->m_oVal = m_oBufferedStream.GetLong();
 		}
 		else if (c_oserct_chartExBinningINTERVAL == type)
 		{
@@ -12604,16 +12606,16 @@ namespace BinXlsxRW
 	}
 	void BinaryChartWriter::WriteCT_ChartExBinning(OOX::Spreadsheet::ChartEx::CBinning *pVal)
 	{
-		if (pVal->m_binSize.IsInit())
+		if ((pVal->m_binSize.IsInit()) && (pVal->m_binSize->m_oVal.IsInit()))
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartExBinningBINSIZE);
-			m_oBcw.m_oStream.WriteDoubleReal(*pVal->m_binSize);
+			m_oBcw.m_oStream.WriteDoubleReal(pVal->m_binSize->m_oVal->GetValue());
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (pVal->m_binCount.IsInit())
+		if ((pVal->m_binCount.IsInit()) && (pVal->m_binCount->m_oVal.IsInit()))
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartExBinningBINCOUNT);
-			m_oBcw.m_oStream.WriteLONG(*pVal->m_binCount);
+			m_oBcw.m_oStream.WriteLONG(*pVal->m_binCount->m_oVal);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if (pVal->m_intervalClosed.IsInit())
@@ -12639,7 +12641,7 @@ namespace BinXlsxRW
 		}
 		if (pVal->m_overflow.IsInit())
 		{
-			if (pVal->m_underflow->GetValue() == SimpleTypes::Spreadsheet::typeAuto)
+			if (pVal->m_overflow->GetValue() == SimpleTypes::Spreadsheet::typeAuto)
 			{
 				int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartExBinningOVERAUTO);
 				m_oBcw.m_oStream.WriteBYTE(pVal->m_overflow->GetValue());

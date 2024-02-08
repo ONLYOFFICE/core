@@ -54,11 +54,11 @@ namespace DocFileFormat
 		//It's a real string table
 		if (reader->nWordVersion > 0)
 		{
-			FormatUtils::GetSTLCollectionFromBytes<WideString>( newObject, bytes, length, ENCODING_WINDOWS_1250 );
+			FormatUtils::GetWStringFromBytes( *newObject, bytes, length, ENCODING_WINDOWS_1250 );
 		}
 		else
 		{
-			FormatUtils::GetSTLCollectionFromBytes<WideString>( newObject, bytes, length, ENCODING_UTF16 );
+			FormatUtils::GetWStringFromBytes( *newObject, bytes, length, ENCODING_UTF16 );
 		}
 		RELEASEARRAYOBJECTS( bytes );
 

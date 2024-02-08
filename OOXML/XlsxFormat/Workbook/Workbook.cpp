@@ -292,10 +292,6 @@ namespace OOX
 			}
 			if (m_oCalcPr.IsInit())
                 workBookStream->m_BrtCalcProp = m_oCalcPr->toBin();
-			if (m_oDefinedNames.IsInit())
-			{
-                workBookStream->m_arBrtName = m_oDefinedNames->toBin();
-			}
 			if (m_oSheets.IsInit())
 			{
 				auto ptr(new XLSB::BUNDLESHS);
@@ -336,7 +332,10 @@ namespace OOX
 				workBookStream->m_BrtWbProp = m_oWorkbookPr->toBin();
 			if (m_oPivotCaches.IsInit())
 				workBookStream->m_PIVOTCACHEIDS = m_oPivotCaches->toBin();
-
+			if (m_oDefinedNames.IsInit())
+			{
+                workBookStream->m_arBrtName = m_oDefinedNames->toBin();
+			}
 			if (m_oWorkbookProtection.IsInit())
 				workBookStream->m_BrtBookProtection = m_oWorkbookProtection->toBin();
 

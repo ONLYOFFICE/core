@@ -395,7 +395,7 @@ namespace StarMath
 		static CElement* ParseElement(CStarMathReader* pReader);
 		//Function for adding a left argument (receives the argument itself and the element to which it needs to be added as input. Works with classes:CElementBinOperator,CElementConnection,CElementSetOperation).
 		static bool AddLeftArgument(CElement* pLeftArg,CElement* pElementWhichAdd);
-		static bool CheckForLeftArgument(const TypeElement& enType);
+		static bool CheckForLeftArgument(const TypeElement& enType );
 		static CElement* ReadingWithoutBracket(CStarMathReader* pReader);
 	private:
 		std::vector<CElement*> m_arEquation;

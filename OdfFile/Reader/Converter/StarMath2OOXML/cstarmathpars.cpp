@@ -112,6 +112,12 @@ namespace StarMath
 		T* pTempElement = dynamic_cast<T*>(pElementWhichAdd);
 		if(pTempElement->GetLeftArg() == nullptr)
 		{
+			if(pLeftArg->GetBaseType() == TypeElement::SpecialSymbol)
+			{
+				CElementSpecialSymbol* pSpecial = dynamic_cast<CElementSpecialSymbol*>(pLeftArg);
+				if(pSpecial->GetType() == TypeElement::newline)
+					return false;
+			}
 			pTempElement->SetLeftArg(pLeftArg);
 			pElementWhichAdd = pTempElement;
 			return true;
@@ -121,38 +127,41 @@ namespace StarMath
 
 	bool CParserStarMathString::AddLeftArgument(CElement *pLeftArg, CElement *pElementWhichAdd)
 	{
-		switch(pElementWhichAdd->GetBaseType())
+		if(pElementWhichAdd!=nullptr)
 		{
-			case TypeElement::BinOperator:
+			switch(pElementWhichAdd->GetBaseType())
 			{
-				return SetLeft<CElementBinOperator>(pLeftArg, pElementWhichAdd);
+				case TypeElement::BinOperator:
+				{
+					return SetLeft<CElementBinOperator>(pLeftArg, pElementWhichAdd);
+				}
+				case TypeElement::SetOperations:
+				{
+					SetLeft<CElementSetOperations>(pLeftArg, pElementWhichAdd);
+					break;
+				}
+				case TypeElement::Connection:
+				{
+					return SetLeft<CElementConnection>(pLeftArg,pElementWhichAdd);
+				}
+				case TypeElement::BracketWithIndex:
+				{
+					return SetLeft<CElementBracketWithIndex>(pLeftArg,pElementWhichAdd);
+				}
+				case TypeElement::Index:
+				{
+					return SetLeft<CElementIndex>(pLeftArg,pElementWhichAdd);
+				}
+				default:
+					return false;
 			}
-			case TypeElement::SetOperations:
-			{
-				SetLeft<CElementSetOperations>(pLeftArg, pElementWhichAdd);
-				break;
-			}
-			case TypeElement::Connection:
-			{
-				return SetLeft<CElementConnection>(pLeftArg,pElementWhichAdd);
-			}
-			case TypeElement::BracketWithIndex:
-			{
-				return SetLeft<CElementBracketWithIndex>(pLeftArg,pElementWhichAdd);
-			}
-			case TypeElement::Index:
-			{
-				return SetLeft<CElementIndex>(pLeftArg,pElementWhichAdd);
-			}
-			default:
-				break;
 		}
+		else return false;
 	}
 	CElement* CParserStarMathString::ReadingWithoutBracket(CStarMathReader *pReader)
 	{
 		CElement* pFirstTempElement = CParserStarMathString::ParseElement(pReader);
-		pReader->GetToken();
-		pReader->SetTypesToken();
+		pReader->ReadingTheNextToken();
 		while(CheckForLeftArgument(pReader->GetGlobalType()) && (pReader->GetLocalType() != TypeElement::frac || pReader->GetLocalType()!=TypeElement::nroot || pReader->GetLocalType()!=TypeElement::sqrt))
 		{
 			CElement* pSecondTempElement = CParserStarMathString::ParseElement(pReader);
@@ -161,11 +170,7 @@ namespace StarMath
 				CParserStarMathString::AddLeftArgument(pFirstTempElement,pSecondTempElement);
 			}
 			pFirstTempElement = pSecondTempElement;
-			if(pReader->EmptyString())
-			{
-				pReader->GetToken();
-				pReader->SetTypesToken();
-			}
+			pReader->ReadingTheNextToken();
 		}
 		return pFirstTempElement;
 	}
@@ -430,7 +435,6 @@ namespace StarMath
 		}
 	}
 
-//нет phantom, rgb, 16 , гарнитуры и кегля
 	TypeElement CAttribute::GetTypeColorAttribute(const std::wstring &wsToken)
 	{
 		if(L"color" == wsToken) return TypeElement::color;
@@ -649,14 +653,14 @@ namespace StarMath
 		{
 			CElement* pTempElement = CParserStarMathString::ParseElement(pReader);
 			pReader->ReadingTheNextToken();
-			if((IsBinOperatorLowPrior() && pReader->GetGlobalType() == TypeElement::BinOperator) || pReader->GetGlobalType() == TypeElement::BracketWithIndex || (pReader->GetGlobalType() == TypeElement::Index && (pReader->GetLocalType() != TypeElement::nroot || pReader->GetLocalType() != TypeElement::sqrt)))
+			while((IsBinOperatorLowPrior() && pReader->GetGlobalType() == TypeElement::BinOperator) || pReader->GetGlobalType() == TypeElement::BracketWithIndex || (pReader->GetGlobalType() == TypeElement::Index && (pReader->GetLocalType() != TypeElement::nroot || pReader->GetLocalType() != TypeElement::sqrt)))
 			{
-				CElement* pBinOp = CParserStarMathString::ParseElement(pReader);
-				CParserStarMathString::AddLeftArgument(pTempElement,pBinOp);
-				SetRightArg(pBinOp);
+				CElement* pElementWithRightArgument = CParserStarMathString::ParseElement(pReader);
+				CParserStarMathString::AddLeftArgument(pTempElement,pElementWithRightArgument);
+				pTempElement = pElementWithRightArgument;
+				pReader->ReadingTheNextToken();
 			}
-			else
-				SetRightArg(pTempElement);
+			SetRightArg(pTempElement);
 		}
 	}
 	void CElementBinOperator::ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite)
@@ -860,8 +864,13 @@ namespace StarMath
 		pReader->FindingTheEndOfParentheses();
 		while(pReader->CheckIteratorPosition())
 		{
+			if(pReader->GetLocalType() == TypeElement::newline)
+			{
+				m_arBrecketValue.push_back(new CElementSpecialSymbol(pReader->GetLocalType()));
+				pReader->ClearReader();
+			}
 			CElement* pTempElement = CParserStarMathString::ParseElement(pReader);
-			if(!m_arBrecketValue.empty() && CParserStarMathString::CheckForLeftArgument(pTempElement->GetBaseType()))
+			if(pTempElement!= nullptr &&( !m_arBrecketValue.empty() && CParserStarMathString::CheckForLeftArgument(pTempElement->GetBaseType())))
 			{
 				if(CParserStarMathString::AddLeftArgument(m_arBrecketValue.back(),pTempElement))
 					m_arBrecketValue.pop_back();
@@ -1403,13 +1412,14 @@ namespace StarMath
 	{
 		CElement* pTempElement = CParserStarMathString::ParseElement(pReader);
 		pReader->ReadingTheNextToken();
-		if((pReader->GetGlobalType() == TypeElement::BinOperator && pReader->GetLocalType()!=TypeElement::frac) || pReader->GetGlobalType() == TypeElement::BracketWithIndex || (pReader->GetGlobalType() == TypeElement::Index && (pReader->GetLocalType()!=TypeElement::nroot || pReader->GetLocalType() != TypeElement::sqrt)))
+		while((pReader->GetGlobalType() == TypeElement::BinOperator && pReader->GetLocalType()!=TypeElement::frac) || pReader->GetGlobalType() == TypeElement::BracketWithIndex || (pReader->GetGlobalType() == TypeElement::Index && (pReader->GetLocalType()!=TypeElement::nroot || pReader->GetLocalType() != TypeElement::sqrt)))
 		{
 			CElement* pElement = CParserStarMathString::ParseElement(pReader);
 			CParserStarMathString::AddLeftArgument(pTempElement,pElement);
-			SetRightArg(pElement);
+			pTempElement = pElement;
+			pReader->ReadingTheNextToken();
 		}
-		else SetRightArg(pTempElement);
+		SetRightArg(pTempElement);
 	}
 	void CElementSetOperations::ConversionToOOXML(XmlUtils::CXmlWriter *pXmlWrite)
 	{
@@ -1526,17 +1536,16 @@ namespace StarMath
 	}
 	void CElementConnection::Parse(CStarMathReader *pReader)
 	{
-//		pReader->SetAttribute(GetAttribute());
 		CElement* pTempElement = CParserStarMathString::ParseElement(pReader);
 		pReader->ReadingTheNextToken();
-		if((pReader->GetGlobalType() == TypeElement::BinOperator && pReader->GetLocalType()!=TypeElement::frac) || pReader->GetGlobalType() == TypeElement::BracketWithIndex || (pReader->GetGlobalType() == TypeElement::Index && (pReader->GetLocalType()!=TypeElement::nroot || pReader->GetLocalType()!=TypeElement::sqrt)))
+		while((pReader->GetGlobalType() == TypeElement::BinOperator && pReader->GetLocalType()!=TypeElement::frac) || pReader->GetGlobalType() == TypeElement::BracketWithIndex || (pReader->GetGlobalType() == TypeElement::Index && (pReader->GetLocalType()!=TypeElement::nroot || pReader->GetLocalType()!=TypeElement::sqrt)))
 		{
-//			pReader->SetAttribute(GetAttribute());
-			CElement* pBinOp = CParserStarMathString::ParseElement(pReader);
-			CParserStarMathString::AddLeftArgument(pTempElement,pBinOp);
-			SetRightArg(pBinOp);
+			CElement* pElement = CParserStarMathString::ParseElement(pReader);
+			CParserStarMathString::AddLeftArgument(pTempElement,pElement);
+			pTempElement = pElement;
+			pReader->ReadingTheNextToken();
 		}
-		else SetRightArg(pTempElement);
+		SetRightArg(pTempElement);
 	}
 	void CElementConnection::ConversionToOOXML(XmlUtils::CXmlWriter *pXmlWrite)
 	{
@@ -1891,17 +1900,17 @@ namespace StarMath
 		{
 			CElement* pTemp = CParserStarMathString::ParseElement(pReader);
 			pReader->ReadingTheNextToken();
-			if(CParserStarMathString::CheckForLeftArgument(pReader->GetGlobalType()))
+			while(CParserStarMathString::CheckForLeftArgument(pReader->GetGlobalType()))
 			{
 				 CElement* pTempElement = CParserStarMathString::ParseElement(pReader);
 				 CParserStarMathString::AddLeftArgument(pTemp,pTempElement);
 				 pTemp = pTempElement;
+				 pReader->ReadingTheNextToken();
 			}
 			SetValueFunction(pTemp);
 		}
 		else
 			SetValueFunction(nullptr);
-		//pReader->ClearReader();
 	}
 	void CElementFunction::ConversionToOOXML(XmlUtils::CXmlWriter *pXmlWrite)
 	{

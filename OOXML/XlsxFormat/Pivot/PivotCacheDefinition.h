@@ -92,8 +92,6 @@ namespace OOX
 			nullable<SimpleTypes::CDateTime>				m_oMinDate;
 			nullable<SimpleTypes::CDateTime>				m_oMaxDate;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
-			private:
-			XLS::BaseObjectPtr parsePCDI(XLS::BaseObjectPtr object);
 		};
 		class COLAPGroupItems : public WritingElementWithChilds<WritingElement>
 		{

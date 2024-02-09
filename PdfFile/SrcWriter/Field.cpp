@@ -1700,7 +1700,10 @@ namespace PdfWriter
 				m_pStream->WriteStr(" rg\012");
 			}
 			else
+			{
 				m_pStream->WriteStr(pAnnot->GetBGforAP().c_str());
+				m_pStream->WriteStr("\012");
+			}
 
 			m_pStream->WriteStr("1 0 0 1 0 0 cm\012");
 			m_pStream->WriteStr("0 0 ");
@@ -1722,7 +1725,6 @@ namespace PdfWriter
 		if ((m_pField && m_pField->HaveBorder()) || (pAnnot && pAnnot->HaveBorder()))
 		{
 			double dBorderSize = m_pField ? m_pField->GetBorderSize() : pAnnot->GetBorderWidth();
-			double dBorderSizeStyle = dBorderSize;
 
 			BYTE nType = 0;
 			if (pAnnot)
@@ -1733,8 +1735,6 @@ namespace PdfWriter
 				case 1: // Beveled
 				case 3: // Inset
 				{
-					dBorderSizeStyle *= 2;
-
 					m_pStream->WriteStr(nType == 1 ? "1 g\012" : "0.501953 g\012");
 
 					m_pStream->WriteReal(dBorderSize);
@@ -1770,7 +1770,10 @@ namespace PdfWriter
 					m_pStream->WriteStr("f\012");
 
 					if (nType == 1 && pAnnot->HaveBG())
+					{
 						m_pStream->WriteStr(pAnnot->GetBGforAP(-0.25).c_str());
+						m_pStream->WriteStr("\012");
+					}
 					else
 						m_pStream->WriteStr("0.75293 g\012");
 
@@ -1827,7 +1830,10 @@ namespace PdfWriter
 				m_pStream->WriteStr(" RG\012");
 			}
 			else
+			{
 				m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
+				m_pStream->WriteStr("\012");
+			}
 
 			m_pStream->WriteReal(dBorderSize);
 			m_pStream->WriteStr(" w\0120 j\0120 J\012");
@@ -1923,7 +1929,10 @@ namespace PdfWriter
 				m_pStream->WriteStr(" rg\012");
 			}
 			else
+			{
 				m_pStream->WriteStr(pAnnot->GetBGforAP().c_str());
+				m_pStream->WriteStr("\012");
+			}
 
 			m_pStream->WriteStr("1 0 0 1 0 0 cm\012");
 			m_pStream->WriteStr("0 0 ");
@@ -1999,7 +2008,10 @@ namespace PdfWriter
 					m_pStream->WriteStr("f\012");
 
 					if (nType == 1 && pAnnot->HaveBG())
+					{
 						m_pStream->WriteStr(pAnnot->GetBGforAP(-0.25).c_str());
+						m_pStream->WriteStr("\012");
+					}
 					else
 						m_pStream->WriteStr("0.75293 g\012");
 
@@ -2056,7 +2068,10 @@ namespace PdfWriter
 				m_pStream->WriteStr(" RG\012");
 			}
 			else
+			{
 				m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
+				m_pStream->WriteStr("\012");
+			}
 
 			m_pStream->WriteReal(dBorderSize);
 			m_pStream->WriteStr(" w\0120 j\0120 J\012");
@@ -2309,6 +2324,7 @@ namespace PdfWriter
 
 		m_pStream->WriteStr("q\012");
 		m_pStream->WriteStr(pAnnot->GetBGforAP().c_str());
+		m_pStream->WriteStr("\012");
 		m_pStream->WriteStr("1 0 0 1 0 0 cm\012");
 		m_pStream->WriteStr("0 0 ");
 		m_pStream->WriteReal(fmax(dWidth, 0.0));
@@ -2368,7 +2384,10 @@ namespace PdfWriter
 			m_pStream->WriteStr("f\012");
 
 			if (nType == 1 && pAnnot->HaveBG())
+			{
 				m_pStream->WriteStr(pAnnot->GetBGforAP(-0.25).c_str());
+				m_pStream->WriteStr("\012");
+			}
 			else
 				m_pStream->WriteStr("0.75293 g\012");
 
@@ -2414,6 +2433,7 @@ namespace PdfWriter
 		}
 
 		m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
+		m_pStream->WriteStr("\012");
 		m_pStream->WriteReal(dBorderSize);
 		m_pStream->WriteStr(" w\0120 j\0120 J\012");
 

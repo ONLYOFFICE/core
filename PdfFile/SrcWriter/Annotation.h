@@ -41,6 +41,37 @@
 namespace PdfWriter
 {
 	class CDestination;
+	enum ELineIntentType
+	{
+		LineDimension = 0,
+		LineArrow
+	};
+	enum ELineEndType
+	{
+		Square = 0,
+		Circle,
+		Diamond,
+		OpenArrow,
+		ClosedArrow,
+		None,
+		Butt,
+		ROpenArrow,
+		RClosedArrow,
+		Slash
+	};
+	enum ECaptionPositioning
+	{
+		Inline = 0,
+		Top
+	};
+	enum EBorderType
+	{
+		Solid = 0,
+		Beveled,
+		Dashed,
+		Inset,
+		Underline
+	};
 
 	class CAction : public CDictObject
 	{
@@ -106,12 +137,12 @@ namespace PdfWriter
 			CBorderType()
 			{
 				bHave  = false;
-				nType  = 0;
-				dWidth = 0;
+				nType  = EBorderType::Solid;
+				dWidth = 1;
 			}
 
 			bool bHave;
-			BYTE nType;
+			EBorderType nType;
 			double dWidth;
 			std::vector<double> arrDash;
 		};
@@ -142,7 +173,6 @@ namespace PdfWriter
 
 		void SetRect(const TRect& oRect);
 		void SetBorder(BYTE nType, double dWidth, const std::vector<double>& arrDash);
-		void SetEmptyBorder();
 		void SetAnnotFlag(const int& nAnnotFlag);
 		void SetPage(CPage* pPage, double dW = 0, double dH = 0, double dX = 0);
 		void SetBE(BYTE nType, const double& dBE);
@@ -156,7 +186,7 @@ namespace PdfWriter
 		void SetDocument(CDocument* pDocument);
 		CDocument* GetDocument();
 		bool HaveBorder()       { return m_oBorder.bHave; }
-		BYTE GetBorderType()    { return m_oBorder.nType; }
+		EBorderType GetBorderType() { return m_oBorder.nType; }
 		double GetBorderWidth() { return m_oBorder.dWidth; }
 		std::string GetBorderDash();
 		double GetWidth()  { return abs(m_oRect.fRight - m_oRect.fLeft); }
@@ -248,6 +278,9 @@ namespace PdfWriter
 	};
 	class CLineAnnotation : public CMarkupAnnotation
 	{
+	private:
+		ELineEndType m_nLE1, m_nLE2;
+		double dL[4];
 	public:
 		CLineAnnotation(CXref* pXref);
 		EAnnotType GetAnnotationType() const override
@@ -265,6 +298,8 @@ namespace PdfWriter
 		void SetL(const double& dL1, const double& dL2, const double& dL3, const double& dL4);
 		void SetCO(const double& dCO1, const double& dCO2);
 		void SetIC(const std::vector<double>& arrIC);
+
+		void SetAP();
 	};
 	class CTextMarkupAnnotation : public CMarkupAnnotation
 	{
@@ -355,8 +390,6 @@ namespace PdfWriter
 		CAnnotAppearance* m_pAppearance;
 		double m_dFontSizeAP;
 		std::vector<double> m_arrTC;
-		std::vector<double> m_arrBC;
-		std::vector<double> m_arrBG;
 		BYTE m_nQ;
 
 		void CheckMK();
@@ -398,8 +431,8 @@ namespace PdfWriter
 		double GetFontSize()   { return m_dFontSize; }
 		bool GetFontIsBold()   { return m_bBold; }
 		bool GetFontIsItalic() { return m_bItalic; }
-		bool HaveBG() { return !m_arrBG.empty(); }
-		bool HaveBC() { return !m_arrBC.empty(); }
+		bool HaveBG() { return Get("BG")->GetType() == object_type_ARRAY; }
+		bool HaveBC() { return Get("BC")->GetType() == object_type_ARRAY; }
 		BYTE GetQ() { return m_nQ; }
 
 		void SetEmptyAP();

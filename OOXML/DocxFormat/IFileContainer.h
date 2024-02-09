@@ -63,7 +63,7 @@ namespace OOX
 		template<class TypeOut> 
 		smart_ptr<TypeOut> Get (const RId& rId) const
 		{
-			boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pFind = m_mapContainer.find(rId.get());
+			std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pFind = m_mapContainer.find(rId.get());
 			if (pFind == m_mapContainer.end ())
 				return smart_ptr<TypeOut>();
 			return pFind->second.smart_dynamic_cast<TypeOut>();
@@ -98,12 +98,12 @@ namespace OOX
 
 		const RId GetMaxRId();
 	protected:
-		static UnknowTypeFile										m_oUnknown;
-		std::vector<smart_ptr<OOX::File>>							m_arContainer;
-		boost::unordered_map<std::wstring, smart_ptr<OOX::File>>	m_mapContainer;
+		static UnknowTypeFile m_oUnknown;
+		std::vector<smart_ptr<OOX::File>> m_arContainer;
+		std::map<std::wstring, smart_ptr<OOX::File>> m_mapContainer;
 
-        boost::unordered_map<std::wstring, std::wstring>			m_mNoWriteContainer;
-        unsigned int												m_lMaxRid;
+        boost::unordered_map<std::wstring, std::wstring> m_mNoWriteContainer;
+        unsigned int m_lMaxRid;
 
 		void Read (const OOX::CRels& oRels, const OOX::CPath& oRootPath, const CPath& oPath);
 		void Write (const OOX::CPath& oFileName, const CPath& oDir, OOX::CContentTypes& oContent) const;

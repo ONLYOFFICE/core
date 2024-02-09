@@ -2,6 +2,7 @@
 #include "../../raster/BgraFrame.h"
 #include "../../graphics/pro/Image.h"
 #include "../../raster/ImageFileFormatChecker.h"
+#include "server.h"
 
 JSSmart<CJSValue> CZipEmbed::open(JSSmart<CJSValue> typedArray_or_Folder)
 {
@@ -18,7 +19,8 @@ JSSmart<CJSValue> CZipEmbed::open(JSSmart<CJSValue> typedArray_or_Folder)
 	}
 	else if (typedArray_or_Folder->isString())
 	{
-		m_pFolder = new CFolderSystem(typedArray_or_Folder->toStringW());
+		if (!CServerInstance::getInstance().IsEnable())
+			m_pFolder = new CFolderSystem(typedArray_or_Folder->toStringW());
 	}
 
 	if (!m_pFolder)

@@ -61,6 +61,7 @@ extern "C" {
 #endif
 
 X2T_DECL int X2T_Convert(int argc, x2tchar *argv[]);
+X2T_DECL int GetOfficeFileFormat(wchar_t* path);
 
 #ifdef __cplusplus
 }

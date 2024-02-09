@@ -770,7 +770,7 @@ namespace PPTX
 				}
 				if (oleObject->m_sShapeId.IsInit() && pVml && !blipFill.blip->embed.IsInit() && blipFill.blip->oleFilepathImage.empty())
 				{					
-                    boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVml->m_mapShapes.find(*oleObject->m_sShapeId);
+					std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVml->m_mapShapes.find(*oleObject->m_sShapeId);
 
                     if (pVml->m_mapShapes.end() != pFind)
 					{

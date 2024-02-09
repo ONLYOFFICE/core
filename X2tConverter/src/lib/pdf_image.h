@@ -812,27 +812,10 @@ namespace NExtractTools
 				RELEASEOBJECT(pReader);
 			}
 		}
-		else if (0 != (AVS_OFFICESTUDIO_FILE_CANVAS & nFormatTo))
+		else if (0 != (AVS_OFFICESTUDIO_FILE_CANVAS & nFormatTo) && params.needConvertToOrigin(nFormatFrom))
 		{
-			if (params.needConvertToOrigin(nFormatFrom))
-			{
-				copyOrigin(sFrom, *params.m_sFileTo);
-			}
-			else
-			{
-				std::wstring sToDir = NSSystemPath::GetDirectoryName(sTo);
-				if (!params.getDontSaveAdditional())
-				{
-					// save origin to print
-					copyOrigin(sFrom, *params.m_sFileTo);
-				}
-				NSHtmlRenderer::CASCHTMLRenderer3 oHtmlRenderer;
-				oHtmlRenderer.CreateOfficeFile(sToDir);
-				IOfficeDrawingFile *pReader = NULL;
-				nRes = PdfDjvuXpsToRenderer(&pReader, &oHtmlRenderer, sFrom, nFormatFrom, sTo, params, convertParams, pApplicationFonts);
-				oHtmlRenderer.CloseFile(params.getIsNoBase64());
-				RELEASEOBJECT(pReader);
-			}
+			//todo remove this code. copy outside x2t
+			copyOrigin(sFrom, *params.m_sFileTo);
 		}
 		else if (0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
 		{

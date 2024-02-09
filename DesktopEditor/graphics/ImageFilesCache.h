@@ -38,7 +38,7 @@
 #include "../common/File.h"
 
 #ifndef GRAPHICS_DISABLE_METAFILE
-#include "../raster/Metafile/MetaFile.h"
+#include "../raster/Metafile/MetaFileCommon.h"
 #endif
 
 #if defined (GetTempPath)
@@ -77,9 +77,11 @@ public:
 			else
 			{
 				std::wstring sTempFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"AscMetafile_");
-				pMetafile->ConvertToRaster(sTempFile.c_str(), 4, 1000, -1);
-				m_oImage.Create(sTempFile);
 
+				//pMetafile->ConvertToRaster(sTempFile.c_str(), 4, 1000, -1);
+				MetaFile::ConvertToRasterMaxSize(pMetafile, sTempFile.c_str(), 4, 1000);
+
+				m_oImage.Create(sTempFile);
 				NSFile::CFileBinary::Remove(sTempFile);
 			}
 			RELEASEINTERFACE(pMetafile);

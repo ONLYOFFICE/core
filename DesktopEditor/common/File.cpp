@@ -43,10 +43,18 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/time.h>
+#include <utime.h>
 #endif
 
 #ifdef _MAC
 #include <mach-o/dyld.h>
+#endif
+
+#if defined(__APPLE__) || defined(__NetBSD__)
+#define st_atim st_atimespec
+#define st_ctim st_ctimespec
+#define st_mtim st_mtimespec
 #endif
 
 #ifndef MAX_PATH
@@ -1690,38 +1698,161 @@ namespace NSFile
 		g_overrideTmpPath = strTempPath;
 	}
 
-	unsigned long CFileBinary::GetDateTime(const std::wstring & inputFile)
+	bool CFileBinary::GetTime(const std::wstring& sFilename, struct tm* ptmLastWrite, struct tm* ptmLastAccess)
 	{
-		unsigned long result = 0;
-#if defined(_WIN32) || defined (_WIN64)
+		bool result = true;
+
+		if (ptmLastWrite) memset(ptmLastWrite, 0, sizeof(struct tm));
+		if (ptmLastAccess) memset(ptmLastAccess, 0, sizeof(struct tm));
+
+#if defined(_WIN32) || defined (_WIN64) // windows
+
 		HANDLE hFile;
-		hFile = ::CreateFileW(inputFile.c_str(), GENERIC_READ, FILE_SHARE_READ,  NULL,  OPEN_EXISTING,  FILE_ATTRIBUTE_NORMAL, NULL);
+		hFile = ::CreateFileW(sFilename.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
 		if (hFile)
 		{
-			FILETIME ft; ft.dwLowDateTime = ft.dwHighDateTime = 0;
-			if (GetFileTime(hFile, NULL, NULL, &ft))
+			FILETIME ftLastWrite{}, ftLastAccess{};
+			if (::GetFileTime(hFile, NULL, &ftLastAccess, &ftLastWrite))
 			{
-				WORD fatDate = 0, fatTime = 0;
-				if (FileTimeToDosDateTime(&ft, &fatDate,  &fatTime))
+				FILETIME ftLastWriteLocal{}, ftLastAccessLocal{};
+				result = result && ::FileTimeToLocalFileTime(&ftLastWrite, &ftLastWriteLocal);
+				result = result && ::FileTimeToLocalFileTime(&ftLastAccess, &ftLastAccessLocal);
+
+				SYSTEMTIME stLastWrite{}, stLastAccess{};
+				result = result && ::FileTimeToSystemTime(&ftLastWriteLocal, &stLastWrite);
+				result = result && ::FileTimeToSystemTime(&ftLastAccessLocal, &stLastAccess);
+
+				auto set_tm_by_st = [] (struct tm* time_tm, SYSTEMTIME* time_st) {
+					time_tm->tm_sec = static_cast<int>(time_st->wSecond);
+					time_tm->tm_min = static_cast<int>(time_st->wMinute);
+					time_tm->tm_hour = static_cast<int>(time_st->wHour);
+					time_tm->tm_mday = static_cast<int>(time_st->wDay);
+					time_tm->tm_mon = static_cast<int>(time_st->wMonth);
+					time_tm->tm_year = static_cast<int>(time_st->wYear);
+				};
+
+				if (result)
 				{
-					result = (fatDate << 16) + fatTime;
+					if (ptmLastWrite) set_tm_by_st(ptmLastWrite, &stLastWrite);
+					if (ptmLastAccess) set_tm_by_st(ptmLastAccess, &stLastAccess);
 				}
 			}
+			else
+				result = false;
+
 			CloseHandle(hFile);
 		}
-#else
-		std::string inputFileA = U_TO_UTF8(inputFile);
-#if defined(__linux__) && !defined(_MAC)
-		struct stat attrib;
-		stat(inputFileA.c_str(), &attrib);
-		result = attrib.st_mtim.tv_nsec;
-#else
-		struct stat attrib;
-		stat(inputFileA.c_str(), &attrib);
-		result = (unsigned long)attrib.st_mtimespec.tv_nsec;
-#endif
-#endif
+		else
+			result = false;
+
+
+#else // linux or macOS
+		struct stat attr;
+		result = (0 == stat(U_TO_UTF8(sFilename).c_str(), &attr));
+
+		if (result)
+		{
+			auto set_tm_by_secs = [] (struct tm* time_tm, time_t time_secs) {
+				struct tm* ltime = localtime(&time_secs);
+				*time_tm = *ltime;
+				time_tm->tm_year += 1900;
+				time_tm->tm_mon += 1;
+			};
+
+			time_t m_secs = attr.st_mtim.tv_sec; // edit
+			time_t a_secs = attr.st_atim.tv_sec; // access
+
+			if (ptmLastWrite) set_tm_by_secs(ptmLastWrite, m_secs);
+			if (ptmLastAccess) set_tm_by_secs(ptmLastAccess, a_secs);
+		}
+
+#endif // defined(_WIN32) || defined (_WIN64)
+		return result;
+	}
+
+	bool CFileBinary::SetTime(const std::wstring& sFilename, struct tm* ptmLastWrite, struct tm* ptmLastAccess)
+	{
+		bool result = true;
+
+#if defined(_WIN32) || defined (_WIN64) // windows
+
+		auto set_st_by_tm = [] (SYSTEMTIME* time_st, struct tm* time_tm) {
+			time_st->wSecond = static_cast<WORD>(time_tm->tm_sec);
+			time_st->wMinute = static_cast<WORD>(time_tm->tm_min);
+			time_st->wHour = static_cast<WORD>(time_tm->tm_hour);
+			time_st->wDay = static_cast<WORD>(time_tm->tm_mday);
+			time_st->wMonth = static_cast<WORD>(time_tm->tm_mon);
+			time_st->wYear = static_cast<WORD>(time_tm->tm_year);
+		};
+
+		SYSTEMTIME stLastWrite{}, stLastAccess{};
+		if (ptmLastWrite) set_st_by_tm(&stLastWrite, ptmLastWrite);
+		if (ptmLastAccess) set_st_by_tm(&stLastAccess, ptmLastAccess);
+
+		FILETIME ftLastWriteLocal{}, ftLastAccessLocal{};
+		if (ptmLastWrite) result = result && ::SystemTimeToFileTime(&stLastWrite, &ftLastWriteLocal);
+		if (ptmLastAccess) result = result && ::SystemTimeToFileTime(&stLastAccess, &ftLastAccessLocal);
+
+		FILETIME ftLastWrite{}, ftLastAccess{};
+		if (ptmLastWrite) result = result && ::LocalFileTimeToFileTime(&ftLastWriteLocal, &ftLastWrite);
+		if (ptmLastAccess) result = result && ::LocalFileTimeToFileTime(&ftLastAccessLocal, &ftLastAccess);
+
+		if (result)
+		{
+			HANDLE hFile;
+			hFile = ::CreateFileW(sFilename.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+			if (hFile)
+			{
+				FILETIME* pftLastWrite = NULL;
+				FILETIME* pftLastAccess = NULL;
+
+				if (ptmLastWrite) pftLastWrite = &ftLastWrite;
+				if (ptmLastAccess) pftLastAccess = &ftLastAccess;
+
+				result = SetFileTime(hFile, NULL, pftLastAccess, pftLastWrite);
+			}
+			else
+				result = false;
+
+			CloseHandle(hFile);
+		}
+
+
+#else // linux or macOS
+		struct stat attr;
+		std::string sFilenameA = U_TO_UTF8(sFilename);
+		result = (0 == stat(sFilenameA.c_str(), &attr));
+
+		if (result)
+		{
+			time_t m_secs = attr.st_mtim.tv_sec; // edit
+			time_t a_secs = attr.st_atim.tv_sec; // access
+
+			time_t new_m_secs = m_secs;
+			time_t new_a_secs = a_secs;
+
+			if (ptmLastWrite)
+			{
+				struct tm tmLastWriteUnix = *ptmLastWrite;
+				tmLastWriteUnix.tm_year -= 1900;
+				tmLastWriteUnix.tm_mon -= 1;
+				new_m_secs = mktime(&tmLastWriteUnix);
+			}
+			if (ptmLastAccess)
+			{
+				struct tm tmLastAccessUnix = *ptmLastAccess;
+				tmLastAccessUnix.tm_year -= 1900;
+				tmLastAccessUnix.tm_mon -= 1;
+				new_a_secs = mktime(&tmLastAccessUnix);
+			}
+
+			utimbuf new_time{};
+			new_time.actime = new_a_secs;
+			new_time.modtime = new_m_secs;
+			utime(sFilenameA.c_str(), &new_time);
+		}
+#endif // defined(_WIN32) || defined (_WIN64)
 		return result;
 	}
 }

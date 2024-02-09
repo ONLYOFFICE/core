@@ -47,12 +47,13 @@ namespace OOX
 	public:
 		struct _vml_shape
 		{
-			_vml_shape() : bUsed(false), pElement(NULL), nId(0) {}
+			_vml_shape() : bUsed(false), pElement(NULL), nId(0), bComment(false) {}
 			
 			int						nId;		// for comments
 			std::wstring			sXml;		// for pptx 
 			OOX::WritingElement*	pElement;	// for docx/xlsx
 			bool					bUsed;		// for single drawing
+			bool					bComment;
 		};
 		CVmlDrawing(OOX::Document* pMain, bool bDocument = true) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 		{
@@ -115,16 +116,16 @@ namespace OOX
 
 	public:
 //reading
-        CPath                                                                   m_oReadPath;
-        boost::unordered_map<std::wstring, _vml_shape>							m_mapShapes;
-		std::vector<_vml_shape>													m_arrShapeTypes;
+        CPath m_oReadPath;
+        std::map<std::wstring, _vml_shape> m_mapShapes;
+		std::vector<_vml_shape> m_arrShapeTypes;
 
-		std::wstring															m_sFileContent;
+		std::wstring m_sFileContent;
 //writing
-        std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>*				m_mapComments;
-        std::vector<std::wstring>                                               m_arObjectXml;
-        std::vector<std::wstring>                                               m_arControlXml;
+        std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>* m_mapComments;
+        std::vector<std::wstring> m_arObjectXml;
+        std::vector<std::wstring> m_arControlXml;
 
-		long                                                                    m_lObjectIdVML;
+		long m_lObjectIdVML;
 	};
 } // namespace OOX

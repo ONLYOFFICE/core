@@ -29,40 +29,36 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
+#ifndef _METAFILE_COMMON_H
+#define _METAFILE_COMMON_H
 
-#include "OfficeArtRecord.h"
+#include "./MetaFile.h"
 
-namespace XLS
+namespace MetaFile
 {
-	class CFRecord;
+	static void ConvertToRasterMaxSize(MetaFile::IMetaFile* pMetafile, const wchar_t* wsOutFilePath, unsigned int unFileType, int nOneMaxSize)
+	{
+		double dX, dY, dW, dH;
+		pMetafile->GetBounds(&dX, &dY, &dW, &dH);
+
+		if (dW < 0) dW = -dW;
+		if (dH < 0) dH = -dH;
+
+		double dOneMaxSize = (double)nOneMaxSize;
+
+		if (dW > dH)
+		{
+			dH *= (dOneMaxSize / dW);
+			dW = dOneMaxSize;
+		}
+		else
+		{
+			dW *= (dOneMaxSize / dH);
+			dH = dOneMaxSize;
+		}
+
+		pMetafile->ConvertToRaster(wsOutFilePath, unFileType, (int)dW, (int)dH);
+	}
 }
 
-
-namespace ODRAW
-{
-
-class OfficeArtContainer : public OfficeArtRecord
-{
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtContainer)
-public:
-	OfficeArtContainer(const unsigned char recVer, const unsigned short recType, const OfficeArtClientAnchorType anchor_type);
-
-	static const XLS::ElementType	type = XLS::typeOfficeArtContainer;
-
-	virtual void loadFields(XLS::CFRecord& record);
-
-	static OfficeArtRecordPtr loadAnyArtRecord(XLS::CFRecord& record);
-
-	OfficeArtClientAnchorType anchor_type_;
-	std::vector<OfficeArtRecordPtr> child_records;
-
-private:
-	OfficeArtRecordPtr CreateOfficeArt(unsigned short type);
-
-};
-
-typedef boost::shared_ptr<OfficeArtContainer> OfficeArtContainerPtr;
-
-
-} // namespace ODRAW
+#endif //_METAFILE_COMMON_H

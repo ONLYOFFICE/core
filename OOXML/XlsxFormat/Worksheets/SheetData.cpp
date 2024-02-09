@@ -1633,7 +1633,7 @@ namespace OOX
 						m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
 					}
 				}
-				else if (SimpleTypes::Spreadsheet::celltypeStr == m_oType->GetValue() || SimpleTypes::Spreadsheet::celltypeError == m_oType->GetValue())
+                else if ((SimpleTypes::Spreadsheet::celltypeStr == m_oType->GetValue() || SimpleTypes::Spreadsheet::celltypeError == m_oType->GetValue()) && !m_oFormula.IsInit())
 				{
 					if (m_oValue.IsInit())
 					{

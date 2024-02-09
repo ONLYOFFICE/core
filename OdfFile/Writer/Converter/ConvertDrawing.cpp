@@ -418,7 +418,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 				if (pVml)
 				{	
 					std::wstring sShapeId = oox_picture->oleObject->m_sShapeId.get();
-                    std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVml->m_mapShapes.find(sShapeId);
+                    boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVml->m_mapShapes.find(sShapeId);
 
                     if (pVml->m_mapShapes.end() != pFind)
 					{

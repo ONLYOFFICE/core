@@ -170,13 +170,7 @@ namespace PPTX
 		}
 		void BlipFill::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			std::wstring strName;
-
-			if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
-				strName = L"w14:blipFill";
-			else
-				strName = m_namespace.empty() ? L"blipFill" : (m_namespace + L":blipFill");
-			
+			std::wstring strName = m_namespace.empty() ? L"blipFill" : (m_namespace + L":blipFill");
 			pWriter->StartNode(strName);
 
 			pWriter->StartAttributes();

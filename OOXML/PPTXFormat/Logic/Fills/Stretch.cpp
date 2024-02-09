@@ -85,18 +85,12 @@ namespace PPTX
 		}
 		void Stretch::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			std::wstring strName;
-			if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
-				strName = L"w14:stretch";
-			else
-				strName = L"a:stretch";
-
-			pWriter->StartNode(strName);
+			pWriter->StartNode(_T("a:stretch"));
 			pWriter->EndAttributes();
 
 			pWriter->Write(fillRect);
 
-			pWriter->EndNode(strName);
+			pWriter->EndNode(_T("a:stretch"));
 		}
 		void Stretch::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{

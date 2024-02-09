@@ -47,8 +47,7 @@
 		"_SetCMapData"
 	],
 	"include_path": [
-		"wasm/src/lib", "../../../agg-2.4/include", "../../../cximage/jasper/include", "../../../cximage/jpeg", "../../../cximage/png", "freetype-2.10.4/include", "freetype-2.10.4/include/freetype", "../../../../OfficeUtils/src/zlib-1.2.11", "../../../../OfficeUtils/src", "../../../../Common/3dParty/icu/icu/source/common", "../../../xml/libxml2/include", "../../../xml/build/qt", "../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip", "../../../../PdfFile/lib/goo", "../../../../PdfFile/lib/fofi", "../../../../PdfFile/lib/splash", "../../../../PdfFile/lib", "../../../raster/Jp2/openjpeg", "../../../raster/Jp2/openjpeg/openjpeg-2.4.0/src/lib/openjp2", 
-		"../../../../Common/3dParty/openssl/openssl/include"
+		"wasm/src/lib", "../../../agg-2.4/include", "../../../cximage/jasper/include", "../../../cximage/jpeg", "../../../cximage/png", "freetype-2.10.4/include", "freetype-2.10.4/include/freetype", "../../../../OfficeUtils/src/zlib-1.2.11", "../../../../OfficeUtils/src", "../../../../Common/3dParty/icu/icu/source/common", "../../../xml/libxml2/include", "../../../xml/build/qt", "../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip", "../../../../PdfFile/lib/goo", "../../../../PdfFile/lib/fofi", "../../../../PdfFile/lib/splash", "../../../../PdfFile/lib", "../../../raster/Jp2/openjpeg", "../../../raster/Jp2/openjpeg/openjpeg-2.4.0/src/lib/openjp2"
 	],
 	"define": [
 		"__linux__", "_LINUX", "UNIX", 
@@ -65,8 +64,7 @@
 		"_ARM_ALIGN_", 
 		"_tcsnicmp=strncmp", "_lseek=lseek", "_getcwd=getcwd", 
 		"NO_CONSOLE_IO", "USE_EXTERNAL_JPEG2000", "USE_JPIP", "OPJ_STATIC", "FONT_ENGINE_DISABLE_FILESYSTEM",
-		"IMAGE_CHECKER_DISABLE_XML",
-		"USE_OPENSSL_HASH"
+		"IMAGE_CHECKER_DISABLE_XML"
 	],
 	"compile_files_array": [
 	{

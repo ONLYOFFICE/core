@@ -1070,7 +1070,7 @@ void CSvmFile::Read_META_BMP(TSvmBitmap & bitmap_info, BYTE** ppDstBuffer, unsig
         MetaFile::ReadImage((BYTE*)&bitmap_info, bitmap_info.nSize, destBuf, destSize, ppDstBuffer, pulWidth, pulHeight);
         delete []destBuf;
     }
-    else if (nHeaderSize >= bitmap_info.nSize)
+    else
     {
         BYTE *Header = new BYTE [ nHeaderSize];
         memcpy(Header, &bitmap_info, bitmap_info.nSize);

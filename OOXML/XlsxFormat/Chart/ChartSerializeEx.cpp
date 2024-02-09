@@ -657,11 +657,11 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			{
 				m_title = oReader;
 			}
-			else if(_T("numFmt") == sName)
-			{
-				m_numFmt = new CNumberFormat;
-				m_numFmt->fromXML(oReader);
-			}
+			//else if(_T("numFmt") == sName)
+			//{
+			//	m_numFmt = new CT_NumFmt;
+			//	m_numFmt->fromXML(oReader);
+			//}
 			else if(_T("majorTickMark") == sName)
 			{
 				m_majorTickMarks = new CTickMarks;

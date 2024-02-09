@@ -41,11 +41,3 @@ int X2T_Convert(int argc, x2tchar *argv[])
 	return wmain_lib(argc, argv);
 #endif
 }
-
-X2T_DECL int GetOfficeFileFormat(wchar_t* path)
-{
-	COfficeFileFormatChecker oChecker;
-	if (oChecker.isOfficeFile(std::wstring(path)))
-		return oChecker.nFileType;
-	return AVS_OFFICESTUDIO_FILE_UNKNOWN;
-}

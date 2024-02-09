@@ -611,7 +611,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CLegacyDrawingHFWorksheet *oox_bac
 
 	oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(vmlDrawing.GetPointer());					
 		
-	for (std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator it = vmlDrawing->m_mapShapes.begin(); it!= vmlDrawing->m_mapShapes.end(); ++it)
+	for (boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator it = vmlDrawing->m_mapShapes.begin(); it!= vmlDrawing->m_mapShapes.end(); ++it)
 	{
 		OOX::Vml::CShape* pShape = dynamic_cast<OOX::Vml::CShape*>(it->second.pElement);
 

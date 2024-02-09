@@ -761,7 +761,7 @@ void XlsConverter::convert(XLS::GlobalsSubstream* globals)
 
 	for (size_t i = 0 ; i < globals->m_arHFPictureDrawing.size(); i++)
 	{
-		convert((ODRAW::OfficeArtDggContainer*)globals->m_arHFPictureDrawing[i].get());
+		convert((ODRAW::OfficeArtDgContainer*)globals->m_arHFPictureDrawing[i].get());
 	}
 	globals->serialize_protection(xlsx_context->workbook_protection());
 	
@@ -833,10 +833,10 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 			
 			CP_XML_NODE(L"numFmts")
 			{
-				CP_XML_ATTR(L"count", xls_global_info->m_mapNumFormats.size());
-				for (std::map<_UINT16, XLS::BaseObjectPtr>::iterator it = xls_global_info->m_mapNumFormats.begin(); it != xls_global_info->m_mapNumFormats.end(); ++it)
+				CP_XML_ATTR(L"count", xls_global_info->m_arNumFormats.size());
+				for (size_t i = 0; i < xls_global_info->m_arNumFormats.size(); i++)
 				{
-					XLS::Format* fmt = dynamic_cast<XLS::Format*>(it->second.get());
+					XLS::Format* fmt = dynamic_cast<XLS::Format*>(xls_global_info->m_arNumFormats[i].get());
 
 					if (fmt->ifmt < 5 || (fmt->ifmt > 8 && fmt->ifmt < 23) || (fmt->ifmt > 36 && fmt->ifmt < 41) || (fmt->ifmt > 44 && fmt->ifmt < 50))
 						continue;
@@ -1428,21 +1428,14 @@ void XlsConverter::convert(ODRAW::OfficeArtSpgrContainer * spgr)
 
 	for (size_t i = 0; i < spgr->child_records.size(); i++)
 	{
-		ODRAW::OfficeArtSpContainer* SpContainer = dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[i].get());
-		if (SpContainer)
-		{
-			ODRAW::OfficeArtFSP* fsp = dynamic_cast<ODRAW::OfficeArtFSP*>(SpContainer->m_OfficeArtFSP.get());
-			if ((fsp) && (fsp->fHaveSpt))
-			{
-				int type_object = 2;//rect
-				if (xlsx_context->get_drawing_context().start_drawing(type_object))
-				{
-					xlsx_context->get_drawing_context().set_mode_HF(true);
-					convert(spgr->child_records[i].get());
+		int type_object = 2;//rect
 
-					xlsx_context->get_drawing_context().end_drawing();
-				}
-			}
+		if (xlsx_context->get_drawing_context().start_drawing(type_object))
+		{
+			xlsx_context->get_drawing_context().set_mode_HF(true);
+			convert(spgr->child_records[i].get());
+
+			xlsx_context->get_drawing_context().end_drawing();
 		}
 	}
 }
@@ -1541,12 +1534,6 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 
 			convert(dg->m_OfficeArtSpgrContainer.get());
 		}break;
-	case XLS::typeOfficeArtDggContainer:
-	{		
-		ODRAW::OfficeArtDggContainer* dg = dynamic_cast<ODRAW::OfficeArtDggContainer*>(art);
-
-		convert(dg->m_OfficeArtBStoreContainer.get());
-	}break;
 	default:
 		break;
 	}

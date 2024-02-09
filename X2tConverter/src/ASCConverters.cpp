@@ -265,7 +265,39 @@ namespace NExtractTools
 				AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM == nFormatTo ||
 				AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF == nFormatTo)
 			{
-				if (AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM == nFormatTo)
+				if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatTo ||
+					AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX == nFormatTo ||
+					AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM == nFormatTo)
+				{
+					std::wstring sCTFrom = L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml";
+					switch (*params.m_nFormatFrom)
+					{
+					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:
+						sCTFrom = L"application/vnd.ms-word.document.macroEnabled.main+xml";
+						break;
+					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:
+						sCTFrom = L"application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml";
+						break;
+					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:
+						sCTFrom = L"application/vnd.ms-word.template.macroEnabledTemplate.main+xml";
+						break;
+					}
+					std::wstring sCTTo;
+					switch (nFormatTo)
+					{
+					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:
+						sCTTo = L"application/vnd.ms-word.document.macroEnabled.main+xml";
+						break;
+					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:
+						sCTTo = L"application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml";
+						break;
+					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:
+						sCTTo = L"application/vnd.ms-word.template.macroEnabledTemplate.main+xml";
+						break;
+					}
+					nRes = replaceContentType(sFromWithChanges, sCTFrom, sCTTo);
+				}
+				else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM == nFormatTo)
 				{
 					std::wstring sCT = L"<Default Extension=\"oform\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.oform\"/>";
 					nRes = addContentType(sFromWithChanges, sCT);
@@ -274,51 +306,6 @@ namespace NExtractTools
 				{
 					std::wstring sCT = L"<Default Extension=\"docxf\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.docxf\"/>";
 					nRes = addContentType(sFromWithChanges, sCT);
-				}
-				else
-				{
-					if ((params.m_nFormatFrom) && (AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM == *params.m_nFormatFrom))
-					{
-						std::wstring sCT = L"<Default Extension=\"oform\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.oform\"/>";
-						replaceContentType(sFromWithChanges, sCT, L"");
-					}
-					else if ((params.m_nFormatFrom) && (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF == *params.m_nFormatFrom))
-					{
-						std::wstring sCT = L"<Default Extension=\"docxf\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.docxf\"/>";
-						replaceContentType(sFromWithChanges, sCT, L"");
-					}
-					if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatTo ||
-						AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX == nFormatTo ||
-						AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM == nFormatTo)
-					{
-						std::wstring sCTFrom = L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml";
-						switch (*params.m_nFormatFrom)
-						{
-						case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:
-							sCTFrom = L"application/vnd.ms-word.document.macroEnabled.main+xml";
-							break;
-						case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:
-							sCTFrom = L"application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml";
-							break;
-						case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:
-							sCTFrom = L"application/vnd.ms-word.template.macroEnabledTemplate.main+xml";
-							break;
-						}
-						std::wstring sCTTo;
-						switch (nFormatTo)
-						{
-						case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:
-							sCTTo = L"application/vnd.ms-word.document.macroEnabled.main+xml";
-							break;
-						case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:
-							sCTTo = L"application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml";
-							break;
-						case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:
-							sCTTo = L"application/vnd.ms-word.template.macroEnabledTemplate.main+xml";
-							break;
-						}
-						nRes = replaceContentType(sFromWithChanges, sCTFrom, sCTTo);
-					}
 				}
 				if (SUCCEEDED_X2T(nRes))
 				{

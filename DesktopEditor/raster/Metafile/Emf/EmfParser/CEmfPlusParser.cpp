@@ -2349,9 +2349,6 @@ namespace MetaFile
 		if (0 == unLength)
 			return;
 
-		if (2 * unLength > m_ulRecordSize - 28) // 28 = 4*3 + 4*4
-			unLength = m_ulRecordSize - 28;
-
 		m_oStream >> oRect;
 
 		unsigned short* pString = new unsigned short[unLength + 1];

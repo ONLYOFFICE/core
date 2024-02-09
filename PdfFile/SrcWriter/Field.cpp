@@ -1533,21 +1533,14 @@ namespace PdfWriter
 		m_pAnnot = pAnnot;
 		m_pField = NULL;
 
-		m_pNormal   = NULL;
+		m_pNormal   = new CAnnotAppearanceObject(pXref, pAnnot);
 		m_pRollover = NULL;
 		m_pDown     = NULL;
+
+		Add("N", m_pNormal);
 	}
 	CAnnotAppearanceObject* CAnnotAppearance::GetNormal()
 	{
-		if (!m_pNormal)
-		{
-			if (m_pField)
-				m_pNormal = new CAnnotAppearanceObject(m_pXref, m_pField);
-			else if (m_pAnnot)
-				m_pNormal = new CAnnotAppearanceObject(m_pXref, m_pAnnot);
-			Add("N", m_pNormal);
-		}
-
 		return m_pNormal;
 	}
 	CAnnotAppearanceObject* CAnnotAppearance::GetRollover()
@@ -1936,17 +1929,7 @@ namespace PdfWriter
 
 		double dBorderSize       = 0;
 		double dBorderSizeStyle  = 0;
-
-		if (pAnnot && pAnnot->HaveBorder())
-		{
-			dBorderSize      = pAnnot->GetBorderWidth();
-			dBorderSizeStyle = dBorderSize;
-
-			if (pAnnot->GetBorderType() == 1 || pAnnot->GetBorderType() == 3)
-				dBorderSizeStyle *= 2;
-		}
-
-		if ((m_pField && m_pField->HaveBorder()) || (pAnnot && pAnnot->HaveBorder() && pAnnot->HaveBC()))
+		if ((m_pField && m_pField->HaveBorder()) || (pAnnot && pAnnot->HaveBorder()))
 		{
 			m_pStream->WriteStr("q\012");
 

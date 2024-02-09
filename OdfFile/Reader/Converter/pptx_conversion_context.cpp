@@ -461,7 +461,6 @@ const std::vector<std::wstring>& pptx_conversion_context::get_page_names() const
 		{
 			create_new_slide(pageName);
 			get_slide_context().start_slide();//pageName, pageStyleName);
-			get_slide_context().get_animation_context().clear();
 
 			current_master_page_name_ = pageMasterName;
 			current_layout_page_name_ = pageLayoutName;

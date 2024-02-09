@@ -105,7 +105,7 @@
 //#include "Biff_records/XCT.h"
 //#include "Biff_records/CRN.h"
 
-#include "Biff_structures/ODRAW/SimpleOfficeArtContainers.h"
+#include "Biff_structures/ODRAW/OfficeArtDgContainer.h"
 
 namespace XLS
 {;
@@ -657,7 +657,7 @@ void GlobalsSubstream::LoadHFPicture()
 					hf = dynamic_cast<HFPicture*>(m_arHFPicture[j].get());
 					record.appendRawData(hf->recordDrawingGroup);
 				}
-				ODRAW::OfficeArtDggContainerPtr rgDrawing = ODRAW::OfficeArtDggContainerPtr(new ODRAW::OfficeArtDggContainer(ODRAW::OfficeArtRecord::CA_HF));
+				ODRAW::OfficeArtDgContainerPtr rgDrawing = ODRAW::OfficeArtDgContainerPtr(new ODRAW::OfficeArtDgContainer(ODRAW::OfficeArtRecord::CA_HF));
 				rgDrawing->loadFields(record);
 				m_arHFPictureDrawing.push_back(rgDrawing);
 				current_size_hf = 0;
@@ -674,15 +674,7 @@ void GlobalsSubstream::LoadHFPicture()
 			HFPicture* hf = dynamic_cast<HFPicture*>(m_arHFPicture[j].get());
 			record.appendRawData(hf->recordDrawingGroup);
 		}
-		ODRAW::OfficeArtRecordHeader rh_test;
-		record >> rh_test;
-		record.RollRdPtrBack(8);//sizeof(OfficeArtRecordHeader)
-
-		if ((rh_test.recType & 0xF000) != 0xF000)
-		{
-			return;
-		}
-		ODRAW::OfficeArtDggContainerPtr rgDrawing = ODRAW::OfficeArtDggContainerPtr(new ODRAW::OfficeArtDggContainer(ODRAW::OfficeArtRecord::CA_HF));
+		ODRAW::OfficeArtDgContainerPtr rgDrawing = ODRAW::OfficeArtDgContainerPtr(new ODRAW::OfficeArtDgContainer(ODRAW::OfficeArtRecord::CA_HF));
 		rgDrawing->loadFields(record);
 		m_arHFPictureDrawing.push_back(rgDrawing);
 	}

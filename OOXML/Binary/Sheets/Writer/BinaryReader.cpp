@@ -2206,7 +2206,7 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 	else if (c_oSerWorkbookTypes::FileSharing == type)
 	{
 		m_oWorkbook.m_oFileSharing.Init();
-		READ2_DEF_SPREADSHEET(length, res, this->ReadFileSharing, m_oWorkbook.m_oFileSharing.GetPointer());
+		READ1_DEF(length, res, this->ReadFileSharing, m_oWorkbook.m_oFileSharing.GetPointer());
 	}
 	else if (c_oSerWorkbookTypes::ExternalLinksAutoRefresh == type)
 	{	

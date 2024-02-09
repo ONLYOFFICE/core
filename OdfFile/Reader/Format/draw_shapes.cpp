@@ -648,8 +648,7 @@ std::wstring convert_equation(const std::wstring& formula)
 
 			if (pos + 1 < formula.size() && formula[pos + 1] >= L'0' && formula[pos + 1] <= L'9')
 			{
-				std::wstring strVal = formula.substr(pos + 1, 1);
-				int adj = XmlUtils::GetInteger(strVal);
+				int adj = XmlUtils::GetInteger(std::wstring(formula[pos + 1], 1));
 
 				values.emplace_back();
 				values.back() = L"adj" + std::to_wstring(adj + 1);

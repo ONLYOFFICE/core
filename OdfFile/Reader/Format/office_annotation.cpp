@@ -185,16 +185,13 @@ void office_annotation::xlsx_convert(oox::xlsx_conversion_context & Context)
 	{
 	}  
 
-	Context.start_text_context();
-	Context.get_text_context()->start_comment_content();
+	Context.get_text_context().start_comment_content();
 	for (size_t i = 0; i < content_.size(); i++)//текст + текстовый стиль
     {
         content_[i]->xlsx_convert(Context);
     }
 	Context.get_comments_context().add_author(author);
-	Context.get_comments_context().add_content(Context.get_text_context()->end_comment_content());
-	Context.end_text_context();
-
+	Context.get_comments_context().add_content(Context.get_text_context().end_comment_content());
 //----------- drawing part ---------------	
 	Context.get_drawing_context().start_comment(col, row);
 	Context.get_drawing_context().start_drawing(L"");

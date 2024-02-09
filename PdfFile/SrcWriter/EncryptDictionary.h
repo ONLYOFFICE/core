@@ -61,7 +61,7 @@ namespace PdfWriter
 		{
 			return m_pEncrypt;
 		}
-		bool UpdateKey(int nCryptAlgorithm);
+		void UpdateKey(int nCryptAlgorithm);
 	private:
 		CEncrypt* m_pEncrypt;
 		std::string PadOrTrancatePassword(const std::wstring & wsPassword);

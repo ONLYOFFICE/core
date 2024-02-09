@@ -104,40 +104,36 @@ const cpdoccore::oox::pptx_animation_context::Impl::_animation_element_array& OD
 	return actions;
 }
 
-TEST_F(ODP2OOX_AnimationAudioTest, set)
+TEST_F(ODP2OOX_AnimationAudioTest, r_embed_id)
 {
 	using namespace cpdoccore::oox;
 
 	const auto& mainArray = GetMainSequenceArray();
 	ASSERT_GE(mainArray.size(), 1);
 	const auto& actions = GetInnermostPar(mainArray[0])->AnimationActionArray;
-	ASSERT_EQ(actions.size(), 3);
-	const auto set = dynamic_cast<pptx_animation_context::Impl::_set*>(actions[0].get());
-	ASSERT_NE(set, nullptr);
+	ASSERT_EQ(actions.size(), 4);
+	const auto audio = dynamic_cast<pptx_animation_context::Impl::_audio*>(actions[3].get()); ;
+	ASSERT_NE(audio, nullptr);
+	
+	const std::wstring rIdExp = L"aId1";
+
+	EXPECT_EQ(audio->RId.value(), rIdExp);
 }
 
-TEST_F(ODP2OOX_AnimationAudioTest, anim_1)
+TEST_F(ODP2OOX_AnimationAudioTest, name)
 {
 	using namespace cpdoccore::oox;
 
 	const auto& mainArray = GetMainSequenceArray();
 	ASSERT_GE(mainArray.size(), 1);
 	const auto& actions = GetInnermostPar(mainArray[0])->AnimationActionArray;
-	ASSERT_EQ(actions.size(), 3);
-	const auto anim = dynamic_cast<pptx_animation_context::Impl::_anim*>(actions[1].get());
-	ASSERT_NE(anim, nullptr);
-}
+	ASSERT_EQ(actions.size(), 4);
+	const auto audio = dynamic_cast<pptx_animation_context::Impl::_audio*>(actions[3].get()); ;
+	ASSERT_NE(audio, nullptr);
 
-TEST_F(ODP2OOX_AnimationAudioTest, anim_2)
-{
-	using namespace cpdoccore::oox;
+	const std::wstring nameExp = L"apert.wav";
 
-	const auto& mainArray = GetMainSequenceArray();
-	ASSERT_GE(mainArray.size(), 1);
-	const auto& actions = GetInnermostPar(mainArray[0])->AnimationActionArray;
-	ASSERT_EQ(actions.size(), 3);
-	const auto anim = dynamic_cast<pptx_animation_context::Impl::_anim*>(actions[2].get());
-	ASSERT_NE(anim, nullptr);
+	EXPECT_EQ(audio->Name.value(), nameExp);
 }
 
 //////////////////////////////////////////////////////////////////////////

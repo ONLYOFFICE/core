@@ -121,9 +121,9 @@ namespace PdfWriter
 		pObj->Add("RD", pArray);
 
 		pArray->Add(dRD1);
-		pArray->Add(dRD4);
-		pArray->Add(dRD3);
 		pArray->Add(dRD2);
+		pArray->Add(dRD3);
+		pArray->Add(dRD4);
 	}
 	std::string GetColor(const std::vector<double>& arr, bool bCaps, double dDiff = 0)
 	{
@@ -821,6 +821,8 @@ namespace PdfWriter
 	{
 		m_pMK         = NULL;
 		m_pParent     = NULL;
+		m_pAA         = NULL;
+		m_pA          = NULL;
 		m_pAppearance = NULL;
 		m_pFont       = NULL;
 		m_dFontSizeAP = 0;
@@ -905,13 +907,6 @@ namespace PdfWriter
 	{
 		if (!m_pMK)
 		{
-			CObjectBase* pMK = Get("MK");
-			if (pMK && pMK->GetType() == object_type_DICT)
-			{
-				m_pMK = (CDictObject*)pMK;
-				return;
-			}
-
 			m_pMK = new CDictObject();
 			Add("MK", m_pMK);
 		}
@@ -968,7 +963,7 @@ namespace PdfWriter
 		CDictObject* pOwner = GetObjOwnValue("TU");
 		if (!pOwner)
 			pOwner = this;
-		pOwner->Add("TU", new CStringObject(sValue.c_str(), true));
+		pOwner->Add("TU", new CStringObject(sValue.c_str()));
 	}
 	void CWidgetAnnotation::SetDS(const std::wstring& wsDS)
 	{
@@ -1021,32 +1016,18 @@ namespace PdfWriter
 			return;
 		}
 
-		std::string sAA = pAction->m_sType;
-		CDictObject* pAA = NULL;
-		if (m_pParent && (sAA == "K" || sAA == "F" || sAA == "V" || sAA == "C"))
-			pAA = (CDictObject*)m_pParent->Get("AA");
-		else if (sAA == "E" || sAA == "X" || sAA == "D" || sAA == "U" || sAA == "Fo" || sAA == "Bl" || sAA == "PO" || sAA == "PC" || sAA == "PV" || sAA == "PI")
+		if (!m_pAA)
 		{
-			pAA = (CDictObject*)Get("AA");
-			if (!pAA)
+			CDictObject* pOwner = GetObjOwnValue("AA");
+			if (!pOwner)
 			{
-				pAA = new CDictObject();
-				Add("AA", pAA);
+				Add("AA", new CDictObject());
+				pOwner = this;
 			}
+			m_pAA = (CDictObject*)pOwner->Get("AA");
 		}
 
-		if (!pAA)
-		{
-			pAA = (CDictObject*)GetObjValue("AA");
-			if (!pAA)
-			{
-				pAA = new CDictObject();
-				Add("AA", pAA);
-			}
-		}
-
-		if (pAA)
-			pAA->Add(sAA.c_str(), pAction);
+		m_pAA->Add(pAction->m_sType.c_str(), pAction);
 	}
 	std::string CWidgetAnnotation::GetDAforAP(CFontDict* pFont)
 	{
@@ -1074,23 +1055,11 @@ namespace PdfWriter
 	{
 		return GetColor(m_arrBC, true) + "\012";
 	}
-	void CWidgetAnnotation::SetEmptyAP()
-	{
-		if (!m_pAppearance)
-			m_pAppearance = new CAnnotAppearance(m_pXref, this);
-		Add("AP", m_pAppearance);
-		CAnnotAppearanceObject* pAppearance = m_pAppearance->GetNormal();
-
-		double dHeight = fabs(m_oRect.fTop - m_oRect.fBottom);
-		double dWidth  = fabs(m_oRect.fRight - m_oRect.fLeft);
-
-		pAppearance->StartDraw(dWidth, dHeight);
-		pAppearance->EndDraw();
-	}
 	void CWidgetAnnotation::SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts)
 	{
+		m_pAppearance = new CAnnotAppearance(m_pXref, this);
 		if (!m_pAppearance)
-			m_pAppearance = new CAnnotAppearance(m_pXref, this);
+			return;
 		Add("AP", m_pAppearance);
 		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
 		pNormal->DrawSimpleText(wsValue, pCodes, unCount, m_pFont, m_dFontSize, dX, dY, 0, 0, 0, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), ppFonts, pShifts);
@@ -1266,36 +1235,9 @@ namespace PdfWriter
 	}
 	void CPushButtonWidget::SetAP(CXObject* pForm, BYTE nAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, double dLineW, double dLineH, CFontCidTrueType** ppFonts)
 	{
+		m_pAppearance = new CAnnotAppearance(m_pXref, this);
 		if (!m_pAppearance)
-		{
-			m_pAppearance = new CAnnotAppearance(m_pXref, this);
-			CObjectBase* pAP = Get("AP");
-			if (pAP && pAP->GetType() == object_type_DICT)
-			{
-				CDictObject* pDAP = (CDictObject*)pAP;
-				CObjectBase* pAPi = pDAP->Get("N");
-				if (pAPi)
-				{
-					CProxyObject* pNewAPi = new CProxyObject(pAPi->Copy(), true);
-					pNewAPi->Get()->SetRef(pAPi->GetObjId(), pAPi->GetGenNo());
-					m_pAppearance->Add("N", pNewAPi);
-				}
-				pAPi = pDAP->Get("D");
-				if (pAPi)
-				{
-					CProxyObject* pNewAPi = new CProxyObject(pAPi->Copy(), true);
-					pNewAPi->Get()->SetRef(pAPi->GetObjId(), pAPi->GetGenNo());
-					m_pAppearance->Add("D", pNewAPi);
-				}
-				pAPi = pDAP->Get("R");
-				if (pAPi)
-				{
-					CProxyObject* pNewAPi = new CProxyObject(pAPi->Copy(), true);
-					pNewAPi->Get()->SetRef(pAPi->GetObjId(), pAPi->GetGenNo());
-					m_pAppearance->Add("R", pNewAPi);
-				}
-			}
-		}
+			return;
 
 		CAnnotAppearanceObject* pAppearance = NULL;
 		if (nAP == 0)
@@ -1404,11 +1346,7 @@ namespace PdfWriter
 		CDictObject* pOwner = GetObjOwnValue("V");
 		if (!pOwner)
 			pOwner = this;
-
-		if (isdigit(sV[0]))
-			pOwner->Add("V", sV.c_str());
-		else
-			pOwner->Add("V", new CStringObject(sV.c_str(), true));
+		pOwner->Add("V", new CStringObject(sV.c_str(), true));
 	}
 	std::wstring CCheckBoxWidget::SetStyle(BYTE nStyle)
 	{
@@ -1443,11 +1381,7 @@ namespace PdfWriter
 	}
 	void CCheckBoxWidget::SwitchAP(const std::string& sV)
 	{
-		CObjectBase* pAP, *pAPN;
-		if ((pAP = Get("AP")) && pAP->GetType() == object_type_DICT && (pAPN = ((CDictObject*)pAP)->Get("N")) && pAPN->GetType() == object_type_DICT && ((CDictObject*)pAPN)->Get(sV))
-			Add("AS", sV.c_str());
-		else
-			Add("AS", "Off");
+		Add("AS", sV == m_sAP_N_Yes ? sV.c_str() : "Off");
 	}
 	void CCheckBoxWidget::SetFlag(const int& nFlag)
 	{
@@ -1461,7 +1395,6 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CTextWidget::CTextWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
 	{
-		m_bAPV = false;
 	}
 	void CTextWidget::SetMaxLen(const int& nMaxLen)
 	{
@@ -1613,7 +1546,7 @@ namespace PdfWriter
 				(!m_arrOpt[i].first.empty() && m_arrOpt[i].first  == wsExportV))
 				return m_arrOpt[i].second;
 		}
-		return wsExportV;
+		return L"";
 	}
 	std::wstring CChoiceWidget::SetListBoxIndex(const std::vector<std::wstring>& arrV)
 	{
@@ -1702,7 +1635,7 @@ namespace PdfWriter
 		for (const std::wstring& A : arrFileds)
 		{
 			std::string sValue = U_TO_UTF8(A);
-			pArray->Add(new CStringObject(sValue.c_str(), true));
+			pArray->Add(new CStringObject(sValue.c_str()));
 		}
 	}
 	//----------------------------------------------------------------------------------------
@@ -1713,7 +1646,7 @@ namespace PdfWriter
 	void CActionJavaScript::SetJS(const std::wstring& wsJS)
 	{
 		std::string sValue = U_TO_UTF8(wsJS);
-		Add("JS", new CStringObject(sValue.c_str(), true));
+		Add("JS", new CStringObject(sValue.c_str()));
 	}
 	//----------------------------------------------------------------------------------------
 	CActionGoTo::CActionGoTo(CXref* pXref) : CAction(pXref)
@@ -1754,7 +1687,7 @@ namespace PdfWriter
 		for (const std::wstring& A : arrT)
 		{
 			std::string sValue = U_TO_UTF8(A);
-			pArray->Add(new CStringObject(sValue.c_str(), true));
+			pArray->Add(new CStringObject(sValue.c_str()));
 		}
 	}
 	//----------------------------------------------------------------------------------------

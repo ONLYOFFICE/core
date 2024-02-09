@@ -40,10 +40,6 @@ std::wstring RtfOldList::RenderToRtf(RenderParameter oRenderParameter)
 		sResult += m_oText->RenderToRtf( oRenderParameter );
 	return sResult;
 }
-static inline bool IsControlSymbol(unsigned short c)
-{
-	return (c <= 31) ? (true) : (false);
-}
 std::wstring RtfOldList::RenderToOOX(RenderParameter oRenderParameter)
 {
     std::wstring sResult;
@@ -65,15 +61,12 @@ std::wstring RtfOldList::RenderToOOX(RenderParameter oRenderParameter)
 			
 			if(!sText.empty() )
 			{
-				wchar_t xchBullet = sText[0];
-				if ((xchBullet & 0xF000) != 0)
+				// В символьном шрифте обрезать надо, в других случаях - нет
+				if (/*bIsSymbol && */(sText[0] & 0xF000) != 0)
 				{
-					xchBullet &= 0x00FF;
+					sText[0] &= 0x00FF;
 				}
-				if (!IsControlSymbol(xchBullet))
-				{
-					sResult += L"<w:lvlText w:val=\"" + XmlUtils::EncodeXmlString(sText) + L"\"/>";
-				}
+				sResult += L"<w:lvlText w:val=\"" + XmlUtils::EncodeXmlString( sText ) + L"\"/>";
 			}
 			else
 			{

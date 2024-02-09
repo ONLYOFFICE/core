@@ -125,12 +125,9 @@ namespace NExtractTools
 			std::wstring sData;
 			if (NSFile::CFileBinary::ReadAllTextUtf8(sContentTypesPath, sData))
 			{
-				if (std::wstring::npos == sData.find(sCT))
-				{
-					sData = string_replaceAll(sData, L"</Types>", sCT + L"</Types>");
-					if (false == NSFile::CFileBinary::SaveToFile(sContentTypesPath, sData, true))
-						nRes = AVS_FILEUTILS_ERROR_CONVERT;
-				}
+				sData = string_replaceAll(sData, L"</Types>", sCT + L"</Types>");
+				if (false == NSFile::CFileBinary::SaveToFile(sContentTypesPath, sData, true))
+					nRes = AVS_FILEUTILS_ERROR_CONVERT;
 			}
 		}
 		return nRes;

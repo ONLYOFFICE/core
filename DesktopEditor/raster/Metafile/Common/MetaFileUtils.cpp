@@ -44,7 +44,7 @@
     #define DIB_RGB_COLORS  0x00
 #endif
 
-#define MINACCURACY 5
+#define MINACCURACY 3
 #define MAXACCURACY 10
 
 namespace MetaFile
@@ -1097,7 +1097,7 @@ namespace MetaFile
 		if (std::wstring::npos == unFirstPosition)
 			return wsValue.substr(0, unDotPosition);
 
-		const size_t unLastPosition = wsValue.find_last_not_of(L'0', unFirstPosition + MINACCURACY - 1);
+		const size_t unLastPosition = wsValue.find_last_not_of(L'0', unFirstPosition + 2);
 
 		return wsValue.substr(0, unLastPosition + 1);
 	}

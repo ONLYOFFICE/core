@@ -42,8 +42,7 @@ HEADERS += \
 	docbuilder_p.h \
 	nativecontrol.h \
 	graphics.h \
-	hash.h \
-	server.h
+	hash.h
 
 HEADERS += \
 	embed/PointerEmbed.h \

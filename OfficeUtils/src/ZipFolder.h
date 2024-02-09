@@ -134,7 +134,6 @@ public:
 				{
 					return true;
 				}
-				iter++;
 			}
 		}
 
@@ -467,8 +466,8 @@ protected:
 	{
 		std::string sPath = U_TO_UTF8(path);
 		if (!sPath.empty() && sPath[0] == '/')
-			return NSSystemPath::NormalizePath(sPath.substr(1), true);
-		return NSSystemPath::NormalizePath(sPath, true);
+			return NSSystemPath::NormalizePath(sPath.substr(1));
+		return NSSystemPath::NormalizePath(sPath);
 	}
 
 public:

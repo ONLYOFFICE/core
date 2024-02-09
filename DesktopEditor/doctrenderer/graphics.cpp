@@ -1,6 +1,5 @@
 #include "graphics.h"
 #include "../common/Base64.h"
-#include "../raster/Metafile/MetaFileCommon.h"
 
 #include <string>
 #include <iostream>
@@ -1236,7 +1235,7 @@ namespace NSGraphics
 				pMetafile->GetBounds(&x, &y, &w, &h);
 
 				sName += L"png";
-				MetaFile::ConvertToRasterMaxSize(pMetafile, sName.c_str(), 4, 1000);
+				pMetafile->ConvertToRaster(sName.c_str(), 4, 1000);
 
 				RELEASEOBJECT(pMetafile);
 			}

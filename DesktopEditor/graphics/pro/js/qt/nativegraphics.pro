@@ -27,8 +27,7 @@ INCLUDEPATH += \
 	$$CORE_ROOT_DIR/DesktopEditor/cximage/jpeg \
 	$$CORE_ROOT_DIR/DesktopEditor/cximage/png \
 	$$CORE_ROOT_DIR/DesktopEditor/freetype-2.10.4/include \
-	$$CORE_ROOT_DIR/DesktopEditor/freetype-2.10.4/include/freetype \
-	$$CORE_ROOT_DIR/Common/3dParty/openssl/openssl/include
+	$$CORE_ROOT_DIR/DesktopEditor/freetype-2.10.4/include/freetype
 
 win32 {
 DEFINES += \

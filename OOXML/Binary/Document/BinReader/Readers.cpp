@@ -1707,7 +1707,7 @@ int Binary_pPrReader::Read_pgSz(BYTE type, long length, void* poResult)
 	if ( c_oSer_pgSzType::Orientation == type )
 	{
 		pPageSz->m_oOrient.Init();
-		pPageSz->m_oOrient->SetValueFromByte( m_oBufferedStream.GetUChar() == 1 ? 0 : 1); 
+		pPageSz->m_oOrient->SetValueFromByte( m_oBufferedStream.GetUChar());
 	}
 	else if ( c_oSer_pgSzType::W == type )
 	{

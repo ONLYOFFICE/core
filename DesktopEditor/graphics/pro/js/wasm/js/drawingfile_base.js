@@ -563,7 +563,7 @@
 			let n = reader.readInt();
 			rec["C"] = [];
 			for (let i = 0; i < n; ++i)
-				rec["C"].push(reader.readDouble2());
+				rec["C"].push(reader.readDouble());
 		}
 		// Border/BS
 		if (flags & (1 << 4))
@@ -718,13 +718,6 @@
 				for (let i = 0; i < n; ++i)
 					rec["value"].push(reader.readString());
 			}
-			if (flags & (1 << 6))
-			{
-				let n = reader.readInt();
-				rec["Opt"] = [];
-				for (let i = 0; i < n; ++i)
-					rec["Opt"].push(reader.readString());
-			}
 			res["Parents"].push(rec);
 		}
 
@@ -748,7 +741,7 @@
 			{
 				rec["font"]["color"] = [];
 				for (let i = 0; i < tc; ++i)
-					rec["font"]["color"].push(reader.readDouble2());
+					rec["font"]["color"].push(reader.readDouble());
 			}
 			// 0 - left-justified, 1 - centered, 2 - right-justified
 			rec["alignment"] = reader.readByte();
@@ -782,7 +775,7 @@
 				let n = reader.readInt();
 				rec["BC"] = [];
 				for (let i = 0; i < n; ++i)
-					rec["BC"].push(reader.readDouble2());
+					rec["BC"].push(reader.readDouble());
 			}
 			// Rotate an annotation relative to the page - R
 			if (flags & (1 << 6))
@@ -793,7 +786,7 @@
 				let n = reader.readInt();
 				rec["BG"] = [];
 				for (let i = 0; i < n; ++i)
-					rec["BG"].push(reader.readDouble2());
+					rec["BG"].push(reader.readDouble());
 			}
 			// Default value - DV
 			if (flags & (1 << 8))
@@ -1185,7 +1178,7 @@
 					let n = reader.readInt();
 					rec["IC"] = [];
 					for (let i = 0; i < n; ++i)
-						rec["IC"].push(reader.readDouble2());
+						rec["IC"].push(reader.readDouble());
 				}
 				// LL
 				if (flags & (1 << 17))
@@ -1253,7 +1246,7 @@
 					let n = reader.readInt();
 					rec["IC"] = [];
 					for (let i = 0; i < n; ++i)
-						rec["IC"].push(reader.readDouble2());
+						rec["IC"].push(reader.readDouble());
 				}
 			}
 			// Polygon, PolyLine
@@ -1277,7 +1270,7 @@
 					let n = reader.readInt();
 					rec["IC"] = [];
 					for (let i = 0; i < n; ++i)
-						rec["IC"].push(reader.readDouble2());
+						rec["IC"].push(reader.readDouble());
 				}
 				// IT
 				// 0 - PolygonCloud, 1 - PolyLineDimension, 2 - PolygonDimension
@@ -1338,7 +1331,7 @@
 					let n = reader.readInt();
 					rec["C"] = [];
 					for (let i = 0; i < n; ++i)
-						rec["C"].push(reader.readDouble2());
+						rec["C"].push(reader.readDouble());
 				}
 			}
 			// Caret

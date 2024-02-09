@@ -1,9 +1,7 @@
 CONFIGURATION
 =============
 
-## Default conversion
-
-You need to create an xml configuration file. It contains:
+You need to create an xml configuration file. It must contain:
 
 	# root of xml
 	<settings> </settings>
@@ -97,23 +95,8 @@ You need to create an xml configuration file. It contains:
 	<input> docx txt pptx xlsx<input>
 	<output> txt doc pdf</output>
 	
-## Extraction
-x2ttester can extract files with the required output extension instead of default x2t conversion. Set extraction mode:
 
-	(non-required) sets extraction mode (default - "0")
-	<extract> </extract>
-
-When `extract` is "1", you can set the `output` parameter to determine which exts will be extracted. Default `output` is `emf wmf`.
-Params `input`, `inputDirectory`, `outputDirectory`, `cores` works the same.
-
-Extract mode has additional options:
-
-	(non-required) converts non-zip office files into docx (e.g. pdf) (default - "0").
-	<convertBeforeExtract> </convertBeforeExtract>
-
-The conversion params in `convertBeforeExtract` are the same as the default conversion.
-
-## Templates
+You can use the following templates:
 
 	# main xml config
 

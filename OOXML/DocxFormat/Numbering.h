@@ -87,8 +87,9 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::COnOff> m_oNull;
-            nullable_string m_sVal;
+
+			nullable<SimpleTypes::COnOff>	m_oNull;
+            nullable_string						m_sVal;
 		};
 
 		//--------------------------------------------------------------------------------

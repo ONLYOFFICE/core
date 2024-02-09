@@ -191,10 +191,7 @@ const cpdoccore::odf_writer::anim_par* OOX2ODP_AnimationTest::GetInnerPar(const 
 	if (!par)
 		return nullptr;
 
-	if (par->anim_par_.size() == 0)
-		return nullptr;
-
-	const anim_par* inner_par = dynamic_cast<anim_par*>(par->anim_par_[0].get());
+	const anim_par* inner_par = dynamic_cast<anim_par*>(par->anim_par_.get());
 
 	if (!inner_par)
 		return nullptr;
@@ -211,9 +208,9 @@ const cpdoccore::odf_writer::anim_par* OOX2ODP_AnimationTest::GetInnermostPar(co
 
 	const anim_par* innermost = GetInnerPar(par);
 
-	while (innermost->anim_par_.size())
+	while (innermost->anim_par_)
 	{
-		innermost = dynamic_cast<anim_par*>(innermost->anim_par_[0].get());
+		innermost = dynamic_cast<anim_par*>(innermost->anim_par_.get());
 		if (!innermost)
 			return nullptr;
 	}

@@ -345,6 +345,8 @@ namespace PdfWriter
 		EWidgetType m_nSubtype;
 		CDictObject* m_pMK;
 		CDictObject* m_pParent;
+		CDictObject* m_pAA;
+		CDictObject* m_pA;
 
 		CFontCidTrueType* m_pFont;
 		double m_dFontSize;
@@ -401,7 +403,6 @@ namespace PdfWriter
 		bool HaveBC() { return !m_arrBC.empty(); }
 		BYTE GetQ() { return m_nQ; }
 
-		void SetEmptyAP();
 		void SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts);
 		void StartAP();
 		void AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts = NULL, const double* pShifts = NULL);
@@ -468,7 +469,6 @@ namespace PdfWriter
 	{
 	private:
 		std::string m_sV;
-		bool m_bAPV;
 
 	public:
 		CTextWidget(CXref* pXref);
@@ -476,12 +476,10 @@ namespace PdfWriter
 		void SetMaxLen(const int& nMaxLen);
 		void SetV (const std::wstring& wsV);
 		void SetRV(const std::wstring& wsRV);
-		void SetAPV() { m_bAPV = true; }
 
 		bool IsCombFlag();
 		bool IsMultiLine();
 		unsigned int GetMaxLen();
-		bool HaveAPV() { return m_bAPV; }
 	};
 	class CChoiceWidget : public CWidgetAnnotation
 	{

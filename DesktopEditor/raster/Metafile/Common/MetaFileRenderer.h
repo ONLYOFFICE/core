@@ -454,12 +454,7 @@ namespace MetaFile
 				}
 				else
 				{
-					double dRendererDpiX, dRendererDpiY;
-
-					m_pRenderer->get_DpiX(&dRendererDpiX);
-					m_pRenderer->get_DpiY(&dRendererDpiY);
-
-					pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, dRendererDpiX, dRendererDpiY);
+					pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, 72, 72);
 					pFontManager->SetCharSpacing(dFontCharSpace * 72 / 25.4);
 
 					double dMmToPt = 25.4 / 72;

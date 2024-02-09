@@ -309,7 +309,7 @@ namespace PPTX
 	{
 		if(Vml.is_init() && !spid.empty())
 		{
-			std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pPair = Vml->m_mapShapes.find(spid);
+			boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pPair = Vml->m_mapShapes.find(spid);
 			if (Vml->m_mapShapes.end() != pPair)
 			{
 				pPair->second.bUsed = true;

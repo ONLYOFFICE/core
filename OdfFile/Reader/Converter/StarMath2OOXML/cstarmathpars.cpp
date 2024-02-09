@@ -153,7 +153,7 @@ namespace StarMath
 					return SetLeft<CElementIndex>(pLeftArg,pElementWhichAdd);
 				}
 				default:
-					return false;
+					break;
 			}
 		}
 		else return false;
@@ -435,6 +435,7 @@ namespace StarMath
 		}
 	}
 
+//нет phantom, rgb, 16 , гарнитуры и кегля
 	TypeElement CAttribute::GetTypeColorAttribute(const std::wstring &wsToken)
 	{
 		if(L"color" == wsToken) return TypeElement::color;
@@ -655,9 +656,9 @@ namespace StarMath
 			pReader->ReadingTheNextToken();
 			while((IsBinOperatorLowPrior() && pReader->GetGlobalType() == TypeElement::BinOperator) || pReader->GetGlobalType() == TypeElement::BracketWithIndex || (pReader->GetGlobalType() == TypeElement::Index && (pReader->GetLocalType() != TypeElement::nroot || pReader->GetLocalType() != TypeElement::sqrt)))
 			{
-				CElement* pElementWithRightArgument = CParserStarMathString::ParseElement(pReader);
-				CParserStarMathString::AddLeftArgument(pTempElement,pElementWithRightArgument);
-				pTempElement = pElementWithRightArgument;
+				CElement* pElement = CParserStarMathString::ParseElement(pReader);
+				CParserStarMathString::AddLeftArgument(pTempElement,pElement);
+				pTempElement = pElement;
 				pReader->ReadingTheNextToken();
 			}
 			SetRightArg(pTempElement);
@@ -870,7 +871,7 @@ namespace StarMath
 				pReader->ClearReader();
 			}
 			CElement* pTempElement = CParserStarMathString::ParseElement(pReader);
-			if(pTempElement!= nullptr &&( !m_arBrecketValue.empty() && CParserStarMathString::CheckForLeftArgument(pTempElement->GetBaseType())))
+			if(pTempElement != nullptr &&(!m_arBrecketValue.empty() && CParserStarMathString::CheckForLeftArgument(pTempElement->GetBaseType())))
 			{
 				if(CParserStarMathString::AddLeftArgument(m_arBrecketValue.back(),pTempElement))
 					m_arBrecketValue.pop_back();
@@ -1898,16 +1899,16 @@ namespace StarMath
 	{
 		if(pReader->CheckIteratorPosition())
 		{
-			CElement* pTemp = CParserStarMathString::ParseElement(pReader);
+			CElement* pTempElement = CParserStarMathString::ParseElement(pReader);
 			pReader->ReadingTheNextToken();
 			while(CParserStarMathString::CheckForLeftArgument(pReader->GetGlobalType()))
 			{
-				 CElement* pTempElement = CParserStarMathString::ParseElement(pReader);
-				 CParserStarMathString::AddLeftArgument(pTemp,pTempElement);
-				 pTemp = pTempElement;
+				 CElement* pElement = CParserStarMathString::ParseElement(pReader);
+				 CParserStarMathString::AddLeftArgument(pTempElement,pElement);
+				 pTempElement = pElement;
 				 pReader->ReadingTheNextToken();
 			}
-			SetValueFunction(pTemp);
+			SetValueFunction(pTempElement);
 		}
 		else
 			SetValueFunction(nullptr);

@@ -51,8 +51,10 @@ struct CTc
 	int i;
 	int j;
 	std::wstring sGridSpan = L"1";
+	std::wstring sPr = L"";
 
-	CTc(int _i, int _j, const std::wstring& sColspan) : i(_i), j(_j), sGridSpan(sColspan) {}
+	CTc(int _i, int _j, const std::wstring& sColspan, const std::wstring& sTcPr = L"") 
+		: i(_i), j(_j), sGridSpan(sColspan), sPr(sTcPr) {}
 
 	bool operator==(const CTc& c2)
 	{
@@ -1142,8 +1144,35 @@ private:
 		return true;
 	}
 
-	void readTr     (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
+	std::wstring CreateBorders(const NSCSS::NSProperties::CBorder& oBorder)
 	{
+		if (oBorder.EqualSides())
+		{
+			const std::wstring wsBorderStyle = NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetLeftBorder());
+
+			return L"<w:top "     + wsBorderStyle + L"/>" +
+			       L"<w:left "    + wsBorderStyle + L"/>" +
+			       L"<w:bottom "  + wsBorderStyle + L"/>" +
+			       L"<w:right "   + wsBorderStyle + L"/>";
+		}
+		else
+		{
+			const std::wstring wsTopBorderStyle    = NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetTopBorder());
+			const std::wstring wsLeftBorderStyle   = NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetLeftBorder());
+			const std::wstring wsBottomBorderStyle = NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetBottomBorder());
+			const std::wstring wsRightBorderStyle  = NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetRightBorder());
+
+			return L"<w:top "     + wsTopBorderStyle    + L"/>" +
+			       L"<w:left "    + wsLeftBorderStyle   + L"/>" +
+			       L"<w:bottom "  + wsBottomBorderStyle + L"/>" +
+			       L"<w:right "   + wsRightBorderStyle  + L"/>";
+		}
+
+		return L"";
+	}
+
+	void readTr     (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, const NSCSS::CCompiledStyle& oTableStyle)
+	{	
 		std::vector<CTc> mTable;
 		int nDeath = m_oLightReader.GetDepth();
 		int i = 1; // Строка
@@ -1161,6 +1190,10 @@ private:
 
 			int j = 1; // Столбец
 			oXml->WriteString(L"<w:tr>");
+
+			if (oTableStyle.m_oBorder.GetCollapse() == NSCSS::NSProperties::BorderCollapse::Separate)
+				oXml->WriteString(L"<w:trPr><w:tblCellSpacing w:w=\"15\" w:type=\"dxa\"/></w:trPr>");
+
 			do
 			{
 				int nColspan = 1;
@@ -1179,9 +1212,9 @@ private:
 				std::vector<CTc>::iterator it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
 				while(it1 != mTable.end() || it2 != mTable.end())
 				{
-					oXml->WriteString(L"<w:tc><w:tcPr><w:tcBorders>");
-//					oXml->WriteString(!sBorders.empty() ? sBorders : L"<w:left w:val=\"none\" w:color=\"000000\"/><w:top w:val=\"none\" w:color=\"000000\"/><w:right w:val=\"none\" w:color=\"000000\"/><w:bottom w:val=\"none\" w:color=\"000000\"/>");
-					oXml->WriteString(L"</w:tcBorders><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
+					oXml->WriteString(L"<w:tc><w:tcPr>");
+					oXml->WriteString(it1->sPr);
+					oXml->WriteString(L"<w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
 					std::wstring sCol = (it1 != mTable.end() ? it1->sGridSpan : it2->sGridSpan);
 					oXml->WriteString(sCol);
 					oXml->WriteString(L"\"/><w:noWrap w:val=\"false\"/><w:textDirection w:val=\"lrTb\"/></w:tcPr><w:p></w:p></w:tc>");
@@ -1222,42 +1255,44 @@ private:
 				}
 				//-------------------------
 
+				std::wstring wsTcPr;
+				
 				if (nWidth > 0)
-					oXml->WriteString(L"<w:tcW w:w=\"" + std::to_wstring(nWidth) + L"\" w:type=\"" + wsType + L"\"/>");
+					wsTcPr += L"<w:tcW w:w=\"" + std::to_wstring(nWidth) + L"\" w:type=\"" + wsType + L"\"/>";
 				else
-					oXml->WriteString(L"<w:tcW w:w=\"0\" w:type=\"auto\"/>");
+					wsTcPr += L"<w:tcW w:w=\"0\" w:type=\"auto\"/>";
 
 				if(nColspan != 1)
-				{
-					oXml->WriteString(L"<w:gridSpan w:val=\"");
-					oXml->WriteString(std::to_wstring(nColspan));
-					oXml->WriteString(L"\"/>");
-				}
+					wsTcPr += L"<w:gridSpan w:val=\"" + std::to_wstring(nColspan) + L"\"/>";
 
-//				oXml->WriteString(L"<w:tcBorders>");
-//				oXml->WriteString(!sBorders.empty() ? sBorders : L"<w:left w:val=\"none\" w:color=\"000000\"/><w:top w:val=\"none\" w:color=\"000000\"/><w:right w:val=\"none\" w:color=\"000000\"/><w:bottom w:val=\"none\" w:color=\"000000\"/>");
-//				oXml->WriteString(L"</w:tcBorders>");
+				if (!oStyle.m_oBorder.Empty())
+					wsTcPr += L"<w:tcBorders>" +  CreateBorders(oStyle.m_oBorder) + L"</w:tcBorders>";
+
+				if (!oStyle.m_oBackground.Empty() && !oStyle.m_oBackground.GetColor().Empty())
+					wsTcPr += L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + oStyle.m_oBackground.GetColor().ToWString() + L"\"/>";
+
+				std::wstring wsVerticalAlign = oStyle.m_oDisplay.GetVAlign().ToWString();
+
+				if (wsVerticalAlign.empty())
+					wsTcPr += L"<w:vAlign w:val=\"center\"/>";
+				else
+					wsTcPr += L"<w:vAlign w:val=\"" + wsVerticalAlign + L"\"/>";
 
 				if(nRowspan != 1)
 				{
 					oXml->WriteString(L"<w:vMerge w:val=\"restart\"/>");
 					std::wstring sColspan = std::to_wstring(nColspan);
 					if(nRowspan == 0)
-						mTable.push_back({0, j, sColspan});
+						mTable.push_back({0, j, sColspan, wsTcPr});
 					else
 						for(int k = i + 1; k < i + nRowspan; k++)
-							mTable.push_back({k, j, sColspan});
+							mTable.push_back({k, j, sColspan, wsTcPr});
 				}
 
 				if(nColspan != 1)
 					j += nColspan - 1;
 
-				std::wstring wsVerticalAlign = oStyle.m_oDisplay.GetVAlign().ToWString();
-
-				if (wsVerticalAlign.empty())
-					oXml->WriteString(L"<w:vAlign w:val=\"center\"/>");
-				else
-					oXml->WriteString(L"<w:vAlign w:val=\"" + wsVerticalAlign + L"\"/>");
+				oXml->WriteString(wsTcPr);
 
 				oXml->WriteString(L"<w:noWrap w:val=\"false\"/><w:textDirection w:val=\"lrTb\"/><w:hideMark/></w:tcPr>");
 				m_bWasPStyle = false;
@@ -1305,9 +1340,9 @@ private:
 				it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
 				while(it1 != mTable.end() || it2 != mTable.end())
 				{
-					oXml->WriteString(L"<w:tc><w:tcPr><w:tcBorders>");
-//					oXml->WriteString(!sBorders.empty() ? sBorders : L"<w:left w:val=\"none\" w:color=\"000000\"/><w:top w:val=\"none\" w:color=\"000000\"/><w:right w:val=\"none\" w:color=\"000000\"/><w:bottom w:val=\"none\" w:color=\"000000\"/>");
-					oXml->WriteString(L"</w:tcBorders><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
+					oXml->WriteString(L"<w:tc><w:tcPr>");
+					oXml->WriteString(it1->sPr);
+					oXml->WriteString(L"<w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
 					std::wstring sCol = (it1 != mTable.end() ? it1->sGridSpan : it2->sGridSpan);
 					oXml->WriteString(sCol);
 					oXml->WriteString(L"\"/><w:noWrap w:val=\"false\"/><w:textDirection w:val=\"lrTb\"/></w:tcPr><w:p></w:p></w:tc>");
@@ -1379,33 +1414,7 @@ private:
 		
 		// borders
 		if (!oStyle.m_oBorder.Empty())
-		{
-			wsTable += L"<w:tblBorders>";
-
-			if (oStyle.m_oBorder.EqualSides())
-			{
-				const std::wstring wsBorderStyle = NSCSS::CDocumentStyle::CalculateBorderStyle(oStyle.m_oBorder.GetLeftBorder());
-				
-				wsTable += L"<w:top "     + wsBorderStyle + L"/>" +
-				           L"<w:left "    + wsBorderStyle + L"/>" +
-				           L"<w:bottom "  + wsBorderStyle + L"/>" +
-				           L"<w:right "   + wsBorderStyle + L"/>";
-			}
-			else
-			{
-				const std::wstring wsTopBorderStyle    = NSCSS::CDocumentStyle::CalculateBorderStyle(oStyle.m_oBorder.GetTopBorder());
-				const std::wstring wsLeftBorderStyle   = NSCSS::CDocumentStyle::CalculateBorderStyle(oStyle.m_oBorder.GetLeftBorder());
-				const std::wstring wsBottomBorderStyle = NSCSS::CDocumentStyle::CalculateBorderStyle(oStyle.m_oBorder.GetBottomBorder());
-				const std::wstring wsRightBorderStyle  = NSCSS::CDocumentStyle::CalculateBorderStyle(oStyle.m_oBorder.GetRightBorder());
-				
-				wsTable += L"<w:top "     + wsTopBorderStyle    + L"/>" +
-				           L"<w:left "    + wsLeftBorderStyle   + L"/>" +
-				           L"<w:bottom "  + wsBottomBorderStyle + L"/>" +
-				           L"<w:right "   + wsRightBorderStyle  + L"/>";
-			}
-
-			wsTable += L"</w:tblBorders>";
-		}
+			wsTable += L"<w:tblBorders>" + CreateBorders(oStyle.m_oBorder) + L"</w:tblBorders>";
 
 		if (!oStyle.m_oMargin.Empty() && (0 < oStyle.m_oMargin.GetTop().ToInt() || 0 < oStyle.m_oMargin.GetBottom().ToInt()))
 		{
@@ -1425,6 +1434,8 @@ private:
 
 			wsTable += L"</w:tblCellMar>";
 		}
+		else
+			wsTable += L"<w:tblCellMar><w:top w:w=\"15\" w:type=\"dxa\"/><w:left w:w=\"15\" w:type=\"dxa\"/><w:bottom w:w=\"15\" w:type=\"dxa\"/><w:right w:w=\"15\" w:type=\"dxa\"/></w:tblCellMar>";
 
 		if (!wsAlign.empty())
 			wsTable += L"<w:jc w:val=\"" + wsAlign + L"\"/>";
@@ -1498,11 +1509,11 @@ private:
 				m_bWasSpace = false;
 			}
 			if(sName == L"thead")
-				readTr(&oHead, sSelectors, oTS);
+				readTr(&oHead, sSelectors, oTS, oStyle);
 			else if(sName == L"tbody")
-				readTr(&oBody, sSelectors, oTS);
+				readTr(&oBody, sSelectors, oTS, oStyle);
 			else if(sName == L"tfoot")
-				readTr(&oFoot, sSelectors, oTS);
+				readTr(&oFoot, sSelectors, oTS, oStyle);
 			sSelectors.pop_back();
 		}
 

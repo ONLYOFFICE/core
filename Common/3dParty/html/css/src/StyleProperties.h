@@ -280,7 +280,7 @@ namespace NSCSS
 		CEnum();
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode) override;
-		void SetMapping(const std::map<std::wstring, int>& mMap);
+		void SetMapping(const std::map<std::wstring, int>& mMap, int nDefaulvalue = -1);
 
 		bool Empty() const override;
 		void Clear() override;
@@ -443,6 +443,12 @@ namespace NSCSS
 		bool    m_bBlock;
 	};
 
+	typedef enum
+	{
+		Collapse,
+		Separate
+	} BorderCollapse;
+	
 	class CBorder
 	{
 	public:
@@ -454,6 +460,7 @@ namespace NSCSS
 		bool SetWidth(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetStyle(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetColor(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetCollapse(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 
 		//Left Side
 		bool SetLeftSide       (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
@@ -485,6 +492,8 @@ namespace NSCSS
 		bool Empty() const;
 		bool EqualSides() const;
 
+		const CEnum& GetCollapse() const;
+
 		const CBorderSide& GetLeftBorder()   const;
 		const CBorderSide& GetTopBorder()    const;
 		const CBorderSide& GetRightBorder()  const;
@@ -497,6 +506,8 @@ namespace NSCSS
 		CBorderSide m_oTop;
 		CBorderSide m_oRight;
 		CBorderSide m_oBottom;
+		
+		CEnum m_enCollapse;
 	};
 
 	class CTextDecorationLine

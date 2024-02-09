@@ -1353,12 +1353,7 @@ namespace NSCSS
 				wsNewValue.replace(unFoundPos, oAbsValue.first.length(), oAbsValue.second);
 		}
 
-		const bool bResult = m_oWidth.SetValue(wsNewValue, unLevel, bHardMode);
-
-		if (m_oWidth != 1.)
-			m_oWidth += 1.;
-
-		return bResult;
+		return m_oWidth.SetValue(wsNewValue, unLevel, bHardMode);
 	}
 
 	bool CBorderSide::SetStyle(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -1437,7 +1432,9 @@ namespace NSCSS
 
 	// BORDER
 	CBorder::CBorder()
-	{}
+	{
+		m_enCollapse.SetMapping({{L"collapse", BorderCollapse::Collapse}, {L"separate", BorderCollapse::Separate}}, BorderCollapse::Separate);
+	}
 
 	void CBorder::Equation(CBorder &oFirstBorder, CBorder &oSecondBorder)
 	{
@@ -1493,6 +1490,11 @@ namespace NSCSS
 		if (m_oBottom.SetColor(wsValue, unLevel, bHardMode)) bResult = true;
 
 		return bResult;
+	}
+
+	bool CBorder::SetCollapse(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_enCollapse.SetValue(wsValue, unLevel, bHardMode);
 	}
 
 	bool CBorder::SetLeftSide(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -1600,6 +1602,11 @@ namespace NSCSS
 	bool CBorder::EqualSides() const
 	{
 		return m_oLeft == m_oTop && m_oTop == m_oRight && m_oRight == m_oBottom;
+	}
+
+	const CEnum &CBorder::GetCollapse() const
+	{
+		return m_enCollapse;
 	}
 
 	const CBorderSide& CBorder::GetLeftBorder() const
@@ -2304,7 +2311,16 @@ namespace NSCSS
 	{
 		Clear();
 
-		m_pColor = new std::wstring(wsValue);
+		if (6 != wsValue.length() && 3 != wsValue.length())
+		{
+			m_enType = ColorEmpty;
+			return;
+		}
+
+		if (6 == wsValue.length())
+			m_pColor = new std::wstring(wsValue);
+		else
+			m_pColor = new std::wstring({wsValue[0], wsValue[0], wsValue[1], wsValue[1], wsValue[2], wsValue[2]});
 
 		if (NULL == m_pColor)
 		{
@@ -2399,8 +2415,10 @@ namespace NSCSS
 				RELEASEOBJECT(pValue);
 				break;
 			}
+			default:
+			break;
 		}
-
+		
 		m_enType = ColorEmpty;
 	}
 
@@ -2433,9 +2451,12 @@ namespace NSCSS
 		return true;
 	}
 
-	void CEnum::SetMapping(const std::map<std::wstring, int> &mMap)
+	void CEnum::SetMapping(const std::map<std::wstring, int> &mMap, int nDefaulvalue)
 	{
 		m_mMap = mMap;
+
+		if (-1 != nDefaulvalue)
+			m_oValue = nDefaulvalue;
 	}
 
 	bool CEnum::Empty() const

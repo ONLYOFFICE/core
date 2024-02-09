@@ -305,6 +305,11 @@ namespace NSCSS
 					m_oBorder.SetColor(pPropertie.second, unLevel, bHardMode);
 					break;
 				}
+				CASE(L"border-collapse"):
+				{
+					m_oBorder.SetCollapse(pPropertie.second, unLevel, bHardMode);
+					break;
+				}
 				//BORDER TOP
 				CASE(L"border-top"):
 				{

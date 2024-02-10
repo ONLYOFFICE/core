@@ -228,7 +228,9 @@ static const def_language_code LanguageCodeTable[] =
 	{L"Vietnamese",			L"", L"",	0x042A},
 	{L"Welsh",				L"", L"",	0x0452},
 	{L"Xhosa",				L"", L"",	0x0434},
-	{L"Zulu",				L"", L"",	0x0435}
+	{L"Zulu",				L"", L"",	0x0435},
+	{L"",					L"PL", L"pl",	0x019F },
+	{L"",					L"IR", L"fa",	0x00160429}
 };
 
 odf_number_styles_context::odf_number_styles_context()
@@ -340,7 +342,7 @@ void odf_number_styles_context::create_default(int oox_num_fmt, std::wstring for
 	}
     boost::algorithm::split(state.format_code, formatCode, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
 
-	if (state.format_code.size()>1 && state.format_code[state.format_code.size()-1].find(L"@")>=0)
+	if (state.format_code.size() > 1 && state.format_code[state.format_code.size()-1].find(L"@") >= 0)
 	{
 		state.format_code.pop_back();
 	}
@@ -613,7 +615,29 @@ void odf_number_styles_context::create_currency_style(number_format_state & stat
 				}
 			}
 		}
+		std::wstring number_country, number_language;
 
+		for (long i = 0; state.language_code > 0 && i < sizeof(LanguageCodeTable) / sizeof(def_language_code); i++)
+		{
+			if (LanguageCodeTable[i].id == state.language_code)
+			{
+				number_country = LanguageCodeTable[i].country_code;
+				number_language = LanguageCodeTable[i].language_code;
+				break;
+			}
+		}
+		//number_currency_style* currency_style_ = dynamic_cast<number_currency_style*>(root_elm.get());
+		//if (currency_style_)
+		//{
+		//	if (false == number_country.empty())
+		//	{
+		//		currency_style_->common_data_style_attlist_.number_country_ = number_country;
+		//	}
+		//	if (number_language.length() > 0)
+		//	{
+		//		currency_style_->common_data_style_attlist_.number_language_ = number_language;
+		//	}
+		//}
 		office_element_ptr elm_symbol;
 		create_element(L"number", L"currency-symbol", elm_symbol, odf_context_);
 		styles_elments.push_back(elm_symbol);
@@ -621,18 +645,6 @@ void odf_number_styles_context::create_currency_style(number_format_state & stat
 		number_currency_symbol* number_currency_symbol_ = dynamic_cast<number_currency_symbol*>(elm_symbol.get());
 		if (number_currency_symbol_)
 		{
-			std::wstring number_country,number_language;
-
-			for (long i = 0; state.language_code > 0 && i < sizeof(LanguageCodeTable)/sizeof(def_language_code); i++)
-			{
-				if (LanguageCodeTable[i].id == state.language_code)
-				{
-					number_country = LanguageCodeTable[i].country_code;
-					number_language = LanguageCodeTable[i].language_code;
-					break;
-				}
-			}
-
 			if (false == number_country.empty())
 			{
 				number_currency_symbol_->number_country_ = number_country;
@@ -672,9 +684,28 @@ void odf_number_styles_context::create_currency_style(number_format_state & stat
 void odf_number_styles_context::create_date_style(number_format_state & state, office_element_ptr & root_elm)
 {
 	create_element(L"number", L"date-style", root_elm, odf_context_);
+	number_date_style *date_ = dynamic_cast<number_date_style*>(root_elm.get());
 
-	//state.language_code == L"F800" System long date format
-	
+	std::wstring number_country, number_language;
+
+	for (long i = 0; state.language_code > 0 && i < sizeof(LanguageCodeTable) / sizeof(def_language_code); i++)
+	{
+		if (LanguageCodeTable[i].id == state.language_code)
+		{
+			number_country = LanguageCodeTable[i].country_code;
+			number_language = LanguageCodeTable[i].language_code;
+			break;
+		}
+	}
+	if (false == number_country.empty())
+	{
+		date_->common_data_style_attlist_.number_country_ = number_country;
+	}
+	if (number_language.length() > 0)
+	{
+		date_->common_data_style_attlist_.number_language_ = number_language;
+	}
+//---------------------------------------------------------------------------------
 	std::wstring s = state.format_code[0];
 	
 	boost::wregex re(L"([mMdDyYhHsS^(AM)^(PM)^(am)^(pm)]+)([^m^M^d^D^y^Y^h^H^s^S^(AM)^(PM)^(am)^(pm)]+)");
@@ -893,18 +924,21 @@ void odf_number_styles_context::detect_format(number_format_state & state)
 	if (state.ods_type != office_value_type::Custom) return;
 	if (state.format_code.empty()) return;
 
-	boost::wregex re_unwanted(L"([\"'])(.+?)\\1");
+	boost::wregex re_unwanted(L"(\\\\.{1})");
 	
-	std::wstring strFormatCode = boost::regex_replace(state.format_code[0], re_unwanted, &replace_unwanted,	boost::match_default | boost::format_all);
+	std::wstring strFormatCode = boost::regex_replace(state.format_code[0], re_unwanted, &replace_unwanted,	boost::match_any | boost::format_all);
 
  	//find [$<Currency String>-<language info>].
-	boost::wregex re(L"(?:\\[)(?:\\$)(\\S+)?\-(\\S+)(?:\\])");
-	boost::wsmatch result;
-	bool b = boost::regex_search(strFormatCode, result, re);
+	boost::wregex re(L"(?=(\\[{1}\\${1}(\\w*)\\-(\\d*)\\]{1}))");
 	
+	std::vector<std::wstring> result;
+	std::wstring tmp = strFormatCode;
+	bool b = boost::regex_split(std::back_inserter(result), tmp, re);
+
 	if (b && result.size() >= 3)
 	{
 		state.currency_str = result[1];
+
 		int code = -1; 
 		try
 		{
@@ -913,21 +947,21 @@ void odf_number_styles_context::detect_format(number_format_state & state)
 			ss >> state.language_code;
 		}catch(...){}
 
-		//state.format_code[0] = boost::regex_replace( state.format_code[0],re,L"");
+		XmlUtils::replace_all(strFormatCode, result[0], L"");
 	}
 
 	if (state.format_code.size() > 0) //any
 	{
-		boost::wregex re1(L"([mMhH{2,}sS{2,}]+)");
-		boost::wregex re2(L"([mMdD{1,}yY{2,}]+)");
+		boost::wregex re1(L"([mM]{2,}|[hH]{2,}|[sS]{2,})");
+		boost::wregex re2(L"([mM]{1,}|[dD]{1,}|[yY]{2,})");
 
-		std::wstring tmp = strFormatCode;
+		tmp = strFormatCode;
 		
-		std::list<std::wstring> result1;
+		std::vector<std::wstring> result1;
 		bool b1 = boost::regex_split(std::back_inserter(result1), tmp, re1);
 
 		tmp = strFormatCode;
-		std::list<std::wstring> result2;
+		std::vector<std::wstring> result2;
 		bool b2 = boost::regex_split(std::back_inserter(result2), tmp, re2);
 		
 		if (b1 && b2 && result1.size() > 2 && result2.size() > 2)

@@ -35,6 +35,7 @@
 #include "Biff_records/Format.h"
 
 #include "../../../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../../../OOXML/Base/Unit.h"
 
 namespace XLS
 {
@@ -382,7 +383,7 @@ _UINT16 GlobalWorkbookInfo::RegisterNumFormat(_UINT16 ifmt, const std::wstring &
 			fmt->ifmt = ifmt;
 			fmt->ifmt_used = ifmt_used;
 
-			fmt->stFormat = format_code;
+			fmt->stFormat = XmlUtils::EncodeXmlString(format_code, true);
 
 			m_mapNumFormats.insert(std::make_pair(fmt->ifmt_used, BaseObjectPtr(fmt)));
 		}

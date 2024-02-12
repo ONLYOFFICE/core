@@ -111,6 +111,8 @@ public:
 	styles_context & get_styles_context();   
 
 	void set_process_layouts(bool val);
+	
+	std::wstring get_last_paragraph_style_name();
 
 private:
 

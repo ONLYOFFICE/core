@@ -188,18 +188,14 @@ namespace PdfWriter
 
 		if (oRect.fTop < oRect.fBottom)
 		{
-			pArray->Add(oRect.fLeft);
-			pArray->Add(oRect.fTop);
-			pArray->Add(oRect.fRight);
-			pArray->Add(oRect.fBottom);
+			m_oRect.fTop = oRect.fBottom;
+			m_oRect.fBottom = oRect.fTop;
 		}
-		else
-		{
-			pArray->Add(oRect.fLeft);
-			pArray->Add(oRect.fBottom);
-			pArray->Add(oRect.fRight);
-			pArray->Add(oRect.fTop);
-		}
+
+		pArray->Add(m_oRect.fLeft);
+		pArray->Add(m_oRect.fBottom);
+		pArray->Add(m_oRect.fRight);
+		pArray->Add(m_oRect.fTop);
 	}
 	void CAnnotation::SetBorder(BYTE nType, double dWidth, const std::vector<double>& arrDash)
 	{
@@ -545,6 +541,9 @@ namespace PdfWriter
 	}
 	void CLineAnnotation::SetCP(BYTE nCP)
 	{
+		if (!Get("Open"))
+			return;
+
 		std::string sValue;
 		switch (nCP)
 		{
@@ -614,100 +613,169 @@ namespace PdfWriter
 	{
 		AddToVectorD(this, "IC", arrIC);
 	}
-	void DrawLE(CStream* pStream, ELineEndType nType, double dX1, double dY1, double dX2, double dY2, double dBW)
+	void AdjustLineEndpoint(ELineEndType nType, double x, double y, double dx, double dy, double w, double& tx, double& ty)
 	{
-		double dLen = sqrt(pow(dX2 - dX1, 2) + pow(dY2 - dY1, 2));
+		switch (nType)
+		{
+		case ELineEndType::Slash:
+		case ELineEndType::Butt:
+		case ELineEndType::ROpenArrow:
+		case ELineEndType::RClosedArrow:
+		case ELineEndType::Diamond:
+		case ELineEndType::None:
+		{
+			w = 0;
+			break;
+		}
+		case ELineEndType::ClosedArrow:
+		case ELineEndType::OpenArrow:
+		{
+			w *= cos(M_PI / 6);
+			break;
+		}
+		case ELineEndType::Square:
+		case ELineEndType::Circle:
+		default:
+			break;
+		}
+		tx = x + w * dx;
+		ty = y + w * dy;
+	}
+	void SreamWriteXYMove(CStream* pStream, double x, double y)
+	{
+		pStream->WriteReal(x);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(y);
+		pStream->WriteStr(" m\012");
+	}
+	void SreamWriteXYLine(CStream* pStream, double x, double y)
+	{
+		pStream->WriteReal(x);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(y);
+		pStream->WriteStr(" l\012");
+	}
+	void SreamWriteXYCurve(CStream* pStream, double x1, double y1, double x2, double y2, double x3, double y3)
+	{
+		pStream->WriteReal(x1);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(y1);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(x2);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(y2);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(x3);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(y3);
+		pStream->WriteStr(" c\012");
+	}
+	void SreamWriteCircle(CStream* pStream, double cx, double cy, double r)
+	{
+		double bezierCircle = 0.55228475;
+		SreamWriteXYMove(pStream, cx + r, cy);
+		SreamWriteXYCurve(pStream, cx + r, cy + bezierCircle * r, cx + bezierCircle * r, cy + r, cx, cy + r);
+		SreamWriteXYCurve(pStream, cx - bezierCircle * r, cy + r, cx - r, cy + bezierCircle * r, cx - r, cy);
+		SreamWriteXYCurve(pStream, cx - r, cy - bezierCircle * r, cx - bezierCircle * r, cy - r, cx, cy - r);
+		SreamWriteXYCurve(pStream, cx + bezierCircle * r, cy - r, cx + r, cy - bezierCircle * r, cx + r, cy);
+	}
+	void DrawLineArrow(CStream* pStream, ELineEndType nType, double x, double y, double dx, double dy, double w)
+	{
+		double lineEndSize1 = 3;
 		switch (nType)
 		{
 		case ELineEndType::Butt:
 		{
+			w *= lineEndSize1;
+			SreamWriteXYMove(pStream, x + w * dy, y - w * dx);
+			SreamWriteXYLine(pStream, x - w * dy, y + w * dx);
+			pStream->WriteStr("S\012");
 			break;
 		}
 		case ELineEndType::Circle:
 		{
-			double _ex = dX1 - dX2;
-			double _ey = dY1 - dY2;
-			double _elen = sqrt(_ex * _ex + _ey * _ey);
-			_ex /= _elen;
-			_ey /= _elen;
-
-			double _vx = _ey;
-			double _vy = -_ex;
-
-			double tmpx  = dX2 + dLen / 2 * _ex;
-			double tmpy  = dY2 + dLen / 2 * _ey;
-			double tmpx2 = dX2 - dLen / 2 * _ex;
-			double tmpy2 = dY2 - dLen / 2 * _ey;
-
-			double cx1 = tmpx  + _vx * 3 * dBW / 4;
-			double cy1 = tmpy  + _vy * 3 * dBW / 4;
-			double cx2 = tmpx2 + _vx * 3 * dBW / 4;
-			double cy2 = tmpy2 + _vy * 3 * dBW / 4;
-
-			double cx3 = tmpx  - _vx * 3 * dBW / 4;
-			double cy3 = tmpy  - _vy * 3 * dBW / 4;
-			double cx4 = tmpx2 - _vx * 3 * dBW / 4;
-			double cy4 = tmpy2 - _vy * 3 * dBW / 4;
-
-			pStream->WriteReal(tmpx);
-			pStream->WriteChar(' ');
-			pStream->WriteReal(tmpy);
-			pStream->WriteStr(" m\012");
-
-			pStream->WriteReal(cx1);
-			pStream->WriteChar(' ');
-			pStream->WriteReal(cy1);
-			pStream->WriteChar(' ');
-			pStream->WriteReal(cx2);
-			pStream->WriteChar(' ');
-			pStream->WriteReal(cy2);
-			pStream->WriteChar(' ');
-			pStream->WriteReal(tmpx2);
-			pStream->WriteChar(' ');
-			pStream->WriteReal(tmpy2);
-			pStream->WriteStr(" c\012");
-
-			pStream->WriteReal(cx4);
-			pStream->WriteChar(' ');
-			pStream->WriteReal(cy4);
-			pStream->WriteChar(' ');
-			pStream->WriteReal(cx3);
-			pStream->WriteChar(' ');
-			pStream->WriteReal(cy3);
-			pStream->WriteChar(' ');
-			pStream->WriteReal(tmpx);
-			pStream->WriteChar(' ');
-			pStream->WriteReal(tmpy);
-			pStream->WriteStr(" c\012");
-
-			break;
-		}
-		case ELineEndType::ClosedArrow:
-		{
+			SreamWriteCircle(pStream, x, y, w * lineEndSize1);
+			pStream->WriteStr("h\012B\012");
 			break;
 		}
 		case ELineEndType::Diamond:
 		{
+			w *= lineEndSize1;
+			SreamWriteXYMove(pStream, x - w, y);
+			SreamWriteXYLine(pStream, x, y + w);
+			SreamWriteXYLine(pStream, x + w, y);
+			SreamWriteXYLine(pStream, x, y - w);
+			pStream->WriteStr("b\012");
 			break;
 		}
 		case ELineEndType::OpenArrow:
 		{
+			w *= lineEndSize1 * lineEndSize1;
+			double dCos = w * cos(M_PI / 6);
+			double dSin = w * sin(M_PI / 6);
+			SreamWriteXYMove(pStream, x + dCos * dx + dSin * dy, y + dCos * dy - dSin * dx);
+			SreamWriteXYLine(pStream, x, y);
+			SreamWriteXYLine(pStream, x + dCos * dx - dSin * dy, y + dCos * dy + dSin * dx);
+			pStream->WriteStr("S\012");
 			break;
 		}
-		case ELineEndType::RClosedArrow:
+		case ELineEndType::ClosedArrow:
 		{
+			w *= lineEndSize1 * lineEndSize1;
+			double dCos = w * cos(M_PI / 6);
+			double dSin = w * sin(M_PI / 6);
+			SreamWriteXYMove(pStream, x + dCos * dx + dSin * dy, y + dCos * dy - dSin * dx);
+			SreamWriteXYLine(pStream, x, y);
+			SreamWriteXYLine(pStream, x + dCos * dx - dSin * dy, y + dCos * dy + dSin * dx);
+			pStream->WriteStr("b\012");
 			break;
 		}
 		case ELineEndType::ROpenArrow:
 		{
+			x -= cos(M_PI / 6) * dx * w;
+			y -= cos(M_PI / 6) * dy * w;
+			double dCos = w * cos(M_PI / 6) * lineEndSize1 * lineEndSize1;
+			double dSin = w * sin(M_PI / 6) * lineEndSize1 * lineEndSize1;
+			SreamWriteXYMove(pStream, x - dCos * dx + dSin * dy, y - dCos * dy - dSin * dx);
+			SreamWriteXYLine(pStream, x, y);
+			SreamWriteXYLine(pStream, x - dCos * dx - dSin * dy, y - dCos * dy + dSin * dx);
+			pStream->WriteStr("S\012");
+			break;
+		}
+		case ELineEndType::RClosedArrow:
+		{
+			x -= cos(M_PI / 6) * dx * w;
+			y -= cos(M_PI / 6) * dy * w;
+			double dCos = w * cos(M_PI / 6) * lineEndSize1 * lineEndSize1;
+			double dSin = w * sin(M_PI / 6) * lineEndSize1 * lineEndSize1;
+			SreamWriteXYMove(pStream, x - dCos * dx + dSin * dy, y - dCos * dy - dSin * dx);
+			SreamWriteXYLine(pStream, x, y);
+			SreamWriteXYLine(pStream, x - dCos * dx - dSin * dy, y - dCos * dy + dSin * dx);
+			pStream->WriteStr("b\012");
 			break;
 		}
 		case ELineEndType::Slash:
 		{
+			w *= lineEndSize1 * lineEndSize1;
+			double dCos = w * cos(M_PI / 6);
+			double dSin = w * sin(M_PI / 6);
+			SreamWriteXYMove(pStream, x + dCos * dy - dSin * dx, y - dCos * dx - dSin * dy);
+			SreamWriteXYLine(pStream, x - dCos * dy + dSin * dx, y + dCos * dx + dSin * dy);
+			pStream->WriteStr("S\012");
 			break;
 		}
 		case ELineEndType::Square:
 		{
+			w *= lineEndSize1;
+			pStream->WriteReal(x + (dx + dy) * w);
+			pStream->WriteChar(' ');
+			pStream->WriteReal(y + (dx + dy) * w);
+			pStream->WriteChar(' ');
+			pStream->WriteReal(w * 2);
+			pStream->WriteChar(' ');
+			pStream->WriteReal(w * 2);
+			pStream->WriteStr(" re\012");
+			pStream->WriteStr("B\012");
 			break;
 		}
 		case ELineEndType::None:
@@ -744,32 +812,86 @@ namespace PdfWriter
 		pObj = Get("CA");
 		if (pObj && pObj->GetType() == object_type_REAL)
 		{
-			CExtGrState* pExtGrState = m_pDocument->GetFillAlpha(((CRealObject*)pObj)->Get());
-			const char* sExtGrStateName =  m_pDocument->GetFieldsResources()->GetExtGrStateName(pExtGrState);
-			if (sExtGrStateName)
+			float dAlpha = ((CRealObject*)pObj)->Get();
+			if (dAlpha != 1)
 			{
-				pStream->WriteEscapeName(sExtGrStateName);
-				pStream->WriteStr(" gs\012");
+				CExtGrState* pExtGrState = m_pDocument->GetExtGState(dAlpha, dAlpha);
+				const char* sExtGrStateName =  m_pDocument->GetFieldsResources()->GetExtGrStateName(pExtGrState);
+				if (sExtGrStateName)
+				{
+					pStream->WriteEscapeName(sExtGrStateName);
+					pStream->WriteStr(" gs\012");
+				}
 			}
 		}
 
-		pStream->WriteReal(dL[0]);
-		pStream->WriteChar(' ');
-		pStream->WriteReal(dL[1]);
-		pStream->WriteStr(" m\012");
+		double dLL = 0, dLLE = 0, dLLO = 0;
+		pObj = Get("LL");
+		if (pObj && pObj->GetType() == object_type_REAL)
+			dLL = ((CRealObject*)pObj)->Get();
+		pObj = Get("LLE");
+		if (pObj && pObj->GetType() == object_type_REAL)
+			dLLE = ((CRealObject*)pObj)->Get();
+		pObj = Get("LLO");
+		if (pObj && pObj->GetType() == object_type_REAL)
+			dLLO = ((CRealObject*)pObj)->Get();
 
-		pStream->WriteReal(dL[2]);
-		pStream->WriteChar(' ');
-		pStream->WriteReal(dL[3]);
-		pStream->WriteStr(" l\012");
+		double dDX = dL[2] - dL[0];
+		double dDY = dL[3] - dL[1];
+		double dLen = sqrt(dDX * dDX + dDY * dDY);
+		if (dLen > 0)
+		{
+			dDX /= dLen;
+			dDY /= dLen;
+		}
 
+		double lx1, ly1, lx2, ly2;
+		double ax1, ay1, ax2, ay2;
+		double bx1, by1, bx2, by2;
+		if (dLL != 0)
+		{
+			ax1 = dL[0] + dLLO * dDY;
+			ay1 = dL[1] - dLLO * dDX;
+			lx1 = ax1 + dLL * dDY;
+			ly1 = ay1 - dLL * dDX;
+			bx1 = lx1 + dLLE * dDY;
+			by1 = ly1 - dLLE * dDX;
+			ax2 = dL[2] + dLLO * dDY;
+			ay2 = dL[3] - dLLO * dDX;
+			lx2 = ax2 + dLL * dDY;
+			ly2 = ay2 - dLL * dDX;
+			bx2 = lx2 + dLLE * dDY;
+			by2 = ly2 - dLLE * dDX;
+		}
+		else
+		{
+			lx1 = dL[0];
+			ly1 = dL[1];
+			lx2 = dL[2];
+			ly2 = dL[3];
+			ax1 = ay1 = ax2 = ay2 = 0;
+			bx1 = by1 = bx2 = by2 = 0;
+		  }
+
+		double tx1, ty1, tx2, ty2;
+		AdjustLineEndpoint(m_nLE1, lx1, ly1,  dDX,  dDY, dBorderSize, tx1, ty1);
+		AdjustLineEndpoint(m_nLE2, lx2, ly2, -dDX, -dDY, dBorderSize, tx2, ty2);
+
+		if (dLL != 0)
+		{
+			SreamWriteXYMove(pStream, ax1, ay1);
+			SreamWriteXYLine(pStream, bx1, by1);
+
+			SreamWriteXYMove(pStream, ax2, ay2);
+			SreamWriteXYLine(pStream, bx2, by2);
+		}
+
+		SreamWriteXYMove(pStream, tx1, ty1);
+		SreamWriteXYLine(pStream, tx2, ty2);
 		pStream->WriteStr("S\012");
 
-		if (m_nLE1 != ELineEndType::None)
-			DrawLE(pStream, m_nLE1, dL[0], dL[1], dL[2], dL[3], dBorderSize);
-
-		if (m_nLE2 != ELineEndType::None)
-			DrawLE(pStream, m_nLE2, dL[2], dL[3], dL[0], dL[1], dBorderSize);
+		DrawLineArrow(pStream, m_nLE1, tx1, ty1,  dDX,  dDY, dBorderSize);
+		DrawLineArrow(pStream, m_nLE2, tx2, ty2, -dDX, -dDY, dBorderSize);
 	}
 	//----------------------------------------------------------------------------------------
 	// CPopupAnnotation

@@ -1772,6 +1772,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 	pAnnot->SetPage(pPage, pPage->GetWidth(), dPageH, dPageX);
 	pAnnot->SetAnnotFlag(oInfo.GetAnnotFlag());
+	pAnnot->SetDocument(m_pDocument);
 
 	int nFlags = oInfo.GetFlag();
 	if (nFlags & (1 << 0))
@@ -2026,7 +2027,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		put_FontSize(dFontSize);
 		PdfWriter::CFontTrueType* pFontTT = NULL;
 
-		pWidgetAnnot->SetDocument(m_pDocument);
 		if (nWidgetType != 28 && nWidgetType != 29)
 		{
 			if (m_bNeedUpdateTextFont)

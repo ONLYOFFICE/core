@@ -1618,7 +1618,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CAnnotAppearanceObject
 	//----------------------------------------------------------------------------------------
-	void CAnnotAppearanceObject::Init(CXref* pXref, CResourcesDict* pResources, TRect* pRect)
+	void CAnnotAppearanceObject::Init(CXref* pXref, CResourcesDict* pResources)
 	{
 		m_pXref     = pXref ? pXref : NULL;
 		m_pStream   = new CMemoryStream();
@@ -1631,6 +1631,12 @@ namespace PdfWriter
 		Add("Type", "XObject");
 		Add("Subtype", "Form");
 		Add("Resources", pResources);
+	}
+	CAnnotAppearanceObject::CAnnotAppearanceObject(CXref* pXref, CFieldBase* pField)
+	{
+		Init(pXref, pField->GetResourcesDict());
+		m_pField = pField;
+		m_pAnnot = NULL;
 
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
@@ -1639,20 +1645,46 @@ namespace PdfWriter
 		Add("BBox", pArray);
 		pArray->Add(0);
 		pArray->Add(0);
-		pArray->Add(fabs(pRect->fRight - pRect->fLeft));
-		pArray->Add(fabs(pRect->fBottom - pRect->fTop));
-	}
-	CAnnotAppearanceObject::CAnnotAppearanceObject(CXref* pXref, CFieldBase* pField)
-	{
-		Init(pXref, pField->GetResourcesDict(), &pField->GetRect());
-		m_pField = pField;
-		m_pAnnot = NULL;
+		pArray->Add(fabs(pField->GetRect().fRight - pField->GetRect().fLeft));
+		pArray->Add(fabs(pField->GetRect().fBottom - pField->GetRect().fTop));
 	}
 	CAnnotAppearanceObject::CAnnotAppearanceObject(CXref* pXRef, CAnnotation* pAnnot)
 	{
-		Init(pXRef, pAnnot->GetDocument()->GetFieldsResources(), &pAnnot->GetRect());
+		Init(pXRef, pAnnot->GetDocument()->GetFieldsResources());
 		m_pAnnot = pAnnot;
 		m_pField = NULL;
+
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+		Add("BBox", pArray);
+
+		if (pAnnot->GetAnnotationType() == EAnnotType::AnnotWidget)
+		{
+			pArray->Add(0);
+			pArray->Add(0);
+			pArray->Add(fabs(pAnnot->GetRect().fRight - pAnnot->GetRect().fLeft));
+			pArray->Add(fabs(pAnnot->GetRect().fBottom - pAnnot->GetRect().fTop));
+		}
+		else
+		{
+			pArray->Add(pAnnot->GetRect().fLeft);
+			pArray->Add(pAnnot->GetRect().fBottom);
+			pArray->Add(pAnnot->GetRect().fRight);
+			pArray->Add(pAnnot->GetRect().fTop);
+
+			pArray = new CArrayObject();
+			if (!pArray)
+				return;
+
+			Add("Matrix", pArray);
+			pArray->Add(1);
+			pArray->Add(0);
+			pArray->Add(0);
+			pArray->Add(1);
+			pArray->Add(-pAnnot->GetRect().fLeft);
+			pArray->Add(-pAnnot->GetRect().fBottom);
+		}
 	}
 	void CAnnotAppearanceObject::DrawSimpleText(const std::wstring& wsText, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, double dFontSize, double dX, double dY, double dR, double dG, double dB, const char* sExtGStateName, double dWidth, double dHeight, CFontCidTrueType** ppFonts, double* pShifts)
 	{

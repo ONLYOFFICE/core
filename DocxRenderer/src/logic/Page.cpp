@@ -1358,14 +1358,43 @@ namespace NSDocxRenderer
 				ar_delims[index] = true;
 		}
 
+		// большая высота между строками
+		for (size_t index = 0; index < ar_spacings.size() - 1; ++index)
+		{
+			// если разница больше чем срединий в три раза - отделим
+			if (ar_spacings[index] > avg_spacing * 3)
+				ar_delims[index] = true;
+		}
+
 		// width check (слишком большая разница в ширине)
 		for (size_t index = 1; index < ar_spacings.size(); ++index)
 		{
-			double width_diff = fabs(m_arTextLines[index - 1]->m_dWidth - m_arTextLines[index]->m_dWidth);
-			bool big_diff = width_diff > std::min(m_arTextLines[index - 1]->m_dWidth, m_arTextLines[index - 1]->m_dWidth) * 3;
+			double diff = 0;
+			if (ar_positions[index - 1].right)
+				diff = m_arTextLines[index - 1]->m_dLeft - m_arTextLines[index]->m_dLeft;
+			else if (ar_positions[index -  1].center)
+				diff = m_arTextLines[index - 1]->m_dWidth - m_arTextLines[index]->m_dWidth;
+			else
+				diff = m_arTextLines[index - 1]->m_dRight - m_arTextLines[index]->m_dRight;
 
-			if (big_diff && !ar_delims[index])
-				ar_delims[index - 1] = true;
+			bool big_diff = fabs(diff) > std::min(m_arTextLines[index - 1]->m_dWidth, m_arTextLines[index]->m_dWidth) * 3;
+			bool is_first_less = diff < 0;
+
+
+			// два случая
+			// Text (end paragraph)
+			// bla-bla-bla (end paragraph)
+			//
+			// bla-bla-bla (\n)
+			// bla (end paragraph)
+			if (big_diff)
+			{
+				if (is_first_less)
+					ar_delims[index - 1] = true;
+				else
+					ar_delims[index] = true;
+			}
+
 		}
 
 		// alignment check
@@ -1386,8 +1415,21 @@ namespace NSDocxRenderer
 			else
 				is_first_line = false;
 
-			if (is_first_line && !position_bot.right && m_arTextLines[index + 1]->m_dLeft < m_arTextLines[index]->m_dLeft)
-				position_bot.left = true;
+			// первая строка может быть с отступом
+			if (is_first_line && m_arTextLines[index + 1]->m_dLeft < m_arTextLines[index]->m_dLeft)
+			{
+				// если больше трех линий - проверим третью
+				if (index < ar_positions.size() - 2)
+				{
+					if (!ar_delims[index] && !ar_delims[index + 1] && ar_positions[index + 1].left)
+						position_bot.left = true;
+					else
+						position_bot.left = false;
+				}
+				else
+					position_bot.left = true;
+			}
+
 
 			bool is_unknown = !(position_bot.left || position_bot.right || position_bot.center);
 			if (is_unknown)
@@ -1477,7 +1519,7 @@ namespace NSDocxRenderer
 		pShape->m_dTop = pParagraph->m_dTop;
 		pShape->m_dRight =  pParagraph->m_dRight;
 		pShape->m_dBaselinePos = pParagraph->m_dBaselinePos;
-		pShape->m_dWidth = pParagraph->m_dWidth * 1.03;
+		pShape->m_dWidth = pParagraph->m_dWidth * 1.03; // чтобы текст точно уместился
 
 		pParagraph->m_dLeftBorder = 0;
 		pParagraph->m_dRightBorder = 0;

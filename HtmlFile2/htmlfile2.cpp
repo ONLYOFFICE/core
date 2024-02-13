@@ -2144,7 +2144,16 @@ private:
 			size_t nHRefLen = sSVG.find(L"\"", nHRef);
 			if(nHRefLen == std::wstring::npos)
 				break;
-			std::wstring sImageName = sSVG.substr(nHRef, nHRefLen - nHRef);
+
+			std::wstring sImageName = NSSystemPath::ShortenPath(sSVG.substr(nHRef, nHRefLen - nHRef));
+
+			bool bIsAllowExternalLocalFiles = true;
+			if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
+				bIsAllowExternalLocalFiles = NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
+
+			if (!bIsAllowExternalLocalFiles && !sImageName.empty() && L'.' == sImageName[0])
+				break;
+
 			std::wstring sTIN(sImageName);
 			sTIN.erase(std::remove_if(sTIN.begin(), sTIN.end(), [] (wchar_t ch) { return std::iswspace(ch) || (ch == L'^'); }), sTIN.end());
 			sTIN = NSFile::GetFileName(sTIN);

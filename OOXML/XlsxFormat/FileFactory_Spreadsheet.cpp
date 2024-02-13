@@ -58,6 +58,8 @@
 #include "Slicer/Slicer.h"
 #include "NamedSheetViews/NamedSheetViews.h"
 #include "Timelines/Timeline.h"
+#include "RichData/RdRichValue.h"
+#include "Workbook/Metadata.h"
 
 #include "Table/Table.h"
 #include "Table/QueryTable.h"
@@ -181,6 +183,14 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CTimelineFile(pMain, oRootPath, oFileName));
 			else if (	oRelation.Type() == FileTypes::TimelineCache)
 				return smart_ptr<OOX::File>(new CTimelineCacheFile(pMain, oRootPath, oFileName));
+			else if (oRelation.Type() == FileTypes::Metadata)
+				return smart_ptr<OOX::File>(new CMetadataFile(pMain, oRootPath, oFileName));
+			else if (oRelation.Type() == FileTypes::RdRichValueStructure)
+				return smart_ptr<OOX::File>(new CRdRichValueStructureFile(pMain, oRootPath, oFileName));
+			else if (oRelation.Type() == FileTypes::RdRichValue)
+				return smart_ptr<OOX::File>(new CRdRichValueFile(pMain, oRootPath, oFileName));
+			else if (oRelation.Type() == FileTypes::RdRichValueTypes)
+				return smart_ptr<OOX::File>(new CRdRichValueTypesFile(pMain, oRootPath, oFileName));
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 		}
@@ -313,6 +323,14 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CTimelineFile(pMain, oRootPath, oFileName));
 			else if (pRelation->Type() == FileTypes::TimelineCache)
 				return smart_ptr<OOX::File>(new CTimelineCacheFile(pMain, oRootPath, oFileName));
+			else if (pRelation->Type() == FileTypes::Metadata)
+				return smart_ptr<OOX::File>(new CMetadataFile(pMain, oRootPath, oFileName));
+			else if (pRelation->Type() == FileTypes::RdRichValueStructure)
+				return smart_ptr<OOX::File>(new CRdRichValueStructureFile(pMain, oRootPath, oFileName));
+			else if (pRelation->Type() == FileTypes::RdRichValue)
+				return smart_ptr<OOX::File>(new CRdRichValueFile(pMain, oRootPath, oFileName));
+			else if (pRelation->Type() == FileTypes::RdRichValueTypes)
+				return smart_ptr<OOX::File>(new CRdRichValueTypesFile(pMain, oRootPath, oFileName));
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 		}

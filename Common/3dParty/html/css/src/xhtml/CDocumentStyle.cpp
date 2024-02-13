@@ -422,6 +422,9 @@ namespace NSCSS
 
 	std::wstring CDocumentStyle::CalculateBorderStyle(const NSProperties::CBorderSide &oBorder)
 	{
+		if (oBorder.Empty())
+			return L"";
+		
 		std::wstring wsColor = oBorder.GetColor().ToWString();
 		std::wstring wsStyle = oBorder.GetStyle().ToWString();
 		double dWidth = oBorder.GetWidth().ToDouble(Point) * 8; // Так как значение указано в восьмых долях точки

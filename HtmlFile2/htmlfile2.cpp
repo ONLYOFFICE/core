@@ -1157,15 +1157,21 @@ private:
 		}
 		else
 		{
-			const std::wstring wsTopBorderStyle    = NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetTopBorder());
-			const std::wstring wsLeftBorderStyle   = NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetLeftBorder());
-			const std::wstring wsBottomBorderStyle = NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetBottomBorder());
-			const std::wstring wsRightBorderStyle  = NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetRightBorder());
+			std::wstring wsTable;
 
-			return L"<w:top "     + wsTopBorderStyle    + L"/>" +
-			       L"<w:left "    + wsLeftBorderStyle   + L"/>" +
-			       L"<w:bottom "  + wsBottomBorderStyle + L"/>" +
-			       L"<w:right "   + wsRightBorderStyle  + L"/>";
+			if (!oBorder.GetTopBorder().Empty())
+				wsTable += L"<w:top "    + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetTopBorder())    + L"/>";
+
+			if (!oBorder.GetLeftBorder().Empty())
+				wsTable += L"<w:left "   + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetLeftBorder())   + L"/>";
+
+			if (!oBorder.GetBottomBorder().Empty())
+				wsTable += L"<w:bottom " + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetBottomBorder()) + L"/>";
+
+			if (!oBorder.GetRightBorder().Empty())
+				wsTable += L"<w:right "  + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetRightBorder())  + L"/>";
+
+			return wsTable;
 		}
 
 		return L"";

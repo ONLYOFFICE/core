@@ -615,31 +615,35 @@ namespace PdfWriter
 	}
 	void AdjustLineEndpoint(ELineEndType nType, double x, double y, double dx, double dy, double w, double& tx, double& ty)
 	{
+		tx = x;
+		ty = y;
+
 		switch (nType)
 		{
-		case ELineEndType::Slash:
-		case ELineEndType::Butt:
-		case ELineEndType::ROpenArrow:
-		case ELineEndType::RClosedArrow:
-		case ELineEndType::Diamond:
-		case ELineEndType::None:
-		{
-			w = 0;
-			break;
-		}
 		case ELineEndType::ClosedArrow:
 		case ELineEndType::OpenArrow:
+		case ELineEndType::Diamond:
 		{
-			w *= cos(M_PI / 6);
+			tx += w * dx;
+			if ((dx > 0.001 && dy > 0) || (dx < -0.001 && dy < 0))
+				ty += w * dy;
 			break;
 		}
 		case ELineEndType::Square:
 		case ELineEndType::Circle:
+		{
+			if ((dx > 0 && dy < 0) || (dx < 0 && dy > 0))
+				tx += w * dx;
+			break;
+		}
+		case ELineEndType::Slash:
+		case ELineEndType::Butt:
+		case ELineEndType::ROpenArrow:
+		case ELineEndType::RClosedArrow:
+		case ELineEndType::None:
 		default:
 			break;
 		}
-		tx = x + w * dx;
-		ty = y + w * dy;
 	}
 	void SreamWriteXYMove(CStream* pStream, double x, double y)
 	{
@@ -672,16 +676,16 @@ namespace PdfWriter
 	}
 	void SreamWriteCircle(CStream* pStream, double cx, double cy, double r)
 	{
-		double bezierCircle = 0.55228475;
+		double bezierCircle = 0.55228475 * r;
 		SreamWriteXYMove(pStream, cx + r, cy);
-		SreamWriteXYCurve(pStream, cx + r, cy + bezierCircle * r, cx + bezierCircle * r, cy + r, cx, cy + r);
-		SreamWriteXYCurve(pStream, cx - bezierCircle * r, cy + r, cx - r, cy + bezierCircle * r, cx - r, cy);
-		SreamWriteXYCurve(pStream, cx - r, cy - bezierCircle * r, cx - bezierCircle * r, cy - r, cx, cy - r);
-		SreamWriteXYCurve(pStream, cx + bezierCircle * r, cy - r, cx + r, cy - bezierCircle * r, cx + r, cy);
+		SreamWriteXYCurve(pStream, cx + r, cy + bezierCircle, cx + bezierCircle, cy + r, cx, cy + r);
+		SreamWriteXYCurve(pStream, cx - bezierCircle, cy + r, cx - r, cy + bezierCircle, cx - r, cy);
+		SreamWriteXYCurve(pStream, cx - r, cy - bezierCircle, cx - bezierCircle, cy - r, cx, cy - r);
+		SreamWriteXYCurve(pStream, cx + bezierCircle, cy - r, cx + r, cy - bezierCircle, cx + r, cy);
 	}
 	void DrawLineArrow(CStream* pStream, ELineEndType nType, double x, double y, double dx, double dy, double w)
 	{
-		double lineEndSize1 = 3;
+		double lineEndSize1 = 3, pi = 3.14159265358979323846;
 		switch (nType)
 		{
 		case ELineEndType::Butt:
@@ -709,56 +713,48 @@ namespace PdfWriter
 			break;
 		}
 		case ELineEndType::OpenArrow:
-		{
-			w *= lineEndSize1 * lineEndSize1;
-			double dCos = w * cos(M_PI / 6);
-			double dSin = w * sin(M_PI / 6);
-			SreamWriteXYMove(pStream, x + dCos * dx + dSin * dy, y + dCos * dy - dSin * dx);
-			SreamWriteXYLine(pStream, x, y);
-			SreamWriteXYLine(pStream, x + dCos * dx - dSin * dy, y + dCos * dy + dSin * dx);
-			pStream->WriteStr("S\012");
-			break;
-		}
 		case ELineEndType::ClosedArrow:
 		{
 			w *= lineEndSize1 * lineEndSize1;
-			double dCos = w * cos(M_PI / 6);
-			double dSin = w * sin(M_PI / 6);
-			SreamWriteXYMove(pStream, x + dCos * dx + dSin * dy, y + dCos * dy - dSin * dx);
-			SreamWriteXYLine(pStream, x, y);
-			SreamWriteXYLine(pStream, x + dCos * dx - dSin * dy, y + dCos * dy + dSin * dx);
-			pStream->WriteStr("b\012");
+			double d32 = pi * 32.0 / 180.0;
+			double d28 = pi * 28.0 / 180.0;
+			if ((dx > 0.001 && dy < 0) || (dx < -0.001 && dy > 0))
+			{
+				SreamWriteXYMove(pStream, x + w * cos(d32) * dx + w * sin(d32) * dy, y + w * cos(d32) * dy - w * sin(d32) * dx);
+				SreamWriteXYLine(pStream, x, y);
+				SreamWriteXYLine(pStream, x + w * cos(d28) * dx - w * sin(d28) * dy, y + w * cos(d28) * dy + w * sin(d28) * dx);
+			}
+			else
+			{
+				double dCos = w * cos(pi / 6.0);
+				double dSin = w * sin(pi / 6.0);
+
+				SreamWriteXYMove(pStream, x + dCos * dx + dSin * dy, y + dCos * dy - dSin * dx);
+				SreamWriteXYLine(pStream, x, y);
+				SreamWriteXYLine(pStream, x + dCos * dx - dSin * dy, y + dCos * dy + dSin * dx);
+			}
+			pStream->WriteStr(nType == ELineEndType::OpenArrow ? "S\012" : "b\012");
 			break;
 		}
 		case ELineEndType::ROpenArrow:
-		{
-			x -= cos(M_PI / 6) * dx * w;
-			y -= cos(M_PI / 6) * dy * w;
-			double dCos = w * cos(M_PI / 6) * lineEndSize1 * lineEndSize1;
-			double dSin = w * sin(M_PI / 6) * lineEndSize1 * lineEndSize1;
-			SreamWriteXYMove(pStream, x - dCos * dx + dSin * dy, y - dCos * dy - dSin * dx);
-			SreamWriteXYLine(pStream, x, y);
-			SreamWriteXYLine(pStream, x - dCos * dx - dSin * dy, y - dCos * dy + dSin * dx);
-			pStream->WriteStr("S\012");
-			break;
-		}
 		case ELineEndType::RClosedArrow:
 		{
-			x -= cos(M_PI / 6) * dx * w;
-			y -= cos(M_PI / 6) * dy * w;
-			double dCos = w * cos(M_PI / 6) * lineEndSize1 * lineEndSize1;
-			double dSin = w * sin(M_PI / 6) * lineEndSize1 * lineEndSize1;
+			x -= cos(pi / 18.0) * dx * w;
+			y -= cos(pi / 18.0) * dy * w;
+			w *= lineEndSize1 * lineEndSize1;
+			double dCos = w * cos(pi / 6.0);
+			double dSin = w * sin(pi / 6.0);
 			SreamWriteXYMove(pStream, x - dCos * dx + dSin * dy, y - dCos * dy - dSin * dx);
 			SreamWriteXYLine(pStream, x, y);
 			SreamWriteXYLine(pStream, x - dCos * dx - dSin * dy, y - dCos * dy + dSin * dx);
-			pStream->WriteStr("b\012");
+			pStream->WriteStr(nType == ELineEndType::ROpenArrow ? "S\012" : "b\012");
 			break;
 		}
 		case ELineEndType::Slash:
 		{
 			w *= lineEndSize1 * lineEndSize1;
-			double dCos = w * cos(M_PI / 6);
-			double dSin = w * sin(M_PI / 6);
+			double dCos = w * cos(pi / 6.0);
+			double dSin = w * sin(pi / 6.0);
 			SreamWriteXYMove(pStream, x + dCos * dy - dSin * dx, y - dCos * dx - dSin * dy);
 			SreamWriteXYLine(pStream, x - dCos * dy + dSin * dx, y + dCos * dx + dSin * dy);
 			pStream->WriteStr("S\012");
@@ -767,9 +763,9 @@ namespace PdfWriter
 		case ELineEndType::Square:
 		{
 			w *= lineEndSize1;
-			pStream->WriteReal(x + (dx + dy) * w);
+			pStream->WriteReal(x - w);
 			pStream->WriteChar(' ');
-			pStream->WriteReal(y + (dx + dy) * w);
+			pStream->WriteReal(y - w);
 			pStream->WriteChar(' ');
 			pStream->WriteReal(w * 2);
 			pStream->WriteChar(' ');

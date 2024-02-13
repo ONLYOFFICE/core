@@ -1119,6 +1119,106 @@ namespace NSDocxRenderer
 				v_type == eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
 		};
 
+		// после переместим все в output objects
+		std::vector<std::shared_ptr<CParagraph>> ar_paragraphs;
+
+		double avg_spacing{0.0};
+		size_t avg_spacing_n{0};
+
+		double min_left{m_dWidth};
+		double max_right{0.0};
+
+		// совпадает ли left, right, center со строкой ниже
+		struct Position {
+			bool left{false};
+			bool center{false};
+			bool right {false};
+		};
+
+		// параграф будет набиваться строчками
+		auto paragraph = std::make_shared<CParagraph>();
+
+		// lamda to setup and add paragpraph
+		auto add_paragraph = [this, &max_right, &min_left, &ar_paragraphs] (std::shared_ptr<CParagraph>& paragraph) {
+
+			paragraph->m_dBaselinePos = paragraph->m_arLines.back()->m_dBaselinePos;
+			paragraph->m_dTop = paragraph->m_arLines.front()->m_dTop;
+			paragraph->m_dRight = max_right;
+			paragraph->m_dLeft = min_left;
+
+			paragraph->m_dWidth = paragraph->m_dRight - paragraph->m_dLeft;
+			paragraph->m_dHeight = paragraph->m_dBaselinePos - paragraph->m_dTop;
+
+			paragraph->m_dRightBorder = m_dWidth - max_right;
+			paragraph->m_dLeftBorder = min_left;
+
+			paragraph->m_dLineHeight = paragraph->m_dHeight / paragraph->m_arLines.size();
+			paragraph->m_bIsNeedFirstLineIndent = false;
+			paragraph->m_dFirstLine = 0;
+			paragraph->m_wsStyleId = m_pParagraphStyleManager->GetDefaultParagraphStyleId(*paragraph);
+
+			paragraph->MergeLines();
+
+			// setting TextAlignmentType
+			if (paragraph->m_arLines.size() > 1)
+			{
+				Position position_curr = {true, true, true};
+				bool first_left = false;
+
+				for (size_t index = 1; index < paragraph->m_arLines.size(); ++index)
+				{
+					auto& curr_line = paragraph->m_arLines[index];
+					auto& prev_line = paragraph->m_arLines[index - 1];
+
+					// indent check
+					if (index == 1)
+						first_left = fabs(curr_line->m_dLeft - prev_line->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
+					else
+						position_curr.left &= fabs(curr_line->m_dLeft - prev_line->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
+
+					position_curr.right &= fabs(curr_line->m_dRight - prev_line->m_dRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
+
+					auto center_curr = curr_line->m_dLeft + curr_line->m_dWidth / 2;
+					auto center_prev = prev_line->m_dLeft + prev_line->m_dWidth / 2;
+
+					position_curr.center &= fabs(center_curr - center_prev) < c_dCENTER_POSITION_ERROR_MM;
+				}
+				if (position_curr.left && position_curr.right)
+					paragraph->m_eTextAlignmentType = CParagraph::tatByWidth;
+				else if (position_curr.left)
+					paragraph->m_eTextAlignmentType = CParagraph::tatByLeft;
+				else if (position_curr.right)
+					paragraph->m_eTextAlignmentType = CParagraph::tatByRight;
+				else if (position_curr.center)
+					paragraph->m_eTextAlignmentType = CParagraph::tatByCenter;
+
+				// indent check
+				if (paragraph->m_eTextAlignmentType == CParagraph::tatByLeft && !first_left)
+				{
+					paragraph->m_bIsNeedFirstLineIndent = true;
+					paragraph->m_dFirstLine = paragraph->m_arLines[0]->m_dLeft - paragraph->m_dLeft;
+				}
+			}
+
+			if (ar_paragraphs.empty())
+				paragraph->m_dSpaceBefore = paragraph->m_dTop + c_dCORRECTION_FOR_FIRST_PARAGRAPH;
+			else
+				paragraph->m_dSpaceBefore = paragraph->m_dTop - ar_paragraphs.back()->m_dBaselinePos;
+
+			ar_paragraphs.push_back(std::move(paragraph));
+			paragraph = std::make_shared<CParagraph>();
+
+			min_left = m_dWidth;
+			max_right = 0.0;
+		};
+
+		// lamda to add line and setup min_left/max_right
+		auto add_line = [&min_left, &max_right] (std::shared_ptr<CParagraph>& paragraph, std::shared_ptr<CTextLine>& curr_line) {
+			min_left = std::min(min_left, curr_line->m_dLeft);
+			max_right = std::max(max_right, curr_line->m_dRight);
+			paragraph->m_arLines.push_back(curr_line);
+		};
+
 		// линии из которых сделаем шейпы
 		for (size_t index = 0; index < m_arTextLines.size(); ++index)
 		{
@@ -1126,21 +1226,14 @@ namespace NSDocxRenderer
 			if (!curr_line)
 				continue;
 
-			// 1 строчка в параграфе
-			if (m_eTextAssociationType == TextAssociationType::tatShapeLine)
-			{
-				CreateSingleLineShape(curr_line);
-				continue;
-			}
-
 			// если у текущей линии есть дубликаты, то создаем из них шейпы
 			if (curr_line->m_iNumDuplicates > 0)
 			{
 				size_t duplicates = curr_line->m_iNumDuplicates;
-				CreateSingleLineShape(curr_line);
+				m_arShapes.push_back(CreateSingleLineShape(curr_line));
 				while (duplicates > 0)
 				{
-					CreateSingleLineShape(curr_line);
+					m_arShapes.push_back(CreateSingleLineShape(curr_line));
 					duplicates--;
 				}
 				continue;
@@ -1189,7 +1282,7 @@ namespace NSDocxRenderer
 			}
 		}
 
-		if(m_arTextLines.empty())
+		if (m_arTextLines.empty())
 			return;
 
 		// переместим nullptr в конец и удалим
@@ -1201,30 +1294,22 @@ namespace NSDocxRenderer
 			return a->m_dBaselinePos < b->m_dBaselinePos;
 		});
 
-
-		// todo обработать все TextAssociationType
-		// параграф будет набиваться строчками
-		auto paragraph = std::make_shared<CParagraph>();
-
-		// после переместим все в output objects
-		std::vector<std::shared_ptr<CParagraph>> ar_paragraphs;
-
-		double avg_spacing{0.0};
-		size_t avg_spacing_n{0};
-
-		double min_left{m_dWidth};
-		double max_right{0.0};
+		// 1 строчка в параграфе
+		if (m_eTextAssociationType == TextAssociationType::tatPlainLine ||
+				m_eTextAssociationType == TextAssociationType::tatShapeLine)
+		{
+			for (auto& curr_line : m_arTextLines)
+			{
+				add_line(paragraph, curr_line);
+				add_paragraph(paragraph);
+			}
+		}
 
 		// ar_spacing[index]- расстояние строки до строки снизу
 		// если 0.0 - строка последняя
 		std::vector<double> ar_spacings(m_arTextLines.size(), 0.0);
 
-		// совпадает ли left, right, center со строкой ниже
-		struct Position {
-			bool left{false};
-			bool center{false};
-			bool right {false};
-		};
+		// позиции относительно других линий
 		std::vector<Position> ar_positions(m_arTextLines.size());
 
 		// если ar_delims[index] == true, после строчки index нужно начинать новый параграф
@@ -1309,99 +1394,22 @@ namespace NSDocxRenderer
 				ar_delims[index] = true;
 		}
 
-		// lamda to setup and add paragpraph
-		auto add_paragraph = [&] () {
-
-			paragraph->m_dBaselinePos = paragraph->m_arLines.back()->m_dBaselinePos;
-			paragraph->m_dTop = paragraph->m_arLines.front()->m_dTop;
-			paragraph->m_dRight = max_right;
-			paragraph->m_dLeft = min_left;
-
-			paragraph->m_dWidth = paragraph->m_dRight - paragraph->m_dLeft;
-			paragraph->m_dHeight = paragraph->m_dBaselinePos - paragraph->m_dTop;
-
-			paragraph->m_dRightBorder = m_dWidth - max_right;
-			paragraph->m_dLeftBorder = min_left;
-
-			paragraph->m_dLineHeight = paragraph->m_dHeight / paragraph->m_arLines.size();
-			paragraph->m_bIsNeedFirstLineIndent = false;
-			paragraph->m_dFirstLine = 0;
-			paragraph->m_wsStyleId = m_pParagraphStyleManager->GetDefaultParagraphStyleId(*paragraph);
-
-			paragraph->MergeLines();
-
-			// setting TextAlignmentType
-			if (paragraph->m_arLines.size() > 1)
-			{
-				Position position_curr = {true, true, true};
-				bool first_left = false;
-
-				for (size_t index = 1; index < paragraph->m_arLines.size(); ++index)
-				{
-					auto& curr_line = paragraph->m_arLines[index];
-					auto& prev_line = paragraph->m_arLines[index - 1];
-
-					// indent check
-					if (index == 1)
-						first_left = fabs(curr_line->m_dLeft - prev_line->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
-					else
-						position_curr.left &= fabs(curr_line->m_dLeft - prev_line->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
-
-					position_curr.right &= fabs(curr_line->m_dRight - prev_line->m_dRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
-
-					auto center_curr = curr_line->m_dLeft + curr_line->m_dWidth / 2;
-					auto center_prev = prev_line->m_dLeft + prev_line->m_dWidth / 2;
-
-					position_curr.center &= fabs(center_curr - center_prev) < c_dCENTER_POSITION_ERROR_MM;
-				}
-				if (position_curr.left && position_curr.right)
-					paragraph->m_eTextAlignmentType = CParagraph::tatByWidth;
-				else if (position_curr.left)
-					paragraph->m_eTextAlignmentType = CParagraph::tatByLeft;
-				else if (position_curr.right)
-					paragraph->m_eTextAlignmentType = CParagraph::tatByRight;
-				else if (position_curr.center)
-					paragraph->m_eTextAlignmentType = CParagraph::tatByCenter;
-
-				// indent check
-				if (paragraph->m_eTextAlignmentType == CParagraph::tatByLeft && !first_left)
-				{
-					paragraph->m_bIsNeedFirstLineIndent = true;
-					paragraph->m_dFirstLine = paragraph->m_arLines[0]->m_dLeft - paragraph->m_dLeft;
-				}
-			}
-
-			if (ar_paragraphs.empty())
-				paragraph->m_dSpaceBefore = paragraph->m_dTop + c_dCORRECTION_FOR_FIRST_PARAGRAPH;
-			else
-				paragraph->m_dSpaceBefore = paragraph->m_dTop - ar_paragraphs.back()->m_dBaselinePos;
-
-			ar_paragraphs.push_back(std::move(paragraph));
-			paragraph = std::make_shared<CParagraph>();
-
-			min_left = m_dWidth;
-			max_right = 0.0;
-		};
-
-		// lamda to add line and setup min_left/max_right
-		auto add_line = [&min_left, &max_right, &paragraph] (std::shared_ptr<CTextLine>& curr_line) {
-			min_left = std::min(min_left, curr_line->m_dLeft);
-			max_right = std::max(max_right, curr_line->m_dRight);
-			paragraph->m_arLines.push_back(curr_line);
-		};
-
-		// на основе ar_delims разбиваем на параграфы + IsShadingPresent
-		for (size_t index = 0; index < ar_delims.size(); ++index)
+		if (m_eTextAssociationType == TextAssociationType::tatPlainParagraph ||
+				m_eTextAssociationType == TextAssociationType::tatParagraphToShape)
 		{
-			if (m_arTextLines[index]->m_pDominantShape)
+			// на основе ar_delims разбиваем на параграфы + IsShadingPresent
+			for (size_t index = 0; index < ar_delims.size(); ++index)
 			{
-				paragraph->m_bIsShadingPresent = true;
-				paragraph->m_lColorOfShadingFill = m_arTextLines[index]->m_pDominantShape->m_oBrush.Color1;
-				paragraph->RemoveHighlightColor();
+				if (m_arTextLines[index]->m_pDominantShape)
+				{
+					paragraph->m_bIsShadingPresent = true;
+					paragraph->m_lColorOfShadingFill = m_arTextLines[index]->m_pDominantShape->m_oBrush.Color1;
+					paragraph->RemoveHighlightColor();
+				}
+				add_line(paragraph, m_arTextLines[index]);
+				if (ar_delims[index] || index == ar_delims.size() - 1)
+					add_paragraph(paragraph);
 			}
-			add_line(m_arTextLines[index]);
-			if (ar_delims[index] || index == ar_delims.size() - 1)
-				add_paragraph();
 		}
 
 		using paragraph_ptr_t = std::shared_ptr<CParagraph>;
@@ -1409,11 +1417,22 @@ namespace NSDocxRenderer
 			return a->m_dBaselinePos < b->m_dBaselinePos;
 		});
 
-		for(auto&& p : ar_paragraphs)
-			m_arOutputObjects.push_back(std::move(p));
+		if (m_eTextAssociationType == TextAssociationType::tatPlainParagraph ||
+				m_eTextAssociationType == TextAssociationType::tatPlainLine)
+		{
+			for(auto&& p : ar_paragraphs)
+				m_arOutputObjects.push_back(std::move(p));
+		}
+
+		if (m_eTextAssociationType == TextAssociationType::tatParagraphToShape ||
+				m_eTextAssociationType == TextAssociationType::tatShapeLine)
+		{
+			for(auto&& p : ar_paragraphs)
+				m_arShapes.push_back(CreateSingleParagraphShape(p));
+		}
 	}
 
-	std::shared_ptr<CShape> CPage::CreateSingleLineShape(std::shared_ptr<CTextLine> pLine)
+	std::shared_ptr<CShape> CPage::CreateSingleLineShape(std::shared_ptr<CTextLine>& pLine)
 	{
 		auto pParagraph = std::make_shared<CParagraph>();
 
@@ -1421,7 +1440,7 @@ namespace NSDocxRenderer
 		pParagraph->m_dLeft = pLine->m_dLeft;
 		pParagraph->m_dTop = pLine->m_dTop;
 		pParagraph->m_dBaselinePos = pLine->m_dBaselinePos;
-		pParagraph->m_dWidth = pLine->m_dWidth * 1.05; // чтобы текст точно уместился
+		pParagraph->m_dWidth = pLine->m_dWidth * 1.03; // чтобы текст точно уместился
 		pParagraph->m_dHeight = pLine->m_dHeight;
 		pParagraph->m_dRight = pLine->m_dRight;
 
@@ -1447,53 +1466,29 @@ namespace NSDocxRenderer
 		return pShape;
 	}
 
-	void CPage::CreateShapeFormParagraphs(std::shared_ptr<CParagraph> pParagraph, bool bIsSameTypeText)
+	std::shared_ptr<CShape> CPage::CreateSingleParagraphShape(std::shared_ptr<CParagraph>& pParagraph)
 	{
-		if (!pParagraph)
-			return;
-
-		bool bIsShapesPresent = false;
-		std::shared_ptr<CShape> pBackShape = nullptr;
-
-		for (size_t i = 0; i < m_arOutputObjects.size(); ++i)
-		{
-			if (m_arOutputObjects[i]->m_eType != COutputObject::eOutputType::etShape)
-				continue;
-
-			bIsShapesPresent = true;
-			pBackShape = std::dynamic_pointer_cast<CShape>(m_arOutputObjects[i]);
-		}
-
 		std::shared_ptr<CShape> pShape;
-		if (bIsSameTypeText && bIsShapesPresent)
-		{
-			pShape = pBackShape;
-			pShape->m_dHeight = pParagraph->m_dLineHeight * pParagraph->m_arLines.size() + pParagraph->m_dSpaceBefore;
-		}
-		else
-		{
-			pShape = std::make_shared<CShape>();
-			pParagraph->m_dSpaceBefore = 0;
-			pShape->m_dHeight = pParagraph->m_dLineHeight * pParagraph->m_arLines.size();
-		}
 
-		pShape->m_dLeft = pShape->m_dLeft > 0 ? std::min(pShape->m_dLeft, pParagraph->m_dLeft) : pParagraph->m_dLeft;
-		pShape->m_dTop = pShape->m_dTop > 0 ? std::min(pShape->m_dTop, pParagraph->m_dTop) : pParagraph->m_dTop;
-		pShape->m_dRight = pShape->m_dRight > 0 ? std::max(pShape->m_dRight, pParagraph->m_dRight) : pParagraph->m_dRight;
-		pShape->m_dBaselinePos = pShape->m_dBaselinePos > 0 ? std::max(pShape->m_dBaselinePos, pParagraph->m_dBaselinePos) : pParagraph->m_dBaselinePos;
-		pShape->m_dWidth = fabs(pShape->m_dRight - pShape->m_dLeft);
+		pShape = std::make_shared<CShape>();
+		pShape->m_dHeight = pParagraph->m_dHeight;
+
+		pShape->m_dLeft = pParagraph->m_dLeft;
+		pShape->m_dTop = pParagraph->m_dTop;
+		pShape->m_dRight =  pParagraph->m_dRight;
+		pShape->m_dBaselinePos = pParagraph->m_dBaselinePos;
+		pShape->m_dWidth = pParagraph->m_dWidth * 1.03;
 
 		pParagraph->m_dLeftBorder = 0;
 		pParagraph->m_dRightBorder = 0;
+		pParagraph->m_dSpaceBefore = 0;
+		pParagraph->m_dSpaceAfter = 0;
 
 		pShape->m_arOutputObjects.push_back(pParagraph);
 		pShape->m_eType = CShape::eShapeType::stTextBox;
 		pShape->m_bIsBehindDoc = false;
 
-		if (!bIsSameTypeText)
-		{
-			m_arOutputObjects.push_back(pShape);
-		}
+		return pShape;
 	}
 
 	void CPage::WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter)

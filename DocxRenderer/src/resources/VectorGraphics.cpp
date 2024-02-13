@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <string.h>
 #include <numeric>
+#include <limits>
 
 #include "VectorGraphics.h"
 

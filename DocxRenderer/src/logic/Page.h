@@ -113,8 +113,8 @@ namespace NSDocxRenderer
 
 		void BuildParagraphes();
 
-		std::shared_ptr<CShape> CreateSingleLineShape(std::shared_ptr<CTextLine> pLine);
-		void CreateShapeFormParagraphs(std::shared_ptr<CParagraph> pParagraph, bool bIsSameTypeText);
+		std::shared_ptr<CShape> CreateSingleLineShape(std::shared_ptr<CTextLine>& pLine);
+		std::shared_ptr<CShape> CreateSingleParagraphShape(std::shared_ptr<CParagraph>& pParagraph);
 
 		void MergeShapes();
 		void CalcSelected();

@@ -102,6 +102,25 @@ std::wstring EncodeXmlString(const std::wstring& s)
 	return sRes;
 }
 
+bool GetStatusUsingExternalLocalFiles()
+{
+	if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
+		return NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
+
+	return true;
+}
+
+bool CanUseThisPath(const std::wstring& wsPath, bool bIsAllowExternalLocalFiles)
+{
+	if (bIsAllowExternalLocalFiles)
+		return true;
+
+	if (wsPath.length() >= 3 && L"../" == wsPath.substr(0, 3))
+		return false;
+
+	return true;
+}
+
 class CHtmlFile2_Private
 {
 public:
@@ -1849,9 +1868,12 @@ private:
 			return;
 		}
 
-		bool bIsAllowExternalLocalFiles = true;
-		if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
-			bIsAllowExternalLocalFiles = NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
+		const bool bIsAllowExternalLocalFiles = GetStatusUsingExternalLocalFiles();
+
+		sSrcM = NSSystemPath::ShortenPath(sSrcM);
+
+		if (!CanUseThisPath(sSrcM, bIsAllowExternalLocalFiles))
+			return;
 
 		int nImageId = -1;
 		std::wstring sImageSrc, sExtention;
@@ -2144,7 +2166,12 @@ private:
 			size_t nHRefLen = sSVG.find(L"\"", nHRef);
 			if(nHRefLen == std::wstring::npos)
 				break;
-			std::wstring sImageName = sSVG.substr(nHRef, nHRefLen - nHRef);
+
+			const std::wstring sImageName = NSSystemPath::ShortenPath(sSVG.substr(nHRef, nHRefLen - nHRef));
+
+			if (!CanUseThisPath(sImageName, GetStatusUsingExternalLocalFiles()))
+				break;
+
 			std::wstring sTIN(sImageName);
 			sTIN.erase(std::remove_if(sTIN.begin(), sTIN.end(), [] (wchar_t ch) { return std::iswspace(ch) || (ch == L'^'); }), sTIN.end());
 			sTIN = NSFile::GetFileName(sTIN);

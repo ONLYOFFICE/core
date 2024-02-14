@@ -67,13 +67,13 @@ namespace SVG
 		if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
 			bIsAllowExternalLocalFiles = NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
 
-		if (bIsAllowExternalLocalFiles || (!wsFilePath.empty() && L'.' != wsFilePath[0]))
-		{
-			wsFilePath = pFile->GetWorkingDirectory() + L'/' + wsFilePath;
+		if (!bIsAllowExternalLocalFiles && wsFilePath.length() >= 3 && L"../" == wsFilePath.substr(0, 3))
+			return true;
 
-			if (!NSFile::CFileBinary::Exists(wsFilePath) || !NSFile::CFileBinary::ReadAllBytes(wsFilePath, &pBuffer, ulSize))
-				return false;
-		}
+		wsFilePath = pFile->GetWorkingDirectory() + L'/' + wsFilePath;
+
+		if (!NSFile::CFileBinary::Exists(wsFilePath) || !NSFile::CFileBinary::ReadAllBytes(wsFilePath, &pBuffer, ulSize))
+			return false;
 		#endif
 
 		if (NULL == pBuffer)

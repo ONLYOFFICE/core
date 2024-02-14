@@ -674,9 +674,10 @@ namespace NExtractTools
 	}
 
 	_UINT32 fromCrossPlatform(const std::wstring& sFromSrc, int nFormatFrom,
-							  const std::wstring& sTo, int nFormatTo,
+							  const std::wstring& sTo_, int nFormatTo,
 							  InputParams& params, ConvertParams& convertParams)
 	{
+		std::wstring sTo = sTo_;
 		_UINT32 nRes = 0;
 		NSFonts::IApplicationFonts *pApplicationFonts = createApplicationFonts(params);
 
@@ -825,16 +826,25 @@ namespace NExtractTools
 		}
 		else
 		{
+			bool bChangeExt = false;
 			switch (nFormatTo)
 			{
 			case AVS_OFFICESTUDIO_FILE_OTHER_OOXML:
-				nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
+				*params.m_nFormatTo = nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX; bChangeExt = true;
 				break;
 			case AVS_OFFICESTUDIO_FILE_OTHER_ODF:
-				nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
+				*params.m_nFormatTo = nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT; bChangeExt = true;
 				break;
 			}
-
+			if (bChangeExt)
+			{
+				size_t nIndex = sTo.rfind('.');
+				COfficeFileFormatChecker FileFormatChecker;
+				if (-1 != nIndex)
+					sTo.replace(nIndex, std::wstring::npos, FileFormatChecker.GetExtensionByType(*params.m_nFormatTo));
+				else
+					sTo.append(FileFormatChecker.GetExtensionByType(*params.m_nFormatTo));
+			}
 			IOfficeDrawingFile *pReader = NULL;
 			switch (nFormatFrom)
 			{
@@ -894,6 +904,7 @@ namespace NExtractTools
 
 				oDocxRenderer.SetTempFolder(sTempDirOut);
 				bool bIsOutCompress = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo && !params.hasSavePassword();
+
 				nRes = oDocxRenderer.Convert(pReader, sTo, bIsOutCompress);
 
 				if (nRes == S_OK && !bIsOutCompress)

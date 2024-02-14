@@ -402,7 +402,7 @@ namespace PdfWriter
 		bool        m_bStart;
 
 	private:
-		void Init(CXref* pXref, CResourcesDict* pResources, TRect* pRect);
+		void Init(CXref* pXref, CResourcesDict* pResources);
 
 		void DrawBackground(const double& dWidth, const double& dHeight);
 		void DrawBorder(const double& dWidth, const double& dHeight);

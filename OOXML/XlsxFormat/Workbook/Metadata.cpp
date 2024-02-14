@@ -431,7 +431,7 @@ namespace OOX
 		{
 			if (m_arrItems.empty()) return;
 
-			writer.WriteString(L"<metadataStrings>");
+			writer.WriteString(L"<metadataStrings count=\"" + std::to_wstring(m_arrItems.size()) + L"\">");
 
 			for (size_t i = 0; i < m_arrItems.size(); ++i)
 			{
@@ -595,7 +595,7 @@ namespace OOX
 		{
 			if (m_arrItems.empty()) return;
 
-			writer.WriteString(L"<" + m_sName + L">");
+			writer.WriteString(L"<" + m_sName + L" count=\"" + std::to_wstring(m_arrItems.size()) + L"\">");
 
 			for (size_t i = 0; i < m_arrItems.size(); ++i)
 			{
@@ -642,7 +642,7 @@ namespace OOX
 		{
 			if (m_arrItems.empty()) return;
 
-			writer.WriteString(L"<metadataTypes>");
+			writer.WriteString(L"<metadataTypes count=\"" + std::to_wstring(m_arrItems.size()) + L"\">");
 
 			for (size_t i = 0; i < m_arrItems.size(); ++i)
 			{
@@ -824,6 +824,7 @@ namespace OOX
 
 			writer.WriteString(L"<futureMetadata");
 				WritingStringNullableAttrEncodeXmlString2(L"name", m_oName);
+				writer.WriteString(L" count=\"" + std::to_wstring(m_arrItems.size()) + L"\">");
 			writer.WriteString(L">");
 
 			for (size_t i = 0; i < m_arrItems.size(); ++i)

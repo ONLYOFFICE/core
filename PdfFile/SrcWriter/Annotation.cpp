@@ -632,7 +632,7 @@ namespace PdfWriter
 		case ELineEndType::Square:
 		case ELineEndType::Circle:
 		{
-			if ((dx > 0 && dy < 0) || (dx < 0 && dy > 0))
+			if ((dx > -0.02 && dy < 0.02) || (dx < 0.02 && dy > -0.02))
 				tx += w * dx;
 			break;
 		}
@@ -1354,11 +1354,29 @@ namespace PdfWriter
 	}
 	std::string CWidgetAnnotation::GetBGforAP(double dDiff)
 	{
-		return GetColor(dynamic_cast<CArrayObject*>(Get("BG")), false, dDiff);
+		if (m_pMK)
+			return GetColor(dynamic_cast<CArrayObject*>(m_pMK->Get("BG")), false, dDiff);
+		return "";
 	}
 	std::string CWidgetAnnotation::GetBCforAP()
 	{
-		return GetColor(dynamic_cast<CArrayObject*>(Get("BC")), true);
+		if (m_pMK)
+			return GetColor(dynamic_cast<CArrayObject*>(m_pMK->Get("BC")), true);
+		return "";
+	}
+	bool CWidgetAnnotation::HaveBG()
+	{
+		if (!m_pMK)
+			return false;
+		CObjectBase* pObj = m_pMK->Get("BG");
+		return pObj && pObj->GetType() == object_type_ARRAY;
+	}
+	bool CWidgetAnnotation::HaveBC()
+	{
+		if (!m_pMK)
+			return false;
+		CObjectBase* pObj = m_pMK->Get("BC");
+		return pObj && pObj->GetType() == object_type_ARRAY;
 	}
 	void CWidgetAnnotation::SetEmptyAP()
 	{

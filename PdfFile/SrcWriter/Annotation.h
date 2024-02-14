@@ -431,8 +431,8 @@ namespace PdfWriter
 		double GetFontSize()   { return m_dFontSize; }
 		bool GetFontIsBold()   { return m_bBold; }
 		bool GetFontIsItalic() { return m_bItalic; }
-		bool HaveBG() { return Get("BG")->GetType() == object_type_ARRAY; }
-		bool HaveBC() { return Get("BC")->GetType() == object_type_ARRAY; }
+		bool HaveBG();
+		bool HaveBC();
 		BYTE GetQ() { return m_nQ; }
 
 		void SetEmptyAP();

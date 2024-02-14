@@ -467,6 +467,8 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 			static boost::wregex reg_inside_table1(L"\\[#?[\\s\\w\\d.]+\\]");
 			static boost::wregex reg_inside_table2(L"\\[#\\w[\\s\\w\\d.]*\\],\\[#\\w[\\s\\w\\d.]*\\]");
 			static boost::wregex reg_inside_table3(L"^[,;:]?\\[#?[\\s\\w\\d.]+\\]");
+			static boost::wregex reg_inside_table4(L"\\[#?(\\[.+?\\]\\,)?(\\[.+?\\])?.+?\\]");
+			static boost::wregex reg_inside_table5(L"^[,;:]?\\[.+?\\]");
 
 			first = results[1].second;
 
@@ -567,12 +569,43 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 						}
 					}					
 				}
+                else if(boost::regex_search(first, last, results_1, reg_inside_table5))
+				{
+					insider = results_1.str(0);
+                    insider = boost::algorithm::erase_first_copy(insider, L",");
+
+                    if (XMLSTUFF::isColumn(boost::algorithm::erase_last_copy(boost::algorithm::erase_first_copy(insider, L"["), L"]"), indexTable, indexColumn))
+                    {
+                        if (ptgList.colFirst == 65535)
+                        {
+                            ptgList.columns = 0x01;
+                            ptgList.colFirst = indexColumn;
+                        }
+                    }
+					first = results_1[0].second;
+				}
 
 				if (first != last && *first == ']')
 					++first;
 					
 				return true;
 				
+			}
+			else if(boost::regex_search(first, last, results_1, reg_inside_table4))
+			{
+				_UINT16 indexColumn = -1;
+				auto insider = results_1.str(0);
+
+				if (XMLSTUFF::isColumn(boost::algorithm::erase_last_copy(boost::algorithm::erase_first_copy(insider, L"["), L"]"), indexTable, indexColumn))
+				{
+					ptgList.columns = 0x02;
+					ptgList.colLast = indexColumn;
+                    first = results_1[0].second;
+                    return true;
+				}
+				
+				if (first != last && *first == ']')
+					++first;
 			}
 		}
 	}

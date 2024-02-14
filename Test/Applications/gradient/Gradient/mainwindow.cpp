@@ -5,7 +5,7 @@
 #include "../../../../DesktopEditor/graphics/pro/Graphics.h"
 #include "../../../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 #include "../../../../DesktopEditor/common/Directory.h"
-#include "../../../../PdfReader/PdfReader.h"
+#include "../../../../PdfFile/PdfFile.h"
 
 std::vector<Point> drawCircle1(int n, double cx, double cy, double r) {
     std::vector<Point> res;

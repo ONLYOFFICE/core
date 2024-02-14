@@ -610,6 +610,18 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			else if ((L"extLst") == sName)
 				m_oExtLst = oReader;
 		}
+		if(!m_oName.IsInit() && m_oDisplayName.IsInit())
+			m_oName = m_oDisplayName.get();
+		
+		if(m_oTableColumns.IsInit() && !m_oTableColumns->m_arrItems.empty())
+		{	
+			XLS::GlobalWorkbookInfo::mapTableColumnNames_static.emplace(m_oId->GetValue(),
+				std::vector<std::wstring>(m_oTableColumns->m_arrItems.size()+1, L""));	
+			for(auto i:m_oTableColumns->m_arrItems)
+				if(i->m_oName.IsInit() && i->m_oId.IsInit())
+					XLS::GlobalWorkbookInfo::mapTableColumnNames_static.at(m_oId->GetValue()).at(i->m_oId->GetValue())  = i->m_oName.get();
+		}
+        XLS::GlobalWorkbookInfo::mapTableNames_static.emplace(m_oId->GetValue(), m_oName.get());
 	}
     void CTable::fromBin(XLS::BaseObjectPtr& obj)
     {

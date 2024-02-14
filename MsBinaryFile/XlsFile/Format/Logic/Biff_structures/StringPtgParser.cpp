@@ -265,7 +265,8 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             }
             if(!ptg_stack.size() || !left_p)
             {
-                // EXCEPT::RT::WrongParenthesisSequence(assembled_formula);
+                operand_expected = true;
+                continue;// EXCEPT::RT::WrongParenthesisSequence(assembled_formula);
             }
             left_p->incrementParametersNum(); // The count of parameters will be transferred to PtgFuncVar
             last_ptg = left_p; // PtgParen. Mostly to differ unary and binary minuses and pluses

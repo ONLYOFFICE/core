@@ -3,8 +3,8 @@
 #include "../CSvgFile.h"
 #include "../../graphics/Image.h"
 #include "../../../BgraFrame.h"
-#include "../../common/Path.h"
-#include "../../Common/ProcessEnv.h"
+#include "../../../../common/Path.h"
+#include "../../../../common/ProcessEnv.h"
 
 namespace SVG
 {

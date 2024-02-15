@@ -422,6 +422,9 @@ GFileOffset XRef::getStartXref() {
   do {
     str->setPos(xrefSearchSize * nTry, -1);
     n = str->getBlock(buf, xrefSearchSize);
+    if (n <= 0) {
+      break;
+    }
     buf[n] = '\0';
 
     // find startxref

@@ -334,7 +334,8 @@ namespace PdfWriter
 	void CMarkupAnnotation::SetT(const std::wstring& wsT)
 	{
 		std::string sValue = U_TO_UTF8(wsT);
-		Add("T", new CStringObject(sValue.c_str(), true));
+		if (!Get("T"))
+			Add("T", new CStringObject(sValue.c_str(), true));
 	}
 	void CMarkupAnnotation::SetRC(const std::wstring& wsRC)
 	{
@@ -1279,8 +1280,10 @@ namespace PdfWriter
 		std::string sValue = U_TO_UTF8(wsT);
 		CDictObject* pOwner = GetObjOwnValue("T");
 		if (!pOwner)
+		{
 			pOwner = this;
-		pOwner->Add("T", new CStringObject(sValue.c_str(), true));
+			pOwner->Add("T", new CStringObject(sValue.c_str(), true));
+		}
 	}
 	void CWidgetAnnotation::SetBC(const std::vector<double>& arrBC)
 	{

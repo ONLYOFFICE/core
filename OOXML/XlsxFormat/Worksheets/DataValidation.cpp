@@ -251,8 +251,10 @@ xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\">");
 
 			if (m_oPromptTitle.IsInit())
 				ptr->PromptTitle = m_oPromptTitle.get();
-
-			ptr->errStyle = m_oErrorStyle->GetValue();
+            if(m_oErrorStyle.IsInit())
+                ptr->errStyle = m_oErrorStyle->GetValue();
+            else
+                ptr->errStyle = 0;
             if(m_oImeMode.IsInit())
             {
                 if(m_oImeMode == SimpleTypes::Spreadsheet::EDataValidationImeMode::imeModeOn)

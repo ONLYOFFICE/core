@@ -619,7 +619,12 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 				std::vector<std::wstring>(m_oTableColumns->m_arrItems.size()+1, L""));	
 			for(auto i:m_oTableColumns->m_arrItems)
 				if(i->m_oName.IsInit() && i->m_oId.IsInit())
+                {
+                    if(i->m_oId->GetValue()+1 > XLS::GlobalWorkbookInfo::mapTableColumnNames_static.at(m_oId->GetValue()).size())
+                        XLS::GlobalWorkbookInfo::mapTableColumnNames_static.at(m_oId->GetValue()).resize(i->m_oId->GetValue()+1);
+					i->m_oName = boost::algorithm::erase_all_copy(i->m_oName.get(), L"_x000a_");
 					XLS::GlobalWorkbookInfo::mapTableColumnNames_static.at(m_oId->GetValue()).at(i->m_oId->GetValue())  = i->m_oName.get();
+                }
 		}
         XLS::GlobalWorkbookInfo::mapTableNames_static.emplace(m_oId->GetValue(), m_oName.get());
 	}

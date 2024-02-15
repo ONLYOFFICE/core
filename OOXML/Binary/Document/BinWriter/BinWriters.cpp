@@ -1132,6 +1132,12 @@ void Binary_pPrWriter::Write_pPr(const OOX::Logic::CParagraphProperty& pPr)
 		WriteCnfStyle(pPr.m_oCnfStyle.GetPointer());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos2);
 	}
+	if (pPr.m_oSnapToGrid.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_pPrType::SnapToGrid);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(pPr.m_oSnapToGrid->m_oVal.ToBool());
+	}
 }
 void Binary_pPrWriter::WritePPrChange(const OOX::Logic::CPPrChange& pPrChange)
 {

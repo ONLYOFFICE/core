@@ -31,6 +31,7 @@
  */
 #include "Path.h"
 #include "File.h"
+#include <stack>
 
 #if defined(_WIN32) || defined (_WIN64)
 #include <tchar.h>
@@ -191,4 +192,61 @@ namespace NSSystemPath
 	{
 		return NormalizePathTemplate<wchar_t>(strFileName, canHead);
 	}
+
+	std::wstring ShortenPath(const std::wstring &strPath, const bool& bRemoveExternalPath)
+	{
+		std::stack<std::wstring> arStack;
+		std::wstring wsToken;
+
+		for (size_t i = 0; i < strPath.size(); ++i) 
+		{
+			if (L'/' == strPath[i] || L'\\' == strPath[i])
+			{
+				if (L".." == wsToken)
+				{
+					if (!arStack.empty() && L".." != arStack.top())
+						arStack.pop();
+					else
+						arStack.push(wsToken);
+				}
+				else if (L"." != wsToken && !wsToken.empty())
+					arStack.push(wsToken);
+	
+				wsToken.clear();
+			}
+			else
+				wsToken += strPath[i];
+		}
+
+		if (L".." == wsToken)
+		{
+			if (!arStack.empty() && L".." == arStack.top())
+				arStack.pop();
+			else
+				arStack.push(wsToken);
+		}
+		else if (L"." != wsToken && !wsToken.empty())
+			arStack.push(wsToken);
+
+		wsToken.clear();
+
+		if (arStack.empty())
+			return std::wstring();
+
+		std::wstring wsNewPath;
+
+		while (!arStack.empty()) 
+		{
+			if (bRemoveExternalPath && L".." == arStack.top())
+				break;
+
+			wsNewPath = arStack.top() + L'/' + wsNewPath;
+			arStack.pop();
+		}
+
+		wsNewPath.pop_back();
+
+		return wsNewPath;
+	}
+	
 }

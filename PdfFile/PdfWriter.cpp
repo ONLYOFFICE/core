@@ -1772,6 +1772,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 	pAnnot->SetPage(pPage, pPage->GetWidth(), dPageH, dPageX);
 	pAnnot->SetAnnotFlag(oInfo.GetAnnotFlag());
+	pAnnot->SetDocument(m_pDocument);
 
 	int nFlags = oInfo.GetFlag();
 	if (nFlags & (1 << 0))
@@ -1856,6 +1857,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		if (nFlags & (1 << 7))
 			pMarkupAnnot->SetSubj(pPr->GetSubj());
 
+		pMarkupAnnot->RemoveAP();
+
 		if (oInfo.IsText())
 		{
 			CAnnotFieldInfo::CTextAnnotPr* pPr = oInfo.GetTextAnnotPr();
@@ -1910,6 +1913,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pPr->GetCO(dCO1, dCO2);
 				pLineAnnot->SetCO(dCO1, dCO2);
 			}
+
+			pLineAnnot->SetAP();
 		}
 		else if (oInfo.IsTextMarkup())
 		{
@@ -1987,10 +1992,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			if (nFlags & (1 << 16))
 				pCaretAnnot->SetSy(pPr->GetSy());
 		}
-
-		// TODO
-		// ВНЕШНИЙ ВИД
-		pMarkupAnnot->RemoveAP();
 	}
 	else if (oInfo.IsPopup())
 	{
@@ -2026,7 +2027,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		put_FontSize(dFontSize);
 		PdfWriter::CFontTrueType* pFontTT = NULL;
 
-		pWidgetAnnot->SetDocument(m_pDocument);
 		if (nWidgetType != 28 && nWidgetType != 29)
 		{
 			if (m_bNeedUpdateTextFont)
@@ -3670,13 +3670,8 @@ void CPdfWriter::DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 	else
 		wsValue = pButtonWidget->GetAC().empty() ? pButtonWidget->GetCA() : pButtonWidget->GetAC();
 
-	if (!pButtonWidget->HaveBorder())
-	{
-		if (pButtonWidget->HaveBC())
-			pButtonWidget->SetBorder(0, 1, {});
-		else
-			pButtonWidget->SetEmptyBorder();
-	}
+	if (!pButtonWidget->HaveBorder() && pButtonWidget->HaveBC())
+		pButtonWidget->SetBorder(0, 1, {});
 
 	if (!wsValue.empty() && nTP != 1)
 	{

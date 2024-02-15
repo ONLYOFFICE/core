@@ -1171,7 +1171,9 @@ int BinarySharedStringTableReader::ReadRun(BYTE type, long length, void* poResul
 		std::wstring sText(m_oBufferedStream.GetString4(length));
 		OOX::Spreadsheet::CText* pText = new OOX::Spreadsheet::CText();
 		pText->m_sText = sText;
-		if (std::wstring::npos != sText.find(_T(" ")))
+		
+		bool bHHHH = std::wstring::npos != sText.find('\xA') || std::wstring::npos != sText.find('\x9');
+		if (std::wstring::npos != sText.find(L" ") || bHHHH)
 		{
 			pText->m_oSpace.Init();
 			pText->m_oSpace->SetValue(SimpleTypes::xmlspacePreserve);

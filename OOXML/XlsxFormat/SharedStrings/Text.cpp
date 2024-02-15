@@ -299,7 +299,7 @@ namespace OOX
 		}
 		void CText::trimString(std::wstring& sVal, SimpleTypes::EXmlSpace eSpace)
 		{
-			NSStringExt::Replace(sVal, L"\t", L"");
+			//NSStringExt::Replace(sVal, L"\t", L"");
 			if(SimpleTypes::xmlspacePreserve != eSpace)
 			{
 				//trim ' ', '\r', '\n'
@@ -310,7 +310,7 @@ namespace OOX
 				for(int i = nStartIndex; i < nLength; ++i)
 				{
 					wchar_t cElem = sVal[i];
-					if(' ' == cElem || '\n' == cElem || '\r' == cElem)
+					if(' ' == cElem || '\n' == cElem || '\r' == cElem || '\t' == cElem)
 						nStartIndex++;
 					else
 						break;

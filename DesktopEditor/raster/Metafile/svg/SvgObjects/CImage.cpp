@@ -3,56 +3,11 @@
 #include "../CSvgFile.h"
 #include "../../graphics/Image.h"
 #include "../../../BgraFrame.h"
-
-#include <stack>
+#include "../../../../common/Path.h"
+#include "../../../../common/ProcessEnv.h"
 
 namespace SVG
 {
-	std::wstring ShortenPath(const std::wstring& wsPath)
-	{
-		std::stack<std::wstring> arStack;
-		std::wstring wsToken;
-		std::wstring wsNewPath;
-		
-		std::function<void()> checkToken = [&]()
-		{
-			if (L".." == wsToken)
-			{
-				if (!arStack.empty() && L".." != arStack.top())
-					arStack.pop();
-				else
-					arStack.push(wsToken);
-			}
-			else if (L"." != wsToken && !wsToken.empty())
-				arStack.push(wsToken);
-
-			wsToken.clear();
-		};
-
-		for (size_t i = 0; i < wsPath.size(); ++i) 
-		{
-			if (L'/' == wsPath[i] || L'\\' == wsPath[i])
-				checkToken();
-			else
-				wsToken += wsPath[i];
-		}
-
-		checkToken();
-
-		if (arStack.empty())
-			return std::wstring();
-
-		while (!arStack.empty()) 
-		{
-			wsNewPath = arStack.top() + L'/' + wsNewPath;
-			arStack.pop();
-		}
-
-		wsNewPath.pop_back();
-
-		return wsNewPath;
-	}
-
 	CImage::CImage(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent)
 		: CRenderedObject(oNode, pParent)
 	{
@@ -106,15 +61,19 @@ namespace SVG
 		}
 
 		#ifndef METAFILE_DISABLE_FILESYSTEM
-		std::wstring wsFilePath = ShortenPath(m_wsHref);
+		std::wstring wsFilePath = NSSystemPath::ShortenPath(m_wsHref);
 
-		if (!wsFilePath.empty() && L'.' != wsFilePath[0])
-		{
-			wsFilePath = pFile->GetWorkingDirectory() + L'/' + wsFilePath;
+		bool bIsAllowExternalLocalFiles = true;
+		if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
+			bIsAllowExternalLocalFiles = NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
 
-			if (!NSFile::CFileBinary::Exists(wsFilePath) || !NSFile::CFileBinary::ReadAllBytes(wsFilePath, &pBuffer, ulSize))
-				return false;
-		}
+		if (!bIsAllowExternalLocalFiles && wsFilePath.length() >= 3 && L"../" == wsFilePath.substr(0, 3))
+			return true;
+
+		wsFilePath = pFile->GetWorkingDirectory() + L'/' + wsFilePath;
+
+		if (!NSFile::CFileBinary::Exists(wsFilePath) || !NSFile::CFileBinary::ReadAllBytes(wsFilePath, &pBuffer, ulSize))
+			return false;
 		#endif
 
 		if (NULL == pBuffer)

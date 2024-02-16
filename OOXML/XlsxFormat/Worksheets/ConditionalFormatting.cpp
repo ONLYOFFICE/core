@@ -247,8 +247,10 @@ XLS::BaseObjectPtr CConditionalFormatValueObject::toBin()
 
     auto ptr1(new XLSB::CFVO);
     ptr->m_BrtCFVO = XLS::BaseObjectPtr{ptr1};
-    ptr1->fGTE = m_oGte->GetValue();
-
+    if(m_oGte.IsInit())
+        ptr1->fGTE = m_oGte->GetValue();
+    else
+        ptr1->fGTE = false;
     if (m_oType == SimpleTypes::Spreadsheet::ECfvoType::Number)
         ptr1->iType = XLSB::CFVOtype::CFVONUM;
     else if (m_oType == SimpleTypes::Spreadsheet::ECfvoType::Minimum)
@@ -262,7 +264,8 @@ XLS::BaseObjectPtr CConditionalFormatValueObject::toBin()
     else if (m_oType == SimpleTypes::Spreadsheet::ECfvoType::Formula)
         ptr1->iType = XLSB::CFVOtype::CFVOFMLA;
 
-    ptr1->numParam.data.value = std::stod(m_oVal.get());
+    if(m_oVal.IsInit())
+        ptr1->numParam.data.value = std::stod(m_oVal.get());
 
     if(m_oFormula.IsInit())
     {
@@ -887,15 +890,23 @@ XLS::BaseObjectPtr CDataBar::toBin()
 
     auto ptr1(new XLSB::BeginDatabar);
     ptr->m_BrtBeginDatabar = XLS::BaseObjectPtr{ptr1};
-    ptr1->bLenMax = m_oMaxLength->GetValue();
-    ptr1->bLenMin = m_oMinLength->GetValue();
-    ptr1->fShowValue = m_oShowValue->GetValue();
+    if(m_oMaxLength.IsInit())
+        ptr1->bLenMax = m_oMaxLength->GetValue();
+    else
+        m_oMaxLength = 100;
+    if(m_oMinLength.IsInit())
+        ptr1->bLenMin = m_oMinLength->GetValue();
+    else
+        ptr1->bLenMin = 0;
+    if(m_oShowValue.IsInit())
+        ptr1->fShowValue = m_oShowValue->GetValue();
+    else
+        ptr1->fShowValue = false;
 
     for(auto i:m_arrValues)
         ptr->m_arCFVO.push_back(i->toBin());
     if(m_oColor.IsInit())
-
-    ptr->m_BrtColor = m_oColor->toBin();
+        ptr->m_BrtColor = m_oColor->toBin();
 
     return objectPtr;
 }

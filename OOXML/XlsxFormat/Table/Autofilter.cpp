@@ -109,31 +109,39 @@ namespace OOX
 				auto ptr(new XLSB::BeginSortCond);
 				XLS::BaseObjectPtr objectPtr(ptr);
 
-				ptr->fSortDes = m_oDescending->GetValue();
-				ptr->rfx = m_oRef->GetValue();
-
-				if(m_oSortBy == SimpleTypes::Spreadsheet::ESortBy::sortbyValue)
-				{
-					ptr->sortOn = 0;
-				}
-				else if(m_oSortBy ==  SimpleTypes::Spreadsheet::ESortBy::sortbyCellColor)
-				{
-					ptr->sortOn = 1;
-					ptr->condDataValue.condDataValue = m_oDxfId->GetValue();
-				}
-				else if(m_oSortBy == SimpleTypes::Spreadsheet::ESortBy::sortbyFontColor)
-				{
-					ptr->sortOn = 2;
-					ptr->condDataValue.condDataValue = m_oDxfId->GetValue();
-				}
-				else if(m_oSortBy == SimpleTypes::Spreadsheet::ESortBy::sortbyIcon)
-				{
-					ptr->sortOn = 3;
-				}
+                if(m_oDescending.IsInit())
+                    ptr->fSortDes = m_oDescending->GetValue();
                 else
+                    ptr->fSortDes = 0;
+                if(m_oRef.IsInit())
+                    ptr->rfx = m_oRef->GetValue();
+                if(m_oSortBy.IsInit())
                 {
-                    ptr->sortOn = 0;
+                    if(m_oSortBy == SimpleTypes::Spreadsheet::ESortBy::sortbyValue)
+                    {
+                        ptr->sortOn = 0;
+                    }
+                    else if(m_oSortBy ==  SimpleTypes::Spreadsheet::ESortBy::sortbyCellColor)
+                    {
+                        ptr->sortOn = 1;
+                        ptr->condDataValue.condDataValue = m_oDxfId->GetValue();
+                    }
+                    else if(m_oSortBy == SimpleTypes::Spreadsheet::ESortBy::sortbyFontColor)
+                    {
+                        ptr->sortOn = 2;
+                        ptr->condDataValue.condDataValue = m_oDxfId->GetValue();
+                    }
+                    else if(m_oSortBy == SimpleTypes::Spreadsheet::ESortBy::sortbyIcon)
+                    {
+                        ptr->sortOn = 3;
+                    }
+                    else
+                        ptr->sortOn = 0;
                 }
+                else
+                    ptr->sortOn = 0;
+
+
                 ptr->stSslist = L"";
 				return objectPtr;
 			}

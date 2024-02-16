@@ -1240,25 +1240,25 @@ namespace NSDocxRenderer
 			}
 
 			// если линия пересекается с другим шейпом
-//			bool next = false;
-//			for (auto& shape : m_arShapes)
-//			{
-//				if (!shape)
-//					continue;
+			bool next = false;
+			for (auto& shape : m_arShapes)
+			{
+				if (!shape)
+					continue;
 
-//				auto h_type = curr_line->GetHorizontalCrossingType(shape.get());
-//				auto v_type = curr_line->CBaseItem::GetVerticalCrossingType(shape.get());
+				auto h_type = curr_line->GetHorizontalCrossingType(shape.get());
+				auto v_type = curr_line->CBaseItem::GetVerticalCrossingType(shape.get());
 
-//				if (!no_crossing(h_type, v_type))
-//				{
-//					m_arShapes.push_back(CreateSingleLineShape(curr_line));
-//					curr_line = nullptr;
-//					next = true;
-//					break;
-//				}
-//			}
-//			if (next)
-//				continue;
+				if (!no_crossing(h_type, v_type))
+				{
+					m_arShapes.push_back(CreateSingleLineShape(curr_line));
+					curr_line = nullptr;
+					next = true;
+					break;
+				}
+			}
+			if (next)
+				continue;
 
 			// если линия пересекается с предыдущей линией
 			if (index && m_arTextLines[index - 1])
@@ -1305,140 +1305,145 @@ namespace NSDocxRenderer
 			}
 		}
 
-		// ar_spacing[index]- расстояние строки до строки снизу
-		// если 0.0 - строка последняя
-		std::vector<double> ar_spacings(m_arTextLines.size(), 0.0);
-
-		// позиции относительно других линий
-		std::vector<Position> ar_positions(m_arTextLines.size());
-
-		// если ar_delims[index] == true, после строчки index нужно начинать новый параграф
-		std::vector<bool> ar_delims(m_arTextLines.size());
-
-		// calcs spacings & positions
-		for (size_t index = 0; index < m_arTextLines.size() - 1; ++index)
+		else if (m_eTextAssociationType == TextAssociationType::tatPlainParagraph ||
+				m_eTextAssociationType == TextAssociationType::tatParagraphToShape)
 		{
-			ar_spacings[index] = m_arTextLines[index + 1]->m_dTopWithMaxAscent - m_arTextLines[index]->m_dBotWithMaxDescent;
-			avg_spacing = (avg_spacing / (avg_spacing_n + 1)) * avg_spacing_n + (ar_spacings[index] / (avg_spacing_n + 1));
+			// ar_spacing[index]- расстояние строки до строки снизу
+			// если 0.0 - строка последняя
+			std::vector<double> ar_spacings(m_arTextLines.size(), 0.0);
 
-			auto& left_curr = m_arTextLines[index]->m_dLeft;
-			auto& left_next = m_arTextLines[index + 1]->m_dLeft;
+			// позиции относительно других линий
+			std::vector<Position> ar_positions(m_arTextLines.size());
 
-			auto& right_curr = m_arTextLines[index]->m_dRight;
-			auto& right_next = m_arTextLines[index + 1]->m_dRight;
+			// если ar_delims[index] == true, после строчки index нужно начинать новый параграф
+			std::vector<bool> ar_delims(m_arTextLines.size(), false);
 
-			auto center_curr = (m_arTextLines[index]->m_dLeft + m_arTextLines[index]->m_dWidth) / 2;
-			auto center_next = (m_arTextLines[index + 1]->m_dLeft + m_arTextLines[index + 1]->m_dWidth) / 2;
-
-			if (fabs(center_curr - center_next) < c_dCENTER_POSITION_ERROR_MM)
-				ar_positions[index].center = true;
-			if (fabs(left_curr - left_next) < c_dERROR_OF_PARAGRAPH_BORDERS_MM)
-				ar_positions[index].left = true;
-			if (fabs(right_curr - right_next) < c_dERROR_OF_PARAGRAPH_BORDERS_MM)
-				ar_positions[index].right = true;
-		}
-
-		// spacing check
-		for (size_t index = 0; index < ar_spacings.size(); ++index)
-		{
-			double spacing_top = 0.0;
-			double spacing_bot = 0.0;
-
-			if (index != 0) spacing_top = ar_spacings[index - 1];
-			spacing_bot = ar_spacings[index];
-
-			if (spacing_top == 0.0) spacing_top = spacing_bot;
-			if (spacing_bot == 0.0) spacing_bot = spacing_top;
-
-			if (fabs(spacing_top - spacing_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM * 3)
-				ar_delims[index] = false;
-			else if (spacing_top > spacing_bot)
-				ar_delims[index - 1] = true;
-			else if (spacing_top < spacing_bot)
-				ar_delims[index] = true;
-		}
-
-		// большая высота между строками
-		for (size_t index = 0; index < ar_spacings.size() - 1; ++index)
-		{
-			// если разница больше чем срединий в три раза - отделим
-			if (ar_spacings[index] > avg_spacing * 3)
-				ar_delims[index] = true;
-		}
-
-		// width check (слишком большая разница в ширине)
-		for (size_t index = 1; index < ar_spacings.size(); ++index)
-		{
-			double diff = 0;
-			if (ar_positions[index - 1].right)
-				diff = m_arTextLines[index - 1]->m_dLeft - m_arTextLines[index]->m_dLeft;
-			else if (ar_positions[index -  1].center)
-				diff = m_arTextLines[index - 1]->m_dWidth - m_arTextLines[index]->m_dWidth;
-			else
-				diff = m_arTextLines[index - 1]->m_dRight - m_arTextLines[index]->m_dRight;
-
-			bool big_diff = fabs(diff) > std::min(m_arTextLines[index - 1]->m_dWidth, m_arTextLines[index]->m_dWidth) * 3;
-			bool is_first_less = diff < 0;
-
-
-			// два случая
-			// Text (end paragraph)
-			// bla-bla-bla (end paragraph)
-			//
-			// bla-bla-bla (\n)
-			// bla (end paragraph)
-			if (big_diff)
+			// calcs spacings & positions
+			for (size_t index = 0; index < m_arTextLines.size() - 1; ++index)
 			{
-				if (is_first_less)
-					ar_delims[index - 1] = true;
+				ar_spacings[index] = m_arTextLines[index + 1]->m_dBaselinePos - m_arTextLines[index]->m_dTop;
+				avg_spacing = (avg_spacing / (avg_spacing_n + 1)) * avg_spacing_n + (ar_spacings[index] / (avg_spacing_n + 1));
+
+				auto& left_curr = m_arTextLines[index]->m_dLeft;
+				auto& left_next = m_arTextLines[index + 1]->m_dLeft;
+
+				auto& right_curr = m_arTextLines[index]->m_dRight;
+				auto& right_next = m_arTextLines[index + 1]->m_dRight;
+
+				auto center_curr = (m_arTextLines[index]->m_dLeft + m_arTextLines[index]->m_dWidth) / 2;
+				auto center_next = (m_arTextLines[index + 1]->m_dLeft + m_arTextLines[index + 1]->m_dWidth) / 2;
+
+				if (fabs(center_curr - center_next) < c_dCENTER_POSITION_ERROR_MM)
+					ar_positions[index].center = true;
+				if (fabs(left_curr - left_next) < c_dERROR_OF_PARAGRAPH_BORDERS_MM)
+					ar_positions[index].left = true;
+				if (fabs(right_curr - right_next) < c_dERROR_OF_PARAGRAPH_BORDERS_MM)
+					ar_positions[index].right = true;
+			}
+
+			// spacing check
+			for (size_t index = 0; index < ar_spacings.size(); ++index)
+			{
+				double spacing_top = 0.0;
+				double spacing_bot = 0.0;
+
+				if (index != 0) spacing_top = ar_spacings[index - 1];
+				spacing_bot = ar_spacings[index];
+
+				if (spacing_top == 0.0) spacing_top = spacing_bot;
+				if (spacing_bot == 0.0) spacing_bot = spacing_top;
+
+				if (spacing_bot > c_dLINE_DISTANCE_MAX_MM)
+					ar_delims[index] = true;
+				else if (fabs(spacing_top - spacing_bot) < c_dLINE_DISTANCE_ERROR_MM)
+					ar_delims[index] = false;
 				else
+				{
+					// берем доп строчки сверху и снизу для анализа
+					bool same_double_top = false;
+					bool same_double_bot = false;
+
+					if (index > 1)
+					{
+						double spacing_top_next = ar_spacings[index - 2];
+						if (fabs(spacing_top - spacing_top_next) < c_dLINE_DISTANCE_ERROR_MM)
+							same_double_top = true;
+					}
+					if (index < ar_spacings.size() - 1)
+					{
+						double spacing_bot_next = ar_spacings[index + 1];
+						if (fabs(spacing_bot - spacing_bot_next) < c_dLINE_DISTANCE_ERROR_MM)
+							same_double_bot = true;
+					}
+
+					// если анализ доп строчек ничего не дал - разбиваем наиболее "вероятным" способом
+					if ((same_double_top == same_double_bot))
+					{
+						if (spacing_top > spacing_bot)
+							ar_delims[index - 1] = true;
+						else if (spacing_top < spacing_bot)
+							ar_delims[index] = true;
+					}
+					// прикрепляем строчку к верху или низу
+					else
+					{
+						if (same_double_top)
+							ar_delims[index] = true;
+						else if (same_double_bot)
+							ar_delims[index - 1] = true;
+					}
+				}
+			}
+
+			// alignment check
+			bool is_first_line = false;
+			for (size_t index = 0; index < ar_positions.size() - 1; ++index)
+			{
+				Position position_top;
+				Position position_bot;
+
+				position_bot = ar_positions[index];
+				if (index == 0)
+					position_top = position_bot;
+				else
+					position_top = ar_positions[index - 1];
+
+				if (index == 0 || ar_delims[index - 1])
+					is_first_line = true;
+				else
+					is_first_line = false;
+
+				// первая строка может быть с отступом
+				if (is_first_line && m_arTextLines[index + 1]->m_dLeft < m_arTextLines[index]->m_dLeft)
+				{
+					// если больше трех линий - проверим третью
+					if (index < ar_positions.size() - 2)
+					{
+						if (!ar_delims[index] && !ar_delims[index + 1] && ar_positions[index + 1].left)
+							position_bot.left = true;
+						else
+							position_bot.left = false;
+					}
+					else
+						position_bot.left = true;
+				}
+
+				bool is_unknown = !(position_bot.left || position_bot.right || position_bot.center);
+				if (is_unknown)
 					ar_delims[index] = true;
 			}
 
-		}
-
-		// alignment check
-		bool is_first_line = false;
-		for (size_t index = 0; index < ar_positions.size() - 1; ++index)
-		{
-			Position position_top;
-			Position position_bot;
-
-			position_bot = ar_positions[index];
-			if (index == 0)
-				position_top = position_bot;
-			else
-				position_top = ar_positions[index - 1];
-
-			if (index == 0 || ar_delims[index - 1])
-				is_first_line = true;
-			else
-				is_first_line = false;
-
-			// первая строка может быть с отступом
-			if (is_first_line && m_arTextLines[index + 1]->m_dLeft < m_arTextLines[index]->m_dLeft)
+			// отдельно просмотрим возможные параграфы по две строки
+			for (size_t index = 0; index < ar_delims.size() - 1; ++index)
 			{
-				// если больше трех линий - проверим третью
-				if (index < ar_positions.size() - 2)
+				if (!ar_delims[index] && ar_delims[index + 1])
 				{
-					if (!ar_delims[index] && !ar_delims[index + 1] && ar_positions[index + 1].left)
-						position_bot.left = true;
-					else
-						position_bot.left = false;
+					// ширина верхней строчки сильно меньше нижней
+					if (m_arTextLines[index]->m_dWidth * 3 < m_arTextLines[index + 1]->m_dWidth)
+						ar_delims[index] = true;
 				}
-				else
-					position_bot.left = true;
 			}
 
-
-			bool is_unknown = !(position_bot.left || position_bot.right || position_bot.center);
-			if (is_unknown)
-				ar_delims[index] = true;
-		}
-
-		if (m_eTextAssociationType == TextAssociationType::tatPlainParagraph ||
-				m_eTextAssociationType == TextAssociationType::tatParagraphToShape)
-		{
 			// на основе ar_delims разбиваем на параграфы + IsShadingPresent
 			for (size_t index = 0; index < ar_delims.size(); ++index)
 			{
@@ -1466,7 +1471,7 @@ namespace NSDocxRenderer
 				m_arOutputObjects.push_back(std::move(p));
 		}
 
-		if (m_eTextAssociationType == TextAssociationType::tatParagraphToShape ||
+		else if (m_eTextAssociationType == TextAssociationType::tatParagraphToShape ||
 				m_eTextAssociationType == TextAssociationType::tatShapeLine)
 		{
 			for(auto&& p : ar_paragraphs)
@@ -1523,7 +1528,10 @@ namespace NSDocxRenderer
 
 		pParagraph->m_dLeftBorder = 0;
 		pParagraph->m_dRightBorder = 0;
-		pParagraph->m_dSpaceBefore = 0;
+
+		// first correction fix
+		if (pParagraph->m_dSpaceBefore > 0) pParagraph->m_dSpaceBefore = 0;
+
 		pParagraph->m_dSpaceAfter = 0;
 
 		pShape->m_arOutputObjects.push_back(pParagraph);

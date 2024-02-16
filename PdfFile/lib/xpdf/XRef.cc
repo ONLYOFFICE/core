@@ -419,8 +419,11 @@ GFileOffset XRef::getStartXref() {
   nTry = 1;
   bFind = false;
 
-  do {
+  bool isBreak = false;
+  do
+  {
     str->setPos(xrefSearchSize * nTry, -1);
+    isBreak = str->getPos() == 0;
     n = str->getBlock(buf, xrefSearchSize);
     buf[n] = '\0';
 
@@ -436,7 +439,7 @@ GFileOffset XRef::getStartXref() {
       break;
     }
     nTry++;
-  } while (str->getPos() > 0);
+  } while (!isBreak);
 
   // read last xrefSearchSize bytes
 

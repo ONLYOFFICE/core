@@ -1330,6 +1330,36 @@ namespace NExtractTools
 			else
 				nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 		}
+		else if ((0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo)) || AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo))
+		{
+			if (params.needConvertToOrigin(AVS_OFFICESTUDIO_FILE_DRAW_VSDX))
+			{
+				std::wstring sToRender = convertParams.m_sTempParamOOXMLFile;
+				if (sToRender.empty())
+				{
+					sToRender = combinePath(convertParams.m_sTempDir, L"toRender.vsdx");
+					nRes = dir2zip(sFrom, sToRender);
+				}
+				NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::VSDT;
+				if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
+				{
+					convertParams.m_sInternalMediaDirectory = sFrom;
+					nRes = doct_bin2pdf(eFromType, sToRender, sTo, params, convertParams);
+				}
+				else if (0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
+				{
+					convertParams.m_sInternalMediaDirectory = sFrom;
+					nRes = doct_bin2image(eFromType, sToRender, sTo, params, convertParams);
+				}
+				else
+					nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+			}
+			else
+			{
+				//There is no Editor.bin for vsdx
+				nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+			}
+		}
 		else
 			nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 		return nRes;
@@ -1347,7 +1377,7 @@ namespace NExtractTools
 		std::wstring sVsdxDir = combinePath(convertParams.m_sTempDir, L"xsdx_unpacked");
 		NSDirectory::CreateDirectory(sVsdxDir);
 
-		if (AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX == nFormatFrom)
+		if (0 != (AVS_OFFICESTUDIO_FILE_DRAW & nFormatFrom))
 		{
 			convertParams.m_sTempParamOOXMLFile = sFrom;
 			if (params.getFromChanges())
@@ -1361,6 +1391,12 @@ namespace NExtractTools
 			nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 		if (SUCCEEDED_X2T(nRes))
 		{
+			std::wstring sFileToCurrent = *params.m_sFileTo;
+			params.changeFormatFromPost(*params.m_nFormatFrom, params.m_bMacro);
+
+			if (NULL != params.m_nFormatTo)
+				nFormatTo = *params.m_nFormatTo;
+			
 			nRes = fromVsdxDir(sVsdxDir, sTo, nFormatTo, params, convertParams);
 		}
 		return nRes;

@@ -436,7 +436,7 @@ namespace Spreadsheet
 	void CExternalRow::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		writer.WriteString(L"<row");
-		WritingStringNullableAttrInt(L"r", m_oR, m_oR->GetValue()+1);
+		WritingStringNullableAttrInt(L"r", m_oR, m_oR->GetValue());
 		writer.WriteString(L">");
 
 		for (size_t i = 0; i < m_arrItems.size(); ++i)

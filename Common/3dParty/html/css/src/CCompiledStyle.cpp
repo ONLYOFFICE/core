@@ -100,16 +100,6 @@ namespace NSCSS
 		m_UnitMeasure = enUnitMeasure;
 	}
 
-	void CCompiledStyle::SetSizeSourceWindow(const CSizeWindow &oSizeWindow)
-	{
-		m_oSourceWindow = oSizeWindow;
-	}
-
-	void CCompiledStyle::SetSizeDeviceWindow(const CSizeWindow &oSizeWindow)
-	{
-		m_oDeviceWindow = oSizeWindow;
-	}
-
 	bool CCompiledStyle::Empty() const
 	{
 		return m_oBackground.Empty() && m_oBorder.Empty() && m_oFont.Empty() &&
@@ -125,7 +115,7 @@ namespace NSCSS
 	{
 		const bool bIsThereBorder = (m_oBorder.Empty()) ? false : true;
 		const double dFontSize = m_oFont.GetSize().ToDouble(NSCSS::Twips);
-		
+
 		for (std::pair<std::wstring, std::wstring> pPropertie : mStyle)
 		{
 			std::transform(pPropertie.first.begin(), pPropertie.first.end(), pPropertie.first.begin(), tolower);

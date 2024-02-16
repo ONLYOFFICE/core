@@ -324,9 +324,6 @@ namespace NSCSS
 			oStyle.SetUnitMeasure(m_UnitMeasure);
 			oStyle.SetID(arSelectors.back().m_wsName + ((!arSelectors.back().m_wsClass.empty()) ? L'.' + arSelectors.back().m_wsClass : L"") + ((arSelectors.back().m_wsId.empty()) ? L"" : L'#' + arSelectors.back().m_wsId) + L'-' + std::to_wstring(++m_nCountNodes));
 
-			oStyle.SetSizeDeviceWindow(m_oDeviceWindow);
-			oStyle.SetSizeSourceWindow(m_oSourceWindow);
-
 			return oStyle;
 		}
 
@@ -334,9 +331,6 @@ namespace NSCSS
 
 		pStyle->SetDpi(m_nDpi);
 		pStyle->SetUnitMeasure(m_UnitMeasure);
-
-		pStyle->SetSizeDeviceWindow(m_oDeviceWindow);
-		pStyle->SetSizeSourceWindow(m_oSourceWindow);
 
 		std::vector<std::wstring> arWords;
 		arWords.reserve(arSelectors.size() * 2);
@@ -502,6 +496,9 @@ namespace NSCSS
 				          });
 			}
 
+			// Данные о border'ах используются только для текущей ноды и не наследуются
+			pStyle->m_oBorder.Clear();
+
 			pStyle->AddStyle(arSelectors[i].m_mAttributes, i + 1);
 
 			for (const CElement* oElement : arFindElements)
@@ -558,17 +555,11 @@ namespace NSCSS
 			oStyle.SetUnitMeasure(m_UnitMeasure);
 			oStyle.SetID(arSelectors.back().m_wsName + ((!arSelectors.back().m_wsClass.empty()) ? L'.' + arSelectors.back().m_wsClass : L"") + ((arSelectors.back().m_wsId.empty()) ? L"" : L'#' + arSelectors.back().m_wsId) + L'-' + std::to_wstring(++m_nCountNodes));
 
-			oStyle.SetSizeDeviceWindow(m_oDeviceWindow);
-			oStyle.SetSizeSourceWindow(m_oSourceWindow);
-
 			return false;
 		}
 
 		oStyle.SetDpi(m_nDpi);
 		oStyle.SetUnitMeasure(m_UnitMeasure);
-
-		oStyle.SetSizeDeviceWindow(m_oDeviceWindow);
-		oStyle.SetSizeSourceWindow(m_oSourceWindow);
 
 		std::vector<std::wstring> arWords;
 		arWords.reserve(arSelectors.size() * 2);
@@ -810,26 +801,6 @@ namespace NSCSS
 		CTree::CountingNumberRepetitions(oTree, *m_mStatictics);
 	}
 
-	void CCssCalculator_Private::SetSizeSourceWindow(const CSizeWindow &oSizeWindow)
-	{
-		m_oSourceWindow = oSizeWindow;
-	}
-
-	void CCssCalculator_Private::SetSizeDeviceWindow(const CSizeWindow &oSizeWindow)
-	{
-		m_oDeviceWindow = oSizeWindow;
-	}
-
-	CSizeWindow CCssCalculator_Private::GetSizeSourceWindow() const
-	{
-		return m_oSourceWindow;
-	}
-
-	CSizeWindow CCssCalculator_Private::GetSizeDeviceWindow() const
-	{
-		return m_oDeviceWindow;
-	}
-
 	void CCssCalculator_Private::SetUnitMeasure(const UnitMeasure& nType)
 	{
 		m_UnitMeasure = nType;
@@ -863,9 +834,6 @@ namespace NSCSS
 
 		m_mData.clear();
 		m_arFiles.clear();
-
-		m_oDeviceWindow.Clear();
-		m_oSourceWindow.Clear();
 	}
 }
 inline static std::wstring StringifyValueList(const KatanaArray* oValues)

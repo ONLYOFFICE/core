@@ -22,9 +22,6 @@ namespace NSCSS
 		unsigned short int m_nDpi;
 		UnitMeasure m_UnitMeasure;
 
-		CSizeWindow m_oSourceWindow;
-		CSizeWindow m_oDeviceWindow;
-
 	public:
 		NSProperties::CFont       m_oFont;
 		NSProperties::CIndent     m_oMargin;
@@ -41,8 +38,6 @@ namespace NSCSS
 
 		void SetDpi(const unsigned short& uiDpi);
 		void SetUnitMeasure(const UnitMeasure& enUnitMeasure);
-		void SetSizeSourceWindow(const CSizeWindow& oSizeWindow);
-		void SetSizeDeviceWindow(const CSizeWindow& oSizeWindow);
 
 		bool Empty() const;
 

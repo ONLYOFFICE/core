@@ -415,6 +415,8 @@ namespace NSCSS
 	public:
 		CBorderSide();
 
+		void Clear();
+
 		static void Equation(CBorderSide &oFirstBorderSide, CBorderSide &oSecondBorderSide);
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
@@ -453,6 +455,8 @@ namespace NSCSS
 	{
 	public:
 		CBorder();
+
+		void Clear();
 
 		static void Equation(CBorder &oFirstBorder, CBorder &oSecondBorder);
 

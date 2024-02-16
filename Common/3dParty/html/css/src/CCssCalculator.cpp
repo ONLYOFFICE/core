@@ -1,7 +1,6 @@
 #include "CCssCalculator.h"
 #include "CCssCalculator_Private.h"
 
-
 namespace NSCSS
 {
 	CCssCalculator::CCssCalculator()
@@ -52,26 +51,6 @@ namespace NSCSS
 	void CCssCalculator::SetBodyTree(const CTree &oTree)
 	{
 		m_pInternal->SetBodyTree(oTree);
-	}
-
-	void CCssCalculator::SetSizeSourceWindow(const CSizeWindow &oSizeWindow)
-	{
-		m_pInternal->SetSizeSourceWindow(oSizeWindow);
-	}
-
-	void CCssCalculator::SetSizeDeviceWindow(const CSizeWindow &oSizeWindow)
-	{
-		m_pInternal->SetSizeDeviceWindow(oSizeWindow);
-	}
-
-	CSizeWindow CCssCalculator::GetSizeSourceWindow() const
-	{
-		return m_pInternal->GetSizeSourceWindow();
-	}
-
-	CSizeWindow CCssCalculator::GetSizeDeviceWindow() const
-	{
-		return m_pInternal->GetSizeDeviceWindow();
 	}
 
 	UnitMeasure CCssCalculator::GetUnitMeasure() const

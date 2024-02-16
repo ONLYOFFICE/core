@@ -7,11 +7,6 @@
 #include <list>
 
 #define LINEHEIGHTSCALE 10 // Значение LineHeight в OOXML должно быть в 10 раз больше чем указано в стиле
-#define LINEHEIGHTCOEF  24 // Используется когда необходимо перевести в twips значение
-#define POINTCOEF       20 // Используется для конвертации в OOXML значение интервала между абзацами (Измерение в двадцатых долях от точки)
-
-#define PAGEWIDTH  (12240 / POINTCOEF)
-#define PAGEHEIGHT (15840 / POINTCOEF)
 
 #define DOUBLE_TO_INTW(dValue) std::to_wstring(static_cast<int>(dValue + 0.5))
 
@@ -288,8 +283,8 @@ namespace NSCSS
 			const double dLeftSide  = oStyle.m_oMargin.GetLeft() .ToDouble(NSCSS::Twips) + oStyle.m_oPadding.GetLeft() .ToDouble(NSCSS::Twips);
 			const double dRightSide = oStyle.m_oMargin.GetRight().ToDouble(NSCSS::Twips) + oStyle.m_oPadding.GetRight().ToDouble(NSCSS::Twips);
 
-			sInfValue += L"w:left=\""  + DOUBLE_TO_INTW(dLeftSide  * POINTCOEF) + L"\" ";
-			sInfValue += L"w:right=\"" + DOUBLE_TO_INTW(dRightSide * POINTCOEF) + L"\" ";
+			sInfValue += L"w:left=\""  + DOUBLE_TO_INTW(dLeftSide) + L"\" ";
+			sInfValue += L"w:right=\"" + DOUBLE_TO_INTW(dRightSide) + L"\" ";
 		}
 
 		const double dIndent = oStyle.m_oText.GetIndent().ToDouble(NSCSS::Twips);
@@ -308,8 +303,8 @@ namespace NSCSS
 			const double dSpacingBottom = oStyle.m_oMargin.GetBottom().ToDouble(NSCSS::Twips) + oStyle.m_oPadding.GetBottom().ToDouble(NSCSS::Twips);
 			const double dSpacingTop    = oStyle.m_oMargin.GetTop()   .ToDouble(NSCSS::Twips) + oStyle.m_oPadding.GetTop()   .ToDouble(NSCSS::Twips);;
 			
-			sSpacingValue += L" w:after=\""  + DOUBLE_TO_INTW(dSpacingBottom * POINTCOEF) + L"\" ";
-			sSpacingValue += L" w:before=\"" + DOUBLE_TO_INTW(dSpacingTop    * POINTCOEF) + L"\" ";
+			sSpacingValue += L" w:after=\""  + DOUBLE_TO_INTW(dSpacingBottom) + L"\" ";
+			sSpacingValue += L" w:before=\"" + DOUBLE_TO_INTW(dSpacingTop) + L"\" ";
 		}
 		else/* if (!oStyle.m_pBorder.Empty() || !oStyle.m_oMargin.GetPermission())*/
 			sSpacingValue += L"w:after=\"0\" w:before=\"0\"";
@@ -318,10 +313,10 @@ namespace NSCSS
 		
 		if (!oStyle.m_oFont.GetLineHeight().Empty())
 		{
-			double dLineHeight = oStyle.m_oFont.GetLineHeight().ToDouble(NSCSS::Twips, LINEHEIGHTCOEF) * LINEHEIGHTSCALE;
+			double dLineHeight = oStyle.m_oFont.GetLineHeight().ToDouble(NSCSS::Twips) * LINEHEIGHTSCALE;
 
-			if (NSCSS::None == oStyle.m_oFont.GetLineHeight().GetUnitMeasure())
-				dLineHeight *= LINEHEIGHTCOEF;
+//			if (NSCSS::None == oStyle.m_oFont.GetLineHeight().GetUnitMeasure())
+//				dLineHeight *= LINEHEIGHTCOEF;
 			
 			if (0. != dLineHeight)
 				wsLineHeight = DOUBLE_TO_INTW(dLineHeight);
@@ -448,11 +443,13 @@ namespace NSCSS
 			return;
 
 		if (!oStyle.m_oFont.GetSize().Empty())
-			oXmlElement.AddPropertiesInR(RProperties::R_Sz, DOUBLE_TO_INTW(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Twips))); 
+			oXmlElement.AddPropertiesInR(RProperties::R_Sz, DOUBLE_TO_INTW(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Point) * 2.)); // Значения шрифта увеличивает на 2
 
+		if (oStyle.m_oText.GetDecoration().m_oLine.Underline())
+			oXmlElement.AddPropertiesInR(RProperties::R_U, (!oStyle.m_oText.GetDecoration().m_oStyle.Empty()) ? oStyle.m_oText.GetDecoration().m_oStyle.ToWString() : L"single");
+		
 		oXmlElement.AddPropertiesInR(RProperties::R_Highlight, oStyle.m_oBackground.GetColor().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_Color, oStyle.m_oText.GetColor().ToWString());
-		oXmlElement.AddPropertiesInR(RProperties::R_U, (oStyle.m_oText.GetDecoration().m_oLine.Underline()) ? L"underline" : L"");
 		oXmlElement.AddPropertiesInR(RProperties::R_RFonts, oStyle.m_oFont.GetFamily().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_I, oStyle.m_oFont.GetStyle().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_B, oStyle.m_oFont.GetWeight().ToWString());

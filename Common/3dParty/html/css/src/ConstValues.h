@@ -16,21 +16,6 @@ namespace NSCSS
 		ScalingDirectionY = 2
 	} ScalingDirection;
 
-	struct CSizeWindow
-	{
-		unsigned short m_ushWidth;
-		unsigned short m_ushHeight;
-
-		CSizeWindow();
-		CSizeWindow(unsigned short unWidth, unsigned short unHeight);
-
-		bool Empty() const;
-		void Clear();
-
-		bool operator==(const CSizeWindow& oSizeWindow) const;
-		bool operator!=(const CSizeWindow& oSizeWindow) const;
-	};
-
 	struct StatistickElement
 	{
 		enum TypeElement

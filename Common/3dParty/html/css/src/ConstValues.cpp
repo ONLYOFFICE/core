@@ -2,34 +2,6 @@
 
 namespace NSCSS
 {
-	CSizeWindow::CSizeWindow()
-		: m_ushWidth(0), m_ushHeight(0)
-	{}
-
-	CSizeWindow::CSizeWindow(unsigned short unWidth, unsigned short unHeight)
-		: m_ushWidth(unWidth), m_ushHeight(unHeight)
-	{}
-
-	bool CSizeWindow::Empty() const
-	{
-		return ((0 == m_ushWidth) && (0 == m_ushHeight));
-	}
-
-	void CSizeWindow::Clear()
-	{
-		m_ushWidth = m_ushHeight = 0;
-	}
-
-	bool CSizeWindow::operator==(const CSizeWindow &oSizeWindow) const
-	{
-		return ((m_ushWidth == oSizeWindow.m_ushWidth) && (m_ushHeight == oSizeWindow.m_ushHeight));
-	}
-
-	bool CSizeWindow::operator!=(const CSizeWindow &oSizeWindow) const
-	{
-		return ((m_ushWidth != oSizeWindow.m_ushWidth) || (m_ushHeight != oSizeWindow.m_ushHeight));
-	}
-
 	bool StatistickElement::operator<(const StatistickElement &oStatistickElement) const
 	{
 		return sValue < oStatistickElement.sValue;

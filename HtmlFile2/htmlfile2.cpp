@@ -139,15 +139,16 @@ private:
 
 	std::vector<std::wstring>            m_arrImages;  // Картинки
 	std::map<std::wstring, std::wstring> m_mFootnotes; // Сноски
+
+	UINT m_unWidth;
+	UINT m_unHeight;
 public:
 
-	CHtmlFile2_Private() : m_nFootnoteId(1), m_nHyperlinkId(1), m_nCrossId(1), m_nNumberingId(1), m_bInP(false), m_bWasPStyle(false), m_bWasSpace(false)
-	{
-		//Установим размер исходного и нового окна для Css калькулятора (должны быть одинаковые единицы измерения (желательно пункты))
-		//Это нужно для масштабирования некоторых значений
-		m_oStylesCalculator.SetSizeSourceWindow(NSCSS::CSizeWindow(4940 * (1366 * (25.4 / m_oStylesCalculator.GetDpi())), 0));
-		m_oStylesCalculator.SetSizeDeviceWindow(NSCSS::CSizeWindow(4940, 0));
-	}
+	CHtmlFile2_Private() 
+		: m_nFootnoteId(1), m_nHyperlinkId(1), m_nCrossId(1), m_nNumberingId(1), 
+		  m_bInP(false), m_bWasPStyle(false), m_bWasSpace(false),
+		  m_unWidth(12240), m_unHeight(15840) // Размеры страницы указаны в Twips
+	{}
 
 	~CHtmlFile2_Private()
 	{
@@ -383,7 +384,7 @@ public:
 
 		if (m_bInP)
 			m_oDocXml.WriteString(L"</w:p>");
-		m_oDocXml.WriteString(L"<w:sectPr w:rsidR=\"0007083F\" w:rsidRPr=\"0007083F\" w:rsidSect=\"0007612E\"><w:pgSz w:w=\"12240\" w:h=\"15840\"/><w:pgMar w:gutter=\"0\" w:footer=\"720\" w:header=\"720\" w:left=\"720\" w:bottom=\"720\" w:right=\"720\" w:top=\"720\"/><w:cols w:space=\"720\"/><w:docGrid w:linePitch=\"360\"/></w:sectPr></w:body></w:document>");
+		m_oDocXml.WriteString(L"<w:sectPr w:rsidR=\"0007083F\" w:rsidRPr=\"0007083F\" w:rsidSect=\"0007612E\"><w:pgSz w:w=\"" + std::to_wstring(m_unWidth) + L"\" w:h=\""+ std::to_wstring(m_unHeight) +L"\"/><w:pgMar w:gutter=\"0\" w:footer=\"720\" w:header=\"720\" w:left=\"720\" w:bottom=\"720\" w:right=\"720\" w:top=\"720\"/><w:cols w:space=\"720\"/><w:docGrid w:linePitch=\"360\"/></w:sectPr></w:body></w:document>");
 		NSFile::CFileBinary oDocumentWriter;
 		if (oDocumentWriter.CreateFileW(m_sDst + L"/word/document.xml"))
 		{
@@ -649,7 +650,24 @@ public:
 	}
 
 private:
+	bool NodeBelongToTable(const std::wstring& wsNodeName)
+	{
+		return L"table" == wsNodeName || L"tbody" == wsNodeName || L"th" == wsNodeName || L"td" == wsNodeName ||
+		       L"tr" == wsNodeName    || L"thead" == wsNodeName || L"tfoot" == wsNodeName;
+	}
 
+	// Так как CSS калькулятор не знает для какой ноды производится расчет стиля
+	// и не знает, что некоторые стили предназначены только определенной ноде,
+	// то проще пока обрабатывать это заранее
+	// ! Используется для стилей, заданных через аргументы !
+	bool CheckArgumentMath(const std::wstring& wsNodeName, const std::wstring& wsStyleName)
+	{
+		if (L"border" == wsStyleName && L"table" != wsNodeName)
+			return false;
+
+		return true;
+	}
+	
 	std::wstring GetSubClass(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors)
 	{
 		NSCSS::CNode oNode;
@@ -678,7 +696,10 @@ private:
 			else if(sName == L"title")
 				sNote           = m_oLightReader.GetText();
 			else
-				oNode.m_mAttributes[sName] = m_oLightReader.GetText();
+			{
+				if (CheckArgumentMath(oNode.m_wsName, sName))
+					oNode.m_mAttributes[sName] = m_oLightReader.GetText();
+			}
 		}
 		m_oLightReader.MoveToElement();
 		sSelectors.push_back(oNode);
@@ -737,6 +758,7 @@ private:
 		if(sName == L"#text")
 		{
 			std::wstring sText = m_oLightReader.GetText();
+
 			size_t find = sText.find_first_not_of(L" \n\t\r");
 			if (find == std::wstring::npos)
 			{
@@ -1185,6 +1207,17 @@ private:
 		
 		UINT unMaxColumns = 0;
 		
+		bool bTableHasBorderAttribute = false;
+		
+		for (std::vector<NSCSS::CNode>::const_reverse_iterator oIter = sSelectors.crbegin(); oIter < sSelectors.crend(); ++oIter)
+		{
+			if (L"table" != oIter->m_wsName)
+				continue;
+
+			if (oIter->m_mAttributes.end() != oIter->m_mAttributes.find(L"border"))
+				bTableHasBorderAttribute = true;
+		}
+		
 		while(m_oLightReader.ReadNextSiblingNode(nDeath) && i < MAXROWSINTABLE)
 		{
 			// tr - строки в таблице
@@ -1237,34 +1270,15 @@ private:
 
 				NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);
 
-				int nWidth = oStyle.m_oDisplay.GetWidth().ToInt(NSCSS::UnitMeasure::Point, m_oStylesCalculator.GetSizeDeviceWindow().m_ushWidth);
-				std::wstring wsType = L"dxa";
-
-				//Если ширина указана в %, то используем тип dxa, если же в других единицах измерения, то в pct
-			#if 1
-				// проблема с regex в старом gcc (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=52719)
-				boost::wregex oWidthRegex(L"((width)+)[\\s]*:[\\s]*(.+%)");
-				bool bIsWidthPct = boost::regex_search(sSelectors.back().m_wsStyle, oWidthRegex);
-			#else
-				std::wregex oWidthRegex(L"((width)+)[\\s]*:[\\s]*(.+%)");
-				bool bIsWidthPct = std::regex_search(sSelectors.back().m_wsStyle, oWidthRegex);
-			#endif
-
-				if (bIsWidthPct)
-					wsType = L"pct";
-				else
-				{
-					nWidth *= 10;
-					// ограничиваем, примерно как в ms (22 inch)
-					if (nWidth > 31680)
-						nWidth = 31680;
-				}
-				//-------------------------
-
 				std::wstring wsTcPr;
-				
-				if (nWidth > 0)
-					wsTcPr += L"<w:tcW w:w=\"" + std::to_wstring(nWidth) + L"\" w:type=\"" + wsType + L"\"/>";
+
+				if (!oStyle.m_oDisplay.GetWidth().Empty())
+				{
+					if (NSCSS::UnitMeasure::Percent == oStyle.m_oDisplay.GetWidth().GetUnitMeasure())
+						wsTcPr += L"<w:tcW w:w=\"" + std::to_wstring(oStyle.m_oDisplay.GetWidth().ToInt(NSCSS::UnitMeasure::Percent, 5000)) + L"\" w:type=\"pct\"/>";
+					else
+						wsTcPr += L"<w:tcW w:w=\"" + std::to_wstring(oStyle.m_oDisplay.GetWidth().ToInt(NSCSS::UnitMeasure::Twips)) + L"\" w:type=\"dxa\"/>";
+				}
 				else
 					wsTcPr += L"<w:tcW w:w=\"0\" w:type=\"auto\"/>";
 
@@ -1272,7 +1286,9 @@ private:
 					wsTcPr += L"<w:gridSpan w:val=\"" + std::to_wstring(nColspan) + L"\"/>";
 
 				if (!oStyle.m_oBorder.Empty())
-					wsTcPr += L"<w:tcBorders>" +  CreateBorders(oStyle.m_oBorder) + L"</w:tcBorders>";
+					wsTcPr += L"<w:tcBorders>" + CreateBorders(oStyle.m_oBorder) + L"</w:tcBorders>";
+				else if (bTableHasBorderAttribute)
+					wsTcPr += L"<w:tcBorders><w:top w:val=\"outset\" w:sz=\"6\" w:space=\"0\" w:color=\"auto\"/><w:left w:val=\"outset\" w:sz=\"6\" w:space=\"0\" w:color=\"auto\"/><w:bottom w:val=\"outset\" w:sz=\"6\" w:space=\"0\" w:color=\"auto\"/><w:right w:val=\"outset\" w:sz=\"6\" w:space=\"0\" w:color=\"auto\"/></w:tcBorders>";
 
 				if (!oStyle.m_oBackground.Empty() && !oStyle.m_oBackground.GetColor().Empty())
 					wsTcPr += L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + oStyle.m_oBackground.GetColor().ToWString() + L"\"/>";
@@ -1304,26 +1320,24 @@ private:
 				m_bWasPStyle = false;
 
 				//Оставляем только всё что не относится к таблице
-				std::vector<NSCSS::CNode> arSelectors;
-				for (const NSCSS::CNode& oItem : sSelectors)
-				{
-					if (oItem.m_wsName == L"table" || oItem.m_wsName == L"tbody" || oItem.m_wsName == L"th"    || 
-					    oItem.m_wsName == L"td"    || oItem.m_wsName == L"tr"    || oItem.m_wsName == L"thead" || 
-					    oItem.m_wsName == L"tfoot")
-						continue;
-					arSelectors.push_back(oItem);
-				}
+//				std::vector<NSCSS::CNode> arSelectors;
+//				for (const NSCSS::CNode& oItem : sSelectors)
+//				{
+//					if (NodeBelongToTable(oItem.m_wsName))
+//						continue;
+//					arSelectors.push_back(oItem);
+//				}
 				// Читаем th. Ячейка заголовка таблицы. Выравнивание посередине. Выделяется полужирным
 				if(m_oLightReader.GetName() == L"th")
 				{
 					CTextSettings oTSR(oTS);
 					oTSR.sRStyle += L"<w:b/>";
-					readStream(oXml, arSelectors, oTSR);
+					readStream(oXml, sSelectors, oTSR);
 				}
 				// Читаем td. Ячейка таблицы. Выравнивание вправо
 				else if(m_oLightReader.GetName() == L"td")
 				{
-					readStream(oXml, arSelectors, oTS);
+					readStream(oXml, sSelectors, oTS);
 				}
 				sSelectors.pop_back();
 				if (m_bInP)
@@ -1389,15 +1403,17 @@ private:
 		// Начало таблицы
 		std::wstring wsTable = L"<w:tbl><w:tblPr>";
 
-		int nWidth = oStyle.m_oDisplay.GetWidth().ToInt(NSCSS::UnitMeasure::Point, m_oStylesCalculator.GetSizeDeviceWindow().m_ushWidth);
-		std::wstring wsAlign = oStyle.m_oDisplay.GetHAlign().ToWString();
-
-		if (0 < nWidth)
-			wsTable += L"<w:tblW w:w=\"" + std::to_wstring(nWidth) + L"\" w:type=\"pct\"/>";
-//		else if (m_oStylesCalculator.GetSizeDeviceWindow().m_ushWidth != 0)
-//			wsTable += L"<w:tblW w:w=\"" + std::to_wstring(m_oStylesCalculator.GetSizeDeviceWindow().m_ushWidth) + L"\" w:type=\"pct\"/>";
+		if (!oStyle.m_oDisplay.GetWidth().Empty())
+		{
+			if (NSCSS::UnitMeasure::Percent == oStyle.m_oDisplay.GetWidth().GetUnitMeasure())
+				wsTable += L"<w:tblW w:w=\"" + std::to_wstring(oStyle.m_oDisplay.GetWidth().ToInt(NSCSS::UnitMeasure::Percent, 5000)) + L"\" w:type=\"pct\"/>";
+			else
+				wsTable += L"<w:tblW w:w=\"" + std::to_wstring(oStyle.m_oDisplay.GetWidth().ToInt(NSCSS::UnitMeasure::Twips)) + L"\" w:type=\"dxa\"/>";
+		}
 		else
 			wsTable += L"<w:tblW w:w=\"0\" w:type=\"auto\"/>";
+
+		std::wstring wsAlign = oStyle.m_oDisplay.GetHAlign().ToWString();
 
 		if (wsAlign.empty())
 		{
@@ -1417,7 +1433,7 @@ private:
 
 			sSelectors.push_back(oLastNode);
 		}
-		
+
 		// borders
 		if (!oStyle.m_oBorder.Empty())
 			wsTable += L"<w:tblBorders>" + CreateBorders(oStyle.m_oBorder) + L"</w:tblBorders>";

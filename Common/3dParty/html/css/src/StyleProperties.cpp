@@ -1302,8 +1302,15 @@ namespace NSCSS
 
 	// BORDER SIDE
 	CBorderSide::CBorderSide()
-	    : m_bBlock(false)
+		: m_bBlock(false)
 	{}
+
+	void CBorderSide::Clear()
+	{
+		m_oWidth.Clear();
+		m_oStyle.Clear();
+		m_oColor.Clear();
+	}
 
 	void CBorderSide::Equation(CBorderSide &oFirstBorderSide, CBorderSide &oSecondBorderSide)
 	{
@@ -1360,7 +1367,7 @@ namespace NSCSS
 	{
 		return m_oStyle.SetValue(wsValue, {std::make_pair(L"dotted", L"dotted"), std::make_pair(L"dashed", L"dashed"), std::make_pair(L"solid", L"single"),
 		                                   std::make_pair(L"double", L"double"), std::make_pair(L"groove", L"threeDEmboss"), std::make_pair(L"ridge", L"threeDEngrave"),
-		                                   std::make_pair(L"inset", L"thinThickMediumGap"), std::make_pair(L"outset", L"thickThinMediumGap")}, unLevel, bHardMode);
+		                                   std::make_pair(L"inset", L"inset"), std::make_pair(L"outset", L"outset")}, unLevel, bHardMode);
 	}
 
 	bool CBorderSide::SetColor(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -1434,6 +1441,14 @@ namespace NSCSS
 	CBorder::CBorder()
 	{
 		m_enCollapse.SetMapping({{L"collapse", BorderCollapse::Collapse}, {L"separate", BorderCollapse::Separate}}, BorderCollapse::Separate);
+	}
+	
+	void CBorder::Clear()
+	{
+		m_oLeft  .Clear();
+		m_oTop   .Clear();
+		m_oRight .Clear();
+		m_oBottom.Clear();
 	}
 
 	void CBorder::Equation(CBorder &oFirstBorder, CBorder &oSecondBorder)

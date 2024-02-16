@@ -114,9 +114,12 @@ namespace StarMath
 		void FindingTheEndOfParentheses();
 		void IteratorNullification();
 		void ReadingTheNextToken();
+		void SetMarkForUnar(const bool& bMark);
+		bool GetMarkForUnar();
 	private:
 		bool CheckTokenForGetElement(const wchar_t& cToken);
 		bool CheckIsalhpaForGetElement(const wchar_t& cToken,const wchar_t& cLastToken);
+		bool m_bMarkForUnar;
 		std::wstring::iterator m_itStart,m_itEnd;
 		TypeElement m_enGlobalType;
 		TypeElement m_enUnderType;
@@ -192,7 +195,10 @@ namespace StarMath
 		CElement* GetRightArg();
 		CElement* GetLeftArg();
 		static TypeElement GetBinOperator(const std::wstring& wsToken);
+		static void UnaryCheck(CStarMathReader* pReader,CElement* pLastElement);
 	private:
+		//checking for signs such as -,+,-+,+-.
+		static bool MixedOperators(const TypeElement& enType);
 		void SetAttribute(CAttribute* pAttribute) override;
 		bool IsBinOperatorLowPrior();
 		void Parse(CStarMathReader* pReader) override;
@@ -397,6 +403,12 @@ namespace StarMath
 		static bool AddLeftArgument(CElement* pLeftArg,CElement* pElementWhichAdd);
 		static bool CheckForLeftArgument(const TypeElement& enType);
 		static CElement* ReadingWithoutBracket(CStarMathReader* pReader);
+		//checking the element (true if it is newline)
+		static bool CheckNewline(CElement* pElement);
+		//adding an element to the array, checking that it is not empty and adding the left element, if there is one.
+		static void AddingAnElementToAnArray(std::vector<CElement*>& arrEquation,CElement* pAddElement);
+		//Receives the left element as input, reads the next one, if the next element has a higher priority and contains the left element, the element received at the input is passed to it. The entire structure is saved and returned.
+		static void ReadingElementsWithPriorities(CStarMathReader* pReader,CElement*& pLeftElement);
 	private:
 		std::vector<CElement*> m_arEquation;
 	};

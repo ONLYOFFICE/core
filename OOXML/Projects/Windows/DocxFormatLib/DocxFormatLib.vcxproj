@@ -354,6 +354,7 @@
     <ClInclude Include="..\..\..\XlsxFormat\Pivot\PivotCacheDefinitionExt.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Pivot\PivotCacheRecords.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Pivot\PivotTable.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\RichData\RdRichValue.h" />
     <ClInclude Include="..\..\..\XlsxFormat\SharedStrings\PhoneticPr.h" />
     <ClInclude Include="..\..\..\XlsxFormat\SharedStrings\Run.h" />
     <ClInclude Include="..\..\..\XlsxFormat\SharedStrings\SharedStrings.h" />
@@ -383,6 +384,7 @@
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\CalcPr.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\DefinedNames.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\ExternalReferences.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Workbook\Metadata.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\Sheets.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\Workbook.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\WorkbookPr.h" />
@@ -513,6 +515,7 @@
     <ClCompile Include="..\..\..\XlsxFormat\Ole\OleObjects.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Pivot\PivotCacheDefinitionExt.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Pivot\Pivots.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\RichData\RdRichValue.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\PhoneticPr.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\XlsxRun.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\SharedStrings.cpp" />
@@ -540,6 +543,7 @@
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\CalcPr.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\DefinedNames.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\ExternalReferences.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Workbook\Metadata.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\Sheets.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\Workbook.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\WorkbookPr.cpp" />

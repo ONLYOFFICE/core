@@ -47,6 +47,7 @@
 #include "../../XlsxFormat/Chart/ChartSerialize.h"
 #include "../../XlsxFormat/Worksheets/WorksheetChildOther.h"
 #include "../../XlsxFormat/Timelines/Timeline.h"
+#include "../../XlsxFormat/Workbook/Metadata.h"
 
 #include "../Comments.h"
 
@@ -225,6 +226,8 @@ namespace OOX
 										*m_sUri == L"{7E03D99C-DC04-49d9-9315-930204A7B6E9}" ||
 										*m_sUri == L"{D0CA8CA8-9F24-4464-BF8E-62219DCF47F9}" ||
 										*m_sUri == L"{9260A510-F301-46a8-8635-F512D64BE5F5}" ||
+										*m_sUri == L"{3e2802c4-a4d2-4d8b-9148-e3be6c30e623}" ||			
+										*m_sUri == L"{bdbb8cdc-fa1e-496e-a857-3c3f30c029c3}" ||
 										*m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))
 			{
 				int nCurDepth = oReader.GetDepth();
@@ -367,6 +370,14 @@ namespace OOX
 								WritingElement_ReadAttributes_End_No_NS(oReader)
 							}
 						}
+					}
+					else if (sName == L"dynamicArrayProperties")
+					{
+						m_oDynamicArrayProperties = oReader;
+					}
+					else if (sName == L"rvb")
+					{
+						m_oRichValueBlock = oReader;
 					}
 				}
 			}
@@ -589,6 +600,18 @@ namespace OOX
 						writer.EndAttributes();
 					writer.EndNode(L"c16r3:dispNaAsBlank");
 				writer.EndNode(L"c16r3:dataDisplayOptions16");
+				sResult += writer.GetData().c_str();
+			}
+			if (m_oDynamicArrayProperties.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				m_oDynamicArrayProperties->toXML(writer);
+				sResult += writer.GetData().c_str();
+			}
+			if (m_oRichValueBlock.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				m_oRichValueBlock->toXML(writer);
 				sResult += writer.GetData().c_str();
 			}
 			sResult += L"</" + sNamespace + L"ext>";

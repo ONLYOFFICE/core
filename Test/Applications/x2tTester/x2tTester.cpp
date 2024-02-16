@@ -119,22 +119,23 @@ std::vector<std::wstring> CFormatsList::GetAllExts() const
 {
 	std::vector<std::wstring> all_formats;
 
-	for(auto& val : m_documents)
+	for (const auto& val : m_documents)
 		all_formats.push_back(val);
 
-	for(auto& val : m_presentations)
+	for (const auto& val : m_presentations)
 		all_formats.push_back(val);
 
-	for(auto& val : m_spreadsheets)
+	for (const auto& val : m_spreadsheets)
 		all_formats.push_back(val);
 
-	for(auto& val : m_images)
+	for (const auto& val : m_images)
 		all_formats.push_back(val);
 
-	for(auto& val : m_crossplatform)
+	for (const auto& val : m_crossplatform)
 		all_formats.push_back(val);
 
-	all_formats.push_back(m_pdf);
+	if (!m_pdf.empty())
+		all_formats.push_back(m_pdf);
 
 	return all_formats;
 }
@@ -259,6 +260,16 @@ CFormatsList CFormatsList::GetOutputExts()
 	return list;
 }
 
+CFormatsList CFormatsList::GetExtractExts()
+{
+	CFormatsList list;
+
+	list.m_images.push_back(L"emf");
+	list.m_images.push_back(L"wmf");
+
+	return list;
+}
+
 Cx2tTester::Cx2tTester(const std::wstring& configPath)
 {
 	m_bIsUseSystemFonts = true;
@@ -269,14 +280,22 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 	m_bIsFilenamePassword = true;
 	m_bTroughConversion = false;
 	m_bSaveEnvironment = false;
+
+	m_bExtract = false;
+	m_bConvertBeforeExtract = false;
+
 	m_defaultCsvDelimiter = L";";
 	m_defaultCsvTxtEndcoding = L"UTF-8";
 	m_inputFormatsList = CFormatsList::GetDefaultExts();
 	m_outputFormatsList = CFormatsList::GetOutputExts();
+	m_extractFormatsList = CFormatsList::GetExtractExts();
 	m_timeout = 5 * 60; // 5 min
+
 	SetConfig(configPath);
+
 	m_errorsXmlDirectory = m_outputDirectory + FILE_SEPARATOR_STR + L"_errors";
 	m_troughConversionDirectory = m_outputDirectory + FILE_SEPARATOR_STR + L"_t";
+	m_tempDirectory = m_outputDirectory + FILE_SEPARATOR_STR + L"_temp";
 	m_fontsDirectory = NSFile::GetProcessDirectory() + FILE_SEPARATOR_STR + L"fonts";
 
 
@@ -335,6 +354,12 @@ Cx2tTester::~Cx2tTester()
 	m_reportCS.DeleteCriticalSection();
 	m_outputCS.DeleteCriticalSection();
 	m_reportStream.CloseFile();
+
+	for(auto&& val : m_deleteLaterFiles)
+		NSFile::CFileBinary::Remove(val);
+
+	for(auto&& val : m_deleteLaterDirectories)
+		NSDirectory::DeleteDirectory(val);
 }
 
 void Cx2tTester::SetConfig(const std::wstring& configPath)
@@ -366,6 +391,8 @@ void Cx2tTester::SetConfig(const std::wstring& configPath)
 			else if(name == L"troughConversion" && !node.GetText().empty()) m_bTroughConversion = std::stoi(node.GetText());
 			else if(name == L"saveEnvironment" && !node.GetText().empty()) m_bSaveEnvironment = std::stoi(node.GetText());
 			else if(name == L"defaultCsvTxtEncoding" && !node.GetText().empty()) m_defaultCsvTxtEndcoding = node.GetText();
+			else if(name == L"extract" && !node.GetText().empty()) m_bExtract = std::stoi(node.GetText());
+			else if(name == L"convertBeforeExtract" && !node.GetText().empty()) m_bConvertBeforeExtract = std::stoi(node.GetText());
 			else if(name == L"defaultCsvDelimiter" && !node.GetText().empty()) m_defaultCsvDelimiter = (wchar_t)std::stoi(node.GetText(), nullptr, 16);
 			else if(name == L"inputFilesList" && !node.GetText().empty())
 			{
@@ -418,16 +445,39 @@ void Cx2tTester::SetConfig(const std::wstring& configPath)
 		exit(-1);
 	}
 
-	if(default_input_formats)
+	if (default_input_formats)
 		m_inputExts = m_inputFormatsList.GetAllExts();
 
-	if(default_output_formats)
-		m_outputExts = m_outputFormatsList.GetAllExts();
+	if (default_output_formats)
+	{
+		if (m_bExtract)
+			m_outputExts = m_extractFormatsList.GetAllExts();
+		else
+			m_outputExts = m_outputFormatsList.GetAllExts();
+	}
+
 }
 void Cx2tTester::Start()
 {
 	// setup timer
 	m_timeStart = NSTimers::GetTickCount();
+
+	m_outputDirectory = CorrectPathW(m_outputDirectory);
+	m_errorsXmlDirectory = CorrectPathW(m_errorsXmlDirectory);
+	m_troughConversionDirectory = CorrectPathW(m_troughConversionDirectory);
+	m_tempDirectory = CorrectPathW(m_tempDirectory);
+
+	// setup & clear output folder
+	if(NSDirectory::Exists(m_outputDirectory))
+		NSDirectory::DeleteDirectory(m_outputDirectory);
+
+	NSDirectory::CreateDirectory(m_outputDirectory);
+
+	// setup & clear errors folder
+	if(NSDirectory::Exists(m_errorsXmlDirectory))
+		NSDirectory::DeleteDirectory(m_errorsXmlDirectory);
+
+	NSDirectory::CreateDirectory(m_errorsXmlDirectory);
 
 	// check fonts
 	CApplicationFontsWorker fonts_worker;
@@ -449,23 +499,6 @@ void Cx2tTester::Start()
 	NSFonts::IApplicationFonts* pFonts = fonts_worker.Check();
 	RELEASEINTERFACE(pFonts);
 
-	m_outputDirectory = CorrectPathW(m_outputDirectory);
-	m_errorsXmlDirectory = CorrectPathW(m_errorsXmlDirectory);
-	m_troughConversionDirectory = CorrectPathW(m_troughConversionDirectory);
-
-	// setup & clear output folder
-	if(NSDirectory::Exists(m_outputDirectory))
-		NSDirectory::DeleteDirectory(m_outputDirectory);
-
-	NSDirectory::CreateDirectory(m_outputDirectory);
-
-	// setup & clear errors folder
-	if(NSDirectory::Exists(m_errorsXmlDirectory))
-		NSDirectory::DeleteDirectory(m_errorsXmlDirectory);
-
-	NSDirectory::CreateDirectory(m_errorsXmlDirectory);
-
-
 	std::vector<std::wstring> files = NSDirectory::GetFiles(m_inputDirectory, true);
 	for(int i = 0; i < files.size(); i++)
 	{
@@ -483,8 +516,53 @@ void Cx2tTester::Start()
 		}
 	}
 
-	if(files.size() < m_maxProc)
-		m_maxProc = files.size();
+	if (m_bExtract)
+	{
+		COfficeFileFormatChecker checker;
+		COfficeUtils utils;
+		std::vector<std::wstring> files_to_convert;
+
+		for (size_t i = 0; i < files.size(); i++)
+			if (utils.IsArchive(files[i]) == S_FALSE && checker.isOfficeFile(files[i]))
+			{
+				if (m_bConvertBeforeExtract)
+					files_to_convert.push_back(files[i]);
+				files.erase(files.begin() + i);
+			}
+
+		if (!files_to_convert.empty())
+		{
+			if(NSDirectory::Exists(m_tempDirectory))
+				NSDirectory::DeleteDirectory(m_tempDirectory);
+
+			NSDirectory::CreateDirectories(m_tempDirectory);
+
+			auto copy_inputDirectory = m_inputDirectory;
+			auto copy_outputDirectory = m_outputDirectory;
+			auto copy_outputExts = m_outputExts;
+
+			m_outputDirectory = m_tempDirectory;
+			m_outputExts = {L"docx"};
+
+			Convert(files_to_convert, true, true);
+
+			m_outputDirectory = copy_outputDirectory;
+			m_outputExts = copy_outputExts;
+
+			m_inputDirectory = m_tempDirectory;
+			std::vector<std::wstring> temp_files = NSDirectory::GetFiles(m_tempDirectory, true);
+			Extract(temp_files);
+
+			m_inputDirectory = copy_inputDirectory;
+		}
+
+		Extract(files);
+
+		if(NSDirectory::Exists(m_tempDirectory))
+			NSDirectory::DeleteDirectory(m_tempDirectory);
+
+		return;
+	}
 
 	// conversion in _t directory -> _t directory to output
 	if(m_bTroughConversion)
@@ -512,16 +590,13 @@ void Cx2tTester::Start()
 
 	Convert(files);
 	WriteTime();
-
-	for(auto&& val : m_deleteLaterFiles)
-		NSFile::CFileBinary::Remove(val);
-
-	for(auto&& val : m_deleteLaterDirectories)
-		NSDirectory::DeleteDirectory(val);
 }
 
 void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirectory, bool bTrough)
 {
+	if(files.size() < m_maxProc)
+		m_maxProc = files.size();
+
 	for(int i = 0; i < files.size(); i++)
 	{
 		const std::wstring& input_file = files[i];
@@ -569,7 +644,7 @@ void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirecto
 			continue;
 
 		// setup & clear output subfolder
-		while(!NSDirectory::Exists(output_files_directory))
+		if (!NSDirectory::Exists(output_files_directory))
 			NSDirectory::CreateDirectories(output_files_directory);
 
 		std::wstring csvTxtEncodingS = m_defaultCsvTxtEndcoding;
@@ -620,6 +695,8 @@ void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirecto
 			NSThreads::Sleep(50);
 		} while(IsAllBusy());
 
+
+
 		m_coresCS.Enter();
 
 		// setup & start new coverter
@@ -652,6 +729,50 @@ void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirecto
 	while(!IsAllFree())
 		NSThreads::Sleep(150);
 }
+void Cx2tTester::Extract(const std::vector<std::wstring>& files)
+{
+	if(files.size() < m_maxProc)
+		m_maxProc = files.size();
+
+	for (int i = 0; i < files.size(); i++)
+	{
+		const std::wstring& input_file = files[i];
+		std::wstring input_filename = NSFile::GetFileName(input_file);
+		std::wstring input_file_directory = NSFile::GetDirectoryName(input_file);
+		std::wstring input_subfolders = input_file_directory.substr(m_inputDirectory.size(),
+																	input_file_directory.size() - m_inputDirectory.size());
+		std::wstring output_files_directory = m_outputDirectory + input_subfolders + FILE_SEPARATOR_STR + input_filename;
+
+		if(!NSDirectory::Exists(output_files_directory))
+			NSDirectory::CreateDirectories(output_files_directory);
+
+		// waiting...
+		do
+		{
+			NSThreads::Sleep(50);
+		} while(IsAllBusy());
+
+		m_coresCS.Enter();
+
+		// setup & start new extractor
+		CExtractor *extractor = new CExtractor(this);
+		extractor->SetInputFile(input_file);
+		extractor->SetOutputFilesDirectory(output_files_directory);
+		extractor->SetExtractExts(m_outputExts);
+		extractor->SetFilesCount(files.size(), i + 1);
+		extractor->DestroyOnFinish();
+		m_currentProc++;
+
+		m_coresCS.Leave();
+
+		extractor->Start(0);
+	}
+
+	// waiting all procs end
+	while(!IsAllFree())
+		NSThreads::Sleep(150);
+}
+
 void Cx2tTester::WriteReportHeader()
 {
 	CTemporaryCS CS(&m_reportCS);
@@ -844,7 +965,7 @@ DWORD CConverter::ThreadProc()
 	for(int i = 0; i < m_outputExts.size(); i++)
 	{
 		std::wstring output_ext = L"."+ m_outputExts[i];
-		int output_format =  checker.GetFormatByExtension(output_ext);
+		int output_format =  m_checker.GetFormatByExtension(output_ext);
 
 		std::wstring xml_params_filename = input_filename + L"_" + output_ext + L".xml";
 		std::wstring xml_params_file = m_outputFilesDirectory + FILE_SEPARATOR_STR + xml_params_filename;
@@ -1077,4 +1198,78 @@ DWORD CConverter::ThreadProc()
 	return 0;
 }
 
+CExtractor::CExtractor(Cx2tTester* internal) : m_internal(internal)
+{
+}
+CExtractor::~CExtractor()
+{
+	Stop();
+}
 
+void CExtractor::SetInputFile(const std::wstring& inputFile)
+{
+	m_inputFile = inputFile;
+}
+void CExtractor::SetOutputFilesDirectory(const std::wstring& outputFilesDirectory)
+{
+	m_outputFilesDirectory = outputFilesDirectory;
+}
+void CExtractor::SetExtractExts(const std::vector<std::wstring>& extractExts)
+{
+	m_extractExts = extractExts;
+}
+void CExtractor::SetFilesCount(int totalFiles, int currFile)
+{
+	m_totalFiles = totalFiles;
+	m_currFile = currFile;
+}
+
+DWORD CExtractor::ThreadProc()
+{
+	std::wstring input_filename = NSFile::GetFileName(m_inputFile);
+	std::wstring input_ext = L'.' + NSFile::GetFileExtention(input_filename);
+	std::wstring input_filename_no_ext = input_filename.substr(0, input_filename.size() - input_ext.size());
+
+	for (size_t i = 0; i < m_extractExts.size(); i++)
+	{
+		const std::wstring& extract_ext = m_extractExts[i];
+		std::wstring output_folder = m_outputFilesDirectory + FILE_SEPARATOR_STR + extract_ext;
+
+		// output_CS start
+		m_internal->m_outputCS.Enter();
+
+		std::cout << "[" << m_currFile << "/" << m_totalFiles << "](" << i + 1 << "/" << m_extractExts.size() << ") ";
+		std::cout << "(" << m_internal->m_currentProc << " processes now) ";
+		std::cout << U_TO_UTF8(input_filename) << " extract " << U_TO_UTF8(extract_ext) << " ";
+
+		std::cout << std::endl;
+		m_internal->m_outputCS.Leave();
+
+		if (NSDirectory::Exists(output_folder))
+			NSDirectory::DeleteDirectory(output_folder);
+
+		NSDirectory::CreateDirectories(output_folder);
+
+		std::wstring temp_folder = NSDirectory::CreateDirectoryWithUniqueName(output_folder);
+		m_utils.ExtractToDirectory(m_inputFile, temp_folder, nullptr, false);
+
+		auto unzip_files = NSDirectory::GetFiles(temp_folder, true);
+		bool delete_empty = true;
+		for (const auto& file : unzip_files)
+		{
+			if (NSFile::GetFileExtention(file) == m_extractExts[i])
+			{
+				delete_empty = false;
+				NSFile::CFileBinary::Move(file, output_folder + FILE_SEPARATOR_STR +NSFile::GetFileName(file));
+			}
+		}
+		if (delete_empty)
+			NSDirectory::DeleteDirectory(output_folder);
+		NSDirectory::DeleteDirectory(temp_folder);
+	}
+	if (NSDirectory::GetFilesCount(m_outputFilesDirectory, true) == 0)
+		NSDirectory::DeleteDirectory(m_outputFilesDirectory);
+
+	m_internal->m_currentProc--;
+	return 0;
+}

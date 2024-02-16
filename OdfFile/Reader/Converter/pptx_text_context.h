@@ -58,6 +58,12 @@ enum field_type
 	datetime
 };
 
+struct hyperlink_data
+{
+	std::wstring rId;
+	std::wstring action;
+};
+
 class pptx_text_context: boost::noncopyable
 {
 public:
@@ -85,8 +91,11 @@ public:
 	void			start_object();
 	std::wstring	end_object();
 
+	hyperlink_data get_hyperlink();
 	void start_hyperlink();
-	void end_hyperlink(std::wstring hId);
+	void set_rel_id(const std::wstring& rId);
+	void set_action(const std::wstring& action);
+	void end_hyperlink();
 
     void start_field(field_type type, const std::wstring & styleName);//1 - datetime, 2 -pagecount, 3 - pagenumber - <a:fld><a:t></a:fld>
     void end_field();
@@ -102,6 +111,8 @@ public:
 	styles_context & get_styles_context();   
 
 	void set_process_layouts(bool val);
+	
+	std::wstring get_last_paragraph_style_name();
 
 private:
 

@@ -139,6 +139,12 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 	{
 		properties->apply_to(Context.get_slide_context().get_properties());
 		Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_, Context.root(), fill);
+
+		if (properties->fo_clip_)
+		{
+			std::wstring strRectClip = properties->fo_clip_.get();
+			Context.get_slide_context().set_clipping(strRectClip.substr(5, strRectClip.length() - 6));
+		}
 	}
  	for (size_t i = 0; i < additional_.size(); i++)
 	{

@@ -41,6 +41,37 @@
 namespace PdfWriter
 {
 	class CDestination;
+	enum ELineIntentType
+	{
+		LineDimension = 0,
+		LineArrow
+	};
+	enum ELineEndType
+	{
+		Square = 0,
+		Circle,
+		Diamond,
+		OpenArrow,
+		ClosedArrow,
+		None,
+		Butt,
+		ROpenArrow,
+		RClosedArrow,
+		Slash
+	};
+	enum ECaptionPositioning
+	{
+		Inline = 0,
+		Top
+	};
+	enum EBorderType
+	{
+		Solid = 0,
+		Beveled,
+		Dashed,
+		Inset,
+		Underline
+	};
 
 	class CAction : public CDictObject
 	{
@@ -106,12 +137,12 @@ namespace PdfWriter
 			CBorderType()
 			{
 				bHave  = false;
-				nType  = 0;
-				dWidth = 0;
+				nType  = EBorderType::Solid;
+				dWidth = 1;
 			}
 
 			bool bHave;
-			BYTE nType;
+			EBorderType nType;
 			double dWidth;
 			std::vector<double> arrDash;
 		};
@@ -121,7 +152,8 @@ namespace PdfWriter
 		CXref* m_pXref;
 		TRect  m_oRect;
 		double m_dPageWidth  = 0;
-		double m_dPageHeight = 0;
+		double m_dPageH = 0;
+		double m_dPageX = 0;
 		CDocument* m_pDocument;
 
 	public:
@@ -141,9 +173,8 @@ namespace PdfWriter
 
 		void SetRect(const TRect& oRect);
 		void SetBorder(BYTE nType, double dWidth, const std::vector<double>& arrDash);
-		void SetEmptyBorder();
 		void SetAnnotFlag(const int& nAnnotFlag);
-		void SetPage(CPage* pPage);
+		void SetPage(CPage* pPage, double dW = 0, double dH = 0, double dX = 0);
 		void SetBE(BYTE nType, const double& dBE);
 		void SetContents(const std::wstring& wsText);
 		void SetNM(const std::wstring& wsNM);
@@ -155,7 +186,7 @@ namespace PdfWriter
 		void SetDocument(CDocument* pDocument);
 		CDocument* GetDocument();
 		bool HaveBorder()       { return m_oBorder.bHave; }
-		BYTE GetBorderType()    { return m_oBorder.nType; }
+		EBorderType GetBorderType() { return m_oBorder.nType; }
 		double GetBorderWidth() { return m_oBorder.dWidth; }
 		std::string GetBorderDash();
 		double GetWidth()  { return abs(m_oRect.fRight - m_oRect.fLeft); }
@@ -247,6 +278,9 @@ namespace PdfWriter
 	};
 	class CLineAnnotation : public CMarkupAnnotation
 	{
+	private:
+		ELineEndType m_nLE1, m_nLE2;
+		double dL[4];
 	public:
 		CLineAnnotation(CXref* pXref);
 		EAnnotType GetAnnotationType() const override
@@ -264,6 +298,8 @@ namespace PdfWriter
 		void SetL(const double& dL1, const double& dL2, const double& dL3, const double& dL4);
 		void SetCO(const double& dCO1, const double& dCO2);
 		void SetIC(const std::vector<double>& arrIC);
+
+		void SetAP();
 	};
 	class CTextMarkupAnnotation : public CMarkupAnnotation
 	{
@@ -345,8 +381,6 @@ namespace PdfWriter
 		EWidgetType m_nSubtype;
 		CDictObject* m_pMK;
 		CDictObject* m_pParent;
-		CDictObject* m_pAA;
-		CDictObject* m_pA;
 
 		CFontCidTrueType* m_pFont;
 		double m_dFontSize;
@@ -356,8 +390,6 @@ namespace PdfWriter
 		CAnnotAppearance* m_pAppearance;
 		double m_dFontSizeAP;
 		std::vector<double> m_arrTC;
-		std::vector<double> m_arrBC;
-		std::vector<double> m_arrBG;
 		BYTE m_nQ;
 
 		void CheckMK();
@@ -399,10 +431,11 @@ namespace PdfWriter
 		double GetFontSize()   { return m_dFontSize; }
 		bool GetFontIsBold()   { return m_bBold; }
 		bool GetFontIsItalic() { return m_bItalic; }
-		bool HaveBG() { return !m_arrBG.empty(); }
-		bool HaveBC() { return !m_arrBC.empty(); }
+		bool HaveBG();
+		bool HaveBC();
 		BYTE GetQ() { return m_nQ; }
 
+		void SetEmptyAP();
 		void SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts);
 		void StartAP();
 		void AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts = NULL, const double* pShifts = NULL);
@@ -469,6 +502,7 @@ namespace PdfWriter
 	{
 	private:
 		std::string m_sV;
+		bool m_bAPV;
 
 	public:
 		CTextWidget(CXref* pXref);
@@ -476,10 +510,12 @@ namespace PdfWriter
 		void SetMaxLen(const int& nMaxLen);
 		void SetV (const std::wstring& wsV);
 		void SetRV(const std::wstring& wsRV);
+		void SetAPV() { m_bAPV = true; }
 
 		bool IsCombFlag();
 		bool IsMultiLine();
 		unsigned int GetMaxLen();
+		bool HaveAPV() { return m_bAPV; }
 	};
 	class CChoiceWidget : public CWidgetAnnotation
 	{

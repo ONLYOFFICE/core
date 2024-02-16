@@ -1036,6 +1036,11 @@ int Binary_pPrReader::ReadContent(BYTE type, long length, void* poResult)
 		pPPr->m_oCnfStyle.Init();
 		READ1_DEF(length, res, this->ReadCnfStyle, pPPr->m_oCnfStyle.GetPointer());
 	}break;
+	case c_oSerProp_pPrType::SnapToGrid:
+	{
+		pPPr->m_oSnapToGrid.Init();
+		pPPr->m_oSnapToGrid->m_oVal.FromBool(m_oBufferedStream.GetBool());
+	}break;
 	default:
 		res = c_oSerConstants::ReadUnknown;
 		break;
@@ -1707,7 +1712,7 @@ int Binary_pPrReader::Read_pgSz(BYTE type, long length, void* poResult)
 	if ( c_oSer_pgSzType::Orientation == type )
 	{
 		pPageSz->m_oOrient.Init();
-		pPageSz->m_oOrient->SetValueFromByte( m_oBufferedStream.GetUChar());
+		pPageSz->m_oOrient->SetValueFromByte( m_oBufferedStream.GetUChar() == 1 ? 0 : 1); 
 	}
 	else if ( c_oSer_pgSzType::W == type )
 	{

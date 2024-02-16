@@ -356,7 +356,8 @@ extern int g_nCurFormatVersion;
 		Tab_Item_PosTwips = 42,
 		Tab_Item_Val = 43,
 		SuppressLineNumbers = 44,
-		CnfStyle = 45
+		CnfStyle = 45,
+		SnapToGrid = 46
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{

@@ -27,6 +27,19 @@ enum CheckResultCode
 
 bool g_save_x2t_xml = false;
 
+int GetPagesCount(const std::wstring& dir)
+{
+	int nCount = 0;
+	std::vector<std::wstring> files = NSDirectory::GetFiles(dir, false);
+	for (std::vector<std::wstring>::iterator i = files.begin(); i != files.end(); i++)
+	{
+		std::wstring sExt = NSFile::GetFileExtention(*i);
+		if (sExt == L"png")
+			++nCount;
+	}
+	return nCount;
+}
+
 class CConverter;
 class CInternalWorker
 {
@@ -63,6 +76,7 @@ public:
 
 	bool m_bIsStandard;
 	bool m_bIsDiffAllInOne;
+	bool m_bDiffOnly{false};
 
 	NSCriticalSection::CRITICAL_SECTION m_oCS;
 	NSCriticalSection::CRITICAL_SECTION m_oCS_OfficeUtils;
@@ -121,6 +135,13 @@ public:
 	void OpenDir(std::wstring sDir)
 	{
 		m_sInputFolder = sDir;
+		if (m_bDiffOnly)
+		{
+			m_files = NSDirectory::GetDirectories(m_sInputFolder);
+			m_nCount = (int)m_files.size();
+			return;
+		}
+
 		std::vector<std::wstring> arFiles = NSDirectory::GetFiles(sDir, true);
 		for (std::vector<std::wstring>::iterator iter = arFiles.begin(); iter != arFiles.end(); iter++)
 		{
@@ -268,6 +289,224 @@ public:
 
 		NSFile::CFileBinary::SaveToFile(sLogFile, sLogContent, true);
 	}
+
+
+	int GenerateDiff(const std::wstring strDirIn, const std::wstring strDirOut, const std::wstring strDiffs)
+	{
+		int nCountInPages = GetPagesCount(strDirIn);
+		int nCountOutPages = GetPagesCount(strDirOut);
+		int checkCode = crcEqual;
+
+		if (nCountInPages != nCountOutPages)
+		{
+			if (nCountInPages > nCountOutPages)
+				nCountInPages = nCountOutPages;
+
+			if (!NSDirectory::Exists(strDiffs))
+				NSDirectory::CreateDirectories(CorrectPathW(strDiffs));
+
+			std::wstring sFilePagesDiff = strDiffs + L"/pages_count";
+			NSFile::CFileBinary oFile;
+			oFile.CreateFileW(sFilePagesDiff);
+			oFile.CloseFile();
+
+			checkCode |= crcPageCount;
+		}
+
+		for (int nPage = 0; nPage < nCountInPages; ++nPage)
+		{
+			std::wstring sPageI = strDirIn + L"/image" + std::to_wstring(nPage + 1) + L".png";
+			std::wstring sPageO = strDirOut + L"/image" + std::to_wstring(nPage + 1) + L".png";
+			std::wstring sPageDiff = strDiffs + L"/image" + std::to_wstring(nPage + 1) + L".png";
+
+			CBgraFrame frameI;
+			frameI.OpenFile(sPageI);
+
+			CBgraFrame frameO;
+			frameO.OpenFile(sPageO);
+
+			int nW_I = frameI.get_Width();
+			int nH_I = frameI.get_Height();
+
+			int nW_O = frameO.get_Width();
+			int nH_O = frameO.get_Height();
+
+			if (nW_I != nW_O || nH_I != nH_O)
+			{
+				if (!NSDirectory::Exists(strDiffs))
+					NSDirectory::CreateDirectories(CorrectPathW(strDiffs));
+
+				std::wstring sFilePagesDiff = sPageDiff;
+				NSFile::CFileBinary oFile;
+				oFile.CreateFileW(sPageDiff);
+				oFile.WriteStringUTF8(L"sizes!");
+				oFile.CloseFile();
+
+				checkCode |= crcPageSize;
+				continue;
+			}
+
+			BYTE* pDataI = frameI.get_Data();
+			BYTE* pDataO = frameO.get_Data();
+			size_t sizeMemory = 4 * nW_I * nH_I;
+
+			if (0 == memcmp(pDataI, pDataO, sizeMemory))
+				continue;
+
+			sizeMemory = nW_I * nH_I;
+
+			int nEpsilonEps = 3;
+			int nEpsilonNatural = 5;
+
+			int nDivExist = 0;
+			for (int indexPixH = 0; indexPixH < nH_I; indexPixH++)
+			{
+				for (int indexPixW = 0; indexPixW < nW_I; indexPixW++)
+				{
+					if (pDataI[0] != pDataO[0] || pDataI[1] != pDataO[1] || pDataI[2] != pDataO[2])
+					{
+						// test epsilon natural
+						if ((abs(pDataI[0] - pDataO[0]) < nEpsilonNatural) &&
+								(abs(pDataI[1] - pDataO[1]) < nEpsilonNatural) &&
+								(abs(pDataI[2] - pDataO[2]) < nEpsilonNatural))
+						{
+							pDataI += 4;
+							pDataO += 4;
+							continue;
+						}
+
+						// test epsilon left, right, top, bottom
+						int nEpsUp = nEpsilonEps;
+						if (indexPixH > 0)
+						{
+							BYTE* pByteI = frameI.get_Data() + 4 * (indexPixH - 1) * nW_I + 4 * indexPixW;
+
+							if ((abs(pByteI[0] - pDataO[0]) < nEpsilonEps) &&
+									(abs(pByteI[1] - pDataO[1]) < nEpsilonEps) &&
+									(abs(pByteI[2] - pDataO[2]) < nEpsilonEps))
+							{
+								nEpsUp = nEpsilonEps - 1;
+							}
+						}
+
+						int nEpsDown = nEpsilonEps;
+						if (indexPixH < (nH_I - 1))
+						{
+							BYTE* pByteI = frameI.get_Data() + 4 * (indexPixH + 1) * nW_I + 4 * indexPixW;
+
+							if ((abs(pByteI[0] - pDataO[0]) < nEpsilonEps) &&
+									(abs(pByteI[1] - pDataO[1]) < nEpsilonEps) &&
+									(abs(pByteI[2] - pDataO[2]) < nEpsilonEps))
+							{
+								nEpsDown = nEpsilonEps - 1;
+							}
+						}
+
+						int nEpsLeft = nEpsilonEps;
+						if (indexPixW > 0)
+						{
+							BYTE* pByteI = pDataI - 4;
+
+							if ((abs(pByteI[0] - pDataO[0]) < nEpsilonEps) &&
+									(abs(pByteI[1] - pDataO[1]) < nEpsilonEps) &&
+									(abs(pByteI[2] - pDataO[2]) < nEpsilonEps))
+							{
+								nEpsLeft = nEpsilonEps - 1;
+							}
+						}
+
+						int nEpsRight = nEpsilonEps;
+						if (indexPixW < (nW_I - 1))
+						{
+							BYTE* pByteI = pDataI + 4;
+
+							if ((abs(pByteI[0] - pDataO[0]) < nEpsilonEps) &&
+									(abs(pByteI[1] - pDataO[1]) < nEpsilonEps) &&
+									(abs(pByteI[2] - pDataO[2]) < nEpsilonEps))
+							{
+								nEpsRight = nEpsilonEps - 1;
+							}
+						}
+
+						if ((nEpsLeft < nEpsilonEps) ||
+								(nEpsRight < nEpsilonEps) ||
+								(nEpsUp < nEpsilonEps) ||
+								(nEpsDown < nEpsilonEps))
+						{
+							pDataI += 4;
+							pDataO += 4;
+							continue;
+						}
+
+						++nDivExist;
+
+						if (pDataO[0] == 0x00 && pDataO[1] == 0x00 && pDataO[2] == 0xFF)
+						{
+							pDataO[0] = 0xFF;
+							pDataO[1] = 0x00;
+							pDataO[2] = 0x00;
+						}
+						else
+						{
+							pDataO[0] = 0x00;
+							pDataO[1] = 0x00;
+							pDataO[2] = 0xFF;
+						}
+					}
+					pDataI += 4;
+					pDataO += 4;
+				}
+			}
+
+			if (nDivExist > 7)
+			{
+				if (!NSDirectory::Exists(strDiffs))
+					NSDirectory::CreateDirectories(CorrectPathW(strDiffs));
+
+				if (!m_bIsDiffAllInOne)
+				{
+					frameO.SaveFile(sPageDiff, 4);
+				}
+				else
+				{
+					CBgraFrame frameOSrc;
+					frameOSrc.OpenFile(sPageO);
+
+					BYTE* pData1 = frameI.get_Data();
+					BYTE* pData2 = frameOSrc.get_Data();
+					BYTE* pData3 = frameO.get_Data();
+
+					int nRowW = 4 * nW_I;
+					BYTE* pDataAll = new BYTE[3 * nRowW * nH_I];
+					BYTE* pDataAllSrc = pDataAll;
+					for (int j = 0; j < nH_I; j++)
+					{
+						memcpy(pDataAll, pData1, nRowW);
+						pDataAll += nRowW;
+						pData1 += nRowW;
+
+						memcpy(pDataAll, pData2, nRowW);
+						pDataAll += nRowW;
+						pData2 += nRowW;
+
+						memcpy(pDataAll, pData3, nRowW);
+						pDataAll += nRowW;
+						pData3 += nRowW;
+					}
+
+					CBgraFrame oFrameAll;
+					oFrameAll.put_Data(pDataAllSrc);
+					oFrameAll.put_Width(3 * nW_I);
+					oFrameAll.put_Height(nH_I);
+					oFrameAll.put_Stride(-3 * nRowW);
+					oFrameAll.SaveFile(sPageDiff, 4);
+				}
+
+				checkCode |= crcPageDiffs;
+			}
+		}
+		return checkCode;
+	}
 };
 
 class CConverter : public NSThreads::CBaseThread
@@ -277,6 +516,7 @@ public:
 	std::wstring m_file;
 	std::wstring m_folder_dst;
 	int m_format;
+	bool m_bDiffOnly{false};
 
 public:
 	CConverter(CInternalWorker* pWorker) : NSThreads::CBaseThread()
@@ -291,6 +531,21 @@ public:
 
 	virtual DWORD ThreadProc()
 	{
+		if (m_bDiffOnly)
+		{
+			std::wstring strDirIn = m_file;
+			std::wstring strDirOut = m_folder_dst;
+
+			std::wstring strDiffsMain = NSFile::GetDirectoryName(strDirOut) + L"/DIFF";
+			std::wstring strDiffs = strDiffsMain + L"/" + NSFile::GetFileName(m_file);
+
+			int checkCode = m_pInternal->GenerateDiff(strDirIn, strDirOut, strDiffs);
+
+			m_bRunThread = FALSE;
+			m_pInternal->OnConvertFile(this, 0, 0, checkCode);
+
+			return 0;
+		}
 		bool bIsOfficeFile = true;
 		if (true)
 		{
@@ -393,242 +648,13 @@ public:
 			std::wstring strDiffsMain = NSFile::GetDirectoryName(strDirOut) + L"/DIFF";
 			std::wstring strDiffs = strDiffsMain + L"/" + NSFile::GetFileName(m_file);
 
-			int nCountInPages = GetPagesCount(strDirIn);
-			int nCountOutPages = GetPagesCount(strDirOut);
-
-			if (nCountInPages != nCountOutPages)
-			{
-				if (!NSDirectory::Exists(strDiffsMain))
-					NSDirectory::CreateDirectory(strDiffsMain);
-				if (!NSDirectory::Exists(strDiffs))
-					NSDirectory::CreateDirectory(strDiffs);
-
-				if (nCountInPages > nCountOutPages)
-					nCountInPages = nCountOutPages;
-
-				std::wstring sFilePagesDiff = strDiffs + L"/pages_count";
-				NSFile::CFileBinary oFile;
-				oFile.CreateFileW(sFilePagesDiff);
-				oFile.CloseFile();
-
-				checkCode |= crcPageCount;
-			}
-
-			for (int nPage = 0; nPage < nCountInPages; ++nPage)
-			{
-				std::wstring sPageI = strDirIn + L"/image" + std::to_wstring(nPage + 1) + L".png";
-				std::wstring sPageO = strDirOut + L"/image" + std::to_wstring(nPage + 1) + L".png";
-				std::wstring sPageDiff = strDiffs + L"/image" + std::to_wstring(nPage + 1) + L".png";
-
-				CBgraFrame frameI;
-				frameI.OpenFile(sPageI);
-
-				CBgraFrame frameO;
-				frameO.OpenFile(sPageO);
-
-				int nW_I = frameI.get_Width();
-				int nH_I = frameI.get_Height();
-
-				int nW_O = frameO.get_Width();
-				int nH_O = frameO.get_Height();
-
-				if (nW_I != nW_O || nH_I != nH_O)
-				{
-					if (!NSDirectory::Exists(strDiffsMain))
-						NSDirectory::CreateDirectory(strDiffsMain);
-					if (!NSDirectory::Exists(strDiffs))
-						NSDirectory::CreateDirectory(strDiffs);
-
-					std::wstring sFilePagesDiff = sPageDiff;
-					NSFile::CFileBinary oFile;
-					oFile.CreateFileW(sPageDiff);
-					oFile.WriteStringUTF8(L"sizes!");
-					oFile.CloseFile();
-
-					checkCode |= crcPageSize;
-					continue;
-				}
-
-				BYTE* pDataI = frameI.get_Data();
-				BYTE* pDataO = frameO.get_Data();
-				size_t sizeMemory = 4 * nW_I * nH_I;
-
-				if (0 == memcmp(pDataI, pDataO, sizeMemory))
-					continue;
-
-				sizeMemory = nW_I * nH_I;
-
-				int nEpsilonEps = 3;
-				int nEpsilonNatural = 5;
-
-				int nDivExist = 0;
-				for (int indexPixH = 0; indexPixH < nH_I; indexPixH++)
-				{
-					for (int indexPixW = 0; indexPixW < nW_I; indexPixW++)
-					{
-						if (pDataI[0] != pDataO[0] || pDataI[1] != pDataO[1] || pDataI[2] != pDataO[2])
-						{
-							// test epsilon natural
-							if ((abs(pDataI[0] - pDataO[0]) < nEpsilonNatural) &&
-									(abs(pDataI[1] - pDataO[1]) < nEpsilonNatural) &&
-									(abs(pDataI[2] - pDataO[2]) < nEpsilonNatural))
-							{
-								pDataI += 4;
-								pDataO += 4;
-								continue;
-							}
-
-							// test epsilon left, right, top, bottom
-							int nEpsUp = nEpsilonEps;
-							if (indexPixH > 0)
-							{
-								BYTE* pByteI = frameI.get_Data() + 4 * (indexPixH - 1) * nW_I + 4 * indexPixW;
-
-								if ((abs(pByteI[0] - pDataO[0]) < nEpsilonEps) &&
-										(abs(pByteI[1] - pDataO[1]) < nEpsilonEps) &&
-										(abs(pByteI[2] - pDataO[2]) < nEpsilonEps))
-								{
-									nEpsUp = nEpsilonEps - 1;
-								}
-							}
-
-							int nEpsDown = nEpsilonEps;
-							if (indexPixH < (nH_I - 1))
-							{
-								BYTE* pByteI = frameI.get_Data() + 4 * (indexPixH + 1) * nW_I + 4 * indexPixW;
-
-								if ((abs(pByteI[0] - pDataO[0]) < nEpsilonEps) &&
-										(abs(pByteI[1] - pDataO[1]) < nEpsilonEps) &&
-										(abs(pByteI[2] - pDataO[2]) < nEpsilonEps))
-								{
-									nEpsDown = nEpsilonEps - 1;
-								}
-							}
-
-							int nEpsLeft = nEpsilonEps;
-							if (indexPixW > 0)
-							{
-								BYTE* pByteI = pDataI - 4;
-
-								if ((abs(pByteI[0] - pDataO[0]) < nEpsilonEps) &&
-										(abs(pByteI[1] - pDataO[1]) < nEpsilonEps) &&
-										(abs(pByteI[2] - pDataO[2]) < nEpsilonEps))
-								{
-									nEpsLeft = nEpsilonEps - 1;
-								}
-							}
-
-							int nEpsRight = nEpsilonEps;
-							if (indexPixW < (nW_I - 1))
-							{
-								BYTE* pByteI = pDataI + 4;
-
-								if ((abs(pByteI[0] - pDataO[0]) < nEpsilonEps) &&
-										(abs(pByteI[1] - pDataO[1]) < nEpsilonEps) &&
-										(abs(pByteI[2] - pDataO[2]) < nEpsilonEps))
-								{
-									nEpsRight = nEpsilonEps - 1;
-								}
-							}
-
-							if ((nEpsLeft < nEpsilonEps) ||
-									(nEpsRight < nEpsilonEps) ||
-									(nEpsUp < nEpsilonEps) ||
-									(nEpsDown < nEpsilonEps))
-							{
-								pDataI += 4;
-								pDataO += 4;
-								continue;
-							}
-
-							++nDivExist;
-
-							if (pDataO[0] == 0x00 && pDataO[1] == 0x00 && pDataO[2] == 0xFF)
-							{
-								pDataO[0] = 0xFF;
-								pDataO[1] = 0x00;
-								pDataO[2] = 0x00;
-							}
-							else
-							{
-								pDataO[0] = 0x00;
-								pDataO[1] = 0x00;
-								pDataO[2] = 0xFF;
-							}
-						}
-						pDataI += 4;
-						pDataO += 4;
-					}
-				}
-
-				if (nDivExist > 7)
-				{
-					if (!NSDirectory::Exists(strDiffsMain))
-						NSDirectory::CreateDirectory(strDiffsMain);
-					if (!NSDirectory::Exists(strDiffs))
-						NSDirectory::CreateDirectory(strDiffs);
-
-					if (!m_pInternal->m_bIsDiffAllInOne)
-					{
-						frameO.SaveFile(sPageDiff, 4);
-					}
-					else
-					{
-						CBgraFrame frameOSrc;
-						frameOSrc.OpenFile(sPageO);
-
-						BYTE* pData1 = frameI.get_Data();
-						BYTE* pData2 = frameOSrc.get_Data();
-						BYTE* pData3 = frameO.get_Data();
-
-						int nRowW = 4 * nW_I;
-						BYTE* pDataAll = new BYTE[3 * nRowW * nH_I];
-						BYTE* pDataAllSrc = pDataAll;
-						for (int j = 0; j < nH_I; j++)
-						{
-							memcpy(pDataAll, pData1, nRowW);
-							pDataAll += nRowW;
-							pData1 += nRowW;
-
-							memcpy(pDataAll, pData2, nRowW);
-							pDataAll += nRowW;
-							pData2 += nRowW;
-
-							memcpy(pDataAll, pData3, nRowW);
-							pDataAll += nRowW;
-							pData3 += nRowW;
-						}
-
-						CBgraFrame oFrameAll;
-						oFrameAll.put_Data(pDataAllSrc);
-						oFrameAll.put_Width(3 * nW_I);
-						oFrameAll.put_Height(nH_I);
-						oFrameAll.put_Stride(-3 * nRowW);
-						oFrameAll.SaveFile(sPageDiff, 4);
-					}
-
-					checkCode |= crcPageDiffs;
-				}
-			}
+			checkCode = m_pInternal->GenerateDiff(strDirIn, strDirOut, strDiffs);
 		}
 
 		m_bRunThread = FALSE;
 
 		m_pInternal->OnConvertFile(this, nReturnCode, (int)(dwTime2 - dwTime1), checkCode);
 		return 0;
-	}
-
-	int GetPagesCount(const std::wstring& dir)
-	{
-		int nCount = 0;
-		std::vector<std::wstring> files = NSDirectory::GetFiles(dir, false);
-		for (std::vector<std::wstring>::iterator i = files.begin(); i != files.end(); i++)
-		{
-			std::wstring sExt = NSFile::GetFileExtention(*i);
-			if (sExt == L"png")
-				++nCount;
-		}
-		return nCount;
 	}
 };
 
@@ -640,6 +666,7 @@ CConverter* CInternalWorker::GetNextConverter()
 	CConverter* pConverter = new CConverter(this);
 	pConverter->DestroyOnFinish();
 	pConverter->m_file = m_files[m_nCurrent];
+	pConverter->m_bDiffOnly = m_bDiffOnly;
 	++m_nCurrent;
 	std::wstring sName = NSFile::GetFileName(pConverter->m_file);
 
@@ -737,6 +764,7 @@ int main(int argc, char** argv)
 {
 	std::vector<std::wstring> arFontsDirs;
 	bool bIsStandard = false;
+	bool bDiffOnly = false;
 	std::wstring strInputFolder = L"";
 	std::wstring strOutputFolder = L"";
 	bool bIsUseSystemFonts = true;
@@ -779,6 +807,10 @@ int main(int argc, char** argv)
 			else if (sKey == L"--standard")
 			{
 				bIsStandard = true;
+			}
+			else if (sKey == L"--diff-only")
+			{
+				bDiffOnly = true;
 			}
 			else if (sKey == L"--use-system-fonts")
 			{
@@ -853,6 +885,7 @@ int main(int argc, char** argv)
 #endif
 
 	CInternalWorker oWorker;
+	oWorker.m_bDiffOnly = bDiffOnly;
 	oWorker.OpenDir(strInputFolder);
 	oWorker.m_sOutputFolder = strOutputFolder;
 	oWorker.m_bIsStandard = bIsStandard;

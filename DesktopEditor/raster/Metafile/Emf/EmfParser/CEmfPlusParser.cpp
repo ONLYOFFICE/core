@@ -336,9 +336,9 @@ namespace MetaFile
 		this->ClearFile();
 	}
 
-	double CEmfPlusParser::GetDpi()
+	USHORT CEmfPlusParser::GetDpi()
 	{
-		return (double)m_unLogicalDpiX;
+		return m_unLogicalDpiX;
 	}
 
 	EmfParserType CEmfPlusParser::GetType()
@@ -2348,6 +2348,9 @@ namespace MetaFile
 
 		if (0 == unLength)
 			return;
+
+		if (2 * unLength > m_ulRecordSize - 28) // 28 = 4*3 + 4*4
+			unLength = m_ulRecordSize - 28;
 
 		m_oStream >> oRect;
 

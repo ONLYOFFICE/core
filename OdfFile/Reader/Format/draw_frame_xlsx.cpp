@@ -131,7 +131,7 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
     const std::wstring textStyleName = common_draw_attlist_.common_shape_draw_attlist_.draw_text_style_name_.get_value_or(L"");
 
 //////////////////////////////////////////////////////////////////////////
-	if (Context.get_text_context().is_drawing_context())
+	if (Context.get_text_context()->is_drawing_context())
 	{
 		Context.get_drawing_context().set_text_box();
 	}
@@ -258,14 +258,14 @@ void draw_image::xlsx_convert(oox::xlsx_conversion_context & Context)
 	Context.get_drawing_context().set_image(href);
 
 ////////////////////////////////////в принципе достаточно общая часть ...
-	Context.get_text_context().start_drawing_content(); //...  если в объекте есть текст он привяжется к объекту - иначе к ячейке
+	Context.get_text_context()->start_drawing_content(); //...  если в объекте есть текст он привяжется к объекту - иначе к ячейке
 	Context.start_drawing_context();
 
 	for (size_t i = 0 ; i < content_.size(); i++)
     {
 		content_[i]->xlsx_convert(Context);
     }
-	std::wstring text_content_ = Context.get_text_context().end_drawing_content();
+	std::wstring text_content_ = Context.get_text_context()->end_drawing_content();
 	Context.end_drawing_context();
 
 	if (!text_content_.empty())
@@ -304,7 +304,7 @@ void draw_text_box::xlsx_convert(oox::xlsx_conversion_context & Context)
 //---------------------------------------------------------------------------------------------------------------
 	Context.get_drawing_context().set_text_box();
 
-	Context.get_text_context().start_drawing_content();
+	Context.get_text_context()->start_drawing_content();
 	Context.start_drawing_context();
 
 	for (size_t i = 0 ; i < content_.size(); i++)
@@ -312,7 +312,7 @@ void draw_text_box::xlsx_convert(oox::xlsx_conversion_context & Context)
 		content_[i]->xlsx_convert(Context);
     }
 
-	std::wstring text_content_ = Context.get_text_context().end_drawing_content();
+	std::wstring text_content_ = Context.get_text_context()->end_drawing_content();
 	Context.end_drawing_context();
 
 	if (!text_content_.empty())
@@ -412,7 +412,7 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 				}
 				else
 				{
-					Context.get_text_context().add_paragraph(text_content);
+					Context.get_text_context()->add_paragraph(text_content);
 				}
 			}
 		}

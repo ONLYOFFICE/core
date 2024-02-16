@@ -60,6 +60,8 @@ namespace OOX
 		class CTimelineRefs;
 		class CTimelineCacheRefs;
 		class CTimelineStyles;
+		class CDynamicArrayProperties;
+		class CRichValueBlock;
 	}
 
 	namespace Drawing
@@ -159,6 +161,9 @@ namespace OOX
             nullable<OOX::Spreadsheet::CSlicerCacheHideNoData>      m_oSlicerCacheHideItemsWithNoData;
 
 			std::vector<OOX::Spreadsheet::CConditionalFormatting*>	m_arrConditionalFormatting;
+
+			nullable < OOX::Spreadsheet::CDynamicArrayProperties>	m_oDynamicArrayProperties;
+			nullable < OOX::Spreadsheet::CRichValueBlock>			m_oRichValueBlock;
 
 			nullable<OOX::CPresenceInfo> m_oPresenceInfo;
 

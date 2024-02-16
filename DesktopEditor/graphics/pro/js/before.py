@@ -13,6 +13,8 @@ if not base.is_dir("xml"):
   base.replaceInFile("./xml/src/xmllight_private.h", "#include \"../../common/", "#include \"../../../../../common/")
   base.replaceInFile("./xml/src/xmllight_private.h", "#include \"../../../UnicodeConverter/", "#include \"../../../../../../UnicodeConverter/")
   base.replaceInFile("./xml/include/xmlutils.h", "#include \"../../common/", "#include \"../../../../../common/")
+  base.replaceInFile("./xml/libxml2/globals.c", "int xmlGetWarningsDefaultValue = 1;", "int xmlGetWarningsDefaultValue = 0;")
+  base.replaceInFile("./xml/libxml2/globals.c", "static int xmlGetWarningsDefaultValueThrDef = 1;", "static int xmlGetWarningsDefaultValueThrDef = 0;")
 
 if not base.is_dir("freetype-2.10.4"):
   base.copy_dir("../../../freetype-2.10.4", "./freetype-2.10.4")

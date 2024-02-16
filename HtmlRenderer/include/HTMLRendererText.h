@@ -29,8 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _ASC_HTMLRENDERER3_H_
-#define _ASC_HTMLRENDERER3_H_
+#ifndef _ASC_HTMLRENDERER3_TEXT_H_
+#define _ASC_HTMLRENDERER3_TEXT_H_
 
 #include "../../DesktopEditor/graphics/IRenderer.h"
 #include "../../DesktopEditor/graphics/pro/officedrawingfile.h"
@@ -187,4 +187,4 @@ namespace NSHtmlRenderer
 	};
 }
 
-#endif // _ASC_HTMLRENDERER3_H_
+#endif // _ASC_HTMLRENDERER3_TEXT_H_

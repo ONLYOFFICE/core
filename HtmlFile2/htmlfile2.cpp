@@ -25,6 +25,7 @@
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 #include "../DesktopEditor/graphics/pro/Graphics.h"
+#include "../DesktopEditor/raster/Metafile/MetaFileCommon.h"
 #include "htmlfile2.h"
 
 #include <boost/regex.hpp>
@@ -99,6 +100,25 @@ std::wstring EncodeXmlString(const std::wstring& s)
 	replace_all(sRes, L"\t", L"&#x9;");
 
 	return sRes;
+}
+
+bool GetStatusUsingExternalLocalFiles()
+{
+	if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
+		return NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
+
+	return true;
+}
+
+bool CanUseThisPath(const std::wstring& wsPath, bool bIsAllowExternalLocalFiles)
+{
+	if (bIsAllowExternalLocalFiles)
+		return true;
+
+	if (wsPath.length() >= 3 && L"../" == wsPath.substr(0, 3))
+		return false;
+
+	return true;
 }
 
 class CHtmlFile2_Private
@@ -1848,9 +1868,12 @@ private:
 			return;
 		}
 
-		bool bIsAllowExternalLocalFiles = true;
-		if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
-			bIsAllowExternalLocalFiles = NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
+		const bool bIsAllowExternalLocalFiles = GetStatusUsingExternalLocalFiles();
+
+		sSrcM = NSSystemPath::ShortenPath(sSrcM);
+
+		if (!CanUseThisPath(sSrcM, bIsAllowExternalLocalFiles))
+			return;
 
 		int nImageId = -1;
 		std::wstring sImageSrc, sExtention;
@@ -2143,7 +2166,12 @@ private:
 			size_t nHRefLen = sSVG.find(L"\"", nHRef);
 			if(nHRefLen == std::wstring::npos)
 				break;
-			std::wstring sImageName = sSVG.substr(nHRef, nHRefLen - nHRef);
+
+			const std::wstring sImageName = NSSystemPath::ShortenPath(sSVG.substr(nHRef, nHRefLen - nHRef));
+
+			if (!CanUseThisPath(sImageName, GetStatusUsingExternalLocalFiles()))
+				break;
+
 			std::wstring sTIN(sImageName);
 			sTIN.erase(std::remove_if(sTIN.begin(), sTIN.end(), [] (wchar_t ch) { return std::iswspace(ch) || (ch == L'^'); }), sTIN.end());
 			sTIN = NSFile::GetFileName(sTIN);
@@ -2174,7 +2202,7 @@ private:
 		if (bLoad)
 		{
 			std::wstring sPngFile = m_sDst + L"/word/media/i" + sImageId + L".png";
-			pMetafile->ConvertToRaster(sPngFile.data(), 4, 1000);
+			MetaFile::ConvertToRasterMaxSize(pMetafile, sPngFile.data(), 4, 1000);
 		}
 		pMetafile->Release();
 		pFonts->Release();

@@ -238,6 +238,7 @@ namespace BinXlsxRW
 		ExternalLinksAutoRefresh = 26,
 		TimelineCaches = 27,
 		TimelineCache = 28,
+		Metadata = 29
 	};}
 	namespace c_oSerWorkbookProtection {enum c_oSerWorkbookProtection{
 		AlgorithmName = 0,
@@ -662,6 +663,7 @@ namespace BinXlsxRW
 		ChildChain = 5,
 		NewThread = 6
 	};}
+//------------------------------------------------------------------------------------------------------------------------------
 	namespace c_oSer_Timeline {enum c_oSer_Timeline
 	{
 		Name = 0,
@@ -717,6 +719,116 @@ namespace BinXlsxRW
 		Name = 0,
 		TabId = 1
 	};}
+//------------------------------------------------------------------------------------------------------------------------------
+	namespace c_oSer_Metadata {	enum c_oSer_Metadata
+	{
+		MetadataTypes = 0,
+		MetadataStrings = 1,
+		MdxMetadata = 2,
+		CellMetadata = 3,
+		ValueMetadata = 4,
+		FutureMetadata = 5,
+	};}
+	namespace c_oSer_MetadataType {	enum c_oSer_MetadataType
+		{
+			MetadataType = 0,
+			Name = 1,
+			MinSupportedVersion = 2,
+			GhostRow = 3,
+			GhostCol = 4,
+			Edit = 5,
+			Delete = 6,
+			Copy = 7,
+			PasteAll = 8,
+			PasteFormulas = 9,
+			PasteValues = 10,
+			PasteFormats = 11,
+			PasteComments = 12,
+			PasteDataValidation = 13,
+			PasteBorders = 14,
+			PasteColWidths = 15,
+			PasteNumberFormats = 16,
+			Merge = 17,
+			SplitFirst = 18,
+			SplitAll = 19,
+			RowColShift = 30,
+			ClearAll = 21,
+			ClearFormats = 22,
+			ClearContents = 23,
+			ClearComments = 24,
+			Assign = 25,
+			Coerce = 26,
+			CellMeta = 27,
+		};}
+	namespace c_oSer_MetadataString {enum c_oSer_MetadataString
+		{
+			MetadataString = 0,
+
+		};}
+	namespace c_oSer_MetadataBlock {enum c_oSer_MetadataBlock
+		{
+			MetadataBlock = 0,
+			MetadataRecord = 1,
+			MetadataRecordType = 2,
+			MetadataRecordValue = 3,
+		};}
+	namespace c_oSer_FutureMetadataBlock {enum c_oSer_FutureMetadataBlock
+		{
+			Name = 0,
+			FutureMetadataBlock = 1,
+			RichValueBlock = 2,
+			DynamicArrayProperties = 3,
+			DynamicArray = 4,
+			CollapsedArray = 5
+		};}
+	namespace c_oSer_MdxMetadata {enum c_oSer_MdxMetadata
+		{
+			Mdx = 0,
+			NameIndex = 1,
+			FunctionTag = 2,
+			MdxTuple = 3,
+			MdxSet = 4,
+			MdxKPI = 5,
+			MdxMemeberProp = 6
+		};}
+	namespace c_oSer_MetadataMdxTuple {	enum c_oSer_MetadataMdxTuple
+	{
+		IndexCount = 0,
+		CultureCurrency = 1,
+		StringIndex = 2,
+		NumFmtIndex = 3,
+		BackColor = 4,
+		ForeColor = 5,
+		Italic = 6,
+		Underline = 7,
+		Strike = 8,
+		Bold = 9,
+		MetadataStringIndex = 10
+	};}	
+	namespace c_oSer_MetadataStringIndex {enum c_oSer_MetadataStringIndex
+	{
+		StringIsSet = 0,
+		IndexValue = 1
+	};}
+	namespace c_oSer_MetadataMdxSet {enum c_oSer_MetadataMdxSet
+	{
+		Count = 0,
+		Index = 1,
+		SortOrder = 2,
+		MetadataStringIndex = 3
+	};}
+	namespace c_oSer_MetadataMdxKPI {enum c_oSer_MetadataMdxKPI
+	{
+		NameIndex = 0,
+		Index = 1,
+		Property = 2
+	};}
+	namespace c_oSer_MetadataMemberProperty {enum c_oSer_MetadataMemberProperty
+	{
+		NameIndex = 0,
+		Index = 1
+	};}
+//------------------------------------------------------------------------------------------------------------------------------
 	namespace c_oSerCustoms {enum c_oSerCustoms
 	{
 		Custom = 0,

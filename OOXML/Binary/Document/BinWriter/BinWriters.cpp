@@ -1132,6 +1132,12 @@ void Binary_pPrWriter::Write_pPr(const OOX::Logic::CParagraphProperty& pPr)
 		WriteCnfStyle(pPr.m_oCnfStyle.GetPointer());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos2);
 	}
+	if (pPr.m_oSnapToGrid.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_pPrType::SnapToGrid);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(pPr.m_oSnapToGrid->m_oVal.ToBool());
+	}
 }
 void Binary_pPrWriter::WritePPrChange(const OOX::Logic::CPPrChange& pPrChange)
 {
@@ -6418,7 +6424,7 @@ void BinaryDocumentTableWriter::WriteRunContent(std::vector<OOX::WritingElement*
 				OOX::Logic::CSym* oSym = static_cast<OOX::Logic::CSym*>(item);
 				wchar_t ch = 0x0FFF & oSym->m_oChar->GetValue();
 				std::wstring sText(&ch, 1);
-				WriteText(sText, c_oSerRunType::run);
+				WriteText(sText, c_oSerRunType::run);  // todooo определить что писать c_oSerRunType::run или c_oSerRunType::delText - 66333
 				break;
 			}
 		case OOX::et_w_delText:

@@ -418,7 +418,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 				if (pVml)
 				{	
 					std::wstring sShapeId = oox_picture->oleObject->m_sShapeId.get();
-                    boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVml->m_mapShapes.find(sShapeId);
+                    std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVml->m_mapShapes.find(sShapeId);
 
                     if (pVml->m_mapShapes.end() != pFind)
 					{
@@ -1993,6 +1993,26 @@ void OoxConverter::convert_list_level(PPTX::Logic::TextParagraphPr	*oox_para_pro
 	odf_context()->styles_context()->lists_styles().end_style_level();
 }
 
+static bool is_empty_run_elems(const std::vector<PPTX::Logic::RunElem>& runElems)
+{
+	using namespace PPTX::Logic;
+
+	auto runIt = std::find_if_not(runElems.begin(), runElems.end(),
+		[](const RunElem& r) {
+			return !r.is<Run>();
+		});
+	if (runIt != runElems.end())
+	{
+		const Run& run = runIt->as<Run>();
+		if (!run.HasText())
+			return true;
+	}
+	else
+		return true;
+
+	return false;
+}
+
 void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::TextListStyle *oox_list_style)
 {
 	if (!oox_paragraph)return;
@@ -2036,6 +2056,8 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 			if (paraPr->ParagraphBullet.is<PPTX::Logic::BuNone>())
 				list_present = false;
 		}
+		else
+			list_present = false;
 														//свойства могут быть приписаны не только к параграфу, но и к самому объекту		
 		odf_writer::paragraph_format_properties* paragraph_properties = odf_context()->text_context()->get_paragraph_properties();
 		odf_writer::text_format_properties*	text_properties = odf_context()->text_context()->get_text_properties();
@@ -2061,17 +2083,7 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 		}
 	}	
 
-	std::vector<PPTX::Logic::RunElem>::iterator runIt = std::find_if_not(oox_paragraph->RunElems.begin(), oox_paragraph->RunElems.end(),
-		[](const PPTX::Logic::RunElem& r) {
-			return !r.is<PPTX::Logic::Run>();
-		});
-	if (runIt != oox_paragraph->RunElems.end())
-	{
-		const PPTX::Logic::Run& run = runIt->as<PPTX::Logic::Run>();
-		if (!run.HasText())
-			list_present = false;
-	}
-	else 
+	if (is_empty_run_elems(oox_paragraph->RunElems))
 		list_present = false;
 
 	//if (oox_paragraph->RunElems.empty() && list_present) list_present = false; // ms не обозначает присутствие списка, libra - показывает значек
@@ -2499,10 +2511,6 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::t
 	{
 		text_properties->fo_text_transform_ = odf_types::text_transform(odf_types::text_transform::Capitalize);
 	}
-	if (oox_run_pr->hlinkClick.IsInit())
-	{
-		convert(oox_run_pr->hlinkClick.GetPointer());
-	}
 }
 static std::vector<std::wstring> split_tabs(const std::wstring& text)
 {
@@ -2577,6 +2585,29 @@ void OoxConverter::convert(PPTX::Logic::Run *oox_run)
 		bool bExternal = false;
 		std::wstring hlink = find_link_by_id(oox_run->rPr->hlinkClick->id.get(), 2, bExternal);
 		std::wstring location;
+
+		smart_ptr<OOX::File> file = find_file_by_id(oox_run->rPr->hlinkClick->id.get());
+		OOX::HyperLink* hyperlink = dynamic_cast<OOX::HyperLink*>(file.GetPointer());
+
+		if (hyperlink)
+			location = hyperlink->Uri().GetBasename();
+		
+		if (oox_run->rPr->hlinkClick->action.IsInit() && location.empty())
+		{
+			const std::wstring& action = *oox_run->rPr->hlinkClick->action;
+
+			if (std::wstring::npos != action.find(L"previousslide"))
+				location = L"previous-page";
+			else if (std::wstring::npos != action.find(L"nextslide"))
+				location = L"next-page";
+			else if (std::wstring::npos != action.find(L"firstslide"))
+				location = L"first-page";
+			else if (std::wstring::npos != action.find(L"lastslide"))
+				location = L"last-page";
+			else if (std::wstring::npos != action.find(L"endshow"))
+				location = L"end";
+		}
+
 		text_context->add_hyperlink(hlink, oox_run->GetText(), location);
 	}
 	else

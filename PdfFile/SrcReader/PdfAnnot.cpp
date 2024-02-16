@@ -2150,24 +2150,31 @@ CAnnotMarkup::CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : 
 
 			do
 			{
-				if (oLightReader.GetNameA() != "span")
-					continue;
-
-				CFontData* pFont = new CFontData(oFontBase);
-				while (oLightReader.MoveToNextAttribute())
+				std::string sName = oLightReader.GetNameA();
+				if (sName == "span")
 				{
-					if (oLightReader.GetNameA() == "style")
+					CFontData* pFont = new CFontData(oFontBase);
+					while (oLightReader.MoveToNextAttribute())
 					{
-						BYTE nTextAlign = ReadFontData(oLightReader.GetTextA(), pFont);
-						if (nTextAlign != 3)
-							m_nTextAlign = nTextAlign;
-						break;
+						if (oLightReader.GetNameA() == "style")
+						{
+							BYTE nTextAlign = ReadFontData(oLightReader.GetTextA(), pFont);
+							if (nTextAlign != 3)
+								m_nTextAlign = nTextAlign;
+							break;
+						}
 					}
-				}
-				oLightReader.MoveToElement();
+					oLightReader.MoveToElement();
 
-				pFont->sText = oLightReader.GetText2A();
-				m_arrRC.push_back(pFont);
+					pFont->sText = oLightReader.GetText2A();
+					m_arrRC.push_back(pFont);
+				}
+				else if (sName == "#text")
+				{
+					CFontData* pFont = new CFontData(oFontBase);
+					pFont->sText = oLightReader.GetTextA();
+					m_arrRC.push_back(pFont);
+				}
 			} while (oLightReader.ReadNextSiblingNode2(nDepthSpan));
 		}
 	}

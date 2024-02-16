@@ -3,6 +3,7 @@
 #include "../../../../raster/BgraFrame.h"
 #include "../../../../raster/ImageFileFormatChecker.h"
 #include "../../../../../common/File.h"
+#include "../../../../../common/StringBuilder.h"
 #include "drawingfile.cpp"
 
 unsigned char READ_BYTE(BYTE* x)
@@ -1289,7 +1290,9 @@ int main(int argc, char* argv[])
 
 						nPathLength = READ_INT(pAnnots + i);
 						i += 4;
-						std::cout << "text:" << std::string((char*)(pAnnots + i), nPathLength) << " ";
+						std::string sText = std::string((char*)(pAnnots + i), nPathLength);
+						NSStringUtils::string_replaceA(sText, "\r", "\n");
+						std::cout << "text:" << sText << " ";
 						i += nPathLength;
 
 						std::cout << "} ";

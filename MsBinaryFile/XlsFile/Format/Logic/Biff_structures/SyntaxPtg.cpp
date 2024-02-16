@@ -469,6 +469,7 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 			static boost::wregex reg_inside_table3(L"^[,;:]?\\[#?[\\s\\w\\d.]+\\]");
 			static boost::wregex reg_inside_table4(L"\\[#?(\\[.+?\\]\\,)?(\\[.+?\\])?.+?\\]");
 			static boost::wregex reg_inside_table5(L"^[,;:]?\\[.+?\\]");
+			static boost::wregex reg_inside_table6(L"\\[\\]");
 
 			first = results[1].second;
 
@@ -606,6 +607,24 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 					
 				return true;
 				
+			}
+			else if (boost::regex_search(first, last, results_1, reg_inside_table6))
+			{
+				auto colCount = XMLSTUFF::getColumnsCount(indexTable);
+				if(colCount>1)
+				{
+					ptgList.columns = 0x02;
+					ptgList.colFirst = 0;
+					ptgList.colLast = colCount-1;
+                    first = results_1[0].second;
+				}
+				else
+				{
+					ptgList.columns = 0x01;
+					ptgList.colFirst = 0;
+					first = results_1[0].second;
+				}
+				return true;
 			}
 			else if(boost::regex_search(first, last, results_1, reg_inside_table4))
 			{

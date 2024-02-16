@@ -161,6 +161,15 @@ TEST_F(CPdfFileTest, GetMetaData)
 	RELEASEARRAYOBJECTS(pMetaData);
 }
 
+TEST_F(CPdfFileTest, ValidMetaData)
+{
+	GTEST_SKIP();
+
+	LoadFromFile();
+
+	std::cout << "ValidMetaData " << (pdfFile->ValidMetaData() ? "true" : "false") << std::endl;
+}
+
 TEST_F(CPdfFileTest, PdfBinToPng)
 {
 	GTEST_SKIP();

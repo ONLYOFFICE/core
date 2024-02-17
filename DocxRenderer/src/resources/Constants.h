@@ -2,6 +2,7 @@
 #include "../../../DesktopEditor/common/Types.h"
 
 #define USING_DELETE_DUPLICATING_CONTS 0 // 0 - все сточки-дубликаты превращаются в shape, 1 - строчки дубликаты удаляются
+// #define USE_DEFAULT_FONT_TO_RECALC
 
 const double c_dDpiX		= 72.0;
 const double c_dDpiY		= 72.0;

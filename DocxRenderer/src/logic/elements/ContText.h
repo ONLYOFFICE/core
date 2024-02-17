@@ -58,6 +58,8 @@ namespace NSDocxRenderer
 		bool m_bIsEmbossPresent   {false};
 		bool m_bIsEngravePresent  {false};
 
+		// font to calc selected sizes
+		NSStructures::CFont m_oSelectedFont{};
 
 		// sizes
 		double m_dSpaceWidthMM{0};

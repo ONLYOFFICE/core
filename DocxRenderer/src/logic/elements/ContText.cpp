@@ -69,6 +69,8 @@ namespace NSDocxRenderer
 		m_dTopWithAscent = rCont.m_dTopWithAscent;
 		m_dBotWithDescent = rCont.m_dBotWithDescent;
 
+		m_oSelectedFont = rCont.m_oSelectedFont;
+
 		return *this;
 	}
 
@@ -77,12 +79,7 @@ namespace NSDocxRenderer
 		if (!m_pFontStyle->wsFontName.empty() && !m_oText.empty())
 		{
 			// нужно перемерять...
-			NSStructures::CFont oFont;
-			oFont.Name = m_pFontStyle->wsFontName;
-			oFont.Bold = m_pFontStyle->bBold;
-			oFont.Italic = m_pFontStyle->bItalic;
-			oFont.Size = m_pFontStyle->dFontSize;
-			m_pManager->LoadFontByName(oFont);
+			m_pManager->LoadFontByName(m_oSelectedFont);
 
 			double dBoxX;
 			double dBoxY;

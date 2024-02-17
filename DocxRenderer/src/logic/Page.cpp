@@ -357,7 +357,19 @@ namespace NSDocxRenderer
 			m_pFontSelector->IsSelectedBold());
 
 		pCont->m_dSpaceWidthMM = m_pFontManager->GetSpaceWidthMM();
+
+#ifndef USE_DEFAULT_FONT_TO_RECALC
+		pCont->m_oSelectedFont.Name = m_pFontSelector->GetSelectedName();
+		pCont->m_oSelectedFont.Size = m_pFont->Size;
+		pCont->m_oSelectedFont.SetStyle(m_pFont->GetStyle2());
+#else
+		pCont->m_oSelectedFont.Path = m_pFont->Path;
+		pCont->m_oSelectedFont.Size = m_pFont->Size;
+		pCont->m_oSelectedFont.FaceIndex = m_pFont->FaceIndex;
+#endif // USE_DEFAULT_FONT_TO_RECALC
+
 		m_pParagraphStyleManager->UpdateAvgFontSize(m_pFont->Size);
+
 
 		m_arConts.push_back(pCont);
 	}

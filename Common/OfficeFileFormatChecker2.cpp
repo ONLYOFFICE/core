@@ -900,12 +900,12 @@ bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring &fileName, boo
 		const char *ppsmFormatLine = "application/vnd.ms-powerpoint.slideshow.macroEnabled.main+xml";
 		const char *potmFormatLine = "application/vnd.ms-powerpoint.template.macroEnabled.main+xml";
 
-		const char *vsdxFormatLine = "application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml";
-		const char *vssxFormatLine = "application/vnd.openxmlformats-officedocument.presentationml.slideshow.main+xml";
-		const char *vstxFormatLine = "application/vnd.openxmlformats-officedocument.presentationml.template.main+xml";
-		const char *vsdmFormatLine = "application/vnd.ms-powerpoint.presentation.macroEnabled.main+xml";
-		const char *vssmFormatLine = "application/vnd.ms-powerpoint.slideshow.macroEnabled.main+xml";
-		const char *vstmFormatLine = "application/vnd.ms-powerpoint.template.macroEnabled.main+xml";
+		const char *vsdxFormatLine = "application/vnd.ms-visio.drawing.main+xml";
+		const char *vssxFormatLine = "application/vnd.ms-visio.stencil.main+xml";
+		const char *vstxFormatLine = "application/vnd.ms-visio.template.main+xml";
+		const char *vsdmFormatLine = "application/vnd.ms-visio.drawing.macroEnabled.main+xml";
+		const char *vssmFormatLine = "application/vnd.ms-visio.stencil.macroEnabled.main+xml";
+		const char *vstmFormatLine = "application/vnd.ms-visio.template.macroEnabled.main+xml";
 
 		std::string strContentTypes((char*)pBuffer, nBufferSize);
 

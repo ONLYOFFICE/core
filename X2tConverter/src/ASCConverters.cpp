@@ -1365,7 +1365,6 @@ namespace NExtractTools
 			nFormatTo = *params.m_nFormatTo;
 
 		_UINT32 nRes = 0;
-		std::wstring sVsdxFile;
 		std::wstring sVsdxDir = combinePath(convertParams.m_sTempDir, L"xsdx_unpacked");
 		NSDirectory::CreateDirectory(sVsdxDir);
 
@@ -1377,7 +1376,7 @@ namespace NExtractTools
 				params.setFromChanges(false);
 				nRes = apply_changes(sFrom, sTo, NSDoctRenderer::DoctRendererFormat::FormatFile::VSDT, convertParams.m_sTempParamOOXMLFile, params, convertParams);
 			}
-			nRes = zip2dir(sVsdxFile, sVsdxDir);
+			nRes = zip2dir(sFrom, sVsdxDir);
 		}
 		else
 			nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;

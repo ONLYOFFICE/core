@@ -467,7 +467,7 @@ namespace Spreadsheet
 			auto ptrExternRowHdr = static_cast<XLSB::ExternRowHdr*>(ptr->m_BrtExternRowHdr.get());
 			if (ptrExternRowHdr != nullptr)
 			{
-				m_oR = ptrExternRowHdr->rw;
+				m_oR = ptrExternRowHdr->rw + 1;
 			}
 
 			for (auto &item : ptr->m_arEXTERNVALUE)

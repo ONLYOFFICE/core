@@ -39,4 +39,16 @@ class CRecordExObjListContainer : public CRecordsContainer
 public:
     virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 };
+
+
+class CRecordExObjStg : public CUnknownRecord
+{
+public:
+    std::wstring m_sFileName;
+
+    CRecordExObjStg(const std::wstring& name, const std::wstring& tempPath);
+    ~CRecordExObjStg();
+
+    virtual void ReadFromStream(SRecordHeader& oHeader, POLE::Stream* pStream) override;
+};
 }

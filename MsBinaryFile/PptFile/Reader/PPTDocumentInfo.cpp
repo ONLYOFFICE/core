@@ -33,7 +33,7 @@
 
 using namespace PPT;
 
-CPPTDocumentInfo::CPPTDocumentInfo() : m_oCurrentUser(), m_bMacros(true)
+CPPTDocumentInfo::CPPTDocumentInfo() : m_oCurrentUser(), m_bMacros(true), m_pStream(NULL)
 {
 }
 
@@ -57,6 +57,7 @@ void CPPTDocumentInfo::Clear()
 
 bool CPPTDocumentInfo::ReadFromStream(CRecordCurrentUserAtom *pCurrentUser, POLE::Stream *pStream)
 {
+    m_pStream = pStream;
     m_oCurrentUser.FromAtom(pCurrentUser);
 
     _UINT32 offsetToEdit = m_oCurrentUser.m_nOffsetToCurrentEdit;

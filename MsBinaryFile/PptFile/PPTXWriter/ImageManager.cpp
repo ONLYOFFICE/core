@@ -32,8 +32,9 @@
 #include "ImageManager.h"
 #include <boost/algorithm/string.hpp>
 #include "../../../OOXML/SystemUtility/SystemUtility.h"
+#include "../../../DesktopEditor/common/Directory.h"
 
-CMediaManager::CMediaManager() : m_lIndexNextImage(0), m_lIndexNextAudio(0), m_lIndexNextVideo(0)
+CMediaManager::CMediaManager() : m_lIndexNextImage(0), m_lIndexNextAudio(0), m_lIndexNextVideo(0), m_lIndexNextOleObject(0)
 {
 }
 CMediaManager::~CMediaManager()
@@ -46,6 +47,7 @@ void CMediaManager::Clear()
     m_lIndexNextImage = 0;
     m_lIndexNextAudio = 0;
     m_lIndexNextVideo = 0;
+    m_lIndexNextOleObject = 0;
 }
 
 std::wstring CMediaManager::FindMedia(const std::wstring &strInput)
@@ -56,6 +58,10 @@ std::wstring CMediaManager::FindMedia(const std::wstring &strInput)
         return pPair->second;
     }
     return L"";
+}
+void CMediaManager::SetDstEmbeddings(const std::wstring& strDst)
+{
+    m_strDstEmbeddings = strDst;
 }
 void CMediaManager::SetDstMedia(const std::wstring &strDst)
 {
@@ -80,13 +86,69 @@ std::wstring CMediaManager::GenerateImage(const std::wstring &strInput)
 {
     return GenerateMedia(strInput, L"image", m_lIndexNextImage, L".png");
 }
-
+std::wstring CMediaManager::GenerateOleObject(const std::wstring& strInput)
+{
+    return GenerateEmbedding(strInput, L"oleObject", m_lIndexNextOleObject, L".bin");
+}
 std::wstring CMediaManager::GenerateImageJPEG(const std::wstring &strInput)
 {
     return GenerateMedia(strInput, L"image", m_lIndexNextImage, L".jpeg");
 }
 
-std::wstring CMediaManager::GenerateMedia(const std::wstring &strInput, const std::wstring &Template, long &Indexer, const std::wstring &strDefaultExt)
+std::wstring CMediaManager::GenerateEmbedding(const std::wstring &strInput, const std::wstring &Template, long &Indexer, const std::wstring &strDefaultExt)
+{
+    std::map<std::wstring, std::wstring>::iterator pPair = m_mapMedia.find(strInput);
+    if (m_mapMedia.end() != pPair)
+    {
+        return pPair->second;
+    }
+
+//    if (IsNeedDownload(strInput))
+//    {
+//#ifndef DISABLE_FILE_DOWNLOADER
+//        NSNetwork::NSFileTransport::CFileDownloader oDownloader(strInput, TRUE);
+//        if ( oDownloader.DownloadSync() )
+//        {
+//            std::wstring file_name = oDownloader.GetFilePath();
+//
+//            //todooo - check media file
+//            return GenerateEmbedding(file_name , Template, Indexer, strDefaultExt);
+//        }
+//#endif
+//    }
+
+    std::wstring strExts = strDefaultExt;
+    int nIndexExt = strInput.rfind(wchar_t('.'));
+    if (-1 != nIndexExt)
+        strExts = strInput.substr(nIndexExt);
+
+    if (strExts == L".tmp" || strExts.empty()) strExts = strDefaultExt;
+
+    std::wstring strMediaName = Template + std::to_wstring(++Indexer);
+
+    std::wstring strOutput = m_strDstEmbeddings + strMediaName + strExts;
+    strMediaName  = L"../embeddings/" + strMediaName + strExts;
+
+    OOX::CPath pathInput(strInput); 
+    std::wstring strPathInput = pathInput.GetPath();
+    
+    if (std::wstring::npos == strPathInput.find(m_strTempMedia))
+    {
+        return L"";
+    }
+    if (strOutput != strInput)
+    {
+        NSDirectory::CreateDirectory(m_strDstEmbeddings);
+
+        if (NSFile::CFileBinary::Copy(strInput, strOutput) == false)
+        {
+            return L"";
+        }
+    }
+    m_mapMedia[strInput] = strMediaName;
+    return strMediaName;
+}
+std::wstring CMediaManager::GenerateMedia(const std::wstring& strInput, const std::wstring& Template, long& Indexer, const std::wstring& strDefaultExt)
 {
     std::map<std::wstring, std::wstring>::iterator pPair = m_mapMedia.find(strInput);
     if (m_mapMedia.end() != pPair)
@@ -98,12 +160,12 @@ std::wstring CMediaManager::GenerateMedia(const std::wstring &strInput, const st
     {
 #ifndef DISABLE_FILE_DOWNLOADER
         NSNetwork::NSFileTransport::CFileDownloader oDownloader(strInput, TRUE);
-        if ( oDownloader.DownloadSync() )
+        if (oDownloader.DownloadSync())
         {
             std::wstring file_name = oDownloader.GetFilePath();
 
             //todooo - check media file
-            return GenerateMedia(file_name , Template, Indexer, strDefaultExt);
+            return GenerateMedia(file_name, Template, Indexer, strDefaultExt);
         }
 #endif
     }
@@ -117,24 +179,26 @@ std::wstring CMediaManager::GenerateMedia(const std::wstring &strInput, const st
     {
         std::wstring strInput1 = strInput.substr(0, nIndexExt);
         nIndexExt = strInput1.rfind(wchar_t('.'));
-        strExts =  nIndexExt < 0 ? L"" : strInput1.substr(nIndexExt);
+        strExts = nIndexExt < 0 ? L"" : strInput1.substr(nIndexExt);
     }
     if (strExts == L".tmp" || strExts.empty()) strExts = strDefaultExt;
 
     std::wstring strMediaName = Template + std::to_wstring(++Indexer);
 
     std::wstring strOutput = m_strDstMedia + strMediaName + strExts;
-    strMediaName  = L"../media/" + strMediaName + strExts;
+    strMediaName = L"../media/" + strMediaName + strExts;
 
-    OOX::CPath pathInput(strInput); 
+    OOX::CPath pathInput(strInput);
     std::wstring strPathInput = pathInput.GetPath();
-    
+
     if (std::wstring::npos == strPathInput.find(m_strTempMedia))
     {
         return L"";
     }
     if (strOutput != strInput)
     {
+        NSDirectory::CreateDirectory(m_strDstMedia);
+        
         if (NSFile::CFileBinary::Copy(strInput, strOutput) == false)
         {
             return L"";
@@ -359,19 +423,24 @@ std::wstring CRelsGenerator::WriteHyperlinkMedia(const std::wstring &strMedia, b
     return strRid;
 }
 
-std::wstring CRelsGenerator::WriteHyperlinkImage(const std::wstring &strImage, bool bExternal)
+std::wstring CRelsGenerator::WriteHyperlinkImage(const std::wstring & strFileName, bool bExternal)
 {
-    return WriteHyperlinkMedia(strImage, bExternal, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image");
+    return WriteHyperlinkMedia(strFileName, bExternal, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image");
 }
 
-std::wstring CRelsGenerator::WriteHyperlinkAudio(const std::wstring &strImage, bool bExternal)
+std::wstring CRelsGenerator::WriteHyperlinkAudio(const std::wstring & strFileName, bool bExternal)
 {
-    return WriteHyperlinkMedia(strImage, bExternal, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
+    return WriteHyperlinkMedia(strFileName, bExternal, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
 }
 
-std::wstring CRelsGenerator::WriteHyperlinkVideo(const std::wstring &strImage, bool bExternal)
+std::wstring CRelsGenerator::WriteHyperlinkVideo(const std::wstring & strFileName, bool bExternal)
 {
-    return WriteHyperlinkMedia(strImage, bExternal, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video");
+    return WriteHyperlinkMedia(strFileName, bExternal, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video");
+}
+
+std::wstring CRelsGenerator::WriteHyperlinkOleObject(const std::wstring &strFileName, bool bExternal)
+{
+    return WriteHyperlinkMedia(strFileName, bExternal, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject");
 }
 
 std::wstring CRelsGenerator::WriteMedia(const std::wstring &strMediaPath)
@@ -389,7 +458,14 @@ std::wstring CRelsGenerator::WriteImage(const std::wstring &strImagePath)
     if (strImage.empty())	return WriteHyperlinkImage(CorrectXmlString3(strImagePath), true);
     return WriteHyperlinkImage(strImage, false);
 }
+std::wstring  CRelsGenerator::WriteOleObject(const std::wstring& strOleObjectPath)
+{
+    std::wstring strOleObject = m_pManager->GenerateOleObject(strOleObjectPath);
 
+    if (strOleObject.empty())	
+        return WriteHyperlinkOleObject(CorrectXmlString3(strOleObjectPath), true);
+    return WriteHyperlinkOleObject(strOleObject, false);
+}
 std::wstring CRelsGenerator::WriteSlideRef(const std::wstring &strLocation)
 {
     int sldNum = PPT::CExFilesInfo::GetSlideNumber(strLocation);

@@ -37,3 +37,63 @@ void CRecordExObjListContainer::ReadFromStream(SRecordHeader &oHeader, POLE::Str
 {
     CRecordsContainer::ReadFromStream(oHeader, pStream);
 }
+
+CRecordExObjStg::CRecordExObjStg(const std::wstring& name, const std::wstring& tempPath)
+{
+    if (name.empty())
+    {
+        m_sFileName = NSFile::CFileBinary::CreateTempFileWithUniqueName(tempPath, L"bin");
+    }
+    else
+    {
+        m_sFileName = tempPath + FILE_SEPARATOR_STR + name;
+    }
+}
+
+CRecordExObjStg::~CRecordExObjStg()
+{
+}
+
+void CRecordExObjStg::ReadFromStream(SRecordHeader& oHeader, POLE::Stream* pStream)
+{
+    m_oHeader = oHeader;
+
+    ULONG decompressedSize = m_oHeader.RecLen, compressedSize = m_oHeader.RecLen;
+
+    BYTE* pData = new BYTE[compressedSize];
+    if (!pData) return;
+
+    if (m_oHeader.RecInstance == 0x01)
+    {
+        decompressedSize = StreamUtils::ReadDWORD(pStream) + 64;
+        compressedSize -= 4;
+    }
+    pStream->read(pData, compressedSize);
+
+    //if (pDecryptor)
+    //{
+    //	pDecryptor->Decrypt((char*)pData, compressedSize, 0);
+    //}
+
+    if (m_oHeader.RecInstance == 0x01)
+    {
+        BYTE* pDataUncompress = new BYTE[decompressedSize];
+        NSZip::Decompress(pData, compressedSize, pDataUncompress, decompressedSize);
+
+        delete[]pData;
+        pData = pDataUncompress;
+    }
+
+    NSFile::CFileBinary file;
+    if (file.CreateFileW(m_sFileName))
+    {
+        file.WriteFile(pData, decompressedSize);
+        file.CloseFile();
+    }
+    else
+    {
+        m_sFileName.clear();
+    }
+    delete[] pData;
+    pData = NULL;
+}

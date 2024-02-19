@@ -225,6 +225,7 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
         }        
     }break;
     case PPT::etPicture:
+    case PPT::etOleObject:
     {
         if (reset_default)
         {
@@ -1645,10 +1646,10 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
 
             if (CExFilesInfo::eftVideo == exType)
             {
-                CVideoElement* pVideoElem		= new CVideoElement();
+                CVideoElement* pVideoElem = new CVideoElement();
 
-                pVideoElem->m_strVideoFileName	= oInfo.m_strFilePath ;
-                pVideoElem->m_strImageFileName	= oInfoDefault.m_strFilePath + FILE_SEPARATOR_STR;
+                pVideoElem->m_strVideoFileName = oInfo.m_strFilePath ;
+                pVideoElem->m_strImageFileName = oInfoDefault.m_strFilePath + FILE_SEPARATOR_STR;
 
                 pElement = CElementPtr(pVideoElem);
             }
@@ -1678,9 +1679,20 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
                 }
 
             }
+            else if (CExFilesInfo::eftOleObject == exType)
+            {
+                COleObjectElement* pOleObjectElem = new COleObjectElement();
+                pOleObjectElem->m_strBinFileName = oInfo.m_strFilePath;
+                pOleObjectElem->m_strImageFileName = oInfoDefault.m_strFilePath + FILE_SEPARATOR_STR;
+
+                pOleObjectElem->m_strProgId = oInfo.m_progName;
+                pOleObjectElem->m_strOleName = oInfo.m_name;
+
+                pElement = CElementPtr(pOleObjectElem);
+            }
             else
             {
-                CImageElement* pImageElem		= new CImageElement();
+                CImageElement* pImageElem = new CImageElement();
                 pImageElem->m_strImageFileName	= oInfo.m_strFilePath + FILE_SEPARATOR_STR;
 
                 pElement = CElementPtr(pImageElem);
@@ -1782,7 +1794,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
     GetRecordsByType(&oArrayFooterMeta, true, true);
     if (0 < oArrayFooterMeta.size())
     {
-        pElement->m_lPlaceholderType		= PT_MasterFooter;
+        pElement->m_lPlaceholderType = PT_MasterFooter;
         pElement->m_lPlaceholderUserStr	= oArrayFooterMeta[0]->m_nPosition;
     }
     std::vector<CRecordSlideNumberMetaAtom*> oArraySlideNumberMeta;

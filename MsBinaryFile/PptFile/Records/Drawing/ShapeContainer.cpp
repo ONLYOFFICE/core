@@ -222,22 +222,28 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
         for (size_t i = 0; i < lCount; ++i)
         {
             SetUpPropertyVideo(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
-        }
-        break;
-    }
+        }        
+    }break;
     case PPT::etPicture:
     {
         if (reset_default)
         {
-            pElement->m_oBrush.Type = c_BrushTypeTexture;
+            pElement->m_oBrush.Type = c_BrushTypeTexture; // or 3000 set  ???
             pElement->m_bLine = false;
         }
         for (size_t i = 0; i < lCount; ++i)
         {
             SetUpPropertyImage(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
         }
-        break;
-    }
+        if (false == pElement->m_bIsFilled)
+        {
+            pElement->m_oBrush.Type = c_BrushTypeNoFill;
+        }
+        else if (pElement->m_oBrush.Type == c_BrushTypeTexture)
+        {
+            pElement->m_oBrush.Type = c_BrushTypeSolid;
+        }        
+    }break;
     case PPT::etAudio:
     {
         if (reset_default)
@@ -247,9 +253,8 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
         for (size_t i = 0; i < lCount; ++i)
         {
             SetUpPropertyAudio(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
-        }
-        break;
-    }
+        }        
+    }break;
     case PPT::etGroup:
     {
         if (reset_default)
@@ -282,7 +287,7 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
             pElement->m_oBrush.Type = c_BrushTypeNoFill;
         }
         else if (pElement->m_oBrush.Type == c_BrushTypeNotSet &&
-                 (pElement->m_lPlaceholderType == 0 && pElement->m_lPlaceholderID < 0 ))
+            (pElement->m_lPlaceholderType == 0 && pElement->m_lPlaceholderID < 0))
         {
             pElement->m_oBrush.Type = c_BrushTypeSolid;
         }
@@ -292,8 +297,7 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
             pPPTShape->m_oCustomVML.ToCustomShape(pPPTShape, pPPTShape->m_oManager);
             pPPTShape->ReCalculate();
         }
-        break;
-    }
+    }break;
     default:
         break;
     }

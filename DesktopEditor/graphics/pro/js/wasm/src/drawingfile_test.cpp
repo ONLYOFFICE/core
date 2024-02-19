@@ -1240,10 +1240,7 @@ int main(int argc, char* argv[])
 				}
 				if (nFlags & (1 << 3))
 				{					
-					nPathLength = READ_BYTE(pAnnots + i);
-					i += 1;
-					std::string arrTextAlign[] = {"Left", "Center", "Right", "Justify"};
-					std::cout << "RC { text-align: " << arrTextAlign[nPathLength] << "; ";
+					std::cout << "RC {";
 
 					int nFontLength = READ_INT(pAnnots + i);
 					i += 4;
@@ -1251,7 +1248,12 @@ int main(int argc, char* argv[])
 					{
 						std::cout << std::endl << "span" << j << " { ";
 
-						std::cout << "font-style:";
+						nPathLength = READ_BYTE(pAnnots + i);
+						i += 1;
+						std::string arrTextAlign[] = {"Left", "Center", "Right", "Justify"};
+						std::cout << "text-align: " << arrTextAlign[nPathLength];
+
+						std::cout << "; font-style:";
 						int nFontFlag = READ_INT(pAnnots + i);
 						i += 4;
 						if (nFontFlag & (1 << 0))
@@ -1267,6 +1269,13 @@ int main(int argc, char* argv[])
 							nPathLength = READ_INT(pAnnots + i);
 							i += 4;
 							std::cout << "; vertical-align:" << (double)nPathLength / 100.0;
+						}
+						if (nFontFlag & (1 << 6))
+						{
+							nPathLength = READ_INT(pAnnots + i);
+							i += 4;
+							std::cout << "font-actual:" << std::string((char*)(pAnnots + i), nPathLength) << "; ";
+							i += nPathLength;
 						}
 
 						nPathLength = READ_INT(pAnnots + i);

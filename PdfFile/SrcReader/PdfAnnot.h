@@ -326,6 +326,8 @@ private:
 
 class CAnnotMarkup : public CAnnot
 {
+public:
+	void SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CFontList *pFontList);
 protected:
 	CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
 	virtual ~CAnnotMarkup();
@@ -335,20 +337,21 @@ protected:
 private:
 	struct CFontData final
 	{
-		unsigned int unFontFlags; // 0 Bold, 1 Italic, 3 зачеркнутый, 4 подчеркнутый, 5 vertical-align
+		BYTE nAlign;
+		unsigned int unFontFlags; // 0 Bold, 1 Italic, 3 зачеркнутый, 4 подчеркнутый, 5 vertical-align, 6 actual font
 		double dFontSise;
-		double dVerticalAlign;
+		double dVAlign;
 		double dColor[3];
 		std::string sFontFamily;
+		std::string sActualFont;
 		std::string sText;
 
-		CFontData() : unFontFlags(4), dFontSise(10), dVerticalAlign(0), dColor{0, 0, 0} {}
+		CFontData() : nAlign(0), unFontFlags(4), dFontSise(10), dVAlign(0), dColor{0, 0, 0} {}
 		CFontData(const CFontData& oFont);
 	};
-	BYTE ReadFontData(const std::string& sData, CFontData* pFont);
+	void ReadFontData(const std::string& sData, CFontData* pFont);
 
 	BYTE m_nRT; // Тип аннотации-ответа
-	BYTE m_nTextAlign; // Выравнивание текста в RC
 	unsigned int m_unRefNumPopup; // Номер ссылки на всплывающую аннотацию
 	unsigned int m_unRefNumIRT; // Номер ссылки на аннотацию-ответ
 	double m_dCA; // Значение непрозрачности

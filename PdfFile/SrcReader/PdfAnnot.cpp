@@ -2132,7 +2132,7 @@ CAnnotMarkup::CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : 
 		{
 			if (oLightReader.GetNameA() == "style")
 			{
-				m_nTextAlign = ReadFontData(oLightReader.GetTextA(), &oFontBase);
+				ReadFontData(oLightReader.GetTextA(), &oFontBase);
 				break;
 			}
 		}
@@ -2158,9 +2158,7 @@ CAnnotMarkup::CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : 
 					{
 						if (oLightReader.GetNameA() == "style")
 						{
-							BYTE nTextAlign = ReadFontData(oLightReader.GetTextA(), pFont);
-							if (nTextAlign != 3)
-								m_nTextAlign = nTextAlign;
+							ReadFontData(oLightReader.GetTextA(), pFont);
 							break;
 						}
 					}
@@ -2215,9 +2213,104 @@ CAnnotMarkup::~CAnnotMarkup()
 	for (int i = 0; i < m_arrRC.size(); ++i)
 		RELEASEOBJECT(m_arrRC[i]);
 }
-BYTE CAnnotMarkup::ReadFontData(const std::string& sData, CFontData* pFont)
+void CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
 {
-	BYTE nTextAlign = 0;
+	if (m_arrRC.empty())
+		return;
+
+	Object oAnnot, oObj;
+	XRef* pXref = pdfDoc->getXRef();
+	oAnnotRef->fetch(pXref, &oAnnot);
+
+	// Теперь для всех шрифтов необходимо извлечь файлы шрифтов из внешнего вида
+	Object oAP, oN, oR, oFonts;
+	XRef* xref = pdfDoc->getXRef();
+	if (oAnnot.dictLookup("AP", &oAP)->isDict() && oAP.dictLookup("N", &oN)->isStream() && oN.streamGetDict()->lookup("Resources", &oR)->isDict() && oR.dictLookup("Font", &oFonts)->isDict())
+	{
+		Parser* parser = new Parser(xref, new Lexer(xref, &oN), gFalse);
+		int nFont = 0;
+		std::string sPredFontName = m_arrRC[0]->sFontFamily, sPredKey;
+
+		Object oObj1, oObj2, oObj3;
+		parser->getObj(&oObj1);
+		while (!oObj1.isEOF())
+		{
+			if (nFont == m_arrRC.size())
+				break;
+
+			if (oObj1.isName())
+			{
+				parser->getObj(&oObj2);
+				if (oObj2.isEOF())
+					break;
+				if (oObj2.isNum())
+				{
+					parser->getObj(&oObj3);
+					if (oObj3.isEOF())
+						break;
+					Object oFontRef;
+					if (oObj3.isCmd("Tf") && oFonts.dictLookupNF(oObj1.getName(), &oFontRef)->isRef())
+					{
+						std::string sFontName, sActual;
+						bool bBold = false, bItalic = false;
+						GetFontData(pdfDoc, pFontManager, pFontList, &oFonts, &oFontRef, 7, sFontName, sActual, bBold, bItalic);
+
+						if (!oObj1.isName(sPredKey.c_str()))
+						{
+							while (nFont < m_arrRC.size())
+							{
+								if ((bool)((m_arrRC[nFont]->unFontFlags >> 0) & 1) == bBold &&
+									(bool)((m_arrRC[nFont]->unFontFlags >> 1) & 1) == bItalic &&
+									m_arrRC[nFont]->sFontFamily == sPredFontName)
+								{
+									m_arrRC[nFont]->sFontFamily = sFontName;
+									if (!sActual.empty())
+									{
+										m_arrRC[nFont]->unFontFlags |= (1 << 6);
+										m_arrRC[nFont]->sActualFont = sActual;
+									}
+								}
+								else
+								{
+									sPredFontName = m_arrRC[nFont]->sFontFamily;
+									break;
+								}
+								nFont++;
+							}
+							sPredKey = oObj1.getName();
+						}
+					}
+					oFontRef.free();
+				}
+			}
+			if (oObj2.isName())
+			{
+				oObj1.free();
+				oObj2.copy(&oObj1);
+				oObj2.free(); oObj3.free();
+				continue;
+			}
+			if (oObj3.isName())
+			{
+				oObj1.free();
+				oObj3.copy(&oObj1);
+				oObj3.free(); oObj2.free();
+				continue;
+			}
+			oObj1.free(); oObj2.free(); oObj3.free();
+
+			parser->getObj(&oObj1);
+		}
+
+		oObj1.free(); oObj2.free(); oObj3.free();
+		RELEASEOBJECT(parser);
+	}
+	oAP.free(); oN.free(); oR.free(); oFonts.free();
+
+	oAnnot.free();
+}
+void CAnnotMarkup::ReadFontData(const std::string& sData, CFontData* pFont)
+{
 	size_t nSemicolon = 0;
 	size_t nColon = sData.find(':');
 	while (nColon != std::string::npos && nColon > nSemicolon)
@@ -2226,8 +2319,8 @@ BYTE CAnnotMarkup::ReadFontData(const std::string& sData, CFontData* pFont)
 		nSemicolon = sData.find(';', nSemicolon);
 		nColon++;
 		std::string sValue = sData.substr(nColon, nSemicolon - nColon);
+		nColon = sData.find(':', nSemicolon);
 		nSemicolon++;
-		nColon = sData.find(':', nColon);
 
 		if (sProperty == "font-size")
 			pFont->dFontSise = std::stod(sValue);
@@ -2235,11 +2328,11 @@ BYTE CAnnotMarkup::ReadFontData(const std::string& sData, CFontData* pFont)
 		{
 			// 0 start / left
 			if (sValue == "center" || sValue == "middle")
-				nTextAlign = 1;
+				pFont->nAlign = 1;
 			else if (sValue == "right" || sValue == "end")
-				nTextAlign = 2;
+				pFont->nAlign = 2;
 			else if (sValue == "justify")
-				nTextAlign = 3;
+				pFont->nAlign = 3;
 		}
 		else if (sProperty == "color")
 		{
@@ -2295,23 +2388,24 @@ BYTE CAnnotMarkup::ReadFontData(const std::string& sData, CFontData* pFont)
 		else if (sProperty == "vertical-align")
 		{
 			pFont->unFontFlags |= (1 << 5);
-			pFont->dVerticalAlign = std::stod(sValue);
-			if (pFont->dVerticalAlign == 0 && sValue[0] == '-')
-				pFont->dVerticalAlign = -0.01;
+			pFont->dVAlign = std::stod(sValue);
+			if (pFont->dVAlign == 0 && sValue[0] == '-')
+				pFont->dVAlign = -0.01;
 		}
 		// font-stretch
 	}
-	return nTextAlign;
 }
 CAnnotMarkup::CFontData::CFontData(const CFontData& oFont)
 {
+	nAlign      = oFont.nAlign;
 	unFontFlags = oFont.unFontFlags;
 	dFontSise   = oFont.dFontSise;
-	dVerticalAlign = oFont.dVerticalAlign;
+	dVAlign     = oFont.dVAlign;
 	dColor[0]   = oFont.dColor[0];
 	dColor[1]   = oFont.dColor[1];
 	dColor[2]   = oFont.dColor[2];
 	sFontFamily = oFont.sFontFamily;
+	sActualFont = oFont.sActualFont;
 	sText       = oFont.sText;
 }
 
@@ -3251,13 +3345,15 @@ void CAnnotMarkup::ToWASM(NSWasm::CData& oRes)
 		oRes.AddDouble(m_dCA);
 	if (m_unFlags & (1 << 3))
 	{
-		oRes.WriteBYTE(m_nTextAlign);
 		oRes.AddInt(m_arrRC.size());
 		for (int i = 0; i < m_arrRC.size(); ++i)
 		{
+			oRes.WriteBYTE(m_arrRC[i]->nAlign);
 			oRes.AddInt(m_arrRC[i]->unFontFlags);
 			if (m_arrRC[i]->unFontFlags & (1 << 5))
-				oRes.AddDouble(m_arrRC[i]->dVerticalAlign);
+				oRes.AddDouble(m_arrRC[i]->dVAlign);
+			if (m_arrRC[i]->unFontFlags & (1 << 6))
+				oRes.WriteString(m_arrRC[i]->sActualFont);
 			oRes.AddDouble(m_arrRC[i]->dFontSise);
 			oRes.WriteDouble(m_arrRC[i]->dColor[0]);
 			oRes.WriteDouble(m_arrRC[i]->dColor[1]);

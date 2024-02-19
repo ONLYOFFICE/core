@@ -1428,7 +1428,7 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
-void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
+void GetPageAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, PdfReader::CFontList *pFontList, NSWasm::CData& oRes, int nPageIndex)
 {
 	Page* pPage = pdfDoc->getCatalog()->getPage(nPageIndex + 1);
 	if (!pPage)
@@ -1469,7 +1469,9 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 		}
 		else if (sType == "FreeText")
 		{
-			pAnnot = new PdfReader::CAnnotFreeText(pdfDoc, &oAnnotRef, nPageIndex);
+			PdfReader::CAnnotFreeText* pFreeText = new PdfReader::CAnnotFreeText(pdfDoc, &oAnnotRef, nPageIndex);
+			pFreeText->SetFont(pdfDoc, &oAnnotRef, pFontManager, pFontList);
+			pAnnot = pFreeText;
 		}
 		else if (sType == "Line")
 		{
@@ -1529,10 +1531,10 @@ BYTE* CPdfReader::GetAnnots(int nPageIndex)
 	oRes.SkipLen();
 
 	if (nPageIndex >= 0)
-		GetPageAnnots(m_pPDFDocument, oRes, nPageIndex);
+		GetPageAnnots(m_pPDFDocument, m_pFontManager, m_pFontList, oRes, nPageIndex);
 	else
 		for (int nPage = 0, nLastPage = m_pPDFDocument->getNumPages(); nPage < nLastPage; ++nPage)
-			GetPageAnnots(m_pPDFDocument, oRes, nPage);
+			GetPageAnnots(m_pPDFDocument, m_pFontManager, m_pFontList, oRes, nPage);
 
 	oRes.WriteLen();
 	BYTE* bRes = oRes.GetBuffer();

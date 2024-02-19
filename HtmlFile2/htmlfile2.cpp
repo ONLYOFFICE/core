@@ -1789,14 +1789,14 @@ private:
 		std::wstring sImageName = std::to_wstring(m_arrImages.size()) + L'.' + sExtention;
 		if (oImageWriter.CreateFileW(m_sDst + L"/word/media/i" + sImageName))
 		{
-			std::string sSrc = U_TO_UTF8(sSrcM);
-			std::string sBase64 = sSrc.substr(nBase + 7);
-			int nSrcLen = (int)sBase64.length();
+			int nOffset = nBase + 7;
+			int nSrcLen = (int)(sSrcM.length() - nBase + 1);
+
 			int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
 			if (nDecodeLen != 0)
 			{
 				BYTE* pImageData = new BYTE[nDecodeLen];
-				if (TRUE == NSBase64::Base64Decode(sBase64.c_str(), nSrcLen, pImageData, &nDecodeLen))
+				if (TRUE == NSBase64::Base64Decode(sSrcM.c_str() + nOffset, nSrcLen, pImageData, &nDecodeLen))
 				{
 					oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
 					bRes = true;
@@ -1870,7 +1870,12 @@ private:
 
 		const bool bIsAllowExternalLocalFiles = GetStatusUsingExternalLocalFiles();
 
-		sSrcM = NSSystemPath::ShortenPath(sSrcM);
+		bool bIsBase64 = false;
+		if (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"data" && sSrcM.find(L"/", 4) != std::wstring::npos)
+			bIsBase64 = true;
+
+		if (!bIsBase64)
+			sSrcM = NSSystemPath::ShortenPath(sSrcM);
 
 		if (!CanUseThisPath(sSrcM, bIsAllowExternalLocalFiles))
 			return;
@@ -1878,7 +1883,7 @@ private:
 		int nImageId = -1;
 		std::wstring sImageSrc, sExtention;
 		// Предполагаем картинку в Base64
-		if (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"data" && sSrcM.find(L"/", 4) != std::wstring::npos)
+		if (bIsBase64)
 			bRes = readBase64(sSrcM, sExtention);
 
 		if (!bRes)

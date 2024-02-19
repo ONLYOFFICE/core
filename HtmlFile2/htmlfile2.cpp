@@ -1438,23 +1438,19 @@ private:
 		if (!oStyle.m_oBorder.Empty())
 			wsTable += L"<w:tblBorders>" + CreateBorders(oStyle.m_oBorder) + L"</w:tblBorders>";
 
-		if (!oStyle.m_oMargin.Empty() && (0 < oStyle.m_oMargin.GetTop().ToInt() || 0 < oStyle.m_oMargin.GetBottom().ToInt()))
+		if (!oStyle.m_oPadding.Empty())
 		{
-			wsTable += L"<w:tblCellMar>";
+			const int nTopPadding    = std::max(0, oStyle.m_oPadding.GetTop()   .ToInt(NSCSS::UnitMeasure::Twips, m_unHeight));
+			const int nLeftPadding   = std::max(0, oStyle.m_oPadding.GetLeft()  .ToInt(NSCSS::UnitMeasure::Twips, m_unWidth ));
+			const int nBottomPadding = std::max(0, oStyle.m_oPadding.GetBottom().ToInt(NSCSS::UnitMeasure::Twips, m_unHeight));
+			const int nRightPadding  = std::max(0, oStyle.m_oPadding.GetRight() .ToInt(NSCSS::UnitMeasure::Twips, m_unWidth ));
 
-			if (0 < oStyle.m_oMargin.GetTop().ToInt())
-				wsTable += L"<w:top w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_oMargin.GetTop().ToInt() * 10 + 0.5f)) + L"\" w:type=\"dxa\"/>";
-
-//            if (0 < oStyle.m_pMargin.GetLeftSide())
-//                wsTable += L"<w:left w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pMargin.GetLeftSide() * 10 + 0.5f)) + L"\" w:type=\"dxa\"/>";
-
-			if (0 < oStyle.m_oMargin.GetBottom().ToInt())
-				wsTable += L"<w:bottom w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_oMargin.GetBottom().ToInt() * 10 + 0.5f)) + L"\" w:type=\"dxa\"/>";
-
-//            if (0 < oStyle.m_pMargin.GetRightSide())
-//                wsTable += L"<w:right w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pMargin.GetRightSide() * 10 + 0.5f)) + L"\" w:type=\"dxa\"/>";
-
-			wsTable += L"</w:tblCellMar>";
+			wsTable += L"<w:tblCellMar>"
+			               "<w:top w:w=\""    + std::to_wstring(nTopPadding)    + L"\" w:type=\"dxa\"/>"
+			               "<w:left w:w=\""   + std::to_wstring(nLeftPadding)   + L"\" w:type=\"dxa\"/>"
+			               "<w:bottom w:w=\"" + std::to_wstring(nBottomPadding) + L"\" w:type=\"dxa\"/>"
+			               "<w:right w:w=\""  + std::to_wstring(nRightPadding)  + L"\" w:type=\"dxa\"/>"
+			           "</w:tblCellMar>";
 		}
 		else
 			wsTable += L"<w:tblCellMar><w:top w:w=\"15\" w:type=\"dxa\"/><w:left w:w=\"15\" w:type=\"dxa\"/><w:bottom w:w=\"15\" w:type=\"dxa\"/><w:right w:w=\"15\" w:type=\"dxa\"/></w:tblCellMar>";

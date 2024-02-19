@@ -54,6 +54,11 @@ namespace NSCSS
 			}
 		}
 
+		static bool LevelIsSame(const CValue& oFirstValue, const CValue& oSecondValue)
+		{
+			return oFirstValue.m_unLevel == oSecondValue.m_unLevel;
+		}
+
 		bool operator==(const T& oValue) const { return m_oValue == oValue; }
 		bool operator>=(const T& oValue) const { return m_oValue >= oValue; }
 		bool operator<=(const T& oValue) const { return m_oValue <= oValue; }
@@ -595,22 +600,24 @@ namespace NSCSS
 		void UpdateRight(double dFontSize);
 		void UpdateBottom(double dFontSize);
 
-		const CDigit& GetLeft  () const;
-		const CDigit& GetTop   () const;
-		const CDigit& GetRight () const;
-		const CDigit& GetBottom() const;
+		CDigit GetLeft  () const;
+		CDigit GetTop   () const;
+		CDigit GetRight () const;
+		CDigit GetBottom() const;
 
 		bool Empty() const;
 
-		CIndent& operator+=(const CIndent& oMargin);
-		bool     operator==(const CIndent& oMargin) const;
+		CIndent& operator+=(const CIndent& oIndent);
+		bool     operator==(const CIndent& oIndent) const;
 	private:
-		bool AddValue(CDigit& oValue, const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool AddSide(std::vector<CDigit>& arValues, const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		void UpdateSide(std::vector<CDigit>& arValues, double dFontSize);
+		CDigit CalculateSide(const std::vector<CDigit>& arValues) const;
 
-		CDigit m_oLeft;
-		CDigit m_oTop;
-		CDigit m_oRight;
-		CDigit m_oBottom;
+		std::vector<CDigit> m_arLeftValues;
+		std::vector<CDigit> m_arTopValues;
+		std::vector<CDigit> m_arRightValues;
+		std::vector<CDigit> m_arBottomValues;
 
 		bool   m_bPermission;
 	};

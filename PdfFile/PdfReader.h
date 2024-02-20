@@ -61,6 +61,7 @@ public:
 	int GetError();
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();
+	bool ValidMetaData();
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
 	void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
 	std::wstring GetInfo();

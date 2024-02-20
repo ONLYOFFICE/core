@@ -149,27 +149,25 @@ TEST_F(CPdfFileTest, GetMetaData)
 	BYTE* pMetaData = NULL;
 	DWORD nMetaLength = 0;
 
-	if (pdfFile->GetMetaData(wsSrcFile, L"Test0", &pMetaData, nMetaLength))
+	if (pdfFile->GetMetaData(wsSrcFile, L"ONLYOFFICEFORM", &pMetaData, nMetaLength))
 	{
 		NSFile::CFileBinary oFile;
-		if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/resGetMetaData0.png"))
+		if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/ONLYOFFICEFORM.docxf"))
 			oFile.WriteFile(pMetaData, nMetaLength);
 		oFile.CloseFile();
 
 		EXPECT_TRUE(pMetaData);
 	}
 	RELEASEARRAYOBJECTS(pMetaData);
+}
 
-	if (pdfFile->GetMetaData(wsSrcFile, L"Test1", &pMetaData, nMetaLength))
-	{
-		NSFile::CFileBinary oFile;
-		if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/resGetMetaData1.png"))
-			oFile.WriteFile(pMetaData, nMetaLength);
-		oFile.CloseFile();
+TEST_F(CPdfFileTest, ValidMetaData)
+{
+	GTEST_SKIP();
 
-		EXPECT_TRUE(pMetaData);
-	}
-	RELEASEARRAYOBJECTS(pMetaData);
+	LoadFromFile();
+
+	std::cout << "ValidMetaData " << (pdfFile->ValidMetaData() ? "true" : "false") << std::endl;
 }
 
 TEST_F(CPdfFileTest, PdfBinToPng)
@@ -215,14 +213,9 @@ TEST_F(CPdfFileTest, SetMetaData)
 
 	BYTE* pFileData = NULL;
 	DWORD nFileSize;
-	std::wstring sFile = NSFile::GetProcessDirectory() + L"/res0.png";
+	std::wstring sFile = NSFile::GetProcessDirectory() + L"/ONLYOFFICEFORM.docxf";
 	EXPECT_TRUE(NSFile::CFileBinary::ReadAllBytes(sFile, &pFileData, nFileSize));
-	pdfFile->AddMetaData(L"Test0", pFileData, nFileSize);
-	RELEASEARRAYOBJECTS(pFileData);
-
-	sFile = NSFile::GetProcessDirectory() + L"/res1.png";
-	EXPECT_TRUE(NSFile::CFileBinary::ReadAllBytes(sFile, &pFileData, nFileSize));
-	pdfFile->AddMetaData(L"Test1", pFileData, nFileSize);
+	pdfFile->AddMetaData(L"ONLYOFFICEFORM", pFileData, nFileSize);
 	RELEASEARRAYOBJECTS(pFileData);
 
 	EXPECT_HRESULT_SUCCEEDED(pdfFile->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile));

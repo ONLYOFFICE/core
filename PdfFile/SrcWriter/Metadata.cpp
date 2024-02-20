@@ -179,6 +179,12 @@ namespace PdfWriter
 		m_nLengthBegin = 0;
 		m_nLengthEnd   = 0;
 	}
+	void CStreamData::SetID(CBinaryObject* pID)
+	{
+		if (!pID)
+			return;
+		Add("ID", pID);
+	}
 	bool CStreamData::AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength)
 	{
 		if (sMetaName == L"Length")

@@ -361,7 +361,8 @@ namespace NSDocxRenderer
 #ifndef USE_DEFAULT_FONT_TO_RECALC
 		pCont->m_oSelectedFont.Name = m_pFontSelector->GetSelectedName();
 		pCont->m_oSelectedFont.Size = m_pFont->Size;
-		pCont->m_oSelectedFont.SetStyle(m_pFont->GetStyle2());
+		pCont->m_oSelectedFont.Bold = m_pFontSelector->IsSelectedBold();
+		pCont->m_oSelectedFont.Italic = m_pFontSelector->IsSelectedItalic();
 #else
 		pCont->m_oSelectedFont.Path = m_pFont->Path;
 		pCont->m_oSelectedFont.Size = m_pFont->Size;
@@ -424,14 +425,14 @@ namespace NSDocxRenderer
 		// merge conts in text lines
 		BuildLines();
 
+		// calc sizes on selected fonts for m_arConts
+		CalcSelected();
+
 		// build paragraphs from m_arTextLines
 		BuildParagraphes();
 
 		// merge shapes
 		MergeShapes();
-
-		// calc sizes on selected fonts for m_arConts
-		CalcSelected();
 
 		ToXml(oWriter);
 		WriteSectionToFile(lPagesCount >= lNumberPages - 1, oWriter);
@@ -1301,6 +1302,9 @@ namespace NSDocxRenderer
 		auto right = MoveNullptr(m_arTextLines.begin(), m_arTextLines.end());
 		m_arTextLines.erase(right, m_arTextLines.end());
 
+		if (m_arTextLines.empty())
+			return;
+
 		using line_ptr_t = std::shared_ptr<CTextLine>;
 		std::sort(m_arTextLines.begin(), m_arTextLines.end(), [] (const line_ptr_t& a, const line_ptr_t& b) {
 			return a->m_dBaselinePos < b->m_dBaselinePos;
@@ -1530,12 +1534,12 @@ namespace NSDocxRenderer
 		std::shared_ptr<CShape> pShape;
 
 		pShape = std::make_shared<CShape>();
-		pShape->m_dHeight = pParagraph->m_dHeight;
 
 		pShape->m_dLeft = pParagraph->m_dLeft;
 		pShape->m_dTop = pParagraph->m_dTop;
 		pShape->m_dRight =  pParagraph->m_dRight;
 		pShape->m_dBaselinePos = pParagraph->m_dBaselinePos;
+		pShape->m_dHeight = pParagraph->m_dHeight;
 		pShape->m_dWidth = pParagraph->m_dWidth * 1.03; // чтобы текст точно уместился
 
 		pParagraph->m_dLeftBorder = 0;

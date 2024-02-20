@@ -42,6 +42,7 @@ namespace NSDocxRenderer
 		void MergeConts();
 		void RecalcSizes();
 		void SetVertAlignType(const eVertAlignType& oType);
+
 		bool IsShadingPresent(const CTextLine* pLine) const noexcept;
 		bool IsCanBeDeleted() const;
 	};

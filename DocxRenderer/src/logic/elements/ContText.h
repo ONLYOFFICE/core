@@ -22,7 +22,6 @@ namespace NSDocxRenderer
 	struct CSelectedSizes
 	{
 		double dWidth{0};
-		double dSpaceWidth{0};
 		double dHeight{0};
 
 		CSelectedSizes() = default;

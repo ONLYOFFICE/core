@@ -78,7 +78,7 @@ namespace NSDocxRenderer
 					wide_space->CalcSelected();
 				};
 
-				if(bIsEqual)
+				if (bIsEqual)
 				{
 					// assign all
 					*wide_space = *pFirst;
@@ -92,12 +92,12 @@ namespace NSDocxRenderer
 				m_arConts.insert(m_arConts.begin() + i, wide_space);
 
 				i++;
-				while(!m_arConts[i]) i++;
+				while (!m_arConts[i]) i++;
 				pFirst = m_arConts[i];
 			}
-			else if(bIsEqual)
+			else if (bIsEqual)
 			{
-				if(!bIsBigDelta)
+				if (!bIsBigDelta)
 				{
 					pFirst->m_oText += pCurrent->m_oText;
 				}

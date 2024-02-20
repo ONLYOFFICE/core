@@ -12,7 +12,6 @@ namespace NSDocxRenderer
 	CSelectedSizes& CSelectedSizes::operator=(const CSelectedSizes& oSelectedSizes)
 	{
 		dWidth = oSelectedSizes.dWidth;
-		dSpaceWidth = oSelectedSizes.dSpaceWidth;
 		dHeight = oSelectedSizes.dHeight;
 		return *this;
 	}
@@ -76,6 +75,7 @@ namespace NSDocxRenderer
 
 	void CContText::CalcSelected()
 	{
+#ifndef USE_DEFAULT_FONT_TO_RECALC
 		if (!m_pFontStyle->wsFontName.empty() && !m_oText.empty())
 		{
 			// нужно перемерять...
@@ -91,9 +91,11 @@ namespace NSDocxRenderer
 
 			m_oSelectedSizes.dWidth = dBoxWidth;
 			m_oSelectedSizes.dHeight = dBoxHeight;
-			if(!m_oSelectedSizes.dSpaceWidth)
-				m_oSelectedSizes.dSpaceWidth = m_pManager->GetSpaceWidthMM();
 		}
+#else
+		m_oSelectedSizes.dWidth = dBoxWidth;
+		m_oSelectedSizes.dHeight = dBoxHeight;
+#endif // USE_DEFAULT_FONT_TO_RECALC
 	}
 
 	eVerticalCrossingType CContText::GetVerticalCrossingType(const CContText* pCont) const noexcept
@@ -154,7 +156,7 @@ namespace NSDocxRenderer
 
 		LONG lCalculatedSpacing = 0;
 
-		if (!m_pFontStyle->wsFontName.empty() && !m_oText.empty())
+		if (!m_oText.empty())
 		{
 			double dSpacing = (m_dWidth - m_oSelectedSizes.dWidth) / (m_oText.length());
 			dSpacing *= c_dMMToDx;
@@ -163,7 +165,7 @@ namespace NSDocxRenderer
 			lCalculatedSpacing = static_cast<LONG>(dSpacing);
 		}
 
-		//note принудительно уменьшаем spacing чтобы текстовые линии не выходили за правую границу
+		// принудительно уменьшаем spacing чтобы текстовые линии не выходили за правую границу
 		lCalculatedSpacing -= 1;
 
 		if (lCalculatedSpacing != 0)

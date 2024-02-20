@@ -42,14 +42,15 @@ namespace NSDoctRenderer
 	{
 		enum FormatFile
 		{
-			DOCT	= 0,
-			XLST	= 1,
-			PPTT	= 2,
-			PDF		= 3,
-			HTML    = 4,
+			DOCT      = 0,
+			XLST      = 1,
+			PPTT      = 2,
+			PDF       = 3,
+			HTML      = 4,
 			PPTX_THEME_THUMBNAIL = 5,
-			IMAGE   = 6,
-			VSDT    = 7,
+			IMAGE     = 6,
+			VSDT      = 7,
+			WATERMARK = 8,
 
 			INVALID = 255
 		};

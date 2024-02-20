@@ -542,6 +542,7 @@ public:
 		void convert(PPTX::Logic::NvPr							*oox_nvPr);
 		void convert(PPTX::Logic::Paragraph						*oox_para, PPTX::Logic::TextListStyle *oox_list_style = NULL);		
 		void convert(PPTX::Logic::TextListStyle					*oox_list_style);
+		void convert(PPTX::Logic::Hyperlink						*oox_hyperlink);
 		
 		void convert_list_level	(PPTX::Logic::TextParagraphPr	*oox_para_props, int level);
 
@@ -651,7 +652,7 @@ public:
 		void convert(OOX::Spreadsheet::ChartEx::CPlotArea		*oox_plot_area);
 //.vml............................................................................................................................
 		void convert(OOX::Vml::CShapeType				*vml_shape_type);
-		void convert(OOX::Vml::CShape					*vml_shape);
+		void convert(OOX::Vml::CShape					*vml_shape, OOX::VmlOffice::COLEObject* vml_object);
 		void convert(OOX::Vml::CImage					*vml_image);
 		void convert(OOX::Vml::CImageData				*vml_image_data);
 		void convert(OOX::Vml::CArc						*vml_arc);
@@ -660,7 +661,6 @@ public:
 		void convert(OOX::Vml::CFill					*vml_fill);
 		void convert(OOX::Vml::CLine					*vml_line);
 		void convert(OOX::Vml::COval					*vml_oval);
-		void convert(OOX::Vml::CPath					*vml_path);
 		void convert(OOX::Vml::CPolyLine				*vml_polyline);
 		void convert(OOX::Vml::CRect					*vml_rect);
 		void convert(OOX::Vml::CRoundRect				*vml_roundrect);
@@ -672,7 +672,6 @@ public:
 		void convert(OOX::VmlWord::CWrap				*vml_wrap);
 		void convert(OOX::Vml::CGroup					*vml_group);
 		void convert(OOX::Vml::CVmlCommonElements		*vml_attr);
-		void convert(OOX::Vml::CFormulas				*vml_formulas);
 
 		void convert(OOX::Drawing::COfficeArtExtensionList		*ext_list);
 		void convert(OOX::Drawing::COfficeArtExtension			*art_ext);

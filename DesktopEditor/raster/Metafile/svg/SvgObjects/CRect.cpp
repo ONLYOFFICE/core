@@ -15,6 +15,11 @@ namespace SVG
 
 		m_oRx.SetValue(oNode.GetAttribute(L"rx"));
 		m_oRy.SetValue(oNode.GetAttribute(L"ry"));
+
+		if (m_oRx.Empty() && !m_oRy.Empty())
+			m_oRx = m_oRy;
+		else if (!m_oRx.Empty() && m_oRy.Empty())
+			m_oRy = m_oRx;
 	}
 
 	CRect::~CRect()
@@ -75,17 +80,17 @@ namespace SVG
 			pRenderer->PathCommandClose();
 		}
 
-		EndPath(pRenderer, pFile, oOldTransform, oMode);
+		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles);
 
 		return true;
 	}
 
 	void CRect::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
 	{
-		if (Apply(pRenderer, &pStyles->m_oStroke))
+		if (ApplyStroke(pRenderer, &pStyles->m_oStroke))
 			nTypePath += c_nStroke;
 
-		if (Apply(pRenderer, &pStyles->m_oFill, pFile, true))
+		if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true))
 			nTypePath += c_nWindingFillMode;
 	}
 

@@ -64,6 +64,7 @@ public:
     std::wstring				text_cond_style_name_;
 
 	_CP_OPT(int)				outline_level_; 
+    _CP_OPT(std::wstring)		xml_id_;
 
 };
 

@@ -330,6 +330,7 @@ public:
 		void set_table_protection_protected_cells(bool Val);
 
     void add_column(office_element_ptr & elm, unsigned int repeated, office_element_ptr & style);
+		void set_column_width_sym(double width);
 		void set_column_width(double width);
 		void set_column_optimal_width(bool val);
 		void set_column_hidden(bool val);
@@ -382,14 +383,22 @@ public:
 	void add_child_element( const office_element_ptr & child_element);
 
 	void start_conditional_formats();
-		void start_conditional_format(std::wstring ref);
+		void start_conditional_format(const std::wstring& ref);
             void start_conditional_rule(int rule_type, _CP_OPT(unsigned int) rank, _CP_OPT(bool) bottom, _CP_OPT(bool) percent);
-				void set_conditional_formula(std::wstring formula);
-                void set_conditional_value(int type, std::wstring value );
-                void set_conditional_iconset(int type_iconset);
-				void add_conditional_colorscale(int index, _CP_OPT(odf_types::color) color);
-				void set_conditional_databar_color(_CP_OPT(odf_types::color) color);
+				void set_conditional_formula(const std::wstring& formula);
+                void set_conditional_value(int type, const std::wstring& value );
+                
+				void set_conditional_iconset(int type_iconset);
 				
+				void set_conditional_show_value(bool value);
+
+				void add_conditional_colorscale(int index, _CP_OPT(odf_types::color) & color);
+				
+				void set_conditional_databar_color(_CP_OPT(odf_types::color) & color);
+				void set_conditional_databar_negative_color(_CP_OPT(odf_types::color) & color);
+				void set_conditional_databar_axis_color(_CP_OPT(odf_types::color) & color);
+				void set_conditional_databar_axis_position(const std::wstring& value);
+
 				void set_conditional_style_name(const std::wstring &style_name);
                 void set_conditional_operator(int _operator);
 
@@ -482,6 +491,7 @@ public:
     int dimension_columns;
     int dimension_row;
 
+	double defaut_column_width_sym_ = 0;
 	double defaut_column_width_;
 	double defaut_row_height_;
 
@@ -541,6 +551,8 @@ private:
 	
 	std::vector<ods_hyperlink_state> hyperlinks_;
 	std::map<unsigned int, ods_shared_formula_state> shared_formulas_;
+
+	std::map<std::wstring, std::wstring> mapTabled; // for formula used ... perhaps
 
 	std::vector<table_part_state> table_parts_;
 

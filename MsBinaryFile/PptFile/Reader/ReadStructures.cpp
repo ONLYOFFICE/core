@@ -906,6 +906,28 @@ void CMetaFileBuffer::SetData(BYTE *pCompress, LONG lCompressSize, LONG lUncompr
         }
     }
 }
+int CMetaFileBuffer::ToBuffer(BYTE*& Data)
+{
+    int sz = 0;
+
+    if (NULL != m_pMetaHeader)	sz += m_lMetaHeaderSize;
+    if (NULL != m_pMetaFile)	sz += m_lMetaFileSize;
+
+    Data = new BYTE[sz];
+    int pos = 0;
+
+    if (NULL != m_pMetaHeader)
+    {
+        memcpy(Data, (BYTE*)m_pMetaHeader, m_lMetaHeaderSize);
+        pos += m_lMetaHeaderSize;
+    }
+    if (NULL != m_pMetaFile)
+    {
+        memcpy(Data + pos, (BYTE*)m_pMetaFile, m_lMetaFileSize);
+    }
+
+    return sz;
+}
 
 void CMetaFileBuffer::ToFile(NSFile::CFileBinary *pFile)
 {

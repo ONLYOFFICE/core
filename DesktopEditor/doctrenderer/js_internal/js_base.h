@@ -215,19 +215,22 @@ namespace NSJSBase
 		 * Returns specified property of the object.
 		 * @param name The name of a property.
 		 */
-		virtual JSSmart<CJSValue> get(const char* name)                 = 0;
+		virtual JSSmart<CJSValue> get(const char* name)         = 0;
 		/**
 		 * Sets a property of the object.
 		 * @param name The name of a property.
 		 * @param value The value of a property.
 		 */
-		virtual void set(const char* name, CJSValue* value)     = 0;
+		virtual void set(const char* name, JSSmart<CJSValue> value) = 0;
 		virtual void set(const char* name, const int& value)    = 0;
 		virtual void set(const char* name, const double& value) = 0;
-		// Common funcs
-		void set(const char* name, JSSmart<CJSValue> value);
+		// Common function
 		void set(const char* name, JSSmart<CJSObject> value);
 
+		/**
+		 * Returns a vector containing the names of the properties of this object as strings, including properties from prototype objects.
+		 */
+		virtual std::vector<std::string> getPropertyNames()     = 0;
 		/**
 		 * Returns a pointer to the native embedded object.
 		 */
@@ -269,8 +272,7 @@ namespace NSJSBase
 		 * @param index The index of the array value.
 		 * @param value The array value to be set.
 		 */
-		virtual void set(const int& index, CJSValue* value)     = 0;
-		virtual void set(const int& index, const bool& value)   = 0;
+		virtual void set(const int& index, JSSmart<CJSValue> value) = 0;
 		virtual void set(const int& index, const int& value)    = 0;
 		virtual void set(const int& index, const double& value) = 0;
 
@@ -278,7 +280,7 @@ namespace NSJSBase
 		 * Add the specified value to the array.
 		 * @param value The value to be added.
 		 */
-		virtual void add(CJSValue* value)                       = 0;
+		virtual void add(JSSmart<CJSValue> value)               = 0;
 		/**
 		 * Add null to the array.
 		 */
@@ -494,6 +496,12 @@ namespace NSJSBase
 		 */
 		JSSmart<CJSValue> JSON_Parse(const char* json_content);
 		/**
+		 * Creates a string that contains the JSON-serialized representation of a JS value.
+		 * @param value The JS value to serialize.
+		 * @return The string that contains the result of serialization, or empty string in case of errors.
+		 */
+		std::string JSON_Stringify(JSSmart<CJSValue> value);
+		/**
 		 * Do not use this function. It is for internal needs.
 		 * Associates current context with the specifed thread id.
 		 * @param id The id of a thread.
@@ -673,7 +681,7 @@ namespace NSJSBase
  *
  * NOTE: If you don't want to export certain functions from your embedded class for some reason,
  *       then add the inline comment "[noexport]" at the start of a function declaration.
- *       Also you can use `#ifdef ... #endif` blocks (see doctrenderer/test/internal/Embed.h for an example).
+ *       Also you can use `#ifdef ... #endif` blocks (see doctrenderer/test/embed/external/Embed.h for an example).
  */
 
 #endif // _CORE_EXT_JS_BASE_H_

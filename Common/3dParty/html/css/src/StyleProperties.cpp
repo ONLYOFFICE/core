@@ -3,13 +3,14 @@
 #include "StaticFunctions.h"
 #include "ConstValues.h"
 #include <cfloat>
+#include <cmath>
 #include <wchar.h>
 
 namespace NSCSS
 {
 	namespace NSProperties
 	{
-	#define CHECK_CONDITIONS (m_bImportant || unLevel <= m_unLevel)
+	#define CHECK_CONDITIONS (m_bImportant || unLevel < m_unLevel)
 
 	static bool CutImportant(std::wstring& wsValue)
 	{
@@ -148,12 +149,15 @@ namespace NSCSS
 			case Millimeter: return CUnitMeasureConverter::ConvertMm(m_oValue, enUnitMeasure, 96);
 			case Inch:       return CUnitMeasureConverter::ConvertIn(m_oValue, enUnitMeasure, 96);
 			case Peak:       return CUnitMeasureConverter::ConvertPc(m_oValue, enUnitMeasure, 96);
-			case None:       return m_oValue;
+			case Em:
+			case Rem:        return m_oValue * dPrevValue;
+			case None:
+			case Twips:      return m_oValue;
 		}
 	}
 
 	CDigit::CDigit()
-	    : CValue(DBL_MIN, 0, false), m_enUnitMeasure(None)
+	    : CValue(DBL_MAX, 0, false), m_enUnitMeasure(None)
 	{}
 
 	CDigit::CDigit(double dValue)
@@ -166,22 +170,28 @@ namespace NSCSS
 
 	bool CDigit::Empty() const
 	{
-		return DBL_MIN == m_oValue;
+		return DBL_MAX == m_oValue;
 	}
 
 	bool CDigit::Zero() const
 	{
-		return 0. == m_oValue;
+		return (std::abs(0 - m_oValue) <= DBL_EPSILON);
 	}
 
 	void CDigit::Clear()
 	{
-		m_oValue = DBL_MIN;
+		m_oValue = DBL_MAX;
+	}
+	
+	void CDigit::ConvertTo(UnitMeasure enUnitMeasure, double dPrevValue)
+	{
+		m_oValue = ConvertValue(dPrevValue, enUnitMeasure);
+		m_enUnitMeasure = enUnitMeasure;
 	}
 
 	int CDigit::ToInt() const
 	{
-		if (DBL_MIN == m_oValue)
+		if (DBL_MAX == m_oValue)
 			return 0;
 
 		return static_cast<int>(m_oValue + 0.5);
@@ -189,7 +199,7 @@ namespace NSCSS
 
 	double CDigit::ToDouble() const
 	{
-		if (DBL_MIN == m_oValue)
+		if (DBL_MAX == m_oValue)
 			return 0.;
 
 		return m_oValue;
@@ -197,7 +207,7 @@ namespace NSCSS
 
 	std::wstring CDigit::ToWString() const
 	{
-		if (DBL_MIN == m_oValue)
+		if (DBL_MAX == m_oValue)
 			return std::wstring();
 
 		return std::to_wstring(m_oValue);
@@ -205,7 +215,7 @@ namespace NSCSS
 
 	int CDigit::ToInt(UnitMeasure enUnitMeasure, double dPrevValue) const
 	{
-		if (DBL_MIN == m_oValue)
+		if (DBL_MAX == m_oValue)
 			return 0;
 
 		return static_cast<int>(ConvertValue(dPrevValue, enUnitMeasure) + 0.5);
@@ -213,7 +223,7 @@ namespace NSCSS
 
 	double CDigit::ToDouble(UnitMeasure enUnitMeasure, double dPrevValue) const
 	{
-		if (DBL_MIN == m_oValue)
+		if (DBL_MAX == m_oValue)
 			return 0;
 
 		return ConvertValue(dPrevValue, enUnitMeasure);
@@ -221,8 +231,8 @@ namespace NSCSS
 
 	std::wstring CDigit::ToWString(UnitMeasure enUnitMeasure, double dPrevValue) const
 	{
-		if (DBL_MIN == m_oValue)
-			return 0;
+		if (DBL_MAX == m_oValue)
+			return std::wstring();
 
 		return std::to_wstring(ConvertValue(dPrevValue, enUnitMeasure));
 	}
@@ -230,6 +240,16 @@ namespace NSCSS
 	UnitMeasure CDigit::GetUnitMeasure() const
 	{
 		return m_enUnitMeasure;
+	}
+
+	bool CDigit::operator==(const double &oValue) const
+	{
+		return (std::abs(oValue - m_oValue) <= DBL_EPSILON);
+	}
+
+	bool CDigit::operator==(const CDigit &oDigit) const
+	{
+		return (std::abs(oDigit.m_oValue - m_oValue) <= DBL_EPSILON);
 	}
 
 	CDigit CDigit::operator+(const CDigit &oDigit) const
@@ -287,12 +307,12 @@ namespace NSCSS
 
 	CDigit &CDigit::operator+=(const CDigit &oDigit)
 	{
-		if (m_unLevel > oDigit.m_unLevel || (m_bImportant && !oDigit.m_bImportant) || DBL_MIN == oDigit.m_oValue)
+		if (m_unLevel > oDigit.m_unLevel || (m_bImportant && !oDigit.m_bImportant) || DBL_MAX == oDigit.m_oValue)
 			return *this;
 
-		m_oValue     = oDigit.m_oValue;
-		m_unLevel    = oDigit.m_unLevel;
-		m_bImportant = oDigit.m_bImportant;
+		m_oValue        += oDigit.ToDouble(m_enUnitMeasure);
+		m_unLevel       = oDigit.m_unLevel;
+		m_bImportant    = oDigit.m_bImportant;
 
 		return *this;
 	}
@@ -345,7 +365,7 @@ namespace NSCSS
 		if (!CUnitMeasureConverter::GetValue(wsValue, dNewValue, enNewUnitMeasure))
 			return false;
 
-		if (Percent == enNewUnitMeasure && !Empty() && unLevel > m_unLevel)
+		if (Percent == enNewUnitMeasure && !Empty() && (unLevel > m_unLevel || bHardMode))
 		{
 			m_oValue *= dNewValue / 100.;
 		}
@@ -419,6 +439,14 @@ namespace NSCSS
 
 		return wsCopyValue.substr(unBegin + 2, wsCopyValue.find(L')') - unBegin - 2);
 	}
+	
+	void CColor::SetEmpty(unsigned int unLevel)
+	{
+		m_oValue.Clear();
+		m_oValue.m_enType = ColorEmpty;
+		m_unLevel    = unLevel;
+		m_bImportant = false;
+	}
 
 	CColor::CColor()
 		: CValue({}, 0, false), m_oOpacity(1.)
@@ -426,16 +454,13 @@ namespace NSCSS
 
 	bool CColor::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (wsValue.empty() || (CHECK_CONDITIONS && !bHardMode))
+		if ((CHECK_CONDITIONS && !bHardMode) || (wsValue.empty() && unLevel == m_unLevel))
 			return false;
 
 		if (wsValue.empty())
 		{
-			m_oValue.Clear();
-			m_oValue.m_enType = ColorEmpty;
-			m_unLevel    = unLevel;
-			m_bImportant = false;
-			return true;
+			SetEmpty(unLevel);
+			return false;
 		}
 
 		std::wstring wsNewValue(wsValue);
@@ -475,14 +500,26 @@ namespace NSCSS
 			if (std::wstring::npos == unEnd)
 				return false;
 
-			std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsNewValue.substr(4, unEnd - 3), false, L" (),");
+			std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsNewValue.substr(4, unEnd - 4), false, L" (),");
 
 			if (3 > arValues.size())
 				return false;
 
-			m_oValue.SetRGB(NS_STATIC_FUNCTIONS::ReadDouble(arValues[0]),
-			                NS_STATIC_FUNCTIONS::ReadDouble(arValues[1]),
-			                NS_STATIC_FUNCTIONS::ReadDouble(arValues[2]));
+			INT nRed   = std::ceil(NS_STATIC_FUNCTIONS::CalculatePersentage(arValues[0], 255));
+			INT nGreen = std::ceil(NS_STATIC_FUNCTIONS::CalculatePersentage(arValues[1], 255));
+			INT nBlue  = std::ceil(NS_STATIC_FUNCTIONS::CalculatePersentage(arValues[2], 255));
+
+			if (nRed < 0 || nGreen < 0 || nBlue < 0)
+			{
+				SetEmpty(unLevel);
+				return false;
+			}
+
+			if (255 < nRed)   nRed   = 255;
+			if (255 < nGreen) nGreen = 255;
+			if (255 < nBlue)  nBlue  = 255;
+
+			m_oValue.SetRGB(nRed, nGreen, nBlue);
 
 			if (wsNewValue.substr(0, 4) == L"rgba" && 4 == arValues.size())
 				m_oOpacity.SetValue(arValues[3], unLevel, bHardMode);
@@ -541,6 +578,9 @@ namespace NSCSS
 
 	double CColor::GetOpacity() const
 	{
+		if (m_oOpacity.Empty())
+			return 1.;
+
 		if (Percent == m_oOpacity.GetUnitMeasure())
 			return m_oOpacity.ToDouble() / 100.;
 
@@ -656,6 +696,10 @@ namespace NSCSS
 				enType = TransformScale;
 			else if (std::wstring::npos != wsTransform.find(L"rotate"))
 				enType = TransformRotate;
+			else if (std::wstring::npos != wsTransform.find(L"skewx"))
+				enType = TransformSkewX;
+			else if (std::wstring::npos != wsTransform.find(L"skewy"))
+				enType = TransformSkewY;
 			else
 			{
 				Clear();
@@ -730,6 +774,16 @@ namespace NSCSS
 				else
 					return false;
 
+				break;
+			}
+			case TransformSkewX:
+			case TransformSkewY:
+			{
+				if (arValues.empty())
+					return false;
+				
+				m_oValue.push_back(std::make_pair(std::vector<double>{arValues[0]}, enType));
+				
 				break;
 			}
 		}
@@ -846,6 +900,16 @@ namespace NSCSS
 					oMatrix.RotateAt(oElement.first[0], -oElement.first[1], -oElement.first[2]);
 					break;
 				}
+				case TransformSkewX:
+				{
+					oMatrix.Shear(oElement.first[0] * 3.14 / 180.0, 0);
+					break;
+				}
+				case TransformSkewY:
+				{
+					oMatrix.Shear(0, oElement.first[0] * 3.14 / 180.0);
+					break;
+				}
 				default: break;
 			}
 		}
@@ -879,6 +943,16 @@ namespace NSCSS
 				case TransformRotate:
 				{
 					oMatrix.RotateAt(oElement.first[0], -oElement.first[1], -oElement.first[2], order);
+					break;
+				}
+				case TransformSkewX:
+				{
+					oMatrix.Shear(oElement.first[0] * 3.14 / 180.0, 0, order);
+					break;
+				}
+				case TransformSkewY:
+				{
+					oMatrix.Shear(0, oElement.first[0] * 3.14 / 180.0, order);
 					break;
 				}
 				default: break;
@@ -976,7 +1050,7 @@ namespace NSCSS
 
 	bool CDisplay::SetVAlign(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		return m_oVAlign.SetValue(wsValue, {std::make_pair(L"top", L"top"), std::make_pair(L"baseline", L"top"), std::make_pair(L"text-top", L"top"), std::make_pair(L"bottom", L"bottom"), std::make_pair(L"text-bottom", L"bottom"), std::make_pair(L"middle", L"middle")}, unLevel, bHardMode);
+		return m_oVAlign.SetValue(wsValue, {std::make_pair(L"top", L"top"), std::make_pair(L"baseline", L"top"), std::make_pair(L"text-top", L"top"), std::make_pair(L"bottom", L"bottom"), std::make_pair(L"text-bottom", L"bottom"), std::make_pair(L"middle", L"center")}, unLevel, bHardMode);
 	}
 
 	bool CDisplay::SetDisplay(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -1232,6 +1306,9 @@ namespace NSCSS
 	{
 		if (wsValue.empty())
 			return false;
+			
+		if (L"none" == wsValue)
+			return true;
 
 		const std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsValue, false, L" ");
 		for (const std::wstring& sValue : arValues)
@@ -1546,13 +1623,7 @@ namespace NSCSS
 
 	bool CText::SetIndent(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (m_oIndent.SetValue(wsValue, unLevel, bHardMode))
-		{
-			m_oIndent *= 10.;
-			return true;
-		}
-
-		return false;
+		return m_oIndent.SetValue(wsValue, unLevel, bHardMode);
 	}
 
 	bool CText::SetAlign(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -1735,6 +1806,38 @@ namespace NSCSS
 	{
 		return AddValue(m_oBottom, wsValue, unLevel, bHardMode);
 	}
+	
+	void CIndent::UpdateAll(double dFontSize)
+	{
+		UpdateLeft(dFontSize);
+		UpdateTop(dFontSize);
+		UpdateRight(dFontSize);
+		UpdateBottom(dFontSize);
+	}
+	
+	void CIndent::UpdateLeft(double dFontSize)
+	{
+		if (NSCSS::Em == m_oLeft.GetUnitMeasure() || NSCSS::Rem == m_oLeft.GetUnitMeasure())
+			m_oLeft.ConvertTo(NSCSS::Twips, dFontSize);
+	}
+	
+	void CIndent::UpdateTop(double dFontSize)
+	{
+		if (NSCSS::Em == m_oTop.GetUnitMeasure() || NSCSS::Rem == m_oTop.GetUnitMeasure())
+			m_oTop.ConvertTo(NSCSS::Twips, dFontSize);
+	}
+	
+	void CIndent::UpdateRight(double dFontSize)
+	{
+		if (NSCSS::Em == m_oRight.GetUnitMeasure() || NSCSS::Rem == m_oRight.GetUnitMeasure())
+			m_oRight.ConvertTo(NSCSS::Twips, dFontSize);
+	}
+	
+	void CIndent::UpdateBottom(double dFontSize)
+	{
+		if (NSCSS::Em == m_oBottom.GetUnitMeasure() || NSCSS::Rem == m_oBottom.GetUnitMeasure())
+			m_oBottom.ConvertTo(NSCSS::Twips, dFontSize);
+	}
 
 	const CDigit& CIndent::GetLeft() const
 	{
@@ -1783,7 +1886,7 @@ namespace NSCSS
 	{
 		if (!m_bPermission)
 			return false;
-
+		
 		CDigit oTempValue;
 
 		if (!oTempValue.SetValue(wsValue, unLevel, bHardMode))
@@ -1946,10 +2049,10 @@ namespace NSCSS
 	bool CFont::SetSize(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		const std::map<std::wstring, std::wstring> arAbsoluteFontValues =
-			{{L"xx-small", L"9px"},  {L"x-small", L"10px"},
-			 {L"small",    L"13px"}, {L"medium",  L"16px"},
-			 {L"large",    L"18px"}, {L"x-large", L"24px"},
-			 {L"xx-large", L"32px"}};
+			{{L"xx-small", L"0.6em"},  {L"x-small", L"0.75em"},
+			 {L"small",    L"0.875em"}, {L"medium",  L"1em"},
+			 {L"large",    L"1.125em"}, {L"x-large", L"1.25em"},
+			 {L"xx-large", L"1.5em"}};
 
 		size_t unFoundPos = std::wstring::npos;
 		std::wstring wsNewValue(wsValue);
@@ -1966,13 +2069,7 @@ namespace NSCSS
 
 	bool CFont::SetLineHeight(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (m_oLineHeight.SetValue(wsValue, unLevel, bHardMode))
-		{
-			m_oLineHeight *= 10.;
-			return true;
-		}
-
-		return false;
+		return m_oLineHeight.SetValue(wsValue, unLevel, bHardMode);
 	}
 
 	bool CFont::SetFamily(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -1990,7 +2087,9 @@ namespace NSCSS
 			if ((*iWord).empty())
 				continue;
 
-			return m_oFamily.SetValue(NSCSS::NS_STATIC_FUNCTIONS::RemoveSpaces(*iWord), unLevel, bHardMode);
+			NSCSS::NS_STATIC_FUNCTIONS::RemoveSpaces(*iWord);
+
+			return m_oFamily.SetValue(*iWord, unLevel, bHardMode);
 		}
 
 		return false;
@@ -2016,13 +2115,19 @@ namespace NSCSS
 	{
 		return m_oWeight.SetValue(wsValue, {std::make_pair(L"normal", L"normal"), std::make_pair(L"300", L"normal"), std::make_pair(L"400", L"normal"), std::make_pair(L"500", L"normal"),
 		                                    std::make_pair(L"bold", L"bold"), std::make_pair(L"bolder", L"bold"), std::make_pair(L"600", L"bold"),
-		                                    std::make_pair(L"700", L"bold"), std::make_pair(L"800", L"bold"), std::make_pair(L"900", L"bold")}, unLevel, bHardMode);
+											std::make_pair(L"700", L"bold"), std::make_pair(L"800", L"bold"), std::make_pair(L"900", L"bold")}, unLevel, bHardMode);
 	}
 
-	bool CFont::UpdateSize(double dSize)
+	void CFont::UpdateSize(double dFontSize)
 	{
-		m_oSize = dSize;
-		return true;
+		if (NSCSS::Em == m_oSize.GetUnitMeasure() || NSCSS::Rem == m_oSize.GetUnitMeasure())
+			m_oSize.ConvertTo(NSCSS::Twips, dFontSize);
+	}
+	
+	void CFont::UpdateLineHeight(double dFontSize)
+	{
+		if (NSCSS::Em == m_oLineHeight.GetUnitMeasure() || NSCSS::Rem == m_oLineHeight.GetUnitMeasure())
+			m_oLineHeight.ConvertTo(NSCSS::Twips, dFontSize);
 	}
 
 	bool CFont::Bold() const

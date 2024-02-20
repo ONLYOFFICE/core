@@ -88,7 +88,7 @@ public:
 	//std::vector<BaseObjectPtr>	m_arPIVOTCACHEDEFINITION; -> GlobalWorkbookInfo
 	std::vector<BaseObjectPtr>		m_arDConn;
 
-	std::vector<BiffStructurePtr>	m_arHFPictureDrawing;
+	std::vector<BiffStructurePtr>	m_arHFPictureDrawing; // тут OfficeArtDggContainer - картинки ...
 	
 	unsigned short					code_page_;
 	GlobalWorkbookInfoPtr			global_info_;

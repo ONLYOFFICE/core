@@ -56,7 +56,7 @@ public:
 	std::wstring	guid;
 	TabId			iTabid;
 	_UINT32			wScale;
-	Icv				icvHdr;
+	Icv				icvHdr = 64;
 	PaneType		pnnSel;
 
 	bool fShowBrks;

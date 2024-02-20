@@ -82,6 +82,22 @@ static std::wstring htmlToXhtml(std::string& sFileContent, bool bNeedConvert)
 		sFileContent.replace(posA, 8, "<title></title>");
 		posA = sFileContent.find("<title/>", posA);
 	}
+	// Избавление от <script/>
+	posA = sFileContent.find("<script");
+	while (posA != std::string::npos)
+	{
+		size_t nEnd = 0;
+		size_t nEnd1 = sFileContent.find("/>", posA);
+		size_t nEnd2 = sFileContent.find("</script>", posA);
+		if (nEnd1 != std::string::npos)
+			nEnd = nEnd1 + 2;
+		if (nEnd2 != std::string::npos && (nEnd == 0 || (nEnd > 0 && nEnd2 < nEnd)))
+			nEnd = nEnd2 + 9;
+
+		sFileContent.erase(posA, nEnd - posA);
+
+		posA = sFileContent.find("<script", posA);
+	}
 
 	// Gumbo
 	GumboOptions options = kGumboDefaultOptions;

@@ -218,7 +218,7 @@ void xlsx_conversion_context::end_document()
 
     {
         std::wstringstream strm;
-        xlsx_text_context_.serialize_shared_strings(strm);
+		get_text_context()->serialize_shared_strings(strm);
         output_document_->get_xl_files().set_sharedStrings( package::simple_element::create(L"sharedStrings.xml", strm.str()) );
     }
 
@@ -510,7 +510,7 @@ void xlsx_conversion_context::end_table()
 					CP_XML_ATTR(L"min", cMin);
 					//CP_XML_ATTR(L"style", 0);
 					CP_XML_ATTR(L"width", lastWidht);
-					CP_XML_ATTR(L"customWidth", 0);
+					CP_XML_ATTR(L"customWidth", 1);
 				}
 			}
 		}
@@ -660,12 +660,12 @@ void xlsx_conversion_context::end_office_spreadsheet()
 
 void xlsx_conversion_context::start_paragraph(const std::wstring & styleName)
 {
-    xlsx_text_context_.start_paragraph(styleName);
+	get_text_context()->start_paragraph(styleName);
 }
 
 void xlsx_conversion_context::end_paragraph()
 {
-	if (xlsx_text_context_.is_drawing_context())
+	if (get_text_context()->is_drawing_context())
 	{
 		get_drawing_context().process_objects(get_table_metrics());
 
@@ -674,20 +674,20 @@ void xlsx_conversion_context::end_paragraph()
 			std::wstringstream strm;
 			get_drawing_context().serialize(strm, L"a", true);
 
-			xlsx_text_context_.add_paragraph(strm.str());
+			get_text_context()->add_paragraph(strm.str());
 		}
 	}
-    xlsx_text_context_.end_paragraph();
+	get_text_context()->end_paragraph();
 }
 
 void xlsx_conversion_context::start_span(const std::wstring & styleName)
 {
-    xlsx_text_context_.start_span(styleName);
+	get_text_context()->start_span(styleName);
 }
 
 void xlsx_conversion_context::end_span()
 {
-    xlsx_text_context_.end_span();
+	get_text_context()->end_span();
 }
 
 void xlsx_conversion_context::start_table_cell(const std::wstring & formula, size_t columnsSpanned, size_t rowsSpanned)
@@ -723,6 +723,35 @@ void xlsx_conversion_context::set_current_cell_style_id(unsigned int xfId)
 int xlsx_conversion_context::get_current_cell_style_id()
 {
     return get_table_context().get_current_cell_style_id();
+}
+int xlsx_conversion_context::add_dxfId_style(const std::wstring& color, bool cellColor)
+{
+	int dxfId = -1;
+	odf_reader::style_instance* instStyle =
+		root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::TableCell);
+
+	if (instStyle)
+	{
+		odf_reader::text_format_properties_ptr textFormats = calc_text_properties_content(instStyle);
+		odf_reader::graphic_format_properties_ptr graphicFormats = calc_graphic_properties_content(instStyle);
+		odf_reader::style_table_cell_properties_attlist	cellFormats = calc_table_cell_properties(instStyle);
+
+		odf_types::color odf_color(color);
+		if (cellColor)
+		{
+			cellFormats.common_background_color_attlist_.fo_background_color_ = odf_color;
+		}
+		else
+		{
+			if (!textFormats)
+				textFormats = odf_reader::text_format_properties_ptr(new odf_reader::text_format_properties());
+
+			textFormats->fo_color_ = odf_color;
+		}
+
+		dxfId = get_style_manager().dxfId(textFormats, graphicFormats, &cellFormats);
+	}
+	return dxfId;
 }
 int xlsx_conversion_context::get_dxfId_style(const std::wstring &style_name)
 {
@@ -884,6 +913,29 @@ void xlsx_conversion_context::add_jsaProject(const std::string &content)
 	
 	output_document_->get_xl_files().add_jsaProject(content);
 	output_document_->get_content_types_file().add_or_find_default(L"bin");
+}
+void xlsx_conversion_context::start_text_context()
+{
+	minor_text_contexts_.push_back(new xlsx_text_context(odf_document_->odf_context()));
+}
+void xlsx_conversion_context::end_text_context()
+{
+	if (false == minor_text_contexts_.empty())
+	{
+		delete minor_text_contexts_.back();
+		minor_text_contexts_.pop_back();
+	}
+}
+xlsx_text_context* xlsx_conversion_context::get_text_context()
+{
+	if (false == minor_text_contexts_.empty())
+	{
+		return minor_text_contexts_.back();
+	}
+	else
+	{
+		return &xlsx_text_context_;
+	}
 }
 
 }

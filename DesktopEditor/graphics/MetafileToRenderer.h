@@ -35,6 +35,7 @@
 #pragma once
 
 #include "pro/Image.h"
+#include "MetafileToRendererCheck.h"
 
 #ifndef INT32
 typedef int INT32;
@@ -179,6 +180,9 @@ namespace NSOnlineOfficeBinToPdf
 		ctLink                          = 161,
 		ctFormField                     = 162,
 		ctDocInfo                       = 163,
+		ctAnnotField                    = 164,
+		ctAnnotFieldDelete              = 165,
+		ctWidgetsInfo                   = 166,
 
 		ctPageWidth                     = 200,
 		ctPageHeight                    = 201,

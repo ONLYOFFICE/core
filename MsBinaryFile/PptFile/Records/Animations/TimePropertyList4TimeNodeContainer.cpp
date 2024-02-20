@@ -87,11 +87,12 @@ void CRecordTimePropertyList4TimeNodeContainer::ReadFromStream(SRecordHeader &oH
         default :
             break;
         }
-
-        pRecord->ReadFromStream  ( ReadHeader, pStream );
+        if (pRecord)
+        {
+            pRecord->ReadFromStream(ReadHeader, pStream);
+            m_arrElements.push_back(pRecord);
+        }
         lCurLen += 8 + ReadHeader.RecLen;
-
-        m_arrElements.push_back ( pRecord );
     }
 
     StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );

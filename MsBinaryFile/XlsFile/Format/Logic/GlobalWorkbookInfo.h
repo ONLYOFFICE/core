@@ -89,7 +89,7 @@ public:
 	const size_t	RegisterFontId		(const FontInfo& font);
 	const int		RegistrDxfn			(const std::wstring& dx_style);
 	_UINT16			RegisterNumFormat	(_UINT16 ifmt, const std::wstring & format_code);
-
+	void			RegisterNumFormat	(BaseObjectPtr element);
 	void			RegisterPaletteColor(int id, const std::wstring & argb);
     
 	void			GetDigitFontSizePixels();
@@ -114,7 +114,6 @@ public:
 	std::map<int, int>						fonts_charsets;
 	std::map<int,  std::wstring>			colors_palette;
 
-	std::vector<BaseObjectPtr>				m_arNumFormats;
 	std::vector<BaseObjectPtr>				m_arFonts;
 	PPTX::ThemePtr							m_pTheme;
 	
@@ -202,8 +201,11 @@ public:
 	int								cellStyleXfs_count;
 	int								cellStyleDxfs_count;
 
-	std::map<std::wstring, int>		mapDefaultFormatCode;
+	std::map<std::wstring, _UINT16>	mapDefaultFormatCode;
+	std::map<_UINT16, std::wstring>	mapDefaultFormatCodeNum;
+
 	std::map<_UINT16, _UINT16>		mapUsedFormatCode; //original, used
+	std::map<_UINT16, BaseObjectPtr> m_mapNumFormats;
 
 	std::map<std::wstring, int>		mapUserDxfs;
 	std::vector<std::wstring>		arrUserDxfs;

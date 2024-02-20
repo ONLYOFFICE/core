@@ -185,8 +185,8 @@ void CSvmFile::PlayMetaFile()
 			case META_ISECTRECTCLIPREGION_ACTION:	Read_META_SECTRECTCLIPREGION(); break;
 			case META_ISECTREGIONCLIPREGION_ACTION:	Read_META_SECTREGIONCLIPREGION(); break;
 
-                        case META_BMPEX_ACTION:                 Read_META_BMPEX(); break;
-                        case META_BMPEXSCALE_ACTION:		Read_META_BMPEXSCALE(); break;
+			case META_BMPEX_ACTION:                 Read_META_BMPEX(); break;
+			case META_BMPEXSCALE_ACTION:		Read_META_BMPEXSCALE(); break;
 
 			case META_ROUNDRECT_ACTION:
 			case META_ELLIPSE_ACTION:
@@ -224,7 +224,7 @@ void CSvmFile::PlayMetaFile()
 #ifdef _DEBUG
 		if (100 <= actionType && actionType <= META_LAST_ACTION && need_skip > 0 && !m_pOutput)
 		{
-                        std::wstring name = actionNamesSmv[actionType - 99].actionName;
+			std::wstring name = actionNamesSmv[actionType - 99].actionName;
 
 			std::wcout << name << L"\t\t" << actionType << L"\t(version = " << m_currentActionVersion << L")\t; skiped = " << need_skip << L"\n";
 		}			
@@ -294,12 +294,12 @@ void CSvmFile::Read_SVM_HEADER()
 	if (m_bMainStream) //из-за 2 идет увеличение самой картинки в 2 раза (содержимое имеет исходный размер, т.е. в 2 раза меньше нужного)
 	{	
 		unsigned int unCoef = 1;
-		m_oBoundingBox			= m_oHeader.boundRect;
-		m_oBoundingBox.nRight	= static_cast<int>(m_pDC->m_dPixelWidthPrefered		* unCoef * m_oBoundingBox.nRight);
-		m_oBoundingBox.nBottom	= static_cast<int>(m_pDC->m_dPixelHeightPrefered	* unCoef * m_oBoundingBox.nBottom);
+		m_oBoundingBox          = m_oHeader.boundRect;
+		m_oBoundingBox.Right    = static_cast<int>(m_pDC->m_dPixelWidthPrefered		* unCoef * m_oBoundingBox.Right);
+		m_oBoundingBox.Bottom   = static_cast<int>(m_pDC->m_dPixelHeightPrefered	* unCoef * m_oBoundingBox.Bottom);
 			
-		m_oBoundingBox.nLeft	= static_cast<int>(m_pDC->m_dPixelWidthPrefered		* unCoef * m_oBoundingBox.nLeft);
-		m_oBoundingBox.nTop		= static_cast<int>(m_pDC->m_dPixelHeightPrefered	* unCoef * m_oBoundingBox.nTop);
+		m_oBoundingBox.Left     = static_cast<int>(m_pDC->m_dPixelWidthPrefered		* unCoef * m_oBoundingBox.Left);
+		m_oBoundingBox.Top      = static_cast<int>(m_pDC->m_dPixelHeightPrefered	* unCoef * m_oBoundingBox.Top);
 	}// *2 ради повышения качества картинки (если в векторе насамом деле растр - сментся на растровые размеры ниже
 		
 	m_bFirstPoint = true;
@@ -981,11 +981,11 @@ void CSvmFile::Read_META_BMP()
 
     Read_META_BMP(bitmap_info, &pBgraBuffer, &ulWidth, &ulHeight );
 
-    if (bitmap_info.nHeight >  (unsigned int)m_oBoundingBox.nBottom &&
-            bitmap_info.nWidth > (unsigned int)m_oBoundingBox.nRight && !m_pOutput)
+	if (bitmap_info.nHeight >  (unsigned int)m_oBoundingBox.Bottom &&
+	    bitmap_info.nWidth > (unsigned int)m_oBoundingBox.Right && !m_pOutput)
     {
-        m_oBoundingBox.nRight = bitmap_info.nWidth;
-        m_oBoundingBox.nBottom = bitmap_info.nHeight;
+        m_oBoundingBox.Right = bitmap_info.nWidth;
+        m_oBoundingBox.Bottom = bitmap_info.nHeight;
     }
 
     if (pBgraBuffer)
@@ -1070,7 +1070,7 @@ void CSvmFile::Read_META_BMP(TSvmBitmap & bitmap_info, BYTE** ppDstBuffer, unsig
         MetaFile::ReadImage((BYTE*)&bitmap_info, bitmap_info.nSize, destBuf, destSize, ppDstBuffer, pulWidth, pulHeight);
         delete []destBuf;
     }
-    else
+    else if (nHeaderSize >= bitmap_info.nSize)
     {
         BYTE *Header = new BYTE [ nHeaderSize];
         memcpy(Header, &bitmap_info, bitmap_info.nSize);
@@ -1098,11 +1098,11 @@ void CSvmFile::Read_META_BMPEX()
 	}
 	//иногда наверху неверно вычисляется оригинальный размер - если внутри одиночная картинка
 
-    if (bitmap_info.nHeight >  (unsigned int)m_oBoundingBox.nBottom &&
-            bitmap_info.nWidth > (unsigned int)m_oBoundingBox.nRight && !m_pOutput)
+    if (bitmap_info.nHeight >  (unsigned int)m_oBoundingBox.Bottom &&
+            bitmap_info.nWidth > (unsigned int)m_oBoundingBox.Right && !m_pOutput)
     {
-        m_oBoundingBox.nRight = bitmap_info.nWidth;
-        m_oBoundingBox.nBottom = bitmap_info.nHeight;
+        m_oBoundingBox.Right = bitmap_info.nWidth;
+        m_oBoundingBox.Bottom = bitmap_info.nHeight;
     }
     unsigned int	nMagic1;
     unsigned int	nMagic2;
@@ -1170,11 +1170,11 @@ void CSvmFile::Read_META_BMPEXSCALE()
 		bitmap_info.nWidth = ulWidth;
 	}
 
-    if (bitmap_info.nHeight >  (unsigned int)m_oBoundingBox.nBottom &&
-            bitmap_info.nWidth > (unsigned int)m_oBoundingBox.nRight && !m_pOutput)
+    if (bitmap_info.nHeight >  (unsigned int)m_oBoundingBox.Bottom &&
+            bitmap_info.nWidth > (unsigned int)m_oBoundingBox.Right && !m_pOutput)
     {
-        m_oBoundingBox.nRight = bitmap_info.nWidth;
-        m_oBoundingBox.nBottom = bitmap_info.nHeight;
+        m_oBoundingBox.Right = bitmap_info.nWidth;
+        m_oBoundingBox.Bottom = bitmap_info.nHeight;
     }
     unsigned int	nMagic1;
     unsigned int	nMagic2;
@@ -1241,11 +1241,11 @@ void CSvmFile::Read_META_BMPSCALE()
         bitmap_info.nWidth = ulWidth;
     }
 
-    if (bitmap_info.nHeight >  (unsigned int)m_oBoundingBox.nBottom &&
-            bitmap_info.nWidth > (unsigned int)m_oBoundingBox.nRight && !m_pOutput)
+    if (bitmap_info.nHeight >  (unsigned int)m_oBoundingBox.Bottom &&
+            bitmap_info.nWidth > (unsigned int)m_oBoundingBox.Right && !m_pOutput)
     {
-        m_oBoundingBox.nRight = bitmap_info.nWidth;
-        m_oBoundingBox.nBottom = bitmap_info.nHeight;
+        m_oBoundingBox.Right = bitmap_info.nWidth;
+        m_oBoundingBox.Bottom = bitmap_info.nHeight;
     }
 
     TSvmSize	size;

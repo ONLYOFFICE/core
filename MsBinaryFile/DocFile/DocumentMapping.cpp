@@ -383,7 +383,7 @@ namespace DocFileFormat
 		RELEASEOBJECT(chpxFcs);
 		RELEASEOBJECT(chpxs);
 		
-		return cpEnd++;
+		return cpEnd;
 
 		return (std::max)(cp, cpEnd); //ralph_scovile.doc
 	}
@@ -1441,7 +1441,7 @@ namespace DocFileFormat
 					case sprmPFInnerTableCell:
 					case sprmPFInnerTtp:
 					{
-						fEndNestingLevel = ( iter->Arguments[0] == 1 && (nestingLevel == iTap_current)) ? (true) : (false);
+						fEndNestingLevel = ( iter->Arguments[0] == 1 ) ? (true) : (false);
 					}break;
 
 					case sprmOldPFInTable:
@@ -1453,6 +1453,8 @@ namespace DocFileFormat
 						break;
 				}
 			}
+			fEndNestingLevel == (nestingLevel == iTap_current) ? fEndNestingLevel : false;
+			
 			if (nestingLevel == iTap_current)
 			{ 
 				bool bPresent = false; //118854.doc
@@ -1485,7 +1487,7 @@ namespace DocFileFormat
 					}
 				}
 			}
-			if ((nestingLevel != iTap_current || fEndNestingLevel) && !mapBoundaries.empty())
+			if ((nestingLevel != iTap_current && fEndNestingLevel) && !mapBoundaries.empty())
 				break;
 	//get the next papx
 			papx = findValidPapx( fcRowEnd );

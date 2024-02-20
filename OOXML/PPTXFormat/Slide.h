@@ -68,6 +68,8 @@ namespace PPTX
 
 		virtual const OOX::FileType type() const;
 
+		void fromXML(XmlUtils::CXmlNode& node);
+
 		virtual const OOX::CPath DefaultDirectory() const;
 		virtual const OOX::CPath DefaultFileName() const;
 

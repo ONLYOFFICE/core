@@ -193,6 +193,9 @@ namespace BinXlsxRW
 		int ReadTableCustomStyle(BYTE type, long length, void* poResult);
 		int ReadTableCustomStyleElements(BYTE type, long length, void* poResult);
 		int ReadTableCustomStyleElement(BYTE type, long length, void* poResult);
+		int ReadTimelineStyles(BYTE type, long length, void* poResult);
+		int ReadTimelineStyle(BYTE type, long length, void* poResult);
+		int ReadTimelineStyleElement(BYTE type, long length, void* poResult);
 	};
 	class BinaryWorkbookTableReader : public Binary_CommonReader
 	{
@@ -216,6 +219,7 @@ namespace BinXlsxRW
 		int ReadDefinedNames(BYTE type, long length, void* poResult);
 		int ReadDefinedName(BYTE type, long length, void* poResult);
 		int ReadCalcPr(BYTE type, long length, void* poResult);
+		
 		int ReadExternalBook(BYTE type, long length, void* poResult);
 		int ReadExternalSheetNames(BYTE type, long length, void* poResult);
 		int ReadExternalDefinedNames(BYTE type, long length, void* poResult);
@@ -225,6 +229,7 @@ namespace BinXlsxRW
 		int ReadExternalRow(BYTE type, long length, void* poResult);
 		int ReadExternalCell(BYTE type, long length, void* poResult);
 		int ReadExternalAlternateUrls(BYTE type, long length, void* poResult);
+		
 		int ReadOleLink(BYTE type, long length, void* poResult);
 		int ReadOleItem(BYTE type, long length, void* poResult);
 		int ReadDdeLink(BYTE type, long length, void* poResult);
@@ -233,6 +238,7 @@ namespace BinXlsxRW
 		int ReadDdeValue(BYTE type, long length, void* poResult);
 		int ReadPivotCaches(BYTE type, long length, void* poResult);
 		int ReadPivotCache(BYTE type, long length, void* poResult);
+		
 		int ReadConnections(BYTE type, long length, void* poResult);
 		int ReadConnection(BYTE type, long length, void* poResult);
 		int ReadConnectionDbPr(BYTE type, long length, void* poResult);
@@ -242,7 +248,34 @@ namespace BinXlsxRW
 		int ReadConnectionRangePr(BYTE type, long length, void* poResult);
 		int ReadConnectionTextFields(BYTE type, long length, void* poResult);
 		int ReadConnectionTextField(BYTE type, long length, void* poResult);
+		
 		int ReadSlicerCaches(BYTE type, long length, void* poResult);
+		
+		int ReadTimelineCaches(BYTE type, long length, void* poResult);
+		int ReadTimelineCache(BYTE type, long length, void* poResult);
+		int ReadTimelineState(BYTE type, long length, void* poResult);
+		int ReadTimelinePivotFilter(BYTE type, long length, void* poResult);
+		int ReadTimelineCachePivotTables(BYTE type, long length, void* poResult);
+		int ReadTimelineCachePivotTable(BYTE type, long length, void* poResult);
+		int ReadTimelineRange(BYTE type, long length, void* poResult);
+		
+		int ReadMetadata(BYTE type, long length, void* poResult);
+		int ReadMetadataTypes(BYTE type, long length, void* poResult);
+		int ReadMetadataType(BYTE type, long length, void* poResult);
+		int ReadMetadataStrings(BYTE type, long length, void* poResult);
+		int ReadMdxMetadata(BYTE type, long length, void* poResult);
+		int ReadMdx(BYTE type, long length, void* poResult);
+		int ReadMetadataBlocks(BYTE type, long length, void* poResult);
+		int ReadMetadataBlock(BYTE type, long length, void* poResult);
+		int ReadMetadataRecord(BYTE type, long length, void* poResult);
+		int ReadFutureMetadata(BYTE type, long length, void* poResult);
+		int ReadFutureMetadataBlock(BYTE type, long length, void* poResult);
+		int ReadMdxTuple(BYTE type, long length, void* poResult);
+		int ReadMdxSet(BYTE type, long length, void* poResult);
+		int ReadMdxKPI(BYTE type, long length, void* poResult);
+		int ReadMdxMemeberProp(BYTE type, long length, void* poResult);
+		int ReadMetadataStringIndex(BYTE type, long length, void* poResult);
+		int ReadDynamicArrayProperties(BYTE type, long length, void* poResult);
 	};
 	class BinaryCommentReader : public Binary_CommonReader
 	{
@@ -363,6 +396,9 @@ namespace BinXlsxRW
 		int ReadUserProtectedRanges(BYTE type, long length, void* poResult);
 		int ReadUserProtectedRange(BYTE type, long length, void* poResult);
 		int ReadUserProtectedRangeDesc(BYTE type, long length, void* poResult);
+		int ReadTimelinesList(BYTE type, long length, void* poResult);
+		int ReadTimelines(BYTE type, long length, void* poResult);
+		int ReadTimeline(BYTE type, long length, void* poResult);		
 
 		void WriteComments();
 		void AddLineBreak(OOX::Spreadsheet::CSi& oSi);

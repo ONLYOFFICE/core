@@ -425,9 +425,9 @@ namespace NSJSBase
 			return _value;
 		}
 
-		virtual void set(const char* name, CJSValue* value_param)
+		virtual void set(const char* name, JSSmart<CJSValue> value_param)
 		{
-			CJSValueV8* _value = static_cast<CJSValueV8*>(value_param);
+			CJSValueV8* _value = static_cast<CJSValueV8*>(value_param.GetPointer());
 			v8::Local<v8::String> _name = CreateV8String(CV8Worker::GetCurrent(), name);
 			value->Set(V8ContextFirstArg _name, _value->value);
 		}
@@ -444,6 +444,28 @@ namespace NSJSBase
 			v8::Isolate* isolate = CV8Worker::GetCurrent();
 			v8::Local<v8::String> _name = CreateV8String(CV8Worker::GetCurrent(), name);
 			value->Set(V8ContextFirstArg _name, v8::Number::New(isolate, _value));
+		}
+
+		virtual std::vector<std::string> getPropertyNames()
+		{
+			v8::Local<v8::Context> context = CV8Worker::GetCurrentContext();
+			v8::Local<v8::Array> names = value->GetPropertyNames(context).ToLocalChecked();
+			uint32_t len = names->Length();
+
+			std::vector<std::string> ret;
+			for (uint32_t i = 0; i < len; i++)
+			{
+				v8::Local<v8::Value> propertyName = names->Get(context, i).ToLocalChecked();
+				v8::Local<v8::Value> propertyValue = value->Get(context, propertyName).ToLocalChecked();
+				// skip undefined properties
+				if (propertyValue->IsUndefined())
+					continue;
+				CJSValueV8 _value;
+				_value.value = propertyName;
+				ret.push_back(_value.toStringA());
+			}
+
+			return ret;
 		}
 
 		virtual CJSEmbedObject* getNative()
@@ -530,21 +552,16 @@ namespace NSJSBase
 			return _value;
 		}
 
-		virtual void set(const int& index, CJSValue* value_param)
+		virtual void set(const int& index, JSSmart<CJSValue> value_param)
 		{
-			CJSValueV8* _value = static_cast<CJSValueV8*>(value_param);
+			CJSValueV8* _value = static_cast<CJSValueV8*>(value_param.GetPointer());
 			value->Set(V8ContextFirstArg index, _value->value);
 		}
 
-		virtual void add(CJSValue* value_param)
+		virtual void add(JSSmart<CJSValue> value_param)
 		{
-			CJSValueV8* _value = static_cast<CJSValueV8*>(value_param);
+			CJSValueV8* _value = static_cast<CJSValueV8*>(value_param.GetPointer());
 			value->Set(V8ContextFirstArg getCount(), _value->value);
-		}
-
-		virtual void set(const int& index, const bool& _value)
-		{
-			value->Set(V8ContextFirstArg index, v8::Boolean::New(CV8Worker::GetCurrent(), _value));
 		}
 
 		virtual void set(const int& index, const int& _value)

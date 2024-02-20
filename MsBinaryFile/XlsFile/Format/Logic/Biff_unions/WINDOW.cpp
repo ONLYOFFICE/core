@@ -136,7 +136,7 @@ int WINDOW::serialize(std::wostream & stream)
 				{
 					CP_XML_ATTR(L"view", L"pageLayout");
 				}
-				if (window2->topLeftCell != L"A1")
+				if (!window2->topLeftCell.empty() && window2->topLeftCell != L"A1")
 				{
 					CP_XML_ATTR(L"topLeftCell", window2->topLeftCell);
 				}

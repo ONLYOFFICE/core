@@ -6,7 +6,6 @@ import org.apache.tools.ant.taskdefs.condition.Os
 plugins {
     id("com.android.library")
     kotlin("android")
-    id("maven-publish")
 }
 
 apply {
@@ -15,30 +14,30 @@ apply {
 
 val keystore = extra.get("getKeystore") as org.codehaus.groovy.runtime.MethodClosure
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            groupId = PublishEditors.groupId
-            artifactId = PublishEditors.x2tId
-            version = PublishEditors.version
-            artifact("$buildDir/outputs/aar/lib${artifactId}-release.aar")
-        }
-    }
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("${PublishEditors.publishUrl}/")
-            credentials {
-                username = (keystore() as? java.util.Properties)?.getProperty("git_user_name") ?: ""
-                password = (keystore() as? java.util.Properties)?.getProperty("git_token") ?: ""
-            }
-        }
-    }
-}
+//publishing {
+//    publications {
+//        create<MavenPublication>("maven") {
+//            groupId = PublishEditors.groupId
+//            artifactId = PublishEditors.x2tId
+//            version = PublishEditors.version
+//            artifact("${layout.buildDirectory}/outputs/aar/lib${artifactId}-release.aar")
+//        }
+//    }
+//    repositories {
+//        maven {
+//            name = "GitHubPackages"
+//            url = uri("${PublishEditors.publishUrl}/")
+//            credentials {
+//                username = (keystore() as? java.util.Properties)?.getProperty("git_user_name") ?: ""
+//                password = (keystore() as? java.util.Properties)?.getProperty("git_token") ?: ""
+//            }
+//        }
+//    }
+//}
 
 android {
 
-    buildToolsVersion = AppDependency.BUILD_TOOLS_VERSION
+    namespace = "lib.x2t"
     compileSdk = AppDependency.COMPILE_SDK_VERSION
     ndkVersion = rootProject.extra.get("NDK_VERSION").toString()
 
@@ -49,8 +48,6 @@ android {
 
     defaultConfig {
         minSdk = AppDependency.MIN_SDK_VERSION
-        targetSdk = AppDependency.TARGET_SDK_VERSION
-
 
         buildConfigField("String", "LIB_X2T", "\"${extra.get("NAME_LIB")}\"")
 
@@ -102,15 +99,19 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility(JavaVersion.VERSION_11)
-        targetCompatibility(JavaVersion.VERSION_11)
+        sourceCompatibility(JavaVersion.VERSION_17)
+        targetCompatibility(JavaVersion.VERSION_17)
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 
-    packagingOptions {
+    buildFeatures {
+        buildConfig = true
+    }
+
+    packaging {
         jniLibs.useLegacyPackaging = true
         arrayOf("armeabi-v7a", "x86", "arm64-v8a", "x86_64").forEach { abi ->
             val dh = file("${extra.get("PATH_LIB_BUILD_TOOLS")}/$abi")

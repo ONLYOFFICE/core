@@ -59,6 +59,7 @@ public:
 	_CP_OPT(odf_types::color) calcext_axis_color_;
 	_CP_OPT(odf_types::color) calcext_positive_color_;
 	_CP_OPT(odf_types::color) calcext_negative_color_;
+    _CP_OPT(std::wstring) calcext_axis_position_;
 };
 
 class calcext_condition_attr
@@ -155,16 +156,16 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeCalcextFormattingEntry;
-    
+    static const ElementType type = typeCalcextFormattingEntry;    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
     virtual void add_child_element( const office_element_ptr & child_element){}
 
 	virtual void serialize(std::wostream & _Wostream);
 
-	_CP_OPT(std::wstring)				calcext_value_;
-	_CP_OPT(odf_types::calcext_type)	calcext_type_;
+	_CP_OPT(std::wstring)				value_;
+	_CP_OPT(odf_types::calcext_type)    type_;
+    _CP_OPT(odf_types::Bool)            show_value_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_formatting_entry);
@@ -176,8 +177,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeCalcextIconSet;
-    
+    static const ElementType type = typeCalcextIconSet;    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -185,6 +185,7 @@ public:
 	virtual void serialize(std::wostream & _Wostream);
 	
 	calcext_icon_set_attr		attr_;
+    _CP_OPT(odf_types::Bool)    show_value_;
     office_element_ptr_array	content_;//entries
 
 };
@@ -197,8 +198,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeCalcextDataBar;
-    
+    static const ElementType type = typeCalcextDataBar;    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -206,6 +206,7 @@ public:
 	virtual void serialize(std::wostream & _Wostream);
 	
 	calcext_data_bar_attr		attr_;
+    _CP_OPT(odf_types::Bool)    show_value_;
     office_element_ptr_array	content_;//entries
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_data_bar)

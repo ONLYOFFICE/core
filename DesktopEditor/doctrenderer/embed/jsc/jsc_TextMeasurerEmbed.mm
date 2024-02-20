@@ -27,6 +27,9 @@
 -(JSValue*) FT_SetCMapForCharCode : (JSValue*)face : (JSValue*)unicode;
 -(JSValue*) FT_GetKerningX : (JSValue*)face : (JSValue*)gid1 : (JSValue*)gid2;
 -(JSValue*) FT_GetFaceMaxAdvanceX : (JSValue*)face;
+-(JSValue*) Hyphen_SetCacheSize : (JSValue*)size;
+-(JSValue*) Hyphen_Word : (JSValue*)lang : (JSValue*)word;
+-(JSValue*) Hyphen_IsDictionaryExist : (JSValue*)lang;
 @end
 
 @interface CJSCTextMeasurerEmbed : NSObject<IJSCTextMeasurerEmbed, JSEmbedObjectProtocol>
@@ -61,6 +64,9 @@ FUNCTION_WRAPPER_JS_5(FT_Set_Char_Size, FT_Set_Char_Size)
 FUNCTION_WRAPPER_JS_2(FT_SetCMapForCharCode, FT_SetCMapForCharCode)
 FUNCTION_WRAPPER_JS_3(FT_GetKerningX, FT_GetKerningX)
 FUNCTION_WRAPPER_JS_1(FT_GetFaceMaxAdvanceX, FT_GetFaceMaxAdvanceX)
+FUNCTION_WRAPPER_JS_1(Hyphen_SetCacheSize, Hyphen_SetCacheSize)
+FUNCTION_WRAPPER_JS_2(Hyphen_Word, Hyphen_Word)
+FUNCTION_WRAPPER_JS_1(Hyphen_IsDictionaryExist, Hyphen_IsDictionaryExist)
 @end
 
 class CTextMeasurerEmbedAdapter : public CJSEmbedObjectAdapterJSC

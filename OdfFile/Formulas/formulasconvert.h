@@ -99,9 +99,10 @@ public:
 	bool is_simple_ref(std::wstring const & expr);
 
 	std::wstring get_table_name();
+    void set_table_name(std::wstring const& val);
 
 	//Sheet2!C3:C19 -> Sheet2.C3:Sheet2.C19 
-    std::wstring convert_chart_distance(std::wstring const & expr);
+    std::wstring convert_ref_distances(std::wstring const & expr, std::wstring const& separator_in, std::wstring const& separator_out);
     
     std::wstring convert_ref(std::wstring const & expr);
 

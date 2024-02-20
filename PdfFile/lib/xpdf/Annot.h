@@ -80,7 +80,7 @@ enum AnnotLineEndType {
 class Annot {
 public:
 
-  Annot(PDFDoc *docA, Dict *dict, Ref *refA);
+  Annot(PDFDoc *docA, Dict *dict, Ref *refA, const char* AP = "N", const char* AS = 0);
   ~Annot();
   GBool isOk() { return ok; }
 

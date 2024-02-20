@@ -63,14 +63,14 @@ namespace MetaFile
 			shHeight = oRect.shHeight;
 		}
 
-		TEmfRectL GetRectL()
+		TRectL ToRectL()
 		{
-			TEmfRectL oRect;
+			TRectL oRect;
 
-			oRect.lLeft   = (int)shX;
-			oRect.lRight  = (int)(shX + shWidth);
-			oRect.lTop    = (int)shY;
-			oRect.lBottom = (int)(shY + shHeight);
+			oRect.Left   = (int)shX;
+			oRect.Right  = (int)(shX + shWidth);
+			oRect.Top    = (int)shY;
+			oRect.Bottom = (int)(shY + shHeight);
 
 			return oRect;
 		}
@@ -88,7 +88,7 @@ namespace MetaFile
 			chBlue  = 0;
 			chGreen = 0;
 			chRed   = 0;
-			chAlpha = 0;
+			chAlpha = 255;
 		}
 
 		TEmfPlusARGB(unsigned char chBlue, unsigned char chGreen, unsigned char chRed)
@@ -107,17 +107,11 @@ namespace MetaFile
 		}
 	};
 
-
-	struct TEmfPlusPointR
-	{
-		//TODO: реализовать
-	};
-
 	struct TGUID
 	{
-		int nData1;
-		short shData2;
-		short shData3;
+		int           nData1;
+		short         shData2;
+		short         shData3;
 		long long int llnData4;
 
 		TGUID()
@@ -162,71 +156,68 @@ namespace MetaFile
 			dHeight = (double)oRectangle.shHeight;
 		}
 
-		TRectD GetRectD() const
+		TRectD ToRectD() const
 		{
 			TRectD oRectangle;
 
-			oRectangle.dLeft   = dX;
-			oRectangle.dTop    = dY;
-			oRectangle.dRight  = dX + dWidth;
-			oRectangle.dBottom = dY + dHeight;
+			oRectangle.Left   = dX;
+			oRectangle.Top    = dY;
+			oRectangle.Right  = dX + dWidth;
+			oRectangle.Bottom = dY + dHeight;
 
 			return oRectangle;
 		}
 
-		TEmfRectL GetRectL() const
+		TRectL ToRectL() const
 		{
-			TEmfRectL oRectangle;
+			TRectL oRectangle;
 
-			oRectangle.lLeft   = dX;
-			oRectangle.lTop    = dY;
-			oRectangle.lRight  = dX + dWidth;
-			oRectangle.lBottom = dY + dHeight;
+			oRectangle.Left   = dX;
+			oRectangle.Top    = dY;
+			oRectangle.Right  = dX + dWidth;
+			oRectangle.Bottom = dY + dHeight;
 
 			return oRectangle;
 		}
 	};
 
-    #define TEmfPlusPoint TEmfPointS
-    #define TEmfPlusXForm TEmfXForm
+	#define TEmfPlusXForm TEmfXForm
 
-	struct TEmfPlusPointF
+	struct TEmfPlusPoint : public TPointS
 	{
-		double X;
-		double Y;
-
-		TEmfPlusPointF(){}
-
-		TEmfPlusPointF(const double& dX, const double& dY) : X(dX), Y(dY) {};
-
-		TEmfPointL ToPointL() const
+		TEmfPlusPoint() : TPointS(0, 0) {}
+		TEmfPlusPoint(short shX, short shY) : TPointS(shX, shY) {}
+		
+		TPointL ToPointL() const
 		{
-			TEmfPointL oPoint;
+			TPointL oPoint;
 
-			oPoint.x = (int)X;
-			oPoint.y = (int)Y;
+			oPoint.X = (int)X;
+			oPoint.Y = (int)Y;
 
 			return oPoint;
 		}
-
-		TEmfPlusPointF& operator=(const TEmfPlusPoint& oPoint)
+	};
+	
+	struct TEmfPlusPointF : public TPointD
+	{
+		TEmfPlusPointF() : TPointD(0, 0) {}
+		TEmfPlusPointF(double dX, double dY) : TPointD(dX, dY) {}
+		
+		void Set(const TEmfPlusPoint& oPointS)
 		{
-			X = (double)oPoint.x;
-			Y = (double)oPoint.y;
-
-			return *this;
+			X = (double)oPointS.X;
+			Y = (double)oPointS.Y;
 		}
-
-		TEmfPlusPointF& operator=(const TEmfPlusPointR& oPoint)
+		
+		TPointL ToPointL() const
 		{
-			//TODO: реализовать
-			return *this;
-		}
+			TPointL oPoint;
 
-		TEmfPlusPointF& operator+(const TEmfPlusPointR& oPoint)
-		{
-			//TODO: реализовать
-			return *this;
+			oPoint.X = (int)X;
+			oPoint.Y = (int)Y;
+
+			return oPoint;
 		}
 	};
 
@@ -300,7 +291,7 @@ namespace MetaFile
 		CEmfPlusPath*  pPath;
 
 		TEmfPlusCustomLineCapData() : pPath(NULL) {};
-		virtual ~TEmfPlusCustomLineCapData() { RELEASEOBJECT(pPath) };
+		virtual ~TEmfPlusCustomLineCapData();
 
 		CustomLineCapDataType GetType() const override
 		{

@@ -13,24 +13,32 @@ ios:CONFIG += build_x2t_as_library
 android:CONFIG += build_x2t_as_library
 
 build_x2t_as_library {
-    TEMPLATE = lib
-    CONFIG -= console
+	TEMPLATE = lib
+	CONFIG -= console
 
-    DEFINES += BUILD_X2T_AS_LIBRARY_DYLIB
+	DEFINES += BUILD_X2T_AS_LIBRARY_DYLIB
 
-    CONFIG += shared
-    CONFIG += plugin
+	CONFIG += shared
+	CONFIG += plugin
 
-    !core_debug:shared:QMAKE_LFLAGS += -exported_symbols_list $$PWD/../../src/dylib/export
+	!core_debug:shared:QMAKE_LFLAGS += -exported_symbols_list $$PWD/../../src/dylib/export
 }
 
 include(X2tConverter.pri)
 
 !build_x2t_as_library {
-    SOURCES += ../../src/main.cpp
+	SOURCES += ../../src/main.cpp
 
-    DESTDIR = $$CORE_BUILDS_BINARY_PATH
+	DESTDIR = $$CORE_BUILDS_BINARY_PATH
+
+	core_windows {
+		!build_xp {
+			CONFIG -= embed_manifest_exe
+			QMAKE_MANIFEST = $$PWD/x2t.exe.manifest
+			OTHER_FILES += $$PWD/x2t.exe.manifest
+		}
+	}
 } else {
-    HEADERS += ../../src/dylib/x2t.h
-    SOURCES += ../../src/dylib/x2t.cpp
+	HEADERS += ../../src/dylib/x2t.h
+	SOURCES += ../../src/dylib/x2t.cpp
 }

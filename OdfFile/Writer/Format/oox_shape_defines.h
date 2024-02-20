@@ -66,6 +66,8 @@ namespace cpdoccore
 			_CP_OPT(std::wstring) x_maximum;
 			_CP_OPT(std::wstring) r_minimum;
 			_CP_OPT(std::wstring) r_maximum;
+
+			_CP_OPT(bool) handle_swiched;
 		};
 
         void add(std::wstring name,std::wstring frmla);
@@ -80,6 +82,9 @@ namespace cpdoccore
 		_CP_OPT(std::wstring)	view_box;
 		_CP_OPT(std::wstring)	sub_view_size;
 		_CP_OPT(std::wstring)	glue_points;
+
+		std::wstring path_stretchpoint_x;
+		std::wstring path_stretchpoint_y;
 
 		std::wstring			odf_type_name;
 	};

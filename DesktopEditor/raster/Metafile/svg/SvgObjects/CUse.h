@@ -9,7 +9,7 @@ namespace SVG
 	class CUse : public CRenderedObject
 	{
 	public:
-		CUse(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL, const CSvgFile* pFile = NULL);
+		CUse(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
 		virtual ~CUse();
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
@@ -26,7 +26,6 @@ namespace SVG
 		SvgDigit m_oHeight;
 
 		std::wstring    m_wsHref;
-		const CSvgFile *m_pFile;
 	};
 }
 #endif // CUSE_H

@@ -1820,7 +1820,7 @@ namespace SimpleTypes
 	{
 		relfromvBottomMargin  = 0,
 		relfromvInsideMargin  = 1,
-		relfromvLine          = 2,
+		relfromvLine        = 2,  
 		relfromvMargin        = 3,
 		relfromvOutsideMargin = 4,
 		relfromvPage          = 5,

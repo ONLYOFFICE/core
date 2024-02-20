@@ -99,7 +99,7 @@ namespace MetaFile
 			return ((CEmfInterpretatorSvg*)m_oEmfFile.GetEmfParser()->GetInterpretator())->GetFile();
 		}
 	#endif
-        return L"";
+		return L"";
 	}
 
 #ifdef METAFILE_SUPPORT_WMF_EMF
@@ -145,7 +145,7 @@ namespace MetaFile
 		double dWidth  = 25.4 * nWidth / 96;
 		double dHeight = 25.4 * nHeight / 96;
 
-		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+		BYTE* pBgraData = new(std::nothrow) BYTE[nWidth * nHeight * 4];
 		if (!pBgraData)
 			return;
 
@@ -508,10 +508,6 @@ namespace MetaFile
 		m_oSvmFile.Close();
 	#endif
 
-	#ifdef METAFILE_SUPPORT_SVG
-		m_oSvgFile.Close();
-	#endif
-
 		m_lType  = 0;
 	}
 
@@ -527,31 +523,31 @@ namespace MetaFile
 		#ifdef METAFILE_SUPPORT_WMF_EMF
 			case c_lMetaWmf:
 			{
-				const TRectD& oRect = m_oWmfFile.GetBounds();
-				*pdX = oRect.dLeft;
-				*pdY = oRect.dTop;
-				*pdW = oRect.dRight - oRect.dLeft;
-				*pdH = oRect.dBottom - oRect.dTop;
+				TRectL* pRect = m_oWmfFile.GetBounds();
+				*pdX = pRect->Left;
+				*pdY = pRect->Top;
+				*pdW = pRect->Right - pRect->Left;
+				*pdH = pRect->Bottom - pRect->Top;
 				break;
 			}
 			case c_lMetaEmf:
 			{
-				TEmfRectL* pRect = m_oEmfFile.GetBounds();
-				*pdX = pRect->lLeft;
-				*pdY = pRect->lTop;
-				*pdW = pRect->lRight - pRect->lLeft;
-				*pdH = pRect->lBottom - pRect->lTop;
+				TRectL* pRect = m_oEmfFile.GetBounds();
+				*pdX = pRect->Left;
+				*pdY = pRect->Top;
+				*pdW = pRect->Right - pRect->Left;
+				*pdH = pRect->Bottom - pRect->Top;
 				break;
 			}
 		#endif
 		#ifdef METAFILE_SUPPORT_SVM
 			case c_lMetaSvm:
 			{
-				TRect* pRect = m_oSvmFile.GetBounds();
-				*pdX = pRect->nLeft;
-				*pdY = pRect->nTop;
-				*pdW = pRect->nRight - pRect->nLeft;
-				*pdH = pRect->nBottom - pRect->nTop;
+				TRectL* pRect = m_oSvmFile.GetBounds();
+				*pdX = pRect->Left;
+				*pdY = pRect->Top;
+				*pdW = pRect->Right - pRect->Left;
+				*pdH = pRect->Bottom - pRect->Top;
 
 				if (*pdW > 10000 || *pdH > 10000)
 				{

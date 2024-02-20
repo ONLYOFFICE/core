@@ -31,10 +31,11 @@
  */
 #include "ImageFileFormatChecker.h"
 #include "../common/File.h"
-#include "../xml/include/xmlutils.h"
-
 #include "../cximage/CxImage/ximacfg.h"
 
+#ifndef IMAGE_CHECKER_DISABLE_XML
+#include "../xml/include/xmlutils.h"
+#endif
 
 #define MIN_SIZE_BUFFER 4096
 #define MAX_SIZE_BUFFER 102400
@@ -411,6 +412,26 @@ bool CImageFileFormatChecker::isIpodFile(BYTE* pBuffer,DWORD dwBytes)
 
 	return false;
 }
+
+bool CImageFileFormatChecker::isPicFile(BYTE *pBuffer, DWORD dwBytes)
+{
+    if (dwBytes < 12)
+        return false;
+
+    if (memcmp(pBuffer, "PICT", 4) == 0)
+        return true;
+
+    if (memcmp(pBuffer + 10, "\000\021\002\377\014\000", 6) == 0)
+        return true;
+
+    if (dwBytes < 528)
+        return false;
+
+    if (memcmp(pBuffer + 522, "\000\021\002\377\014\000", 6) == 0)
+        return true;
+
+    return false;
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool CImageFileFormatChecker::isImageFile(std::wstring& fileName)
 {
@@ -529,6 +550,10 @@ bool CImageFileFormatChecker::isImageFile(std::wstring& fileName)
 	{
 		eFileType = _CXIMAGE_FORMAT_UNKNOWN;
 	}
+    else if (isPicFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_PIC;
+    }
 	///////////////////////////////////////////////////////////////////////
 	delete [] buffer;
 
@@ -640,7 +665,11 @@ bool CImageFileFormatChecker::isImageFile(BYTE* buffer, DWORD sizeRead)
 	{
 		eFileType = _CXIMAGE_FORMAT_UNKNOWN;
 	}
-	///////////////////////////////////////////////////////////////////////
+    if (isPicFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_PIC;
+    }
+    ///////////////////////////////////////////////////////////////////////
 	if (eFileType) return true;
 	return false;
 }
@@ -718,6 +747,7 @@ bool CImageFileFormatChecker::isRawFile(BYTE* pBuffer, DWORD dwBytes)
 }
 bool CImageFileFormatChecker::isSvgFile(std::wstring& fileName)
 {
+#ifndef IMAGE_CHECKER_DISABLE_XML
 	XmlUtils::CXmlLiteReader oReader;
 	if (!oReader.FromFile(fileName))
 		return false;
@@ -728,6 +758,33 @@ bool CImageFileFormatChecker::isSvgFile(std::wstring& fileName)
 		return true;
 	else
 		return false;
+#else
+	NSFile::CFileBinary file;
+	if (!file.OpenFile(fileName))
+		return false;
+
+	DWORD nSize = (DWORD)file.GetFileSize();
+	if (nSize > 1000)
+		nSize = 1000;
+
+	BYTE* buffer = new BYTE[nSize];
+	if (!buffer)
+		return false;
+
+	DWORD sizeRead = 0;
+	if (!file.ReadFile(buffer, nSize, sizeRead))
+	{
+		delete []buffer;
+		return false;
+	}
+	file.CloseFile();
+
+	std::string test((char*)buffer, nSize);
+	bool bFind = (std::string::npos != test.find("<svg")) ? true : false;
+
+	delete [] buffer;
+	return bFind;
+#endif
 }
 
 std::wstring CImageFileFormatChecker::DetectFormatByData(BYTE *Data, int DataSize)

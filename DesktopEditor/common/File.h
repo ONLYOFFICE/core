@@ -125,6 +125,8 @@ namespace NSFile
 		// utf16
 		static void GetUtf16StringFromUnicode_4bytes(const wchar_t* pUnicodes, LONG lCount, BYTE*& pData, int& lOutputCount, bool bIsBOM = false);
 		static void GetUtf16StringFromUnicode_4bytes2(const wchar_t* pUnicodes, LONG lCount, CStringUtf16& data);
+		static long GetUtf16SizeFromUnicode_4bytes(const wchar_t* pUnicodes, LONG lCount, bool bIsBOM = false);
+		static long GetUtf16SizeFromUnicode(const wchar_t* pUnicodes, LONG lCount, bool bIsBOM = false);
 
 		static std::wstring GetWStringFromUTF16(const CStringUtf16& data);
 		static std::wstring GetWStringFromUTF16(const unsigned short* pUtf16, LONG lCount);
@@ -192,7 +194,18 @@ namespace NSFile
 		static bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, wchar_t *wsMode, wchar_t *wsExt, wchar_t *wsFolder, wchar_t* wsName = NULL);
 		static FILE* OpenFileNative(const std::wstring& sFileName, const std::wstring& sMode);
 
-		static unsigned long GetDateTime(const std::wstring & strFileName);
+		// returns true if everything is OK;
+		// you can set ptmLastWrite / ptmLastAccess to nullptr if you are not going to use them;
+		// tm_wday && tm_yday && tm_isdst is unused on windows
+		static bool GetTime(const std::wstring& sFilename,
+				struct tm* ptmLastWrite = nullptr,
+				struct tm* ptmLastAccess = nullptr);
+
+		// returns true if everything is OK;
+		// you can set ptmLastWrite / ptmLastAccess to nullptr if you are not going to change them
+		static bool SetTime(const std::wstring& sFilename,
+				struct tm* ptmLastWrite = nullptr,
+				struct tm* ptmLastAccess = nullptr);
 	};
 
 	class KERNEL_DECL CBase64Converter

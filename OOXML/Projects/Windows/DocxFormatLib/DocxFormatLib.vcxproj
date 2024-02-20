@@ -316,7 +316,6 @@
     <ClInclude Include="..\..\..\DocxFormat\Media\OleObject.h" />
     <ClInclude Include="..\..\..\DocxFormat\Media\VbaProject.h" />
     <ClInclude Include="..\..\..\DocxFormat\Media\Video.h" />
-    <ClInclude Include="..\..\..\DocxFormat\Namespaces.h" />
     <ClInclude Include="..\..\..\DocxFormat\Numbering.h" />
     <ClInclude Include="..\..\..\DocxFormat\Rels.h" />
     <ClInclude Include="..\..\..\DocxFormat\RId.h" />
@@ -355,6 +354,7 @@
     <ClInclude Include="..\..\..\XlsxFormat\Pivot\PivotCacheDefinitionExt.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Pivot\PivotCacheRecords.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Pivot\PivotTable.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\RichData\RdRichValue.h" />
     <ClInclude Include="..\..\..\XlsxFormat\SharedStrings\PhoneticPr.h" />
     <ClInclude Include="..\..\..\XlsxFormat\SharedStrings\Run.h" />
     <ClInclude Include="..\..\..\XlsxFormat\SharedStrings\SharedStrings.h" />
@@ -378,11 +378,13 @@
     <ClInclude Include="..\..\..\XlsxFormat\Table\Connections.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Table\QueryTable.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Table\Table.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Timelines\Timeline.h" />
     <ClInclude Include="..\..\..\XlsxFormat\WorkbookComments.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\BookViews.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\CalcPr.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\DefinedNames.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\ExternalReferences.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Workbook\Metadata.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\Sheets.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\Workbook.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\WorkbookPr.h" />
@@ -478,7 +480,6 @@
     <ClCompile Include="..\..\..\DocxFormat\Media\OleObject.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Media\VbaProject.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Media\Video.cpp" />
-    <ClCompile Include="..\..\..\DocxFormat\Namespaces.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Numbering.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Rels.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\RId.cpp" />
@@ -514,6 +515,7 @@
     <ClCompile Include="..\..\..\XlsxFormat\Ole\OleObjects.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Pivot\PivotCacheDefinitionExt.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Pivot\Pivots.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\RichData\RdRichValue.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\PhoneticPr.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\XlsxRun.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\SharedStrings.cpp" />
@@ -536,10 +538,12 @@
     <ClCompile Include="..\..\..\XlsxFormat\Table\Autofilter.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Table\Connections.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Table\Tables.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Timelines\Timeline.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\BookViews.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\CalcPr.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\DefinedNames.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\ExternalReferences.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Workbook\Metadata.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\Sheets.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\Workbook.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\WorkbookPr.cpp" />

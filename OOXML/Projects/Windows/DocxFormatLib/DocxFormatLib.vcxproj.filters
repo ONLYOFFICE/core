@@ -82,6 +82,12 @@
     <Filter Include="XlsxFormat\Controls">
       <UniqueIdentifier>{f45ba67d-ffc8-49ea-8b3a-a0477f13042e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="XlsxFormat\Timelines">
+      <UniqueIdentifier>{34deda6e-7347-49f2-be67-d088cdd469db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XlsxFormat\RichData">
+      <UniqueIdentifier>{db25162b-705e-4c13-b6c5-f7c018c6f39a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Base\Base.h">
@@ -135,7 +141,6 @@
     <ClInclude Include="..\..\..\DocxFormat\HeaderFooter.h" />
     <ClInclude Include="..\..\..\DocxFormat\IFileBuilder.h" />
     <ClInclude Include="..\..\..\DocxFormat\IFileContainer.h" />
-    <ClInclude Include="..\..\..\DocxFormat\Namespaces.h" />
     <ClInclude Include="..\..\..\DocxFormat\Numbering.h" />
     <ClInclude Include="..\..\..\DocxFormat\Rels.h" />
     <ClInclude Include="..\..\..\DocxFormat\RId.h" />
@@ -533,6 +538,15 @@
     <ClInclude Include="..\..\..\DocxFormat\UnknowTypeFile.h" />
     <ClInclude Include="..\..\..\DocxFormat\VmlDrawing.h" />
     <ClInclude Include="..\..\..\DocxFormat\WritingElement.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Timelines\Timeline.h">
+      <Filter>XlsxFormat\Timelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsxFormat\RichData\RdRichValue.h">
+      <Filter>XlsxFormat\RichData</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsxFormat\Workbook\Metadata.h">
+      <Filter>XlsxFormat\Workbook</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Base\codecvt.cpp">
@@ -776,7 +790,6 @@
     <ClCompile Include="..\..\..\DocxFormat\FontTable.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Footnote.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\FtnEdn.cpp" />
-    <ClCompile Include="..\..\..\DocxFormat\Namespaces.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Numbering.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Rels.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\RId.cpp" />
@@ -940,6 +953,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\DocxFormat\External\ExternalHyperLink.cpp">
       <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsxFormat\Timelines\Timeline.cpp">
+      <Filter>XlsxFormat\Timelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsxFormat\RichData\RdRichValue.cpp">
+      <Filter>XlsxFormat\RichData</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsxFormat\Workbook\Metadata.cpp">
+      <Filter>XlsxFormat\Workbook</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

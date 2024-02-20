@@ -15,9 +15,6 @@ class CSvgFile
 
 		bool ReadFromBuffer(BYTE* pBuffer, unsigned int unSize);
 		bool OpenFromFile(const std::wstring& wsFile);
-		bool Load(const std::wstring& wsContent);
-
-		void Close();
 
 		bool GetBounds(double& dX, double& dY, double& dWidth, double& dHeight) const;
 		const SVG::CSvgCalculator* GetSvgCalculator() const;
@@ -27,6 +24,8 @@ class CSvgFile
 		bool MarkObject(SVG::CObject* pObject);
 		SVG::CObject* GetMarkedObject(const std::wstring& wsId) const;
 
+		std::wstring GetWorkingDirectory() const;
+		
 		void AddStyles(const std::wstring& wsStyles);
 
 		bool Draw(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
@@ -39,7 +38,8 @@ class CSvgFile
 
 		typedef std::map<std::wstring, SVG::CObject*> MarkedMap;
 
-		MarkedMap m_mMarkedObjects;
+		MarkedMap    m_mMarkedObjects;
+		std::wstring m_wsWorkingDirectory;
 };
 
 #endif // CSVGFILE_H

@@ -227,7 +227,7 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing & val)
 					{
 						CP_XML_NODE(L"p:ph")
 						{
-							CP_XML_ATTR(L"type",val.place_holder_type_);
+							CP_XML_ATTR(L"type", val.place_holder_type_);
 							if (val.place_holder_idx_ > 0)	CP_XML_ATTR(L"idx", val.place_holder_idx_);
 							
 							if (val.place_holder_type_ == L"dt")	{	CP_XML_ATTR(L"sz", L"half");	}
@@ -242,19 +242,19 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing & val)
 				_CP_OPT(bool) bNoRect;
 				odf_reader::GetProperty(val.additional,L"no_rect",bNoRect);
 
+				if (val.cx != 0 || val.cy != 0) //layout
+				{
+					val.serialize_xfrm(CP_XML_STREAM(), L"a", true);
+				}
 				if (!bNoRect)
-				{	
-					if (val.cx != 0 || val.cy != 0) //layout
-					{
-						val.serialize_xfrm(CP_XML_STREAM(), L"a", true);
-					}
+				{
 					val.serialize_shape(CP_XML_STREAM());
 
 					oox_serialize_ln(CP_XML_STREAM(), val.additional);
 					oox_serialize_effects(CP_XML_STREAM(), val.additional);
 				}
 			}
-			 pptx_serialize_text(CP_XML_STREAM(), val);
+			pptx_serialize_text(CP_XML_STREAM(), val);
 		}
     }  // CP_XML_WRITER  
 }
@@ -280,10 +280,22 @@ void pptx_serialize_connector(std::wostream & strm, _pptx_drawing & val)
 					//{
 					//	CP_XML_ATTR(L"noGrp", 1);
 					//}
+
+					CP_XML_NODE(L"a:stCxn")
+					{
+						CP_XML_ATTR(L"id", val.start_connection_shape_id);
+						CP_XML_ATTR(L"idx", val.start_connection_index);
+					}
+
+					CP_XML_NODE(L"a:endCxn")
+					{
+						CP_XML_ATTR(L"id", val.end_connection_shape_id);
+						CP_XML_ATTR(L"idx", val.end_connection_index);
+					}	
 				}
 				CP_XML_NODE(L"p:nvPr")
 				{
-					if (val.place_holder_type_.length()>0)
+					if (false == val.place_holder_type_.empty())
 					{
 						CP_XML_NODE(L"p:ph")
 						{
@@ -314,7 +326,7 @@ void pptx_serialize_connector(std::wostream & strm, _pptx_drawing & val)
 					oox_serialize_effects(CP_XML_STREAM(), val.additional);
 				}
 			}
-			 pptx_serialize_text(CP_XML_STREAM(), val);
+			pptx_serialize_text(CP_XML_STREAM(), val);
 		}
     }  // CP_XML_WRITER  
 }
@@ -444,9 +456,9 @@ void _pptx_drawing::serialize(std::wostream & strm)
 {
 	if (type == typeShape)
 	{
-		//if (connector) only for ms prst connectors, but not custom!!
-		//	pptx_serialize_connector(strm, *this);
-		//else			
+		if (connector) // only for ms prst connectors, but not custom!!
+			pptx_serialize_connector(strm, *this);
+		else			
 			pptx_serialize_shape(strm, *this);
 	}
 	else if (type == typeImage)

@@ -39,6 +39,7 @@
 #include "Font.h"
 #include "Info.h"
 #include "EncryptDictionary.h"
+#include "Annotation.h"
 
 #include <algorithm>
 #include <math.h>
@@ -1518,6 +1519,7 @@ namespace PdfWriter
 	{
 		m_pXref  = pXref;
 		m_pField = pField;
+		m_pAnnot = NULL;
 
 		m_pNormal   = new CAnnotAppearanceObject(pXref, pField);
 		m_pRollover = NULL;
@@ -1525,15 +1527,37 @@ namespace PdfWriter
 
 		Add("N", m_pNormal);
 	}
+	CAnnotAppearance::CAnnotAppearance(CXref* pXref, CAnnotation* pAnnot)
+	{
+		m_pXref  = pXref;
+		m_pAnnot = pAnnot;
+		m_pField = NULL;
+
+		m_pNormal   = NULL;
+		m_pRollover = NULL;
+		m_pDown     = NULL;
+	}
 	CAnnotAppearanceObject* CAnnotAppearance::GetNormal()
 	{
+		if (!m_pNormal)
+		{
+			if (m_pField)
+				m_pNormal = new CAnnotAppearanceObject(m_pXref, m_pField);
+			else if (m_pAnnot)
+				m_pNormal = new CAnnotAppearanceObject(m_pXref, m_pAnnot);
+			Add("N", m_pNormal);
+		}
+
 		return m_pNormal;
 	}
 	CAnnotAppearanceObject* CAnnotAppearance::GetRollover()
 	{
 		if (!m_pRollover)
 		{
-			m_pRollover = new CAnnotAppearanceObject(m_pXref, m_pField);
+			if (m_pField)
+				m_pRollover = new CAnnotAppearanceObject(m_pXref, m_pField);
+			else if (m_pAnnot)
+				m_pRollover = new CAnnotAppearanceObject(m_pXref, m_pAnnot);
 			Add("R", m_pRollover);
 		}
 
@@ -1543,7 +1567,10 @@ namespace PdfWriter
 	{
 		if (!m_pDown)
 		{
-			m_pDown = new CAnnotAppearanceObject(m_pXref, m_pField);
+			if (m_pField)
+				m_pDown = new CAnnotAppearanceObject(m_pXref, m_pField);
+			else if (m_pAnnot)
+				m_pDown = new CAnnotAppearanceObject(m_pXref, m_pAnnot);
 			Add("D", m_pDown);
 		}
 
@@ -1591,20 +1618,25 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CAnnotAppearanceObject
 	//----------------------------------------------------------------------------------------
-	CAnnotAppearanceObject::CAnnotAppearanceObject(CXref* pXref, CFieldBase* pField)
+	void CAnnotAppearanceObject::Init(CXref* pXref, CResourcesDict* pResources)
 	{
-		m_pXref     = pXref;
+		m_pXref     = pXref ? pXref : NULL;
 		m_pStream   = new CMemoryStream();
-		m_pField    = pField;
 		m_pFont     = NULL;
 		m_dFontSize = 10.0;
 
-		SetStream(m_pXref, m_pStream);
+		if (m_pXref)
+			SetStream(m_pXref, m_pStream);
 
 		Add("Type", "XObject");
 		Add("Subtype", "Form");
-
-		TRect oRect = pField->GetRect();
+		Add("Resources", pResources);
+	}
+	CAnnotAppearanceObject::CAnnotAppearanceObject(CXref* pXref, CFieldBase* pField)
+	{
+		Init(pXref, pField->GetResourcesDict());
+		m_pField = pField;
+		m_pAnnot = NULL;
 
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
@@ -1613,14 +1645,46 @@ namespace PdfWriter
 		Add("BBox", pArray);
 		pArray->Add(0);
 		pArray->Add(0);
-		pArray->Add(oRect.fRight - oRect.fLeft);
-		pArray->Add(oRect.fBottom - oRect.fTop);
+		pArray->Add(fabs(pField->GetRect().fRight - pField->GetRect().fLeft));
+		pArray->Add(fabs(pField->GetRect().fBottom - pField->GetRect().fTop));
+	}
+	CAnnotAppearanceObject::CAnnotAppearanceObject(CXref* pXRef, CAnnotation* pAnnot)
+	{
+		Init(pXRef, pAnnot->GetDocument()->GetFieldsResources());
+		m_pAnnot = pAnnot;
+		m_pField = NULL;
 
-		Add("Resources", pField->GetResourcesDict());
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+		Add("BBox", pArray);
 
-#ifndef FILTER_FLATE_DECODE_DISABLED
-		//SetFilter(STREAM_FILTER_FLATE_DECODE);
-#endif
+		if (pAnnot->GetAnnotationType() == EAnnotType::AnnotWidget)
+		{
+			pArray->Add(0);
+			pArray->Add(0);
+			pArray->Add(fabs(pAnnot->GetRect().fRight - pAnnot->GetRect().fLeft));
+			pArray->Add(fabs(pAnnot->GetRect().fBottom - pAnnot->GetRect().fTop));
+		}
+		else
+		{
+			pArray->Add(pAnnot->GetRect().fLeft);
+			pArray->Add(pAnnot->GetRect().fBottom);
+			pArray->Add(pAnnot->GetRect().fRight);
+			pArray->Add(pAnnot->GetRect().fTop);
+
+			pArray = new CArrayObject();
+			if (!pArray)
+				return;
+
+			Add("Matrix", pArray);
+			pArray->Add(1);
+			pArray->Add(0);
+			pArray->Add(0);
+			pArray->Add(1);
+			pArray->Add(-pAnnot->GetRect().fLeft);
+			pArray->Add(-pAnnot->GetRect().fBottom);
+		}
 	}
 	void CAnnotAppearanceObject::DrawSimpleText(const std::wstring& wsText, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, double dFontSize, double dX, double dY, double dR, double dG, double dB, const char* sExtGStateName, double dWidth, double dHeight, CFontCidTrueType** ppFonts, double* pShifts)
 	{
@@ -1641,25 +1705,37 @@ namespace PdfWriter
 		if (!m_pStream)
 			return;
 
+		CWidgetAnnotation* pAnnot = NULL;
+		if (m_pAnnot)
+			pAnnot = (CWidgetAnnotation*)m_pAnnot;
+
 		double dW = 0, dH = 0;
-		if (m_pField)
+		if (m_pField || pAnnot)
 		{
-			TRect oRect = m_pField->GetRect();
+			TRect oRect = m_pField ? m_pField->GetRect() : pAnnot->GetRect();
 			dW = fabs(oRect.fRight - oRect.fLeft);
 			dH = fabs(oRect.fBottom - oRect.fTop);
 		}
 
 		m_pStream->WriteStr("q\012");
 
-		if (m_pField->HaveShd())
+		if ((m_pField && m_pField->HaveShd()) || (pAnnot && pAnnot->HaveBG()))
 		{
-			TRgb oColor = m_pField->GetShdColor();
-			m_pStream->WriteReal(oColor.r);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(oColor.g);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(oColor.b);
-			m_pStream->WriteStr(" rg\012");
+			if (m_pField)
+			{
+				TRgb oColor = m_pField->GetShdColor();
+				m_pStream->WriteReal(oColor.r);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(oColor.g);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(oColor.b);
+				m_pStream->WriteStr(" rg\012");
+			}
+			else
+			{
+				m_pStream->WriteStr(pAnnot->GetBGforAP().c_str());
+				m_pStream->WriteStr("\012");
+			}
 
 			m_pStream->WriteStr("1 0 0 1 0 0 cm\012");
 			m_pStream->WriteStr("0 0 ");
@@ -1678,30 +1754,145 @@ namespace PdfWriter
 			m_pStream->WriteStr(" re\012f\012");
 		}
 
-		if (m_pField->HaveBorder())
+		if ((m_pField && m_pField->HaveBorder()) || (pAnnot && pAnnot->HaveBorder()))
 		{
-			TRgb oColor = m_pField->GetBorderColor();
+			double dBorderSize = m_pField ? m_pField->GetBorderSize() : pAnnot->GetBorderWidth();
 
-			m_pStream->WriteReal(oColor.r);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(oColor.g);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(oColor.b);
-			m_pStream->WriteStr(" RG\012");
+			BYTE nType = 0;
+			if (pAnnot)
+			{
+				nType = pAnnot->GetBorderType();
+				switch (nType)
+				{
+				case 1: // Beveled
+				case 3: // Inset
+				{
+					m_pStream->WriteStr(nType == 1 ? "1 g\012" : "0.501953 g\012");
 
-			double dBorderSize   = m_pField->GetBorderSize();
-			double dBorderSize_2 = dBorderSize / 2;
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteStr(" m\012");
+
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dH - dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(dW - dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dH - dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(dW - 2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dH - 2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dH - 2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteStr("f\012");
+
+					if (nType == 1 && pAnnot->HaveBG())
+					{
+						m_pStream->WriteStr(pAnnot->GetBGforAP(-0.25).c_str());
+						m_pStream->WriteStr("\012");
+					}
+					else
+						m_pStream->WriteStr("0.75293 g\012");
+
+					m_pStream->WriteReal(dW - dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dH - dBorderSize);
+					m_pStream->WriteStr(" m\012");
+
+					m_pStream->WriteReal(dW - dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(dW - 2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(dW - 2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dH - 2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteStr("f\012");
+					break;
+				}
+				case 2: // Dashed
+				{
+					m_pStream->WriteStr(pAnnot->GetBorderDash().c_str());
+					break;
+				}
+				default: break;
+				}
+			}
+
+			if (m_pField)
+			{
+				TRgb oColor = m_pField->GetBorderColor();
+				m_pStream->WriteReal(oColor.r);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(oColor.g);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(oColor.b);
+				m_pStream->WriteStr(" RG\012");
+			}
+			else
+			{
+				m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
+				m_pStream->WriteStr("\012");
+			}
+
 			m_pStream->WriteReal(dBorderSize);
 			m_pStream->WriteStr(" w\0120 j\0120 J\012");
 
-			m_pStream->WriteReal(dBorderSize_2);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(dBorderSize_2);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(fmax(dW - dBorderSize, 0.0));
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(fmax(dH - dBorderSize, 0.0));
-			m_pStream->WriteStr(" re\012S\012");
+			if (nType == 4) // Underline
+			{
+				m_pStream->WriteInt(0);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(dBorderSize / 2);
+				m_pStream->WriteStr(" m\012");
+
+				m_pStream->WriteReal(dW);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(dBorderSize / 2);
+				m_pStream->WriteStr(" l\012S\012");
+			}
+			else
+			{
+				m_pStream->WriteReal(dBorderSize / 2);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(dBorderSize / 2);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(std::max(dW - dBorderSize, 0.0));
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(std::max(dH - dBorderSize, 0.0));
+				m_pStream->WriteStr(" re\012S\012");
+			}
 
 			if (bRespectBorder && sImageName)
 			{
@@ -1728,7 +1919,6 @@ namespace PdfWriter
 
 		if (sImageName)
 		{
-
 			m_pStream->WriteReal(dImageW);
 			m_pStream->WriteStr(" 0 0 ");
 			m_pStream->WriteReal(dImageH);
@@ -1746,23 +1936,35 @@ namespace PdfWriter
 	}	
 	void CAnnotAppearanceObject::StartDrawText(CFontDict* pFont, const double& dFontSize, const double& dR, const double& dG, const double& dB, const char* sExtGStateName, const double& dWidth, const double& dHeight)
 	{
-		CResourcesDict* pResources = m_pField->GetResourcesDict();
+		CResourcesDict* pResources = dynamic_cast<CResourcesDict*>(Get("Resources"));
 		if (!m_pStream || !pFont || !pResources)
 			return;
+
+		CWidgetAnnotation* pAnnot = NULL;
+		if (m_pAnnot)
+			pAnnot = (CWidgetAnnotation*)m_pAnnot;
 
 		m_pStream->WriteEscapeName("Tx");
 		m_pStream->WriteStr(" BMC\012");
 
-		if (m_pField->HaveShd())
+		if ((m_pField && m_pField->HaveShd()) || (pAnnot && pAnnot->HaveBG()))
 		{
 			m_pStream->WriteStr("q\012");
-			TRgb oColor = m_pField->GetShdColor();
-			m_pStream->WriteReal(oColor.r);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(oColor.g);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(oColor.b);
-			m_pStream->WriteStr(" rg\012");
+			if (m_pField)
+			{
+				TRgb oColor = m_pField->GetShdColor();
+				m_pStream->WriteReal(oColor.r);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(oColor.g);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(oColor.b);
+				m_pStream->WriteStr(" rg\012");
+			}
+			else
+			{
+				m_pStream->WriteStr(pAnnot->GetBGforAP().c_str());
+				m_pStream->WriteStr("\012");
+			}
 
 			m_pStream->WriteStr("1 0 0 1 0 0 cm\012");
 			m_pStream->WriteStr("0 0 ");
@@ -1773,40 +1975,168 @@ namespace PdfWriter
 			m_pStream->WriteStr("Q\012");
 		}
 
-		double dBorderSize   = 0;
-		double dBorderSize_2 = 0;
-		double dBorderSize2  = 0;
-		if (m_pField && m_pField->HaveBorder())
+		double dBorderSize       = 0;
+		double dBorderSizeStyle  = 0;
+
+		if (pAnnot && pAnnot->HaveBorder())
 		{
-			TRgb oColor = m_pField->GetBorderColor();
+			dBorderSize      = pAnnot->GetBorderWidth();
+			dBorderSizeStyle = dBorderSize;
+
+			if (pAnnot->GetBorderType() == 1 || pAnnot->GetBorderType() == 3)
+				dBorderSizeStyle *= 2;
+		}
+
+		if ((m_pField && m_pField->HaveBorder()) || (pAnnot && pAnnot->HaveBorder() && pAnnot->HaveBC()))
+		{
 			m_pStream->WriteStr("q\012");
 
-			m_pStream->WriteReal(oColor.r);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(oColor.g);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(oColor.b);
-			m_pStream->WriteStr(" RG\012");
+			dBorderSize      = m_pField ? m_pField->GetBorderSize() : pAnnot->GetBorderWidth();
+			dBorderSizeStyle = dBorderSize;
 
-			dBorderSize   = m_pField->GetBorderSize();
-			dBorderSize_2 = dBorderSize / 2;
-			dBorderSize2  = dBorderSize * 2;
+			BYTE nType = 0;
+			if (pAnnot)
+			{
+				nType = pAnnot->GetBorderType();
+				switch (nType)
+				{
+				case 1: // Beveled
+				case 3: // Inset
+				{
+					dBorderSizeStyle *= 2;
+
+					m_pStream->WriteStr(nType == 1 ? "1 g\012" : "0.501953 g\012");
+
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteStr(" m\012");
+
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dHeight - dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(dWidth - dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dHeight - dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(dWidth - 2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dHeight - 2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dHeight - 2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteStr("f\012");
+
+					if (nType == 1 && pAnnot->HaveBG())
+					{
+						m_pStream->WriteStr(pAnnot->GetBGforAP(-0.25).c_str());
+						m_pStream->WriteStr("\012");
+					}
+					else
+						m_pStream->WriteStr("0.75293 g\012");
+
+					m_pStream->WriteReal(dWidth - dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dHeight - dBorderSize);
+					m_pStream->WriteStr(" m\012");
+
+					m_pStream->WriteReal(dWidth - dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(dWidth - 2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteReal(dWidth - 2 * dBorderSize);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(dHeight - 2 * dBorderSize);
+					m_pStream->WriteStr(" l\012");
+
+					m_pStream->WriteStr("f\012");
+					break;
+				}
+				case 2: // Dashed
+				{
+					m_pStream->WriteStr(pAnnot->GetBorderDash().c_str());
+					break;
+				}
+				default: break;
+				}
+			}
+
+			if (m_pField)
+			{
+				TRgb oColor = m_pField->GetBorderColor();
+				m_pStream->WriteReal(oColor.r);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(oColor.g);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(oColor.b);
+				m_pStream->WriteStr(" RG\012");
+			}
+			else
+			{
+				m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
+				m_pStream->WriteStr("\012");
+			}
+
 			m_pStream->WriteReal(dBorderSize);
 			m_pStream->WriteStr(" w\0120 j\0120 J\012");
 
-			m_pStream->WriteReal(dBorderSize_2);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(dBorderSize_2);
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(std::max(dWidth - dBorderSize, 0.0));
-			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(std::max(dHeight - dBorderSize, 0.0));
-			m_pStream->WriteStr(" re\012S\012");
+			if (nType == 4) // Underline
+			{
+				m_pStream->WriteInt(0);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(dBorderSize / 2);
+				m_pStream->WriteStr(" m\012");
+
+				m_pStream->WriteReal(dWidth);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(dBorderSize / 2);
+				m_pStream->WriteStr(" l\012S\012");
+			}
+			else
+			{
+				m_pStream->WriteReal(dBorderSize / 2);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(dBorderSize / 2);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(std::max(dWidth - dBorderSize, 0.0));
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(std::max(dHeight - dBorderSize, 0.0));
+				m_pStream->WriteStr(" re\012S\012");
+			}
 
 			CTextField* pTextField = dynamic_cast<CTextField*>(m_pField);
-			if (pTextField && pTextField->IsCombFlag())
+			CTextWidget* pAnnot = dynamic_cast<CTextWidget*>(m_pAnnot);
+			if ((pTextField && pTextField->IsCombFlag()) || (pAnnot && pAnnot->IsCombFlag() && (nType == 0 || nType == 2)))
 			{
-				int nMaxLen = pTextField->GetMaxLen();
+				int nMaxLen = pTextField ? pTextField->GetMaxLen() : pAnnot->GetMaxLen();
 				if (nMaxLen > 1)
 				{
 					double dStep = dWidth / nMaxLen;
@@ -1834,44 +2164,340 @@ namespace PdfWriter
 
 		m_pStream->WriteStr("q\012");
 
-		m_pStream->WriteReal(dBorderSize);
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(dBorderSize);
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(std::max(dWidth - dBorderSize2, 0.0));
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(std::max(dHeight - dBorderSize2, 0.0));
+		if (pAnnot && pAnnot->GetWidgetType() == WidgetPushbutton && !((CPushButtonWidget*)pAnnot)->GetRespectBorder())
+		{
+			m_pStream->WriteStr("0 0 ");
+			m_pStream->WriteReal(std::max(dWidth, 0.0));
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(std::max(dHeight, 0.0));
+		}
+		else
+		{
+			m_pStream->WriteReal(dBorderSizeStyle);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dBorderSizeStyle);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(std::max(dWidth - dBorderSizeStyle * 2, 0.0));
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(std::max(dHeight - dBorderSizeStyle * 2, 0.0));
+		}
 		m_pStream->WriteStr(" re\012W\012n\012");
+
+		if (pAnnot && pAnnot->GetWidgetType() == WidgetListbox)
+		{
+			CChoiceWidget* pAnnot = dynamic_cast<CChoiceWidget*>(m_pAnnot);
+			double dBaseLine = pAnnot->GetListBoxHeight();
+			std::vector<int> arrIndex = pAnnot->GetListBoxIndex();
+			m_pStream->WriteStr("0.60 0.75 0.85 rg\012");
+			for (int i = 0; i < arrIndex.size(); ++i)
+			{
+				double dH = dHeight - dBorderSizeStyle - dBaseLine * (double)(arrIndex[i] + 1);
+				if (dH < 0)
+					break;
+				m_pStream->WriteReal(dBorderSizeStyle);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(dH);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(std::max(dWidth - dBorderSizeStyle * 2.0, 0.0));
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(dBaseLine);
+				m_pStream->WriteStr(" re\012f\012");
+			}
+		}
 
 		m_pStream->WriteStr("BT\012");
 
-		m_pStream->WriteReal(dR);
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(dG);
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(dB);
-		m_pStream->WriteStr(" rg\012");
-
-		if (sExtGStateName)
+		m_dFontSize = std::min(1000.0, std::max(0.0, dFontSize));
+		if (m_pField)
 		{
-			m_pStream->WriteEscapeName(sExtGStateName);
-			m_pStream->WriteStr(" gs\012");
+			m_pStream->WriteReal(dR);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dG);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dB);
+			m_pStream->WriteStr(" rg\012");
+
+			if (sExtGStateName)
+			{
+				m_pStream->WriteEscapeName(sExtGStateName);
+				m_pStream->WriteStr(" gs\012");
+			}
+
+			m_pStream->WriteEscapeName(pResources->GetFontName(pFont));
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(m_dFontSize);
+			m_pStream->WriteStr(" Tf\012");
+		}
+		else
+			m_pStream->WriteStr(pAnnot->GetDAforAP(pFont).c_str());
+
+		m_bStart = true;
+		m_pFont  = pFont;
+	}
+	void CAnnotAppearanceObject::StartDraw(const double& dWidth, const double& dHeight)
+	{
+		CWidgetAnnotation* pAnnot = dynamic_cast<CWidgetAnnotation*>(m_pAnnot);
+		if (!m_pStream || !pAnnot)
+			return;
+
+		DrawBackground(dWidth, dHeight);
+		DrawBorder(dWidth, dHeight);
+
+		m_pStream->WriteStr("q\012");
+
+		double dBorderSize = pAnnot->GetBorderWidth();
+		BYTE nType = pAnnot->GetBorderType();
+		if (nType == 1 || nType == 3)
+			dBorderSize *= 2;
+
+		if (pAnnot->GetWidgetType() == WidgetPushbutton && !((CPushButtonWidget*)pAnnot)->GetRespectBorder())
+			dBorderSize = 0;
+
+		m_pStream->WriteReal(dBorderSize);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dBorderSize);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(std::max(dWidth  - dBorderSize * 2, 0.0));
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(std::max(dHeight - dBorderSize * 2, 0.0));
+		m_pStream->WriteStr(" re\012W\012n\012");
+
+		if (pAnnot && pAnnot->GetWidgetType() == WidgetListbox)
+		{
+			CChoiceWidget* pAnnot = dynamic_cast<CChoiceWidget*>(m_pAnnot);
+			double dBaseLine = pAnnot->GetListBoxHeight();
+			std::vector<int> arrIndex = pAnnot->GetListBoxIndex();
+			m_pStream->WriteStr("0.60 0.75 0.85 rg\012");
+			for (int i = 0; i < arrIndex.size(); ++i)
+			{
+				double dH = dHeight - dBorderSize - dBaseLine * (double)(arrIndex[i] + 1);
+				if (dH < 0)
+					break;
+				m_pStream->WriteReal(dBorderSize);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(dH);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(std::max(dWidth - dBorderSize * 2.0, 0.0));
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(dBaseLine);
+				m_pStream->WriteStr(" re\012f\012");
+			}
+		}
+	}
+	void CAnnotAppearanceObject::StartText(CFontDict* pFont, const double& dFontSize)
+	{
+		CWidgetAnnotation* pAnnot  = dynamic_cast<CWidgetAnnotation*>(m_pAnnot);
+		if (!m_pStream || !pAnnot)
+			return;
+
+		m_dFontSize = std::min(1000.0, std::max(0.0, dFontSize));
+		m_pFont  = pFont;
+		m_bStart = true;
+
+		m_pStream->WriteStr("BT\012");
+		m_pStream->WriteStr(pAnnot->GetDAforAP(pFont).c_str());
+	}
+	void CAnnotAppearanceObject::DrawPictureInline(const char* sImageName, const double& dX, const double& dY, const double& dW, const double& dH, const bool& bRespectBorder)
+	{
+		CWidgetAnnotation* pAnnot  = dynamic_cast<CWidgetAnnotation*>(m_pAnnot);
+		if (!m_pStream || !pAnnot || !sImageName)
+			return;
+
+		m_pStream->WriteStr("q\012");
+
+		if (bRespectBorder)
+		{
+			TRect oRect = pAnnot->GetRect();
+			double dWidth  = fabs(oRect.fRight - oRect.fLeft);
+			double dHeight = fabs(oRect.fBottom - oRect.fTop);
+
+			double dBorderSize = pAnnot->GetBorderWidth();
+			BYTE nType = pAnnot->GetBorderType();
+			if (nType == 1 || nType == 3)
+				dBorderSize *= 2;
+
+			m_pStream->WriteReal(2 * dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(2 * dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(fmax(dWidth  - 4 * dBorderSize, 0.0));
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(fmax(dHeight - 4 * dBorderSize, 0.0));
+			m_pStream->WriteStr(" re\012W\012n\012");
 		}
 
-		double _dFontSize = std::min(1000.0, std::max(0.0, dFontSize));
-
-		m_pStream->WriteEscapeName(pResources->GetFontName(pFont));
+		m_pStream->WriteReal(dW);
+		m_pStream->WriteStr(" 0 0 ");
+		m_pStream->WriteReal(dH);
 		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(_dFontSize);
-		m_pStream->WriteStr(" Tf\012");
+		m_pStream->WriteReal(dX);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dY);
+		m_pStream->WriteStr(" cm\012");
 
-		m_bStart    = true;
-		m_pFont     = pFont;
-		m_dFontSize = _dFontSize;
+		m_pStream->WriteEscapeName(sImageName);
+		m_pStream->WriteStr(" Do\012");
+
+		m_pStream->WriteStr("Q\012");
+	}
+	void CAnnotAppearanceObject::EndText()
+	{
+		m_pStream->WriteStr("ET\012");
+	}
+	void CAnnotAppearanceObject::EndDraw()
+	{
+		m_pStream->WriteStr("Q\012");
+	}
+	void CAnnotAppearanceObject::DrawBackground(const double& dWidth, const double& dHeight)
+	{
+		CWidgetAnnotation* pAnnot  = dynamic_cast<CWidgetAnnotation*>(m_pAnnot);
+		if (!pAnnot || !pAnnot->HaveBG())
+			return;
+
+		m_pStream->WriteStr("q\012");
+		m_pStream->WriteStr(pAnnot->GetBGforAP().c_str());
+		m_pStream->WriteStr("\012");
+		m_pStream->WriteStr("1 0 0 1 0 0 cm\012");
+		m_pStream->WriteStr("0 0 ");
+		m_pStream->WriteReal(fmax(dWidth, 0.0));
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(fmax(dHeight, 0.0));
+		m_pStream->WriteStr(" re\012f\012");
+		m_pStream->WriteStr("Q\012");
+	}
+	void CAnnotAppearanceObject::DrawBorder(const double& dWidth, const double& dHeight)
+	{
+		CWidgetAnnotation* pAnnot  = dynamic_cast<CWidgetAnnotation*>(m_pAnnot);
+		if (!pAnnot || !pAnnot->HaveBorder())
+			return;
+
+		m_pStream->WriteStr("q\012");
+
+		double dBorderSize = pAnnot->GetBorderWidth();
+		BYTE nType = pAnnot->GetBorderType();
+
+		switch (nType)
+		{
+		case 1: // Beveled
+		case 3: // Inset
+		{
+			m_pStream->WriteStr(nType == 1 ? "1 g\012" : "0.501953 g\012");
+
+			m_pStream->WriteReal(dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dBorderSize);
+			m_pStream->WriteStr(" m\012");
+
+			m_pStream->WriteReal(dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dHeight - dBorderSize);
+			m_pStream->WriteStr(" l\012");
+
+			m_pStream->WriteReal(dWidth - dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dHeight - dBorderSize);
+			m_pStream->WriteStr(" l\012");
+
+			m_pStream->WriteReal(dWidth - 2 * dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dHeight - 2 * dBorderSize);
+			m_pStream->WriteStr(" l\012");
+
+			m_pStream->WriteReal(2 * dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dHeight - 2 * dBorderSize);
+			m_pStream->WriteStr(" l\012");
+
+			m_pStream->WriteReal(2 * dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(2 * dBorderSize);
+			m_pStream->WriteStr(" l\012");
+
+			m_pStream->WriteStr("f\012");
+
+			if (nType == 1 && pAnnot->HaveBG())
+			{
+				m_pStream->WriteStr(pAnnot->GetBGforAP(-0.25).c_str());
+				m_pStream->WriteStr("\012");
+			}
+			else
+				m_pStream->WriteStr("0.75293 g\012");
+
+			m_pStream->WriteReal(dWidth - dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dHeight - dBorderSize);
+			m_pStream->WriteStr(" m\012");
+
+			m_pStream->WriteReal(dWidth - dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dBorderSize);
+			m_pStream->WriteStr(" l\012");
+
+			m_pStream->WriteReal(dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dBorderSize);
+			m_pStream->WriteStr(" l\012");
+
+			m_pStream->WriteReal(2 * dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(2 * dBorderSize);
+			m_pStream->WriteStr(" l\012");
+
+			m_pStream->WriteReal(dWidth - 2 * dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(2 * dBorderSize);
+			m_pStream->WriteStr(" l\012");
+
+			m_pStream->WriteReal(dWidth - 2 * dBorderSize);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dHeight - 2 * dBorderSize);
+			m_pStream->WriteStr(" l\012");
+
+			m_pStream->WriteStr("f\012");
+			break;
+		}
+		case 2: // Dashed
+		{
+			m_pStream->WriteStr(pAnnot->GetBorderDash().c_str());
+			break;
+		}
+		default: break;
+		}
+
+		m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
+		m_pStream->WriteStr("\012");
+		m_pStream->WriteReal(dBorderSize);
+		m_pStream->WriteStr(" w\0120 j\0120 J\012");
+
+		if (nType == 4) // Underline
+		{
+			m_pStream->WriteInt(0);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dBorderSize / 2);
+			m_pStream->WriteStr(" m\012");
+
+			m_pStream->WriteReal(dWidth);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dBorderSize / 2);
+			m_pStream->WriteStr(" l\012S\012");
+		}
+		else
+		{
+			m_pStream->WriteReal(dBorderSize / 2);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dBorderSize / 2);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(std::max(dWidth - dBorderSize, 0.0));
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(std::max(dHeight - dBorderSize, 0.0));
+			m_pStream->WriteStr(" re\012S\012");
+		}
+
+		m_pStream->WriteStr("Q\012");
 	}
 	void CAnnotAppearanceObject::DrawTextLine(const double& dX, const double& dY, const unsigned short* pCodes, const unsigned int& unCount, CFontCidTrueType** ppFonts, const double* pShifts)
 	{
-		CResourcesDict* pResources = m_pField->GetResourcesDict();
+		CResourcesDict* pResources = dynamic_cast<CResourcesDict*>(Get("Resources"));
 		if (!pResources)
 			return;
 
@@ -1993,5 +2619,19 @@ namespace PdfWriter
 	{
 		m_pStream->WriteStr("ET\012");
 		m_pStream->WriteStr("Q\012EMC\012");
+	}
+	void CAnnotAppearanceObject::DrawTextComment()
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("BBox", pArray);
+		pArray->Add(0);
+		pArray->Add(0);
+		pArray->Add(20);
+		pArray->Add(20);
+
+		m_pStream->WriteStr("");
 	}
 }

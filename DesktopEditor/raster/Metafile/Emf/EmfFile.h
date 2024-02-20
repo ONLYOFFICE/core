@@ -38,7 +38,6 @@
 
 #include "EmfTypes.h"
 #include "EmfPlayer.h"
-#include "EmfPath.h"
 
 #if defined(DrawText)
 #undef DrawText
@@ -143,7 +142,7 @@ namespace MetaFile
 			m_pParser->SetInterpretator(oInterpretatorType, unWidth, unHeight);
 		}
 
-		TEmfRectL* GetBounds()
+		TRectL* GetBounds()
 		{
 			return m_pParser->GetBounds();
 		}

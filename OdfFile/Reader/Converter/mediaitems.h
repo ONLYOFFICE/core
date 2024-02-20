@@ -83,11 +83,14 @@ public:
 	size_t count_activeX;
 	size_t count_control;
 
+	bool is_internal_path(const std::wstring& uri, const std::wstring& packetRoot);
+
 	void set_font_directory(std::wstring pathFonts);
 	NSFonts::IApplicationFonts *applicationFonts() {return applicationFonts_;}
 
     std::wstring add_or_find(const std::wstring & href, _rels_type type, bool & isInternal, _rels_type_place type_place);//возможны ссылки на один и тот же объект
     std::wstring add_or_find(const std::wstring & href, _rels_type type, bool & isInternal, std::wstring & ref, _rels_type_place type_place);
+	std::wstring add_or_find_anim_audio(const std::wstring& href, bool& isInternal, std::wstring& ref);
     
 	void add_rels(bool isInternal, std::wstring const & rid, std::wstring const & ref, _rels_type type, _rels_type_place type_place);
 	std::wstring add_control_props	(std::wstring & oox_target);

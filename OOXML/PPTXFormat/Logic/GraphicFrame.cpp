@@ -41,6 +41,7 @@
 #include "../../../OfficeUtils/src/OfficeUtils.h"
 
 #include "../../XlsxFormat/Slicer/SlicerCacheExt.h"
+#include "../../XlsxFormat/Timelines/Timeline.h"
 #include "../../XlsxFormat/Chart/Chart.h"
 
 #include "../../DocxFormat/VmlDrawing.h"
@@ -246,6 +247,10 @@ namespace PPTX
 						slicerExt = oReader;
 					}
 					result = true;
+				}
+				else if (strName == L"timeslicer")
+				{
+					timeslicer = oReader;
 				}
 				else if (strName == L"contentPart")
 				{
@@ -467,6 +472,12 @@ namespace PPTX
 				slicerExt->toXML(*pWriter, L"sle:slicer");
 				pWriter->WriteString(L"</a:graphicData></a:graphic>");
 			}
+			else if (timeslicer.is_init())
+			{
+				pWriter->WriteString(L"<a:graphic><a:graphicData uri=\"http://schemas.microsoft.com/office/drawing/2012/timeslicer\">");
+				timeslicer->toXmlWriter(pWriter);
+				pWriter->WriteString(L"</a:graphicData></a:graphic>");
+			}
 			else if (smartArt.is_init())
 			{
 				pWriter->WriteString(L"<a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\">");
@@ -509,7 +520,7 @@ namespace PPTX
 
 		bool GraphicFrame::IsEmpty() const
 		{
-			return !olePic.is_init() && !smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !vmlSpid.is_init() && !slicer.is_init() && !slicerExt.is_init() && !element.is_init();
+			return !olePic.is_init() && !smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !vmlSpid.is_init() && !slicer.is_init() && !slicerExt.is_init() && !timeslicer.is_init() && !element.is_init();
 		}
 
 		void GraphicFrame::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -599,13 +610,13 @@ namespace PPTX
 				RELEASEOBJECT(oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager);
 				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = pWriter->m_pCommon->m_pMediaManager;
 	
-				std::wstring *main_props = NULL;
-
 				oDrawingConverter.SetRels(xml_object_rels);
                 oDrawingConverter.SetAdditionalParam(L"xfrm_override", (BYTE*)xfrm.GetPointer(), sizeof(xfrm));
 
 				std::vector<nullable<PPTX::Logic::SpTreeElem>> elements;
-				oDrawingConverter.ConvertVml(temp, elements);
+				nullable<OOX::WritingElement> anchor;
+
+				oDrawingConverter.ConvertVml(temp, elements, anchor);
 				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = NULL;
 
 				smart_ptr<OOX::IFileContainer> rels_old = pWriter->GetRels();
@@ -652,6 +663,10 @@ namespace PPTX
 			else if (slicerExt.is_init())
 			{
 					pWriter->WriteRecord2(6, slicerExt);
+			}
+			else if (timeslicer.is_init())
+			{
+				pWriter->WriteRecord2(9, timeslicer);
 			}
 			else if (element.is_init())
 			{
@@ -742,6 +757,11 @@ namespace PPTX
 					{
 						smartArt = new Logic::SmartArt();
 						smartArt->fromPPTY(pReader);
+					}break;
+					case 9:
+					{
+						timeslicer = new OOX::Spreadsheet::CDrawingTimeslicer();
+						timeslicer->fromPPTY(pReader);
 					}break;
 					case SPTREE_TYPE_MACRO:
 					{

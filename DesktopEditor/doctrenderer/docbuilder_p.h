@@ -61,6 +61,8 @@
 #include "../fontengine/ApplicationFontsWorker.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
+#include "../common/ProcessEnv.h"
+
 #ifdef CreateFile
 #undef CreateFile
 #endif
@@ -100,6 +102,14 @@ namespace NSDoctRenderer
 			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_JPG;
 		else if (L"png" == sExt)
 			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_PNG;
+		else if (L"vsdx" == sExt)
+			nFormat = AVS_OFFICESTUDIO_FILE_DRAW_VSDX;
+		else if (L"docxf" == sExt)
+			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF;
+		else if (L"oform" == sExt)
+			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM;
+		else if (L"html" == sExt)
+			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER;
 		return nFormat;
 	}
 }
@@ -417,6 +427,7 @@ public:
 
 	bool OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath, CV8Params* pParams = NULL);
 	bool SaveFileWithChanges(int type, const std::wstring& _path, const std::wstring& sJsonParams = L"");
+	bool InitVariables();
 };
 
 namespace NSDoctRenderer
@@ -590,6 +601,11 @@ namespace NSDoctRenderer
 				sEmptyPath = sEmptyPath + L"xlsx.bin";
 				m_nFileType = 2;
 			}
+			else if (type & AVS_OFFICESTUDIO_FILE_DRAW)
+			{
+				sEmptyPath = sEmptyPath + L"vsdx.bin";
+				m_nFileType = 7;
+			}
 			else
 				return false;
 
@@ -616,6 +632,11 @@ namespace NSDoctRenderer
 				sEmptyPath = sEmptyPath + L"new.xlsx";
 				m_nFileType = 2;
 			}
+			else if (type & AVS_OFFICESTUDIO_FILE_DRAW)
+			{
+				sEmptyPath = sEmptyPath + L"new.vsdx";
+				m_nFileType = 7;
+			}
 			else
 				return false;
 
@@ -638,6 +659,8 @@ namespace NSDoctRenderer
 				sPath += L"pptx";
 			else if (type & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
 				sPath += L"xlsx";
+			else if (type & AVS_OFFICESTUDIO_FILE_DRAW)
+				sPath += L"vsdx";
 			return this->OpenFile(sPath, L"");
 #endif
 		}
@@ -733,6 +756,11 @@ namespace NSDoctRenderer
 			oBuilder.WriteString(L"<m_bIsNoBase64>true</m_bIsNoBase64>");
 			oBuilder.WriteString(L"<m_sThemeDir>./sdkjs/slide/themes</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
 			oBuilder.WriteString(sParams);
+
+			std::string sOptions = NSProcessEnv::Save();
+			if (!sOptions.empty())
+				oBuilder.WriteString(UTF8_TO_U(sOptions));
+
 			oBuilder.WriteString(L"</TaskQueueDataConvert>");
 
 			std::wstring sXmlConvert = oBuilder.GetData();
@@ -911,6 +939,8 @@ namespace NSDoctRenderer
 				m_nFileType = 1;
 			if (oChecker.nFileType & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
 				m_nFileType = 2;
+			if (oChecker.nFileType & AVS_OFFICESTUDIO_FILE_DRAW)
+				m_nFileType = 7;
 
 			int nReturnCode = ConvertToInternalFormat(m_sFileDir, sFileCopy, params);
 
@@ -1059,6 +1089,10 @@ namespace NSDoctRenderer
 			oBuilder.WriteString(L"<m_sTempDir>");
 			oBuilder.WriteEncodeXmlString(sDstTmpDir);
 			oBuilder.WriteString(L"</m_sTempDir>");
+
+			std::string sOptions = NSProcessEnv::Save();
+			if (!sOptions.empty())
+				oBuilder.WriteString(UTF8_TO_U(sOptions));
 
 			oBuilder.WriteString(L"</TaskQueueDataConvert>");
 
@@ -1247,40 +1281,7 @@ namespace NSDoctRenderer
 
 		int SaveFile(const std::wstring& ext, const std::wstring& path, const wchar_t* params = NULL)
 		{
-			int nType = -1;
-			if (L"docx" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-			else if (L"doc" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC;
-			else if (L"odt" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
-			else if (L"rtf" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF;
-			else if (L"txt" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
-			else if (L"pptx" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
-			else if (L"odp" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
-			else if (L"xlsx" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
-			else if (L"xls" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
-			else if (L"ods" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
-			else if (L"csv" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
-			else if (L"pdf" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
-			else if (L"image" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_IMAGE;
-			else if (L"jpg" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_IMAGE;
-			else if (L"png" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_IMAGE;
-			else if (L"html" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER;
-
+			int nType = GetFormatByTexExtention(ext);
 			return SaveFile(nType, path, params);
 		}
 
@@ -1291,7 +1292,11 @@ namespace NSDoctRenderer
 
 			Init();
 
-			CheckWorker();
+			bool bRes = CheckWorker();
+
+			if (!bRes && m_pWorker && m_bJavascriptBeforeEditor)
+				m_pWorker->InitVariables();
+
 			return m_pWorker->ExecuteCommand(command, retValue);
 		}
 
@@ -1325,6 +1330,11 @@ namespace NSDoctRenderer
 			case 2:
 			{
 				arSdkFiles = &m_arXlstSDK;
+				break;
+			}
+			case 7:
+			{
+				arSdkFiles = &m_arVsdtSDK;
 				break;
 			}
 			default:
@@ -1371,6 +1381,11 @@ namespace NSDoctRenderer
 			case 2:
 			{
 				arSdkFiles = &m_arXlstSDK;
+				break;
+			}
+			case 7:
+			{
+				arSdkFiles = &m_arVsdtSDK;
 				break;
 			}
 			default:

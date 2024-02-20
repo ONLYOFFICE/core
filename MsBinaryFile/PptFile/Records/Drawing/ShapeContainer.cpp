@@ -222,22 +222,29 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
         for (size_t i = 0; i < lCount; ++i)
         {
             SetUpPropertyVideo(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
-        }
-        break;
-    }
+        }        
+    }break;
     case PPT::etPicture:
+    case PPT::etOleObject:
     {
         if (reset_default)
         {
-            pElement->m_oBrush.Type = c_BrushTypeTexture;
+            pElement->m_oBrush.Type = c_BrushTypeTexture; // or 3000 set  ???
             pElement->m_bLine = false;
         }
         for (size_t i = 0; i < lCount; ++i)
         {
             SetUpPropertyImage(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
         }
-        break;
-    }
+        if (false == pElement->m_bIsFilled)
+        {
+            pElement->m_oBrush.Type = c_BrushTypeNoFill;
+        }
+        else if (pElement->m_oBrush.Type == c_BrushTypeTexture)
+        {
+            pElement->m_oBrush.Type = c_BrushTypeSolid;
+        }        
+    }break;
     case PPT::etAudio:
     {
         if (reset_default)
@@ -247,9 +254,8 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
         for (size_t i = 0; i < lCount; ++i)
         {
             SetUpPropertyAudio(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
-        }
-        break;
-    }
+        }        
+    }break;
     case PPT::etGroup:
     {
         if (reset_default)
@@ -282,7 +288,7 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
             pElement->m_oBrush.Type = c_BrushTypeNoFill;
         }
         else if (pElement->m_oBrush.Type == c_BrushTypeNotSet &&
-                 (pElement->m_lPlaceholderType == 0 && pElement->m_lPlaceholderID < 0 ))
+            (pElement->m_lPlaceholderType == 0 && pElement->m_lPlaceholderID < 0))
         {
             pElement->m_oBrush.Type = c_BrushTypeSolid;
         }
@@ -292,8 +298,7 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
             pPPTShape->m_oCustomVML.ToCustomShape(pPPTShape, pPPTShape->m_oManager);
             pPPTShape->ReCalculate();
         }
-        break;
-    }
+    }break;
     default:
         break;
     }
@@ -1641,10 +1646,10 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
 
             if (CExFilesInfo::eftVideo == exType)
             {
-                CVideoElement* pVideoElem		= new CVideoElement();
+                CVideoElement* pVideoElem = new CVideoElement();
 
-                pVideoElem->m_strVideoFileName	= oInfo.m_strFilePath ;
-                pVideoElem->m_strImageFileName	= oInfoDefault.m_strFilePath + FILE_SEPARATOR_STR;
+                pVideoElem->m_strVideoFileName = oInfo.m_strFilePath ;
+                pVideoElem->m_strImageFileName = oInfoDefault.m_strFilePath + FILE_SEPARATOR_STR;
 
                 pElement = CElementPtr(pVideoElem);
             }
@@ -1674,9 +1679,20 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
                 }
 
             }
+            else if (CExFilesInfo::eftOleObject == exType)
+            {
+                COleObjectElement* pOleObjectElem = new COleObjectElement();
+                pOleObjectElem->m_strBinFileName = oInfo.m_strFilePath;
+                pOleObjectElem->m_strImageFileName = oInfoDefault.m_strFilePath + FILE_SEPARATOR_STR;
+
+                pOleObjectElem->m_strProgId = oInfo.m_progName;
+                pOleObjectElem->m_strOleName = oInfo.m_name;
+
+                pElement = CElementPtr(pOleObjectElem);
+            }
             else
             {
-                CImageElement* pImageElem		= new CImageElement();
+                CImageElement* pImageElem = new CImageElement();
                 pImageElem->m_strImageFileName	= oInfo.m_strFilePath + FILE_SEPARATOR_STR;
 
                 pElement = CElementPtr(pImageElem);
@@ -1778,7 +1794,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
     GetRecordsByType(&oArrayFooterMeta, true, true);
     if (0 < oArrayFooterMeta.size())
     {
-        pElement->m_lPlaceholderType		= PT_MasterFooter;
+        pElement->m_lPlaceholderType = PT_MasterFooter;
         pElement->m_lPlaceholderUserStr	= oArrayFooterMeta[0]->m_nPosition;
     }
     std::vector<CRecordSlideNumberMetaAtom*> oArraySlideNumberMeta;
@@ -2508,7 +2524,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
         }
     }
 
-    if ((_T("") != strText) && 0 == pTextSettings->m_arParagraphs.size())
+    if ((L"" != strText) && 0 == pTextSettings->m_arParagraphs.size())
     {
         // значит никаких своих настроек нету. Значит просто пустые свои настройки
         std::vector<CTextPFRunRecord> oArrayPF;

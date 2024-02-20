@@ -16,7 +16,7 @@ namespace SVG
 	// IpathElement
 	TBounds IPathElement::GetBounds() const
 	{
-		TBounds oBounds{0., 0., 0., 0.};
+		TBounds oBounds{DBL_MAX, DBL_MAX, -DBL_MAX, -DBL_MAX};
 
 		for (const Point& oPoint : m_arPoints)
 		{
@@ -55,7 +55,7 @@ namespace SVG
 	CMoveElement *CMoveElement::CreateFromArray(std::vector<double> &arValues, bool bRelativeCoordinate, IPathElement *pPrevElement)
 	{
 		if (arValues.size() < 2)
-				return NULL;
+			return NULL;
 
 		Point oTranslatePoint{0., 0.};
 
@@ -94,7 +94,7 @@ namespace SVG
 	CLineElement *CLineElement::CreateFromArray(std::vector<double> &arValues, bool bRelativeCoordinate, IPathElement *pPrevElement)
 	{
 		if (arValues.size() < 2)
-				return NULL;
+			return NULL;
 
 		Point oTranslatePoint{0., 0.};
 
@@ -269,23 +269,30 @@ namespace SVG
 
 	std::vector<IPathElement *> CCBezierElement::CreateFromArc(std::vector<double> &arValues, bool bRelativeCoordinate, IPathElement *pPrevElement)
 	{
-		if (arValues.size() < 7)
+		if (arValues.size() < 7 || Equals(0., arValues[0]) || Equals(0.,  arValues[1]))
 			return std::vector<IPathElement *>();
-
-		std::vector<IPathElement *> arCurves;
 
 		Point oTranslatePoint{0., 0.};
 
 		if (bRelativeCoordinate && NULL != pPrevElement)
 			oTranslatePoint = (*pPrevElement)[-1];
 
-		Point oRadius{arValues[0], arValues[1]};
 		Point oSrartPoint{(*pPrevElement)[-1]};
+		Point oSecondPoint{arValues[5] + oTranslatePoint.dX, arValues[6] + oTranslatePoint.dY};
 
+		if (oSrartPoint == oSecondPoint)
+		{
+			arValues.erase(arValues.begin(), arValues.begin() + 7);
+			return std::vector<IPathElement *>();
+		}
+
+		std::vector<IPathElement *> arCurves;
+
+		Point oRadius{arValues[0], arValues[1]};
 		Point oCenter{0, 0};
 		double dAngle = 0, dSweep = 0;
 
-		CalculateArcData(oSrartPoint, Point{arValues[5], arValues[6]} + oTranslatePoint, oRadius, oCenter, arValues[2], (1 == arValues[3]) ? true : false, (1 == arValues[4]) ? true : false, dAngle, dSweep);
+		CalculateArcData(oSrartPoint, oSecondPoint, oRadius, oCenter, arValues[2],  Equals(1., arValues[3]) ? true : false, Equals(1., arValues[4]) ? true : false, dAngle, dSweep);
 
 		double dStartAngle = dAngle;
 		double dEndAngle;
@@ -297,8 +304,12 @@ namespace SVG
 			if ((int)(dStartAngle / 90.) == dStartAngle / 90.)
 				dEndAngle = dStartAngle + ((dSweep > 0.) ? 90. : -90.);
 			else
-				dEndAngle = (int)(dStartAngle / 90.) * ((dSweep > 0.) ? 90. : -90.);
-
+			{
+				dEndAngle = copysign(ceil(std::abs(dStartAngle) / 90.), dStartAngle) * ((dSweep > 0. || dStartAngle < 0.) ? 90. : -90.);
+			
+				if (dStartAngle < 0. && dSweep > 0.)
+					dEndAngle += 90.;
+			}
 			if (std::abs(dAngle - dEndAngle) > std::abs(dSweep))
 				dEndAngle = dAngle + dSweep;
 
@@ -351,6 +362,13 @@ namespace SVG
 				m_arPoints[2].dX, m_arPoints[2].dY);
 	}
 
+	inline double ClampSinCos(const double& d)
+	{
+		if (d < -1) return -1;
+		if (d > 1)  return 1;
+		return d;
+	}
+
 	void CCBezierElement::CalculateArcData(const Point &oFirst, const Point &oSecond, Point &oRadius, Point &oCenter, double dAngle, bool bLargeArc, bool bSweep, double &dStartAngle, double &dSweep)
 	{
 		dAngle *= M_PI / 180.;
@@ -377,8 +395,11 @@ namespace SVG
 
 		oCenter = Point{dCpx * std::cos(dAngle) - dCpy * std::sin(dAngle) + (oFirst.dX + oSecond.dX) / 2., dCpx * std::sin(dAngle) + dCpy * std::cos(dAngle) + (oFirst.dY + oSecond.dY) / 2.};
 
-		dStartAngle = std::acos(((dXp - dCpx) / oRadius.dX) / std::sqrt(std::pow((dXp - dCpx) / oRadius.dX, 2) + std::pow((dYp - dCpy) / oRadius.dY, 2))) * 180. / M_PI;
-		dSweep      = std::acos((((dXp - dCpx) / oRadius.dX * (-dXp - dCpx) / oRadius.dX) + ((dYp - dCpy) / oRadius.dY * (-dYp - dCpy) / oRadius.dY)) / (std::sqrt(std::pow((dXp - dCpx) / oRadius.dX, 2) + std::pow((dYp - dCpy) / oRadius.dY, 2)) * std::sqrt(std::pow((-dXp - dCpx) / oRadius.dX, 2) + std::pow((-dYp - dCpy) / oRadius.dY, 2)))) * 180. / M_PI;
+		double dStartAngleCos = ((dXp - dCpx) / oRadius.dX) / std::sqrt(std::pow((dXp - dCpx) / oRadius.dX, 2) + std::pow((dYp - dCpy) / oRadius.dY, 2));
+		dStartAngle = std::acos(ClampSinCos(dStartAngleCos)) * 180. / M_PI;
+
+		double dSweepAngleCos = (((dXp - dCpx) / oRadius.dX * (-dXp - dCpx) / oRadius.dX) + ((dYp - dCpy) / oRadius.dY * (-dYp - dCpy) / oRadius.dY)) / (std::sqrt(std::pow((dXp - dCpx) / oRadius.dX, 2) + std::pow((dYp - dCpy) / oRadius.dY, 2)) * std::sqrt(std::pow((-dXp - dCpx) / oRadius.dX, 2) + std::pow((-dYp - dCpy) / oRadius.dY, 2)));
+		dSweep = std::acos(ClampSinCos(dSweepAngleCos)) * 180. / M_PI;
 
 		if (((dYp - dCpy) / oRadius.dY) < 0)
 			dStartAngle *= -1;
@@ -436,6 +457,7 @@ namespace SVG
 
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
+		SetOpacity(mAttributes, ushLevel, bHardMode);
 		SetMarker(mAttributes, ushLevel, bHardMode);
 
 		std::map<std::wstring, std::wstring>::const_iterator oIter = mAttributes.find(L"fill-rule");
@@ -473,11 +495,11 @@ namespace SVG
 	}
 
 	void CPath::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
-	{	
-		if (Apply(pRenderer, &pStyles->m_oStroke))
+	{
+		if (ApplyStroke(pRenderer, &pStyles->m_oStroke))
 			nTypePath += c_nStroke;
 
-		if (Apply(pRenderer, &pStyles->m_oFill, pFile))
+		if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true))
 			nTypePath += (m_bEvenOddRule) ? c_nEvenOddFillMode : c_nWindingFillMode;
 	}
 
@@ -551,15 +573,15 @@ namespace SVG
 
 	TBounds CPath::GetBounds() const
 	{
-		TBounds oBounds{0., 0., 0., 0.}, oTempBounds;
+		TBounds oBounds{DBL_MAX, DBL_MAX, -DBL_MAX, -DBL_MAX}, oTempBounds;
 
 		for (const IPathElement* oElement : m_arElements)
 		{
 			oTempBounds = oElement->GetBounds();
 
-			oBounds.m_dLeft   = std::min(oBounds.m_dLeft, oTempBounds.m_dLeft);
-			oBounds.m_dTop    = std::min(oBounds.m_dTop, oTempBounds.m_dTop);
-			oBounds.m_dRight  = std::max(oBounds.m_dRight, oTempBounds.m_dRight);
+			oBounds.m_dLeft   = std::min(oBounds.m_dLeft,   oTempBounds.m_dLeft);
+			oBounds.m_dTop    = std::min(oBounds.m_dTop,    oTempBounds.m_dTop);
+			oBounds.m_dRight  = std::max(oBounds.m_dRight,  oTempBounds.m_dRight);
 			oBounds.m_dBottom = std::max(oBounds.m_dBottom, oTempBounds.m_dBottom);
 		}
 
@@ -586,7 +608,7 @@ namespace SVG
 			}
 
 			oSecondPos = std::find_if(oFirstPos + 1, wsValue.end(), [](wchar_t wChar){return ISPATHCOMMAND(wChar);});
-
+			
 			std::vector<double> arValues = StrUtils::ReadDoubleValues(oFirstPos, oSecondPos);
 
 			switch(*oFirstPos)
@@ -705,7 +727,7 @@ namespace SVG
 	}
 
 	CMovingPath::CMovingPath(const CPath *pPath)
-	    : m_pPath(pPath), m_oPosition{DBL_MIN, DBL_MIN}
+	    : m_pPath(pPath), m_oPosition{0., 0.}
 	{
 		ToStart();
 	}

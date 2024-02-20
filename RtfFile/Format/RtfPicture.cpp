@@ -33,6 +33,7 @@
 #include "../OOXml/Writer/OOXWriter.h"
 #include "RtfWriter.h"
 #include "Utils.h"
+#include "../../DesktopEditor/raster/BgraFrame.h"
 
 RtfPicture::RtfPicture()
 {
@@ -172,11 +173,11 @@ std::wstring RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
     std::wstring sMime;
 	switch( eDataType )
 	{
+		case dt_macpict: // convert it
 		case dt_png:	sExtension = L"png"; sMime = L"image/png";		break;
 		case dt_jpg:	sExtension = L"jpg"; sMime = L"image/jpg";		break;
 		case dt_wmf:	sExtension = L"wmf"; sMime = L"image/x-wmf";	break;
 		case dt_emf:	sExtension = L"emf"; sMime = L"image/x-emf";	break;
-		case dt_macpict:sExtension = L"pct"; sMime = L"image/x-pict";	break;
 		case dt_svg:	sExtension = L"svg"; sMime = L"image/svg+xml";	break;
 	}
 	if (poOOXWriter->m_sTargetFolder.empty()) return L"rIdtemp"; //test from fields
@@ -193,7 +194,16 @@ std::wstring RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
 	sFilenameFull += FILE_SEPARATOR_STR + sFilenameRels;
 	sFilenameRels = L"media/" + sFilenameRels;
 
-	if( m_sPicFilename != sFilenameFull )
+	if (eDataType == dt_macpict)
+	{
+		CBgraFrame bgraFrame;
+
+		if (bgraFrame.OpenFile(m_sPicFilename))
+		{
+			bgraFrame.SaveFile(sFilenameFull, 4); // png
+		}
+	}
+	else if( m_sPicFilename != sFilenameFull )
 		Utils::CopyDirOrFile( m_sPicFilename, sFilenameFull );
 	else
 		m_bIsCopy = false;

@@ -427,18 +427,27 @@ namespace NS_DWC_Common
 
 	BYTE getOpacityFromString(const std::wstring opacityStr)
 	{
-		BYTE alpha;
-		if (opacityStr.find(L"f") != -1)
+		BYTE alpha = 0xff;
+		
+		if (opacityStr.find(L"f") != std::wstring::npos)
+		{
 			alpha = (BYTE)(XmlUtils::GetDouble(opacityStr) / 65536 * 256);
+		}
 		else
 		{
-			if (0 == opacityStr.find(L"."))
+			if (opacityStr.find(L"%") != std::wstring::npos)
+			{
+				alpha = (BYTE)(XmlUtils::GetDouble(opacityStr.substr(0, opacityStr.length() - 1)) / 100. * 256);
+			}
+			else if (0 == opacityStr.find(L"."))
 			{
 				std::wstring str = L"0" + opacityStr;
 				alpha = (BYTE)(XmlUtils::GetDouble(str) * 256);
 			}
 			else
+			{
 				alpha = (BYTE)(XmlUtils::GetDouble(opacityStr) * 256);
+			}
 		}
 		return alpha;
 	}
@@ -1229,6 +1238,7 @@ CDrawingConverter::CDrawingConverter()
     m_lCurrentObjectTop     = 0;
     m_pOOXToVMLRenderer     = NULL;
     m_bIsUseConvertion2007  = true;
+	m_bNeedMainProps		= false;
     m_pBinaryWriter         = new NSBinPptxRW::CBinaryFileWriter();
     m_pReader               = new NSBinPptxRW::CBinaryFileReader();
     m_pImageManager         = new NSBinPptxRW::CImageManager2();
@@ -1760,7 +1770,7 @@ HRESULT CDrawingConverter::AddObject(const std::wstring& bsXml, std::wstring** p
 
 	return bResult ? S_OK : S_FALSE;
 }
-void CDrawingConverter::ConvertVml(const std::wstring& sXml, std::vector<nullable<PPTX::Logic::SpTreeElem>> &elements)
+void CDrawingConverter::ConvertVml(const std::wstring& sXml, std::vector<nullable<PPTX::Logic::SpTreeElem>> &elements, NSCommon::nullable<OOX::WritingElement>& anchor)
 {
 	std::wstring strXml = _start_xml_object + sXml + _end_xml_object;
 
@@ -1772,8 +1782,8 @@ void CDrawingConverter::ConvertVml(const std::wstring& sXml, std::vector<nullabl
 	if (!oMainNode.GetNodes(L"*", oNodes))
 		return;
 
-	std::wstring* pMainProps = NULL;
-	std::wstring** ppMainProps = &pMainProps;
+	std::wstring* mainProps = NULL;
+	std::wstring** ppMainProps = &mainProps;
 
 	for (size_t i = 0; i < oNodes.size(); ++i)
 	{
@@ -1921,6 +1931,31 @@ void CDrawingConverter::ConvertVml(const std::wstring& sXml, std::vector<nullabl
 				break;
 			}
 		}
+	}
+
+	if (mainProps)
+	{
+		strXml = _start_xml_object + *mainProps + _end_xml_object;
+
+		XmlUtils::CXmlLiteReader oReader;
+		oReader.FromString(strXml);
+		
+		int nCurDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nCurDepth))
+		{
+			std::wstring sName = oReader.GetName();
+			if (_T("wp:inline") == sName)
+			{
+				anchor = new OOX::Drawing::CInline(NULL);
+				anchor->fromXML(oReader);
+			}
+			else if (_T("wp:anchor") == sName)
+			{
+				anchor = new OOX::Drawing::CAnchor(NULL);
+				anchor->fromXML(oReader);
+			}
+		}
+		RELEASEOBJECT(mainProps);
 	}
 }
 bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** pMainProps)
@@ -4750,7 +4785,7 @@ std::wstring CDrawingConverter::GetVMLShapeXml(CPPTShape* pPPTShape)
 
 void CDrawingConverter::SendMainProps(const std::wstring& strMainProps, std::wstring**& pMainProps)
 {
-	if (((m_pBinaryWriter) && (m_pBinaryWriter->m_pMainDocument)) || !m_pBinaryWriter)
+	if (((m_pBinaryWriter) && (m_pBinaryWriter->m_pMainDocument)) || !m_pBinaryWriter || m_bNeedMainProps)
 	{
 		*pMainProps = new std::wstring();
 		**pMainProps = strMainProps;
@@ -4994,36 +5029,53 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 		nullable_string sColor2;
         XmlMacroReadAttributeBase(oNodeFill, L"color2", sColor2);
 		
+		nullable_string sOpacity2;
+		XmlMacroReadAttributeBase(oNodeFill, L"o:opacity2", sOpacity2);
+
 		nullable_string sFocus;
         XmlMacroReadAttributeBase(oNodeFill, L"focus", sFocus);
-		//
+
+		nullable<SimpleTypes::Vml::CVml_Vector2D_Percentage> oFocusPosition;
+		XmlMacroReadAttributeBase(oNodeFill, L"focusposition", oFocusPosition);
+		
         if (sType.is_init() && (*sType == L"gradient" || *sType == L"gradientradial" || *sType == L"gradientRadial"))
 		{
 			PPTX::Logic::GradFill* pGradFill = new PPTX::Logic::GradFill();
             pGradFill->m_namespace = L"a";
 		
+			PPTX::Logic::Gs Gs_;
+			Gs_.color.Color = new PPTX::Logic::SrgbClr();
+
 			if (sColor.is_init())
 			{
 				ODRAW::CColor color;
 				if (NS_DWC_Common::getColorFromString(*sColor, color))
 				{
-					PPTX::Logic::Gs Gs_;
-					Gs_.color.Color = new PPTX::Logic::SrgbClr();
-					Gs_.color.Color->SetRGB(color.R, color.G, color.B);
-
-					Gs_.pos = 0;
-					pGradFill->GsLst.push_back(Gs_);
-
 					R = color.R;
 					G = color.G;
 					B = color.B;
 				}
 			}
-			if (sColor2.is_init())
+			Gs_.color.Color->SetRGB(R, G, B);
+			if (sOpacity.is_init())
+			{
+				BYTE lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity);
+
+				PPTX::Logic::ColorModifier oMod;
+				oMod.name = L"alpha";
+				int nA = (int)(lAlpha * 100000.0 / 255.0);
+				oMod.val = nA;
+				Gs_.color.Color->Modifiers.push_back(oMod);
+			}
+			Gs_.pos = 0;
+			pGradFill->GsLst.push_back(Gs_);
+
+			if (sColor2.is_init() || sOpacity2.is_init())
 			{
 				PPTX::Logic::Gs Gs_;
 				Gs_.color.Color = new PPTX::Logic::SrgbClr();
-                if (sColor2->find(L"fill") != -1)
+
+				if (sColor2.is_init() && (std::wstring::npos != sColor2->find(L"fill")))
 				{
                     std::wstring sColorEffect = *sColor2;
                     if (sColorEffect.length() > 5)
@@ -5037,12 +5089,24 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 				else
 				{
 					ODRAW::CColor color;
-					if (NS_DWC_Common::getColorFromString(*sColor2, color))
+					if (sColor2.is_init() && NS_DWC_Common::getColorFromString(*sColor2, color))
 					{
-						Gs_.color.Color->SetRGB(color.R, color.G, color.B);
+						R = color.R;
+						G = color.G;
+						B = color.B;
 					}
+					Gs_.color.Color->SetRGB(R, G, B);
 				}
+				if (sOpacity2.is_init())
+				{
+					BYTE lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity2);
 
+					PPTX::Logic::ColorModifier oMod;
+					oMod.name = L"alpha";
+					int nA = (int)(lAlpha * 100000.0 / 255.0);
+					oMod.val = nA;
+					Gs_.color.Color->Modifiers.push_back(oMod);
+				}
 				Gs_.pos = 100 * 1000;
 				pGradFill->GsLst.push_back( Gs_ );
 			}
@@ -5058,17 +5122,30 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 				pGradFill->GsLst.push_back( Gs_ );
 			}
 			//todooo method
-			if (sRotate.is_init())
+
+			if (oFocusPosition.is_init() && (*sType == L"gradientradial" || *sType == L"gradientRadial"))
 			{
-				pGradFill->lin = new PPTX::Logic::Lin();
-				pGradFill->lin->scaled = 1;
-
-				if (*sRotate == L"l") pGradFill->lin->ang = 0   * 60000;
-				if (*sRotate == L"t") pGradFill->lin->ang = 90  * 60000;
-				if (*sRotate == L"b") pGradFill->lin->ang = 270 * 60000;
-				if (*sRotate == L"r") pGradFill->lin->ang = 180 * 60000;
+				pGradFill->path.Init();
+				pGradFill->path->path = 2;
+				pGradFill->path->rect.Init();
+				pGradFill->path->rect->b = XmlUtils::ToString(100 - int(oFocusPosition->GetY() * 100)) + L"%";
+				pGradFill->path->rect->t = XmlUtils::ToString(int(oFocusPosition->GetY() * 100)) + L"%";
+				pGradFill->path->rect->l = XmlUtils::ToString(oFocusPosition->GetX() * 100) + L"%";
+				pGradFill->path->rect->r = XmlUtils::ToString(100 - int(oFocusPosition->GetX() * 100)) + L"%";
 			}
+			else
+			{
+				if (sRotate.is_init())
+				{
+					pGradFill->lin = new PPTX::Logic::Lin();
+					pGradFill->lin->scaled = 1;
 
+					if (*sRotate == L"l") pGradFill->lin->ang = 0 * 60000;
+					if (*sRotate == L"t") pGradFill->lin->ang = 90 * 60000;
+					if (*sRotate == L"b") pGradFill->lin->ang = 270 * 60000;
+					if (*sRotate == L"r") pGradFill->lin->ang = 180 * 60000;
+				}
+			}
 			pSpPr->Fill.m_type = PPTX::Logic::UniFill::gradFill;
 			pSpPr->Fill.Fill = pGradFill;
 		}	
@@ -5679,7 +5756,13 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
 				oXmlWriter.WriteString(strMainProps);
 
 				bool bAddGraphicData = false;
-				if (oElem.is<PPTX::Logic::SpTree>())
+				if (oElem.is<PPTX::Logic::LockedCanvas>())
+				{
+					bAddGraphicData = true;
+					oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
+		<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/lockedCanvas\">");
+				}
+				else if (oElem.is<PPTX::Logic::SpTree>())
 				{
 					bAddGraphicData = true;
 					oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\

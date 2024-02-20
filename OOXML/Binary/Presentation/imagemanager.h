@@ -50,12 +50,13 @@ namespace NSShapeImageGen
 	{
 		itJPG	= 0,
 		itPNG	= 1,
-		itVIF	= 2,
-		itWMF	= 3,
-		itEMF	= 4,
-		itSVG   = 5,
-		itMedia = 6,
-		itUnknown = 7
+		itGIF	= 2,
+		itVIF	= 3,
+		itWMF	= 4,
+		itEMF	= 5,
+		itSVG   = 6,
+		itMedia = 7,
+		itUnknown = 8
 	};
 
 	class CMediaInfo
@@ -117,6 +118,9 @@ namespace NSShapeImageGen
 			case itPNG:
 				_strExt = L".png";
 				break;
+			case itGIF:
+				_strExt = L".gif";
+			break;
 			case itJPG:
 				_strExt = L".jpg";
 				break;

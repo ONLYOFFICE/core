@@ -54,6 +54,8 @@ namespace OOX
 		}
 		void CDefinedName::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
+			if (false == m_oRef.IsInit() && false == m_oName.IsInit()) return;
+
 			writer.WriteString(L"<definedName");
 			WritingStringNullableAttrEncodeXmlString(L"name", m_oName, *m_oName);
 			WritingStringNullableAttrInt(L"localSheetId", m_oLocalSheetId, m_oLocalSheetId->GetValue());
@@ -72,6 +74,88 @@ namespace OOX
 
 			m_oRef = oReader.GetText3();
 		}
+		XLS::BaseObjectPtr CDefinedName::toBin()
+		{
+			auto ptr(new XLSB::Name);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			if(m_oComment.IsInit())
+                ptr->comment = m_oComment.get();
+            else
+                ptr->comment = 0xFFFFFFFF;
+
+			if(m_oDescription.IsInit())
+                ptr->description = m_oDescription.get();
+            else
+                ptr->description = 0xFFFFFFFF;
+			if(m_oFunction.IsInit())
+                ptr->fFunc = m_oFunction->GetValue();
+            else
+                ptr->fFunc = false;
+			if(m_oFunctionGroupId.IsInit())
+                ptr->fGrp = m_oFunctionGroupId->GetValue();
+
+			if(m_oHelp.IsInit())
+                ptr->helpTopic = m_oHelp.get();
+            else
+                ptr->helpTopic = 0xFFFFFFFF;
+			if(m_oHidden.IsInit())
+                ptr->fHidden = m_oHidden->GetValue();
+            else
+                ptr->fHidden = false;
+
+			if (m_oLocalSheetId.IsInit())
+				ptr->itab = m_oLocalSheetId->GetValue();
+			else
+				ptr->itab = 0xFFFFFFFF;
+
+			if (m_oName.IsInit())
+                ptr->name = m_oName.get();
+            else
+                ptr->name = 0xFFFFFFFF;
+			if (m_oPublishToServer.IsInit())
+                ptr->fPublished = m_oPublishToServer->GetValue();
+			else
+				ptr->fPublished = false;
+			if (m_oShortcutKey.IsInit())
+                ptr->chKey = std::stoi(m_oShortcutKey.get());
+			else
+				ptr->chKey = 0;
+
+			if (m_oVbProcedure.IsInit())
+                ptr->fOB = m_oVbProcedure->GetValue();
+            else
+                ptr->fOB = false;
+            if(!ptr->fOB)
+                ptr->fProc = false;
+            if(!ptr->fProc)
+            {
+                ptr->unusedstring1 = 0xFFFFFFFF;
+                ptr->unusedstring2 = 0xFFFFFFFF;
+            }
+
+			if (m_oWorkbookParameter.IsInit())
+                ptr->fWorkbookParam = m_oWorkbookParameter->GetValue();
+			else
+				ptr->fWorkbookParam = false;
+			if (m_oXlm.IsInit())
+                ptr->fFutureFunction = m_oXlm->GetValue();
+			else
+				ptr->fFutureFunction = false;
+			if (m_oRef.IsInit())
+			{
+				auto ref = m_oRef.get();
+				auto separatorPos = ref.find(L"!");
+				if(separatorPos != std::string::npos && separatorPos != ref.size() -1)
+					ref = ref.substr(separatorPos + 1, ref.size() - separatorPos -1);
+				else if(separatorPos == ref.size() -1)
+					ref = L"";
+				ptr->rgce = ref;
+			}
+            ptr->fCalcExp = true;
+			ptr->fBuiltin = false;
+			return objectPtr;
+		}
 		void CDefinedName::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
@@ -85,26 +169,32 @@ namespace OOX
         void CDefinedName::ReadAttributes(XLS::BaseObjectPtr& obj)
 		{
 			auto ptr = static_cast<XLSB::Name*>(obj.get());
-			m_oComment                  = ptr->comment.value();
-		   // m_oCustomMenu               = ptr->.value();
-			m_oDescription              = ptr->description.value();
-			m_oFunction                 = ptr->fFunc;
-			m_oFunctionGroupId          = ptr->fGrp;
-			m_oHelp                     = ptr->helpTopic.value();
-			m_oHidden                   = ptr->fHidden;
+
+			std::wstring ref = ptr->rgce.getAssembledFormula();
+			
+			if (ref.empty()) return; // ???
+			
+			m_oComment = ptr->comment.value();
+		   // m_oCustomMenu = ptr->.value();
+			m_oDescription = ptr->description.value();
+			m_oFunction = ptr->fFunc;
+			m_oFunctionGroupId = ptr->fGrp;
+			m_oHelp = ptr->helpTopic.value();
+
+			if (ptr->fHidden)
+				m_oHidden = ptr->fHidden;
 
 			if(ptr->itab != 0xFFFFFFFF)
 				m_oLocalSheetId         = ptr->itab;
 
-			m_oName                     = ptr->name.value();
-			m_oPublishToServer          = ptr->fPublished;
-			m_oShortcutKey              = std::to_wstring(ptr->chKey);
-			//m_oStatusBar                = ;
-			m_oVbProcedure              = ptr->fOB;
-			m_oWorkbookParameter        = ptr->fWorkbookParam;
-			m_oXlm                      = ptr->fFutureFunction;
-			m_oRef                      = ptr->rgce.getAssembledFormula();
-
+			m_oName = ptr->name.value();
+			m_oPublishToServer = ptr->fPublished;
+			m_oShortcutKey = std::to_wstring(ptr->chKey);
+			//m_oStatusBar = ;
+			m_oVbProcedure = ptr->fOB;
+			m_oWorkbookParameter = ptr->fWorkbookParam;
+			m_oXlm = ptr->fFutureFunction;
+			m_oRef = ref;
 		}
 
 		CDefinedNames::CDefinedNames(OOX::Document *pMain) : WritingElementWithChilds<CDefinedName>(pMain)
@@ -156,6 +246,15 @@ namespace OOX
 					pDefinedName->fromXML(oReader);
 				}
 			}
+		}
+		std::vector<XLS::BaseObjectPtr> CDefinedNames::toBin()
+		{
+			std::vector<XLS::BaseObjectPtr> objectVector;
+
+			for(auto i:m_arrItems)
+				objectVector.push_back(i->toBin());
+
+			return objectVector;
 		}
 		void CDefinedNames::fromBin(std::vector<XLS::BaseObjectPtr>& obj)
 		{

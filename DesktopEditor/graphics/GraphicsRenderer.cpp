@@ -796,7 +796,12 @@ HRESULT CGraphicsRenderer::BeginCommand(const DWORD& lType)
 		}
 	case c_nMaskType:
 		{
-			m_pRenderer->CreateAlphaMask();
+			m_pRenderer->StartCreatingAlphaMask();
+			break;
+		}
+	case c_nLayerType:
+		{
+			m_pRenderer->CreateLayer();
 			break;
 		}
 	default:
@@ -830,12 +835,17 @@ HRESULT CGraphicsRenderer::EndCommand(const DWORD& lType)
 		}
 	case c_nMaskType:
 		{
-			m_pRenderer->StartApplyingAlphaMask();
+			m_pRenderer->EndCreatingAlphaMask();
 			break;
 		}
 	case c_nResetMaskType:
 		{
 			m_pRenderer->ResetAlphaMask();
+			break;
+		}
+	case c_nLayerType:
+		{
+			m_pRenderer->BlendLayer();
 			break;
 		}
 	default:
@@ -955,7 +965,9 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 				else
 				{
 				#ifdef BUILDING_WASM_MODULE
-					if (m_oBrush.TexturePath.find(L"data:") == 0)
+					if (NULL != m_oBrush.Image)
+						pTextureBrush = new Aggplus::CBrushTexture(m_oBrush.Image, oMode);
+					else if (m_oBrush.TexturePath.find(L"data:") == 0)
 					{
 						bool bIsOnlyOfficeHatch = false;
 						if (m_oBrush.TexturePath.find(L"onlyoffice_hatch") != std::wstring::npos)
@@ -1399,9 +1411,14 @@ void CGraphicsRenderer::CreateFlip(BYTE* pPixels, const Aggplus::CDoubleRect& oR
 	m_pRenderer->SetPageUnit(Aggplus::UnitMillimeter);
 }
 
-void CGraphicsRenderer::SetAlphaMask(Aggplus::CAlphaMask* pAlphaMask)
+void CGraphicsRenderer::SetAlphaMask(Aggplus::CAlphaMask *pAlphaMask)
 {
 	m_pRenderer->SetAlphaMask(pAlphaMask);
+}
+
+HRESULT CGraphicsRenderer::put_LayerOpacity(double dValue)
+{
+	return m_pRenderer->SetLayerOpacity(dValue);
 }
 
 void CGraphicsRenderer::put_GlobalAlphaEnabled(const bool& bEnabled, const double& dVal)

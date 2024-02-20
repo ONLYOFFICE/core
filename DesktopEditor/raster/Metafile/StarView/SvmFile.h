@@ -82,11 +82,11 @@ class CSvmFile : virtual public IMetaFileBase
 		m_currentCharset		= 0;
 		m_currentLanguage		= 0;
 	}
-	TRect*   GetBounds()
+	TRectL*   GetBounds()
 	{
 		return &m_oBoundingBox;
 	}	
-	TRect* GetDCBounds()
+	TRectL* GetDCBounds()
 	{
 		//if (m_oHeader.mapMode.isSimple)
 		if (m_pDC->m_oMapMode.isSimple)
@@ -110,7 +110,7 @@ class CSvmFile : virtual public IMetaFileBase
 	int GetTextColor()
 	{
 		TSvmColor& oColor = m_pDC->GetTextColor();
-		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b);
+		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b, 0);
 	}
 	IFont*       GetFont()
 	{
@@ -147,7 +147,7 @@ class CSvmFile : virtual public IMetaFileBase
 	int GetTextBgColor()
 	{
 		TSvmColor& oColor = m_pDC->GetTextBgColor();
-		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b);
+		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b, 0);
 	}
 	unsigned int GetFillMode()
 	{
@@ -157,7 +157,7 @@ class CSvmFile : virtual public IMetaFileBase
 	{
 		TSvmPoint oPoint = m_pDC->GetCurPos();
 		TPointD oRes( oPoint.x,  oPoint.y);
-		TranslatePoint(oPoint.x, oPoint.y, oRes.x, oRes.y);
+		TranslatePoint(oPoint.x, oPoint.y, oRes.X, oRes.Y);
 		return oRes;
 	}
 	TXForm*      GetInverseTransform()
@@ -176,13 +176,13 @@ class CSvmFile : virtual public IMetaFileBase
 	{
 		return m_pDC->GetRop2Mode();
 	}
-	IClip*       GetClip()
+	CClip*       GetClip()
 	{
-		CSvmClip* pClip = m_pDC->GetClip();			
+		CClip* pClip = m_pDC->GetClip();
 		if (!pClip)
 			return NULL;
 
-		return (IClip*)pClip;
+		return pClip;
 	}
 	int          GetCharSpace()
 	{
@@ -202,9 +202,9 @@ class CSvmFile : virtual public IMetaFileBase
 		return MM_ANISOTROPIC;
 	}
 
-	double GetDpi()
+	USHORT GetDpi()
 	{
-		return 96.;
+		return 96;
 	}
 
 	IRegion* GetRegion()
@@ -215,6 +215,11 @@ class CSvmFile : virtual public IMetaFileBase
 	unsigned int GetArcDirection()
 	{
 		return AD_CLOCKWISE;
+	}
+
+	CPath* GetPath()
+	{
+		return NULL;
 	}
 
  private:
@@ -234,9 +239,9 @@ class CSvmFile : virtual public IMetaFileBase
 	unsigned int		m_unRecordPos;
 	
 	bool				m_bFirstPoint;
-	TRect				m_oBoundingBox;
+	TRectL				m_oBoundingBox;
 	//TRect				m_oRect;
-	TRect				m_oDCRect;
+	TRectL				m_oDCRect;
 
 	friend class CSvmPlayer;
 

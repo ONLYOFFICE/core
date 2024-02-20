@@ -66,8 +66,14 @@ odp_page_state & odp_slide_context::state()
     return page_state_list_.back();
 }
 
+int odp_slide_context::page_index()
+{
+	return count_slides_ - 1;
+}
+
 void odp_slide_context::start_page(office_element_ptr & elm)
 {
+	context_.map_identifiers_.push_back(odp_conversion_context::IdentifierMap());
 	page_state_list_.push_back( odp_page_state(&context_, elm) );
 	
 	std::wstring style_name_new = L"dp" + std::to_wstring(++count_slides_);
@@ -78,6 +84,11 @@ void odp_slide_context::start_page(office_element_ptr & elm)
 	state().set_page_id(count_slides_);
 	state().set_page_style(style);
 	state().drawing_context()->set_styles_context(styles_context_);
+}
+
+void odp_slide_context::hide_page()
+{
+	state().hide_page();
 }
 
 void odp_slide_context::end_page()
@@ -185,7 +196,7 @@ void odp_slide_context::start_table_row (bool styled)
 
 	if (styled)
 	{
-		styles_context_->create_style(L"",odf_types::style_family::TableRow, true, false, -1);
+		styles_context_->create_style(L"", odf_types::style_family::TableRow, true, false, -1);
 		
 		odf_style_state_ptr style_state = styles_context_->last_state(style_family::TableRow);
 		if (style_state)

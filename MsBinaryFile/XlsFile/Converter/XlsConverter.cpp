@@ -761,7 +761,7 @@ void XlsConverter::convert(XLS::GlobalsSubstream* globals)
 
 	for (size_t i = 0 ; i < globals->m_arHFPictureDrawing.size(); i++)
 	{
-		convert((ODRAW::OfficeArtDgContainer*)globals->m_arHFPictureDrawing[i].get());
+		convert((ODRAW::OfficeArtDggContainer*)globals->m_arHFPictureDrawing[i].get());
 	}
 	globals->serialize_protection(xlsx_context->workbook_protection());
 	
@@ -833,10 +833,10 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 			
 			CP_XML_NODE(L"numFmts")
 			{
-				CP_XML_ATTR(L"count", xls_global_info->m_arNumFormats.size());
-				for (size_t i = 0; i < xls_global_info->m_arNumFormats.size(); i++)
+				CP_XML_ATTR(L"count", xls_global_info->m_mapNumFormats.size());
+				for (std::map<_UINT16, XLS::BaseObjectPtr>::iterator it = xls_global_info->m_mapNumFormats.begin(); it != xls_global_info->m_mapNumFormats.end(); ++it)
 				{
-					XLS::Format* fmt = dynamic_cast<XLS::Format*>(xls_global_info->m_arNumFormats[i].get());
+					XLS::Format* fmt = dynamic_cast<XLS::Format*>(it->second.get());
 
 					if (fmt->ifmt < 5 || (fmt->ifmt > 8 && fmt->ifmt < 23) || (fmt->ifmt > 36 && fmt->ifmt < 41) || (fmt->ifmt > 44 && fmt->ifmt < 50))
 						continue;
@@ -1047,6 +1047,24 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 			}
 		}
 	}
+	else if (type_ext == L"pict")
+	{
+		//NSFile::CFileBinary file;
+		//std::wstring tempPICT = file.CreateTempFileWithUniqueName(xls_global_info->tempDirectory, L"pct");
+		//if (file.CreateFileW(tempPICT))
+		//{
+		//	file.WriteFile((BYTE*)data, size);
+		//	file.CloseFile();
+		//}
+		CBgraFrame bgraFrame;
+
+		if (bgraFrame.Decode((BYTE*)data, size))
+		{
+			file_name += L".png";
+			bgraFrame.SaveFile(xlsx_context->get_mediaitems().media_path() + file_name, 4); // png
+		}
+		//NSFile::CFileBinary::Remove(tempPICT);
+	}
 	else
 	{
 		file_name += type_ext;
@@ -1144,7 +1162,7 @@ void XlsConverter::convert(XLS::IMDATA * imdata)
 
 	if (imdata->cf == 0x09 && imdata->env == 0x01)	type_image = L".wmf";
 	if ((imdata->cf == 0x09 || imdata->cf == 0x02)
-							&& imdata->env == 0x02)	type_image = L".pict";
+							&& imdata->env == 0x02)	type_image = L"pict";
 	if (imdata->cf == 0x09)							type_image = L"dib_data";
 	if (imdata->cf == 0x0e)							type_image = L"";			//native aka unknown
 
@@ -1410,14 +1428,21 @@ void XlsConverter::convert(ODRAW::OfficeArtSpgrContainer * spgr)
 
 	for (size_t i = 0; i < spgr->child_records.size(); i++)
 	{
-		int type_object = 2;//rect
-
-		if (xlsx_context->get_drawing_context().start_drawing(type_object))
+		ODRAW::OfficeArtSpContainer* SpContainer = dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[i].get());
+		if (SpContainer)
 		{
-			xlsx_context->get_drawing_context().set_mode_HF(true);
-			convert(spgr->child_records[i].get());
+			ODRAW::OfficeArtFSP* fsp = dynamic_cast<ODRAW::OfficeArtFSP*>(SpContainer->m_OfficeArtFSP.get());
+			if ((fsp) && (fsp->fHaveSpt))
+			{
+				int type_object = 2;//rect
+				if (xlsx_context->get_drawing_context().start_drawing(type_object))
+				{
+					xlsx_context->get_drawing_context().set_mode_HF(true);
+					convert(spgr->child_records[i].get());
 
-			xlsx_context->get_drawing_context().end_drawing();
+					xlsx_context->get_drawing_context().end_drawing();
+				}
+			}
 		}
 	}
 }
@@ -1516,6 +1541,12 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 
 			convert(dg->m_OfficeArtSpgrContainer.get());
 		}break;
+	case XLS::typeOfficeArtDggContainer:
+	{		
+		ODRAW::OfficeArtDggContainer* dg = dynamic_cast<ODRAW::OfficeArtDggContainer*>(art);
+
+		convert(dg->m_OfficeArtBStoreContainer.get());
+	}break;
 	default:
 		break;
 	}

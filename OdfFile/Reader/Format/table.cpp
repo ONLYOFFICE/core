@@ -127,7 +127,7 @@ const wchar_t * table_table_source::name = L"table-source";
 
 void table_table_source::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    table_table_source_attlist_.add_attributes(Attributes);
+    attlist_.add_attributes(Attributes);
     table_linked_source_attlist_.add_attributes(Attributes);
 }
 
@@ -239,7 +239,7 @@ const wchar_t * table_table_column::name = L"table-column";
 
 void table_table_column::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    table_table_column_attlist_.add_attributes(Attributes);
+    attlist_.add_attributes(Attributes);
 }
 
 void table_table_column::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -431,7 +431,9 @@ void table_table_cell::add_child_element( xml::sax * Reader, const std::wstring 
 		if (p)
 		{
 			is_present_hyperlink_ = p->paragraph_.is_present_hyperlink_;
-		}
+            if (content_.elements_.size() > 1)
+                is_AligmentWrap_ = true;
+        }
 	}
 }
 

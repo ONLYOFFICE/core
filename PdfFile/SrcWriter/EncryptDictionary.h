@@ -61,7 +61,7 @@ namespace PdfWriter
 		{
 			return m_pEncrypt;
 		}
-		void UpdateKey(int nCryptAlgorithm);
+		bool UpdateKey(int nCryptAlgorithm);
 	private:
 		CEncrypt* m_pEncrypt;
 		std::string PadOrTrancatePassword(const std::wstring & wsPassword);
@@ -72,13 +72,12 @@ namespace PdfWriter
 	public:
 		CSignatureDict(CXref* pXref);
 		~CSignatureDict();
-		EDictType GetDictType() const
+		EDictType GetDictType() const override
 		{
 			return dict_type_SIGNATURE;
 		}
 
-		void SetByteRange(int nLen1, int nOffset2);
-		void ByteRangeOffset(int nBegin, int nEnd);
+		void WriteToStream(CStream* pStream, CEncrypt* pEncrypt) override;
 		void WriteToStream(CStream* pStream, int nFileEnd);
 		void SetCert(ICertificate* pCert);
 

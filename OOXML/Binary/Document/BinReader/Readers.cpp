@@ -1036,6 +1036,11 @@ int Binary_pPrReader::ReadContent(BYTE type, long length, void* poResult)
 		pPPr->m_oCnfStyle.Init();
 		READ1_DEF(length, res, this->ReadCnfStyle, pPPr->m_oCnfStyle.GetPointer());
 	}break;
+	case c_oSerProp_pPrType::SnapToGrid:
+	{
+		pPPr->m_oSnapToGrid.Init();
+		pPPr->m_oSnapToGrid->m_oVal.FromBool(m_oBufferedStream.GetBool());
+	}break;
 	default:
 		res = c_oSerConstants::ReadUnknown;
 		break;
@@ -1707,7 +1712,7 @@ int Binary_pPrReader::Read_pgSz(BYTE type, long length, void* poResult)
 	if ( c_oSer_pgSzType::Orientation == type )
 	{
 		pPageSz->m_oOrient.Init();
-		pPageSz->m_oOrient->SetValueFromByte( m_oBufferedStream.GetUChar());
+		pPageSz->m_oOrient->SetValueFromByte( m_oBufferedStream.GetUChar() == 1 ? 0 : 1); 
 	}
 	else if ( c_oSer_pgSzType::W == type )
 	{
@@ -2752,7 +2757,7 @@ int Binary_tblPrReader::Read_CellPr(BYTE type, long length, void* poResult)
 	else if (c_oSerProp_cellPrType::CnfStyle == type)
 	{
 		ComplexTypes::Word::CCnf cnf;
-		READ2_DEF(length, res, this->oBinary_pPrReader.ReadCnfStyle, &cnf);
+		READ1_DEF(length, res, this->oBinary_pPrReader.ReadCnfStyle, &cnf);
 
 		pCStringWriter->WriteString(cnf.ToString());
 	}
@@ -3968,6 +3973,32 @@ int Binary_SettingsTableReader::ReadSettings(BYTE type, long length, void* poRes
 	{
 		pSettings->m_oWriteProtection.Init();
 		READ1_DEF(length, res, this->ReadWriteProtect, pSettings->m_oWriteProtection.GetPointer());
+	}
+	else if (c_oSer_SettingsType::SdtGlobalShowHighlight == type)
+	{
+		m_pSettingsCustom->m_oSdtGlobalShowHighlight.Init();
+		m_pSettingsCustom->m_oSdtGlobalShowHighlight->m_oVal.FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSer_SettingsType::AutoHyphenation == type)
+	{
+		pSettings->m_oAutoHyphenation.Init();
+		pSettings->m_oAutoHyphenation->m_oVal.FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSer_SettingsType::HyphenationZone == type)
+	{
+		pSettings->m_oHyphenationZone.Init();
+		pSettings->m_oHyphenationZone->m_oVal.Init();
+		pSettings->m_oHyphenationZone->m_oVal->FromTwips(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSer_SettingsType::DoNotHyphenateCaps == type)
+	{
+		pSettings->m_oDoNotHyphenateCaps.Init();
+		pSettings->m_oDoNotHyphenateCaps->m_oVal.FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSer_SettingsType::ConsecutiveHyphenLimit == type)
+	{
+		pSettings->m_oConsecutiveHyphenLimit.Init();
+		pSettings->m_oConsecutiveHyphenLimit->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -9564,18 +9595,19 @@ int Binary_DocumentTableReader::ReadSdtPrDataBinding(BYTE type, long length, voi
 	ComplexTypes::Word::CDataBinding* pDataBinding = static_cast<ComplexTypes::Word::CDataBinding*>(poResult);
 	if (c_oSerSdt::PrefixMappings == type)
 	{
-		pDataBinding->m_sPrefixMappings.Init();
-		pDataBinding->m_sPrefixMappings->append(m_oBufferedStream.GetString3(length));
+		pDataBinding->m_sPrefixMappings = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerSdt::StoreItemID == type)
 	{
-		pDataBinding->m_sStoreItemID.Init();
-		pDataBinding->m_sStoreItemID->append(m_oBufferedStream.GetString3(length));
+		pDataBinding->m_sStoreItemID = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerSdt::XPath == type)
 	{
-		pDataBinding->m_sXPath.Init();
-		pDataBinding->m_sXPath->append(m_oBufferedStream.GetString3(length));
+		pDataBinding->m_sXPath = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerSdt::StoreItemChecksum == type)
+	{
+		pDataBinding->m_sStoreItemChecksum = m_oBufferedStream.GetString3(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

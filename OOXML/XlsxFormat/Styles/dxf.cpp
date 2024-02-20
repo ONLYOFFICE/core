@@ -41,8 +41,12 @@
 #include "../../XlsbFormat/Biff12_unions/DXF.h"
 #include "../../XlsbFormat/Biff12_unions/FRTDXF.h"
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
+#include "../../XlsbFormat/Biff12_records/BeginDXFs.h"
 
 #include "../../Common/SimpleTypes_Shared.h"
+#include <boost/algorithm/string.hpp>
+
+#include "../../XlsbFormat/Biff12_unions/DXFS.h"
 
 namespace OOX
 {
@@ -145,7 +149,14 @@ namespace OOX
 						else if ( _T("font") == sName )
 							m_oFont = oReader;
 						else if ( _T("numFmt") == sName )
+                        {
 							m_oNumFmt = oReader;
+                            if(m_oNumFmt->m_oFormatCode.IsInit())
+                                if(m_oNumFmt->m_oFormatCode.get().find(L"&quot;"))
+                                    boost::algorithm::replace_all(m_oNumFmt->m_oFormatCode.get(), L"&quot;", L"\"");
+
+
+                        }
 						else if ( _T("protection") == sName )
 							m_oProtection = oReader;
 					}
@@ -187,6 +198,21 @@ namespace OOX
 				}
 			}
 
+		}
+		XLS::BaseObjectPtr CDxf::toBin()
+		{
+			auto ptr(new XLSB::DXF);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			NSStringUtils::CStringBuilder writer;
+			toXML(writer);
+			XmlUtils::CXmlLiteReader oReader;
+			auto stringData = writer.GetData();
+
+			if ( !oReader.FromString(stringData))
+                        return objectPtr;
+			ptr->deserialize(oReader);
+
+			return objectPtr;
 		}
 		EElementType CDxf::getType () const
 		{
@@ -291,6 +317,19 @@ namespace OOX
 				else
 					m_arrItems.push_back(new CDxf(dxf));
 			}
+		}
+		XLS::BaseObjectPtr CDxfs::toBin()
+		{
+			auto ptr(new XLSB::DXFS);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::BeginDXFs);
+			ptr->m_BrtBeginDXFs = XLS::BaseObjectPtr{ptr1};
+			for(auto i:m_arrItems)
+			{
+				ptr->m_aruDXF.push_back(i->toBin());
+			}
+			ptr1->cdxfs = ptr->m_aruDXF.size();
+			return objectPtr;
 		}
 		void CDxfs::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{

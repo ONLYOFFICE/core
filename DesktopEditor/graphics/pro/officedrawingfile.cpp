@@ -34,7 +34,7 @@
 #include "./Graphics.h"
 
 CBgraFrame* GetFrame(IOfficeDrawingFile* pFile, int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip, bool bIsSwapRGB,
-                     NSFonts::IFontManager* pFonts = NULL, int nBackgroundColor = 0xFFFFFF, bool bIsDarkMode = false)
+                     NSFonts::IFontManager* pFonts = NULL, int nBackgroundColor = 0xFFFFFF, bool bIsDarkMode = false, int nBackgroundOpacity = 0xFF)
 {
     NSFonts::IFontManager *pFontManager = pFonts;
 
@@ -64,7 +64,7 @@ CBgraFrame* GetFrame(IOfficeDrawingFile* pFile, int nPageIndex, int nRasterW, in
     int nWidth  = (nRasterW > 0) ? nRasterW : ((int)dWidth  * 96 / dPageDpiX);
     int nHeight = (nRasterH > 0) ? nRasterH : ((int)dHeight * 96 / dPageDpiY);
 
-    BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+	BYTE* pBgraData = new(std::nothrow) BYTE[nWidth * nHeight * 4];
     if (!pBgraData)
     {
         RELEASEINTERFACE(pFontManager);
@@ -79,7 +79,7 @@ CBgraFrame* GetFrame(IOfficeDrawingFile* pFile, int nPageIndex, int nRasterW, in
     else
     {
         unsigned int nColor = (unsigned int)nBackgroundColor;
-        nColor = 0xFF000000 | nColor;
+        nColor = (nBackgroundOpacity << 24) | nColor;
 
         unsigned int nSize = (unsigned int)(nWidth * nHeight);
         unsigned int* pTemp = (unsigned int*)pBgraData;
@@ -118,9 +118,9 @@ CBgraFrame* GetFrame(IOfficeDrawingFile* pFile, int nPageIndex, int nRasterW, in
 }
 
 unsigned char* IOfficeDrawingFile::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH,
-                                                   bool bIsFlip, NSFonts::IFontManager* pFonts, int nBackgroundColor, bool bIsDarkMode)
+                                                   bool bIsFlip, NSFonts::IFontManager* pFonts, int nBackgroundColor, bool bIsDarkMode, int nBackgroundOpacity)
 {
-    CBgraFrame* pFrame = GetFrame(this, nPageIndex, nRasterW, nRasterH, bIsFlip, true, pFonts, nBackgroundColor, bIsDarkMode);
+    CBgraFrame* pFrame = GetFrame(this, nPageIndex, nRasterW, nRasterH, bIsFlip, true, pFonts, nBackgroundColor, bIsDarkMode, nBackgroundOpacity);
     if (!pFrame)
         return NULL;
 
@@ -132,9 +132,9 @@ unsigned char* IOfficeDrawingFile::ConvertToPixels(int nPageIndex, int nRasterW,
 }
 
 void IOfficeDrawingFile::ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW, const int nRasterH,
-                                         bool bIsFlip, NSFonts::IFontManager* pFonts, int nBackgroundColor, bool bIsDarkMode)
+                                         bool bIsFlip, NSFonts::IFontManager* pFonts, int nBackgroundColor, bool bIsDarkMode, int nBackgroundOpacity)
 {
-    CBgraFrame* pFrame = GetFrame(this, nPageIndex, nRasterW, nRasterH, bIsFlip, false, pFonts, nBackgroundColor, bIsDarkMode);
+    CBgraFrame* pFrame = GetFrame(this, nPageIndex, nRasterW, nRasterH, bIsFlip, false, pFonts, nBackgroundColor, bIsDarkMode, nBackgroundOpacity);
     if (!pFrame)
         return;
 

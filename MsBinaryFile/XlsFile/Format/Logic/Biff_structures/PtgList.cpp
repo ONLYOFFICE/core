@@ -135,7 +135,7 @@ void PtgList::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool ful
                 case 0x00: break;
                 case 0x01:
                 case 0x02:
-                formula += L",[" + arrColumn->second[colFirst] + L"]"; if(columns == 0x01) break;
+                formula += L",['" + arrColumn->second[colFirst] + L"]"; if(columns == 0x01) break;
                 formula += L":[" + arrColumn->second[colLast] + L"]"; break;
             }
         }

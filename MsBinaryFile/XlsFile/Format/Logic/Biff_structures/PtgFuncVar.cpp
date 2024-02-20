@@ -58,7 +58,7 @@ void PtgFuncVar::loadFields(CFRecord& record)
 {
 	global_info_ = record.getGlobalWorkbookInfo();
 	
-	global_info_->bMacrosExist = true;
+	//global_info_->bMacrosExist = true;
 
 	record >> cparams;
 	record.loadAnyData(tab);
@@ -68,8 +68,6 @@ void PtgFuncVar::loadFields(CFRecord& record)
 void PtgFuncVar::writeFields(CFRecord& record)
 {
 	global_info_ = record.getGlobalWorkbookInfo();
-
-	global_info_->bMacrosExist = true;
 
 	record << cparams;
 	record.storeAnyData(tab);
@@ -112,6 +110,8 @@ void PtgFuncVar::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool 
 				func_name == L"YEARS")
 		{
 			func_name = L"_xll." + func_name;
+			
+			global_info_->bMacrosExist = true;
 		}
 		ptg_stack.pop();
 	}

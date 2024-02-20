@@ -551,6 +551,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 		
 		bool fCompressed = GETBIT(CountOfCharsWithCompressionFlag, 31);
 		size_t size = GETBITS(CountOfCharsWithCompressionFlag, 0, 30);
+		
+		if (size > 0xfff0) return L"";
 
 		if (stream->GetPosition() + size > stream->GetSize())
 		{

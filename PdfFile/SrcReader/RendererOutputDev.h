@@ -48,14 +48,9 @@
 #include "MemoryUtils.h"
 #include "GfxClip.h"
 #include <stack>
-#ifdef BUILDING_WASM_MODULE
-#include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
-#endif
 
 namespace PdfReader
 {
-
-
 	//-------------------------------------------------------------------------------------------------------------------------------
 	struct TFontEntry
 	{
@@ -106,13 +101,16 @@ namespace PdfReader
 		CRefFontMap                         m_oFontMap;
 		NSCriticalSection::CRITICAL_SECTION m_oCS;       // Критическая секция
 	};
+
+	NSFonts::CFontInfo* GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontManager, GfxFont* pFont, std::wstring& wsFontBaseName);
+	void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName);
+	void CheckFontStylePDF(std::wstring& sName, bool& bBold, bool& bItalic);
 	//-------------------------------------------------------------------------------------------------------------------------------
 	template <typename T>
 	inline static double PDFCoordsToMM(T tX)
 	{
 		return  ((double)tX / 72.0) * 25.4;
 	}
-
 	//-------------------------------------------------------------------------------------------------------------------------------
 	static void FileWrite(void *pStream, char *sData, int nLen)
 	{
@@ -138,6 +136,7 @@ namespace PdfReader
 		}
 		virtual GBool useTilingPatternFill()
         {
+			// TODO Доделать поддержку различных параметров TilingPattern
 			if (m_bDrawOnlyText)
 				return true;
 
@@ -225,10 +224,9 @@ namespace PdfReader
 		virtual void eoFill(GfxState *pGState);
 		virtual void FillStroke(GfxState *pGState);
 		virtual void EoFillStroke(GfxState *pGState);
-		virtual void tilingPatternFill(GfxState *pGState, Object *pStream, int nPaintType, Dict *pResourcesDict, double *pMatrix, double *pBBox, int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep);
+		virtual void tilingPatternFill(GfxState *pGState, Gfx *gfx, Object *pStream, int nPaintType, int nTilingType, Dict *pResourcesDict, double *pMatrix, double *pBBox, int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep);
 		virtual void StartTilingFill(GfxState *pGState);
 		virtual void EndTilingFill();
-		//todo overide
 		virtual GBool shadedFill(GfxState *state, GfxShading *shading);
 		virtual bool FunctionShadedFill(GfxState *pGState, GfxFunctionShading *pShading);
 		virtual bool AxialShadedFill(GfxState *pGState, GfxAxialShading    *pShading);

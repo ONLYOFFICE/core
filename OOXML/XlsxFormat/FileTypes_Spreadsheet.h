@@ -89,6 +89,17 @@ namespace OOX
 
 			extern const FileType SpreadsheetFlat;
 
+			extern const FileType Timeline;
+
+			extern const FileType TimelineCache;
+
+			extern const FileType Metadata;
+
+			extern const FileType RdRichValue;
+
+			extern const FileType RdRichValueStructure;
+
+			extern const FileType RdRichValueTypes;
 		} // namespace FileTypes
 	}
 } // namespace OOX

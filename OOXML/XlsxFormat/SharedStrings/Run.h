@@ -53,6 +53,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(std::wstring& str, unsigned short fontindex);
+			std::wstring toBin(unsigned short &fontindex);
 			virtual EElementType getType () const;
 
 		private:

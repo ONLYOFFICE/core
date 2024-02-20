@@ -47,22 +47,22 @@ namespace DocFileFormat
 			unsigned int maxPosition	=	(int)(pFIB->m_FibWord97.fcDggInfo + pFIB->m_FibWord97.lcbDggInfo);
 
 			// read the DrawingGroupData
-			m_pDrawingGroupData			=	static_cast<DrawingGroup*>(RecordFactory::ReadRecord (&oStearmReader, 0));
+			m_pDrawingGroupData = dynamic_cast<DrawingGroup*>(RecordFactory::ReadRecord (&oStearmReader, 0));
 
 			while (oStearmReader.GetPosition() < maxPosition)
 			{
 				OfficeArtWordDrawing drawing;
-				drawing.dgglbl			=	(DrawingType)oStearmReader.ReadByte();
-				drawing.container		=	static_cast<DrawingContainer*>(RecordFactory::ReadRecord (&oStearmReader, 0));
+				drawing.dgglbl = (DrawingType)oStearmReader.ReadByte();
+				drawing.container =	dynamic_cast<DrawingContainer*>(RecordFactory::ReadRecord (&oStearmReader, 0));
 
-				for (size_t i = 0; i < drawing.container->Children.size(); ++i)
+				for (size_t i = 0; drawing.container && i < drawing.container->Children.size(); ++i)
 				{
 					Record* groupChild = drawing.container->Children[i];
 					if (groupChild)
 					{
 						if (GroupContainer::TYPE_CODE_0xF003 == groupChild->TypeCode)
 						{
-							GroupContainer* group	=	static_cast<GroupContainer*>(groupChild);
+							GroupContainer* group = dynamic_cast<GroupContainer*>(groupChild);
 							if (group)
 							{
 								group->Index =	(int)i;
@@ -70,7 +70,7 @@ namespace DocFileFormat
 						}
 						else if (ShapeContainer::TYPE_CODE_0xF004 == groupChild->TypeCode)
 						{
-							ShapeContainer* shape	=	static_cast<ShapeContainer*>(groupChild);
+							ShapeContainer* shape = dynamic_cast<ShapeContainer*>(groupChild);
 							if (shape)
 							{
 								shape->m_nIndex = (int)i;
@@ -82,7 +82,7 @@ namespace DocFileFormat
 						}
 						else if (DrawingRecord::TYPE_CODE_0xF008 == groupChild->TypeCode)
 						{
-							DrawingRecord* dr	=	static_cast<DrawingRecord*>(groupChild);
+							DrawingRecord* dr = dynamic_cast<DrawingRecord*>(groupChild);
 							if (dr)
 							{
 								m_uLastShapeId = dr->spidCur;
@@ -109,49 +109,52 @@ namespace DocFileFormat
 
 		for (auto& iter : m_arrDrawings)
 		{
-			GroupContainer* group = iter.container->FirstChildWithType<GroupContainer>();
-			if (group)
+			if (iter.container)
 			{
-				for (size_t i = 1; i < group->Children.size(); ++i)
+				GroupContainer* group = iter.container->FirstChildWithType<GroupContainer>();
+				if (group)
 				{
-					Record* groupChild = group->Children[i];
-
-					if ( groupChild->TypeCode == GroupContainer::TYPE_CODE_0xF003)
+					for (size_t i = 1; i < group->Children.size(); ++i)
 					{
-						//It's a group of shapes
-						GroupContainer* subgroup	=	static_cast<GroupContainer*>(groupChild);
+						Record* groupChild = group->Children[i];
 
-						//the referenced shape must be the first shape in the group
-						ShapeContainer* container	=	static_cast<ShapeContainer*>(subgroup->Children[0]);
-						Shape* shape				=	static_cast<Shape*>(container->Children[1]);
-
-						if (shape->GetShapeID() == spid)
+						if (groupChild->TypeCode == GroupContainer::TYPE_CODE_0xF003)
 						{
-							ret = container;
-							break;
+							//It's a group of shapes
+							GroupContainer* subgroup = dynamic_cast<GroupContainer*>(groupChild);
+
+							//the referenced shape must be the first shape in the group
+							ShapeContainer* container = subgroup ? dynamic_cast<ShapeContainer*>(subgroup->Children[0]) : NULL;
+							Shape* shape = container ? dynamic_cast<Shape*>(container->Children[1]) : NULL;
+
+							if (shape && shape->GetShapeID() == spid)
+							{
+								ret = container;
+								break;
+							}
 						}
-					}
-					else if ( groupChild->TypeCode == ShapeContainer::TYPE_CODE_0xF004 )
-					{
-						//It's a singe shape
-						ShapeContainer* container	=	static_cast<ShapeContainer*>(groupChild);
-						Shape* shape				=	static_cast<Shape*>(container->Children[0]);
-
-						if (shape->GetShapeID() == spid)
+						else if (groupChild->TypeCode == ShapeContainer::TYPE_CODE_0xF004)
 						{
-							ret	 =	container;
-							break;
+							//It's a singe shape
+							ShapeContainer* container = dynamic_cast<ShapeContainer*>(groupChild);
+							Shape* shape = container ? dynamic_cast<Shape*>(container->Children[0]) : NULL;
+
+							if (shape && shape->GetShapeID() == spid)
+							{
+								ret = container;
+								break;
+							}
 						}
 					}
 				}
-			}
-			else
-			{
-				continue;
-			}
+				else
+				{
+					continue;
+				}
 
-			if (ret)
-				break;
+				if (ret)
+					break;
+			}
 		}
 
 		return ret;

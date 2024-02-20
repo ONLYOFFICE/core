@@ -955,6 +955,23 @@ namespace SimpleTypes
 			typeDouble		=  1
 		};
 
+		enum ETimelineStyle
+		{
+			TimelineStyleLight1 = 0,
+			TimelineStyleLight2 = 1,
+			TimelineStyleLight3 = 2,
+			TimelineStyleLight4 = 3,
+			TimelineStyleLight5 = 4,
+			TimelineStyleLight6 = 5,
+			TimelineStyleDark1 = 6,
+			TimelineStyleDark2 = 7,
+			TimelineStyleDark3 = 8,
+			TimelineStyleDark4 = 9,
+			TimelineStyleDark5 = 10,
+			TimelineStyleDark6 = 11
+		};
+		DEFINE_SIMPLE_TYPE(CTimelineStyle, ETimelineStyle, TimelineStyleLight1)
+
 		template<EDoubleOrAutomatic eDefValue = typeAuto>
 		class CDoubleOrAutomatic : public CSimpleType<EDoubleOrAutomatic, eDefValue>
 		{
@@ -1375,6 +1392,54 @@ namespace SimpleTypes
 		};
 
 		DEFINE_SIMPLE_TYPE(CSlicerStyleType, ESlicerStyleType, cslicerstyletypeUnselectedItemWithData)
+		
+		enum ETimelineStyleType
+		{
+			timelineStyle_selectionLabel = 0,
+			timelineStyle_timeLevel = 1,
+			timelineStyle_periodLabel1 = 2,
+			timelineStyle_periodLabel2 = 3,
+			timelineStyle_selectedTimeBlock = 4,
+			timelineStyle_unselectedTimeBlock = 5,
+			timelineStyle_selectedTimeBlockSpace = 6
+		};
+
+		DEFINE_SIMPLE_TYPE(CTimelineStyleType, ETimelineStyleType, timelineStyle_selectionLabel)
+
+		enum EMdxKPIProperty
+		{
+			mdxKPIProperty_v = 0,
+			mdxKPIProperty_g = 1,
+			mdxKPIProperty_s = 2,
+			mdxKPIProperty_t = 3,
+			mdxKPIProperty_w = 4,
+			mdxKPIProperty_m = 5
+		};
+		DEFINE_SIMPLE_TYPE(CMdxKPIProperty, EMdxKPIProperty, mdxKPIProperty_v)
+			
+		enum EMdxSetOrder
+		{
+			mdxSetOrder_u = 0,
+			mdxSetOrder_a = 1,
+			mdxSetOrder_d = 2,
+			mdxSetOrder_aa = 3,
+			mdxSetOrder_ad = 4,
+			mdxSetOrder_na = 5,
+			mdxSetOrder_nd = 6
+		};
+		DEFINE_SIMPLE_TYPE(CMdxSetOrder, EMdxSetOrder, mdxSetOrder_u)
+
+		enum EMdxFunctionType
+		{
+			mdxFunctionType_m = 0,
+			mdxFunctionType_v = 1,
+			mdxFunctionType_s = 2,
+			mdxFunctionType_c = 3,
+			mdxFunctionType_r = 4,
+			mdxFunctionType_p = 5,
+			mdxFunctionType_k = 6
+		};
+		DEFINE_SIMPLE_TYPE(CMdxFunctionType, EMdxFunctionType, mdxFunctionType_m)
 
 	}// Spreadsheet
 } // SimpleTypes

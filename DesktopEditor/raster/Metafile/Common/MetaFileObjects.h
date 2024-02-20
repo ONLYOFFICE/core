@@ -88,14 +88,6 @@ namespace MetaFile
 		virtual double       GetDashOffset() = 0;
 		virtual void         GetDashData(double*&, unsigned int&) = 0;
 	};
-	class IPath
-	{
-	public:
-		IPath(){}
-		virtual ~IPath(){}
-
-		virtual void Draw(IOutputDevice* pOutput, bool bStroke, bool bFill, int nClipMode = -1) = 0;
-	};
 
 	class IRegion
 	{

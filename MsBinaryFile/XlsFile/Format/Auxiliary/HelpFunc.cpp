@@ -50,23 +50,23 @@ namespace AUX
 {
 const int normalizeColumn(const int column)
 {
-	if ((column & 0x000000ff) == 0xff)
-	{
-		return 0x00004000 - 1;
-	}
-	else
-	{
-		int norm_col = column;
-		while(norm_col > 255)
-		{
-			norm_col -= 0x100;
-		}
-		while(norm_col < 0)
-		{
-			norm_col += 0x100; // It is correct. must be on the second place after 255
-		}
-		return norm_col;
-	}
+    if ((column & 0x00004000) == 0x00004000)
+    {
+        return 0x00004000 - 1;
+    }
+    else
+    {
+        int norm_col = column;
+        while (norm_col > 16383)
+        {
+            norm_col -= 16384;
+        }
+        while (norm_col < 0)
+        {
+            norm_col += 16384; // It is correct. must be on the second place after 16383
+        }
+        return norm_col;
+    }
 }
 
 
@@ -90,13 +90,13 @@ const std::wstring column2str(const int column, const bool col_rel)
 const int normalizeRow(const int row)
 {
 	int norm_row = row;
-	while(norm_row > 65535)
+    while(norm_row > 1048576)
 	{
-		norm_row -= 0x10000;
+        norm_row -= 0x100000;
 	}
-	while(norm_row < 0) 
+	while(norm_row < 0)
 	{
-		norm_row += 0x10000; // It is correct. must be on the second place after 65535
+        norm_row += 0x100000; // It is correct. must be on the second place after 1048576
 	}
 	return norm_row;
 }
@@ -266,8 +266,8 @@ const std::wstring  guid2bstr(_GUID_ & guid)
 {
 	std::wstring  guid_ret=L"{";
 
-	guid_ret += int2hex_wstr(guid.Data1, 4) + L"-" + 
-				int2hex_wstr(guid.Data2, 2) + L"-" + 
+	guid_ret += int2hex_wstr(guid.Data1, 4) + L"-" +
+				int2hex_wstr(guid.Data2, 2) + L"-" +
 				int2hex_wstr(guid.Data3, 2) + L"-" +
 				int2hex_wstr((guid.getData4())[0], 1) + int2hex_wstr((guid.getData4())[1], 1) + L"-" +
 				int2hex_wstr((guid.getData4())[2], 1) + int2hex_wstr((guid.getData4())[3], 1) +
@@ -394,7 +394,7 @@ const std::wstring unescape_ST_Xstring(const std::wstring& wstr)
 
     while(true)
 	{
-        
+
 		const auto it_range = boost::make_iterator_range(x_pos_noncopied, wstr_end);
         x_pos_next = boost::algorithm::find_first(it_range, L"_x").begin();
 
@@ -503,7 +503,7 @@ const size_t hex_str2int(const std::wstring::const_iterator& it_begin, const std
 //    {
 //#if defined (_WIN32) || defined (_WIN64)
 //		int outsize_with_0 = MultiByteToWideChar(code_page, 0, inptr, -1, NULL, NULL);
-//		sResult.resize(outsize_with_0); 
+//		sResult.resize(outsize_with_0);
 //		if (MultiByteToWideChar(code_page, 0, inptr, -1, (LPWSTR)sResult.c_str(), outsize_with_0) > 0)
 //        {
 //			sResult.erase(outsize_with_0 - 1);
@@ -564,7 +564,7 @@ std::wstring toStdWString(std::string ansi_string, const _UINT32 code_page)
 
 		std::wstring result;
 		result.resize(ansi_string.size());
-	    
+
 		facet.widen(ansi_string.c_str(), ansi_string.c_str() + ansi_string.size(), &result[0]);
 
 		return result;
@@ -627,14 +627,14 @@ const std::wstring name2sheet_name(std::wstring name, const std::wstring prefix)
 {
 	static boost::wregex correct_sheet_name(L"^\\'.+?\\'$");
     static boost::wregex test_sheet_name(L"[\\s)(\\!\\'&:-]+"); //.??? 6442946.xls
-	
+
 	std::wstring sheet_first = prefix + name;
-	
+
 	if(!boost::regex_search(sheet_first.begin(), sheet_first.end(), correct_sheet_name))
-	{	
+	{
 		if(boost::regex_search(sheet_first.begin(), sheet_first.end(), test_sheet_name))
-		{	
-			sheet_first = boost::algorithm::replace_all_copy(sheet_first, L"'", L"''"); 
+		{
+			sheet_first = boost::algorithm::replace_all_copy(sheet_first, L"'", L"''");
 			sheet_first = std::wstring(L"'") + sheet_first + std::wstring(L"'");
 		}
 	}
@@ -648,15 +648,15 @@ const std::wstring xti_indexes2sheet_name(const short tabFirst, const short tabL
 	}
 	static boost::wregex correct_table_name(L"^\\'.+?\\'$");
     static boost::wregex test_table_name(L"([\\s)(\\!\\'&:-]+)|(^[\\d]+)"); //.??? 6442946.xls 5558608.xls
-	
-	std::wstring table_name = tab2sheet_name(tabFirst, names); 
+
+	std::wstring table_name = tab2sheet_name(tabFirst, names);
 	std::wstring sheet_first = prefix + table_name;
-	
+
 	if(!boost::regex_search(table_name.begin(), table_name.end(), correct_table_name))
-	{	
-		if(boost::regex_search(table_name.begin(), table_name.end(), test_table_name)) 
+	{
+		if(boost::regex_search(table_name.begin(), table_name.end(), test_table_name))
 		{
-			sheet_first = boost::algorithm::replace_all_copy(sheet_first, L"'", L"''"); 
+			sheet_first = boost::algorithm::replace_all_copy(sheet_first, L"'", L"''");
 			sheet_first = std::wstring(L"'") + sheet_first + std::wstring(L"'");
 		}
 	}
@@ -665,12 +665,12 @@ const std::wstring xti_indexes2sheet_name(const short tabFirst, const short tabL
 	{
 		table_name = tab2sheet_name(tabLast, names);
 		sheet_last = std::wstring(L":") + prefix + table_name;
-		
+
 		if(!boost::regex_search(table_name.begin(), table_name.end(), correct_table_name))
-		{	
+		{
 			if(boost::regex_search(table_name.begin(), table_name.end(), test_table_name))
-			{	
-				sheet_last = boost::algorithm::replace_all_copy(sheet_last, L"'", L"''"); 
+			{
+				sheet_last = boost::algorithm::replace_all_copy(sheet_last, L"'", L"''");
 				sheet_last = std::wstring(L"'") + sheet_last + std::wstring(L"'");
 			}
 		}
@@ -732,7 +732,7 @@ bool isColumn(const std::wstring& columnName, _UINT32 listIndex, _UINT16& indexC
 			{
 				return true;
 			}
-		}		
+		}
 	}
 	return false;
 }

@@ -35,13 +35,13 @@
 
 namespace XmlUtils
 {
-    std::wstring GetNameNoNS(const std::wstring & strNodeName)
-    {
-        int nFind = (int)strNodeName.find(L":");
-        if (-1 == nFind)
-            return strNodeName;
-        return strNodeName.substr(nFind + 1);
-    }
+	std::wstring GetNameNoNS(const std::wstring& strNodeName)
+	{
+		int nFind = (int)strNodeName.find(L":");
+		if (-1 == nFind)
+			return strNodeName;
+		return strNodeName.substr(nFind + 1);
+	}
 	const char* GetNameNoNS(const char* strNodeName)
 	{
 		const char* find = strchr(strNodeName, ':');
@@ -54,42 +54,42 @@ namespace XmlUtils
 			return strNodeName;
 		}
 	}
-    std::wstring GetNamespace(const std::wstring& strNodeName)
-    {
-        int nFind = (int)strNodeName.find(L":");
-        if (-1 == nFind)
-            return L"";
-        return strNodeName.substr(0, nFind);
-    }
-}
+	std::wstring GetNamespace(const std::wstring& strNodeName)
+	{
+		int nFind = (int)strNodeName.find(L":");
+		if (-1 == nFind)
+			return L"";
+		return strNodeName.substr(0, nFind);
+	}
+} // namespace XmlUtils
 
 namespace XmlUtils
 {
-    class CXmlNodeBase : public IXmlDOMDocument
-    {
-    public:
-        IXmlDOMDocument* m_pDocument;
+	class CXmlNodeBase : public IXmlDOMDocument
+	{
+	public:
+		IXmlDOMDocument* m_pDocument;
 
-        std::map<std::string, std::string> m_attributes;
-        std::vector<CXmlNodeBase*> m_nodes;
-        std::string m_sText;
-        std::wstring m_sName;
+		std::map<std::string, std::string> m_attributes;
+		std::vector<CXmlNodeBase*> m_nodes;
+		std::string m_sText;
+		std::wstring m_sName;
 
-    public:
-        CXmlNodeBase();
-        ~CXmlNodeBase();
+	public:
+		CXmlNodeBase();
+		~CXmlNodeBase();
 
-        void AddRefDoc();
-        void ReleaseDoc();
+		void AddRefDoc();
+		void ReleaseDoc();
 
-        std::wstring GetXml();
-        void GetXml(NSStringUtils::CStringBuilder& oWriter);
-    };
+		std::wstring GetXml();
+		void GetXml(NSStringUtils::CStringBuilder& oWriter);
+	};
 
 	CXmlNodeBase::CXmlNodeBase()
 	{
 		m_pDocument = NULL;
-        m_sText = "";
+		m_sText = "";
 		m_sName = L"";
 	}
 	CXmlNodeBase::~CXmlNodeBase()
@@ -145,17 +145,17 @@ namespace XmlUtils
 		{
 			m_nodes[i]->GetXml(oWriter);
 		}
-        oWriter.WriteEncodeXmlString(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)m_sText.c_str(), (LONG)m_sText.length()).c_str());
+		oWriter.WriteEncodeXmlString(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)m_sText.c_str(), (LONG)m_sText.length()).c_str());
 
 		oWriter.WriteString(L"</", 2);
 		oWriter.WriteEncodeXmlString(m_sName.c_str());
 		oWriter.WriteString(L">", 1);
 	}
-}
+} // namespace XmlUtils
 
 namespace XmlUtils
 {
- 	class CXmlDOMDocument : public IXmlDOMDocument, public CXmlLiteReader_Private
+	class CXmlDOMDocument : public IXmlDOMDocument, public CXmlLiteReader_Private
 	{
 	public:
 		CXmlNodeBase* m_pNode;
@@ -256,11 +256,11 @@ namespace XmlUtils
 					nCurDepth = GetDepth();
 					if (eNodeType == XmlNodeType_Text || eNodeType == XmlNodeType_Whitespace || eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE)
 					{
-                        m_pCurrentNode->m_sText += GetTextA();
+						m_pCurrentNode->m_sText += GetTextA();
 					}
 					else if (eNodeType == XmlNodeType_CDATA)
 					{
-                        m_pCurrentNode->m_sText += GetTextA();
+						m_pCurrentNode->m_sText += GetTextA();
 					}
 					else if (eNodeType == XmlNodeType_Element)
 					{
@@ -292,7 +292,7 @@ namespace XmlUtils
 			}
 		}
 	};
-}
+} // namespace XmlUtils
 
 namespace XmlUtils
 {
@@ -316,7 +316,7 @@ namespace XmlUtils
 	}
 	bool CXmlNode::FromXmlFile(const std::wstring& sFile, bool bRemoveRootNode)
 	{
-		//ignore bRemoveRootNode
+		// ignore bRemoveRootNode
 		CXmlDOMDocument* m_pDocument = new CXmlDOMDocument();
 		bool bRes = m_pDocument->FromFile(sFile);
 
@@ -333,9 +333,9 @@ namespace XmlUtils
 			delete m_pDocument;
 			return false;
 		}
-		//присваиваем m_pBase без AddRef, чтобы при удалении CXmlNode начался удаляться m_pBase(после конструктора RefCount==1, а если сделать AddRef то не удалится)
+		// присваиваем m_pBase без AddRef, чтобы при удалении CXmlNode начался удаляться m_pBase(после конструктора RefCount==1, а если сделать AddRef то не удалится)
 		m_pBase = m_pDocument->m_pNode;
-		//после Parse все Node из m_pDocument сделали ему AddRef, поэтому можем вызвать Release(потому что напрямую нигде его не используем), а окончательно он удалится после удаления всех Node
+		// после Parse все Node из m_pDocument сделали ему AddRef, поэтому можем вызвать Release(потому что напрямую нигде его не используем), а окончательно он удалится после удаления всех Node
 		m_pDocument->Release();
 
 		return true;
@@ -359,15 +359,15 @@ namespace XmlUtils
 			delete m_pDocument;
 			return false;
 		}
-		//присваиваем m_pBase без AddRef, чтобы при удалении CXmlNode начался удаляться m_pBase(после конструктора RefCount==1, а если сделать AddRef то не удалится)
+		// присваиваем m_pBase без AddRef, чтобы при удалении CXmlNode начался удаляться m_pBase(после конструктора RefCount==1, а если сделать AddRef то не удалится)
 		m_pBase = m_pDocument->m_pNode;
-		//после Parse все Node из m_pDocument сделали ему AddRef, поэтому можем вызвать Release(потому что напрямую нигде его не используем), а окончательно он удалится после удаления всех Node
+		// после Parse все Node из m_pDocument сделали ему AddRef, поэтому можем вызвать Release(потому что напрямую нигде его не используем), а окончательно он удалится после удаления всех Node
 		m_pDocument->Release();
 		return true;
 	}
 	bool CXmlNode::FromXmlString(const wchar_t* sString)
 	{
-		return FromXmlString(std::wstring(sString));		
+		return FromXmlString(std::wstring(sString));
 	}
 	bool CXmlNode::FromXmlString(const std::wstring& sString)
 	{
@@ -386,37 +386,41 @@ namespace XmlUtils
 	{
 		return (IsValid() ? m_pBase->m_sName : L"");
 	}
-    std::string CXmlNode::GetTextA()
-    {
-        if (IsValid())
-        {
-            return m_pBase->m_sText;
-        }
-        else
-            return "";
-    }
-    std::wstring CXmlNode::GetText()
+	std::string CXmlNode::GetNameA()
 	{
-        if (IsValid())
-        {
-            return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)m_pBase->m_sText.c_str(), (LONG)m_pBase->m_sText.length());
-        }
-        else
-            return L"";
+		return (IsValid() ? U_TO_UTF8(m_pBase->m_sName) : "");
+	}
+	std::string CXmlNode::GetTextA()
+	{
+		if (IsValid())
+		{
+			return m_pBase->m_sText;
+		}
+		else
+			return "";
+	}
+	std::wstring CXmlNode::GetText()
+	{
+		if (IsValid())
+		{
+			return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)m_pBase->m_sText.c_str(), (LONG)m_pBase->m_sText.length());
+		}
+		else
+			return L"";
 	}
 	bool CXmlNode::GetTextIfExist(std::wstring& sOutput)
 	{
 		bool bRes = false;
 		if (IsValid() && !m_pBase->m_sText.empty())
 		{
-            sOutput = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)m_pBase->m_sText.c_str(), (LONG)m_pBase->m_sText.length());
+			sOutput = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)m_pBase->m_sText.c_str(), (LONG)m_pBase->m_sText.length());
 			bRes = true;
 		}
 		return bRes;
 	}
 	std::wstring CXmlNode::GetTextExt(const std::wstring& strDefaultValue)
 	{
-		//todo xml:space preserve
+		// todo xml:space preserve
 		std::wstring sRes;
 		if (!GetTextIfExist(sRes))
 			sRes = strDefaultValue;
@@ -436,31 +440,31 @@ namespace XmlUtils
 		return GetAttribute(std::wstring(strAttibuteName));
 	}
 
-    void CXmlNode::ReadAllAttributesA(std::vector<std::string>& strNames, std::vector<std::string>& strValues)
-    {
-        if (!IsValid())
-            return;
+	void CXmlNode::ReadAllAttributesA(std::vector<std::string>& strNames, std::vector<std::string>& strValues)
+	{
+		if (!IsValid())
+			return;
 
-        std::map<std::string, std::string>::iterator p;
-        for (p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
-        {
-            strNames.push_back(p->first);
-            strValues.push_back(p->second);
-        }
-    }
+		std::map<std::string, std::string>::iterator p;
+		for (p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
+		{
+			strNames.push_back(p->first);
+			strValues.push_back(p->second);
+		}
+	}
 
-    void CXmlNode::ReadAllAttributes(std::vector<std::wstring>& strNames, std::vector<std::wstring>& strValues)
-    {
-        if (!IsValid())
-            return;
+	void CXmlNode::ReadAllAttributes(std::vector<std::wstring>& strNames, std::vector<std::wstring>& strValues)
+	{
+		if (!IsValid())
+			return;
 
-        std::map<std::string, std::string>::iterator p;
-        for (p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
-        {
-            strNames.push_back  (NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->first.c_str(), (long)p->first.length()));
-            strValues.push_back (NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->second.c_str(), (long)p->second.length()));
-        }
-    }
+		std::map<std::string, std::string>::iterator p;
+		for (p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
+		{
+			strNames.push_back(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->first.c_str(), (long)p->first.length()));
+			strValues.push_back(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->second.c_str(), (long)p->second.length()));
+		}
+	}
 
 	std::string CXmlNode::GetAttributeA(const std::string& sName, const std::string& _default)
 	{
@@ -515,41 +519,41 @@ namespace XmlUtils
 		{
 			return m_pBase->m_attributes.size();
 		}
-		else 
+		else
 			return 0;
 	}
-    void CXmlNode::GetAllAttributes(std::vector<std::wstring>& names, std::vector<std::wstring>& values)
-    {
-        for (std::map<std::string, std::string>::iterator p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
-        {
-            names.push_back(UTF8_TO_U(p->first));
-            values.push_back(UTF8_TO_U(p->second));
-        }
-    }
-    void CXmlNode::GetAllAttributes(std::vector<std::string>& names, std::vector<std::string>& values)
-    {
-        for (std::map<std::string, std::string>::iterator p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
-        {
-            names.push_back(p->first);
-            values.push_back(p->second);
-        }
-    }
-    void CXmlNode::GetAllAttributes(std::list<std::wstring>& names, std::list<std::wstring>& values)
-    {
-        for (std::map<std::string, std::string>::iterator p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
-        {
-            names.push_back(UTF8_TO_U(p->first));
-            values.push_back(UTF8_TO_U(p->second));
-        }
-    }
-    void CXmlNode::GetAllAttributes(std::list<std::string>& names, std::list<std::string>& values)
-    {
-        for (std::map<std::string, std::string>::iterator p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
-        {
-            names.push_back(p->first);
-            values.push_back(p->second);
-        }
-    }
+	void CXmlNode::GetAllAttributes(std::vector<std::wstring>& names, std::vector<std::wstring>& values)
+	{
+		for (std::map<std::string, std::string>::iterator p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
+		{
+			names.push_back(UTF8_TO_U(p->first));
+			values.push_back(UTF8_TO_U(p->second));
+		}
+	}
+	void CXmlNode::GetAllAttributes(std::vector<std::string>& names, std::vector<std::string>& values)
+	{
+		for (std::map<std::string, std::string>::iterator p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
+		{
+			names.push_back(p->first);
+			values.push_back(p->second);
+		}
+	}
+	void CXmlNode::GetAllAttributes(std::list<std::wstring>& names, std::list<std::wstring>& values)
+	{
+		for (std::map<std::string, std::string>::iterator p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
+		{
+			names.push_back(UTF8_TO_U(p->first));
+			values.push_back(UTF8_TO_U(p->second));
+		}
+	}
+	void CXmlNode::GetAllAttributes(std::list<std::string>& names, std::list<std::string>& values)
+	{
+		for (std::map<std::string, std::string>::iterator p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
+		{
+			names.push_back(p->first);
+			values.push_back(p->second);
+		}
+	}
 	bool CXmlNode::GetAttributeIfExist(const std::wstring& sName, std::wstring& sOutput)
 	{
 		bool bRes = false;
@@ -674,16 +678,16 @@ namespace XmlUtils
 		{
 			std::wstring sText;
 			if (oTemp.GetTextIfExist(sText))
-            {
-                try
-                {
-                    nRes = std::stoi(sText);
-                }
-                catch (...)
-                {
-                    nRes = nDef;
-                }
-            }
+			{
+				try
+				{
+					nRes = std::stoi(sText);
+				}
+				catch (...)
+				{
+					nRes = nDef;
+				}
+			}
 		}
 		return nRes;
 	}
@@ -693,11 +697,11 @@ namespace XmlUtils
 		std::wstring sRes;
 		if (!GetAttributeIfExist(strAttributeName, sRes))
 		{
-            CXmlNode oTemp;
-            if (GetNode(strAttributeName, oTemp))
-                sRes = oTemp.GetText();
-            else
-                sRes = strDefaultValue;
+			CXmlNode oTemp;
+			if (GetNode(strAttributeName, oTemp))
+				sRes = oTemp.GetText();
+			else
+				sRes = strDefaultValue;
 		}
 		return sRes;
 	}
@@ -736,7 +740,7 @@ namespace XmlUtils
 	{
 		std::vector<CXmlNode> oNodes;
 
-        if (IsValid())
+		if (IsValid())
 		{
 			bool bGetAll = false;
 			if (L"*" == sName)
@@ -750,7 +754,7 @@ namespace XmlUtils
 					CXmlNodeBase* pBase = m_pBase->m_nodes[i];
 					oNode.SetBase(pBase);
 
-                    oNodes.push_back(oNode);
+					oNodes.push_back(oNode);
 				}
 			}
 		}
@@ -780,7 +784,7 @@ namespace XmlUtils
 					CXmlNode oNode;
 					CXmlNodeBase* pBase = m_pBase->m_nodes[i];
 					oNode.SetBase(pBase);
-                    oNodes.push_back(oNode);
+					oNodes.push_back(oNode);
 				}
 			}
 		}
@@ -801,7 +805,7 @@ namespace XmlUtils
 					CXmlNode oNode;
 					CXmlNodeBase* pBase = m_pBase->m_nodes[i];
 					oNode.SetBase(pBase);
-                    oXmlNodes.push_back(oNode);
+					oXmlNodes.push_back(oNode);
 				}
 			}
 		}
@@ -827,10 +831,10 @@ namespace XmlUtils
 		}
 		return bRes;
 	}
-    bool CXmlNode::GetNodes(const std::wstring& sName, std::vector<CXmlNode>& oNodes)
+	bool CXmlNode::GetNodes(const std::wstring& sName, std::vector<CXmlNode>& oNodes)
 	{
 		oNodes = GetNodes(sName);
-        return (0 != oNodes.size());
+		return (0 != oNodes.size());
 	}
 
 	CXmlNode& CXmlNode::operator=(const CXmlNode& oSrc)
@@ -860,7 +864,7 @@ namespace XmlUtils
 		NSStringUtils::CStringBuilder oWriter;
 		m_pBase->GetXml(oWriter);
 		return oWriter.GetData();
-	}    
+	}
 
 	void CXmlNode::SetBase(CXmlNodeBase* pBase)
 	{
@@ -871,181 +875,178 @@ namespace XmlUtils
 		if (NULL != pBaseOld)
 			pBaseOld->Release();
 	}
-    std::wstring CXmlNode::GetNamespace(const std::wstring& strNodeName)
-    {
-        int nFind = strNodeName.find(wchar_t(':'));
-        if (-1 == nFind)
-            return L"";
-        return strNodeName.substr(0, nFind);
-    }
-    std::wstring CXmlNode::GetNameNoNS(const std::wstring& strNodeName)
-    {
-        int nFind = strNodeName.find(wchar_t(':'));
-        if (-1 == nFind)
-            return strNodeName;
-        return strNodeName.substr(nFind + 1);
-    }
-}
+	std::wstring CXmlNode::GetNamespace(const std::wstring& strNodeName)
+	{
+		int nFind = strNodeName.find(wchar_t(':'));
+		if (-1 == nFind)
+			return L"";
+		return strNodeName.substr(0, nFind);
+	}
+	std::wstring CXmlNode::GetNameNoNS(const std::wstring& strNodeName)
+	{
+		int nFind = strNodeName.find(wchar_t(':'));
+		if (-1 == nFind)
+			return strNodeName;
+		return strNodeName.substr(nFind + 1);
+	}
+} // namespace XmlUtils
 
 namespace XmlUtils
 {
-    class CXmlBuffer
-    {
-    public:
-        NSStringUtils::CStringBuilderA builder;
+	class CXmlBuffer
+	{
+	public:
+		NSStringUtils::CStringBuilderA builder;
 
-    public:
-        CXmlBuffer()
-        {
-        }
-        ~CXmlBuffer()
-        {
-        }
-    };
+	public:
+		CXmlBuffer()
+		{
+		}
+		~CXmlBuffer()
+		{
+		}
+	};
 
-    static int buffer_xmlBufferIOWrite(CXmlBuffer* buf, const char* buffer, int len)
-    {
-        buf->builder.WriteString(buffer, (size_t)len);
-        return len;
-    }
+	static int buffer_xmlBufferIOWrite(CXmlBuffer* buf, const char* buffer, int len)
+	{
+		buf->builder.WriteString(buffer, (size_t)len);
+		return len;
+	}
 
-    static int buffer_xmlBufferIOClose(CXmlBuffer* buf)
-    {
-        XML_UNUSED(buf);
-        return 0;
-    }
+	static int buffer_xmlBufferIOClose(CXmlBuffer* buf)
+	{
+		XML_UNUSED(buf);
+		return 0;
+	}
 
-    static int buffer_xmlC14NIsVisibleCallback(void * user_data, xmlNodePtr node, xmlNodePtr parent)
-    {
-        XML_UNUSED(user_data);
-        XML_UNUSED(parent);
-        if (node->type == XML_TEXT_NODE)
-        {
-            const char* cur = (char*)node->content;
-            size_t size = strlen(cur);
-            for (size_t i = 0; i < size; ++i, ++cur)
-            {
-                if (*cur != '\n' && *cur != '\r' && *cur != '\t')
-                    return 1;
-            }
-            return 0;
-        }
-        return 1;
-    }
+	static int buffer_xmlC14NIsVisibleCallback(void* user_data, xmlNodePtr node, xmlNodePtr parent)
+	{
+		XML_UNUSED(user_data);
+		XML_UNUSED(parent);
+		if (node->type == XML_TEXT_NODE)
+		{
+			const char* cur = (char*)node->content;
+			size_t size = strlen(cur);
+			for (size_t i = 0; i < size; ++i, ++cur)
+			{
+				if (*cur != '\n' && *cur != '\r' && *cur != '\t')
+					return 1;
+			}
+			return 0;
+		}
+		return 1;
+	}
 
-    std::string NSXmlCanonicalizator::Execute(const std::string& sXml, int mode, bool withComments)
-    {
+	std::string NSXmlCanonicalizator::Execute(const std::string& sXml, int mode, bool withComments)
+	{
 #ifdef LIBXML_C14N_ENABLED
-        xmlDocPtr xmlDoc = xmlParseMemory((char*)sXml.c_str(), (int)sXml.length());
+		xmlDocPtr xmlDoc = xmlParseMemory((char*)sXml.c_str(), (int)sXml.length());
 
-        CXmlBuffer bufferC14N;
-        xmlOutputBufferPtr _buffer = xmlOutputBufferCreateIO((xmlOutputWriteCallback)buffer_xmlBufferIOWrite,
-                                                             (xmlOutputCloseCallback)buffer_xmlBufferIOClose,
-                                                             &bufferC14N,
-                                                             NULL);
+		CXmlBuffer bufferC14N;
+		xmlOutputBufferPtr _buffer = xmlOutputBufferCreateIO((xmlOutputWriteCallback)buffer_xmlBufferIOWrite, (xmlOutputCloseCallback)buffer_xmlBufferIOClose, &bufferC14N, NULL);
 
-        xmlC14NExecute(xmlDoc, buffer_xmlC14NIsVisibleCallback, NULL, mode, NULL, withComments ? 1 : 0, _buffer);
+		xmlC14NExecute(xmlDoc, buffer_xmlC14NIsVisibleCallback, NULL, mode, NULL, withComments ? 1 : 0, _buffer);
 
-        xmlOutputBufferClose(_buffer);
+		xmlOutputBufferClose(_buffer);
 
-        return bufferC14N.builder.GetData();
+		return bufferC14N.builder.GetData();
 #else
 		return "";
 #endif
-    }
-    std::string NSXmlCanonicalizator::Execute(const std::wstring& sXmlFile, int mode, bool withComments)
-    {
-        std::string sXml;
-        NSFile::CFileBinary::ReadAllTextUtf8A(sXmlFile, sXml);
-        return Execute(sXml, mode, withComments);
-    }
-}
+	}
+	std::string NSXmlCanonicalizator::Execute(const std::wstring& sXmlFile, int mode, bool withComments)
+	{
+		std::string sXml;
+		NSFile::CFileBinary::ReadAllTextUtf8A(sXmlFile, sXml);
+		return Execute(sXml, mode, withComments);
+	}
+} // namespace XmlUtils
 
 std::string XmlUtils::GetUtf8FromFileContent(unsigned char* pData, unsigned int len)
 {
-    if (4 > len)
-        return std::string((char*)pData, (size_t)len);
+	if (4 > len)
+		return std::string((char*)pData, (size_t)len);
 
-    if (pData[0] == 0xEF && pData[1] == 0xBB && pData[2] == 0xFE && pData[3] == 0xBF)
-    {
-        return std::string((char*)pData + 3, (size_t)(len - 3));
-    }
+	if (pData[0] == 0xEF && pData[1] == 0xBB && pData[2] == 0xFE && pData[3] == 0xBF)
+	{
+		return std::string((char*)pData + 3, (size_t)(len - 3));
+	}
 
-    char markerUtf16 = 0;
-    if (pData[0] == 0xFF && pData[1] == 0xFE && !(pData[2] == 0x00 && pData[3] == 0x00))
-        markerUtf16 = 1;
-    if (pData[0] == 0xFE && pData[1] == 0xFF)
-        markerUtf16 = 2;
+	char markerUtf16 = 0;
+	if (pData[0] == 0xFF && pData[1] == 0xFE && !(pData[2] == 0x00 && pData[3] == 0x00))
+		markerUtf16 = 1;
+	if (pData[0] == 0xFE && pData[1] == 0xFF)
+		markerUtf16 = 2;
 
-    if (0 != markerUtf16)
-    {
-        int nCountSymbols = (len - 2) >> 1;
-        int nCountSymbolsNatural = 0;
+	if (0 != markerUtf16)
+	{
+		int nCountSymbols = (len - 2) >> 1;
+		int nCountSymbolsNatural = 0;
 
-        unsigned int* pUnicodes = new unsigned int[nCountSymbols];
-        unsigned char* pCurrent = pData + 2;
+		unsigned int* pUnicodes = new unsigned int[nCountSymbols];
+		unsigned char* pCurrent = pData + 2;
 
-        for (int i = 0; i < nCountSymbols; ++i)
-        {
-            unsigned short nLeading = (markerUtf16 == 1) ? (pCurrent[0] | (pCurrent[1] << 8)) : (pCurrent[1] | (pCurrent[0] << 8));
-            pCurrent += 2;
+		for (int i = 0; i < nCountSymbols; ++i)
+		{
+			unsigned short nLeading = (markerUtf16 == 1) ? (pCurrent[0] | (pCurrent[1] << 8)) : (pCurrent[1] | (pCurrent[0] << 8));
+			pCurrent += 2;
 
-            if (nLeading < 0xD800 || nLeading > 0xDFFF)
-            {
-                pUnicodes[nCountSymbolsNatural++] = nLeading;
-            }
-            else
-            {
-                i++;
-                if (i == nCountSymbols)
-                    break;
+			if (nLeading < 0xD800 || nLeading > 0xDFFF)
+			{
+				pUnicodes[nCountSymbolsNatural++] = nLeading;
+			}
+			else
+			{
+				i++;
+				if (i == nCountSymbols)
+					break;
 
-                unsigned short nTrailing = (markerUtf16 == 1) ? (pCurrent[0] | (pCurrent[1] << 8)) : (pCurrent[1] | (pCurrent[0] << 8));
-                pCurrent += 2;
+				unsigned short nTrailing = (markerUtf16 == 1) ? (pCurrent[0] | (pCurrent[1] << 8)) : (pCurrent[1] | (pCurrent[0] << 8));
+				pCurrent += 2;
 
-                if (nTrailing >= 0xDC00 && nTrailing <= 0xDFFF)
-                {
-                    pUnicodes[nCountSymbolsNatural++] = 0x10000 + (((nLeading & 0x03FF) << 10) | (nTrailing & 0x03FF));
-                }
-            }
-        }
+				if (nTrailing >= 0xDC00 && nTrailing <= 0xDFFF)
+				{
+					pUnicodes[nCountSymbolsNatural++] = 0x10000 + (((nLeading & 0x03FF) << 10) | (nTrailing & 0x03FF));
+				}
+			}
+		}
 
-        std::string sRet = NSStringExt::CConverter::GetUtf8FromUTF32(pUnicodes, nCountSymbolsNatural);
+		std::string sRet = NSStringExt::CConverter::GetUtf8FromUTF32(pUnicodes, nCountSymbolsNatural);
 
-        RELEASEARRAYOBJECTS(pUnicodes);
-        return sRet;
-    }
+		RELEASEARRAYOBJECTS(pUnicodes);
+		return sRet;
+	}
 
-    char markerUtf32 = 0;
-    if (pData[0] == 0xFF && pData[1] == 0xFE && pData[2] == 0x00 && pData[3] == 0x00)
-        markerUtf32 = 1;
-    if (pData[0] == 0 && pData[1] == 0 && pData[2] == 0xFE && pData[3] == 0xFF)
-        markerUtf32 = 2;
+	char markerUtf32 = 0;
+	if (pData[0] == 0xFF && pData[1] == 0xFE && pData[2] == 0x00 && pData[3] == 0x00)
+		markerUtf32 = 1;
+	if (pData[0] == 0 && pData[1] == 0 && pData[2] == 0xFE && pData[3] == 0xFF)
+		markerUtf32 = 2;
 
-    if (0 != markerUtf16)
-    {
-        int nCountSymbols = (len - 4) >> 2;
-        int nCountSymbolsNatural = 0;
+	if (0 != markerUtf16)
+	{
+		int nCountSymbols = (len - 4) >> 2;
+		int nCountSymbolsNatural = 0;
 
-        unsigned int* pUnicodes = new unsigned int[nCountSymbols];
-        unsigned char* pCurrent = pData + 4;
+		unsigned int* pUnicodes = new unsigned int[nCountSymbols];
+		unsigned char* pCurrent = pData + 4;
 
-        if (markerUtf32 == 1)
-        {
-            for (int i = 0; i < nCountSymbols; ++i, pCurrent += 4)
-                pUnicodes[nCountSymbolsNatural++] = (pCurrent[0] | (pCurrent[1] << 8) | (pCurrent[2] << 16) | (pCurrent[3] << 24));
-        }
-        else
-        {
-            for (int i = 0; i < nCountSymbols; ++i, pCurrent += 4)
-                pUnicodes[nCountSymbolsNatural++] = (pCurrent[3] | (pCurrent[2] << 8) | (pCurrent[1] << 16) | (pCurrent[0] << 24));
-        }
+		if (markerUtf32 == 1)
+		{
+			for (int i = 0; i < nCountSymbols; ++i, pCurrent += 4)
+				pUnicodes[nCountSymbolsNatural++] = (pCurrent[0] | (pCurrent[1] << 8) | (pCurrent[2] << 16) | (pCurrent[3] << 24));
+		}
+		else
+		{
+			for (int i = 0; i < nCountSymbols; ++i, pCurrent += 4)
+				pUnicodes[nCountSymbolsNatural++] = (pCurrent[3] | (pCurrent[2] << 8) | (pCurrent[1] << 16) | (pCurrent[0] << 24));
+		}
 
-        std::string sRet = NSStringExt::CConverter::GetUtf8FromUTF32(pUnicodes, nCountSymbolsNatural);
+		std::string sRet = NSStringExt::CConverter::GetUtf8FromUTF32(pUnicodes, nCountSymbolsNatural);
 
-        RELEASEARRAYOBJECTS(pUnicodes);
-        return sRet;
-    }
+		RELEASEARRAYOBJECTS(pUnicodes);
+		return sRet;
+	}
 
-    return std::string((char*)pData, (size_t)len);
+	return std::string((char*)pData, (size_t)len);
 }

@@ -203,6 +203,12 @@ namespace PdfWriter
 		m_unPermission = ENABLE_PRINT | ENABLE_EDIT_ALL | ENABLE_COPY | ENABLE_EDIT | PERMISSION_PAD;
 		
 		MemSet(m_anEncryptID, 0, ID_LEN);
+
+		MemSet(m_anOwnerKey, 0, 48);
+		MemSet(m_anUserKey, 0, 48);
+		MemSet(m_anOwnerEncryptKey, 0, 32);
+		MemSet(m_anUserEncryptKey, 0, 32);
+		MemSet(m_anPermEncrypt, 0, 16);
 	}
     CEncrypt::~CEncrypt()
     {

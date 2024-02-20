@@ -14,7 +14,10 @@ namespace NSCSS
 		Cantimeter,
 		Millimeter,
 		Inch,
-		Peak
+		Peak,
+		Em,
+		Rem,
+		Twips
 	} UnitMeasure;
 
 	class CUnitMeasureConverter

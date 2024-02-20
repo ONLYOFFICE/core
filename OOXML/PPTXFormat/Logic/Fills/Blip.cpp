@@ -246,7 +246,13 @@ namespace PPTX
 		}
 		void Blip::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			std::wstring strName = m_namespace.empty() ? L"blip" : (m_namespace + L":blip");
+			std::wstring strName;
+
+			if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+				strName = L"w14:blip";
+			else
+				strName = m_namespace.empty() ? L"blip" : (m_namespace + L":blip");
+
 			pWriter->StartNode(strName);
 
 			pWriter->StartAttributes();
@@ -322,7 +328,7 @@ namespace PPTX
 			{
 				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(dataFilepathImageA, dX, dY, dW, dH, additionalPath, additionalType);
 			}
-			if (!dataFilepathImage.empty())
+			else if (!dataFilepathImage.empty())
 			{
 				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(dataFilepathImage, dX, dY, dW, dH, additionalPath, additionalType);
 			}

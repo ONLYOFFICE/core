@@ -1718,13 +1718,12 @@ void CConditionalFormattingRule::fromBin(XLS::BaseObjectPtr& obj)
     }
 }
 
-XLS::BaseObjectPtr CConditionalFormattingRule::toBin()
+XLS::BaseObjectPtr CConditionalFormattingRule::toBin(const  XLS::CellRef &cellRef)
 {
-    XLS::CellRef cellRef;
     auto ptr(new XLSB::CFRULE(cellRef));
     XLS::BaseObjectPtr objPtr(ptr);
 
-    ptr->m_BrtBeginCFRule = WriteAttributes();
+    ptr->m_BrtBeginCFRule = WriteAttributes(cellRef);
 
     if(m_oColorScale.IsInit())
     {
@@ -1741,9 +1740,9 @@ XLS::BaseObjectPtr CConditionalFormattingRule::toBin()
     return objPtr;
 }
 
-XLS::BaseObjectPtr CConditionalFormattingRule::WriteAttributes()
+XLS::BaseObjectPtr CConditionalFormattingRule::WriteAttributes(const  XLS::CellRef &cellRef)
 {
-    XLS::CellRef cellRef;
+    
     auto ptr(new XLSB::BeginCFRule(cellRef));
     BaseObjectPtr objectPtr(ptr);
 
@@ -2640,9 +2639,10 @@ XLS::BaseObjectPtr CConditionalFormatting::toBin()
 
         auto ptr(new XLSB::CONDITIONALFORMATTING);
         objectPtr = XLS::BaseObjectPtr{ptr};
+        XLS::CellRef formatingfirstCell;
         if(m_oSqRef.IsInit())
         {
-            auto conditionPtr(new XLSB::BeginConditionalFormatting);
+            auto conditionPtr(new XLSB::BeginConditionalFormatting);//
             ptr->m_BrtBeginConditionalFormatting = XLS::BaseObjectPtr{conditionPtr};
             conditionPtr->ccf = m_arrItems.size();
             conditionPtr->sqrfx.strValue = m_oSqRef.get();
@@ -2650,11 +2650,12 @@ XLS::BaseObjectPtr CConditionalFormatting::toBin()
                 conditionPtr->fPivot = m_oPivot->GetValue();
             else
                 conditionPtr->fPivot = false;
+            formatingfirstCell = conditionPtr->sqrfx.getLocationFirstCell();
 
         }
         for(auto i: m_arrItems)
         {
-            ptr->m_arCFRULE.push_back(i->toBin());
+            ptr->m_arCFRULE.push_back(i->toBin(formatingfirstCell));
         }
 
     return objectPtr;

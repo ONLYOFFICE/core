@@ -42,7 +42,7 @@ CFParsedFormula::CFParsedFormula(const CellRef& cell_base_ref) :	ParsedFormula(c
 
 CFParsedFormula& CFParsedFormula::operator=(const std::wstring& value)
 {
-	ParsedFormula::operator = (value);
+    parseStringFormula(value, L"CFParsedFormulaNoCCE");
 	return *this;
 }
 

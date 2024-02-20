@@ -2122,6 +2122,7 @@ CAnnotMarkup::CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : 
 
 	// 3 - Форматированный текст - RC
 	std::string sRC = DictLookupString(&oAnnot, "RC", 3);
+	std::cout << sRC << std::endl;
 	// if (oAnnot.dictLookup("RC", &oObj)->isStream())
 	// TODO streamGetBlock
 	XmlUtils::CXmlLiteReader oLightReader;
@@ -2229,7 +2230,7 @@ void CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontMana
 	{
 		Parser* parser = new Parser(xref, new Lexer(xref, &oN), gFalse);
 		int nFont = 0;
-		std::string sPredFontName = m_arrRC[0]->sFontFamily, sPredKey;
+		std::string sExpectedFontName = m_arrRC[0]->sFontFamily, sPredKey;
 
 		Object oObj1, oObj2, oObj3;
 		parser->getObj(&oObj1);
@@ -2257,11 +2258,42 @@ void CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontMana
 
 						if (!oObj1.isName(sPredKey.c_str()))
 						{
+							sPredKey = oObj1.getName();
+
+							int nRead = 0;
+							oObj1.free(); oObj2.free(); oObj3.free();
+							parser->getObj(&oObj1);
+							while (nRead < m_arrRC[nFont]->sText.length() && !oObj1.isEOF())
+							{
+								if (oObj1.isString())
+								{
+									parser->getObj(&oObj2);
+									if (oObj2.isEOF())
+									{
+										oObj1.free();
+										oObj2.copy(&oObj1);
+										oObj2.free();
+										break;
+									}
+									if (oObj2.isCmd("Tj"))
+										nRead += oObj1.getString()->getLength();
+								}
+								if (oObj2.isString())
+								{
+									oObj1.free();
+									oObj2.copy(&oObj1);
+									oObj2.free();
+									continue;
+								}
+								parser->getObj(&oObj1);
+							}
+							oObj2.free();
+
 							while (nFont < m_arrRC.size())
 							{
 								if ((bool)((m_arrRC[nFont]->unFontFlags >> 0) & 1) == bBold &&
 									(bool)((m_arrRC[nFont]->unFontFlags >> 1) & 1) == bItalic &&
-									m_arrRC[nFont]->sFontFamily == sPredFontName)
+									m_arrRC[nFont]->sFontFamily == sExpectedFontName)
 								{
 									m_arrRC[nFont]->sFontFamily = sFontName;
 									if (!sActual.empty())
@@ -2272,12 +2304,14 @@ void CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontMana
 								}
 								else
 								{
-									sPredFontName = m_arrRC[nFont]->sFontFamily;
+									sExpectedFontName = m_arrRC[nFont]->sFontFamily;
 									break;
 								}
 								nFont++;
 							}
-							sPredKey = oObj1.getName();
+
+							oFontRef.free();
+							continue;
 						}
 					}
 					oFontRef.free();

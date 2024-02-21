@@ -3031,8 +3031,11 @@ void BinaryWorkbookTableWriter::WriteExternalReferences(const OOX::Spreadsheet::
 				smart_ptr<OOX::File> pFile = pExternalLink->Find(OOX::RId(pExternalLink->m_oOleLink->m_oRid.get().GetValue()));
 				if (pFile.IsInit() && OOX::FileTypes::OleObject == pFile->type())
 				{
-					OOX::OleObject* pLinkFile = static_cast<OOX::OleObject*>(pFile.operator ->());
-					sLink = pLinkFile->filename().GetPath();
+					smart_ptr<OOX::OleObject> pLinkFile = pFile.smart_dynamic_cast<OOX::OleObject>();
+					if (pLinkFile.IsInit())
+					{
+						sLink = pLinkFile->filename().GetPath();
+					}
 				}
 			}
 			if (!sLink.empty())
@@ -4573,18 +4576,21 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 		smart_ptr<OOX::File> pFile = oWorksheet.Find(oWorksheet.m_oPicture->m_oId->GetValue());
 		if (pFile.IsInit() && (	OOX::FileTypes::Image == pFile->type()))
 		{
-			OOX::Image* pImageFileCache = static_cast<OOX::Image*>(pFile.GetPointer());
-			OOX::CPath pathImage = pImageFileCache->filename();
-			std::wstring	additionalPath;
-			int				additionalType = 0;
-			double dX = -1.0; //mm
-			double dY = -1.0;
-			double dW = -1.0; //mm
-			double dH = -1.0;
-			NSShapeImageGen::CMediaInfo oId = m_pOfficeDrawingConverter->m_pBinaryWriter->m_pCommon->m_pMediaManager->WriteImage(pathImage.GetPath(), dX, dY, dW, dH, additionalPath, additionalType);
-			nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Picture);
-			m_oBcw.m_oStream.WriteStringW3(oId.GetPath2());
-			m_oBcw.WriteItemEnd(nCurPos);
+			smart_ptr<OOX::Image> pImageFileCache = pFile.smart_dynamic_cast<OOX::Image>();
+			if (pImageFileCache.IsInit())
+			{
+				OOX::CPath pathImage = pImageFileCache->filename();
+				std::wstring	additionalPath;
+				int				additionalType = 0;
+				double dX = -1.0; //mm
+				double dY = -1.0;
+				double dW = -1.0; //mm
+				double dH = -1.0;
+				NSShapeImageGen::CMediaInfo oId = m_pOfficeDrawingConverter->m_pBinaryWriter->m_pCommon->m_pMediaManager->WriteImage(pathImage.GetPath(), dX, dY, dW, dH, additionalPath, additionalType);
+				nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Picture);
+				m_oBcw.m_oStream.WriteStringW3(oId.GetPath2());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
 		}
 	}
 	if (oWorksheet.m_oSortState.IsInit())
@@ -5823,7 +5829,8 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 			olePic->blipFill.blip->oleFilepathBin = olePic->oleObject->m_OleObjectFile->filename().GetPath();
 		}
 
-		OOX::Image*		pImageFileCache = NULL;
+		smart_ptr<OOX::Image> pImageFileCache;
+
 		std::wstring	sIdImageFileCache;
 		if ((NULL != pShapeElem) && (OOX::et_v_shapetype != pShapeElem->getType()))
 		{
@@ -5854,23 +5861,23 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 
 						if (pFile.IsInit() && (OOX::FileTypes::Image == pFile->type()))
 						{
-							pImageFileCache = static_cast<OOX::Image*>(pFile.GetPointer());
+							pImageFileCache = pFile.smart_dynamic_cast<OOX::Image>();
 						}
 					}
 				}
 			}
 		}
-		if (pImageFileCache == NULL && pOleObject->m_oObjectPr.IsInit() && pOleObject->m_oObjectPr->m_oRid.IsInit())
+		if (pImageFileCache.IsInit() && pOleObject->m_oObjectPr.IsInit() && pOleObject->m_oObjectPr->m_oRid.IsInit())
 		{
 			sIdImageFileCache = pOleObject->m_oObjectPr->m_oRid->GetValue();
 
 			smart_ptr<OOX::File> pFile = oWorksheet.Find(sIdImageFileCache);
 			if (pFile.IsInit() && (OOX::FileTypes::Image == pFile->type()))
 			{
-				pImageFileCache = static_cast<OOX::Image*>(pFile.GetPointer());
+				pImageFileCache = pFile.smart_dynamic_cast<OOX::Image>();
 			}
 		}
-		if (pImageFileCache)
+		if (pImageFileCache.IsInit())
 		{
 			OOX::CPath pathImage = pImageFileCache->filename();
 

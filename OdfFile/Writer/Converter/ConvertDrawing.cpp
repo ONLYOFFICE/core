@@ -433,8 +433,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 
 							if (pFile.IsInit() && (OOX::FileTypes::Image == pFile->type()))
 							{
-								OOX::Image*	pImageFileCache = static_cast<OOX::Image*>(pFile.GetPointer());
-
+								smart_ptr<OOX::Image> pImageFileCache = pFile.smart_dynamic_cast<OOX::Image>();
 								pathImage = pImageFileCache->filename().GetPath();
 							}
 						}

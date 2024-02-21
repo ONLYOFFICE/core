@@ -20,6 +20,12 @@ bool CSvgFile::ReadFromBuffer(BYTE *pBuffer, unsigned int unSize)
 	return false;
 }
 
+bool CSvgFile::ReadFromWString(const std::wstring &wsContext)
+{
+	Clear();
+	return m_oParser.LoadFromString(wsContext, &m_oContainer, this);
+}
+
 bool CSvgFile::OpenFromFile(const std::wstring &wsFile)
 {
 	Clear();
@@ -57,6 +63,11 @@ const SVG::CSvgCalculator *CSvgFile::GetSvgCalculator() const
 void CSvgFile::SetFontManager(NSFonts::IFontManager *pFontManager)
 {
 	m_oParser.SetFontManager(pFontManager);
+}
+
+void CSvgFile::SetWorkingDirectory(const std::wstring &wsWorkingDirectory)
+{
+	m_wsWorkingDirectory = wsWorkingDirectory;
 }
 
 bool CSvgFile::MarkObject(SVG::CObject *pObject)

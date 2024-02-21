@@ -65,12 +65,12 @@ namespace PdfReader
 		
 	};
 
-	class CFontList
+	class CPdfFontList
 	{
 	public:
 
-		CFontList();
-		~CFontList();
+		CPdfFontList();
+		~CPdfFontList();
 		void LoadFromFile(std::wstring wsDirPath);
 		void SaveToFile(std::wstring wsDirPath);
 		bool Find(Ref oRef, TFontEntry *pEntry);
@@ -103,7 +103,7 @@ namespace PdfReader
 	};
 
 	NSFonts::CFontInfo* GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontManager, GfxFont* pFont, std::wstring& wsFontBaseName);
-	void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName);
+	void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName);
 	void CheckFontStylePDF(std::wstring& sName, bool& bBold, bool& bItalic);
 	//-------------------------------------------------------------------------------------------------------------------------------
 	template <typename T>
@@ -123,7 +123,7 @@ namespace PdfReader
 	class RendererOutputDev : public OutputDev
 	{
 	public:
-        RendererOutputDev(IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CFontList *pFontList = NULL);
+		RendererOutputDev(IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList = NULL);
 		virtual ~RendererOutputDev();
 
 		virtual GBool upsideDown()
@@ -314,7 +314,7 @@ namespace PdfReader
 		//GfxTextClip                   *m_pBufferTextClip;
 
 		XRef                         *m_pXref;           // Таблица Xref для данного PDF-документа
-		CFontList                    *m_pFontList;
+		CPdfFontList                    *m_pFontList;
 
 		bool                         *m_pbBreak;         // Внешняя остановка рендерера
 

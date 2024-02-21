@@ -85,7 +85,7 @@ private:
 	PDFDoc*                m_pPDFDocument;
 	std::wstring           m_wsTempFolder;
 	NSFonts::IFontManager* m_pFontManager;
-	PdfReader::CFontList*  m_pFontList;
+	PdfReader::CPdfFontList*  m_pFontList;
 	DWORD                  m_nFileLength;
 	int                    m_eError;
 	std::map<std::wstring, std::wstring> m_mFonts;

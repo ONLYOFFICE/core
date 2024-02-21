@@ -44,6 +44,7 @@
 #include "../../DesktopEditor/common/Types.h"
 #include "../../DesktopEditor/common/StringExt.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"
+#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 
 namespace PdfReader
 {
@@ -1050,7 +1051,7 @@ bool GetFontFromAP(PDFDoc* pdfDoc, AcroFormField* pField, Object* oR, Object* oF
 
 	return bFindResources;
 }
-std::wstring GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList *pFontList, Object* oFonts, Object* oFontRef, int nTypeFonts, std::string& sFontName, std::string& sActualFontName, bool& bBold, bool& bItalic)
+std::wstring GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oFonts, Object* oFontRef, int nTypeFonts, std::string& sFontName, std::string& sActualFontName, bool& bBold, bool& bItalic)
 {
 	XRef* xref = pdfDoc->getXRef();
 
@@ -1133,7 +1134,7 @@ std::string CAnnotWidget::FieldLookupString(AcroFormField* pField, const char* s
 	oObj.free();
 	return sRes;
 }
-void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
+void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList)
 {
 	// Шрифт и размер шрифта - из DA
 	Ref fontID;
@@ -1201,7 +1202,7 @@ void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFont
 	if (bItalic)
 		m_unFontStyle |= (1 << 1);
 }
-void CAnnotWidget::SetButtonFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
+void CAnnotWidget::SetButtonFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList)
 {
 	// Неполноценный шрифт во внешнем виде pushbutton
 	Object oR, oFonts, oFontRef;
@@ -1893,7 +1894,7 @@ CAnnotFileAttachment::~CAnnotFileAttachment()
 // Annots
 //------------------------------------------------------------------------
 
-CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
+CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList)
 {
 	Object oObj1, oObj2;
 	XRef* xref = pdfDoc->getXRef();
@@ -2214,7 +2215,7 @@ CAnnotMarkup::~CAnnotMarkup()
 	for (int i = 0; i < m_arrRC.size(); ++i)
 		RELEASEOBJECT(m_arrRC[i]);
 }
-void CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
+void CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList)
 {
 	if (m_arrRC.empty())
 		return;
@@ -2225,9 +2226,109 @@ void CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontMana
 
 	// Теперь для всех шрифтов необходимо извлечь файлы шрифтов из внешнего вида
 	Object oAP, oN, oR, oFonts;
-	XRef* xref = pdfDoc->getXRef();
 	if (oAnnot.dictLookup("AP", &oAP)->isDict() && oAP.dictLookup("N", &oN)->isStream() && oN.streamGetDict()->lookup("Resources", &oR)->isDict() && oR.dictLookup("Font", &oFonts)->isDict())
 	{
+		// 4.2 Доработка: Стандартные шрифты не попадают в подбор, для них необходима отдельная проверка
+
+		// 4.1 Доработка: GetByParams обязательно подберет шрифт, поэтому список должен быть полным.
+
+		// 4 УСПЕХ: Требуется проверка
+		// 4 ПЛАН:
+		// Реализовать добавление шрифта в CFontList
+		// Создать CFontList только из шрифтов в FreeText
+		// Сделать подбор по параметрам
+		CFontList* pAppFontList = (CFontList*)pFontManager->GetApplication()->GetList();
+
+		for (int i = 0; i < oFonts.dictGetLength(); ++i)
+		{
+			Object oFontRef;
+			if (oFonts.dictGetValNF(i, &oFontRef)->isRef())
+			{
+				std::string sFontName, sActual;
+				bool bBold = false, bItalic = false;
+				std::wstring sFontPath = GetFontData(pdfDoc, pFontManager, pFontList, &oFonts, &oFontRef, 3, sFontName, sActual, bBold, bItalic);
+
+				const unsigned char* pData14 = NULL;
+				unsigned int nSize14 = 0;
+				if (!GetBaseFont(sFontPath, pData14, nSize14))
+				{
+					CFontStream* pFontStream = (CFontStream*)NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(sFontPath);
+					pAppFontList->Add(sFontPath, pFontStream);
+				}
+			}
+			oFontRef.free();
+		}
+
+		for (int i = 0; i < m_arrRC.size(); ++i)
+		{
+			std::wstring wsFontName = UTF8_TO_U(m_arrRC[i]->sFontFamily);
+			bool bBold = (bool)((m_arrRC[i]->unFontFlags >> 0) & 1);
+			bool bItalic = (bool)((m_arrRC[i]->unFontFlags >> 1) & 1);
+			// Если стандартный шрифт
+			if (wsFontName == L"Courier" || wsFontName == L"Helvetica" || wsFontName == L"Symbol" || wsFontName == L"Times New Roman" || wsFontName == L"ZapfDingbats")
+			{
+				if (wsFontName == L"Times New Roman")
+				{
+					if (bBold && bItalic)
+						wsFontName = L"Times-BoldItalic";
+					else if (bBold)
+						wsFontName = L"Times-Bold";
+					else if (bItalic)
+						wsFontName = L"Times-Italic";
+					else
+						wsFontName = L"Times-Roman";
+				}
+				else if (wsFontName == L"Courier" || wsFontName == L"Helvetica")
+				{
+					if (bBold && bItalic)
+						wsFontName += L"-BoldOblique";
+					else if (bBold)
+						wsFontName += L"-Bold";
+					else if (bItalic)
+						wsFontName += L"-Oblique";
+				}
+
+				if (!NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(wsFontName))
+				{
+					const unsigned char* pData14 = NULL;
+					unsigned int nSize14 = 0;
+					if (GetBaseFont(wsFontName, pData14, nSize14))
+					{
+						NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFontName, (BYTE*)pData14, nSize14, false);
+						m_arrRC[i]->sFontFamily = U_TO_UTF8(wsFontName);
+					}
+				}
+			}
+			else
+			{
+				NSFonts::CFontSelectFormat oFontSelect;
+				if (bBold)
+					oFontSelect.bBold = new INT(1);
+				if (bItalic)
+					oFontSelect.bItalic = new INT(1);
+				oFontSelect.wsName = new std::wstring(wsFontName);
+
+				NSFonts::CFontInfo* pFontInfo = pAppFontList->GetByParams(oFontSelect);
+				if (pFontInfo)
+				{
+					// Если шрифт из FreeText
+					// Иначе шрифт из подбора
+				}
+			}
+		}
+
+		// 3 ПРОВАЛ: PdfReader::CFontList - это не CFontList из ApplicationFonts, т.е. сделать подбор на PdfReader::CFontList не получится
+		// 3 ПЛАН:
+		// Загрузить все шрифты FreeText в pFontList
+		// На pFontList сделать подбор по параметрам
+		// Если подобранный шрифт неполный или не подобрался, то
+		// На pFontManager сделать подбор по параметрам
+
+		// 2 ПРОВАЛ: Встречаются составные глифы из 2, 4 бит, из-за чего количество символов разительно отличается
+		// 2 ПЛАН: Дополнительное сопоставление по количеству символов чтобы проскочить места путаницы со шрифтами.
+		// 1 ПРОВАЛ: Во внешнем виде используются больше шрифтов, и они не соответствуют RC
+		// 1 ПЛАН: Последовательное сопоставление шрифта и имени шрифта
+		/*
 		Parser* parser = new Parser(xref, new Lexer(xref, &oN), gFalse);
 		int nFont = 0;
 		std::string sExpectedFontName = m_arrRC[0]->sFontFamily, sPredKey;
@@ -2338,6 +2439,7 @@ void CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontMana
 
 		oObj1.free(); oObj2.free(); oObj3.free();
 		RELEASEOBJECT(parser);
+		*/
 	}
 	oAP.free(); oN.free(); oR.free(); oFonts.free();
 
@@ -2762,7 +2864,7 @@ CAnnot::CBorderType* CAnnot::getBorder(Object* oBorder, bool bBSorBorder)
 // AP
 //------------------------------------------------------------------------
 
-CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, const char* sView, const char* sButtonView, AcroFormField* pField)
+CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, const char* sView, const char* sButtonView, AcroFormField* pField)
 {
 	m_gfx = NULL;
 	m_pFrame = NULL;
@@ -2780,7 +2882,7 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLis
 
 	Clear();
 }
-CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, const char* sView, Object* oAnnotRef)
+CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, const char* sView, Object* oAnnotRef)
 {
 	m_gfx = NULL;
 	m_pFrame = NULL;
@@ -2818,7 +2920,7 @@ void CAnnotAP::Clear()
 	RELEASEOBJECT(m_pRendererOut);
 	RELEASEOBJECT(m_pRenderer);
 }
-void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex)
+void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex)
 {
 	Page* pPage = pdfDoc->getCatalog()->getPage(nPageIndex + 1);
 

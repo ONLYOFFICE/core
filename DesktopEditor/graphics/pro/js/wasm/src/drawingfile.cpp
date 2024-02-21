@@ -211,10 +211,7 @@ WASM_EXPORT BYTE* GetFontBinary(CGraphicsFileDrawing* pGraphics, char* path)
 	std::wstring sFontName = UTF8_TO_U(sPathA);
 	std::wstring sFontFile = pGraphics->GetFont(sFontName);
 	if (sFontFile.empty())
-		return NULL;
-
-	NSWasm::CData oRes;
-	oRes.SkipLen();
+		sFontFile = sFontName;
 
 	NSFonts::IFontsMemoryStorage* pStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
 	if (pStorage)
@@ -228,20 +225,24 @@ WASM_EXPORT BYTE* GetFontBinary(CGraphicsFileDrawing* pGraphics, char* path)
 
 			if (pData)
 			{
+				NSWasm::CData oRes;
+				oRes.SkipLen();
+
 				oRes.AddInt(lLength);
 
 				unsigned long long npSubMatrix = (unsigned long long)pData;
 				unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
 				oRes.AddInt(npSubMatrix1);
 				oRes.AddInt(npSubMatrix >> 32);
+
+				oRes.WriteLen();
+				BYTE* bRes = oRes.GetBuffer();
+				oRes.ClearWithoutAttack();
+				return bRes;
 			}
 		}
 	}
-
-	oRes.WriteLen();
-	BYTE* bRes = oRes.GetBuffer();
-	oRes.ClearWithoutAttack();
-	return bRes;
+	return NULL;
 }
 WASM_EXPORT void DestroyTextInfo(CGraphicsFileDrawing* pGraphics)
 {

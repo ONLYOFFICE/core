@@ -2664,72 +2664,72 @@ namespace OOX
 					ptr->protpwd = 0;
 
 				if (m_oAutoFilter.IsInit())
-					ptr->fAutoFilter = m_oAutoFilter->GetValue();
+					ptr->fAutoFilter = !m_oAutoFilter->GetValue();
 				else
 					ptr->fAutoFilter = true;
 
 				if (m_oDeleteColumns.IsInit())
-					ptr->fDeleteColumns = m_oDeleteColumns->GetValue();
+					ptr->fDeleteColumns = !m_oDeleteColumns->GetValue();
 				else
 					ptr->fDeleteColumns= true;
 
 				if (m_oDeleteRows.IsInit())
-					ptr->fDeleteRows = m_oDeleteRows->GetValue();
+					ptr->fDeleteRows = !m_oDeleteRows->GetValue();
 				else
 					ptr->fDeleteRows = true;
 
 				if (m_oFormatCells.IsInit())
-					ptr->fFormatCells = m_oFormatCells->GetValue();
+					ptr->fFormatCells = !m_oFormatCells->GetValue();
 				else
 					ptr->fFormatCells = true;
 
 				if (m_oFormatColumns.IsInit())
-					ptr->fFormatColumns = m_oFormatColumns->GetValue();
+					ptr->fFormatColumns = !m_oFormatColumns->GetValue();
 				else
 					ptr->fFormatColumns = true;
 
 				if (m_oFormatRows.IsInit())
-					ptr->fFormatRows = m_oFormatRows->GetValue();
+					ptr->fFormatRows = !m_oFormatRows->GetValue();
 				else
 					ptr->fFormatRows = true;
 
 				if (m_oInsertColumns.IsInit())
-					ptr->fInsertColumns = m_oInsertColumns->GetValue();
+					ptr->fInsertColumns = !m_oInsertColumns->GetValue();
 				else
 					ptr->fInsertColumns = true;
 
 				if (m_oInsertHyperlinks.IsInit())
-					ptr->fInsertHyperlinks = m_oInsertHyperlinks->GetValue();
+					ptr->fInsertHyperlinks = !m_oInsertHyperlinks->GetValue();
 				else
 					ptr->fInsertHyperlinks = true;
 
 				if (m_oInsertRows.IsInit())
-					ptr->fInsertRows = m_oInsertRows->GetValue();
+					ptr->fInsertRows = !m_oInsertRows->GetValue();
 				else
 					ptr->fInsertRows = true;
 
 				if (m_oObjects.IsInit())
-					ptr->fObjects = m_oObjects->GetValue();
+					ptr->fObjects = !m_oObjects->GetValue();
 				else
 					ptr->fObjects = true;
 
 				if (m_oPivotTables.IsInit())
-					ptr->fPivotTables = m_oPivotTables->GetValue();
+					ptr->fPivotTables = !m_oPivotTables->GetValue();
 				else
 					ptr->fPivotTables = true;
 
 				if (m_oScenarios.IsInit())
-					ptr->fScenarios = m_oScenarios->GetValue();
+					ptr->fScenarios = !m_oScenarios->GetValue();
 				else
 					ptr->fScenarios = true;
 
 				if (m_oSelectLockedCells.IsInit())
-					ptr->fSelLockedCells = m_oSelectLockedCells->GetValue();
+					ptr->fSelLockedCells = !m_oSelectLockedCells->GetValue();
 				else
 					ptr->fSelLockedCells = true;
 
 				if (m_oSelectUnlockedCells.IsInit())
-					ptr->fSelUnlockedCells = m_oSelectUnlockedCells->GetValue();
+					ptr->fSelUnlockedCells = !m_oSelectUnlockedCells->GetValue();
 				else
 					ptr->fSelUnlockedCells = true;
 
@@ -2739,7 +2739,7 @@ namespace OOX
 					ptr->fLocked = false;
 
 				if (m_oSort.IsInit())
-					ptr->fSort = m_oSort->GetValue();
+					ptr->fSort = !m_oSort->GetValue();
 				else
 					ptr->fSort = true;
 
@@ -2771,53 +2771,85 @@ namespace OOX
 					ptr->ipdPasswordData.rgbSalt.cbLength = tempSize2;
 				}
 
-				if(m_oAutoFilter.IsInit())
-				ptr->fAutoFilter = m_oAutoFilter->GetValue();
+				if (m_oAutoFilter.IsInit())
+					ptr->fAutoFilter = !m_oAutoFilter->GetValue();
+				else
+					ptr->fAutoFilter = true;
 
 				if (m_oDeleteColumns.IsInit())
-					ptr->fDeleteColumns = m_oDeleteColumns->GetValue();
+					ptr->fDeleteColumns = !m_oDeleteColumns->GetValue();
+				else
+					ptr->fDeleteColumns= true;
 
 				if (m_oDeleteRows.IsInit())
-					ptr->fDeleteRows = m_oDeleteRows->GetValue();
+					ptr->fDeleteRows = !m_oDeleteRows->GetValue();
+				else
+					ptr->fDeleteRows = true;
 
 				if (m_oFormatCells.IsInit())
-					ptr->fFormatCells = m_oFormatCells->GetValue();
+					ptr->fFormatCells = !m_oFormatCells->GetValue();
+				else
+					ptr->fFormatCells = true;
 
 				if (m_oFormatColumns.IsInit())
-					ptr->fFormatColumns = m_oFormatColumns->GetValue();
+					ptr->fFormatColumns = !m_oFormatColumns->GetValue();
+				else
+					ptr->fFormatColumns = true;
 
 				if (m_oFormatRows.IsInit())
-					ptr->fFormatRows = m_oFormatRows->GetValue();
+					ptr->fFormatRows = !m_oFormatRows->GetValue();
+				else
+					ptr->fFormatRows = true;
 
 				if (m_oInsertColumns.IsInit())
-					ptr->fInsertColumns = m_oInsertColumns->GetValue();
+					ptr->fInsertColumns = !m_oInsertColumns->GetValue();
+				else
+					ptr->fInsertColumns = true;
 
 				if (m_oInsertHyperlinks.IsInit())
-					ptr->fInsertHyperlinks = m_oInsertHyperlinks->GetValue();
+					ptr->fInsertHyperlinks = !m_oInsertHyperlinks->GetValue();
+				else
+					ptr->fInsertHyperlinks = true;
 
 				if (m_oInsertRows.IsInit())
-					ptr->fInsertRows = m_oInsertRows->GetValue();
+					ptr->fInsertRows = !m_oInsertRows->GetValue();
+				else
+					ptr->fInsertRows = true;
 
 				if (m_oObjects.IsInit())
-					ptr->fObjects = m_oObjects->GetValue();
+					ptr->fObjects = !m_oObjects->GetValue();
+				else
+					ptr->fObjects = true;
 
 				if (m_oPivotTables.IsInit())
-					ptr->fPivotTables = m_oPivotTables->GetValue();
+					ptr->fPivotTables = !m_oPivotTables->GetValue();
+				else
+					ptr->fPivotTables = true;
 
 				if (m_oScenarios.IsInit())
-					ptr->fScenarios = m_oScenarios->GetValue();
+					ptr->fScenarios = !m_oScenarios->GetValue();
+				else
+					ptr->fScenarios = true;
 
 				if (m_oSelectLockedCells.IsInit())
-					ptr->fSelLockedCells = m_oSelectLockedCells->GetValue();
+					ptr->fSelLockedCells = !m_oSelectLockedCells->GetValue();
+				else
+					ptr->fSelLockedCells = true;
 
 				if (m_oSelectUnlockedCells.IsInit())
-					ptr->fSelUnlockedCells = m_oSelectUnlockedCells->GetValue();
+					ptr->fSelUnlockedCells = !m_oSelectUnlockedCells->GetValue();
+				else
+					ptr->fSelUnlockedCells = true;
 
 				if (m_oSheet.IsInit())
 					ptr->fLocked = m_oSheet->GetValue();
+				else
+					ptr->fLocked = false;
 
 				if (m_oSort.IsInit())
-					ptr->fSort = m_oSort->GetValue();
+					ptr->fSort = !m_oSort->GetValue();
+				else
+					ptr->fSort = true;
 
 				return castedPtr;
 			}

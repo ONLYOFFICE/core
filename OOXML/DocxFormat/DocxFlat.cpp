@@ -159,11 +159,24 @@ namespace OOX
 			}
 			else if (L"w:docSuppData" == sName && !oReader.IsEmptyNode())
 			{
-				m_oDocSuppData = new OOX::Logic::CDocSuppData(WritingElement::m_pMainDocument);
-				m_oDocSuppData->fromXML(oReader);
-				
-				ParsingSuppData();
+				//m_oDocSuppData = new OOX::Logic::CDocSuppData(WritingElement::m_pMainDocument);
+				//m_oDocSuppData->fromXML(oReader);
+				//
+				//ParsingSuppData();
 			}
+			//CustomDocumentProperties
+		}
+
+		if (!m_sCompatibilityMode.IsInit() && m_pCore.IsInit() && (m_pCore->m_sVersion.IsInit()))
+		{
+			if (false == m_pSettings.IsInit()) m_pSettings = new CSettings(this);
+			if (m_pSettings->m_oCompat.IsInit()) m_pSettings->m_oCompat.Init();
+
+			Settings::CCompatSetting* pSett = new Settings::CCompatSetting();
+			pSett->m_sName = L"compatibilityMode";
+			pSett->m_sUri = L"http://schemas.microsoft.com/office/word";
+			pSett->m_sVal = m_pCore->m_sVersion;
+			m_pSettings->m_oCompat->m_arrCompatSettings.push_back(pSett);
 		}
 
 		if ((m_oDocSuppData.IsInit()) && (m_oDocSuppData->m_oBinData.IsInit()) && (m_pDocument.IsInit()))

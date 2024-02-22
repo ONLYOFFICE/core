@@ -824,7 +824,7 @@ namespace OOX
 
 			writer.WriteString(L"<futureMetadata");
 				WritingStringNullableAttrEncodeXmlString2(L"name", m_oName);
-				writer.WriteString(L" count=\"" + std::to_wstring(m_arrItems.size()) + L"\">");
+				writer.WriteString(L" count=\"" + std::to_wstring(m_arrItems.size()));
 			writer.WriteString(L">");
 
 			for (size_t i = 0; i < m_arrItems.size(); ++i)

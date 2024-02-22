@@ -98,6 +98,8 @@ namespace OOX
 		nullable<CApp>					m_pApp;
 		nullable<CCore>					m_pCore;
 //-----------------------------------------------------------
+		nullable_string					m_sCompatibilityMode;
+
 		std::map<std::wstring, NSCommon::smart_ptr<OOX::File>> m_mapImages;
 		std::map<std::wstring, NSCommon::smart_ptr<OOX::File>> m_mapOleData;
 

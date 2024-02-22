@@ -1274,7 +1274,7 @@ int main(int argc, char* argv[])
 						{
 							nPathLength = READ_INT(pAnnots + i);
 							i += 4;
-							std::cout << "font-actual:" << std::string((char*)(pAnnots + i), nPathLength) << "; ";
+							std::cout << "; font-actual:" << std::string((char*)(pAnnots + i), nPathLength) << "; ";
 							i += nPathLength;
 						}
 
@@ -1294,8 +1294,18 @@ int main(int argc, char* argv[])
 
 						nPathLength = READ_INT(pAnnots + i);
 						i += 4;
-						std::cout << "font-family:" << std::string((char*)(pAnnots + i), nPathLength) << "; ";
+						std::string sFontName((char*)(pAnnots + i), nPathLength);
+						std::cout << "font-family:" << sFontName << "; ";
 						i += nPathLength;
+
+						BYTE* pFont = GetFontBinary(pGrFile, (char*)sFontName.c_str());
+						if (pFont)
+						{
+							std::cout << "FIND; ";
+							free(pFont);
+						}
+						else
+							std::cout << "NO; ";
 
 						nPathLength = READ_INT(pAnnots + i);
 						i += 4;

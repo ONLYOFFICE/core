@@ -327,7 +327,7 @@ private:
 class CAnnotMarkup : public CAnnot
 {
 public:
-	void SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList);
+	std::map<std::wstring, std::wstring> SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList);
 protected:
 	CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
 	virtual ~CAnnotMarkup();

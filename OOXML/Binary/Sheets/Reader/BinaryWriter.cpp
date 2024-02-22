@@ -3809,7 +3809,7 @@ void BinaryWorkbookTableWriter::WriteMdx(OOX::Spreadsheet::CMdx* pMdx)
 	}
 	if (pMdx->m_oF.IsInit())
 	{
-		int nCurPos = m_oBcw.WriteItemStart(c_oSer_MdxMetadata::NameIndex);
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_MdxMetadata::FunctionTag);
 		m_oBcw.m_oStream.WriteBYTE(pMdx->m_oF->GetValue());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}

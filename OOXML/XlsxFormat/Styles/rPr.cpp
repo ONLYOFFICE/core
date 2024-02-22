@@ -827,6 +827,10 @@ namespace OOX
 
 			if ( !oReader.IsEmptyNode() )
 				oReader.ReadTillEnd();
+            if(!m_oUnderline.IsInit())
+              {
+                m_oUnderline.Init();
+              }
 		}
 		std::wstring CUnderline::toXML() const
 		{

@@ -385,7 +385,7 @@ namespace OOX
 		void CWorksheet::PrepareAfterRead()
 		{
 			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
-			if (!xlsb || ((xlsb) && (xlsb->m_bWriteToXlsb)))
+            if (!xlsb || !xlsb->m_bWriteToXlsb)
 			{
 				PrepareComments(m_pComments, m_pThreadedComments, m_oLegacyDrawing.GetPointer());
 			}

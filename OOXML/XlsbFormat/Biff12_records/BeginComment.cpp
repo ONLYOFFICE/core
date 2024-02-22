@@ -59,10 +59,18 @@ namespace XLSB
 
 	void BeginComment::writeFields(XLS::CFRecord& record)
 	{
+        if(!guid.empty())
+        {
 		_GUID_          guid_;
 		STR::bstr2guid(guid, guid_);
 
 		record << iauthor << rfx << guid_;
+        }
+        else
+        {
+            record << iauthor << rfx;
+            record.reserveNunBytes(16);
+        }
 	}
 
 } // namespace XLSB

@@ -1849,7 +1849,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		if ( oReader.IsEmptyNode() )
 			return;
 	}
-	XLS::BaseObjectPtr CFieldItem::toBin()
+	XLS::BaseObjectPtr CFieldItem::toBin()// fix name init
 	{
 		auto ptr1(new XLSB::SXVI);
 		XLS::BaseObjectPtr objectPtr(ptr1);
@@ -1870,7 +1870,14 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		if(m_oMissing.IsInit())
 			ptr->fMissing = m_oMissing.get();
 		if(m_oUserCaption.IsInit())
+		{
 			ptr->displayName = m_oUserCaption.get();
+			ptr->fDisplayName = true;
+		}
+		else
+		{
+			ptr->fDisplayName = false;
+		}
 		if(m_oCharacter.IsInit())
 			ptr->fOlapFilterSelected = m_oCharacter.get();
 		if(m_oHideDetails.IsInit())
@@ -4184,66 +4191,53 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		ptr->m_BrtBeginPCDFAtbl = writeAttributes();
 		for(auto i:m_arrItems)
 		{
-			auto valueBool = static_cast<CPivotBooleanValue*>(i);
-			if(valueBool)
+            
+            if(i->getType() == et_x_PivotBooleanValue)
 			{
-				XLS::BaseObjectPtr element= valueBool->toBin();
-				ptr->m_arSource.push_back(parsePCDI(element));
+				auto valueBool = static_cast<CPivotBooleanValue*>(i);
+				XLS::BaseObjectPtr element = valueBool->toBin();
+				ptr->m_arSource.push_back(element);
 				continue;
 			}
-			auto noVal = static_cast<CPivotNoValue*>(i);
-			if(noVal)
+            else if(i->getType() == et_x_PivotNoValue)
 			{
+				auto noVal = static_cast<CPivotNoValue*>(i);
 				XLS::BaseObjectPtr element = noVal->toBin();
-				ptr->m_arSource.push_back(parsePCDI(element));
+				ptr->m_arSource.push_back(element);
 				continue;
 			}
-			auto numVal = static_cast<CPivotNumericValue*>(i);
-			if(numVal)
+            else if(i->getType() == et_x_PivotNumericValue)
 			{
+				auto numVal = static_cast<CPivotNumericValue*>(i);
 				XLS::BaseObjectPtr element = numVal->toBin();
-				ptr->m_arSource.push_back(parsePCDI(element));
+				ptr->m_arSource.push_back(element);
 				continue;
 			}
-			auto charVal = static_cast<CPivotCharacterValue*>(i);
-			if(charVal)
+            else if(i->getType() == et_x_PivotCharacterValue)
 			{
+				auto charVal = static_cast<CPivotCharacterValue*>(i);
 				XLS::BaseObjectPtr element = charVal->toBin();
-				ptr->m_arSource.push_back(parsePCDI(element));
+				ptr->m_arSource.push_back(element);
 				continue;
 			}
-			auto dateValue = static_cast<CPivotDateTimeValue*>(i);
-			if(dateValue)
+            else if(i->getType() == et_x_PivotDateTimeValue)
 			{
+				auto dateValue = static_cast<CPivotDateTimeValue*>(i);
 				XLS::BaseObjectPtr element = dateValue->toBin();
-				ptr->m_arSource.push_back(parsePCDI(element));
+				ptr->m_arSource.push_back(element);
 				continue;
 			}
-			auto errorVal = static_cast<CPivotErrorValue*>(i);
-			if(errorVal)
+            else if(i->getType() == et_x_PivotErrorValue)
 			{
+				auto errorVal = static_cast<CPivotErrorValue*>(i);
 				XLS::BaseObjectPtr element = errorVal->toBin();
-				ptr->m_arSource.push_back(parsePCDI(element));
+				ptr->m_arSource.push_back(element);
 				continue;
 			}
 		}
 		return objectPtr;
 	}
-	XLS::BaseObjectPtr CSharedItems::parsePCDI(XLS::BaseObjectPtr object)
-	{
-		if(object->get_type() == XLS::typePCDI)
-		{
-			auto ptr1(new XLSB::PCDI);
-			ptr1->m_source = object;
-			return XLS::BaseObjectPtr{ptr1};
-		}
-		else if(object->get_type() == XLS::typePCDIA)
-		{
-			auto ptr1(new XLSB::PCDIA);
-			ptr1->m_source = object;
-			return XLS::BaseObjectPtr{ptr1};
-		}
-	}
+
 	XLS::BaseObjectPtr CSharedItems::writeAttributes()
 	{
 		auto ptr(new XLSB::BeginPCDFAtbl);
@@ -4960,6 +4954,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		if(m_oCalculated.IsInit() || m_oUnused.IsInit() || m_oCount.IsInit() || !m_arrItems.empty() || m_oCaption.IsInit())
 		{
 			auto ptr(new XLSB::PCDIAString);
+			auto ptr1(new XLSB::PCDIA);
+            ptr1->m_source = XLS::BaseObjectPtr{ptr1};
 			XLS::BaseObjectPtr objectPtr(ptr);
 			if(m_oCaption.IsInit())
 				ptr->info.stCaption = m_oCaption.get();
@@ -4976,7 +4972,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		else
 		{
 			auto ptr(new XLSB::PCDIString);
-			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::PCDI);
+            ptr1->m_source = XLS::BaseObjectPtr{ptr};
+			XLS::BaseObjectPtr objectPtr(ptr1);
 			if(m_oValue.IsInit())
 				ptr->st = m_oValue.get();
 			if(m_oBold.IsInit())
@@ -5128,7 +5126,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		if(m_oCalculated.IsInit() || m_oUnused.IsInit() || m_oCount.IsInit() || !m_arrItems.empty() || m_oCaption.IsInit())
 		{
 			auto ptr(new XLSB::PCDIAError);
-			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::PCDIA);
+            ptr1->m_source = XLS::BaseObjectPtr{ptr};
+			XLS::BaseObjectPtr objectPtr(ptr1);
 			if(m_oValue.IsInit())
 			{
 				if (m_oValue == L"#NULL!") ptr->err = 0x00;
@@ -5155,7 +5155,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		else
 		{
 			auto ptr(new XLSB::PCDIError);
-			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::PCDI);
+            ptr1->m_source = XLS::BaseObjectPtr{ptr};
+			XLS::BaseObjectPtr objectPtr(ptr1);
 			if(m_oValue.IsInit())
 			{
 				if (m_oValue == L"#NULL!") ptr->err = 0x00;
@@ -5338,7 +5340,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		if(m_oCalculated.IsInit() || m_oUnused.IsInit() || m_oCount.IsInit() || !m_arrItems.empty() || m_oCaption.IsInit())
 		{
 			auto ptr(new XLSB::PCDIANumber);
-			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::PCDIA);
+            ptr1->m_source = XLS::BaseObjectPtr{ptr};
+			XLS::BaseObjectPtr objectPtr(ptr1);
 			if(m_oCaption.IsInit())
 				ptr->info.stCaption = m_oCaption.get();
 			if(m_oCalculated.IsInit())
@@ -5354,7 +5358,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		else
 		{
 			auto ptr(new XLSB::PCDINumber);
-			XLS::BaseObjectPtr objectPtr(ptr);
+            auto ptr1(new XLSB::PCDI);
+            ptr1->m_source = XLS::BaseObjectPtr{ptr};
+			XLS::BaseObjectPtr objectPtr(ptr1);
 			if(m_oValue.IsInit())
 				ptr->xnum.data.value = m_oValue.get();
 			if(m_oBold.IsInit())
@@ -5488,7 +5494,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		if(m_oCalculated.IsInit() || m_oUnused.IsInit() || m_oCount.IsInit() || !m_arrItems.empty() || m_oCaption.IsInit())
 		{
 			auto ptr(new XLSB::PCDIADatetime);
-			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::PCDIA);
+            ptr1->m_source = XLS::BaseObjectPtr{ptr};
+			XLS::BaseObjectPtr objectPtr(ptr1);
 			if(m_oCaption.IsInit())
 				ptr->info.stCaption = m_oCaption.get();
 			if(m_oCalculated.IsInit())
@@ -5504,7 +5512,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		else
 		{
 			auto ptr(new XLSB::PCDIDatetime);
-			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::PCDI);
+            ptr1->m_source = XLS::BaseObjectPtr{ptr};
+			XLS::BaseObjectPtr objectPtr(ptr1);
 			if(m_oValue.IsInit())
 				ptr->datetime.fromString(m_oValue->GetValue());
 
@@ -5604,7 +5614,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		if(m_oCalculated.IsInit() || m_oUnused.IsInit() || m_oCount.IsInit() || !m_arrItems.empty() || m_oCaption.IsInit())
 		{
 			auto ptr(new XLSB::PCDIABoolean);
-			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::PCDIA);
+            ptr1->m_source = XLS::BaseObjectPtr{ptr};
+			XLS::BaseObjectPtr objectPtr(ptr1);
 			if(m_oValue.IsInit())
 				ptr->f = m_oValue.get();
 			if(m_oCalculated.IsInit())
@@ -5622,7 +5634,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		else
 		{
 			auto ptr(new XLSB::PCDIBoolean);
-			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::PCDI);
+            ptr1->m_source = XLS::BaseObjectPtr{ptr};
+			XLS::BaseObjectPtr objectPtr(ptr1);
 			if(m_oValue.IsInit())
 				ptr->f = m_oValue.get();
 			return objectPtr;
@@ -5738,7 +5752,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			|| m_oBackColor.IsInit() || m_oForeColor.IsInit())
 		{
 			auto ptr(new XLSB::PCDIMissing);
-			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::PCDI);
+            ptr1->m_source = XLS::BaseObjectPtr{ptr};
+			XLS::BaseObjectPtr objectPtr(ptr1);
 			if(m_oBold.IsInit())
 				ptr->sxvcellextra->fSrvFmtBold = m_oBold.get();
 			if(m_oItalic.IsInit())
@@ -5758,7 +5774,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		else
 		{
 			auto ptr(new XLSB::PCDIAMissing);
-			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::PCDIA);
+            ptr1->m_source = XLS::BaseObjectPtr{ptr};
+			XLS::BaseObjectPtr objectPtr(ptr1);
 			if(m_oCaption.IsInit())
 				ptr->info.stCaption = m_oCaption.get();
 			if(m_oCalculated.IsInit())
@@ -6822,51 +6840,58 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		{
 			auto ptrPCDIDT(new XLSB::PCDIDT);
 
-			auto boolValue = static_cast<CPivotBooleanValue*>(i);
-			if(boolValue)
+
+			if(i->getType() == et_x_PivotBooleanValue)
 			{
+                auto boolValue = static_cast<CPivotBooleanValue*>(i);
 				ptrPCDIDT->m_source =  boolValue->toBin();
 				ptr1->m_arPCDIDT.push_back(XLS::BaseObjectPtr{ptrPCDIDT});
 				continue;
 			}
-			auto dataValue = static_cast<CPivotDateTimeValue*>(i);
-			if(dataValue)
+			
+			else if(i->getType() == et_x_PivotDateTimeValue)
 			{
+				auto dataValue = static_cast<CPivotDateTimeValue*>(i);
 				ptrPCDIDT->m_source =  dataValue->toBin();
 				ptr1->m_arPCDIDT.push_back(XLS::BaseObjectPtr{ptrPCDIDT});
 				continue;
 			}
-			auto errorValue = static_cast<CPivotErrorValue*>(i);
-			if(errorValue)
+			
+			else if(i->getType() == et_x_PivotErrorValue)
 			{
+				auto errorValue = static_cast<CPivotErrorValue*>(i);
 				ptrPCDIDT->m_source =  errorValue->toBin();
 				ptr1->m_arPCDIDT.push_back(XLS::BaseObjectPtr{ptrPCDIDT});
 				continue;
 			}
-			auto noValue = static_cast<CPivotNoValue*>(i);
-			if(noValue)
+			
+			else if(i->getType() == et_x_PivotNoValue)
 			{
+				auto noValue = static_cast<CPivotNoValue*>(i);
 				ptrPCDIDT->m_source =  noValue->toBin();
 				ptr1->m_arPCDIDT.push_back(XLS::BaseObjectPtr{ptrPCDIDT});
 				continue;
 			}
-			auto numValue = static_cast<CPivotNumericValue*>(i);
-			if(numValue)
+			
+			else if(i->getType() == et_x_PivotNumericValue)
 			{
+				auto numValue = static_cast<CPivotNumericValue*>(i);
 				ptrPCDIDT->m_source =  numValue->toBin();
 				ptr1->m_arPCDIDT.push_back(XLS::BaseObjectPtr{ptrPCDIDT});
 				continue;
 			}
-			auto charValue = static_cast<CPivotCharacterValue*>(i);
-			if(charValue)
+			
+			else if(i->getType() == et_x_PivotCharacterValue)
 			{
+				auto charValue = static_cast<CPivotCharacterValue*>(i);
 				ptrPCDIDT->m_source =  charValue->toBin();
 				ptr1->m_arPCDIDT.push_back(XLS::BaseObjectPtr{ptrPCDIDT});
 				continue;
 			}
-			auto itemIndex = static_cast<CSharedItemsIndex*>(i);
-			if(charValue)
+			
+			else if(i->getType() == et_x_SharedItemsIndex)
 			{
+				auto itemIndex = static_cast<CSharedItemsIndex*>(i);
 				ptrPCDIDT->m_source =  itemIndex->toBinItemIndex();
 				ptr1->m_arPCDIDT.push_back(XLS::BaseObjectPtr{ptrPCDIDT});
 				continue;

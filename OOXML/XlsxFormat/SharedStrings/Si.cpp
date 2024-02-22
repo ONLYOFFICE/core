@@ -139,15 +139,18 @@ namespace OOX
 			ptr->fRichStr = false;
 			for(auto i = 0; i < m_arrItems.size(); i++)
 			{
-				auto text = static_cast<CText*>(m_arrItems[i]);
-				if(text)
+				
+				
+				if(m_arrItems[i]->getType() == OOX::et_x_t)
 				{
+					auto text = static_cast<CText*>(m_arrItems[i]);
 					ptr->str = text->ToString();
 					continue;
 				}
-				auto crunPtr = static_cast<CRun*>(m_arrItems[i]);
-				if(crunPtr)
+				
+				if(m_arrItems[i]->getType() == OOX::et_x_r)
 				{
+					auto crunPtr = static_cast<CRun*>(m_arrItems[i]);
 					ptr->fRichStr = true;
 					USHORT ind = 0;
 					ptr->str = ptr->str.value() + crunPtr->toBin(ind);
@@ -155,6 +158,7 @@ namespace OOX
 					run.ifnt = ind;
 					run.ich = ptr->str.value().size();
 					ptr->rgsStrRun.push_back(run);
+					continue;
 				}
 				auto phonPtr = static_cast<CPhonetic*>(m_arrItems[i]);
 				if(phonPtr)

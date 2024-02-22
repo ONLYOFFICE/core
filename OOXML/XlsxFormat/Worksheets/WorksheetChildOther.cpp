@@ -55,6 +55,7 @@
 #include "../../XlsbFormat/Biff12_unions/DCON.h"
 #include "../../XlsbFormat/Biff12_records/BeginDCon.h"
 #include "../../XlsbFormat/Biff12_unions/DREFS.h"
+#include "../../XlsbFormat/Biff12_records/BeginDRefs.h"
 #include "../../XlsbFormat/Biff12_records/DRef.h"
 #include "../../XlsbFormat/Biff12_unions/CSVIEWS.h"
 #include "../../XlsbFormat/Biff12_unions/CSVIEW.h"
@@ -444,22 +445,22 @@ namespace OOX
 			XLS::BaseObjectPtr objPtr(ptr);
 
 			if(m_oLeft.IsInit())
-				ptr->xnumLeft.data.value = std::round(m_oLeft->GetValue() * 100) / 100;
+                ptr->xnumLeft.data.value = std::round(m_oLeft->GetValue()) / 100;
 
 			if(m_oTop.IsInit())
-				ptr->xnumTop.data.value = std::round(m_oTop->GetValue() * 100) / 100;
+                ptr->xnumTop.data.value = std::round(m_oTop->GetValue()) / 100;
 
 			if(m_oRight.IsInit())
-				ptr->xnumRight.data.value = std::round(m_oRight->GetValue() * 100) / 100;
+                ptr->xnumRight.data.value = std::round(m_oRight->GetValue()) / 100;
 
 			if(m_oBottom.IsInit())
-				ptr->xnumBottom.data.value = std::round(m_oBottom->GetValue() * 100) / 100;
+                ptr->xnumBottom.data.value = std::round(m_oBottom->GetValue()) / 100;
 
 			if(m_oHeader.IsInit())
-				ptr->xnumHeader.data.value = std::round(m_oHeader->GetValue() * 100) / 100;
+                ptr->xnumHeader.data.value = std::round(m_oHeader->GetValue()) / 100;
 
 			if(m_oFooter.IsInit())
-				ptr->xnumFooter.data.value = std::round(m_oFooter->GetValue() * 100) / 100;
+                ptr->xnumFooter.data.value = std::round(m_oFooter->GetValue()) / 100;
 
 			return objPtr;
 		}
@@ -571,6 +572,8 @@ namespace OOX
 
 			if (m_oCopies.IsInit())
 				ptr->iCopies = m_oCopies->m_eValue;
+			else
+				ptr->iCopies = 1;
 
 			if (m_oDraft.IsInit())
 				ptr->fDraft = m_oDraft->m_eValue;
@@ -580,37 +583,63 @@ namespace OOX
 
 			if (m_oFirstPageNumber.IsInit())
 				ptr->iPageStart = m_oFirstPageNumber->m_eValue;
+			else
+				ptr->iPageStart = 1;
 
 			if (m_oFitToHeight.IsInit())
 				ptr->iFitHeight = m_oFitToHeight->m_eValue;
+			else
+				ptr->iFitHeight = 1;
 
 			if (m_oFitToWidth.IsInit())
 				ptr->iFitWidth = m_oFitToWidth->m_eValue;
+			else
+				ptr->iFitWidth = 1;
 
 			if (m_oHorizontalDpi.IsInit())
 				ptr->iRes = m_oHorizontalDpi->m_eValue;
+			else
+				ptr->iRes = 600;
 
 			if (m_oRId.IsInit())
 				ptr->szRelID = m_oRId->GetValue();
 
-			if (m_oOrientation == SimpleTypes::EPageOrientation::pageorientLandscape)
+            if (m_oOrientation.IsInit() && m_oOrientation->GetValue() == SimpleTypes::EPageOrientation::pageorientLandscape)
+            {
+                ptr->fPortrait = false;
 				ptr->fLandscape = true;
-			else
+            }
+            else if(m_oOrientation.IsInit())
+            {
 				ptr->fLandscape = false;
+                ptr->fPortrait = true;
+            }
+            else
+            {
+                ptr->fPortrait = false;
+                ptr->fLandscape = false;
+                ptr->fNoOrient = true;
+            }
 
-			if ( m_oPageOrder == SimpleTypes::Spreadsheet::EPageOrder::pageorderOverThenDown)
+            if (m_oPageOrder.IsInit() && m_oPageOrder->GetValue() == SimpleTypes::Spreadsheet::EPageOrder::pageorderOverThenDown)
 				ptr->fLeftToRight = true;
 			else
 				ptr->fLeftToRight = false;
 
 			if (m_oPaperSize.IsInit())
 				ptr->iPaperSize = m_oPaperSize->m_eValue;
+			else
+				ptr->iPaperSize = 9;
 
 			if (m_oScale.IsInit())
 				ptr->iScale = m_oScale->m_eValue;
+			else
+				ptr->iScale = 100;
 
 			if (m_oUseFirstPageNumber.IsInit())
 				ptr->fUsePage = m_oUseFirstPageNumber->m_eValue;
+			else
+				ptr->fUsePage = true;
 
 			if (m_oVerticalDpi.IsInit())
 				ptr->iVRes = m_oVerticalDpi->m_eValue;
@@ -1342,8 +1371,6 @@ namespace OOX
 		}
 		XLS::BaseObjectPtr CSheetView::toBin()
 		{
-            //if(m_oView.IsInit() || m_oTopLeftCell.IsInit() || m_oTopLeftCell.IsInit())
-            //{
 				auto ptr(new XLSB::WSVIEW2);
 				XLS::BaseObjectPtr castedPtr(ptr);
 				auto pWsView(new XLSB::BeginWsView);
@@ -1382,13 +1409,13 @@ namespace OOX
 				else
 					pWsView->fDspRuler = false;
 				if (m_oShowWhiteSpace.IsInit())
-					pWsView->fWhitespaceHidden = m_oShowWhiteSpace->m_eValue;
+					pWsView->fWhitespaceHidden = !m_oShowWhiteSpace->m_eValue;
 				else
 					pWsView->fWhitespaceHidden = false;
 				if (m_oShowZeros.IsInit())
 					pWsView->fDspZerosRt = m_oShowZeros->m_eValue;
 				else
-					pWsView->fDspZerosRt = false;
+					pWsView->fDspZerosRt = true;
 				if (m_oTabSelected.IsInit())
 					pWsView->fSelected = m_oTabSelected->m_eValue;
 				else
@@ -1588,8 +1615,6 @@ namespace OOX
 		}
 		XLS::BaseObjectPtr CSheetViews::toBin()
 		{
-			auto view = m_arrItems.back();
-
 				auto castedPtr(new XLSB::WSVIEWS2);
 				XLS::BaseObjectPtr ptr(castedPtr);
 				for(auto i:m_arrItems)
@@ -1639,6 +1664,18 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		void CPageSetUpPr::toBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::WsProp*>(obj.get());
+			if(m_oAutoPageBreaks.IsInit())
+				ptr->fShowAutoBreaks = m_oAutoPageBreaks->GetValue();
+			else
+				ptr->fShowAutoBreaks = true;
+			if(m_oFitToPage.IsInit())
+				ptr->fFitToPage = m_oFitToPage->GetValue();
+			else
+				ptr->fFitToPage = false;
+		}
 		EElementType CPageSetUpPr::getType() const
 		{
 			return et_x_PageSetUpPr;
@@ -1649,7 +1686,7 @@ namespace OOX
 			if (ptr != nullptr)
 			{
 				m_oAutoPageBreaks = ptr->fShowAutoBreaks;
-				m_oFitToPage = ptr->fFitToPage;;
+				m_oFitToPage = ptr->fFitToPage;
 			}
 		}
 		void CPageSetUpPr::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -1692,6 +1729,26 @@ namespace OOX
 		void COutlinePr::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
+		}
+		void COutlinePr::toBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::WsProp*>(obj.get());
+			if(m_oApplyStyles.IsInit())
+				ptr->fApplyStyles = m_oApplyStyles->GetValue();
+			else
+				ptr->fApplyStyles = false;
+			if(m_oShowOutlineSymbols.IsInit())
+				ptr->fShowOutlineSymbols = m_oShowOutlineSymbols->GetValue();
+			else
+				ptr->fShowOutlineSymbols = true;
+			if(m_oSummaryBelow.IsInit())
+				ptr->fRowSumsBelow = m_oSummaryBelow->GetValue();
+			else
+				ptr->fRowSumsBelow = true;
+			if(m_oSummaryRight.IsInit())
+				ptr->fColSumsRight = m_oSummaryRight->GetValue();
+			else
+				ptr->fColSumsRight = true;
 		}
 		EElementType COutlinePr::getType() const
 		{
@@ -1782,33 +1839,65 @@ namespace OOX
 		}
 		XLS::BaseObjectPtr CSheetPr::toBin()
 		{
-			XLS::BaseObjectPtr objectPtr;
-
-			if(m_oEnableFormatConditionsCalculation.IsInit() || m_oSyncHorizontal.IsInit() || m_oSyncHorizontal.IsInit() || m_oTransitionEvaluation.IsInit())
-			{
-				auto ptr(new XLSB::WsProp);
-				objectPtr = XLS::BaseObjectPtr{ptr};
-
-				if(m_oCodeName.IsInit())
-					ptr->strName.value = m_oCodeName.get();
-				else
-					ptr->strName.value = L"";
-
-				ptr->fCondFmtCalc = m_oEnableFormatConditionsCalculation->GetValue();
-				ptr->fFilterMode = m_oFilterMode->GetValue();
-				ptr->fPublish = m_oPublished->GetValue();
-				ptr->fSyncHoriz = m_oSyncHorizontal->GetValue();
-				ptr->fSyncVert = m_oSyncVertical->GetValue();
-				ptr->fAltFormulaEntry = m_oTransitionEntry->GetValue();
-				ptr->fAltExprEval = m_oTransitionEvaluation->GetValue();
-
-				if (m_oSyncRef.IsInit())
-					ptr->syncRef = m_oSyncRef.get();
-				if(m_oTabColor.IsInit())
-					ptr->brtcolorTab = m_oTabColor->toColor();
-			}
-
-			return objectPtr;
+            auto ptr(new XLSB::WsProp);
+            XLS::BaseObjectPtr objectPtr(ptr);
+            if(m_oCodeName.IsInit())
+                ptr->strName.value = m_oCodeName.get();
+            else
+                ptr->strName.value = L"";
+            if(m_oEnableFormatConditionsCalculation.IsInit())
+                ptr->fCondFmtCalc = m_oEnableFormatConditionsCalculation->GetValue();
+            if(m_oFilterMode.IsInit())
+                ptr->fFilterMode = m_oFilterMode->GetValue();
+            else
+                ptr->fFilterMode = false;
+            if(m_oPublished.IsInit())
+                ptr->fPublish = m_oPublished->GetValue();
+            else
+                ptr->fPublish = true;
+            if(m_oSyncHorizontal.IsInit())
+                ptr->fSyncHoriz = m_oSyncHorizontal->GetValue();
+            else
+                ptr->fSyncHoriz = false;
+            if(m_oSyncVertical.IsInit())
+                ptr->fSyncVert = m_oSyncVertical->GetValue();
+            else
+                ptr->fSyncVert = false;
+            if(m_oTransitionEntry.IsInit())
+                ptr->fAltFormulaEntry = m_oTransitionEntry->GetValue();
+            else
+                ptr->fAltFormulaEntry = false;
+            if(m_oTransitionEvaluation.IsInit())
+                ptr->fAltExprEval = m_oTransitionEvaluation->GetValue();
+            else
+                ptr->fAltExprEval = false;
+            if (m_oSyncRef.IsInit())
+                ptr->syncRef = m_oSyncRef.get();
+            else
+                ptr->syncRef = L"";
+            if(m_oTabColor.IsInit())
+                ptr->brtcolorTab = m_oTabColor->toColor();
+            else
+                ptr->brtcolorTab = m_oTabColor->GetDefaultColor();
+            if(m_oPageSetUpPr.IsInit())
+                m_oPageSetUpPr->toBin(objectPtr);
+            else
+            {
+                ptr->fFitToPage = false;
+                ptr->fShowAutoBreaks = true;
+            }
+			if(m_oOutlinePr.IsInit())
+                m_oOutlinePr->toBin(objectPtr);
+            else
+            {
+                ptr->fApplyStyles = false;
+                ptr->fColSumsRight = true;
+                ptr->fRowSumsBelow = true;
+                ptr->fShowOutlineSymbols = true;
+            }
+            ptr->fDialog = false;
+            ptr->fCondFmtCalc = false;
+            return objectPtr;
 		}
 		XLS::BaseObjectPtr CSheetPr::toBinCs()
 		{
@@ -2571,54 +2660,88 @@ namespace OOX
 
 				if (m_oPassword.IsInit())
 					ptr->protpwd = std::stoul(m_oPassword.get());
+				else	
+					ptr->protpwd = 0;
 
 				if (m_oAutoFilter.IsInit())
-					ptr->fAutoFilter = m_oAutoFilter->GetValue();
+					ptr->fAutoFilter = !m_oAutoFilter->GetValue();
+				else
+					ptr->fAutoFilter = true;
 
 				if (m_oDeleteColumns.IsInit())
-					ptr->fDeleteColumns = m_oDeleteColumns->GetValue();
+					ptr->fDeleteColumns = !m_oDeleteColumns->GetValue();
+				else
+					ptr->fDeleteColumns= true;
 
 				if (m_oDeleteRows.IsInit())
-					ptr->fDeleteRows = m_oDeleteRows->GetValue();
+					ptr->fDeleteRows = !m_oDeleteRows->GetValue();
+				else
+					ptr->fDeleteRows = true;
 
 				if (m_oFormatCells.IsInit())
-					ptr->fFormatCells = m_oFormatCells->GetValue();
+					ptr->fFormatCells = !m_oFormatCells->GetValue();
+				else
+					ptr->fFormatCells = true;
 
 				if (m_oFormatColumns.IsInit())
-					ptr->fFormatColumns = m_oFormatColumns->GetValue();
+					ptr->fFormatColumns = !m_oFormatColumns->GetValue();
+				else
+					ptr->fFormatColumns = true;
 
 				if (m_oFormatRows.IsInit())
-					ptr->fFormatRows = m_oFormatRows->GetValue();
+					ptr->fFormatRows = !m_oFormatRows->GetValue();
+				else
+					ptr->fFormatRows = true;
 
 				if (m_oInsertColumns.IsInit())
-					ptr->fInsertColumns = m_oInsertColumns->GetValue();
+					ptr->fInsertColumns = !m_oInsertColumns->GetValue();
+				else
+					ptr->fInsertColumns = true;
 
 				if (m_oInsertHyperlinks.IsInit())
-					ptr->fInsertHyperlinks = m_oInsertHyperlinks->GetValue();
+					ptr->fInsertHyperlinks = !m_oInsertHyperlinks->GetValue();
+				else
+					ptr->fInsertHyperlinks = true;
 
 				if (m_oInsertRows.IsInit())
-					ptr->fInsertRows = m_oInsertRows->GetValue();
+					ptr->fInsertRows = !m_oInsertRows->GetValue();
+				else
+					ptr->fInsertRows = true;
 
 				if (m_oObjects.IsInit())
-					ptr->fObjects = m_oObjects->GetValue();
+					ptr->fObjects = !m_oObjects->GetValue();
+				else
+					ptr->fObjects = true;
 
 				if (m_oPivotTables.IsInit())
-					ptr->fPivotTables = m_oPivotTables->GetValue();
+					ptr->fPivotTables = !m_oPivotTables->GetValue();
+				else
+					ptr->fPivotTables = true;
 
 				if (m_oScenarios.IsInit())
-					ptr->fScenarios = m_oScenarios->GetValue();
+					ptr->fScenarios = !m_oScenarios->GetValue();
+				else
+					ptr->fScenarios = true;
 
 				if (m_oSelectLockedCells.IsInit())
-					ptr->fSelLockedCells = m_oSelectLockedCells->GetValue();
+					ptr->fSelLockedCells = !m_oSelectLockedCells->GetValue();
+				else
+					ptr->fSelLockedCells = true;
 
 				if (m_oSelectUnlockedCells.IsInit())
-					ptr->fSelUnlockedCells = m_oSelectUnlockedCells->GetValue();
+					ptr->fSelUnlockedCells = !m_oSelectUnlockedCells->GetValue();
+				else
+					ptr->fSelUnlockedCells = true;
 
 				if (m_oSheet.IsInit())
 					ptr->fLocked = m_oSheet->GetValue();
+				else
+					ptr->fLocked = false;
 
 				if (m_oSort.IsInit())
-					ptr->fSort = m_oSort->GetValue();
+					ptr->fSort = !m_oSort->GetValue();
+				else
+					ptr->fSort = true;
 
 				return castedPtr;
 			}
@@ -2648,53 +2771,85 @@ namespace OOX
 					ptr->ipdPasswordData.rgbSalt.cbLength = tempSize2;
 				}
 
-				if(m_oAutoFilter.IsInit())
-				ptr->fAutoFilter = m_oAutoFilter->GetValue();
+				if (m_oAutoFilter.IsInit())
+					ptr->fAutoFilter = !m_oAutoFilter->GetValue();
+				else
+					ptr->fAutoFilter = true;
 
 				if (m_oDeleteColumns.IsInit())
-					ptr->fDeleteColumns = m_oDeleteColumns->GetValue();
+					ptr->fDeleteColumns = !m_oDeleteColumns->GetValue();
+				else
+					ptr->fDeleteColumns= true;
 
 				if (m_oDeleteRows.IsInit())
-					ptr->fDeleteRows = m_oDeleteRows->GetValue();
+					ptr->fDeleteRows = !m_oDeleteRows->GetValue();
+				else
+					ptr->fDeleteRows = true;
 
 				if (m_oFormatCells.IsInit())
-					ptr->fFormatCells = m_oFormatCells->GetValue();
+					ptr->fFormatCells = !m_oFormatCells->GetValue();
+				else
+					ptr->fFormatCells = true;
 
 				if (m_oFormatColumns.IsInit())
-					ptr->fFormatColumns = m_oFormatColumns->GetValue();
+					ptr->fFormatColumns = !m_oFormatColumns->GetValue();
+				else
+					ptr->fFormatColumns = true;
 
 				if (m_oFormatRows.IsInit())
-					ptr->fFormatRows = m_oFormatRows->GetValue();
+					ptr->fFormatRows = !m_oFormatRows->GetValue();
+				else
+					ptr->fFormatRows = true;
 
 				if (m_oInsertColumns.IsInit())
-					ptr->fInsertColumns = m_oInsertColumns->GetValue();
+					ptr->fInsertColumns = !m_oInsertColumns->GetValue();
+				else
+					ptr->fInsertColumns = true;
 
 				if (m_oInsertHyperlinks.IsInit())
-					ptr->fInsertHyperlinks = m_oInsertHyperlinks->GetValue();
+					ptr->fInsertHyperlinks = !m_oInsertHyperlinks->GetValue();
+				else
+					ptr->fInsertHyperlinks = true;
 
 				if (m_oInsertRows.IsInit())
-					ptr->fInsertRows = m_oInsertRows->GetValue();
+					ptr->fInsertRows = !m_oInsertRows->GetValue();
+				else
+					ptr->fInsertRows = true;
 
 				if (m_oObjects.IsInit())
-					ptr->fObjects = m_oObjects->GetValue();
+					ptr->fObjects = !m_oObjects->GetValue();
+				else
+					ptr->fObjects = true;
 
 				if (m_oPivotTables.IsInit())
-					ptr->fPivotTables = m_oPivotTables->GetValue();
+					ptr->fPivotTables = !m_oPivotTables->GetValue();
+				else
+					ptr->fPivotTables = true;
 
 				if (m_oScenarios.IsInit())
-					ptr->fScenarios = m_oScenarios->GetValue();
+					ptr->fScenarios = !m_oScenarios->GetValue();
+				else
+					ptr->fScenarios = true;
 
 				if (m_oSelectLockedCells.IsInit())
-					ptr->fSelLockedCells = m_oSelectLockedCells->GetValue();
+					ptr->fSelLockedCells = !m_oSelectLockedCells->GetValue();
+				else
+					ptr->fSelLockedCells = true;
 
 				if (m_oSelectUnlockedCells.IsInit())
-					ptr->fSelUnlockedCells = m_oSelectUnlockedCells->GetValue();
+					ptr->fSelUnlockedCells = !m_oSelectUnlockedCells->GetValue();
+				else
+					ptr->fSelUnlockedCells = true;
 
 				if (m_oSheet.IsInit())
 					ptr->fLocked = m_oSheet->GetValue();
+				else
+					ptr->fLocked = false;
 
 				if (m_oSort.IsInit())
-					ptr->fSort = m_oSort->GetValue();
+					ptr->fSort = !m_oSort->GetValue();
+				else
+					ptr->fSort = true;
 
 				return castedPtr;
 			}
@@ -2919,12 +3074,18 @@ namespace OOX
 
 			if (m_oName.IsInit())
 				ptr->xstrName = m_oName.get();
-
+            else
+            {
+                ptr->fName = false;
+                ptr->fBuiltin = false;
+            }
 			if (m_oRef.IsInit())
 				ptr->rfx = m_oRef.get();
 
 			if (m_oSheet.IsInit())
 				ptr->xstrSheet = m_oSheet.get();
+            else
+                ptr->xstrSheet = L"";
 
 			return objectPtr;
 		}
@@ -3023,10 +3184,14 @@ namespace OOX
 		{
 			auto ptr(new XLSB::DREFS);
 			XLS::BaseObjectPtr objectPtr(ptr);
+            auto beginRefs(new XLSB::BeginDRefs);
+            ptr->m_BrtBeginDRefs = XLS::BaseObjectPtr{beginRefs};
+
 			for(auto i:m_arrItems)
 			{
 				ptr->m_arBrtDRef.push_back(i->toBin());
 			}
+            beginRefs->cdref = ptr->m_arBrtDRef.size();
 			return objectPtr;
 		}
 		EElementType CDataRefs::getType() const
@@ -3089,12 +3254,20 @@ namespace OOX
 
 			if(m_oFunction.IsInit())
 				beginPtr->iiftab = m_oFunction->GetValue();
+            else
+                beginPtr->iiftab = 0;
 			if(m_oFunction.IsInit())
 				beginPtr->fLinkConsol = m_oLink->GetValue();
+            else
+                beginPtr->fLinkConsol = false;
 			if(m_oFunction.IsInit())
 				beginPtr->fLeftCat = m_oStartLabels->GetValue();
+            else
+                beginPtr->fLeftCat = false;
 			if(m_oFunction.IsInit())
 				beginPtr->fTopCat = m_oTopLabels->GetValue();
+            else
+                beginPtr->fTopCat = false;
 
 			if(m_oDataRefs.IsInit())
 			{

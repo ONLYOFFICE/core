@@ -159,7 +159,7 @@ namespace NSCSS
 
 	bool CUnitMeasureConverter::GetValue(const std::wstring &wsValue, double &dValue, UnitMeasure &enUnitMeasure)
 	{
-		std::wregex oRegex(LR"((-?\.\d+|-?\d+(\.\d+)?)\s*(px|pt|cm|mm|in|pc|%|em|rem)?)");
+		std::wregex oRegex(LR"((-?\.\d+|-?\d+(\.\d+)?)\s*(px|pt|cm|mm|in|pc|%|em|rem|tw)?)");
 		std::wsmatch oMatches;
 
 		if(!std::regex_search(wsValue, oMatches, oRegex))
@@ -185,6 +185,8 @@ namespace NSCSS
 			enUnitMeasure = Em;
 		else if (L"rem" == oMatches[3])
 			enUnitMeasure = Rem;
+		else if (L"tw" == oMatches[3])
+			enUnitMeasure = Twips;
 		else
 			enUnitMeasure = None;
 		

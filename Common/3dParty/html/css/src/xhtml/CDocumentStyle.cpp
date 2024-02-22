@@ -6,9 +6,8 @@
 #include <algorithm>
 #include <list>
 
+#define DEFAULT_LINEHEIGHT 240
 #define LINEHEIGHTSCALE 10 // Значение LineHeight в OOXML должно быть в 10 раз больше чем указано в стиле
-
-#define DOUBLE_TO_INTW(dValue) std::to_wstring(static_cast<int>(dValue + 0.5))
 
 namespace NSCSS
 {
@@ -277,61 +276,40 @@ namespace NSCSS
 		std::wstring sInfValue;
 		sInfValue.reserve(64);
 
-		//TODO:: проверить Permission в Margin
-		if (!oStyle.m_oMargin.Empty() || !oStyle.m_oPadding.Empty() /*&& oStyle.m_oMargin.GetPermission()*/)
-		{
-			const double dLeftSide  = oStyle.m_oMargin.GetLeft() .ToDouble(NSCSS::Twips) + oStyle.m_oPadding.GetLeft() .ToDouble(NSCSS::Twips);
-			const double dRightSide = oStyle.m_oMargin.GetRight().ToDouble(NSCSS::Twips) + oStyle.m_oPadding.GetRight().ToDouble(NSCSS::Twips);
+//		if (!oStyle.m_oPadding.GetLeft().Empty() && !oStyle.m_oPadding.GetLeft().Zero())
+//			sInfValue += L"w:left=\""   + DOUBLE_TO_INTW(oStyle.m_oPadding.GetLeft().ToDouble(NSCSS::Twips)) + L"\" ";
 
-			sInfValue += L"w:left=\""  + DOUBLE_TO_INTW(dLeftSide) + L"\" ";
-			sInfValue += L"w:right=\"" + DOUBLE_TO_INTW(dRightSide) + L"\" ";
-		}
+//		if (!oStyle.m_oPadding.GetRight().Empty() && !oStyle.m_oPadding.GetRight().Zero())
+//			sInfValue += L"w:right=\""  + DOUBLE_TO_INTW(oStyle.m_oPadding.GetRight().ToDouble(NSCSS::Twips)) + L"\" ";
 
-		const double dIndent = oStyle.m_oText.GetIndent().ToDouble(NSCSS::Twips);
+		const int nIndent = oStyle.m_oText.GetIndent().ToInt(NSCSS::Twips);
 		
-		if (0. != dIndent)
-			sInfValue += L"w:firstLine=\"" + DOUBLE_TO_INTW(dIndent) + L"\" ";
+		if (0 != nIndent)
+			sInfValue += L"w:firstLine=\"" + std::to_wstring(nIndent) + L"\" ";
 
 		oXmlElement.AddPropertiesInP(PProperties::P_Ind, sInfValue);
 
 		std::wstring sSpacingValue;
 		sSpacingValue.reserve(128);
 
-		//TODO:: проверить Permission в Margin
-		if (!oStyle.m_oMargin.Empty() || !oStyle.m_oPadding.Empty()/*&& oStyle.m_oMargin.GetPermission()*/)
-		{
-			const double dSpacingBottom = oStyle.m_oMargin.GetBottom().ToDouble(NSCSS::Twips) + oStyle.m_oPadding.GetBottom().ToDouble(NSCSS::Twips);
-			const double dSpacingTop    = oStyle.m_oMargin.GetTop()   .ToDouble(NSCSS::Twips) + oStyle.m_oPadding.GetTop()   .ToDouble(NSCSS::Twips);;
-			
-			sSpacingValue += L" w:after=\""  + DOUBLE_TO_INTW(dSpacingBottom) + L"\" ";
-			sSpacingValue += L" w:before=\"" + DOUBLE_TO_INTW(dSpacingTop) + L"\" ";
-		}
-		else/* if (!oStyle.m_pBorder.Empty() || !oStyle.m_oMargin.GetPermission())*/
-			sSpacingValue += L"w:after=\"0\" w:before=\"0\"";
+//		if (!oStyle.m_oPadding.GetBottom().Empty() && !oStyle.m_oPadding.GetBottom().Zero())
+//			sSpacingValue += L"w:after=\""   + DOUBLE_TO_INTW(oStyle.m_oPadding.GetBottom().ToDouble(NSCSS::Twips)) + L"\" ";
 
-		std::wstring wsLineHeight;
-		
-		if (!oStyle.m_oFont.GetLineHeight().Empty())
-		{
-			double dLineHeight = oStyle.m_oFont.GetLineHeight().ToDouble(NSCSS::Twips) * LINEHEIGHTSCALE;
+//		if (!oStyle.m_oPadding.GetTop().Empty() && !oStyle.m_oPadding.GetTop().Zero())
+//			sSpacingValue += L"w:before=\""  + DOUBLE_TO_INTW(oStyle.m_oPadding.GetTop().ToDouble(NSCSS::Twips)) + L"\" ";
 
-//			if (NSCSS::None == oStyle.m_oFont.GetLineHeight().GetUnitMeasure())
-//				dLineHeight *= LINEHEIGHTCOEF;
-			
-			if (0. != dLineHeight)
-				wsLineHeight = DOUBLE_TO_INTW(dLineHeight);
-		}
-		
-		if (!wsLineHeight.empty())
-		{
-			sSpacingValue += L" w:line=\"" + wsLineHeight + L"\" w:lineRule=\"auto\"";
-		}
+//		else/* if (!oStyle.m_pBorder.Empty() || !oStyle.m_oMargin.GetPermission())*/
+//			sSpacingValue += L"w:after=\"0\" w:before=\"0\"";
+
+		if (!oStyle.m_oFont.GetLineHeight().Empty() && !oStyle.m_oFont.GetLineHeight().Zero())
+			sSpacingValue += L" w:line=\"" + std::to_wstring(oStyle.m_oFont.GetLineHeight().ToInt(NSCSS::Twips, DEFAULT_LINEHEIGHT)) + L"\" w:lineRule=\"auto\"";
+
 //		else if (!oStyle.m_oBorder.Empty())
 //		{
 //			sSpacingValue += L" w:line=\"" + std::to_wstring(static_cast<short int>(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Twips) * 2 * POINTCOEF + 0.5f)) + L"\" w:lineRule=\"auto\"";
 //		}
 		else if (!oStyle.m_oBorder.Empty())
-			sSpacingValue += L" w:line=\"240\" w:lineRule=\"auto\" ";
+			sSpacingValue += L" w:line=\"" + std::to_wstring(DEFAULT_LINEHEIGHT) + L"\" w:lineRule=\"auto\" ";
 
 		if (!sSpacingValue.empty())
 		{
@@ -443,7 +421,7 @@ namespace NSCSS
 			return;
 
 		if (!oStyle.m_oFont.GetSize().Empty())
-			oXmlElement.AddPropertiesInR(RProperties::R_Sz, DOUBLE_TO_INTW(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Point) * 2.)); // Значения шрифта увеличивает на 2
+			oXmlElement.AddPropertiesInR(RProperties::R_Sz, std::to_wstring(oStyle.m_oFont.GetSize().ToInt(NSCSS::Point) * 2.)); // Значения шрифта увеличивает на 2
 
 		if (oStyle.m_oText.GetDecoration().m_oLine.Underline())
 			oXmlElement.AddPropertiesInR(RProperties::R_U, (!oStyle.m_oText.GetDecoration().m_oStyle.Empty()) ? oStyle.m_oText.GetDecoration().m_oStyle.ToWString() : L"single");

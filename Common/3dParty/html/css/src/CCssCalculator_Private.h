@@ -25,14 +25,27 @@ namespace NSCSS
 		std::list<std::wstring> m_arFiles;
 
 		std::map<std::wstring, CElement*> m_mData;
+		
+		typedef struct
+		{
+			std::vector<std::wstring>            m_wsNames;
+			std::map<std::wstring, std::wstring> m_mData;
+		} TPageData;
+
+		std::vector<TPageData> m_arPageDatas;
 
 		std::map<StatistickElement, unsigned int> *m_mStatictics; // Количество повторений свойств id и style у селекторов
 
 		#ifdef CSS_CALCULATOR_WITH_XHTML
 		std::map<std::vector<CNode>, CCompiledStyle*> m_mUsedStyles;
+		
+		std::map<std::wstring, std::wstring> GetPageData(const std::wstring& wsPageName);
+		void SetPageData(NSProperties::CPage& oPage, const std::map<std::wstring, std::wstring>& mData, unsigned int unLevel, bool bHardMode = false);
 		#endif
 
 		std::wstring m_sEncoding;
+
+		void AddPageData(const std::wstring& wsPageName, const std::wstring& wsStyles);
 
 		void GetStylesheet(const KatanaStylesheet* oStylesheet);
 		void GetRule(const KatanaRule* oRule);
@@ -56,6 +69,8 @@ namespace NSCSS
 		#ifdef CSS_CALCULATOR_WITH_XHTML
 		CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors, const bool& bIsSettings = false, const UnitMeasure& unitMeasure = Point);
 		bool GetCompiledStyle(CCompiledStyle& oStyle, const std::vector<CNode> &arSelectors, const bool& bIsSettings = false, const UnitMeasure& unitMeasure = Point);
+
+		bool CalculatePageStyle(NSProperties::CPage& oPageData, const std::vector<CNode> &arSelectors);
 		#endif
 
 		void AddStyles(const std::string& sStyle);

@@ -37,6 +37,9 @@
 #define MAXCOLUMNSINTABLE 63
 #define MAXROWSINTABLE    32767
 
+#define DEFAULT_PAGE_WIDTH  12240 // Значение в Twips
+#define DEFAULT_PAGE_HEIGHT 15840 // Значение в Twips
+
 std::wstring rStyle = L" a area b strong bdo bdi big br center cite dfn em i var code kbd samp tt del s font img ins u mark q rt sup small sub svg input basefont button label data object noscript output abbr time ruby progress hgroup meter span acronym ";
 
 //struct CTree
@@ -113,6 +116,8 @@ public:
 	NSCSS::CCssCalculator m_oStylesCalculator; // Css калькулятор
 	NSCSS::CDocumentStyle m_oXmlStyle;         // Ooxml стиль
 
+	NSCSS::NSProperties::CPage m_oPageData; // Стили страницы
+
 	std::wstring m_sTmp;  // Temp папка
 	std::wstring m_sSrc;  // Директория источника
 	std::wstring m_sDst;  // Директория назначения
@@ -139,16 +144,17 @@ private:
 
 	std::vector<std::wstring>            m_arrImages;  // Картинки
 	std::map<std::wstring, std::wstring> m_mFootnotes; // Сноски
-
-	UINT m_unWidth;
-	UINT m_unHeight;
 public:
 
 	CHtmlFile2_Private() 
 		: m_nFootnoteId(1), m_nHyperlinkId(1), m_nCrossId(1), m_nNumberingId(1), 
-		  m_bInP(false), m_bWasPStyle(false), m_bWasSpace(false),
-		  m_unWidth(12240), m_unHeight(15840) // Размеры страницы указаны в Twips
-	{}
+		  m_bInP(false), m_bWasPStyle(false), m_bWasSpace(false)
+	{
+		m_oPageData.SetSize  (std::to_wstring(DEFAULT_PAGE_WIDTH) + L"tw " + std::to_wstring(DEFAULT_PAGE_HEIGHT) + L"tw", 0, true);
+		m_oPageData.SetMargin(L"720tw 720tw 720tw 720tw", 0, true);
+		m_oPageData.SetFooter(L"720tw", 0, true);
+		m_oPageData.SetHeader(L"720tw", 0, true);
+	}
 
 	~CHtmlFile2_Private()
 	{
@@ -329,7 +335,7 @@ public:
 		if(oParams && !oParams->m_sdocDefaults.empty())
 			m_oStylesXml += oParams->m_sdocDefaults;
 		else
-			m_oStylesXml += L"<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\" w:hint=\"default\"/><w:sz w:val=\"22\"/><w:szCs w:val=\"22\"/><w:lang w:val=\"ru-RU\" w:bidi=\"ar-SA\" w:eastAsia=\"en-US\"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"276\" w:after=\"200\"/></w:pPr></w:pPrDefault></w:docDefaults>";
+			m_oStylesXml += L"<w:rPrDefault><w:rPr><w:rFonts w:ascii=\"Arial\" w:eastAsia=\"Times New Roman\" w:hAnsi=\"Arial\" w:cs=\"Arial\"/></w:rPr></w:rPrDefault><w:pPrDefault/>";
 
 		// normal по умолчанию
 		if(oParams && !oParams->m_sNormal.empty())
@@ -384,7 +390,18 @@ public:
 
 		if (m_bInP)
 			m_oDocXml.WriteString(L"</w:p>");
-		m_oDocXml.WriteString(L"<w:sectPr w:rsidR=\"0007083F\" w:rsidRPr=\"0007083F\" w:rsidSect=\"0007612E\"><w:pgSz w:w=\"" + std::to_wstring(m_unWidth) + L"\" w:h=\""+ std::to_wstring(m_unHeight) +L"\"/><w:pgMar w:gutter=\"0\" w:footer=\"720\" w:header=\"720\" w:left=\"720\" w:bottom=\"720\" w:right=\"720\" w:top=\"720\"/><w:cols w:space=\"720\"/><w:docGrid w:linePitch=\"360\"/></w:sectPr></w:body></w:document>");
+
+		m_oDocXml.WriteString(L"<w:sectPr w:rsidR=\"0007083F\" w:rsidRPr=\"0007083F\" w:rsidSect=\"0007612E\">");
+		m_oDocXml.WriteString(L"<w:pgSz w:w=\"" + std::to_wstring(m_oPageData.GetWidth().ToInt(NSCSS::Twips)) + L"\" ");
+		m_oDocXml.WriteString(L" w:h=\"" + std::to_wstring(m_oPageData.GetHeight().ToInt(NSCSS::Twips)) + L"\"/>");
+		m_oDocXml.WriteString(L"<w:pgMar w:top=\"" + std::to_wstring(m_oPageData.GetMargin().GetTop().ToInt(NSCSS::Twips)) + L"\" ");
+		m_oDocXml.WriteString(L"w:right=\"" + std::to_wstring(m_oPageData.GetMargin().GetRight().ToInt(NSCSS::Twips)) + L"\" ");
+		m_oDocXml.WriteString(L"w:bottom=\"" + std::to_wstring(m_oPageData.GetMargin().GetBottom().ToInt(NSCSS::Twips)) + L"\" ");
+		m_oDocXml.WriteString(L"w:left=\"" + std::to_wstring(m_oPageData.GetMargin().GetLeft().ToInt(NSCSS::Twips)) + L"\" ");
+		m_oDocXml.WriteString(L"w:header=\"" + std::to_wstring(m_oPageData.GetHeader().ToInt(NSCSS::Twips)) + L"\" ");
+		m_oDocXml.WriteString(L"w:footer=\"" + std::to_wstring(m_oPageData.GetFooter().ToInt(NSCSS::Twips)) + L"\" ");
+		m_oDocXml.WriteString(L"w:gutter=\"0\"/><w:cols w:space=\"720\"/><w:docGrid w:linePitch=\"360\"/></w:sectPr></w:body></w:document>");
+		
 		NSFile::CFileBinary oDocumentWriter;
 		if (oDocumentWriter.CreateFileW(m_sDst + L"/word/document.xml"))
 		{
@@ -463,14 +480,14 @@ public:
 				sFileContent.replace(nFind, nFindEnd - nFind, "1.0");
 		}
 		std::wstring sRes = htmlToXhtml(sFileContent, bNeedConvert);
-		/*
-		NSFile::CFileBinary oWriter;
-		if (oWriter.CreateFileW(m_sTmp + L"/res.html"))
-		{
-			oWriter.WriteStringUTF8(sRes);
-			oWriter.CloseFile();
-		}
-		*/
+		
+//		NSFile::CFileBinary oWriter;
+//		if (oWriter.CreateFileW(m_sTmp + L"/res.html"))
+//		{
+//			oWriter.WriteStringUTF8(sRes);
+//			oWriter.CloseFile();
+//		}
+		
 		return m_oLightReader.FromString(sRes);
 	}
 
@@ -1047,6 +1064,8 @@ private:
 			// aside возможно использовать для сносок в epub
 			else if (sName == L"aside" || sName == L"div")
 			{
+				m_oStylesCalculator.CalculatePageStyle(m_oPageData, sSelectors);
+
 				int bMsoFootnote = 0;
 				std::wstring sFootnoteID;
 				while (m_oLightReader.MoveToNextAttribute())
@@ -1200,7 +1219,9 @@ private:
 	}
 
 	void readTr     (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, const NSCSS::CCompiledStyle& oTableStyle)
-	{	
+	{
+		const std::wstring wsName = m_oLightReader.GetName();
+
 		std::vector<CTc> mTable;
 		int nDeath = m_oLightReader.GetDepth();
 		int i = 1; // Строка
@@ -1230,8 +1251,16 @@ private:
 			int j = 1; // Столбец
 			oXml->WriteString(L"<w:tr>");
 
-			if (oTableStyle.m_oBorder.GetCollapse() == NSCSS::NSProperties::BorderCollapse::Separate)
-				oXml->WriteString(L"<w:trPr><w:tblCellSpacing w:w=\"15\" w:type=\"dxa\"/></w:trPr>");
+			std::wstring wsTrPr;
+
+			if (L"thead" == wsName)
+				wsTrPr += L"<w:tblHeader/>";
+
+			if (!bTableHasBorderAttribute &&  oTableStyle.m_oBorder.GetCollapse() == NSCSS::NSProperties::BorderCollapse::Separate)
+				wsTrPr += L"<w:tblCellSpacing w:w=\"15\" w:type=\"dxa\"/>";
+
+			if (!wsTrPr.empty())
+				oXml->WriteString(L"<w:trPr>" + wsTrPr + L"</w:trPr>");
 
 			do
 			{
@@ -1265,8 +1294,19 @@ private:
 				GetSubClass(oXml, sSelectors);
 				oXml->WriteString(L"<w:tc><w:tcPr>");
 
-				NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetCompiledStyle({sSelectors.back()}, true);
-				NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle({sSelectors.back()}, false);
+				std::vector<NSCSS::CNode> arNewSelectors;
+
+				for (std::vector<NSCSS::CNode>::const_iterator oIter = sSelectors.cbegin(); oIter < sSelectors.cend(); ++oIter)
+				{
+					if (L"table" == oIter->m_wsName)
+					{
+						arNewSelectors.insert(arNewSelectors.end(), oIter, sSelectors.cend());
+						break;
+					}
+				}
+
+				NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetCompiledStyle(arNewSelectors, true);
+				NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(arNewSelectors, false);
 
 				NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);
 
@@ -1299,6 +1339,25 @@ private:
 					wsTcPr += L"<w:vAlign w:val=\"center\"/>";
 				else
 					wsTcPr += L"<w:vAlign w:val=\"" + wsVerticalAlign + L"\"/>";
+
+				if (!oStyle.m_oPadding.Empty())
+				{
+					const int nTopPadding    = std::max(oTableStyle.m_oPadding.GetTop()   .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT),
+					                                    oStyle     .m_oPadding.GetTop()   .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
+					const int nLeftPadding   = std::max(oTableStyle.m_oPadding.GetLeft()  .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ),
+					                                    oStyle     .m_oPadding.GetLeft()  .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ));
+					const int nBottomPadding = std::max(oTableStyle.m_oPadding.GetBottom().ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT),
+					                                    oStyle     .m_oPadding.GetBottom().ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
+					const int nRightPadding  = std::max(oTableStyle.m_oPadding.GetRight() .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ),
+					                                    oStyle     .m_oPadding.GetRight() .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ));
+		
+					wsTcPr += L"<w:tcMar>"
+							       "<w:top w:w=\""    + std::to_wstring(nTopPadding)    + L"\" w:type=\"dxa\"/>"
+							       "<w:left w:w=\""   + std::to_wstring(nLeftPadding)   + L"\" w:type=\"dxa\"/>"
+							       "<w:bottom w:w=\"" + std::to_wstring(nBottomPadding) + L"\" w:type=\"dxa\"/>"
+							       "<w:right w:w=\""  + std::to_wstring(nRightPadding)  + L"\" w:type=\"dxa\"/>"
+							   "</w:tcMar>";
+				}
 
 				if(nRowspan != 1)
 				{
@@ -1406,7 +1465,10 @@ private:
 		if (!oStyle.m_oDisplay.GetWidth().Empty())
 		{
 			if (NSCSS::UnitMeasure::Percent == oStyle.m_oDisplay.GetWidth().GetUnitMeasure())
+			{
+				
 				wsTable += L"<w:tblW w:w=\"" + std::to_wstring(oStyle.m_oDisplay.GetWidth().ToInt(NSCSS::UnitMeasure::Percent, 5000)) + L"\" w:type=\"pct\"/>";
+			}
 			else
 				wsTable += L"<w:tblW w:w=\"" + std::to_wstring(oStyle.m_oDisplay.GetWidth().ToInt(NSCSS::UnitMeasure::Twips)) + L"\" w:type=\"dxa\"/>";
 		}
@@ -1440,10 +1502,10 @@ private:
 
 		if (!oStyle.m_oPadding.Empty())
 		{
-			const int nTopPadding    = std::max(0, oStyle.m_oPadding.GetTop()   .ToInt(NSCSS::UnitMeasure::Twips, m_unHeight));
-			const int nLeftPadding   = std::max(0, oStyle.m_oPadding.GetLeft()  .ToInt(NSCSS::UnitMeasure::Twips, m_unWidth ));
-			const int nBottomPadding = std::max(0, oStyle.m_oPadding.GetBottom().ToInt(NSCSS::UnitMeasure::Twips, m_unHeight));
-			const int nRightPadding  = std::max(0, oStyle.m_oPadding.GetRight() .ToInt(NSCSS::UnitMeasure::Twips, m_unWidth ));
+			const int nTopPadding    = std::max(0, oStyle.m_oPadding.GetTop()   .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
+			const int nLeftPadding   = std::max(0, oStyle.m_oPadding.GetLeft()  .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ));
+			const int nBottomPadding = std::max(0, oStyle.m_oPadding.GetBottom().ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
+			const int nRightPadding  = std::max(0, oStyle.m_oPadding.GetRight() .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ));
 
 			wsTable += L"<w:tblCellMar>"
 			               "<w:top w:w=\""    + std::to_wstring(nTopPadding)    + L"\" w:type=\"dxa\"/>"

@@ -19,9 +19,7 @@ namespace NSCSS
 	typedef std::map<std::wstring, std::wstring>::const_iterator styles_iterator;
 
 	CCompiledStyle::CCompiledStyle() : m_nDpi(96), m_UnitMeasure(Point)
-	{
-		m_oFont.SetSize(std::to_wstring(DEFAULTFONTSIZE), 0, true);
-	}
+	{}
 
 	 CCompiledStyle::CCompiledStyle(const CCompiledStyle& oStyle) :
 	    m_arParentsStyles(oStyle.m_arParentsStyles), m_sId(oStyle.m_sId),
@@ -173,7 +171,7 @@ namespace NSCSS
 					if (bIsThereBorder)
 						break;
 
-					m_oMargin.AddValue(pPropertie.second, unLevel, bHardMode);
+					m_oMargin.SetValues(pPropertie.second, unLevel, bHardMode);
 					m_oMargin.UpdateAll(dFontSize);
 					break;
 				}
@@ -182,7 +180,7 @@ namespace NSCSS
 					if (bIsThereBorder)
 						break;
 
-					m_oMargin.AddTop(pPropertie.second, unLevel, bHardMode);
+					m_oMargin.SetTop(pPropertie.second, unLevel, bHardMode);
 					m_oMargin.UpdateTop(dFontSize);
 					break;
 				}
@@ -192,7 +190,7 @@ namespace NSCSS
 					if (bIsThereBorder)
 						break;
 
-					m_oMargin.AddRight(pPropertie.second, unLevel, bHardMode);
+					m_oMargin.SetRight(pPropertie.second, unLevel, bHardMode);
 					m_oMargin.UpdateRight(dFontSize);
 					break;
 				}
@@ -201,7 +199,7 @@ namespace NSCSS
 					if (bIsThereBorder)
 						break;
 
-					m_oMargin.AddBottom(pPropertie.second, unLevel, bHardMode);
+					m_oMargin.SetBottom(pPropertie.second, unLevel, bHardMode);
 					m_oMargin.UpdateBottom(dFontSize);
 					break;
 				}
@@ -211,7 +209,7 @@ namespace NSCSS
 					if (bIsThereBorder)
 						break;
 
-					m_oMargin.AddLeft(pPropertie.second, unLevel, bHardMode);
+					m_oMargin.SetLeft(pPropertie.second, unLevel, bHardMode);
 					m_oMargin.UpdateLeft(dFontSize);
 					break;
 				}
@@ -219,35 +217,35 @@ namespace NSCSS
 				CASE(L"padding"):
 				CASE(L"mso-padding-alt"):
 				{
-					m_oPadding.AddValue(pPropertie.second, unLevel, bHardMode);
+					m_oPadding.SetValues(pPropertie.second, unLevel, bHardMode);
 					m_oPadding.UpdateAll(dFontSize);
 					break;
 				}
 				CASE(L"padding-top"):
 				CASE(L"mso-padding-top-alt"):
 				{
-					m_oPadding.AddTop(pPropertie.second, unLevel, bHardMode);
+					m_oPadding.SetTop(pPropertie.second, unLevel, bHardMode);
 					m_oPadding.UpdateTop(dFontSize);
 					break;
 				}
 				CASE(L"padding-right"):
 				CASE(L"mso-padding-right-alt"):
 				{
-					m_oPadding.AddRight(pPropertie.second, unLevel, bHardMode);
+					m_oPadding.SetRight(pPropertie.second, unLevel, bHardMode);
 					m_oPadding.UpdateRight(dFontSize);
 					break;
 				}
 				CASE(L"padding-bottom"):
 				CASE(L"mso-padding-bottom-alt"):
 				{
-					m_oPadding.AddBottom(pPropertie.second, unLevel, bHardMode);
+					m_oPadding.SetBottom(pPropertie.second, unLevel, bHardMode);
 					m_oPadding.UpdateBottom(dFontSize);
 					break;
 				}
 				CASE(L"padding-left"):
 				CASE(L"mso-padding-left-alt"):
 				{
-					m_oPadding.AddLeft(pPropertie.second, unLevel, bHardMode);
+					m_oPadding.SetLeft(pPropertie.second, unLevel, bHardMode);
 					m_oPadding.UpdateLeft(dFontSize);
 					break;
 				}

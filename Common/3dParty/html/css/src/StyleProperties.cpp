@@ -175,7 +175,7 @@ namespace NSCSS
 
 	bool CDigit::Zero() const
 	{
-		return (std::abs(0 - m_oValue) <= DBL_EPSILON);
+		return (std::abs(0. - m_oValue) <= DBL_EPSILON);
 	}
 
 	void CDigit::Clear()
@@ -191,7 +191,7 @@ namespace NSCSS
 
 	int CDigit::ToInt() const
 	{
-		if (DBL_MAX == m_oValue)
+		if (Empty())
 			return 0;
 
 		return static_cast<int>(m_oValue + 0.5);
@@ -199,7 +199,7 @@ namespace NSCSS
 
 	double CDigit::ToDouble() const
 	{
-		if (DBL_MAX == m_oValue)
+		if (Empty())
 			return 0.;
 
 		return m_oValue;
@@ -320,7 +320,16 @@ namespace NSCSS
 		if (m_unLevel > oDigit.m_unLevel || (m_bImportant && !oDigit.m_bImportant) || DBL_MAX == oDigit.m_oValue)
 			return *this;
 
-		m_oValue        += oDigit.ToDouble(m_enUnitMeasure);
+		if (oDigit.Empty())
+			return *this;
+		else if (NSCSS::Percent == oDigit.m_enUnitMeasure && !Empty())
+			m_oValue *= oDigit.m_oValue / 100.;
+		else
+		{
+			m_oValue        = oDigit.m_oValue;
+			m_enUnitMeasure = oDigit.m_enUnitMeasure;
+		}
+
 		m_unLevel       = oDigit.m_unLevel;
 		m_bImportant    = oDigit.m_bImportant;
 
@@ -369,24 +378,11 @@ namespace NSCSS
 		if (m_bImportant && !bImportant)
 			return false;
 
-		double dNewValue;
-		UnitMeasure enNewUnitMeasure;
-
-		if (!CUnitMeasureConverter::GetValue(wsValue, dNewValue, enNewUnitMeasure))
+		if (!CUnitMeasureConverter::GetValue(wsValue, m_oValue, m_enUnitMeasure))
 			return false;
 
-		if (Percent == enNewUnitMeasure && !Empty() && (unLevel > m_unLevel || bHardMode))
-		{
-			m_oValue *= dNewValue / 100.;
-		}
-		else
-		{
-			m_oValue        = dNewValue;
-			m_enUnitMeasure = enNewUnitMeasure;
-		}
-
-		m_unLevel    = unLevel;
-		m_bImportant = bImportant;
+		m_unLevel       = unLevel;
+		m_bImportant    = bImportant;
 
 		return true;
 	}
@@ -1113,8 +1109,8 @@ namespace NSCSS
 	{
 		m_oX       += oDisplay.m_oX;
 		m_oY       += oDisplay.m_oY;
-		m_oWidth   += oDisplay.m_oWidth;
-		m_oHeight  += oDisplay.m_oHeight;
+		m_oWidth   = oDisplay.m_oWidth;
+		m_oHeight  = oDisplay.m_oHeight;
 		m_oHAlign  += oDisplay.m_oHAlign;
 		m_oVAlign  += oDisplay.m_oVAlign;
 		m_oDisplay += oDisplay.m_oDisplay;
@@ -1420,9 +1416,9 @@ namespace NSCSS
 
 	CBorderSide &CBorderSide::operator+=(const CBorderSide &oBorderSide)
 	{
-		m_oWidth += oBorderSide.m_oWidth;
-		m_oStyle += oBorderSide.m_oStyle;
-		m_oColor += oBorderSide.m_oColor;
+		m_oWidth = oBorderSide.m_oWidth;
+		m_oStyle = oBorderSide.m_oStyle;
+		m_oColor = oBorderSide.m_oColor;
 
 		if (oBorderSide.m_bBlock)
 			m_bBlock = true;
@@ -1646,10 +1642,10 @@ namespace NSCSS
 
 	CBorder &CBorder::operator+=(const CBorder &oBorder)
 	{
-		m_oLeft   += oBorder.m_oLeft;
-		m_oTop    += oBorder.m_oTop;
-		m_oRight  += oBorder.m_oRight;
-		m_oBottom += oBorder.m_oBottom;
+		m_oLeft   = oBorder.m_oLeft;
+		m_oTop    = oBorder.m_oTop;
+		m_oRight  = oBorder.m_oRight;
+		m_oBottom = oBorder.m_oBottom;
 
 		return *this;
 	}
@@ -1768,17 +1764,15 @@ namespace NSCSS
 
 	// MARGIN
 	CIndent::CIndent()
-	    : m_bPermission(true)
-	 {}
+		: m_bPermission(true)
+	{}
 
-	void CIndent::Equation(CIndent &oFirstMargin, CIndent &oSecondMargin)
+	void CIndent::Clear()
 	{
-		//TODO:: добавить корректную реализацию
-
-//		CDigit::Equation(oFirstMargin.m_oLeft,   oSecondMargin.m_oLeft);
-//		CDigit::Equation(oFirstMargin.m_oTop,    oSecondMargin.m_oTop);
-//		CDigit::Equation(oFirstMargin.m_oRight,  oSecondMargin.m_oRight);
-//		CDigit::Equation(oFirstMargin.m_oBottom, oSecondMargin.m_oBottom);
+		m_oTop   .Clear();
+		m_oRight .Clear();
+		m_oBottom.Clear();
+		m_oLeft  .Clear();
 	}
 
 	void CIndent::SetPermisson(bool bPermission)
@@ -1786,187 +1780,143 @@ namespace NSCSS
 		m_bPermission = bPermission;
 	}
 
-	bool CIndent::AddValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
+	void CIndent::Equation(CIndent &oFirstMargin, CIndent &oSecondMargin)
+	{
+		CDigit::Equation(oFirstMargin.m_oLeft,   oSecondMargin.m_oLeft);
+		CDigit::Equation(oFirstMargin.m_oTop,    oSecondMargin.m_oTop);
+		CDigit::Equation(oFirstMargin.m_oRight,  oSecondMargin.m_oRight);
+		CDigit::Equation(oFirstMargin.m_oBottom, oSecondMargin.m_oBottom);
+	}
+
+	bool CIndent::SetValues(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		if (!m_bPermission)
 			return false;
-		
+
 		const std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsValue, false, L" ");
 		switch (arValues.size())
 		{
 			case 1:
-			{
-				return AddSide(m_arTopValues,    arValues[0], unLevel, bHardMode) && 
-				       AddSide(m_arLeftValues,   arValues[0], unLevel, bHardMode) &&
-				       AddSide(m_arRightValues,  arValues[0], unLevel, bHardMode) &&
-				       AddSide(m_arBottomValues, arValues[0], unLevel, bHardMode);
-			}
+				return SetValues(arValues[0], arValues[0], arValues[0], arValues[0], unLevel, bHardMode);
 			case 2:
-			{
-				return AddSide(m_arTopValues,    arValues[0], unLevel, bHardMode) && 
-				       AddSide(m_arBottomValues, arValues[0], unLevel, bHardMode) &&
-				       AddSide(m_arLeftValues,   arValues[1], unLevel, bHardMode) &&
-				       AddSide(m_arRightValues,  arValues[1], unLevel, bHardMode);
-			}
+				return SetValues(arValues[0], arValues[1], arValues[0], arValues[1], unLevel, bHardMode);
 			case 3:
-			{
-				return AddSide(m_arTopValues,    arValues[0], unLevel, bHardMode) && 
-				       AddSide(m_arLeftValues,   arValues[1], unLevel, bHardMode) &&
-				       AddSide(m_arRightValues,  arValues[1], unLevel, bHardMode) &&
-				       AddSide(m_arBottomValues, arValues[2], unLevel, bHardMode);
-			}
+				return SetValues(arValues[0], arValues[1], arValues[2], arValues[1], unLevel, bHardMode);
 			case 4:
-			{
-				return AddSide(m_arTopValues,    arValues[0], unLevel, bHardMode) && 
-				       AddSide(m_arRightValues,  arValues[1], unLevel, bHardMode) &&
-				       AddSide(m_arBottomValues, arValues[2], unLevel, bHardMode) &&
-				       AddSide(m_arLeftValues,   arValues[3], unLevel, bHardMode);
-			}
+				return SetValues(arValues[0], arValues[1], arValues[2], arValues[3], unLevel, bHardMode);
 		}
 
 		return false;
 	}
 
-	bool CIndent::AddLeft(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
+	bool CIndent::SetTop(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		return AddSide(m_arLeftValues, wsValue, unLevel, bHardMode);
+		return m_oTop.SetValue(wsValue, unLevel, bHardMode);
 	}
 
-	bool CIndent::AddTop(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
+	bool CIndent::SetRight(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		return AddSide(m_arTopValues, wsValue, unLevel, bHardMode);
+		return m_oRight.SetValue(wsValue, unLevel, bHardMode);
 	}
 
-	bool CIndent::AddRight(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
+	bool CIndent::SetBottom(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		return AddSide(m_arRightValues, wsValue, unLevel, bHardMode);
+		return m_oBottom.SetValue(wsValue, unLevel, bHardMode);
 	}
 
-	bool CIndent::AddBottom(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
+	bool CIndent::SetLeft(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		return AddSide(m_arBottomValues, wsValue, unLevel, bHardMode);
+		return m_oLeft.SetValue(wsValue, unLevel, bHardMode);
 	}
-	
+
 	void CIndent::UpdateAll(double dFontSize)
 	{
-		UpdateLeft(dFontSize);
-		UpdateTop(dFontSize);
-		UpdateRight(dFontSize);
+		UpdateTop   (dFontSize);
+		UpdateRight (dFontSize);
 		UpdateBottom(dFontSize);
+		UpdateLeft  (dFontSize);
 	}
-	
-	void CIndent::UpdateLeft(double dFontSize)
-	{
-		UpdateSide(m_arLeftValues, dFontSize);
-	}
-	
+
 	void CIndent::UpdateTop(double dFontSize)
 	{
-		UpdateSide(m_arTopValues, dFontSize);
+		UpdateSide(m_oTop, dFontSize);
 	}
-	
+
 	void CIndent::UpdateRight(double dFontSize)
 	{
-		UpdateSide(m_arRightValues, dFontSize);
+		UpdateSide(m_oRight, dFontSize);
 	}
-	
+
 	void CIndent::UpdateBottom(double dFontSize)
 	{
-		UpdateSide(m_arBottomValues, dFontSize);
+		UpdateSide(m_oBottom, dFontSize);
 	}
 
-	CDigit CIndent::GetLeft() const
+	void CIndent::UpdateLeft(double dFontSize)
 	{
-		return CalculateSide(m_arLeftValues);
+		UpdateSide(m_oLeft, dFontSize);
 	}
 
-	CDigit CIndent::GetTop() const
+	const CDigit &CIndent::GetTop() const
 	{
-		return CalculateSide(m_arTopValues);
+		return m_oTop;
 	}
 
-	CDigit CIndent::GetRight() const
+	const CDigit &CIndent::GetRight() const
 	{
-		return CalculateSide(m_arRightValues);
+		return m_oRight;
 	}
 
-	CDigit CIndent::GetBottom() const
+	const CDigit &CIndent::GetBottom() const
 	{
-		return CalculateSide(m_arBottomValues);
+		return m_oBottom;
 	}
 
+	const CDigit &CIndent::GetLeft() const
+	{
+		return m_oLeft;
+	}
+	
 	bool CIndent::Empty() const
 	{
-		return m_arLeftValues.empty() && m_arTopValues.empty() && m_arRightValues.empty() && m_arBottomValues.empty();
+		return m_oTop.Empty() && m_oRight.Empty() && m_oBottom.Empty() && m_oLeft.Empty();
 	}
-
+	
 	CIndent &CIndent::operator+=(const CIndent &oIndent)
 	{
-		m_arLeftValues  .insert(m_arLeftValues.end(),   oIndent.m_arLeftValues.begin(),   oIndent.m_arLeftValues.end());
-		m_arTopValues   .insert(m_arTopValues.end(),    oIndent.m_arTopValues.begin(),    oIndent.m_arTopValues.end());
-		m_arRightValues .insert(m_arRightValues.end(),  oIndent.m_arRightValues.begin(),  oIndent.m_arRightValues.end());
-		m_arBottomValues.insert(m_arBottomValues.end(), oIndent.m_arBottomValues.begin(), oIndent.m_arBottomValues.end());
+		m_oTop    += oIndent.m_oTop;
+		m_oRight  += oIndent.m_oRight;
+		m_oBottom += oIndent.m_oBottom;
+		m_oLeft   += oIndent.m_oLeft;
 
 		return *this;
 	}
-
+	
 	bool CIndent::operator==(const CIndent &oIndent) const
 	{
-		// Есть вариант, когда у CIndent разное кол-во значений, но итоговое значение одинаковое
-		// Пока считаем это не одинаковыми
-		if (m_arLeftValues  .size() != oIndent.m_arLeftValues  .size() ||
-			m_arTopValues   .size() != oIndent.m_arTopValues   .size() || 
-			m_arRightValues .size() != oIndent.m_arRightValues .size() ||
-			m_arBottomValues.size() != oIndent.m_arBottomValues.size())
-			return false;
-
-		for (unsigned int unIndex = 0; unIndex < m_arLeftValues.size(); ++unIndex)
-		{
-			if (m_arLeftValues  [unIndex] != oIndent.m_arLeftValues  [unIndex]) return false;
-			if (m_arTopValues   [unIndex] != oIndent.m_arTopValues   [unIndex]) return false;
-			if (m_arRightValues [unIndex] != oIndent.m_arRightValues [unIndex]) return false;
-			if (m_arBottomValues[unIndex] != oIndent.m_arBottomValues[unIndex]) return false;
-		}
-
-		return true;
+		return m_oTop == oIndent.m_oTop &&
+		       m_oRight == oIndent.m_oRight && 
+		       m_oBottom == oIndent.m_oBottom &&
+		       m_oLeft == oIndent.m_oLeft;
 	}
 
-	bool CIndent::AddSide(std::vector<CDigit> &arValues, const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
+	bool CIndent::SetValues(const std::wstring &wsTopValue, const std::wstring &wsRightValue, const std::wstring &wsBottomValue, const std::wstring &wsLeftValue, unsigned int unLevel, bool bHardMode)
 	{
-		CDigit oValue;
-
-		if (!oValue.SetValue(wsValue, unLevel, bHardMode))
-			return false;
-
-		if (!arValues.empty() && CDigit::LevelIsSame(oValue, arValues.back()))
-			arValues.pop_back();
-
-		arValues.push_back(oValue);
-
-		return true;
+		const bool bTopResult    = SetTop    (wsTopValue,    unLevel, bHardMode);
+		const bool bRightResult  = SetRight  (wsRightValue,  unLevel, bHardMode);
+		const bool bBottomResult = SetBottom (wsBottomValue, unLevel, bHardMode);
+		const bool bLeftResult   = SetLeft   (wsLeftValue,   unLevel, bHardMode);
+		
+		return bTopResult || bRightResult || bBottomResult || bLeftResult;
 	}
-
-	void CIndent::UpdateSide(std::vector<CDigit> &arValues, double dFontSize)
+	
+	void CIndent::UpdateSide(CDigit &oSide, double dFontSize)
 	{
-		if (arValues.empty())
+		if (oSide.Empty())
 			return;
 
-		const UnitMeasure eUM = arValues.back().GetUnitMeasure();
-		if (NSCSS::Em == eUM || NSCSS::Rem == eUM)
-			arValues.back().ConvertTo(NSCSS::Twips, dFontSize);
-	}
-
-	CDigit CIndent::CalculateSide(const std::vector<CDigit> &arValues) const
-	{
-		if (arValues.empty())
-			return CDigit();
-
-		CDigit oValue{arValues.front()};
-
-		for (std::vector<CDigit>::const_iterator oIter = arValues.begin() + 1; oIter < arValues.end(); ++oIter)
-			oValue += *oIter;
-
-		return oValue;
+		if (NSCSS::Em == oSide.GetUnitMeasure() || NSCSS::Rem == oSide.GetUnitMeasure())
+			oSide.ConvertTo(NSCSS::Twips, dFontSize);
 	}
 
 	// FONT
@@ -2534,5 +2484,62 @@ namespace NSCSS
 		return std::wstring();
 	}
 
+	CPage::CPage()
+	{}
+
+	bool CPage::SetMargin(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oMargin.SetValues(wsValue, unLevel, bHardMode);
+	}
+
+	bool CPage::SetSize(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
+	{
+		if (wsValue.empty())
+			return false;
+
+		std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsValue);
+
+		if (1 == arValues.size())
+			return m_oWidth.SetValue(arValues[0], unLevel, bHardMode) && m_oHeight.SetValue(arValues[0], unLevel, bHardMode);
+		else if (2 == arValues.size())
+			return m_oWidth.SetValue(arValues[0], unLevel, bHardMode) && m_oHeight.SetValue(arValues[1], unLevel, bHardMode);
+	
+		return false;
+	}
+
+	bool CPage::SetFooter(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oFooter.SetValue(wsValue, unLevel, bHardMode);
+	}
+
+	bool CPage::SetHeader(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oHeader.SetValue(wsValue, unLevel, bHardMode);
+	}
+
+	const CDigit &CPage::GetWidth() const
+	{
+		return m_oWidth;
+	}
+
+	const CDigit &CPage::GetHeight() const
+	{
+		return m_oHeight;
+	}
+
+	const CIndent &CPage::GetMargin() const
+	{
+		return m_oMargin;
+	}
+
+	const CDigit &CPage::GetFooter() const
+	{
+		return m_oFooter;
+	}
+
+	const CDigit &CPage::GetHeader() const
+	{
+		return m_oHeader;
+	}
 	}
 }

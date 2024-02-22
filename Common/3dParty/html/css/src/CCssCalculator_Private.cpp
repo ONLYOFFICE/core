@@ -85,7 +85,41 @@ namespace NSCSS
 		}
 
 	}
+	
+	std::map<std::wstring, std::wstring> CCssCalculator_Private::GetPageData(const std::wstring &wsPageName)
+	{
+		if (m_arPageDatas.empty())
+			return {};
 
+		for (const TPageData& oPageData : m_arPageDatas)
+		{
+			if (std::find(oPageData.m_wsNames.begin(), oPageData.m_wsNames.end(), wsPageName) != oPageData.m_wsNames.end())
+				return oPageData.m_mData;
+		}
+
+		return {};
+	}
+	
+	void CCssCalculator_Private::SetPageData(NSProperties::CPage &oPage, const std::map<std::wstring, std::wstring> &mData, unsigned int unLevel, bool bHardMode)
+	{
+		for (const std::pair<std::wstring, std::wstring> &oData : mData)
+		{
+			if (L"margin" == oData.first)
+				oPage.SetMargin(oData.second, unLevel, bHardMode);
+			else if (L"size" == oData.first)
+				oPage.SetSize(oData.second, unLevel, bHardMode);
+			else if (L"mso-header-margin" == oData.first)
+				oPage.SetHeader(oData.second, unLevel, bHardMode);
+			else if (L"mso-footer-margin" == oData.first)
+				oPage.SetFooter(oData.second, unLevel, bHardMode);
+		}
+	}
+	
+	void CCssCalculator_Private::AddPageData(const std::wstring &wsPageNames, const std::wstring &wsStyles)
+	{
+		m_arPageDatas.push_back({NS_STATIC_FUNCTIONS::GetWordsW(wsPageNames), NS_STATIC_FUNCTIONS::GetRules(wsStyles)});
+	}
+	
 	inline void CCssCalculator_Private::GetStylesheet(const KatanaStylesheet *oStylesheet)
 	{
 		for (size_t i = 0; i < oStylesheet->imports.length; ++i)
@@ -495,14 +529,16 @@ namespace NSCSS
 					          return oFirstElement->GetWeight() > oSecondElement->GetWeight();
 				          });
 			}
+			
+			if (L"table" == arSelectors[i].m_wsName)
+				pStyle->m_oFont.Clear();
 
-			// Данные о border'ах используются только для текущей ноды и не наследуются
-			pStyle->m_oBorder.Clear();
+			CCompiledStyle oTempStyle;
 
-			pStyle->AddStyle(arSelectors[i].m_mAttributes, i + 1);
+			oTempStyle.AddStyle(arSelectors[i].m_mAttributes, i + 1);
 
 			for (const CElement* oElement : arFindElements)
-				pStyle->AddStyle(oElement->GetStyle(), i + 1);
+				oTempStyle.AddStyle(oElement->GetStyle(), i + 1);
 
 			if (NULL != m_mStatictics)
 			{
@@ -512,15 +548,17 @@ namespace NSCSS
 				{
 					if ((bIsSettings && oFindCountStyle->second <  MaxNumberRepetitions) ||
 					   (!bIsSettings && oFindCountStyle->second >= MaxNumberRepetitions))
-						pStyle->AddStyle(arSelectors[i].m_wsStyle, i + 1,  true);
+						oTempStyle.AddStyle(arSelectors[i].m_wsStyle, i + 1,  true);
 					else if (!bIsSettings)
-						pStyle->AddStyle(arSelectors[i].m_wsStyle, i + 1, true);
+						oTempStyle.AddStyle(arSelectors[i].m_wsStyle, i + 1, true);
 				}
 				else if (bIsSettings)
-					pStyle->AddStyle(arSelectors[i].m_wsStyle, i + 1, true);
+					oTempStyle.AddStyle(arSelectors[i].m_wsStyle, i + 1, true);
 			}
 			else
-				pStyle->AddStyle(arSelectors[i].m_wsStyle, i + 1, true);
+				oTempStyle.AddStyle(arSelectors[i].m_wsStyle, i + 1, true);
+			
+			*pStyle += oTempStyle;
 		}
 
 		if (!bIsSettings)
@@ -714,7 +752,6 @@ namespace NSCSS
 				}
 			}
 
-
 			if (arFindElements.size() > 1)
 			{
 				std::sort(arFindElements.rbegin(), arFindElements.rend(),
@@ -759,6 +796,176 @@ namespace NSCSS
 
 		return true;
 	}
+
+	bool CCssCalculator_Private::CalculatePageStyle(NSProperties::CPage &oPageData, const std::vector<CNode> &arSelectors)
+	{
+		if (arSelectors.empty())
+			return false;
+
+		std::vector<std::wstring> arWords;
+		std::vector<std::wstring> arNextNodes;
+
+		for (std::vector<CNode>::const_reverse_iterator oNode = arSelectors.rbegin(); oNode != arSelectors.rend(); ++oNode)
+		{
+			arWords.push_back(oNode->m_wsName);
+
+			if (!oNode->m_wsClass.empty())
+			{
+				if (oNode->m_wsClass.find(L' ') != std::wstring::npos)
+				{
+					std::vector<std::wstring> arClasses = NS_STATIC_FUNCTIONS::GetWordsW(oNode->m_wsClass, false,  L" ");
+
+					if (arClasses.size() > 1)
+						arClasses.resize(unique(arClasses.begin(),arClasses.end()) - arClasses.begin());
+					switch (arClasses.size())
+					{
+						case 1:
+						{
+							arWords.push_back(L'.' + arClasses[0]);
+							break;
+						}
+						case 2:
+						{
+							arWords.push_back(L'.' + arClasses[0] + L" ." + arClasses[1]);
+							break;
+						}
+						case 3:
+						{
+							arWords.push_back(L'.' + arClasses[0] + L" ." + arClasses[1] + L" ." + arClasses[2]);
+							break;
+						}
+						default:
+						{
+							arWords.push_back(std::accumulate(arClasses.begin(), arClasses.end(), std::wstring(),
+							                                  [](std::wstring sRes, const std::wstring& sClass)
+							                                    {return sRes += L'.' + sClass + L' ';}));
+							break;
+						}
+					}
+				}
+				else
+				arWords.push_back(L'.' + oNode->m_wsClass);
+			}
+			if (!oNode->m_wsId.empty())
+				arWords.push_back(L'#' + oNode->m_wsId);
+		}
+
+		std::vector<CElement*> arElements;
+
+		for (size_t i = 0; i < arSelectors.size(); ++i)
+		{
+			std::wstring sName, sId;
+			std::vector<std::wstring> arClasses;
+
+			if (arWords.back()[0] == L'#')
+			{
+				sId = arWords.back();
+				arWords.pop_back();
+				arNextNodes.push_back(sId);
+			}
+
+			if (arWords.back()[0] == L'.')
+			{
+				arClasses = NS_STATIC_FUNCTIONS::GetWordsW(arWords.back(), false,  L" ");
+				arNextNodes.push_back(arWords.back());
+				arWords.pop_back();
+			}
+
+			sName = arWords.back();
+			arWords.pop_back();
+			arNextNodes.push_back(sName);
+
+			const std::map<std::wstring, CElement*>::const_iterator oFindName = m_mData.find(sName);
+			std::map<std::wstring, CElement*>::const_iterator oFindId;
+			std::vector<CElement*> arFindElements;
+
+			if (!sId.empty())
+			{
+				oFindId = m_mData.find(sId);
+
+				if (oFindId != m_mData.end())
+				{
+					if (!oFindId->second->Empty())
+						arFindElements.push_back(oFindId->second);
+
+					const std::vector<CElement*> arTempPrev = oFindId->second->GetPrevElements(arNextNodes.rbegin() + ((arClasses.empty()) ? 1 : 2), arNextNodes.rend());
+
+					if (!arTempPrev.empty())
+						arFindElements.insert(arFindElements.end(), arTempPrev.begin(), arTempPrev.end());
+
+					const std::vector<CElement*> arTempKin = oFindId->second->GetNextOfKin(sName);
+
+					if (!arTempKin.empty())
+						arFindElements.insert(arFindElements.end(), arTempKin.begin(), arTempKin.end());
+				}
+			}
+
+			if (!arClasses.empty())
+			{
+				for (std::vector<std::wstring>::const_reverse_iterator iClass = arClasses.rbegin(); iClass != arClasses.rend(); ++iClass)
+				{
+					const std::map<std::wstring, CElement*>::const_iterator oFindClass = m_mData.find(*iClass);
+					if (oFindClass != m_mData.end())
+					{
+						if (!oFindClass->second->Empty())
+							arFindElements.push_back(oFindClass->second);
+
+						const std::vector<CElement*> arTempPrev = oFindClass->second->GetPrevElements(arNextNodes.rbegin() + 2, arNextNodes.rend());
+						const std::vector<CElement*> arTempKins = oFindClass->second->GetNextOfKin(sName);
+
+						if (!arTempPrev.empty())
+							arFindElements.insert(arFindElements.end(), arTempPrev.begin(), arTempPrev.end());
+
+						if (!arTempKins.empty())
+							arFindElements.insert(arFindElements.end(), arTempKins.begin(), arTempKins.end());
+					}
+				}
+			}
+
+			if (oFindName != m_mData.end())
+			{
+				if (!oFindName->second->Empty())
+					arFindElements.push_back(oFindName->second);
+
+				const std::vector<CElement*> arTempPrev = oFindName->second->GetPrevElements(arNextNodes.rbegin() + 1, arNextNodes.rend());
+				const std::vector<CElement*> arTempKins = oFindName->second->GetNextOfKin(sName, arClasses);
+
+				if (!arTempPrev.empty())
+					arFindElements.insert(arFindElements.end(), arTempPrev.begin(), arTempPrev.end());
+
+				if (!arTempKins.empty())
+					arFindElements.insert(arFindElements.end(), arTempKins.begin(), arTempKins.end());
+			}
+
+			if (arFindElements.size() > 1)
+			{
+				std::sort(arFindElements.rbegin(), arFindElements.rend(),
+				          [](CElement* oFirstElement, CElement* oSecondElement)
+				          {
+					          return oFirstElement->GetWeight() > oSecondElement->GetWeight();
+				          });
+			}
+			
+			if (!arSelectors[i].m_wsStyle.empty() && std::wstring::npos != arSelectors[i].m_wsStyle.find(L"page"))
+			{
+				std::map<std::wstring, std::wstring> mRules = NS_STATIC_FUNCTIONS::GetRules(arSelectors[i].m_wsStyle);
+				if (mRules.end() != mRules.find(L"page"))
+					SetPageData(oPageData, GetPageData(mRules[L"page"]), i + 1, true);
+			}
+
+			for (const CElement* oElement : arFindElements)
+			{
+				std::map<std::wstring, std::wstring> mRules = oElement->GetStyle();
+				if (mRules.end() != mRules.find(L"page"))
+					SetPageData(oPageData, GetPageData(mRules[L"page"]), i + 1, true);
+			}
+
+			if (arSelectors[i].m_mAttributes.end() != arSelectors[i].m_mAttributes.find(L"page"))
+				SetPageData(oPageData, GetPageData(arSelectors[i].m_mAttributes.at(L"page")), i + 1, false);
+		}
+		
+		return true;
+	}
 	#endif
 	void CCssCalculator_Private::AddStyles(const std::string &sStyle)
 	{
@@ -774,6 +981,16 @@ namespace NSCSS
 	{
 		if (wsStyle.empty())
 			return;
+
+		std::wregex oRegex(L"@page\\s*([^{]*)(\\{[^}]*\\})");
+		std::wsmatch oMatch;
+		std::wstring::const_iterator oSearchStart(wsStyle.cbegin());
+		
+		while (std::regex_search(oSearchStart, wsStyle.cend(), oMatch, oRegex))
+		{
+			AddPageData(oMatch[1].str(), oMatch[2].str());
+			oSearchStart = oMatch.suffix().first;
+		}
 
 		AddStyles(U_TO_UTF8(wsStyle));
 	}

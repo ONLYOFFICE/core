@@ -141,30 +141,17 @@ namespace NS_STATIC_FUNCTIONS
 
 	std::map<std::wstring, std::wstring> GetRules(const std::wstring& wsStyles)
 	{
-		if (wsStyles.empty())
-				return {};
+		std::wregex oCssPropertyRegex(L"([a-zA-Z-]+)\\s*:\\s*([^;\t\n\r\f\v]+)");
+		std::wsmatch oMatch;
+
+		std::wstring::const_iterator oSearchStart(wsStyles.cbegin());
 
 		std::map<std::wstring, std::wstring> mRules;
 
-		std::wstring::const_iterator oStartProperty = std::find_if_not(wsStyles.begin(), wsStyles.end(), std::iswspace);
-		std::wstring::const_iterator oEndProperty, oStartValue, oEndValue;
-
-		while (wsStyles.end() != oStartProperty)
+		while (std::regex_search(oSearchStart, wsStyles.cend(), oMatch, oCssPropertyRegex))
 		{
-			oEndProperty = std::find_if(oStartProperty, wsStyles.end(), [](const wchar_t &wcChar){ return L':' == wcChar;});
-			oStartValue  = std::find_if_not(oEndProperty + 1, wsStyles.end(), std::iswspace);
-
-			if (wsStyles.end() == oEndProperty || wsStyles.end() == oStartValue)
-				break;
-
-			oEndValue    = std::find_if(oStartValue, wsStyles.end(), [](const wchar_t &wcChar){ return L';' == wcChar;});
-
-			mRules.insert({std::wstring(oStartProperty, oEndProperty), std::wstring(oStartValue, oEndValue)});
-
-			if (wsStyles.end() == oEndValue)
-				break;
-
-			oStartProperty = std::find_if_not(oEndValue + 1, wsStyles.end(), std::iswspace);
+			mRules.insert(std::make_pair<std::wstring, std::wstring>(oMatch[1], oMatch[2]));
+			oSearchStart = oMatch.suffix().first;
 		}
 
 		return mRules;

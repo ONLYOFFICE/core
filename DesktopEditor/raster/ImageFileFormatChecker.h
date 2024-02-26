@@ -63,6 +63,7 @@ enum __ENUM_CXIMAGE_FORMATS
 	_CXIMAGE_FORMAT_SVM = 23,
 	_CXIMAGE_FORMAT_SVG = 24,
     _CXIMAGE_FORMAT_PIC = 25,
+	_CXIMAGE_FORMAT_WDP = 26,
 };
 
 class GRAPHICS_DECL CImageFileFormatChecker
@@ -111,6 +112,7 @@ public:
 	bool isSvgFile(BYTE* pBuffer,DWORD dwBytes);
 	bool isRawFile(BYTE* pBuffer,DWORD dwBytes);
     bool isPicFile(BYTE* pBuffer,DWORD dwBytes);
+	bool isWdpFile(BYTE* pBuffer,DWORD dwBytes);
 
 	std::wstring DetectFormatByData(BYTE *Data, int DataSize);
 

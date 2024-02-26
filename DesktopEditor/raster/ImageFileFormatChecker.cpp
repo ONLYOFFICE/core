@@ -432,6 +432,14 @@ bool CImageFileFormatChecker::isPicFile(BYTE *pBuffer, DWORD dwBytes)
 
     return false;
 }
+
+bool CImageFileFormatChecker::isWdpFile(BYTE *pBuffer, DWORD dwBytes)
+{
+	if (memcmp(pBuffer, "II", 2) == 0)
+		return true;
+
+	return false;
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool CImageFileFormatChecker::isImageFile(std::wstring& fileName)
 {
@@ -554,6 +562,10 @@ bool CImageFileFormatChecker::isImageFile(std::wstring& fileName)
     {
         eFileType = _CXIMAGE_FORMAT_PIC;
     }
+	else if (isWdpFile(buffer, sizeRead))
+	{
+		eFileType = _CXIMAGE_FORMAT_WDP;
+	}
 	///////////////////////////////////////////////////////////////////////
 	delete [] buffer;
 
@@ -669,6 +681,10 @@ bool CImageFileFormatChecker::isImageFile(BYTE* buffer, DWORD sizeRead)
     {
         eFileType = _CXIMAGE_FORMAT_PIC;
     }
+	if (isWdpFile(buffer, sizeRead))
+	{
+		eFileType = _CXIMAGE_FORMAT_WDP;
+	}
     ///////////////////////////////////////////////////////////////////////
 	if (eFileType) return true;
 	return false;

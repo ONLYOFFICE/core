@@ -277,6 +277,47 @@ SOURCES += \
 	$$LIB_GRAPHICS_PRI_PATH/raster/PICT/PICFile.cpp \
 	$$LIB_GRAPHICS_PRI_PATH/raster/PICT/pic.cpp
 
+HEADERS += \
+    $$PWD/../../../Common/3dParty/libjxr/include/guiddef.h \
+	$$PWD/../../../Common/3dParty/libjxr/image/decode/decode.h \
+	$$PWD/../../../Common/3dParty/libjxr/image/encode/encode.h \
+	$$PWD/../../../Common/3dParty/libjxr/image/sys/ansi.h \
+	$$PWD/../../../Common/3dParty/libjxr/image/sys/common.h \
+	$$PWD/../../../Common/3dParty/libjxr/image/sys/perfTimer.h \
+	$$PWD/../../../Common/3dParty/libjxr/image/sys/strcodec.h \
+	$$PWD/../../../Common/3dParty/libjxr/image/sys/strTransform.h \
+	$$PWD/../../../Common/3dParty/libjxr/image/sys/windowsmediaphoto.h \
+	$$PWD/../../../Common/3dParty/libjxr/image/sys/xplatform_image.h \
+	$$PWD/../../../Common/3dParty/libjxr/image/x86/x86.h \
+	$$PWD/../../../Common/3dParty/libjxr/jxrgluelib/JXRGlue.h \
+	$$PWD/../../../Common/3dParty/libjxr/jxrgluelib/JXRMeta.h \
+
+SOURCES += \
+    $$PWD/../../../Common/3dParty/libjxr/image/decode/decode.c \
+	$$PWD/../../../Common/3dParty/libjxr/image/decode/JXRTranscode.c \
+	$$PWD/../../../Common/3dParty/libjxr/image/decode/postprocess.c \
+	$$PWD/../../../Common/3dParty/libjxr/image/decode/segdec.c \
+	$$PWD/../../../Common/3dParty/libjxr/image/decode/strdec.c \
+	$$PWD/../../../Common/3dParty/libjxr/image/decode/strInvTransform.c \
+	$$PWD/../../../Common/3dParty/libjxr/image/decode/strPredQuantDec.c \
+	$$PWD/../../../Common/3dParty/libjxr/image/encode/encode.c \
+	$$PWD/../../../Common/3dParty/libjxr/image/encode/segenc.c \
+	$$PWD/../../../Common/3dParty/libjxr/image/encode/strenc.c \
+	$$PWD/../../../Common/3dParty/libjxr/image/encode/strFwdTransform.c \
+	$$PWD/../../../Common/3dParty/libjxr/image/encode/strPredQuantEnc.c \
+	$$PWD/../../../Common/3dParty/libjxr/image/sys/adapthuff.c \
+	$$PWD/../../../Common/3dParty/libjxr/image/sys/image.c \
+	$$PWD/../../../Common/3dParty/libjxr/image/sys/strcodec.c \
+	$$PWD/../../../Common/3dParty/libjxr/image/sys/strPredQuant.c \
+	$$PWD/../../../Common/3dParty/libjxr/image/sys/strTransform.c \
+	$$PWD/../../../Common/3dParty/libjxr/jxrgluelib/JXRGlue.c \
+	$$PWD/../../../Common/3dParty/libjxr/jxrgluelib/JXRGluejxr.c \
+	$$PWD/../../../Common/3dParty/libjxr/jxrgluelib/JXRGluePFC.c \
+	$$PWD/../../../Common/3dParty/libjxr/jxrgluelib/JXRMeta.c \
+
+SOURCES += \
+    $$LIB_GRAPHICS_PRI_PATH/raster/WDP/WDP.cpp
+
 SOURCES += \
 	$$LIB_GRAPHICS_PRI_PATH/cximage/jasper/base/jas_cm.c \
 	$$LIB_GRAPHICS_PRI_PATH/cximage/jasper/base/jas_debug.c \

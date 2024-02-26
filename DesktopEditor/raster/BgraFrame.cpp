@@ -44,6 +44,10 @@
 #include "PICT/PICFile.h"
 #endif
 
+#if CXIMAGE_SUPPORT_WDP
+#include "WDP/WDP.h"
+#endif
+
 #include <cmath>
 #define BGRA_FRAME_CXIMAGE_MAX_MEMORY 67108864 // 256Mb (*4 channel)
 
@@ -449,6 +453,14 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
         PICT::CPictFile PIC;
         return PIC.Open(this, strFileName, !m_bIsRGBA);
     }
+#endif
+
+#if CXIMAGE_SUPPORT_WDP
+	if (CXIMAGE_FORMAT_WDP == m_nFileType)
+	{
+		WDP::CWDPFile WDP;
+		return WDP.Open(this, strFileName, !m_bIsRGBA);
+	}
 #endif
 
 	NSFile::CFileBinary oFile;

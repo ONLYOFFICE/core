@@ -41,7 +41,7 @@ namespace StarMath {
 	{
 	public:
 		CConversionSMtoOOXML();
-		void StartConversion(std::vector<CElement*> arPars);
+		void StartConversion(std::vector<CElement*> arPars, const unsigned int& iAlignment = -1);
 		static void StandartProperties(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute);
 		static void PropertiesMFPR(bool bType,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute);
 		static void PropertiesNaryPr(const TypeElement& enTypeOp,bool bEmptySub,bool bEmptySup,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute);
@@ -56,7 +56,7 @@ namespace StarMath {
 		static void WriteRPrFName(const TypeElement& enTypeOp,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const std::wstring& wsNameOp);
 		static void WriteStyNode(XmlUtils::CXmlWriter* pXmlWrite,const std::wstring& wsAttributeNode);
 		static void WritePreserveBlock(XmlUtils::CXmlWriter* pXmlWrite, CAttribute *pAttribute);
-		static void WriteLimUpOrLowNode(XmlUtils::CXmlWriter* pXmlWrite,const std::wstring& wsNameNode,CElement* pValue,const TypeElement& enType,CAttribute* pAttribute, const std::wstring& wsName = L"oper");
+		static void WriteLimUpOrLowNode(XmlUtils::CXmlWriter* pXmlWrite,const std::wstring& wsNameNode,CElement* pValue,const TypeElement& enType,CAttribute* pAttribute, const std::wstring& wsName = L"oper",CElement* pIndex = nullptr);
 		static void ElementConversion(XmlUtils::CXmlWriter* pXmlWrite,CElement* pElement);
 		void EndConversion();
 		std::wstring GetOOXML();

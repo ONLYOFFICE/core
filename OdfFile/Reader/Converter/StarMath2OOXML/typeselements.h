@@ -112,6 +112,9 @@ enum class TypeElement{
 	overstrike,
 	size,
 	font,
+	alignl,
+	alignc,
+	alignr,
 	//top element
 	acute,
 	breve,

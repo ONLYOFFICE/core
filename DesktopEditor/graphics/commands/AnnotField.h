@@ -524,4 +524,20 @@ private:
 	std::vector<CParent*> m_arrParents;
 };
 
+class GRAPHICS_DECL CShapeStart : public IAdvancedCommand
+{
+public:
+	CShapeStart();
+
+	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
+};
+
+class GRAPHICS_DECL CShapeEnd : public IAdvancedCommand
+{
+public:
+	CShapeEnd();
+
+	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
+};
+
 #endif // _BUILD_ANNOTFIELD_H_

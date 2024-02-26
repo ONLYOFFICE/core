@@ -2297,6 +2297,8 @@ HRESULT CPdfFile::IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedComma
 	case IAdvancedCommand::AdvancedCommandType::Annotaion:
 	case IAdvancedCommand::AdvancedCommandType::DeleteAnnot:
 	case IAdvancedCommand::AdvancedCommandType::WidgetsInfo:
+	case IAdvancedCommand::AdvancedCommandType::ShapeStart:
+	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:
 		return S_OK;
 	default:
 		break;
@@ -2359,6 +2361,14 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 		if (m_pInternal->bEdit && EditWidgets(pCommand))
 			return m_pInternal->pWriter->EditWidgetParents(m_pInternal->pAppFonts, pCommand, m_pInternal->wsTempFolder);
 #endif
+		return S_OK;
+	}
+	case IAdvancedCommand::AdvancedCommandType::ShapeStart:
+	{
+		return S_OK;
+	}
+	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:
+	{
 		return S_OK;
 	}
 	default:

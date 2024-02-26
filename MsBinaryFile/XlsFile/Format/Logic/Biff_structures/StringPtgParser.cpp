@@ -281,6 +281,7 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             unsigned int number;
             unsigned short ixti;
 			PtgList ptgList(PtgList::fixed_id);
+            ptgList.type_ = 0x00;
 
             if(SyntaxPtg::extract_PtgBool(it, itEnd, operand_str))
             {
@@ -331,6 +332,9 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             }
 			else if (SyntaxPtg::extract_PtgList(it, itEnd, ptgList))// Shall be placed strongly before PtgArea and PtgRef
 			{
+                if((ptgList.rowType == 0x10 || ptgList.rowType == 0x08 || ptgList.rowType == 0x02)
+                        && ptgList.columns == 0x01)
+                    ptgList.type_ = 0x01;
 				rgce.addPtg(found_operand = OperandPtgPtr(new PtgList(ptgList)));
 			}
             else if(SyntaxPtg::extract_PtgArea(it, itEnd, operand_str)) // Sequence is important (in pair with PtgRef)

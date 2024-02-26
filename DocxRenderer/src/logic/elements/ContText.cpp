@@ -75,11 +75,13 @@ namespace NSDocxRenderer
 
 	void CContText::CalcSelected()
 	{
-#ifndef USE_DEFAULT_FONT_TO_RECALC
 		if (!m_pFontStyle->wsFontName.empty() && !m_oText.empty())
 		{
 			// нужно перемерять...
-			m_pManager->LoadFontByName(m_oSelectedFont);
+			if (m_oSelectedFont.Path.empty())
+				m_pManager->LoadFontByName(m_oSelectedFont);
+			else
+				m_pManager->LoadFontByFile(m_oSelectedFont);
 
 			double dBoxX;
 			double dBoxY;
@@ -92,10 +94,6 @@ namespace NSDocxRenderer
 			m_oSelectedSizes.dWidth = dBoxWidth;
 			m_oSelectedSizes.dHeight = dBoxHeight;
 		}
-#else
-		m_oSelectedSizes.dWidth = dBoxWidth;
-		m_oSelectedSizes.dHeight = dBoxHeight;
-#endif // USE_DEFAULT_FONT_TO_RECALC
 	}
 
 	eVerticalCrossingType CContText::GetVerticalCrossingType(const CContText* pCont) const noexcept
@@ -150,9 +148,12 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"<w:rPr>");
 		oWriter.WriteString(L"<w:noProof/>");
 
-		oWriter.WriteString(L"<w:rStyle w:val=\"");
-		oWriter.WriteString(m_pFontStyle->wsFontStyleId);
-		oWriter.WriteString(L"\"/>");
+		if (!m_bWriteStyleRaw)
+		{
+			oWriter.WriteString(L"<w:rStyle w:val=\"");
+			oWriter.WriteString(m_pFontStyle->wsFontStyleId);
+			oWriter.WriteString(L"\"/>");
+		}
 
 		LONG lCalculatedSpacing = 0;
 
@@ -225,7 +226,7 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"\"/>");
 		}
 
-		if(m_eVertAlignType == eVertAlignType::vatSubscript || m_eVertAlignType == eVertAlignType::vatSuperscript)
+		if (m_eVertAlignType == eVertAlignType::vatSubscript || m_eVertAlignType == eVertAlignType::vatSuperscript)
 		{
 			int lSize = static_cast<int>(3.0 * m_pFontStyle->dFontSize);
 			oWriter.WriteString(L"<w:sz w:val=\"");
@@ -234,6 +235,44 @@ namespace NSDocxRenderer
 			oWriter.AddInt(lSize);
 			oWriter.WriteString(L"\"/>");
 		}
+		else if (m_bWriteStyleRaw)
+		{
+			int lSize = static_cast<int>(2.0 * m_pFontStyle->dFontSize);
+			oWriter.WriteString(L"<w:sz w:val=\"");
+			oWriter.AddInt(lSize);
+			oWriter.WriteString(L"\"/><w:szCs w:val=\"");
+			oWriter.AddInt(lSize);
+			oWriter.WriteString(L"\"/>");
+		}
+
+		if (m_bWriteStyleRaw)
+		{
+			oWriter.WriteString(L"<w:rFonts w:ascii=\"");
+			oWriter.WriteEncodeXmlString(m_pFontStyle->wsFontName);
+			oWriter.WriteString(L"\" w:hAnsi=\"");
+			oWriter.WriteEncodeXmlString(m_pFontStyle->wsFontName);
+			oWriter.WriteString(L"\" w:cs=\"");
+			oWriter.WriteEncodeXmlString(m_pFontStyle->wsFontName);
+			oWriter.WriteString(L"\" w:hint=\"default\"/>");
+
+			if (m_pFontStyle->bBold)
+			{
+				oWriter.WriteString(L"<w:b/>");
+				oWriter.WriteString(L"<w:bCs/>");
+			}
+			if (m_pFontStyle->bItalic)
+			{
+				oWriter.WriteString(L"<w:i/>");
+				oWriter.WriteString(L"<w:iCs/>");
+			}
+			if (ConvertColorBGRToRGB(m_pFontStyle->oBrush.Color1) != c_iBlackColor2)
+			{
+				oWriter.WriteString(L"<w:color w:val=\"");
+				oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_pFontStyle->oBrush.Color1));
+				oWriter.WriteString(L"\"/>");
+			}
+		}
+
 		if (m_eVertAlignType == eVertAlignType::vatSubscript)
 			oWriter.WriteString(L"<w:vertAlign w:val=\"subscript\"/>");
 		else if (m_eVertAlignType == eVertAlignType::vatSuperscript)

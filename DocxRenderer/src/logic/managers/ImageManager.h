@@ -24,7 +24,7 @@ namespace NSDocxRenderer
 
 		CImageManager(){};
 
-		void NewDocument();
+		void Clear();
 
 	public:
 		std::shared_ptr<CImageInfo> WriteImage(Aggplus::CImage* pImage, double& x, double& y, double& width, double& height);

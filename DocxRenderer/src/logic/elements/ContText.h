@@ -71,6 +71,7 @@ namespace NSDocxRenderer
 		UINT m_iNumDuplicates{0};
 
 		bool m_bIsAddBrEnd{false};
+		bool m_bWriteStyleRaw{false};
 
 		CContText() = default;
 		CContText(CFontManager* pManager) : m_pManager(pManager) {}

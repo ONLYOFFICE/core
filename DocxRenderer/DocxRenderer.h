@@ -52,9 +52,7 @@ public:
 	CDocxRenderer(NSFonts::IApplicationFonts* pAppFonts);
 	virtual ~CDocxRenderer();
 
-	HRESULT      CreateNewFile(const std::wstring& wsPath, bool bIsOutCompress = true);
-	HRESULT      Close();
-
+	HRESULT      Compress();
 	HRESULT      SetTempFolder(const std::wstring& wsPath);
 	//----------------------------------------------------------------------------------------
 	// Тип рендерера
@@ -195,7 +193,9 @@ public:
 	// методы, которыми будет пользоваться конвертер
 	HRESULT SetTextAssociationType(const NSDocxRenderer::TextAssociationType& eType);
 	int Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFile, bool bIsOutCompress = true);
+	std::vector<std::wstring> ScanPage(IOfficeDrawingFile* pFile, size_t nPage);
 
 private:
 	CDocxRenderer_Private* m_pInternal;
+	void DrawPage(IOfficeDrawingFile* pFile, size_t nPage);
 };

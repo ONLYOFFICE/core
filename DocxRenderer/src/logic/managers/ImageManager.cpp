@@ -3,7 +3,7 @@
 
 namespace NSDocxRenderer
 {
-	void CImageManager::NewDocument()
+	void CImageManager::Clear()
 	{
 		m_strDstMedia	= L"";
 		m_lMaxSizeImage = 1200;

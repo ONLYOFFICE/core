@@ -54,27 +54,18 @@ CDocxRenderer::CDocxRenderer(NSFonts::IApplicationFonts* pAppFonts)
 {
 	m_pInternal = new CDocxRenderer_Private(pAppFonts, this);
 }
-
 CDocxRenderer::~CDocxRenderer()
 {
 	RELEASEOBJECT(m_pInternal);
 }
-
-HRESULT CDocxRenderer::CreateNewFile(const std::wstring& wsPath, bool bIsOutCompress)
-{
-	m_pInternal->m_oDocument.m_strDstFilePath = wsPath;
-	m_pInternal->m_oDocument.m_strTempDirectory = bIsOutCompress ?
-				NSDirectory::CreateDirectoryWithUniqueName(m_pInternal->m_sTempDirectory) :
-				m_pInternal->m_sTempDirectory;
-	m_pInternal->m_oDocument.CreateDocument();
-	return S_OK;
-}
-HRESULT CDocxRenderer::Close()
+HRESULT CDocxRenderer::Compress()
 {
 	COfficeUtils oCOfficeUtils(nullptr);
 	HRESULT hr = oCOfficeUtils.CompressFileOrDirectory(m_pInternal->m_oDocument.m_strTempDirectory, m_pInternal->m_oDocument.m_strDstFilePath, true);
+
 	if (!m_pInternal->m_oDocument.m_strTempDirectory.empty())
 		NSDirectory::DeleteDirectory(m_pInternal->m_oDocument.m_strTempDirectory);
+
 	m_pInternal->m_oDocument.m_strTempDirectory = L"";
 	return hr;
 }
@@ -87,52 +78,74 @@ HRESULT CDocxRenderer::SetTextAssociationType(const NSDocxRenderer::TextAssociat
 
 int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFile, bool bIsOutCompress)
 {
-	// Сбросим кэш шрифтов. По идее можно оставлять кэш для шрифтов "по имени",
-	// но для шрифтов из темповых папок - нет. Темповая папка для Reader (PDF/XPS/DJVU)
-	// может быть одной и той же. И создание там файлов функцией создания временных файлов
-	// может вернуть один и тот же путь. И шрифт возьмется из старого файла.
-	m_pInternal->m_oDocument.m_oFontManager.ClearCache();
-	if (m_pInternal->m_oDocument.m_pAppFonts)
-		m_pInternal->m_oDocument.m_pAppFonts->GetStreams()->Clear();
+	m_pInternal->m_oDocument.m_strDstFilePath = sDstFile;
 
-	CreateNewFile(sDstFile, bIsOutCompress);
+	if (bIsOutCompress)
+		m_pInternal->m_oDocument.m_strTempDirectory = NSDirectory::CreateDirectoryWithUniqueName(m_pInternal->m_sTempDirectory);
+	else
+		m_pInternal->m_oDocument.m_strTempDirectory= m_pInternal->m_sTempDirectory;
 
-	if (odftPDF == pFile->GetType())
-		m_pInternal->m_oDocument.m_bIsNeedPDFTextAnalyzer = true;
+	m_pInternal->m_oDocument.Init();
+	m_pInternal->m_oDocument.CreateTemplates();
 
 	int nPagesCount = pFile->GetPagesCount();
 	m_pInternal->m_oDocument.m_lNumberPages = nPagesCount;
 
 	for (int i = 0; i < nPagesCount; ++i)
-	{
-		//std::cout << "Page " << i + 1 << "/" << nPagesCount << std::endl;
-		NewPage();
-		BeginCommand(c_nPageType);
-		m_pInternal->m_oDocument.m_bIsDisablePageCommand = true;
-		m_pInternal->m_oDocument.m_lPagesCount = i;
-
-		double dPageDpiX, dPageDpiY;
-		double dWidth, dHeight;
-		pFile->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-
-		dWidth  *= 25.4 / dPageDpiX;
-		dHeight *= 25.4 / dPageDpiY;
-
-		put_Width(dWidth);
-		put_Height(dHeight);
-
-		pFile->DrawPageOnRenderer(this, i, nullptr);
-
-		m_pInternal->m_oDocument.m_bIsDisablePageCommand = false;
-		EndCommand(c_nPageType);
-	}
+		DrawPage(pFile, i);
 
 	HRESULT hr = S_OK;
-	m_pInternal->m_oDocument.Close();
+	m_pInternal->m_oDocument.Write();
 	m_pInternal->m_oDocument.Clear();
-	if (bIsOutCompress)
-		hr = Close();
+	if (bIsOutCompress) hr = Compress();
 	return (hr == S_OK) ? 0 : 1;
+}
+
+std::vector<std::wstring> CDocxRenderer::ScanPage(IOfficeDrawingFile* pFile, size_t nPage)
+{
+	m_pInternal->m_oDocument.Clear();
+	m_pInternal->m_oDocument.Init();
+
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = true;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
+
+	DrawPage(pFile, nPage);
+
+	std::vector<std::wstring> xml_shapes;
+	for (const auto& shape : m_pInternal->m_oDocument.m_oCurrentPage.m_arShapes)
+	{
+		if (!shape) continue;
+		auto writer = new NSStringUtils::CStringBuilder();
+		shape->ToXml(*writer);
+		xml_shapes.push_back(writer->GetData());
+		delete writer;
+	}
+	m_pInternal->m_oDocument.Clear();
+	return xml_shapes;
+}
+
+void CDocxRenderer::DrawPage(IOfficeDrawingFile* pFile, size_t nPage)
+{
+	//std::cout << "Page " << i + 1 << "/" << nPagesCount << std::endl;
+	NewPage();
+	BeginCommand(c_nPageType);
+	m_pInternal->m_oDocument.m_bIsDisablePageCommand = true;
+	m_pInternal->m_oDocument.m_lPageNum = nPage;
+
+	double dPageDpiX, dPageDpiY;
+	double dWidth, dHeight;
+	pFile->GetPageInfo(nPage, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+
+	dWidth  *= 25.4 / dPageDpiX;
+	dHeight *= 25.4 / dPageDpiY;
+
+	put_Width(dWidth);
+	put_Height(dHeight);
+
+	pFile->DrawPageOnRenderer(this, nPage, nullptr);
+
+	m_pInternal->m_oDocument.m_bIsDisablePageCommand = false;
+	EndCommand(c_nPageType);
 }
 
 HRESULT CDocxRenderer::SetTempFolder(const std::wstring& wsPath)

@@ -10,10 +10,17 @@ namespace NSDocxRenderer
 	{
 	}
 
-	void CPage::Init(NSStructures::CFont* pFont, NSStructures::CPen* pPen, NSStructures::CBrush* pBrush,
-					 NSStructures::CShadow* pShadow, NSStructures::CEdgeText* pEdge, Aggplus::CMatrix* pMatrix,
-					 Aggplus::CGraphicsPathSimpleConverter* pSimple, CFontStyleManager* pFontStyleManager, CFontManager *pFontManager,
-					 CFontSelector* pFontSelector, CParagraphStyleManager* pParagraphStyleManager)
+	void CPage::Init(NSStructures::CFont* pFont,
+		NSStructures::CPen* pPen,
+		NSStructures::CBrush* pBrush,
+		NSStructures::CShadow* pShadow,
+		NSStructures::CEdgeText* pEdge,
+		Aggplus::CMatrix* pMatrix,
+		Aggplus::CGraphicsPathSimpleConverter* pSimple,
+		CFontStyleManager* pFontStyleManager,
+		CFontManager *pFontManager,
+		CFontSelector* pFontSelector,
+		CParagraphStyleManager* pParagraphStyleManager)
 	{
 		m_pFont     = pFont;
 		m_pPen      = pPen;
@@ -178,16 +185,16 @@ namespace NSDocxRenderer
 		m_oVector.CurveTo(x1, y1, x2, y2, x3, y3);
 	}
 
-	void CPage::Start()
+	void CPage::PathStart()
 	{
 	}
 
-	void CPage::End()
+	void CPage::PathEnd()
 	{
 		m_oVector.End();
 	}
 
-	void CPage::Close()
+	void CPage::PathClose()
 	{
 		m_oVector.Close();
 	}
@@ -265,9 +272,14 @@ namespace NSDocxRenderer
 		}
 	}
 
-	void CPage::CollectTextData(const PUINT pUnicodes, const PUINT pGids, const UINT& nCount,
-								const double& fX, const double& fY, const double& fWidth, const double& fHeight,
-								const double& fBaseLineOffset, const bool& bIsPDFAnalyzer)
+	void CPage::CollectTextData(const PUINT pUnicodes,
+		const PUINT pGids,
+		const UINT& nCount,
+		const double& fX,
+		const double& fY,
+		const double& fWidth,
+		const double& fHeight,
+		const double& fBaseLineOffset)
 	{
 		// 9 - \t
 		if (pUnicodes != nullptr && nCount == 1 && (IsSpaceUtf32(*pUnicodes) || *pUnicodes == 9))
@@ -358,20 +370,21 @@ namespace NSDocxRenderer
 
 		pCont->m_dSpaceWidthMM = m_pFontManager->GetSpaceWidthMM();
 
-#ifndef USE_DEFAULT_FONT_TO_RECALC
-		pCont->m_oSelectedFont.Name = m_pFontSelector->GetSelectedName();
-		pCont->m_oSelectedFont.Size = m_pFont->Size;
-		pCont->m_oSelectedFont.Bold = m_pFontSelector->IsSelectedBold();
-		pCont->m_oSelectedFont.Italic = m_pFontSelector->IsSelectedItalic();
-#else
-		pCont->m_oSelectedFont.Path = m_pFont->Path;
-		pCont->m_oSelectedFont.Size = m_pFont->Size;
-		pCont->m_oSelectedFont.FaceIndex = m_pFont->FaceIndex;
-#endif // USE_DEFAULT_FONT_TO_RECALC
-
+		if (m_bUseDefaultFont)
+		{
+			pCont->m_oSelectedFont.Path = m_pFont->Path;
+			pCont->m_oSelectedFont.Size = m_pFont->Size;
+			pCont->m_oSelectedFont.FaceIndex = m_pFont->FaceIndex;
+		}
+		else
+		{
+			pCont->m_oSelectedFont.Name = m_pFontSelector->GetSelectedName();
+			pCont->m_oSelectedFont.Size = m_pFont->Size;
+			pCont->m_oSelectedFont.Bold = m_pFontSelector->IsSelectedBold();
+			pCont->m_oSelectedFont.Italic = m_pFontSelector->IsSelectedItalic();
+		}
+		pCont->m_bWriteStyleRaw = m_bWriteStyleRaw;
 		m_pParagraphStyleManager->UpdateAvgFontSize(m_pFont->Size);
-
-
 		m_arConts.push_back(pCont);
 	}
 
@@ -408,7 +421,7 @@ namespace NSDocxRenderer
 		m_arTextLines.push_back(pLine);
 	}
 
-	void CPage::ProcessingAndRecordingOfPageData(NSStringUtils::CStringBuilder& oWriter, LONG lPagesCount, LONG lNumberPages)
+	void CPage::Analyze()
 	{
 		// build m_arDiacriticalSymbols
 		BuildDiacriticalSymbols();
@@ -433,9 +446,12 @@ namespace NSDocxRenderer
 
 		// merge shapes
 		MergeShapes();
+	}
 
+	void CPage::Record(NSStringUtils::CStringBuilder& oWriter, bool bIsLastPage)
+	{
 		ToXml(oWriter);
-		WriteSectionToFile(lPagesCount >= lNumberPages - 1, oWriter);
+		WriteSectionToFile(bIsLastPage, oWriter);
 	}
 
 	void CPage::BuildDiacriticalSymbols()
@@ -484,8 +500,20 @@ namespace NSDocxRenderer
 	void CPage::CalcSelected()
 	{
 		for (auto& cont : m_arConts)
-			if (cont)
-				cont->CalcSelected();
+		{
+			if (cont && cont->m_oSelectedSizes.dHeight == 0.0 && cont->m_oSelectedSizes.dWidth == 0.0)
+			{
+				if (m_bUseDefaultFont)
+				{
+					cont->m_oSelectedSizes.dHeight = cont->m_dHeight;
+					cont->m_oSelectedSizes.dWidth = cont->m_dWidth;
+				}
+				else
+				{
+					cont->CalcSelected();
+				}
+			}
+		}
 	}
 
 	void CPage::AnalyzeShapes()
@@ -1033,24 +1061,13 @@ namespace NSDocxRenderer
 		}
 
 		for (const auto& image : m_arImages)
-			if(image)
+			if (image)
 				image->ToXml(oWriter);
 
 
 		for (const auto& shape : m_arShapes)
-			if(shape)
+			if (shape)
 				shape->ToXml(oWriter);
-
-		if (bIsTextShapePresent)
-		{
-			for (size_t i = 0; i < m_arOutputObjects.size(); ++i)
-			{
-				auto pObj = m_arOutputObjects[i];
-				CShape* pSahpe = nullptr;
-				if((pSahpe = dynamic_cast<CShape*>(pObj.get())) != nullptr)
-					pSahpe->ToXml(oWriter);
-			}
-		}
 
 		if (bIsNeedWP)
 		{

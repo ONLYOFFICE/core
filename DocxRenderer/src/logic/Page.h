@@ -17,6 +17,11 @@ namespace NSDocxRenderer
 
 		LONG m_lCurrentCommand {0};
 
+		TextAssociationType m_eTextAssociationType {TextAssociationType::tatPlainParagraph};
+
+		bool m_bUseDefaultFont{false};
+		bool m_bWriteStyleRaw {false};
+
 		NSStructures::CFont*        m_pFont      {nullptr};
 		NSStructures::CPen*         m_pPen       {nullptr};
 		NSStructures::CBrush*       m_pBrush     {nullptr};
@@ -42,22 +47,26 @@ namespace NSDocxRenderer
 
 		CTextLine*               m_pCurrentLine {nullptr};
 
-		TextAssociationType      m_eTextAssociationType {TextAssociationType::tatPlainParagraph};
-
 		bool m_bIsDeleteTextClipPage {true};
 		bool m_bIsRecalcFontSize {true};
 		LONG m_lLastCommand = 0;
 
 		CPage(NSFonts::IApplicationFonts* pFonts);
 		~CPage();
-		void Init(NSStructures::CFont* pFont, NSStructures::CPen* pPen, NSStructures::CBrush* pBrush,
-				  NSStructures::CShadow* pShadow, NSStructures::CEdgeText* pEdge, Aggplus::CMatrix* pMatrix,
-				  Aggplus::CGraphicsPathSimpleConverter* pSimple, CFontStyleManager* pStyleManager, CFontManager *pFontManager,
-				  CFontSelector* pFontSelector, CParagraphStyleManager* pParagraphStyleManager);
 
+		void Init(NSStructures::CFont* pFont,
+			NSStructures::CPen* pPen,
+			NSStructures::CBrush* pBrush,
+			NSStructures::CShadow* pShadow,
+			NSStructures::CEdgeText* pEdge,
+			Aggplus::CMatrix* pMatrix,
+			Aggplus::CGraphicsPathSimpleConverter* pSimple,
+			CFontStyleManager* pStyleManager,
+			CFontManager *pFontManager,
+			CFontSelector* pFontSelector,
+			CParagraphStyleManager* pParagraphStyleManager);
 
 		void BeginCommand(DWORD lType);
-
 		void Clear();
 
 		//удаляем то, что выходит за границы страницы
@@ -71,22 +80,27 @@ namespace NSDocxRenderer
 		void MoveTo(double& dX, double& dY);
 		void LineTo(double& dX, double& dY);
 		void CurveTo(double& x1, double& y1, double& x2, double& y2, double& x3, double& y3);
-		void Start();
-		void End();
-		void Close();
+		void PathStart();
+		void PathEnd();
+		void PathClose();
 
 		//набивается содержимым вектор m_arShapes
 		void DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo);
 
 		//набивается содержимым вектор m_arTextData
-		void CollectTextData(const PUINT pUnicodes, const PUINT pGids, const UINT& nCount,
-							 const double& fX, const double& fY, const double& fWidth, const double& fHeight,
-							 const double& fBaseLineOffset, const bool& bIsPDFAnalyzer);
+		void CollectTextData(const PUINT pUnicodes,
+			const PUINT pGids,
+			const UINT& nCount,
+			const double& fX,
+			const double& fY,
+			const double& fWidth,
+			const double& fHeight,
+			const double& fBaseLineOffset);
 
-		void ProcessingAndRecordingOfPageData(NSStringUtils::CStringBuilder& oWriter, LONG lPagesCount, LONG lNumberPages);
+		void Analyze();
+		void Record(NSStringUtils::CStringBuilder& oWriter, bool bIsLastPage);
 
 	private:
-
 		// methods to build text lines
 		void BuildDiacriticalSymbols();
 		void BuildTextLines();

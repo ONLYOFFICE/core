@@ -12,15 +12,14 @@ namespace NSDocxRenderer
 		~CFontStyleManager();
 
 		void Clear();
-		void NewDocument();
 		void ToXml(NSStringUtils::CStringBuilder& oWriter);
 
 		std::shared_ptr<const CFontStyle> GetOrAddFontStyle(const CFontStyle& oFontStyle);
 		std::shared_ptr<const CFontStyle> GetOrAddFontStyle(const NSStructures::CBrush& oBrush,
-									   const std::wstring& wsFontName,
-									   double dFontSize,
-									   bool bItalic,
-									   bool bBold);
+			const std::wstring& wsFontName,
+			double dFontSize,
+			bool bItalic,
+			bool bBold);
 
 	private:
 		std::list<std::shared_ptr<CFontStyle>> m_arFontStyles;

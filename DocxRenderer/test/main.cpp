@@ -167,11 +167,13 @@ int main(int argc, char *argv[])
 		NSDocxRenderer::TextAssociationType taType;
 		//taType = NSDocxRenderer::TextAssociationType::tatPlainLine;
 		//taType = NSDocxRenderer::TextAssociationType::tatShapeLine;
-		taType = NSDocxRenderer::TextAssociationType::tatPlainParagraph;
-		//taType = NSDocxRenderer::TextAssociationType::tatParagraphToShape;
+		//taType = NSDocxRenderer::TextAssociationType::tatPlainParagraph;
+		taType = NSDocxRenderer::TextAssociationType::tatParagraphToShape;
 
 		oDocxRenderer.SetTextAssociationType(taType);
-		oDocxRenderer.Convert(pReader, sTextDirOut+sDocx);
+		//oDocxRenderer.Convert(pReader, sTextDirOut+sDocx);
+		//auto shapes = oDocxRenderer.ScanPage(pReader, 0);
+
 		//Если сразу нужен zip-архив
 		//oDocxRenderer.Convert(pReader, sPlainParagraphDirOut+sZip);
 #endif

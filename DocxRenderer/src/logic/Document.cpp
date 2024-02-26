@@ -9,15 +9,7 @@ namespace NSDocxRenderer
 	}
 	void CDocument::Clear()
 	{
-		m_oPen.SetDefaultParams();
-		m_oBrush.SetDefaultParams();
-		m_oFont.SetDefaultParams();
-		m_oShadow.SetDefaultParams();
-		m_oEdge.SetDefaultParams();
-
-		m_oTransform.Reset();
-		m_lClipMode = 0;
-		m_lPagesCount = 0;
+		NewPage();
 
 		for(auto& val : m_mapXmlString)
 			delete val.second;
@@ -481,7 +473,7 @@ namespace NSDocxRenderer
 			return S_OK;
 		}
 
-		m_oCurrentPage.CollectTextData((unsigned int*)pUnicodes, (unsigned int*)pGids, nCount, dX, dY, dW, dH, 0, m_bIsNeedPDFTextAnalyzer);
+		m_oCurrentPage.CollectTextData((unsigned int*)pUnicodes, (unsigned int*)pGids, nCount, dX, dY, dW, dH, 0);
 		return S_OK;
 	}
 
@@ -535,19 +527,20 @@ namespace NSDocxRenderer
 		if (c_nPageType == lType && m_bIsDisablePageCommand)
 			return S_OK;
 
-		m_lCurrentCommandType				= -1;
-		m_oCurrentPage.m_lCurrentCommand	= m_lCurrentCommandType;
+		m_lCurrentCommandType = -1;
+		m_oCurrentPage.m_lCurrentCommand = m_lCurrentCommandType;
 
 		if (c_nPageType == lType)
 		{
 			auto pWriter = new NSStringUtils::CStringBuilder();
 			pWriter->AddSize(100000);
-			m_oCurrentPage.ProcessingAndRecordingOfPageData(*pWriter, m_lPagesCount, m_lNumberPages);
-			m_mapXmlString[m_lPagesCount] = pWriter;
+			m_oCurrentPage.Analyze();
+			m_oCurrentPage.Record(*pWriter, m_lPageNum >= m_lNumberPages - 1);
+			m_mapXmlString[m_lPageNum] = pWriter;
 		}
 		else if (c_nPathType == lType)
 		{
-			m_oCurrentPage.End();
+			m_oCurrentPage.PathEnd();
 		}
 
 		return S_OK;
@@ -608,7 +601,7 @@ namespace NSDocxRenderer
 	{
 		if (c_nSimpleGraphicType == m_lCurrentCommandType)
 		{
-			m_oCurrentPage.Close();
+			m_oCurrentPage.PathClose();
 		}
 		else
 		{
@@ -620,7 +613,7 @@ namespace NSDocxRenderer
 	{
 		if (c_nSimpleGraphicType == m_lCurrentCommandType)
 		{
-			m_oCurrentPage.End();
+			m_oCurrentPage.PathEnd();
 		}
 		else
 		{
@@ -648,7 +641,7 @@ namespace NSDocxRenderer
 	{
 		if (c_nSimpleGraphicType == m_lCurrentCommandType)
 		{
-			m_oCurrentPage.Start();
+			m_oCurrentPage.PathStart();
 		}
 		else
 		{
@@ -804,27 +797,42 @@ namespace NSDocxRenderer
 		m_oInstalledFont = m_oFont;
 	}
 
-	bool CDocument::CreateDocument()
+	void CDocument::CreateTemplates()
 	{
 		CreateTemplate(m_strTempDirectory);
-
-		// Init
-		Clear();
-
-		m_lCurrentCommandType = 0;
-		m_oCurrentPage.Init(&m_oFont, &m_oPen, &m_oBrush, &m_oShadow, &m_oEdge, &m_oTransform, &m_oSimpleGraphicsConverter, &m_oFontStyleManager, &m_oFontManager, &m_oFontSelector, &m_oParagraphStyleManager);
-
-		m_oImageManager.NewDocument();
-		m_oFontStyleManager.NewDocument();
-
-		// media
 		m_oImageManager.m_strDstMedia = m_strTempDirectory + L"/word/media";
 		NSDirectory::CreateDirectory(m_oImageManager.m_strDstMedia);
-
-		return true;
 	}
 
-	void CDocument::Close()
+	void CDocument::Init()
+	{
+		// Сбросим кэш шрифтов. По идее можно оставлять кэш для шрифтов "по имени",
+		// но для шрифтов из темповых папок - нет. Темповая папка для Reader (PDF/XPS/DJVU)
+		// может быть одной и той же. И создание там файлов функцией создания временных файлов
+		// может вернуть один и тот же путь. И шрифт возьмется из старого файла.
+		m_oFontManager.ClearCache();
+		if (m_pAppFonts) m_pAppFonts->GetStreams()->Clear();
+
+		Clear();
+		m_lCurrentCommandType = 0;
+
+		m_oCurrentPage.Init(&m_oFont,
+			&m_oPen,
+			&m_oBrush,
+			&m_oShadow,
+			&m_oEdge,
+			&m_oTransform,
+			&m_oSimpleGraphicsConverter,
+			&m_oFontStyleManager,
+			&m_oFontManager,
+			&m_oFontSelector,
+			&m_oParagraphStyleManager);
+
+		m_oImageManager.Clear();
+		m_oFontStyleManager.Clear();
+	}
+
+	void CDocument::Write()
 	{
 		BuildDocumentXml();
 		BuildDocumentXmlRels();
@@ -1214,7 +1222,6 @@ namespace NSDocxRenderer
 
 		//oWriter.WriteString(L"<w:style w:type=\"paragraph\" w:default=\"1\" w:styleId=\"Normal\"><w:name w:val=\"Normal\"/>");
 		//oWriter.WriteString(L"</w:style>");
-
 
 		m_oFontStyleManager.ToXml(oWriter);
 		m_oParagraphStyleManager.ToXml(oWriter);

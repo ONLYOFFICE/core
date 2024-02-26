@@ -17,10 +17,6 @@ namespace NSDocxRenderer
 		m_arFontStyles.clear();
 	}
 
-	void CFontStyleManager::NewDocument()
-	{
-		Clear();
-	}
 	void CFontStyleManager::ToXml(NSStringUtils::CStringBuilder& oWriter)
 	{
 		for(auto& val : m_arFontStyles)

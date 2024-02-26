@@ -1031,6 +1031,71 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
 		oR.free(); oFonts.free(); oFontRef.free();
 	}
 
+	for (int nPage = 0, nLastPage = m_pPDFDocument->getNumPages(); nPage < nLastPage; ++nPage)
+	{
+		Page* pPage = m_pPDFDocument->getCatalog()->getPage(nPage + 1);
+		if (!pPage)
+			continue;
+
+		Object oAnnots;
+		if (!pPage->getAnnots(&oAnnots)->isArray())
+		{
+			oAnnots.free();
+			continue;
+		}
+
+		for (int i = 0, nNum = oAnnots.arrayGetLength(); i < nNum; ++i)
+		{
+			Object oAnnot;
+			if (!oAnnots.arrayGet(i, &oAnnot)->isDict())
+			{
+				oAnnot.free();
+				continue;
+			}
+
+			Object oSubtype;
+			std::string sType;
+			if (oAnnot.dictLookup("Subtype", &oSubtype)->isName())
+				sType = oSubtype.getName();
+			oSubtype.free();
+
+			if (sType != "FreeText")
+			{
+				oAnnot.free();
+				continue;
+			}
+
+			Object oObj;
+			if (!oAnnot.dictLookup("RC", &oObj)->isString())
+			{
+				oAnnot.free(); oObj.free();
+				continue;
+			}
+
+			TextString* s = new TextString(oObj.getString());
+			std::string sRC = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+			delete s;
+			oObj.free();
+
+			Object oAnnotRef;
+			oAnnots.arrayGetNF(i, &oAnnotRef);
+			std::vector<PdfReader::CAnnotMarkup::CFontData*> arrRC = PdfReader::CAnnotMarkup::ReadRC(sRC);
+			std::map<std::wstring, std::wstring> mFreeText = PdfReader::CAnnotMarkup::SetFont(m_pPDFDocument, &oAnnotRef, m_pFontManager, m_pFontList, arrRC, nTypeFonts);
+			for (std::map<std::wstring, std::wstring>::iterator it = mFreeText.begin(); it != mFreeText.end(); ++it)
+			{
+				if (m_mFonts.find(it->first) != m_mFonts.end())
+					continue;
+
+				oRes.WriteString(U_TO_UTF8(it->first));
+				nFontsID++;
+				m_mFonts[it->first] = it->second;
+			}
+			oAnnotRef.free();
+		}
+
+		oAnnots.free();
+	}
+
 	oRes.AddInt(nFontsID, nFontsPos);
 
 	oRes.WriteLen();

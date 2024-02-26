@@ -327,14 +327,6 @@ private:
 class CAnnotMarkup : public CAnnot
 {
 public:
-	std::map<std::wstring, std::wstring> SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList);
-protected:
-	CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
-	virtual ~CAnnotMarkup();
-
-	virtual void ToWASM(NSWasm::CData& oRes) override;
-
-private:
 	struct CFontData final
 	{
 		bool bFind;
@@ -350,7 +342,18 @@ private:
 		CFontData() : bFind(false), nAlign(0), unFontFlags(4), dFontSise(10), dVAlign(0), dColor{0, 0, 0} {}
 		CFontData(const CFontData& oFont);
 	};
-	void ReadFontData(const std::string& sData, CFontData* pFont);
+
+	static std::map<std::wstring, std::wstring> SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, const std::vector<CFontData*>& arrRC, int nTypeFonts = 3);
+	std::map<std::wstring, std::wstring> SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList);
+	static std::vector<CFontData*> ReadRC(const std::string& sRC);
+protected:
+	CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+	virtual ~CAnnotMarkup();
+
+	virtual void ToWASM(NSWasm::CData& oRes) override;
+
+private:
+	static void ReadFontData(const std::string& sData, CFontData* pFont);
 
 	BYTE m_nRT; // Тип аннотации-ответа
 	unsigned int m_unRefNumPopup; // Номер ссылки на всплывающую аннотацию

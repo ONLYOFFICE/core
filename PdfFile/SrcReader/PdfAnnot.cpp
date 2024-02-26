@@ -2125,59 +2125,7 @@ CAnnotMarkup::CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : 
 	std::string sRC = DictLookupString(&oAnnot, "RC", 3);
 	// if (oAnnot.dictLookup("RC", &oObj)->isStream())
 	// TODO streamGetBlock
-	XmlUtils::CXmlLiteReader oLightReader;
-	if (!sRC.empty() && oLightReader.FromStringA(sRC) && oLightReader.ReadNextNode() && oLightReader.GetNameA() == "body")
-	{
-		CFontData oFontBase;
-		while (oLightReader.MoveToNextAttribute())
-		{
-			if (oLightReader.GetNameA() == "style")
-			{
-				ReadFontData(oLightReader.GetTextA(), &oFontBase);
-				break;
-			}
-		}
-		oLightReader.MoveToElement();
-
-		int nDepthP = oLightReader.GetDepth();
-		while (oLightReader.ReadNextSiblingNode2(nDepthP))
-		{
-			if (oLightReader.GetNameA() != "p")
-				continue;
-
-			int nDepthSpan = oLightReader.GetDepth();
-			if (oLightReader.IsEmptyNode() || !oLightReader.ReadNextSiblingNode2(nDepthSpan))
-				continue;
-
-			do
-			{
-				std::string sName = oLightReader.GetNameA();
-				if (sName == "span")
-				{
-					CFontData* pFont = new CFontData(oFontBase);
-					while (oLightReader.MoveToNextAttribute())
-					{
-						if (oLightReader.GetNameA() == "style")
-						{
-							ReadFontData(oLightReader.GetTextA(), pFont);
-							break;
-						}
-					}
-					oLightReader.MoveToElement();
-
-					pFont->sText = oLightReader.GetText2A();
-					m_arrRC.push_back(pFont);
-				}
-				else if (sName == "#text")
-				{
-					CFontData* pFont = new CFontData(oFontBase);
-					pFont->sText = oLightReader.GetTextA();
-					m_arrRC.push_back(pFont);
-				}
-			} while (oLightReader.ReadNextSiblingNode2(nDepthSpan));
-		}
-	}
-	oLightReader.Clear();
+	m_arrRC = ReadRC(sRC);
 	if (m_arrRC.empty())
 		m_unFlags &= ~(1 << 3);
 	else
@@ -2214,10 +2162,73 @@ CAnnotMarkup::~CAnnotMarkup()
 	for (int i = 0; i < m_arrRC.size(); ++i)
 		RELEASEOBJECT(m_arrRC[i]);
 }
-std::map<std::wstring, std::wstring> CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList)
+std::vector<CAnnotMarkup::CFontData*> CAnnotMarkup::ReadRC(const std::string& sRC)
+{
+	std::vector<CFontData*> arrRC;
+
+	XmlUtils::CXmlLiteReader oLightReader;
+	if (sRC.empty() || !oLightReader.FromStringA(sRC) || !oLightReader.ReadNextNode() || oLightReader.GetNameA() != "body")
+		return arrRC;
+
+	CFontData oFontBase;
+	while (oLightReader.MoveToNextAttribute())
+	{
+		if (oLightReader.GetNameA() == "style")
+		{
+			ReadFontData(oLightReader.GetTextA(), &oFontBase);
+			break;
+		}
+	}
+	oLightReader.MoveToElement();
+
+	int nDepthP = oLightReader.GetDepth();
+	while (oLightReader.ReadNextSiblingNode2(nDepthP))
+	{
+		if (oLightReader.GetNameA() != "p")
+			continue;
+
+		int nDepthSpan = oLightReader.GetDepth();
+		if (oLightReader.IsEmptyNode() || !oLightReader.ReadNextSiblingNode2(nDepthSpan))
+			continue;
+
+		do
+		{
+			std::string sName = oLightReader.GetNameA();
+			if (sName == "span")
+			{
+				CFontData* pFont = new CFontData(oFontBase);
+				while (oLightReader.MoveToNextAttribute())
+				{
+					if (oLightReader.GetNameA() == "style")
+					{
+						ReadFontData(oLightReader.GetTextA(), pFont);
+						break;
+					}
+				}
+				oLightReader.MoveToElement();
+
+				pFont->sText = oLightReader.GetText2A();
+				arrRC.push_back(pFont);
+			}
+			else if (sName == "#text")
+			{
+				CFontData* pFont = new CFontData(oFontBase);
+				pFont->sText = oLightReader.GetTextA();
+				arrRC.push_back(pFont);
+			}
+		} while (oLightReader.ReadNextSiblingNode2(nDepthSpan));
+	}
+
+	return arrRC;
+}
+std::map<std::wstring, std::wstring> CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList)
+{
+	return SetFont(pdfDoc, oAnnotRef, pFontManager, pFontList, m_arrRC);
+}
+std::map<std::wstring, std::wstring> CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, const std::vector<CFontData*>& arrRC, int nTypeFonts)
 {
 	std::map<std::wstring, std::wstring> mRes;
-	if (m_arrRC.empty())
+	if (arrRC.empty())
 		return mRes;
 
 	Object oAnnot, oObj;
@@ -2237,7 +2248,7 @@ std::map<std::wstring, std::wstring> CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Objec
 			{
 				std::string sFontName, sActual;
 				bool bBold = false, bItalic = false;
-				std::wstring sFontPath = GetFontData(pdfDoc, pFontManager, pFontList, &oFonts, &oFontRef, 3, sFontName, sActual, bBold, bItalic);
+				std::wstring sFontPath = GetFontData(pdfDoc, pFontManager, pFontList, &oFonts, &oFontRef, nTypeFonts, sFontName, sActual, bBold, bItalic);
 
 				const unsigned char* pData14 = NULL;
 				unsigned int nSize14 = 0;
@@ -2251,14 +2262,14 @@ std::map<std::wstring, std::wstring> CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Objec
 			oFontRef.free();
 		}
 
-		for (int i = 0; i < m_arrRC.size(); ++i)
+		for (int i = 0; i < arrRC.size(); ++i)
 		{
-			if (m_arrRC[i]->bFind)
+			if (arrRC[i]->bFind)
 				continue;
 
-			std::string sFontName = m_arrRC[i]->sFontFamily;
-			bool bBold = (bool)((m_arrRC[i]->unFontFlags >> 0) & 1);
-			bool bItalic = (bool)((m_arrRC[i]->unFontFlags >> 1) & 1);
+			std::string sFontName = arrRC[i]->sFontFamily;
+			bool bBold = (bool)((arrRC[i]->unFontFlags >> 0) & 1);
+			bool bItalic = (bool)((arrRC[i]->unFontFlags >> 1) & 1);
 			if (sFontName == "Courier" || sFontName == "Helvetica" || sFontName == "Symbol" || sFontName == "Times New Roman" || sFontName == "ZapfDingbats")
 			{
 				if (sFontName == "Times New Roman")
@@ -2287,16 +2298,16 @@ std::map<std::wstring, std::wstring> CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Objec
 				std::wstring wsFontName = UTF8_TO_U(sFontName);
 				if (!NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(wsFontName) && GetBaseFont(wsFontName, pData14, nSize14))
 					NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFontName, (BYTE*)pData14, nSize14, false);
-				std::string sFontNameBefore = m_arrRC[i]->sFontFamily;
-				m_arrRC[i]->sFontFamily = sFontName;
-				m_arrRC[i]->bFind = true;
+				std::string sFontNameBefore = arrRC[i]->sFontFamily;
+				arrRC[i]->sFontFamily = sFontName;
+				arrRC[i]->bFind = true;
 
-				for (int j = i; j < m_arrRC.size(); ++j)
+				for (int j = i; j < arrRC.size(); ++j)
 				{
-					if (m_arrRC[j]->sFontFamily == sFontNameBefore)
+					if (arrRC[j]->sFontFamily == sFontNameBefore)
 					{
-						m_arrRC[j]->sFontFamily = sFontName;
-						m_arrRC[j]->bFind = true;
+						arrRC[j]->sFontFamily = sFontName;
+						arrRC[j]->bFind = true;
 					}
 				}
 			}
@@ -2315,29 +2326,29 @@ std::map<std::wstring, std::wstring> CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Objec
 					bool bFreeText = std::find(arrFontFreeText.begin(), arrFontFreeText.end(), pFontInfo->m_wsFontPath) != arrFontFreeText.end();
 					if (bFreeText)
 					{
-						m_arrRC[i]->sFontFamily = U_TO_UTF8(pFontInfo->m_wsFontName);
+						arrRC[i]->sFontFamily = U_TO_UTF8(pFontInfo->m_wsFontName);
 						mRes[pFontInfo->m_wsFontName] = pFontInfo->m_wsFontPath;
 					}
 					else
 					{
-						m_arrRC[i]->unFontFlags |= (1 << 6);
-						m_arrRC[i]->sActualFont = U_TO_UTF8(pFontInfo->m_wsFontName);
+						arrRC[i]->unFontFlags |= (1 << 6);
+						arrRC[i]->sActualFont = U_TO_UTF8(pFontInfo->m_wsFontName);
 					}
-					m_arrRC[i]->bFind = true;
+					arrRC[i]->bFind = true;
 
-					std::string sFontNameNew = bFreeText ? m_arrRC[i]->sFontFamily : m_arrRC[i]->sActualFont;
-					for (int j = i; j < m_arrRC.size(); ++j)
+					std::string sFontNameNew = bFreeText ? arrRC[i]->sFontFamily : arrRC[i]->sActualFont;
+					for (int j = i; j < arrRC.size(); ++j)
 					{
-						if (m_arrRC[j]->sFontFamily == sFontName)
+						if (arrRC[j]->sFontFamily == sFontName)
 						{
 							if (bFreeText)
-								m_arrRC[j]->sFontFamily = sFontNameNew;
+								arrRC[j]->sFontFamily = sFontNameNew;
 							else
 							{
-								m_arrRC[j]->unFontFlags |= (1 << 6);
-								m_arrRC[j]->sActualFont = sFontNameNew;
+								arrRC[j]->unFontFlags |= (1 << 6);
+								arrRC[j]->sActualFont = sFontNameNew;
 							}
-							m_arrRC[j]->bFind = true;
+							arrRC[j]->bFind = true;
 						}
 					}
 				}

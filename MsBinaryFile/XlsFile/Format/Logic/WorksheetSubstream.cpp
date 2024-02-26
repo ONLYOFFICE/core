@@ -681,24 +681,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 
 				while (count > 0)
 				{
-					Format *fmt = dynamic_cast<Format *>(elements_.front().get());
-					if ((fmt) && (fmt->ifmt == 0xffff))
-					{
-						std::map<std::wstring, int>::iterator pFind = global_info_->mapDefaultFormatCode.find(fmt->stFormat);
-						if (pFind != global_info_->mapDefaultFormatCode.end())
-						{
-							fmt->ifmt_used = fmt->ifmt = pFind->second;
-						}
-						else
-						{
-							fmt->ifmt_used = fmt->ifmt = global_info_->last_User_NumFmt++;
-						}
-					}
-					else
-					{
-						fmt->ifmt_used = global_info_->RegisterNumFormat(fmt->ifmt, fmt->stFormat);
-					}
-					global_info_->m_arNumFormats.push_back(elements_.front());
+					global_info_->RegisterNumFormat(elements_.front());
 					elements_.pop_front();
 					count--;
 				} 

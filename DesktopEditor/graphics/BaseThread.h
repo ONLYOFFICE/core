@@ -41,7 +41,7 @@
 #include <pthread.h>
 #endif
 
-#if defined(_WIN32) || defined (_WIN64)
+#if defined(_WIN32) || defined(_WIN64)
 typedef DWORD ASC_THREAD_ID;
 #else
 typedef pthread_t ASC_THREAD_ID;
@@ -51,56 +51,57 @@ typedef pthread_t ASC_THREAD_ID;
 
 namespace NSThreads
 {
-    KERNEL_DECL ASC_THREAD_ID GetCurrentThreadId();
+	KERNEL_DECL ASC_THREAD_ID GetCurrentThreadId();
 
-    KERNEL_DECL void Sleep(int nMilliseconds);
+	KERNEL_DECL void Sleep(int nMilliseconds);
 
-    class CThreadDescriptor;
-    class KERNEL_DECL CBaseThread
+	class CThreadDescriptor;
+	class KERNEL_DECL CBaseThread
 	{
 	protected:
-        CThreadDescriptor*  m_hThread;
-        INT                 m_bRunThread;
-        INT                 m_bSuspend;
+		CThreadDescriptor* m_hThread;
+		INT m_bRunThread;
+		INT m_bSuspend;
 
-        int                 m_lError;
-        int                 m_lThreadPriority;
+		int m_lError;
+		int m_lThreadPriority;
 
-        bool                m_bIsNeedDestroy;
-        std::atomic<bool>   m_bIsExit{false};
+		bool m_bIsNeedDestroy;
+		std::atomic<bool> m_bIsExit{false};
 
 	public:
-        CBaseThread();
-        virtual ~CBaseThread();
+		CBaseThread();
+		virtual ~CBaseThread();
+
 	public:
-        virtual void Start(int lPriority);
-        virtual void Suspend();
-        virtual void Resume();
-        virtual void Stop();
-        virtual void StopNoJoin();
-        virtual void DestroyOnFinish();
-        virtual void Cancel();
+		virtual void Start(int lPriority);
+		virtual void Suspend();
+		virtual void Resume();
+		virtual void Stop();
+		virtual void StopNoJoin();
+		virtual void DestroyOnFinish();
+		virtual void Cancel();
 
-        INT IsSuspended();
-        INT IsRunned();
-        bool isAborted();
-        int GetError();
+		INT IsSuspended();
+		INT IsRunned();
+		bool isAborted();
+		int GetError();
 
-        CThreadDescriptor* GetDescriptor();
-        int GetPriority();
-		
-        virtual void CheckSuspend();
+		CThreadDescriptor* GetDescriptor();
+		int GetPriority();
+
+		virtual void CheckSuspend();
 
 	protected:
-        virtual void Join();
+		virtual void Join();
 		virtual DWORD ThreadProc() = 0;
 
 #if defined(_WIN32) || defined(_WIN64) || defined(_WIN32_WCE)
-        static DWORD WINAPI __ThreadProc(void* pv);
+		static DWORD WINAPI __ThreadProc(void* pv);
 #else
-        static void* __ThreadProc(void* pv);
+		static void* __ThreadProc(void* pv);
 #endif
-    };
+	};
 }
 
 #endif // _BUILD_BASETHREAD_H_

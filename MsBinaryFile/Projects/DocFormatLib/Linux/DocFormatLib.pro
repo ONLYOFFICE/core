@@ -31,8 +31,9 @@ SOURCES +=  \
 	../../../DocFile/EncryptionHeader.cpp \
 	../../../DocFile/DrawingPrimitives.cpp \
 	../../../DocFile/Spa.cpp \
-	../../../DocFile/OleObject.cpp \
-	../../../Common/Base/XmlTools.cpp
+        ../../../DocFile/OleObject.cpp \
+        ../../../Common/Base/FormatUtils.cpp \
+        ../../../Common/Base/XmlTools.cpp
 
 core_release {
 SOURCES += \

@@ -499,18 +499,13 @@ namespace DocFileFormat
 				RELEASEOBJECT(Text);
 				Text = new std::vector<wchar_t>();
 
-				int coding = nFontsCodePage != ENCODING_WINDOWS_1250 ? nFontsCodePage : nDocumentCodePage;
+				int coding = nFontsCodePage != ENCODING_WINDOWS_1250 ? nFontsCodePage : (nWordVersion < 1 ? nDocumentCodePage : ENCODING_WINDOWS_1250);
 
-				if (coding == ENCODING_UTF16)
-				{
-					std::wstring sText = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)(bytes), cb / 2);
-					std::copy(sText.begin(), sText.end(), std::back_inserter(*Text));
-				}
-				else
-				{
-					FormatUtils::GetSTLCollectionFromBytes<std::vector<wchar_t>>(Text, bytes, cb, coding);
-				}
+				FormatUtils::GetSTLCollectionFromBytes(Text, bytes, cb, coding);
 
+				//std::wstring strTest1 = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(bytes, cb);
+				//std::wstring strTest2;
+				//FormatUtils::GetWStringFromBytes(strTest2, bytes, cb, ENCODING_WINDOWS_1250);
 				RELEASEARRAYOBJECTS(bytes);
 			}
 		}

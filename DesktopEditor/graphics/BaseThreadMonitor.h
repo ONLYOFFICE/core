@@ -29,52 +29,59 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef DOCTRENDERER_H
-#define DOCTRENDERER_H
+#ifndef _BUILD_BASETHREAD_MONITOR_H_
+#define _BUILD_BASETHREAD_MONITOR_H_
 
-#include <string>
-#include <vector>
-#include "./common.h"
+#include "BaseThread.h"
+#include "TemporaryCS.h"
+#include <functional>
+#include <list>
 
-namespace NSDoctRenderer
+namespace NSThreads
 {
-	namespace DoctRendererFormat
-	{
-		enum FormatFile
-		{
-			DOCT      = 0,
-			XLST      = 1,
-			PPTT      = 2,
-			PDF       = 3,
-			HTML      = 4,
-			PPTX_THEME_THUMBNAIL = 5,
-			IMAGE     = 6,
-			VSDT      = 7,
-			WATERMARK = 8,
-
-			INVALID = 255
-		};
-	}
-}
-
-namespace NSDoctRenderer
-{
-	class CDoctRenderer_Private;
-	class BUILDER_DECL CDoctrenderer
+	class CBaseThreadInfo
 	{
 	public:
-		CDoctrenderer(const std::wstring& sAllFontsPath = L"");
-		void LoadConfig(const std::wstring& sConfigDir, const std::wstring& sAllFontsPath = L"");
-		~CDoctrenderer();
+		ASC_THREAD_ID ID;
+		CBaseThread*  Instance;
+	};
 
-	public:
-		bool Execute(const std::wstring& strXml, std::wstring& strError);
-		std::vector<std::wstring> GetImagesInChanges();
-		void CreateCache(const std::wstring& sAllFontsPath, const std::wstring& sCacheDir);
+	class KERNEL_DECL CBaseThreadMonitor
+	{
+	private:
+		NSCriticalSection::CRITICAL_SECTION m_oCS;
+
+		bool m_bIsInit;
+
+		void* m_pReceiver;
+		std::function<void(void* initializer, CBaseThread*)> m_funcRelease;
+
+		std::list<CBaseThreadInfo> m_listThreads;
 
 	private:
-		CDoctRenderer_Private* m_pInternal;
+		CBaseThreadMonitor();
+
+	public:
+		static CBaseThreadMonitor& Get();
+		~CBaseThreadMonitor();
+
+	public:
+		bool IsInit();
+
+		bool Init(void* receiver);
+		bool Destroy();
+
+		CBaseThread* GetBaseThread(const ASC_THREAD_ID& nThreadId);
+		void SetReleaseHandler(std::function<void(void* initializer, CBaseThread*)> func);
+
+		NSCriticalSection::CRITICAL_SECTION* GetCS();
+
+	private:
+		void Register(CBaseThread* pInstance);
+		void Unregister(CBaseThread* pInstance);
+
+		friend class CBaseThread;
 	};
 }
 
-#endif // DOCTRENDERER_H
+#endif // _BUILD_BASETHREAD_MONITOR_H_

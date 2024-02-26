@@ -989,7 +989,9 @@ void MemStream::setPos(GFileOffset pos, int dir) {
   } else {
     i = (Guint)(start + length - pos);
   }
-  if (i < start) {
+  if (dir < 0 && start + length < pos) {
+    i = 0;
+  } else if (i < start) {
     i = start;
   } else if (i > start + length) {
     i = start + length;

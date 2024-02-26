@@ -37,15 +37,51 @@ namespace StarMath {
 	{
 	}
 	//check XMLWrite(if not nullptr == delete)
-	void CConversionSMtoOOXML::StartConversion(std::vector<StarMath::CElement*> arPars)
+	void CConversionSMtoOOXML::StartConversion(std::vector<StarMath::CElement*> arPars, const unsigned int& iAlignment)
 	{
 		m_pXmlWrite = new XmlUtils::CXmlWriter;
 		m_pXmlWrite->WriteNodeBegin(L"m:oMathPara",false);
+		if(iAlignment>= 0 && iAlignment <= 2)
+		{
+			std::wstring wsAlignment;
+			switch(iAlignment)
+			{
+			case 0:
+			wsAlignment = L"center";
+			break;
+			case 1:
+			wsAlignment = L"left";
+			break;
+			case 2:
+			wsAlignment = L"right";
+			break;
+			default:
+			wsAlignment = L"center";
+			break;
+			}
+			m_pXmlWrite->WriteNodeBegin(L"m:oMathParaPr",false);
+			m_pXmlWrite->WriteNodeBegin(L"m:jc",true);
+			m_pXmlWrite->WriteAttribute(L"m:val",wsAlignment);
+			m_pXmlWrite->WriteNodeEnd(L"",true,true);
+			m_pXmlWrite->WriteNodeEnd(L"m:oMathParaPr",false,false);
+		}
 		m_pXmlWrite->WriteNodeBegin(L"m:oMath",false);
 		for(CElement* oTempElement:arPars)
 		{
 			if(oTempElement != nullptr)
-				oTempElement->ConversionToOOXML(m_pXmlWrite);
+			{
+				if(CParserStarMathString::CheckNewline(oTempElement))
+				{
+					m_pXmlWrite->WriteNodeBegin(L"m:r",false);
+					m_pXmlWrite->WriteNodeBegin(L"w:br",true);
+					m_pXmlWrite->WriteNodeEnd(L"",true,true);
+					m_pXmlWrite->WriteNodeEnd(L"m:r",false,false);
+					m_pXmlWrite->WriteNodeEnd(L"m:oMath",false,false);
+					m_pXmlWrite->WriteNodeBegin(L"m:oMath",false);
+				}
+				else
+					oTempElement->ConversionToOOXML(m_pXmlWrite);
+			}
 		}
 		EndConversion();
 	}
@@ -211,10 +247,6 @@ namespace StarMath {
 			pXmlWrite->WriteNodeBegin(wsNameBlock,true);
 			pXmlWrite->WriteNodeEnd(L"",true,true);
 		}
-/*		pXmlWrite->WriteNodeBegin(wsNameBlock,false);
-		if(pValueBlock != nullptr)
-			pValueBlock->ConversionToOOXML(pXmlWrite);
-		pXmlWrite->WriteNodeEnd(wsNameBlock,false,false)*/;
 	}
 	std::wstring CConversionSMtoOOXML::GetOOXML()
 	{
@@ -389,7 +421,7 @@ namespace StarMath {
 		pXmlWrite->WriteNodeEnd(L"m:t",false,false);
 		pXmlWrite->WriteNodeEnd(L"m:r",false,false);
 	}
-	void CConversionSMtoOOXML::WriteLimUpOrLowNode(XmlUtils::CXmlWriter *pXmlWrite,const std::wstring& wsNameNode,CElement* pValue, const TypeElement& enType,CAttribute* pAttribute,const std::wstring& wsName)
+	void CConversionSMtoOOXML::WriteLimUpOrLowNode(XmlUtils::CXmlWriter *pXmlWrite,const std::wstring& wsNameNode,CElement* pValue, const TypeElement& enType,CAttribute* pAttribute,const std::wstring& wsName,CElement* pIndex)
 	{
 		pXmlWrite->WriteNodeBegin(wsNameNode,false);
 		pXmlWrite->WriteNodeBegin(wsNameNode+L"Pr",false);
@@ -398,7 +430,17 @@ namespace StarMath {
 		pXmlWrite->WriteNodeBegin(L"m:e",false);
 		CConversionSMtoOOXML::WriteRPrFName(enType,pXmlWrite,pAttribute,wsName);
 		pXmlWrite->WriteNodeEnd(L"m:e",false,false);
-		WriteNodeConversion(L"m:lim",pValue,pXmlWrite);
+		if(pValue!= nullptr && pIndex != nullptr)
+		{
+			pXmlWrite->WriteNodeBegin(L"m:lim",false);
+			pIndex->ConversionToOOXML(pXmlWrite);
+			pValue->ConversionToOOXML(pXmlWrite);
+			pXmlWrite->WriteNodeEnd(L"m:lim",false,false);
+		}
+		else if(pValue!=nullptr && pIndex == nullptr)
+			WriteNodeConversion(L"m:lim",pValue,pXmlWrite);
+		else if(pValue == nullptr && pIndex !=nullptr)
+			WriteNodeConversion(L"m:lim",pIndex,pXmlWrite);
 		pXmlWrite->WriteNodeEnd(wsNameNode,false,false);
 	}
 	void CConversionSMtoOOXML::ElementConversion(XmlUtils::CXmlWriter *pXmlWrite, CElement *pElement)

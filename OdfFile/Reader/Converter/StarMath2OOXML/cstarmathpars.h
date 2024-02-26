@@ -46,9 +46,9 @@ namespace StarMath
 
 	struct TBaseAttribute
 	{
-		int base_font_size = 12;
+		unsigned int base_font_size = 12;
 		std::wstring base_font_name = L"Arial";
-		int base_alignment = 1;
+		unsigned int base_alignment = 1;//(0 - center,1 - left,2 - right)
 		bool base_font_bold = false;
 		bool base_font_italic = false;
 	};
@@ -65,12 +65,14 @@ namespace StarMath
 		bool GetPhantom();
 		bool GetStrike();
 		unsigned int GetSize();
+		unsigned int GetAlignment();
 		std::wstring GetColor();
 		const std::wstring& GetFontName();
 		bool EmptyColor();
 		void ParseFontAttribute(const TypeElement& enTypeFont,CStarMathReader* pReader);
 		void ParseColorAttribute(const std::wstring& wsToken,CStarMathReader* pReader);
 		void SetSize(const unsigned int& iSize);
+		void SetAlignment(const unsigned int& iAlignment);
 		void SetBold();
 		void SetItal();
 		void SetPhantom();
@@ -80,13 +82,9 @@ namespace StarMath
 		void SetFont(const TypeElement& enFont);
 		void SetFontName(const std::wstring& wsNameFont);
 	private:
-		std::wstring m_wsColor;
-		bool m_bBold;
-		bool m_bItal;
-		bool m_bPhantom;
-		bool m_bStrike;
-		unsigned int m_iSize;
-		std::wstring m_wsNameFont;
+		std::wstring m_wsColor,m_wsNameFont;
+		bool m_bBold,m_bItal,m_bPhantom,m_bStrike;
+		unsigned int m_iSize,m_iAlignment;
 	};
 	//Сlass for working with tokens (reading, defining types, passing)
 	class CStarMathReader
@@ -121,8 +119,7 @@ namespace StarMath
 		bool CheckIsalhpaForGetElement(const wchar_t& cToken,const wchar_t& cLastToken);
 		bool m_bMarkForUnar;
 		std::wstring::iterator m_itStart,m_itEnd;
-		TypeElement m_enGlobalType;
-		TypeElement m_enUnderType;
+		TypeElement m_enGlobalType,m_enUnderType;
 		std::wstring m_wsToken;
 		CAttribute* m_pAttribute;
 		CAttribute* m_pBaseAttribute;
@@ -159,6 +156,8 @@ namespace StarMath
 		CElement* GetValueIndex();
 		CElement* GetLeftArg();
 		static TypeElement GetIndex(const std::wstring& wsCheckToken);
+		static bool GetUpperIndex(const TypeElement& enType);
+		static bool GetLowerIndex(const TypeElement& enType);
 	private:
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
@@ -230,6 +229,8 @@ namespace StarMath
 		CElement* m_pValueOperator;
 		CElement* m_pValueFrom;
 		CElement* m_pValueTo;
+		CElement* m_pUpperIndex;
+		CElement* m_pLowerIndex;
 		TypeElement m_enTypeOperator;
 		std::wstring m_wsName;
 	};
@@ -409,8 +410,11 @@ namespace StarMath
 		static void AddingAnElementToAnArray(std::vector<CElement*>& arrEquation,CElement* pAddElement);
 		//Receives the left element as input, reads the next one, if the next element has a higher priority and contains the left element, the element received at the input is passed to it. The entire structure is saved and returned.
 		static void ReadingElementsWithPriorities(CStarMathReader* pReader,CElement*& pLeftElement);
+		void SetAlignment(const unsigned int& iAlignment);
+		const unsigned int& GetAlignment();
 	private:
 		std::vector<CElement*> m_arEquation;
+		unsigned int m_iAlignment;
 	};
 }
 

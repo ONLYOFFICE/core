@@ -468,7 +468,7 @@ namespace NSBinPptxRW
 	{
 	private:
 		NSStringUtils::CStringBuilder*				m_pWriter;
-		std::map<std::wstring, _relsGeneratorInfo>	m_mapImages;
+		std::map<std::wstring, _relsGeneratorInfo>	m_mapRelsImages;
 		std::map<std::wstring, unsigned int>		m_mapLinks;
 	public:
 		unsigned int								m_lNextRelsID;

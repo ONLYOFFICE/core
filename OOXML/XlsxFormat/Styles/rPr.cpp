@@ -494,6 +494,7 @@ namespace OOX
 				ptr.bBlue = m_oRgb->Get_B();
 				ptr.bGreen = m_oRgb->Get_G();
 				ptr.bRed = m_oRgb->Get_R();
+                ptr.xColorType = 2;
 			}
 
 

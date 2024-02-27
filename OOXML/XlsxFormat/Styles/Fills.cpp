@@ -154,7 +154,11 @@ namespace OOX
 					ptr->fls = 0x11;
 				else if (m_oPatternType == SimpleTypes::Spreadsheet::EPatternType::patterntypeGray0625)
 					ptr->fls = 0x12;
+				else
+					ptr->fls = 0x00;
 			}
+			else
+					ptr->fls = 0x00;
 
 			if(m_oBgColor.IsInit())
 				ptr->brtColorBack = m_oBgColor->toColor();

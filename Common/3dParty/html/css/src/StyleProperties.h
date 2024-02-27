@@ -536,6 +536,7 @@ namespace NSCSS
 		bool LineThrough() const;
 
 		CTextDecorationLine &operator+=(const CTextDecorationLine& oTextDecoration);
+		bool operator==(const CTextDecorationLine& oTextDecorationLine) const;
 	};
 
 	struct TTextDecoration
@@ -545,6 +546,7 @@ namespace NSCSS
 		CColor              m_oColor;
 
 		TTextDecoration& operator+=(const TTextDecoration& oTextDecoration);
+		bool operator==(const TTextDecoration& oTextDecoration) const;
 	};
 
 	class CText
@@ -611,6 +613,7 @@ namespace NSCSS
 
 		CIndent& operator+=(const CIndent& oIndent);
 		bool     operator==(const CIndent& oIndent) const;
+		bool     operator!=(const CIndent& oIndent) const;
 	private:
 		bool SetValues(const std::wstring& wsTopValue, const std::wstring& wsRightValue, const std::wstring& wsBottomValue, const std::wstring& wsLeftValue, unsigned int unLevel, bool bHardMode = false);
 		void UpdateSide(CDigit& oSide, double dFontSize);
@@ -668,8 +671,6 @@ namespace NSCSS
 		CString m_oStyle;
 		CString m_oVariant;
 		CString m_oWeight;
-
-		TTextDecoration m_oTextDecoration;
 	};
 
 	class CPage

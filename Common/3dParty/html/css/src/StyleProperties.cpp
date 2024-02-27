@@ -109,6 +109,8 @@ namespace NSCSS
 	void CString::Clear()
 	{
 		m_oValue.clear();
+		m_unLevel    = NULL;
+		m_bImportant = false;
 	}
 
 	int CString::ToInt() const
@@ -180,7 +182,10 @@ namespace NSCSS
 
 	void CDigit::Clear()
 	{
-		m_oValue = DBL_MAX;
+		m_oValue        = DBL_MAX;
+		m_unLevel       = NULL;
+		m_enUnitMeasure = None;
+		m_bImportant    = false;
 	}
 	
 	void CDigit::ConvertTo(UnitMeasure enUnitMeasure, double dPrevValue)
@@ -463,6 +468,9 @@ namespace NSCSS
 		if ((CHECK_CONDITIONS && !bHardMode) || (wsValue.empty() && unLevel == m_unLevel))
 			return false;
 
+		if (8 == unLevel)
+			unLevel = 8;
+		
 		if (wsValue.empty())
 		{
 			SetEmpty(unLevel);
@@ -575,6 +583,8 @@ namespace NSCSS
 	void CColor::Clear()
 	{
 		m_oValue.Clear();
+		m_unLevel    = NULL;
+		m_bImportant = false;
 	}
 
 	ColorType CColor::GetType() const
@@ -1411,7 +1421,7 @@ namespace NSCSS
 
 	bool CBorderSide::Empty() const
 	{
-		return (m_oWidth.Empty() || m_oWidth == 0) && m_oStyle.Empty() && m_oColor.Empty();
+		return m_oWidth.Empty() || m_oWidth.Zero();
 	}
 
 	CBorderSide &CBorderSide::operator+=(const CBorderSide &oBorderSide)
@@ -1642,10 +1652,12 @@ namespace NSCSS
 
 	CBorder &CBorder::operator+=(const CBorder &oBorder)
 	{
-		m_oLeft   = oBorder.m_oLeft;
-		m_oTop    = oBorder.m_oTop;
-		m_oRight  = oBorder.m_oRight;
-		m_oBottom = oBorder.m_oBottom;
+		m_oLeft      = oBorder.m_oLeft;
+		m_oTop       = oBorder.m_oTop;
+		m_oRight     = oBorder.m_oRight;
+		m_oBottom    = oBorder.m_oBottom;
+
+		m_enCollapse = oBorder.m_enCollapse;
 
 		return *this;
 	}
@@ -1758,7 +1770,7 @@ namespace NSCSS
 	{
 		return m_oIndent     == oText.m_oIndent     &&
 		       m_oAlign      == oText.m_oAlign      &&
-//		       m_oDecoration == oText.m_oDecoration &&
+		       m_oDecoration == oText.m_oDecoration &&
 		       m_oColor      == oText.m_oColor;
 	}
 
@@ -1894,10 +1906,18 @@ namespace NSCSS
 	
 	bool CIndent::operator==(const CIndent &oIndent) const
 	{
-		return m_oTop == oIndent.m_oTop &&
-		       m_oRight == oIndent.m_oRight && 
+		return m_oTop    == oIndent.m_oTop    &&
+		       m_oRight  == oIndent.m_oRight  && 
 		       m_oBottom == oIndent.m_oBottom &&
-		       m_oLeft == oIndent.m_oLeft;
+		       m_oLeft   == oIndent.m_oLeft;
+	}
+	
+	bool CIndent::operator!=(const CIndent &oIndent) const
+	{
+		return m_oTop    != oIndent.m_oTop    ||
+		       m_oRight  != oIndent.m_oRight  || 
+		       m_oBottom != oIndent.m_oBottom ||
+		       m_oLeft   != oIndent.m_oLeft;
 	}
 
 	bool CIndent::SetValues(const std::wstring &wsTopValue, const std::wstring &wsRightValue, const std::wstring &wsBottomValue, const std::wstring &wsLeftValue, unsigned int unLevel, bool bHardMode)
@@ -1982,6 +2002,13 @@ namespace NSCSS
 		return *this;
 	}
 
+	bool CTextDecorationLine::operator==(const CTextDecorationLine &oTextDecorationLine) const
+	{
+		return m_bUnderline   == oTextDecorationLine.m_bUnderline &&
+		       m_bOverline    == oTextDecorationLine.m_bOverline  &&
+		       m_bLineThrough == oTextDecorationLine.m_bLineThrough;
+	}
+
 	TTextDecoration &TTextDecoration::operator+=(const TTextDecoration &oTextDecoration)
 	{
 		m_oLine  += oTextDecoration.m_oLine;
@@ -1989,6 +2016,13 @@ namespace NSCSS
 		m_oColor += oTextDecoration.m_oColor;
 
 		return *this;
+	}
+
+	bool TTextDecoration::operator==(const TTextDecoration &oTextDecoration) const
+	{
+		return m_oLine  == oTextDecoration.m_oLine  &&
+		       m_oStyle == oTextDecoration.m_oStyle &&
+		       m_oColor == oTextDecoration.m_oColor;
 	}
 
 	CFont::CFont()
@@ -2137,7 +2171,7 @@ namespace NSCSS
 	{
 		return m_oWeight.SetValue(wsValue, {std::make_pair(L"normal", L"normal"), std::make_pair(L"300", L"normal"), std::make_pair(L"400", L"normal"), std::make_pair(L"500", L"normal"),
 		                                    std::make_pair(L"bold", L"bold"), std::make_pair(L"bolder", L"bold"), std::make_pair(L"600", L"bold"),
-											std::make_pair(L"700", L"bold"), std::make_pair(L"800", L"bold"), std::make_pair(L"900", L"bold")}, unLevel, bHardMode);
+		                                    std::make_pair(L"700", L"bold"), std::make_pair(L"800", L"bold"), std::make_pair(L"900", L"bold")}, unLevel, bHardMode);
 	}
 
 	void CFont::UpdateSize(double dFontSize)
@@ -2407,7 +2441,7 @@ namespace NSCSS
 	}
 
 	CEnum::CEnum()
-	    : CValue(INT_MIN, 0, false){}
+	    : CValue(INT_MAX, 0, false){}
 
 	bool CEnum::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
@@ -2445,12 +2479,14 @@ namespace NSCSS
 
 	bool CEnum::Empty() const
 	{
-		return m_mMap.empty() || INT_MIN == m_oValue;
+		return m_mMap.empty() || INT_MAX == m_oValue;
 	}
 
 	void CEnum::Clear()
 	{
-		m_oValue = INT_MIN;
+		m_oValue     = INT_MAX;
+		m_unLevel    = NULL;
+		m_bImportant = false;
 	}
 
 	CEnum &CEnum::operator =(int nValue)

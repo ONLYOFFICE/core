@@ -25,7 +25,7 @@ namespace NSCSS
 		std::list<std::wstring> m_arFiles;
 
 		std::map<std::wstring, CElement*> m_mData;
-		
+
 		typedef struct
 		{
 			std::vector<std::wstring>            m_wsNames;
@@ -41,6 +41,11 @@ namespace NSCSS
 		
 		std::map<std::wstring, std::wstring> GetPageData(const std::wstring& wsPageName);
 		void SetPageData(NSProperties::CPage& oPage, const std::map<std::wstring, std::wstring>& mData, unsigned int unLevel, bool bHardMode = false);
+
+		std::vector<std::wstring> CalculateAllNodes(const std::vector<CNode>& arSelectors);
+
+		void FindPrevAndKindElements(const CElement* pElement, const std::vector<std::wstring>& arNextNodes, std::vector<CElement*>& arFindedElements, const std::wstring& wsName, const std::vector<std::wstring>& arClasses = {});
+		std::vector<CElement*> FindElements(std::vector<std::wstring>& arNodes, std::vector<std::wstring>& arNextNodes, bool bIsSettings);
 		#endif
 
 		std::wstring m_sEncoding;

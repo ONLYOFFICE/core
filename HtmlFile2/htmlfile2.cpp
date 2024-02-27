@@ -93,6 +93,12 @@ void replace_all(std::wstring& s, const std::wstring& s1, const std::wstring& s2
 	}
 }
 
+void ReplaceSpaces(std::wstring& wsValue)
+{
+	boost::wregex oRegex(L"\\s+");
+	wsValue = boost::regex_replace(wsValue, oRegex, L" ");
+}
+
 std::wstring EncodeXmlString(const std::wstring& s)
 {
 	std::wstring sRes = s;
@@ -240,7 +246,7 @@ public:
 		}
 
 		// settings.xml
-		std::wstring sSettings = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?><w:settings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:v=\"urn:schemas-microsoft-com:vml\"><w:clrSchemeMapping w:accent1=\"accent1\" w:accent2=\"accent2\" w:accent3=\"accent3\" w:accent4=\"accent4\" w:accent5=\"accent5\" w:accent6=\"accent6\" w:bg1=\"light1\" w:bg2=\"light2\" w:followedHyperlink=\"followedHyperlink\" w:hyperlink=\"hyperlink\" w:t1=\"dark1\" w:t2=\"dark2\"/><w:defaultTabStop w:val=\"708\"/><m:mathPr/><w:trackRevisions w:val=\"false\"/><w:footnotePr><w:footnote w:id=\"-1\"/><w:footnote w:id=\"0\"/><w:numFmt w:val=\"decimal\"/><w:numRestart w:val=\"continuous\"/><w:numStart w:val=\"1\"/><w:pos w:val=\"pageBottom\"/></w:footnotePr><w:decimalSymbol w:val=\".\"/><w:listSeparator w:val=\",\"/><w:compat><w:compatSetting w:name=\"compatibilityMode\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"14\"/><w:compatSetting w:name=\"overrideTableStyleFontSizeAndJustification\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"1\"/><w:compatSetting w:name=\"enableOpenTypeFeatures\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"1\"/><w:compatSetting w:name=\"doNotFlipMirrorIndents\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"1\"/></w:compat><w:zoom w:percent=\"100\"/><w:characterSpacingControl w:val=\"doNotCompress\"/><w:themeFontLang w:val=\"en-US\" w:eastAsia=\"zh-CN\"/><w:shapeDefaults><o:shapedefaults v:ext=\"edit\" spidmax=\"1026\"/><o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"1\"/></o:shapelayout></w:shapeDefaults></w:settings>";
+		std::wstring sSettings = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?><w:settings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:v=\"urn:schemas-microsoft-com:vml\"><w:clrSchemeMapping w:accent1=\"accent1\" w:accent2=\"accent2\" w:accent3=\"accent3\" w:accent4=\"accent4\" w:accent5=\"accent5\" w:accent6=\"accent6\" w:bg1=\"light1\" w:bg2=\"light2\" w:followedHyperlink=\"followedHyperlink\" w:hyperlink=\"hyperlink\" w:t1=\"dark1\" w:t2=\"dark2\"/><w:defaultTabStop w:val=\"708\"/><m:mathPr/><w:trackRevisions w:val=\"false\"/><w:footnotePr><w:footnote w:id=\"-1\"/><w:footnote w:id=\"0\"/><w:numFmt w:val=\"decimal\"/><w:numRestart w:val=\"continuous\"/><w:numStart w:val=\"1\"/><w:pos w:val=\"pageBottom\"/></w:footnotePr><w:decimalSymbol w:val=\".\"/><w:listSeparator w:val=\",\"/><w:compat><w:compatSetting w:name=\"compatibilityMode\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"15\"/><w:compatSetting w:name=\"overrideTableStyleFontSizeAndJustification\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"1\"/><w:compatSetting w:name=\"enableOpenTypeFeatures\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"1\"/><w:compatSetting w:name=\"doNotFlipMirrorIndents\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"1\"/><w:compatSetting w:name=\"useWord2013TrackBottomHyphenation\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"0\"/></w:compat><w:zoom w:percent=\"100\"/><w:characterSpacingControl w:val=\"doNotCompress\"/><w:themeFontLang w:val=\"en-US\" w:eastAsia=\"zh-CN\"/><w:shapeDefaults><o:shapedefaults v:ext=\"edit\" spidmax=\"1026\"/><o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"1\"/></o:shapelayout></w:shapeDefaults></w:settings>";
 		NSFile::CFileBinary oSettingsWriter;
 		if (oSettingsWriter.CreateFileW(m_sDst + L"/word/settings.xml"))
 		{
@@ -348,7 +354,7 @@ public:
 		// Ссылки
 		m_oStylesXml += L"<w:style w:type=\"character\" w:styleId=\"a\"><w:name w:val=\"Hyperlink\"/><w:uiPriority w:val=\"99\"/><w:unhideWhenUsed/><w:rPr><w:color w:val=\"0000FF\" w:themeColor=\"hyperlink\"/><w:u w:val=\"single\"/></w:rPr></w:style>";
 		// Таблицы
-		m_oStylesXml += L"<w:style w:type=\"table\" w:default=\"1\" w:styleId=\"table-based\"><w:name w:val=\"Normal Table\"/><w:uiPriority w:val=\"99\"/><w:semiHidden/><w:unhideWhenUsed/><w:tblPr><w:tblInd w:w=\"0\" w:type=\"dxa\"/><w:tblCellMar><w:top w:w=\"0\" w:type=\"dxa\"/><w:left w:w=\"108\" w:type=\"dxa\"/><w:bottom w:w=\"0\" w:type=\"dxa\"/><w:right w:w=\"108\" w:type=\"dxa\"/></w:tblCellMar></w:tblPr></w:style><w:style w:type=\"table\" w:styleId=\"table\"><w:name w:val=\"Table Grid\"/><w:basedOn w:val=\"table-based\"/><w:uiPriority w:val=\"59\"/><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:tblPr><w:tblBorders><w:top w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:left w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:bottom w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:right w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:insideH w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:insideV w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/></w:tblBorders></w:tblPr></w:style>";
+//		m_oStylesXml += L"<w:style w:type=\"table\" w:default=\"1\" w:styleId=\"table-based\"><w:name w:val=\"Normal Table\"/><w:uiPriority w:val=\"99\"/><w:semiHidden/><w:unhideWhenUsed/><w:tblPr><w:tblInd w:w=\"0\" w:type=\"dxa\"/><w:tblCellMar><w:top w:w=\"0\" w:type=\"dxa\"/><w:left w:w=\"108\" w:type=\"dxa\"/><w:bottom w:w=\"0\" w:type=\"dxa\"/><w:right w:w=\"108\" w:type=\"dxa\"/></w:tblCellMar></w:tblPr></w:style><w:style w:type=\"table\" w:styleId=\"table\"><w:name w:val=\"Table Grid\"/><w:basedOn w:val=\"table-based\"/><w:uiPriority w:val=\"59\"/><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:tblPr><w:tblBorders><w:top w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:left w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:bottom w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:right w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:insideH w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:insideV w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/></w:tblBorders></w:tblPr></w:style>";
 		// Сноски
 		m_oStylesXml += L"<w:style w:type=\"character\" w:styleId=\"footnote\"><w:name w:val=\"footnote reference\"/><w:uiPriority w:val=\"99\"/><w:unhideWhenUsed/><w:rPr><w:vertAlign w:val=\"superscript\"/></w:rPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"footnote-p\"><w:name w:val=\"footnote text\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"footnote-c\"/><w:uiPriority w:val=\"99\"/><w:semiHidden/><w:unhideWhenUsed/><w:rPr><w:sz w:val=\"18\"/></w:rPr><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"40\"/></w:pPr></w:style><w:style w:type=\"character\" w:styleId=\"footnote-c\" w:customStyle=\"1\"><w:name w:val=\"footnote text character\"/><w:link w:val=\"footnote-p\"/><w:uiPriority w:val=\"99\"/><w:rPr><w:sz w:val=\"18\"/></w:rPr></w:style>";
 	}
@@ -684,6 +690,21 @@ private:
 
 		return true;
 	}
+
+	void CloseP(NSStringUtils::CStringBuilder* pXml, const std::vector<NSCSS::CNode>& arSelectors)
+	{
+		m_bWasSpace = false;
+
+		if (!m_bInP)
+			return;
+	
+		for (const NSCSS::CNode& item : arSelectors)
+			if (item.m_wsName == L"a")
+				pXml->WriteString(L"</w:hyperlink>");
+	
+		pXml->WriteString(L"</w:p>");
+		m_bInP      = false;
+	}
 	
 	std::wstring GetSubClass(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors)
 	{
@@ -778,26 +799,19 @@ private:
 
 			size_t find = sText.find_first_not_of(L" \n\t\r");
 			if (find == std::wstring::npos)
-			{
-				m_bWasSpace = true;
 				return;
-			}
-			else if (find != 1 || m_bWasSpace || sText.front() != L' ')
-				sText.erase(0, find);
+
+			if (m_bInP && !iswspace(sText.front()) && !m_bWasSpace)
+				oXml->WriteString(L"<w:r><w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/></w:rPr><w:t xml:space=\"preserve\"> </w:t></w:r>");
 
 			std::wstring sPStyle = wrP(oXml, sSelectors, oTS);
 			oXml->WriteString(L"<w:r>");
 			std::wstring sRStyle = wrR(oXml, sSelectors, oTS);
 			oXml->WriteString(L"<w:t xml:space=\"preserve\">");
 
-			std::wstring::iterator end;
 			if(oTS.bBdo)
 				std::reverse(sText.begin(), sText.end());
-			if (m_bWasSpace)
-			{
-				sText.insert(sText.begin(), L' ');
-				m_bWasSpace = false;
-			}
+
 			if(oTS.bPre)
 			{
 				size_t nAfter = sText.find_first_of(L"\n\r");
@@ -821,14 +835,15 @@ private:
 					sText.erase(0, nAfter + 1);
 					nAfter = sText.find_first_of(L"\n\r");
 				}
-				end = sText.end();
 			}
 			else
-				end = std::unique(sText.begin(), sText.end(), [] (wchar_t l, wchar_t r) { return std::iswspace(l) && std::iswspace(r); });
+				ReplaceSpaces(sText);
 
-			sText = std::wstring(sText.begin(), end);
 			oXml->WriteEncodeXmlString(sText);
 			oXml->WriteString(L"</w:t></w:r>");
+
+			m_bWasSpace = std::iswspace(sText.back());
+
 			return;
 		}
 
@@ -1037,15 +1052,7 @@ private:
 		// С нового абзаца
 		else
 		{
-			if (m_bInP)
-			{
-				for (const NSCSS::CNode& item : sSelectors)
-					if (item.m_wsName == L"a")
-						oXml->WriteString(L"</w:hyperlink>");
-				oXml->WriteString(L"</w:p>");
-				m_bInP = false;
-			}
-			m_bWasSpace = false;
+			CloseP(oXml, sSelectors);
 
 			// Адрес
 			if(sName == L"address")
@@ -1158,15 +1165,7 @@ private:
 			readNote(oXml, sSelectors, sNote);
 			sNote = L"";
 
-			if (m_bInP)
-			{
-				for (const NSCSS::CNode& item : sSelectors)
-					if (item.m_wsName == L"a")
-						oXml->WriteString(L"</w:hyperlink>");
-				oXml->WriteString(L"</w:p>");
-				m_bInP = false;
-			}
-			m_bWasSpace = false;
+			CloseP(oXml, sSelectors);
 		}
 		readNote(oXml, sSelectors, sNote);
 		sSelectors.pop_back();
@@ -1191,10 +1190,10 @@ private:
 		{
 			const std::wstring wsBorderStyle = NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetLeftBorder());
 
-			return L"<w:top "     + wsBorderStyle + L"/>" +
-			       L"<w:left "    + wsBorderStyle + L"/>" +
-			       L"<w:bottom "  + wsBorderStyle + L"/>" +
-			       L"<w:right "   + wsBorderStyle + L"/>";
+			return L"<w:top "    + wsBorderStyle + L"/>" +
+			       L"<w:left "   + wsBorderStyle + L"/>" +
+			       L"<w:bottom " + wsBorderStyle + L"/>" +
+			       L"<w:right "  + wsBorderStyle + L"/>";
 		}
 		else
 		{
@@ -1236,7 +1235,10 @@ private:
 				continue;
 
 			if (oIter->m_mAttributes.end() != oIter->m_mAttributes.find(L"border"))
+			{
 				bTableHasBorderAttribute = true;
+				break;
+			}
 		}
 		
 		while(m_oLightReader.ReadNextSiblingNode(nDeath) && i < MAXROWSINTABLE)
@@ -1256,7 +1258,7 @@ private:
 			if (L"thead" == wsName)
 				wsTrPr += L"<w:tblHeader/>";
 
-			if (!bTableHasBorderAttribute &&  oTableStyle.m_oBorder.GetCollapse() == NSCSS::NSProperties::BorderCollapse::Separate)
+			if (!bTableHasBorderAttribute && oTableStyle.m_oBorder.GetCollapse() == NSCSS::NSProperties::BorderCollapse::Separate)
 				wsTrPr += L"<w:tblCellSpacing w:w=\"15\" w:type=\"dxa\"/>";
 
 			if (!wsTrPr.empty())
@@ -1340,7 +1342,7 @@ private:
 				else
 					wsTcPr += L"<w:vAlign w:val=\"" + wsVerticalAlign + L"\"/>";
 
-				if (!oStyle.m_oPadding.Empty())
+				if (!oStyle.m_oPadding.Empty() && oStyle.m_oPadding != oTableStyle.m_oPadding)
 				{
 					const int nTopPadding    = std::max(oTableStyle.m_oPadding.GetTop()   .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT),
 					                                    oStyle     .m_oPadding.GetTop()   .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
@@ -1378,14 +1380,6 @@ private:
 				oXml->WriteString(L"<w:noWrap w:val=\"false\"/><w:textDirection w:val=\"lrTb\"/><w:hideMark/></w:tcPr>");
 				m_bWasPStyle = false;
 
-				//Оставляем только всё что не относится к таблице
-//				std::vector<NSCSS::CNode> arSelectors;
-//				for (const NSCSS::CNode& oItem : sSelectors)
-//				{
-//					if (NodeBelongToTable(oItem.m_wsName))
-//						continue;
-//					arSelectors.push_back(oItem);
-//				}
 				// Читаем th. Ячейка заголовка таблицы. Выравнивание посередине. Выделяется полужирным
 				if(m_oLightReader.GetName() == L"th")
 				{
@@ -1399,18 +1393,14 @@ private:
 					readStream(oXml, sSelectors, oTS);
 				}
 				sSelectors.pop_back();
+				
 				if (m_bInP)
-				{
 					wrP(oXml, sSelectors, oTS);
-					for (const NSCSS::CNode& item : sSelectors)
-						if (item.m_wsName == L"a")
-							oXml->WriteString(L"</w:hyperlink>");
-					oXml->WriteString(L"<w:r></w:r></w:p>");
-					m_bInP = false;
-				}
 				else if (oXml->GetSubData(oXml->GetCurSize() - 6) != L"</w:p>")
 					oXml->WriteString(L"<w:p></w:p>");
-				m_bWasSpace = false;
+
+				CloseP(oXml, sSelectors);
+
 				oXml->WriteString(L"</w:tc>");
 				j++;
 
@@ -1457,8 +1447,9 @@ private:
 
 		if (oXml->GetSubData(oXml->GetCurSize() - 6) != L"</w:p>")
 			oXml->WriteString(L"<w:p><w:pPr><w:spacing w:beforeLines=\"0\" w:before=\"0\" w:afterLines=\"0\" w:after=\"0\"/><w:rPr><w:vanish/><w:sz w:val=\"2\"/><w:szCs w:val=\"2\"/></w:rPr></w:pPr></w:p>");
-		m_bWasSpace = false;
 
+		m_bWasSpace = false;
+		
 		// Начало таблицы
 		std::wstring wsTable = L"<w:tbl><w:tblPr>";
 
@@ -1579,14 +1570,8 @@ private:
 				CTextSettings oTSP { oTS.bBdo, oTS.bPre, oTS.nLi, oTS.sRStyle, oTS.sPStyle + L"<w:jc w:val=\"center\"/>" };
 				readStream(oXml, sSelectors, oTSP);
 				if (m_bInP)
-				{
-					for (size_t i = 0; i < nHyp; i++)
-						oXml->WriteString(L"</w:hyperlink>");
-					oXml->WriteString(L"</w:p>");
-					m_bInP = false;
 					m_bWasPStyle = false;
-				}
-				m_bWasSpace = false;
+				CloseP(oXml, sSelectors);
 			}
 			if(sName == L"thead")
 				readTr(&oHead, sSelectors, oTS, oStyle);
@@ -1658,15 +1643,7 @@ private:
 				{
 					if(m_oLightReader.GetName() != L"label")
 						continue;
-					if (m_bInP)
-					{
-						for (const NSCSS::CNode& item : sSelectors)
-							if (item.m_wsName == L"a")
-								oXml->WriteString(L"</w:hyperlink>");
-						oXml->WriteString(L"</w:p>");
-						m_bInP = false;
-					}
-					m_bWasSpace = false;
+					CloseP(oXml, sSelectors);
 					wrP(oXml, sSelectors, oTS);
 					oXml->WriteString(L"<w:r>");
 					wrR(oXml, sSelectors, oTS);
@@ -1691,29 +1668,16 @@ private:
 					sStart = m_oLightReader.GetText();
 			m_oLightReader.MoveToElement();
 
-			if (m_bInP)
-			{
-				for (const NSCSS::CNode& item : sSelectors)
-					if (item.m_wsName == L"a")
-						oXml->WriteString(L"</w:hyperlink>");
-				oXml->WriteString(L"</w:p>");
-				m_bInP = false;
-			}
-			m_bWasSpace = false;
+			CloseP(oXml, sSelectors);
+
 			CTextSettings oTSLiP(oTS);
 			oTSLiP.nLi++;
 			oTSLiP.sPStyle += L"<w:numPr><w:ilvl w:val=\"" + std::to_wstring(oTSLiP.nLi) + L"\"/><w:numId w:val=\"" +
-					(bType ? L"1" : std::to_wstring(m_nNumberingId + 1)) + L"\"/></w:numPr>";
+			                  (bType ? L"1" : std::to_wstring(m_nNumberingId + 1)) + L"\"/></w:numPr>";
 			readStream(oXml, sSelectors, oTSLiP);
-			if (m_bInP)
-			{
-				for (const NSCSS::CNode& item : sSelectors)
-					if (item.m_wsName == L"a")
-						oXml->WriteString(L"</w:hyperlink>");
-				oXml->WriteString(L"</w:p>");
-				m_bInP = false;
-			}
-			m_bWasSpace = false;
+
+			CloseP(oXml, sSelectors);
+
 			sSelectors.pop_back();
 		}
 		// Нумерованный список
@@ -2044,8 +2008,10 @@ private:
 			m_bInP = true;
 			m_bWasPStyle = false;
 		}
+
 		if (m_bWasPStyle)
 			return L"";
+
 		oXml->WriteString(L"<w:pPr><w:pStyle w:val=\"");
 
 		std::vector<std::pair<size_t, NSCSS::CNode>> temporary;
@@ -2064,7 +2030,7 @@ private:
 		NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
 
 		NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);
-
+		
 		std::wstring sPStyle = GetStyle(oStyle, true);
 
 		m_oXmlStyle.WriteLitePStyle(oStyleSetting);

@@ -429,8 +429,8 @@ std::wstring CXmlElement::ConvertRStyle(bool bIsLite) const
 			}
 			case CSSProperties::RunnerProperties::R_Sz:
 			{
-				sRStyle += L"<w:sz w:val=\"" + oItem.second +
-				           L"\"/>" + L"<w:szCs w:val=\"" + oItem.second + L"\"/>";
+				sRStyle += L"<w:sz w:val=\""   + oItem.second + L"\"/>" + 
+				           L"<w:szCs w:val=\"" + oItem.second + L"\"/>";
 				break;
 			}
 			case CSSProperties::RunnerProperties::R_B:

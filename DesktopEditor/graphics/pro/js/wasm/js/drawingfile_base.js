@@ -1126,13 +1126,13 @@
 				// RC
 				if (flags & (1 << 3))
 				{
-					// 0 - left, 1 - centered, 2 - right, 3 - justify
-					rec["alignment"] = reader.readByte();
 					let n = reader.readInt();
 					rec["RC"] = [];
 					for (let i = 0; i < n; ++i)
 					{
 						let oFont = {};
+						// 0 - left, 1 - centered, 2 - right, 3 - justify
+						oFont["alignment"] = reader.readByte();
 						let nFontFlag = reader.readInt();
 						oFont["bold"] = (nFontFlag >> 0) & 1;
 						oFont["italic"] = (nFontFlag >> 1) & 1;
@@ -1140,6 +1140,8 @@
 						oFont["underlined"] = (nFontFlag >> 4) & 1;
 						if (nFontFlag & (1 << 5))
 							oFont["vertical"] = reader.readDouble();
+						if (nFontFlag & (1 << 6))
+							oFont["actual"] = reader.readDouble();
 						oFont["size"] = reader.readDouble();
 						oFont["color"] = [];
 						oFont["color"].push(reader.readDouble2());

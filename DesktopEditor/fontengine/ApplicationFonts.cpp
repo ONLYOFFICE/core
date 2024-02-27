@@ -1412,7 +1412,7 @@ void CFontList::Add(FT_Library pLibrary, FT_Parameter* pParams, const std::wstri
 	}
 }
 
-void CFontList::Add(const std::wstring& sFontPath, CFontStream* pStream, int nFlag)
+void CFontList::Add(const std::wstring& sFontPath, NSFonts::IFontStream* pStream, int nFlag)
 {
 	if (!pStream)
 		return;
@@ -1431,7 +1431,7 @@ void CFontList::Add(const std::wstring& sFontPath, CFontStream* pStream, int nFl
 	pParams[3].tag  = FT_PARAM_TAG_IGNORE_PREFERRED_SUBFAMILY;
 	pParams[3].data = NULL;
 
-	Add(pLibrary, pParams, sFontPath, pStream, nFlag);
+	Add(pLibrary, pParams, sFontPath, (CFontStream*)pStream, nFlag);
 
 	::free( pParams );
 	FT_Done_FreeType(pLibrary);

@@ -317,7 +317,7 @@ public:
 	void LoadFromFolder (const std::wstring& strDirectory);
 	bool CheckLoadFromFolderBin(const std::wstring& strDirectory);
 	void CheckLoadFromSelectionBin(const std::wstring& strDirectory, BYTE* pData, DWORD len);
-	void Add (const std::wstring& sFontPath, CFontStream* pStream, int nFlag = 0);
+	void Add (const std::wstring& sFontPath, NSFonts::IFontStream* pStream, int nFlag = 0);
 	void Add (NSFonts::CFontInfo* pInfo);
 	NSFonts::CFontInfo* GetByParams (NSFonts::CFontSelectFormat& oSelect, bool bIsDictionaryUse = true);
 	std::vector<NSFonts::CFontInfo*> GetAllByName (const std::wstring& strFontName);

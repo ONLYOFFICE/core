@@ -35,6 +35,7 @@
 
 #include "styles_lite_container.h"
 #include "office_settings.h"
+#include "..\..\Common\xml\simple_xml_writer.h"
 
 namespace cpdoccore { 
 
@@ -106,6 +107,28 @@ std::wstring doc_props_container::get_user_defined(const std::wstring & name)
 	std::map<std::wstring, std::wstring>::iterator pFind = impl_->map_user_defineds.find(name);
 
 	return pFind != impl_->map_user_defineds.end() ? pFind->second : L"";
+}
+std::wstring doc_props_container::dump_user_defined()
+{
+	std::wstringstream output;
+
+	CP_XML_WRITER(output)
+	{
+		for (std::map<std::wstring, std::wstring>::iterator it = impl_->map_user_defineds.begin(); it != impl_->map_user_defineds.end(); ++it)
+		{
+			CP_XML_NODE(L"property")
+			{
+				CP_XML_ATTR(L"fmtid", L"{D5CDD505-2E9C-101B-9397-08002B2CF9AE}");
+				CP_XML_ATTR(L"name", it->first);
+				CP_XML_ATTR(L"pid", 2);
+				CP_XML_NODE(L"vt:lpwstr")
+				{
+					CP_XML_STREAM() << it->second;
+				}
+			}
+		}
+	}
+	return output.str();
 }
 
 //----------------------------------------------------------------------------------

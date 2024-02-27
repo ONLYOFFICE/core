@@ -314,7 +314,6 @@ simple_element_ptr simple_element::create(const std::wstring & FileName, const s
 //-----------------------------------------------------------------------------------------------
 docProps_files::docProps_files()
 {
-
 }
 std::wstring docProps_files::create_core()
 {
@@ -358,6 +357,10 @@ void docProps_files::set_core(element_ptr Element)
 {
 	core_ = Element;
 }
+void docProps_files::set_custom(element_ptr Element)
+{
+	custom_ = Element;
+}
 void docProps_files::write(const std::wstring & RootPath)
 {
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"docProps";
@@ -368,6 +371,8 @@ void docProps_files::write(const std::wstring & RootPath)
 	
 	core_->write(path);
 	app_->write(path);
+
+	if (custom_) custom_->write(path);
 }
 //---------------------------------------------------------------------------------------------------
 media::media(mediaitems_ptr & _mediaitems, NSFonts::IApplicationFonts *pAppFonts) : mediaItems_(_mediaitems), appFonts_(pAppFonts)

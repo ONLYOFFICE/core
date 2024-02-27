@@ -711,6 +711,7 @@ namespace NSDocxRenderer
 
 	void CFontManager::CheckPdfResources()
 	{
+#ifndef DISABLE_FILESYSTEM
 		bool bIsCID = false;
 		std::wstring sFileExt = NSFile::GetFileExtention(m_oFont.Path);
 		if (std::wstring::npos != sFileExt.find(L"cid"))
@@ -766,6 +767,7 @@ namespace NSDocxRenderer
 				}
 			}
 		}
+#endif
 	}
 
 	void CFontManager::ClearCache()

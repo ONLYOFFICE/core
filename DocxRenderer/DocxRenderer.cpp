@@ -78,6 +78,7 @@ HRESULT CDocxRenderer::SetTextAssociationType(const NSDocxRenderer::TextAssociat
 
 int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFile, bool bIsOutCompress)
 {
+#ifndef DISABLE_FULL_DOCUMENT_CREATION
 	m_pInternal->m_oDocument.m_strDstFilePath = sDstFile;
 
 	if (bIsOutCompress)
@@ -99,6 +100,9 @@ int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFi
 	m_pInternal->m_oDocument.Clear();
 	if (bIsOutCompress) hr = Compress();
 	return (hr == S_OK) ? 0 : 1;
+#else
+	return S_FALSE;
+#endif
 }
 
 std::vector<std::wstring> CDocxRenderer::ScanPage(IOfficeDrawingFile* pFile, size_t nPage)

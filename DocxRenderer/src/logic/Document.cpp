@@ -1,5 +1,9 @@
 #include "Document.h"
 
+#ifndef DISABLE_FULL_DOCUMENT_CREATION
+#include "./../resources/resources.h"
+#endif
+
 namespace NSDocxRenderer
 {
 	CDocument::CDocument(IRenderer* pRenderer, NSFonts::IApplicationFonts* pFonts) :
@@ -797,13 +801,6 @@ namespace NSDocxRenderer
 		m_oInstalledFont = m_oFont;
 	}
 
-	void CDocument::CreateTemplates()
-	{
-		CreateTemplate(m_strTempDirectory);
-		m_oImageManager.m_strDstMedia = m_strTempDirectory + L"/word/media";
-		NSDirectory::CreateDirectory(m_oImageManager.m_strDstMedia);
-	}
-
 	void CDocument::Init()
 	{
 		// Сбросим кэш шрифтов. По идее можно оставлять кэш для шрифтов "по имени",
@@ -830,6 +827,14 @@ namespace NSDocxRenderer
 
 		m_oImageManager.Clear();
 		m_oFontStyleManager.Clear();
+	}
+
+#ifndef DISABLE_FULL_DOCUMENT_CREATION
+	void CDocument::CreateTemplates()
+	{
+		CreateTemplate(m_strTempDirectory);
+		m_oImageManager.m_strDstMedia = m_strTempDirectory + L"/word/media";
+		NSDirectory::CreateDirectory(m_oImageManager.m_strDstMedia);
 	}
 
 	void CDocument::Write()
@@ -1230,4 +1235,5 @@ namespace NSDocxRenderer
 
 		NSFile::CFileBinary::SaveToFile(m_strTempDirectory + L"/word/styles.xml", oWriter.GetData());
 	}
+#endif
 }

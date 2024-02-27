@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "Page.h"
 #include "../../../DesktopEditor/common/Directory.h"
-#include "../resources/resources.h"
 #include "managers/ImageManager.h"
 #include "managers/FontStyleManager.h"
 #include "managers/ParagraphStyleManager.h"
@@ -192,14 +191,17 @@ namespace NSDocxRenderer
 		void _SetFont();
 	public:
 
-		void CreateTemplates();
 		void Init();
-		void Write();
 		void Clear();
 
+#ifndef DISABLE_FULL_DOCUMENT_CREATION
 		void BuildDocumentXml();
 		void BuildDocumentXmlRels();
 		void BuildFontTableXml();
 		void BuildStylesXml();
+
+		void CreateTemplates();
+		void Write();
+#endif
 	};
 }

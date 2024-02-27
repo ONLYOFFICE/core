@@ -842,7 +842,8 @@ private:
 			oXml->WriteEncodeXmlString(sText);
 			oXml->WriteString(L"</w:t></w:r>");
 
-			m_bWasSpace = std::iswspace(sText.back());
+			if (!sText.empty())
+				m_bWasSpace = std::iswspace(sText.back());
 
 			return;
 		}
@@ -1138,9 +1139,8 @@ private:
 			else if(sName == L"pre" || sName == L"xmp")
 			{
 				CTextSettings oTSPre(oTS);
+				sSelectors.back().m_wsStyle += L" font-family:Consolas;";
 				oTSPre.bPre = true;
-				oTSPre.sRStyle += L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>";
-				oTSPre.sPStyle += L"<w:spacing w:after=\"0\"/>";
 				readStream(oXml, sSelectors, oTSPre);
 			}
 			// Таблицы

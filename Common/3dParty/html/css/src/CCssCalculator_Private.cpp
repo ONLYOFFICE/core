@@ -185,8 +185,6 @@ namespace NSCSS
 		arNodes.pop_back();
 		arNextNodes.push_back(wsName);
 
-//		pStyle->AddParent(wsName);
-
 		const std::map<std::wstring, CElement*>::const_iterator oFindName = m_mData.find(wsName);
 		std::map<std::wstring, CElement*>::const_iterator oFindId;
 
@@ -544,12 +542,12 @@ namespace NSCSS
 					else if (!bIsSettings)
 						oTempStyle.AddStyle(arSelectors[i].m_wsStyle, i + 1, true);
 				}
-				else if (bIsSettings)
+				else /*if (bIsSettings)*/
 					oTempStyle.AddStyle(arSelectors[i].m_wsStyle, i + 1, true);
 			}
 			else
 				oTempStyle.AddStyle(arSelectors[i].m_wsStyle, i + 1, true);
-			
+
 			oStyle += oTempStyle;
 		}
 

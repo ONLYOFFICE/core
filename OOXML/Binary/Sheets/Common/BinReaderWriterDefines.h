@@ -1353,12 +1353,14 @@ namespace BinXlsxRW
 		Name = 2,
 		Text = 3,
 		User = 4,
-		UsersGroup = 5
+		UsersGroup = 5,
+		Type = 6
 	};}
 	namespace c_oSer_UserProtectedRangeDesc {enum c_oSer_UserProtectedRangeDesc
 	{
 		Id = 0,
-		Name = 1
+		Name = 1,
+		Type = 2
 	};}
 	namespace c_oSer_DataValidation{enum c_oSer_DataValidation
 	{

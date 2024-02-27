@@ -8003,6 +8003,12 @@ void BinaryWorksheetTableWriter::WriteUserProtectedRangeDesc(const OOX::Spreadsh
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 		m_oBcw.m_oStream.WriteStringW(*desc.name);
 	}
+	if (desc.type.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_UserProtectedRangeDesc::Type);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE(desc.type->GetValue());
+	}
 }
 void BinaryWorksheetTableWriter::WriteUserProtectedRange(const OOX::Spreadsheet::CUserProtectedRange& oUserProtectedRange)
 {
@@ -8023,6 +8029,12 @@ void BinaryWorksheetTableWriter::WriteUserProtectedRange(const OOX::Spreadsheet:
 		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::Text);
 		m_oBcw.m_oStream.WriteStringW(*oUserProtectedRange.m_oText);
 		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oUserProtectedRange.m_oType.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_UserProtectedRange::Type);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE(oUserProtectedRange.m_oType->GetValue());
 	}
 	for (size_t i = 0; i < oUserProtectedRange.m_arUsers.size(); ++i)
 	{

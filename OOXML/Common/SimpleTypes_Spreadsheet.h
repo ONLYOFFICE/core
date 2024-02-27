@@ -1441,5 +1441,13 @@ namespace SimpleTypes
 		};
 		DEFINE_SIMPLE_TYPE(CMdxFunctionType, EMdxFunctionType, mdxFunctionType_m)
 
+		enum EUserProtectedRangeType
+		{
+			typeNotView = 0,
+			typeView = 1,
+			typeEdit = 2
+		};
+		DEFINE_SIMPLE_TYPE(CUserProtectedRangeType, EUserProtectedRangeType, typeView)
+
 	}// Spreadsheet
 } // SimpleTypes

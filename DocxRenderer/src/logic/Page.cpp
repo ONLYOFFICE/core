@@ -1296,6 +1296,11 @@ namespace NSDocxRenderer
 		auto right = MoveNullptr(m_arTextLines.begin(), m_arTextLines.end());
 		m_arTextLines.erase(right, m_arTextLines.end());
 
+		using line_ptr_t = std::shared_ptr<CTextLine>;
+		std::sort(m_arTextLines.begin(), m_arTextLines.end(), [] (const line_ptr_t& a, const line_ptr_t& b) {
+			return a->m_dBaselinePos < b->m_dBaselinePos;
+		});
+
 		if (m_arTextLines.empty())
 			return;
 

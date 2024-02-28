@@ -191,7 +191,7 @@ namespace NSDocxRenderer
 		void _SetFont();
 	public:
 
-		void Init();
+		void Init(const bool& bIsClearStreams = true);
 		void Clear();
 
 #ifndef DISABLE_FULL_DOCUMENT_CREATION

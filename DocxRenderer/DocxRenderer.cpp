@@ -108,7 +108,7 @@ int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFi
 std::vector<std::wstring> CDocxRenderer::ScanPage(IOfficeDrawingFile* pFile, size_t nPage)
 {
 	m_pInternal->m_oDocument.Clear();
-	m_pInternal->m_oDocument.Init();
+	m_pInternal->m_oDocument.Init(false);
 
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;

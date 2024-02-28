@@ -801,14 +801,14 @@ namespace NSDocxRenderer
 		m_oInstalledFont = m_oFont;
 	}
 
-	void CDocument::Init()
+	void CDocument::Init(const bool& bIsClearStreams)
 	{
 		// Сбросим кэш шрифтов. По идее можно оставлять кэш для шрифтов "по имени",
 		// но для шрифтов из темповых папок - нет. Темповая папка для Reader (PDF/XPS/DJVU)
 		// может быть одной и той же. И создание там файлов функцией создания временных файлов
 		// может вернуть один и тот же путь. И шрифт возьмется из старого файла.
 		m_oFontManager.ClearCache();
-		if (m_pAppFonts) m_pAppFonts->GetStreams()->Clear();
+		if (m_pAppFonts && bIsClearStreams) m_pAppFonts->GetStreams()->Clear();
 
 		Clear();
 		m_lCurrentCommandType = 0;

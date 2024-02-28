@@ -190,6 +190,7 @@ public:
 	BYTE* GetPageShapes(const int& nPageIndex)
 	{
 		CDocxRenderer oRenderer(pApplicationFonts);
+		oRenderer.SetTextAssociationType(NSDocxRenderer::TextAssociationType::tatParagraphToShape);
 		
 		std::vector<std::wstring> arShapes = oRenderer.ScanPage(pReader, nPageIndex);
 

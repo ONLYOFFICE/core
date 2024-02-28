@@ -2404,7 +2404,7 @@ void docx_conversion_context::start_text_changes (const std::wstring &id)
 
 		if (state_.in_paragraph_)
 		{
-			std::wstring format_change = L" w:date=\"" + state.date + L"\" w:author=\"" + state.author + L"\"";
+			std::wstring format_change = L" w:date=\"" + state.date + L"\" w:author=\"" + XmlUtils::EncodeXmlString(state.author) + L"\"";
 
 			finish_run();
 			state.in_drawing = get_drawing_state_content();
@@ -2465,7 +2465,7 @@ void docx_conversion_context::start_changes(bool in_para)
 
 		std::wstring change_attr;
 		change_attr += L" w:date=\"" + state.date + L"\"";
-		change_attr += L" w:author=\"" + state.author + L"\"";
+		change_attr += L" w:author=\"" + XmlUtils::EncodeXmlString(state.author) + L"\"";
 
 		if (state.oox_id == 0)
 		{

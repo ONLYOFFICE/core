@@ -35,7 +35,7 @@
 
 #include "styles_lite_container.h"
 #include "office_settings.h"
-#include "..\..\Common\xml\simple_xml_writer.h"
+#include "../../Common/xml/simple_xml_writer.h"
 
 namespace cpdoccore { 
 

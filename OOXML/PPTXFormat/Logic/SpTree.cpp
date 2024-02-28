@@ -400,8 +400,25 @@ namespace PPTX
 
 			pWriter->WriteRecord1(0, nvGrpSpPr);
 			pWriter->WriteRecord1(1, grpSpPr);
-			pWriter->WriteRecordArray(2, 0, SpTreeElems);
+//---------------------------------------------------------------------------------------			
+			//pWriter->WriteRecordArray(2, 0, SpTreeElems);
+				pWriter->StartRecord(2);
 
+					_UINT32 len = (_UINT32)SpTreeElems.size();
+					pWriter->WriteULONG(len);
+
+					double oldCxCurShape = pWriter->m_dCxCurShape;
+					double oldCyCurShape = pWriter->m_dCyCurShape;
+
+					for (_UINT32 i = 0; i < len; ++i)
+					{
+						pWriter->WriteRecord1(0, SpTreeElems[i]);
+					
+						pWriter->m_dCxCurShape = oldCxCurShape;
+						pWriter->m_dCyCurShape = oldCyCurShape;
+					}
+				pWriter->EndRecord();
+//---------------------------------------------------------------------------------------			
 			pWriter->EndRecord();
 		}
 		void SpTree::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)

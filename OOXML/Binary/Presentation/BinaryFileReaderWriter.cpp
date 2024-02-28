@@ -695,31 +695,33 @@ namespace NSBinPptxRW
 	}
 	double CBinaryFileWriter::GetShapeHeight()
 	{
-		if (m_lCyCurShape == 0)
+		if (m_dCyCurShape < 0.001)
 			return -1;
-		return (double)m_lCyCurShape / 36000; //mm
+		return m_dCyCurShape / 36000; //mm
 	}
 	double CBinaryFileWriter::GetShapeWidth()
 	{
-		if (m_lCyCurShape == 0)
+		if (m_dCyCurShape < 0.001)
 			return -1;
-		return (double)m_lCxCurShape / 36000;
+		return m_dCxCurShape / 36000;
 	}
 	double CBinaryFileWriter::GetShapeY()
 	{
-		return (double)m_lYCurShape / 36000;
+		return m_dYCurShape / 36000;
 	}
 	double CBinaryFileWriter::GetShapeX()
 	{
-		return (double)m_lXCurShape / 36000; //mm
+		return m_dXCurShape / 36000; //mm
 	}
 	void CBinaryFileWriter::ClearCurShapePositionAndSizes()
 	{
-		m_lXCurShape	= 0;
-		m_lYCurShape	= 0;
+		m_dXCurShape = 0;
+		m_dYCurShape = 0;
 		
-		m_lCxCurShape = 0;
-		m_lCyCurShape = 0;
+		m_dCxCurShape = 0;
+		m_dCyCurShape = 0;
+
+		m_bInGroup = false;
 	}
 	void CBinaryFileWriter::Clear()
 	{
@@ -732,11 +734,13 @@ namespace NSBinPptxRW
 		m_lStackPosition = 0;
 		memset(m_arStack, 0, MAX_STACK_SIZE * sizeof(_UINT32));
 
-		m_lCxCurShape = 0;
-		m_lCyCurShape = 0;
+		m_dCxCurShape = 0;
+		m_dCyCurShape = 0;
 
-		m_lXCurShape = 0;
-		m_lYCurShape = 0;
+		m_dXCurShape = 0;
+		m_dYCurShape = 0;
+
+		m_bInGroup = false;
 	}
 
 	void CBinaryFileWriter::SetMainDocument(BinDocxRW::CDocxSerializer* pMainDoc)

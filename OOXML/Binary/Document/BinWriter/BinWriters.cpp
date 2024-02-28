@@ -6625,6 +6625,8 @@ void BinaryDocumentTableWriter::WriteDrawing(std::wstring* pXml, OOX::Logic::CDr
 
 	int nCurPos = 0;
 	bool bDeleteDrawing = false;
+
+	m_oBcw.m_oStream.m_dCxCurShape = m_oBcw.m_oStream.m_dCyCurShape = 0;
 //pptxdata
 	if (pXml)
 	{
@@ -6657,6 +6659,28 @@ void BinaryDocumentTableWriter::WriteDrawing(std::wstring* pXml, OOX::Logic::CDr
 	}
 	else if (pGraphic)
 	{
+		if (NULL != pDrawing)
+		{
+			OOX::Logic::CDrawing& img = *pDrawing;
+			if (img.m_oInline.IsInit())
+			{
+				const OOX::Drawing::CInline& pInline = img.m_oInline.get();
+				if (pInline.m_oExtent.IsInit())
+				{
+					m_oBcw.m_oStream.m_dCxCurShape = pInline.m_oExtent->m_oCx.GetValue();
+					m_oBcw.m_oStream.m_dCyCurShape = pInline.m_oExtent->m_oCy.GetValue();
+				}
+			}
+			else if (img.m_oAnchor.IsInit())
+			{
+				const OOX::Drawing::CAnchor& pAnchor = img.m_oAnchor.get();
+				if (pAnchor.m_oExtent.IsInit())
+				{
+					m_oBcw.m_oStream.m_dCxCurShape = pAnchor.m_oExtent->m_oCx.GetValue();
+					m_oBcw.m_oStream.m_dCyCurShape = pAnchor.m_oExtent->m_oCy.GetValue();
+				}				
+			}
+		}
 		if (pGraphic->chartRec.IsInit() && pGraphic->chartRec->id_data.IsInit() )
 		{
 			m_oBcw.m_oStream.WriteBYTE(pGraphic->chartRec->m_bChartEx ? c_oSerImageType2::ChartEx : c_oSerImageType2::Chart);

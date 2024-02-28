@@ -273,11 +273,13 @@ namespace NSBinPptxRW
 		std::vector<CSeekTableEntry> m_arMainTables;
 
 	public:
-		_INT32	m_lCxCurShape;	//emu
-		_INT32	m_lCyCurShape;
+		double	m_dCxCurShape;	//emu
+		double	m_dCyCurShape;
 
-		_INT32	m_lXCurShape;
-		_INT32	m_lYCurShape;
+		double	m_dXCurShape;
+		double	m_dYCurShape;
+
+		bool m_bInGroup = false;
 
 		BYTE*	GetBuffer();
 		virtual _UINT32	GetPosition();

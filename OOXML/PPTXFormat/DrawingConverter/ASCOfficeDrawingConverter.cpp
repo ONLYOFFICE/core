@@ -2074,10 +2074,16 @@ bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** p
 							pPicture->spPr.Fill		= PPTX::Logic::UniFill();
 
 							pShape = NULL; 
-							pElem->InitElem(pPicture);							
+							pElem->InitElem(pPicture);
+
 						}
 						if ((pPicture) && (pPicture->blipFill.blip.IsInit()))
 						{
+							if (pPicture->spPr.xfrm.IsInit())
+							{// for bad replacemant image for ole
+								m_pBinaryWriter->m_dCxCurShape = pPicture->spPr.xfrm->extX.get_value_or(0);
+								m_pBinaryWriter->m_dCyCurShape = pPicture->spPr.xfrm->extY.get_value_or(0);
+							}
 							if (pOle->m_OleObjectFile.IsInit())
 							{
 								pPicture->blipFill.blip->oleFilepathBin = pOle->m_OleObjectFile->filename().GetPath();
@@ -2200,26 +2206,26 @@ void CDrawingConverter::ConvertDiagram(PPTX::Logic::SpTreeElem *result, XmlUtils
 		{
 			_pElem.grpSpPr.xfrm = new PPTX::Logic::Xfrm();
 
-			_pElem.grpSpPr.xfrm->offX = m_pBinaryWriter->m_lXCurShape;
-			_pElem.grpSpPr.xfrm->offY = m_pBinaryWriter->m_lYCurShape;
-			_pElem.grpSpPr.xfrm->extX = m_pBinaryWriter->m_lCxCurShape;
-			_pElem.grpSpPr.xfrm->extY = m_pBinaryWriter->m_lCyCurShape;
+			_pElem.grpSpPr.xfrm->offX = m_pBinaryWriter->m_dXCurShape;
+			_pElem.grpSpPr.xfrm->offY = m_pBinaryWriter->m_dYCurShape;
+			_pElem.grpSpPr.xfrm->extX = m_pBinaryWriter->m_dCxCurShape;
+			_pElem.grpSpPr.xfrm->extY = m_pBinaryWriter->m_dCyCurShape;
 			_pElem.grpSpPr.xfrm->chOffX = (int)0;
 			_pElem.grpSpPr.xfrm->chOffY = (int)0;
-			_pElem.grpSpPr.xfrm->chExtX = m_pBinaryWriter->m_lCxCurShape;
-			_pElem.grpSpPr.xfrm->chExtY = m_pBinaryWriter->m_lCyCurShape;
+			_pElem.grpSpPr.xfrm->chExtX = m_pBinaryWriter->m_dCxCurShape;
+			_pElem.grpSpPr.xfrm->chExtY = m_pBinaryWriter->m_dCyCurShape;
 		}
 		else
 		{
-			if (!_pElem.grpSpPr.xfrm->offX.is_init())	_pElem.grpSpPr.xfrm->offX = m_pBinaryWriter->m_lXCurShape;
-			if (!_pElem.grpSpPr.xfrm->offY.is_init())	_pElem.grpSpPr.xfrm->offY = m_pBinaryWriter->m_lYCurShape;
-			if (!_pElem.grpSpPr.xfrm->extX.is_init())	_pElem.grpSpPr.xfrm->extX = m_pBinaryWriter->m_lCxCurShape;
-			if (!_pElem.grpSpPr.xfrm->extY.is_init())	_pElem.grpSpPr.xfrm->extY = m_pBinaryWriter->m_lCyCurShape;
+			if (!_pElem.grpSpPr.xfrm->offX.is_init())	_pElem.grpSpPr.xfrm->offX = m_pBinaryWriter->m_dXCurShape;
+			if (!_pElem.grpSpPr.xfrm->offY.is_init())	_pElem.grpSpPr.xfrm->offY = m_pBinaryWriter->m_dYCurShape;
+			if (!_pElem.grpSpPr.xfrm->extX.is_init())	_pElem.grpSpPr.xfrm->extX = m_pBinaryWriter->m_dCxCurShape;
+			if (!_pElem.grpSpPr.xfrm->extY.is_init())	_pElem.grpSpPr.xfrm->extY = m_pBinaryWriter->m_dCyCurShape;
 			
 			if (!_pElem.grpSpPr.xfrm->chOffX.is_init())	_pElem.grpSpPr.xfrm->chOffX = (int)0;
 			if (!_pElem.grpSpPr.xfrm->chOffY.is_init())	_pElem.grpSpPr.xfrm->chOffY = (int)0;
-			if (!_pElem.grpSpPr.xfrm->chExtX.is_init())	_pElem.grpSpPr.xfrm->chExtX = m_pBinaryWriter->m_lCxCurShape;
-			if (!_pElem.grpSpPr.xfrm->chExtY.is_init())	_pElem.grpSpPr.xfrm->chExtY = m_pBinaryWriter->m_lCyCurShape;
+			if (!_pElem.grpSpPr.xfrm->chExtX.is_init())	_pElem.grpSpPr.xfrm->chExtX = m_pBinaryWriter->m_dCxCurShape;
+			if (!_pElem.grpSpPr.xfrm->chExtY.is_init())	_pElem.grpSpPr.xfrm->chExtY = m_pBinaryWriter->m_dCyCurShape;
 		}
 					
 	}								
@@ -2238,13 +2244,13 @@ void CDrawingConverter::ConvertDrawing(PPTX::Logic::SpTreeElem *elem, XmlUtils::
 	{
 		XmlUtils::CXmlNode oNodeExt;
 
-		m_pBinaryWriter->m_lXCurShape = 0;
-		m_pBinaryWriter->m_lYCurShape = 0;
+		m_pBinaryWriter->m_dXCurShape = 0;
+		m_pBinaryWriter->m_dYCurShape = 0;
 
 		if (oNodeAnchorInline.GetNode(L"wp:extent", oNodeExt))
 		{
-			m_pBinaryWriter->m_lCxCurShape = oNodeExt.ReadAttributeInt(L"cx");
-			m_pBinaryWriter->m_lCyCurShape = oNodeExt.ReadAttributeInt(L"cy");
+			m_pBinaryWriter->m_dCxCurShape = oNodeExt.ReadAttributeInt(L"cx");
+			m_pBinaryWriter->m_dCyCurShape = oNodeExt.ReadAttributeInt(L"cy");
 		}
 		XmlUtils::CXmlNode oNodeDocPr;
 		if (oNodeAnchorInline.GetNode(L"wp:docPr", oNodeDocPr))
@@ -2275,10 +2281,10 @@ void CDrawingConverter::ConvertDrawing(PPTX::Logic::SpTreeElem *elem, XmlUtils::
 					PPTX::Logic::SpTree* pTree = new PPTX::Logic::SpTree();
 
 					pTree->grpSpPr.xfrm = new PPTX::Logic::Xfrm();
-					pTree->grpSpPr.xfrm->offX = m_pBinaryWriter->m_lXCurShape;
-					pTree->grpSpPr.xfrm->offY = m_pBinaryWriter->m_lYCurShape;
-					pTree->grpSpPr.xfrm->extX = m_pBinaryWriter->m_lCxCurShape;
-					pTree->grpSpPr.xfrm->extY = m_pBinaryWriter->m_lCyCurShape;
+					pTree->grpSpPr.xfrm->offX = m_pBinaryWriter->m_dXCurShape;
+					pTree->grpSpPr.xfrm->offY = m_pBinaryWriter->m_dYCurShape;
+					pTree->grpSpPr.xfrm->extX = m_pBinaryWriter->m_dCxCurShape;
+					pTree->grpSpPr.xfrm->extY = m_pBinaryWriter->m_dCyCurShape;
 
 					pTree->fromXML(oNodeContent);
 					elem->InitElem(pTree);
@@ -2922,11 +2928,11 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 		}
 		else
 		{
-			m_pBinaryWriter->m_lXCurShape = 0;
-			m_pBinaryWriter->m_lYCurShape = 0;
+			m_pBinaryWriter->m_dXCurShape = 0;
+			m_pBinaryWriter->m_dYCurShape = 0;
 
-			m_pBinaryWriter->m_lCxCurShape = 0;
-			m_pBinaryWriter->m_lCyCurShape = 0;
+			m_pBinaryWriter->m_dCxCurShape = 0;
+			m_pBinaryWriter->m_dCyCurShape = 0;
 
 			pSpPr->xfrm = new PPTX::Logic::Xfrm();
 			pSpPr->xfrm->offX = oProps.X;
@@ -4122,11 +4128,11 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 	oProps.Width	= width;
 	oProps.Height	= height;
 
-	m_pBinaryWriter->m_lXCurShape = left;
-	m_pBinaryWriter->m_lYCurShape = top;
+	m_pBinaryWriter->m_dXCurShape = left;
+	m_pBinaryWriter->m_dYCurShape = top;
 
-	m_pBinaryWriter->m_lCxCurShape = width;
-	m_pBinaryWriter->m_lCyCurShape = height;
+	m_pBinaryWriter->m_dCxCurShape = width;
+	m_pBinaryWriter->m_dCyCurShape = height;
 
  	bool bExtendedSize = false;
 	XmlUtils::CXmlNode oNodeShadow = oNode.ReadNode(L"v:shadow");

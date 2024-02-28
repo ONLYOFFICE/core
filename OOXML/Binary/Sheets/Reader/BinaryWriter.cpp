@@ -6450,6 +6450,11 @@ void BinaryWorksheetTableWriter::WriteDrawing(const OOX::Spreadsheet::CWorksheet
 
 	WriteCellAnchor(pCellAnchor);
 
+	if (pCellAnchor->m_oExt.IsInit())
+	{
+		m_oBcw.m_oStream.m_dCxCurShape = pCellAnchor->m_oExt->m_oCx.IsInit() ? pCellAnchor->m_oExt->m_oCx->GetValue() : 0;
+		m_oBcw.m_oStream.m_dCyCurShape = pCellAnchor->m_oExt->m_oCy.IsInit() ? pCellAnchor->m_oExt->m_oCy->GetValue() : 0;
+	}
 	if (pCellAnchor->m_sVmlSpId.IsInit() && pVmlDrawing)
 	{
 		std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(pCellAnchor->m_sVmlSpId.get2());

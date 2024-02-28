@@ -524,6 +524,11 @@ namespace NSDocxRenderer
 
 	void CPage::DetermineLinesType()
 	{
+		using shape_ptr_t = std::shared_ptr<CShape>;
+		std::sort(m_arShapes.begin(), m_arShapes.end(), [] (const shape_ptr_t& a, const shape_ptr_t& b) {
+			return a->m_dLeft < b->m_dLeft;
+		});
+
 		for (size_t i = 0; i < m_arShapes.size(); ++i)
 		{
 			if (!m_arShapes[i] || m_arShapes[i]->m_dHeight > c_dMAX_LINE_HEIGHT_MM || // рассматриваем только тонкие объекты
@@ -559,10 +564,6 @@ namespace NSDocxRenderer
 
 			if (curr_shape_indexes.size() > 1)
 			{
-				std::sort(curr_shape_indexes.begin(), curr_shape_indexes.end(), [this] (size_t a, size_t b) {
-					return m_arShapes[a]->m_dLeft < m_arShapes[b]->m_dLeft;
-				});
-
 				size_t j = 0;
 				for (size_t k = 1; k < curr_shape_indexes.size(); ++k)
 				{
@@ -618,15 +619,15 @@ namespace NSDocxRenderer
 		std::vector<std::pair<std::shared_ptr<CContText>&, std::shared_ptr<CTextLine>&>> possible_caps;
 		std::vector<std::shared_ptr<CDropCap>> drop_caps;
 
-		for(size_t i = 0; i < m_arTextLines.size(); i++)
+		for (size_t i = 0; i < m_arTextLines.size(); i++)
 		{
 			auto& line = m_arTextLines[i];
-			for(auto& cont : line->m_arConts)
-				if(cont && cont->m_pFontStyle->dFontSize > 2 * avg_font_size && cont->m_oText.length() == 1)
+			for (auto& cont : line->m_arConts)
+				if (cont && cont->m_pFontStyle->dFontSize > 2 * avg_font_size && cont->m_oText.length() == 1)
 					possible_caps.push_back({cont, line});
 		}
 
-		for(auto& possible_cap : possible_caps)
+		for (auto& possible_cap : possible_caps)
 		{
 			auto& drop_cap_cont = possible_cap.first;
 			auto& drop_cap_line = possible_cap.second;
@@ -635,29 +636,29 @@ namespace NSDocxRenderer
 
 			for(auto& line : m_arTextLines)
 			{
-				if(!line || line == drop_cap_line)
+				if (!line || line == drop_cap_line)
 					continue;
 
 				// буквица должна быть левее
-				if(line->m_dLeft < drop_cap_cont->m_dLeft)
+				if (line->m_dLeft < drop_cap_cont->m_dLeft)
 					continue;
 
 				// если совпадает строка по высоте - берем ее и выходим
-				if(fabs(line->m_dBaselinePos - drop_cap_cont->m_dBaselinePos) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
+				if (fabs(line->m_dBaselinePos - drop_cap_cont->m_dBaselinePos) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
 				{
 					num_of_lines++;
 					break;
 				}
 
-				if(line->m_dBaselinePos > drop_cap_cont->m_dBaselinePos)
+				if (line->m_dBaselinePos > drop_cap_cont->m_dBaselinePos)
 					break;
 
-				if(fabs(line->m_dTop - drop_cap_cont->m_dTop) > c_dTHE_SAME_STRING_Y_PRECISION_MM && line->m_dTop < drop_cap_cont->m_dTop)
+				if (fabs(line->m_dTop - drop_cap_cont->m_dTop) > c_dTHE_SAME_STRING_Y_PRECISION_MM && line->m_dTop < drop_cap_cont->m_dTop)
 					continue;
 
 				num_of_lines++;
 			}
-			if(num_of_lines)
+			if (num_of_lines > 1)
 			{
 				auto drop_cap = std::make_unique<CDropCap>();
 				*static_cast<CBaseItem*>(drop_cap.get()) = *drop_cap_cont;
@@ -669,16 +670,16 @@ namespace NSDocxRenderer
 				drop_caps.push_back(std::move(drop_cap));
 
 				drop_cap_cont = nullptr;
-				if(drop_cap_line->IsCanBeDeleted())
+				if (drop_cap_line->IsCanBeDeleted())
 					drop_cap_line = nullptr;
 
-				if(drop_cap_line)
+				if (drop_cap_line)
 					drop_cap_line->RecalcSizes();
 			}
 		}
 
 		// шейпы из буквиц
-		for(auto&& drop_cap : drop_caps)
+		for (auto&& drop_cap : drop_caps)
 		{
 			auto shape = std::make_shared<CShape>();
 			shape->m_eType = CShape::eShapeType::stTextBox;
@@ -786,9 +787,6 @@ namespace NSDocxRenderer
 
 			for (size_t j = 0; j < m_arTextLines.size(); ++j)
 			{
-				if(!shape)
-					break;
-
 				auto& pCurrLine = m_arTextLines[j];
 				if (!pCurrLine || (pCurrLine->AreObjectsNoCrossingByVertically(shape.get()) &&
 					(pCurrLine->m_dTop > shape->m_dBaselinePos ||
@@ -811,29 +809,29 @@ namespace NSDocxRenderer
 
 					bool bIsNotComplicatedFigure = shape->m_eGraphicsType != eGraphicsType::gtComplicatedFigure;
 					bool bIsLineCrossingText = IsLineCrossingText(shape.get(), curr_cont.get(), eHType);
-					bool bIsLineBelowText = IsLineBelowText(shape.get(), curr_cont.get(), eHType);
 					bool bIsItHighlightingBackground = IsItHighlightingBackground(shape.get(), curr_cont.get(), eHType);
+					bool bIsLineBelowText = IsLineBelowText(shape.get(), curr_cont.get(), eHType);
 
-					if(bIsLineCrossingText)
+					if (bIsLineCrossingText)
 					{
 						curr_cont->m_bIsStrikeoutPresent = true;
 						if (shape->m_eLineType == eLineType::ltDouble)
 							curr_cont->m_bIsDoubleStrikeout = true;
 					}
 
-					if(bIsLineBelowText)
-					{
-						curr_cont->m_bIsUnderlinePresent = true;
-						curr_cont->m_eUnderlineType  = shape->m_eLineType;
-						curr_cont->m_lUnderlineColor = shape->m_dHeight > 0.3 ? shape->m_oBrush.Color1 : shape->m_oPen.Color;
-					}
-
-					if(bIsItHighlightingBackground)
+					else if (bIsItHighlightingBackground)
 					{
 						//Удовлетворяет расположением и размером - привязываем указатель на картинку
 						curr_cont->m_pShape = shape;
 						curr_cont->m_bIsHighlightPresent = true;
 						curr_cont->m_lHighlightColor = shape->m_oBrush.Color1;
+					}
+
+					else if (bIsLineBelowText)
+					{
+						curr_cont->m_bIsUnderlinePresent = true;
+						curr_cont->m_eUnderlineType  = shape->m_eLineType;
+						curr_cont->m_lUnderlineColor = shape->m_dHeight > 0.3 ? shape->m_oBrush.Color1 : shape->m_oPen.Color;
 					}
 
 					// проверили - удаляем
@@ -900,13 +898,13 @@ namespace NSDocxRenderer
 
 	bool CPage::IsLineBelowText(const CShape *pShape, CContText *pCont, const eHorizontalCrossingType& eHType)
 	{
-		//todo распознавание работает не для всех размеров шрифтов - возможно 0.15 мало или улучшить логику
 		bool bIf1 = (pShape->m_eGraphicsType == eGraphicsType::gtRectangle ||
 					 pShape->m_eGraphicsType == eGraphicsType::gtCurve) &&
 				pShape->m_eLineType != eLineType::ltUnknown;
 
 		//Условие по вертикали
-		bool bIf2 = fabs(pShape->m_dBaselinePos - pCont->m_dBaselinePos) < pCont->m_dHeight * 0.5;
+		double max_diff = std::min(c_dGRAPHICS_ERROR_MM * 3, pCont->m_dHeight * 0.5);
+		bool bIf2 = fabs(pShape->m_dBaselinePos - pCont->m_dBaselinePos) < max_diff;
 
 		//Условие пересечения по горизонтали
 		bool bIf3 = eHType != eHorizontalCrossingType::hctUnknown &&
@@ -915,7 +913,7 @@ namespace NSDocxRenderer
 				eHType != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext;
 
 		//Условие для размеров по высоте
-		bool bIf4 = pShape->m_dHeight < pCont->m_dHeight &&
+		bool bIf4 = pShape->m_dHeight < pCont->m_dHeight * 0.5 &&
 				pCont->m_dHeight - pShape->m_dHeight > c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM;
 
 		return bIf1 && bIf2 && bIf3 && bIf4;
@@ -1269,27 +1267,6 @@ namespace NSDocxRenderer
 				continue;
 			}
 
-			// если линия пересекается с другим шейпом
-			bool next = false;
-			for (auto& shape : m_arShapes)
-			{
-				if (!shape)
-					continue;
-
-				auto h_type = curr_line->GetHorizontalCrossingType(shape.get());
-				auto v_type = curr_line->CBaseItem::GetVerticalCrossingType(shape.get());
-
-				if (!no_crossing(h_type, v_type))
-				{
-					m_arShapes.push_back(CreateSingleLineShape(curr_line));
-					curr_line = nullptr;
-					next = true;
-					break;
-				}
-			}
-			if (next)
-				continue;
-
 			// если линия пересекается с предыдущей линией
 			if (index && m_arTextLines[index - 1])
 			{
@@ -1321,11 +1298,6 @@ namespace NSDocxRenderer
 
 		if (m_arTextLines.empty())
 			return;
-
-		using line_ptr_t = std::shared_ptr<CTextLine>;
-		std::sort(m_arTextLines.begin(), m_arTextLines.end(), [] (const line_ptr_t& a, const line_ptr_t& b) {
-			return a->m_dBaselinePos < b->m_dBaselinePos;
-		});
 
 		// 1 строчка в параграфе
 		if (m_eTextAssociationType == TextAssociationType::tatPlainLine ||
@@ -1477,15 +1449,15 @@ namespace NSDocxRenderer
 				}
 			}
 
-			// на основе ar_delims разбиваем на параграфы + IsShadingPresent
+			// на основе ar_delims разбиваем на параграфы
 			for (size_t index = 0; index < ar_delims.size(); ++index)
 			{
-				if (m_arTextLines[index]->m_pDominantShape)
-				{
-					paragraph->m_bIsShadingPresent = true;
-					paragraph->m_lColorOfShadingFill = m_arTextLines[index]->m_pDominantShape->m_oBrush.Color1;
-					paragraph->RemoveHighlightColor();
-				}
+//				if (m_arTextLines[index]->m_pDominantShape)
+//				{
+//					paragraph->m_bIsShadingPresent = true;
+//					paragraph->m_lColorOfShadingFill = m_arTextLines[index]->m_pDominantShape->m_oBrush.Color1;
+//					paragraph->RemoveHighlightColor();
+//				}
 				add_line(paragraph, m_arTextLines[index]);
 				if (ar_delims[index] || index == ar_delims.size() - 1)
 					add_paragraph(paragraph);

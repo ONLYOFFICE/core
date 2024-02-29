@@ -2345,6 +2345,11 @@ HRESULT CPdfWriter::AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, 
 {
 	return m_pDocument->AddMetaData(sMetaName, pMetaData, nMetaLength) ? S_OK : S_FALSE;
 }
+HRESULT CPdfWriter::AddShapeXML(const std::string& sXML)
+{
+	m_pDocument->AddShapeXML(sXML);
+	return S_OK;
+}
 //----------------------------------------------------------------------------------------
 // Дополнительные функции Pdf рендерера
 //----------------------------------------------------------------------------------------

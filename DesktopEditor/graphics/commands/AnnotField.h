@@ -529,7 +529,12 @@ class GRAPHICS_DECL CShapeStart : public IAdvancedCommand
 public:
 	CShapeStart();
 
+	const std::string& GetShapeXML() { return m_sShapeXML; }
+
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
+
+private:
+	std::string m_sShapeXML;
 };
 
 class GRAPHICS_DECL CShapeEnd : public IAdvancedCommand

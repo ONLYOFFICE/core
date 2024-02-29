@@ -882,7 +882,7 @@ bool CWidgetsInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafil
 CShapeStart::CShapeStart() : IAdvancedCommand(AdvancedCommandType::ShapeStart) {}
 bool CShapeStart::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
 {
-	std::string sShape = pReader->ReadStringA();
+	m_sShapeXML = pReader->ReadStringA();
 	return true;
 }
 

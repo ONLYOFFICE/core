@@ -243,6 +243,10 @@ WASM_EXPORT BYTE* GetFontBinary(CGraphicsFileDrawing* pGraphics, char* path)
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
+WASM_EXPORT BYTE* GetShapesXML(CGraphicsFileDrawing* pGraphics, int nPageIndex)
+{
+	return pGraphics->GetShapesXML(nPageIndex);
+}
 WASM_EXPORT void DestroyTextInfo(CGraphicsFileDrawing* pGraphics)
 {
 	return pGraphics->DestroyText();

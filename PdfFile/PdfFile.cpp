@@ -1580,6 +1580,12 @@ BYTE* CPdfFile::GetAnnots(int nPageIndex)
 		return NULL;
 	return m_pInternal->pReader->GetAnnots(nPageIndex);
 }
+BYTE* CPdfFile::GetShapesXML(int nPageIndex)
+{
+	if (!m_pInternal->pReader)
+		return NULL;
+	return m_pInternal->pReader->GetShapes(nPageIndex);
+}
 BYTE* CPdfFile::VerifySign(const std::wstring& sFile, ICertificate* pCertificate, int nWidget)
 {
 	if (!m_pInternal->pReader)
@@ -2365,6 +2371,8 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	}
 	case IAdvancedCommand::AdvancedCommandType::ShapeStart:
 	{
+		CShapeStart* pCommand = (CShapeStart*)command;
+		m_pInternal->pWriter->AddShapeXML(pCommand->GetShapeXML());
 		return S_OK;
 	}
 	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:

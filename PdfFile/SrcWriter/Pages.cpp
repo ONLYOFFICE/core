@@ -457,6 +457,7 @@ namespace PdfWriter
 		m_eGrMode   = grmode_PAGE;
 		m_pGrState  = new CGrState(NULL);
 
+		m_pMetaOForm        = NULL;
 		m_pExtGStates       = NULL;
 		m_unExtGStatesCount = 0;
 		m_pFonts            = NULL;
@@ -1583,7 +1584,15 @@ namespace PdfWriter
         CNumberObject* pRotate = (CNumberObject*)GetRotateItem();
         return pRotate ? pRotate->Get() : 0;
     }
-    //----------------------------------------------------------------------------------------
+	void CPage::SetMetaOForm(CDictObject* pMetaOForm)
+	{
+		if (!m_pMetaOForm)
+		{
+			m_pMetaOForm = pMetaOForm;
+			Add("MetaOForm", m_pMetaOForm);
+		}
+	}
+	//----------------------------------------------------------------------------------------
 	// CTextWord
 	//----------------------------------------------------------------------------------------
 	CTextWord::CTextWord()

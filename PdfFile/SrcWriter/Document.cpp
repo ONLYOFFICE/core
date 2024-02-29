@@ -1688,4 +1688,22 @@ namespace PdfWriter
 			RELEASEOBJECT(XRef);
 		vXRefForWrite.clear();
 	}
+	void CDocument::AddShapeXML(const std::string& sXML)
+	{
+		CDictObject* pMetaOForm = m_pCurPage->GetMetaOForm();
+		if (!pMetaOForm)
+		{
+			pMetaOForm = new CDictObject();
+			m_pXref->Add(pMetaOForm);
+			pMetaOForm->Add("Type", "MetaOForm");
+			m_pCurPage->SetMetaOForm(pMetaOForm);
+		}
+		CArrayObject* pArrayMeta = (CArrayObject*)pMetaOForm->Get("Medata");
+		if (!pArrayMeta)
+		{
+			pArrayMeta = new CArrayObject();
+			pMetaOForm->Add("Metadata", pArrayMeta);
+		}
+		pArrayMeta->Add(new CStringObject(sXML.c_str()));
+	}
 }

@@ -1530,6 +1530,30 @@ BYTE* CPdfReader::GetAnnots(int nPageIndex)
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
+BYTE* CPdfReader::GetShapes(int nPageIndex)
+{
+	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
+		return NULL;
+	Ref* pPageRef = m_pPDFDocument->getCatalog()->getPageRef(nPageIndex + 1);
+	if (!pPageRef)
+		return NULL;
+
+	Object oPageObj;
+	XRef* xref = m_pPDFDocument->getXRef();
+	if (!xref->fetch(pPageRef->num, pPageRef->gen, &oPageObj)->isDict())
+	{
+		oPageObj.free();
+		return NULL;
+	}
+
+	NSWasm::CData oRes;
+	oRes.SkipLen();
+
+	oRes.WriteLen();
+	BYTE* bRes = oRes.GetBuffer();
+	oRes.ClearWithoutAttack();
+	return bRes;
+}
 BYTE* CPdfReader::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot, const char* sView)
 {
 	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())

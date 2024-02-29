@@ -8020,26 +8020,26 @@ void BinaryWorksheetTableWriter::WriteUserProtectedRange(const OOX::Spreadsheet:
 	if (oUserProtectedRange.m_oName.IsInit())
 	{
 		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::Name);
-		m_oBcw.m_oStream.WriteStringW(*oUserProtectedRange.m_oName);
+		m_oBcw.m_oStream.WriteStringW3(*oUserProtectedRange.m_oName);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	if (oUserProtectedRange.m_oSqref.IsInit())
 	{
 		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::Sqref);
-		m_oBcw.m_oStream.WriteStringW(*oUserProtectedRange.m_oSqref);
+		m_oBcw.m_oStream.WriteStringW3(*oUserProtectedRange.m_oSqref);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	if (oUserProtectedRange.m_oText.IsInit())
 	{
 		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::Text);
-		m_oBcw.m_oStream.WriteStringW(*oUserProtectedRange.m_oText);
+		m_oBcw.m_oStream.WriteStringW3(*oUserProtectedRange.m_oText);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	if (oUserProtectedRange.m_oType.IsInit())
 	{
-		m_oBcw.m_oStream.WriteBYTE(c_oSer_UserProtectedRange::Type);
-		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::Type);
 		m_oBcw.m_oStream.WriteBYTE(oUserProtectedRange.m_oType->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	for (size_t i = 0; i < oUserProtectedRange.m_arUsers.size(); ++i)
 	{

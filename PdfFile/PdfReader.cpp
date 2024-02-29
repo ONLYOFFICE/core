@@ -461,6 +461,33 @@ int CPdfReader::GetMaxRefID()
 		return 0;
 	return m_pPDFDocument->getXRef()->getNumObjects();
 }
+bool CPdfReader::ValidMetaData()
+{
+	if (!m_pPDFDocument)
+		return false;
+
+	XRef* xref = m_pPDFDocument->getXRef();
+	Object oMeta, oType, oID;
+	if (!xref->fetch(1, 0, &oMeta)->isStream() || !oMeta.streamGetDict()->lookup("Type", &oType)->isName("MetaOForm") || !oMeta.streamGetDict()->lookup("ID", &oID)->isString())
+	{
+		oMeta.free(); oType.free(); oID.free();
+		return false;
+	}
+	oMeta.free(); oType.free();
+
+	Object oTID, oID2;
+	Object* pTrailerDict = xref->getTrailerDict();
+	if (!pTrailerDict || !pTrailerDict->dictLookup("ID", &oTID)->isArray() || !oTID.arrayGet(1, &oID2)->isString())
+	{
+		oID.free(); oTID.free(); oID2.free();
+		return false;
+	}
+	oTID.free();
+
+	bool bRes = oID2.getString()->cmp(oID.getString()) == 0;
+	oID.free(); oID2.free();
+	return bRes;
+}
 void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool* pbBreak)
 {
 	if (m_pPDFDocument && pRenderer)

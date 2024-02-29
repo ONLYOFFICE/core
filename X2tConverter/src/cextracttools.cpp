@@ -329,6 +329,8 @@ namespace NExtractTools
 						res = TCD_T2BIN;
 					else if (0 == sExt2.compare(L".csv"))
 						res = TCD_XLST2CSV;
+					else if (0 == sExt2.compare(L".xlsb"))
+						res = TCD_XLST2XLSB;
 				}
 				break;
 				case AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY:

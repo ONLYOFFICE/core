@@ -36,6 +36,7 @@
 #include "../../XlsbFormat/Biff12_unions/ACFMT.h"
 
 #include "../../Common/SimpleTypes_Shared.h"
+#include "../../XlsbFormat/Biff12_unions/FMTS.h"
 
 namespace OOX
 {
@@ -82,6 +83,17 @@ namespace OOX
 		void CNumFmt::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
+		}
+		XLS::BaseObjectPtr CNumFmt::toBin()
+		{
+			auto ptr(new XLSB::Fmt);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_oFormatCode.IsInit())
+				ptr->stFmtCode = m_oFormatCode.get();
+			if(m_oNumFmtId.IsInit())
+				ptr->ifmt = m_oNumFmtId->GetValue();
+
+			return objectPtr;
 		}
 		EElementType CNumFmt::getType () const
 		{
@@ -186,6 +198,17 @@ namespace OOX
 				}
 			}
 
+		}
+		XLS::BaseObjectPtr CNumFmts::toBin()
+		{
+			auto fmts(new XLSB::FMTS);
+			XLS::BaseObjectPtr objectPtr(fmts);
+			std::vector<XLS::BaseObjectPtr> objectVector;
+			for(auto i:m_arrItems)
+			{
+                fmts->m_arBrtFmt.push_back(i->toBin());
+			}
+			return objectPtr;
 		}
 		EElementType CNumFmts::getType () const
 		{

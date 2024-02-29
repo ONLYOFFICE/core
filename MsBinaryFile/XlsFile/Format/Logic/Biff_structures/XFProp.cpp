@@ -143,8 +143,77 @@ void XFProp::save(CFRecord& record)
 {
 	if (xfPropDataBlob)
 	{
-		cb = sizeof(cb) + sizeof(xfPropType) + sizeof(*xfPropDataBlob.get());
+        cb = sizeof(cb) + sizeof(xfPropType);
+		auto blobSize = 0;
+        switch(xfPropType)
+        {
+		case 0x000D:
+		case 0x000E:
+		case 0x000F:
+		case 0x0010:
+		case 0x0011: // XFPropTextRotation
+		case 0x0012: // indent
+		case 0x0013: // ReadingOrder
+		case 0x0014:
+		case 0x0015:
+		case 0x0016:
+		case 0x0017:
+		case 0x001C:
+		case 0x001D:
+		case 0x001E:
+		case 0x001F:
+		case 0x0020:
+		case 0x0021:
+		case 0x0022:
+		case 0x0023:
+		case 0x0025:
+		case 0x002B:
+		case 0x002C:
+		case 0x0000:
+            blobSize = 1;
+			break;
+		case 0x0001:
+		case 0x0002:
+		case 0x0005:
+			blobSize = 8;
+			break;
+		case 0x0003:
+			blobSize = 44;
+			break;
+		case 0x0004:
+			blobSize = 18;
+			break;
+		case 0x0006:
+		case 0x0007:
+		case 0x0008:
+		case 0x0009:
+		case 0x000A:
+		case 0x000B:
+		case 0x000C:
+			blobSize = 10;
+			break;
 
+		case 0x0026:
+		case 0x0018:
+		{
+				blobSize = sizeof(*xfPropDataBlob.get());
+		}
+				break;
+		case 0x0019:
+		case 0x001A:
+		case 0x001B:
+		case 0x0029:
+		case 0x002A:
+			blobSize = 2;
+			break;
+		case 0x0024:
+			blobSize = 4;
+			break;
+		default:
+			// EXCEPT::RT::WrongBiffRecord("Unsupported type of XFProp.", record.getTypeString());
+			break;
+        }
+		cb += blobSize;
 		record << xfPropType << cb;
 
 		if (xfPropType == 0x0026 || xfPropType == 0x0018)
@@ -552,6 +621,9 @@ void XFProp::deserialize_attr(XmlUtils::CXmlLiteReader& oReader)
 			xfPropDataBlob.reset(new BIFF_WORD(XmlUtils::GetInteger(oReader.GetText())));
 			break;
 		case 0x0019:
+            xfPropDataBlob.reset(new BIFF_WORD(0x02BC1));
+            deserialize_val_prop(oReader, L"BIFF_WORD", xfPropDataBlob);
+            break;
 		case 0x001A:
 			xfPropDataBlob.reset(new BIFF_WORD(1));
 		case 0x001B:

@@ -778,6 +778,27 @@ void a::xlsx_convert(oox::xlsx_conversion_context & Context)
     }
     Context.end_hyperlink(xlink_attlist_.href_.get_value_or(L""));
 }
+
+static std::wstring convert_href(oox::pptx_conversion_context& Context, const std::wstring& href)
+{
+	std::wstring result = href;
+
+	if (boost::algorithm::starts_with(href, L"#"))
+		result = href.substr(1);
+
+	const auto& page_names = Context.get_page_names();
+	for (size_t i = 0; i < page_names.size(); i++)
+	{
+		if (result == page_names[i])
+		{
+			result = std::wstring(L"slide") + std::to_wstring(i + 1) + std::wstring(L".xml");
+			break;
+		}
+	}
+
+	return result;
+}
+
 void a::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	Context.get_text_context().start_hyperlink();
@@ -786,9 +807,20 @@ void a::pptx_convert(oox::pptx_conversion_context & Context)
         content_[i]->pptx_convert(Context);
     }
 	
-	std::wstring hId = Context.get_slide_context().add_hyperlink(xlink_attlist_.href_.get_value_or(L""));
-	Context.get_text_context().end_hyperlink(hId);
+	std::wstring href = xlink_attlist_.href_.get_value_or(L"");
 
+	if (boost::algorithm::starts_with(href, L"#"))
+	{
+		Context.get_text_context().set_action(L"ppaction://hlinksldjump");
+
+		href = convert_href(Context, href);
+	}
+	
+	std::wstring hId = Context.get_slide_context().add_hyperlink(href);
+	
+	Context.get_text_context().set_rel_id(hId);
+
+	Context.get_text_context().end_hyperlink();
 }
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * endnote::ns = L"text";
@@ -1842,7 +1874,10 @@ void text_user_defined::docx_convert(oox::docx_conversion_context & Context)
 	if (!value.empty())
 		text_ = text::create(value) ;
 	
-	docx_serialize_run(text_, Context);
+	if (text_name_)
+		docx_serialize_field(XmlUtils::EncodeXmlString(L"DOCPROPERTY \"" + *text_name_ + L"\""), text_, Context, false);
+	else
+		docx_serialize_run(text_, Context);
 }
 //-----------------------------------------------------------------------------------------------
 // text:bibliography-mark

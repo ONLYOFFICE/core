@@ -490,7 +490,24 @@ namespace PPT
 		strXmlPPTX += L"</a:custGeom>";
 		return strXmlPPTX;
 	}
+	COleObjectElement::COleObjectElement() : CImageElement()
+	{
+		m_etType = etOleObject;
+	}
+	COleObjectElement::~COleObjectElement()
+	{
+	}
+	CElementPtr COleObjectElement::CreateDublicate()
+	{
+		COleObjectElement* pOleObjectElement = new COleObjectElement();
+		CElementPtr	pElement = CElementPtr(pOleObjectElement);
 
+		SetProperiesToDublicate(pElement);
+		
+		pOleObjectElement->m_strOleName = m_strOleName;
+		pOleObjectElement->m_strProgId = m_strProgId;
+		return pElement;
+	}
 	CAudioElement::CAudioElement() : CImageElement()
 	{
 		m_etType = etAudio;

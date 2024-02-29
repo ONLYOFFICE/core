@@ -552,7 +552,8 @@ void PPT::CShapeWriter::WriteImageInfo()
     if (pImageElement->m_lID < 0)
         pImageElement->m_lID = m_lNextShapeID;
 
-    std::wstring strShapeID = std::to_wstring(pImageElement->m_lID);
+    COleObjectElement* pOleObjectElement = dynamic_cast<COleObjectElement*>(m_pElement.get());
+    std::wstring strShapeID = std::to_wstring(pOleObjectElement ? 0 : pImageElement->m_lID);
 
     m_oWriter.WriteString(std::wstring(L"<p:cNvPr id=\"") + strShapeID + L"\"" );
 
@@ -576,7 +577,6 @@ void PPT::CShapeWriter::WriteImageInfo()
         m_oWriter.WriteString(std::wstring(L"\""));
     }
     m_oWriter.WriteString(std::wstring(L">"));
-
 
     WriteHyperlink(m_pElement->m_arrActions);
 
@@ -702,7 +702,86 @@ void PPT::CShapeWriter::WriteGroupInfo()
     std::wstring str2 = L"</p:nvGrpSpPr>";
     m_oWriter.WriteString(str2);
 }
+void PPT::CShapeWriter::WriteOleObjectInfo(const std::wstring& strRid, const std::wstring& xfrm)
+{
+    COleObjectElement* pOleObjectElement = dynamic_cast<COleObjectElement*>(m_pElement.get());
+    if (!pOleObjectElement) return;
 
+    m_oWriter.WriteString(std::wstring(L"<p:graphicFrame>"));
+
+    m_oWriter.WriteString(std::wstring(L"<p:nvGraphicFramePr>"));
+
+    if (pOleObjectElement->m_lID < 0)
+        pOleObjectElement->m_lID = m_lNextShapeID;
+
+    std::wstring strTableID = std::to_wstring(pOleObjectElement->m_lID);
+
+    m_oWriter.WriteString(std::wstring(L"<p:cNvPr id=\"") + strTableID + L"\"");
+
+    if (pOleObjectElement->m_sName.empty()) pOleObjectElement->m_sName = std::wstring(L"Group ") + strTableID;
+
+    if (pOleObjectElement->m_bHidden)	m_oWriter.WriteString(std::wstring(L" hidden=\"1\""));
+
+    m_oWriter.WriteString(std::wstring(L" name=\""));
+    m_oWriter.WriteStringXML(pOleObjectElement->m_sName);
+    m_oWriter.WriteString(std::wstring(L"\""));
+
+    if (!pOleObjectElement->m_sDescription.empty())
+    {
+        m_oWriter.WriteString(std::wstring(L" descr=\""));
+        m_oWriter.WriteStringXML(XmlUtils::EncodeXmlStringExtend(pOleObjectElement->m_sDescription));
+        m_oWriter.WriteString(std::wstring(L"\""));
+    }
+    m_oWriter.WriteString(std::wstring(L">"));
+    if (!pOleObjectElement->m_sHyperlink.empty())
+    {
+        std::wstring rId = m_pRels->WriteHyperlink(pOleObjectElement->m_sHyperlink);
+
+        if (false == rId.empty())
+        {
+            m_oWriter.WriteString(std::wstring(L"<a:hlinkClick"));
+            m_oWriter.WriteString(std::wstring(L" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""));
+            m_oWriter.WriteString(std::wstring(L" r:id=\"" + rId));
+            m_oWriter.WriteString(std::wstring(L"\"></a:hlinkClick>"));
+        }
+    }
+    m_oWriter.WriteString(std::wstring(L"</p:cNvPr>"));
+
+    m_oWriter.WriteString(std::wstring(L"<p:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect=\"1\"/></p:cNvGraphicFramePr>"));
+
+    ++m_lNextShapeID;
+
+    m_oWriter.WriteString(std::wstring(L"<p:nvPr/>"));
+
+    m_oWriter.WriteString(std::wstring(L"</p:nvGraphicFramePr>"));
+
+    if (pOleObjectElement->m_bChildAnchorEnabled || pOleObjectElement->m_bAnchorEnabled)
+    {
+        m_oWriter.WriteString(std::wstring(L"<p:xfrm") + xfrm + std::wstring(L"</p:xfrm>"));
+    }
+
+    m_oWriter.WriteString(std::wstring(L"<a:graphic>"));
+    m_oWriter.WriteString(std::wstring(L"<a:graphicData uri=\"http://schemas.openxmlformats.org/presentationml/2006/ole\">"));
+    m_oWriter.WriteString(std::wstring(L"<p:oleObj"));
+
+    if (false == pOleObjectElement->m_strOleName.empty())
+    {
+        m_oWriter.WriteString(std::wstring(L" name=\"") + pOleObjectElement->m_strOleName + L"\"");
+    }
+    m_oWriter.WriteString(std::wstring(L" r:id=\"") + strRid + L"\"");
+
+    _INT64 width = (_INT64)(pOleObjectElement->m_bChildAnchorEnabled ? pOleObjectElement->m_rcChildAnchor.GetWidth() : pOleObjectElement->m_rcAnchor.GetWidth()) / 1.78;
+    _INT64 height = (_INT64)(pOleObjectElement->m_bChildAnchorEnabled ? pOleObjectElement->m_rcChildAnchor.GetHeight() : pOleObjectElement->m_rcAnchor.GetHeight()) / 1.78;
+    
+    m_oWriter.WriteString(std::wstring(L" imgW=\"") + std::to_wstring(width) + L"\"");
+    m_oWriter.WriteString(std::wstring(L" imgH=\"") + std::to_wstring(height) + L"\"");
+
+    if (false == pOleObjectElement->m_strProgId.empty())
+    {
+        m_oWriter.WriteString(std::wstring(L" progId=\"") + pOleObjectElement->m_strProgId + L"\"");
+    }
+    m_oWriter.WriteString(std::wstring(L"><p:embed/>"));
+}
 void PPT::CShapeWriter::WriteTableInfo()
 {
     CGroupElement* pGroupElement = dynamic_cast<CGroupElement*>(m_pElement.get());
@@ -1725,7 +1804,7 @@ std::vector<CInteractiveInfo> CShapeWriter::getActionsByNum(const int num)
 }
 
 // TODO! Not work correct
-std::wstring	PPT::CShapeWriter::ConvertTable	()
+std::wstring PPT::CShapeWriter::ConvertTable()
 {
     CGroupElement* pGroupElement = dynamic_cast<CGroupElement*>(m_pElement.get());
     if (!pGroupElement) return L"";
@@ -2001,12 +2080,11 @@ void PPT::CShapeWriter::ParseXmlAlternative(const std::wstring & xml)
     }
 }
 
-
 std::wstring PPT::CShapeWriter::ConvertImage()
-{
+{    
     CImageElement* pImageElement = dynamic_cast<CImageElement*>(m_pElement.get());
     if (!pImageElement) return L"";
-
+    
     if (pImageElement->m_bImagePresent == false)
     {
         if (pImageElement->m_sName.empty()) return L"";
@@ -2027,21 +2105,69 @@ std::wstring PPT::CShapeWriter::ConvertImage()
 
     if (strRid.empty()) return L"";
 
-    m_oWriter.WriteString(std::wstring(L"<p:pic>"));
-
-    WriteImageInfo();
+    std::wstring strAnchor;
 
     CGeomShapeInfo oInfo;
 
-    oInfo.m_lOriginalWidth	= m_pElement->m_bChildAnchorEnabled ? (LONG)m_pElement->m_rcChildAnchor.GetWidth() : (LONG)m_pElement->m_rcAnchor.GetWidth();
-    oInfo.m_lOriginalHeight	= m_pElement->m_bChildAnchorEnabled ? (LONG)m_pElement->m_rcChildAnchor.GetHeight() : (LONG)m_pElement->m_rcAnchor.GetHeight();
+    oInfo.m_lOriginalWidth = m_pElement->m_bChildAnchorEnabled ? (LONG)m_pElement->m_rcChildAnchor.GetWidth() : (LONG)m_pElement->m_rcAnchor.GetWidth();
+    oInfo.m_lOriginalHeight = m_pElement->m_bChildAnchorEnabled ? (LONG)m_pElement->m_rcChildAnchor.GetHeight() : (LONG)m_pElement->m_rcAnchor.GetHeight();
 
     m_pElement->NormalizeCoordsByMetric();
     oInfo.SetBounds(m_pElement->m_bChildAnchorEnabled ? m_pElement->m_rcChildAnchor : m_pElement->m_rcAnchor);
 
     oInfo.m_dRotate = pImageElement->m_dRotate;
-    oInfo.m_bFlipH	= pImageElement->m_bFlipH;
-    oInfo.m_bFlipV	= pImageElement->m_bFlipV;
+    oInfo.m_bFlipH = pImageElement->m_bFlipH;
+    oInfo.m_bFlipV = pImageElement->m_bFlipV;
+
+    if (pImageElement->m_bChildAnchorEnabled || pImageElement->m_bAnchorEnabled)
+    {
+        if (0 != pImageElement->m_dRotate)
+        {
+            strAnchor += L" rot=\"" + std::to_wstring((int)(pImageElement->m_dRotate * 60000)) + L"\"";
+        }
+        if (pImageElement->m_bFlipH)
+        {
+            strAnchor += L" flipH=\"1\"";
+        }
+        if (pImageElement->m_bFlipV)
+        {
+            strAnchor += L" flipV=\"1\"";
+        }
+        strAnchor += L">";
+
+        strAnchor += L"<a:off x=\"" +
+            std::to_wstring(pImageElement->m_bChildAnchorEnabled ? (int)pImageElement->m_rcChildAnchor.left : (int)pImageElement->m_rcAnchor.left)
+            + L"\" y=\"" +
+            std::to_wstring(pImageElement->m_bChildAnchorEnabled ? (int)pImageElement->m_rcChildAnchor.top : (int)pImageElement->m_rcAnchor.top) +
+            L"\"/>";
+
+        _INT64 width = (_INT64)(pImageElement->m_bChildAnchorEnabled ? pImageElement->m_rcChildAnchor.GetWidth() : pImageElement->m_rcAnchor.GetWidth());
+        _INT64 height = (_INT64)(pImageElement->m_bChildAnchorEnabled ? pImageElement->m_rcChildAnchor.GetHeight() : pImageElement->m_rcAnchor.GetHeight());
+
+        if ((width > 0 && height > 0) && ((_UINT64)width) < 0xffffffffffff && ((_UINT64)height) < 0xffffffffffff)
+        {
+            strAnchor += L"<a:ext cx=\"" + std::to_wstring(width) + L"\" cy=\"" + std::to_wstring(height) + L"\"/>";
+        }
+        else
+        {
+            strAnchor += L"<a:ext cx=\"0\" cy=\"0\"/>";
+        }
+    }
+
+    COleObjectElement* pOleObjectElement = dynamic_cast<COleObjectElement*>(m_pElement.get());
+    if (pOleObjectElement)
+    {
+        std::wstring strRidOleObject = m_pRels->WriteOleObject(pOleObjectElement->m_strBinFileName);
+        if (false == strRidOleObject.empty())
+        {
+            WriteOleObjectInfo(strRidOleObject, strAnchor);
+         }
+        else pOleObjectElement = NULL;
+    }
+    
+    m_oWriter.WriteString(std::wstring(L"<p:pic>"));
+
+    WriteImageInfo();
 
     m_oWriter.WriteString(std::wstring(L"<p:blipFill>"));
 
@@ -2107,41 +2233,7 @@ std::wstring PPT::CShapeWriter::ConvertImage()
 
     if (pImageElement->m_bChildAnchorEnabled || pImageElement->m_bAnchorEnabled)
     {
-        std::wstring str;
-
-        m_oWriter.WriteString(std::wstring(L"<a:xfrm"));
-        if (0 != pImageElement->m_dRotate)
-        {
-            m_oWriter.WriteString(L" rot=\"" + std::to_wstring((int)(pImageElement->m_dRotate * 60000)) + L"\"");
-        }
-        if (pImageElement->m_bFlipH)
-        {
-            m_oWriter.WriteString(std::wstring(L" flipH=\"1\""));
-        }
-        if (pImageElement->m_bFlipV)
-        {
-            m_oWriter.WriteString(std::wstring(L" flipV=\"1\""));
-        }
-        m_oWriter.WriteString(std::wstring(L">"));
-
-        m_oWriter.WriteString(L"<a:off x=\"" +
-                              std::to_wstring(pImageElement->m_bChildAnchorEnabled ? (int)pImageElement->m_rcChildAnchor.left : (int)pImageElement->m_rcAnchor.left)
-                              + L"\" y=\"" +
-                              std::to_wstring(pImageElement->m_bChildAnchorEnabled ? (int)pImageElement->m_rcChildAnchor.top : (int)pImageElement->m_rcAnchor.top) +
-                              L"\"/>");
-
-		_INT64 width	= (_INT64)(pImageElement->m_bChildAnchorEnabled ? pImageElement->m_rcChildAnchor.GetWidth() : pImageElement->m_rcAnchor.GetWidth());
-		_INT64 height	= (_INT64)(pImageElement->m_bChildAnchorEnabled ? pImageElement->m_rcChildAnchor.GetHeight() : pImageElement->m_rcAnchor.GetHeight());
-
-        if (( width > 0 && height > 0 ) && ((_UINT64)width) < 0xffffffffffff && ((_UINT64)height) < 0xffffffffffff)
-        {
-            m_oWriter.WriteString(L"<a:ext cx=\"" + std::to_wstring(width) + L"\" cy=\"" + std::to_wstring(height) + L"\"/>");
-        }
-		else
-		{
-			m_oWriter.WriteString(L"<a:ext cx=\"0\" cy=\"0\"/>");
-		}
-        m_oWriter.WriteString(std::wstring(L"</a:xfrm>"));
+        m_oWriter.WriteString(std::wstring(L"<a:xfrm") + strAnchor + std::wstring(L"</a:xfrm>"));        
     }
     m_oWriter.WriteString(std::wstring(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>"));
 
@@ -2155,6 +2247,14 @@ std::wstring PPT::CShapeWriter::ConvertImage()
     m_oWriter.WriteString(std::wstring(L"</p:spPr>"));
 
     m_oWriter.WriteString(std::wstring(L"</p:pic>"));
+  
+    if (pOleObjectElement)
+    {
+        m_oWriter.WriteString(std::wstring(L"</p:oleObj>"));
+        m_oWriter.WriteString(std::wstring(L"</a:graphicData>"));
+        m_oWriter.WriteString(std::wstring(L"</a:graphic>"));
+        m_oWriter.WriteString(std::wstring(L"</p:graphicFrame>"));
+   }
 
     pImageElement = NULL;
     return m_oWriter.GetData();

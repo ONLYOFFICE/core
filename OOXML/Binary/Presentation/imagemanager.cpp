@@ -527,10 +527,12 @@ namespace NSShapeImageGen
 				CDirectory::CopyFile(strFileName, pathSaveItem.GetPath());
 
 				::MetaFile::IMetaFile* pMetafile = MetaFile::Create(m_pFontManager->GetApplication());
+				
+				pMetafile->SetImageSize(lWidth, lHeight);
 				if (pMetafile->LoadFromFile(strFileName.c_str()))
 				{
 					// пробуем сохранить в svg напрямую из метафайлов
-					std::wstring sInternalSvg = pMetafile->ConvertToSvg();
+					std::wstring sInternalSvg = pMetafile->ConvertToSvg(/*lWidth, lHeight*/);
 
 					if (!sInternalSvg.empty())
 					{

@@ -865,8 +865,8 @@ namespace PPTX
 
 			pWriter->WriteRecord2(4, oleObject);
 			pWriter->WriteRecord1(0, nvPicPr);
-			pWriter->WriteRecord1(1, blipFill);
 			pWriter->WriteRecord1(2, spPr);
+			pWriter->WriteRecord1(1, blipFill);
 			pWriter->WriteRecord2(3, style);
 
 			if (macro.IsInit())

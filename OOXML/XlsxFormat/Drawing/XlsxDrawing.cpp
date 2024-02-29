@@ -72,6 +72,17 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		XLS::BaseObjectPtr CDrawingWorksheet::toBin()
+		{
+			auto castedPtr(new XLSB::Drawing);
+			XLS::BaseObjectPtr ptr(castedPtr);
+				if(m_oId.IsInit())
+				{
+					if(!m_oId->GetValue().empty())
+						castedPtr->stRelId.value = m_oId->GetValue();
+				}
+			return ptr;
+		}
 		EElementType CDrawingWorksheet::getType () const
 		{
 			return et_x_FromTo;

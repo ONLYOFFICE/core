@@ -62,6 +62,7 @@ namespace PdfWriter
 			return dict_type_STREAM;
 		}
 
+		void SetID(CBinaryObject* pID);
 		bool AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength);
 		void WriteToStream(CStream* pStream, CEncrypt* pEncrypt) override;
 		void AfterWrite(CStream* pStream) override;

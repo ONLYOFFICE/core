@@ -197,49 +197,69 @@ TEST_F(ODP2OOX_AnimationPlayAudioTest, rels_size)
 	ASSERT_NE(mConversionContext, nullptr);
 
 	auto rels_ = mConversionContext->current_slide().Rels().relationships();
-	const size_t relsSizeExp = 3;
+	const size_t relsSizeExp = 2;
 
-	EXPECT_EQ(rels_.size(), 3);
+	EXPECT_EQ(rels_.size(), relsSizeExp);
 }
 
-TEST_F(ODP2OOX_AnimationPlayAudioTest, audio_rel_id)
+TEST_F(ODP2OOX_AnimationPlayAudioTest, audio_slide_rel_type)
 {
 	ASSERT_NE(mConversionContext, nullptr);
 
-	auto audioRel = mConversionContext->current_slide().Rels().relationships()[1];
-	const std::wstring idExp = L"hId1";
+	auto slideRel = mConversionContext->current_slide().Rels().relationships()[0];
+	const std::wstring typeExp = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout";
 
-	EXPECT_EQ(audioRel.id(), idExp);
+	EXPECT_EQ(slideRel.type(), typeExp);
 }
 
-TEST_F(ODP2OOX_AnimationPlayAudioTest, audio_rel_type)
+TEST_F(ODP2OOX_AnimationPlayAudioTest, audio_slide_rel_target)
 {
 	ASSERT_NE(mConversionContext, nullptr);
 
-	auto audioRel = mConversionContext->current_slide().Rels().relationships()[1];
-	const std::wstring typeExp = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink";
+	auto slideRel = mConversionContext->current_slide().Rels().relationships()[0];
+	const std::wstring targetExp = L"../slideLayouts/slideLayout1.xml";
 
-	EXPECT_EQ(audioRel.type(), typeExp);
+	EXPECT_EQ(slideRel.target(), targetExp);
 }
 
-TEST_F(ODP2OOX_AnimationPlayAudioTest, audio_rel_target)
+TEST_F(ODP2OOX_AnimationPlayAudioTest, audio_slide_rel_target_mode)
 {
 	ASSERT_NE(mConversionContext, nullptr);
 
-	auto audioRel = mConversionContext->current_slide().Rels().relationships()[1];
-	const std::wstring targetExp = L"../../../../X2tConverter/test/win32Test/Res/media_example.wav";
+	auto slideRel = mConversionContext->current_slide().Rels().relationships()[0];
+	const std::wstring targetModeExp = L"";
 
-	EXPECT_EQ(audioRel.target(), targetExp);
+	EXPECT_EQ(slideRel.target_mode(), targetModeExp);
 }
 
-TEST_F(ODP2OOX_AnimationPlayAudioTest, audio_rel_target_mode)
+TEST_F(ODP2OOX_AnimationPlayAudioTest, audio_notes_rel_type)
 {
 	ASSERT_NE(mConversionContext, nullptr);
 
-	auto audioRel = mConversionContext->current_slide().Rels().relationships()[1];
-	const std::wstring targetModeExp = L"External";
+	auto notesRel = mConversionContext->current_slide().Rels().relationships()[1];
+	const std::wstring typeExp = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide";
 
-	EXPECT_EQ(audioRel.target_mode(), targetModeExp);
+	EXPECT_EQ(notesRel.type(), typeExp);
+}
+
+TEST_F(ODP2OOX_AnimationPlayAudioTest, audio_notes_rel_target)
+{
+	ASSERT_NE(mConversionContext, nullptr);
+
+	auto notesRel = mConversionContext->current_slide().Rels().relationships()[1];
+	const std::wstring targetExp = L"../notesSlides/notesSlide1.xml";
+
+	EXPECT_EQ(notesRel.target(), targetExp);
+}
+
+TEST_F(ODP2OOX_AnimationPlayAudioTest, audio_notes_rel_target_mode)
+{
+	ASSERT_NE(mConversionContext, nullptr);
+
+	auto notesRel = mConversionContext->current_slide().Rels().relationships()[1];
+	const std::wstring targetModeExp = L"";
+
+	EXPECT_EQ(notesRel.target_mode(), targetModeExp);
 }
 
 //////////////////////////////////////////////////////////////////////////

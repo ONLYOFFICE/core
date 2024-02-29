@@ -155,7 +155,7 @@ namespace OOX
 	CCustomXMLProps::CCustomXMLProps(OOX::Document *pMain) : OOX::FileGlobalEnumerated(pMain)
 	{
 	}
-	CCustomXMLProps::CCustomXMLProps(OOX::Document *pMain, const OOX::CPath& oFilePath): OOX::FileGlobalEnumerated(pMain)
+	CCustomXMLProps::CCustomXMLProps(OOX::Document *pMain, const OOX::CPath& oFilePath) : OOX::FileGlobalEnumerated(pMain)
 	{
 		read( oFilePath );
 	}

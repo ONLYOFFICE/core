@@ -1036,6 +1036,11 @@ int Binary_pPrReader::ReadContent(BYTE type, long length, void* poResult)
 		pPPr->m_oCnfStyle.Init();
 		READ1_DEF(length, res, this->ReadCnfStyle, pPPr->m_oCnfStyle.GetPointer());
 	}break;
+	case c_oSerProp_pPrType::SnapToGrid:
+	{
+		pPPr->m_oSnapToGrid.Init();
+		pPPr->m_oSnapToGrid->m_oVal.FromBool(m_oBufferedStream.GetBool());
+	}break;
 	default:
 		res = c_oSerConstants::ReadUnknown;
 		break;

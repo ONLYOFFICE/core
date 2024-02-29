@@ -437,6 +437,22 @@ namespace PdfWriter
 	{
 		if (!m_pMetaData)
 			return false;
+
+		CArrayObject* pID = (CArrayObject*)m_pTrailer->Get("ID");
+		if (!pID)
+		{
+			BYTE arrId[16];
+			CEncryptDict::CreateId(m_pInfo, m_pXref, (BYTE*)arrId);
+
+			pID = new CArrayObject();
+			m_pTrailer->Add("ID", pID);
+
+			pID->Add(new CBinaryObject(arrId, 16));
+			pID->Add(new CBinaryObject(arrId, 16));
+
+			m_pMetaData->SetID(new CBinaryObject(arrId, 16));
+		}
+
 		return m_pMetaData->AddMetaData(sMetaName, pMetaData, nMetaLength);
 	}
 	CDictObject* CDocument::CreatePageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix)

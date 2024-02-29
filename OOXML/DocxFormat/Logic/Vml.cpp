@@ -195,14 +195,10 @@ namespace OOX
 						if (docx_flat)
 						{
 							smart_ptr<OOX::Image> pImageFile = smart_ptr<OOX::Image>(new OOX::Image(document, true));
-
-							int dstLen = Base64::Base64DecodeGetRequiredLength((int)oBinData.m_sData->size());
-							pImageFile->m_Data.resize(dstLen);
-							Base64::Base64Decode(oBinData.m_sData->c_str(), (int)oBinData.m_sData->size(), pImageFile->m_Data.data(), &dstLen);
-							pImageFile->m_Data.resize(dstLen);
+							pImageFile->m_Data = oBinData.GetBytes();
 
 							CImageFileFormatChecker fileChecker;
-							std::wstring ext = fileChecker.DetectFormatByData(pImageFile->m_Data.data(), dstLen);
+							std::wstring ext = fileChecker.DetectFormatByData(pImageFile->m_Data.data(), pImageFile->m_Data.size());
 							if (false == ext.empty())
 							{
 								OOX::CPath filename(L"image." + ext);
@@ -557,7 +553,7 @@ namespace OOX
 			if (m_oOleIcon.get_value_or(false))
 				sResult += L"o:oleicon=\"t\" ";
 
-			if (m_oOle.get_value_or(false))
+			if (m_oOle.IsInit())
 				sResult += L"o:ole=\"t\" ";
 
 			if (m_oPreferRelative.get_value_or(false))

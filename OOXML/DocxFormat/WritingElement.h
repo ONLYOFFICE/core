@@ -788,6 +788,7 @@ namespace OOX
 		et_w_bdo, // <w:bdo>
 		et_w_binData, // <w:binData>
 		et_w_bgPict,  // <w:bgPict>
+		et_w_docSuppData,  // <w:docSuppData> 
 		et_w_bookmarkEnd, // <w:bookmarkEnd>
 		et_w_bookmarkStart, // <w:bookmarkStart>
 		et_w_br, // <w:br>
@@ -1514,7 +1515,28 @@ namespace OOX
 		et_x_Timeslicer,
 		et_x_TimelineStyles,
 		et_x_TimelineStyle,
-		et_x_TimelineStyleElement
+		et_x_TimelineStyleElement,
+
+		et_x_Metadata,
+		et_x_FutureMetadata,
+		et_x_FutureMetadataBlock,
+		et_x_MetadataType,
+		et_x_MetadataTypes,
+		et_x_MetadataBlocks,
+		et_x_MetadataBlock,
+		et_x_MetadataRecord,
+		et_x_MetadataString,
+		et_x_MetadataStrings,
+		et_x_MdxMetadata,
+		et_x_Mdx,
+		et_x_MdxTuple,
+		et_x_MetadataStringIndex,
+		et_x_MdxSet,
+		et_x_MdxMemeberProp,
+		et_x_MdxKPI,
+
+		et_x_DynamicArrayProperties,
+		et_x_RichValueBlock
 	};
 
 	class File;
@@ -1526,6 +1548,7 @@ namespace OOX
 		virtual ~Document();
 
 		std::wstring m_sDocumentPath;
+		std::wstring m_sTempPath;
 		std::map<std::wstring, NSCommon::smart_ptr<OOX::File>> m_mapContent;
 	};
 

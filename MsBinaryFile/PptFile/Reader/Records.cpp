@@ -624,8 +624,10 @@ IRecord* CreateByType(SRecordHeader oHeader, _commonInfo* commonInfo)
             //CREATE_BY_TYPE(RECORD_TYPE_METAFILE					, CRecordMetafileBlob)
             CREATE_BY_TYPE(RT_CString, CRecordCString)
             CREATE_BY_TYPE(RT_SoundCollectionAtom, CRecordSoundCollAtom)
+          
             CREATE_BY_TYPE(RT_ExternalOleObjectAtom, CRecordExOleObjAtom)
             CREATE_BY_TYPE(RT_ExternalOleEmbedAtom, CRecordExOleEmbedAtom)
+            CREATE_BY_TYPE(RT_ExternalOleEmbed, CRecordExOleEmbedContainer)
             //CREATE_BY_TYPE(RECORD_TYPE_BOOKMARK_ENTITY_ATOM		, CRecordBookmarkEntityAtom)
             //CREATE_BY_TYPE(RECORD_TYPE_EXLINK_ATOM				, CRecordExOleLinkAtom)
 
@@ -671,7 +673,6 @@ IRecord* CreateByType(SRecordHeader oHeader, _commonInfo* commonInfo)
             CREATE_BY_TYPE(RTE_COLORMRU, CRecordMostRecentlyUserColors)
             CREATE_BY_TYPE(RTE_CLIENTDATA, CRecordOfficeArtClientData)
             CREATE_BY_TYPE(RTE_CLIENTTEXTBOX, CRecordOfficeArtClientTextbox)
-
 
             CREATE_BY_TYPE(RT_ExternalCdAudio, CRecordExCDAudioContainer)
             CREATE_BY_TYPE(RT_ExternalWavAudioLink, CRecordWAVAudioLinkContainer)

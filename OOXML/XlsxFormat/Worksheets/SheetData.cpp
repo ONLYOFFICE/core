@@ -1301,8 +1301,8 @@ namespace OOX
 				writer.WriteString(m_oType->ToString());
 				writer.WriteString(L"\"");
 			}
-			WritingStringNullableAttrInt(L"cm", m_oCellMetadata, m_oCellMetadata->GetValue());
-			WritingStringNullableAttrInt(L"vm", m_oValueMetadata, m_oValueMetadata->GetValue());
+			WritingStringNullableAttrInt2(L"cm", m_oCellMetadata);
+			WritingStringNullableAttrInt2(L"vm", m_oValueMetadata);
 			WritingStringNullableAttrBool(L"ph", m_oShowPhonetic);
 			if(m_oFormula.IsInit() || m_oRichText.IsInit() || m_oValue.IsInit())
 			{
@@ -1807,14 +1807,14 @@ namespace OOX
 				{
 					auto metadata(new XLSB::CellMeta);
 					pCellMeta->m_BrtCellMeta = XLS::BaseObjectPtr{metadata};
-					metadata->icmb = m_oCellMetadata->GetValue();
+					metadata->icmb = *m_oCellMetadata;
 				}
 
 				if(m_oValueMetadata.IsInit())
 				{
 					auto metadata(new XLSB::ValueMeta);
 					pCellMeta->m_BrtValueMeta = XLS::BaseObjectPtr{metadata};
-					metadata->ivmb = m_oValueMetadata->GetValue();
+					metadata->ivmb = *m_oValueMetadata;
 				}
 			}
 

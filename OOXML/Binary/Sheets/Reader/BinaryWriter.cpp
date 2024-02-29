@@ -3247,6 +3247,12 @@ void BinaryWorkbookTableWriter::WriteExternalCell(const OOX::Spreadsheet::CExter
 		m_oBcw.m_oStream.WriteStringW3(cell.m_oValue->ToString());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
+	if (cell.m_oValueMetadata.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::ValueMetadata);
+		m_oBcw.m_oStream.WriteULONG(*cell.m_oValueMetadata);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
 }
 void BinaryWorkbookTableWriter::WriteOleLink(const OOX::Spreadsheet::COleLink& oleLink, const std::wstring& sLink)
 {
@@ -5632,6 +5638,18 @@ void BinaryWorksheetTableWriter::WriteCell(const OOX::Spreadsheet::CCell& oCell)
 		nCurPos = m_oBcw.WriteItemStart(c_oSerCellTypes::ValueCache);
 		m_oBcw.m_oStream.WriteStringW3(*oCell.m_oCacheValue);
 		m_oBcw.WriteItemEnd(nCurPos);		
+	}
+	if (oCell.m_oCellMetadata.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerCellTypes::CellMetadata);
+		m_oBcw.m_oStream.WriteULONG(*oCell.m_oCellMetadata);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oCell.m_oValueMetadata.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerCellTypes::ValueMetadata);
+		m_oBcw.m_oStream.WriteULONG(*oCell.m_oValueMetadata);
+		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
 void BinaryWorksheetTableWriter::WriteFormula(OOX::Spreadsheet::CFormula& oFormula)

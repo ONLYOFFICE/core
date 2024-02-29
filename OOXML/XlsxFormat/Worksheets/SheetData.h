@@ -256,11 +256,11 @@ namespace OOX
 			nullable_int iAcross;
 			nullable_int iDown;
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oCellMetadata;
-			nullable<SimpleTypes::COnOff>						m_oShowPhonetic;
-			nullable_uint										m_oStyle;
 			nullable<SimpleTypes::Spreadsheet::CCellTypeType>	m_oType;
-			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oValueMetadata;
+			nullable<SimpleTypes::COnOff> m_oShowPhonetic;
+			nullable_uint			m_oStyle;
+			nullable_uint			m_oCellMetadata;
+			nullable_uint			m_oValueMetadata;
 
 			nullable<std::string>	m_oRef;
 			nullable_uint			m_oRow;

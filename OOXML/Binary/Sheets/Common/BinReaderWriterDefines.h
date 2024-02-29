@@ -587,7 +587,9 @@ namespace BinXlsxRW
 		Formula = 4,
 		RefRowCol = 5,
 		ValueText = 6,
-		ValueCache = 7
+		ValueCache = 7,
+		CellMetadata = 8,
+		ValueMetadata = 9
 	};}
 	namespace c_oSerFormulaTypes{enum c_oSerFormulaTypes
 	{
@@ -1529,7 +1531,8 @@ namespace BinXlsxRW
 		AbsoluteUrl = 19,
 		RelativeUrl = 20,
 		ExternalAlternateUrlsDriveId = 21,
-		ExternalAlternateUrlsItemId = 22
+		ExternalAlternateUrlsItemId = 22,
+		ValueMetadata = 23
 	};}
 	namespace c_oSer_OleLinkTypes{enum c_oSer_OleLinkTypes
 	{

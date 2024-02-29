@@ -3231,8 +3231,7 @@ int BinaryWorkbookTableReader::ReadExternalCell(BYTE type, long length, void* po
 	int res = c_oSerConstants::ReadOk;
 	if (c_oSer_ExternalLinkTypes::SheetDataRowCellRef == type)
 	{
-		pCell->m_oRef.Init();
-		pCell->m_oRef->append(m_oBufferedStream.GetString3(length));
+		pCell->m_oRef = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSer_ExternalLinkTypes::SheetDataRowCellType == type)
 	{
@@ -3243,6 +3242,10 @@ int BinaryWorkbookTableReader::ReadExternalCell(BYTE type, long length, void* po
 	{
 		pCell->m_oValue.Init();
 		pCell->m_oValue->m_sText.append(m_oBufferedStream.GetString3(length));
+	}
+	else if (c_oSer_ExternalLinkTypes::ValueMetadata == type)
+	{
+		pCell->m_oValueMetadata = m_oBufferedStream.GetULong();
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6374,6 +6377,14 @@ int BinaryWorksheetsTableReader::ReadCell(BYTE type, long length, void* poResult
 	else if (c_oSerCellTypes::ValueCache == type)
 	{
 		pCell->m_oCacheValue = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerCellTypes::CellMetadata == type)
+	{
+		pCell->m_oCellMetadata = m_oBufferedStream.GetULong();
+	}
+	else if (c_oSerCellTypes::ValueMetadata == type)
+	{
+		pCell->m_oValueMetadata = m_oBufferedStream.GetULong();
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

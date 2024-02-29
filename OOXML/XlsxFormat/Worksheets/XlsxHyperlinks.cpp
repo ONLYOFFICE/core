@@ -82,14 +82,22 @@ namespace OOX
 
 			if(m_oDisplay.IsInit())
 				castedPtr->display = m_oDisplay.get();
+            else
+                castedPtr->display = L"";
 			if(m_oRid.IsInit())
 				castedPtr->relId.value = m_oRid->GetValue();
+            else
+                castedPtr->relId.value = L"";
 			if(m_oLocation.IsInit())
 				castedPtr->location = m_oLocation.get();
+            else
+                castedPtr->location = L"";
 			if(m_oRef.IsInit())
 				castedPtr->rfx = m_oRef.get();
 			if(m_oTooltip.IsInit())
 				castedPtr->tooltip = m_oTooltip.get();
+            else
+                castedPtr->tooltip = L"";
 
 			return ptr;
 		}

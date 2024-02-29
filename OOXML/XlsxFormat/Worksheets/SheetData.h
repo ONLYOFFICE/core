@@ -33,6 +33,7 @@
 
 #include "../SharedStrings/Si.h"
 #include "../../Common/SimpleTypes_Shared.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CellRef.h"
 
 namespace NSBinPptxRW
 {
@@ -125,6 +126,11 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 
+		struct sharedFormula
+		{
+			std::vector<std::pair<XLS::CellRef, std::wstring>> shrFmla;
+			std::vector<std::pair<XLS::CellRangeRef, XLS::CellRef>> arrfmla;
+		};
 		class CFormula : public WritingElement
 		{
 		public:
@@ -141,7 +147,7 @@ namespace OOX
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream);
 			void fromXLSBExt (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nFlags);
             void fromBin(XLS::BaseObjectPtr& obj, SimpleTypes::Spreadsheet::ECellFormulaType eType);
-			XLS::BaseObjectPtr toBin();
+            void toBin(XLS::BaseObjectPtr& obj);
 
 			virtual EElementType getType () const;
 
@@ -216,7 +222,7 @@ namespace OOX
 
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, _UINT32 nRow);
             void fromBin(XLS::BaseObjectPtr& obj);
-			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toBin(sharedFormula &sharedFormulas);
 
 			virtual EElementType getType () const;
 
@@ -236,6 +242,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadComment(XmlUtils::CXmlLiteReader& oReader, CCommentItem* pComment);
+			bool checkArrayCell(XLS::CellRef &cellref, const sharedFormula& ArrFmlas);
 
 			void AfterRead();
 	//----------- 2003
@@ -285,7 +292,7 @@ namespace OOX
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
 			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
                         void fromBin(XLS::BaseObjectPtr& obj);
-						XLS::BaseObjectPtr toBin();
+						XLS::BaseObjectPtr toBin(sharedFormula &sharedFormulas);
 
 			virtual EElementType getType () const;
 

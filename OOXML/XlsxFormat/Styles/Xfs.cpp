@@ -281,8 +281,12 @@ namespace OOX
 			auto ptr = static_cast<XLSB::XF*>(obj.get());
 			if(m_oHidden.IsInit())
 				ptr->fHidden = m_oHidden->GetValue();
+			else
+				ptr->fHidden = false;
 			if(m_oLocked.IsInit())
 				ptr->fLocked = m_oLocked->GetValue();
+			else
+				ptr->fLocked = true;
 		}
 		EElementType CProtection::getType () const
 		{
@@ -391,34 +395,49 @@ namespace OOX
                 ptr->fsxButton = m_oPivotButton->GetValue();
             if(m_oQuotePrefix.IsInit())
                 ptr->f123Prefix = m_oQuotePrefix->GetValue();
-			ptr->ind_xf = 0;
 
 			if (m_oXfId.IsInit())
 				ptr->ixfParent = m_oXfId->GetValue();
 			else
 				ptr->ixfParent = 65535;
-            if(m_oApplyAlignment.IsInit())
-                ptr->fAtrAlc = m_oApplyAlignment->GetValue();
-            if(m_oApplyBorder.IsInit())
-                ptr->fAtrBdr = m_oApplyBorder->GetValue();
-            if(m_oApplyFill.IsInit())
-                ptr->fAtrPat = m_oApplyFill->GetValue();
-            if(m_oApplyFont.IsInit())
-                ptr->fAtrFnt = m_oApplyFont->GetValue();
-            if(m_oApplyNumberFormat.IsInit())
-                ptr->fAtrNum = m_oApplyNumberFormat->GetValue();
-            if(m_oApplyProtection.IsInit())
-                ptr->fAtrProt = m_oApplyProtection->GetValue();
 
 			if(m_oAligment.IsInit())
+			{
 				m_oAligment->toBin(objectPtr);
+			}
 			else
 			{
 				ptr->alc = 0;
 				ptr->alcV = 2;
 			}
-			if(m_oProtection.IsInit())
-				m_oProtection->toBin(objectPtr);
+            if(!m_oProtection.IsInit())
+                m_oProtection.Init();
+			m_oProtection->toBin(objectPtr);
+			
+			if(m_oApplyAlignment.IsInit())
+                ptr->fAtrAlc = m_oApplyAlignment->GetValue();
+			else
+				ptr->fAtrAlc = false;
+            if(m_oApplyBorder.IsInit())
+                ptr->fAtrBdr = m_oApplyBorder->GetValue();
+			else
+				ptr->fAtrBdr = false;
+            if(m_oApplyFill.IsInit())
+                ptr->fAtrPat = m_oApplyFill->GetValue();
+			else
+				ptr->fAtrPat = false;
+            if(m_oApplyFont.IsInit())
+                ptr->fAtrFnt = m_oApplyFont->GetValue();
+			else
+				ptr->fAtrFnt = false;
+            if(m_oApplyNumberFormat.IsInit())
+                ptr->fAtrNum = m_oApplyNumberFormat->GetValue();
+			else
+				ptr->fAtrNum = false;
+            if(m_oApplyProtection.IsInit())
+                ptr->fAtrProt = m_oApplyProtection->GetValue();
+			else
+				ptr->fAtrProt = false;
 
 			return objectPtr;
 		}

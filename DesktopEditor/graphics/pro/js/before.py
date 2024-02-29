@@ -36,3 +36,4 @@ if not base.is_dir("freetype-2.10.4"):
   common.apply_patch("./freetype-2.10.4/builds/unix/ftsystem.c", "./wasm/patches/ftsystem.patch")
 
 base.replaceInFile("../../../../Common/3dParty/icu/icu/source/common/udata.cpp", "\n{\n    UDataMemory tData;", "\n{\n#ifdef BUILDING_WASM_MODULE\nreturn NULL;\n#endif\n    UDataMemory tData;")
+base.replaceInFile("../../../../DesktopEditor/cximage/png/pnglibconf.h", "#define PNG_CONSOLE_IO_SUPPORTED", "//#define PNG_CONSOLE_IO_SUPPORTED")

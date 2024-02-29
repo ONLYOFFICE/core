@@ -1874,7 +1874,10 @@ void text_user_defined::docx_convert(oox::docx_conversion_context & Context)
 	if (!value.empty())
 		text_ = text::create(value) ;
 	
-	docx_serialize_run(text_, Context);
+	if (text_name_)
+		docx_serialize_field(XmlUtils::EncodeXmlString(L"DOCPROPERTY \"" + *text_name_ + L"\""), text_, Context, false);
+	else
+		docx_serialize_run(text_, Context);
 }
 //-----------------------------------------------------------------------------------------------
 // text:bibliography-mark

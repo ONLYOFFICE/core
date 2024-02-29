@@ -788,6 +788,7 @@ namespace OOX
 		et_w_bdo, // <w:bdo>
 		et_w_binData, // <w:binData>
 		et_w_bgPict,  // <w:bgPict>
+		et_w_docSuppData,  // <w:docSuppData> 
 		et_w_bookmarkEnd, // <w:bookmarkEnd>
 		et_w_bookmarkStart, // <w:bookmarkStart>
 		et_w_br, // <w:br>
@@ -1547,6 +1548,7 @@ namespace OOX
 		virtual ~Document();
 
 		std::wstring m_sDocumentPath;
+		std::wstring m_sTempPath;
 		std::map<std::wstring, NSCommon::smart_ptr<OOX::File>> m_mapContent;
 	};
 

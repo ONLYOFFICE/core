@@ -503,7 +503,9 @@ namespace NExtractTools
 			{
 				nRes = docxflat2odt(sFrom, sTo, params, convertParams);
 			}
-			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo)
+			else if (	AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo || 
+						AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatTo || 
+						AVS_OFFICESTUDIO_FILE_OTHER_OOXML == nFormatTo)
 			{
 				nRes = docxflat2docx(sFrom, sTo, params, convertParams);
 			}
@@ -1398,8 +1400,9 @@ namespace NExtractTools
 	_UINT32 fromInputParams(InputParams& oInputParams)
 	{
 		TConversionDirection conversion = oInputParams.getConversionDirection();
-		std::wstring sFileFrom = *oInputParams.m_sFileFrom;
-		std::wstring sFileTo = *oInputParams.m_sFileTo;
+		
+		std::wstring sFileFrom = oInputParams.m_sFileFrom  ? *oInputParams.m_sFileFrom : L"";
+		std::wstring sFileTo = oInputParams.m_sFileTo ? *oInputParams.m_sFileTo : L"";
 
 		int nFormatFrom = AVS_OFFICESTUDIO_FILE_UNKNOWN;
 		if (NULL != oInputParams.m_nFormatFrom)

@@ -3393,5 +3393,27 @@ namespace SimpleTypes
 			}
 			return L"v";
 		}
+		EUserProtectedRangeType CUserProtectedRangeType::FromString(const std::wstring& sValue)
+		{
+			if (L"notView" == sValue)
+				this->m_eValue = typeNotView;
+			else if (L"view" == sValue)
+				this->m_eValue = typeView;
+			else if (L"edit" == sValue)
+				this->m_eValue = typeEdit;
+			else
+				this->m_eValue = typeEdit;
+			return this->m_eValue;
+		}
+		std::wstring CUserProtectedRangeType::ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case typeNotView: return L"notView"; break;
+			case typeView: return L"view"; break;
+			case typeEdit: return L"edit"; break;
+			}
+			return L"edit";
+		}
 	}// Spreadsheet
 } // SimpleTypes

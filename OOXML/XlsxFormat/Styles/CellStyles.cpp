@@ -79,7 +79,10 @@ namespace OOX
 			auto ptr(new XLSB::Style);
 			XLS::BaseObjectPtr objectPtr(ptr);
 			if(m_oBuiltinId.IsInit())
-				ptr->fBuiltIn = m_oBuiltinId->GetValue();
+            {
+                ptr->fBuiltIn = true;
+                ptr->iStyBuiltIn = m_oBuiltinId->GetValue();
+            }
             else
                 ptr->fBuiltIn = false;
 			if (m_oCustomBuiltin.IsInit())
@@ -98,7 +101,6 @@ namespace OOX
 				ptr->stName = m_oName.get();
 			if (m_oXfId.IsInit())
 				ptr->ixf = m_oXfId->GetValue();
-			ptr->iStyBuiltIn = 0;
 
 			return objectPtr;
 		}

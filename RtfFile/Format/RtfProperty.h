@@ -526,10 +526,10 @@ public:
     std::wstring RenderToOOX2(RenderParameter oRenderParameter, _INT32 lvl = PROP_DEF);
 
 	static std::wstring GetFormat( _INT32 nNumFormat);
-	static _INT32 GetFormat( std::wstring sFormat);
+	static _INT32 GetFormat(const std::wstring& sFormat);
 
     std::wstring GetLevelTextOOX();
-    void SetLevelTextOOX(std::wstring sText);
+    void SetLevelTextOOX(const std::wstring& sText);
 };
 
 class RtfListProperty : public IRenderableProperty, public ItemContainer<RtfListLevelProperty>

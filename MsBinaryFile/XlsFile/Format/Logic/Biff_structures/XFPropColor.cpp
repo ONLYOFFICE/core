@@ -99,6 +99,7 @@ int XFPropColor::deserialize(XmlUtils::CXmlLiteReader& oReader)
 	{
 		std::wstring wsPropName = oReader.GetName();
 		nTintShade = 0;
+		fValidRGBA = false;
 		while (!wsPropName.empty())
 		{			
 			if (wsPropName == L"auto" && oReader.GetText() == L"1")
@@ -117,10 +118,11 @@ int XFPropColor::deserialize(XmlUtils::CXmlLiteReader& oReader)
 			{
 				xclrType = 2;
 				dwRgba.Parse(oReader.GetText());
+				fValidRGBA = true;
 			}
 			else if (wsPropName == L"tint")
 			{
-				nTintShade = XmlUtils::GetInteger(oReader.GetText()) * 32767.0;
+                nTintShade = XmlUtils::GetDouble(oReader.GetText()) * 32767.0;
 			}
 
 			if (!oReader.MoveToNextAttribute())

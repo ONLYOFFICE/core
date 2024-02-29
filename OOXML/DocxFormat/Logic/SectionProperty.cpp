@@ -1438,9 +1438,9 @@ namespace OOX
 
 			if ( m_sAuthor.IsInit() )
 			{
-				sResult += _T("w:author=\"");
-                sResult += m_sAuthor.get2();
-				sResult += _T("\" ");
+				sResult += L"w:author=\"";
+                sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
+				sResult += L"\" ";
 			}
 
 			if ( m_oDate.IsInit() )

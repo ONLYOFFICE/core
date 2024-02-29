@@ -2324,6 +2324,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pChoiceWidget->SetV(pPr->GetArrV());
 			if (nFlags & (1 << 13))
 				pChoiceWidget->SetI(pPr->GetI());
+			else
+				pChoiceWidget->Remove("I");
 
 			// ВНЕШНИЙ ВИД
 			pChoiceWidget->SetFont(m_pFont, dFontSize, isBold, isItalic);
@@ -2407,8 +2409,9 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		return S_FALSE;
 
 	std::vector<CWidgetsInfo::CParent*> arrParents = pFieldInfo->GetParents();
-	for (CWidgetsInfo::CParent* pParent : arrParents)
+	for (int j = 0; j < arrParents.size(); ++j)
 	{
+		CWidgetsInfo::CParent* pParent = arrParents[j];
 		PdfWriter::CDictObject* pParentObj = m_pDocument->GetParent(pParent->nID);
 		if (!pParentObj)
 			continue;
@@ -2416,8 +2419,9 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		std::vector<std::wstring> arrValue;
 
 		int nFlags = pParent->nFlags;
-		if (nFlags & (1 << 0))
-			pParentObj->Add("T", new PdfWriter::CStringObject((U_TO_UTF8(pParent->sName)).c_str(), true));
+		// Adobe не может смешивать юникод и utf имена полей
+		// if (nFlags & (1 << 0))
+		// 	pParentObj->Add("T", new PdfWriter::CStringObject((U_TO_UTF8(pParent->sName)).c_str(), true));
 		if (nFlags & (1 << 1))
 		{
 			std::string sV = U_TO_UTF8(pParent->sV);
@@ -2563,8 +2567,28 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 			DrawButtonWidget(pAppFonts, pPBWidget, 0, arrForm[pPBWidget->m_nI]);
 		if (pPBWidget->m_nRI >= 0)
 			DrawButtonWidget(pAppFonts, pPBWidget, 1, arrForm[pPBWidget->m_nRI]);
+		else if (pPBWidget->m_nI >= 0)
+		{
+			PdfWriter::CDictObject* pObj = dynamic_cast<PdfWriter::CDictObject*>(pPBWidget->Get("AP"));
+			if (pObj && pObj->Get("R"))
+			{
+				pObj = dynamic_cast<PdfWriter::CDictObject*>(pPBWidget->Get("MK"));
+				if (pObj && !pObj->Get("RI"))
+					DrawButtonWidget(pAppFonts, pPBWidget, 1, arrForm[pPBWidget->m_nI]);
+			}
+		}
 		if (pPBWidget->m_nIX >= 0)
 			DrawButtonWidget(pAppFonts, pPBWidget, 2, arrForm[pPBWidget->m_nIX]);
+		else if (pPBWidget->m_nI >= 0)
+		{
+			PdfWriter::CDictObject* pObj = dynamic_cast<PdfWriter::CDictObject*>(pPBWidget->Get("AP"));
+			if (pObj && pObj->Get("D"))
+			{
+				pObj = dynamic_cast<PdfWriter::CDictObject*>(pPBWidget->Get("MK"));
+				if (pObj && !pObj->Get("IX"))
+					DrawButtonWidget(pAppFonts, pPBWidget, 2, arrForm[pPBWidget->m_nI]);
+			}
+		}
 	}
 
 	return S_OK;

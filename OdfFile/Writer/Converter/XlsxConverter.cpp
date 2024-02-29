@@ -3018,9 +3018,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 						
 						if (pFile.IsInit() && (	OOX::FileTypes::Image == pFile->type()))
 						{
-							OOX::Image* pImageFileCache = static_cast<OOX::Image*>(pFile.GetPointer());
-							
-							if (pImageFileCache && odf_ref_image.empty())
+							smart_ptr<OOX::Image> pImageFileCache = pFile.smart_dynamic_cast<OOX::Image>();
+
+							if (pImageFileCache.IsInit() && odf_ref_image.empty())
 							{
 								odf_ref_image = odf_context()->add_imageobject(pImageFileCache->filename().GetPath());
 							}

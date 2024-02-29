@@ -55,6 +55,7 @@ namespace SimpleTypes
 		class CPaneState;
 		class CSheetViewType;
 		class CDataConsolidateFunction;
+		class CUserProtectedRangeType;
 	}
 }
 
@@ -465,6 +466,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			void toBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const;
 
 		private:
@@ -491,6 +493,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			void toBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const;
 
 		private:
@@ -868,6 +871,7 @@ namespace OOX
 			{
 				nullable_string id;
 				nullable_string name;
+				nullable<SimpleTypes::Spreadsheet::CUserProtectedRangeType> type;
 			};
 
 			WritingElement_AdditionMethods(CUserProtectedRange)
@@ -887,6 +891,7 @@ namespace OOX
 			nullable_string m_oName;
 			nullable_string m_oSqref;
 			nullable_string m_oText;
+			nullable<SimpleTypes::Spreadsheet::CUserProtectedRangeType> m_oType;
 
 			std::vector<_UsersGroupsDesc> m_arUsers;
 			std::vector<_UsersGroupsDesc> m_arUsersGroups;

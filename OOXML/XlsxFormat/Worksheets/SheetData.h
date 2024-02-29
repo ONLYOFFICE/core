@@ -98,7 +98,9 @@ namespace OOX
 			CTextXLSB m_oValue;
 			CFormulaXLSB m_oFormula;
 			nullable<CSi> m_oRichText;
-
+			
+			nullable_uint m_oCellMetadata;
+			nullable_uint m_oValueMetadata;
 		protected:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};

@@ -618,6 +618,8 @@ namespace OOX
 				{
 					m_oShowPhonetic.FromStringA(oReader.GetTextChar());
 				}
+				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "cm", m_oCellMetadata)
+				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "vm", m_oValueMetadata)
 
 				WritingElement_ReadAttributes_EndChar( oReader )
 		}
@@ -729,6 +731,14 @@ namespace OOX
 			{
 				nFlags |= 0x2000;
 			}
+			if (m_oCellMetadata.IsInit())
+			{
+				nFlags |= 0x4000;
+			}
+			if (m_oValueMetadata.IsInit())
+			{
+				nFlags |= 0x8000;
+			}
 			oStream.WriteUSHORT(nFlags);
 			if(m_oFormula.m_bIsInit)
 			{
@@ -737,6 +747,15 @@ namespace OOX
 			if(m_oRichText.IsInit())
 			{
 				m_oRichText->toXLSBExt(oStream);
+			}
+	//it's not by XLSB format
+			if (m_oCellMetadata.IsInit())
+			{
+				oStream.WriteULONG(*m_oCellMetadata);
+			}
+			if (m_oValueMetadata.IsInit())
+			{
+				oStream.WriteULONG(*m_oValueMetadata);
 			}
 
 			oStream.XlsbEndRecord();
@@ -1787,7 +1806,14 @@ namespace OOX
 				m_oRichText.Init();
 				m_oRichText->fromXLSBExt(oStream);
 			}
-
+			if (0 != (nStyleRef & 0x4000))
+			{
+				m_oCellMetadata = oStream.GetULong();
+			}
+			if (0 != (nStyleRef & 0x8000))
+			{
+				m_oValueMetadata = oStream.GetULong();
+			}
 			oStream.Seek(nEnd);
 		}
 		XLS::BaseObjectPtr CCell::toBin(sharedFormula &sharedFormulas)

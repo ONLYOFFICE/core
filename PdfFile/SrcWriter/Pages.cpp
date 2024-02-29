@@ -457,7 +457,6 @@ namespace PdfWriter
 		m_eGrMode   = grmode_PAGE;
 		m_pGrState  = new CGrState(NULL);
 
-		m_pMetaOForm        = NULL;
 		m_pExtGStates       = NULL;
 		m_unExtGStatesCount = 0;
 		m_pFonts            = NULL;
@@ -1584,13 +1583,24 @@ namespace PdfWriter
         CNumberObject* pRotate = (CNumberObject*)GetRotateItem();
         return pRotate ? pRotate->Get() : 0;
     }
-	void CPage::SetMetaOForm(CDictObject* pMetaOForm)
+	void CPage::BeginShape(int nRevision)
 	{
-		if (!m_pMetaOForm)
-		{
-			m_pMetaOForm = pMetaOForm;
-			Add("MetaOForm", m_pMetaOForm);
-		}
+		// Operator   : BDC
+		// Description: Начало маркированного контента MetaOForm
+
+		m_pStream->WriteEscapeName("MetaOForm");
+		m_pStream->WriteStr(" <<");
+		m_pStream->WriteEscapeName("Revision");
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteInt(nRevision);
+		m_pStream->WriteStr(">> BDC\012");
+	}
+	void CPage::EndMarkedContent()
+	{
+		// Operator   : EMC
+		// Description: Конец маркированного контента
+
+		m_pStream->WriteStr("EMC\012");
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextWord

@@ -2383,6 +2383,7 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	}
 	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:
 	{
+		m_pInternal->pWriter->EndMarkedContent();
 		return S_OK;
 	}
 	default:

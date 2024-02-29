@@ -2350,6 +2350,10 @@ HRESULT CPdfWriter::AddShapeXML(const std::string& sXML)
 	m_pDocument->AddShapeXML(sXML);
 	return S_OK;
 }
+void CPdfWriter::EndMarkedContent()
+{
+	m_pDocument->EndMarkedContent();
+}
 //----------------------------------------------------------------------------------------
 // Дополнительные функции Pdf рендерера
 //----------------------------------------------------------------------------------------

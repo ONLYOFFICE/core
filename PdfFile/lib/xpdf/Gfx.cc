@@ -5053,6 +5053,19 @@ void Gfx::opBeginMarkedContent(Object args[], int numArgs) {
       mcKind = gfxMCActualText;
     }
     obj.free();
+  } else if (args[0].isName("MetaOForm") && numArgs == 2 && args[1].isDict()) {
+    if (args[1].dictLookup("Revision", &obj)->isInt()) {
+      // TODO и совпадает с текущим в adaptor
+      Object obj2;
+      getContentObj(&obj2);
+      while (!obj2.isEOF() && !obj2.isCmd("EMC")) {
+        obj2.free();
+        getContentObj(&obj2);
+      }
+      obj2.free(); obj.free();
+      return;
+    }
+    obj.free();
   }
   mc = new GfxMarkedContent(mcKind, ocState);
   markedContentStack->append(mc);

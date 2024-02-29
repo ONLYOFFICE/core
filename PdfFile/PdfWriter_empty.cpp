@@ -133,6 +133,7 @@ HRESULT CPdfWriter::AddLink(const double& dX, const double& dY, const double& dW
 HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFieldInfo* pInfo, const std::wstring& wsTempDirectory) { return 0; }
 HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotFieldInfo* pFieldInfo) { return 0; }
 HRESULT CPdfWriter::AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength) { return 0; }
+HRESULT CPdfWriter::AddShapeXML(const std::string& sXML) { return 0; }
 HRESULT CPdfWriter::DrawImage1bpp(NSImages::CPixJbig2* pImageBuffer, const unsigned int& unWidth, const unsigned int& unHeight, const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }
 HRESULT CPdfWriter::EnableBrushRect(const LONG& lEnable) { return 0; }
 HRESULT CPdfWriter::SetLinearGradient(const double& dX1, const double& dY1, const double& dX2, const double& dY2) { return 0; }
@@ -159,6 +160,7 @@ void CPdfWriter::Reset() {}
 bool CPdfWriter::IsValid() { return false; }
 bool CPdfWriter::IsPageValid() { return false; }
 void CPdfWriter::SetError() {}
+void CPdfWriter::EndMarkedContent() {}
 void CPdfWriter::AddLink(PdfWriter::CPage* pPage, const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const unsigned int& unDestPage) {}
 unsigned char* CPdfWriter::EncodeString(const unsigned int* pUnicodes, const unsigned int& unUnicodesCount, const unsigned int* pGIDs) { return NULL; }
 unsigned char* CPdfWriter::EncodeGID(const unsigned int& unGID, const unsigned int* pUnicodes, const unsigned int& unUnicodesCount) { return NULL; }

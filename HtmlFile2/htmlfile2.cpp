@@ -499,7 +499,36 @@ public:
 			if(nFindEnd != std::string::npos)
 				sFileContent.replace(nFind, nFindEnd - nFind, "1.0");
 		}
+
+		// Так как для htmlToXhtml стили не нужны, а также их содержимое может пагубно повлиять на резьтат, 
+		// то поэтому вырезаем их и вставляем уже после
+		size_t nFirstStyleFounded = sFileContent.find("<style>");
+		size_t nStyleFounded{nFirstStyleFounded};
+		std::string sStyles;
+
+		while (std::string::npos != nStyleFounded)
+		{
+			size_t nStyleEndFounded = sFileContent.find("</style>", nStyleFounded);
+			
+			if (std::string::npos == nStyleEndFounded)
+				break;
+			
+			sStyles += sFileContent.substr(nStyleFounded + 7, nStyleEndFounded - nStyleFounded - 7) + " ";
+			sFileContent.erase(nStyleFounded, nStyleEndFounded - nStyleFounded + 8);
+
+			nStyleFounded = sFileContent.find("<style>", nStyleFounded);
+		}
+
 		std::wstring sRes = htmlToXhtml(sFileContent, bNeedConvert);
+
+		if (!sStyles.empty())
+		{
+			size_t nHeadFounded = sRes.find(L"<head>");
+			if (std::wstring::npos != nHeadFounded)
+				sRes.insert(nHeadFounded + 6, L"<style>" + std::wstring(sStyles.begin(), sStyles.end()) + L"</style>");
+			else
+				sRes.insert(nFirstStyleFounded, L"<style>" + std::wstring(sStyles.begin(), sStyles.end()) + L"</style>");
+		}
 		
 //		NSFile::CFileBinary oWriter;
 //		if (oWriter.CreateFileW(m_sTmp + L"/res.html"))

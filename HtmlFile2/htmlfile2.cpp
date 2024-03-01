@@ -1101,7 +1101,8 @@ private:
 		else if(sName == L"svg" || (sName.length() > 3 && sName.compare(sName.length() - 3, 3, L"svg") == 0))
 		{
 			wrP(oXml, sSelectors, oTS);
-			readSVG(oXml);
+			if (readSVG(m_oLightReader.GetOuterXml()))
+				ImageRels(oXml, -1, L"", L"png");
 		}
 		else if(sName == L"input")
 			readInput(oXml, sSelectors, oTS);
@@ -1938,25 +1939,33 @@ private:
 		if (nBase == std::wstring::npos)
 			return bRes;
 
-		NSFile::CFileBinary oImageWriter;
-		std::wstring sImageName = std::to_wstring(m_arrImages.size()) + L'.' + sExtention;
-		if (oImageWriter.CreateFileW(m_sDst + L"/word/media/i" + sImageName))
+		int nOffset = nBase + 7;
+		int nSrcLen = (int)(sSrcM.length() - nBase + 1);
+		int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
+		if (nDecodeLen != 0)
 		{
-			int nOffset = nBase + 7;
-			int nSrcLen = (int)(sSrcM.length() - nBase + 1);
+			BYTE* pImageData = new BYTE[nDecodeLen];
 
-			int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
-			if (nDecodeLen != 0)
+			if (!pImageData || FALSE == NSBase64::Base64Decode(sSrcM.c_str() + nOffset, nSrcLen, pImageData, &nDecodeLen))
+				return bRes;
+
+			if (L"svg" == sExtention || L"svg+xml" == sExtention)
 			{
-				BYTE* pImageData = new BYTE[nDecodeLen];
-				if (TRUE == NSBase64::Base64Decode(sSrcM.c_str() + nOffset, nSrcLen, pImageData, &nDecodeLen))
-				{
-					oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
-					bRes = true;
-				}
-				RELEASEARRAYOBJECTS(pImageData);
+				std::wstring wsSvg(pImageData, pImageData + nDecodeLen);
+				bRes = readSVG(wsSvg);
 			}
-			oImageWriter.CloseFile();
+			else
+			{
+				NSFile::CFileBinary oImageWriter;
+				std::wstring sImageName = std::to_wstring(m_arrImages.size()) + L'.' + sExtention;
+
+				if (oImageWriter.CreateFileW(m_sDst + L"/word/media/i" + sImageName))
+					bRes = oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
+
+				oImageWriter.CloseFile();
+			}
+
+			RELEASEARRAYOBJECTS(pImageData);
 		}
 
 		return bRes;
@@ -2282,12 +2291,10 @@ private:
 		m_oNoteXml.WriteString(L"</w:t></w:r></w:p></w:footnote>");
 	}
 
-	void readSVG    (NSStringUtils::CStringBuilder* oXml)
+	bool readSVG    (const std::wstring& wsSvg)
 	{
-		const std::wstring wsSvg = m_oLightReader.GetOuterXml();
-
 		if (wsSvg.empty())
-			return;
+			return false;
 
 		CSvgFile oSvgReader;
 
@@ -2304,7 +2311,7 @@ private:
 		{
 			RELEASEINTERFACE(pFontManager);
 			pFonts->Release();
-			return;
+			return false;
 		}
 
 		NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
@@ -2350,7 +2357,7 @@ private:
 		}
 
 		if (!pBgraData)
-			return;
+			return false;
 
 		unsigned int alfa = 0xffffff;
 		//дефолтный тон должен быть прозрачным, а не белым
@@ -2384,7 +2391,7 @@ private:
 
 		pFonts->Release();
 
-		ImageRels(oXml, -1, L"", L"png");
+		return true;
 	}
 };
 

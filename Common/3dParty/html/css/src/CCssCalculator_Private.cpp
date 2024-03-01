@@ -85,7 +85,8 @@ namespace NSCSS
 		}
 
 	}
-	
+
+	#ifdef CSS_CALCULATOR_WITH_XHTML
 	std::map<std::wstring, std::wstring> CCssCalculator_Private::GetPageData(const std::wstring &wsPageName)
 	{
 		if (m_arPageDatas.empty())
@@ -248,6 +249,7 @@ namespace NSCSS
 
 		return arFindedElements;
 	}
+	#endif
 
 	void CCssCalculator_Private::AddPageData(const std::wstring &wsPageNames, const std::wstring &wsStyles)
 	{

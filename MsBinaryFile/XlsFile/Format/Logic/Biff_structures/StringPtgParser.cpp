@@ -341,7 +341,7 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             {
                 if(L"SharedParsedFormula" == tag_name || L"CFParsedFormulaNoCCE" == tag_name)
                 {
-                    found_operand = OperandPtgPtr(new PtgAreaN(operand_str, OperandPtg::ptg_VALUE, rgce.getLocation()));
+                    found_operand = OperandPtgPtr(new PtgAreaN(operand_str, OperandPtg::ptg_REFERENCE, rgce.getLocation()));
                 }
                 else
                 {

@@ -521,7 +521,10 @@ namespace NSCSS
 
 			// Скидываем некоторые внешние стили, которые внутри таблицы переопределяются
 			if (L"table" == arSelectors[i].m_wsName)
-				oStyle.m_oFont.SetLineHeight(L"100%", 0, true);
+			{
+				oStyle.m_oFont.Clear();
+				oStyle.m_oPadding.Clear();
+			}
 
 			CCompiledStyle oTempStyle;
 

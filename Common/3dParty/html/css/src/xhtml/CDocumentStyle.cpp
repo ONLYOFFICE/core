@@ -304,13 +304,6 @@ namespace NSCSS
 		if (!oStyle.m_oFont.GetLineHeight().Empty() && !oStyle.m_oFont.GetLineHeight().Zero())
 			sSpacingValue += L" w:line=\"" + std::to_wstring(oStyle.m_oFont.GetLineHeight().ToInt(NSCSS::Twips, DEFAULT_LINEHEIGHT)) + L"\" w:lineRule=\"auto\"";
 
-//		else if (!oStyle.m_oBorder.Empty())
-//		{
-//			sSpacingValue += L" w:line=\"" + std::to_wstring(static_cast<short int>(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Twips) * 2 * POINTCOEF + 0.5f)) + L"\" w:lineRule=\"auto\"";
-//		}
-		else if (!oStyle.m_oBorder.Empty())
-			sSpacingValue += L" w:line=\"" + std::to_wstring(DEFAULT_LINEHEIGHT) + L"\" w:lineRule=\"auto\" ";
-
 		if (!sSpacingValue.empty())
 		{
 			oXmlElement.AddPropertiesInP(PProperties::P_Spacing, sSpacingValue);

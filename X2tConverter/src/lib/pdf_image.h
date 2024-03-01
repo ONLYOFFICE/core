@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h"
+#include "../../../DesktopEditor/graphics/Image.h"
 
 #include "../../../DjVuFile/DjVu.h"
 #include "../../../DocxRenderer/DocxRenderer.h"
@@ -647,7 +648,7 @@ namespace NExtractTools
 		if (!documentID.empty())
 			oPdfResult.SetDocumentID(documentID);
 
-		std::wstring password = params.getSavePassword();
+		std::wstring password = params.getPassword();
 		if (!oPdfResult.LoadFromFile(sFrom, L"", password, password))
 			return false;
 
@@ -674,9 +675,10 @@ namespace NExtractTools
 	}
 
 	_UINT32 fromCrossPlatform(const std::wstring& sFromSrc, int nFormatFrom,
-							  const std::wstring& sTo, int nFormatTo,
+							  const std::wstring& sTo_, int nFormatTo,
 							  InputParams& params, ConvertParams& convertParams)
 	{
+		std::wstring sTo = sTo_;
 		_UINT32 nRes = 0;
 		NSFonts::IApplicationFonts *pApplicationFonts = createApplicationFonts(params);
 
@@ -707,15 +709,142 @@ namespace NExtractTools
 		{
 			std::string sPages = checkPrintPages(params);
 
-			if (nFormatFrom == nFormatTo && !params.getIsPDFA() && params.getPassword() == params.getSavePassword() && sPages.empty())
+			if (nFormatFrom == nFormatTo && !params.getIsPDFA())
 			{
-				if (sFrom == sFromSrc)
-					nRes = NSFile::CFileBinary::Copy(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+				if (!sPages.empty())
+				{
+					std::wstring sCurrentTmp = L"";
+					sCurrentTmp =NSFile::CFileBinary::CreateTempFileWithUniqueName(convertParams.m_sTempDir, L"PDF_");
+					if (NSFile::CFileBinary::Exists(sCurrentTmp))
+						NSFile::CFileBinary::Remove(sCurrentTmp);
+
+					CPdfFile oPdfPages(pApplicationFonts);
+					oPdfPages.SetTempDirectory(convertParams.m_sTempDir);
+
+					std::wstring sPassword = params.getPassword();
+					if (oPdfPages.LoadFromFile(sFrom.c_str(), L"", sPassword, sPassword) && oPdfPages.EditPdf(sCurrentTmp))
+					{
+						int nPagesCount = oPdfPages.GetPagesCount();
+						std::vector<bool> arPages = getPrintPages(convertParams.m_sPrintPages, nPagesCount);
+
+						for (int i = 0; i < nPagesCount; ++i)
+						{
+							if (!arPages[i])
+								oPdfPages.DeletePage(i);
+						}
+
+						oPdfPages.Close();
+					}
+					else
+					{
+						sCurrentTmp = L"";
+					}
+
+					if (!sCurrentTmp.empty())
+					{
+						if (sFrom != sFromSrc)
+						{
+							NSFile::CFileBinary::Remove(sFrom);
+						}
+						sFrom = sCurrentTmp;
+					}
+				}
+
+				if (params.getPassword() != params.getSavePassword())
+				{
+					std::wstring sCurrentTmp = L"";
+					sCurrentTmp =NSFile::CFileBinary::CreateTempFileWithUniqueName(convertParams.m_sTempDir, L"PDF_");
+					if (NSFile::CFileBinary::Exists(sCurrentTmp))
+						NSFile::CFileBinary::Remove(sCurrentTmp);
+
+					CPdfFile oPdfPages(pApplicationFonts);
+					oPdfPages.SetTempDirectory(convertParams.m_sTempDir);
+
+					std::wstring sPassword = params.getPassword();
+					if (oPdfPages.LoadFromFile(sFrom.c_str(), L"", sPassword, sPassword))
+					{
+						oPdfPages.ChangePassword(sCurrentTmp, params.getSavePassword());
+						oPdfPages.Close();
+					}
+					else
+					{
+						sCurrentTmp = L"";
+					}
+
+					if (!sCurrentTmp.empty())
+					{
+						if (sFrom != sFromSrc)
+						{
+							NSFile::CFileBinary::Remove(sFrom);
+						}
+						sFrom = sCurrentTmp;
+					}
+				}
+
+				if ((NULL == params.m_sJsonParams) ||
+					(std::wstring::npos == params.m_sJsonParams->find(L"\"watermark\":")))
+				{
+					if (sFrom == sFromSrc)
+					{
+						nRes = NSFile::CFileBinary::Copy(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+					}
+					else
+					{
+						nRes = NSFile::CFileBinary::Move(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+					}
+				}
 				else
 				{
-					nRes = NSFile::CFileBinary::Move(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-					sFrom = sFromSrc;
+					NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
+
+					std::wstring sWatermarkTmp = NSFile::CFileBinary::CreateTempFileWithUniqueName(convertParams.m_sTempDir, L"WWW_");
+					if (NSFile::CFileBinary::Exists(sWatermarkTmp))
+						NSFile::CFileBinary::Remove(sWatermarkTmp);
+
+					std::wstring sXml = getDoctXml(NSDoctRenderer::DoctRendererFormat::DOCT,
+												   NSDoctRenderer::DoctRendererFormat::WATERMARK,
+												   L"", sWatermarkTmp, L"", convertParams.m_sThemesDir, -1, L"", params);
+
+					std::wstring sResult = L"";
+					oDoctRenderer.Execute(sXml, sResult);
+
+					if (sResult.empty())
+					{
+						std::wstring password = params.getSavePassword();
+						CPdfFile oPdfResult(pApplicationFonts);
+						if (!oPdfResult.LoadFromFile(sFrom, L"", password, password))
+							return false;
+
+						if (!oPdfResult.EditPdf(sTo))
+							return false;
+
+						Aggplus::CImage oImageW(sWatermarkTmp);
+
+						double dW = 0, dH = 0, dDpiX = 0, dDpiY = 0;
+
+						int nPagesCount = oPdfResult.GetPagesCount();
+						for (int nPage = 0; nPage < nPagesCount; ++nPage)
+						{
+							oPdfResult.EditPage(nPage);
+
+							oPdfResult.GetPageInfo(nPage, &dW, &dH, &dDpiX, &dDpiY);
+
+							double dPageW_MM = dW * 25.4 / dDpiX;
+							double dPageH_MM = dH * 25.4 / dDpiY;
+
+							double dImageW_MM = 25.4 * oImageW.GetWidth() / dDpiX;
+							double dImageH_MM = 25.4 * oImageW.GetHeight() / dDpiY;
+
+							oPdfResult.DrawImage(&oImageW, (dPageW_MM - dImageW_MM) / 2, (dPageH_MM - dImageH_MM) / 2, dImageW_MM, dImageH_MM);
+						}
+
+						oPdfResult.Close();
+					}
+
+					if (NSFile::CFileBinary::Exists(sWatermarkTmp))
+						NSFile::CFileBinary::Remove(sWatermarkTmp);
 				}
+				sFrom = sFromSrc;
 			}
 			else
 			{
@@ -729,7 +858,7 @@ namespace NExtractTools
 					pdfWriter.SetDocumentID(documentID);
 
 				std::wstring password = params.getSavePassword();
-				if (false == password.empty())
+				if (!password.empty())
 					pdfWriter.SetPassword(password);
 
 				IOfficeDrawingFile *pReader = NULL;
@@ -740,27 +869,10 @@ namespace NExtractTools
 				RELEASEOBJECT(pReader);
 			}
 		}
-		else if (0 != (AVS_OFFICESTUDIO_FILE_CANVAS & nFormatTo))
+		else if (0 != (AVS_OFFICESTUDIO_FILE_CANVAS & nFormatTo) && params.needConvertToOrigin(nFormatFrom))
 		{
-			if (params.needConvertToOrigin(nFormatFrom))
-			{
-				copyOrigin(sFrom, *params.m_sFileTo);
-			}
-			else
-			{
-				std::wstring sToDir = NSSystemPath::GetDirectoryName(sTo);
-				if (!params.getDontSaveAdditional())
-				{
-					// save origin to print
-					copyOrigin(sFrom, *params.m_sFileTo);
-				}
-				NSHtmlRenderer::CASCHTMLRenderer3 oHtmlRenderer;
-				oHtmlRenderer.CreateOfficeFile(sToDir);
-				IOfficeDrawingFile *pReader = NULL;
-				nRes = PdfDjvuXpsToRenderer(&pReader, &oHtmlRenderer, sFrom, nFormatFrom, sTo, params, convertParams, pApplicationFonts);
-				oHtmlRenderer.CloseFile(params.getIsNoBase64());
-				RELEASEOBJECT(pReader);
-			}
+			//todo remove this code. copy outside x2t
+			copyOrigin(sFrom, *params.m_sFileTo);
 		}
 		else if (0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
 		{
@@ -770,16 +882,25 @@ namespace NExtractTools
 		}
 		else
 		{
+			bool bChangeExt = false;
 			switch (nFormatTo)
 			{
 			case AVS_OFFICESTUDIO_FILE_OTHER_OOXML:
-				nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
+				*params.m_nFormatTo = nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX; bChangeExt = true;
 				break;
 			case AVS_OFFICESTUDIO_FILE_OTHER_ODF:
-				nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
+				*params.m_nFormatTo = nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT; bChangeExt = true;
 				break;
 			}
-
+			if (bChangeExt)
+			{
+				size_t nIndex = sTo.rfind('.');
+				COfficeFileFormatChecker FileFormatChecker;
+				if (-1 != nIndex)
+					sTo.replace(nIndex, std::wstring::npos, FileFormatChecker.GetExtensionByType(*params.m_nFormatTo));
+				else
+					sTo.append(FileFormatChecker.GetExtensionByType(*params.m_nFormatTo));
+			}
 			IOfficeDrawingFile *pReader = NULL;
 			switch (nFormatFrom)
 			{
@@ -839,6 +960,7 @@ namespace NExtractTools
 
 				oDocxRenderer.SetTempFolder(sTempDirOut);
 				bool bIsOutCompress = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo && !params.hasSavePassword();
+
 				nRes = oDocxRenderer.Convert(pReader, sTo, bIsOutCompress);
 
 				if (nRes == S_OK && !bIsOutCompress)

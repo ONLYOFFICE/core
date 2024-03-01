@@ -23,8 +23,9 @@
 #include "../DesktopEditor/common/ProcessEnv.h"
 #include "../DesktopEditor/xml/include/xmlutils.h"
 #include "../DesktopEditor/raster/BgraFrame.h"
-#include "../DesktopEditor/graphics/pro/Fonts.h"
 #include "../DesktopEditor/graphics/pro/Graphics.h"
+#include "../DesktopEditor/raster/Metafile/svg/CSvgFile.h"
+
 #include "htmlfile2.h"
 
 #include <boost/regex.hpp>
@@ -127,6 +128,25 @@ std::wstring EncodeXmlString(const std::wstring& s)
 	replace_all(sRes, L"\t", L"&#x9;");
 
 	return sRes;
+}
+
+bool GetStatusUsingExternalLocalFiles()
+{
+	if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
+		return NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
+
+	return true;
+}
+
+bool CanUseThisPath(const std::wstring& wsPath, bool bIsAllowExternalLocalFiles)
+{
+	if (bIsAllowExternalLocalFiles)
+		return true;
+
+	if (wsPath.length() >= 3 && L"../" == wsPath.substr(0, 3))
+		return false;
+
+	return true;
 }
 
 class CHtmlFile2_Private
@@ -1922,14 +1942,14 @@ private:
 		std::wstring sImageName = std::to_wstring(m_arrImages.size()) + L'.' + sExtention;
 		if (oImageWriter.CreateFileW(m_sDst + L"/word/media/i" + sImageName))
 		{
-			std::string sSrc = U_TO_UTF8(sSrcM);
-			std::string sBase64 = sSrc.substr(nBase + 7);
-			int nSrcLen = (int)sBase64.length();
+			int nOffset = nBase + 7;
+			int nSrcLen = (int)(sSrcM.length() - nBase + 1);
+
 			int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
 			if (nDecodeLen != 0)
 			{
 				BYTE* pImageData = new BYTE[nDecodeLen];
-				if (TRUE == NSBase64::Base64Decode(sBase64.c_str(), nSrcLen, pImageData, &nDecodeLen))
+				if (TRUE == NSBase64::Base64Decode(sSrcM.c_str() + nOffset, nSrcLen, pImageData, &nDecodeLen))
 				{
 					oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
 					bRes = true;
@@ -2001,14 +2021,22 @@ private:
 			return;
 		}
 
-		bool bIsAllowExternalLocalFiles = true;
-		if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
-			bIsAllowExternalLocalFiles = NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
+		const bool bIsAllowExternalLocalFiles = GetStatusUsingExternalLocalFiles();
+
+		bool bIsBase64 = false;
+		if (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"data" && sSrcM.find(L"/", 4) != std::wstring::npos)
+			bIsBase64 = true;
+
+		if (!bIsBase64)
+			sSrcM = NSSystemPath::ShortenPath(sSrcM);
+
+		if (!CanUseThisPath(sSrcM, bIsAllowExternalLocalFiles))
+			return;
 
 		int nImageId = -1;
 		std::wstring sImageSrc, sExtention;
 		// Предполагаем картинку в Base64
-		if (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"data" && sSrcM.find(L"/", 4) != std::wstring::npos)
+		if (bIsBase64)
 			bRes = readBase64(sSrcM, sExtention);
 
 		if (!bRes)
@@ -2256,82 +2284,104 @@ private:
 
 	void readSVG    (NSStringUtils::CStringBuilder* oXml)
 	{
-		// Сохранить как .svg картинку
-		NSStringUtils::CStringBuilder oSVG;
-		oSVG.WriteString(L"<svg ");
-		while (m_oLightReader.MoveToNextAttribute())
-		{
-			std::wstring sName = m_oLightReader.GetName();
-			if(sName.find(L"xmlns") != std::wstring::npos)
-				continue;
-			oSVG.WriteString(sName);
-			oSVG.WriteString(L"=\"");
-			oSVG.WriteString(m_oLightReader.GetText());
-			oSVG.WriteString(L"\" ");
-		}
-		m_oLightReader.MoveToElement();
-		oSVG.WriteString(L"xmlns=\"http://www.w3.org/2000/svg\">");
+		const std::wstring wsSvg = m_oLightReader.GetOuterXml();
 
-		std::wstring sSVG = m_oLightReader.GetInnerXml();
-		size_t nRef = sSVG.find(L"image");
-		while (nRef != std::wstring::npos)
-		{
-			size_t nRefBegin = sSVG.rfind(L'<', nRef);
-			if (nRefBegin != std::wstring::npos)
-			{
-				if (sSVG[nRefBegin + 1] == L'/')
-					nRefBegin++;
-				sSVG.erase(nRefBegin + 1, nRef - nRefBegin - 1);
-				nRef = nRefBegin + 1;
-			}
+		if (wsSvg.empty())
+			return;
 
-			size_t nRefEnd = sSVG.find(L'>', nRef);
-			size_t nHRef = sSVG.find(L"href", nRef);
-			if (nHRef == std::wstring::npos || nRefEnd == std::wstring::npos)
-				break;
-			nHRef += 6;
-			if (nHRef > nRefEnd || sSVG.compare(nHRef, 4, L"http") == 0)
-			{
-				nRef = sSVG.find(L"image", nRef + 5);
-				continue;
-			}
-			size_t nHRefLen = sSVG.find(L"\"", nHRef);
-			if(nHRefLen == std::wstring::npos)
-				break;
-			std::wstring sImageName = sSVG.substr(nHRef, nHRefLen - nHRef);
-			std::wstring sTIN(sImageName);
-			sTIN.erase(std::remove_if(sTIN.begin(), sTIN.end(), [] (wchar_t ch) { return std::iswspace(ch) || (ch == L'^'); }), sTIN.end());
-			sTIN = NSFile::GetFileName(sTIN);
-			bool bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + sImageName, m_sDst + L"/word/media/" + sTIN);
-			if(!bRes)
-				bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + NSFile::GetFileName(sImageName), m_sDst + L"/word/media/" + sTIN);
-			if(bRes)
-				sSVG.replace(nHRef, nHRefLen - nHRef, sTIN);
-			nRef = sSVG.find(L"image", nRef + 5);
-		}
+		CSvgFile oSvgReader;
 
-		oSVG.WriteString(sSVG);
-		oSVG.WriteString(L"</svg>");
-
-		std::wstring sImageId = std::to_wstring(m_arrImages.size());
-		NSFile::CFileBinary oSVGWriter;
-		std::wstring sImageFile = m_sDst + L"/word/media/i" + sImageId + L".svg";
-		if (oSVGWriter.CreateFileW(sImageFile))
-		{
-			oSVGWriter.WriteStringUTF8(oSVG.GetData());
-			oSVGWriter.CloseFile();
-		}
-
-		// Конвертация из svg в png
 		NSFonts::IApplicationFonts* pFonts = NSFonts::NSApplication::Create();
-		MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
-		bool bLoad = pMetafile->LoadFromFile(sImageFile.data());
-		if (bLoad)
+		NSFonts::IFontManager* pFontManager = pFonts->GenerateFontManager();
+		NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
+
+		pFontCache->SetStreams(pFonts->GetStreams());
+		pFontManager->SetOwnerCache(pFontCache);
+
+		oSvgReader.SetFontManager(pFontManager);
+
+		if (!oSvgReader.ReadFromWString(wsSvg))
 		{
-			std::wstring sPngFile = m_sDst + L"/word/media/i" + sImageId + L".png";
-			pMetafile->ConvertToRaster(sPngFile.data(), 4, 1000);
+			RELEASEINTERFACE(pFontManager);
+			pFonts->Release();
+			return;
 		}
-		pMetafile->Release();
+
+		NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
+		pGrRenderer->SetFontManager(pFontManager);
+
+		double dX, dY, dW, dH;
+		oSvgReader.GetBounds(dX, dY, dW, dH);
+
+		if (dW < 0) dW = -dW;
+		if (dH < 0) dH = -dH;
+
+		double dOneMaxSize = (double)1000.;
+
+		if (dW > dH)
+		{
+			dH *= (dOneMaxSize / dW);
+			dW = dOneMaxSize;
+		}
+		else
+		{
+			dW *= (dOneMaxSize / dH);
+			dH = dOneMaxSize;
+		}
+
+		int nWidth  = static_cast<int>(dW + 0.5);
+		int nHeight = static_cast<int>(dH + 0.5);
+
+		double dWidth  = 25.4 * nWidth / 96;
+		double dHeight = 25.4 * nHeight / 96;
+
+		BYTE* pBgraData = (BYTE*)malloc(nWidth * nHeight * 4);
+		if (!pBgraData)
+		{
+			double dKoef = 2000.0 / (nWidth > nHeight ? nWidth : nHeight);
+
+			nWidth = (int)(dKoef * nWidth);
+			nHeight = (int)(dKoef * nHeight);
+
+			dWidth  = 25.4 * nWidth / 96;
+			dHeight = 25.4 * nHeight / 96;
+
+			pBgraData = (BYTE*)malloc(nWidth * nHeight * 4);
+		}
+
+		if (!pBgraData)
+			return;
+
+		unsigned int alfa = 0xffffff;
+		//дефолтный тон должен быть прозрачным, а не белым
+		//memset(pBgraData, 0xff, nWidth * nHeight * 4);
+		for (int i = 0; i < nWidth * nHeight; i++)
+		{
+			((unsigned int*)pBgraData)[i] = alfa;
+		}
+		CBgraFrame oFrame;
+		oFrame.put_Data(pBgraData);
+		oFrame.put_Width(nWidth);
+		oFrame.put_Height(nHeight);
+		oFrame.put_Stride(-4 * nWidth);
+
+		pGrRenderer->CreateFromBgraFrame(&oFrame);
+		pGrRenderer->SetSwapRGB(false);
+		pGrRenderer->put_Width(dWidth);
+		pGrRenderer->put_Height(dHeight);
+
+		oSvgReader.SetWorkingDirectory(m_sSrc);
+		oSvgReader.Draw(pGrRenderer, 0, 0, dWidth, dHeight);
+
+		oFrame.SaveFile(m_sDst + L"/word/media/i" + std::to_wstring(m_arrImages.size()) + L".png", 4);
+		oFrame.put_Data(NULL);
+
+		RELEASEINTERFACE(pFontManager);
+		RELEASEINTERFACE(pGrRenderer);
+
+		if (pBgraData)
+			free(pBgraData);
+
 		pFonts->Release();
 
 		ImageRels(oXml, -1, L"", L"png");

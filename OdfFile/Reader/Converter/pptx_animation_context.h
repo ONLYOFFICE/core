@@ -71,6 +71,7 @@ namespace oox {
 				_CP_OPT(std::wstring)						End;
 				_CP_OPT(std::wstring)						PresetClass;
 				_CP_OPT(int)								PresetID;
+				_CP_OPT(int)								PresetSubtype;
 				_CP_OPT(std::wstring)						Fill;
 				_CP_OPT(int)								Accelerate;
 				_CP_OPT(int)								Decelerate;
@@ -121,6 +122,9 @@ namespace oox {
 			{
 				_CP_OPT(std::wstring)							Filter;
 				_CP_OPT(std::wstring)							Transition;
+				_CP_OPT(std::wstring)							Delay;
+				_CP_OPT(int)									Accel;
+				_CP_OPT(int)									Decel;
 				_CP_OPT(int)									Duration; // in ms
 				_CP_OPT(size_t)									ShapeID;
 
@@ -295,6 +299,7 @@ namespace oox {
 			void set_par_animation_end(const std::wstring& value);
 			void set_par_animation_preset_class(const std::wstring& value);
 			void set_par_animation_preset_id(int value);
+			void set_par_animation_preset_subtype(int value);
 			void set_par_animation_fill(const std::wstring& value);
 			void set_par_animation_accelerate(int value);
 			void set_par_animation_decelerate(int value);
@@ -327,6 +332,9 @@ namespace oox {
 			void set_anim_effect_filter(const std::wstring& value);
 			void set_anim_effect_transition(const std::wstring& value);
 			void set_anim_effect_duration(int value);
+			void set_anim_effect_delay(const std::wstring& value);
+			void set_anim_effect_accel(int value);
+			void set_anim_effect_decel(int value);
 			void set_anim_effect_shape_id(size_t value);
 		void end_anim_effect();
 

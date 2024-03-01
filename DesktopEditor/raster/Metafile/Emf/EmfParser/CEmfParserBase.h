@@ -79,14 +79,14 @@ namespace MetaFile
 		bool            IsWindowFlippedY()               override;
 		bool            IsWindowFlippedX()               override;
 		unsigned int    GetMapMode()                     override;
-		double          GetDpi()                         override;
+		USHORT          GetDpi()                         override;
 		IRegion*        GetRegion()                      override;
 		unsigned int    GetArcDirection()                override;
 		CPath*          GetPath()                        override;
 		bool            IsViewportFlippedY();
 		bool            IsViewportFlippedX();
 
-		virtual void    SetInterpretator(IOutputDevice* pOutput);
+		void            SetInterpretator(IOutputDevice* pOutput);
 		void            SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
 		void            SetInterpretator(IOutputDevice* pOutput, const wchar_t *wsFilePath);
 		void            SetInterpretator(InterpretatorType oInterpretatorType, double dWidth = 0, double dHeight = 0);

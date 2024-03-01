@@ -1,7 +1,6 @@
 #ifndef CSVGPARSER_H
 #define CSVGPARSER_H
 
-#include "../../graphics/pro/Fonts.h"
 #include "../../../common/Directory.h"
 #include "../../../xml/include/xmlutils.h"
 
@@ -20,7 +19,7 @@ namespace SVG
 		void SetFontManager(NSFonts::IFontManager* pFontManager);
 
 		bool LoadFromFile(const std::wstring& wsFile, CGraphicsContainer* pContainer, CSvgFile* pFile) const;
-		bool LoadFromString(const std::wstring& wsContente, CGraphicsContainer* pContainer, CSvgFile* pFile) const;
+		bool LoadFromString(const std::wstring& wsContentent, CGraphicsContainer* pContainer, CSvgFile* pFile) const;
 		bool LoadFromXmlNode(XmlUtils::CXmlNode& oElement, CGraphicsContainer* pContainer, CSvgFile* pFile) const;
 
 		template <class ObjectType>

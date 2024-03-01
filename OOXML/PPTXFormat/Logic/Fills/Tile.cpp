@@ -92,7 +92,13 @@ namespace PPTX
 		}
 		void Tile::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			pWriter->StartNode(_T("a:tile"));
+			std::wstring strName;
+			if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+				strName = L"w14:tile";
+			else
+				strName = L"a:tile";
+
+			pWriter->StartNode(strName);
 
 			pWriter->StartAttributes();
 			pWriter->WriteAttribute(_T("algn"), algn);
@@ -103,7 +109,7 @@ namespace PPTX
 			pWriter->WriteAttribute(_T("ty"), ty);
 			pWriter->EndAttributes();
 
-			pWriter->EndNode(_T("a:tile"));
+			pWriter->EndNode(strName);
 		}
 		void Tile::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{

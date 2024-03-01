@@ -1170,7 +1170,9 @@ int BinarySharedStringTableReader::ReadRun(BYTE type, long length, void* poResul
 		std::wstring sText(m_oBufferedStream.GetString4(length));
 		OOX::Spreadsheet::CText* pText = new OOX::Spreadsheet::CText();
 		pText->m_sText = sText;
-		if (std::wstring::npos != sText.find(_T(" ")))
+		
+		bool bHHHH = std::wstring::npos != sText.find('\xA') || std::wstring::npos != sText.find('\x9');
+		if (std::wstring::npos != sText.find(L" ") || bHHHH)
 		{
 			pText->m_oSpace.Init();
 			pText->m_oSpace->SetValue(SimpleTypes::xmlspacePreserve);
@@ -2206,7 +2208,7 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 	else if (c_oSerWorkbookTypes::FileSharing == type)
 	{
 		m_oWorkbook.m_oFileSharing.Init();
-		READ1_DEF(length, res, this->ReadFileSharing, m_oWorkbook.m_oFileSharing.GetPointer());
+		READ2_DEF_SPREADSHEET(length, res, this->ReadFileSharing, m_oWorkbook.m_oFileSharing.GetPointer());
 	}
 	else if (c_oSerWorkbookTypes::ExternalLinksAutoRefresh == type)
 	{	

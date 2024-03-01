@@ -243,14 +243,37 @@ std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, RtfC
     }
 
 	return renderRtfText(sText, pDocument, nCodePage, bMarker);
+}
+std::wstring RtfChar::renderRtfText(const std::wstring& sText)
+{
+	std::wstring sResult;
+	for (size_t i = 0; i < sText.length(); i++)
+	{
+		int nUnicode = (int)sText[i];
 
+		if (0 < nUnicode && nUnicode <= 0x8000)
+		{
+			sResult += L"\\u" + std::to_wstring(nUnicode) + L"*";
+		}
+		else if (0x8000 < nUnicode && nUnicode <= 0xffff) {
+			sResult += L"\\u" + std::to_wstring(nUnicode - 0x10000) + L"*"; //??? font alt name china ALL FONTS NEW.docx (Mekanik LET)
+		}
+		else {
+			sResult += L"\\u9633*";
+		}
+	}
+	return sResult;
 }
 std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, int nCodePage, bool bMarker)
 {
 	RtfDocument* pDocument = static_cast<RtfDocument*>(poDocument);
     std::wstring sResult;
 
-    //от настроек документа
+	if (sText.empty())
+	{
+		return sResult;
+	}
+	//от настроек документа
     if( -1 == nCodePage && RtfDocumentProperty::cp_none != pDocument->m_oProperty.m_eCodePage )
     {
         switch ( pDocument->m_oProperty.m_eCodePage )
@@ -274,84 +297,17 @@ std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, int 
         nCodePage = CP_ACP;		
 	}
 	
-	if (nCodePage == CP_ACP && pDocument->m_nUserLCID > 0)
+	if ((nCodePage == CP_ACP || nCodePage == 1252) && pDocument->m_nUserLCID > 0)
 	{
 		nCodePage = pDocument->m_lcidConverter.get_codepage(pDocument->m_nUserLCID);
-	}
-
-    std::wstring    unicodeStr (sText);
-    std::string     ansiStr ;
-
-	if (unicodeStr.empty())
-	{
-		return sResult;
-	}
-
-	//ansiStr = RtfUtility::convert_string(unicodeStr.begin(), unicodeStr.end(), nCodePage);
-
-    std::wstring sTextBack  = RtfUtility::convert_string_icu(ansiStr.begin(), ansiStr.end(), nCodePage);
-
-	//if (!ansiStr.empty() && sTextBack.empty())
-	//{
-	//	//code page not support in icu !!!
-	//	sTextBack = RtfUtility::convert_string(ansiStr.begin(), ansiStr.end(), nCodePage); .. to UnicodeConverter
-	//}
-
-    //обратное преобразование чтобы понять какие символы свонвертировались неправильно
-    while (sTextBack.length() < sText.length())
-		sTextBack += L"-";
+	} 
 
 	if (bMarker)
 		sResult += L"{\\uc1";
+	
+	sResult += renderRtfText(sText);
 
-    for ( size_t i = 0; i < sText.length() ; i++ )
-    {
-        bool bWriteUnicode = true;
-
-        if(sTextBack[i] == sText[i] )
-        {
-            std::wstring sUniChar; sUniChar += unicodeStr[i];
-
-            //делаем Ansi строку sUniChar
-            // -> sTempAnsiChars
-            std::string sTempAnsiChars = RtfUtility::convert_string_icu(unicodeStr.begin() + i, unicodeStr.begin() + i + 1, nCodePage); 
-
-            for( size_t k = 0; k < sTempAnsiChars.length(); k++ )
-            {
-                unsigned char nCharCode = sTempAnsiChars[k];
-                bWriteUnicode = false;
-
-                if (nCharCode == 0x5c || nCharCode == 0x7b || nCharCode == 0x7d || 
-					(0x00 <= nCharCode && nCharCode < 0x20) )
-                {
-					sResult += L"\\'" + XmlUtils::ToString( nCharCode, L"%02x");
-                } 
-				else if ( 0x20 <= nCharCode && nCharCode < 0x80 )
-                {
-                    sResult += nCharCode;
-                } 
-				else 
-				{ // 0x80 <= nUnicode <= 0xff
-					sResult += L"\\'" + XmlUtils::ToString(nCharCode, L"%x" );
-                }
-            }
-        }
-        if( true == bWriteUnicode )
-        {
-            int nUnicode = (int)unicodeStr[i];
-
-            if (0 < nUnicode && nUnicode <= 0x8000)
-            {
-                sResult += L"\\u" + std::to_wstring(nUnicode) + L"*";
-            } else if (0x8000 < nUnicode && nUnicode <= 0xffff) {
-                sResult += L"\\u" + std::to_wstring(nUnicode - 0x10000) + L"*"; //??? font alt name china ALL FONTS NEW.docx (Mekanik LET)
-            } else {
-                sResult += L"\\u9633*";
-            }
-        }
-
-    }
-	if (bMarker)
+ 	if (bMarker)
 		sResult += L"}";
 	return sResult;
 }
@@ -539,7 +495,7 @@ std::wstring RtfCharSpecial::RenderToRtf(RenderParameter oRenderParameter)
 	}
 	sResult += L"}";
 	return sResult;
-	}
+}
 
 std::wstring RtfCharNative::RenderToRtf(RenderParameter oRenderParameter)
 {

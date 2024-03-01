@@ -225,7 +225,7 @@ void ReadAnnot(BYTE* pWidgets, int& i)
 		{
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << (double)nPathLength / 100.0 << " ";
+			std::cout << (double)nPathLength / 10000.0 << " ";
 		}
 		std::cout << ", ";
 	}
@@ -356,6 +356,21 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			}
 			std::cout << ", ";
 		}
+		if (nFlags & (1 << 6))
+		{
+			int nILength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Opt [";
+
+			for (int j = 0; j < nILength; ++j)
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << " " << std::string((char*)(pWidgets + i), nPathLength);
+				i += nPathLength;
+			}
+			std::cout << " ], ";
+		}
 
 		std::cout << std::endl;
 	}
@@ -400,7 +415,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			{
 				nPathLength = READ_INT(pWidgets + i);
 				i += 4;
-				std::cout << " " << (double)nPathLength / 100.0;
+				std::cout << " " << (double)nPathLength / 10000.0;
 			}
 			std::cout << ", ";
 		}
@@ -464,7 +479,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			{
 				nPathLength = READ_INT(pWidgets + i);
 				i += 4;
-				std::cout << (double)nPathLength / 100.0 << " ";
+				std::cout << (double)nPathLength / 10000.0 << " ";
 			}
 			std::cout << ", ";
 		}
@@ -484,7 +499,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			{
 				nPathLength = READ_INT(pWidgets + i);
 				i += 4;
-				std::cout << (double)nPathLength / 100.0 << " ";
+				std::cout << (double)nPathLength / 10000.0 << " ";
 			}
 			std::cout << ", ";
 		}
@@ -506,6 +521,13 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Name " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
+		}
+		if (nFlags & (1 << 19))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Font button " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 			i += nPathLength;
 		}
 
@@ -1086,7 +1108,7 @@ int main(int argc, char* argv[])
 			free(pWidgetsAP);
 
 		int bBase64 = 1;
-		BYTE* pWidgetsMK = GetButtonIcons(pGrFile, nWidth, nHeight, 0xFFFFFF, nTestPage, bBase64, -1, -1);
+		BYTE* pWidgetsMK = GetButtonIcons(pGrFile, 0xFFFFFF, nTestPage, bBase64, -1, -1);
 		nLength = READ_INT(pWidgetsMK);
 		i = 4;
 		nLength -= 4;
@@ -1310,7 +1332,7 @@ int main(int argc, char* argv[])
 					{
 						nPathLength = READ_INT(pAnnots + i);
 						i += 4;
-						std::cout << " " << (double)nPathLength / 100.0;
+						std::cout << " " << (double)nPathLength / 10000.0;
 					}
 					std::cout << ", ";
 				}
@@ -1425,7 +1447,7 @@ int main(int argc, char* argv[])
 					{
 						nPathLength = READ_INT(pAnnots + i);
 						i += 4;
-						std::cout << (double)nPathLength / 100.0 << " ";
+						std::cout << (double)nPathLength / 10000.0 << " ";
 					}
 					std::cout << ", ";
 				}
@@ -1467,7 +1489,7 @@ int main(int argc, char* argv[])
 					{
 						nPathLength = READ_INT(pAnnots + i);
 						i += 4;
-						std::cout << " " << (double)nPathLength / 100.0;
+						std::cout << " " << (double)nPathLength / 10000.0;
 					}
 					std::cout << ", ";
 				}
@@ -1546,6 +1568,20 @@ int main(int argc, char* argv[])
 					i += 1;
 					std::string arrIT[] = {"FreeText", "FreeTextCallout", "FreeTextTypeWriter"};
 					std::cout << "IT " << arrIT[nPathLength] << ", ";
+				}
+				if (nFlags & (1 << 21))
+				{
+					int nCLLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "C from DA:";
+
+					for (int j = 0; j < nCLLength; ++j)
+					{
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << " " << (double)nPathLength / 10000.0;
+					}
+					std::cout << ", ";
 				}
 			}
 			else if (sType == "Caret")

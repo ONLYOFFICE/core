@@ -1937,7 +1937,7 @@ std::wstring RtfListLevelProperty::GetFormat( int nNumFormat)
 	}
 	return sResult;
 }
-int RtfListLevelProperty::GetFormat( std::wstring sFormat)
+int RtfListLevelProperty::GetFormat(const std::wstring& sFormat)
 {
 	if		( L"aiueo" == sFormat )							return 12;
 	else if ( L"aiueoFullWidth" == sFormat )				return 20;
@@ -2025,10 +2025,10 @@ std::wstring RtfListLevelProperty::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_INT( m_nNoRestart, sResult, L"levelnorestart" )
 	RENDER_RTF_INT( m_nPictureIndex, sResult, L"levelpicture" )
 	//чтобы при последующем чтении из rtf не потерялась информация о шрифте
-	sResult +=  m_oCharProp.RenderToRtf( oRenderParameter );
+	sResult +=  m_oCharProp.RenderToRtf( oRenderParameter ); 
 
-    sResult += L"{\\leveltext " + RtfChar::renderRtfText( m_sText, oRenderParameter.poDocument, &m_oCharProp ) + L";}";
-    sResult += L"{\\levelnumbers " + RtfChar::renderRtfText( m_sNumber, oRenderParameter.poDocument, &m_oCharProp ) + L";}";
+    sResult += L"{\\leveltext" +  m_sText + L";}";
+    sResult += L"{\\levelnumbers" + m_sNumber + L";}";
 
 	RENDER_RTF_INT( m_nFirstIndent, sResult, L"fi" )
 	RENDER_RTF_INT( m_nIndent, sResult, L"li" )
@@ -2080,12 +2080,13 @@ std::wstring RtfListLevelProperty::GetLevelTextOOX()
     return XmlUtils::EncodeXmlString( sResult );
 }
 
-void RtfListLevelProperty::SetLevelTextOOX(std::wstring sText)
+void RtfListLevelProperty::SetLevelTextOOX(const std::wstring& sText)
 {
 	m_sText		= L"";
 	m_sNumber	= L"";
 
 	int nLevelOffsets = 0;
+	int nText = 0;
 
 	 for (size_t i = 0; i < sText.length() ; i++ )
 	 {
@@ -2093,18 +2094,21 @@ void RtfListLevelProperty::SetLevelTextOOX(std::wstring sText)
 		{
 			int nLevel = RtfUtility::ToByte( sText[ i + 1 ] );
 
-			wchar_t ch1 = nLevel - 1;
-			m_sText += ch1;
+			m_sText += L"\\'" + XmlUtils::ToString(nLevel - 1, L"%02x");
+			m_sNumber += L"\\'" + XmlUtils::ToString(nLevelOffsets + 1, L"%02x");
 			i++; //т.к. следующий симовл уже учли
-			wchar_t ch2 = nLevelOffsets + 1;
-			m_sNumber += ch2;
+
+			nText++;
 		}
 		else
-			m_sText += sText[i];
+		{
+			std::wstring s (sText.c_str() + i, 1);
+			m_sText += RtfChar::renderRtfText(s);
+			nText++;
+		}
 		 nLevelOffsets++;
 	 }
-	 wchar_t ch = (wchar_t)m_sText.length(); 
-     m_sText.insert(m_sText.begin() + 0, ch );
+	 m_sText = L"\\'"  + XmlUtils::ToString(nText, L"%02x") + m_sText;
 }
 std::wstring RtfListLevelProperty::RenderToOOX(RenderParameter oRenderParameter)
 {

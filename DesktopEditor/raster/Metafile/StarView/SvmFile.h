@@ -202,9 +202,9 @@ class CSvmFile : virtual public IMetaFileBase
 		return MM_ANISOTROPIC;
 	}
 
-	double GetDpi()
+	USHORT GetDpi()
 	{
-		return 96.;
+		return 96;
 	}
 
 	IRegion* GetRegion()

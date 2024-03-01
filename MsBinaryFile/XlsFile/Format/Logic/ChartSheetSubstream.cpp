@@ -428,7 +428,7 @@ void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 		if (series == NULL) continue;
 
 		SerParent *parent = dynamic_cast<SerParent*>(series->m_SerParent.get());
-		if ( parent )
+		if ( (parent) && (parent->series > 0 && parent->series <= charts->m_arSERIESFORMAT.size()))
 		{
 			SERIESFORMAT *series_owner = dynamic_cast<SERIESFORMAT *>(charts->m_arSERIESFORMAT[parent->series - 1].get());
 			if (series_owner)

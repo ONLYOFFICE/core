@@ -104,36 +104,36 @@ namespace cpdoccore { namespace odf_types {
 		{
 			std::wstring preset = tmp.substr(std::wstring(L"ooo-emphasis-").size());
 
-			if (L"fill-color")							return preset_id::type::ooo_emphasis_fill_color;
-			else if (L"font")							return preset_id::type::ooo_emphasis_font;
-			else if (L"font-size")						return preset_id::type::ooo_emphasis_font_size;
-			else if (L"font-style")						return preset_id::type::ooo_emphasis_font_style;
-			else if (L"grow-and-shrink")				return preset_id::type::ooo_emphasis_grow_and_shrink;
-			else if (L"line-color")						return preset_id::type::ooo_emphasis_line_color;
-			else if (L"spin")							return preset_id::type::ooo_emphasis_spin;
-			else if (L"transparency")					return preset_id::type::ooo_emphasis_transparency;
-			else if (L"bold-flash")						return preset_id::type::ooo_emphasis_bold_flash;
-			else if (L"blast")							return preset_id::type::ooo_emphasis_blast;
-			else if (L"bold-reveal")					return preset_id::type::ooo_emphasis_bold_reveal;
-			else if (L"color-over-by-word")				return preset_id::type::ooo_emphasis_color_over_by_word;
-			else if (L"reveal-underline")				return preset_id::type::ooo_emphasis_reveal_underline;
-			else if (L"color-blend")					return preset_id::type::ooo_emphasis_color_blend;
-			else if (L"color-over-by-letter")			return preset_id::type::ooo_emphasis_color_over_by_letter;
-			else if (L"complementary-color")			return preset_id::type::ooo_emphasis_complementary_color;
-			else if (L"complementary-color-2")			return preset_id::type::ooo_emphasis_complementary_color_2;
-			else if (L"contrasting-color")				return preset_id::type::ooo_emphasis_contrasting_color;
-			else if (L"darken")							return preset_id::type::ooo_emphasis_darken;
-			else if (L"desaturate")						return preset_id::type::ooo_emphasis_desaturate;
-			else if (L"flash-bulb")						return preset_id::type::ooo_emphasis_flash_bulb;
-			else if (L"flicker")						return preset_id::type::ooo_emphasis_flicker;
-			else if (L"grow-with-color")				return preset_id::type::ooo_emphasis_grow_with_color;
-			else if (L"lighten")						return preset_id::type::ooo_emphasis_lighten;
-			else if (L"style-emphasis")					return preset_id::type::ooo_emphasis_style_emphasis;
-			else if (L"teeter")							return preset_id::type::ooo_emphasis_teeter;
-			else if (L"vertical-highlight")				return preset_id::type::ooo_emphasis_vertical_highlight;
-			else if (L"wave")							return preset_id::type::ooo_emphasis_wave;
-			else if (L"blink")							return preset_id::type::ooo_emphasis_blink;
-			else if (L"shimmer")						return preset_id::type::ooo_emphasis_shimmer;
+			if (preset == L"fill-color")						return preset_id::type::ooo_emphasis_fill_color;
+			else if (preset == L"font")							return preset_id::type::ooo_emphasis_font;
+			else if (preset == L"font-size")					return preset_id::type::ooo_emphasis_font_size;
+			else if (preset == L"font-style")					return preset_id::type::ooo_emphasis_font_style;
+			else if (preset == L"grow-and-shrink")				return preset_id::type::ooo_emphasis_grow_and_shrink;
+			else if (preset == L"line-color")					return preset_id::type::ooo_emphasis_line_color;
+			else if (preset == L"spin")							return preset_id::type::ooo_emphasis_spin;
+			else if (preset == L"transparency")					return preset_id::type::ooo_emphasis_transparency;
+			else if (preset == L"bold-flash")					return preset_id::type::ooo_emphasis_bold_flash;
+			else if (preset == L"blast")						return preset_id::type::ooo_emphasis_blast;
+			else if (preset == L"bold-reveal")					return preset_id::type::ooo_emphasis_bold_reveal;
+			else if (preset == L"color-over-by-word")			return preset_id::type::ooo_emphasis_color_over_by_word;
+			else if (preset == L"reveal-underline")				return preset_id::type::ooo_emphasis_reveal_underline;
+			else if (preset == L"color-blend")					return preset_id::type::ooo_emphasis_color_blend;
+			else if (preset == L"color-over-by-letter")			return preset_id::type::ooo_emphasis_color_over_by_letter;
+			else if (preset == L"complementary-color")			return preset_id::type::ooo_emphasis_complementary_color;
+			else if (preset == L"complementary-color-2")		return preset_id::type::ooo_emphasis_complementary_color_2;
+			else if (preset == L"contrasting-color")			return preset_id::type::ooo_emphasis_contrasting_color;
+			else if (preset == L"darken")						return preset_id::type::ooo_emphasis_darken;
+			else if (preset == L"desaturate")					return preset_id::type::ooo_emphasis_desaturate;
+			else if (preset == L"flash-bulb")					return preset_id::type::ooo_emphasis_flash_bulb;
+			else if (preset == L"flicker")						return preset_id::type::ooo_emphasis_flicker;
+			else if (preset == L"grow-with-color")				return preset_id::type::ooo_emphasis_grow_with_color;
+			else if (preset == L"lighten")						return preset_id::type::ooo_emphasis_lighten;
+			else if (preset == L"style-emphasis")				return preset_id::type::ooo_emphasis_style_emphasis;
+			else if (preset == L"teeter")						return preset_id::type::ooo_emphasis_teeter;
+			else if (preset == L"vertical-highlight")			return preset_id::type::ooo_emphasis_vertical_highlight;
+			else if (preset == L"wave")							return preset_id::type::ooo_emphasis_wave;
+			else if (preset == L"blink")						return preset_id::type::ooo_emphasis_blink;
+			else if (preset == L"shimmer")						return preset_id::type::ooo_emphasis_shimmer;
 		}
 		else if (boost::algorithm::starts_with(tmp, L"ooo-exit-"))
 		{

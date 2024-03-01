@@ -198,6 +198,8 @@ void MemoryStream::WriteBytes(unsigned char* pData, int size)
 
 unsigned long MemoryStream::GetPosition() const
 {
+	if (m_Position > m_Size)
+		return m_Size;
 	return m_Position;
 }
 unsigned long MemoryStream::GetSize() const

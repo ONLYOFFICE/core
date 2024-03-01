@@ -541,9 +541,33 @@ namespace PdfWriter
 		if (pEncrypt)
 		{
 			const BYTE* pBinary = pString->GetString();
+			unsigned int unLen = pString->GetLength();
+
 			WriteChar('<');
-			WriteBinary(pBinary, StrLen((const char*)pBinary, -1), pEncrypt);
+
+			BYTE* pNewBinary = NULL;
+			if (pString->IsUTF16())
+			{
+				std::string sUtf8((char*)pBinary, unLen);
+				std::wstring sUnicode = UTF8_TO_U(sUtf8);
+				unsigned int unLenUtf16 = 0;
+				unsigned short* pUtf16Data = NSStringExt::CConverter::GetUtf16FromUnicode(sUnicode, unLenUtf16, false);
+				unLenUtf16 *= 2;
+				unLen = unLenUtf16 + 2;
+
+				pNewBinary = new BYTE[unLenUtf16 + 2];
+				pNewBinary[0] = 0xFE;
+				pNewBinary[1] = 0xFF;
+				MemCpy(pNewBinary + 2, (BYTE*)pUtf16Data, unLenUtf16);
+				RELEASEARRAYOBJECTS(pUtf16Data);
+
+				pBinary = pNewBinary;
+			}
+
+			WriteBinary(pBinary, unLen, pEncrypt);
 			WriteChar('>');
+
+			RELEASEARRAYOBJECTS(pNewBinary);
 		}
 		else
 		{            
@@ -589,7 +613,6 @@ namespace PdfWriter
 		// Добавляем запись Filter
 		if (pDict->GetStream())
 		{
-			pDict->Remove("Filter");
 			unsigned int unFilter = pDict->GetFilter();
 			if (STREAM_FILTER_NONE != unFilter)
 			{

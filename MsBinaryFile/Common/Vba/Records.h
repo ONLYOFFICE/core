@@ -886,6 +886,8 @@ namespace VBA
 		unsigned char Depth = 0;
 		unsigned char TypeOrCount = 0;
 		bool fCount = false;
+
+		_CP_OPT(unsigned char) OptionalType;
 	};
 	typedef boost::shared_ptr<FormObjectDepthTypeCount> FormObjectDepthTypeCountPtr;
 //--------------------------------------------------------------------------------------------------------------

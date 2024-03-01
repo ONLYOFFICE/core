@@ -47,7 +47,14 @@ table_state::table_state(xlsx_conversion_context & Context) : drawing_context_(C
 
 table_state_ptr & xlsx_sheet_context::state()
 {
-    return tables_state_.back();
+	if (false == tables_state_.empty())
+	{
+		return tables_state_.back();
+	}
+	else
+	{
+		throw;
+	}
 }
 
 xlsx_sheet_context::xlsx_sheet_context(xlsx_conversion_context & Context) : context_(Context)
@@ -114,38 +121,57 @@ void xlsx_sheet_context::end_table()
 
 xlsx_drawing_context & xlsx_sheet_context::get_drawing_context()
 {
-    return state()->drawing_context_;
+	if (state())
+		return state()->drawing_context_;
+	else
+	{
+		throw;
+	}
 }
 
 xlsx_comments_context & xlsx_sheet_context::get_comments_context()
 {
-    return state()->comments_context_;
+	if (state())
+		return state()->comments_context_;
+	else
+	{
+		throw;
+	}
 }
 
 std::wstring xlsx_sheet_context::add_hyperlink(std::wstring const & ref, std::wstring const & target, std::wstring const & display, bool bExternal)
 {
-    return state()->hyperlinks_.add( ref, target, display, bExternal);
+	if (state())
+		return state()->hyperlinks_.add(ref, target, display, bExternal);
+	else return L"";
 }
  void xlsx_sheet_context::dump_rels_hyperlinks(rels & Rels)
 {
-	state()->hyperlinks_.dump_rels(Rels);
+	 if (state())
+		 state()->hyperlinks_.dump_rels(Rels);
 }
 void xlsx_sheet_context::serialize_hyperlinks(std::wostream & _Wostream)
 {
-    state()->hyperlinks_.serialize(_Wostream);
+	if (state())
+		state()->hyperlinks_.serialize(_Wostream);
 }
 void xlsx_sheet_context::dump_rels_drawing(rels & Rels)
 {
-	xlsx_drawings_rels_ptr drawing_rels = state()->drawing_context_.get_sheet_rels();
-    
-	drawing_rels->dump_rels(Rels);
+	if (state())
+	{
+		xlsx_drawings_rels_ptr drawing_rels = state()->drawing_context_.get_sheet_rels();
+
+		drawing_rels->dump_rels(Rels);
+	}
 }
 void xlsx_sheet_context::serialize_ole_objects(std::wostream & strm)
 {
-    state()->drawing_context_.serialize_objects(strm);
+	if (state())
+		state()->drawing_context_.serialize_objects(strm);
 }
 void xlsx_sheet_context::serialize_controls(std::wostream & strm)
 {
-    state()->drawing_context_.serialize_controls(strm);
+	if (state())
+		state()->drawing_context_.serialize_controls(strm);
 }
 }

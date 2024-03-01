@@ -100,6 +100,8 @@ void drawing_page_properties::serialize(std::wostream & strm, const wchar_t * ns
 			CP_XML_ATTR_OPT(L"presentation:display-date-time",	presentation_display_date_time_);
 			CP_XML_ATTR_OPT(L"presentation:display-header",		presentation_display_header_);
 
+			CP_XML_ATTR_OPT(L"presentation:visibility", presentation_visibility_);
+
 			if (presentation_sound_)
 				presentation_sound_->serialize(CP_XML_STREAM());
 		}

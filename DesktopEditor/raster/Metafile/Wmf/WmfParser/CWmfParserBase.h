@@ -57,7 +57,7 @@ namespace MetaFile
 		bool            IsWindowFlippedY()               override;
 		bool            IsWindowFlippedX()               override;
 		unsigned int    GetMapMode()                     override;
-		double          GetDpi()                         override;
+		USHORT          GetDpi()                         override;
 		IRegion*        GetRegion()                      override;
 		unsigned int    GetArcDirection()                override;
 		CPath*          GetPath()                        override;

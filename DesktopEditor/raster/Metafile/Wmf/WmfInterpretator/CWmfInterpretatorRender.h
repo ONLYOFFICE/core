@@ -101,13 +101,13 @@ namespace MetaFile
 		//-----------------------------------------------------------
 		// 2.3.5 State records
 		//-----------------------------------------------------------
-		void HANDLE_META_EXCLUDECLIPRECT(short shLeft, short shTop, short shRight, short shBottom) override {};
-		void HANDLE_META_INTERSECTCLIPRECT(short shLeft, short shTop, short shRight, short shBottom) override {};
+		void HANDLE_META_EXCLUDECLIPRECT(short shLeft, short shTop, short shRight, short shBottom) override;
+		void HANDLE_META_INTERSECTCLIPRECT(short shLeft, short shTop, short shRight, short shBottom) override;
 		void HANDLE_META_MOVETO(short shX, short shY) override {};
-		void HANDLE_META_OFFSETCLIPRGN(short shOffsetX, short shOffsetY) override {};
+		void HANDLE_META_OFFSETCLIPRGN(short shOffsetX, short shOffsetY) override;
 		void HANDLE_META_OFFSETVIEWPORTORG(short shXOffset, short shYOffset) override {};
 		void HANDLE_META_OFFSETWINDOWORG(short shXOffset, short shYOffset) override {};
-		void HANDLE_META_RESTOREDC() override {};
+		void HANDLE_META_RESTOREDC() override;
 		void HANDLE_META_SAVEDC() override {};
 		void HANDLE_META_SCALEVIEWPORTEXT(short yDenom, short yNum, short xDenom, short xNum) override {};
 		void HANDLE_META_SCALEWINDOWEXT(short yDenom, short yNum, short xDenom, short xNum) override {};

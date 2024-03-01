@@ -32,8 +32,10 @@
 #include "GlobalWorkbookInfo.h"
 
 #include "Biff_records/Font.h"
-#include "../../../../DesktopEditor/graphics/pro/Fonts.h"
+#include "Biff_records/Format.h"
 
+#include "../../../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../../../OOXML/Base/Unit.h"
 
 namespace XLS
 {
@@ -93,6 +95,7 @@ std::vector<GlobalWorkbookInfo::_xti>				GlobalWorkbookInfo::arXti_External_stat
 std::unordered_map<int, std::wstring>				GlobalWorkbookInfo::mapTableNames_static;
 std::unordered_map<int, std::vector<std::wstring>>	GlobalWorkbookInfo::mapTableColumnNames_static;
 std::vector<std::wstring>							GlobalWorkbookInfo::arDefineNames_static;
+
 GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConverter * converter) :	CodePage(code_page), xls_converter(converter)
 {
 	fill_x_ids[FillInfo(0, 0, 0)]		= 0;
@@ -125,7 +128,7 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConver
 	idPivotCache = 0;	
 	currentPivotCacheRecord = 0;
 
-
+// common for all lcid
 	mapDefaultFormatCode.insert(std::make_pair(L"0", 1));
 	mapDefaultFormatCode.insert(std::make_pair(L"0.00", 2));
 	mapDefaultFormatCode.insert(std::make_pair(L"#,##0", 3));
@@ -154,6 +157,35 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConver
 	mapDefaultFormatCode.insert(std::make_pair(L"##0.0E+0", 48));
 	mapDefaultFormatCode.insert(std::make_pair(L"@", 49));
 	mapDefaultFormatCode.insert(std::make_pair(L"General", 0));
+
+	mapDefaultFormatCodeNum.insert(std::make_pair(0, L"General"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(1, L"0"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(2, L"0.00"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(3, L"#,##0"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(4, L"#,##0.00"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(9, L"0%"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(10,L"0.00%"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(11, L"0.00E+00"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(12, L"# ?/?"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(13, L"# ??/??"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(14, L"mm-dd-yy"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(15, L"d-mmm-yy"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(16, L"d-mmm"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(17, L"mmm-yy"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(18, L"h:mm AM/PM"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(19, L"h:mm:ss AM/PM"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(20, L"h:mm"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(21, L"h:mm:ss"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(22, L"m/d/yy h:mm"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(37, L"#,##0 ;(#,##0)"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(38, L"#,##0 ;[Red](#,##0)"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(39, L"#,##0.00;(#,##0.00)"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(40, L"#,##0.00;[Red](#,##0.00)"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(45, L"mm:ss"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(46, L"[h]:mm:ss"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(47, L"mmss.0"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(48, L"##0.0E+0"));
+	mapDefaultFormatCodeNum.insert(std::make_pair(49, L"@"));
 }
 
 GlobalWorkbookInfo::~GlobalWorkbookInfo()
@@ -220,9 +252,57 @@ void GlobalWorkbookInfo::RegisterPaletteColor(int id, const std::wstring & rgb)
 {
 	colors_palette.insert(std::make_pair(id, rgb));
 }
-_UINT16 GlobalWorkbookInfo::RegisterNumFormat(_UINT16 ifmt, const std::wstring & format_code)
+void GlobalWorkbookInfo::RegisterNumFormat(BaseObjectPtr element)
 {
-	_UINT16 ifmt_used = ifmt;
+	Format* fmt = dynamic_cast<Format*>(element.get());
+	if (!fmt) return;
+
+	if (fmt->ifmt == 0xffff)
+	{
+		std::map<std::wstring, _UINT16>::iterator pFind = mapDefaultFormatCode.find(fmt->stFormat);
+		if (pFind != mapDefaultFormatCode.end())
+		{
+			fmt->ifmt_used = fmt->ifmt = pFind->second;
+		}
+		else
+		{
+			fmt->ifmt_used = fmt->ifmt = last_User_NumFmt++;
+		}
+	}
+	else
+	{
+		std::map<_UINT16, _UINT16>::iterator pFindCode = mapUsedFormatCode.find(fmt->ifmt);
+		if (pFindCode != mapUsedFormatCode.end())
+		{
+			fmt->ifmt_used = pFindCode->second;
+		}
+		else
+		{
+			if (fmt->ifmt > 49)
+			{
+				fmt->ifmt_used = last_User_NumFmt++;
+			}
+			else
+			{
+				fmt->ifmt_used = fmt->ifmt;
+			}
+			mapUsedFormatCode.insert(std::make_pair(fmt->ifmt, fmt->ifmt_used));
+		}
+	}
+	std::map<_UINT16, BaseObjectPtr>::iterator pFindFormat = m_mapNumFormats.find(fmt->ifmt_used);
+	if (pFindFormat == m_mapNumFormats.end())
+	{
+		m_mapNumFormats.insert(std::make_pair(fmt->ifmt_used, element));
+	}
+	else
+	{
+		//меняем
+		pFindFormat->second = element;
+	}
+}
+_UINT16 GlobalWorkbookInfo::RegisterNumFormat(_UINT16 ifmt, const std::wstring & format_code_)
+{
+	std::wstring format_code = format_code_;
 
 	std::map<_UINT16, _UINT16>::iterator pFind = mapUsedFormatCode.find(ifmt);
 	if (pFind != mapUsedFormatCode.end())
@@ -231,17 +311,86 @@ _UINT16 GlobalWorkbookInfo::RegisterNumFormat(_UINT16 ifmt, const std::wstring &
 	}
 	else
 	{
+		if (format_code.empty())
+		{
+			if (59 <= ifmt && ifmt <= 78)
+			{
+				if (69 <= ifmt && ifmt <= 71)
+				{
+					ifmt += 1;
+				}
+				ifmt -= 58;
+			}
+			else if (79 <= ifmt && ifmt <= 81)
+			{
+				ifmt -= 34;
+			}
+			switch (ifmt)
+			{
+			case 23:
+			case 24:
+			case 25:
+			case 26:
+				ifmt = 0;
+				break;
+			case 27:
+			case 28:
+			case 29:
+			case 30:
+			case 31:
+			case 36:
+			case 50:
+			case 51:
+			case 52:
+			case 53:
+			case 54:
+			case 55:
+			case 56:
+			case 57:
+			case 58:
+				ifmt = 14;
+				break;
+			case 32:
+			case 33:
+			case 34:
+			case 35:
+				ifmt = 21;
+				break;
+			}
+
+			std::map<_UINT16, std::wstring>::iterator pFindCode = mapDefaultFormatCodeNum.find(ifmt);
+			if (pFindCode != mapDefaultFormatCodeNum.end())
+			{
+				format_code = pFindCode->second;
+			}
+			else
+			{
+				// ???? todooo 
+			}
+		}
+		
+		_UINT16 ifmt_used = ifmt;
 		if (ifmt > 49)
 		{
-			ifmt_used = last_User_NumFmt++;
+			ifmt_used = last_User_NumFmt++; 
 		}
-		else
+
+		std::map<_UINT16, BaseObjectPtr>::iterator pFindFormat = m_mapNumFormats.find(ifmt_used);
+		if (pFindFormat == m_mapNumFormats.end())
 		{
-			//todooo проверка по mapDefaultFormatCode -> ooxml fmtNum format code
+			// генерим хоть что то
+			Format* fmt = new Format();
+			fmt->ifmt = ifmt;
+			fmt->ifmt_used = ifmt_used;
+
+			fmt->stFormat = XmlUtils::EncodeXmlString(format_code, true);
+
+			m_mapNumFormats.insert(std::make_pair(fmt->ifmt_used, BaseObjectPtr(fmt)));
 		}
 		mapUsedFormatCode.insert(std::make_pair(ifmt, ifmt_used));
+	
+		return ifmt_used;
 	}
-	return ifmt_used;
 }
 const int GlobalWorkbookInfo::RegistrDxfn(const std::wstring & dxfn)
 {

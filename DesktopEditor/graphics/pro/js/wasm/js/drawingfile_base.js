@@ -141,8 +141,7 @@
 		Undefined   : 0,
 		Page        : 1,
 		Annotation  : 2,
-		Forms       : 4,
-		ButtonIcons : 8
+		Forms       : 4
 	};
 
 	function CFile()
@@ -157,6 +156,7 @@
 
 		// for async fonts loader
 		this.fontPageIndex = -1;
+		this.fontPageUpdateType = UpdateFontsSource.Undefined;
 		this.fontStreams = {};
 	}
 
@@ -563,7 +563,7 @@
 			let n = reader.readInt();
 			rec["C"] = [];
 			for (let i = 0; i < n; ++i)
-				rec["C"].push(reader.readDouble());
+				rec["C"].push(reader.readDouble2());
 		}
 		// Border/BS
 		if (flags & (1 << 4))
@@ -718,6 +718,13 @@
 				for (let i = 0; i < n; ++i)
 					rec["value"].push(reader.readString());
 			}
+			if (flags & (1 << 6))
+			{
+				let n = reader.readInt();
+				rec["Opt"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["Opt"].push(reader.readString());
+			}
 			res["Parents"].push(rec);
 		}
 
@@ -741,7 +748,7 @@
 			{
 				rec["font"]["color"] = [];
 				for (let i = 0; i < tc; ++i)
-					rec["font"]["color"].push(reader.readDouble());
+					rec["font"]["color"].push(reader.readDouble2());
 			}
 			// 0 - left-justified, 1 - centered, 2 - right-justified
 			rec["alignment"] = reader.readByte();
@@ -775,7 +782,7 @@
 				let n = reader.readInt();
 				rec["BC"] = [];
 				for (let i = 0; i < n; ++i)
-					rec["BC"].push(reader.readDouble());
+					rec["BC"].push(reader.readDouble2());
 			}
 			// Rotate an annotation relative to the page - R
 			if (flags & (1 << 6))
@@ -786,7 +793,7 @@
 				let n = reader.readInt();
 				rec["BG"] = [];
 				for (let i = 0; i < n; ++i)
-					rec["BG"].push(reader.readDouble());
+					rec["BG"].push(reader.readDouble2());
 			}
 			// Default value - DV
 			if (flags & (1 << 8))
@@ -795,6 +802,8 @@
 				rec["Parent"] = reader.readInt();
 			if (flags & (1 << 18))
 				rec["name"] = reader.readString();
+			if (flags & (1 << 19))
+				rec["font"]["AP"] = reader.readString();
 			// Action
 			let nAction = reader.readInt();
 			if (nAction > 0)
@@ -999,9 +1008,7 @@
 		}
 
 		let res = {};
-		this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.ButtonIcons);
-		let ext = Module["_GetButtonIcons"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, bBase64 ? 1 : 0, nWidget === undefined ? -1 : nWidget, nView);
-		this.unlockPageNumForFontsLoader();
+		let ext = Module["_GetButtonIcons"](this.nativeFile, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, bBase64 ? 1 : 0, nWidget === undefined ? -1 : nWidget, nView);
 		if (ext == 0)
 			return res;
 
@@ -1136,6 +1143,12 @@
 			// Text
 			if (rec["Type"] == 0)
 			{
+				// Bachground color - C->IC
+				if (rec["C"])
+				{
+					rec["IC"] = rec["C"];
+					delete rec["C"];
+				}
 				rec["Open"] = (flags >> 15) & 1;
 				// icon - Name
 				// 0 - Check, 1 - Checkmark, 2 - Circle, 3 - Comment, 4 - Cross, 5 - CrossHairs, 6 - Help, 7 - Insert, 8 - Key, 9 - NewParagraph, 10 - Note, 11 - Paragraph, 12 - RightArrow, 13 - RightPointer, 14 - Star, 15 - UpArrow, 16 - UpLeftArrow
@@ -1172,7 +1185,7 @@
 					let n = reader.readInt();
 					rec["IC"] = [];
 					for (let i = 0; i < n; ++i)
-						rec["IC"].push(reader.readDouble());
+						rec["IC"].push(reader.readDouble2());
 				}
 				// LL
 				if (flags & (1 << 17))
@@ -1240,7 +1253,7 @@
 					let n = reader.readInt();
 					rec["IC"] = [];
 					for (let i = 0; i < n; ++i)
-						rec["IC"].push(reader.readDouble());
+						rec["IC"].push(reader.readDouble2());
 				}
 			}
 			// Polygon, PolyLine
@@ -1264,7 +1277,7 @@
 					let n = reader.readInt();
 					rec["IC"] = [];
 					for (let i = 0; i < n; ++i)
-						rec["IC"].push(reader.readDouble());
+						rec["IC"].push(reader.readDouble2());
 				}
 				// IT
 				// 0 - PolygonCloud, 1 - PolyLineDimension, 2 - PolygonDimension
@@ -1285,6 +1298,12 @@
 			// FreeText
 			else if (rec["Type"] == 2)
 			{
+				// Bachground color - C->IC
+				if (rec["C"])
+				{
+					rec["IC"] = rec["C"];
+					delete rec["C"];
+				}
 				// 0 - left-justified, 1 - centered, 2 - right-justified
 				rec["alignment"] = reader.readByte();
 				// Rect and RD differences
@@ -1313,6 +1332,14 @@
 				// 0 - FreeText, 1 - FreeTextCallout, 2 - FreeTextTypeWriter
 				if (flags & (1 << 20))
 					rec["IT"] = reader.readByte();
+				// Border color - from DA (write to C)
+				if (flags & (1 << 21))
+				{
+					let n = reader.readInt();
+					rec["C"] = [];
+					for (let i = 0; i < n; ++i)
+						rec["C"].push(reader.readDouble2());
+				}
 			}
 			// Caret
 			else if (rec["Type"] == 13)
@@ -1329,6 +1356,7 @@
 				if (flags & (1 << 16))
 					rec["Sy"] = reader.readByte();
 			}
+			// FileAttachment
 			else if (rec["Type"] == 16)
 			{
 				if (flags & (1 << 15))
@@ -1559,11 +1587,12 @@
 	CFile.prototype.lockPageNumForFontsLoader = function(pageIndex, type)
 	{
 		this.fontPageIndex = pageIndex;
-		this.pages[pageIndex].fontsUpdateType |= type;
+		this.fontPageUpdateType = type;		
 	};
 	CFile.prototype.unlockPageNumForFontsLoader = function()
 	{
 		this.fontPageIndex = -1;
+		drawingFile.fontPageUpdateType = UpdateFontsSource.Undefined;
 	};
 	
 	self["AscViewer"]["CDrawingFile"] = CFile;
@@ -1654,6 +1683,8 @@
 			addToArrayAsDictionary(drawingFile.fontStreams[fileId].pages, drawingFile.fontPageIndex);
 			addToArrayAsDictionary(drawingFile.pages[drawingFile.fontPageIndex].fonts, fileId);
 
+			drawingFile.pages[drawingFile.fontPageIndex].fontsUpdateType |= drawingFile.fontPageUpdateType;
+
 			// font can be loading in editor
 			if (undefined === file.externalCallback)
 			{
@@ -1667,7 +1698,6 @@
 					let pagesRepaint_Page        = [];
 					let pagesRepaint_Annotation  = [];
 					let pagesRepaint_Forms       = [];
-					let pagesRepaint_ButtonIcons = [];
 
 					for (let i = 0, len = pages.length; i < len; i++)
 					{
@@ -1695,9 +1725,6 @@
 							if (pageObj.fontsUpdateType & UpdateFontsSource.Forms)
 								pagesRepaint_Forms.push(pageNum);
 
-							if (pageObj.fontsUpdateType & UpdateFontsSource.ButtonIcons)
-								pagesRepaint_ButtonIcons.push(pageNum);
-
 							pageObj.fontsUpdateType = UpdateFontsSource.Undefined;
 						}
 					}
@@ -1710,9 +1737,6 @@
 
 					if (pagesRepaint_Forms.length > 0 && drawingFile.onRepaintForms)
 						drawingFile.onRepaintForms(pagesRepaint_Forms);
-
-					if (pagesRepaint_ButtonIcons.length > 0 && drawingFile.onRepaintButtonIcons)
-						drawingFile.onRepaintButtonIcons(pagesRepaint_ButtonIcons);
 
 					delete _t.externalCallback;
 				};

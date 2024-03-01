@@ -414,20 +414,36 @@ XRef::~XRef() {
 GFileOffset XRef::getStartXref() {
   char buf[xrefSearchSize+1];
   char *p;
-  int n, i;
+  int n, i, nTry;
+  bool bFind;
+  nTry = 1;
+  bFind = false;
 
-  // read last xrefSearchSize bytes
-  str->setPos(xrefSearchSize, -1);
-  n = str->getBlock(buf, xrefSearchSize);
-  buf[n] = '\0';
+  bool isBreak = false;
+  do
+  {
+    str->setPos(xrefSearchSize * nTry, -1);
+    isBreak = str->getPos() == 0;
+    n = str->getBlock(buf, xrefSearchSize);
+    buf[n] = '\0';
 
-  // find startxref
-  for (i = n - 9; i >= 0; --i) {
-    if (!strncmp(&buf[i], "startxref", 9)) {
+    // find startxref
+    for (i = n - 9; i >= 0; --i) {
+      if (!strncmp(&buf[i], "startxref", 9)) {
+        bFind = true;
+        break;
+      }
+    }
+
+    if (bFind) {
       break;
     }
-  }
-  if (i < 0) {
+    nTry++;
+  } while (!isBreak);
+
+  // read last xrefSearchSize bytes
+
+  if (!bFind) {
     return 0;
   }
   for (p = &buf[i+9]; isspace(*p & 0xff); ++p) ;

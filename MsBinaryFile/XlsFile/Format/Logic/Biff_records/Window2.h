@@ -51,47 +51,44 @@ public:
 	void readFields(CFRecord& record) override;
 	void writeFields(CFRecord& record) override;
 
-    static const ElementType	type = typeWindow2;
+    static const ElementType type = typeWindow2;
 
-    bool fDspFmlaRt; //fDspFmla in biff12
-    bool fDspGridRt; //fDspGrid in biff12
-    bool fDspRwColRt; //fDspRwCol in biff12
-	bool fFrozenRt;
-    bool fDspZerosRt; // fDspZeros in biff12
-    bool fDefaultHdr; // *
-    bool fRightToLeft; // *
-    bool fDspGuts; // *
-	bool fFrozenNoSplit;
-    bool fSelected; // *
-	bool fPaged;
-	bool fSLV;
+    bool fDspFmlaRt = false; //fDspFmla in biff12
+    bool fDspGridRt = false; //fDspGrid in biff12
+    bool fDspRwColRt = false; //fDspRwCol in biff12
+	bool fFrozenRt = false;
+    bool fDspZerosRt = false; // fDspZeros in biff12
+    bool fDefaultHdr = false; // *
+    bool fRightToLeft = false; // *
+    bool fDspGuts = false; // *
+	bool fFrozenNoSplit = false;
+    bool fSelected = false; // *
+	bool fPaged = false;
+	bool fSLV = false;
 
 	bool is_contained_in_chart_substream;
 
-    //_UINT16		rwTop;
-    UncheckedRw		rwTop;
-    //_UINT16		colLeft;
-    UncheckedCol    colLeft;
+    UncheckedRw rwTop;
+    UncheckedCol colLeft;
 
-    _UINT16		icvHdr; // 1 Byte in biff12
+    _UINT16 icvHdr = 64; // 1 Byte in biff12
 	
-	_UINT16		wScaleSLV;
-	_UINT16		wScaleNormal;
-	std::wstring	topLeftCell;
+	_UINT16 wScaleSLV;
+	_UINT16 wScaleNormal;
+	std::wstring topLeftCell;
 
     //biff12
-    bool fWnProt;
-    bool fDspRuler;
-    bool fWhitespaceHidden;
+    bool fWnProt = false;
+    bool fDspRuler = false;
+    bool fWhitespaceHidden = false;
 
-    _UINT32     xlView;
+    _UINT32 xlView;
 
-    _UINT16     wScale;
-    _UINT16     wScalePLV;
-    _UINT32     iWbkView;
+    _UINT16 wScale;
+    _UINT16 wScalePLV;
+    _UINT32 iWbkView;
 
-    bool        _isChart;
-
+    bool _isChart = false;
 };
 
 } // namespace XLS

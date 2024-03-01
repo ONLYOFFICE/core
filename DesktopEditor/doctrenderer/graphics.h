@@ -235,6 +235,10 @@ namespace NSGraphics
 		void DrawPath(int path);
 		void CoordTransformOffset(double tx, double ty);
 		CTransform GetTransform();
+
+		// layer
+		void CreateLayer(double opacity);
+		void BlendLayer();
 	};
 }
 

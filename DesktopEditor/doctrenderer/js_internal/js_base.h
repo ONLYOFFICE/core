@@ -496,6 +496,12 @@ namespace NSJSBase
 		 */
 		JSSmart<CJSValue> JSON_Parse(const char* json_content);
 		/**
+		 * Creates a string that contains the JSON-serialized representation of a JS value.
+		 * @param value The JS value to serialize.
+		 * @return The string that contains the result of serialization, or empty string in case of errors.
+		 */
+		std::string JSON_Stringify(JSSmart<CJSValue> value);
+		/**
 		 * Do not use this function. It is for internal needs.
 		 * Associates current context with the specifed thread id.
 		 * @param id The id of a thread.

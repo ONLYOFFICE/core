@@ -218,7 +218,7 @@ void xlsx_conversion_context::end_document()
 
     {
         std::wstringstream strm;
-        xlsx_text_context_.serialize_shared_strings(strm);
+		get_text_context()->serialize_shared_strings(strm);
         output_document_->get_xl_files().set_sharedStrings( package::simple_element::create(L"sharedStrings.xml", strm.str()) );
     }
 
@@ -660,12 +660,12 @@ void xlsx_conversion_context::end_office_spreadsheet()
 
 void xlsx_conversion_context::start_paragraph(const std::wstring & styleName)
 {
-    xlsx_text_context_.start_paragraph(styleName);
+	get_text_context()->start_paragraph(styleName);
 }
 
 void xlsx_conversion_context::end_paragraph()
 {
-	if (xlsx_text_context_.is_drawing_context())
+	if (get_text_context()->is_drawing_context())
 	{
 		get_drawing_context().process_objects(get_table_metrics());
 
@@ -674,20 +674,20 @@ void xlsx_conversion_context::end_paragraph()
 			std::wstringstream strm;
 			get_drawing_context().serialize(strm, L"a", true);
 
-			xlsx_text_context_.add_paragraph(strm.str());
+			get_text_context()->add_paragraph(strm.str());
 		}
 	}
-    xlsx_text_context_.end_paragraph();
+	get_text_context()->end_paragraph();
 }
 
 void xlsx_conversion_context::start_span(const std::wstring & styleName)
 {
-    xlsx_text_context_.start_span(styleName);
+	get_text_context()->start_span(styleName);
 }
 
 void xlsx_conversion_context::end_span()
 {
-    xlsx_text_context_.end_span();
+	get_text_context()->end_span();
 }
 
 void xlsx_conversion_context::start_table_cell(const std::wstring & formula, size_t columnsSpanned, size_t rowsSpanned)
@@ -913,6 +913,29 @@ void xlsx_conversion_context::add_jsaProject(const std::string &content)
 	
 	output_document_->get_xl_files().add_jsaProject(content);
 	output_document_->get_content_types_file().add_or_find_default(L"bin");
+}
+void xlsx_conversion_context::start_text_context()
+{
+	minor_text_contexts_.push_back(new xlsx_text_context(odf_document_->odf_context()));
+}
+void xlsx_conversion_context::end_text_context()
+{
+	if (false == minor_text_contexts_.empty())
+	{
+		delete minor_text_contexts_.back();
+		minor_text_contexts_.pop_back();
+	}
+}
+xlsx_text_context* xlsx_conversion_context::get_text_context()
+{
+	if (false == minor_text_contexts_.empty())
+	{
+		return minor_text_contexts_.back();
+	}
+	else
+	{
+		return &xlsx_text_context_;
+	}
 }
 
 }

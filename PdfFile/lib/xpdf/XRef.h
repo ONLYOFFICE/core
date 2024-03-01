@@ -77,6 +77,8 @@ public:
 
   // Is the file encrypted?
   GBool isEncrypted() { return encrypted; }
+  void offEncrypted() { encrypted = gFalse; }
+  void onEncrypted() { encrypted = gTrue; }
   GBool getEncryption(int *permFlagsA, GBool *ownerPasswordOkA,
 		      int *keyLengthA, int *encVersionA,
 		      CryptAlgorithm *encAlgorithmA);

@@ -62,18 +62,18 @@ int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Contex
 	if (elements_.empty()) return -1;
 
     Context.get_table_context().start_cell_content();
-	Context.get_text_context().set_cell_text_properties(text_properties);
+	Context.get_text_context()->set_cell_text_properties(text_properties);
     
 	for (size_t i = 0 ; i < elements_.size(); i++)
     {
         elements_[i]->xlsx_convert(Context);
 		if ((i < elements_.size() - 1) && (elements_[i + 1]->get_type() == typeTextP))
 		{
-			Context.get_text_context().start_paragraph(L"");
-			Context.get_text_context().start_span(L"");
-			Context.get_text_context().add_text(L"\n");
-			Context.get_text_context().end_span();
-			Context.get_text_context().end_paragraph();
+			Context.get_text_context()->start_paragraph(L"");
+			Context.get_text_context()->start_span(L"");
+			Context.get_text_context()->add_text(L"\n");
+			Context.get_text_context()->end_span();
+			Context.get_text_context()->end_paragraph();
 		}
 	}
    
@@ -555,26 +555,29 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
 								CP_XML_ATTR(L"customWidth", true);
 								Context.table_column_last_width(*width);
 							}
-							else if (prop->attlist_.style_column_width_)
+							if (prop->attlist_.style_column_width_)
                             {
                                 pt_width = prop->attlist_.style_column_width_->get_value_unit(length::pt);                        
                                 cm_width = prop->attlist_.style_column_width_->get_value_unit(length::cm);        
 								in_width = prop->attlist_.style_column_width_->get_value_unit(length::inch);
 
-                                if (hidden)
-                                {
-                                    in_width = 0.0;
-                                }
-								
-                                const double pixDpi = in_width * 96.;                
-                                width = pixToSize(pixDpi, Context.getMaxDigitSize().first); 
+								if (!width)
+								{
+									if (hidden)
+									{
+										in_width = 0.0;
+									}
 
-								// see ECMA-376 page 1768
-                                if (in_width > 0)
-									CP_XML_ATTR(L"width", *width);
+									const double pixDpi = in_width * 96.;
+									width = pixToSize(pixDpi, Context.getMaxDigitSize().first);
 
-                                CP_XML_ATTR(L"customWidth", true);
-                                Context.table_column_last_width(*width);
+									// see ECMA-376 page 1768
+									if (in_width > 0)
+										CP_XML_ATTR(L"width", *width);
+
+									CP_XML_ATTR(L"customWidth", true);
+									Context.table_column_last_width(*width);
+								}
                             }
 							if ((prop->attlist_.common_break_attlist_.fo_break_before_) && 
 								(prop->attlist_.common_break_attlist_.fo_break_before_->get_type() == odf_types::fo_break::Page))
@@ -600,8 +603,11 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
 
         } // col
     } // CP_XML_WRITER 
-
     
+	if (pt_width < 1)
+	{
+		pt_width = 2.26 * 28.34467120181406; // 2.26 cm default 
+	}
 	Context.get_table_metrics().add_cols(cMax - cMin, pt_width);
 	Context.end_table_column();
 }
@@ -1393,12 +1399,12 @@ void table_content_validation::xlsx_convert(oox::xlsx_conversion_context & Conte
 		{
 			table_error_message* error = dynamic_cast<table_error_message*>(content_[i].get());
 
-			Context.get_text_context().start_only_text();
+			Context.get_text_context()->start_only_text();
 			for (size_t j = 0 ; j < error->content_.size(); j++)
 			{
 				error->content_[j]->xlsx_convert(Context);
 			}
-			std::wstring content = Context.get_text_context().end_only_text();
+			std::wstring content = Context.get_text_context()->end_only_text();
 
 			Context.get_dataValidations_context().add_error_msg(name, error->table_title_.get_value_or(L""), content, 
 																error->table_display_ ? error->table_display_->get() : true,
@@ -1408,12 +1414,12 @@ void table_content_validation::xlsx_convert(oox::xlsx_conversion_context & Conte
 		{
 			table_help_message* help = dynamic_cast<table_help_message*>(content_[i].get());
 			
-			Context.get_text_context().start_only_text();
+			Context.get_text_context()->start_only_text();
 			for (size_t j = 0 ; j < help->content_.size(); j++)
 			{
 				help->content_[j]->xlsx_convert(Context);
 			}
-			std::wstring content = Context.get_text_context().end_only_text();
+			std::wstring content = Context.get_text_context()->end_only_text();
 			
 			Context.get_dataValidations_context().add_help_msg(name, help->table_title_.get_value_or(L""), content, 
 																help->table_display_ ? help->table_display_->get() : true);

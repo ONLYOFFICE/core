@@ -144,6 +144,11 @@ namespace oox {
 		SET_PAR_ANIMATION_ATTRIBUTE(PresetID, value);
 	}
 
+	void pptx_animation_context::set_par_animation_preset_subtype(int value)
+	{
+		SET_PAR_ANIMATION_ATTRIBUTE(PresetSubtype, value);
+	}
+
 	void pptx_animation_context::set_par_animation_fill(const std::wstring& value)
 	{
 		SET_PAR_ANIMATION_ATTRIBUTE(Fill, value);
@@ -314,6 +319,21 @@ namespace oox {
 	void pptx_animation_context::set_anim_effect_duration(int value)
 	{
 		impl_->anim_effect_description_->Duration = value;
+	}
+
+	void pptx_animation_context::set_anim_effect_delay(const std::wstring& value)
+	{
+		impl_->anim_effect_description_->Delay = value;
+	}
+
+	void pptx_animation_context::set_anim_effect_accel(int value)
+	{
+		impl_->anim_effect_description_->Accel = value;
+	}
+
+	void pptx_animation_context::set_anim_effect_decel(int value)
+	{
+		impl_->anim_effect_description_->Decel = value;
 	}
 
 	void pptx_animation_context::set_anim_effect_shape_id(size_t value)
@@ -763,6 +783,7 @@ namespace oox {
 				{
 					CP_XML_ATTR_OPT(L"presetClass"	, PresetClass);
 					CP_XML_ATTR_OPT(L"presetID"		, PresetID);
+					CP_XML_ATTR_OPT(L"presetSubtype", PresetSubtype);
 					CP_XML_ATTR_OPT(L"fill"			, Fill);
 					CP_XML_ATTR_OPT(L"accel"		, Accelerate);
 					CP_XML_ATTR_OPT(L"decel"		, Decelerate);
@@ -965,6 +986,19 @@ namespace oox {
 						CP_XML_NODE(L"p:cTn")
 						{
 							CP_XML_ATTR_OPT(L"dur", serialize_duration(Duration));
+							CP_XML_ATTR_OPT(L"accel", Accel);
+							CP_XML_ATTR_OPT(L"decel", Decel);
+
+							if (Delay)
+							{
+								CP_XML_NODE(L"p:stCondLst")
+								{
+									CP_XML_NODE(L"p:cond")
+									{
+										CP_XML_ATTR(L"delay", Delay.value());
+									}
+								}
+							}
 						}
 					}
 					if (ShapeID)
@@ -1037,12 +1071,14 @@ namespace oox {
 							CP_XML_ATTR(L"autoRev", autoRev);
 						}
 
-						CP_XML_NODE(L"p:stCondLst")
+						if (Delay)
 						{
-							std::wstring delay = Delay ? Delay.value() : L"0";
-							CP_XML_NODE(L"p:cond")
+							CP_XML_NODE(L"p:stCondLst")
 							{
-								CP_XML_ATTR(L"delay", delay);
+								CP_XML_NODE(L"p:cond")
+								{
+									CP_XML_ATTR(L"delay", Delay.value());
+								}
 							}
 						}
 					}

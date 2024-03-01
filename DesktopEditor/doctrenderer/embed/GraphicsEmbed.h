@@ -82,11 +82,11 @@ public:
 	JSSmart<CJSValue> drawHorLine (JSSmart<CJSValue> align, JSSmart<CJSValue> y, JSSmart<CJSValue> x, JSSmart<CJSValue> r, JSSmart<CJSValue> penW);
 	JSSmart<CJSValue> drawHorLine2(JSSmart<CJSValue> align, JSSmart<CJSValue> y, JSSmart<CJSValue> x, JSSmart<CJSValue> r, JSSmart<CJSValue> penW);
 	JSSmart<CJSValue> drawVerLine (JSSmart<CJSValue> align, JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> b, JSSmart<CJSValue> penW);
-	// мега крутые функции для таблиц
+
 	JSSmart<CJSValue> drawHorLineExt(JSSmart<CJSValue> align, JSSmart<CJSValue> y, JSSmart<CJSValue> x, JSSmart<CJSValue> r, JSSmart<CJSValue> penW, JSSmart<CJSValue> leftMW, JSSmart<CJSValue> rightMW);
 	JSSmart<CJSValue> rect     (JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h);
 	JSSmart<CJSValue> TableRect(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h);
-	// функции клиппирования
+
 	JSSmart<CJSValue> AddClipRect(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h);
 	JSSmart<CJSValue> RemoveClipRect();
 	JSSmart<CJSValue> SetClip(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h);
@@ -131,6 +131,10 @@ public:
 	JSSmart<CJSValue> DrawPath(JSSmart<CJSValue> path);
 	JSSmart<CJSValue> CoordTransformOffset(JSSmart<CJSValue> tx, JSSmart<CJSValue> ty);
 	JSSmart<CJSValue> GetTransform();
+
+	// layer
+	JSSmart<CJSValue> CreateLayer(JSSmart<CJSValue> opacity);
+	JSSmart<CJSValue> BlendLayer();
 
 	DECLARE_EMBED_METHODS
 };

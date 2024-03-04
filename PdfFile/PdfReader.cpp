@@ -1565,16 +1565,49 @@ BYTE* CPdfReader::GetShapes(int nPageIndex)
 	if (!pPageRef)
 		return NULL;
 
-	Object oPageObj;
+	Object oPageObj, oMetaOForm, oID;
 	XRef* xref = m_pPDFDocument->getXRef();
-	if (!xref->fetch(pPageRef->num, pPageRef->gen, &oPageObj)->isDict())
+	if (!xref->fetch(pPageRef->num, pPageRef->gen, &oPageObj)->isDict() || !oPageObj.dictLookup("MetaOForm", &oMetaOForm)->isDict("MetaOForm") || !oMetaOForm.dictLookup("ID", &oID)->isString())
 	{
-		oPageObj.free();
+		oPageObj.free(); oMetaOForm.free(); oID.free();
 		return NULL;
 	}
+	oPageObj.free();
+
+	Object oTID, oID2;
+	Object* pTrailerDict = xref->getTrailerDict();
+	if (!pTrailerDict || !pTrailerDict->dictLookup("ID", &oTID)->isArray() || !oTID.arrayGet(1, &oID2)->isString() || oID2.getString()->cmp(oID.getString()) != 0)
+	{
+		oMetaOForm.free(); oID.free(); oTID.free(); oID2.free();
+		return NULL;
+	}
+	oTID.free(); oID.free(); oID2.free();
+
+	Object oMetadata;
+	if (!oMetaOForm.dictLookup("Metadata", &oMetadata)->isArray())
+	{
+		oMetaOForm.free(); oMetadata.free();
+		return NULL;
+	}
+	oMetaOForm.free();
 
 	NSWasm::CData oRes;
 	oRes.SkipLen();
+	int nMetadataLength = oMetadata.arrayGetLength();
+	oRes.AddInt(nMetadataLength);
+
+	for (int i = 0; i < nMetadataLength; ++i)
+	{
+		Object oMetaStr;
+		std::string sStr;
+		if (oMetadata.arrayGet(i, &oMetaStr)->isString())
+		{
+			TextString* s = new TextString(oMetaStr.getString());
+			sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+			delete s;
+		}
+		oRes.WriteString(sStr);
+	}
 
 	oRes.WriteLen();
 	BYTE* bRes = oRes.GetBuffer();

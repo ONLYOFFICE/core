@@ -1775,7 +1775,7 @@ namespace PdfWriter
 		}
 		pArrayMeta->Add(new CStringObject(sXML.c_str()));
 
-		m_pCurPage->BeginShape();
+		m_pCurPage->BeginMarkedContent("MetaOForm");
 	}
 	void CDocument::EndMarkedContent()
 	{

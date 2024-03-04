@@ -1586,7 +1586,7 @@ BYTE* CPdfFile::GetAnnots(int nPageIndex)
 		return NULL;
 	return m_pInternal->pReader->GetAnnots(nPageIndex);
 }
-BYTE* CPdfFile::GetShapesXML(int nPageIndex)
+BYTE* CPdfFile::GetShapes(int nPageIndex)
 {
 	if (!m_pInternal->pReader)
 		return NULL;

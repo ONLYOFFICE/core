@@ -317,7 +317,7 @@ namespace NSCSS
 				oXmlElement.AddPropertiesInP(PProperties::P_Shd, wsColor);
 		}
 
-		if (!oStyle.m_oBorder.Empty())
+		if (!oStyle.m_oBorder.Empty() && !oStyle.HaveThisParent(L"table"))
 		{
 			if (oStyle.m_oBorder.EqualSides())
 			{

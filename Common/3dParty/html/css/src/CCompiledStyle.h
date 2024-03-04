@@ -52,6 +52,8 @@ namespace NSCSS
 		void SetID(const std::wstring& sId);
 		std::wstring GetId() const;
 
+		bool HaveThisParent(const std::wstring& wsParentName) const;
+
 		CCompiledStyle& operator+= (const CCompiledStyle& oElement);
 		CCompiledStyle& operator=  (const CCompiledStyle& oElement);
 		bool operator==            (const CCompiledStyle& oElement) const;

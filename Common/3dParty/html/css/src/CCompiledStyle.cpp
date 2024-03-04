@@ -424,6 +424,7 @@ namespace NSCSS
 					break;
 				}
 				CASE(L"vertical-align"):
+				CASE(L"valign"):
 				{
 					m_oDisplay.SetVAlign(pPropertie.second, unLevel, bHardMode);
 					break;
@@ -502,5 +503,10 @@ namespace NSCSS
 	std::wstring CCompiledStyle::GetId() const
 	{
 		return m_sId;
+	}
+	
+	bool CCompiledStyle::HaveThisParent(const std::wstring &wsParentName) const
+	{
+		return m_arParentsStyles.end() != m_arParentsStyles.find(wsParentName);
 	}
 }

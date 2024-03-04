@@ -1423,15 +1423,19 @@ private:
 				else
 					wsTcPr += L"<w:vAlign w:val=\"" + wsVerticalAlign + L"\"/>";
 
-				if (NULL != oTableStyles.m_pPadding && !oStyle.m_oPadding.Empty() && oStyle.m_oPadding != *oTableStyles.m_pPadding)
+				if (!oStyle.m_oPadding.Empty() && (NULL == oTableStyles.m_pPadding || oStyle.m_oPadding != *oTableStyles.m_pPadding))
 				{
-					const int nTopPadding    = std::max(oTableStyles.m_pPadding->GetTop()   .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT),
+					const int nTopPadding    = std::max((NULL != oTableStyles.m_pPadding) ? 
+					                                    oTableStyles.m_pPadding->GetTop()   .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT) : 0,
 					                                    oStyle      .m_oPadding.GetTop()    .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
-					const int nLeftPadding   = std::max(oTableStyles.m_pPadding->GetLeft()  .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ),
+					const int nLeftPadding   = std::max((NULL != oTableStyles.m_pPadding) ? 
+					                                    oTableStyles.m_pPadding->GetLeft()  .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ) : 0,
 					                                    oStyle      .m_oPadding.GetLeft()   .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ));
-					const int nBottomPadding = std::max(oTableStyles.m_pPadding->GetBottom().ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT),
+					const int nBottomPadding = std::max((NULL != oTableStyles.m_pPadding) ? 
+					                                    oTableStyles.m_pPadding->GetBottom().ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT) : 0,
 					                                    oStyle      .m_oPadding.GetBottom() .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
-					const int nRightPadding  = std::max(oTableStyles.m_pPadding->GetRight() .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ),
+					const int nRightPadding  = std::max((NULL != oTableStyles.m_pPadding) ? 
+					                                    oTableStyles.m_pPadding->GetRight() .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ) : 0,
 					                                    oStyle      .m_oPadding.GetRight()  .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ));
 		
 					wsTcPr += L"<w:tcMar>"
@@ -1953,6 +1957,7 @@ private:
 			{
 				std::wstring wsSvg(pImageData, pImageData + nDecodeLen);
 				bRes = readSVG(wsSvg);
+				sExtention = L"png";
 			}
 			else
 			{

@@ -327,13 +327,15 @@ namespace NSCSS
 
 		if (oDigit.Empty())
 			return *this;
+		else if (Empty())
+		{
+			*this = oDigit;
+			return *this;
+		}
 		else if (NSCSS::Percent == oDigit.m_enUnitMeasure && !Empty())
 			m_oValue *= oDigit.m_oValue / 100.;
 		else
-		{
-			m_oValue        = oDigit.m_oValue;
-			m_enUnitMeasure = oDigit.m_enUnitMeasure;
-		}
+			m_oValue += oDigit.ToDouble(m_enUnitMeasure);
 
 		m_unLevel       = oDigit.m_unLevel;
 		m_bImportant    = oDigit.m_bImportant;
@@ -2251,7 +2253,9 @@ namespace NSCSS
 
 	CFont &CFont::operator+=(const CFont &oFont)
 	{
-		m_oSize       += oFont.m_oSize;
+		if (!oFont.m_oSize.Empty())
+			m_oSize        = oFont.m_oSize;
+
 		m_oLineHeight += oFont.m_oLineHeight;
 		m_oFamily     += oFont.m_oFamily;
 		m_oStretch    += oFont.m_oStretch;

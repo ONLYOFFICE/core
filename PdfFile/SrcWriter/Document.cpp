@@ -1585,13 +1585,25 @@ namespace PdfWriter
 
 		// Вторая часть идентификатора должна обновляться
 		CObjectBase* pID = m_pTrailer->Get("ID");
-		if (pID && pID->GetType() == object_type_ARRAY)
+		if ((pID && pID->GetType() == object_type_ARRAY) || !m_vMetaOForms.empty())
 		{
 			BYTE arrId[16];
 			CEncryptDict::CreateId(m_pInfo, m_pXref, (BYTE*)arrId);
 
-			CObjectBase* pObject = ((CArrayObject*)pID)->Get(1, false);
-			((CArrayObject*)pID)->Insert(pObject, new CBinaryObject(arrId, 16), true);
+			CArrayObject* pArrID = (CArrayObject*)pID;
+			if (pArrID)
+			{
+				CObjectBase* pObject = pArrID->Get(1, false);
+				pArrID->Insert(pObject, new CBinaryObject(arrId, 16), true);
+			}
+			else
+			{
+				pArrID = new CArrayObject();
+				m_pTrailer->Add("ID", pArrID);
+
+				pArrID->Add(new CBinaryObject(arrId, 16));
+				pArrID->Add(new CBinaryObject(arrId, 16));
+			}
 
 			for (int i = 0; i < m_vMetaOForms.size(); ++i)
 				m_vMetaOForms[i]->Add("ID", new CBinaryObject(arrId, 16));
@@ -1721,9 +1733,6 @@ namespace PdfWriter
 	}
 	void CDocument::AddShapeXML(const std::string& sXML)
 	{
-		// TODO Revision++
-		int nRevision = 0;
-
 		CObjectBase* pObj = m_pCurPage->Get("MetaOForm");
 		if (pObj && pObj->GetType() != object_type_DICT)
 		{
@@ -1736,7 +1745,6 @@ namespace PdfWriter
 			pMetaOForm = new CDictObject();
 			m_pXref->Add(pMetaOForm);
 			pMetaOForm->Add("Type", "MetaOForm");
-			pMetaOForm->Add("Revision", nRevision);
 			m_pCurPage->Add("MetaOForm", pMetaOForm);
 			m_vMetaOForms.push_back(pMetaOForm);
 
@@ -1767,10 +1775,15 @@ namespace PdfWriter
 		}
 		pArrayMeta->Add(new CStringObject(sXML.c_str()));
 
-		m_pCurPage->BeginShape(nRevision);
+		m_pCurPage->BeginShape();
 	}
 	void CDocument::EndMarkedContent()
 	{
 		m_pCurPage->EndMarkedContent();
+	}
+	bool CDocument::HaveMetaOForm()
+	{
+		CObjectBase* pObj = m_pCurPage->Get("MetaOForm");
+		return pObj && pObj->GetType() == object_type_DICT;
 	}
 }

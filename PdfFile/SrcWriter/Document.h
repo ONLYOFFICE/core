@@ -200,6 +200,7 @@ namespace PdfWriter
 		const std::map<int, CAnnotation*>& GetAnnots() { return m_mAnnotations; }
 		void              AddShapeXML(const std::string& sXML);
 		void              EndMarkedContent();
+		bool              HaveMetaOForm();
 	private:		  
 					  
 		char*             GetTTFontTag();

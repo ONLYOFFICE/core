@@ -1583,17 +1583,13 @@ namespace PdfWriter
         CNumberObject* pRotate = (CNumberObject*)GetRotateItem();
         return pRotate ? pRotate->Get() : 0;
     }
-	void CPage::BeginShape(int nRevision)
+	void CPage::BeginMarkedContent(const std::string& sName)
 	{
-		// Operator   : BDC
-		// Description: Начало маркированного контента MetaOForm
+		// Operator   : BMC
+		// Description: Начало маркированного контента
 
-		m_pStream->WriteEscapeName("MetaOForm");
-		m_pStream->WriteStr(" <<");
-		m_pStream->WriteEscapeName("Revision");
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteInt(nRevision);
-		m_pStream->WriteStr(">> BDC\012");
+		m_pStream->WriteEscapeName(sName.c_str());
+		m_pStream->WriteStr(" BMC\012");
 	}
 	void CPage::EndMarkedContent()
 	{

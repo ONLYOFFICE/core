@@ -198,7 +198,7 @@ public:
 	HRESULT AddFormField (NSFonts::IApplicationFonts* pAppFonts, CFormFieldInfo* pFieldInfo, const std::wstring& wsTempDirectory);
 	HRESULT AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotFieldInfo* pFieldInfo);
 	HRESULT AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength);
-	HRESULT AddShapeXML(const std::string& sXML);
+	void AddShapeXML(const std::string& sXML);
 	void EndMarkedContent();
 	//----------------------------------------------------------------------------------------
 	// Дополнительные функции Pdf рендерера

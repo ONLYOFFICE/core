@@ -6844,6 +6844,11 @@ int BinaryWorksheetsTableReader::ReadUserProtectedRangeDesc(BYTE type, long leng
 	{
 		desc->id = m_oBufferedStream.GetString4(length);
 	}
+	else if (c_oSer_UserProtectedRangeDesc::Type == type)
+	{
+		desc->type.Init(); 
+		desc->type->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -6863,6 +6868,11 @@ int BinaryWorksheetsTableReader::ReadUserProtectedRange(BYTE type, long length, 
 	else if (c_oSer_UserProtectedRange::Text == type)
 	{
 		pUserProtectedRange->m_oText = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_UserProtectedRange::Type == type)
+	{
+		pUserProtectedRange->m_oType.Init();
+		pUserProtectedRange->m_oType->SetValueFromByte(m_oBufferedStream.GetUChar());
 	}
 	else if (c_oSer_UserProtectedRange::User == type)
 	{

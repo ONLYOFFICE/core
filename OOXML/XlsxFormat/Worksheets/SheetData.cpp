@@ -71,6 +71,12 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
+#ifndef MININT32
+#define MAXUINT32   ((uint32_t)~((uint32_t)0))
+#define MAXINT32    ((int32_t)(MAXUINT32 >> 1))
+#define MININT32    ((int32_t)~MAXINT32)
+#endif
+
 using namespace XLS;
 
 namespace OOX

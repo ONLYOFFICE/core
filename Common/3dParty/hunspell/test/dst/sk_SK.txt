@@ -1,0 +1,205 @@
+﻿hiša [šiša, Riša, Miša, hi ša, hi-ša]
+pes
+mačka
+avto [atto, asto, auto, zavito]
+drevo
+knjiga [kvadriga]
+šola [šila, šoka, šla, švola, škola, šosa, vola, šora, rola, kola, mola, dola, šopa, pola, hola]
+prijatelj [prijatej, prijate, prijatie]
+mama
+oče [očne, otče, toče, očke, koče, moče, očeš, oči, one, ose, oke, oje, obe, očí, očú]
+otrok
+jabolko [jablko]
+čokolada [čokoláda]
+kava
+čaj
+telefon [telefón, telefot]
+televizija [televízia]
+računalnik [račianski]
+glasba [glasnosť]
+šport
+zdravje [zdravej, zdravie, zdravte, zdravme, zdrav je, zdrav-je]
+lepota [pelota, slepota, lopota, lehota, klepotať, epoleta, poleptať]
+delo
+ljubezen [lezeniu]
+sreča [srnča, skeča, smeča]
+čas
+denar [denár, nedar]
+jezik [veziko]
+država [držiava, držala, dŕžava, dĺžava]
+mesto
+zima
+poletje [polejte, poleje, poletuje, polje]
+jesen [jeseň, jesne, nesej, jeden, jesene, jeseni, jesení]
+pomlad [omlad, poklad, p omlad, pomlka]
+morje [morke, more, moje, morte, morme, mor je, mor-je, morčej]
+gore [hore, gofre, nore, kore, more, zore, bore, šore, Nore, Tore, Lore, Zore, gágore]
+jezero [jazero, je zero, je-zero, zero]
+reka [areka, rieka, rekta, repka, rezka, raka, roka, rekt, seka, reva, veka, deka, repa, reku, ruka]
+park
+žival [žuval, živa, živel, živil, rival, ži val, ži-val, živ al, živ-al, živa l, žičieval]
+ptica [pica, pätica, psica, štica]
+riba [rabi, roba, ria, iba, raba, ribi, ryba, rúba, róba, Tiba, r iba, babri]
+les
+zlato
+srebro [rebro, s rebro, striebro]
+kovina [okovina, krovina, ovinka, konina, novina, korina, rovina, kozina, košina, kofina, rakovina, kávovina]
+steklo [šteklo, seklo, stekalo, stieklo, stenklo, streklo, stoklo, steblo, stĺklo]
+čevlji [nevlhči]
+obleka
+hlače [hláče, tlače, hlase, hlave, hlade, plače]
+srajca [rajca, krajca, s rajca]
+kapa
+plašč [plaš, plač, plaší, plaš č]
+roka
+noga [noha, nota, nosa, nova, nora, loga, koga, doga, joga, noža, noša, noxa, Toga, neogab]
+oko
+uho [ujo, ho, tuho, uhor, uhol, uhlo, ucho, uhoľ, uňho, hou, oho, uto, uhm, cho, uhú]
+nos
+ustnice [ustrice, kapustnice]
+zob
+glava [hlava, Ilava, Slava]
+srce [drce, srnce, srdce, srne, srde, síce, súce]
+možgani [moganie]
+kralj [kraj, kraal]
+kraljica [kraslica]
+princ
+princesa
+fant
+dekle [deke, dele, pekle, de kle, de-kle, debakle]
+moški [košmi, kamoši]
+ženska [ženská, ženiska, žensky, ženskí, ženský, ženskú, ženské]
+starec
+starka [starká, straka, statka, starla, stara, ostarka, staríka, starca, starkí, starký, starkú, starké]
+zdravnik [zdrav nik, zdrav-nik, zdravenia]
+medicinska sestra [medicínska sestra]
+učitelj [učitelík]
+učenka [učeníka, učenia, učenca, utečenka]
+študent
+študentka
+kuhar [kurare]
+natakar [katakana, katarakta, katarakt]
+vojna
+mir [mri, mor, mi, mira, mire, mier, emir, miri, miru, mar, air, mer, min, sir, mil]
+zemljevid [zemediel]
+zastava [zástava, zastáva, zastav, zastavia, zastaval, zastavaj, zastavať, zostava, zastala, zastaví]
+smeh [sneh, smej, sme, steh, smer, smel, smeč, smeť, sme h]
+jok [koj, kok, joj, jol, ojok, jak, jot, tok, sok, vok, rok, lok, mok, dok, job]
+spanje [spanie]
+sanje [sane, saje, sanuje, banje]
+delo
+učenje [učenej, učene, učenie]
+umetnost [etnosti]
+gledališče [nepojedali]
+kino
+muzej [mušej, muzeálnej]
+kapela
+cerkev
+grad [grád, gard, hrad, graf, rad, grand, gram, gray, úrad, Arad]
+most
+cesta
+
+Сложные слова []
+
+1. Neparlamentarna [parlamentarizmus]
+2. Samozadosten [rozradostene]
+3. Nepristranski [protistranícki]
+4. Pretirano [pretrénovanosti]
+5. Nepredušno [nepriedušnosť]
+6. Nesreča []
+7. Razpršeno [zhoršenou]
+8. Nesprejemljiv [nesprejazdňujeme]
+9. Prekomeren [rekompenzovať]
+10. Prostovoljstvo [sprostredkovateľstvo]
+11. Izolirati []
+12. Trmast []
+13. Brezpogojno []
+14. Neodvisnost [neodôvodnenosti]
+15. Skupnost [ústupnosti]
+16. Neizvedljiv []
+17. Nelegitimen [nelegitimizuje]
+18. Nevzdržen []
+19. Preobremenjenost []
+20. Ogrevalni sistem []
+21. Preoblikovati [aplikovateľnosti]
+22. Nezaslišano [nezasluhujúci]
+23. Neugoden []
+24. Prezasedenost [prezamestnanosť]
+25. Nesreča []
+26. Neupravičeno [nenapraviteľnosť]
+27. Mednaroden [mŕtvonarodeným]
+28. Kompatibilnost [najkompatibilnejšom]
+29. Neuspeh [neusporte]
+30. Neobvladljiv []
+31. Neskončen [neskončenej]
+32. Neprimeren [neprimeranie]
+33. Amortizacija [amortizovaných]
+34. Koncentracija [dekoncentrácia]
+35. Cirkulacija [recirkulácia]
+36. Obremenitev [odbremenenie]
+37. Gromozanski []
+38. Simbol []
+39. Vinjeta []
+40. Digitalizacija [digitalizovaný]
+41. Funkcionalnost [funkcionalistické]
+42. Rentabilnost [nerentabilnosti]
+43. Ekshibicionizem [exhibicionizmus]
+44. Frustracija [frustrujúci]
+45. Neprilagodljiv []
+46. Severnoameriški []
+47. Ekskluzivnost []
+48. Preverjanje [preverovanej]
+49. Celoživljenjsko []
+50. Privlačnost [neprivlastňovala]
+51. Periferija [periferický]
+52. Sokrivda [dokrivkať]
+53. Kompromis [kompromisník]
+54. Strpnost [ostrovtipnosť]
+55. Racionalizacija [zracionalizovania]
+56. Birokracija [gerontokracia]
+57. Odraslost [odrastenými]
+58. Stabilnost [nestabilnosti]
+59. Nepredvidljivost [najnepredstaviteľnejšou]
+60. Razkošje []
+61. Smrtnost [úmrtnostným]
+62. Obveščenost [presvedčenosti]
+63. Produktivnost [neproduktívnosti]
+64. Neugodje []
+65. Zapletenost [zakrpatenosti]
+66. Hegemonija []
+67. Umetnost [menostatikum]
+68. Tranzicija [tranzitivita]
+69. Individualnost [individualisticky]
+70. Kontaminacija [kontaminantmi]
+71. Inkubacija []
+72. Prikrito [prikrátko]
+73. Etnični [Letničie]
+74. Sovražnost [samovražednosť]
+75. Atraktivnost [abstraktnosti]
+76. Nestrpnost [nepriestupnosti]
+77. Divergenca [divergencia]
+78. Digitalna pismenost []
+79. Stabilizacija [autostabilizácia]
+80. Raznolikost []
+
+Слова с ошибками []
+
+ Kontamenacija [Kontaminácia]
+ 
+ Grommozanski [Grobianski]
+ 
+ Neobvladlliv [Neobkradli]
+ 
+ Neparlametarna [Neparlamentný, Parlamentárnej, Parlamentne]
+ 
+ Nevrzdržen [Združene, Zdražene]
+ 
+ voina [vonia, vina, vojna, voľna, voština]
+ 
+ muzei [muzeálni]
+ 
+ ryba
+ 
+ serebro [se rebro, se-rebro, rebro]
+ 
+ televiziia [televízia]

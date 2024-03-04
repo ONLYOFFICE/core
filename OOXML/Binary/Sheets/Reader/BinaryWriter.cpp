@@ -6450,6 +6450,11 @@ void BinaryWorksheetTableWriter::WriteDrawing(const OOX::Spreadsheet::CWorksheet
 
 	WriteCellAnchor(pCellAnchor);
 
+	if (pCellAnchor->m_oExt.IsInit())
+	{
+		m_oBcw.m_oStream.m_dCxCurShape = pCellAnchor->m_oExt->m_oCx.IsInit() ? pCellAnchor->m_oExt->m_oCx->GetValue() : 0;
+		m_oBcw.m_oStream.m_dCyCurShape = pCellAnchor->m_oExt->m_oCy.IsInit() ? pCellAnchor->m_oExt->m_oCy->GetValue() : 0;
+	}
 	if (pCellAnchor->m_sVmlSpId.IsInit() && pVmlDrawing)
 	{
 		std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(pCellAnchor->m_sVmlSpId.get2());
@@ -8003,25 +8008,37 @@ void BinaryWorksheetTableWriter::WriteUserProtectedRangeDesc(const OOX::Spreadsh
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 		m_oBcw.m_oStream.WriteStringW(*desc.name);
 	}
+	if (desc.type.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_UserProtectedRangeDesc::Type);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE(desc.type->GetValue());
+	}
 }
 void BinaryWorksheetTableWriter::WriteUserProtectedRange(const OOX::Spreadsheet::CUserProtectedRange& oUserProtectedRange)
 {
 	if (oUserProtectedRange.m_oName.IsInit())
 	{
 		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::Name);
-		m_oBcw.m_oStream.WriteStringW(*oUserProtectedRange.m_oName);
+		m_oBcw.m_oStream.WriteStringW3(*oUserProtectedRange.m_oName);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	if (oUserProtectedRange.m_oSqref.IsInit())
 	{
 		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::Sqref);
-		m_oBcw.m_oStream.WriteStringW(*oUserProtectedRange.m_oSqref);
+		m_oBcw.m_oStream.WriteStringW3(*oUserProtectedRange.m_oSqref);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	if (oUserProtectedRange.m_oText.IsInit())
 	{
 		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::Text);
-		m_oBcw.m_oStream.WriteStringW(*oUserProtectedRange.m_oText);
+		m_oBcw.m_oStream.WriteStringW3(*oUserProtectedRange.m_oText);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oUserProtectedRange.m_oType.IsInit())
+	{
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::Type);
+		m_oBcw.m_oStream.WriteBYTE(oUserProtectedRange.m_oType->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	for (size_t i = 0; i < oUserProtectedRange.m_arUsers.size(); ++i)

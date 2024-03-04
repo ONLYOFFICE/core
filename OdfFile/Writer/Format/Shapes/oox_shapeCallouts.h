@@ -404,7 +404,8 @@ public:
 		view_box		= L"0 0 21600 21600";
 		modifiers		= L"6300 24300";
 		glue_points		= L"?f40 ?f41";
-		
+		glue_points_leaving_directions = L"180";
+
 		add(L"f0", L"$0 -10800");
 		add(L"f1", L"$1 -10800");
 		add(L"f2", L"if(?f18 ,$0 ,0)");

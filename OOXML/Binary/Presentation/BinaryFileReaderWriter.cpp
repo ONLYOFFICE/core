@@ -231,7 +231,7 @@ namespace NSBinPptxRW
 		if (IsNeedDownload(strInput))
 			return DownloadImage(strInput);
 
-		std::map<std::wstring, _imageManager2Info>::const_iterator pPair = m_mapImages.find ((strBase64Image.empty()) ? strInput : strBase64Image);
+		std::map<std::wstring, _imageManager2Info>::const_iterator pPair = m_mapImages.find ((strBase64Image.empty()) ? strInput + oleData : strBase64Image + oleData);
 
 		if (pPair != m_mapImages.end())
 		{
@@ -386,9 +386,9 @@ namespace NSBinPptxRW
 		}
 			
 		if (strBase64Image.empty())
-			m_mapImages[strInput] = oImageManagerInfo;
+			m_mapImages[strInput + oleData] = oImageManagerInfo;
 		else
-			m_mapImages [strBase64Image] = oImageManagerInfo;
+			m_mapImages [strBase64Image + oleData] = oImageManagerInfo;
 		return oImageManagerInfo;
 	}
 	bool CImageManager2::WriteOleData(const std::wstring& sFilePath, const std::wstring& sData)
@@ -695,31 +695,33 @@ namespace NSBinPptxRW
 	}
 	double CBinaryFileWriter::GetShapeHeight()
 	{
-		if (m_lCyCurShape == 0)
+		if (m_dCyCurShape < 0.001)
 			return -1;
-		return (double)m_lCyCurShape / 36000; //mm
+		return m_dCyCurShape / 36000; //mm
 	}
 	double CBinaryFileWriter::GetShapeWidth()
 	{
-		if (m_lCyCurShape == 0)
+		if (m_dCyCurShape < 0.001)
 			return -1;
-		return (double)m_lCxCurShape / 36000;
+		return m_dCxCurShape / 36000;
 	}
 	double CBinaryFileWriter::GetShapeY()
 	{
-		return (double)m_lYCurShape / 36000;
+		return m_dYCurShape / 36000;
 	}
 	double CBinaryFileWriter::GetShapeX()
 	{
-		return (double)m_lXCurShape / 36000; //mm
+		return m_dXCurShape / 36000; //mm
 	}
 	void CBinaryFileWriter::ClearCurShapePositionAndSizes()
 	{
-		m_lXCurShape	= 0;
-		m_lYCurShape	= 0;
+		m_dXCurShape = 0;
+		m_dYCurShape = 0;
 		
-		m_lCxCurShape = 0;
-		m_lCyCurShape = 0;
+		m_dCxCurShape = 0;
+		m_dCyCurShape = 0;
+
+		m_bInGroup = false;
 	}
 	void CBinaryFileWriter::Clear()
 	{
@@ -732,11 +734,13 @@ namespace NSBinPptxRW
 		m_lStackPosition = 0;
 		memset(m_arStack, 0, MAX_STACK_SIZE * sizeof(_UINT32));
 
-		m_lCxCurShape = 0;
-		m_lCyCurShape = 0;
+		m_dCxCurShape = 0;
+		m_dCyCurShape = 0;
 
-		m_lXCurShape = 0;
-		m_lYCurShape = 0;
+		m_dXCurShape = 0;
+		m_dYCurShape = 0;
+
+		m_bInGroup = false;
 	}
 
 	void CBinaryFileWriter::SetMainDocument(BinDocxRW::CDocxSerializer* pMainDoc)
@@ -1399,7 +1403,7 @@ namespace NSBinPptxRW
 	}
 
 
-	CRelsGenerator::CRelsGenerator(CImageManager2* pManager) : m_lNextRelsID(1), m_mapImages()
+	CRelsGenerator::CRelsGenerator(CImageManager2* pManager) : m_lNextRelsID(1), m_mapRelsImages()
 	{
 		m_pManager = pManager;
 		m_pWriter = new NSStringUtils::CStringBuilder();
@@ -1412,7 +1416,7 @@ namespace NSBinPptxRW
 	{
 		m_pWriter->ClearNoAttack();
 		m_lNextRelsID = 1;
-		m_mapImages.clear();
+		m_mapRelsImages.clear();
 		m_mapLinks.clear();
 	}
 
@@ -1614,20 +1618,20 @@ namespace NSBinPptxRW
 	{
 		_imageManager2Info oImageManagerInfo = m_pManager->GenerateMedia(strImage);
 		
-		std::wstring strImageRelsPath; 
+		std::wstring strMediaRelsPath;
 		
-		if (m_pManager->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX)	strImageRelsPath = L"media/";
-		else														strImageRelsPath = L"../media/";
+		if (m_pManager->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX)	strMediaRelsPath = L"media/";
+		else														strMediaRelsPath = L"../media/";
 
 		_relsGeneratorInfo oRelsGeneratorInfo;
 		
 		if (!oImageManagerInfo.sFilepathImage.empty())
 		{
-			strImageRelsPath += OOX::CPath(oImageManagerInfo.sFilepathImage).GetFilename();
+			strMediaRelsPath += OOX::CPath(oImageManagerInfo.sFilepathImage).GetFilename();
 
-			std::map<std::wstring, _relsGeneratorInfo>::iterator pPair = m_mapImages.find(strImageRelsPath);
+			std::map<std::wstring, _relsGeneratorInfo>::iterator pPair = m_mapRelsImages.find(strMediaRelsPath);
 
-			if (m_mapImages.end() != pPair)
+			if (m_mapRelsImages.end() != pPair)
 			{
 				return pPair->second;				
 			}
@@ -1640,16 +1644,16 @@ namespace NSBinPptxRW
 			if (type == 0)
 			{
 				m_pWriter->WriteString( L"<Relationship Id=\"" + strRid + 
-					L"\" Type=\"http://schemas.microsoft.com/office/2007/relationships/media\" Target=\"" + strImageRelsPath + L"\"/>");
+					L"\" Type=\"http://schemas.microsoft.com/office/2007/relationships/media\" Target=\"" + strMediaRelsPath + L"\"/>");
 			}
 			else if (type == 1)
 			{
 				m_pWriter->WriteString( L"<Relationship Id=\"" + strRid + 
-					L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio\" Target=\"" + strImageRelsPath + L"\"/>");
+					L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio\" Target=\"" + strMediaRelsPath + L"\"/>");
 			}		
 		}
 
-		m_mapImages.insert(std::pair<std::wstring, _relsGeneratorInfo>(strImageRelsPath, oRelsGeneratorInfo));
+		m_mapRelsImages.insert(std::pair<std::wstring, _relsGeneratorInfo>(strMediaRelsPath, oRelsGeneratorInfo));
 		return oRelsGeneratorInfo;
 	}
 
@@ -1668,9 +1672,9 @@ namespace NSBinPptxRW
 		{
 			strImageRelsPath += OOX::CPath(oImageManagerInfo.sFilepathImage).GetFilename();
 
-			std::map<std::wstring, _relsGeneratorInfo>::iterator pPair = m_mapImages.find(strImageRelsPath);
+			std::map<std::wstring, _relsGeneratorInfo>::iterator pPair = m_mapRelsImages.find(strImageRelsPath);
 
-			if (m_mapImages.end() != pPair)
+			if (m_mapRelsImages.end() != pPair)
 			{
 				return pPair->second;				
 			}
@@ -1756,7 +1760,7 @@ namespace NSBinPptxRW
 				}
 			}
 		}
-		m_mapImages.insert(std::pair<std::wstring, _relsGeneratorInfo>(strImageRelsPath, oRelsGeneratorInfo));
+		m_mapRelsImages.insert(std::pair<std::wstring, _relsGeneratorInfo>(strImageRelsPath, oRelsGeneratorInfo));
 		return oRelsGeneratorInfo;
 	}
 

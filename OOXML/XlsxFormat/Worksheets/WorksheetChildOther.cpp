@@ -3332,6 +3332,7 @@ namespace OOX
 			WritingElement_ReadAttributes_Start(oReader)
 				WritingElement_ReadAttributes_Read_if(oReader, L"name", m_oName)
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"sqref", m_oSqref)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"type", m_oType)
 			WritingElement_ReadAttributes_End(oReader)
 		}
 		void CUserProtectedRange::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -3362,6 +3363,7 @@ namespace OOX
 							WritingElement_ReadAttributes_Start(oReader)
 								WritingElement_ReadAttributes_Read_if(oReader, L"id", desc.id)
 								WritingElement_ReadAttributes_Read_else_if(oReader, L"name", desc.name)
+								WritingElement_ReadAttributes_Read_else_if(oReader, L"type", desc.type)
 							WritingElement_ReadAttributes_End(oReader)
 							m_arUsers.push_back(desc);
 						}
@@ -3379,6 +3381,7 @@ namespace OOX
 							WritingElement_ReadAttributes_Start(oReader)
 								WritingElement_ReadAttributes_Read_if(oReader, L"id", desc.id)
 								WritingElement_ReadAttributes_Read_else_if(oReader, L"name", desc.name)
+								WritingElement_ReadAttributes_Read_else_if(oReader, L"type", desc.type)
 							WritingElement_ReadAttributes_End(oReader)
 							m_arUsersGroups.push_back(desc);
 						}
@@ -3391,6 +3394,7 @@ namespace OOX
 			writer.WriteString(L"<userProtectedRange");
 			WritingStringNullableAttrEncodeXmlString2(L"name", m_oName);
 			WritingStringNullableAttrString(L"sqref", m_oSqref, *m_oSqref);
+			WritingStringNullableAttrString(L"type", m_oType, m_oType->ToString())
 			writer.WriteString(L">");
 
 			if (m_oText.IsInit())
@@ -3407,6 +3411,7 @@ namespace OOX
 					writer.WriteString(L"<user");
 					WritingStringNullableAttrEncodeXmlString2(L"id", m_arUsers[i].id);
 					WritingStringNullableAttrEncodeXmlString2(L"name", m_arUsers[i].name);
+					WritingStringNullableAttrString(L"type", m_arUsers[i].type, m_arUsers[i].type->ToString())
 					writer.WriteString(L"/>");
 				}
 				writer.WriteString(L"</users>");
@@ -3419,6 +3424,7 @@ namespace OOX
 					writer.WriteString(L"<usersGroup");
 					WritingStringNullableAttrEncodeXmlString2(L"id", m_arUsersGroups[i].id);
 					WritingStringNullableAttrEncodeXmlString2(L"name", m_arUsersGroups[i].name);
+					WritingStringNullableAttrString(L"type", m_arUsersGroups[i].type, m_arUsersGroups[i].type->ToString())
 					writer.WriteString(L"/>");
 				}
 				writer.WriteString(L"</usersGroups>");

@@ -681,7 +681,7 @@ namespace BinDocxRW {
 		{
 			std::wstring sUserName = XmlUtils::EncodeXmlString(pComment->UserName);
 			sRes += L" w:author=\"";
-			sRes += (sUserName);
+			sRes += XmlUtils::EncodeXmlString(sUserName);
 			sRes += L"\"";
 		}
 		if (false == pComment->Date.empty())

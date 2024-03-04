@@ -55,6 +55,7 @@ namespace SimpleTypes
 		class CPaneState;
 		class CSheetViewType;
 		class CDataConsolidateFunction;
+		class CUserProtectedRangeType;
 	}
 }
 
@@ -870,6 +871,7 @@ namespace OOX
 			{
 				nullable_string id;
 				nullable_string name;
+				nullable<SimpleTypes::Spreadsheet::CUserProtectedRangeType> type;
 			};
 
 			WritingElement_AdditionMethods(CUserProtectedRange)
@@ -889,6 +891,7 @@ namespace OOX
 			nullable_string m_oName;
 			nullable_string m_oSqref;
 			nullable_string m_oText;
+			nullable<SimpleTypes::Spreadsheet::CUserProtectedRangeType> m_oType;
 
 			std::vector<_UsersGroupsDesc> m_arUsers;
 			std::vector<_UsersGroupsDesc> m_arUsersGroups;

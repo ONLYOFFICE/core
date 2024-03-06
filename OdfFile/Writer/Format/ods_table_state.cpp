@@ -2080,18 +2080,18 @@ void ods_table_state::set_conditional_time(int period)
 	{
 		switch (period)
 		{
-		case 1: date_is->attr_.calcext_date_ = odf_types::time_period::yesterday; break;
-		case 2: date_is->attr_.calcext_date_ = odf_types::time_period::tomorrow; break;
-		case 3: date_is->attr_.calcext_date_ = odf_types::time_period::last7Days; break;
-		case 4: date_is->attr_.calcext_date_ = odf_types::time_period::thisMonth; break;
-		case 5: date_is->attr_.calcext_date_ = odf_types::time_period::lastMonth; break;
-		case 6: date_is->attr_.calcext_date_ = odf_types::time_period::nextMonth; break;
-		case 7: date_is->attr_.calcext_date_ = odf_types::time_period::thisWeek; break;
-		case 8: date_is->attr_.calcext_date_ = odf_types::time_period::lastWeek; break;
-		case 9: date_is->attr_.calcext_date_ = odf_types::time_period::nextWeek; break;
+		case 1: date_is->attr_.calcext_date_ = odf_types::time_period::lastMonth; break;
+		case 2: date_is->attr_.calcext_date_ = odf_types::time_period::lastWeek; break;
+		case 3: date_is->attr_.calcext_date_ = odf_types::time_period::nextMonth; break;
+		case 4: date_is->attr_.calcext_date_ = odf_types::time_period::nextWeek; break;
+		case 5: date_is->attr_.calcext_date_ = odf_types::time_period::thisMonth; break;
+		case 6: date_is->attr_.calcext_date_ = odf_types::time_period::thisWeek; break;
+		case 7: date_is->attr_.calcext_date_ = odf_types::time_period::today; break;
+		case 8: date_is->attr_.calcext_date_ = odf_types::time_period::tomorrow; break;
+		case 9: date_is->attr_.calcext_date_ = odf_types::time_period::yesterday; break;
 		case 0:
 		default:
-			date_is->attr_.calcext_date_ = odf_types::time_period::today;
+			date_is->attr_.calcext_date_ = odf_types::time_period::last7Days;
 		}
 	}
 }

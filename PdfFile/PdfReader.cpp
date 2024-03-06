@@ -1561,18 +1561,18 @@ BYTE* CPdfReader::GetShapes(int nPageIndex)
 {
 	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
 		return NULL;
-	Ref* pPageRef = m_pPDFDocument->getCatalog()->getPageRef(nPageIndex + 1);
-	if (!pPageRef)
+	Dict* pResources = m_pPDFDocument->getCatalog()->getPage(nPageIndex + 1)->getResourceDict();
+	if (!pResources)
 		return NULL;
 
-	Object oPageObj, oMetaOForm, oID;
+	Object oProperties, oMetaOForm, oID;
 	XRef* xref = m_pPDFDocument->getXRef();
-	if (!xref->fetch(pPageRef->num, pPageRef->gen, &oPageObj)->isDict() || !oPageObj.dictLookup("MetaOForm", &oMetaOForm)->isDict("MetaOForm") || !oMetaOForm.dictLookup("ID", &oID)->isString())
+	if (!pResources->lookup("Properties", &oProperties)->isDict() || !oProperties.dictLookup("MetaOForm", &oMetaOForm)->isDict("MetaOForm") || !oMetaOForm.dictLookup("ID", &oID)->isString())
 	{
-		oPageObj.free(); oMetaOForm.free(); oID.free();
+		oProperties.free(); oMetaOForm.free(); oID.free();
 		return NULL;
 	}
-	oPageObj.free();
+	oProperties.free();
 
 	Object oTID, oID2;
 	Object* pTrailerDict = xref->getTrailerDict();
@@ -1581,7 +1581,7 @@ BYTE* CPdfReader::GetShapes(int nPageIndex)
 		oMetaOForm.free(); oID.free(); oTID.free(); oID2.free();
 		return NULL;
 	}
-	oTID.free(); oID.free(); oID2.free();
+	oID.free(); oTID.free(); oID2.free();
 
 	Object oMetadata;
 	if (!oMetaOForm.dictLookup("Metadata", &oMetadata)->isArray())
@@ -1608,6 +1608,7 @@ BYTE* CPdfReader::GetShapes(int nPageIndex)
 		}
 		oRes.WriteString(sStr);
 	}
+	oMetadata.free();
 
 	oRes.WriteLen();
 	BYTE* bRes = oRes.GetBuffer();

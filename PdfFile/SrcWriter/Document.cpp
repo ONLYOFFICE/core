@@ -1733,10 +1733,22 @@ namespace PdfWriter
 	}
 	void CDocument::AddShapeXML(const std::string& sXML)
 	{
-		CObjectBase* pObj = m_pCurPage->Get("MetaOForm");
+		CDictObject* pResources = (CDictObject*)m_pCurPage->Get("Resources");
+		if (!pResources)
+		{
+			pResources = new CDictObject();
+			m_pCurPage->Add("Resources", pResources);
+		}
+		CDictObject* pProperties = (CDictObject*)pResources->Get("Properties");
+		if (!pProperties)
+		{
+			pProperties = new CDictObject();
+			pResources->Add("Properties", pProperties);
+		}
+		CObjectBase* pObj = pProperties->Get("MetaOForm");
 		if (pObj && pObj->GetType() != object_type_DICT)
 		{
-			m_pCurPage->Remove("MetaOForm");
+			pProperties->Remove("MetaOForm");
 			pObj = NULL;
 		}
 		CDictObject* pMetaOForm = (CDictObject*)pObj;
@@ -1745,7 +1757,7 @@ namespace PdfWriter
 			pMetaOForm = new CDictObject();
 			m_pXref->Add(pMetaOForm);
 			pMetaOForm->Add("Type", "MetaOForm");
-			m_pCurPage->Add("MetaOForm", pMetaOForm);
+			pProperties->Add("MetaOForm", pMetaOForm);
 			m_vMetaOForms.push_back(pMetaOForm);
 
 			CBinaryObject* sID = NULL;
@@ -1776,14 +1788,5 @@ namespace PdfWriter
 		pArrayMeta->Add(new CStringObject(sXML.c_str()));
 
 		m_pCurPage->BeginMarkedContent("MetaOForm");
-	}
-	void CDocument::EndMarkedContent()
-	{
-		m_pCurPage->EndMarkedContent();
-	}
-	bool CDocument::HaveMetaOForm()
-	{
-		CObjectBase* pObj = m_pCurPage->Get("MetaOForm");
-		return pObj && pObj->GetType() == object_type_DICT;
 	}
 }

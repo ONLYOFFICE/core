@@ -2378,12 +2378,18 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	case IAdvancedCommand::AdvancedCommandType::ShapeStart:
 	{
 		CShapeStart* pCommand = (CShapeStart*)command;
-		m_pInternal->pWriter->AddShapeXML(pCommand->GetShapeXML());
+#ifndef BUILDING_WASM_MODULE
+		if (m_pInternal->bEdit && m_pInternal->bEditPage)
+			m_pInternal->pWriter->m_pDocument->AddShapeXML(pCommand->GetShapeXML());
+#endif
 		return S_OK;
 	}
 	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:
 	{
-		m_pInternal->pWriter->EndMarkedContent();
+#ifndef BUILDING_WASM_MODULE
+		if (m_pInternal->bEdit && m_pInternal->bEditPage)
+			m_pInternal->pWriter->m_pPage->EndMarkedContent();
+#endif
 		return S_OK;
 	}
 	default:

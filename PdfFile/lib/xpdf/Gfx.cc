@@ -5053,14 +5053,20 @@ void Gfx::opBeginMarkedContent(Object args[], int numArgs) {
       mcKind = gfxMCActualText;
     }
     obj.free();
-  } else if (args[0].isName("MetaOForm")) {
-    getContentObj(&obj);
-    while (!obj.isEOF() && !obj.isCmd("EMC")) {
-      obj.free();
+  } else if (args[0].isName("MetaOForm") && res->lookupPropertiesNF("MetaOForm", &obj)) {
+    Object oMetaOForm, oID, oTID, oID2;
+    if (obj.fetch(xref, &oMetaOForm)->isDict("MetaOForm") && oMetaOForm.dictLookup("ID", &oID)->isString() && xref->getTrailerDict()->dictLookup("ID", &oTID)->isArray() &&
+        oTID.arrayGet(1, &oID2)->isString() && oID2.getString()->cmp(oID.getString()) == 0) {
+      oMetaOForm.free(); oID.free(); oTID.free(); oID2.free(); obj.free();
       getContentObj(&obj);
+      while (!obj.isEOF() && !obj.isCmd("EMC")) {
+        obj.free();
+        getContentObj(&obj);
+      }
+      obj.free();
+      return;
     }
-    obj.free();
-    return;
+    oMetaOForm.free(); oID.free(); oTID.free(); oID2.free(); obj.free();
   }
   mc = new GfxMarkedContent(mcKind, ocState);
   markedContentStack->append(mc);

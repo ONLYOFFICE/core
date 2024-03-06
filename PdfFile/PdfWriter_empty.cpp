@@ -159,8 +159,6 @@ void CPdfWriter::Reset() {}
 bool CPdfWriter::IsValid() { return false; }
 bool CPdfWriter::IsPageValid() { return false; }
 void CPdfWriter::SetError() {}
-void CPdfWriter::EndMarkedContent() {}
-void CPdfWriter::AddShapeXML(const std::string& sXML) {}
 void CPdfWriter::AddLink(PdfWriter::CPage* pPage, const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const unsigned int& unDestPage) {}
 unsigned char* CPdfWriter::EncodeString(const unsigned int* pUnicodes, const unsigned int& unUnicodesCount, const unsigned int* pGIDs) { return NULL; }
 unsigned char* CPdfWriter::EncodeGID(const unsigned int& unGID, const unsigned int* pUnicodes, const unsigned int& unUnicodesCount) { return NULL; }

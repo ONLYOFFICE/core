@@ -42,9 +42,20 @@
 #include <iomanip>
 #include <cctype>
 
+
 const std::wstring DefaultDateFormat = L"dd.mm.yyyy";
 const std::wstring DefaultPercentFormat = L"0.0%";
 const std::wstring DefaultDollarFormat = L"#,##0.00$";
+
+std::map<std::wstring, std::uint16_t> defaultDataFormats
+{
+	{DefaultDateFormat, 14},
+	{L"d-mmm-yy", 15},
+	{L"d-mmm", 16},
+	{L"mmm-yy", 17},
+	{L"m/d/yy h:mm", 22},
+	{L"h:mm", 20}
+};
 
 CellFormatController::CellFormatController(OOX::Spreadsheet::CStyles *styles):
 	m_pStyles{styles}
@@ -170,23 +181,29 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
 
 void CellFormatController::createFormatStyle(const std::wstring &format)
 {
-	if (!m_pStyles->m_oNumFmts.IsInit())
+	auto prepareFormat = defaultDataFormats.find(format);
+	if(prepareFormat == defaultDataFormats.end())
 	{
-		m_pStyles->m_oNumFmts.Init();
+		if (!m_pStyles->m_oNumFmts.IsInit())
+		{
+			m_pStyles->m_oNumFmts.Init();
+		}
+		m_pStyles->m_oNumFmts->m_arrItems.push_back(new OOX::Spreadsheet::CNumFmt());
+		m_pStyles->m_oNumFmts->m_arrItems.back()->m_oFormatCode = format;
+		m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId.Init();
+		m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId->SetValue(164 + m_pStyles->m_oNumFmts->m_arrItems.size());
 	}
-	m_pStyles->m_oNumFmts->m_arrItems.push_back(new OOX::Spreadsheet::CNumFmt());
-	m_pStyles->m_oNumFmts->m_arrItems.back()->m_oFormatCode = format;
-	m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId.Init();
-	m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId->SetValue(164 + m_pStyles->m_oNumFmts->m_arrItems.size());
-
 	// Normal + data format
 	OOX::Spreadsheet::CXfs* pXfs = new OOX::Spreadsheet::CXfs();
 
 	pXfs->m_oBorderId.Init();	pXfs->m_oBorderId->SetValue(0);
 	pXfs->m_oFillId.Init();		pXfs->m_oFillId->SetValue(0);
 	pXfs->m_oFontId.Init();		pXfs->m_oFontId->SetValue(0);
-	pXfs->m_oNumFmtId.Init();	pXfs->m_oNumFmtId->SetValue(m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId->GetValue());
-
+	pXfs->m_oNumFmtId.Init();
+	if(prepareFormat == defaultDataFormats.end())
+		pXfs->m_oNumFmtId->SetValue(m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId->GetValue());
+	else
+		pXfs->m_oNumFmtId->SetValue(prepareFormat->second);
 	m_pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
 
 	auto styleNum = (unsigned int)(m_pStyles->m_oCellXfs->m_arrItems.size() - 1);

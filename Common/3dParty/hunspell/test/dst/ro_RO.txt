@@ -1,0 +1,210 @@
+﻿casă
+copil
+carte
+masă
+școală
+lumină
+apă
+munte
+soare
+lună
+pâine
+fruct
+floare
+stradă
+mașină
+aer
+timp
+zi
+noapte
+nor
+vânt
+ochi
+gură
+nas
+mână
+picior
+inimă
+sânge
+cap
+ureche
+voce
+melodie
+culoare
+formă
+linie
+cerc
+dreptunghi
+cercetare
+știință
+limbă
+frază
+literă
+cifră
+număr
+sunet
+zgomot
+telefon
+internet
+computer
+program
+ecran
+tastatură
+mouse
+joc
+sport
+muzică
+artă
+film
+televizor
+radio
+planetă
+stea
+univers
+galaxie
+atom
+moleculă
+substanță
+energie
+lumină
+căldură
+frig
+aparat
+instrument
+mașinărie
+unelte
+hrană
+băutură
+haine
+pantofi
+păr
+piele
+ochelari
+ceas
+bijuterie
+pământ
+apă
+aer
+foc
+metal
+lemn
+piatră
+hârtie
+cerneală
+pix
+carte
+cadru
+tablou
+sculptură
+model
+formă
+anticonstituționalitate [anti constituționalitate, anti-constituționalitate, anticonstituționali tate, anticonstituționali-tate, anticonstituționale, neconstituționalitate, anticonstituțională, constituționalitate]
+dezvoltare
+inexpugnabil
+nefast
+concomitent
+antiseptic
+recalcitrant
+perseverență
+extravagant
+inexorabil
+colosal
+plauzibil
+efervescent
+perspicacitate
+superfluu [superfluă, superfulger]
+subversiv
+incoruptibil
+inefabil
+hiperbolic
+indefectibil [indestructibil, indefinibil]
+peremptoriu
+ambivalent
+paradoxal
+heterogen [eterogen, heterogonie]
+indiferent
+periferic
+subliminal
+ultraviolet
+indeferent [indiferent, interferent, deferent, inaderent, independent]
+conglomerație
+circumstanțial
+contraproducător [contra producător, contra-producător, contraproductivă, contraproductiv, neproducător]
+conglomerat
+insurmontabil
+intransigent
+insidios
+inerent
+consternant
+ambiguitate
+inerție
+inconsolabil
+oniric
+remarcabil
+repudiat
+subiectiv
+periculos
+infatigabil
+abnegare
+exuberant
+facet [face, falet, facem]
+represiune
+implacabil
+indiferent
+infatigabil
+insolit
+intempestiv
+incandescent
+letargic
+magistral
+magnanim [magnaliu]
+nefast
+oblivial [bolivian]
+oportun
+periculos
+plutitor
+propice
+reprobabil
+risipitor
+robust
+salutar
+simetric
+solicitant
+stringent
+sufocant
+superficial
+tranzitoriu
+tributar
+trivial
+umilitor
+unic
+vehement
+vernal
+vicios
+victorios
+vindicativ
+virtuos
+vizibil
+volatil
+vorace
+vulnerabil
+xenofob
+xerofil
+yonder [pondere]
+yang
+yodel [model]
+zonal
+zodiac
+zoon [ozon, zono, zoom, zoo, zon, zobon, zovon, zvon, zoo n]
+zoomorf
+zurbagiu
+Caaă [Casă, Cară, Cată, Cală, Cană, Cauă, Camă, Capă, Cadă, Cață, Cază, Cavă, Cașă]
+Soaare [Soare, Sotare, Solare, Sonare, Somare, Soțioare]
+Cartr [Carte, Cart, Carter, Carta, Carto, Cartu, Cartă]
+Appă [Papă, Apă, Arpă, Aptă]
+Coopil [Copil, Copilo, Copiilor]
+Frumoss [Frumos, Frumos s, Frumoasă]
+Feriсire [Fericire, Rereferire, Ferire]
+Prietenn [Prieten, Prieteni, Prietena, Prietene, Prieteno, Prietenu, Prietenă, Prieten n, Prietinie, Prietin, Pretenție]
+Muziică [Muzică, Muzic, Muică]
+Exeplu [Exemplu]

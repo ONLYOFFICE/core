@@ -100,9 +100,9 @@ namespace utils//////////////////////////////////////////// ОБЩАЯ хрен�
 		}
 		return convert_date(iDate);
 	}
-	std::wstring convert_time(double dTime)
+	std::wstring convert_time(double dTime, bool bPT)
 	{
-		//12H15M42S
+		//12H15M42S - pt
 		int hours = 0, minutes = 0;
 		double sec = 0;
 
@@ -110,23 +110,20 @@ namespace utils//////////////////////////////////////////// ОБЩАЯ хрен�
 
 		double millisec = day.total_milliseconds() * dTime;
 
-
 		sec = millisec / 1000.;
 		hours = (int)(sec / 60. / 60.);
-		minutes = (int)((sec - (hours * 60 * 60)) / 60.);
-		sec = sec - (hours * 60 + minutes) * 60.;
+		minutes = (int)((sec - (hours * (int)60 * (int)60)) / 60.);
+		sec = sec - (hours * (int)60 + minutes) * 60.;
 
 		int sec1 = (int)sec;
 
 		std::wstring time_str =
 			(hours < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(hours)
-			//+ std::wstring(L"H") +
-			+ std::wstring(L":") +
+			+ (bPT ? std::wstring(L"H") : std::wstring(L":")) +
 			(minutes < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(minutes)
-			//+ std::wstring(L"M") +
-			+ std::wstring(L":") +
-			(sec1 < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(sec1);
-			//+ std::wstring(L"S");
+			+ (bPT ? std::wstring(L"M") : std::wstring(L":")) +
+			(sec1 < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(sec1)
+			+ (bPT ? std::wstring(L"S") : std::wstring(L""));
 
 		return time_str;
 	}
@@ -148,7 +145,7 @@ namespace utils//////////////////////////////////////////// ОБЩАЯ хрен�
 		std::wstring sDate, sTime;
 		if (dTime > 0)
 		{
-			sTime = convert_time(dTime);
+			sTime = convert_time(dTime, false);
 		}
 		if (nDate > 0)
 		{
@@ -173,8 +170,7 @@ namespace utils//////////////////////////////////////////// ОБЩАЯ хрен�
 		{
 			return oox_time;
 		}
-		//PT12H15M42S
-		return std::wstring(L"PT") + convert_time(dTime);
+		return std::wstring(L"PT") + convert_time(dTime, true);
 	}
 };
 
@@ -2084,18 +2080,18 @@ void ods_table_state::set_conditional_time(int period)
 	{
 		switch (period)
 		{
-		case 1: date_is->attr_.calcext_date_ = odf_types::time_period::yesterday; break;
-		case 2: date_is->attr_.calcext_date_ = odf_types::time_period::tomorrow; break;
-		case 3: date_is->attr_.calcext_date_ = odf_types::time_period::last7Days; break;
-		case 4: date_is->attr_.calcext_date_ = odf_types::time_period::thisMonth; break;
-		case 5: date_is->attr_.calcext_date_ = odf_types::time_period::lastMonth; break;
-		case 6: date_is->attr_.calcext_date_ = odf_types::time_period::nextMonth; break;
-		case 7: date_is->attr_.calcext_date_ = odf_types::time_period::thisWeek; break;
-		case 8: date_is->attr_.calcext_date_ = odf_types::time_period::lastWeek; break;
-		case 9: date_is->attr_.calcext_date_ = odf_types::time_period::nextWeek; break;
+		case 1: date_is->attr_.calcext_date_ = odf_types::time_period::lastMonth; break;
+		case 2: date_is->attr_.calcext_date_ = odf_types::time_period::lastWeek; break;
+		case 3: date_is->attr_.calcext_date_ = odf_types::time_period::nextMonth; break;
+		case 4: date_is->attr_.calcext_date_ = odf_types::time_period::nextWeek; break;
+		case 5: date_is->attr_.calcext_date_ = odf_types::time_period::thisMonth; break;
+		case 6: date_is->attr_.calcext_date_ = odf_types::time_period::thisWeek; break;
+		case 7: date_is->attr_.calcext_date_ = odf_types::time_period::today; break;
+		case 8: date_is->attr_.calcext_date_ = odf_types::time_period::tomorrow; break;
+		case 9: date_is->attr_.calcext_date_ = odf_types::time_period::yesterday; break;
 		case 0:
 		default:
-			date_is->attr_.calcext_date_ = odf_types::time_period::today;
+			date_is->attr_.calcext_date_ = odf_types::time_period::last7Days;
 		}
 	}
 }

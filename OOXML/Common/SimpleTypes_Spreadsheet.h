@@ -808,18 +808,18 @@ namespace SimpleTypes
 		//----------------------------------------------------
 		//	18.18.82 ST_TimePeriod (Conditional Format Value Object Type)
 		//----------------------------------------------------
-		enum ETimePeriod
+			enum ETimePeriod
 		{
-			last7Days					= 0,
-			lastMonth					= 1,
-			lastWeek					= 2,
-			nextMonth					= 3,
-			nextWeek					= 4,
-			thisMonth       				= 5,
-			thisWeek					= 6,
-			today                                           = 7,
-			tomorrow                                        = 8,
-			yesterday                                       = 9
+			last7Days	= 0,
+			lastMonth	= 1,
+			lastWeek	= 2,
+			nextMonth	= 3,
+			nextWeek	= 4,
+			thisMonth	= 5,
+			thisWeek	= 6,
+			today		= 7,
+			tomorrow	= 8,
+			yesterday	= 9
 		};
 
 		DEFINE_SIMPLE_TYPE(ST_TimePeriod, ETimePeriod, last7Days)

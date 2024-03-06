@@ -1,0 +1,215 @@
+﻿boliestan [bolestan, obijestan]
+jyak [jak]
+slaby [slabu, slab, slaba, slabe, slabi, slabo]
+pameetan [pametan, pametna, napamet]
+gllup [glup]
+bezuspješhno [bezuspješno, bezuspješnih, bezuspješan, bezuspješna]
+besimeni [besi meni, besi-meni, bezimeni, besanim]
+bezuzban [bezuman, bezuba]
+blagastanje [blagostanje, blaga stanje, blaga-stanje, blagostanja, blistanje, oblaganje]
+bljeskovica [bljeskovima, bljeskovi, bljeskova, bljeskalica, bljeskavi]
+jabuka
+sunce
+voda
+kuća
+ptica
+kava
+kruh
+cvijet
+knjiga
+pas
+mačka
+grad
+zelen
+plav
+crven
+bijel
+crn
+velik
+malen
+brz
+spor
+sretan
+tužan
+vruć
+hladan
+nov
+star
+lijep
+ružan
+dobar
+loš
+zdrav
+bolestan
+jak
+slab
+pametan
+glup
+raditi
+jesti
+piti
+spavati
+čitati
+pisati
+govoriti
+smijati se [smijati]
+plakati
+pjevati
+igrati
+plesati
+učiti se [učiti]
+kupovati
+kuhati
+telefonirati
+gledati
+slušati
+hodati
+trčati
+letjeti
+plivati
+čitati
+pisati
+raditi
+imati
+biti
+ići
+doći
+otići
+dati
+uzeti
+reći
+vidjeti
+čuti
+osjetiti
+misliti
+htjeti
+moći
+morati
+rado
+nerado
+da
+ne
+molim
+hvala
+doviđenja
+oprosti
+zbogom
+zdravo
+čau [ča, ču, čađu, čaju, čamu, času, čađ, čaj, čak, čar, čas, ča u]
+ej
+da
+baš
+super
+glupost
+fantastično
+jasno
+tako
+zapravo
+možda
+lako
+teško
+prozračnost
+usplahirenost
+neoblomivost [neslomivom]
+prezir
+proigranost [prostranost, programiranosti, razigranosti, pristranost]
+uznemirenost
+besprijekornost
+besprizornost [besprizornom, besprizornoj, besprijekornost, besprizorni]
+nepredvidivost
+beznadnost
+promašenost [promašenosti, promašen, osiromašenom, raspršenost]
+protivljenje
+neizreciv
+bezizlaznost
+neuspjelost [neuspjeloj, neuspješnost, neuspjelog, neuspjelom]
+zbunjenost
+neodlučnost
+protivština
+nepovratnost [nepovratnoj, nepovratnom, nepovratna, nepovratnima]
+bezduhovitost [bez duhovitost, bez-duhovitost, duhovitostu, duhovitosti, duhovitosta, duhovitost]
+ravnodušnost
+prolaznost
+neobaveznost [neobaveznosti, neobaveznom, neobaveznoj, neobavezna, neobavezni]
+bezbrižnost
+nepovratnost [nepovratnoj, nepovratnom, nepovratna, nepovratnima]
+promašenost [promašenosti, promašen, osiromašenom, raspršenost]
+neprepoznatljivost [neprepoznatljivosti, ne prepoznatljivost, ne-prepoznatljivost, prepoznatljivosti, prepoznatljivost, neprepoznatljiva, neraspoznatljivosti]
+neukrotivost [neukrotivog, neukrotiv, neučtivost, neotuđivosti]
+bezobzirnost
+nevinost
+nestalnost
+nepostojanost
+bezizlaznost
+nepovratnost [nepovratnoj, nepovratnom, nepovratna, nepovratnima]
+prolaznost
+neodgovornost
+bezbrižnost
+nevolja
+nezadovoljstvo
+prolaznost
+bezuspješno
+bezimeni
+bezuzdan [bez uzdan, bez-uzdan, bezdan, bezdušan, beznadan]
+blagostanje
+bljeskavica [bljeskalica, bljeskavima, bljeska vica, bljeska-vica, bljeskavi, bljeskalici, bljeskava, bljeskalicu]
+boren [borne, obrne, bore, oboren, borbena]
+carovnija [otrovnija, darovnica]
+crpeža [crteža]
+dostojanstvo
+duhovitost
+egzaltacija
+gorkoća [gorkoga, gorkošću]
+histerija
+idila
+ironija
+izdaja
+janjetina
+kajanje
+kavana
+krhotina
+ljepljivost
+lukavstvo
+magnutizam [zategnutima, zamahnutima, izdignutima, vagnutima]
+melankolija
+misticizam
+naivnost
+nelagoda
+neraspoloženje
+obmana
+okrutnost
+opojenost [opojnost, obojenost, opojenoj, popunjenost, podvojenost, opčinjenost]
+prezir
+propast
+ravnodušnost
+sjenka
+skitnica
+spletka
+stid
+sudbina
+susret
+sudbina
+šapat
+tišina
+trepet
+utopija
+uzaludnost
+veličanstvo
+zaborav
+zanesenost
+zanos
+zavjera
+zbunjenost
+zluradost [zluradosti, zlu radost, zlu-radost, zlurad]
+zloslutnost [zloslutnoj, zloslutnom, zloslutnu, zloslutna]
+žargon
+žártva [žrtva]
+šaptanje
+čarobnost
+dileme
+hodočasće [hodočaste, hodočašće]
+lebdjeti
+iznimka
+preobilje [preobilne, preoblikuje]
+probuditi se [probuditi]
+surov

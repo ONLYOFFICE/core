@@ -279,6 +279,8 @@ void style_content::add_child_element( xml::sax * Reader, const std::wstring & N
 	}
 	else if CP_CHECK_NAME(L"style", L"properties")
 	{
+		Context->is_old_version = true;
+
 		office_element_ptr element;
 		CP_CREATE_ELEMENT_SIMPLE(element);
 
@@ -1775,16 +1777,41 @@ void style_master_page::pptx_convert(oox::pptx_conversion_context & Context)
 	if (attlist_.draw_style_name_)
 	{
 		std::wstring style_name = attlist_.draw_style_name_.get();
-		style_instance * style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::DrawingPage, true);
 		
+		graphic_format_properties* default_properties = NULL;
+		
+		if (getContext()->is_old_version)
+		{
+			style_instance* style_inst_def = Context.root()->odf_context().styleContainer().style_by_name(L"standard", style_family::Graphic, true);
+			if ((style_inst_def) && (style_inst_def->content()))
+			{
+				default_properties = style_inst_def->content()->get_graphic_properties();
+			}
+		}
+		else
+		{
+			style_instance* style_inst_def = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);
+			if ((style_inst_def) && (style_inst_def->content()))
+			{
+				default_properties = style_inst_def->content()->get_graphic_properties();
+			}
+		}
+		style_instance * style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::DrawingPage, true);
 		if ((style_inst) && (style_inst->content()))
 		{
 			style_drawing_page_properties * properties = style_inst->content()->get_style_drawing_page_properties();
 
 			if (properties)
 			{				
+				odf_types::common_draw_fill_attlist calc_props;
+				if (default_properties)
+				{
+					calc_props.apply_from(default_properties->common_draw_fill_attlist_);
+				}
+				calc_props.apply_from(properties->content().common_draw_fill_attlist_);
+
 				oox::_oox_fill fill;
-				Compute_GraphicFill(properties->content().common_draw_fill_attlist_, office_element_ptr(), Context.root(), fill);
+				Compute_GraphicFill(calc_props, office_element_ptr(), Context.root(), fill);
 				Context.get_slide_context().add_background(fill);
 			}
 		}

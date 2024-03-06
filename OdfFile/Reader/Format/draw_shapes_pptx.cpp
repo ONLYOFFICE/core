@@ -397,10 +397,7 @@ void draw_connector::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context) 
 {
-	find_draw_type_oox();
-
-	bool set_shape = oox_convert(Context.get_slide_context().get_properties());
-	
+	bool set_shape = oox_convert(Context.get_slide_context().get_properties());	
 
 	if (!set_shape)
 	{

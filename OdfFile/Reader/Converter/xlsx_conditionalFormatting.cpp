@@ -339,11 +339,13 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 	}
 	else if (0 <= (pos = f.find(L"is-between(")))
 	{
+		val = f.substr(11, f.size() - 12);
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"expression";
 		impl_->conditionalFormattings_.back().rules.back().formula = converter.convert_named_expr(val);
 	}
 	else if (0 <= (pos = f.find(L"is-time(")))
 	{
+		val = f.substr(8, f.size() - 9);
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"expression";
 		impl_->conditionalFormattings_.back().rules.back().formula = converter.convert_named_expr(val);
 	}
@@ -464,6 +466,28 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 		{
 			val = converter.convert_named_expr( f );
 		}
+		else if (0 <= (pos = f.find(L"between")))
+		{
+			if (0 <= (pos = f.find(L"not-between")))
+			{
+				impl_->conditionalFormattings_.back().rules.back().operator_ = L"notBetween";
+				val = f.substr(12, f.length() - 13);
+			}
+			else
+			{
+				impl_->conditionalFormattings_.back().rules.back().operator_ = L"between";
+				val = f.substr(8, f.length() - 9);
+			}
+
+			XmlUtils::replace_all(val, L"(", L"");
+			XmlUtils::replace_all(val, L")", L"");
+			if (0 <= (pos = val.find(L",")))
+			{
+				impl_->conditionalFormattings_.back().rules.back().formula2 = converter.convert_named_expr(val.substr(pos + 1));
+				val = val.substr(0, pos);
+			}
+			val = converter.convert_named_expr(val);
+		}
 		else if (0 <= (pos = f.find(L"!=")))
 		{
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"notEqual";
@@ -493,20 +517,6 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 		{
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"greaterThan";
 			val = converter.convert_named_expr( f.substr(1) );
-		}
-		else if (0 <= (pos = f.find(L"between")))
-		{
-			impl_->conditionalFormattings_.back().rules.back().operator_ = L"between";
-			val = f.substr(8, f.length() - 9);
-			
-			XmlUtils::replace_all(val, L"(", L"");
-			XmlUtils::replace_all(val, L")", L"");
-			if (0 <= (pos = val.find(L",")))
-			{
-				impl_->conditionalFormattings_.back().rules.back().formula2 = converter.convert_named_expr( val.substr(pos + 1) );
-				val = val.substr(0, pos);
-			}
-			val = converter.convert_named_expr( val );
 		}
 		else
 		{

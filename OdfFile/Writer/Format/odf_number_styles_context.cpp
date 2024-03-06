@@ -929,31 +929,42 @@ void odf_number_styles_context::detect_format(number_format_state & state)
 	std::wstring strFormatCode = boost::regex_replace(state.format_code[0], re_unwanted, &replace_unwanted,	boost::match_any | boost::format_all);
 
  	//find [$<Currency String>-<language info>].
-	boost::wregex re(L"(?=(\\[{1}\\${1}(\\w*)\\-(\\d*)\\]{1}))");
+	boost::wregex re(L"(\\[\\$.*\-[\\w\\d]+\\])");
 	
 	std::vector<std::wstring> result;
 	std::wstring tmp = strFormatCode;
 	bool b = boost::regex_split(std::back_inserter(result), tmp, re);
 
-	if (b && result.size() >= 3)
-	{
-		state.currency_str = result[1];
-
-		int code = -1; 
-		try
+	if (b && result.size() > 0)
+	{//split Currency String		
+		tmp = result[0].substr(1, result[0].size() - 2);
+		size_t sep = tmp.find(L"-");
+		if (sep != std::wstring::npos)
 		{
-			std::wstringstream ss;
-			ss << std::hex << result[2];
-			ss >> state.language_code;
-		}catch(...){}
+			state.currency_str = tmp.substr(1, sep - 1);
+			
+			try
+			{
+				std::wstringstream ss;
+				ss << std::hex << tmp.substr(sep + 1);
+				ss >> state.language_code;
+			}
+			catch (...) {}
+		}
+		if (false == state.currency_str.empty())
+		{
+			size_t pos_digit = (std::min)(strFormatCode.find(L"0"), strFormatCode.find(L"#"));
+			size_t pos_currency = strFormatCode.find(state.currency_str);
 
+			if (pos_digit != std::wstring::npos) state.currency_pos = pos_digit < pos_currency ? 1 : 2;
+		}
 		XmlUtils::replace_all(strFormatCode, result[0], L"");
 	}
 
 	if (state.format_code.size() > 0) //any
 	{
-		boost::wregex re1(L"([mM]{2,}|[hH]{2,}|[sS]{2,})");
-		boost::wregex re2(L"([mM]{1,}|[dD]{1,}|[yY]{2,})");
+		boost::wregex re1(L"([mM]{2,}|[hH]{1,}|[sS]{2,})");
+		boost::wregex re2(L"([M]{2,}|[m]{1,}|[dD]{1,}|[yY]{2,})");
 
 		tmp = strFormatCode;
 		

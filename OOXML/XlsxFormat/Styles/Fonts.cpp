@@ -241,6 +241,8 @@ namespace OOX
 						ptr->uls = 34;
 				}
 			}
+            else
+                ptr->uls = 0;
 
 			if(m_oFamily.IsInit())
 				ptr->bFamily = m_oFamily->m_oFontFamily->GetValue();
@@ -252,6 +254,7 @@ namespace OOX
 				ptr->brtColor = m_oColor->toColor();
 			else
 			{
+				m_oColor.Init();
                 ptr->brtColor = m_oColor->GetDefaultColor();
 			}
 

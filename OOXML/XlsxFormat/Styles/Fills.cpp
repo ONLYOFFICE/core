@@ -163,26 +163,15 @@ namespace OOX
 			if(m_oBgColor.IsInit())
 				ptr->brtColorBack = m_oBgColor->toColor();
             else
-            {
-                ptr->brtColorBack.bAlpha = 255;
-                ptr->brtColorBack.bBlue = 0;
-                ptr->brtColorBack.bGreen = 0;
-                ptr->brtColorBack.bRed = 0;
-                ptr->brtColorBack.index = 64;
-                ptr->brtColorBack.nTintAndShade = 0;
-                ptr->brtColorBack.xColorType = 0;
+            {   m_oBgColor.Init();
+                ptr->brtColorBack = m_oBgColor->GetDefaultColor();
             }
 			if(m_oFgColor.IsInit())
 				ptr->brtColorFore = m_oFgColor->toColor();
             else
             {
-                ptr->brtColorFore.bAlpha = 255;
-                ptr->brtColorFore.bBlue = 255;
-                ptr->brtColorFore.bGreen = 255;
-                ptr->brtColorFore.bRed = 255;
-                ptr->brtColorFore.index = 64;
-                ptr->brtColorFore.nTintAndShade = 0;
-                ptr->brtColorFore.xColorType = 0;
+                m_oFgColor.Init();
+                ptr->brtColorFore = m_oFgColor->GetDefaultColor();
             }
 		}
 		EElementType CPatternFill::getType () const
@@ -530,6 +519,13 @@ namespace OOX
 			{
 				m_oPatternFill->toBin(objectPtr);
 			}
+            else
+            {
+                CColor color;
+                ptr->fls = 0;
+                ptr->brtColorBack = color.GetDefaultColor();
+                ptr->brtColorFore = color.GetDefaultColor();
+            }
 
 			if(m_oGradientFill.IsInit())
 			{

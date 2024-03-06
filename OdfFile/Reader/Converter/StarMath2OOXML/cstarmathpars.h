@@ -162,7 +162,15 @@ namespace StarMath
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
+		void ConversionOfIndicesToValue(XmlUtils::CXmlWriter* pXmlWrite);
+		void ConversionOfIndicesAfterValue(XmlUtils::CXmlWriter* pXmlWrite);
 		CElement* m_pValueIndex;
+		CElement* m_pUpperIndex;
+		CElement* m_pLowerIndex;
+		CElement* m_pLsubIndex;
+		CElement* m_pLsupIndex;
+		CElement* m_pCsubIndex;
+		CElement* m_pCsupIndex;
 		CElement* m_pLeftArg;
 		TypeElement m_enTypeIndex;
 	};
@@ -265,7 +273,8 @@ namespace StarMath
 	private:
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
-		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;//
+		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
+		bool CheckMline(CElement* pElement);
 		TypeElement m_enTypeBracket;
 		std::vector<CElement*> m_arBrecketValue;
 	};
@@ -341,6 +350,7 @@ namespace StarMath
 		void Parse(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
 		CElement* m_pValue;
+		CElement* m_pIndex;
 		std::wstring m_wsNameFunc;
 		TypeElement m_enTypeFunction;
 	};
@@ -410,6 +420,8 @@ namespace StarMath
 		static void AddingAnElementToAnArray(std::vector<CElement*>& arrEquation,CElement* pAddElement);
 		//Receives the left element as input, reads the next one, if the next element has a higher priority and contains the left element, the element received at the input is passed to it. The entire structure is saved and returned.
 		static void ReadingElementsWithPriorities(CStarMathReader* pReader,CElement*& pLeftElement);
+		//
+		static void ReadingElementsWithAttributes(CStarMathReader* pReader,CElement*& pSavingElement);
 		void SetAlignment(const unsigned int& iAlignment);
 		const unsigned int& GetAlignment();
 	private:

@@ -163,6 +163,8 @@ public:
 	std::wstring m_sDst;  // Директория назначения
 	std::wstring m_sBase; // Полный базовый адрес
 
+	std::wstring m_sEncoding;
+
 	NSCSS::CTree m_oTree; // Дерево body html-файла
 
 private:
@@ -520,35 +522,7 @@ public:
 				sFileContent.replace(nFind, nFindEnd - nFind, "1.0");
 		}
 
-		// Так как для htmlToXhtml стили не нужны, а также их содержимое может пагубно повлиять на резьтат, 
-		// то поэтому вырезаем их и вставляем уже после
-		size_t nFirstStyleFounded = sFileContent.find("<style>");
-		size_t nStyleFounded{nFirstStyleFounded};
-		std::string sStyles;
-
-		while (std::string::npos != nStyleFounded)
-		{
-			size_t nStyleEndFounded = sFileContent.find("</style>", nStyleFounded);
-			
-			if (std::string::npos == nStyleEndFounded)
-				break;
-			
-			sStyles += sFileContent.substr(nStyleFounded + 7, nStyleEndFounded - nStyleFounded - 7) + " ";
-			sFileContent.erase(nStyleFounded, nStyleEndFounded - nStyleFounded + 8);
-
-			nStyleFounded = sFileContent.find("<style>", nStyleFounded);
-		}
-
-		std::wstring sRes = htmlToXhtml(sFileContent, bNeedConvert);
-
-		if (!sStyles.empty())
-		{
-			size_t nHeadFounded = sRes.find(L"<head>");
-			if (std::wstring::npos != nHeadFounded)
-				sRes.insert(nHeadFounded + 6, L"<style>" + std::wstring(sStyles.begin(), sStyles.end()) + L"</style>");
-			else
-				sRes.insert(nFirstStyleFounded, L"<style>" + std::wstring(sStyles.begin(), sStyles.end()) + L"</style>");
-		}
+		std::wstring sRes = htmlToXhtml(sFileContent);
 		
 //		NSFile::CFileBinary oWriter;
 //		if (oWriter.CreateFileW(m_sTmp + L"/res.html"))
@@ -736,22 +710,66 @@ public:
 	}
 
 private:
-	bool NodeBelongToTable(const std::wstring& wsNodeName)
+	bool NodeBelongToTable(const std::wstring& wsNodeName) const
 	{
 		return L"table" == wsNodeName || L"tbody" == wsNodeName || L"th" == wsNodeName || L"td" == wsNodeName ||
 		       L"tr" == wsNodeName    || L"thead" == wsNodeName || L"tfoot" == wsNodeName;
+	}
+
+	std::wstring GetArgumentValue(const std::wstring& wsArgumentName, const std::wstring& wsDefaultValue = L"")
+	{
+		if (!m_oLightReader.MoveToFirstAttribute())
+			return wsDefaultValue;
+
+		std::wstring wsValue{wsDefaultValue};
+
+		do
+		{
+			if (wsArgumentName == m_oLightReader.GetName())
+			{
+				wsValue = m_oLightReader.GetText();
+				break;
+			}
+		} while (m_oLightReader.MoveToNextAttribute());
+
+		m_oLightReader.MoveToElement();
+		return wsValue;
+	}
+
+	std::wstring ToUnicode(const std::string& sText) const
+	{
+		if (!m_sEncoding.empty() && !NSStringFinder::Equals<std::string>("utf-8", m_sEncoding))
+		{
+			NSUnicodeConverter::CUnicodeConverter oConverter;
+			return oConverter.toUnicode(sText, *m_sEncoding.c_str());
+		}
+
+		return UTF8_TO_U(sText);
 	}
 
 	// Так как CSS калькулятор не знает для какой ноды производится расчет стиля
 	// и не знает, что некоторые стили предназначены только определенной ноде,
 	// то проще пока обрабатывать это заранее
 	// ! Используется для стилей, заданных через аргументы !
-	bool CheckArgumentMath(const std::wstring& wsNodeName, const std::wstring& wsStyleName)
+	bool CheckArgumentMath(const std::wstring& wsNodeName, const std::wstring& wsStyleName) const
 	{
 		if (L"border" == wsStyleName && L"table" != wsNodeName)
 			return false;
 
 		return true;
+	}
+
+	void WriteEmptyParagraph(NSStringUtils::CStringBuilder* pXml, bool bVahish = false) const
+	{
+		if (NULL == pXml)
+			return;
+
+		pXml->WriteString(L"<w:p><w:pPr><w:rPr>");
+		
+		if (bVahish)
+			pXml->WriteString(L"<w:vanish/>");
+		
+		pXml->WriteString(L"</w:rPr></w:pPr></w:p>");
 	}
 
 	void CloseP(NSStringUtils::CStringBuilder* pXml, const std::vector<NSCSS::CNode>& arSelectors)
@@ -822,13 +840,20 @@ private:
 		int nDeath = m_oLightReader.GetDepth();
 		while (m_oLightReader.ReadNextSiblingNode(nDeath))
 		{
+			const std::wstring wsName = m_oLightReader.GetName();
 			// Базовый адрес
-			if (m_oLightReader.GetName() == L"base")
+			if (L"base" == wsName)
+				m_sBase = GetArgumentValue(L"href");
+			else if (L"meta" == wsName)
 			{
-				while (m_oLightReader.MoveToNextAttribute())
-					if (m_oLightReader.GetName() == L"href")
-						m_sBase = m_oLightReader.GetText();
-				m_oLightReader.MoveToElement();
+				m_sEncoding = GetArgumentValue(L"charset");
+				if (m_sEncoding.empty())
+				{
+					const std::wstring sContent = GetArgumentValue(L"content");
+
+					if (!sContent.empty())
+						m_sEncoding = NSStringFinder::FindPropety<std::wstring>(sContent, L"charset", {L"="}, {L";", L" ", L"\\n", L"\\t", L"\\f"});
+				}
 			}
 		}
 	}
@@ -858,7 +883,7 @@ private:
 	{
 		if(sName == L"#text")
 		{
-			std::wstring sText = m_oLightReader.GetText();
+			std::wstring sText = ToUnicode(m_oLightReader.GetTextA());
 
 			size_t find = sText.find_first_not_of(L" \n\t\r");
 			if (find == std::wstring::npos)
@@ -1536,8 +1561,8 @@ private:
 		if (sSelectors.back().m_mAttributes.end() != sSelectors.back().m_mAttributes.find(L"border"))
 			oTableStyles.m_bHaveBorderAttribute = true;
 
-//		if (oXml->GetSubData(oXml->GetCurSize() - 6) != L"</w:p>")
-//			oXml->WriteString(L"<w:p><w:pPr><w:spacing w:beforeLines=\"0\" w:before=\"0\" w:afterLines=\"0\" w:after=\"0\"/><w:rPr><w:vanish/><w:sz w:val=\"2\"/><w:szCs w:val=\"2\"/></w:rPr></w:pPr></w:p>");
+		if (oXml->GetSubData(oXml->GetCurSize() - 8) == L"</w:tbl>")
+			WriteEmptyParagraph(oXml, true);
 
 		m_bWasSpace = false;
 

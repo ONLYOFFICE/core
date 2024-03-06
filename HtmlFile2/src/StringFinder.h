@@ -50,13 +50,13 @@ namespace NSStringFinder
 		if (sString.length() < unStarting)
 			return StringType();
 
-		std::string sRegexValue = "(?i)" + sProperty;
+		std::string sRegexValue = "(?i)" + std::string(sProperty.begin(), sProperty.end());
 
 		if (!arDelimiters.empty())
 		{
 			sRegexValue += "\\s*[";
 			for (const StringType& sDelimiter : arDelimiters)
-				sRegexValue += sDelimiter + "|";
+				sRegexValue +=  std::string(sDelimiter.begin(), sDelimiter.end()) + "|";
 			sRegexValue.pop_back();
 			sRegexValue += "]{1}";
 		}
@@ -66,14 +66,14 @@ namespace NSStringFinder
 			std::string sEndingValue;
 
 			for (const StringType& sEnding : arEndings)
-				sEndingValue += sEnding + "|";
+				sEndingValue +=  std::string(sEnding.begin(), sEnding.end()) + "|";
 
 			sEndingValue.pop_back();
 
-			sRegexValue += "\\s*(.[^" + sEndingValue + "]*)\\s*[" + sEndingValue + "]{1}";
+			sRegexValue += "\\s*(.[^" + sEndingValue + "]*)\\s*[" + sEndingValue + "]?";
 		}
 		else
-			sRegexValue += "\\s*(.*)[\\n|\\r]{1}";
+			sRegexValue += "\\s*(.*)[\\n|\\r]?";
 
 		boost::regex oRegex(sRegexValue);
 		boost::match_results<typename StringType::const_iterator> oResult;

@@ -35,23 +35,8 @@ static void replace_all(std::string& s, const std::string& s1, const std::string
 	}
 }
 
-static std::wstring htmlToXhtml(std::string& sFileContent, bool bNeedConvert)
+static std::wstring htmlToXhtml(std::string& sFileContent)
 {
-	// Распознование кодировки
-	if (bNeedConvert)
-	{
-		std::string sEncoding = NSStringFinder::FindPropety<std::string>(sFileContent, "charset", {"\"", "="}, {"\"", " "}, 0);
-
-		if (sEncoding.empty())
-			sEncoding = NSStringFinder::FindPropety<std::string>(sFileContent, "encoding", "\"", "\"");
-		
-		if (!sEncoding.empty() && !NSStringFinder::Equals<std::string>("utf-8", sEncoding))
-		{
-			NSUnicodeConverter::CUnicodeConverter oConverter;
-			sFileContent = U_TO_UTF8(oConverter.toUnicode(sFileContent, sEncoding.c_str()));
-		}
-	}
-
 	// Избавление от <a/>
 	size_t posA = sFileContent.find("<a ");
 	while(posA != std::string::npos)

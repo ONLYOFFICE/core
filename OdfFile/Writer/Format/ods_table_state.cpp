@@ -2044,16 +2044,17 @@ void ods_table_state::end_conditional_rule()
 void ods_table_state::set_conditional_formula(const std::wstring& formula)
 {
 	calcext_condition* condition = dynamic_cast<calcext_condition*>	 (current_level_.back().get());
-
 	if (!condition) return;
 
 	std::wstring odfFormula = formulas_converter_table.convert_conditional_formula(formula);
 		
-	std::wstring operator_;
+	std::wstring operator_ = condition->attr_.calcext_value_.get_value_or(L"");
+	
+	if (std::wstring::npos != operator_.find(L"is-no-error"))
+		return;
+	
 	bool s = false;
 	bool split = false;
-
-	operator_ = condition->attr_.calcext_value_.get_value_or(L"");
 
 	size_t f_start = operator_.find(L"("); 
 	size_t f_end = operator_.rfind(L")"); 

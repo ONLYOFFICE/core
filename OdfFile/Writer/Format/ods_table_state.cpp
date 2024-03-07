@@ -1948,7 +1948,7 @@ void ods_table_state::end_conditional_format()
 {
 	current_level_.pop_back();
 }
-void ods_table_state::start_conditional_rule(int rule_type, _CP_OPT(unsigned int) rank, _CP_OPT(bool) bottom, _CP_OPT(bool) percent)
+void ods_table_state::start_conditional_rule(int rule_type, _CP_OPT(unsigned int) rank, _CP_OPT(bool) bottom, _CP_OPT(bool) percent, _CP_OPT(bool) above, _CP_OPT(bool) equal, _CP_OPT(int) stdDev)
 {
 	office_element_ptr elm;
 
@@ -1991,11 +1991,20 @@ void ods_table_state::start_conditional_rule(int rule_type, _CP_OPT(unsigned int
 						table = L"'" + table + L"'";
 					}
 				}
-				condition->attr_.calcext_base_cell_address_ = table + col + row;
+				condition->attr_.calcext_base_cell_address_ = (table.empty() ? L"" : (table + L".")) + col + row;
 			}
 			switch(rule_type)
 			{
-				case 0:	condition->attr_.calcext_value_		= L"above-average";		break;
+				case 0:
+				{
+					if (equal) condition->attr_.calcext_value_ = above.get_value_or(true) ? L"above-equal-average" : L"below-equal-average";
+					else condition->attr_.calcext_value_ = above.get_value_or(true) ? L"above-average" : L"below-average";
+
+					if (stdDev)
+					{
+						condition->attr_.loext_stdDev_ = *stdDev;
+					}
+				}break;
 				case 1:	condition->attr_.calcext_value_		= L"begins-with()";		break;
 				case 4: condition->attr_.calcext_value_		= L"contains-text()";	break;
 				case 5: condition->attr_.calcext_value_		= L"is-error";			break;

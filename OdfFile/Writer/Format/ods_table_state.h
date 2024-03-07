@@ -384,7 +384,7 @@ public:
 
 	void start_conditional_formats();
 		void start_conditional_format(const std::wstring& ref);
-            void start_conditional_rule(int rule_type, _CP_OPT(unsigned int) rank, _CP_OPT(bool) bottom, _CP_OPT(bool) percent);
+            void start_conditional_rule(int rule_type, _CP_OPT(unsigned int) rank, _CP_OPT(bool) bottom, _CP_OPT(bool) percent, _CP_OPT(bool) above, _CP_OPT(bool) equal, _CP_OPT(int) stdDev);
 				void set_conditional_formula(const std::wstring& formula);
                 void set_conditional_value(int type, const std::wstring& value );
                 

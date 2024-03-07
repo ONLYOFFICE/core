@@ -70,7 +70,7 @@ public:
 	_CP_OPT(std::wstring)	calcext_base_cell_address_;
 	_CP_OPT(std::wstring)	calcext_apply_style_name_;
 	_CP_OPT(std::wstring)	calcext_value_;
-
+    _CP_OPT(int)	        loext_stdDev_;
 };
 class calcext_icon_set_attr
 {

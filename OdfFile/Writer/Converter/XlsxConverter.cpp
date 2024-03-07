@@ -3431,13 +3431,17 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_co
 	if (false == oox_cond_rule->m_oType.IsInit()) return;
 
 	_CP_OPT(unsigned int) rank; 
-	_CP_OPT(bool) bottom, percent;
-	
+	_CP_OPT(bool) bottom, percent, above, equal;
+	_CP_OPT(int) stdDev;
+
 	if (oox_cond_rule->m_oRank.IsInit()) rank = oox_cond_rule->m_oRank->GetValue();
 	if (oox_cond_rule->m_oBottom.IsInit()) bottom = oox_cond_rule->m_oBottom->ToBool();
 	if (oox_cond_rule->m_oPercent.IsInit()) percent = oox_cond_rule->m_oPercent->ToBool();
+	if (oox_cond_rule->m_oAboveAverage.IsInit()) above = oox_cond_rule->m_oAboveAverage->ToBool();
+	if (oox_cond_rule->m_oEqualAverage.IsInit()) equal = oox_cond_rule->m_oEqualAverage->ToBool();
+	if (oox_cond_rule->m_oStdDev.IsInit()) stdDev = oox_cond_rule->m_oStdDev->GetValue();
 
-	ods_context->current_table()->start_conditional_rule(oox_cond_rule->m_oType->GetValue(), rank, bottom, percent);
+	ods_context->current_table()->start_conditional_rule(oox_cond_rule->m_oType->GetValue(), rank, bottom, percent, above, equal, stdDev);
 	{
 		if (oox_cond_rule->m_oDxfId.IsInit()) 
 		{
@@ -3460,7 +3464,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_co
 
 		if (oox_cond_rule->m_oTimePeriod.IsInit())
 			ods_context->current_table()->set_conditional_time(oox_cond_rule->m_oTimePeriod->GetValue());
-		
+	
 		convert(oox_cond_rule->m_oIconSet.GetPointer());
 		convert(oox_cond_rule->m_oColorScale.GetPointer());
 		convert(oox_cond_rule->m_oDataBar.GetPointer());

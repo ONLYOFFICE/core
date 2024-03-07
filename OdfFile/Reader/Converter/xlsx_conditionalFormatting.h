@@ -55,6 +55,7 @@ public:
 	void set_dxf	(int dxf_id);
 	void set_showVal(bool val);
 	void set_time_period(int val);
+	void set_stdDev(int val);
 
 	void add_sfv	(int type, std::wstring value);
 	void add_color	(std::wstring col);

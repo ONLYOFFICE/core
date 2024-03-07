@@ -90,6 +90,9 @@ namespace oox {
 		_CP_OPT(std::wstring)		formula2;
 		_CP_OPT(int)				rank;
 		_CP_OPT(bool)				bottom;
+		_CP_OPT(bool)				equal;
+		_CP_OPT(bool)				above;
+		_CP_OPT(int)				stdDev;
 //color scale icon set data_bar
 		std::vector<_cfvo>			cfvo;
 //color scale data_bar(1 element)
@@ -152,8 +155,10 @@ public:
 								if (c.rules[j].text)		CP_XML_ATTR(L"text",		*c.rules[j].text);
 								if (c.rules[j].rank)		CP_XML_ATTR(L"rank",		*c.rules[j].rank);
 								if (c.rules[j].bottom)		CP_XML_ATTR(L"bottom",		*c.rules[j].bottom);
-                                 //CP_XML_ATTR(L"equalAverage"	, 0);
-                                //CP_XML_ATTR(L"aboveAverage"	, 0);
+								if (c.rules[j].above)		CP_XML_ATTR(L"aboveAverage",*c.rules[j].above);
+								if (c.rules[j].equal)		CP_XML_ATTR(L"equalAverage",*c.rules[j].equal);
+								if (c.rules[j].stdDev)		CP_XML_ATTR(L"stdDev",		*c.rules[j].stdDev);
+
 								if (c.rules[j].type == 1)
 								{
 									if (c.rules[j].formula_type)
@@ -323,6 +328,22 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 	else if ( f == L"above-average")
 	{
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"aboveAverage";
+	}
+	else if (f == L"below-average")
+	{
+		impl_->conditionalFormattings_.back().rules.back().formula_type = L"aboveAverage";
+		impl_->conditionalFormattings_.back().rules.back().above = false;
+	}
+	else if (f == L"above-equal-average")
+	{
+		impl_->conditionalFormattings_.back().rules.back().formula_type = L"aboveAverage";
+		impl_->conditionalFormattings_.back().rules.back().equal = true;
+	}
+	else if (f == L"below-equal-average")
+	{
+		impl_->conditionalFormattings_.back().rules.back().formula_type = L"aboveAverage";
+		impl_->conditionalFormattings_.back().rules.back().above = false;
+		impl_->conditionalFormattings_.back().rules.back().equal = true;
 	}
 	else if ( 0 <= (pos = f.find(L"formula-is(")))
 	{
@@ -584,5 +605,10 @@ void xlsx_conditionalFormatting_context::set_time_period(int val)
 {
 	impl_->conditionalFormattings_.back().rules.back().time_period = val;
 }
+void xlsx_conditionalFormatting_context::set_stdDev(int val)
+{
+	impl_->conditionalFormattings_.back().rules.back().stdDev = val;
+}
+
 }
 }

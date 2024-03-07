@@ -55,7 +55,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h1-c");
 
 		AddPropertiesInP(CSSProperties::ParagraphProperties::P_OutlineLvl, L"0");
-		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"480\"");
+		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
 	}
 	else if (sNameDefaultElement == L"h2")
 	{
@@ -66,7 +66,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h2-c");
 
 		AddPropertiesInP(CSSProperties::ParagraphProperties::P_OutlineLvl, L"1");
-		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"400\"");
+		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
 	}
 	else if (sNameDefaultElement == L"h3")
 	{
@@ -77,7 +77,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h3-c");
 
 		AddPropertiesInP(CSSProperties::ParagraphProperties::P_OutlineLvl, L"2");
-		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"360\"");
+		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
 	}
 	else if (sNameDefaultElement == L"h4")
 	{
@@ -88,7 +88,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h4-c");
 
 		AddPropertiesInP(CSSProperties::ParagraphProperties::P_OutlineLvl, L"3");
-		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"320\"");
+		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
 	}
 	else if (sNameDefaultElement == L"h5")
 	{
@@ -99,7 +99,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h5-c");
 
 		AddPropertiesInP(CSSProperties::ParagraphProperties::P_OutlineLvl, L"4");
-		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"280\"");
+		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
 
 	}
 	else if (sNameDefaultElement == L"h6")
@@ -111,7 +111,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h6-c");
 
 		AddPropertiesInP(CSSProperties::ParagraphProperties::P_OutlineLvl, L"5");
-		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"280\"");
+		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
 	}
 	else if (sNameDefaultElement == L"h1-c")
 	{
@@ -122,9 +122,9 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_UiPriority, L"9");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h1");
 
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, DEFAULTFONTNAME);
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"44");
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"48");
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_Kern, L"36");
 	}
 	else if (sNameDefaultElement == L"h2-c")
 	{
@@ -136,9 +136,8 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h2");
 
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, DEFAULTFONTNAME);
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"33");
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"36");
 	}
 	else if (sNameDefaultElement == L"h3-c")
 	{
@@ -150,9 +149,8 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h3");
 
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, DEFAULTFONTNAME);
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"26");
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"27");
 	}
 	else if (sNameDefaultElement == L"h4-c")
 	{
@@ -164,9 +162,8 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h4");
 
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, DEFAULTFONTNAME);
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"24");
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"22");
 	}
 	else if (sNameDefaultElement == L"h5-c")
 	{
@@ -178,9 +175,8 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h5");
 
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, DEFAULTFONTNAME);
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"20");
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"18");
 	}
 	else if (sNameDefaultElement == L"h6-c")
 	{
@@ -192,9 +188,8 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h6");
 
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, DEFAULTFONTNAME);
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"15");
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
 	}
 	else if (sNameDefaultElement == L"p-c")
 	{
@@ -203,8 +198,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_CustomStyle, L"1");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Name, L"Paragraph character");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"p");
-
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, DEFAULTFONTNAME);
 	}
 	else if (sNameDefaultElement == L"p")
 	{
@@ -222,8 +215,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_CustomStyle, L"1");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Name, L"Div character");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"div");
-
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, DEFAULTFONTNAME);
 	}
 	else if (sNameDefaultElement == L"div")
 	{
@@ -244,7 +235,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_Color, L"0000FF");
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_U, L"single");
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, DEFAULTFONTNAME);
 	}
 	else if (sNameDefaultElement == L"a")
 	{
@@ -473,6 +463,11 @@ std::wstring CXmlElement::ConvertRStyle(bool bIsLite) const
 					sRStyle += L"<w:smallCaps/>";
 				else if (oItem.second == L"normal")
 					sRStyle += L"<w:smallCaps w:val=\"false\"/>";
+				break;
+			}
+			case CSSProperties::RunnerProperties::R_Kern:
+			{
+				sRStyle += L"<w:kern w:val=\"" + oItem.second + L"\"/>";
 				break;
 			}
 			default:

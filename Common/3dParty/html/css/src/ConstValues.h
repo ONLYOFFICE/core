@@ -86,7 +86,8 @@ namespace NSCSS
 				R_Color = 4,
 				R_U = 5,
 				R_Highlight = 6,
-				R_SmallCaps = 7
+				R_SmallCaps = 7,
+				R_Kern = 8
 			} RunnerProperties;
 
 			typedef enum

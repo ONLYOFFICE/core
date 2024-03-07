@@ -405,7 +405,9 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 	}
 	else if (0 <= (pos = f.find(L"contains-text")))
 	{
-		impl_->conditionalFormattings_.back().rules.back().formula_type = L"containsText";
+		if (std::wstring::npos != f.find(L"not-contains-text")) 
+				impl_->conditionalFormattings_.back().rules.back().formula_type = L"notContainsText";
+		else	impl_->conditionalFormattings_.back().rules.back().formula_type = L"containsText";
 
 		std::wstring text = f.substr(pos + 14, f.length() - pos - 15);
 

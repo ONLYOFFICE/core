@@ -2006,12 +2006,12 @@ void ods_table_state::start_conditional_rule(int rule_type, _CP_OPT(unsigned int
 					}
 				}break;
 				case 1:	condition->attr_.calcext_value_		= L"begins-with()";		break;
-				case 4: condition->attr_.calcext_value_		= L"contains-text()";	break;
+				case 4: condition->attr_.calcext_value_		= L"formula-is()";		break;
 				case 5: condition->attr_.calcext_value_		= L"is-error";			break;
 				case 6: condition->attr_.calcext_value_		= L"contains-text()";	break;
 				case 8: condition->attr_.calcext_value_		= L"duplicate";			break;
 				case 9: condition->attr_.calcext_value_		= L"formula-is()";		break;
-				case 11: condition->attr_.calcext_value_	= L"not-contains-text()"; break;
+				case 11: condition->attr_.calcext_value_	= L"formula-is()";		break;
 				case 12: condition->attr_.calcext_value_	= L"is-no-error";		break;
 				case 13: condition->attr_.calcext_value_	= L"not-contains-text()"; break;
 				case 15:
@@ -2050,7 +2050,8 @@ void ods_table_state::set_conditional_formula(const std::wstring& formula)
 		
 	std::wstring operator_ = condition->attr_.calcext_value_.get_value_or(L"");
 	
-	if (std::wstring::npos != operator_.find(L"is-no-error"))
+	if (std::wstring::npos != operator_.find(L"is-no-error") || 
+		std::wstring::npos != operator_.find(L"is-error"))
 		return;
 	
 	bool s = false;

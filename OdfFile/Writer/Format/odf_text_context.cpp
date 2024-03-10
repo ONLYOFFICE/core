@@ -602,6 +602,18 @@ bool odf_text_context::start_field(int type, const std::wstring& value, const st
 		{
 			create_element(L"text", L"text-input", elm, odf_context_);
 		}break;
+		case fieldRef:
+		{
+			create_element(L"text", L"bookmark-ref", elm, odf_context_);
+			text_bookmark_ref* ref = dynamic_cast<text_bookmark_ref*>(elm.get());
+			if (ref)
+			{
+				if (false == value.empty()) ref->ref_name_ = value;
+
+				ref->reference_format_ = odf_types::reference_format::parse(format.empty() ? L"text" : format);
+
+			}
+		}break;
 	}
 
 	if (elm)

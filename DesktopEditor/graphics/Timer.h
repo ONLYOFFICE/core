@@ -41,51 +41,51 @@
 
 namespace NSTimers
 {
-    KERNEL_DECL DWORD GetTickCount();
+	KERNEL_DECL DWORD GetTickCount();
 
-    class KERNEL_DECL CTimer : public NSThreads::CBaseThread
+	class KERNEL_DECL CTimer : public NSThreads::CBaseThread
 	{
 	private:
 		DWORD	m_dwInterval;
-        INT     m_bIsCOMNeed;
+		INT     m_bIsCOMNeed;
 
 	public:
-        CTimer();
-        virtual ~CTimer();
+		CTimer();
+		virtual ~CTimer();
 
-        void SetInterval(const DWORD& dwInterval);
-        void SetCOMNeed(const INT& bIsCOM);
+		void SetInterval(const DWORD& dwInterval);
+		void SetCOMNeed(const INT& bIsCOM);
 
 	protected:
-        virtual DWORD ThreadProc();
+		virtual DWORD ThreadProc();
 
 		virtual void OnTimer() = 0;
 	};
-    
-    inline static unsigned long getUptimeInMilliseconds()
-    {
+	
+	inline static unsigned long getUptimeInMilliseconds()
+	{
 #if defined(_IOS) || defined(_MAC)
-        const int64_t kOneMillion = 1000 * 1000;
-        static mach_timebase_info_data_t s_timebase_info;
-        
-        if (s_timebase_info.denom == 0) {
-            (void) mach_timebase_info(&s_timebase_info);
-        }
-        
-        // mach_absolute_time() returns billionth of seconds,
-        // so divide by one million to get milliseconds
-        return (unsigned long)((mach_absolute_time() * s_timebase_info.numer) / (kOneMillion * s_timebase_info.denom));
+		const int64_t kOneMillion = 1000 * 1000;
+		static mach_timebase_info_data_t s_timebase_info;
+		
+		if (s_timebase_info.denom == 0) {
+			(void) mach_timebase_info(&s_timebase_info);
+		}
+		
+		// mach_absolute_time() returns billionth of seconds,
+		// so divide by one million to get milliseconds
+		return (unsigned long)((mach_absolute_time() * s_timebase_info.numer) / (kOneMillion * s_timebase_info.denom));
 #endif
-        
+		
 #ifdef __ANDROID__
-        struct timespec ts;
-        clock_gettime(CLOCK_MONOTONIC, &ts);
-        
-        return (ts.tv_sec * 1000 + (DWORD)(ts.tv_nsec / 1000000));
+		struct timespec ts;
+		clock_gettime(CLOCK_MONOTONIC, &ts);
+		
+		return (ts.tv_sec * 1000 + (DWORD)(ts.tv_nsec / 1000000));
 #endif
-        
-        return 0;
-    }
+		
+		return 0;
+	}
 }
 
 #endif

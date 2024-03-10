@@ -52,26 +52,33 @@
 v8::Local<v8::String> CreateV8String(v8::Isolate* i, const char* str, const int& len = -1);
 v8::Local<v8::String> CreateV8String(v8::Isolate* i, const std::string& str);
 
+#define ANDROID_LOGS
 #ifdef ANDROID_LOGS
-#include <JniLogUtils.h>
+//#define ANDROID_LOGS_ALL_FUNCTIONS
+#include <android/log.h>
+#define  LOGW(...)  __android_log_print(ANDROID_LOG_WARN, "js", __VA_ARGS__)
+#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, "js", __VA_ARGS__)
 #endif
 
-#ifdef V8_OS_XP
+#if 1
 class MallocArrayBufferAllocator : public v8::ArrayBuffer::Allocator
 {
 public:
 	virtual void* Allocate(size_t length)
 	{
+		LOGW("allocate: %d\n", (int)length);
 		void* ret = malloc(length);
 		memset(ret, 0, length);
 		return ret;
 	}
 	virtual void* AllocateUninitialized(size_t length)
 	{
+		LOGW("allocate_uninitialized: %d\n", (int)length);
 		return malloc(length);
 	}
 	virtual void Free(void* data, size_t length)
 	{
+		LOGW("free: %d\n", (int)length);
 		free(data);
 	}
 };
@@ -114,7 +121,9 @@ public:
 		v8::V8::InitializeICUDefaultLocation(sPrA.c_str());
 		v8::V8::InitializeExternalStartupData(sPrA.c_str());
 	#ifdef V8_VERSION_89_PLUS
-		m_platform = v8::platform::NewDefaultPlatform();
+		//m_platform = v8::platform::NewDefaultPlatform();
+		v8::V8::SetFlagsFromString("--single-threaded");
+		m_platform = v8::platform::NewSingleThreadedDefaultPlatform();
 		v8::V8::InitializePlatform(m_platform.get());
 	#else
 		m_platform = v8::platform::CreateDefaultPlatform();
@@ -481,9 +490,15 @@ namespace NSJSBase
 				CInspectorPool::get().getInspector(V8IsolateOneArg).startAgent(false);
 #endif
 
+#ifdef ANDROID_LOGS_ALL_FUNCTIONS
+			std::string sFuncName(name);
+			std::string sFunc = "[JS call_func: " + sFuncName + "]";
+			LOGW(sFunc.c_str());
+#endif
+
 			LOGGER_START
 
-					v8::Local<v8::String> _name = CreateV8String(CV8Worker::GetCurrent(), name);
+			v8::Local<v8::String> _name = CreateV8String(CV8Worker::GetCurrent(), name);
 			v8::Handle<v8::Value> _func = value->Get(V8ContextFirstArg _name).ToLocalChecked();
 
 			CJSValueV8* _return = new CJSValueV8();
@@ -514,7 +529,12 @@ namespace NSJSBase
 
 			LOGGER_LAP_NAME(name)
 
-					JSSmart<CJSValue> _ret = _return;
+#ifdef ANDROID_LOGS_ALL_FUNCTIONS
+			sFunc = "[JS call_func_end: " + sFuncName + "]";
+			LOGW(sFunc.c_str());
+#endif
+
+			JSSmart<CJSValue> _ret = _return;
 			return _ret;
 		}
 
@@ -804,10 +824,8 @@ namespace NSJSBase
 #endif
 
 #ifdef ANDROID_LOGS
-				LOGE("NSJSBase::CV8TryCatch::Check() - error:");
-				LOGE(std::to_string(nLineNumber).c_str());
-				LOGE(strCode.c_str());
-				LOGE(strException.c_str());
+				std::string sLog = "[JS (" + std::to_string(nLineNumber) + ")]: " + strCode + ", " + strException;
+				LOGE(sLog.c_str());
 #endif
 				return true;
 			}

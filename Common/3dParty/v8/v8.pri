@@ -30,6 +30,8 @@ core_android {
     isEqual(CORE_BUILDS_PLATFORM_PREFIX, android_armv7):    CORE_V8_PATH_LIBS=$$CORE_V8_PATH_LIBS/armeabi-v7a
     isEqual(CORE_BUILDS_PLATFORM_PREFIX, android_x86):      CORE_V8_PATH_LIBS=$$CORE_V8_PATH_LIBS/x86
     isEqual(CORE_BUILDS_PLATFORM_PREFIX, android_x86_64):   CORE_V8_PATH_LIBS=$$CORE_V8_PATH_LIBS/x86_64
+
+    LIBS += -ldl
 }
 
 INCLUDEPATH += \

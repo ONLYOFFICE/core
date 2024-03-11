@@ -2221,9 +2221,9 @@ std::vector<CAnnotMarkup::CFontData*> CAnnotMarkup::ReadRC(const std::string& sR
 
 	return arrRC;
 }
-std::map<std::wstring, std::wstring> CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList)
+void CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList)
 {
-	return SetFont(pdfDoc, oAnnotRef, pFontManager, pFontList, m_arrRC);
+	SetFont(pdfDoc, oAnnotRef, pFontManager, pFontList, m_arrRC);
 }
 std::map<std::wstring, std::wstring> CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, const std::vector<CFontData*>& arrRC, int nTypeFonts)
 {
@@ -2261,8 +2261,8 @@ std::map<std::wstring, std::wstring> CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Objec
 					{
 						if (((*arrFontList)[nIndex]->m_wsFontPath == sFontPath ||
 							 (*arrFontList)[nIndex]->m_wsFontName == UTF8_TO_U(sFontName)) &&
-							(*arrFontList)[nIndex]->m_bBold      == bBold &&
-							(*arrFontList)[nIndex]->m_bItalic    == bItalic)
+							 (*arrFontList)[nIndex]->m_bBold      == bBold &&
+							 (*arrFontList)[nIndex]->m_bItalic    == bItalic)
 						{
 							bNew = false;
 							break;

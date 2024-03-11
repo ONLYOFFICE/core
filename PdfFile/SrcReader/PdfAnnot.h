@@ -343,8 +343,8 @@ public:
 		CFontData(const CFontData& oFont);
 	};
 
+	void SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList);
 	static std::map<std::wstring, std::wstring> SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, const std::vector<CFontData*>& arrRC, int nTypeFonts = 3);
-	std::map<std::wstring, std::wstring> SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList);
 	static std::vector<CFontData*> ReadRC(const std::string& sRC);
 protected:
 	CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);

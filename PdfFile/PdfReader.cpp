@@ -1535,8 +1535,7 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, PdfReade
 		else if (sType == "FreeText")
 		{
 			PdfReader::CAnnotFreeText* pFreeText = new PdfReader::CAnnotFreeText(pdfDoc, &oAnnotRef, nPageIndex);
-			std::map<std::wstring, std::wstring> mFreeText = pFreeText->SetFont(pdfDoc, &oAnnotRef, pFontManager, pFontList);
-			m_mFonts.insert(mFreeText.begin(), mFreeText.end());
+			pFreeText->SetFont(pdfDoc, &oAnnotRef, pFontManager, pFontList);
 			pAnnot = pFreeText;
 		}
 		else if (sType == "Line")

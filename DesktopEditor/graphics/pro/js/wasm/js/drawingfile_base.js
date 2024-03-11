@@ -1141,7 +1141,7 @@
 						if (nFontFlag & (1 << 5))
 							oFont["vertical"] = reader.readDouble();
 						if (nFontFlag & (1 << 6))
-							oFont["actual"] = reader.readDouble();
+							oFont["actual"] = reader.readString();
 						oFont["size"] = reader.readDouble();
 						oFont["color"] = [];
 						oFont["color"].push(reader.readDouble2());

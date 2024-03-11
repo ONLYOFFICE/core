@@ -130,9 +130,9 @@ const int str2column(std::wstring::const_iterator& str_begin, std::wstring::cons
 		column = (column + 1) * radix + (symb - L'A');
 	}
 
-	if(column > 255)
+	if(column > 16384)
 	{
-		column = 255;
+		column = 16384;
 	}
 
 	return column;
@@ -152,9 +152,9 @@ const int str2row(std::wstring::const_iterator& str_begin, std::wstring::const_i
 		row = row * 10 + (symb - L'0');
 	}
 	--row;
-	if(row > 65535)
+	if(row > 1048576)
 	{
-		row = 65535;
+		row = 1048576;
 	}
 	return row;
 }

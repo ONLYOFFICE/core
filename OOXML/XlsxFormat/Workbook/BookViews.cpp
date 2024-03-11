@@ -76,18 +76,16 @@ namespace OOX
 			}
 			XLS::BaseObjectPtr CWorkbookView::toBin()
 			{
-				auto ptr(new XLS::Window1);
+                auto ptr(new XLSB::BookView);
 				XLS::BaseObjectPtr objectPtr(ptr);
 
                 if (m_oActiveTab.IsInit())
                 {
                     ptr->itabCur = m_oActiveTab->GetValue();
-                    ptr->ctabSel = m_oActiveTab->GetValue();
                 }
                 else
                 {
                     ptr->itabCur = 0;
-                    ptr->ctabSel = 0;
                 }
 
                 if (m_oAutoFilterDateGrouping.IsInit())

@@ -186,12 +186,16 @@ void CellRangeRef::fromString(const std::wstring& str)
 		}
 
 		rowFirst = 0;
-		rowLast = 65535;
+        rowLast = 1048576;
+        rowFirstRelative = false;
+        rowLastRelative = false;
 	}
 	if(-1 == columnFirst || -1 == columnLast) // no column specified - means whole row or range of rows
 	{
 		columnFirst = 0;
-		columnLast = 255;
+        columnLast = 16384;
+        columnFirstRelative = false;
+        columnLastRelative = false;
 	}
 	to_string_cache.clear();
 }

@@ -460,7 +460,7 @@ namespace OOX
 			ptr.xColorType = 0;
 			ptr.nTintAndShade = 0;
 			ptr.index = 0;
-			ptr.fValidRGB = true;
+			ptr.fValidRGB = 0;
 
 			return ptr;
 		}
@@ -472,6 +472,7 @@ namespace OOX
             ptr.bBlue = 0;
             ptr.bGreen = 0;
             ptr.bRed = 0;
+            ptr.fValidRGB = false;
 
 			if(m_oAuto.IsInit())
 			{
@@ -495,7 +496,10 @@ namespace OOX
 				ptr.bGreen = m_oRgb->Get_G();
 				ptr.bRed = m_oRgb->Get_R();
                 ptr.xColorType = 2;
+                ptr.fValidRGB = true;
 			}
+            else
+                ptr.xColorType = 0;
 
 
 			if ( m_oTint.IsInit())

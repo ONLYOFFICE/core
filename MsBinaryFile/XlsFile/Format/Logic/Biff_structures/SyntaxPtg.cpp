@@ -427,7 +427,7 @@ const bool SyntaxPtg::extract_PtgStr(std::wstring::const_iterator& first, std::w
 // static
 const bool SyntaxPtg::extract_PtgName(std::wstring::const_iterator& first, std::wstring::const_iterator last, unsigned int& out_num)
 {
-	static boost::wregex reg_name(L"^(\\w[\\w\\d.]*)([-+*/^&%<=>: ;),]|$)");
+    static boost::wregex reg_name(L"^([\\w[:Unicode:]][\\w[:Unicode:]\\d.]*)([-+*/^&%<=>: ;),]|$)");
 	
 	boost::match_results<std::wstring::const_iterator> results;
 	if(boost::regex_search(first, last, results, reg_name))
@@ -447,7 +447,7 @@ const bool SyntaxPtg::extract_PtgName(std::wstring::const_iterator& first, std::
 // static
 const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::wstring::const_iterator last, PtgList& ptgList, unsigned short ixti)
 {
-	static boost::wregex reg_table_name(L"^(\\w[\\w\\d.]*)\\["); //tableName '=SUM(tblName[Total])'
+    static boost::wregex reg_table_name(L"^([\\w[:Unicode:]][[:Unicode:]\\w\\d.]*)\\["); //tableName '=SUM(tblName[Total])'
 
 	boost::match_results<std::wstring::const_iterator> results;
 	if (boost::regex_search(first, last, results, reg_table_name))
@@ -464,9 +464,9 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 			ptgList.invalid = false;
 			ptgList.nonresident = false;
 			ptgList.ixti = ixti;
-			static boost::wregex reg_inside_table1(L"\\[#?[\\s\\w\\d.]+\\]");
-			static boost::wregex reg_inside_table2(L"\\[#\\w[\\s\\w\\d.]*\\],\\[#\\w[\\s\\w\\d.]*\\]");
-			static boost::wregex reg_inside_table3(L"^[,;:]?\\[#?[\\s\\w\\d.]+\\]");
+            static boost::wregex reg_inside_table1(L"\\[#?[\\s\\w[:Unicode:]\\d.]+\\]");
+            static boost::wregex reg_inside_table2(L"\\[#[\\w[:Unicode:]][\\s\\w[:Unicode:]\\d.]*\\],\\[#[\\w[:Unicode:]][[:Unicode:]\\s\\w\\d.]*\\]");
+            static boost::wregex reg_inside_table3(L"^[,;:]?\\[#?[[:Unicode:]\\s\\w\\d.]+\\]");
 			static boost::wregex reg_inside_table4(L"\\[#?(\\[.+?\\]\\,)?(\\[.+?\\])?.+?\\]");
 			static boost::wregex reg_inside_table5(L"^[,;:]?\\[.+?\\]");
 			static boost::wregex reg_inside_table6(L"\\[\\]");
@@ -713,7 +713,7 @@ const bool SyntaxPtg::extract_PtgRef(std::wstring::const_iterator& first, std::w
 // static
 const bool SyntaxPtg::extract_3D_part(std::wstring::const_iterator& first, std::wstring::const_iterator last, unsigned short& ixti)
 {
-	static boost::wregex reg_sheets(L"^(\\w[\\w\\d.]*(:\\w[\\w\\d.]*)?)!");
+    static boost::wregex reg_sheets(L"^([\\w[:Unicode:]][[:Unicode:]\\w\\d.]*(:[\\w[:Unicode:]][[:Unicode:]\\w\\d.]*)?)!");
 	static boost::wregex reg_quoted(L"^'((''|[^]['\\/*?])*)'!");
 	boost::match_results<std::wstring::const_iterator> results;
 	if (boost::regex_search(first, last, results, reg_sheets) ||
@@ -736,7 +736,7 @@ const bool SyntaxPtg::extract_3D_part(std::wstring::const_iterator& first, std::
 // static
 const bool SyntaxPtg::extract_UndefinedName(std::wstring::const_iterator& first, std::wstring::const_iterator last)
 {
-	static boost::wregex reg_undef(L"^([\\w\\d.]+)([-+*/^&%<=>: ;),]|$)");
+    static boost::wregex reg_undef(L"^([[:Unicode:]\\w\\d.]+)([-+*/^&%<=>: ;),]|$)");
 	boost::match_results<std::wstring::const_iterator> results;
 	if(boost::regex_search(first, last, results, reg_undef))
 	{

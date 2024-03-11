@@ -536,7 +536,6 @@ namespace NExtractTools
 		}
 		else
 		{
-			std::wstring sDocxFile;
 			std::wstring sDocxDir = combinePath(convertParams.m_sTempDir, L"docx_unpacked");
 			NSDirectory::CreateDirectory(sDocxDir);
 
@@ -544,14 +543,13 @@ namespace NExtractTools
 				AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM == nFormatFrom ||
 				AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF == nFormatFrom)
 			{
-				sDocxFile = sFrom;
-				convertParams.m_sTempParamOOXMLFile = sDocxFile;
+				convertParams.m_sTempParamOOXMLFile = sFrom;
 				if (params.getFromChanges())
 				{
 					params.setFromChanges(false);
-					nRes = apply_changes(sFrom, sTo, NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT, sDocxFile, params, convertParams);
+					nRes = apply_changes(sFrom, sTo, NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT, convertParams.m_sTempParamOOXMLFile, params, convertParams);
 				}
-				nRes = zip2dir(sDocxFile, sDocxDir);
+				nRes = zip2dir(convertParams.m_sTempParamOOXMLFile, sDocxDir);
 
 				if (false == SUCCEEDED_X2T(nRes))
 				{

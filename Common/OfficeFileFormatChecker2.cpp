@@ -1084,6 +1084,7 @@ bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring &fileNa
 	const char *odtFormatLine = "application/vnd.oasis.opendocument.text";
 	const char *odsFormatLine = "application/vnd.oasis.opendocument.spreadsheet";
 	const char *odpFormatLine = "application/vnd.oasis.opendocument.presentation";
+	const char* odgFormatLine = "application/vnd.oasis.opendocument.graphics";
 	const char *ottFormatLine = "application/vnd.oasis.opendocument.text-template";
 	const char *otsFormatLine = "application/vnd.oasis.opendocument.spreadsheet-template";
 	const char *otpFormatLine = "application/vnd.oasis.opendocument.presentation-template";
@@ -1133,6 +1134,10 @@ bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring &fileNa
 		else if (NULL != strstr((char *)pBuffer, odpFormatLine) || NULL != strstr((char *)pBuffer, sxiFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
+		}
+		else if (NULL != strstr((char*)pBuffer, odgFormatLine))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODG;
 		}
 		else if (NULL != strstr((char *)pBuffer, epubFormatLine))
 		{

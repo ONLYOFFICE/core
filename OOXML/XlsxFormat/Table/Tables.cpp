@@ -356,12 +356,14 @@ namespace Spreadsheet
         if(m_oCalculatedColumnFormula.IsInit())
         {
             auto fmla(new XLSB::ListCCFmla);
+            fmla->fArray = false;
             fmla->formula = m_oCalculatedColumnFormula.get();
             ptr->m_BrtListCCFmla = XLS::BaseObjectPtr{fmla};
         }
         if(m_oTotalsRowFormula.IsInit())
         {
             auto fmla(new XLSB::ListTrFmla);
+            fmla->fArray = false;
             fmla->formula = m_oTotalsRowFormula.get();
             ptr->m_BrtListTrFmla = XLS::BaseObjectPtr{fmla};
         }
@@ -616,15 +618,17 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 		if(m_oTableColumns.IsInit() && !m_oTableColumns->m_arrItems.empty())
 		{	
 			XLS::GlobalWorkbookInfo::mapTableColumnNames_static.emplace(m_oId->GetValue(),
-				std::vector<std::wstring>(m_oTableColumns->m_arrItems.size()+1, L""));	
+				std::vector<std::wstring>(m_oTableColumns->m_arrItems.size()));	
+				auto colInd = 0;
 			for(auto i:m_oTableColumns->m_arrItems)
-				if(i->m_oName.IsInit() && i->m_oId.IsInit())
+			{
+				if(i->m_oName.IsInit())
                 {
-                    if(i->m_oId->GetValue()+1 > XLS::GlobalWorkbookInfo::mapTableColumnNames_static.at(m_oId->GetValue()).size())
-                        XLS::GlobalWorkbookInfo::mapTableColumnNames_static.at(m_oId->GetValue()).resize(i->m_oId->GetValue()+1);
 					i->m_oName = boost::algorithm::erase_all_copy(i->m_oName.get(), L"_x000a_");
-					XLS::GlobalWorkbookInfo::mapTableColumnNames_static.at(m_oId->GetValue()).at(i->m_oId->GetValue())  = i->m_oName.get();
+					XLS::GlobalWorkbookInfo::mapTableColumnNames_static.at(m_oId->GetValue()).at(colInd)  = i->m_oName.get();
                 }
+				colInd++;
+			}
 		}
         XLS::GlobalWorkbookInfo::mapTableNames_static.emplace(m_oId->GetValue(), m_oName.get());
 	}
@@ -768,6 +772,8 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 
         if(m_oTotalsRowShown.IsInit())
             ptr1->fShownTotalRow = m_oTotalsRowShown.get();
+        else if(m_oTotalsRowCount.IsInit() && m_oTotalsRowCount->GetValue() > 0)
+            ptr1->fShownTotalRow = true;
         else
             ptr1->fShownTotalRow = false;
         ptr1->fSingleCell = false;

@@ -31,46 +31,46 @@
  */
 #pragma once
 
-#include <CPOptional.h>
-#include <CPScopedPtr.h>
+#include <iosfwd>
 #include <string>
+#include "odfattributes.h"
 
-namespace cpdoccore {
-namespace oox {
 
-class xlsx_conditionalFormatting_context
+namespace cpdoccore { 
+namespace odf_types { 
+
+class reference_format
 {
 public:
-    xlsx_conditionalFormatting_context();
-    ~xlsx_conditionalFormatting_context();
+    enum type
+    {
+    chapter,
+    direction,
+    text,
+    caption,
+    category_and_value,
+    value,
+    number,
+    number_all_superior,
+    number_no_superior
+    };
 
-	void start(std::wstring ref);
-	void end(){}
+    reference_format() {}
+    reference_format(type _Type) : type_(_Type)
+    {}
 
-	void add_rule(int type);
+    type get_type() const
+    {
+        return type_;
+    };
+    static reference_format parse(const std::wstring & Str);
 
-	void set_formula(std::wstring f);
-	void set_dataBar(_CP_OPT(int) min, _CP_OPT(int) max);
-
-	void set_dxf	(int dxf_id);
-	void set_showVal(bool val);
-	void set_time_period(int val);
-	void set_stdDev(int val);
-
-	void add_sfv	(int type, std::wstring value);
-	void add_color	(std::wstring col);
-	
-	void set_negative_color(std::wstring col);
-	
-	void set_axis_position(std::wstring val);
-	void set_axis_color(std::wstring val);
-	void set_icon_set_type(int type);
-
-    void serialize(std::wostream & _Wostream);
 private:
-    class Impl;
-    _CP_SCOPED_PTR(Impl) impl_;
-};
+    type type_;
 
-}
+};
+std::wostream & operator << (std::wostream & _Wostream, const reference_format& _Val);
+} 
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::reference_format);
+
 }

@@ -189,6 +189,42 @@ void text_bookmark_end::serialize(std::wostream & _Wostream)
 	}
 }
 //----------------------------------------------------------------------------------
+// text:bookmark-ref
+//----------------------------------------------------------------------------------
+const wchar_t* text_bookmark_ref::ns = L"text";
+const wchar_t* text_bookmark_ref::name = L"bookmark-ref";
+
+void text_bookmark_ref::create_child_element(const std::wstring& Ns, const std::wstring& Name)
+{
+	CP_CREATE_ELEMENT(content_);
+}
+void text_bookmark_ref::add_child_element(const office_element_ptr& child_element)
+{
+	content_.push_back(child_element);
+}
+void text_bookmark_ref::add_text(const std::wstring& Text)
+{
+	office_element_ptr elm = text_text::create(Text);
+	content_.push_back(elm);
+}
+void text_bookmark_ref::serialize(std::wostream& _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"text:ref-name", ref_name_);
+			CP_XML_ATTR_OPT(L"text:reference-format", reference_format_);
+			
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
+
+//----------------------------------------------------------------------------------
 // text:reference-mark
 //----------------------------------------------------------------------------------
 const wchar_t * text_reference_mark::ns = L"text";

@@ -72,6 +72,7 @@ void calcext_condition_attr::add_attributes( const xml::attributes_wc_ptr & Attr
 	CP_APPLY_ATTR(L"calcext:base-cell-address",	base_cell_address_);
 	CP_APPLY_ATTR(L"calcext:apply-style-name",	apply_style_name_);
 	CP_APPLY_ATTR(L"calcext:value",				value_);
+	CP_APPLY_ATTR(L"loext:stdDev", loext_stdDev_);
 }
 void calcext_date_is_attr::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -309,6 +310,9 @@ void calcext_condition::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	if (dxfId >= 0)
 		Context.get_conditionalFormatting_context().set_dxf(dxfId);
+
+	if (attr_.loext_stdDev_)
+		Context.get_conditionalFormatting_context().set_stdDev(*attr_.loext_stdDev_);
 }
 // calcext_condition
 //---------------------------------------------------------------------------------------------------------

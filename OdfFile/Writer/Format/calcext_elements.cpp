@@ -60,6 +60,7 @@ void calcext_condition_attr::serialize(CP_ATTR_NODE)
 	CP_XML_ATTR_OPT_ENCODE_STRING(L"calcext:base-cell-address",	calcext_base_cell_address_);
 	CP_XML_ATTR_OPT(L"calcext:apply-style-name", calcext_apply_style_name_);
 	CP_XML_ATTR_OPT_ENCODE_STRING(L"calcext:value", calcext_value_);
+	CP_XML_ATTR_OPT(L"loext:stdDev", loext_stdDev_);
 }
 void calcext_date_is_attr::serialize(CP_ATTR_NODE)
 {

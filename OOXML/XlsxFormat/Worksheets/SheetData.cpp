@@ -2215,53 +2215,34 @@ namespace OOX
 					if(m_oFormula->m_oT.get() == SimpleTypes::Spreadsheet::cellformulatypeShared)
 					{
 						
-						m_oFormula->m_oT = SimpleTypes::Spreadsheet::cellformulatypeNormal;
-						ptr->m_source = XLS::BaseObjectPtr{pFMLACELL};
+						pSHRFMLACELL = new XLSB::SHRFMLACELL(0,0, refs);
+						ptr->m_source = XLS::BaseObjectPtr{pSHRFMLACELL};
 						pFMLACELL->m_source = XLS::BaseObjectPtr{pSource};
+						pSHRFMLACELL->_fmlacell = XLS::BaseObjectPtr{pFMLACELL};
 
 						if(!m_oFormula->m_sText.empty())
 						{
-							m_oFormula->toBin(pFMLACELL->m_source);
+							auto shrFmla(new XLSB::ShrFmla(cellref));
+							pSHRFMLACELL->m_source = XLS::BaseObjectPtr{shrFmla};
+							m_oFormula->toBin(pSHRFMLACELL->m_source);
 							
-							sharedFormulas.shrFmla.push_back(std::make_pair(cellref, m_oFormula->m_sText));
+							sharedFormulas.shrFmla.push_back(cellref);
 							
 						}
-						else if(m_oFormula->m_oSi.IsInit() && sharedFormulas.shrFmla.size() > m_oFormula->m_oSi->GetValue() )
+						if(m_oFormula->m_oSi.IsInit() && sharedFormulas.shrFmla.size() > m_oFormula->m_oSi->GetValue() )
 						{
-							
-							auto fmla = dynamic_cast<XLSB::FmlaBase*>(pSource);
-							
-							auto dataPair = sharedFormulas.shrFmla[m_oFormula->m_oSi->GetValue()];
-							sourceCellRef = dataPair.first;
-							int coldiff = 0; 
-							if(sourceCellRef.colRelative)
-								coldiff = cellref.column - dataPair.first.column;
-							int rowdiff = 0;
-							if(sourceCellRef.rowRelative)
-							 	rowdiff =  cellref.row - dataPair.first.row;
-							fmla->formula = dataPair.second;
-							if(rowdiff || coldiff)
-							{
-								for(auto i:fmla->formula.rgce.sequence)
-								{
-									if(i->ptg_id.is_initialized() && i->ptg_id.get() == 37)
-									{
-										auto area(static_cast<XLS::PtgArea*>(i.get()));
-                                        area->areaXlsb.columnFirst += coldiff;
-                                        area->areaXlsb.columnLast += coldiff;
-                                        area->areaXlsb.rowFirst += rowdiff;
-                                        area->areaXlsb.rowLast += rowdiff;
-									}
-									else if(i->ptg_id.is_initialized() && i->ptg_id.get() == 36)
-									{
-										auto area(static_cast<XLS::PtgRef*>(i.get()));
-                                        area->loc_xlsb.column += coldiff;
-                                        area->loc_xlsb.row += rowdiff;
-									}
-								}
-							}
-
+							sourceCellRef = sharedFormulas.shrFmla[m_oFormula->m_oSi->GetValue()];
 						}
+
+						auto rowPos = new XLS::PtgExp;
+						rowPos->rowXlsb = sourceCellRef.row;
+						auto colPos = new XLS::PtgExtraCol;
+						colPos->col = sourceCellRef.column;
+						auto cellFmla = dynamic_cast<XLSB::FmlaBase*>(pSource);
+						cellFmla->formula.rgce.addPtg(PtgPtr{rowPos});
+						cellFmla->formula.rgcb.addPtg(PtgPtr{colPos});
+
+						
 					}
 					else if(m_oFormula->m_oT.get() == SimpleTypes::Spreadsheet::cellformulatypeArray)
 					{

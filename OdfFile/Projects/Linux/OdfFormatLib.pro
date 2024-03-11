@@ -40,7 +40,8 @@ SOURCES += \
 
 core_debug {
 SOURCES += \    
-	../../DataTypes/mathvariant.cpp \
+        ../../DataTypes/referenceformat.cpp \
+        ../../DataTypes/mathvariant.cpp \
 	../../DataTypes/anchortype.cpp \
 	../../DataTypes/animation_attlists.cpp \
 	../../DataTypes/backgroundcolor.cpp \
@@ -445,7 +446,8 @@ HEADERS += \
 	../../Common/xml/xmlchar.h \
 	../../Common/xml/xmlelement.h \
 	\
-	../../DataTypes/mathvariant.h \
+        ../../DataTypes/referenceformat.h \
+        ../../DataTypes/mathvariant.h \
 	../../DataTypes/anchortype.h \
 	../../DataTypes/animation_attlists.h \
 	../../DataTypes/backgroundcolor.h \

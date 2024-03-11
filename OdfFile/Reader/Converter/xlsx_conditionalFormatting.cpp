@@ -90,6 +90,9 @@ namespace oox {
 		_CP_OPT(std::wstring)		formula2;
 		_CP_OPT(int)				rank;
 		_CP_OPT(bool)				bottom;
+		_CP_OPT(bool)				equal;
+		_CP_OPT(bool)				above;
+		_CP_OPT(int)				stdDev;
 //color scale icon set data_bar
 		std::vector<_cfvo>			cfvo;
 //color scale data_bar(1 element)
@@ -152,8 +155,10 @@ public:
 								if (c.rules[j].text)		CP_XML_ATTR(L"text",		*c.rules[j].text);
 								if (c.rules[j].rank)		CP_XML_ATTR(L"rank",		*c.rules[j].rank);
 								if (c.rules[j].bottom)		CP_XML_ATTR(L"bottom",		*c.rules[j].bottom);
-                                 //CP_XML_ATTR(L"equalAverage"	, 0);
-                                //CP_XML_ATTR(L"aboveAverage"	, 0);
+								if (c.rules[j].above)		CP_XML_ATTR(L"aboveAverage",*c.rules[j].above);
+								if (c.rules[j].equal)		CP_XML_ATTR(L"equalAverage",*c.rules[j].equal);
+								if (c.rules[j].stdDev)		CP_XML_ATTR(L"stdDev",		*c.rules[j].stdDev);
+
 								if (c.rules[j].type == 1)
 								{
 									if (c.rules[j].formula_type)
@@ -324,6 +329,22 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 	{
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"aboveAverage";
 	}
+	else if (f == L"below-average")
+	{
+		impl_->conditionalFormattings_.back().rules.back().formula_type = L"aboveAverage";
+		impl_->conditionalFormattings_.back().rules.back().above = false;
+	}
+	else if (f == L"above-equal-average")
+	{
+		impl_->conditionalFormattings_.back().rules.back().formula_type = L"aboveAverage";
+		impl_->conditionalFormattings_.back().rules.back().equal = true;
+	}
+	else if (f == L"below-equal-average")
+	{
+		impl_->conditionalFormattings_.back().rules.back().formula_type = L"aboveAverage";
+		impl_->conditionalFormattings_.back().rules.back().above = false;
+		impl_->conditionalFormattings_.back().rules.back().equal = true;
+	}
 	else if ( 0 <= (pos = f.find(L"formula-is(")))
 	{
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"expression";
@@ -339,11 +360,13 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 	}
 	else if (0 <= (pos = f.find(L"is-between(")))
 	{
+		val = f.substr(11, f.size() - 12);
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"expression";
 		impl_->conditionalFormattings_.back().rules.back().formula = converter.convert_named_expr(val);
 	}
 	else if (0 <= (pos = f.find(L"is-time(")))
 	{
+		val = f.substr(8, f.size() - 9);
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"expression";
 		impl_->conditionalFormattings_.back().rules.back().formula = converter.convert_named_expr(val);
 	}
@@ -352,6 +375,10 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"containsErrors";
 		impl_->conditionalFormattings_.back().rules.back().formula = L"0";
 	}
+	else if (0 <= (pos = f.find(L"is-no-error")))
+	{
+		impl_->conditionalFormattings_.back().rules.back().formula_type = L"notContainsErrors";
+	}	
 	else if (0 <= (pos = f.find(L"duplicate")))
 	{
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"duplicateValues";
@@ -382,7 +409,9 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 	}
 	else if (0 <= (pos = f.find(L"contains-text")))
 	{
-		impl_->conditionalFormattings_.back().rules.back().formula_type = L"containsText";
+		if (std::wstring::npos != f.find(L"not-contains-text")) 
+				impl_->conditionalFormattings_.back().rules.back().formula_type = L"notContainsText";
+		else	impl_->conditionalFormattings_.back().rules.back().formula_type = L"containsText";
 
 		std::wstring text = f.substr(pos + 14, f.length() - pos - 15);
 
@@ -464,6 +493,28 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 		{
 			val = converter.convert_named_expr( f );
 		}
+		else if (0 <= (pos = f.find(L"between")))
+		{
+			if (0 <= (pos = f.find(L"not-between")))
+			{
+				impl_->conditionalFormattings_.back().rules.back().operator_ = L"notBetween";
+				val = f.substr(12, f.length() - 13);
+			}
+			else
+			{
+				impl_->conditionalFormattings_.back().rules.back().operator_ = L"between";
+				val = f.substr(8, f.length() - 9);
+			}
+
+			XmlUtils::replace_all(val, L"(", L"");
+			XmlUtils::replace_all(val, L")", L"");
+			if (0 <= (pos = val.find(L",")))
+			{
+				impl_->conditionalFormattings_.back().rules.back().formula2 = converter.convert_named_expr(val.substr(pos + 1));
+				val = val.substr(0, pos);
+			}
+			val = converter.convert_named_expr(val);
+		}
 		else if (0 <= (pos = f.find(L"!=")))
 		{
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"notEqual";
@@ -493,20 +544,6 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 		{
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"greaterThan";
 			val = converter.convert_named_expr( f.substr(1) );
-		}
-		else if (0 <= (pos = f.find(L"between")))
-		{
-			impl_->conditionalFormattings_.back().rules.back().operator_ = L"between";
-			val = f.substr(8, f.length() - 9);
-			
-			XmlUtils::replace_all(val, L"(", L"");
-			XmlUtils::replace_all(val, L")", L"");
-			if (0 <= (pos = val.find(L",")))
-			{
-				impl_->conditionalFormattings_.back().rules.back().formula2 = converter.convert_named_expr( val.substr(pos + 1) );
-				val = val.substr(0, pos);
-			}
-			val = converter.convert_named_expr( val );
 		}
 		else
 		{
@@ -574,5 +611,10 @@ void xlsx_conditionalFormatting_context::set_time_period(int val)
 {
 	impl_->conditionalFormattings_.back().rules.back().time_period = val;
 }
+void xlsx_conditionalFormatting_context::set_stdDev(int val)
+{
+	impl_->conditionalFormattings_.back().rules.back().stdDev = val;
+}
+
 }
 }

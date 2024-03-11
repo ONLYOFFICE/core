@@ -69,6 +69,7 @@ public:
 	_CP_OPT(std::wstring) base_cell_address_;
 	_CP_OPT(std::wstring) apply_style_name_;
 	_CP_OPT(std::wstring) value_;
+    _CP_OPT(int) loext_stdDev_;
 };
 
 class calcext_icon_set_attr
@@ -77,7 +78,6 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 	_CP_OPT(odf_types::iconset_type) icon_set_type_;
-
 };
 
 class calcext_date_is_attr

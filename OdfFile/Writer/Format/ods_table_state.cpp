@@ -1948,7 +1948,7 @@ void ods_table_state::end_conditional_format()
 {
 	current_level_.pop_back();
 }
-void ods_table_state::start_conditional_rule(int rule_type, _CP_OPT(unsigned int) rank, _CP_OPT(bool) bottom, _CP_OPT(bool) percent)
+void ods_table_state::start_conditional_rule(int rule_type, _CP_OPT(unsigned int) rank, _CP_OPT(bool) bottom, _CP_OPT(bool) percent, _CP_OPT(bool) above, _CP_OPT(bool) equal, _CP_OPT(int) stdDev)
 {
 	office_element_ptr elm;
 
@@ -1991,18 +1991,27 @@ void ods_table_state::start_conditional_rule(int rule_type, _CP_OPT(unsigned int
 						table = L"'" + table + L"'";
 					}
 				}
-				condition->attr_.calcext_base_cell_address_ = table + col + row;
+				condition->attr_.calcext_base_cell_address_ = (table.empty() ? L"" : (table + L".")) + col + row;
 			}
 			switch(rule_type)
 			{
-				case 0:	condition->attr_.calcext_value_		= L"above-average";		break;
+				case 0:
+				{
+					if (equal) condition->attr_.calcext_value_ = above.get_value_or(true) ? L"above-equal-average" : L"below-equal-average";
+					else condition->attr_.calcext_value_ = above.get_value_or(true) ? L"above-average" : L"below-average";
+
+					if (stdDev)
+					{
+						condition->attr_.loext_stdDev_ = *stdDev;
+					}
+				}break;
 				case 1:	condition->attr_.calcext_value_		= L"begins-with()";		break;
-				case 4: condition->attr_.calcext_value_		= L"contains-text()";	break;
+				case 4: condition->attr_.calcext_value_		= L"formula-is()";		break;
 				case 5: condition->attr_.calcext_value_		= L"is-error";			break;
 				case 6: condition->attr_.calcext_value_		= L"contains-text()";	break;
 				case 8: condition->attr_.calcext_value_		= L"duplicate";			break;
 				case 9: condition->attr_.calcext_value_		= L"formula-is()";		break;
-				case 11: condition->attr_.calcext_value_	= L"not-contains-text()"; break;
+				case 11: condition->attr_.calcext_value_	= L"formula-is()";		break;
 				case 12: condition->attr_.calcext_value_	= L"is-no-error";		break;
 				case 13: condition->attr_.calcext_value_	= L"not-contains-text()"; break;
 				case 15:
@@ -2035,16 +2044,18 @@ void ods_table_state::end_conditional_rule()
 void ods_table_state::set_conditional_formula(const std::wstring& formula)
 {
 	calcext_condition* condition = dynamic_cast<calcext_condition*>	 (current_level_.back().get());
-
 	if (!condition) return;
 
 	std::wstring odfFormula = formulas_converter_table.convert_conditional_formula(formula);
 		
-	std::wstring operator_;
+	std::wstring operator_ = condition->attr_.calcext_value_.get_value_or(L"");
+	
+	if (std::wstring::npos != operator_.find(L"is-no-error") || 
+		std::wstring::npos != operator_.find(L"is-error"))
+		return;
+	
 	bool s = false;
 	bool split = false;
-
-	operator_ = condition->attr_.calcext_value_.get_value_or(L"");
 
 	size_t f_start = operator_.find(L"("); 
 	size_t f_end = operator_.rfind(L")"); 

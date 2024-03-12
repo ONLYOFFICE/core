@@ -1142,18 +1142,28 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 
 		if(m_oId.IsInit())
 			ptr->idField = m_oId->GetValue();
+        else
+            ptr->idField = 0;
 		if(m_oTableColumnId.IsInit())
 			ptr->idList = m_oTableColumnId->GetValue();
+        else
+            ptr->idList = 0;
 		if(m_oName.IsInit())
 			ptr->name = m_oName.get();
         if(m_oRowNumbers.IsInit())
 			ptr->fRowNums = m_oRowNumbers.get();
 		if(m_oFillFormulas.IsInit())
 			ptr->fFillDown = m_oFillFormulas.get();
+        else
+            ptr->fFillDown = false;
 		if(m_oDataBound.IsInit())
 			ptr->fUserIns = m_oDataBound.get();
+        else
+            ptr->fUserIns = false;
         if(m_oClipped.IsInit())
 			ptr->fClipped = m_oClipped.get();
+        else
+            ptr->fClipped = false;
            
 		return XLS::BaseObjectPtr{ptr1};
 	}
@@ -1437,6 +1447,8 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			ptr->wVerBeforeRefreshAlert = m_oMinimumVersion->GetValue();
 		if(m_FieldIdWrapped.IsInit())
 			ptr->fidWrapped = m_FieldIdWrapped.get();
+        else
+            ptr->fidWrapped = false;
 		if(m_HeadersInLastRefresh.IsInit())
 			ptr->fTitlesOld = m_HeadersInLastRefresh.get();
 		if(m_PreserveSortFilterLayout.IsInit())
@@ -1573,33 +1585,61 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		if(m_oAdjustColumnWidth.IsInit())
 			ptr->fAutoFit = m_oAdjustColumnWidth.get();
+        else
+            ptr->fAutoFit = true;
 		if(m_oApplyAlignmentFormats.IsInit())
         	ptr->fibitAtrAlc = m_oApplyAlignmentFormats.get();
+        else
+            ptr->fibitAtrAlc = false;
 		if(m_oApplyBorderFormats.IsInit())
             ptr->fibitAtrBdr = m_oApplyBorderFormats.get();
+        else
+            ptr->fibitAtrBdr = false;
 		if(m_oApplyFontFormats.IsInit())
             ptr->fibitAtrFnt = m_oApplyFontFormats.get();
+        else
+            ptr->fibitAtrFnt = false;
 		if(m_oApplyNumberFormats.IsInit())
             ptr->fibitAtrNum = m_oApplyNumberFormats.get();
+        else
+            ptr->fibitAtrNum = false;
 		if(m_oApplyPatternFormats.IsInit())
             ptr->fibitAtrPat = m_oApplyPatternFormats.get();
+        else
+            ptr->fibitAtrPat = false;
 		if(m_oApplyWidthHeightFormats.IsInit())
             ptr->fibitAtrProt = m_oApplyWidthHeightFormats.get();
+        else
+            ptr->fibitAtrProt = false;
 		if(m_oBackgroundRefresh.IsInit())
             ptr->fAsync = m_oBackgroundRefresh.get();
+        else
+            ptr->fAsync = true;
 	
 		if(m_oAutoFormatId.IsInit())
            ptr->itblAutoFmt = m_oAutoFormatId->GetValue();
+        else
+            ptr->itblAutoFmt = 0;
 		if(m_oConnectionId.IsInit())
            ptr->dwConnID = m_oConnectionId->GetValue();
+        else
+            ptr->dwConnID = 0;
 		if(m_oDisableEdit.IsInit())
             ptr->fDisableEdit = m_oDisableEdit.get();
+        else
+            ptr->fDisableEdit = false;
 		if(m_oDisableRefresh.IsInit())
             ptr->fDisableRefresh = m_oDisableRefresh.get();
+        else
+            ptr->fDisableRefresh = false;
 		if(m_oFillFormulas.IsInit())
             ptr->fFill = m_oFillFormulas.get();
+        else
+            ptr->fFill = false;
 		if(m_oFirstBackgroundRefresh.IsInit())
             ptr->fNewAsync = m_oFirstBackgroundRefresh.get();
+        else
+            ptr->fNewAsync = true;
 		ptr->fOverwrite = false;
 		ptr->fShrink = false;
 
@@ -1611,17 +1651,25 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->fTitles = m_oHeaders.get();
 		if(m_oIntermediate.IsInit())
 			ptr->fDummyList = m_oIntermediate.get();
+        else
+            ptr->fDummyList = 0;
 
-		if(!ptr->name.empty())
-			m_oName                 = ptr->name;
+        if(m_oName.IsInit())
+            ptr->name = m_oName.get();
 		if(m_oPreserveFormatting.IsInit())
 			ptr->fPreserveFmt = m_oPreserveFormatting.get();
 		if(m_oRefreshOnLoad.IsInit())
 			ptr->fAutoRefresh = m_oRefreshOnLoad.get();
+        else
+            ptr->fAutoRefresh = false;
 		if(m_oRemoveDataOnSave.IsInit())
             ptr->fSaveData = !m_oRemoveDataOnSave.get();
+        else
+            ptr->fSaveData = true;
 		if(m_oRowNumbers.IsInit())
             ptr->fRowNums = m_oRowNumbers.get();
+        else
+            ptr->fRowNums = false;
 
 		if(m_oQueryTableRefresh.IsInit())
 			ptr1->m_QSIR = m_oQueryTableRefresh->toBin();
@@ -1771,6 +1819,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			XLS::BaseObjectPtr object = WriteBin();
 			xlsb->WriteBin(oPath, object.get());
 		}
+		else
 		{
 			NSStringUtils::CStringBuilder sXml;
 

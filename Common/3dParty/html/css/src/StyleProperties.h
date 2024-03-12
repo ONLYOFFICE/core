@@ -440,6 +440,7 @@ namespace NSCSS
 
 		bool Empty() const;
 		bool Zero()  const;
+		bool Valid() const;
 
 		CBorderSide& operator+=(const CBorderSide& oBorderSide);
 		bool         operator==(const CBorderSide& oBorderSide) const;

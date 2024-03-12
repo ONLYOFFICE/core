@@ -304,7 +304,12 @@ namespace NSCSS
 //			sSpacingValue += L"w:after=\"0\" w:before=\"0\"";
 
 		if (!oStyle.m_oFont.GetLineHeight().Empty() && !oStyle.m_oFont.GetLineHeight().Zero())
-			sSpacingValue += L" w:line=\"" + std::to_wstring(oStyle.m_oFont.GetLineHeight().ToInt(NSCSS::Twips, DEFAULT_LINEHEIGHT)) + L"\" w:lineRule=\"auto\"";
+		{
+			const std::wstring wsLine{std::to_wstring(oStyle.m_oFont.GetLineHeight().ToInt(NSCSS::Twips, DEFAULT_LINEHEIGHT))};
+			const std::wstring wsLineRule{(NSCSS::Percent == oStyle.m_oFont.GetLineHeight().GetUnitMeasure() ? L"auto" : L"atLeast")};
+
+			sSpacingValue += L" w:line=\"" + wsLine + L"\" w:lineRule=\"" + wsLineRule + L"\"";
+		}
 
 		if (!sSpacingValue.empty())
 		{
@@ -392,7 +397,7 @@ namespace NSCSS
 	{
 		if (oBorder.Empty())
 			return L"";
-		
+
 		std::wstring wsColor = oBorder.GetColor().ToWString();
 		std::wstring wsStyle = oBorder.GetStyle().ToWString();
 		double dWidth = oBorder.GetWidth().ToDouble(Point) * 8; // Так как значение указано в восьмых долях точки
@@ -402,9 +407,6 @@ namespace NSCSS
 
 		if (wsStyle.empty())
 			wsStyle = L"single";
-
-		if (1 > dWidth)
-			dWidth = 1;
 
 		return  L"w:val=\"" + wsStyle + L"\" w:sz=\"" + std::to_wstring(static_cast<int>(dWidth)) + + L"\" w:space=\"0\" w:color=\"" + wsColor + L"\"";
 	}
@@ -416,11 +418,11 @@ namespace NSCSS
 			return;
 
 		if (!oStyle.m_oFont.GetSize().Empty())
-			oXmlElement.AddPropertiesInR(RProperties::R_Sz, std::to_wstring(oStyle.m_oFont.GetSize().ToInt(NSCSS::Point) * 2)); // Значения шрифта увеличивает на 2
+			oXmlElement.AddPropertiesInR(RProperties::R_Sz, std::to_wstring(static_cast<int>(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Point) * 2. + 0.5))); // Значения шрифта увеличивает на 2
 
 		if (oStyle.m_oText.GetDecoration().m_oLine.Underline())
 			oXmlElement.AddPropertiesInR(RProperties::R_U, (!oStyle.m_oText.GetDecoration().m_oStyle.Empty()) ? oStyle.m_oText.GetDecoration().m_oStyle.ToWString() : L"single");
-		
+
 		oXmlElement.AddPropertiesInR(RProperties::R_Highlight, oStyle.m_oBackground.GetColor().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_Color, oStyle.m_oText.GetColor().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_RFonts, oStyle.m_oFont.GetFamily().ToWString());

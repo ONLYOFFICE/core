@@ -151,10 +151,10 @@ namespace NSCSS
 			case Millimeter: return CUnitMeasureConverter::ConvertMm(m_oValue, enUnitMeasure, 96);
 			case Inch:       return CUnitMeasureConverter::ConvertIn(m_oValue, enUnitMeasure, 96);
 			case Peak:       return CUnitMeasureConverter::ConvertPc(m_oValue, enUnitMeasure, 96);
+			case Twips:      return CUnitMeasureConverter::ConvertTw(m_oValue, enUnitMeasure, 96);
 			case Em:
 			case Rem:        return m_oValue * dPrevValue;
-			case None:
-			case Twips:      return m_oValue;
+			case None:       return m_oValue;
 		}
 	}
 
@@ -254,7 +254,8 @@ namespace NSCSS
 
 	bool CDigit::operator==(const CDigit &oDigit) const
 	{
-		return (std::abs(oDigit.m_oValue - m_oValue) <= DBL_EPSILON);
+		return (std::abs(oDigit.m_oValue - m_oValue) <= DBL_EPSILON) && 
+		       m_enUnitMeasure == oDigit.m_enUnitMeasure;
 	}
 
 	bool CDigit::operator!=(const double &oValue) const
@@ -1333,8 +1334,13 @@ namespace NSCSS
 			return false;
 			
 		if (L"none" == wsValue)
+		{
+			SetColor(L"#ffffff", unLevel, bHardMode);
+			SetStyle(L"solid", unLevel, bHardMode);
+			SetWidth(L"0",unLevel,bHardMode);
 			return true;
-
+		}
+		
 		const std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsValue, false, L" ");
 		for (const std::wstring& sValue : arValues)
 		{
@@ -1429,6 +1435,11 @@ namespace NSCSS
 	bool CBorderSide::Zero() const
 	{
 		return m_oWidth.Zero();
+	}
+
+	bool CBorderSide::Valid() const
+	{
+		return !m_oWidth.Empty() && !m_oWidth.Zero();
 	}
 
 	CBorderSide &CBorderSide::operator+=(const CBorderSide &oBorderSide)
@@ -2287,7 +2298,7 @@ namespace NSCSS
 		       m_oStretch    == oFont.m_oStretch    &&
 		       m_oStyle      == oFont.m_oStyle      &&
 		       m_oVariant    == oFont.m_oVariant    &&
-		        m_oWeight     == oFont.m_oWeight;
+		       m_oWeight     == oFont.m_oWeight;
 	}
 
 	CColorValue::CColorValue()

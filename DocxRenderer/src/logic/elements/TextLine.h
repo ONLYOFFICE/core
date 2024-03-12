@@ -35,6 +35,7 @@ namespace NSDocxRenderer
 		virtual ~CTextLine();
 		virtual void Clear() override final;
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
+		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
 		virtual void RecalcWithNewItem(const CContText* pCont);
 		virtual eVerticalCrossingType GetVerticalCrossingType(const CTextLine* pLine) const noexcept;
 
@@ -45,5 +46,7 @@ namespace NSDocxRenderer
 
 		bool IsShadingPresent(const CTextLine* pLine) const noexcept;
 		bool IsCanBeDeleted() const;
+
+		size_t GetLength() const;
 	};
 }

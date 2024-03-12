@@ -80,6 +80,7 @@ namespace NSDocxRenderer
 
 		virtual void Clear() override final;
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
+		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
 		virtual eVerticalCrossingType GetVerticalCrossingType(const CContText* pItem) const noexcept;
 
 		// calc sizes in selected font (uses m_pFontStyle & m_pManager)

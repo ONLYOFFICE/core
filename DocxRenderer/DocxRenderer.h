@@ -194,6 +194,7 @@ public:
 	HRESULT SetTextAssociationType(const NSDocxRenderer::TextAssociationType& eType);
 	int Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFile, bool bIsOutCompress = true);
 	std::vector<std::wstring> ScanPage(IOfficeDrawingFile* pFile, size_t nPage);
+	std::vector<std::wstring> ScanPagePptx(IOfficeDrawingFile* pFile, size_t nPage);
 
 private:
 	CDocxRenderer_Private* m_pInternal;

@@ -18,8 +18,12 @@ namespace NSDocxRenderer
 		CDropCap() = default;
 		~CDropCap() = default;
 
-		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override;
+		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
+		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
 		virtual void Clear() override {}
+
+	private:
+		void BuildXml(NSStringUtils::CStringBuilder& oWriter, const std::wstring& wsTag) const;
 	};
 }
 

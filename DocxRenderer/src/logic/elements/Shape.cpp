@@ -781,13 +781,20 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"\"");
 		}
 		oWriter.WriteString(L">");
-		oWriter.WriteString(L"<a:off x=\"0\" y=\"0\"/>");
+
+		oWriter.WriteString(L"<a:off x=\"");
+		oWriter.AddInt(static_cast<int>(m_dLeft * c_dMMToEMU));
+		oWriter.WriteString(L"\" y=\"");
+		oWriter.AddInt(static_cast<int>(m_dTop * c_dMMToEMU));
+		oWriter.WriteString(L"\"/>");
+
 		oWriter.WriteString(L"<a:ext");
 		oWriter.WriteString(L" cx=\"");
 		oWriter.AddInt(static_cast<int>(m_dWidth * c_dMMToEMU));
 		oWriter.WriteString(L"\" cy=\"");
 		oWriter.AddInt(static_cast<int>(m_dHeight * c_dMMToEMU));
 		oWriter.WriteString(L"\"/>");
+
 		oWriter.WriteString(L"</a:xfrm>");
 
 		//Если просто текст без графики
@@ -869,6 +876,36 @@ namespace NSDocxRenderer
 		}
 	}
 
+	void CShape::BuildTextBoxParams(NSStringUtils::CStringBuilder &oWriter) const
+	{
+		oWriter.WriteString(L" rot=\"0\""); //Определяет поворот, который применяется к тексту в пределах ограничивающей рамки.
+		oWriter.WriteString(L" spcFirstLastPara=\"0\""); //должен ли соблюдаться интервал между абзацами до и после, заданный пользователем.
+		oWriter.WriteString(L" vertOverflow=\"overflow\""); //может ли текст выходить за пределы ограничительной рамки по вертикали
+		oWriter.WriteString(L" horzOverflow=\"overflow\""); //может ли текст выходить за пределы ограничительной рамки по горизонтали.
+		oWriter.WriteString(L" vert=\"horz\"");
+		//oWriter.WriteString(L" wrap=\"none\""); //граница шейпа по ширине текста
+		oWriter.WriteString(L" wrap=\"square\""); //Определяет параметры обертки, которые будут использоваться для данного текстового тела.
+		//на сколько граница текста отступает от границы шейпа
+		oWriter.WriteString(L" lIns=\"0\""); //left   по умолчанию 0.25см = 91440
+		oWriter.WriteString(L" tIns=\"0\""); //top    по умолчанию 0.13см = 45720
+		oWriter.WriteString(L" rIns=\"0\""); //right  по умолчанию 0.25см
+		oWriter.WriteString(L" bIns=\"0\""); //bottom по умолчанию 0.13см
+		oWriter.WriteString(L" numCol=\"1\""); //Определяет количество колонок текста в ограничивающем прямоугольнике.
+		oWriter.WriteString(L" spcCol=\"0\""); //Определяет пространство между колонками текста в текстовой области (только если numCol >1)
+		oWriter.WriteString(L" rtlCol=\"0\""); //используются ли столбцы в порядке справа налево (true) или слева направо (false).
+		oWriter.WriteString(L" fromWordArt=\"0\""); //true/1 текст в этом текстовом поле является преобразованным текстом из объекта WordArt.
+		oWriter.WriteString(L" anchor=\"t\""); //Вертикальное выравнивание текста в шейпе (t - top, b - bottom, ctr - middle) по умолчанию top
+		oWriter.WriteString(L" anchorCtr=\"0\""); //true/1 Определяет центрирование текстового поля.
+		oWriter.WriteString(L" forceAA=\"0\""); //true/1 Заставляет текст отображаться сглаженным независимо от размера шрифта.
+		oWriter.WriteString(L" compatLnSpc=\"1\""); //межстрочный интервал для данного текста определяется упрощенным способом с помощью сцены шрифта.
+		oWriter.WriteString(L">");
+
+		oWriter.WriteString(L"<a:prstTxWarp prst=\"textNoShape\">");
+		oWriter.WriteString(L"<a:avLst/>");
+		oWriter.WriteString(L"</a:prstTxWarp>");
+		oWriter.WriteString(L"<a:noAutofit/>");
+	}
+
 	void CShape::BuildTextBox(NSStringUtils::CStringBuilder &oWriter) const
 	{
 		if (m_eType == eShapeType::stTextBox && !m_arOutputObjects.empty())
@@ -884,32 +921,7 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"</wps:txbx>");
 
 			oWriter.WriteString(L"<wps:bodyPr"); //определяет свойства тела текста внутри фигуры
-			oWriter.WriteString(L" rot=\"0\""); //Определяет поворот, который применяется к тексту в пределах ограничивающей рамки.
-			oWriter.WriteString(L" spcFirstLastPara=\"0\""); //должен ли соблюдаться интервал между абзацами до и после, заданный пользователем.
-			oWriter.WriteString(L" vertOverflow=\"overflow\""); //может ли текст выходить за пределы ограничительной рамки по вертикали
-			oWriter.WriteString(L" horzOverflow=\"overflow\""); //может ли текст выходить за пределы ограничительной рамки по горизонтали.
-			oWriter.WriteString(L" vert=\"horz\"");
-			//oWriter.WriteString(L" wrap=\"none\""); //граница шейпа по ширине текста
-			oWriter.WriteString(L" wrap=\"square\""); //Определяет параметры обертки, которые будут использоваться для данного текстового тела.
-			//на сколько граница текста отступает от границы шейпа
-			oWriter.WriteString(L" lIns=\"0\""); //left   по умолчанию 0.25см = 91440
-			oWriter.WriteString(L" tIns=\"0\""); //top    по умолчанию 0.13см = 45720
-			oWriter.WriteString(L" rIns=\"0\""); //right  по умолчанию 0.25см
-			oWriter.WriteString(L" bIns=\"0\""); //bottom по умолчанию 0.13см
-			oWriter.WriteString(L" numCol=\"1\""); //Определяет количество колонок текста в ограничивающем прямоугольнике.
-			oWriter.WriteString(L" spcCol=\"0\""); //Определяет пространство между колонками текста в текстовой области (только если numCol >1)
-			oWriter.WriteString(L" rtlCol=\"0\""); //используются ли столбцы в порядке справа налево (true) или слева направо (false).
-			oWriter.WriteString(L" fromWordArt=\"0\""); //true/1 текст в этом текстовом поле является преобразованным текстом из объекта WordArt.
-			oWriter.WriteString(L" anchor=\"t\""); //Вертикальное выравнивание текста в шейпе (t - top, b - bottom, ctr - middle) по умолчанию top
-			oWriter.WriteString(L" anchorCtr=\"0\""); //true/1 Определяет центрирование текстового поля.
-			oWriter.WriteString(L" forceAA=\"0\""); //true/1 Заставляет текст отображаться сглаженным независимо от размера шрифта.
-			oWriter.WriteString(L" compatLnSpc=\"1\""); //межстрочный интервал для данного текста определяется упрощенным способом с помощью сцены шрифта.
-			oWriter.WriteString(L">");
-
-			oWriter.WriteString(L"<a:prstTxWarp prst=\"textNoShape\">");
-			oWriter.WriteString(L"<a:avLst/>");
-			oWriter.WriteString(L"</a:prstTxWarp>");
-			oWriter.WriteString(L"<a:noAutofit/>");
+			BuildTextBoxParams(oWriter);
 			oWriter.WriteString(L"</wps:bodyPr>");
 		}
 		else
@@ -917,4 +929,27 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"<wps:bodyPr/>");
 		}
 	}
+	void CShape::ToXmlPptx(NSStringUtils::CStringBuilder &oWriter) const
+	{
+		oWriter.WriteString(L"<p:sp>");
+		oWriter.WriteString(L"<p:spPr>");
+		BuildGraphicProperties(oWriter);
+		oWriter.WriteString(L"</p:spPr>");
+
+		if (m_eType == eShapeType::stTextBox && !m_arOutputObjects.empty())
+		{
+			oWriter.WriteString(L"<a:txBody>");
+			oWriter.WriteString(L"<a:bodyPr");
+			BuildTextBoxParams(oWriter);
+			oWriter.WriteString(L"</a:bodyPr>");
+
+			for (const auto& obj : m_arOutputObjects)
+				obj->ToXmlPptx(oWriter);
+
+			oWriter.WriteString(L"</a:txBody>");
+		}
+		oWriter.WriteString(L"</p:sp>");
+	}
+
+
 }; // namespace NSDocxRenderer

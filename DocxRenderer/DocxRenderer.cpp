@@ -128,6 +128,29 @@ std::vector<std::wstring> CDocxRenderer::ScanPage(IOfficeDrawingFile* pFile, siz
 	return xml_shapes;
 }
 
+std::vector<std::wstring> CDocxRenderer::ScanPagePptx(IOfficeDrawingFile* pFile, size_t nPage)
+{
+	m_pInternal->m_oDocument.Clear();
+	m_pInternal->m_oDocument.Init(false);
+
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = true;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
+
+	DrawPage(pFile, nPage);
+
+	std::vector<std::wstring> xml_shapes;
+	for (const auto& shape : m_pInternal->m_oDocument.m_oCurrentPage.m_arShapes)
+	{
+		if (!shape) continue;
+		auto writer = new NSStringUtils::CStringBuilder();
+		shape->ToXmlPptx(*writer);
+		xml_shapes.push_back(writer->GetData());
+		delete writer;
+	}
+	m_pInternal->m_oDocument.Clear();
+	return xml_shapes;
+}
+
 void CDocxRenderer::DrawPage(IOfficeDrawingFile* pFile, size_t nPage)
 {
 	//std::cout << "Page " << i + 1 << "/" << nPagesCount << std::endl;

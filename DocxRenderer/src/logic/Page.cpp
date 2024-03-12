@@ -1407,16 +1407,13 @@ namespace NSDocxRenderer
 
 			// alignment check
 			bool is_first_line = false;
+			std::shared_ptr<CTextLine> gap_check_line = m_arTextLines[0];
 			for (size_t index = 0; index < ar_positions.size() - 1; ++index)
 			{
-				Position position_top;
-				Position position_bot;
+				Position position_bot = ar_positions[index];
 
-				position_bot = ar_positions[index];
-				if (index == 0)
-					position_top = position_bot;
-				else
-					position_top = ar_positions[index - 1];
+				auto& line_top = m_arTextLines[index];
+				auto& line_bot = m_arTextLines[index + 1];
 
 				if (index == 0 || ar_delims[index - 1])
 					is_first_line = true;
@@ -1424,7 +1421,7 @@ namespace NSDocxRenderer
 					is_first_line = false;
 
 				// первая строка может быть с отступом
-				if (is_first_line && m_arTextLines[index + 1]->m_dLeft < m_arTextLines[index]->m_dLeft)
+				if (is_first_line && line_bot->m_dLeft < line_top->m_dLeft)
 				{
 					// если больше трех линий - проверим третью
 					if (index < ar_positions.size() - 2)
@@ -1441,15 +1438,48 @@ namespace NSDocxRenderer
 				bool is_unknown = !(position_bot.left || position_bot.right || position_bot.center);
 				if (is_unknown)
 					ar_delims[index] = true;
-			}
 
-			// отдельно просмотрим возможные параграфы по две строки
-			for (size_t index = 0; index < ar_delims.size() - 1; ++index)
-			{
-				if (!ar_delims[index] && ar_delims[index + 1])
+				if (ar_delims[index])
+					gap_check_line = line_bot;
+
+				// bla-bla-bla
+				// text bla-bla-bla-bla
+				//
+				// bla-bla-bla text
+				// bla-bla-bla-bla
+				else if (!ar_delims[index])
 				{
-					// ширина верхней строчки сильно меньше нижней
-					if (m_arTextLines[index]->m_dWidth * 3 < m_arTextLines[index + 1]->m_dWidth)
+					double gap = 0;
+					std::shared_ptr<CContText> cont = nullptr;
+
+					if (position_bot.left)
+					{
+						gap = line_bot->m_dRight - gap_check_line->m_dRight;
+						cont = line_bot->m_arConts[0];
+
+					}
+					else if (position_bot.right)
+					{
+						gap = line_bot->m_dLeft - gap_check_line->m_dLeft;
+						cont = line_bot->m_arConts[line_bot->m_arConts.size() - 1];
+					}
+					else
+						continue;
+
+					if (gap < 0)
+					{
+						gap_check_line = line_bot;
+						continue;
+					}
+
+					size_t cont_len = cont->m_oText.length();
+					size_t space_pos = cont->m_oText.ToStdWString().find_first_of(L' ');
+					if (space_pos == std::wstring::npos)
+						space_pos = cont_len;
+
+					// to save time doing it roughly
+					double rough_width = cont->m_dWidth / cont_len * space_pos;
+					if (gap > rough_width * 1.2)
 						ar_delims[index] = true;
 				}
 			}

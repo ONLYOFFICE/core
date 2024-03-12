@@ -62,6 +62,7 @@ namespace NSDocxRenderer
 		virtual ~CShape();
 		virtual void Clear() override final;
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
+		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter)const override final;
 
 		void SetVector(CVectorGraphics&& oVector);
 
@@ -85,6 +86,7 @@ namespace NSDocxRenderer
 		void BuildCanvasProperties(NSStringUtils::CStringBuilder &oWriter) const;
 		void BuildGraphicProperties(NSStringUtils::CStringBuilder &oWriter) const;
 		void BuildTextBox(NSStringUtils::CStringBuilder &oWriter) const;
+		void BuildTextBoxParams(NSStringUtils::CStringBuilder &oWriter) const;
 
 		static void ResetRelativeHeight();
 

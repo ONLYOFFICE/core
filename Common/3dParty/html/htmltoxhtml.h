@@ -37,6 +37,13 @@ static void replace_all(std::string& s, const std::string& s1, const std::string
 
 static std::wstring htmlToXhtml(std::string& sFileContent)
 {
+	// Избавляемся от лишних символов до <...
+	boost::regex oRegex("<[a-zA-Z]");
+	boost::match_results<typename std::string::const_iterator> oResult;
+
+	if (boost::regex_search(sFileContent, oResult, oRegex))
+		sFileContent.erase(0, oResult.position());
+
 	// Избавление от <a/>
 	size_t posA = sFileContent.find("<a ");
 	while(posA != std::string::npos)

@@ -21,11 +21,11 @@ namespace NSCSS
 	CCompiledStyle::CCompiledStyle() : m_nDpi(96), m_UnitMeasure(Point)
 	{}
 
-	 CCompiledStyle::CCompiledStyle(const CCompiledStyle& oStyle) :
-	    m_arParentsStyles(oStyle.m_arParentsStyles), m_sId(oStyle.m_sId),
-	    m_nDpi(oStyle.m_nDpi), m_UnitMeasure(oStyle.m_UnitMeasure),
-	    m_oFont(oStyle.m_oFont), m_oMargin(oStyle.m_oMargin), m_oPadding(oStyle.m_oPadding), m_oBackground(oStyle.m_oBackground),
-	    m_oText(oStyle.m_oText), m_oBorder(oStyle.m_oBorder), m_oDisplay(oStyle.m_oDisplay){}
+	CCompiledStyle::CCompiledStyle(const CCompiledStyle& oStyle) :
+		m_arParentsStyles(oStyle.m_arParentsStyles), m_sId(oStyle.m_sId),
+		m_nDpi(oStyle.m_nDpi), m_UnitMeasure(oStyle.m_UnitMeasure),
+		m_oFont(oStyle.m_oFont), m_oMargin(oStyle.m_oMargin), m_oPadding(oStyle.m_oPadding), m_oBackground(oStyle.m_oBackground),
+		m_oText(oStyle.m_oText), m_oBorder(oStyle.m_oBorder), m_oDisplay(oStyle.m_oDisplay){}
 
 	CCompiledStyle::~CCompiledStyle()
 	{
@@ -176,6 +176,7 @@ namespace NSCSS
 					break;
 				}
 				CASE(L"margin-top"):
+				CASE(L"topmargin"):
 				{
 					if (bIsThereBorder)
 						break;
@@ -186,6 +187,7 @@ namespace NSCSS
 				}
 				CASE(L"margin-right"):
 				CASE(L"margin-block-end"):
+				CASE(L"rightmargin"):
 				{
 					if (bIsThereBorder)
 						break;
@@ -195,6 +197,7 @@ namespace NSCSS
 					break;
 				}
 				CASE(L"margin-bottom"):
+				CASE(L"bottommargin"):
 				{
 					if (bIsThereBorder)
 						break;
@@ -205,6 +208,7 @@ namespace NSCSS
 				}
 				CASE(L"margin-left"):
 				CASE(L"margin-block-start"):
+				CASE(L"leftmargin"):
 				{
 					if (bIsThereBorder)
 						break;

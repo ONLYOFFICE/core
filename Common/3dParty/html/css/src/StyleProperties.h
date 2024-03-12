@@ -439,6 +439,7 @@ namespace NSCSS
 		const CColor&  GetColor() const;
 
 		bool Empty() const;
+		bool Zero()  const;
 
 		CBorderSide& operator+=(const CBorderSide& oBorderSide);
 		bool         operator==(const CBorderSide& oBorderSide) const;
@@ -499,6 +500,7 @@ namespace NSCSS
 		void Unblock();
 
 		bool Empty() const;
+		bool Zero() const;
 		bool EqualSides() const;
 
 		const CEnum& GetCollapse() const;

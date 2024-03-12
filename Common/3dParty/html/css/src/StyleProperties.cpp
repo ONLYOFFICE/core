@@ -1423,7 +1423,12 @@ namespace NSCSS
 
 	bool CBorderSide::Empty() const
 	{
-		return m_oWidth.Empty() || m_oWidth.Zero();
+		return m_oWidth.Empty();
+	}
+
+	bool CBorderSide::Zero() const
+	{
+		return m_oWidth.Zero();
 	}
 
 	CBorderSide &CBorderSide::operator+=(const CBorderSide &oBorderSide)
@@ -1622,6 +1627,12 @@ namespace NSCSS
 		       m_oRight.Empty() && m_oBottom.Empty();
 	}
 
+	bool CBorder::Zero() const
+	{
+		return m_oLeft.Zero()  && m_oTop.Zero() &&
+		       m_oRight.Zero() && m_oBottom.Zero();
+	}
+
 	bool CBorder::EqualSides() const
 	{
 		return m_oLeft == m_oTop && m_oTop == m_oRight && m_oRight == m_oBottom;
@@ -1654,6 +1665,9 @@ namespace NSCSS
 
 	CBorder &CBorder::operator+=(const CBorder &oBorder)
 	{
+		if (oBorder.Empty())
+			return *this;
+
 		m_oLeft      = oBorder.m_oLeft;
 		m_oTop       = oBorder.m_oTop;
 		m_oRight     = oBorder.m_oRight;
@@ -2200,8 +2214,7 @@ namespace NSCSS
 
 	void CFont::Clear()
 	{
-		m_oSize = CDigit(24., 0);
-
+		m_oSize      .Clear();
 		m_oLineHeight.Clear();
 		m_oFamily    .Clear();
 		m_oStretch   .Clear();

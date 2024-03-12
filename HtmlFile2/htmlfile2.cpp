@@ -87,10 +87,10 @@ struct TTableStyles
 {
 	const NSCSS::NSProperties::CIndent* m_pPadding;
 	const NSCSS::NSProperties::CEnum*   m_pCollapse;
-	
+
 	int  m_nCellSpacing;
 	bool m_bHaveBorderAttribute;
-	
+
 	TTableStyles()
 		: m_pPadding(NULL), m_pCollapse(NULL), m_nCellSpacing(-1), m_bHaveBorderAttribute(false)
 	{}
@@ -774,7 +774,7 @@ private:
 
 	void CloseP(NSStringUtils::CStringBuilder* pXml, const std::vector<NSCSS::CNode>& arSelectors)
 	{
-		m_bWasSpace = false;
+		m_bWasSpace = true;
 
 		if (!m_bInP)
 			return;
@@ -1403,7 +1403,7 @@ private:
 					oXml->WriteString(L"<w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
 					std::wstring sCol = (it1 != mTable.end() ? it1->sGridSpan : it2->sGridSpan);
 					oXml->WriteString(sCol);
-					oXml->WriteString(L"\"/><w:noWrap w:val=\"false\"/><w:textDirection w:val=\"lrTb\"/></w:tcPr><w:p></w:p></w:tc>");
+					oXml->WriteString(L"\"/></w:tcPr><w:p></w:p></w:tc>");
 					j += stoi(sCol);
 					it1 = std::find_if(mTable.begin(), mTable.end(), [i, j](const CTc& item){ return item.i == i && item.j == j; });
 					it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
@@ -1445,7 +1445,7 @@ private:
 
 				if (!oStyle.m_oBorder.Empty())
 					wsTcPr += L"<w:tcBorders>" + CreateBorders(oStyle.m_oBorder) + L"</w:tcBorders>";
-				else if (bTableHasBorderAttribute)
+				else if (bTableHasBorderAttribute && !oStyle.m_oBorder.Zero())
 					wsTcPr += L"<w:tcBorders><w:top w:val=\"outset\" w:sz=\"6\" w:space=\"0\" w:color=\"auto\"/><w:left w:val=\"outset\" w:sz=\"6\" w:space=\"0\" w:color=\"auto\"/><w:bottom w:val=\"outset\" w:sz=\"6\" w:space=\"0\" w:color=\"auto\"/><w:right w:val=\"outset\" w:sz=\"6\" w:space=\"0\" w:color=\"auto\"/></w:tcBorders>";
 
 				if (!oStyle.m_oBackground.Empty() && !oStyle.m_oBackground.GetColor().Empty())
@@ -1497,7 +1497,7 @@ private:
 
 				oXml->WriteString(wsTcPr);
 
-				oXml->WriteString(L"<w:noWrap w:val=\"false\"/><w:textDirection w:val=\"lrTb\"/><w:hideMark/></w:tcPr>");
+				oXml->WriteString(L"<w:hideMark/></w:tcPr>");
 				m_bWasPStyle = false;
 
 				// Читаем th. Ячейка заголовка таблицы. Выравнивание посередине. Выделяется полужирным
@@ -1534,7 +1534,7 @@ private:
 					oXml->WriteString(L"<w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
 					std::wstring sCol = (it1 != mTable.end() ? it1->sGridSpan : it2->sGridSpan);
 					oXml->WriteString(sCol);
-					oXml->WriteString(L"\"/><w:noWrap w:val=\"false\"/><w:textDirection w:val=\"lrTb\"/></w:tcPr><w:p></w:p></w:tc>");
+					oXml->WriteString(L"\"/></w:tcPr><w:p></w:p></w:tc>");
 					j += stoi(sCol);
 					it1 = std::find_if(mTable.begin(), mTable.end(), [i, j](const CTc& item){ return item.i == i && item.j == j; });
 					it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
@@ -1546,7 +1546,7 @@ private:
 			else
 			{
 				for (; j < unMaxColumns; ++j)
-					oXml->WriteString(L"<w:tc><w:tcPr><w:tcW w:w=\"0\" w:type=\"auto\"/><w:tcBorders><w:left w:val=\"none\" w:sz=\"4\" w:color=\"auto\" w:space=\"0\"/><w:top w:val=\"none\" w:sz=\"4\" w:color=\"auto\" w:space=\"0\"/><w:right w:val=\"none\" w:sz=\"4\" w:color=\"auto\" w:space=\"0\"/><w:bottom w:val=\"none\" w:color=\"auto\" w:sz=\"4\" w:space=\"0\"/></w:tcBorders><w:noWrap w:val=\"false\"/><w:textDirection w:val=\"lrTb\"/><w:hideMark/></w:tcPr><w:p></w:p></w:tc>");
+					oXml->WriteString(L"<w:tc><w:tcPr><w:tcW w:w=\"0\" w:type=\"auto\"/><w:tcBorders><w:left w:val=\"none\" w:sz=\"4\" w:color=\"auto\" w:space=\"0\"/><w:top w:val=\"none\" w:sz=\"4\" w:color=\"auto\" w:space=\"0\"/><w:right w:val=\"none\" w:sz=\"4\" w:color=\"auto\" w:space=\"0\"/><w:bottom w:val=\"none\" w:color=\"auto\" w:sz=\"4\" w:space=\"0\"/></w:tcBorders><w:hideMark/></w:tcPr><w:p></w:p></w:tc>");
 			}
 
 			oXml->WriteString(L"</w:tr>");
@@ -1563,13 +1563,18 @@ private:
 		NSStringUtils::CStringBuilder oBody;
 		NSStringUtils::CStringBuilder oFoot;
 
-		NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, false);
-
 		TTableStyles oTableStyles;
 
-		oTableStyles.m_pCollapse = &oStyle.m_oBorder.GetCollapse();
 		if (sSelectors.back().m_mAttributes.end() != sSelectors.back().m_mAttributes.find(L"border"))
+		{
+			int nWidth = NSStringFinder::ToInt(sSelectors.back().m_mAttributes[L"border"]);
+			sSelectors.back().m_mAttributes[L"border"] = L"outset " + std::to_wstring(nWidth) + L"px auto";
 			oTableStyles.m_bHaveBorderAttribute = true;
+		}
+
+		NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, false);
+
+		oTableStyles.m_pCollapse = &oStyle.m_oBorder.GetCollapse();
 
 		if (oXml->GetSubData(oXml->GetCurSize() - 8) == L"</w:tbl>")
 			WriteEmptyParagraph(oXml, true);
@@ -1582,10 +1587,7 @@ private:
 		if (!oStyle.m_oDisplay.GetWidth().Empty())
 		{
 			if (NSCSS::UnitMeasure::Percent == oStyle.m_oDisplay.GetWidth().GetUnitMeasure())
-			{
-				
 				wsTable += L"<w:tblW w:w=\"" + std::to_wstring(oStyle.m_oDisplay.GetWidth().ToInt(NSCSS::UnitMeasure::Percent, 5000)) + L"\" w:type=\"pct\"/>";
-			}
 			else
 				wsTable += L"<w:tblW w:w=\"" + std::to_wstring(oStyle.m_oDisplay.GetWidth().ToInt(NSCSS::UnitMeasure::Twips)) + L"\" w:type=\"dxa\"/>";
 		}
@@ -1593,11 +1595,14 @@ private:
 			wsTable += L"<w:tblW w:w=\"0\" w:type=\"auto\"/>";
 
 		if (sSelectors.back().m_mAttributes.end() != sSelectors.back().m_mAttributes.find(L"cellspacing"))
-		{
 			oTableStyles.m_nCellSpacing = NSStringFinder::ToInt(sSelectors.back().m_mAttributes[L"cellspacing"]);
+		else
+			oTableStyles.m_nCellSpacing = 15;
 
-			wsTable += L"<w:tblCellSpacing w:w=\"" + std::to_wstring(oTableStyles.m_nCellSpacing) + L"\" w:type=\"dxa\"/>";
-		}
+		wsTable += L"<w:tblCellSpacing w:w=\"" + std::to_wstring(oTableStyles.m_nCellSpacing) + L"\" w:type=\"dxa\"/>";
+
+		if (sSelectors.back().m_mAttributes.end() != sSelectors.back().m_mAttributes.find(L"cellpadding"))
+			oStyle.m_oPadding.SetValues(sSelectors.back().m_mAttributes[L"cellpadding"] + L"px", 0, true);
 
 		std::wstring wsAlign = oStyle.m_oDisplay.GetHAlign().ToWString();
 

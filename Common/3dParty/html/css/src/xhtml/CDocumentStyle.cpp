@@ -74,6 +74,8 @@ namespace NSCSS
 
 	void CDocumentStyle::CombineStandardStyles(const std::vector<std::wstring>& arStandartedStyles, CXmlElement& oElement)
 	{
+		oElement.AddBasicProperties(CSSProperties::BasicProperties::B_BasedOn, L"normal");
+
 		if (arStandartedStyles.empty())
 			return;
 

@@ -233,6 +233,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_UiPriority, L"99");
 		AddBasicProperties(CSSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
 
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"24");
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_Color, L"0000FF");
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_U, L"single");
 	}

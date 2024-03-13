@@ -43,8 +43,7 @@ core_ios {
 
 core_android {
     INCLUDEPATH += $$PWD/android/build/include
-    ICU_LIBS_PATH = $$replace(CORE_BUILDS_PLATFORM_PREFIX, "android_", "")
 
-    LIBS        += $$PWD/android/build/$$ICU_LIBS_PATH/libicuuc.a
-    LIBS        += $$PWD/android/build/$$ICU_LIBS_PATH/libicudata.a
+    LIBS        += $$PWD/android/build/$$CORE_BUILDS_PLATFORM_PREFIX_DST/libicuuc.a
+    LIBS        += $$PWD/android/build/$$CORE_BUILDS_PLATFORM_PREFIX_DST/libicudata.a
 }

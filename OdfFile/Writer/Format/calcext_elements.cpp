@@ -44,10 +44,13 @@ namespace odf_writer {
 
 void calcext_data_bar_attr::serialize(CP_ATTR_NODE)
 {
-	CP_XML_ATTR_OPT(L"calcext:axis-color",		calcext_axis_color_);
-	CP_XML_ATTR_OPT(L"calcext:positive-color",	calcext_positive_color_);
-	CP_XML_ATTR_OPT(L"calcext:negative-color",	calcext_negative_color_);
-	CP_XML_ATTR_OPT(L"calcext:axis-position", calcext_axis_position_);
+	CP_XML_ATTR_OPT(L"calcext:axis-color", axis_color_);
+	CP_XML_ATTR_OPT(L"calcext:positive-color", positive_color_);
+	CP_XML_ATTR_OPT(L"calcext:negative-color", negative_color_);
+	CP_XML_ATTR_OPT(L"calcext:axis-position", axis_position_);
+	CP_XML_ATTR_OPT(L"calcext:gradient", gradient_);
+	CP_XML_ATTR_OPT(L"calcext:min-length", min_length_);
+	CP_XML_ATTR_OPT(L"calcext:max-length", max_length_);
 }
 
 void calcext_icon_set_attr::serialize(CP_ATTR_NODE)

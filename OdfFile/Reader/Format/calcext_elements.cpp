@@ -60,6 +60,7 @@ void calcext_data_bar_attr::add_attributes( const xml::attributes_wc_ptr & Attri
 	CP_APPLY_ATTR(L"calcext:min-length",		min_length_);
 	CP_APPLY_ATTR(L"calcext:max-length",		max_length_);
 	CP_APPLY_ATTR(L"calcext:axis-position",		axis_position_);
+	CP_APPLY_ATTR(L"calcext:gradient",			gradient_);
 }
 
 void calcext_icon_set_attr::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -180,6 +181,9 @@ void calcext_data_bar::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	if (attr_.axis_position_)
 		Context.get_conditionalFormatting_context().set_axis_position(*attr_.axis_position_);
+
+	if (attr_.gradient_)
+		Context.get_conditionalFormatting_context().set_gradient(*attr_.gradient_);
 
 	Context.get_conditionalFormatting_context().set_dataBar(attr_.min_length_, attr_.max_length_);
 

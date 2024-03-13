@@ -28,6 +28,10 @@ core_windows {
 	LIBS += -lUser32
 }
 
+core_android {
+	QMAKE_CFLAGS += -Wno-incompatible-function-pointer-types
+}
+
 INCLUDEPATH += \
 	$$LIB_GRAPHICS_PRI_PATH/cximage/jasper/include \
 	$$LIB_GRAPHICS_PRI_PATH/cximage/jpeg \

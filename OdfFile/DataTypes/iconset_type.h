@@ -59,7 +59,10 @@ public:
 		Arrows5,
 		Arrows5Gray,
 		Quarters5,
-		Rating5
+		Rating5,
+        Stars3,
+        Triangles3,
+        Boxes5
    };
 
     iconset_type() {}

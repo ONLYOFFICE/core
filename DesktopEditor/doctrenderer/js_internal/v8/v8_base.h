@@ -52,8 +52,18 @@
 v8::Local<v8::String> CreateV8String(v8::Isolate* i, const char* str, const int& len = -1);
 v8::Local<v8::String> CreateV8String(v8::Isolate* i, const std::string& str);
 
+#ifdef __ANDROID__
+
+#ifdef _DEBUG
+#define ANDROID_LOGS
+#endif
+
 #ifdef ANDROID_LOGS
-#include <JniLogUtils.h>
+#include <android/log.h>
+#define  LOGW(...)  __android_log_print(ANDROID_LOG_WARN, "js", __VA_ARGS__)
+#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, "js", __VA_ARGS__)
+#endif
+
 #endif
 
 #ifdef V8_OS_XP
@@ -144,7 +154,11 @@ public:
 #endif
 
 		v8::V8::Dispose();
+	#ifdef V8_VERSION_121_PLUS
+		v8::V8::DisposePlatform();
+	#else
 		v8::V8::ShutdownPlatform();
+	#endif
 		if (m_pAllocator)
 			delete m_pAllocator;
 
@@ -483,7 +497,7 @@ namespace NSJSBase
 
 			LOGGER_START
 
-					v8::Local<v8::String> _name = CreateV8String(CV8Worker::GetCurrent(), name);
+			v8::Local<v8::String> _name = CreateV8String(CV8Worker::GetCurrent(), name);
 			v8::Handle<v8::Value> _func = value->Get(V8ContextFirstArg _name).ToLocalChecked();
 
 			CJSValueV8* _return = new CJSValueV8();
@@ -514,7 +528,7 @@ namespace NSJSBase
 
 			LOGGER_LAP_NAME(name)
 
-					JSSmart<CJSValue> _ret = _return;
+			JSSmart<CJSValue> _ret = _return;
 			return _ret;
 		}
 
@@ -804,10 +818,8 @@ namespace NSJSBase
 #endif
 
 #ifdef ANDROID_LOGS
-				LOGE("NSJSBase::CV8TryCatch::Check() - error:");
-				LOGE(std::to_string(nLineNumber).c_str());
-				LOGE(strCode.c_str());
-				LOGE(strException.c_str());
+				std::string sLog = "[JS (" + std::to_string(nLineNumber) + ")]: " + strCode + ", " + strException;
+				LOGE(sLog.c_str());
 #endif
 				return true;
 			}

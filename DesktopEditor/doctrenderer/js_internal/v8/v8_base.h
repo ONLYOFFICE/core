@@ -66,7 +66,7 @@ v8::Local<v8::String> CreateV8String(v8::Isolate* i, const std::string& str);
 
 #endif
 
-#if V8_OS_XP
+#ifdef V8_OS_XP
 class MallocArrayBufferAllocator : public v8::ArrayBuffer::Allocator
 {
 public:

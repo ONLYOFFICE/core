@@ -475,7 +475,7 @@ namespace OOX
 			}
 			return nLen;
 		}
-		_UINT16 CFormulaXLSB::toXLSB(NSBinPptxRW::CXlsbBinaryWriter& oStream, bool bIsBlankFormula)
+		_UINT32 CFormulaXLSB::toXLSB(NSBinPptxRW::CXlsbBinaryWriter& oStream, bool bIsBlankFormula)
 		{
 			_UINT16 nFlags = 0;
 			if(m_oCa.ToBool())
@@ -486,7 +486,7 @@ namespace OOX
 			oStream.WriteULONG(0);//cce
 			oStream.WriteULONG(0);//cb
 
-			_UINT16 nFlagsExt = 0;
+			_UINT32 nFlagsExt = 0;
 			nFlagsExt |= m_oT.GetValue();
 			nFlagsExt |= 0x4;
 			if(m_oAca.ToBool())
@@ -721,7 +721,7 @@ namespace OOX
 				break;
 			}
 
-			_UINT16 nFlags = 0;
+			_UINT32 nFlags = 0;
 			if(m_oFormula.m_bIsInit)
 			{
 				nFlags = m_oFormula.toXLSB(oStream, bIsBlankFormula);
@@ -733,13 +733,13 @@ namespace OOX
 			}
 			if (m_oCellMetadata.IsInit())
 			{
-				nFlags |= 0x4000;
+				nFlags |= 0x8000;
 			}
 			if (m_oValueMetadata.IsInit())
 			{
-				nFlags |= 0x8000;
+				nFlags |= 0x10000;
 			}
-			oStream.WriteUSHORT(nFlags);
+			oStream.WriteULONG(nFlags);
 			if(m_oFormula.m_bIsInit)
 			{
 				m_oFormula.toXLSBExt(oStream);
@@ -1784,7 +1784,7 @@ namespace OOX
 				m_oFormula->fromXLSB(oStream);
 			}
 			//todo it breaks xslb format
-			_UINT16 nFlags = oStream.GetUShort();
+			_UINT32 nFlags = oStream.GetULong();
 			if(0 != (nFlags & 0x4))
 			{
 				if(!m_oFormula.IsInit())
@@ -1806,11 +1806,11 @@ namespace OOX
 				m_oRichText.Init();
 				m_oRichText->fromXLSBExt(oStream);
 			}
-			if (0 != (nStyleRef & 0x4000))
+			if (0 != (nFlags & 0x8000))
 			{
 				m_oCellMetadata = oStream.GetULong();
 			}
-			if (0 != (nStyleRef & 0x8000))
+			if (0 != (nFlags & 0x10000))
 			{
 				m_oValueMetadata = oStream.GetULong();
 			}

@@ -3,10 +3,9 @@
 
 #include <jni.h>
 #include <string>
-#include <locale>
-#include <codecvt>
 #include <JniLogUtils.h>
 #include <vector>
+#include "../../../../../../../../../DesktopEditor/common/File.h"
 
 #define DELETE_LOCAL_REF(ENV, REFERENCE)                                             \
     if (REFERENCE != NULL && !ENV->IsSameObject(REFERENCE, NULL)) {                  \
@@ -140,8 +139,8 @@ class JniBaseObjects {
         static std::string jstringToString(JNIEnv* env, jstring jstr) {
             jboolean isCopy;
             const char * charPath = env->GetStringUTFChars(jstr, &isCopy);
-            const int size = env->GetStringLength(jstr);
-            const std::string str(charPath, charPath + size);
+            const int size = env->GetStringUTFLength(jstr);
+            const std::string str(charPath, (size_t)size);
             env->ReleaseStringUTFChars(jstr, charPath);
             return str;
         }
@@ -149,23 +148,28 @@ class JniBaseObjects {
         static std::string* jstringToPString(JNIEnv* env, jstring jstr) {
             jboolean isCopy;
             const char * charPath = env->GetStringUTFChars(jstr, &isCopy);
-            const int size = env->GetStringLength(jstr);
-            std::string* pStr = new std::string(charPath, charPath + size);
+            const int size = env->GetStringUTFLength(jstr);
+            std::string* pStr = new std::string(charPath, (size_t)size);
             env->ReleaseStringUTFChars(jstr, charPath);
             return pStr;
         }
 
         static std::wstring jstringToWString(JNIEnv* env, jstring jstr) {
             jboolean isCopy;
-            const char * cstr = env->GetStringUTFChars(jstr, &isCopy);
-            const int size = env->GetStringLength(jstr);
-            const std::wstring wstr = charsToWString(cstr);
-            env->ReleaseStringUTFChars(jstr, cstr);
-            return wstr;
+            const char * charPath = env->GetStringUTFChars(jstr, &isCopy);
+            const int size = env->GetStringUTFLength(jstr);
+            std::wstring pStr = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)charPath, (LONG)size);
+            env->ReleaseStringUTFChars(jstr, charPath);
+            return pStr;
         }
 
-        static jstring wStringToJString(JNIEnv* env, const std::wstring wstr) {
-            return env->NewStringUTF(wStringToString(wstr).c_str());
+        static jstring wStringToJString(JNIEnv* env, const std::wstring& wstr) {
+            std::string sTmp = U_TO_UTF8(wstr);
+            return stringToJString(env, sTmp);
+        }
+
+        static jstring stringToJString(JNIEnv* env, const std::string& str) {
+            return env->NewStringUTF(str.c_str());
         }
 
         static jstring charToJString(JNIEnv* env, const char * str) {
@@ -182,24 +186,6 @@ class JniBaseObjects {
             jintArray jArray = jEnv->NewIntArray(length);
             jEnv->SetIntArrayRegion(jArray, 0, length, reinterpret_cast<jint*>(data));
             return jArray;
-        }
-
-        static std::wstring charsToWString(const char * str) {
-            using convert_typeX = std::codecvt_utf8<wchar_t>;
-            std::wstring_convert<convert_typeX, wchar_t> converterX;
-            return converterX.from_bytes(str);
-        }
-
-        static std::wstring stringToWString(const std::string & str) {
-            using convert_typeX = std::codecvt_utf8<wchar_t>;
-            std::wstring_convert<convert_typeX, wchar_t> converterX;
-            return converterX.from_bytes(str);
-        }
-
-        static std::string wStringToString(const std::wstring & str) {
-            using convert_typeX = std::codecvt_utf8<wchar_t>;
-            std::wstring_convert<convert_typeX, wchar_t> converterX;
-            return converterX.to_bytes(str);
         }
 
         static jobjectArray wStringToObjectArray(JNIEnv *jEnv, std::wstring *data, int length) {

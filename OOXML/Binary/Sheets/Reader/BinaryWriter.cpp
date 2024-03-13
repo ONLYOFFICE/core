@@ -5867,7 +5867,7 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 				}
 			}
 		}
-		if (pImageFileCache.IsInit() && pOleObject->m_oObjectPr.IsInit() && pOleObject->m_oObjectPr->m_oRid.IsInit())
+		if (false == pImageFileCache.IsInit() && pOleObject->m_oObjectPr.IsInit() && pOleObject->m_oObjectPr->m_oRid.IsInit())
 		{
 			sIdImageFileCache = pOleObject->m_oObjectPr->m_oRid->GetValue();
 

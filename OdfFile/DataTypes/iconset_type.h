@@ -60,8 +60,8 @@ public:
 		Arrows5Gray,
 		Quarters5,
 		Rating5,
-        Stars3,
         Triangles3,
+        Stars3,
         Boxes5
    };
 

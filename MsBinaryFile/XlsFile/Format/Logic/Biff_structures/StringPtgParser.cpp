@@ -401,6 +401,10 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
 
             else
             {
+               //add error name to prevent endless formula conversion
+                rgce.sequence.clear();
+                rgce.addPtg(found_operand = OperandPtgPtr(new PtgErr(L"#NAME?")));
+                break;
                 // EXCEPT::RT::WrongFormulaString("Unknown operand format in formula.", assembled_formula);
             }
             last_ptg = found_operand;

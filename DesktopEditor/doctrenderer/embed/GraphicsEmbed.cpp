@@ -564,3 +564,14 @@ JSSmart<CJSValue> CGraphicsEmbed::GetTransform()
 	e->set("ty",  res.ty);
 	return e->toValue();
 }
+
+JSSmart<CJSValue> CGraphicsEmbed::CreateLayer(JSSmart<CJSValue> opacity)
+{
+	m_pInternal->CreateLayer(opacity->toDouble());
+	return NULL;
+}
+JSSmart<CJSValue> CGraphicsEmbed::BlendLayer()
+{
+	m_pInternal->BlendLayer();
+	return NULL;
+}

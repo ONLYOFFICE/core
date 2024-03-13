@@ -1525,6 +1525,12 @@ int CPdfFile::GetMaxRefID()
 
 	return m_pInternal->pReader->GetMaxRefID();
 }
+bool CPdfFile::ValidMetaData()
+{
+	if (!m_pInternal->pReader)
+		return false;
+	return m_pInternal->pReader->ValidMetaData();
+}
 void CPdfFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
 {
 	if (!m_pInternal->pReader)

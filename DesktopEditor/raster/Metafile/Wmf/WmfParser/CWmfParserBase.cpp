@@ -161,9 +161,9 @@ namespace MetaFile
 		return m_pDC->GetMapMode();
 	}
 
-	double CWmfParserBase::GetDpi()
+	USHORT CWmfParserBase::GetDpi()
 	{
-		return (0 != m_oPlaceable.ushInch) ? m_oPlaceable.ushInch : 96.;
+		return (0 != m_oPlaceable.ushInch) ? m_oPlaceable.ushInch : 96;
 	}
 
 	IRegion *CWmfParserBase::GetRegion()
@@ -249,6 +249,19 @@ namespace MetaFile
 
 			oBB = m_oPlaceable.oBoundingBox;
 
+			const USHORT ushFileDpi = GetDpi();
+			const USHORT ushRendererDpi = 96;
+
+			if (ushFileDpi != ushRendererDpi && 0 != ushFileDpi)
+			{
+				const double dKoef = (double)ushRendererDpi / (double)ushFileDpi;
+
+				oBB.Left   = std::round(oBB.Left   * dKoef);
+				oBB.Top    = std::round(oBB.Top    * dKoef);
+				oBB.Right  = std::round(oBB.Right  * dKoef);
+				oBB.Bottom = std::round(oBB.Bottom * dKoef);
+			}
+
 			// Иногда m_oPlaceable.BoundingBox задается нулевой ширины и высоты
 			if (abs(oBB.Right - oBB.Left) <= 1)
 			{
@@ -260,17 +273,6 @@ namespace MetaFile
 				oBB.Top    = m_oBoundingBox.Top;
 				oBB.Bottom = m_oBoundingBox.Bottom;
 			}
-
-			const double dFileDpi = GetDpi();
-			const double dRendererDpi = 96;
-
-			if (Equals(dFileDpi, dRendererDpi) && !Equals(0, dFileDpi))
-				return oBB;
-
-			oBB.Left   = std::round(oBB.Left   * dRendererDpi / dFileDpi);
-			oBB.Top    = std::round(oBB.Top    * dRendererDpi / dFileDpi);
-			oBB.Right  = std::round(oBB.Right  * dRendererDpi / dFileDpi);
-			oBB.Bottom = std::round(oBB.Bottom * dRendererDpi / dFileDpi);
 
 			return oBB;
 		}

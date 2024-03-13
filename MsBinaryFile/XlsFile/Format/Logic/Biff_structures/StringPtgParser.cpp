@@ -265,7 +265,8 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             }
             if(!ptg_stack.size() || !left_p)
             {
-                // EXCEPT::RT::WrongParenthesisSequence(assembled_formula);
+                operand_expected = true;
+                continue;// EXCEPT::RT::WrongParenthesisSequence(assembled_formula);
             }
             left_p->incrementParametersNum(); // The count of parameters will be transferred to PtgFuncVar
             last_ptg = left_p; // PtgParen. Mostly to differ unary and binary minuses and pluses
@@ -301,7 +302,7 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             {
                 if(SyntaxPtg::extract_PtgArea(it, itEnd, operand_str))
                 {
-                    rgce.addPtg(found_operand = OperandPtgPtr(new PtgArea3d(ixti, operand_str, OperandPtg::ptg_VALUE, rgce.getLocation())));
+                    rgce.addPtg(found_operand = OperandPtgPtr(new PtgArea3d(ixti, operand_str, OperandPtg::ptg_REFERENCE, rgce.getLocation())));
                 }
                 else if(SyntaxPtg::extract_PtgRef(it, itEnd, operand_str))
                 {
@@ -340,7 +341,7 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
                 }
                 else
                 {
-                    found_operand = OperandPtgPtr(new PtgArea(operand_str, OperandPtg::ptg_VALUE));
+                    found_operand = OperandPtgPtr(new PtgArea(operand_str, OperandPtg::ptg_REFERENCE));
                 }
                 rgce.addPtg(found_operand);
             }
@@ -364,17 +365,6 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             {
                 rgce.addPtg(found_operand = OperandPtgPtr(new PtgNum(operand_str)));
             }
-
-            else if(SyntaxPtg::extract_UndefinedName(it, itEnd)) // Shall be placed strongly after extract_PtgName
-            {
-                rgce.addPtg(found_operand = OperandPtgPtr(new PtgErr(L"#REF!")));
-            }
-
-            else if(SyntaxPtg::extract_PtgArray(it, itEnd, operand_str))
-            {
-                rgce.addPtg(found_operand = OperandPtgPtr(new PtgArray(OperandPtg::ptg_ARRAY)));
-                rgb.addPtg(PtgPtr(new PtgExtraArray(operand_str)));
-            }
             else if(SyntaxPtg::extract_PtgFunc(it, itEnd, operand_str))
             {
                 PtgPtr func;
@@ -394,6 +384,17 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
                     rgce.addPtg(PtgPtr(new PtgNameX(operand_str,  OperandPtg::ptg_VALUE)));
                 }
             }
+            else if(SyntaxPtg::extract_UndefinedName(it, itEnd)) // Shall be placed strongly after extract_PtgName
+            {
+                rgce.addPtg(found_operand = OperandPtgPtr(new PtgErr(L"#REF!")));
+            }
+
+            else if(SyntaxPtg::extract_PtgArray(it, itEnd, operand_str))
+            {
+                rgce.addPtg(found_operand = OperandPtgPtr(new PtgArray(OperandPtg::ptg_ARRAY)));
+                rgb.addPtg(PtgPtr(new PtgExtraArray(operand_str)));
+            }
+
             else
             {
                 // EXCEPT::RT::WrongFormulaString("Unknown operand format in formula.", assembled_formula);

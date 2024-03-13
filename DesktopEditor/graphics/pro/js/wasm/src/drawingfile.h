@@ -7,6 +7,7 @@
 #include "../../../../../../DjVuFile/DjVu.h"
 #include "../../../../../../PdfFile/PdfFile.h"
 #include "../../../../../../HtmlRenderer/include/HTMLRendererText.h"
+#include "../../../../../../DocxRenderer/DocxRenderer.h"
 #include "serialize.h"
 
 class CGraphicsFileDrawing
@@ -184,6 +185,29 @@ public:
 	void DestroyText()
 	{
 		RELEASEOBJECT(pTextRenderer);
+	}
+
+	BYTE* GetPageShapes(const int& nPageIndex)
+	{
+		CDocxRenderer oRenderer(pApplicationFonts);
+		oRenderer.SetTextAssociationType(NSDocxRenderer::TextAssociationType::tatParagraphToShape);
+		
+		std::vector<std::wstring> arShapes = oRenderer.ScanPage(pReader, nPageIndex);
+
+		int nLen = (int)arShapes.size();
+
+		NSWasm::CData oRes;
+		oRes.SkipLen();
+		oRes.AddInt(nLen);
+
+		for (int i = 0; i < nLen; ++i)
+			oRes.WriteString(arShapes[i]);
+
+		oRes.WriteLen();
+
+		BYTE* res = oRes.GetBuffer();
+		oRes.ClearWithoutAttack();
+		return res;
 	}
 };
 

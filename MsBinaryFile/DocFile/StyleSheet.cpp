@@ -116,7 +116,7 @@ namespace DocFileFormat
 				{
 					//user style
 					unsigned char *bytes = tableReader.ReadBytes( sz_name, true );
-					FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &std->xstzName, bytes, sz_name, ENCODING_WINDOWS_1250 );
+					FormatUtils::GetWStringFromBytes( std->xstzName, bytes, sz_name, ENCODING_WINDOWS_1250 );
 					RELEASEARRAYOBJECTS( bytes );
 				}
 				// ms style

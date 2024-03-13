@@ -170,6 +170,7 @@ public:
 
 private:
 	void process_common_properties(drawing_object_description& obj, _pptx_drawing & drawing);
+	void process_crop(const drawing_object_description& obj, _pptx_drawing& drawing, const std::wstring& filename);
 
 	void process_shape	(drawing_object_description& obj, _pptx_drawing & drawing);
     void process_image	(drawing_object_description& obj, _pptx_drawing & drawing);
@@ -688,8 +689,7 @@ void pptx_slide_context::Impl::process_image(drawing_object_description& obj, _p
 	}
 
 	std::wstring fileName = odfPacket_ + FILE_SEPARATOR_STR + obj.xlink_href_;			
-	drawing.fill.bitmap->bCrop  = odf_reader::parse_clipping(obj.clipping_string_, fileName, drawing.fill.bitmap->cropRect, get_mediaitems()->applicationFonts());
-	drawing.fill.bitmap->bStretch = true;
+	process_crop(obj, drawing, fileName);
 	
 	if ((sColorMode) && (*sColorMode == L"greyscale"))
 		drawing.fill.bitmap->luminance	= true;
@@ -748,6 +748,9 @@ void pptx_slide_context::Impl::process_shape(drawing_object_description & obj, _
 		drawing.fill.bitmap->rId = get_mediaitems()->add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref, oox::document_place);
 		
 		add_additional_rels(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);
+
+		std::wstring fileName = odfPacket_ + FILE_SEPARATOR_STR + drawing.fill.bitmap->xlink_href_;
+		process_crop(obj, drawing, fileName);
 	}
 		
 	std::wstring rId = get_mediaitems()->add_or_find(L"", typeShape, isMediaInternal, ref, oox::document_place);
@@ -843,6 +846,12 @@ void pptx_slide_context::Impl::process_common_properties(drawing_object_descript
 	drawing.hlinks		= pic.hlinks_;
 	drawing.action		= pic.action_;
 	drawing.fill		= pic.fill_;
+}
+
+void pptx_slide_context::Impl::process_crop(const drawing_object_description& obj, _pptx_drawing& drawing, const std::wstring& filename)
+{
+	drawing.fill.bitmap->bCrop = odf_reader::parse_clipping(obj.clipping_string_, filename, drawing.fill.bitmap->cropRect, get_mediaitems()->applicationFonts());
+	drawing.fill.bitmap->bStretch = true;
 }
 
 void pptx_slide_context::dump_rels(rels & Rels)

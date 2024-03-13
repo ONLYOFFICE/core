@@ -98,6 +98,27 @@ namespace OOX
 				}
 			}
 		}
+		XLS::BaseObjectPtr CColors::toBin()
+		{
+			auto ptr(new XLSB::COLORPALETTE);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			if(m_oIndexedColors.IsInit())
+			{
+			auto indexColors(new XLSB::INDEXEDCOLORS);
+                ptr->m_INDEXEDCOLORS = XLS::BaseObjectPtr{indexColors};
+			indexColors->m_arIndexedColor =	m_oIndexedColors->toBin();
+			}
+
+			if(m_oMruColors.IsInit())
+			{
+				auto mruColors(new XLSB::MRUCOLORS);
+				ptr->m_MRUCOLORS = XLS::BaseObjectPtr{mruColors};
+                mruColors->m_arMRUColor = m_oMruColors->toBin();
+			}
+
+			return objectPtr;
+		}
 		EElementType CColors::getType () const
 		{
 			return et_x_Colors;

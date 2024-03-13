@@ -34,6 +34,8 @@
 
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../XlsbFormat/Biff12_records/MergeCell.h"
+#include "../../XlsbFormat/Biff12_records/BeginMergeCells.h"
+#include "../../XlsbFormat/Biff12_unions/MERGECELLS.h"
 
 namespace OOX
 {
@@ -68,6 +70,13 @@ namespace OOX
 		void CMergeCell::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
+		}
+		XLS::BaseObjectPtr CMergeCell::toBin()
+		{
+			auto castedPtr(new XLSB::MergeCell);
+			XLS::BaseObjectPtr ptr(castedPtr);
+			castedPtr->rfx = m_oRef.get();
+			return ptr;
 		}
 		EElementType CMergeCell::getType () const
 		{
@@ -151,6 +160,19 @@ namespace OOX
 
 				pMergeCell->fromBin(mergeCell);
 			}
+		}
+		XLS::BaseObjectPtr CMergeCells::toBin()
+		{
+			auto castedPtr(new XLSB::MERGECELLS);
+            auto beginCells(new XLSB::BeginMergeCells);
+            castedPtr->m_BrtBeginMergeCells = XLS::BaseObjectPtr{beginCells};
+			XLS::BaseObjectPtr ptr(castedPtr);
+			for(auto i:m_arrItems)
+			{
+				castedPtr->m_arBrtMergeCell.push_back(i->toBin());
+			}
+            beginCells->cmcs = castedPtr->m_arBrtMergeCell.size();
+			return ptr;
 		}
 		EElementType CMergeCells::getType () const
 		{

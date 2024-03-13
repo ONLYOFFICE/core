@@ -144,7 +144,42 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:themeTint", m_oThemeTint)
 			WritingElement_ReadAttributes_End(oReader)
 		}
+//------------------------------------------------------------------------------------------------------------------------------------------------
+		CDocSuppData::CDocSuppData(OOX::Document* pMain) : WritingElement(pMain)
+		{
+		}
+		CDocSuppData::~CDocSuppData()
+		{
+		}
+		void CDocSuppData::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+		}
+		std::wstring CDocSuppData::toXML() const
+		{
+			return L"";
+		}
+		EElementType CDocSuppData::getType() const
+		{
+			return et_w_docSuppData;
+		}
+		void CDocSuppData::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if (oReader.IsEmptyNode())
+				return;
 
+			int nCurDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nCurDepth))
+			{
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if (L"binData" == sName)
+					m_oBinData = oReader;
+			}
+		}
+		void CDocSuppData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+		}
+//------------------------------------------------------------------------------------------------------------------------------------------------
 		CBgPict::CBgPict(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
@@ -401,7 +436,6 @@ namespace OOX
 				pItem->fromXML(oReader);
 				m_arrItems.push_back(pItem);
 			}
-
 			if ( pItem )
 			{
 				pItem->fromXML(oReader);

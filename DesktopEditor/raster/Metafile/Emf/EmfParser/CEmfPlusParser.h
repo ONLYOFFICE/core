@@ -21,7 +21,7 @@ namespace MetaFile
 
 		void            PlayFile()                                  override;
 		void            Scan()                                      override;
-		double          GetDpi()                                    override;
+		USHORT          GetDpi()                                    override;
 
 		EmfParserType   GetType()				    override;
 

@@ -48,6 +48,7 @@ PtgRefN::PtgRefN(const std::wstring& word, const PtgDataType data_type, const Ce
 	cell_base_ref(cell_base_ref_init)
 {
 	loc -= cell_base_ref;
+    loc_xlsb -= cell_base_ref;
 	bUseLocInit = true;
 }
 

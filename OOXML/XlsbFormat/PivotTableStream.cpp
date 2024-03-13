@@ -74,7 +74,7 @@ BaseObjectPtr PivotTableStream::clone()
 }
 
 const bool PivotTableStream::loadContent(BinProcessor& proc)
-{    
+{
 	while (true)
 	{
             CFRecordType::TypeId type = proc.getNextRecordType();
@@ -331,6 +331,7 @@ const bool PivotTableStream::saveContent(XLS::BinProcessor & proc)
 
 	if (m_FRTSXVIEW != nullptr)
 		proc.mandatory(*m_FRTSXVIEW);
+    proc.mandatory<EndSXView>();
 
 	return true;
 }

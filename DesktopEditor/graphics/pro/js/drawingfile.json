@@ -44,11 +44,21 @@
 		"_IsFontBinaryExist",
 		"_DestroyTextInfo",
 		"_IsNeedCMap",
-		"_SetCMapData"
+		"_SetCMapData",
+		"_ScanPage"
 	],
 	"include_path": [
-		"wasm/src/lib", "../../../agg-2.4/include", "../../../cximage/jasper/include", "../../../cximage/jpeg", "../../../cximage/png", "freetype-2.10.4/include", "freetype-2.10.4/include/freetype", "../../../../OfficeUtils/src/zlib-1.2.11", "../../../../OfficeUtils/src", "../../../../Common/3dParty/icu/icu/source/common", "../../../xml/libxml2/include", "../../../xml/build/qt", "../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip", "../../../../PdfFile/lib/goo", "../../../../PdfFile/lib/fofi", "../../../../PdfFile/lib/splash", "../../../../PdfFile/lib", "../../../raster/Jp2/openjpeg", "../../../raster/Jp2/openjpeg/openjpeg-2.4.0/src/lib/openjp2", 
-		"../../../../Common/3dParty/openssl/openssl/include"
+		"wasm/src/lib", 
+		"../../../agg-2.4/include", 
+		"../../../cximage/jasper/include", "../../../cximage/jpeg", "../../../cximage/png", 
+		"freetype-2.10.4/include", "freetype-2.10.4/include/freetype", 		
+		"../../../../OfficeUtils/src/zlib-1.2.11", "../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip", "../../../../OfficeUtils/src", 
+		"../../../../Common/3dParty/icu/icu/source/common", 
+		"../../../xml/libxml2/include", "../../../xml/build/qt", 		
+		"../../../../PdfFile/lib/goo", "../../../../PdfFile/lib/fofi", "../../../../PdfFile/lib/splash", "../../../../PdfFile/lib", 
+		"../../../raster/Jp2/openjpeg", "../../../raster/Jp2/openjpeg/openjpeg-2.4.0/src/lib/openjp2", 
+		"../../../../Common/3dParty/openssl/openssl/include", 
+		"../../../../DocxRenderer"
 	],
 	"define": [
 		"__linux__", "_LINUX", "UNIX", 
@@ -61,12 +71,13 @@
 		"LIBXML_READER_ENABLED", "LIBXML_PUSH_ENABLED", "LIBXML_HTML_ENABLED", 
 		"LIBXML_XPATH_ENABLED", "LIBXML_OUTPUT_ENABLED", "LIBXML_C14N_ENABLED", 
 		"LIBXML_SAX1_ENABLED", "LIBXML_TREE_ENABLED", "LIBXML_XPTR_ENABLED", 
-		"IN_LIBXML", "LIBXML_STATIC", "BUILD_ZLIB_AS_SOURCES", 
+		"XML_ERROR_DISABLE_MODE", "IN_LIBXML", "LIBXML_STATIC", "BUILD_ZLIB_AS_SOURCES", 
 		"_ARM_ALIGN_", 
 		"_tcsnicmp=strncmp", "_lseek=lseek", "_getcwd=getcwd", 
 		"NO_CONSOLE_IO", "USE_EXTERNAL_JPEG2000", "USE_JPIP", "OPJ_STATIC", "FONT_ENGINE_DISABLE_FILESYSTEM",
 		"IMAGE_CHECKER_DISABLE_XML",
-		"USE_OPENSSL_HASH"
+		"USE_OPENSSL_HASH",
+		"DISABLE_FULL_DOCUMENT_CREATION", "DISABLE_FILESYSTEM"
 	],
 	"compile_files_array": [
 	{
@@ -188,6 +199,30 @@
 	{
 		"folder": "../../../../UnicodeConverter/",
 		"files": ["UnicodeConverter.cpp"]
+	},
+	{
+		"folder": "../../../../DocxRenderer/",
+		"files": ["DocxRenderer.cpp"]
+	},
+	{
+		"folder": "../../../../DocxRenderer/src/resources",
+		"files": ["VectorGraphics.cpp"]
+	},
+	{
+		"folder": "../../../../DocxRenderer/src/logic",
+		"files": ["styles/FontStyle.cpp", "styles/ParagraphStyle.cpp", "Page.cpp", "Document.cpp"]
+	},
+	{
+		"folder": "../../../../DocxRenderer/src/logic/managers",
+		"files": ["FontManager.cpp", "FontStyleManager.cpp", "ImageManager.cpp", "ParagraphStyleManager.cpp"]
+	},
+	{
+		"folder": "../../../../DocxRenderer/src/logic/elements",
+		"files": ["BaseItem.cpp", "ContText.cpp", "DropCap.cpp", "Image.cpp", "Paragraph.cpp", "Shape.cpp", "TextLine.cpp"]
+	},
+	{
+		"folder": "../../../common",
+		"files": ["StringUTF32.cpp", "StringBuilder.cpp"]
 	}
 	]
 }

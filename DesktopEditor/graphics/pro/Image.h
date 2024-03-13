@@ -121,6 +121,7 @@ namespace MetaFile
 		IMetaFile(NSFonts::IApplicationFonts *pAppFonts) {}
 		virtual ~IMetaFile() {}
 
+		virtual void SetImageSize(int nWidth, int nHeight) = 0;
 		virtual bool LoadFromFile(const wchar_t* wsFilePath) = 0;
 		virtual bool LoadFromBuffer(BYTE* pBuffer, unsigned int unSize) = 0;
 		virtual bool DrawOnRenderer(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight) = 0;

@@ -80,7 +80,7 @@ namespace MetaFile
 		virtual bool         IsWindowFlippedY() = 0;
 		virtual bool         IsWindowFlippedX() = 0;
 		virtual unsigned int GetMapMode() = 0;
-		virtual double       GetDpi() = 0;
+		virtual USHORT       GetDpi() = 0;
 		virtual IRegion*     GetRegion() = 0;
 		virtual unsigned int GetArcDirection() = 0;
 		virtual CPath*       GetPath() = 0;

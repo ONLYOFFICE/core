@@ -39,7 +39,7 @@
 namespace OOX
 {
 	namespace Spreadsheet
-	{	
+	{
 		CExternalReference::CExternalReference()
 		{
 		}
@@ -66,6 +66,20 @@ namespace OOX
 			if ( !oReader.IsEmptyNode() )
 				oReader.ReadTillEnd();
 		}
+		XLS::BaseObjectPtr CExternalReference::toBin()
+		{
+			auto ptr(new XLSB::SUP);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_oRid.IsInit())
+			{
+				auto ptr1(new XLSB::SupBookSrc);
+				ptr->m_source = XLS::BaseObjectPtr{ptr1};
+				ptr1->strRelID.value = m_oRid->GetValue();
+			}
+
+			return objectPtr;
+		}
+
 		void CExternalReference::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
@@ -155,6 +169,13 @@ namespace OOX
                 if(reference->m_oRid.IsInit())
                     m_arrItems.push_back(reference);
 			}
+		}
+		std::vector<XLS::BaseObjectPtr> CExternalReferences::toBin()
+		{
+			std::vector<XLS::BaseObjectPtr> objectVector;
+			for(auto i:m_arrItems)
+				objectVector.push_back(i->toBin());
+			return objectVector;
 		}
 		EElementType CExternalReferences::getType () const
 		{

@@ -101,7 +101,19 @@ public:
     std::wstring ConvertPPTShapeToPPTX(bool bIsNamespace = false);
     std::wstring ConvertPPTtoPPTX(CPPTShape* pPPTShape, const NSGuidesVML::CFormParam& pCoef, bool bIsNamespace = false);
 };
+class COleObjectElement : public CImageElement
+{
+public:
+    std::wstring	m_strBinFileName;
 
+    std::wstring	m_strOleName;
+    std::wstring	m_strProgId;
+
+    COleObjectElement();
+    virtual ~COleObjectElement();
+
+    virtual CElementPtr CreateDublicate();
+};
 class CAudioElement : public CImageElement
 {
 public:

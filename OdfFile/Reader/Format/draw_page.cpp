@@ -207,7 +207,6 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 	}
 
 	Context.end_page();
-	Context.get_slide_context().get_animation_context().clear();
 
  	if (presentation_notes_)
 	{

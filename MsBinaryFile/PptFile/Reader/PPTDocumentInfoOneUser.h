@@ -100,8 +100,7 @@ public:
     bool    m_bHasFooter;
     int     m_nFormatDate;
 
-    CRecordVbaProjectStg*   m_VbaProjectStg;
-    int                     m_lIndexThisUser;
+    int m_lIndexThisUser;
 
     double  m_nWriteSlideTimeOffset;
     double  m_nWriteSlideTime;
@@ -133,6 +132,8 @@ public:
     bool ReadDocumentPersists(POLE::Stream* pStream);
     void ReadExtenalObjects();
 
+    std::wstring GetBinFromStg(const std::wstring& name, _UINT32 nRef);
+
     void DecryptStream(POLE::Stream *pStream, int block);
 
     void FromDocument();
@@ -161,6 +162,7 @@ public:
 
     void LoadExVideo(CRecordsContainer* pExObject);
     void LoadExAudio(CRecordsContainer* pExObject);
+    void LoadExOleObject(CRecordsContainer* pExObject);
 
     void LoadAutoNumbering(CRecordGroupShapeContainer* pGroupContainer, CTheme* pTheme);
     void LoadBulletBlip(CShapeElement* pShape);

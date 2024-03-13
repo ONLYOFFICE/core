@@ -206,7 +206,6 @@ namespace NExtractTools
 		m_oCDocxSerializer.setIsNoBase64(params.getIsNoBase64());
 		m_oCDocxSerializer.setFontDir(params.getFontPath());
 
-		// bool bRes = m_oCDocxSerializer.saveToFile (sResDoct, sSrcDocx, sTemp);
 		_UINT32 nRes = m_oCDocxSerializer.saveToFile(sTo, sFrom, params.getXmlOptions(), convertParams.m_sTempDir) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
 		return nRes;
@@ -220,9 +219,10 @@ namespace NExtractTools
 		BinDocxRW::CDocxSerializer m_oCDocxSerializer;
 
 		_UINT32 nRes = 0;
-		if (m_oCDocxSerializer.convertFlat(sFrom, sTempUnpackedDOCX))
+		if (m_oCDocxSerializer.convertFlat(sFrom, sTempUnpackedDOCX, params.m_bMacro, convertParams.m_sTempDir))
 		{
-			nRes = dir2zipMscrypt(sTempUnpackedDOCX, sTo, params, convertParams);
+			params.changeFormatFromPost(*params.m_nFormatFrom, params.m_bMacro);
+			nRes = dir2zipMscrypt(sTempUnpackedDOCX, *params.m_sFileTo, params, convertParams);
 		}
 		else
 		{

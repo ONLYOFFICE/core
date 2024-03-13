@@ -669,9 +669,14 @@ void odf_text_context::add_hyperlink (const std::wstring & link, const std::wstr
 	if (!display.empty())
 		hyperlink->add_text(display);
 ////////////////////////////
-
-	hyperlink->common_xlink_attlist_.href_	= link + (location.empty() ? L"" : (L"#" + location));
-	hyperlink->common_xlink_attlist_.type_	= xlink_type::Simple;
+	
+	if (!link.empty())
+	{
+		hyperlink->common_xlink_attlist_.href_ = link + (location.empty() ? L"" : (L"#" + location));
+		hyperlink->common_xlink_attlist_.type_ = xlink_type::Simple;
+	}
+	else 
+		odf_context_->add_hyperlink(elm, location);
 	
 	if (false == current_level_.empty())
 		current_level_.back().elm->add_child_element(elm);

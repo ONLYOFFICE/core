@@ -95,3 +95,5 @@
 #include "../../../XlsxFormat/SharedStrings/XlsxRun.cpp"
 #include "../../../XlsxFormat/SharedStrings/SharedStrings.cpp"
 #include "../../../XlsxFormat/Timelines/Timeline.cpp"
+#include "../../../XlsxFormat/Workbook/Metadata.cpp"
+#include "../../../XlsxFormat/RichData/RdRichValue.cpp"

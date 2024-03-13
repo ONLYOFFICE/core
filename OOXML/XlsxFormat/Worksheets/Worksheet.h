@@ -76,6 +76,7 @@ namespace OOX
 			virtual ~CWorksheet();
 
             void readBin(const CPath& oPath);
+			XLS::BaseObjectPtr WriteBin() const;
 			virtual void read(const CPath& oPath);
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
 
@@ -85,9 +86,9 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			
+
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
-			
+
 			void toXMLStart(NSStringUtils::CStringBuilder& writer) const;
 			void toXMLEnd(NSStringUtils::CStringBuilder& writer) const;
 			virtual const OOX::FileType type() const;
@@ -107,7 +108,7 @@ namespace OOX
 			void ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader);
 
 			CPath	m_oReadPath;
-			
+
 			bool	m_bPrepareForBinaryWriter;
 			bool	m_bWriteDirectlyToFile;
             bool    m_bIsChartSheet;

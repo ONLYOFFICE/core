@@ -311,7 +311,7 @@ void text_format_properties::pptx_convert_as_list(oox::pptx_conversion_context &
 		}
 	}
 }
-void text_format_properties::drawing_serialize(std::wostream & strm, std::wstring node, fonts_container & fonts, const odf_reader::style_instance *current_style, std::wstring hlink)
+void text_format_properties::drawing_serialize(std::wostream & strm, std::wstring node, fonts_container & fonts, const odf_reader::style_instance *current_style, const oox::hyperlink_data link)
 {
 	CP_XML_WRITER(strm)
 	{  
@@ -541,12 +541,15 @@ void text_format_properties::drawing_serialize(std::wostream & strm, std::wstrin
 				}
 
 			}
-			if (!hlink.empty())
+			if (!link.rId.empty())
 			{
 				CP_XML_NODE(L"a:hlinkClick")
 				{
-					CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-					CP_XML_ATTR(L"r:id", hlink);
+					if (link.action == L"ppaction://hlinksldjump")
+						CP_XML_ATTR(L"action", link.action);
+					else 
+						CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+					CP_XML_ATTR(L"r:id", link.rId);
 				}
 			}
 		}
@@ -1031,7 +1034,9 @@ void text_format_properties::pptx_convert(oox::pptx_conversion_context & Context
 	oox::styles_context	& styles_context_ = Context.get_text_context().get_styles_context();
 	fonts_container & fonts_ = Context.root()->odf_context().fontContainer();	  
 
-	drawing_serialize(styles_context_.text_style(), styles_context_.extern_node(), fonts_, styles_context_.get_current_processed_style(), styles_context_.hlinkClick());
+	oox::hyperlink_data link = Context.get_text_context().get_hyperlink();
+
+	drawing_serialize(styles_context_.text_style(), styles_context_.extern_node(), fonts_, styles_context_.get_current_processed_style(), link); // styles_context_.hlinkClick()
 }
 
 void text_format_properties::docx_convert(oox::docx_conversion_context & Context)

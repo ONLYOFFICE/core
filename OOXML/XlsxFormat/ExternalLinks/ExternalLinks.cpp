@@ -65,6 +65,8 @@
 #include "../../XlsbFormat/Biff12_records/SupName.h"
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalWorkbookInfo.h"
+#include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
+#include <string>
 
 namespace OOX
 {
@@ -117,6 +119,16 @@ namespace Spreadsheet
 		NSStringUtils::CStringBuilder writer;
 		toXML(writer);
 		return writer.GetData().c_str();
+	}
+	XLS::BaseObjectPtr CExternalSheetNames::toBin()
+	{
+		XLSB::SupTabsPtr supTabs(new XLSB::SupTabs);
+		for (auto& item : m_arrItems)
+		{
+			XLSB::XLWideString str = *item->m_sVal;
+			supTabs->sheetNames.push_back(str);
+		}
+		return supTabs;
 	}
 	void CExternalSheetNames::fromBin(XLS::BaseObjectPtr& obj)
 	{
@@ -436,7 +448,7 @@ namespace Spreadsheet
 	void CExternalRow::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		writer.WriteString(L"<row");
-		WritingStringNullableAttrInt(L"r", m_oR, m_oR->GetValue()+1);
+		WritingStringNullableAttrInt(L"r", m_oR, m_oR->GetValue());
 		writer.WriteString(L">");
 
 		for (size_t i = 0; i < m_arrItems.size(); ++i)
@@ -467,7 +479,7 @@ namespace Spreadsheet
 			auto ptrExternRowHdr = static_cast<XLSB::ExternRowHdr*>(ptr->m_BrtExternRowHdr.get());
 			if (ptrExternRowHdr != nullptr)
 			{
-				m_oR = ptrExternRowHdr->rw;
+				m_oR = ptrExternRowHdr->rw + 1;
 			}
 
 			for (auto &item : ptr->m_arEXTERNVALUE)
@@ -697,6 +709,21 @@ namespace Spreadsheet
 		toXML(writer);
 		return writer.GetData().c_str();
 	}
+	XLS::BaseObjectPtr CExternalBook::toBin()
+	{
+		XLSB::EXTERNALLINKPtr externalLINK(new XLSB::EXTERNALLINK());
+
+		XLSB::ExternalReferenceType type;
+		XLSB::EXTERNALBOOKPtr externalBOOK(new XLSB::EXTERNALBOOK(type));
+
+		externalLINK->m_EXTERNALBOOK = externalBOOK;
+		if (externalBOOK != nullptr)
+		{
+			if (m_oSheetNames.IsInit())
+				externalBOOK->m_BrtSupTabs = m_oSheetNames->toBin();
+		}
+		return externalLINK;
+	}
 	void CExternalBook::fromBin(XLS::BaseObjectPtr& obj)
 	{
 		auto ptr = static_cast<XLSB::EXTERNALLINK*>(obj.get());
@@ -785,6 +812,77 @@ namespace Spreadsheet
 		NSStringUtils::CStringBuilder writer;
 		toXML(writer);
 		return writer.GetData().c_str();
+	}
+	XLS::BaseObjectPtr CDdeValue::toBin()
+	{
+		XLSB::DDEOLEITEMVALUEPtr ptr(new XLSB::DDEOLEITEMVALUE);
+		if(!m_oType.IsInit())
+			return ptr;
+		auto type = m_oType->GetValue();
+		switch(type)
+		{
+			case XLSB::rt_SupNameNum:
+				{
+					ptr->m_source = XLS::BaseObjectPtr{new XLSB::SupNameNum};
+					if(!m_arrItems.empty())
+					{
+						auto castedSource = reinterpret_cast<XLSB::SupNameNum*>(ptr->m_source.get());
+						castedSource->value.data.value = std::stod(m_arrItems.back()->m_sText);
+						m_arrItems.pop_back();
+					}
+				}
+				break;
+				case XLSB::rt_SupNameBool:
+				{
+                    ptr->m_source = XLS::BaseObjectPtr{new XLSB::SupNameBool};
+					if(!m_arrItems.empty())
+					{
+						auto castedSource = reinterpret_cast<XLSB::SupNameBool*>(ptr->m_source.get());
+                        castedSource->value = std::stoi(m_arrItems.back()->m_sText);
+						m_arrItems.pop_back();
+					}
+
+				}
+				break;
+				case XLSB::rt_SupNameErr:
+				{
+                    ptr->m_source = XLS::BaseObjectPtr{new XLSB::SupNameErr};
+					if(!m_arrItems.empty())
+					{
+						auto castedSource = reinterpret_cast<XLSB::SupNameErr*>(ptr->m_source.get());
+                        auto error = m_arrItems.back()->m_sText.c_str();
+
+						if(error == L"#NULL!"){ castedSource->value = 0x00;}
+						else if(error == L"#DIV/0!"){castedSource->value = 0x07;}
+						else if(error == L"#VALUE!"){ castedSource->value = 0x0F;}
+						else if(error == L"#REF!"){ castedSource->value = 0x17;}
+						else if(error == L"#NAME?"){ castedSource->value = 0x1D;}
+						else if(error == L"#NUM!"){castedSource->value = 0x24;}
+						else if(error == L"#N/A"){castedSource->value = 0x2A;}
+						else if(error == L"#GETTING_DATA"){castedSource->value = 0x2B;}
+
+						m_arrItems.pop_back();
+					}
+				}
+				break;
+				case XLSB::rt_SupNameSt:
+				{
+					ptr->m_source = XLS::BaseObjectPtr{new XLSB::SupNameSt};
+					if(!m_arrItems.empty())
+					{
+						auto castedSource = reinterpret_cast<XLSB::SupNameSt*>(ptr->m_source.get());
+						castedSource->value = m_arrItems.back()->m_sText;
+						m_arrItems.pop_back();
+					}
+				}
+				break;
+				case XLSB::rt_SupNameNil:
+				{
+					ptr->m_source = XLS::BaseObjectPtr{new XLSB::SupNameNil};
+				}
+				break;
+		}
+		return ptr;
 	}
 	void CDdeValue::fromBin(XLS::BaseObjectPtr& obj)
 	{
@@ -943,6 +1041,18 @@ namespace Spreadsheet
 				m_arrItems.push_back(new CDdeValue(item));
 		}
 	}
+	XLS::BaseObjectPtr CDdeValues::toBin()
+	{
+		XLSB::DDEOLEITEMVALUESPtr ptr(new XLSB::DDEOLEITEMVALUES);
+		auto castedPtr = static_cast<XLSB::SupNameValueStart*>(ptr->m_BrtSupNameValueStart.get());
+		if(m_oRows.IsInit())
+			castedPtr->cRw = m_oRows->GetValue();
+		if(m_oCols.IsInit())
+		castedPtr->cCol = m_oCols->GetValue();
+		for (auto &item : m_arrItems)
+				ptr->m_arDDEOLEITEMVALUE.push_back(item->toBin());
+       return ptr;
+	}
 	void CDdeValues::ReadAttributes(XLS::BaseObjectPtr& obj)
 	{
 		auto ptr = static_cast<XLSB::SupNameValueStart*>(obj.get());
@@ -1010,6 +1120,31 @@ namespace Spreadsheet
 		NSStringUtils::CStringBuilder writer;
 		toXML(writer);
 		return writer.GetData().c_str();
+	}
+	XLS::BaseObjectPtr CDdeItem::toBin()
+	{
+		XLSB::ExternalReferenceType type;
+		XLSB::DDEOLEITEMPtr ptr(new XLSB::DDEOLEITEM(type));
+		if (m_oDdeValues.IsInit())
+				ptr->m_DDEOLEITEMVALUES = m_oDdeValues->toBin();
+		if(m_oName.IsInit())
+		{
+			ptr->m_BrtSupNameStart = XLS::BaseObjectPtr{new XLSB::SupNameStart};
+			auto ptrSupNameStart = static_cast<XLSB::SupNameStart*>(ptr->m_BrtSupNameStart.get());
+			ptrSupNameStart->name = m_oName.get();
+		}
+		if(m_oOle.IsInit() || m_oAdvise.IsInit() || m_oPreferPic.IsInit())
+		{
+			ptr->m_BrtSupNameBits = XLS::BaseObjectPtr{new XLSB::SupNameBits(type)};
+			auto ptrSupNameBits = static_cast<XLSB::SupNameBits*>(ptr->m_BrtSupNameBits.get());
+			if(m_oOle.IsInit())
+				ptrSupNameBits->contentsDDE.fOLE = m_oOle->ToBool();
+			if(m_oAdvise.IsInit())
+				ptrSupNameBits->contentsDDE.fWantAdvise  = m_oAdvise->ToBool();
+			if(m_oPreferPic.IsInit())
+				ptrSupNameBits->contentsDDE.fWantPict = m_oPreferPic->ToBool();
+		}
+		return ptr;
 	}
 	void CDdeItem::fromBin(XLS::BaseObjectPtr& obj)
 	{
@@ -1108,6 +1243,15 @@ namespace Spreadsheet
 		}
 	}
 
+	XLS::BaseObjectPtr CDdeItems::toBin()
+	{
+		XLSB::ExternalReferenceType type;
+		XLSB::DDEOLELINKPtr ptr(new XLSB::DDEOLELINK(type));
+		for (auto item : m_arrItems)
+				ptr->m_arDDEOLEITEM.push_back(item->toBin());
+		return ptr;
+	}
+
 	void CDdeLink::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -1154,6 +1298,18 @@ namespace Spreadsheet
 			if (ptr->m_DDEOLELINK != nullptr)
 				m_oDdeItems = ptr->m_DDEOLELINK;
 		}
+	}
+	XLS::BaseObjectPtr CDdeLink::toBin()
+	{
+		XLSB::EXTERNALLINKPtr ptr(new XLSB::EXTERNALLINK);
+		ptr->m_BrtBeginSupBook = XLS::BaseObjectPtr{new XLSB::BeginSupBook};
+		auto castedBook = static_cast<XLSB::BeginSupBook*>(ptr->m_BrtBeginSupBook.get());
+		if (m_oDdeService.IsInit())
+				castedBook->string1 = m_oDdeService.get();
+		if (m_oDdeTopic.IsInit())
+				castedBook->string2 = m_oDdeTopic.get();
+		ptr->m_DDEOLELINK = m_oDdeItems->toBin();
+        return ptr;
 	}
 
 	CDdeLink::CDdeLink()
@@ -1222,6 +1378,29 @@ namespace Spreadsheet
 		NSStringUtils::CStringBuilder writer;
 		toXML(writer);
 		return writer.GetData().c_str();
+	}
+	XLS::BaseObjectPtr COleItem::toBin()
+	{
+		XLSB::ExternalReferenceType type;
+		XLSB::DDEOLEITEMPtr coleItem(new XLSB::DDEOLEITEM(type));
+		if(m_oName.IsInit())
+		{
+			coleItem->m_BrtSupNameStart = XLS::BaseObjectPtr{new XLSB::SupNameStart};
+			auto castedName = static_cast<XLSB::SupNameStart*>(coleItem->m_BrtSupNameStart.get());
+			castedName->name = m_oName.get();
+		}
+		if(m_oIcon.IsInit() || m_oAdvise.IsInit() || m_oPreferPic.IsInit())
+		{
+			coleItem->m_BrtSupNameBits = XLS::BaseObjectPtr{new XLSB::SupNameBits(type)};
+			auto ptrSupNameBits = static_cast<XLSB::SupNameBits*>(coleItem->m_BrtSupNameBits.get());
+			if(m_oIcon.IsInit())
+				ptrSupNameBits->contentsOLE.fIcon = m_oIcon->ToBool();
+			if(m_oAdvise.IsInit())
+				ptrSupNameBits->contentsOLE.fWantAdvise = m_oAdvise->ToBool();
+			if(m_oPreferPic.IsInit())
+				ptrSupNameBits->contentsOLE.fWantPict = m_oPreferPic->ToBool();
+		}
+		return coleItem;
 	}
 	void COleItem::fromBin(XLS::BaseObjectPtr& obj)
 	{
@@ -1316,6 +1495,17 @@ namespace Spreadsheet
 				m_arrItems.push_back(new COleItem(item));
 		}
 	}
+	XLS::BaseObjectPtr COleItems::toBin()
+	{
+		XLSB::ExternalReferenceType type;
+		XLSB::DDEOLELINKPtr ptr(new XLSB::DDEOLELINK(type));
+
+		for(auto i: m_arrItems)
+		{
+			ptr->m_arDDEOLEITEM.push_back(i->toBin());
+		}
+		return ptr;
+	}
 
 	COleLink::COleLink()
 	{
@@ -1376,6 +1566,20 @@ namespace Spreadsheet
 			if (ptr->m_DDEOLELINK != nullptr)
 				m_oOleItems = ptr->m_DDEOLELINK;
 		}
+	}
+	XLS::BaseObjectPtr COleLink::toBin()
+	{
+		XLSB::EXTERNALLINKPtr COleLink(new XLSB::EXTERNALLINK);
+		COleLink->m_BrtBeginSupBook = XLS::BaseObjectPtr{new XLSB::BeginSupBook};
+		auto castedBook = static_cast<XLSB::BeginSupBook*>(COleLink->m_BrtBeginSupBook.get());
+
+		if(m_oRid.IsInit())
+			castedBook->string1 = m_oRid->ToString();
+		if(m_oProgId.IsInit())
+			castedBook->string2 = m_oProgId.get();
+
+		COleLink->m_DDEOLELINK = m_oOleItems->toBin();
+		return COleLink;
 	}
 	void COleLink::ReadAttributes(XLS::BaseObjectPtr& obj)
 	{
@@ -1480,6 +1684,21 @@ namespace Spreadsheet
 	}
 	CExternalLink::~CExternalLink()
 	{
+	}
+    XLS::BaseObjectPtr CExternalLink::writeBin() const
+	{
+		XLSB::ExternalLinkStreamPtr externalLinkStreamStream(new XLSB::ExternalLinkStream);
+
+		if (externalLinkStreamStream != nullptr)
+		{
+			if (m_oExternalBook.IsInit())
+				externalLinkStreamStream->m_EXTERNALLINK = m_oExternalBook->toBin();
+			if (m_oDdeLink.IsInit())
+				externalLinkStreamStream->m_EXTERNALLINK = m_oDdeLink->toBin();
+			if (m_oOleLink.IsInit())
+				externalLinkStreamStream->m_EXTERNALLINK = m_oOleLink->toBin();
+		}
+		return externalLinkStreamStream;
 	}
 	void CExternalLink::readBin(const CPath& oPath)
 	{
@@ -1593,6 +1812,14 @@ namespace Spreadsheet
 	}
 	void CExternalLink::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 	{
+		CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+		if ((xlsb) && (xlsb->m_bWriteToXlsb))
+		{
+			XLS::BaseObjectPtr object = writeBin();
+			xlsb->WriteBin(oPath, object.get());
+		}
+		else
+		{
 		NSStringUtils::CStringBuilder sXml;
 		sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
 		sXml.WriteString(L"<externalLink \
@@ -1628,7 +1855,7 @@ xmlns:xxl21=\"http://schemas.microsoft.com/office/spreadsheetml/2021/extlinks202
 
 		std::wstring sPath = oPath.GetPath();
 		NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
-
+		}
 		oContent.Registration(type().OverrideType(), oDirectory, oPath.GetFilename());
 		IFileContainer::Write(oPath, oDirectory, oContent);
 	}
@@ -1638,6 +1865,11 @@ xmlns:xxl21=\"http://schemas.microsoft.com/office/spreadsheetml/2021/extlinks202
 	}
 	const OOX::FileType CExternalLink::type() const
 	{
+		CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+		if ((xlsb) && (xlsb->m_bWriteToXlsb))
+		{
+			return OOX::SpreadsheetBin::FileTypes::ExternalLinksBin;
+		}
 		return OOX::Spreadsheet::FileTypes::ExternalLinks;
 	}
 	const CPath CExternalLink::DefaultDirectory() const

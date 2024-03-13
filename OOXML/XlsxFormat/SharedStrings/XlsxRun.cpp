@@ -97,6 +97,20 @@ namespace OOX
 			m_oRPr->m_nFontIndex.Init();
 			m_oRPr->m_nFontIndex = fontindex;
 		}
+		std::wstring CRun::toBin(unsigned short &fontindex)
+		{
+			if(m_oRPr.IsInit())
+			{
+				if(m_oRPr->m_nFontIndex.IsInit())
+					fontindex = m_oRPr->m_nFontIndex->GetValue();
+			}
+			if(!m_arrItems.empty())
+			{
+			auto textPtr = m_arrItems.back();
+				return textPtr->ToString();
+			}
+			return L"";
+		}
 		EElementType CRun::getType () const
 		{
 			return et_x_r;

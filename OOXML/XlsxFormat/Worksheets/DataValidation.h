@@ -63,10 +63,10 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
-			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;			
+			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);				
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual EElementType getType () const;
 
 			std::wstring m_sNodeName;
@@ -92,6 +92,7 @@ namespace OOX
 
 			bool IsExtended();
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const;
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
@@ -135,6 +136,7 @@ namespace OOX
 					void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
 
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const;
 
 		private:

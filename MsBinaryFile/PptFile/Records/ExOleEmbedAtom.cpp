@@ -43,3 +43,8 @@ void CRecordExOleEmbedAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream 
     m_nIsTable = StreamUtils::ReadBYTE(pStream);
     StreamUtils::StreamSkip(1, pStream);
 }
+
+void CRecordExOleEmbedContainer::ReadFromStream(SRecordHeader& oHeader, POLE::Stream* pStream)
+{
+    CRecordsContainer::ReadFromStream(oHeader, pStream);
+}

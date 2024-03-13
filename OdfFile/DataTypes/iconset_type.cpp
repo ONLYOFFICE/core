@@ -92,8 +92,18 @@ std::wostream & operator << (std::wostream & _Wostream, const iconset_type & _Va
 	case iconset_type::Rating5:
         _Wostream << L"5Rating";
         break;
-	 default:
+    case iconset_type::Boxes5:
+        _Wostream << L"5Boxes";
         break;
+    case iconset_type::Triangles3:
+        _Wostream << L"3Triangles";
+        break;
+    case iconset_type::Stars3:
+        _Wostream << L"3Stars";
+        break;
+    default:
+         _Wostream << L"3Arrows";
+         break;
     }
     return _Wostream;    
 }
@@ -137,6 +147,12 @@ iconset_type iconset_type::parse(const std::wstring & Str)
         return iconset_type( Quarters5 );
 	else	if (tmp == L"5rating")
         return iconset_type( Rating5 );
+    else	if (tmp == L"5Boxes")
+        return iconset_type( Boxes5 );
+    else	if (tmp == L"3Stars")
+        return iconset_type(Stars3);
+    else	if (tmp == L"3Triangles")
+        return iconset_type(Triangles3);
 	else
     {
         return iconset_type( Arrows3 );

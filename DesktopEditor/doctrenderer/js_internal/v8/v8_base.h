@@ -60,7 +60,7 @@ v8::Local<v8::String> CreateV8String(v8::Isolate* i, const std::string& str);
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, "js", __VA_ARGS__)
 #endif
 
-#if 1
+#if V8_OS_XP
 class MallocArrayBufferAllocator : public v8::ArrayBuffer::Allocator
 {
 public:
@@ -121,9 +121,7 @@ public:
 		v8::V8::InitializeICUDefaultLocation(sPrA.c_str());
 		v8::V8::InitializeExternalStartupData(sPrA.c_str());
 	#ifdef V8_VERSION_89_PLUS
-		//m_platform = v8::platform::NewDefaultPlatform();
-		v8::V8::SetFlagsFromString("--single-threaded");
-		m_platform = v8::platform::NewSingleThreadedDefaultPlatform();
+		m_platform = v8::platform::NewDefaultPlatform();
 		v8::V8::InitializePlatform(m_platform.get());
 	#else
 		m_platform = v8::platform::CreateDefaultPlatform();
@@ -153,7 +151,11 @@ public:
 #endif
 
 		v8::V8::Dispose();
+	#ifdef V8_VERSION_121_PLUS
+		v8::V8::DisposePlatform();
+	#else
 		v8::V8::ShutdownPlatform();
+	#endif
 		if (m_pAllocator)
 			delete m_pAllocator;
 

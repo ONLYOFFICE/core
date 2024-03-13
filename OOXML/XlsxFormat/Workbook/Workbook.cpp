@@ -297,36 +297,6 @@ namespace OOX
 				auto ptr(new XLSB::BUNDLESHS);
 				ptr->m_arBrtBundleSh = m_oSheets->toBin();
                 workBookStream->m_BUNDLESHS = XLS::BaseObjectPtr{ptr};
-
-				auto ptr1(new XLSB::EXTERNALS);
-				workBookStream->m_EXTERNALS = XLS::BaseObjectPtr{ptr1};
-				auto externSheet(new XLSB::ExternSheet);
-                ptr1->m_BrtExternSheet = XLS::BaseObjectPtr{externSheet};
-				externSheet->cXTI = ptr->m_arBrtBundleSh.size();
-				for(auto i = 0; i < ptr->m_arBrtBundleSh.size(); i++)
-				{
-					auto sup(new XLSB::SUP);
-					auto supSelf(new XLSB::SupSelf);
-					sup->m_source = XLS::BaseObjectPtr{supSelf};
-					ptr1->m_arSUP.push_back(XLS::BaseObjectPtr{sup});
-					auto xti(new XLS::XTI);
-					xti->iSupBook = i;
-					xti->itabFirst = i;
-					xti->itabLast = i;
-					
-					auto biffStructPtr = XLS::BiffStructurePtr(xti);
-					externSheet->rgXTI.push_back(biffStructPtr);
-
-					XLS::GlobalWorkbookInfo::_xti val_1;
-            		val_1.iSup		= xti->iSupBook;
-					val_1.itabFirst = i;
-					val_1.itabLast = i;
-					auto sheet = static_cast<XLSB::BundleSh*>(ptr->m_arBrtBundleSh[i].get());
-					val_1.link = sheet->strName;
-					 
-					XLS::GlobalWorkbookInfo::arXti_External_static.push_back(val_1);
-
-				}
 			}
 			if (m_oWorkbookPr.IsInit())
 				workBookStream->m_BrtWbProp = m_oWorkbookPr->toBin();
@@ -339,13 +309,13 @@ namespace OOX
 			if (m_oWorkbookProtection.IsInit())
 				workBookStream->m_BrtBookProtection = m_oWorkbookProtection->toBin();
 
+				workBookStream->m_EXTERNALS = WriteXtiRefs();
 			if (m_oExternalReferences.IsInit())
 			{
 				auto ptr = static_cast<XLSB::EXTERNALS*>(workBookStream->m_EXTERNALS.get());
 				auto sups = m_oExternalReferences->toBin();
 				if(!sups.empty())
 					ptr->m_arSUP.insert(ptr->m_arSUP.end(), sups.begin(), sups.end());
-				
 			}
 
 
@@ -630,6 +600,33 @@ xmlns:xr2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/revision2\"\
 				}
 			}
 			return lActiveSheet;
+		}
+
+		XLS::BaseObjectPtr CWorkbook::WriteXtiRefs() const
+		{
+			auto ptr(new XLSB::EXTERNALS);
+
+
+			auto externSheet(new XLSB::ExternSheet);
+			ptr->m_BrtExternSheet = XLS::BaseObjectPtr{externSheet};
+
+			for(auto i:XLS::GlobalWorkbookInfo::arXti_External_static)
+			{	
+				auto sup(new XLSB::SUP);
+				auto supSelf(new XLSB::SupSelf);
+				sup->m_source = XLS::BaseObjectPtr{supSelf};
+				ptr->m_arSUP.push_back(XLS::BaseObjectPtr{sup});
+
+				auto xti(new XLS::XTI);
+				xti->iSupBook = i.iSup;
+				xti->itabFirst = i.itabFirst;
+				xti->itabLast = i.itabLast;
+				
+				auto biffStructPtr = XLS::BiffStructurePtr(xti);
+				externSheet->rgXTI.push_back(biffStructPtr);
+			}
+            externSheet->cXTI = externSheet->rgXTI.size();
+			return XLS::BaseObjectPtr{ptr};
 		}
 
 	} //Spreadsheet

@@ -39,8 +39,8 @@
 
 namespace NSTimers
 {    
-    // CLOCK_MONOTONIC defined ONLY since macOS 10.12!!! (crash on earlier version)
-    DWORD GetTickCount()
+	// CLOCK_MONOTONIC defined ONLY since macOS 10.12!!! (crash on earlier version)
+	DWORD GetTickCount()
 	{
 #if defined(_WIN32) || defined(_WIN64) || defined(_WIN32_WCE)
 		return ::GetTickCount();
@@ -49,55 +49,55 @@ namespace NSTimers
 		struct timespec ts;
 		clock_gettime(CLOCK_MONOTONIC, &ts);
 
-        return (ts.tv_sec * 1000 + (DWORD)(ts.tv_nsec / 1000000));
+		return (ts.tv_sec * 1000 + (DWORD)(ts.tv_nsec / 1000000));
 #else
-        //uint64_t nano = mach_absolute_time();
-        //return nano / 1000000;
-        return getUptimeInMilliseconds();
+		//uint64_t nano = mach_absolute_time();
+		//return nano / 1000000;
+		return getUptimeInMilliseconds();
 #endif
 #endif
 	}
 
-    CTimer::CTimer() : NSThreads::CBaseThread()
-    {
-        m_dwInterval = 40;
-        m_bIsCOMNeed = FALSE;
-    }
-    CTimer::~CTimer()
-    {
-    }
+	CTimer::CTimer() : NSThreads::CBaseThread()
+	{
+		m_dwInterval = 40;
+		m_bIsCOMNeed = FALSE;
+	}
+	CTimer::~CTimer()
+	{
+	}
 
-    void CTimer::SetInterval(const DWORD& dwInterval) { m_dwInterval = dwInterval; }
-    void CTimer::SetCOMNeed(const INT& bIsCOM) { m_bIsCOMNeed = bIsCOM; }
+	void CTimer::SetInterval(const DWORD& dwInterval) { m_dwInterval = dwInterval; }
+	void CTimer::SetCOMNeed(const INT& bIsCOM) { m_bIsCOMNeed = bIsCOM; }
 
-    DWORD CTimer::ThreadProc()
-    {
+	DWORD CTimer::ThreadProc()
+	{
 #ifdef _CAN_USE_COM_THREADS
-        if (m_bIsCOMNeed)
-            CoInitialize(NULL);
+		if (m_bIsCOMNeed)
+			CoInitialize(NULL);
 #endif
-        DWORD m_startTime, m_curTime;
-        m_startTime = NSTimers::GetTickCount();
+		DWORD m_startTime, m_curTime;
+		m_startTime = NSTimers::GetTickCount();
 
-        while (m_bRunThread)
-        {
-            m_curTime = NSTimers::GetTickCount();
-            while (m_curTime - m_startTime < m_dwInterval)
-            {
-                NSThreads::Sleep(10);
-                if (!m_bRunThread)
-                    break;
-                m_curTime = NSTimers::GetTickCount();
-            }
+		while (m_bRunThread)
+		{
+			m_curTime = NSTimers::GetTickCount();
+			while (m_curTime - m_startTime < m_dwInterval)
+			{
+				NSThreads::Sleep(10);
+				if (!m_bRunThread)
+					break;
+				m_curTime = NSTimers::GetTickCount();
+			}
 
-            m_startTime = NSTimers::GetTickCount();
-            OnTimer();
-        }
+			m_startTime = NSTimers::GetTickCount();
+			OnTimer();
+		}
 
 #ifdef _CAN_USE_COM_THREADS
-        if (m_bIsCOMNeed)
-            CoUninitialize();
+		if (m_bIsCOMNeed)
+			CoUninitialize();
 #endif
-        return 0;
-    }
+		return 0;
+	}
 }

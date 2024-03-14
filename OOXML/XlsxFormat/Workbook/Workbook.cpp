@@ -309,7 +309,7 @@ namespace OOX
 			if (m_oWorkbookProtection.IsInit())
 				workBookStream->m_BrtBookProtection = m_oWorkbookProtection->toBin();
 
-				workBookStream->m_EXTERNALS = WriteXtiRefs();
+            workBookStream->m_EXTERNALS = WriteXtiRefs();
 			if (m_oExternalReferences.IsInit())
 			{
 				auto ptr = static_cast<XLSB::EXTERNALS*>(workBookStream->m_EXTERNALS.get());

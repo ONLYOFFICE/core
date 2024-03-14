@@ -1608,7 +1608,7 @@ namespace PdfReader
 						nLen = 0;
 					}
 				}
-				else if (L"" != wsFileName && (pFont8bit = dynamic_cast<Gfx8BitFont*>(pFont)) && pFont8bit->getHasEncoding())
+				else if (L"" != wsFileName && (pFont8bit = dynamic_cast<Gfx8BitFont*>(pFont)))
 				{
 					char **ppEncoding = pFont8bit->getEncoding();
 					if (!ppEncoding)

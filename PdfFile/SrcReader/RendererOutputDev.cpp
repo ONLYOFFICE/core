@@ -3945,8 +3945,8 @@ namespace PdfReader
 			pNewTm[1] =  pTm[1] * dITextScale * pGState->getHorizScaling();
 			pNewTm[2] = -pTm[2] * dITextScale;
 			pNewTm[3] = -pTm[3] * dITextScale;
-			pNewTm[4] =  dX;
-			pNewTm[5] =  dY;
+			pNewTm[4] =  dX - dOriginX;
+			pNewTm[5] =  dY - dOriginY;
 		}
 		else
 		{

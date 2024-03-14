@@ -238,7 +238,7 @@ void calcext_icon_set::xlsx_convert(oox::xlsx_conversion_context & Context)
 	}
 }
 	
-// calcext_formatting_entry
+///  calcext:formatting-entry
 //---------------------------------------------------------------------------------------------------------
 const wchar_t * calcext_formatting_entry::ns	= L"calcext";
 const wchar_t * calcext_formatting_entry::name	= L"formatting-entry";

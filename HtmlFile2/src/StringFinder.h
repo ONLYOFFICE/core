@@ -166,7 +166,7 @@ namespace NSStringFinder
 
 		const int nValue = std::stoi(*oResult.begin());
 
-		return (nValue >= nMinValue) ? nValue : nMinValue;
+		return std::max(nMinValue, nValue);
 	}
 	
 	int ToDouble(const std::wstring& oValue, double dMinValue = 0.)

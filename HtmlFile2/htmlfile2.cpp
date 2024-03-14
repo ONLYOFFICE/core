@@ -71,15 +71,16 @@ struct CTextSettings
 {
 	bool bBdo; // Реверс текста
 	bool bPre; // Сохранение форматирования (Сохранение пробелов, табуляций, переносов строк)
+	bool bAddSpaces; // Не добавлять пробелы перед текстом
 	int  nLi;  // Уровень списка
 	std::wstring sRStyle; // w:rStyle
 	std::wstring sPStyle; // w:pStyle
 
-	CTextSettings(bool _bBdo, bool _bPre, int _nLi, const std::wstring& _sRStyle, const std::wstring& _sPStyle) :
-		bBdo(_bBdo), bPre(_bPre), nLi(_nLi), sRStyle(_sRStyle), sPStyle(_sPStyle) {}
+	CTextSettings(bool _bBdo, bool _bPre, bool _bAddSpaces, int _nLi, const std::wstring& _sRStyle, const std::wstring& _sPStyle) :
+		bBdo(_bBdo), bPre(_bPre), bAddSpaces(_bAddSpaces), nLi(_nLi), sRStyle(_sRStyle), sPStyle(_sPStyle) {}
 
 	CTextSettings(const CTextSettings& oTS) :
-		bBdo(oTS.bBdo), bPre(oTS.bPre), nLi(oTS.nLi), sRStyle(oTS.sRStyle), sPStyle(oTS.sPStyle) {}
+		bBdo(oTS.bBdo), bPre(oTS.bPre), bAddSpaces(oTS.bAddSpaces), nLi(oTS.nLi), sRStyle(oTS.sRStyle), sPStyle(oTS.sPStyle) {}
 };
 
 //Необходимые стили таблицы
@@ -498,19 +499,19 @@ public:
 			return false;
 
 		std::string sFileContent = XmlUtils::GetUtf8FromFileContent(pData, nLength);
-		bool bNeedConvert = true;
-		if (nLength > 4)
-		{
-			if (pData[0] == 0xFF && pData[1] == 0xFE && !(pData[2] == 0x00 && pData[3] == 0x00))
-				bNeedConvert = false;
-			if (pData[0] == 0xFE && pData[1] == 0xFF)
-				bNeedConvert = false;
+//		bool bNeedConvert = true;
+//		if (nLength > 4)
+//		{
+//			if (pData[0] == 0xFF && pData[1] == 0xFE && !(pData[2] == 0x00 && pData[3] == 0x00))
+//				bNeedConvert = false;
+//			if (pData[0] == 0xFE && pData[1] == 0xFF)
+//				bNeedConvert = false;
 
-			if (pData[0] == 0xFF && pData[1] == 0xFE && pData[2] == 0x00 && pData[3] == 0x00)
-				bNeedConvert = false;
-			if (pData[0] == 0 && pData[1] == 0 && pData[2] == 0xFE && pData[3] == 0xFF)
-				bNeedConvert = false;
-		}
+//			if (pData[0] == 0xFF && pData[1] == 0xFE && pData[2] == 0x00 && pData[3] == 0x00)
+//				bNeedConvert = false;
+//			if (pData[0] == 0 && pData[1] == 0 && pData[2] == 0xFE && pData[3] == 0xFF)
+//				bNeedConvert = false;
+//		}
 		RELEASEARRAYOBJECTS(pData);
 
 		size_t nFind = sFileContent.find("version=\"");
@@ -876,7 +877,7 @@ private:
 		m_oDocXml.WriteString(L"\"/>");
 		*/
 
-		readStream(&m_oDocXml, sSelectors, { false, false, -1, L"", L"" });
+		readStream(&m_oDocXml, sSelectors, { false, false, true, -1, L"", L"" });
 	}
 
 	void readInside (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, const std::wstring& sName)
@@ -889,7 +890,7 @@ private:
 			if (find == std::wstring::npos)
 				return;
 
-			if (m_bInP && !iswspace(sText.front()) && !m_bWasSpace)
+			if (oTS.bAddSpaces && m_bInP && !iswspace(sText.front()) && !m_bWasSpace)
 				oXml->WriteString(L"<w:r><w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/></w:rPr><w:t xml:space=\"preserve\"> </w:t></w:r>");
 
 			std::wstring sPStyle = wrP(oXml, sSelectors, oTS);
@@ -1350,12 +1351,14 @@ private:
 			}
 		}
 
-
 		while(m_oLightReader.ReadNextSiblingNode(nDeath) && i < MAXROWSINTABLE)
 		{
 			// tr - строки в таблице
 			if(m_oLightReader.GetName() != L"tr")
 				continue;
+
+			GetSubClass(oXml, sSelectors);
+
 			int nTrDeath = m_oLightReader.GetDepth();
 			if(m_oLightReader.IsEmptyNode() || !m_oLightReader.ReadNextSiblingNode(nTrDeath))
 				continue;
@@ -1374,9 +1377,9 @@ private:
 				while(m_oLightReader.MoveToNextAttribute())
 				{
 					if(m_oLightReader.GetName() == L"colspan")
-						nColspan = std::min((MAXCOLUMNSINTABLE - j), NSStringFinder::ToInt(m_oLightReader.GetText(), 1));
+						nColspan = std::min((MAXCOLUMNSINTABLE - j + 1), NSStringFinder::ToInt(m_oLightReader.GetText(), 1));
 					else if(m_oLightReader.GetName() == L"rowspan")
-						nRowspan = std::min((MAXROWSINTABLE - i), NSStringFinder::ToInt(m_oLightReader.GetText(), 1));
+						nRowspan = std::min((MAXROWSINTABLE - i + 1), NSStringFinder::ToInt(m_oLightReader.GetText(), 1));
 				}
 				m_oLightReader.MoveToElement();
 
@@ -1484,7 +1487,9 @@ private:
 				}
 
 				if(nColspan != 1)
-					j += nColspan - 1;
+					j += nColspan;
+				else
+					++j;
 
 				oTrBody.WriteString(wsTcPr);
 
@@ -1504,16 +1509,31 @@ private:
 					readStream(&oTrBody, sSelectors, oTS);
 				}
 				sSelectors.pop_back();
-				
+
 				if (m_bInP)
 					wrP(&oTrBody, sSelectors, oTS);
 				else if (oTrBody.GetSubData(oTrBody.GetCurSize() - 6) != L"</w:p>")
 					oTrBody.WriteString(L"<w:p></w:p>");
 
-				CloseP(&oTrBody, sSelectors);
+				if (j - 1 == MAXCOLUMNSINTABLE)
+				{
+					while (m_oLightReader.ReadNextSiblingNode2(nTrDeath) && L"td" == m_oLightReader.GetName())
+					{
+						GetSubClass(&oTrBody, sSelectors);
 
+						CTextSettings oTSTd{oTS};
+						oTSTd.bAddSpaces = false;
+
+						readStream(&oTrBody, sSelectors, oTSTd);
+						sSelectors.pop_back();
+					}
+				}
+
+				CloseP(&oTrBody, sSelectors);
 				oTrBody.WriteString(L"</w:tc>");
-				j++;
+
+				if (j - 1 == MAXCOLUMNSINTABLE)
+					break;
 
 				// Вставляем ячейки после
 				it1 = std::find_if(mTable.begin(), mTable.end(), [i, j](const CTc& item){ return item.i == i && item.j == j; });
@@ -1530,7 +1550,7 @@ private:
 					it1 = std::find_if(mTable.begin(), mTable.end(), [i, j](const CTc& item){ return item.i == i && item.j == j; });
 					it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
 				}
-			} while(m_oLightReader.ReadNextSiblingNode(nTrDeath) && j < MAXCOLUMNSINTABLE);
+			} while(m_oLightReader.ReadNextSiblingNode(nTrDeath) && j <= MAXCOLUMNSINTABLE);
 
 			if (j > unMaxColumns)
 				unMaxColumns = j;
@@ -1558,6 +1578,7 @@ private:
 
 			oXml->WriteString(oTrBody.GetData());
 			oXml->WriteString(L"</w:tr>");
+			sSelectors.pop_back();
 			i++;
 		}
 	}
@@ -1609,34 +1630,16 @@ private:
 
 		if (sSelectors.back().m_mAttributes.end() != sSelectors.back().m_mAttributes.find(L"cellspacing"))
 			oTableStyles.m_nCellSpacing = NSStringFinder::ToInt(sSelectors.back().m_mAttributes[L"cellspacing"]);
-		else
+		else if (oStyle.m_oBorder.GetCollapse() == NSCSS::NSProperties::BorderCollapse::Separate)
 			oTableStyles.m_nCellSpacing = 15;
 
-		wsTable += L"<w:tblCellSpacing w:w=\"" + std::to_wstring(oTableStyles.m_nCellSpacing) + L"\" w:type=\"dxa\"/>";
+		if (0 < oTableStyles.m_nCellSpacing)
+			wsTable += L"<w:tblCellSpacing w:w=\"" + std::to_wstring(oTableStyles.m_nCellSpacing) + L"\" w:type=\"dxa\"/>";
 
 		if (sSelectors.back().m_mAttributes.end() != sSelectors.back().m_mAttributes.find(L"cellpadding"))
 			oStyle.m_oPadding.SetValues(sSelectors.back().m_mAttributes[L"cellpadding"] + L"px", 0, true);
 
-		std::wstring wsAlign = oStyle.m_oDisplay.GetHAlign().ToWString();
-
-		if (wsAlign.empty())
-		{
-			NSCSS::CNode oLastNode = sSelectors.back();
-			sSelectors.pop_back();
-
-			NSCSS::CCompiledStyle oTempSettingsStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, true);
-
-			wsAlign = oTempSettingsStyle.m_oText.GetAlign().ToWString();
-
-			if (wsAlign.empty())
-			{
-				NSCSS::CCompiledStyle oTempStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, false);
-
-				wsAlign = oTempStyle.m_oText.GetAlign().ToWString();
-			}
-
-			sSelectors.push_back(oLastNode);
-		}
+		const std::wstring wsAlign = (oStyle.m_oDisplay.GetHAlign().Empty()) ? L"center" : oStyle.m_oDisplay.GetHAlign().ToWString();
 
 		// borders
 		if (!oStyle.m_oBorder.Empty() && !oStyle.m_oBorder.Zero())
@@ -1661,9 +1664,7 @@ private:
 		else
 			wsTable += L"<w:tblCellMar><w:top w:w=\"15\" w:type=\"dxa\"/><w:left w:w=\"15\" w:type=\"dxa\"/><w:bottom w:w=\"15\" w:type=\"dxa\"/><w:right w:w=\"15\" w:type=\"dxa\"/></w:tblCellMar>";
 
-		if (!wsAlign.empty())
-			wsTable += L"<w:jc w:val=\"" + wsAlign + L"\"/>";
-
+		wsTable += L"<w:jc w:val=\"" + wsAlign + L"\"/>";
 		wsTable += L"<w:tblLook w:val=\"04A0\" w:noVBand=\"1\" w:noHBand=\"0\" w:lastColumn=\"0\" w:firstColumn=\"1\" w:lastRow=\"0\" w:firstRow=\"1\"/>";
 		wsTable += L"</w:tblPr>";
 
@@ -1720,7 +1721,7 @@ private:
 					m_bWasPStyle = false;
 				}
 				// Заголовок таблицы выравнивание посередине
-				CTextSettings oTSP { oTS.bBdo, oTS.bPre, oTS.nLi, oTS.sRStyle, oTS.sPStyle + L"<w:jc w:val=\"center\"/>" };
+				CTextSettings oTSP { oTS.bBdo, oTS.bPre, oTS.bAddSpaces, oTS.nLi, oTS.sRStyle, oTS.sPStyle + L"<w:jc w:val=\"center\"/>" };
 				readStream(oXml, sSelectors, oTSP);
 				if (m_bInP)
 					m_bWasPStyle = false;

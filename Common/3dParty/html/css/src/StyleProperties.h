@@ -378,19 +378,17 @@ namespace NSCSS
 
 		bool SetColor     (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetBackground(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
-		void InBorder();
 
 		const CColor& GetColor() const;
-		bool IsInBorder()        const;
 
-		bool Empty() const;
+		bool Empty()  const;
+		bool IsNone() const;
 
 		CBackground& operator =(const CBackground& oBackground);
 		CBackground& operator+=(const CBackground& oBackground);
 		bool         operator==(const CBackground& oBackground) const;
 	private:
 		CColor m_oColor;
-		bool   m_bInBorder;
 	};
 
 	class CTransform

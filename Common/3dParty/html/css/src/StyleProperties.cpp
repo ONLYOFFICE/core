@@ -471,9 +471,6 @@ namespace NSCSS
 		if ((CHECK_CONDITIONS && !bHardMode) || (wsValue.empty() && unLevel == m_unLevel))
 			return false;
 
-		if (8 == unLevel)
-			unLevel = 8;
-		
 		if (wsValue.empty())
 		{
 			SetEmpty(unLevel);
@@ -1192,7 +1189,7 @@ namespace NSCSS
 	}
 
 	// BACKGROUND
-	CBackground::CBackground() : m_bInBorder(false)
+	CBackground::CBackground()
 	{}
 
 	void CBackground::Equation(CBackground &oFirstBackground, CBackground &oSecondBackground)
@@ -1218,19 +1215,9 @@ namespace NSCSS
 		return false;
 	}
 
-	void CBackground::InBorder()
-	{
-		m_bInBorder = true;
-	}
-
 	const CColor& CBackground::GetColor() const
 	{
 		return m_oColor;
-	}
-
-	bool CBackground::IsInBorder() const
-	{
-		return m_bInBorder;
 	}
 
 	bool CBackground::Empty() const
@@ -1238,10 +1225,14 @@ namespace NSCSS
 		return m_oColor.Empty();
 	}
 
+	bool CBackground::IsNone() const
+	{
+		return ColorType::ColorNone == m_oColor.GetType();
+	}
+
 	CBackground &CBackground::operator=(const CBackground &oBackground)
 	{
 		m_oColor    = oBackground.m_oColor;
-		m_bInBorder = oBackground.m_bInBorder;
 
 		return *this;
 	}
@@ -1250,16 +1241,12 @@ namespace NSCSS
 	{
 		m_oColor += oBackground.m_oColor;
 
-		if (oBackground.m_bInBorder)
-			m_bInBorder = true;
-
 		return *this;
 	}
 
 	bool CBackground::operator==(const CBackground &oBackground) const
 	{
-		return m_oColor    == oBackground.m_oColor &&
-		       m_bInBorder == oBackground.m_bInBorder;
+		return m_oColor    == oBackground.m_oColor;
 	}
 
 	// TRANSFORM

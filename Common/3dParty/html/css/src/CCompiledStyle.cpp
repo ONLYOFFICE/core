@@ -390,20 +390,12 @@ namespace NSCSS
 				CASE(L"background-color"):
 				{
 					m_oBackground.SetColor(pPropertie.second, unLevel, bHardMode);
-
-					if (bIsThereBorder)
-						m_oBackground.InBorder();
-
 					break;
 				}
 				CASE(L"background"):
 				CASE(L"bgcolor"):
 				{
 					m_oBackground.SetBackground(pPropertie.second, unLevel, bHardMode);
-
-					if (bIsThereBorder)
-						m_oBackground.InBorder();
-
 					break;
 				}
 				//DISPLAY

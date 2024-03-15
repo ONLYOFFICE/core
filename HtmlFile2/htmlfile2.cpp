@@ -829,7 +829,9 @@ private:
 	std::wstring GetStyle(const NSCSS::CCompiledStyle& oStyle, bool bP)
 	{
 //        NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
-		bP ? m_oXmlStyle.WritePStyle(oStyle) : m_oXmlStyle.WriteRStyle(oStyle);
+		if ((bP && !m_oXmlStyle.WritePStyle(oStyle)) || (!bP && !m_oXmlStyle.WriteRStyle(oStyle)))
+			return L"";
+
 		m_oStylesXml.WriteString(m_oXmlStyle.GetStyle());
 		return m_oXmlStyle.GetIdAndClear();
 	}
@@ -916,11 +918,16 @@ private:
 						oXml->WriteString(oTS.sPStyle);
 						oXml->WriteString(L"</w:pPr>");
 					}
-					oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"");
-					oXml->WriteString(sRStyle);
-					oXml->WriteString(L"\"/>");
-					oXml->WriteString(oTS.sRStyle);
-					oXml->WriteString(L"</w:rPr><w:t xml:space=\"preserve\">");
+					oXml->WriteString(L"<w:r>");
+					if (!sRStyle.empty())
+					{
+						oXml->WriteString(L"<w:rPr><w:rStyle w:val=\"");
+						oXml->WriteString(sRStyle);
+						oXml->WriteString(L"\"/>");
+						oXml->WriteString(oTS.sRStyle);
+						oXml->WriteString(L"</w:rPr>");
+					}
+					oXml->WriteString(L"<w:t xml:space=\"preserve\">");
 					sText.erase(0, nAfter + 1);
 					nAfter = sText.find_first_of(L"\n\r");
 				}
@@ -931,11 +938,11 @@ private:
 			if (std::iswspace(sText.front()) && m_bWasSpace)
 				sText.erase(0, 1);
 
-			oXml->WriteEncodeXmlString(sText);
-			oXml->WriteString(L"</w:t></w:r>");
-
 			if (!sText.empty())
 				m_bWasSpace = std::iswspace(sText.back());
+
+			oXml->WriteEncodeXmlString(sText);
+			oXml->WriteString(L"</w:t></w:r>");
 
 			return;
 		}
@@ -1101,10 +1108,15 @@ private:
 			readStream(oXml, sSelectors, oTSR);
 
 			wrP(oXml, sSelectors, oTS);
-			oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"");
-			oXml->WriteString(sRStyle);
-			oXml->WriteString(L"\"/>");
-			oXml->WriteString(oTS.sRStyle);
+			oXml->WriteString(L"<w:r>");
+			if (!sRStyle.empty())
+			{
+				oXml->WriteString(L"<w:rPr><w:rStyle w:val=\"");
+				oXml->WriteString(sRStyle);
+				oXml->WriteString(L"\"/>");
+				oXml->WriteString(oTS.sRStyle);
+				oXml->WriteString(L"</w:rPr>");
+			}
 			oXml->WriteString(L"</w:rPr><w:t xml:space=\"preserve\">&quot;</w:t></w:r>");
 		}
 		// Текст верхнего регистра
@@ -1253,6 +1265,12 @@ private:
 				oTSPre.bPre = true;
 				readStream(oXml, sSelectors, oTSPre);
 			}
+			else if (sName == L"nobr")
+			{
+				CTextSettings oTSPre(oTS);
+				oTSPre.bPre = true;
+				readStream(oXml, sSelectors, oTSPre);
+			}
 			// Таблицы
 			else if(sName == L"table")
 				readTable(oXml, sSelectors, oTS);
@@ -1377,10 +1395,11 @@ private:
 				while(m_oLightReader.MoveToNextAttribute())
 				{
 					if(m_oLightReader.GetName() == L"colspan")
-						nColspan = std::min((MAXCOLUMNSINTABLE - j + 1), NSStringFinder::ToInt(m_oLightReader.GetText(), 1));
+						nColspan = std::min((MAXCOLUMNSINTABLE - j), NSStringFinder::ToInt(m_oLightReader.GetText(), 1));
 					else if(m_oLightReader.GetName() == L"rowspan")
-						nRowspan = std::min((MAXROWSINTABLE - i + 1), NSStringFinder::ToInt(m_oLightReader.GetText(), 1));
+						nRowspan = std::min((MAXROWSINTABLE - i), NSStringFinder::ToInt(m_oLightReader.GetText(), 1));
 				}
+
 				m_oLightReader.MoveToElement();
 
 				// Вставляем ячейки до
@@ -1418,7 +1437,7 @@ private:
 
 				NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);
 
-				if (!oStyle.m_oDisplay.GetHeight().Empty())
+				if (!oStyle.m_oDisplay.GetHeight().Empty() && 1 == nColspan && 1 == nRowspan)
 					nHeight = std::max(nHeight, oStyle.m_oDisplay.GetHeight().ToInt(NSCSS::Twips, DEFAULT_PAGE_HEIGHT));
 
 				std::wstring wsTcPr;
@@ -1433,7 +1452,7 @@ private:
 				else
 					wsTcPr += L"<w:tcW w:w=\"0\" w:type=\"auto\"/>";
 
-				if(nColspan != 1)
+				if(nColspan > 1)
 					wsTcPr += L"<w:gridSpan w:val=\"" + std::to_wstring(nColspan) + L"\"/>";
 
 				if (!oStyle.m_oBorder.Zero())
@@ -1445,8 +1464,11 @@ private:
 				}
 
 				if (!oStyle.m_oBackground.Empty() && !oStyle.m_oBackground.GetColor().Empty())
-					wsTcPr += L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + oStyle.m_oBackground.GetColor().ToWString() + L"\"/>";
-
+				{
+					const std::wstring wsShdFill{oStyle.m_oBackground.IsNone() ? L"auto" : oStyle.m_oBackground.GetColor().ToWString()};
+					wsTcPr += L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + wsShdFill + L"\"/>";
+				}
+				
 				std::wstring wsVerticalAlign = oStyle.m_oDisplay.GetVAlign().ToWString();
 
 				if (!wsVerticalAlign.empty())
@@ -1475,7 +1497,7 @@ private:
 							   "</w:tcMar>";
 				}
 
-				if(nRowspan != 1)
+				if(nRowspan > 1 && nColspan >= 1 && j < MAXCOLUMNSINTABLE)
 				{
 					oTrBody.WriteString(L"<w:vMerge w:val=\"restart\"/>");
 					std::wstring sColspan = std::to_wstring(nColspan);
@@ -1486,7 +1508,7 @@ private:
 							mTable.push_back({k, j, sColspan, wsTcPr});
 				}
 
-				if(nColspan != 1)
+				if(nColspan > 1)
 					j += nColspan;
 				else
 					++j;
@@ -1506,7 +1528,11 @@ private:
 				// Читаем td. Ячейка таблицы. Выравнивание вправо
 				else if(m_oLightReader.GetName() == L"td")
 				{
-					readStream(&oTrBody, sSelectors, oTS);
+					if (!readStream(&oTrBody, sSelectors, oTS))
+					{
+						oTrBody.WriteString(L"<w:p><w:pPr><w:rPr><w:sz w:val=\"20\"/><w:szCs w:val=\"20\"/></w:rPr></w:pPr><w:r><w:rPr><w:sz w:val=\"20\"/><w:szCs w:val=\"20\"/></w:rPr></w:r></w:p>");
+						m_bInP = false;
+					}
 				}
 				sSelectors.pop_back();
 
@@ -1517,7 +1543,7 @@ private:
 
 				if (j - 1 == MAXCOLUMNSINTABLE)
 				{
-					while (m_oLightReader.ReadNextSiblingNode2(nTrDeath) && L"td" == m_oLightReader.GetName())
+					while (m_oLightReader.ReadNextSiblingNode(nTrDeath) && L"td" == m_oLightReader.GetName())
 					{
 						GetSubClass(&oTrBody, sSelectors);
 
@@ -1527,6 +1553,7 @@ private:
 						readStream(&oTrBody, sSelectors, oTSTd);
 						sSelectors.pop_back();
 					}
+
 				}
 
 				CloseP(&oTrBody, sSelectors);
@@ -2183,8 +2210,6 @@ private:
 		if (m_bWasPStyle)
 			return L"";
 
-		oXml->WriteString(L"<w:pPr><w:pStyle w:val=\"");
-
 		std::vector<std::pair<size_t, NSCSS::CNode>> temporary;
 		size_t i = 0;
 		while(i != sSelectors.size())
@@ -2204,6 +2229,9 @@ private:
 		
 		std::wstring sPStyle = GetStyle(oStyle, true);
 
+		if (sPStyle.empty())
+			return L"";
+		
 		m_oXmlStyle.WriteLitePStyle(oStyleSetting);
 		std::wstring sPSettings = m_oXmlStyle.GetStyle();
 		m_oXmlStyle.Clear();
@@ -2227,6 +2255,7 @@ private:
 			}
 		}
 
+		oXml->WriteString(L"<w:pPr><w:pStyle w:val=\"");
 		oXml->WriteString(sPStyle);
 		oXml->WriteString(L"\"/>");
 		oXml->WriteString(oTS.sPStyle + L' ' + sPSettings);
@@ -2251,12 +2280,15 @@ private:
 		const std::wstring sRSettings = m_oXmlStyle.GetStyle();
 		m_oXmlStyle.Clear();
 
-		oXml->WriteString(L"<w:rPr><w:rStyle w:val=\"");
-		oXml->WriteString(sRStyle);
-		oXml->WriteString(L"\"/>");
-
-		oXml->WriteString(oTS.sRStyle + L' ' + sRSettings);
-		oXml->WriteString(L"</w:rPr>");
+		if (!sRStyle.empty())
+		{
+			oXml->WriteString(L"<w:rPr><w:rStyle w:val=\"");
+			oXml->WriteString(sRStyle);
+			oXml->WriteString(L"\"/>");
+	
+			oXml->WriteString(oTS.sRStyle + L' ' + sRSettings);
+			oXml->WriteString(L"</w:rPr>");
+		}
 		return sRStyle;
 	}
 

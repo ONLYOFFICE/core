@@ -27,7 +27,7 @@ CXmlElement::CXmlElement(const std::wstring& sNameDefaultElement)
 
 bool CXmlElement::Empty() const
 {
-	return m_mBasicValues.empty() && m_mPStyleValues.empty() && m_mRStyleValues.empty();
+	return m_mPStyleValues.empty() && m_mRStyleValues.empty();
 }
 
 void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)

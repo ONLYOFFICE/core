@@ -74,8 +74,6 @@ namespace NSCSS
 
 	void CDocumentStyle::CombineStandardStyles(const std::vector<std::wstring>& arStandartedStyles, CXmlElement& oElement)
 	{
-		oElement.AddBasicProperties(CSSProperties::BasicProperties::B_BasedOn, L"normal");
-
 		if (arStandartedStyles.empty())
 			return;
 
@@ -153,6 +151,7 @@ namespace NSCSS
 
 			if (!oParentStyle.Empty())
 			{
+				oParentStyle.AddBasicProperties(BProperties::B_BasedOn, L"normal");
 				oParentStyle.AddBasicProperties(BProperties::B_StyleId, L"(" + oParentStyle.GetStyleId() + L")");
 				if (!bIsPStyle)
 				{
@@ -270,7 +269,8 @@ namespace NSCSS
 	void CDocumentStyle::SetPStyle   (const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement)
 	{
 		ConvertStyle(oStyle, oXmlElement, true);
-		if (oStyle.Empty() && oXmlElement.Empty())
+
+		if (oStyle.Empty())
 			return;
 		
 		oXmlElement.AddPropertiesInP(PProperties::P_Jc, oStyle.m_oText.GetAlign().ToWString());
@@ -317,12 +317,8 @@ namespace NSCSS
 			oXmlElement.AddPropertiesInP(PProperties::P_ContextualSpacing, L"true");
 		}
 
-		if (!oStyle.m_oBackground.Empty())
-		{
-			const std::wstring wsColor = oStyle.m_oBackground.GetColor().ToWString();
-			if (wsColor != L"ffffff")
-				oXmlElement.AddPropertiesInP(PProperties::P_Shd, wsColor);
-		}
+		if (!oStyle.m_oBackground.Empty() && oStyle.HaveThisParent(L"table"))
+			oXmlElement.AddPropertiesInP(PProperties::P_Shd, oStyle.m_oBackground.IsNone() ? L"auto" : oStyle.m_oBackground.GetColor().ToWString());
 
 		if (!oStyle.m_oBorder.Empty() && !oStyle.HaveThisParent(L"table"))
 		{
@@ -431,12 +427,12 @@ namespace NSCSS
 		oXmlElement.AddPropertiesInR(RProperties::R_SmallCaps, oStyle.m_oFont.GetVariant().ToWString());
 	}
 
-	void CDocumentStyle::WriteRStyle (const NSCSS::CCompiledStyle& oStyle)
+	bool CDocumentStyle::WriteRStyle(const NSCSS::CCompiledStyle& oStyle)
 	{
 		if(oStyle.GetId().empty())
 		{
 			m_sId = L"normal";
-			return;
+			return false;
 		}
 
 		CStyleUsed structStyle(oStyle, false);
@@ -446,49 +442,59 @@ namespace NSCSS
 		if (oItem != m_arStyleUsed.end())
 		{
 			m_sId = (*oItem).getId();
-			return;
+			return false;
 		}
 		CXmlElement oXmlElement;
 		SetRStyle(oStyle, oXmlElement);
 
-		if (!oStyle.Empty() || !oXmlElement.Empty())
-		{
-			structStyle.setId(oXmlElement.GetStyleId());
-			m_arStyleUsed.push_back(structStyle);
-			m_sStyle += oXmlElement.GetRStyle();
-		}
+		if (oXmlElement.Empty())
+			return false;
+
+		structStyle.setId(oXmlElement.GetStyleId());
+		m_arStyleUsed.push_back(structStyle);
+		m_sStyle += oXmlElement.GetRStyle();
+
+		return true;
 	}
 
-	void CDocumentStyle::WriteLitePStyle(const CCompiledStyle &oStyle)
+	bool CDocumentStyle::WriteLitePStyle(const CCompiledStyle &oStyle)
 	{
 		if (oStyle.Empty())
-			return;
+			return false;
 
 		CXmlElement oXmlElement;
 		SetPStyle(oStyle, oXmlElement);
 
-		if (!oXmlElement.Empty())
-			m_sStyle += oXmlElement.GetPStyle(true);
+		if (oXmlElement.Empty())
+			return false;
+		
+		m_sStyle += oXmlElement.GetPStyle(true);
+		return true;
 	}
 
-	void CDocumentStyle::WriteLiteRStyle(const CCompiledStyle &oStyle)
+	bool CDocumentStyle::WriteLiteRStyle(const CCompiledStyle &oStyle)
 	{
 		if (oStyle.Empty())
-			return;
+			return false;
 
 		CXmlElement oXmlElement;
 		SetRStyle(oStyle, oXmlElement);
 
-		if (!oXmlElement.Empty())
-			m_sStyle += oXmlElement.GetRStyle(true);
+		if (oXmlElement.Empty())
+			return false;
+
+		m_sStyle += oXmlElement.GetRStyle(true);
+		return true;
 	}
 
-	void CDocumentStyle::WritePStyle (const NSCSS::CCompiledStyle& oStyle)
+	bool CDocumentStyle::WritePStyle(const NSCSS::CCompiledStyle& oStyle)
 	{
+		Clear();
+
 		if(oStyle.GetId().empty())
 		{
 			m_sId = L"normal";
-			return;
+			return true;
 		}
 
 		CStyleUsed structStyle(oStyle, true);
@@ -497,17 +503,19 @@ namespace NSCSS
 		if (oItem != m_arStyleUsed.end())
 		{
 			m_sId = (*oItem).getId();
-			return;
+			return true;
 		}
 
 		CXmlElement oXmlElement;
 		SetPStyle(oStyle, oXmlElement);
 
-		if (!oStyle.Empty() || !oXmlElement.Empty())
-		{
-			structStyle.setId(oXmlElement.GetStyleId());
-			m_arStyleUsed.push_back(structStyle);
-			m_sStyle += oXmlElement.GetPStyle();
-		}
+		if (!oXmlElement.Empty())
+			return false;
+
+		structStyle.setId(oXmlElement.GetStyleId());
+		m_arStyleUsed.push_back(structStyle);
+		m_sStyle += oXmlElement.GetPStyle();
+
+		return true;
 	}
 }

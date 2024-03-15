@@ -49,10 +49,10 @@ namespace NSCSS
 		CDocumentStyle();
 		~CDocumentStyle();
 
-		void WritePStyle(const NSCSS::CCompiledStyle& oStyle);
-		void WriteRStyle(const NSCSS::CCompiledStyle& oStyle);
-		void WriteLitePStyle(const NSCSS::CCompiledStyle& oStyle);
-		void WriteLiteRStyle(const NSCSS::CCompiledStyle& oStyle);
+		bool WritePStyle(const NSCSS::CCompiledStyle& oStyle);
+		bool WriteRStyle(const NSCSS::CCompiledStyle& oStyle);
+		bool WriteLitePStyle(const NSCSS::CCompiledStyle& oStyle);
+		bool WriteLiteRStyle(const NSCSS::CCompiledStyle& oStyle);
 
 		void SetStyle(const std::wstring& sStyle);
 		void SetId   (const std::wstring& sId);

@@ -10,6 +10,11 @@ core_android {
     QMAKE_CXXFLAGS += -Wno-enum-constexpr-conversion
 }
 
+core_ios {
+    QMAKE_CFLAGS += -Wno-enum-constexpr-conversion
+    QMAKE_CXXFLAGS += -Wno-enum-constexpr-conversion
+}
+
 bundle_xcframeworks {
     xcframework_platform_ios_simulator {
         CORE_BOOST_LIBS = $$PWD/build/ios_xcframework/ios_simulator/lib/$$CORE_BUILDS_PLATFORM_PREFIX

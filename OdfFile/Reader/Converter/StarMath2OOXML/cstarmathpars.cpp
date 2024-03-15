@@ -224,7 +224,7 @@ namespace StarMath
 		return m_iAlignment;
 	}
 //class methods CAttribute
-	CAttribute::CAttribute(): m_bBold(false),m_bItal(false),m_bPhantom(false),m_bStrike(false),m_iSize(0),m_iAlignment(-1)
+	CAttribute::CAttribute(): m_bBold(false),m_bItal(false),m_bPhantom(false),m_bStrike(false),m_iSize(0),m_iAlignment(0)
 	{
 	}
 	CAttribute::~CAttribute()
@@ -253,112 +253,113 @@ namespace StarMath
 	{
 		m_bStrike = true;
 	}
-	void CAttribute::SetColor(const TypeElement &enColor)
+	bool CAttribute::SetColor(const TypeElement &enColor)
 	{
 		if(enColor != TypeElement::undefine)
 		{
 			switch (enColor) {
 			case TypeElement::black:
 			m_wsColor = L"000000";
-			break;
+			return true;
 			case TypeElement::blue:
 			m_wsColor = L"0400ff";
-			break;
+			return true;
 			case TypeElement::green:
 			m_wsColor =L"00FF00";
-			break;
+			return true;
 			case TypeElement::red:
 			m_wsColor =L"FF0000";
-			break;
+			return true;
 			case TypeElement::fuchsia:
 			m_wsColor =L"ED0DD9";
-			break;
+			return true;
 			case TypeElement::aqua:
 			m_wsColor =L"30D5C8";
-			break;
+			return true;
 			case TypeElement::yellow:
 			m_wsColor =L"FFFF00";
-			break;
+			return true;
 			case TypeElement::gray:
 			m_wsColor =L"808080";
-			break;
+			return true;
 			case TypeElement::lime:
 			m_wsColor =L"00FF00";
-			break;
+			return true;
 			case TypeElement::maroon:
 			m_wsColor =L"800000";
-			break;
+			return true;
 			case TypeElement::navy:
 			m_wsColor =L"000080";
-			break;
+			return true;
 			case TypeElement::olive:
 			m_wsColor =L"808000";
-			break;
+			return true;
 			case TypeElement::purple:
 			m_wsColor =L"800080";
-			break;
+			return true;
 			case TypeElement::silver:
 			m_wsColor =L"C0C0C0";
-			break;
+			return true;
 			case TypeElement::teal:
 			m_wsColor =L"008080";
-			break;
+			return true;
 			case TypeElement::coral:
 			m_wsColor =L"FF7F50";
-			break;
+			return true;
 			case TypeElement::midnightblue:
 			m_wsColor =L"191970";
-			break;
+			return true;
 			case TypeElement::crimson:
 			m_wsColor =L"DC143C";
-			break;
+			return true;
 			case TypeElement::violet:
 			m_wsColor =L"EE82EE";
-			break;
+			return true;
 			case TypeElement::orange:
 			m_wsColor =L"FFA500";
-			break;
+			return true;
 			case TypeElement::orangered:
 			m_wsColor =L"FF4500";
-			break;
+			return true;
 			case TypeElement::seagreen:
 			m_wsColor =L"2E8B57";
-			break;
+			return true;
 			case TypeElement::indigo:
 			m_wsColor =L"4B0082";
-			break;
+			return true;
 			case TypeElement::hotpink:
 			m_wsColor =L"FF69B4";
-			break;
+			return true;
 			case TypeElement::lavender:
 			m_wsColor =L"FFF0F5";
-			break;
+			return true;
 			default:
-			break;
+			return false;
 			}
 		}
+		else return false;
 	}
 	void CAttribute::SetColor(const std::wstring &wsColor)
 	{
 		m_wsColor = wsColor;
 	}
-	void CAttribute::SetFont(const TypeElement &enFont)
+	bool CAttribute::SetFont(const TypeElement &enFont)
 	{
 		switch (enFont) {
 		case TypeElement::ital:
-		SetItal();
-		break;
+		m_bItal = true;
+		return true;
 		case TypeElement::bold:
-		SetBold();
-		break;
+		m_bBold = true;
+		return true;
 		case TypeElement::phantom:
-		SetPhantom();
-		break;
+		m_bPhantom = true;
+		return true;
 		case TypeElement::overstrike:
-		SetStrike();
-		break;
+		m_bStrike = true;
+		return true;
 		default:
-		break;
+		return false;
 		}
 	}
 	void CAttribute::SetFontName(const std::wstring &wsNameFont)
@@ -401,32 +402,62 @@ namespace StarMath
 	{
 		return m_wsColor.empty();
 	}
-	void CAttribute::ParseColorAttribute(const std::wstring &wsToken,CStarMathReader* pReader)
+	//hex current
+	bool CAttribute::ParseColorAttribute(const std::wstring &wsToken,CStarMathReader* pReader)
 	{
 		TypeElement enTempColor = GetTypeColorAttribute(wsToken);
 		switch(enTempColor)
 		{
 		case TypeElement::hex:
 		{
-			std::wstring wsTempHex;
-			do
+			pReader->SetString(L"");
+			std::wstring wsTempToken;
+			wsTempToken = pReader->TakingElementForHex();
+			if(wsTempToken.empty())
+				return false;
+			if(!m_wsColor.empty())
+				m_wsColor.clear();
+			if(wsTempToken.size()< 6)
 			{
-				wsTempHex += pReader->GetElement();
-			}while(wsTempHex.size()< 6);
-			m_wsColor = wsTempHex;
-		break;
+				int iZero = 6 - wsTempToken.size();
+				for(int i = 0;i<iZero;i++)
+					m_wsColor.push_back(L'0');
+				m_wsColor += wsTempToken;
+				return true;
+			}
+			else if(wsTempToken.size() == 6)
+			{
+				m_wsColor = wsTempToken;
+				return true;
+			}
+			else if(wsTempToken.size() > 6)
+			{
+				m_wsColor += wsTempToken.substr(wsTempToken.size()-6);
+				return true;
+			}
 		}
 		case TypeElement::rgb:
 		{
 		const int iTempLen = 7;
 		wchar_t arTemp[iTempLen];
 		unsigned int  wsRed,wsGreen,wsBlue;
-		pReader->GetToken();
-		wsRed = std::stoi(pReader->GetString());
-		pReader->GetToken();
-		wsGreen = std::stoi(pReader->GetString());
-		pReader->GetToken();
-		wsBlue = std::stoi(pReader->GetString());
+		pReader->SetString(pReader->GetElement());
+		if(TypeElement::undefine != CElementString::GetDigit(pReader->GetString()))
+			wsRed = std::stoi(pReader->GetString());
+		else
+			return false;
+		if(wsRed > 255 || wsRed < 0)
+			return false;
+		pReader->SetString(pReader->GetElement());
+		if(TypeElement::undefine != CElementString::GetDigit(pReader->GetString()))
+			wsGreen = std::stoi(pReader->GetString());
+		else
+			return false;
+		pReader->SetString(pReader->GetElement());
+		if(TypeElement::undefine != CElementString::GetDigit(pReader->GetString()))
+			wsBlue = std::stoi(pReader->GetString());
+		else
+			return false;
 		if(wsRed > 255 || wsGreen > 255 || wsBlue > 255)
 			m_wsColor = L"000000";
 		else
@@ -434,30 +465,36 @@ namespace StarMath
 			swprintf(arTemp,iTempLen,L"%02X%02X%02X",wsRed,wsGreen,wsBlue);
 			m_wsColor = std::wstring(arTemp,6);
 		}
-		break;
+		return true;
 		}
 		default:
-		SetColor(enTempColor);
-		break;
+		return(SetColor(enTempColor));
 		}
 	}
-	void CAttribute::ParseFontAttribute(const TypeElement& enTypeFont, CStarMathReader *pReader)
+	bool CAttribute::ParseFontAttribute(const TypeElement& enTypeFont, CStarMathReader *pReader)
 	{
 		switch(enTypeFont)
 		{
 		case TypeElement::size:
 		{
-			pReader->GetToken();
-			int iTemp = std::stoi(pReader->GetString());
-			if (iTemp >= 0)
+			std::wstring wsSize = pReader->GetElement();
+			int iTemp;
+			if(CElementString::GetDigit(wsSize) != TypeElement::undefine)
+				iTemp = std::stoi(wsSize);
+			else
+			{
+				pReader->SetString(wsSize);
+				return false;
+			}
+			if (iTemp > 0)
 				m_iSize = iTemp*2;
 			else
 				m_iSize = 24;
-			break;
+			return true;
 		}
 		case TypeElement::font:
 		{
-			pReader->GetToken();
+			pReader->SetString(pReader->GetElement());
 			if(pReader->GetString() == L"sans")
 				m_wsNameFont = L"Liberation Sans";
 			else if(pReader->GetString() == L"serif")
@@ -465,24 +502,23 @@ namespace StarMath
 			else if(pReader->GetString() == L"fixed")
 				m_wsNameFont = L"Liberation Mono";
 			else
-				m_wsNameFont = pReader->GetString();
-			break;
+				return false;
+//				m_wsNameFont = pReader->GetString();
+			return true;
 		}
 		case TypeElement::alignl:
 		case TypeElement::alignr:
 		case TypeElement::alignc:
-		break;
+		return true;
 		default:
-		SetFont(enTypeFont);
-		break;
+		return SetFont(enTypeFont);
 		}
 	}
 
 //нет phantom, rgb, 16 , гарнитуры и кегля
 	TypeElement CAttribute::GetTypeColorAttribute(const std::wstring &wsToken)
 	{
-		if(L"color" == wsToken) return TypeElement::color;
-		else if(L"hex"==wsToken) return TypeElement::hex;
+		if(L"hex"==wsToken) return TypeElement::hex;
 		else if(L"rgb" == wsToken) return TypeElement::rgb;
 		else if(L"black" == wsToken) return TypeElement::black;
 		else if(L"green" == wsToken) return TypeElement::green;
@@ -523,6 +559,29 @@ namespace StarMath
 		else if(L"alignr" == wsToken) return TypeElement::alignr;
 		else if(L"alignc" == wsToken) return TypeElement::alignc;
 		else return TypeElement::undefine;
+	}
+	bool CAttribute::CheckHexPosition(const wchar_t &cToken)
+	{
+		if(isdigit(cToken))
+			return true;
+		if( L'A' == cToken) return true;
+		else if(L'B' == cToken) return true;
+		else if(L'C' == cToken) return true;
+		else if(L'D' == cToken) return true;
+		else if(L'E' == cToken) return true;
+		else if(L'F' == cToken) return true;
+		else
+			return false;
+	}
+	bool CAttribute::CheckAttribute()
+	{
+		if(m_bBold == true || m_bItal == true || m_bStrike == true || m_bPhantom == true)
+			return true;
+		else if(!m_wsColor.empty() || !m_wsNameFont.empty())
+			return true;
+		else if(m_iSize != 0 || (m_iAlignment == 1 || m_iAlignment == 2))
+			return true;
+		return false;
 	}
 //class methods CElement
 	CElement::~CElement()
@@ -2536,21 +2595,30 @@ namespace StarMath
 		if(CheckIteratorPosition())
 		{
 			m_wsToken = GetElement();
-			TypeElement enTypeFont =CAttribute::GetTypeFontAttribute(m_wsToken),enTypeColor = CAttribute::GetTypeColorAttribute(m_wsToken);
-			if(enTypeFont != TypeElement::undefine || enTypeColor != TypeElement::undefine)
+			TypeElement enTypeFont = CAttribute::GetTypeFontAttribute(m_wsToken);
+			if(enTypeFont != TypeElement::undefine || L"color" == m_wsToken)
 				m_pAttribute = new CAttribute();
-			while((enTypeFont != TypeElement::undefine || enTypeColor != TypeElement::undefine) && m_itStart != m_itEnd)
+			while((enTypeFont != TypeElement::undefine || L"color" == m_wsToken) && m_itStart != m_itEnd)
 			{
-				if(enTypeColor == TypeElement::color) m_pAttribute->ParseColorAttribute(GetElement(),this);
-				else if(enTypeFont != TypeElement::undefine) m_pAttribute->ParseFontAttribute(enTypeFont,this);
-
-				if(m_itStart != m_itEnd)
+				if(L"color" == m_wsToken)
 				{
 					m_wsToken = GetElement();
-					enTypeColor = CAttribute::GetTypeColorAttribute(m_wsToken);
+					if(m_pAttribute->ParseColorAttribute(m_wsToken,this))
+						m_wsToken.clear();
+				}
+				else if(enTypeFont != TypeElement::undefine)
+					if(m_pAttribute->ParseFontAttribute(enTypeFont,this))
+						m_wsToken.clear();
+					else
+						enTypeFont = TypeElement::undefine;
+				if((m_itStart != m_itEnd) && m_wsToken.empty())
+				{
+					m_wsToken = GetElement();
 					enTypeFont = CAttribute::GetTypeFontAttribute(m_wsToken);
 				}
 			}
+			if(m_pAttribute != nullptr && !m_pAttribute->CheckAttribute())
+				m_pAttribute = nullptr;
 			if(m_wsToken == L"left") m_wsToken = GetElement();
 			else if(L"right" == m_wsToken ) m_wsToken = GetElement();
 		}
@@ -2740,6 +2808,24 @@ namespace StarMath
 		}
 		if(!m_wsElement.empty()) return m_wsElement;
 		else return {};
+	}
+	std::wstring CStarMathReader::TakingElementForHex()
+	{
+		std::wstring wsTokenHex{};
+		for(;m_itStart != m_itEnd;m_itStart++)
+		{
+			if(iswspace(*m_itStart))
+				return wsTokenHex;
+			else if(CAttribute::CheckHexPosition(*m_itStart))
+				wsTokenHex.push_back(*m_itStart);
+			else
+				return wsTokenHex;
+		}
+		return wsTokenHex;
+	}
+	void CStarMathReader::SetString(const std::wstring &wsToken)
+	{
+		m_wsToken = wsToken;
 	}
 	void CStarMathReader::FindingTheEndOfParentheses()
 	{

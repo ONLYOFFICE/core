@@ -1258,6 +1258,8 @@ namespace PdfWriter
 	}
 	void CDocument::AddImage(const std::wstring& wsImagePath, BYTE nAlpha, CImageDict* pImage)
 	{
+		if (!pImage)
+			return;
 		m_vImages.push_back({wsImagePath, nAlpha, pImage});
 	}
 	bool CDocument::CheckFieldName(CFieldBase* pField, const std::string& sName)

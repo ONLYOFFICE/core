@@ -143,8 +143,8 @@ bool CPdfWriter::AddPage(int nPageIndex) { return false; }
 bool CPdfWriter::EditClose() { return false; }
 void CPdfWriter::PageRotate(int nRotate) {}
 void CPdfWriter::Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate) {}
-PdfWriter::CImageDict* CPdfWriter::LoadImage(Aggplus::CImage* pImage, const BYTE& nAlpha) { return NULL; }
-bool CPdfWriter::DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha) { return false; }
+PdfWriter::CImageDict* CPdfWriter::LoadImage(Aggplus::CImage* pImage, BYTE nAlpha) { return NULL; }
+PdfWriter::CImageDict* CPdfWriter::DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha) { return NULL; }
 bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, const double& dX, const double& dY) { return false; }
 bool CPdfWriter::DrawTextToRenderer(const unsigned int* unGid, const unsigned int& unLen, const double& dX, const double& dY) { return false; }
 bool CPdfWriter::PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids) { return false; }

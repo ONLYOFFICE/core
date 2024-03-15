@@ -1027,6 +1027,16 @@ HRESULT CPdfWriter::DrawImageFromFile(NSFonts::IApplicationFonts* pAppFonts, con
 	if (!IsPageValid())
 		return S_OK;
 
+	if (m_pDocument->HasImage(wsImagePathSrc, nAlpha))
+	{
+		PdfWriter::CImageDict* pPdfImage = m_pDocument->GetImage(wsImagePathSrc, nAlpha);
+		m_pPage->GrSave();
+		UpdateTransform();
+		m_pPage->DrawImage(pPdfImage, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY - dH), MM_2_PT(dW), MM_2_PT(dH));
+		m_pPage->GrRestore();
+		return S_OK;
+	}
+
 	std::wstring sTempImagePath = GetDownloadFile(wsImagePathSrc, wsTempDirectory);
 	std::wstring wsImagePath = sTempImagePath.empty() ? wsImagePathSrc : sTempImagePath;
 
@@ -1057,8 +1067,10 @@ HRESULT CPdfWriter::DrawImageFromFile(NSFonts::IApplicationFonts* pAppFonts, con
 	}
 
 	HRESULT hRes = S_OK;
-	if (!pAggImage || !DrawImage(pAggImage, dX, dY, dW, dH, nAlpha))
+	PdfWriter::CImageDict* pPdfImage = NULL;
+	if (!pAggImage || !(pPdfImage = DrawImage(pAggImage, dX, dY, dW, dH, nAlpha)))
 		hRes = S_FALSE;
+	m_pDocument->AddImage(wsImagePathSrc, nAlpha, pPdfImage);
 
 	if (NSFile::CFileBinary::Exists(sTempImagePath))
 		NSFile::CFileBinary::Remove(sTempImagePath);
@@ -2761,18 +2773,18 @@ PdfWriter::CImageDict* CPdfWriter::LoadImage(Aggplus::CImage* pImage, BYTE nAlph
 
 	return pPdfImage;
 }
-bool CPdfWriter::DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha)
+PdfWriter::CImageDict* CPdfWriter::DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha)
 {
 	PdfWriter::CImageDict* pPdfImage = LoadImage(pImage, nAlpha);
 	if (!pPdfImage)
-		return false;
+		return NULL;
 
 	m_pPage->GrSave();
 	UpdateTransform();
 	m_pPage->DrawImage(pPdfImage, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY - dH), MM_2_PT(dW), MM_2_PT(dH));
 	m_pPage->GrRestore();
 	
-	return true;
+	return pPdfImage;
 }
 bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, const double& dX, const double& dY)
 {

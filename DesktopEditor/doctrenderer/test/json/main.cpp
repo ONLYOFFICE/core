@@ -550,26 +550,24 @@ TEST_F(CJSONTest, wrong_usage)
 	EXPECT_THROW((bool)val, std::bad_cast);
 	EXPECT_THROW((int)val, std::bad_cast);
 	EXPECT_THROW((double)val, std::bad_cast);
-	EXPECT_THROW((std::wstring)val, std::bad_cast);
 #else
 	EXPECT_EQ((bool)val, false);
 	EXPECT_EQ((int)val, 0);
 	EXPECT_EQ((double)val, 0.0);
-	EXPECT_EQ((std::wstring)val, L"test");
 #endif
+	EXPECT_EQ((std::wstring)val, L"test");
 
 	val = L"test";
 #ifdef JSON_DEBUG
 	EXPECT_THROW((bool)val, std::bad_cast);
 	EXPECT_THROW((int)val, std::bad_cast);
 	EXPECT_THROW((double)val, std::bad_cast);
-	EXPECT_THROW((std::string)val, std::bad_cast);
 #else
 	EXPECT_EQ((bool)val, false);
 	EXPECT_EQ((int)val, 0);
 	EXPECT_EQ((double)val, 0.0);
-	EXPECT_EQ((std::string)val, "test");
 #endif
+	EXPECT_EQ((std::string)val, "test");
 
 	val = CValue::CreateObject();
 #ifdef JSON_DEBUG

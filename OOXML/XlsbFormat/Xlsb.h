@@ -70,6 +70,7 @@ namespace OOX
             void PrepareSi();
             void PrepareTableFormula();
             void ReadSheetData();
+            void WriteSheetData();
             void SetPropForWriteSheet(const std::wstring &sPath, OOX::CContentTypes& oContentTypes);
             void WriteSheet(CWorksheet* worksheet);
 

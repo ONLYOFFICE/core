@@ -166,6 +166,8 @@ namespace NExtractTools
 		oXlsb.Read(oox_path);
 
 		OOX::CContentTypes oContentTypes;
+		oXlsb.SetPropForWriteSheet(sTo, oContentTypes);
+		oXlsb.WriteSheetData();
 		_UINT32 nRes = oXlsb.WriteBin(sTo, oContentTypes) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
 
 		return nRes;

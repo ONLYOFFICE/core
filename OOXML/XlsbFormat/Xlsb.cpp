@@ -122,6 +122,22 @@ bool OOX::Spreadsheet::CXlsb::WriteBin(const CPath& oFilePath, XLS::BaseObject* 
 	return true;
 }
 
+void OOX::Spreadsheet::CXlsb::WriteSheetData()
+{
+    for(auto &worksheet : m_arWorksheets)
+    {
+		
+        //для оптимизации по памяти сразу записываем в файл все листы
+        if(m_bWriteToXlsb)
+        {
+            WriteSheet(worksheet);
+        }//
+
+        //cell_table_temlate.reset();
+        //reader.reset();
+    }
+}
+
 XLS::GlobalWorkbookInfo* OOX::Spreadsheet::CXlsb::GetGlobalinfo()
 {
     return xls_global_info.get();

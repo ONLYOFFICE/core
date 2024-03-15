@@ -69,18 +69,21 @@ namespace StarMath
 		std::wstring GetColor();
 		const std::wstring& GetFontName();
 		bool EmptyColor();
-		void ParseFontAttribute(const TypeElement& enTypeFont,CStarMathReader* pReader);
-		void ParseColorAttribute(const std::wstring& wsToken,CStarMathReader* pReader);
+		bool ParseFontAttribute(const TypeElement& enTypeFont,CStarMathReader* pReader);
+		bool ParseColorAttribute(const std::wstring& wsToken,CStarMathReader* pReader);
 		void SetSize(const unsigned int& iSize);
 		void SetAlignment(const unsigned int& iAlignment);
 		void SetBold();
 		void SetItal();
 		void SetPhantom();
 		void SetStrike();
-		void SetColor(const TypeElement& enColor);
+		bool SetColor(const TypeElement& enColor);
 		void SetColor(const std::wstring& wsColor);
-		void SetFont(const TypeElement& enFont);
+		bool SetFont(const TypeElement& enFont);
 		void SetFontName(const std::wstring& wsNameFont);
+		bool CheckAttribute();
+		//
+		static bool CheckHexPosition(const wchar_t& cToken);
 	private:
 		std::wstring m_wsColor,m_wsNameFont;
 		bool m_bBold,m_bItal,m_bPhantom,m_bStrike;
@@ -109,6 +112,8 @@ namespace StarMath
 		CAttribute* GetBaseAttribute();
 		//The function returns a Token from a string (the iterator pointer m_itStart is on the next element)
 		std::wstring GetElement();
+		std::wstring TakingElementForHex();
+		void SetString(const std::wstring& wsToken);
 		void FindingTheEndOfParentheses();
 		void IteratorNullification();
 		void ReadingTheNextToken();
@@ -420,7 +425,7 @@ namespace StarMath
 		static void AddingAnElementToAnArray(std::vector<CElement*>& arrEquation,CElement* pAddElement);
 		//Receives the left element as input, reads the next one, if the next element has a higher priority and contains the left element, the element received at the input is passed to it. The entire structure is saved and returned.
 		static void ReadingElementsWithPriorities(CStarMathReader* pReader,CElement*& pLeftElement);
-		//
+		//method for parsing indexes with attributes. If there is an attribute present when indexes are read, then all subsequent indexes are applied to the index with the attribute.
 		static void ReadingElementsWithAttributes(CStarMathReader* pReader,CElement*& pSavingElement);
 		void SetAlignment(const unsigned int& iAlignment);
 		const unsigned int& GetAlignment();

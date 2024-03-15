@@ -98,7 +98,7 @@ int wmain_lib(int argc, wchar_t *argv[])
 	if (sMemoryLimit.empty())
 		sMemoryLimit = NSSystemUtils::gc_EnvMemoryLimitDefault;
 
-#if !defined(_DEBUG)
+#if !defined(_DEBUG) && !defined(__ANDROID__) && !defined(_IOS)
 	long long nMemoryLimit;
 	if (NSStringExt::FromHumanReadableByteCount(sMemoryLimit, nMemoryLimit) && nMemoryLimit > 0)
 		limit_memory((size_t)nMemoryLimit);

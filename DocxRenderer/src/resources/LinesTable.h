@@ -42,9 +42,9 @@ enum class eLineType
 class LinesTable
 {
 public:
-	LinesTable ()
+	LinesTable()
 	{
-		InitLinesTable ();
+		InitLinesTable();
 	}
 
 	inline std::wstring ConvertLineToString(const eLineType& sKey)
@@ -53,8 +53,15 @@ public:
 		return iter == m_Table.end() ? L"\"none\"" : iter->second;
 	}
 
+	inline std::wstring ConvertLineToStringPptx(const eLineType& sKey)
+	{
+		auto iter = m_TablePptx.find(sKey);
+		return iter == m_TablePptx.end() ? L"\"none\"" : iter->second;
+	}
+
 private:
 	std::map<eLineType, std::wstring> m_Table;
+	std::map<eLineType, std::wstring> m_TablePptx;
 
 private:
 	void InitLinesTable()
@@ -81,6 +88,25 @@ private:
 		m_Table.insert({eLineType::ltWavyDouble,      L"\"wavyDouble\"" });
 		m_Table.insert({eLineType::ltWords,           L"\"words\"" });
 		m_Table.insert({eLineType::ltNone,            L"\"none\"" });
+
+		m_TablePptx.insert({eLineType::ltSingle,          L"\"sng\""});
+		m_TablePptx.insert({eLineType::ltDouble,          L"\"dbl\"" });
+		m_TablePptx.insert({eLineType::ltThick,           L"\"heavy\"" });
+		m_TablePptx.insert({eLineType::ltDotted,          L"\"dotted\"" });
+		m_TablePptx.insert({eLineType::ltDottedHeavy,     L"\"dottedHeavy\"" });
+		m_TablePptx.insert({eLineType::ltDash,            L"\"dash\"" });
+		m_TablePptx.insert({eLineType::ltDashedHeavy,     L"\"dashHeavy\"" });
+		m_TablePptx.insert({eLineType::ltDashLong,        L"\"dashLong\"" });
+		m_TablePptx.insert({eLineType::ltDashLongHeavy,   L"\"dashLongHeavy\"" });
+		m_TablePptx.insert({eLineType::ltDotDash,         L"\"dotDash\"" });
+		m_TablePptx.insert({eLineType::ltDashDotHeavy,    L"\"dotDashHeavy\"" });
+		m_TablePptx.insert({eLineType::ltDotDotDash,      L"\"dotDotDash\"" });
+		m_TablePptx.insert({eLineType::ltDashDotDotHeavy, L"\"dotDotDashHeavy\"" });
+		m_TablePptx.insert({eLineType::ltWave,            L"\"wavy\"" });
+		m_TablePptx.insert({eLineType::ltWavyHeavy,       L"\"wavyHeavy\"" });
+		m_TablePptx.insert({eLineType::ltWavyDouble,      L"\"wavyDbl\"" });
+		m_TablePptx.insert({eLineType::ltWords,           L"\"words\"" });
+		m_TablePptx.insert({eLineType::ltNone,            L"\"none\"" });
 	}
 };
 

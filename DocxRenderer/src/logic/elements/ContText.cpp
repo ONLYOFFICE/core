@@ -289,126 +289,116 @@ namespace NSDocxRenderer
 	void CContText::ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const
 	{
 		oWriter.WriteString(L"<a:r>");
-		oWriter.WriteString(L"<w:rPr noProof=\"1\" ");
+		oWriter.WriteString(L"<a:rPr noProof=\"1\"");
 
 		LONG lCalculatedSpacing = 0;
 		if (!m_oText.empty())
 		{
 			double dSpacing = (m_dWidth - m_oSelectedSizes.dWidth) / (m_oText.length());
-			dSpacing *= c_dMMToDx;
-
-			//mm to points * 20
+			dSpacing *= c_dMMToPt * 100;
 			lCalculatedSpacing = static_cast<LONG>(dSpacing);
 		}
 
 		// принудительно уменьшаем spacing чтобы текстовые линии не выходили за правую границу
-		lCalculatedSpacing -= 1;
+		lCalculatedSpacing -= 15;
 
 		oWriter.WriteString(L" spc=\"");
-		oWriter.AddInt(lCalculatedSpacing * 100);
+		oWriter.AddInt(lCalculatedSpacing);
 		oWriter.WriteString(L"\"");
-//////////////////////////////////////////////////////////////////////
+
 		if (m_bIsOutlinePresent)
-			oWriter.WriteString(L"<w:outline/>");
-		if (m_bIsShadowPresent)
-			oWriter.WriteString(L"<w:shadow/>");
+			oWriter.WriteString(L" ln=\"1\"");
+		// if (m_bIsShadowPresent)
 
 		if (m_bIsStrikeoutPresent)
 		{
 			if (m_bIsDoubleStrikeout)
-				oWriter.WriteString(L"<w:dstrike/>");
+				oWriter.WriteString(L" strike=\"dblStrike\"");
 			else
-				oWriter.WriteString(L"<w:strike/>");
+				oWriter.WriteString(L" strike=\"sngStrike\"");
 		}
 
 		if (m_bIsUnderlinePresent)
 		{
-			oWriter.WriteString(L"<w:u w:val=");
-			oWriter.WriteString(SingletonInstance<LinesTable>().ConvertLineToString(m_eUnderlineType));
+			oWriter.WriteString(L" u=");
+			oWriter.WriteString(SingletonInstance<LinesTable>().ConvertLineToStringPptx(m_eUnderlineType));
+		}
+
+		UINT lSize = 0;
+		if (m_eVertAlignType == eVertAlignType::vatSubscript || m_eVertAlignType == eVertAlignType::vatSuperscript)
+			lSize = static_cast<int>(1.5 * m_pFontStyle->dFontSize) * 100;
+		else if (m_bWriteStyleRaw)
+			lSize = static_cast<int>(m_pFontStyle->dFontSize) * 100;
+
+		oWriter.WriteString(L" sz=\"");
+		oWriter.AddUInt(lSize);
+		oWriter.WriteString(L"\"");
+
+		if (m_pFontStyle->bBold)
+			oWriter.WriteString(L" b=\"1\"");
+		if (m_pFontStyle->bItalic)
+			oWriter.WriteString(L" i=\"1\"");
+
+		if (m_eVertAlignType == eVertAlignType::vatSubscript)
+			oWriter.WriteString(L" baseline=\"-20000\">");
+		else if (m_eVertAlignType == eVertAlignType::vatSuperscript)
+			oWriter.WriteString(L" baseline=\"30000\">");
+
+		oWriter.WriteString(L">");
+
+		oWriter.WriteString(L"<a:sym typeface=\"");
+		oWriter.WriteEncodeXmlString(m_pFontStyle->wsFontName);
+		oWriter.WriteString(L"\"/>");
+
+		oWriter.WriteString(L"<a:cs typeface=\"");
+		oWriter.WriteEncodeXmlString(m_pFontStyle->wsFontName);
+		oWriter.WriteString(L"\"/>");
+
+		oWriter.WriteString(L"<a:latin typeface=\"");
+		oWriter.WriteEncodeXmlString(m_pFontStyle->wsFontName);
+		oWriter.WriteString(L"\"/>");
+
+		if (m_bIsUnderlinePresent)
+		{
 			if (m_lUnderlineColor != m_pFontStyle->oBrush.Color1)
 			{
-				oWriter.WriteString(L" w:color=\"");
+				oWriter.WriteString(L"<a:uFill>");
+				oWriter.WriteString(L"<a:solidFill>");
+				oWriter.WriteString(L"<a:srgbClr val=\"");
 				oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_lUnderlineColor));
-				oWriter.WriteString(L"\"");
+				oWriter.WriteString(L"\"/>");
+				oWriter.WriteString(L"</a:solidFill>");
+				oWriter.WriteString(L"</a:uFill>");
 			}
-			oWriter.WriteString(L"/>");
+			else
+				oWriter.WriteString(L"<a:uFillTx>");
 		}
 
 		if (m_bIsHighlightPresent)
 		{
-			//note В <w:style это не работает
-			ColorTable& colorTable = SingletonInstance<ColorTable>();
-			if (colorTable.IsStandardColor(m_lHighlightColor))
-			{
-				oWriter.WriteString(L"<w:highlight w:val=\"");
-				oWriter.WriteString(colorTable.ConverColorToString(ConvertColorBGRToRGB(m_lHighlightColor)));
-			}
-			else
-			{
-				oWriter.WriteString(L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"");
-				oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_lHighlightColor));
-			}
+			oWriter.WriteString(L"<a:highlight>");
+			oWriter.WriteString(L"<a:srgbClr val=\"");
+			oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_lHighlightColor));
 			oWriter.WriteString(L"\"/>");
+			oWriter.WriteString(L"</a:highlight>");
 		}
 
-		if (m_eVertAlignType == eVertAlignType::vatSubscript || m_eVertAlignType == eVertAlignType::vatSuperscript)
+		if (ConvertColorBGRToRGB(m_pFontStyle->oBrush.Color1) != c_iBlackColor)
 		{
-			int lSize = static_cast<int>(3.0 * m_pFontStyle->dFontSize);
-			oWriter.WriteString(L"<w:sz w:val=\"");
-			oWriter.AddInt(lSize);
-			oWriter.WriteString(L"\"/><w:szCs w:val=\"");
-			oWriter.AddInt(lSize);
+			oWriter.WriteString(L"<a:solidFill>");
+			oWriter.WriteString(L"<a:srgbClr val=\"");
+			oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_pFontStyle->oBrush.Color1));
 			oWriter.WriteString(L"\"/>");
-		}
-		else if (m_bWriteStyleRaw)
-		{
-			int lSize = static_cast<int>(2.0 * m_pFontStyle->dFontSize);
-			oWriter.WriteString(L"<w:sz w:val=\"");
-			oWriter.AddInt(lSize);
-			oWriter.WriteString(L"\"/><w:szCs w:val=\"");
-			oWriter.AddInt(lSize);
-			oWriter.WriteString(L"\"/>");
+			oWriter.WriteString(L"</a:solidFill>");
 		}
 
-		if (m_bWriteStyleRaw)
-		{
-			oWriter.WriteString(L"<w:rFonts w:ascii=\"");
-			oWriter.WriteEncodeXmlString(m_pFontStyle->wsFontName);
-			oWriter.WriteString(L"\" w:hAnsi=\"");
-			oWriter.WriteEncodeXmlString(m_pFontStyle->wsFontName);
-			oWriter.WriteString(L"\" w:cs=\"");
-			oWriter.WriteEncodeXmlString(m_pFontStyle->wsFontName);
-			oWriter.WriteString(L"\" w:hint=\"default\"/>");
 
-			if (m_pFontStyle->bBold)
-			{
-				oWriter.WriteString(L"<w:b/>");
-				oWriter.WriteString(L"<w:bCs/>");
-			}
-			if (m_pFontStyle->bItalic)
-			{
-				oWriter.WriteString(L"<w:i/>");
-				oWriter.WriteString(L"<w:iCs/>");
-			}
-			if (ConvertColorBGRToRGB(m_pFontStyle->oBrush.Color1) != c_iBlackColor2)
-			{
-				oWriter.WriteString(L"<w:color w:val=\"");
-				oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_pFontStyle->oBrush.Color1));
-				oWriter.WriteString(L"\"/>");
-			}
-		}
-
-		if (m_eVertAlignType == eVertAlignType::vatSubscript)
-			oWriter.WriteString(L"<w:vertAlign w:val=\"subscript\"/>");
-		else if (m_eVertAlignType == eVertAlignType::vatSuperscript)
-			oWriter.WriteString(L"<w:vertAlign w:val=\"superscript\"/>");
-
-		oWriter.WriteString(L"</w:rPr>");
-		oWriter.WriteString(L"<w:t xml:space=\"preserve\">");
+		oWriter.WriteString(L"</a:rPr>");
+		oWriter.WriteString(L"<a:t>");
 		oWriter.WriteEncodeXmlString(m_oText.ToStdWString());
-		oWriter.WriteString(L"</w:t>");
-		if (m_bIsAddBrEnd) oWriter.WriteString(L"<w:br/>");
-		oWriter.WriteString(L"</w:r>");
+		oWriter.WriteString(L"</a:t>");
+		if (m_bIsAddBrEnd) oWriter.WriteString(L"<a:br/>");
+		oWriter.WriteString(L"</a:r>");
 	}
 
 	bool CContText::IsEqual(const CContText *pCont) const noexcept

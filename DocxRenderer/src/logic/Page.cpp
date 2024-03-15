@@ -1527,7 +1527,7 @@ namespace NSDocxRenderer
 		pParagraph->m_dLeft = pLine->m_dLeft;
 		pParagraph->m_dTop = pLine->m_dTop;
 		pParagraph->m_dBaselinePos = pLine->m_dBaselinePos;
-		pParagraph->m_dWidth = pLine->m_dWidth * 1.03; // чтобы текст точно уместился
+		pParagraph->m_dWidth = pLine->m_dWidth;
 		pParagraph->m_dHeight = pLine->m_dHeight;
 		pParagraph->m_dRight = pLine->m_dRight;
 
@@ -1564,7 +1564,7 @@ namespace NSDocxRenderer
 		pShape->m_dRight =  pParagraph->m_dRight;
 		pShape->m_dBaselinePos = pParagraph->m_dBaselinePos;
 		pShape->m_dHeight = pParagraph->m_dHeight;
-		pShape->m_dWidth = pParagraph->m_dWidth * 1.03; // чтобы текст точно уместился
+		pShape->m_dWidth = pParagraph->m_dWidth;
 
 		pParagraph->m_dLeftBorder = 0;
 		pParagraph->m_dRightBorder = 0;

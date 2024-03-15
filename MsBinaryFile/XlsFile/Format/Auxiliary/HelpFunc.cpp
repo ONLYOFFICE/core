@@ -708,7 +708,7 @@ unsigned short sheetsnames2ixti(std::wstring name)
      XLS::GlobalWorkbookInfo::_xti newXti;
      newXti.iSup = XLS::GlobalWorkbookInfo::arXti_External_static.size();
      newXti.itabFirst = pos1->itabFirst;
-     newXti.itabFirst = pos1->itabLast;
+     newXti.itabLast = pos2->itabFirst;
      newXti.link = name;
      XLS::GlobalWorkbookInfo::arXti_External_static.push_back(newXti);
      return newXti.iSup;

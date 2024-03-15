@@ -307,7 +307,14 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
                 }
                 else if(SyntaxPtg::extract_PtgRef(it, itEnd, operand_str))
                 {
-                    rgce.addPtg(found_operand = OperandPtgPtr(new PtgRef3d(ixti, operand_str, OperandPtg::ptg_VALUE, rgce.getLocation())));
+                    auto pos = std::find_if(XLS::GlobalWorkbookInfo::arXti_External_static.cbegin(), XLS::GlobalWorkbookInfo::arXti_External_static.cend(),
+                            [&](XLS::GlobalWorkbookInfo::_xti i) {
+                        return i.iSup == ixti;
+                    });
+                    if(pos->itabFirst == pos->itabLast)
+                        rgce.addPtg(found_operand = OperandPtgPtr(new PtgRef3d(ixti, operand_str, OperandPtg::ptg_VALUE, rgce.getLocation())));
+                    else
+                        rgce.addPtg(found_operand = OperandPtgPtr(new PtgRef3d(ixti, operand_str, OperandPtg::ptg_REFERENCE, rgce.getLocation())));
                 }
                 else if(SyntaxPtg::extract_PtgRefErr(it, itEnd))
                 {

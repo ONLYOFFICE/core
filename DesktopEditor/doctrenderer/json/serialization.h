@@ -29,13 +29,9 @@ namespace NSJSON
 		{
 			ret = NSJSBase::CJSContext::createDouble((double)value);
 		}
-		else if (value.IsStringA())
+		else if (value.IsString())
 		{
-			ret = NSJSBase::CJSContext::createString((std::string)value);
-		}
-		else if (value.IsStringW())
-		{
-			ret = NSJSBase::CJSContext::createString((std::wstring)value);
+			ret = NSJSBase::CJSContext::createString(value.ToStringA());
 		}
 		// arrays
 		else if (value.IsArray())

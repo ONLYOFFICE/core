@@ -180,32 +180,18 @@ public:
 						return false;
 				}
 			}
-			else if (value.IsStringA())
-			{
-				if (makeExpects)
-					EXPECT_TRUE(jsValue->isString());
-				if (!jsValue->isString())
-					return false;
-
-				std::string val = value.ToStringA();
-				std::string jsVal = jsValue->toStringA();
-				if (makeExpects)
-					EXPECT_EQ(val, jsVal);
-				if (val != jsVal)
-					return false;
-			}
 			else
 			{
 				if (makeExpects)
 				{
-					EXPECT_TRUE(value.IsStringW());
+					EXPECT_TRUE(value.IsString());
 					EXPECT_TRUE(jsValue->isString());
 				}
 				if (!jsValue->isString())
 					return false;
 
-				std::wstring val = value.ToStringW();
-				std::wstring jsVal = jsValue->toStringW();
+				std::string val = value.ToStringA();
+				std::string jsVal = jsValue->toStringA();
 				if (makeExpects)
 					EXPECT_EQ(val, jsVal);
 				if (val != jsVal)
@@ -569,10 +555,10 @@ TEST_F(CJSONTest, wrong_usage)
 	EXPECT_EQ((bool)val, false);
 	EXPECT_EQ((int)val, 0);
 	EXPECT_EQ((double)val, 0.0);
-	EXPECT_EQ((std::wstring)val, L"");
+	EXPECT_EQ((std::wstring)val, L"test");
 #endif
 
-	val = L"тест";
+	val = L"test";
 #ifdef JSON_DEBUG
 	EXPECT_THROW((bool)val, std::bad_cast);
 	EXPECT_THROW((int)val, std::bad_cast);
@@ -582,7 +568,7 @@ TEST_F(CJSONTest, wrong_usage)
 	EXPECT_EQ((bool)val, false);
 	EXPECT_EQ((int)val, 0);
 	EXPECT_EQ((double)val, 0.0);
-	EXPECT_EQ((std::string)val, "");
+	EXPECT_EQ((std::string)val, "test");
 #endif
 
 	val = CValue::CreateObject();

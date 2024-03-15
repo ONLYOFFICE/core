@@ -1,5 +1,8 @@
 #include "json_values.h"
 
+#include <locale>
+#include <codecvt>
+
 namespace NSJSON
 {
 	IBaseValue::IBaseValue()
@@ -113,6 +116,13 @@ namespace NSJSON
 	{
 		if (m_type == ptStringA)
 			return m_string;
+
+		if (m_type == ptStringW)
+		{
+			std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+			return std::string(converter.to_bytes(m_wstring));
+		}
+
 #ifdef JSON_DEBUG
 		throw std::bad_cast();
 #endif
@@ -123,6 +133,13 @@ namespace NSJSON
 	{
 		if (m_type == ptStringW)
 			return m_wstring;
+
+		if (m_type == ptStringA)
+		{
+			std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+			return std::wstring(converter.from_bytes(m_string));
+		}
+
 #ifdef JSON_DEBUG
 		throw std::bad_cast();
 #endif

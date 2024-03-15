@@ -66,16 +66,13 @@ namespace NSJSON
 				static_cast<CPrimitive*>(m_internal->m_value.get())->isDouble());
 	}
 
-	bool IValue::IsStringA() const
+	bool IValue::IsString() const
 	{
-		return (m_internal->m_type == CTypedValue::vtPrimitive &&
-				static_cast<CPrimitive*>(m_internal->m_value.get())->isStringA());
-	}
+		if (m_internal->m_type != CTypedValue::vtPrimitive)
+			return false;
 
-	bool IValue::IsStringW() const
-	{
-		return (m_internal->m_type == CTypedValue::vtPrimitive &&
-				static_cast<CPrimitive*>(m_internal->m_value.get())->isStringW());
+		CPrimitive* pPrimitive = static_cast<CPrimitive*>(m_internal->m_value.get());
+		return (pPrimitive->isStringA() || pPrimitive->isStringW());
 	}
 
 	bool IValue::IsArray() const

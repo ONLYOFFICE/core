@@ -174,7 +174,7 @@ private:
   GBool readXRefStreamSection(Stream *xrefStr, int *w, int first, int n);
   GBool constructXRef();
   void constructTrailerDict(GFileOffset pos);
-  void saveTrailerDict(Dict *dict, GBool isXRefStream);
+  GBool saveTrailerDict(Dict *dict, GBool isXRefStream);
   char *constructObjectEntry(char *p, GFileOffset pos, int *objNum);
   void constructObjectStreamEntries(Object *objStr, int objStrObjNum);
   GBool constructXRefEntry(int num, int gen, GFileOffset pos,

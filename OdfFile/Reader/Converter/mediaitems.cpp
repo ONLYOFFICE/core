@@ -270,6 +270,7 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, _rels_type type,
 	}
 	else if ( type == typeMsObject || type == typeOleObject)
 	{
+		isMediaInternal = is_internal(href, odf_packet_);
 		sub_path = L"embeddings/";
 	}
 	else if ( type == typeControlProps)

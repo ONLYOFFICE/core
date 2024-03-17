@@ -341,12 +341,13 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 		{			
 			if (href[0] == L'#') href = href.substr(1);
 			
-			std::wstring objectPath = odfPath + FILE_SEPARATOR_STR + href;
-
-			// normalize path ???? todooo
-			XmlUtils::replace_all( objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
-
-            odf_document_ = odf_document_ptr(new odf_document(objectPath, tempPath, L""));
+			if (Context.get_mediaitems()->is_internal_path(href, odfPath))
+			{
+				std::wstring objectPath = odfPath + FILE_SEPARATOR_STR + href;
+				// normalize path ???? todooo
+				XmlUtils::replace_all(objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
+				odf_document_ = odf_document_ptr(new odf_document(objectPath, tempPath, L""));
+			}
 		}
 //---------------------------------------------------------------------------------------------------------------------
 		office_element *contentSubDoc = odf_document_ ? odf_document_->get_impl()->get_content() : NULL;
@@ -465,12 +466,14 @@ void draw_object_ole::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	Context.get_slide_context().set_use_image_replacement();
 	
-	std::wstring href		= xlink_attlist_.href_.get_value_or(L"");
-	std::wstring folderPath = Context.root()->get_folder();
-	std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
+	std::wstring href = xlink_attlist_.href_.get_value_or(L"");
+	if (href.empty()) return;
 
-	if (!href.empty()) 
+	std::wstring folderPath = Context.root()->get_folder();
+	if (Context.get_mediaitems()->is_internal_path(href, folderPath))
 	{
+		std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
+
 		std::wstring prog, extension;
 		oox::_rels_type relsType;
 		detectObject(objectPath, prog, extension, relsType);
@@ -481,6 +484,10 @@ void draw_object_ole::pptx_convert(oox::pptx_conversion_context & Context)
 			Context.get_slide_context().set_ms_object(href + extension, prog);
 		else
 			Context.get_slide_context().set_ole_object(href + extension, prog);
+	}
+	else
+	{
+		Context.get_slide_context().set_ole_object(href, L"");
 	}
 }
 

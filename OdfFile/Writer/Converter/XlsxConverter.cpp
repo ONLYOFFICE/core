@@ -2962,7 +2962,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 			
 			std::wstring pathOle = find_link_by_id(sID, 4, bExternal);
 
-			odf_ref_object = odf_context()->add_oleobject(pathOle);
+			odf_ref_object = odf_context()->add_oleobject(pathOle, bExternal);
 		}
 		if ((object->m_oObjectPr.IsInit()) && (object->m_oObjectPr->m_oRid.IsInit()))
 		{
@@ -2970,7 +2970,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 			
 			std::wstring pathImage = find_link_by_id(sID, 1, bExternal);
 					
-			odf_ref_image = odf_context()->add_imageobject(pathImage);
+			odf_ref_image = odf_context()->add_imageobject(pathImage, bExternal);
 		}
 //--------------------------------------------------------------------------------------------------
 		if ((!bAnchor || odf_ref_image.empty()) && object->m_oShapeId.IsInit())

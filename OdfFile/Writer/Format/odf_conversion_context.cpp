@@ -565,23 +565,37 @@ std::wstring odf_conversion_context::add_media(const std::wstring & file_name, b
 		return odf_ref_name;
 	}
 }
-std::wstring odf_conversion_context::add_imageobject(const std::wstring & file_name)
+std::wstring odf_conversion_context::add_imageobject(const std::wstring & file_name, bool bExternal)
 {
 	if (file_name.empty()) return L"";
 	
-	std::wstring odf_ref_name ;	
-	mediaitems()->add_or_find(file_name,_mediaitems::typeObjectReplacement, odf_ref_name);
+	if (bExternal)
+	{
+		return file_name;
+	}
+	else
+	{
+		std::wstring odf_ref_name;
+		mediaitems()->add_or_find(file_name, _mediaitems::typeObjectReplacement, odf_ref_name);
 
-	return odf_ref_name;
+		return odf_ref_name;
+	}
 }
-std::wstring odf_conversion_context::add_oleobject(const std::wstring & file_name)
+std::wstring odf_conversion_context::add_oleobject(const std::wstring & file_name, bool bExternal)
 {
 	if (file_name.empty()) return L"";
 	
-	std::wstring odf_ref_name ;	
-	mediaitems()->add_or_find(file_name,_mediaitems::typeOleObject, odf_ref_name);
+	if (bExternal)
+	{
+		return file_name;
+	}
+	else
+	{
+		std::wstring odf_ref_name;
+		mediaitems()->add_or_find(file_name, _mediaitems::typeOleObject, odf_ref_name);
 
-	return odf_ref_name;
+		return odf_ref_name;
+	}
 }
 void odf_conversion_context::add_tab(_CP_OPT(int) type, _CP_OPT(length) _length, _CP_OPT(int) leader)
 {

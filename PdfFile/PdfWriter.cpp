@@ -1200,11 +1200,6 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 		PdfWriter::CPictureField* pField = m_pDocument->CreatePictureField();
 		pFieldBase = static_cast<PdfWriter::CFieldBase*>(pField);
 	}
-	else if (oInfo.IsSignature())
-	{
-		PdfWriter::CSignatureField* pField = m_pDocument->CreateSignatureField();
-		pFieldBase = static_cast<PdfWriter::CFieldBase*>(pField);
-	}
 	else if (oInfo.IsDateTime())
 	{
 		PdfWriter::CDateTimeField* pField = m_pDocument->CreateDateTimeField();
@@ -1574,33 +1569,6 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 		}
 
 		pField->SetAppearance(pImage);
-	}
-	else if (oInfo.IsSignature())
-	{
-		const CFormFieldInfo::CSignatureFormPr* pPr = oInfo.GetSignaturePr();
-
-		PdfWriter::CSignatureField* pField = dynamic_cast<PdfWriter::CSignatureField*>(pFieldBase);
-		if (!pField)
-			return S_FALSE;
-
-		pFieldBase->AddPageRect(m_pPage, PdfWriter::TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
-		pField->SetName(pPr->GetName());
-		pField->SetReason(pPr->GetReason());
-		pField->SetContact(pPr->GetContact());
-		pField->SetDate(pPr->GetDate());
-
-		std::wstring wsPath = pPr->GetPicturePath();
-		PdfWriter::CImageDict* pImage = NULL;
-		if (!wsPath.empty())
-		{
-			Aggplus::CImage oImage(wsPath);
-			pImage = LoadImage(&oImage, 255);
-		}
-
-		pField->SetAppearance(pImage);
-
-		// TODO Реализовать, когда появится поддержка CSignatureField
-		pField->SetCert();
 	}
 	else if (oInfo.IsDateTime())
 	{

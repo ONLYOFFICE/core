@@ -197,6 +197,21 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 				Context.root()->odf_context().styleContainer().style_by_name(textStyleName, odf_types::style_family::Paragraph, Context.process_masters_);
 
 			paragraph_format_properties paragraph_properties = calc_paragraph_properties_content(textStyleInst);
+
+			if (paragraph_properties.style_writing_mode_)
+			{
+				const odf_types::writing_mode& mode = *paragraph_properties.style_writing_mode_;
+				if (mode.get_type() == odf_types::writing_mode::TbRl)
+				{
+					_property vert = _property(L"text_vert", 1);
+					Context.get_slide_context().set_property(vert);
+				}
+				else if (mode.get_type() == odf_types::writing_mode::TbLr)
+				{
+					_property vert270 = _property(L"text_vert", 2);
+					Context.get_slide_context().set_property(vert270);				
+				}
+			}
 		}
 
 		if (office_event_listeners_) office_event_listeners_->pptx_convert(Context);

@@ -179,16 +179,28 @@ namespace NExtractTools
 
 		_UINT32 nRes = 0;
 		
+		std::wstring sTargetBin;
+		if (params.getFromChanges())
+		{
+			params.setFromChanges(false);
+			nRes = apply_changes(sFrom, sTo, NSDoctRenderer::DoctRendererFormat::FormatFile::XLST, sTargetBin, params, convertParams);
+		}
+		else
+			sTargetBin = sFrom;
+		
 		std::wstring sTempUnpackedXLSB = convertParams.m_sTempResultOOXMLDirectory;
 
 		convertParams.m_sTempResultOOXMLDirectory = sTempUnpackedXLSX;
-		nRes = xlst_bin2xlsx_dir(sFrom, sTempUnpackedXLSX, params, convertParams);
+		nRes = xlst_bin2xlsx_dir(sTargetBin, sTempUnpackedXLSX, params, convertParams);
 
 		if (SUCCEEDED_X2T(nRes))
 		{
 			convertParams.m_sTempResultOOXMLDirectory = sTempUnpackedXLSB;
 			nRes = xlsx_dir2xlsb_dir(sTempUnpackedXLSX, sTempUnpackedXLSB, params, convertParams);
 		}
+		// удаляем EditorWithChanges, потому что он не в Temp
+		if (sFrom != sTargetBin)
+			NSFile::CFileBinary::Remove(sTargetBin);
 		return nRes;
 	}
 	_UINT32 xlst_bin2xlsb(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)

@@ -2257,7 +2257,7 @@ void ods_table_state::set_conditional_databar_color(_CP_OPT(color)& color)
 
 	if (cond_format)
 	{
-		cond_format->attr_.calcext_positive_color_ = color;
+		cond_format->attr_.positive_color_ = color;
 	}
 }
 void ods_table_state::set_conditional_databar_axis_color(_CP_OPT(color)& color)
@@ -2266,7 +2266,7 @@ void ods_table_state::set_conditional_databar_axis_color(_CP_OPT(color)& color)
 
 	if (cond_format)
 	{
-		cond_format->attr_.calcext_axis_color_ = color;
+		cond_format->attr_.axis_color_ = color;
 	}
 }
 void ods_table_state::set_conditional_databar_negative_color(_CP_OPT(color)& color)
@@ -2275,7 +2275,7 @@ void ods_table_state::set_conditional_databar_negative_color(_CP_OPT(color)& col
 
 	if (cond_format)
 	{
-		cond_format->attr_.calcext_negative_color_ = color;
+		cond_format->attr_.negative_color_ = color;
 	}
 }
 void ods_table_state::set_conditional_databar_axis_position(const std::wstring& type)
@@ -2284,9 +2284,35 @@ void ods_table_state::set_conditional_databar_axis_position(const std::wstring& 
 
 	if (cond_format)
 	{
-		cond_format->attr_.calcext_axis_position_ = type;
+		cond_format->attr_.axis_position_ = type;
 	}
+}
+void ods_table_state::set_conditional_databar_gradient(bool val)
+{
+	calcext_data_bar* cond_format = dynamic_cast<calcext_data_bar*>(current_level_.back().get());
 
+	if (cond_format)
+	{
+		cond_format->attr_.gradient_ = val;
+	}
+}
+void ods_table_state::set_conditional_databar_max(unsigned int val)
+{
+	calcext_data_bar* cond_format = dynamic_cast<calcext_data_bar*>(current_level_.back().get());
+
+	if (cond_format)
+	{
+		cond_format->attr_.max_length_ = val;
+	}
+}
+void ods_table_state::set_conditional_databar_min(unsigned int val)
+{
+	calcext_data_bar* cond_format = dynamic_cast<calcext_data_bar*>(current_level_.back().get());
+
+	if (cond_format)
+	{
+		cond_format->attr_.min_length_ = val;
+	}
 }
 
 }

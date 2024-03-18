@@ -398,6 +398,9 @@ public:
 				void set_conditional_databar_negative_color(_CP_OPT(odf_types::color) & color);
 				void set_conditional_databar_axis_color(_CP_OPT(odf_types::color) & color);
 				void set_conditional_databar_axis_position(const std::wstring& value);
+				void set_conditional_databar_gradient(bool val);
+				void set_conditional_databar_max(unsigned int val);
+				void set_conditional_databar_min(unsigned int val);
 
 				void set_conditional_style_name(const std::wstring &style_name);
                 void set_conditional_operator(int _operator);

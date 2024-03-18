@@ -78,6 +78,7 @@ public:
 	std::wstringstream	tableParts_;
     std::wstringstream	autofilter_;
 	std::wstringstream	conditionalFormatting_;
+	std::wstringstream	conditionalFormattingEx_;
 	std::wstringstream  picture_background_;
 	std::wstringstream  dataValidations_;
 	std::wstringstream  dataValidationsX14_;
@@ -147,6 +148,10 @@ std::wostream & xlsx_xml_worksheet::tableParts()
 std::wostream & xlsx_xml_worksheet::conditionalFormatting()
 {
     return impl_->conditionalFormatting_;
+}
+std::wostream& xlsx_xml_worksheet::conditionalFormattingEx()
+{
+	return impl_->conditionalFormattingEx_;
 }
 std::wostream & xlsx_xml_worksheet::sort()
 {
@@ -312,8 +317,9 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 
 			std::wstring dataValidations14 = impl_->dataValidationsX14_.str();
 			std::wstring sparklines = impl_->sparklines_.str();
+			std::wstring condFormattings = impl_->conditionalFormattingEx_.str();
 			
-			if (false == dataValidations14.empty() || false == sparklines.empty())
+			if (false == dataValidations14.empty() || false == sparklines.empty() || false == condFormattings.empty())
 			{
 				CP_XML_NODE(L"extLst")
 				{
@@ -335,6 +341,19 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 							CP_XML_ATTR(L"xmlns:x14", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
 
 							CP_XML_STREAM() << sparklines;
+						}
+					}
+					if (false == condFormattings.empty())
+					{
+						CP_XML_NODE(L"ext")
+						{
+							CP_XML_ATTR(L"uri", L"{78C0D931-6437-407d-A8EE-F0AAD7539E65}");
+							CP_XML_ATTR(L"xmlns:x14", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
+
+							CP_XML_NODE(L"x14:conditionalFormattings")
+							{
+								CP_XML_STREAM() << condFormattings;
+							}
 						}
 					}
 				}

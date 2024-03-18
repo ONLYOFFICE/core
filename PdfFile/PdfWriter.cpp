@@ -1027,6 +1027,16 @@ HRESULT CPdfWriter::DrawImageFromFile(NSFonts::IApplicationFonts* pAppFonts, con
 	if (!IsPageValid())
 		return S_OK;
 
+	if (m_pDocument->HasImage(wsImagePathSrc, nAlpha))
+	{
+		PdfWriter::CImageDict* pPdfImage = m_pDocument->GetImage(wsImagePathSrc, nAlpha);
+		m_pPage->GrSave();
+		UpdateTransform();
+		m_pPage->DrawImage(pPdfImage, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY - dH), MM_2_PT(dW), MM_2_PT(dH));
+		m_pPage->GrRestore();
+		return S_OK;
+	}
+
 	std::wstring sTempImagePath = GetDownloadFile(wsImagePathSrc, wsTempDirectory);
 	std::wstring wsImagePath = sTempImagePath.empty() ? wsImagePathSrc : sTempImagePath;
 
@@ -1057,8 +1067,10 @@ HRESULT CPdfWriter::DrawImageFromFile(NSFonts::IApplicationFonts* pAppFonts, con
 	}
 
 	HRESULT hRes = S_OK;
-	if (!pAggImage || !DrawImage(pAggImage, dX, dY, dW, dH, nAlpha))
+	PdfWriter::CImageDict* pPdfImage = NULL;
+	if (!pAggImage || !(pPdfImage = DrawImage(pAggImage, dX, dY, dW, dH, nAlpha)))
 		hRes = S_FALSE;
+	m_pDocument->AddImage(wsImagePathSrc, nAlpha, pPdfImage);
 
 	if (NSFile::CFileBinary::Exists(sTempImagePath))
 		NSFile::CFileBinary::Remove(sTempImagePath);
@@ -2666,7 +2678,7 @@ void CPdfWriter::Sign(const double& dX, const double& dY, const double& dW, cons
 //----------------------------------------------------------------------------------------
 // Внутренние функции
 //----------------------------------------------------------------------------------------
-PdfWriter::CImageDict* CPdfWriter::LoadImage(Aggplus::CImage* pImage, const BYTE& nAlpha)
+PdfWriter::CImageDict* CPdfWriter::LoadImage(Aggplus::CImage* pImage, BYTE nAlpha)
 {
 	TColor oColor;
 	int nImageW = abs((int)pImage->GetWidth());
@@ -2761,18 +2773,18 @@ PdfWriter::CImageDict* CPdfWriter::LoadImage(Aggplus::CImage* pImage, const BYTE
 
 	return pPdfImage;
 }
-bool CPdfWriter::DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha)
+PdfWriter::CImageDict* CPdfWriter::DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha)
 {
 	PdfWriter::CImageDict* pPdfImage = LoadImage(pImage, nAlpha);
 	if (!pPdfImage)
-		return false;
+		return NULL;
 
 	m_pPage->GrSave();
 	UpdateTransform();
 	m_pPage->DrawImage(pPdfImage, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY - dH), MM_2_PT(dW), MM_2_PT(dH));
 	m_pPage->GrRestore();
 	
-	return true;
+	return pPdfImage;
 }
 bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, const double& dX, const double& dY)
 {
@@ -3041,12 +3053,17 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 	if (c_BrushTypeTexture == lBrushType)
 	{
 		std::wstring wsTexturePath = m_oBrush.GetTexturePath();
+		BYTE nAlpha = m_oBrush.GetTextureAlpha();
 		CImageFileFormatChecker oImageFormat(wsTexturePath);
 
 		PdfWriter::CImageDict* pImage = NULL;
 		int nImageW = 0;
 		int nImageH = 0;
-		if (_CXIMAGE_FORMAT_JPG == oImageFormat.eFileType || _CXIMAGE_FORMAT_JP2 == oImageFormat.eFileType)
+		if (m_pDocument->HasImage(wsTexturePath, nAlpha))
+		{
+			pImage = m_pDocument->GetImage(wsTexturePath, nAlpha);
+		}
+		else if (_CXIMAGE_FORMAT_JPG == oImageFormat.eFileType || _CXIMAGE_FORMAT_JP2 == oImageFormat.eFileType)
 		{
 			pImage = m_pDocument->CreateImage();
 			CBgraFrame oFrame;
@@ -3060,6 +3077,8 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 					pImage->LoadJpeg(wsTexturePath.c_str(), nImageW, nImageH, oFrame.IsGrayScale());
 				else
 					pImage->LoadJpx(wsTexturePath.c_str(), nImageW, nImageH);
+
+				m_pDocument->AddImage(wsTexturePath, nAlpha, pImage);
 			}
 		}
 		else if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType ||
@@ -3103,6 +3122,7 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 			nImageW = abs((int)oImage.GetWidth());
 			nImageH = abs((int)oImage.GetHeight());
 			pImage = LoadImage(&oImage, 255);
+			m_pDocument->AddImage(wsTexturePath, nAlpha, pImage);
 		}
 		else
 		{
@@ -3110,11 +3130,11 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 			nImageW = abs((int)oImage.GetWidth());
 			nImageH = abs((int)oImage.GetHeight());
 			pImage = LoadImage(&oImage, 255);
+			m_pDocument->AddImage(wsTexturePath, nAlpha, pImage);
 		}
 
 		if (pImage)
 		{
-			BYTE nAlpha = m_oBrush.GetTextureAlpha();
 			if (0xFF != nAlpha)
 				pImage->AddTransparency(nAlpha);
 

@@ -794,9 +794,13 @@ void xlsx_table_state::serialize_hyperlinks(std::wostream & strm)
 {
     return xlsx_hyperlinks_.xlsx_serialize(strm);
 }
-void xlsx_table_state::serialize_conditionalFormatting(std::wostream & strm)
+void xlsx_table_state::serialize_condFormatting(std::wostream & strm)
 {
     return xlsx_conditionalFormatting_context_.serialize(strm);
+}
+void xlsx_table_state::serialize_condFormattingEx(std::wostream& strm)
+{
+	return xlsx_conditionalFormatting_context_.serializeEx(strm);
 }
 void xlsx_table_state::dump_rels_hyperlinks(rels & Rels)
 {

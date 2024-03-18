@@ -625,7 +625,14 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 				if(i->m_oName.IsInit())
                 {
 					i->m_oName = boost::algorithm::erase_all_copy(i->m_oName.get(), L"_x000a_");
-					XLS::GlobalWorkbookInfo::mapTableColumnNames_static.at(m_oId->GetValue()).at(colInd)  = i->m_oName.get();
+					std::unordered_map<int, std::vector<std::wstring>>::iterator pFind = XLS::GlobalWorkbookInfo::mapTableColumnNames_static.find(m_oId->GetValue());
+					if (pFind != XLS::GlobalWorkbookInfo::mapTableColumnNames_static.end())
+					{
+						if (colInd < pFind->second.size())
+						{
+							pFind->second[colInd] = i->m_oName.get();
+						}
+					}
                 }
 				colInd++;
 			}

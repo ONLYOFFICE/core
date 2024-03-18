@@ -946,6 +946,7 @@ GBool XRef::constructXRef() {
   }
 
   // read each stream object, check for xref or object stream
+  GBool bRoot = gFalse;
   for (int i = 0; i < streamObjNumsLen; ++i) {
     Object obj;
     fetch(streamObjNums[i], entries[streamObjNums[i]].gen, &obj);
@@ -953,8 +954,8 @@ GBool XRef::constructXRef() {
       Dict *dict = obj.streamGetDict();
       Object type;
       dict->lookup("Type", &type);
-      if (type.isName("XRef")) {
-	saveTrailerDict(dict, gTrue);
+      if (type.isName("XRef") && !bRoot) {
+	bRoot = saveTrailerDict(dict, gTrue);
       } else if (type.isName("ObjStm")) {
 	constructObjectStreamEntries(&obj, streamObjNums[i]);
       }
@@ -991,7 +992,8 @@ void XRef::constructTrailerDict(GFileOffset pos) {
 
 // If [dict] "looks like" a trailer dict (i.e., has a Root entry),
 // save it as the trailer dict.
-void XRef::saveTrailerDict(Dict *dict, GBool isXRefStream) {
+GBool XRef::saveTrailerDict(Dict *dict, GBool isXRefStream) {
+  GBool bRes = gFalse;
   Object obj;
   dict->lookupNF("Root", &obj);
   if (obj.isRef()) {
@@ -1005,9 +1007,11 @@ void XRef::saveTrailerDict(Dict *dict, GBool isXRefStream) {
 	trailerDict.free();
       }
       trailerDict.initDict(dict);
+      bRes = gTrue;
     }
   }
   obj.free();
+  return bRes;
 }
 
 // Look for an object header ("nnn ggg obj") at [p].  The first

@@ -299,7 +299,7 @@ bool COfficeFileFormatChecker::isOleObjectFile(POLE::Storage *storage)
 		std::string UserType, ClipboardFormat, Program;
 
 		POLE::Stream streamCompObject(storage, L"CompObj");
-		if (false == streamCompObject.fail())
+		if (false == streamCompObject.fail() && streamCompObject.size() >= 28)
 		{
 			streamCompObject.seek(28); // skip Header
 

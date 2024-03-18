@@ -5252,7 +5252,7 @@ void FlateStream::readSome() {
   totalOut += remain;
 
   // check for a 'decompression bomb'
-  if (totalOut > 50000000 && totalIn < totalOut / 250) {
+  if (totalOut > 100000000 && totalIn < totalOut / 250) {
     error(errSyntaxError, getPos(), "Decompression bomb in flate stream");
     endOfBlock = eof = gTrue;
     remain = 0;

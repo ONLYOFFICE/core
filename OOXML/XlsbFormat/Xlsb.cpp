@@ -101,6 +101,10 @@ bool OOX::Spreadsheet::CXlsb::WriteBin(const CPath& oDirPath, OOX::CContentTypes
         return false;
 
     m_bWriteToXlsb = true;
+    if(!m_oContentTypes.m_mapDefaults.empty() && !m_oContentTypes.m_mapOverrides.empty())
+    {
+        oContentTypes.Merge(&m_oContentTypes);
+    }
 
     IFileContainer::Write(oDirPath / L"", OOX::CPath(_T("")), oContentTypes);
 

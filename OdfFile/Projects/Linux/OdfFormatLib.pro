@@ -203,7 +203,8 @@ SOURCES += \
 	../../Reader/Format/office_settings.cpp \
 	../../Reader/Format/office_spreadsheet.cpp \
 	../../Reader/Format/office_text.cpp \
-	../../Reader/Format/office_meta.cpp \
+        ../../Reader/Format/office_drawing.cpp \
+        ../../Reader/Format/office_meta.cpp \
 	../../Reader/Format/paragraph_elements.cpp \
 	../../Reader/Format/ruby.cpp \
 	../../Reader/Format/search_table_cell.cpp \
@@ -387,7 +388,6 @@ SOURCES += \
 	../../Writer/Format/odp_page_state.cpp \
 	../../Writer/Format/odp_slide_context.cpp \
 	../../Writer/Format/office_presentation.cpp \
-	../../Writer/Format/office_drawing.cpp \
 	../../Writer/Format/style_presentation.cpp \
 	../../Writer/Format/odf_math_context.cpp \
 	../../Writer/Format/math_elementaries.cpp \

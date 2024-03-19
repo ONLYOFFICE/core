@@ -44,8 +44,5 @@ namespace NSDocxRenderer
 
 		void RemoveHighlightColor();
 		void MergeLines();
-
-	private:
-		void BuildXml(NSStringUtils::CStringBuilder& oWriter, const std::wstring& wsTag) const;
 	};
 }

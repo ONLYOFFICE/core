@@ -30,6 +30,7 @@ const double c_dMAX_LINE_HEIGHT_MM              = 2.5;
 const double c_dCORRECTION_FOR_FIRST_PARAGRAPH  = -1.5;
 const double c_dCOEFFICIENT_LENGTHS_LINES_IN_PARAGRAPH = 0.8;
 const double c_dLINE_DISTANCE_MAX_MM			= 50.0;
+const double c_dSHAPE_X_OFFSET					= 2.5;
 
 const UINT   c_iWhiteColor = 0xFFFFFF;
 const UINT   c_iBlackColor = 0x000000;

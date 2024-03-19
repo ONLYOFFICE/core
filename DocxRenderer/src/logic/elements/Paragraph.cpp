@@ -14,54 +14,54 @@ namespace NSDocxRenderer
 		m_arLines.clear();
 	}
 
-	void CParagraph::BuildXml(NSStringUtils::CStringBuilder& oWriter, const std::wstring& wsTag) const
+	void CParagraph::ToXml(NSStringUtils::CStringBuilder& oWriter) const
 	{
-		oWriter.WriteString(L"<" + wsTag + L":p>");
-		oWriter.WriteString(L"<" + wsTag + L":pPr>");
+		oWriter.WriteString(L"<w:p>");
+		oWriter.WriteString(L"<w:pPr>");
 
 		// styles
-		if(!m_wsStyleId.empty()) oWriter.WriteString(L"<" + wsTag + L":pStyle " + wsTag + L":val=\"" + m_wsStyleId + L"\"/>");
+		if(!m_wsStyleId.empty()) oWriter.WriteString(L"<w:pStyle w:val=\"" + m_wsStyleId + L"\"/>");
 
-		oWriter.WriteString(L"<" + wsTag + L":spacing");
+		oWriter.WriteString(L"<w:spacing");
 		if (m_dSpaceBefore > 0)
 		{
-			oWriter.WriteString(L" " + wsTag + L":before=\"");
+			oWriter.WriteString(L" w:before=\"");
 			oWriter.AddInt(static_cast<int>(m_dSpaceBefore * c_dMMToDx));
 			oWriter.WriteString(L"\"");
 		}
 
 		if (m_dSpaceAfter > 0)
 		{
-			oWriter.WriteString(L" " + wsTag + L":after=\"");
+			oWriter.WriteString(L" w:after=\"");
 			oWriter.AddInt(static_cast<int>(m_dSpaceAfter * c_dMMToDx));
 			oWriter.WriteString(L"\"");
 		}
 
 		if (m_dLineHeight > 0)
 		{
-			oWriter.WriteString(L" " + wsTag + L":line=\"");
+			oWriter.WriteString(L" w:line=\"");
 			oWriter.AddInt(static_cast<int>(m_dLineHeight * c_dMMToDx));
-			oWriter.WriteString(L"\" " + wsTag + L":lineRule=\"exact\""); // exact - точный размер строки
+			oWriter.WriteString(L"\" w:lineRule=\"exact\""); // exact - точный размер строки
 		}
 
 		oWriter.WriteString(L"/>"); //конец w:spacing
 
-		oWriter.WriteString(L"<" + wsTag + L":ind");
+		oWriter.WriteString(L"<w:ind");
 		if (m_dLeftBorder > 0)
 		{
-			oWriter.WriteString(L" " + wsTag + L":left=\"");
+			oWriter.WriteString(L" w:left=\"");
 			oWriter.AddInt(static_cast<int>(m_dLeftBorder * c_dMMToDx));
 			oWriter.WriteString(L"\"");
 		}
 		if (m_dRightBorder > 0)
 		{
-			oWriter.WriteString(L" " + wsTag + L":right=\"");
+			oWriter.WriteString(L" w:right=\"");
 			oWriter.AddInt(static_cast<int>(m_dRightBorder * c_dMMToDx)); //здесь m_dRight - расстояние от правого края
 			oWriter.WriteString(L"\"");
 		}
 		if (m_bIsNeedFirstLineIndent)
 		{
-			oWriter.WriteString(L" " + wsTag + L":firstLine=\"");
+			oWriter.WriteString(L" w:firstLine=\"");
 			oWriter.AddInt(static_cast<int>(m_dFirstLine * c_dMMToDx));
 			oWriter.WriteString(L"\"");
 		}
@@ -70,16 +70,16 @@ namespace NSDocxRenderer
 		switch (m_eTextAlignmentType)
 		{
 		case tatByCenter:
-			oWriter.WriteString(L"<" + wsTag + L":jc " + wsTag + L":val=\"center\"/>");
+			oWriter.WriteString(L"<w:jc w:val=\"center\"/>");
 			break;
 		case tatByRight:
-			oWriter.WriteString(L"<" + wsTag + L":jc " + wsTag + L":val=\"end\"/>");
+			oWriter.WriteString(L"<w:jc w:val=\"end\"/>");
 			break;
 		case tatByWidth:
-			oWriter.WriteString(L"<" + wsTag + L":jc " + wsTag + L":val=\"both\"/>");
+			oWriter.WriteString(L"<w:jc w:val=\"both\"/>");
 			break;
 		case tatByLeft:
-			oWriter.WriteString(L"<" + wsTag + L":jc " + wsTag + L":val=\"begin\"/>");
+			oWriter.WriteString(L"<w:jc w:val=\"begin\"/>");
 			break;
 		case tatUnknown:
 		default: //по умолчанию выравнивание по левому краю - можно ничего не добавлять
@@ -88,15 +88,10 @@ namespace NSDocxRenderer
 
 		if (m_bIsShadingPresent)
 		{
-			oWriter.WriteString(L"<" + wsTag + L":shd " + wsTag + L":val=\"clear\" " + wsTag + L":color=\"auto\" " + wsTag + L":fill=\"");
+			oWriter.WriteString(L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"");
 			oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_lColorOfShadingFill));
 			oWriter.WriteString(L"\"/>");
 		}
-	}
-
-	void CParagraph::ToXml(NSStringUtils::CStringBuilder& oWriter) const
-	{
-		BuildXml(oWriter, L"w");
 
 		oWriter.WriteString(L"</w:pPr>");
 		for(const auto& line : m_arLines)
@@ -107,7 +102,54 @@ namespace NSDocxRenderer
 
 	void CParagraph::ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const
 	{
-		BuildXml(oWriter, L"a");
+		oWriter.WriteString(L"<a:p>");
+		oWriter.WriteString(L"<a:pPr algn=\"");
+		switch (m_eTextAlignmentType)
+		{
+		case tatByCenter:
+			oWriter.WriteString(L"ctr");
+			break;
+		case tatByRight:
+			oWriter.WriteString(L"r");
+			break;
+		case tatByWidth:
+			oWriter.WriteString(L"just");
+			break;
+		case tatByLeft:
+			oWriter.WriteString(L"l");
+			break;
+		case tatUnknown:
+		default:
+			oWriter.WriteString(L"l");
+			break;
+		}
+
+		if (m_bIsNeedFirstLineIndent)
+		{
+			oWriter.WriteString(L" indent=\"");
+			oWriter.AddInt(static_cast<int>(m_dFirstLine * c_dMMToPt * 100));
+			oWriter.WriteString(L"\"");
+		}
+		oWriter.WriteString(L"\">");
+
+		oWriter.WriteString(L"<a:spcBef>");
+		oWriter.WriteString(L"<a:spcPts val=\"");
+		oWriter.AddInt(static_cast<int>(m_dSpaceBefore * c_dMMToPt * 100));
+		oWriter.WriteString(L"\"/>");
+		oWriter.WriteString(L"</a:spcBef>");
+
+
+		oWriter.WriteString(L"<a:spcAft>");
+		oWriter.WriteString(L"<a:spcPts val=\"");
+		oWriter.AddInt(static_cast<int>(m_dSpaceBefore * c_dMMToPt * 100));
+		oWriter.WriteString(L"\"/>");
+		oWriter.WriteString(L"</a:spcAft>");
+
+		oWriter.WriteString(L"<a:lnSpc>");
+		oWriter.WriteString(L"<a:spcPts val=\"");
+		oWriter.AddInt(static_cast<int>(m_dLineHeight * c_dMMToPt * 100));
+		oWriter.WriteString(L"\"/>");
+		oWriter.WriteString(L"</a:lnSpc>");
 
 		oWriter.WriteString(L"</a:pPr>");
 		for(const auto& line : m_arLines)

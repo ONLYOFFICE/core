@@ -1258,7 +1258,13 @@ namespace NSDocxRenderer
 
 						// indent check
 						if (index == 1)
+						{
 							first_left = fabs(curr_line->m_dLeft - prev_line->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
+
+							// первая строчка левее правой
+							if (!first_left && prev_line->m_dLeft < curr_line->m_dLeft)
+								position_curr.left = false;
+						}
 						else
 							position_curr.left &= fabs(curr_line->m_dLeft - prev_line->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
 
@@ -1269,7 +1275,7 @@ namespace NSDocxRenderer
 
 						position_curr.center &= fabs(center_curr - center_prev) < c_dCENTER_POSITION_ERROR_MM;
 					}
-					if (position_curr.left && position_curr.right)
+					if (position_curr.left && position_curr.right && first_left)
 						paragraph->m_eTextAlignmentType = CParagraph::tatByWidth;
 					else if (position_curr.left)
 						paragraph->m_eTextAlignmentType = CParagraph::tatByLeft;
@@ -1344,8 +1350,10 @@ namespace NSDocxRenderer
 					auto& right_curr = m_arTextLines[index]->m_dRight;
 					auto& right_next = m_arTextLines[index + 1]->m_dRight;
 
-					auto center_curr = (m_arTextLines[index]->m_dLeft + m_arTextLines[index]->m_dWidth) / 2;
-					auto center_next = (m_arTextLines[index + 1]->m_dLeft + m_arTextLines[index + 1]->m_dWidth) / 2;
+					auto center_curr = (m_arTextLines[index]->m_dLeft + m_arTextLines[index]->m_dWidth / 2);
+					auto center_next = (m_arTextLines[index + 1]->m_dLeft + m_arTextLines[index + 1]->m_dWidth / 2);
+
+					/////////////
 
 					if (fabs(center_curr - center_next) < c_dCENTER_POSITION_ERROR_MM)
 						ar_positions[index].center = true;
@@ -1464,7 +1472,7 @@ namespace NSDocxRenderer
 						}
 						else if (position_bot.right)
 						{
-							gap = line_bot->m_dLeft - gap_check_line->m_dLeft;
+							gap = gap_check_line->m_dLeft - line_bot->m_dLeft;
 							cont = line_bot->m_arConts[line_bot->m_arConts.size() - 1];
 						}
 						else
@@ -1491,12 +1499,6 @@ namespace NSDocxRenderer
 				// на основе ar_delims разбиваем на параграфы
 				for (size_t index = 0; index < ar_delims.size(); ++index)
 				{
-	//				if (m_arTextLines[index]->m_pDominantShape)
-	//				{
-	//					paragraph->m_bIsShadingPresent = true;
-	//					paragraph->m_lColorOfShadingFill = m_arTextLines[index]->m_pDominantShape->m_oBrush.Color1;
-	//					paragraph->RemoveHighlightColor();
-	//				}
 					add_line(paragraph, m_arTextLines[index]);
 					if (ar_delims[index] || index == ar_delims.size() - 1)
 						add_paragraph(paragraph);

@@ -260,7 +260,6 @@ WASM_EXPORT void SetCMapData(CGraphicsFileDrawing* pGraphics, BYTE* data, int si
 {
 	pGraphics->SetCMapData(data, size);
 }
-
 WASM_EXPORT BYTE* ScanPage(CGraphicsFileDrawing* pGraphics, int nPageIndex)
 {
 	return pGraphics->GetPageShapes(nPageIndex);

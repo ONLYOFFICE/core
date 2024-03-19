@@ -166,6 +166,7 @@ CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRend
 	m_dPageWidth  = 210;
 	m_pPage       = NULL;
 	m_pFont       = NULL;
+	m_lClipMode   = 0;
 
 	m_unFieldsCounter          = 0;
 	m_bNeedUpdateTextFont      = true;
@@ -753,7 +754,7 @@ HRESULT CPdfWriter::CommandDrawTextCHAR2(unsigned int* pUnicodes, const unsigned
 //----------------------------------------------------------------------------------------
 // Маркеры команд
 //----------------------------------------------------------------------------------------
-HRESULT CPdfWriter::EndCommand(const DWORD& dwType, const LONG& lClipMode)
+HRESULT CPdfWriter::EndCommand(const DWORD& dwType)
 {
 	if (!IsPageValid())
 		return S_FALSE;
@@ -766,7 +767,7 @@ HRESULT CPdfWriter::EndCommand(const DWORD& dwType, const LONG& lClipMode)
 		m_lClipDepth++;
 		UpdateTransform();
 
-		m_oPath.Clip(m_pPage, c_nClipRegionTypeEvenOdd & lClipMode);
+		m_oPath.Clip(m_pPage, c_nClipRegionTypeEvenOdd & m_lClipMode);
 	}
 	else if (c_nResetClipType == dwType)
 	{
@@ -1091,6 +1092,16 @@ HRESULT CPdfWriter::ResetTransform()
 {
 	m_oCommandManager.Flush();
 	m_oTransform.Reset();
+	return S_OK;
+}
+HRESULT CPdfWriter::get_ClipMode(LONG* lMode)
+{
+	*lMode = m_lClipMode;
+	return S_OK;
+}
+HRESULT CPdfWriter::put_ClipMode(const LONG& lMode)
+{
+	m_lClipMode = lMode;
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------

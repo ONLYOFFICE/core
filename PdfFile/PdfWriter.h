@@ -160,7 +160,7 @@ public:
 	//----------------------------------------------------------------------------------------
 	// Маркеры команд
 	//----------------------------------------------------------------------------------------
-	HRESULT EndCommand(const DWORD& lType, const LONG& lClipMode);
+	HRESULT EndCommand(const DWORD& lType);
 	//----------------------------------------------------------------------------------------
 	// Функции для работы с патом
 	//----------------------------------------------------------------------------------------
@@ -198,6 +198,8 @@ public:
 	HRESULT AddFormField (NSFonts::IApplicationFonts* pAppFonts, CFormFieldInfo* pFieldInfo, const std::wstring& wsTempDirectory);
 	HRESULT AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotFieldInfo* pFieldInfo);
 	HRESULT AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength);
+	HRESULT get_ClipMode(LONG* lMode);
+	HRESULT put_ClipMode(const LONG& lMode);
 	//----------------------------------------------------------------------------------------
 	// Дополнительные функции Pdf рендерера
 	//----------------------------------------------------------------------------------------
@@ -271,6 +273,7 @@ private:
 	double                       m_dPageHeight;
 	double                       m_dPageWidth;
 	LONG                         m_lClipDepth;
+	LONG                         m_lClipMode;
 	std::vector<TFontInfo>       m_vFonts;
 	std::vector<TDestinationInfo>m_vDestinations;
 	unsigned int                 m_unFieldsCounter;

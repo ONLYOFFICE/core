@@ -107,7 +107,7 @@ HRESULT CPdfWriter::CommandDrawTextExCHAR(const LONG& lUnicode, const LONG& lGid
 HRESULT CPdfWriter::CommandDrawText      (const std::wstring& wsUnicodeText,                                                           const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }
 HRESULT CPdfWriter::CommandDrawTextEx    (const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }
 HRESULT CPdfWriter::CommandDrawTextCHAR2 (unsigned int* unUnicode, const unsigned int& unUnicodeCount, const unsigned int& unGid, const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }
-HRESULT CPdfWriter::EndCommand(const DWORD& lType, const LONG& lClipMode) { return 0; }
+HRESULT CPdfWriter::EndCommand(const DWORD& lType) { return 0; }
 HRESULT CPdfWriter::PathCommandMoveTo(const double& dX, const double& dY) { return 0; }
 HRESULT CPdfWriter::PathCommandLineTo(const double& dX, const double& dY) { return 0; }
 HRESULT CPdfWriter::PathCommandLinesTo(double* pPoints, const int& nCount) { return 0; }
@@ -128,6 +128,8 @@ HRESULT CPdfWriter::DrawImageFromFile(NSFonts::IApplicationFonts* pAppFonts, con
 HRESULT CPdfWriter::SetTransform(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY) { return 0; }
 HRESULT CPdfWriter::GetTransform(double* dM11, double* dM12, double* dM21, double* dM22, double* dX, double* dY) { return 0; }
 HRESULT CPdfWriter::ResetTransform() { return 0; }
+HRESULT CPdfWriter::get_ClipMode(LONG* lMode) { return 0; }
+HRESULT CPdfWriter::put_ClipMode(const LONG& lMode) { return 0; }
 HRESULT CPdfWriter::AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip) { return 0; }
 HRESULT CPdfWriter::AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage) { return 0; }
 HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFieldInfo* pInfo, const std::wstring& wsTempDirectory) { return 0; }

@@ -264,17 +264,17 @@ namespace PdfReader
 	//--------------------------------------------------------------------------------------
 	// CFontList
 	//--------------------------------------------------------------------------------------
-	CFontList::CFontList()
+	CPdfFontList::CPdfFontList()
 	{
 		m_oCS.InitializeCriticalSection();
 		m_oFontMap.clear();
 	}
-	CFontList::~CFontList()
+	CPdfFontList::~CPdfFontList()
 	{
 		m_oCS.DeleteCriticalSection();
 		Clear();
 	}
-	void        CFontList::LoadFromFile(std::wstring wsDirPath)
+	void        CPdfFontList::LoadFromFile(std::wstring wsDirPath)
 	{
 		return;
 		//Clear();
@@ -365,7 +365,7 @@ namespace PdfReader
 		//    }
 		//}
 	}
-	void        CFontList::SaveToFile(std::wstring wsDirPath)
+	void        CPdfFontList::SaveToFile(std::wstring wsDirPath)
 	{
 		return;
 		//CStringW wsFilePath = wsDirPath + CStringW( _T("/FontList.rsc") );
@@ -422,7 +422,7 @@ namespace PdfReader
 
 		//oWriter.SaveToFile( wsFilePath );
 	}
-	bool        CFontList::Find(Ref oRef, TFontEntry *pEntry)
+	bool        CPdfFontList::Find(Ref oRef, TFontEntry *pEntry)
 	{
 		CTemporaryCS* pCS = new CTemporaryCS(&m_oCS);
 
@@ -439,7 +439,7 @@ namespace PdfReader
 
 		return bResult;
 	}
-	bool        CFontList::Find2(Ref oRef, TFontEntry **ppEntry)
+	bool        CPdfFontList::Find2(Ref oRef, TFontEntry **ppEntry)
 	{
 		CTemporaryCS* pCS = new CTemporaryCS(&m_oCS);
 
@@ -462,7 +462,7 @@ namespace PdfReader
 
 		return bResult;
 	}
-	TFontEntry* CFontList::Add(Ref oRef, std::wstring wsFileName, int *pCodeToGID, int *pCodeToUnicode, unsigned int unLenGID, unsigned int unLenUnicode)
+	TFontEntry* CPdfFontList::Add(Ref oRef, std::wstring wsFileName, int *pCodeToGID, int *pCodeToUnicode, unsigned int unLenGID, unsigned int unLenUnicode)
 	{
 		// Данная функция приходит только из Find2, поэтому проверять есть ли данный шрифт уже не надо
 		CTemporaryCS* pCS = new CTemporaryCS(&m_oCS);
@@ -482,7 +482,7 @@ namespace PdfReader
 
 		return pNewEntry;
 	}
-	void CFontList::Remove(Ref oRef)
+	void CPdfFontList::Remove(Ref oRef)
 	{
 		CRefFontMap::iterator oPos = m_oFontMap.find(oRef);
 		if (m_oFontMap.end() != oPos)
@@ -497,7 +497,7 @@ namespace PdfReader
 			m_oFontMap.erase(oPos);
 		}
 	}
-	void        CFontList::Clear()
+	void        CPdfFontList::Clear()
 	{
 		for (auto const &oIt : m_oFontMap)
 		{
@@ -511,7 +511,7 @@ namespace PdfReader
 		}
 		m_oFontMap.clear();
 	}
-	bool        CFontList::GetFont(Ref *pRef, TFontEntry *pEntry)
+	bool        CPdfFontList::GetFont(Ref *pRef, TFontEntry *pEntry)
 	{
 		TFontEntry* pFindEntry = Lookup(*pRef);
 		if (NULL == pFindEntry)
@@ -523,7 +523,7 @@ namespace PdfReader
 	//--------------------------------------------------------------------------------------
 	// RendererOutputDev
 	//--------------------------------------------------------------------------------------
-	RendererOutputDev::RendererOutputDev(IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
+	RendererOutputDev::RendererOutputDev(IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList)
 	{
 		m_pFontManager  = pFontManager;
 		m_pFontManager  = pFontManager;
@@ -1003,7 +1003,7 @@ namespace PdfReader
 		pFontInfo = pFontManager->GetFontInfoByParams(oFontSelect);
 		return pFontInfo;
 	}
-	void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName)
+	void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName)
 	{
 		wsFileName = L"";
 		wsFontName = L"";

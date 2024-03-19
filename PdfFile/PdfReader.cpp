@@ -68,7 +68,7 @@ CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts)
 	globalParams->setErrQuiet(gTrue);
 #endif
 
-	m_pFontList = new PdfReader::CFontList();
+	m_pFontList = new PdfReader::CPdfFontList();
 
 	// Создаем менеджер шрифтов с собственным кэшем
 	m_pFontManager = pAppFonts->GenerateFontManager();
@@ -953,10 +953,6 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
 	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
 		return NULL;
 
-	AcroForm* pAcroForms = m_pPDFDocument->getCatalog()->getForm();
-	if (!pAcroForms || !m_pPDFDocument->getXRef())
-		return NULL;
-
 	NSWasm::CData oRes;
 	oRes.SkipLen();
 
@@ -964,44 +960,30 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
 	int nFontsPos = oRes.GetSize();
 	oRes.AddInt(nFontsID);
 
-	std::vector<int> arrFontsRef;
-	for (int nField = 0, nNum = pAcroForms->getNumFields(); nField < nNum; ++nField)
+	AcroForm* pAcroForms = m_pPDFDocument->getCatalog()->getForm();
+	if (pAcroForms)
 	{
-		AcroFormField* pField = pAcroForms->getField(nField);
-		if (!pField)
-			continue;
-
-		// Шрифт и размер шрифта - из DA
-		Ref fontID;
-		double dFontSize = 0;
-		bool bFullFont = true;
-		pField->getFont(&fontID, &dFontSize);
-		if (fontID.num < 0)
-			bFullFont = false;
-
-		if (std::find(arrFontsRef.begin(), arrFontsRef.end(), fontID.num) != arrFontsRef.end())
-			continue;
-
-		Object oR, oFonts, oFontRef;
-		bool bFindResources = false;
-		if (bFullFont && pField->fieldLookup("DR", &oR)->isDict() && oR.dictLookup("Font", &oFonts)->isDict())
+		std::vector<int> arrFontsRef;
+		for (int nField = 0, nNum = pAcroForms->getNumFields(); nField < nNum; ++nField)
 		{
-			for (int i = 0; i < oFonts.dictGetLength(); ++i)
-			{
-				if (oFonts.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
-				{
-					bFindResources = true;
-					break;
-				}
-				oFontRef.free();
-			}
-		}
+			AcroFormField* pField = pAcroForms->getField(nField);
+			if (!pField)
+				continue;
 
-		if (bFullFont && !bFindResources)
-		{
-			oR.free(); oFonts.free();
-			Object* oAcroForm = pAcroForms->getAcroFormObj();
-			if (oAcroForm->isDict() && oAcroForm->dictLookup("DR", &oR)->isDict() && oR.dictLookup("Font", &oFonts)->isDict())
+			// Шрифт и размер шрифта - из DA
+			Ref fontID;
+			double dFontSize = 0;
+			bool bFullFont = true;
+			pField->getFont(&fontID, &dFontSize);
+			if (fontID.num < 0)
+				bFullFont = false;
+
+			if (std::find(arrFontsRef.begin(), arrFontsRef.end(), fontID.num) != arrFontsRef.end())
+				continue;
+
+			Object oR, oFonts, oFontRef;
+			bool bFindResources = false;
+			if (bFullFont && pField->fieldLookup("DR", &oR)->isDict() && oR.dictLookup("Font", &oFonts)->isDict())
 			{
 				for (int i = 0; i < oFonts.dictGetLength(); ++i)
 				{
@@ -1013,40 +995,122 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
 					oFontRef.free();
 				}
 			}
-		}
 
-		if (!bFullFont || pField->getAcroFormFieldType() == acroFormFieldPushbutton)
-		{
+			if (bFullFont && !bFindResources)
+			{
+				oR.free(); oFonts.free();
+				Object* oAcroForm = pAcroForms->getAcroFormObj();
+				if (oAcroForm->isDict() && oAcroForm->dictLookup("DR", &oR)->isDict() && oR.dictLookup("Font", &oFonts)->isDict())
+				{
+					for (int i = 0; i < oFonts.dictGetLength(); ++i)
+					{
+						if (oFonts.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
+						{
+							bFindResources = true;
+							break;
+						}
+						oFontRef.free();
+					}
+				}
+			}
+
+			if (!bFullFont || pField->getAcroFormFieldType() == acroFormFieldPushbutton)
+			{
+				oR.free(); oFonts.free(); oFontRef.free();
+				std::string sFontKey;
+				bool bFind = PdfReader::GetFontFromAP(m_pPDFDocument, pField, &oR, &oFonts, &oFontRef, sFontKey);
+				if (bFind && std::find(arrFontsRef.begin(), arrFontsRef.end(), oFontRef.getRefNum()) == arrFontsRef.end() &&
+					(pField->getAcroFormFieldType() == acroFormFieldPushbutton || (nTypeFonts & 2)))
+				{
+					bFindResources = true;
+				}
+			}
+
+			std::string sFontName;
+			std::wstring wsFileName;
+			if (bFindResources)
+			{
+				bool bBold = false, bItalic = false;
+				wsFileName = PdfReader::GetFontData(m_pPDFDocument, m_pFontManager, m_pFontList, &oFonts, &oFontRef, nTypeFonts, sFontName, sFontName, bBold, bItalic);
+			}
+
+			if (!sFontName.empty())
+			{
+				std::wstring wsFontName = UTF8_TO_U(sFontName);
+				if (m_mFonts.find(wsFontName) == m_mFonts.end())
+				{
+					oRes.WriteString(sFontName);
+					nFontsID++;
+					arrFontsRef.push_back(oFontRef.getRefNum());
+					m_mFonts[wsFontName] = wsFileName;
+				}
+			}
 			oR.free(); oFonts.free(); oFontRef.free();
-			std::string sFontKey;
-			bool bFind = PdfReader::GetFontFromAP(m_pPDFDocument, pField, &oR, &oFonts, &oFontRef, sFontKey);
-			if (bFind && std::find(arrFontsRef.begin(), arrFontsRef.end(), oFontRef.getRefNum()) == arrFontsRef.end() &&
-				(pField->getAcroFormFieldType() == acroFormFieldPushbutton || (nTypeFonts & 2)))
+		}
+	}
+
+	for (int nPage = 0, nLastPage = m_pPDFDocument->getNumPages(); nPage < nLastPage; ++nPage)
+	{
+		Page* pPage = m_pPDFDocument->getCatalog()->getPage(nPage + 1);
+		if (!pPage)
+			continue;
+
+		Object oAnnots;
+		if (!pPage->getAnnots(&oAnnots)->isArray())
+		{
+			oAnnots.free();
+			continue;
+		}
+
+		for (int i = 0, nNum = oAnnots.arrayGetLength(); i < nNum; ++i)
+		{
+			Object oAnnot;
+			if (!oAnnots.arrayGet(i, &oAnnot)->isDict())
 			{
-				bFindResources = true;
+				oAnnot.free();
+				continue;
 			}
-		}
 
-		std::string sFontName;
-		std::wstring wsFileName;
-		if (bFindResources)
-		{
-			bool bBold = false, bItalic = false;
-			wsFileName = PdfReader::GetFontData(m_pPDFDocument, m_pFontManager, m_pFontList, &oFonts, &oFontRef, nTypeFonts, sFontName, sFontName, bBold, bItalic);
-		}
+			Object oSubtype;
+			std::string sType;
+			if (oAnnot.dictLookup("Subtype", &oSubtype)->isName())
+				sType = oSubtype.getName();
+			oSubtype.free();
 
-		if (!sFontName.empty())
-		{
-			std::wstring wsFontName = UTF8_TO_U(sFontName);
-			if (m_mFonts.find(wsFontName) == m_mFonts.end())
+			if (sType != "FreeText")
 			{
-				oRes.WriteString(sFontName);
+				oAnnot.free();
+				continue;
+			}
+
+			Object oObj;
+			if (!oAnnot.dictLookup("RC", &oObj)->isString())
+			{
+				oAnnot.free(); oObj.free();
+				continue;
+			}
+
+			TextString* s = new TextString(oObj.getString());
+			std::string sRC = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+			delete s;
+			oObj.free();
+
+			Object oAnnotRef;
+			oAnnots.arrayGetNF(i, &oAnnotRef);
+			std::vector<PdfReader::CAnnotMarkup::CFontData*> arrRC = PdfReader::CAnnotMarkup::ReadRC(sRC);
+			std::map<std::wstring, std::wstring> mFreeText = PdfReader::CAnnotMarkup::SetFont(m_pPDFDocument, &oAnnotRef, m_pFontManager, m_pFontList, arrRC, nTypeFonts);
+			for (std::map<std::wstring, std::wstring>::iterator it = mFreeText.begin(); it != mFreeText.end(); ++it)
+			{
+				if (m_mFonts.find(it->first) != m_mFonts.end())
+					continue;
+
+				oRes.WriteString(U_TO_UTF8(it->first));
 				nFontsID++;
-				arrFontsRef.push_back(oFontRef.getRefNum());
-				m_mFonts[wsFontName] = wsFileName;
+				m_mFonts[it->first] = it->second;
 			}
+			oAnnotRef.free();
 		}
-		oR.free(); oFonts.free(); oFontRef.free();
+		oAnnots.free();
 	}
 
 	oRes.AddInt(nFontsID, nFontsPos);
@@ -1446,7 +1510,7 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
-void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
+void GetPageAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, PdfReader::CPdfFontList *pFontList, NSWasm::CData& oRes, std::map<std::wstring, std::wstring>& m_mFonts, int nPageIndex)
 {
 	Page* pPage = pdfDoc->getCatalog()->getPage(nPageIndex + 1);
 	if (!pPage)
@@ -1487,7 +1551,9 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 		}
 		else if (sType == "FreeText")
 		{
-			pAnnot = new PdfReader::CAnnotFreeText(pdfDoc, &oAnnotRef, nPageIndex);
+			PdfReader::CAnnotFreeText* pFreeText = new PdfReader::CAnnotFreeText(pdfDoc, &oAnnotRef, nPageIndex);
+			pFreeText->SetFont(pdfDoc, &oAnnotRef, pFontManager, pFontList);
+			pAnnot = pFreeText;
 		}
 		else if (sType == "Line")
 		{
@@ -1547,10 +1613,10 @@ BYTE* CPdfReader::GetAnnots(int nPageIndex)
 	oRes.SkipLen();
 
 	if (nPageIndex >= 0)
-		GetPageAnnots(m_pPDFDocument, oRes, nPageIndex);
+		GetPageAnnots(m_pPDFDocument, m_pFontManager, m_pFontList, oRes, m_mFonts, nPageIndex);
 	else
 		for (int nPage = 0, nLastPage = m_pPDFDocument->getNumPages(); nPage < nLastPage; ++nPage)
-			GetPageAnnots(m_pPDFDocument, oRes, nPage);
+			GetPageAnnots(m_pPDFDocument, m_pFontManager, m_pFontList, oRes, m_mFonts, nPage);
 
 	oRes.WriteLen();
 	BYTE* bRes = oRes.GetBuffer();

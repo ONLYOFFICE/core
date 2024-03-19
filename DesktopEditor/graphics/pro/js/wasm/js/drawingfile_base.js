@@ -1125,7 +1125,33 @@
 					rec["CA"] = reader.readDouble();
 				// RC
 				if (flags & (1 << 3))
-					rec["RC"] = reader.readString();
+				{
+					let n = reader.readInt();
+					rec["RC"] = [];
+					for (let i = 0; i < n; ++i)
+					{
+						let oFont = {};
+						// 0 - left, 1 - centered, 2 - right, 3 - justify
+						oFont["alignment"] = reader.readByte();
+						let nFontFlag = reader.readInt();
+						oFont["bold"] = (nFontFlag >> 0) & 1;
+						oFont["italic"] = (nFontFlag >> 1) & 1;
+						oFont["strikethrough"] = (nFontFlag >> 3) & 1;
+						oFont["underlined"] = (nFontFlag >> 4) & 1;
+						if (nFontFlag & (1 << 5))
+							oFont["vertical"] = reader.readDouble();
+						if (nFontFlag & (1 << 6))
+							oFont["actual"] = reader.readString();
+						oFont["size"] = reader.readDouble();
+						oFont["color"] = [];
+						oFont["color"].push(reader.readDouble2());
+						oFont["color"].push(reader.readDouble2());
+						oFont["color"].push(reader.readDouble2());
+						oFont["name"] = reader.readString();
+						oFont["text"] = reader.readString();
+						rec["RC"].push(oFont);
+					}
+				}
 				// CreationDate
 				if (flags & (1 << 4))
 					rec["CreationDate"] = reader.readString();
@@ -1614,6 +1640,33 @@
 		Module["_free"](ext);
 		
 		return res;
+	};
+
+	CFile.prototype["scanPage"] = function(page)
+	{
+		let data = Module["_ScanPage"](this.nativeFile, page);
+		if (data == 0)
+			return [];
+
+		let lenArray = new Int32Array(Module["HEAP8"].buffer, data, 4);
+		if (lenArray == null)
+			return [];
+
+		let len = lenArray[0];
+		if (0 == len)
+			return [];
+
+		let buffer = new Uint8Array(Module["HEAP8"].buffer, data + 4, len);
+		let reader = new CBinaryReader(buffer, 0, len);
+
+		let shapesCount = reader.readInt();
+		let shapes = new Array(shapesCount);
+
+		for (let i = 0; i < shapesCount; i++)
+			shapes[i] = reader.readString();
+
+		Module["_free"](data);
+		return shapes;
 	};
 
 	CFile.prototype.memory = function()

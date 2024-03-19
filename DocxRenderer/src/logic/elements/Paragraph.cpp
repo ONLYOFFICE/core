@@ -124,13 +124,15 @@ namespace NSDocxRenderer
 			break;
 		}
 
+		oWriter.WriteString(L"\"");
+
 		if (m_bIsNeedFirstLineIndent)
 		{
 			oWriter.WriteString(L" indent=\"");
-			oWriter.AddInt(static_cast<int>(m_dFirstLine * c_dMMToPt * 100));
+			oWriter.AddInt(static_cast<int>(m_dFirstLine * c_dMMToEMU));
 			oWriter.WriteString(L"\"");
 		}
-		oWriter.WriteString(L"\">");
+		oWriter.WriteString(L">");
 
 		oWriter.WriteString(L"<a:spcBef>");
 		oWriter.WriteString(L"<a:spcPts val=\"");

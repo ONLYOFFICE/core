@@ -27,7 +27,7 @@ CXmlElement::CXmlElement(const std::wstring& sNameDefaultElement)
 
 bool CXmlElement::Empty() const
 {
-	return m_mPStyleValues.empty() && m_mRStyleValues.empty();
+	return m_mPStyleValues.empty() && m_mRStyleValues.empty() && m_mBasicValues.find(CSSProperties::BasicProperties::B_BasedOn) == m_mBasicValues.end();
 }
 
 void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
@@ -35,7 +35,19 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 	if (!Empty())
 		Clear();
 
-	if (sNameDefaultElement == L"li")
+	if (sNameDefaultElement == L"p")
+	{
+		AddBasicProperties(CSSProperties::BasicProperties::B_Type, L"paragraph");
+		AddBasicProperties(CSSProperties::BasicProperties::B_StyleId, L"p");
+		AddBasicProperties(CSSProperties::BasicProperties::B_Name, L"Normal (Web)");
+		AddBasicProperties(CSSProperties::BasicProperties::B_BasedOn, L"normal");
+		AddBasicProperties(CSSProperties::BasicProperties::B_UiPriority, L"99");
+		AddBasicProperties(CSSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
+		AddBasicProperties(CSSProperties::BasicProperties::B_SemiHidden, L"true");
+
+		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
+	}
+	else if (sNameDefaultElement == L"li")
 	{
 		AddBasicProperties(CSSProperties::BasicProperties::B_Type, L"paragraph");
 		AddBasicProperties(CSSProperties::BasicProperties::B_StyleId, L"li");
@@ -190,23 +202,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"15");
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
-	}
-	else if (sNameDefaultElement == L"p-c")
-	{
-		AddBasicProperties(CSSProperties::BasicProperties::B_Type, L"character");
-		AddBasicProperties(CSSProperties::BasicProperties::B_StyleId, L"p-c");
-		AddBasicProperties(CSSProperties::BasicProperties::B_CustomStyle, L"1");
-		AddBasicProperties(CSSProperties::BasicProperties::B_Name, L"Paragraph character");
-		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"p");
-	}
-	else if (sNameDefaultElement == L"p")
-	{
-		AddBasicProperties(CSSProperties::BasicProperties::B_Type, L"paragraph");
-		AddBasicProperties(CSSProperties::BasicProperties::B_StyleId, L"p");
-		AddBasicProperties(CSSProperties::BasicProperties::B_CustomStyle, L"1");
-		AddBasicProperties(CSSProperties::BasicProperties::B_Name, L"Paragraph");
-		AddBasicProperties(CSSProperties::BasicProperties::B_BasedOn, L"normal");
-		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"p-c");
 	}
 	else if (sNameDefaultElement == L"div-c")
 	{
@@ -515,12 +510,19 @@ std::wstring CXmlElement::ConvertBasicInfoStyle() const
 			}
 			case CSSProperties::BasicProperties::B_UnhideWhenUsed:
 			{
-				sBasicInfo += L"<w:unhideWhenUsed/>";
+				if (L"true" == oItem.second)
+					sBasicInfo += L"<w:unhideWhenUsed/>";
 				break;
 			}
 			case CSSProperties::BasicProperties::B_UiPriority:
 			{
 				sBasicInfo += L"<w:uiPriority w:val=\"" + oItem.second + L"\"/>";
+				break;
+			}
+			case CSSProperties::BasicProperties::B_SemiHidden:
+			{
+				if (L"true" == oItem.second)
+					sBasicInfo += L"<w:semiHidden/>";
 				break;
 			}
 			default:

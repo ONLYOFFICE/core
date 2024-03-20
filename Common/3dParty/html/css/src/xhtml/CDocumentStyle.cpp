@@ -509,10 +509,14 @@ namespace NSCSS
 		CXmlElement oXmlElement;
 		SetPStyle(oStyle, oXmlElement);
 
-		if (!oXmlElement.Empty())
+		if (oXmlElement.Empty())
 			return false;
 
 		structStyle.setId(oXmlElement.GetStyleId());
+
+		if (structStyle.getId().empty())
+			structStyle.setId(m_sId);
+
 		m_arStyleUsed.push_back(structStyle);
 		m_sStyle += oXmlElement.GetPStyle();
 

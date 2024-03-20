@@ -71,16 +71,19 @@ struct CTextSettings
 {
 	bool bBdo; // Реверс текста
 	bool bPre; // Сохранение форматирования (Сохранение пробелов, табуляций, переносов строк)
-	bool bAddSpaces; // Не добавлять пробелы перед текстом
+	bool bAddSpaces; // Добавлять пробелы перед текстом?
+	bool bMergeText; // Объединять подяр идущий текст в 1?
 	int  nLi;  // Уровень списка
 	std::wstring sRStyle; // w:rStyle
 	std::wstring sPStyle; // w:pStyle
 
-	CTextSettings(bool _bBdo, bool _bPre, bool _bAddSpaces, int _nLi, const std::wstring& _sRStyle, const std::wstring& _sPStyle) :
-		bBdo(_bBdo), bPre(_bPre), bAddSpaces(_bAddSpaces), nLi(_nLi), sRStyle(_sRStyle), sPStyle(_sPStyle) {}
+	CTextSettings(bool _bBdo, bool _bPre, bool _bAddSpaces, bool _bMergeText, int _nLi, const std::wstring& _sRStyle, const std::wstring& _sPStyle) :
+		bBdo(_bBdo), bPre(_bPre), bAddSpaces(_bAddSpaces), bMergeText(_bMergeText), nLi(_nLi), sRStyle(_sRStyle), sPStyle(_sPStyle) 
+	{}
 
 	CTextSettings(const CTextSettings& oTS) :
-		bBdo(oTS.bBdo), bPre(oTS.bPre), bAddSpaces(oTS.bAddSpaces), nLi(oTS.nLi), sRStyle(oTS.sRStyle), sPStyle(oTS.sPStyle) {}
+		bBdo(oTS.bBdo), bPre(oTS.bPre), bAddSpaces(oTS.bAddSpaces), bMergeText(oTS.bMergeText), nLi(oTS.nLi), sRStyle(oTS.sRStyle), sPStyle(oTS.sPStyle) 
+	{}
 };
 
 //Необходимые стили таблицы
@@ -182,6 +185,8 @@ private:
 	NSStringUtils::CStringBuilder m_oNumberXml;   // numbering.xml
 
 	bool m_bInP;       // <w:p> открыт?
+	bool m_bInR;       // <w:r> открыт?
+	bool m_bInT;       // <w:t> открыт?
 	bool m_bWasPStyle; // <w:pStyle> записан?
 	bool m_bWasSpace;  // Был пробел?
 
@@ -191,7 +196,7 @@ public:
 
 	CHtmlFile2_Private() 
 		: m_nFootnoteId(1), m_nHyperlinkId(1), m_nCrossId(1), m_nNumberingId(1), 
-		  m_bInP(false), m_bWasPStyle(false), m_bWasSpace(false)
+		  m_bInP(false), m_bInR(false), m_bInT(false), m_bWasPStyle(false), m_bWasSpace(false)
 	{
 		m_oPageData.SetSize  (std::to_wstring(DEFAULT_PAGE_WIDTH) + L"tw " + std::to_wstring(DEFAULT_PAGE_HEIGHT) + L"tw", 0, true);
 		m_oPageData.SetMargin(L"1440tw 1440tw 1440tw 1440tw", 0, true);
@@ -773,6 +778,44 @@ private:
 		pXml->WriteString(L"</w:rPr></w:pPr></w:p>");
 	}
 
+	bool OpenR(NSStringUtils::CStringBuilder* pXml)
+	{
+		if (m_bInR)
+			return false;
+
+		pXml->WriteString(L"<w:r>");
+		m_bInR = true;
+		return true;
+	}
+
+	void CloseR(NSStringUtils::CStringBuilder* pXml)
+	{
+		if (!m_bInR)
+			return;
+
+		pXml->WriteString(L"</w:r>");
+		m_bInR = false;
+	}
+
+	bool OpenT(NSStringUtils::CStringBuilder* pXml)
+	{
+		if (m_bInT)
+			return false;
+
+		pXml->WriteString(L"<w:t xml:space=\"preserve\">");
+		m_bInT = true;
+		return true;
+	}
+
+	void CloseT(NSStringUtils::CStringBuilder* pXml)
+	{
+		if (!m_bInT)
+			return;
+
+		pXml->WriteString(L"</w:t>");
+		m_bInT = false;
+	}
+
 	void CloseP(NSStringUtils::CStringBuilder* pXml, const std::vector<NSCSS::CNode>& arSelectors)
 	{
 		m_bWasSpace = true;
@@ -783,11 +826,19 @@ private:
 		for (const NSCSS::CNode& item : arSelectors)
 			if (item.m_wsName == L"a")
 				pXml->WriteString(L"</w:hyperlink>");
-	
+
+		CloseT(pXml);
+		CloseR(pXml);
+
 		pXml->WriteString(L"</w:p>");
-		m_bInP      = false;
+		m_bInP = false;
 	}
-	
+
+	std::wstring GetText()
+	{
+		return ToUnicode(m_oLightReader.GetTextA());
+	}
+
 	std::wstring GetSubClass(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors)
 	{
 		NSCSS::CNode oNode;
@@ -879,26 +930,41 @@ private:
 		m_oDocXml.WriteString(L"\"/>");
 		*/
 
-		readStream(&m_oDocXml, sSelectors, { false, false, true, -1, L"", L"" });
+		readStream(&m_oDocXml, sSelectors, { false, false, true, false, -1, L"", L"" });
 	}
 
 	void readInside (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, const std::wstring& sName)
 	{
 		if(sName == L"#text")
 		{
-			std::wstring sText = ToUnicode(m_oLightReader.GetTextA());
+			std::wstring sText = GetText();
 
 			size_t find = sText.find_first_not_of(L" \n\t\r");
 			if (find == std::wstring::npos)
 				return;
 
-			if (oTS.bAddSpaces && m_bInP && !iswspace(sText.front()) && !m_bWasSpace)
+			bool bInT = m_bInT;
+
+			if (!oTS.sRStyle.empty() || oTS.bPre)
+			{
+				CloseT(oXml);
+				CloseR(oXml);
+			}
+
+			if (oTS.bAddSpaces && m_bInP && !m_bInR && !iswspace(sText.front()) && !m_bWasSpace)
+			{
 				oXml->WriteString(L"<w:r><w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/></w:rPr><w:t xml:space=\"preserve\"> </w:t></w:r>");
+				m_bWasSpace = true;
+			}
 
 			std::wstring sPStyle = wrP(oXml, sSelectors, oTS);
-			oXml->WriteString(L"<w:r>");
-			std::wstring sRStyle = wrR(oXml, sSelectors, oTS);
-			oXml->WriteString(L"<w:t xml:space=\"preserve\">");
+			std::wstring sRStyle;
+
+			if (OpenR(oXml))
+			{
+				sRStyle = wrR(oXml, sSelectors, oTS);
+				OpenT(oXml);
+			}
 
 			if(oTS.bBdo)
 				std::reverse(sText.begin(), sText.end());
@@ -938,11 +1004,19 @@ private:
 			if (std::iswspace(sText.front()) && m_bWasSpace)
 				sText.erase(0, 1);
 
+			if (oTS.bMergeText && !m_bWasSpace && bInT)
+				oXml->WriteEncodeXmlString(L" ");
+
 			if (!sText.empty())
 				m_bWasSpace = std::iswspace(sText.back());
 
 			oXml->WriteEncodeXmlString(sText);
-			oXml->WriteString(L"</w:t></w:r>");
+
+			if (!oTS.bMergeText)
+			{
+				CloseT(oXml);
+				CloseR(oXml);
+			}
 
 			return;
 		}
@@ -958,7 +1032,7 @@ private:
 		else if(sName == L"b" || sName == L"strong")
 		{
 			CTextSettings oTSR(oTS);
-			oTSR.sRStyle += L"<w:b/>";
+			oTSR.sRStyle += L"<w:b/><w:bCs/>";
 			readStream(oXml, sSelectors, oTSR);
 		}
 		// Направление текста
@@ -1167,6 +1241,12 @@ private:
 			}
 			readStream(oXml, sSelectors, oTS);
 		}
+		else if (sName == L"nobr")
+		{
+			CTextSettings oTSPre(oTS);
+			oTSPre.bPre = true;
+			readStream(oXml, sSelectors, oTSPre);
+		}
 		// Без нового абзаца
 		else if(sName == L"basefont" || sName == L"button" || sName == L"label" || sName == L"data" || sName == L"object" ||
 				sName == L"noscript" || sName == L"output" || sName == L"abbr"  || sName == L"time" || sName == L"ruby"   ||
@@ -1265,12 +1345,6 @@ private:
 				oTSPre.bPre = true;
 				readStream(oXml, sSelectors, oTSPre);
 			}
-			else if (sName == L"nobr")
-			{
-				CTextSettings oTSPre(oTS);
-				oTSPre.bPre = true;
-				readStream(oXml, sSelectors, oTSPre);
-			}
 			// Таблицы
 			else if(sName == L"table")
 				readTable(oXml, sSelectors, oTS);
@@ -1343,6 +1417,71 @@ private:
 		}
 
 		return L"";
+	}
+
+	struct TTextReadingSettings
+	{
+		bool m_bOpenedRT;
+		bool m_bAddSpace;
+		std::wstring m_wsLastElement;
+
+		TTextReadingSettings()
+			: m_bOpenedRT(false), m_bAddSpace(true)
+		{}
+
+		TTextReadingSettings(bool bOpenedRT, bool bAddSpace, const std::wstring& wsLastElement)
+			: m_bOpenedRT(bOpenedRT), m_bAddSpace(bAddSpace), m_wsLastElement(wsLastElement)
+		{}
+	};
+
+	void ReadOnlyText(NSStringUtils::CStringBuilder* pXml, TTextReadingSettings& oTextReadingSettings, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, int nDepth)
+	{
+		if (!m_oLightReader.IsValid() || m_oLightReader.IsEmptyNode())
+			return;
+
+		while (m_oLightReader.ReadNextSiblingNode2(nDepth))
+		{
+			if (L"#text" == m_oLightReader.GetName())
+			{
+				if (!oTextReadingSettings.m_bOpenedRT)
+				{
+					pXml->WriteString(L"<w:r><w:t>");
+					oTextReadingSettings.m_bOpenedRT = true;
+				}
+
+				pXml->WriteString(GetText());
+				
+				if (oTextReadingSettings.m_bAddSpace)
+					pXml->WriteString(L" ");
+			}
+			else if (L"td" == m_oLightReader.GetName())
+				ReadOnlyText(pXml, oTextReadingSettings, sSelectors, oTS, nDepth + 1);
+			else
+			{
+				GetSubClass(pXml, sSelectors);
+				if (oTextReadingSettings.m_bOpenedRT)
+				{
+					pXml->WriteString(L"</w:t></w:r>");
+					oTextReadingSettings.m_bOpenedRT = false;
+				}
+				readStream(pXml, sSelectors, oTS);
+				sSelectors.pop_back();
+			}
+		}
+	}
+	
+	void MergeCells(NSStringUtils::CStringBuilder* pXml)
+	{
+		if (!m_oLightReader.IsValid() || m_oLightReader.IsEmptyNode() || L"td" != m_oLightReader.GetName())
+			return;
+
+		std::vector<NSCSS::CNode> arSelectors;
+		TTextReadingSettings oSettings;
+		
+		ReadOnlyText(pXml, oSettings, arSelectors, { false, false, true, false, -1, L"", L"" }, m_oLightReader.GetDepth() - 1);
+		
+		if (oSettings.m_bOpenedRT)
+			pXml->WriteString(L"</w:t></w:r>");
 	}
 
 	void readTr     (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, const TTableStyles& oTableStyles)
@@ -1543,19 +1682,20 @@ private:
 
 				if (j - 1 == MAXCOLUMNSINTABLE)
 				{
+//					MergeCells(&oTrBody);
+					CTextSettings oTrTS{oTS};
+					oTrTS.bMergeText = true;
+					oTrTS.bAddSpaces = true;
+					m_bWasSpace      = true;
+
 					while (m_oLightReader.ReadNextSiblingNode(nTrDeath) && L"td" == m_oLightReader.GetName())
 					{
 						GetSubClass(&oTrBody, sSelectors);
 
-						CTextSettings oTSTd{oTS};
-						oTSTd.bAddSpaces = false;
-
-						readStream(&oTrBody, sSelectors, oTSTd);
+						readStream(&oTrBody, sSelectors, oTrTS);
 						sSelectors.pop_back();
 					}
-
 				}
-
 				CloseP(&oTrBody, sSelectors);
 				oTrBody.WriteString(L"</w:tc>");
 
@@ -1748,7 +1888,8 @@ private:
 					m_bWasPStyle = false;
 				}
 				// Заголовок таблицы выравнивание посередине
-				CTextSettings oTSP { oTS.bBdo, oTS.bPre, oTS.bAddSpaces, oTS.nLi, oTS.sRStyle, oTS.sPStyle + L"<w:jc w:val=\"center\"/>" };
+				CTextSettings oTSP(oTS);
+				oTSP.sPStyle += L"<w:jc w:val=\"center\"/>";
 				readStream(oXml, sSelectors, oTSP);
 				if (m_bInP)
 					m_bWasPStyle = false;
@@ -2280,12 +2421,16 @@ private:
 		const std::wstring sRSettings = m_oXmlStyle.GetStyle();
 		m_oXmlStyle.Clear();
 
-		if (!sRStyle.empty())
+		if (!sRStyle.empty() || !oTS.sRStyle.empty())
 		{
-			oXml->WriteString(L"<w:rPr><w:rStyle w:val=\"");
-			oXml->WriteString(sRStyle);
-			oXml->WriteString(L"\"/>");
-	
+			oXml->WriteString(L"<w:rPr>");
+			if (!sRStyle.empty())
+			{
+				oXml->WriteString(L"<w:rStyle w:val=\"");
+				oXml->WriteString(sRStyle);
+				oXml->WriteString(L"\"/>");
+			}
+
 			oXml->WriteString(oTS.sRStyle + L' ' + sRSettings);
 			oXml->WriteString(L"</w:rPr>");
 		}

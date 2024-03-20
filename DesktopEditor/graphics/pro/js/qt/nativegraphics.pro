@@ -643,7 +643,6 @@ SOURCES += \
 	$$PDF_ROOT_DIR/Resources/BaseFonts.cpp \
 	$$PDF_ROOT_DIR/Resources/CMapMemory/cmap_memory.cpp \
 	$$PDF_ROOT_DIR/PdfReader.cpp \
-	$$PDF_ROOT_DIR/PdfWriter_empty.cpp \
 	$$PDF_ROOT_DIR/PdfFile.cpp
 
 HEADERS +=\
@@ -727,5 +726,6 @@ HEADERS += \
 	../wasm/src/serialize.h
 
 SOURCES += \
+	../wasm/src/pdfwriter.cpp \
 	../wasm/src/drawingfile.cpp \
 	../wasm/src/drawingfile_test.cpp

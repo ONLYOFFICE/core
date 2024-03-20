@@ -215,7 +215,7 @@ HRESULT _ChangePassword(const std::wstring& wsPath, const std::wstring& wsPasswo
 	if (!trailerDict)
 		return S_FALSE;
 
-	PdfWriter::CDocument* pDoc = _pWriter->m_pDocument;
+	PdfWriter::CDocument* pDoc = _pWriter->GetDocument();
 	PdfWriter::CXref* pXref   = new PdfWriter::CXref(pDoc, 0);
 	PdfWriter::CXref* m_pXref = new PdfWriter::CXref(pDoc, xref->getNumObjects()); // Для новых объектов
 	if (!xref || !pDoc || !pXref || !m_pXref)
@@ -434,7 +434,7 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 	}
 
 	XRef* xref = pPDFDocument->getXRef();
-	PdfWriter::CDocument* pDoc = pWriter->m_pDocument;
+	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
 	if (!xref || !pDoc)
 	{
 		nError = 1;
@@ -650,7 +650,7 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 void CPdfEditor::Close()
 {
 	PDFDoc* pPDFDocument = pReader->GetPDFDocument();
-	PdfWriter::CDocument* pDoc = pWriter->m_pDocument;
+	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
 	if (!pPDFDocument || !pDoc)
 		return;
 	XRef* xref = pPDFDocument->getXRef();
@@ -749,7 +749,7 @@ int CPdfEditor::GetError()
 }
 void CPdfEditor::GetPageTree(XRef* xref, Object* pPagesRefObj)
 {
-	PdfWriter::CDocument* pDoc = pWriter->m_pDocument;
+	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
 	if (!pPagesRefObj || !xref || !pDoc)
 		return;
 
@@ -816,7 +816,7 @@ void CPdfEditor::GetPageTree(XRef* xref, Object* pPagesRefObj)
 bool CPdfEditor::EditPage(int nPageIndex)
 {
 	PDFDoc* pPDFDocument = pReader->GetPDFDocument();
-	PdfWriter::CDocument* pDoc = pWriter->m_pDocument;
+	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
 	if (!pPDFDocument || !pDoc)
 		return false;
 
@@ -888,7 +888,7 @@ bool CPdfEditor::EditPage(int nPageIndex)
 }
 bool CPdfEditor::DeletePage(int nPageIndex)
 {
-	return pWriter->m_pDocument->DeletePage(nPageIndex);
+	return pWriter->GetDocument()->DeletePage(nPageIndex);
 }
 bool CPdfEditor::AddPage(int nPageIndex)
 {
@@ -910,7 +910,7 @@ bool CPdfEditor::AddPage(int nPageIndex)
 bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 {
 	PDFDoc* pPDFDocument = pReader->GetPDFDocument();
-	PdfWriter::CDocument* pDoc = pWriter->m_pDocument;
+	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
 	if (!pPDFDocument || !pDoc)
 		return false;
 
@@ -1126,7 +1126,7 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 bool CPdfEditor::DeleteAnnot(int nID)
 {
 	PDFDoc* pPDFDocument = pReader->GetPDFDocument();
-	PdfWriter::CDocument* pDoc = pWriter->m_pDocument;
+	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
 	if (!pPDFDocument || !pDoc)
 		return false;
 
@@ -1153,12 +1153,12 @@ bool CPdfEditor::DeleteAnnot(int nID)
 		Object oAnnotRef, oAnnot;
 		if (oAnnots.arrayGetNF(i, &oAnnotRef)->isRef() && oAnnotRef.getRefNum() == nID)
 		{
-			bRes = pWriter->m_pDocument->DeleteAnnot(oAnnotRef.getRefNum(), oAnnotRef.getRefGen());
+			bRes = pDoc->DeleteAnnot(oAnnotRef.getRefNum(), oAnnotRef.getRefGen());
 			if (oAnnotRef.fetch(xref, &oAnnot)->isDict())
 			{
 				Object oPopupRef;
 				if (oAnnot.dictLookupNF("Popup", &oPopupRef)->isRef())
-					pWriter->m_pDocument->DeleteAnnot(oPopupRef.getRefNum(), oPopupRef.getRefGen());
+					pDoc->DeleteAnnot(oPopupRef.getRefNum(), oPopupRef.getRefGen());
 				oPopupRef.free();
 			}
 		}
@@ -1179,7 +1179,7 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 {
 	CWidgetsInfo* pFieldInfo = (CWidgetsInfo*)pCommand;
 	PDFDoc* pPDFDocument = pReader->GetPDFDocument();
-	PdfWriter::CDocument* pDoc = pWriter->m_pDocument;
+	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
 
 	std::vector<CWidgetsInfo::CParent*> arrParents = pFieldInfo->GetParents();
 	for (CWidgetsInfo::CParent* pParent : arrParents)
@@ -1199,11 +1199,11 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 }
 int CPdfEditor::GetPagesCount()
 {
-	return pWriter->m_pDocument->GetPagesCount();
+	return pWriter->GetDocument()->GetPagesCount();
 }
 void CPdfEditor::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY)
 {
-	PdfWriter::CPage* pPage = pWriter->m_pDocument->GetPage(nPageIndex);
+	PdfWriter::CPage* pPage = pWriter->GetDocument()->GetPage(nPageIndex);
 	if (!pPage)
 		return;
 
@@ -1224,7 +1224,7 @@ void CPdfEditor::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, 
 }
 int CPdfEditor::GetRotate(int nPageIndex)
 {
-	PdfWriter::CPage* pPage = pWriter->m_pDocument->GetPage(nPageIndex);
+	PdfWriter::CPage* pPage = pWriter->GetDocument()->GetPage(nPageIndex);
 	if (!pPage)
 		return 0;
 	return pPage->GetRotate();
@@ -1232,4 +1232,12 @@ int CPdfEditor::GetRotate(int nPageIndex)
 bool CPdfEditor::EditPage()
 {
 	return bEditPage;
+}
+void CPdfEditor::AddShapeXML(const std::string& sXML)
+{
+	return pWriter->GetDocument()->AddShapeXML(sXML);
+}
+void CPdfEditor::EndMarkedContent()
+{
+	pWriter->GetPage()->EndMarkedContent();
 }

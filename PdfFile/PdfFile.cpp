@@ -34,6 +34,7 @@
 #include "PdfReader.h"
 
 #include "../DesktopEditor/common/File.h"
+#include "../DesktopEditor/graphics/commands/DocInfo.h"
 #include "lib/xpdf/PDFDoc.h"
 
 #ifndef BUILDING_WASM_MODULE
@@ -41,16 +42,21 @@
 #include "OnlineOfficeBinToPdf.h"
 
 #include "SrcWriter/Document.h"
-#include "SrcWriter/Pages.h"
 
 #else
 class CPdfEditor
 {
 public:
 	void Close() {}
+	bool EditAnnot(int nPageIndex, int nID) { return false; }
+	bool DeleteAnnot(int nID) { return false; }
+	bool EditWidgets(IAdvancedCommand* pCommand) { return false; }
 	int  GetPagesCount() { return 0; }
 	int  GetRotate(int nPageIndex) { return 0; }
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) {}
+	bool EditPage() { return false; }
+	void AddShapeXML(const std::string& sXML) {}
+	void EndMarkedContent() {}
 };
 #endif // BUILDING_WASM_MODULE
 
@@ -151,24 +157,6 @@ bool CPdfFile::AddPage(int nPageIndex)
 	if (!m_pInternal->pEditor)
 		return false;
 	return m_pInternal->pEditor->AddPage(nPageIndex);
-}
-bool CPdfFile::EditAnnot(int nPageIndex, int nID)
-{
-	if (!m_pInternal->pEditor)
-		return false;
-	return m_pInternal->pEditor->EditAnnot(nPageIndex, nID);
-}
-bool CPdfFile::DeleteAnnot(int nID)
-{
-	if (!m_pInternal->pEditor)
-		return false;
-	return m_pInternal->pEditor->DeleteAnnot(nID);
-}
-bool CPdfFile::EditWidgets(IAdvancedCommand* pCommand)
-{
-	if (!m_pInternal->pEditor)
-		return false;
-	return m_pInternal->pEditor->EditWidgets(pCommand);
 }
 HRESULT CPdfFile::ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword)
 {
@@ -1210,45 +1198,35 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	case IAdvancedCommand::AdvancedCommandType::Annotaion:
 	{
 		CAnnotFieldInfo* pCommand = (CAnnotFieldInfo*)command;
-#ifndef BUILDING_WASM_MODULE
 		if (m_pInternal->pEditor && m_pInternal->pEditor->EditPage())
-			EditAnnot(pCommand->GetPage(), pCommand->GetID());
-#endif
+			m_pInternal->pEditor->EditAnnot(pCommand->GetPage(), pCommand->GetID());
 		return m_pInternal->pWriter->AddAnnotField(m_pInternal->pAppFonts, pCommand);
 	}
 	case IAdvancedCommand::AdvancedCommandType::DeleteAnnot:
 	{
 		CAnnotFieldDelete* pCommand = (CAnnotFieldDelete*)command;
-#ifndef BUILDING_WASM_MODULE
 		if (m_pInternal->pEditor && m_pInternal->pEditor->EditPage())
-			DeleteAnnot(pCommand->GetID());
-#endif
+			m_pInternal->pEditor->DeleteAnnot(pCommand->GetID());
 		return S_OK;
 	}
 	case IAdvancedCommand::AdvancedCommandType::WidgetsInfo:
 	{
 		CWidgetsInfo* pCommand = (CWidgetsInfo*)command;
-#ifndef BUILDING_WASM_MODULE
-		if (m_pInternal->pEditor && EditWidgets(pCommand))
+		if (m_pInternal->pEditor && m_pInternal->pEditor->EditWidgets(pCommand))
 			return m_pInternal->pWriter->EditWidgetParents(m_pInternal->pAppFonts, pCommand, m_pInternal->wsTempFolder);
-#endif
 		return S_OK;
 	}
 	case IAdvancedCommand::AdvancedCommandType::ShapeStart:
 	{
 		CShapeStart* pCommand = (CShapeStart*)command;
-#ifndef BUILDING_WASM_MODULE
 		if (m_pInternal->pEditor && m_pInternal->pEditor->EditPage())
-			m_pInternal->pWriter->m_pDocument->AddShapeXML(pCommand->GetShapeXML());
-#endif
+			m_pInternal->pEditor->AddShapeXML(pCommand->GetShapeXML());
 		return S_OK;
 	}
 	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:
 	{
-#ifndef BUILDING_WASM_MODULE
 		if (m_pInternal->pEditor && m_pInternal->pEditor->EditPage())
-			m_pInternal->pWriter->m_pPage->EndMarkedContent();
-#endif
+			m_pInternal->pEditor->EndMarkedContent();
 		return S_OK;
 	}
 	default:

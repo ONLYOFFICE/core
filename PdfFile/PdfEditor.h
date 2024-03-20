@@ -54,6 +54,8 @@ public:
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
 	int  GetRotate(int nPageIndex);
 	bool EditPage();
+	void AddShapeXML(const std::string& sXML);
+	void EndMarkedContent();
 
 private:
 	void GetPageTree(XRef* xref, Object* pPagesRefObj);

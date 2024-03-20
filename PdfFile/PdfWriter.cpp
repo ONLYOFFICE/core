@@ -168,12 +168,8 @@ CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRend
 	m_pFont       = NULL;
 	m_lClipMode   = 0;
 
-	m_unFieldsCounter          = 0;
-	m_bNeedUpdateTextFont      = true;
-	m_bNeedUpdateTextColor     = true;
-	m_bNeedUpdateTextAlpha     = true;
-	m_bNeedUpdateTextCharSpace = true;
-	m_bNeedUpdateTextSize      = true;
+	m_unFieldsCounter     = 0;
+	m_bNeedUpdateTextFont = true;
 }
 CPdfWriter::~CPdfWriter()
 {
@@ -413,7 +409,6 @@ HRESULT CPdfWriter::put_BrushColor1(const LONG& lColor)
 	if (lColor != m_oBrush.GetColor1())
 	{
 		m_oBrush.SetColor1(lColor);
-		m_bNeedUpdateTextColor = true;
 	}
 	return S_OK;
 }
@@ -427,7 +422,6 @@ HRESULT CPdfWriter::put_BrushAlpha1(const LONG& lAlpha)
 	if (lAlpha != m_oBrush.GetAlpha1())
 	{
 		m_oBrush.SetAlpha1(lAlpha);
-		m_bNeedUpdateTextAlpha = true;
 	}
 	return S_OK;
 }
@@ -566,7 +560,6 @@ HRESULT CPdfWriter::put_FontSize(const double& dSize)
 	if (fabs(dSize - m_oFont.GetSize()) > 0.001)
 	{
 		m_oFont.SetSize(dSize);
-		m_bNeedUpdateTextSize = true;
 	}
 	return S_OK;
 }
@@ -604,7 +597,6 @@ HRESULT CPdfWriter::put_FontCharSpace(const double& dSpace)
 	if (fabs(dSpace - m_oFont.GetCharSpace()) > 0.001)
 	{
 		m_oFont.SetCharSpace(dSpace);
-		m_bNeedUpdateTextCharSpace = true;
 	}
 	return S_OK;
 }
@@ -2571,6 +2563,14 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 	}
 
 	return S_OK;
+}
+PdfWriter::CDocument* CPdfWriter::GetDocument()
+{
+	return m_pDocument;
+}
+PdfWriter::CPage* CPdfWriter::GetPage()
+{
+	return m_pPage;
 }
 bool CPdfWriter::EditPage(PdfWriter::CPage* pNewPage)
 {

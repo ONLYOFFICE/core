@@ -32,20 +32,17 @@
 #ifndef _PDF_WRITER_H
 #define _PDF_WRITER_H
 
-#include "../../DesktopEditor/graphics/IRenderer.h"
-#include "../../DesktopEditor/graphics/pro/Fonts.h"
-#include "../../DesktopEditor/graphics/pro/Image.h"
-#include "../../DesktopEditor/xmlsec/src/include/Certificate.h"
-#include "SrcWriter/States.h"
-
 #include <string>
 #include <vector>
 #include <math.h>
 
-#include "../../DesktopEditor/graphics/commands/DocInfo.h"
+#include "../../DesktopEditor/graphics/IRenderer.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../DesktopEditor/graphics/pro/Image.h"
 #include "../../DesktopEditor/graphics/commands/FormField.h"
 #include "../../DesktopEditor/graphics/commands/AnnotField.h"
-#include "SrcWriter/Metadata.h"
+#include "../../DesktopEditor/xmlsec/src/include/Certificate.h"
+#include "SrcWriter/States.h"
 #include "SrcWriter/Annotation.h"
 
 namespace PdfWriter
@@ -208,7 +205,6 @@ public:
 	HRESULT SetLinearGradient(const double& dX1, const double& dY1, const double& dX2, const double& dY2);
 	HRESULT SetRadialGradient(const double& dX1, const double& dY1, const double& dR1, const double& dX2, const double& dY2, const double& dR2);
 	HRESULT DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH);
-
 	//----------------------------------------------------------------------------------------
 	// Дополнительные функции для дозаписи Pdf
 	//----------------------------------------------------------------------------------------
@@ -218,9 +214,8 @@ public:
 	void PageRotate(int nRotate);
 	void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
 	HRESULT EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWidgetsInfo* pFieldInfo, const std::wstring& wsTempDirectory);
-
-	PdfWriter::CDocument* m_pDocument;
-	PdfWriter::CPage*     m_pPage;
+	PdfWriter::CDocument* GetDocument();
+	PdfWriter::CPage*     GetPage();
 
 private:
 	PdfWriter::CImageDict* LoadImage(Aggplus::CImage* pImage, const BYTE& nAlpha);
@@ -245,31 +240,26 @@ private:
 	unsigned char* EncodeString(const unsigned int* pUnicodes, const unsigned int& unUnicodesCount, const unsigned int* pGIDs = NULL);
 	unsigned char* EncodeGID(const unsigned int& unGID, const unsigned int* pUnicodes, const unsigned int& unUnicodesCount);
 	std::wstring GetDownloadFile(const std::wstring& sUrl, const std::wstring& wsTempDirectory);
-	void DrawTextWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CTextWidget* pTextWidget, const std::wstring& wsValue);
+	void DrawTextWidget  (NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CTextWidget* pTextWidget, const std::wstring& wsValue);
 	void DrawChoiceWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CChoiceWidget* pChoiceWidget, const std::vector<std::wstring>& arrValue);
 	void DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CPushButtonWidget* pButtonWidget, BYTE nAP, PdfWriter::CXObject* pForm);
 
 private:
 	NSFonts::IFontManager*       m_pFontManager;
 	IRenderer*                   m_pRenderer;
-
+	PdfWriter::CDocument*        m_pDocument;
+	PdfWriter::CPage*            m_pPage;
 	PdfWriter::CFontCidTrueType* m_pFont;
 	PdfWriter::CShading*         m_pShading;
 	PdfWriter::CExtGrState*      m_pShadingExtGrState;
 
-	bool                         m_bNeedUpdateTextFont;
-	bool                         m_bNeedUpdateTextColor;
-	bool                         m_bNeedUpdateTextAlpha;
-	bool                         m_bNeedUpdateTextCharSpace;
-	bool                         m_bNeedUpdateTextSize;
-
 	CCommandManager              m_oCommandManager;
-
 	CPenState                    m_oPen;
 	CBrushState                  m_oBrush;
 	CFontState                   m_oFont;
 	CPath                        m_oPath;
 	CTransform                   m_oTransform;
+	bool                         m_bNeedUpdateTextFont;
 	double                       m_dPageHeight;
 	double                       m_dPageWidth;
 	LONG                         m_lClipDepth;

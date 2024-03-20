@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "PdfWriter.h"
+#include "../../../../../../PdfFile/PdfWriter.h"
 
 #ifdef BUILDING_WASM_MODULE
 CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRenderer* pRenderer, bool bCreate) : m_oCommandManager(this) {}
@@ -145,6 +145,9 @@ bool CPdfWriter::AddPage(int nPageIndex) { return false; }
 bool CPdfWriter::EditClose() { return false; }
 void CPdfWriter::PageRotate(int nRotate) {}
 void CPdfWriter::Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate) {}
+HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWidgetsInfo* pFieldInfo, const std::wstring& wsTempDirectory) { return 0; }
+PdfWriter::CDocument* CPdfWriter::GetDocument() { return NULL; }
+PdfWriter::CPage* CPdfWriter::GetPage() { return NULL; }
 PdfWriter::CImageDict* CPdfWriter::LoadImage(Aggplus::CImage* pImage, const BYTE& nAlpha) { return NULL; }
 bool CPdfWriter::DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha) { return false; }
 bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, const double& dX, const double& dY) { return false; }

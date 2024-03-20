@@ -97,9 +97,6 @@ public:
 	bool EditPage   (int nPageIndex);
 	bool DeletePage (int nPageIndex);
 	bool AddPage    (int nPageIndex);
-	bool EditAnnot  (int nPageIndex, int nID);
-	bool DeleteAnnot(int nID);
-	bool EditWidgets(IAdvancedCommand* pCommand);
 	HRESULT ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword = L"");
 #endif
 

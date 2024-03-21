@@ -51,5 +51,10 @@ private:
     /// @param datetime структура с датой
     /// @return дата в формате excel
     _INT32 getStandartDate(tm &date);
+
+    /// @brief получение даты в виде числа в формате excel из дат от 1900 года и до 1970
+    /// @param datetime структура с датой
+    /// @return дата в формате excel
+    _INT32 getNonUnixDate(tm &date);
 };
 

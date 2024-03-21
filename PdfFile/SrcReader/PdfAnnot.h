@@ -143,6 +143,7 @@ private:
 
 	unsigned int m_unRefNum; // Номер ссылки на объект
 	double m_dx1, m_dy1, m_dx2, m_dy2;
+	double m_dCropX, m_dCropY;
 	double m_dWScale, m_dHScale;
 	double m_dWTale;
 	double m_dHTale;

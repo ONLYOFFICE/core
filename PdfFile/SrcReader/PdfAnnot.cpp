@@ -2529,6 +2529,9 @@ void CAnnotAP::Clear()
 void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex)
 {
 	Page* pPage = pdfDoc->getCatalog()->getPage(nPageIndex + 1);
+	PDFRectangle* pCropBox = pPage->getCropBox();
+	m_dCropX = pCropBox->x1;
+	m_dCropY = pCropBox->y1;
 
 	double dWidth  = pdfDoc->getPageCropWidth(nPageIndex + 1);
 	double dHeight = pdfDoc->getPageCropHeight(nPageIndex + 1);
@@ -2579,8 +2582,8 @@ void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLi
 	m_gfx = new Gfx(pdfDoc, m_pRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, crop ? cropBox : (PDFRectangle *)NULL, 0, NULL, NULL);
 
 	// Координаты внешнего вида
-	m_nRx1 = (int)round(m_dx1 * m_dWScale) - 1;
-	m_nRy1 = nRasterH - (int)round(m_dy2 * m_dHScale) - 1;
+	m_nRx1 = (int)round((m_dx1 - m_dCropX) * m_dWScale) - 1;
+	m_nRy1 = nRasterH - (int)round((m_dy2 - m_dCropY) * m_dHScale) - 1;
 }
 void CAnnotAP::Init(AcroFormField* pField)
 {
@@ -2644,7 +2647,7 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 				pView->sASName = oObj.dictGetKey(k);
 				if ((oType == acroFormFieldRadioButton || oType == acroFormFieldCheckbox) && pView->sASName != "Off")
 					pView->sASName = "Yes";
-				m_pRenderer->SetCoordTransformOffset(-m_dx1 * m_dWScale + 1 + m_dWTale / 2, m_dy2 * m_dHScale - nRasterH + 1 + m_dHTale / 2);
+				m_pRenderer->SetCoordTransformOffset(-(m_dx1 - m_dCropX) * m_dWScale + 1 + m_dWTale / 2, (m_dy2 - m_dCropY) * m_dHScale - nRasterH + 1 + m_dHTale / 2);
 				DrawAppearance(pdfDoc, nPageIndex + 1, pField, m_gfx, arrAPName[j], pView->sASName.c_str());
 				WriteAppearance(nBackgroundColor, pView);
 				pView->nBlendMode = GetBlendMode();
@@ -2655,7 +2658,7 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 		{
 			CAnnotAPView* pView = new CAnnotAPView();
 			pView->sAPName = arrAPName[j];
-			m_pRenderer->SetCoordTransformOffset(-m_dx1 * m_dWScale + 1 + m_dWTale / 2, m_dy2 * m_dHScale - nRasterH + 1 + m_dHTale / 2);
+			m_pRenderer->SetCoordTransformOffset(-(m_dx1 - m_dCropX) * m_dWScale + 1 + m_dWTale / 2, (m_dy2 - m_dCropY) * m_dHScale - nRasterH + 1 + m_dHTale / 2);
 			DrawAppearance(pdfDoc, nPageIndex + 1, pField, m_gfx, arrAPName[j], NULL);
 			WriteAppearance(nBackgroundColor, pView);
 			pView->nBlendMode = GetBlendMode();
@@ -2686,7 +2689,7 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 			pView = new CAnnotAPView();
 			pView->sAPName = arrAPName[j];
 
-			m_pRenderer->SetCoordTransformOffset(-m_dx1 * m_dWScale + 1 + m_dWTale / 2, m_dy2 * m_dHScale - nRasterH + 1 + m_dHTale / 2);
+			m_pRenderer->SetCoordTransformOffset(-(m_dx1 - m_dCropX) * m_dWScale + 1 + m_dWTale / 2, (m_dy2 - m_dCropY) * m_dHScale - nRasterH + 1 + m_dHTale / 2);
 
 			Ref ref = oAnnotRef->getRef();
 			Annot* annot = new Annot(pdfDoc, oAnnot.getDict(), &ref, arrAPName[j]);

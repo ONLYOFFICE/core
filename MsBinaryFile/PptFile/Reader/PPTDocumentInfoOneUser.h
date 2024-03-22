@@ -132,8 +132,6 @@ public:
     bool ReadDocumentPersists(POLE::Stream* pStream);
     void ReadExtenalObjects();
 
-    std::wstring GetBinFromStg(const std::wstring& name, _UINT32 nRef);
-
     void DecryptStream(POLE::Stream *pStream, int block);
 
     void FromDocument();

@@ -69,7 +69,7 @@ namespace utils//////////////////////////////////////////// ОБЩАЯ хрен�
 {
 	std::wstring convert_date(int date)
 	{
-		boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration(date - 2);
+		boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration( date - (date < 60 ? 1 : 2)); //29.02.1900
 
 		std::wstring date_str;
 

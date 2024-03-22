@@ -2761,12 +2761,13 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 	{
 		switch(mode)
 		{
+			case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
+				paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbLr);
+				break;
 			case 5://textverticaltypeWordArtVert:
 			case 6://textverticaltypeWordArtVertRtl:
-			case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
 			case 3://SimpleTypes::textverticaltypeVert: 
 			case 2://SimpleTypes::textverticaltypeMongolianVert:
-				
 				paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
 				break;
 			case 0://SimpleTypes::textverticaltypeEaVert: 
@@ -2782,9 +2783,11 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 	{
 		switch(mode)
 		{
+			case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
+				impl_->current_paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbLr);
+				break;
 			case 5://textverticaltypeWordArtVert:
 			case 6://textverticaltypeWordArtVertRtl:
-			case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
 			case 3://SimpleTypes::textverticaltypeVert: 
 			case 2://SimpleTypes::textverticaltypeMongolianVert:
 				impl_->current_paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	

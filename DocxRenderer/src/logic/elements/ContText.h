@@ -73,6 +73,8 @@ namespace NSDocxRenderer
 		bool m_bIsAddBrEnd{false};
 		bool m_bWriteStyleRaw{false};
 
+		double m_dFirstWordWidth{0};
+
 		CContText() = default;
 		CContText(CFontManager* pManager) : m_pManager(pManager) {}
 		CContText(const CContText& rCont);

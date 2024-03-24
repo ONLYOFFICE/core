@@ -1229,7 +1229,7 @@ namespace NSDocxRenderer
 
 				paragraph->m_dBaselinePos = paragraph->m_arLines.back()->m_dBaselinePos;
 				paragraph->m_dTop = paragraph->m_arLines.front()->m_dTop;
-				paragraph->m_dRight = max_right;
+				paragraph->m_dRight = max_right + c_dERROR_OF_PARAGRAPH_BORDERS_MM;
 				paragraph->m_dLeft = min_left;
 
 				paragraph->m_dWidth = paragraph->m_dRight - paragraph->m_dLeft;
@@ -1335,6 +1335,9 @@ namespace NSDocxRenderer
 				// позиции относительно других линий
 				std::vector<Position> ar_positions(m_arTextLines.size());
 
+				// требуется ли отступ
+				std::vector<bool> ar_indents(m_arTextLines.size(), false);
+
 				// если ar_delims[index] == true, после строчки index нужно начинать новый параграф
 				std::vector<bool> ar_delims(m_arTextLines.size(), false);
 
@@ -1352,8 +1355,6 @@ namespace NSDocxRenderer
 
 					auto center_curr = (m_arTextLines[index]->m_dLeft + m_arTextLines[index]->m_dWidth / 2);
 					auto center_next = (m_arTextLines[index + 1]->m_dLeft + m_arTextLines[index + 1]->m_dWidth / 2);
-
-					/////////////
 
 					if (fabs(center_curr - center_next) < c_dCENTER_POSITION_ERROR_MM)
 						ar_positions[index].center = true;
@@ -1419,10 +1420,9 @@ namespace NSDocxRenderer
 
 				// alignment check
 				bool is_first_line = false;
-				std::shared_ptr<CTextLine> gap_check_line = m_arTextLines[0];
 				for (size_t index = 0; index < ar_positions.size() - 1; ++index)
 				{
-					Position position_bot = ar_positions[index];
+					Position& position = ar_positions[index];
 
 					auto& line_top = m_arTextLines[index];
 					auto& line_bot = m_arTextLines[index + 1];
@@ -1439,60 +1439,73 @@ namespace NSDocxRenderer
 						if (index < ar_positions.size() - 2)
 						{
 							if (!ar_delims[index] && !ar_delims[index + 1] && ar_positions[index + 1].left)
-								position_bot.left = true;
-							else
-								position_bot.left = false;
+								ar_indents[index] = true;
+							else if (!ar_delims[index] && ar_delims[index + 1])
+								ar_indents[index] = true;
 						}
 						else
-							position_bot.left = true;
+							ar_indents[index] = true;
 					}
 
-					bool is_unknown = !(position_bot.left || position_bot.right || position_bot.center);
+					bool is_unknown = !((position.left || ar_indents[index]) || position.right || position.center);
 					if (is_unknown)
 						ar_delims[index] = true;
+				}
+
+				// gap check
+				//
+				// bla-bla-bla
+				// text bla-bla-bla-bla
+				//
+				// bla-bla-bla text
+				// bla-bla-bla-bla
+
+				double curr_max_right = m_arTextLines[0]->m_dRight;
+				double curr_min_left = m_arTextLines[0]->m_dLeft;
+				for (size_t index = 0; index < ar_positions.size() - 1; ++index)
+				{
+					Position position = ar_positions[index];
+					auto& line_top = m_arTextLines[index];
+					auto& line_bot = m_arTextLines[index + 1];
 
 					if (ar_delims[index])
-						gap_check_line = line_bot;
-
-					// bla-bla-bla
-					// text bla-bla-bla-bla
-					//
-					// bla-bla-bla text
-					// bla-bla-bla-bla
-					else if (!ar_delims[index])
 					{
-						double gap = 0;
-						std::shared_ptr<CContText> cont = nullptr;
+						curr_max_right = line_bot->m_dRight;
+						curr_min_left = line_bot->m_dLeft;
+						continue;
+					}
 
-						if (position_bot.left)
-						{
-							gap = line_bot->m_dRight - gap_check_line->m_dRight;
-							cont = line_bot->m_arConts[0];
+					std::shared_ptr<CContText> cont = line_bot->m_arConts[0];
+					double line_with_first_right = line_top->m_dRight + cont->m_dFirstWordWidth;
+					double line_with_first_left = line_top->m_dLeft - cont->m_dFirstWordWidth;
 
-						}
-						else if (position_bot.right)
-						{
-							gap = gap_check_line->m_dLeft - line_bot->m_dLeft;
-							cont = line_bot->m_arConts[line_bot->m_arConts.size() - 1];
-						}
-						else
+					curr_max_right = std::max(curr_max_right, line_bot->m_dRight);
+					curr_min_left = std::min(curr_min_left, line_bot->m_dLeft);
+
+					double diff = 0;
+
+					if (position.right)
+						diff = line_with_first_left - curr_min_left;
+					else if (position.left || ar_indents[index])
+						diff = curr_max_right - line_with_first_right;
+					else if (position.center)
+						continue;
+
+					if (diff <= 0)
+					{
+//						if (diff > -c_dERROR_GAP)
+//						{
+//							auto& last_cont = line_top->m_arConts[line_top->m_arConts.size() - 1];
+//							last_cont->m_bIsAddBrEnd = true;
+//						}
+//						else
 							continue;
-
-						if (gap < 0)
-						{
-							gap_check_line = line_bot;
-							continue;
-						}
-
-						size_t cont_len = cont->m_oText.length();
-						size_t space_pos = cont->m_oText.ToStdWString().find_first_of(L' ');
-						if (space_pos == std::wstring::npos)
-							space_pos = cont_len;
-
-						// to save time doing it roughly
-						double rough_width = cont->m_dWidth / cont_len * space_pos;
-						if (gap > rough_width * 1.2)
-							ar_delims[index] = true;
+					}
+					else
+					{
+						ar_delims[index] = true;
+						curr_max_right = line_bot->m_dRight;
+						curr_min_left = line_bot->m_dLeft;
 					}
 				}
 
@@ -1550,7 +1563,7 @@ namespace NSDocxRenderer
 		pParagraph->m_dLeft = pLine->m_dLeft;
 		pParagraph->m_dTop = pLine->m_dTop;
 		pParagraph->m_dBaselinePos = pLine->m_dBaselinePos;
-		pParagraph->m_dWidth = pLine->m_dWidth + c_dSHAPE_X_OFFSET;
+		pParagraph->m_dWidth = pLine->m_dWidth + c_dERROR_OF_PARAGRAPH_BORDERS_MM;
 		pParagraph->m_dHeight = pLine->m_dHeight;
 		pParagraph->m_dRight = pLine->m_dRight;
 
@@ -1587,7 +1600,7 @@ namespace NSDocxRenderer
 		pShape->m_dRight =  pParagraph->m_dRight;
 		pShape->m_dBaselinePos = pParagraph->m_dBaselinePos;
 		pShape->m_dHeight = pParagraph->m_dHeight;
-		pShape->m_dWidth = pParagraph->m_dWidth + c_dSHAPE_X_OFFSET;
+		pShape->m_dWidth = pParagraph->m_dWidth;
 
 		pParagraph->m_dLeftBorder = 0;
 		pParagraph->m_dRightBorder = 0;

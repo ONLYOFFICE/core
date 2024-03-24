@@ -62,6 +62,9 @@ namespace NSDocxRenderer
 			bool bIsBigDelta = dDifference > dSpaceDefaultSize;
 			bool bIsVeryBigDelta = dDifference > dSpaceWideSize;
 
+			if (bIsBigDelta && pFirst->m_dFirstWordWidth == 0.0)
+				pFirst->m_dFirstWordWidth = pFirst->m_dWidth;
+
 			if (bIsVeryBigDelta)
 			{
 				auto wide_space = std::make_shared<CContText>(pFirst->m_pManager);

@@ -85,7 +85,6 @@ void XFProp::load(CFRecord& record)
 		case 0x000F:
 		case 0x0010:
 		case 0x0011: // XFPropTextRotation
-		case 0x0012: // indent
 		case 0x0013: // ReadingOrder
 		case 0x0014:
 		case 0x0015:
@@ -112,6 +111,7 @@ void XFProp::load(CFRecord& record)
 				xfPropDataBlob = str;
 				return;
 			}
+		case 0x0012: // indent
 		case 0x0019:
 		case 0x001A:
 		case 0x001B:
@@ -141,6 +141,7 @@ void XFProp::load(CFRecord& record)
 }
 void XFProp::save(CFRecord& record)
 {
+    LPWideString* strData;
 	if (xfPropDataBlob)
 	{
         cb = sizeof(cb) + sizeof(xfPropType);
@@ -152,7 +153,6 @@ void XFProp::save(CFRecord& record)
 		case 0x000F:
 		case 0x0010:
 		case 0x0011: // XFPropTextRotation
-		case 0x0012: // indent
 		case 0x0013: // ReadingOrder
 		case 0x0014:
 		case 0x0015:
@@ -196,9 +196,12 @@ void XFProp::save(CFRecord& record)
 		case 0x0026:
 		case 0x0018:
 		{
-				blobSize = sizeof(*xfPropDataBlob.get());
+			strData = dynamic_cast<LPWideString*>(xfPropDataBlob.get());
+			if(strData)
+				blobSize = (strData->getSize() * 2) + 2;
 		}
 				break;
+		case 0x0012: // indent
 		case 0x0019:
 		case 0x001A:
 		case 0x001B:
@@ -218,9 +221,8 @@ void XFProp::save(CFRecord& record)
 
 		if (xfPropType == 0x0026 || xfPropType == 0x0018)
 		{
-			LPWideString* string = dynamic_cast<LPWideString*>(xfPropDataBlob.get());
-			if (string)
-				record << *string;
+			if (strData)
+				record << *strData;
 		}
 		else
 			 record << *xfPropDataBlob;
@@ -345,6 +347,37 @@ static void deserialize_val_prop(XmlUtils::CXmlLiteReader& oReader, const std::w
 	}
 
 }
+static void deserialize_default_val(XmlUtils::CXmlLiteReader& oReader, const std::wstring & typeName, const _UINT32& value, BiffStructurePtr & val)
+{
+	BiffStructurePtr biffref;
+	deserialize_val_prop(oReader, typeName, biffref);
+	if (typeName == L"BIFF_WORD")
+	{
+		auto word = new BIFF_WORD;
+		if(biffref.get())
+		{
+			*word = *(reinterpret_cast<BIFF_WORD*>(biffref.get()));
+		}
+		else
+		{
+			*word = value;
+		}
+		val.reset(word);
+	}
+	else if(typeName == L"BIFF_BYTE")
+	{
+		auto word = new BIFF_BYTE;
+		if(biffref.get())
+		{
+			*word = *(reinterpret_cast<BIFF_BYTE*>(biffref.get()));
+		}
+		else
+		{
+			*word = value;
+		}
+		val.reset(word);
+	}
+}
 static void deserialize_prop(XmlUtils::CXmlLiteReader& oReader, const std::wstring & typeName, BiffStructurePtr & val)
 {
 	auto value = oReader.GetText();
@@ -468,10 +501,46 @@ static XFPropBorder* deserialize_border_prop(XmlUtils::CXmlLiteReader& oReader)
 				border->color.deserialize(oReader);			
 		}
 	}
+    else
+    {
+        border->color.xclrType = 0;
+        border->color.fValidRGBA = false;
+        border->color.nTintShade = 0;
+    }
 
 	return border;
 }
-	
+	static void deserialize_alignment(XmlUtils::CXmlLiteReader& oReader, const unsigned short & typeName, BiffStructurePtr & val)
+	{
+			BIFF_BYTE* byte_ = new BIFF_BYTE;
+            if (!byte_)	return;
+
+            auto value = oReader.GetText();
+			if(typeName == 0x000F)
+			{
+				if (value == L"general") *byte_ = 0;
+				else if (value == L"left") *byte_ = 1;
+				else if (value == L"center") *byte_ = 2;
+				else if (value == L"right") *byte_ = 3;
+				else if (value == L"fill") *byte_ = 4;
+				else if (value == L"justify") *byte_ = 5;
+				else if (value == L"center-across-selection") *byte_ = 6;
+				else if (value == L"distributed") *byte_ = 7;
+				else *byte_ = 0xFF;
+			}
+			else if(typeName == 0x0010)
+			{
+				if (value == L"top") *byte_ = 0;
+				else if (value == L"center") *byte_ = 1;
+				else if (value == L"bottom") *byte_ = 2;
+				else if (value == L"justify") *byte_ = 3;
+				else if (value == L"distributed") *byte_ = 4;
+				else *byte_ = 0;
+			}
+			else 
+				*byte_ = 0;
+            val.reset(byte_);
+	}
 void XFProp::serialize_attr(CP_ATTR_NODE)
 {
 	switch(xfPropType)
@@ -585,25 +654,34 @@ void XFProp::deserialize_attr(XmlUtils::CXmlLiteReader& oReader)
 		case 0x000C:
 			xfPropDataBlob.reset(deserialize_border_prop(oReader));
 			break;
+        case 0x000F:
+		case 0x0010:
+			deserialize_alignment(oReader, xfPropType, xfPropDataBlob);
+        	break;
 		case 0x000D:
 		case 0x000E:
-		case 0x000F:
-		case 0x0010:
 		case 0x0011: // XFPropTextRotation
-		case 0x0012: // indent
 		case 0x0013: // ReadingOrder
 		case 0x0014:
 		case 0x0015:
 		case 0x0016:
 		//case 0x0017:
-			xfPropDataBlob.reset(new BIFF_BYTE(XmlUtils::GetInteger(oReader.GetText())));
+            xfPropDataBlob.reset(new BIFF_BYTE(XmlUtils::GetInteger(oReader.GetText())));
+            break;//
+		case 0x0018:
+			deserialize_val_prop(oReader, L"LPWideString", xfPropDataBlob);
 			break;
-		case 0x001C: 
-		case 0x001D: 
-		case 0x001E: 
-		case 0x001F: 
-		case 0x0020: 
-		case 0x0021:
+		case 0x0019:
+			deserialize_default_val(oReader, L"BIFF_WORD", 0x02BC, xfPropDataBlob);
+			break;
+		case 0x0020:
+		case 0x0021:		
+		case 0x001C:
+        case 0x001D:
+        case 0x001E:
+		case 0x001F:
+			deserialize_default_val(oReader, L"BIFF_BYTE", 0x01, xfPropDataBlob);
+			break;    
 		case 0x0022:
 		case 0x0023:
 			xfPropDataBlob.reset(new BIFF_BYTE(1));
@@ -614,18 +692,12 @@ void XFProp::deserialize_attr(XmlUtils::CXmlLiteReader& oReader)
 		case 0x002C:
 			deserialize_prop(oReader, L"BIFF_BYTE", xfPropDataBlob);
 			break;
-		case 0x0018:
-			deserialize_val_prop(oReader, L"LPWideString", xfPropDataBlob);
-			break;		
+		case 0x0012: // indent
 		case 0x0029:
 			xfPropDataBlob.reset(new BIFF_WORD(XmlUtils::GetInteger(oReader.GetText())));
 			break;
-		case 0x0019:
-            xfPropDataBlob.reset(new BIFF_WORD(0x02BC1));
-            deserialize_val_prop(oReader, L"BIFF_WORD", xfPropDataBlob);
-            break;
 		case 0x001A:
-			xfPropDataBlob.reset(new BIFF_WORD(1));
+            //xfPropDataBlob.reset(new BIFF_WORD(1));
 		case 0x001B:
 		case 0x002A:
 			deserialize_val_prop(oReader, L"BIFF_WORD", xfPropDataBlob);			
@@ -640,7 +712,7 @@ void XFProp::deserialize_attr(XmlUtils::CXmlLiteReader& oReader)
 }
 int XFProp::serialize(std::wostream & stream)
 {
-	CP_XML_WRITER(stream)    
+    CP_XML_WRITER(stream)
     {
 		switch(xfPropType)
 		{

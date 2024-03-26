@@ -236,6 +236,15 @@ bool COfficeFileFormatChecker::isPdfFormatFile(unsigned char *pBuffer, int dwByt
 
 	char *pFirst = strstr((char *)pBuffer, "%PDF-");
 
+	if (NULL == pFirst)
+	{
+		//skip special
+		_UINT16 sz = pBuffer[0] + (pBuffer[1] << 8);
+		if (sz < dwBytes - 8)
+		{
+			pFirst = strstr((char*)(pBuffer + sz), "%PDF-");
+		}
+	}
 	if (NULL != pFirst)
 	{
 		pFirst = strstr((char *)pBuffer, "%DocumentID ");

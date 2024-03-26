@@ -120,11 +120,14 @@ int XFPropColor::deserialize(XmlUtils::CXmlLiteReader& oReader)
 				dwRgba.Parse(oReader.GetText());
 				fValidRGBA = true;
 			}
-			else if (wsPropName == L"tint")
+            if (wsPropName == L"tint")
 			{
                 nTintShade = XmlUtils::GetDouble(oReader.GetText()) * 32767.0;
 			}
-
+            else
+            {
+                nTintShade = 0;
+            }
 			if (!oReader.MoveToNextAttribute())
 				break;
 

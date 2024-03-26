@@ -605,7 +605,8 @@ void XFProp::deserialize_attr(XmlUtils::CXmlLiteReader& oReader)
 			if (value == L"none") *byte_ = 0;
 			else if (value == L"solid") *byte_ = 1;
 			else if (value == L"pct50") *byte_ = 2;
-			else if (value == L"pct75") *byte_ = 3;
+            else if (value == L"pct75" || value == L"darkGray")
+                *byte_ = 3;
 			else if (value == L"pct25") *byte_ = 4;
 			else if (value == L"horzStripe") *byte_ = 5;
 			else if (value == L"vertStripe") *byte_ = 6;
@@ -621,7 +622,8 @@ void XFProp::deserialize_attr(XmlUtils::CXmlLiteReader& oReader)
 			else if (value == L"thinDiagCross") *byte_ = 16;
 			else if (value == L"gray125") *byte_ = 17;
 			else if (value == L"gray0625") *byte_ = 18;
-				
+            else *byte_ = 1;
+
 			xfPropDataBlob.reset(byte_);
 		}break;
 
@@ -703,7 +705,7 @@ void XFProp::deserialize_attr(XmlUtils::CXmlLiteReader& oReader)
 			deserialize_val_prop(oReader, L"BIFF_WORD", xfPropDataBlob);			
 			break;
 		case 0x0024:
-			xfPropDataBlob.reset(new BIFF_DWORD(XmlUtils::GetInteger(oReader.GetText())));
+			deserialize_val_prop(oReader, L"BIFF_DWORD", xfPropDataBlob);
 			break;
 		case 0x0026:
 			xfPropDataBlob.reset(new LPWideString(oReader.GetText()));

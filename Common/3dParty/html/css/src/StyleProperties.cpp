@@ -621,9 +621,9 @@ namespace NSCSS
 				TRGB oRGB = ConvertHEXtoRGB(*pValue);
 				return RGB_TO_INT(oRGB.uchRed, oRGB.uchGreen, oRGB.uchBlue);
 			}
+			default:
+				return 0;
 		}
-
-		return 0;
 	}
 
 	double CColor::ToDouble() const
@@ -639,6 +639,47 @@ namespace NSCSS
 			case ColorHEX: case ColorUrl: return *static_cast<std::wstring*>(m_oValue.m_pColor);
 			default: return std::wstring();
 		}
+	}
+
+	std::wstring CColor::EquateToColor(const std::vector<std::wstring>& arColors) const
+	{
+		if (arColors.empty())
+			return L"none";
+
+		TRGB oColor;
+
+		switch(m_oValue.m_enType)
+		{
+			case ColorRGB: oColor = *static_cast<TRGB*>(m_oValue.m_pColor); break;
+			case ColorHEX: oColor = ConvertHEXtoRGB(*static_cast<std::wstring*>(m_oValue.m_pColor)); break;
+			default: return L"none";
+		}
+
+		TRGB oTempColor;
+		std::wstring wsSelectedColor;
+		double dMinDistance = DBL_MAX;
+		double dDistance;
+
+		for (const std::wstring& wsColor : arColors)
+		{
+			oTempColor = ConvertHEXtoRGB(wsColor);
+			dDistance = sqrt(pow(oTempColor.uchRed - oColor.uchRed, 2) + pow(oTempColor.uchGreen - oColor.uchGreen, 2) + pow(oTempColor.uchBlue - oColor.uchBlue, 2));
+
+			if (dDistance < dMinDistance)
+			{
+				dMinDistance = dDistance;
+				wsSelectedColor = wsColor;
+			}
+		}
+
+		std::map<std::wstring, std::wstring>::const_iterator oIter = 
+			std::find_if(NSConstValues::COLORS.begin(), NSConstValues::COLORS.end(), [&wsSelectedColor](const std::pair<std::wstring, std::wstring>& oPair)
+			{ return wsSelectedColor == oPair.second; });
+
+		if (NSConstValues::COLORS.end() == oIter)
+			return std::wstring();
+
+		return oIter->first;
 	}
 
 	TRGB CColor::ToRGB() const
@@ -802,6 +843,8 @@ namespace NSCSS
 				
 				break;
 			}
+			default:
+				break;
 		}
 
 		return true;
@@ -878,6 +921,8 @@ namespace NSCSS
 				wsValue = L"rotate(";
 				break;
 			}
+			default:
+				break;
 		}
 
 		return wsValue;

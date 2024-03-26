@@ -448,11 +448,12 @@ std::wstring CXmlElement::ConvertRStyle(bool bIsLite) const
 					sRStyle += L"<w:u w:val=\"" + oItem.second + L"\"/>";
 				break;
 			}
-//			case CSSProperties::RunnerProperties::R_Highlight:
-//			{
-//				sRStyle += L"<w:highlight w:val=\"" + oItem.second + L"\"/>";
-//				break;
-//			}
+			case CSSProperties::RunnerProperties::R_Highlight:
+			{
+				if (!oItem.second.empty())
+					sRStyle += L"<w:highlight w:val=\"" + oItem.second + L"\"/>";
+				break;
+			}
 			case CSSProperties::RunnerProperties::R_SmallCaps:
 			{
 				if (oItem.second == L"smallCaps")

@@ -358,20 +358,15 @@ namespace NSDocxRenderer
 		oWriter.WriteEncodeXmlString(m_pFontStyle->wsFontName);
 		oWriter.WriteString(L"\"/>");
 
-		if (m_bIsUnderlinePresent)
+		if (m_bIsUnderlinePresent && m_lUnderlineColor != m_pFontStyle->oBrush.Color1)
 		{
-			if (m_lUnderlineColor != m_pFontStyle->oBrush.Color1)
-			{
-				oWriter.WriteString(L"<a:uFill>");
-				oWriter.WriteString(L"<a:solidFill>");
-				oWriter.WriteString(L"<a:srgbClr val=\"");
-				oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_lUnderlineColor));
-				oWriter.WriteString(L"\"/>");
-				oWriter.WriteString(L"</a:solidFill>");
-				oWriter.WriteString(L"</a:uFill>");
-			}
-			else
-				oWriter.WriteString(L"<a:uFillTx>");
+			oWriter.WriteString(L"<a:uFill>");
+			oWriter.WriteString(L"<a:solidFill>");
+			oWriter.WriteString(L"<a:srgbClr val=\"");
+			oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_lUnderlineColor));
+			oWriter.WriteString(L"\"/>");
+			oWriter.WriteString(L"</a:solidFill>");
+			oWriter.WriteString(L"</a:uFill>");
 		}
 
 		if (m_bIsHighlightPresent)

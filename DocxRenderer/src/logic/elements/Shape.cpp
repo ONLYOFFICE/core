@@ -737,6 +737,7 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"</pic:blipFill>");
 		oWriter.WriteString(L"<pic:spPr bwMode=\"auto\">");
 
+		BuildForm(oWriter);
 		BuildGraphicProperties(oWriter);
 
 		oWriter.WriteString(L"</pic:spPr>");
@@ -751,6 +752,7 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"<wpg:wgp>");
 		oWriter.WriteString(L"<wpg:cNvGrpSpPr/>");
 		oWriter.WriteString(L"<wpg:grpSpPr>");
+		BuildForm(oWriter);
 		BuildGraphicProperties(oWriter);
 		oWriter.WriteString(L"</wpg:grpSpPr>");
 
@@ -772,30 +774,6 @@ namespace NSDocxRenderer
 	void CShape::BuildGraphicProperties(NSStringUtils::CStringBuilder &oWriter) const
 	{
 		std::wstring strPath = PathToWString();
-		//отвечает за размеры прямоугольного фрейма шейпа
-		oWriter.WriteString(L"<a:xfrm");
-		if (fabs(m_dRotate) > 0.01)
-		{
-			oWriter.WriteString(L" rot=\"");
-			oWriter.AddInt(static_cast<int>(m_dRotate * c_dDegreeToAngle));
-			oWriter.WriteString(L"\"");
-		}
-		oWriter.WriteString(L">");
-
-		oWriter.WriteString(L"<a:off x=\"");
-		oWriter.AddInt(static_cast<int>(m_dLeft * c_dMMToEMU));
-		oWriter.WriteString(L"\" y=\"");
-		oWriter.AddInt(static_cast<int>(m_dTop * c_dMMToEMU));
-		oWriter.WriteString(L"\"/>");
-
-		oWriter.WriteString(L"<a:ext");
-		oWriter.WriteString(L" cx=\"");
-		oWriter.AddInt(static_cast<int>(m_dWidth * c_dMMToEMU));
-		oWriter.WriteString(L"\" cy=\"");
-		oWriter.AddInt(static_cast<int>(m_dHeight * c_dMMToEMU));
-		oWriter.WriteString(L"\"/>");
-
-		oWriter.WriteString(L"</a:xfrm>");
 
 		//Если просто текст без графики
 		if (strPath.empty())
@@ -876,6 +854,29 @@ namespace NSDocxRenderer
 		}
 	}
 
+	void CShape::BuildForm(NSStringUtils::CStringBuilder &oWriter) const
+	{
+		// отвечает за размеры прямоугольного фрейма шейпа
+		oWriter.WriteString(L"<a:xfrm");
+		if (fabs(m_dRotate) > 0.01)
+		{
+			oWriter.WriteString(L" rot=\"");
+			oWriter.AddInt(static_cast<int>(m_dRotate * c_dDegreeToAngle));
+			oWriter.WriteString(L"\"");
+		}
+		oWriter.WriteString(L">");
+
+		oWriter.WriteString(L"<a:off x=\"0\" y=\"0\"/>");
+		oWriter.WriteString(L"<a:ext");
+		oWriter.WriteString(L" cx=\"");
+		oWriter.AddInt(static_cast<int>(m_dWidth * c_dMMToEMU));
+		oWriter.WriteString(L"\" cy=\"");
+		oWriter.AddInt(static_cast<int>(m_dHeight * c_dMMToEMU));
+		oWriter.WriteString(L"\"/>");
+
+		oWriter.WriteString(L"</a:xfrm>");
+	}
+
 	void CShape::BuildTextBoxParams(NSStringUtils::CStringBuilder &oWriter) const
 	{
 		oWriter.WriteString(L" rot=\"0\""); //Определяет поворот, который применяется к тексту в пределах ограничивающей рамки.
@@ -933,6 +934,30 @@ namespace NSDocxRenderer
 	{
 		oWriter.WriteString(L"<p:sp>");
 		oWriter.WriteString(L"<p:spPr>");
+
+		oWriter.WriteString(L"<a:xfrm");
+		if (fabs(m_dRotate) > 0.01)
+		{
+			oWriter.WriteString(L" rot=\"");
+			oWriter.AddInt(static_cast<int>(m_dRotate * c_dDegreeToAngle));
+			oWriter.WriteString(L"\"");
+		}
+		oWriter.WriteString(L">");
+
+		oWriter.WriteString(L"<a:off x=\"");
+		oWriter.AddInt(static_cast<int>(m_dLeft * c_dMMToEMU));
+		oWriter.WriteString(L"\" y=\"");
+		oWriter.AddInt(static_cast<int>(m_dTop * c_dMMToEMU));
+		oWriter.WriteString(L"\"/>");
+
+		oWriter.WriteString(L"<a:ext");
+		oWriter.WriteString(L" cx=\"");
+		oWriter.AddInt(static_cast<int>(m_dWidth * c_dMMToEMU));
+		oWriter.WriteString(L"\" cy=\"");
+		oWriter.AddInt(static_cast<int>(m_dHeight * c_dMMToEMU));
+		oWriter.WriteString(L"\"/>");
+
+		oWriter.WriteString(L"</a:xfrm>");
 		BuildGraphicProperties(oWriter);
 		oWriter.WriteString(L"</p:spPr>");
 

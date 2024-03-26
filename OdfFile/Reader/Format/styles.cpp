@@ -1441,7 +1441,7 @@ int style_page_layout_properties::DetectPageSize(double w, double h)
 	{
 		if		(			w < 211 && h > 296 && h < 298) result = 9;	//  pagesizeA4Paper;
 		else if (w > 279 && w < 280 && h > 431 && h < 433) result = 3;	//  pagesizeTabloidPaper;
-		else if (w > 215 && w < 217 && h > 355 && h < 356) result = 6;	//  pagesizeLegalPaper;
+		else if (w > 215 && w < 217 && h > 354 && h < 356) result = 5;	//  pagesizeLegalPaper;
 		else if (w > 296 && w < 298 && h > 419 && h < 421) result = 8;	//  pagesizeA3Paper;
 		else if (w > 256 && w < 258 && h > 363 && h < 365) result = 12;	//  pagesizeB4Paper;
 		else if (w > 215 && w < 217 && h > 329 && h < 331) result = 14;	//  pagesizeFolioPaper;

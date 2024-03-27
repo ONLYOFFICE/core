@@ -82,9 +82,10 @@ namespace StarMath
 		bool SetFont(const TypeElement& enFont);
 		void SetFontName(const std::wstring& wsNameFont);
 		bool CheckAttribute();
-		//
+		//checking an element for a number from 1 to 9 or from the letter A to F
 		static bool CheckHexPosition(const wchar_t& cToken);
 	private:
+		void RefundOfTheAmountRGB(CStarMathReader* pReader,const int& iRed, const int& iGreen, const int& iBlue);
 		std::wstring m_wsColor,m_wsNameFont;
 		bool m_bBold,m_bItal,m_bPhantom,m_bStrike;
 		unsigned int m_iSize,m_iAlignment;
@@ -112,7 +113,10 @@ namespace StarMath
 		CAttribute* GetBaseAttribute();
 		//The function returns a Token from a string (the iterator pointer m_itStart is on the next element)
 		std::wstring GetElement();
+		//
 		std::wstring TakingElementForHex();
+		//
+		int TakingElementForRGB();
 		void SetString(const std::wstring& wsToken);
 		void FindingTheEndOfParentheses();
 		void IteratorNullification();
@@ -163,6 +167,7 @@ namespace StarMath
 		static TypeElement GetIndex(const std::wstring& wsCheckToken);
 		static bool GetUpperIndex(const TypeElement& enType);
 		static bool GetLowerIndex(const TypeElement& enType);
+		const TypeElement& GetType();
 	private:
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
@@ -208,6 +213,7 @@ namespace StarMath
 		CElement* GetLeftArg();
 		static TypeElement GetBinOperator(const std::wstring& wsToken);
 		static void UnaryCheck(CStarMathReader* pReader,CElement* pLastElement);
+		const TypeElement& GetType();
 	private:
 		//checking for signs such as -,+,-+,+-.
 		static bool MixedOperators(const TypeElement& enType);
@@ -293,6 +299,7 @@ namespace StarMath
 		void SetBracketValue(CElement* pElement);
 		CElement* GetLeftArg();
 		static TypeElement GetBracketWithIndex(const std::wstring& wsToken);
+		const TypeElement& GetType();
 	private:
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
@@ -312,6 +319,7 @@ namespace StarMath
 		void SetRightArg(CElement* pElement);
 		CElement* GetRightArg();
 		static TypeElement GetSetOperation(const std::wstring& wsToken);
+		const TypeElement& GetType();
 	private:
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
@@ -331,6 +339,7 @@ namespace StarMath
 		void SetLeftArg(CElement* pElement);
 		CElement* GetLeftArg();
 		static TypeElement GetConnection(const std::wstring& wsToken);
+		const TypeElement& GetType();
 	private:
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
@@ -417,8 +426,8 @@ namespace StarMath
 		static CElement* ParseElement(CStarMathReader* pReader);
 		//Function for adding a left argument (receives the argument itself and the element to which it needs to be added as input. Works with classes:CElementBinOperator,CElementConnection,CElementSetOperation).
 		static bool AddLeftArgument(CElement* pLeftArg,CElement* pElementWhichAdd);
-		static bool CheckForLeftArgument(const TypeElement& enType);
-		static CElement* ReadingWithoutBracket(CStarMathReader* pReader);
+		static bool CheckForLeftArgument(const TypeElement& enType, const bool& bConnection = true);
+		static CElement* ReadingWithoutBracket(CStarMathReader* pReader,const bool& bConnection = true);
 		//checking the element (true if it is newline)
 		static bool CheckNewline(CElement* pElement);
 		//adding an element to the array, checking that it is not empty and adding the left element, if there is one.

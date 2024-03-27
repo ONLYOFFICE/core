@@ -40,32 +40,32 @@ namespace StarMath {
 	void CConversionSMtoOOXML::StartConversion(std::vector<StarMath::CElement*> arPars, const unsigned int& iAlignment)
 	{
 		m_pXmlWrite = new XmlUtils::CXmlWriter;
-		m_pXmlWrite->WriteNodeBegin(L"m:oMathPara",false);
-		if(iAlignment>= 0 && iAlignment <= 2)
-		{
-			std::wstring wsAlignment;
-			switch(iAlignment)
-			{
-			case 0:
-			wsAlignment = L"center";
-			break;
-			case 1:
-			wsAlignment = L"left";
-			break;
-			case 2:
-			wsAlignment = L"right";
-			break;
-			default:
-			wsAlignment = L"center";
-			break;
-			}
-			m_pXmlWrite->WriteNodeBegin(L"m:oMathParaPr",false);
-			m_pXmlWrite->WriteNodeBegin(L"m:jc",true);
-			m_pXmlWrite->WriteAttribute(L"m:val",wsAlignment);
-			m_pXmlWrite->WriteNodeEnd(L"",true,true);
-			m_pXmlWrite->WriteNodeEnd(L"m:oMathParaPr",false,false);
-		}
-		m_pXmlWrite->WriteNodeBegin(L"m:oMath",false);
+//		m_pXmlWrite->WriteNodeBegin(L"m:oMathPara",false);
+//		if(iAlignment>= 0 && iAlignment <= 2)
+//		{
+//			std::wstring wsAlignment;
+//			switch(iAlignment)
+//			{
+//			case 0:
+//			wsAlignment = L"center";
+//			break;
+//			case 1:
+//			wsAlignment = L"left";
+//			break;
+//			case 2:
+//			wsAlignment = L"right";
+//			break;
+//			default:
+//			wsAlignment = L"center";
+//			break;
+//			}
+//			m_pXmlWrite->WriteNodeBegin(L"m:oMathParaPr",false);
+//			m_pXmlWrite->WriteNodeBegin(L"m:jc",true);
+//			m_pXmlWrite->WriteAttribute(L"m:val",wsAlignment);
+//			m_pXmlWrite->WriteNodeEnd(L"",true,true);
+//			m_pXmlWrite->WriteNodeEnd(L"m:oMathParaPr",false,false);
+//		}
+//		m_pXmlWrite->WriteNodeBegin(L"m:oMath",false);
 		for(CElement* oTempElement:arPars)
 		{
 			if(oTempElement != nullptr)
@@ -83,7 +83,7 @@ namespace StarMath {
 					oTempElement->ConversionToOOXML(m_pXmlWrite);
 			}
 		}
-		EndConversion();
+//		EndConversion();
 	}
 	void CConversionSMtoOOXML::StandartProperties(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute)
 	{

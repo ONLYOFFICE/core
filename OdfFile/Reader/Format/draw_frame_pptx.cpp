@@ -88,7 +88,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 	{
 		common_shape_draw_attlist	&common_draw_attlist_ = common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_;
 		common_presentation_attlist	&common_presentation_attlist_ = common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_;
-
+		
 		const unsigned int z_index = common_draw_attlist_.draw_z_index_.get_value_or(0);
 		const std::wstring name = common_draw_attlist_.draw_name_.get_value_or(L"");
 		const std::wstring textStyleName = common_draw_attlist_.draw_text_style_name_.get_value_or(L"");
@@ -189,6 +189,11 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 
 			if (idx_in_owner >= 0)
 				Context.get_slide_context().set_placeHolder_idx(idx_in_owner);
+		}
+
+		if (common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_)
+		{
+			Context.get_slide_context().set_hidden(true);
 		}
 
 		if (!textStyleName.empty())

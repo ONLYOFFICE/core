@@ -696,12 +696,12 @@ void XFProp::deserialize_attr(XmlUtils::CXmlLiteReader& oReader)
 			break;
 		case 0x0012: // indent
 		case 0x0029:
+        case 0x002A:
 			xfPropDataBlob.reset(new BIFF_WORD(XmlUtils::GetInteger(oReader.GetText())));
 			break;
 		case 0x001A:
             //xfPropDataBlob.reset(new BIFF_WORD(1));
 		case 0x001B:
-		case 0x002A:
 			deserialize_val_prop(oReader, L"BIFF_WORD", xfPropDataBlob);			
 			break;
 		case 0x0024:

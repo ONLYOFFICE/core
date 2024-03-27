@@ -74,9 +74,15 @@ WASM_EXPORT int GetType(BYTE* data, LONG size)
 	// 0 - PDF
 	// 1 - DJVU
 	// 2 - XPS
-	char* pFirst = strstr((char*)data, "%PDF-" );
-	if (pFirst)
-		return 0;
+	LONG nHeaderSearchSize = 1024;
+	LONG nSize = size < nHeaderSearchSize ? size : nHeaderSearchSize;
+	char* pData = (char*)data;
+	for (int i = 0; i < nSize - 5; ++i)
+	{
+		int nPDF = strncmp(&pData[i], "%PDF-", 5);
+		if (!nPDF)
+			return 0;
+	}
 	if ( (8 <= size) && (0x41 == data[0] && 0x54 == data[1] && 0x26 == data[2] && 0x54 == data[3] &&
 						 0x46 == data[4] && 0x4f == data[5] && 0x52 == data[6] && 0x4d == data[7]))
 		return 1;

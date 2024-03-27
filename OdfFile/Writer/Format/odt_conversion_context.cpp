@@ -590,6 +590,15 @@ void odt_conversion_context::start_hyperlink(const std::wstring& link, const std
 	text_a* hyperlink = dynamic_cast<text_a*>(hyperlink_elm.get());
 	if (hyperlink)
 	{
+		if (location == L"_top")
+			hyperlink->office_target_frame_name_ = odf_types::target_frame_name::Top;
+		else if (location == L"_blank")
+			hyperlink->office_target_frame_name_ = odf_types::target_frame_name::Blank;
+		else if (location == L"_self")
+			hyperlink->office_target_frame_name_ = odf_types::target_frame_name::Self;
+		else if (location == L"_parent")
+			hyperlink->office_target_frame_name_ = odf_types::target_frame_name::Parent;
+
 		hyperlink->common_xlink_attlist_.href_	= link + (location.empty() ? L"" : (L"#" + location));
 		hyperlink->common_xlink_attlist_.type_	= xlink_type::Simple;
 		

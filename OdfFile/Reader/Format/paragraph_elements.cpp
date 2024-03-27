@@ -740,16 +740,16 @@ void a::add_space(const std::wstring & Text)
 }
 void a::docx_convert(oox::docx_conversion_context & Context)
 {
-    bool pushed_style = false;
-    
-	bool addNewRun = false;
-    Context.finish_run();
-    
-    std::wostream & _Wostream = Context.output_stream();
-
 	std::wstring ref = xlink_attlist_.href_.get_value_or(L"");
+	if (ref.empty()) return;
+    
+	bool pushed_style = false;    
+	bool addNewRun = false;
+   
+	Context.finish_run();    
 	
-	if (Context.is_table_content())
+	std::wostream& _Wostream = Context.output_stream();
+	if (Context.is_table_content() || office_target_frame_name_ || ref[0] == L'#')
 	{
 		size_t pos_outline = ref.find(L"|outline");
 		if (std::wstring::npos != pos_outline)//без #
@@ -766,11 +766,14 @@ void a::docx_convert(oox::docx_conversion_context & Context)
 		{
 			ref = XmlUtils::EncodeXmlString(ref.substr(1));
 		}
-
 		_Wostream << L"<w:hyperlink w:anchor=\"" << ref << L"\" w:history=\"1\">"; 
-		int type = Context.get_table_content_context().get_type_current_content_template_index();
-		//type == 3 (LinkStart)
-		Context.get_table_content_context().next_level_index();
+
+		if (Context.is_table_content())
+		{
+			int type = Context.get_table_content_context().get_type_current_content_template_index();
+			//type == 3 (LinkStart)
+			Context.get_table_content_context().next_level_index();
+		}
 	}
 	else
 	{

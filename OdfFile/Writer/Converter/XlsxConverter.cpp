@@ -1998,6 +1998,19 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPageSetup *oox_page)
 			width	= odf_types::length(8.5, odf_types::length::inch);
 			height	= odf_types::length(11, odf_types::length::inch);
 			break;
+		//case SimpleTypes::Spreadsheet::pagesizeLetterSmall:
+		case SimpleTypes::Spreadsheet::pagesizeTabloidPaper:
+			width = odf_types::length(279.4, odf_types::length::mm);
+			height = odf_types::length(431.8, odf_types::length::mm);
+			break;
+		case SimpleTypes::Spreadsheet::pagesizeLegalPaper:
+			width = odf_types::length(215.9, odf_types::length::mm);
+			height = odf_types::length(355.6, odf_types::length::mm);
+			break;
+		case SimpleTypes::Spreadsheet::pagesizeExecutivePaper:
+			width = odf_types::length(184.2, odf_types::length::mm);
+			height = odf_types::length(266.7, odf_types::length::mm);
+			break;
 		case SimpleTypes::Spreadsheet::pagesizeA3Paper:
 			width	= odf_types::length(297, odf_types::length::mm);
 			height	= odf_types::length(420, odf_types::length::mm);
@@ -2006,9 +2019,45 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPageSetup *oox_page)
 			width	= odf_types::length(210, odf_types::length::mm);
 			height	= odf_types::length(297, odf_types::length::mm);
 			break;
+		//case SimpleTypes::Spreadsheet::pagesizeA4SmallPaper:
+		case SimpleTypes::Spreadsheet::pagesizeA5Paper:
+			width = odf_types::length(148, odf_types::length::mm);
+			height = odf_types::length(210, odf_types::length::mm);
+			break;
+		case SimpleTypes::Spreadsheet::pagesizeB4Paper:
+			width = odf_types::length(257, odf_types::length::mm);
+			height = odf_types::length(364, odf_types::length::mm);
+			break;
+		case SimpleTypes::Spreadsheet::pagesizeB5Paper:
+			width = odf_types::length(182, odf_types::length::mm);
+			height = odf_types::length(257, odf_types::length::mm);
+			break;
+		case SimpleTypes::Spreadsheet::pagesizeFolioPaper:
+			width = odf_types::length(215.9, odf_types::length::mm);
+			height = odf_types::length(330.2, odf_types::length::mm);
+			break;
+		case SimpleTypes::Spreadsheet::pagesize10Envelope:
+			width = odf_types::length(104.7, odf_types::length::mm);
+			height = odf_types::length(241.3, odf_types::length::mm);
+			break;
+		case SimpleTypes::Spreadsheet::pagesizeDLEnvelope:
+			width = odf_types::length(110, odf_types::length::mm);
+			height = odf_types::length(220, odf_types::length::mm);
+			break;
+		case SimpleTypes::Spreadsheet::pagesizeC5Envelope:
+			width = odf_types::length(162, odf_types::length::mm);
+			height = odf_types::length(229, odf_types::length::mm);
+			break;
+		case SimpleTypes::Spreadsheet::pagesizeC4Envelope:
+			width = odf_types::length(229, odf_types::length::mm);
+			height = odf_types::length(324, odf_types::length::mm);
+		break;
+		case SimpleTypes::Spreadsheet::pagesizeMonarchEnvelope:
+			width = odf_types::length(98.4, odf_types::length::mm);
+			height = odf_types::length(190.5, odf_types::length::mm);
+			break;
 		default:
 			break;
-		//todooo
 		}
 	}
 	ods_context->page_layout_context()->set_page_size(width, height);

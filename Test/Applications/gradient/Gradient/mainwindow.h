@@ -10,6 +10,14 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+typedef enum {
+    NoColorspaceType,
+    Rainbow,
+    BlackAndWhite,
+    RedAndBlue,
+    Pastel
+} ColorspaceType;
+
 struct Point {
     Point(double _x = 0, double _y = 0) : x(_x), y(_y){}
     double x, y;
@@ -30,7 +38,8 @@ struct Color {
 };
 
 struct Info {
-    // Для теста адаптора все вынес в инфо.
+    ColorspaceType colorspace = NoColorspaceType;
+
     float r0, r1;
     NSStructures::Point c0, c1;
     NSStructures::Point p0, p1;
@@ -78,55 +87,28 @@ public:
     Info info;
 
 private slots:
-    void on_RenderPic_clicked();
 
-    void on_GradientType_itemDoubleClicked(QListWidgetItem *item);
+    void on_actionLinear_Gradient_triggered();
 
-    void on_GradientType_itemClicked(QListWidgetItem *item);
+    void on_actionRadial_Gradient_triggered();
 
-    void on_ColorSpaces_itemClicked(QListWidgetItem *item);
+    void on_BAW_Colorspace_Radio_Button_clicked();
 
-    void on_ColorSpaces_itemDoubleClicked(QListWidgetItem *item);
+    void on_RAB_Colorspace_Radio_Button_clicked();
 
-    void on_Point1X_sliderMoved(int position);
+    void on_Pastel_Colorspace_Radio_Button_clicked();
 
-    void on_Point1Y_sliderMoved(int position);
+    void on_Rainbow_Colorspace_Radio_Button_clicked();
 
-    void on_Point2X_sliderMoved(int position);
+    void on_pushButton_clicked();
 
-    void on_Point2Y_sliderMoved(int position);
+    void on_Continue_Shading_Forward_clicked(bool checked);
 
-    void on_CenterX0_valueChanged(int value);
+    void on_checkBox_2_clicked(bool checked);
 
-    void on_CenterY0_valueChanged(int value);
+    void on_Continue_Shading_Forward_2_clicked(bool checked);
 
-    void on_CenterX1_valueChanged(int value);
-
-    void on_CenterY1_valueChanged(int value);
-
-    void on_r0slider_valueChanged(int value);
-
-    void on_r1slider_valueChanged(int value);
-
-    void on_ContinueForvard_clicked(bool checked);
-
-    void on_ContinueBack_clicked(bool checked);
-
-    void on_TrianglePoint1X_sliderMoved(int position);
-
-    void on_TrianglePoint1Y_sliderMoved(int position);
-
-    void on_TrianglePoint2X_sliderMoved(int position);
-
-    void on_TrianglePoint2Y_sliderMoved(int position);
-
-    void on_TrianglePoint3X_sliderMoved(int position);
-
-    void on_TrianglePoint3Y_sliderMoved(int position);
-
-    void on_LeftButton_clicked();
-
-    void on_RightButton_clicked();
+    void on_Continue_Shading_Backward_2_clicked(bool checked);
 
 private:
     Ui::MainWindow *ui;

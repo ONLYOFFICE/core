@@ -284,6 +284,9 @@ public:
 										case 14: CP_XML_ATTR(L"iconSet", L"5ArrowsGray"); break;
 										case 15: CP_XML_ATTR(L"iconSet", L"5Quarters"); break;
 										case 16: CP_XML_ATTR(L"iconSet", L"5Rating"); break;
+										case 17: CP_XML_ATTR(L"iconSet", L"3Triangles"); break;
+										case 18: CP_XML_ATTR(L"iconSet", L"3Stars"); break;
+										case 19: CP_XML_ATTR(L"iconSet", L"5Boxes"); break;
 										case 0:
 										default: CP_XML_ATTR(L"iconSet", L"3Arrows"); break;
 											break;

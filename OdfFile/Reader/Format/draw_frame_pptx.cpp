@@ -469,7 +469,10 @@ void draw_object_ole::pptx_convert(oox::pptx_conversion_context & Context)
 	std::wstring folderPath = Context.root()->get_folder();
 	std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
 
-	if (!href.empty()) 
+	NSFile::CFileBinary objectFile;
+	objectFile.OpenFile(objectPath);
+	
+	if (!href.empty() && objectFile.SizeFile() != 0) 
 	{
 		std::wstring prog, extension;
 		oox::_rels_type relsType;

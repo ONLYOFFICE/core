@@ -35,7 +35,7 @@
 #define VALUE2STR(x) VALUE_TO_STRING(x)
 #endif
 
-#define MAXCOLUMNSINTABLE 63
+#define MAXCOLUMNSINTABLE 64
 #define MAXROWSINTABLE    32767
 
 #define DEFAULT_PAGE_WIDTH  12240 // Значение в Twips
@@ -86,18 +86,396 @@ struct CTextSettings
 	{}
 };
 
+std::wstring CreateBorders(const NSCSS::NSProperties::CBorder& oBorder)
+{
+	if (oBorder.EqualSides())
+	{
+		const std::wstring wsBorderStyle = NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetLeftBorder());
+
+		return L"<w:top "    + wsBorderStyle + L"/>" +
+			   L"<w:left "   + wsBorderStyle + L"/>" +
+			   L"<w:bottom " + wsBorderStyle + L"/>" +
+			   L"<w:right "  + wsBorderStyle + L"/>";
+	}
+	else
+	{
+		std::wstring wsTable;
+
+		if (oBorder.GetTopBorder().Valid())
+			wsTable += L"<w:top "    + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetTopBorder())    + L"/>";
+
+		if (oBorder.GetLeftBorder().Valid())
+			wsTable += L"<w:left "   + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetLeftBorder())   + L"/>";
+
+		if (oBorder.GetBottomBorder().Valid())
+			wsTable += L"<w:bottom " + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetBottomBorder()) + L"/>";
+
+		if (oBorder.GetRightBorder().Valid())
+			wsTable += L"<w:right "  + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetRightBorder())  + L"/>";
+
+		return wsTable;
+	}
+
+	return L"";
+}
+
 //Необходимые стили таблицы
 struct TTableStyles
 {
-	const NSCSS::NSProperties::CIndent* m_pPadding;
-	const NSCSS::NSProperties::CEnum*   m_pCollapse;
+	NSCSS::NSProperties::CIndent m_oPadding;
+	NSCSS::NSProperties::CBorder m_oBorder;
+	NSCSS::NSProperties::CDigit  m_oWidth;
 
 	int  m_nCellSpacing;
 	bool m_bHaveBorderAttribute;
 
+	std::wstring m_wsAlign;
+
 	TTableStyles()
-		: m_pPadding(NULL), m_pCollapse(NULL), m_nCellSpacing(-1), m_bHaveBorderAttribute(false)
+		: m_nCellSpacing(-1), m_bHaveBorderAttribute(false)
 	{}
+
+	bool Empty() const
+	{
+		return m_oPadding.Empty() && m_oBorder.Empty() && m_oWidth.Empty() && -1 == m_nCellSpacing && false == m_bHaveBorderAttribute && m_wsAlign.empty();
+	}
+};
+
+struct TTableCellStyle
+{
+	NSCSS::NSProperties::CDigit  m_oWidth;
+	NSCSS::NSProperties::CDigit  m_oHeight;
+	NSCSS::NSProperties::CBorder m_oBorder;
+	NSCSS::NSProperties::CIndent m_oPadding;
+	NSCSS::NSProperties::CColor  m_oBackground;
+
+	std::wstring m_wsAlign;
+
+	TTableCellStyle() {}
+	
+	bool Empty()
+	{
+		return m_oWidth.Empty() && m_oHeight.Empty() && m_oBorder.Empty() && m_oPadding.Empty() && m_wsAlign.empty();
+	}
+};
+
+class CTableCell
+{
+public:
+	CTableCell() 
+		: m_unColspan(1), m_unRowSpan(1) 
+	{}
+
+	void SetColspan(UINT unColspan, UINT unCurrentIndex)
+	{
+		if (MAXCOLUMNSINTABLE - 1 != unCurrentIndex)
+			m_unColspan = std::min(MAXCOLUMNSINTABLE - 1 - unCurrentIndex, unColspan);
+		else
+			m_unColspan = 1;
+	}
+
+	UINT GetColspan() const
+	{
+		return m_unColspan;
+	}
+
+	void SetRowspan(UINT unRowspan)
+	{
+		m_unRowSpan = unRowspan;
+	}
+
+	UINT GetRowspan() const
+	{
+		return m_unRowSpan;
+	}
+
+	NSStringUtils::CStringBuilder* GetData()
+	{
+		return &m_oData;
+	}
+
+	void SetWidth(const NSCSS::NSProperties::CDigit& oWidth)
+	{
+		m_oStyles.m_oWidth = oWidth;
+	}
+
+	void SetHeight(const NSCSS::NSProperties::CDigit& oHeight)
+	{
+		m_oStyles.m_oHeight = oHeight;
+	}
+
+	void SetBorder(const NSCSS::NSProperties::CBorder& oBorder)
+	{
+		m_oStyles.m_oBorder = oBorder;
+	}
+
+	void SetPadding(const NSCSS::NSProperties::CIndent& oPadding)
+	{
+		m_oStyles.m_oPadding = oPadding;
+	}
+
+	void SetAlign(const std::wstring& wsAlign)
+	{
+		m_oStyles.m_wsAlign = wsAlign;
+	}
+
+	std::wstring ConvertToOOXML(const TTableStyles& oTableStyles)
+	{
+		NSStringUtils::CStringBuilder oCell;
+
+		oCell.WriteNodeBegin(L"w:tc");
+
+		if (!m_oStyles.Empty())
+		{
+			oCell.WriteNodeBegin(L"w:tcPr");
+
+			if (!m_oStyles.m_oWidth.Empty())
+			{
+				if (NSCSS::UnitMeasure::Percent == m_oStyles.m_oWidth.GetUnitMeasure())
+					oCell += L"<w:tcW w:w=\"" + std::to_wstring(m_oStyles.m_oWidth.ToInt(NSCSS::UnitMeasure::Percent, 5000)) + L"\" w:type=\"pct\"/>";
+				else
+					oCell += L"<w:tcW w:w=\"" + std::to_wstring((!m_oStyles.m_oWidth.Zero()) ? m_oStyles.m_oWidth.ToInt(NSCSS::UnitMeasure::Twips) : 6) + L"\" w:type=\"dxa\"/>";
+			}
+			else
+				oCell += L"<w:tcW w:w=\"0\" w:type=\"auto\"/>";
+
+			if (1 < m_unColspan)
+				oCell += L"<w:gridSpan w:val=\"" + std::to_wstring(m_unColspan) + L"\"/>";
+
+			if (!m_oStyles.m_oBorder.Zero() && !m_oStyles.m_oBorder.Empty())
+				oCell += L"<w:tcBorders>" + CreateBorders(m_oStyles.m_oBorder) + L"</w:tcBorders>";
+			else if (oTableStyles.m_bHaveBorderAttribute)
+				oCell += L"<w:tcBorders><w:top w:val=\"outset\" w:sz=\"6\" w:space=\"0\" w:color=\"auto\"/><w:left w:val=\"outset\" w:sz=\"6\" w:space=\"0\" w:color=\"auto\"/><w:bottom w:val=\"outset\" w:sz=\"6\" w:space=\"0\" w:color=\"auto\"/><w:right w:val=\"outset\" w:sz=\"6\" w:space=\"0\" w:color=\"auto\"/></w:tcBorders>";
+
+			if (!m_oStyles.m_oBackground.Empty())
+			{
+				const std::wstring wsShdFill{(NSCSS::NSProperties::ColorNone == m_oStyles.m_oBackground.GetType()) ? L"auto" : m_oStyles.m_oBackground.ToWString()};
+				oCell += L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + wsShdFill + L"\"/>";
+			}
+
+			if (!m_oStyles.m_wsAlign.empty())
+				oCell += L"<w:vAlign w:val=\"" + m_oStyles.m_wsAlign + L"\"/>";
+
+			if (!m_oStyles.m_oPadding.Empty() && oTableStyles.m_oPadding != m_oStyles.m_oPadding)
+			{
+				const int nTopPadding    = std::max(oTableStyles.m_oPadding.GetTop()   .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT),
+				                                    m_oStyles   .m_oPadding.GetTop()   .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
+				const int nLeftPadding   = std::max(oTableStyles.m_oPadding.GetLeft()  .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH),
+				                                    m_oStyles   .m_oPadding.GetLeft()  .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH));
+				const int nBottomPadding = std::max(oTableStyles.m_oPadding.GetBottom().ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT),
+				                                    m_oStyles   .m_oPadding.GetBottom().ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
+				const int nRightPadding  = std::max(oTableStyles.m_oPadding.GetRight() .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH),
+				                                    m_oStyles   .m_oPadding.GetRight() .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH));
+
+				oCell += L"<w:tcMar>"
+				              "<w:top w:w=\""    + std::to_wstring(nTopPadding)    + L"\" w:type=\"dxa\"/>"
+				              "<w:left w:w=\""   + std::to_wstring(nLeftPadding)   + L"\" w:type=\"dxa\"/>"
+				              "<w:bottom w:w=\"" + std::to_wstring(nBottomPadding) + L"\" w:type=\"dxa\"/>"
+				              "<w:right w:w=\""  + std::to_wstring(nRightPadding)  + L"\" w:type=\"dxa\"/>"
+				          "</w:tcMar>";
+			}
+
+			oCell += L"<w:hideMark/>";
+			oCell.WriteNodeEnd(L"w:tcPr");
+		}
+		
+		oCell += m_oData.GetData();
+
+		oCell.WriteNodeEnd(L"w:tc");
+
+		return oCell.GetData();
+	}
+
+private:
+	UINT m_unColspan;
+	UINT m_unRowSpan;
+
+	TTableCellStyle m_oStyles;
+	NSStringUtils::CStringBuilder m_oData;
+};
+
+class CTableRow
+{
+public:
+	CTableRow()
+		: m_unMaxIndex(0)
+	{}
+
+	~CTableRow()
+	{
+		for (CTableCell* pCell : m_arCells)
+			delete pCell;
+	}
+
+	void AddCell(CTableCell* pCell)
+	{
+		if (NULL == pCell)
+			return;
+
+		m_arCells.push_back(pCell);
+		m_unMaxIndex += pCell->GetColspan();
+	}
+
+	UINT GetIndex() const
+	{
+		return m_unMaxIndex;
+	}
+
+	UINT GetCountIndex() const
+	{
+		return m_arCells.size();
+	}
+
+	bool ColumnsOverflowing() const
+	{
+		return MAXCOLUMNSINTABLE == m_unMaxIndex;
+	}
+
+	std::wstring ConvertToOOXML(const TTableStyles& oTableStyles)
+	{
+		if (m_arCells.empty())
+			return std::wstring();
+
+		NSStringUtils::CStringBuilder oRow;
+		oRow.WriteNodeBegin(L"w:tr");
+
+		for (CTableCell* pCell : m_arCells)
+			oRow += pCell->ConvertToOOXML(oTableStyles);
+
+		oRow.WriteNodeEnd(L"w:tr");
+
+		return oRow.GetData();
+	}
+private:
+	UINT m_unMaxIndex;
+	std::vector<CTableCell*> m_arCells;
+};
+
+class CTable
+{
+public:
+	CTable()
+	{}
+
+	~CTable()
+	{
+		for (CTableRow* pRow : m_arRows)
+			delete pRow;
+	}
+
+	void AddRow(CTableRow* pRow)
+	{
+		if (NULL == pRow)
+			return;
+		
+		m_arRows.push_back(pRow);
+	}
+
+	void SetPadding(const NSCSS::NSProperties::CIndent& oPadding)
+	{
+		m_oStyles.m_oPadding = oPadding;
+	}
+
+	const NSCSS::NSProperties::CIndent& GetPadding() const
+	{
+		return m_oStyles.m_oPadding;
+	}
+
+	void SetBorder(const NSCSS::NSProperties::CBorder& oBorder)
+	{
+		m_oStyles.m_oBorder = oBorder;
+	}
+
+	void SetWidth(const NSCSS::NSProperties::CDigit& oWidth)
+	{
+		m_oStyles.m_oWidth = oWidth;
+	}
+
+	void SetCellSpacing(int nCellSpacing)
+	{
+		m_oStyles.m_nCellSpacing = nCellSpacing;
+	}
+
+	void SetAlign(const std::wstring& wsValue)
+	{
+		m_oStyles.m_wsAlign = wsValue;
+	}
+
+	void HaveBorderAttribute()
+	{
+		m_oStyles.m_bHaveBorderAttribute = true;
+	}
+
+	bool IsHaveBorderAttribute() const
+	{
+		return m_oStyles.m_bHaveBorderAttribute;
+	}
+
+	void Shorten()
+	{
+		
+	}
+
+	std::wstring ConvertToOOXML()
+	{
+		if (m_arRows.empty())
+			return std::wstring();
+
+		NSStringUtils::CStringBuilder oTable;
+
+		oTable.WriteNodeBegin(L"w:tbl");
+		oTable.WriteNodeBegin(L"w:tblPr");
+
+		if (!m_oStyles.m_oWidth.Empty() && !m_oStyles.m_oWidth.Zero())
+		{
+			if (NSCSS::UnitMeasure::Percent == m_oStyles.m_oWidth.GetUnitMeasure())
+				oTable += L"<w:tblW w:w=\"" + std::to_wstring(m_oStyles.m_oWidth.ToInt(NSCSS::UnitMeasure::Percent, 5000)) + L"\" w:type=\"pct\"/>";
+			else
+				oTable += L"<w:tblW w:w=\"" + std::to_wstring(m_oStyles.m_oWidth.ToInt(NSCSS::UnitMeasure::Twips)) + L"\" w:type=\"dxa\"/>";
+		}
+		else
+			oTable += L"<w:tblW w:w=\"0\" w:type=\"auto\"/>";
+
+		if (0 < m_oStyles.m_nCellSpacing)
+			oTable += L"<w:tblCellSpacing w:w=\"" + std::to_wstring(m_oStyles.m_nCellSpacing) + L"\" w:type=\"dxa\"/>";
+
+		if (!m_oStyles.m_oBorder.Empty() && !m_oStyles.m_oBorder.Zero())
+			oTable += L"<w:tblBorders>" + CreateBorders(m_oStyles.m_oBorder) + L"</w:tblBorders>";
+
+		if (!m_oStyles.m_oPadding.Empty())
+		{
+			const int nTopPadding    = std::max(0, m_oStyles.m_oPadding.GetTop()   .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
+			const int nLeftPadding   = std::max(0, m_oStyles.m_oPadding.GetLeft()  .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ));
+			const int nBottomPadding = std::max(0, m_oStyles.m_oPadding.GetBottom().ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
+			const int nRightPadding  = std::max(0, m_oStyles.m_oPadding.GetRight() .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ));
+
+			oTable += L"<w:tblCellMar>"
+			              "<w:top w:w=\""     + std::to_wstring(nTopPadding)    + L"\" w:type=\"dxa\"/>"
+			               "<w:left w:w=\""   + std::to_wstring(nLeftPadding)   + L"\" w:type=\"dxa\"/>"
+			               "<w:bottom w:w=\"" + std::to_wstring(nBottomPadding) + L"\" w:type=\"dxa\"/>"
+			               "<w:right w:w=\""  + std::to_wstring(nRightPadding)  + L"\" w:type=\"dxa\"/>"
+			           "</w:tblCellMar>";
+		}
+		else
+			oTable += L"<w:tblCellMar><w:top w:w=\"15\" w:type=\"dxa\"/><w:left w:w=\"15\" w:type=\"dxa\"/><w:bottom w:w=\"15\" w:type=\"dxa\"/><w:right w:w=\"15\" w:type=\"dxa\"/></w:tblCellMar>";
+
+		if (!m_oStyles.m_wsAlign.empty())
+			oTable += L"<w:jc w:val=\"" + m_oStyles.m_wsAlign + L"\"/>";
+
+		oTable += L"<w:tblLook w:val=\"04A0\" w:noVBand=\"1\" w:noHBand=\"0\" w:lastColumn=\"0\" w:firstColumn=\"1\" w:lastRow=\"0\" w:firstRow=\"1\"/>";
+		oTable.WriteNodeEnd(L"w:tblPr");
+
+		for (CTableRow* pRow : m_arRows)
+			oTable += pRow->ConvertToOOXML(m_oStyles);
+
+		oTable.WriteNodeEnd(L"w:tbl");
+
+		return oTable.GetData();
+	}
+private:
+	std::vector<CTableRow*> m_arRows;
+
+	TTableStyles m_oStyles;
 };
 
 void replace_all(std::wstring& s, const std::wstring& s1, const std::wstring& s2)
@@ -850,7 +1228,7 @@ private:
 			std::wstring sName  = m_oLightReader.GetName();
 			if(sName == L"class")
 				oNode.m_wsClass  = m_oLightReader.GetText();
-			else if(sName == L"id")
+			else if(sName == L"id" && NULL != oXml)
 			{
 				oNode.m_wsId = m_oLightReader.GetText();
 				std::wstring sCrossId = std::to_wstring(m_nCrossId++);
@@ -1386,104 +1764,6 @@ private:
 		return true;
 	}
 
-	std::wstring CreateBorders(const NSCSS::NSProperties::CBorder& oBorder)
-	{
-		if (oBorder.EqualSides())
-		{
-			const std::wstring wsBorderStyle = NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetLeftBorder());
-
-			return L"<w:top "    + wsBorderStyle + L"/>" +
-			       L"<w:left "   + wsBorderStyle + L"/>" +
-			       L"<w:bottom " + wsBorderStyle + L"/>" +
-			       L"<w:right "  + wsBorderStyle + L"/>";
-		}
-		else
-		{
-			std::wstring wsTable;
-
-			if (oBorder.GetTopBorder().Valid())
-				wsTable += L"<w:top "    + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetTopBorder())    + L"/>";
-
-			if (oBorder.GetLeftBorder().Valid())
-				wsTable += L"<w:left "   + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetLeftBorder())   + L"/>";
-
-			if (oBorder.GetBottomBorder().Valid())
-				wsTable += L"<w:bottom " + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetBottomBorder()) + L"/>";
-
-			if (oBorder.GetRightBorder().Valid())
-				wsTable += L"<w:right "  + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetRightBorder())  + L"/>";
-
-			return wsTable;
-		}
-
-		return L"";
-	}
-
-	struct TTextReadingSettings
-	{
-		bool m_bOpenedRT;
-		bool m_bAddSpace;
-		std::wstring m_wsLastElement;
-
-		TTextReadingSettings()
-			: m_bOpenedRT(false), m_bAddSpace(true)
-		{}
-
-		TTextReadingSettings(bool bOpenedRT, bool bAddSpace, const std::wstring& wsLastElement)
-			: m_bOpenedRT(bOpenedRT), m_bAddSpace(bAddSpace), m_wsLastElement(wsLastElement)
-		{}
-	};
-
-	void ReadOnlyText(NSStringUtils::CStringBuilder* pXml, TTextReadingSettings& oTextReadingSettings, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, int nDepth)
-	{
-		if (!m_oLightReader.IsValid() || m_oLightReader.IsEmptyNode())
-			return;
-
-		while (m_oLightReader.ReadNextSiblingNode2(nDepth))
-		{
-			if (L"#text" == m_oLightReader.GetName())
-			{
-				if (!oTextReadingSettings.m_bOpenedRT)
-				{
-					pXml->WriteString(L"<w:r><w:t>");
-					oTextReadingSettings.m_bOpenedRT = true;
-				}
-
-				pXml->WriteString(GetText());
-				
-				if (oTextReadingSettings.m_bAddSpace)
-					pXml->WriteString(L" ");
-			}
-			else if (L"td" == m_oLightReader.GetName())
-				ReadOnlyText(pXml, oTextReadingSettings, sSelectors, oTS, nDepth + 1);
-			else
-			{
-				GetSubClass(pXml, sSelectors);
-				if (oTextReadingSettings.m_bOpenedRT)
-				{
-					pXml->WriteString(L"</w:t></w:r>");
-					oTextReadingSettings.m_bOpenedRT = false;
-				}
-				readStream(pXml, sSelectors, oTS);
-				sSelectors.pop_back();
-			}
-		}
-	}
-	
-	void MergeCells(NSStringUtils::CStringBuilder* pXml)
-	{
-		if (!m_oLightReader.IsValid() || m_oLightReader.IsEmptyNode() || L"td" != m_oLightReader.GetName())
-			return;
-
-		std::vector<NSCSS::CNode> arSelectors;
-		TTextReadingSettings oSettings;
-		
-		ReadOnlyText(pXml, oSettings, arSelectors, { false, false, true, false, -1, L"", L"" }, m_oLightReader.GetDepth() - 1);
-		
-		if (oSettings.m_bOpenedRT)
-			pXml->WriteString(L"</w:t></w:r>");
-	}
-
 	void readTr     (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, const TTableStyles& oTableStyles)
 	{
 		const std::wstring wsName = m_oLightReader.GetName();
@@ -1613,28 +1893,28 @@ private:
 				if (!wsVerticalAlign.empty())
 					wsTcPr += L"<w:vAlign w:val=\"" + wsVerticalAlign + L"\"/>";
 
-				if (!oStyle.m_oPadding.Empty() && (NULL == oTableStyles.m_pPadding || oStyle.m_oPadding != *oTableStyles.m_pPadding))
-				{
-					const int nTopPadding    = std::max((NULL != oTableStyles.m_pPadding) ? 
-					                                    oTableStyles.m_pPadding->GetTop()   .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT) : 0,
-					                                    oStyle      .m_oPadding.GetTop()    .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
-					const int nLeftPadding   = std::max((NULL != oTableStyles.m_pPadding) ? 
-					                                    oTableStyles.m_pPadding->GetLeft()  .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ) : 0,
-					                                    oStyle      .m_oPadding.GetLeft()   .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ));
-					const int nBottomPadding = std::max((NULL != oTableStyles.m_pPadding) ? 
-					                                    oTableStyles.m_pPadding->GetBottom().ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT) : 0,
-					                                    oStyle      .m_oPadding.GetBottom() .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
-					const int nRightPadding  = std::max((NULL != oTableStyles.m_pPadding) ? 
-					                                    oTableStyles.m_pPadding->GetRight() .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ) : 0,
-					                                    oStyle      .m_oPadding.GetRight()  .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ));
+//				if (!oStyle.m_oPadding.Empty() && (NULL == oTableStyles.m_pPadding || oStyle.m_oPadding != *oTableStyles.m_pPadding))
+//				{
+//					const int nTopPadding    = std::max((NULL != oTableStyles.m_pPadding) ? 
+//					                                    oTableStyles.m_pPadding->GetTop()   .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT) : 0,
+//					                                    oStyle      .m_oPadding.GetTop()    .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
+//					const int nLeftPadding   = std::max((NULL != oTableStyles.m_pPadding) ? 
+//					                                    oTableStyles.m_pPadding->GetLeft()  .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ) : 0,
+//					                                    oStyle      .m_oPadding.GetLeft()   .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ));
+//					const int nBottomPadding = std::max((NULL != oTableStyles.m_pPadding) ? 
+//					                                    oTableStyles.m_pPadding->GetBottom().ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT) : 0,
+//					                                    oStyle      .m_oPadding.GetBottom() .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
+//					const int nRightPadding  = std::max((NULL != oTableStyles.m_pPadding) ? 
+//					                                    oTableStyles.m_pPadding->GetRight() .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ) : 0,
+//					                                    oStyle      .m_oPadding.GetRight()  .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ));
 		
-					wsTcPr += L"<w:tcMar>"
-							       "<w:top w:w=\""    + std::to_wstring(nTopPadding)    + L"\" w:type=\"dxa\"/>"
-							       "<w:left w:w=\""   + std::to_wstring(nLeftPadding)   + L"\" w:type=\"dxa\"/>"
-							       "<w:bottom w:w=\"" + std::to_wstring(nBottomPadding) + L"\" w:type=\"dxa\"/>"
-							       "<w:right w:w=\""  + std::to_wstring(nRightPadding)  + L"\" w:type=\"dxa\"/>"
-							   "</w:tcMar>";
-				}
+//					wsTcPr += L"<w:tcMar>"
+//							       "<w:top w:w=\""    + std::to_wstring(nTopPadding)    + L"\" w:type=\"dxa\"/>"
+//							       "<w:left w:w=\""   + std::to_wstring(nLeftPadding)   + L"\" w:type=\"dxa\"/>"
+//							       "<w:bottom w:w=\"" + std::to_wstring(nBottomPadding) + L"\" w:type=\"dxa\"/>"
+//							       "<w:right w:w=\""  + std::to_wstring(nRightPadding)  + L"\" w:type=\"dxa\"/>"
+//							   "</w:tcMar>";
+//				}
 
 				if(nRowspan > 1 && nColspan >= 1 && j < MAXCOLUMNSINTABLE)
 				{
@@ -1669,7 +1949,9 @@ private:
 				{
 					if (!readStream(&oTrBody, sSelectors, oTS))
 					{
-						oTrBody.WriteString(L"<w:p><w:pPr><w:rPr><w:sz w:val=\"20\"/><w:szCs w:val=\"20\"/></w:rPr></w:pPr><w:r><w:rPr><w:sz w:val=\"20\"/><w:szCs w:val=\"20\"/></w:rPr></w:r></w:p>");
+						wrP(&oTrBody, sSelectors, oTS);
+						wrR(&oTrBody, sSelectors, oTS);
+						CloseP(&oTrBody, sSelectors);
 						m_bInP = false;
 					}
 				}
@@ -1682,7 +1964,6 @@ private:
 
 				if (j - 1 == MAXCOLUMNSINTABLE)
 				{
-//					MergeCells(&oTrBody);
 					CTextSettings oTrTS{oTS};
 					oTrTS.bMergeText = true;
 					oTrTS.bAddSpaces = true;
@@ -1737,8 +2018,8 @@ private:
 
 			if (0 <= oTableStyles.m_nCellSpacing)
 				wsTrPr += L"<w:tblCellSpacing w:w=\"" + std::to_wstring(oTableStyles.m_nCellSpacing) + L"\" w:type=\"dxa\"/>";
-			else if (!bTableHasBorderAttribute && NULL != oTableStyles.m_pCollapse && *oTableStyles.m_pCollapse == NSCSS::NSProperties::BorderCollapse::Separate)
-				wsTrPr += L"<w:tblCellSpacing w:w=\"15\" w:type=\"dxa\"/>";
+//			else if (!bTableHasBorderAttribute && NULL != oTableStyles.m_pCollapse && *oTableStyles.m_pCollapse == NSCSS::NSProperties::BorderCollapse::Separate)
+//				wsTrPr += L"<w:tblCellSpacing w:w=\"15\" w:type=\"dxa\"/>";
 
 			if (!wsTrPr.empty())
 				oXml->WriteString(L"<w:trPr>" + wsTrPr + L"</w:trPr>");
@@ -1750,8 +2031,179 @@ private:
 		}
 	}
 
+	void ParseTableRows(CTable& oTable, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
+	{
+		int nDeath = m_oLightReader.GetDepth();
+		while (m_oLightReader.ReadNextSiblingNode(nDeath))
+		{
+			if (L"tr" != m_oLightReader.GetName())
+				continue;
+
+			GetSubClass(NULL, sSelectors);
+
+			CTableRow *pRow = new CTableRow();
+
+			int nTrDepth = m_oLightReader.GetDepth();
+			while (m_oLightReader.ReadNextSiblingNode(nTrDepth))
+			{
+				CTableCell *pCell = new CTableCell();
+
+				GetSubClass(pCell->GetData(), sSelectors);
+
+				NSCSS::CCompiledStyle oStyle;
+				m_oStylesCalculator.GetCompiledStyle(oStyle, sSelectors);
+
+				pCell->SetAlign(oStyle.m_oDisplay.GetHAlign().ToWString());
+				pCell->SetHeight(oStyle.m_oDisplay.GetHeight());
+				pCell->SetWidth(oStyle.m_oDisplay.GetWidth());
+				pCell->SetPadding(oStyle.m_oPadding);
+				pCell->SetBorder(oStyle.m_oBorder);
+
+				while(m_oLightReader.MoveToNextAttribute())
+				{
+					if(m_oLightReader.GetName() == L"colspan")
+						pCell->SetColspan(NSStringFinder::ToInt(m_oLightReader.GetText(), 1), pRow->GetIndex());
+					else if(m_oLightReader.GetName() == L"rowspan")
+						pCell->SetRowspan(NSStringFinder::ToInt(m_oLightReader.GetText(), 1));
+				}
+
+				m_oLightReader.MoveToElement();
+				m_bWasPStyle = false;
+
+				// Читаем th. Ячейка заголовка таблицы. Выравнивание посередине. Выделяется полужирным
+				if(m_oLightReader.GetName() == L"th")
+				{
+					CTextSettings oTSR(oTS);
+					oTSR.sRStyle += L"<w:b/>";
+					readStream(pCell->GetData(), sSelectors, oTSR);
+				}
+				// Читаем td. Ячейка таблицы. Выравнивание вправо
+				else if(m_oLightReader.GetName() == L"td")
+				{
+					if (!readStream(pCell->GetData(), sSelectors, oTS))
+					{
+						wrP(pCell->GetData(), sSelectors, oTS);
+						wrR(pCell->GetData(), sSelectors, oTS);
+						CloseP(pCell->GetData(), sSelectors);
+						m_bInP = false;
+					}
+				}
+
+				if (pRow->ColumnsOverflowing())
+				{
+					CTextSettings oTrTS{oTS};
+					oTrTS.bMergeText = true;
+					oTrTS.bAddSpaces = true;
+					m_bWasSpace      = true;
+
+					while (m_oLightReader.ReadNextSiblingNode(nTrDepth) && L"td" == m_oLightReader.GetName())
+					{
+						GetSubClass(pCell->GetData(), sSelectors);
+						readStream(pCell->GetData(), sSelectors, oTrTS);
+						sSelectors.pop_back();
+					}
+				}
+				CloseP(pCell->GetData(), sSelectors);
+
+				pRow->AddCell(pCell);
+
+				sSelectors.pop_back();
+
+				if (pRow->ColumnsOverflowing())
+					break;
+			}
+
+			sSelectors.pop_back();
+
+			oTable.AddRow(pRow);
+		}
+	}
+
+	void ParseTable(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
+	{
+		if(m_oLightReader.IsEmptyNode())
+			return;
+		
+		CTable oTable;
+
+		//Table styles
+		if (sSelectors.back().m_mAttributes.end() != sSelectors.back().m_mAttributes.find(L"border"))
+		{
+			const int nWidth = NSStringFinder::ToInt(sSelectors.back().m_mAttributes[L"border"]);
+
+			if (0 >= nWidth)
+				sSelectors.back().m_mAttributes[L"border"] = L"none";
+			else
+				sSelectors.back().m_mAttributes[L"border"] = L"outset " + std::to_wstring(nWidth) + L"px auto";
+
+			oTable.HaveBorderAttribute();
+		}
+		
+		if (oXml->GetSubData(oXml->GetCurSize() - 8) == L"</w:tbl>")
+			WriteEmptyParagraph(oXml, true);
+
+		NSCSS::CCompiledStyle oStyle;
+		m_oStylesCalculator.GetCompiledStyle(oStyle, sSelectors);
+
+		if (sSelectors.back().m_mAttributes.end() != sSelectors.back().m_mAttributes.find(L"cellpadding"))
+			oStyle.m_oPadding.SetValues(sSelectors.back().m_mAttributes[L"cellpadding"] + L"px", 0, true);
+
+		if (sSelectors.back().m_mAttributes.end() != sSelectors.back().m_mAttributes.find(L"cellspacing"))
+			oTable.SetCellSpacing(NSStringFinder::ToInt(sSelectors.back().m_mAttributes[L"cellspacing"]));
+		else if (oStyle.m_oBorder.GetCollapse() == NSCSS::NSProperties::BorderCollapse::Separate)
+			oTable.SetCellSpacing(15);
+		
+		oTable.SetWidth(oStyle.m_oDisplay.GetWidth());
+		oTable.SetBorder(oStyle.m_oBorder);
+		oTable.SetPadding(oStyle.m_oPadding);
+		oTable.SetAlign(oStyle.m_oDisplay.GetHAlign().ToWString());
+		//------
+
+		int nDeath = m_oLightReader.GetDepth();
+		while(m_oLightReader.ReadNextSiblingNode(nDeath))
+		{
+			std::wstring sName = m_oLightReader.GetName();
+			GetSubClass(oXml, sSelectors);
+			// Заголовок таблицы
+			if(sName == L"caption")
+			{
+				if (!m_bInP)
+				{
+					oXml->WriteString(L"<w:p>");
+					for (const NSCSS::CNode& item : sSelectors)
+					{
+						if (item.m_wsName == L"a")
+							oXml->WriteString(L"<w:hyperlink>");
+					}
+					m_bInP = true;
+					m_bWasPStyle = false;
+				}
+				// Заголовок таблицы выравнивание посередине
+				CTextSettings oTSP(oTS);
+				oTSP.sPStyle += L"<w:jc w:val=\"center\"/>";
+				readStream(oXml, sSelectors, oTSP);
+				if (m_bInP)
+					m_bWasPStyle = false;
+				CloseP(oXml, sSelectors);
+			}
+//			if(sName == L"thead")
+//				readTr(&oHead, sSelectors, oTS, oTableStyles);
+			else if(sName == L"tbody")
+				ParseTableRows(oTable, sSelectors, oTS);
+//			else if(sName == L"tfoot")
+//				readTr(&oFoot, sSelectors, oTS, oTableStyles);
+			sSelectors.pop_back();
+		}
+
+		oTable.Shorten();
+		oXml->WriteString(oTable.ConvertToOOXML());
+	}
+
 	void readTable  (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
 	{
+		ParseTable(oXml, sSelectors, oTS);
+
+		return;
 		if(m_oLightReader.IsEmptyNode())
 			return;
 
@@ -1773,9 +2225,9 @@ private:
 			oTableStyles.m_bHaveBorderAttribute = true;
 		}
 
-		NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, false);
+		NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
 
-		oTableStyles.m_pCollapse = &oStyle.m_oBorder.GetCollapse();
+//		oTableStyles.m_pCollapse = &oStyle.m_oBorder.GetCollapse();
 
 		if (oXml->GetSubData(oXml->GetCurSize() - 8) == L"</w:tbl>")
 			WriteEmptyParagraph(oXml, true);
@@ -1826,7 +2278,7 @@ private:
 			               "<w:right w:w=\""  + std::to_wstring(nRightPadding)  + L"\" w:type=\"dxa\"/>"
 			           "</w:tblCellMar>";
 
-			oTableStyles.m_pPadding = &oStyle.m_oPadding;
+//			oTableStyles.m_pPadding = &oStyle.m_oPadding;
 		}
 		else
 			wsTable += L"<w:tblCellMar><w:top w:w=\"15\" w:type=\"dxa\"/><w:left w:w=\"15\" w:type=\"dxa\"/><w:bottom w:w=\"15\" w:type=\"dxa\"/><w:right w:w=\"15\" w:type=\"dxa\"/></w:tblCellMar>";
@@ -1837,33 +2289,6 @@ private:
 
 		oXml->WriteString(wsTable);
 
-		/*
-		NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetCompiledStyle(sSelectors, true);
-		oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
-		NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);
-		m_oXmlStyle.WriteLitePStyle(oStyleSetting);
-		std::wstring sPSettings = m_oXmlStyle.GetStyle();
-		m_oXmlStyle.Clear();
-		size_t nBdr = sPSettings.find(L"<w:pBdr>");
-		if (nBdr != std::wstring::npos)
-		{
-			nBdr += 8;
-			size_t nBdrEnd = sPSettings.find(L"</w:pBdr>", nBdr);
-			if (nBdrEnd != std::wstring::npos)
-			{
-				sBorders = sPSettings.substr(nBdr, nBdrEnd - nBdr);
-				size_t nSpace = sBorders.find(L"w:space=\"");
-				while (nSpace != std::wstring::npos)
-				{
-					nSpace += 9;
-					size_t nSpaceEnd = sBorders.find(L'\"', nSpace);
-					sBorders.replace(nSpace, nSpaceEnd - nSpace, L"0");
-					nSpace = sBorders.find(L"w:space=\"", nSpace);
-				}
-			}
-		}
-		*/
-
 		int nDeath = m_oLightReader.GetDepth();
 		while(m_oLightReader.ReadNextSiblingNode(nDeath))
 		{
@@ -1872,17 +2297,13 @@ private:
 			// Заголовок таблицы
 			if(sName == L"caption")
 			{
-				size_t nHyp = 0;
 				if (!m_bInP)
 				{
 					oXml->WriteString(L"<w:p>");
 					for (const NSCSS::CNode& item : sSelectors)
 					{
 						if (item.m_wsName == L"a")
-						{
 							oXml->WriteString(L"<w:hyperlink>");
-							nHyp++;
-						}
 					}
 					m_bInP = true;
 					m_bWasPStyle = false;

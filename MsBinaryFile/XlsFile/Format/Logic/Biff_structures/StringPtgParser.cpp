@@ -265,7 +265,8 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             }
             if(!ptg_stack.size() || !left_p)
             {
-                // EXCEPT::RT::WrongParenthesisSequence(assembled_formula);
+                operand_expected = true;
+                continue;// EXCEPT::RT::WrongParenthesisSequence(assembled_formula);
             }
             left_p->incrementParametersNum(); // The count of parameters will be transferred to PtgFuncVar
             last_ptg = left_p; // PtgParen. Mostly to differ unary and binary minuses and pluses
@@ -280,6 +281,7 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             unsigned int number;
             unsigned short ixti;
 			PtgList ptgList(PtgList::fixed_id);
+            ptgList.type_ = 0x00;
 
             if(SyntaxPtg::extract_PtgBool(it, itEnd, operand_str))
             {
@@ -301,7 +303,7 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             {
                 if(SyntaxPtg::extract_PtgArea(it, itEnd, operand_str))
                 {
-                    rgce.addPtg(found_operand = OperandPtgPtr(new PtgArea3d(ixti, operand_str, OperandPtg::ptg_VALUE, rgce.getLocation())));
+                    rgce.addPtg(found_operand = OperandPtgPtr(new PtgArea3d(ixti, operand_str, OperandPtg::ptg_REFERENCE, rgce.getLocation())));
                 }
                 else if(SyntaxPtg::extract_PtgRef(it, itEnd, operand_str))
                 {
@@ -330,17 +332,20 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             }
 			else if (SyntaxPtg::extract_PtgList(it, itEnd, ptgList))// Shall be placed strongly before PtgArea and PtgRef
 			{
+                if((ptgList.rowType == 0x10 || ptgList.rowType == 0x08 || ptgList.rowType == 0x02)
+                        && ptgList.columns == 0x01)
+                    ptgList.type_ = 0x01;
 				rgce.addPtg(found_operand = OperandPtgPtr(new PtgList(ptgList)));
 			}
             else if(SyntaxPtg::extract_PtgArea(it, itEnd, operand_str)) // Sequence is important (in pair with PtgRef)
             {
                 if(L"SharedParsedFormula" == tag_name || L"CFParsedFormulaNoCCE" == tag_name)
                 {
-                    found_operand = OperandPtgPtr(new PtgAreaN(operand_str, OperandPtg::ptg_VALUE, rgce.getLocation()));
+                    found_operand = OperandPtgPtr(new PtgAreaN(operand_str, OperandPtg::ptg_REFERENCE, rgce.getLocation()));
                 }
                 else
                 {
-                    found_operand = OperandPtgPtr(new PtgArea(operand_str, OperandPtg::ptg_VALUE));
+                    found_operand = OperandPtgPtr(new PtgArea(operand_str, OperandPtg::ptg_REFERENCE));
                 }
                 rgce.addPtg(found_operand);
             }
@@ -364,17 +369,6 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             {
                 rgce.addPtg(found_operand = OperandPtgPtr(new PtgNum(operand_str)));
             }
-
-            else if(SyntaxPtg::extract_UndefinedName(it, itEnd)) // Shall be placed strongly after extract_PtgName
-            {
-                rgce.addPtg(found_operand = OperandPtgPtr(new PtgErr(L"#REF!")));
-            }
-
-            else if(SyntaxPtg::extract_PtgArray(it, itEnd, operand_str))
-            {
-                rgce.addPtg(found_operand = OperandPtgPtr(new PtgArray(OperandPtg::ptg_ARRAY)));
-                rgb.addPtg(PtgPtr(new PtgExtraArray(operand_str)));
-            }
             else if(SyntaxPtg::extract_PtgFunc(it, itEnd, operand_str))
             {
                 PtgPtr func;
@@ -394,6 +388,17 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
                     rgce.addPtg(PtgPtr(new PtgNameX(operand_str,  OperandPtg::ptg_VALUE)));
                 }
             }
+            else if(SyntaxPtg::extract_UndefinedName(it, itEnd)) // Shall be placed strongly after extract_PtgName
+            {
+                rgce.addPtg(found_operand = OperandPtgPtr(new PtgErr(L"#REF!")));
+            }
+
+            else if(SyntaxPtg::extract_PtgArray(it, itEnd, operand_str))
+            {
+                rgce.addPtg(found_operand = OperandPtgPtr(new PtgArray(OperandPtg::ptg_ARRAY)));
+                rgb.addPtg(PtgPtr(new PtgExtraArray(operand_str)));
+            }
+
             else
             {
                 // EXCEPT::RT::WrongFormulaString("Unknown operand format in formula.", assembled_formula);

@@ -172,6 +172,7 @@ namespace PdfWriter
 		m_vFillAlpha.clear();
 		m_vStrokeAlpha.clear();
 		m_vRadioGroups.clear();
+		m_vImages.clear();
 
 		m_pTransparencyGroup = NULL;
 
@@ -212,6 +213,7 @@ namespace PdfWriter
 		m_vTTFonts.clear();
 		m_vFreeTypeFonts.clear();
 		m_vSignatures.clear();
+		m_vImages.clear();
 		if (m_pFreeTypeLibrary)
 		{
 			FT_Done_FreeType(m_pFreeTypeLibrary);
@@ -437,6 +439,22 @@ namespace PdfWriter
 	{
 		if (!m_pMetaData)
 			return false;
+
+		CArrayObject* pID = (CArrayObject*)m_pTrailer->Get("ID");
+		if (!pID)
+		{
+			BYTE arrId[16];
+			CEncryptDict::CreateId(m_pInfo, m_pXref, (BYTE*)arrId);
+
+			pID = new CArrayObject();
+			m_pTrailer->Add("ID", pID);
+
+			pID->Add(new CBinaryObject(arrId, 16));
+			pID->Add(new CBinaryObject(arrId, 16));
+
+			m_pMetaData->SetID(new CBinaryObject(arrId, 16));
+		}
+
 		return m_pMetaData->AddMetaData(sMetaName, pMetaData, nMetaLength);
 	}
 	CDictObject* CDocument::CreatePageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix)
@@ -1219,6 +1237,30 @@ namespace PdfWriter
 		ppFields->Add(pField);
 
 		return pField;
+	}
+	bool CDocument::HasImage(const std::wstring& wsImagePath, BYTE nAlpha)
+	{
+		for (size_t i = 0, nSize = m_vImages.size(); i < nSize; ++i)
+		{
+			if (m_vImages[i].wsImagePath == wsImagePath && m_vImages[i].nAlpha == nAlpha)
+				return true;
+		}
+		return false;
+	}
+	CImageDict* CDocument::GetImage(const std::wstring& wsImagePath, BYTE nAlpha)
+	{
+		for (size_t i = 0, nSize = m_vImages.size(); i < nSize; ++i)
+		{
+			if (m_vImages[i].wsImagePath == wsImagePath && m_vImages[i].nAlpha == nAlpha)
+				return m_vImages[i].pImage;
+		}
+		return NULL;
+	}
+	void CDocument::AddImage(const std::wstring& wsImagePath, BYTE nAlpha, CImageDict* pImage)
+	{
+		if (!pImage)
+			return;
+		m_vImages.push_back({wsImagePath, nAlpha, pImage});
 	}
 	bool CDocument::CheckFieldName(CFieldBase* pField, const std::string& sName)
 	{

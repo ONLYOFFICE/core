@@ -1611,7 +1611,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CAnnotAppearanceObject
 	//----------------------------------------------------------------------------------------
-	void CAnnotAppearanceObject::Init(CXref* pXref, CResourcesDict* pResources, TRect* pRect)
+	void CAnnotAppearanceObject::Init(CXref* pXref, CResourcesDict* pResources)
 	{
 		m_pXref     = pXref ? pXref : NULL;
 		m_pStream   = new CMemoryStream();
@@ -1624,6 +1624,12 @@ namespace PdfWriter
 		Add("Type", "XObject");
 		Add("Subtype", "Form");
 		Add("Resources", pResources);
+	}
+	CAnnotAppearanceObject::CAnnotAppearanceObject(CXref* pXref, CFieldBase* pField)
+	{
+		Init(pXref, pField->GetResourcesDict());
+		m_pField = pField;
+		m_pAnnot = NULL;
 
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
@@ -1632,20 +1638,46 @@ namespace PdfWriter
 		Add("BBox", pArray);
 		pArray->Add(0);
 		pArray->Add(0);
-		pArray->Add(fabs(pRect->fRight - pRect->fLeft));
-		pArray->Add(fabs(pRect->fBottom - pRect->fTop));
-	}
-	CAnnotAppearanceObject::CAnnotAppearanceObject(CXref* pXref, CFieldBase* pField)
-	{
-		Init(pXref, pField->GetResourcesDict(), &pField->GetRect());
-		m_pField = pField;
-		m_pAnnot = NULL;
+		pArray->Add(fabs(pField->GetRect().fRight - pField->GetRect().fLeft));
+		pArray->Add(fabs(pField->GetRect().fBottom - pField->GetRect().fTop));
 	}
 	CAnnotAppearanceObject::CAnnotAppearanceObject(CXref* pXRef, CAnnotation* pAnnot)
 	{
-		Init(pXRef, pAnnot->GetDocument()->GetFieldsResources(), &pAnnot->GetRect());
+		Init(pXRef, pAnnot->GetDocument()->GetFieldsResources());
 		m_pAnnot = pAnnot;
 		m_pField = NULL;
+
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+		Add("BBox", pArray);
+
+		if (pAnnot->GetAnnotationType() == EAnnotType::AnnotWidget)
+		{
+			pArray->Add(0);
+			pArray->Add(0);
+			pArray->Add(fabs(pAnnot->GetRect().fRight - pAnnot->GetRect().fLeft));
+			pArray->Add(fabs(pAnnot->GetRect().fBottom - pAnnot->GetRect().fTop));
+		}
+		else
+		{
+			pArray->Add(pAnnot->GetRect().fLeft);
+			pArray->Add(pAnnot->GetRect().fBottom);
+			pArray->Add(pAnnot->GetRect().fRight);
+			pArray->Add(pAnnot->GetRect().fTop);
+
+			pArray = new CArrayObject();
+			if (!pArray)
+				return;
+
+			Add("Matrix", pArray);
+			pArray->Add(1);
+			pArray->Add(0);
+			pArray->Add(0);
+			pArray->Add(1);
+			pArray->Add(-pAnnot->GetRect().fLeft);
+			pArray->Add(-pAnnot->GetRect().fBottom);
+		}
 	}
 	void CAnnotAppearanceObject::DrawSimpleText(const std::wstring& wsText, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, double dFontSize, double dX, double dY, double dR, double dG, double dB, const char* sExtGStateName, double dWidth, double dHeight, CFontCidTrueType** ppFonts, double* pShifts)
 	{
@@ -1693,7 +1725,10 @@ namespace PdfWriter
 				m_pStream->WriteStr(" rg\012");
 			}
 			else
+			{
 				m_pStream->WriteStr(pAnnot->GetBGforAP().c_str());
+				m_pStream->WriteStr("\012");
+			}
 
 			m_pStream->WriteStr("1 0 0 1 0 0 cm\012");
 			m_pStream->WriteStr("0 0 ");
@@ -1715,7 +1750,6 @@ namespace PdfWriter
 		if ((m_pField && m_pField->HaveBorder()) || (pAnnot && pAnnot->HaveBorder()))
 		{
 			double dBorderSize = m_pField ? m_pField->GetBorderSize() : pAnnot->GetBorderWidth();
-			double dBorderSizeStyle = dBorderSize;
 
 			BYTE nType = 0;
 			if (pAnnot)
@@ -1726,8 +1760,6 @@ namespace PdfWriter
 				case 1: // Beveled
 				case 3: // Inset
 				{
-					dBorderSizeStyle *= 2;
-
 					m_pStream->WriteStr(nType == 1 ? "1 g\012" : "0.501953 g\012");
 
 					m_pStream->WriteReal(dBorderSize);
@@ -1763,7 +1795,10 @@ namespace PdfWriter
 					m_pStream->WriteStr("f\012");
 
 					if (nType == 1 && pAnnot->HaveBG())
+					{
 						m_pStream->WriteStr(pAnnot->GetBGforAP(-0.25).c_str());
+						m_pStream->WriteStr("\012");
+					}
 					else
 						m_pStream->WriteStr("0.75293 g\012");
 
@@ -1820,7 +1855,10 @@ namespace PdfWriter
 				m_pStream->WriteStr(" RG\012");
 			}
 			else
+			{
 				m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
+				m_pStream->WriteStr("\012");
+			}
 
 			m_pStream->WriteReal(dBorderSize);
 			m_pStream->WriteStr(" w\0120 j\0120 J\012");
@@ -1916,7 +1954,10 @@ namespace PdfWriter
 				m_pStream->WriteStr(" rg\012");
 			}
 			else
+			{
 				m_pStream->WriteStr(pAnnot->GetBGforAP().c_str());
+				m_pStream->WriteStr("\012");
+			}
 
 			m_pStream->WriteStr("1 0 0 1 0 0 cm\012");
 			m_pStream->WriteStr("0 0 ");
@@ -1982,7 +2023,10 @@ namespace PdfWriter
 					m_pStream->WriteStr("f\012");
 
 					if (nType == 1 && pAnnot->HaveBG())
+					{
 						m_pStream->WriteStr(pAnnot->GetBGforAP(-0.25).c_str());
+						m_pStream->WriteStr("\012");
+					}
 					else
 						m_pStream->WriteStr("0.75293 g\012");
 
@@ -2039,7 +2083,10 @@ namespace PdfWriter
 				m_pStream->WriteStr(" RG\012");
 			}
 			else
+			{
 				m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
+				m_pStream->WriteStr("\012");
+			}
 
 			m_pStream->WriteReal(dBorderSize);
 			m_pStream->WriteStr(" w\0120 j\0120 J\012");
@@ -2292,6 +2339,7 @@ namespace PdfWriter
 
 		m_pStream->WriteStr("q\012");
 		m_pStream->WriteStr(pAnnot->GetBGforAP().c_str());
+		m_pStream->WriteStr("\012");
 		m_pStream->WriteStr("1 0 0 1 0 0 cm\012");
 		m_pStream->WriteStr("0 0 ");
 		m_pStream->WriteReal(fmax(dWidth, 0.0));
@@ -2351,7 +2399,10 @@ namespace PdfWriter
 			m_pStream->WriteStr("f\012");
 
 			if (nType == 1 && pAnnot->HaveBG())
+			{
 				m_pStream->WriteStr(pAnnot->GetBGforAP(-0.25).c_str());
+				m_pStream->WriteStr("\012");
+			}
 			else
 				m_pStream->WriteStr("0.75293 g\012");
 
@@ -2397,6 +2448,7 @@ namespace PdfWriter
 		}
 
 		m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
+		m_pStream->WriteStr("\012");
 		m_pStream->WriteReal(dBorderSize);
 		m_pStream->WriteStr(" w\0120 j\0120 J\012");
 

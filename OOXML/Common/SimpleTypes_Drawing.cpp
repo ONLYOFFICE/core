@@ -5324,7 +5324,7 @@ namespace SimpleTypes
 
 	EHierBranch CHierBranch::FromString(const std::wstring &sValue)
 	{
-		if (L"none" == sValue) this->m_eValue = hierBranch_hang;
+		if (L"hang" == sValue) this->m_eValue = hierBranch_hang;
 		else if (L"init" == sValue) this->m_eValue = hierBranch_init;
 		else if (L"l" == sValue) this->m_eValue = hierBranch_l;
 		else if (L"r" == sValue) this->m_eValue = hierBranch_r;

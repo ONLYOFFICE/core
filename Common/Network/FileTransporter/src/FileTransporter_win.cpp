@@ -442,7 +442,7 @@ namespace NSNetwork
 				std::function<void(int)> func_onProgress = nullptr;
 			};
 
-			void EscapeQuotesPS(std::wstring& command)
+			void EscapeQuotesPS(std::wstring& command, bool isPath)
 			{
 				/*
 				var symbols = [0x22, 0x27, 0x2018, 0x2019, 0x201a, 0x201b, 0x201c, 0x201d, 0x201e, 0x201f];
@@ -455,6 +455,11 @@ namespace NSNetwork
 				*/
 
 				std::wstring sTmp = L" ";
+
+				if (isPath)
+				{
+					sTmp[0] = (wchar_t)'\\';   NSStringExt::Replace(command, sTmp, L"/");
+				}
 
 				sTmp[0] = (wchar_t)0x22;   NSStringExt::Replace(command, sTmp, L"%22");
 				sTmp[0] = (wchar_t)0x27;   NSStringExt::Replace(command, sTmp, L"%27");
@@ -477,8 +482,8 @@ namespace NSNetwork
 				std::wstring sFileDst = strFileOutput;
 				std::wstring sFileURL = sFileURLOriginal;
 
-				NSStringExt::Replace(sFileDst, L"\\", L"/");
-				EscapeQuotesPS(sFileURL);
+				EscapeQuotesPS(sFileDst, true);
+				EscapeQuotesPS(sFileURL, false);
 
 				std::wstring sApp = L"powershell.exe –c \"(new-object System.Net.WebClient).DownloadFile('" + sFileURL + L"','" + sFileDst + L"')\"";
 				wchar_t* pCommandLine = new wchar_t[sApp.length() + 1];

@@ -1,0 +1,135 @@
+﻿pan [pana, pane, pano, pen, par, pai, pau, paz, San, Van, Dan, pança]
+manteiga
+menteiga [manteiga, antigamente]
+queijo
+salchichón [salsicha]
+saуlchichón []
+óleo
+pimenta
+pimmenta [pimenta, pigmenta, pimenteira, pavimenta, implementa, impiamente]
+sal
+baga
+mel
+geléia [geleia]
+cogumelo
+cebola
+cóbola [cebola]
+banana
+cenoura
+pêra [pera, para, pira, pura]
+beterraba
+frutas
+melão
+melancia
+bolo
+chocolate
+carne
+batatas
+salada
+salóda [salda, salada, salsada]
+tomate
+pepino
+pipino [pepino, pi pino, pi-pino, pipi no, pipi-no, filipino, pino]
+col [cola, cole, colo, coa, cal, coe, cor, rol, sol, coo, com]
+mingau [mingua, mingai, minga, mingar, mingas, mingou, mingam]
+sopa
+sanduíche
+refrigerante
+refrigarante [refrigerante, refrigerar, intrigante]
+água
+café
+chá
+leite
+suco
+scuco [suco, cuco, cucos]
+maçã
+uvas
+laranja
+abacaxi
+adacaxi [abacaxi, cacada]
+damasco
+demasco [damasco, demarco, remasco, de masco, de-masco, descasco]
+açucar [açúcar, açucara, açucare, açucaro, açudar]
+arroz
+macarrão
+res [rés, ser, ares, reis, ires, ores, dres, rei, ris, ses, rãs, rês]
+porco
+frango
+costeleta
+cãsteleta [costeleta, chapeleta]
+limão
+ervilha
+pão
+peixe
+caramelo
+sorvete
+nogueira
+ovo
+pêssego
+xícara
+xíícara [xícara, caraíba]
+vidro
+prato
+colher
+garfo
+faca
+pires
+garrafa
+guardanapo
+café da manhã [ssafé da manhã]
+almoço
+jantar
+avião
+carro
+bonde
+ônibus [ónibus]
+trem
+bicicleta
+janeiro
+fevereiro
+fevíreiro [fevereiro, ferreiro]
+março
+abril
+maio
+junho
+julho
+agosto
+setembro
+setembra [setembro, seteara]
+outubro
+novembro
+dezembro
+desembro [desmembro, dezembro, deslumbro, setembro, desdobro]
+caneta
+livro
+xadrez
+telefone
+relógio
+pente
+televisão
+ferro
+sabão
+rádio
+bolsa
+cartão
+mala
+presente
+câmera [câmara, comera]
+computador
+camputador [computador, captador]
+filme
+flor
+vaso
+quadro
+lenço
+bola
+balão
+brinquedo
+brinqueedo [brinquedo, branqueado]
+conta
+sobre
+papel
+pepel [papel, repele, pele]
+jornal
+letra
+bilhete

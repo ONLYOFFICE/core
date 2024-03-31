@@ -74,9 +74,15 @@ WASM_EXPORT int GetType(BYTE* data, LONG size)
 	// 0 - PDF
 	// 1 - DJVU
 	// 2 - XPS
-	char* pFirst = strstr((char*)data, "%PDF-" );
-	if (pFirst)
-		return 0;
+	LONG nHeaderSearchSize = 1024;
+	LONG nSize = size < nHeaderSearchSize ? size : nHeaderSearchSize;
+	char* pData = (char*)data;
+	for (int i = 0; i < nSize - 5; ++i)
+	{
+		int nPDF = strncmp(&pData[i], "%PDF-", 5);
+		if (!nPDF)
+			return 0;
+	}
 	if ( (8 <= size) && (0x41 == data[0] && 0x54 == data[1] && 0x26 == data[2] && 0x54 == data[3] &&
 						 0x46 == data[4] && 0x4f == data[5] && 0x52 == data[6] && 0x4d == data[7]))
 		return 1;
@@ -177,7 +183,7 @@ WASM_EXPORT BYTE* GetInteractiveFormsAP(CGraphicsFileDrawing* pGraphics, int nRa
 
 	return pGraphics->GetAPWidget(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nWidget, sView, sButtonView);
 }
-WASM_EXPORT BYTE* GetButtonIcons(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int bBase64, int nButtonWidget, int nIconView)
+WASM_EXPORT BYTE* GetButtonIcons(CGraphicsFileDrawing* pGraphics, int nBackgroundColor, int nPageIndex, int bBase64, int nButtonWidget, int nIconView)
 {
 	const char* sIconView = NULL;
 	if (nIconView == 0)
@@ -187,7 +193,7 @@ WASM_EXPORT BYTE* GetButtonIcons(CGraphicsFileDrawing* pGraphics, int nRasterW, 
 	else if (nIconView == 2)
 		sIconView = "IX";
 
-	return pGraphics->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, bBase64 ? true : false, nButtonWidget, sIconView);
+	return pGraphics->GetButtonIcon(nBackgroundColor, nPageIndex, bBase64 ? true : false, nButtonWidget, sIconView);
 }
 WASM_EXPORT BYTE* GetAnnotationsInfo(CGraphicsFileDrawing* pGraphics, int nPageIndex)
 {

@@ -1504,6 +1504,12 @@ int CPdfFile::GetMaxRefID()
 
 	return m_pInternal->pReader->GetMaxRefID();
 }
+bool CPdfFile::ValidMetaData()
+{
+	if (!m_pInternal->pReader)
+		return false;
+	return m_pInternal->pReader->ValidMetaData();
+}
 void CPdfFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
 {
 	if (!m_pInternal->pReader)
@@ -1571,11 +1577,11 @@ BYTE* CPdfFile::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, in
 		return NULL;
 	return m_pInternal->pReader->GetAPWidget(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nWidget, sView, sButtonView);
 }
-BYTE* CPdfFile::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, bool bBase64, int nButtonWidget, const char* sIconView)
+BYTE* CPdfFile::GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase64, int nButtonWidget, const char* sIconView)
 {
 	if (!m_pInternal->pReader)
 		return NULL;
-	return m_pInternal->pReader->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, bBase64, nButtonWidget, sIconView);
+	return m_pInternal->pReader->GetButtonIcon(nBackgroundColor, nPageIndex, bBase64, nButtonWidget, sIconView);
 }
 BYTE* CPdfFile::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot, const char* sView)
 {

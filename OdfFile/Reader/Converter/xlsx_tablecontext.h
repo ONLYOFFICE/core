@@ -88,7 +88,8 @@ public:
 	void serialize_autofilter			(std::wostream & _Wostream);
     void serialize_merge_cells			(std::wostream & _Wostream);
 	void serialize_table_format			(std::wostream & _Wostream);
-	void serialize_conditionalFormatting(std::wostream & _Wostream);
+	void serialize_condFormatting		(std::wostream & _Wostream);
+	void serialize_condFormattingEx		(std::wostream& _Wostream);
 	void serialize_hyperlinks			(std::wostream & _Wostream);
 	void serialize_ole_objects			(std::wostream & _Wostream);
 	void serialize_controls				(std::wostream & _Wostream);

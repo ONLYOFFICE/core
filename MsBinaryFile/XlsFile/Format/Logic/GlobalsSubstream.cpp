@@ -699,6 +699,8 @@ void GlobalsSubstream::UpdateXti()
 			XTI* xti = dynamic_cast<XTI*>(extern_sheet->rgXTI[i].get());
 			if (!xti) continue;
 
+			if (xti->iSupBook >= m_arSUPBOOK.size()) continue;
+
 			SUPBOOK* index_book = dynamic_cast<SUPBOOK*>(m_arSUPBOOK[xti->iSupBook].get());
 			if (!index_book) continue;
 

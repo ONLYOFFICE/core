@@ -126,6 +126,10 @@
     <ClCompile Include="..\..\DataTypes\writingmode.cpp" />
     <ClCompile Include="..\..\DataTypes\xlink.cpp" />
     <ClCompile Include="..\..\DataTypes\animation_attlists.cpp" />
+    <ClCompile Include="..\..\DataTypes\presentationvisibility.cpp" />
+    <ClCompile Include="..\..\DataTypes\tabledatatype.cpp" />
+    <ClCompile Include="..\..\DataTypes\tableoperator.cpp" />
+    <ClCompile Include="..\..\DataTypes\referenceformat.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Common\CPColorUtils.h" />
@@ -143,15 +147,133 @@
     <ClInclude Include="..\..\Common\utils.h" />
     <ClInclude Include="..\..\Common\writedocelement.h" />
     <ClInclude Include="..\..\Common\errors.h" />
-    <ClInclude Include="..\..\DataTypes\sparklines.h">
-      <Filter>datatypes odf</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\DataTypes\tabledatatype.h">
-      <Filter>datatypes odf</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\DataTypes\tableoperator.h">
-      <Filter>datatypes odf</Filter>
-    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\anchortype.h" />
+    <ClInclude Include="..\..\DataTypes\animation_attlists.h" />
+    <ClInclude Include="..\..\DataTypes\backgroundcolor.h" />
+    <ClInclude Include="..\..\DataTypes\bibliography.h" />
+    <ClInclude Include="..\..\DataTypes\bool.h" />
+    <ClInclude Include="..\..\DataTypes\bordermodel.h" />
+    <ClInclude Include="..\..\DataTypes\borderstyle.h" />
+    <ClInclude Include="..\..\DataTypes\borderwidths.h" />
+    <ClInclude Include="..\..\DataTypes\calcext_type.h" />
+    <ClInclude Include="..\..\DataTypes\chartclass.h" />
+    <ClInclude Include="..\..\DataTypes\chartdatalabelnumber.h" />
+    <ClInclude Include="..\..\DataTypes\charterrorcategory.h" />
+    <ClInclude Include="..\..\DataTypes\chartinterpolation.h" />
+    <ClInclude Include="..\..\DataTypes\chartlabelarrangement.h" />
+    <ClInclude Include="..\..\DataTypes\chartlabelposition.h" />
+    <ClInclude Include="..\..\DataTypes\chartregressiontype.h" />
+    <ClInclude Include="..\..\DataTypes\chartseriessource.h" />
+    <ClInclude Include="..\..\DataTypes\chartsolidtype.h" />
+    <ClInclude Include="..\..\DataTypes\chartsymbol.h" />
+    <ClInclude Include="..\..\DataTypes\charttimeunit.h" />
+    <ClInclude Include="..\..\DataTypes\clockvalue.h" />
+    <ClInclude Include="..\..\DataTypes\color.h" />
+    <ClInclude Include="..\..\DataTypes\commandtype.h" />
+    <ClInclude Include="..\..\DataTypes\common_attlists.h" />
+    <ClInclude Include="..\..\DataTypes\custom_shape_types_convert.h" />
+    <ClInclude Include="..\..\DataTypes\dategroup.h" />
+    <ClInclude Include="..\..\DataTypes\direction.h" />
+    <ClInclude Include="..\..\DataTypes\drawangle.h" />
+    <ClInclude Include="..\..\DataTypes\drawfill.h" />
+    <ClInclude Include="..\..\DataTypes\dropcaplength.h" />
+    <ClInclude Include="..\..\DataTypes\errors.h" />
+    <ClInclude Include="..\..\DataTypes\fillimagerefpoint.h" />
+    <ClInclude Include="..\..\DataTypes\fobreak.h" />
+    <ClInclude Include="..\..\DataTypes\fontfamilygeneric.h" />
+    <ClInclude Include="..\..\DataTypes\fontpitch.h" />
+    <ClInclude Include="..\..\DataTypes\fontrelief.h" />
+    <ClInclude Include="..\..\DataTypes\fontsize.h" />
+    <ClInclude Include="..\..\DataTypes\fontstretch.h" />
+    <ClInclude Include="..\..\DataTypes\fontstyle.h" />
+    <ClInclude Include="..\..\DataTypes\fontvariant.h" />
+    <ClInclude Include="..\..\DataTypes\fontweight.h" />
+    <ClInclude Include="..\..\DataTypes\gradientstyle.h" />
+    <ClInclude Include="..\..\DataTypes\grandtotal.h" />
+    <ClInclude Include="..\..\DataTypes\hatchstyle.h" />
+    <ClInclude Include="..\..\DataTypes\hyphenationkeep.h" />
+    <ClInclude Include="..\..\DataTypes\hyphenationladdercount.h" />
+    <ClInclude Include="..\..\DataTypes\iconset_type.h" />
+    <ClInclude Include="..\..\DataTypes\keeptogether.h" />
+    <ClInclude Include="..\..\DataTypes\layoutgridmode.h" />
+    <ClInclude Include="..\..\DataTypes\length.h" />
+    <ClInclude Include="..\..\DataTypes\lengthorpercent.h" />
+    <ClInclude Include="..\..\DataTypes\letterspacing.h" />
+    <ClInclude Include="..\..\DataTypes\linebreak.h" />
+    <ClInclude Include="..\..\DataTypes\linemode.h" />
+    <ClInclude Include="..\..\DataTypes\linestyle.h" />
+    <ClInclude Include="..\..\DataTypes\linetype.h" />
+    <ClInclude Include="..\..\DataTypes\linewidth.h" />
+    <ClInclude Include="..\..\DataTypes\markerstyle.h" />
+    <ClInclude Include="..\..\DataTypes\mathvariant.h" />
+    <ClInclude Include="..\..\DataTypes\membertype.h" />
+    <ClInclude Include="..\..\DataTypes\messagetype.h" />
+    <ClInclude Include="..\..\DataTypes\noteclass.h" />
+    <ClInclude Include="..\..\DataTypes\odfattributes.h" />
+    <ClInclude Include="..\..\DataTypes\officevaluetype.h" />
+    <ClInclude Include="..\..\DataTypes\pageusage.h" />
+    <ClInclude Include="..\..\DataTypes\percent.h" />
+    <ClInclude Include="..\..\DataTypes\percentorscale.h" />
+    <ClInclude Include="..\..\DataTypes\presentationclass.h" />
+    <ClInclude Include="..\..\DataTypes\presentationnodetype.h" />
+    <ClInclude Include="..\..\DataTypes\presentationvisibility.h" />
+    <ClInclude Include="..\..\DataTypes\presetclass.h" />
+    <ClInclude Include="..\..\DataTypes\presetid.h" />
+    <ClInclude Include="..\..\DataTypes\punctuationwrap.h" />
+    <ClInclude Include="..\..\DataTypes\rotationalign.h" />
+    <ClInclude Include="..\..\DataTypes\runthrough.h" />
+    <ClInclude Include="..\..\DataTypes\scripttype.h" />
+    <ClInclude Include="..\..\DataTypes\shadowtype.h" />
+    <ClInclude Include="..\..\DataTypes\smil_additive.h" />
+    <ClInclude Include="..\..\DataTypes\smil_attributename.h" />
+    <ClInclude Include="..\..\DataTypes\smil_fill.h" />
+    <ClInclude Include="..\..\DataTypes\smil_keytimes.h" />
+    <ClInclude Include="..\..\DataTypes\smil_transitiontype.h" />
+    <ClInclude Include="..\..\DataTypes\smil_values.h" />
+    <ClInclude Include="..\..\DataTypes\sparklines.h" />
+    <ClInclude Include="..\..\DataTypes\stylecellprotect.h" />
+    <ClInclude Include="..\..\DataTypes\stylefamily.h" />
+    <ClInclude Include="..\..\DataTypes\stylehorizontalpos.h" />
+    <ClInclude Include="..\..\DataTypes\stylehorizontalrel.h" />
+    <ClInclude Include="..\..\DataTypes\styleleadercolor.h" />
+    <ClInclude Include="..\..\DataTypes\stylenumformat.h" />
+    <ClInclude Include="..\..\DataTypes\styleposition.h" />
+    <ClInclude Include="..\..\DataTypes\styleprint.h" />
+    <ClInclude Include="..\..\DataTypes\stylerepeat.h" />
+    <ClInclude Include="..\..\DataTypes\styletype.h" />
+    <ClInclude Include="..\..\DataTypes\styleverticalpos.h" />
+    <ClInclude Include="..\..\DataTypes\styleverticalrel.h" />
+    <ClInclude Include="..\..\DataTypes\stylewrap.h" />
+    <ClInclude Include="..\..\DataTypes\stylewrapcontourmode.h" />
+    <ClInclude Include="..\..\DataTypes\style_ref.h" />
+    <ClInclude Include="..\..\DataTypes\svg_type.h" />
+    <ClInclude Include="..\..\DataTypes\tablealign.h" />
+    <ClInclude Include="..\..\DataTypes\tablecentering.h" />
+    <ClInclude Include="..\..\DataTypes\tabledatatype.h" />
+    <ClInclude Include="..\..\DataTypes\tablefunction.h" />
+    <ClInclude Include="..\..\DataTypes\tablemode.h" />
+    <ClInclude Include="..\..\DataTypes\tableoperator.h" />
+    <ClInclude Include="..\..\DataTypes\tableorder.h" />
+    <ClInclude Include="..\..\DataTypes\tableorientation.h" />
+    <ClInclude Include="..\..\DataTypes\tabletype.h" />
+    <ClInclude Include="..\..\DataTypes\tablevisibility.h" />
+    <ClInclude Include="..\..\DataTypes\targetframename.h" />
+    <ClInclude Include="..\..\DataTypes\textalign.h" />
+    <ClInclude Include="..\..\DataTypes\textalignsource.h" />
+    <ClInclude Include="..\..\DataTypes\textautospace.h" />
+    <ClInclude Include="..\..\DataTypes\textcombine.h" />
+    <ClInclude Include="..\..\DataTypes\textdisplay.h" />
+    <ClInclude Include="..\..\DataTypes\textemphasize.h" />
+    <ClInclude Include="..\..\DataTypes\textposition.h" />
+    <ClInclude Include="..\..\DataTypes\textrotationscale.h" />
+    <ClInclude Include="..\..\DataTypes\texttransform.h" />
+    <ClInclude Include="..\..\DataTypes\timeperiod.h" />
+    <ClInclude Include="..\..\DataTypes\underlinecolor.h" />
+    <ClInclude Include="..\..\DataTypes\verticalalign.h" />
+    <ClInclude Include="..\..\DataTypes\wrapoption.h" />
+    <ClInclude Include="..\..\DataTypes\writingmode.h" />
+    <ClInclude Include="..\..\DataTypes\xlink.h" />
+    <ClInclude Include="..\..\DataTypes\referenceformat.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Common\CPColorUtils.cpp" />
@@ -487,12 +609,6 @@
     <ClCompile Include="..\..\Common\utils.cpp" />
     <ClCompile Include="..\..\Common\logging.cpp" />
     <ClCompile Include="..\..\DataTypes\sparklines.cpp">
-      <Filter>datatypes odf</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\DataTypes\tabledatatype.cpp">
-      <Filter>datatypes odf</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\DataTypes\tableoperator.cpp">
       <Filter>datatypes odf</Filter>
     </ClCompile>
   </ItemGroup>

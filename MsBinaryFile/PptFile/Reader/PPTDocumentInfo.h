@@ -39,6 +39,8 @@ namespace PPT
 class CPPTDocumentInfo
 {
 public:
+    friend class CPPTUserInfo;
+
     _commonInfo*                    m_pCommonInfo = NULL;
     
     CCurrentUser					m_oCurrentUser;
@@ -57,5 +59,9 @@ public:
 
     bool ReadFromStream(CRecordCurrentUserAtom* pCurrentUser, POLE::Stream* pStream);
     bool LoadDocument();
+    
+    std::wstring GetBinFromStg(const std::wstring& name, _UINT32 nRef);
+private:
+    POLE::Stream* m_pStream;
 };
 }

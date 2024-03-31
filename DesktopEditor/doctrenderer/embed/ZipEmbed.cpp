@@ -174,7 +174,7 @@ JSSmart<CJSValue> CZipEmbed::encodeImageData(JSSmart<CJSValue> typedArray, JSSma
 	if (oFrame.Encode(pBuffer, nEncodedSize, format->toInt32()))
 	{
 		BYTE* pData = NSAllocator::Alloc((size_t)nEncodedSize);
-		memcpy(pData, oFrame.get_Data(), (size_t)nEncodedSize);
+		memcpy(pData, pBuffer, (size_t)nEncodedSize);
 		oFrame.FreeEncodedMemory(pBuffer);
 		oFrame.put_Data(NULL);
 
@@ -228,7 +228,7 @@ JSSmart<CJSValue> CZipEmbed::encodeImage(JSSmart<CJSValue> typedArray, JSSmart<C
 			if (oFrame.Encode(pBuffer, nEncodedSize, format->toInt32()))
 			{
 				BYTE* pData = NSAllocator::Alloc((size_t)nEncodedSize);
-				memcpy(pData, oFrame.get_Data(), (size_t)nEncodedSize);
+				memcpy(pData, pBuffer, (size_t)nEncodedSize);
 				oFrame.FreeEncodedMemory(pBuffer);
 				oFrame.put_Data(NULL);
 

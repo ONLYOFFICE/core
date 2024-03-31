@@ -332,7 +332,7 @@ namespace Oox2Odf
 			{
 				pathOle = find_link_by_id(vml_object->m_oId->GetValue(), 4, bExternal);
 			}
-			std::wstring odf_ref_ole = odf_context()->add_oleobject(pathOle);
+			std::wstring odf_ref_ole = odf_context()->add_oleobject(pathOle, bExternal);
 
 			if (!odf_ref_ole.empty())
 			{
@@ -345,7 +345,7 @@ namespace Oox2Odf
 				std::wstring sIdImageFileCache = GetImageIdFromVmlShape(vml_shape);
 
 				std::wstring pathImage = find_link_by_id(sIdImageFileCache, 1, bExternal);
-				std::wstring odf_ref_image = odf_context()->add_imageobject(pathImage);
+				std::wstring odf_ref_image = odf_context()->add_imageobject(pathImage, bExternal);
 
 				odf_context()->drawing_context()->set_image_replacement(odf_ref_image);
 

@@ -109,28 +109,40 @@ namespace OOX
 				auto ptr(new XLSB::BeginSortCond);
 				XLS::BaseObjectPtr objectPtr(ptr);
 
-				ptr->fSortDes = m_oDescending->GetValue();
-				ptr->rfx = m_oRef->GetValue();
+                if(m_oDescending.IsInit())
+                    ptr->fSortDes = m_oDescending->GetValue();
+                else
+                    ptr->fSortDes = 0;
+                if(m_oRef.IsInit())
+                    ptr->rfx = m_oRef->GetValue();
+                if(m_oSortBy.IsInit())
+                {
+                    if(m_oSortBy == SimpleTypes::Spreadsheet::ESortBy::sortbyValue)
+                    {
+                        ptr->sortOn = 0;
+                    }
+                    else if(m_oSortBy ==  SimpleTypes::Spreadsheet::ESortBy::sortbyCellColor)
+                    {
+                        ptr->sortOn = 1;
+                        ptr->condDataValue.condDataValue = m_oDxfId->GetValue();
+                    }
+                    else if(m_oSortBy == SimpleTypes::Spreadsheet::ESortBy::sortbyFontColor)
+                    {
+                        ptr->sortOn = 2;
+                        ptr->condDataValue.condDataValue = m_oDxfId->GetValue();
+                    }
+                    else if(m_oSortBy == SimpleTypes::Spreadsheet::ESortBy::sortbyIcon)
+                    {
+                        ptr->sortOn = 3;
+                    }
+                    else
+                        ptr->sortOn = 0;
+                }
+                else
+                    ptr->sortOn = 0;
 
-				if(m_oSortBy == SimpleTypes::Spreadsheet::ESortBy::sortbyValue)
-				{
-					ptr->sortOn = 0;
-				}
-				else if(m_oSortBy ==  SimpleTypes::Spreadsheet::ESortBy::sortbyCellColor)
-				{
-					ptr->sortOn = 1;
-					ptr->condDataValue.condDataValue = m_oDxfId->GetValue();
-				}
-				else if(m_oSortBy == SimpleTypes::Spreadsheet::ESortBy::sortbyFontColor)
-				{
-					ptr->sortOn = 2;
-					ptr->condDataValue.condDataValue = m_oDxfId->GetValue();
-				}
-				else if(m_oSortBy == SimpleTypes::Spreadsheet::ESortBy::sortbyIcon)
-				{
-					ptr->sortOn = 3;
-				}
 
+                ptr->stSslist = L"";
 				return objectPtr;
 			}
 			EElementType CSortCondition::getType () const
@@ -295,8 +307,12 @@ namespace OOX
 					beginSortState->rfx = m_oRef->GetValue();
 				if(m_oCaseSensitive.IsInit())
 					beginSortState->fCaseSensitive = m_oCaseSensitive->GetValue();
+                else
+                    beginSortState->fCaseSensitive = false;
 				if(m_oColumnSort.IsInit())
 					beginSortState->fCol = m_oColumnSort->GetValue();
+                else
+                    beginSortState->fCol = false;
 				if(m_oSortMethod == SimpleTypes::Spreadsheet::ESortMethod::sortmethodStroke)
 					beginSortState->fAltMethod = true;
 				else
@@ -308,6 +324,7 @@ namespace OOX
 				{
 					sortConds->m_arSORTCOND.push_back(i->toBin());
 				}
+                beginSortState->cconditions = sortConds->m_arSORTCOND.size();
 
 				return objectPtr;
 			}

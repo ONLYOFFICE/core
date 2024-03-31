@@ -52,12 +52,12 @@ namespace OOX
 	namespace Logic
 	{
 		class CBgPict;
+		class CDocSuppData;
 	}
 
 	class CDocxFlat : public Document, public File, public WritingElement
 	{
 	public:
-
 		CDocxFlat();
 		CDocxFlat(const CPath& oFilePath);
 		virtual ~CDocxFlat();
@@ -89,6 +89,8 @@ namespace OOX
 		nullable<CNumbering>			m_pNumbering;
 		nullable<CSettings>				m_pSettings;
 		nullable<Logic::CBgPict>		m_pBgPict;
+		nullable<Logic::CDocSuppData>	m_oDocSuppData;
+		nullable<Logic::CDocSuppData>	m_oDocOleData;
 
 		nullable<CComments>				m_pComments;
 		nullable<CFootnotes>			m_pFootnotes;
@@ -96,9 +98,15 @@ namespace OOX
 		nullable<CApp>					m_pApp;
 		nullable<CCore>					m_pCore;
 //-----------------------------------------------------------
+		nullable_string					m_sCompatibilityMode;
+
 		std::map<std::wstring, NSCommon::smart_ptr<OOX::File>> m_mapImages;
+		std::map<std::wstring, NSCommon::smart_ptr<OOX::File>> m_mapOleData;
 
 		OOX::IFileContainer *m_currentContainer = NULL;
+	private:
+		void ParsingOleData();
+		void ParsingSuppData();
 	};
 
 

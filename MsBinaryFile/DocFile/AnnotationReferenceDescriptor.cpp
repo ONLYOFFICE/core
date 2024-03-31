@@ -45,7 +45,7 @@ namespace DocFileFormat
 			short cch = reader->ReadByte();
 		
 			unsigned char *chars = reader->ReadBytes(cch, true);
-			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(newObject->m_UserInitials), chars,  cch , ENCODING_WINDOWS_1250);
+			FormatUtils::GetWStringFromBytes(newObject->m_UserInitials, chars, cch , ENCODING_WINDOWS_1250);
 
 			newObject->m_AuthorIndex = reader->ReadUInt16();
 			newObject->m_BookmarkId = reader->ReadInt16();

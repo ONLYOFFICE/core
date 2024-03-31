@@ -131,11 +131,19 @@ private:
 		std::string sASName;
 		BYTE* pAP;
 	};
+
 	void WriteAppearance(unsigned int nColor, CAnnotAPView* pView);
 	BYTE GetBlendMode();
+	void Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex);
+	void Init(AcroFormField* pField);
+	void Init(Object* oAnnot);
+	void Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, int nPageIndex, AcroFormField* pField, const char* sView, const char* sButtonView);
+	void Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, Object* oAnnotRef, const char* sView);
+	void Clear();
 
 	unsigned int m_unRefNum; // Номер ссылки на объект
 	double m_dx1, m_dy1, m_dx2, m_dy2;
+	double m_dCropX, m_dCropY;
 	double m_dWScale, m_dHScale;
 	double m_dWTale;
 	double m_dHTale;
@@ -146,14 +154,6 @@ private:
 	CBgraFrame* m_pFrame;
 	RendererOutputDev* m_pRendererOut;
 	NSGraphics::IGraphicsRenderer* m_pRenderer;
-
-	void Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex);
-	void Init(AcroFormField* pField);
-	void Init(Object* oAnnot);
-	void Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, int nPageIndex, AcroFormField* pField, const char* sView, const char* sButtonView);
-	void Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, Object* oAnnotRef, const char* sView);
-
-	void Clear();
 };
 
 //------------------------------------------------------------------------
@@ -170,8 +170,11 @@ public:
 protected:
 	CAnnot(PDFDoc* pdfDoc, AcroFormField* pField);
 	CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+	std::string DictLookupString(Object* pObj, const char* sName, int nByte);
 
-	double m_dHeight; // Высота холста, для Y трансормации
+	unsigned int m_unFlags;
+	double m_dHeight; // Высота холста, для Y трансформации
+	double m_dX; // Смещение по X для трансформации
 
 private:
 	struct CBorderType final
@@ -221,9 +224,9 @@ public:
 protected:
 	CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField);
 
+	std::string FieldLookupString(AcroFormField* pField, const char* sName, int nByte);
 	virtual void ToWASM(NSWasm::CData& oRes) override;
 
-	unsigned int m_unFlags;
 	BYTE m_nType; // Тип - FT + флаги
 	unsigned int m_unFieldFlag; // Флаг - Ff
 
@@ -328,8 +331,6 @@ protected:
 	CMarkupAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
 
 	virtual void ToWASM(NSWasm::CData& oRes) override;
-
-	unsigned int m_unFlags;
 
 private:
 	BYTE m_nRT; // Тип аннотации-ответа

@@ -37,6 +37,7 @@
 
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../XlsbFormat/Biff12_unions/FMTS.h"
+#include "../../XlsbFormat/Biff12_records/BeginFmts.h"
 
 namespace OOX
 {
@@ -202,12 +203,15 @@ namespace OOX
 		XLS::BaseObjectPtr CNumFmts::toBin()
 		{
 			auto fmts(new XLSB::FMTS);
+            auto beginfmt(new XLSB::BeginFmts);
+            fmts->m_BrtBeginFmts = XLS::BaseObjectPtr{beginfmt};
 			XLS::BaseObjectPtr objectPtr(fmts);
 			std::vector<XLS::BaseObjectPtr> objectVector;
 			for(auto i:m_arrItems)
 			{
                 fmts->m_arBrtFmt.push_back(i->toBin());
 			}
+            beginfmt->cfmts = fmts->m_arBrtFmt.size();
 			return objectPtr;
 		}
 		EElementType CNumFmts::getType () const

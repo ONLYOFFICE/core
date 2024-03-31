@@ -428,6 +428,7 @@ void draw_enhanced_geometry_attlist::serialize(CP_ATTR_NODE)
 	//CP_XML_ATTR_OPT(L"drawooo:enhanced-path",	draw_enhanced_path_);	
     CP_XML_ATTR_OPT(L"draw:enhanced-path",		draw_enhanced_path_);	
 	CP_XML_ATTR_OPT(L"draw:glue-points",		draw_glue_points_);
+	CP_XML_ATTR_OPT(L"draw:glue-point-leaving-directions", glue_points_leaving_directions_);
 	CP_XML_ATTR_OPT(L"draw:mirror-vertical",	draw_mirror_vertical_);
 	CP_XML_ATTR_OPT(L"draw:mirror-horizontal",	draw_mirror_horizontal_);
 

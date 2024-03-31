@@ -73,6 +73,8 @@ namespace OOX
 				return;
 
 			m_oRef = oReader.GetText3();
+			 if(m_oName.IsInit())
+				XLS::GlobalWorkbookInfo::arDefineNames_static.push_back(m_oName.get());
 		}
 		XLS::BaseObjectPtr CDefinedName::toBin()
 		{
@@ -143,15 +145,7 @@ namespace OOX
 			else
 				ptr->fFutureFunction = false;
 			if (m_oRef.IsInit())
-			{
-				auto ref = m_oRef.get();
-				auto separatorPos = ref.find(L"!");
-				if(separatorPos != std::string::npos && separatorPos != ref.size() -1)
-					ref = ref.substr(separatorPos + 1, ref.size() - separatorPos -1);
-				else if(separatorPos == ref.size() -1)
-					ref = L"";
-				ptr->rgce = ref;
-			}
+                ptr->rgce = m_oRef.get();
             ptr->fCalcExp = true;
 			ptr->fBuiltin = false;
 			return objectPtr;

@@ -49,6 +49,7 @@ public:
 	office_element* get_last_element();
 
 	std::wstring office_class_; //openoffice xml 1.0
+	bool is_old_version;  //openoffice xml 1.0
 
 	std::vector<office_element*> levels;
 	office_element* last_paragraph;

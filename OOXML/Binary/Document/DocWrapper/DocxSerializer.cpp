@@ -623,9 +623,12 @@ bool BinDocxRW::CDocxSerializer::unpackageFile(const std::wstring& sSrcFileName,
 	
 	return file.unpackage(sSrcFileName, sDstPath);
 }
-bool BinDocxRW::CDocxSerializer::convertFlat(const std::wstring& sSrcFileName, const std::wstring& sDstPath)
+bool BinDocxRW::CDocxSerializer::convertFlat(const std::wstring& sSrcFileName, const std::wstring& sDstPath, bool &bMacro, const std::wstring& sTempPath)
 {
-	OOX::CDocxFlat docxflat(sSrcFileName);
+	OOX::CDocxFlat docxflat;
+	
+	docxflat.m_sTempPath = sTempPath;
+	docxflat.read(sSrcFileName);
 
 	if (false == docxflat.m_pDocument.IsInit())
 		return false;
@@ -637,6 +640,8 @@ bool BinDocxRW::CDocxSerializer::convertFlat(const std::wstring& sSrcFileName, c
 		NSCommon::smart_ptr<OOX::File> file = docxflat.m_pDocument.GetPointer(); file.AddRef();
 		docx.Add(file);
 		docx.m_oMain.document = docxflat.m_pDocument.GetPointer();
+		
+		bMacro = bMacro && docxflat.m_pDocument->m_bMacroEnabled;
 	}
 	if (docxflat.m_pApp.IsInit())
 	{
@@ -648,6 +653,7 @@ bool BinDocxRW::CDocxSerializer::convertFlat(const std::wstring& sSrcFileName, c
 		NSCommon::smart_ptr<OOX::File> file(docxflat.m_pCore.GetPointer()); file.AddRef();
 		docx.Add(file);
 	}	
+
 	//docxflat.m_oBgPict.GetPointer();
 
 	return docx.Write(sDstPath);

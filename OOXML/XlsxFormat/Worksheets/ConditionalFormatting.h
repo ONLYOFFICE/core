@@ -33,6 +33,7 @@
 
 #include "../WritingElement.h"
 #include "../../Base/Nullable.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CellRef.h"
 
 namespace SimpleTypes
 {
@@ -299,7 +300,7 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
-			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toBin(const  XLS::CellRef &cellRef);
 
 			virtual EElementType getType () const;
 			bool isValid () const;
@@ -311,7 +312,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
-			XLS::BaseObjectPtr WriteAttributes();
+			XLS::BaseObjectPtr WriteAttributes(const  XLS::CellRef &cellRef);
 
 
 		public:

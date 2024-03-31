@@ -98,6 +98,8 @@ public:
 	void start_comment		();
     std::wstring end_comment();
 
+	std::wstring get_last_paragraph_style_name();
+
 	bool in_list_;
 	bool process_layouts_;
 
@@ -129,6 +131,7 @@ private:
     std::wstringstream paragraph_;	//перманенто скидываемые параграфы
     std::wstringstream run_;		//перманенто скидываемые куски с быть может разными свойствами
    
+	std::wstring		last_paragraph_style_name_;
 	std::wstring		paragraph_style_name_;
     std::wstring		span_style_name_;
 
@@ -200,9 +203,10 @@ void pptx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 		text_.str(std::wstring());
 		field_value_.str(std::wstring());
 	}
-	paragraph_style_name_	= styleName;
-	in_paragraph			= true;
-	is_predump				= false;
+	last_paragraph_style_name_	= paragraph_style_name_;
+	paragraph_style_name_		= styleName;
+	in_paragraph				= true;
+	is_predump					= false;
 }
 
 void pptx_text_context::Impl::end_paragraph()
@@ -397,7 +401,7 @@ void pptx_text_context::Impl::write_pPr(std::wostream & strm)
 	const std::wstring & paragraphNodes = get_styles_context().paragraph_nodes().str();
 
 
-	if (level < 0 && paragraphAttr.length() < 1 && !paragraphNodes.empty()) return;
+	if (level < 0 && paragraphAttr.length() < 1 && paragraphNodes.empty()) return;
 	
 	strm << L"<a:pPr ";
 
@@ -799,6 +803,11 @@ hyperlink_data pptx_text_context::Impl::get_hyperlink()
 	return hyperlink_;
 }
 
+std::wstring pptx_text_context::Impl::get_last_paragraph_style_name()
+{
+	return last_paragraph_style_name_;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pptx_text_context::pptx_text_context(odf_reader::odf_read_context & odf_context_, pptx_conversion_context & pptx_context_):
@@ -931,6 +940,11 @@ std::wstring pptx_text_context::end_comment_content()
 void pptx_text_context::set_process_layouts(bool val)
 {
 	impl_->process_layouts_ = val;
+}
+
+std::wstring pptx_text_context::get_last_paragraph_style_name()
+{
+	return impl_->get_last_paragraph_style_name();
 }
 
 }

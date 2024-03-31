@@ -1,0 +1,162 @@
+name: "CodeQL Scanner"
+on:
+  push:
+    branches: 
+      - 'master'
+      - 'release/**'
+      - 'hotfix/**'
+    paths-ignore:
+      - '**/README.md'
+      - '**/LICENSE'
+      - '.github/**'
+  #pull_request:
+  #  branches: 
+  #    - 'master'
+  #    - 'release/**'
+  #    - 'hotfix/**'
+  schedule:
+    - cron: '00 19 * * 5'
+
+# This job take a lot of time, so if the number of worker 
+# processes from one branch or one PR exceeds 1, all previous
+# running processes will be automatically canceled to avoid the accumulation
+# of a large number of concurrent workers
+concurrency:
+  group: codeql-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
+  
+env:
+  SOURCE_ROOT: "/build/core"
+  
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ${{ 'ubuntu-latest' }}
+    container:
+       image: ${{ matrix.image }}
+       options: --privileged
+       volumes:
+         - /usr/local/lib:/foovolume/android
+         - /usr/local/share:/foovolume/boost
+         - /usr/share:/foovolume/dotnet
+         - /opt:/foovolume/opt
+         - /opt/hostedtoolcache:/foovolume/tool
+    timeout-minutes: ${{ (matrix.language == 'swift' && 120) || 360 }}
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'c-cpp' ]
+        image: ["ubuntu:20.04"]
+        # CodeQL supports [ 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift' ]
+        # Use only 'java-kotlin' to analyze code written in Java, Kotlin or both
+        # Use only 'javascript-typescript' to analyze code written in JavaScript, TypeScript or both
+        # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support
+
+    steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        
+    - name: make free space in container
+      run: |
+         rm -rf /foovolume/android/android
+         rm -rf /foovolume/dotnet/dotnet
+         rm -rf /foovolume/boost/boost
+         rm -rf /foovolume/opt/ghc
+         rm -rf /foovolume/tool/*
+         df -h
+
+    # Prepare container environment
+    # Install some deps 
+    # Set cache restore keys
+    - name: Prepare environment
+      id: prepare
+      shell: bash
+      env:
+        TZ: Etc/UTC
+      run: |
+         pwd
+         ls -la 
+         ln -snf /usr/share/zoneinfo/$TZ /etc/localtime 
+         echo $TZ > /etc/timezone 
+         apt-get update 
+         apt-get install -y python3 python2 sudo curl jq git
+         apt-get install -y python || true
+         rm /usr/bin/python || true
+         ln -s /usr/bin/python2 /usr/bin/python 
+         mkdir -p /build
+         git clone --depth 1 \
+                   --single-branch \
+                   --branch ${{ github.base_ref || github.ref_name }} https://github.com/ONLYOFFICE/core.git ${SOURCE_ROOT}
+         git clone --depth 1 \
+                   --single-branch \
+                   --branch ${{ github.base_ref || github.ref_name }} https://github.com/ONLYOFFICE/build_tools.git /build/build_tools
+         echo "party-key=$(curl -L -H "Accept: application/vnd.github+json" \
+                                   -H "X-GitHub-Api-Version: 2022-11-28" \
+                                   "https://api.github.com/repos/ONLYOFFICE/core/commits?per_page=1&path=/Common/3dParty&sha=${{ github.base_ref || github.ref_name }}" | \
+                                    jq -r '.[].sha')" >> "$GITHUB_OUTPUT"
+         echo "qt-key=$(cat /build/build_tools/tools/linux/automate.py | egrep -m1 -o "qt_source_([0-9])?.([0-9])?.([0-9])?")" >> "$GITHUB_OUTPUT"
+
+    # Restore 3dParty from cache if cache key is match
+    - uses: actions/cache/restore@v3
+      id: restore-3d
+      with:
+        path: /build/core/Common/3dParty
+        key: 3dParty-${{ steps.prepare.outputs.party-key }}
+
+    # Restore qt tool from cache if cache key is match
+    - uses: actions/cache/restore@v3
+      id: restore-qt
+      with:
+        path: /build/build_tools/tools/linux/qt_build
+        key: qt-${{ steps.prepare.outputs.qt-key }}
+
+    # NOTE: 
+    # init codeql with custom source-root dir
+    # because sources code was checkout with git from cli 
+    # NOT with checkout action
+    # Also. Init and scan with codeql only if all cache hit
+    # otherwise will no initialization, just build and cache depends
+    - name: Initialize CodeQL
+      if: > 
+        steps.restore-3d.outputs.cache-hit == 'true' 
+        && steps.restore-qt.outputs.cache-hit == 'true'
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+        source-root: ${{ env.SOURCE_ROOT }}
+         
+    - name: build
+      shell: bash
+      run: |
+            cd /build/build_tools/tools/linux
+            python3 ./automate.py core
+            
+    - name: Perform CodeQL Analysis
+      if: > 
+        steps.restore-3d.outputs.cache-hit == 'true' 
+        && steps.restore-qt.outputs.cache-hit == 'true'
+      uses: github/codeql-action/analyze@v3
+      with:
+       category: "/language:${{matrix.language}}"
+    
+    # Make new 3dParty cache if restore action do not restore any cache
+    - uses: actions/cache/save@v3
+      if: steps.restore-3d.outputs.cache-hit != 'true' 
+      id: save-3d
+      with:
+        path: /build/core/Common/3dParty
+        key: 3dParty-${{ steps.prepare.outputs.party-key }}
+
+    # Make new qt tool cache if restore action do not restore any cache
+    - uses: actions/cache/save@v3
+      if: steps.restore-qt.outputs.cache-hit != 'true'
+      id: save-qt
+      with: 
+        path: /build/build_tools/tools/linux/qt_build
+        key: qt-${{ steps.prepare.outputs.qt-key }}

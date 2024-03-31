@@ -49,7 +49,7 @@ namespace NSGuidesVML
 			point.x = lParam;
 			if (m_eRuler !=  rtRMoveTo && m_eRuler !=  rtRLineTo && m_eRuler !=  rtRCurveTo)
 			{
-				//point.x -= m_lX;
+				point.x -= m_lX;
 			}
 			point.y = 0;
 			pointType.x = eParType;
@@ -62,7 +62,7 @@ namespace NSGuidesVML
 			m_arPoints.back().y = lParam;
 			if (m_eRuler !=  rtRMoveTo && m_eRuler !=  rtRLineTo && m_eRuler !=  rtRCurveTo)
 			{
-				//m_arPoints.back().y -= m_lY;
+				m_arPoints.back().y -= m_lY;
 			}
 
 			m_arPointsType.back().y = eParType;
@@ -272,8 +272,8 @@ namespace NSGuidesVML
 				m_lWidth = oPart.width;
 				m_lHeight = oPart.height;
 
-				//m_lX = oPart.x;
-				//m_lY = oPart.y;
+				m_lX = oPart.x;
+				m_lY = oPart.y;
 			}
 
 			bool bFill = false;

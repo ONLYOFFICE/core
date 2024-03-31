@@ -84,8 +84,14 @@ namespace OOX
 		{
 			auto ptr(new XLSB::TableStyleElement);
 			XLS::BaseObjectPtr objectPtr(ptr);
-			ptr->index = m_oDxfId->GetValue();
-			ptr->size = m_oSize->GetValue();
+            if(m_oDxfId.IsInit())
+                ptr->index = m_oDxfId->GetValue();
+            else
+                ptr->index = 0;
+            if(m_oSize.IsInit())
+                ptr->size = m_oSize->GetValue();
+            else
+                ptr->size = 0;
 
 			if(m_oType.IsInit())
 			{
@@ -148,6 +154,8 @@ namespace OOX
 				else
 					ptr->tseType = 19;
 			}
+            else
+                ptr->tseType = 19;
 
 			return objectPtr;
 		}
@@ -314,11 +322,19 @@ namespace OOX
 			auto beginStyle(new XLSB::BeginTableStyle);
 			ptr->m_BrtBeginTableStyle = XLS::BaseObjectPtr{beginStyle};
 
-			beginStyle->ctse = m_oCount->GetValue();
-			beginStyle->fIsPivot =	m_oPivot->GetValue();
-			beginStyle->fIsTable =	m_oTable->GetValue();
-			beginStyle->rgchName =	m_oName.get();
-			beginStyle->rgchName =	m_oDisplayName.get();
+            beginStyle->ctse = m_arrItems.size();
+            if(m_oPivot.IsInit())
+                beginStyle->fIsPivot =	m_oPivot->GetValue();
+            else
+                beginStyle->fIsPivot = false;
+            if(m_oTable.IsInit())
+                beginStyle->fIsTable =	m_oTable->GetValue();
+            else
+                beginStyle->fIsTable = false;
+            if(m_oName.IsInit())
+                beginStyle->rgchName =	m_oName.get();
+            else if(m_oDisplayName.IsInit())
+                beginStyle->rgchName =	m_oDisplayName.get();
 
 			for(auto i:m_arrItems)
 				ptr->m_arBrtTableStyleElement.push_back(i->toBin());

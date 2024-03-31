@@ -64,6 +64,7 @@ public:
 
 	void add_user_defined(const std::wstring & name, const std::wstring & value);
 	std::wstring get_user_defined(const std::wstring & name);
+	std::wstring dump_user_defined();
 	
 	std::wstring dc_creator_;
 	std::wstring dc_date_;

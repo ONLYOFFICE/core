@@ -540,6 +540,42 @@ namespace NSDoctRenderer
 				}
 				break;
 			}
+			case DoctRendererFormat::WATERMARK:
+			{
+				if (!pParams->m_sJsonParams.empty())
+				{
+					std::string sTmp = U_TO_UTF8((pParams->m_sJsonParams));
+					args[0] = context->JSON_Parse(sTmp.c_str());
+
+					JSSmart<CJSValue> js_watermark = js_objectApi->call_func("asc_nativeGetWatermark", 1, args);
+					if (!try_catch->Check() && js_watermark->isString())
+					{
+						std::string sWatermark = js_watermark->toStringA();
+						std::string::size_type pos = sWatermark.find(',');
+						if (pos != std::string::npos)
+						{
+							int nInputSize = (int)(sWatermark.length() - pos) - 1;
+							char* pInput = (char*)(sWatermark.c_str() + pos + 1);
+
+							int nOutputSize = 0;
+							BYTE* pOutput = NULL;
+
+							if (NSFile::CBase64Converter::Decode(pInput, nInputSize, pOutput, nOutputSize))
+							{
+								NSFile::CFileBinary oFileWatermark;
+								if (oFileWatermark.CreateFileW(pParams->m_strDstFilePath))
+								{
+									oFileWatermark.WriteFile(pOutput, nOutputSize);
+									oFileWatermark.CloseFile();
+								}
+
+								RELEASEARRAYOBJECTS(pOutput);
+							}
+						}
+					}
+				}
+				break;
+			}
 			default:
 				break;
 			}
@@ -606,27 +642,20 @@ namespace NSDoctRenderer
 				// Api object
 				JSSmart<CJSObject> js_objectApi;
 
-				// OPEN
+				bool bIsWatermark = (m_oParams.m_eDstFormat == NSDoctRenderer::DoctRendererFormat::WATERMARK) ? true : false;
+				JSSmart<CJSValue> openOptions;
+
 				if (!bIsBreak)
 				{
-					CChangesWorker oWorkerLoader;
-					int nVersion = oWorkerLoader.OpenNative(pNative->GetFilePath());
-
-					JSSmart<CJSValue> args_open[4];
-					args_open[0] = oWorkerLoader.GetDataFull()->toValue();
-					args_open[1] = CJSContext::createInt(nVersion);
-					std::wstring sXlsx = NSFile::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
-					args_open[2] = NSFile::CFileBinary::Exists(sXlsx) ? CJSContext::createString(sXlsx) : CJSContext::createUndefined();
-
 					if (!m_oParams.m_sJsonParams.empty())
 					{
 						std::string sTmp = U_TO_UTF8((m_oParams.m_sJsonParams));
-						args_open[3] = context->JSON_Parse(sTmp.c_str());
+						openOptions = context->JSON_Parse(sTmp.c_str());
 
 						if (0 < m_oParams.m_nLcid)
 						{
-							if (args_open[3]->isObject())
-								args_open[3]->toObject()->set("locale", CJSContext::createInt(m_oParams.m_nLcid));
+							if (openOptions->isObject())
+								openOptions->toObject()->set("locale", CJSContext::createInt(m_oParams.m_nLcid));
 						}
 					}
 					else
@@ -634,10 +663,35 @@ namespace NSDoctRenderer
 						JSSmart<CJSObject> optionsParams = CJSContext::createObject();
 						if (0 < m_oParams.m_nLcid)
 							optionsParams->set("locale", CJSContext::createInt(m_oParams.m_nLcid));
-						args_open[3] = optionsParams->toValue();
+						openOptions = optionsParams->toValue();
+					}
+				}
+
+				// OPEN
+				if (!bIsBreak)
+				{
+					if (!bIsWatermark)
+					{
+						CChangesWorker oWorkerLoader;
+						int nVersion = oWorkerLoader.OpenNative(pNative->GetFilePath());
+
+						JSSmart<CJSValue> args_open[4];
+						args_open[0] = oWorkerLoader.GetDataFull()->toValue();
+						args_open[1] = CJSContext::createInt(nVersion);
+						std::wstring sXlsx = NSFile::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
+						args_open[2] = NSFile::CFileBinary::Exists(sXlsx) ? CJSContext::createString(sXlsx) : CJSContext::createUndefined();
+						args_open[3] = openOptions;
+
+						global_js->call_func("NativeOpenFileData", 4, args_open);
+					}
+					else
+					{
+						JSSmart<CJSValue> args_open[1];
+						args_open[0] = openOptions;
+
+						global_js->call_func("NativeCreateApi", 1, args_open);
 					}
 
-					global_js->call_func("NativeOpenFileData", 4, args_open);
 					if (try_catch->Check())
 					{
 						strError = L"code=\"open\"";
@@ -655,7 +709,7 @@ namespace NSDoctRenderer
 				LOGGER_SPEED_LAP("open");
 
 				// CHANGES
-				if (!bIsBreak)
+				if (!bIsBreak && !bIsWatermark)
 				{
 					if (m_oParams.m_arChanges.size() != 0)
 					{
@@ -892,6 +946,7 @@ namespace NSDoctRenderer
 			case DoctRendererFormat::PDF:
 			case DoctRendererFormat::IMAGE:
 			case DoctRendererFormat::HTML:
+			case DoctRendererFormat::WATERMARK:
 			{
 				arSdkFiles = &m_pInternal->m_arDoctSDK;
 				m_pInternal->m_strEditorType = L"document";

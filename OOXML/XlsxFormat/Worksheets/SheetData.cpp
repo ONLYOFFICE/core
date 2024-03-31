@@ -62,10 +62,20 @@
 #include "../../XlsbFormat/Biff12_records/Cell.h"
 #include "../../XlsbFormat/Biff12_records/Fmla.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/CellRef.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/PtgArea.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/PtgRef.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/PtgExp.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/PtgExtraCol.h"
 
 #include <boost/regex.hpp>
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+
+#ifndef MININT32
+#define MAXUINT32   ((uint32_t)~((uint32_t)0))
+#define MAXINT32    ((int32_t)(MAXUINT32 >> 1))
+#define MININT32    ((int32_t)~MAXINT32)
+#endif
 
 using namespace XLS;
 
@@ -1085,47 +1095,54 @@ namespace OOX
 
             }
         }
-		XLS::BaseObjectPtr CFormula::toBin()
+		void CFormula::toBin(XLS::BaseObjectPtr& obj)
 		{
-			XLS::BaseObjectPtr objectPtr;
 			switch(m_oT->GetValue())
 			{
 				 case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeNormal:
                     {
-                        auto formula(new XLSB::FmlaBase(false));
+                        auto formula = dynamic_cast<XLSB::FmlaBase*>(obj.get());
                         formula->formula = m_sText;
-						objectPtr = XLS::BaseObjectPtr{dynamic_cast<XLS::BiffRecord*>(formula)};
+						
                     }
                     break;
                 case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared:
                     {
+						auto formula = dynamic_cast<XLSB::ShrFmla*>(obj.get());
+						formula->formula = m_sText;
 						if(m_oRef.IsInit())
-						{
-						 	auto formula(new XLSB::ShrFmla(m_oRef.get()));
-                       		formula->formula = m_sText;
-							objectPtr = XLS::BaseObjectPtr{formula};
-						}
+							formula->rfx = m_oRef.get();
+							
                     }
                     break;
                 case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeArray:
                     {
-						if(m_oRef.IsInit())
+						auto formula = dynamic_cast<XLSB::ArrFmla*>(obj.get());
+						formula->formula = m_sText;
+						for(auto i:formula->formula.rgce.sequence)
 						{
-							auto formula(new XLSB::ArrFmla(m_oRef.get()));
-
-							formula->formula = m_sText;
-							if(m_oAca.IsInit())
+							if(i->ptg_id.get() == 37)
 							{
-								formula->fAlwaysCalc = m_oAca->GetValue();
+								i->ptg_id = 101;
 							}
-							objectPtr = XLS::BaseObjectPtr{formula};
+							if(i->ptg_id.get() == 36)
+							{
+								i->ptg_id = 100;
+							}
 						}
+						if(m_oAca.IsInit())
+						{
+							formula->fAlwaysCalc = m_oAca->GetValue();
+						}
+						if(m_oRef.IsInit())
+							formula->rfx = m_oRef.get();
+							
+						
                     }
                     break;
                 case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeDataTable:
                     {
-
-						auto dataTable(new XLSB::Table);
+						auto dataTable = dynamic_cast<XLSB::Table*>(obj.get());
 
                         if(m_oCa.IsInit())
                         {
@@ -1169,7 +1186,6 @@ namespace OOX
                     }
                     break;
 			}
-			return objectPtr;
 		}
 		EElementType CFormula::getType () const
 		{
@@ -1379,6 +1395,18 @@ namespace OOX
 				}
 			}
 		}
+		bool CCell::checkArrayCell(XLS::CellRef &cellref, const sharedFormula& ArrFmlas)
+		{
+			for(auto i:ArrFmlas.arrfmla)
+			{
+				if(i.first.inRange(cellref))
+				{
+					cellref = i.second;
+					return true;
+				}
+			}
+			return false;
+		}	
 		void CCell::After2003Read()
 		{
 			CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
@@ -1611,7 +1639,7 @@ namespace OOX
 						m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
 					}
 				}
-				else if (SimpleTypes::Spreadsheet::celltypeStr == m_oType->GetValue() || SimpleTypes::Spreadsheet::celltypeError == m_oType->GetValue())
+                else if ((SimpleTypes::Spreadsheet::celltypeStr == m_oType->GetValue() || SimpleTypes::Spreadsheet::celltypeError == m_oType->GetValue()) && !m_oFormula.IsInit())
 				{
 					if (m_oValue.IsInit())
 					{
@@ -1762,7 +1790,7 @@ namespace OOX
 
 			oStream.Seek(nEnd);
 		}
-		XLS::BaseObjectPtr CCell::toBin()
+		XLS::BaseObjectPtr CCell::toBin(sharedFormula &sharedFormulas)
 		{
 			std::vector<XLS::CellRangeRef> shared_formulas_locations_ref;
 			auto ptr(new XLSB::CELL(0, shared_formulas_locations_ref));
@@ -1796,31 +1824,149 @@ namespace OOX
 			XLSB::SHRFMLACELL* pSHRFMLACELL = nullptr;
 			BiffRecord* pSource = nullptr;
 			XLSB::Cell* oCell;
+			bool isReal = false;
+			_INT32 intCache = 0;
+			double realCache = 0;
+
+            XLS::CellRef cellref;
+            if(m_oRow.IsInit() && m_oCol.IsInit())
+                cellref = XLS::CellRef(m_oRow.get() -1, m_oCol.get(), 0, 0);
+			else if(m_oRef.IsInit())
+			{
+				std::wstring wstringRef(m_oRef.get().begin(), m_oRef.get().end());
+				cellref = XLS::CellRef(wstringRef);
+			}
+			else
+				cellref = XLS::CellRef(0, 0, 0, 0);
+			auto sourceCellRef = cellref;
+
+			if(!sharedFormulas.arrfmla.empty())
+			{
+				if(checkArrayCell(sourceCellRef, sharedFormulas))
+				{
+					if(!m_oFormula.IsInit())
+					{
+						m_oFormula.Init();
+						m_oFormula->m_oT = SimpleTypes::Spreadsheet::cellformulatypeArray;
+					}
+				}
+			}
 
 			if(!m_oType.IsInit())
 			{
 				m_oType.Init();
-				m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+				m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeStr);
+                if(m_oValue.IsInit())
+				{
+					if(m_oValue->m_sText == L"TRUE" || m_oValue->m_sText == L"FALSE")
+						m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeBool);
+					else if(std::all_of(m_oValue->m_sText.begin(), m_oValue->m_sText.end(), [](const char c) { return std::isdigit(c); }) && m_oValue->m_sText.size() <= 10)
+					{
+						if(m_oValue->m_sText.size() < 10)
+						{
+							intCache = std::stoi(m_oValue->m_sText);
+							m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+						}
+						else if(m_oValue->m_sText.size() == 10)
+						{
+							_INT64 tempVal = std::stoll(m_oValue->m_sText);
+							if(tempVal < MAXINT32 && tempVal > MININT32)
+							{	
+								intCache = tempVal;
+								m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+							}
+						}
+					}
+					
+					if((m_oValue->m_sText.find(L".") == std::string::npos || m_oValue->m_sText.find(L".") == m_oValue->m_sText.rfind(L".")) 
+						&& m_oValue->m_sText.size() <=17)
+					{
+						if(m_oValue->m_sText.size() < 17)
+						{
+							wchar_t *tail;
+							double tempVal = std::wcstod(m_oValue->m_sText.c_str(), &tail);
+                            if(*tail == L'\0')
+							{
+								m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+								isReal = true;
+								realCache = tempVal;
+							}
+						}
+						else
+						{
+							wchar_t *tail;
+							long double tempVal = std::wcstold(m_oValue->m_sText.c_str(), &tail);
+							if(*tail == L'\0')
+								if(tempVal <= DBL_MAX && tempVal >= DBL_MIN)
+								{
+									m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+									realCache = tempVal;
+									isReal = true;
+								}
+						}
+					}
+					else if((m_oValue->m_sText.find(L"E") == std::string::npos || m_oValue->m_sText.find(L"E") == m_oValue->m_sText.rfind(L"E")))
+					{
+						wchar_t *tail;
+						long double tempVal = std::wcstold(m_oValue->m_sText.c_str(), &tail);
+						if(*tail == L'\0')
+							if(tempVal <= DBL_MAX)
+							{
+								m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+								realCache = tempVal;
+								isReal = true;
+							}
+					}
+					
+				}
 			}
 			switch (m_oType->GetValue())
 			{
 				case SimpleTypes::Spreadsheet::celltypeNumber:
 					{
-						auto pCellRk = new(XLSB::CellRk);
-						if( m_oValue->m_sText.find('.') == std::string::npos)
+						if(!isReal)
 						{
-							pCellRk->value.fInt = 1;
-							pCellRk->value.fX100 = 0;
-							pCellRk->value.num = std::stoi(m_oValue->m_sText);
+							if(!m_oFormula.IsInit())
+							{
+								auto pCellRk = new(XLSB::CellRk);
+								pCellRk->value.fInt = 1;
+								pCellRk->value.fX100 = 0;
+								pCellRk->value.num = intCache;
+								oCell = &pCellRk->cell;
+								pSource = pCellRk;
+							}
+							else
+							{
+								auto pCellRk = new(XLSB::FmlaNum);
+							
+								pCellRk->value.data.value = intCache;
+								oCell = &pCellRk->cell;
+								pSource = pCellRk;
+							}
+							
+							
+							
 						}
-						else
+						else if(isReal)
 						{
-							pCellRk->value.fInt = 0;
-							pCellRk->value.fX100 = 1;
-							pCellRk->value.num = std::stod(m_oValue->m_sText) * 100;
+							if(!m_oFormula.IsInit())
+							{
+							auto pCellReal = new(XLSB::CellReal);
+							
+							pCellReal->value.data.value = realCache;
+							
+							oCell = &pCellReal->cell;
+							pSource = pCellReal;
+							}
+							else
+							{
+								auto pCellRk = new(XLSB::FmlaNum);
+							
+								pCellRk->value.data.value = realCache;
+								oCell = &pCellRk->cell;
+								pSource = pCellRk;
+							}
 						}
-						oCell = &pCellRk->cell;
-						pSource = pCellRk;
 					}
 					break;
 				case SimpleTypes::Spreadsheet::celltypeError:
@@ -1974,23 +2120,33 @@ namespace OOX
 				case SimpleTypes::Spreadsheet::celltypeInlineStr:
 				case SimpleTypes::Spreadsheet::celltypeStr:
 					{
-						if(m_oFormula.IsInit())
+						if(m_oValue.IsInit())
 						{
-							auto str(new XLSB::FmlaString);
-							if(m_oValue.IsInit())
-								str->value = m_oValue->m_sText;
-							oCell = &str->cell;
+							if(m_oFormula.IsInit())
+							{
+								auto str(new XLSB::FmlaString);
+								if(m_oValue.IsInit())
+									str->value = m_oValue->m_sText;
+								oCell = &str->cell;
 
-							pSource = str;
+								pSource = str;
 
+							}
+							else
+							{
+								auto str(new XLSB::CellSt);
+								if(m_oValue.IsInit())
+									str->value = m_oValue->m_sText;
+								oCell = &str->cell;
+								pSource = str;
+							}
 						}
 						else
 						{
-							auto str(new XLSB::CellSt);
-							if(m_oValue.IsInit())
-								str->value = m_oValue->m_sText;
-							oCell = &str->cell;
-							pSource = str;
+							auto pCellblank = new(XLSB::CellBlank);
+							oCell = &pCellblank->cell;
+                            oCell->fPhShow = false;
+							pSource = pCellblank;
 						}
 					}
 					break;
@@ -2002,58 +2158,108 @@ namespace OOX
 				ptr->m_source = XLS::BaseObjectPtr{pDATACELL};
 				pDATACELL->m_source = XLS::BaseObjectPtr{pSource};
 			}
-			else if(m_oFormula->getType() == SimpleTypes::Spreadsheet::cellformulatypeDataTable)
-			{
-				pTABLECELL = new(XLSB::TABLECELL);
-				ptr->m_source = XLS::BaseObjectPtr{pTABLECELL};
-				pFMLACELL->m_source = m_oFormula->toBin();
-				pTABLECELL->m_source = XLS::BaseObjectPtr{pSource};
-			}
 			else
 			{
-				std::vector<XLS::CellRangeRef> ref;
-				pFMLACELL = new XLSB::FMLACELL(0, ref);
-
-				if(m_oRef.IsInit())
+				if(!m_oFormula->m_oT.IsInit())
 				{
-					pSHRFMLACELL = new XLSB::SHRFMLACELL(0,0, ref);
-					pSHRFMLACELL->_fmlacell = XLS::BaseObjectPtr{pFMLACELL};
-					ptr->m_source = XLS::BaseObjectPtr{pSHRFMLACELL};
+					m_oFormula->m_oT.Init();
+					m_oFormula->m_oT = SimpleTypes::Spreadsheet::cellformulatypeNormal;
 				}
-				if(m_oFormula->getType() == SimpleTypes::Spreadsheet::cellformulatypeShared)
+				if(m_oFormula->m_oT.get() == SimpleTypes::Spreadsheet::cellformulatypeDataTable)
 				{
-
-					if(!m_oRef.IsInit())
+					pTABLECELL = new(XLSB::TABLECELL);
+					ptr->m_source = XLS::BaseObjectPtr{pTABLECELL};
+					pTABLECELL->m_source = XLS::BaseObjectPtr{pSource};
+					auto table(new XLSB::Table);
+					pTABLECELL->m_BrtTable = XLS::BaseObjectPtr{table};
+					m_oFormula->toBin(pTABLECELL->m_BrtTable);
+				
+				}
+				else
+				{
+					std::vector<XLS::CellRangeRef> refs;
+					pFMLACELL = new XLSB::FMLACELL(0, refs);
+	
+					if(m_oFormula->m_oT.get() == SimpleTypes::Spreadsheet::cellformulatypeNormal)
 					{
-						pFMLACELL->m_source = m_oFormula->toBin();
-						if(m_oFormula->m_oSi.IsInit())
-							pFMLACELL->m_sharedIndex = m_oFormula->m_oSi->GetValue();
-						pFMLACELL->isShared = true;
 						ptr->m_source = XLS::BaseObjectPtr{pFMLACELL};
+						pFMLACELL->m_source = XLS::BaseObjectPtr{pSource};
+						m_oFormula->toBin(pFMLACELL->m_source);
 					}
-					else
+					if(m_oFormula->m_oT.get() == SimpleTypes::Spreadsheet::cellformulatypeShared)
 					{
-						if(m_oFormula->m_oSi.IsInit())
-						{
-							pSHRFMLACELL->m_sharedIndex = m_oFormula->m_oSi->GetValue();
-							pSHRFMLACELL->m_source = m_oFormula->toBin();
-						}
-					}
-				}
-				else if(m_oFormula->getType() == SimpleTypes::Spreadsheet::cellformulatypeNormal)
-				{
-					std::vector<XLS::CellRangeRef> ref;
-					pFMLACELL = new XLSB::FMLACELL(0, ref);
-					ptr->m_source = XLS::BaseObjectPtr{pFMLACELL};
-					pFMLACELL->m_source = m_oFormula->toBin();
-				}
+						
+						pSHRFMLACELL = new XLSB::SHRFMLACELL(0,0, refs);
+						ptr->m_source = XLS::BaseObjectPtr{pSHRFMLACELL};
+						pFMLACELL->m_source = XLS::BaseObjectPtr{pSource};
+						pSHRFMLACELL->_fmlacell = XLS::BaseObjectPtr{pFMLACELL};
 
-				else if(m_oFormula->getType() == SimpleTypes::Spreadsheet::cellformulatypeArray)
-				{
-					pSHRFMLACELL->m_source = m_oFormula->toBin();
+						if(!m_oFormula->m_sText.empty())
+						{
+							auto shrFmla(new XLSB::ShrFmla(cellref));
+							pSHRFMLACELL->m_source = XLS::BaseObjectPtr{shrFmla};
+							m_oFormula->toBin(pSHRFMLACELL->m_source);
+							
+							sharedFormulas.shrFmla.push_back(cellref);
+							
+						}
+						if(m_oFormula->m_oSi.IsInit() && sharedFormulas.shrFmla.size() > m_oFormula->m_oSi->GetValue() )
+						{
+							sourceCellRef = sharedFormulas.shrFmla[m_oFormula->m_oSi->GetValue()];
+						}
+
+						auto rowPos = new XLS::PtgExp;
+						rowPos->rowXlsb = sourceCellRef.row;
+						auto colPos = new XLS::PtgExtraCol;
+						colPos->col = sourceCellRef.column;
+						auto cellFmla = dynamic_cast<XLSB::FmlaBase*>(pSource);
+						cellFmla->formula.rgce.addPtg(PtgPtr{rowPos});
+						cellFmla->formula.rgcb.addPtg(PtgPtr{colPos});
+
+						
+					}
+					else if(m_oFormula->m_oT.get() == SimpleTypes::Spreadsheet::cellformulatypeArray)
+					{
+						pSHRFMLACELL = new XLSB::SHRFMLACELL(0,0, refs);
+						ptr->m_source = XLS::BaseObjectPtr{pSHRFMLACELL};
+						pSHRFMLACELL->_fmlacell = XLS::BaseObjectPtr{pFMLACELL};
+						pFMLACELL->m_source = XLS::BaseObjectPtr{pSource};
+						if(!m_oFormula->m_sText.empty())
+						{
+							auto arrfmla(new XLSB::ArrFmla(XLS::CellRef()));
+							pSHRFMLACELL->m_source = XLS::BaseObjectPtr{arrfmla};
+							m_oFormula->toBin(pSHRFMLACELL->m_source);
+							
+							auto rowPos = new XLS::PtgExp;
+							rowPos->rowXlsb = cellref.row;
+							auto colPos = new XLS::PtgExtraCol;
+							colPos->col = cellref.column;
+							auto cellFmla = dynamic_cast<XLSB::FmlaBase*>(pSource);
+							cellFmla->formula.rgce.addPtg(PtgPtr{rowPos});
+							cellFmla->formula.rgcb.addPtg(PtgPtr{colPos});
+							if(m_oFormula->m_oRef.IsInit())
+							{
+								XLS::CellRangeRef arrRange(m_oFormula->m_oRef.get());
+								sharedFormulas.arrfmla.push_back(std::make_pair(arrRange, cellref));
+							}
+						}
+						else
+						{
+							auto rowPos = new XLS::PtgExp;
+							rowPos->rowXlsb = sourceCellRef.row;
+							auto colPos = new XLS::PtgExtraCol;
+							colPos->col = sourceCellRef.column;
+							auto cellFmla = dynamic_cast<XLSB::FmlaBase*>(pSource);
+							cellFmla->formula.rgce.addPtg(PtgPtr{rowPos});
+							cellFmla->formula.rgcb.addPtg(PtgPtr{colPos});
+						}
+
+					}
+
 				}
 			}
-			oCell->column = m_oCol.get();
+
+                oCell->column = cellref.column;
 			if(m_oShowPhonetic.IsInit())
             	oCell->fPhShow =  m_oShowPhonetic->GetValue();
 			else
@@ -2684,7 +2890,7 @@ namespace OOX
                 m_arrItems.push_back(pCell);
             }*/
         }
-		XLS::BaseObjectPtr CRow::toBin()
+		XLS::BaseObjectPtr CRow::toBin(sharedFormula &sharedFormulas)
 		{
 			std::vector<XLS::CellRangeRef> shared_formulas_locations_ref;
 			auto ptr(new XLSB::Parenthesis_CELLTABLE(shared_formulas_locations_ref));
@@ -2692,7 +2898,7 @@ namespace OOX
 
 			for(auto it = m_arrItems.begin(); it != m_arrItems.end();)
 			{
-				ptr->m_arCELL.push_back((*it)->toBin());
+				ptr->m_arCELL.push_back((*it)->toBin(sharedFormulas));
 				it = m_arrItems.erase(it);
 			}
 
@@ -2738,14 +2944,14 @@ namespace OOX
 				hdrPtr->fExAsc = m_oThickTop->GetValue();
 			}
 
-			if(m_oDyDescent.IsInit())
-			{
-				auto ptrAccel(new XLSB::ACCELLTABLE);
-				ptr->m_ACCELLTABLE = XLS::BaseObjectPtr{ptrAccel};
-				auto ptrdescent(new XLSB::RwDescent);
-				ptrAccel->m_BrtRwDescent =  XLS::BaseObjectPtr{ptrdescent};
-				ptrdescent->dyDescent = m_oDyDescent->GetValue();
-			}
+			//if(m_oDyDescent.IsInit())
+			//{
+				//auto ptrAccel(new XLSB::ACCELLTABLE);
+				//ptr->m_ACCELLTABLE = XLS::BaseObjectPtr{ptrAccel};
+				//auto ptrdescent(new XLSB::RwDescent);
+			//	ptrAccel->m_BrtRwDescent =  XLS::BaseObjectPtr{ptrdescent};
+			//	ptrdescent->dyDescent = m_oDyDescent->GetValue();
+			//}
 
 			return objectPtr;
 		}
@@ -3305,10 +3511,11 @@ namespace OOX
 		{
 			auto ptr(new XLSB::CELLTABLE);
 			XLS::BaseObjectPtr objectPtr(ptr);
-
+			sharedFormula fmlaStruct;
+			
 			for(auto it = m_arrItems.begin(); it != m_arrItems.end();)
 			{
-				ptr->m_arParenthesis_CELLTABLE.push_back((*it)->toBin());
+				ptr->m_arParenthesis_CELLTABLE.push_back((*it)->toBin(fmlaStruct));
 				it = m_arrItems.erase(it);
 			}
 

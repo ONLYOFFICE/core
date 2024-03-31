@@ -464,20 +464,42 @@ namespace OOX
 
 			if(m_oLocalConnection.IsInit())
 				ptr->stConnLocal = m_oLocalConnection.get();
+            else
+            {
+                ptr->bLoadConnLocal = false;
+                ptr->stConnLocal = L"";
+            }
 			if(m_oRowDrillCount.IsInit())
 				ptr->nDrillthroughRows = m_oRowDrillCount.get();
+            else
+                ptr->nDrillthroughRows = 0;
 			if(m_oLocal.IsInit())
 				ptr->fLocalConn = m_oLocal.get();
+            else
+            {
+                ptr->fLocalConn = false;
+                ptr->bLoadConnLocal = false;
+            }
 			if(m_oLocalRefresh.IsInit())
 				ptr->fNoRefreshCube = m_oLocalRefresh.get();
+            else
+                ptr->fNoRefreshCube = false;
 			if(m_oSendLocale.IsInit())
-				ptr->fUseOfficeLcid = m_oSendLocale.get();
+                ptr->fUseOfficeLcid = m_oSendLocale.get();
+            else
+                ptr->fUseOfficeLcid = false;
 			if(m_oServerNumberFormat.IsInit())
 				ptr->fSrvFmtNum = m_oServerNumberFormat.get();
+            else
+                ptr->fSrvFmtNum = false;
 			if(m_oServerFont.IsInit())
 				ptr->fSrvFmtFlags = m_oServerFont.get();
+            else
+                ptr->fSrvFmtFlags = false;
 			if(m_oServerFontColor.IsInit())
 				ptr->fSrvFmtFore = m_oServerFontColor.get();
+            else
+                ptr->fSrvFmtFore = false;
 			return XLS::BaseObjectPtr{ptr1};
 		}
 		EElementType COlapPr::getType() const
@@ -943,6 +965,15 @@ namespace OOX
 				auto ptr(new XLSB::EXTCONN15);
 				objectPtr = XLS::BaseObjectPtr{ptr};
 				auto ptr1(new XLSB::BeginExtConn15);
+                ptr1->fAutoDelete = false;
+                ptr1->fExcludeFromRefreshAll = false;
+                ptr1->fSandbox = false;
+                ptr1->fUsedByAddin = false;
+                if(m_oId.IsInit())
+                    ptr1->irstId = m_oId->GetValue();
+                else
+                    ptr1->irstId = false;
+
 				ptr->m_BrtBeginExtConn15 = XLS::BaseObjectPtr{ptr1};
 				ptr->m_source = m_oRangePr->toBin();
 			}
@@ -968,6 +999,8 @@ namespace OOX
 					ptr1->idbtype = m_oType.get();
 				if(m_oName.IsInit())
 					ptr1->stConnName = m_oName.get();
+				else
+					ptr1->stConnName = L"";
 				if(m_oId.IsInit())
 					ptr1->dwConnID = m_oId->GetValue();
 				if(m_oCredentials.IsInit())

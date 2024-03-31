@@ -4,6 +4,15 @@ CORE_BOOST_LIBS = $$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib
 core_android {
     INCLUDEPATH += $$PWD/build/android/include
     CORE_BOOST_LIBS = $$PWD/build/android/lib/$$CORE_BUILDS_PLATFORM_PREFIX
+
+    DEFINES += "_HAS_AUTO_PTR_ETC=0"
+    QMAKE_CFLAGS += -Wno-enum-constexpr-conversion
+    QMAKE_CXXFLAGS += -Wno-enum-constexpr-conversion
+}
+
+core_ios {
+    QMAKE_CFLAGS += -Wno-enum-constexpr-conversion
+    QMAKE_CXXFLAGS += -Wno-enum-constexpr-conversion
 }
 
 bundle_xcframeworks {

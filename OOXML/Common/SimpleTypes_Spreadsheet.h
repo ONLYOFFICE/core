@@ -808,18 +808,18 @@ namespace SimpleTypes
 		//----------------------------------------------------
 		//	18.18.82 ST_TimePeriod (Conditional Format Value Object Type)
 		//----------------------------------------------------
-		enum ETimePeriod
+			enum ETimePeriod
 		{
-			last7Days					= 0,
-			lastMonth					= 1,
-			lastWeek					= 2,
-			nextMonth					= 3,
-			nextWeek					= 4,
-			thisMonth       				= 5,
-			thisWeek					= 6,
-			today                                           = 7,
-			tomorrow                                        = 8,
-			yesterday                                       = 9
+			last7Days	= 0,
+			lastMonth	= 1,
+			lastWeek	= 2,
+			nextMonth	= 3,
+			nextWeek	= 4,
+			thisMonth	= 5,
+			thisWeek	= 6,
+			today		= 7,
+			tomorrow	= 8,
+			yesterday	= 9
 		};
 
 		DEFINE_SIMPLE_TYPE(ST_TimePeriod, ETimePeriod, last7Days)
@@ -1405,6 +1405,49 @@ namespace SimpleTypes
 		};
 
 		DEFINE_SIMPLE_TYPE(CTimelineStyleType, ETimelineStyleType, timelineStyle_selectionLabel)
+
+		enum EMdxKPIProperty
+		{
+			mdxKPIProperty_v = 0,
+			mdxKPIProperty_g = 1,
+			mdxKPIProperty_s = 2,
+			mdxKPIProperty_t = 3,
+			mdxKPIProperty_w = 4,
+			mdxKPIProperty_m = 5
+		};
+		DEFINE_SIMPLE_TYPE(CMdxKPIProperty, EMdxKPIProperty, mdxKPIProperty_v)
+			
+		enum EMdxSetOrder
+		{
+			mdxSetOrder_u = 0,
+			mdxSetOrder_a = 1,
+			mdxSetOrder_d = 2,
+			mdxSetOrder_aa = 3,
+			mdxSetOrder_ad = 4,
+			mdxSetOrder_na = 5,
+			mdxSetOrder_nd = 6
+		};
+		DEFINE_SIMPLE_TYPE(CMdxSetOrder, EMdxSetOrder, mdxSetOrder_u)
+
+		enum EMdxFunctionType
+		{
+			mdxFunctionType_m = 0,
+			mdxFunctionType_v = 1,
+			mdxFunctionType_s = 2,
+			mdxFunctionType_c = 3,
+			mdxFunctionType_r = 4,
+			mdxFunctionType_p = 5,
+			mdxFunctionType_k = 6
+		};
+		DEFINE_SIMPLE_TYPE(CMdxFunctionType, EMdxFunctionType, mdxFunctionType_m)
+
+		enum EUserProtectedRangeType
+		{
+			typeNotView = 0,
+			typeView = 1,
+			typeEdit = 2
+		};
+		DEFINE_SIMPLE_TYPE(CUserProtectedRangeType, EUserProtectedRangeType, typeView)
 
 	}// Spreadsheet
 } // SimpleTypes

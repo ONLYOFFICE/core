@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1098</width>
-    <height>706</height>
+    <width>1053</width>
+    <height>602</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,566 +17,570 @@
    <property name="enabled">
     <bool>true</bool>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <widget class="QLabel" name="lable_test">
+   <widget class="QLabel" name="lable_test">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>500</width>
+      <height>500</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>500</width>
+      <height>500</height>
+     </size>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_2">
+    <property name="geometry">
+     <rect>
+      <x>510</x>
+      <y>-10</y>
+      <width>535</width>
+      <height>511</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>535</width>
+      <height>0</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>535</width>
+      <height>16777215</height>
+     </size>
+    </property>
+    <property name="title">
+     <string/>
+    </property>
+    <widget class="QGroupBox" name="groupBox_Linear">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>201</width>
+       <height>150</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Choose gradient colorspace</string>
+     </property>
+     <widget class="QRadioButton" name="Rainbow_Colorspace_Radio_Button">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>30</y>
+        <width>112</width>
+        <height>26</height>
+       </rect>
+      </property>
       <property name="text">
-       <string/>
+       <string>Rainbow</string>
       </property>
      </widget>
-    </item>
-    <item>
-     <widget class="QGroupBox" name="groupBox_2">
-      <property name="minimumSize">
-       <size>
-        <width>535</width>
-        <height>0</height>
-       </size>
+     <widget class="QRadioButton" name="BAW_Colorspace_Radio_Button">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>60</y>
+        <width>161</width>
+        <height>26</height>
+       </rect>
       </property>
-      <property name="maximumSize">
-       <size>
-        <width>535</width>
-        <height>16777215</height>
-       </size>
+      <property name="text">
+       <string>Black and White</string>
       </property>
-      <property name="title">
-       <string/>
+     </widget>
+     <widget class="QRadioButton" name="RAB_Colorspace_Radio_Button">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>90</y>
+        <width>131</width>
+        <height>26</height>
+       </rect>
       </property>
-      <widget class="QGroupBox" name="groupBox_Linear">
+      <property name="text">
+       <string>Red and Blue</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="Pastel_Colorspace_Radio_Button">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>120</y>
+        <width>112</width>
+        <height>26</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Pastel</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QStackedWidget" name="stackedWidget">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>160</y>
+       <width>511</width>
+       <height>331</height>
+      </rect>
+     </property>
+     <property name="currentIndex">
+      <number>1</number>
+     </property>
+     <widget class="QWidget" name="Linear_Page">
+      <widget class="QGroupBox" name="groupBox">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>10</y>
-         <width>201</width>
+         <x>0</x>
+         <y>0</y>
+         <width>371</width>
+         <height>160</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Set Coordinates</string>
+       </property>
+       <widget class="QLabel" name="label">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>158</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>X Coordinate, First Point</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="First_X_Coordinate_Input">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_2">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>80</y>
+          <width>157</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Y Coordinate, First Point</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="First_Y_Coordinate_Input">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_3">
+        <property name="geometry">
+         <rect>
+          <x>180</x>
+          <y>30</y>
+          <width>180</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>X Coordinate, Second Point</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="Second_X_Coordinate_Input">
+        <property name="geometry">
+         <rect>
+          <x>180</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_4">
+        <property name="geometry">
+         <rect>
+          <x>180</x>
+          <y>80</y>
+          <width>179</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Y Coordinate, Second Point</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="Second_Y_Coordinate_Input">
+        <property name="geometry">
+         <rect>
+          <x>180</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_3">
+       <property name="geometry">
+        <rect>
+         <x>380</x>
+         <y>0</y>
+         <width>131</width>
          <height>161</height>
         </rect>
        </property>
-       <property name="minimumSize">
-        <size>
-         <width>201</width>
-         <height>161</height>
-        </size>
+       <property name="title">
+        <string>Continue Shading</string>
        </property>
-       <property name="maximumSize">
-        <size>
-         <width>201</width>
+       <widget class="QCheckBox" name="Continue_Shading_Forward">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>50</y>
+          <width>93</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Forward</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_2">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>100</y>
+          <width>93</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Backward</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QLabel" name="label_5">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>170</y>
+         <width>415</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>A linear gradient describes a color change along a straight line</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_6">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>190</y>
+         <width>415</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>that is defined by two points.</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="Radial_Page">
+      <widget class="QGroupBox" name="groupBox_4">
+       <property name="geometry">
+        <rect>
+         <x>380</x>
+         <y>160</y>
+         <width>131</width>
          <height>161</height>
-        </size>
+        </rect>
        </property>
        <property name="title">
-        <string>Choose gradient colorspace</string>
+        <string>Continue Shading</string>
        </property>
-       <widget class="QRadioButton" name="Rainbow_Colorspace_Radio_Button">
+       <widget class="QCheckBox" name="Continue_Shading_Forward_2">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>50</y>
+          <width>93</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Forward</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="Continue_Shading_Backward_2">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>100</y>
+          <width>93</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Backward</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_5">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>10</y>
+         <width>510</width>
+         <height>140</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Set Coordinates Of Circle Centers</string>
+       </property>
+       <widget class="QLabel" name="label_7">
         <property name="geometry">
          <rect>
           <x>20</x>
           <y>30</y>
-          <width>112</width>
-          <height>26</height>
+          <width>168</width>
+          <height>20</height>
          </rect>
         </property>
         <property name="text">
-         <string>Rainbow</string>
+         <string>X Coordinate, First Center</string>
         </property>
        </widget>
-       <widget class="QRadioButton" name="BAW_Colorspace_Radio_Button">
+       <widget class="QLineEdit" name="First_Center_X_Coordinate_Input">
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>60</y>
-          <width>161</width>
-          <height>26</height>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
          </rect>
         </property>
-        <property name="text">
-         <string>Black and White</string>
-        </property>
        </widget>
-       <widget class="QRadioButton" name="RAB_Colorspace_Radio_Button">
+       <widget class="QLabel" name="label_8">
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>90</y>
-          <width>131</width>
-          <height>26</height>
+          <y>80</y>
+          <width>167</width>
+          <height>20</height>
          </rect>
         </property>
         <property name="text">
-         <string>Red and Blue</string>
+         <string>Y Coordinate, First Center</string>
         </property>
        </widget>
-       <widget class="QRadioButton" name="Pastel_Colorspace_Radio_Button">
+       <widget class="QLineEdit" name="First_Center_Y_Coordinate_Input">
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>120</y>
-          <width>112</width>
-          <height>26</height>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_9">
+        <property name="geometry">
+         <rect>
+          <x>280</x>
+          <y>30</y>
+          <width>187</width>
+          <height>20</height>
          </rect>
         </property>
         <property name="text">
-         <string>Pastel</string>
+         <string>Second Center X Coordinate</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="Second_Center_X_Coordinate_Input">
+        <property name="geometry">
+         <rect>
+          <x>280</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_10">
+        <property name="geometry">
+         <rect>
+          <x>280</x>
+          <y>80</y>
+          <width>186</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Second Center Y Coordinate</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="Second_Center_Y_Coordinate_Input">
+        <property name="geometry">
+         <rect>
+          <x>280</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
         </property>
        </widget>
       </widget>
-      <widget class="QStackedWidget" name="stackedWidget">
+      <widget class="QGroupBox" name="groupBox_6">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>180</y>
-         <width>511</width>
-         <height>401</height>
+         <x>0</x>
+         <y>160</y>
+         <width>371</width>
+         <height>100</height>
         </rect>
        </property>
-       <property name="currentIndex">
-        <number>1</number>
+       <property name="title">
+        <string>Set Radius Of Circle</string>
        </property>
-       <widget class="QWidget" name="Linear_Page">
-        <widget class="QGroupBox" name="groupBox">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>0</y>
-           <width>371</width>
-           <height>160</height>
-          </rect>
-         </property>
-         <property name="title">
-          <string>Set Coordinates</string>
-         </property>
-         <widget class="QLabel" name="label">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>30</y>
-            <width>158</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>X Coordinate, First Point</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="First_X_Coordinate_Input">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>50</y>
-            <width>113</width>
-            <height>28</height>
-           </rect>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_2">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>80</y>
-            <width>157</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Y Coordinate, First Point</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="First_Y_Coordinate_Input">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>100</y>
-            <width>113</width>
-            <height>28</height>
-           </rect>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_3">
-          <property name="geometry">
-           <rect>
-            <x>180</x>
-            <y>30</y>
-            <width>180</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>X Coordinate, Second Point</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="Second_X_Coordinate_Input">
-          <property name="geometry">
-           <rect>
-            <x>180</x>
-            <y>50</y>
-            <width>113</width>
-            <height>28</height>
-           </rect>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_4">
-          <property name="geometry">
-           <rect>
-            <x>180</x>
-            <y>80</y>
-            <width>179</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Y Coordinate, Second Point</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="Second_Y_Coordinate_Input">
-          <property name="geometry">
-           <rect>
-            <x>180</x>
-            <y>100</y>
-            <width>113</width>
-            <height>28</height>
-           </rect>
-          </property>
-         </widget>
-        </widget>
-        <widget class="QGroupBox" name="groupBox_3">
-         <property name="geometry">
-          <rect>
-           <x>380</x>
-           <y>0</y>
-           <width>131</width>
-           <height>161</height>
-          </rect>
-         </property>
-         <property name="title">
-          <string>Continue Shading</string>
-         </property>
-         <widget class="QCheckBox" name="Continue_Shading_Forward">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>50</y>
-            <width>93</width>
-            <height>26</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Forward</string>
-          </property>
-         </widget>
-         <widget class="QCheckBox" name="checkBox_2">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>100</y>
-            <width>93</width>
-            <height>26</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Backward</string>
-          </property>
-         </widget>
-        </widget>
-        <widget class="QLabel" name="label_5">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>170</y>
-           <width>415</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>A linear gradient describes a color change along a straight line</string>
-         </property>
-         <property name="textFormat">
-          <enum>Qt::AutoText</enum>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_6">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>190</y>
-           <width>415</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>that is defined by two points.</string>
-         </property>
-         <property name="textFormat">
-          <enum>Qt::AutoText</enum>
-         </property>
-        </widget>
+       <widget class="QLabel" name="label_11">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>30</y>
+          <width>75</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>First Radius</string>
+        </property>
        </widget>
-       <widget class="QWidget" name="Radial_Page">
-        <widget class="QGroupBox" name="groupBox_4">
-         <property name="geometry">
-          <rect>
-           <x>380</x>
-           <y>180</y>
-           <width>131</width>
-           <height>161</height>
-          </rect>
-         </property>
-         <property name="title">
-          <string>Continue Shading</string>
-         </property>
-         <widget class="QCheckBox" name="Continue_Shading_Forward_2">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>50</y>
-            <width>93</width>
-            <height>26</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Forward</string>
-          </property>
-         </widget>
-         <widget class="QCheckBox" name="Continue_Shading_Backward_2">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>100</y>
-            <width>93</width>
-            <height>26</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Backward</string>
-          </property>
-         </widget>
-        </widget>
-        <widget class="QGroupBox" name="groupBox_5">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>10</y>
-           <width>510</width>
-           <height>160</height>
-          </rect>
-         </property>
-         <property name="title">
-          <string>Set Coordinates Of Circle Centers</string>
-         </property>
-         <widget class="QLabel" name="label_7">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>30</y>
-            <width>168</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>X Coordinate, First Center</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="First_Center_X_Coordinate_Input">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>50</y>
-            <width>113</width>
-            <height>28</height>
-           </rect>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_8">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>80</y>
-            <width>167</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Y Coordinate, First Center</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="First_Center_Y_Coordinate_Input">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>100</y>
-            <width>113</width>
-            <height>28</height>
-           </rect>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_9">
-          <property name="geometry">
-           <rect>
-            <x>280</x>
-            <y>30</y>
-            <width>187</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Second Center X Coordinate</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="Second_Center_X_Coordinate_Input">
-          <property name="geometry">
-           <rect>
-            <x>280</x>
-            <y>50</y>
-            <width>113</width>
-            <height>28</height>
-           </rect>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_10">
-          <property name="geometry">
-           <rect>
-            <x>280</x>
-            <y>80</y>
-            <width>186</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Second Center Y Coordinate</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="Second_Center_Y_Coordinate_Input">
-          <property name="geometry">
-           <rect>
-            <x>280</x>
-            <y>100</y>
-            <width>113</width>
-            <height>28</height>
-           </rect>
-          </property>
-         </widget>
-        </widget>
-        <widget class="QGroupBox" name="groupBox_6">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>180</y>
-           <width>371</width>
-           <height>100</height>
-          </rect>
-         </property>
-         <property name="title">
-          <string>Set Radius Of Circle</string>
-         </property>
-         <widget class="QLabel" name="label_11">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>30</y>
-            <width>75</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>First Radius</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_12">
-          <property name="geometry">
-           <rect>
-            <x>200</x>
-            <y>30</y>
-            <width>97</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Second Radius</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="First_Radius_Input">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>50</y>
-            <width>113</width>
-            <height>28</height>
-           </rect>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="Second_Radius_Input">
-          <property name="geometry">
-           <rect>
-            <x>200</x>
-            <y>50</y>
-            <width>113</width>
-            <height>28</height>
-           </rect>
-          </property>
-         </widget>
-        </widget>
-        <widget class="QLabel" name="label_13">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>290</y>
-           <width>319</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Radial gradient describes the color change from</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_14">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>310</y>
-           <width>335</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>the center to the edges, it is defined by two circles,</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_15">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>330</y>
-           <width>281</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>which are defined by the center and radius</string>
-         </property>
-        </widget>
+       <widget class="QLabel" name="label_12">
+        <property name="geometry">
+         <rect>
+          <x>200</x>
+          <y>30</y>
+          <width>97</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Second Radius</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="First_Radius_Input">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="Second_Radius_Input">
+        <property name="geometry">
+         <rect>
+          <x>200</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
        </widget>
       </widget>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QLabel" name="label_13">
        <property name="geometry">
         <rect>
-         <x>300</x>
-         <y>80</y>
-         <width>117</width>
-         <height>29</height>
+         <x>0</x>
+         <y>260</y>
+         <width>319</width>
+         <height>20</height>
         </rect>
        </property>
        <property name="text">
-        <string>Render Gradient</string>
+        <string>Radial gradient describes the color change from</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_14">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>280</y>
+         <width>335</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>the center to the edges, it is defined by two circles,</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_15">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>300</y>
+         <width>281</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>which are defined by the center and radius</string>
        </property>
       </widget>
      </widget>
-    </item>
-   </layout>
+    </widget>
+    <widget class="QPushButton" name="pushButton">
+     <property name="geometry">
+      <rect>
+       <x>300</x>
+       <y>80</y>
+       <width>117</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Render Gradient</string>
+     </property>
+    </widget>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1098</width>
+     <width>1053</width>
      <height>25</height>
     </rect>
    </property>

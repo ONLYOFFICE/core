@@ -72,7 +72,7 @@ struct Info {
     }
 };
 
-void GenerateImg(QImage &img, int grad = 1,double angle = 0,std::vector<Point> points = {});
+QImage GenerateImg(int grad = 1,double angle = 0,std::vector<Point> points = {});
 std::vector<Point> drawCircle1(int n, double cx, double cy, double r);
 class MainWindow : public QMainWindow
 {
@@ -109,6 +109,26 @@ private slots:
     void on_Continue_Shading_Forward_2_clicked(bool checked);
 
     void on_Continue_Shading_Backward_2_clicked(bool checked);
+
+    void on_First_X_Coordinate_Input_editingFinished();
+
+    void on_First_Y_Coordinate_Input_editingFinished();
+
+    void on_Second_X_Coordinate_Input_editingFinished();
+
+    void on_Second_Y_Coordinate_Input_editingFinished();
+
+    void on_First_Center_X_Coordinate_Input_editingFinished();
+
+    void on_First_Center_Y_Coordinate_Input_editingFinished();
+
+    void on_Second_Center_X_Coordinate_Input_editingFinished();
+
+    void on_Second_Center_Y_Coordinate_Input_editingFinished();
+
+    void on_First_Radius_Input_editingFinished();
+
+    void on_Second_Radius_Input_editingFinished();
 
 private:
     Ui::MainWindow *ui;

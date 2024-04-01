@@ -433,7 +433,7 @@ void odf_drawing_context::start_group()
 	//if (!impl_->current_drawing_state_.description_.empty())
 	//	group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_ = impl_->current_drawing_state_.description_;
 	if (impl_->current_drawing_state_.hidden_)
-		group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_ = L"printer";
+		group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_ = L"printer"; // L"none" ??? 
 	if (!impl_->current_drawing_state_.xml_id_.empty())
 		group->xml_id_ = impl_->current_drawing_state_.xml_id_;
 	
@@ -630,7 +630,7 @@ void odf_drawing_context::end_drawing()
 		if (impl_->current_drawing_state_.z_order_ >= 0)
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_z_index_ = impl_->current_drawing_state_.z_order_;
 		if (impl_->current_drawing_state_.hidden_)
-			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_ = L"printer";
+			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_ = L"printer"; // L"none" ??? 
 		if (!impl_->current_drawing_state_.xml_id_.empty())
 			draw->xml_id_ = impl_->current_drawing_state_.xml_id_;
 

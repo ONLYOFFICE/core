@@ -277,7 +277,8 @@ void math_context::start()
 	}
 	math_stream_ << L"\"/></m:oMathParaPr>";
 
-	math_stream_ << L"<m:oMath xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
+	math_stream_ << L"<m:oMath>";
+	//math_stream_ << L"<m:oMath xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
 	
 	start_level();
 }

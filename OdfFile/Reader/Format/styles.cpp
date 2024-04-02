@@ -41,6 +41,8 @@
 #include "serialize_elements.h"
 #include "odfcontext.h"
 #include "draw_common.h"
+#include "paragraph_elements.h"
+#include "text_elements.h"
 
 namespace cpdoccore { 
 
@@ -2090,11 +2092,27 @@ void header_footer_impl::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_con
 		{
 			region->xlsx_serialize(_Wostream, Context);
 		}
+		else if (typeTextP == content_[i]->get_type())
+		{
+			text::p* p = dynamic_cast<text::p*>(content_[i].get());
+			for (size_t j = 0; p && j < p->paragraph_.content_.size(); j++)
+			{
+				text::paragraph_content_element* paragraph_element = dynamic_cast<text::paragraph_content_element*>(p->paragraph_.content_[i].get());
+				if (paragraph_element)
+				{
+					paragraph_element->xlsx_serialize(_Wostream, Context);
+				}
+				else
+				{
+					CP_SERIALIZE_TEXT(content_[i], true);
+				}
+			}
+		}
 		else
 		{
 			CP_SERIALIZE_TEXT(content_[i], true);
 		}
-    }
+	}
 }
 // text:notes-configuration
 //-------------------------------------------------------------------------------------------------------

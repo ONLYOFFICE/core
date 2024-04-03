@@ -247,6 +247,7 @@ XLS::BaseObjectPtr CConditionalFormatValueObject::toBin()
 
     auto ptr1(new XLSB::CFVO);
     ptr->m_BrtCFVO = XLS::BaseObjectPtr{ptr1};
+    ptr1->fSaveGTE = 0;
     if(m_oGte.IsInit())
         ptr1->fGTE = m_oGte->GetValue();
     else
@@ -266,10 +267,19 @@ XLS::BaseObjectPtr CConditionalFormatValueObject::toBin()
 
     if(m_oVal.IsInit())
         ptr1->numParam.data.value = std::stod(m_oVal.get());
+    else if(ptr1->iType.get_type() == XLSB::CFVOtype::CFVOMIN)
+        ptr1->numParam.data.value = 0;
+    else if(ptr1->iType.get_type() == XLSB::CFVOtype::CFVOMAX)
+        ptr1->numParam.data.value = 0;
 
     if(m_oFormula.IsInit())
     {
         ptr1->formula = m_oFormula->m_sText;
+        ptr1->cbFmla = ptr1->formula.cce;
+    }
+    else
+    {
+        ptr1->cbFmla = 0;
     }
 
     return objectPtr;
@@ -659,6 +669,8 @@ XLS::BaseObjectPtr CColorScale::toBin()
     XLS::BaseObjectPtr objectPtr(ptr);
     for(auto i:m_arrValues)
         ptr->m_arCFVO.push_back(i->toBin());
+    for(auto i:m_arrColors)
+        ptr->m_arBrtColor.push_back(i->toBin());
     return objectPtr;
 }
 EElementType CColorScale::getType () const
@@ -893,7 +905,7 @@ XLS::BaseObjectPtr CDataBar::toBin()
     if(m_oMaxLength.IsInit())
         ptr1->bLenMax = m_oMaxLength->GetValue();
     else
-        m_oMaxLength = 100;
+        ptr1->bLenMax = 100;
     if(m_oMinLength.IsInit())
         ptr1->bLenMin = m_oMinLength->GetValue();
     else
@@ -1737,6 +1749,15 @@ XLS::BaseObjectPtr CConditionalFormattingRule::toBin(const  XLS::CellRef &cellRe
     {
         ptr->m_source = m_oIconSet->toBin();
     }
+    if(m_oExtId.IsInit())
+    {
+        auto extPtr(new XLSB::FRTCFRULE);
+        auto beginExt(new XLSB::CFRuleExt);
+        extPtr->m_BrtCFRuleExt = XLS::BaseObjectPtr{beginExt};
+        ptr->m_FRTCFRULE = XLS::BaseObjectPtr{extPtr};
+
+        beginExt->guid = m_oExtId.get();
+    }
     return objPtr;
 }
 
@@ -1750,6 +1771,8 @@ XLS::BaseObjectPtr CConditionalFormattingRule::WriteAttributes(const  XLS::CellR
     {
         ptr->dxfId = m_oDxfId->GetValue();
     }
+    else
+        ptr->dxfId = 0;
     if(m_oPriority.IsInit())
         ptr->iPri = m_oPriority->GetValue();
     if(m_oStopIfTrue.IsInit())
@@ -1771,7 +1794,7 @@ XLS::BaseObjectPtr CConditionalFormattingRule::WriteAttributes(const  XLS::CellR
     if(m_oText.IsInit())
         ptr->strParam = m_oText.get();
     else
-        ptr->strParam = L"";
+        ptr->strParam.setSize(0xFFFFFFFF);
 
     if(!m_arrFormula.empty())
     {
@@ -1941,11 +1964,13 @@ else if (m_oType == SimpleTypes::Spreadsheet::ECfType::colorScale)
 {
     ptr->iType = XLSB::CFType::CF_TYPE_GRADIENT;
     ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_GRADIENT;
+    ptr->dxfId = 0xFFFFFFFF;
 }
 else if (m_oType == SimpleTypes::Spreadsheet::ECfType::dataBar)
 {
     ptr->iType = XLSB::CFType::CF_TYPE_DATABAR;
     ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_DATABAR;
+    ptr->dxfId = 0xFFFFFFFF;
 }
 else if (m_oType == SimpleTypes::Spreadsheet::ECfType::iconSet)
 {
@@ -2636,28 +2661,29 @@ XLS::BaseObjectPtr CConditionalFormatting::toBin()
     {
         return objectPtr;
     }
+    auto ptr(new XLSB::CONDITIONALFORMATTING);
+    objectPtr = XLS::BaseObjectPtr{ptr};
+    XLS::CellRef formatingfirstCell;
 
-        auto ptr(new XLSB::CONDITIONALFORMATTING);
-        objectPtr = XLS::BaseObjectPtr{ptr};
-        XLS::CellRef formatingfirstCell;
-        if(m_oSqRef.IsInit())
-        {
-            auto conditionPtr(new XLSB::BeginConditionalFormatting);
-            ptr->m_BrtBeginConditionalFormatting = XLS::BaseObjectPtr{conditionPtr};
-            conditionPtr->ccf = m_arrItems.size();
-            conditionPtr->sqrfx.strValue = m_oSqRef.get();
-            if(m_oPivot.IsInit())
-                conditionPtr->fPivot = m_oPivot->GetValue();
-            else
-                conditionPtr->fPivot = false;
-            formatingfirstCell = conditionPtr->sqrfx.getLocationFirstCell();
+    auto conditionPtr(new XLSB::BeginConditionalFormatting);
+    ptr->m_BrtBeginConditionalFormatting = XLS::BaseObjectPtr{conditionPtr};
+    conditionPtr->ccf = m_arrItems.size();
+    if(m_oSqRef.IsInit())
+    {
+        conditionPtr->sqrfx.strValue = m_oSqRef.get();
+    }
+    else
+        conditionPtr->sqrfx.crfx = 0;
+    if(m_oPivot.IsInit())
+        conditionPtr->fPivot = m_oPivot->GetValue();
+    else
+        conditionPtr->fPivot = false;
+    formatingfirstCell = conditionPtr->sqrfx.getLocationFirstCell();
 
-        }
-        for(auto i: m_arrItems)
-        {
-            ptr->m_arCFRULE.push_back(i->toBin(formatingfirstCell));
-        }
-
+    for(auto i: m_arrItems)
+    {
+        ptr->m_arCFRULE.push_back(i->toBin(formatingfirstCell));
+    }
     return objectPtr;
 }
 bool CConditionalFormatting::IsUsage()

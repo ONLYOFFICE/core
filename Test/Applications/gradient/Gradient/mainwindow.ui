@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1053</width>
-    <height>602</height>
+    <width>1120</width>
+    <height>675</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,15 +22,9 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>500</width>
-      <height>500</height>
+      <width>567</width>
+      <height>567</height>
      </rect>
-    </property>
-    <property name="maximumSize">
-     <size>
-      <width>500</width>
-      <height>500</height>
-     </size>
     </property>
     <property name="text">
      <string/>
@@ -39,10 +33,10 @@
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>510</x>
+      <x>580</x>
       <y>-10</y>
       <width>535</width>
-      <height>511</height>
+      <height>580</height>
      </rect>
     </property>
     <property name="minimumSize">
@@ -66,7 +60,7 @@
        <x>10</x>
        <y>10</y>
        <width>201</width>
-       <height>150</height>
+       <height>170</height>
       </rect>
      </property>
      <property name="title">
@@ -129,20 +123,20 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>160</y>
+       <y>190</y>
        <width>511</width>
-       <height>331</height>
+       <height>370</height>
       </rect>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="Linear_Page">
       <widget class="QGroupBox" name="groupBox">
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
+         <y>10</y>
          <width>371</width>
          <height>160</height>
         </rect>
@@ -247,7 +241,7 @@
        <property name="geometry">
         <rect>
          <x>380</x>
-         <y>0</y>
+         <y>10</y>
          <width>131</width>
          <height>161</height>
         </rect>
@@ -286,7 +280,7 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>170</y>
+         <y>180</y>
          <width>415</width>
          <height>20</height>
         </rect>
@@ -302,7 +296,7 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>190</y>
+         <y>200</y>
          <width>415</width>
          <height>20</height>
         </rect>
@@ -320,7 +314,7 @@
        <property name="geometry">
         <rect>
          <x>380</x>
-         <y>160</y>
+         <y>180</y>
          <width>131</width>
          <height>161</height>
         </rect>
@@ -361,7 +355,7 @@
          <x>0</x>
          <y>10</y>
          <width>510</width>
-         <height>140</height>
+         <height>150</height>
         </rect>
        </property>
        <property name="title">
@@ -464,7 +458,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>160</y>
+         <y>180</y>
          <width>371</width>
          <height>100</height>
         </rect>
@@ -523,7 +517,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>260</y>
+         <y>280</y>
          <width>319</width>
          <height>20</height>
         </rect>
@@ -536,7 +530,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>280</y>
+         <y>300</y>
          <width>335</width>
          <height>20</height>
         </rect>
@@ -549,7 +543,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>300</y>
+         <y>320</y>
          <width>281</width>
          <height>20</height>
         </rect>
@@ -563,8 +557,8 @@
     <widget class="QPushButton" name="pushButton">
      <property name="geometry">
       <rect>
-       <x>300</x>
-       <y>80</y>
+       <x>310</x>
+       <y>90</y>
        <width>117</width>
        <height>29</height>
       </rect>
@@ -580,7 +574,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1053</width>
+     <width>1120</width>
      <height>25</height>
     </rect>
    </property>

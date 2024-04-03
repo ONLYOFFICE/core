@@ -46,8 +46,8 @@ QImage GenerateImg(std::vector<Point> &points, Info &info) {
     NSGraphics::IGraphicsRenderer* pRasterRenderer = NSGraphics::Create();
     NSFonts::IFontManager *fmp = NSFonts::NSFontManager::Create();
     pRasterRenderer->SetFontManager(fmp);
-    int nRasterW = 500;
-    int nRasterH = 500;
+    int nRasterW = 567;
+    int nRasterH = 567;
     BYTE* pData = new BYTE[4 * nRasterW * nRasterH];
 
     unsigned int back = 0xffffff;
@@ -66,8 +66,8 @@ QImage GenerateImg(std::vector<Point> &points, Info &info) {
     pRasterRenderer->CreateFromBgraFrame(&oFrame);
     pRasterRenderer->SetSwapRGB(false);
 
-    double dW_MM = nRasterW /** 25.4 / 96*/;
-    double dH_MM = nRasterH /** 25.4 / 96*/;
+    double dW_MM = nRasterW * 25.4 / 96;
+    double dH_MM = nRasterH * 25.4 / 96;
 
     pRasterRenderer->put_Width(dW_MM);
     pRasterRenderer->put_Height(dH_MM);
@@ -94,7 +94,7 @@ QImage GenerateImg(std::vector<Point> &points, Info &info) {
     pRasterRenderer->EndCommand(c_nPathType);
     pRasterRenderer->PathCommandEnd();
 
-    QImage img = QImage(pData, 500, 500, QImage::Format_RGBA8888, CleanupFunction);
+    QImage img = QImage(pData, 567, 567, QImage::Format_RGBA8888, CleanupFunction);
     oFrame.put_Data(NULL);
     return img;
 }
@@ -252,8 +252,8 @@ void MainWindow::on_First_X_Coordinate_Input_editingFinished()
 {
     if (ui->First_X_Coordinate_Input->text().toInt() < 0)
         ui->First_X_Coordinate_Input->setText("0");
-    if (ui->First_X_Coordinate_Input->text().toInt() > 500)
-        ui->First_X_Coordinate_Input->setText("500");
+    if (ui->First_X_Coordinate_Input->text().toInt() > 150)
+        ui->First_X_Coordinate_Input->setText("150");
 }
 
 
@@ -261,16 +261,16 @@ void MainWindow::on_First_Y_Coordinate_Input_editingFinished()
 {
     if (ui->First_Y_Coordinate_Input->text().toInt() < 0)
         ui->First_Y_Coordinate_Input->setText("0");
-    if (ui->First_Y_Coordinate_Input->text().toInt() > 500)
-        ui->First_Y_Coordinate_Input->setText("500");
+    if (ui->First_Y_Coordinate_Input->text().toInt() > 150)
+        ui->First_Y_Coordinate_Input->setText("150");
 }
 
 void MainWindow::on_Second_X_Coordinate_Input_editingFinished()
 {
     if (ui->Second_X_Coordinate_Input->text().toInt() < 0)
         ui->Second_X_Coordinate_Input->setText("0");
-    if (ui->Second_X_Coordinate_Input->text().toInt() > 500)
-        ui->Second_X_Coordinate_Input->setText("500");
+    if (ui->Second_X_Coordinate_Input->text().toInt() > 150)
+        ui->Second_X_Coordinate_Input->setText("150");
 }
 
 
@@ -278,8 +278,8 @@ void MainWindow::on_Second_Y_Coordinate_Input_editingFinished()
 {
     if (ui->Second_Y_Coordinate_Input->text().toInt() < 0)
         ui->Second_Y_Coordinate_Input->setText("0");
-    if (ui->Second_Y_Coordinate_Input->text().toInt() > 500)
-        ui->Second_Y_Coordinate_Input->setText("500");
+    if (ui->Second_Y_Coordinate_Input->text().toInt() > 150)
+        ui->Second_Y_Coordinate_Input->setText("150");
 }
 
 
@@ -287,8 +287,8 @@ void MainWindow::on_First_Center_X_Coordinate_Input_editingFinished()
 {
     if (ui->First_Center_X_Coordinate_Input->text().toInt() < 0)
         ui->First_Center_X_Coordinate_Input->setText("0");
-    if (ui->First_Center_X_Coordinate_Input->text().toInt() > 499)
-        ui->First_Center_X_Coordinate_Input->setText("500");
+    if (ui->First_Center_X_Coordinate_Input->text().toInt() > 150)
+        ui->First_Center_X_Coordinate_Input->setText("150");
 }
 
 
@@ -296,8 +296,8 @@ void MainWindow::on_First_Center_Y_Coordinate_Input_editingFinished()
 {
     if (ui->First_Center_Y_Coordinate_Input->text().toInt() < 0)
         ui->First_Center_Y_Coordinate_Input->setText("0");
-    if (ui->First_Center_Y_Coordinate_Input->text().toInt() > 499)
-        ui->First_Center_Y_Coordinate_Input->setText("500");
+    if (ui->First_Center_Y_Coordinate_Input->text().toInt() > 150)
+        ui->First_Center_Y_Coordinate_Input->setText("150");
 }
 
 
@@ -305,8 +305,8 @@ void MainWindow::on_Second_Center_X_Coordinate_Input_editingFinished()
 {
     if (ui->Second_Center_X_Coordinate_Input->text().toInt() < 0)
         ui->Second_Center_X_Coordinate_Input->setText("0");
-    if (ui->Second_Center_X_Coordinate_Input->text().toInt() > 500)
-        ui->Second_Center_X_Coordinate_Input->setText("500");
+    if (ui->Second_Center_X_Coordinate_Input->text().toInt() > 150)
+        ui->Second_Center_X_Coordinate_Input->setText("150");
 }
 
 
@@ -314,8 +314,8 @@ void MainWindow::on_Second_Center_Y_Coordinate_Input_editingFinished()
 {
     if (ui->Second_Center_Y_Coordinate_Input->text().toInt() < 0)
         ui->Second_Center_Y_Coordinate_Input->setText("0");
-    if (ui->Second_Center_Y_Coordinate_Input->text().toInt() > 500)
-        ui->Second_Center_Y_Coordinate_Input->setText("500");
+    if (ui->Second_Center_Y_Coordinate_Input->text().toInt() > 150)
+        ui->Second_Center_Y_Coordinate_Input->setText("150");
 }
 
 
@@ -323,8 +323,8 @@ void MainWindow::on_First_Radius_Input_editingFinished()
 {
     if (ui->First_Radius_Input->text().toInt() < 0)
         ui->First_Radius_Input->setText("0");
-    if (ui->First_Radius_Input->text().toInt() > 500)
-        ui->First_Radius_Input->setText("500");
+    if (ui->First_Radius_Input->text().toInt() > 150)
+        ui->First_Radius_Input->setText("150");
 }
 
 
@@ -332,7 +332,7 @@ void MainWindow::on_Second_Radius_Input_editingFinished()
 {
     if (ui->Second_Radius_Input->text().toInt() < 0)
         ui->Second_Radius_Input->setText("0");
-    if (ui->Second_Radius_Input->text().toInt() > 500)
-        ui->Second_Radius_Input->setText("500");
+    if (ui->Second_Radius_Input->text().toInt() > 150)
+        ui->Second_Radius_Input->setText("150");
 }
 

@@ -64,7 +64,7 @@ bool is_internal(const std::wstring & uri, const std::wstring & packetRoot)
 	std::wstring testRoot = pathRoot.GetPath();
 	std::wstring testFile = pathFile.GetPath();
 
-	return (NSFile::CFileBinary::Exists(resultPath) || NSDirectory::Exists(mediaPath)) && (std::wstring::npos != testFile.find(testRoot));
+	return (NSFile::CFileBinary::Exists(testFile) || NSDirectory::Exists(testFile)) && (std::wstring::npos != testFile.find(testRoot));
 }
 
 mediaitems::item::item(std::wstring const & _href,_rels_type _type, std::wstring const & _outputName,

@@ -881,12 +881,12 @@ namespace OOX
 			{
 				if(i->m_sUri == L"{78C0D931-6437-407d-A8EE-F0AAD7539E65}")
 				{
-					auto formatPtr(new XLSB::CONDITIONALFORMATTINGS);
+					/*auto formatPtr(new XLSB::CONDITIONALFORMATTINGS);
 					ptr->m_CONDITIONALFORMATTINGS = XLS::BaseObjectPtr{formatPtr};
 					for(auto j:i->m_arrConditionalFormatting)
 					{
 						formatPtr->m_arCONDITIONALFORMATTING14.push_back(j->toBin());
-					}
+					}*/
 				}
 				else if(i->m_sUri == L"{CCE6A557-97BC-4B89-ADB6-D9C93CAAB3DF}")
 				{

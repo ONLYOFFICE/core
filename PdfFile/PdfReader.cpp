@@ -1015,7 +1015,7 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
 			}
 		}
 
-		if (!bFullFont || pField->getAcroFormFieldType() == acroFormFieldPushbutton)
+		if (!bFullFont)
 		{
 			oR.free(); oFonts.free(); oFontRef.free();
 			std::string sFontKey;
@@ -1044,6 +1044,27 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
 				nFontsID++;
 				arrFontsRef.push_back(oFontRef.getRefNum());
 				m_mFonts[wsFontName] = wsFileName;
+			}
+		}
+		oR.free(); oFonts.free(); oFontRef.free();
+
+		if (pField->getAcroFormFieldType() == acroFormFieldPushbutton)
+		{
+			std::string sFontKey;
+			bool bFind = PdfReader::GetFontFromAP(m_pPDFDocument, pField, &oR, &oFonts, &oFontRef, sFontKey);
+			if (bFind && std::find(arrFontsRef.begin(), arrFontsRef.end(), oFontRef.getRefNum()) == arrFontsRef.end())
+			{
+				bool bBold = false, bItalic = false;
+				wsFileName = PdfReader::GetFontData(m_pPDFDocument, m_pFontManager, m_pFontList, &oFonts, &oFontRef, nTypeFonts, sFontName, sFontName, bBold, bItalic);
+
+				std::wstring wsFontName = UTF8_TO_U(sFontName);
+				if (m_mFonts.find(wsFontName) == m_mFonts.end())
+				{
+					oRes.WriteString(sFontName);
+					nFontsID++;
+					arrFontsRef.push_back(oFontRef.getRefNum());
+					m_mFonts[wsFontName] = wsFileName;
+				}
 			}
 		}
 		oR.free(); oFonts.free(); oFontRef.free();

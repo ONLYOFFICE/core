@@ -155,7 +155,7 @@ namespace PdfWriter
 		if (pXref->IsPDFA())
 		{
 			sXML += "<rdf:Description rdf:about=\"\" xmlns:pdfaid=\"http://www.aiim.org/pdfa/ns/id/\">\n";
-			sXML += "<pdfaid:part>1</pdfaid:part><pdfaid:conformance>A</pdfaid:conformance>\n";
+			sXML += "<pdfaid:part>2</pdfaid:part><pdfaid:conformance>A</pdfaid:conformance>\n";
 			sXML += "</rdf:Description>";
 		}
 

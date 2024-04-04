@@ -4035,8 +4035,9 @@ namespace PdfReader
 
 		if (nRenderMode == 0 || nRenderMode == 4 || nRenderMode == 6 || (m_bDrawOnlyText && nRenderMode == 2))
 		{
-#ifdef BUILDING_WASM_MODULE
+			bool bReplace = false;
 			std::wstring sFontPath;
+#ifdef BUILDING_WASM_MODULE
 			m_pRenderer->get_FontPath(&sFontPath);
 			if (!unGid && !wsUnicodeText.empty() && !sFontPath.empty())
 			{
@@ -4079,13 +4080,15 @@ namespace PdfReader
 								return;
 							}
 							m_pRenderer->put_FontPath(wsFileName);
-							sFontPath = wsFileName;
+							bReplace = true;
 						}
 					}
 				}
 			}
 #endif
 			m_pRenderer->CommandDrawTextEx(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+			if (bReplace)
+				m_pRenderer->put_FontPath(sFontPath);
 		}
 
 		if (nRenderMode == 1 || nRenderMode == 2 || nRenderMode == 5 || nRenderMode == 6)

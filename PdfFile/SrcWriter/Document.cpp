@@ -531,9 +531,6 @@ namespace PdfWriter
 	}
     CExtGrState* CDocument::GetExtGState(double dAlphaStroke, double dAlphaFill, EBlendMode eMode, int nStrokeAdjustment)
 	{
-		if (IsPDFA())
-			return NULL;
-
 		CExtGrState* pExtGrState = FindExtGrState(dAlphaStroke, dAlphaFill, eMode, nStrokeAdjustment);
 
 		if (!pExtGrState)
@@ -561,9 +558,6 @@ namespace PdfWriter
 	}
     CExtGrState* CDocument::GetStrokeAlpha(double dAlpha)
 	{
-		if (IsPDFA())
-			return NULL;
-
 		CExtGrState* pExtGrState = NULL;
 		for (unsigned int unIndex = 0, unCount = m_vStrokeAlpha.size(); unIndex < unCount; unIndex++)
 		{
@@ -584,9 +578,6 @@ namespace PdfWriter
 	}
     CExtGrState* CDocument::GetFillAlpha(double dAlpha)
 	{
-		if (IsPDFA())
-			return NULL;
-
 		CExtGrState* pExtGrState = NULL;
 		for (unsigned int unIndex = 0, unCount = m_vFillAlpha.size(); unIndex < unCount; unIndex++)
 		{

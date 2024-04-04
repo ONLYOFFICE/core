@@ -396,7 +396,27 @@ namespace NSCSS
 
 		std::wstring wsColor = oBorder.GetColor().ToWString();
 		std::wstring wsStyle = oBorder.GetStyle().ToWString();
-		double dWidth = oBorder.GetWidth().ToDouble(Point) * 8; // Так как значение указано в восьмых долях точки
+
+		int nWidth = static_cast<int>(std::round(oBorder.GetWidth().ToDouble(Point) * 8.));
+
+		if (nWidth <= 3)
+			nWidth = 2;
+		else if (nWidth <= 5)
+			nWidth = 4;
+		else if (nWidth <= 7)
+			nWidth = 6;
+		else if (nWidth <= 9)
+			nWidth = 8;
+		else if (nWidth <= 15)
+			nWidth = 12;
+		else if (nWidth <= 21)
+			nWidth = 18;
+		else if (nWidth <= 29)
+			nWidth = 24;
+		else if (nWidth <= 41)
+			nWidth = 36;
+		else
+			nWidth = 48;
 
 		if (wsColor.empty())
 			wsColor = L"auto";
@@ -404,7 +424,7 @@ namespace NSCSS
 		if (wsStyle.empty())
 			wsStyle = L"single";
 
-		return  L"w:val=\"" + wsStyle + L"\" w:sz=\"" + std::to_wstring(static_cast<int>(dWidth)) + + L"\" w:space=\"0\" w:color=\"" + wsColor + L"\"";
+		return  L"w:val=\"" + wsStyle + L"\" w:sz=\"" + std::to_wstring(nWidth) + + L"\" w:space=\"0\" w:color=\"" + wsColor + L"\"";
 	}
 
 	void CDocumentStyle::SetRStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement)

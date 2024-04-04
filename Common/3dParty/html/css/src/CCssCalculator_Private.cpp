@@ -528,6 +528,8 @@ namespace NSCSS
 				oStyle.m_oPadding.Clear();
 			}
 
+			oStyle.m_oBorder.Clear();
+
 			CCompiledStyle oTempStyle;
 
 			oTempStyle.AddStyle(arSelectors[i].m_mAttributes, i + 1);

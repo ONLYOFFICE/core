@@ -96,7 +96,7 @@ namespace StarMath
 	public:
 		CStarMathReader(std::wstring::iterator& itStart, std::wstring::iterator& itEnd);
 		~CStarMathReader();
-		void GetToken();
+		bool GetToken();
 		//getting a subtype and setting the global type of a token to variables m_enUnderType and m_enGlobalType
 		void SetTypesToken();
 		//void SkipNextElement();

@@ -648,8 +648,10 @@ namespace StarMath
 				{
 				if(pReader->GetLocalType() == TypeElement::func)
 				{
-					pReader->GetToken();
-					return new CElementFunction(pReader->GetLocalType(),pReader->GetString());
+                    if (pReader->GetToken())
+                        return new CElementFunction(pReader->GetLocalType(),pReader->GetString());
+                    else
+                        return nullptr;
 				}
 				else
 					return new CElementFunction(pReader->GetLocalType());
@@ -660,8 +662,12 @@ namespace StarMath
 				{
 				if(pReader->GetLocalType() == TypeElement::oper)
 				{
-					pReader->GetToken();
-					return new CElementOperator(pReader->GetLocalType(),pReader->GetString());
+                    if (pReader->GetToken())
+                    {
+                        return new CElementOperator(pReader->GetLocalType(),pReader->GetString());
+                    }
+                    else
+                        return nullptr;
 				}
 				else
 					return new CElementOperator(pReader->GetLocalType());
@@ -2556,7 +2562,7 @@ namespace StarMath
 		delete m_pAttribute;
 	}
 	//TODO :: ParseColor and ParseFont
-	void CStarMathReader::GetToken()
+    bool CStarMathReader::GetToken()
 	{
 		if(CheckIteratorPosition())
 		{
@@ -2587,8 +2593,10 @@ namespace StarMath
 				m_pAttribute = nullptr;
 			if(m_wsToken == L"left") m_wsToken = GetElement();
 			else if(L"right" == m_wsToken ) m_wsToken = GetElement();
+
+            return true;
 		}
-		//std::wcout<<m_wsToken << std::endl;
+        return false;
 	}
 	void CStarMathReader::SetTypesToken()
 	{
@@ -2823,7 +2831,11 @@ namespace StarMath
 		while(CheckIteratorPosition())
 		{
 			itStartBracketClose = m_itStart;
-			GetToken();
+            bool res = GetToken();
+            if (false == res)
+            {
+                break;
+            }
 			if(CElementBracket::GetBracketOpen(m_wsToken) != TypeElement::undefine)
 			{
 				inBracketInside +=1;
@@ -2851,7 +2863,8 @@ namespace StarMath
 		}
 		while(TypeElement::undefine == CElementBracket::GetBracketClose(GetString()) && CheckIteratorPosition())
 		{
-			GetToken();
+            if (false == GetToken())
+                break;
 		}
 		ClearReader();
 	}
@@ -2859,8 +2872,12 @@ namespace StarMath
 	{
 		if(m_wsToken.empty())
 		{
-			GetToken();
-			SetTypesToken();
+            if (GetToken())
+                SetTypesToken();
+            else
+            {
+                ClearReader();
+            }
 		}
 	}
 	bool CStarMathReader::CheckTokenForGetElement(const wchar_t &cToken)

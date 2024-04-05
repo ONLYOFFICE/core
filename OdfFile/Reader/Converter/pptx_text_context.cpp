@@ -722,8 +722,9 @@ std::wstring pptx_text_context::Impl::find_list_rename(const std::wstring & List
 void pptx_text_context::Impl::end_list_item()
 {
 	dump_paragraph();
-	
-	paragraphs_cout_--;
+
+	if (paragraphs_cout_ != 0)
+		paragraphs_cout_--;
 	paragraph_style_name_ = L"";
 
 	in_list_ = false;
@@ -739,7 +740,7 @@ void pptx_text_context::Impl::start_comment()
 }
 std::wstring pptx_text_context::Impl::end_comment()
 {
-	std::wstring  str_comment = text_.str();
+	std::wstring str_comment = text_.str();
     text_.str(std::wstring());
 	in_comment = false;
 

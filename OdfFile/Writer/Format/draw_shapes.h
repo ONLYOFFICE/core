@@ -311,7 +311,8 @@ public:
 	_CP_OPT(std::wstring)		draw_enhanced_path_;
 	_CP_OPT(std::wstring)		draw_text_areas_;
 	_CP_OPT(std::wstring)		draw_glue_points_;
-	
+	_CP_OPT(std::wstring)		glue_points_leaving_directions_;
+
 	_CP_OPT(std::wstring)		draw_sub_view_size_;
 
 	_CP_OPT(odf_types::Bool)	draw_mirror_vertical_;

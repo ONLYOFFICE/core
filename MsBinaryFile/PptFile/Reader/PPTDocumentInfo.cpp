@@ -109,6 +109,34 @@ bool CPPTDocumentInfo::ReadFromStream(CRecordCurrentUserAtom *pCurrentUser, POLE
 
     return true;
 }
+std::wstring CPPTDocumentInfo::GetBinFromStg(const std::wstring& name, _UINT32 nRef)
+{
+    for (size_t i = 0; i < m_arUsers.size(); ++i)
+    {
+        std::map<_UINT32, _UINT32>::iterator nIndexPsrRef = m_arUsers[i]->m_mapOffsetInPIDs.find(nRef);
+        if (m_arUsers[i]->m_mapOffsetInPIDs.end() != nIndexPsrRef)
+        {
+            std::wstring result;
+            _UINT32 offset_stream = nIndexPsrRef->second;
+            StreamUtils::StreamSeek(offset_stream, m_pStream);
+
+            SRecordHeader oHeader;
+            oHeader.ReadFromStream(m_pStream);
+
+            CRecordExObjStg* pExObjStg = new CRecordExObjStg(name, m_pCommonInfo->tempPath);
+
+            if (pExObjStg)
+            {
+                pExObjStg->ReadFromStream(oHeader, m_pStream);
+                result = pExObjStg->m_sFileName;
+
+                RELEASEOBJECT(pExObjStg);
+            }
+            return result;
+        }
+    }
+    return L"";
+}
 
 bool CPPTDocumentInfo::LoadDocument()
 {
@@ -116,7 +144,7 @@ bool CPPTDocumentInfo::LoadDocument()
 
     try
     {
-        m_arUsers[0]->ReadExtenalObjects();
+        m_arUsers[0]->ReadExtenalObjects(); // todooo ???? прочитать по всем (см 66864)
         m_arUsers[0]->FromDocument();
     }
     catch(int) //error code

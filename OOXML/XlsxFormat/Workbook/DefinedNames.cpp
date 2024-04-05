@@ -73,6 +73,8 @@ namespace OOX
 				return;
 
 			m_oRef = oReader.GetText3();
+			 if(m_oName.IsInit())
+				XLS::GlobalWorkbookInfo::arDefineNames_static.push_back(m_oName.get());
 		}
 		XLS::BaseObjectPtr CDefinedName::toBin()
 		{

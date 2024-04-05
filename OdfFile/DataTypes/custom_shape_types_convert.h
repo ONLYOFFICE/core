@@ -30,6 +30,7 @@
  *
  */
 #pragma once
+#include <string>
 
 struct _shape_converter
 {

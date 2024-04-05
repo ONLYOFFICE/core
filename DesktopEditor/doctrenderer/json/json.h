@@ -73,11 +73,7 @@ namespace NSJSON
 		/**
 		 * Returns true if the value is a string.
 		 */
-		bool IsStringA() const;
-		/**
-		 * Returns true if the value is a wstring.
-		 */
-		bool IsStringW() const;
+		bool IsString() const;
 		/**
 		 * Returns true if the value is an array.
 		 */

@@ -3143,7 +3143,7 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 		{
 			pathOle = find_link_by_id(oox_obj->m_oOleObject->m_oId->GetValue(), 4, bExternal);
 		}
-		std::wstring odf_ref_ole = odf_context()->add_oleobject(pathOle);
+		std::wstring odf_ref_ole = odf_context()->add_oleobject(pathOle, bExternal);
 
 		if (!odf_ref_ole.empty())
 		{
@@ -3156,7 +3156,7 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 			std::wstring sIdImageFileCache = GetImageIdFromVmlShape(oox_obj->m_oShape.GetPointer());
 			
 			std::wstring pathImage = find_link_by_id(sIdImageFileCache, 1, bExternal);
-			std::wstring odf_ref_image = odf_context()->add_imageobject(pathImage);			
+			std::wstring odf_ref_image = odf_context()->add_imageobject(pathImage, bExternal);
 
 			OoxConverter::convert(oox_obj->m_oShape.GetPointer(), NULL);
 			odf_context()->drawing_context()->set_image_replacement(odf_ref_image);

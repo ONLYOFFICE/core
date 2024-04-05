@@ -58,6 +58,7 @@ namespace odf_writer
 		fieldDropDown,
 		fieldDate,
 		fieldTime,
+		fieldRef,
 
 		fieldBibliography = 0xff + 1,
 		fieldIndex,

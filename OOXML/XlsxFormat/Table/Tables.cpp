@@ -356,12 +356,14 @@ namespace Spreadsheet
         if(m_oCalculatedColumnFormula.IsInit())
         {
             auto fmla(new XLSB::ListCCFmla);
+            fmla->fArray = false;
             fmla->formula = m_oCalculatedColumnFormula.get();
             ptr->m_BrtListCCFmla = XLS::BaseObjectPtr{fmla};
         }
         if(m_oTotalsRowFormula.IsInit())
         {
             auto fmla(new XLSB::ListTrFmla);
+            fmla->fArray = false;
             fmla->formula = m_oTotalsRowFormula.get();
             ptr->m_BrtListTrFmla = XLS::BaseObjectPtr{fmla};
         }
@@ -616,15 +618,24 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 		if(m_oTableColumns.IsInit() && !m_oTableColumns->m_arrItems.empty())
 		{	
 			XLS::GlobalWorkbookInfo::mapTableColumnNames_static.emplace(m_oId->GetValue(),
-				std::vector<std::wstring>(m_oTableColumns->m_arrItems.size()+1, L""));	
+				std::vector<std::wstring>(m_oTableColumns->m_arrItems.size()));	
+				auto colInd = 0;
 			for(auto i:m_oTableColumns->m_arrItems)
-				if(i->m_oName.IsInit() && i->m_oId.IsInit())
+			{
+				if(i->m_oName.IsInit())
                 {
-                    if(i->m_oId->GetValue()+1 > XLS::GlobalWorkbookInfo::mapTableColumnNames_static.at(m_oId->GetValue()).size())
-                        XLS::GlobalWorkbookInfo::mapTableColumnNames_static.at(m_oId->GetValue()).resize(i->m_oId->GetValue()+1);
 					i->m_oName = boost::algorithm::erase_all_copy(i->m_oName.get(), L"_x000a_");
-					XLS::GlobalWorkbookInfo::mapTableColumnNames_static.at(m_oId->GetValue()).at(i->m_oId->GetValue())  = i->m_oName.get();
+					std::unordered_map<int, std::vector<std::wstring>>::iterator pFind = XLS::GlobalWorkbookInfo::mapTableColumnNames_static.find(m_oId->GetValue());
+					if (pFind != XLS::GlobalWorkbookInfo::mapTableColumnNames_static.end())
+					{
+						if (colInd < pFind->second.size())
+						{
+							pFind->second[colInd] = i->m_oName.get();
+						}
+					}
                 }
+				colInd++;
+			}
 		}
         XLS::GlobalWorkbookInfo::mapTableNames_static.emplace(m_oId->GetValue(), m_oName.get());
 	}
@@ -768,6 +779,8 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 
         if(m_oTotalsRowShown.IsInit())
             ptr1->fShownTotalRow = m_oTotalsRowShown.get();
+        else if(m_oTotalsRowCount.IsInit() && m_oTotalsRowCount->GetValue() > 0)
+            ptr1->fShownTotalRow = true;
         else
             ptr1->fShownTotalRow = false;
         ptr1->fSingleCell = false;
@@ -1136,18 +1149,28 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 
 		if(m_oId.IsInit())
 			ptr->idField = m_oId->GetValue();
+        else
+            ptr->idField = 0;
 		if(m_oTableColumnId.IsInit())
 			ptr->idList = m_oTableColumnId->GetValue();
+        else
+            ptr->idList = 0;
 		if(m_oName.IsInit())
 			ptr->name = m_oName.get();
         if(m_oRowNumbers.IsInit())
 			ptr->fRowNums = m_oRowNumbers.get();
 		if(m_oFillFormulas.IsInit())
 			ptr->fFillDown = m_oFillFormulas.get();
+        else
+            ptr->fFillDown = false;
 		if(m_oDataBound.IsInit())
 			ptr->fUserIns = m_oDataBound.get();
+        else
+            ptr->fUserIns = false;
         if(m_oClipped.IsInit())
 			ptr->fClipped = m_oClipped.get();
+        else
+            ptr->fClipped = false;
            
 		return XLS::BaseObjectPtr{ptr1};
 	}
@@ -1431,6 +1454,8 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			ptr->wVerBeforeRefreshAlert = m_oMinimumVersion->GetValue();
 		if(m_FieldIdWrapped.IsInit())
 			ptr->fidWrapped = m_FieldIdWrapped.get();
+        else
+            ptr->fidWrapped = false;
 		if(m_HeadersInLastRefresh.IsInit())
 			ptr->fTitlesOld = m_HeadersInLastRefresh.get();
 		if(m_PreserveSortFilterLayout.IsInit())
@@ -1567,33 +1592,61 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		if(m_oAdjustColumnWidth.IsInit())
 			ptr->fAutoFit = m_oAdjustColumnWidth.get();
+        else
+            ptr->fAutoFit = true;
 		if(m_oApplyAlignmentFormats.IsInit())
         	ptr->fibitAtrAlc = m_oApplyAlignmentFormats.get();
+        else
+            ptr->fibitAtrAlc = false;
 		if(m_oApplyBorderFormats.IsInit())
             ptr->fibitAtrBdr = m_oApplyBorderFormats.get();
+        else
+            ptr->fibitAtrBdr = false;
 		if(m_oApplyFontFormats.IsInit())
             ptr->fibitAtrFnt = m_oApplyFontFormats.get();
+        else
+            ptr->fibitAtrFnt = false;
 		if(m_oApplyNumberFormats.IsInit())
             ptr->fibitAtrNum = m_oApplyNumberFormats.get();
+        else
+            ptr->fibitAtrNum = false;
 		if(m_oApplyPatternFormats.IsInit())
             ptr->fibitAtrPat = m_oApplyPatternFormats.get();
+        else
+            ptr->fibitAtrPat = false;
 		if(m_oApplyWidthHeightFormats.IsInit())
             ptr->fibitAtrProt = m_oApplyWidthHeightFormats.get();
+        else
+            ptr->fibitAtrProt = false;
 		if(m_oBackgroundRefresh.IsInit())
             ptr->fAsync = m_oBackgroundRefresh.get();
+        else
+            ptr->fAsync = true;
 	
 		if(m_oAutoFormatId.IsInit())
            ptr->itblAutoFmt = m_oAutoFormatId->GetValue();
+        else
+            ptr->itblAutoFmt = 0;
 		if(m_oConnectionId.IsInit())
            ptr->dwConnID = m_oConnectionId->GetValue();
+        else
+            ptr->dwConnID = 0;
 		if(m_oDisableEdit.IsInit())
             ptr->fDisableEdit = m_oDisableEdit.get();
+        else
+            ptr->fDisableEdit = false;
 		if(m_oDisableRefresh.IsInit())
             ptr->fDisableRefresh = m_oDisableRefresh.get();
+        else
+            ptr->fDisableRefresh = false;
 		if(m_oFillFormulas.IsInit())
             ptr->fFill = m_oFillFormulas.get();
+        else
+            ptr->fFill = false;
 		if(m_oFirstBackgroundRefresh.IsInit())
             ptr->fNewAsync = m_oFirstBackgroundRefresh.get();
+        else
+            ptr->fNewAsync = true;
 		ptr->fOverwrite = false;
 		ptr->fShrink = false;
 
@@ -1605,17 +1658,25 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->fTitles = m_oHeaders.get();
 		if(m_oIntermediate.IsInit())
 			ptr->fDummyList = m_oIntermediate.get();
+        else
+            ptr->fDummyList = 0;
 
-		if(!ptr->name.empty())
-			m_oName                 = ptr->name;
+        if(m_oName.IsInit())
+            ptr->name = m_oName.get();
 		if(m_oPreserveFormatting.IsInit())
 			ptr->fPreserveFmt = m_oPreserveFormatting.get();
 		if(m_oRefreshOnLoad.IsInit())
 			ptr->fAutoRefresh = m_oRefreshOnLoad.get();
+        else
+            ptr->fAutoRefresh = false;
 		if(m_oRemoveDataOnSave.IsInit())
             ptr->fSaveData = !m_oRemoveDataOnSave.get();
+        else
+            ptr->fSaveData = true;
 		if(m_oRowNumbers.IsInit())
             ptr->fRowNums = m_oRowNumbers.get();
+        else
+            ptr->fRowNums = false;
 
 		if(m_oQueryTableRefresh.IsInit())
 			ptr1->m_QSIR = m_oQueryTableRefresh->toBin();
@@ -1765,6 +1826,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			XLS::BaseObjectPtr object = WriteBin();
 			xlsb->WriteBin(oPath, object.get());
 		}
+		else
 		{
 			NSStringUtils::CStringBuilder sXml;
 

@@ -59,7 +59,8 @@ public:
 
     bool ReadFromStream(CRecordCurrentUserAtom* pCurrentUser, POLE::Stream* pStream);
     bool LoadDocument();
-
+    
+    std::wstring GetBinFromStg(const std::wstring& name, _UINT32 nRef);
 private:
     POLE::Stream* m_pStream;
 };

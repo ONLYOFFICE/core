@@ -281,6 +281,7 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             unsigned int number;
             unsigned short ixti;
 			PtgList ptgList(PtgList::fixed_id);
+            ptgList.type_ = 0x00;
 
             if(SyntaxPtg::extract_PtgBool(it, itEnd, operand_str))
             {
@@ -306,7 +307,14 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
                 }
                 else if(SyntaxPtg::extract_PtgRef(it, itEnd, operand_str))
                 {
-                    rgce.addPtg(found_operand = OperandPtgPtr(new PtgRef3d(ixti, operand_str, OperandPtg::ptg_VALUE, rgce.getLocation())));
+                    auto pos = std::find_if(XLS::GlobalWorkbookInfo::arXti_External_static.cbegin(), XLS::GlobalWorkbookInfo::arXti_External_static.cend(),
+                            [&](XLS::GlobalWorkbookInfo::_xti i) {
+                        return i.iSup == ixti;
+                    });
+                    if(pos->itabFirst == pos->itabLast)
+                        rgce.addPtg(found_operand = OperandPtgPtr(new PtgRef3d(ixti, operand_str, OperandPtg::ptg_VALUE, rgce.getLocation())));
+                    else
+                        rgce.addPtg(found_operand = OperandPtgPtr(new PtgRef3d(ixti, operand_str, OperandPtg::ptg_REFERENCE, rgce.getLocation())));
                 }
                 else if(SyntaxPtg::extract_PtgRefErr(it, itEnd))
                 {
@@ -331,13 +339,16 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             }
 			else if (SyntaxPtg::extract_PtgList(it, itEnd, ptgList))// Shall be placed strongly before PtgArea and PtgRef
 			{
+                if((ptgList.rowType == 0x10 || ptgList.rowType == 0x08 || ptgList.rowType == 0x02)
+                        && ptgList.columns == 0x01)
+                    ptgList.type_ = 0x01;
 				rgce.addPtg(found_operand = OperandPtgPtr(new PtgList(ptgList)));
 			}
             else if(SyntaxPtg::extract_PtgArea(it, itEnd, operand_str)) // Sequence is important (in pair with PtgRef)
             {
                 if(L"SharedParsedFormula" == tag_name || L"CFParsedFormulaNoCCE" == tag_name)
                 {
-                    found_operand = OperandPtgPtr(new PtgAreaN(operand_str, OperandPtg::ptg_VALUE, rgce.getLocation()));
+                    found_operand = OperandPtgPtr(new PtgAreaN(operand_str, OperandPtg::ptg_REFERENCE, rgce.getLocation()));
                 }
                 else
                 {
@@ -397,6 +408,10 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
 
             else
             {
+               //add error name to prevent endless formula conversion
+                rgce.sequence.clear();
+                rgce.addPtg(found_operand = OperandPtgPtr(new PtgErr(L"#NAME?")));
+                break;
                 // EXCEPT::RT::WrongFormulaString("Unknown operand format in formula.", assembled_formula);
             }
             last_ptg = found_operand;

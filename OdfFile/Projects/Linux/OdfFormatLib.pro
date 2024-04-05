@@ -19,6 +19,8 @@ include(../../../Common/base.pri)
 #BOOST
 include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
+include($$PWD/../../Reader/Converter/StarMath2OOXML/StarMath2OOXML.pri)
+
 DEFINES +=  UNICODE \
             _UNICODE \
             DONT_WRITE_EMBEDDED_FONTS
@@ -40,7 +42,8 @@ SOURCES += \
 
 core_debug {
 SOURCES += \    
-	../../DataTypes/mathvariant.cpp \
+        ../../DataTypes/referenceformat.cpp \
+        ../../DataTypes/mathvariant.cpp \
 	../../DataTypes/anchortype.cpp \
 	../../DataTypes/animation_attlists.cpp \
 	../../DataTypes/backgroundcolor.cpp \
@@ -445,7 +448,8 @@ HEADERS += \
 	../../Common/xml/xmlchar.h \
 	../../Common/xml/xmlelement.h \
 	\
-	../../DataTypes/mathvariant.h \
+        ../../DataTypes/referenceformat.h \
+        ../../DataTypes/mathvariant.h \
 	../../DataTypes/anchortype.h \
 	../../DataTypes/animation_attlists.h \
 	../../DataTypes/backgroundcolor.h \

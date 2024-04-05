@@ -384,7 +384,7 @@ public:
 
 	void start_conditional_formats();
 		void start_conditional_format(const std::wstring& ref);
-            void start_conditional_rule(int rule_type, _CP_OPT(unsigned int) rank, _CP_OPT(bool) bottom, _CP_OPT(bool) percent);
+            void start_conditional_rule(int rule_type, _CP_OPT(unsigned int) rank, _CP_OPT(bool) bottom, _CP_OPT(bool) percent, _CP_OPT(bool) above, _CP_OPT(bool) equal, _CP_OPT(int) stdDev);
 				void set_conditional_formula(const std::wstring& formula);
                 void set_conditional_value(int type, const std::wstring& value );
                 
@@ -398,6 +398,9 @@ public:
 				void set_conditional_databar_negative_color(_CP_OPT(odf_types::color) & color);
 				void set_conditional_databar_axis_color(_CP_OPT(odf_types::color) & color);
 				void set_conditional_databar_axis_position(const std::wstring& value);
+				void set_conditional_databar_gradient(bool val);
+				void set_conditional_databar_max(unsigned int val);
+				void set_conditional_databar_min(unsigned int val);
 
 				void set_conditional_style_name(const std::wstring &style_name);
                 void set_conditional_operator(int _operator);

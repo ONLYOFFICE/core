@@ -128,7 +128,7 @@ namespace OOX
 
 		struct sharedFormula
 		{
-			std::vector<std::pair<XLS::CellRef, std::wstring>> shrFmla;
+			std::vector<XLS::CellRef> shrFmla;
 			std::vector<std::pair<XLS::CellRangeRef, XLS::CellRef>> arrfmla;
 		};
 		class CFormula : public WritingElement

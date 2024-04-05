@@ -290,7 +290,11 @@ xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\">");
                     ptr->typOperator = XLS::_typOperatorDv::operatorDvGreaterThanOrEqual;
                 else if (m_oOperator->GetValue() == SimpleTypes::Spreadsheet::EDataValidationOperator::operatorLessThanOrEqual)
                     ptr->typOperator = XLS::_typOperatorDv::operatorDvLessThanOrEqual;
+                else
+                    ptr->typOperator = XLS::_typOperatorDv::operatorDvBetween;
             }
+            else
+                ptr->typOperator = XLS::_typOperatorDv::operatorDvBetween;
 
             if(m_oShowDropDown.IsInit())
                 ptr->fSuppressCombo = m_oShowDropDown->GetValue();

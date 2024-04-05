@@ -2642,7 +2642,7 @@ XLS::BaseObjectPtr CConditionalFormatting::toBin()
         XLS::CellRef formatingfirstCell;
         if(m_oSqRef.IsInit())
         {
-            auto conditionPtr(new XLSB::BeginConditionalFormatting);//
+            auto conditionPtr(new XLSB::BeginConditionalFormatting);
             ptr->m_BrtBeginConditionalFormatting = XLS::BaseObjectPtr{conditionPtr};
             conditionPtr->ccf = m_arrItems.size();
             conditionPtr->sqrfx.strValue = m_oSqRef.get();

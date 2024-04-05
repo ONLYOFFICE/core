@@ -173,6 +173,7 @@ namespace PdfWriter
 		m_vStrokeAlpha.clear();
 		m_vRadioGroups.clear();
 		m_vMetaOForms.clear();
+		m_vImages.clear();
 
 		m_pTransparencyGroup = NULL;
 
@@ -213,6 +214,8 @@ namespace PdfWriter
 		m_vTTFonts.clear();
 		m_vFreeTypeFonts.clear();
 		m_vSignatures.clear();
+		m_vMetaOForms.clear();
+		m_vImages.clear();
 		if (m_pFreeTypeLibrary)
 		{
 			FT_Done_FreeType(m_pFreeTypeLibrary);
@@ -541,9 +544,6 @@ namespace PdfWriter
 	}
     CExtGrState* CDocument::GetExtGState(double dAlphaStroke, double dAlphaFill, EBlendMode eMode, int nStrokeAdjustment)
 	{
-		if (IsPDFA())
-			return NULL;
-
 		CExtGrState* pExtGrState = FindExtGrState(dAlphaStroke, dAlphaFill, eMode, nStrokeAdjustment);
 
 		if (!pExtGrState)
@@ -571,9 +571,6 @@ namespace PdfWriter
 	}
     CExtGrState* CDocument::GetStrokeAlpha(double dAlpha)
 	{
-		if (IsPDFA())
-			return NULL;
-
 		CExtGrState* pExtGrState = NULL;
 		for (unsigned int unIndex = 0, unCount = m_vStrokeAlpha.size(); unIndex < unCount; unIndex++)
 		{
@@ -594,9 +591,6 @@ namespace PdfWriter
 	}
     CExtGrState* CDocument::GetFillAlpha(double dAlpha)
 	{
-		if (IsPDFA())
-			return NULL;
-
 		CExtGrState* pExtGrState = NULL;
 		for (unsigned int unIndex = 0, unCount = m_vFillAlpha.size(); unIndex < unCount; unIndex++)
 		{
@@ -1247,6 +1241,30 @@ namespace PdfWriter
 		ppFields->Add(pField);
 
 		return pField;
+	}
+	bool CDocument::HasImage(const std::wstring& wsImagePath, BYTE nAlpha)
+	{
+		for (size_t i = 0, nSize = m_vImages.size(); i < nSize; ++i)
+		{
+			if (m_vImages[i].wsImagePath == wsImagePath && m_vImages[i].nAlpha == nAlpha)
+				return true;
+		}
+		return false;
+	}
+	CImageDict* CDocument::GetImage(const std::wstring& wsImagePath, BYTE nAlpha)
+	{
+		for (size_t i = 0, nSize = m_vImages.size(); i < nSize; ++i)
+		{
+			if (m_vImages[i].wsImagePath == wsImagePath && m_vImages[i].nAlpha == nAlpha)
+				return m_vImages[i].pImage;
+		}
+		return NULL;
+	}
+	void CDocument::AddImage(const std::wstring& wsImagePath, BYTE nAlpha, CImageDict* pImage)
+	{
+		if (!pImage)
+			return;
+		m_vImages.push_back({wsImagePath, nAlpha, pImage});
 	}
 	bool CDocument::CheckFieldName(CFieldBase* pField, const std::string& sName)
 	{

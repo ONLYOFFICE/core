@@ -161,9 +161,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Binary\Document\DocWrapper\ChartWriter.h">
-      <Filter>Document</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Binary\Document\DocWrapper\DocxSerializer.h">
       <Filter>Document</Filter>
     </ClInclude>

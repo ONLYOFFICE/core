@@ -130,9 +130,9 @@ const int str2column(std::wstring::const_iterator& str_begin, std::wstring::cons
 		column = (column + 1) * radix + (symb - L'A');
 	}
 
-	if(column > 255)
+	if(column > 16384)
 	{
-		column = 255;
+		column = 16384;
 	}
 
 	return column;
@@ -152,9 +152,9 @@ const int str2row(std::wstring::const_iterator& str_begin, std::wstring::const_i
 		row = row * 10 + (symb - L'0');
 	}
 	--row;
-	if(row > 65535)
+	if(row > 1048576)
 	{
-		row = 65535;
+		row = 1048576;
 	}
 	return row;
 }
@@ -691,6 +691,28 @@ unsigned short sheetsnames2ixti(std::wstring name)
 
 	return 0xFFFF;
 }
+
+ unsigned short AddMultysheetXti(const std::wstring& name, const _INT32& firstIxti, const _INT32& secondIxti)
+ {
+     auto pos1 = std::find_if(XLS::GlobalWorkbookInfo::arXti_External_static.cbegin(), XLS::GlobalWorkbookInfo::arXti_External_static.cend(),
+             [&](XLS::GlobalWorkbookInfo::_xti i) {
+         return i.iSup == firstIxti;
+     });
+
+     auto pos2 = std::find_if(XLS::GlobalWorkbookInfo::arXti_External_static.cbegin(), XLS::GlobalWorkbookInfo::arXti_External_static.cend(),
+             [&](XLS::GlobalWorkbookInfo::_xti i) {
+         return i.iSup == secondIxti;
+     });
+     if (pos1 == XLS::GlobalWorkbookInfo::arXti_External_static.cend() || pos2 == XLS::GlobalWorkbookInfo::arXti_External_static.cend())
+         return 0;
+     XLS::GlobalWorkbookInfo::_xti newXti;
+     newXti.iSup = XLS::GlobalWorkbookInfo::arXti_External_static.size();
+     newXti.itabFirst = pos1->itabFirst;
+     newXti.itabLast = pos2->itabFirst;
+     newXti.link = name;
+     XLS::GlobalWorkbookInfo::arXti_External_static.push_back(newXti);
+     return newXti.iSup;
+ }
 
 unsigned int definenames2index(std::wstring name)
 {

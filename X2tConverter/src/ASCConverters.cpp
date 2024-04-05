@@ -462,18 +462,26 @@ namespace NExtractTools
 			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
 			nRes = doct_bin2image(eFromType, sFrom, sTo, params, convertParams);
 		}
-		else if (0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatTo))
+		else if (0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatTo) || 
+						AVS_OFFICESTUDIO_FILE_OTHER_OOXML == nFormatTo ||
+						AVS_OFFICESTUDIO_FILE_OTHER_ODF == nFormatTo)
 		{
 			std::wstring sDocxDir = combinePath(convertParams.m_sTempDir, L"docx_unpacked");
 			if (true == NSDirectory::CreateDirectory(sDocxDir))
 			{
-				params.m_bMacro = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM == nFormatTo;
+				params.m_bMacro = AVS_OFFICESTUDIO_FILE_OTHER_OOXML == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM == nFormatTo;
 
 				convertParams.m_sTempResultOOXMLDirectory = sDocxDir;
 				nRes = doct_bin2docx_dir(sFrom, sTo, params, convertParams);
 				if (SUCCEEDED_X2T(nRes))
 				{
-					nRes = fromDocxDir(sDocxDir, sTo, nFormatTo, params, convertParams);
+					std::wstring sFileToCurrent = *params.m_sFileTo;
+					params.changeFormatFromPost(*params.m_nFormatFrom, params.m_bMacro);
+
+					if (NULL != params.m_nFormatTo)
+						nFormatTo = *params.m_nFormatTo;
+
+					nRes = fromDocxDir(sDocxDir, *params.m_sFileTo, nFormatTo, params, convertParams);
 				}
 			}
 			else
@@ -528,7 +536,6 @@ namespace NExtractTools
 		}
 		else
 		{
-			std::wstring sDocxFile;
 			std::wstring sDocxDir = combinePath(convertParams.m_sTempDir, L"docx_unpacked");
 			NSDirectory::CreateDirectory(sDocxDir);
 
@@ -536,14 +543,13 @@ namespace NExtractTools
 				AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM == nFormatFrom ||
 				AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF == nFormatFrom)
 			{
-				sDocxFile = sFrom;
-				convertParams.m_sTempParamOOXMLFile = sDocxFile;
+				convertParams.m_sTempParamOOXMLFile = sFrom;
 				if (params.getFromChanges())
 				{
 					params.setFromChanges(false);
-					nRes = apply_changes(sFrom, sTo, NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT, sDocxFile, params, convertParams);
+					nRes = apply_changes(sFrom, sTo, NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT, convertParams.m_sTempParamOOXMLFile, params, convertParams);
 				}
-				nRes = zip2dir(sDocxFile, sDocxDir);
+				nRes = zip2dir(convertParams.m_sTempParamOOXMLFile, sDocxDir);
 
 				if (false == SUCCEEDED_X2T(nRes))
 				{
@@ -832,7 +838,9 @@ namespace NExtractTools
 			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::XLST;
 			nRes = doct_bin2image(eFromType, sFrom, sTo, params, convertParams);
 		}
-		else if (0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo))
+		else if (0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo) ||
+						AVS_OFFICESTUDIO_FILE_OTHER_OOXML == nFormatTo ||
+						AVS_OFFICESTUDIO_FILE_OTHER_ODF == nFormatTo)
 		{
 			std::wstring sXlsxDir = combinePath(convertParams.m_sTempDir, L"xlsx_unpacked");
 			if (true == NSDirectory::CreateDirectory(sXlsxDir))
@@ -842,8 +850,13 @@ namespace NExtractTools
 				nRes = xlst_bin2xlsx_dir(sFrom, sTo, params, convertParams);
 				if (SUCCEEDED_X2T(nRes))
 				{
-					std::wstring sXlsxFile;
-					nRes = fromXlsxDir(sXlsxDir, sTo, nFormatTo, params, convertParams);
+					std::wstring sFileToCurrent = *params.m_sFileTo;
+					params.changeFormatFromPost(*params.m_nFormatFrom, params.m_bMacro);
+
+					if (NULL != params.m_nFormatTo)
+						nFormatTo = *params.m_nFormatTo;
+
+					nRes = fromXlsxDir(sXlsxDir, *params.m_sFileTo, nFormatTo, params, convertParams);
 				}
 			}
 			else
@@ -1158,7 +1171,9 @@ namespace NExtractTools
 			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::PPTT;
 			nRes = doct_bin2image(eFromType, sFrom, sTo, params, convertParams);
 		}
-		else if (0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & nFormatTo))
+		else if (0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & nFormatTo) ||
+						AVS_OFFICESTUDIO_FILE_OTHER_OOXML == nFormatTo ||
+						AVS_OFFICESTUDIO_FILE_OTHER_ODF == nFormatTo)
 		{
 			std::wstring sPptxDir = combinePath(convertParams.m_sTempDir, L"pptx_unpacked");
 
@@ -1172,7 +1187,13 @@ namespace NExtractTools
 				nRes = pptt_bin2pptx_dir(sFrom, sTo, params, convertParams);
 				if (SUCCEEDED_X2T(nRes))
 				{
-					nRes = fromPptxDir(sPptxDir, sTo, nFormatTo, params, convertParams);
+					std::wstring sFileToCurrent = *params.m_sFileTo;
+					params.changeFormatFromPost(*params.m_nFormatFrom, params.m_bMacro);
+
+					if (NULL != params.m_nFormatTo)
+						nFormatTo = *params.m_nFormatTo;
+
+					nRes = fromPptxDir(sPptxDir, *params.m_sFileTo, nFormatTo, params, convertParams);
 				}
 			}
 			else

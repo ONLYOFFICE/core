@@ -219,6 +219,8 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 
 	smart_ptr<OOX::Spreadsheet::CWorksheet> pWorksheet(new OOX::Spreadsheet::CWorksheet(NULL));
 	pWorksheet->m_oSheetData.Init();
+	pWorksheet->m_oSheetFormatPr.Init();
+	pWorksheet->m_oSheetFormatPr->m_oBaseColWidth = 9;
 
 	//-----------------------------------------------------------------------------------
 	DWORD nFileSize = 0;
@@ -311,6 +313,7 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 	INT nIndexRow = 0;
 	INT nIndexCol = 0;
 	OOX::Spreadsheet::CRow *pRow = new OOX::Spreadsheet::CRow();
+
 	pRow->m_oR.Init();
 	pRow->m_oR->SetValue(nIndexRow + 1);
 

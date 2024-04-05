@@ -178,6 +178,10 @@ namespace PdfWriter
 		CSignatureField*  CreateSignatureField();
 		CDateTimeField*   CreateDateTimeField();
 		bool              CheckFieldName(CFieldBase* pField, const std::string& sName);
+
+		bool              HasImage(const std::wstring& wsImagePath, BYTE nAlpha);
+		CImageDict*       GetImage(const std::wstring& wsImagePath, BYTE nAlpha);
+		void              AddImage(const std::wstring& wsImagePath, BYTE nAlpha, CImageDict* pImage);
 					  
 		bool              CreatePageTree(CXref* pXref, CPageTree* pPageTree);
 		bool              EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, CXref* pXref, CCatalog* pCatalog, CEncryptDict* pEncrypt, int nFormField);
@@ -246,6 +250,19 @@ namespace PdfWriter
 			CImageDict* pImage;
 			ICertificate* pCertificate;
 		};
+		struct TImageInfo
+		{
+			TImageInfo(const std::wstring& _wsImagePath, BYTE _nAlpha, CImageDict* _pImage)
+			{
+				wsImagePath = _wsImagePath;
+				nAlpha = _nAlpha;
+				pImage = _pImage;
+			}
+
+			std::wstring wsImagePath;
+			BYTE nAlpha;
+			CImageDict* pImage;
+		};
 
 		CCatalog*                          m_pCatalog;
 		COutline*                          m_pOutlines;
@@ -261,6 +278,7 @@ namespace PdfWriter
 		bool                               m_bEncrypt;
 		CEncryptDict*                      m_pEncryptDict;
 		std::vector<TSignatureInfo>        m_vSignatures;
+		std::vector<TImageInfo>            m_vImages;
 		unsigned int                       m_unFormFields;
 		unsigned int                       m_unCompressMode;
 		std::vector<CExtGrState*>          m_vExtGrStates;

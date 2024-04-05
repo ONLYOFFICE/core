@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1120</width>
-    <height>675</height>
+    <width>1060</width>
+    <height>592</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,8 +22,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>567</width>
-      <height>567</height>
+      <width>500</width>
+      <height>500</height>
      </rect>
     </property>
     <property name="text">
@@ -33,10 +33,10 @@
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>580</x>
-      <y>-10</y>
+      <x>520</x>
+      <y>0</y>
       <width>535</width>
-      <height>580</height>
+      <height>500</height>
      </rect>
     </property>
     <property name="minimumSize">
@@ -60,7 +60,7 @@
        <x>10</x>
        <y>10</y>
        <width>201</width>
-       <height>170</height>
+       <height>150</height>
       </rect>
      </property>
      <property name="title">
@@ -123,13 +123,13 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>190</y>
+       <y>160</y>
        <width>511</width>
-       <height>370</height>
+       <height>330</height>
       </rect>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="Linear_Page">
       <widget class="QGroupBox" name="groupBox">
@@ -314,7 +314,7 @@
        <property name="geometry">
         <rect>
          <x>380</x>
-         <y>180</y>
+         <y>160</y>
          <width>131</width>
          <height>161</height>
         </rect>
@@ -412,12 +412,12 @@
          <rect>
           <x>280</x>
           <y>30</y>
-          <width>187</width>
+          <width>190</width>
           <height>20</height>
          </rect>
         </property>
         <property name="text">
-         <string>Second Center X Coordinate</string>
+         <string>X Coordinate, Second Center</string>
         </property>
        </widget>
        <widget class="QLineEdit" name="Second_Center_X_Coordinate_Input">
@@ -435,12 +435,12 @@
          <rect>
           <x>280</x>
           <y>80</y>
-          <width>186</width>
+          <width>189</width>
           <height>20</height>
          </rect>
         </property>
         <property name="text">
-         <string>Second Center Y Coordinate</string>
+         <string>Y Coordinate, Second Center</string>
         </property>
        </widget>
        <widget class="QLineEdit" name="Second_Center_Y_Coordinate_Input">
@@ -458,7 +458,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>180</y>
+         <y>160</y>
          <width>371</width>
          <height>100</height>
         </rect>
@@ -517,7 +517,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>280</y>
+         <y>260</y>
          <width>319</width>
          <height>20</height>
         </rect>
@@ -530,7 +530,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>300</y>
+         <y>280</y>
          <width>335</width>
          <height>20</height>
         </rect>
@@ -543,7 +543,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>320</y>
+         <y>300</y>
          <width>281</width>
          <height>20</height>
         </rect>
@@ -551,6 +551,364 @@
        <property name="text">
         <string>which are defined by the center and radius</string>
        </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="page">
+      <widget class="QGroupBox" name="groupBox_7">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>10</y>
+         <width>510</width>
+         <height>240</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Set Coordinates Of Triangle Vertices</string>
+       </property>
+       <widget class="QLabel" name="label_16">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>30</y>
+          <width>168</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>X Coordinate, First Vertex</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="First_Vertex_X_Coordinate_Input">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_17">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>80</y>
+          <width>167</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Y Coordinate, First Vertex</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="First_Vertex_Y_Coordinate_Input">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_18">
+        <property name="geometry">
+         <rect>
+          <x>280</x>
+          <y>30</y>
+          <width>188</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>X Coordinate, Second Vertex</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="Second_Vertex_X_Coordinate_Input">
+        <property name="geometry">
+         <rect>
+          <x>280</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_19">
+        <property name="geometry">
+         <rect>
+          <x>280</x>
+          <y>80</y>
+          <width>187</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Y Coordinate, Second Vertex</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="Second_Vertex_Y_Coordinate_Input">
+        <property name="geometry">
+         <rect>
+          <x>280</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_20">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>140</y>
+          <width>173</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>X Coordinate, Third Vertex</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="Third_Vertex_X_Coordinate_Input">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>160</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_21">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>190</y>
+          <width>173</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Y Coordinate, Third Vertex</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="Third_Vertex_Y_Coordinate_Input">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>210</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QLabel" name="label_28">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>250</y>
+         <width>502</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Triangle gradient describes the color change between the three vertices of a</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_29">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>270</y>
+         <width>512</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>triangle. The color change occurs according to the principle of linear gradient</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_30">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>290</y>
+         <width>476</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>along the perpendiculars from the triangle vertex to the point where the</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_31">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>310</y>
+         <width>161</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>perpendiculars intersect.</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="page_2">
+      <widget class="QGroupBox" name="groupBox_8">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>10</y>
+         <width>510</width>
+         <height>260</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Set Coordinates Of Triangle Vertices</string>
+       </property>
+       <widget class="QLabel" name="label_22">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>30</y>
+          <width>168</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>X Coordinate, First Vertex</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="First_Vertex_X_Coordinate_Input_2">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_23">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>80</y>
+          <width>167</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Y Coordinate, First Vertex</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="First_Vertex_Y_Coordinate_Input_2">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_24">
+        <property name="geometry">
+         <rect>
+          <x>280</x>
+          <y>30</y>
+          <width>188</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>X Coordinate, Second Vertex</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="Second_Vertex_X_Coordinate_Input_2">
+        <property name="geometry">
+         <rect>
+          <x>280</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_25">
+        <property name="geometry">
+         <rect>
+          <x>280</x>
+          <y>80</y>
+          <width>187</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Y Coordinate, Second Vertex</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="Second_Vertex_Y_Coordinate_Input_2">
+        <property name="geometry">
+         <rect>
+          <x>280</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_26">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>140</y>
+          <width>173</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>X Coordinate, Third Vertex</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="Third_Vertex_X_Coordinate_Input_2">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>160</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_27">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>190</y>
+          <width>173</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Y Coordinate, Third Vertex</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="Third_Vertex_Y_Coordinate_Input_2">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>210</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+       </widget>
       </widget>
      </widget>
     </widget>
@@ -574,7 +932,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1120</width>
+     <width>1060</width>
      <height>25</height>
     </rect>
    </property>
@@ -592,6 +950,8 @@
    </attribute>
    <addaction name="actionLinear_Gradient"/>
    <addaction name="actionRadial_Gradient"/>
+   <addaction name="actionTriangle_Gradient"/>
+   <addaction name="actionTriangle_Parametric_Gradient"/>
   </widget>
   <action name="actionLinear_Gradient">
    <property name="text">
@@ -601,6 +961,22 @@
   <action name="actionRadial_Gradient">
    <property name="text">
     <string>Radial Gradient</string>
+   </property>
+  </action>
+  <action name="actionTriangle_Gradient">
+   <property name="text">
+    <string>Triangle Gradient</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::TextHeuristicRole</enum>
+   </property>
+  </action>
+  <action name="actionTriangle_Parametric_Gradient">
+   <property name="text">
+    <string>Triangle Parametric Gradient</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::TextHeuristicRole</enum>
    </property>
   </action>
  </widget>

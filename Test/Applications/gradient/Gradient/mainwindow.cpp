@@ -86,6 +86,8 @@ QImage GenerateImg(std::vector<Point> &points, Info &info, const int& w, const i
 	return img;
 }
 
+bool parametric = false;
+
 void MainWindow::on_actionLinear_Gradient_triggered()
 {
 	ui->stackedWidget->setCurrentIndex(0);
@@ -98,6 +100,21 @@ void MainWindow::on_actionRadial_Gradient_triggered()
 	ui->stackedWidget->setCurrentIndex(1);
 	ui->statusbar->showMessage("Radial");
 	info.gradient_type = c_BrushTypePathRadialGradient;
+}
+
+void MainWindow::on_actionTriangle_Gradient_triggered()
+{
+	ui->stackedWidget->setCurrentIndex(2);
+	ui->statusbar->showMessage("Triangle");
+	info.gradient_type = c_BrushTypeTriagnleMeshGradient;
+}
+
+void MainWindow::on_actionTriangle_Parametric_Gradient_triggered()
+{
+	ui->stackedWidget->setCurrentIndex(3);
+	ui->statusbar->showMessage("Triangle Parametric");
+	info.gradient_type = c_BrushTypeTriagnleMeshGradient;
+	parametric = true;
 }
 
 void MainWindow::on_BAW_Colorspace_Radio_Button_clicked()
@@ -188,6 +205,97 @@ void MainWindow::on_pushButton_clicked()
 		}
 		info.r1 = ui->Second_Radius_Input->text().toInt();
 		info.ginfo = NSStructures::GInfoConstructor::get_radial(info.c0, info.c1, info.r0, info.r1, 0, 1, info.cont_b, info.cont_f);
+	}
+	else if (info.gradient_type == c_BrushTypeTriagnleMeshGradient && !parametric)
+	{
+		if (ui->First_Vertex_X_Coordinate_Input->text() == "")
+		{
+			ui->statusbar->showMessage("First Vertex X coordinate = NULL");
+			return;
+		}
+		info.triangle[0].x = ui->First_Vertex_X_Coordinate_Input->text().toInt();
+		if (ui->First_Vertex_Y_Coordinate_Input->text() == "")
+		{
+			ui->statusbar->showMessage("First Vertex Y coordinate = NULL");
+			return;
+		}
+		info.triangle[0].y = ui->First_Vertex_Y_Coordinate_Input->text().toInt();
+		if (ui->Second_Vertex_X_Coordinate_Input->text() == "")
+		{
+			ui->statusbar->showMessage("Second Vertex X coordinate = NULL");
+			return;
+		}
+		info.triangle[1].x = ui->Second_Vertex_X_Coordinate_Input->text().toInt();
+		if (ui->Second_Vertex_Y_Coordinate_Input->text() == "")
+		{
+			ui->statusbar->showMessage("Second Vertex Y coordinate = NULL");
+			return;
+		}
+		info.triangle[1].y = ui->Second_Vertex_Y_Coordinate_Input->text().toInt();
+		if (ui->Third_Vertex_X_Coordinate_Input->text() == "")
+		{
+			ui->statusbar->showMessage("Third Vertex X coordinate = NULL");
+			return;
+		}
+		info.triangle[2].x = ui->Third_Vertex_X_Coordinate_Input->text().toInt();
+		if (ui->Third_Vertex_Y_Coordinate_Input->text() == "")
+		{
+			ui->statusbar->showMessage("Third Vertex Y coordinate = NULL");
+			return;
+		}
+		info.triangle[2].y = ui->Third_Vertex_Y_Coordinate_Input->text().toInt();
+		info.ginfo = NSStructures::GInfoConstructor::get_triangle(info.triangle, {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}}, {}, false);
+		points = {};
+		for (auto p : info.triangle)
+		{
+			points.push_back({p.x, p.y});
+		}
+	}
+	else if (info.gradient_type = c_BrushTypeTriagnleMeshGradient && parametric)
+	{
+		if (ui->First_Vertex_X_Coordinate_Input_2->text() == "")
+		{
+			ui->statusbar->showMessage("First Vertex X coordinate = NULL");
+			return;
+		}
+		info.triangle[0].x = ui->First_Vertex_X_Coordinate_Input_2->text().toInt();
+		if (ui->First_Vertex_Y_Coordinate_Input_2->text() == "")
+		{
+			ui->statusbar->showMessage("First Vertex Y coordinate = NULL");
+			return;
+		}
+		info.triangle[0].y = ui->First_Vertex_Y_Coordinate_Input_2->text().toInt();
+		if (ui->Second_Vertex_X_Coordinate_Input_2->text() == "")
+		{
+			ui->statusbar->showMessage("Second Vertex X coordinate = NULL");
+			return;
+		}
+		info.triangle[1].x = ui->Second_Vertex_X_Coordinate_Input_2->text().toInt();
+		if (ui->Second_Vertex_Y_Coordinate_Input_2->text() == "")
+		{
+			ui->statusbar->showMessage("Second Vertex Y coordinate = NULL");
+			return;
+		}
+		info.triangle[1].y = ui->Second_Vertex_Y_Coordinate_Input_2->text().toInt();
+		if (ui->Third_Vertex_X_Coordinate_Input_2->text() == "")
+		{
+			ui->statusbar->showMessage("Third Vertex X coordinate = NULL");
+			return;
+		}
+		info.triangle[2].x = ui->Third_Vertex_X_Coordinate_Input_2->text().toInt();
+		if (ui->Third_Vertex_Y_Coordinate_Input_2->text() == "")
+		{
+			ui->statusbar->showMessage("Third Vertex Y coordinate = NULL");
+			return;
+		}
+		info.triangle[2].y = ui->Third_Vertex_Y_Coordinate_Input_2->text().toInt();
+		info.ginfo = NSStructures::GInfoConstructor::get_triangle(info.triangle, {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
+																  {0.f, 0.4f, 1.f}, true);
+		points = {};
+		for (auto p : info.triangle)
+		{
+			points.push_back({p.x, p.y});
+		}
 	}
 
 	if (info.colorspace == NoColorspaceType)
@@ -306,3 +414,75 @@ void MainWindow::on_Second_Radius_Input_editingFinished()
 {
 	ClampCoords(ui->Second_Radius_Input);
 }
+
+void MainWindow::on_First_Vertex_X_Coordinate_Input_editingFinished()
+{
+	ClampCoords(ui->First_Vertex_X_Coordinate_Input);
+}
+
+
+void MainWindow::on_First_Vertex_Y_Coordinate_Input_editingFinished()
+{
+	ClampCoords(ui->First_Vertex_Y_Coordinate_Input);
+}
+
+
+void MainWindow::on_Second_Vertex_X_Coordinate_Input_editingFinished()
+{
+	ClampCoords(ui->Second_Vertex_X_Coordinate_Input);
+}
+
+
+void MainWindow::on_Second_Vertex_Y_Coordinate_Input_editingFinished()
+{
+	ClampCoords(ui->Second_Vertex_Y_Coordinate_Input);
+}
+
+
+void MainWindow::on_Third_Vertex_X_Coordinate_Input_editingFinished()
+{
+	ClampCoords(ui->Third_Vertex_X_Coordinate_Input);
+}
+
+
+void MainWindow::on_Third_Vertex_Y_Coordinate_Input_editingFinished()
+{
+	ClampCoords(ui->Third_Vertex_Y_Coordinate_Input);
+}
+
+
+void MainWindow::on_First_Vertex_X_Coordinate_Input_2_editingFinished()
+{
+	ClampCoords(ui->First_Vertex_X_Coordinate_Input_2);
+}
+
+
+void MainWindow::on_First_Vertex_Y_Coordinate_Input_2_editingFinished()
+{
+	ClampCoords(ui->First_Vertex_Y_Coordinate_Input_2);
+}
+
+
+void MainWindow::on_Second_Vertex_X_Coordinate_Input_2_editingFinished()
+{
+	ClampCoords(ui->Second_Vertex_X_Coordinate_Input_2);
+}
+
+
+void MainWindow::on_Second_Vertex_Y_Coordinate_Input_2_editingFinished()
+{
+	ClampCoords(ui->Second_Vertex_Y_Coordinate_Input_2);
+}
+
+
+void MainWindow::on_Third_Vertex_X_Coordinate_Input_2_editingFinished()
+{
+	ClampCoords(ui->Third_Vertex_X_Coordinate_Input_2);
+}
+
+
+void MainWindow::on_Third_Vertex_Y_Coordinate_Input_2_editingFinished()
+{
+	ClampCoords(ui->Third_Vertex_Y_Coordinate_Input_2);
+}
+

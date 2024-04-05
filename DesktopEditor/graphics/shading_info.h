@@ -468,14 +468,14 @@ namespace NSStructures
 		{
 			GradientInfo ginfo;
 			ginfo.shading.triangle = points;
+			ginfo.shading.function = ColorFunction<agg::rgba8>(256, t0, t1);
+			ginfo.continue_shading_f = false;
+			ginfo.continue_shading_b = false;
 			if (parametric)
 			{
 				ginfo.shading.triangle_parameters = params;
 				ginfo.shading.f_type = ShadingInfo::UseNew;
-				ginfo.shading.function = ColorFunction<agg::rgba8>(256, t0, t1);
 				ginfo.shading.shading_type = ShadingInfo::Parametric;
-				ginfo.continue_shading_f = false;
-				ginfo.continue_shading_b = false;
 			}
 			else
 			{

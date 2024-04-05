@@ -139,6 +139,34 @@ private slots:
 
 	void on_Second_Radius_Input_editingFinished();
 
+	void on_actionTriangle_Gradient_triggered();
+
+	void on_First_Vertex_X_Coordinate_Input_editingFinished();
+
+	void on_First_Vertex_Y_Coordinate_Input_editingFinished();
+
+	void on_Second_Vertex_X_Coordinate_Input_editingFinished();
+
+	void on_Second_Vertex_Y_Coordinate_Input_editingFinished();
+
+	void on_Third_Vertex_X_Coordinate_Input_editingFinished();
+
+	void on_Third_Vertex_Y_Coordinate_Input_editingFinished();
+
+	void on_actionTriangle_Parametric_Gradient_triggered();
+
+	void on_First_Vertex_X_Coordinate_Input_2_editingFinished();
+
+	void on_First_Vertex_Y_Coordinate_Input_2_editingFinished();
+
+	void on_Second_Vertex_X_Coordinate_Input_2_editingFinished();
+
+	void on_Second_Vertex_Y_Coordinate_Input_2_editingFinished();
+
+	void on_Third_Vertex_X_Coordinate_Input_2_editingFinished();
+
+	void on_Third_Vertex_Y_Coordinate_Input_2_editingFinished();
+
 private:
 	Ui::MainWindow *ui;
 };

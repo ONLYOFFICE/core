@@ -1114,8 +1114,8 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
 
 			Object oAnnotRef;
 			oAnnots.arrayGetNF(i, &oAnnotRef);
-			std::vector<PdfReader::CAnnotMarkup::CFontData*> arrRC = PdfReader::CAnnotMarkup::ReadRC(sRC);
-			std::map<std::wstring, std::wstring> mFreeText = PdfReader::CAnnotMarkup::SetFont(m_pPDFDocument, &oAnnotRef, m_pFontManager, m_pFontList, arrRC, nTypeFonts);
+			std::vector<PdfReader::CAnnotMarkup::CFontData*> arrRC = PdfReader::AnnotMarkup::ReadRC(sRC);
+			std::map<std::wstring, std::wstring> mFreeText = PdfReader::AnnotMarkup::SetFont(m_pPDFDocument, &oAnnotRef, m_pFontManager, m_pFontList, arrRC, nTypeFonts);
 			for (std::map<std::wstring, std::wstring>::iterator it = mFreeText.begin(); it != mFreeText.end(); ++it)
 			{
 				if (m_mFonts.find(it->first) != m_mFonts.end())
@@ -1126,6 +1126,8 @@ BYTE* CPdfReader::GetWidgetFonts(int nTypeFonts)
 				m_mFonts[it->first] = it->second;
 			}
 			oAnnotRef.free();
+			for (int j = 0; j < arrRC.size(); ++j)
+				RELEASEOBJECT(arrRC[j]);
 		}
 		oAnnots.free();
 	}

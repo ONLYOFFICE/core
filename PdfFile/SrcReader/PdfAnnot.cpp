@@ -450,6 +450,13 @@ GList* tokenize(GString *s)
   }
   return toks;
 }
+bool isBaseFont(const std::wstring& wsName)
+{
+	return wsName == L"Courier" || wsName == L"Courier-Bold" || wsName == L"Courier-BoldOblique" || wsName == L"Courier-Oblique" ||
+		   wsName == L"Helvetica" || wsName == L"Helvetica-Bold" || wsName == L"Helvetica-BoldOblique" ||
+		   wsName == L"Helvetica-Oblique" || wsName == L"Symbol" || wsName == L"Times-Bold" || wsName == L"Times-BoldItalic" ||
+		   wsName == L"Times-Italic" || wsName == L"Times-Roman" || wsName == L"ZapfDingbats";
+}
 
 //------------------------------------------------------------------------
 // Widget
@@ -1068,12 +1075,10 @@ std::wstring GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CP
 	}
 
 	Ref oEmbRef;
-	const unsigned char* pData14 = NULL;
-	unsigned int nSize14 = 0;
 	std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
 	std::wstring wsFileName;
 
-	if (((nTypeFonts & 1) && gfxFont->getEmbeddedFontID(&oEmbRef)) || ((nTypeFonts & 2) && GetBaseFont(wsFontBaseName, pData14, nSize14)))
+	if (((nTypeFonts & 1) && gfxFont->getEmbeddedFontID(&oEmbRef)) || ((nTypeFonts & 2) && isBaseFont(wsFontBaseName)))
 	{
 		std::wstring wsFontName;
 		GetFont(xref, pFontManager, pFontList, gfxFont, wsFileName, wsFontName);
@@ -2125,7 +2130,7 @@ CAnnotMarkup::CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : 
 	std::string sRC = DictLookupString(&oAnnot, "RC", 3);
 	// if (oAnnot.dictLookup("RC", &oObj)->isStream())
 	// TODO streamGetBlock
-	m_arrRC = ReadRC(sRC);
+	m_arrRC = AnnotMarkup::ReadRC(sRC);
 	if (m_arrRC.empty())
 		m_unFlags &= ~(1 << 3);
 	else
@@ -2162,238 +2167,7 @@ CAnnotMarkup::~CAnnotMarkup()
 	for (int i = 0; i < m_arrRC.size(); ++i)
 		RELEASEOBJECT(m_arrRC[i]);
 }
-std::vector<CAnnotMarkup::CFontData*> CAnnotMarkup::ReadRC(const std::string& sRC)
-{
-	std::vector<CFontData*> arrRC;
-
-	XmlUtils::CXmlLiteReader oLightReader;
-	if (sRC.empty() || !oLightReader.FromStringA(sRC) || !oLightReader.ReadNextNode() || oLightReader.GetNameA() != "body")
-		return arrRC;
-
-	CFontData oFontBase;
-	while (oLightReader.MoveToNextAttribute())
-	{
-		if (oLightReader.GetNameA() == "style")
-		{
-			ReadFontData(oLightReader.GetTextA(), &oFontBase);
-			break;
-		}
-	}
-	oLightReader.MoveToElement();
-
-	int nDepthP = oLightReader.GetDepth();
-	while (oLightReader.ReadNextSiblingNode2(nDepthP))
-	{
-		if (oLightReader.GetNameA() != "p")
-			continue;
-
-		int nDepthSpan = oLightReader.GetDepth();
-		if (oLightReader.IsEmptyNode() || !oLightReader.ReadNextSiblingNode2(nDepthSpan))
-			continue;
-
-		do
-		{
-			std::string sName = oLightReader.GetNameA();
-			if (sName == "span")
-			{
-				CFontData* pFont = new CFontData(oFontBase);
-				while (oLightReader.MoveToNextAttribute())
-				{
-					if (oLightReader.GetNameA() == "style")
-					{
-						ReadFontData(oLightReader.GetTextA(), pFont);
-						break;
-					}
-				}
-				oLightReader.MoveToElement();
-
-				pFont->sText = oLightReader.GetText2A();
-				arrRC.push_back(pFont);
-			}
-			else if (sName == "#text")
-			{
-				CFontData* pFont = new CFontData(oFontBase);
-				pFont->sText = oLightReader.GetTextA();
-				arrRC.push_back(pFont);
-			}
-		} while (oLightReader.ReadNextSiblingNode2(nDepthSpan));
-	}
-
-	return arrRC;
-}
-void CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList)
-{
-	SetFont(pdfDoc, oAnnotRef, pFontManager, pFontList, m_arrRC);
-}
-std::map<std::wstring, std::wstring> CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, const std::vector<CFontData*>& arrRC, int nTypeFonts)
-{
-	std::map<std::wstring, std::wstring> mRes;
-	if (arrRC.empty())
-		return mRes;
-
-	Object oAnnot, oObj;
-	XRef* pXref = pdfDoc->getXRef();
-	oAnnotRef->fetch(pXref, &oAnnot);
-
-	Object oAP, oN, oR, oFonts;
-	if (oAnnot.dictLookup("AP", &oAP)->isDict() && oAP.dictLookup("N", &oN)->isStream() && oN.streamGetDict()->lookup("Resources", &oR)->isDict() && oR.dictLookup("Font", &oFonts)->isDict())
-	{
-		CFontList* pAppFontList = (CFontList*)pFontManager->GetApplication()->GetList();
-		std::vector<std::wstring> arrFontFreeText;
-
-		for (int i = 0; i < oFonts.dictGetLength(); ++i)
-		{
-			Object oFontRef;
-			if (oFonts.dictGetValNF(i, &oFontRef)->isRef())
-			{
-				std::string sFontName, sActual;
-				bool bBold = false, bItalic = false;
-				std::wstring sFontPath = GetFontData(pdfDoc, pFontManager, pFontList, &oFonts, &oFontRef, nTypeFonts, sFontName, sActual, bBold, bItalic);
-
-				const unsigned char* pData14 = NULL;
-				unsigned int nSize14 = 0;
-				CFontStream* pFontStream = (CFontStream*)NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(sFontPath);
-				if (pFontStream && !GetBaseFont(sFontPath, pData14, nSize14))
-				{
-					bool bNew = true;
-					std::vector<NSFonts::CFontInfo*>* arrFontList = pAppFontList->GetFonts();
-					for (int nIndex = 0; nIndex < arrFontList->size(); ++nIndex)
-					{
-						if (((*arrFontList)[nIndex]->m_wsFontPath == sFontPath ||
-							 (*arrFontList)[nIndex]->m_wsFontName == UTF8_TO_U(sFontName)) &&
-							 (*arrFontList)[nIndex]->m_bBold      == bBold &&
-							 (*arrFontList)[nIndex]->m_bItalic    == bItalic)
-						{
-							bNew = false;
-							break;
-						}
-					}
-					if (bNew)
-						pAppFontList->Add(sFontPath, pFontStream);
-					arrFontFreeText.push_back(sFontPath);
-				}
-			}
-			oFontRef.free();
-		}
-
-		for (int i = 0; i < arrRC.size(); ++i)
-		{
-			if (arrRC[i]->bFind)
-				continue;
-
-			std::string sFontName = arrRC[i]->sFontFamily;
-			bool bBold = (bool)((arrRC[i]->unFontFlags >> 0) & 1);
-			bool bItalic = (bool)((arrRC[i]->unFontFlags >> 1) & 1);
-			bool bBase = sFontName == "Courier" || sFontName == "Helvetica" || sFontName == "Symbol" || sFontName == "Times New Roman" || sFontName == "ZapfDingbats";
-			if ((nTypeFonts & 2) && bBase)
-			{
-				if (sFontName == "Times New Roman")
-				{
-					if (bBold && bItalic)
-						sFontName = "Times-BoldItalic";
-					else if (bBold)
-						sFontName = "Times-Bold";
-					else if (bItalic)
-						sFontName = "Times-Italic";
-					else
-						sFontName = "Times-Roman";
-				}
-				else if (sFontName == "Courier" || sFontName == "Helvetica")
-				{
-					if (bBold && bItalic)
-						sFontName += "-BoldOblique";
-					else if (bBold)
-						sFontName += "-Bold";
-					else if (bItalic)
-						sFontName += "-Oblique";
-				}
-
-				const unsigned char* pData14 = NULL;
-				unsigned int nSize14 = 0;
-				std::wstring wsFontName = UTF8_TO_U(sFontName);
-				if (!NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(wsFontName) && GetBaseFont(wsFontName, pData14, nSize14))
-					NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFontName, (BYTE*)pData14, nSize14, false);
-				std::string sFontNameBefore = arrRC[i]->sFontFamily;
-				arrRC[i]->sFontFamily = sFontName;
-				arrRC[i]->bFind = true;
-				mRes[wsFontName] = wsFontName;
-
-				for (int j = i; j < arrRC.size(); ++j)
-				{
-					if (arrRC[j]->sFontFamily == sFontNameBefore)
-					{
-						arrRC[j]->sFontFamily = sFontName;
-						arrRC[j]->bFind = true;
-					}
-				}
-			}
-			if ((nTypeFonts & 1) && !bBase)
-			{
-				NSFonts::CFontSelectFormat oFontSelect;
-				if (bBold)
-					oFontSelect.bBold = new INT(1);
-				if (bItalic)
-					oFontSelect.bItalic = new INT(1);
-				oFontSelect.wsName = new std::wstring(UTF8_TO_U(sFontName));
-
-				NSFonts::CFontInfo* pFontInfo = pAppFontList->GetByParams(oFontSelect);
-				if (pFontInfo && !pFontInfo->m_wsFontPath.empty())
-				{
-					bool bFreeText = std::find(arrFontFreeText.begin(), arrFontFreeText.end(), pFontInfo->m_wsFontPath) != arrFontFreeText.end();
-					std::wstring wsFontBaseName = pFontInfo->m_wsFontName;
-					if (wsFontBaseName.length() > 7 && wsFontBaseName.at(6) == '+')
-					{
-						bool bIsRemove = true;
-						for (int nIndex = 0; nIndex < 6; nIndex++)
-						{
-							wchar_t nChar = wsFontBaseName.at(nIndex);
-							if (nChar < 'A' || nChar > 'Z')
-							{
-								bIsRemove = false;
-								break;
-							}
-						}
-						if (bIsRemove)
-							wsFontBaseName.erase(0, 7);
-					}
-
-					if (bFreeText)
-					{
-						arrRC[i]->sFontFamily = U_TO_UTF8(wsFontBaseName);
-						mRes[wsFontBaseName] = pFontInfo->m_wsFontPath;
-					}
-					else
-					{
-						arrRC[i]->unFontFlags |= (1 << 6);
-						arrRC[i]->sActualFont = U_TO_UTF8(wsFontBaseName);
-					}
-					arrRC[i]->bFind = true;
-
-					std::string sFontNameNew = bFreeText ? arrRC[i]->sFontFamily : arrRC[i]->sActualFont;
-					for (int j = i; j < arrRC.size(); ++j)
-					{
-						if (arrRC[j]->sFontFamily == sFontName)
-						{
-							if (bFreeText)
-								arrRC[j]->sFontFamily = sFontNameNew;
-							else
-							{
-								arrRC[j]->unFontFlags |= (1 << 6);
-								arrRC[j]->sActualFont = sFontNameNew;
-							}
-							arrRC[j]->bFind = true;
-						}
-					}
-				}
-			}
-		}
-	}
-	oAP.free(); oN.free(); oR.free(); oFonts.free();
-
-	oAnnot.free();
-	return mRes;
-}
-void CAnnotMarkup::ReadFontData(const std::string& sData, CFontData* pFont)
+void ReadFontData(const std::string& sData, CAnnotMarkup::CFontData* pFont)
 {
 	size_t nSemicolon = 0;
 	size_t nColon = sData.find(':');
@@ -2478,6 +2252,248 @@ void CAnnotMarkup::ReadFontData(const std::string& sData, CFontData* pFont)
 		}
 		// font-stretch
 	}
+}
+std::vector<CAnnotMarkup::CFontData*> AnnotMarkup::ReadRC(const std::string& sRC)
+{
+	std::vector<CAnnotMarkup::CFontData*> arrRC;
+
+	XmlUtils::CXmlLiteReader oLightReader;
+	if (sRC.empty() || !oLightReader.FromStringA(sRC) || !oLightReader.ReadNextNode() || oLightReader.GetNameA() != "body")
+		return arrRC;
+
+	CAnnotMarkup::CFontData oFontBase;
+	while (oLightReader.MoveToNextAttribute())
+	{
+		if (oLightReader.GetNameA() == "style")
+		{
+			ReadFontData(oLightReader.GetTextA(), &oFontBase);
+			break;
+		}
+	}
+	oLightReader.MoveToElement();
+
+	int nDepthP = oLightReader.GetDepth();
+	while (oLightReader.ReadNextSiblingNode2(nDepthP))
+	{
+		if (oLightReader.GetNameA() != "p")
+			continue;
+
+		int nDepthSpan = oLightReader.GetDepth();
+		if (oLightReader.IsEmptyNode() || !oLightReader.ReadNextSiblingNode2(nDepthSpan))
+			continue;
+
+		do
+		{
+			std::string sName = oLightReader.GetNameA();
+			if (sName == "span")
+			{
+				CAnnotMarkup::CFontData* pFont = new CAnnotMarkup::CFontData(oFontBase);
+				while (oLightReader.MoveToNextAttribute())
+				{
+					if (oLightReader.GetNameA() == "style")
+					{
+						ReadFontData(oLightReader.GetTextA(), pFont);
+						break;
+					}
+				}
+				oLightReader.MoveToElement();
+
+				pFont->sText = oLightReader.GetText2A();
+				arrRC.push_back(pFont);
+			}
+			else if (sName == "#text")
+			{
+				CAnnotMarkup::CFontData* pFont = new CAnnotMarkup::CFontData(oFontBase);
+				pFont->sText = oLightReader.GetTextA();
+				arrRC.push_back(pFont);
+			}
+		} while (oLightReader.ReadNextSiblingNode2(nDepthSpan));
+	}
+
+	return arrRC;
+}
+void CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList)
+{
+	AnnotMarkup::SetFont(pdfDoc, oAnnotRef, pFontManager, pFontList, m_arrRC);
+}
+std::map<std::wstring, std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, std::vector<CAnnotMarkup::CFontData*>& arrRC, int nTypeFonts)
+{
+	std::map<std::wstring, std::wstring> mRes;
+	if (arrRC.empty())
+		return mRes;
+
+	Object oAnnot, oObj;
+	XRef* pXref = pdfDoc->getXRef();
+	oAnnotRef->fetch(pXref, &oAnnot);
+
+	Object oAP, oN, oR, oFonts;
+	if (!oAnnot.dictLookup("AP", &oAP)->isDict() || !oAP.dictLookup("N", &oN)->isStream() || !oN.streamGetDict()->lookup("Resources", &oR)->isDict() || !oR.dictLookup("Font", &oFonts)->isDict())
+	{
+		oAP.free(); oN.free(); oR.free(); oFonts.free();
+		return mRes;
+	}
+
+	CFontList* pAppFontList = (CFontList*)pFontManager->GetApplication()->GetList();
+	std::vector<std::wstring> arrFontFreeText;
+
+	for (int i = 0, nFonts = oFonts.dictGetLength(); i < nFonts; ++i)
+	{
+		Object oFontRef;
+		if (!oFonts.dictGetValNF(i, &oFontRef)->isRef())
+		{
+			oFontRef.free();
+			continue;
+		}
+
+		std::string sFontName, sActual;
+		bool bBold = false, bItalic = false;
+		std::wstring sFontPath = GetFontData(pdfDoc, pFontManager, pFontList, &oFonts, &oFontRef, nTypeFonts, sFontName, sActual, bBold, bItalic);
+		if (sFontPath.empty())
+		{
+			oFontRef.free();
+			continue;
+		}
+
+		CFontStream* pFontStream = (CFontStream*)NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(sFontPath);
+		if (pFontStream && !isBaseFont(sFontPath))
+		{
+			bool bNew = true;
+			std::vector<NSFonts::CFontInfo*>* arrFontList = pAppFontList->GetFonts();
+			for (int nIndex = 0; nIndex < arrFontList->size(); ++nIndex)
+			{
+				if (((*arrFontList)[nIndex]->m_wsFontPath == sFontPath ||
+					 (*arrFontList)[nIndex]->m_wsFontName == UTF8_TO_U(sFontName)) &&
+					 (*arrFontList)[nIndex]->m_bBold      == bBold &&
+					 (*arrFontList)[nIndex]->m_bItalic    == bItalic)
+				{
+					bNew = false;
+					break;
+				}
+			}
+			if (bNew)
+				pAppFontList->Add(sFontPath, pFontStream);
+			arrFontFreeText.push_back(sFontPath);
+		}
+		oFontRef.free();
+	}
+
+	for (int i = 0; i < arrRC.size(); ++i)
+	{
+		if (arrRC[i]->bFind)
+			continue;
+
+		std::string sFontName = arrRC[i]->sFontFamily;
+		bool bBold = (bool)((arrRC[i]->unFontFlags >> 0) & 1);
+		bool bItalic = (bool)((arrRC[i]->unFontFlags >> 1) & 1);
+		bool bBase = sFontName == "Courier" || sFontName == "Helvetica" || sFontName == "Symbol" || sFontName == "Times New Roman" || sFontName == "ZapfDingbats";
+		if ((nTypeFonts & 2) && bBase)
+		{
+			if (sFontName == "Times New Roman")
+			{
+				if (bBold && bItalic)
+					sFontName = "Times-BoldItalic";
+				else if (bBold)
+					sFontName = "Times-Bold";
+				else if (bItalic)
+					sFontName = "Times-Italic";
+				else
+					sFontName = "Times-Roman";
+			}
+			else if (sFontName == "Courier" || sFontName == "Helvetica")
+			{
+				if (bBold && bItalic)
+					sFontName += "-BoldOblique";
+				else if (bBold)
+					sFontName += "-Bold";
+				else if (bItalic)
+					sFontName += "-Oblique";
+			}
+
+			const unsigned char* pData14 = NULL;
+			unsigned int nSize14 = 0;
+			std::wstring wsFontName = UTF8_TO_U(sFontName);
+			if (!NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(wsFontName) && GetBaseFont(wsFontName, pData14, nSize14))
+				NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFontName, (BYTE*)pData14, nSize14, false);
+			std::string sFontNameBefore = arrRC[i]->sFontFamily;
+			arrRC[i]->sFontFamily = sFontName;
+			arrRC[i]->bFind = true;
+			mRes[wsFontName] = wsFontName;
+
+			for (int j = i; j < arrRC.size(); ++j)
+			{
+				if (arrRC[j]->sFontFamily == sFontNameBefore && bBold == (bool)((arrRC[j]->unFontFlags >> 0) & 1) && bItalic == (bool)((arrRC[j]->unFontFlags >> 1) & 1))
+				{
+					arrRC[j]->sFontFamily = sFontName;
+					arrRC[j]->bFind = true;
+				}
+			}
+		}
+		if ((nTypeFonts & 1) && !bBase)
+		{
+			NSFonts::CFontSelectFormat oFontSelect;
+			if (bBold)
+				oFontSelect.bBold = new INT(1);
+			if (bItalic)
+				oFontSelect.bItalic = new INT(1);
+			oFontSelect.wsName = new std::wstring(UTF8_TO_U(sFontName));
+
+			NSFonts::CFontInfo* pFontInfo = pAppFontList->GetByParams(oFontSelect);
+			if (pFontInfo && !pFontInfo->m_wsFontPath.empty())
+			{
+				bool bFreeText = std::find(arrFontFreeText.begin(), arrFontFreeText.end(), pFontInfo->m_wsFontPath) != arrFontFreeText.end();
+				std::wstring wsFontBaseName = pFontInfo->m_wsFontName;
+				if (wsFontBaseName.length() > 7 && wsFontBaseName.at(6) == '+')
+				{
+					bool bIsRemove = true;
+					for (int nIndex = 0; nIndex < 6; nIndex++)
+					{
+						wchar_t nChar = wsFontBaseName.at(nIndex);
+						if (nChar < 'A' || nChar > 'Z')
+						{
+							bIsRemove = false;
+							break;
+						}
+					}
+					if (bIsRemove)
+						wsFontBaseName.erase(0, 7);
+				}
+
+				if (bFreeText)
+				{
+					arrRC[i]->sFontFamily = U_TO_UTF8(wsFontBaseName);
+					mRes[wsFontBaseName] = pFontInfo->m_wsFontPath;
+				}
+				else
+				{
+					arrRC[i]->unFontFlags |= (1 << 6);
+					arrRC[i]->sActualFont = U_TO_UTF8(wsFontBaseName);
+				}
+				arrRC[i]->bFind = true;
+
+				std::string sFontNameNew = bFreeText ? arrRC[i]->sFontFamily : arrRC[i]->sActualFont;
+				for (int j = i; j < arrRC.size(); ++j)
+				{
+					if (arrRC[j]->sFontFamily == sFontName && bBold == (bool)((arrRC[j]->unFontFlags >> 0) & 1) && bItalic == (bool)((arrRC[j]->unFontFlags >> 1) & 1))
+					{
+						if (bFreeText)
+							arrRC[j]->sFontFamily = sFontNameNew;
+						else
+						{
+							arrRC[j]->unFontFlags |= (1 << 6);
+							arrRC[j]->sActualFont = sFontNameNew;
+						}
+						arrRC[j]->bFind = true;
+					}
+				}
+			}
+		}
+	}
+
+
+	oAP.free(); oN.free(); oR.free(); oFonts.free();
+
+	oAnnot.free();
+	return mRes;
 }
 CAnnotMarkup::CFontData::CFontData(const CFontData& oFont)
 {

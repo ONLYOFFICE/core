@@ -345,8 +345,7 @@ public:
 	};
 
 	void SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList);
-	static std::map<std::wstring, std::wstring> SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, const std::vector<CFontData*>& arrRC, int nTypeFonts = 3);
-	static std::vector<CFontData*> ReadRC(const std::string& sRC);
+
 protected:
 	CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
 	virtual ~CAnnotMarkup();
@@ -354,8 +353,6 @@ protected:
 	virtual void ToWASM(NSWasm::CData& oRes) override;
 
 private:
-	static void ReadFontData(const std::string& sData, CFontData* pFont);
-
 	BYTE m_nRT; // Тип аннотации-ответа
 	unsigned int m_unRefNumPopup; // Номер ссылки на всплывающую аннотацию
 	unsigned int m_unRefNumIRT; // Номер ссылки на аннотацию-ответ
@@ -365,6 +362,11 @@ private:
 	std::string m_sSubj; // Краткое описание
 	std::vector<CFontData*> m_arrRC; // Форматированный текст
 };
+namespace AnnotMarkup
+{
+std::map<std::wstring, std::wstring> SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, std::vector<CAnnotMarkup::CFontData*>& arrRC, int nTypeFonts = 3);
+std::vector<CAnnotMarkup::CFontData*> ReadRC(const std::string& sRC);
+}
 
 //------------------------------------------------------------------------
 // PdfReader::CAnnotText

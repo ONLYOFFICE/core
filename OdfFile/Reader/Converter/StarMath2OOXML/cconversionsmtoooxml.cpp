@@ -36,36 +36,14 @@ namespace StarMath {
 	CConversionSMtoOOXML::CConversionSMtoOOXML(): m_pXmlWrite(nullptr)
 	{
 	}
+	CConversionSMtoOOXML::~CConversionSMtoOOXML()
+	{
+		delete m_pXmlWrite;
+	}
 	//check XMLWrite(if not nullptr == delete)
 	void CConversionSMtoOOXML::StartConversion(std::vector<StarMath::CElement*> arPars, const unsigned int& iAlignment)
 	{
 		m_pXmlWrite = new XmlUtils::CXmlWriter;
-//		m_pXmlWrite->WriteNodeBegin(L"m:oMathPara",false);
-//		if(iAlignment>= 0 && iAlignment <= 2)
-//		{
-//			std::wstring wsAlignment;
-//			switch(iAlignment)
-//			{
-//			case 0:
-//			wsAlignment = L"center";
-//			break;
-//			case 1:
-//			wsAlignment = L"left";
-//			break;
-//			case 2:
-//			wsAlignment = L"right";
-//			break;
-//			default:
-//			wsAlignment = L"center";
-//			break;
-//			}
-//			m_pXmlWrite->WriteNodeBegin(L"m:oMathParaPr",false);
-//			m_pXmlWrite->WriteNodeBegin(L"m:jc",true);
-//			m_pXmlWrite->WriteAttribute(L"m:val",wsAlignment);
-//			m_pXmlWrite->WriteNodeEnd(L"",true,true);
-//			m_pXmlWrite->WriteNodeEnd(L"m:oMathParaPr",false,false);
-//		}
-//		m_pXmlWrite->WriteNodeBegin(L"m:oMath",false);
 		for(CElement* oTempElement:arPars)
 		{
 			if(oTempElement != nullptr)
@@ -83,13 +61,11 @@ namespace StarMath {
 					oTempElement->ConversionToOOXML(m_pXmlWrite);
 			}
 		}
-//		EndConversion();
 	}
 	void CConversionSMtoOOXML::StandartProperties(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute)
 	{
 		if(pAttribute == nullptr)
 		{
-			//тут должны быть базовые свойства шрифта, задаваемые выше
 
 			pXmlWrite->WriteNodeBegin(L"w:rPr",false);
 			pXmlWrite->WriteNodeBegin(L"w:rFonts",true);
@@ -97,10 +73,10 @@ namespace StarMath {
 			pXmlWrite->WriteAttribute(L"w:ascii",L"Cambria Math");
 			pXmlWrite->WriteNodeEnd(L"w",true,true);
 			pXmlWrite->WriteNodeBegin(L"w:sz",true);
-			pXmlWrite->WriteAttribute(L"w:val",L"40");
+			pXmlWrite->WriteAttribute(L"w:val",L"30");
 			pXmlWrite->WriteNodeEnd(L"w",true,true);
 			pXmlWrite->WriteNodeBegin(L"w:szCs",true);
-			pXmlWrite->WriteAttribute(L"w:val",L"40");
+			pXmlWrite->WriteAttribute(L"w:val",L"30");
 			pXmlWrite->WriteNodeEnd(L"w",true,true);
 			pXmlWrite->WriteNodeEnd(L"w:rPr",false,false);
 		}
@@ -122,12 +98,11 @@ namespace StarMath {
 			pXmlWrite->WriteNodeEnd(L"w",true,true);
 			if(pAttribute->GetSize() == 0)
 			{
-				//тут должны быть базовые свойства шрифта, задаваемые выше - далее везде где не задано - аналогично
 				pXmlWrite->WriteNodeBegin(L"w:sz",true);
-				pXmlWrite->WriteAttribute(L"w:val",L"40");
+				pXmlWrite->WriteAttribute(L"w:val",L"30");
 				pXmlWrite->WriteNodeEnd(L"w",true,true);
 				pXmlWrite->WriteNodeBegin(L"w:szCs",true);
-				pXmlWrite->WriteAttribute(L"w:val",L"40");
+				pXmlWrite->WriteAttribute(L"w:val",L"30");
 				pXmlWrite->WriteNodeEnd(L"w",true,true);
 			}
 			else if(pAttribute->GetSize() != 0)

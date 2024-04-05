@@ -46,11 +46,12 @@ namespace StarMath
 
 	struct TBaseAttribute
 	{
-		unsigned int base_font_size = 12;
-		std::wstring base_font_name = L"Arial";
-		unsigned int base_alignment = 1;//(0 - center,1 - left,2 - right)
-		bool base_font_bold = false;
-		bool base_font_italic = false;
+		TBaseAttribute():base_font_size(0),base_alignment(0),base_font_bold(false),base_font_italic(false){};
+		unsigned int base_font_size;
+		std::wstring base_font_name;
+		unsigned int base_alignment;
+		bool base_font_bold;
+		bool base_font_italic;
 	};
 
 	class CAttribute
@@ -84,11 +85,15 @@ namespace StarMath
 		bool CheckAttribute();
 		//checking an element for a number from 1 to 9 or from the letter A to F
 		static bool CheckHexPosition(const wchar_t& cToken);
+		bool CheckingForEmptiness();
+		void AddRef();
+		void Release();
 	private:
 		void RefundOfTheAmountRGB(CStarMathReader* pReader,const int& iRed, const int& iGreen, const int& iBlue);
 		std::wstring m_wsColor,m_wsNameFont;
 		bool m_bBold,m_bItal,m_bPhantom,m_bStrike;
 		unsigned int m_iSize,m_iAlignment;
+		unsigned int m_unCount;
 	};
 	//Сlass for working with tokens (reading, defining types, passing)
 	class CStarMathReader
@@ -109,13 +114,13 @@ namespace StarMath
 		bool EmptyString();
 		void SetAttribute(CAttribute* pAttribute);
 		CAttribute* GetAttribute();
-		void SetBaseAttribute(const TBaseAttribute* pAttribute);
+		void SetBaseAttribute(const TBaseAttribute& pAttribute);
 		CAttribute* GetBaseAttribute();
 		//The function returns a Token from a string (the iterator pointer m_itStart is on the next element)
 		std::wstring GetElement();
-		//
+		//taking a token for a color in hex form
 		std::wstring TakingElementForHex();
-		//
+		//taking a token for a color in rgb form
 		int TakingElementForRGB();
 		void SetString(const std::wstring& wsToken);
 		void FindingTheEndOfParentheses();
@@ -214,9 +219,9 @@ namespace StarMath
 		static TypeElement GetBinOperator(const std::wstring& wsToken);
 		static void UnaryCheck(CStarMathReader* pReader,CElement* pLastElement);
 		const TypeElement& GetType();
-	private:
 		//checking for signs such as -,+,-+,+-.
 		static bool MixedOperators(const TypeElement& enType);
+	private:
 		void SetAttribute(CAttribute* pAttribute) override;
 		bool IsBinOperatorLowPrior();
 		void Parse(CStarMathReader* pReader) override;
@@ -422,7 +427,9 @@ namespace StarMath
 	class CParserStarMathString
 	{
 	public:
-		std::vector<CElement*> Parse(std::wstring& wsParseString, const TBaseAttribute* pBaseAttribute = nullptr);
+		CParserStarMathString();
+		~CParserStarMathString();
+		std::vector<CElement*> Parse(std::wstring& wsParseString);
 		static CElement* ParseElement(CStarMathReader* pReader);
 		//Function for adding a left argument (receives the argument itself and the element to which it needs to be added as input. Works with classes:CElementBinOperator,CElementConnection,CElementSetOperation).
 		static bool AddLeftArgument(CElement* pLeftArg,CElement* pElementWhichAdd);
@@ -438,7 +445,13 @@ namespace StarMath
 		static void ReadingElementsWithAttributes(CStarMathReader* pReader,CElement*& pSavingElement);
 		void SetAlignment(const unsigned int& iAlignment);
 		const unsigned int& GetAlignment();
+		void SetBaseFont(const std::wstring& wsNameFont);
+		void SetBaseSize(const unsigned int& iSize);
+		void SetBaseAlignment(const unsigned int& iAlignment);
+		void SetBaseItalic(const bool& bItal);
+		void SetBaseBold(const bool& bBold);
 	private:
+		TBaseAttribute m_stBaseAttribute;
 		std::vector<CElement*> m_arEquation;
 		unsigned int m_iAlignment;
 	};

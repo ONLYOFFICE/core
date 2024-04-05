@@ -114,7 +114,13 @@ void math_semantics::oox_convert(oox::math_context & Context)
         /*parser.set*/ /*?*/ /*converter.set*/ Context.base_alignment_;
         /*parser.set*/ /*?*/ /*converter.set*/ Context.base_font_italic_;
         /*parser.set*/ /*?*/ /*converter.set*/ Context.base_font_bold_;
-        
+
+        parser.SetBaseFont(Context.base_font_name_);
+        parser.SetBaseSize(Context.base_font_size_);
+        parser.SetBaseAlignment(Context.base_alignment_);
+        parser.SetBaseItalic(Context.base_font_italic_);
+        parser.SetBaseBold(Context.base_font_bold_);
+
         /*result = */converter.StartConversion(parser.Parse(annotation_text));
 
         Context.output_stream() << converter.GetOOXML();

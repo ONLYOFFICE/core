@@ -475,7 +475,7 @@ namespace OOX
 			}
 			return nLen;
 		}
-		_UINT32 CFormulaXLSB::toXLSB(NSBinPptxRW::CXlsbBinaryWriter& oStream, bool bIsBlankFormula)
+		_UINT16 CFormulaXLSB::toXLSB(NSBinPptxRW::CXlsbBinaryWriter& oStream, bool bIsBlankFormula)
 		{
 			_UINT16 nFlags = 0;
 			if(m_oCa.ToBool())
@@ -486,7 +486,7 @@ namespace OOX
 			oStream.WriteULONG(0);//cce
 			oStream.WriteULONG(0);//cb
 
-			_UINT32 nFlagsExt = 0;
+			_UINT16 nFlagsExt = 0;
 			nFlagsExt |= m_oT.GetValue();
 			nFlagsExt |= 0x4;
 			if(m_oAca.ToBool())
@@ -693,12 +693,20 @@ namespace OOX
 			oStream.XlsbStartRecord(nType, nLen);
 			oStream.WriteULONG(m_nCol & 0x3FFF);
 
-			_UINT32 nStyle = m_nStyle;
+			_UINT32 nFlags2 = m_nStyle;
 			if (m_oShowPhonetic.ToBool())
 			{
-				nStyle |= 0x1000000;
+				nFlags2 |= 0x1000000;
 			}
-			oStream.WriteULONG(nStyle);
+			if (m_oCellMetadata.IsInit())
+			{
+				nFlags2 |= 0x2000000;
+			}
+			if (m_oValueMetadata.IsInit())
+			{
+				nFlags2 |= 0x4000000;
+			}
+			oStream.WriteULONG(nFlags2);
 			//todo RkNumber
 			switch(nType)
 			{
@@ -721,25 +729,16 @@ namespace OOX
 				break;
 			}
 
-			_UINT32 nFlags = 0;
+			_UINT16 nFlags = 0;
 			if(m_oFormula.m_bIsInit)
 			{
 				nFlags = m_oFormula.toXLSB(oStream, bIsBlankFormula);
 			}
-
 			if(m_oRichText.IsInit())
 			{
 				nFlags |= 0x2000;
 			}
-			if (m_oCellMetadata.IsInit())
-			{
-				nFlags |= 0x8000;
-			}
-			if (m_oValueMetadata.IsInit())
-			{
-				nFlags |= 0x10000;
-			}
-			oStream.WriteULONG(nFlags);
+			oStream.WriteUSHORT(nFlags);
 			if(m_oFormula.m_bIsInit)
 			{
 				m_oFormula.toXLSBExt(oStream);
@@ -1715,13 +1714,13 @@ namespace OOX
 
 			m_oRow = nRow;
 			m_oCol = (oStream.GetULong() & 0x3FFF);
-			_UINT32 nStyleRef = oStream.GetULong();
-			if(0 != (nStyleRef & 0xFFFFFF))
+			_UINT32 nFlags2 = oStream.GetULong();
+			if(0 != (nFlags2 & 0xFFFFFF))
 			{
-				m_oStyle = (nStyleRef & 0xFFFFFF);
+				m_oStyle = (nFlags2 & 0xFFFFFF);
 			}
 
-			if(0 != (nStyleRef & 0x1000000))
+			if(0 != (nFlags2 & 0x1000000))
 			{
 				m_oShowPhonetic.Init();
 				m_oShowPhonetic->FromBool(true);
@@ -1784,7 +1783,7 @@ namespace OOX
 				m_oFormula->fromXLSB(oStream);
 			}
 			//todo it breaks xslb format
-			_UINT32 nFlags = oStream.GetULong();
+			_UINT16 nFlags = oStream.GetUShort();
 			if(0 != (nFlags & 0x4))
 			{
 				if(!m_oFormula.IsInit())
@@ -1806,11 +1805,11 @@ namespace OOX
 				m_oRichText.Init();
 				m_oRichText->fromXLSBExt(oStream);
 			}
-			if (0 != (nFlags & 0x8000))
+			if (0 != (nFlags2 & 0x2000000))
 			{
 				m_oCellMetadata = oStream.GetULong();
 			}
-			if (0 != (nFlags & 0x10000))
+			if (0 != (nFlags2 & 0x4000000))
 			{
 				m_oValueMetadata = oStream.GetULong();
 			}

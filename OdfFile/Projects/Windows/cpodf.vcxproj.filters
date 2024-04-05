@@ -945,6 +945,7 @@
     <ClInclude Include="..\..\Reader\Converter\pptx_animation_context.h">
       <Filter>oox\pptx</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\cconversionsmtoooxml.h">
       <Filter>starmath</Filter>
     </ClInclude>
@@ -953,6 +954,8 @@
     </ClInclude>
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\typeselements.h">
       <Filter>starmath</Filter>
+=======
+>>>>>>> origin/fix/bug61378
     <ClInclude Include="..\..\Reader\Format\office_drawing.h">
       <Filter>elements</Filter>
     </ClInclude>

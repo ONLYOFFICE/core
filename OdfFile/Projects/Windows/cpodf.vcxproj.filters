@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="oox">
@@ -945,7 +945,6 @@
     <ClInclude Include="..\..\Reader\Converter\pptx_animation_context.h">
       <Filter>oox\pptx</Filter>
     </ClInclude>
-<<<<<<< HEAD
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\cconversionsmtoooxml.h">
       <Filter>starmath</Filter>
     </ClInclude>
@@ -954,8 +953,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\typeselements.h">
       <Filter>starmath</Filter>
-=======
->>>>>>> origin/fix/bug61378
     <ClInclude Include="..\..\Reader\Format\office_drawing.h">
       <Filter>elements</Filter>
     </ClInclude>

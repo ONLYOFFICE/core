@@ -489,6 +489,8 @@
     </ClCompile>
     <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\cstarmathpars.cpp">
       <Filter>starmath</Filter>
+    <ClCompile Include="..\..\Reader\Format\office_drawing.cpp">
+      <Filter>elements</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -951,6 +953,8 @@
     </ClInclude>
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\typeselements.h">
       <Filter>starmath</Filter>
+    <ClInclude Include="..\..\Reader\Format\office_drawing.h">
+      <Filter>elements</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -389,6 +389,7 @@ SOURCES += \
 	../../Writer/Format/odp_page_state.cpp \
 	../../Writer/Format/odp_slide_context.cpp \
 	../../Writer/Format/office_presentation.cpp \
+	../../Writer/Format/office_drawing.cpp \
 	../../Writer/Format/style_presentation.cpp \
 	../../Writer/Format/odf_math_context.cpp \
 	../../Writer/Format/math_elementaries.cpp \
@@ -596,6 +597,7 @@ HEADERS += \
 	../../Reader/Format/office_elements_type.h \
 	../../Reader/Format/office_event_listeners.h \
 	../../Reader/Format/office_presentation.h \
+	../../Reader/Format/office_drawing.h \
 	../../Reader/Format/office_scripts.h \
 	../../Reader/Format/office_forms.h \
 	../../Reader/Format/office_settings.h \

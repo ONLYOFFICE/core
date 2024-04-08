@@ -712,7 +712,7 @@ namespace OOX
 			{
 				if(i->m_sUri == L"{DE250136-89BD-433C-8126-D09CA5730AF9}")
 				{
-					ptr->m_EXTCONN15 = i->m_oConnection->toBin();
+					ptr->m_EXTCONN15 = i->m_oConnection->toBin15();
 				}
 			}
 			return XLS::BaseObjectPtr{ptr};

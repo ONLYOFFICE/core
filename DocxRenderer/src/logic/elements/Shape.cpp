@@ -695,7 +695,7 @@ namespace NSDocxRenderer
 
 		//не работает
 		//oWriter.WriteString(L"<wps:style/>"); //shape styles. http://officeopenxml.com/drwSp-styles.php
-
+		BuildForm(oWriter);
 		BuildGraphicProperties(oWriter);
 
 		oWriter.WriteString(L"</wps:spPr>");
@@ -854,7 +854,7 @@ namespace NSDocxRenderer
 		}
 	}
 
-	void CShape::BuildForm(NSStringUtils::CStringBuilder &oWriter) const
+	void CShape::BuildForm(NSStringUtils::CStringBuilder &oWriter, const bool& bIsLT) const
 	{
 		// отвечает за размеры прямоугольного фрейма шейпа
 		oWriter.WriteString(L"<a:xfrm");
@@ -866,7 +866,19 @@ namespace NSDocxRenderer
 		}
 		oWriter.WriteString(L">");
 
-		oWriter.WriteString(L"<a:off x=\"0\" y=\"0\"/>");
+		if (!bIsLT)
+		{
+			oWriter.WriteString(L"<a:off x=\"0\" y=\"0\"/>");
+		}
+		else
+		{
+			oWriter.WriteString(L"<a:off x=\"");
+			oWriter.AddInt(static_cast<int>(m_dLeft * c_dMMToEMU));
+			oWriter.WriteString(L"\" y=\"");
+			oWriter.AddInt(static_cast<int>(m_dTop * c_dMMToEMU));
+			oWriter.WriteString(L"\"/>");
+		}
+
 		oWriter.WriteString(L"<a:ext");
 		oWriter.WriteString(L" cx=\"");
 		oWriter.AddInt(static_cast<int>(m_dWidth * c_dMMToEMU));
@@ -935,29 +947,7 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"<p:sp>");
 		oWriter.WriteString(L"<p:spPr>");
 
-		oWriter.WriteString(L"<a:xfrm");
-		if (fabs(m_dRotate) > 0.01)
-		{
-			oWriter.WriteString(L" rot=\"");
-			oWriter.AddInt(static_cast<int>(m_dRotate * c_dDegreeToAngle));
-			oWriter.WriteString(L"\"");
-		}
-		oWriter.WriteString(L">");
-
-		oWriter.WriteString(L"<a:off x=\"");
-		oWriter.AddInt(static_cast<int>(m_dLeft * c_dMMToEMU));
-		oWriter.WriteString(L"\" y=\"");
-		oWriter.AddInt(static_cast<int>(m_dTop * c_dMMToEMU));
-		oWriter.WriteString(L"\"/>");
-
-		oWriter.WriteString(L"<a:ext");
-		oWriter.WriteString(L" cx=\"");
-		oWriter.AddInt(static_cast<int>(m_dWidth * c_dMMToEMU));
-		oWriter.WriteString(L"\" cy=\"");
-		oWriter.AddInt(static_cast<int>(m_dHeight * c_dMMToEMU));
-		oWriter.WriteString(L"\"/>");
-
-		oWriter.WriteString(L"</a:xfrm>");
+		BuildForm(oWriter, true);
 		BuildGraphicProperties(oWriter);
 		oWriter.WriteString(L"</p:spPr>");
 

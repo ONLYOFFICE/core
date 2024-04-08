@@ -1575,9 +1575,9 @@
 		return res;
 	};
 
-	CFile.prototype["scanPage"] = function(page)
+	CFile.prototype["scanPage"] = function(page, mode)
 	{
-		let data = Module["_ScanPage"](this.nativeFile, page);
+		let data = Module["_ScanPage"](this.nativeFile, page, (mode === undefined) ? 0 : mode);
 		if (data == 0)
 			return [];
 

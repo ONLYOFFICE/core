@@ -1,83 +1,114 @@
 #pragma once
 #include "BaseItem.h"
-#include "../DesktopEditor/common/StringBuilder.h"
+#include "../../../../DesktopEditor/common/StringBuilder.h"
 #include "../managers/FontManager.h"
-#include "../managers/StyleManager.h"
-#include "../styles/FontStyle.h"
+#include "../managers/FontStyleManager.h"
 #include "../../resources/Constants.h"
 #include "../../resources/LinesTable.h"
 
 namespace NSDocxRenderer
 {
-    class CShape;
+	class CShape;
 
-    enum class eVertAlignType
-    {
-        vatUnknown,
-        vatBase,
-        vatSubscript,
-        vatSuperscript
-    };
+	enum class eVertAlignType
+	{
+		vatUnknown,
+		vatBase,
+		vatSubscript,
+		vatSuperscript
+	};
 
-    class CContText : public CBaseItem
-    {
-        public:
-            std::shared_ptr<CFontStyle> m_pFontStyle {nullptr};
+	// sizes in selected font
+	struct CSelectedSizes
+	{
+		double dWidth{0};
+		double dHeight{0};
 
-            bool   m_bIsStrikeoutPresent {false};
-            bool   m_bIsDoubleStrikeout {false};
+		CSelectedSizes() = default;
+		~CSelectedSizes() = default;
+		CSelectedSizes(const CSelectedSizes& oSelectedSizes);
+		CSelectedSizes& operator=(const CSelectedSizes& oSelectedSizes);
+	};
 
-            bool   m_bIsHighlightPresent {false};
-            LONG   m_lHighlightColor {c_iBlackColor};
+	class CContText : public CBaseItem
+	{
+	public:
+		// utils
+		std::shared_ptr<const CFontStyle> m_pFontStyle{nullptr};
+		CFontManager* m_pManager                      {nullptr};
 
-            bool   m_bIsUnderlinePresent {false};
-            eLineType m_eUnderlineType {eLineType::ltUnknown};
-            LONG   m_lUnderlineColor {c_iBlackColor};
+		// background graphics
+		std::shared_ptr<CShape> m_pShape              {nullptr};
 
-            bool   m_bIsShadowPresent {false};
-            bool   m_bIsOutlinePresent {false};
-            bool   m_bIsEmbossPresent {false};
-            bool   m_bIsEngravePresent {false};
+		// super/sub script
+		std::weak_ptr<CContText> m_pCont              {};
+		eVertAlignType m_eVertAlignType               {eVertAlignType::vatUnknown};
 
-            NSStringUtils::CStringUTF32 m_oText;
+		// highlights
+		bool m_bIsStrikeoutPresent{false};
+		bool m_bIsDoubleStrikeout {false};
+		bool m_bIsHighlightPresent{false};
+		LONG m_lHighlightColor    {c_iBlackColor};
+		bool m_bIsUnderlinePresent{false};
+		eLineType m_eUnderlineType{eLineType::ltUnknown};
+		LONG m_lUnderlineColor    {c_iBlackColor};
+		bool m_bIsShadowPresent   {false};
+		bool m_bIsOutlinePresent  {false};
+		bool m_bIsEmbossPresent   {false};
+		bool m_bIsEngravePresent  {false};
 
-            double m_dLastX {0};
-            double m_dSpaceWidthMM {0};
-            bool   m_bSpaceIsNotNeeded {false};
+		// font to calc selected sizes
+		NSStructures::CFont m_oSelectedFont{};
 
-            eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
+		// sizes
+		double m_dSpaceWidthMM{0};
+		CSelectedSizes m_oSelectedSizes{};
 
-            CFontManagerLight* m_pManagerLight {nullptr};
-            CStyleManager*     m_pStyleManager {nullptr};
+		double m_dTopWithAscent{0};
+		double m_dBotWithDescent{0};
 
-            CShape*    m_pShape {nullptr}; //Если не nullptr, то есть фоновая графика - можно анализировать.
-            const CContText* m_pCont {nullptr}; //Если не nullptr, то есть привязка к vatSubscript или vatSuperscript;
+		NSStringUtils::CStringUTF32 m_oText{};
+		UINT m_iNumDuplicates{0};
 
-            UINT m_iNumDuplicates {0};
+		bool m_bIsAddBrEnd{false};
+		bool m_bWriteStyleRaw{false};
 
-        public:
-            CContText(CFontManagerLight* pManagerLight, CStyleManager* pStyleManager);
-            ~CContText();
+		double m_dFirstWordWidth{0};
 
-            void Clear() override final;
+		CContText() = default;
+		CContText(CFontManager* pManager) : m_pManager(pManager) {}
+		CContText(const CContText& rCont);
+		virtual ~CContText();
 
-            double GetIntersect(const CContText* pCont) const;
+		virtual void Clear() override final;
+		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
+		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
+		virtual eVerticalCrossingType GetVerticalCrossingType(const CContText* pItem) const noexcept;
 
-            void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
+		// calc sizes in selected font (uses m_pFontStyle & m_pManager)
+		void CalcSelected();
 
-            void AddWideSpaceToXml(double dSpacingMM,
-                                   NSStringUtils::CStringBuilder& oWriter,
-                                   bool bIsNeedSaveFormat = false);
+		CContText& operator=(const CContText& rCont);
+		bool IsEqual(const CContText* pCont) const noexcept;
 
-            bool IsEqual(const CContText* pCont);
+		UINT GetNumberOfFeatures() const noexcept;
+		bool IsDuplicate(CContText *pCont, eVerticalCrossingType eVType) const noexcept;
 
-            UINT GetNumberOfFeatures();
+		// check font effect and delete not needed cont
+		// return true if was deleted
+		static bool CheckFontEffects
+			(std::shared_ptr<CContText>& pFirstCont,
+			std::shared_ptr<CContText>& pSecondCont,
+			eVerticalCrossingType eVType,
+			eHorizontalCrossingType eHType);
 
-            bool IsDuplicate(CContText *pCont, eVerticalCrossingType eVType);
-            bool IsThereAreFontEffects(CContText *pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType);
-            bool IsVertAlignTypeBetweenConts(CContText* pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType);
+		static bool CheckVertAlignTypeBetweenConts
+			(std::shared_ptr<CContText> pFirstCont,
+			std::shared_ptr<CContText> pSecondCont,
+			eVerticalCrossingType eVType,
+			eHorizontalCrossingType eHType);
 
-            double CalculateWideSpace();
-            double CalculateThinSpace();
-    };
+		double CalculateWideSpace() const noexcept;
+		double CalculateThinSpace() const noexcept;
+	};
 }

@@ -1575,6 +1575,33 @@
 		return res;
 	};
 
+	CFile.prototype["scanPage"] = function(page)
+	{
+		let data = Module["_ScanPage"](this.nativeFile, page);
+		if (data == 0)
+			return [];
+
+		let lenArray = new Int32Array(Module["HEAP8"].buffer, data, 4);
+		if (lenArray == null)
+			return [];
+
+		let len = lenArray[0];
+		if (0 == len)
+			return [];
+
+		let buffer = new Uint8Array(Module["HEAP8"].buffer, data + 4, len);
+		let reader = new CBinaryReader(buffer, 0, len);
+
+		let shapesCount = reader.readInt();
+		let shapes = new Array(shapesCount);
+
+		for (let i = 0; i < shapesCount; i++)
+			shapes[i] = reader.readString();
+
+		Module["_free"](data);
+		return shapes;
+	};
+
 	CFile.prototype.memory = function()
 	{
 		return Module["HEAP8"];

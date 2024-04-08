@@ -193,12 +193,16 @@ public:
 		RELEASEOBJECT(pTextRenderer);
 	}
 
-	BYTE* GetPageShapes(const int& nPageIndex)
+	BYTE* GetPageShapes(const int& nPageIndex, int mode)
 	{
 		CDocxRenderer oRenderer(pApplicationFonts);
 		oRenderer.SetTextAssociationType(NSDocxRenderer::TextAssociationType::tatParagraphToShape);
 		
-		std::vector<std::wstring> arShapes = oRenderer.ScanPage(pReader, nPageIndex);
+		std::vector<std::wstring> arShapes;
+		if (0 == mode)
+		 	arShapes = oRenderer.ScanPage(pReader, nPageIndex);
+		else
+		 	arShapes = oRenderer.ScanPagePptx(pReader, nPageIndex);
 
 		int nLen = (int)arShapes.size();
 

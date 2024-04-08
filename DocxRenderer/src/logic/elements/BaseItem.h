@@ -54,6 +54,7 @@ namespace NSDocxRenderer
 
 		virtual void Clear() = 0;
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const = 0;
+		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const = 0;
 
 		virtual eVerticalCrossingType GetVerticalCrossingType(const CBaseItem* oSrc) const;
 		virtual eHorizontalCrossingType GetHorizontalCrossingType(const CBaseItem* oSrc) const;

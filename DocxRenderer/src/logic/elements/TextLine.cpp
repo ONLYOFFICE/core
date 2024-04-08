@@ -62,7 +62,10 @@ namespace NSDocxRenderer
 			bool bIsBigDelta = dDifference > dSpaceDefaultSize;
 			bool bIsVeryBigDelta = dDifference > dSpaceWideSize;
 
-			if(bIsVeryBigDelta)
+			if (bIsBigDelta && pFirst->m_dFirstWordWidth == 0.0)
+				pFirst->m_dFirstWordWidth = pFirst->m_dWidth;
+
+			if (bIsVeryBigDelta)
 			{
 				auto wide_space = std::make_shared<CContText>(pFirst->m_pManager);
 
@@ -75,6 +78,8 @@ namespace NSDocxRenderer
 					wide_space->m_pFontStyle = pFirst->m_pFontStyle;
 					wide_space->m_pShape = nullptr;
 					wide_space->m_iNumDuplicates = 0;
+
+					// cache that value? (calls rarely)
 					wide_space->CalcSelected();
 				};
 
@@ -244,5 +249,22 @@ namespace NSDocxRenderer
 		for (const auto& cont : m_arConts)
 			if(cont)
 				cont->ToXml(oWriter);
+	}
+
+	void CTextLine::ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const
+	{
+		for (const auto& cont : m_arConts)
+			if(cont)
+				cont->ToXmlPptx(oWriter);
+	}
+
+	size_t CTextLine::GetLength() const
+	{
+		size_t len = 0;
+		for (const auto& cont : m_arConts)
+			if (cont)
+				len += cont->m_oText.length();
+
+		return len;
 	}
 }

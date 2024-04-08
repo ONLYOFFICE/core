@@ -168,11 +168,11 @@ namespace OOX
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			nullable<std::wstring>								m_oRef;
-			nullable<SimpleTypes::Spreadsheet::CCellTypeType>	m_oType;
-			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oValueMetadata;
+			nullable_string m_oRef;
+			nullable<SimpleTypes::Spreadsheet::CCellTypeType> m_oType;
+			nullable_uint m_oValueMetadata;
 
-			nullable<CText>		m_oValue;
+			nullable<CText> m_oValue;
 		};
 
 		class CExternalRow : public WritingElementWithChilds<CExternalCell>

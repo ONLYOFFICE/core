@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="oox">
@@ -489,6 +489,8 @@
     </ClCompile>
     <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\cstarmathpars.cpp">
       <Filter>starmath</Filter>
+    <ClCompile Include="..\..\Reader\Format\office_drawing.cpp">
+      <Filter>elements</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -951,6 +953,8 @@
     </ClInclude>
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\typeselements.h">
       <Filter>starmath</Filter>
+    <ClInclude Include="..\..\Reader\Format\office_drawing.h">
+      <Filter>elements</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -574,6 +574,7 @@ enum ElementType
 	typeOfficeScripts,
 	typeOfficeScript,
 	typeOfficePresentation,
+	typeOfficeDrawing,
 	typeOfficeChart,
 	typeOfficeEventListeners,
   

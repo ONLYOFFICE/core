@@ -456,8 +456,8 @@ namespace NSDocxRenderer
 
 	void CPage::BuildDiacriticalSymbols()
 	{
-		for(size_t i = 0; i < m_arConts.size(); i++)
-			if(m_arConts[i] && m_arConts[i]->m_oText.length() == 1 && IsDiacriticalMark(m_arConts[i]->m_oText[0]))
+		for (size_t i = 0; i < m_arConts.size(); i++)
+			if (m_arConts[i] && m_arConts[i]->m_oText.length() == 1 && IsDiacriticalMark(m_arConts[i]->m_oText[0]))
 				m_arDiacriticalSymbols.push_back(std::move(m_arConts[i]));
 
 	}
@@ -468,24 +468,24 @@ namespace NSDocxRenderer
 			if(!a) return false;
 			if(!b) return true;
 
-			if(fabs(a->m_dBaselinePos - b->m_dBaselinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
+			if (fabs(a->m_dBaselinePos - b->m_dBaselinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
 				return a->m_dLeft < b->m_dLeft;
 
 			return a->m_dBaselinePos < b->m_dBaselinePos;
 		});
 
-		for(auto& cont : m_arConts)
-			if(cont)
+		for (auto& cont : m_arConts)
+			if (cont)
 				AddContToTextLine(cont);
 	}
 
 	void CPage::MergeShapes()
 	{
-		if(m_arShapes.empty())
+		if (m_arShapes.empty())
 			return;
 
 		using shape_ref_ptr_t = std::reference_wrapper<std::shared_ptr<CShape>>;
-		for(size_t i = 0; i < m_arShapes.size() - 1; i++)
+		for (size_t i = 0; i < m_arShapes.size() - 1; i++)
 		{
 			shape_ref_ptr_t val = m_arShapes[i];
 			shape_ref_ptr_t next_val = m_arShapes[i + 1];
@@ -1147,119 +1147,6 @@ namespace NSDocxRenderer
 				v_type == eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
 		};
 
-		// после переместим все в output objects
-		std::vector<std::shared_ptr<CParagraph>> ar_paragraphs;
-
-		double avg_spacing{0.0};
-		size_t avg_spacing_n{0};
-
-		double min_left{m_dWidth};
-		double max_right{0.0};
-
-		// совпадает ли left, right, center со строкой ниже
-		struct Position {
-			bool left = false;
-			bool center = false;
-			bool right  = false;
-
-			Position()
-			{
-				left = false;
-				center = false;
-				right  = false;
-			}
-			Position(bool bLeft, bool bCenter, bool bRight)
-			{
-				left   = bLeft;
-				center = bCenter;
-				right  = bRight;
-			}
-		};
-
-		// параграф будет набиваться строчками
-		auto paragraph = std::make_shared<CParagraph>();
-
-		// lamda to setup and add paragpraph
-		auto add_paragraph = [this, &max_right, &min_left, &ar_paragraphs] (std::shared_ptr<CParagraph>& paragraph) {
-
-			paragraph->m_dBaselinePos = paragraph->m_arLines.back()->m_dBaselinePos;
-			paragraph->m_dTop = paragraph->m_arLines.front()->m_dTop;
-			paragraph->m_dRight = max_right;
-			paragraph->m_dLeft = min_left;
-
-			paragraph->m_dWidth = paragraph->m_dRight - paragraph->m_dLeft;
-			paragraph->m_dHeight = paragraph->m_dBaselinePos - paragraph->m_dTop;
-
-			paragraph->m_dRightBorder = m_dWidth - max_right;
-			paragraph->m_dLeftBorder = min_left;
-
-			paragraph->m_dLineHeight = paragraph->m_dHeight / paragraph->m_arLines.size();
-			paragraph->m_bIsNeedFirstLineIndent = false;
-			paragraph->m_dFirstLine = 0;
-			paragraph->m_wsStyleId = m_pParagraphStyleManager->GetDefaultParagraphStyleId(*paragraph);
-
-			paragraph->MergeLines();
-
-			// setting TextAlignmentType
-			if (paragraph->m_arLines.size() > 1)
-			{
-				Position position_curr = {true, true, true};
-				bool first_left = false;
-
-				for (size_t index = 1; index < paragraph->m_arLines.size(); ++index)
-				{
-					auto& curr_line = paragraph->m_arLines[index];
-					auto& prev_line = paragraph->m_arLines[index - 1];
-
-					// indent check
-					if (index == 1)
-						first_left = fabs(curr_line->m_dLeft - prev_line->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
-					else
-						position_curr.left &= fabs(curr_line->m_dLeft - prev_line->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
-
-					position_curr.right &= fabs(curr_line->m_dRight - prev_line->m_dRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
-
-					auto center_curr = curr_line->m_dLeft + curr_line->m_dWidth / 2;
-					auto center_prev = prev_line->m_dLeft + prev_line->m_dWidth / 2;
-
-					position_curr.center &= fabs(center_curr - center_prev) < c_dCENTER_POSITION_ERROR_MM;
-				}
-				if (position_curr.left && position_curr.right)
-					paragraph->m_eTextAlignmentType = CParagraph::tatByWidth;
-				else if (position_curr.left)
-					paragraph->m_eTextAlignmentType = CParagraph::tatByLeft;
-				else if (position_curr.right)
-					paragraph->m_eTextAlignmentType = CParagraph::tatByRight;
-				else if (position_curr.center)
-					paragraph->m_eTextAlignmentType = CParagraph::tatByCenter;
-
-				// indent check
-				if (paragraph->m_eTextAlignmentType == CParagraph::tatByLeft && !first_left)
-				{
-					paragraph->m_bIsNeedFirstLineIndent = true;
-					paragraph->m_dFirstLine = paragraph->m_arLines[0]->m_dLeft - paragraph->m_dLeft;
-				}
-			}
-
-			if (ar_paragraphs.empty())
-				paragraph->m_dSpaceBefore = paragraph->m_dTop + c_dCORRECTION_FOR_FIRST_PARAGRAPH;
-			else
-				paragraph->m_dSpaceBefore = paragraph->m_dTop - ar_paragraphs.back()->m_dBaselinePos;
-
-			ar_paragraphs.push_back(std::move(paragraph));
-			paragraph = std::make_shared<CParagraph>();
-
-			min_left = m_dWidth;
-			max_right = 0.0;
-		};
-
-		// lamda to add line and setup min_left/max_right
-		auto add_line = [&min_left, &max_right] (std::shared_ptr<CParagraph>& paragraph, std::shared_ptr<CTextLine>& curr_line) {
-			min_left = std::min(min_left, curr_line->m_dLeft);
-			max_right = std::max(max_right, curr_line->m_dRight);
-			paragraph->m_arLines.push_back(curr_line);
-		};
-
 		// линии из которых сделаем шейпы
 		for (size_t index = 0; index < m_arTextLines.size(); ++index)
 		{
@@ -1302,6 +1189,7 @@ namespace NSDocxRenderer
 			}
 		}
 
+
 		if (m_arTextLines.empty())
 			return;
 
@@ -1317,169 +1205,334 @@ namespace NSDocxRenderer
 		if (m_arTextLines.empty())
 			return;
 
-		// 1 строчка в параграфе
-		if (m_eTextAssociationType == TextAssociationType::tatPlainLine ||
-				m_eTextAssociationType == TextAssociationType::tatShapeLine)
-		{
-			for (auto& curr_line : m_arTextLines)
-			{
-				add_line(paragraph, curr_line);
-				add_paragraph(paragraph);
-			}
-		}
+		auto build = [this] (const std::vector<std::shared_ptr<CTextLine>>& text_lines) {
+			std::vector<std::shared_ptr<CParagraph>> ar_paragraphs;
 
-		else if (m_eTextAssociationType == TextAssociationType::tatPlainParagraph ||
-				m_eTextAssociationType == TextAssociationType::tatParagraphToShape)
-		{
-			// ar_spacing[index]- расстояние строки до строки снизу
-			// если 0.0 - строка последняя
-			std::vector<double> ar_spacings(m_arTextLines.size(), 0.0);
+			double avg_spacing{0.0};
+			size_t avg_spacing_n{0};
 
-			// позиции относительно других линий
-			std::vector<Position> ar_positions(m_arTextLines.size());
+			double min_left{m_dWidth};
+			double max_right{0.0};
 
-			// если ar_delims[index] == true, после строчки index нужно начинать новый параграф
-			std::vector<bool> ar_delims(m_arTextLines.size(), false);
+			// совпадает ли left, right, center со строкой ниже
+			struct Position {
+				bool left{false};
+				bool center{false};
+				bool right {false};
+			};
 
-			// calcs spacings & positions
-			for (size_t index = 0; index < m_arTextLines.size() - 1; ++index)
-			{
-				ar_spacings[index] = m_arTextLines[index + 1]->m_dBaselinePos - m_arTextLines[index]->m_dTop;
-				avg_spacing = (avg_spacing / (avg_spacing_n + 1)) * avg_spacing_n + (ar_spacings[index] / (avg_spacing_n + 1));
+			// параграф будет набиваться строчками
+			auto paragraph = std::make_shared<CParagraph>();
 
-				auto& left_curr = m_arTextLines[index]->m_dLeft;
-				auto& left_next = m_arTextLines[index + 1]->m_dLeft;
+			// lamda to setup and add paragpraph
+			auto add_paragraph = [this, &max_right, &min_left, &ar_paragraphs] (std::shared_ptr<CParagraph>& paragraph) {
 
-				auto& right_curr = m_arTextLines[index]->m_dRight;
-				auto& right_next = m_arTextLines[index + 1]->m_dRight;
+				paragraph->m_dBaselinePos = paragraph->m_arLines.back()->m_dBaselinePos;
+				paragraph->m_dTop = paragraph->m_arLines.front()->m_dTop;
+				paragraph->m_dRight = max_right + c_dERROR_OF_PARAGRAPH_BORDERS_MM;
+				paragraph->m_dLeft = min_left;
 
-				auto center_curr = (m_arTextLines[index]->m_dLeft + m_arTextLines[index]->m_dWidth) / 2;
-				auto center_next = (m_arTextLines[index + 1]->m_dLeft + m_arTextLines[index + 1]->m_dWidth) / 2;
+				paragraph->m_dWidth = paragraph->m_dRight - paragraph->m_dLeft;
+				paragraph->m_dHeight = paragraph->m_dBaselinePos - paragraph->m_dTop;
 
-				if (fabs(center_curr - center_next) < c_dCENTER_POSITION_ERROR_MM)
-					ar_positions[index].center = true;
-				if (fabs(left_curr - left_next) < c_dERROR_OF_PARAGRAPH_BORDERS_MM)
-					ar_positions[index].left = true;
-				if (fabs(right_curr - right_next) < c_dERROR_OF_PARAGRAPH_BORDERS_MM)
-					ar_positions[index].right = true;
-			}
+				paragraph->m_dRightBorder = m_dWidth - max_right;
+				paragraph->m_dLeftBorder = min_left;
 
-			// spacing check
-			for (size_t index = 0; index < ar_spacings.size(); ++index)
-			{
-				double spacing_top = 0.0;
-				double spacing_bot = 0.0;
+				paragraph->m_dLineHeight = paragraph->m_dHeight / paragraph->m_arLines.size();
+				paragraph->m_bIsNeedFirstLineIndent = false;
+				paragraph->m_dFirstLine = 0;
+				paragraph->m_wsStyleId = m_pParagraphStyleManager->GetDefaultParagraphStyleId(*paragraph);
 
-				if (index != 0) spacing_top = ar_spacings[index - 1];
-				spacing_bot = ar_spacings[index];
+				paragraph->MergeLines();
 
-				if (spacing_top == 0.0) spacing_top = spacing_bot;
-				if (spacing_bot == 0.0) spacing_bot = spacing_top;
-
-				if (spacing_bot > c_dLINE_DISTANCE_MAX_MM)
-					ar_delims[index] = true;
-				else if (fabs(spacing_top - spacing_bot) < c_dLINE_DISTANCE_ERROR_MM)
-					ar_delims[index] = false;
-				else
+				// setting TextAlignmentType
+				if (paragraph->m_arLines.size() > 1)
 				{
-					// берем доп строчки сверху и снизу для анализа
-					bool same_double_top = false;
-					bool same_double_bot = false;
+					Position position_curr = {true, true, true};
+					bool first_left = false;
 
-					if (index > 1)
+					for (size_t index = 1; index < paragraph->m_arLines.size(); ++index)
 					{
-						double spacing_top_next = ar_spacings[index - 2];
-						if (fabs(spacing_top - spacing_top_next) < c_dLINE_DISTANCE_ERROR_MM)
-							same_double_top = true;
-					}
-					if (index < ar_spacings.size() - 1)
-					{
-						double spacing_bot_next = ar_spacings[index + 1];
-						if (fabs(spacing_bot - spacing_bot_next) < c_dLINE_DISTANCE_ERROR_MM)
-							same_double_bot = true;
-					}
+						auto& curr_line = paragraph->m_arLines[index];
+						auto& prev_line = paragraph->m_arLines[index - 1];
 
-					// если анализ доп строчек ничего не дал - разбиваем наиболее "вероятным" способом
-					if ((same_double_top == same_double_bot))
-					{
-						if (spacing_top > spacing_bot)
-							ar_delims[index - 1] = true;
-						else if (spacing_top < spacing_bot)
-							ar_delims[index] = true;
-					}
-					// прикрепляем строчку к верху или низу
-					else
-					{
-						if (same_double_top)
-							ar_delims[index] = true;
-						else if (same_double_bot)
-							ar_delims[index - 1] = true;
-					}
-				}
-			}
+						// indent check
+						if (index == 1)
+						{
+							first_left = fabs(curr_line->m_dLeft - prev_line->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
 
-			// alignment check
-			bool is_first_line = false;
-			for (size_t index = 0; index < ar_positions.size() - 1; ++index)
-			{
-				Position position_top;
-				Position position_bot;
-
-				position_bot = ar_positions[index];
-				if (index == 0)
-					position_top = position_bot;
-				else
-					position_top = ar_positions[index - 1];
-
-				if (index == 0 || ar_delims[index - 1])
-					is_first_line = true;
-				else
-					is_first_line = false;
-
-				// первая строка может быть с отступом
-				if (is_first_line && m_arTextLines[index + 1]->m_dLeft < m_arTextLines[index]->m_dLeft)
-				{
-					// если больше трех линий - проверим третью
-					if (index < ar_positions.size() - 2)
-					{
-						if (!ar_delims[index] && !ar_delims[index + 1] && ar_positions[index + 1].left)
-							position_bot.left = true;
+							// первая строчка левее правой
+							if (!first_left && prev_line->m_dLeft < curr_line->m_dLeft)
+								position_curr.left = false;
+						}
 						else
-							position_bot.left = false;
+							position_curr.left &= fabs(curr_line->m_dLeft - prev_line->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
+
+						position_curr.right &= fabs(curr_line->m_dRight - prev_line->m_dRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
+
+						auto center_curr = curr_line->m_dLeft + curr_line->m_dWidth / 2;
+						auto center_prev = prev_line->m_dLeft + prev_line->m_dWidth / 2;
+
+						position_curr.center &= fabs(center_curr - center_prev) < c_dCENTER_POSITION_ERROR_MM;
 					}
+					if (position_curr.left && position_curr.right && first_left)
+						paragraph->m_eTextAlignmentType = CParagraph::tatByWidth;
+					else if (position_curr.left)
+						paragraph->m_eTextAlignmentType = CParagraph::tatByLeft;
+					else if (position_curr.right)
+						paragraph->m_eTextAlignmentType = CParagraph::tatByRight;
+					else if (position_curr.center)
+						paragraph->m_eTextAlignmentType = CParagraph::tatByCenter;
+
+					// indent check
+					if (paragraph->m_eTextAlignmentType == CParagraph::tatByLeft && !first_left)
+					{
+						paragraph->m_bIsNeedFirstLineIndent = true;
+						paragraph->m_dFirstLine = paragraph->m_arLines[0]->m_dLeft - paragraph->m_dLeft;
+					}
+				}
+				if (m_eTextAssociationType == TextAssociationType::tatPlainParagraph ||
+						m_eTextAssociationType == TextAssociationType::tatPlainLine)
+				{
+					if (ar_paragraphs.empty())
+						paragraph->m_dSpaceBefore = paragraph->m_dTop + c_dCORRECTION_FOR_FIRST_PARAGRAPH;
 					else
-						position_bot.left = true;
+						paragraph->m_dSpaceBefore = paragraph->m_dTop - ar_paragraphs.back()->m_dBaselinePos;
 				}
 
-				bool is_unknown = !(position_bot.left || position_bot.right || position_bot.center);
-				if (is_unknown)
-					ar_delims[index] = true;
+				ar_paragraphs.push_back(std::move(paragraph));
+				paragraph = std::make_shared<CParagraph>();
+
+				min_left = m_dWidth;
+				max_right = 0.0;
+			};
+
+			// lamda to add line and setup min_left/max_right
+			auto add_line = [&min_left, &max_right] (std::shared_ptr<CParagraph>& paragraph, std::shared_ptr<CTextLine>& curr_line) {
+				min_left = std::min(min_left, curr_line->m_dLeft);
+				max_right = std::max(max_right, curr_line->m_dRight);
+				paragraph->m_arLines.push_back(curr_line);
+			};
+
+			// 1 строчка в параграфе
+			if (m_eTextAssociationType == TextAssociationType::tatPlainLine ||
+					m_eTextAssociationType == TextAssociationType::tatShapeLine)
+			{
+				for (auto& curr_line : m_arTextLines)
+				{
+					add_line(paragraph, curr_line);
+					add_paragraph(paragraph);
+				}
 			}
 
-			// отдельно просмотрим возможные параграфы по две строки
-			for (size_t index = 0; index < ar_delims.size() - 1; ++index)
+			else if (m_eTextAssociationType == TextAssociationType::tatPlainParagraph ||
+					m_eTextAssociationType == TextAssociationType::tatParagraphToShape)
 			{
-				if (!ar_delims[index] && ar_delims[index + 1])
+				// ar_spacing[index]- расстояние строки до строки снизу
+				// если 0.0 - строка последняя
+				std::vector<double> ar_spacings(m_arTextLines.size(), 0.0);
+
+				// позиции относительно других линий
+				std::vector<Position> ar_positions(m_arTextLines.size());
+
+				// требуется ли отступ
+				std::vector<bool> ar_indents(m_arTextLines.size(), false);
+
+				// если ar_delims[index] == true, после строчки index нужно начинать новый параграф
+				std::vector<bool> ar_delims(m_arTextLines.size(), false);
+
+				// calcs spacings & positions
+				for (size_t index = 0; index < m_arTextLines.size() - 1; ++index)
 				{
-					// ширина верхней строчки сильно меньше нижней
-					if (m_arTextLines[index]->m_dWidth * 3 < m_arTextLines[index + 1]->m_dWidth)
+					ar_spacings[index] = m_arTextLines[index + 1]->m_dBaselinePos - m_arTextLines[index]->m_dTop;
+					avg_spacing = (avg_spacing / (avg_spacing_n + 1)) * avg_spacing_n + (ar_spacings[index] / (avg_spacing_n + 1));
+
+					auto& left_curr = m_arTextLines[index]->m_dLeft;
+					auto& left_next = m_arTextLines[index + 1]->m_dLeft;
+
+					auto& right_curr = m_arTextLines[index]->m_dRight;
+					auto& right_next = m_arTextLines[index + 1]->m_dRight;
+
+					auto center_curr = (m_arTextLines[index]->m_dLeft + m_arTextLines[index]->m_dWidth / 2);
+					auto center_next = (m_arTextLines[index + 1]->m_dLeft + m_arTextLines[index + 1]->m_dWidth / 2);
+
+					if (fabs(center_curr - center_next) < c_dCENTER_POSITION_ERROR_MM)
+						ar_positions[index].center = true;
+					if (fabs(left_curr - left_next) < c_dERROR_OF_PARAGRAPH_BORDERS_MM)
+						ar_positions[index].left = true;
+					if (fabs(right_curr - right_next) < c_dERROR_OF_PARAGRAPH_BORDERS_MM)
+						ar_positions[index].right = true;
+				}
+
+				// spacing check
+				for (size_t index = 0; index < ar_spacings.size(); ++index)
+				{
+					double spacing_top = 0.0;
+					double spacing_bot = 0.0;
+
+					if (index != 0) spacing_top = ar_spacings[index - 1];
+					spacing_bot = ar_spacings[index];
+
+					if (spacing_top == 0.0) spacing_top = spacing_bot;
+					if (spacing_bot == 0.0) spacing_bot = spacing_top;
+
+					if (spacing_bot > c_dLINE_DISTANCE_MAX_MM)
+						ar_delims[index] = true;
+					else if (fabs(spacing_top - spacing_bot) < c_dLINE_DISTANCE_ERROR_MM)
+						ar_delims[index] = false;
+					else
+					{
+						// берем доп строчки сверху и снизу для анализа
+						bool same_double_top = false;
+						bool same_double_bot = false;
+
+						if (index > 1)
+						{
+							double spacing_top_next = ar_spacings[index - 2];
+							if (fabs(spacing_top - spacing_top_next) < c_dLINE_DISTANCE_ERROR_MM)
+								same_double_top = true;
+						}
+						if (index < ar_spacings.size() - 1)
+						{
+							double spacing_bot_next = ar_spacings[index + 1];
+							if (fabs(spacing_bot - spacing_bot_next) < c_dLINE_DISTANCE_ERROR_MM)
+								same_double_bot = true;
+						}
+
+						// если анализ доп строчек ничего не дал - разбиваем наиболее "вероятным" способом
+						if ((same_double_top == same_double_bot))
+						{
+							if (spacing_top > spacing_bot)
+								ar_delims[index - 1] = true;
+							else if (spacing_top < spacing_bot)
+								ar_delims[index] = true;
+						}
+						// прикрепляем строчку к верху или низу
+						else
+						{
+							if (same_double_top)
+								ar_delims[index] = true;
+							else if (same_double_bot)
+								ar_delims[index - 1] = true;
+						}
+					}
+				}
+
+				// alignment check
+				bool is_first_line = false;
+				for (size_t index = 0; index < ar_positions.size() - 1; ++index)
+				{
+					Position& position = ar_positions[index];
+
+					auto& line_top = m_arTextLines[index];
+					auto& line_bot = m_arTextLines[index + 1];
+
+					if (index == 0 || ar_delims[index - 1])
+						is_first_line = true;
+					else
+						is_first_line = false;
+
+					// первая строка может быть с отступом
+					if (is_first_line && line_bot->m_dLeft < line_top->m_dLeft)
+					{
+						// если больше трех линий - проверим третью
+						if (index < ar_positions.size() - 2)
+						{
+							if (!ar_delims[index] && !ar_delims[index + 1] && ar_positions[index + 1].left)
+								ar_indents[index] = true;
+							else if (!ar_delims[index] && ar_delims[index + 1])
+								ar_indents[index] = true;
+						}
+						else
+							ar_indents[index] = true;
+					}
+
+					bool is_unknown = !((position.left || ar_indents[index]) || position.right || position.center);
+					if (is_unknown)
 						ar_delims[index] = true;
 				}
+
+				// gap check
+				//
+				// bla-bla-bla
+				// text bla-bla-bla-bla
+				//
+				// bla-bla-bla text
+				// bla-bla-bla-bla
+
+				double curr_max_right = m_arTextLines[0]->m_dRight;
+				double curr_min_left = m_arTextLines[0]->m_dLeft;
+				for (size_t index = 0; index < ar_positions.size() - 1; ++index)
+				{
+					Position position = ar_positions[index];
+					auto& line_top = m_arTextLines[index];
+					auto& line_bot = m_arTextLines[index + 1];
+
+					if (ar_delims[index])
+					{
+						curr_max_right = line_bot->m_dRight;
+						curr_min_left = line_bot->m_dLeft;
+						continue;
+					}
+
+					std::shared_ptr<CContText> cont = line_bot->m_arConts[0];
+					double line_with_first_right = line_top->m_dRight + cont->m_dFirstWordWidth;
+					double line_with_first_left = line_top->m_dLeft - cont->m_dFirstWordWidth;
+
+					curr_max_right = std::max(curr_max_right, line_bot->m_dRight);
+					curr_min_left = std::min(curr_min_left, line_bot->m_dLeft);
+
+					double diff = 0;
+
+					if (position.right)
+						diff = line_with_first_left - curr_min_left;
+					else if (position.left || ar_indents[index])
+						diff = curr_max_right - line_with_first_right;
+					else if (position.center)
+						continue;
+
+					if (diff <= 0)
+					{
+//						if (diff > -c_dERROR_GAP)
+//						{
+//							auto& last_cont = line_top->m_arConts[line_top->m_arConts.size() - 1];
+//							last_cont->m_bIsAddBrEnd = true;
+//						}
+//						else
+							continue;
+					}
+					else
+					{
+						ar_delims[index] = true;
+						curr_max_right = line_bot->m_dRight;
+						curr_min_left = line_bot->m_dLeft;
+					}
+				}
+
+				// на основе ar_delims разбиваем на параграфы
+				for (size_t index = 0; index < ar_delims.size(); ++index)
+				{
+					add_line(paragraph, m_arTextLines[index]);
+					if (ar_delims[index] || index == ar_delims.size() - 1)
+						add_paragraph(paragraph);
+				}
 			}
 
-			// на основе ar_delims разбиваем на параграфы
-			for (size_t index = 0; index < ar_delims.size(); ++index)
-			{
-//				if (m_arTextLines[index]->m_pDominantShape)
-//				{
-//					paragraph->m_bIsShadingPresent = true;
-//					paragraph->m_lColorOfShadingFill = m_arTextLines[index]->m_pDominantShape->m_oBrush.Color1;
-//					paragraph->RemoveHighlightColor();
-//				}
-				add_line(paragraph, m_arTextLines[index]);
-				if (ar_delims[index] || index == ar_delims.size() - 1)
-					add_paragraph(paragraph);
-			}
+			return ar_paragraphs;
+		};
+
+		std::vector<std::shared_ptr<CParagraph>> ar_paragraphs;
+
+		if (m_eTextAssociationType == TextAssociationType::tatPlainParagraph ||
+				m_eTextAssociationType == TextAssociationType::tatPlainLine)
+		{
+			ar_paragraphs = build(m_arTextLines);
+		}
+
+		else if (m_eTextAssociationType == TextAssociationType::tatParagraphToShape ||
+				m_eTextAssociationType == TextAssociationType::tatShapeLine)
+		{
+			ar_paragraphs = build(m_arTextLines);
 		}
 
 		using paragraph_ptr_t = std::shared_ptr<CParagraph>;
@@ -1510,7 +1563,7 @@ namespace NSDocxRenderer
 		pParagraph->m_dLeft = pLine->m_dLeft;
 		pParagraph->m_dTop = pLine->m_dTop;
 		pParagraph->m_dBaselinePos = pLine->m_dBaselinePos;
-		pParagraph->m_dWidth = pLine->m_dWidth * 1.03; // чтобы текст точно уместился
+		pParagraph->m_dWidth = pLine->m_dWidth + c_dERROR_OF_PARAGRAPH_BORDERS_MM;
 		pParagraph->m_dHeight = pLine->m_dHeight;
 		pParagraph->m_dRight = pLine->m_dRight;
 
@@ -1547,7 +1600,7 @@ namespace NSDocxRenderer
 		pShape->m_dRight =  pParagraph->m_dRight;
 		pShape->m_dBaselinePos = pParagraph->m_dBaselinePos;
 		pShape->m_dHeight = pParagraph->m_dHeight;
-		pShape->m_dWidth = pParagraph->m_dWidth * 1.03; // чтобы текст точно уместился
+		pShape->m_dWidth = pParagraph->m_dWidth;
 
 		pParagraph->m_dLeftBorder = 0;
 		pParagraph->m_dRightBorder = 0;

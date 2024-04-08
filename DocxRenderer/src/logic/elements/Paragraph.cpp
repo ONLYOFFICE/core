@@ -94,12 +94,70 @@ namespace NSDocxRenderer
 		}
 
 		oWriter.WriteString(L"</w:pPr>");
-
 		for(const auto& line : m_arLines)
 			if(line)
 				line->ToXml(oWriter);
-
 		oWriter.WriteString(L"</w:p>");
+	}
+
+	void CParagraph::ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const
+	{
+		oWriter.WriteString(L"<a:p>");
+		oWriter.WriteString(L"<a:pPr algn=\"");
+		switch (m_eTextAlignmentType)
+		{
+		case tatByCenter:
+			oWriter.WriteString(L"ctr");
+			break;
+		case tatByRight:
+			oWriter.WriteString(L"r");
+			break;
+		case tatByWidth:
+			oWriter.WriteString(L"just");
+			break;
+		case tatByLeft:
+			oWriter.WriteString(L"l");
+			break;
+		case tatUnknown:
+		default:
+			oWriter.WriteString(L"l");
+			break;
+		}
+
+		oWriter.WriteString(L"\"");
+
+		if (m_bIsNeedFirstLineIndent)
+		{
+			oWriter.WriteString(L" indent=\"");
+			oWriter.AddInt(static_cast<int>(m_dFirstLine * c_dMMToEMU));
+			oWriter.WriteString(L"\"");
+		}
+		oWriter.WriteString(L">");
+
+		oWriter.WriteString(L"<a:spcBef>");
+		oWriter.WriteString(L"<a:spcPts val=\"");
+		oWriter.AddInt(static_cast<int>(m_dSpaceBefore * c_dMMToPt * 100));
+		oWriter.WriteString(L"\"/>");
+		oWriter.WriteString(L"</a:spcBef>");
+
+
+		oWriter.WriteString(L"<a:spcAft>");
+		oWriter.WriteString(L"<a:spcPts val=\"");
+		oWriter.AddInt(static_cast<int>(m_dSpaceBefore * c_dMMToPt * 100));
+		oWriter.WriteString(L"\"/>");
+		oWriter.WriteString(L"</a:spcAft>");
+
+		oWriter.WriteString(L"<a:lnSpc>");
+		oWriter.WriteString(L"<a:spcPts val=\"");
+		oWriter.AddInt(static_cast<int>(m_dLineHeight * c_dMMToPt * 100));
+		oWriter.WriteString(L"\"/>");
+		oWriter.WriteString(L"</a:lnSpc>");
+
+		oWriter.WriteString(L"</a:pPr>");
+		for(const auto& line : m_arLines)
+			if(line)
+				line->ToXmlPptx(oWriter);
+		oWriter.WriteString(L"</a:p>");
 	}
 
 	void CParagraph::RemoveHighlightColor()
@@ -134,8 +192,7 @@ namespace NSDocxRenderer
 			while(!pLastCont)
 				pLastCont = pLine->m_arConts[--iNumConts];
 
-			// добавляем br в конец каждой строки
-			pLastCont->m_bIsAddBrEnd = true;
+			pLastCont->m_oText += L" ";
 		}
 	}
 }

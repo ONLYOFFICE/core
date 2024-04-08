@@ -310,7 +310,7 @@ namespace Spreadsheet
 		writer.WriteString(L"<cell");
 		WritingStringNullableAttrString(L"r", m_oRef, m_oRef.get());
 		WritingStringNullableAttrString(L"t", m_oType, m_oType->ToString());
-		WritingStringNullableAttrInt(L"vm", m_oValueMetadata, m_oValueMetadata->GetValue());
+		WritingStringNullableAttrInt2(L"vm", m_oValueMetadata);
 		writer.WriteString(L">");
 		if (m_oValue.IsInit())
 			m_oValue->toXML2(writer, (L"v"));
@@ -410,7 +410,7 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_Read_if(oReader, (L"r"), m_oRef)
 			WritingElement_ReadAttributes_Read_else_if(oReader, (L"t"), m_oType)
 			WritingElement_ReadAttributes_Read_else_if(oReader, (L"vm"), m_oValueMetadata)
-			WritingElement_ReadAttributes_End(oReader)
+		WritingElement_ReadAttributes_End(oReader)
 	}
 
 	CExternalRow::CExternalRow()

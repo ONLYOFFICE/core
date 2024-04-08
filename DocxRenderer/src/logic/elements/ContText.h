@@ -73,6 +73,8 @@ namespace NSDocxRenderer
 		bool m_bIsAddBrEnd{false};
 		bool m_bWriteStyleRaw{false};
 
+		double m_dFirstWordWidth{0};
+
 		CContText() = default;
 		CContText(CFontManager* pManager) : m_pManager(pManager) {}
 		CContText(const CContText& rCont);
@@ -80,6 +82,7 @@ namespace NSDocxRenderer
 
 		virtual void Clear() override final;
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
+		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
 		virtual eVerticalCrossingType GetVerticalCrossingType(const CContText* pItem) const noexcept;
 
 		// calc sizes in selected font (uses m_pFontStyle & m_pManager)

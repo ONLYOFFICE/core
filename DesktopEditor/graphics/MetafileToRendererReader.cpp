@@ -60,6 +60,7 @@ namespace NSOnlineOfficeBinToPdf
 		case ctWidgetsInfo:      return Read_Command<CWidgetsInfo>     (this, pCorrector);
 		case ctShapeStart:       return Read_Command<CShapeStart>      (this, pCorrector);
 		case ctShapeEnd:         return Read_Command<CShapeEnd>        (this, pCorrector);
+		case ctPageRotate:       return Read_Command<CPageRotate>      (this, pCorrector);
 		default: break;
 		}
 

@@ -1011,3 +1011,12 @@ bool CShapeStart::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafile
 
 CShapeEnd::CShapeEnd() : IAdvancedCommand(AdvancedCommandType::ShapeEnd) {}
 bool CShapeEnd::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector) { return true; }
+
+CPageRotate::CPageRotate() : IAdvancedCommand(AdvancedCommandType::PageRotate) {}
+int CPageRotate::GetPageRotate() { return m_nPageRotate; }
+bool CPageRotate::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
+{
+	m_nPageRotate = pReader->ReadInt();
+	return true;
+}
+

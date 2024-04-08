@@ -529,4 +529,17 @@ public:
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 };
 
+class GRAPHICS_DECL CPageRotate : public IAdvancedCommand
+{
+public:
+	CPageRotate();
+
+	int GetPageRotate();
+
+	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
+
+private:
+	int m_nPageRotate;
+};
+
 #endif // _BUILD_ANNOTFIELD_H_

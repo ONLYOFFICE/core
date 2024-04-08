@@ -191,9 +191,16 @@ namespace NSOnlineOfficeBinToPdf
 				break;
 			}
 			case AddCommandType::AddPage:
+			{
+				pPdf->AddPage(nPageNum);
+
+				NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(oReader.GetCurrentBuffer(), (LONG)(nLen - 9) , &oCorrector);
+				oReader.Skip(nLen - 9);
+				break;
+			}
 			case AddCommandType::RemovePage:
 			{
-				// TODO: version 7.6+
+				pPdf->DeletePage(nPageNum);
 				break;
 			}
 			case AddCommandType::WidgetInfo:

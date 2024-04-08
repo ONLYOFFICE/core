@@ -1158,6 +1158,7 @@ HRESULT CPdfFile::IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedComma
 	case IAdvancedCommand::AdvancedCommandType::WidgetsInfo:
 	case IAdvancedCommand::AdvancedCommandType::ShapeStart:
 	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:
+	case IAdvancedCommand::AdvancedCommandType::PageRotate:
 		return S_OK;
 	default:
 		break;
@@ -1227,6 +1228,13 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	{
 		if (m_pInternal->pEditor && m_pInternal->pEditor->EditPage())
 			m_pInternal->pEditor->EndMarkedContent();
+		return S_OK;
+	}
+	case IAdvancedCommand::AdvancedCommandType::PageRotate:
+	{
+		CPageRotate* pCommand = (CPageRotate*)command;
+		if (m_pInternal->pEditor && m_pInternal->pEditor->EditPage())
+			m_pInternal->pWriter->PageRotate(pCommand->GetPageRotate());
 		return S_OK;
 	}
 	default:

@@ -660,7 +660,7 @@ namespace NSDocxRenderer
 			}
 			if (num_of_lines > 1)
 			{
-				auto drop_cap = std::make_unique<CDropCap>();
+				auto drop_cap = std::make_shared<CDropCap>();
 				*static_cast<CBaseItem*>(drop_cap.get()) = *drop_cap_cont;
 				drop_cap->nLines = num_of_lines;
 				drop_cap->wsFont = drop_cap_cont->m_pFontStyle->wsFontName;
@@ -1248,7 +1248,11 @@ namespace NSDocxRenderer
 				// setting TextAlignmentType
 				if (paragraph->m_arLines.size() > 1)
 				{
-					Position position_curr = {true, true, true};
+					Position position_curr;
+					position_curr.left   = true;
+					position_curr.center = true;
+					position_curr.right  = true;
+
 					bool first_left = false;
 
 					for (size_t index = 1; index < paragraph->m_arLines.size(); ++index)

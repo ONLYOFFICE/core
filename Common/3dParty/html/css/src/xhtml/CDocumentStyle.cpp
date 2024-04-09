@@ -317,7 +317,7 @@ namespace NSCSS
 			oXmlElement.AddPropertiesInP(PProperties::P_ContextualSpacing, L"true");
 		}
 
-		if (!oStyle.m_oBackground.Empty() && oStyle.HaveThisParent(L"table"))
+		if (!oStyle.m_oBackground.Empty() && !oStyle.HaveThisParent(L"table"))
 			oXmlElement.AddPropertiesInP(PProperties::P_Shd, oStyle.m_oBackground.IsNone() ? L"auto" : oStyle.m_oBackground.GetColor().ToWString());
 
 		if (!oStyle.m_oBorder.Empty() && !oStyle.HaveThisParent(L"table"))

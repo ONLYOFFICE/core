@@ -319,8 +319,7 @@ namespace OOX
 			auto ptr(new XLSB::RangePr15);
 			if(m_oSourceName.IsInit())
 			{
-				auto tempStr = m_oSourceName.get();
-				ptr->irstSourceName = tempStr.substr(0, tempStr.size()-2);
+				ptr->irstSourceName = m_oSourceName.get();
 			}
 			else
 				ptr->irstSourceName.setSize(0xFFFFFFFF);
@@ -1053,17 +1052,6 @@ namespace OOX
 				auto ptr1(new XLSB::BeginExtConnection);
 				ptr->m_BrtBeginExtConnection = XLS::BaseObjectPtr{ptr1};
 
-				if(m_oDbPr.IsInit())
-					ptr->m_ECDBPROPS = m_oDbPr->toBin();
-				if(m_oOlapPr.IsInit())
-					ptr->m_ECOLAPPROPS = m_oOlapPr->toBin();
-				if(m_oTextPr.IsInit())
-					ptr->m_ECTXTWIZ = m_oTextPr->toBin();
-				if(m_oWebPr.IsInit())
-					ptr->m_ECWEBPROPS = m_oWebPr->toBin();
-				if(m_oExtLst.IsInit())
-					ptr->m_FRTEXTCONNECTIONS = m_oExtLst->toBinConnections();
-
 				if(m_oType.IsInit())
 					ptr1->idbtype = m_oType.get();
                 else
@@ -1144,6 +1132,17 @@ namespace OOX
 					ptr1->stDataFile = m_oSourceFile.get();
 				else
 					ptr1->fLoadSourceDataFile = false;
+
+				if(m_oDbPr.IsInit())
+					ptr->m_ECDBPROPS = m_oDbPr->toBin();
+				if(m_oOlapPr.IsInit())
+					ptr->m_ECOLAPPROPS = m_oOlapPr->toBin();
+				if(m_oTextPr.IsInit())
+					ptr->m_ECTXTWIZ = m_oTextPr->toBin();
+				if(m_oWebPr.IsInit())
+					ptr->m_ECWEBPROPS = m_oWebPr->toBin();
+				//if(m_oExtLst.IsInit())
+					//ptr->m_FRTEXTCONNECTIONS = m_oExtLst->toBinConnections();
 			}
 
 			return objectPtr;

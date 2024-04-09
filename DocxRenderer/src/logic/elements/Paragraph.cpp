@@ -1,6 +1,6 @@
 #include "Paragraph.h"
-#include "src/resources/ColorTable.h"
-#include "src/resources/utils.h"
+#include "../../resources/ColorTable.h"
+#include "../../resources/utils.h"
 
 namespace NSDocxRenderer
 {

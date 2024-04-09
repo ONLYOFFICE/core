@@ -1548,7 +1548,7 @@ bool CConditionalFormattingRule::isValid () const
 }
 bool CConditionalFormattingRule::isExtended()
 {
-	if (m_oDxf.IsInit())		return true;
+	//if (m_oDxf.IsInit())		return true;
 
 	if (m_oDataBar.IsInit())	return m_oDataBar->isExtended();
 	if (m_oIconSet.IsInit())	return m_oIconSet->isExtended();
@@ -2652,6 +2652,7 @@ void CConditionalFormatting::fromBin(XLS::BaseObjectPtr& obj)
         for(auto &pCFRULE14: ptr->m_arCFRULE14)
             m_arrItems.push_back(new CConditionalFormattingRule(pCFRULE14));
     }
+    IsExtended();
 }
 
 XLS::BaseObjectPtr CConditionalFormatting::toBin()

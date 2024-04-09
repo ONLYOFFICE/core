@@ -1,6 +1,6 @@
 #pragma once
 #include "../../../../DesktopEditor/common/StringBuilder.h"
-#include "src/resources/Constants.h"
+#include "../../resources/Constants.h"
 #include <vector>
 #include <memory>
 

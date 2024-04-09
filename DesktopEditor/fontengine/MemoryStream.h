@@ -45,7 +45,9 @@
 #include <stdlib.h>
 #endif
 
+#ifndef _ARM_ALIGN_
 #define _ARM_ALIGN_
+#endif
 
 static void LOGGING(const std::string& strFile, const std::wstring& strMessage)
 {

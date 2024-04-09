@@ -164,13 +164,13 @@ namespace Aggplus { class CImage; }
 class IRenderer : public IGrObject
 {
 public:
-    bool m_bUseTransformCoordsToIdentity;
+	bool m_bUseTransformCoordsToIdentity;
 
 public:
-    IRenderer()
-    {
-        m_bUseTransformCoordsToIdentity = false;
-    }
+	IRenderer()
+	{
+		m_bUseTransformCoordsToIdentity = false;
+	}
 
 public:
 	// тип рендерера-----------------------------------------------------------------------------
@@ -261,6 +261,7 @@ public:
 
 	virtual HRESULT CommandDrawTextCHAR2(unsigned int* codepoints, const unsigned int& codepointscount, const unsigned int& gid, const double& x, const double& y, const double& w, const double& h)
 	{
+		UNUSED_VARIABLE(codepointscount);
 		LONG c = (NULL == codepoints) ? 32 : codepoints[0];
 		return CommandDrawTextExCHAR(c, (LONG)gid, x, y, w, h);
 	}
@@ -295,6 +296,12 @@ public:
 	// transform --------------------------------------------------------------------------------
 	virtual HRESULT GetCommandParams(double* dAngle, double* dLeft, double* dTop, double* dWidth, double* dHeight, DWORD* lFlags)
 	{
+		UNUSED_VARIABLE(dAngle);
+		UNUSED_VARIABLE(dLeft);
+		UNUSED_VARIABLE(dTop);
+		UNUSED_VARIABLE(dWidth);
+		UNUSED_VARIABLE(dHeight);
+		UNUSED_VARIABLE(lFlags);
 		return S_OK;
 	}
 	virtual HRESULT SetCommandParams(double dAngle, double dLeft, double dTop, double dWidth, double dHeight, DWORD lFlags)
@@ -327,7 +334,16 @@ public:
 		SetTransform(mass[0], mass[1], mass[2], mass[3], mass[4], mass[5]);
 		return S_OK;
 	}
-	virtual HRESULT SetBaseTransform(const double& m1, const double& m2, const double& m3, const double& m4, const double& m5, const double& m6) { return S_OK; };
+	virtual HRESULT SetBaseTransform(const double& m1, const double& m2, const double& m3, const double& m4, const double& m5, const double& m6)
+	{
+		UNUSED_VARIABLE(m1);
+		UNUSED_VARIABLE(m2);
+		UNUSED_VARIABLE(m3);
+		UNUSED_VARIABLE(m4);
+		UNUSED_VARIABLE(m5);
+		UNUSED_VARIABLE(m6);
+		return S_OK;
+	};
 	virtual HRESULT SetTransform(const double& m1, const double& m2, const double& m3, const double& m4, const double& m5, const double& m6) = 0;
 	virtual HRESULT GetTransform(double *pdA, double *pdB, double *pdC, double *pdD, double *pdE, double *pdF)	= 0;
 	virtual HRESULT ResetTransform() = 0;
@@ -352,29 +368,50 @@ public:
 		return S_OK;
 	}
 
-	virtual HRESULT IsExistAdditionalParam(const int& type) {return S_FALSE;}
-	virtual HRESULT GetAdditionalParam(const int& type, std::string& result) {return S_FALSE;}
+	virtual HRESULT IsExistAdditionalParam(const int& type)
+	{
+		UNUSED_VARIABLE(type);
+		return S_FALSE;
+	}
+	virtual HRESULT GetAdditionalParam(const int& type, std::string& result)
+	{
+		UNUSED_VARIABLE(type);
+		UNUSED_VARIABLE(result);
+		return S_FALSE;
+	}
 
-	virtual HRESULT IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedCommandType& type) { return S_FALSE; }
-	virtual HRESULT AdvancedCommand(IAdvancedCommand* command) { return S_FALSE; }
+	virtual HRESULT IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedCommandType& type)
+	{
+		UNUSED_VARIABLE(type);
+		return S_FALSE;
+	}
+	virtual HRESULT AdvancedCommand(IAdvancedCommand* command)
+	{
+		UNUSED_VARIABLE(command);
+		return S_FALSE;
+	}
 
 	// graphics layer settings
-	virtual HRESULT put_LayerOpacity(double dValue) { return S_FALSE; }
+	virtual HRESULT put_LayerOpacity(double dValue)
+	{
+		UNUSED_VARIABLE(dValue);
+		return S_FALSE;
+	}
 };
 
 #define PROPERTY_RENDERER(NameBase, Name, Type)    \
-    STDMETHOD(get_##NameBase##Name)(Type* pVal)    \
-    {                                              \
-        if (NULL == pVal)                          \
-            return S_FALSE;                        \
-        *pVal = m_o##NameBase.##Name;              \
-        return S_OK;                               \
-    }                                              \
-    STDMETHOD(put_##NameBase##Name)(Type Val)      \
-    {                                              \
-        m_o##NameBase.##Name = Val;                \
-        return S_OK;                               \
-    }
+	STDMETHOD(get_##NameBase##Name)(Type* pVal)    \
+	{                                              \
+		if (NULL == pVal)                          \
+			return S_FALSE;                        \
+		*pVal = m_o##NameBase.##Name;              \
+		return S_OK;                               \
+	}                                              \
+	STDMETHOD(put_##NameBase##Name)(Type Val)      \
+	{                                              \
+		m_o##NameBase.##Name = Val;                \
+		return S_OK;                               \
+	}
 
 // exapmle:
 // PROPERTY_RENDERER(Pen, Color, LONG)

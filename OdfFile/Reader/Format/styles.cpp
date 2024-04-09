@@ -1508,11 +1508,11 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 			{
 				if (horizontal_margins.fo_margin_left_ && horizontal_margins.fo_margin_left_->get_type() == odf_types::length_or_percent::Length)
 					CP_XML_ATTR(L"left"		, horizontal_margins.fo_margin_left_->get_length().get_value_unit(odf_types::length::inch));
-				else CP_XML_ATTR(L"left", 0);
+				else CP_XML_ATTR(L"left", 0.7875);
 				
 				if (horizontal_margins.fo_margin_right_ && horizontal_margins.fo_margin_right_->get_type() == odf_types::length_or_percent::Length)
 					CP_XML_ATTR(L"right"	, horizontal_margins.fo_margin_right_->get_length().get_value_unit(odf_types::length::inch));
-				else CP_XML_ATTR(L"right", 0);
+				else CP_XML_ATTR(L"right", 0.7875);
 				
 				if (vertical_margins.fo_margin_top_ && vertical_margins.fo_margin_top_->get_type() == odf_types::length_or_percent::Length)
 				{
@@ -2097,7 +2097,7 @@ void header_footer_impl::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_con
 			text::p* p = dynamic_cast<text::p*>(content_[i].get());
 			for (size_t j = 0; p && j < p->paragraph_.content_.size(); j++)
 			{
-				text::paragraph_content_element* paragraph_element = dynamic_cast<text::paragraph_content_element*>(p->paragraph_.content_[i].get());
+				text::paragraph_content_element* paragraph_element = dynamic_cast<text::paragraph_content_element*>(p->paragraph_.content_[j].get());
 				if (paragraph_element)
 				{
 					paragraph_element->xlsx_serialize(_Wostream, Context);

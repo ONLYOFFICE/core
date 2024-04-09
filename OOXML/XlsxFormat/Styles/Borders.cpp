@@ -225,7 +225,9 @@ namespace OOX
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDouble));
 				else if (*sLineStyle == L"Continuous")
 				{
-					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleThin));
+					if (iWeight.IsInit()) m_oStyle.reset();
+					else
+						m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleHair));
 					bBorderContinuous = true;
 				}
 			}
@@ -243,8 +245,11 @@ namespace OOX
 						if (false == sLineStyle.IsInit())
 							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleThick));
 					}break;
-					default://2: //Medium
+					case 2:
+					default: //Medium
 					{
+						if (false == sLineStyle.IsInit())
+							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleMedium));
 					}break;
 				}
 			}

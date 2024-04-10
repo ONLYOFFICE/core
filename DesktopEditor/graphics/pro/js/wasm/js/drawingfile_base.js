@@ -261,6 +261,7 @@
 			rec["H"] = reader.readInt();
 			rec["Dpi"] = reader.readInt();
 			rec["Rotate"] = reader.readInt();
+			rec["originIndex"] = i;
 			rec.fonts = [];
 			rec.fontsUpdateType = UpdateFontsSource.Undefined;
 			rec.text = null;
@@ -308,9 +309,20 @@
 		return this.StartID;
 	};
 
+	function getOriginPage(pages, originIndex)
+	{
+		for (let i = 0; i < pages.length; ++i)
+		{
+			if (pages[i]["originIndex"] == originIndex)
+				return pages[i];
+		}
+		return null;
+	}
+
 	CFile.prototype["getPagePixmap"] = function(pageIndex, width, height, backgroundColor)
 	{
-		if (this.pages[pageIndex].fonts.length > 0)
+		let page = getOriginPage(this.pages, pageIndex);
+		if (!page || page.fonts.length > 0)
 		{
 			// waiting fonts
 			return null;
@@ -320,7 +332,7 @@
 		let retValue = Module["_GetPixmap"](this.nativeFile, pageIndex, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor);
 		this.unlockPageNumForFontsLoader();
 
-		if (this.pages[pageIndex].fonts.length > 0)
+		if (page.fonts.length > 0)
 		{
 			// waiting fonts
 			Module["_free"](retValue);
@@ -330,7 +342,8 @@
 	};
 	CFile.prototype["getGlyphs"] = function(pageIndex)
 	{
-		if (this.pages[pageIndex].fonts.length > 0)
+		let page = getOriginPage(this.pages, pageIndex);
+		if (!page || page.fonts.length > 0)
 		{
 			// waiting fonts
 			return null;
@@ -343,7 +356,7 @@
 		// you need to call destroyTextInfo()
 		this.unlockPageNumForFontsLoader();
 
-		if (this.pages[pageIndex].fonts.length > 0)
+		if (page.fonts.length > 0)
 		{
 			// waiting fonts
 			retValue = null;

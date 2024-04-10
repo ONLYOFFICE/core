@@ -5066,6 +5066,7 @@ void Gfx::opBeginMarkedContent(Object args[], int numArgs) {
         getContentObj(&obj);
       }
       obj.free();
+      out->endMarkedContent(state);
       return;
     }
     oMetaOForm.free(); oID.free(); oTID.free(); oID2.free(); oMCID.free(), oMetadata.free(); oMetadataCur.free(); obj.free();

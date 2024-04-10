@@ -1805,6 +1805,9 @@ namespace PdfWriter
 		}
 		pArrayMeta->Add(new CStringObject(sXML.c_str()));
 
-		m_pCurPage->BeginMarkedContent("MetaOForm");
+		CDictObject* pBDC = new CDictObject();
+		pBDC->Add("MCID", pArrayMeta->GetCount() - 1);
+		m_pCurPage->BeginMarkedContentDict("MetaOForm", pBDC);
+		RELEASEOBJECT(pBDC);
 	}
 }

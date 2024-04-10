@@ -207,7 +207,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"ss:Position", m_oType)
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"ss:Weight", iWeight)
 			WritingElement_ReadAttributes_End(oReader)
-
+			
 			if (sColor.IsInit())
 			{
 				m_oColor.Init(); m_oColor->m_oRgb.Init();
@@ -219,10 +219,16 @@ namespace OOX
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDotted));
 				else if (*sLineStyle == L"Dash")
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDashed));
-				else if (*sLineStyle == L"None")
-					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleNone));
+				else if (*sLineStyle == L"DashDot")
+					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDashDot));
+				else if (*sLineStyle == L"DashDotDot")
+					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDashDotDot));				
 				else if (*sLineStyle == L"Double")
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDouble));
+				else if (*sLineStyle == L"None")
+					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleNone));
+				else if (*sLineStyle == L"SlantDashDot")
+					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleSlantDashDot));
 				else if (*sLineStyle == L"Continuous")
 				{
 					if (iWeight.IsInit()) m_oStyle.reset();
@@ -237,19 +243,28 @@ namespace OOX
 				{
 					case 1:	 //Thin
 					{
-						if (false == sLineStyle.IsInit())
+						if (false == m_oStyle.IsInit())
 							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleThin));
 					}break;
 					case 3: //Thick
 					{
-						if (false == sLineStyle.IsInit())
+						if (false == m_oStyle.IsInit())
 							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleThick));
 					}break;
 					case 2:
 					default: //Medium
 					{
-						if (false == sLineStyle.IsInit())
+						if (false == m_oStyle.IsInit())
 							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleMedium));
+						else
+						{
+							switch (m_oStyle->GetValue())
+							{
+							case SimpleTypes::Spreadsheet::borderstyleDashed: m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleMediumDashed)); break;
+							case SimpleTypes::Spreadsheet::borderstyleDashDot: m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleMediumDashDot)); break;
+							case SimpleTypes::Spreadsheet::borderstyleDashDotDot: m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleMediumDashDotDot)); break;
+							}
+						}
 					}break;
 				}
 			}
@@ -344,10 +359,26 @@ namespace OOX
 
 					if ((border) && (border->m_oType.IsInit()))
 					{
-						if (*border->m_oType == L"Bottom")		m_oBottom	= border;
-						else if (*border->m_oType == L"Top")	m_oTop		= border;
-						else if (*border->m_oType == L"Left")	m_oStart	= border;
-						else if (*border->m_oType == L"Right")	m_oEnd		= border;
+						if (*border->m_oType == L"Bottom")		m_oBottom = border;
+						else if (*border->m_oType == L"Top")	m_oTop = border;
+						else if (*border->m_oType == L"Left")	m_oStart = border;
+						else if (*border->m_oType == L"Right")	m_oEnd = border;
+						else if (*border->m_oType == L"DiagonalLeft")
+						{
+							if (false == m_oDiagonal.IsInit())
+							{
+								m_oDiagonal = border;
+							}
+							m_oDiagonalUp = true;
+						}
+						else if (*border->m_oType == L"DiagonalRight")
+						{
+							if (false == m_oDiagonal.IsInit())
+							{
+								m_oDiagonal = border;
+							}
+							m_oDiagonalDown = true;
+						}
 
 						if (border->bBorderContinuous)
 							bBorderContinuous = true;
@@ -357,7 +388,6 @@ namespace OOX
 						delete border;
 					}
 				}
-
 			}
 		}
 		void CBorder::fromBin(XLS::BaseObjectPtr& obj)

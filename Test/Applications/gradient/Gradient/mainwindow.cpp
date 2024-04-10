@@ -10,11 +10,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 {
 	ui->setupUi(this);
 	ui->lable_test->setStyleSheet("QLabel { background-color : white;}");
-	ui->stackedWidget->setCurrentIndex(0);
-	ui->stackedWidget_2->setCurrentIndex(0);
-	ui->statusbar->showMessage("Linear");
+	on_actionLinear_Gradient_triggered();
 	ui->Rainbow_Colorspace_Radio_Button->setChecked(true);
-	info.colorspace = Rainbow;
 }
 
 MainWindow::~MainWindow()
@@ -26,8 +23,6 @@ void CleanupFunction(void *data)
 {
 	delete[] data;
 }
-
-const int COORD_SIZE_MM = 100;
 
 QImage GenerateImg(std::vector<Point> &points, Info &info, const int& w, const int& h)
 {
@@ -95,7 +90,6 @@ void MainWindow::on_actionLinear_Gradient_triggered()
 	ui->statusbar->showMessage("Linear");
 	info.gradient = Linear;
 	info.gradient_type = c_BrushTypePathNewLinearGradient;
-	points = {{0, 0}, {500, 0}, {500, 500}, {0, 500}};
 }
 
 void MainWindow::on_actionRadial_Gradient_triggered()
@@ -105,7 +99,6 @@ void MainWindow::on_actionRadial_Gradient_triggered()
 	ui->statusbar->showMessage("Radial");
 	info.gradient = Radial;
 	info.gradient_type = c_BrushTypePathRadialGradient;
-	points = {{0, 0}, {500, 0}, {500, 500}, {0, 500}};
 }
 
 void MainWindow::on_actionTriangle_Gradient_triggered()
@@ -115,7 +108,6 @@ void MainWindow::on_actionTriangle_Gradient_triggered()
 	ui->statusbar->showMessage("Triangle");
 	info.gradient = Triangle;
 	info.gradient_type = c_BrushTypeTriagnleMeshGradient;
-	points = {{0, 0}, {500, 0}, {500, 500}, {0, 500}};
 }
 
 void MainWindow::on_actionTriangle_Parametric_Gradient_triggered()
@@ -125,7 +117,6 @@ void MainWindow::on_actionTriangle_Parametric_Gradient_triggered()
 	ui->statusbar->showMessage("Triangle Parametric");
 	info.gradient = TriangleParametric;
 	info.gradient_type = c_BrushTypeTriagnleMeshGradient;
-	points = {{0, 0}, {500, 0}, {500, 500}, {0, 500}};
 }
 
 void MainWindow::on_actionCoons_Patch_Gradient_triggered()
@@ -135,7 +126,6 @@ void MainWindow::on_actionCoons_Patch_Gradient_triggered()
 	ui->statusbar->showMessage("Coons Patch");
 	info.gradient = CoonsPatch;
 	info.gradient_type = c_BrushTypePathNewLinearGradient;
-	points = {{0, 0}, {500, 0}, {500, 500}, {0, 500}};
 }
 
 void MainWindow::on_actionCoons_Patch_Parametric_triggered()
@@ -145,7 +135,6 @@ void MainWindow::on_actionCoons_Patch_Parametric_triggered()
 	ui->statusbar->showMessage("Coons Patch Parametric");
 	info.gradient = CoonsPatchParametric;
 	info.gradient_type = c_BrushTypeCurveGradient;
-	points = {{0, 0}, {500, 0}, {500, 500}, {0, 500}};
 }
 
 void MainWindow::on_actionTensor_Coons_Patch_Gradient_triggered()
@@ -155,7 +144,6 @@ void MainWindow::on_actionTensor_Coons_Patch_Gradient_triggered()
 	ui->statusbar->showMessage("Tensor Coons Patch");
 	info.gradient = TensorCoonsPatch;
 	info.gradient_type = c_BrushTypePathNewLinearGradient;
-	points = {{0, 0}, {500, 0}, {500, 500}, {0, 500}};
 }
 
 void MainWindow::on_actionTensor_Coons_Patch_Parametric_triggered()
@@ -165,135 +153,44 @@ void MainWindow::on_actionTensor_Coons_Patch_Parametric_triggered()
 	ui->statusbar->showMessage("Tensor Coons Patch Parametric");
 	info.gradient = TensorCoonsPatchParametric;
 	info.gradient_type = c_BrushTypeTensorCurveGradient;
-	points = {{0, 0}, {500, 0}, {500, 500}, {0, 500}};
-}
-
-void MainWindow::on_BAW_Colorspace_Radio_Button_clicked()
-{
-	info.colorspace = BlackAndWhite;
-}
-
-void MainWindow::on_RAB_Colorspace_Radio_Button_clicked()
-{
-	info.colorspace = RedAndBlue;
-}
-
-void MainWindow::on_Pastel_Colorspace_Radio_Button_clicked()
-{
-	info.colorspace = Pastel;
-}
-void MainWindow::on_Rainbow_Colorspace_Radio_Button_clicked()
-{
-	info.colorspace = Rainbow;
 }
 
 void MainWindow::on_pushButton_clicked()
 {
+	points = {{0, 0},
+			  {static_cast<double>(ui->lable_test->width()), 0},
+			  {static_cast<double>(ui->lable_test->width()), static_cast<double>(ui->lable_test->height())},
+			  {0, static_cast<double>(ui->lable_test->height())}};
+
 	if (info.gradient == Linear)
 	{
-		if (ui->First_X_Coordinate_Input->text() == "")
-		{
-			ui->statusbar->showMessage("First X coordinate = NULL");
-			return;
-		}
 		info.p0.x = ui->First_X_Coordinate_Input->text().toInt();
-		if (ui->First_Y_Coordinate_Input->text() == "")
-		{
-			ui->statusbar->showMessage("First Y coordinate = NULL");
-			return;
-		}
 		info.p0.y = ui->First_Y_Coordinate_Input->text().toInt();
-		if (ui->Second_X_Coordinate_Input->text() == "")
-		{
-			ui->statusbar->showMessage("First X coordinate = NULL");
-			return;
-		}
 		info.p1.x = ui->Second_X_Coordinate_Input->text().toInt();
-		if (ui->Second_Y_Coordinate_Input->text() == "")
-		{
-			ui->statusbar->showMessage("First X coordinate = NULL");
-			return;
-		}
 		info.p1.y = ui->Second_Y_Coordinate_Input->text().toInt();
+		info.cont_b = ui->Continue_Shading_Backward->isChecked();
+		info.cont_f = ui->Continue_Shading_Forward->isChecked();
 		info.ginfo = NSStructures::GInfoConstructor::get_linear(info.p0, info.p1, 0, 1, info.cont_b, info.cont_f);
 	}
 	else if (info.gradient == Radial)
 	{
-		if (ui->First_Center_X_Coordinate_Input->text() == "")
-		{
-			ui->statusbar->showMessage("First Center X coordinate = NULL");
-			return;
-		}
 		info.c0.x = ui->First_Center_X_Coordinate_Input->text().toInt();
-		if (ui->First_Center_Y_Coordinate_Input->text() == "")
-		{
-			ui->statusbar->showMessage("First Center Y coordinate = NULL");
-			return;
-		}
 		info.c0.y = ui->First_Center_Y_Coordinate_Input->text().toInt();
-		if (ui->Second_Center_X_Coordinate_Input->text() == "")
-		{
-			ui->statusbar->showMessage("First Center X coordinate = NULL");
-			return;
-		}
 		info.c1.x = ui->Second_Center_X_Coordinate_Input->text().toInt();
-		if (ui->Second_Center_Y_Coordinate_Input->text() == "")
-		{
-			ui->statusbar->showMessage("First Center X coordinate = NULL");
-			return;
-		}
 		info.c1.y = ui->Second_Center_Y_Coordinate_Input->text().toInt();
-		if (ui->First_Radius_Input->text() == "")
-		{
-			ui->statusbar->showMessage("First Radius = NUll");
-			return;
-		}
 		info.r0 = ui->First_Radius_Input->text().toInt();
-		if (ui->Second_Radius_Input->text() == "")
-		{
-			ui->statusbar->showMessage("Second Radius = NULL");
-			return;
-		}
 		info.r1 = ui->Second_Radius_Input->text().toInt();
+		info.cont_b = ui->Continue_Shading_Backward_2->isChecked();
+		info.cont_f = ui->Continue_Shading_Forward_2->isChecked();
 		info.ginfo = NSStructures::GInfoConstructor::get_radial(info.c0, info.c1, info.r0, info.r1, 0, 1, info.cont_b, info.cont_f);
 	}
 	else if (info.gradient == Triangle || info.gradient == TriangleParametric)
 	{
-		if (ui->First_Vertex_X_Coordinate_Input->text() == "")
-		{
-			ui->statusbar->showMessage("First Vertex X coordinate = NULL");
-			return;
-		}
 		info.triangle[0].x = ui->First_Vertex_X_Coordinate_Input->text().toInt();
-		if (ui->First_Vertex_Y_Coordinate_Input->text() == "")
-		{
-			ui->statusbar->showMessage("First Vertex Y coordinate = NULL");
-			return;
-		}
 		info.triangle[0].y = ui->First_Vertex_Y_Coordinate_Input->text().toInt();
-		if (ui->Second_Vertex_X_Coordinate_Input->text() == "")
-		{
-			ui->statusbar->showMessage("Second Vertex X coordinate = NULL");
-			return;
-		}
 		info.triangle[1].x = ui->Second_Vertex_X_Coordinate_Input->text().toInt();
-		if (ui->Second_Vertex_Y_Coordinate_Input->text() == "")
-		{
-			ui->statusbar->showMessage("Second Vertex Y coordinate = NULL");
-			return;
-		}
 		info.triangle[1].y = ui->Second_Vertex_Y_Coordinate_Input->text().toInt();
-		if (ui->Third_Vertex_X_Coordinate_Input->text() == "")
-		{
-			ui->statusbar->showMessage("Third Vertex X coordinate = NULL");
-			return;
-		}
 		info.triangle[2].x = ui->Third_Vertex_X_Coordinate_Input->text().toInt();
-		if (ui->Third_Vertex_Y_Coordinate_Input->text() == "")
-		{
-			ui->statusbar->showMessage("Third Vertex Y coordinate = NULL");
-			return;
-		}
 		info.triangle[2].y = ui->Third_Vertex_Y_Coordinate_Input->text().toInt();
 		info.ginfo = NSStructures::GInfoConstructor::get_triangle(info.triangle,
 																  {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
@@ -307,150 +204,30 @@ void MainWindow::on_pushButton_clicked()
 	}
 	else if (info.gradient == CoonsPatch || info.gradient == CoonsPatchParametric)
 	{
-		if (ui->First_Vertex_X_Coordinate_Input_3->text() == "")
-		{
-			ui->statusbar->showMessage("First Vertex X Coordinate = NULL");
-			return;
-		}
-		info.curve[0].x = 5 * ui->First_Vertex_X_Coordinate_Input_3->text().toInt();
-		if (ui->First_Vertex_Y_Coordinate_Input_3->text() == "")
-		{
-			ui->statusbar->showMessage("First Vertex Y Coordinate = NULL");
-			return;
-		}
-		info.curve[0].y = 5 * ui->First_Vertex_Y_Coordinate_Input_3->text().toInt();
-		if (ui->First_X_Coordinate_First_Edge->text() == "")
-		{
-			ui->statusbar->showMessage("First X Coordinate First Edge = NULL");
-			return;
-		}
-		info.curve[1].x = 5 * ui->First_X_Coordinate_First_Edge->text().toInt();
-		if (ui->First_Y_Coordinate_First_Edge->text() == "")
-		{
-			ui->statusbar->showMessage("First Y Coordinate First Edge = NULL");
-			return;
-		}
-		info.curve[1].y = 5 * ui->First_Y_Coordinate_First_Edge->text().toInt();
-		if (ui->Second_X_Coordinate_First_Edge->text() == "")
-		{
-			ui->statusbar->showMessage("Second X Coordinate First Edge = NULL");
-			return;
-		}
-		info.curve[2].x = 5 * ui->Second_X_Coordinate_First_Edge->text().toInt();
-		if (ui->Second_Y_Coordinate_First_Edge->text() == "")
-		{
-			ui->statusbar->showMessage("Second Y Coordinate First Edge = NULL");
-			return;
-		}
-		info.curve[2].y = 5 * ui->Second_Y_Coordinate_First_Edge->text().toInt();
-		if (ui->Second_Vertex_X_Coordinate_Input_3->text() == "")
-		{
-			ui->statusbar->showMessage("Second Vertex X Coordinate = NULL");
-			return;
-		}
-		info.curve[3].x = 5 * ui->Second_Vertex_X_Coordinate_Input_3->text().toInt();
-		if (ui->Second_Vertex_Y_Coordinate_Input_3->text() == "")
-		{
-			ui->statusbar->showMessage("Second Vertex Y Coordinate = NULL");
-			return;
-		}
-		info.curve[3].y = 5 * ui->Second_Vertex_Y_Coordinate_Input_3->text().toInt();
-		if (ui->First_X_Coordinate_Second_Edge->text() == "")
-		{
-			ui->statusbar->showMessage("First X Coordinate Second Edge = NULL");
-			return;
-		}
-		info.curve[4].x = 5 * ui->First_X_Coordinate_Second_Edge->text().toInt();
-		if (ui->First_Y_Coordinate_Second_Edge->text() == "")
-		{
-			ui->statusbar->showMessage("First Y Coordinate Second Edge = NULL");
-			return;
-		}
-		info.curve[4].y = 5 * ui->First_Y_Coordinate_Second_Edge->text().toInt();
-		if (ui->Second_X_Coordinate_Second_Edge->text() == "")
-		{
-			ui->statusbar->showMessage("Second X Coordinate Second Edge = NULL");
-			return;
-		}
-		info.curve[5].x = 5 * ui->Second_X_Coordinate_Second_Edge->text().toInt();
-		if (ui->Second_Y_Coordinate_Second_Edge->text() == "")
-		{
-			ui->statusbar->showMessage("Second Y Coordinate Second Edge = NULL");
-			return;
-		}
-		info.curve[5].y = 5 * ui->Second_Y_Coordinate_Second_Edge->text().toInt();
-		if (ui->Third_Vertex_X_Coordinate_Input_3->text() == "")
-		{
-			ui->statusbar->showMessage("Third Vertex X Coordinate = NULL");
-			return;
-		}
-		info.curve[6].x = 5 * ui->Third_Vertex_X_Coordinate_Input_3->text().toInt();
-		if (ui->Third_Vertex_Y_Coordinate_Input_3->text() == "")
-		{
-			ui->statusbar->showMessage("Third Vertex Y Coordinate = NULL");
-			return;
-		}
-		info.curve[6].y = 5 * ui->Third_Vertex_Y_Coordinate_Input_3->text().toInt();
-		if (ui->First_X_Coordinate_Third_Edge->text() == "")
-		{
-			ui->statusbar->showMessage("First X Coordinate Third Edge = NULL");
-			return;
-		}
-		info.curve[7].x = 5 * ui->First_X_Coordinate_Third_Edge->text().toInt();
-		if (ui->First_Y_Coordinate_Third_Edge->text() == "")
-		{
-			ui->statusbar->showMessage("First Y Coordinate Third Edge = NULL");
-			return;
-		}
-		info.curve[7].y = 5 * ui->First_Y_Coordinate_Third_Edge->text().toInt();
-		if (ui->Second_X_Coordinate_Third_Edge->text() == "")
-		{
-			ui->statusbar->showMessage("Second X Coordinate Third Edge = NULL");
-			return;
-		}
-		info.curve[8].x = 5 * ui->Second_X_Coordinate_Third_Edge->text().toInt();
-		if (ui->Second_Y_Coordinate_Third_Edge->text() == "")
-		{
-			ui->statusbar->showMessage("Second Y Coordinate Third Edge = NULL");
-			return;
-		}
-		info.curve[8].y = 5 * ui->Second_Y_Coordinate_Third_Edge->text().toInt();
-		if (ui->Fourth_Vertex_X_Coordinate_Input_3->text() == "")
-		{
-			ui->statusbar->showMessage("Fourth Vertex X Coordinate = NULL");
-			return;
-		}
-		info.curve[9].x = 5 * ui->Fourth_Vertex_X_Coordinate_Input_3->text().toInt();
-		if (ui->Fourth_Vertex_Y_Coordinate_Input_3->text() == "")
-		{
-			ui->statusbar->showMessage("Fourth Vertex Y Coordinate = NULL");
-			return;
-		}
-		info.curve[9].y = 5 * ui->Fourth_Vertex_Y_Coordinate_Input_3->text().toInt();
-		if (ui->First_X_Coordinate_Fourth_Edge->text() == "")
-		{
-			ui->statusbar->showMessage("First X Coordinate Fourth Edge = NULL");
-			return;
-		}
-		info.curve[10].x = 5 * ui->First_X_Coordinate_Fourth_Edge->text().toInt();
-		if (ui->First_Y_Coordinate_Fourth_Edge->text() == "")
-		{
-			ui->statusbar->showMessage("First Y Coordinate Fourth Edge = NULL");
-			return;
-		}
-		info.curve[10].y = 5 * ui->First_Y_Coordinate_Fourth_Edge->text().toInt();
-		if (ui->Second_X_Coordinate_Fourth_Edge->text() == "")
-		{
-			ui->statusbar->showMessage("Second X Coordinate Fourth Edge = NULL");
-			return;
-		}
-		info.curve[11].x = 5 * ui->Second_X_Coordinate_Fourth_Edge->text().toInt();
-		if (ui->Second_Y_Coordinate_Fourth_Edge->text() == "")
-		{
-			ui->statusbar->showMessage("Second Y Coordinate Fourth Edge = NULL");
-			return;
-		}
-		info.curve[11].y = 5 * ui->Second_Y_Coordinate_Fourth_Edge->text().toInt();
+		info.curve[0].x = MM_TO_COORD(ui->lable_test->width()) * ui->First_Vertex_X_Coordinate_Input_3->text().toInt();
+		info.curve[0].y = MM_TO_COORD(ui->lable_test->height()) * ui->First_Vertex_Y_Coordinate_Input_3->text().toInt();
+		info.curve[1].x = MM_TO_COORD(ui->lable_test->width()) * ui->First_X_Coordinate_First_Edge->text().toInt();
+		info.curve[1].y = MM_TO_COORD(ui->lable_test->height()) * ui->First_Y_Coordinate_First_Edge->text().toInt();
+		info.curve[2].x = MM_TO_COORD(ui->lable_test->width()) * ui->Second_X_Coordinate_First_Edge->text().toInt();
+		info.curve[2].y = MM_TO_COORD(ui->lable_test->height()) * ui->Second_Y_Coordinate_First_Edge->text().toInt();
+		info.curve[3].x = MM_TO_COORD(ui->lable_test->width()) * ui->Second_Vertex_X_Coordinate_Input_3->text().toInt();
+		info.curve[3].y = MM_TO_COORD(ui->lable_test->height()) * ui->Second_Vertex_Y_Coordinate_Input_3->text().toInt();
+		info.curve[4].x = MM_TO_COORD(ui->lable_test->width()) * ui->First_X_Coordinate_Second_Edge->text().toInt();
+		info.curve[4].y = MM_TO_COORD(ui->lable_test->height()) * ui->First_Y_Coordinate_Second_Edge->text().toInt();
+		info.curve[5].x = MM_TO_COORD(ui->lable_test->width()) * ui->Second_X_Coordinate_Second_Edge->text().toInt();
+		info.curve[5].y = MM_TO_COORD(ui->lable_test->height()) * ui->Second_Y_Coordinate_Second_Edge->text().toInt();
+		info.curve[6].x = MM_TO_COORD(ui->lable_test->width()) * ui->Third_Vertex_X_Coordinate_Input_3->text().toInt();
+		info.curve[6].y = MM_TO_COORD(ui->lable_test->height()) * ui->Third_Vertex_Y_Coordinate_Input_3->text().toInt();
+		info.curve[7].x = MM_TO_COORD(ui->lable_test->width()) * ui->First_X_Coordinate_Third_Edge->text().toInt();
+		info.curve[7].y = MM_TO_COORD(ui->lable_test->height()) * ui->First_Y_Coordinate_Third_Edge->text().toInt();
+		info.curve[8].x = MM_TO_COORD(ui->lable_test->width()) * ui->Second_X_Coordinate_Third_Edge->text().toInt();
+		info.curve[8].y = MM_TO_COORD(ui->lable_test->height()) * ui->Second_Y_Coordinate_Third_Edge->text().toInt();
+		info.curve[9].x = MM_TO_COORD(ui->lable_test->width()) * ui->Fourth_Vertex_X_Coordinate_Input_3->text().toInt();
+		info.curve[9].y = MM_TO_COORD(ui->lable_test->height()) * ui->Fourth_Vertex_Y_Coordinate_Input_3->text().toInt();
+		info.curve[10].x = MM_TO_COORD(ui->lable_test->width()) * ui->First_X_Coordinate_Fourth_Edge->text().toInt();
+		info.curve[10].y = MM_TO_COORD(ui->lable_test->height()) * ui->First_Y_Coordinate_Fourth_Edge->text().toInt();
+		info.curve[11].x = MM_TO_COORD(ui->lable_test->width()) * ui->Second_X_Coordinate_Fourth_Edge->text().toInt();
+		info.curve[11].y = MM_TO_COORD(ui->lable_test->height()) * ui->Second_Y_Coordinate_Fourth_Edge->text().toInt();
 		info.ginfo = NSStructures::GInfoConstructor::get_curve(
 			info.curve,
 			{0, 0.5, 1, 0.5},
@@ -461,198 +238,38 @@ void MainWindow::on_pushButton_clicked()
 	}
 	else if (info.gradient == TensorCoonsPatch || info.gradient == TensorCoonsPatchParametric)
 	{
-		if (ui->First_X_Coordinate_First_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("First X Coordinate First Edge = NULL");
-			return;
-		}
-		info.tensorcurve[0][0].x = 5 * ui->First_X_Coordinate_First_Edge_3->text().toInt();
-		if (ui->First_Y_Coordinate_First_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("First Y Coordinate First Edge = NULL");
-			return;
-		}
-		info.tensorcurve[0][0].y = 5 * ui->First_Y_Coordinate_First_Edge_3->text().toInt();
-		if (ui->Second_X_Coordinate_First_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Second X Coordinate First Edge = NULL");
-			return;
-		}
-		info.tensorcurve[0][1].x = 5 * ui->Second_X_Coordinate_First_Edge_3->text().toInt();
-		if (ui->Second_Y_Coordinate_First_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Second Y Coordinate First Edge = NULL");
-			return;
-		}
-		info.tensorcurve[0][1].y = 5 * ui->Second_Y_Coordinate_First_Edge_3->text().toInt();
-		if (ui->Third_X_Coordinate_First_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Third X Coordinate First Edge = NULL");
-			return;
-		}
-		info.tensorcurve[0][2].x = 5 * ui->Third_X_Coordinate_First_Edge_3->text().toInt();
-		if (ui->Third_Y_Coordinate_First_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Third Y Coordinate First Edge = NULL");
-			return;
-		}
-		info.tensorcurve[0][2].y = 5 * ui->Third_Y_Coordinate_First_Edge_3->text().toInt();
-		if (ui->Fourth_X_Coordinate_First_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Fourth X Coordinate First Edge = NULL");
-			return;
-		}
-		info.tensorcurve[0][3].x = 5 * ui->Fourth_X_Coordinate_First_Edge_3->text().toInt();
-		if (ui->Fourth_Y_Coordinate_First_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Fourth Y Coordinate First Edge = NULL");
-			return;
-		}
-		info.tensorcurve[0][3].y = 5 * ui->Fourth_Y_Coordinate_First_Edge_3->text().toInt();
-		if (ui->First_X_Coordinate_Second_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("First X Coordinate Second Edge = NULL");
-			return;
-		}
-		info.tensorcurve[1][0].x = 5 * ui->First_X_Coordinate_Second_Edge_3->text().toInt();
-		if (ui->First_Vertex_Y_Coordinate_Input_3->text() == "")
-		{
-			ui->statusbar->showMessage("First Y Coordinate Second Edge = NULL");
-			return;
-		}
-		info.tensorcurve[1][0].y = 5 * ui->First_Y_Coordinate_Second_Edge_3->text().toInt();
-		if (ui->Second_X_Coordinate_Second_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Second X Coordinate Second Edge = NULL");
-			return;
-		}
-		info.tensorcurve[1][1].x = 5 * ui->Second_X_Coordinate_Second_Edge_3->text().toInt();
-		if (ui->Second_Y_Coordinate_Second_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Second Y Coordinate Second Edge = NULL");
-			return;
-		}
-		info.tensorcurve[1][1].y = 5 * ui->Second_Y_Coordinate_Second_Edge_3->text().toInt();
-		if (ui->Third_X_Coordinate_Second_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Third X Coordinate Second Edge = NULL");
-			return;
-		}
-		info.tensorcurve[1][2].x = 5 * ui->Third_X_Coordinate_Second_Edge_3->text().toInt();
-		if (ui->Third_Y_Coordinate_Second_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Third Y Coordinate Second Edge = NULL");
-			return;
-		}
-		info.tensorcurve[1][2].y = 5 * ui->Third_Y_Coordinate_Second_Edge_3->text().toInt();
-		if (ui->Fourth_X_Coordinate_Second_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Fourth X Coordinate Second Edge = NULL");
-			return;
-		}
-		info.tensorcurve[1][3].x = 5 * ui->Fourth_X_Coordinate_Second_Edge_3->text().toInt();
-		if (ui->Fourth_Y_Coordinate_Second_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Fourth Y Coordinate Second Edge = NULL");
-			return;
-		}
-		info.tensorcurve[1][3].y = 5 * ui->Fourth_Y_Coordinate_Second_Edge_3->text().toInt();
-		if (ui->First_X_Coordinate_Third_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("First X Coordinate Third Edge = NULL");
-			return;
-		}
-		info.tensorcurve[2][0].x = 5 * ui->First_X_Coordinate_Third_Edge_3->text().toInt();
-		if (ui->First_Y_Coordinate_Third_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("First Y Coordinate Third Edge = NULL");
-			return;
-		}
-		info.tensorcurve[2][0].y = 5 * ui->First_Y_Coordinate_Third_Edge_3->text().toInt();
-		if (ui->Second_X_Coordinate_Third_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Second X Coordinate Third Edge = NULL");
-			return;
-		}
-		info.tensorcurve[2][1].x = 5 * ui->Second_Y_Coordinate_Third_Edge_3->text().toInt();
-		if (ui->Second_Y_Coordinate_Third_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Second Y Coordinate Third Edge = NULL");
-			return;
-		}
-		info.tensorcurve[2][1].y = 5 * ui->Second_Y_Coordinate_Third_Edge_3->text().toInt();
-		if (ui->Third_X_Coordinate_Third_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Third X Coordinate Third Edge = NULL");
-			return;
-		}
-		info.tensorcurve[2][2].x = 5 * ui->Third_X_Coordinate_Third_Edge_3->text().toInt();
-		if (ui->Third_Y_Coordinate_Third_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Third Y Coordinate Third Edge = NULL");
-			return;
-		}
-		info.tensorcurve[2][2].y = 5 * ui->Third_Y_Coordinate_Third_Edge_3->text().toInt();
-		if (ui->Fourth_X_Coordinate_Third_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Fourth X Coordinate Third Edge = NULL");
-			return;
-		}
-		info.tensorcurve[2][3].x = 5 * ui->Fourth_X_Coordinate_Third_Edge_3->text().toInt();
-		if (ui->Fourth_Y_Coordinate_Third_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Fourth Y Coordinate Third Edge = NULL");
-			return;
-		}
-		info.tensorcurve[2][3].y = 5 * ui->Fourth_Y_Coordinate_Third_Edge_3->text().toInt();
-		if (ui->First_X_Coordinate_Fourth_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("First X Coordinate Fourth Edge = NULL");
-			return;
-		}
-		info.tensorcurve[3][0].x = 5 * ui->First_X_Coordinate_Fourth_Edge_3->text().toInt();
-		if (ui->First_Y_Coordinate_Fourth_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("First Y Coordinate Fourth Edge = NULL");
-			return;
-		}
-		info.tensorcurve[3][0].y = 5 * ui->First_Y_Coordinate_Fourth_Edge_3->text().toInt();
-		if (ui->Second_X_Coordinate_Fourth_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Second X Coordinate Fourth Edge = NULL");
-			return;
-		}
-		info.tensorcurve[3][1].x = 5 * ui->Second_X_Coordinate_Fourth_Edge_3->text().toInt();
-		if (ui->Second_Y_Coordinate_Fourth_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Second Y Coordinate Fourth Edge = NULL");
-			return;
-		}
-		info.tensorcurve[3][1].y = 5 * ui->Second_Y_Coordinate_Fourth_Edge_3->text().toInt();
-		if (ui->Third_X_Coordinate_Fourth_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Third X Coordinate Fourth Edge = NULL");
-			return;
-		}
-		info.tensorcurve[3][2].x = 5 * ui->Third_X_Coordinate_Fourth_Edge_3->text().toInt();
-		if (ui->Third_Y_Coordinate_Fourth_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Third X Coordinate Fourth Edge = NULL");
-			return;
-		}
-		info.tensorcurve[3][2].y = 5 * ui->Third_Y_Coordinate_Fourth_Edge_3->text().toInt();
-		if (ui->Fourth_X_Coordinate_Fourth_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Fourth X Coordinate Fourth Edge = NULL");
-			return;
-		}
-		info.tensorcurve[3][3].x = 5 * ui->Fourth_X_Coordinate_Fourth_Edge_3->text().toInt();
-		if (ui->Fourth_Y_Coordinate_Fourth_Edge_3->text() == "")
-		{
-			ui->statusbar->showMessage("Fourth Y Coordinate Fourth Edge = NULL");
-			return;
-		}
-		info.tensorcurve[3][3].y = 5 * ui->Fourth_Y_Coordinate_Fourth_Edge_3->text().toInt();
+		info.tensorcurve[0][0].x = MM_TO_COORD(ui->lable_test->width()) * ui->First_X_Coordinate_First_Edge_3->text().toInt();
+		info.tensorcurve[0][0].y = MM_TO_COORD(ui->lable_test->height()) * ui->First_Y_Coordinate_First_Edge_3->text().toInt();
+		info.tensorcurve[0][1].x = MM_TO_COORD(ui->lable_test->width()) * ui->Second_X_Coordinate_First_Edge_3->text().toInt();
+		info.tensorcurve[0][1].y = MM_TO_COORD(ui->lable_test->height()) * ui->Second_Y_Coordinate_First_Edge_3->text().toInt();
+		info.tensorcurve[0][2].x = MM_TO_COORD(ui->lable_test->width()) * ui->Third_X_Coordinate_First_Edge_3->text().toInt();
+		info.tensorcurve[0][2].y = MM_TO_COORD(ui->lable_test->height()) * ui->Third_Y_Coordinate_First_Edge_3->text().toInt();
+		info.tensorcurve[0][3].x = MM_TO_COORD(ui->lable_test->width()) * ui->Fourth_X_Coordinate_First_Edge_3->text().toInt();
+		info.tensorcurve[0][3].y = MM_TO_COORD(ui->lable_test->height()) * ui->Fourth_Y_Coordinate_First_Edge_3->text().toInt();
+		info.tensorcurve[1][0].x = MM_TO_COORD(ui->lable_test->width()) * ui->First_X_Coordinate_Second_Edge_3->text().toInt();
+		info.tensorcurve[1][0].y = MM_TO_COORD(ui->lable_test->height()) * ui->First_Y_Coordinate_Second_Edge_3->text().toInt();
+		info.tensorcurve[1][1].x = MM_TO_COORD(ui->lable_test->width()) * ui->Second_X_Coordinate_Second_Edge_3->text().toInt();
+		info.tensorcurve[1][1].y = MM_TO_COORD(ui->lable_test->height()) * ui->Second_Y_Coordinate_Second_Edge_3->text().toInt();
+		info.tensorcurve[1][2].x = MM_TO_COORD(ui->lable_test->width()) * ui->Third_X_Coordinate_Second_Edge_3->text().toInt();
+		info.tensorcurve[1][2].y = MM_TO_COORD(ui->lable_test->height()) * ui->Third_Y_Coordinate_Second_Edge_3->text().toInt();
+		info.tensorcurve[1][3].x = MM_TO_COORD(ui->lable_test->width()) * ui->Fourth_X_Coordinate_Second_Edge_3->text().toInt();
+		info.tensorcurve[1][3].y = MM_TO_COORD(ui->lable_test->height()) * ui->Fourth_Y_Coordinate_Second_Edge_3->text().toInt();
+		info.tensorcurve[2][0].x = MM_TO_COORD(ui->lable_test->width()) * ui->First_X_Coordinate_Third_Edge_3->text().toInt();
+		info.tensorcurve[2][0].y = MM_TO_COORD(ui->lable_test->height()) * ui->First_Y_Coordinate_Third_Edge_3->text().toInt();
+		info.tensorcurve[2][1].x = MM_TO_COORD(ui->lable_test->width()) * ui->Second_Y_Coordinate_Third_Edge_3->text().toInt();
+		info.tensorcurve[2][1].y = MM_TO_COORD(ui->lable_test->height()) * ui->Second_Y_Coordinate_Third_Edge_3->text().toInt();
+		info.tensorcurve[2][2].x = MM_TO_COORD(ui->lable_test->width()) * ui->Third_X_Coordinate_Third_Edge_3->text().toInt();
+		info.tensorcurve[2][2].y = MM_TO_COORD(ui->lable_test->height()) * ui->Third_Y_Coordinate_Third_Edge_3->text().toInt();
+		info.tensorcurve[2][3].x = MM_TO_COORD(ui->lable_test->width()) * ui->Fourth_X_Coordinate_Third_Edge_3->text().toInt();
+		info.tensorcurve[2][3].y = MM_TO_COORD(ui->lable_test->height()) * ui->Fourth_Y_Coordinate_Third_Edge_3->text().toInt();
+		info.tensorcurve[3][0].x = MM_TO_COORD(ui->lable_test->width()) * ui->First_X_Coordinate_Fourth_Edge_3->text().toInt();
+		info.tensorcurve[3][0].y = MM_TO_COORD(ui->lable_test->height()) * ui->First_Y_Coordinate_Fourth_Edge_3->text().toInt();
+		info.tensorcurve[3][1].x = MM_TO_COORD(ui->lable_test->width()) * ui->Second_X_Coordinate_Fourth_Edge_3->text().toInt();
+		info.tensorcurve[3][1].y = MM_TO_COORD(ui->lable_test->height()) * ui->Second_Y_Coordinate_Fourth_Edge_3->text().toInt();
+		info.tensorcurve[3][2].x = MM_TO_COORD(ui->lable_test->width()) * ui->Third_X_Coordinate_Fourth_Edge_3->text().toInt();
+		info.tensorcurve[3][2].y = MM_TO_COORD(ui->lable_test->height()) * ui->Third_Y_Coordinate_Fourth_Edge_3->text().toInt();
+		info.tensorcurve[3][3].x = MM_TO_COORD(ui->lable_test->width()) * ui->Fourth_X_Coordinate_Fourth_Edge_3->text().toInt();
+		info.tensorcurve[3][3].y = MM_TO_COORD(ui->lable_test->height()) * ui->Fourth_Y_Coordinate_Fourth_Edge_3->text().toInt();
 		info.ginfo = NSStructures::GInfoConstructor::get_tensor_curve(
 			info.tensorcurve,
 			{{0, 0.5}, {1, 0.5}},
@@ -661,33 +278,28 @@ void MainWindow::on_pushButton_clicked()
 			);
 	}
 
-	if (info.colorspace == NoColorspaceType)
-	{
-		ui->statusbar->showMessage("Colorspace - NULL");
-		return;
-	}
-	else if (info.colorspace == Rainbow)
+	if (ui->Rainbow_Colorspace_Radio_Button->isChecked())
 	{
 		info.c = {(LONG)0xFFff0000, (LONG)0xFFffa500, (LONG)0xFFffff00, (LONG)0xFF008000, (LONG)0xFF0000ff, (LONG)0xFFFF00FF};
 		info.p = {0.0, 0.2, 0.4, 0.6, 0.8, 1};
 		info.n_colors = 6;
 		info.ginfo.shading.function.set_linear_interpolation({0xFFff0000, 0xFFffa500, 0xFFffff00, 0xFF008000, 0xFF0000ff, 0xFFFF00FF}, {0.0f, 0.2f, 0.4f, 0.6f, 0.8f, 1.0f});
 	}
-	else if (info.colorspace == BlackAndWhite)
+	else if (ui->BAW_Colorspace_Radio_Button->isChecked())
 	{
 		info.c = {(LONG)0xFFFFFFFF, (LONG)0xFF000000};
 		info.p = {0.0, 1};
 		info.n_colors = 2;
 		info.ginfo.shading.function.set_linear_interpolation({0xFFFFFFFF, 0xFF000000}, {0.0f, 1.0f});
 	}
-	else if (info.colorspace == RedAndBlue)
+	else if (ui->RAB_Colorspace_Radio_Button->isChecked())
 	{
 		info.c = {(LONG)0xFFFF0000, (LONG)0xFF0000FF};
 		info.p = {0.0, 1};
 		info.n_colors = 2;
 		info.ginfo.shading.function.set_linear_interpolation({0xFFFF0000, 0xFF0000FF}, {0.0f, 1.0f});
 	}
-	else if (info.colorspace == Pastel)
+	else if (ui->Pastel_Colorspace_Radio_Button->isChecked())
 	{
 		info.c = {(LONG)0xfff39189, (LONG)0xff046582};
 		info.p = {0.0, 1};
@@ -699,453 +311,3 @@ void MainWindow::on_pushButton_clicked()
 	ui->lable_test->setPixmap(QPixmap::fromImage(pm));
 	ui->lable_test->setScaledContents(true);
 }
-
-void MainWindow::on_Continue_Shading_Forward_clicked(bool checked)
-{
-	info.cont_f = checked;
-}
-
-void MainWindow::on_checkBox_2_clicked(bool checked)
-{
-	info.cont_b = checked;
-}
-
-void MainWindow::on_Continue_Shading_Forward_2_clicked(bool checked)
-{
-	info.cont_f = checked;
-}
-
-void MainWindow::on_Continue_Shading_Backward_2_clicked(bool checked)
-{
-	info.cont_b = checked;
-}
-
-inline void ClampCoords(QLineEdit* edit)
-{
-	if (edit->text().toInt() < 0)
-		edit->setText("0");
-	if (edit->text().toInt() > COORD_SIZE_MM)
-		edit->setText(QString::number(COORD_SIZE_MM));
-}
-
-void MainWindow::on_First_X_Coordinate_Input_editingFinished()
-{
-	ClampCoords(ui->First_X_Coordinate_Input);
-}
-
-void MainWindow::on_First_Y_Coordinate_Input_editingFinished()
-{
-	ClampCoords(ui->First_Y_Coordinate_Input);
-}
-
-void MainWindow::on_Second_X_Coordinate_Input_editingFinished()
-{
-	ClampCoords(ui->Second_X_Coordinate_Input);
-}
-
-void MainWindow::on_Second_Y_Coordinate_Input_editingFinished()
-{
-	ClampCoords(ui->Second_Y_Coordinate_Input);
-}
-
-void MainWindow::on_First_Center_X_Coordinate_Input_editingFinished()
-{
-	ClampCoords(ui->First_Center_X_Coordinate_Input);
-}
-
-void MainWindow::on_First_Center_Y_Coordinate_Input_editingFinished()
-{
-	ClampCoords(ui->First_Center_Y_Coordinate_Input);
-}
-
-void MainWindow::on_Second_Center_X_Coordinate_Input_editingFinished()
-{
-	ClampCoords(ui->Second_Center_X_Coordinate_Input);
-}
-
-void MainWindow::on_Second_Center_Y_Coordinate_Input_editingFinished()
-{
-	ClampCoords(ui->Second_Center_Y_Coordinate_Input);
-}
-
-void MainWindow::on_First_Radius_Input_editingFinished()
-{
-	ClampCoords(ui->First_Radius_Input);
-}
-
-void MainWindow::on_Second_Radius_Input_editingFinished()
-{
-	ClampCoords(ui->Second_Radius_Input);
-}
-
-void MainWindow::on_First_Vertex_X_Coordinate_Input_editingFinished()
-{
-	ClampCoords(ui->First_Vertex_X_Coordinate_Input);
-}
-
-
-void MainWindow::on_First_Vertex_Y_Coordinate_Input_editingFinished()
-{
-	ClampCoords(ui->First_Vertex_Y_Coordinate_Input);
-}
-
-
-void MainWindow::on_Second_Vertex_X_Coordinate_Input_editingFinished()
-{
-	ClampCoords(ui->Second_Vertex_X_Coordinate_Input);
-}
-
-
-void MainWindow::on_Second_Vertex_Y_Coordinate_Input_editingFinished()
-{
-	ClampCoords(ui->Second_Vertex_Y_Coordinate_Input);
-}
-
-
-void MainWindow::on_Third_Vertex_X_Coordinate_Input_editingFinished()
-{
-	ClampCoords(ui->Third_Vertex_X_Coordinate_Input);
-}
-
-
-void MainWindow::on_Third_Vertex_Y_Coordinate_Input_editingFinished()
-{
-	ClampCoords(ui->Third_Vertex_Y_Coordinate_Input);
-}
-
-
-void MainWindow::on_First_Vertex_X_Coordinate_Input_3_editingFinished()
-{
-	ClampCoords(ui->First_Vertex_X_Coordinate_Input_3);
-}
-
-
-void MainWindow::on_First_Vertex_Y_Coordinate_Input_3_editingFinished()
-{
-	ClampCoords(ui->First_Vertex_Y_Coordinate_Input_3);
-}
-
-
-void MainWindow::on_Second_Vertex_X_Coordinate_Input_3_editingFinished()
-{
-	ClampCoords(ui->Second_Vertex_X_Coordinate_Input_3);
-}
-
-
-void MainWindow::on_Second_Vertex_Y_Coordinate_Input_3_editingFinished()
-{
-	ClampCoords(ui->Second_Vertex_Y_Coordinate_Input_3);
-}
-
-
-void MainWindow::on_Third_Vertex_X_Coordinate_Input_3_editingFinished()
-{
-	ClampCoords(ui->Third_Vertex_X_Coordinate_Input_3);
-}
-
-
-void MainWindow::on_Third_Vertex_Y_Coordinate_Input_3_editingFinished()
-{
-	ClampCoords(ui->Third_Vertex_Y_Coordinate_Input_3);
-}
-
-
-void MainWindow::on_Fourth_Vertex_X_Coordinate_Input_3_editingFinished()
-{
-	ClampCoords(ui->Fourth_Vertex_X_Coordinate_Input_3);
-}
-
-
-void MainWindow::on_Fourth_Vertex_Y_Coordinate_Input_3_editingFinished()
-{
-	ClampCoords(ui->Fourth_Vertex_Y_Coordinate_Input_3);
-}
-
-
-void MainWindow::on_First_X_Coordinate_First_Edge_editingFinished()
-{
-	ClampCoords(ui->First_X_Coordinate_First_Edge);
-}
-
-
-void MainWindow::on_First_Y_Coordinate_First_Edge_editingFinished()
-{
-	ClampCoords(ui->First_Y_Coordinate_First_Edge);
-}
-
-
-void MainWindow::on_Second_X_Coordinate_First_Edge_editingFinished()
-{
-	ClampCoords(ui->Second_X_Coordinate_First_Edge);
-}
-
-
-void MainWindow::on_Second_Y_Coordinate_First_Edge_editingFinished()
-{
-	ClampCoords(ui->Second_Y_Coordinate_First_Edge);
-}
-
-
-void MainWindow::on_First_X_Coordinate_Second_Edge_editingFinished()
-{
-	ClampCoords(ui->First_X_Coordinate_Second_Edge);
-}
-
-
-void MainWindow::on_First_Y_Coordinate_Second_Edge_editingFinished()
-{
-	ClampCoords(ui->First_Y_Coordinate_Second_Edge);
-}
-
-
-void MainWindow::on_Second_X_Coordinate_Second_Edge_editingFinished()
-{
-	ClampCoords(ui->Second_X_Coordinate_Second_Edge);
-}
-
-
-void MainWindow::on_Second_Y_Coordinate_Second_Edge_editingFinished()
-{
-	ClampCoords(ui->Second_Y_Coordinate_Second_Edge);
-}
-
-
-void MainWindow::on_First_X_Coordinate_Third_Edge_editingFinished()
-{
-	ClampCoords(ui->First_X_Coordinate_Third_Edge);
-}
-
-
-void MainWindow::on_First_Y_Coordinate_Third_Edge_editingFinished()
-{
-	ClampCoords(ui->First_Y_Coordinate_Third_Edge);
-}
-
-
-void MainWindow::on_Second_X_Coordinate_Third_Edge_editingFinished()
-{
-	ClampCoords(ui->Second_X_Coordinate_Third_Edge);
-}
-
-
-void MainWindow::on_Second_Y_Coordinate_Third_Edge_editingFinished()
-{
-	ClampCoords(ui->Second_Y_Coordinate_Third_Edge);
-}
-
-
-void MainWindow::on_First_X_Coordinate_Fourth_Edge_editingFinished()
-{
-	ClampCoords(ui->First_X_Coordinate_Fourth_Edge);
-}
-
-
-void MainWindow::on_First_Y_Coordinate_Fourth_Edge_editingFinished()
-{
-	ClampCoords(ui->First_Y_Coordinate_Fourth_Edge);
-}
-
-
-void MainWindow::on_Second_X_Coordinate_Fourth_Edge_editingFinished()
-{
-	ClampCoords(ui->Second_X_Coordinate_Fourth_Edge);
-}
-
-
-void MainWindow::on_Second_Y_Coordinate_Fourth_Edge_editingFinished()
-{
-	ClampCoords(ui->Second_Y_Coordinate_Fourth_Edge);
-}
-
-
-void MainWindow::on_First_X_Coordinate_First_Edge_3_editingFinished()
-{
-	ClampCoords(ui->First_X_Coordinate_First_Edge_3);
-}
-
-
-void MainWindow::on_First_Y_Coordinate_First_Edge_3_editingFinished()
-{
-	ClampCoords(ui->First_Y_Coordinate_First_Edge_3);
-}
-
-
-void MainWindow::on_Second_X_Coordinate_First_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Second_X_Coordinate_First_Edge_3);
-}
-
-
-void MainWindow::on_Second_Y_Coordinate_First_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Second_Y_Coordinate_First_Edge_3);
-}
-
-
-void MainWindow::on_Third_X_Coordinate_First_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Third_X_Coordinate_First_Edge_3);
-}
-
-
-void MainWindow::on_Third_Y_Coordinate_First_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Third_Y_Coordinate_First_Edge_3);
-}
-
-
-void MainWindow::on_Fourth_X_Coordinate_First_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Fourth_X_Coordinate_First_Edge_3);
-}
-
-
-void MainWindow::on_Fourth_Y_Coordinate_First_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Fourth_Y_Coordinate_First_Edge_3);
-}
-
-
-void MainWindow::on_First_X_Coordinate_Second_Edge_3_editingFinished()
-{
-	ClampCoords(ui->First_X_Coordinate_Second_Edge_3);
-}
-
-
-void MainWindow::on_First_Y_Coordinate_Second_Edge_3_editingFinished()
-{
-	ClampCoords(ui->First_Y_Coordinate_Second_Edge_3);
-}
-
-
-void MainWindow::on_Second_X_Coordinate_Second_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Second_X_Coordinate_Second_Edge_3);
-}
-
-
-void MainWindow::on_Second_Y_Coordinate_Second_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Second_Y_Coordinate_Second_Edge_3);
-}
-
-
-void MainWindow::on_Third_X_Coordinate_Second_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Third_X_Coordinate_Second_Edge_3);
-}
-
-
-void MainWindow::on_Third_Y_Coordinate_Second_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Third_Y_Coordinate_Second_Edge_3);
-}
-
-
-void MainWindow::on_Fourth_X_Coordinate_Second_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Fourth_X_Coordinate_Second_Edge_3);
-}
-
-
-void MainWindow::on_Fourth_Y_Coordinate_Second_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Fourth_Y_Coordinate_Second_Edge_3);
-}
-
-
-void MainWindow::on_First_X_Coordinate_Third_Edge_3_editingFinished()
-{
-	ClampCoords(ui->First_X_Coordinate_Third_Edge_3);
-}
-
-
-void MainWindow::on_First_Y_Coordinate_Third_Edge_3_editingFinished()
-{
-	ClampCoords(ui->First_Y_Coordinate_Third_Edge_3);
-}
-
-
-void MainWindow::on_Second_X_Coordinate_Third_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Second_X_Coordinate_Third_Edge_3);
-}
-
-
-void MainWindow::on_Second_Y_Coordinate_Third_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Second_Y_Coordinate_Third_Edge_3);
-}
-
-
-void MainWindow::on_Third_X_Coordinate_Third_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Third_X_Coordinate_Third_Edge_3);
-}
-
-
-void MainWindow::on_Third_Y_Coordinate_Third_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Third_Y_Coordinate_Third_Edge_3);
-}
-
-
-void MainWindow::on_Fourth_X_Coordinate_Third_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Fourth_X_Coordinate_Third_Edge_3);
-}
-
-
-void MainWindow::on_Fourth_Y_Coordinate_Third_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Fourth_Y_Coordinate_Third_Edge_3);
-}
-
-
-void MainWindow::on_First_X_Coordinate_Fourth_Edge_3_editingFinished()
-{
-	ClampCoords(ui->First_X_Coordinate_Fourth_Edge_3);
-}
-
-
-void MainWindow::on_First_Y_Coordinate_Fourth_Edge_3_editingFinished()
-{
-	ClampCoords(ui->First_Y_Coordinate_Fourth_Edge_3);
-}
-
-
-void MainWindow::on_Second_X_Coordinate_Fourth_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Second_X_Coordinate_Fourth_Edge_3);
-}
-
-
-void MainWindow::on_Second_Y_Coordinate_Fourth_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Second_Y_Coordinate_Fourth_Edge_3);
-}
-
-
-void MainWindow::on_Third_X_Coordinate_Fourth_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Third_X_Coordinate_Fourth_Edge_3);
-}
-
-
-void MainWindow::on_Third_Y_Coordinate_Fourth_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Third_Y_Coordinate_Fourth_Edge_3);
-}
-
-
-void MainWindow::on_Fourth_X_Coordinate_Fourth_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Fourth_X_Coordinate_Fourth_Edge_3);
-}
-
-
-void MainWindow::on_Fourth_Y_Coordinate_Fourth_Edge_3_editingFinished()
-{
-	ClampCoords(ui->Fourth_Y_Coordinate_Fourth_Edge_3);
-}
-

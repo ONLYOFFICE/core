@@ -4,7 +4,11 @@
 #include <QLabel>
 #include <QListWidgetItem>
 #include <QMainWindow>
+#include <QLineEdit>
 #include "../../../../DesktopEditor/graphics/structures.h"
+
+#define COORD_SIZE_MM 100
+#define MM_TO_COORD(size) (size / COORD_SIZE_MM)
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -12,6 +16,30 @@ namespace Ui
 	class MainWindow;
 }
 QT_END_NAMESPACE
+
+class CustomLineEdit : public QLineEdit
+{
+	Q_OBJECT
+public:
+	CustomLineEdit(QWidget *parent = nullptr) : QLineEdit(parent)
+	{
+		connect(this, &QLineEdit::editingFinished, this, &CustomLineEdit::onEditingFinished);
+	}
+	~CustomLineEdit()
+	{
+
+	}
+public slots:
+	void onEditingFinished()
+	{
+		if (this->text() == "")
+			this->setText(this->placeholderText());
+		if (this->text().toInt() < 0)
+			this->setText("0");
+		if (this->text().toInt() > COORD_SIZE_MM)
+			this->setText(QString::number(COORD_SIZE_MM));
+	}
+};
 
 typedef enum
 {
@@ -26,15 +54,6 @@ typedef enum
 	Functional
 } GradientType;
 
-typedef enum
-{
-	NoColorspaceType,
-	Rainbow,
-	BlackAndWhite,
-	RedAndBlue,
-	Pastel
-} ColorspaceType;
-
 struct Point
 {
 	Point(double _x = 0, double _y = 0) : x(_x), y(_y)
@@ -42,6 +61,7 @@ struct Point
 	}
 	double x, y;
 };
+
 struct Color
 {
 	uint r, g, b;
@@ -63,7 +83,6 @@ struct Color
 
 struct Info
 {
-	ColorspaceType colorspace = NoColorspaceType;
 	GradientType gradient = Linear;
 
 	float r0, r1;
@@ -122,57 +141,9 @@ private slots:
 
 	void on_actionRadial_Gradient_triggered();
 
-	void on_BAW_Colorspace_Radio_Button_clicked();
-
-	void on_RAB_Colorspace_Radio_Button_clicked();
-
-	void on_Pastel_Colorspace_Radio_Button_clicked();
-
-	void on_Rainbow_Colorspace_Radio_Button_clicked();
-
 	void on_pushButton_clicked();
 
-	void on_Continue_Shading_Forward_clicked(bool checked);
-
-	void on_checkBox_2_clicked(bool checked);
-
-	void on_Continue_Shading_Forward_2_clicked(bool checked);
-
-	void on_Continue_Shading_Backward_2_clicked(bool checked);
-
-	void on_First_X_Coordinate_Input_editingFinished();
-
-	void on_First_Y_Coordinate_Input_editingFinished();
-
-	void on_Second_X_Coordinate_Input_editingFinished();
-
-	void on_Second_Y_Coordinate_Input_editingFinished();
-
-	void on_First_Center_X_Coordinate_Input_editingFinished();
-
-	void on_First_Center_Y_Coordinate_Input_editingFinished();
-
-	void on_Second_Center_X_Coordinate_Input_editingFinished();
-
-	void on_Second_Center_Y_Coordinate_Input_editingFinished();
-
-	void on_First_Radius_Input_editingFinished();
-
-	void on_Second_Radius_Input_editingFinished();
-
 	void on_actionTriangle_Gradient_triggered();
-
-	void on_First_Vertex_X_Coordinate_Input_editingFinished();
-
-	void on_First_Vertex_Y_Coordinate_Input_editingFinished();
-
-	void on_Second_Vertex_X_Coordinate_Input_editingFinished();
-
-	void on_Second_Vertex_Y_Coordinate_Input_editingFinished();
-
-	void on_Third_Vertex_X_Coordinate_Input_editingFinished();
-
-	void on_Third_Vertex_Y_Coordinate_Input_editingFinished();
 
 	void on_actionTriangle_Parametric_Gradient_triggered();
 
@@ -183,118 +154,6 @@ private slots:
 	void on_actionTensor_Coons_Patch_Gradient_triggered();
 
 	void on_actionTensor_Coons_Patch_Parametric_triggered();
-
-	void on_First_Vertex_X_Coordinate_Input_3_editingFinished();
-
-	void on_First_Vertex_Y_Coordinate_Input_3_editingFinished();
-
-	void on_Second_Vertex_X_Coordinate_Input_3_editingFinished();
-
-	void on_Second_Vertex_Y_Coordinate_Input_3_editingFinished();
-
-	void on_Third_Vertex_X_Coordinate_Input_3_editingFinished();
-
-	void on_Third_Vertex_Y_Coordinate_Input_3_editingFinished();
-
-	void on_Fourth_Vertex_X_Coordinate_Input_3_editingFinished();
-
-	void on_Fourth_Vertex_Y_Coordinate_Input_3_editingFinished();
-
-	void on_First_X_Coordinate_First_Edge_editingFinished();
-
-	void on_First_Y_Coordinate_First_Edge_editingFinished();
-
-	void on_Second_X_Coordinate_First_Edge_editingFinished();
-
-	void on_Second_Y_Coordinate_First_Edge_editingFinished();
-
-	void on_First_X_Coordinate_Second_Edge_editingFinished();
-
-	void on_First_Y_Coordinate_Second_Edge_editingFinished();
-
-	void on_Second_X_Coordinate_Second_Edge_editingFinished();
-
-	void on_Second_Y_Coordinate_Second_Edge_editingFinished();
-
-	void on_First_X_Coordinate_Third_Edge_editingFinished();
-
-	void on_First_Y_Coordinate_Third_Edge_editingFinished();
-
-	void on_Second_X_Coordinate_Third_Edge_editingFinished();
-
-	void on_Second_Y_Coordinate_Third_Edge_editingFinished();
-
-	void on_First_X_Coordinate_Fourth_Edge_editingFinished();
-
-	void on_First_Y_Coordinate_Fourth_Edge_editingFinished();
-
-	void on_Second_X_Coordinate_Fourth_Edge_editingFinished();
-
-	void on_Second_Y_Coordinate_Fourth_Edge_editingFinished();
-
-	void on_First_X_Coordinate_First_Edge_3_editingFinished();
-
-	void on_First_Y_Coordinate_First_Edge_3_editingFinished();
-
-	void on_Second_X_Coordinate_First_Edge_3_editingFinished();
-
-	void on_Second_Y_Coordinate_First_Edge_3_editingFinished();
-
-	void on_Third_X_Coordinate_First_Edge_3_editingFinished();
-
-	void on_Third_Y_Coordinate_First_Edge_3_editingFinished();
-
-	void on_Fourth_X_Coordinate_First_Edge_3_editingFinished();
-
-	void on_Fourth_Y_Coordinate_First_Edge_3_editingFinished();
-
-	void on_First_X_Coordinate_Second_Edge_3_editingFinished();
-
-	void on_First_Y_Coordinate_Second_Edge_3_editingFinished();
-
-	void on_Second_X_Coordinate_Second_Edge_3_editingFinished();
-
-	void on_Second_Y_Coordinate_Second_Edge_3_editingFinished();
-
-	void on_Third_X_Coordinate_Second_Edge_3_editingFinished();
-
-	void on_Third_Y_Coordinate_Second_Edge_3_editingFinished();
-
-	void on_Fourth_X_Coordinate_Second_Edge_3_editingFinished();
-
-	void on_Fourth_Y_Coordinate_Second_Edge_3_editingFinished();
-
-	void on_First_X_Coordinate_Third_Edge_3_editingFinished();
-
-	void on_First_Y_Coordinate_Third_Edge_3_editingFinished();
-
-	void on_Second_X_Coordinate_Third_Edge_3_editingFinished();
-
-	void on_Second_Y_Coordinate_Third_Edge_3_editingFinished();
-
-	void on_Third_X_Coordinate_Third_Edge_3_editingFinished();
-
-	void on_Third_Y_Coordinate_Third_Edge_3_editingFinished();
-
-	void on_Fourth_X_Coordinate_Third_Edge_3_editingFinished();
-
-	void on_Fourth_Y_Coordinate_Third_Edge_3_editingFinished();
-
-	void on_First_X_Coordinate_Fourth_Edge_3_editingFinished();
-
-	void on_First_Y_Coordinate_Fourth_Edge_3_editingFinished();
-
-	void on_Second_X_Coordinate_Fourth_Edge_3_editingFinished();
-
-	void on_Second_Y_Coordinate_Fourth_Edge_3_editingFinished();
-
-	void on_Third_X_Coordinate_Fourth_Edge_3_editingFinished();
-
-	void on_Third_Y_Coordinate_Fourth_Edge_3_editingFinished();
-
-	void on_Fourth_X_Coordinate_Fourth_Edge_3_editingFinished();
-
-	void on_Fourth_Y_Coordinate_Fourth_Edge_3_editingFinished();
 
 private:
 	Ui::MainWindow *ui;

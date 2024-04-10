@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1126</width>
-    <height>827</height>
+    <height>795</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,7 +36,7 @@
       <x>510</x>
       <y>0</y>
       <width>610</width>
-      <height>740</height>
+      <height>710</height>
      </rect>
     </property>
     <property name="title">
@@ -46,9 +46,9 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>10</y>
+       <y>0</y>
        <width>201</width>
-       <height>150</height>
+       <height>140</height>
       </rect>
      </property>
      <property name="title">
@@ -58,7 +58,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>30</y>
+        <y>20</y>
         <width>112</width>
         <height>26</height>
        </rect>
@@ -71,7 +71,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>60</y>
+        <y>50</y>
         <width>161</width>
         <height>26</height>
        </rect>
@@ -84,7 +84,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>90</y>
+        <y>80</y>
         <width>131</width>
         <height>26</height>
        </rect>
@@ -97,7 +97,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>120</y>
+        <y>110</y>
         <width>112</width>
         <height>26</height>
        </rect>
@@ -111,9 +111,9 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>160</y>
+       <y>140</y>
        <width>590</width>
-       <height>570</height>
+       <height>560</height>
       </rect>
      </property>
      <property name="currentIndex">
@@ -124,7 +124,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>10</y>
+         <y>0</y>
          <width>440</width>
          <height>150</height>
         </rect>
@@ -145,7 +145,7 @@
          <string>X Coordinate, First Point</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="First_X_Coordinate_Input">
+       <widget class="CustomLineEdit" name="First_X_Coordinate_Input">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -155,6 +155,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>10</string>
+        </property>
+        <property name="placeholderText">
          <string>10</string>
         </property>
        </widget>
@@ -171,7 +174,7 @@
          <string>Y Coordinate, First Point</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="First_Y_Coordinate_Input">
+       <widget class="CustomLineEdit" name="First_Y_Coordinate_Input">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -181,6 +184,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>10</string>
+        </property>
+        <property name="placeholderText">
          <string>10</string>
         </property>
        </widget>
@@ -197,7 +203,7 @@
          <string>X Coordinate, Second Point</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Second_X_Coordinate_Input">
+       <widget class="CustomLineEdit" name="Second_X_Coordinate_Input">
         <property name="geometry">
          <rect>
           <x>240</x>
@@ -207,6 +213,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>90</string>
+        </property>
+        <property name="placeholderText">
          <string>90</string>
         </property>
        </widget>
@@ -223,7 +232,7 @@
          <string>Y Coordinate, Second Point</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Second_Y_Coordinate_Input">
+       <widget class="CustomLineEdit" name="Second_Y_Coordinate_Input">
         <property name="geometry">
          <rect>
           <x>240</x>
@@ -235,14 +244,17 @@
         <property name="text">
          <string>90</string>
         </property>
+        <property name="placeholderText">
+         <string>90</string>
+        </property>
        </widget>
       </widget>
       <widget class="QGroupBox" name="groupBox_3">
        <property name="geometry">
         <rect>
          <x>450</x>
-         <y>10</y>
-         <width>131</width>
+         <y>0</y>
+         <width>130</width>
          <height>150</height>
         </rect>
        </property>
@@ -262,7 +274,7 @@
          <string>Forward</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_2">
+       <widget class="QCheckBox" name="Continue_Shading_Backward">
         <property name="geometry">
          <rect>
           <x>20</x>
@@ -282,8 +294,8 @@
        <property name="geometry">
         <rect>
          <x>450</x>
-         <y>10</y>
-         <width>131</width>
+         <y>0</y>
+         <width>130</width>
          <height>150</height>
         </rect>
        </property>
@@ -321,7 +333,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>10</y>
+         <y>0</y>
          <width>440</width>
          <height>150</height>
         </rect>
@@ -342,7 +354,7 @@
          <string>X Coordinate, First Center</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="First_Center_X_Coordinate_Input">
+       <widget class="CustomLineEdit" name="First_Center_X_Coordinate_Input">
         <property name="geometry">
          <rect>
           <x>20</x>
@@ -352,6 +364,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
          <string>50</string>
         </property>
        </widget>
@@ -368,7 +383,7 @@
          <string>Y Coordinate, First Center</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="First_Center_Y_Coordinate_Input">
+       <widget class="CustomLineEdit" name="First_Center_Y_Coordinate_Input">
         <property name="geometry">
          <rect>
           <x>20</x>
@@ -378,6 +393,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
          <string>50</string>
         </property>
        </widget>
@@ -394,7 +412,7 @@
          <string>X Coordinate, Second Center</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Second_Center_X_Coordinate_Input">
+       <widget class="CustomLineEdit" name="Second_Center_X_Coordinate_Input">
         <property name="geometry">
          <rect>
           <x>230</x>
@@ -404,6 +422,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
          <string>50</string>
         </property>
        </widget>
@@ -420,7 +441,7 @@
          <string>Y Coordinate, Second Center</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Second_Center_Y_Coordinate_Input">
+       <widget class="CustomLineEdit" name="Second_Center_Y_Coordinate_Input">
         <property name="geometry">
          <rect>
           <x>230</x>
@@ -432,13 +453,16 @@
         <property name="text">
          <string>50</string>
         </property>
+        <property name="placeholderText">
+         <string>50</string>
+        </property>
        </widget>
       </widget>
       <widget class="QGroupBox" name="groupBox_6">
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>160</y>
+         <y>150</y>
          <width>440</width>
          <height>100</height>
         </rect>
@@ -472,7 +496,7 @@
          <string>Second Radius</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="First_Radius_Input">
+       <widget class="CustomLineEdit" name="First_Radius_Input">
         <property name="geometry">
          <rect>
           <x>20</x>
@@ -484,8 +508,11 @@
         <property name="text">
          <string>10</string>
         </property>
+        <property name="placeholderText">
+         <string>10</string>
+        </property>
        </widget>
-       <widget class="QLineEdit" name="Second_Radius_Input">
+       <widget class="CustomLineEdit" name="Second_Radius_Input">
         <property name="geometry">
          <rect>
           <x>230</x>
@@ -497,6 +524,9 @@
         <property name="text">
          <string>30</string>
         </property>
+        <property name="placeholderText">
+         <string>30</string>
+        </property>
        </widget>
       </widget>
      </widget>
@@ -505,7 +535,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>10</y>
+         <y>0</y>
          <width>590</width>
          <height>140</height>
         </rect>
@@ -526,7 +556,7 @@
          <string>X Coordinate, First Vertex</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="First_Vertex_X_Coordinate_Input">
+       <widget class="CustomLineEdit" name="First_Vertex_X_Coordinate_Input">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -536,6 +566,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
          <string>50</string>
         </property>
        </widget>
@@ -552,7 +585,7 @@
          <string>Y Coordinate, First Vertex</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="First_Vertex_Y_Coordinate_Input">
+       <widget class="CustomLineEdit" name="First_Vertex_Y_Coordinate_Input">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -562,6 +595,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>20</string>
+        </property>
+        <property name="placeholderText">
          <string>20</string>
         </property>
        </widget>
@@ -578,7 +614,7 @@
          <string>X Coordinate, Second Vertex</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Second_Vertex_X_Coordinate_Input">
+       <widget class="CustomLineEdit" name="Second_Vertex_X_Coordinate_Input">
         <property name="geometry">
          <rect>
           <x>200</x>
@@ -588,6 +624,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>20</string>
+        </property>
+        <property name="placeholderText">
          <string>20</string>
         </property>
        </widget>
@@ -604,7 +643,7 @@
          <string>Y Coordinate, Second Vertex</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Second_Vertex_Y_Coordinate_Input">
+       <widget class="CustomLineEdit" name="Second_Vertex_Y_Coordinate_Input">
         <property name="geometry">
          <rect>
           <x>200</x>
@@ -614,6 +653,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>70</string>
+        </property>
+        <property name="placeholderText">
          <string>70</string>
         </property>
        </widget>
@@ -630,7 +672,7 @@
          <string>X Coordinate, Third Vertex</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Third_Vertex_X_Coordinate_Input">
+       <widget class="CustomLineEdit" name="Third_Vertex_X_Coordinate_Input">
         <property name="geometry">
          <rect>
           <x>410</x>
@@ -640,6 +682,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>80</string>
+        </property>
+        <property name="placeholderText">
          <string>80</string>
         </property>
        </widget>
@@ -656,7 +701,7 @@
          <string>Y Coordinate, Third Vertex</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Third_Vertex_Y_Coordinate_Input">
+       <widget class="CustomLineEdit" name="Third_Vertex_Y_Coordinate_Input">
         <property name="geometry">
          <rect>
           <x>410</x>
@@ -668,6 +713,9 @@
         <property name="text">
          <string>70</string>
         </property>
+        <property name="placeholderText">
+         <string>70</string>
+        </property>
        </widget>
       </widget>
      </widget>
@@ -676,7 +724,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>10</y>
+         <y>0</y>
          <width>590</width>
          <height>140</height>
         </rect>
@@ -697,7 +745,7 @@
          <string>First X Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="First_Vertex_X_Coordinate_Input_3">
+       <widget class="CustomLineEdit" name="First_Vertex_X_Coordinate_Input_3">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -707,6 +755,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>20</string>
+        </property>
+        <property name="placeholderText">
          <string>20</string>
         </property>
        </widget>
@@ -723,7 +774,7 @@
          <string>First Y Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="First_Vertex_Y_Coordinate_Input_3">
+       <widget class="CustomLineEdit" name="First_Vertex_Y_Coordinate_Input_3">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -733,6 +784,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>60</string>
+        </property>
+        <property name="placeholderText">
          <string>60</string>
         </property>
        </widget>
@@ -749,7 +803,7 @@
          <string>Second X Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Second_Vertex_X_Coordinate_Input_3">
+       <widget class="CustomLineEdit" name="Second_Vertex_X_Coordinate_Input_3">
         <property name="geometry">
          <rect>
           <x>140</x>
@@ -759,6 +813,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>20</string>
+        </property>
+        <property name="placeholderText">
          <string>20</string>
         </property>
        </widget>
@@ -775,7 +832,7 @@
          <string>Second Y Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Second_Vertex_Y_Coordinate_Input_3">
+       <widget class="CustomLineEdit" name="Second_Vertex_Y_Coordinate_Input_3">
         <property name="geometry">
          <rect>
           <x>140</x>
@@ -785,6 +842,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>20</string>
+        </property>
+        <property name="placeholderText">
          <string>20</string>
         </property>
        </widget>
@@ -801,7 +861,7 @@
          <string>Third X Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Third_Vertex_X_Coordinate_Input_3">
+       <widget class="CustomLineEdit" name="Third_Vertex_X_Coordinate_Input_3">
         <property name="geometry">
          <rect>
           <x>300</x>
@@ -811,6 +871,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>60</string>
+        </property>
+        <property name="placeholderText">
          <string>60</string>
         </property>
        </widget>
@@ -827,7 +890,7 @@
          <string>Third Y Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Third_Vertex_Y_Coordinate_Input_3">
+       <widget class="CustomLineEdit" name="Third_Vertex_Y_Coordinate_Input_3">
         <property name="geometry">
          <rect>
           <x>300</x>
@@ -837,6 +900,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>20</string>
+        </property>
+        <property name="placeholderText">
          <string>20</string>
         </property>
        </widget>
@@ -853,7 +919,7 @@
          <string>Fourth X Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Fourth_Vertex_X_Coordinate_Input_3">
+       <widget class="CustomLineEdit" name="Fourth_Vertex_X_Coordinate_Input_3">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -863,6 +929,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>60</string>
+        </property>
+        <property name="placeholderText">
          <string>60</string>
         </property>
        </widget>
@@ -879,7 +948,7 @@
          <string>Fourth Y Coorfinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Fourth_Vertex_Y_Coordinate_Input_3">
+       <widget class="CustomLineEdit" name="Fourth_Vertex_Y_Coordinate_Input_3">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -891,13 +960,16 @@
         <property name="text">
          <string>60</string>
         </property>
+        <property name="placeholderText">
+         <string>60</string>
+        </property>
        </widget>
       </widget>
       <widget class="QGroupBox" name="groupBox_10">
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>150</y>
+         <y>140</y>
          <width>590</width>
          <height>320</height>
         </rect>
@@ -930,7 +1002,7 @@
           <string>First X Coordinate</string>
          </property>
         </widget>
-        <widget class="QLineEdit" name="First_X_Coordinate_First_Edge">
+        <widget class="CustomLineEdit" name="First_X_Coordinate_First_Edge">
          <property name="geometry">
           <rect>
            <x>10</x>
@@ -940,6 +1012,9 @@
           </rect>
          </property>
          <property name="text">
+          <string>10</string>
+         </property>
+         <property name="placeholderText">
           <string>10</string>
          </property>
         </widget>
@@ -956,7 +1031,7 @@
           <string>Second X Coordinate</string>
          </property>
         </widget>
-        <widget class="QLineEdit" name="Second_X_Coordinate_First_Edge">
+        <widget class="CustomLineEdit" name="Second_X_Coordinate_First_Edge">
          <property name="geometry">
           <rect>
            <x>140</x>
@@ -966,6 +1041,9 @@
           </rect>
          </property>
          <property name="text">
+          <string>30</string>
+         </property>
+         <property name="placeholderText">
           <string>30</string>
          </property>
         </widget>
@@ -982,7 +1060,7 @@
           <string>First Y Coordinate</string>
          </property>
         </widget>
-        <widget class="QLineEdit" name="First_Y_Coordinate_First_Edge">
+        <widget class="CustomLineEdit" name="First_Y_Coordinate_First_Edge">
          <property name="geometry">
           <rect>
            <x>10</x>
@@ -992,6 +1070,9 @@
           </rect>
          </property>
          <property name="text">
+          <string>50</string>
+         </property>
+         <property name="placeholderText">
           <string>50</string>
          </property>
         </widget>
@@ -1008,7 +1089,7 @@
           <string>Second Y Coordinate</string>
          </property>
         </widget>
-        <widget class="QLineEdit" name="Second_Y_Coordinate_First_Edge">
+        <widget class="CustomLineEdit" name="Second_Y_Coordinate_First_Edge">
          <property name="geometry">
           <rect>
            <x>140</x>
@@ -1018,6 +1099,9 @@
           </rect>
          </property>
          <property name="text">
+          <string>30</string>
+         </property>
+         <property name="placeholderText">
           <string>30</string>
          </property>
         </widget>
@@ -1047,7 +1131,7 @@
           <string>First X Coordinate</string>
          </property>
         </widget>
-        <widget class="QLineEdit" name="First_X_Coordinate_Second_Edge">
+        <widget class="CustomLineEdit" name="First_X_Coordinate_Second_Edge">
          <property name="geometry">
           <rect>
            <x>10</x>
@@ -1057,6 +1141,9 @@
           </rect>
          </property>
          <property name="text">
+          <string>30</string>
+         </property>
+         <property name="placeholderText">
           <string>30</string>
          </property>
         </widget>
@@ -1073,7 +1160,7 @@
           <string>Second X Coordinate</string>
          </property>
         </widget>
-        <widget class="QLineEdit" name="Second_X_Coordinate_Second_Edge">
+        <widget class="CustomLineEdit" name="Second_X_Coordinate_Second_Edge">
          <property name="geometry">
           <rect>
            <x>140</x>
@@ -1083,6 +1170,9 @@
           </rect>
          </property>
          <property name="text">
+          <string>50</string>
+         </property>
+         <property name="placeholderText">
           <string>50</string>
          </property>
         </widget>
@@ -1099,7 +1189,7 @@
           <string>First Y Coordinate</string>
          </property>
         </widget>
-        <widget class="QLineEdit" name="First_Y_Coordinate_Second_Edge">
+        <widget class="CustomLineEdit" name="First_Y_Coordinate_Second_Edge">
          <property name="geometry">
           <rect>
            <x>10</x>
@@ -1109,6 +1199,9 @@
           </rect>
          </property>
          <property name="text">
+          <string>10</string>
+         </property>
+         <property name="placeholderText">
           <string>10</string>
          </property>
         </widget>
@@ -1125,7 +1218,7 @@
           <string>Second Y Coordinate</string>
          </property>
         </widget>
-        <widget class="QLineEdit" name="Second_Y_Coordinate_Second_Edge">
+        <widget class="CustomLineEdit" name="Second_Y_Coordinate_Second_Edge">
          <property name="geometry">
           <rect>
            <x>140</x>
@@ -1135,6 +1228,9 @@
           </rect>
          </property>
          <property name="text">
+          <string>30</string>
+         </property>
+         <property name="placeholderText">
           <string>30</string>
          </property>
         </widget>
@@ -1164,7 +1260,7 @@
           <string>First X Coordinate</string>
          </property>
         </widget>
-        <widget class="QLineEdit" name="First_X_Coordinate_Third_Edge">
+        <widget class="CustomLineEdit" name="First_X_Coordinate_Third_Edge">
          <property name="geometry">
           <rect>
            <x>10</x>
@@ -1174,6 +1270,9 @@
           </rect>
          </property>
          <property name="text">
+          <string>50</string>
+         </property>
+         <property name="placeholderText">
           <string>50</string>
          </property>
         </widget>
@@ -1190,7 +1289,7 @@
           <string>Second X Coordinate</string>
          </property>
         </widget>
-        <widget class="QLineEdit" name="Second_X_Coordinate_Third_Edge">
+        <widget class="CustomLineEdit" name="Second_X_Coordinate_Third_Edge">
          <property name="geometry">
           <rect>
            <x>140</x>
@@ -1200,6 +1299,9 @@
           </rect>
          </property>
          <property name="text">
+          <string>70</string>
+         </property>
+         <property name="placeholderText">
           <string>70</string>
          </property>
         </widget>
@@ -1216,7 +1318,7 @@
           <string>First Y Coordinate</string>
          </property>
         </widget>
-        <widget class="QLineEdit" name="First_Y_Coordinate_Third_Edge">
+        <widget class="CustomLineEdit" name="First_Y_Coordinate_Third_Edge">
          <property name="geometry">
           <rect>
            <x>10</x>
@@ -1226,6 +1328,9 @@
           </rect>
          </property>
          <property name="text">
+          <string>30</string>
+         </property>
+         <property name="placeholderText">
           <string>30</string>
          </property>
         </widget>
@@ -1242,7 +1347,7 @@
           <string>Second Y Coordinate</string>
          </property>
         </widget>
-        <widget class="QLineEdit" name="Second_Y_Coordinate_Third_Edge">
+        <widget class="CustomLineEdit" name="Second_Y_Coordinate_Third_Edge">
          <property name="geometry">
           <rect>
            <x>140</x>
@@ -1252,6 +1357,9 @@
           </rect>
          </property>
          <property name="text">
+          <string>50</string>
+         </property>
+         <property name="placeholderText">
           <string>50</string>
          </property>
         </widget>
@@ -1281,7 +1389,7 @@
           <string>First X Coordinate</string>
          </property>
         </widget>
-        <widget class="QLineEdit" name="First_X_Coordinate_Fourth_Edge">
+        <widget class="CustomLineEdit" name="First_X_Coordinate_Fourth_Edge">
          <property name="geometry">
           <rect>
            <x>10</x>
@@ -1291,6 +1399,9 @@
           </rect>
          </property>
          <property name="text">
+          <string>50</string>
+         </property>
+         <property name="placeholderText">
           <string>50</string>
          </property>
         </widget>
@@ -1307,7 +1418,7 @@
           <string>Second X Coordinate</string>
          </property>
         </widget>
-        <widget class="QLineEdit" name="Second_X_Coordinate_Fourth_Edge">
+        <widget class="CustomLineEdit" name="Second_X_Coordinate_Fourth_Edge">
          <property name="geometry">
           <rect>
            <x>140</x>
@@ -1317,6 +1428,9 @@
           </rect>
          </property>
          <property name="text">
+          <string>30</string>
+         </property>
+         <property name="placeholderText">
           <string>30</string>
          </property>
         </widget>
@@ -1333,7 +1447,7 @@
           <string>First Y Coordinate</string>
          </property>
         </widget>
-        <widget class="QLineEdit" name="First_Y_Coordinate_Fourth_Edge">
+        <widget class="CustomLineEdit" name="First_Y_Coordinate_Fourth_Edge">
          <property name="geometry">
           <rect>
            <x>10</x>
@@ -1343,6 +1457,9 @@
           </rect>
          </property>
          <property name="text">
+          <string>70</string>
+         </property>
+         <property name="placeholderText">
           <string>70</string>
          </property>
         </widget>
@@ -1359,7 +1476,7 @@
           <string>Second Y Coordinate</string>
          </property>
         </widget>
-        <widget class="QLineEdit" name="Second_Y_Coordinate_Fourth_Edge">
+        <widget class="CustomLineEdit" name="Second_Y_Coordinate_Fourth_Edge">
          <property name="geometry">
           <rect>
            <x>140</x>
@@ -1371,6 +1488,9 @@
          <property name="text">
           <string>50</string>
          </property>
+         <property name="placeholderText">
+          <string>50</string>
+         </property>
         </widget>
        </widget>
       </widget>
@@ -1380,7 +1500,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>10</y>
+         <y>0</y>
          <width>590</width>
          <height>140</height>
         </rect>
@@ -1401,7 +1521,7 @@
          <string>First X Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="First_X_Coordinate_First_Edge_3">
+       <widget class="CustomLineEdit" name="First_X_Coordinate_First_Edge_3">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -1411,6 +1531,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>20</string>
+        </property>
+        <property name="placeholderText">
          <string>20</string>
         </property>
        </widget>
@@ -1427,7 +1550,7 @@
          <string>First Y Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="First_Y_Coordinate_First_Edge_3">
+       <widget class="CustomLineEdit" name="First_Y_Coordinate_First_Edge_3">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -1437,6 +1560,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>60</string>
+        </property>
+        <property name="placeholderText">
          <string>60</string>
         </property>
        </widget>
@@ -1453,7 +1579,7 @@
          <string>Second X Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Second_X_Coordinate_First_Edge_3">
+       <widget class="CustomLineEdit" name="Second_X_Coordinate_First_Edge_3">
         <property name="geometry">
          <rect>
           <x>140</x>
@@ -1463,6 +1589,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>30</string>
+        </property>
+        <property name="placeholderText">
          <string>30</string>
         </property>
        </widget>
@@ -1479,7 +1608,7 @@
          <string>Second Y Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Second_Y_Coordinate_First_Edge_3">
+       <widget class="CustomLineEdit" name="Second_Y_Coordinate_First_Edge_3">
         <property name="geometry">
          <rect>
           <x>140</x>
@@ -1489,6 +1618,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
          <string>50</string>
         </property>
        </widget>
@@ -1505,7 +1637,7 @@
          <string>Third X Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Third_X_Coordinate_First_Edge_3">
+       <widget class="CustomLineEdit" name="Third_X_Coordinate_First_Edge_3">
         <property name="geometry">
          <rect>
           <x>300</x>
@@ -1515,6 +1647,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>10</string>
+        </property>
+        <property name="placeholderText">
          <string>10</string>
         </property>
        </widget>
@@ -1531,7 +1666,7 @@
          <string>Third Y Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Third_Y_Coordinate_First_Edge_3">
+       <widget class="CustomLineEdit" name="Third_Y_Coordinate_First_Edge_3">
         <property name="geometry">
          <rect>
           <x>300</x>
@@ -1541,6 +1676,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>30</string>
+        </property>
+        <property name="placeholderText">
          <string>30</string>
         </property>
        </widget>
@@ -1557,7 +1695,7 @@
          <string>Fourth X Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Fourth_X_Coordinate_First_Edge_3">
+       <widget class="CustomLineEdit" name="Fourth_X_Coordinate_First_Edge_3">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -1567,6 +1705,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>20</string>
+        </property>
+        <property name="placeholderText">
          <string>20</string>
         </property>
        </widget>
@@ -1583,7 +1724,7 @@
          <string>Fourth Y Coorfinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Fourth_Y_Coordinate_First_Edge_3">
+       <widget class="CustomLineEdit" name="Fourth_Y_Coordinate_First_Edge_3">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -1595,13 +1736,16 @@
         <property name="text">
          <string>20</string>
         </property>
+        <property name="placeholderText">
+         <string>20</string>
+        </property>
        </widget>
       </widget>
       <widget class="QGroupBox" name="groupBox_22">
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>150</y>
+         <y>140</y>
          <width>590</width>
          <height>140</height>
         </rect>
@@ -1622,7 +1766,7 @@
          <string>First X Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="First_X_Coordinate_Second_Edge_3">
+       <widget class="CustomLineEdit" name="First_X_Coordinate_Second_Edge_3">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -1632,6 +1776,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>30</string>
+        </property>
+        <property name="placeholderText">
          <string>30</string>
         </property>
        </widget>
@@ -1648,7 +1795,7 @@
          <string>First Y Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="First_Y_Coordinate_Second_Edge_3">
+       <widget class="CustomLineEdit" name="First_Y_Coordinate_Second_Edge_3">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -1658,6 +1805,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
          <string>50</string>
         </property>
        </widget>
@@ -1674,7 +1824,7 @@
          <string>Second X Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Second_X_Coordinate_Second_Edge_3">
+       <widget class="CustomLineEdit" name="Second_X_Coordinate_Second_Edge_3">
         <property name="geometry">
          <rect>
           <x>140</x>
@@ -1684,6 +1834,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>34</string>
+        </property>
+        <property name="placeholderText">
          <string>34</string>
         </property>
        </widget>
@@ -1700,7 +1853,7 @@
          <string>Second Y Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Second_Y_Coordinate_Second_Edge_3">
+       <widget class="CustomLineEdit" name="Second_Y_Coordinate_Second_Edge_3">
         <property name="geometry">
          <rect>
           <x>140</x>
@@ -1710,6 +1863,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>46</string>
+        </property>
+        <property name="placeholderText">
          <string>46</string>
         </property>
        </widget>
@@ -1726,7 +1882,7 @@
          <string>Third X Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Third_X_Coordinate_Second_Edge_3">
+       <widget class="CustomLineEdit" name="Third_X_Coordinate_Second_Edge_3">
         <property name="geometry">
          <rect>
           <x>300</x>
@@ -1736,6 +1892,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>34</string>
+        </property>
+        <property name="placeholderText">
          <string>34</string>
         </property>
        </widget>
@@ -1752,7 +1911,7 @@
          <string>Third Y Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Third_Y_Coordinate_Second_Edge_3">
+       <widget class="CustomLineEdit" name="Third_Y_Coordinate_Second_Edge_3">
         <property name="geometry">
          <rect>
           <x>300</x>
@@ -1762,6 +1921,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>34</string>
+        </property>
+        <property name="placeholderText">
          <string>34</string>
         </property>
        </widget>
@@ -1778,7 +1940,7 @@
          <string>Fourth X Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Fourth_X_Coordinate_Second_Edge_3">
+       <widget class="CustomLineEdit" name="Fourth_X_Coordinate_Second_Edge_3">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -1788,6 +1950,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>10</string>
+        </property>
+        <property name="placeholderText">
          <string>10</string>
         </property>
        </widget>
@@ -1804,7 +1969,7 @@
          <string>Fourth Y Coorfinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Fourth_Y_Coordinate_Second_Edge_3">
+       <widget class="CustomLineEdit" name="Fourth_Y_Coordinate_Second_Edge_3">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -1816,13 +1981,16 @@
         <property name="text">
          <string>30</string>
         </property>
+        <property name="placeholderText">
+         <string>30</string>
+        </property>
        </widget>
       </widget>
       <widget class="QGroupBox" name="groupBox_23">
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>290</y>
+         <y>280</y>
          <width>590</width>
          <height>140</height>
         </rect>
@@ -1843,7 +2011,7 @@
          <string>First X Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="First_X_Coordinate_Third_Edge_3">
+       <widget class="CustomLineEdit" name="First_X_Coordinate_Third_Edge_3">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -1853,6 +2021,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>70</string>
+        </property>
+        <property name="placeholderText">
          <string>70</string>
         </property>
        </widget>
@@ -1869,7 +2040,7 @@
          <string>First Y Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="First_Y_Coordinate_Third_Edge_3">
+       <widget class="CustomLineEdit" name="First_Y_Coordinate_Third_Edge_3">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -1879,6 +2050,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
          <string>50</string>
         </property>
        </widget>
@@ -1895,7 +2069,7 @@
          <string>Second X Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Second_X_Coordinate_Third_Edge_3">
+       <widget class="CustomLineEdit" name="Second_X_Coordinate_Third_Edge_3">
         <property name="geometry">
          <rect>
           <x>140</x>
@@ -1905,6 +2079,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>46</string>
+        </property>
+        <property name="placeholderText">
          <string>46</string>
         </property>
        </widget>
@@ -1921,7 +2098,7 @@
          <string>Second Y Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Second_Y_Coordinate_Third_Edge_3">
+       <widget class="CustomLineEdit" name="Second_Y_Coordinate_Third_Edge_3">
         <property name="geometry">
          <rect>
           <x>140</x>
@@ -1931,6 +2108,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>46</string>
+        </property>
+        <property name="placeholderText">
          <string>46</string>
         </property>
        </widget>
@@ -1947,7 +2127,7 @@
          <string>Third X Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Third_X_Coordinate_Third_Edge_3">
+       <widget class="CustomLineEdit" name="Third_X_Coordinate_Third_Edge_3">
         <property name="geometry">
          <rect>
           <x>300</x>
@@ -1957,6 +2137,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>46</string>
+        </property>
+        <property name="placeholderText">
          <string>46</string>
         </property>
        </widget>
@@ -1973,7 +2156,7 @@
          <string>Third Y Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Third_Y_Coordinate_Third_Edge_3">
+       <widget class="CustomLineEdit" name="Third_Y_Coordinate_Third_Edge_3">
         <property name="geometry">
          <rect>
           <x>300</x>
@@ -1983,6 +2166,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>34</string>
+        </property>
+        <property name="placeholderText">
          <string>34</string>
         </property>
        </widget>
@@ -1999,7 +2185,7 @@
          <string>Fourth X Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Fourth_X_Coordinate_Third_Edge_3">
+       <widget class="CustomLineEdit" name="Fourth_X_Coordinate_Third_Edge_3">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -2009,6 +2195,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>30</string>
+        </property>
+        <property name="placeholderText">
          <string>30</string>
         </property>
        </widget>
@@ -2025,7 +2214,7 @@
          <string>Fourth Y Coorfinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Fourth_Y_Coordinate_Third_Edge_3">
+       <widget class="CustomLineEdit" name="Fourth_Y_Coordinate_Third_Edge_3">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -2037,13 +2226,16 @@
         <property name="text">
          <string>50</string>
         </property>
+        <property name="placeholderText">
+         <string>50</string>
+        </property>
        </widget>
       </widget>
       <widget class="QGroupBox" name="groupBox_24">
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>430</y>
+         <y>420</y>
          <width>590</width>
          <height>140</height>
         </rect>
@@ -2064,7 +2256,7 @@
          <string>First X Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="First_X_Coordinate_Fourth_Edge_3">
+       <widget class="CustomLineEdit" name="First_X_Coordinate_Fourth_Edge_3">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -2074,6 +2266,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>60</string>
+        </property>
+        <property name="placeholderText">
          <string>60</string>
         </property>
        </widget>
@@ -2090,7 +2285,7 @@
          <string>First Y Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="First_Y_Coordinate_Fourth_Edge_3">
+       <widget class="CustomLineEdit" name="First_Y_Coordinate_Fourth_Edge_3">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -2100,6 +2295,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>60</string>
+        </property>
+        <property name="placeholderText">
          <string>60</string>
         </property>
        </widget>
@@ -2116,7 +2314,7 @@
          <string>Second X Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Second_X_Coordinate_Fourth_Edge_3">
+       <widget class="CustomLineEdit" name="Second_X_Coordinate_Fourth_Edge_3">
         <property name="geometry">
          <rect>
           <x>140</x>
@@ -2126,6 +2324,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
          <string>50</string>
         </property>
        </widget>
@@ -2142,7 +2343,7 @@
          <string>Second Y Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Second_Y_Coordinate_Fourth_Edge_3">
+       <widget class="CustomLineEdit" name="Second_Y_Coordinate_Fourth_Edge_3">
         <property name="geometry">
          <rect>
           <x>140</x>
@@ -2152,6 +2353,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
          <string>50</string>
         </property>
        </widget>
@@ -2168,7 +2372,7 @@
          <string>Third X Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Third_X_Coordinate_Fourth_Edge_3">
+       <widget class="CustomLineEdit" name="Third_X_Coordinate_Fourth_Edge_3">
         <property name="geometry">
          <rect>
           <x>300</x>
@@ -2178,6 +2382,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>70</string>
+        </property>
+        <property name="placeholderText">
          <string>70</string>
         </property>
        </widget>
@@ -2194,7 +2401,7 @@
          <string>Third Y Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Third_Y_Coordinate_Fourth_Edge_3">
+       <widget class="CustomLineEdit" name="Third_Y_Coordinate_Fourth_Edge_3">
         <property name="geometry">
          <rect>
           <x>300</x>
@@ -2204,6 +2411,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>30</string>
+        </property>
+        <property name="placeholderText">
          <string>30</string>
         </property>
        </widget>
@@ -2220,7 +2430,7 @@
          <string>Fourth X Coordinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Fourth_X_Coordinate_Fourth_Edge_3">
+       <widget class="CustomLineEdit" name="Fourth_X_Coordinate_Fourth_Edge_3">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -2230,6 +2440,9 @@
          </rect>
         </property>
         <property name="text">
+         <string>60</string>
+        </property>
+        <property name="placeholderText">
          <string>60</string>
         </property>
        </widget>
@@ -2246,7 +2459,7 @@
          <string>Fourth Y Coorfinate</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="Fourth_Y_Coordinate_Fourth_Edge_3">
+       <widget class="CustomLineEdit" name="Fourth_Y_Coordinate_Fourth_Edge_3">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -2258,6 +2471,9 @@
         <property name="text">
          <string>20</string>
         </property>
+        <property name="placeholderText">
+         <string>20</string>
+        </property>
        </widget>
       </widget>
      </widget>
@@ -2265,8 +2481,8 @@
     <widget class="QPushButton" name="pushButton">
      <property name="geometry">
       <rect>
-       <x>310</x>
-       <y>90</y>
+       <x>360</x>
+       <y>60</y>
        <width>117</width>
        <height>29</height>
       </rect>
@@ -2282,7 +2498,7 @@
       <x>10</x>
       <y>510</y>
       <width>490</width>
-      <height>220</height>
+      <height>190</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -2671,6 +2887,13 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CustomLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>mainwindow.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
  <slots>

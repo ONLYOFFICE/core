@@ -107,7 +107,7 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
-			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toBin(const bool isIcon = false);
 
 			virtual EElementType getType () const;
 			bool isExtended ();

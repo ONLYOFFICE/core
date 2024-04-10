@@ -551,16 +551,15 @@ namespace ZLibZipUtils
 
 	/*========================================================================================================*/
 
-	int oneZipFile(zipFile & zf, zip_fileinfo* zi, std::wstring & file_name, std::wstring & zip_file_name, int method, int compressionLevel, bool bDateTime)
+	int oneZipFile(zipFile & zf, std::wstring & file_name, std::wstring & zip_file_name, int method, int compressionLevel, bool bDateTime)
 	{
 		int err = -1;
-
 		NSFile::CFileBinary oFile;
 
 		zip_fileinfo zinfo;
-		zinfo.dosDate = zinfo.external_fa = zinfo.internal_fa = 0;
-
-		zip_fileinfo* zi_new = zi ? zi : &zinfo;
+		zinfo.dosDate = 0;
+		zinfo.external_fa = 0;
+		zinfo.internal_fa = 0;
 
 		if (bDateTime)
 		{
@@ -568,20 +567,21 @@ namespace ZLibZipUtils
 			bool ok = NSFile::CFileBinary::GetTime(file_name, &edited);
 			if (ok)
 			{
-				zi_new->tmz_date.tm_sec = edited.tm_sec;
-				zi_new->tmz_date.tm_min = edited.tm_min;
-				zi_new->tmz_date.tm_hour = edited.tm_hour;
-				zi_new->tmz_date.tm_mday = edited.tm_mday;
-				zi_new->tmz_date.tm_mon = edited.tm_mon - 1;
-				zi_new->tmz_date.tm_year = edited.tm_year;
+				zinfo.tmz_date.tm_sec = edited.tm_sec;
+				zinfo.tmz_date.tm_min = edited.tm_min;
+				zinfo.tmz_date.tm_hour = edited.tm_hour;
+				zinfo.tmz_date.tm_mday = edited.tm_mday;
+				zinfo.tmz_date.tm_mon = edited.tm_mon - 1;
+				zinfo.tmz_date.tm_year = edited.tm_year;
 			}
 		}
+		zip_fileinfo* zi_new = bDateTime ? &zinfo : NULL;
 
-		if(oFile.OpenFile(file_name))
+		if (oFile.OpenFile(file_name))
 		{
 			DWORD dwSizeRead;
 			BYTE* pData = new BYTE[oFile.GetFileSize()];
-			if(oFile.ReadFile(pData, oFile.GetFileSize(), dwSizeRead))
+			if (oFile.ReadFile(pData, oFile.GetFileSize(), dwSizeRead))
 			{
 				std::string zipFileNameA = codepage_issue_fixToOEM(zip_file_name);
 
@@ -591,7 +591,7 @@ namespace ZLibZipUtils
 			}
 			RELEASEARRAYOBJECTS(pData);
 		}
-		return 0;
+		return err;
 	}
 	int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback* progress, bool sorted, int method, int compressionLevel, bool bDateTime )
 	{
@@ -669,7 +669,7 @@ namespace ZLibZipUtils
 						file = NSSystemPath::Combine(szText, cFileName);
 						zipFileName = zipDir + cFileName;
 
-						oneZipFile(zf, NULL, file, zipFileName, 0, compressionLevel, bDateTime);
+						oneZipFile(zf, file, zipFileName, 0, compressionLevel, bDateTime);
 
 						aCurFiles.erase(aCurFiles.begin() + i, aCurFiles.begin() + i + 1);
 						break;
@@ -682,7 +682,7 @@ namespace ZLibZipUtils
 					file = NSSystemPath::Combine(szText, cFileName);
 					zipFileName = zipDir + cFileName;
 
-					oneZipFile(zf, NULL, file, zipFileName, method, compressionLevel, bDateTime);
+					oneZipFile(zf, file, zipFileName, method, compressionLevel, bDateTime);
 
 					if ( progress != NULL )
 					{
@@ -719,13 +719,14 @@ namespace ZLibZipUtils
 	{
 		int err = -1;
 
-		if ( ( inputFile != NULL ) && ( outputFile != NULL ) )
+		if (( inputFile != NULL) && (outputFile != NULL))
 		{
 			NSFile::CFileBinary oFile;
 
 			zip_fileinfo zinfo;
-			zinfo.external_fa = zinfo.internal_fa = 0;
 			zinfo.dosDate = 0;
+			zinfo.external_fa = 0;
+			zinfo.internal_fa = 0;
 
 			if (bDateTime)
 			{
@@ -741,6 +742,7 @@ namespace ZLibZipUtils
 					zinfo.tmz_date.tm_year = edited.tm_year;
 				}
 			}
+			zip_fileinfo* zi_new = bDateTime ? &zinfo : NULL;
 
 			if (oFile.OpenFile(inputFile))
 			{
@@ -750,11 +752,11 @@ namespace ZLibZipUtils
 				{
 					zipFile zf = zipOpenHelp(outputFile);
 					if (zf)
-					{					
+					{
 						wstring zipFileName = NSFile::GetFileName(inputFile);
 						std::string zipFileNameA = codepage_issue_fixToOEM(zipFileName);
 
-						err = zipOpenNewFileInZip( zf, zipFileNameA.c_str(), &zinfo, NULL, 0, NULL, 0, NULL, method, compressionLevel );
+						err = zipOpenNewFileInZip( zf, zipFileNameA.c_str(), zi_new, NULL, 0, NULL, 0, NULL, method, compressionLevel );
 						err = zipWriteInFileInZip( zf, pData, dwSizeRead );
 						err = zipCloseFileInZip( zf );
 						err = zipClose( zf, NULL );
@@ -837,13 +839,13 @@ namespace ZLibZipUtils
 	int UnzipToDir(unzFile uf, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password, bool opt_extract_without_path, bool clearOutputDirectory )
 	{
 		int err = -1;
-		
+
 		if ( uf != NULL && unzipDir != NULL )
 		{
-            if (NSDirectory::Exists(unzipDir))
-                err = 0;
+			if (NSDirectory::Exists(unzipDir))
+				err = 0;
 
-            if ( clearOutputDirectory )
+			if ( clearOutputDirectory )
 			{
 				ClearDirectory( unzipDir );
 			}

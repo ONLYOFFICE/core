@@ -53,6 +53,7 @@
 #include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/Array.h"
 #include "../../DesktopEditor/graphics/BaseThread.h"
+#include "../../DesktopEditor/graphics/commands/DocInfo.h"
 #include "../Resources/BaseFonts.h"
 #include <new>
 
@@ -4143,6 +4144,26 @@ namespace PdfReader
 	void RendererOutputDev::Type3D1(GfxState *pGState, double dWx, double dWy, double dBLx, double dBLy, double dTRx, double dTRy)
 	{
 		return;
+	}
+	GBool RendererOutputDev::beginMarkedContent(GfxState *state, GString* s)
+	{
+		IAdvancedCommand::AdvancedCommandType eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::ShapeStart;
+		if (m_pRenderer->IsSupportAdvancedCommand(eAdvancedCommandType))
+		{
+			CShapeStart* pCommand = new CShapeStart();
+			pCommand->SetShapeXML(s->getCString());
+			m_pRenderer->AdvancedCommand(pCommand);
+		}
+		return gFalse;
+	}
+	void RendererOutputDev::endMarkedContent(GfxState *state)
+	{
+		IAdvancedCommand::AdvancedCommandType eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::ShapeEnd;
+		if (m_pRenderer->IsSupportAdvancedCommand(eAdvancedCommandType))
+		{
+			IAdvancedCommand* pCommand = new CShapeEnd();
+			m_pRenderer->AdvancedCommand(pCommand);
+		}
 	}
 	void RendererOutputDev::drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight,GBool bInvert, GBool bInlineImage, GBool interpolate)
 	{

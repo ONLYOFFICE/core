@@ -308,6 +308,7 @@ core_ios {
 		QMAKE_CFLAGS += -fembed-bitcode
 		QMAKE_CXXFLAGS += -fembed-bitcode
 		QMAKE_LFLAGS += -fembed-bitcode
+		QMAKE_CFLAGS += -fobjc-arc
 		QMAKE_CXXFLAGS += -fobjc-arc
 	} else {
 
@@ -316,6 +317,7 @@ core_ios {
 		QMAKE_CFLAGS += -fembed-bitcode
 		QMAKE_CXXFLAGS += -fembed-bitcode
 		QMAKE_LFLAGS += -fembed-bitcode
+		QMAKE_CFLAGS += -fobjc-arc
 		QMAKE_CXXFLAGS += -fobjc-arc
 
 		bundle_xcframeworks {

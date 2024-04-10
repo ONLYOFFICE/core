@@ -4148,21 +4148,25 @@ namespace PdfReader
 	GBool RendererOutputDev::beginMarkedContent(GfxState *state, GString* s)
 	{
 		IAdvancedCommand::AdvancedCommandType eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::ShapeStart;
-		if (m_pRenderer->IsSupportAdvancedCommand(eAdvancedCommandType))
+		if (m_pRenderer->IsSupportAdvancedCommand(eAdvancedCommandType) == S_OK)
 		{
 			CShapeStart* pCommand = new CShapeStart();
 			pCommand->SetShapeXML(s->getCString());
-			m_pRenderer->AdvancedCommand(pCommand);
+			bool bRes = m_pRenderer->AdvancedCommand(pCommand) == S_OK;
+			RELEASEOBJECT(pCommand);
+			if (bRes)
+				return gTrue;
 		}
 		return gFalse;
 	}
 	void RendererOutputDev::endMarkedContent(GfxState *state)
 	{
 		IAdvancedCommand::AdvancedCommandType eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::ShapeEnd;
-		if (m_pRenderer->IsSupportAdvancedCommand(eAdvancedCommandType))
+		if (m_pRenderer->IsSupportAdvancedCommand(eAdvancedCommandType) == S_OK)
 		{
-			IAdvancedCommand* pCommand = new CShapeEnd();
+			CShapeEnd* pCommand = new CShapeEnd();
 			m_pRenderer->AdvancedCommand(pCommand);
+			RELEASEOBJECT(pCommand);
 		}
 	}
 	void RendererOutputDev::drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight,GBool bInvert, GBool bInlineImage, GBool interpolate)

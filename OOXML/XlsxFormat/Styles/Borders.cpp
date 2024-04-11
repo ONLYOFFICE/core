@@ -156,6 +156,25 @@ namespace OOX
 				m_oColor.Init(); m_oColor->m_oRgb.Init();
 				m_oColor->m_oRgb->FromString(*sColor);
 			}
+			auto borderstyle = SimpleTypes::Spreadsheet::borderstyleNone;
+			if (iWeight.IsInit())
+			{
+				switch (*iWeight)
+				{
+					case 1:	 //Thin
+					{
+						borderstyle = SimpleTypes::Spreadsheet::borderstyleThin;
+					}break;
+					case 2:	 //Medium
+					case 3:	 //Thick
+					{
+						borderstyle = SimpleTypes::Spreadsheet::borderstyleThick;
+					}break;
+					default:
+					{
+					}break;
+				}
+			}
 			if (sLineStyle.IsInit())
 			{
 				if (*sLineStyle == L"Dot")
@@ -166,29 +185,16 @@ namespace OOX
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleNone));
 				else if (*sLineStyle == L"Double")
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDouble));
-				else if (*sLineStyle == L"Continuous")
+				else if (*sLineStyle == L"Continuous" && borderstyle != SimpleTypes::Spreadsheet::borderstyleNone)
 				{
-					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleThin));
+					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(borderstyle));
 					bBorderContinuous = true;
 				}
-			}
-			if (iWeight.IsInit())
-			{
-				switch (*iWeight)
+			}else
+				if (borderstyle != SimpleTypes::Spreadsheet::borderstyleNone)
 				{
-					case 1:	 //Thin
-					{
-						if (false == sLineStyle.IsInit())
-							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleThin));
-					}break;
-					case 3: //Thick
-					{
-						if (false == sLineStyle.IsInit())
-							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleThick));
-					}break;
-					default://2: //Medium
-					{
-					}break;
+					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(borderstyle));
+					bBorderContinuous = true;
 				}
 			}
 		}

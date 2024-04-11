@@ -190,7 +190,7 @@ namespace OOX
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(borderstyle));
 					bBorderContinuous = true;
 				}
-			}else
+			} else {
 				m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(borderstyle));
 			}
 		}

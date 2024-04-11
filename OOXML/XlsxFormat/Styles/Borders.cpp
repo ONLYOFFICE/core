@@ -185,17 +185,13 @@ namespace OOX
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleNone));
 				else if (*sLineStyle == L"Double")
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDouble));
-				else if (*sLineStyle == L"Continuous" && borderstyle != SimpleTypes::Spreadsheet::borderstyleNone)
+				else if (*sLineStyle == L"Continuous")
 				{
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(borderstyle));
 					bBorderContinuous = true;
 				}
 			}else
-				if (borderstyle != SimpleTypes::Spreadsheet::borderstyleNone)
-				{
-					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(borderstyle));
-					bBorderContinuous = true;
-				}
+				m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(borderstyle));
 			}
 		}
 

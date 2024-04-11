@@ -478,14 +478,12 @@ std::wstring pptx_text_context::Impl::dump_paragraph(/*bool last*/)
 				{
 					CP_XML_STREAM() << run_.str();
 				}
-				else
+
+				CP_XML_NODE(L"a:endParaRPr")
 				{
-					CP_XML_NODE(L"a:endParaRPr")
+					if(last_run_font_size_ && false)
 					{
-						if(last_run_font_size_)
-						{
-							CP_XML_ATTR(L"sz", last_run_font_size_->get_value_unit(odf_types::length::pt) * 100);
-						}
+						CP_XML_ATTR(L"sz", last_run_font_size_->get_value_unit(odf_types::length::pt) * 100);
 					}
 				}
 			}

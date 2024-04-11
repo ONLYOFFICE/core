@@ -41,6 +41,7 @@
 #include "../lib/xpdf/CMap.h"
 #include "../lib/xpdf/Dict.h"
 #include "../lib/xpdf/Stream.h"
+#include "../lib/xpdf/PDFDoc.h"
 //#include "FontFileTrueType.h"
 //#include "FontFileType1C.h"
 #include "../lib/xpdf/CharCodeToUnicode.h"
@@ -654,6 +655,9 @@ namespace PdfReader
 	}
 	void RendererOutputDev::startPage(int nPageIndex, GfxState *pGState)
 	{
+		if (nPageIndex < 0)
+			return;
+
 		m_pRenderer->BeginCommand(c_nPageType);
 
 		// Переводим пункты в миллиметры
@@ -3058,8 +3062,16 @@ namespace PdfReader
 		if (abs(pBBox[2] - pBBox[0] - dXStep) > 0.001 || abs(pBBox[3] - pBBox[1] - dYStep) > 0.001)
 			return;
 
-		int nWidth  = round(dXStep);
-		int nHeight = round(dYStep);
+		double dWidth, dHeight, dDpiX, dDpiY;
+		m_pRenderer->get_Width(&dWidth);
+		m_pRenderer->get_Height(&dHeight);
+		m_pRenderer->get_DpiX(&dDpiX);
+		m_pRenderer->get_DpiY(&dDpiY);
+		dWidth  = dWidth  * dDpiX / 25.4;
+		dHeight = dHeight * dDpiY / 25.4;
+
+		int nWidth  = round(dXStep * dWidth / pGState->getPageWidth());
+		int nHeight = round(dYStep * dHeight / pGState->getPageHeight());
 
 		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
 		memset(pBgraData, 0, nWidth * nHeight * 4);
@@ -3073,11 +3085,8 @@ namespace PdfReader
 		NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
 		pRenderer->SetFontManager(m_pFontManager);
 		pRenderer->CreateFromBgraFrame(pFrame);
-		pRenderer->put_Width (dXStep * 25.4 / 72.0);
-		pRenderer->put_Height(dYStep * 25.4 / 72.0);
-
-		IRenderer* pOldRenderer = m_pRenderer;
-		m_pRenderer = pRenderer;
+		pRenderer->put_Width (nWidth * 25.4 / 72.0);
+		pRenderer->put_Height(nHeight * 25.4 / 72.0);
 
 		PDFRectangle box;
 		box.x1 = pBBox[0];
@@ -3085,15 +3094,18 @@ namespace PdfReader
 		box.x2 = pBBox[2];
 		box.y2 = pBBox[3];
 
-		Gfx* m_gfx = new Gfx(gfx->getDoc(), this, pResourcesDict, &box, NULL);
+		RendererOutputDev* m_pRendererOut = new RendererOutputDev(pRenderer, m_pFontManager, m_pFontList);
+		m_pRendererOut->NewPDF(gfx->getDoc()->getXRef());
+
+		Gfx* m_gfx = new Gfx(gfx->getDoc(), m_pRendererOut, -1, pResourcesDict, dDpiX, dDpiY, &box, NULL, 0);
 		m_gfx->display(pStream);
 
 		pFrame->ClearNoAttack();
 		RELEASEOBJECT(m_gfx);
 		RELEASEOBJECT(pRenderer);
+		RELEASEOBJECT(m_pRendererOut);
 		RELEASEOBJECT(pFrame);
 
-		m_pRenderer = pOldRenderer;
 		Aggplus::CImage* oImage = new Aggplus::CImage();
 		oImage->Create(pBgraData, nWidth, nHeight, 4 * nWidth);
 

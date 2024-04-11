@@ -304,6 +304,12 @@ core_ios {
 	CONFIG(iphonesimulator, iphoneos|iphonesimulator): {
 		message("iphonesimulator")
 		CORE_BUILDS_PLATFORM_PREFIX = ios_simulator
+
+		QMAKE_CFLAGS += -fembed-bitcode
+		QMAKE_CXXFLAGS += -fembed-bitcode
+		QMAKE_LFLAGS += -fembed-bitcode
+		QMAKE_CFLAGS += -fobjc-arc
+		QMAKE_CXXFLAGS += -fobjc-arc
 	} else {
 
 		QMAKE_IOS_DEPLOYMENT_TARGET = 11.0
@@ -311,6 +317,7 @@ core_ios {
 		QMAKE_CFLAGS += -fembed-bitcode
 		QMAKE_CXXFLAGS += -fembed-bitcode
 		QMAKE_LFLAGS += -fembed-bitcode
+		QMAKE_CFLAGS += -fobjc-arc
 		QMAKE_CXXFLAGS += -fobjc-arc
 
 		bundle_xcframeworks {

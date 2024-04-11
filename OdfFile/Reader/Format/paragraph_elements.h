@@ -620,7 +620,9 @@ public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
-	_CP_OPT(odf_types::Bool)	text_fixed_;
+    virtual void xlsx_serialize(std::wostream& _Wostream, oox::xlsx_conversion_context& Context);
+    
+    _CP_OPT(odf_types::Bool)	text_fixed_;
 	office_element_ptr			text_;    
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );

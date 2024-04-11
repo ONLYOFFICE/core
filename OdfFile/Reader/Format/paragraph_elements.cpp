@@ -1084,6 +1084,21 @@ void title::xlsx_convert(oox::xlsx_conversion_context & Context)
 		Context.get_text_context()->add_text(_title);
 	}
 }
+void title::xlsx_serialize(std::wostream& _Wostream, oox::xlsx_conversion_context& Context)
+{
+	std::wstringstream val;
+	text_to_stream(val);
+	std::wstring _title = val.str();
+
+	if (_title == L"???")
+	{
+		_Wostream << L"&amp;F";
+	}
+	else
+	{
+		_Wostream << _title;
+	}
+}
 void title::pptx_convert(oox::pptx_conversion_context & Context)
 {
     std::wstringstream val;

@@ -698,14 +698,14 @@ namespace OOX
 			{
 				nFlags2 |= 0x1000000;
 			}
-			if (m_oCellMetadata.IsInit())
-			{
-				nFlags2 |= 0x2000000;
-			}
-			if (m_oValueMetadata.IsInit())
-			{
-				nFlags2 |= 0x4000000;
-			}
+			//if (m_oCellMetadata.IsInit())
+			//{
+			//	nFlags2 |= 0x2000000;
+			//}
+			//if (m_oValueMetadata.IsInit())
+			//{
+			//	nFlags2 |= 0x4000000;
+			//}
 			oStream.WriteULONG(nFlags2);
 			//todo RkNumber
 			switch(nType)
@@ -748,14 +748,14 @@ namespace OOX
 				m_oRichText->toXLSBExt(oStream);
 			}
 	//it's not by XLSB format
-			if (m_oCellMetadata.IsInit())
-			{
-				oStream.WriteULONG(*m_oCellMetadata);
-			}
-			if (m_oValueMetadata.IsInit())
-			{
-				oStream.WriteULONG(*m_oValueMetadata);
-			}
+			//if (m_oCellMetadata.IsInit())
+			//{
+			//	oStream.WriteULONG(*m_oCellMetadata);
+			//}
+			//if (m_oValueMetadata.IsInit())
+			//{
+			//	oStream.WriteULONG(*m_oValueMetadata);
+			//}
 
 			oStream.XlsbEndRecord();
 		}
@@ -1714,13 +1714,14 @@ namespace OOX
 
 			m_oRow = nRow;
 			m_oCol = (oStream.GetULong() & 0x3FFF);
+			
 			_UINT32 nFlags2 = oStream.GetULong();
-			if(0 != (nFlags2 & 0xFFFFFF))
+			if (0 != (nFlags2 & 0xFFFFFF))
 			{
 				m_oStyle = (nFlags2 & 0xFFFFFF);
 			}
 
-			if(0 != (nFlags2 & 0x1000000))
+			if (0 != (nFlags2 & 0x1000000))
 			{
 				m_oShowPhonetic.Init();
 				m_oShowPhonetic->FromBool(true);

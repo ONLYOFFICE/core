@@ -2556,47 +2556,47 @@ void XlsxConverter::convert(OOX::Spreadsheet::CBorderProp *borderProp, std::wstr
 		switch(borderProp->m_oStyle->GetValue())
 		{
 			case SimpleTypes::Spreadsheet::borderstyleDashDot:
-				border_style = L"1pt dot-dashed";
+				border_style = L"0.74pt dash-dot";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleDashDotDot:
-				border_style = L"1pt dot-dashed";
+				border_style = L"0.74pt dash-dot-dot";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleDashed:
-				border_style = L"1pt dashed";
+				border_style = L"0.74pt dashed";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleDotted:
-				border_style = L"1pt dotted";
+				border_style = L"0.74pt dotted";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleDouble:
-				border_style = L"1pt double";
+				border_style = L"0.74pt double";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleHair:
-				border_style = L"1pt solid";
+				border_style = L"0.06pt solid";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleMedium:
-				border_style = L"2.49pt solid";
+				border_style = L"1.76pt solid";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleMediumDashDot:
-				border_style = L"2.49pt dot-dashed";
+				border_style = L"1.76pt dash-dot";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleMediumDashDotDot:
-				border_style = L"2.49pt dot-dashed";
+				border_style = L"1.76pt dash-dot-dot";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleMediumDashed:
-				border_style = L"2.49pt dashed";
+				border_style = L"1.76pt dashed";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleNone:
 				border_style = L"none";
 				return;
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleSlantDashDot:
-				border_style = L"1pt solid";
+				border_style = L"1.76pt fine-dashed";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleThick:
-				border_style = L"1pt solid";
+				border_style = L"2.49pt solid";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleThin:
-				 border_style = L"1pt solid";
+				 border_style = L"0.74pt solid";
 			break;
 		}
 	}

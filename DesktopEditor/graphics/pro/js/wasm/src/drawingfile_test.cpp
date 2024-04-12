@@ -1791,35 +1791,6 @@ int main(int argc, char* argv[])
 			free(pAnnotAP);
 	}
 
-	// SHAPES
-	if (true)
-	{
-		BYTE* pShapes = GetShapes(pGrFile, 0);
-		nLength = READ_INT(pShapes);
-		int i = 4;
-		nLength -= 4;
-
-		std::cout << std::endl;
-
-		while (i < nLength)
-		{
-			int nShapesLength = READ_INT(pShapes + i);
-			i += 4;
-			std::cout << "Shapes" << std::endl;
-
-			for (int j = 0; j < nShapesLength; ++j)
-			{
-				int nPathLength = READ_INT(pShapes + i);
-				i += 4;
-				std::cout << std::string((char*)(pShapes + i), nPathLength) << std::endl;
-				i += nPathLength;
-			}
-		}
-
-		if (pShapes)
-			free(pShapes);
-	}
-
 	Close(pGrFile);
 	RELEASEARRAYOBJECTS(pCMapData);
 

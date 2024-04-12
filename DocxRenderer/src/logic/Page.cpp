@@ -1218,19 +1218,9 @@ namespace NSDocxRenderer
 
 			// совпадает ли left, right, center со строкой ниже
 			struct Position {
-				Position() {
-					left   = false;
-					center = false;
-					right  = false;
-				}
-				Position(bool bLeft, bool bCenter, bool bRight) {
-					left   = bLeft;
-					center = bCenter;
-					right  = bRight;
-				}
-				bool left   = false;
-				bool center = false;
-				bool right  = false;
+				bool left{false};
+				bool center{false};
+				bool right{false};
 			};
 
 			// параграф будет набиваться строчками

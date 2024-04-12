@@ -58,6 +58,8 @@ namespace NSDocxRenderer
 
 		m_pCurrentLine = nullptr;
 		m_oVector.Clear();
+
+		m_arCompleteObjectsXml.clear();
 	}
 
 	CPage::~CPage()

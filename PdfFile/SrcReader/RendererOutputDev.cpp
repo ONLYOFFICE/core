@@ -41,6 +41,7 @@
 #include "../lib/xpdf/CMap.h"
 #include "../lib/xpdf/Dict.h"
 #include "../lib/xpdf/Stream.h"
+#include "../lib/xpdf/PDFDoc.h"
 //#include "FontFileTrueType.h"
 //#include "FontFileType1C.h"
 #include "../lib/xpdf/CharCodeToUnicode.h"
@@ -655,6 +656,9 @@ namespace PdfReader
 	}
 	void RendererOutputDev::startPage(int nPageIndex, GfxState *pGState)
 	{
+		if (nPageIndex < 0)
+			return;
+
 		m_pRenderer->BeginCommand(c_nPageType);
 
 		// Переводим пункты в миллиметры
@@ -3056,25 +3060,19 @@ namespace PdfReader
 		if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
 			return;
 
-		double xMin, yMin, xMax, yMax;
-		pGState->getUserClipBBox(&xMin, &yMin, &xMax, &yMax);
-		pGState->moveTo(xMin, yMin);
-		pGState->lineTo(xMax, yMin);
-		pGState->lineTo(xMax, yMax);
-		pGState->lineTo(xMin, yMax);
-		pGState->closePath();
+		if (abs(pBBox[2] - pBBox[0] - dXStep) > 0.001 || abs(pBBox[3] - pBBox[1] - dYStep) > 0.001)
+			return;
 
-		DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
-
-		// Image
-		long brush;
-		int alpha = pGState->getFillOpacity() * 255;
-
-		double dDpiX, dDpiY;
+		double dWidth, dHeight, dDpiX, dDpiY;
+		m_pRenderer->get_Width(&dWidth);
+		m_pRenderer->get_Height(&dHeight);
 		m_pRenderer->get_DpiX(&dDpiX);
 		m_pRenderer->get_DpiY(&dDpiY);
-		int nWidth  = dXStep * dDpiX / 72.0;
-		int nHeight = dYStep * dDpiY / 72.0;
+		dWidth  = dWidth  * dDpiX / 25.4;
+		dHeight = dHeight * dDpiY / 25.4;
+
+		int nWidth  = round(dXStep * dWidth / pGState->getPageWidth());
+		int nHeight = round(dYStep * dHeight / pGState->getPageHeight());
 
 		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
 		memset(pBgraData, 0, nWidth * nHeight * 4);
@@ -3088,11 +3086,8 @@ namespace PdfReader
 		NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
 		pRenderer->SetFontManager(m_pFontManager);
 		pRenderer->CreateFromBgraFrame(pFrame);
-		pRenderer->put_Width (dXStep * 25.4 / 72.0);
-		pRenderer->put_Height(dYStep * 25.4 / 72.0);
-
-		IRenderer* pOldRenderer = m_pRenderer;
-		m_pRenderer = pRenderer;
+		pRenderer->put_Width (nWidth * 25.4 / 72.0);
+		pRenderer->put_Height(nHeight * 25.4 / 72.0);
 
 		PDFRectangle box;
 		box.x1 = pBBox[0];
@@ -3100,24 +3095,41 @@ namespace PdfReader
 		box.x2 = pBBox[2];
 		box.y2 = pBBox[3];
 
-		Gfx* m_gfx = new Gfx(gfx->getDoc(), this, pResourcesDict, &box, NULL);
+		RendererOutputDev* m_pRendererOut = new RendererOutputDev(pRenderer, m_pFontManager, m_pFontList);
+		m_pRendererOut->NewPDF(gfx->getDoc()->getXRef());
+
+		Gfx* m_gfx = new Gfx(gfx->getDoc(), m_pRendererOut, -1, pResourcesDict, dDpiX, dDpiY, &box, NULL, 0);
 		m_gfx->display(pStream);
 
 		pFrame->ClearNoAttack();
 		RELEASEOBJECT(m_gfx);
 		RELEASEOBJECT(pRenderer);
+		RELEASEOBJECT(m_pRendererOut);
 		RELEASEOBJECT(pFrame);
 
-		m_pRenderer = pOldRenderer;
 		Aggplus::CImage* oImage = new Aggplus::CImage();
 		oImage->Create(pBgraData, nWidth, nHeight, 4 * nWidth);
 
-		m_pRenderer->BrushRect(true, xMin, yMin, xMax, yMax);
+		double xMin, yMin, xMax, yMax;
+		pGState->getUserClipBBox(&xMin, &yMin, &xMax, &yMax);
+
+		pGState->moveTo(xMin + pBBox[0], yMin + pBBox[1]);
+		pGState->lineTo(xMax + pBBox[2], yMin + pBBox[1]);
+		pGState->lineTo(xMax + pBBox[2], yMax + pBBox[3]);
+		pGState->lineTo(xMin + pBBox[0], yMax + pBBox[3]);
+		pGState->closePath();
+
+		DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
+
+		long brush;
 		m_pRenderer->get_BrushType(&brush);
+
+		int alpha = pGState->getFillOpacity() * 255;
 		m_pRenderer->put_BrushType(c_BrushTypeTexture);
 		m_pRenderer->put_BrushTextureImage(oImage);
-		m_pRenderer->put_BrushTextureMode(1);
+		m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
 		m_pRenderer->put_BrushTextureAlpha(alpha);
+		m_pRenderer->BeginCommand(c_nImageType);
 #ifdef BUILDING_WASM_MODULE
 		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
 		{
@@ -3130,8 +3142,8 @@ namespace PdfReader
 		m_pRenderer->DrawPath(c_nWindingFillMode);
 #endif
 
-		m_pRenderer->EndCommand(c_nPathType);
-		m_pRenderer->BrushRect(false, 0, 0, 1, 1);
+		m_pRenderer->PathCommandEnd();
+		m_pRenderer->EndCommand(c_nImageType);
 		m_pRenderer->put_BrushType(brush);
 
 		pGState->clearPath();

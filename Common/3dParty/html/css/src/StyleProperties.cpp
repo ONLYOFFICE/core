@@ -641,45 +641,36 @@ namespace NSCSS
 		}
 	}
 
-	std::wstring CColor::EquateToColor(const std::vector<std::wstring>& arColors) const
+	std::wstring CColor::EquateToColor(const std::vector<std::pair<TRGB, std::wstring>> &arColors) const
 	{
 		if (arColors.empty())
 			return L"none";
 
-		TRGB oColor;
+		TRGB oCurrentColor;
 
 		switch(m_oValue.m_enType)
 		{
-			case ColorRGB: oColor = *static_cast<TRGB*>(m_oValue.m_pColor); break;
-			case ColorHEX: oColor = ConvertHEXtoRGB(*static_cast<std::wstring*>(m_oValue.m_pColor)); break;
+			case ColorRGB: oCurrentColor = *static_cast<TRGB*>(m_oValue.m_pColor); break;
+			case ColorHEX: oCurrentColor = ConvertHEXtoRGB(*static_cast<std::wstring*>(m_oValue.m_pColor)); break;
 			default: return L"none";
 		}
 
-		TRGB oTempColor;
 		std::wstring wsSelectedColor;
 		double dMinDistance = DBL_MAX;
 		double dDistance;
 
-		for (const std::wstring& wsColor : arColors)
+		for (const std::pair<TRGB, std::wstring>& oColor : arColors)
 		{
-			oTempColor = ConvertHEXtoRGB(wsColor);
-			dDistance = sqrt(pow(oTempColor.uchRed - oColor.uchRed, 2) + pow(oTempColor.uchGreen - oColor.uchGreen, 2) + pow(oTempColor.uchBlue - oColor.uchBlue, 2));
+			dDistance = sqrt(pow(oCurrentColor.uchRed - oColor.first.uchRed, 2) + pow(oCurrentColor.uchGreen - oColor.first.uchGreen, 2) + pow(oCurrentColor.uchBlue - oColor.first.uchBlue, 2));
 
 			if (dDistance < dMinDistance)
 			{
 				dMinDistance = dDistance;
-				wsSelectedColor = wsColor;
+				wsSelectedColor = oColor.second;
 			}
 		}
 
-		std::map<std::wstring, std::wstring>::const_iterator oIter = 
-			std::find_if(NSConstValues::COLORS.begin(), NSConstValues::COLORS.end(), [&wsSelectedColor](const std::pair<std::wstring, std::wstring>& oPair)
-			{ return wsSelectedColor == oPair.second; });
-
-		if (NSConstValues::COLORS.end() == oIter)
-			return std::wstring();
-
-		return oIter->first;
+		return wsSelectedColor;
 	}
 
 	TRGB CColor::ToRGB() const
@@ -1364,7 +1355,7 @@ namespace NSCSS
 	{
 		if (wsValue.empty())
 			return false;
-			
+
 		if (L"none" == wsValue)
 		{
 			SetColor(L"#ffffff", unLevel, bHardMode);
@@ -1372,8 +1363,8 @@ namespace NSCSS
 			SetWidth(L"0",unLevel,bHardMode);
 			return true;
 		}
-		
-		const std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsValue, false, L" ");
+
+		const std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::ParseCSSPropertie(wsValue);
 		for (const std::wstring& sValue : arValues)
 		{
 			if (SetColor(sValue, unLevel, bHardMode))
@@ -2236,7 +2227,7 @@ namespace NSCSS
 	void CFont::UpdateSize(double dFontSize)
 	{
 		if (NSCSS::Em == m_oSize.GetUnitMeasure() || NSCSS::Rem == m_oSize.GetUnitMeasure())
-			m_oSize.ConvertTo(NSCSS::Twips, dFontSize);
+			m_oSize.ConvertTo(NSCSS::Point, dFontSize);
 	}
 	
 	void CFont::UpdateLineHeight(double dFontSize)

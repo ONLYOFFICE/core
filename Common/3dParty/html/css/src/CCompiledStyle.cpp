@@ -12,7 +12,7 @@
 #include "StaticFunctions.h"
 #include "ConstValues.h"
 
-#define DEFAULTFONTSIZE 28 // 14 * 2
+#define DEFAULT_FONT_SIZE 28 // 14 * 2
 
 namespace NSCSS
 {
@@ -66,9 +66,7 @@ namespace NSCSS
 
 	bool CCompiledStyle::operator== (const CCompiledStyle& oStyle) const
 	{
-		return GetId()[0]        == oStyle.GetId()[0]        &&
-		       m_arParentsStyles == oStyle.m_arParentsStyles &&
-		       m_oBackground     == oStyle.m_oBackground     &&
+		return m_oBackground     == oStyle.m_oBackground     &&
 		       m_oBorder         == oStyle.m_oBorder         &&
 		       m_oFont           == oStyle.m_oFont           &&
 		       m_oMargin         == oStyle.m_oMargin         &&
@@ -112,7 +110,7 @@ namespace NSCSS
 	void CCompiledStyle::AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const unsigned int unLevel, const bool& bHardMode)
 	{
 		const bool bIsThereBorder = (m_oBorder.Empty()) ? false : true;
-		const double dFontSize = m_oFont.GetSize().ToDouble(NSCSS::Twips);
+		const double dFontSize = (!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Twips) : DEFAULT_FONT_SIZE;
 
 		for (std::pair<std::wstring, std::wstring> pPropertie : mStyle)
 		{

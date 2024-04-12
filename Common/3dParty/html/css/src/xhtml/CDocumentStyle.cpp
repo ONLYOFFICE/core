@@ -11,23 +11,23 @@
 
 namespace NSCSS
 {
-	CStyleUsed::CStyleUsed(const CCompiledStyle &oStyle, bool bIsPStyle)
-		: m_oStyle(oStyle), m_bIsPStyle(bIsPStyle)
+	CStyleUsed::CStyleUsed(const std::wstring &wsId, bool bIsPStyle)
+		: m_bIsPStyle(bIsPStyle), m_wsId(wsId)
 	{}
 
 	bool CStyleUsed::operator==(const CStyleUsed &oUsedStyle) const
 	{
-		return (m_bIsPStyle == oUsedStyle.m_bIsPStyle) && (m_oStyle == oUsedStyle.m_oStyle);
+		return (m_bIsPStyle == oUsedStyle.m_bIsPStyle) && (m_wsId == oUsedStyle.m_wsId);
 	}
 
 	std::wstring CStyleUsed::getId()
 	{
-		return m_sId;
+		return m_wsId;
 	}
 
 	void CStyleUsed::setId(const std::wstring &sId)
 	{
-		m_sId = sId;
+		m_wsId = sId;
 	}
 
 	CDocumentStyle::CDocumentStyle() : m_arStandardStyles({L"a", L"li", L"h1", L"h2", L"h3", L"h4", L"h5", L"h6", L"h1-c",
@@ -439,8 +439,25 @@ namespace NSCSS
 		if (oStyle.m_oText.GetDecoration().m_oLine.Underline())
 			oXmlElement.AddPropertiesInR(RProperties::R_U, (!oStyle.m_oText.GetDecoration().m_oStyle.Empty()) ? oStyle.m_oText.GetDecoration().m_oStyle.ToWString() : L"single");
 
-		oXmlElement.AddPropertiesInR(RProperties::R_Highlight, oStyle.m_oBackground.GetColor().EquateToColor({L"000000", L"0000FF", L"00FFFF", L"00FF00", L"FF00FF", L"FF0000", L"FFFF00", L"FFFFFF", L"00008B", L"008B8B", L"006400", L"8B008B", L"8B0000", L"8B8000", L"A9A9A9", L"D3D3D3"}));
+		const std::wstring wsHighlight{oStyle.m_oBackground.GetColor().EquateToColor({{{0,   0,   0},   L"black"},    {{0,   0,   255}, L"blue"},      {{0,   255, 255}, L"cyan"}, 
+		                                                                              {{0,   255, 0},   L"green"},    {{255, 0,   255}, L"magenta"},   {{255, 0,   0},   L"red"}, 
+		                                                                              {{255, 255, 0},   L"yellow"},   {{255, 255, 255}, L"white"},     {{0,   0,   139}, L"darkBlue"}, 
+		                                                                              {{0,   139, 139}, L"darkCyan"}, {{0,   100, 0},   L"darkGreen"}, {{139, 0,   139}, L"darkMagenta"}, 
+		                                                                              {{139, 0,   0},   L"darkRed"},  {{128, 128, 0},   L"darkYellow"},{{169, 169, 169}, L"darkGray"},
+		                                                                              {{211, 211, 211}, L"lightGray"}})};
+
+		if (L"none" != wsHighlight)
+			oXmlElement.AddPropertiesInR(RProperties::R_Highlight, wsHighlight);
+
 		oXmlElement.AddPropertiesInR(RProperties::R_Color, oStyle.m_oText.GetColor().ToWString());
+		
+		std::wstring wsFontFamily{oStyle.m_oFont.GetFamily().ToWString()};
+
+		if (L"sans-serif" == wsFontFamily)
+			wsFontFamily = L"Arial";
+		else if (L"serif" == wsFontFamily)
+			wsFontFamily = L"Times New Roman";
+
 		oXmlElement.AddPropertiesInR(RProperties::R_RFonts, oStyle.m_oFont.GetFamily().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_I, oStyle.m_oFont.GetStyle().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_B, oStyle.m_oFont.GetWeight().ToWString());
@@ -455,7 +472,7 @@ namespace NSCSS
 			return false;
 		}
 
-		CStyleUsed structStyle(oStyle, false);
+		CStyleUsed structStyle(oStyle.GetId(), false);
 
 		std::list<CStyleUsed>::iterator oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
 
@@ -464,6 +481,7 @@ namespace NSCSS
 			m_sId = (*oItem).getId();
 			return false;
 		}
+
 		CXmlElement oXmlElement;
 		SetRStyle(oStyle, oXmlElement);
 
@@ -517,7 +535,7 @@ namespace NSCSS
 			return true;
 		}
 
-		CStyleUsed structStyle(oStyle, true);
+		CStyleUsed structStyle(oStyle.GetId(), true);
 		std::list<CStyleUsed>::iterator oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
 
 		if (oItem != m_arStyleUsed.end())

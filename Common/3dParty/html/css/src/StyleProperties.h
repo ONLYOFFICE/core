@@ -237,7 +237,7 @@ namespace NSCSS
 		int ToInt() const override;
 		double ToDouble() const override;
 		std::wstring ToWString() const override;
-		std::wstring EquateToColor(const std::vector<std::wstring>& arColors) const;
+		std::wstring EquateToColor(const std::vector<std::pair<TRGB, std::wstring>>& arColors) const;
 		TRGB ToRGB() const;
 	};
 

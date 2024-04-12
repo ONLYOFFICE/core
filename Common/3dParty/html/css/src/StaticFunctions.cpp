@@ -80,6 +80,52 @@ namespace NS_STATIC_FUNCTIONS
 		return arValues;
 	}
 
+	std::vector<std::wstring> ParseCSSPropertie(const std::wstring& wsInput)
+	{
+		std::vector<std::wstring> arResult;
+		std::wstring wsCurrent;
+		bool bInQuotes = false;
+		bool bInFunction = false;
+		int nParenDepth = 0;
+
+		for (wchar_t c : wsInput)
+		{
+			if (c == ' ' && !bInQuotes && !bInFunction)
+			{
+				if (!wsCurrent.empty())
+				{
+					arResult.push_back(wsCurrent);
+					wsCurrent.clear();
+				}
+			}
+			else if (c == '"' || c == '\'')
+			{
+				bInQuotes = !bInQuotes;
+				wsCurrent += c;
+			}
+			else if (c == '(')
+			{
+				bInFunction = true;
+				nParenDepth++;
+				wsCurrent += c;
+			}
+			else if (c == ')')
+			{
+				nParenDepth--;
+				if (nParenDepth == 0)
+					bInFunction = false;
+				wsCurrent += c;
+			} 
+			else 
+				wsCurrent += c;
+		}
+
+		if (!wsCurrent.empty())
+			arResult.push_back(wsCurrent);
+
+		return arResult;
+	}
+
 	std::vector<std::wstring> GetWordsW(const std::wstring& wsLine, bool bWithSigns, const std::wstring& wsDelimiters)
 	{
 		if (wsLine.empty())

@@ -166,6 +166,9 @@ namespace OOX
 						borderstyle = SimpleTypes::Spreadsheet::borderstyleThin;
 					}break;
 					case 2:	 //Medium
+					{
+						borderstyle = SimpleTypes::Spreadsheet::borderstyleMedium;
+					}break;
 					case 3:	 //Thick
 					{
 						borderstyle = SimpleTypes::Spreadsheet::borderstyleThick;
@@ -179,9 +182,48 @@ namespace OOX
 			{
 				if (*sLineStyle == L"Dot")
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDotted));
-				else if (*sLineStyle == L"Dash")
-					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDashed));
-				else if (*sLineStyle == L"None")
+				else if (*sLineStyle == L"Dash") {
+					switch (borderstyle)
+					{
+						case SimpleTypes::Spreadsheet::borderstyleMedium:
+						case SimpleTypes::Spreadsheet::borderstyleThick:
+						{
+							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleMediumDashed));
+						}break;
+						default:
+						{
+							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDashed));
+						}break;
+					}
+				} else if (*sLineStyle == L"DashDot") {
+					switch (borderstyle)
+					{
+						case SimpleTypes::Spreadsheet::borderstyleMedium:
+						case SimpleTypes::Spreadsheet::borderstyleThick:
+						{
+							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleMediumDashDot));
+						}break;
+						default:
+						{
+							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDashDot));
+						}break;
+					}
+				} else if (*sLineStyle == L"DashDotDot") {
+					switch (borderstyle)
+					{
+						case SimpleTypes::Spreadsheet::borderstyleMedium:
+						case SimpleTypes::Spreadsheet::borderstyleThick:
+						{
+							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleMediumDashDotDot));
+						}break;
+						default:
+						{
+							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDashDotDot));
+						}break;
+					}
+				} else if (*sLineStyle == L"SlantDashDot")
+					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleSlantDashDot));
+				} else if (*sLineStyle == L"None")
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleNone));
 				else if (*sLineStyle == L"Double")
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDouble));

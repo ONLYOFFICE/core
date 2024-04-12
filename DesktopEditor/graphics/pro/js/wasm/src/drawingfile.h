@@ -149,12 +149,6 @@ public:
 			return ((CPdfFile*)pReader)->GetAnnots(nPageIndex);
 		return NULL;
 	}
-	BYTE* GetShapes(int nPageIndex)
-	{
-		if (nType == 0)
-			return ((CPdfFile*)pReader)->GetShapes(nPageIndex);
-		return NULL;
-	}
 	BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget  = -1, const char* sView  = NULL, const char* sBView = NULL)
 	{
 		if (nType == 0)

@@ -1537,47 +1537,6 @@
 		Module["_free"](ext);
 		return res;
 	};
-	CFile.prototype["getShapes"] = function(pageIndex)
-	{
-		let res = [];
-		let ext = Module["_GetShapes"](this.nativeFile, pageIndex);
-		if (ext == 0)
-			return res;
-
-		let lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
-		if (lenArray == null)
-		{
-			Module["_free"](ext);
-			return res;
-		}
-
-		let len = lenArray[0];
-		len -= 4;
-		if (len <= 0)
-		{
-			Module["_free"](ext);
-			return res;
-		}
-		
-		let buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
-		let reader = new CBinaryReader(buffer, 0, len);
-		
-		if (!reader.isValid())
-		{
-			Module["_free"](ext);
-			return res;
-		}
-		
-		while (reader.isValid())
-		{
-			let n = reader.readInt();
-			for (let i = 0; i < n; ++i)
-				res.push(reader.readString());
-		}
-		
-		Module["_free"](ext);
-		return res;
-	};
 	CFile.prototype["getStructure"] = function()
 	{
 		let res = [];

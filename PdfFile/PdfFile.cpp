@@ -431,12 +431,6 @@ BYTE* CPdfFile::GetAnnots(int nPageIndex)
 		return NULL;
 	return m_pInternal->pReader->GetAnnots(nPageIndex);
 }
-BYTE* CPdfFile::GetShapes(int nPageIndex)
-{
-	if (!m_pInternal->pReader)
-		return NULL;
-	return m_pInternal->pReader->GetShapes(nPageIndex);
-}
 BYTE* CPdfFile::VerifySign(const std::wstring& sFile, ICertificate* pCertificate, int nWidget)
 {
 	if (!m_pInternal->pReader)

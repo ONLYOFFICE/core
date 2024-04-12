@@ -36,7 +36,6 @@
 		"_GetButtonIcons",
 		"_GetAnnotationsInfo",
 		"_GetAnnotationsAP",
-		"_GetShapes",
 		"_InitializeFontsBin",
 		"_InitializeFontsBase64",
 		"_InitializeFontsRanges",

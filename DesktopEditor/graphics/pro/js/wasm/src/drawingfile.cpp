@@ -250,10 +250,6 @@ WASM_EXPORT BYTE* GetFontBinary(CGraphicsFileDrawing* pGraphics, char* path)
 	}
 	return NULL;
 }
-WASM_EXPORT BYTE* GetShapes(CGraphicsFileDrawing* pGraphics, int nPageIndex)
-{
-	return pGraphics->GetShapes(nPageIndex);
-}
 WASM_EXPORT void DestroyTextInfo(CGraphicsFileDrawing* pGraphics)
 {
 	return pGraphics->DestroyText();

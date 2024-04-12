@@ -223,17 +223,15 @@ namespace OOX
 					}
 				} else if (*sLineStyle == L"SlantDashDot")
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleSlantDashDot));
-				} else if (*sLineStyle == L"None")
+				else if (*sLineStyle == L"None")
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleNone));
 				else if (*sLineStyle == L"Double")
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDouble));
 				else if (*sLineStyle == L"Continuous")
 				{
-					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(borderstyle));
+					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(borderstyle==SimpleTypes::Spreadsheet::borderstyleNone ? SimpleTypes::Spreadsheet::borderstyleHair : borderstyle));
 					bBorderContinuous = true;
 				}
-			} else {
-				m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(borderstyle));
 			}
 		}
 

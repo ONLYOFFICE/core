@@ -172,6 +172,7 @@ namespace PdfWriter
 		m_vFillAlpha.clear();
 		m_vStrokeAlpha.clear();
 		m_vRadioGroups.clear();
+		m_vMetaOForms.clear();
 		m_vImages.clear();
 
 		m_pTransparencyGroup = NULL;
@@ -213,6 +214,7 @@ namespace PdfWriter
 		m_vTTFonts.clear();
 		m_vFreeTypeFonts.clear();
 		m_vSignatures.clear();
+		m_vMetaOForms.clear();
 		m_vImages.clear();
 		if (m_pFreeTypeLibrary)
 		{
@@ -312,6 +314,12 @@ namespace PdfWriter
 
 		pID->Add(new CBinaryObject(pEncrypt->m_anEncryptID, 16));
 		pID->Add(new CBinaryObject(pEncrypt->m_anEncryptID, 16));
+
+		if (m_pMetaData)
+			m_pMetaData->SetID(new CBinaryObject(pEncrypt->m_anEncryptID, 16));
+
+		for (int i = 0; i < m_vMetaOForms.size(); ++i)
+			m_vMetaOForms[i]->Add("ID", new CBinaryObject(pEncrypt->m_anEncryptID, 16));
 	}
     void CDocument::SetPasswords(const std::wstring & wsOwnerPassword, const std::wstring & wsUserPassword)
 	{
@@ -440,6 +448,7 @@ namespace PdfWriter
 		if (!m_pMetaData)
 			return false;
 
+		CBinaryObject* sID = NULL;
 		CArrayObject* pID = (CArrayObject*)m_pTrailer->Get("ID");
 		if (!pID)
 		{
@@ -452,8 +461,12 @@ namespace PdfWriter
 			pID->Add(new CBinaryObject(arrId, 16));
 			pID->Add(new CBinaryObject(arrId, 16));
 
-			m_pMetaData->SetID(new CBinaryObject(arrId, 16));
+			sID = new CBinaryObject(arrId, 16);
 		}
+		else
+			sID = (CBinaryObject*)pID->Get(1)->Copy();
+
+		m_pMetaData->SetID(sID);
 
 		return m_pMetaData->AddMetaData(sMetaName, pMetaData, nMetaLength);
 	}
@@ -1590,13 +1603,28 @@ namespace PdfWriter
 
 		// Вторая часть идентификатора должна обновляться
 		CObjectBase* pID = m_pTrailer->Get("ID");
-		if (pID && pID->GetType() == object_type_ARRAY)
+		if ((pID && pID->GetType() == object_type_ARRAY) || !m_vMetaOForms.empty())
 		{
 			BYTE arrId[16];
 			CEncryptDict::CreateId(m_pInfo, m_pXref, (BYTE*)arrId);
 
-			CObjectBase* pObject = ((CArrayObject*)pID)->Get(1, false);
-			((CArrayObject*)pID)->Insert(pObject, new CBinaryObject(arrId, 16), true);
+			CArrayObject* pArrID = (CArrayObject*)pID;
+			if (pArrID)
+			{
+				CObjectBase* pObject = pArrID->Get(1, false);
+				pArrID->Insert(pObject, new CBinaryObject(arrId, 16), true);
+			}
+			else
+			{
+				pArrID = new CArrayObject();
+				m_pTrailer->Add("ID", pArrID);
+
+				pArrID->Add(new CBinaryObject(arrId, 16));
+				pArrID->Add(new CBinaryObject(arrId, 16));
+			}
+
+			for (int i = 0; i < m_vMetaOForms.size(); ++i)
+				m_vMetaOForms[i]->Add("ID", new CBinaryObject(arrId, 16));
 		}
 
 		CEncrypt* pEncrypt = NULL;
@@ -1720,5 +1748,66 @@ namespace PdfWriter
 		for (CXref* XRef : vXRefForWrite)
 			RELEASEOBJECT(XRef);
 		vXRefForWrite.clear();
+	}
+	void CDocument::AddShapeXML(const std::string& sXML)
+	{
+		CDictObject* pResources = (CDictObject*)m_pCurPage->Get("Resources");
+		if (!pResources)
+		{
+			pResources = new CDictObject();
+			m_pCurPage->Add("Resources", pResources);
+		}
+		CDictObject* pProperties = (CDictObject*)pResources->Get("Properties");
+		if (!pProperties)
+		{
+			pProperties = new CDictObject();
+			pResources->Add("Properties", pProperties);
+		}
+		CObjectBase* pObj = pProperties->Get("MetaOForm");
+		if (pObj && pObj->GetType() != object_type_DICT)
+		{
+			pProperties->Remove("MetaOForm");
+			pObj = NULL;
+		}
+		CDictObject* pMetaOForm = (CDictObject*)pObj;
+		if (!pMetaOForm)
+		{
+			pMetaOForm = new CDictObject();
+			m_pXref->Add(pMetaOForm);
+			pMetaOForm->Add("Type", "MetaOForm");
+			pProperties->Add("MetaOForm", pMetaOForm);
+			m_vMetaOForms.push_back(pMetaOForm);
+
+			CBinaryObject* sID = NULL;
+			CArrayObject* pID = (CArrayObject*)m_pTrailer->Get("ID");
+			if (!pID)
+			{
+				BYTE arrId[16];
+				CEncryptDict::CreateId(m_pInfo, m_pXref, (BYTE*)arrId);
+
+				pID = new CArrayObject();
+				m_pTrailer->Add("ID", pID);
+
+				pID->Add(new CBinaryObject(arrId, 16));
+				pID->Add(new CBinaryObject(arrId, 16));
+
+				sID = new CBinaryObject(arrId, 16);
+			}
+			else
+				sID = (CBinaryObject*)pID->Get(1)->Copy();
+			pMetaOForm->Add("ID", sID);
+		}
+		CArrayObject* pArrayMeta = (CArrayObject*)pMetaOForm->Get("Medata");
+		if (!pArrayMeta)
+		{
+			pArrayMeta = new CArrayObject();
+			pMetaOForm->Add("Metadata", pArrayMeta);
+		}
+		pArrayMeta->Add(new CStringObject(sXML.c_str()));
+
+		CDictObject* pBDC = new CDictObject();
+		pBDC->Add("MCID", pArrayMeta->GetCount() - 1);
+		m_pCurPage->BeginMarkedContentDict("MetaOForm", pBDC);
+		RELEASEOBJECT(pBDC);
 	}
 }

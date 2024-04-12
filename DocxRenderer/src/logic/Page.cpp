@@ -58,6 +58,8 @@ namespace NSDocxRenderer
 
 		m_pCurrentLine = nullptr;
 		m_oVector.Clear();
+
+		m_arCompleteObjectsXml.clear();
 	}
 
 	CPage::~CPage()
@@ -1218,7 +1220,7 @@ namespace NSDocxRenderer
 			struct Position {
 				bool left{false};
 				bool center{false};
-				bool right {false};
+				bool right{false};
 			};
 
 			// параграф будет набиваться строчками

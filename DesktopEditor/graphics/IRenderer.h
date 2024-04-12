@@ -147,6 +147,9 @@ public:
 		Annotaion   = 4,
 		DeleteAnnot = 5,
 		WidgetsInfo = 6,
+		ShapeStart  = 7,
+		ShapeEnd    = 8,
+		PageRotate  = 9,
 
 		Undefined   = 255
 	};

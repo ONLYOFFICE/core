@@ -196,6 +196,9 @@ public:
 	std::vector<std::wstring> ScanPage(IOfficeDrawingFile* pFile, size_t nPage);
 	std::vector<std::wstring> ScanPagePptx(IOfficeDrawingFile* pFile, size_t nPage);
 
+	virtual HRESULT IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedCommandType& type);
+	virtual HRESULT AdvancedCommand(IAdvancedCommand* command);
+
 private:
 	CDocxRenderer_Private* m_pInternal;
 	void DrawPage(IOfficeDrawingFile* pFile, size_t nPage);

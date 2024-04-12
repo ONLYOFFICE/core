@@ -458,7 +458,7 @@ SOURCES += \
 
 # XpsFile
 
-XPS_ROOT_DIR = $$PWD/../../../../../XpsFile
+XPS_ROOT_DIR = $$CORE_ROOT_DIR/XpsFile
 
 HEADERS += \
 	$$XPS_ROOT_DIR/XpsFile.h \
@@ -485,8 +485,8 @@ DEFINES += \
 	THREADMODEL=0 \
 	DEBUGLVL=0
 
-DJVU_ROOT_DIR = $$PWD/../../../../../DjVuFile
-DJVU_WRAPPER  = $$PWD/../../../../../DjVuFile/wasm/libdjvu
+DJVU_ROOT_DIR = $$CORE_ROOT_DIR/DjVuFile
+DJVU_WRAPPER  = $$CORE_ROOT_DIR/DjVuFile/wasm/libdjvu
 
 HEADERS += \
 	$$DJVU_ROOT_DIR/DjVu.h \
@@ -608,7 +608,7 @@ SOURCES += \
 	$$DJVU_WRAPPER/GURL.cpp
 
 # PdfReader
-PDF_ROOT_DIR = $$PWD/../../../../../PdfFile
+PDF_ROOT_DIR = $$CORE_ROOT_DIR/PdfFile
 
 INCLUDEPATH += \
 	$$PDF_ROOT_DIR/lib/goo \
@@ -643,7 +643,6 @@ SOURCES += \
 	$$PDF_ROOT_DIR/Resources/BaseFonts.cpp \
 	$$PDF_ROOT_DIR/Resources/CMapMemory/cmap_memory.cpp \
 	$$PDF_ROOT_DIR/PdfReader.cpp \
-	$$PDF_ROOT_DIR/PdfWriter_empty.cpp \
 	$$PDF_ROOT_DIR/PdfFile.cpp
 
 HEADERS +=\
@@ -727,5 +726,6 @@ HEADERS += \
 	../wasm/src/serialize.h
 
 SOURCES += \
+	../wasm/src/pdfwriter.cpp \
 	../wasm/src/drawingfile.cpp \
 	../wasm/src/drawingfile_test.cpp

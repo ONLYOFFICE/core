@@ -29,41 +29,45 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include <string>
-#include "MetafileToRenderer.h"
+#ifndef _PDF_EDITOR_H
+#define _PDF_EDITOR_H
 
-#include "./commands/DocInfo.h"
-#include "./commands/FormField.h"
-#include "./commands/AnnotField.h"
+#include "PdfWriter.h"
+#include "PdfReader.h"
 
-namespace NSOnlineOfficeBinToPdf
+HRESULT _ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword, CPdfReader* _pReader, CPdfWriter* _pWriter);
+
+class CPdfEditor
 {
-	template<typename T>
-	inline IAdvancedCommand* Read_Command(CBufferReader* pReader, IMetafileToRenderter* pCorrector)
-	{
-		T* command = new T();
-		if (!command->Read(pReader, pCorrector))
-			RELEASEOBJECT(command);
-		return command;
-	}
+public:
+	CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, CPdfReader* _pReader, const std::wstring& _wsDstFile, CPdfWriter* _pWriter);
 
-	IAdvancedCommand* CBufferReader::Read(int type, IMetafileToRenderter* pCorrector)
-	{
-		switch (type)
-		{
-		case ctHyperlink:        return Read_Command<CHyperlinkCommand>(this, pCorrector);
-		case ctLink:             return Read_Command<CLinkCommand>     (this, pCorrector);
-		case ctDocInfo:          return Read_Command<CDocInfoCommand>  (this, pCorrector);
-		case ctAnnotField:       return Read_Command<CAnnotFieldInfo>  (this, pCorrector);
-		case ctFormField:        return Read_Command<CFormFieldInfo>   (this, pCorrector);
-		case ctAnnotFieldDelete: return Read_Command<CAnnotFieldDelete>(this, pCorrector);
-		case ctWidgetsInfo:      return Read_Command<CWidgetsInfo>     (this, pCorrector);
-		case ctShapeStart:       return Read_Command<CShapeStart>      (this, pCorrector);
-		case ctShapeEnd:         return Read_Command<CShapeEnd>        (this, pCorrector);
-		case ctPageRotate:       return Read_Command<CPageRotate>      (this, pCorrector);
-		default: break;
-		}
+	int  GetError();
+	void Close();
+	bool EditPage(int nPageIndex);
+	bool DeletePage(int nPageIndex);
+	bool AddPage(int nPageIndex);
+	bool EditAnnot(int nPageIndex, int nID);
+	bool DeleteAnnot(int nID);
+	bool EditWidgets(IAdvancedCommand* pCommand);
+	int  GetPagesCount();
+	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
+	int  GetRotate(int nPageIndex);
+	bool EditPage();
+	void AddShapeXML(const std::string& sXML);
+	void EndMarkedContent();
 
-		return NULL;
-	}
-}
+private:
+	void GetPageTree(XRef* xref, Object* pPagesRefObj);
+
+	std::wstring wsSrcFile;
+	std::wstring wsPassword;
+
+	CPdfReader* pReader;
+	CPdfWriter* pWriter;
+
+	int nError;
+	bool bEditPage;
+};
+
+#endif // _PDF_EDITOR_H

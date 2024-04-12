@@ -138,6 +138,9 @@ namespace PdfWriter
 		void      DrawShading(CShading* pShading);
 		void      SetStrokeAlpha(unsigned char unAlpha);
 		void      SetFillAlpha(unsigned char unAlpha);
+		void      BeginMarkedContent(const std::string& sName);
+		void      BeginMarkedContentDict(const std::string& sName, CDictObject* pBDC);
+		void      EndMarkedContent();
 
 		void      BeginText();
 		void      EndText();

@@ -1583,7 +1583,32 @@ namespace PdfWriter
         CNumberObject* pRotate = (CNumberObject*)GetRotateItem();
         return pRotate ? pRotate->Get() : 0;
     }
-    //----------------------------------------------------------------------------------------
+	void CPage::BeginMarkedContent(const std::string& sName)
+	{
+		// Operator   : BMC
+		// Description: Начало маркированного контента
+
+		m_pStream->WriteEscapeName(sName.c_str());
+		m_pStream->WriteStr(" BMC\012");
+	}
+	void CPage::BeginMarkedContentDict(const std::string& sName, CDictObject* pBDC)
+	{
+		// Operator   : BDC
+		// Description: Начало маркированного контента со списком свойств
+
+		m_pStream->WriteEscapeName(sName.c_str());
+		m_pStream->WriteChar(' ');
+		m_pStream->Write(pBDC, NULL);
+		m_pStream->WriteStr(" BDC\012");
+	}
+	void CPage::EndMarkedContent()
+	{
+		// Operator   : EMC
+		// Description: Конец маркированного контента
+
+		m_pStream->WriteStr("EMC\012");
+	}
+	//----------------------------------------------------------------------------------------
 	// CTextWord
 	//----------------------------------------------------------------------------------------
 	CTextWord::CTextWord()

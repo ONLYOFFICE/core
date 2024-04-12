@@ -43,6 +43,8 @@ namespace NSDocxRenderer
 		std::vector<std::shared_ptr<CShape>>     m_arImages;
 		std::vector<std::shared_ptr<CShape>>     m_arShapes;
 
+		std::vector<std::wstring>   m_arCompleteObjectsXml;
+
 		std::vector<std::shared_ptr<COutputObject>>  m_arOutputObjects;
 
 		CTextLine*               m_pCurrentLine {nullptr};

@@ -34,6 +34,7 @@
 #include "../DesktopEditor/common/Directory.h"
 #include "../OfficeUtils/src/OfficeUtils.h"
 #include "src/logic/Document.h"
+#include "../DesktopEditor/graphics/commands/DocInfo.h"
 
 class CDocxRenderer_Private
 {
@@ -124,6 +125,11 @@ std::vector<std::wstring> CDocxRenderer::ScanPage(IOfficeDrawingFile* pFile, siz
 		xml_shapes.push_back(writer->GetData());
 		delete writer;
 	}
+
+	std::vector<std::wstring>& arComleteObjects = m_pInternal->m_oDocument.m_oCurrentPage.m_arCompleteObjectsXml;
+	if (!arComleteObjects.empty())
+		xml_shapes.insert(xml_shapes.end(), arComleteObjects.begin(), arComleteObjects.end());
+
 	m_pInternal->m_oDocument.Clear();
 	return xml_shapes;
 }
@@ -147,6 +153,11 @@ std::vector<std::wstring> CDocxRenderer::ScanPagePptx(IOfficeDrawingFile* pFile,
 		xml_shapes.push_back(writer->GetData());
 		delete writer;
 	}
+
+	std::vector<std::wstring>& arComleteObjects = m_pInternal->m_oDocument.m_oCurrentPage.m_arCompleteObjectsXml;
+	if (!arComleteObjects.empty())
+		xml_shapes.insert(xml_shapes.end(), arComleteObjects.begin(), arComleteObjects.end());
+
 	m_pInternal->m_oDocument.Clear();
 	return xml_shapes;
 }
@@ -180,6 +191,44 @@ HRESULT CDocxRenderer::SetTempFolder(const std::wstring& wsPath)
 	m_pInternal->m_sTempDirectory = wsPath;
 	return S_OK;
 }
+
+HRESULT CDocxRenderer::IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedCommandType& type)
+{
+	switch (type)
+	{
+	case IAdvancedCommand::AdvancedCommandType::ShapeStart:
+	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:
+		return S_OK;
+	default:
+		break;
+	}
+
+	return S_FALSE;
+}
+HRESULT CDocxRenderer::AdvancedCommand(IAdvancedCommand* command)
+{
+	if (NULL == command)
+		return S_FALSE;
+
+	switch (command->GetCommandType())
+	{
+	case IAdvancedCommand::AdvancedCommandType::ShapeStart:
+	{
+		CShapeStart* pShape = (CShapeStart*)command;
+		const std::string& sUtf8Shape = pShape->GetShapeXML();
+		m_pInternal->m_oDocument.m_oCurrentPage.m_arCompleteObjectsXml.push_back(UTF8_TO_U(sUtf8Shape));
+		return S_OK;
+	}
+	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:
+	{
+		return S_OK;
+	}
+	default:
+		break;
+	}
+	return S_FALSE;
+}
+
 //----------------------------------------------------------------------------------------
 // Тип рендерера
 //----------------------------------------------------------------------------------------

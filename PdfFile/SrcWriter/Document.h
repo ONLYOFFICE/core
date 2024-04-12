@@ -202,6 +202,7 @@ namespace PdfWriter
 		void              SetCurPage(CPage* pPage) { m_pCurPage = pPage; }
 		bool              EditCO(const std::vector<int>& arrCO);
 		const std::map<int, CAnnotation*>& GetAnnots() { return m_mAnnotations; }
+		void              AddShapeXML(const std::string& sXML);
 	private:		  
 					  
 		char*             GetTTFontTag();
@@ -298,6 +299,7 @@ namespace PdfWriter
 		CDictObject*                       m_pAcroForm;
 		CResourcesDict*                    m_pFieldsResources;
 		std::vector<CRadioGroupField*>     m_vRadioGroups;
+		std::vector<CDictObject*>          m_vMetaOForms;
 		std::map<std::string, CFieldBase*> m_mFields;
 		std::map<int, CAnnotation*>        m_mAnnotations;
 		std::map<int, CDictObject*>        m_mParents;

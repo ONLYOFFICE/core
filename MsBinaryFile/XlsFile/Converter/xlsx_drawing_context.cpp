@@ -1368,7 +1368,7 @@ void xlsx_drawing_context::serialize_pic(_drawing_state_ptr & drawing_state)
 				{
 					CP_XML_ATTR(L"id", drawing_state->id);
 					if (drawing_state->name.empty())	
-						drawing_state->name = L"Picture_" + drawing_state->objectId.substr(5);
+						drawing_state->name = L"Picture_" + (drawing_state->objectId.size() > 5 ? drawing_state->objectId.substr(5) : std::to_wstring(drawing_state->id));
 					CP_XML_ATTR(L"name", drawing_state->name);		
 
 					if (!drawing_state->description.empty())

@@ -4174,7 +4174,7 @@ namespace PdfReader
 		IAdvancedCommand::AdvancedCommandType eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::ShapeEnd;
 		if (m_pRenderer->IsSupportAdvancedCommand(eAdvancedCommandType) == S_OK)
 		{
-			CShapeEnd* pCommand = new CShapeEnd();
+			CEmptyComand* pCommand = new CEmptyComand(IAdvancedCommand::AdvancedCommandType::ShapeEnd);
 			m_pRenderer->AdvancedCommand(pCommand);
 			RELEASEOBJECT(pCommand);
 		}

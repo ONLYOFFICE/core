@@ -149,7 +149,8 @@ public:
 		WidgetsInfo = 6,
 		ShapeStart  = 7,
 		ShapeEnd    = 8,
-		PageRotate  = 9,
+		PageClear   = 9,
+		PageRotate  = 10,
 
 		Undefined   = 255
 	};

@@ -54,7 +54,7 @@ public:
 	int  GetPagesCount() { return 0; }
 	int  GetRotate(int nPageIndex) { return 0; }
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) {}
-	bool EditPage() { return false; }
+	bool EditPage(int nPageIndex) { return false; }
 	void AddShapeXML(const std::string& sXML) {}
 	void EndMarkedContent() {}
 };
@@ -1152,6 +1152,7 @@ HRESULT CPdfFile::IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedComma
 	case IAdvancedCommand::AdvancedCommandType::WidgetsInfo:
 	case IAdvancedCommand::AdvancedCommandType::ShapeStart:
 	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:
+	case IAdvancedCommand::AdvancedCommandType::PageClear:
 	case IAdvancedCommand::AdvancedCommandType::PageRotate:
 		return S_OK;
 	default:
@@ -1222,6 +1223,12 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	{
 		if (m_pInternal->pEditor && m_pInternal->pEditor->EditPage())
 			m_pInternal->pEditor->EndMarkedContent();
+		return S_OK;
+	}
+	case IAdvancedCommand::AdvancedCommandType::PageClear:
+	{
+		if (m_pInternal->pEditor && m_pInternal->pEditor->EditPage())
+			m_pInternal->pWriter->PageClear();
 		return S_OK;
 	}
 	case IAdvancedCommand::AdvancedCommandType::PageRotate:

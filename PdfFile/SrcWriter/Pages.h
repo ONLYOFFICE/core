@@ -164,6 +164,7 @@ namespace PdfWriter
 		void      AddContents(CXref* pXref);
         void      SetRotate(int nRotate);
         int       GetRotate();
+		void      ClearContent(CXref* pXref);
 
 	private:
 

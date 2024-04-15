@@ -146,12 +146,10 @@ private:
 	std::string m_sShapeXML;
 };
 
-class GRAPHICS_DECL CShapeEnd : public IAdvancedCommand
+class GRAPHICS_DECL CEmptyComand : public IAdvancedCommand
 {
 public:
-	CShapeEnd();
-
-	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
+	CEmptyComand(AdvancedCommandType nType);
 };
 
 class GRAPHICS_DECL CPageRotate : public IAdvancedCommand

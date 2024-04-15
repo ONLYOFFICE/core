@@ -138,8 +138,7 @@ bool CShapeStart::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafile
 	return true;
 }
 
-CShapeEnd::CShapeEnd() : IAdvancedCommand(AdvancedCommandType::ShapeEnd) {}
-bool CShapeEnd::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector) { return true; }
+CEmptyComand::CEmptyComand(AdvancedCommandType nType) : IAdvancedCommand(nType) {}
 
 CPageRotate::CPageRotate() : IAdvancedCommand(AdvancedCommandType::PageRotate) {}
 int CPageRotate::GetPageRotate() { return m_nPageRotate; }

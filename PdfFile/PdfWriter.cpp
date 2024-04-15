@@ -2637,6 +2637,10 @@ bool CPdfWriter::EditClose()
 
 	return true;
 }
+void CPdfWriter::PageClear()
+{
+	m_pDocument->ClearPage();
+}
 void CPdfWriter::PageRotate(int nRotate)
 {
 	if (m_pPage)

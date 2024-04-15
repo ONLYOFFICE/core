@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -36,6 +36,8 @@
 #include "lib/xpdf/PDFDoc.h"
 #include "lib/xpdf/AcroForm.h"
 #include "lib/xpdf/TextString.h"
+#include "lib/xpdf/Lexer.h"
+#include "lib/xpdf/Parser.h"
 
 #include "SrcWriter/Catalog.h"
 #include "SrcWriter/EncryptDictionary.h"

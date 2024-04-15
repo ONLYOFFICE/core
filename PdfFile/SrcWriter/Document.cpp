@@ -1797,7 +1797,7 @@ namespace PdfWriter
 				sID = (CBinaryObject*)pID->Get(1)->Copy();
 			pMetaOForm->Add("ID", sID);
 		}
-		CArrayObject* pArrayMeta = (CArrayObject*)pMetaOForm->Get("Medata");
+		CArrayObject* pArrayMeta = (CArrayObject*)pMetaOForm->Get("Metadata");
 		if (!pArrayMeta)
 		{
 			pArrayMeta = new CArrayObject();
@@ -1809,5 +1809,9 @@ namespace PdfWriter
 		pBDC->Add("MCID", pArrayMeta->GetCount() - 1);
 		m_pCurPage->BeginMarkedContentDict("MetaOForm", pBDC);
 		RELEASEOBJECT(pBDC);
+	}
+	void CDocument::ClearPage()
+	{
+		m_pCurPage->ClearContent(m_pXref);
 	}
 }

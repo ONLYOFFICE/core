@@ -1578,6 +1578,12 @@ namespace PdfWriter
 				Add("Rotate", nRotate % 360);
 		}
 	}
+	void CPage::ClearContent(CXref* pXref)
+	{
+		m_pContents = new CArrayObject();
+		Add("Contents", m_pContents);
+		AddContents(pXref);
+	}
     int CPage::GetRotate()
     {
         CNumberObject* pRotate = (CNumberObject*)GetRotateItem();

@@ -144,6 +144,16 @@ void PtgFuncVar::setParamsNum(const unsigned char num)
 	}
 }
 
+const unsigned char PtgFuncVar::getParamsNum()
+{
+	return cparams;
+}
+
+const bool PtgFuncVar::getFCeFunc()
+{
+	return fCeFunc;
+}
+
 
 } // namespace XLS
 

@@ -322,11 +322,14 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
                 }
 				else if (SyntaxPtg::extract_PtgList(it, itEnd, ptgList, ixti))// Shall be placed strongly before PtgArea and PtgRef
 				{
+                    if((ptgList.rowType == 0x10 || ptgList.rowType == 0x08 || ptgList.rowType == 0x02)
+                        && ptgList.columns == 0x01)
+                    ptgList.type_ = 0x01;
 					rgce.addPtg(found_operand = OperandPtgPtr(new PtgList(ptgList)));
 				}
 				else if (SyntaxPtg::extract_PtgName(it, itEnd, number))// Shall be placed strongly before PtgArea and PtgRef
 				{
-					rgce.addPtg(found_operand = OperandPtgPtr(new PtgNameX(ixti, number, OperandPtg::ptg_VALUE)));
+					rgce.addPtg(found_operand = OperandPtgPtr(new PtgNameX(ixti, number, OperandPtg::ptg_REFERENCE)));
 				}
                 else
                 {
@@ -335,7 +338,7 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             }
             else if(SyntaxPtg::extract_PtgName(it, itEnd, number))// Shall be placed strongly before PtgArea and PtgRef
             {
-                rgce.addPtg(found_operand = OperandPtgPtr(new PtgName(number, OperandPtg::ptg_VALUE)));
+                rgce.addPtg(found_operand = OperandPtgPtr(new PtgName(number, OperandPtg::ptg_REFERENCE)));
             }
 			else if (SyntaxPtg::extract_PtgList(it, itEnd, ptgList))// Shall be placed strongly before PtgArea and PtgRef
 			{
@@ -379,20 +382,20 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             else if(SyntaxPtg::extract_PtgFunc(it, itEnd, operand_str))
             {
                 PtgPtr func;
-                if((func = PtgFunc::create(operand_str, OperandPtg::ptg_VALUE)) ||
-                    (func = PtgFuncVar::create(operand_str, OperandPtg::ptg_VALUE)))
+                if((func = PtgFunc::create(operand_str, OperandPtg::ptg_REFERENCE)) ||
+                    (func = PtgFuncVar::create(operand_str, OperandPtg::ptg_REFERENCE)))
                 {
                     ptg_stack.push(func);
                 }
                 else
                 {
-                    func = PtgFuncVar::create(L"USER_DEFINED_FUNCTION", OperandPtg::ptg_VALUE);
+                    func = PtgFuncVar::create(L"USER_DEFINED_FUNCTION", OperandPtg::ptg_REFERENCE);
                     if(!func)
                     {
                         // EXCEPT::LE::WhatIsTheFuck("Ftab_Cetab doesn't contain info about user-defined function (0xFF).", __FUNCTION__);
                     }
                     ptg_stack.push(func);
-                    rgce.addPtg(PtgPtr(new PtgNameX(operand_str,  OperandPtg::ptg_VALUE)));
+                    rgce.addPtg(PtgPtr(new PtgNameX(operand_str,  OperandPtg::ptg_REFERENCE)));
                 }
             }
             else if(SyntaxPtg::extract_UndefinedName(it, itEnd)) // Shall be placed strongly after extract_PtgName
@@ -433,9 +436,42 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             return false;
         }
     }
+    //parsePtgTypes(rgce);
     return true;
 }
 
+const void StringPtgParser::parsePtgTypes(Rgce& rgce)
+{
+    PtgVector functionStack;
+    for(auto i:rgce.sequence)
+    {
+        auto ptgId = i->ptg_id;
+        if(!ptgId.is_initialized())
+            continue;
+        auto untypedId = GETBITS(ptgId.get(), 0, 4);
+        if(untypedId == 1)
+        {
+            auto funcPtr = dynamic_cast<PtgFunc*>(i.get());
+            auto paramsNum = funcPtr->getParametersNum();
+            for(auto j = 0; j < paramsNum; j++)
+            {
+                functionStack.pop_back();
+            }
+            ///check and change fixed num of args
+        }
+        else if(untypedId == 2)
+        {
+            auto funcPtr = dynamic_cast<PtgFuncVar*>(i.get());
+            auto paramsNum = funcPtr->getParamsNum();
+            auto testval = funcPtr->dataType;
+            for(auto j = 0; j < paramsNum; j++)
+            {
+                functionStack.pop_back();
+            }
+        }
+        functionStack.push_back(i);
+    }
+}
 
 
 } // namespace XLS

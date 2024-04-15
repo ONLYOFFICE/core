@@ -45,6 +45,7 @@ public:
     const bool parseToPtgs(const std::wstring& assembled_formula, Rgce& rgce, RgbExtra& rgb, const std::wstring & tag_name);
 
 private:
+    const void parsePtgTypes(Rgce& rgce);
 	PtgStack ptg_stack;
 
 };

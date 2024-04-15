@@ -58,6 +58,10 @@ public:
 
 	void setParamsNum(const unsigned char num);
 
+	const unsigned char getParamsNum();
+	
+	const bool getFCeFunc();
+
 	static const unsigned short fixed_id = 0x02;
 private:
 	unsigned char cparams;

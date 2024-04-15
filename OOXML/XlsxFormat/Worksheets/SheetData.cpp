@@ -1119,17 +1119,6 @@ namespace OOX
                     {
 						auto formula = dynamic_cast<XLSB::ArrFmla*>(obj.get());
 						formula->formula = m_sText;
-						for(auto i:formula->formula.rgce.sequence)
-						{
-							if(i->ptg_id.get() == 37)
-							{
-								i->ptg_id = 101;
-							}
-							if(i->ptg_id.get() == 36)
-							{
-								i->ptg_id = 100;
-							}
-						}
 						if(m_oAca.IsInit())
 						{
 							formula->fAlwaysCalc = m_oAca->GetValue();

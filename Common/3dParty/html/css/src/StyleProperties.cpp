@@ -2300,9 +2300,7 @@ namespace NSCSS
 
 	CFont &CFont::operator+=(const CFont &oFont)
 	{
-		if (!oFont.m_oSize.Empty())
-			m_oSize        = oFont.m_oSize;
-
+		m_oSize       += oFont.m_oSize;
 		m_oLineHeight += oFont.m_oLineHeight;
 		m_oFamily     += oFont.m_oFamily;
 		m_oStretch    += oFont.m_oStretch;

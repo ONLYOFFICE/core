@@ -174,13 +174,14 @@ struct TTableCellStyle
 	NSCSS::NSProperties::CIndent m_oPadding;
 	NSCSS::NSProperties::CColor  m_oBackground;
 
-	std::wstring m_wsAlign;
+	std::wstring m_wsHAlign;
+	std::wstring m_wsVAlign;
 
 	TTableCellStyle(){}
 	
 	bool Empty()
 	{
-		return m_oWidth.Empty() && m_oHeight.Empty() && m_oBorder.Empty() && m_oPadding.Empty() && m_wsAlign.empty();
+		return m_oWidth.Empty() && m_oHeight.Empty() && m_oBorder.Empty() && m_oPadding.Empty() && m_wsVAlign.empty() && m_wsVAlign.empty();
 	}
 };
 
@@ -282,9 +283,14 @@ public:
 		m_oStyles.m_oPadding = oPadding;
 	}
 
-	void SetAlign(const std::wstring& wsAlign)
+	void SetHAlign(const std::wstring& wsAlign)
 	{
-		m_oStyles.m_wsAlign = wsAlign;
+		m_oStyles.m_wsHAlign = wsAlign;
+	}
+
+	void SetVAlign(const std::wstring& wsAlign)
+	{
+		m_oStyles.m_wsVAlign = wsAlign;
 	}
 
 	void SetBackground(const NSCSS::NSProperties::CColor& oColor)
@@ -344,8 +350,8 @@ public:
 			oCell += L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + wsShdFill + L"\"/>";
 		}
 
-		if (!m_oStyles.m_wsAlign.empty())
-			oCell += L"<w:vAlign w:val=\"" + m_oStyles.m_wsAlign + L"\"/>";
+		if (!m_oStyles.m_wsVAlign.empty())
+			oCell += L"<w:vAlign w:val=\"" + m_oStyles.m_wsVAlign + L"\"/>";
 		else
 			oCell += L"<w:vAlign w:val=\"center\"/>";
 
@@ -463,7 +469,7 @@ public:
 			if (0 < m_oStyles.m_unMaxHeight)
 				oRow += L"<w:trHeight w:val=\"" + std::to_wstring(m_oStyles.m_unMaxHeight) + L"\"/>";
 
-			if (0 <= oTableStyles.m_nCellSpacing)
+			if (0 < oTableStyles.m_nCellSpacing)
 				oRow += L"<w:tblCellSpacing w:w=\"" + std::to_wstring(oTableStyles.m_nCellSpacing) + L"\" w:type=\"dxa\"/>";
 
 			oRow.WriteNodeEnd(L"w:trPr");
@@ -606,7 +612,7 @@ public:
 
 				if (1 != pCell->GetRowspan())
 				{
-					for (UINT unIndex = unRowIndex + 1; unIndex < m_arRows.size(); ++unIndex)
+					for (UINT unIndex = unRowIndex + 1; unIndex < std::min((UINT)m_arRows.size(), unRowIndex + pCell->GetRowspan()); ++unIndex)
 						(*m_arRows[unIndex]).InsertCell(CTableCell::CreateEmpty(pCell->GetColspan(), true, pCell->GetStyles()), unColumnIndex);
 				}
 			}
@@ -618,16 +624,38 @@ public:
 		UINT unIndex   = 0;
 		CTableCell* pCell = NULL;
 
+		UINT unMaxIndex = 0; //Максимальный индекс без учета строк, где имеется только 1 ячейка
+
+		for (const CTableRow* pRow : m_arRows)
+		{
+			if (1 < pRow->GetCount())
+				unMaxIndex = std::max(unMaxIndex, pRow->GetIndex());
+		}
+
 		while (unIndex < m_arMinColspan.size())
 		{
 			for (CTableRow* pRow : m_arRows)
 			{
+				if (0 != unMaxIndex && 1 == pRow->GetCount() && pRow->GetIndex() > unMaxIndex)
+				{
+					pCell = (*pRow)[unIndex];
+	
+					if (NULL == pCell)
+						continue;
+
+					pCell->SetColspan(unMaxIndex , MAXCOLUMNSINTABLE);
+					continue;
+				}
+
+				if (1 == m_arMinColspan[unIndex])
+					break;
+
 				pCell = (*pRow)[unIndex];
 
 				if (NULL == pCell)
 					continue;
 
-				if (1 != pCell->GetColspan() && unIndex + pCell->GetColspan() > m_arMinColspan[unIndex])
+				if (1 < pCell->GetColspan() && unIndex + pCell->GetColspan() > m_arMinColspan[unIndex])
 				{
 					pCell->SetColspan(m_arMinColspan[unIndex] - unIndex, MAXCOLUMNSINTABLE);
 					continue;
@@ -695,7 +723,7 @@ public:
 		if (!m_oStyles.m_wsAlign.empty())
 			oTable += L"<w:jc w:val=\"" + m_oStyles.m_wsAlign + L"\"/>";
 
-		if (0 <= m_oStyles.m_nCellSpacing)
+		if (0 < m_oStyles.m_nCellSpacing)
 			oTable += L"<w:tblCellSpacing w:w=\"" + std::to_wstring(m_oStyles.m_nCellSpacing) + L"\" w:type=\"dxa\"/>";
 
 		if (!m_oStyles.m_oBorder.Empty() && !m_oStyles.m_oBorder.Zero())
@@ -724,9 +752,6 @@ public:
 		if (HaveCaption())
 		{
 			oTable.WriteNodeBegin(L"w:tr");
-			oTable.WriteNodeBegin(L"w:trPr");
-			oTable += L"<w:tblCellSpacing w:w=\"0\" w:type=\"dxa\"/>";
-			oTable.WriteNodeEnd(L"w:trPr");
 			oTable.WriteNodeBegin(L"w:tc");
 			oTable.WriteNodeBegin(L"w:tcPr");
 			oTable += L"<w:tcW w:w=\"0\" w:type=\"auto\"/>";
@@ -1597,6 +1622,7 @@ private:
 		if(sName == L"#text")
 		{
 			std::wstring sText = GetText();
+			std::wstring wsTemp{sText};
 
 			size_t find = sText.find_first_not_of(L" \n\t\r");
 			if (find == std::wstring::npos)
@@ -1656,6 +1682,9 @@ private:
 					sText.erase(0, nAfter + 1);
 					nAfter = sText.find_first_of(L"\n\r");
 				}
+
+				if (sText.empty())
+					return;
 			}
 			else
 				ReplaceSpaces(sText);
@@ -2007,7 +2036,7 @@ private:
 			// Таблицы
 			else if(sName == L"table")
 				ParseTable(oXml, sSelectors, oTS);
-				// Текст с границами
+			// Текст с границами
 			else if(sName == L"textarea" || sName == L"fieldset")
 			{
 				CTextSettings oTSP(oTS);
@@ -2032,12 +2061,20 @@ private:
 		sSelectors.pop_back();
 	}
 
-	bool readStream (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
+	bool readStream (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool bInsertEmptyP = false)
 	{
 		int nDeath = m_oLightReader.GetDepth();
 		if(m_oLightReader.IsEmptyNode() || !m_oLightReader.ReadNextSiblingNode2(nDeath))
+		{
+			if (bInsertEmptyP)
+			{
+				wrP(oXml, sSelectors, oTS);
+				wrR(oXml, sSelectors, oTS);
+				CloseP(oXml, sSelectors);
+				m_bInP = false;
+			}
 			return false;
-
+		}
 		do
 		{
 			readInside(oXml, sSelectors, oTS, m_oLightReader.GetName());
@@ -2055,7 +2092,8 @@ private:
 		NSCSS::CCompiledStyle oStyle;
 		m_oStylesCalculator.GetCompiledStyle(oStyle, arNewSelectors);
 
-		pCell->SetAlign(oStyle.m_oDisplay.GetHAlign().ToWString());
+		pCell->SetVAlign(oStyle.m_oDisplay.GetVAlign().ToWString());
+		pCell->SetHAlign(oStyle.m_oDisplay.GetHAlign().ToWString());
 		pCell->SetBackground(oStyle.m_oBackground.GetColor());
 		pCell->SetHeight(oStyle.m_oDisplay.GetHeight());
 		pCell->SetWidth(oStyle.m_oDisplay.GetWidth());
@@ -2119,21 +2157,16 @@ private:
 				if(m_oLightReader.GetName() == L"th")
 				{
 					CTextSettings oTSR(oTS);
-					oTSR.sPStyle += L"<w:jc w:val=\"center\"/>";
-					oTSR.sRStyle += L"<w:b/>";
-					readStream(pCell->GetData(), sSelectors, oTSR);
+
+					if (pCell->GetStyles()->m_wsHAlign.empty())
+						oTSR.sPStyle += L"<w:jc w:val=\"center\"/>";
+
+					oTSR.sRStyle += L"<w:b/><w:bCs/>";
+					readStream(pCell->GetData(), sSelectors, oTSR, true);
 				}
-				// Читаем td. Ячейка таблицы. Выравнивание вправо
+				// Читаем td. Ячейка таблицы
 				else if(m_oLightReader.GetName() == L"td")
-				{
-					if (!readStream(pCell->GetData(), sSelectors, oTS))
-					{
-						wrP(pCell->GetData(), sSelectors, oTS);
-						wrR(pCell->GetData(), sSelectors, oTS);
-						CloseP(pCell->GetData(), sSelectors);
-						m_bInP = false;
-					}
-				}
+					readStream(pCell->GetData(), sSelectors, oTS, true);
 
 				if (pRow->ColumnsOverflowing())
 				{
@@ -2142,10 +2175,10 @@ private:
 					oTrTS.bAddSpaces = true;
 					m_bWasSpace      = true;
 
-					while (m_oLightReader.ReadNextSiblingNode(nTrDepth) && L"td" == m_oLightReader.GetName())
+					while (m_oLightReader.ReadNextSiblingNode(nTrDepth) && (L"td" == m_oLightReader.GetName() || L"th" == m_oLightReader.GetName()))
 					{
 						GetSubClass(pCell->GetData(), sSelectors);
-						readStream(pCell->GetData(), sSelectors, oTrTS);
+						readStream(pCell->GetData(), sSelectors, oTrTS, true);
 						sSelectors.pop_back();
 					}
 				}
@@ -2184,7 +2217,7 @@ private:
 
 			oTable.HaveBorderAttribute();
 		}
-		
+
 		if (oXml->GetSubData(oXml->GetCurSize() - 8) == L"</w:tbl>")
 			WriteEmptyParagraph(oXml, true);
 
@@ -2198,7 +2231,7 @@ private:
 			oTable.SetCellSpacing(NSStringFinder::ToInt(sSelectors.back().m_mAttributes[L"cellspacing"]));
 		else if (oStyle.m_oBorder.GetCollapse() == NSCSS::NSProperties::BorderCollapse::Separate)
 			oTable.SetCellSpacing(15);
-		
+
 		oTable.SetWidth(oStyle.m_oDisplay.GetWidth());
 		oTable.SetBorder(oStyle.m_oBorder);
 		oTable.SetPadding(oStyle.m_oPadding);

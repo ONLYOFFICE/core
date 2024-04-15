@@ -272,8 +272,15 @@ namespace NSCSS
 
 		if (oStyle.Empty())
 			return;
-		
-		oXmlElement.AddPropertiesInP(PProperties::P_Jc, oStyle.m_oText.GetAlign().ToWString());
+
+		const bool bInTable{oStyle.HaveThisParent(L"table")};
+
+		std::wstring wsTextAlign{oStyle.m_oText.GetAlign().ToWString()};
+
+		if (wsTextAlign.empty() && bInTable)
+			wsTextAlign = oStyle.m_oDisplay.GetHAlign().ToWString();
+
+		oXmlElement.AddPropertiesInP(PProperties::P_Jc, wsTextAlign);
 
 		std::wstring sInfValue;
 		sInfValue.reserve(64);
@@ -317,10 +324,10 @@ namespace NSCSS
 			oXmlElement.AddPropertiesInP(PProperties::P_ContextualSpacing, L"true");
 		}
 
-		if (!oStyle.m_oBackground.Empty() && !oStyle.HaveThisParent(L"table"))
+		if (!oStyle.m_oBackground.Empty() && !bInTable)
 			oXmlElement.AddPropertiesInP(PProperties::P_Shd, oStyle.m_oBackground.IsNone() ? L"auto" : oStyle.m_oBackground.GetColor().ToWString());
 
-		if (!oStyle.m_oBorder.Empty() && !oStyle.HaveThisParent(L"table"))
+		if (!oStyle.m_oBorder.Empty() && !bInTable)
 		{
 			if (oStyle.m_oBorder.EqualSides())
 			{
@@ -450,7 +457,7 @@ namespace NSCSS
 			oXmlElement.AddPropertiesInR(RProperties::R_Highlight, wsHighlight);
 
 		oXmlElement.AddPropertiesInR(RProperties::R_Color, oStyle.m_oText.GetColor().ToWString());
-		
+
 		std::wstring wsFontFamily{oStyle.m_oFont.GetFamily().ToWString()};
 
 		if (L"sans-serif" == wsFontFamily)
@@ -466,6 +473,8 @@ namespace NSCSS
 
 	bool CDocumentStyle::WriteRStyle(const NSCSS::CCompiledStyle& oStyle)
 	{
+		Clear();
+
 		if(oStyle.GetId().empty())
 		{
 			m_sId = L"normal";
@@ -479,7 +488,7 @@ namespace NSCSS
 		if (oItem != m_arStyleUsed.end())
 		{
 			m_sId = (*oItem).getId();
-			return false;
+			return true;
 		}
 
 		CXmlElement oXmlElement;
@@ -488,7 +497,6 @@ namespace NSCSS
 		if (oXmlElement.Empty())
 			return false;
 
-		structStyle.setId(oXmlElement.GetStyleId());
 		m_arStyleUsed.push_back(structStyle);
 		m_sStyle += oXmlElement.GetRStyle();
 

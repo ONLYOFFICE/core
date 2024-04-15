@@ -597,7 +597,7 @@ std::wstring CXmlElement::GetPStyle(bool bIsLite) const
 {
 	if (bIsLite)
 		return ConvertPStyle(true);
-		
+
 	return GetStyle(true, true, false);
 }
 
@@ -605,7 +605,7 @@ std::wstring CXmlElement::GetRStyle(bool bIsLite) const
 {
 	if (bIsLite)
 		return ConvertRStyle(true);
-		
+
 	return GetStyle(true, false, true);
 }
 

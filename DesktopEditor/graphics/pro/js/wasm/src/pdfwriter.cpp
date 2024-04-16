@@ -143,6 +143,7 @@ HRESULT CPdfWriter::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2
 bool CPdfWriter::EditPage(PdfWriter::CPage* pNewPage) { return false; }
 bool CPdfWriter::AddPage(int nPageIndex) { return false; }
 bool CPdfWriter::EditClose() { return false; }
+void CPdfWriter::PageClear() {}
 void CPdfWriter::PageRotate(int nRotate) {}
 void CPdfWriter::Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate) {}
 HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWidgetsInfo* pFieldInfo, const std::wstring& wsTempDirectory) { return 0; }

@@ -305,7 +305,7 @@ TEST_F(CPdfFileTest, EditPdfFromBase64)
 
 	EXPECT_TRUE(NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, pBuffer, &nBufferLen));
 	CConvertFromBinParams* pParams = new CConvertFromBinParams();
-	pParams->m_sMediaDirectory = NSFile::GetProcessDirectory() + L"/media";
+	pParams->m_sMediaDirectory = NSFile::GetProcessDirectory();
 	pdfFile->AddToPdfFromBinary(pBuffer, nBufferLen, pParams);
 
 	RELEASEOBJECT(pParams);

@@ -54,7 +54,7 @@ public:
 	int  GetPagesCount() { return 0; }
 	int  GetRotate(int nPageIndex) { return 0; }
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) {}
-	bool EditPage(int nPageIndex) { return false; }
+	bool EditPage() { return false; }
 	void AddShapeXML(const std::string& sXML) {}
 	void EndMarkedContent() {}
 };

@@ -440,37 +440,72 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
     return true;
 }
 
+void SetPtgType(unsigned short &ptgId, const char type)
+{
+    if(ptgId > 31)
+    SETBITS(ptgId,5,6,type);
+}
 const void StringPtgParser::parsePtgTypes(Rgce& rgce)
 {
     PtgVector functionStack;
     for(auto i:rgce.sequence)
     {
-        auto ptgId = i->ptg_id;
-        if(!ptgId.is_initialized())
+        if(!i->ptg_id.is_initialized())
             continue;
-        auto untypedId = GETBITS(ptgId.get(), 0, 4);
-        if(untypedId == 1)
+        auto ptgId = i->ptg_id.get();
+        
+        auto untypedId = GETBITS(ptgId, 0, 4);
+        if(ptgId > 21)
         {
-            auto funcPtr = dynamic_cast<PtgFunc*>(i.get());
-            auto paramsNum = funcPtr->getParametersNum();
-            for(auto j = 0; j < paramsNum; j++)
+            if(untypedId == 1)
             {
-                functionStack.pop_back();
+                auto funcPtr = dynamic_cast<PtgFunc*>(i.get());
+                auto paramsNum = funcPtr->getParametersNum();
+                for(auto j = 0; j < paramsNum; j++)
+                {  
+                    functionStack.pop_back();
+                }
+                ///check and change fixed num of args
             }
-            ///check and change fixed num of args
+            else if(untypedId == 2)
+            {
+                auto funcPtr = dynamic_cast<PtgFuncVar*>(i.get());
+                auto paramsNum = funcPtr->getParamsNum();
+                for(auto j = 0; j < paramsNum; j++)
+                {
+                    functionStack.pop_back();
+                }
+            }
+            functionStack.push_back(i);
         }
-        else if(untypedId == 2)
+        else if(ptgId > 1 && ptgId < 15)
         {
-            auto funcPtr = dynamic_cast<PtgFuncVar*>(i.get());
-            auto paramsNum = funcPtr->getParamsNum();
-            auto testval = funcPtr->dataType;
-            for(auto j = 0; j < paramsNum; j++)
-            {
-                functionStack.pop_back();
-            }
+            SetPtgType(functionStack.back()->ptg_id.get(), 2);
+            functionStack.pop_back();
+            SetPtgType(functionStack.back()->ptg_id.get(), 2);
         }
-        functionStack.push_back(i);
+        else if(ptgId > 14 && ptgId < 18)
+        {
+            SetPtgType(functionStack.back()->ptg_id.get(), 1);
+            functionStack.pop_back();
+            SetPtgType(functionStack.back()->ptg_id.get(), 1);
+        }
+        else if(ptgId > 17 && ptgId < 21)
+        {
+           SetPtgType(functionStack.back()->ptg_id.get(), 2);
+        }
+        else if(ptgId == 21)
+        {
+            continue;
+        }
+        else
+        {
+            functionStack.push_back(i);
+        }
+
     }
+    auto exit = 1;
+    exit++;
 }
 
 

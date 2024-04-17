@@ -1850,6 +1850,14 @@ namespace NSCSS
 		CDigit::Equation(oFirstMargin.m_oBottom, oSecondMargin.m_oBottom);
 	}
 
+	bool CIndent::Equals() const
+	{
+		if (Empty())
+			return true;
+
+		return m_oLeft == m_oTop && m_oTop == m_oRight && m_oRight == m_oBottom;
+	}
+
 	bool CIndent::SetValues(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		if (!m_bPermission)
@@ -1946,10 +1954,10 @@ namespace NSCSS
 	
 	CIndent &CIndent::operator+=(const CIndent &oIndent)
 	{
-		m_oTop    += oIndent.m_oTop;
-		m_oRight  += oIndent.m_oRight;
-		m_oBottom += oIndent.m_oBottom;
-		m_oLeft   += oIndent.m_oLeft;
+		m_oTop    = oIndent.m_oTop;
+		m_oRight  = oIndent.m_oRight;
+		m_oBottom = oIndent.m_oBottom;
+		m_oLeft   = oIndent.m_oLeft;
 
 		return *this;
 	}

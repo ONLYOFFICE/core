@@ -88,11 +88,11 @@ struct CTextSettings
 	{}
 };
 
-std::wstring CreateBorders(const NSCSS::NSProperties::CBorder& oBorder)
+std::wstring CreateBorders(const NSCSS::NSProperties::CBorder& oBorder, const NSCSS::NSProperties::CIndent* pPadding = NULL)
 {
-	if (oBorder.EqualSides())
+	if (oBorder.EqualSides() && (NULL == pPadding || pPadding->Equals()))
 	{
-		const std::wstring wsBorderStyle = NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetLeftBorder());
+		const std::wstring wsBorderStyle = NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetLeftBorder(), ((NULL == pPadding) ? NULL : (&(pPadding->GetLeft()))));
 
 		return L"<w:top "    + wsBorderStyle + L"/>" +
 			   L"<w:left "   + wsBorderStyle + L"/>" +
@@ -104,16 +104,16 @@ std::wstring CreateBorders(const NSCSS::NSProperties::CBorder& oBorder)
 		std::wstring wsTable;
 
 		if (oBorder.GetTopBorder().Valid())
-			wsTable += L"<w:top "    + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetTopBorder())    + L"/>";
+			wsTable += L"<w:top "    + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetTopBorder(), ((NULL == pPadding) ? NULL : (&(pPadding->GetTop()))))       + L"/>";
 
 		if (oBorder.GetLeftBorder().Valid())
-			wsTable += L"<w:left "   + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetLeftBorder())   + L"/>";
+			wsTable += L"<w:left "   + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetLeftBorder(), ((NULL == pPadding) ? NULL : (&(pPadding->GetLeft()))))     + L"/>";
 
 		if (oBorder.GetBottomBorder().Valid())
-			wsTable += L"<w:bottom " + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetBottomBorder()) + L"/>";
+			wsTable += L"<w:bottom " + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetBottomBorder(), ((NULL == pPadding) ? NULL : (&(pPadding->GetBottom())))) + L"/>";
 
 		if (oBorder.GetRightBorder().Valid())
-			wsTable += L"<w:right "  + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetRightBorder())  + L"/>";
+			wsTable += L"<w:right "  + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetRightBorder(), ((NULL == pPadding) ? NULL : (&(pPadding->GetRight()))))   + L"/>";
 
 		return wsTable;
 	}
@@ -877,7 +877,7 @@ public:
 
 	CHtmlFile2_Private() 
 		: m_nFootnoteId(1), m_nHyperlinkId(1), m_nCrossId(1), m_nNumberingId(1), 
-		  m_bInP(false), m_bInR(false), m_bInT(false), m_bWasPStyle(false), m_bWasSpace(false)
+		  m_bInP(false), m_bInR(false), m_bInT(false), m_bWasPStyle(false), m_bWasSpace(true)
 	{
 		m_oPageData.SetSize  (std::to_wstring(DEFAULT_PAGE_WIDTH) + L"tw " + std::to_wstring(DEFAULT_PAGE_HEIGHT) + L"tw", 0, true);
 		m_oPageData.SetMargin(L"1440tw 1440tw 1440tw 1440tw", 0, true);
@@ -1622,7 +1622,6 @@ private:
 		if(sName == L"#text")
 		{
 			std::wstring sText = GetText();
-			std::wstring wsTemp{sText};
 
 			size_t find = sText.find_first_not_of(L" \n\t\r");
 			if (find == std::wstring::npos)
@@ -1647,7 +1646,7 @@ private:
 
 			if (OpenR(oXml))
 			{
-				sRStyle = wrR(oXml, sSelectors, oTS);
+				sRStyle = wrRPr(oXml, sSelectors, oTS);
 				OpenT(oXml);
 			}
 
@@ -1753,7 +1752,7 @@ private:
 		// Перенос строки
 		else if(sName == L"br")
 		{
-			if (L"</w:r>" == oXml->GetSubData(oXml->GetCurSize() - 6))
+			if (m_bInP)
 			{
 				oXml->WriteString(L"<w:r>");
 				NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
@@ -1862,7 +1861,7 @@ private:
 		{
 			wrP(oXml, sSelectors, oTS);
 			oXml->WriteString(L"<w:r>");
-			std::wstring sRStyle = wrR(oXml, sSelectors, oTS);
+			std::wstring sRStyle = wrRPr(oXml, sSelectors, oTS);
 			oXml->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t></w:r>");
 
 			CTextSettings oTSR(oTS);
@@ -2069,7 +2068,7 @@ private:
 			if (bInsertEmptyP)
 			{
 				wrP(oXml, sSelectors, oTS);
-				wrR(oXml, sSelectors, oTS);
+				wrRPr(oXml, sSelectors, oTS);
 				CloseP(oXml, sSelectors);
 				m_bInP = false;
 			}
@@ -2099,6 +2098,9 @@ private:
 		pCell->SetWidth(oStyle.m_oDisplay.GetWidth());
 		pCell->SetPadding(oStyle.m_oPadding);
 		pCell->SetBorder(oStyle.m_oBorder);
+
+		if (pCell->GetStyles()->m_wsHAlign.empty())
+			pCell->SetHAlign(oStyle.m_oText.GetAlign().ToWString());
 	}
 
 	void ParseTableCaption(CTable& oTable, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
@@ -2286,7 +2288,7 @@ private:
 		{
 			wrP(oXml, sSelectors, oTS);
 			oXml->WriteString(L"<w:r>");
-			wrR(oXml, sSelectors, oTS);
+			wrRPr(oXml, sSelectors, oTS);
 			oXml->WriteString(L"<w:t xml:space=\"preserve\">");
 			oXml->WriteEncodeXmlString(sValue + L' ');
 			oXml->WriteString(L"</w:t></w:r>");
@@ -2319,7 +2321,7 @@ private:
 					CloseP(oXml, sSelectors);
 					wrP(oXml, sSelectors, oTS);
 					oXml->WriteString(L"<w:r>");
-					wrR(oXml, sSelectors, oTS);
+					wrRPr(oXml, sSelectors, oTS);
 					oXml->WriteString(L"<w:t xml:space=\"preserve\">");
 					oXml->WriteEncodeXmlString(m_oLightReader.GetText());
 					oXml->WriteString(L"</w:t></w:r>");
@@ -2421,15 +2423,6 @@ private:
 		if (bCross && sFootnote == L"href")
 			sFootnote = sRef.substr(sRef.find('#') + 1);
 
-		if (!m_bInP)
-		{
-			oXml->WriteString(L"<w:p>");
-			for (size_t i = 0; i < sSelectors.size() - 1; i++)
-				if (sSelectors[i].m_wsName == L"a")
-					oXml->WriteString(L"<w:hyperlink>");
-			m_bInP = true;
-			m_bWasPStyle = false;
-		}
 		wrP(oXml, sSelectors, oTS);
 		// Перекрестная ссылка внутри файла
 		if(bCross)
@@ -2465,7 +2458,7 @@ private:
 		if(!readStream(oXml, sSelectors, oTS))
 		{
 			oXml->WriteString(L"<w:r>");
-			wrR(oXml, sSelectors, oTS);
+			wrRPr(oXml, sSelectors, oTS);
 			oXml->WriteString(L"<w:t xml:space=\"preserve\">");
 			oXml->WriteEncodeXmlString(sAlt);
 			oXml->WriteString(L"</w:t></w:r>");
@@ -2582,7 +2575,7 @@ private:
 
 		wrP(oXml, sSelectors, oTS);
 		oXml->WriteString(L"<w:r>");
-		wrR(oXml, sSelectors, oTS);
+		wrRPr(oXml, sSelectors, oTS);
 		oXml->WriteString(L"<w:t xml:space=\"preserve\">");
 		oXml->WriteEncodeXmlString(wsAlt);
 		oXml->WriteString(L"</w:t></w:r>");
@@ -2692,9 +2685,6 @@ private:
 		if (!m_bInP)
 		{
 			oXml->WriteString(L"<w:p>");
-			for (const NSCSS::CNode& item : sSelectors)
-				if (item.m_wsName == L"a")
-					oXml->WriteString(L"<w:hyperlink>");
 			m_bInP = true;
 			m_bWasPStyle = false;
 		}
@@ -2762,7 +2752,7 @@ private:
 		return sPStyle;
 	}
 
-	std::wstring wrR(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
+	std::wstring wrRPr(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
 	{
 		if (!m_bInP)
 			return L"";

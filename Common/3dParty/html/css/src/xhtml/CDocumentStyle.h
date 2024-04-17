@@ -42,7 +42,6 @@ namespace NSCSS
 		void SetRStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement);
 		void SetPStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement);
 
-		void SetAllBorderStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement);
 		void SetBorderStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement, const PProperties& enBorderProperty);
 	public:
 		CDocumentStyle();
@@ -61,7 +60,7 @@ namespace NSCSS
 
 		void Clear();
 
-		static std::wstring CalculateBorderStyle(const NSCSS::NSProperties::CBorderSide& oBorder);
+		static std::wstring CalculateBorderStyle(const NSCSS::NSProperties::CBorderSide& oBorder, const NSCSS::NSProperties::CDigit* pPadding = NULL);
 	};
 }
 #endif // CDOCUMENTSTYLE_H

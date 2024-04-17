@@ -592,6 +592,8 @@ namespace NSCSS
 
 		static void Equation(CIndent &oFirstMargin, CIndent &oSecondMargin);
 
+		bool Equals() const;
+
 		void SetPermisson(bool bPermission);
 
 		bool SetValues (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);

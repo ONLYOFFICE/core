@@ -285,14 +285,14 @@ namespace NSCSS
 		std::wstring sInfValue;
 		sInfValue.reserve(64);
 
-//		if (!oStyle.m_oPadding.GetLeft().Empty() && !oStyle.m_oPadding.GetLeft().Zero())
-//			sInfValue += L"w:left=\""   + DOUBLE_TO_INTW(oStyle.m_oPadding.GetLeft().ToDouble(NSCSS::Twips)) + L"\" ";
+		if (!oStyle.m_oMargin.GetLeft().Empty() && !oStyle.m_oMargin.GetLeft().Zero())
+			sInfValue += L"w:left=\""   + std::to_wstring(oStyle.m_oMargin.GetLeft().ToInt(NSCSS::Twips)) + L"\" ";
 
-//		if (!oStyle.m_oPadding.GetRight().Empty() && !oStyle.m_oPadding.GetRight().Zero())
-//			sInfValue += L"w:right=\""  + DOUBLE_TO_INTW(oStyle.m_oPadding.GetRight().ToDouble(NSCSS::Twips)) + L"\" ";
+		if (!oStyle.m_oMargin.GetRight().Empty() && !oStyle.m_oMargin.GetRight().Zero())
+			sInfValue += L"w:right=\""  + std::to_wstring(oStyle.m_oMargin.GetRight().ToInt(NSCSS::Twips)) + L"\" ";
 
 		const int nIndent = oStyle.m_oText.GetIndent().ToInt(NSCSS::Twips);
-		
+
 		if (0 != nIndent)
 			sInfValue += L"w:firstLine=\"" + std::to_wstring(nIndent) + L"\" ";
 
@@ -301,14 +301,11 @@ namespace NSCSS
 		std::wstring sSpacingValue;
 		sSpacingValue.reserve(128);
 
-//		if (!oStyle.m_oPadding.GetBottom().Empty() && !oStyle.m_oPadding.GetBottom().Zero())
-//			sSpacingValue += L"w:after=\""   + DOUBLE_TO_INTW(oStyle.m_oPadding.GetBottom().ToDouble(NSCSS::Twips)) + L"\" ";
+		if (!oStyle.m_oMargin.GetTop().Empty() && !oStyle.m_oMargin.GetTop().Zero())
+			sSpacingValue += L"w:before=\""  + std::to_wstring(oStyle.m_oMargin.GetTop().ToInt(NSCSS::Twips))    + L"\" ";
 
-//		if (!oStyle.m_oPadding.GetTop().Empty() && !oStyle.m_oPadding.GetTop().Zero())
-//			sSpacingValue += L"w:before=\""  + DOUBLE_TO_INTW(oStyle.m_oPadding.GetTop().ToDouble(NSCSS::Twips)) + L"\" ";
-
-//		else/* if (!oStyle.m_pBorder.Empty() || !oStyle.m_oMargin.GetPermission())*/
-//			sSpacingValue += L"w:after=\"0\" w:before=\"0\"";
+		if (!oStyle.m_oMargin.GetBottom().Empty() && !oStyle.m_oMargin.GetBottom().Zero())
+			sSpacingValue += L"w:after=\""   + std::to_wstring(oStyle.m_oMargin.GetBottom().ToInt(NSCSS::Twips)) + L"\" ";
 
 		if (!oStyle.m_oFont.GetLineHeight().Empty() && !oStyle.m_oFont.GetLineHeight().Zero())
 		{
@@ -319,10 +316,7 @@ namespace NSCSS
 		}
 
 		if (!sSpacingValue.empty())
-		{
 			oXmlElement.AddPropertiesInP(PProperties::P_Spacing, sSpacingValue);
-			oXmlElement.AddPropertiesInP(PProperties::P_ContextualSpacing, L"true");
-		}
 
 		if (!oStyle.m_oBackground.Empty() && !bInTable)
 			oXmlElement.AddPropertiesInP(PProperties::P_Shd, oStyle.m_oBackground.IsNone() ? L"auto" : oStyle.m_oBackground.GetColor().ToWString());
@@ -353,50 +347,45 @@ namespace NSCSS
 		}
 	}
 
-	void CDocumentStyle::SetAllBorderStyle(const CCompiledStyle &oStyle, CXmlElement &oXmlElement)
-	{
-		const std::wstring wsBorder = CalculateBorderStyle(oStyle.m_oBorder.GetLeftBorder());
-
-		oXmlElement.AddPropertiesInP(PProperties::P_TopBorder,    wsBorder);
-		oXmlElement.AddPropertiesInP(PProperties::P_RightBorder,  wsBorder);
-		oXmlElement.AddPropertiesInP(PProperties::P_BottomBorder, wsBorder);
-		oXmlElement.AddPropertiesInP(PProperties::P_LeftBorder,   wsBorder);
-	}
-
 	void CDocumentStyle::SetBorderStyle(const CCompiledStyle &oStyle, CXmlElement &oXmlElement, const PProperties &enBorderProperty)
 	{
 		const NSCSS::NSProperties::CBorderSide* pBorder = NULL;
+		const NSCSS::NSProperties::CDigit* pPadding = NULL;
 
 		switch(enBorderProperty)
 		{
 			case PProperties::P_BottomBorder:
 			{
-				pBorder = &oStyle.m_oBorder.GetBottomBorder();
+				pBorder  = &oStyle.m_oBorder.GetBottomBorder();
+				pPadding = &oStyle.m_oPadding.GetBottom();
 				break;
 			}
 			case PProperties::P_LeftBorder:
 			{
 				pBorder = &oStyle.m_oBorder.GetLeftBorder();
+				pPadding = &oStyle.m_oPadding.GetLeft();
 				break;
 			}
 			case PProperties::P_RightBorder:
 			{
 				pBorder = &oStyle.m_oBorder.GetRightBorder();
+				pPadding = &oStyle.m_oPadding.GetRight();
 				break;
 			}
 			case PProperties::P_TopBorder:
 			{
 				pBorder = &oStyle.m_oBorder.GetTopBorder();
+				pPadding = &oStyle.m_oPadding.GetTop();
 				break;
 			}
 			default:
 				return;
 		}
 
-		oXmlElement.AddPropertiesInP(enBorderProperty, CalculateBorderStyle(*pBorder));
+		oXmlElement.AddPropertiesInP(enBorderProperty, CalculateBorderStyle(*pBorder, pPadding));
 	}
 
-	std::wstring CDocumentStyle::CalculateBorderStyle(const NSProperties::CBorderSide &oBorder)
+	std::wstring CDocumentStyle::CalculateBorderStyle(const NSProperties::CBorderSide &oBorder, const NSProperties::CDigit *pPadding)
 	{
 		if (oBorder.Empty())
 			return L"";
@@ -405,6 +394,9 @@ namespace NSCSS
 		std::wstring wsStyle = oBorder.GetStyle().ToWString();
 
 		int nWidth = static_cast<int>(std::round(oBorder.GetWidth().ToDouble(Point) * 8.));
+
+		if (L"double" == wsStyle)
+			nWidth /= 3; // в ooxml double граница формируется из трёх линий
 
 		if (nWidth <= 3)
 			nWidth = 2;
@@ -431,7 +423,12 @@ namespace NSCSS
 		if (wsStyle.empty())
 			wsStyle = L"single";
 
-		return  L"w:val=\"" + wsStyle + L"\" w:sz=\"" + std::to_wstring(nWidth) + + L"\" w:space=\"0\" w:color=\"" + wsColor + L"\"";
+		int nSpace{0};
+
+		if (NULL != pPadding && !pPadding->Empty() && !pPadding->Zero())
+			nSpace = pPadding->ToInt(NSCSS::Point);
+
+		return  L"w:val=\"" + wsStyle + L"\" w:sz=\"" + std::to_wstring(nWidth) + + L"\" w:space=\"" + std::to_wstring(nSpace) + L"\" w:color=\"" + wsColor + L"\"";
 	}
 
 	void CDocumentStyle::SetRStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement)

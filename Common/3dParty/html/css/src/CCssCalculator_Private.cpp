@@ -526,6 +526,7 @@ namespace NSCSS
 			{
 				oStyle.m_oFont.Clear();
 				oStyle.m_oPadding.Clear();
+				oStyle.m_oMargin.Clear();
 			}
 
 			oStyle.m_oBorder.Clear();

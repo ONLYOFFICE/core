@@ -870,6 +870,21 @@ bool CPdfEditor::EditPage(int nPageIndex)
 		char* chKey = pageObj.dictGetKey(nIndex);
 		if (strcmp("Resources", chKey) == 0 || strcmp("Annots", chKey) == 0)
 			pageObj.dictGetVal(nIndex, &oTemp);
+		else if (strcmp("Contents", chKey) == 0)
+		{
+			pageObj.dictGetVal(nIndex, &oTemp);
+			if (oTemp.isArray())
+			{
+				DictToCDictObject(&oTemp, pPage, true, chKey);
+				oTemp.free();
+				continue;
+			}
+			else
+			{
+				oTemp.free();
+				pageObj.dictGetValNF(nIndex, &oTemp);
+			}
+		}
 		else
 			pageObj.dictGetValNF(nIndex, &oTemp);
 		DictToCDictObject(&oTemp, pPage, true, chKey);

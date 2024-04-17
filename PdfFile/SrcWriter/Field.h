@@ -389,6 +389,7 @@ namespace PdfWriter
 		void DrawTextLine(const double& dX, const double& dY, const unsigned short* pCodes, const unsigned int& unCount, CFontCidTrueType** ppFonts, const double* pShifts);
 		void DrawTextLine(const double &dX, const double &dY, const std::wstring& wsText);
 		void EndDrawText();
+		void AddBBox(double dX, double dY, double dW, double dH);
 
 		void StartDraw(const double& dWidth, const double& dHeight);
 		void StartText(CFontDict* pFont, const double& dFontSize);
@@ -398,6 +399,17 @@ namespace PdfWriter
 
 		void DrawTextCommentN(const std::string& sColor);
 		void DrawTextCommentR(const std::string& sColor);
+		void DrawTextCheck(const std::string& sColor);
+		void DrawTextCheckmark();
+		void DrawTextCircle(const std::string& sColor);
+		void DrawTextCross(const std::string& sColor);
+		void DrawTextCrossHairs(const std::string& sColor);
+		void DrawTextHelp(const std::string& sColor);
+		void DrawTextInsert(const std::string& sColor);
+		void DrawTextKey(const std::string& sColor);
+		void DrawTextNewParagraph(const std::string& sColor);
+		void DrawTextNote(const std::string& sColor);
+
 		CStream* GetStream() { return m_pStream; }
 
 		bool        m_bStart;

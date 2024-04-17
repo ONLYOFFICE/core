@@ -1194,14 +1194,14 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	case IAdvancedCommand::AdvancedCommandType::Annotaion:
 	{
 		CAnnotFieldInfo* pCommand = (CAnnotFieldInfo*)command;
-		if (m_pInternal->pEditor && m_pInternal->pEditor->EditPage())
+		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
 			m_pInternal->pEditor->EditAnnot(pCommand->GetPage(), pCommand->GetID());
 		return m_pInternal->pWriter->AddAnnotField(m_pInternal->pAppFonts, pCommand);
 	}
 	case IAdvancedCommand::AdvancedCommandType::DeleteAnnot:
 	{
 		CAnnotFieldDelete* pCommand = (CAnnotFieldDelete*)command;
-		if (m_pInternal->pEditor && m_pInternal->pEditor->EditPage())
+		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
 			m_pInternal->pEditor->DeleteAnnot(pCommand->GetID());
 		return S_OK;
 	}
@@ -1215,26 +1215,26 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	case IAdvancedCommand::AdvancedCommandType::ShapeStart:
 	{
 		CShapeStart* pCommand = (CShapeStart*)command;
-		if (m_pInternal->pEditor && m_pInternal->pEditor->EditPage())
+		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
 			m_pInternal->pEditor->AddShapeXML(pCommand->GetShapeXML());
 		return S_OK;
 	}
 	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:
 	{
-		if (m_pInternal->pEditor && m_pInternal->pEditor->EditPage())
+		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
 			m_pInternal->pEditor->EndMarkedContent();
 		return S_OK;
 	}
 	case IAdvancedCommand::AdvancedCommandType::PageClear:
 	{
-		if (m_pInternal->pEditor && m_pInternal->pEditor->EditPage())
+		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
 			m_pInternal->pWriter->PageClear();
 		return S_OK;
 	}
 	case IAdvancedCommand::AdvancedCommandType::PageRotate:
 	{
 		CPageRotate* pCommand = (CPageRotate*)command;
-		if (m_pInternal->pEditor && m_pInternal->pEditor->EditPage())
+		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
 			m_pInternal->pWriter->PageRotate(pCommand->GetPageRotate());
 		return S_OK;
 	}

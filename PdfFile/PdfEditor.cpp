@@ -1246,7 +1246,7 @@ int CPdfEditor::GetRotate(int nPageIndex)
 		return 0;
 	return pPage->GetRotate();
 }
-bool CPdfEditor::EditPage()
+bool CPdfEditor::IsEditPage()
 {
 	return bEditPage;
 }

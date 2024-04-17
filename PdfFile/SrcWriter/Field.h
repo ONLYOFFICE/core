@@ -396,7 +396,8 @@ namespace PdfWriter
 		void EndText();
 		void EndDraw();
 
-		void DrawTextComment();
+		void DrawTextCommentN(const std::string& sColor);
+		void DrawTextCommentR(const std::string& sColor);
 		CStream* GetStream() { return m_pStream; }
 
 		bool        m_bStart;

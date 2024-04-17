@@ -466,10 +466,29 @@ namespace PdfWriter
 		{
 		case 3:
 		{
-			CAnnotAppearanceObject* pAP = new CAnnotAppearanceObject(m_pXref, this);
+			CAnnotAppearance* pAP = new CAnnotAppearance(m_pXref, this);
 			Add("AP", pAP);
+			std::string sColor = GetColor(dynamic_cast<CArrayObject*>(Get("C")), false);
+			CAnnotAppearanceObject* pN = pAP->GetNormal();
+			pN->DrawTextCommentN(sColor);
 
-			pAP->DrawTextComment();
+			CArrayObject* pArray = new CArrayObject();
+			pN->Add("BBox", pArray);
+			pArray->Add(0);
+			pArray->Add(0);
+			pArray->Add(24);
+			pArray->Add(24);
+
+			CAnnotAppearanceObject* pR = pAP->GetRollover();
+			pR->DrawTextCommentR(sColor);
+
+			pArray = new CArrayObject();
+			pR->Add("BBox", pArray);
+			pArray->Add(0);
+			pArray->Add(0);
+			pArray->Add(24);
+			pArray->Add(24);
+
 			break;
 		}
 		case 10:
@@ -788,6 +807,28 @@ namespace PdfWriter
 		Add("AP", pAppearance);
 		CAnnotAppearanceObject* pNormal = pAppearance->GetNormal();
 		CStream* pStream = pNormal->GetStream();
+
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+		pNormal->Add("BBox", pArray);
+
+		pArray->Add(GetRect().fLeft);
+		pArray->Add(GetRect().fBottom);
+		pArray->Add(GetRect().fRight);
+		pArray->Add(GetRect().fTop);
+
+		pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		pNormal->Add("Matrix", pArray);
+		pArray->Add(1);
+		pArray->Add(0);
+		pArray->Add(0);
+		pArray->Add(1);
+		pArray->Add(-GetRect().fLeft);
+		pArray->Add(-GetRect().fBottom);
 
 		if (GetBorderType() == EBorderType::Dashed)
 			pStream->WriteStr(GetBorderDash().c_str());

@@ -1854,6 +1854,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pTextAnnot->SetStateModel(pPr->GetStateModel());
 			if (nFlags & (1 << 18))
 				pTextAnnot->SetState(pPr->GetState());
+
+			pTextAnnot->SetAP();
 		}
 		else if (oInfo.IsInk())
 		{

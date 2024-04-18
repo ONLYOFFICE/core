@@ -186,6 +186,10 @@ public:
   virtual void beginActualText(GfxState *state, Unicode *u, int uLen) {}
   virtual void endActualText(GfxState *state) {}
 
+  //----- additional
+  virtual GBool beginMarkedContent(GfxState *state, GString *s) { return gFalse; }
+  virtual void endMarkedContent(GfxState *state) {}
+
   //----- image drawing
   virtual void drawImageMask(GfxState *state, Object *ref, Stream *str,
 			     int width, int height, GBool invert,

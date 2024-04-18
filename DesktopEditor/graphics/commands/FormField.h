@@ -213,34 +213,6 @@ public:
 		LONG         m_lShiftY;
 		std::wstring m_wsPicturePath;
 	};
-
-	class GRAPHICS_DECL CSignatureFormPr
-	{
-	public:
-		CSignatureFormPr();
-
-		void SetName(const std::wstring& wsValue);
-		void SetContact(const std::wstring& wsValue);
-		void SetReason(const std::wstring& wsValue);
-		void SetPicturePath(const std::wstring& wsPath);
-		void SetCert(const std::wstring& wsValue);
-		void SetDate(const bool& bDate);
-
-		const std::wstring& GetName() const;
-		const std::wstring& GetContact() const;
-		const std::wstring& GetReason() const;
-		const std::wstring& GetPicturePath() const;
-		const std::wstring& GetCert() const;
-		bool GetDate() const;
-
-	private:
-		std::wstring m_wsName;
-		std::wstring m_wsContact;
-		std::wstring m_wsReason;
-		std::wstring m_wsPicturePath;
-		std::wstring m_wsCert;
-		bool         m_bDate;
-	};
 	
 	class GRAPHICS_DECL CDateTimeFormPr
 	{
@@ -304,7 +276,6 @@ public:
 	bool IsDropDownList() const;
 	bool IsCheckBox() const;
 	bool IsPicture() const;
-	bool IsSignature() const;
 	bool IsDateTime() const;
 
 	CTextFormPr* GetTextFormPr();
@@ -318,9 +289,6 @@ public:
 
 	CPictureFormPr* GetPictureFormPr();
 	const CPictureFormPr* GetPicturePr() const;
-
-	CSignatureFormPr* GetSignatureFormPr();
-	const CSignatureFormPr* GetSignaturePr() const;
 	
 	CDateTimeFormPr* GetDateTimeFormPr();
 	const CDateTimeFormPr* GetDateTimePr() const;
@@ -349,7 +317,6 @@ private:
 	CDropDownFormPr  m_oDropDownPr;
 	CCheckBoxFormPr  m_oCheckBoxPr;
 	CPictureFormPr   m_oPicturePr;
-	CSignatureFormPr m_oSignaturePr;
 	CDateTimeFormPr  m_oDateTimePr;
 };
 

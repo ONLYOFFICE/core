@@ -68,6 +68,8 @@ namespace NSJSON
 
 	static CValue fromJS(JSSmart<NSJSBase::CJSValue> jsValue)
 	{
+		if (!jsValue.is_init())
+			return CValue::CreateUndefined();
 		if (jsValue->isUndefined())
 			return CValue::CreateUndefined();
 		if (jsValue->isNull())

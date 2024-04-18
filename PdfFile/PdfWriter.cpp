@@ -166,13 +166,10 @@ CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRend
 	m_dPageWidth  = 210;
 	m_pPage       = NULL;
 	m_pFont       = NULL;
+	m_lClipMode   = 0;
 
-	m_unFieldsCounter          = 0;
-	m_bNeedUpdateTextFont      = true;
-	m_bNeedUpdateTextColor     = true;
-	m_bNeedUpdateTextAlpha     = true;
-	m_bNeedUpdateTextCharSpace = true;
-	m_bNeedUpdateTextSize      = true;
+	m_unFieldsCounter     = 0;
+	m_bNeedUpdateTextFont = true;
 }
 CPdfWriter::~CPdfWriter()
 {
@@ -412,7 +409,6 @@ HRESULT CPdfWriter::put_BrushColor1(const LONG& lColor)
 	if (lColor != m_oBrush.GetColor1())
 	{
 		m_oBrush.SetColor1(lColor);
-		m_bNeedUpdateTextColor = true;
 	}
 	return S_OK;
 }
@@ -426,7 +422,6 @@ HRESULT CPdfWriter::put_BrushAlpha1(const LONG& lAlpha)
 	if (lAlpha != m_oBrush.GetAlpha1())
 	{
 		m_oBrush.SetAlpha1(lAlpha);
-		m_bNeedUpdateTextAlpha = true;
 	}
 	return S_OK;
 }
@@ -565,7 +560,6 @@ HRESULT CPdfWriter::put_FontSize(const double& dSize)
 	if (fabs(dSize - m_oFont.GetSize()) > 0.001)
 	{
 		m_oFont.SetSize(dSize);
-		m_bNeedUpdateTextSize = true;
 	}
 	return S_OK;
 }
@@ -603,7 +597,6 @@ HRESULT CPdfWriter::put_FontCharSpace(const double& dSpace)
 	if (fabs(dSpace - m_oFont.GetCharSpace()) > 0.001)
 	{
 		m_oFont.SetCharSpace(dSpace);
-		m_bNeedUpdateTextCharSpace = true;
 	}
 	return S_OK;
 }
@@ -753,7 +746,7 @@ HRESULT CPdfWriter::CommandDrawTextCHAR2(unsigned int* pUnicodes, const unsigned
 //----------------------------------------------------------------------------------------
 // Маркеры команд
 //----------------------------------------------------------------------------------------
-HRESULT CPdfWriter::EndCommand(const DWORD& dwType, const LONG& lClipMode)
+HRESULT CPdfWriter::EndCommand(const DWORD& dwType)
 {
 	if (!IsPageValid())
 		return S_FALSE;
@@ -766,7 +759,7 @@ HRESULT CPdfWriter::EndCommand(const DWORD& dwType, const LONG& lClipMode)
 		m_lClipDepth++;
 		UpdateTransform();
 
-		m_oPath.Clip(m_pPage, c_nClipRegionTypeEvenOdd & lClipMode);
+		m_oPath.Clip(m_pPage, c_nClipRegionTypeEvenOdd & m_lClipMode);
 	}
 	else if (c_nResetClipType == dwType)
 	{
@@ -1105,6 +1098,16 @@ HRESULT CPdfWriter::ResetTransform()
 	m_oTransform.Reset();
 	return S_OK;
 }
+HRESULT CPdfWriter::get_ClipMode(LONG* lMode)
+{
+	*lMode = m_lClipMode;
+	return S_OK;
+}
+HRESULT CPdfWriter::put_ClipMode(const LONG& lMode)
+{
+	m_lClipMode = lMode;
+	return S_OK;
+}
 //----------------------------------------------------------------------------------------
 // Дополнительные функции
 //----------------------------------------------------------------------------------------
@@ -1210,11 +1213,6 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 	else if (oInfo.IsPicture())
 	{
 		PdfWriter::CPictureField* pField = m_pDocument->CreatePictureField();
-		pFieldBase = static_cast<PdfWriter::CFieldBase*>(pField);
-	}
-	else if (oInfo.IsSignature())
-	{
-		PdfWriter::CSignatureField* pField = m_pDocument->CreateSignatureField();
 		pFieldBase = static_cast<PdfWriter::CFieldBase*>(pField);
 	}
 	else if (oInfo.IsDateTime())
@@ -1587,33 +1585,6 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 
 		pField->SetAppearance(pImage);
 	}
-	else if (oInfo.IsSignature())
-	{
-		const CFormFieldInfo::CSignatureFormPr* pPr = oInfo.GetSignaturePr();
-
-		PdfWriter::CSignatureField* pField = dynamic_cast<PdfWriter::CSignatureField*>(pFieldBase);
-		if (!pField)
-			return S_FALSE;
-
-		pFieldBase->AddPageRect(m_pPage, PdfWriter::TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
-		pField->SetName(pPr->GetName());
-		pField->SetReason(pPr->GetReason());
-		pField->SetContact(pPr->GetContact());
-		pField->SetDate(pPr->GetDate());
-
-		std::wstring wsPath = pPr->GetPicturePath();
-		PdfWriter::CImageDict* pImage = NULL;
-		if (!wsPath.empty())
-		{
-			Aggplus::CImage oImage(wsPath);
-			pImage = LoadImage(&oImage, 255);
-		}
-
-		pField->SetAppearance(pImage);
-
-		// TODO Реализовать, когда появится поддержка CSignatureField
-		pField->SetCert();
-	}
 	else if (oInfo.IsDateTime())
 	{
 		const CFormFieldInfo::CDateTimeFormPr* pPr = oInfo.GetDateTimePr();
@@ -1883,6 +1854,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pTextAnnot->SetStateModel(pPr->GetStateModel());
 			if (nFlags & (1 << 18))
 				pTextAnnot->SetState(pPr->GetState());
+
+			pTextAnnot->SetAP();
 		}
 		else if (oInfo.IsInk())
 		{
@@ -2605,6 +2578,14 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 
 	return S_OK;
 }
+PdfWriter::CDocument* CPdfWriter::GetDocument()
+{
+	return m_pDocument;
+}
+PdfWriter::CPage* CPdfWriter::GetPage()
+{
+	return m_pPage;
+}
 bool CPdfWriter::EditPage(PdfWriter::CPage* pNewPage)
 {
 	if (!IsValid())
@@ -2657,6 +2638,10 @@ bool CPdfWriter::EditClose()
 	}
 
 	return true;
+}
+void CPdfWriter::PageClear()
+{
+	m_pDocument->ClearPage();
 }
 void CPdfWriter::PageRotate(int nRotate)
 {

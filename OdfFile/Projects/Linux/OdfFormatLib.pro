@@ -205,7 +205,8 @@ SOURCES += \
 	../../Reader/Format/office_settings.cpp \
 	../../Reader/Format/office_spreadsheet.cpp \
 	../../Reader/Format/office_text.cpp \
-	../../Reader/Format/office_meta.cpp \
+        ../../Reader/Format/office_drawing.cpp \
+        ../../Reader/Format/office_meta.cpp \
 	../../Reader/Format/paragraph_elements.cpp \
 	../../Reader/Format/ruby.cpp \
 	../../Reader/Format/search_table_cell.cpp \
@@ -596,6 +597,7 @@ HEADERS += \
 	../../Reader/Format/office_elements_type.h \
 	../../Reader/Format/office_event_listeners.h \
 	../../Reader/Format/office_presentation.h \
+	../../Reader/Format/office_drawing.h \
 	../../Reader/Format/office_scripts.h \
 	../../Reader/Format/office_forms.h \
 	../../Reader/Format/office_settings.h \

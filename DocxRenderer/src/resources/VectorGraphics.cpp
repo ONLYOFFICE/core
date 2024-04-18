@@ -1,175 +1,141 @@
 #include <algorithm>
-#include "VectorGraphics.h"
-#include "../DesktopEditor/common/Types.h"
 #include <string.h>
+#include <numeric>
+#include <limits>
+
+#include "VectorGraphics.h"
+
 
 namespace NSDocxRenderer
 {
-    CVectorGraphics::CVectorGraphics()
-    {
-        m_pData = nullptr;
-        m_lSize = 0;
+	CVectorGraphics::CVectorGraphics()
+	{
+		m_dLeftDefault = std::numeric_limits<double>().max();
+		m_dTopDefault = std::numeric_limits<double>().max();
+		m_dRightDefault = std::numeric_limits<double>().min();
+		m_dBottomDefault = std::numeric_limits<double>().min();
 
-        m_pDataCur = m_pData;
-        m_lSizeCur = m_lSize;
+		ResetBorders();
+	}
 
-        End();
-    }
+	CVectorGraphics::~CVectorGraphics()
+	{
+		m_arData.clear();
+	}
+	CVectorGraphics& CVectorGraphics::operator=(CVectorGraphics&& other)
+	{
+		if(this == &other)
+			return *this;
 
-    CVectorGraphics::~CVectorGraphics()
-    {
-        RELEASEMEM(m_pData);
-    }
+		m_arData = std::move(other.m_arData);
 
-    void CVectorGraphics::AddSize(size_t nSize)
-    {
-        if (nullptr == m_pData)
-        {
-            m_lSize = std::max(nSize, (size_t)500);
-            m_pData = (double *)malloc(m_lSize * sizeof(double));
+		m_dLeft = other.m_dLeft;
+		m_dTop = other.m_dTop;
+		m_dRight = other.m_dRight;
+		m_dBottom = other.m_dBottom;
 
-            m_lSizeCur = 0;
-            m_pDataCur = m_pData;
-            return;
-        }
+		other.Clear();
+		return *this;
+	}
 
-        if ((m_lSizeCur + nSize) > m_lSize)
-        {
-            while ((m_lSizeCur + nSize) > m_lSize)
-            {
-                m_lSize *= 2;
-            }
+	void CVectorGraphics::ResetBorders()
+	{
+		m_dLeft = m_dLeftDefault;
+		m_dTop = m_dTopDefault;
+		m_dRight = m_dRightDefault;
+		m_dBottom = m_dBottomDefault;
+	}
 
-            double *pRealloc = (double *)realloc(m_pData, m_lSize * sizeof(double));
-            if (nullptr != pRealloc)
-            {
-                // реаллок сработал
-                m_pData = pRealloc;
-                m_pDataCur = m_pData + m_lSizeCur;
-            }
-            else
-            {
-                double *pMalloc = (double *)malloc(m_lSize * sizeof(double));
-                memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(double));
+	double CVectorGraphics::GetLeft() const noexcept
+	{
+		return m_dLeft;
+	}
+	double CVectorGraphics::GetTop() const noexcept
+	{
+		return m_dTop;
+	}
+	double CVectorGraphics::GetRight() const noexcept
+	{
+		return m_dRight;
+	}
+	double CVectorGraphics::GetBottom() const noexcept
+	{
+		return m_dBottom;
+	}
 
-                free(m_pData);
-                m_pData = pMalloc;
-                m_pDataCur = m_pData + m_lSizeCur;
-            }
-        }
-    }
+	const std::list<CVectorGraphics::PathCommand>& CVectorGraphics::GetData() const
+	{
+		return m_arData;
+	}
 
-    void CVectorGraphics::MoveTo(const double &x1, const double &y1)
-    {
-        AddSize(3);
-        *m_pDataCur = vgtMove;
-        ++m_pDataCur;
+	void CVectorGraphics::MoveTo(const double &x1, const double &y1)
+	{
+		Point point = {x1, y1};
+		eVectorGraphicsType type = eVectorGraphicsType::vgtMove;
+		m_arData.push_back({type, {point}});
 
-        *m_pDataCur = x1;
-        ++m_pDataCur;
-        *m_pDataCur = y1;
-        ++m_pDataCur;
+		CheckPoint(point);
+	}
 
-        m_lSizeCur += 3;
+	void CVectorGraphics::LineTo(const double &x1, const double &y1)
+	{
+		Point point = {x1, y1};
+		eVectorGraphicsType type = eVectorGraphicsType::vgtLine;
+		m_arData.push_back({type, {point}});
 
-        CheckPoint(x1, y1);
-    }
+		CheckPoint(point);
+	}
 
-    void CVectorGraphics::LineTo(const double &x1, const double &y1)
-    {
-        AddSize(3);
-        *m_pDataCur = vgtLine;
-        ++m_pDataCur;
+	void CVectorGraphics::CurveTo(const double &x1, const double &y1,
+								  const double &x2, const double &y2,
+								  const double &x3, const double &y3)
+	{
+		std::list<Point> points = {{x1, y1}, {x2, y2}, {x3, y3}};
+		eVectorGraphicsType type = eVectorGraphicsType::vgtCurve;
+		m_arData.push_back({type, points});
 
-        *m_pDataCur = x1;
-        ++m_pDataCur;
-        *m_pDataCur = y1;
-        ++m_pDataCur;
+		for(auto& point : points)
+			CheckPoint(point);
+	}
 
-        m_lSizeCur += 3;
+	void CVectorGraphics::Close()
+	{
+		eVectorGraphicsType type = eVectorGraphicsType::vgtClose;
+		m_arData.push_back({type, {}});
+	}
 
-        CheckPoint(x1, y1);
-    }
+	void CVectorGraphics::Clear()
+	{
+		m_arData.clear();
+		ResetBorders();
+	}
 
-    void CVectorGraphics::CurveTo(const double &x1, const double &y1,
-                                  const double &x2, const double &y2,
-                                  const double &x3, const double &y3)
-    {
-        AddSize(7);
-        *m_pDataCur = vgtCurve;
-        ++m_pDataCur;
+	void CVectorGraphics::End()
+	{
+		Clear();
+	}
+	void CVectorGraphics::Add(const PathCommand& command)
+	{
+		m_arData.push_back(command);
+	}
+	void CVectorGraphics::Join(CVectorGraphics&& other)
+	{
+		CheckPoint(other.m_dLeft, other.m_dTop);
+		CheckPoint(other.m_dRight, other.m_dBottom);
+		m_arData.splice(m_arData.end(), std::move(other.m_arData));
+		other.Clear();
+	}
 
-        *m_pDataCur = x1;
-        ++m_pDataCur;
-        *m_pDataCur = y1;
-        ++m_pDataCur;
-        *m_pDataCur = x2;
-        ++m_pDataCur;
-        *m_pDataCur = y2;
-        ++m_pDataCur;
-        *m_pDataCur = x3;
-        ++m_pDataCur;
-        *m_pDataCur = y3;
-        ++m_pDataCur;
-
-        m_lSizeCur += 7;
-
-        CheckPoint(x1, y1);
-        CheckPoint(x2, y2);
-        CheckPoint(x3, y3);
-    }
-
-    void CVectorGraphics::Close()
-    {
-        AddSize(1);
-        *m_pDataCur = vgtClose;
-        ++m_pDataCur;
-
-        m_lSizeCur += 1;
-    }
-
-    size_t CVectorGraphics::GetCurSize() const
-    {
-        return m_lSizeCur;
-    }
-
-    void CVectorGraphics::Clear()
-    {
-        RELEASEMEM(m_pData);
-
-        m_pData = nullptr;
-        m_lSize = 0;
-
-        m_pDataCur = m_pData;
-        m_lSizeCur = 0;
-    }
-
-    void CVectorGraphics::ClearNoAttack()
-    {
-        m_pDataCur = m_pData;
-        m_lSizeCur = 0;
-    }
-
-    void CVectorGraphics::End()
-    {
-        ClearNoAttack();
-
-        //todo
-        m_dLeft = 0xFFFFFF;
-        m_dTop = 0xFFFFFF;
-        m_dRight = -0xFFFFFF;
-        m_dBottom = -0xFFFFFF;
-    }
-
-    void CVectorGraphics::CheckPoint(const double &x, const double &y)
-    {
-        if (m_dLeft > x)
-            m_dLeft = x;
-        if (m_dRight < x)
-            m_dRight = x;
-        if (m_dTop > y)
-            m_dTop = y;
-        if (m_dBottom < y)
-            m_dBottom = y;
-    }
+	void CVectorGraphics::CheckPoint(const Point& point)
+	{
+		if (m_dLeft > point.x) m_dLeft = point.x;
+		if (m_dRight < point.x) m_dRight = point.x;
+		if (m_dTop > point.y) m_dTop = point.y;
+		if (m_dBottom < point.y) m_dBottom = point.y;
+	}
+	void CVectorGraphics::CheckPoint(const double& x, const double& y)
+	{
+		Point point = {x, y};
+		CheckPoint(point);
+	}
 }

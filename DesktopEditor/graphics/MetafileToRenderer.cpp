@@ -925,6 +925,10 @@ namespace NSOnlineOfficeBinToPdf
 			case ctAnnotField:
 			case ctAnnotFieldDelete:
 			case ctWidgetsInfo:
+			case ctShapeStart:
+			case ctShapeEnd:
+			case ctPageClear:
+			case ctPageRotate:
 			{
 				IAdvancedCommand::AdvancedCommandType eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Undefined;
 				switch (eCommand)
@@ -933,6 +937,10 @@ namespace NSOnlineOfficeBinToPdf
 				case ctAnnotField:       eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Annotaion;   break;
 				case ctAnnotFieldDelete: eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::DeleteAnnot; break;
 				case ctWidgetsInfo:      eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::WidgetsInfo; break;
+				case ctShapeStart:       eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::ShapeStart;  break;
+				case ctShapeEnd:         eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::ShapeEnd;    break;
+				case ctPageClear:        eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::PageClear;   break;
+				case ctPageRotate:       eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::PageRotate;  break;
 				default:
 					break;
 				}
@@ -1252,6 +1260,10 @@ namespace NSOnlineOfficeBinToPdf
 			case ctFormField:
 			case ctAnnotField:
 			case ctAnnotFieldDelete:
+			case ctWidgetsInfo:
+			case ctShapeStart:
+			case ctShapeEnd:
+			case ctPageRotate:
 			default:
 			{
 				BYTE* cur = oReader.GetCurrentBuffer();

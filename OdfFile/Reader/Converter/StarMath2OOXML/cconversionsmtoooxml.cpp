@@ -73,7 +73,7 @@ namespace StarMath {
 				if(CParserStarMathString::CheckNewline(oTempElement))
 				{
 					m_pXmlWrite->WriteNodeBegin(L"m:r",false);
-					m_pXmlWrite->WriteNodeBegin(L"w:br",true);
+					m_pXmlWrite->WriteNodeBegin(L"a:br",true);
 					m_pXmlWrite->WriteNodeEnd(L"",true,true);
 					m_pXmlWrite->WriteNodeEnd(L"m:r",false,false);
 					m_pXmlWrite->WriteNodeEnd(L"m:oMath",false,false);
@@ -91,58 +91,58 @@ namespace StarMath {
 		{
 			//тут должны быть базовые свойства шрифта, задаваемые выше
 
-			pXmlWrite->WriteNodeBegin(L"w:rPr",false);
-			pXmlWrite->WriteNodeBegin(L"w:rFonts",true);
-			pXmlWrite->WriteAttribute(L"w:hAnsi",L"Cambria Math");
-			pXmlWrite->WriteAttribute(L"w:ascii",L"Cambria Math");
+			pXmlWrite->WriteNodeBegin(L"a:rPr",false);
+			pXmlWrite->WriteNodeBegin(L"a:rFonts",true);
+			pXmlWrite->WriteAttribute(L"a:hAnsi",L"Cambria Math");
+			pXmlWrite->WriteAttribute(L"a:ascii",L"Cambria Math");
 			pXmlWrite->WriteNodeEnd(L"w",true,true);
-			pXmlWrite->WriteNodeBegin(L"w:sz",true);
-			pXmlWrite->WriteAttribute(L"w:val",L"40");
+			pXmlWrite->WriteNodeBegin(L"a:sz",true);
+			pXmlWrite->WriteAttribute(L"a:val",L"40");
 			pXmlWrite->WriteNodeEnd(L"w",true,true);
-			pXmlWrite->WriteNodeBegin(L"w:szCs",true);
-			pXmlWrite->WriteAttribute(L"w:val",L"40");
+			pXmlWrite->WriteNodeBegin(L"a:szCs",true);
+			pXmlWrite->WriteAttribute(L"a:val",L"40");
 			pXmlWrite->WriteNodeEnd(L"w",true,true);
-			pXmlWrite->WriteNodeEnd(L"w:rPr",false,false);
+			pXmlWrite->WriteNodeEnd(L"a:rPr",false,false);
 		}
 		else
 		{
 			std::wstring wsNameFont = pAttribute->GetFontName();
-			pXmlWrite->WriteNodeBegin(L"w:rPr",false);
-			pXmlWrite->WriteNodeBegin(L"w:rFonts",true);
+			pXmlWrite->WriteNodeBegin(L"a:rPr",false);
+			pXmlWrite->WriteNodeBegin(L"a:rFonts",true);
 			if(!wsNameFont.empty())
 			{
-				pXmlWrite->WriteAttribute(L"w:hAnsi",wsNameFont);
-				pXmlWrite->WriteAttribute(L"w:ascii",wsNameFont);
+				pXmlWrite->WriteAttribute(L"a:hAnsi",wsNameFont);
+				pXmlWrite->WriteAttribute(L"a:ascii",wsNameFont);
 			}
 			else
 			{
-				pXmlWrite->WriteAttribute(L"w:hAnsi",L"Cambria Math");
-				pXmlWrite->WriteAttribute(L"w:ascii",L"Cambria Math");
+				pXmlWrite->WriteAttribute(L"a:hAnsi",L"Cambria Math");
+				pXmlWrite->WriteAttribute(L"a:ascii",L"Cambria Math");
 			}
 			pXmlWrite->WriteNodeEnd(L"w",true,true);
 			if(pAttribute->GetSize() == 0)
 			{
 				//тут должны быть базовые свойства шрифта, задаваемые выше - далее везде где не задано - аналогично
-				pXmlWrite->WriteNodeBegin(L"w:sz",true);
-				pXmlWrite->WriteAttribute(L"w:val",L"40");
+				pXmlWrite->WriteNodeBegin(L"a:sz",true);
+				pXmlWrite->WriteAttribute(L"a:val",L"40");
 				pXmlWrite->WriteNodeEnd(L"w",true,true);
-				pXmlWrite->WriteNodeBegin(L"w:szCs",true);
-				pXmlWrite->WriteAttribute(L"w:val",L"40");
+				pXmlWrite->WriteNodeBegin(L"a:szCs",true);
+				pXmlWrite->WriteAttribute(L"a:val",L"40");
 				pXmlWrite->WriteNodeEnd(L"w",true,true);
 			}
 			else if(pAttribute->GetSize() != 0)
 			{
-				pXmlWrite->WriteNodeBegin(L"w:sz",true);
-				pXmlWrite->WriteAttribute(L"w:val",std::to_wstring(pAttribute->GetSize()));
+				pXmlWrite->WriteNodeBegin(L"a:sz",true);
+				pXmlWrite->WriteAttribute(L"a:val",std::to_wstring(pAttribute->GetSize()));
 				pXmlWrite->WriteNodeEnd(L"w",true,true);
-				pXmlWrite->WriteNodeBegin(L"w:szCs",true);
-				pXmlWrite->WriteAttribute(L"w:val",std::to_wstring(pAttribute->GetSize()));
+				pXmlWrite->WriteNodeBegin(L"a:szCs",true);
+				pXmlWrite->WriteAttribute(L"a:val",std::to_wstring(pAttribute->GetSize()));
 				pXmlWrite->WriteNodeEnd(L"w",true,true);
 			}
 			if(!pAttribute->EmptyColor())
 			{
-				pXmlWrite->WriteNodeBegin(L"w:color",true);
-				pXmlWrite->WriteAttribute(L"w:val",pAttribute->GetColor());
+				pXmlWrite->WriteNodeBegin(L"a:color",true);
+				pXmlWrite->WriteAttribute(L"a:val",pAttribute->GetColor());
 				pXmlWrite->WriteNodeEnd(L"w",true,true);
 			}
 			if(pAttribute->GetBold() && pAttribute->GetItal())
@@ -154,22 +154,22 @@ namespace StarMath {
 				pXmlWrite->WriteNodeBegin(L"m:sty", true);
 				pXmlWrite->WriteAttribute(L"m:val",L"b");
 				pXmlWrite->WriteNodeEnd(L"w",true,true);
-				pXmlWrite->WriteNodeBegin(L"w:b",true);
+				pXmlWrite->WriteNodeBegin(L"a:b",true);
 				pXmlWrite->WriteNodeEnd(L"w",true,true);
-				pXmlWrite->WriteNodeBegin(L"w:bCs",true);
+				pXmlWrite->WriteNodeBegin(L"a:bCs",true);
 				pXmlWrite->WriteNodeEnd(L"w",true,true);
 			}
 			else if(pAttribute->GetItal())
 			{
-				pXmlWrite->WriteNodeBegin(L"w:i",true);
+				pXmlWrite->WriteNodeBegin(L"a:i",true);
 				pXmlWrite->WriteNodeEnd(L"w",true,true);
 			}
 			if(pAttribute->GetStrike())
 			{
-				pXmlWrite->WriteNodeBegin(L"w:strike",true);
+				pXmlWrite->WriteNodeBegin(L"a:strike",true);
 				pXmlWrite->WriteNodeEnd(L"w",true,true);
 			}
-			pXmlWrite->WriteNodeEnd(L"w:rPr",false,false);
+			pXmlWrite->WriteNodeEnd(L"a:rPr",false,false);
 		}
 	}
 	void CConversionSMtoOOXML::PropertiesMFPR(bool bType, XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute)

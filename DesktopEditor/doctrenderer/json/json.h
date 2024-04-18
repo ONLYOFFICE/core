@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#ifndef JSON_DECL
 #ifdef JSBASE_NO_USE_DYNAMIC_LIBRARY
 #define JSON_DECL
 #else
@@ -14,6 +15,7 @@
 #define JSON_DECL Q_DECL_EXPORT
 #else
 #define JSON_DECL Q_DECL_IMPORT
+#endif
 #endif
 #endif
 

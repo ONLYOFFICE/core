@@ -1,13 +1,13 @@
 #include "ImageManager.h"
-#include "../DesktopEditor/common/Directory.h"
+#include "../../../../DesktopEditor/common/Directory.h"
 
 namespace NSDocxRenderer
 {
-	void CImageManager::NewDocument()
+	void CImageManager::Clear()
 	{
-		m_strDstMedia = L"";
+		m_strDstMedia	= L"";
 		m_lMaxSizeImage = 1200;
-		m_lNextIDImage = 0;
+		m_lNextIDImage	= 0;
 
 		m_mapImageData.clear();
 		m_mapImagesFile.clear();
@@ -35,27 +35,11 @@ namespace NSDocxRenderer
 		NSFile::CFileBinary::Copy(strFileSrc, strFileDst);
 	}
 
-	void CImageManager::SaveEmptyImage(std::shared_ptr<CImageInfo> pInfo)
+	void CImageManager::SaveImage(const std::wstring& strFileSrc, std::shared_ptr<CImageInfo> pInfo)
 	{
-		Aggplus::CImage oFrame;
-
-		int nW = 10;
-		int nH = 10;
-		int nMax = nW * nH;
-		BYTE* pDataExternal = new BYTE[nMax * 4];
-		memset(pDataExternal, 0xFF, 4 * nMax);
-
-		BYTE* pDataCurrent = pDataExternal + 3;
-		for (int i = 0; i < nMax; i++, pDataCurrent += 4)
-			*pDataCurrent = 0;
-
-		oFrame.Create(pDataExternal, nW, nH, 4 * nW, true);
-
-		pInfo->m_eType = CImageInfo::itPNG;
-		pInfo->m_strFileName += (L"image" + std::to_wstring(pInfo->m_nId) + L".png");
-
-		oFrame.SaveFile(m_strDstMedia + L"/" + pInfo->m_strFileName, 4);
-		delete[] pDataExternal;
+		Aggplus::CImage oFrame(strFileSrc);
+		if (nullptr != oFrame.GetData())
+			return SaveImage(&oFrame, pInfo);
 	}
 
 	void CImageManager::SaveImage(Aggplus::CImage* pImage, std::shared_ptr<CImageInfo> pInfo)
@@ -128,29 +112,10 @@ namespace NSDocxRenderer
 		if (find != m_mapImagesFile.end())
 			return find->second;
 
-		Aggplus::CImage oFrame(strFileName);
-
-		if (nullptr == oFrame.GetData())
-		{
-			if (m_pEmptyInfo)
-				return m_pEmptyInfo;
-
-			++m_lNextIDImage;
-			m_pEmptyInfo = std::make_shared<CImageInfo>();
-			m_pEmptyInfo->m_nId = m_lNextIDImage;
-			m_pEmptyInfo->m_eType = CImageInfo::itPNG;
-			m_pEmptyInfo->m_strFileName += (L"image" + std::to_wstring(m_pEmptyInfo->m_nId) + L".png");
-
-			// можно не сохранять - но тогда несуществующие картинки.
-			// создадим пустую - и посмотрим на жалобы
-			SaveEmptyImage(m_pEmptyInfo);
-			return m_pEmptyInfo;
-		}
-
 		++m_lNextIDImage;
 		auto pInfo = std::make_shared<CImageInfo>();
 		pInfo->m_nId = m_lNextIDImage;
-		SaveImage(&oFrame, pInfo);
+		SaveImage(strFileName, pInfo);
 		m_mapImagesFile.insert(std::pair<std::wstring, std::shared_ptr<CImageInfo>>(strFileName, pInfo));
 
 		return pInfo;
@@ -201,8 +166,8 @@ namespace NSDocxRenderer
 			memcpy(pBuffer, pBufferEnd, stride);
 			memcpy(pBufferEnd, pBufferMem, stride);
 
-			pBuffer += stride;
-			pBufferEnd -= stride;
+			pBuffer		+= stride;
+			pBufferEnd	-= stride;
 		}
 
 		RELEASEARRAYOBJECTS(pBufferMem);
@@ -224,7 +189,7 @@ namespace NSDocxRenderer
 		if ((w * 4) != stride)
 			return;
 
-		DWORD* pBufferDWORD = (DWORD*)pBuffer;
+		DWORD* pBufferDWORD	= (DWORD*)pBuffer;
 
 		LONG lW2 = w / 2;
 		for (LONG lIndexV = 0; lIndexV < h; ++lIndexV)
@@ -241,4 +206,4 @@ namespace NSDocxRenderer
 			}
 		}
 	}
-} // namespace NSDocxRenderer
+}

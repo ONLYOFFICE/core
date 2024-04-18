@@ -1654,36 +1654,17 @@ namespace PdfWriter
 		m_pAnnot = pAnnot;
 		m_pField = NULL;
 
-		CArrayObject* pArray = new CArrayObject();
-		if (!pArray)
-			return;
-		Add("BBox", pArray);
-
 		if (pAnnot->GetAnnotationType() == EAnnotType::AnnotWidget)
 		{
+			CArrayObject* pArray = new CArrayObject();
+			if (!pArray)
+				return;
+			Add("BBox", pArray);
+
 			pArray->Add(0);
 			pArray->Add(0);
 			pArray->Add(fabs(pAnnot->GetRect().fRight - pAnnot->GetRect().fLeft));
 			pArray->Add(fabs(pAnnot->GetRect().fBottom - pAnnot->GetRect().fTop));
-		}
-		else
-		{
-			pArray->Add(pAnnot->GetRect().fLeft);
-			pArray->Add(pAnnot->GetRect().fBottom);
-			pArray->Add(pAnnot->GetRect().fRight);
-			pArray->Add(pAnnot->GetRect().fTop);
-
-			pArray = new CArrayObject();
-			if (!pArray)
-				return;
-
-			Add("Matrix", pArray);
-			pArray->Add(1);
-			pArray->Add(0);
-			pArray->Add(0);
-			pArray->Add(1);
-			pArray->Add(-pAnnot->GetRect().fLeft);
-			pArray->Add(-pAnnot->GetRect().fBottom);
 		}
 	}
 	void CAnnotAppearanceObject::DrawSimpleText(const std::wstring& wsText, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, double dFontSize, double dX, double dY, double dR, double dG, double dB, const char* sExtGStateName, double dWidth, double dHeight, CFontCidTrueType** ppFonts, double* pShifts)
@@ -2620,18 +2601,24 @@ namespace PdfWriter
 		m_pStream->WriteStr("ET\012");
 		m_pStream->WriteStr("Q\012EMC\012");
 	}
-	void CAnnotAppearanceObject::DrawTextComment()
+	void CAnnotAppearanceObject::DrawTextCommentN(const std::string& sColor)
 	{
-		CArrayObject* pArray = new CArrayObject();
-		if (!pArray)
-			return;
-
-		Add("BBox", pArray);
-		pArray->Add(0);
-		pArray->Add(0);
-		pArray->Add(20);
-		pArray->Add(20);
-
-		m_pStream->WriteStr("");
+		m_pStream->WriteStr("q 1 1 1 rg 0 i 1 w 4 M 1 j 0 J [] 0 d ");
+		// GS0 gs
+		m_pStream->WriteStr("1 0 0 1 9 5.0908 cm 7.74 12.616 m -7.74 12.616 l -8.274 12.616 -8.707 12.184 -8.707 11.649 c -8.707 -3.831 l -8.707 -4.365 -8.274 -4.798 -7.74 -4.798 c ");
+		m_pStream->WriteStr("7.74 -4.798 l 8.274 -4.798 8.707 -4.365 8.707 -3.831 c 8.707 11.649 l 8.707 12.184 8.274 12.616 7.74 12.616 c h f Q 0 G ");
+		m_pStream->WriteStr(sColor.c_str());
+		m_pStream->WriteStr(" 0 i 0.60 w 4 M 1 j 0 J [0 100] 1 d 1 0 0 1 9 5.0908 cm 1 0 m -2.325 -2.81 l -2.325 0 l -5.72 0 l -5.72 8.94 l 5.51 8.94 l 5.51 0 l 1 0 l -3.50 5.01 m ");
+		m_pStream->WriteStr("-3.50 5.59 l 3.29 5.59 l 3.29 5.01 l -3.50 5.01 l -3.50 3.34 m -3.50 3.92 l 2.27 3.92 l 2.27 3.34 l -3.50 3.34 l 7.74 12.616 m -7.74 12.616 l ");
+		m_pStream->WriteStr("-8.274 12.616 -8.707 12.184 -8.707 11.649 c -8.707 -3.831 l -8.707 -4.365 -8.274 -4.798 -7.74 -4.798 c 7.74 -4.798 l ");
+		m_pStream->WriteStr("8.274 -4.798 8.707 -4.365 8.707 -3.831 c 8.707 11.649 l 8.707 12.184 8.274 12.616 7.74 12.616 c b");
+	}
+	void CAnnotAppearanceObject::DrawTextCommentR(const std::string& sColor)
+	{
+		m_pStream->WriteStr("0 G ");
+		m_pStream->WriteStr(sColor.c_str());
+		m_pStream->WriteStr(" 0 i 0.60 w 4 M 1 j 0 J [0 100] 1 d 1 0 0 1 9 5.0908 cm 4.1 1.71 m -0.54 -2.29 l -0.54 1.71 l -5.5 1.71 l -5.5 14.42 l 10.5 14.42 l 10.5 1.71 l 4.1 1.71 l ");
+		m_pStream->WriteStr("-2.33 9.66 m 7.34 9.66 l 7.34 8.83 l -2.33 8.83 l -2.33 9.66 l -2.33 7.28 m 5.88 7.28 l 5.88 6.46 l -2.33 6.46 l -2.33 7.28 l 14.9 23.1235 m -14.9 23.1235 l ");
+		m_pStream->WriteStr("-14.9 -20.345 l 14.9 -20.345 l 14.9 23.1235 l b");
 	}
 }

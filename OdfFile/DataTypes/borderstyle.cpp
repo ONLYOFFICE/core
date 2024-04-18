@@ -52,6 +52,10 @@ std::wostream & operator << (std::wostream & _Wostream, const border_style & bor
         case border_style::dotted:      _Wostream << L" dotted "; break;
         case border_style::dashed:      _Wostream << L" dashed "; break;
         case border_style::dot_dashed:  _Wostream << L" dot-dashed "; break;
+        case border_style::dash_dot:    _Wostream << L" dash-dot "; break;
+        case border_style::dash_dot_dot:  _Wostream << L" dash-dot-dot "; break;
+        case border_style::fine_dashed:  _Wostream << L" fine-dashed "; break;
+        case border_style::double_thin:  _Wostream << L" double-thin "; break;
         case border_style::solid:
         default:
             _Wostream <<  L" solid "; break;
@@ -126,6 +130,10 @@ border_style::border_style(const std::wstring & Value) : initialized_(false), no
                 if (splitted[1] == L"dotted")       style_ = dotted;
                 if (splitted[1] == L"dashed")       style_ = dashed;
                 if (splitted[1] == L"dot-dashed")   style_ = dot_dashed;
+                if (splitted[1] == L"dash-dot")     style_ = dash_dot;
+                if (splitted[1] == L"dash-dot-dot") style_ = dash_dot_dot;
+                if (splitted[1] == L"fine-dashed")  style_ = fine_dashed;
+                if (splitted[1] == L"double-thin")  style_ = double_thin;                
             }
 
             if (splitted.size() > 2)

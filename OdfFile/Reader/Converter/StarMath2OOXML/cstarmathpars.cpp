@@ -1538,7 +1538,7 @@ namespace StarMath
 		m_wsType = L"\u2209";
 		break;
 		case TypeElement::dlriarrow:
-		m_wsType = L"\u\u226B";
+		m_wsType = L"\u226B";
 		break;
 		case TypeElement::dllearrow:
 		m_wsType = L"\u226A";

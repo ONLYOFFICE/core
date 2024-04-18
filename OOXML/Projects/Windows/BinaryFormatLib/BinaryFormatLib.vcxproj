@@ -82,7 +82,6 @@
     <ClInclude Include="..\..\..\Binary\Document\BinWriter\BinEquationWriter.h" />
     <ClInclude Include="..\..\..\Binary\Document\BinWriter\BinReaderWriterDefines.h" />
     <ClInclude Include="..\..\..\Binary\Document\BinWriter\BinWriters.h" />
-    <ClInclude Include="..\..\..\Binary\Document\DocWrapper\ChartWriter.h" />
     <ClInclude Include="..\..\..\Binary\Document\DocWrapper\DocxSerializer.h" />
     <ClInclude Include="..\..\..\Binary\Document\DocWrapper\FontProcessor.h" />
     <ClInclude Include="..\..\..\Binary\Document\DocWrapper\XlsxSerializer.h" />

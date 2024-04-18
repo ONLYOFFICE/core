@@ -1269,12 +1269,12 @@ CAnnotText::CAnnotText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnn
 	oObj.free();
 
 	// 16 - Иконка - Name
+	m_unFlags |= (1 << 16);
+	m_nName = 10; // Default: Note
 	if (oAnnot.dictLookup("Name", &oObj)->isName())
 	{
-		m_unFlags |= (1 << 16);
 		std::string sName(oObj.getName());
 		std::vector<std::string> arrName = {"Check", "Checkmark", "Circle", "Comment", "Cross", "CrossHairs", "Help", "Insert", "Key", "NewParagraph", "Note", "Paragraph", "RightArrow", "RightPointer", "Star", "UpArrow", "UpLeftArrow"};
-		m_nName = 10; // Default: Note
 		std::vector<std::string>::iterator p = std::find(arrName.begin(), arrName.end(), sName);
 		if (p != arrName.end())
 			m_nName = p - arrName.begin();

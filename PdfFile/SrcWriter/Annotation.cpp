@@ -462,38 +462,144 @@ namespace PdfWriter
 	}
 	void CTextAnnotation::SetAP()
 	{
+		std::string sColor = GetColor(dynamic_cast<CArrayObject*>(Get("C")), false);
+
+		CAnnotAppearance* pAP = new CAnnotAppearance(m_pXref, this);
+		Add("AP", pAP);
+		CAnnotAppearanceObject* pN = pAP->GetNormal();
+		CAnnotAppearanceObject* pR = pAP->GetRollover();
+
 		switch (m_nName)
 		{
+		case 0:
+		{
+			pN->AddBBox(0, 0, 19, 19);
+			pN->DrawTextCheck(sColor);
+			pR->AddBBox(0, 0, 19, 19);
+			pR->DrawTextCheck(sColor);
+			break;
+		}
+		case 1:
+		{
+			pN->AddBBox(0, 0, 20, 20);
+			pN->DrawTextCheckmark();
+			pR->AddBBox(0, 0, 20, 20);
+			pR->DrawTextCheckmark();
+			break;
+		}
+		case 2:
+		{
+			pN->AddBBox(0, 0, 20, 20);
+			pN->DrawTextCircle(sColor);
+			pR->AddBBox(0, 0, 20, 20);
+			pR->DrawTextCircle(sColor);
+			break;
+		}
 		case 3:
 		{
-			CAnnotAppearance* pAP = new CAnnotAppearance(m_pXref, this);
-			Add("AP", pAP);
-			std::string sColor = GetColor(dynamic_cast<CArrayObject*>(Get("C")), false);
-			CAnnotAppearanceObject* pN = pAP->GetNormal();
+			pN->AddBBox(0, 0, 24, 24);
 			pN->DrawTextCommentN(sColor);
-
-			CArrayObject* pArray = new CArrayObject();
-			pN->Add("BBox", pArray);
-			pArray->Add(0);
-			pArray->Add(0);
-			pArray->Add(24);
-			pArray->Add(24);
-
-			CAnnotAppearanceObject* pR = pAP->GetRollover();
+			pR->AddBBox(0, 0, 24, 24);
 			pR->DrawTextCommentR(sColor);
-
-			pArray = new CArrayObject();
-			pR->Add("BBox", pArray);
-			pArray->Add(0);
-			pArray->Add(0);
-			pArray->Add(24);
-			pArray->Add(24);
-
 			break;
+		}
+		case 4:
+		{
+			pN->AddBBox(0, 0, 19, 19);
+			pN->DrawTextCross(sColor);
+			pR->AddBBox(0, 0, 19, 19);
+			pR->DrawTextCross(sColor);
+			break;
+		}
+		case 5:
+		{
+			pN->AddBBox(0, 0, 20, 20);
+			pN->DrawTextCrossHairs(sColor);
+			pR->AddBBox(0, 0, 20, 20);
+			pR->DrawTextCrossHairs(sColor);
+			break;
+		}
+		case 6:
+		{
+			pN->AddBBox(0, 0, 20, 20);
+			pN->DrawTextHelp(sColor);
+			pR->AddBBox(0, 0, 20, 20);
+			pR->DrawTextHelp(sColor);
+			break;
+		}
+		case 7:
+		{
+			pN->AddBBox(0, 0, 17, 20);
+			pN->DrawTextInsert(sColor);
+			pR->AddBBox(0, 0, 17, 20);
+			pR->DrawTextInsert(sColor);
+			break;
+		}
+		case 8:
+		{
+			pN->AddBBox(0, 0, 13, 18);
+			pN->DrawTextKey(sColor);
+			pR->AddBBox(0, 0, 13, 18);
+			pR->DrawTextKey(sColor);
+			break;
+		}
+		case 9:
+		{
+			pN->AddBBox(0, 0, 13, 20);
+			pN->DrawTextNewParagraph(sColor);
+			pR->AddBBox(0, 0, 13, 20);
+			pR->DrawTextNewParagraph(sColor);
+			break;
+		}
+		case 11:
+		{
+			pN->AddBBox(0, 0, 20, 20);
+			pN->DrawTextParagraph(sColor);
+			pR->AddBBox(0, 0, 20, 20);
+			pR->DrawTextParagraph(sColor);
+		}
+		case 12:
+		{
+			pN->AddBBox(0, 0, 20, 20);
+			pN->DrawTextRightArrow(sColor);
+			pR->AddBBox(0, 0, 20, 20);
+			pR->DrawTextRightArrow(sColor);
+		}
+		case 13:
+		{
+			pN->AddBBox(0, 0, 20, 17);
+			pN->DrawTextRightPointer(sColor);
+			pR->AddBBox(0, 0, 20, 17);
+			pR->DrawTextRightPointer(sColor);
+		}
+		case 14:
+		{
+			pN->AddBBox(0, 0, 20, 19);
+			pN->DrawTextStar(sColor);
+			pR->AddBBox(0, 0, 20, 19);
+			pR->DrawTextStar(sColor);
+		}
+		case 15:
+		{
+			pN->AddBBox(0, 0, 17, 20);
+			pN->DrawTextUpArrow(sColor);
+			pR->AddBBox(0, 0, 17, 20);
+			pR->DrawTextUpArrow(sColor);
+		}
+		case 16:
+		{
+			pN->AddBBox(0, 0, 17, 17);
+			pN->DrawTextUpLeftArrow(sColor);
+			pR->AddBBox(0, 0, 17, 17);
+			pR->DrawTextUpLeftArrow(sColor);
 		}
 		case 10:
 		default:
 		{
+			pN->AddBBox(0, 0, 18, 20);
+			pN->DrawTextNote(sColor);
+			pR->AddBBox(0, 0, 18, 20);
+			pR->DrawTextNote(sColor);
 			break;
 		}
 		}

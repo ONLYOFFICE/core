@@ -3060,6 +3060,12 @@ namespace PdfReader
 		if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
 			return;
 
+		if (nX1 - nX0 == 1 && nY1 - nY0 == 1) // Одно изображение, tilingPattern не требуется
+		{
+			gfx->drawForm(pStream, pResourcesDict, matrix, pBBox);
+			return;
+		}
+
 		if (abs(pBBox[2] - pBBox[0] - dXStep) > 0.001 || abs(pBBox[3] - pBBox[1] - dYStep) > 0.001)
 			return;
 
@@ -3111,12 +3117,14 @@ namespace PdfReader
 		oImage->Create(pBgraData, nWidth, nHeight, 4 * nWidth);
 
 		double xMin, yMin, xMax, yMax;
-		pGState->getUserClipBBox(&xMin, &yMin, &xMax, &yMax);
-
-		pGState->moveTo(xMin + pBBox[0], yMin + pBBox[1]);
-		pGState->lineTo(xMax + pBBox[2], yMin + pBBox[1]);
-		pGState->lineTo(xMax + pBBox[2], yMax + pBBox[3]);
-		pGState->lineTo(xMin + pBBox[0], yMax + pBBox[3]);
+		Transform(matrix, pBBox[0], pBBox[1], &xMin, &yMin);
+		Transform(matrix, pBBox[2], pBBox[3], &xMax, &yMax);
+		xMax *= (nX1 - nX0);
+		yMax *= (nY1 - nY0);
+		pGState->moveTo(xMin, yMin);
+		pGState->lineTo(xMax, yMin);
+		pGState->lineTo(xMax, yMax);
+		pGState->lineTo(xMin, yMax);
 		pGState->closePath();
 
 		DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());

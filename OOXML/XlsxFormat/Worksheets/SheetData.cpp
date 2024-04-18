@@ -2078,6 +2078,40 @@ namespace OOX
 							pSource = error;
 						}
 					}
+                    else if (m_oValue->m_sText == L"#VALUE!")
+					{
+						if(m_oFormula.IsInit())
+						{
+							auto error = new XLSB::FmlaError;
+							error->value = 0x0F;
+							oCell = &error->cell;
+							pSource = error;
+						}
+						else
+						{
+							auto error = new XLSB::CellError;
+							error->value = 0x0F;
+							oCell = &error->cell;
+							pSource = error;
+						}
+					}
+                    else
+                    {
+                        if(m_oFormula.IsInit())
+                        {
+                            auto error = new XLSB::FmlaError;
+                            error->value = 0x0F;
+                            oCell = &error->cell;
+                            pSource = error;
+                        }
+                        else
+                        {
+                            auto error = new XLSB::CellError;
+                            error->value = 0x0F;
+                            oCell = &error->cell;
+                            pSource = error;
+                        }
+                    }
 					}
 					break;
 				case SimpleTypes::Spreadsheet::celltypeBool:

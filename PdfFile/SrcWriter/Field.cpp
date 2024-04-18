@@ -2758,4 +2758,63 @@ namespace PdfWriter
 		m_pStream->WriteStr("h b Q q 1 0 0 1 4.4023 13.9243 cm 0 0 m 9.418 0 l S Q q 1 0 0 1 4.4019 11.2207 cm 0 0 m 9.418 0 l S Q q 1 0 0 1 4.4023 8.5176 cm 0 0 m 9.418 0 l S Q q ");
 		m_pStream->WriteStr("1 0 0 1 4.4023 5.8135 cm 0 0 m 9.418 0 l S Q");
 	}
+	void CAnnotAppearanceObject::DrawTextParagraph(const std::string& sColor)
+	{
+		CExtGrState* pExtGrState = m_pAnnot->GetDocument()->GetExtGState(0.6, 0.6);
+		const char* sExtGrStateName =  m_pAnnot->GetDocument()->GetFieldsResources()->GetExtGrStateName(pExtGrState);
+
+		m_pStream->WriteStr("q 1 1 1 rg 0 i 1 w 4 M 1 j 0 J [] 0 d ");
+		if (sExtGrStateName)
+		{
+			m_pStream->WriteEscapeName(sExtGrStateName);
+			m_pStream->WriteStr(" gs ");
+		}
+		m_pStream->WriteStr("1 0 0 1 19.6973 10.0005 cm 0 0 m 0 -5.336 -4.326 -9.662 -9.663 -9.662 c -14.998 -9.662 -19.324 -5.336 -19.324 0 c -19.324 5.335 -14.998 9.662 -9.663 9.662 c ");
+		m_pStream->WriteStr("-4.326 9.662 0 5.335 0 0 c h f Q ");
+		m_pStream->WriteStr(sColor.c_str());
+		m_pStream->WriteStr(" 0 G 0 i 0.59 w 4 M 1 j 0 J [] 0 d q 1 0 0 1 19.6973 10.0005 cm 0 0 m 0 -5.336 -4.326 -9.662 -9.663 -9.662 c -14.998 -9.662 -19.324 -5.336 -19.324 0 c ");
+		m_pStream->WriteStr("-19.324 5.335 -14.998 9.662 -9.663 9.662 c -4.326 9.662 0 5.335 0 0 c h S Q q 1 0 0 1 11.6787 2.6582 cm 0 0 m -1.141 0 l -1.227 0 -1.244 0.052 -1.227 0.139 c ");
+		m_pStream->WriteStr("-0.656 1.157 -0.52 2.505 -0.52 3.317 c -0.52 3.594 l -2.833 3.783 -5.441 4.838 -5.441 8.309 c -5.441 10.778 -3.714 12.626 -0.57 13.024 c ");
+		m_pStream->WriteStr("-0.535 13.508 -0.381 14.129 -0.242 14.389 c -0.207 14.44 -0.174 14.475 -0.104 14.475 c 1.088 14.475 l 1.156 14.475 1.191 14.458 1.175 14.372 c ");
+		m_pStream->WriteStr("1.105 14.095 0.881 13.127 0.881 12.402 c 0.881 9.431 0.932 7.324 0.95 4.06 c 0.95 2.298 0.708 0.813 0.189 0.07 c 0.155 0.034 0.103 0 0 0 c b Q");
+	}
+	void CAnnotAppearanceObject::DrawTextRightArrow(const std::string& sColor)
+	{
+		CExtGrState* pExtGrState = m_pAnnot->GetDocument()->GetExtGState(0.6, 0.6);
+		const char* sExtGrStateName =  m_pAnnot->GetDocument()->GetFieldsResources()->GetExtGrStateName(pExtGrState);
+
+		m_pStream->WriteStr("q 1 1 1 rg 0 i 1 w 4 M 1 j 0 J [] 0 d ");
+		if (sExtGrStateName)
+		{
+			m_pStream->WriteEscapeName(sExtGrStateName);
+			m_pStream->WriteStr(" gs ");
+		}
+		m_pStream->WriteStr("1 0 0 1 3.7856 11.1963 cm 6.214 -10.655 m 11.438 -10.655 15.673 -6.42 15.673 -1.196 c 15.673 4.027 11.438 8.262 6.214 8.262 c ");
+		m_pStream->WriteStr("0.991 8.262 -3.244 4.027 -3.244 -1.196 c -3.244 -6.42 0.991 -10.655 6.214 -10.655 c h f Q ");
+		m_pStream->WriteStr(sColor.c_str());
+		m_pStream->WriteStr(" 0 G 0 i 0.59 w 4 M 0 j 0 J [] 0 d 1 0 0 1 3.7856 11.1963 cm 0 0 m 8.554 0 l 6.045 2.51 l 7.236 3.702 l 12.135 -1.197 l 7.236 -6.096 l 6.088 -4.949 l");
+		m_pStream->WriteStr("8.644 -2.394 l 0 -2.394 l h 6.214 -10.655 m 11.438 -10.655 15.673 -6.42 15.673 -1.196 c 15.673 4.027 11.438 8.262 6.214 8.262 c ");
+		m_pStream->WriteStr("0.991 8.262 -3.244 4.027 -3.244 -1.196 c -3.244 -6.42 0.991 -10.655 6.214 -10.655 c b");
+	}
+	void CAnnotAppearanceObject::DrawTextRightPointer(const std::string& sColor)
+	{
+		m_pStream->WriteStr(sColor.c_str());
+		m_pStream->WriteStr(" 0 G 0.59 w 4 M 0 j 0 J [] 0 d 1 0 0 1 1.1871 17.0000 cm 0 0 m 4.703 -8.703 l 0 -17 l 18.813 -8.703 l b");
+	}
+	void CAnnotAppearanceObject::DrawTextStar(const std::string& sColor)
+	{
+		m_pStream->WriteStr(sColor.c_str());
+		m_pStream->WriteStr(" 0 G 0 i 0.59 w 4 M 1 j 0 J [] 0 d 1 0 0 1 9.999 18.8838 cm 0 0 m 3.051 -6.178 l 9.867 -7.168 l 4.934 -11.978 l 6.099 -18.768 l 0 -15.562 l -6.097 -18.768 l ");
+		m_pStream->WriteStr("-4.933 -11.978 l -9.866 -7.168 l -3.048 -6.178 l b");
+	}
+	void CAnnotAppearanceObject::DrawTextUpArrow(const std::string& sColor)
+	{
+		m_pStream->WriteStr(sColor.c_str());
+		m_pStream->WriteStr(" 0 G 0 i 0.59 w 4 M 1 j 0 J [] 0 d 1 0 0 1 1.1007 6.7185 cm 0 0 m 4.009 0 l 4.009 -6.719 l 11.086 -6.719 l 11.086 0 l 14.963 0 l 7.499 13.081 l b");
+	}
+	void CAnnotAppearanceObject::DrawTextUpLeftArrow(const std::string& sColor)
+	{
+		m_pStream->WriteStr(sColor.c_str());
+		m_pStream->WriteStr(" 0 G 0 i 0.59 w 4 M 1 j 0 J [] 0 d 1 0 0 1 2.8335 1.7627 cm 0 0 m -2.74 15.16 l 12.345 12.389 l 9.458 9.493 l 14.027 4.91 l 7.532 -1.607 l 2.964 2.975 l b");
+	}
 }

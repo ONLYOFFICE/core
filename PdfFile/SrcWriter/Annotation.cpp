@@ -551,6 +551,48 @@ namespace PdfWriter
 			pR->DrawTextNewParagraph(sColor);
 			break;
 		}
+		case 11:
+		{
+			pN->AddBBox(0, 0, 20, 20);
+			pN->DrawTextParagraph(sColor);
+			pR->AddBBox(0, 0, 20, 20);
+			pR->DrawTextParagraph(sColor);
+		}
+		case 12:
+		{
+			pN->AddBBox(0, 0, 20, 20);
+			pN->DrawTextRightArrow(sColor);
+			pR->AddBBox(0, 0, 20, 20);
+			pR->DrawTextRightArrow(sColor);
+		}
+		case 13:
+		{
+			pN->AddBBox(0, 0, 20, 17);
+			pN->DrawTextRightPointer(sColor);
+			pR->AddBBox(0, 0, 20, 17);
+			pR->DrawTextRightPointer(sColor);
+		}
+		case 14:
+		{
+			pN->AddBBox(0, 0, 20, 19);
+			pN->DrawTextStar(sColor);
+			pR->AddBBox(0, 0, 20, 19);
+			pR->DrawTextStar(sColor);
+		}
+		case 15:
+		{
+			pN->AddBBox(0, 0, 17, 20);
+			pN->DrawTextUpArrow(sColor);
+			pR->AddBBox(0, 0, 17, 20);
+			pR->DrawTextUpArrow(sColor);
+		}
+		case 16:
+		{
+			pN->AddBBox(0, 0, 17, 17);
+			pN->DrawTextUpLeftArrow(sColor);
+			pR->AddBBox(0, 0, 17, 17);
+			pR->DrawTextUpLeftArrow(sColor);
+		}
 		case 10:
 		default:
 		{

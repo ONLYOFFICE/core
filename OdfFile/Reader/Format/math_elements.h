@@ -55,6 +55,7 @@ public:
 	virtual void pptx_convert	(oox::pptx_conversion_context & Context) {}
 	
 	virtual void oox_convert	(oox::math_context & Context) = 0;
+	virtual void oox_convert    (oox::math_context &Context, int iTypeConversion) {oox_convert(Context);}
 
 	CPDOCCORE_DEFINE_VISITABLE();
 	friend class odf_document;
@@ -73,7 +74,7 @@ public:
 	virtual void xlsx_convert	(oox::xlsx_conversion_context & Context){}
 	virtual void pptx_convert	(oox::pptx_conversion_context & Context){}
 
-	void oox_convert (oox::math_context & Context);
+	void oox_convert (oox::math_context & Context,int iTypeConversion = 0);
 
 	CPDOCCORE_DEFINE_VISITABLE();
 	friend class odf_document;
@@ -98,6 +99,7 @@ public:
     static const ElementType type = typeMathSemantics;
 
 	virtual void oox_convert(oox::math_context & Context);
+	virtual void oox_convert(oox::math_context & Context, int iTypeConversion);
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );

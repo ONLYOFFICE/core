@@ -459,7 +459,7 @@ public:
 		NSStringUtils::CStringBuilder oRow;
 		oRow.WriteNodeBegin(L"w:tr");
 
-		if (!m_oStyles.Empty() || 0 <= oTableStyles.m_nCellSpacing)
+		if (!m_oStyles.Empty() || 0 < oTableStyles.m_nCellSpacing)
 		{
 			oRow.WriteNodeBegin(L"w:trPr");
 
@@ -848,8 +848,6 @@ public:
 	std::wstring m_sDst;  // Директория назначения
 	std::wstring m_sBase; // Полный базовый адрес
 
-	std::wstring m_sEncoding;
-
 	NSCSS::CTree m_oTree; // Дерево body html-файла
 
 private:
@@ -1185,19 +1183,21 @@ public:
 			return false;
 
 		std::string sFileContent = XmlUtils::GetUtf8FromFileContent(pData, nLength);
-//		bool bNeedConvert = true;
-//		if (nLength > 4)
-//		{
-//			if (pData[0] == 0xFF && pData[1] == 0xFE && !(pData[2] == 0x00 && pData[3] == 0x00))
-//				bNeedConvert = false;
-//			if (pData[0] == 0xFE && pData[1] == 0xFF)
-//				bNeedConvert = false;
 
-//			if (pData[0] == 0xFF && pData[1] == 0xFE && pData[2] == 0x00 && pData[3] == 0x00)
-//				bNeedConvert = false;
-//			if (pData[0] == 0 && pData[1] == 0 && pData[2] == 0xFE && pData[3] == 0xFF)
-//				bNeedConvert = false;
-//		}
+		bool bNeedConvert = true;
+		if (nLength > 4)
+		{
+			if (pData[0] == 0xFF && pData[1] == 0xFE && !(pData[2] == 0x00 && pData[3] == 0x00))
+				bNeedConvert = false;
+			if (pData[0] == 0xFE && pData[1] == 0xFF)
+				bNeedConvert = false;
+
+			if (pData[0] == 0xFF && pData[1] == 0xFE && pData[2] == 0x00 && pData[3] == 0x00)
+				bNeedConvert = false;
+			if (pData[0] == 0 && pData[1] == 0 && pData[2] == 0xFE && pData[3] == 0xFF)
+				bNeedConvert = false;
+		}
+
 		RELEASEARRAYOBJECTS(pData);
 
 		size_t nFind = sFileContent.find("version=\"");
@@ -1209,8 +1209,8 @@ public:
 				sFileContent.replace(nFind, nFindEnd - nFind, "1.0");
 		}
 
-		std::wstring sRes = htmlToXhtml(sFileContent);
-		
+		std::wstring sRes = htmlToXhtml(sFileContent, bNeedConvert);
+
 		#ifdef SAVE_NORMALIZED_HTML
 		#if 1 == SAVE_NORMALIZED_HTML
 		NSFile::CFileBinary oWriter;
@@ -1221,6 +1221,7 @@ public:
 		}
 		#endif
 		#endif
+
 		return m_oLightReader.FromString(sRes);
 	}
 
@@ -1243,7 +1244,7 @@ public:
 		file.CloseFile();
 		std::string xml_string = XmlUtils::GetUtf8FromFileContent(buffer, dwReadBytes);
 
-		const std::string sContentType = NSStringFinder::FindPropety<std::string>(xml_string, "content-type", ":", ";");
+		const std::string sContentType = NSStringFinder::FindPropety(xml_string, "content-type", ":", ";");
 		bool bRes = false;
 
 		if(NSStringFinder::Equals(sContentType, "multipart/related"))
@@ -1426,17 +1427,6 @@ private:
 		return wsValue;
 	}
 
-	std::wstring ToUnicode(const std::string& sText) const
-	{
-		if (!m_sEncoding.empty() && !NSStringFinder::Equals<std::string>("utf-8", m_sEncoding))
-		{
-			NSUnicodeConverter::CUnicodeConverter oConverter;
-			return oConverter.toUnicode(sText, *m_sEncoding.c_str());
-		}
-
-		return UTF8_TO_U(sText);
-	}
-
 	// Так как CSS калькулятор не знает для какой ноды производится расчет стиля
 	// и не знает, что некоторые стили предназначены только определенной ноде,
 	// то проще пока обрабатывать это заранее
@@ -1518,11 +1508,6 @@ private:
 		m_bInP = false;
 	}
 
-	std::wstring GetText()
-	{
-		return ToUnicode(m_oLightReader.GetTextA());
-	}
-
 	std::wstring GetSubClass(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors)
 	{
 		NSCSS::CNode oNode;
@@ -1582,18 +1567,9 @@ private:
 			// Базовый адрес
 			if (L"base" == wsName)
 				m_sBase = GetArgumentValue(L"href");
-			else if (L"meta" == wsName)
-			{
-				m_sEncoding = GetArgumentValue(L"charset");
-				if (m_sEncoding.empty())
-				{
-					const std::wstring sContent = GetArgumentValue(L"content");
-
-					if (!sContent.empty())
-						m_sEncoding = NSStringFinder::FindPropety<std::wstring>(sContent, L"charset", {L"="}, {L";", L" ", L"\\n", L"\\t", L"\\f"});
-				}
-			}
 		}
+
+		m_oLightReader.MoveToElement();
 	}
 
 	void readBody()
@@ -1621,7 +1597,7 @@ private:
 	{
 		if(sName == L"#text")
 		{
-			std::wstring sText = GetText();
+			std::wstring sText = m_oLightReader.GetText();
 
 			size_t find = sText.find_first_not_of(L" \n\t\r");
 			if (find == std::wstring::npos)
@@ -2212,12 +2188,13 @@ private:
 		{
 			const int nWidth = NSStringFinder::ToInt(sSelectors.back().m_mAttributes[L"border"]);
 
-			if (0 >= nWidth)
-				sSelectors.back().m_mAttributes[L"border"] = L"none";
-			else
+			if (0 < nWidth)
+			{
 				sSelectors.back().m_mAttributes[L"border"] = L"outset " + std::to_wstring(nWidth) + L"px auto";
-
-			oTable.HaveBorderAttribute();
+				oTable.HaveBorderAttribute();
+			}
+			else
+				sSelectors.back().m_mAttributes[L"border"] = L"none";
 		}
 
 		if (oXml->GetSubData(oXml->GetCurSize() - 8) == L"</w:tbl>")
@@ -2571,7 +2548,11 @@ private:
 	void ImageAlternative(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, const std::wstring& wsAlt)
 	{
 		if (wsAlt.empty())
+		{
+			//TODO:: реализовать отображение того, что картинку не удалось получить
+			WriteEmptyParagraph(oXml);
 			return;
+		}
 
 		wrP(oXml, sSelectors, oTS);
 		oXml->WriteString(L"<w:r>");

@@ -11,6 +11,7 @@
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/common/StringBuilder.h"
+#include "../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../../UnicodeConverter/UnicodeConverter.h"
 #include "../../../HtmlFile2/src/StringFinder.h"
 
@@ -35,8 +36,22 @@ static void replace_all(std::string& s, const std::string& s1, const std::string
 	}
 }
 
-static std::wstring htmlToXhtml(std::string& sFileContent)
+static std::wstring htmlToXhtml(std::string& sFileContent, bool bNeedConvert)
 {
+	if (bNeedConvert)
+	{ // Определение кодировки
+		std::string sEncoding = NSStringFinder::FindPropety(sFileContent, "charset", {"="}, {";", "\\n", "\\r", " ", "\""});
+
+		if (sEncoding.empty())
+			sEncoding = NSStringFinder::FindPropety(sFileContent, "encoding", {"="}, {";", "\\n", "\\r", " "});
+
+		if (!sEncoding.empty() && !NSStringFinder::Equals("utf-8", sEncoding))
+		{
+			NSUnicodeConverter::CUnicodeConverter oConverter;
+			sFileContent = U_TO_UTF8(oConverter.toUnicode(sFileContent, sEncoding.c_str()));
+		}
+	}
+
 	// Избавляемся от лишних символов до <...
 	boost::regex oRegex("<[a-zA-Z]");
 	boost::match_results<typename std::string::const_iterator> oResult;
@@ -213,7 +228,7 @@ static void ReadMht(std::string& sFileContent, size_t& nFound, size_t& nNextFoun
 		nContentTag += 2;
 
 	// Content-Type
-	std::string sContentType = NSStringFinder::FindPropety<std::string>(sFileContent, "content-type", {":"}, {";", "\\n", "\\r"}, nFound);
+	std::string sContentType = NSStringFinder::FindPropety(sFileContent, "content-type", {":"}, {";", "\\n", "\\r"}, nFound);
 
 	if (sContentType.empty())
 	{
@@ -227,19 +242,19 @@ static void ReadMht(std::string& sFileContent, size_t& nFound, size_t& nNextFoun
 	size_t nTag = 0, nTagEnd = 0;
 	
 	// name
-	std::string sName = NSStringFinder::FindPropety<std::string>(sFileContent, "name", {"="}, {";", "\\n", "\\r"}, nFound);
+	std::string sName = NSStringFinder::FindPropety(sFileContent, "name", {"="}, {";", "\\n", "\\r"}, nFound);
 
 	// charset
-	std::string sCharset = NSStringFinder::FindPropety<std::string>(sFileContent, "charset", {"="}, {";", "\\n", "\\r"}, nFound);
+	std::string sCharset = NSStringFinder::FindPropety(sFileContent, "charset", {"="}, {";", "\\n", "\\r"}, nFound);
 	NSStringFinder::CutInside<std::string>(sCharset, "\"");
 
 	// Content-Location
-	std::string sContentLocation = NSStringFinder::FindPropety<std::string>(sFileContent, "content-location", {":"}, {";", "\\n", "\\r"}, nFound);
+	std::string sContentLocation = NSStringFinder::FindPropety(sFileContent, "content-location", {":"}, {";", "\\n", "\\r"}, nFound);
 
 	if (sContentLocation.empty())
 	{
 		// Content-ID
-		std::string sContentID = NSStringFinder::FindPropety<std::string>(sFileContent, "content-id", {":"}, {";", "\\n", "\\r"}, nFound);
+		std::string sContentID = NSStringFinder::FindPropety(sFileContent, "content-id", {":"}, {";", "\\n", "\\r"}, nFound);
 		NSStringFinder::CutInside<std::string>(sCharset, "<", ">");
 
 		if (!sContentID.empty())
@@ -247,7 +262,7 @@ static void ReadMht(std::string& sFileContent, size_t& nFound, size_t& nNextFoun
 	}
 
 	// Content-Transfer-Encoding
-	std::string sContentEncoding = NSStringFinder::FindPropety<std::string>(sFileContent, "content-transfer-encoding", {":"}, {";", "\\n", "\\r"}, nFound);;
+	std::string sContentEncoding = NSStringFinder::FindPropety(sFileContent, "content-transfer-encoding", {":"}, {";", "\\n", "\\r"}, nFound);;
 	
 //	nTag = sFileContent.find("Content-Transfer-Encoding: ", nFound);
 //	if(nTag != std::string::npos && nTag < nContentTag)
@@ -330,7 +345,7 @@ static std::string mhtTohtml(std::string& sFileContent)
 
 	size_t nFound = 0;
 	// Поиск boundary
-	std::string sBoundary = NSStringFinder::FindPropety<std::string>(sFileContent, "boundary", {"="}, {"\\r", "\\n", "\""}, 0, nFound);
+	std::string sBoundary = NSStringFinder::FindPropety(sFileContent, "boundary", {"="}, {"\\r", "\\n", "\""}, 0, nFound);
 
 	if (sBoundary.empty())
 	{

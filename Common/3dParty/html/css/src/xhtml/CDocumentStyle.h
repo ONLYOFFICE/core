@@ -10,12 +10,11 @@ namespace NSCSS
 {
 	class CStyleUsed
 	{
-		CCompiledStyle m_oStyle;
 		bool m_bIsPStyle;
-		std::wstring m_sId;
+		std::wstring m_wsId;
 
 	public:
-		CStyleUsed(const CCompiledStyle& oStyle, bool bIsPStyle);
+		CStyleUsed(const std::wstring& wsId, bool bIsPStyle);
 
 		bool operator==(const CStyleUsed& oUsedStyle) const;
 
@@ -43,14 +42,15 @@ namespace NSCSS
 		void SetRStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement);
 		void SetPStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement);
 
+		void SetBorderStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement, const PProperties& enBorderProperty);
 	public:
 		CDocumentStyle();
 		~CDocumentStyle();
 
-		void WritePStyle(const NSCSS::CCompiledStyle& oStyle);
-		void WriteRStyle(const NSCSS::CCompiledStyle& oStyle);
-		void WriteLitePStyle(const NSCSS::CCompiledStyle& oStyle);
-		void WriteLiteRStyle(const NSCSS::CCompiledStyle& oStyle);
+		bool WritePStyle(const NSCSS::CCompiledStyle& oStyle);
+		bool WriteRStyle(const NSCSS::CCompiledStyle& oStyle);
+		bool WriteLitePStyle(const NSCSS::CCompiledStyle& oStyle);
+		bool WriteLiteRStyle(const NSCSS::CCompiledStyle& oStyle);
 
 		void SetStyle(const std::wstring& sStyle);
 		void SetId   (const std::wstring& sId);
@@ -59,6 +59,8 @@ namespace NSCSS
 		std::wstring GetIdAndClear();
 
 		void Clear();
+
+		static std::wstring CalculateBorderStyle(const NSCSS::NSProperties::CBorderSide& oBorder, const NSCSS::NSProperties::CDigit* pPadding = NULL);
 	};
 }
 #endif // CDOCUMENTSTYLE_H

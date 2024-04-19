@@ -178,21 +178,15 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 	pRenderer->GetTransform(&oldTransform[0], &oldTransform[1], &oldTransform[2], &oldTransform[3], &oldTransform[4], &oldTransform[5]);
 	pRenderer->ResetTransform();
 
-	double dM11 = 1;
-	double dM22 = 1;
-
-	if (!oWindow.m_oWidth.Empty() && !oWindow.m_oWidth.Zero())
-		dM11 = dWidth / dWindowWidth;
-
-	if (!oWindow.m_oHeight.Empty() && !oWindow.m_oHeight.Zero())
-		dM22 = dHeight / dWindowHeight;
+	double dM11 = dWidth / dWindowWidth;
+	double dM22 = dHeight / dWindowHeight;
 
 	double dScaleX = 1, dScaleY = 1;
 
-	if (!oWindow.m_oWidth.Empty() && !oWindow.m_oWidth.Zero() && !oViewBox.m_oWidth.Empty() && !oViewBox.m_oWidth.Zero())
+	if (!SVG::Equals(0., dViewBoxWidth))
 		dScaleX = dWindowWidth / dViewBoxWidth;
 
-	if (!oWindow.m_oHeight.Empty() && !oWindow.m_oHeight.Zero() && !oViewBox.m_oHeight.Empty() && !oViewBox.m_oHeight.Zero())
+	if (!SVG::Equals(0., dViewBoxHeight))
 		dScaleY = dWindowHeight / dViewBoxHeight;
 
 	double dMinScale = std::min(dScaleX, dScaleY);

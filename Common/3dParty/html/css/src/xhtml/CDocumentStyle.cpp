@@ -22,7 +22,10 @@ namespace NSCSS
 
 	std::wstring CStyleUsed::getId()
 	{
-		return m_wsId;
+		if (m_bIsPStyle)
+			return m_wsId;
+
+		return m_wsId + L"-c";
 	}
 
 	void CStyleUsed::setId(const std::wstring &sId)

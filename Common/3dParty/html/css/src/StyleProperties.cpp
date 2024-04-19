@@ -323,12 +323,10 @@ namespace NSCSS
 
 	CDigit &CDigit::operator+=(const CDigit &oDigit)
 	{
-		if (m_unLevel > oDigit.m_unLevel || (m_bImportant && !oDigit.m_bImportant) || DBL_MAX == oDigit.m_oValue)
+		if (m_unLevel > oDigit.m_unLevel || (m_bImportant && !oDigit.m_bImportant) || oDigit.Empty())
 			return *this;
 
-		if (oDigit.Empty())
-			return *this;
-		else if (Empty())
+		if (Empty())
 		{
 			*this = oDigit;
 			return *this;
@@ -391,6 +389,27 @@ namespace NSCSS
 
 		m_unLevel       = unLevel;
 		m_bImportant    = bImportant;
+
+		return true;
+	}
+	
+	bool CDigit::SetValue(const CDigit &oValue)
+	{
+		if (oValue.Empty() || m_unLevel > oValue.m_unLevel || (m_bImportant && !oValue.m_bImportant))
+			return false;
+
+		if (Empty())
+		{
+			m_oValue = oValue.m_oValue;
+			m_enUnitMeasure = oValue.m_enUnitMeasure;
+		}
+		else if (NSCSS::Percent == oValue.m_enUnitMeasure)
+			m_oValue *= oValue.m_oValue / 100.;
+		else
+			m_oValue = oValue.ToDouble(m_enUnitMeasure);
+
+		m_unLevel       = oValue.m_unLevel;
+		m_bImportant    = oValue.m_bImportant;
 
 		return true;
 	}
@@ -1699,6 +1718,8 @@ namespace NSCSS
 
 	CBorder &CBorder::operator+=(const CBorder &oBorder)
 	{
+		m_enCollapse = oBorder.m_enCollapse;
+
 		if (oBorder.Empty())
 			return *this;
 
@@ -1706,8 +1727,6 @@ namespace NSCSS
 		m_oTop       = oBorder.m_oTop;
 		m_oRight     = oBorder.m_oRight;
 		m_oBottom    = oBorder.m_oBottom;
-
-		m_enCollapse = oBorder.m_enCollapse;
 
 		return *this;
 	}
@@ -1946,12 +1965,17 @@ namespace NSCSS
 	{
 		return m_oLeft;
 	}
-	
+
 	bool CIndent::Empty() const
 	{
 		return m_oTop.Empty() && m_oRight.Empty() && m_oBottom.Empty() && m_oLeft.Empty();
 	}
-	
+
+	bool CIndent::Zero() const
+	{
+		return m_oTop.Zero() && m_oRight.Zero() && m_oBottom.Zero() && m_oLeft.Zero();
+	}
+
 	CIndent &CIndent::operator+=(const CIndent &oIndent)
 	{
 		m_oTop    = oIndent.m_oTop;
@@ -2163,10 +2187,10 @@ namespace NSCSS
 	bool CFont::SetSize(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		const std::map<std::wstring, std::wstring> arAbsoluteFontValues =
-			{{L"xx-small", L"0.6em"},  {L"x-small", L"0.75em"},
-			 {L"small",    L"0.875em"}, {L"medium",  L"1em"},
-			 {L"large",    L"1.125em"}, {L"x-large", L"1.25em"},
-			 {L"xx-large", L"1.5em"}};
+			{{L"xx-small", L"7.5pt"}, {L"x-small", L"10pt"  },
+			 {L"small",    L"12pt" }, {L"medium",  L"13.5pt"},
+			 {L"large",    L"18pt" }, {L"x-large", L"24pt"  },
+			 {L"xx-large", L"36pt" }}; 
 
 		size_t unFoundPos = std::wstring::npos;
 		std::wstring wsNewValue(wsValue);
@@ -2275,6 +2299,11 @@ namespace NSCSS
 		return m_oLineHeight;
 	}
 
+	CDigit &CFont::GetLineHeight()
+	{
+		return m_oLineHeight;
+	}
+
 	const CString &CFont::GetFamily() const
 	{
 		return m_oFamily;
@@ -2308,7 +2337,7 @@ namespace NSCSS
 
 	CFont &CFont::operator+=(const CFont &oFont)
 	{
-		m_oSize       += oFont.m_oSize;
+		m_oSize.SetValue(oFont.m_oSize);
 		m_oLineHeight += oFont.m_oLineHeight;
 		m_oFamily     += oFont.m_oFamily;
 		m_oStretch    += oFont.m_oStretch;
@@ -2514,14 +2543,12 @@ namespace NSCSS
 
 		std::map<std::wstring, int>::const_iterator oFound = m_mMap.find(wsNewValue);
 
-		if (m_mMap.end() != oFound)
-		{
-			m_oValue     = oFound->second;
-			m_unLevel    = unLevel;
-			m_bImportant = bImportant;
-		}
-		else
+		if (m_mMap.end() == oFound)
 			return false;
+
+		m_oValue     = oFound->second;
+		m_unLevel    = unLevel;
+		m_bImportant = bImportant;
 
 		return true;
 	}
@@ -2569,12 +2596,15 @@ namespace NSCSS
 
 	double CEnum::ToDouble() const
 	{
-		return 0.;
+		return (double)m_oValue;
 	}
 
 	std::wstring CEnum::ToWString() const
 	{
-		return std::wstring();
+		if (m_mMap.empty())
+			return std::wstring();
+
+		return std::find_if(m_mMap.begin(), m_mMap.end(), [this](const std::pair<std::wstring, int>& oValue){ return m_oValue == oValue.second; })->first;
 	}
 
 	CPage::CPage()

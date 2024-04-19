@@ -524,7 +524,7 @@ namespace NSCSS
 			// Скидываем некоторые внешние стили, которые внутри таблицы переопределяются
 			if (L"table" == arSelectors[i].m_wsName)
 			{
-				oStyle.m_oFont.Clear();
+				oStyle.m_oFont.GetLineHeight().Clear();
 				oStyle.m_oPadding.Clear();
 				oStyle.m_oMargin.Clear();
 			}

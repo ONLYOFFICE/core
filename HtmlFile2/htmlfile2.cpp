@@ -121,6 +121,19 @@ std::wstring CreateBorders(const NSCSS::NSProperties::CBorder& oBorder, const NS
 	return L"";
 }
 
+void WriteEmptyParagraph(NSStringUtils::CStringBuilder* pXml, bool bVahish = false)
+{
+	if (NULL == pXml)
+		return;
+
+	pXml->WriteString(L"<w:p><w:pPr><w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/>");
+
+	if (bVahish)
+		pXml->WriteString(L"<w:vanish/>");
+
+	pXml->WriteString(L"</w:rPr></w:pPr></w:p>");
+}
+
 typedef enum
 {
 	ParseModeHeader,
@@ -377,7 +390,10 @@ public:
 		oCell += L"<w:hideMark/>";
 		oCell.WriteNodeEnd(L"w:tcPr");
 
-		oCell += m_oData.GetData();
+		if (0 != m_oData.GetCurSize())
+			oCell += m_oData.GetData();
+		else
+			WriteEmptyParagraph(&oCell);
 
 		oCell.WriteNodeEnd(L"w:tc");
 
@@ -418,6 +434,8 @@ public:
 			return;
 
 		if (nPosition < 0)
+			m_arCells.push_back(pCell);
+		else if (nPosition > m_arCells.size())
 			m_arCells.push_back(pCell);
 		else
 			m_arCells.insert(m_arCells.begin() + nPosition, pCell);
@@ -723,25 +741,34 @@ public:
 		if (!m_oStyles.m_wsAlign.empty())
 			oTable += L"<w:jc w:val=\"" + m_oStyles.m_wsAlign + L"\"/>";
 
-		if (0 < m_oStyles.m_nCellSpacing)
+		if (0 < m_oStyles.m_nCellSpacing && m_oStyles.m_oBorder.GetCollapse() != NSCSS::NSProperties::BorderCollapse::Collapse)
 			oTable += L"<w:tblCellSpacing w:w=\"" + std::to_wstring(m_oStyles.m_nCellSpacing) + L"\" w:type=\"dxa\"/>";
 
 		if (!m_oStyles.m_oBorder.Empty() && !m_oStyles.m_oBorder.Zero())
 			oTable += L"<w:tblBorders>" + CreateBorders(m_oStyles.m_oBorder) + L"</w:tblBorders>";
 
-		if (!m_oStyles.m_oPadding.Empty())
+		if (!m_oStyles.m_oPadding.Empty() && !m_oStyles.m_oPadding.Zero())
 		{
 			const int nTopPadding    = std::max(0, m_oStyles.m_oPadding.GetTop()   .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
 			const int nLeftPadding   = std::max(0, m_oStyles.m_oPadding.GetLeft()  .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ));
 			const int nBottomPadding = std::max(0, m_oStyles.m_oPadding.GetBottom().ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
 			const int nRightPadding  = std::max(0, m_oStyles.m_oPadding.GetRight() .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ));
 
-			oTable += L"<w:tblCellMar>"
-			              "<w:top w:w=\""     + std::to_wstring(nTopPadding)    + L"\" w:type=\"dxa\"/>"
-			               "<w:left w:w=\""   + std::to_wstring(nLeftPadding)   + L"\" w:type=\"dxa\"/>"
-			               "<w:bottom w:w=\"" + std::to_wstring(nBottomPadding) + L"\" w:type=\"dxa\"/>"
-			               "<w:right w:w=\""  + std::to_wstring(nRightPadding)  + L"\" w:type=\"dxa\"/>"
-			           "</w:tblCellMar>";
+			oTable.WriteNodeBegin(L"w:tblCellMar");
+
+			if (0 != nTopPadding)
+				oTable += L"<w:top w:w=\""    + std::to_wstring(nTopPadding)    + L"\" w:type=\"dxa\"/>";
+
+			if (0 != nLeftPadding)
+				oTable += L"<w:left w:w=\""   + std::to_wstring(nLeftPadding)   + L"\" w:type=\"dxa\"/>";
+
+			if (0 != nBottomPadding)
+				oTable += L"<w:bottom w:w=\"" + std::to_wstring(nBottomPadding) + L"\" w:type=\"dxa\"/>";
+
+			if (0 != nRightPadding)
+				oTable += L"<w:right w:w=\""  + std::to_wstring(nRightPadding)  + L"\" w:type=\"dxa\"/>";
+
+			oTable.WriteNodeEnd(L"w:tblCellMar");
 		}
 		else
 			oTable += L"<w:tblCellMar><w:top w:w=\"15\" w:type=\"dxa\"/><w:left w:w=\"15\" w:type=\"dxa\"/><w:bottom w:w=\"15\" w:type=\"dxa\"/><w:right w:w=\"15\" w:type=\"dxa\"/></w:tblCellMar>";
@@ -1439,19 +1466,6 @@ private:
 		return true;
 	}
 
-	void WriteEmptyParagraph(NSStringUtils::CStringBuilder* pXml, bool bVahish = false) const
-	{
-		if (NULL == pXml)
-			return;
-
-		pXml->WriteString(L"<w:p><w:pPr><w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/>");
-
-		if (bVahish)
-			pXml->WriteString(L"<w:vanish/>");
-
-		pXml->WriteString(L"</w:rPr></w:pPr></w:p>");
-	}
-
 	bool OpenR(NSStringUtils::CStringBuilder* pXml)
 	{
 		if (m_bInR)
@@ -1636,22 +1650,28 @@ private:
 				{
 					oXml->WriteEncodeXmlString(sText.c_str(), nAfter);
 					oXml->WriteString(L"</w:t></w:r></w:p><w:p>");
-					if(!sPStyle.empty())
+					if(!sPStyle.empty() || !oTS.sPStyle.empty())
 					{
-						oXml->WriteString(L"<w:pPr><w:pStyle w:val=\"");
-						oXml->WriteString(sPStyle);
-						oXml->WriteString(L"\"/>");
+						oXml->WriteNodeBegin(L"w:pPr");
+
+						if (!sPStyle.empty())
+							oXml->WriteString(L"<w:pStyle w:val=\"" + sPStyle + L"\"/>");
+
 						oXml->WriteString(oTS.sPStyle);
-						oXml->WriteString(L"</w:pPr>");
+
+						oXml->WriteNodeEnd(L"w:pPr");
 					}
-					oXml->WriteString(L"<w:r>");
-					if (!sRStyle.empty())
+					oXml->WriteNodeBegin(L"w:r");
+					if (!sRStyle.empty() || !oTS.sRStyle.empty())
 					{
-						oXml->WriteString(L"<w:rPr><w:rStyle w:val=\"");
-						oXml->WriteString(sRStyle);
-						oXml->WriteString(L"\"/>");
+						oXml->WriteNodeBegin(L"w:rPr");
+
+						if (!sRStyle.empty())
+							oXml->WriteString(L"<w:rStyle w:val=\"" + sRStyle + L"\"/>");
+
 						oXml->WriteString(oTS.sRStyle);
-						oXml->WriteString(L"</w:rPr>");
+
+						oXml->WriteNodeEnd(L"w:rPr");
 					}
 					oXml->WriteString(L"<w:t xml:space=\"preserve\">");
 					sText.erase(0, nAfter + 1);
@@ -2197,16 +2217,15 @@ private:
 				sSelectors.back().m_mAttributes[L"border"] = L"none";
 		}
 
-		if (oXml->GetSubData(oXml->GetCurSize() - 8) == L"</w:tbl>")
-			WriteEmptyParagraph(oXml, true);
-
 		NSCSS::CCompiledStyle oStyle;
 		m_oStylesCalculator.GetCompiledStyle(oStyle, sSelectors);
 
 		if (sSelectors.back().m_mAttributes.end() != sSelectors.back().m_mAttributes.find(L"cellpadding"))
 			oStyle.m_oPadding.SetValues(sSelectors.back().m_mAttributes[L"cellpadding"] + L"px", 0, true);
 
-		if (sSelectors.back().m_mAttributes.end() != sSelectors.back().m_mAttributes.find(L"cellspacing"))
+		if (oStyle.m_oBorder.GetCollapse() == NSCSS::NSProperties::BorderCollapse::Collapse)
+			oTable.SetCellSpacing(0);
+		else if (sSelectors.back().m_mAttributes.end() != sSelectors.back().m_mAttributes.find(L"cellspacing"))
 			oTable.SetCellSpacing(NSStringFinder::ToInt(sSelectors.back().m_mAttributes[L"cellspacing"]));
 		else if (oStyle.m_oBorder.GetCollapse() == NSCSS::NSProperties::BorderCollapse::Separate)
 			oTable.SetCellSpacing(15);
@@ -2239,6 +2258,7 @@ private:
 		oTable.Shorten();
 		oTable.CompleteTable();
 		oXml->WriteString(oTable.ConvertToOOXML());
+		WriteEmptyParagraph(oXml, true);
 	}
 
 	void readInput  (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
@@ -2889,12 +2909,12 @@ private:
 
 		double dOneMaxSize = (double)1000.;
 
-		if (dW > dH)
+		if (dW > dH && dW > dOneMaxSize)
 		{
 			dH *= (dOneMaxSize / dW);
 			dW = dOneMaxSize;
 		}
-		else
+		else if (dH > dW && dH > dOneMaxSize)
 		{
 			dW *= (dOneMaxSize / dH);
 			dH = dOneMaxSize;

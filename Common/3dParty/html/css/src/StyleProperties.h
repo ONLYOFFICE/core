@@ -129,6 +129,7 @@ namespace NSCSS
 		CDigit(double dValue, unsigned int unLevel, bool bImportant = false);
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel = 0, bool bHardMode = true) override;
+		bool SetValue(const CDigit& oValue);
 
 		bool Empty() const override;
 		bool Zero() const;
@@ -614,6 +615,7 @@ namespace NSCSS
 		const CDigit& GetLeft  () const;
 
 		bool Empty() const;
+		bool Zero() const;
 
 		CIndent& operator+=(const CIndent& oIndent);
 		bool     operator==(const CIndent& oIndent) const;
@@ -656,6 +658,7 @@ namespace NSCSS
 
 		const CDigit&  GetSize()       const;
 		const CDigit&  GetLineHeight() const;
+		CDigit&  GetLineHeight();
 		const CString& GetFamily()     const;
 		const CString& GetStretch()    const;
 		const CString& GetStyle()      const;

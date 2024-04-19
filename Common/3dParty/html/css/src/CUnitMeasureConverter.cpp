@@ -159,6 +159,9 @@ namespace NSCSS
 
 	bool CUnitMeasureConverter::GetValue(const std::wstring &wsValue, double &dValue, UnitMeasure &enUnitMeasure)
 	{
+		if (wsValue.empty() || wsValue.end() == std::find_if(wsValue.begin(), wsValue.end(), [](wchar_t wChar) { return iswdigit(wChar);}))
+			return false;
+
 		std::wregex oRegex(LR"((-?\.\d+|-?\d+(\.\d+)?)\s*(px|pt|cm|mm|in|pc|%|em|rem|tw)?)");
 		std::wsmatch oMatches;
 

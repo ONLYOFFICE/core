@@ -5,6 +5,9 @@
 #include <QListWidgetItem>
 #include <QMainWindow>
 #include <QLineEdit>
+#include <QPoint>
+#include <QMouseEvent>
+#include <QPainter>
 #include "../../../../DesktopEditor/graphics/structures.h"
 
 #define COORD_SIZE_MM 100
@@ -25,10 +28,7 @@ public:
 	{
 		connect(this, &QLineEdit::editingFinished, this, &CustomLineEdit::onEditingFinished);
 	}
-	~CustomLineEdit()
-	{
-
-	}
+	~CustomLineEdit() {}
 public slots:
 	void onEditingFinished()
 	{
@@ -39,6 +39,43 @@ public slots:
 		if (this->text().toInt() > COORD_SIZE_MM)
 			this->setText(QString::number(COORD_SIZE_MM));
 	}
+};
+
+class CustomLabel : public QLabel
+{
+	Q_OBJECT
+public:
+	CustomLabel(QWidget *parent = nullptr) : QLabel(parent)
+	{
+		connect(this, &CustomLabel::mousePressed, this, &CustomLabel::onCheckPosition);
+	}
+
+	~CustomLabel() {}
+
+	std::vector<QPoint> GetPoints() const
+	{
+		return m_points;
+	}
+
+	void Clear()
+	{
+		m_points.clear();
+	}
+signals:
+	void mousePressed(QPoint point);
+protected:
+	void mousePressEvent(QMouseEvent *event) override
+	{
+		QPoint point = event->pos();
+		emit mousePressed(point);
+	}
+public slots:
+	void onCheckPosition(QPoint point)
+	{
+		m_points.push_back(point);
+	}
+private:
+	std::vector<QPoint> m_points;
 };
 
 typedef enum
@@ -154,6 +191,8 @@ private slots:
 	void on_actionTensor_Coons_Patch_Gradient_triggered();
 
 	void on_actionTensor_Coons_Patch_Parametric_triggered();
+
+	void on_pushButton_2_clicked();
 
 private:
 	Ui::MainWindow *ui;

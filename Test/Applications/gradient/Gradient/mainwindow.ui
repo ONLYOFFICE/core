@@ -17,7 +17,7 @@
    <property name="enabled">
     <bool>true</bool>
    </property>
-   <widget class="QLabel" name="lable_test">
+   <widget class="CustomLabel" name="lable_test">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -117,7 +117,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="Linear_Page">
       <widget class="QGroupBox" name="groupBox">
@@ -2491,6 +2491,19 @@
       <string>Render Gradient</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="pushButton_2">
+     <property name="geometry">
+      <rect>
+       <x>380</x>
+       <y>110</y>
+       <width>80</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>set from</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QStackedWidget" name="stackedWidget_2">
     <property name="geometry">
@@ -2891,6 +2904,11 @@
   <customwidget>
    <class>CustomLineEdit</class>
    <extends>QLineEdit</extends>
+   <header>mainwindow.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CustomLabel</class>
+   <extends>QLabel</extends>
    <header>mainwindow.h</header>
   </customwidget>
  </customwidgets>

@@ -3,7 +3,7 @@
 
 #include "CObjectBase.h"
 
-#include "../../../graphics/pro/Fonts.h"
+#include "../../../../graphics/pro/Fonts.h"
 
 class CSvgFile;
 

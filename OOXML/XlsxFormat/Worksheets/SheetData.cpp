@@ -1859,7 +1859,7 @@ namespace OOX
 			{
 				if(checkArrayCell(sourceCellRef, sharedFormulas))
 				{
-					if(!m_oFormula.IsInit())
+                    if(!m_oFormula.IsInit() || m_oFormula->m_sText.empty())
 					{
 						m_oFormula.Init();
 						m_oFormula->m_oT = SimpleTypes::Spreadsheet::cellformulatypeArray;

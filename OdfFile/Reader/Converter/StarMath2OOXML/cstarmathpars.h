@@ -71,7 +71,7 @@ namespace StarMath
 		const std::wstring& GetFontName();
 		bool EmptyColor();
 		bool ParseFontAttribute(const TypeElement& enTypeFont,CStarMathReader* pReader);
-        bool ParseColorAttribute(const std::wstring& wsToken,CStarMathReader* pReader);
+		bool ParseColorAttribute(const std::wstring& wsToken,CStarMathReader* pReader);
 		void SetSize(const unsigned int& iSize);
 		void SetAlignment(const unsigned int& iAlignment);
 		void SetBold();

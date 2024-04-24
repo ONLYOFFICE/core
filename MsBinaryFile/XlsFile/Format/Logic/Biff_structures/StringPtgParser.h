@@ -46,6 +46,7 @@ public:
 
 private:
     const void parsePtgTypes(Rgce& rgce);
+    std::vector<bool> PosValArgs(const unsigned int &index)const;
 	PtgStack ptg_stack;
 
 };

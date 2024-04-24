@@ -154,6 +154,11 @@ const bool PtgFuncVar::getFCeFunc()
 	return fCeFunc;
 }
 
+const unsigned short PtgFuncVar::getFuncIndex() const
+{
+    return tab.getIndex();
+}
+
 
 } // namespace XLS
 

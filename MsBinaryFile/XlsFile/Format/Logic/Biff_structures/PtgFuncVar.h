@@ -62,6 +62,8 @@ public:
 	
 	const bool getFCeFunc();
 
+	const unsigned short getFuncIndex() const;
+
 	static const unsigned short fixed_id = 0x02;
 private:
 	unsigned char cparams;

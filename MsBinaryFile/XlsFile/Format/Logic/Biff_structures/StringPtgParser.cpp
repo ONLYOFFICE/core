@@ -342,9 +342,6 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             }
 			else if (SyntaxPtg::extract_PtgList(it, itEnd, ptgList))// Shall be placed strongly before PtgArea and PtgRef
 			{
-                if((ptgList.rowType == 0x10 || ptgList.rowType == 0x08 || ptgList.rowType == 0x02)
-                        && ptgList.columns == 0x01)
-                    ptgList.type_ = 0x01;
 				rgce.addPtg(found_operand = OperandPtgPtr(new PtgList(ptgList)));
 			}
             else if(SyntaxPtg::extract_PtgArea(it, itEnd, operand_str)) // Sequence is important (in pair with PtgRef)
@@ -440,11 +437,19 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
     return true;
 }
 
-void SetPtgType(unsigned short &ptgId, const char type)
+void SetPtgType(PtgPtr ptg, const char type)
 {
-    if(ptgId > 31)
-    SETBITS(ptgId,5,6,type);
+    if(ptg->ptg_id.get() > 0x1F && ptg->ptg_id.get() <= 0x7D )
+    {
+        SETBITS(ptg->ptg_id.get(),5,6,type);
+    }
+    else if(ptg->ptg_id.get() == 0x1918)
+    {
+        auto list = static_cast<XLS::PtgList*>(ptg.get());
+        list->type_ = type - 1;
+    }
 }
+
 const void StringPtgParser::parsePtgTypes(Rgce& rgce)
 {
     PtgVector functionStack;
@@ -464,7 +469,7 @@ const void StringPtgParser::parsePtgTypes(Rgce& rgce)
                 auto refArgs = PosValArgs(funcPtr->getFuncIndex());
                 for(auto j = paramsNum-1; j >= 0; j--)
                 {  if(refArgs.size() > j && refArgs.at(j))
-                    SetPtgType(functionStack.back()->ptg_id.get(), 3);
+                    SetPtgType(functionStack.back(), 3);
                     functionStack.pop_back();
                 }
                 ///check and change fixed num of args
@@ -477,7 +482,7 @@ const void StringPtgParser::parsePtgTypes(Rgce& rgce)
                 for(auto j = paramsNum-1; j >= 0; j--)
                 {
                     if(refArgs.size() > j && refArgs.at(j))
-                    SetPtgType(functionStack.back()->ptg_id.get(), 3);
+                    SetPtgType(functionStack.back(), 3);
                     functionStack.pop_back();
                 }
             }
@@ -485,19 +490,19 @@ const void StringPtgParser::parsePtgTypes(Rgce& rgce)
         }
         else if(ptgId > 1 && ptgId < 15)
         {
-            SetPtgType(functionStack.back()->ptg_id.get(), 3);
+            SetPtgType(functionStack.back(), 3);
             functionStack.pop_back();
-            SetPtgType(functionStack.back()->ptg_id.get(), 3);
+            SetPtgType(functionStack.back(), 3);
         }
         else if(ptgId > 14 && ptgId < 18)
         {
-            SetPtgType(functionStack.back()->ptg_id.get(), 1);
+            SetPtgType(functionStack.back(), 1);
             functionStack.pop_back();
-            SetPtgType(functionStack.back()->ptg_id.get(), 1);
+            SetPtgType(functionStack.back(), 1);
         }
         else if(ptgId > 17 && ptgId < 21)
         {
-           SetPtgType(functionStack.back()->ptg_id.get(), 3);
+           SetPtgType(functionStack.back(), 3);
         }
         else if(ptgId == 21)
         {

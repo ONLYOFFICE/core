@@ -629,12 +629,14 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 			else if(boost::regex_search(first, last, results_1, reg_inside_table4))
 			{
 				_UINT16 indexColumn = -1;
+                ptgList.rowType = 0x00;
 				auto insider = boost::algorithm::erase_all_copy(results_1.str(0), L"\n");
 
 				if (XMLSTUFF::isColumn(boost::algorithm::erase_last_copy(boost::algorithm::erase_first_copy(insider, L"["), L"]"), indexTable, indexColumn))
 				{
 					ptgList.columns = 0x01;
 					ptgList.colFirst = indexColumn;
+                    ptgList.colLast = ptgList.colFirst;
                     first = results_1[0].second;
                     return true;
 				}

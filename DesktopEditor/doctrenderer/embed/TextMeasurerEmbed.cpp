@@ -134,7 +134,11 @@ JSSmart<CJSValue> CTextMeasurerEmbed::FT_Get_Glyph_Render_Params(JSSmart<CJSValu
 JSSmart<CJSValue> CTextMeasurerEmbed::FT_Get_Glyph_Render_Buffer(JSSmart<CJSValue> face, JSSmart<CJSValue> size)
 {
 	void* Data = NSShaper::FT_Get_Glyph_Render_Buffer(RAW_POINTER(face));
-	return CJSContext::createUint8Array((unsigned char*)Data, size->toInt32(), true);
+	int nSize = size->toInt32();
+	int nSizeMax = NSShaper::FT_Get_Glyph_Render_BufferSize(RAW_POINTER(face));
+	if (nSize > nSizeMax)
+		nSize = nSizeMax;
+	return CJSContext::createUint8Array((unsigned char*)Data, nSize, true);
 }
 
 JSSmart<CJSValue> CTextMeasurerEmbed::FT_Set_Transform(JSSmart<CJSValue> face, JSSmart<CJSValue> xx, JSSmart<CJSValue> yx, JSSmart<CJSValue> xy, JSSmart<CJSValue> yy)

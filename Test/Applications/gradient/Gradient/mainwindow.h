@@ -41,6 +41,27 @@ public slots:
 	}
 };
 
+class CustomParametrLineEdit : public QLineEdit
+{
+	Q_OBJECT
+public:
+	CustomParametrLineEdit(QWidget *parent = nullptr) : QLineEdit(parent)
+	{
+		connect(this, &QLineEdit::editingFinished, this, &CustomParametrLineEdit::onEditingFinished);
+	}
+	~CustomParametrLineEdit() {}
+public slots:
+	void onEditingFinished()
+	{
+		if (this->text() == "")
+			this->setText(this->placeholderText());
+		if (this->text().toDouble() < 0)
+			this->setText("0");
+		if (this->text().toDouble() > 1)
+			this->setText("1");
+	}
+};
+
 class CustomLabel : public QLabel
 {
 	Q_OBJECT
@@ -134,6 +155,9 @@ struct Info
 																 {{150, 250}, {170, 230}, {170, 170}, {50, 150}},
 																 {{350, 250}, {230, 230}, {230, 170}, {150, 250}},
 																 {{300, 300}, {250, 250}, {350, 150}, {300, 100}}};
+	std::vector<float> triangle_parametrs = {0.f, 0.5f, 1.f};
+	std::vector<float> curve_parametrs = {0.f, 0.3f, 1.f, 0.6f};
+	std::vector<std::vector<float>> tensor_curve_parametrs = {{0.f, 0.3f}, {1.f, 0.6f}};
 
 	NSStructures::GradientInfo ginfo;
 	int gradient_type;

@@ -117,7 +117,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>4</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="Linear_Page">
       <widget class="QGroupBox" name="groupBox">
@@ -2481,8 +2481,8 @@
     <widget class="QPushButton" name="pushButton">
      <property name="geometry">
       <rect>
-       <x>360</x>
-       <y>60</y>
+       <x>370</x>
+       <y>40</y>
        <width>117</width>
        <height>29</height>
       </rect>
@@ -2494,14 +2494,27 @@
     <widget class="QPushButton" name="pushButton_2">
      <property name="geometry">
       <rect>
-       <x>380</x>
-       <y>110</y>
+       <x>390</x>
+       <y>100</y>
        <width>80</width>
        <height>29</height>
       </rect>
      </property>
      <property name="text">
       <string>set from</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_42">
+     <property name="geometry">
+      <rect>
+       <x>300</x>
+       <y>80</y>
+       <width>288</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Set the coordinates from the label and click</string>
      </property>
     </widget>
    </widget>
@@ -2515,7 +2528,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>6</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="page">
      <widget class="QLabel" name="label_5">
@@ -2646,7 +2659,134 @@
       </property>
      </widget>
     </widget>
-    <widget class="QWidget" name="page_4"/>
+    <widget class="QWidget" name="page_4">
+     <widget class="QLabel" name="label_26">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>469</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>A parametric gradient differs in that the colors at the corners are set by</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_27">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>271</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>the initial parameters (value from 0 to 1).</string>
+      </property>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_16">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>50</y>
+        <width>470</width>
+        <height>130</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Set Parametrs</string>
+      </property>
+      <widget class="QLabel" name="label_77">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>135</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>First Vertex Parametr</string>
+       </property>
+      </widget>
+      <widget class="CustomParametrLineEdit" name="First_Vertex_Parametr_Input_4">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>50</y>
+         <width>113</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="placeholderText">
+        <string>0</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_78">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>30</y>
+         <width>157</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Second Vertex Parametr</string>
+       </property>
+      </widget>
+      <widget class="CustomParametrLineEdit" name="Second_Vertex_Parametr_Input_4">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>50</y>
+         <width>113</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0.5</string>
+       </property>
+       <property name="placeholderText">
+        <string>0.5</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_79">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>80</y>
+         <width>157</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Third Vertex Parametr</string>
+       </property>
+      </widget>
+      <widget class="CustomParametrLineEdit" name="Third_Vertex_Parametr_Input_4">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>100</y>
+         <width>113</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>1</string>
+       </property>
+       <property name="placeholderText">
+        <string>1</string>
+       </property>
+      </widget>
+     </widget>
+    </widget>
     <widget class="QWidget" name="page_5">
      <widget class="QLabel" name="label_32">
       <property name="geometry">
@@ -2753,7 +2893,163 @@
       </property>
      </widget>
     </widget>
-    <widget class="QWidget" name="page_6"/>
+    <widget class="QWidget" name="page_6">
+     <widget class="QLabel" name="label_24">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>469</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>A parametric gradient differs in that the colors at the corners are set by</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_25">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>271</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>the initial parameters (value from 0 to 1).</string>
+      </property>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_15">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>50</y>
+        <width>470</width>
+        <height>130</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Set Parametrs</string>
+      </property>
+      <widget class="QLabel" name="label_73">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>135</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>First Vertex Parametr</string>
+       </property>
+      </widget>
+      <widget class="CustomParametrLineEdit" name="First_Vertex_Parametr_Input_2">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>50</y>
+         <width>113</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="placeholderText">
+        <string>0</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_74">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>30</y>
+         <width>157</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Second Vertex Parametr</string>
+       </property>
+      </widget>
+      <widget class="CustomParametrLineEdit" name="Second_Vertex_Parametr_Input_2">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>50</y>
+         <width>113</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0.3</string>
+       </property>
+       <property name="placeholderText">
+        <string>0.3</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_75">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>80</y>
+         <width>157</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Third Vertex Parametr</string>
+       </property>
+      </widget>
+      <widget class="CustomParametrLineEdit" name="Third_Vertex_Parametr_Input_2">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>100</y>
+         <width>113</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0.6</string>
+       </property>
+       <property name="placeholderText">
+        <string>0.6</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_76">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>80</y>
+         <width>157</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Fourth Vertex Parametr</string>
+       </property>
+      </widget>
+      <widget class="CustomParametrLineEdit" name="Fourth_Vertex_Parametr_Input_2">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>100</y>
+         <width>113</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>1</string>
+       </property>
+       <property name="placeholderText">
+        <string>1</string>
+       </property>
+      </widget>
+     </widget>
+    </widget>
     <widget class="QWidget" name="page_7">
      <widget class="QLabel" name="label_60">
       <property name="geometry">
@@ -2808,7 +3104,163 @@
       </property>
      </widget>
     </widget>
-    <widget class="QWidget" name="page_8"/>
+    <widget class="QWidget" name="page_8">
+     <widget class="QLabel" name="label_22">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>469</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>A parametric gradient differs in that the colors at the corners are set by</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_23">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>271</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>the initial parameters (value from 0 to 1).</string>
+      </property>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_8">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>50</y>
+        <width>470</width>
+        <height>130</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Set Parametrs</string>
+      </property>
+      <widget class="QLabel" name="label_69">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>135</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>First Vertex Parametr</string>
+       </property>
+      </widget>
+      <widget class="CustomParametrLineEdit" name="First_Vertex_Parametr_Input_3">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>50</y>
+         <width>113</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="placeholderText">
+        <string>0</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_70">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>30</y>
+         <width>157</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Second Vertex Parametr</string>
+       </property>
+      </widget>
+      <widget class="CustomParametrLineEdit" name="Second_Vertex_Parametr_Input_3">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>50</y>
+         <width>113</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0.3</string>
+       </property>
+       <property name="placeholderText">
+        <string>0.3</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_71">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>80</y>
+         <width>157</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Third Vertex Parametr</string>
+       </property>
+      </widget>
+      <widget class="CustomParametrLineEdit" name="Third_Vertex_Parametr_Input_3">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>100</y>
+         <width>113</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0.6</string>
+       </property>
+       <property name="placeholderText">
+        <string>0.6</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_72">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>80</y>
+         <width>157</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Fourth Vertex Parametr</string>
+       </property>
+      </widget>
+      <widget class="CustomParametrLineEdit" name="Fourth_Vertex_Parametr_Input_3">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>100</y>
+         <width>113</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>1</string>
+       </property>
+       <property name="placeholderText">
+        <string>1</string>
+       </property>
+      </widget>
+     </widget>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -2909,6 +3361,11 @@
   <customwidget>
    <class>CustomLabel</class>
    <extends>QLabel</extends>
+   <header>mainwindow.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CustomParametrLineEdit</class>
+   <extends>QLineEdit</extends>
    <header>mainwindow.h</header>
   </customwidget>
  </customwidgets>

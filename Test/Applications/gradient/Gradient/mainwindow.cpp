@@ -134,7 +134,7 @@ void MainWindow::on_actionCoons_Patch_Parametric_triggered()
 	ui->stackedWidget_2->setCurrentIndex(5);
 	ui->statusbar->showMessage("Coons Patch Parametric");
 	info.gradient = CoonsPatchParametric;
-	info.gradient_type = c_BrushTypePathNewLinearGradient;
+	info.gradient_type = c_BrushTypeCurveGradient;
 }
 
 void MainWindow::on_actionTensor_Coons_Patch_Gradient_triggered()
@@ -192,9 +192,17 @@ void MainWindow::on_pushButton_clicked()
 		info.triangle[1].y = ui->Second_Vertex_Y_Coordinate_Input->text().toInt();
 		info.triangle[2].x = ui->Third_Vertex_X_Coordinate_Input->text().toInt();
 		info.triangle[2].y = ui->Third_Vertex_Y_Coordinate_Input->text().toInt();
+
+		if (info.gradient == TriangleParametric)
+		{
+			info.triangle_parametrs[0] = ui->First_Vertex_Parametr_Input_4->text().toFloat();
+			info.triangle_parametrs[1] = ui->Second_Vertex_Parametr_Input_4->text().toFloat();
+			info.triangle_parametrs[2] = ui->Third_Vertex_Parametr_Input_4->text().toFloat();
+		}
+
 		info.ginfo = NSStructures::GInfoConstructor::get_triangle(info.triangle,
 																  {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
-																  {0.f, 0.9f, 1.f},
+																  info.triangle_parametrs,
 																  info.gradient == TriangleParametric);
 		points = {};
 		for (auto p : info.triangle)
@@ -204,33 +212,51 @@ void MainWindow::on_pushButton_clicked()
 	}
 	else if (info.gradient == CoonsPatch || info.gradient == CoonsPatchParametric)
 	{
-		info.curve[0].x = MM_TO_COORD(ui->lable_test->width()) * ui->First_Vertex_X_Coordinate_Input_3->text().toInt();
-		info.curve[0].y = MM_TO_COORD(ui->lable_test->height()) * ui->First_Vertex_Y_Coordinate_Input_3->text().toInt();
-		info.curve[1].x = MM_TO_COORD(ui->lable_test->width()) * ui->First_X_Coordinate_First_Edge->text().toInt();
-		info.curve[1].y = MM_TO_COORD(ui->lable_test->height()) * ui->First_Y_Coordinate_First_Edge->text().toInt();
-		info.curve[2].x = MM_TO_COORD(ui->lable_test->width()) * ui->Second_X_Coordinate_First_Edge->text().toInt();
-		info.curve[2].y = MM_TO_COORD(ui->lable_test->height()) * ui->Second_Y_Coordinate_First_Edge->text().toInt();
-		info.curve[3].x = MM_TO_COORD(ui->lable_test->width()) * ui->Second_Vertex_X_Coordinate_Input_3->text().toInt();
-		info.curve[3].y = MM_TO_COORD(ui->lable_test->height()) * ui->Second_Vertex_Y_Coordinate_Input_3->text().toInt();
-		info.curve[4].x = MM_TO_COORD(ui->lable_test->width()) * ui->First_X_Coordinate_Second_Edge->text().toInt();
-		info.curve[4].y = MM_TO_COORD(ui->lable_test->height()) * ui->First_Y_Coordinate_Second_Edge->text().toInt();
-		info.curve[5].x = MM_TO_COORD(ui->lable_test->width()) * ui->Second_X_Coordinate_Second_Edge->text().toInt();
-		info.curve[5].y = MM_TO_COORD(ui->lable_test->height()) * ui->Second_Y_Coordinate_Second_Edge->text().toInt();
-		info.curve[6].x = MM_TO_COORD(ui->lable_test->width()) * ui->Third_Vertex_X_Coordinate_Input_3->text().toInt();
-		info.curve[6].y = MM_TO_COORD(ui->lable_test->height()) * ui->Third_Vertex_Y_Coordinate_Input_3->text().toInt();
-		info.curve[7].x = MM_TO_COORD(ui->lable_test->width()) * ui->First_X_Coordinate_Third_Edge->text().toInt();
-		info.curve[7].y = MM_TO_COORD(ui->lable_test->height()) * ui->First_Y_Coordinate_Third_Edge->text().toInt();
-		info.curve[8].x = MM_TO_COORD(ui->lable_test->width()) * ui->Second_X_Coordinate_Third_Edge->text().toInt();
-		info.curve[8].y = MM_TO_COORD(ui->lable_test->height()) * ui->Second_Y_Coordinate_Third_Edge->text().toInt();
-		info.curve[9].x = MM_TO_COORD(ui->lable_test->width()) * ui->Fourth_Vertex_X_Coordinate_Input_3->text().toInt();
-		info.curve[9].y = MM_TO_COORD(ui->lable_test->height()) * ui->Fourth_Vertex_Y_Coordinate_Input_3->text().toInt();
-		info.curve[10].x = MM_TO_COORD(ui->lable_test->width()) * ui->First_X_Coordinate_Fourth_Edge->text().toInt();
-		info.curve[10].y = MM_TO_COORD(ui->lable_test->height()) * ui->First_Y_Coordinate_Fourth_Edge->text().toInt();
-		info.curve[11].x = MM_TO_COORD(ui->lable_test->width()) * ui->Second_X_Coordinate_Fourth_Edge->text().toInt();
-		info.curve[11].y = MM_TO_COORD(ui->lable_test->height()) * ui->Second_Y_Coordinate_Fourth_Edge->text().toInt();
+		info.curve[0].x = ui->First_Vertex_X_Coordinate_Input_3->text().toInt();
+		info.curve[0].y = ui->First_Vertex_Y_Coordinate_Input_3->text().toInt();
+		info.curve[1].x = ui->First_X_Coordinate_First_Edge->text().toInt();
+		info.curve[1].y = ui->First_Y_Coordinate_First_Edge->text().toInt();
+		info.curve[2].x = ui->Second_X_Coordinate_First_Edge->text().toInt();
+		info.curve[2].y = ui->Second_Y_Coordinate_First_Edge->text().toInt();
+		info.curve[3].x = ui->Second_Vertex_X_Coordinate_Input_3->text().toInt();
+		info.curve[3].y = ui->Second_Vertex_Y_Coordinate_Input_3->text().toInt();
+		info.curve[4].x = ui->First_X_Coordinate_Second_Edge->text().toInt();
+		info.curve[4].y = ui->First_Y_Coordinate_Second_Edge->text().toInt();
+		info.curve[5].x = ui->Second_X_Coordinate_Second_Edge->text().toInt();
+		info.curve[5].y = ui->Second_Y_Coordinate_Second_Edge->text().toInt();
+		info.curve[6].x = ui->Third_Vertex_X_Coordinate_Input_3->text().toInt();
+		info.curve[6].y = ui->Third_Vertex_Y_Coordinate_Input_3->text().toInt();
+		info.curve[7].x = ui->First_X_Coordinate_Third_Edge->text().toInt();
+		info.curve[7].y = ui->First_Y_Coordinate_Third_Edge->text().toInt();
+		info.curve[8].x = ui->Second_X_Coordinate_Third_Edge->text().toInt();
+		info.curve[8].y = ui->Second_Y_Coordinate_Third_Edge->text().toInt();
+		info.curve[9].x = ui->Fourth_Vertex_X_Coordinate_Input_3->text().toInt();
+		info.curve[9].y = ui->Fourth_Vertex_Y_Coordinate_Input_3->text().toInt();
+		info.curve[10].x = ui->First_X_Coordinate_Fourth_Edge->text().toInt();
+		info.curve[10].y = ui->First_Y_Coordinate_Fourth_Edge->text().toInt();
+		info.curve[11].x = ui->Second_X_Coordinate_Fourth_Edge->text().toInt();
+		info.curve[11].y = ui->Second_Y_Coordinate_Fourth_Edge->text().toInt();
+
+		if (info.gradient == CoonsPatchParametric)
+		{
+			info.curve_parametrs[0] = ui->First_Vertex_Parametr_Input_2->text().toFloat();
+			info.curve_parametrs[1] = ui->Second_Vertex_Parametr_Input_2->text().toFloat();
+			info.curve_parametrs[2] = ui->Third_Vertex_Parametr_Input_2->text().toFloat();
+			info.curve_parametrs[3] = ui->Fourth_Vertex_Parametr_Input_2->text().toFloat();
+		}
+
+		if (info.gradient == CoonsPatch)
+		{
+			for(int j = 0; j < 12; j++)
+			{
+				info.curve[j].x *= MM_TO_COORD(ui->lable_test->width());
+				info.curve[j].y *= MM_TO_COORD(ui->lable_test->height());
+			}
+		}
+
 		info.ginfo = NSStructures::GInfoConstructor::get_curve(
 			info.curve,
-			{0.1f, 0.5f, 0.9f, 0.2f},
+			info.curve_parametrs,
 			{{0, 0, 255}, {255, 0, 255},
 			 {255, 0, 0}, {0, 255, 0}},
 			info.gradient == CoonsPatchParametric
@@ -238,41 +264,62 @@ void MainWindow::on_pushButton_clicked()
 	}
 	else if (info.gradient == TensorCoonsPatch || info.gradient == TensorCoonsPatchParametric)
 	{
-		info.tensorcurve[0][0].x = MM_TO_COORD(ui->lable_test->width()) * ui->First_X_Coordinate_First_Edge_3->text().toInt();
-		info.tensorcurve[0][0].y = MM_TO_COORD(ui->lable_test->height()) * ui->First_Y_Coordinate_First_Edge_3->text().toInt();
-		info.tensorcurve[0][1].x = MM_TO_COORD(ui->lable_test->width()) * ui->Second_X_Coordinate_First_Edge_3->text().toInt();
-		info.tensorcurve[0][1].y = MM_TO_COORD(ui->lable_test->height()) * ui->Second_Y_Coordinate_First_Edge_3->text().toInt();
-		info.tensorcurve[0][2].x = MM_TO_COORD(ui->lable_test->width()) * ui->Third_X_Coordinate_First_Edge_3->text().toInt();
-		info.tensorcurve[0][2].y = MM_TO_COORD(ui->lable_test->height()) * ui->Third_Y_Coordinate_First_Edge_3->text().toInt();
-		info.tensorcurve[0][3].x = MM_TO_COORD(ui->lable_test->width()) * ui->Fourth_X_Coordinate_First_Edge_3->text().toInt();
-		info.tensorcurve[0][3].y = MM_TO_COORD(ui->lable_test->height()) * ui->Fourth_Y_Coordinate_First_Edge_3->text().toInt();
-		info.tensorcurve[1][0].x = MM_TO_COORD(ui->lable_test->width()) * ui->First_X_Coordinate_Second_Edge_3->text().toInt();
-		info.tensorcurve[1][0].y = MM_TO_COORD(ui->lable_test->height()) * ui->First_Y_Coordinate_Second_Edge_3->text().toInt();
-		info.tensorcurve[1][1].x = MM_TO_COORD(ui->lable_test->width()) * ui->Second_X_Coordinate_Second_Edge_3->text().toInt();
-		info.tensorcurve[1][1].y = MM_TO_COORD(ui->lable_test->height()) * ui->Second_Y_Coordinate_Second_Edge_3->text().toInt();
-		info.tensorcurve[1][2].x = MM_TO_COORD(ui->lable_test->width()) * ui->Third_X_Coordinate_Second_Edge_3->text().toInt();
-		info.tensorcurve[1][2].y = MM_TO_COORD(ui->lable_test->height()) * ui->Third_Y_Coordinate_Second_Edge_3->text().toInt();
-		info.tensorcurve[1][3].x = MM_TO_COORD(ui->lable_test->width()) * ui->Fourth_X_Coordinate_Second_Edge_3->text().toInt();
-		info.tensorcurve[1][3].y = MM_TO_COORD(ui->lable_test->height()) * ui->Fourth_Y_Coordinate_Second_Edge_3->text().toInt();
-		info.tensorcurve[2][0].x = MM_TO_COORD(ui->lable_test->width()) * ui->First_X_Coordinate_Third_Edge_3->text().toInt();
-		info.tensorcurve[2][0].y = MM_TO_COORD(ui->lable_test->height()) * ui->First_Y_Coordinate_Third_Edge_3->text().toInt();
-		info.tensorcurve[2][1].x = MM_TO_COORD(ui->lable_test->width()) * ui->Second_Y_Coordinate_Third_Edge_3->text().toInt();
-		info.tensorcurve[2][1].y = MM_TO_COORD(ui->lable_test->height()) * ui->Second_Y_Coordinate_Third_Edge_3->text().toInt();
-		info.tensorcurve[2][2].x = MM_TO_COORD(ui->lable_test->width()) * ui->Third_X_Coordinate_Third_Edge_3->text().toInt();
-		info.tensorcurve[2][2].y = MM_TO_COORD(ui->lable_test->height()) * ui->Third_Y_Coordinate_Third_Edge_3->text().toInt();
-		info.tensorcurve[2][3].x = MM_TO_COORD(ui->lable_test->width()) * ui->Fourth_X_Coordinate_Third_Edge_3->text().toInt();
-		info.tensorcurve[2][3].y = MM_TO_COORD(ui->lable_test->height()) * ui->Fourth_Y_Coordinate_Third_Edge_3->text().toInt();
-		info.tensorcurve[3][0].x = MM_TO_COORD(ui->lable_test->width()) * ui->First_X_Coordinate_Fourth_Edge_3->text().toInt();
-		info.tensorcurve[3][0].y = MM_TO_COORD(ui->lable_test->height()) * ui->First_Y_Coordinate_Fourth_Edge_3->text().toInt();
-		info.tensorcurve[3][1].x = MM_TO_COORD(ui->lable_test->width()) * ui->Second_X_Coordinate_Fourth_Edge_3->text().toInt();
-		info.tensorcurve[3][1].y = MM_TO_COORD(ui->lable_test->height()) * ui->Second_Y_Coordinate_Fourth_Edge_3->text().toInt();
-		info.tensorcurve[3][2].x = MM_TO_COORD(ui->lable_test->width()) * ui->Third_X_Coordinate_Fourth_Edge_3->text().toInt();
-		info.tensorcurve[3][2].y = MM_TO_COORD(ui->lable_test->height()) * ui->Third_Y_Coordinate_Fourth_Edge_3->text().toInt();
-		info.tensorcurve[3][3].x = MM_TO_COORD(ui->lable_test->width()) * ui->Fourth_X_Coordinate_Fourth_Edge_3->text().toInt();
-		info.tensorcurve[3][3].y = MM_TO_COORD(ui->lable_test->height()) * ui->Fourth_Y_Coordinate_Fourth_Edge_3->text().toInt();
+		info.tensorcurve[0][0].x = ui->First_X_Coordinate_First_Edge_3->text().toInt();
+		info.tensorcurve[0][0].y = ui->First_Y_Coordinate_First_Edge_3->text().toInt();
+		info.tensorcurve[0][1].x = ui->Second_X_Coordinate_First_Edge_3->text().toInt();
+		info.tensorcurve[0][1].y = ui->Second_Y_Coordinate_First_Edge_3->text().toInt();
+		info.tensorcurve[0][2].x = ui->Third_X_Coordinate_First_Edge_3->text().toInt();
+		info.tensorcurve[0][2].y = ui->Third_Y_Coordinate_First_Edge_3->text().toInt();
+		info.tensorcurve[0][3].x = ui->Fourth_X_Coordinate_First_Edge_3->text().toInt();
+		info.tensorcurve[0][3].y = ui->Fourth_Y_Coordinate_First_Edge_3->text().toInt();
+		info.tensorcurve[1][0].x = ui->First_X_Coordinate_Second_Edge_3->text().toInt();
+		info.tensorcurve[1][0].y = ui->First_Y_Coordinate_Second_Edge_3->text().toInt();
+		info.tensorcurve[1][1].x = ui->Second_X_Coordinate_Second_Edge_3->text().toInt();
+		info.tensorcurve[1][1].y = ui->Second_Y_Coordinate_Second_Edge_3->text().toInt();
+		info.tensorcurve[1][2].x = ui->Third_X_Coordinate_Second_Edge_3->text().toInt();
+		info.tensorcurve[1][2].y = ui->Third_Y_Coordinate_Second_Edge_3->text().toInt();
+		info.tensorcurve[1][3].x = ui->Fourth_X_Coordinate_Second_Edge_3->text().toInt();
+		info.tensorcurve[1][3].y = ui->Fourth_Y_Coordinate_Second_Edge_3->text().toInt();
+		info.tensorcurve[2][0].x = ui->First_X_Coordinate_Third_Edge_3->text().toInt();
+		info.tensorcurve[2][0].y = ui->First_Y_Coordinate_Third_Edge_3->text().toInt();
+		info.tensorcurve[2][1].x = ui->Second_Y_Coordinate_Third_Edge_3->text().toInt();
+		info.tensorcurve[2][1].y = ui->Second_Y_Coordinate_Third_Edge_3->text().toInt();
+		info.tensorcurve[2][2].x = ui->Third_X_Coordinate_Third_Edge_3->text().toInt();
+		info.tensorcurve[2][2].y = ui->Third_Y_Coordinate_Third_Edge_3->text().toInt();
+		info.tensorcurve[2][3].x = ui->Fourth_X_Coordinate_Third_Edge_3->text().toInt();
+		info.tensorcurve[2][3].y = ui->Fourth_Y_Coordinate_Third_Edge_3->text().toInt();
+		info.tensorcurve[3][0].x = ui->First_X_Coordinate_Fourth_Edge_3->text().toInt();
+		info.tensorcurve[3][0].y = ui->First_Y_Coordinate_Fourth_Edge_3->text().toInt();
+		info.tensorcurve[3][1].x = ui->Second_X_Coordinate_Fourth_Edge_3->text().toInt();
+		info.tensorcurve[3][1].y = ui->Second_Y_Coordinate_Fourth_Edge_3->text().toInt();
+		info.tensorcurve[3][2].x = ui->Third_X_Coordinate_Fourth_Edge_3->text().toInt();
+		info.tensorcurve[3][2].y = ui->Third_Y_Coordinate_Fourth_Edge_3->text().toInt();
+		info.tensorcurve[3][3].x = ui->Fourth_X_Coordinate_Fourth_Edge_3->text().toInt();
+		info.tensorcurve[3][3].y = ui->Fourth_Y_Coordinate_Fourth_Edge_3->text().toInt();
+
+		if (info.gradient == TensorCoonsPatchParametric)
+		{
+			info.tensor_curve_parametrs[0][0] = ui->First_Vertex_Parametr_Input_3->text().toFloat();
+			info.tensor_curve_parametrs[0][1] = ui->Second_Vertex_Parametr_Input_3->text().toFloat();
+			info.tensor_curve_parametrs[1][0] = ui->Third_Vertex_Parametr_Input_3->text().toFloat();
+			info.tensor_curve_parametrs[1][1] = ui->Fourth_Vertex_Parametr_Input_3->text().toFloat();
+		}
+
+		if (info.gradient == TensorCoonsPatch)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+					info.tensorcurve[i][j].x *= MM_TO_COORD(ui->lable_test->width());
+					info.tensorcurve[i][j].y *= MM_TO_COORD(ui->lable_test->height());
+				}
+			}
+		}
+
 		info.ginfo = NSStructures::GInfoConstructor::get_tensor_curve(
 			info.tensorcurve,
-			{{0, 0.5}, {1, 0.5}},
+			info.tensor_curve_parametrs,
 			{{{0, 0, 255}, {255, 0, 255}}, {{255, 0, 0}, {0, 255, 0}}},
 			info.gradient == TensorCoonsPatchParametric
 			);

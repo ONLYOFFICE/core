@@ -2141,6 +2141,26 @@ namespace OOX
 								pSource = str;
 							}
 						}
+                        else if(m_oRichText.IsInit())
+                        {
+                            if(m_oFormula.IsInit())
+                            {
+                                auto str(new XLSB::FmlaString);
+                                if(m_oValue.IsInit())
+                                    str->value = m_oRichText->ToString();
+                                oCell = &str->cell;
+
+                                pSource = str;
+
+                            }
+                            else
+                            {
+                                auto str(new XLSB::CellSt);
+                                    str->value = m_oRichText->ToString();
+                                oCell = &str->cell;
+                                pSource = str;
+                            }
+                        }
 						else
 						{
 							auto pCellblank = new(XLSB::CellBlank);

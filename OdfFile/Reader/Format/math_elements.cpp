@@ -62,12 +62,12 @@ void office_math::add_child_element( xml::sax * Reader, const std::wstring & Ns,
 }
 
 
-void office_math::oox_convert(oox::math_context & Context)
+void office_math::oox_convert(oox::math_context & Context, int iTypeConversion)
 {
 	if (semantics_)
 	{
 		office_math_element* math_element = dynamic_cast<office_math_element*>(semantics_.get());
-		math_element->oox_convert(Context);
+		math_element->oox_convert(Context,iTypeConversion);
 	}
 }
 
@@ -93,6 +93,10 @@ void math_semantics::add_child_element( xml::sax * Reader, const std::wstring & 
 
 
 void math_semantics::oox_convert(oox::math_context & Context)
+{
+    this->oox_convert(Context,0);
+}
+void math_semantics::oox_convert(oox::math_context &Context, int iTypeConversion)
 {
     math_annotation* annotation = dynamic_cast<math_annotation*>(annotation_.get());
     math_annotation_xml* annotation_xml = dynamic_cast<math_annotation_xml*>(annotation_.get());
@@ -121,7 +125,8 @@ void math_semantics::oox_convert(oox::math_context & Context)
         parser.SetBaseItalic(Context.base_font_italic_);
         parser.SetBaseBold(Context.base_font_bold_);
 
-        /*result = */converter.StartConversion(parser.Parse(annotation_text));
+        /*result = */converter.StartConversion(parser.Parse(annotation_text,iTypeConversion));
+
 
         Context.output_stream() << converter.GetOOXML();
     }

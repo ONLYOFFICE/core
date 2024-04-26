@@ -692,6 +692,28 @@ unsigned short sheetsnames2ixti(std::wstring name)
 	return 0xFFFF;
 }
 
+ unsigned short AddMultysheetXti(const std::wstring& name, const _INT32& firstIxti, const _INT32& secondIxti)
+ {
+     auto pos1 = std::find_if(XLS::GlobalWorkbookInfo::arXti_External_static.cbegin(), XLS::GlobalWorkbookInfo::arXti_External_static.cend(),
+             [&](XLS::GlobalWorkbookInfo::_xti i) {
+         return i.iSup == firstIxti;
+     });
+
+     auto pos2 = std::find_if(XLS::GlobalWorkbookInfo::arXti_External_static.cbegin(), XLS::GlobalWorkbookInfo::arXti_External_static.cend(),
+             [&](XLS::GlobalWorkbookInfo::_xti i) {
+         return i.iSup == secondIxti;
+     });
+     if (pos1 == XLS::GlobalWorkbookInfo::arXti_External_static.cend() || pos2 == XLS::GlobalWorkbookInfo::arXti_External_static.cend())
+         return 0;
+     XLS::GlobalWorkbookInfo::_xti newXti;
+     newXti.iSup = XLS::GlobalWorkbookInfo::arXti_External_static.size();
+     newXti.itabFirst = pos1->itabFirst;
+     newXti.itabLast = pos2->itabFirst;
+     newXti.link = name;
+     XLS::GlobalWorkbookInfo::arXti_External_static.push_back(newXti);
+     return newXti.iSup;
+ }
+
 unsigned int definenames2index(std::wstring name)
 {
 	unsigned int index;

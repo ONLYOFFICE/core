@@ -1304,6 +1304,36 @@ TEST(SMConvectorTest,UnarySignWithColor)
 	EXPECT_EQ(oTest.GetOOXML(),wsXmlString);
 }
 
+TEST(SMConvectorTest,rSubrSup)
+{
+	std::wstring wsString = L"2 rSub 20 1 rSup 28";
+	StarMath::CParserStarMathString oTemp;
+	StarMath::CConversionSMtoOOXML oTest;
+	oTest.StartConversion(oTemp.Parse(wsString));
+	std::wstring wsXmlString = L"<m:sSub><m:sSubPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /></w:rPr></m:ctrlPr></m:sSubPr><m:e><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /></w:rPr><m:t>2</m:t></m:r></m:e><m:sub><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /></w:rPr><m:t>20</m:t></m:r></m:sub></m:sSub><m:sSup><m:sSupPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /></w:rPr></m:ctrlPr></m:sSupPr><m:e><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /></w:rPr><m:t>1</m:t></m:r></m:e><m:sup><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /></w:rPr><m:t>28</m:t></m:r></m:sup></m:sSup>";
+	EXPECT_EQ(oTest.GetOOXML(),wsXmlString);
+}
+
+TEST(SMConvectorTest,DifferentRegisters)
+{
+	std::wstring wsString = L"2 OvEr 10 unION 5";
+	StarMath::CParserStarMathString oTemp;
+	StarMath::CConversionSMtoOOXML oTest;
+	oTest.StartConversion(oTemp.Parse(wsString));
+	std::wstring wsXmlString = L"<m:f><m:fPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /></w:rPr></m:ctrlPr></m:fPr><m:num><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /></w:rPr><m:t>2</m:t></m:r></m:num><m:den><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /></w:rPr><m:t>10</m:t></m:r></m:den></m:f><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /></w:rPr><m:t>\x22C3</m:t></m:r><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /></w:rPr><m:t>5</m:t></m:r>";
+	EXPECT_EQ(oTest.GetOOXML(),wsXmlString);
+}
+
+TEST(SMConvectorTest,Quotes)
+{
+	std::wstring wsString = L"\"2 + 3\" over 10  2 \"+\" 5 over 3";
+	StarMath::CParserStarMathString oTemp;
+	StarMath::CConversionSMtoOOXML oTest;
+	oTest.StartConversion(oTemp.Parse(wsString));
+	std::wstring wsXmlString = L"<m:f><m:fPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /></w:rPr></m:ctrlPr></m:fPr><m:num><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /></w:rPr><m:t>2 + 3</m:t></m:r></m:num><m:den><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /></w:rPr><m:t>10</m:t></m:r></m:den></m:f><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /></w:rPr><m:t>2</m:t></m:r><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /></w:rPr><m:t>+</m:t></m:r><m:f><m:fPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /></w:rPr></m:ctrlPr></m:fPr><m:num><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /></w:rPr><m:t>5</m:t></m:r></m:num><m:den><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /></w:rPr><m:t>3</m:t></m:r></m:den></m:f>";
+	EXPECT_EQ(oTest.GetOOXML(),wsXmlString);
+}
+
 //TEST(SMConvectorTest,AttributeMatrix)
 //{
 //	std::wstring wsString = L"";

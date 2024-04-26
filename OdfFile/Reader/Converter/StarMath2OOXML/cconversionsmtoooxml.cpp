@@ -327,9 +327,7 @@ namespace StarMath {
 		StandartProperties(pXmlWrite,pAttribute);
 		pXmlWrite->WriteNodeEnd(L"m:ctrlPr",false);
 		pXmlWrite->WriteNodeEnd(L"m:dPr",false,false);
-		pXmlWrite->WriteNodeBegin(L"m:e",false);
-		pValueGrade->ConversionToOOXML(pXmlWrite);
-		pXmlWrite->WriteNodeEnd(L"m:e",false,false);
+		CConversionSMtoOOXML::WriteNodeConversion(L"m:e",pValueGrade,pXmlWrite);
 		pXmlWrite->WriteNodeEnd(L"m:d",false,false);
 	}
 	void CConversionSMtoOOXML::WriteCtrlPrNode(XmlUtils::CXmlWriter *pXmlWrite, CAttribute *pAttribute)

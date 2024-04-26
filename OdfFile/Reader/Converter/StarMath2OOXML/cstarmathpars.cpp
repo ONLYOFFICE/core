@@ -257,6 +257,18 @@ namespace StarMath
 	{
 		m_stBaseAttribute.base_font_italic = bItal;
 	}
+	std::wstring CParserStarMathString::ConvertToLowerCase(const std::wstring& wsToken)
+	{
+		if(!wsToken.empty() &&  wsToken[0] == L'%')
+			return wsToken;
+		std::wstring wsLowerCase;
+		for(wchar_t cOneElement:wsToken)
+			wsLowerCase+= std::tolower(cOneElement);
+		if(wsLowerCase.empty())
+			return wsToken;
+		else
+			return wsLowerCase;
+	}
 //class methods CAttribute
 	CAttribute::CAttribute(): m_bBold(false),m_bItal(false),m_bPhantom(false),m_bStrike(false),m_iSize(0),m_iAlignment(0),m_unCount(0)
 	{
@@ -511,7 +523,7 @@ namespace StarMath
 		case TypeElement::size:
 		{
 			std::wstring wsSize = pReader->GetElement();
-			pReader->SetString(wsSize);
+			pReader->TokenProcessing(wsSize);
 			int iTemp;
 			if(CElementString::GetDigit(wsSize) != TypeElement::undefine)
 				iTemp = std::stoi(wsSize);
@@ -527,12 +539,12 @@ namespace StarMath
 		}
 		case TypeElement::font:
 		{
-			pReader->SetString(pReader->GetElement());
-			if(pReader->GetString() == L"sans")
+			pReader->TokenProcessing();
+			if(pReader->GetLowerCaseString() == L"sans")
 				m_wsNameFont = L"Liberation Sans";
-			else if(pReader->GetString() == L"serif")
+			else if(pReader->GetLowerCaseString() == L"serif")
 				m_wsNameFont = L"Liberation Serif";
-			else if(pReader->GetString() == L"fixed")
+			else if(pReader->GetLowerCaseString() == L"fixed")
 				m_wsNameFont = L"Liberation Mono";
 			else
 				return false;
@@ -624,7 +636,7 @@ namespace StarMath
 			wsSum += std::to_wstring(iGreen);
 		if(iBlue != -1)
 			wsSum += std::to_wstring(iBlue);
-		pReader->SetString(wsSum);
+		pReader->TokenProcessing(wsSum);
 	}
 	bool CAttribute::CheckingForEmptiness()
 	{
@@ -668,7 +680,7 @@ namespace StarMath
 	{
 		switch (pReader->GetGlobalType()) {
 			case TypeElement::String:
-				return new CElementString(pReader->GetString());
+				return new CElementString(pReader->GetOriginalString());
 			case TypeElement::BinOperator:
 				return new CElementBinOperator(pReader->GetLocalType());
 			case TypeElement::SetOperations:
@@ -680,7 +692,7 @@ namespace StarMath
 				if(pReader->GetLocalType() == TypeElement::func)
 				{
 					pReader->GetToken();
-					return new CElementFunction(pReader->GetLocalType(),pReader->GetString());
+					return new CElementFunction(pReader->GetLocalType(),pReader->GetLowerCaseString());
 				}
 				else
 					return new CElementFunction(pReader->GetLocalType());
@@ -692,7 +704,7 @@ namespace StarMath
 				if(pReader->GetLocalType() == TypeElement::oper)
 				{
 					pReader->GetToken();
-					return new CElementOperator(pReader->GetLocalType(),pReader->GetString());
+					return new CElementOperator(pReader->GetLocalType(),pReader->GetLowerCaseString());
 				}
 				else
 					return new CElementOperator(pReader->GetLocalType());
@@ -760,17 +772,33 @@ namespace StarMath
 		m_wsString = wsTokenString;
 	}
 	void CElementString::Parse(CStarMathReader* pReader)
-	{
+	{		
+		if(m_wsString == L"\"")
+		{
+			m_wsString.clear();
+			wchar_t wsOneToken = pReader->GetOneElement();
+			while(wsOneToken !=L'"')
+			{
+				m_wsString+=wsOneToken;
+				if(pReader->CheckIteratorPosition())
+					wsOneToken = pReader->GetOneElement();
+				else 
+					break;
+			}
+		}
 		pReader->ClearReader();
 	}
 	void CElementString::ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite)
 	{
+		if(m_wsString !=L"" && m_wsString!=L" ")
+		{
 		pXmlWrite->WriteNodeBegin(L"m:r",false);
 		CConversionSMtoOOXML::StandartProperties(pXmlWrite,GetAttribute());
 		pXmlWrite->WriteNodeBegin(L"m:t",false);
 		pXmlWrite->WriteString(m_wsString);
 		pXmlWrite->WriteNodeEnd(L"m:t",false,false);
 		pXmlWrite->WriteNodeEnd(L"m:r",false,false);
+		}
 	}
 	std::wstring CElementString::GetString()
 	{
@@ -1984,6 +2012,8 @@ namespace StarMath
 	TypeElement CElementIndex::GetIndex(const std::wstring &wsCheckToken)
 	{
 		if(L"^" == wsCheckToken) return TypeElement::upper;
+		else if(L"rsup" == wsCheckToken) return TypeElement::upper;
+		else if(L"rsub" == wsCheckToken) return TypeElement::lower;
 		else if(L"_" == wsCheckToken) return TypeElement::lower;
 		else if(L"lsup" == wsCheckToken) return TypeElement::lsup;
 		else if(L"lsub" == wsCheckToken) return TypeElement::lsub;
@@ -2604,133 +2634,141 @@ namespace StarMath
 	{
 		if(CheckIteratorPosition())
 		{
-			m_wsToken = GetElement();
-			TypeElement enTypeFont = CAttribute::GetTypeFontAttribute(m_wsToken);
-			if(enTypeFont != TypeElement::undefine || L"color" == m_wsToken)
+			TokenProcessing();
+			TypeElement enTypeFont = CAttribute::GetTypeFontAttribute(m_wsLowerCaseToken);
+			if(enTypeFont != TypeElement::undefine || L"color" == m_wsLowerCaseToken)
 				m_pAttribute = new CAttribute();
-			while((enTypeFont != TypeElement::undefine || L"color" == m_wsToken) && m_itStart != m_itEnd)
+			while((enTypeFont != TypeElement::undefine || L"color" == m_wsLowerCaseToken) && m_itStart != m_itEnd)
 			{
-				if(L"color" == m_wsToken)
+				if(L"color" == m_wsLowerCaseToken)
 				{
-					m_wsToken = GetElement();
-					if(m_pAttribute->ParseColorAttribute(m_wsToken,this))
-						m_wsToken.clear();
+					TokenProcessing();
+					if(m_pAttribute->ParseColorAttribute(m_wsLowerCaseToken,this))
+						m_wsLowerCaseToken.clear();
 				}
 				else if(enTypeFont != TypeElement::undefine)
 					if(m_pAttribute->ParseFontAttribute(enTypeFont,this))
-						m_wsToken.clear();
+						m_wsLowerCaseToken.clear();
 					else
-						enTypeFont = CAttribute::GetTypeFontAttribute(m_wsToken);
-				if((m_itStart != m_itEnd) && m_wsToken.empty())
+						enTypeFont = CAttribute::GetTypeFontAttribute(m_wsLowerCaseToken);
+				if((m_itStart != m_itEnd) && m_wsLowerCaseToken.empty())
 				{
-					m_wsToken = GetElement();
-					enTypeFont = CAttribute::GetTypeFontAttribute(m_wsToken);
+					TokenProcessing();
+					enTypeFont = CAttribute::GetTypeFontAttribute(m_wsLowerCaseToken);
 				}
 			}
 			if(m_pAttribute != nullptr && !m_pAttribute->CheckAttribute())
 				m_pAttribute = nullptr;
-			if(m_wsToken == L"left") m_wsToken = GetElement();
-			else if(L"right" == m_wsToken ) m_wsToken = GetElement();
+			if(m_wsLowerCaseToken == L"left") TokenProcessing();
+			else if(L"right" == m_wsLowerCaseToken ) TokenProcessing();
 		}
 		//std::wcout<<m_wsToken << std::endl;
 	}
 	void CStarMathReader::SetTypesToken()
 	{
-		m_enUnderType = CElementOperator::GetFromOrTo(m_wsToken);
+		m_enUnderType = CElementOperator::GetFromOrTo(m_wsLowerCaseToken);
 		if(m_enUnderType != TypeElement::undefine)
 		{
 			m_enGlobalType = TypeElement::String;
 			return;
 		}
-		m_enUnderType = CElementBracketWithIndex::GetBracketWithIndex(m_wsToken);
+		m_enUnderType = CElementBracketWithIndex::GetBracketWithIndex(m_wsLowerCaseToken);
 		if(m_enUnderType != TypeElement::undefine)
 		{
 			m_enGlobalType = TypeElement::BracketWithIndex;
 			return;
 		}
-		m_enUnderType = CElementGrade::GetGrade(m_wsToken);
+		m_enUnderType = CElementGrade::GetGrade(m_wsLowerCaseToken);
 		if(m_enUnderType != TypeElement::undefine)
 		{
 			m_enGlobalType = TypeElement::Grade;
 			return;
 		}
-		m_enUnderType = CElementIndex::GetIndex(m_wsToken);
+		m_enUnderType = CElementIndex::GetIndex(m_wsLowerCaseToken);
 		if(m_enUnderType != TypeElement::undefine)
 		{
 			m_enGlobalType = TypeElement::Index;
 			return;
 		}
-		m_enUnderType=CElementMatrix::GetMatrix(m_wsToken);
+		m_enUnderType=CElementMatrix::GetMatrix(m_wsLowerCaseToken);
 		if(m_enUnderType != TypeElement::undefine)
 		{
 			m_enGlobalType = TypeElement::Matrix;
 			return;
 		}
-		m_enUnderType = CElementDiacriticalMark::GetMark(m_wsToken);
+		m_enUnderType = CElementDiacriticalMark::GetMark(m_wsLowerCaseToken);
 		if(m_enUnderType != TypeElement::undefine)
 		{
 			m_enGlobalType = TypeElement::Mark;
 			return;
 		}
-		m_enUnderType = CElementBracket::GetBracketOpen(m_wsToken);
+		m_enUnderType = CElementBracket::GetBracketOpen(m_wsLowerCaseToken);
 		if(m_enUnderType != TypeElement::undefine)
 		{
 			m_enGlobalType = TypeElement::Bracket;
 			return;
 		}
-		m_enUnderType = CElementString::GetDigit(m_wsToken);
+		m_enUnderType = CElementString::GetDigit(m_wsLowerCaseToken);
 		if(m_enUnderType != TypeElement::undefine)
 		{
 			m_enGlobalType = TypeElement::String;
 			return;
 		}
-		m_enUnderType = CElementSpecialSymbol::GetSpecialSymbol(m_wsToken);
+		m_enUnderType = CElementSpecialSymbol::GetSpecialSymbol(m_wsLowerCaseToken);
 		if(m_enUnderType != TypeElement::undefine)
 		{
 			m_enGlobalType = TypeElement::SpecialSymbol;
 			return;
 		}
-		m_enUnderType = CElementBinOperator::GetBinOperator(m_wsToken);
+		m_enUnderType = CElementBinOperator::GetBinOperator(m_wsLowerCaseToken);
 		if(m_enUnderType != TypeElement::undefine)
 		{
 			m_enGlobalType = TypeElement::BinOperator;
 			return;
 		}
-		m_enUnderType = CElementSetOperations::GetSetOperation(m_wsToken);
+		m_enUnderType = CElementSetOperations::GetSetOperation(m_wsLowerCaseToken);
 		if(m_enUnderType != TypeElement::undefine)
 		{
 			m_enGlobalType = TypeElement::SetOperations;
 			return;
 		}
-		m_enUnderType = CElementConnection::GetConnection(m_wsToken);
+		m_enUnderType = CElementConnection::GetConnection(m_wsLowerCaseToken);
 		if(m_enUnderType != TypeElement::undefine)
 		{
 			m_enGlobalType = TypeElement::Connection;
 			return;
 		}
-		m_enUnderType = CElementFunction::GetFunction(m_wsToken);
+		m_enUnderType = CElementFunction::GetFunction(m_wsLowerCaseToken);
 		if(m_enUnderType != TypeElement::undefine)
 		{
 			m_enGlobalType = TypeElement::Function;
 			return;
 		}
-		m_enUnderType = CElementOperator::GetOperator(m_wsToken);
+		m_enUnderType = CElementOperator::GetOperator(m_wsLowerCaseToken);
 		if(m_enUnderType != TypeElement::undefine)
 		{
 			m_enGlobalType = TypeElement::Operation;
 			return;
 		}
-		m_enUnderType = CElementString::GetWord(m_wsToken);
+		m_enUnderType = CElementString::GetWord(m_wsLowerCaseToken);
 		if(m_enUnderType != TypeElement::undefine)
 		{
 			m_enGlobalType = TypeElement::String;
 			return;
 		}
-		if(m_enUnderType == TypeElement::undefine && !m_wsToken.empty())
+		if(m_enUnderType == TypeElement::undefine && !m_wsLowerCaseToken.empty())
 		{
 			m_enGlobalType = TypeElement::String;
 			return;
 		}
+	}
+	void CStarMathReader::TokenProcessing(const std::wstring &wsToken)
+	{
+		if(wsToken.empty())
+			m_wsOriginalToken = GetElement();
+		else
+			m_wsOriginalToken = wsToken;
+		m_wsLowerCaseToken = CParserStarMathString::ConvertToLowerCase(m_wsOriginalToken);
 	}
 	TypeElement CStarMathReader::GetLocalType()
 	{
@@ -2740,20 +2778,25 @@ namespace StarMath
 	{
 		return m_enGlobalType;
 	}
-	std::wstring CStarMathReader::GetString()
+	std::wstring CStarMathReader::GetLowerCaseString()
 	{
-		return m_wsToken;
+		return m_wsLowerCaseToken;
+	}
+	std::wstring CStarMathReader::GetOriginalString()
+	{
+		return m_wsOriginalToken;
 	}
 	void CStarMathReader::ClearReader()
 	{
-		m_wsToken.clear();
+		m_wsLowerCaseToken.clear();
+		m_wsOriginalToken.clear();
 		m_enGlobalType = TypeElement::Empty;
 		m_enUnderType = TypeElement::Empty;
 		m_pAttribute = nullptr;
 	}
 	bool CStarMathReader::EmptyString()
 	{
-		return m_wsToken.empty();
+		return m_wsLowerCaseToken.empty();
 	}
 	bool CStarMathReader::CheckIteratorPosition()
 	{
@@ -2816,6 +2859,17 @@ namespace StarMath
 		if(!m_wsElement.empty()) return m_wsElement;
 		else return {};
 	}
+	wchar_t CStarMathReader::GetOneElement()
+	{
+		if(m_itStart!=m_itEnd)
+		{
+			wchar_t cOne = (*m_itStart);
+			m_itStart++;
+			return cOne;
+		}
+		else
+			return L' ';
+	}
 	std::wstring CStarMathReader::TakingElementForHex()
 	{
 		std::wstring wsTokenHex{};
@@ -2855,7 +2909,7 @@ namespace StarMath
 	}
 	void CStarMathReader::SetString(const std::wstring &wsToken)
 	{
-		m_wsToken = wsToken;
+		m_wsLowerCaseToken = wsToken;
 	}
 	void CStarMathReader::FindingTheEndOfParentheses()
 	{
@@ -2865,17 +2919,17 @@ namespace StarMath
 		{
 			itStartBracketClose = m_itStart;
 			GetToken();
-			if(CElementBracket::GetBracketOpen(m_wsToken) != TypeElement::undefine)
+			if(CElementBracket::GetBracketOpen(m_wsLowerCaseToken) != TypeElement::undefine)
 			{
 				inBracketInside +=1;
 			}
-			else if(CElementBracket::GetBracketClose(m_wsToken) != TypeElement::undefine && inBracketInside == 0)
+			else if(CElementBracket::GetBracketClose(m_wsLowerCaseToken) != TypeElement::undefine && inBracketInside == 0)
 			{
 				m_stBracket.push(m_itEnd);
 				m_itEnd = itStartBracketClose;
 				break;
 			}
-			else if(CElementBracket::GetBracketClose(m_wsToken) != TypeElement::undefine && inBracketInside != 0)
+			else if(CElementBracket::GetBracketClose(m_wsLowerCaseToken) != TypeElement::undefine && inBracketInside != 0)
 			{
 				inBracketInside -=1;
 			}
@@ -2890,7 +2944,7 @@ namespace StarMath
 			m_itEnd = m_stBracket.top();
 			m_stBracket.pop();
 		}
-		while(TypeElement::undefine == CElementBracket::GetBracketClose(GetString()) && CheckIteratorPosition())
+		while(TypeElement::undefine == CElementBracket::GetBracketClose(GetLowerCaseString()) && CheckIteratorPosition())
 		{
 			GetToken();
 		}
@@ -2898,7 +2952,7 @@ namespace StarMath
 	}
 	void CStarMathReader::ReadingTheNextToken()
 	{
-		if(m_wsToken.empty())
+		if(m_wsLowerCaseToken.empty())
 		{
 			GetToken();
 			SetTypesToken();
@@ -2918,6 +2972,7 @@ namespace StarMath
 		case L'/':
 		case L'`':
 		case L'~':
+		case L'"':
 		return true;
 		default:
 		return false;

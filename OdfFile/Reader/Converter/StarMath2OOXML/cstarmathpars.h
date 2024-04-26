@@ -104,10 +104,11 @@ namespace StarMath
 		void GetToken();
 		//getting a subtype and setting the global type of a token to variables m_enUnderType and m_enGlobalType
 		void SetTypesToken();
-		//void SkipNextElement();
+		void TokenProcessing(const std::wstring& wsToken = L"");
 		TypeElement GetGlobalType();
 		TypeElement GetLocalType();
-		std::wstring GetString();
+		std::wstring GetLowerCaseString();
+		std::wstring GetOriginalString();
 		//clearing a variable m_wsToken
 		void ClearReader();
 		bool CheckIteratorPosition();
@@ -118,6 +119,7 @@ namespace StarMath
 		CAttribute* GetBaseAttribute();
 		//The function returns a Token from a string (the iterator pointer m_itStart is on the next element)
 		std::wstring GetElement();
+		wchar_t GetOneElement();
 		//taking a token for a color in hex form
 		std::wstring TakingElementForHex();
 		//taking a token for a color in rgb form
@@ -134,7 +136,7 @@ namespace StarMath
 		bool m_bMarkForUnar;
 		std::wstring::iterator m_itStart,m_itEnd;
 		TypeElement m_enGlobalType,m_enUnderType;
-		std::wstring m_wsToken;
+		std::wstring m_wsLowerCaseToken,m_wsOriginalToken;
 		CAttribute* m_pAttribute;
 		CAttribute* m_pBaseAttribute;
 		std::stack<std::wstring::iterator> m_stBracket;
@@ -450,6 +452,7 @@ namespace StarMath
 		void SetBaseAlignment(const unsigned int& iAlignment);
 		void SetBaseItalic(const bool& bItal);
 		void SetBaseBold(const bool& bBold);
+		static std::wstring ConvertToLowerCase(const std::wstring& wsToken);
 	private:
 		TBaseAttribute m_stBaseAttribute;
 		std::vector<CElement*> m_arEquation;

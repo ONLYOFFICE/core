@@ -4110,7 +4110,38 @@ namespace PdfReader
 				m_pRenderer->put_FontPath(sFontPath);
 		}
 
-		if (nRenderMode == 1 || nRenderMode == 2 || nRenderMode == 5 || nRenderMode == 6)
+		LONG lRendererType = 0;
+		m_pRenderer->get_Type(&lRendererType);
+
+		bool bIsEmulateBold = false;
+		if (c_nDocxWriter == lRendererType && 2 == nRenderMode)
+			bIsEmulateBold = (S_OK == m_pRenderer->CommandLong(c_nSupportPathTextAsText, 0)) ? true : false;
+
+		if (bIsEmulateBold)
+		{
+			m_pRenderer->BeginCommand(c_nStrokeTextType);
+
+			LONG lOldStyle = 0;
+			m_pRenderer->get_FontStyle(&lOldStyle);
+			LONG lNewStyle = lOldStyle;
+
+			if ((lNewStyle & 0x01) == 0)
+			{
+				lNewStyle |= 0x01;
+				m_pRenderer->put_FontStyle(lNewStyle);
+			}
+
+			if (unGid)
+				m_pRenderer->CommandDrawTextEx(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+			else
+				m_pRenderer->CommandDrawText(wsUnicodeText, PDFCoordsToMM(dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+
+			if (lOldStyle != lNewStyle)
+				m_pRenderer->put_FontStyle(lOldStyle);
+
+			m_pRenderer->EndCommand(c_nStrokeTextType);
+		}
+		else if (nRenderMode == 1 || nRenderMode == 2 || nRenderMode == 5 || nRenderMode == 6)
 		{
 			m_pRenderer->BeginCommand(c_nStrokeTextType);
 

@@ -121,17 +121,23 @@ std::wstring CreateBorders(const NSCSS::NSProperties::CBorder& oBorder, const NS
 	return L"";
 }
 
-void WriteEmptyParagraph(NSStringUtils::CStringBuilder* pXml, bool bVahish = false)
+void WriteEmptyParagraph(NSStringUtils::CStringBuilder* pXml, bool bVahish = false, bool bInP = false)
 {
 	if (NULL == pXml)
 		return;
 
-	pXml->WriteString(L"<w:p><w:pPr><w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/>");
+	if (!bInP)
+		pXml->WriteString(L"<w:p><w:pPr>");
+
+	pXml->WriteString(L"<w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/>");
 
 	if (bVahish)
 		pXml->WriteString(L"<w:vanish/>");
 
-	pXml->WriteString(L"</w:rPr></w:pPr></w:p>");
+	pXml->WriteString(L"</w:rPr>");
+
+	if (!bInP)
+		pXml->WriteString(L"</w:pPr></w:p>");
 }
 
 typedef enum
@@ -2570,7 +2576,7 @@ private:
 		if (wsAlt.empty())
 		{
 			//TODO:: реализовать отображение того, что картинку не удалось получить
-			WriteEmptyParagraph(oXml);
+			WriteEmptyParagraph(oXml, false, m_bInP);
 			return;
 		}
 

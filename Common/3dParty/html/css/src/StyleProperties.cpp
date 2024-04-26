@@ -1508,7 +1508,7 @@ namespace NSCSS
 	{
 		m_enCollapse.SetMapping({{L"collapse", BorderCollapse::Collapse}, {L"separate", BorderCollapse::Separate}}, BorderCollapse::Separate);
 	}
-	
+
 	void CBorder::Clear()
 	{
 		m_oLeft  .Clear();
@@ -2258,7 +2258,7 @@ namespace NSCSS
 
 	void CFont::UpdateSize(double dFontSize)
 	{
-		if (NSCSS::Em == m_oSize.GetUnitMeasure() || NSCSS::Rem == m_oSize.GetUnitMeasure())
+		if (NSCSS::Em == m_oSize.GetUnitMeasure() || NSCSS::Rem == m_oSize.GetUnitMeasure() || NSCSS::Percent == m_oSize.GetUnitMeasure())
 			m_oSize.ConvertTo(NSCSS::Point, dFontSize);
 	}
 	

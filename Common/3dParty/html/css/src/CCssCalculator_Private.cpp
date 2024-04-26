@@ -516,7 +516,8 @@ namespace NSCSS
 
 		std::vector<std::wstring> arNodes = CalculateAllNodes(arSelectors);
 		std::vector<std::wstring> arPrevNodes;
-
+		bool bInTable = false;
+		
 		for (size_t i = 0; i < arSelectors.size(); ++i)
 		{
 			oStyle.AddParent(arSelectors[i].m_wsName);
@@ -527,9 +528,11 @@ namespace NSCSS
 				oStyle.m_oFont.GetLineHeight().Clear();
 				oStyle.m_oPadding.Clear();
 				oStyle.m_oMargin.Clear();
+				bInTable = true;
 			}
 
-			oStyle.m_oBorder.Clear();
+			if (bInTable)
+				oStyle.m_oBorder.Clear();
 
 			CCompiledStyle oTempStyle;
 

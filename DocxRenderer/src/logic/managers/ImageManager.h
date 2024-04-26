@@ -1,9 +1,6 @@
 #pragma once
 #include "../../../../DesktopEditor/common/CalculatorCRC32.h"
-#include "../../../../DesktopEditor/raster/BgraFrame.h"
-#include "../../resources/ImageInfo.h"
-#include <map>
-#include <memory>
+#include "./ExternalImageStorage.h"
 
 namespace NSDocxRenderer
 {
@@ -19,6 +16,8 @@ namespace NSDocxRenderer
 		int                                 m_lNextIDImage {0};
 
 		CCalculatorCRC32                    m_oCRC;
+
+		IImageStorage* m_pExternalStorage = nullptr;
 
 	public:
 
@@ -42,10 +41,11 @@ namespace NSDocxRenderer
 
 		std::shared_ptr<CImageInfo> GenerateImageID(const std::wstring& strFileName);
 
-		CImageInfo::ImageType GetImageType(Aggplus::CImage* pFrame);
-
 		void FlipY(Aggplus::CImage* pImage);
 
 		void FlipX(CBgraFrame* pImage);
+
+	public:
+		static CImageInfo::ImageType GetImageType(Aggplus::CImage* pFrame);
 	};
 }

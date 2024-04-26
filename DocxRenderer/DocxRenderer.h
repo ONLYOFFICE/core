@@ -44,6 +44,7 @@
 #endif
 
 #include "convert_params.h"
+#include "src/logic/managers/ExternalImageStorage.h"
 
 class CDocxRenderer_Private;
 class DOCXRENDERER_DECL_EXPORT CDocxRenderer : public IRenderer
@@ -195,6 +196,8 @@ public:
 	int Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFile, bool bIsOutCompress = true);
 	std::vector<std::wstring> ScanPage(IOfficeDrawingFile* pFile, size_t nPage);
 	std::vector<std::wstring> ScanPagePptx(IOfficeDrawingFile* pFile, size_t nPage);
+
+	void SetExternalImageStorage(NSDocxRenderer::IImageStorage* pStorage);
 
 	virtual HRESULT IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedCommandType& type);
 	virtual HRESULT AdvancedCommand(IAdvancedCommand* command);

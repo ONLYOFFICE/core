@@ -17,12 +17,14 @@ private:
 	NSFonts::IApplicationFonts* pApplicationFonts;
 	NSFonts::IFontManager* pFontManager;
 	NSHtmlRenderer::CHTMLRendererText* pTextRenderer;
+	NSDocxRenderer::IImageStorage* pImageStorage;
 	int nType;
 public:
 	CGraphicsFileDrawing(NSFonts::IApplicationFonts* pFonts)
 	{
 		pReader = NULL;
 		pTextRenderer = NULL;
+		pImageStorage = NULL;
 		pApplicationFonts = pFonts;
 		pApplicationFonts->AddRef();
 
@@ -40,6 +42,7 @@ public:
 		RELEASEOBJECT(pTextRenderer);
 		RELEASEOBJECT(pFontManager);
 		RELEASEINTERFACE(pApplicationFonts);
+		RELEASEOBJECT(pImageStorage);
 		nType = -1;
 	}
 	bool Open(BYTE* data, DWORD length, int _nType, const char* password)
@@ -189,7 +192,11 @@ public:
 
 	BYTE* GetPageShapes(const int& nPageIndex, int mode)
 	{
+		if (NULL == pImageStorage)
+			pImageStorage = NSDocxRenderer::CreateWasmImageStorage();
+
 		CDocxRenderer oRenderer(pApplicationFonts);
+		oRenderer.SetExternalImageStorage(pImageStorage);
 		oRenderer.SetTextAssociationType(NSDocxRenderer::TextAssociationType::tatParagraphToShape);
 		
 		std::vector<std::wstring> arShapes;

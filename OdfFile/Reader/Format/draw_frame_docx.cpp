@@ -1756,8 +1756,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				drawing->type = oox::typeShape;		
 				
 				drawing->additional.push_back(_property(L"fit-to-size",	true));		
-				drawing->additional.push_back(_property(L"text-content",	std::wstring(L"<w:p><m:oMathPara>") + 
-																	content + std::wstring(L"</m:oMathPara></w:p>")));
+				drawing->additional.push_back(_property(L"text-content",	std::wstring(L"<w:p>") +  content + std::wstring(L"</w:p>")));
 			}
 			else
 			{//in text			
@@ -1765,9 +1764,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				
 				if (runState) Context.finish_run();
 
-				Context.output_stream() << L"<m:oMathPara>";
 				Context.output_stream() << content;
-				Context.output_stream() << L"</m:oMathPara>";
 
 				if (runState) Context.add_new_run(_T(""));
 			}

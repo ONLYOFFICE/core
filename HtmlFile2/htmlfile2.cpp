@@ -35,7 +35,7 @@
 #define VALUE2STR(x) VALUE_TO_STRING(x)
 #endif
 
-#define MAXCOLUMNSINTABLE 64
+#define MAXCOLUMNSINTABLE 63
 #define MAXROWSINTABLE    32767
 
 #define DEFAULT_PAGE_WIDTH  12240 // Значение в Twips
@@ -222,6 +222,11 @@ public:
 		m_oData.SetText(oCell.m_oData.GetData());
 	}
 
+	bool Empty()
+	{
+		return 0 == m_oData.GetCurSize();
+	}
+
 	CTableCell* Copy()
 	{
 		return new CTableCell(*this);
@@ -233,8 +238,6 @@ public:
 
 		if (NULL != pStyle)
 			pCell->m_oStyles = *pStyle;
-
-		pCell->m_oData.SetText(L"<w:p></w:p>");
 
 		return pCell;
 	}
@@ -440,9 +443,66 @@ public:
 			return;
 
 		if (nPosition < 0)
+		{
+			std::vector<CTableCell*>::iterator itFoundEmpty = std::find_if(m_arCells.begin(), m_arCells.end(), [](CTableCell* pCell) { return pCell->Empty(); });
+
+			if (m_arCells.end() != itFoundEmpty)
+			{
+				--m_oStyles.m_unMaxIndex;
+				delete *itFoundEmpty;
+				*itFoundEmpty = pCell;
+				
+				if (1 != pCell->GetColspan())
+				{
+					UINT unColspan = pCell->GetColspan() - 1;
+	
+					while (m_arCells.end() != itFoundEmpty && (*itFoundEmpty)->Empty() && unColspan > 0)
+					{
+						--m_oStyles.m_unMaxIndex;
+						--unColspan;
+						delete (*itFoundEmpty);
+						itFoundEmpty = m_arCells.erase(itFoundEmpty);
+					}
+	
+					if (unColspan != 0)
+						pCell->SetColspan(pCell->GetColspan() - unColspan, MAXCOLUMNSINTABLE);
+				}
+			}
+			else
+				m_arCells.push_back(pCell);
+		}
+		else if (nPosition >= m_arCells.size())
+		{
+			const UINT unMissingCount = nPosition - m_arCells.size();
+
+			for (UINT unIndex = 0; unIndex < unMissingCount; ++unIndex)
+				m_arCells.push_back(CTableCell::CreateEmpty());
+
+			m_oStyles.m_unMaxIndex += unMissingCount;
+
 			m_arCells.push_back(pCell);
-		else if (nPosition > m_arCells.size())
-			m_arCells.push_back(pCell);
+		}
+		else if (m_arCells[nPosition]->Empty())
+		{
+			delete m_arCells[nPosition];
+			--m_oStyles.m_unMaxIndex;
+			m_arCells[nPosition++] = pCell;
+
+			if (1 != pCell->GetColspan())
+			{
+				UINT unDeleteCount =  pCell->GetColspan() - 1;
+				while (m_arCells[nPosition]->Empty() && nPosition < m_arCells.size() && unDeleteCount > 0)
+				{
+					delete m_arCells[nPosition];
+					--m_oStyles.m_unMaxIndex;
+					m_arCells.erase(m_arCells.begin() + nPosition);
+					--unDeleteCount;
+				}
+
+				if (0 != unDeleteCount)
+					pCell->SetColspan(pCell->GetColspan() - unDeleteCount, MAXCOLUMNSINTABLE);
+			}
+		}
 		else
 			m_arCells.insert(m_arCells.begin() + nPosition, pCell);
 
@@ -460,19 +520,6 @@ public:
 	UINT GetCount() const
 	{
 		return m_arCells.size();
-	}
-
-	bool ColumnsOverflowing() const
-	{
-		return MAXCOLUMNSINTABLE == m_oStyles.m_unMaxIndex;
-	}
-
-	void RecalculateMaxIndex()
-	{
-		m_oStyles.m_unMaxIndex = 0;
-
-		for (const CTableCell* pCell : m_arCells)
-			m_oStyles.m_unMaxIndex += pCell->GetColspan();
 	}
 
 	std::wstring ConvertToOOXML(const TTableStyles& oTableStyles)
@@ -625,24 +672,6 @@ public:
 		return unMaxColumns;
 	}
 
-	void ApplyRowspan()
-	{
-		CTableCell* pCell = NULL;
-		for (UINT unRowIndex = 0; unRowIndex < m_arRows.size(); ++unRowIndex)
-		{
-			for (UINT unColumnIndex = 0; unColumnIndex < m_arRows[unRowIndex]->GetCount(); ++unColumnIndex)
-			{
-				pCell = (*m_arRows[unRowIndex])[unColumnIndex];
-
-				if (1 != pCell->GetRowspan())
-				{
-					for (UINT unIndex = unRowIndex + 1; unIndex < std::min((UINT)m_arRows.size(), unRowIndex + pCell->GetRowspan()); ++unIndex)
-						(*m_arRows[unIndex]).InsertCell(CTableCell::CreateEmpty(pCell->GetColspan(), true, pCell->GetStyles()), unColumnIndex);
-				}
-			}
-		}
-	}
-
 	void Shorten()
 	{
 		UINT unIndex   = 0;
@@ -700,19 +729,12 @@ public:
 		UINT unMaxIndex = 0;
 
 		for (CTableRow* pRow : m_arRows)
-		{
-			pRow->RecalculateMaxIndex();
 			unMaxIndex = std::max(unMaxIndex, pRow->GetIndex());
-		}
 
-		UINT unMissingCount = 0;
-		
 		for (CTableRow* pRow : m_arRows)
 		{
-			unMissingCount = unMaxIndex - pRow->GetIndex();
-
-			for (UINT unIndex = 0; unIndex < unMissingCount; ++unIndex)
-				pRow->AddCell(CTableCell::CreateEmpty());
+			for (UINT unIndex = pRow->GetIndex(); unIndex < unMaxIndex; ++unIndex)
+				pRow->InsertCell(CTableCell::CreateEmpty(), unIndex);
 		}
 	}
 
@@ -2123,9 +2145,22 @@ private:
 		sSelectors.pop_back();
 		return;
 	}
+	
+	struct TRowspanElement
+	{
+		UINT  m_unRowSpan;
+		UINT  m_unColumnIndex;
+		const CTableCell* m_pCell;
+
+		TRowspanElement(UINT unRowSpan, UINT unColumnIndex, const CTableCell* pCell)
+			: m_unRowSpan(unRowSpan), m_unColumnIndex(unColumnIndex), m_pCell(pCell)
+		{}
+	};
 
 	void ParseTableRows(CTable& oTable, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, ERowParseMode eMode)
 	{
+		std::vector<TRowspanElement> arRowspanElements;
+		
 		int nDeath = m_oLightReader.GetDepth();
 		while (m_oLightReader.ReadNextSiblingNode(nDeath))
 		{
@@ -2136,6 +2171,18 @@ private:
 
 			CTableRow *pRow = new CTableRow();
 
+			for (std::vector<TRowspanElement>::iterator itElement = arRowspanElements.begin(); itElement < arRowspanElements.end();)
+			{
+				pRow->InsertCell(CTableCell::CreateEmpty(itElement->m_pCell->GetColspan(), true, itElement->m_pCell->GetStyles()), itElement->m_unColumnIndex);
+
+				itElement->m_unRowSpan--;
+				if (1 == itElement->m_unRowSpan)
+					itElement = arRowspanElements.erase(itElement);
+				else
+					++itElement;
+			}
+
+			UINT unColumnIndex = 0;
 			int nTrDepth = m_oLightReader.GetDepth();
 			while (m_oLightReader.ReadNextSiblingNode(nTrDepth))
 			{
@@ -2151,7 +2198,12 @@ private:
 					if(m_oLightReader.GetName() == L"colspan")
 						pCell->SetColspan(NSStringFinder::ToInt(m_oLightReader.GetText(), 1), pRow->GetIndex());
 					else if(m_oLightReader.GetName() == L"rowspan")
+					{
 						pCell->SetRowspan(NSStringFinder::ToInt(m_oLightReader.GetText(), 1));
+						
+						if (1 != pCell->GetRowspan())
+							arRowspanElements.push_back({pCell->GetRowspan(), unColumnIndex, pCell});
+					}
 				}
 
 				m_oLightReader.MoveToElement();
@@ -2172,7 +2224,7 @@ private:
 				else if(m_oLightReader.GetName() == L"td")
 					readStream(pCell->GetData(), sSelectors, oTS, true);
 
-				if (pRow->ColumnsOverflowing())
+				if (pRow->GetIndex() == MAXCOLUMNSINTABLE - 1)
 				{
 					CTextSettings oTrTS{oTS};
 					oTrTS.bMergeText = true;
@@ -2192,7 +2244,9 @@ private:
 
 				sSelectors.pop_back();
 
-				if (pRow->ColumnsOverflowing())
+				++unColumnIndex;
+
+				if (pRow->GetIndex() == MAXCOLUMNSINTABLE)
 					break;
 			}
 
@@ -2260,7 +2314,6 @@ private:
 			sSelectors.pop_back();
 		}
 
-		oTable.ApplyRowspan();
 		oTable.Shorten();
 		oTable.CompleteTable();
 		oXml->WriteString(oTable.ConvertToOOXML());

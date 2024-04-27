@@ -1073,21 +1073,21 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::COnOff              > m_oAnchorLock;
-			nullable<SimpleTypes::CDropCap            > m_oDropCap;
-			nullable<SimpleTypes::CTwipsMeasure       > m_oH;
-			nullable<SimpleTypes::CHAnchor            > m_oHAnchor;
-			nullable<SimpleTypes::CHeightRule         > m_oHRule;
-			nullable<SimpleTypes::CTwipsMeasure       > m_oHSpace;
-			nullable<SimpleTypes::CDecimalNumber      > m_oLines;
-			nullable<SimpleTypes::CVAnchor            > m_oVAnchor;
-			nullable<SimpleTypes::CTwipsMeasure       > m_oVSpace;
-			nullable<SimpleTypes::CTwipsMeasure       > m_oW;
-			nullable<SimpleTypes::CWrap               > m_oWrap;
-			nullable<SimpleTypes::CSignedTwipsMeasure > m_oX;
-			nullable<SimpleTypes::CXAlign             > m_oXAlign;
-			nullable<SimpleTypes::CSignedTwipsMeasure > m_oY;
-			nullable<SimpleTypes::CYAlign             > m_oYAlign;
+			nullable<SimpleTypes::COnOff>				m_oAnchorLock;
+			nullable<SimpleTypes::CDropCap>				m_oDropCap;
+			nullable<SimpleTypes::CTwipsMeasure>		m_oH;
+			nullable<SimpleTypes::CHAnchor>				m_oHAnchor;
+			nullable<SimpleTypes::CHeightRule>			m_oHRule;
+			nullable<SimpleTypes::CTwipsMeasure>		m_oHSpace;
+			nullable<SimpleTypes::CDecimalNumber>		m_oLines;
+			nullable<SimpleTypes::CVAnchor>				m_oVAnchor;
+			nullable<SimpleTypes::CTwipsMeasure>		m_oVSpace;
+			nullable<SimpleTypes::CTwipsMeasure>		m_oW;
+			nullable<SimpleTypes::CWrap>				m_oWrap;
+			nullable<SimpleTypes::CSignedTwipsMeasure>	m_oX;
+			nullable<SimpleTypes::CXAlign>				m_oXAlign;
+			nullable<SimpleTypes::CSignedTwipsMeasure>	m_oY;
+			nullable<SimpleTypes::CYAlign>				m_oYAlign;
 		};
 
 		//--------------------------------------------------------------------------------

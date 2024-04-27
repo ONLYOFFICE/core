@@ -128,3 +128,23 @@ bool CDocInfoCommand::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 		m_sKeywords = pReader->ReadString();
 	return true;
 }
+
+CShapeStart::CShapeStart() : IAdvancedCommand(AdvancedCommandType::ShapeStart) {}
+void CShapeStart::SetShapeXML(const std::string& sShapeXML) { m_sShapeXML = sShapeXML; }
+const std::string& CShapeStart::GetShapeXML() { return m_sShapeXML; }
+bool CShapeStart::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
+{
+	m_sShapeXML = pReader->ReadStringA();
+	return true;
+}
+
+CEmptyComand::CEmptyComand(AdvancedCommandType nType) : IAdvancedCommand(nType) {}
+
+CPageRotate::CPageRotate() : IAdvancedCommand(AdvancedCommandType::PageRotate) {}
+int CPageRotate::GetPageRotate() { return m_nPageRotate; }
+bool CPageRotate::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
+{
+	m_nPageRotate = pReader->ReadInt();
+	return true;
+}
+

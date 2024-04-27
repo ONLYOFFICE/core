@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 	//Или добавляем любой нужный файл
 	sSourceFiles.push_back(L"");
 
-	std::wstring sTextDirOut = NSFile::GetProcessDirectory() + L"/text";
+	std::wstring sTextDirOut = NSFile::GetProcessDirectory() + L"/output";
 	if (!NSDirectory::Exists(sTextDirOut))
 		NSDirectory::CreateDirectory(sTextDirOut);
 
@@ -107,6 +107,8 @@ int main(int argc, char *argv[])
 
 	for (size_t nIndex = 0; nIndex < sSourceFiles.size(); nIndex++)
 	{
+		// нужно скинуть тип, чтобы не определялся как OOXML всегда (см чеккер).
+		oChecker.nFileType = 0;
 		if (oChecker.isOfficeFile(sSourceFiles[nIndex]))
 		{
 			nFileType = oChecker.nFileType;
@@ -127,10 +129,7 @@ int main(int argc, char *argv[])
 		}
 
 		if (!pReader)
-		{
-			pFonts->Release();
-			return 0;
-		}
+			continue;
 
 		pReader->SetTempDirectory(sTempDir);
 
@@ -166,18 +165,24 @@ int main(int argc, char *argv[])
 
 		// проверить все режимы
 		NSDocxRenderer::TextAssociationType taType;
-		//taType = NSDocxRenderer::tatBlockChar;
-		//taType = NSDocxRenderer::tatBlockLine;
-		//taType = NSDocxRenderer::tatPlainLine;
-		//taType = NSDocxRenderer::tatShapeLine;
-		taType = NSDocxRenderer::tatPlainParagraph;
+		//taType = NSDocxRenderer::TextAssociationType::tatPlainLine;
+		//taType = NSDocxRenderer::TextAssociationType::tatShapeLine;
+		//taType = NSDocxRenderer::TextAssociationType::tatPlainParagraph;
+		taType = NSDocxRenderer::TextAssociationType::tatParagraphToShape;
+
+		NSDocxRenderer::IImageStorage* pExternalImagheStorage = NSDocxRenderer::CreateWasmImageStorage();
+		//oDocxRenderer.SetExternalImageStorage(pExternalImagheStorage);
 
 		oDocxRenderer.SetTextAssociationType(taType);
 		oDocxRenderer.Convert(pReader, sTextDirOut+sDocx);
+		//auto shapes = oDocxRenderer.ScanPage(pReader, 0);
+
 		//Если сразу нужен zip-архив
 		//oDocxRenderer.Convert(pReader, sPlainParagraphDirOut+sZip);
 #endif
-		delete pReader;
+		RELEASEOBJECT(pReader);
+
+		RELEASEOBJECT(pExternalImagheStorage);
 	}
 
 	pFonts->Release();

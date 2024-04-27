@@ -140,6 +140,8 @@ private:
 //-------------------------------------------------------------------------------
     std::vector<std::wstring> list_style_stack_;
     bool first_element_list_item_;
+
+	_CP_OPT(odf_types::length) last_run_font_size_;
     
     int new_list_style_number_;	// счетчик для нумерации имен созданных в процессе конвертации стилей
    
@@ -451,6 +453,10 @@ void pptx_text_context::Impl::write_rPr(std::wostream & strm)
 
 	strm << get_styles_context().text_style().str();
 
+	if (text_properties_.fo_font_size_)
+		last_run_font_size_ = text_properties_.fo_font_size_->get_length();
+	else
+		last_run_font_size_ = boost::none;
 }
 std::wstring pptx_text_context::Impl::dump_paragraph(/*bool last*/)
 {				
@@ -474,7 +480,13 @@ std::wstring pptx_text_context::Impl::dump_paragraph(/*bool last*/)
 				}
 				else
 				{
-					CP_XML_NODE(L"a:endParaRPr");
+					CP_XML_NODE(L"a:endParaRPr")
+					{
+						if(last_run_font_size_)
+						{
+							CP_XML_ATTR(L"sz", last_run_font_size_->get_value_unit(odf_types::length::pt) * 100);
+						}
+					}
 				}
 			}
 		}
@@ -722,8 +734,9 @@ std::wstring pptx_text_context::Impl::find_list_rename(const std::wstring & List
 void pptx_text_context::Impl::end_list_item()
 {
 	dump_paragraph();
-	
-	paragraphs_cout_--;
+
+	if (paragraphs_cout_ != 0)
+		paragraphs_cout_--;
 	paragraph_style_name_ = L"";
 
 	in_list_ = false;
@@ -739,7 +752,7 @@ void pptx_text_context::Impl::start_comment()
 }
 std::wstring pptx_text_context::Impl::end_comment()
 {
-	std::wstring  str_comment = text_.str();
+	std::wstring str_comment = text_.str();
     text_.str(std::wstring());
 	in_comment = false;
 

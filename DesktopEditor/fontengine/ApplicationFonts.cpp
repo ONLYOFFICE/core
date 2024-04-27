@@ -1118,6 +1118,325 @@ std::vector<NSFonts::CFontInfo*> CFontList::GetAllByName(const std::wstring& str
 	return aRes;
 }
 
+void CFontList::Add(FT_Library pLibrary, FT_Parameter* pParams, const std::wstring& sFontPath, CFontStream* pStream, int nFlag)
+{
+	if (!pLibrary || !pParams || !pStream)
+		return;
+
+	FT_Open_Args oOpenArgs;
+	oOpenArgs.flags         = FT_OPEN_MEMORY | FT_OPEN_PARAMS;
+	oOpenArgs.memory_base   = pStream->m_pData;
+	oOpenArgs.memory_size   = pStream->m_lSize;
+
+	oOpenArgs.num_params = 4;
+	oOpenArgs.params     = pParams;
+
+	FT_Face pFace = NULL;
+	if (FT_Open_Face( pLibrary, &oOpenArgs, 0, &pFace ))
+		return;
+
+	// TO DO: Шрифты, которые нельзя скейлить (т.е. изменять размер
+	// произвольно) мы не грузим. Возможно в будущем надо будет
+	// сделать, чтобы работал и такой вариант. (в Word такие шрифты
+	// не используются)
+	if ( !( pFace->face_flags & FT_FACE_FLAG_SCALABLE ) )
+	{
+		FT_Done_Face( pFace );
+		return;
+	}
+
+	int nFacesCount = pFace->num_faces;
+	if ( FT_Done_Face( pFace ) )
+		return;
+
+	for ( int nIndexFace = 0; nIndexFace < nFacesCount; nIndexFace++ )
+	{
+		if (FT_Open_Face( pLibrary, &oOpenArgs, nIndexFace, &pFace))
+			continue;
+
+		INT bBold   = (pFace->style_flags & FT_STYLE_FLAG_BOLD ? 1 : 0);
+		INT bItalic = (pFace->style_flags & FT_STYLE_FLAG_ITALIC) ? 1 : 0;
+
+		const char* pPostName = FT_Get_Postscript_Name(pFace);
+		std::string sPostscriptName = "";
+		if (NULL != pPostName)
+			sPostscriptName = FT_Get_Postscript_Name(pFace);
+
+		INT bFixedWidth = FT_IS_FIXED_WIDTH( pFace );
+
+		TT_OS2 *pOs2 = (TT_OS2 *)FT_Get_Sfnt_Table( pFace, ft_sfnt_os2 );
+
+		BYTE* pPanose = NULL;
+		ULONG ulRange1 = 0, ulRange2 = 0, ulRange3 = 0, ulRange4 = 0, ulCodeRange1 = 0, ulCodeRange2 = 0;
+		USHORT usWidth = 0, usWeight = 0, usType = 0;
+		SHORT sFamilyClass = 0;
+
+		SHORT shAvgCharWidth = 0, shAscent = 0, shDescent = 0, shLineGap = 0, shXHeight = 0, shCapHeight = 0;
+		if ( NULL != pOs2 )
+		{
+			pPanose        = (BYTE *)pOs2->panose;
+
+			ulRange1       = pOs2->ulUnicodeRange1;
+			ulRange2       = pOs2->ulUnicodeRange2;
+			ulRange3       = pOs2->ulUnicodeRange3;
+			ulRange4       = pOs2->ulUnicodeRange4;
+			ulCodeRange1   = pOs2->ulCodePageRange1;
+			ulCodeRange2   = pOs2->ulCodePageRange2;
+
+			usWeight       = pOs2->usWeightClass;
+			usWidth        = pOs2->usWidthClass;
+
+			sFamilyClass   = pOs2->sFamilyClass;
+
+			usType         = pOs2->fsType;
+
+			if ( 0 != pFace->units_per_EM )
+			{
+				double dKoef = ( 1000 / (double)pFace->units_per_EM );
+				shAvgCharWidth = (SHORT)(pOs2->xAvgCharWidth  * dKoef);
+				shAscent       = (SHORT)(pOs2->sTypoAscender  * dKoef);
+				shDescent      = (SHORT)(pOs2->sTypoDescender * dKoef);
+				shLineGap      = (SHORT)(pOs2->sTypoLineGap   * dKoef);
+				shXHeight      = (SHORT)(pOs2->sxHeight       * dKoef);
+				shCapHeight    = (SHORT)(pOs2->sCapHeight     * dKoef);
+			}
+			else
+			{
+				shAvgCharWidth = (SHORT)pOs2->xAvgCharWidth;
+				shAscent       = (SHORT)pOs2->sTypoAscender;
+				shDescent      = (SHORT)pOs2->sTypoDescender;
+				shLineGap      = (SHORT)pOs2->sTypoLineGap;
+				shXHeight      = (SHORT)pOs2->sxHeight;
+				shCapHeight    = (SHORT)pOs2->sCapHeight;
+			}
+		}
+
+		if ( true )
+		{
+			// Специальная ветка для случаев, когда charset может быть задан не через значения
+			// ulCodePageRange, а непосредственно через тип Cmap.
+
+			//  Charset Name       Charset Value(hex)  Codepage number   Platform_ID   Encoding_ID   Description
+			//  -------------------------------------------------------------------------------------------------
+			//
+			//  SYMBOL_CHARSET            2 (x02)                             3            0           Symbol
+			//  SHIFTJIS_CHARSET        128 (x80)             932             3            2           ShiftJIS
+			//  GB2313_CHARSET          134 (x86)             936             3            3           PRC
+			//  CHINESEBIG5_CHARSET     136 (x88)             950             3            4           Big5
+			//  HANGEUL_CHARSET         129 (x81)             949             3            5           Wansung
+			//  JOHAB_CHARSET           130 (x82)            1361             3            6           Johab
+
+			for( int nIndex = 0; nIndex < pFace->num_charmaps; nIndex++ )
+			{
+				// Symbol
+				if ( !( ulCodeRange1 & 0x80000000 ) && 0 == pFace->charmaps[nIndex]->encoding_id && 3 == pFace->charmaps[nIndex]->platform_id )
+					ulCodeRange1 |= 0x80000000;
+
+				// ShiftJIS
+				if ( !( ulCodeRange1 & 0x00020000 ) && 2 == pFace->charmaps[nIndex]->encoding_id && 3 == pFace->charmaps[nIndex]->platform_id )
+					ulCodeRange1 |= 0x00020000;
+
+				// PRC
+				if ( !( ulCodeRange1 & 0x00040000 ) && 3 == pFace->charmaps[nIndex]->encoding_id && 3 == pFace->charmaps[nIndex]->platform_id )
+					ulCodeRange1 |= 0x00040000;
+
+				// Big5
+				if ( !( ulCodeRange1 & 0x00100000 ) && 4 == pFace->charmaps[nIndex]->encoding_id && 3 == pFace->charmaps[nIndex]->platform_id )
+					ulCodeRange1 |= 0x00100000;
+
+				// Wansung
+				if ( !( ulCodeRange1 & 0x00080000 ) && 5 == pFace->charmaps[nIndex]->encoding_id && 3 == pFace->charmaps[nIndex]->platform_id )
+					ulCodeRange1 |= 0x00080000;
+
+				// Johab
+				if ( !( ulCodeRange1 & 0x00200000 ) && 6 == pFace->charmaps[nIndex]->encoding_id && 3 == pFace->charmaps[nIndex]->platform_id )
+					ulCodeRange1 |= 0x00200000;
+			}
+		}
+
+		NSFonts::EFontFormat eFormat = GetFontFormat( pFace );
+
+		bool bSupportFont = ((eFormat == NSFonts::fontTrueType) || ((nFlag & 1) && (eFormat == NSFonts::fontOpenType)));
+		if (!bSupportFont)
+		{
+			FT_Done_Face( pFace );
+			continue;
+		}
+
+		std::wstring wsFamilyName = GetCorrectSfntName(pFace->family_name);
+		std::wstring wsStyleName = GetCorrectSfntName(pFace->style_name);
+
+		bool isBadASCII = (std::wstring::npos != wsFamilyName.find('?')) ? true : false;
+
+#ifdef _MAC
+		if (wsFamilyName.find(L".") == 0)
+		{
+			FT_Done_Face( pFace );
+			continue;
+		}
+#endif
+
+		NSFonts::CFontInfo* pFontInfo = new NSFonts::CFontInfo( wsFamilyName,
+																wsStyleName,
+																sFontPath,
+																nIndexFace,
+																bBold,
+																bItalic,
+																bFixedWidth,
+																pPanose,
+																ulRange1,
+																ulRange2,
+																ulRange3,
+																ulRange4,
+																ulCodeRange1,
+																ulCodeRange2,
+																usWeight,
+																usWidth,
+																sFamilyClass,
+																eFormat,
+																shAvgCharWidth,
+																shAscent,
+																shDescent,
+																shLineGap,
+																shXHeight,
+																shCapHeight,
+																usType);
+
+		if (pFace && FT_IS_SFNT(pFace))
+		{
+			TT_Face pTTFace = (TT_Face)pFace;
+
+			int nNamesCount = (int)pTTFace->num_names;
+			TT_NameRec* pNameRecs = pTTFace->name_table.names;
+
+			for (int nNameIndex = 0; nNameIndex < nNamesCount; ++nNameIndex)
+			{
+				TT_NameRec* rec = pNameRecs + nNameIndex;
+
+				if (rec->nameID != TT_NAME_ID_FONT_FAMILY || rec->stringLength <= 0)
+					continue;
+
+				std::string sEncoding = "";
+				switch (rec->platformID)
+				{
+				case TT_PLATFORM_APPLE_UNICODE:
+				{
+					sEncoding = "UTF-16BE";
+					break;
+				}
+				case TT_PLATFORM_MACINTOSH:
+				{
+					break;
+				}
+				case TT_PLATFORM_MICROSOFT:
+				{
+					switch (rec->encodingID)
+					{
+					case TT_MS_ID_SYMBOL_CS:
+					case TT_MS_ID_UNICODE_CS:
+						sEncoding = "UTF-16BE";
+						break;
+					case TT_MS_ID_UCS_4:
+						//sEncoding = "UCS4"; // см tt_
+						sEncoding = "UTF-16BE";
+						break;
+						//case TT_MS_ID_SJIS:
+						//    sEncoding = "Shift-JIS";
+						//    break;
+						//case TT_MS_ID_GB2312:
+						//    sEncoding = "GB2312";
+						//    break;
+						//case TT_MS_ID_BIG_5:
+						//    sEncoding = "Big5";
+						//    break;
+					default:
+						break;
+					}
+				}
+				default:
+					break;
+				}
+
+				if (!sEncoding.empty())
+				{
+					FT_Stream stream = pTTFace->name_table.stream;
+					FT_Memory memory = pFace->memory;
+					FT_Error error = 0;
+
+					if ( FT_QNEW_ARRAY ( rec->string, rec->stringLength ) ||
+						 FT_STREAM_SEEK( rec->stringOffset )              ||
+						 FT_STREAM_READ( rec->string, rec->stringLength ) )
+					{
+						FT_FREE( rec->string );
+						rec->stringLength = 0;
+					}
+					else
+					{
+						NSUnicodeConverter::CUnicodeConverter oConverter;
+						std::wstring sNameW = oConverter.toUnicode((char*)rec->string, (unsigned int)rec->stringLength, sEncoding.c_str());
+
+						if (std::wstring::npos == sNameW.find(wsFamilyName) && std::wstring::npos == wsFamilyName.find(sNameW))
+						{
+							std::vector<std::wstring>::iterator iter = pFontInfo->names.begin();
+							for (std::vector<std::wstring>::iterator iter = pFontInfo->names.begin(); iter != pFontInfo->names.end(); iter++)
+							{
+								if (*iter == sNameW)
+									break;
+							}
+
+							if (isBadASCII && pFontInfo->names.empty())
+							{
+								wsFamilyName = sNameW;
+								pFontInfo->m_wsFontName = wsFamilyName;
+								isBadASCII = false;
+							}
+							else if (iter == pFontInfo->names.end())
+							{
+								pFontInfo->names.push_back(sNameW);
+
+#if 0
+								FILE* f = fopen("D:\\111.txt", "a+");
+								fprintf(f, "%s: %s\n", U_TO_UTF8(wsFamilyName).c_str(), U_TO_UTF8(sNameW).c_str());
+								fclose(f);
+#endif
+							}
+						}
+					}
+				}
+			}
+		}
+
+		Add(pFontInfo);
+
+		FT_Done_Face( pFace );
+	}
+}
+
+void CFontList::Add(const std::wstring& sFontPath, NSFonts::IFontStream* pStream, int nFlag)
+{
+	if (!pStream)
+		return;
+
+	FT_Library pLibrary = NULL;
+	if (FT_Init_FreeType(&pLibrary))
+		return;
+
+	FT_Parameter *pParams = (FT_Parameter *)::malloc( sizeof(FT_Parameter) * 4 );
+	pParams[0].tag  = FT_MAKE_TAG( 'i', 'g', 'p', 'f' );
+	pParams[0].data = NULL;
+	pParams[1].tag  = FT_MAKE_TAG( 'i', 'g', 'p', 's' );
+	pParams[1].data = NULL;
+	pParams[2].tag  = FT_PARAM_TAG_IGNORE_PREFERRED_FAMILY;
+	pParams[2].data = NULL;
+	pParams[3].tag  = FT_PARAM_TAG_IGNORE_PREFERRED_SUBFAMILY;
+	pParams[3].data = NULL;
+
+	Add(pLibrary, pParams, sFontPath, (CFontStream*)pStream, nFlag);
+
+	::free( pParams );
+	FT_Done_FreeType(pLibrary);
+}
+
 void CFontList::LoadFromArrayFiles(std::vector<std::wstring>& oArray, int nFlag)
 {
 	size_t nCount = oArray.size();
@@ -1173,293 +1492,7 @@ void CFontList::LoadFromArrayFiles(std::vector<std::wstring>& oArray, int nFlag)
 		if (!oStream.CreateFromFile(oArray[nIndex], pDataFontFile))
 			continue;
 
-		FT_Open_Args oOpenArgs;
-		oOpenArgs.flags         = FT_OPEN_MEMORY | FT_OPEN_PARAMS;
-		oOpenArgs.memory_base   = oStream.m_pData;
-		oOpenArgs.memory_size   = oStream.m_lSize;
-
-		oOpenArgs.num_params = 4;
-		oOpenArgs.params     = pParams;
-
-		FT_Face pFace = NULL;
-		if (FT_Open_Face( pLibrary, &oOpenArgs, 0, &pFace ))
-			continue;
-
-		// TO DO: Шрифты, которые нельзя скейлить (т.е. изменять размер
-		// произвольно) мы не грузим. Возможно в будущем надо будет
-		// сделать, чтобы работал и такой вариант. (в Word такие шрифты
-		// не используются)
-		if ( !( pFace->face_flags & FT_FACE_FLAG_SCALABLE ) )
-		{
-			FT_Done_Face( pFace );
-			continue;
-		}
-
-		int nFacesCount = pFace->num_faces;
-		if ( FT_Done_Face( pFace ) )
-			continue;
-
-		for ( int nIndexFace = 0; nIndexFace < nFacesCount; nIndexFace++ )
-		{
-			if (FT_Open_Face( pLibrary, &oOpenArgs, nIndexFace, &pFace))
-				continue;
-
-			INT bBold   = (pFace->style_flags & FT_STYLE_FLAG_BOLD ? 1 : 0);
-			INT bItalic = (pFace->style_flags & FT_STYLE_FLAG_ITALIC) ? 1 : 0;
-
-			const char* pPostName = FT_Get_Postscript_Name(pFace);
-			std::string sPostscriptName = "";
-			if (NULL != pPostName)
-				sPostscriptName = FT_Get_Postscript_Name(pFace);
-
-			INT bFixedWidth = FT_IS_FIXED_WIDTH( pFace );
-
-			TT_OS2 *pOs2 = (TT_OS2 *)FT_Get_Sfnt_Table( pFace, ft_sfnt_os2 );
-
-			BYTE* pPanose = NULL;
-			ULONG ulRange1 = 0, ulRange2 = 0, ulRange3 = 0, ulRange4 = 0, ulCodeRange1 = 0, ulCodeRange2 = 0;
-			USHORT usWidth = 0, usWeight = 0, usType = 0;
-			SHORT sFamilyClass = 0;
-
-			SHORT shAvgCharWidth = 0, shAscent = 0, shDescent = 0, shLineGap = 0, shXHeight = 0, shCapHeight = 0;
-			if ( NULL != pOs2 )
-			{
-				pPanose        = (BYTE *)pOs2->panose;
-
-				ulRange1       = pOs2->ulUnicodeRange1;
-				ulRange2       = pOs2->ulUnicodeRange2;
-				ulRange3       = pOs2->ulUnicodeRange3;
-				ulRange4       = pOs2->ulUnicodeRange4;
-				ulCodeRange1   = pOs2->ulCodePageRange1;
-				ulCodeRange2   = pOs2->ulCodePageRange2;
-
-				usWeight       = pOs2->usWeightClass;
-				usWidth        = pOs2->usWidthClass;
-
-				sFamilyClass   = pOs2->sFamilyClass;
-
-				usType         = pOs2->fsType;
-
-				if ( 0 != pFace->units_per_EM )
-				{
-					double dKoef = ( 1000 / (double)pFace->units_per_EM );
-					shAvgCharWidth = (SHORT)(pOs2->xAvgCharWidth  * dKoef);
-					shAscent       = (SHORT)(pOs2->sTypoAscender  * dKoef);
-					shDescent      = (SHORT)(pOs2->sTypoDescender * dKoef);
-					shLineGap      = (SHORT)(pOs2->sTypoLineGap   * dKoef);
-					shXHeight      = (SHORT)(pOs2->sxHeight       * dKoef);
-					shCapHeight    = (SHORT)(pOs2->sCapHeight     * dKoef);
-				}
-				else
-				{
-					shAvgCharWidth = (SHORT)pOs2->xAvgCharWidth;
-					shAscent       = (SHORT)pOs2->sTypoAscender;
-					shDescent      = (SHORT)pOs2->sTypoDescender;
-					shLineGap      = (SHORT)pOs2->sTypoLineGap;
-					shXHeight      = (SHORT)pOs2->sxHeight;
-					shCapHeight    = (SHORT)pOs2->sCapHeight;
-				}
-			}
-
-			if ( true )
-			{
-				// Специальная ветка для случаев, когда charset может быть задан не через значения
-				// ulCodePageRange, а непосредственно через тип Cmap.
-
-				//  Charset Name       Charset Value(hex)  Codepage number   Platform_ID   Encoding_ID   Description
-				//  -------------------------------------------------------------------------------------------------
-				//
-				//  SYMBOL_CHARSET            2 (x02)                             3            0           Symbol
-				//  SHIFTJIS_CHARSET        128 (x80)             932             3            2           ShiftJIS
-				//  GB2313_CHARSET          134 (x86)             936             3            3           PRC
-				//  CHINESEBIG5_CHARSET     136 (x88)             950             3            4           Big5
-				//  HANGEUL_CHARSET         129 (x81)             949             3            5           Wansung
-				//  JOHAB_CHARSET           130 (x82)            1361             3            6           Johab
-
-				for( int nIndex = 0; nIndex < pFace->num_charmaps; nIndex++ )
-				{
-					// Symbol
-					if ( !( ulCodeRange1 & 0x80000000 ) && 0 == pFace->charmaps[nIndex]->encoding_id && 3 == pFace->charmaps[nIndex]->platform_id )
-						ulCodeRange1 |= 0x80000000;
-
-					// ShiftJIS
-					if ( !( ulCodeRange1 & 0x00020000 ) && 2 == pFace->charmaps[nIndex]->encoding_id && 3 == pFace->charmaps[nIndex]->platform_id )
-						ulCodeRange1 |= 0x00020000;
-
-					// PRC
-					if ( !( ulCodeRange1 & 0x00040000 ) && 3 == pFace->charmaps[nIndex]->encoding_id && 3 == pFace->charmaps[nIndex]->platform_id )
-						ulCodeRange1 |= 0x00040000;
-
-					// Big5
-					if ( !( ulCodeRange1 & 0x00100000 ) && 4 == pFace->charmaps[nIndex]->encoding_id && 3 == pFace->charmaps[nIndex]->platform_id )
-						ulCodeRange1 |= 0x00100000;
-
-					// Wansung
-					if ( !( ulCodeRange1 & 0x00080000 ) && 5 == pFace->charmaps[nIndex]->encoding_id && 3 == pFace->charmaps[nIndex]->platform_id )
-						ulCodeRange1 |= 0x00080000;
-
-					// Johab
-					if ( !( ulCodeRange1 & 0x00200000 ) && 6 == pFace->charmaps[nIndex]->encoding_id && 3 == pFace->charmaps[nIndex]->platform_id )
-						ulCodeRange1 |= 0x00200000;
-				}
-			}
-
-			NSFonts::EFontFormat eFormat = GetFontFormat( pFace );
-
-			bool bSupportFont = ((eFormat == NSFonts::fontTrueType) || ((nFlag & 1) && (eFormat == NSFonts::fontOpenType)));
-			if (!bSupportFont)
-			{
-				FT_Done_Face( pFace );
-				continue;
-			}
-
-			std::wstring wsFamilyName = GetCorrectSfntName(pFace->family_name);
-			std::wstring wsStyleName = GetCorrectSfntName(pFace->style_name);
-
-			bool isBadASCII = (std::wstring::npos != wsFamilyName.find('?')) ? true : false;
-
-#ifdef _MAC
-			if (wsFamilyName.find(L".") == 0)
-			{
-				FT_Done_Face( pFace );
-				continue;
-			}
-#endif
-
-			NSFonts::CFontInfo* pFontInfo = new NSFonts::CFontInfo( wsFamilyName,
-																	wsStyleName,
-																	oArray[nIndex],
-																	nIndexFace,
-																	bBold,
-																	bItalic,
-																	bFixedWidth,
-																	pPanose,
-																	ulRange1,
-																	ulRange2,
-																	ulRange3,
-																	ulRange4,
-																	ulCodeRange1,
-																	ulCodeRange2,
-																	usWeight,
-																	usWidth,
-																	sFamilyClass,
-																	eFormat,
-																	shAvgCharWidth,
-																	shAscent,
-																	shDescent,
-																	shLineGap,
-																	shXHeight,
-																	shCapHeight,
-																	usType);
-
-			if (pFace && FT_IS_SFNT(pFace))
-			{
-				TT_Face pTTFace = (TT_Face)pFace;
-
-				int nNamesCount = (int)pTTFace->num_names;
-				TT_NameRec* pNameRecs = pTTFace->name_table.names;
-
-				for (int nNameIndex = 0; nNameIndex < nNamesCount; ++nNameIndex)
-				{
-					TT_NameRec* rec = pNameRecs + nNameIndex;
-
-					if (rec->nameID != TT_NAME_ID_FONT_FAMILY || rec->stringLength <= 0)
-						continue;
-
-					std::string sEncoding = "";
-					switch (rec->platformID)
-					{
-					case TT_PLATFORM_APPLE_UNICODE:
-					{
-						sEncoding = "UTF-16BE";
-						break;
-					}
-					case TT_PLATFORM_MACINTOSH:
-					{
-						break;
-					}
-					case TT_PLATFORM_MICROSOFT:
-					{
-						switch (rec->encodingID)
-						{
-						case TT_MS_ID_SYMBOL_CS:
-						case TT_MS_ID_UNICODE_CS:
-							sEncoding = "UTF-16BE";
-							break;
-						case TT_MS_ID_UCS_4:
-							//sEncoding = "UCS4"; // см tt_
-							sEncoding = "UTF-16BE";
-							break;
-							//case TT_MS_ID_SJIS:
-							//    sEncoding = "Shift-JIS";
-							//    break;
-							//case TT_MS_ID_GB2312:
-							//    sEncoding = "GB2312";
-							//    break;
-							//case TT_MS_ID_BIG_5:
-							//    sEncoding = "Big5";
-							//    break;
-						default:
-							break;
-						}
-					}
-					default:
-						break;
-					}
-
-					if (!sEncoding.empty())
-					{
-						FT_Stream stream = pTTFace->name_table.stream;
-						FT_Memory memory = pFace->memory;
-						FT_Error error = 0;
-
-						if ( FT_QNEW_ARRAY ( rec->string, rec->stringLength ) ||
-							 FT_STREAM_SEEK( rec->stringOffset )              ||
-							 FT_STREAM_READ( rec->string, rec->stringLength ) )
-						{
-							FT_FREE( rec->string );
-							rec->stringLength = 0;
-						}
-						else
-						{
-							NSUnicodeConverter::CUnicodeConverter oConverter;
-							std::wstring sNameW = oConverter.toUnicode((char*)rec->string, (unsigned int)rec->stringLength, sEncoding.c_str());
-
-							if (std::wstring::npos == sNameW.find(wsFamilyName) && std::wstring::npos == wsFamilyName.find(sNameW))
-							{
-								std::vector<std::wstring>::iterator iter = pFontInfo->names.begin();
-								for (std::vector<std::wstring>::iterator iter = pFontInfo->names.begin(); iter != pFontInfo->names.end(); iter++)
-								{
-									if (*iter == sNameW)
-										break;
-								}
-
-								if (isBadASCII && pFontInfo->names.empty())
-								{
-									wsFamilyName = sNameW;
-									pFontInfo->m_wsFontName = wsFamilyName;
-									isBadASCII = false;
-								}
-								else if (iter == pFontInfo->names.end())
-								{
-									pFontInfo->names.push_back(sNameW);
-
-#if 0
-									FILE* f = fopen("D:\\111.txt", "a+");
-									fprintf(f, "%s: %s\n", U_TO_UTF8(wsFamilyName).c_str(), U_TO_UTF8(sNameW).c_str());
-									fclose(f);
-#endif
-								}
-							}
-						}
-					}
-				}
-			}
-
-			Add(pFontInfo);
-
-			FT_Done_Face( pFace );
-		}
+		Add(pLibrary, pParams, oArray[nIndex], &oStream, nFlag);
 	}
 
 	RELEASEARRAYOBJECTS(pDataFontFile);

@@ -45,8 +45,27 @@ namespace NExtractTools
 
 	_UINT32 pdfoform2docx_dir(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		std::wstring sTempDocx = combinePath(convertParams.m_sTempDir, L"meta.docx");
+		std::wstring sTempDocxInjected = combinePath(convertParams.m_sTempDir, L"meta.docx");
+		std::wstring sTempDocx = sTempDocxInjected;
 		_UINT32 nRes = pdfoform2docx(sFrom, sTempDocx, params, convertParams);
+
+		if (SUCCEEDED_X2T(nRes))
+		{
+			COfficeFileFormatChecker OfficeFileFormatChecker;
+			if (OfficeFileFormatChecker.isOfficeFile(sTempDocxInjected))
+			{
+				if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO)
+				{
+					sTempDocx = combinePath(convertParams.m_sTempDir, L"uncrypt_file.oox");
+					nRes = mscrypt2oox(sTempDocxInjected, sTempDocx, params, convertParams);
+				}
+				else if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_OTHER_MS_MITCRYPTO)
+				{
+					sTempDocx = combinePath(convertParams.m_sTempDir, L"uncrypt_file.oox");
+					nRes = mitcrypt2oox(sTempDocxInjected, sTempDocx, params, convertParams);
+				}
+			}
+		}
 
 		if (SUCCEEDED_X2T(nRes))
 		{

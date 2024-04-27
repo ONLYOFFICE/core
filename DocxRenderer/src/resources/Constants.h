@@ -1,7 +1,8 @@
 #pragma once
-#include "../DesktopEditor/common/Types.h"
+#include "../../../DesktopEditor/common/Types.h"
 
 #define USING_DELETE_DUPLICATING_CONTS 0 // 0 - все сточки-дубликаты превращаются в shape, 1 - строчки дубликаты удаляются
+// #define USE_DEFAULT_FONT_TO_RECALC
 
 const double c_dDpiX		= 72.0;
 const double c_dDpiY		= 72.0;
@@ -18,9 +19,9 @@ const double c_dDegreeToAngle = 60000.0;
 
 const double c_dSTANDART_STRING_HEIGHT_MM       = 4.2333333333333334;
 const double c_dTHE_SAME_STRING_Y_PRECISION_MM  = 0.01;
-const double c_dLINE_DISTANCE_ERROR_MM          = 0.5;
-const double c_dERROR_OF_RIGHT_BORDERS_MM       = 0.5;
-const double c_dERROR_OF_LEFT_BORDERS_MM        = 0.1;
+const double c_dLINE_DISTANCE_ERROR_MM          = 0.03;
+const double c_dERROR_OF_PARAGRAPH_BORDERS_MM   = 1.0;
+const double c_dERROR_GAP                       = 1.5;
 const double c_dCENTER_POSITION_ERROR_MM        = 1.5;
 const double c_dTHE_STRING_X_PRECISION_MM       = 0.5;
 const double c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM = 0.1;
@@ -28,6 +29,9 @@ const double c_dGRAPHICS_ERROR_MM               = 0.5;
 const double c_dGRAPHICS_ERROR_IN_LINES_MM      = 0.3;
 const double c_dMAX_LINE_HEIGHT_MM              = 2.5;
 const double c_dCORRECTION_FOR_FIRST_PARAGRAPH  = -1.5;
+const double c_dCOEFFICIENT_LENGTHS_LINES_IN_PARAGRAPH = 0.8;
+const double c_dLINE_DISTANCE_MAX_MM            = 50.0;
+const double c_dSHAPE_X_OFFSET                  = 1.5;
 
 const UINT   c_iWhiteColor = 0xFFFFFF;
 const UINT   c_iBlackColor = 0x000000;

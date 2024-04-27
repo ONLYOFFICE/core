@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "PdfWriter.h"
+#include "../../../../../../PdfFile/PdfWriter.h"
 
 #ifdef BUILDING_WASM_MODULE
 CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRenderer* pRenderer, bool bCreate) : m_oCommandManager(this) {}
@@ -107,7 +107,7 @@ HRESULT CPdfWriter::CommandDrawTextExCHAR(const LONG& lUnicode, const LONG& lGid
 HRESULT CPdfWriter::CommandDrawText      (const std::wstring& wsUnicodeText,                                                           const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }
 HRESULT CPdfWriter::CommandDrawTextEx    (const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }
 HRESULT CPdfWriter::CommandDrawTextCHAR2 (unsigned int* unUnicode, const unsigned int& unUnicodeCount, const unsigned int& unGid, const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }
-HRESULT CPdfWriter::EndCommand(const DWORD& lType, const LONG& lClipMode) { return 0; }
+HRESULT CPdfWriter::EndCommand(const DWORD& lType) { return 0; }
 HRESULT CPdfWriter::PathCommandMoveTo(const double& dX, const double& dY) { return 0; }
 HRESULT CPdfWriter::PathCommandLineTo(const double& dX, const double& dY) { return 0; }
 HRESULT CPdfWriter::PathCommandLinesTo(double* pPoints, const int& nCount) { return 0; }
@@ -128,6 +128,8 @@ HRESULT CPdfWriter::DrawImageFromFile(NSFonts::IApplicationFonts* pAppFonts, con
 HRESULT CPdfWriter::SetTransform(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY) { return 0; }
 HRESULT CPdfWriter::GetTransform(double* dM11, double* dM12, double* dM21, double* dM22, double* dX, double* dY) { return 0; }
 HRESULT CPdfWriter::ResetTransform() { return 0; }
+HRESULT CPdfWriter::get_ClipMode(LONG* lMode) { return 0; }
+HRESULT CPdfWriter::put_ClipMode(const LONG& lMode) { return 0; }
 HRESULT CPdfWriter::AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip) { return 0; }
 HRESULT CPdfWriter::AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage) { return 0; }
 HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFieldInfo* pInfo, const std::wstring& wsTempDirectory) { return 0; }
@@ -141,8 +143,12 @@ HRESULT CPdfWriter::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2
 bool CPdfWriter::EditPage(PdfWriter::CPage* pNewPage) { return false; }
 bool CPdfWriter::AddPage(int nPageIndex) { return false; }
 bool CPdfWriter::EditClose() { return false; }
+void CPdfWriter::PageClear() {}
 void CPdfWriter::PageRotate(int nRotate) {}
 void CPdfWriter::Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate) {}
+HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWidgetsInfo* pFieldInfo, const std::wstring& wsTempDirectory) { return 0; }
+PdfWriter::CDocument* CPdfWriter::GetDocument() { return NULL; }
+PdfWriter::CPage* CPdfWriter::GetPage() { return NULL; }
 PdfWriter::CImageDict* CPdfWriter::LoadImage(Aggplus::CImage* pImage, BYTE nAlpha) { return NULL; }
 PdfWriter::CImageDict* CPdfWriter::DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha) { return NULL; }
 bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, const double& dX, const double& dY) { return false; }

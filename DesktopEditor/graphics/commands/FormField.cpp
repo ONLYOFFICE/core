@@ -330,60 +330,6 @@ const std::wstring& CFormFieldInfo::CPictureFormPr::GetPicturePath() const
 }
 
 //
-CFormFieldInfo::CSignatureFormPr::CSignatureFormPr()
-{
-}
-void CFormFieldInfo::CSignatureFormPr::SetName(const std::wstring& wsValue)
-{
-	m_wsName = wsValue;
-}
-void CFormFieldInfo::CSignatureFormPr::SetContact(const std::wstring& wsValue)
-{
-	m_wsContact = wsValue;
-}
-void CFormFieldInfo::CSignatureFormPr::SetReason(const std::wstring& wsValue)
-{
-	m_wsReason = wsValue;
-}
-void CFormFieldInfo::CSignatureFormPr::SetPicturePath(const std::wstring& wsPath)
-{
-	m_wsPicturePath = wsPath;
-}
-void CFormFieldInfo::CSignatureFormPr::SetCert(const std::wstring& wsValue)
-{
-	m_wsCert = wsValue;
-}
-void CFormFieldInfo::CSignatureFormPr::SetDate(const bool& bDate)
-{
-	m_bDate = bDate;
-}
-
-const std::wstring& CFormFieldInfo::CSignatureFormPr::GetName() const
-{
-	return m_wsName;
-}
-const std::wstring& CFormFieldInfo::CSignatureFormPr::GetContact() const
-{
-	return m_wsContact;
-}
-const std::wstring& CFormFieldInfo::CSignatureFormPr::GetReason() const
-{
-	return m_wsReason;
-}
-const std::wstring& CFormFieldInfo::CSignatureFormPr::GetPicturePath() const
-{
-	return m_wsPicturePath;
-}
-const std::wstring& CFormFieldInfo::CSignatureFormPr::GetCert() const
-{
-	return m_wsCert;
-}
-bool CFormFieldInfo::CSignatureFormPr::GetDate() const
-{
-	return m_bDate;
-}
-
-//
 CFormFieldInfo::CDateTimeFormPr::CDateTimeFormPr()
 {
 }
@@ -565,10 +511,6 @@ bool CFormFieldInfo::IsPicture() const
 {
 	return (m_nType == 4);
 }
-bool CFormFieldInfo::IsSignature() const
-{
-	return (m_nType == 5);
-}
 bool CFormFieldInfo::IsDateTime() const
 {
 	return (m_nType == 6);
@@ -604,14 +546,6 @@ CFormFieldInfo::CPictureFormPr* CFormFieldInfo::GetPictureFormPr()
 const CFormFieldInfo::CPictureFormPr* CFormFieldInfo::GetPicturePr() const
 {
 	return &m_oPicturePr;
-}
-CFormFieldInfo::CSignatureFormPr* CFormFieldInfo::GetSignatureFormPr()
-{
-	return &m_oSignaturePr;
-}
-const CFormFieldInfo::CSignatureFormPr* CFormFieldInfo::GetSignaturePr() const
-{
-	return &m_oSignaturePr;
 }
 CFormFieldInfo::CDateTimeFormPr* CFormFieldInfo::GetDateTimeFormPr()
 {
@@ -746,40 +680,6 @@ bool CFormFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetaf
 
 		if (nFlags & (1 << 22))
 			pPr->SetPicturePath(pCorrector->GetImagePath(pReader->ReadString()));
-	}
-	else if (IsSignature())
-	{
-		CFormFieldInfo::CSignatureFormPr* pPr = GetSignatureFormPr();
-
-			   // Поля Настройки подписи
-			   // Сведения о подписывающем
-
-			   // Имя
-		if (nFlags & (1 << 20))
-			pPr->SetName(pReader->ReadString());
-
-			   // Должность Игнорируется
-
-			   // Адрес электронной почты
-		if (nFlags & (1 << 21))
-			pPr->SetContact(pReader->ReadString());
-
-			   // Инструкция для подписывающего Игнорируется
-
-			   // Показывать дату подписи в строке подписи
-		pPr->SetDate(nFlags & (1 << 22));
-
-			   // Цель подписания документа (причина)
-		if (nFlags & (1 << 23))
-			pPr->SetReason(pReader->ReadString());
-
-			   // Картинка
-		if (nFlags & (1 << 24))
-			pPr->SetPicturePath(pCorrector->GetImagePath(pReader->ReadString()));
-
-			   // Необходимо передать сертификат, пароль, ключ, пароль ключа
-		if (nFlags & (1 << 25))
-			pPr->SetCert(pReader->ReadString());
 	}
 	else if (IsDateTime())
 	{

@@ -205,9 +205,11 @@ SOURCES += \
 HEADERS += PdfFile.h \
            PdfWriter.h \
            PdfReader.h \
+           PdfEditor.h \
            OnlineOfficeBinToPdf.h
 
 SOURCES += PdfFile.cpp \
            PdfWriter.cpp \
            PdfReader.cpp \
+           PdfEditor.cpp \
            OnlineOfficeBinToPdf.cpp

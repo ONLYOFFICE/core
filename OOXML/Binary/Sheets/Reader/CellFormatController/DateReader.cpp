@@ -43,7 +43,7 @@
 
  // Определение основных форматов даты
 std::vector<std::wstring> DateFormats = {
-    L"%d.%m.%Y", L"%d.%m.%y", L"%Y-%m-%d", L"%m/%d/%Y",
+    L"%d.%m.%Y", L"%d.%m.%y", L"%Y-%m-%d",L"%d/%m/%Y",L"%d/%m/%y", L"%m/%d/%Y",
     L"%m/%d/%y", L"%d %B %Y", L"%d %B, %Y", L"%d %b %Y",
     L"%d %b, %Y", L"%B %d %Y", L"%B %d, %Y", L"%b %d %Y",
     L"%b %d, %Y", L"%Y/%m/%d", L"%Y/%d/%m", L"%m-%d-%Y",
@@ -67,7 +67,10 @@ bool DateReader::GetDigitalDate(const std::wstring &date, _INT32 &result)
 
         if(time.tm_year > 0)
         {
-            result = getStandartDate(time);
+            if(time.tm_year >= 70)
+                result = getStandartDate(time);
+            else
+              result = getNonUnixDate(time);
             return true;
         }
         return false;
@@ -80,8 +83,44 @@ bool DateReader::GetDigitalDate(const std::wstring &date, _INT32 &result)
 _INT32 DateReader::getStandartDate(tm &date)
 {
     // Преобразование даты в формат excel
-    auto tp = std::chrono::system_clock::from_time_t(mktime(&date));
-    auto excelTime = (tp.time_since_epoch().count() / 10000000) + 2209161600;
+    auto timeT = mktime(&date);
+    auto tp = std::chrono::system_clock::from_time_t(timeT);
+    auto excelTime = tp.time_since_epoch().count();
+    #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
+        excelTime = excelTime / 10000000;
+    #else
+        excelTime = excelTime / 1000000000;
+    #endif
+    excelTime += 2209161600;
     _INT32 tempTime = round(excelTime / 86400.0);
     return tempTime;
+}
+
+// Функция для определения високосного года
+bool isLeapYear(int year) {
+    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+}
+
+_INT32 DateReader::getNonUnixDate(tm &date)
+{
+    const int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+       long days = 1;
+
+       // Добавляем количество дней за предыдущие годы
+       for (int year = 1900; year < date.tm_year + 1900; ++year) {
+           days += isLeapYear(year) ? 366 : 365;
+       }
+
+       // Добавляем количество дней до начала текущего года
+       for (int month = 0; month < date.tm_mon; ++month) {
+           days += daysInMonth[month];
+           if (month == 1 && isLeapYear(date.tm_year + 1900))
+               days++; // добавляем 1 день для февраля в високосном году
+       }
+
+       // Добавляем количество дней текущего месяца
+       days += date.tm_mday;
+
+       return days;
 }

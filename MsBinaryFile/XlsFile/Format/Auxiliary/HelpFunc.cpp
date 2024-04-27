@@ -48,25 +48,28 @@
 
 namespace AUX
 {
-const int normalizeColumn(const int column)
+const int normalizeColumn(const int column, const bool xlsb)
 {
-    if ((column & 0x00004000) == 0x00004000)
-    {
-        return 0x00004000 - 1;
-    }
-    else
-    {
-        int norm_col = column;
-        while (norm_col > 16383)
-        {
-            norm_col -= 16384;
-        }
-        while (norm_col < 0)
-        {
-            norm_col += 16384; // It is correct. must be on the second place after 16383
-        }
-        return norm_col;
-    }
+	int maxCol = 0;
+	if(xlsb)
+	{
+		maxCol = 16383;
+	}
+	else
+	{
+		maxCol = 255;
+	}
+	int norm_col = column;
+	while (norm_col > maxCol)
+	{
+		norm_col -= (maxCol+1);
+	}
+	while (norm_col < 0)
+	{
+		norm_col += (maxCol+1); // It is correct. must be on the second place after maxCol(16383 or 255)
+	}
+	return norm_col;
+   
 }
 
 
@@ -87,16 +90,25 @@ const std::wstring column2str(const int column, const bool col_rel)
 }
 
 
-const int normalizeRow(const int row)
+const int normalizeRow(const int row, bool xlsb)
 {
-	int norm_row = row;
-    while(norm_row > 1048576)
+	int maxRow = 0;
+	if(xlsb)
 	{
-        norm_row -= 0x100000;
+		maxRow = 1048576;
+	}
+	else
+	{
+		maxRow = 65536;
+	}
+	int norm_row = row;
+    while(norm_row > maxRow)
+	{
+        norm_row -= maxRow;
 	}
 	while(norm_row < 0)
 	{
-        norm_row += 0x100000; // It is correct. must be on the second place after 1048576
+        norm_row += maxRow; // It is correct. must be on the second place after 1048576
 	}
 	return norm_row;
 }

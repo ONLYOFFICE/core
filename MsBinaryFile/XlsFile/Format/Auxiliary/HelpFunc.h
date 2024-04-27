@@ -42,8 +42,8 @@ namespace XLS
 
 namespace AUX
 {
-	const int			normalizeColumn	(const int column);
-	const int			normalizeRow	(const int row);
+	const int			normalizeColumn	(const int column, const bool xlsb = false);
+	const int			normalizeRow	(const int row, const bool xlsb = false);
 
 	const std::wstring	column2str		(const int column, const bool col_rel);
 	const std::wstring	row2str			(const int row, const bool row_rel);

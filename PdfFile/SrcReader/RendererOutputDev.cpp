@@ -3060,6 +3060,12 @@ namespace PdfReader
 		if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
 			return;
 
+		if (nX1 - nX0 == 1 && nY1 - nY0 == 1) // Одно изображение, tilingPattern не требуется
+		{
+			gfx->drawForm(pStream, pResourcesDict, matrix, pBBox);
+			return;
+		}
+
 		if (abs(pBBox[2] - pBBox[0] - dXStep) > 0.001 || abs(pBBox[3] - pBBox[1] - dYStep) > 0.001)
 			return;
 
@@ -3111,12 +3117,14 @@ namespace PdfReader
 		oImage->Create(pBgraData, nWidth, nHeight, 4 * nWidth);
 
 		double xMin, yMin, xMax, yMax;
-		pGState->getUserClipBBox(&xMin, &yMin, &xMax, &yMax);
-
-		pGState->moveTo(xMin + pBBox[0], yMin + pBBox[1]);
-		pGState->lineTo(xMax + pBBox[2], yMin + pBBox[1]);
-		pGState->lineTo(xMax + pBBox[2], yMax + pBBox[3]);
-		pGState->lineTo(xMin + pBBox[0], yMax + pBBox[3]);
+		Transform(matrix, pBBox[0], pBBox[1], &xMin, &yMin);
+		Transform(matrix, pBBox[2], pBBox[3], &xMax, &yMax);
+		xMax *= (nX1 - nX0);
+		yMax *= (nY1 - nY0);
+		pGState->moveTo(xMin, yMin);
+		pGState->lineTo(xMax, yMin);
+		pGState->lineTo(xMax, yMax);
+		pGState->lineTo(xMin, yMax);
 		pGState->closePath();
 
 		DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
@@ -4102,7 +4110,38 @@ namespace PdfReader
 				m_pRenderer->put_FontPath(sFontPath);
 		}
 
-		if (nRenderMode == 1 || nRenderMode == 2 || nRenderMode == 5 || nRenderMode == 6)
+		LONG lRendererType = 0;
+		m_pRenderer->get_Type(&lRendererType);
+
+		bool bIsEmulateBold = false;
+		if (c_nDocxWriter == lRendererType && 2 == nRenderMode)
+			bIsEmulateBold = (S_OK == m_pRenderer->CommandLong(c_nSupportPathTextAsText, 0)) ? true : false;
+
+		if (bIsEmulateBold)
+		{
+			m_pRenderer->BeginCommand(c_nStrokeTextType);
+
+			LONG lOldStyle = 0;
+			m_pRenderer->get_FontStyle(&lOldStyle);
+			LONG lNewStyle = lOldStyle;
+
+			if ((lNewStyle & 0x01) == 0)
+			{
+				lNewStyle |= 0x01;
+				m_pRenderer->put_FontStyle(lNewStyle);
+			}
+
+			if (unGid)
+				m_pRenderer->CommandDrawTextEx(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+			else
+				m_pRenderer->CommandDrawText(wsUnicodeText, PDFCoordsToMM(dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+
+			if (lOldStyle != lNewStyle)
+				m_pRenderer->put_FontStyle(lOldStyle);
+
+			m_pRenderer->EndCommand(c_nStrokeTextType);
+		}
+		else if (nRenderMode == 1 || nRenderMode == 2 || nRenderMode == 5 || nRenderMode == 6)
 		{
 			m_pRenderer->BeginCommand(c_nStrokeTextType);
 

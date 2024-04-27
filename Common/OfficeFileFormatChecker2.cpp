@@ -850,7 +850,7 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
 	}
 	else if (0 == sExt.compare(L".mht") || 0 == sExt.compare(L".mhtml"))
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT;
-	else if (0 == sExt.compare(L".csv") || 0 == sExt.compare(L".xlsx"))
+	else if (0 == sExt.compare(L".csv") || 0 == sExt.compare(L".xls") || 0 == sExt.compare(L".xlsx") || 0 == sExt.compare(L".xlsb"))
 		nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
 	else if (0 == sExt.compare(L".html") || 0 == sExt.compare(L".htm"))
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML;
@@ -858,9 +858,7 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
 		nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_PDF;
 	else if (0 == sExt.compare(L".doct")) // случай архива с html viewer
 		nFileType = AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY;
-	else if (0 == sExt.compare(L".xlsb"))
-		nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB;
-	else // if (0 == sExt.compare(L".txt") || 0 == sExt.compare(L".xml")) //volsciv.rtf -или любой другой
+	else if (0 == sExt.compare(L".txt") || 0 == sExt.compare(L".xml") || 0 == sExt.compare(L".rtf")	|| 0 == sExt.compare(L".doc") || 0 == sExt.compare(L".docx"))
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
 
 	if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN)

@@ -1,7 +1,6 @@
 #include "CCssCalculator.h"
 #include "CCssCalculator_Private.h"
 
-
 namespace NSCSS
 {
 	CCssCalculator::CCssCalculator()
@@ -22,6 +21,11 @@ namespace NSCSS
 	bool CCssCalculator::GetCompiledStyle(CCompiledStyle &oStyle, const std::vector<CNode> &arSelectors, const bool &bIsSettings, const UnitMeasure &unitMeasure) const
 	{
 		return m_pInternal->GetCompiledStyle(oStyle, arSelectors, bIsSettings, unitMeasure);
+	}
+
+	bool CCssCalculator::CalculatePageStyle(NSProperties::CPage& oPageData, const std::vector<CNode> &arSelectors)
+	{
+		return m_pInternal->CalculatePageStyle(oPageData, arSelectors);
 	}
 
 	void CCssCalculator::AddStyles(const std::string &sStyle)
@@ -52,26 +56,6 @@ namespace NSCSS
 	void CCssCalculator::SetBodyTree(const CTree &oTree)
 	{
 		m_pInternal->SetBodyTree(oTree);
-	}
-
-	void CCssCalculator::SetSizeSourceWindow(const CSizeWindow &oSizeWindow)
-	{
-		m_pInternal->SetSizeSourceWindow(oSizeWindow);
-	}
-
-	void CCssCalculator::SetSizeDeviceWindow(const CSizeWindow &oSizeWindow)
-	{
-		m_pInternal->SetSizeDeviceWindow(oSizeWindow);
-	}
-
-	CSizeWindow CCssCalculator::GetSizeSourceWindow() const
-	{
-		return m_pInternal->GetSizeSourceWindow();
-	}
-
-	CSizeWindow CCssCalculator::GetSizeDeviceWindow() const
-	{
-		return m_pInternal->GetSizeDeviceWindow();
 	}
 
 	UnitMeasure CCssCalculator::GetUnitMeasure() const

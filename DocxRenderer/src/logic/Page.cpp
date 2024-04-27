@@ -342,6 +342,11 @@ namespace NSDocxRenderer
 		auto oMetrics = m_pFontManager->GetFontMetrics();
 		auto oParams = m_pFontManager->GetFontSelectParams();
 
+		// use forced fold option
+		bool bForcedBold = oParams.bDefaultBold;
+		if (m_lCurrentCommand == c_nStrokeTextType && m_pFont->Bold)
+			bForcedBold = true;
+
 		m_pFontSelector->SelectFont(oParams, oMetrics, oText);
 		_h = m_pFontManager->GetFontHeight();
 
@@ -368,7 +373,7 @@ namespace NSDocxRenderer
 			m_pFontSelector->GetSelectedName(),
 			m_pFont->Size,
 			m_pFontSelector->IsSelectedItalic(),
-			m_pFontSelector->IsSelectedBold());
+			m_pFontSelector->IsSelectedBold() || bForcedBold);
 
 		pCont->m_dSpaceWidthMM = m_pFontManager->GetSpaceWidthMM();
 

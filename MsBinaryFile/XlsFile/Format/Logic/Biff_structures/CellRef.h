@@ -49,7 +49,7 @@ public:
 
 	static const ElementType type = typeCellRef;	
 
-	const std::wstring	toString() const;
+	const std::wstring	toString(const bool xlsb = false) const;
 	void				fromString(const std::wstring& str);
 	operator std::wstring  () const;
 
@@ -106,7 +106,14 @@ template<class NameProducer, class RwType, class ColType, RELATIVE_INFO rel_info
 class CellRef_T : public CellRef
 {
 public:
-    CellRef_T(const std::wstring & str_ref) : CellRef(str_ref) {}
+    CellRef_T(const std::wstring & str_ref) : CellRef(str_ref)
+    {
+        if(sizeof(RwType) < 4)
+        {
+            column = AUX::normalizeColumn(column);
+            row = AUX::normalizeRow(row);
+        }
+    }
     CellRef_T() {}
     CellRef_T(const int row_init, const int column_init, const bool row_relative_init, const bool col_relative_init)
         :	CellRef(row_init, column_init, row_relative_init, col_relative_init) {}

@@ -116,16 +116,28 @@ BiffStructurePtr CellRangeRef::clone()
 	return BiffStructurePtr(new CellRangeRef(*this));
 }
 
-const std::wstring CellRangeRef::toString(const bool useShortForm) const
+const std::wstring CellRangeRef::toString(const bool useShortForm, const bool xlsb) const
 {
 	if(to_string_cache.empty())
 	{
-        int rowLast_norm		= AUX::normalizeRow		(rowLast);
-        int rowFirst_norm		= AUX::normalizeRow		(rowFirst);
-        int columnFirst_norm	= AUX::normalizeColumn	(columnFirst);
-        int columnLast_norm		= AUX::normalizeColumn	(columnLast);
+        int rowLast_norm		= AUX::normalizeRow		(rowLast, xlsb);
+        int rowFirst_norm		= AUX::normalizeRow		(rowFirst, xlsb);
+        int columnFirst_norm	= AUX::normalizeColumn	(columnFirst, xlsb);
+        int columnLast_norm		= AUX::normalizeColumn	(columnLast, xlsb);
+		int maxCol = 0;
+		int maxRow = 0;
+		if(xlsb)
+		{
+			maxCol = 16383;
+			maxRow = 1048575;
+		}
+		else
+		{
+			maxCol = 255;
+			maxRow = 65535;
+		}
 		
-		if(0 == rowFirst_norm && 65535 == rowLast_norm ) // whole column or range of columns
+		if(0 == rowFirst_norm && maxRow == rowLast_norm ) // whole column or range of columns
 		{
 			if(useShortForm)
 			{
@@ -133,10 +145,10 @@ const std::wstring CellRangeRef::toString(const bool useShortForm) const
 			}
 			else
 			{
-				rowLast_norm = 1048575;
+				rowLast_norm = maxRow;
 			}
 		}
-		if(0 == columnFirst_norm && 255 == columnLast_norm) // whole row or range of rows
+		if(0 == columnFirst_norm && maxCol == columnLast_norm) // whole row or range of rows
 		{
 			if(useShortForm)
 			{
@@ -144,7 +156,7 @@ const std::wstring CellRangeRef::toString(const bool useShortForm) const
 			}
 			else
 			{
-				columnLast_norm = 16383;
+				columnLast_norm = maxCol;
 			}
 		}
 		if(columnLast_norm == columnFirst_norm && rowFirst_norm == rowLast_norm) // single cell

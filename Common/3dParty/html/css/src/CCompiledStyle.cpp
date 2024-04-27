@@ -12,7 +12,7 @@
 #include "StaticFunctions.h"
 #include "ConstValues.h"
 
-#define DEFAULT_FONT_SIZE 28 // 14 * 2
+#define DEFAULT_FONT_SIZE 14
 
 namespace NSCSS
 {

@@ -58,7 +58,7 @@ public:
 
 	static const ElementType	type = typeCellRangeRef;
 
-	const std::wstring	toString(const bool useShortForm = true) const;
+	const std::wstring	toString(const bool useShortForm = true, const bool xlsb = false) const;
 	void				fromString(const std::wstring& str);
 	operator std::wstring  () const;
 
@@ -110,7 +110,16 @@ template<class NameProducer, class RwType, class ColType, RELATIVE_INFO rel_info
 class CellRangeRef_T : public CellRangeRef
 {
 public:
-    CellRangeRef_T(const std::wstring & str_ref) : CellRangeRef(str_ref) {}
+    CellRangeRef_T(const std::wstring & str_ref) : CellRangeRef(str_ref)
+	{
+        if(sizeof(RwType) < 4)
+        {
+            columnFirst = AUX::normalizeColumn(columnFirst);
+			columnLast = AUX::normalizeColumn(columnLast);
+            rowFirst = AUX::normalizeRow(rowFirst);
+			rowLast = AUX::normalizeRow(rowLast);
+        }
+    }
     CellRangeRef_T() {}
 
 	template<class otherNameProducer, class otherRwType, class otherColType, RELATIVE_INFO otherRel_info>

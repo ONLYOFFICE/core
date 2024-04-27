@@ -1830,22 +1830,35 @@ void PptxConverter::convert(PPTX::Logic::EightDirectionTransition	*oox_transitio
 	if (!oox_transition) return;
 
 	if (oox_transition->name == L"cover")
-		odp_context->current_slide().set_transition_type(1);
+		odp_context->current_slide().set_transition_type(35);
 	if (oox_transition->name == L"pull")
 		odp_context->current_slide().set_transition_type(35);
 
-	if (oox_transition->dir.IsInit())
-	{
-			 if (oox_transition->dir->get() == L"d")	odp_context->current_slide().set_transition_subtype(L"fromTop");
-		else if (oox_transition->dir->get() == L"l")	odp_context->current_slide().set_transition_subtype(L"fromRight");
-		else if (oox_transition->dir->get() == L"r")	odp_context->current_slide().set_transition_subtype(L"fromLeft");
-		else if (oox_transition->dir->get() == L"u")	odp_context->current_slide().set_transition_subtype(L"fromBottom");
+	const std::wstring default_subtype = L"l";
+	std::wstring dir = oox_transition->dir.get_value_or(default_subtype);
+	if (dir.empty())
+		dir = default_subtype;
 
-		else if (oox_transition->dir->get() == L"rd")	odp_context->current_slide().set_transition_subtype(L"horizontalLeft");
-		else if (oox_transition->dir->get() == L"lu")	odp_context->current_slide().set_transition_subtype(L"horizontalRight");
-		else if (oox_transition->dir->get() == L"ld")	odp_context->current_slide().set_transition_subtype(L"verticalRight");
-		else if (oox_transition->dir->get() == L"ru")	odp_context->current_slide().set_transition_subtype(L"verticalLeft");
+		 if (dir == L"d")	odp_context->current_slide().set_transition_subtype(L"fromTop");
+	else if (dir == L"l")	odp_context->current_slide().set_transition_subtype(L"fromRight");
+	else if (dir == L"r")	odp_context->current_slide().set_transition_subtype(L"fromLeft");
+	else if (dir == L"u")	odp_context->current_slide().set_transition_subtype(L"fromBottom");
+
+	if(oox_transition->name == L"cover")
+	{
+			 if (dir == L"rd")	odp_context->current_slide().set_transition_subtype(L"fromTopLeft");
+		else if (dir == L"lu")	odp_context->current_slide().set_transition_subtype(L"fromBottomRight");
+		else if (dir == L"ld")	odp_context->current_slide().set_transition_subtype(L"fromTopRight");
+		else if (dir == L"ru")	odp_context->current_slide().set_transition_subtype(L"fromBottomLeft");
 	}
+	else
+	{
+			 if (dir == L"rd")	odp_context->current_slide().set_transition_subtype(L"horizontalLeft");
+		else if (dir == L"lu")	odp_context->current_slide().set_transition_subtype(L"horizontalRight");
+		else if (dir == L"ld")	odp_context->current_slide().set_transition_subtype(L"verticalRight");
+		else if (dir == L"ru")	odp_context->current_slide().set_transition_subtype(L"verticalLeft");
+	}
+	
 }
 void PptxConverter::convert(PPTX::Logic::OptionalBlackTransition *oox_transition)
 {
@@ -1905,8 +1918,19 @@ void PptxConverter::convert(PPTX::Logic::SplitTransition *oox_transition)
 {
 	if (!oox_transition) return;
 	//name == split
+
+	const std::wstring& orient	= oox_transition->orient.get_value_or(L"horz");
+	const std::wstring& dir		= oox_transition->dir.get_value_or(L"out");
+
 	odp_context->current_slide().set_transition_type(3);
-	odp_context->current_slide().set_transition_subtype(L"vertical");
+
+	if(orient == L"horz" || orient == L"")
+		odp_context->current_slide().set_transition_subtype(L"horizontal");
+	else if (orient == L"vert")
+		odp_context->current_slide().set_transition_subtype(L"vertical");
+
+	if (dir == L"in")
+		odp_context->current_slide().set_transition_direction(L"reverse");
 }
 void PptxConverter::convert(PPTX::Logic::ZoomTransition *oox_transition)
 {

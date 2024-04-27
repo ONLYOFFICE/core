@@ -627,19 +627,19 @@ void odp_page_state::set_transition_speed(int val)
 		{
 			if (page_properties_)
 				page_properties_->content_.presentation_transition_speed_ = L"fast";
-			trans->common_attlist_.smil_dur_ = odf_types::clockvalue(2000);
+			trans->common_attlist_.smil_dur_ = odf_types::clockvalue(250);
 		}
 		if (val == 1)
 		{
 			if (page_properties_)
 				page_properties_->content_.presentation_transition_speed_ = L"medium";
-			trans->common_attlist_.smil_dur_ = odf_types::clockvalue(3000);
+			trans->common_attlist_.smil_dur_ = odf_types::clockvalue(500);
 		}
 		if (val == 2)
 		{
 			if (page_properties_)
 				page_properties_->content_.presentation_transition_speed_ = L"slow";
-			trans->common_attlist_.smil_dur_ = odf_types::clockvalue(4000);
+			trans->common_attlist_.smil_dur_ = odf_types::clockvalue(1000);
 		}
 	}
 }

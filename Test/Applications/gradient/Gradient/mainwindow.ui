@@ -42,71 +42,6 @@
     <property name="title">
      <string/>
     </property>
-    <widget class="QGroupBox" name="groupBox_Linear">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>0</y>
-       <width>201</width>
-       <height>140</height>
-      </rect>
-     </property>
-     <property name="title">
-      <string>Choose gradient colorspace</string>
-     </property>
-     <widget class="QRadioButton" name="Rainbow_Colorspace_Radio_Button">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>20</y>
-        <width>112</width>
-        <height>26</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Rainbow</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="BAW_Colorspace_Radio_Button">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>50</y>
-        <width>161</width>
-        <height>26</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Black and White</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="RAB_Colorspace_Radio_Button">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>80</y>
-        <width>131</width>
-        <height>26</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Red and Blue</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="Pastel_Colorspace_Radio_Button">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>110</y>
-        <width>112</width>
-        <height>26</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Pastel</string>
-      </property>
-     </widget>
-    </widget>
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="geometry">
       <rect>
@@ -2517,6 +2452,153 @@
       <string>Set the coordinates from the label and click</string>
      </property>
     </widget>
+    <widget class="QStackedWidget" name="stackedWidget_3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>221</width>
+       <height>130</height>
+      </rect>
+     </property>
+     <property name="currentIndex">
+      <number>1</number>
+     </property>
+     <widget class="QWidget" name="page_11">
+      <widget class="QGroupBox" name="groupBox_Linear">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>201</width>
+         <height>120</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Choose gradient colorspace</string>
+       </property>
+       <widget class="QRadioButton" name="Rainbow_Colorspace_Radio_Button">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>30</y>
+          <width>112</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Rainbow</string>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="BAW_Colorspace_Radio_Button">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>50</y>
+          <width>161</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Black and White</string>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="RAB_Colorspace_Radio_Button">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>70</y>
+          <width>131</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Red and Blue</string>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="Pastel_Colorspace_Radio_Button">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>90</y>
+          <width>112</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Pastel</string>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="page_12">
+      <widget class="QGroupBox" name="groupBox_17">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>171</width>
+         <height>81</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Set colors in angles</string>
+       </property>
+       <widget class="CustomColorLabel" name="label_80">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>40</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="CustomColorLabel" name="label_81">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>40</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="CustomColorLabel" name="label_114">
+        <property name="geometry">
+         <rect>
+          <x>90</x>
+          <y>40</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="CustomColorLabel" name="label_115">
+        <property name="geometry">
+         <rect>
+          <x>130</x>
+          <y>40</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+    </widget>
    </widget>
    <widget class="QStackedWidget" name="stackedWidget_2">
     <property name="geometry">
@@ -3367,6 +3449,14 @@
    <class>CustomParametrLineEdit</class>
    <extends>QLineEdit</extends>
    <header>mainwindow.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CustomColorLabel</class>
+   <extends>QLabel</extends>
+   <header>mainwindow.h</header>
+   <slots>
+    <slot>onMouseClicked()</slot>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources/>

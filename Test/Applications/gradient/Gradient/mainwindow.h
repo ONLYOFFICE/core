@@ -7,6 +7,7 @@
 #include <QLineEdit>
 #include <QPoint>
 #include <QMouseEvent>
+#include <QColorDialog>
 #include <QPainter>
 #include "../../../../DesktopEditor/graphics/structures.h"
 
@@ -97,6 +98,49 @@ public slots:
 	}
 private:
 	std::vector<QPoint> m_points;
+};
+
+class CustomColorLabel : public QLabel
+{
+	Q_OBJECT
+public:
+	CustomColorLabel(QWidget *parent = nullptr) : QLabel(parent)
+	{
+		connect(this, &CustomColorLabel::mousePressed, this, &CustomColorLabel::onMousePressed);
+	}
+
+	~CustomColorLabel() {}
+
+	void SetColor(QColor color)
+	{
+		m_color = color;
+		this->setStyleSheet("QLabel { background-color : " + m_color.name() + "; border: 1px solid black; padding 10px;}");
+	}
+
+	QColor GetColor() const
+	{
+		return m_color;
+	}
+signals:
+	void mousePressed();
+protected:
+	void mousePressEvent(QMouseEvent *event) override
+	{
+		emit mousePressed();
+	}
+public slots:
+	void onMousePressed()
+	{
+		QColorDialog colorDialog;
+		QColor color = colorDialog.getColor();
+
+		if (color.isValid())
+		{
+			SetColor(color);
+		}
+	}
+private:
+	QColor m_color;
 };
 
 typedef enum
@@ -191,6 +235,9 @@ class MainWindow : public QMainWindow
 public:
 	MainWindow(QWidget *parent = nullptr);
 	~MainWindow();
+	void InitializeColors(bool triangle);
+	std::vector<agg::rgba8> QColor2rgba(bool triangle);
+	std::vector<std::vector<agg::rgba8>> QColor2rgbaMatrix();
 	QImage img;
 	QLabel *lable;
 	std::vector<Point> points;

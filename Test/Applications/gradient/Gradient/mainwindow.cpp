@@ -83,10 +83,22 @@ QImage GenerateImg(std::vector<Point> &points, Info &info, const int& w, const i
 	return img;
 }
 
+void MainWindow::InitializeColors(bool Triangle)
+{
+	ui->label_80->SetColor(QColor(Qt::red));
+	ui->label_81->SetColor(QColor(Qt::green));
+	ui->label_114->SetColor(QColor(Qt::blue));
+	if (!Triangle)
+	{
+		ui->label_115->SetColor(QColor(Qt::yellow));
+	}
+}
+
 void MainWindow::on_actionLinear_Gradient_triggered()
 {
 	ui->stackedWidget->setCurrentIndex(0);
 	ui->stackedWidget_2->setCurrentIndex(0);
+	ui->stackedWidget_3->setCurrentIndex(0);
 	ui->statusbar->showMessage("Linear");
 	info.gradient = Linear;
 	info.gradient_type = c_BrushTypePathNewLinearGradient;
@@ -96,6 +108,7 @@ void MainWindow::on_actionRadial_Gradient_triggered()
 {
 	ui->stackedWidget->setCurrentIndex(1);
 	ui->stackedWidget_2->setCurrentIndex(1);
+	ui->stackedWidget_3->setCurrentIndex(0);
 	ui->statusbar->showMessage("Radial");
 	info.gradient = Radial;
 	info.gradient_type = c_BrushTypePathRadialGradient;
@@ -105,6 +118,8 @@ void MainWindow::on_actionTriangle_Gradient_triggered()
 {
 	ui->stackedWidget->setCurrentIndex(2);
 	ui->stackedWidget_2->setCurrentIndex(2);
+	ui->stackedWidget_3->setCurrentIndex(1);
+	InitializeColors(true);
 	ui->statusbar->showMessage("Triangle");
 	info.gradient = Triangle;
 	info.gradient_type = c_BrushTypeTriagnleMeshGradient;
@@ -114,6 +129,7 @@ void MainWindow::on_actionTriangle_Parametric_Gradient_triggered()
 {
 	ui->stackedWidget->setCurrentIndex(2);
 	ui->stackedWidget_2->setCurrentIndex(3);
+	ui->stackedWidget_3->setCurrentIndex(0);
 	ui->statusbar->showMessage("Triangle Parametric");
 	info.gradient = TriangleParametric;
 	info.gradient_type = c_BrushTypeTriagnleMeshGradient;
@@ -123,6 +139,8 @@ void MainWindow::on_actionCoons_Patch_Gradient_triggered()
 {
 	ui->stackedWidget->setCurrentIndex(3);
 	ui->stackedWidget_2->setCurrentIndex(4);
+	ui->stackedWidget_3->setCurrentIndex(1);
+	InitializeColors(false);
 	ui->statusbar->showMessage("Coons Patch");
 	info.gradient = CoonsPatch;
 	info.gradient_type = c_BrushTypePathNewLinearGradient;
@@ -132,6 +150,7 @@ void MainWindow::on_actionCoons_Patch_Parametric_triggered()
 {
 	ui->stackedWidget->setCurrentIndex(3);
 	ui->stackedWidget_2->setCurrentIndex(5);
+	ui->stackedWidget_3->setCurrentIndex(0);
 	ui->statusbar->showMessage("Coons Patch Parametric");
 	info.gradient = CoonsPatchParametric;
 	info.gradient_type = c_BrushTypeCurveGradient;
@@ -141,6 +160,8 @@ void MainWindow::on_actionTensor_Coons_Patch_Gradient_triggered()
 {
 	ui->stackedWidget->setCurrentIndex(4);
 	ui->stackedWidget_2->setCurrentIndex(6);
+	ui->stackedWidget_3->setCurrentIndex(1);
+	InitializeColors(false);
 	ui->statusbar->showMessage("Tensor Coons Patch");
 	info.gradient = TensorCoonsPatch;
 	info.gradient_type = c_BrushTypePathNewLinearGradient;
@@ -150,9 +171,56 @@ void MainWindow::on_actionTensor_Coons_Patch_Parametric_triggered()
 {
 	ui->stackedWidget->setCurrentIndex(4);
 	ui->stackedWidget_2->setCurrentIndex(7);
+	ui->stackedWidget_3->setCurrentIndex(0);
 	ui->statusbar->showMessage("Tensor Coons Patch Parametric");
 	info.gradient = TensorCoonsPatchParametric;
 	info.gradient_type = c_BrushTypeTensorCurveGradient;
+}
+
+std::vector<agg::rgba8> MainWindow::QColor2rgba(bool triangle)
+{
+	std::vector<agg::rgba8> colors;
+	colors.push_back({static_cast<unsigned int>(ui->label_80->GetColor().red()),
+					  static_cast<unsigned int>(ui->label_80->GetColor().green()),
+					  static_cast<unsigned int>(ui->label_80->GetColor().blue())});
+	colors.push_back({static_cast<unsigned int>(ui->label_81->GetColor().red()),
+					  static_cast<unsigned int>(ui->label_81->GetColor().green()),
+					  static_cast<unsigned int>(ui->label_81->GetColor().blue())});
+	colors.push_back({static_cast<unsigned int>(ui->label_114->GetColor().red()),
+					  static_cast<unsigned int>(ui->label_114->GetColor().green()),
+					  static_cast<unsigned int>(ui->label_114->GetColor().blue())});
+	if (!triangle)
+	{
+		colors.push_back({static_cast<unsigned int>(ui->label_115->GetColor().red()),
+						  static_cast<unsigned int>(ui->label_115->GetColor().green()),
+						  static_cast<unsigned int>(ui->label_115->GetColor().blue())});
+	}
+
+	return colors;
+}
+
+std::vector<std::vector<agg::rgba8>> MainWindow::QColor2rgbaMatrix()
+{
+	std::vector<std::vector<agg::rgba8>> colors;
+	std::vector<agg::rgba8> sub_colors;
+	sub_colors.push_back({static_cast<unsigned int>(ui->label_80->GetColor().red()),
+						  static_cast<unsigned int>(ui->label_80->GetColor().green()),
+						  static_cast<unsigned int>(ui->label_80->GetColor().blue())});
+	sub_colors.push_back({static_cast<unsigned int>(ui->label_81->GetColor().red()),
+						  static_cast<unsigned int>(ui->label_81->GetColor().green()),
+						  static_cast<unsigned int>(ui->label_81->GetColor().blue())});
+	colors.push_back(sub_colors);
+	sub_colors.clear();
+	sub_colors.push_back({static_cast<unsigned int>(ui->label_114->GetColor().red()),
+						  static_cast<unsigned int>(ui->label_114->GetColor().green()),
+						  static_cast<unsigned int>(ui->label_114->GetColor().blue())});
+	sub_colors.push_back({static_cast<unsigned int>(ui->label_115->GetColor().red()),
+						  static_cast<unsigned int>(ui->label_115->GetColor().green()),
+						  static_cast<unsigned int>(ui->label_115->GetColor().blue())});
+	colors.push_back(sub_colors);
+	sub_colors.clear();
+
+	return colors;
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -199,9 +267,8 @@ void MainWindow::on_pushButton_clicked()
 			info.triangle_parametrs[1] = ui->Second_Vertex_Parametr_Input_4->text().toFloat();
 			info.triangle_parametrs[2] = ui->Third_Vertex_Parametr_Input_4->text().toFloat();
 		}
-
 		info.ginfo = NSStructures::GInfoConstructor::get_triangle(info.triangle,
-																  {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
+																  QColor2rgba(true),
 																  info.triangle_parametrs,
 																  info.gradient == TriangleParametric);
 		points = {};
@@ -253,12 +320,10 @@ void MainWindow::on_pushButton_clicked()
 				info.curve[j].y *= MM_TO_COORD(ui->lable_test->height());
 			}
 		}
-
 		info.ginfo = NSStructures::GInfoConstructor::get_curve(
 			info.curve,
 			info.curve_parametrs,
-			{{0, 0, 255}, {255, 0, 255},
-			 {255, 0, 0}, {0, 255, 0}},
+			QColor2rgba(false),
 			info.gradient == CoonsPatchParametric
 			);
 	}
@@ -320,7 +385,7 @@ void MainWindow::on_pushButton_clicked()
 		info.ginfo = NSStructures::GInfoConstructor::get_tensor_curve(
 			info.tensorcurve,
 			info.tensor_curve_parametrs,
-			{{{0, 0, 255}, {255, 0, 255}}, {{255, 0, 0}, {0, 255, 0}}},
+			QColor2rgbaMatrix(),
 			info.gradient == TensorCoonsPatchParametric
 			);
 	}
@@ -453,4 +518,3 @@ void MainWindow::on_pushButton_2_clicked()
 		ui->lable_test->Clear();
 	}
 }
-

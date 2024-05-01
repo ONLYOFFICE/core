@@ -79,7 +79,8 @@ message(STATUS "X2t Converter destination path: ${X2T_CONVERTER_DEST}")
 set(X2T_CONVERTER_LIBS ${ARG_PATH_LIB_BUILD_TOOLS}/${ANDROID_ABI})
 message(STATUS "Prebuild libraries path: ${X2T_CONVERTER_LIBS}")
 
-FILE(GLOB new_list "${X2T_CONVERTER_LIBS}/*.so")
+SET(new_list libUnicodeConverter.so libkernel.so libkernel_network.so libgraphics.so libPdfFile.so libDjVuFile.so libXpsFile.so libHtmlFile2.so libFb2File.so libEpubFile.so libHtmlRenderer.so libDocxRenderer.so libdoctrenderer.so libx2t.so)
+
 SET(libs_list "")
 FOREACH(file_path ${new_list})
     GET_FILENAME_COMPONENT(file_path ${file_path} NAME)

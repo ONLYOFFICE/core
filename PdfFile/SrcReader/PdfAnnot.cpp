@@ -2128,6 +2128,7 @@ CAnnotMarkup::CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : 
 
 	// 3 - Форматированный текст - RC
 	std::string sRC = DictLookupString(&oAnnot, "RC", 3);
+	// std::cout << sRC << std::endl;
 	// if (oAnnot.dictLookup("RC", &oObj)->isStream())
 	// TODO streamGetBlock
 	m_arrRC = AnnotMarkup::ReadRC(sRC);

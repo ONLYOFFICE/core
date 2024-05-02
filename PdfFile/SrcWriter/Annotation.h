@@ -219,7 +219,7 @@ namespace PdfWriter
 		void SetRT(BYTE nRT);
 		void SetCA(const double& dCA);
 		void SetT(const std::wstring& wsT);
-		void SetRC(const std::wstring& wsRC);
+		void SetRC(const std::string& sRC);
 		void SetCD(const std::wstring& wsCD);
 		void SetSubj(const std::wstring& wsSubj);
 
@@ -362,6 +362,7 @@ namespace PdfWriter
 		void SetDS(const std::wstring& wsDS);
 		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4);
 		void SetCL(const std::vector<double>& arrCL);
+		void SetIC(const std::vector<double>& arrIC);
 	};
 	class CCaretAnnotation : public CMarkupAnnotation
 	{

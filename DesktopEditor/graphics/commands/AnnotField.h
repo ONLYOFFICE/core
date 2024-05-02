@@ -201,15 +201,29 @@ public:
 	class GRAPHICS_DECL CMarkupAnnotPr
 	{
 	public:
+		struct GRAPHICS_DECL CFontData
+		{
+			BYTE nAlignment;
+			int nFontFlag;
+			double dFontSise;
+			double dVAlign;
+			double dColor[3];
+			std::wstring sFontFamily;
+			std::wstring sActualFont;
+			std::wstring sText;
+		};
+
+		virtual ~CMarkupAnnotPr();
+
 		BYTE   GetRT()      const;
 		int    GetFlag()    const;
 		int    GetPopupID() const;
 		int    GetIRTID()   const;
 		double GetCA()      const;
 		const std::wstring& GetT();
-		const std::wstring& GetRC();
 		const std::wstring& GetCD();
 		const std::wstring& GetSubj();
+		const std::vector<CFontData*>& GetRC();
 
 		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
 
@@ -223,6 +237,7 @@ public:
 		std::wstring m_wsRC;
 		std::wstring m_wsCD;
 		std::wstring m_wsSubj;
+		std::vector<CFontData*> m_arrRC;
 	};
 
 	class GRAPHICS_DECL CTextAnnotPr
@@ -355,6 +370,7 @@ public:
 		const std::wstring& GetDS();
 		void GetRD(double& dRD1, double& dRD2, double& dRD3, double& dRD4);
 		const std::vector<double>& GetCL();
+		const std::vector<double>& GetIC();
 
 		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
 
@@ -365,6 +381,7 @@ public:
 		std::wstring m_wsDS;
 		double m_dRD[4]{};
 		std::vector<double> m_arrCL;
+		std::vector<double> m_arrIC;
 	};
 
 	class GRAPHICS_DECL CCaretAnnotPr

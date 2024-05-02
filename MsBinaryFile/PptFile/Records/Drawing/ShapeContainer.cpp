@@ -553,7 +553,12 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
         bool bUsebRecolorFillAsPictures = (0x40 == (0x40 & flag2));
 
         if (bUsebFilled)
+        {
             pElement->m_bIsFilled = bFilled;
+            if (pElement->m_oBrush.Type == c_BrushTypeNotSet)
+                pElement->m_oBrush.Type = c_BrushTypeSolid;
+        }
+
 
         break;
     }

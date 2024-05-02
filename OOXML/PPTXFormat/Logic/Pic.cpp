@@ -896,8 +896,33 @@ namespace PPTX
 			{
 				if (oleObject.IsInit() && oleObject->isValid())
 				{
+					int _id = nvPicPr.cNvPr.id;
+					if (_id <= 0)
+					{
+						_id = pWriter->m_lObjectId;
+						++pWriter->m_lObjectId;
+					}
+					else
+					{
+						if (pWriter->m_lObjectId <= (unsigned int)_id)
+						{
+							pWriter->m_lObjectId = _id + 1;
+						}
+					}
+
 					bOle = true;
-					pWriter->WriteString(L"<p:graphicFrame><p:nvGraphicFramePr><p:cNvPr id=\"0\" name=\"\"/><p:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/></p:cNvGraphicFramePr><p:nvPr><p:extLst><p:ext uri=\"{D42A27DB-BD31-4B8C-83A1-F6EECF244321}\"><p14:modId xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" val=\"2157879785\"/></p:ext></p:extLst></p:nvPr></p:nvGraphicFramePr>");
+					pWriter->WriteString(L"<p:graphicFrame><p:nvGraphicFramePr>");
+						pWriter->WriteString(L"<p:cNvPr id = \"" + std::to_wstring(_id) + L"\"");
+						if (false == nvPicPr.cNvPr.name.empty())
+							pWriter->WriteString(L" name=\"" + nvPicPr.cNvPr.name + L"\"");
+						pWriter->WriteString(L"/><p:cNvGraphicFramePr>"); 
+						pWriter->WriteString(L"<a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/>");
+						pWriter->WriteString(L"</p:cNvGraphicFramePr>");
+					pWriter->WriteString(L"<p:nvPr>");
+					//pWriter->WriteString(L"<p:extLst><p:ext uri=\"{D42A27DB-BD31-4B8C-83A1-F6EECF244321}\">");
+					//pWriter->WriteString(L"<p14:modId xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" val=\"2157879785\"/>");
+					//pWriter->WriteString(L"</p:ext></p:extLst>");
+					pWriter->WriteString(L"</p:nvPr></p:nvGraphicFramePr>");
 					if (spPr.xfrm.IsInit())
 					{
 						std::wstring oldName = spPr.xfrm->node_name;

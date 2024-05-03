@@ -488,6 +488,11 @@ namespace NSCSS
 		return arParentsName;
 	}
 
+	std::set<std::wstring> CCompiledStyle::GetParentsNamesSet() const
+	{
+		return m_arParentsStyles;
+	}
+
 	void CCompiledStyle::SetID(const std::wstring& sId)
 	{
 		m_sId = sId;

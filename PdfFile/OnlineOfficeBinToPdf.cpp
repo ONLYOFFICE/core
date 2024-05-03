@@ -153,7 +153,7 @@ namespace NSOnlineOfficeBinToPdf
 		Undefined  = 255
 	};
 
-	bool AddBinToPdf(CPdfFile* pPdf, BYTE* pBuffer, unsigned int nLen, CConvertFromBinParams* pParams)
+	bool AddBinToPdf(CPdfFile* pPdf, BYTE* pBuffer, unsigned int nBufferLen, CConvertFromBinParams* pParams)
 	{
 		CMetafileToRenderterPDF oCorrector(pPdf);
 		oCorrector.SetTempDirectory(pPdf->GetTempDirectory());
@@ -167,7 +167,7 @@ namespace NSOnlineOfficeBinToPdf
 				oCorrector.InitPicker(pPdf->GetFonts());
 		}
 
-		NSOnlineOfficeBinToPdf::CBufferReader oReader(pBuffer, (int)nLen);
+		NSOnlineOfficeBinToPdf::CBufferReader oReader(pBuffer, (int)nBufferLen);
 
 		while (oReader.Check())
 		{

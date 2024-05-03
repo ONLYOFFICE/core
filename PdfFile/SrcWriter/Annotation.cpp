@@ -337,9 +337,10 @@ namespace PdfWriter
 		if (!Get("T"))
 			Add("T", new CStringObject(sValue.c_str(), true));
 	}
-	void CMarkupAnnotation::SetRC(const std::string& sRC)
+	void CMarkupAnnotation::SetRC(const std::wstring& wsRC)
 	{
-		Add("RC", new CStringObject(sRC.c_str()));
+		std::string sValue = U_TO_UTF8(wsRC);
+		Add("RC", new CStringObject(sValue.c_str(), true));
 	}
 	void CMarkupAnnotation::SetCD(const std::wstring& wsCD)
 	{

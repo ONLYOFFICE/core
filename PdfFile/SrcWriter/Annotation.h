@@ -219,7 +219,7 @@ namespace PdfWriter
 		void SetRT(BYTE nRT);
 		void SetCA(const double& dCA);
 		void SetT(const std::wstring& wsT);
-		void SetRC(const std::string& sRC);
+		void SetRC(const std::wstring& wsRC);
 		void SetCD(const std::wstring& wsCD);
 		void SetSubj(const std::wstring& wsSubj);
 

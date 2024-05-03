@@ -1877,6 +1877,21 @@ int Binary_pPrReader::Read_pageNumType(BYTE type, long length, void* poResult)
 		pCPageNumber->m_oStart.Init();
 		pCPageNumber->m_oStart->SetValue(m_oBufferedStream.GetLong());
 	}
+	else if (c_oSerProp_secPrPageNumType::fmt == type)
+	{
+		pCPageNumber->m_oFmt.Init();
+		pCPageNumber->m_oFmt->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else if (c_oSerProp_secPrPageNumType::chapStyle == type)
+	{
+		pCPageNumber->m_oChapStyle.Init();
+		pCPageNumber->m_oChapStyle->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSerProp_secPrPageNumType::chapSep == type)
+	{
+		pCPageNumber->m_oChapSep.Init();
+		pCPageNumber->m_oChapSep->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;

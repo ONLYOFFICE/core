@@ -374,7 +374,7 @@ namespace NSCSS
 
 	bool CDigit::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (wsValue.empty() || (CHECK_CONDITIONS && !bHardMode))
+		if (wsValue.empty() || (CHECK_CONDITIONS && !bHardMode) || unLevel < m_unLevel)
 			return false;
 
 		std::wstring wsNewValue = wsValue;
@@ -404,7 +404,12 @@ namespace NSCSS
 			m_enUnitMeasure = oValue.m_enUnitMeasure;
 		}
 		else if (NSCSS::Percent == oValue.m_enUnitMeasure)
-			m_oValue *= oValue.m_oValue / 100.;
+		{
+			if (m_unLevel == oValue.m_unLevel)
+				m_oValue  = oValue.m_oValue;
+			else
+				m_oValue *= oValue.m_oValue / 100.;
+		}
 		else
 			m_oValue = oValue.ToDouble(m_enUnitMeasure);
 

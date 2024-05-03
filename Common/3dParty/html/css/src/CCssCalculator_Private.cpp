@@ -564,6 +564,14 @@ namespace NSCSS
 
 		if (!bIsSettings)
 		{
+			std::map<std::vector<CNode>, CCompiledStyle*>::const_iterator itFound = std::find_if(m_mUsedStyles.begin(), m_mUsedStyles.end(), [oStyle](const std::pair<std::vector<CNode>, CCompiledStyle*>& oValue){ return (*oValue.second) == oStyle; });
+			
+			if (m_mUsedStyles.end() != itFound)
+			{
+				oStyle = *itFound->second;
+				return true;
+			}
+
 			oStyle.SetID(arSelectors.back().m_wsName + ((!arSelectors.back().m_wsClass.empty()) ? L'.' + arSelectors.back().m_wsClass : L"") + ((arSelectors.back().m_wsId.empty()) ? L"" : L'#' + arSelectors.back().m_wsId) + L'-' + std::to_wstring(++m_nCountNodes));
 
 			CCompiledStyle *pTemp = new CCompiledStyle(oStyle);

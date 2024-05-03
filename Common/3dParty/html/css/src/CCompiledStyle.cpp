@@ -110,7 +110,7 @@ namespace NSCSS
 	void CCompiledStyle::AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const unsigned int unLevel, const bool& bHardMode)
 	{
 		const bool bIsThereBorder = (m_oBorder.Empty()) ? false : true;
-		const double dFontSize = (!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Twips) : DEFAULT_FONT_SIZE;
+		const double dFontSize = (!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Point) : DEFAULT_FONT_SIZE;
 
 		for (std::pair<std::wstring, std::wstring> pPropertie : mStyle)
 		{
@@ -180,7 +180,6 @@ namespace NSCSS
 						break;
 
 					m_oMargin.SetTop(pPropertie.second, unLevel, bHardMode);
-					m_oMargin.UpdateTop(dFontSize);
 					break;
 				}
 				CASE(L"margin-right"):

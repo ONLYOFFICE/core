@@ -196,10 +196,25 @@ struct TTableCellStyle
 	std::wstring m_wsVAlign;
 
 	TTableCellStyle(){}
-	
+
 	bool Empty()
 	{
 		return m_oWidth.Empty() && m_oHeight.Empty() && m_oBorder.Empty() && m_oPadding.Empty() && m_wsVAlign.empty() && m_wsVAlign.empty();
+	}
+
+	void Copy(const TTableCellStyle* pTableCellStyle)
+	{
+		if (NULL == pTableCellStyle)
+			return;
+
+		m_oWidth      = pTableCellStyle->m_oWidth;
+		m_oHeight     = pTableCellStyle->m_oHeight;
+		m_oBorder     = pTableCellStyle->m_oBorder;
+		m_oPadding    = pTableCellStyle->m_oPadding;
+		m_oBackground = pTableCellStyle->m_oBackground;
+
+		m_wsHAlign    = pTableCellStyle->m_wsHAlign;
+		m_wsVAlign    = pTableCellStyle->m_wsVAlign;
 	}
 };
 
@@ -207,23 +222,23 @@ class CTableCell
 {
 public:
 	CTableCell() 
-		: m_unColspan(1), m_unRowSpan(1), m_bIsMerged(false), m_enMode(ParseModeBody)
+		: m_unColspan(1), m_unRowSpan(1), m_bIsMerged(false), m_bIsEmpty(false), m_enMode(ParseModeBody)
 	{}
 
-	CTableCell(UINT unColspan, UINT unRowspan, bool bIsMerged)
-		: m_unColspan(unColspan), m_unRowSpan(unRowspan), m_bIsMerged(bIsMerged), m_enMode(ParseModeBody)
+	CTableCell(UINT unColspan, UINT unRowspan, bool bIsMerged, bool bIsEmpty)
+		: m_unColspan(unColspan), m_unRowSpan(unRowspan), m_bIsMerged(bIsMerged), m_bIsEmpty(bIsEmpty), m_enMode(ParseModeBody)
 	{}
 
 	CTableCell(CTableCell& oCell)
 		: m_unColspan(oCell.m_unColspan), m_unRowSpan(oCell.m_unRowSpan), m_bIsMerged(oCell.m_bIsMerged), 
-		  m_enMode(oCell.m_enMode), m_oStyles(oCell.m_oStyles)
+		  m_bIsEmpty(oCell.m_bIsEmpty), m_enMode(oCell.m_enMode), m_oStyles(oCell.m_oStyles)
 	{
 		m_oData.SetText(oCell.m_oData.GetData());
 	}
 
 	bool Empty()
 	{
-		return 0 == m_oData.GetCurSize();
+		return m_bIsEmpty;
 	}
 
 	CTableCell* Copy()
@@ -233,10 +248,9 @@ public:
 
 	static CTableCell* CreateEmpty(UINT unColspan = 1, bool m_bIsMerged = false, const TTableCellStyle* pStyle = NULL)
 	{
-		CTableCell *pCell = new CTableCell(unColspan, 1, m_bIsMerged);
+		CTableCell *pCell = new CTableCell(unColspan, 1, m_bIsMerged, true);
 
-		if (NULL != pStyle)
-			pCell->m_oStyles = *pStyle;
+		pCell->m_oStyles.Copy(pStyle);
 
 		return pCell;
 	}
@@ -413,6 +427,7 @@ private:
 	UINT m_unRowSpan;
 
 	bool m_bIsMerged;
+	bool m_bIsEmpty;
 	ERowParseMode m_enMode;
 
 	TTableCellStyle m_oStyles;
@@ -2206,7 +2221,7 @@ private:
 	void ParseTableRows(CTable& oTable, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, ERowParseMode eMode)
 	{
 		std::vector<TRowspanElement> arRowspanElements;
-		
+
 		int nDeath = m_oLightReader.GetDepth();
 		while (m_oLightReader.ReadNextSiblingNode(nDeath))
 		{
@@ -2233,6 +2248,9 @@ private:
 			while (m_oLightReader.ReadNextSiblingNode(nTrDepth))
 			{
 				CTableCell *pCell = new CTableCell();
+
+				if (NULL == pCell)
+					continue;
 
 				pCell->SetMode(eMode);
 

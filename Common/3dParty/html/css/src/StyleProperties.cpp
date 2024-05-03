@@ -25,7 +25,7 @@ namespace NSCSS
 	}
 
 	CString::CString()
-	    : CValue(L"", 0, false)
+		: CValue(L"", 0, false)
 	{}
 
 	CString::CString(const std::wstring &wsValue, unsigned int unLevel, bool bImportant)
@@ -1508,6 +1508,15 @@ namespace NSCSS
 		       m_oColor == oBorderSide.m_oColor;
 	}
 
+	CBorderSide &CBorderSide::operator =(const CBorderSide &oBorderSide)
+	{
+		m_oWidth = oBorderSide.m_oWidth;
+		m_oStyle = oBorderSide.m_oStyle;
+		m_oColor = oBorderSide.m_oColor;
+
+		return *this;
+	}
+
 	// BORDER
 	CBorder::CBorder()
 	{
@@ -1742,6 +1751,18 @@ namespace NSCSS
 		       m_oTop    == oBorder.m_oTop   &&
 		       m_oRight  == oBorder.m_oRight &&
 		       m_oBottom == oBorder.m_oBottom;
+	}
+
+	CBorder &CBorder::operator =(const CBorder &oBorder)
+	{
+		m_oLeft   = oBorder.m_oLeft;
+		m_oTop    = oBorder.m_oTop;
+		m_oRight  = oBorder.m_oRight;
+		m_oBottom = oBorder.m_oBottom;
+
+		m_enCollapse = oBorder.m_enCollapse;
+
+		return *this;
 	}
 
 	// TEXT

@@ -912,7 +912,7 @@ namespace PPTX
 
 					bOle = true;
 					pWriter->WriteString(L"<p:graphicFrame><p:nvGraphicFramePr>");
-						pWriter->WriteString(L"<p:cNvPr id = \"" + std::to_wstring(_id) + L"\"");
+						pWriter->WriteString(L"<p:cNvPr id=\"" + std::to_wstring(_id) + L"\"");
 						if (false == nvPicPr.cNvPr.name.empty())
 							pWriter->WriteString(L" name=\"" + nvPicPr.cNvPr.name + L"\"");
 						pWriter->WriteString(L"/><p:cNvGraphicFramePr>"); 

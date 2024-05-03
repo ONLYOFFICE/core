@@ -868,8 +868,33 @@ bool CPdfEditor::EditPage(int nPageIndex)
 	{
 		Object oTemp;
 		char* chKey = pageObj.dictGetKey(nIndex);
-		if (strcmp("Resources", chKey) == 0 || strcmp("Annots", chKey) == 0)
+		if (strcmp("Resources", chKey) == 0)
 			pageObj.dictGetVal(nIndex, &oTemp);
+		else if (strcmp("Annots", chKey) == 0)
+		{
+			// ВРЕМЕНО удаление Link аннотаций при редактировании
+			pageObj.dictGetVal(nIndex, &oTemp);
+			if (oTemp.isArray())
+			{
+				PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
+				pPage->Add("Annots", pArray);
+				for (int nIndex = 0; nIndex < oTemp.arrayGetLength(); ++nIndex)
+				{
+					Object oAnnot, oSubtype;
+					if (oTemp.arrayGet(nIndex, &oAnnot)->isDict("Annot") && oAnnot.dictLookup("Subtype", &oSubtype)->isName("Link"))
+					{
+						oAnnot.free(); oSubtype.free();
+						continue;
+					}
+					oAnnot.free(); oSubtype.free();
+					oTemp.arrayGetNF(nIndex, &oAnnot);
+					DictToCDictObject(&oAnnot, pArray, false, "");
+					oAnnot.free();
+				}
+				oTemp.free();
+				continue;
+			}
+		}
 		else if (strcmp("Contents", chKey) == 0)
 		{
 			pageObj.dictGetVal(nIndex, &oTemp);

@@ -2022,30 +2022,49 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		}
 		else if (oInfo.IsFreeText())
 		{
-			CAnnotFieldInfo::CFreeTextAnnotPr* pPr = oInfo.GetFreeTextAnnotPr();
+			CAnnotFieldInfo::CFreeTextAnnotPr* pFTPr = oInfo.GetFreeTextAnnotPr();
 			PdfWriter::CFreeTextAnnotation* pFreeTextAnnot = (PdfWriter::CFreeTextAnnotation*)pAnnot;
 
-			pFreeTextAnnot->SetQ(pPr->GetQ());
+			pFreeTextAnnot->SetQ(pFTPr->GetQ());
 			if (nFlags & (1 << 15))
 			{
 				double dRD1, dRD2, dRD3, dRD4;
-				pPr->GetRD(dRD1, dRD2, dRD3, dRD4);
+				pFTPr->GetRD(dRD1, dRD2, dRD3, dRD4);
 				pFreeTextAnnot->SetRD(dRD1, dRD2, dRD3, dRD4);
 			}
 			if (nFlags & (1 << 16))
-				pFreeTextAnnot->SetCL(pPr->GetCL());
+				pFreeTextAnnot->SetCL(pFTPr->GetCL());
 
-			std::wstring sDS = pPr->GetDS();
+			std::wstring sDS = pFTPr->GetDS();
 			if (sDS.empty())
 				sDS = sDefaultStyle;
 			pFreeTextAnnot->SetDS(sDS);
 
 			if (nFlags & (1 << 18))
-				pFreeTextAnnot->SetLE(pPr->GetLE());
+				pFreeTextAnnot->SetLE(pFTPr->GetLE());
 			if (nFlags & (1 << 20))
-				pFreeTextAnnot->SetIT(pPr->GetIT());
+				pFreeTextAnnot->SetIT(pFTPr->GetIT());
 			if (nFlags & (1 << 21))
-				pFreeTextAnnot->SetIC(pPr->GetIC());
+				pFreeTextAnnot->SetIC(pFTPr->GetIC());
+
+			std::vector<CAnnotFieldInfo::CMarkupAnnotPr::CFontData*> arrRC = pPr->GetRC();
+			double dFontSize = 10.0;
+			if (!arrRC.empty())
+			{
+				dFontSize = arrRC[0]->dFontSise;
+				std::wstring wsFontName = arrRC[0]->sActualFont.empty() ? arrRC[0]->sFontFamily : arrRC[0]->sActualFont;
+				if (wsFontName == L"Times-Roman" || wsFontName == L"Times-Bold" || wsFontName == L"Times-BoldItalic" || wsFontName == L"Times-Italic")
+					wsFontName = L"Times New Roman";
+				int nStyle = arrRC[0]->nFontFlag;
+				put_FontName(wsFontName);
+				put_FontStyle(nStyle);
+				put_FontSize(dFontSize);
+			}
+			if (m_bNeedUpdateTextFont)
+				UpdateFont();
+			pFreeTextAnnot->SetDA(m_pFont, dFontSize, oInfo.GetC()); // Можно указать полный шрифт?
+
+			DrawFreeTextAnnot(pFreeTextAnnot, pPr->GetRC(), oInfo.GetC());
 		}
 		else if (oInfo.IsCaret())
 		{
@@ -3860,4 +3879,10 @@ void CPdfWriter::DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 	RELEASEARRAYOBJECTS(pUnicodes);
 	RELEASEARRAYOBJECTS(pCodes);
 	RELEASEARRAYOBJECTS(ppFonts);
+}
+void CPdfWriter::DrawFreeTextAnnot(PdfWriter::CFreeTextAnnotation* pFreeTextAnnot, const std::vector<CAnnotFieldInfo::CMarkupAnnotPr::CFontData*>& arrRC, const std::vector<double>& arrC)
+{
+	// TODO шрифты
+	pFreeTextAnnot->StartAP(arrC);
+	pFreeTextAnnot->EndAP();
 }

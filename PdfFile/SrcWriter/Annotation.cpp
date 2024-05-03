@@ -1056,6 +1056,42 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CFreeTextAnnotation::CFreeTextAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotFreeText)
 	{
+		m_pAppearance = NULL;
+	}
+	void CFreeTextAnnotation::StartAP(const std::vector<double>& arrC)
+	{
+		m_pAppearance = new CAnnotAppearance(m_pXref, this);
+		if (!m_pAppearance)
+			return;
+		Add("AP", m_pAppearance);
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
+
+		// TODO рисование
+	}
+	void CFreeTextAnnotation::EndAP()
+	{
+		if (!m_pAppearance)
+			return;
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
+		pNormal->EndDraw();
+	}
+	void CFreeTextAnnotation::SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrC)
+	{
+		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
+		const char* sFontName = pFieldsResources->GetFontName(pFont);
+
+		std::string sDA = GetColor(arrC, false);
+		if (sFontName)
+		{
+			sDA.append(" /");
+			sDA.append(sFontName);
+		}
+
+		sDA.append(" ");
+		sDA.append(std::to_string(dFontSize));
+		sDA.append(" Tf");
+
+		Add("DA", new CStringObject(sDA.c_str()));
 	}
 	void CFreeTextAnnotation::SetQ(BYTE nQ)
 	{

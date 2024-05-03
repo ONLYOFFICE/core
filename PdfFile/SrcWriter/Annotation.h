@@ -349,12 +349,19 @@ namespace PdfWriter
 	};
 	class CFreeTextAnnotation : public CMarkupAnnotation
 	{
+	private:
+		CAnnotAppearance* m_pAppearance;
+
 	public:
 		CFreeTextAnnotation(CXref* pXref);
 		EAnnotType GetAnnotationType() const override
 		{
 			return AnnotFreeText;
 		}
+
+		void StartAP(const std::vector<double>& arrC);
+		void EndAP();
+		void SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrC);
 
 		void SetQ(BYTE nQ);
 		void SetIT(BYTE nIT);

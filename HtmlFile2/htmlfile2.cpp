@@ -27,6 +27,7 @@
 #include "../DesktopEditor/raster/Metafile/svg/CSvgFile.h"
 
 #include "htmlfile2.h"
+#include "src/Languages.h"
 
 #include <boost/regex.hpp>
 
@@ -41,15 +42,13 @@
 #define DEFAULT_PAGE_WIDTH  12240 // Значение в Twips
 #define DEFAULT_PAGE_HEIGHT 15840 // Значение в Twips
 
+#define DEFAULT_LANGUAGE std::wstring(L"en-US")
+#define DEFAULT_FONT_FAMILY std::wstring(L"Times New Roman")
+#define DEFAULT_FONT_SIZE 24
+
 #define SAVE_NORMALIZED_HTML 0
 
 std::wstring rStyle = L" a area b strong bdo bdi big br center cite dfn em i var code kbd samp tt del s font img ins u mark q rt sup small sub svg input basefont button label data object noscript output abbr time ruby progress hgroup meter span acronym ";
-
-//struct CTree
-//{
-//    NSCSS::CNode m_oNode;
-//    std::vector<CTree> m_arrChild;
-//};
 
 // Ячейка таблицы
 struct CTc
@@ -1055,6 +1054,8 @@ public:
 		m_oNumberXml.AddCharSafe(167);
 		m_oNumberXml += L"\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"6480\" w:hanging=\"360\"/></w:pPr><w:rPr><w:rFonts w:ascii=\"Wingdings\" w:hAnsi=\"Wingdings\" w:cs=\"Wingdings\" w:eastAsia=\"Wingdings\"/></w:rPr></w:lvl></w:abstractNum>";
 
+		std::wstring wsCurrentLanguage;
+
 		// core.xml
 		std::wstring sCore = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
 		if(oParams)
@@ -1089,6 +1090,14 @@ public:
 				sCore += EncodeXmlString(oParams->m_sDescription);
 				sCore += L"</dc:description>";
 			}
+			if (!oParams->m_sLanguage.empty())
+			{
+				wsCurrentLanguage = IndentifyLanguage(oParams->m_sLanguage);
+
+				sCore += L"<dc:language>";
+				sCore += wsCurrentLanguage;
+				sCore += L"</dc:language>";
+			}
 		}
 		sCore += L"<cp:lastModifiedBy/></cp:coreProperties>";
 		NSFile::CFileBinary oCoreWriter;
@@ -1117,13 +1126,25 @@ public:
 		if(oParams && !oParams->m_sdocDefaults.empty())
 			m_oStylesXml += oParams->m_sdocDefaults;
 		else
-			m_oStylesXml += L"<w:rPrDefault><w:rPr><w:rFonts w:ascii=\"Times New Roman\" w:eastAsia=\"Times New Roman\" w:hAnsi=\"Times New Roman\" w:cs=\"Times New Roman\"/></w:rPr></w:rPrDefault><w:pPrDefault/>";
+		{
+			m_oStylesXml += L"<w:rPrDefault><w:rPr>";
+			m_oStylesXml += L"<w:rFonts w:ascii=\"" + DEFAULT_FONT_FAMILY + L"\" w:eastAsia=\"" + DEFAULT_FONT_FAMILY + L"\"  w:hAnsi=\"" + DEFAULT_FONT_FAMILY + L"\" w:cs=\"" + DEFAULT_FONT_FAMILY + L"\"/>";
+			m_oStylesXml += L"<w:sz w:val=\"" + std::to_wstring(DEFAULT_FONT_SIZE) + L"\"/><w:szCs w:val=\"" + std::to_wstring(DEFAULT_FONT_SIZE) + L"\"/>";
+			m_oStylesXml += L"<w:lang w:val=\"" + ((!wsCurrentLanguage.empty()) ? wsCurrentLanguage : DEFAULT_LANGUAGE) + L"\" w:eastAsia=\"en-US\" w:bidi=\"ar-SA\"/>";
+			m_oStylesXml += L"</w:rPr></w:rPrDefault>";
+
+			m_oStylesXml += L"<w:pPrDefault><w:pPr><w:spacing w:after=\"200\" w:line=\"276\" w:lineRule=\"auto\"/></w:pPr></w:pPrDefault>";
+		}
 
 		// normal по умолчанию
 		if(oParams && !oParams->m_sNormal.empty())
 			m_oStylesXml += oParams->m_sNormal;
 		else
-			m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"normal\" w:default=\"1\"><w:name w:val=\"Normal\"/><w:qFormat/><w:rPr><w:rFonts w:eastAsiaTheme=\"minorEastAsia\"/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr></w:style>";
+		{
+			m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"normal\" w:default=\"1\"><w:name w:val=\"Normal\"/><w:qFormat/><w:rPr><w:rFonts w:eastAsiaTheme=\"minorEastAsia\"/>";
+			m_oStylesXml += L"<w:sz w:val=\"" + std::to_wstring(DEFAULT_FONT_SIZE) + L"\"/><w:szCs w:val=\"" + std::to_wstring(DEFAULT_FONT_SIZE) + L"\"/>";
+			m_oStylesXml += L"</w:rPr></w:style>";
+		}
 
 		// Маркированный список
 		m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"li\"><w:name w:val=\"List Paragraph\"/><w:basedOn w:val=\"normal\"/><w:qFormat/><w:uiPriority w:val=\"34\"/><w:pPr><w:contextualSpacing w:val=\"true\"/><w:ind w:left=\"720\"/></w:pPr></w:style>";

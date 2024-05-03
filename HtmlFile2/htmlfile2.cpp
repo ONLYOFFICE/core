@@ -1494,6 +1494,18 @@ private:
 		return true;
 	}
 
+	bool OpenP(NSStringUtils::CStringBuilder* pXml)
+	{
+		if (m_bInP)
+			return false;
+
+		pXml->WriteString(L"<w:p>");
+		m_bInP = true;
+		m_bWasPStyle = false;
+
+		return true;
+	}
+
 	bool OpenR(NSStringUtils::CStringBuilder* pXml)
 	{
 		if (m_bInR)
@@ -1532,16 +1544,29 @@ private:
 		m_bInT = false;
 	}
 
+	void CheckA(NSStringUtils::CStringBuilder* pXml, const std::vector<NSCSS::CNode>& arSelectors)
+	{
+		for (std::vector<NSCSS::CNode>::const_reverse_iterator itNode = arSelectors.crbegin(); itNode < arSelectors.crend(); ++itNode)
+		{
+			if (NodeBelongToTable(itNode->m_wsName))
+				break;
+
+			if (L"a" == itNode->m_wsName)
+			{
+				pXml->WriteString(L"</w:hyperlink>");
+				break;
+			}
+		}
+	}
+
 	void CloseP(NSStringUtils::CStringBuilder* pXml, const std::vector<NSCSS::CNode>& arSelectors)
 	{
 		m_bWasSpace = true;
 
 		if (!m_bInP)
 			return;
-	
-		for (const NSCSS::CNode& item : arSelectors)
-			if (item.m_wsName == L"a")
-				pXml->WriteString(L"</w:hyperlink>");
+
+		CheckA(pXml, arSelectors);
 
 		CloseT(pXml);
 		CloseR(pXml);
@@ -2479,6 +2504,32 @@ private:
 		if (bCross && sFootnote == L"href")
 			sFootnote = sRef.substr(sRef.find('#') + 1);
 
+		const bool bInP{m_bInP}, bWasPStyle{m_bWasPStyle};
+
+		NSStringUtils::CStringBuilder oInsideData;
+		m_bInP = true;
+		m_bWasPStyle = true;
+
+		if(!readStream(&oInsideData, sSelectors, oTS))
+		{
+			oInsideData.WriteString(L"<w:r>");
+			wrRPr(&oInsideData, sSelectors, oTS);
+			oInsideData.WriteString(L"<w:t xml:space=\"preserve\">");
+			oInsideData.WriteEncodeXmlString(sAlt);
+			oInsideData.WriteString(L"</w:t></w:r>");
+		}
+
+		if (0 != oInsideData.GetCurSize() && L"</w:p>" == oInsideData.GetSubData(0, 6))
+		{
+			CloseP(oXml, sSelectors);
+			oXml->WriteString(oInsideData.GetSubData(6, oInsideData.GetCurSize() - 6));
+			sNote.clear();
+			return;
+		}
+
+		m_bInP = bInP;
+		m_bWasPStyle = bWasPStyle;
+
 		wrP(oXml, sSelectors, oTS);
 		// Перекрестная ссылка внутри файла
 		if(bCross)
@@ -2511,14 +2562,8 @@ private:
 		}
 		oXml->WriteString(L"\">");
 
-		if(!readStream(oXml, sSelectors, oTS))
-		{
-			oXml->WriteString(L"<w:r>");
-			wrRPr(oXml, sSelectors, oTS);
-			oXml->WriteString(L"<w:t xml:space=\"preserve\">");
-			oXml->WriteEncodeXmlString(sAlt);
-			oXml->WriteString(L"</w:t></w:r>");
-		}
+		oXml->WriteString(oInsideData.GetData());
+
 		if (m_bInP)
 		{
 			oXml->WriteString(L"</w:hyperlink>");
@@ -2545,6 +2590,7 @@ private:
 					oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteRef/></w:r>");
 			}
 		}
+
 		sNote = L"";
 	}
 
@@ -2742,12 +2788,7 @@ private:
 
 	std::wstring wrP(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
 	{
-		if (!m_bInP)
-		{
-			oXml->WriteString(L"<w:p>");
-			m_bInP = true;
-			m_bWasPStyle = false;
-		}
+		OpenP(oXml);
 
 		if (m_bWasPStyle)
 			return L"";

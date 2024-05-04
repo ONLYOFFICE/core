@@ -58,7 +58,6 @@ android {
                     "-DANDROID_STL=c++_static",
                     "-DANDROID_ARM_NEON=TRUE",
                     "-DARG_PATH_LIB_BUILD_TOOLS=${getProjectPath(extra.get("PATH_LIB_BUILD_TOOLS") as String)}",
-                    "-DARG_PATH_LIB_DST=${getProjectPath(extra.get("PATH_LIB_DST") as String, true)}",
                     "-DARG_PATH_SRC_CORE=${getProjectPath(extra.get("PATH_SRC_CORE") as String)}",
                     "-DARG_NAME_LIB=${extra.get("NAME_LIB")}"
                 )
@@ -83,12 +82,6 @@ android {
     sourceSets {
         getByName("main") {
             java.srcDir("src/main/java")
-            jniLibs.srcDirs(
-                arrayOf(
-                    extra.get("PATH_LIB_DST") as String,
-                    extra.get("PATH_LIB_BUILD_TOOLS") as String
-                )
-            )
         }
     }
 
@@ -113,15 +106,15 @@ android {
 
     packaging {
         jniLibs.useLegacyPackaging = true
-        arrayOf("armeabi-v7a", "x86", "arm64-v8a", "x86_64").forEach { abi ->
-            val dh = file("${extra.get("PATH_LIB_BUILD_TOOLS")}/$abi")
-            dh.listFiles()?.forEach {
-                if (it.name.contains(".so"))
-                    jniLibs.pickFirsts.add("lib/$abi/${it.name}")
-            }
-            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB")}.so")
-            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_KERNEL_NETWORK")}.so")
-        }
+//        arrayOf("armeabi-v7a", "x86", "arm64-v8a", "x86_64").forEach { abi ->
+//            val dh = file("${extra.get("PATH_LIB_BUILD_TOOLS")}/$abi")
+//            dh.listFiles()?.forEach {
+//                if (it.name.contains(".so"))
+//                    jniLibs.pickFirsts.add("lib/$abi/${it.name}")
+//            }
+//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB")}.so")
+//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_KERNEL_NETWORK")}.so")
+//        }
     }
 }
 

@@ -1580,29 +1580,12 @@ private:
 		m_bInT = false;
 	}
 
-	void CheckA(NSStringUtils::CStringBuilder* pXml, const std::vector<NSCSS::CNode>& arSelectors)
-	{
-		for (std::vector<NSCSS::CNode>::const_reverse_iterator itNode = arSelectors.crbegin(); itNode < arSelectors.crend(); ++itNode)
-		{
-			if (NodeBelongToTable(itNode->m_wsName))
-				break;
-
-			if (L"a" == itNode->m_wsName)
-			{
-				pXml->WriteString(L"</w:hyperlink>");
-				break;
-			}
-		}
-	}
-
 	void CloseP(NSStringUtils::CStringBuilder* pXml, const std::vector<NSCSS::CNode>& arSelectors)
 	{
 		m_bWasSpace = true;
 
 		if (!m_bInP)
 			return;
-
-		CheckA(pXml, arSelectors);
 
 		CloseT(pXml);
 		CloseR(pXml);
@@ -2934,8 +2917,10 @@ private:
 		std::wstring sImageName = sImageId + L'.' + sExtention;
 		CBgraFrame oBgraFrame;
 		if (!oBgraFrame.OpenFile(m_sDst + L"/word/media/i" + sImageName))
+		{
+			NSFile::CFileBinary::Remove(m_sDst + L"/word/media/i" + sImageName);
 			return;
-
+		}
 		// Прописать рельсы
 		if (bNew)
 		{
@@ -2995,15 +2980,9 @@ private:
 	{
 		if(sNote.empty())
 			return;
-		if (!m_bInP)
-		{
-			oXml->WriteString(L"<w:p>");
-			for (const NSCSS::CNode& item : sSelectors)
-				if (item.m_wsName == L"a")
-					oXml->WriteString(L"<w:hyperlink>");
-			m_bInP = true;
-			m_bWasPStyle = false;
-		}
+
+		OpenP(oXml);
+
 		oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"");
 		oXml->WriteString(std::to_wstring(m_nFootnoteId));
 		oXml->WriteString(L"\"/></w:r>");

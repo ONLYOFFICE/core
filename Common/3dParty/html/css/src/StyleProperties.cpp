@@ -63,7 +63,7 @@ namespace NSCSS
 		if (m_bImportant && !bImportant)
 			return false;
 
-		if (arValiableValues.end() != std::find(arValiableValues.begin(), arValiableValues.end(), wsNewValue))\
+		if (arValiableValues.end() != std::find(arValiableValues.begin(), arValiableValues.end(), wsNewValue))
 		{
 			m_oValue     = wsNewValue;
 			m_unLevel    = unLevel;
@@ -1131,7 +1131,7 @@ namespace NSCSS
 
 	bool CDisplay::SetDisplay(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		return m_oHAlign.SetValue(wsValue, NSConstValues::DISPLAY_VALUES, unLevel, bHardMode);
+		return m_oDisplay.SetValue(wsValue, NSConstValues::DISPLAY_VALUES, unLevel, bHardMode);
 	}
 
 	const CDigit& CDisplay::GetX() const

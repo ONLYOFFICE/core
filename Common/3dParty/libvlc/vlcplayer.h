@@ -24,12 +24,19 @@ public:
 public:
 	void integrateIntoWidget(QWidget* pWidget);
 	void open(CVlcMedia* pMedia);
+	// control playback
 	void pause();
 	void play();
 	void stop();
+	// volume
 	void setVolume(int nVolume);
+	// time (in ms)
 	void setTime(qint64 nTime);
+	qint64 time();
+	// position (in range 0.0...1.0)
 	void setPosition(float fPos);
+	float position();
+
 	bool isAudio();
 	bool isPlaying();
 	libvlc_state_t getState();

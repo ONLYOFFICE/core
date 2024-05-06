@@ -97,9 +97,20 @@ void CVlcPlayer::setTime(qint64 nTime)
 	libvlc_media_player_set_time(m_pVlcPlayer, nTime);
 }
 
+qint64 CVlcPlayer::time()
+{
+	return libvlc_media_player_get_time(m_pVlcPlayer);
+}
+
 void CVlcPlayer::setPosition(float fPos)
 {
 	libvlc_media_player_set_position(m_pVlcPlayer, fPos);
+	emit positionChanged(libvlc_media_player_get_position(m_pVlcPlayer));
+}
+
+float CVlcPlayer::position()
+{
+	return libvlc_media_player_get_position(m_pVlcPlayer);
 }
 
 bool CVlcPlayer::isAudio()

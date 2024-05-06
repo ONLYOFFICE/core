@@ -92,6 +92,32 @@ namespace OOX
 					m_oSqRef = oReader.GetText3();
 			}
 		}
+		XLS::BaseObjectPtr CSparkline::toBin()
+		{
+			auto ptr(new XLSB::Sparkline);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			ptr->FRTheader.fFormula = false;
+			ptr->FRTheader.fRef = false;
+			ptr->FRTheader.fRelID = false;
+			ptr->FRTheader.fSqref = false;
+
+			if(m_oRef.IsInit())
+			{
+				XLSB::FRTFormula formula;
+				formula.formula = m_oRef.get();
+				ptr->FRTheader.rgFormulas.array.push_back(formula);
+				ptr->FRTheader.fFormula = true;
+			}
+			if(m_oSqRef.IsInit())
+			{
+				XLSB::FRTSqref sqref;
+				sqref.sqrfx.strValue = m_oSqRef.get();
+				ptr->FRTheader.rgSqrefs.array.push_back(sqref);
+				ptr->FRTheader.fSqref = true;
+			}
+
+			return objectPtr;
+		}
 		void CSparkline::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
@@ -174,6 +200,17 @@ namespace OOX
 				for(auto &sparkline : ptr->m_arBrtSparkline)
 					m_arrItems.push_back(new CSparkline(sparkline));
 			}
+		}
+		std::vector<XLS::BaseObjectPtr> CSparklines::toBin()
+		{
+			std::vector<XLS::BaseObjectPtr> sparclineVector;
+
+			for(auto i:m_arrItems)
+			{
+				sparclineVector.push_back(i->toBin());
+			}
+
+			return sparclineVector; 
 		}
 		EElementType CSparklines::getType () const
 		{
@@ -422,9 +459,21 @@ namespace OOX
             else
                 ptr->fDateAxis = 0;
             if(m_oDisplayEmptyCellsAs.IsInit())
-                ptr->fShowEmptyCellAsZero = (m_oDisplayEmptyCellsAs == OOX::Spreadsheet::ST_DispBlanksAs::st_dispblanksasZERO) ? 0x01 : 0x00;
-            else
-                ptr->fShowEmptyCellAsZero = false;
+			{
+				switch(m_oDisplayEmptyCellsAs.get())
+				{
+					case st_dispblanksasZERO:
+						ptr->fShowEmptyCellAsZero = 0;
+						break;
+					case st_dispblanksasSPAN:
+						ptr->fShowEmptyCellAsZero = 2;
+						break;
+					case st_dispblanksasGAP:
+					default:
+						ptr->fShowEmptyCellAsZero = 1;
+						break;
+				}
+			}
             if(m_oMarkers.IsInit())
                 ptr->fMarkers = m_oMarkers->GetValue();
             else
@@ -461,11 +510,43 @@ namespace OOX
                 ptr->fRTL = m_oRightToLeft->GetValue();
             else
                 ptr->fRTL = false;
-            if(m_oMaxAxisType.IsInit()  && m_oMaxAxisType == SimpleTypes::Spreadsheet::ESparklineAxisMinMax::Individual)
+			if(m_oMaxAxisType.IsInit())
+			{
+				
+				if(m_oMaxAxisType.get()== SimpleTypes::Spreadsheet::ESparklineAxisMinMax::Group)
+				{
+					ptr->fIndividualAutoMax = false;
+					ptr->fGroupAutoMax = true;
+				}
+				else 
+				{
+					ptr->fIndividualAutoMax = true;
+					ptr->fGroupAutoMax = false;
+				}
+			}
+			else
+			{
 				ptr->fIndividualAutoMax = true;
-            else
-                ptr->fIndividualAutoMax = false;
-
+				ptr->fGroupAutoMax = false;
+			}
+			if(m_oMinAxisType.IsInit())
+			{
+				if(m_oMinAxisType.get()== SimpleTypes::Spreadsheet::ESparklineAxisMinMax::Group)
+				{
+					ptr->fIndividualAutoMin = false;
+					ptr->fGroupAutoMin = true;
+				}
+				else
+				{
+					ptr->fIndividualAutoMin = true;
+					ptr->fGroupAutoMin = false;
+				}
+			}
+			else
+			{
+				ptr->fIndividualAutoMin = true;
+				ptr->fGroupAutoMin = false;
+			}
 
             if(m_oColorSeries.IsInit())
                 ptr->brtcolorSeries =  m_oColorSeries->toColor();
@@ -517,6 +598,10 @@ namespace OOX
 				ptr->FRTheader.rgFormulas.array.push_back(fmla);
                 ptr->FRTheader.rgFormulas.array[0].formula = m_oRef.get();
 				ptr->FRTheader.fFormula = true;
+            }
+            for(auto i:m_oSparklines->m_arrItems)
+            {
+                ptr1->m_arBrtSparkline.push_back(i->toBin());
             }
 
 			return objectPtr;

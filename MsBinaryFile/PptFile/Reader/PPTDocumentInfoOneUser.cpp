@@ -2353,9 +2353,10 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
             {
                 PPT::CExFilesInfo oInfo;
 
-                oInfo.m_strFilePath = m_oExMedia.m_strPresentationDirectory + FILE_SEPARATOR_STR + oArrayStrings[0]->m_strText + L".audio";
+                oInfo.m_strFilePath = m_oExMedia.m_strPresentationDirectory + FILE_SEPARATOR_STR + L"audio" + std::to_wstring(m_oExMedia.m_arAudioCollection.size() + 1) + L".audio";
                 oInfo.m_dwID = (_UINT32)XmlUtils::GetInteger(oArrayStrings[2]->m_strText.c_str());
                 oInfo.m_name = oArrayStrings[0]->m_strText;
+                oInfo.m_strFileExt = oArrayStrings[1]->m_strText;
 
                 m_oExMedia.m_arAudioCollection.push_back(oInfo);
                 oArrayData[0]->SaveToFile(oInfo.m_strFilePath);

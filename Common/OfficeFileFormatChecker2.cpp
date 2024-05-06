@@ -1118,35 +1118,38 @@ bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring &fileNa
 	hresult = OfficeUtils.LoadFileFromArchive(fileName, L"mimetype", &pBuffer, nBufferSize);
 	if (hresult == S_OK && pBuffer != NULL)
 	{
-		if (NULL != strstr((char *)pBuffer, ottFormatLine))
+		if (48 <= nBufferSize && NULL != strstr((char *)pBuffer, ottFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT;
 		}
-		else if (NULL != strstr((char *)pBuffer, otsFormatLine))
+		else if (55 <= nBufferSize && NULL != strstr((char *)pBuffer, otsFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS;
 		}
-		else if (NULL != strstr((char *)pBuffer, otpFormatLine))
+		else if (56 <= nBufferSize && NULL != strstr((char *)pBuffer, otpFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP;
 		}
-		else if (NULL != strstr((char *)pBuffer, odtFormatLine) || NULL != strstr((char *)pBuffer, sxwFormatLine))
+		else if ((39 <= nBufferSize && NULL != strstr((char *)pBuffer, odtFormatLine)) ||
+				(30 <= nBufferSize && NULL != strstr((char *)pBuffer, sxwFormatLine)))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
 		}
-		else if (NULL != strstr((char *)pBuffer, odsFormatLine) || NULL != strstr((char *)pBuffer, sxcFormatLine))
+		else if ((46 <= nBufferSize && NULL != strstr((char *)pBuffer, odsFormatLine)) || 
+				(28 <= nBufferSize && NULL != strstr((char *)pBuffer, sxcFormatLine)))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
 		}
-		else if (NULL != strstr((char *)pBuffer, odpFormatLine) || NULL != strstr((char *)pBuffer, sxiFormatLine))
+		else if ((47 <= nBufferSize && NULL != strstr((char *)pBuffer, odpFormatLine)) || 
+				(31 <= nBufferSize && NULL != strstr((char *)pBuffer, sxiFormatLine)))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
 		}
-		else if (NULL != strstr((char*)pBuffer, odgFormatLine))
+		else if (43 <= nBufferSize && NULL != strstr((char*)pBuffer, odgFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODG;
 		}
-		else if (NULL != strstr((char *)pBuffer, epubFormatLine))
+		else if (20 <= nBufferSize && NULL != strstr((char *)pBuffer, epubFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB;
 		}
@@ -1683,7 +1686,8 @@ bool COfficeFileFormatChecker::isXpsFile(const std::wstring &fileName)
 	{
 		// http://schemas.microsoft.com/xps/2005/06/fixedrepresentation
 		// http://schemas.openxps.org/oxps/v1.0/fixedrepresentation
-		if (NULL != strstr((char *)pBuffer, "fixedrepresentation") && (NULL != strstr((char *)pBuffer, "/xps/") || NULL != strstr((char *)pBuffer, "/oxps/")))
+		if ((19 <= nBufferSize && NULL != strstr((char *)pBuffer, "fixedrepresentation") && (NULL != strstr((char *)pBuffer, "/xps/")) ||
+			(6 <= nBufferSize && NULL != strstr((char *)pBuffer, "/oxps/"))))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS;
 		}

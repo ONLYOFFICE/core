@@ -2817,4 +2817,8 @@ namespace PdfWriter
 		m_pStream->WriteStr(sColor.c_str());
 		m_pStream->WriteStr(" 0 G 0 i 0.59 w 4 M 1 j 0 J [] 0 d 1 0 0 1 2.8335 1.7627 cm 0 0 m -2.74 15.16 l 12.345 12.389 l 9.458 9.493 l 14.027 4.91 l 7.532 -1.607 l 2.964 2.975 l b");
 	}
+	void CAnnotAppearanceObject::StartDrawFreeText(const std::string& sColor)
+	{
+
+	}
 }

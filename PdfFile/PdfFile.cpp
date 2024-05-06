@@ -48,6 +48,7 @@ class CPdfEditor
 {
 public:
 	void Close() {}
+	bool EditPage(int nPageIndex) { return false; }
 	bool EditAnnot(int nPageIndex, int nID) { return false; }
 	bool DeleteAnnot(int nID) { return false; }
 	bool EditWidgets(IAdvancedCommand* pCommand) { return false; }

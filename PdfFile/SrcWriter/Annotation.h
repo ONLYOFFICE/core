@@ -350,6 +350,8 @@ namespace PdfWriter
 	class CFreeTextAnnotation : public CMarkupAnnotation
 	{
 	private:
+		BYTE m_nIT;
+		ELineEndType m_nLE;
 		CAnnotAppearance* m_pAppearance;
 
 	public:

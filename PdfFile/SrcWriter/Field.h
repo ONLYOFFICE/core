@@ -416,6 +416,8 @@ namespace PdfWriter
 		void DrawTextUpArrow(const std::string& sColor);
 		void DrawTextUpLeftArrow(const std::string& sColor);
 
+		void StartDrawFreeText(const std::string& sColor);
+
 		CStream* GetStream() { return m_pStream; }
 
 		bool        m_bStart;

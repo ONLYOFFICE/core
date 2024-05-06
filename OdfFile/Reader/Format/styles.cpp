@@ -2160,6 +2160,7 @@ void text_linenumbering_configuration::add_attributes(const xml::attributes_wc_p
 	CP_APPLY_ATTR(L"text:number-position", text_number_position_); //inner, left, outer, right
 	CP_APPLY_ATTR(L"text:offset", text_offset_);
 	CP_APPLY_ATTR(L"text:restart-on-page", text_restart_on_page_);
+	CP_APPLY_ATTR(L"text:start", text_start_);
 }
 void text_linenumbering_configuration::add_child_element(xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
@@ -2186,6 +2187,10 @@ void text_linenumbering_configuration::docx_serialize(std::wostream & strm, oox:
 			else
 			{
 				CP_XML_ATTR(L"w:restart", L"continuous");
+			}
+			if (text_start_)
+			{
+				CP_XML_ATTR(L"w:start", *text_start_);
 			}
 			if (text_offset_)
 			{

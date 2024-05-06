@@ -1,16 +1,18 @@
 INCLUDEPATH += $$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX/include
 CORE_BOOST_LIBS = $$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib
 
+core_ios:CONFIG += disable_enum_constexpr_conversion
+core_android:CONFIG += disable_enum_constexpr_conversion
+core_mac:CONFIG += disable_enum_constexpr_conversion
+
 core_android {
     INCLUDEPATH += $$PWD/build/android/include
     CORE_BOOST_LIBS = $$PWD/build/android/lib/$$CORE_BUILDS_PLATFORM_PREFIX
 
     DEFINES += "_HAS_AUTO_PTR_ETC=0"
-    QMAKE_CFLAGS += -Wno-enum-constexpr-conversion
-    QMAKE_CXXFLAGS += -Wno-enum-constexpr-conversion
 }
 
-core_ios {
+disable_enum_constexpr_conversion {
     QMAKE_CFLAGS += -Wno-enum-constexpr-conversion
     QMAKE_CXXFLAGS += -Wno-enum-constexpr-conversion
 }

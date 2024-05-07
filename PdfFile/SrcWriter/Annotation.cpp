@@ -1122,6 +1122,22 @@ namespace PdfWriter
 		pStream->WriteStr(GetColor(arrC, true).c_str());
 		pStream->WriteStr("\012");
 
+		pObj = Get("CA");
+		if (pObj && pObj->GetType() == object_type_REAL)
+		{
+			float dAlpha = ((CRealObject*)pObj)->Get();
+			if (dAlpha != 1)
+			{
+				CExtGrState* pExtGrState = m_pDocument->GetExtGState(dAlpha, dAlpha);
+				const char* sExtGrStateName =  m_pDocument->GetFieldsResources()->GetExtGrStateName(pExtGrState);
+				if (sExtGrStateName)
+				{
+					pStream->WriteEscapeName(sExtGrStateName);
+					pStream->WriteStr(" gs\012");
+				}
+			}
+		}
+
 		// TODO Облачная граница
 
 		pObj = Get("CL");
@@ -1138,11 +1154,21 @@ namespace PdfWriter
 			}
 		}
 
-		StreamWriteRect(pStream, 0, 0, 0, 0);
+		double dRDLeft = 0.0, dRDTop = 0.0, dRDRight = 0.0, dRDBottom = 0.0;
+		pObj = Get("RD");
+		if (pObj && pObj->GetType() == object_type_ARRAY)
+		{
+			CArrayObject* pArr = (CArrayObject*)pObj;
+			dRDLeft   = ((CRealObject*)(pArr->Get(0)))->Get();
+			dRDTop    = ((CRealObject*)(pArr->Get(1)))->Get();
+			dRDRight  = ((CRealObject*)(pArr->Get(2)))->Get();
+			dRDBottom = ((CRealObject*)(pArr->Get(3)))->Get();
+		}
+		StreamWriteRect(pStream, GetRect().fLeft + dRDLeft + dBorderSize / 2,
+								 GetRect().fTop + dRDTop + dBorderSize / 2,
+								 GetRect().fRight - GetRect().fLeft - dRDRight - dRDLeft - dBorderSize,
+								 GetRect().fBottom - GetRect().fTop - dRDBottom - dRDTop - dBorderSize);
 		pStream->WriteStr("B\012");
-
-		// re внутренняя область
-		// BT/ET текст
 	}
 	void CFreeTextAnnotation::EndAP()
 	{

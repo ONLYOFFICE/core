@@ -31,7 +31,7 @@
  */
 
 #include "ListParsedFormula.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/PtgList.h"
+#include "PtgList.h"
 
 namespace XLS
 {

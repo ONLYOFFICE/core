@@ -561,14 +561,11 @@ CAnnotWidgetBtn::CAnnotWidgetBtn(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot
 			// 3 - Смещение - A
 			if (oIF.dictLookup("A", &oObj)->isArray())
 			{
+				m_dA1 = 0.5, m_dA2 = 0.5;
 				Object oObj2;
 				m_unIFFlag |= (1 << 3);
 				m_dA1 = ArrGetNum(&oObj, 0);
-				if (!m_dA1)
-					m_dA1 = 0.5;
 				m_dA2 = ArrGetNum(&oObj, 1);
-				if (!m_dA2)
-					m_dA2 = 0.5;
 			}
 			oObj.free();
 			// 4 - Полное соответствие - FB

@@ -20,6 +20,7 @@ public:
 	static void onStateChanged(const libvlc_event_t* pEvent, void *pData);
 	static void onTimeChanged(const libvlc_event_t* pEvent, void *pData);
 	static void onPositionChanged(const libvlc_event_t* pEvent, void *pData);
+	static void onVideoOutputChanged(const libvlc_event_t* pEvent, void *pData);
 
 public:
 	void integrateIntoWidget(QWidget* pWidget);
@@ -37,6 +38,7 @@ public:
 	void setPosition(float fPos);
 	float position();
 
+	// NOTE: isAudio() will always return true until event libvlc_MediaPlayerVout is occurred (see onVideoOutputChanged())
 	bool isAudio();
 	bool isPlaying();
 	libvlc_state_t getState();
@@ -45,6 +47,7 @@ signals:
 	void stateChanged(int newState);
 	void timeChanged(qint64 nNewTime);
 	void positionChanged(float fNewPos);
+	void videoOutputChanged(int nVoutCount);
 
 public:
 	libvlc_media_player_t* m_pVlcPlayer;

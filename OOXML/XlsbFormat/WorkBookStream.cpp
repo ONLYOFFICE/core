@@ -492,6 +492,7 @@ void WorkBookStream::UpdateXti(XLS::GlobalWorkbookInfo* global_info_)
         {
             XTI* xti = dynamic_cast<XTI*>(extern_sheet->rgXTI[i].get());
             if (!xti) continue;
+            if(externals->m_arSUP.size() <= xti->iSupBook) continue;
 
             SUP* index_book = dynamic_cast<SUP*>(externals->m_arSUP[xti->iSupBook].get());
             if (!index_book) continue;

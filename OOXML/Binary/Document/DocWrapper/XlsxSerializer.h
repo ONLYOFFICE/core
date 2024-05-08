@@ -71,7 +71,9 @@ namespace BinXlsxRW {
         void setEmbeddedFontsDir(const std::wstring& sEmbeddedFontsDir);
 		void setDrawingConverter(NSBinPptxRW::CDrawingConverter* pDrawingConverter);
 		void setIsNoBase64		(bool val);
+		
 		void setMacroEnabled	(bool val);
+		bool getMacroEnabled	();
 
 		_UINT32 xml2Xlsx		(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions);
 		

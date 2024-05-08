@@ -169,6 +169,7 @@ namespace NExtractTools
 			pptx_file->SetFontDir(params.getFontPath());
 			nRes = (S_OK == pptx_file->ConvertPPTYToPPTX(sTargetBin, convertParams.m_sTempResultOOXMLDirectory, convertParams.m_sThemesDir)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 
+			params.m_bMacro = pptx_file->GetMacroEnabled();
 			delete pptx_file;
 		}
 		// удаляем EditorWithChanges, потому что он не в Temp

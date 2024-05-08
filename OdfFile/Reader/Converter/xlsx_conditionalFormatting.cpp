@@ -266,6 +266,7 @@ public:
 								{
 									if (c.rules[j].icon_set_type)
 									{
+										int h = *c.rules[j].icon_set_type;
 										switch (*c.rules[j].icon_set_type)
 										{
 										case 1: CP_XML_ATTR(L"iconSet", L"3ArrowsGray"); break;
@@ -286,7 +287,7 @@ public:
 										case 16: CP_XML_ATTR(L"iconSet", L"5Rating"); break;
 										case 17: CP_XML_ATTR(L"iconSet", L"3Triangles"); break;
 										case 18: CP_XML_ATTR(L"iconSet", L"3Stars"); break;
-										case 19: CP_XML_ATTR(L"iconSet", L"5Boxes"); break;
+										case 19: CP_XML_ATTR(L"iconSet", L"5Boxes"); break; //todooo to ext
 										case 0:
 										default: CP_XML_ATTR(L"iconSet", L"3Arrows"); break;
 											break;

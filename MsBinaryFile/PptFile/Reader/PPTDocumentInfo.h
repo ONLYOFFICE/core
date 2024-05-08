@@ -47,7 +47,7 @@ public:
 	std::vector<CPPTUserInfo*>		m_arUsers;
 	std::map<int, std::wstring>		m_mapStoreImageFile;
     std::wstring					m_strPassword;
-	bool							m_bMacros;
+	bool							m_bMacroEnabled;
 
 	std::wstring					m_app_xml;
 	std::wstring					m_core_xml;

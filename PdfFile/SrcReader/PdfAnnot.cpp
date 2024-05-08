@@ -2314,6 +2314,45 @@ void CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontMana
 {
 	AnnotMarkup::SetFont(pdfDoc, oAnnotRef, pFontManager, pFontList, m_arrRC);
 }
+bool FindFonts(Object* oStream, int nDepth, Object* oResFonts)
+{
+	if (nDepth > 5)
+		return false;
+
+	Object oResources;
+	if (!oStream->streamGetDict()->lookup("Resources", &oResources)->isDict())
+	{
+		oResources.free();
+		return false;
+	}
+
+	if (oResources.dictLookup("Font", oResFonts)->isDict())
+	{
+		oResources.free();
+		return true;
+	}
+
+	Object oXObject;
+	if (oResources.dictLookup("XObject", &oXObject)->isDict())
+	{
+		for (int i = 0, nLength = oXObject.dictGetLength(); i < nLength; ++i)
+		{
+			Object oXObj;
+			if (!oXObject.dictGetVal(i, &oXObj)->isStream())
+			{
+				oXObj.free();
+				continue;
+			}
+			if (FindFonts(&oXObj, nDepth + 1, oResFonts))
+			{
+				oXObj.free(); oXObject.free(); oResources.free();
+				return true;
+			}
+		}
+	}
+	oXObject.free();
+	return false;
+}
 std::map<std::wstring, std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, std::vector<CAnnotMarkup::CFontData*>& arrRC, int nTypeFonts)
 {
 	std::map<std::wstring, std::wstring> mRes;
@@ -2325,7 +2364,13 @@ std::map<std::wstring, std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object
 	oAnnotRef->fetch(pXref, &oAnnot);
 
 	Object oAP, oN, oR, oFonts;
-	if (!oAnnot.dictLookup("AP", &oAP)->isDict() || !oAP.dictLookup("N", &oN)->isStream() || !oN.streamGetDict()->lookup("Resources", &oR)->isDict() || !oR.dictLookup("Font", &oFonts)->isDict())
+	if (!oAnnot.dictLookup("AP", &oAP)->isDict() || !oAP.dictLookup("N", &oN)->isStream())
+	{
+		oAP.free(); oN.free(); oR.free(); oFonts.free();
+		return mRes;
+	}
+
+	if (!FindFonts(&oN, 0, &oFonts))
 	{
 		oAP.free(); oN.free(); oR.free(); oFonts.free();
 		return mRes;

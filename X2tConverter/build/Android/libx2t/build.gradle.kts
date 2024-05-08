@@ -63,19 +63,25 @@ android {
                 )
             }
         }
-
-        ndk {
-            abiFilters.addAll(arrayOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
-        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            ndk {
+                abiFilters.addAll(arrayOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
+            }
         }
         debug {
             isJniDebuggable = true
+            ndk {
+                if (System.getProperty("os.arch") == "aarch64") {
+                    abiFilters.add("arm64-v8a")
+                } else {
+                    abiFilters.addAll(arrayOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
+                }
+            }
         }
     }
 

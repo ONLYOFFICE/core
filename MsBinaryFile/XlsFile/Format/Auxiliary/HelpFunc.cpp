@@ -73,9 +73,9 @@ const int normalizeColumn(const int column, const bool xlsb)
 }
 
 
-const std::wstring column2str(const int column, const bool col_rel)
+const std::wstring column2str(const int column, const bool col_rel, const bool xlsb)
 {
-	int column_value = normalizeColumn(column);
+	int column_value = normalizeColumn(column, xlsb);
 	const int radix = L'Z' - L'A' + 1;
 	std::wstring ret_val;
 	++column_value;
@@ -90,7 +90,7 @@ const std::wstring column2str(const int column, const bool col_rel)
 }
 
 
-const int normalizeRow(const int row, bool xlsb)
+const int normalizeRow(const int row, const bool xlsb)
 {
 	int maxRow = 0;
 	if(xlsb)
@@ -114,16 +114,16 @@ const int normalizeRow(const int row, bool xlsb)
 }
 
 
-const std::wstring row2str(const int row, const bool row_rel)
+const std::wstring row2str(const int row, const bool row_rel, const bool xlsb)
 {
-	int row_value = normalizeRow(row);
+	int row_value = normalizeRow(row, xlsb);
 	return  (row_rel ? L"" : L"$") + STR::int2wstr(row_value + 1, 10);
 }
 
 
-const std::wstring loc2str(const int row, const bool row_rel, const int column, const bool col_rel)
+const std::wstring loc2str(const int row, const bool row_rel, const int column, const bool col_rel, const bool xlsb)
 {
-	return column2str(column, col_rel) + row2str(row, row_rel);
+	return column2str(column, col_rel, xlsb) + row2str(row, row_rel, xlsb);
 }
 
 

@@ -1050,7 +1050,7 @@ namespace OOX
                         auto formula = dynamic_cast<XLSB::ShrFmla*>(obj.get());
                         m_sText = formula->formula.getAssembledFormula();
                         m_oRef.Init();
-                        m_oRef = formula->rfx.toString();
+                        m_oRef = formula->rfx.toString(true, true);
                     }
                     break;
                 case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeArray:
@@ -1063,7 +1063,7 @@ namespace OOX
                             m_oAca = formula->fAlwaysCalc;
                         }
                         m_oRef.Init();
-                        m_oRef = formula->rfx.toString();
+                        m_oRef = formula->rfx.toString(true, true);
                     }
                     break;
                 case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeDataTable:
@@ -1078,7 +1078,7 @@ namespace OOX
                         }
 
                         m_oRef.Init();
-                        m_oRef = dataTable->rfx.toString();
+                        m_oRef = dataTable->rfx.toString(true, true);
 
                         if(dataTable->fRw)
                         {
@@ -2501,7 +2501,7 @@ namespace OOX
 
                     }
 
-                    auto wRef = XLSB::RgceLoc(m_oRow.get(), m_oCol.get(), true, true).toString();
+                    auto wRef = XLSB::RgceLoc(m_oRow.get(), m_oCol.get(), true, true).toString(true);
                     m_oRef = std::string(wRef.begin(), wRef.end());
 
                     if(pSource != nullptr)

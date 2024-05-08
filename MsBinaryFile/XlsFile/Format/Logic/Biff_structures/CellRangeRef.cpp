@@ -141,7 +141,7 @@ const std::wstring CellRangeRef::toString(const bool useShortForm, const bool xl
 		{
 			if(useShortForm)
 			{
-				return to_string_cache = AUX::column2str(columnFirst_norm, columnFirstRelative) + L':' + AUX::column2str(columnLast_norm, columnLastRelative);
+                return to_string_cache = AUX::column2str(columnFirst_norm, columnFirstRelative, xlsb) + L':' + AUX::column2str(columnLast_norm, columnLastRelative, xlsb);
 			}
 			else
 			{
@@ -152,7 +152,7 @@ const std::wstring CellRangeRef::toString(const bool useShortForm, const bool xl
 		{
 			if(useShortForm)
 			{
-				return to_string_cache = AUX::row2str(rowFirst_norm, rowFirstRelative) + L':' + AUX::row2str(rowLast_norm, rowLastRelative);
+                return to_string_cache = AUX::row2str(rowFirst_norm, rowFirstRelative, xlsb) + L':' + AUX::row2str(rowLast_norm, rowLastRelative, xlsb);
 			}
 			else
 			{
@@ -161,12 +161,12 @@ const std::wstring CellRangeRef::toString(const bool useShortForm, const bool xl
 		}
 		if(columnLast_norm == columnFirst_norm && rowFirst_norm == rowLast_norm) // single cell
 		{
-			return to_string_cache = AUX::loc2str(rowFirst_norm, rowFirstRelative, columnFirst_norm, columnFirstRelative);
+            return to_string_cache = AUX::loc2str(rowFirst_norm, rowFirstRelative, columnFirst_norm, columnFirstRelative, xlsb);
 		}
 		else
 		{
-			return to_string_cache = AUX::loc2str(rowFirst_norm, rowFirstRelative, columnFirst_norm, columnFirstRelative) + 
-				L':' + AUX::loc2str(rowLast_norm, rowLastRelative, columnLast_norm, columnLastRelative);
+            return to_string_cache = AUX::loc2str(rowFirst_norm, rowFirstRelative, columnFirst_norm, columnFirstRelative, xlsb) +
+                L':' + AUX::loc2str(rowLast_norm, rowLastRelative, columnLast_norm, columnLastRelative, xlsb);
 		}
 	}
 	return to_string_cache;

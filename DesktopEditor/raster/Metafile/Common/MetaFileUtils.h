@@ -93,7 +93,7 @@ namespace MetaFile
 	{
 	public:
 
-		CDataStream() : pBuffer(NULL)
+		CDataStream() : pBuffer(NULL), pBufferEnd(NULL), pEnd(NULL), pCur(NULL)
 		{
 		}
 
@@ -103,10 +103,25 @@ namespace MetaFile
 
 		void SetStream(BYTE* pBuf, unsigned int unSize)
 		{
-			pBuffer = pBuf;
-			pCur    = pBuf;
-			pEnd    = pBuf + unSize;
-		};
+			pBuffer       = pBuf;
+			pCur          = pBuf;
+			pBufferEnd    = pBuf + unSize;
+			pEnd          = pBufferEnd;
+		}
+
+		void SetCurrentBlockSize(unsigned int unSize)
+		{
+			if (pCur + unSize >= pBufferEnd)
+				pEnd = pBufferEnd;
+			else
+				pEnd = pCur + unSize;
+		}
+
+		void ClearCurrentBlockSize()
+		{
+			pEnd = pBufferEnd;
+		}
+
 		BYTE* GetCurPtr()
 		{
 			return pCur;
@@ -120,7 +135,7 @@ namespace MetaFile
 			unsigned char unResult = pCur[0];
 			pCur++;
 			return unResult;
-		};
+		}
 		unsigned short ReadUShort()
 		{
 			if (pCur + 1 >= pEnd)
@@ -129,7 +144,7 @@ namespace MetaFile
 			unsigned short ushResult = (pCur[0]) | ((pCur[1]) << 8);
 			pCur += 2;
 			return ushResult;
-		};
+		}
 		unsigned int   ReadULong()
 		{
 			if (pCur + 3 >= pEnd)
@@ -138,7 +153,7 @@ namespace MetaFile
 			unsigned int unResult = (unsigned int)((pCur[0] << 0) | ((pCur[1]) << 8) | ((pCur[2]) << 16) | ((pCur[3]) << 24));
 			pCur += 4;
 			return unResult;
-		};
+		}
 		double         ReadDouble()
 		{
 			if (pCur + 3 >= pEnd)
@@ -159,19 +174,19 @@ namespace MetaFile
 			int lFracValue = (int)(pCur[3]);
 			pCur += 4;
 			return (double)(lIntValue + (lFracValue / 16.0));
-		};
+		}
 		char           ReadChar()
 		{
 			return (char)ReadUChar();
-		};
+		}
 		short          ReadShort()
 		{
 			return (short)ReadUShort();
-		};
+		}
 		int            ReadLong()
 		{
 			return (int)ReadULong();
-		};
+		}
 		void           ReadBytes(unsigned char*  pBuffer, unsigned int ulSize)
 		{
 			size_t ulRemainSize = (pEnd - pCur);
@@ -181,7 +196,7 @@ namespace MetaFile
 			{
 				pBuffer[ulIndex] = ReadChar();
 			}
-		};
+		}
 		void           ReadBytes(unsigned short* pBuffer, unsigned int ulSize)
 		{
 			size_t ulRemainSize = (pEnd - pCur) / 2;
@@ -1047,7 +1062,7 @@ namespace MetaFile
 
 		bool IsEof() const
 		{
-			if (pCur >= pEnd)
+			if (pCur >= pBufferEnd)
 				return true;
 
 			return false;
@@ -1060,7 +1075,10 @@ namespace MetaFile
 
 		void Skip(unsigned int ulSkip)
 		{
-			pCur += ulSkip;
+			if (pCur + ulSkip >= pEnd)
+				pCur = pEnd;
+			else
+				pCur += ulSkip;
 		}
 
 		void SeekBack(unsigned int ulSkipBack)
@@ -1071,6 +1089,7 @@ namespace MetaFile
 		void SeekToStart()
 		{
 			pCur = pBuffer;
+			ClearCurrentBlockSize();
 		}
 
 		unsigned int CanRead()
@@ -1085,21 +1104,31 @@ namespace MetaFile
 			*this >> oText;
 
 			// Читаем OutputString
-			const unsigned int unCharsCount = oText.unChars;
-			int nSkip = oText.unOffString - (unOffset + 40); // 40 - размер структуры TEmfEmrText
-			Skip(nSkip);
-			T* pString = new T[unCharsCount + 1];
+			oText.unChars = std::min(oText.unChars, (UINT)(CanRead() / sizeof(T)));
+
+			if (0 == oText.unChars)
+				return;
+
+			if (oText.unOffString - 40 > unOffset)
+				Skip(oText.unOffString - (unOffset + 40)); // 40 - размер структуры TEmfEmrText
+
+			T* pString = new T[oText.unChars + 1];
 			if (pString)
 			{
-				pString[unCharsCount] = 0x00;
-				ReadBytes(pString, unCharsCount);
+				pString[oText.unChars] = 0x00;
+				ReadBytes(pString, oText.unChars);
 				oText.pOutputString = pString;
 			}
 
 			// Читаем OutputDx
-			nSkip = oText.unOffDx - oText.unOffString - 2 * unCharsCount;
-			Skip(nSkip);
-			const unsigned int unDxCount = oText.unOptions & ETO_PDY ? 2 * unCharsCount : unCharsCount;
+			if (oText.unChars < (UINT32_MAX / 2) && (oText.unOffDx > oText.unOffString) && (oText.unOffDx - oText.unOffString > 2 * oText.unChars))
+				Skip(oText.unOffDx - oText.unOffString - 2 * oText.unChars);
+
+			const unsigned int unDxCount = (oText.unOptions & ETO_PDY ? 2 * oText.unChars : oText.unChars);
+
+			if ((CanRead() / 4) < unDxCount || 0 == unDxCount)
+				return;
+
 			unsigned int* pDx = new unsigned int[unDxCount];
 			if (pDx)
 			{
@@ -1116,6 +1145,7 @@ namespace MetaFile
 	private:
 
 		BYTE *pBuffer;
+		BYTE *pBufferEnd;
 		BYTE *pCur;
 		BYTE *pEnd;
 	};

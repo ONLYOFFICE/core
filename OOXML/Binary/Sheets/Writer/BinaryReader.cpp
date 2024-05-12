@@ -8552,7 +8552,7 @@ int BinaryFileReader::Xml2Xlsx(const std::wstring& sSrcFileName, std::wstring sD
 	delete pXlsxFlat;
 	return 0;
 }
-int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool bMacro)
+int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool &bMacro)
 {
 	bool bResultOk = false;
 	
@@ -8689,6 +8689,8 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 
 				oXlsx.PrepareToWrite();
 				oXlsx.Write(sDstPath, *oSaveParams.pContentTypes);
+
+				bMacro = oSaveParams.bMacroEnabled;
 			}
 			else if (BinXlsxRW::c_oFileTypes::XLSB == fileType)
 			{
@@ -8708,6 +8710,8 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 
 				oXlsb.PrepareToWrite();
 				oXlsb.WriteBin(sDstPath, *oSaveParams.pContentTypes);
+				
+				bMacro = oSaveParams.bMacroEnabled;
 			}
 			else
 			{
@@ -8719,7 +8723,7 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 				bResultOk = oCSVWriter.Start(sDstPathCSV);
 				if (!bResultOk) return AVS_FILEUTILS_ERROR_CONVERT;
 
-				SaveParams oSaveParams(drawingsPath, embeddingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), &oCSVWriter);
+				SaveParams oSaveParams(drawingsPath, embeddingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), &oCSVWriter, false);
 				
 				try
 				{

@@ -183,12 +183,17 @@ namespace NSOnlineOfficeBinToPdf
 		ctAnnotField                    = 164,
 		ctAnnotFieldDelete              = 165,
 		ctWidgetsInfo                   = 166,
+		ctShapeStart                    = 167,
+		ctShapeEnd                      = 168,
 
 		ctPageWidth                     = 200,
 		ctPageHeight                    = 201,
 
 		ctPageStart                     = 202,
 		ctPageEnd                       = 203,
+
+		ctPageClear                     = 207,
+		ctPageRotate                    = 208,
 
 		// gradients
 

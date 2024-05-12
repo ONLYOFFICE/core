@@ -59,21 +59,23 @@ namespace SVG
 
 			NSBase64::Base64Decode(wsImageData.c_str(), wsImageData.length(), pBuffer, &(int&)ulSize);
 		}
-
 		#ifndef METAFILE_DISABLE_FILESYSTEM
-		std::wstring wsFilePath = NSSystemPath::ShortenPath(m_wsHref);
+		else
+		{
+			std::wstring wsFilePath = NSSystemPath::ShortenPath(m_wsHref);
+	
+			bool bIsAllowExternalLocalFiles = true;
+			if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
+				bIsAllowExternalLocalFiles = NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
 
-		bool bIsAllowExternalLocalFiles = true;
-		if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
-			bIsAllowExternalLocalFiles = NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
-
-		if (!bIsAllowExternalLocalFiles && wsFilePath.length() >= 3 && L"../" == wsFilePath.substr(0, 3))
-			return true;
-
-		wsFilePath = pFile->GetWorkingDirectory() + L'/' + wsFilePath;
-
-		if (!NSFile::CFileBinary::Exists(wsFilePath) || !NSFile::CFileBinary::ReadAllBytes(wsFilePath, &pBuffer, ulSize))
-			return false;
+			if (!bIsAllowExternalLocalFiles && wsFilePath.length() >= 3 && L"../" == wsFilePath.substr(0, 3))
+				return false;
+	
+			wsFilePath = pFile->GetWorkingDirectory() + L'/' + wsFilePath;
+	
+			if (!NSFile::CFileBinary::Exists(wsFilePath) || !NSFile::CFileBinary::ReadAllBytes(wsFilePath, &pBuffer, ulSize))
+				return false;
+		}
 		#endif
 
 		if (NULL == pBuffer)

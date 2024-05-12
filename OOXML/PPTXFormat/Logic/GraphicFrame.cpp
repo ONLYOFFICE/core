@@ -530,6 +530,14 @@ namespace PPTX
 
 			if (olePic.is_init())
 			{
+				if (nvGraphicFramePr.IsInit())
+				{
+					if (olePic->nvPicPr.cNvPr.id < 1)
+						olePic->nvPicPr.cNvPr.id = nvGraphicFramePr->cNvPr.id;
+					
+					if (olePic->nvPicPr.cNvPr.name.empty())
+						olePic->nvPicPr.cNvPr.name = nvGraphicFramePr->cNvPr.name;
+				}
 				olePic->toPPTY(pWriter);
 				return;
 			}

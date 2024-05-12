@@ -1998,6 +1998,19 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPageSetup *oox_page)
 			width	= odf_types::length(8.5, odf_types::length::inch);
 			height	= odf_types::length(11, odf_types::length::inch);
 			break;
+		//case SimpleTypes::Spreadsheet::pagesizeLetterSmall:
+		case SimpleTypes::Spreadsheet::pagesizeTabloidPaper:
+			width = odf_types::length(279.4, odf_types::length::mm);
+			height = odf_types::length(431.8, odf_types::length::mm);
+			break;
+		case SimpleTypes::Spreadsheet::pagesizeLegalPaper:
+			width = odf_types::length(215.9, odf_types::length::mm);
+			height = odf_types::length(355.6, odf_types::length::mm);
+			break;
+		case SimpleTypes::Spreadsheet::pagesizeExecutivePaper:
+			width = odf_types::length(184.2, odf_types::length::mm);
+			height = odf_types::length(266.7, odf_types::length::mm);
+			break;
 		case SimpleTypes::Spreadsheet::pagesizeA3Paper:
 			width	= odf_types::length(297, odf_types::length::mm);
 			height	= odf_types::length(420, odf_types::length::mm);
@@ -2006,9 +2019,45 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPageSetup *oox_page)
 			width	= odf_types::length(210, odf_types::length::mm);
 			height	= odf_types::length(297, odf_types::length::mm);
 			break;
+		//case SimpleTypes::Spreadsheet::pagesizeA4SmallPaper:
+		case SimpleTypes::Spreadsheet::pagesizeA5Paper:
+			width = odf_types::length(148, odf_types::length::mm);
+			height = odf_types::length(210, odf_types::length::mm);
+			break;
+		case SimpleTypes::Spreadsheet::pagesizeB4Paper:
+			width = odf_types::length(257, odf_types::length::mm);
+			height = odf_types::length(364, odf_types::length::mm);
+			break;
+		case SimpleTypes::Spreadsheet::pagesizeB5Paper:
+			width = odf_types::length(182, odf_types::length::mm);
+			height = odf_types::length(257, odf_types::length::mm);
+			break;
+		case SimpleTypes::Spreadsheet::pagesizeFolioPaper:
+			width = odf_types::length(215.9, odf_types::length::mm);
+			height = odf_types::length(330.2, odf_types::length::mm);
+			break;
+		case SimpleTypes::Spreadsheet::pagesize10Envelope:
+			width = odf_types::length(104.7, odf_types::length::mm);
+			height = odf_types::length(241.3, odf_types::length::mm);
+			break;
+		case SimpleTypes::Spreadsheet::pagesizeDLEnvelope:
+			width = odf_types::length(110, odf_types::length::mm);
+			height = odf_types::length(220, odf_types::length::mm);
+			break;
+		case SimpleTypes::Spreadsheet::pagesizeC5Envelope:
+			width = odf_types::length(162, odf_types::length::mm);
+			height = odf_types::length(229, odf_types::length::mm);
+			break;
+		case SimpleTypes::Spreadsheet::pagesizeC4Envelope:
+			width = odf_types::length(229, odf_types::length::mm);
+			height = odf_types::length(324, odf_types::length::mm);
+		break;
+		case SimpleTypes::Spreadsheet::pagesizeMonarchEnvelope:
+			width = odf_types::length(98.4, odf_types::length::mm);
+			height = odf_types::length(190.5, odf_types::length::mm);
+			break;
 		default:
 			break;
-		//todooo
 		}
 	}
 	ods_context->page_layout_context()->set_page_size(width, height);
@@ -2507,47 +2556,47 @@ void XlsxConverter::convert(OOX::Spreadsheet::CBorderProp *borderProp, std::wstr
 		switch(borderProp->m_oStyle->GetValue())
 		{
 			case SimpleTypes::Spreadsheet::borderstyleDashDot:
-				border_style = L"1pt dot-dashed";
+				border_style = L"0.74pt dash-dot";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleDashDotDot:
-				border_style = L"1pt dot-dashed";
+				border_style = L"0.74pt dash-dot-dot";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleDashed:
-				border_style = L"1pt dashed";
+				border_style = L"0.74pt dashed";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleDotted:
-				border_style = L"1pt dotted";
+				border_style = L"0.74pt dotted";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleDouble:
-				border_style = L"1pt double";
+				border_style = L"0.74pt double";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleHair:
-				border_style = L"1pt solid";
+				border_style = L"0.06pt solid";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleMedium:
-				border_style = L"2.49pt solid";
+				border_style = L"1.76pt solid";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleMediumDashDot:
-				border_style = L"2.49pt dot-dashed";
+				border_style = L"1.76pt dash-dot";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleMediumDashDotDot:
-				border_style = L"2.49pt dot-dashed";
+				border_style = L"1.76pt dash-dot-dot";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleMediumDashed:
-				border_style = L"2.49pt dashed";
+				border_style = L"1.76pt dashed";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleNone:
 				border_style = L"none";
 				return;
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleSlantDashDot:
-				border_style = L"1pt solid";
+				border_style = L"1.76pt fine-dashed";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleThick:
-				border_style = L"1pt solid";
+				border_style = L"2.49pt solid";
 			break;
 			case SimpleTypes::Spreadsheet::borderstyleThin:
-				 border_style = L"1pt solid";
+				 border_style = L"0.74pt solid";
 			break;
 		}
 	}
@@ -2962,7 +3011,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 			
 			std::wstring pathOle = find_link_by_id(sID, 4, bExternal);
 
-			odf_ref_object = odf_context()->add_oleobject(pathOle);
+			odf_ref_object = odf_context()->add_oleobject(pathOle, bExternal);
 		}
 		if ((object->m_oObjectPr.IsInit()) && (object->m_oObjectPr->m_oRid.IsInit()))
 		{
@@ -2970,7 +3019,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 			
 			std::wstring pathImage = find_link_by_id(sID, 1, bExternal);
 					
-			odf_ref_image = odf_context()->add_imageobject(pathImage);
+			odf_ref_image = odf_context()->add_imageobject(pathImage, bExternal);
 		}
 //--------------------------------------------------------------------------------------------------
 		if ((!bAnchor || odf_ref_image.empty()) && object->m_oShapeId.IsInit())

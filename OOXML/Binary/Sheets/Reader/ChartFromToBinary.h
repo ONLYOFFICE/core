@@ -99,14 +99,13 @@ namespace BinXlsxRW
 {
 	struct SaveParams
 	{
-		SaveParams	(const std::wstring& _sDrawingsPath, const std::wstring& _sEmbeddingsPath, const std::wstring& _sThemePath, OOX::CContentTypes *pContentTypes, CSVWriter* pCSVWriter = NULL, bool bMacro = false);
+		SaveParams(const std::wstring& _sDrawingsPath, const std::wstring& _sEmbeddingsPath, const std::wstring& _sThemePath, OOX::CContentTypes *pContentTypes, CSVWriter* pCSVWriter = NULL, bool bMacro = false);
 
 		smart_ptr<PPTX::Theme>			pTheme;
 		std::wstring					sThemePath;
 		std::wstring					sDrawingsPath;
 		std::wstring					sEmbeddingsPath;
 		OOX::CContentTypes*				pContentTypes = NULL;
-		int								nThemeOverrideCount = 0;
 		CSVWriter*						pCSVWriter = NULL;
 		bool							bMacroEnabled = false;
 	};
@@ -114,9 +113,9 @@ namespace BinXlsxRW
 	class BinaryChartReader : public Binary_CommonReader
 	{
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
-		SaveParams&						m_oSaveParams;
+		SaveParams& m_oSaveParams;
 	public:
-		BinaryChartReader	(NSBinPptxRW::CBinaryFileReader& oBufferedStream, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter);
+		BinaryChartReader (NSBinPptxRW::CBinaryFileReader& oBufferedStream, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter);
 		
 		int ReadCT_ChartFile			(long length, OOX::Spreadsheet::CChartFile* poResult);
 		int ReadCT_ChartExFile			(long length, OOX::Spreadsheet::CChartExFile* poResult);

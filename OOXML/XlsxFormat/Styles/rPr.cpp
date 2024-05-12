@@ -520,6 +520,7 @@ namespace OOX
             ptr->bAlpha = 0;
             ptr->bAlpha = 0;
             ptr->bAlpha = 0;
+            ptr->fValidRGB = false;
 
 			if(m_oAuto.IsInit())
 			{
@@ -542,6 +543,8 @@ namespace OOX
 				ptr->bBlue = m_oRgb->Get_B();
 				ptr->bGreen = m_oRgb->Get_G();
 				ptr->bRed = m_oRgb->Get_R();
+                ptr->xColorType = 2;
+                ptr->fValidRGB = true;
 			}
 
 			if ( m_oTint.IsInit())

@@ -160,10 +160,10 @@ void PtgRef3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 			{
 				strRange = L"#REF";
 			}
-			else
+            else if(global_info->sheets_info.size() > itabFirst)
 			{
 				strRange = XMLSTUFF::name2sheet_name(global_info->sheets_info[itabFirst].name, L"");
-				if (itabFirst != itabLast)
+                if (itabFirst != itabLast && global_info->sheets_info.size() > itabLast)
 				{
 					strRange += std::wstring(L":") + XMLSTUFF::name2sheet_name(global_info->sheets_info[itabLast].name, L"");
 				}

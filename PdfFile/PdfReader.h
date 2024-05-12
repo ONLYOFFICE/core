@@ -77,6 +77,7 @@ public:
 	BYTE* GetWidgets();
 	BYTE* GetWidgetFonts(int nTypeFonts);
 	BYTE* GetAnnots(int nPageIndex = -1);
+	BYTE* GetShapes(int nPageIndex);
 	BYTE* VerifySign(const std::wstring& sFile, ICertificate* pCertificate, int nWidget = -1);
 	BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget  = -1, const char* sView  = NULL, const char* sBView = NULL);
 	BYTE* GetAPAnnots  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot   = -1, const char* sView  = NULL);
@@ -86,7 +87,7 @@ private:
 	PDFDoc*                m_pPDFDocument;
 	std::wstring           m_wsTempFolder;
 	NSFonts::IFontManager* m_pFontManager;
-	PdfReader::CFontList*  m_pFontList;
+	PdfReader::CPdfFontList*  m_pFontList;
 	DWORD                  m_nFileLength;
 	int                    m_eError;
 	std::map<std::wstring, std::wstring> m_mFonts;

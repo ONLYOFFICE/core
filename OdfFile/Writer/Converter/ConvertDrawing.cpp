@@ -397,7 +397,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 		{
 			pathOle = find_link_by_id(oox_picture->oleObject->m_oId->get(), 4, bExternal);
 		}
-		std::wstring odf_ref_ole = odf_context()->add_oleobject(pathOle);
+		std::wstring odf_ref_ole = odf_context()->add_oleobject(pathOle, bExternal);
 
 		if (!odf_ref_ole.empty())
 		{
@@ -442,7 +442,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 
 			}
 
-			odf_ref_image = bExternal ? pathImage : odf_context()->add_imageobject(pathImage);
+			odf_ref_image = odf_context()->add_imageobject(pathImage, bExternal);
 			odf_context()->drawing_context()->set_image_replacement(odf_ref_image);
 
 			odf_context()->drawing_context()->end_object_ole();

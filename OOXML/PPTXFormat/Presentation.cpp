@@ -371,8 +371,9 @@ namespace PPTX
 			}
 			}
 		}
-
 		pReader->Seek(_end_pos);
+		
+		m_bMacroEnabled = m_pVbaProject.IsInit();
 	}
 
 	void Presentation::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const

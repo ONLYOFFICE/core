@@ -409,60 +409,8 @@ bool CPPTUserInfo::ReadDocumentPersists(POLE::Stream* pStream)
             m_mapHandoutMasters.insert(std::pair<_UINT32, CRecordSlide*>(0, pSlide));
         }
     }
-    if (m_bMacros)
-    {
-        m_bMacros = false;
-        std::vector<CRecordDocInfoListContainer*> oArrayDocInfo;
-        m_oDocument.GetRecordsByType(&oArrayDocInfo, true, true);
 
-        CRecordVBAInfoAtom* pVbaAtom = nullptr;
-        if (!oArrayDocInfo.empty())
-            pVbaAtom = oArrayDocInfo[0]->getVBAInfoAtom();
-
-        if (pVbaAtom)
-        {
-            if (pVbaAtom->m_nHasMacros)
-            {
-                m_sVbaProjectFile = GetBinFromStg(L"vbaProject.bin", pVbaAtom->m_nObjStgDataRef);
-                
-                m_bMacros = (false == m_sVbaProjectFile.empty());
-            }
-        }
-    }
     return true;
-}
-std::wstring CPPTUserInfo::GetBinFromStg(const std::wstring& name, _UINT32 nRef)
-{
-    POLE::Stream* pStream = m_pDocumentInfo->m_pStream;
-
-    std::map<_UINT32, _UINT32>::iterator nIndexPsrRef = m_mapOffsetInPIDs.find(nRef);
-
-    std::wstring result;
-    if (m_mapOffsetInPIDs.end() != nIndexPsrRef)
-    {
-        _UINT32 offset_stream = nIndexPsrRef->second;
-        StreamUtils::StreamSeek(offset_stream, pStream);
-
-        POLE::Stream* pStreamTmp = pStream;
-        if (m_pDecryptor)
-        {
-            DecryptStream(pStream, nRef);
-            pStreamTmp = m_arStreamDecrypt.back()->stream_;
-        }
-        SRecordHeader oHeader;
-        oHeader.ReadFromStream(pStreamTmp);
-
-        CRecordExObjStg *pExObjStg = new CRecordExObjStg(name, m_pDocumentInfo->m_pCommonInfo->tempPath);
-
-        if (pExObjStg)
-        {
-            pExObjStg->ReadFromStream(oHeader, pStreamTmp);
-            result = pExObjStg->m_sFileName;
-
-            RELEASEOBJECT(pExObjStg);
-        }
-    }
-    return result;
 }
 //--------------------------------------------------------------------------------------------
 void CPPTUserInfo::ReadExtenalObjects()
@@ -512,6 +460,27 @@ void CPPTUserInfo::ReadExtenalObjects()
     {
         m_bIsSetupEmpty = TRUE;
         m_arrBlipStore[0]->SetUpPicturesInfos(&m_arOffsetPictures);
+    }
+    
+    if (m_bMacroEnabled)
+    {
+        m_bMacroEnabled = false;
+        std::vector<CRecordDocInfoListContainer*> oArrayDocInfo;
+        m_oDocument.GetRecordsByType(&oArrayDocInfo, true, true);
+
+        CRecordVBAInfoAtom* pVbaAtom = nullptr;
+        if (!oArrayDocInfo.empty())
+            pVbaAtom = oArrayDocInfo[0]->getVBAInfoAtom();
+
+        if (pVbaAtom)
+        {
+            if (pVbaAtom->m_nHasMacros)
+            {
+                m_sVbaProjectFile = m_pDocumentInfo->GetBinFromStg(L"vbaProject.bin", pVbaAtom->m_nObjStgDataRef);
+
+                m_bMacroEnabled = (false == m_sVbaProjectFile.empty());
+            }
+        }
     }
 }
 
@@ -2386,9 +2355,10 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
             {
                 PPT::CExFilesInfo oInfo;
 
-                oInfo.m_strFilePath = m_oExMedia.m_strPresentationDirectory + FILE_SEPARATOR_STR + oArrayStrings[0]->m_strText + L".audio";
+                oInfo.m_strFilePath = m_oExMedia.m_strPresentationDirectory + FILE_SEPARATOR_STR + L"audio" + std::to_wstring(m_oExMedia.m_arAudioCollection.size() + 1) + L".audio";
                 oInfo.m_dwID = (_UINT32)XmlUtils::GetInteger(oArrayStrings[2]->m_strText.c_str());
                 oInfo.m_name = oArrayStrings[0]->m_strText;
+                oInfo.m_strFileExt = oArrayStrings[1]->m_strText;
 
                 m_oExMedia.m_arAudioCollection.push_back(oInfo);
                 oArrayData[0]->SaveToFile(oInfo.m_strFilePath);
@@ -2570,7 +2540,7 @@ void CPPTUserInfo::LoadExOleObject(CRecordsContainer* pExObject)
          if (oArrayCString.size() > 1)
              oInfo.m_progName = oArrayCString[1]->m_strText;
 
-         oInfo.m_strFilePath = GetBinFromStg(L"", oArrayExOleObj[0]->m_nPersistID); // ExOleObjStg || ExControlStg
+         oInfo.m_strFilePath = m_pDocumentInfo->GetBinFromStg(L"", oArrayExOleObj[0]->m_nPersistID); // ExOleObjStg || ExControlStg
          
          m_oExMedia.m_arOleObjects.push_back(oInfo);
      }

@@ -1,36 +1,34 @@
 #pragma once
 #include <memory>
-#include "BaseStyle.h"
-#include "../managers/FontManager.h"
+
+#include "../../../../DesktopEditor/graphics/structures.h"
+#include "../../../../DesktopEditor/common/StringBuilder.h"
 
 
 namespace NSDocxRenderer
 {
-    class CFontStyle : public CBaseStyle
-    {
-        public:
-            NSStructures::CFont		m_oFont;
-            NSStructures::CBrush	m_oBrush;
+	class CFontStyle
+	{
+	public:
+		CFontStyle();
+		CFontStyle(const CFontStyle& oFontStyle);
+		~CFontStyle();
 
-            std::wstring m_strPickFontName {L""};
-            LONG	m_lPickFontStyle {0};
+		CFontStyle& operator=(const CFontStyle& oSrc);
+		bool operator==(const CFontStyle& oSrc);
 
-        private:
-            std::wstring m_strStyleId {L""};
+		void ToXml(NSStringUtils::CStringBuilder& oWriter);
 
-        public:
-            CFontStyle();
-            ~CFontStyle(){}
+		std::wstring wsFontStyleId {L""};
+		NSStructures::CBrush oBrush;
+		std::wstring wsFontName {L""};
+		double dFontSize {0};
+		bool bItalic {false};
+		bool bBold {false};
 
-            CFontStyle& operator=(const CFontStyle& oSrc);
-            void CopyFormat(const CFontStyle& oSrc);
-
-            void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
-
-            bool IsEqual(std::shared_ptr<CFontStyle> oSrc);
-
-            std::wstring GetStyleId() {return m_strStyleId;}
-    };
+	private:
+		const std::wstring m_wsIdStart = L"fontstyle";
+	};
 }
 
 

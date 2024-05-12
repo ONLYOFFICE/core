@@ -41,6 +41,7 @@
 #include "../lib/xpdf/CMap.h"
 #include "../lib/xpdf/Dict.h"
 #include "../lib/xpdf/Stream.h"
+#include "../lib/xpdf/PDFDoc.h"
 //#include "FontFileTrueType.h"
 //#include "FontFileType1C.h"
 #include "../lib/xpdf/CharCodeToUnicode.h"
@@ -53,6 +54,7 @@
 #include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/Array.h"
 #include "../../DesktopEditor/graphics/BaseThread.h"
+#include "../../DesktopEditor/graphics/commands/DocInfo.h"
 #include "../Resources/BaseFonts.h"
 #include <new>
 
@@ -264,17 +266,17 @@ namespace PdfReader
 	//--------------------------------------------------------------------------------------
 	// CFontList
 	//--------------------------------------------------------------------------------------
-	CFontList::CFontList()
+	CPdfFontList::CPdfFontList()
 	{
 		m_oCS.InitializeCriticalSection();
 		m_oFontMap.clear();
 	}
-	CFontList::~CFontList()
+	CPdfFontList::~CPdfFontList()
 	{
 		m_oCS.DeleteCriticalSection();
 		Clear();
 	}
-	void        CFontList::LoadFromFile(std::wstring wsDirPath)
+	void        CPdfFontList::LoadFromFile(std::wstring wsDirPath)
 	{
 		return;
 		//Clear();
@@ -365,7 +367,7 @@ namespace PdfReader
 		//    }
 		//}
 	}
-	void        CFontList::SaveToFile(std::wstring wsDirPath)
+	void        CPdfFontList::SaveToFile(std::wstring wsDirPath)
 	{
 		return;
 		//CStringW wsFilePath = wsDirPath + CStringW( _T("/FontList.rsc") );
@@ -422,7 +424,7 @@ namespace PdfReader
 
 		//oWriter.SaveToFile( wsFilePath );
 	}
-	bool        CFontList::Find(Ref oRef, TFontEntry *pEntry)
+	bool        CPdfFontList::Find(Ref oRef, TFontEntry *pEntry)
 	{
 		CTemporaryCS* pCS = new CTemporaryCS(&m_oCS);
 
@@ -439,7 +441,7 @@ namespace PdfReader
 
 		return bResult;
 	}
-	bool        CFontList::Find2(Ref oRef, TFontEntry **ppEntry)
+	bool        CPdfFontList::Find2(Ref oRef, TFontEntry **ppEntry)
 	{
 		CTemporaryCS* pCS = new CTemporaryCS(&m_oCS);
 
@@ -462,7 +464,7 @@ namespace PdfReader
 
 		return bResult;
 	}
-	TFontEntry* CFontList::Add(Ref oRef, std::wstring wsFileName, int *pCodeToGID, int *pCodeToUnicode, unsigned int unLenGID, unsigned int unLenUnicode)
+	TFontEntry* CPdfFontList::Add(Ref oRef, std::wstring wsFileName, int *pCodeToGID, int *pCodeToUnicode, unsigned int unLenGID, unsigned int unLenUnicode)
 	{
 		// Данная функция приходит только из Find2, поэтому проверять есть ли данный шрифт уже не надо
 		CTemporaryCS* pCS = new CTemporaryCS(&m_oCS);
@@ -482,7 +484,7 @@ namespace PdfReader
 
 		return pNewEntry;
 	}
-	void CFontList::Remove(Ref oRef)
+	void CPdfFontList::Remove(Ref oRef)
 	{
 		CRefFontMap::iterator oPos = m_oFontMap.find(oRef);
 		if (m_oFontMap.end() != oPos)
@@ -497,7 +499,7 @@ namespace PdfReader
 			m_oFontMap.erase(oPos);
 		}
 	}
-	void        CFontList::Clear()
+	void        CPdfFontList::Clear()
 	{
 		for (auto const &oIt : m_oFontMap)
 		{
@@ -511,7 +513,7 @@ namespace PdfReader
 		}
 		m_oFontMap.clear();
 	}
-	bool        CFontList::GetFont(Ref *pRef, TFontEntry *pEntry)
+	bool        CPdfFontList::GetFont(Ref *pRef, TFontEntry *pEntry)
 	{
 		TFontEntry* pFindEntry = Lookup(*pRef);
 		if (NULL == pFindEntry)
@@ -523,7 +525,7 @@ namespace PdfReader
 	//--------------------------------------------------------------------------------------
 	// RendererOutputDev
 	//--------------------------------------------------------------------------------------
-	RendererOutputDev::RendererOutputDev(IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
+	RendererOutputDev::RendererOutputDev(IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList)
 	{
 		m_pFontManager  = pFontManager;
 		m_pFontManager  = pFontManager;
@@ -654,6 +656,9 @@ namespace PdfReader
 	}
 	void RendererOutputDev::startPage(int nPageIndex, GfxState *pGState)
 	{
+		if (nPageIndex < 0)
+			return;
+
 		m_pRenderer->BeginCommand(c_nPageType);
 
 		// Переводим пункты в миллиметры
@@ -1003,7 +1008,7 @@ namespace PdfReader
 		pFontInfo = pFontManager->GetFontInfoByParams(oFontSelect);
 		return pFontInfo;
 	}
-	void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName)
+	void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName)
 	{
 		wsFileName = L"";
 		wsFontName = L"";
@@ -3055,25 +3060,25 @@ namespace PdfReader
 		if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
 			return;
 
-		double xMin, yMin, xMax, yMax;
-		pGState->getUserClipBBox(&xMin, &yMin, &xMax, &yMax);
-		pGState->moveTo(xMin, yMin);
-		pGState->lineTo(xMax, yMin);
-		pGState->lineTo(xMax, yMax);
-		pGState->lineTo(xMin, yMax);
-		pGState->closePath();
+		if (nX1 - nX0 == 1 && nY1 - nY0 == 1) // Одно изображение, tilingPattern не требуется
+		{
+			gfx->drawForm(pStream, pResourcesDict, matrix, pBBox);
+			return;
+		}
 
-		DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
+		if (abs(pBBox[2] - pBBox[0] - dXStep) > 0.001 || abs(pBBox[3] - pBBox[1] - dYStep) > 0.001)
+			return;
 
-		// Image
-		long brush;
-		int alpha = pGState->getFillOpacity() * 255;
-
-		double dDpiX, dDpiY;
+		double dWidth, dHeight, dDpiX, dDpiY;
+		m_pRenderer->get_Width(&dWidth);
+		m_pRenderer->get_Height(&dHeight);
 		m_pRenderer->get_DpiX(&dDpiX);
 		m_pRenderer->get_DpiY(&dDpiY);
-		int nWidth  = dXStep * dDpiX / 72.0;
-		int nHeight = dYStep * dDpiY / 72.0;
+		dWidth  = dWidth  * dDpiX / 25.4;
+		dHeight = dHeight * dDpiY / 25.4;
+
+		int nWidth  = round(dXStep * dWidth / pGState->getPageWidth());
+		int nHeight = round(dYStep * dHeight / pGState->getPageHeight());
 
 		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
 		memset(pBgraData, 0, nWidth * nHeight * 4);
@@ -3082,16 +3087,13 @@ namespace PdfReader
 		pFrame->put_Data(pBgraData);
 		pFrame->put_Width(nWidth);
 		pFrame->put_Height(nHeight);
-		pFrame->put_Stride(4 * nWidth);
+		pFrame->put_Stride(-4 * nWidth);
 
 		NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
 		pRenderer->SetFontManager(m_pFontManager);
 		pRenderer->CreateFromBgraFrame(pFrame);
-		pRenderer->put_Width (dXStep * 25.4 / 72.0);
-		pRenderer->put_Height(dYStep * 25.4 / 72.0);
-
-		IRenderer* pOldRenderer = m_pRenderer;
-		m_pRenderer = pRenderer;
+		pRenderer->put_Width (nWidth * 25.4 / 72.0);
+		pRenderer->put_Height(nHeight * 25.4 / 72.0);
 
 		PDFRectangle box;
 		box.x1 = pBBox[0];
@@ -3099,25 +3101,43 @@ namespace PdfReader
 		box.x2 = pBBox[2];
 		box.y2 = pBBox[3];
 
-		Gfx* m_gfx = new Gfx(gfx->getDoc(), this, pResourcesDict, &box, NULL);
+		RendererOutputDev* m_pRendererOut = new RendererOutputDev(pRenderer, m_pFontManager, m_pFontList);
+		m_pRendererOut->NewPDF(gfx->getDoc()->getXRef());
+
+		Gfx* m_gfx = new Gfx(gfx->getDoc(), m_pRendererOut, -1, pResourcesDict, dDpiX, dDpiY, &box, NULL, 0);
 		m_gfx->display(pStream);
 
-		// pBgraData будет передано oImage
 		pFrame->ClearNoAttack();
 		RELEASEOBJECT(m_gfx);
 		RELEASEOBJECT(pRenderer);
+		RELEASEOBJECT(m_pRendererOut);
 		RELEASEOBJECT(pFrame);
 
-		m_pRenderer = pOldRenderer;
 		Aggplus::CImage* oImage = new Aggplus::CImage();
 		oImage->Create(pBgraData, nWidth, nHeight, 4 * nWidth);
 
-		m_pRenderer->BrushRect(true, xMin, yMin, xMax, yMax);
+		double xMin, yMin, xMax, yMax;
+		Transform(matrix, pBBox[0], pBBox[1], &xMin, &yMin);
+		Transform(matrix, pBBox[2], pBBox[3], &xMax, &yMax);
+		xMax *= (nX1 - nX0);
+		yMax *= (nY1 - nY0);
+		pGState->moveTo(xMin, yMin);
+		pGState->lineTo(xMax, yMin);
+		pGState->lineTo(xMax, yMax);
+		pGState->lineTo(xMin, yMax);
+		pGState->closePath();
+
+		DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
+
+		long brush;
 		m_pRenderer->get_BrushType(&brush);
+
+		int alpha = pGState->getFillOpacity() * 255;
 		m_pRenderer->put_BrushType(c_BrushTypeTexture);
 		m_pRenderer->put_BrushTextureImage(oImage);
-		m_pRenderer->put_BrushTextureMode(1); // TODO Tile 1 или TileCenter 2
+		m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
 		m_pRenderer->put_BrushTextureAlpha(alpha);
+		m_pRenderer->BeginCommand(c_nImageType);
 #ifdef BUILDING_WASM_MODULE
 		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
 		{
@@ -3130,12 +3150,11 @@ namespace PdfReader
 		m_pRenderer->DrawPath(c_nWindingFillMode);
 #endif
 
-		m_pRenderer->EndCommand(c_nPathType);
-		m_pRenderer->BrushRect(false, 0, 0, 1, 1);
+		m_pRenderer->PathCommandEnd();
+		m_pRenderer->EndCommand(c_nImageType);
 		m_pRenderer->put_BrushType(brush);
 
 		pGState->clearPath();
-
 		RELEASEINTERFACE(oImage);
 	}
 	void RendererOutputDev::StartTilingFill(GfxState *pGState)
@@ -4035,8 +4054,9 @@ namespace PdfReader
 
 		if (nRenderMode == 0 || nRenderMode == 4 || nRenderMode == 6 || (m_bDrawOnlyText && nRenderMode == 2))
 		{
-#ifdef BUILDING_WASM_MODULE
+			bool bReplace = false;
 			std::wstring sFontPath;
+#ifdef BUILDING_WASM_MODULE
 			m_pRenderer->get_FontPath(&sFontPath);
 			if (!unGid && !wsUnicodeText.empty() && !sFontPath.empty())
 			{
@@ -4079,16 +4099,49 @@ namespace PdfReader
 								return;
 							}
 							m_pRenderer->put_FontPath(wsFileName);
-							sFontPath = wsFileName;
+							bReplace = true;
 						}
 					}
 				}
 			}
 #endif
 			m_pRenderer->CommandDrawTextEx(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+			if (bReplace)
+				m_pRenderer->put_FontPath(sFontPath);
 		}
 
-		if (nRenderMode == 1 || nRenderMode == 2 || nRenderMode == 5 || nRenderMode == 6)
+		LONG lRendererType = 0;
+		m_pRenderer->get_Type(&lRendererType);
+
+		bool bIsEmulateBold = false;
+		if (c_nDocxWriter == lRendererType && 2 == nRenderMode)
+			bIsEmulateBold = (S_OK == m_pRenderer->CommandLong(c_nSupportPathTextAsText, 0)) ? true : false;
+
+		if (bIsEmulateBold)
+		{
+			m_pRenderer->BeginCommand(c_nStrokeTextType);
+
+			LONG lOldStyle = 0;
+			m_pRenderer->get_FontStyle(&lOldStyle);
+			LONG lNewStyle = lOldStyle;
+
+			if ((lNewStyle & 0x01) == 0)
+			{
+				lNewStyle |= 0x01;
+				m_pRenderer->put_FontStyle(lNewStyle);
+			}
+
+			if (unGid)
+				m_pRenderer->CommandDrawTextEx(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+			else
+				m_pRenderer->CommandDrawText(wsUnicodeText, PDFCoordsToMM(dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+
+			if (lOldStyle != lNewStyle)
+				m_pRenderer->put_FontStyle(lOldStyle);
+
+			m_pRenderer->EndCommand(c_nStrokeTextType);
+		}
+		else if (nRenderMode == 1 || nRenderMode == 2 || nRenderMode == 5 || nRenderMode == 6)
 		{
 			m_pRenderer->BeginCommand(c_nStrokeTextType);
 
@@ -4140,6 +4193,30 @@ namespace PdfReader
 	void RendererOutputDev::Type3D1(GfxState *pGState, double dWx, double dWy, double dBLx, double dBLy, double dTRx, double dTRy)
 	{
 		return;
+	}
+	GBool RendererOutputDev::beginMarkedContent(GfxState *state, GString* s)
+	{
+		IAdvancedCommand::AdvancedCommandType eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::ShapeStart;
+		if (m_pRenderer->IsSupportAdvancedCommand(eAdvancedCommandType) == S_OK)
+		{
+			CShapeStart* pCommand = new CShapeStart();
+			pCommand->SetShapeXML(s->getCString());
+			bool bRes = m_pRenderer->AdvancedCommand(pCommand) == S_OK;
+			RELEASEOBJECT(pCommand);
+			if (bRes)
+				return gTrue;
+		}
+		return gFalse;
+	}
+	void RendererOutputDev::endMarkedContent(GfxState *state)
+	{
+		IAdvancedCommand::AdvancedCommandType eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::ShapeEnd;
+		if (m_pRenderer->IsSupportAdvancedCommand(eAdvancedCommandType) == S_OK)
+		{
+			CEmptyComand* pCommand = new CEmptyComand(IAdvancedCommand::AdvancedCommandType::ShapeEnd);
+			m_pRenderer->AdvancedCommand(pCommand);
+			RELEASEOBJECT(pCommand);
+		}
 	}
 	void RendererOutputDev::drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight,GBool bInvert, GBool bInlineImage, GBool interpolate)
 	{

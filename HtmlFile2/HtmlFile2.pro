@@ -10,6 +10,7 @@ CONFIG += plugin
 
 DEFINES += HTMLFILE2_USE_DYNAMIC_LIBRARY
 DEFINES += CSSCALCULATOR_LIBRARY_STATIC
+DEFINES += CSS_CALCULATOR_WITH_XHTML
 
 CORE_ROOT_DIR = $$PWD/..
 PWD_ROOT_DIR = $$PWD
@@ -29,4 +30,6 @@ ADD_DEPENDENCY(kernel, UnicodeConverter, graphics, kernel_network)
 
 SOURCES += htmlfile2.cpp
 
-HEADERS += htmlfile2.h
+HEADERS += htmlfile2.h \
+	./src/StringFinder.h \
+	./src/Languages.h

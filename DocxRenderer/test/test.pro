@@ -22,7 +22,7 @@ SOURCES += main.cpp
 SOURCES += \
     $$CORE_ROOT_DIR/Common/OfficeFileFormatChecker2.cpp \
     $$CORE_ROOT_DIR/Common/3dParty/pole/pole.cpp \
-	$$CORE_ROOT_DIR/OOXML/Base/unicode_util.cpp
+    $$CORE_ROOT_DIR/OOXML/Base/unicode_util.cpp
 
 DESTDIR = $$PWD_ROOT_DIR/build
 

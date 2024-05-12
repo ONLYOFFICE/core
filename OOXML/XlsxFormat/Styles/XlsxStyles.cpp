@@ -125,7 +125,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_if(oReader, L"ss:ID", m_sId)
 				WritingElement_ReadAttributes_Read_if(oReader, L"ss:Name", m_sName)
 				WritingElement_ReadAttributes_Read_if(oReader, L"ss:Parent", m_sParentId)
-				WritingElement_ReadAttributes_End(oReader)
+			WritingElement_ReadAttributes_End(oReader)
 		}
 
 //----------------------------------------------------------------------------------------------------------------------

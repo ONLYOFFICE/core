@@ -52,10 +52,10 @@ public:
     CThemePtr				m_pNotesMaster;
     CThemePtr				m_pHandoutMaster;
 
-    bool					m_bMacros;
+    bool					m_bMacroEnabled;
     std::wstring			m_sVbaProjectFile;
 
-    CDocument() : m_bMacros (true)
+    CDocument() : m_bMacroEnabled(true)
     {
         m_lSlideWidth	= 0;
         m_lSlideHeight	= 0;

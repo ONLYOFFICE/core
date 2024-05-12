@@ -178,6 +178,12 @@ namespace OOX
 				}
 
 			}
+			auto sheetIndex = 0;
+			for(auto i:m_arrItems)
+			{	if(i->m_oName.IsInit())
+					AddSheetRef(i->m_oName.get(), sheetIndex);
+				sheetIndex++;
+			}
 		}
 		void CSheets::fromBin(std::vector<XLS::BaseObjectPtr>& obj)
 		{
@@ -205,6 +211,16 @@ namespace OOX
 		void CSheets::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
+		void CSheets::AddSheetRef(const std::wstring& link, const _INT32&  sheetIndex)
+		{
+			XLS::GlobalWorkbookInfo::_xti val_1;
+			val_1.iSup		= sheetIndex;
+			val_1.itabFirst = sheetIndex;
+			val_1.itabLast = sheetIndex;
+			val_1.link = link;
+				
+			XLS::GlobalWorkbookInfo::arXti_External_static.push_back(val_1);
+		}
 
 	} //Spreadsheet
 } // namespace OOX

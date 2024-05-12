@@ -5,7 +5,7 @@
 #include "../../../../../Common/3dParty/html/css/src/StaticFunctions.h"
 #include "../../../../xml/include/xmlutils.h"
 #include "../../../../graphics/IRenderer.h"
-#include "../../../common/IGrObject.h"
+#include "../../../../common/IGrObject.h"
 #include "../SvgTypes.h"
 
 class CSvgFile;

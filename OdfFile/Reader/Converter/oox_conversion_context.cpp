@@ -265,19 +265,6 @@ void math_context::start()
 	
 	text_properties_->content_.fo_font_family_ = base_font_name_.empty() ? L"Cambria Math" : base_font_name_;
 	text_properties_->content_.fo_font_size_ = odf_types::length(base_font_size_, odf_types::length::pt);
-
-	math_stream_ << L"<m:oMathParaPr><m:jc m:val=\"";
-	switch (base_alignment_)
-	{
-		case 0: math_stream_ << L"left"; break;
-		case 2: math_stream_ << L"right"; break;
-		case 1:
-		default:
-			math_stream_ << L"center"; break;
-	}
-	math_stream_ << L"\"/></m:oMathParaPr>";
-
-	math_stream_ << L"<m:oMath xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
 	
 	start_level();
 }
@@ -285,7 +272,6 @@ std::wstring math_context::end()
 {
 	end_level();
 	
-	math_stream_ << L"</m:oMath>";
 	std::wstring math = math_stream_.str();
 	
 	math_stream_.str( std::wstring() );

@@ -19,6 +19,8 @@ include(../../../Common/base.pri)
 #BOOST
 include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
+include($$PWD/../../Reader/Converter/StarMath2OOXML/StarMath2OOXML.pri)
+
 DEFINES +=  UNICODE \
             _UNICODE \
             DONT_WRITE_EMBEDDED_FONTS

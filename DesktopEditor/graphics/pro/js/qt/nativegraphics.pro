@@ -458,7 +458,7 @@ SOURCES += \
 
 # XpsFile
 
-XPS_ROOT_DIR = $$PWD/../../../../../XpsFile
+XPS_ROOT_DIR = $$CORE_ROOT_DIR/XpsFile
 
 HEADERS += \
 	$$XPS_ROOT_DIR/XpsFile.h \
@@ -485,8 +485,8 @@ DEFINES += \
 	THREADMODEL=0 \
 	DEBUGLVL=0
 
-DJVU_ROOT_DIR = $$PWD/../../../../../DjVuFile
-DJVU_WRAPPER  = $$PWD/../../../../../DjVuFile/wasm/libdjvu
+DJVU_ROOT_DIR = $$CORE_ROOT_DIR/DjVuFile
+DJVU_WRAPPER  = $$CORE_ROOT_DIR/DjVuFile/wasm/libdjvu
 
 HEADERS += \
 	$$DJVU_ROOT_DIR/DjVu.h \
@@ -608,7 +608,7 @@ SOURCES += \
 	$$DJVU_WRAPPER/GURL.cpp
 
 # PdfReader
-PDF_ROOT_DIR = $$PWD/../../../../../PdfFile
+PDF_ROOT_DIR = $$CORE_ROOT_DIR/PdfFile
 
 INCLUDEPATH += \
 	$$PDF_ROOT_DIR/lib/goo \
@@ -643,7 +643,6 @@ SOURCES += \
 	$$PDF_ROOT_DIR/Resources/BaseFonts.cpp \
 	$$PDF_ROOT_DIR/Resources/CMapMemory/cmap_memory.cpp \
 	$$PDF_ROOT_DIR/PdfReader.cpp \
-	$$PDF_ROOT_DIR/PdfWriter_empty.cpp \
 	$$PDF_ROOT_DIR/PdfFile.cpp
 
 HEADERS +=\
@@ -672,6 +671,53 @@ HEADERS +=\
 	$$PDF_ROOT_DIR/PdfReader.h \
 	$$PDF_ROOT_DIR/PdfFile.h
 
+# DocxRenderer
+DOCX_RENDERER_ROOT_DIR = $$CORE_ROOT_DIR/DocxRenderer
+HEADERS += \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/BaseItem.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/ContText.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/DropCap.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/Image.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/Paragraph.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/Shape.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/TextLine.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/managers/FontStyleManager.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/managers/ImageManager.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/managers/FontManager.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/managers/ParagraphStyleManager.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/styles/FontStyle.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/styles/ParagraphStyle.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/resources/ColorTable.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/resources/Constants.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/resources/ImageInfo.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/resources/LinesTable.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/resources/VectorGraphics.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/resources/resources.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/resources/utils.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/Page.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/Document.h \
+	$$DOCX_RENDERER_ROOT_DIR/DocxRenderer.h
+
+SOURCES += \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/BaseItem.cpp \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/ContText.cpp \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/DropCap.cpp \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/Image.cpp \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/Paragraph.cpp \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/Shape.cpp \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/TextLine.cpp \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/managers/FontManager.cpp \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/managers/FontStyleManager.cpp \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/managers/ImageManager.cpp \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/managers/ParagraphStyleManager.cpp \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/styles/FontStyle.cpp \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/Page.cpp \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/Document.cpp \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/styles/ParagraphStyle.cpp \
+	$$DOCX_RENDERER_ROOT_DIR/src/resources/VectorGraphics.cpp \
+	$$DOCX_RENDERER_ROOT_DIR/DocxRenderer.cpp \
+	$$DOCX_RENDERER_ROOT_DIR/src/resources/resources.cpp
+
 HEADERS += $$CORE_ROOT_DIR/HtmlRenderer/include/HTMLRendererText.h
 SOURCES += $$CORE_ROOT_DIR/HtmlRenderer/src/HTMLRendererText.cpp
 
@@ -680,5 +726,6 @@ HEADERS += \
 	../wasm/src/serialize.h
 
 SOURCES += \
+	../wasm/src/pdfwriter.cpp \
 	../wasm/src/drawingfile.cpp \
 	../wasm/src/drawingfile_test.cpp

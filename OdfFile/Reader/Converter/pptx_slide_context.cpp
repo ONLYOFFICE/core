@@ -290,6 +290,8 @@ void pptx_slide_context::default_set()
 	impl_->object_description_.connector_	= false;
 	impl_->object_description_.lined_		= false;
 
+	impl_->object_description_.hidden_ = false;
+
 	impl_->object_description_.start_shape_id			= boost::none;
 	impl_->object_description_.start_shape_glue_point	= boost::none;
 	impl_->object_description_.end_shape_id				= boost::none;
@@ -465,6 +467,10 @@ void pptx_slide_context::set_name(std::wstring const & name)
 void pptx_slide_context::set_id(std::wstring const& id)
 {
 	impl_->object_description_.xml_id_ = id;
+}
+void pptx_slide_context::set_hidden(bool val)
+{
+	impl_->object_description_.hidden_ = val;
 }
 
 void pptx_slide_context::start_shape(int type)
@@ -841,7 +847,8 @@ void pptx_slide_context::Impl::process_common_properties(drawing_object_descript
 		val = (int)(0.5 + odf_types::length(pic.svg_rect_->cy, odf_types::length::pt).get_value_unit(odf_types::length::emu));
 		if ( val >=0 ) drawing.cy = val;
 	}
-	
+
+	drawing.hidden		= pic.hidden_;
 	drawing.additional	= pic.additional_;
 	drawing.hlinks		= pic.hlinks_;
 	drawing.action		= pic.action_;

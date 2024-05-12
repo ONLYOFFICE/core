@@ -239,6 +239,7 @@ void oox_serialize_effects(std::wostream & strm, const std::vector<odf_reader::_
 
 					double dist = sqrt(offsetX * offsetX + offsetY * offsetY);
 					double dir = (offsetX != 0)  ? atan(offsetY / offsetX) * 180. / 3.1415926 : 0;
+					if (offsetX < 0) dir += 180;
 					if (dir < 0) dir += 360;
 
 					CP_XML_ATTR(L"dist", (int)(dist)); 

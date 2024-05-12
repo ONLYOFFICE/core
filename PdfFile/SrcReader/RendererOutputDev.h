@@ -65,12 +65,12 @@ namespace PdfReader
 		
 	};
 
-	class CFontList
+	class CPdfFontList
 	{
 	public:
 
-		CFontList();
-		~CFontList();
+		CPdfFontList();
+		~CPdfFontList();
 		void LoadFromFile(std::wstring wsDirPath);
 		void SaveToFile(std::wstring wsDirPath);
 		bool Find(Ref oRef, TFontEntry *pEntry);
@@ -103,7 +103,7 @@ namespace PdfReader
 	};
 
 	NSFonts::CFontInfo* GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontManager, GfxFont* pFont, std::wstring& wsFontBaseName);
-	void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName);
+	void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName);
 	void CheckFontStylePDF(std::wstring& sName, bool& bBold, bool& bItalic);
 	//-------------------------------------------------------------------------------------------------------------------------------
 	template <typename T>
@@ -123,7 +123,7 @@ namespace PdfReader
 	class RendererOutputDev : public OutputDev
 	{
 	public:
-        RendererOutputDev(IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CFontList *pFontList = NULL);
+		RendererOutputDev(IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList = NULL);
 		virtual ~RendererOutputDev();
 
 		virtual GBool upsideDown()
@@ -136,11 +136,7 @@ namespace PdfReader
 		}
 		virtual GBool useTilingPatternFill()
         {
-			// TODO Доделать поддержку различных параметров TilingPattern
-			if (m_bDrawOnlyText)
-				return true;
-
-			return false;
+			return true;
 		}
 		virtual GBool useFunctionalShadedFills()
 		{
@@ -262,6 +258,9 @@ namespace PdfReader
 		void endType3Char(GfxState *pGState);
 		void Type3D0(GfxState *pGState, double dWx, double dWy);
 		void Type3D1(GfxState *pGState, double dWx, double dWy, double dBLx, double dBLy, double dTRx, double dTRy);
+		//----- Дополнительные функции
+		virtual GBool beginMarkedContent(GfxState *state, GString *s) override;
+		virtual void endMarkedContent(GfxState *state) override;
 		//----- Вывод картинок
 		virtual void drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
 		virtual void setSoftMaskFromImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
@@ -314,7 +313,7 @@ namespace PdfReader
 		//GfxTextClip                   *m_pBufferTextClip;
 
 		XRef                         *m_pXref;           // Таблица Xref для данного PDF-документа
-		CFontList                    *m_pFontList;
+		CPdfFontList                    *m_pFontList;
 
 		bool                         *m_pbBreak;         // Внешняя остановка рендерера
 

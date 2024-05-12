@@ -484,7 +484,6 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 
 				insider = results_1.str(0);
 
-				insider = boost::algorithm::erase_all_copy(insider, L"\n");
 				if (insider == L"[#Data]")
 				{
 					if (boost::regex_search(first, last, results_1, reg_inside_table2))
@@ -534,8 +533,7 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 
 				if (boost::regex_search(first, last, results_1, reg_inside_table3))
 				{
-					insider = results_1.str(0);
-                    insider = boost::algorithm::erase_all_copy(insider, L"\n");
+					insider = results_1.str(0);      
 					if (!insider.empty() && insider[0] != '[')
 						insider.erase(0, 1);
 
@@ -547,12 +545,12 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 						if (ptgList.colFirst == 65535)
 						{
 							ptgList.columns = 0x01;
-							ptgList.colFirst = indexColumn;							
+                            ptgList.colFirst = indexColumn;
+                            ptgList.colLast = indexColumn;
 
 							if (boost::regex_search(first, last, results_1, reg_inside_table3))
 							{
-								insider = results_1.str(0);
-                                insider = boost::algorithm::erase_all_copy(insider, L"\n");
+								insider = results_1.str(0);                                
 								if (!insider.empty() && insider[0] != '[')
 									insider.erase(0, 1);
 
@@ -566,8 +564,7 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 							}
 							else if(boost::regex_search(first, last, results_1, reg_inside_table5))
 							{
-								insider = results_1.str(0);
-                                insider = boost::algorithm::erase_all_copy(insider, L"\n");
+								insider = results_1.str(0);                             
 								insider = boost::algorithm::erase_first_copy(insider, L":");
 
 								if (XMLSTUFF::isColumn(boost::algorithm::erase_last_copy(boost::algorithm::erase_first_copy(insider, L"["), L"]"), indexTable, indexColumn))
@@ -588,8 +585,7 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
                 else if(boost::regex_search(first, last, results_1, reg_inside_table5))
 				{
 					insider = results_1.str(0);
-                    insider = boost::algorithm::erase_first_copy(insider, L",");
-                    insider = boost::algorithm::erase_all_copy(insider, L"\n");
+                    insider = boost::algorithm::erase_first_copy(insider, L",");              
 
                     if (XMLSTUFF::isColumn(boost::algorithm::erase_last_copy(boost::algorithm::erase_first_copy(insider, L"["), L"]"), indexTable, indexColumn))
                     {
@@ -597,6 +593,7 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
                         {
                             ptgList.columns = 0x01;
                             ptgList.colFirst = indexColumn;
+                            ptgList.colLast = indexColumn;
                         }
                     }
 					first = results_1[0].second;
@@ -622,6 +619,7 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 				{
 					ptgList.columns = 0x01;
 					ptgList.colFirst = 0;
+                    ptgList.colLast = 0;
 					first = results_1[0].second;
 				}
 				return true;
@@ -629,12 +627,14 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 			else if(boost::regex_search(first, last, results_1, reg_inside_table4))
 			{
 				_UINT16 indexColumn = -1;
-				auto insider = boost::algorithm::erase_all_copy(results_1.str(0), L"\n");
+                ptgList.rowType = 0x00;
+				auto insider = results_1.str(0);
 
 				if (XMLSTUFF::isColumn(boost::algorithm::erase_last_copy(boost::algorithm::erase_first_copy(insider, L"["), L"]"), indexTable, indexColumn))
 				{
 					ptgList.columns = 0x01;
 					ptgList.colFirst = indexColumn;
+                    ptgList.colLast = ptgList.colFirst;
                     first = results_1[0].second;
                     return true;
 				}
@@ -714,22 +714,39 @@ const bool SyntaxPtg::extract_PtgRef(std::wstring::const_iterator& first, std::w
 const bool SyntaxPtg::extract_3D_part(std::wstring::const_iterator& first, std::wstring::const_iterator last, unsigned short& ixti)
 {
     static boost::wregex reg_sheets(L"^([\\w[:Unicode:]][[:Unicode:]\\w\\d.]*(:[\\w[:Unicode:]][[:Unicode:]\\w\\d.]*)?)!");
-	static boost::wregex reg_quoted(L"^'((''|[^]['\\/*?])*)'!");
-	boost::match_results<std::wstring::const_iterator> results;
-	if (boost::regex_search(first, last, results, reg_sheets) ||
-		boost::regex_search(first, last, results, reg_quoted))
-	{
+    static boost::wregex reg_sheet(L"^([^:]+):(.*)$");
+    static boost::wregex reg_quoted(L"^'((''|[^]['\\/*?])*)'!");
+    boost::match_results<std::wstring::const_iterator> results;
+    if (boost::regex_search(first, last, results, reg_sheets) ||
+        boost::regex_search(first, last, results, reg_quoted))
+    {
 
-		std::wstring sheets_names = results.str(1);
+        std::wstring sheets_names = results.str(1);
 
-		ixti = XMLSTUFF::sheetsnames2ixti(boost::algorithm::replace_all_copy(sheets_names, L"''", L"'"));
-		if(0xFFFF != ixti)
-		{
-			first = results[0].second;
-			return true;
-		}
-	}
-	return false;
+        ixti = XMLSTUFF::sheetsnames2ixti(boost::algorithm::replace_all_copy(sheets_names, L"''", L"'"));
+        if(0xFFFF != ixti)
+        {
+            first = results[0].second;
+            return true;
+        }
+       boost::match_results<std::wstring::const_iterator> results2;
+        if (boost::regex_search(sheets_names, results2, reg_sheet))
+        {
+            auto firstSheetName = results2.str(1);
+            auto secondSheetName = results2.str(2);
+            auto xti1 = XMLSTUFF::sheetsnames2ixti(boost::algorithm::replace_all_copy(firstSheetName, L"''", L"'"));
+            auto xti2 = XMLSTUFF::sheetsnames2ixti(boost::algorithm::replace_all_copy(secondSheetName, L"''", L"'"));
+            if(0xFFFF != xti1 && 0xFFFF != xti2)
+            {
+                ixti = XMLSTUFF::AddMultysheetXti(sheets_names, xti1, xti2);
+                if(!ixti)
+                    return false;
+                first = results[0].second;
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 

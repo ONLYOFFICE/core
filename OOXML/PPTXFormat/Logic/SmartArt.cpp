@@ -650,7 +650,6 @@ namespace PPTX
 					pWriter->StartRecord(/*c_oserct_chartspaceTHEMEOVERRIDE = */15);
 					pThemeOverride->toPPTY(pWriter);
 					pWriter->EndRecord();
-					break;
 				}
 				else if (OOX::FileTypes::ChartStyle == container[i]->type())
 				{

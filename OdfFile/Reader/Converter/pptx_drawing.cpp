@@ -76,7 +76,8 @@ void pptx_serialize_image(std::wostream & strm, _pptx_drawing & val)
                 {
                     CP_XML_ATTR(L"id",		val.id);
                     CP_XML_ATTR(L"name",	val.name);
-
+					if (val.hidden) CP_XML_ATTR(L"hidden", true);
+					
 					oox_serialize_action(CP_XML_STREAM(), val.action);
 
 				}
@@ -123,6 +124,7 @@ void pptx_serialize_media(std::wostream & strm, _pptx_drawing & val)
                 {
                     CP_XML_ATTR(L"id",		val.id);
                     CP_XML_ATTR(L"name",	val.name);
+					if (val.hidden) CP_XML_ATTR(L"hidden", true);
 
 					oox_serialize_action(CP_XML_STREAM(), val.action);
 
@@ -210,6 +212,7 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing & val)
                 {
                     CP_XML_ATTR(L"id", val.id);//числовое значение val.rId
                     CP_XML_ATTR(L"name", val.name); 
+					if (val.hidden) CP_XML_ATTR(L"hidden", true);
 
 					oox_serialize_action(CP_XML_STREAM(),val.action);
                 }
@@ -270,6 +273,7 @@ void pptx_serialize_connector(std::wostream & strm, _pptx_drawing & val)
                 {
                     CP_XML_ATTR(L"id", val.id);//числовое значение val.rId
                     CP_XML_ATTR(L"name", val.name); 
+					if (val.hidden) CP_XML_ATTR(L"hidden", true);
 
 					oox_serialize_action(CP_XML_STREAM(), val.action);
                 }
@@ -342,7 +346,8 @@ void pptx_serialize_chart(std::wostream & strm, _pptx_drawing & val)
                 {
                     CP_XML_ATTR(L"id", val.id);
                     CP_XML_ATTR(L"name", val.name);
-                }
+					if (val.hidden) CP_XML_ATTR(L"hidden", true);
+				}
 
                 CP_XML_NODE(L"p:cNvGraphicFramePr");
 				CP_XML_NODE(L"p:nvPr");
@@ -379,7 +384,8 @@ void pptx_serialize_table(std::wostream & strm, _pptx_drawing & val)
                 {
                     CP_XML_ATTR(L"id", val.id);
                     CP_XML_ATTR(L"name", val.name);
-                }
+					if (val.hidden) CP_XML_ATTR(L"hidden", true);
+				}
 
                 CP_XML_NODE(L"p:cNvGraphicFramePr");
 				CP_XML_NODE(L"p:nvPr");
@@ -420,7 +426,8 @@ void pptx_serialize_object(std::wostream & strm, _pptx_drawing & val)
                 {
                     CP_XML_ATTR(L"id", val.id);
                     CP_XML_ATTR(L"name", val.name);
-                }
+					if (val.hidden) CP_XML_ATTR(L"hidden", true);
+				}
 
                 CP_XML_NODE(L"p:cNvGraphicFramePr");
 				CP_XML_NODE(L"p:nvPr");

@@ -1,301 +1,270 @@
 #include "TextLine.h"
+#include "../../logic/elements/Shape.h"
 #include "../../resources/Constants.h"
-#include "../../resources/SortElements.h"
 #include "../../resources/utils.h"
 
 namespace NSDocxRenderer
 {
-    CTextLine::CTextLine() : CBaseItem(ElemType::etTextLine)
-    {
-    }
 
-    void CTextLine::Clear()
-    {
-        m_arConts.clear();
-    }
+	CTextLine::~CTextLine()
+	{
+		Clear();
+	}
 
-    CTextLine::~CTextLine()
-    {
-        Clear();
-    }
+	void CTextLine::Clear()
+	{
+		m_arConts.clear();
+	}
+	void CTextLine::AddCont(std::shared_ptr<CContText> oCont)
+	{
+		RecalcWithNewItem(oCont.get());
+		m_arConts.push_back(oCont);
+	}
 
-    void CTextLine::AddCont(CContText *pCont)
-    {
-        m_dBaselinePos = std::max(m_dBaselinePos, pCont->m_dBaselinePos);
+	bool CTextLine::IsCanBeDeleted() const
+	{
+		for (size_t i = 0; i < m_arConts.size(); ++i)
+			if (m_arConts[i])
+				return false;
 
-        if ( ( pCont->m_dLeft > 0 ) && ( ( m_dLeft == 0 ) || ( pCont->m_dLeft < m_dLeft ) ) )
-            m_dLeft = pCont->m_dLeft;
+		return true;
+	}
 
-        if (m_dHeight < pCont->m_dHeight)
-            m_dHeight = pCont->m_dHeight;
+	void CTextLine::MergeConts()
+	{
+		if (m_arConts.empty())
+			return;
 
-        if (m_dTop > pCont->m_dTop || m_dTop == 0.0)
-            m_dTop = pCont->m_dTop;
+		using cont_ptr_t = std::shared_ptr<CContText>;
+		std::sort(m_arConts.begin(), m_arConts.end(), [] (const cont_ptr_t& a, const cont_ptr_t& b) {
+			if (!a) return false;
+			if (!b) return true;
+			return a->m_dLeft < b->m_dLeft;
+		});
 
-        if (pCont->m_pCont && m_eVertAlignType == eVertAlignType::vatUnknown)
-        {
-            m_eVertAlignType = pCont->m_eVertAlignType;
-        }
+		std::shared_ptr<CContText> pFirst;
+		size_t j = 0;
 
-        m_arConts.push_back(pCont);
-    }
+		for(; j < m_arConts.size() && !pFirst; ++j)
+			pFirst = m_arConts[j];
 
-    bool CTextLine::IsBigger(const CBaseItem* oSrc)
-    {
-        return (m_dBaselinePos > dynamic_cast<const CTextLine*>(oSrc)->m_dBaselinePos) ? true : false;
-    }
+		for (size_t i = j; i < m_arConts.size(); ++i)
+		{
+			auto& pCurrent = m_arConts[i];
+			if (!pCurrent)
+				continue;
 
-    bool CTextLine::IsBiggerOrEqual(const CBaseItem* oSrc)
-    {
-        return (m_dBaselinePos >= dynamic_cast<const CTextLine*>(oSrc)->m_dBaselinePos) ? true : false;
-    }
+			double dSpaceDefaultSize = pCurrent->CalculateThinSpace();
+			double dSpaceWideSize = pCurrent->CalculateWideSpace();
+			double dDifference = fabs(pCurrent->m_dLeft - pFirst->m_dRight);
 
-    void CTextLine::SortConts()
-    {
-        // сортировка непрерывных слов по m_dX
-        SortElements(m_arConts);
-    }
+			bool bIsEqual = pFirst->IsEqual(pCurrent.get());
+			bool bIsBigDelta = dDifference > dSpaceDefaultSize;
+			bool bIsVeryBigDelta = dDifference > dSpaceWideSize;
 
-    void CTextLine::Merge(CTextLine* pLine)
-    {
-        size_t nCount = pLine->m_arConts.size();
-        if (0 != nCount)
-        {
-            if (pLine->m_dLeft < m_dLeft)
-            {
-                m_dLeft = pLine->m_dLeft;
-            }
-            if (pLine->m_dBaselinePos < m_dBaselinePos)
-            {
-                m_dHeight = (m_dBaselinePos - pLine->m_dBaselinePos + pLine->m_dHeight);
-            }
-            else
-            {
-                m_dHeight = (pLine->m_dBaselinePos - m_dBaselinePos + m_dHeight);
-            }
+			if (bIsBigDelta && pFirst->m_dFirstWordWidth == 0.0)
+				pFirst->m_dFirstWordWidth = pFirst->m_dWidth;
 
-            for (const auto &pCont : pLine->m_arConts)
-            {
-                m_arConts.push_back(new CContText(*pCont));
-            }
+			if (bIsVeryBigDelta)
+			{
+				auto wide_space = std::make_shared<CContText>(pFirst->m_pManager);
 
-            SortConts();
-            CalculateWidth();
-        }
-    }
+				// sets all members for wide_space except highlight things
+				auto set_base = [&pFirst, &pCurrent, &wide_space] () {
+					wide_space->m_dLeft = pFirst->m_dRight;
+					wide_space->m_dRight = pCurrent->m_dLeft;
+					wide_space->m_dWidth = wide_space->m_dRight - wide_space->m_dLeft;
+					wide_space->m_oText = L" ";
+					wide_space->m_pFontStyle = pFirst->m_pFontStyle;
+					wide_space->m_pShape = nullptr;
+					wide_space->m_iNumDuplicates = 0;
 
-    void CTextLine::MergeConts()
-    {
-        if (m_arConts.empty())
-            return;
+					// cache that value? (calls rarely)
+					wide_space->CalcSelected();
+				};
 
-        auto pFirst = m_arConts.front();
+				if (bIsEqual)
+				{
+					// assign all
+					*wide_space = *pFirst;
 
-        for (size_t i = 1; i < m_arConts.size(); ++i)
-        {
-            auto pCurrent = m_arConts[i];
+					// then set all for wide space
+					set_base();
+				}
+				else
+					set_base();
 
-            if (pCurrent->m_bIsNotNecessaryToUse)
-            {
-                continue;
-            }
+				m_arConts.insert(m_arConts.begin() + i, wide_space);
 
-            bool bIsEqual = pFirst->IsEqual(pCurrent) && pFirst->m_eVertAlignType == pCurrent->m_eVertAlignType;
-            bool bIsBigDelta = fabs(pFirst->m_dRight - pCurrent->m_dLeft) > pFirst->CalculateThinSpace();
-            bool bIsVeryBigDelta = fabs(pFirst->m_dRight - pCurrent->m_dLeft) > pFirst->CalculateWideSpace();
+				i++;
+				while (!m_arConts[i]) i++;
+				pFirst = m_arConts[i];
+			}
+			else if (bIsEqual)
+			{
+				if (!bIsBigDelta)
+				{
+					pFirst->m_oText += pCurrent->m_oText;
+				}
+				else
+				{
+					pFirst->m_oText += uint32_t(' ');
+					pFirst->m_oText += pCurrent->m_oText;
+				}
 
-            if (bIsVeryBigDelta)
-            {
-                pFirst->m_bSpaceIsNotNeeded = false;
-                pFirst = pCurrent;
+				pFirst->m_dWidth = pCurrent->m_dRight - pFirst->m_dLeft;
+				pFirst->m_dRight = pCurrent->m_dRight;
 
-            }
-            else if (bIsEqual)
-            {
-                if (bIsBigDelta)
-                {
-                    pFirst->m_oText += L" ";
-                    pFirst->m_dWidth += pFirst->m_dSpaceWidthMM;
-                }
+				if (pFirst->m_pCont.expired())
+				{
+					pFirst->m_pCont = pCurrent->m_pCont;
+					pFirst->m_eVertAlignType = pCurrent->m_eVertAlignType;
+				}
+				pCurrent = nullptr;
+			}
+			else
+			{
+				if (bIsBigDelta)
+				{
+					if (!IsSpaceUtf32(pFirst->m_oText[pFirst->m_oText.length()-1]) &&
+							!IsSpaceUtf32(pCurrent->m_oText[0]))
+					{
+						if (pFirst->GetNumberOfFeatures() <= pCurrent->GetNumberOfFeatures())
+						{
+							pFirst->m_oText += L" ";
+							pFirst->m_dWidth += (pCurrent->m_dLeft - pFirst->m_dRight);
+						}
+						else
+						{
+							NSStringUtils::CStringUTF32 oNewText = L" ";
+							oNewText += pCurrent->m_oText;
+							pCurrent->m_oText = oNewText;
+							pCurrent->m_dWidth += (pCurrent->m_dLeft - pFirst->m_dRight);
+						}
+					}
+				}
+				pFirst = pCurrent;
+			}
+		}
 
-                pFirst->m_oText += pCurrent->m_oText;
-                pFirst->m_dWidth += pCurrent->m_dWidth;
-                pFirst->m_dRight = pCurrent->m_dRight;
+		auto right = MoveNullptr(m_arConts.begin(), m_arConts.end());
+		m_arConts.erase(right, m_arConts.end());
 
-                pFirst->m_bSpaceIsNotNeeded = true;
-                pCurrent->m_bIsNotNecessaryToUse = true;
-            }
-            else
-            {
-                if (bIsBigDelta)
-                {
-                    if (!IsSpaceUtf32(pFirst->m_oText[pFirst->m_oText.length()-1]) &&
-                        !IsSpaceUtf32(pCurrent->m_oText[0]))
-                    {
-                        if (pFirst->GetNumberOfFeatures() <= pCurrent->GetNumberOfFeatures())
-                        {
-                            pFirst->m_oText += L" ";
-                            pFirst->m_dWidth += pFirst->m_dSpaceWidthMM;
-                        }
-                        else
-                        {
-                            NSStringUtils::CStringUTF32 oNewText = L" ";
-                            oNewText += pCurrent->m_oText;
-                            pCurrent->m_oText = oNewText;
-                            pCurrent->m_dWidth += pCurrent->m_dSpaceWidthMM;
-                        }
-                    }
+		using cont_ptr_t = std::shared_ptr<CContText>;
+		std::sort(m_arConts.begin(), m_arConts.end(), [] (const cont_ptr_t& a, const cont_ptr_t& b) {
+			return a->m_dLeft < b->m_dLeft;
+		});
+	}
 
-                    pFirst->m_bSpaceIsNotNeeded = true;
-                }
-                else
-                {
-                    pFirst->m_bSpaceIsNotNeeded = false;
-                }
-                pFirst = pCurrent;
-            }
-        }
-    }
+	void CTextLine::RecalcSizes()
+	{
+		m_dLeft = 0.0;
+		m_dTop = 0.0;
+		m_dWidth = 0.0;
+		m_dHeight = 0.0;
+		m_dBaselinePos = 0.0;
+		m_dRight = 0.0;
+		m_dHeight = 0.0;
 
-    void CTextLine::CalculateWidth()
-    {
-        if (m_arConts.empty())
-        {
-            return;
-        }
+		for(const auto& cont : m_arConts)
+			if(cont)
+				RecalcWithNewItem(cont.get());
+	}
 
-        m_dWidth = m_arConts[0]->m_dWidth;
+	eVerticalCrossingType CTextLine::GetVerticalCrossingType(const CTextLine* pLine) const noexcept
+	{
+		const double& this_top = m_dTopWithMaxAscent;
+		const double& this_bot = m_dBotWithMaxDescent;
 
-        for (size_t i = 1; i < m_arConts.size(); ++i)
-        {
-            m_dWidth += m_arConts[i]->m_dLeft - (m_arConts[i-1]->m_dLeft + m_arConts[i-1]->m_dWidth);
-            m_dWidth += m_arConts[i]->m_dWidth;
-        }
-        m_dRight = m_dLeft + m_dWidth;
-    }
+		const double& other_top = pLine->m_dTopWithMaxAscent;
+		const double& other_bot = pLine->m_dBotWithMaxDescent;
 
-    void CTextLine::DetermineAssumedTextAlignmentType(double dWidthOfPage)
-    {
-        //рассматриваем строки, которые короче трети ширины страницы
-        double maxTextLineWidth = dWidthOfPage/3; //нужна какая-нибудь отправная точка...
-        double delta = 2 * c_dCENTER_POSITION_ERROR_MM; //координата m_dWidth/2 +- c_dCENTER_POSITION_ERROR_MM
+		if (this_top > other_top && this_bot < other_bot)
+			return eVerticalCrossingType::vctCurrentInsideNext;
 
-        if (fabs(dWidthOfPage/2 - m_dLeft - m_dWidth/2) <= delta && //если середины линий по x одинаковы
-                m_dWidth < maxTextLineWidth )
-        {
-            m_eAlignmentType = atatByCenter;
-        }
-        else if ((m_dLeft + m_dWidth/2) > (dWidthOfPage/2 + c_dCENTER_POSITION_ERROR_MM) && //середина строки правее центра страницы
-                 m_dWidth < maxTextLineWidth)
-        {
-            m_eAlignmentType = atatByRightEdge;
-        }
-        else if ((m_dLeft + m_dWidth/2) < (dWidthOfPage/2 - c_dCENTER_POSITION_ERROR_MM) && //середина строки левее центра страницы
-                 m_dWidth < maxTextLineWidth)
-        {
-            m_eAlignmentType = atatByLeftEdge;
-        }
-        else if (fabs(dWidthOfPage/2 - m_dLeft - m_dWidth/2) <= delta &&
-                 m_dWidth > maxTextLineWidth + maxTextLineWidth/2 )
-        {
-            m_eAlignmentType = atatByWidth;
-        }
-        else
-        {
-            m_eAlignmentType = atatUnknown;
-        }
-    }
+		else if (this_top < other_top && this_bot > other_bot)
+			return  eVerticalCrossingType::vctCurrentOutsideNext;
 
-    bool CTextLine::AreAlignmentsAppropriate(const CTextLine *pLine)
-    {
-        if ((m_eAlignmentType == pLine->m_eAlignmentType && m_eAlignmentType!= atatByLeftEdge) ||
-            (m_eAlignmentType == atatByWidth && pLine->m_eAlignmentType == atatByLeftEdge) ||
-            (m_eAlignmentType == atatByWidth && pLine->m_eAlignmentType == atatUnknown) ||
-            (m_eAlignmentType == atatUnknown && pLine->m_eAlignmentType == atatByWidth))
-        {
-            return true;
-        }
-        return false;
-    }
+		else if (this_top < other_top && this_bot < other_bot &&
+				 (this_bot >= other_top || fabs(this_bot - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
+			return  eVerticalCrossingType::vctCurrentAboveNext;
 
-    void CTextLine::SetVertAlignType(const eVertAlignType& oType)
-    {
-        for (const auto &pCont : m_arConts)
-        {
-            pCont->m_eVertAlignType = oType;
-        }
-    }
+		else if (this_top > other_top && this_bot > other_bot &&
+				(this_top <= other_bot || fabs(this_top - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
+			return  eVerticalCrossingType::vctCurrentBelowNext;
 
-    double CTextLine::CalculateBeforeSpacing(double dPreviousStringBaseline)
-    {
-        return m_dBaselinePos - dPreviousStringBaseline - m_dHeight;
-    }
+		else if (this_top == other_top && this_bot == other_bot &&
+				 m_dLeft == pLine->m_dLeft && m_dRight == pLine->m_dRight)
+			return  eVerticalCrossingType::vctDublicate;
 
-    double CTextLine::CalculateRightBorder(const double& dPageWidth)
-    {
-        return dPageWidth - (m_dLeft + m_dWidth);
-    }
+		else if (fabs(this_top - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
+				 fabs(this_bot - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
+			return  eVerticalCrossingType::vctTopAndBottomBordersMatch;
 
-    bool CTextLine::IsForceBlock()
-    {
-        // линия отсортирована, так что сравниваем только соседние conts
-        size_t nCount = m_arConts.size();
-        if (nCount <= 1)
-            return false;
+		else if (fabs(this_top - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
+			return  eVerticalCrossingType::vctTopBorderMatch;
 
-        for (size_t i = 0; i < nCount; i++)
-        {
-            for (size_t j = i + 1; j < nCount; j++)
-            {
-                if (m_arConts[i]->GetIntersect(m_arConts[j]) > 10)
-                    return true;
-            }
-        }
-        return false;
-    }
+		else if (fabs(this_bot - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
+			return  eVerticalCrossingType::vctBottomBorderMatch;
 
-    void CTextLine::ToXml(NSStringUtils::CStringBuilder& oWriter)
-    {
-        if (m_bIsNotNecessaryToUse)
-        {
-            return;
-        }
+		else if (this_bot < other_top)
+			return  eVerticalCrossingType::vctNoCrossingCurrentAboveNext;
 
-        size_t nCountConts = m_arConts.size();
+		else if (this_top > other_bot)
+			return  eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
 
-        if (0 == nCountConts)
-            return;
+		else
+			return  eVerticalCrossingType::vctUnknown;
+	}
 
-        auto pPrev = m_arConts[0];
-        double dDelta = 0;
+	void CTextLine::RecalcWithNewItem(const CContText* pCont)
+	{
+		CBaseItem::RecalcWithNewItem(pCont);
+		if (m_dTopWithMaxAscent == 0.0) m_dTopWithMaxAscent = pCont->m_dTopWithAscent;
+		else m_dTopWithMaxAscent = std::min(m_dTopWithMaxAscent, pCont->m_dTopWithAscent);
 
-        for (size_t i = 1; i < nCountConts; ++i)
-        {
-            auto pCurrent = m_arConts[i];
+		m_dBotWithMaxDescent = std::max(m_dBotWithMaxDescent, pCont->m_dBotWithDescent);
+	}
 
-            if (pCurrent->m_bIsNotNecessaryToUse)
-            {
-                continue;
-            }
+	void CTextLine::SetVertAlignType(const eVertAlignType& oType)
+	{
+		m_eVertAlignType = oType;
+		for (size_t i = 0; i < m_arConts.size(); ++i)
+		{
+			if(m_arConts[i])
+				m_arConts[i]->m_eVertAlignType = oType;
+		}
+	}
 
-            dDelta = pCurrent->m_dLeft - pPrev->m_dRight;
+	bool CTextLine::IsShadingPresent(const CTextLine *pLine) const noexcept
+	{
+		return (m_pDominantShape && pLine->m_pDominantShape &&
+				m_pDominantShape->m_oBrush.Color1 == pLine->m_pDominantShape->m_oBrush.Color1 &&
+				fabs(m_pDominantShape->m_dLeft - pLine->m_pDominantShape->m_dLeft) < c_dGRAPHICS_ERROR_IN_LINES_MM &&
+				fabs(m_pDominantShape->m_dWidth - pLine->m_pDominantShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM);
+	}
 
-            if (dDelta < pPrev->CalculateWideSpace() ||
-                pPrev->m_bSpaceIsNotNeeded)
-            {
-                // просто текст на тексте или сменились настройки (font/brush)
-                pPrev->ToXml(oWriter);
-                pPrev = pCurrent;
-            }
-            else
-            {
-                // расстояние слишком большое. нужно сделать большой пробел
-                pPrev->ToXml(oWriter);
-                pPrev->AddWideSpaceToXml(dDelta, oWriter, pPrev->IsEqual(pCurrent));
-                pPrev = pCurrent;
-            }
-        }
+	void CTextLine::ToXml(NSStringUtils::CStringBuilder& oWriter) const
+	{
+		for (const auto& cont : m_arConts)
+			if(cont)
+				cont->ToXml(oWriter);
+	}
 
-        pPrev->ToXml(oWriter);
-    }
+	void CTextLine::ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const
+	{
+		for (const auto& cont : m_arConts)
+			if(cont)
+				cont->ToXmlPptx(oWriter);
+	}
+
+	size_t CTextLine::GetLength() const
+	{
+		size_t len = 0;
+		for (const auto& cont : m_arConts)
+			if (cont)
+				len += cont->m_oText.length();
+
+		return len;
+	}
 }

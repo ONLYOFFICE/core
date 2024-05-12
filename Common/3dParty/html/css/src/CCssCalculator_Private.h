@@ -37,7 +37,7 @@ namespace NSCSS
 		std::map<StatistickElement, unsigned int> *m_mStatictics; // Количество повторений свойств id и style у селекторов
 
 		#ifdef CSS_CALCULATOR_WITH_XHTML
-		std::map<std::vector<CNode>, CCompiledStyle*> m_mUsedStyles;
+		std::map<std::vector<CNode>, CCompiledStyle> m_mUsedStyles;
 		
 		std::map<std::wstring, std::wstring> GetPageData(const std::wstring& wsPageName);
 		void SetPageData(NSProperties::CPage& oPage, const std::map<std::wstring, std::wstring>& mData, unsigned int unLevel, bool bHardMode = false);

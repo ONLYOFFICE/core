@@ -19,6 +19,7 @@ struct CHtmlParams
     std::wstring m_sBookTitle;   // Название
     std::wstring m_sDate;        // Дата
     std::wstring m_sDescription; // описание
+    std::wstring m_sLanguage;    // Язык
     bool m_bNeedPageBreakBefore; // Новый html с новой страницы
     std::wstring m_sdocDefaults; // Стиль docDefaults
     std::wstring m_sNormal;      // Стиль normal
@@ -63,6 +64,11 @@ struct CHtmlParams
     void SetTitle(const std::wstring& sTitle)
     {
         m_sBookTitle = sTitle;
+    }
+
+    void SetLanguage(const std::wstring& sLanguage)
+    {
+        m_sLanguage = sLanguage;
     }
 };
 

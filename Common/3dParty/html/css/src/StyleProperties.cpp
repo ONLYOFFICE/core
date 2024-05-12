@@ -25,7 +25,7 @@ namespace NSCSS
 	}
 
 	CString::CString()
-	    : CValue(L"", 0, false)
+		: CValue(L"", 0, false)
 	{}
 
 	CString::CString(const std::wstring &wsValue, unsigned int unLevel, bool bImportant)
@@ -63,7 +63,7 @@ namespace NSCSS
 		if (m_bImportant && !bImportant)
 			return false;
 
-		if (arValiableValues.end() != std::find(arValiableValues.begin(), arValiableValues.end(), wsNewValue))\
+		if (arValiableValues.end() != std::find(arValiableValues.begin(), arValiableValues.end(), wsNewValue))
 		{
 			m_oValue     = wsNewValue;
 			m_unLevel    = unLevel;
@@ -374,7 +374,7 @@ namespace NSCSS
 
 	bool CDigit::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (wsValue.empty() || (CHECK_CONDITIONS && !bHardMode))
+		if (wsValue.empty() || (CHECK_CONDITIONS && !bHardMode) || unLevel < m_unLevel)
 			return false;
 
 		std::wstring wsNewValue = wsValue;
@@ -404,7 +404,12 @@ namespace NSCSS
 			m_enUnitMeasure = oValue.m_enUnitMeasure;
 		}
 		else if (NSCSS::Percent == oValue.m_enUnitMeasure)
-			m_oValue *= oValue.m_oValue / 100.;
+		{
+			if (m_unLevel == oValue.m_unLevel)
+				m_oValue  = oValue.m_oValue;
+			else
+				m_oValue *= oValue.m_oValue / 100.;
+		}
 		else
 			m_oValue = oValue.ToDouble(m_enUnitMeasure);
 
@@ -1126,7 +1131,7 @@ namespace NSCSS
 
 	bool CDisplay::SetDisplay(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		return m_oHAlign.SetValue(wsValue, NSConstValues::DISPLAY_VALUES, unLevel, bHardMode);
+		return m_oDisplay.SetValue(wsValue, NSConstValues::DISPLAY_VALUES, unLevel, bHardMode);
 	}
 
 	const CDigit& CDisplay::GetX() const
@@ -1503,6 +1508,15 @@ namespace NSCSS
 		       m_oColor == oBorderSide.m_oColor;
 	}
 
+	CBorderSide &CBorderSide::operator =(const CBorderSide &oBorderSide)
+	{
+		m_oWidth = oBorderSide.m_oWidth;
+		m_oStyle = oBorderSide.m_oStyle;
+		m_oColor = oBorderSide.m_oColor;
+
+		return *this;
+	}
+
 	// BORDER
 	CBorder::CBorder()
 	{
@@ -1737,6 +1751,18 @@ namespace NSCSS
 		       m_oTop    == oBorder.m_oTop   &&
 		       m_oRight  == oBorder.m_oRight &&
 		       m_oBottom == oBorder.m_oBottom;
+	}
+
+	CBorder &CBorder::operator =(const CBorder &oBorder)
+	{
+		m_oLeft   = oBorder.m_oLeft;
+		m_oTop    = oBorder.m_oTop;
+		m_oRight  = oBorder.m_oRight;
+		m_oBottom = oBorder.m_oBottom;
+
+		m_enCollapse = oBorder.m_enCollapse;
+
+		return *this;
 	}
 
 	// TEXT

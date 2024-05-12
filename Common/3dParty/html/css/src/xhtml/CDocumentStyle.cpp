@@ -1,6 +1,7 @@
 #include "CDocumentStyle.h"
 
 #include <iostream>
+#include <unordered_set>
 #include <wchar.h>
 #include <math.h>
 #include <cmath>
@@ -18,16 +19,28 @@ namespace NSCSS
 
 	bool CheckArrays(const std::vector<std::wstring>& arInitial, const std::set<std::wstring>& arFirst, const std::set<std::wstring>& arSecond) 
 	{
-		std::set<std::wstring> arInitialSet(arInitial.begin(), arInitial.end());
+		std::unordered_set<std::wstring> arInitialSet(arInitial.begin(), arInitial.end());
 	
 		std::vector<std::wstring> arCommonElements1;
 		std::vector<std::wstring> arCommonElements2;
-	
-		std::set_intersection(arInitialSet.begin(), arInitialSet.end(), arFirst.begin(), arFirst.end(), std::back_inserter(arCommonElements1));
-		std::set_intersection(arInitialSet.begin(), arInitialSet.end(), arSecond.begin(), arSecond.end(), std::back_inserter(arCommonElements2));
-	
+
+		for (const std::wstring& wsValue : arFirst)
+		{
+			if (arInitialSet.count(wsValue) > 0)
+				arCommonElements1.push_back(wsValue);
+		}
+
+		for (const std::wstring& wsValue : arSecond)
+		{
+			if (arInitialSet.count(wsValue) > 0)
+				arCommonElements2.push_back(wsValue);
+		}
+
 		if (arCommonElements1.size() != arCommonElements2.size())
 			return false;
+
+		std::sort(arCommonElements1.begin(), arCommonElements1.end());
+		std::sort(arCommonElements2.begin(), arCommonElements2.end());
 
 		return arCommonElements1 == arCommonElements2;
 	}

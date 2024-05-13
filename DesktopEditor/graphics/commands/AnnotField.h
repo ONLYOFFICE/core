@@ -371,8 +371,9 @@ public:
 		void GetRD(double& dRD1, double& dRD2, double& dRD3, double& dRD4);
 		const std::vector<double>& GetCL();
 		const std::vector<double>& GetIC();
+		BYTE* GetRender(LONG& nLen, std::wstring& sMediaDirectory, std::wstring& sInternalMediaDirectory, std::wstring& sThemesDirectory);
 
-		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
+		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags, IMetafileToRenderter* pCorrector);
 
 	private:
 		BYTE m_nQ;
@@ -382,6 +383,11 @@ public:
 		double m_dRD[4]{};
 		std::vector<double> m_arrCL;
 		std::vector<double> m_arrIC;
+		LONG m_nRenderLen;
+		BYTE* m_pRender;
+		std::wstring m_sMediaDirectory;
+		std::wstring m_sInternalMediaDirectory;
+		std::wstring m_sThemesDirectory;
 	};
 
 	class GRAPHICS_DECL CCaretAnnotPr

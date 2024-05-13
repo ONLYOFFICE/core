@@ -352,6 +352,7 @@ namespace PdfWriter
 	private:
 		BYTE m_nIT;
 		ELineEndType m_nLE;
+		TRect m_oRD;
 		CAnnotAppearance* m_pAppearance;
 
 	public:
@@ -364,6 +365,8 @@ namespace PdfWriter
 		void StartAP(const std::vector<double>& arrC);
 		void EndAP();
 		void SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrC);
+		void AddTextToAP(double dFontSize, const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, double dR, double dG, double dB, CFontCidTrueType** ppFonts = NULL, const double* pShifts = NULL);
+		TRect& GetRD();
 
 		void SetQ(BYTE nQ);
 		void SetIT(BYTE nIT);

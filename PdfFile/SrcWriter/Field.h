@@ -419,6 +419,7 @@ namespace PdfWriter
 		void StartDrawFreeText(const std::string& sColor);
 
 		CStream* GetStream() { return m_pStream; }
+		void     SetFontSize(double dFontSize) { m_dFontSize = dFontSize; }
 
 		bool        m_bStart;
 

@@ -1624,6 +1624,7 @@ namespace PdfWriter
 		m_pStream   = new CMemoryStream();
 		m_pFont     = NULL;
 		m_dFontSize = 10.0;
+		m_bStart    = true;
 
 		if (m_pXref)
 			SetStream(m_pXref, m_pStream);

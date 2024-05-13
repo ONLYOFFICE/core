@@ -917,7 +917,7 @@ namespace PdfWriter
 		}
 		}
 	}
-	void DrawLineArrow(CStream* pStream, double dBorderSize, double x1, double y1, double x2, double y2, ELineEndType nLE1, ELineEndType nLE2, double dLL = 0, double dLLO = 0, double dLLE = 0)
+	void DrawLineArrow(CStream* pStream, double dBorderSize, double x1, double y1, double x2, double y2, ELineEndType nLE1, ELineEndType nLE2, double dLX = 0, double dLY = 0, double dLL = 0, double dLLO = 0, double dLLE = 0)
 	{
 		double dDX = x2 - x1;
 		double dDY = y2 - y1;
@@ -960,7 +960,7 @@ namespace PdfWriter
 		AdjustLineEndpoint(nLE1, lx1, ly1,  dDX,  dDY, dBorderSize, tx1, ty1);
 		AdjustLineEndpoint(nLE2, lx2, ly2, -dDX, -dDY, dBorderSize, tx2, ty2);
 
-		if (dLL != 0)
+		if (dLL)
 		{
 			SreamWriteXYMove(pStream, ax1, ay1);
 			SreamWriteXYLine(pStream, bx1, by1);
@@ -971,6 +971,8 @@ namespace PdfWriter
 
 		SreamWriteXYMove(pStream, tx1, ty1);
 		SreamWriteXYLine(pStream, tx2, ty2);
+		if (dLX && dLY)
+			SreamWriteXYLine(pStream, dLX, dLY);
 		pStream->WriteStr("S\012");
 
 		DrawArrow(pStream, nLE1, tx1, ty1,  dDX,  dDY, dBorderSize);
@@ -1049,7 +1051,7 @@ namespace PdfWriter
 		if (pObj && pObj->GetType() == object_type_REAL)
 			dLLO = ((CRealObject*)pObj)->Get();
 
-		DrawLineArrow(pStream, dBorderSize, dL[0], dL[1], dL[2], dL[3], m_nLE1, m_nLE2, dLL, dLLE, dLLO);
+		DrawLineArrow(pStream, dBorderSize, dL[0], dL[1], dL[2], dL[3], m_nLE1, m_nLE2, 0, 0, dLL, dLLE, dLLO);
 	}
 	//----------------------------------------------------------------------------------------
 	// CPopupAnnotation
@@ -1144,38 +1146,49 @@ namespace PdfWriter
 		if (m_nIT == 1 && pObj && pObj->GetType() == object_type_ARRAY)
 		{
 			CArrayObject* pArr = (CArrayObject*)pObj;
-			DrawLineArrow(pStream, dBorderSize, ((CRealObject*)(pArr->Get(0)))->Get(), ((CRealObject*)(pArr->Get(1)))->Get(),
-						  ((CRealObject*)(pArr->Get(2)))->Get(), ((CRealObject*)(pArr->Get(3)))->Get(), m_nLE, ELineEndType::None);
+			double dLX = 0, dLY = 0;
 			if (pArr->GetCount() == 6)
 			{
-				SreamWriteXYMove(pStream, ((CRealObject*)(pArr->Get(2)))->Get(), ((CRealObject*)(pArr->Get(3)))->Get());
-				SreamWriteXYLine(pStream, ((CRealObject*)(pArr->Get(4)))->Get(), ((CRealObject*)(pArr->Get(5)))->Get());
-				pStream->WriteStr("S\012");
+				dLX = ((CRealObject*)(pArr->Get(4)))->Get();
+				dLY = ((CRealObject*)(pArr->Get(5)))->Get();
 			}
+			DrawLineArrow(pStream, dBorderSize, ((CRealObject*)(pArr->Get(0)))->Get(), ((CRealObject*)(pArr->Get(1)))->Get(),
+						  ((CRealObject*)(pArr->Get(2)))->Get(), ((CRealObject*)(pArr->Get(3)))->Get(), m_nLE, ELineEndType::None, dLX, dLY);
 		}
 
-		double dRDLeft = 0.0, dRDTop = 0.0, dRDRight = 0.0, dRDBottom = 0.0;
-		pObj = Get("RD");
-		if (pObj && pObj->GetType() == object_type_ARRAY)
-		{
-			CArrayObject* pArr = (CArrayObject*)pObj;
-			dRDLeft   = ((CRealObject*)(pArr->Get(0)))->Get();
-			dRDTop    = ((CRealObject*)(pArr->Get(1)))->Get();
-			dRDRight  = ((CRealObject*)(pArr->Get(2)))->Get();
-			dRDBottom = ((CRealObject*)(pArr->Get(3)))->Get();
-		}
-		StreamWriteRect(pStream, GetRect().fLeft + dRDLeft + dBorderSize / 2,
-								 GetRect().fTop + dRDTop + dBorderSize / 2,
-								 GetRect().fRight - GetRect().fLeft - dRDRight - dRDLeft - dBorderSize,
-								 GetRect().fBottom - GetRect().fTop - dRDBottom - dRDTop - dBorderSize);
-		pStream->WriteStr("B\012");
+		StreamWriteRect(pStream, GetRect().fLeft + m_oRD.fLeft + dBorderSize / 2,
+								 GetRect().fBottom + m_oRD.fBottom + dBorderSize / 2,
+								 GetRect().fRight - GetRect().fLeft - m_oRD.fRight - m_oRD.fLeft - dBorderSize,
+								 GetRect().fTop - GetRect().fBottom - m_oRD.fBottom - m_oRD.fTop - dBorderSize);
+		pStream->WriteStr("B\012q\0121 0 0 1 0 0 cm\012");
+		StreamWriteRect(pStream, GetRect().fLeft + m_oRD.fLeft + dBorderSize * 2,
+								 GetRect().fBottom + m_oRD.fBottom + dBorderSize * 2,
+								 GetRect().fRight - GetRect().fLeft - m_oRD.fRight - m_oRD.fLeft - dBorderSize * 4,
+								 GetRect().fTop - GetRect().fBottom - m_oRD.fBottom - m_oRD.fTop - dBorderSize * 4);
+		pStream->WriteStr("W\012n\0120 g\0120 G\0121 w\012BT\012");
 	}
 	void CFreeTextAnnotation::EndAP()
 	{
 		if (!m_pAppearance)
 			return;
 		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
+		pNormal->EndText();
 		pNormal->EndDraw();
+	}
+	void CFreeTextAnnotation::AddTextToAP(double dFontSize, const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, double dR, double dG, double dB, CFontCidTrueType** ppFonts, const double* pShifts)
+	{
+		if (!m_pAppearance)
+			return;
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
+		CStream* pStream = pNormal->GetStream();
+		pNormal->SetFontSize(dFontSize);
+		pStream->WriteStr(std::to_string(dR).c_str());
+		pStream->WriteChar(' ');
+		pStream->WriteStr(std::to_string(dG).c_str());
+		pStream->WriteChar(' ');
+		pStream->WriteStr(std::to_string(dB).c_str());
+		pStream->WriteStr(" rg\012");
+		pNormal->DrawTextLine(dX, dY, pCodes, unCodesCount, ppFonts, pShifts);
 	}
 	void CFreeTextAnnotation::SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrC)
 	{
@@ -1194,6 +1207,10 @@ namespace PdfWriter
 		sDA.append(" Tf");
 
 		Add("DA", new CStringObject(sDA.c_str()));
+	}
+	TRect& CFreeTextAnnotation::GetRD()
+	{
+		return m_oRD;
 	}
 	void CFreeTextAnnotation::SetQ(BYTE nQ)
 	{
@@ -1229,6 +1246,7 @@ namespace PdfWriter
 	void CFreeTextAnnotation::SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
 	{
 		AddRD(this, dRD1, dRD2, dRD3, dRD4);
+		m_oRD = { dRD1, dRD2, dRD3, dRD4 };
 	}
 	void CFreeTextAnnotation::SetCL(const std::vector<double>& arrCL)
 	{

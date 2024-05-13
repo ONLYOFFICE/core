@@ -241,10 +241,10 @@ private:
 	unsigned char* EncodeString(const unsigned int* pUnicodes, const unsigned int& unUnicodesCount, const unsigned int* pGIDs = NULL);
 	unsigned char* EncodeGID(const unsigned int& unGID, const unsigned int* pUnicodes, const unsigned int& unUnicodesCount);
 	std::wstring GetDownloadFile(const std::wstring& sUrl, const std::wstring& wsTempDirectory);
-	void DrawTextWidget  (NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CTextWidget* pTextWidget, const std::wstring& wsValue);
-	void DrawChoiceWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CChoiceWidget* pChoiceWidget, const std::vector<std::wstring>& arrValue);
-	void DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CPushButtonWidget* pButtonWidget, BYTE nAP, PdfWriter::CXObject* pForm);
-	void DrawFreeTextAnnot(PdfWriter::CFreeTextAnnotation* pFreeTextAnnot, const std::vector<CAnnotFieldInfo::CMarkupAnnotPr::CFontData*>& arrRC, const std::vector<double>& arrC);
+	void DrawTextWidget   (NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CTextWidget* pTextWidget, const std::wstring& wsValue);
+	void DrawChoiceWidget (NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CChoiceWidget* pChoiceWidget, const std::vector<std::wstring>& arrValue);
+	void DrawButtonWidget (NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CPushButtonWidget* pButtonWidget, BYTE nAP, PdfWriter::CXObject* pForm);
+	void DrawFreeTextAnnot(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CFreeTextAnnotation* pFreeTextAnnot, const std::vector<CAnnotFieldInfo::CMarkupAnnotPr::CFontData*>& arrRC, const std::vector<double>& arrC);
 
 private:
 	NSFonts::IFontManager*       m_pFontManager;

@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	ui->lable_test->setStyleSheet("QLabel { background-color : white;}");
 	on_actionLinear_Gradient_triggered();
 	ui->Rainbow_Colorspace_Radio_Button->setChecked(true);
+	connect(ui->lable_test, SIGNAL(mousePressed()), this, SLOT(on_label_test_clicked()));
 }
 
 MainWindow::~MainWindow()
@@ -223,6 +224,306 @@ std::vector<std::vector<agg::rgba8>> MainWindow::QColor2rgbaMatrix()
 	return colors;
 }
 
+inline void setPoint(QImage *image, int x, int y, QRgb color)
+{
+	image->setPixel(x, y, color);
+	image->setPixel(x - 1, y, color);
+	image->setPixel(x, y - 1, color);
+	image->setPixel(x + 1, y, color);
+	image->setPixel(x, y + 1, color);
+}
+
+void MainWindow::setPoints(QImage *image)
+{
+	std::vector<QPoint> points;
+	if (info.gradient == Linear)
+	{
+		setPoint(image,
+				 info.p0.x * MM_TO_COORD(ui->lable_test->width()),
+				 info.p0.y * MM_TO_COORD(ui->lable_test->height()),
+				 qRgb(0, 0, 0));
+		setPoint(image,
+				 info.p1.x * MM_TO_COORD(ui->lable_test->width()),
+				 info.p1.y * MM_TO_COORD(ui->lable_test->height()),
+				 qRgb(0, 0, 0));
+		points.push_back(QPoint(info.p0.x * MM_TO_COORD(ui->lable_test->width()), info.p0.y * MM_TO_COORD(ui->lable_test->height())));
+		points.push_back(QPoint(info.p1.x * MM_TO_COORD(ui->lable_test->width()), info.p1.y * MM_TO_COORD(ui->lable_test->height())));
+	}
+	else if (info.gradient == Radial)
+	{
+		setPoint(image,
+				 info.c0.x * MM_TO_COORD(ui->lable_test->width()),
+				 info.c0.y * MM_TO_COORD(ui->lable_test->height()),
+				 qRgb(0, 0, 0));
+		setPoint(image,
+				 info.c1.x * MM_TO_COORD(ui->lable_test->width()),
+				 info.c1.y * MM_TO_COORD(ui->lable_test->height()),
+				 qRgb(0, 0, 0));
+		points.push_back(QPoint(info.c0.x * MM_TO_COORD(ui->lable_test->width()), info.c0.y * MM_TO_COORD(ui->lable_test->height())));
+		points.push_back(QPoint(info.c1.x * MM_TO_COORD(ui->lable_test->width()), info.c1.y * MM_TO_COORD(ui->lable_test->height())));
+	}
+	else if (info.gradient == Triangle || info.gradient == TriangleParametric)
+	{
+		for (NSStructures::Point p : info.triangle)
+		{
+			setPoint(image,
+					 p.x * MM_TO_COORD(ui->lable_test->width()),
+					 p.y * MM_TO_COORD(ui->lable_test->height()),
+					 qRgb(0,0,0));
+			points.push_back(QPoint(p.x * MM_TO_COORD(ui->lable_test->width()), p.y * MM_TO_COORD(ui->lable_test->height())));
+		}
+	}
+	else if (info.gradient == CoonsPatch)
+	{
+		for (NSStructures::Point p : info.curve)
+		{
+			setPoint(image,
+					 p.x,
+					 p.y,
+					 qRgb(0,0,0));
+			points.push_back(QPoint(p.x, p.y));
+		}
+	}
+	else if (info.gradient == CoonsPatchParametric)
+	{
+		for (NSStructures::Point p : info.curve)
+		{
+			setPoint(image,
+					 p.x * MM_TO_COORD(ui->lable_test->width()),
+					 p.y * MM_TO_COORD(ui->lable_test->height()),
+					 qRgb(0,0,0));
+			points.push_back(QPoint(p.x * MM_TO_COORD(ui->lable_test->width()), p.y * MM_TO_COORD(ui->lable_test->width())));
+		}
+	}
+	else if (info.gradient == TensorCoonsPatch)
+	{
+		for (std::vector<NSStructures::Point> v : info.tensorcurve)
+		{
+			for (NSStructures::Point p : v)
+			{
+				setPoint(image,
+						 p.x,
+						 p.y,
+						 qRgb(0,0,0));
+				points.push_back(QPoint(p.x, p.y));
+			}
+		}
+	}
+	else if (info.gradient == TensorCoonsPatchParametric)
+	{
+		for (std::vector<NSStructures::Point> v : info.tensorcurve)
+		{
+			for (NSStructures::Point p : v)
+			{
+				setPoint(image,
+						 p.x * MM_TO_COORD(ui->lable_test->width()),
+						 p.y * MM_TO_COORD(ui->lable_test->height()),
+						 qRgb(0,0,0));
+				points.push_back(QPoint(p.x * MM_TO_COORD(ui->lable_test->width()), p.y * MM_TO_COORD(ui->lable_test->width())));
+			}
+		}
+	}
+	ui->lable_test->SetPoints(points);
+}
+
+void MainWindow::on_label_test_clicked()
+{
+	if (ui->lable_test->Movable())
+	{
+		ui->lable_test->ResetMovable();
+		disconnect(ui->lable_test, SIGNAL(mouseMoved()), this, SLOT(on_label_test_mouse_move()));
+	}
+	else if (ui->lable_test->CheckPointArea())
+	{
+		ui->lable_test->ResetMovable();
+		connect(ui->lable_test, SIGNAL(mouseMoved()), this, SLOT(on_label_test_mouse_move()));
+	}
+}
+
+void MainWindow::on_label_test_mouse_move()
+{
+	if (info.gradient == Linear)
+	{
+		switch (ui->lable_test->GetIndex())
+		{
+		case 0:
+			ui->First_X_Coordinate_Input->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->First_Y_Coordinate_Input->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 1:
+			ui->Second_X_Coordinate_Input->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->Second_Y_Coordinate_Input->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		default:
+			break;
+		}
+	}
+	else if (info.gradient == Radial)
+	{
+		switch (ui->lable_test->GetIndex())
+		{
+		case 0:
+			ui->First_Center_X_Coordinate_Input->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->First_Center_Y_Coordinate_Input->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 1:
+			ui->Second_Center_X_Coordinate_Input->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->Second_Center_Y_Coordinate_Input->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		default:
+			break;
+		}
+	}
+	else if (info.gradient == Triangle || info.gradient == TriangleParametric)
+	{
+		switch (ui->lable_test->GetIndex())
+		{
+		case 0:
+			ui->First_Vertex_X_Coordinate_Input->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->First_Vertex_Y_Coordinate_Input->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 1:
+			ui->Second_Vertex_X_Coordinate_Input->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->Second_Vertex_Y_Coordinate_Input->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 2:
+			ui->Third_Vertex_X_Coordinate_Input->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->Third_Vertex_Y_Coordinate_Input->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		default:
+			break;
+		}
+	}
+	else if (info.gradient == CoonsPatch || info.gradient == CoonsPatchParametric)
+	{
+		switch (ui->lable_test->GetIndex())
+		{
+		case 0:
+			ui->First_Vertex_X_Coordinate_Input_3->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->First_Vertex_Y_Coordinate_Input_3->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 1:
+			ui->First_X_Coordinate_First_Edge->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->First_Y_Coordinate_First_Edge->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 2:
+			ui->Second_X_Coordinate_First_Edge->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->Second_Y_Coordinate_First_Edge->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 3:
+			ui->Second_Vertex_X_Coordinate_Input_3->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->Second_Vertex_Y_Coordinate_Input_3->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 4:
+			ui->First_X_Coordinate_Second_Edge->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->First_Y_Coordinate_Second_Edge->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 5:
+			ui->Second_X_Coordinate_Second_Edge->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->Second_Y_Coordinate_Second_Edge->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 6:
+			ui->Third_Vertex_X_Coordinate_Input_3->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->Third_Vertex_Y_Coordinate_Input_3->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 7:
+			ui->First_X_Coordinate_Third_Edge->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->First_Y_Coordinate_Third_Edge->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 8:
+			ui->Second_X_Coordinate_Third_Edge->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->Second_Y_Coordinate_Third_Edge->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 9:
+			ui->Fourth_Vertex_X_Coordinate_Input_3->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->Fourth_Vertex_Y_Coordinate_Input_3->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 10:
+			ui->First_X_Coordinate_Fourth_Edge->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->First_Y_Coordinate_Fourth_Edge->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 11:
+			ui->Second_X_Coordinate_Fourth_Edge->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->Second_Y_Coordinate_Fourth_Edge->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		default:
+			break;
+		}
+	}
+	else if (info.gradient == TensorCoonsPatch || info.gradient == TensorCoonsPatchParametric)
+	{
+		switch (ui->lable_test->GetIndex())
+		{
+		case 0:
+			ui->First_X_Coordinate_First_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->First_Y_Coordinate_First_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 1:
+			ui->Second_X_Coordinate_First_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->Second_Y_Coordinate_First_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 2:
+			ui->Third_X_Coordinate_First_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x()/ MM_TO_COORD(ui->lable_test->width())));
+			ui->Third_Y_Coordinate_First_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x()/ MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 3:
+			ui->Fourth_X_Coordinate_First_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x()/ MM_TO_COORD(ui->lable_test->width())));
+			ui->Fourth_Y_Coordinate_First_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x()/ MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 4:
+			ui->First_X_Coordinate_Second_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->First_Y_Coordinate_Second_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 5:
+			ui->Second_X_Coordinate_Second_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->Second_Y_Coordinate_Second_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 6:
+			ui->Third_X_Coordinate_Second_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x()/ MM_TO_COORD(ui->lable_test->width())));
+			ui->Third_Y_Coordinate_Second_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x()/ MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 7:
+			ui->Fourth_X_Coordinate_Second_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x()/ MM_TO_COORD(ui->lable_test->width())));
+			ui->Fourth_Y_Coordinate_Second_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x()/ MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 8:
+			ui->First_X_Coordinate_Third_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->First_Y_Coordinate_Third_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 9:
+			ui->Second_X_Coordinate_Third_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->Second_Y_Coordinate_Third_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 10:
+			ui->Third_X_Coordinate_Third_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x()/ MM_TO_COORD(ui->lable_test->width())));
+			ui->Third_Y_Coordinate_Third_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x()/ MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 11:
+			ui->Fourth_X_Coordinate_Third_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x()/ MM_TO_COORD(ui->lable_test->width())));
+			ui->Fourth_Y_Coordinate_Third_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x()/ MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 12:
+			ui->First_X_Coordinate_Fourth_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->First_Y_Coordinate_Fourth_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 13:
+			ui->Second_X_Coordinate_Fourth_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
+			ui->Second_Y_Coordinate_Fourth_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+			break;
+		case 14:
+			ui->Third_X_Coordinate_Fourth_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x()/ MM_TO_COORD(ui->lable_test->width())));
+			ui->Third_Y_Coordinate_Fourth_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x()/ MM_TO_COORD(ui->lable_test->height())));
+		case 15:
+			ui->Fourth_X_Coordinate_Fourth_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x()/ MM_TO_COORD(ui->lable_test->width())));
+			ui->Fourth_Y_Coordinate_Fourth_Edge_3->setText(QString::number(ui->lable_test->GetMovePoint().x()/ MM_TO_COORD(ui->lable_test->height())));
+		default:
+			break;
+		}
+	}
+
+	on_pushButton_clicked();
+}
+
 void MainWindow::on_pushButton_clicked()
 {
 	points = {{0, 0},
@@ -420,101 +721,7 @@ void MainWindow::on_pushButton_clicked()
 	}
 
 	QImage pm = GenerateImg(points, info, ui->lable_test->width(), ui->lable_test->height());
+	setPoints(&pm);
 	ui->lable_test->setPixmap(QPixmap::fromImage(pm));
 	ui->lable_test->setScaledContents(true);
-}
-
-void MainWindow::on_pushButton_2_clicked()
-{
-	std::vector<QPoint> p = ui->lable_test->GetPoints();
-	if (info.gradient == Linear)
-	{
-		ui->First_X_Coordinate_Input->setText(QString::number(p[0].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->First_Y_Coordinate_Input->setText(QString::number(p[0].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->Second_X_Coordinate_Input->setText(QString::number(p[1].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->Second_Y_Coordinate_Input->setText(QString::number(p[1].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->lable_test->Clear();
-	}
-	else if (info.gradient == Radial)
-	{
-		ui->First_Center_X_Coordinate_Input->setText(QString::number(p[0].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->First_Center_Y_Coordinate_Input->setText(QString::number(p[0].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->Second_Center_X_Coordinate_Input->setText(QString::number(p[1].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->Second_Center_Y_Coordinate_Input->setText(QString::number(p[1].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->lable_test->Clear();
-	}
-	else if (info.gradient == Triangle || info.gradient == TriangleParametric)
-	{
-		ui->First_Vertex_X_Coordinate_Input->setText(QString::number(p[0].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->First_Vertex_Y_Coordinate_Input->setText(QString::number(p[0].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->Second_Vertex_X_Coordinate_Input->setText(QString::number(p[1].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->Second_Vertex_Y_Coordinate_Input->setText(QString::number(p[1].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->Third_Vertex_X_Coordinate_Input->setText(QString::number(p[2].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->Third_Vertex_Y_Coordinate_Input->setText(QString::number(p[2].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->lable_test->Clear();
-	}
-	else if (info.gradient == CoonsPatch || info.gradient == CoonsPatchParametric)
-	{
-		ui->First_Vertex_X_Coordinate_Input_3->setText(QString::number(p[0].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->First_Vertex_Y_Coordinate_Input_3->setText(QString::number(p[0].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->First_X_Coordinate_First_Edge->setText(QString::number(p[1].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->First_Y_Coordinate_First_Edge->setText(QString::number(p[1].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->Second_X_Coordinate_First_Edge->setText(QString::number(p[2].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->Second_Y_Coordinate_First_Edge->setText(QString::number(p[2].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->Second_Vertex_X_Coordinate_Input_3->setText(QString::number(p[3].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->Second_Vertex_Y_Coordinate_Input_3->setText(QString::number(p[3].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->First_X_Coordinate_Second_Edge->setText(QString::number(p[4].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->First_Y_Coordinate_Second_Edge->setText(QString::number(p[4].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->Second_X_Coordinate_Second_Edge->setText(QString::number(p[5].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->Second_Y_Coordinate_Second_Edge->setText(QString::number(p[5].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->Third_Vertex_X_Coordinate_Input_3->setText(QString::number(p[6].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->Third_Vertex_Y_Coordinate_Input_3->setText(QString::number(p[6].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->First_X_Coordinate_Third_Edge->setText(QString::number(p[7].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->First_Y_Coordinate_Third_Edge->setText(QString::number(p[7].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->Second_X_Coordinate_Third_Edge->setText(QString::number(p[8].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->Second_Y_Coordinate_Third_Edge->setText(QString::number(p[8].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->Fourth_Vertex_X_Coordinate_Input_3->setText(QString::number(p[9].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->Fourth_Vertex_Y_Coordinate_Input_3->setText(QString::number(p[9].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->First_X_Coordinate_Fourth_Edge->setText(QString::number(p[10].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->First_Y_Coordinate_Fourth_Edge->setText(QString::number(p[10].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->Second_X_Coordinate_Fourth_Edge->setText(QString::number(p[11].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->Second_Y_Coordinate_Fourth_Edge->setText(QString::number(p[11].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->lable_test->Clear();
-	}
-	else if (info.gradient == TensorCoonsPatch || info.gradient == TensorCoonsPatchParametric)
-	{
-		ui->First_X_Coordinate_First_Edge_3->setText(QString::number(p[0].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->First_Y_Coordinate_First_Edge_3->setText(QString::number(p[0].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->Second_X_Coordinate_First_Edge_3->setText(QString::number(p[1].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->Second_Y_Coordinate_First_Edge_3->setText(QString::number(p[1].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->Third_X_Coordinate_First_Edge_3->setText(QString::number(p[2].x()/ MM_TO_COORD(ui->lable_test->width())));
-		ui->Third_Y_Coordinate_First_Edge_3->setText(QString::number(p[2].x()/ MM_TO_COORD(ui->lable_test->height())));
-		ui->Fourth_X_Coordinate_First_Edge_3->setText(QString::number(p[3].x()/ MM_TO_COORD(ui->lable_test->width())));
-		ui->Fourth_Y_Coordinate_First_Edge_3->setText(QString::number(p[3].x()/ MM_TO_COORD(ui->lable_test->height())));
-		ui->First_X_Coordinate_Second_Edge_3->setText(QString::number(p[4].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->First_Y_Coordinate_Second_Edge_3->setText(QString::number(p[4].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->Second_X_Coordinate_Second_Edge_3->setText(QString::number(p[5].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->Second_Y_Coordinate_Second_Edge_3->setText(QString::number(p[5].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->Third_X_Coordinate_Second_Edge_3->setText(QString::number(p[6].x()/ MM_TO_COORD(ui->lable_test->width())));
-		ui->Third_Y_Coordinate_Second_Edge_3->setText(QString::number(p[6].x()/ MM_TO_COORD(ui->lable_test->height())));
-		ui->Fourth_X_Coordinate_Second_Edge_3->setText(QString::number(p[7].x()/ MM_TO_COORD(ui->lable_test->width())));
-		ui->Fourth_Y_Coordinate_Second_Edge_3->setText(QString::number(p[7].x()/ MM_TO_COORD(ui->lable_test->height())));
-		ui->First_X_Coordinate_Third_Edge_3->setText(QString::number(p[8].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->First_Y_Coordinate_Third_Edge_3->setText(QString::number(p[8].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->Second_X_Coordinate_Third_Edge_3->setText(QString::number(p[9].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->Second_Y_Coordinate_Third_Edge_3->setText(QString::number(p[9].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->Third_X_Coordinate_Third_Edge_3->setText(QString::number(p[10].x()/ MM_TO_COORD(ui->lable_test->width())));
-		ui->Third_Y_Coordinate_Third_Edge_3->setText(QString::number(p[10].x()/ MM_TO_COORD(ui->lable_test->height())));
-		ui->Fourth_X_Coordinate_Third_Edge_3->setText(QString::number(p[11].x()/ MM_TO_COORD(ui->lable_test->width())));
-		ui->Fourth_Y_Coordinate_Third_Edge_3->setText(QString::number(p[11].x()/ MM_TO_COORD(ui->lable_test->height())));
-		ui->First_X_Coordinate_Fourth_Edge_3->setText(QString::number(p[12].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->First_Y_Coordinate_Fourth_Edge_3->setText(QString::number(p[12].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->Second_X_Coordinate_Fourth_Edge_3->setText(QString::number(p[13].x() / MM_TO_COORD(ui->lable_test->width())));
-		ui->Second_Y_Coordinate_Fourth_Edge_3->setText(QString::number(p[13].y() / MM_TO_COORD(ui->lable_test->height())));
-		ui->Third_X_Coordinate_Fourth_Edge_3->setText(QString::number(p[14].x()/ MM_TO_COORD(ui->lable_test->width())));
-		ui->Third_Y_Coordinate_Fourth_Edge_3->setText(QString::number(p[14].x()/ MM_TO_COORD(ui->lable_test->height())));
-		ui->Fourth_X_Coordinate_Fourth_Edge_3->setText(QString::number(p[15].x()/ MM_TO_COORD(ui->lable_test->width())));
-		ui->Fourth_Y_Coordinate_Fourth_Edge_3->setText(QString::number(p[15].x()/ MM_TO_COORD(ui->lable_test->height())));
-		ui->lable_test->Clear();
-	}
 }

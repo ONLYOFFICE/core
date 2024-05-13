@@ -69,34 +69,95 @@ class CustomLabel : public QLabel
 public:
 	CustomLabel(QWidget *parent = nullptr) : QLabel(parent)
 	{
-		connect(this, &CustomLabel::mousePressed, this, &CustomLabel::onCheckPosition);
+		movable = false;
+		setMouseTracking(true);
 	}
 
 	~CustomLabel() {}
 
-	std::vector<QPoint> GetPoints() const
+	void SetPoints(const std::vector<QPoint>& points)
 	{
-		return m_points;
+		m_points = points;
+	}
+
+	QPoint GetCheckPoint() const
+	{
+		return checkPoint;
+	}
+
+	QPoint GetMovePoint() const
+	{
+		return movePoint;
+	}
+
+	size_t GetIndex() const
+	{
+		return index;
+	}
+
+	bool Movable() const
+	{
+		return movable;
+	}
+
+	void ResetMovable()
+	{
+		if (movable)
+		{
+			movable = false;
+		}
+		else
+		{
+			movable = true;
+		}
+	}
+
+	void setIndex(size_t _index)
+	{
+		index = _index;
 	}
 
 	void Clear()
 	{
 		m_points.clear();
 	}
+
+	bool CheckPointArea()
+	{
+		for (int i = 0; i < m_points.size(); i++)
+		{
+			QRect rect(m_points[i].x() - 5, m_points[i].y() - 5, m_points[i].x() + 5, m_points[i].y() + 5);
+			if (rect.contains(checkPoint))
+			{
+				index = i;
+				return true;
+			}
+		}
+		return false;
+	}
+
 signals:
-	void mousePressed(QPoint point);
+	void mousePressed();
+	void mouseMoved();
+
 protected:
 	void mousePressEvent(QMouseEvent *event) override
 	{
-		QPoint point = event->pos();
-		emit mousePressed(point);
+		checkPoint = event->pos();
+		emit mousePressed();
 	}
-public slots:
-	void onCheckPosition(QPoint point)
+
+	void mouseMoveEvent(QMouseEvent *event) override
 	{
-		m_points.push_back(point);
+		movePoint = event->pos();
+		emit mouseMoved();
 	}
+
 private:
+	bool movable;
+	size_t index;
+	QPoint movePoint;
+	QPoint checkPoint;
 	std::vector<QPoint> m_points;
 };
 
@@ -238,12 +299,17 @@ public:
 	void InitializeColors(bool triangle);
 	std::vector<agg::rgba8> QColor2rgba(bool triangle);
 	std::vector<std::vector<agg::rgba8>> QColor2rgbaMatrix();
+	void setPoints(QImage *image);
 	QImage img;
 	QLabel *lable;
 	std::vector<Point> points;
 	Info info;
 
 private slots:
+
+	void on_label_test_clicked();
+
+	void on_label_test_mouse_move();
 
 	void on_actionLinear_Gradient_triggered();
 
@@ -262,8 +328,6 @@ private slots:
 	void on_actionTensor_Coons_Patch_Gradient_triggered();
 
 	void on_actionTensor_Coons_Patch_Parametric_triggered();
-
-	void on_pushButton_2_clicked();
 
 private:
 	Ui::MainWindow *ui;

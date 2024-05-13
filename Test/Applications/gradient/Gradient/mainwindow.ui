@@ -52,7 +52,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="Linear_Page">
       <widget class="QGroupBox" name="groupBox">
@@ -2424,32 +2424,6 @@
      </property>
      <property name="text">
       <string>Render Gradient</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_2">
-     <property name="geometry">
-      <rect>
-       <x>390</x>
-       <y>100</y>
-       <width>80</width>
-       <height>29</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>set from</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_42">
-     <property name="geometry">
-      <rect>
-       <x>300</x>
-       <y>80</y>
-       <width>288</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Set the coordinates from the label and click</string>
      </property>
     </widget>
     <widget class="QStackedWidget" name="stackedWidget_3">

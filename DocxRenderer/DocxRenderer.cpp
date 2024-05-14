@@ -77,15 +77,21 @@ HRESULT CDocxRenderer::SetTextAssociationType(const NSDocxRenderer::TextAssociat
 	return S_OK;
 }
 
-int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFile, bool bIsOutCompress)
+int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDst, bool bIsOutCompress)
 {
 #ifndef DISABLE_FULL_DOCUMENT_CREATION
-	m_pInternal->m_oDocument.m_strDstFilePath = sDstFile;
+	m_pInternal->m_oDocument.m_strDstFilePath = sDst;
 
 	if (bIsOutCompress)
 		m_pInternal->m_oDocument.m_strTempDirectory = NSDirectory::CreateDirectoryWithUniqueName(m_pInternal->m_sTempDirectory);
 	else
-		m_pInternal->m_oDocument.m_strTempDirectory= m_pInternal->m_sTempDirectory;
+	{
+		if (NSDirectory::Exists(sDst))
+			NSDirectory::DeleteDirectory(sDst);
+
+		NSDirectory::CreateDirectories(sDst);
+		m_pInternal->m_oDocument.m_strTempDirectory = sDst;
+	}
 
 	m_pInternal->m_oDocument.Init();
 	m_pInternal->m_oDocument.CreateTemplates();

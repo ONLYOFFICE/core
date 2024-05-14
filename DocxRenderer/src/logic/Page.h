@@ -110,16 +110,19 @@ namespace NSDocxRenderer
 
 		void AnalyzeTextLines();
 		void AnalyzeConts();
-		void DetermineStrikeoutsUnderlinesHighlights();
+
+		// strikeouts, underlines, highlights, outline
+		void AnalyzeEffects();
+
+		bool IsLineCrossingText(std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont);
+		bool IsLineBelowText(std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont);
+		bool IsHighlight(std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont);
+		bool IsOutline(std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont);
 
 		void AnalyzeDropCaps();
 		void AddDiacriticalSymbols();
 		void MergeLinesByVertAlignType();
 		void DetermineTextColumns();
-
-		bool IsLineCrossingText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
-		bool IsLineBelowText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
-		bool IsItHighlightingBackground(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
 
 		void AnalyzeShapes();
 		void DetermineLinesType();

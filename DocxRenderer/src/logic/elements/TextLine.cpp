@@ -20,6 +20,11 @@ namespace NSDocxRenderer
 		RecalcWithNewItem(oCont.get());
 		m_arConts.push_back(oCont);
 	}
+	void CTextLine::AddConts(const std::vector<std::shared_ptr<CContText>>& arConts)
+	{
+		for (auto& cont : arConts)
+			AddCont(cont);
+	}
 
 	bool CTextLine::IsCanBeDeleted() const
 	{

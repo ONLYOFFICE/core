@@ -597,6 +597,12 @@ std::vector<bool> StringPtgParser::PosValArgs(const unsigned int &index) const
             argVector.push_back(false);
             argVector.push_back(true);
             break;
+        case 0x01E1:
+            for(auto i = 0; i < 127; i++)
+            {
+                argVector.push_back(false);
+                argVector.push_back(true);
+            }
 		default:
 			break;
 	}

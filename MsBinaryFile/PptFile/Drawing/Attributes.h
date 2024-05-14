@@ -91,8 +91,9 @@ namespace PPT
         
         _UINT32  m_dwID = 0;
         std::wstring m_strFilePath;
+        std::wstring m_strFileExt;
 
-        std::wstring m_name;        
+        std::wstring m_name;
         std::wstring m_progName;
 
         // clip

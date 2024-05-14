@@ -47,16 +47,10 @@ using namespace OOX::Spreadsheet;
 
 namespace BinXlsxRW
 {
-	SaveParams::SaveParams(const std::wstring& _sDrawingsPath, const std::wstring& _sEmbeddingsPath, const std::wstring& _sThemePath, OOX::CContentTypes* _pContentTypes, CSVWriter* _pCSVWriter, bool bMacro)
+	SaveParams::SaveParams(const std::wstring& _sDrawingsPath, const std::wstring& _sEmbeddingsPath, const std::wstring& _sThemePath, OOX::CContentTypes* _pContentTypes, CSVWriter* _pCSVWriter, bool bMacro) :
+		bMacroEnabled(bMacro), pContentTypes(_pContentTypes), sThemePath(_sThemePath), 
+		sDrawingsPath(_sDrawingsPath), sEmbeddingsPath(_sEmbeddingsPath), pCSVWriter(_pCSVWriter)
 	{
-		bMacroEnabled = bMacro;
-		pContentTypes = _pContentTypes;
-        sThemePath = _sThemePath;
-		sDrawingsPath = _sDrawingsPath;
-		sEmbeddingsPath = _sEmbeddingsPath;
-
-		nThemeOverrideCount = 1;
-		pCSVWriter = _pCSVWriter;
 	}
 
 	const BYTE c_oserct_extlstEXT = 0;
@@ -1134,7 +1128,7 @@ namespace BinXlsxRW
 		}
 		else if (c_oserct_chartspaceTHEMEOVERRIDE == type)
 		{
-            std::wstring sThemeOverrideName      = L"themeOverride" + std::to_wstring(m_oSaveParams.nThemeOverrideCount++) + L".xml";
+            std::wstring sThemeOverrideName      = L"themeOverride" + std::to_wstring(m_oBufferedStream.m_nThemeOverrideCount++) + L".xml";
             std::wstring sThemeOverrideRelsPath  = L"../theme/" + sThemeOverrideName;
 
             OOX::CPath pathThemeOverrideFile = m_oSaveParams.sThemePath + FILE_SEPARATOR_STR + sThemeOverrideName;
@@ -7393,6 +7387,7 @@ namespace BinXlsxRW
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspaceCHART);
 			WriteCT_Chart(*oVal.m_chart);
 			m_oBcw.WriteItemEnd(nCurPos);
+
 		}
 		if (oVal.m_spPr.IsInit())
 		{

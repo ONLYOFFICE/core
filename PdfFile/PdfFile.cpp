@@ -1177,6 +1177,13 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	case IAdvancedCommand::AdvancedCommandType::Link:
 	{
 		CLinkCommand* pCommand = (CLinkCommand*)command;
+		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
+		{
+			PdfWriter::CPage* pCurrent = m_pInternal->pWriter->GetPage();
+			m_pInternal->pEditor->EditPage(pCommand->GetPage());
+			m_pInternal->pWriter->GetDocument()->SetCurPage(pCurrent);
+			m_pInternal->pWriter->EditPage(pCurrent);
+		}
 		return m_pInternal->pWriter->AddLink(pCommand->GetX(), pCommand->GetY(), pCommand->GetW(), pCommand->GetH(),
 											 pCommand->GetDestX(), pCommand->GetDestY(), pCommand->GetPage());
 	}

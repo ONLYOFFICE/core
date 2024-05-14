@@ -63,6 +63,8 @@ namespace MetaFile
 			m_ulRecordPos	= m_oStream.Tell();
 			m_ulRecordSize	= ulSize - 8;
 
+			m_oStream.SetCurrentBlockSize(m_ulRecordSize);
+
 			if (ulType < EMR_MIN || ulType > EMR_MAX)
 			{
 				if (ENHMETA_SIGNATURE != m_oHeader.ulSignature || 0x00010000 != m_oHeader.ulVersion)
@@ -212,6 +214,8 @@ namespace MetaFile
 			int need_skip = m_ulRecordSize - (m_oStream.Tell() - m_ulRecordPos);
 			m_oStream.Skip(need_skip);
 			ulRecordIndex++;
+
+			m_oStream.ClearCurrentBlockSize();
 
 		} while (!CheckError());
 

@@ -298,7 +298,7 @@ CXmlElement& CXmlElement::operator=(const CXmlElement& oElement)
 	return *this;
 }
 
-bool CXmlElement::operator==(const CXmlElement &oElement)
+bool CXmlElement::operator==(const CXmlElement &oElement) const
 {
 	return m_mBasicValues == oElement.m_mBasicValues &&
 	       m_mPStyleValues == oElement.m_mPStyleValues &&

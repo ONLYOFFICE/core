@@ -535,6 +535,7 @@ namespace NSBinPptxRW
 		_INT32							m_nCountCharts = 1;
 		_INT32							m_nCountDiagram = 1;
 		_INT32							m_nCountActiveX = 1;
+		_INT32							m_nThemeOverrideCount = 1;
 
 		BinDocxRW::CDocxSerializer*		m_pMainDocument;
 		int								m_nDocumentType;

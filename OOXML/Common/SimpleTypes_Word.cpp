@@ -1680,10 +1680,11 @@ namespace SimpleTypes
 
 	EHeightRule CHeightRule::FromString(const std::wstring &sValue)
 	{
-		if      ( (L"atLeast") == sValue ) this->m_eValue = heightruleAtLeast;
-		else if ( (L"auto")    == sValue ) this->m_eValue = heightruleAuto;
-		else if ( (L"exact")   == sValue ) this->m_eValue = heightruleExact;
-		else                                this->m_eValue = heightruleAuto;
+		if      (L"atLeast"		== sValue) this->m_eValue = heightruleAtLeast;
+		else if (L"at-least"	== sValue) this->m_eValue = heightruleAtLeast;
+		else if (L"auto"		== sValue) this->m_eValue = heightruleAuto;
+		else if (L"exact"		== sValue) this->m_eValue = heightruleExact;
+		else                               this->m_eValue = heightruleAuto;
 
 		return this->m_eValue;
 	}
@@ -4333,12 +4334,13 @@ namespace SimpleTypes
 
 	EWrap CWrap::FromString(const std::wstring &sValue)
 	{
-		if      ( (L"around")    == sValue ) this->m_eValue = wrapAround;
-		else if ( (L"auto")      == sValue ) this->m_eValue = wrapAuto;
-		else if ( (L"none")      == sValue ) this->m_eValue = wrapNone;
-		else if ( (L"notBeside") == sValue ) this->m_eValue = wrapNotBeside;
-		else if ( (L"through")   == sValue ) this->m_eValue = wrapThrough;
-		else if ( (L"tight")     == sValue ) this->m_eValue = wrapTight;
+		if      (L"around"		== sValue ) this->m_eValue = wrapAround;
+		else if (L"auto"		== sValue ) this->m_eValue = wrapAuto;
+		else if (L"none"		== sValue ) this->m_eValue = wrapNone;
+		else if (L"notBeside"	== sValue ) this->m_eValue = wrapNotBeside;
+		else if (L"not-beside"	== sValue) this->m_eValue = wrapNotBeside;
+		else if (L"through"		== sValue ) this->m_eValue = wrapThrough;
+		else if (L"tight"		== sValue ) this->m_eValue = wrapTight;
 		else                                  this->m_eValue = wrapAuto;
 
 		return this->m_eValue;

@@ -284,6 +284,7 @@ namespace NExtractTools
 		if (SUCCEEDED_X2T(nRes))
 		{
 			nRes = oCXlsxSerializer.loadFromFile(sTargetBin, convertParams.m_sTempResultOOXMLDirectory, sXmlOptions, sMediaPath, sEmbedPath);
+			params.m_bMacro = oCXlsxSerializer.getMacroEnabled();
 		}
 		// удаляем EditorWithChanges, потому что он не в Temp
 		if (sFrom != sTargetBin)

@@ -933,7 +933,7 @@ namespace OOX
 		{
 			auto ptr = static_cast<XLSB::WsDim*>(obj.get());
 			if (ptr != nullptr)
-				m_oRef = ptr->rfx.toString();
+				m_oRef = ptr->rfx.toString(true, true);
 		}
 
 		CSheetFormatPr::CSheetFormatPr()
@@ -3105,7 +3105,7 @@ namespace OOX
 					m_oName = ptr->xstrName.value();
 
 				if (!ptr->rfx.toString().empty())
-					m_oRef = ptr->rfx.toString();
+					m_oRef = ptr->rfx.toString(true, true);
 
 				if (!ptr->xstrSheet.value().empty())
 					m_oSheet = ptr->xstrSheet.value();

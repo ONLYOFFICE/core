@@ -240,17 +240,18 @@ void CConditionalFormatValueObject::fromXML(XmlUtils::CXmlLiteReader& oReader)
 			m_oFormula = oReader;
 	}
 }
-XLS::BaseObjectPtr CConditionalFormatValueObject::toBin()
+XLS::BaseObjectPtr CConditionalFormatValueObject::toBin(bool isIcon)
 {
     auto ptr(new XLSB::uCFVO);
     XLS::BaseObjectPtr objectPtr(ptr);
 
     auto ptr1(new XLSB::CFVO);
     ptr->m_BrtCFVO = XLS::BaseObjectPtr{ptr1};
+    ptr1->fSaveGTE = isIcon;
     if(m_oGte.IsInit())
         ptr1->fGTE = m_oGte->GetValue();
     else
-        ptr1->fGTE = false;
+        ptr1->fGTE = true;
     if (m_oType == SimpleTypes::Spreadsheet::ECfvoType::Number)
         ptr1->iType = XLSB::CFVOtype::CFVONUM;
     else if (m_oType == SimpleTypes::Spreadsheet::ECfvoType::Minimum)
@@ -263,13 +264,24 @@ XLS::BaseObjectPtr CConditionalFormatValueObject::toBin()
         ptr1->iType = XLSB::CFVOtype::CFVOPERCENTILE;
     else if (m_oType == SimpleTypes::Spreadsheet::ECfvoType::Formula)
         ptr1->iType = XLSB::CFVOtype::CFVOFMLA;
+    else
+        ptr1->iType = XLSB::CFVOtype::CFVONUM;
 
-    if(m_oVal.IsInit())
+    if(m_oVal.IsInit() && ptr1->iType != XLSB::CFVOtype::CFVOFMLA)
         ptr1->numParam.data.value = std::stod(m_oVal.get());
+    else if(ptr1->iType.get_type() == XLSB::CFVOtype::CFVOMIN)
+        ptr1->numParam.data.value = 0;
+    else if(ptr1->iType.get_type() == XLSB::CFVOtype::CFVOMAX)
+        ptr1->numParam.data.value = 0;
 
-    if(m_oFormula.IsInit())
+    if(static_cast<_UINT32>(ptr1->iType) == XLSB::CFVOtype::CFVOFMLA && m_oVal.IsInit())
     {
-        ptr1->formula = m_oFormula->m_sText;
+        ptr1->formula = m_oVal.get();
+        ptr1->cbFmla = 1;
+    }
+    else
+    {
+        ptr1->cbFmla = 0;
     }
 
     return objectPtr;
@@ -659,6 +671,8 @@ XLS::BaseObjectPtr CColorScale::toBin()
     XLS::BaseObjectPtr objectPtr(ptr);
     for(auto i:m_arrValues)
         ptr->m_arCFVO.push_back(i->toBin());
+    for(auto i:m_arrColors)
+        ptr->m_arBrtColor.push_back(i->toBin());
     return objectPtr;
 }
 EElementType CColorScale::getType () const
@@ -893,7 +907,7 @@ XLS::BaseObjectPtr CDataBar::toBin()
     if(m_oMaxLength.IsInit())
         ptr1->bLenMax = m_oMaxLength->GetValue();
     else
-        m_oMaxLength = 100;
+        ptr1->bLenMax = 100;
     if(m_oMinLength.IsInit())
         ptr1->bLenMin = m_oMinLength->GetValue();
     else
@@ -1138,85 +1152,149 @@ XLS::BaseObjectPtr CIconSet::toBin()
     auto beginPtr(new XLSB::BeginIconSet);
     ptr->m_BrtBeginIconSet = XLS::BaseObjectPtr{beginPtr};
     if(m_oShowValue.IsInit())
-    beginPtr->fIcon = !m_oShowValue->GetValue();
+        beginPtr->fIcon = !m_oShowValue->GetValue();
+    else
+        beginPtr->fIcon = false;
     if(m_oReverse.IsInit())
-    beginPtr->fReverse = m_oReverse->GetValue();
+        beginPtr->fReverse = m_oReverse->GetValue();
+    else
+        beginPtr->fReverse = false;
+    if(m_oIconSet.IsInit())
+    {
+        switch (m_oIconSet->GetValue())
+        {
+            case SimpleTypes::Spreadsheet::EIconSetType::NoIcons:
+            {
+                beginPtr->iSet.set = KPISets::KPINIL;
+                break;
+            }
+            case SimpleTypes::Spreadsheet::EIconSetType::Arrows3:
+            {
+                beginPtr->iSet.set = KPISets::KPI3ARROWS;
+                break;
+            }
+            case SimpleTypes::Spreadsheet::EIconSetType::Arrows3Gray:
+            {
+                beginPtr->iSet.set = KPISets::KPI3ARROWSGRAY;
+                break;
+            }
+            case SimpleTypes::Spreadsheet::EIconSetType::Flags3:
+            {
+                beginPtr->iSet.set = KPISets::KPI3FLAGS;
+                break;
+            }
+            case SimpleTypes::Spreadsheet::EIconSetType::Traffic3Lights1:
+            {
+                beginPtr->iSet.set = KPISets::KPI3TRAFFICLIGHTS1;
+                break;
+            }
+            case SimpleTypes::Spreadsheet::EIconSetType::Traffic3Lights2:
+            {
+                beginPtr->iSet.set = KPISets::KPI3TRAFFICLIGHTS2;
+                break;
+            }
+            case SimpleTypes::Spreadsheet::EIconSetType::Signs3:
+            {
+                beginPtr->iSet.set = KPISets::KPI3SIGNS;
+                break;
+            }
+            case SimpleTypes::Spreadsheet::EIconSetType::Symbols3:
+            {
+                beginPtr->iSet.set = KPISets::KPI3SYMBOLS;
+                break;
+            }
+            case SimpleTypes::Spreadsheet::EIconSetType::Symbols3_2:
+            {
+                beginPtr->iSet.set = KPISets::KPI3SYMBOLS2;
+                break;
+            }
+            case SimpleTypes::Spreadsheet::EIconSetType::Arrows4:
+            {
+                beginPtr->iSet.set = KPISets::KPI4ARROWS;
+                break;
+            }
+            case SimpleTypes::Spreadsheet::EIconSetType::Arrows4Gray:
+            {
+                beginPtr->iSet.set = KPISets::KPI4ARROWSGRAY;
+                break;
+            }
+            case SimpleTypes::Spreadsheet::EIconSetType::RedToBlack4:
+            {
+                beginPtr->iSet.set = KPISets::KPI4REDTOBLACK;
+                break;
+            }
+            case SimpleTypes::Spreadsheet::EIconSetType::Rating4:
+            {
+                beginPtr->iSet.set = KPISets::KPI4RATING;
+                break;
+            }
+            case SimpleTypes::Spreadsheet::EIconSetType::Traffic4Lights:
+            {
+                beginPtr->iSet.set =  KPISets::KPI4TRAFFICLIGHTS;
+                break;
+            }
+            case SimpleTypes::Spreadsheet::EIconSetType::Arrows5:
+            {
+                beginPtr->iSet.set = KPISets::KPI5ARROWS;
+                break;
+            }
+            case SimpleTypes::Spreadsheet::EIconSetType::Arrows5Gray:
+            {
+                beginPtr->iSet.set = KPISets::KPI5ARROWSGRAY;
+                break;
+            }
+            case SimpleTypes::Spreadsheet::EIconSetType::Rating5:
+            {
+                beginPtr->iSet.set = KPISets::KPI5RATING;
+                break;
+            }
+            case SimpleTypes::Spreadsheet::EIconSetType::Quarters5:
+            {
+                beginPtr->iSet.set = KPISets::KPI5QUARTERS;
+                break;
+            }
+            default:
+            {
+                beginPtr->iSet.set = KPISets::KPINIL;
+                break;
+            }
+        }
+    }
+    else
+    {
+        switch(m_arrValues.size())
+        {
+            case 0:
+            {
+                beginPtr->iSet.set = KPISets::KPINIL;
+                break;
+            }
+            case 3:
+            {
+                beginPtr->iSet.set = KPISets::KPI3TRAFFICLIGHTS1;
+                break;
+            }
+            case 4:
+            {
+                beginPtr->iSet.set = KPISets::KPI4TRAFFICLIGHTS;
+                break;
+            }
+            case 5:
+            {
+                beginPtr->iSet.set = KPISets::KPI5QUARTERS;
+                break;
+            }
+            default:
+            {
+                beginPtr->iSet.set = KPISets::KPINIL;
+                break;
+            }
+        }
 
-    if (m_oIconSet == SimpleTypes::Spreadsheet::EIconSetType::NoIcons)
-    {
-        beginPtr->iSet.set = KPISets::KPINIL;
-    }
-    else if (m_oIconSet == SimpleTypes::Spreadsheet::EIconSetType::Arrows3)
-    {
-        beginPtr->iSet.set = KPISets::KPI3ARROWS;
-    }
-    else if (m_oIconSet == SimpleTypes::Spreadsheet::EIconSetType::Arrows3Gray)
-    {
-        beginPtr->iSet.set = KPISets::KPI3ARROWSGRAY;
-    }
-    else if (m_oIconSet == SimpleTypes::Spreadsheet::EIconSetType::Flags3)
-    {
-        beginPtr->iSet.set = KPISets::KPI3FLAGS;
-    }
-    else if (m_oIconSet == SimpleTypes::Spreadsheet::EIconSetType::Traffic3Lights1)
-    {
-        beginPtr->iSet.set = KPISets::KPI3TRAFFICLIGHTS1;
-    }
-    else if (m_oIconSet == SimpleTypes::Spreadsheet::EIconSetType::Traffic3Lights2)
-    {
-        beginPtr->iSet.set = KPISets::KPI3TRAFFICLIGHTS2;
-    }
-    else if (m_oIconSet == SimpleTypes::Spreadsheet::EIconSetType::Signs3)
-    {
-        beginPtr->iSet.set = KPISets::KPI3SIGNS;
-    }
-    else if (m_oIconSet == SimpleTypes::Spreadsheet::EIconSetType::Symbols3)
-    {
-        beginPtr->iSet.set = KPISets::KPI3SYMBOLS;
-    }
-    else if (m_oIconSet == SimpleTypes::Spreadsheet::EIconSetType::Symbols3_2)
-    {
-        beginPtr->iSet.set = KPISets::KPI3SYMBOLS2;
-    }
-    else if (m_oIconSet == SimpleTypes::Spreadsheet::EIconSetType::Arrows4)
-    {
-        beginPtr->iSet.set = KPISets::KPI4ARROWS;
-    }
-    else if (m_oIconSet == SimpleTypes::Spreadsheet::EIconSetType::Arrows4Gray)
-    {
-        beginPtr->iSet.set = KPISets::KPI4ARROWSGRAY;
-    }
-    else if (m_oIconSet == SimpleTypes::Spreadsheet::EIconSetType::RedToBlack4)
-    {
-        beginPtr->iSet.set = KPISets::KPI4REDTOBLACK;
-    }
-    else if (m_oIconSet == SimpleTypes::Spreadsheet::EIconSetType::Rating4)
-    {
-        beginPtr->iSet.set = KPISets::KPI4RATING;
-    }
-    else if (m_oIconSet == SimpleTypes::Spreadsheet::EIconSetType::Traffic4Lights)
-    {
-        beginPtr->iSet.set = KPISets::KPI4TRAFFICLIGHTS;
-    }
-    else if (m_oIconSet == SimpleTypes::Spreadsheet::EIconSetType::Arrows5)
-    {
-        beginPtr->iSet.set = KPISets::KPI5ARROWS;
-    }
-    else if (m_oIconSet == SimpleTypes::Spreadsheet::EIconSetType::Arrows5Gray)
-    {
-        beginPtr->iSet.set = KPISets::KPI5ARROWSGRAY;
-    }
-    else if (m_oIconSet == SimpleTypes::Spreadsheet::EIconSetType::Rating5)
-    {
-        beginPtr->iSet.set = KPISets::KPI5RATING;
-    }
-    else if (m_oIconSet == SimpleTypes::Spreadsheet::EIconSetType::Quarters5)
-    {
-        beginPtr->iSet.set = KPISets::KPI5QUARTERS;
     }
 
     for(auto i:m_arrValues)
-        ptr->m_arCFVO.push_back(i->toBin());
+        ptr->m_arCFVO.push_back(i->toBin(true));
     return objectPtr;
 }
 void CIconSet::ReadAttributes(XLS::BaseObjectPtr& obj)
@@ -1536,7 +1614,7 @@ bool CConditionalFormattingRule::isValid () const
 }
 bool CConditionalFormattingRule::isExtended()
 {
-	if (m_oDxf.IsInit())		return true;
+	//if (m_oDxf.IsInit())		return true;
 
 	if (m_oDataBar.IsInit())	return m_oDataBar->isExtended();
 	if (m_oIconSet.IsInit())	return m_oIconSet->isExtended();
@@ -1737,6 +1815,15 @@ XLS::BaseObjectPtr CConditionalFormattingRule::toBin(const  XLS::CellRef &cellRe
     {
         ptr->m_source = m_oIconSet->toBin();
     }
+    if(m_oExtId.IsInit())
+    {
+        auto extPtr(new XLSB::FRTCFRULE);
+        auto beginExt(new XLSB::CFRuleExt);
+        extPtr->m_BrtCFRuleExt = XLS::BaseObjectPtr{beginExt};
+        ptr->m_FRTCFRULE = XLS::BaseObjectPtr{extPtr};
+
+        beginExt->guid = m_oExtId.get();
+    }
     return objPtr;
 }
 
@@ -1750,6 +1837,8 @@ XLS::BaseObjectPtr CConditionalFormattingRule::WriteAttributes(const  XLS::CellR
     {
         ptr->dxfId = m_oDxfId->GetValue();
     }
+    else
+        ptr->dxfId = 0;
     if(m_oPriority.IsInit())
         ptr->iPri = m_oPriority->GetValue();
     if(m_oStopIfTrue.IsInit())
@@ -1771,7 +1860,7 @@ XLS::BaseObjectPtr CConditionalFormattingRule::WriteAttributes(const  XLS::CellR
     if(m_oText.IsInit())
         ptr->strParam = m_oText.get();
     else
-        ptr->strParam = L"";
+        ptr->strParam.setSize(0xFFFFFFFF);
 
     if(!m_arrFormula.empty())
     {
@@ -1941,11 +2030,13 @@ else if (m_oType == SimpleTypes::Spreadsheet::ECfType::colorScale)
 {
     ptr->iType = XLSB::CFType::CF_TYPE_GRADIENT;
     ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_GRADIENT;
+    ptr->dxfId = 0xFFFFFFFF;
 }
 else if (m_oType == SimpleTypes::Spreadsheet::ECfType::dataBar)
 {
     ptr->iType = XLSB::CFType::CF_TYPE_DATABAR;
     ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_DATABAR;
+    ptr->dxfId = 0xFFFFFFFF;
 }
 else if (m_oType == SimpleTypes::Spreadsheet::ECfType::iconSet)
 {
@@ -2627,6 +2718,7 @@ void CConditionalFormatting::fromBin(XLS::BaseObjectPtr& obj)
         for(auto &pCFRULE14: ptr->m_arCFRULE14)
             m_arrItems.push_back(new CConditionalFormattingRule(pCFRULE14));
     }
+    IsExtended();
 }
 
 XLS::BaseObjectPtr CConditionalFormatting::toBin()
@@ -2636,28 +2728,29 @@ XLS::BaseObjectPtr CConditionalFormatting::toBin()
     {
         return objectPtr;
     }
+    auto ptr(new XLSB::CONDITIONALFORMATTING);
+    objectPtr = XLS::BaseObjectPtr{ptr};
+    XLS::CellRef formatingfirstCell;
 
-        auto ptr(new XLSB::CONDITIONALFORMATTING);
-        objectPtr = XLS::BaseObjectPtr{ptr};
-        XLS::CellRef formatingfirstCell;
-        if(m_oSqRef.IsInit())
-        {
-            auto conditionPtr(new XLSB::BeginConditionalFormatting);
-            ptr->m_BrtBeginConditionalFormatting = XLS::BaseObjectPtr{conditionPtr};
-            conditionPtr->ccf = m_arrItems.size();
-            conditionPtr->sqrfx.strValue = m_oSqRef.get();
-            if(m_oPivot.IsInit())
-                conditionPtr->fPivot = m_oPivot->GetValue();
-            else
-                conditionPtr->fPivot = false;
-            formatingfirstCell = conditionPtr->sqrfx.getLocationFirstCell();
+    auto conditionPtr(new XLSB::BeginConditionalFormatting);
+    ptr->m_BrtBeginConditionalFormatting = XLS::BaseObjectPtr{conditionPtr};
+    conditionPtr->ccf = m_arrItems.size();
+    if(m_oSqRef.IsInit())
+    {
+        conditionPtr->sqrfx.strValue = m_oSqRef.get();
+    }
+    else
+        conditionPtr->sqrfx.crfx = 0;
+    if(m_oPivot.IsInit())
+        conditionPtr->fPivot = m_oPivot->GetValue();
+    else
+        conditionPtr->fPivot = false;
+    formatingfirstCell = conditionPtr->sqrfx.getLocationFirstCell();
 
-        }
-        for(auto i: m_arrItems)
-        {
-            ptr->m_arCFRULE.push_back(i->toBin(formatingfirstCell));
-        }
-
+    for(auto i: m_arrItems)
+    {
+        ptr->m_arCFRULE.push_back(i->toBin(formatingfirstCell));
+    }
     return objectPtr;
 }
 bool CConditionalFormatting::IsUsage()

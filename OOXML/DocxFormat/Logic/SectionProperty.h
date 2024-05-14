@@ -281,10 +281,10 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CChapterSep      > m_oChapSep;
-			nullable<SimpleTypes::CDecimalNumber   > m_oChapStyle;
-			nullable<SimpleTypes::CNumberFormat    > m_oFmt;
-			nullable<SimpleTypes::CDecimalNumber   > m_oStart;
+			nullable<SimpleTypes::CChapterSep>		m_oChapSep;
+			nullable<SimpleTypes::CDecimalNumber>	m_oChapStyle;
+			nullable<SimpleTypes::CNumberFormat>	m_oFmt;
+			nullable<SimpleTypes::CDecimalNumber>	m_oStart;
 		};
 
 		//--------------------------------------------------------------------------------

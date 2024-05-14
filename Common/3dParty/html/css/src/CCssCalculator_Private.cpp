@@ -52,13 +52,6 @@ namespace NSCSS
 
 		m_mData.clear();
 
-		#ifdef CSS_CALCULATOR_WITH_XHTML
-		for (std::map<std::vector<CNode>, CCompiledStyle*>::iterator iter  = m_mUsedStyles.begin(); iter != m_mUsedStyles.end(); ++iter)
-			delete iter->second;
-
-		m_mUsedStyles.clear();
-		#endif
-
 		if (NULL != m_mStatictics)
 			delete m_mStatictics;
 	}
@@ -494,11 +487,11 @@ namespace NSCSS
 
 		if (!bIsSettings)
 		{
-			const std::map<std::vector<CNode>, CCompiledStyle*>::iterator oItem = m_mUsedStyles.find(arSelectors);
+			const std::map<std::vector<CNode>, CCompiledStyle>::iterator oItem = m_mUsedStyles.find(arSelectors);
 
 			if (oItem != m_mUsedStyles.end())
 			{
-				oStyle = *oItem->second;
+				oStyle = oItem->second;
 				return true;
 			}
 		}
@@ -562,14 +555,10 @@ namespace NSCSS
 			oStyle += oTempStyle;
 		}
 
-		if (!bIsSettings)
-		{
-			oStyle.SetID(arSelectors.back().m_wsName + ((!arSelectors.back().m_wsClass.empty()) ? L'.' + arSelectors.back().m_wsClass : L"") + ((arSelectors.back().m_wsId.empty()) ? L"" : L'#' + arSelectors.back().m_wsId) + L'-' + std::to_wstring(++m_nCountNodes));
+		oStyle.SetID(arSelectors.back().m_wsName + ((!arSelectors.back().m_wsClass.empty()) ? L'.' + arSelectors.back().m_wsClass : L"") + ((arSelectors.back().m_wsId.empty()) ? L"" : L'#' + arSelectors.back().m_wsId) + L'-' + std::to_wstring(++m_nCountNodes));
 
-			CCompiledStyle *pTemp = new CCompiledStyle(oStyle);
-
-			m_mUsedStyles[arSelectors] = pTemp;
-		}
+		if (!bIsSettings && !oStyle.Empty())
+			m_mUsedStyles[arSelectors] = oStyle;
 
 		return true;
 	}

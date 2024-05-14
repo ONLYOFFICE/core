@@ -14,6 +14,18 @@
 namespace NSStringFinder 
 {
 	template<class CharType, class StringType = std::basic_string<CharType, std::char_traits<CharType>, std::allocator<CharType>>>
+	struct TFoundedData
+	{
+		size_t     m_unBeginPosition;
+		size_t     m_unEndPosition;
+		StringType m_sValue;
+
+		TFoundedData()
+			: m_unBeginPosition(0), m_unEndPosition(0)
+		{}
+	};
+
+	template<class CharType, class StringType = std::basic_string<CharType, std::char_traits<CharType>, std::allocator<CharType>>>
 	StringType FindPropetyTemplate(const StringType& sString, const StringType& sProperty, const StringType& sDelimiter, const StringType& sEnding, const size_t& unStarting, size_t& unEndPosition)
 	{
 		if (sString.length() < unStarting)
@@ -66,70 +78,61 @@ namespace NSStringFinder
 	}
 
 	template<class CharType, class StringType = std::basic_string<CharType, std::char_traits<CharType>, std::allocator<CharType>>>
-	StringType FindPropetyTemplate(const StringType& sString, const StringType& sProperty, const std::vector<StringType>& arDelimiters, const std::vector<StringType>& arEndings, const size_t& unStarting, size_t& unEndPosition)
+	TFoundedData<CharType> FindPropetyTemplate(const StringType& sString, const StringType& sProperty, const std::vector<StringType>& arDelimiters, const std::vector<StringType>& arEndings, const size_t& unStarting)
 	{
 		if (sString.length() < unStarting)
-			return StringType();
+			return TFoundedData<CharType>();
 
-		std::string sRegexValue = "(?i)" + std::string(sProperty.begin(), sProperty.end());
+		std::wstring wsRegexValue = L"(?i)" + std::wstring(sProperty.begin(), sProperty.end());
 
 		if (!arDelimiters.empty())
 		{
-			sRegexValue += "\\s*[";
-			for (const StringType& sDelimiter : arDelimiters)
-				sRegexValue +=  std::string(sDelimiter.begin(), sDelimiter.end()) + "|";
-			sRegexValue.pop_back();
-			sRegexValue += "]{1}";
+			wsRegexValue += L"\\s*[";
+			for (const StringType& wsDelimiter : arDelimiters)
+				wsRegexValue +=  std::wstring(wsDelimiter.begin(), wsDelimiter.end()) + L"|";
+			wsRegexValue.pop_back();
+			wsRegexValue += L"]{1}";
 		}
 
 		if (!arEndings.empty())
 		{
-			std::string sEndingValue;
+			std::wstring wsEndingValue;
 
 			for (const StringType& sEnding : arEndings)
-				sEndingValue +=  std::string(sEnding.begin(), sEnding.end()) + "|";
+				wsEndingValue +=  std::wstring(sEnding.begin(), sEnding.end()) + L"|";
 
-			sEndingValue.pop_back();
+			wsEndingValue.pop_back();
 
-			sRegexValue += "\\s*(.[^" + sEndingValue + "]*)\\s*[" + sEndingValue + "]?";
+			wsRegexValue += L"\\s*(.[^" + wsEndingValue + L"]*)\\s*[" + wsEndingValue + L"]?";
 		}
 		else
-			sRegexValue += "\\s*(.*)[\\n|\\r]?";
+			wsRegexValue += L"\\s*(.*)[\\n|\\r]?";
 
-		boost::regex oRegex(sRegexValue);
+		boost::wregex oRegex(wsRegexValue);
 		boost::match_results<typename StringType::const_iterator> oResult;
 
 		if (!boost::regex_search(sString.begin() + unStarting, sString.end(), oResult, oRegex))
-			return StringType();
+			return TFoundedData<CharType>();
 
-		unEndPosition = unStarting + oResult.position() + oResult.length();
+		TFoundedData<CharType> oData;
 
-		StringType sValue(oResult[1]);
-		boost::algorithm::trim(sValue);
+		oData.m_unBeginPosition = unStarting + oResult.position();
+		oData.m_unEndPosition = unStarting + oResult.position() + oResult.length();
 
-		return sValue;
+		oData.m_sValue = oResult[1];
+		boost::algorithm::trim(oData.m_sValue);
+
+		return oData;
 	}
 
-	std::string FindPropety(const std::string& sString, const std::string& sProperty, const std::vector<std::string>& arDelimiters, const std::vector<std::string>& arEndings, const size_t& unStarting, size_t& unEndPosition)
+	TFoundedData<char> FindPropety(const std::string& sString, const std::string& sProperty, const std::vector<std::string>& arDelimiters, const std::vector<std::string>& arEndings, const size_t& unStarting = 0)
 	{
-		return FindPropetyTemplate<char>(sString, sProperty, arDelimiters, arEndings, unStarting, unEndPosition);
+		return FindPropetyTemplate<char>(sString, sProperty, arDelimiters, arEndings, unStarting);
 	}
 
-	std::wstring FindPropety(const std::wstring& wsString, const std::wstring& wsProperty, const std::vector<std::wstring>& arDelimiters, const std::vector<std::wstring>& arEndings, const size_t& unStarting, size_t& unEndPosition)
+	TFoundedData<wchar_t> FindPropety(const std::wstring& wsString, const std::wstring& wsProperty, const std::vector<std::wstring>& arDelimiters, const std::vector<std::wstring>& arEndings, const size_t& unStarting = 0)
 	{
-		return FindPropetyTemplate<wchar_t>(wsString, wsProperty, arDelimiters, arEndings, unStarting, unEndPosition);
-	}
-
-	std::string FindPropety(const std::string& sString, const std::string& sProperty, const std::vector<std::string>& arDelimiters, const std::vector<std::string>& arEndings, const size_t& unStarting = 0)
-	{
-		size_t unEndPosition = 0;
-		return FindPropetyTemplate<char>(sString, sProperty, arDelimiters, arEndings, unStarting, unEndPosition);
-	}
-
-	std::wstring FindPropety(const std::wstring& wsString, const std::wstring& wsProperty, const std::vector<std::wstring>& arDelimiters, const std::vector<std::wstring>& arEndings, const size_t& unStarting = 0)
-	{
-		size_t unEndPosition = 0;
-		return FindPropetyTemplate<wchar_t>(wsString, wsProperty, arDelimiters, arEndings, unStarting, unEndPosition);
+		return FindPropetyTemplate<wchar_t>(wsString, wsProperty, arDelimiters, arEndings, unStarting);
 	}
 
 	template <typename StringType, typename StringEndgeType>

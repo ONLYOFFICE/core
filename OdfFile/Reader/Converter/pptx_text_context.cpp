@@ -134,6 +134,7 @@ private:
 	std::wstring		last_paragraph_style_name_;
 	std::wstring		paragraph_style_name_;
     std::wstring		span_style_name_;
+	
 
 	std::wstring					base_style_name_;
 	odf_types::style_family::type	base_style_family_;//Presentation Or SpreadSheet
@@ -220,14 +221,13 @@ void pptx_text_context::Impl::start_span(const std::wstring & styleName)//кус
 {
 	int text_size = text_.str().length();
 	
-	if ((span_style_name_ !=styleName && text_size > 0) || in_span)
+	if ((span_style_name_ != styleName && text_size > 0) || in_span)
 	{
 		dump_run();
 	}
 
 	span_style_name_ = styleName;
-
-	in_span=true;
+	in_span = true;
 }
 
 void pptx_text_context::Impl::end_span() 
@@ -451,12 +451,10 @@ void pptx_text_context::Impl::write_rPr(std::wostream & strm)
 	
 	text_properties_.pptx_convert(pptx_context_);
 
-	strm << get_styles_context().text_style().str();
-
-	if (text_properties_.fo_font_size_)
+	if (text_properties_.fo_font_size_ && text_properties_.fo_font_size_->get_type() == odf_types::font_size::Length)
 		last_run_font_size_ = text_properties_.fo_font_size_->get_length();
-	else
-		last_run_font_size_ = boost::none;
+
+	strm << get_styles_context().text_style().str();
 }
 std::wstring pptx_text_context::Impl::dump_paragraph(/*bool last*/)
 {				
@@ -478,15 +476,21 @@ std::wstring pptx_text_context::Impl::dump_paragraph(/*bool last*/)
 				{
 					CP_XML_STREAM() << run_.str();
 				}
-				else
+
+				CP_XML_NODE(L"a:endParaRPr")
 				{
-					CP_XML_NODE(L"a:endParaRPr")
+					odf_reader::paragraph_format_properties parap_props;
+					ApplyParagraphProperties(paragraph_style_name_, parap_props, false);
+
+					if (last_run_font_size_ && !parap_props.fo_margin_top_)
 					{
-						if(last_run_font_size_)
-						{
-							CP_XML_ATTR(L"sz", last_run_font_size_->get_value_unit(odf_types::length::pt) * 100);
-						}
+						int sz = last_run_font_size_->get_value_unit(odf_types::length::pt) * 100;
+						
+						CP_XML_ATTR(L"sz", sz);
+
 					}
+
+					last_run_font_size_ = boost::none;
 				}
 			}
 		}
@@ -589,7 +593,7 @@ void pptx_text_context::Impl::dump_run()
 	const std::wstring content = XmlUtils::EncodeXmlString(text_.str());
 	//if (content.length() <1 &&  span_style_name_.length()<1) return ;      ... провеить с пустыми строками нужны ли  ...
 
-	if (content .length() > 0)
+	if (content.length() > 0)
 	{		
 		CP_XML_WRITER(run_)
 		{
@@ -606,6 +610,15 @@ void pptx_text_context::Impl::dump_run()
 			text_.str(std::wstring());			
 		}
 	}
+	else
+	{
+		odf_reader::text_format_properties text_properties_;
+		ApplyTextProperties(span_style_name_, paragraph_style_name_, text_properties_);
+
+		if (text_properties_.fo_font_size_ && text_properties_.fo_font_size_->get_type() == odf_types::font_size::Length)
+			last_run_font_size_ = text_properties_.fo_font_size_->get_length();
+	}
+
 	hyperlink_hId =L"";
 }
 

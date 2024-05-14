@@ -1456,8 +1456,12 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			ptr->fPersist = m_PreserveSortFilterLayout.get();
 		if(m_UnboundColumnsLeft.IsInit())
 			ptr->ccolExtraLeft = m_UnboundColumnsLeft->GetValue();
+        else
+            ptr->ccolExtraLeft = 0;
 		if(m_UnboundColumnsRight.IsInit())
 			ptr->ccolExtraRight = m_UnboundColumnsRight->GetValue();
+        else
+            ptr->ccolExtraRight = 0;
 
 		if(m_oQueryTableFields.IsInit())
 			ptr1->m_QSIFS = m_oQueryTableFields->toBin();

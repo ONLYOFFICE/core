@@ -1967,59 +1967,59 @@ else if (m_oType == SimpleTypes::Spreadsheet::ECfType::timePeriod)
 {
     if (m_oTimePeriod == SimpleTypes::Spreadsheet::ETimePeriod::today)
     {
-        ptr->iTemplate.value().get() = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODTODAY;
+        ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODTODAY;
         ptr->iParam = XLSB::CFDateOper::CF_TIMEPERIOD_TODAY;
     }
     else if (m_oTimePeriod == SimpleTypes::Spreadsheet::ETimePeriod::tomorrow)
     {
-        ptr->iTemplate.value().get() = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODTOMORROW;
+        ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODTOMORROW;
         ptr->iParam = XLSB::CFDateOper::CF_TIMEPERIOD_TOMORROW;
     }
     else if (m_oTimePeriod == SimpleTypes::Spreadsheet::ETimePeriod::yesterday)
     {
-        ptr->iTemplate.value().get() = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODYESTERDAY;
+        ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODYESTERDAY;
          ptr->iParam = XLSB::CFDateOper::CF_TIMEPERIOD_YESTERDAY;
     }
     else if (m_oTimePeriod == SimpleTypes::Spreadsheet::ETimePeriod::last7Days)
     {
-        ptr->iTemplate.value().get() = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODLAST7DAYS;
+        ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODLAST7DAYS;
          ptr->iParam = XLSB::CFDateOper::CF_TIMEPERIOD_LAST7DAYS;
     }
     else if (m_oTimePeriod == SimpleTypes::Spreadsheet::ETimePeriod::lastMonth)
     {
-        ptr->iTemplate.value().get() = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODLASTMONTH;
+        ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODLASTMONTH;
          ptr->iParam = XLSB::CFDateOper::CF_TIMEPERIOD_LASTMONTH;
     }
     else if (m_oTimePeriod == SimpleTypes::Spreadsheet::ETimePeriod::nextMonth)
     {
-        ptr->iTemplate.value().get() = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODNEXTMONTH;
+        ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODNEXTMONTH;
          ptr->iParam = XLSB::CFDateOper::CF_TIMEPERIOD_NEXTMONTH;
     }
     else if (m_oTimePeriod == SimpleTypes::Spreadsheet::ETimePeriod::thisWeek)
     {
-        ptr->iTemplate.value().get() = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODTHISWEEK;
+        ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODTHISWEEK;
          ptr->iParam = XLSB::CFDateOper::CF_TIMEPERIOD_THISWEEK;
     }
     else if (m_oTimePeriod == SimpleTypes::Spreadsheet::ETimePeriod::nextWeek)
     {
-        ptr->iTemplate.value().get() = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODNEXTWEEK;
+        ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODNEXTWEEK;
          ptr->iParam = XLSB::CFDateOper::CF_TIMEPERIOD_NEXTWEEK;
     }
     else if (m_oTimePeriod == SimpleTypes::Spreadsheet::ETimePeriod::lastWeek)
     {
-        ptr->iTemplate.value().get() = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODLASTWEEK;
+        ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODLASTWEEK;
          ptr->iParam = XLSB::CFDateOper::CF_TIMEPERIOD_LASTWEEK;
     }
     else if (m_oTimePeriod == SimpleTypes::Spreadsheet::ETimePeriod::thisMonth)
     {
-        ptr->iTemplate.value().get() = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODTHISMONTH;
+        ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODTHISMONTH;
          ptr->iParam = XLSB::CFDateOper::CF_TIMEPERIOD_THISMONTH;
     }
 }
 
 else if (m_oType == SimpleTypes::Spreadsheet::ECfType::aboveAverage)
 {
-    ptr->iTemplate= XLSB::CFTemp::CF_TEMPLATE_ABOVEAVERAGE;
+    ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_ABOVEAVERAGE;
     ptr->iParam = m_oStdDev->GetValue();
 }
 else if (m_oType == SimpleTypes::Spreadsheet::ECfType::duplicateValues)

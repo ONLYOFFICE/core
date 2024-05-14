@@ -4,9 +4,10 @@ namespace StarMath
 {
 enum class TypeConversion
 {
-    undefine,
-    pptx,
-    docx,
+	undefine,
+	pptx,
+	docx,
+	xlsx,
 };
 }
 

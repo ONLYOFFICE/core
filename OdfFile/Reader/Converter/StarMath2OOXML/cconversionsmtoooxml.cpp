@@ -44,59 +44,67 @@ namespace StarMath {
 	void CConversionSMtoOOXML::StartConversion(std::vector<StarMath::CElement*> arPars, const unsigned int& iAlignment)
 	{
 		m_pXmlWrite = new XmlUtils::CXmlWriter;
-		std::wstring wsNodeMath(L"m:oMath"),wsNodeMathPara(L"m:oMathPara"),wsAlignment;
-		switch(iAlignment)
+		if(!arPars.empty())
 		{
-		case 0:
-		wsAlignment = L"center";
-		break;
-		case 1:
-		wsAlignment = L"left";
-		break;
-		case 2:
-		wsAlignment = L"right";
-		break;
-		default:
-		wsAlignment = L"center";
-		break;
-		}
-		if(arPars[0]->GetTypeConversion() == TypeConversion::pptx)
-		{
-			wsNodeMath += L" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\"";
-			wsNodeMathPara += L" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\"";
-			wsAlignment += L"Group";
-		}
-		m_pXmlWrite->WriteNodeBegin(wsNodeMathPara,false);
-		if(iAlignment>= 0 && iAlignment <= 2)
-		{
-			m_pXmlWrite->WriteNodeBegin(L"m:oMathParaPr",false);
-			m_pXmlWrite->WriteNodeBegin(L"m:jc",true);
-			m_pXmlWrite->WriteAttribute(L"m:val",wsAlignment);
-			m_pXmlWrite->WriteNodeEnd(L"",true,true);
-			m_pXmlWrite->WriteNodeEnd(L"m:oMathParaPr",false,false);
-		}
-		m_pXmlWrite->WriteNodeBegin(wsNodeMath,false);
-		for(CElement* oTempElement:arPars)
-		{
-			if(oTempElement != nullptr)
+			std::wstring wsNodeMath(L"m:oMath"),wsNodeMathPara(L"m:oMathPara"),wsAlignment;
+			switch(iAlignment)
 			{
-				if(CParserStarMathString::CheckNewline(oTempElement))
-				{
-					m_pXmlWrite->WriteNodeBegin(L"m:r",false);
-					m_pXmlWrite->WriteNodeBegin(L"w:br",true);
-					m_pXmlWrite->WriteNodeEnd(L"",true,true);
-					m_pXmlWrite->WriteNodeEnd(L"m:r",false,false);
-					m_pXmlWrite->WriteNodeEnd(L"m:oMath",false,false);
-					m_pXmlWrite->WriteNodeBegin(L"m:oMath",false);
-				}
-				else
-					oTempElement->ConversionToOOXML(m_pXmlWrite);
+			case 0:
+			wsAlignment = L"center";
+			break;
+			case 1:
+			wsAlignment = L"left";
+			break;
+			case 2:
+			wsAlignment = L"right";
+			break;
+			default:
+			wsAlignment = L"center";
+			break;
 			}
+			if(arPars[0]->GetTypeConversion() == TypeConversion::pptx)
+			{
+				wsNodeMath += L" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\"";
+				wsNodeMathPara += L" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\"";
+				wsAlignment += L"Group";
+			}
+			m_pXmlWrite->WriteNodeBegin(wsNodeMathPara,false);
+			if(iAlignment>= 0 && iAlignment <= 2)
+			{
+				m_pXmlWrite->WriteNodeBegin(L"m:oMathParaPr",false);
+				m_pXmlWrite->WriteNodeBegin(L"m:jc",true);
+				m_pXmlWrite->WriteAttribute(L"m:val",wsAlignment);
+				m_pXmlWrite->WriteNodeEnd(L"",true,true);
+				m_pXmlWrite->WriteNodeEnd(L"m:oMathParaPr",false,false);
+			}
+			m_pXmlWrite->WriteNodeBegin(wsNodeMath,false);
+			for(CElement* oTempElement:arPars)
+			{
+				if(oTempElement != nullptr)
+				{
+					if(CParserStarMathString::CheckNewline(oTempElement))
+					{
+						m_pXmlWrite->WriteNodeBegin(L"m:r",false);
+						m_pXmlWrite->WriteNodeBegin(L"w:br",true);
+						m_pXmlWrite->WriteNodeEnd(L"",true,true);
+						m_pXmlWrite->WriteNodeEnd(L"m:r",false,false);
+						m_pXmlWrite->WriteNodeEnd(L"m:oMath",false,false);
+						m_pXmlWrite->WriteNodeBegin(L"m:oMath",false);
+					}
+					else
+						oTempElement->ConversionToOOXML(m_pXmlWrite);
+				}
+			}
+		}
+		else
+		{
+			m_pXmlWrite->WriteNodeBegin(L"m:oMathPara",false);
+			m_pXmlWrite->WriteNodeBegin(L"m:oMath",false);
 		}
 		m_pXmlWrite->WriteNodeEnd(L"m:oMath",false,false);
 		m_pXmlWrite->WriteNodeEnd(L"m:oMathPara",false,false);
 	}
-    void CConversionSMtoOOXML::StandartProperties(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion)
+	void CConversionSMtoOOXML::StandartProperties(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion)
 	{
 		if(TypeConversion::docx == enTypeConversion || TypeConversion::undefine == enTypeConversion)
 		{
@@ -134,10 +142,10 @@ namespace StarMath {
 				if(pAttribute->GetSize() == 0)
 				{
 					pXmlWrite->WriteNodeBegin(L"w:sz",true);
-					pXmlWrite->WriteAttribute(L"w:val",L"40");
+					pXmlWrite->WriteAttribute(L"w:val",L"30");
 					pXmlWrite->WriteNodeEnd(L"w",true,true);
 					pXmlWrite->WriteNodeBegin(L"w:szCs",true);
-					pXmlWrite->WriteAttribute(L"w:val",L"40");
+					pXmlWrite->WriteAttribute(L"w:val",L"30");
 					pXmlWrite->WriteNodeEnd(L"w",true,true);
 				}
 				else if(pAttribute->GetSize() != 0)
@@ -182,7 +190,7 @@ namespace StarMath {
 				pXmlWrite->WriteNodeEnd(L"w:rPr",false,false);
 			}
 		}
-		else if(TypeConversion::pptx == enTypeConversion)
+		else if(TypeConversion::pptx == enTypeConversion || TypeConversion::xlsx == enTypeConversion)
 		{
 			if(pAttribute !=nullptr)
 			{
@@ -481,14 +489,14 @@ namespace StarMath {
 		pXmlWrite->WriteNodeEnd(L"m:t",false,false);
 		pXmlWrite->WriteNodeEnd(L"m:r",false,false);
 	}
-	void CConversionSMtoOOXML::WriteLimUpOrLowNode(XmlUtils::CXmlWriter *pXmlWrite,const std::wstring& wsNameNode,CElement* pValue, const TypeElement& enType,CAttribute* pAttribute,const std::wstring& wsName,CElement* pIndex)
+	void CConversionSMtoOOXML::WriteLimUpOrLowNode(XmlUtils::CXmlWriter *pXmlWrite, const std::wstring& wsNameNode, CElement* pValue, const TypeElement& enType, CAttribute* pAttribute, const TypeConversion &enTypeConvers, const std::wstring& wsName, CElement* pIndex)
 	{
 		pXmlWrite->WriteNodeBegin(wsNameNode,false);
 		pXmlWrite->WriteNodeBegin(wsNameNode+L"Pr",false);
-		CConversionSMtoOOXML::WriteCtrlPrNode(pXmlWrite,nullptr,pValue->GetTypeConversion());
+		CConversionSMtoOOXML::WriteCtrlPrNode(pXmlWrite,nullptr,enTypeConvers);
 		pXmlWrite->WriteNodeEnd(wsNameNode+L"Pr",false,false);
 		pXmlWrite->WriteNodeBegin(L"m:e",false);
-		CConversionSMtoOOXML::WriteRPrFName(enType,pXmlWrite,pAttribute,wsName,pValue->GetTypeConversion());
+		CConversionSMtoOOXML::WriteRPrFName(enType,pXmlWrite,pAttribute,wsName,enTypeConvers);
 		pXmlWrite->WriteNodeEnd(L"m:e",false,false);
 		if(pValue!= nullptr && pIndex != nullptr)
 		{

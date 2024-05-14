@@ -39,7 +39,10 @@
 #include <iterator>
 #include <stack>
 #include <queue>
+#include <ctype.h>
+#include <cwctype>
 #include "../../../../DesktopEditor/xml/include/xmlwriter.h"
+#include "../../../../OOXML/Base/Unit.h" 
 
 namespace StarMath
 {
@@ -100,7 +103,7 @@ namespace StarMath
 	class CStarMathReader
 	{
 	public:
-        CStarMathReader(std::wstring::iterator& itStart, std::wstring::iterator& itEnd,const TypeConversion &enTypeConversion);
+		CStarMathReader(std::wstring::iterator& itStart, std::wstring::iterator& itEnd,const TypeConversion &enTypeConversion);
 		~CStarMathReader();
 		bool GetToken();
 		//getting a subtype and setting the global type of a token to variables m_enUnderType and m_enGlobalType
@@ -131,8 +134,8 @@ namespace StarMath
 		void ReadingTheNextToken();
 		void SetMarkForUnar(const bool& bMark);
 		bool GetMarkForUnar();
-        void SetTypeConversion(const TypeConversion &enTypeCon);
-        TypeConversion GetTypeConversion();
+		void SetTypeConversion(const TypeConversion &enTypeCon);
+		TypeConversion GetTypeConversion();
 	private:
 		bool CheckTokenForGetElement(const wchar_t& cToken);
 		bool CheckIsalhpaForGetElement(const wchar_t& cToken,const wchar_t& cLastToken);
@@ -142,7 +145,7 @@ namespace StarMath
 		std::wstring m_wsLowerCaseToken,m_wsOriginalToken;
 		CAttribute* m_pAttribute;
 		CAttribute* m_pBaseAttribute;
-        TypeConversion m_enTypeCon;
+		TypeConversion m_enTypeCon;
 		std::stack<std::wstring::iterator> m_stBracket;
 	};
 
@@ -150,7 +153,7 @@ namespace StarMath
 	{
 	public:
 		CElement();
-        CElement(const TypeElement& enTypeBase, const TypeConversion& enTypeConversion);
+		CElement(const TypeElement& enTypeBase, const TypeConversion& enTypeConversion);
 		virtual ~CElement();
 		virtual void Parse(CStarMathReader* pReader) = 0;
 		//The function creates the class we need (by determining the class type by a variable m_enGlobalType from the class CStarMathReader)
@@ -161,17 +164,17 @@ namespace StarMath
 		void SetBaseType(const TypeElement& enType);
 		CAttribute* GetAttribute();
 		const TypeElement& GetBaseType();
-        const TypeConversion& GetTypeConversion();
+		const TypeConversion& GetTypeConversion();
 	private:
 		CAttribute* m_pAttribute;
 		TypeElement m_enBaseType;
-        TypeConversion m_enTypeConversion;
+		TypeConversion m_enTypeConversion;
 	};
 
 	class CElementIndex: public CElement
 	{
 	public:
-        CElementIndex(const TypeElement& enType,const TypeConversion &enTypeConversion);
+		CElementIndex(const TypeElement& enType,const TypeConversion &enTypeConversion);
 		virtual ~CElementIndex();
 		void SetValueIndex(CElement* pElement);
 		void SetLeftArg(CElement* pElement);
@@ -198,14 +201,14 @@ namespace StarMath
 		TypeElement m_enTypeIndex;
 	};
 
-	class CElementString: public CElement
+	class  CElementString: public CElement
 	{
 	public:
-        CElementString(const std::wstring& wsTokenString, const TypeConversion &enTypeConversion);
+		CElementString(const std::wstring& wsTokenString, const TypeConversion &enTypeConversion);
 		virtual ~CElementString();
 		void SetString(const std::wstring& wsTokenString);
 		std::wstring GetString();
-		static TypeElement GetDigit(const std::wstring& wsCheckToken);
+		static TypeElement  GetDigit(const std::wstring& wsCheckToken);
 		static TypeElement GetWord(const std::wstring& wsToken);
 		void SetAttribute(CAttribute* pAttribute) override;
 	private:
@@ -217,7 +220,7 @@ namespace StarMath
 	class CElementBinOperator: public CElement
 	{
 	public:
-        CElementBinOperator(const TypeElement& enType,const TypeConversion &enTypeConversion);
+		CElementBinOperator(const TypeElement& enType,const TypeConversion &enTypeConversion);
 		virtual ~CElementBinOperator();
 		void SetLeftArg(CElement* pElement);
 		void SetRightArg(CElement* pElement);
@@ -242,7 +245,7 @@ namespace StarMath
 	class CElementOperator: public CElement
 	{
 	public:
-        CElementOperator(const TypeElement& enType, const TypeConversion &enTypeConversion ,const std::wstring& wsNameOp = L"");
+		CElementOperator(const TypeElement& enType, const TypeConversion &enTypeConversion ,const std::wstring& wsNameOp = L"");
 		virtual ~CElementOperator();
 		void SetValueOperator(CElement* pElement);
 		CElement* GetValueOperator();
@@ -270,7 +273,7 @@ namespace StarMath
 	class CElementGrade: public CElement
 	{
 	public:
-        CElementGrade(const TypeConversion &enTypeConversion);
+		CElementGrade(const TypeConversion &enTypeConversion);
 		virtual ~CElementGrade();
 		void SetValueGrade(CElement* pElement);
 		void SetValueFrom(CElement* pElement);
@@ -288,7 +291,7 @@ namespace StarMath
 	class CElementBracket: public CElement
 	{
 	public:
-        CElementBracket(const TypeElement& enType,const TypeConversion &enTypeConversion);
+		CElementBracket(const TypeElement& enType,const TypeConversion &enTypeConversion);
 		virtual ~CElementBracket();
 		void SetBracketValue(const std::vector<CElement*>& arValue);
 		static TypeElement GetBracketOpen(const std::wstring& wsToken);
@@ -306,7 +309,7 @@ namespace StarMath
 	class CElementBracketWithIndex: public CElement
 	{
 	public:
-        CElementBracketWithIndex(const TypeElement& enType,const TypeConversion &enTypeConversion);
+		CElementBracketWithIndex(const TypeElement& enType,const TypeConversion &enTypeConversion);
 		virtual ~CElementBracketWithIndex();
 		void SetLeftArg(CElement* pElement);
 		void SetBracketValue(CElement* pElement);
@@ -325,7 +328,7 @@ namespace StarMath
 	class CElementSetOperations: public CElement
 	{
 	public:
-        CElementSetOperations(const TypeElement& enType,const TypeConversion &enTypeConversion);
+		CElementSetOperations(const TypeElement& enType,const TypeConversion &enTypeConversion);
 		virtual ~CElementSetOperations();
 		void SetLeftArg(CElement* pElement);
 		CElement* GetLeftArg();
@@ -345,7 +348,7 @@ namespace StarMath
 	class CElementConnection: public CElement
 	{
 	public:
-        CElementConnection(const TypeElement& enType,const TypeConversion &enTypeConversion);
+		CElementConnection(const TypeElement& enType,const TypeConversion &enTypeConversion);
 		virtual ~CElementConnection();
 		void SetRightArg(CElement* pElement);
 		CElement* GetRightArg();
@@ -365,7 +368,7 @@ namespace StarMath
 	class CElementFunction: public CElement
 	{
 	public:
-        CElementFunction(const TypeElement& enType, const TypeConversion &enTypeConversion,const std::wstring& wsNameFunc = L"");
+		CElementFunction(const TypeElement& enType, const TypeConversion &enTypeConversion,const std::wstring& wsNameFunc = L"");
 		virtual ~CElementFunction();
 		void SetValueFunction(CElement* pElement);
 		CElement* GetValueFunction();
@@ -385,7 +388,7 @@ namespace StarMath
 	class CElementSpecialSymbol: public CElement
 	{
 	public:
-        CElementSpecialSymbol(const TypeElement& enType,const TypeConversion &enTypeConversion);
+		CElementSpecialSymbol(const TypeElement& enType,const TypeConversion &enTypeConversion);
 		virtual ~CElementSpecialSymbol();
 		static TypeElement GetSpecialSymbol(std::wstring& wsToken);
 		void SetValue(CElement* pValue);
@@ -403,7 +406,7 @@ namespace StarMath
 	class CElementMatrix: public CElement
 	{
 	public:
-        CElementMatrix(const TypeElement& enType,const TypeConversion &enTypeConversion);
+		CElementMatrix(const TypeElement& enType,const TypeConversion &enTypeConversion);
 		virtual ~CElementMatrix();
 		void SetFirstArgument(CElement* pElement);
 		void SetSecondArgument(CElement* pElement);
@@ -420,7 +423,7 @@ namespace StarMath
 	class CElementDiacriticalMark: public CElement
 	{
 	public:
-        CElementDiacriticalMark(const TypeElement& enType,const TypeConversion &enTypeConversion);
+		CElementDiacriticalMark(const TypeElement& enType,const TypeConversion &enTypeConversion);
 		virtual ~CElementDiacriticalMark();
 		void SetValueMark(CElement* pValue);
 		static TypeElement GetMark(const std::wstring& wsToken);
@@ -437,7 +440,7 @@ namespace StarMath
 	public:
 		CParserStarMathString();
 		~CParserStarMathString();
-    std::vector<CElement*> Parse(std::wstring& wsParseString,int iTypeConversion,const TBaseAttribute* pBaseAttribute = nullptr);
+		std::vector<CElement*> Parse(std::wstring& wsParseString,int iTypeConversion = 0);
 		static CElement* ParseElement(CStarMathReader* pReader);
 		//Function for adding a left argument (receives the argument itself and the element to which it needs to be added as input. Works with classes:CElementBinOperator,CElementConnection,CElementSetOperation).
 		static bool AddLeftArgument(CElement* pLeftArg,CElement* pElementWhichAdd);

@@ -371,9 +371,9 @@ public:
 		void GetRD(double& dRD1, double& dRD2, double& dRD3, double& dRD4);
 		const std::vector<double>& GetCL();
 		const std::vector<double>& GetIC();
-		BYTE* GetRender(LONG& nLen, std::wstring& sMediaDirectory, std::wstring& sInternalMediaDirectory, std::wstring& sThemesDirectory);
+		BYTE* GetRender(LONG& nLen);
 
-		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags, IMetafileToRenderter* pCorrector);
+		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
 
 	private:
 		BYTE m_nQ;

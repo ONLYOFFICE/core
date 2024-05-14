@@ -358,7 +358,7 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 		else if (IsPolygonLine())
 			m_pPolygonLinePr->Read(pReader, nType, nFlags);
 		else if (IsFreeText())
-			m_pFreeTextPr->Read(pReader, nFlags, pCorrector);
+			m_pFreeTextPr->Read(pReader, nFlags);
 		else if (IsCaret())
 			m_pCaretPr->Read(pReader, nFlags);
 	}
@@ -566,15 +566,12 @@ const std::wstring& CAnnotFieldInfo::CFreeTextAnnotPr::GetDS() { return m_wsDS; 
 void CAnnotFieldInfo::CFreeTextAnnotPr::GetRD(double& dRD1, double& dRD2, double& dRD3, double& dRD4) { dRD1 = m_dRD[0]; dRD2 = m_dRD[1]; dRD3 = m_dRD[2]; dRD4 = m_dRD[3]; }
 const std::vector<double>& CAnnotFieldInfo::CFreeTextAnnotPr::GetCL() { return m_arrCL; }
 const std::vector<double>& CAnnotFieldInfo::CFreeTextAnnotPr::GetIC() { return m_arrIC; }
-BYTE* CAnnotFieldInfo::CFreeTextAnnotPr::GetRender(LONG& nLen, std::wstring& sMediaDirectory, std::wstring& sInternalMediaDirectory, std::wstring& sThemesDirectory)
+BYTE* CAnnotFieldInfo::CFreeTextAnnotPr::GetRender(LONG& nLen)
 {
 	nLen = m_nRenderLen;
-	sMediaDirectory = m_sMediaDirectory;
-	sInternalMediaDirectory = m_sInternalMediaDirectory;
-	sThemesDirectory = m_sThemesDirectory;
 	return m_pRender;
 }
-void CAnnotFieldInfo::CFreeTextAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags, IMetafileToRenderter* pCorrector)
+void CAnnotFieldInfo::CFreeTextAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags)
 {
 	m_nQ = pReader->ReadByte();
 	if (nFlags & (1 << 15))
@@ -606,9 +603,6 @@ void CAnnotFieldInfo::CFreeTextAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferRead
 	{
 		m_nRenderLen = pReader->ReadInt();
 		m_pRender = pReader->GetCurrentBuffer();
-		m_sMediaDirectory = pCorrector->GetMediaDirectory();
-		m_sInternalMediaDirectory = pCorrector->GetInternalMediaDirectory();
-		m_sThemesDirectory = pCorrector->GetThemesDirectory();
 		pReader->Skip(m_nRenderLen - 4);
 	}
 }

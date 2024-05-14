@@ -1500,6 +1500,7 @@ public:
     CMultiLineTextManager()
     {
         m_pCodes       = NULL;
+		m_pFontSizes   = NULL;
         m_pWidths      = NULL;
         m_unLen        = 0;
         m_ushSpaceCode = 0;
@@ -1518,9 +1519,19 @@ public:
         m_nAscent        = nAscent;
         m_nDescent       = unLineHeight - nAscent;
     }
+	void Init(unsigned short* pCodes, double* pFontSizes, unsigned int* pWidths, const unsigned int& unLen, const unsigned short& ushSpaceCode, const unsigned short& ushNewLineCode)
+	{
+		m_pCodes         = pCodes;
+		m_pFontSizes     = pFontSizes;
+		m_pWidths        = pWidths;
+		m_unLen          = unLen;
+		m_ushSpaceCode   = ushSpaceCode;
+		m_ushNewLineCode = ushNewLineCode;
+	}
     void Clear()
     {
         m_pCodes         = NULL;
+		m_pFontSizes     = NULL;
         m_pWidths        = NULL;
         m_unLen          = 0;
         m_ushSpaceCode   = 0;
@@ -1543,7 +1554,7 @@ public:
         {
             if (IsSpace(unPos))
             {
-                dX += dWordWidth + m_pWidths[unPos] * dKoef;
+				dX += dWordWidth + m_pWidths[unPos] * (m_pFontSizes ? m_pFontSizes[unPos] / 1000.0 : dKoef);
                 bWord             = false;
                 dWordWidth        = 0;
                 bLineStart        = false;
@@ -1560,7 +1571,7 @@ public:
 			}
             else
             {
-                double dLetterWidth = m_pWidths[unPos] * dKoef;
+				double dLetterWidth = m_pWidths[unPos] * (m_pFontSizes ? m_pFontSizes[unPos] / 1000.0 : dKoef);
                 if (dX + dWordWidth + dLetterWidth > dW)
                 {
                     if (bLineStart)
@@ -1600,13 +1611,13 @@ public:
 
                 if (bWord)
                 {
-                    dWordWidth += m_pWidths[unPos] * dKoef;
+					dWordWidth += m_pWidths[unPos] * (m_pFontSizes ? m_pFontSizes[unPos] / 1000.0 : dKoef);
                 }
                 else
                 {
                     unWordStartPos = unPos;
                     bWord          = true;
-                    dWordWidth     = m_pWidths[unPos] * dKoef;
+					dWordWidth     = m_pWidths[unPos] * (m_pFontSizes ? m_pFontSizes[unPos] / 1000.0 : dKoef);
                 }
 
                 bFirstItemOnLine  = false;
@@ -1615,7 +1626,7 @@ public:
             unPos++;
         }
     }
-    double ProcessAutoFit(const double& dW, const double& dH)
+	double ProcessAutoFit(const double& dW, const double& dH)
     {
         double dGoodFontSize = 0;
 
@@ -1676,7 +1687,11 @@ public:
 		
 		return unLineEnd;
 	}
-    double GetLineWidth(const int& nLineIndex, const double& dFontSize = 10.0)
+	double GetLineHeight(const double& dFontSize = 10.0)
+	{
+		return 0;
+	}
+	double GetLineWidth(const int& nLineIndex, const double& dFontSize = 10.0)
     {
         if (nLineIndex < 0 || nLineIndex > m_vBreaks.size())
             return 0;
@@ -1705,7 +1720,7 @@ public:
 
         for (unsigned int unPos = unStart; unPos < unEnd; ++unPos)
         {
-            dWidth += m_pWidths[unPos] * dKoef;
+			dWidth += m_pWidths[unPos] * (m_pFontSizes ? m_pFontSizes[unPos] / 1000.0 : dKoef);
         }
 
         return dWidth;
@@ -1728,6 +1743,7 @@ private:
 
 private:
     unsigned short* m_pCodes;
+	double*         m_pFontSizes;
     unsigned int*   m_pWidths;
     unsigned int    m_unLen;
     unsigned short  m_ushSpaceCode;

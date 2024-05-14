@@ -29,8 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "../../DesktopEditor/common/File.h"
-#include "../../DesktopEditor/common/Directory.h"
+#include "../DesktopEditor/common/File.h"
+#include "../DesktopEditor/common/Directory.h"
 
 #include "PdfWriter.h"
 
@@ -42,19 +42,20 @@
 #include "SrcWriter/FontTT.h"
 #include "SrcWriter/Destination.h"
 #include "SrcWriter/Field.h"
+#include "SrcWriter/AnnotRenderer.h"
 
-#include "../../DesktopEditor/graphics/Image.h"
-#include "../../DesktopEditor/graphics/structures.h"
-#include "../../DesktopEditor/raster/BgraFrame.h"
-#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
-#include "../../DesktopEditor/graphics/pro/Fonts.h"
-#include "../../DesktopEditor/graphics/pro/Image.h"
-#include "../../DesktopEditor/common/StringExt.h"
-#include "../../DesktopEditor/graphics/GraphicsPath.h"
-#include "../../DesktopEditor/graphics/MetafileToRenderer.h"
+#include "../DesktopEditor/graphics/Image.h"
+#include "../DesktopEditor/graphics/structures.h"
+#include "../DesktopEditor/raster/BgraFrame.h"
+#include "../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../DesktopEditor/graphics/pro/Fonts.h"
+#include "../DesktopEditor/graphics/pro/Image.h"
+#include "../DesktopEditor/common/StringExt.h"
+#include "../DesktopEditor/graphics/GraphicsPath.h"
+#include "../DesktopEditor/graphics/MetafileToRenderer.h"
 
-#include "../../UnicodeConverter/UnicodeConverter.h"
-#include "../../Common/Network/FileTransporter/include/FileTransporter.h"
+#include "../UnicodeConverter/UnicodeConverter.h"
+#include "../Common/Network/FileTransporter/include/FileTransporter.h"
 
 #if defined(GetTempPath)
 #undef GetTempPath
@@ -2046,20 +2047,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pFreeTextAnnot->SetIT(pFTPr->GetIT());
 			if (nFlags & (1 << 21))
 				pFreeTextAnnot->SetIC(pFTPr->GetIC());
-			if (nFlags & (1 << 22))
-			{
-				// TODO перенаправить рендер в нужный объект
-				LONG nLen = 0;
-				std::wstring sMediaDirectory, sInternalMediaDirectory, sThemesDirectory;
-				BYTE* pRender = pFTPr->GetRender(nLen, sMediaDirectory, sInternalMediaDirectory, sThemesDirectory);
-				IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pRenderer);
-				pCorrector->SetMediaDirectory(sMediaDirectory);
-				pCorrector->SetInternalMediaDirectory(sInternalMediaDirectory);
-				pCorrector->SetThemesDirectory(sThemesDirectory);
-				NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLen, pCorrector);
-				RELEASEOBJECT(pCorrector);
-			}
-
 			std::vector<CAnnotFieldInfo::CMarkupAnnotPr::CFontData*> arrRC = pPr->GetRC();
 			double dFontSize = 10.0;
 			if (!arrRC.empty())
@@ -2075,9 +2062,17 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			}
 			if (m_bNeedUpdateTextFont)
 				UpdateFont();
-			pFreeTextAnnot->SetDA(m_pFont, dFontSize, oInfo.GetC()); // Можно указать полный шрифт?
-
-			DrawFreeTextAnnot(pAppFonts, pFreeTextAnnot, pPr->GetRC(), oInfo.GetC());
+			pFreeTextAnnot->SetDA(m_pFont, dFontSize, oInfo.GetC());
+			if (nFlags & (1 << 22))
+			{
+				LONG nLen = 0;
+				BYTE* pRender = pFTPr->GetRender(nLen);
+				PdfWriter::CAnnotRenderer* pAnnotRenderer = new PdfWriter::CAnnotRenderer(pAppFonts);
+				IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pRenderer);
+				NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLen, pCorrector);
+				RELEASEOBJECT(pCorrector);
+				RELEASEOBJECT(pAnnotRenderer);
+			}
 		}
 		else if (oInfo.IsCaret())
 		{
@@ -3897,26 +3892,35 @@ void CPdfWriter::DrawFreeTextAnnot(NSFonts::IApplicationFonts* pAppFonts, PdfWri
 {
 	pFreeTextAnnot->StartAP(arrC);
 
+	struct CGlypgs
+	{
+		unsigned int unLen;
+		unsigned int* pUnicodes;
+		unsigned short* pCodes;
+		PdfWriter::CFontCidTrueType** ppFonts;
+		double dFontSize;
+		BYTE nAlign;
+		unsigned int unStart;
+		PdfWriter::CFontTrueType* pFontTT;
+		double dR;
+		double dG;
+		double dB;
+	};
+
+	std::vector<CGlypgs> arrGlyphs;
+
+	double dWidth  = pFreeTextAnnot->GetRect().fRight - pFreeTextAnnot->GetRect().fLeft - pFreeTextAnnot->GetRD().fRight - pFreeTextAnnot->GetRD().fLeft;
+	double dHeight = pFreeTextAnnot->GetRect().fTop - pFreeTextAnnot->GetRect().fBottom - pFreeTextAnnot->GetRD().fTop - pFreeTextAnnot->GetRD().fBottom;
+	double dShiftBorder = pFreeTextAnnot->GetBorderWidth();
+
+	unsigned int unAllLen = 0;
 	for (int i = 0; i < arrRC.size(); ++i)
 	{
-		// TODO следующая итерация может продолжаться на той-же строке
-		// найти оставшееся пространство и записаться в него сколько получиться
-		// если не всё, то остаток писать на следующую строку
-
-		// TODO высота строки должна вычисляться по самому высокому шрифту и глифу
-		// Возможно, стоит найти как это реализовано на отрисовке docx на js
-
-		bool isBold      = (arrRC[i]->nFontFlag >> 0) & 1;
-		bool isItalic    = (arrRC[i]->nFontFlag >> 1) & 1;
-		double dFontSize = arrRC[i]->dFontSise;
-		double dWidth    = pFreeTextAnnot->GetRect().fRight - pFreeTextAnnot->GetRect().fLeft - pFreeTextAnnot->GetRD().fRight - pFreeTextAnnot->GetRD().fLeft;
-		double dHeight   = pFreeTextAnnot->GetRect().fTop - pFreeTextAnnot->GetRect().fBottom - pFreeTextAnnot->GetRD().fTop - pFreeTextAnnot->GetRD().fBottom;
-		BYTE nAlign      = arrRC[i]->nAlignment;
-		double dShiftBorder = pFreeTextAnnot->GetBorderWidth();
+		bool isBold   = (arrRC[i]->nFontFlag >> 0) & 1;
+		bool isItalic = (arrRC[i]->nFontFlag >> 1) & 1;
 		PdfWriter::CFontCidTrueType* pFont = GetFont(arrRC[i]->sActualFont.empty() ? arrRC[i]->sFontFamily : arrRC[i]->sActualFont, isBold, isItalic);
 		if (!pFont)
 			continue;
-		PdfWriter::CFontTrueType* pFontTT = m_pDocument->CreateTrueTypeFont(pFont);
 
 		unsigned int unLen = 0;
 		unsigned int* pUnicodes = NULL;
@@ -3931,59 +3935,106 @@ void CPdfWriter::DrawFreeTextAnnot(NSFonts::IApplicationFonts* pAppFonts, PdfWri
 			continue;
 		}
 
-		unsigned short* pCodes2 = new unsigned short[unLen];
-		unsigned int* pWidths   = new unsigned int[unLen];
+		arrGlyphs.push_back({unLen, pUnicodes, pCodes, ppFonts, arrRC[i]->dFontSise, arrRC[i]->nAlignment, unAllLen, m_pDocument->CreateTrueTypeFont(pFont),
+							 arrRC[i]->dColor[0], arrRC[i]->dColor[1], arrRC[i]->dColor[2]});
+		unAllLen += unLen;
+	}
 
-		unsigned short ushSpaceCode   = 0xFFFF;
-		unsigned short ushNewLineCode = 0xFFFE;
-		for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
+	unsigned short* pCodes2 = new unsigned short[unAllLen];
+	unsigned int* pWidths   = new unsigned int[unAllLen];
+	double* pFontSizes      = new double[unAllLen];
+
+	unsigned short ushSpaceCode   = 0xFFFF;
+	unsigned short ushNewLineCode = 0xFFFE;
+	unsigned int unIndexI = 0;
+
+	for (int i = 0; i < arrGlyphs.size(); ++i)
+	{
+		for (unsigned int unIndex = 0; unIndex < arrGlyphs[i].unLen; ++unIndex)
 		{
 			unsigned short ushCode = 0;
-			if (0x0020 == pUnicodes[unIndex])
+			if (0x0020 == arrGlyphs[i].pUnicodes[unIndex])
 				ushCode = ushSpaceCode;
-			else if (0x000D == pUnicodes[unIndex] || 0x000A == pUnicodes[unIndex])
+			else if (0x000D == arrGlyphs[i].pUnicodes[unIndex] || 0x000A == arrGlyphs[i].pUnicodes[unIndex])
 				ushCode = ushNewLineCode;
 
-			pCodes2[unIndex] = ushCode;
-			pWidths[unIndex] = ppFonts[unIndex]->GetWidth(pCodes[unIndex]);
+			pCodes2[unIndexI] = ushCode;
+			pWidths[unIndexI] = arrGlyphs[i].ppFonts[unIndex]->GetWidth(arrGlyphs[i].pCodes[unIndex]);
+			pFontSizes[unIndexI] = arrGlyphs[i].dFontSize;
+			unIndexI++;
 		}
+	}
 
-		m_oLinesManager.Init(pCodes2, pWidths, unLen, ushSpaceCode, ushNewLineCode, pFontTT->GetLineHeight(), pFontTT->GetAscent());
+	m_oLinesManager.Init(pCodes2, pFontSizes, pWidths, unAllLen, ushSpaceCode, ushNewLineCode);
+	m_oLinesManager.CalculateLines(0, dWidth);
 
-		double dKoef = dFontSize / pFontTT->m_dUnitsPerEm;
-		double dLineHeight = (pFontTT->m_dAscent + std::abs(pFontTT->m_dDescent)) * dKoef;
+	unsigned int unLinesCount = m_oLinesManager.GetLinesCount(), unIndex = 0;
+	double _dLineShiftX = 0, dLineShiftY = dHeight + pFreeTextAnnot->GetRect().fBottom + pFreeTextAnnot->GetRD().fBottom - dShiftBorder * 2 - m_oLinesManager.GetLineHeight(0);
+	for (int i = 0; i < arrGlyphs.size(); ++i)
+	{
+		BYTE nAlign = arrGlyphs[i].nAlign;
+		dLineShiftY -= (arrGlyphs[i].pFontTT->m_dAscent + std::abs(arrGlyphs[i].pFontTT->m_dDescent)) * arrGlyphs[i].dFontSize / arrGlyphs[i].pFontTT->m_dUnitsPerEm;
+		// double dLineHeight = (pFontTT->m_dAscent + std::abs(pFontTT->m_dDescent)) * dKoef;
 
-		m_oLinesManager.CalculateLines(dFontSize, dWidth);
+		double dLineShiftX = dShiftBorder * 2 + pFreeTextAnnot->GetRect().fLeft + pFreeTextAnnot->GetRD().fLeft;
+		double dLineWidth = m_oLinesManager.GetLineWidth(unIndex);
+		if (2 == nAlign)
+			dLineShiftX = dWidth - dLineWidth - dShiftBorder * 2 + pFreeTextAnnot->GetRect().fLeft + pFreeTextAnnot->GetRD().fLeft;
+		else if (1 == nAlign)
+			dLineShiftX = (dWidth - dLineWidth) / 2 + pFreeTextAnnot->GetRect().fLeft + pFreeTextAnnot->GetRD().fLeft;
 
-		pFreeTextAnnot->GetRect();
+		int nInLineCount = m_oLinesManager.GetLineEndPos(unIndex) - m_oLinesManager.GetLineStartPos(unIndex);
+		if (nInLineCount > 0)
+			pFreeTextAnnot->AddTextToAP(arrGlyphs[i].dFontSize, dLineShiftX, dLineShiftY, arrGlyphs[i].pCodes, arrGlyphs[i].unLen, arrGlyphs[i].dR, arrGlyphs[i].dG, arrGlyphs[i].dB, arrGlyphs[i].ppFonts, NULL);
 
-		unsigned int unLinesCount = m_oLinesManager.GetLinesCount();
-		double dLineShiftY = dHeight - dShiftBorder * 2 - dLineHeight + pFreeTextAnnot->GetRect().fBottom + pFreeTextAnnot->GetRD().fBottom;
-		for (unsigned int unIndex = 0; unIndex < unLinesCount; ++unIndex)
+		unsigned int unLineStart = m_oLinesManager.GetLineStartPos(unIndex);
+		while (unIndex < unLinesCount && unLineStart < arrGlyphs[i].unStart + arrGlyphs[i].unLen)
 		{
-			unsigned int unLineStart = m_oLinesManager.GetLineStartPos(unIndex);
-			double dLineShiftX = dShiftBorder * 2 + pFreeTextAnnot->GetRect().fLeft + pFreeTextAnnot->GetRD().fLeft;
-			double dLineWidth = m_oLinesManager.GetLineWidth(unIndex, dFontSize);
-			if (2 == nAlign)
-				dLineShiftX = dWidth - dLineWidth - dShiftBorder * 2 + pFreeTextAnnot->GetRect().fLeft + pFreeTextAnnot->GetRD().fLeft;
-			else if (1 == nAlign)
-				dLineShiftX = (dWidth - dLineWidth) / 2 + pFreeTextAnnot->GetRect().fLeft + pFreeTextAnnot->GetRD().fLeft;
-
-			int nInLineCount = m_oLinesManager.GetLineEndPos(unIndex) - m_oLinesManager.GetLineStartPos(unIndex);
-			if (nInLineCount > 0)
-				pFreeTextAnnot->AddTextToAP(dFontSize, dLineShiftX, dLineShiftY, pCodes + unLineStart, nInLineCount, arrRC[i]->dColor[0], arrRC[i]->dColor[1], arrRC[i]->dColor[2], ppFonts + unLineStart, NULL);
-
-			dLineShiftY -= dLineHeight;
-
-			// TODO зачеркнутый, подчеркнутый текст, верхний и нижний регистр
+			unLineStart = m_oLinesManager.GetLineStartPos(++unIndex);
+			dLineShiftY -= m_oLinesManager.GetLineHeight(unIndex);
 		}
+	}
 
-		RELEASEARRAYOBJECTS(pCodes2);
-		RELEASEARRAYOBJECTS(pWidths);
+	/*
+	for (unsigned int unIndex = 0; unIndex < unLinesCount; ++unIndex)
+	{
+		unsigned int unLineStart = m_oLinesManager.GetLineStartPos(unIndex);
+		BYTE nAlign = 0;
+		while (unPos < arrGlyphs.size() && unLineStart < arrGlyphs[unPos].unStart + arrGlyphs[unPos].unLen)
+			unPos++;
 
-		RELEASEARRAYOBJECTS(pUnicodes);
-		RELEASEARRAYOBJECTS(pCodes);
-		RELEASEARRAYOBJECTS(ppFonts);
+		//double dKoef = dFontSize / pFontTT->m_dUnitsPerEm;
+		double dLineHeight = m_oLinesManager.GetLineHeight(unIndex); //(pFontTT->m_dAscent + std::abs(pFontTT->m_dDescent)) * dKoef;
+		double dLineShiftY = _dLineShiftY - dLineHeight;
+
+		double dLineShiftX = dShiftBorder * 2 + pFreeTextAnnot->GetRect().fLeft + pFreeTextAnnot->GetRD().fLeft;
+		double dLineWidth = m_oLinesManager.GetLineWidth(unIndex);
+		if (2 == nAlign)
+			dLineShiftX = dWidth - dLineWidth - dShiftBorder * 2 + pFreeTextAnnot->GetRect().fLeft + pFreeTextAnnot->GetRD().fLeft;
+		else if (1 == nAlign)
+			dLineShiftX = (dWidth - dLineWidth) / 2 + pFreeTextAnnot->GetRect().fLeft + pFreeTextAnnot->GetRD().fLeft;
+
+		int nInLineCount = m_oLinesManager.GetLineEndPos(unIndex) - m_oLinesManager.GetLineStartPos(unIndex);
+		if (nInLineCount > 0)
+			pFreeTextAnnot->AddTextToAP(dFontSize, dLineShiftX, dLineShiftY, pCodes2 + unLineStart, nInLineCount, arrRC[i]->dColor[0], arrRC[i]->dColor[1], arrRC[i]->dColor[2], ppFonts + unLineStart, NULL);
+
+		dLineShiftY -= dLineHeight;
+
+		// TODO зачеркнутый, подчеркнутый текст, верхний и нижний регистр
+	}
+	*/
+
+	m_oLinesManager.Clear();
+
+	RELEASEARRAYOBJECTS(pCodes2);
+	RELEASEARRAYOBJECTS(pWidths);
+	RELEASEARRAYOBJECTS(pFontSizes);
+
+	for (int i = 0; i < arrGlyphs.size(); ++i)
+	{
+		RELEASEARRAYOBJECTS(arrGlyphs[i].pUnicodes);
+		RELEASEARRAYOBJECTS(arrGlyphs[i].pCodes);
+		RELEASEARRAYOBJECTS(arrGlyphs[i].ppFonts);
 	}
 
 	pFreeTextAnnot->EndAP();

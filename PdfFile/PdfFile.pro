@@ -170,6 +170,7 @@ HEADERS += \
     SrcWriter/Utils.h \
     SrcWriter/Metadata.h \
     SrcWriter/ICCProfile.h \
+	SrcWriter/AnnotRenderer.h \
     SrcWriter/States.h
 
 SOURCES += \
@@ -198,6 +199,7 @@ SOURCES += \
     SrcWriter/Streams.cpp \
     SrcWriter/Utils.cpp \
     SrcWriter/Metadata.cpp \
+	SrcWriter/AnnotRenderer.cpp \
     SrcWriter/States.cpp
 
 # PdfFile

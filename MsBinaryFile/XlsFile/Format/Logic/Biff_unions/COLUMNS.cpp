@@ -68,6 +68,11 @@ const bool COLUMNS::loadContent(BinProcessor& proc)
 	}
 	int count = (global_info_->Version == 0x0200) ? proc.repeated<ColWidth>(0, 255) : proc.repeated<ColInfo>(0, 255);
 
+	if (count < 1)
+	{//version 0x0400 ???? ColWidth 
+		count = (global_info_->Version == 0x0200) ? proc.repeated<ColInfo>(0, 255) : proc.repeated<ColWidth>(0, 255);
+	}
+
 	int last_add = 0;
 
 	for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); ++it)

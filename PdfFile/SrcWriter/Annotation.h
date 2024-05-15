@@ -362,6 +362,7 @@ namespace PdfWriter
 			return AnnotFreeText;
 		}
 
+		void APFromFakePage(CPage* pFakePage);
 		void StartAP(const std::vector<double>& arrC);
 		void EndAP();
 		void SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrC);

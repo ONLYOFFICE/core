@@ -41,6 +41,7 @@
 #include "Pattern.h"
 #include "Document.h"
 #include "Field.h"
+#include "ResourcesDictionary.h"
 
 #ifdef DrawText
 #undef DrawText
@@ -310,9 +311,16 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CPage
 	//----------------------------------------------------------------------------------------
-	CPage::CPage(CDocument* pDocument)
+	CPage::CPage(CDocument* pDocument, CXref* pXref)
 	{
 		Init(pDocument);
+		if (pXref)
+		{
+			AddResource(pXref);
+			m_pContents = new CArrayObject();
+			Add("Contents", m_pContents);
+			AddContents(pXref);
+		}
 	}
 	void CPage::Fix()
 	{
@@ -566,27 +574,13 @@ namespace PdfWriter
 	{
 		return Get("Rotate");
 	}
-    void CPage::AddResource()
+	void CPage::AddResource(CXref* pXref)
 	{
-		// TODO: Переделать на ResourcesDict
-		CDictObject* pResource = new CDictObject();
+		CResourcesDict* pResource = new CResourcesDict(pXref, !pXref, true);
 		if (!pResource)
 			return;
-	
-	    // Не смотря на то, что ProcSet - устаревший объект, добавляем
-	    // его для совместимости	
+
 	    Add("Resources", pResource);
-	
-		CArrayObject* pProcset = new CArrayObject();
-		if (!pProcset)
-			return;	
-	
-		pResource->Add("ProcSet", pProcset);
-		pProcset->Add(new CNameObject("PDF"));
-		pProcset->Add(new CNameObject("Text"));
-		pProcset->Add(new CNameObject("ImageB"));
-		pProcset->Add(new CNameObject("ImageC"));
-		pProcset->Add(new CNameObject("ImageI"));
 	}
     void CPage::BeforeWrite()
 	{
@@ -1583,6 +1577,10 @@ namespace PdfWriter
 		m_pContents = new CArrayObject();
 		Add("Contents", m_pContents);
 		AddContents(pXref);
+	}
+	CDictObject* CPage::GetContent() const
+	{
+		return (CDictObject*)m_pContents->Remove(0);
 	}
     int CPage::GetRotate()
     {

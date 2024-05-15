@@ -1263,6 +1263,44 @@ namespace PdfWriter
 	{
 		SetC(arrIC);
 	}
+	void CFreeTextAnnotation::APFromFakePage(CPage* pFakePage)
+	{
+		// xref NULL - тогда у CAnnotAppearanceObject не будет создан stream
+		m_pAppearance = new CAnnotAppearance(NULL, this);
+		if (!m_pAppearance)
+			return;
+		Add("AP", m_pAppearance);
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal((CResourcesDict*)pFakePage->Get("Resources"));
+		m_pXref->Add(pNormal);
+		m_pAppearance->Add("N", pNormal);
+
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+		pNormal->Add("BBox", pArray);
+
+		pArray->Add(GetRect().fLeft);
+		pArray->Add(GetRect().fBottom);
+		pArray->Add(GetRect().fRight);
+		pArray->Add(GetRect().fTop);
+
+		pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		pNormal->Add("Matrix", pArray);
+		pArray->Add(1);
+		pArray->Add(0);
+		pArray->Add(0);
+		pArray->Add(1);
+		pArray->Add(-GetRect().fLeft);
+		pArray->Add(-GetRect().fBottom);
+
+		CDictObject* pFPStream = pFakePage->GetContent();
+		pNormal->SetStream(m_pXref, pFPStream->GetStream(), false, ((CNumberObject*)pFPStream->Get("Length"))->Get());
+		pFPStream->SetStream(NULL);
+		// RELEASEOBJECT(pFPStream); Нельзя удалять - это объект стрима, он уже в xref
+	}
 	//----------------------------------------------------------------------------------------
 	// CTextMarkupAnnotation
 	//----------------------------------------------------------------------------------------

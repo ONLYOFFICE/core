@@ -546,7 +546,6 @@ HRESULT CAnnotRenderer::DrawImageFromFile(const std::wstring& wsImagePath, const
 // transform --------------------------------------------------------------------------------
 HRESULT CAnnotRenderer::SetTransform(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY)
 {
-	m_oCommandManager.Flush();
 	m_oTransform.Set(dM11, dM12, dM21, dM22, dX, dY);
 	return S_OK;
 }
@@ -586,21 +585,6 @@ HRESULT CAnnotRenderer::CommandString(const LONG& lType, const std::wstring& sCo
 // внутренние функции ----------------------------------------------------------------------
 bool CAnnotRenderer::DrawText(unsigned char* pCodes, const unsigned int& unLen, const double& dX, const double& dY)
 {
-	if (!pCodes || !unLen)
-		return false;
-
-	CTransform& t = m_oTransform;
-	m_oCommandManager.SetTransform(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
-
-	CRendererTextCommand* pText = m_oCommandManager.AddText(pCodes, unLen, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY));
-	pText->SetFont(m_pFont);
-	pText->SetSize(m_oFont.GetSize());
-	pText->SetColor(m_oBrush.GetColor1());
-	pText->SetAlpha((BYTE)m_oBrush.GetAlpha1());
-	pText->SetCharSpace(MM_2_PT(m_oFont.GetCharSpace()));
-	pText->SetNeedDoBold(m_oFont.IsNeedDoBold());
-	pText->SetNeedDoItalic(m_oFont.IsNeedDoItalic());
-
 	return true;
 }
 bool CAnnotRenderer::DrawTextToRenderer(const unsigned int* unGid, const unsigned int& unLen, const double& dX, const double& dY)

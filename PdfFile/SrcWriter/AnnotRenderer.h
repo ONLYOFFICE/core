@@ -183,7 +183,6 @@ private:
 
 	CFontCidTrueType* m_pFont;
 
-	CCommandManager              m_oCommandManager;
 	CPenState                    m_oPen;
 	CBrushState                  m_oBrush;
 	CFontState                   m_oFont;

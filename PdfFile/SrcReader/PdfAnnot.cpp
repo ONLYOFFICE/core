@@ -45,6 +45,7 @@
 #include "../../DesktopEditor/common/StringExt.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace PdfReader
 {
@@ -2353,31 +2354,28 @@ bool FindFonts(Object* oStream, int nDepth, Object* oResFonts)
 	oXObject.free();
 	return false;
 }
-std::map<std::wstring, std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, std::vector<CAnnotMarkup::CFontData*>& arrRC, int nTypeFonts)
+std::vector<std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, int nTypeFonts)
 {
-	std::map<std::wstring, std::wstring> mRes;
-	if (arrRC.empty())
-		return mRes;
-
 	Object oAnnot, oObj;
 	XRef* pXref = pdfDoc->getXRef();
 	oAnnotRef->fetch(pXref, &oAnnot);
+	std::vector<std::wstring> arrFontFreeText;
 
 	Object oAP, oN, oR, oFonts;
 	if (!oAnnot.dictLookup("AP", &oAP)->isDict() || !oAP.dictLookup("N", &oN)->isStream())
 	{
 		oAP.free(); oN.free(); oR.free(); oFonts.free();
-		return mRes;
+		return arrFontFreeText;
 	}
 
 	if (!FindFonts(&oN, 0, &oFonts))
 	{
 		oAP.free(); oN.free(); oR.free(); oFonts.free();
-		return mRes;
+		return arrFontFreeText;
 	}
 
 	CFontList* pAppFontList = (CFontList*)pFontManager->GetApplication()->GetList();
-	std::vector<std::wstring> arrFontFreeText;
+	NSFonts::IFontsMemoryStorage* pMemoryStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
 
 	for (int i = 0, nFonts = oFonts.dictGetLength(); i < nFonts; ++i)
 	{
@@ -2396,9 +2394,13 @@ std::map<std::wstring, std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object
 			oFontRef.free();
 			continue;
 		}
+		oFontRef.free();
 
-		CFontStream* pFontStream = (CFontStream*)NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(sFontPath);
-		if (pFontStream && !isBaseFont(sFontPath))
+		if (isBaseFont(sFontPath))
+			continue;
+
+		NSFonts::IFontStream* pFontStream = pMemoryStorage ? (NSFonts::IFontStream*)pMemoryStorage->Get(sFontPath) : NULL;
+		if (pFontStream)
 		{
 			bool bNew = true;
 			std::vector<NSFonts::CFontInfo*>* arrFontList = pAppFontList->GetFonts();
@@ -2406,8 +2408,8 @@ std::map<std::wstring, std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object
 			{
 				if (((*arrFontList)[nIndex]->m_wsFontPath == sFontPath ||
 					 (*arrFontList)[nIndex]->m_wsFontName == UTF8_TO_U(sFontName)) &&
-					 (*arrFontList)[nIndex]->m_bBold      == bBold &&
-					 (*arrFontList)[nIndex]->m_bItalic    == bItalic)
+					 (*arrFontList)[nIndex]->m_bBold      == (bBold ? 1 : 0) &&
+					 (*arrFontList)[nIndex]->m_bItalic    == (bItalic ? 1 : 0))
 				{
 					bNew = false;
 					break;
@@ -2417,9 +2419,28 @@ std::map<std::wstring, std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object
 				pAppFontList->Add(sFontPath, pFontStream);
 			arrFontFreeText.push_back(sFontPath);
 		}
-		oFontRef.free();
+		else
+		{
+			pFontStream = NSFonts::NSStream::Create();
+			if (pFontStream->CreateFromFile(sFontPath))
+				pAppFontList->Add(sFontPath, pFontStream);
+		}
 	}
 
+	oAP.free(); oN.free(); oR.free(); oFonts.free();
+
+	oAnnot.free();
+	return arrFontFreeText;
+}
+std::map<std::wstring, std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, std::vector<CAnnotMarkup::CFontData*>& arrRC, int nTypeFonts)
+{
+	std::map<std::wstring, std::wstring> mRes;
+	if (arrRC.empty())
+		return mRes;
+
+	std::vector<std::wstring> arrFontFreeText = SetFont(pdfDoc, oAnnotRef, pFontManager, pFontList, nTypeFonts);
+
+	CFontList* pAppFontList = (CFontList*)pFontManager->GetApplication()->GetList();
 	for (int i = 0; i < arrRC.size(); ++i)
 	{
 		if (arrRC[i]->bFind)
@@ -2532,10 +2553,6 @@ std::map<std::wstring, std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object
 		}
 	}
 
-
-	oAP.free(); oN.free(); oR.free(); oFonts.free();
-
-	oAnnot.free();
 	return mRes;
 }
 CAnnotMarkup::CFontData::CFontData(const CFontData& oFont)

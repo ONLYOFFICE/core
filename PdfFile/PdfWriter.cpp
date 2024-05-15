@@ -2065,13 +2065,22 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			pFreeTextAnnot->SetDA(m_pFont, dFontSize, oInfo.GetC());
 			if (nFlags & (1 << 22))
 			{
+				PdfWriter::CPage* pCurPage = m_pPage;
+				PdfWriter::CPage* pFakePage = m_pDocument->CreateFakePage();
+				m_pPage = pFakePage;
+				m_pDocument->SetCurPage(pFakePage);
+
 				LONG nLen = 0;
 				BYTE* pRender = pFTPr->GetRender(nLen);
-				PdfWriter::CAnnotRenderer* pAnnotRenderer = new PdfWriter::CAnnotRenderer(pAppFonts);
 				IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pRenderer);
 				NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLen, pCorrector);
 				RELEASEOBJECT(pCorrector);
-				RELEASEOBJECT(pAnnotRenderer);
+
+				pFreeTextAnnot->APFromFakePage(pFakePage);
+
+				m_pPage = pCurPage;
+				m_pDocument->SetCurPage(pCurPage);
+				RELEASEOBJECT(pFakePage);
 			}
 		}
 		else if (oInfo.IsCaret())

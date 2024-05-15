@@ -1537,15 +1537,16 @@ namespace PdfWriter
 		m_pRollover = NULL;
 		m_pDown     = NULL;
 	}
-	CAnnotAppearanceObject* CAnnotAppearance::GetNormal()
+	CAnnotAppearanceObject* CAnnotAppearance::GetNormal(CResourcesDict* pResources)
 	{
 		if (!m_pNormal)
 		{
 			if (m_pField)
 				m_pNormal = new CAnnotAppearanceObject(m_pXref, m_pField);
 			else if (m_pAnnot)
-				m_pNormal = new CAnnotAppearanceObject(m_pXref, m_pAnnot);
-			Add("N", m_pNormal);
+				m_pNormal = new CAnnotAppearanceObject(m_pXref, m_pAnnot, pResources);
+			if (m_pXref)
+				Add("N", m_pNormal);
 		}
 
 		return m_pNormal;
@@ -1621,13 +1622,15 @@ namespace PdfWriter
 	void CAnnotAppearanceObject::Init(CXref* pXref, CResourcesDict* pResources)
 	{
 		m_pXref     = pXref ? pXref : NULL;
-		m_pStream   = new CMemoryStream();
 		m_pFont     = NULL;
 		m_dFontSize = 10.0;
 		m_bStart    = true;
 
 		if (m_pXref)
+		{
+			m_pStream   = new CMemoryStream();
 			SetStream(m_pXref, m_pStream);
+		}
 
 		Add("Type", "XObject");
 		Add("Subtype", "Form");
@@ -1649,9 +1652,9 @@ namespace PdfWriter
 		pArray->Add(fabs(pField->GetRect().fRight - pField->GetRect().fLeft));
 		pArray->Add(fabs(pField->GetRect().fBottom - pField->GetRect().fTop));
 	}
-	CAnnotAppearanceObject::CAnnotAppearanceObject(CXref* pXRef, CAnnotation* pAnnot)
+	CAnnotAppearanceObject::CAnnotAppearanceObject(CXref* pXRef, CAnnotation* pAnnot, CResourcesDict* pResources)
 	{
-		Init(pXRef, pAnnot->GetDocument()->GetFieldsResources());
+		Init(pXRef, pResources ? pResources : pAnnot->GetDocument()->GetFieldsResources());
 		m_pAnnot = pAnnot;
 		m_pField = NULL;
 

@@ -886,6 +886,15 @@ bool CPdfEditor::EditPage(int nPageIndex)
 						oAnnot.free(); oSubtype.free();
 						continue;
 					}
+					else if (oSubtype.isName("FreeText"))
+					{
+						//TODO добавление шрифтов FreeText в общий m_pAppAplication чтобы writer мог использовать шрифты из reader
+						oAnnot.free(); oSubtype.free();
+						oTemp.arrayGetNF(nIndex, &oAnnot);
+						pReader->AnnotFonts(&oAnnot);
+						DictToCDictObject(&oAnnot, pArray, false, "");
+						oAnnot.free();
+					}
 					oAnnot.free(); oSubtype.free();
 					oTemp.arrayGetNF(nIndex, &oAnnot);
 					DictToCDictObject(&oAnnot, pArray, false, "");

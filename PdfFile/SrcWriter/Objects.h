@@ -456,6 +456,7 @@ namespace PdfWriter
 		{
 			return m_pStream;
 		}
+		void SetStream(CStream* pStream);
 		unsigned int GetFilter() const
 		{
 			return m_unFilter;
@@ -468,7 +469,7 @@ namespace PdfWriter
 		{
 			m_unFilter = unFiler;
 		}
-		void         SetStream(CXref* pXref, CStream* pStream, bool bThis = true);
+		void         SetStream(CXref* pXref, CStream* pStream, bool bThis = true, int nLength = 0);
 
 		virtual void      BeforeWrite(){}
 		virtual void      Write(CStream* pStream){}

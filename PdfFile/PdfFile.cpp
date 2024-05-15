@@ -881,7 +881,10 @@ HRESULT CPdfFile::put_FontName(const std::wstring& wsName)
 {
 	if (!m_pInternal->pWriter)
 		return S_FALSE;
-	return m_pInternal->pWriter->put_FontName(wsName);
+	std::wstring wsFontName = wsName;
+	if (m_pInternal->pEditor && wsFontName.find(L"Embedded: ") == 0)
+		wsFontName.erase(0, 10);
+	return m_pInternal->pWriter->put_FontName(wsFontName);
 }
 HRESULT CPdfFile::get_FontPath(std::wstring* wsPath)
 {

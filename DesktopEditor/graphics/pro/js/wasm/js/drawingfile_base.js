@@ -1665,6 +1665,15 @@
 		return this.scannedImages[strId];
 	};
 
+	CFile.prototype["changeImageUrl"] = function(baseUrl, resultUrl)
+	{
+		for (let i in this.scannedImages)
+		{
+			if (this.scannedImages[i] == baseUrl)
+				this.scannedImages[i] = resultUrl;
+		}
+	};
+
 	CFile.prototype.memory = function()
 	{
 		return Module["HEAP8"];

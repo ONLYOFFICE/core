@@ -891,7 +891,8 @@ bool CPdfEditor::EditPage(int nPageIndex)
 						//TODO добавление шрифтов FreeText в общий m_pAppAplication чтобы writer мог использовать шрифты из reader
 						oAnnot.free(); oSubtype.free();
 						oTemp.arrayGetNF(nIndex, &oAnnot);
-						pReader->AnnotFonts(&oAnnot);
+						std::map<std::wstring, std::wstring> mapFont = pReader->AnnotFonts(&oAnnot);
+						m_mFonts.insert(mapFont.begin(), mapFont.end());
 						DictToCDictObject(&oAnnot, pArray, false, "");
 						oAnnot.free();
 					}
@@ -1291,4 +1292,19 @@ void CPdfEditor::AddShapeXML(const std::string& sXML)
 void CPdfEditor::EndMarkedContent()
 {
 	pWriter->GetPage()->EndMarkedContent();
+}
+bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath)
+{
+	std::map<std::wstring, std::wstring>::iterator it = m_mFonts.find(wsFontName);
+	if (it == m_mFonts.end())
+		return false;
+	wsFontPath = it->second;
+	if (wsFontName == L"Courier-Oblique")
+	{
+		bItalic = true;
+		return true;
+	}
+	if (wsFontName == L"Symbol")
+		return true;
+	return false;
 }

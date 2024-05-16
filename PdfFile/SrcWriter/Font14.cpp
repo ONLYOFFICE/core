@@ -30,6 +30,7 @@
  *
  */
 #include "Font14.h"
+#include "Document.h"
 
 namespace PdfWriter
 {

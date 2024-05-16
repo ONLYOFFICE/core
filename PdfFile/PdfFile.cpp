@@ -883,7 +883,24 @@ HRESULT CPdfFile::put_FontName(const std::wstring& wsName)
 		return S_FALSE;
 	std::wstring wsFontName = wsName;
 	if (m_pInternal->pEditor && wsFontName.find(L"Embedded: ") == 0)
+	{
 		wsFontName.erase(0, 10);
+		bool bBold = false, bItalic = false;
+		std::wstring wsFontPath;
+		if (m_pInternal->pEditor->IsBase14(wsFontName, bBold, bItalic, wsFontPath))
+		{
+			m_pInternal->pWriter->AddFont(wsFontName, bBold, bItalic, wsFontPath, 0);
+			if (bBold || bItalic)
+			{
+				LONG lStyle = 0;
+				if (bBold)
+					lStyle |= 1;
+				if (bItalic)
+					lStyle |= 2;
+				put_FontStyle(lStyle);
+			}
+		}
+	}
 	return m_pInternal->pWriter->put_FontName(wsFontName);
 }
 HRESULT CPdfFile::get_FontPath(std::wstring* wsPath)

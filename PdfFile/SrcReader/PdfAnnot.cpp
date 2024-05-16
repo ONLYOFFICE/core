@@ -2354,12 +2354,12 @@ bool FindFonts(Object* oStream, int nDepth, Object* oResFonts)
 	oXObject.free();
 	return false;
 }
-std::vector<std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, int nTypeFonts)
+std::map<std::wstring, std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, int nTypeFonts)
 {
 	Object oAnnot, oObj;
 	XRef* pXref = pdfDoc->getXRef();
 	oAnnotRef->fetch(pXref, &oAnnot);
-	std::vector<std::wstring> arrFontFreeText;
+	std::map<std::wstring, std::wstring> arrFontFreeText;
 
 	Object oAP, oN, oR, oFonts;
 	if (!oAnnot.dictLookup("AP", &oAP)->isDict() || !oAP.dictLookup("N", &oN)->isStream())
@@ -2389,6 +2389,7 @@ std::vector<std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef
 		std::string sFontName, sActual;
 		bool bBold = false, bItalic = false;
 		std::wstring sFontPath = GetFontData(pdfDoc, pFontManager, pFontList, &oFonts, &oFontRef, nTypeFonts, sFontName, sActual, bBold, bItalic);
+		std::wstring wsFontName = UTF8_TO_U(sFontName);
 		if (sFontPath.empty())
 		{
 			oFontRef.free();
@@ -2407,7 +2408,7 @@ std::vector<std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef
 			for (int nIndex = 0; nIndex < arrFontList->size(); ++nIndex)
 			{
 				if (((*arrFontList)[nIndex]->m_wsFontPath == sFontPath ||
-					 (*arrFontList)[nIndex]->m_wsFontName == UTF8_TO_U(sFontName)) &&
+					 (*arrFontList)[nIndex]->m_wsFontName == wsFontName) &&
 					 (*arrFontList)[nIndex]->m_bBold      == (bBold ? 1 : 0) &&
 					 (*arrFontList)[nIndex]->m_bItalic    == (bItalic ? 1 : 0))
 				{
@@ -2417,7 +2418,6 @@ std::vector<std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef
 			}
 			if (bNew)
 				pAppFontList->Add(sFontPath, pFontStream);
-			arrFontFreeText.push_back(sFontPath);
 		}
 		else
 		{
@@ -2425,6 +2425,7 @@ std::vector<std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef
 			if (pFontStream->CreateFromFile(sFontPath))
 				pAppFontList->Add(sFontPath, pFontStream);
 		}
+		arrFontFreeText[wsFontName] = sFontPath;
 	}
 
 	oAP.free(); oN.free(); oR.free(); oFonts.free();
@@ -2435,10 +2436,8 @@ std::vector<std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef
 std::map<std::wstring, std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, std::vector<CAnnotMarkup::CFontData*>& arrRC, int nTypeFonts)
 {
 	std::map<std::wstring, std::wstring> mRes;
-	if (arrRC.empty())
-		return mRes;
 
-	std::vector<std::wstring> arrFontFreeText = SetFont(pdfDoc, oAnnotRef, pFontManager, pFontList, nTypeFonts);
+	std::map<std::wstring, std::wstring> arrFontFreeText = SetFont(pdfDoc, oAnnotRef, pFontManager, pFontList, nTypeFonts);
 
 	CFontList* pAppFontList = (CFontList*)pFontManager->GetApplication()->GetList();
 	for (int i = 0; i < arrRC.size(); ++i)
@@ -2504,7 +2503,8 @@ std::map<std::wstring, std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object
 			NSFonts::CFontInfo* pFontInfo = pAppFontList->GetByParams(oFontSelect);
 			if (pFontInfo && !pFontInfo->m_wsFontPath.empty())
 			{
-				bool bFreeText = std::find(arrFontFreeText.begin(), arrFontFreeText.end(), pFontInfo->m_wsFontPath) != arrFontFreeText.end();
+				std::wstring sFontPath = pFontInfo->m_wsFontPath;
+				bool bFreeText = std::find_if(arrFontFreeText.begin(), arrFontFreeText.end(), [&sFontPath](auto&& p) { return p.second == sFontPath; }) != arrFontFreeText.end();
 				std::wstring wsFontBaseName = pFontInfo->m_wsFontName;
 				if (wsFontBaseName.length() > 7 && wsFontBaseName.at(6) == '+')
 				{

@@ -42,7 +42,6 @@
 #include "SrcWriter/FontTT.h"
 #include "SrcWriter/Destination.h"
 #include "SrcWriter/Field.h"
-#include "SrcWriter/AnnotRenderer.h"
 
 #include "../DesktopEditor/graphics/Image.h"
 #include "../DesktopEditor/graphics/structures.h"
@@ -168,6 +167,7 @@ CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRend
 	m_dPageWidth  = 210;
 	m_pPage       = NULL;
 	m_pFont       = NULL;
+	m_pFont14     = NULL;
 	m_lClipMode   = 0;
 
 	m_unFieldsCounter     = 0;
@@ -739,6 +739,20 @@ HRESULT CPdfWriter::CommandDrawTextCHAR2(unsigned int* pUnicodes, const unsigned
 {
 	if (!IsPageValid())
 		return S_FALSE;
+
+	if (m_bNeedUpdateTextFont)
+	{
+		if (!UpdateFont())
+			return NULL;
+	}
+
+	if (m_pFont14)
+	{
+		unsigned char* pCodes = new unsigned char[2];
+		pCodes[0] = 0;
+		pCodes[1] = *pUnicodes & 0xFF;
+		return DrawText(pCodes, 2, dX, dY) ? S_OK : S_FALSE;
+	}
 
 	unsigned char* pCodes = EncodeGID(unGid, pUnicodes, unUnicodeCount);
 	if (!pCodes)
@@ -2047,6 +2061,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pFreeTextAnnot->SetIT(pFTPr->GetIT());
 			if (nFlags & (1 << 21))
 				pFreeTextAnnot->SetIC(pFTPr->GetIC());
+			/*
 			std::vector<CAnnotFieldInfo::CMarkupAnnotPr::CFontData*> arrRC = pPr->GetRC();
 			double dFontSize = 10.0;
 			if (!arrRC.empty())
@@ -2063,6 +2078,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			if (m_bNeedUpdateTextFont)
 				UpdateFont();
 			pFreeTextAnnot->SetDA(m_pFont, dFontSize, oInfo.GetC());
+			*/
 			if (nFlags & (1 << 22))
 			{
 				PdfWriter::CPage* pCurPage = m_pPage;
@@ -2900,7 +2916,7 @@ bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, cons
 	m_oCommandManager.SetTransform(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
 
 	CRendererTextCommand* pText = m_oCommandManager.AddText(pCodes, unLen, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY));
-	pText->SetFont(m_pFont);
+	pText->SetFont(m_pFont14 ? m_pFont : m_pFont);
 	pText->SetSize(m_oFont.GetSize());
 	pText->SetColor(m_oBrush.GetColor1());
 	pText->SetAlpha((BYTE)m_oBrush.GetAlpha1());
@@ -2934,14 +2950,62 @@ bool CPdfWriter::PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen
 	m_oPath.AddText(m_pFont, pCodes, unLen * 2, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), m_oFont.GetSize(), MM_2_PT(m_oFont.GetCharSpace()));
 	return true;
 }
+int CPdfWriter::IsBase14(const std::wstring& wsName)
+{
+	if (wsName == L"Helvetica")
+		return 0;
+	if (wsName == L"Helvetica-Bold")
+		return 1;
+	if (wsName == L"Helvetica-Oblique")
+		return 2;
+	if (wsName == L"Helvetice-BoldOblique")
+		return 3;
+	if (wsName == L"Courier")
+		return 4;
+	if (wsName == L"Courier-Bold")
+		return 5;
+	if (wsName == L"Courier-Oblique")
+		return 6;
+	if (wsName == L"Courier-BoldOblique")
+		return 7;
+	if (wsName == L"Times")
+		return 8;
+	if (wsName == L"Times-Bold")
+		return 9;
+	if (wsName == L"Times-Oblique")
+		return 10;
+	if (wsName == L"Times-BoldOblique")
+		return 11;
+	if (wsName == L"Symbol")
+		return 12;
+	if (wsName == L"ZapfDingbats")
+		return 13;
+	return -1;
+}
+bool CPdfWriter::GetBaseFont14(const std::wstring& wsFontName, int nBase14)
+{
+	std::wstring wsFontPath = m_oFont.GetPath();
+	LONG lFaceIndex         = m_oFont.GetFaceIndex();
+	if (!FindFontPath(wsFontName, m_oFont.IsBold(), m_oFont.IsItalic(), wsFontPath, lFaceIndex))
+		return false;
+	if (!m_pFontManager->LoadFontFromFile(wsFontPath, lFaceIndex, m_oFont.GetSize(), 72, 72))
+		return false;
+	m_pFont14 = m_pDocument->CreateFont14((PdfWriter::EStandard14Fonts)nBase14);
+	return !!m_pFont14;
+}
 bool CPdfWriter::UpdateFont()
 {
 	m_bNeedUpdateTextFont = false;
+	m_pFont14 = NULL;
 	std::wstring wsFontPath = m_oFont.GetPath();
 	LONG lFaceIndex         = m_oFont.GetFaceIndex();
 	if (L"" == wsFontPath)
 	{
-		if (!GetFontPath(m_oFont.GetName(), m_oFont.IsBold(), m_oFont.IsItalic(), wsFontPath, lFaceIndex))
+		std::wstring wsFontName = m_oFont.GetName();
+		int nBase14 = IsBase14(wsFontName);
+		if (nBase14 >= 0 && GetBaseFont14(wsFontName, nBase14))
+			return true;
+		if (!GetFontPath(wsFontName, m_oFont.IsBold(), m_oFont.IsItalic(), wsFontPath, lFaceIndex))
 		{
 			m_pFont = NULL;
 			return false;
@@ -2968,9 +3032,16 @@ bool CPdfWriter::UpdateFont()
 	}
 	return true;
 }
-bool CPdfWriter::GetFontPath(const std::wstring &wsFontName, const bool &bBold, const bool &bItalic, std::wstring& wsFontPath, LONG& lFaceIndex)
+void CPdfWriter::AddFont(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, const std::wstring& wsFontPath, const LONG& lFaceIndex)
 {
-	bool bFind = false;
+	std::wstring _wsFontPath;
+	LONG _lFaceIndex;
+	if (FindFontPath(wsFontName, bBold, bItalic, _wsFontPath, _lFaceIndex))
+		return;
+	m_vFonts.push_back(TFontInfo(wsFontName, bBold, bItalic, wsFontPath, lFaceIndex));
+}
+bool CPdfWriter::FindFontPath(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, std::wstring& wsFontPath, LONG& lFaceIndex)
+{
 	for (int nIndex = 0, nCount = m_vFonts.size(); nIndex < nCount; nIndex++)
 	{
 		TFontInfo& oInfo = m_vFonts.at(nIndex);
@@ -2978,10 +3049,14 @@ bool CPdfWriter::GetFontPath(const std::wstring &wsFontName, const bool &bBold, 
 		{
 			wsFontPath = oInfo.wsFontPath;
 			lFaceIndex = oInfo.lFaceIndex;
-			bFind = true;
-			break;
+			return true;
 		}
 	}
+	return false;
+}
+bool CPdfWriter::GetFontPath(const std::wstring &wsFontName, const bool &bBold, const bool &bItalic, std::wstring& wsFontPath, LONG& lFaceIndex)
+{
+	bool bFind = FindFontPath(wsFontName, bBold, bItalic, wsFontPath, lFaceIndex);
 
 	if (!bFind)
 	{
@@ -3027,7 +3102,7 @@ PdfWriter::CFontCidTrueType* CPdfWriter::GetFont(const std::wstring& wsFontPath,
 		}
 
 		std::wstring wsFontType = m_pFontManager->GetFontType();
-		if (L"TrueType" == wsFontType || L"OpenType" == wsFontType || L"CFF" == wsFontType)
+		if (L"TrueType" == wsFontType || L"OpenType" == wsFontType || L"CFF" == wsFontType || L"Type 1" == wsFontType)
 			pFont = m_pDocument->CreateCidTrueTypeFont(wsFontPath, lFaceIndex);
 	}
 

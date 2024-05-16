@@ -209,7 +209,7 @@ void object_odf_context::xlsx_convert(oox::xlsx_conversion_context & Context)
 		Context.get_math_context().base_font_bold_ = baseFontBold_;
 		
 		Context.get_math_context().start();
-		office_math_->oox_convert(Context.get_math_context(), 1);
+		office_math_->oox_convert(Context.get_math_context(),3);
 	}
 	else if(object_type_ == 4 && office_spreadsheet_)
 	{

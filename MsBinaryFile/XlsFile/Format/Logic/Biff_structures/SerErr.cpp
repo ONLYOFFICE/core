@@ -63,6 +63,21 @@ void SerErr::load(CFRecord& record)
 
 }
 
+void SerErr::save(CFRecord& record)
+{
+    char serType;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+        serType = 0x10;
+    else
+        serType = 4;
+
+    record << serType << err;
+
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+        record.reserveNunBytes(7);
+    else
+        record.reserveNunBytes(3);
+}
 
 const std::wstring SerErr::toString() const
 {

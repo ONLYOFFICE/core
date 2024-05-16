@@ -521,9 +521,9 @@ Ftab_Cetab::ValuesDetermination::ValuesDetermination()
     params_fixed.insert(ParamsFixed(0x01D6, 4, L"ACCRINTM"));
     params_fixed.insert(ParamsFixed(0x01D7, 2, L"WORKDAY"));
     params_fixed.insert(ParamsFixed(0x01D8, 2, L"NETWORKDAYS"));
-    params_fixed.insert(ParamsFixed(0x01D9, 1, L"GCD"));
+    params_fixed.insert(ParamsFixed(0x01D9, -1, L"GCD"));
     params_fixed.insert(ParamsFixed(0x01DA, 1, L"MULTINOMIAL"));
-    params_fixed.insert(ParamsFixed(0x01DB, 1, L"LCM"));
+    params_fixed.insert(ParamsFixed(0x01DB, -1, L"LCM"));
     params_fixed.insert(ParamsFixed(0x01DC, 2, L"FVSCHEDULE"));
     params_fixed.insert(ParamsFixed(0x01DD, 3, L"CUBEKPIMEMBER"));
     params_fixed.insert(ParamsFixed(0x01DE, 1, L"CUBESET"));

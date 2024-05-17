@@ -1199,6 +1199,15 @@ namespace PdfWriter
 			m_pStream->WriteBinary(sText, unLen, NULL);
 			m_pStream->WriteChar('>');
 		}
+		else if (fontType1 == eType)
+		{
+			unLen = unLen / 2;
+			BYTE* sText2 = new BYTE[unLen];
+			for (int i = 0; i < unLen; ++i)
+				sText2[i] = sText[i * 2 + 1];
+			m_pStream->WriteEscapeText(sText2, unLen);
+			RELEASEARRAYOBJECTS(sText2);
+		}
 		else
 		{
 			m_pStream->WriteEscapeText(sText, unLen);

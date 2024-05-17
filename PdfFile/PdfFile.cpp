@@ -58,6 +58,7 @@ public:
 	bool IsEditPage() { return false; }
 	void AddShapeXML(const std::string& sXML) {}
 	void EndMarkedContent() {}
+	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath) { return false; }
 };
 #endif // BUILDING_WASM_MODULE
 

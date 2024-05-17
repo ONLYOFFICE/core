@@ -157,7 +157,8 @@ namespace PdfWriter
 					      
 		CImageDict*       CreateImage();
 		CXObject*         CreateForm(CImageDict* pImage, const std::string& sName);
-		CFont14*          CreateFont14(EStandard14Fonts eType);
+		CFont14*          CreateFont14(const std::wstring& wsFontPath, unsigned int unIndex, EStandard14Fonts eType);
+		CFont14*          FindFont14  (const std::wstring& wsFontPath, unsigned int unIndex);
 		CFontCidTrueType* CreateCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
 		CFontCidTrueType* FindCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
 		CFontTrueType*    CreateTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
@@ -291,6 +292,7 @@ namespace PdfWriter
 		std::vector<CShading*>             m_vShadings;
 		std::vector<TFontInfo>             m_vCidTTFonts;
 		std::vector<TFontInfo>             m_vTTFonts;
+		std::vector<TFontInfo>             m_vFonts14;
 		CFont14*                           m_pDefaultCheckBoxFont;
 		CDictObject*                       m_pTransparencyGroup;
 		std::vector<CFontCidTrueType*>     m_vFreeTypeFonts;

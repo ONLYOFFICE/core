@@ -40,6 +40,7 @@
 #include "SrcWriter/Font.h"
 #include "SrcWriter/FontCidTT.h"
 #include "SrcWriter/FontTT.h"
+#include "SrcWriter/Font14.h"
 #include "SrcWriter/Destination.h"
 #include "SrcWriter/Field.h"
 
@@ -748,8 +749,16 @@ HRESULT CPdfWriter::CommandDrawTextCHAR2(unsigned int* pUnicodes, const unsigned
 
 	if (m_pFont14)
 	{
+		bool bNew = false;
+		m_pFont14->EncodeUnicode(unGid, *pUnicodes, bNew);
+		if (bNew)
+		{
+			TBBoxAdvance oBox = m_pFontManager->MeasureChar2(*pUnicodes);
+			double dWidth = oBox.fAdvanceX / m_oFont.GetSize() * 1000.0;
+			m_pFont14->AddWidth(dWidth);
+		}
 		unsigned char* pCodes = new unsigned char[2];
-		pCodes[0] = 0;
+		pCodes[0] = (*pUnicodes >> 8) & 0xFF;
 		pCodes[1] = *pUnicodes & 0xFF;
 		return DrawText(pCodes, 2, dX, dY) ? S_OK : S_FALSE;
 	}
@@ -2916,7 +2925,10 @@ bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, cons
 	m_oCommandManager.SetTransform(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
 
 	CRendererTextCommand* pText = m_oCommandManager.AddText(pCodes, unLen, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY));
-	pText->SetFont(m_pFont14 ? m_pFont : m_pFont);
+	PdfWriter::CFontDict* pFont = m_pFont;
+	if (m_pFont14)
+		pFont = m_pFont14;
+	pText->SetFont(pFont);
 	pText->SetSize(m_oFont.GetSize());
 	pText->SetColor(m_oBrush.GetColor1());
 	pText->SetAlpha((BYTE)m_oBrush.GetAlpha1());
@@ -2990,7 +3002,8 @@ bool CPdfWriter::GetBaseFont14(const std::wstring& wsFontName, int nBase14)
 		return false;
 	if (!m_pFontManager->LoadFontFromFile(wsFontPath, lFaceIndex, m_oFont.GetSize(), 72, 72))
 		return false;
-	m_pFont14 = m_pDocument->CreateFont14((PdfWriter::EStandard14Fonts)nBase14);
+	PdfWriter::EStandard14Fonts nType = (PdfWriter::EStandard14Fonts)nBase14;
+	m_pFont14 = m_pDocument->CreateFont14(wsFontPath, lFaceIndex, nType);
 	return !!m_pFont14;
 }
 bool CPdfWriter::UpdateFont()

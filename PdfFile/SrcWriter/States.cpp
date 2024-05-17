@@ -177,7 +177,7 @@ void CCommandManager::Flush()
                 double         dX        = pText->GetX();
                 double         dY        = pText->GetY();
                 double         dTextSize = pText->GetSize();
-                double         dWidth    = ((PdfWriter::CFontCidTrueType*)pText->GetFont())->GetWidth(ushCode) / 1000.0 * dTextSize;
+				double         dWidth    = pText->GetFont()->GetWidth(ushCode) / 1000.0 * dTextSize;
 
                 if (!oTextLine.Add(pCodes, unLen, dX, dY, dWidth, dTextSize))
                 {

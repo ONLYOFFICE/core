@@ -886,16 +886,6 @@ bool CPdfEditor::EditPage(int nPageIndex)
 						oAnnot.free(); oSubtype.free();
 						continue;
 					}
-					else if (oSubtype.isName("FreeText"))
-					{
-						//TODO добавление шрифтов FreeText в общий m_pAppAplication чтобы writer мог использовать шрифты из reader
-						oAnnot.free(); oSubtype.free();
-						oTemp.arrayGetNF(nIndex, &oAnnot);
-						std::map<std::wstring, std::wstring> mapFont = pReader->AnnotFonts(&oAnnot);
-						m_mFonts.insert(mapFont.begin(), mapFont.end());
-						DictToCDictObject(&oAnnot, pArray, false, "");
-						oAnnot.free();
-					}
 					oAnnot.free(); oSubtype.free();
 					oTemp.arrayGetNF(nIndex, &oAnnot);
 					DictToCDictObject(&oAnnot, pArray, false, "");
@@ -1027,7 +1017,11 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 	else if (oType.isName("Polygon") || oType.isName("PolyLine"))
 		pAnnot = new PdfWriter::CPolygonLineAnnotation(pXref);
 	else if (oType.isName("FreeText"))
+	{
+		std::map<std::wstring, std::wstring> mapFont = pReader->AnnotFonts(&oAnnotRef);
+		m_mFonts.insert(mapFont.begin(), mapFont.end());
 		pAnnot = new PdfWriter::CFreeTextAnnotation(pXref);
+	}
 	else if (oType.isName("Caret"))
 		pAnnot = new PdfWriter::CCaretAnnotation(pXref);
 	else if (oType.isName("Popup"))

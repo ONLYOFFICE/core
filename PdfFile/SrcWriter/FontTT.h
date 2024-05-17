@@ -58,7 +58,6 @@ namespace PdfWriter
 
 		CFontTrueType(CXref* pXref, CDocument* pDocument, const std::wstring& wsFontPath, unsigned int unIndex);
 		~CFontTrueType();
-		unsigned int   GetWidth(unsigned short ushCode);
 		int            GetLineHeight() const
 		{
 			return m_nLineHeight;

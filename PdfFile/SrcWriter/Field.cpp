@@ -1537,16 +1537,15 @@ namespace PdfWriter
 		m_pRollover = NULL;
 		m_pDown     = NULL;
 	}
-	CAnnotAppearanceObject* CAnnotAppearance::GetNormal(CResourcesDict* pResources)
+	CAnnotAppearanceObject* CAnnotAppearance::GetNormal()
 	{
 		if (!m_pNormal)
 		{
 			if (m_pField)
 				m_pNormal = new CAnnotAppearanceObject(m_pXref, m_pField);
 			else if (m_pAnnot)
-				m_pNormal = new CAnnotAppearanceObject(m_pXref, m_pAnnot, pResources);
-			if (m_pXref)
-				Add("N", m_pNormal);
+				m_pNormal = new CAnnotAppearanceObject(m_pXref, m_pAnnot);
+			Add("N", m_pNormal);
 		}
 
 		return m_pNormal;
@@ -1622,15 +1621,13 @@ namespace PdfWriter
 	void CAnnotAppearanceObject::Init(CXref* pXref, CResourcesDict* pResources)
 	{
 		m_pXref     = pXref ? pXref : NULL;
+		m_pStream   = new CMemoryStream();
 		m_pFont     = NULL;
 		m_dFontSize = 10.0;
 		m_bStart    = true;
 
 		if (m_pXref)
-		{
-			m_pStream   = new CMemoryStream();
 			SetStream(m_pXref, m_pStream);
-		}
 
 		Add("Type", "XObject");
 		Add("Subtype", "Form");
@@ -1652,9 +1649,9 @@ namespace PdfWriter
 		pArray->Add(fabs(pField->GetRect().fRight - pField->GetRect().fLeft));
 		pArray->Add(fabs(pField->GetRect().fBottom - pField->GetRect().fTop));
 	}
-	CAnnotAppearanceObject::CAnnotAppearanceObject(CXref* pXRef, CAnnotation* pAnnot, CResourcesDict* pResources)
+	CAnnotAppearanceObject::CAnnotAppearanceObject(CXref* pXRef, CAnnotation* pAnnot)
 	{
-		Init(pXRef, pResources ? pResources : pAnnot->GetDocument()->GetFieldsResources());
+		Init(pXRef, pAnnot->GetDocument()->GetFieldsResources());
 		m_pAnnot = pAnnot;
 		m_pField = NULL;
 
@@ -2820,9 +2817,5 @@ namespace PdfWriter
 	{
 		m_pStream->WriteStr(sColor.c_str());
 		m_pStream->WriteStr(" 0 G 0 i 0.59 w 4 M 1 j 0 J [] 0 d 1 0 0 1 2.8335 1.7627 cm 0 0 m -2.74 15.16 l 12.345 12.389 l 9.458 9.493 l 14.027 4.91 l 7.532 -1.607 l 2.964 2.975 l b");
-	}
-	void CAnnotAppearanceObject::StartDrawFreeText(const std::string& sColor)
-	{
-
 	}
 }

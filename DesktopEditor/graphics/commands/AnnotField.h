@@ -385,9 +385,6 @@ public:
 		std::vector<double> m_arrIC;
 		LONG m_nRenderLen;
 		BYTE* m_pRender;
-		std::wstring m_sMediaDirectory;
-		std::wstring m_sInternalMediaDirectory;
-		std::wstring m_sThemesDirectory;
 	};
 
 	class GRAPHICS_DECL CCaretAnnotPr

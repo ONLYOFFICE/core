@@ -2390,12 +2390,9 @@ std::map<std::wstring, std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object
 		bool bBold = false, bItalic = false;
 		std::wstring sFontPath = GetFontData(pdfDoc, pFontManager, pFontList, &oFonts, &oFontRef, nTypeFonts, sFontName, sActual, bBold, bItalic);
 		std::wstring wsFontName = UTF8_TO_U(sFontName);
-		if (sFontPath.empty())
-		{
-			oFontRef.free();
-			continue;
-		}
 		oFontRef.free();
+		if (sFontPath.empty())
+			continue;
 
 		if (isBaseFont(sFontPath))
 			continue;
@@ -2417,12 +2414,6 @@ std::map<std::wstring, std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object
 				}
 			}
 			if (bNew)
-				pAppFontList->Add(sFontPath, pFontStream);
-		}
-		else
-		{
-			pFontStream = NSFonts::NSStream::Create();
-			if (pFontStream->CreateFromFile(sFontPath))
 				pAppFontList->Add(sFontPath, pFontStream);
 		}
 		arrFontFreeText[wsFontName] = sFontPath;

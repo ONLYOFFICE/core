@@ -469,7 +469,7 @@ namespace PdfWriter
 		{
 			m_unFilter = unFiler;
 		}
-		void         SetStream(CXref* pXref, CStream* pStream, bool bThis = true, int nLength = 0);
+		void         SetStream(CXref* pXref, CStream* pStream, bool bThis = true);
 
 		virtual void      BeforeWrite(){}
 		virtual void      Write(CStream* pStream){}

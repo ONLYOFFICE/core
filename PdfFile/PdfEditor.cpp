@@ -873,8 +873,7 @@ bool CPdfEditor::EditPage(int nPageIndex)
 		else if (strcmp("Annots", chKey) == 0)
 		{
 			// ВРЕМЕНО удаление Link аннотаций при редактировании
-			pageObj.dictGetVal(nIndex, &oTemp);
-			if (oTemp.isArray())
+			if (pageObj.dictGetVal(nIndex, &oTemp)->isArray())
 			{
 				PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
 				pPage->Add("Annots", pArray);
@@ -894,11 +893,15 @@ bool CPdfEditor::EditPage(int nPageIndex)
 				oTemp.free();
 				continue;
 			}
+			else
+			{
+				oTemp.free();
+				pageObj.dictGetValNF(nIndex, &oTemp);
+			}
 		}
 		else if (strcmp("Contents", chKey) == 0)
 		{
-			pageObj.dictGetVal(nIndex, &oTemp);
-			if (oTemp.isArray())
+			if (pageObj.dictGetVal(nIndex, &oTemp)->isArray())
 			{
 				DictToCDictObject(&oTemp, pPage, true, chKey);
 				oTemp.free();
@@ -1293,12 +1296,63 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 	if (it == m_mFonts.end())
 		return false;
 	wsFontPath = it->second;
+	if (wsFontName == L"Helvetica")
+		return true;
+	if (wsFontName == L"Helvetica-Bold")
+	{
+		bBold = true;
+		return true;
+	}
+	if (wsFontName == L"Helvetica-Oblique")
+	{
+		bItalic = true;
+		return true;
+	}
+	if (wsFontName == L"Helvetice-BoldOblique")
+	{
+		bBold = true;
+		bItalic = true;
+		return true;
+	}
+	if (wsFontName == L"Courier")
+		return true;
+	if (wsFontName == L"Courier-Bold")
+	{
+		bBold = true;
+		return true;
+	}
 	if (wsFontName == L"Courier-Oblique")
 	{
 		bItalic = true;
 		return true;
 	}
+	if (wsFontName == L"Courier-BoldOblique")
+	{
+		bBold = true;
+		bItalic = true;
+		return true;
+	}
+	if (wsFontName == L"Times")
+		return true;
+	if (wsFontName == L"Times-Bold")
+	{
+		bBold = true;
+		return true;
+	}
+	if (wsFontName == L"Times-Oblique")
+	{
+		bItalic = true;
+		return true;
+	}
+	if (wsFontName == L"Times-BoldOblique")
+	{
+		bBold = true;
+		bItalic = true;
+		return true;
+	}
 	if (wsFontName == L"Symbol")
+		return true;
+	if (wsFontName == L"ZapfDingbats")
 		return true;
 	return false;
 }

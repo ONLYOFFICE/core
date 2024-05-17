@@ -802,7 +802,6 @@ namespace PdfWriter
 			if (wsFontPath == oInfo.wsPath && unIndex == oInfo.unIndex)
 				return (CFont14*)oInfo.pFont;
 		}
-
 		return NULL;
 	}
 	CFontCidTrueType* CDocument::CreateCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex)

@@ -655,14 +655,14 @@ namespace PdfWriter
 	{
 		m_pStream = pStream;
 	}
-	void CDictObject::SetStream(CXref* pXref, CStream* pStream, bool bThis, int nLength)
+	void CDictObject::SetStream(CXref* pXref, CStream* pStream, bool bThis)
 	{
 		if (m_pStream)
 			delete m_pStream;
 
 		if (!Get("Length"))
 		{
-			CNumberObject* pLength = new CNumberObject(nLength);
+			CNumberObject* pLength = new CNumberObject(0);
 
 			// Только stream object добавляются в таблицу xref автоматически
 			if (bThis)

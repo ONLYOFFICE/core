@@ -913,8 +913,7 @@ namespace PPTX
 					bOle = true;
 					pWriter->WriteString(L"<p:graphicFrame><p:nvGraphicFramePr>");
 						pWriter->WriteString(L"<p:cNvPr id=\"" + std::to_wstring(_id) + L"\"");
-						if (false == nvPicPr.cNvPr.name.empty())
-							pWriter->WriteString(L" name=\"" + nvPicPr.cNvPr.name + L"\"");
+						pWriter->WriteString(L" name=\"" + nvPicPr.cNvPr.name + L"\"");
 						pWriter->WriteString(L"/><p:cNvGraphicFramePr>"); 
 						pWriter->WriteString(L"<a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/>");
 						pWriter->WriteString(L"</p:cNvGraphicFramePr>");

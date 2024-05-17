@@ -385,10 +385,10 @@ bool CDocBuilderContext_IsError(CDocBuilderContext* self)
 // ===== Utility =====
 void DeleteWCharP(wchar_t* str)
 {
-	delete str;
+	delete[] str;
 }
 
 void DeleteCharP(char* str)
 {
-	delete str;
+	delete[] str;
 }

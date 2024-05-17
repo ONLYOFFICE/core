@@ -1,6 +1,7 @@
 #include "../src/docbuilder_functions.h"
 
 #include <string>
+#include <iostream>
 
 #include "app_builder_lib/utils.cpp"
 
@@ -25,8 +26,21 @@ DECLARE_RAII_DOCBUILDER_FUNC_CLASS(CDocBuilderContextScope)
 int main()
 {
 	std::wstring sWorkDirectory = NSUtils::GetBuilderDirectory();
-	std::wstring sProcessDirectory = NSUtils::GetProcessDirectory();
 
+#if 1
+	// Simple test that shows builder version if everything is correct
+	CDocBuilder_InitializeWithDirectory(sWorkDirectory.c_str());
+	CDocBuilder* pBuilder = CDocBuilder_Create();
+
+	char* sVersion = CDocBuilder_GetVersion(pBuilder);
+	std::cout << sVersion << std::endl;
+	DeleteCharP(sVersion);
+
+	CDocBuilder_Dispose();
+	CDocBuilder_Destroy(pBuilder);
+#else
+	// Test is identical to app_builder_lib.pro
+	// The test uses RAII wrappers - classes with 'F' postfix, which are destroyed automatically
 	CDocBuilder_InitializeWithDirectory(sWorkDirectory.c_str());
 
 	CDocBuilderF oBuilder = CDocBuilder_Create();
@@ -48,11 +62,13 @@ int main()
 	CDocBuilderValue_SetByIndex(oContent.get(), 0, oParagraph.get());
 	CDocBuilderValue_Call1(oDocument.get(), L"InsertContent", oContent.get());
 
+	std::wstring sProcessDirectory = NSUtils::GetProcessDirectory();
 	std::wstring sDstPath = sProcessDirectory + L"/result.docx";
 	CDocBuilder_SaveFileByExtension(oBuilder.get(), L"docx", sDstPath.c_str());
 	CDocBuilder_CloseFile(oBuilder.get());
 
 	CDocBuilder_Dispose();
+#endif
 
 	return 0;
 }

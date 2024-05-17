@@ -886,7 +886,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
         {
            drawing->behindDoc = L"1";  
 		   if (!drawing->styleWrap)
-			   drawing->styleWrap = style_wrap(style_wrap::RunThrough);
+			   drawing->styleWrap = style_wrap(style_wrap::Parallel);
 
         }
 		if (!drawing->styleWrap)

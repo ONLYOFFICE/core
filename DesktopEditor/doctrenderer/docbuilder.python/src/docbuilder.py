@@ -276,46 +276,46 @@ class CDocBuilderValue:
         self._lib.CDocBuilderValue_Destroy(self._internal)
 
     def IsEmpty(self):
-        return _lib.CDocBuilderValue_IsEmpty(self._internal).value
+        return _lib.CDocBuilderValue_IsEmpty(self._internal)
 
     def Clear(self):
         _lib.CDocBuilderValue_Clear(self._internal)
 
     def IsNull(self):
-        return _lib.CDocBuilderValue_IsNull(self._internal).value
+        return _lib.CDocBuilderValue_IsNull(self._internal)
 
     def IsUndefined(self):
-        return _lib.CDocBuilderValue_IsUndefined(self._internal).value
+        return _lib.CDocBuilderValue_IsUndefined(self._internal)
 
     def IsInt(self):
-        return _lib.CDocBuilderValue_IsInt(self._internal).value
+        return _lib.CDocBuilderValue_IsInt(self._internal)
 
     def IsDouble(self):
-        return _lib.CDocBuilderValue_IsDouble(self._internal).value
+        return _lib.CDocBuilderValue_IsDouble(self._internal)
 
     def IsString(self):
-        return _lib.CDocBuilderValue_IsString(self._internal).value
+        return _lib.CDocBuilderValue_IsString(self._internal)
 
     def IsFunction(self):
-        return _lib.CDocBuilderValue_IsFunction(self._internal).value
+        return _lib.CDocBuilderValue_IsFunction(self._internal)
 
     def IsObject(self):
-        return _lib.CDocBuilderValue_IsObject(self._internal).value
+        return _lib.CDocBuilderValue_IsObject(self._internal)
 
     def IsArray(self):
-        return _lib.CDocBuilderValue_IsArray(self._internal).value
+        return _lib.CDocBuilderValue_IsArray(self._internal)
 
     def GetLength(self):
-        return _lib.CDocBuilderValue_GetLength(self._internal).value
+        return _lib.CDocBuilderValue_GetLength(self._internal)
 
     def ToBool(self):
-        return _lib.CDocBuilderValue_ToBool(self._internal).value
+        return _lib.CDocBuilderValue_ToBool(self._internal)
 
     def ToInt(self):
-        return _lib.CDocBuilderValue_ToInt(self._internal).value
+        return _lib.CDocBuilderValue_ToInt(self._internal)
 
     def ToDouble(self):
-        return _lib.CDocBuilderValue_ToDouble(self._internal).value
+        return _lib.CDocBuilderValue_ToDouble(self._internal)
 
     def ToString(self):
         strRes = _lib.CDocBuilderValue_ToString(self._internal)
@@ -324,13 +324,13 @@ class CDocBuilderValue:
         return res
 
     def GetProperty(self, name):
-        return CDocBuilderValue(_lib.CDocBuilderValue_GetProperty(self._internal, ctypes.c_wchar_p(name)))
+        return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderValue_GetProperty(self._internal, ctypes.c_wchar_p(name))))
 
     def Get(self, key):
         if isinstance(key, int):
-            return CDocBuilderValue(_lib.CDocBuilderValue_GetByIndex(self._internal, ctypes.c_int(key)))
+            return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderValue_GetByIndex(self._internal, ctypes.c_int(key))))
         elif isinstance(key, str):
-            return CDocBuilderValue(_lib.CDocBuilderValue_GetProperty(self._internal, ctypes.c_wchar_p(key)))
+            return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderValue_GetProperty(self._internal, ctypes.c_wchar_p(key))))
         else:
             return None
 
@@ -346,24 +346,24 @@ class CDocBuilderValue:
     def __getitem__(self, key):
         return self.Get(key)
 
-    def __setitem__(self, key):
-        self.Set(key)
+    def __setitem__(self, key, value):
+        self.Set(key, value)
 
     @staticmethod
     def CreateUndefined():
-        return CDocBuilderValue(_lib.CDocBuilderValue_CreateUndefined())
+        return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderValue_CreateUndefined()))
 
     @staticmethod
     def CreateNull():
-        return CDocBuilderValue(_lib.CDocBuilderValue_CreateNull())
+        return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderValue_CreateNull()))
 
     @staticmethod
     def CreateArray(length):
-        return CDocBuilderValue(_lib.CDocBuilderValue_CreateArray(length))
+        return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderValue_CreateArray(length)))
 
     def Call(self, name, *args):
         if len(args) == 0:
-            return CDocBuilderValue(_lib.CDocBuilderValue_Call0(self._internal, ctypes.c_wchar_p(name)))
+            return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderValue_Call0(self._internal, ctypes.c_wchar_p(name))))
         elif len(args) < 7:
             values = []
             for i in range(len(args)):
@@ -372,17 +372,17 @@ class CDocBuilderValue:
                     p = CDocBuilderValue(p)
                 values.append(p)
             if len(args) == 1:
-                return CDocBuilderValue(_lib.CDocBuilderValue_Call1(self._internal, ctypes.c_wchar_p(name), values[0]._internal))
+                return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderValue_Call1(self._internal, ctypes.c_wchar_p(name), values[0]._internal)))
             elif len(args) == 2:
-                return CDocBuilderValue(_lib.CDocBuilderValue_Call2(self._internal, ctypes.c_wchar_p(name), values[0]._internal, values[1]._internal))
+                return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderValue_Call2(self._internal, ctypes.c_wchar_p(name), values[0]._internal, values[1]._internal)))
             elif len(args) == 3:
-                return CDocBuilderValue(_lib.CDocBuilderValue_Call3(self._internal, ctypes.c_wchar_p(name), values[0]._internal, values[1]._internal, values[2]._internal))
+                return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderValue_Call3(self._internal, ctypes.c_wchar_p(name), values[0]._internal, values[1]._internal, values[2]._internal)))
             elif len(args) == 4:
-                return CDocBuilderValue(_lib.CDocBuilderValue_Call4(self._internal, ctypes.c_wchar_p(name), values[0]._internal, values[1]._internal, values[2]._internal, values[3]._internal))
+                return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderValue_Call4(self._internal, ctypes.c_wchar_p(name), values[0]._internal, values[1]._internal, values[2]._internal, values[3]._internal)))
             elif len(args) == 5:
-                return CDocBuilderValue(_lib.CDocBuilderValue_Call5(self._internal, ctypes.c_wchar_p(name), values[0]._internal, values[1]._internal, values[2]._internal, values[3]._internal, values[4]._internal))
+                return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderValue_Call5(self._internal, ctypes.c_wchar_p(name), values[0]._internal, values[1]._internal, values[2]._internal, values[3]._internal, values[4]._internal)))
             elif len(args) == 6:
-                return CDocBuilderValue(_lib.CDocBuilderValue_Call6(self._internal, ctypes.c_wchar_p(name), values[0]._internal, values[1]._internal, values[2]._internal, values[3]._internal, values[4]._internal, values[5]._internal))
+                return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderValue_Call6(self._internal, ctypes.c_wchar_p(name), values[0]._internal, values[1]._internal, values[2]._internal, values[3]._internal, values[4]._internal, values[5]._internal)))
         else:
             raise TypeError("Call() expects at most 6 arguments")
 
@@ -396,13 +396,13 @@ class CDocBuilder:
         self._lib.CDocBuilder_Destroy(self._internal)
 
     def OpenFile(self, path, params):
-        return _lib.CDocBuilder_OpenFile(self._internal, ctypes.c_wchar_p(path), ctypes.c_wchar_p(params)).value
+        return _lib.CDocBuilder_OpenFile(self._internal, ctypes.c_wchar_p(path), ctypes.c_wchar_p(params))
 
     def CreateFile(self, type):
         if isinstance(type, int):
-            return _lib.CDocBuilder_CreateFileByType(self._internal, ctypes.c_int(type)).value
+            return _lib.CDocBuilder_CreateFileByType(self._internal, ctypes.c_int(type))
         elif isinstance(type, str):
-            return _lib.CDocBuilder_CreateFileByExtension(self._internal, ctypes.c_wchar_p(type)).value
+            return _lib.CDocBuilder_CreateFileByExtension(self._internal, ctypes.c_wchar_p(type))
         else:
             return False
 
@@ -412,14 +412,14 @@ class CDocBuilder:
     def SaveFile(self, type, path, params=None):
         if isinstance(type, int):
             if params is None:
-                return _lib.CDocBuilder_SaveFileByType(self._internal, ctypes.c_int(type), ctypes.c_wchar_p(path)).value
+                return _lib.CDocBuilder_SaveFileByType(self._internal, ctypes.c_int(type), ctypes.c_wchar_p(path))
             else:
-                return _lib.CDocBuilder_SaveFileByTypeWithParams(self._internal, ctypes.c_int(type), ctypes.c_wchar_p(path), ctypes.c_wchar_p(params)).value
+                return _lib.CDocBuilder_SaveFileByTypeWithParams(self._internal, ctypes.c_int(type), ctypes.c_wchar_p(path), ctypes.c_wchar_p(params))
         elif isinstance(type, str):
             if params is None:
-                return _lib.CDocBuilder_SaveFileByExtension(self._internal, ctypes.c_wchar_p(type), ctypes.c_wchar_p(path)).value
+                return _lib.CDocBuilder_SaveFileByExtension(self._internal, ctypes.c_wchar_p(type), ctypes.c_wchar_p(path))
             else:
-                return _lib.CDocBuilder_SaveFileByExtensionWithParams(self._internal, ctypes.c_wchar_p(type), ctypes.c_wchar_p(path), ctypes.c_wchar_p(params)).value
+                return _lib.CDocBuilder_SaveFileByExtensionWithParams(self._internal, ctypes.c_wchar_p(type), ctypes.c_wchar_p(path), ctypes.c_wchar_p(params))
         else:
             return -1
 
@@ -428,15 +428,15 @@ class CDocBuilder:
 
     def ExecuteCommand(self, command, retValue=None):
         if retValue is None:
-            return _lib.CDocBuilder_ExecuteCommand(self._internal, ctypes.c_wchar_p(command)).value
+            return _lib.CDocBuilder_ExecuteCommand(self._internal, ctypes.c_wchar_p(command))
         else:
-            return _lib.CDocBuilder_ExecuteCommandWithRetValue(self._internal, ctypes.c_wchar_p(command), retValue._internal).value
+            return _lib.CDocBuilder_ExecuteCommandWithRetValue(self._internal, ctypes.c_wchar_p(command), retValue._internal)
 
     def Run(self, path):
-        return _lib.CDocBuilder_Run(self._internal, ctypes.c_wchar_p(path)).value
+        return _lib.CDocBuilder_Run(self._internal, ctypes.c_wchar_p(path))
 
     def RunText(self, commands):
-        return _lib.CDocBuilder_RunText(self._internal, ctypes.c_wchar_p(commands)).value
+        return _lib.CDocBuilder_RunText(self._internal, ctypes.c_wchar_p(commands))
 
     def SetProperty(self, param, value):
         _lib.CDocBuilder_SetProperty(self._internal, ctypes.c_wchar_p(param), ctypes.c_wchar_p(value))
@@ -445,7 +445,7 @@ class CDocBuilder:
         _lib.CDocBuilder_WriteData(self._internal, ctypes.c_wchar_p(path), ctypes.c_wchar_p(value), ctypes.c_bool(append))
 
     def IsSaveWithDoctrendererMode(self):
-        return _lib.CDocBuilder_IsSaveWithDoctrendererMode(self._internal).value
+        return _lib.CDocBuilder_IsSaveWithDoctrendererMode(self._internal)
 
     def GetVersion(self):
         strVersion = _lib.CDocBuilder_GetVersion(self._internal)
@@ -454,7 +454,7 @@ class CDocBuilder:
         return version
 
     def GetContext(self):
-        return CDocBuilderContext(_lib.CDocBuilder_GetContext(self._internal))
+        return CDocBuilderContext(OBJECT_HANDLE(_lib.CDocBuilder_GetContext(self._internal)))
 
     @staticmethod
     def Initialize(directory=None):
@@ -477,7 +477,7 @@ class CDocBuilderContextScope:
         elif isinstance(value, OBJECT_HANDLE):
             self._internal = value
         else:
-            TypeError("Unsupported type for CDocBuilderContextScope constructor")
+            raise TypeError("Unsupported type for CDocBuilderContextScope constructor")
         self._lib = _lib
 
     def __del__(self):
@@ -496,7 +496,7 @@ class CDocBuilderContext:
         elif isinstance(value, OBJECT_HANDLE):
             self._internal = value
         else:
-            TypeError("Unsupported type for CDocBuilderContext constructor")
+            raise TypeError("Unsupported type for CDocBuilderContext constructor")
         self._lib = _lib
 
     def __del__(self):
@@ -504,25 +504,25 @@ class CDocBuilderContext:
         self._lib.CDocBuilderContext_Destroy(self._internal)
 
     def CreateUndefined(self):
-        return CDocBuilderValue(_lib.CDocBuilderContext_CreateUndefined(self._internal))
+        return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderContext_CreateUndefined(self._internal)))
 
     def CreateNull(self):
-        return CDocBuilderValue(_lib.CDocBuilderContext_CreateNull(self._internal))
+        return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderContext_CreateNull(self._internal)))
 
     def CreateObject(self):
-        return CDocBuilderValue(_lib.CDocBuilderContext_CreateObject(self._internal))
+        return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderContext_CreateObject(self._internal)))
 
     def CreateArray(self, length):
-        return CDocBuilderValue(_lib.CDocBuilderContext_CreateArray(self._internal, ctypes.c_int(length)))
+        return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderContext_CreateArray(self._internal, ctypes.c_int(length))))
 
     def GetGlobal(self):
-        return CDocBuilderValue(_lib.CDocBuilderContext_GetGlobal(self._internal))
+        return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderContext_GetGlobal(self._internal)))
 
     def CreateScope(self):
-        return CDocBuilderContextScope(_lib.CDocBuilderContext_CreateScope(self._internal))
+        return CDocBuilderContextScope(OBJECT_HANDLE(_lib.CDocBuilderContext_CreateScope(self._internal)))
 
     def IsError(self):
-        return _lib.CDocBuilderContext_IsError(self._internal).value
+        return _lib.CDocBuilderContext_IsError(self._internal)
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
@@ -547,10 +547,37 @@ if __name__ == '__main__':
     _lib.CDocBuilder_Destroy(builder)
     '''
     # ---------
+    '''
     CDocBuilder.Initialize(path)
     builder = CDocBuilder()
 
     version = builder.GetVersion()
     print(version)
+
+    CDocBuilder.Dispose()
+    '''
+    # ---------
+    CDocBuilder.Initialize(path)
+    builder = CDocBuilder()
+
+    builder.CreateFile('docx')
+
+    context = builder.GetContext()
+    scope = context.CreateScope()
+
+    globalObj = context.GetGlobal()
+
+    api = globalObj['Api']
+    document = api.Call('GetDocument')
+    paragraph = api.Call('CreateParagraph')
+    paragraph.Call('SetSpacingAfter', 1000, False)
+    paragraph.Call('AddText', 'Hello, World!')
+    content = context.CreateArray(1)
+    content[0] = paragraph
+    document.Call('InsertContent', content)
+
+    dstPath = os.getcwd() + '/result.docx'
+    builder.SaveFile('docx', dstPath)
+    builder.CloseFile()
 
     CDocBuilder.Dispose()

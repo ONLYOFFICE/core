@@ -25,4 +25,3 @@ INCLUDEPATH += ../..
 
 SOURCES += \
 	main.cpp
-

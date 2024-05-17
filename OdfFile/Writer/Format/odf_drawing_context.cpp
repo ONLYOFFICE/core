@@ -433,7 +433,7 @@ void odf_drawing_context::start_group()
 	//if (!impl_->current_drawing_state_.description_.empty())
 	//	group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_ = impl_->current_drawing_state_.description_;
 	if (impl_->current_drawing_state_.hidden_)
-		group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_ = L"printer";
+		group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_ = L"printer"; // L"none" ??? 
 	if (!impl_->current_drawing_state_.xml_id_.empty())
 		group->xml_id_ = impl_->current_drawing_state_.xml_id_;
 	
@@ -630,7 +630,7 @@ void odf_drawing_context::end_drawing()
 		if (impl_->current_drawing_state_.z_order_ >= 0)
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_z_index_ = impl_->current_drawing_state_.z_order_;
 		if (impl_->current_drawing_state_.hidden_)
-			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_ = L"printer";
+			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_ = L"printer"; // L"none" ??? 
 		if (!impl_->current_drawing_state_.xml_id_.empty())
 			draw->xml_id_ = impl_->current_drawing_state_.xml_id_;
 
@@ -1471,11 +1471,7 @@ void odf_drawing_context::set_shadow(int type, std::wstring hexColor, _CP_OPT(do
 		hexColor = std::wstring(L"#") + hexColor;
 
 	impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_x_ = length(length(dist_pt, length::pt).get_value_unit(length::cm), length::cm);
-	
-	if (dist_pt_y > 0)
-		impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_y_ = length(length(dist_pt_y, length::pt).get_value_unit(length::cm), length::cm);
-	else
-		impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_y_ = length(length(dist_pt, length::pt).get_value_unit(length::cm), length::cm);
+	impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_y_ = length(length(dist_pt_y, length::pt).get_value_unit(length::cm), length::cm);
 	
 	impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_ = shadow_type1(shadow_type1::Visible);
 	if (opacity) impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_opacity_ = *opacity;
@@ -2761,12 +2757,13 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 	{
 		switch(mode)
 		{
+			case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
+				paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbLr);
+				break;
 			case 5://textverticaltypeWordArtVert:
 			case 6://textverticaltypeWordArtVertRtl:
-			case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
 			case 3://SimpleTypes::textverticaltypeVert: 
 			case 2://SimpleTypes::textverticaltypeMongolianVert:
-				
 				paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
 				break;
 			case 0://SimpleTypes::textverticaltypeEaVert: 
@@ -2782,9 +2779,11 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 	{
 		switch(mode)
 		{
+			case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
+				impl_->current_paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbLr);
+				break;
 			case 5://textverticaltypeWordArtVert:
 			case 6://textverticaltypeWordArtVertRtl:
-			case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
 			case 3://SimpleTypes::textverticaltypeVert: 
 			case 2://SimpleTypes::textverticaltypeMongolianVert:
 				impl_->current_paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	

@@ -166,6 +166,8 @@ namespace NExtractTools
 		oXlsb.Read(oox_path);
 
 		OOX::CContentTypes oContentTypes;
+		oXlsb.SetPropForWriteSheet(sTo, oContentTypes);
+		oXlsb.WriteSheetData();
 		_UINT32 nRes = oXlsb.WriteBin(sTo, oContentTypes) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
 
 		return nRes;
@@ -282,6 +284,7 @@ namespace NExtractTools
 		if (SUCCEEDED_X2T(nRes))
 		{
 			nRes = oCXlsxSerializer.loadFromFile(sTargetBin, convertParams.m_sTempResultOOXMLDirectory, sXmlOptions, sMediaPath, sEmbedPath);
+			params.m_bMacro = oCXlsxSerializer.getMacroEnabled();
 		}
 		// удаляем EditorWithChanges, потому что он не в Temp
 		if (sFrom != sTargetBin)

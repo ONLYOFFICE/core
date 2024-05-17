@@ -160,7 +160,16 @@ void paragraph_content_element::docx_serialize_run(office_element_ptr_array& con
 		docx_serialize_run(content[i], Context);
 	}
 }
-
+void paragraph_content_element::xlsx_serialize(std::wostream& _Wostream, oox::xlsx_conversion_context& Context)
+{
+	std::wstringstream val;
+	text_to_stream(val, true);
+	std::wstring val_text = val.str();
+	if (val_text != L"???")
+	{
+		_Wostream << val_text;
+	}
+}
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * text::ns = L"";
 const wchar_t * text::name = L"";
@@ -740,16 +749,16 @@ void a::add_space(const std::wstring & Text)
 }
 void a::docx_convert(oox::docx_conversion_context & Context)
 {
-    bool pushed_style = false;
-    
-	bool addNewRun = false;
-    Context.finish_run();
-    
-    std::wostream & _Wostream = Context.output_stream();
-
 	std::wstring ref = xlink_attlist_.href_.get_value_or(L"");
+	if (ref.empty()) return;
+    
+	bool pushed_style = false;    
+	bool addNewRun = false;
+   
+	Context.finish_run();    
 	
-	if (Context.is_table_content())
+	std::wostream& _Wostream = Context.output_stream();
+	if (Context.is_table_content() || office_target_frame_name_ || ref[0] == L'#')
 	{
 		size_t pos_outline = ref.find(L"|outline");
 		if (std::wstring::npos != pos_outline)//без #
@@ -766,11 +775,14 @@ void a::docx_convert(oox::docx_conversion_context & Context)
 		{
 			ref = XmlUtils::EncodeXmlString(ref.substr(1));
 		}
-
 		_Wostream << L"<w:hyperlink w:anchor=\"" << ref << L"\" w:history=\"1\">"; 
-		int type = Context.get_table_content_context().get_type_current_content_template_index();
-		//type == 3 (LinkStart)
-		Context.get_table_content_context().next_level_index();
+
+		if (Context.is_table_content())
+		{
+			int type = Context.get_table_content_context().get_type_current_content_template_index();
+			//type == 3 (LinkStart)
+			Context.get_table_content_context().next_level_index();
+		}
 	}
 	else
 	{
@@ -1066,7 +1078,26 @@ void title::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     std::wstringstream val;
     text_to_stream(val);
-    Context.get_text_context()->add_text(val.str());
+	std::wstring _title = val.str();
+	if (_title != L"???")
+	{
+		Context.get_text_context()->add_text(_title);
+	}
+}
+void title::xlsx_serialize(std::wostream& _Wostream, oox::xlsx_conversion_context& Context)
+{
+	std::wstringstream val;
+	text_to_stream(val);
+	std::wstring _title = val.str();
+
+	if (_title == L"???")
+	{
+		_Wostream << L"&amp;F";
+	}
+	else
+	{
+		_Wostream << _title;
+	}
 }
 void title::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -1100,11 +1131,15 @@ void subject::docx_convert(oox::docx_conversion_context & Context)
  	docx_serialize_field(L"SUBJECT", text_, Context);
 }
 
-void subject::xlsx_convert(oox::xlsx_conversion_context & Context)
+void subject::xlsx_convert(oox::xlsx_conversion_context& Context)
 {
-    std::wstringstream val;
-    this->text_to_stream(val);
-    Context.get_text_context()->add_text(val.str());
+	std::wstringstream val;
+	this->text_to_stream(val);
+	std::wstring _subject = val.str();
+	if (_subject != L"???")
+	{
+		Context.get_text_context()->add_text(_subject);
+	}
 }
 void subject::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -1139,7 +1174,11 @@ void chapter::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     std::wstringstream val;
     this->text_to_stream(val);
-    Context.get_text_context()->add_text(val.str());
+	std::wstring _chapter = val.str();
+	if (_chapter != L"???")
+	{
+		Context.get_text_context()->add_text(_chapter);
+	}
 }
 void chapter::pptx_convert(oox::pptx_conversion_context & Context)
 {

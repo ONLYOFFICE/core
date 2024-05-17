@@ -91,7 +91,7 @@ namespace OOX
 		void CMergeCell::ReadAttributes(XLS::BaseObjectPtr& obj)
 		{
 			auto ptr = static_cast<XLSB::MergeCell*>(obj.get());
-			m_oRef  = ptr->rfx.toString();
+			m_oRef  = ptr->rfx.toString(true, true);
 		}
 
 		CMergeCells::CMergeCells(OOX::Document *pMain) : WritingElementWithChilds<CMergeCell>(pMain)

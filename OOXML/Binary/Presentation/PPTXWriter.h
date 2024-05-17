@@ -88,10 +88,13 @@ namespace NSBinPptxRW
 		void Init(std::wstring strFolder, bool bMacro = false);
 		void OpenPPTY(BYTE* pBuffer, int len, std::wstring srcFolder, std::wstring strThemesFolder);
 		void ReadMasterInfo(LONG nIndexMaster);
+		
 		void SetRequiredDefaultsApp();
-		void CreateDefaultApp();
 		void SetRequiredDefaultsCore();
 
+		bool GetMacroEnabled();
+
+		void CreateDefaultApp();
 		void CreateDefaultCore();
 		void CreateDefaultViewProps();
 		void CreateDefaultTableStyles();

@@ -1,96 +1,164 @@
 ﻿#pragma once
-#include "FontManagerBase.h"
-#include "../DesktopEditor/graphics/Matrix.h"
+#include <list>
+#include <vector>
+
+#include "../../../../DesktopEditor/graphics/structures.h"
+#include "../../../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../../../DesktopEditor/common/StringUTF32.h"
 
 namespace NSDocxRenderer
 {
-    using namespace NSFontManager;
+	class CUnicodeRange
+	{
+	public:
+		BYTE RangeNum {0};
+		BYTE Range {0};
 
-    class CFontTableEntry
-    {
-        public:
-            std::wstring    	m_strFamilyName {L""};
-            std::wstring		m_strPANOSE {L""};
-            LONG				m_lStyle {0};
-            std::vector<UINT>	m_arSignature;
-            bool				m_bIsFixedWidth {false};
+		int Start {0};
+		int End {0};
 
-        public:
-            CFontTableEntry(){}
-            virtual ~CFontTableEntry(){}
+		CUnicodeRange(const int& _start = 0, const int& _end = 0, const BYTE& _range = 0, const BYTE& _rangenum = 0);
+	};
 
-            CFontTableEntry(const CFontTableEntry& oSrc);
+	// класс для проставления Ranges для подбора шрифта по символу
+	class CUnicodeRanges
+	{
+	public:
+		std::list<CUnicodeRange> m_arRanges;
 
-            CFontTableEntry& operator =(const CFontTableEntry& oSrc);
-    };
+	public:
+		CUnicodeRanges();
+		void CheckRange(const int& symbol, BYTE& Range, BYTE& RangeNum);
+		void CheckRange(const int& symbol, int& Range1, int& Range2, int& Range3, int& Range4);
+	};
 
-    class CFontTable
-    {
-        public:
-            std::map<std::wstring, CFontTableEntry> m_mapTable;
+	struct CFontMetrics
+	{
+		double dAscent {0.0};
+		double dDescent {0.0};
+		double dLineSpacing {0.0};
+		double dEmHeight {0.0};
+		double dBaselineOffset {0.0};
+	};
 
-        public:
-            CFontTable() : m_mapTable(){}
-    };
+	struct CFontSelectParams
+	{
+		// изначальные параметры, которые могут быть нам известны
+		std::wstring wsDefaultName{L""};
+		bool bDefaultBold{false};
+		bool bDefaultItalic{false};
 
-    class CFontManager : public CFontManagerBase
-    {
-        public:
-            NSStructures::CFont*	m_pFont {nullptr};
-            Aggplus::CMatrix*		m_pTransform {nullptr};
-            double					m_dSpaceWidthMM {0.0};
+		SHORT lAvgWidth{-1};
+		bool bIsFixedWidth{false};
 
-        public:
-            CFontTable				m_oFontTable;
+		BYTE arPANOSE[10]{};
+		std::vector<UINT> arSignature;
 
-        public:
-            CFontManager(NSFonts::IApplicationFonts* pFonts);
-            virtual ~CFontManager(){}
+		CFontSelectParams() = default;
+		CFontSelectParams(const CFontSelectParams& oOther);
+		CFontSelectParams& operator=(const CFontSelectParams& oOther);
+		bool operator==(const CFontSelectParams& oOther);
+	};
 
-        public:
-            void Init();
+	// подбирает шрифт по параметрам
+	class CFontSelector
+	{
+	public:
+		// структура для хранения уже подобранных шрифтов
+		struct CFontSelectInfo
+		{
+			CFontSelectParams oFontSelectParams;
+			BYTE lRangeNum;
+			BYTE lRange;
 
-            void AddFontToMap();
+			std::wstring wsSelectedName;
+			bool bIsSelectedBold;
+			bool bIsSelectedItalic;
+		};
 
-        public:
-            virtual void LoadFont(long lFaceIndex = 0, bool bNeedAddToMap = true);
+		CFontSelector(NSFonts::IApplicationFonts* pApplication);
+		~CFontSelector();
 
-            virtual void MeasureString(const std::wstring& sText, double x, double y, double& dBoxX, double& dBoxY,
-                               double& dBoxWidth, double& dBoxHeight, MeasureType measureType);
+		void SelectFont(const CFontSelectParams& oFontSelectParams,
+						const CFontMetrics& oFontMetrics,
+						NSStringUtils::CStringUTF32& oText);
+		std::wstring GetSelectedName() const noexcept;
+		bool IsSelectedBold() const noexcept;
+		bool IsSelectedItalic() const noexcept;
 
-            void MeasureStringGids(unsigned int* pGids, unsigned int count, double x, double y,
-                                   double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType);
+		const std::list<CFontSelectInfo>& GetCache() const;
+		void ClearCache();
 
-            double GetBaseLineOffset();
+	private:
+		std::list<CFontSelectInfo> m_arParamsCache;
 
-            double GetFontHeight();
+		NSFonts::IFontManager* m_pManager;
+		std::wstring m_wsSelectedName;
+		bool m_bIsSelectedBold;
+		bool m_bIsSelectedItalic;
 
-            void SetStringGid(const LONG& lGid);
+		CUnicodeRanges m_oRanges;
+		void CheckRanges(UINT& lRange1, UINT& lRange2, UINT& lRange3, UINT& lRange4, BYTE& lRangeNum, BYTE& lRange);
 
-            void GenerateFontName2(NSStringUtils::CStringUTF32& oText);
-    };
+		void CheckFontNamePDF(std::wstring& wsName, bool& bBold, bool& bItalic);
+		bool CheckFontNameStyle(std::wstring& wsName, const std::wstring& sStyle);
+	};
 
-    class CFontManagerLight
-    {
-        private:
-            std::wstring m_strFontName {L""};
-            LONG	m_lFontStyle {0};
-            double	m_dSize {0.0};
+	// грузит шрифт, его параметры и метрики + измеряет шрифт
+	class CFontManager
+	{
+	public:
+		enum MeasureType
+		{
+			mtGlyph	= 0,
+			mtPosition	= 1
+		};
 
-            double	m_dSpaceWidth {0.0};
+		CFontManager(NSFonts::IApplicationFonts* pFonts);
+		~CFontManager();
 
-            NSFonts::IFontManager*	m_pManager {nullptr};
+		void LoadFontByFile(const NSStructures::CFont& oFont);
+		void LoadFontByName(const NSStructures::CFont& oFont);
 
-        public:
-            CFontManagerLight(NSFonts::IApplicationFonts* pFonts);
-            virtual ~CFontManagerLight();
+		const CFontSelectParams& GetFontSelectParams() const noexcept;
+		const CFontMetrics& GetFontMetrics() const noexcept;
 
-            double GetSpaceWidth();
+		double GetFontHeight() const;
+		double GetSpaceWidthMM() const;
 
-        public:
-            void LoadFont(std::wstring& strFontName, LONG& lStyle, const double &dSize, const bool& bIsGID);
+		void SetStringGid(const LONG& lGid);
 
-            double MeasureStringWidth(const std::wstring& sText);
-    };
+		void MeasureString(const std::wstring& wsText,
+			double x,
+			double y,
+			double& dBoxX,
+			double& dBoxY,
+			double& dBoxWidth,
+			double& dBoxHeight,
+			MeasureType measureType) const;
 
+		void MeasureStringGids(unsigned int* pGids,
+			unsigned int count,
+			double x,
+			double y,
+			double& dBoxX,
+			double& dBoxY,
+			double& dBoxWidth,
+			double& dBoxHeight,
+			MeasureType measureType) const;
+
+		void ClearCache();
+	private:
+		NSFonts::IFontManager* m_pManager;
+
+		NSStructures::CFont m_oFont;
+		CFontMetrics m_oFontMetrics;
+		CFontSelectParams m_oFontSelectParams;
+
+		void LoadFontMetrics();
+		void LoadFontSelectParams();
+
+		void CheckPdfResources();
+
+	};
 }

@@ -1,91 +1,108 @@
 #pragma once
 #include "Paragraph.h"
+#include "TextLine.h"
 #include "../../resources/ImageInfo.h"
 #include "../../resources/LinesTable.h"
 #include "../../resources/VectorGraphics.h"
 
 namespace NSDocxRenderer
 {
-    enum class eGraphicsType
-    {
-        gtUnknown,
-        gtRectangle,
-        gtCurve,
-        gtComplicatedFigure,
-        gtNoGraphics,
-    };
+	enum class eGraphicsType
+	{
+		gtUnknown,
+		gtRectangle,
+		gtCurve,
+		gtComplicatedFigure,
+		gtNoGraphics,
+	};
 
-    class CShape : public CBaseItem
-    {
-        public:
-            enum class eShapeType
-            {
-                stUnknown,
-                stTextBox,
-                stPicture,
-                stVectorGraphics,
-                stVectorTexture,
-                stGroup,
-                stCanvas,
-            };
+	class CShape : public COutputObject
+	{
+	public:
+		enum class eShapeType
+		{
+			stUnknown,
+			stTextBox,
+			stPicture,
+			stVectorGraphics,
+			stVectorTexture,
+			stGroup,
+			stCanvas,
+		};
 
-        public:
-            eShapeType              m_eType {eShapeType::stUnknown};
-            std::wstring            m_strPath {L""};
-            NSStructures::CBrush	m_oBrush;
-            NSStructures::CPen		m_oPen;
-            double                  m_dRotate {0.0};
+	public:
+		eShapeType m_eType           {eShapeType::stUnknown};
 
-            bool m_bIsNoFill {true};
-            bool m_bIsNoStroke {true};
-            bool m_bIsBehindDoc {true};
+		NSStructures::CBrush m_oBrush{};
+		NSStructures::CPen m_oPen    {};
 
-            eGraphicsType   m_eGraphicsType {eGraphicsType::gtUnknown};
-            eSimpleLineType m_eSimpleLineType {eSimpleLineType::sltUnknown};
-            eLineType       m_eLineType {eLineType::ltUnknown};
+		CVectorGraphics m_oVector    {};
+		std::wstring m_strDstMedia   {};
 
-            std::vector<CParagraph*> m_arParagraphs;
+		double m_dRotate {0.0};
 
-            std::shared_ptr<CImageInfo> m_pImageInfo {nullptr};
+		bool m_bIsNoFill    {true};
+		bool m_bIsNoStroke  {true};
+		bool m_bIsBehindDoc {true};
+		bool m_bIsUseInTable{false};
 
-        private:
-            UINT m_nShapeId {0};
-            UINT m_nRelativeHeight {0};
+		eGraphicsType m_eGraphicsType    {eGraphicsType::gtUnknown};
+		eSimpleLineType m_eSimpleLineType{eSimpleLineType::sltUnknown};
+		eLineType m_eLineType            {eLineType::ltUnknown};
 
-            static UINT m_gRelativeHeight;
+		std::vector<std::shared_ptr<COutputObject>> m_arOutputObjects;
+		std::shared_ptr<CImageInfo> m_pImageInfo{nullptr};
 
-        public:
-            CShape();
-            virtual ~CShape();
-            virtual void Clear() override final;
+	private:
 
-            CShape(std::shared_ptr<CImageInfo> pInfo, const std::wstring& strDstMedia);
 
-            void GetDataFromVector(const CVectorGraphics& oVector);
+	public:
+		CShape();
+		CShape(std::shared_ptr<CImageInfo> pInfo, const std::wstring& strDstMedia);
+		virtual ~CShape();
+		virtual void Clear() override final;
+		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
+		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter)const override final;
 
-            void WritePath(const CVectorGraphics& oVector);
+		void SetVector(CVectorGraphics&& oVector);
 
-            void DetermineGraphicsType(double dWidth, double dHeight, size_t nPeacks, size_t nCurves);
+		// tries merge shape, return true if ok and pShape was deleted
+		bool TryMergeShape(std::shared_ptr<CShape>& pShape);
 
-            bool IsItFitLine();
-            bool IsCorrelated(const CShape* pShape);
-            void ChangeGeometryOfDesiredShape(CShape* pShape);
+		std::wstring PathToWString() const;
+		void DetermineGraphicsType(double dWidth, double dHeight, size_t nPeacks, size_t nCurves) noexcept;
 
-            void DetermineLineType(CShape* pShape = nullptr, bool bIsLast = false);
+		bool IsItFitLine() const noexcept;
+		bool IsCorrelated(std::shared_ptr<const CShape> pShape) const noexcept;
 
-            virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
-            void BuildGeneralProperties(NSStringUtils::CStringBuilder &oWriter);
-            void BuildSpecificProperties(NSStringUtils::CStringBuilder &oWriter);
-            void BuildShapeProperties(NSStringUtils::CStringBuilder &oWriter);
-            void BuildPictureProperties(NSStringUtils::CStringBuilder &oWriter);
-            void BuildGroupProperties(NSStringUtils::CStringBuilder &oWriter);
-            void BuildCanvasProperties(NSStringUtils::CStringBuilder &oWriter);
-            void BuildGraphicProperties(NSStringUtils::CStringBuilder &oWriter);
-            void BuildTextBox(NSStringUtils::CStringBuilder &oWriter);
+		bool IsPeak() const noexcept;
+		bool IsSide() const noexcept;
 
-            static void ResetRelativeHeight();
+		void BuildGeneralProperties(NSStringUtils::CStringBuilder &oWriter) const;
+		void BuildSpecificProperties(NSStringUtils::CStringBuilder &oWriter) const;
+		void BuildShapeProperties(NSStringUtils::CStringBuilder &oWriter) const;
+		void BuildPictureProperties(NSStringUtils::CStringBuilder &oWriter) const;
+		void BuildGroupProperties(NSStringUtils::CStringBuilder &oWriter) const;
+		void BuildCanvasProperties(NSStringUtils::CStringBuilder &oWriter) const;
+		void BuildGraphicProperties(NSStringUtils::CStringBuilder &oWriter) const;
+		void BuildTextBox(NSStringUtils::CStringBuilder &oWriter) const;
+		void BuildTextBoxParams(NSStringUtils::CStringBuilder &oWriter) const;
+		void BuildForm(NSStringUtils::CStringBuilder &oWriter, const bool& bIsLT = false) const;
 
-        private:
-            UINT GenerateShapeId();
-    };
+		static void ResetRelativeHeight();
+
+		// check type of line and delete not needed shape
+		// one shape in line
+		static void CheckLineType(std::shared_ptr<CShape>& pShape);
+
+		// many shapes in line
+		static void CheckLineType(std::shared_ptr<CShape>& pFirstShape, std::shared_ptr<CShape>& pSecondShape, bool bIsLast = false);
+
+	private:
+		UINT m_nShapeId{0};
+		UINT m_nRelativeHeight{0};
+
+		static UINT m_gRelativeHeight;
+		static UINT GenerateShapeId();
+	};
 }

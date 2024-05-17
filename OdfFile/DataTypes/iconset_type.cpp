@@ -147,13 +147,15 @@ iconset_type iconset_type::parse(const std::wstring & Str)
         return iconset_type( Quarters5 );
 	else	if (tmp == L"5rating")
         return iconset_type( Rating5 );
-    else	if (tmp == L"5Boxes")
+    else	if (tmp == L"5boxes")
         return iconset_type( Boxes5 );
-    else	if (tmp == L"3Stars")
+    else	if (tmp == L"3stars")
         return iconset_type(Stars3);
-    else	if (tmp == L"3Triangles")
+    else	if (tmp == L"3triangles")
         return iconset_type(Triangles3);
-	else
+    else	if (tmp == L"4rating")
+        return iconset_type(Rating4);	
+    else
     {
         return iconset_type( Arrows3 );
     }

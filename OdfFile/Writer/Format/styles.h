@@ -841,7 +841,8 @@ public:
 	_CP_OPT(odf_types::Bool)			text_count_empty_lines_;
 	_CP_OPT(odf_types::Bool)			text_count_in_text_boxes_;
 	_CP_OPT(unsigned int)				text_increment_;
-	_CP_OPT(std::wstring)				text_number_position_; //inner, left, outer, right
+    _CP_OPT(unsigned int)				text_start_;
+    _CP_OPT(std::wstring)				text_number_position_; //inner, left, outer, right
 	_CP_OPT(odf_types::length)			text_offset_;
 	_CP_OPT(odf_types::Bool)			text_restart_on_page_;
 

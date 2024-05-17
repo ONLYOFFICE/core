@@ -2297,7 +2297,7 @@ void CDrawingConverter::ConvertDrawing(PPTX::Logic::SpTreeElem *elem, XmlUtils::
 		}
 	}
 }
-void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CXmlNode& oNodeShape, std::wstring**& pMainProps,bool bIsTop)
+void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CXmlNode& oNodeShape, std::wstring**& pMainProps, bool bIsTop)
 {
 	if (!elem) return;
 
@@ -3436,11 +3436,11 @@ void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUt
 		strRPr += L"<w:sz w:val=\"" + std::to_wstring(nFontSize * 2) + L"\"/><w:szCs w:val=\"" + std::to_wstring(nFontSize * 2) + L"\"/>";
 
 		nullable_string sStrokeColor;
-		nullable_string sStrokeWeight;
+		nullable<SimpleTypes::CEmu> oStrokeWeight;
 		nullable_string sStroked;
 
 		XmlMacroReadAttributeBase(oNodeShape, L"strokecolor", sStrokeColor);
-		XmlMacroReadAttributeBase(oNodeShape, L"strokeweight", sStrokeWeight);
+		XmlMacroReadAttributeBase(oNodeShape, L"strokeweight", oStrokeWeight);
 		XmlMacroReadAttributeBase(oNodeShape, L"stroked", sStroked);
 
 		XmlUtils::CXmlNode oNodeStroke = oNodeShape.ReadNode(L"v:stroke");
@@ -3580,18 +3580,13 @@ void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUt
 		strRPr += L"</w14:textFill>";
 
 		//textOutline
-		double m_dValue = 1;
-		if (sStrokeWeight.is_init())
+		double m_dValuePt = 1;
+		if (oStrokeWeight.is_init())
 		{
-			std::wstring strW(*sStrokeWeight);
-			int p = (int)strW.find(L"pt");
-			if (p >= 0)
-				strW.erase(p);
-
-			m_dValue = XmlUtils::GetDouble(strW);
+			m_dValuePt = oStrokeWeight->GetValue();
 		}
 
-		std::wstring strStrokeW = std::to_wstring((int)Pt_To_Emu(m_dValue));
+		std::wstring strStrokeW = std::to_wstring((int)Pt_To_Emu(m_dValuePt));
 		strRPr += L"<w14:textOutline w14:w=\"" + strStrokeW + L"\">";
 
 		smart_ptr<PPTX::Logic::SolidFill> pSolid = new PPTX::Logic::SolidFill();
@@ -3909,7 +3904,6 @@ void CDrawingConverter::LoadCoordPos(XmlUtils::CXmlNode& oNode, CShapePtr pShape
 			}
 		}
 	}
-
 	pShape->getBaseShape()->m_oPath.SetCoordpos((LONG)pShape->m_dXLogic, (LONG)pShape->m_dYLogic);
 }
 
@@ -5381,22 +5375,16 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 		}
 	}
 
-	nullable_string sStrokeWeight;
-    XmlMacroReadAttributeBase(oNode, L"strokeweight", sStrokeWeight);
-	if (sStrokeWeight.is_init())
+	nullable<SimpleTypes::CEmu> oStrokeWeight;
+	XmlMacroReadAttributeBase(oNode, L"strokeweight", oStrokeWeight);
+	if (oStrokeWeight.is_init())
 	{
 		pPPTShape->m_bIsStroked = true;
 
 		if (!pSpPr->ln.is_init())
 			pSpPr->ln = new PPTX::Logic::Ln();
 
-        if (sStrokeWeight->length() > 0 && sStrokeWeight->at(0) == wchar_t('.'))
-		{
-            sStrokeWeight = (L"0" + *sStrokeWeight);
-		}
-
-		SimpleTypes::CPoint oPoint;
-		int size = (int)(g_emu_koef * oPoint.FromString(*sStrokeWeight));		
+		int size = oStrokeWeight->ToEmu();
 
 		pSpPr->ln->w = size;
 		pPPTShape->m_bIsStroked = true;

@@ -1671,6 +1671,24 @@ void Binary_pPrWriter::WritePageNumType(const ComplexTypes::Word::CPageNumber& p
 		m_oBcw.m_oStream.WriteLONG(pPageNumber.m_oStart->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (pPageNumber.m_oFmt.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrPageNumType::fmt);
+		m_oBcw.m_oStream.WriteBYTE(pPageNumber.m_oFmt->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (pPageNumber.m_oChapStyle.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrPageNumType::chapStyle);
+		m_oBcw.m_oStream.WriteLONG(pPageNumber.m_oChapStyle->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (pPageNumber.m_oChapSep.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrPageNumType::chapSep);
+		m_oBcw.m_oStream.WriteBYTE(pPageNumber.m_oChapSep->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void Binary_pPrWriter::WriteLineNumType(const ComplexTypes::Word::CLineNumber& pLineNumber)
 {

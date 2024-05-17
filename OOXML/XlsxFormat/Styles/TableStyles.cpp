@@ -91,7 +91,7 @@ namespace OOX
             if(m_oSize.IsInit())
                 ptr->size = m_oSize->GetValue();
             else
-                ptr->size = 0;
+                ptr->size = 1;
 
 			if(m_oType.IsInit())
 			{
@@ -330,7 +330,7 @@ namespace OOX
             if(m_oTable.IsInit())
                 beginStyle->fIsTable =	m_oTable->GetValue();
             else
-                beginStyle->fIsTable = false;
+                beginStyle->fIsTable = true;
             if(m_oName.IsInit())
                 beginStyle->rgchName =	m_oName.get();
             else if(m_oDisplayName.IsInit())

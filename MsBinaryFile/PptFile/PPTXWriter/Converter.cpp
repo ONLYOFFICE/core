@@ -239,7 +239,7 @@ namespace PPT
             <Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.oleObject\" />\
             <Default Extension=\"jpg\" ContentType=\"image/jpeg\"/>";
 
-        if (m_pDocument->m_bMacros)
+        if (m_pDocument->m_bMacroEnabled)
         {
             strContentTypes += L"<Override PartName=\"/ppt/presentation.xml\" ContentType=\"application/vnd.ms-powerpoint.presentation.macroEnabled.main+xml\" />\
                 <Override PartName=\"/ppt/vbaProject.bin\" ContentType=\"application/vnd.ms-office.vbaProject\" />";
@@ -535,7 +535,7 @@ namespace PPT
         strPresRels += L"<Relationship Id=\"rId" + std::to_wstring(nCurrentRels++) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/tableStyles\" Target=\"tableStyles.xml\"/>";
         strPresRels += L"<Relationship Id=\"rId" + std::to_wstring(nCurrentRels++) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/viewProps\" Target=\"viewProps.xml\"/>";
 
-        if (m_pDocument->m_bMacros)
+        if (m_pDocument->m_bMacroEnabled)
         {
             std::wstring strVbaProject = m_strDestPath + FILE_SEPARATOR_STR + L"ppt" + FILE_SEPARATOR_STR + L"vbaProject.bin";
 

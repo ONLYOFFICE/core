@@ -529,7 +529,7 @@ Ftab_Cetab::ValuesDetermination::ValuesDetermination()
     params_fixed.insert(ParamsFixed(0x01DE, 1, L"CUBESET"));
     params_fixed.insert(ParamsFixed(0x01DF, 1, L"CUBESETCOUNT"));
     params_fixed.insert(ParamsFixed(0x01E0, 2, L"IFERROR"));
-    params_fixed.insert(ParamsFixed(0x01E1, 2, L"COUNTIFS"));
+    params_fixed.insert(ParamsFixed(0x01E1, -1, L"COUNTIFS"));
     params_fixed.insert(ParamsFixed(0x01E2, 3, L"SUMIFS"));
     params_fixed.insert(ParamsFixed(0x01E3, 2, L"AVERAGEIF"));
     params_fixed.insert(ParamsFixed(0x01E4, 3, L"AVERAGEIFS"));

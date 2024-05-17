@@ -200,6 +200,7 @@ namespace PPTX
 		pWriter->WriteAttribute(L"xmlns:p", PPTX::g_Namespaces.p.m_strLink);
 		pWriter->WriteAttribute(L"xmlns:m", PPTX::g_Namespaces.m.m_strLink);
 		pWriter->WriteAttribute(L"xmlns:w", PPTX::g_Namespaces.w.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:mc", L"http://schemas.openxmlformats.org/markup-compatibility/2006");
 
 		pWriter->WriteAttribute(L"showMasterPhAnim", showMasterPhAnim);
 		pWriter->WriteAttribute(L"showMasterSp", showMasterSp);

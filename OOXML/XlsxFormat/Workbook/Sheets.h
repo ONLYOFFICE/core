@@ -100,6 +100,7 @@ namespace OOX
 			virtual EElementType getType () const;
 
 		private:
+			void AddSheetRef(const std::wstring& link, const _INT32&  sheetIndex);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 

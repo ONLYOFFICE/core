@@ -997,7 +997,7 @@ void xlsx_drawing_context::serialize_group()
 					
 					if (!drawing_state->description.empty())
 					{
-						CP_XML_ATTR(L"descr", drawing_state->description);
+						CP_XML_ATTR(L"descr", XmlUtils::EncodeXmlString(drawing_state->description));
 					}
 					if (drawing_state->hidden)
 					{
@@ -1368,12 +1368,12 @@ void xlsx_drawing_context::serialize_pic(_drawing_state_ptr & drawing_state)
 				{
 					CP_XML_ATTR(L"id", drawing_state->id);
 					if (drawing_state->name.empty())	
-						drawing_state->name = L"Picture_" + drawing_state->objectId.substr(5);
+						drawing_state->name = L"Picture_" + (drawing_state->objectId.size() > 5 ? drawing_state->objectId.substr(5) : std::to_wstring(drawing_state->id));
 					CP_XML_ATTR(L"name", drawing_state->name);		
 
 					if (!drawing_state->description.empty())
 					{
-						CP_XML_ATTR(L"descr", drawing_state->description);
+						CP_XML_ATTR(L"descr", XmlUtils::EncodeXmlString(drawing_state->description));
 					}
 					if (drawing_state->hidden)
 					{
@@ -1448,7 +1448,7 @@ void xlsx_drawing_context::serialize_chart(_drawing_state_ptr & drawing_state)
 					CP_XML_ATTR(L"name", drawing_state->name);
 					if (!drawing_state->description.empty())
 					{
-						CP_XML_ATTR(L"descr", drawing_state->description);
+						CP_XML_ATTR(L"descr", XmlUtils::EncodeXmlString(drawing_state->description));
 					}
 					if (drawing_state->hidden)
 					{
@@ -1500,7 +1500,7 @@ void xlsx_drawing_context::serialize_control(_drawing_state_ptr & drawing_state)
 					
 					if (!drawing_state->description.empty())
 					{
-						CP_XML_ATTR(L"descr", drawing_state->description);
+						CP_XML_ATTR(L"descr", XmlUtils::EncodeXmlString(drawing_state->description));
 					}
 					CP_XML_ATTR(L"hidden", 1);
 
@@ -1601,7 +1601,7 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 					
 					if (!drawing_state->description.empty())
 					{
-						CP_XML_ATTR(L"descr", drawing_state->description);
+						CP_XML_ATTR(L"descr", XmlUtils::EncodeXmlString(drawing_state->description));
 					}
 					if (drawing_state->hidden)
 					{

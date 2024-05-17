@@ -318,7 +318,11 @@ namespace OOX
 		{
 			auto ptr(new XLSB::RangePr15);
 			if(m_oSourceName.IsInit())
+			{
 				ptr->irstSourceName = m_oSourceName.get();
+			}
+			else
+				ptr->irstSourceName.setSize(0xFFFFFFFF);
 			return XLS::BaseObjectPtr{ptr};
 		}
 		EElementType CRangePr::getType() const
@@ -378,14 +382,29 @@ namespace OOX
 		{
 			auto ptr1(new XLSB::ECDBPROPS);
 			auto ptr(new XLSB::BeginECDbProps);
+            ptr1->m_BrtBeginECDbProps = XLS::BaseObjectPtr{ptr};
 			if(m_oConnection.IsInit())
 				ptr->stConn = m_oConnection.get();
+            else
+                ptr->stConn = false;
 			if(m_oCommand.IsInit())
 				ptr->stCmd = m_oCommand.get();
+            else
+            {
+                ptr->stCmd = false;
+                ptr->fLoadCmd = false;
+            }
 			if(m_oServerCommand.IsInit())
 				ptr->stCmdSvr = m_oServerCommand.get();
+            else
+            {
+                ptr->fLoadCmdSvr = false;
+                ptr->stCmdSvr = false;
+            }
 			if(m_oCommandType.IsInit())
 				ptr->icmdtype = m_oCommandType.get();
+            else
+                ptr->icmdtype = 0;
 			return XLS::BaseObjectPtr{ptr1};
 		}
 		EElementType CDbPr::getType() const
@@ -491,15 +510,15 @@ namespace OOX
 			if(m_oServerNumberFormat.IsInit())
 				ptr->fSrvFmtNum = m_oServerNumberFormat.get();
             else
-                ptr->fSrvFmtNum = false;
+                ptr->fSrvFmtNum = true;
 			if(m_oServerFont.IsInit())
 				ptr->fSrvFmtFlags = m_oServerFont.get();
             else
-                ptr->fSrvFmtFlags = false;
+                ptr->fSrvFmtFlags = true;
 			if(m_oServerFontColor.IsInit())
 				ptr->fSrvFmtFore = m_oServerFontColor.get();
             else
-                ptr->fSrvFmtFore = false;
+                ptr->fSrvFmtFore = true;
 			return XLS::BaseObjectPtr{ptr1};
 		}
 		EElementType COlapPr::getType() const
@@ -604,28 +623,52 @@ namespace OOX
 
 			if(m_oUrl.IsInit())
 				ptr->stURL = m_oUrl.get();
+            else
+                ptr->fLoadURL = false;
 			if(m_oPost.IsInit())
 				ptr->stWebPost = m_oPost.get();
+            else
+                ptr->fLoadWebPost = false;
 			if(m_oEditPage.IsInit())
 				ptr->stEditWebPage = m_oEditPage.get();
+            else
+                ptr->fLoadEditWebPage = false;
 			if(m_oXml.IsInit())
 				ptr->fSrcIsXML = m_oXml.get();
+            else
+                ptr->fSrcIsXML = false;
 			if(m_oSourceData.IsInit())
 				ptr->fImportSourceData = m_oSourceData.get();
+            else
+                ptr->fImportSourceData = false;
 			if(m_oConsecutive.IsInit())
 				ptr->fConsecDelim = m_oConsecutive.get();
+            else
+                ptr->fConsecDelim = false;
 			if(m_oFirstRow.IsInit())
 				ptr->fSameSettings = m_oFirstRow.get();
+            else
+                ptr->fSameSettings = false;
 			if(m_oXl97.IsInit())
 				ptr->fXL97Format = m_oXl97.get();
+            else
+                ptr->fXL97Format = false;
 			if(m_oTextDates.IsInit())
 				ptr->fNoDateRecog = m_oTextDates.get();
+            else
+                ptr->fNoDateRecog = false;
 			if(m_oXl2000.IsInit())
 				ptr->fRefreshedInXL9 = m_oXl2000.get();
+            else
+                ptr->fRefreshedInXL9 = false;
 			if(m_oHtmlTables.IsInit())
 				ptr->fTablesOnlyHTML = m_oHtmlTables.get();
+            else
+                ptr->fRefreshedInXL9 = false;
 			if(m_oHtmlFormat.IsInit())
 				ptr->wHTMLFmt = m_oHtmlFormat->GetValue();
+            else
+                ptr->wHTMLFmt = false;
 			return XLS::BaseObjectPtr{ptr1};
 		}
 		EElementType CWebPr::getType() const
@@ -957,6 +1000,31 @@ namespace OOX
 				}
 			}
 		}
+		XLS::BaseObjectPtr CConnection::toBin15()
+		{
+			XLS::BaseObjectPtr objectPtr;
+			
+            auto ptr(new XLSB::EXTCONN15);
+            objectPtr = XLS::BaseObjectPtr{ptr};
+            auto ptr1(new XLSB::BeginExtConn15);
+            ptr1->fAutoDelete = false;
+            ptr1->fExcludeFromRefreshAll = false;
+            ptr1->fSandbox = false;
+            ptr1->fUsedByAddin = false;
+            if(m_oIdExt.IsInit() && !m_oIdExt.get().empty())
+                ptr1->irstId = m_oIdExt.get();
+            else
+            {
+                ptr1->fSandbox = true;
+                ptr1->irstId.setSize(0xFFFFFFFF);
+            }
+
+            ptr->m_BrtBeginExtConn15 = XLS::BaseObjectPtr{ptr1};
+            if(m_oRangePr.IsInit())
+                ptr->m_source = m_oRangePr->toBin();
+            return objectPtr;
+			
+		}
 		XLS::BaseObjectPtr CConnection::toBin()
 		{
 			XLS::BaseObjectPtr objectPtr;
@@ -984,45 +1052,52 @@ namespace OOX
 				auto ptr1(new XLSB::BeginExtConnection);
 				ptr->m_BrtBeginExtConnection = XLS::BaseObjectPtr{ptr1};
 
-				if(m_oDbPr.IsInit())
-					ptr->m_ECDBPROPS = m_oDbPr->toBin();
-				if(m_oOlapPr.IsInit())
-					ptr->m_ECOLAPPROPS = m_oOlapPr->toBin();
-				if(m_oTextPr.IsInit())
-					ptr->m_ECTXTWIZ = m_oTextPr->toBin();
-				if(m_oWebPr.IsInit())
-					ptr->m_ECWEBPROPS = m_oWebPr->toBin();
-				if(m_oExtLst.IsInit())
-					ptr->m_FRTEXTCONNECTIONS = m_oExtLst->toBinConnections();
-
 				if(m_oType.IsInit())
 					ptr1->idbtype = m_oType.get();
+                else
+                    ptr1->idbtype = 0;
 				if(m_oName.IsInit())
 					ptr1->stConnName = m_oName.get();
 				else
 					ptr1->stConnName = L"";
 				if(m_oId.IsInit())
 					ptr1->dwConnID = m_oId->GetValue();
+                else
+                    ptr1->dwConnID = 1;
 				if(m_oCredentials.IsInit())
 					ptr1->iCredMethod = m_oCredentials->GetValue();
+                else
+                    ptr1->iCredMethod = 0;
 				if(m_oBackground.IsInit())
 					ptr1->fBackgroundQuery = m_oBackground.get();
 				else
 					ptr1->fBackgroundQuery = false;
 				if(m_oDeleted.IsInit())
 					ptr1->fDeleted = m_oDeleted.get();
+                else
+                    ptr1->fDeleted = false;
 				if(m_oDescription.IsInit())
 					ptr1->stConnDesc = m_oDescription.get();
 				else
 					ptr1->fLoadConnectionDesc = false;
 				if(m_oInterval.IsInit())
 					ptr1->wInterval = m_oInterval.get();
+                else
+                    ptr1->wInterval = 0;
 				if(m_oKeepAlive.IsInit())
 					ptr1->fMaintain = m_oKeepAlive.get();
+                else
+                    ptr1->fMaintain = false;
 				if(m_oMinRefreshableVersion.IsInit())
 					ptr1->bVerRefreshableMin = m_oMinRefreshableVersion.get();
+                else if(m_oRefreshedVersion.IsInit())
+                    ptr1->bVerRefreshableMin = m_oRefreshedVersion.get();
+                else
+                    ptr1->bVerRefreshableMin = 0;
 				if(m_oNew.IsInit())
 					ptr1->fNewQuery = m_oNew.get();
+                else
+                    ptr1->fNewQuery = false;
 				if(m_oOdcFile.IsInit())
 					ptr1->stConnectionFile = m_oOdcFile.get();
 				else
@@ -1033,16 +1108,22 @@ namespace OOX
 					ptr1->fAlwaysUseConnectionFile = false;
 				if(m_oReconnectionMethod.IsInit())
 					ptr1->irecontype = m_oReconnectionMethod.get();
+                else
+                    ptr1->irecontype = 1;
 				if(m_oRefreshedVersion.IsInit())
 					ptr1->bVerRefreshed = m_oRefreshedVersion.get();
 				if(m_oRefreshOnLoad.IsInit())
 					ptr1->fRefreshOnLoad = m_oRefreshOnLoad.get();
+                else
+                    ptr1->fRefreshOnLoad = false;
 				if(m_oSaveData.IsInit())
 					ptr1->fSaveData = m_oSaveData.get();
+				else
+					ptr1->fSaveData = false;
 				if(m_oSavePassword.IsInit())
-				{
 					ptr1->pc = m_oSavePassword.get();
-				}
+                else
+                    ptr1->pc = 2;
 				if(m_oSingleSignOnId.IsInit())
 					ptr1->stSso = m_oSingleSignOnId.get();
 				else
@@ -1051,6 +1132,17 @@ namespace OOX
 					ptr1->stDataFile = m_oSourceFile.get();
 				else
 					ptr1->fLoadSourceDataFile = false;
+
+				if(m_oDbPr.IsInit())
+					ptr->m_ECDBPROPS = m_oDbPr->toBin();
+				if(m_oOlapPr.IsInit())
+					ptr->m_ECOLAPPROPS = m_oOlapPr->toBin();
+				if(m_oTextPr.IsInit())
+					ptr->m_ECTXTWIZ = m_oTextPr->toBin();
+				if(m_oWebPr.IsInit())
+					ptr->m_ECWEBPROPS = m_oWebPr->toBin();
+				//if(m_oExtLst.IsInit())
+					//ptr->m_FRTEXTCONNECTIONS = m_oExtLst->toBinConnections();
 			}
 
 			return objectPtr;
@@ -1293,6 +1385,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				XLS::BaseObjectPtr object = WriteBin();
 				xlsb->WriteBin(oPath, object.get());
 			}
+            else
 			{
 				NSStringUtils::CStringBuilder sXml;
 

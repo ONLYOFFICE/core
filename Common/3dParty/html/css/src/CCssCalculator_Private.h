@@ -26,16 +26,31 @@ namespace NSCSS
 
 		std::map<std::wstring, CElement*> m_mData;
 
+		typedef struct
+		{
+			std::vector<std::wstring>            m_wsNames;
+			std::map<std::wstring, std::wstring> m_mData;
+		} TPageData;
+
+		std::vector<TPageData> m_arPageDatas;
+
 		std::map<StatistickElement, unsigned int> *m_mStatictics; // Количество повторений свойств id и style у селекторов
 
 		#ifdef CSS_CALCULATOR_WITH_XHTML
-		std::map<std::vector<CNode>, CCompiledStyle*> m_mUsedStyles;
+		std::map<std::vector<CNode>, CCompiledStyle> m_mUsedStyles;
+		
+		std::map<std::wstring, std::wstring> GetPageData(const std::wstring& wsPageName);
+		void SetPageData(NSProperties::CPage& oPage, const std::map<std::wstring, std::wstring>& mData, unsigned int unLevel, bool bHardMode = false);
+
+		std::vector<std::wstring> CalculateAllNodes(const std::vector<CNode>& arSelectors);
+
+		void FindPrevAndKindElements(const CElement* pElement, const std::vector<std::wstring>& arNextNodes, std::vector<CElement*>& arFindedElements, const std::wstring& wsName, const std::vector<std::wstring>& arClasses = {});
+		std::vector<CElement*> FindElements(std::vector<std::wstring>& arNodes, std::vector<std::wstring>& arNextNodes, bool bIsSettings);
 		#endif
 
 		std::wstring m_sEncoding;
 
-		CSizeWindow m_oSourceWindow;
-		CSizeWindow m_oDeviceWindow;
+		void AddPageData(const std::wstring& wsPageName, const std::wstring& wsStyles);
 
 		void GetStylesheet(const KatanaStylesheet* oStylesheet);
 		void GetRule(const KatanaRule* oRule);
@@ -59,6 +74,8 @@ namespace NSCSS
 		#ifdef CSS_CALCULATOR_WITH_XHTML
 		CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors, const bool& bIsSettings = false, const UnitMeasure& unitMeasure = Point);
 		bool GetCompiledStyle(CCompiledStyle& oStyle, const std::vector<CNode> &arSelectors, const bool& bIsSettings = false, const UnitMeasure& unitMeasure = Point);
+
+		bool CalculatePageStyle(NSProperties::CPage& oPageData, const std::vector<CNode> &arSelectors);
 		#endif
 
 		void AddStyles(const std::string& sStyle);
@@ -68,12 +85,6 @@ namespace NSCSS
 		void SetUnitMeasure(const UnitMeasure& nType);
 		void SetDpi(unsigned short int nValue);
 		void SetBodyTree(const CTree &oTree);
-
-		void SetSizeSourceWindow(const CSizeWindow& oSizeWindow);
-		void SetSizeDeviceWindow(const CSizeWindow& oSizeWindow);
-
-		CSizeWindow GetSizeSourceWindow() const;
-		CSizeWindow GetSizeDeviceWindow() const;
 
 		UnitMeasure GetUnitMeasure() const;
 		std::wstring GetEncoding() const;

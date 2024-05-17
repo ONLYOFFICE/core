@@ -61,10 +61,13 @@ void table_table_attlist::add_attributes( const xml::attributes_wc_ptr & Attribu
     CP_APPLY_ATTR(L"table:print",			table_print_, true);
     CP_APPLY_ATTR(L"table:print-ranges",	table_print_ranges_);
 	
-	CP_APPLY_ATTR(L"table:use-first-row-styles",		table_use_first_row_styles_,false);
-	CP_APPLY_ATTR(L"table:use-banding-rows-styles",		table_use_banding_rows_styles_,false);
-	CP_APPLY_ATTR(L"table:use-banding-columns-styles",	table_use_banding_columns_styles_,false);
-	CP_APPLY_ATTR(L"table:use-first-column-styles",		table_use_first_column_styles_,false);
+    
+	CP_APPLY_ATTR(L"table:use-first-row-styles",		table_use_first_row_styles_, false);
+    CP_APPLY_ATTR(L"table:use-last-row-styles",         table_use_last_row_styles_, false);
+	CP_APPLY_ATTR(L"table:use-banding-rows-styles",		table_use_banding_rows_styles_, false);
+    CP_APPLY_ATTR(L"table:use-last-column-styles",      table_use_last_column_styles_, false);
+	CP_APPLY_ATTR(L"table:use-banding-columns-styles",	table_use_banding_columns_styles_, false);
+	CP_APPLY_ATTR(L"table:use-first-column-styles",		table_use_first_column_styles_, false);
 
 	CP_APPLY_ATTR(L"table:is-sub-table",	table_is_sub_table_);
 }

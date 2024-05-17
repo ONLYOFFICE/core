@@ -1,7 +1,5 @@
 #include "vlcplayer.h"
 
-#include <iostream>
-
 CVlcPlayer::CVlcPlayer(QWidget* parent) : QWidget(parent)
 {
 	// initialize vlc media player
@@ -19,6 +17,8 @@ CVlcPlayer::CVlcPlayer(QWidget* parent) : QWidget(parent)
 	}
 	libvlc_event_attach(m_pEventManager, libvlc_MediaPlayerTimeChanged , onTimeChanged, this);
 	libvlc_event_attach(m_pEventManager, libvlc_MediaPlayerPositionChanged , onPositionChanged, this);
+
+	libvlc_event_attach(m_pEventManager, libvlc_MediaPlayerVout , onVideoOutputChanged, this);
 }
 
 CVlcPlayer::~CVlcPlayer()
@@ -43,6 +43,12 @@ void CVlcPlayer::onPositionChanged(const libvlc_event_t* pEvent, void* pData)
 {
 	CVlcPlayer* pVlcPlayer = reinterpret_cast<CVlcPlayer*>(pData);
 	emit pVlcPlayer->positionChanged(pEvent->u.media_player_position_changed.new_position);
+}
+
+void CVlcPlayer::onVideoOutputChanged(const libvlc_event_t* pEvent, void* pData)
+{
+	CVlcPlayer* pVlcPlayer = reinterpret_cast<CVlcPlayer*>(pData);
+	emit pVlcPlayer->videoOutputChanged(pEvent->u.media_player_vout.new_count);
 }
 
 void CVlcPlayer::integrateIntoWidget(QWidget* pWidget)
@@ -97,9 +103,20 @@ void CVlcPlayer::setTime(qint64 nTime)
 	libvlc_media_player_set_time(m_pVlcPlayer, nTime);
 }
 
+qint64 CVlcPlayer::time()
+{
+	return libvlc_media_player_get_time(m_pVlcPlayer);
+}
+
 void CVlcPlayer::setPosition(float fPos)
 {
 	libvlc_media_player_set_position(m_pVlcPlayer, fPos);
+	emit positionChanged(libvlc_media_player_get_position(m_pVlcPlayer));
+}
+
+float CVlcPlayer::position()
+{
+	return libvlc_media_player_get_position(m_pVlcPlayer);
 }
 
 bool CVlcPlayer::isAudio()

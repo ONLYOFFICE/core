@@ -52,6 +52,8 @@ namespace MetaFile
 
 			m_unRecordSize = unSize * 2; // Размер указан в WORD
 
+			m_oStream.SetCurrentBlockSize(m_unRecordSize);
+
 			switch (ushType)
 			{
 				//-----------------------------------------------------------
@@ -161,6 +163,7 @@ namespace MetaFile
 			// Пропускаем лишние байты, которые могли быть в записи
 			int need_skip = m_unRecordSize - (m_oStream.Tell() - m_unRecordPos);
 			m_oStream.Skip(need_skip);
+			m_oStream.ClearCurrentBlockSize();
 		};
 
 		if (!m_bEof)

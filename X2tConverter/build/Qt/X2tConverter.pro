@@ -22,6 +22,10 @@ build_x2t_as_library {
 	CONFIG += plugin
 
 	!core_debug:shared:QMAKE_LFLAGS += -exported_symbols_list $$PWD/../../src/dylib/export
+
+	build_strip_debug {
+		QMAKE_LFLAGS += -Wl,--strip-debug
+	}
 }
 
 include(X2tConverter.pri)

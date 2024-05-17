@@ -74,9 +74,15 @@ WASM_EXPORT int GetType(BYTE* data, LONG size)
 	// 0 - PDF
 	// 1 - DJVU
 	// 2 - XPS
-	char* pFirst = strstr((char*)data, "%PDF-" );
-	if (pFirst)
-		return 0;
+	LONG nHeaderSearchSize = 1024;
+	LONG nSize = size < nHeaderSearchSize ? size : nHeaderSearchSize;
+	char* pData = (char*)data;
+	for (int i = 0; i < nSize - 5; ++i)
+	{
+		int nPDF = strncmp(&pData[i], "%PDF-", 5);
+		if (!nPDF)
+			return 0;
+	}
 	if ( (8 <= size) && (0x41 == data[0] && 0x54 == data[1] && 0x26 == data[2] && 0x54 == data[3] &&
 						 0x46 == data[4] && 0x4f == data[5] && 0x52 == data[6] && 0x4d == data[7]))
 		return 1;
@@ -211,10 +217,7 @@ WASM_EXPORT BYTE* GetFontBinary(CGraphicsFileDrawing* pGraphics, char* path)
 	std::wstring sFontName = UTF8_TO_U(sPathA);
 	std::wstring sFontFile = pGraphics->GetFont(sFontName);
 	if (sFontFile.empty())
-		return NULL;
-
-	NSWasm::CData oRes;
-	oRes.SkipLen();
+		sFontFile = sFontName;
 
 	NSFonts::IFontsMemoryStorage* pStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
 	if (pStorage)
@@ -228,20 +231,24 @@ WASM_EXPORT BYTE* GetFontBinary(CGraphicsFileDrawing* pGraphics, char* path)
 
 			if (pData)
 			{
+				NSWasm::CData oRes;
+				oRes.SkipLen();
+
 				oRes.AddInt(lLength);
 
 				unsigned long long npSubMatrix = (unsigned long long)pData;
 				unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
 				oRes.AddInt(npSubMatrix1);
 				oRes.AddInt(npSubMatrix >> 32);
+
+				oRes.WriteLen();
+				BYTE* bRes = oRes.GetBuffer();
+				oRes.ClearWithoutAttack();
+				return bRes;
 			}
 		}
 	}
-
-	oRes.WriteLen();
-	BYTE* bRes = oRes.GetBuffer();
-	oRes.ClearWithoutAttack();
-	return bRes;
+	return NULL;
 }
 WASM_EXPORT void DestroyTextInfo(CGraphicsFileDrawing* pGraphics)
 {
@@ -254,6 +261,27 @@ WASM_EXPORT int  IsNeedCMap(CGraphicsFileDrawing* pGraphics)
 WASM_EXPORT void SetCMapData(CGraphicsFileDrawing* pGraphics, BYTE* data, int size)
 {
 	pGraphics->SetCMapData(data, size);
+}
+WASM_EXPORT BYTE* ScanPage(CGraphicsFileDrawing* pGraphics, int nPageIndex, int mode)
+{
+	return pGraphics->GetPageShapes(nPageIndex, mode);
+}
+
+WASM_EXPORT void* GetImageBase64(CGraphicsFileDrawing* pGraphics, int rId)
+{
+	return pGraphics->GetImageBase64(rId);
+}
+WASM_EXPORT int GetImageBase64Len(std::string* p)
+{
+	return (int)p->length();
+}
+WASM_EXPORT char* GetImageBase64Ptr(std::string* p)
+{
+	return (char*)p->c_str();
+}
+WASM_EXPORT void GetImageBase64Free(std::string* p)
+{
+	*p = "";
 }
 
 #ifdef __cplusplus

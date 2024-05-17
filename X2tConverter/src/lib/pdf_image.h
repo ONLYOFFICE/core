@@ -926,7 +926,7 @@ namespace NExtractTools
 
 				CDocxRenderer oDocxRenderer(pApplicationFonts);
 
-				NSDocxRenderer::TextAssociationType taType = NSDocxRenderer::tatPlainLine;
+				NSDocxRenderer::TextAssociationType taType = NSDocxRenderer::TextAssociationType::tatPlainLine;
 				if (params.m_oTextParams)
 				{
 					InputParamsText *oTextParams = params.m_oTextParams;
@@ -936,16 +936,16 @@ namespace NExtractTools
 						switch (*oTextParams->m_nTextAssociationType)
 						{
 						case 0:
-							taType = NSDocxRenderer::tatBlockChar;
+							taType = NSDocxRenderer::TextAssociationType::tatBlockChar;
 							break;
 						case 1:
-							taType = NSDocxRenderer::tatBlockLine;
+							taType = NSDocxRenderer::TextAssociationType::tatBlockLine;
 							break;
 						case 2:
-							taType = NSDocxRenderer::tatPlainLine;
+							taType = NSDocxRenderer::TextAssociationType::tatPlainLine;
 							break;
 						case 3:
-							taType = NSDocxRenderer::tatPlainParagraph;
+							taType = NSDocxRenderer::TextAssociationType::tatPlainParagraph;
 							break;
 						default:
 							break;

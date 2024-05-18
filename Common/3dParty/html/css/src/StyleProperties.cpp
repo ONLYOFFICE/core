@@ -2212,16 +2212,16 @@ namespace NSCSS
 
 	bool CFont::SetSize(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		const std::map<std::wstring, std::wstring> arAbsoluteFontValues =
-			{{L"xx-small", L"7.5pt"}, {L"x-small", L"10pt"  },
+		const std::vector<std::pair<std::wstring, std::wstring>> arAbsoluteFontValues =
+			{{L"xx-small", L"7.5pt"}, {L"xx-large", L"36pt" },
+			 {L"x-small", L"10pt"  }, {L"x-large", L"24pt"  },
 			 {L"small",    L"12pt" }, {L"medium",  L"13.5pt"},
-			 {L"large",    L"18pt" }, {L"x-large", L"24pt"  },
-			 {L"xx-large", L"36pt" }}; 
+			 {L"large",    L"18pt" }}; 
 
 		size_t unFoundPos = std::wstring::npos;
 		std::wstring wsNewValue(wsValue);
 
-		for (const std::pair<std::wstring, std::wstring> oAbsValue : arAbsoluteFontValues)
+		for (const std::pair<std::wstring, std::wstring>& oAbsValue : arAbsoluteFontValues)
 		{
 			unFoundPos = wsNewValue.find(oAbsValue.first);
 			if (std::wstring::npos != unFoundPos)

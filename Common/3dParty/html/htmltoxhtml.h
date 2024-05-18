@@ -59,39 +59,12 @@ static std::wstring htmlToXhtml(std::string& sFileContent, bool bNeedConvert)
 	if (boost::regex_search(sFileContent, oResult, oRegex))
 		sFileContent.erase(0, oResult.position());
 
-	// Избавление от <a/>
-	size_t posA = sFileContent.find("<a ");
-	while(posA != std::string::npos)
-	{
-		size_t nBegin = sFileContent.find('<',  posA + 1);
-		size_t nEnd   = sFileContent.find("/>", posA);
-		if(nEnd < nBegin)
-			sFileContent.replace(nEnd, 2, "></a>");
-		posA = sFileContent.find("<a ", nBegin);
-	}
-	// Избавление от <title/>
-	posA = sFileContent.find("<title/>");
-	while (posA != std::string::npos)
-	{
-		sFileContent.replace(posA, 8, "<title></title>");
-		posA = sFileContent.find("<title/>", posA);
-	}
-	// Избавление от <script/>
-	posA = sFileContent.find("<script");
-	while (posA != std::string::npos)
-	{
-		size_t nEnd = 0;
-		size_t nEnd1 = sFileContent.find("/>", posA);
-		size_t nEnd2 = sFileContent.find("</script>", posA);
-		if (nEnd1 != std::string::npos)
-			nEnd = nEnd1 + 2;
-		if (nEnd2 != std::string::npos && (nEnd == 0 || (nEnd > 0 && nEnd2 < nEnd)))
-			nEnd = nEnd2 + 9;
-
-		sFileContent.erase(posA, nEnd - posA);
-
-		posA = sFileContent.find("<script", posA);
-	}
+	//Избавление от <a ... />
+	while (NSStringFinder::RemoveEmptyTag(sFileContent, "a"));
+	//Избавление от <title ... />
+	while (NSStringFinder::RemoveEmptyTag(sFileContent, "title"));
+	//Избавление от <script ... />
+	while (NSStringFinder::RemoveEmptyTag(sFileContent, "script"));
 
 	// Gumbo
 	GumboOptions options = kGumboDefaultOptions;

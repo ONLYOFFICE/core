@@ -151,6 +151,11 @@ void WriteEmptyParagraph(NSStringUtils::CStringBuilder* pXml, bool bVahish = fal
 		pXml->WriteString(L"</w:pPr></w:p>");
 }
 
+bool ElementInTable(const std::vector<NSCSS::CNode>& arSelectors)
+{
+	return arSelectors.crend() != std::find_if(arSelectors.crbegin(), arSelectors.crend(), [](const NSCSS::CNode& oNode) { return L"table" == oNode.m_wsName; });
+}
+
 typedef enum
 {
 	ParseModeHeader,
@@ -1619,6 +1624,31 @@ private:
 		m_bInP = false;
 	}
 
+	void WriteBookmark(NSStringUtils::CStringBuilder* pXml, const std::wstring& wsId)
+	{
+		if (NULL == pXml)
+			return;
+
+		const std::wstring sCrossId = std::to_wstring(m_mBookmarks.size() + 1);
+		std::wstring sName;
+
+		if (m_mBookmarks.end() != m_mBookmarks.find(wsId))
+			sName = wsId + L"_" + std::to_wstring(++m_mBookmarks[wsId]);
+		else
+		{
+			sName = wsId;
+			m_mBookmarks.insert({wsId, 1});
+		}
+
+		pXml->WriteString(L"<w:bookmarkStart w:id=\"");
+		pXml->WriteString(sCrossId);
+		pXml->WriteString(L"\" w:name=\"");
+		pXml->WriteEncodeXmlString(sName);
+		pXml->WriteString(L"\"/><w:bookmarkEnd w:id=\"");
+		pXml->WriteString(sCrossId);
+		pXml->WriteString(L"\"/>");
+	}
+
 	std::wstring GetSubClass(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors)
 	{
 		NSCSS::CNode oNode;
@@ -1630,17 +1660,10 @@ private:
 			std::wstring sName  = m_oLightReader.GetName();
 			if(sName == L"class")
 				oNode.m_wsClass  = m_oLightReader.GetText();
-			else if(sName == L"id" && NULL != oXml)
+			else if(sName == L"id")
 			{
 				oNode.m_wsId = m_oLightReader.GetText();
-				std::wstring sCrossId = std::to_wstring(m_nCrossId++);
-				oXml->WriteString(L"<w:bookmarkStart w:id=\"");
-				oXml->WriteString(sCrossId);
-				oXml->WriteString(L"\" w:name=\"");
-				oXml->WriteEncodeXmlString(oNode.m_wsId);
-				oXml->WriteString(L"\"/><w:bookmarkEnd w:id=\"");
-				oXml->WriteString(sCrossId);
-				oXml->WriteString(L"\"/>");
+				WriteBookmark(oXml, oNode.m_wsId);
 			}
 			else if(sName == L"style")
 				oNode.m_wsStyle += m_oLightReader.GetText();
@@ -2009,6 +2032,7 @@ private:
 				sName == L"bgsound"  || sName == L"applet" || sName == L"blink" || sName == L"keygen"|| sName == L"script" ||
 				sName == L"comment"  || sName == L"title"  || sName == L"style")
 		{
+			WriteEmptyParagraph(oXml);
 			sSelectors.pop_back();
 			return;
 		}
@@ -2421,7 +2445,8 @@ private:
 			oXml->WriteEncodeXmlString(sValue + L' ');
 			oXml->WriteString(L"</w:t></w:r>");
 		}
-		readStream(oXml, sSelectors, oTS);
+
+		readStream(oXml, sSelectors, oTS, ElementInTable(sSelectors));
 	}
 
 	void readLi     (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool bType)
@@ -2527,16 +2552,7 @@ private:
 					bCross = true;
 			}
 			else if(sName == L"name")
-			{
-				std::wstring sCrossId = std::to_wstring(m_nCrossId++);
-				oXml->WriteString(L"<w:bookmarkStart w:id=\"");
-				oXml->WriteString(sCrossId);
-				oXml->WriteString(L"\" w:name=\"");
-				oXml->WriteString(sText);
-				oXml->WriteString(L"\"/><w:bookmarkEnd w:id=\"");
-				oXml->WriteString(sCrossId);
-				oXml->WriteString(L"\"/>");
-			}
+				WriteBookmark(oXml, sText);
 			else if(sName == L"alt")
 				sAlt = sText;
 			else if (sName == L"style" && sText.find(L"mso-footnote-id") != std::wstring::npos)

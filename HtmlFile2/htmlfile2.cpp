@@ -1509,7 +1509,13 @@ public:
 
 	void PageBreakBefore()
 	{
-		m_oDocXml.WriteString(L"<w:p><w:pPr><w:pageBreakBefore/></w:pPr></w:p>");
+		if (!m_bInP)
+			m_oDocXml.WriteString(L"<w:p>");
+
+		m_oDocXml.WriteString(L"<w:pPr><w:pageBreakBefore/></w:pPr>");
+
+		if (!m_bInP)
+			m_oDocXml.WriteString(L"</w:p>");
 	}
 
 private:
@@ -1994,7 +2000,7 @@ private:
 				oXml->WriteString(oTS.sRStyle);
 				oXml->WriteString(L"</w:rPr>");
 			}
-			oXml->WriteString(L"</w:rPr><w:t xml:space=\"preserve\">&quot;</w:t></w:r>");
+			oXml->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t></w:r>");
 		}
 		// Текст верхнего регистра
 		else if(sName == L"rt" || sName == L"sup")

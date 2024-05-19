@@ -1,6 +1,7 @@
 #include "docbuilder_functions.h"
 
 #include <cstring>
+#include <wchar.h>
 
 // ===== CDocBuilderValue =====
 CDocBuilderValue* CDocBuilderValue_Create()

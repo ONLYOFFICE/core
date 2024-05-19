@@ -9,13 +9,17 @@ STRING_HANDLE = ctypes.c_void_p
 _lib = None
 
 def loadLibrary(path):
-    if any(platform.win32_ver()):
-        os.environ['PATH'] += ';' + path
-    else:
-        os.environ['PATH'] += ':' + path
-
+    os.environ['PATH'] = path + os.pathsep + os.environ['PATH']
+    
+    os_name = platform.system().lower()
+    library_ext = "dll"
+    if ("linux" == os_name):
+        library_ext = "so"
+    elif ("darwin" == os_name):
+        library_ext = "dylib"
+        
     global _lib
-    _lib = ctypes.CDLL(path + '/docbuilder_functions.dll')
+    _lib = ctypes.CDLL(path + '/docbuilder_functions.' + library_ext)
 
     # init all function signatures
     # ===== CDocBuilderValue =====
@@ -524,60 +528,6 @@ class CDocBuilderContext:
     def IsError(self):
         return _lib.CDocBuilderContext_IsError(self._internal)
 
-if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print('Specify the folder with document builder and all dll-s')
-        exit(0)
-
-    path = sys.argv[1]
-
-    loadLibrary(path)
-
-    # ---------
-    '''
-    _lib.CDocBuilder_InitializeWithDirectory(path)
-    builder = _lib.CDocBuilder_Create()
-
-    sVersion = _lib.CDocBuilder_GetVersion(builder)
-    version = ctypes.cast(sVersion, ctypes.c_char_p).value
-    print(version)
-    _lib.DeleteCharP(ctypes.cast(sVersion, ctypes.c_char_p))
-
-    _lib.CDocBuilder_Dispose()
-    _lib.CDocBuilder_Destroy(builder)
-    '''
-    # ---------
-    '''
-    CDocBuilder.Initialize(path)
-    builder = CDocBuilder()
-
-    version = builder.GetVersion()
-    print(version)
-
-    CDocBuilder.Dispose()
-    '''
-    # ---------
-    CDocBuilder.Initialize(path)
-    builder = CDocBuilder()
-
-    builder.CreateFile('docx')
-
-    context = builder.GetContext()
-    scope = context.CreateScope()
-
-    globalObj = context.GetGlobal()
-
-    api = globalObj['Api']
-    document = api.Call('GetDocument')
-    paragraph = api.Call('CreateParagraph')
-    paragraph.Call('SetSpacingAfter', 1000, False)
-    paragraph.Call('AddText', 'Hello, World!')
-    content = context.CreateArray(1)
-    content[0] = paragraph
-    document.Call('InsertContent', content)
-
-    dstPath = os.getcwd() + '/result.docx'
-    builder.SaveFile('docx', dstPath)
-    builder.CloseFile()
-
-    CDocBuilder.Dispose()
+builder_path = os.path.dirname(os.path.realpath(__file__))
+loadLibrary(builder_path)
+CDocBuilder.Initialize(builder_path)

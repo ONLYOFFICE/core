@@ -1,6 +1,6 @@
 import os
 import sys
-sys.path.append('directory_installed_docbuilder/docbuilder.py')
+sys.path.append('path_to_docbuilder')
 import docbuilder
 
 builder = docbuilder.CDocBuilder()

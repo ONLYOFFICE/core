@@ -19,7 +19,7 @@ def loadLibrary(path):
         library_ext = "dylib"
         
     global _lib
-    _lib = ctypes.CDLL(path + '/docbuilder_functions.' + library_ext)
+    _lib = ctypes.CDLL(path + '/docbuilder.c.' + library_ext)
 
     # init all function signatures
     # ===== CDocBuilderValue =====

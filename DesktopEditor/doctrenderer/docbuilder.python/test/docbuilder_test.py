@@ -24,5 +24,3 @@ document.Call('InsertContent', content)
 dstPath = os.getcwd() + '/result.docx'
 builder.SaveFile('docx', dstPath)
 builder.CloseFile()
-
-docbuilder.CDocBuilder.Dispose()

@@ -1,24 +1,27 @@
 import ctypes
 import os
 import platform
-import sys
+import atexit
 
 OBJECT_HANDLE = ctypes.c_void_p
 STRING_HANDLE = ctypes.c_void_p
 
 _lib = None
 
-def loadLibrary(path):
+def _loadLibrary(path):
+    global _lib
+    if _lib is not None:
+        return
+
     os.environ['PATH'] = path + os.pathsep + os.environ['PATH']
-    
+
     os_name = platform.system().lower()
     library_ext = "dll"
     if ("linux" == os_name):
         library_ext = "so"
     elif ("darwin" == os_name):
         library_ext = "dylib"
-        
-    global _lib
+
     _lib = ctypes.CDLL(path + '/docbuilder.c.' + library_ext)
 
     # init all function signatures
@@ -391,6 +394,8 @@ class CDocBuilderValue:
             raise TypeError("Call() expects at most 6 arguments")
 
 class CDocBuilder:
+    _initialized = False
+
     def __init__(self):
         self._internal = _lib.CDocBuilder_Create()
         self._lib = _lib
@@ -460,16 +465,19 @@ class CDocBuilder:
     def GetContext(self):
         return CDocBuilderContext(OBJECT_HANDLE(_lib.CDocBuilder_GetContext(self._internal)))
 
-    @staticmethod
-    def Initialize(directory=None):
+    @classmethod
+    def Initialize(cls, directory=None):
         if directory is None:
             _lib.CDocBuilder_Initialize()
         else:
             _lib.CDocBuilder_InitializeWithDirectory(ctypes.c_wchar_p(directory))
+        cls._initialized = True
 
-    @staticmethod
-    def Dispose():
-        _lib.CDocBuilder_Dispose()
+    @classmethod
+    def Dispose(cls):
+        if (cls._initialized):
+            _lib.CDocBuilder_Dispose()
+            cls._initialized = False
 
 class CDocBuilderContextScope:
     def __init__(self, value=None):
@@ -529,5 +537,7 @@ class CDocBuilderContext:
         return _lib.CDocBuilderContext_IsError(self._internal)
 
 builder_path = os.path.dirname(os.path.realpath(__file__))
-loadLibrary(builder_path)
+_loadLibrary(builder_path)
 CDocBuilder.Initialize(builder_path)
+
+atexit.register(CDocBuilder.Dispose)

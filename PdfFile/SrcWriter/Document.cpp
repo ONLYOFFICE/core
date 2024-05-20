@@ -80,6 +80,7 @@ namespace PdfWriter
 		m_pPageTree         = NULL;
 		m_pCurPage          = NULL;
 		m_nCurPageNum       = -1;
+		m_pCurImage         = NULL;
 		m_unFormFields      = 0;
 		m_pInfo             = NULL;
 		m_pTrailer          = NULL;
@@ -192,6 +193,7 @@ namespace PdfWriter
 		m_pPageTree         = NULL;
 		m_pCurPage          = NULL;
 		m_nCurPageNum       = 0;
+		m_pCurImage         = NULL;
 		m_unFormFields      = 0;
 		m_bEncrypt          = false;
 		m_pEncryptDict      = NULL;
@@ -1271,7 +1273,10 @@ namespace PdfWriter
 		for (size_t i = 0, nSize = m_vImages.size(); i < nSize; ++i)
 		{
 			if (m_vImages[i].wsImagePath == wsImagePath && m_vImages[i].nAlpha == nAlpha)
+			{
+				m_pCurImage = m_vImages[i].pImage;
 				return m_vImages[i].pImage;
+			}
 		}
 		return NULL;
 	}
@@ -1279,6 +1284,7 @@ namespace PdfWriter
 	{
 		if (!pImage)
 			return;
+		m_pCurImage = pImage;
 		m_vImages.push_back({wsImagePath, nAlpha, pImage});
 	}
 	bool CDocument::CheckFieldName(CFieldBase* pField, const std::string& sName)
@@ -1782,10 +1788,10 @@ namespace PdfWriter
 			pProperties = new CDictObject();
 			pResources->Add("Properties", pProperties);
 		}
-		CObjectBase* pObj = pProperties->Get("MetaOForm");
+		CObjectBase* pObj = pProperties->Get("OShapes");
 		if (pObj && pObj->GetType() != object_type_DICT)
 		{
-			pProperties->Remove("MetaOForm");
+			pProperties->Remove("OShapes");
 			pObj = NULL;
 		}
 		CDictObject* pMetaOForm = (CDictObject*)pObj;
@@ -1793,8 +1799,8 @@ namespace PdfWriter
 		{
 			pMetaOForm = new CDictObject();
 			m_pXref->Add(pMetaOForm);
-			pMetaOForm->Add("Type", "MetaOForm");
-			pProperties->Add("MetaOForm", pMetaOForm);
+			pMetaOForm->Add("Type", "OShapes");
+			pProperties->Add("OShapes", pMetaOForm);
 			m_vMetaOForms.push_back(pMetaOForm);
 
 			CBinaryObject* sID = NULL;
@@ -1821,13 +1827,38 @@ namespace PdfWriter
 		{
 			pArrayMeta = new CArrayObject();
 			pMetaOForm->Add("Metadata", pArrayMeta);
+			CArrayObject* pArrayImage = new CArrayObject();
+			pMetaOForm->Add("Image", pArrayImage);
 		}
 		pArrayMeta->Add(new CStringObject(sXML.c_str()));
 
 		CDictObject* pBDC = new CDictObject();
 		pBDC->Add("MCID", pArrayMeta->GetCount() - 1);
-		m_pCurPage->BeginMarkedContentDict("MetaOForm", pBDC);
+		m_pCurPage->BeginMarkedContentDict("OShapes", pBDC);
 		RELEASEOBJECT(pBDC);
+	}
+	void CDocument::EndShapeXML()
+	{
+		CDictObject* pResources = (CDictObject*)m_pCurPage->Get("Resources");
+		if (!pResources)
+			return;
+		CDictObject* pProperties = (CDictObject*)pResources->Get("Properties");
+		if (!pProperties)
+			return;
+		CObjectBase* pObj = pProperties->Get("OShapes");
+		if (!pObj || pObj->GetType() != object_type_DICT)
+			return;
+		CDictObject* pMetaOForm = (CDictObject*)pObj;
+		CArrayObject* pArrayImage = (CArrayObject*)pMetaOForm->Get("Image");
+		if (!pArrayImage)
+			return;
+
+		pObj = m_pCurImage;
+		if (!pObj)
+			pObj = new PdfWriter::CNullObject();
+		pArrayImage->Add(pObj);
+
+		m_pCurPage->EndMarkedContent();
 	}
 	void CDocument::ClearPage()
 	{

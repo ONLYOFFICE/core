@@ -1656,7 +1656,7 @@ BYTE* CPdfReader::GetShapes(int nPageIndex)
 
 	Object oProperties, oMetaOForm, oID;
 	XRef* xref = m_pPDFDocument->getXRef();
-	if (!pResources->lookup("Properties", &oProperties)->isDict() || !oProperties.dictLookup("MetaOForm", &oMetaOForm)->isDict("MetaOForm") || !oMetaOForm.dictLookup("ID", &oID)->isString())
+	if (!pResources->lookup("Properties", &oProperties)->isDict() || !oProperties.dictLookup("OShapes", &oMetaOForm)->isDict("OShapes") || !oMetaOForm.dictLookup("ID", &oID)->isString())
 	{
 		oProperties.free(); oMetaOForm.free(); oID.free();
 		return NULL;

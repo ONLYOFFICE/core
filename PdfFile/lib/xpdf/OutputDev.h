@@ -188,6 +188,7 @@ public:
 
   //----- additional
   virtual GBool beginMarkedContent(GfxState *state, GString *s) { return gFalse; }
+  virtual GBool beginMCOShapes(GfxState *state, GString *s, Object *ref) { return gFalse; }
   virtual void endMarkedContent(GfxState *state) {}
 
   //----- image drawing

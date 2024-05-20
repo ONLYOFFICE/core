@@ -1,5 +1,6 @@
 #include "ImageManager.h"
 #include "../../../../DesktopEditor/common/Directory.h"
+#include "../../resources/Constants.h"
 
 namespace NSDocxRenderer
 {
@@ -10,7 +11,7 @@ namespace NSDocxRenderer
 	{
 	private:
 		std::map<DWORD, std::shared_ptr<CImageInfo>> m_mapImageData;
-		std::map<std::wstring, std::string> m_mapImages;
+		std::map<int, std::string> m_mapImages;
 
 		int m_lMaxSizeImage{1200};
 		int m_lNextIDImage{0};
@@ -87,21 +88,31 @@ namespace NSDocxRenderer
 				oBgraFrame.put_Data(NULL);
 
 			int nBase64DataSize = NSBase64::Base64EncodeGetRequiredLength(nEncodeBufferSize);
-			char* pBase64Data = new char[nBase64DataSize];
+			int nHeaderSize = (pInfo->m_eType == CImageInfo::itPNG) ? 22 : 23;
 
-			NSBase64::Base64Encode(pEncodeBuffer, nEncodeBufferSize, (BYTE*)pBase64Data, &nBase64DataSize, NSBase64::B64_BASE64_FLAG_NOCRLF);
+			char* pBase64Data = new char[nBase64DataSize + nHeaderSize];
+			if (pInfo->m_eType == CImageInfo::itPNG)
+				memcpy(pBase64Data, "data:image/png;base64,", nHeaderSize);
+			else
+				memcpy(pBase64Data, "data:image/jpeg;base64,", nHeaderSize);
+
+			NSBase64::Base64Encode(pEncodeBuffer, nEncodeBufferSize, (BYTE*)pBase64Data + nHeaderSize, &nBase64DataSize, NSBase64::B64_BASE64_FLAG_NOCRLF);
 			RELEASEARRAYOBJECTS(pEncodeBuffer);
 
-			m_mapImages.insert(std::pair<std::wstring, std::string>(pInfo->m_strFileName, std::string(pBase64Data, nBase64DataSize)));
+			m_mapImages.insert(std::pair<int, std::string>((int)pInfo->m_nId, std::string(pBase64Data, nHeaderSize + nBase64DataSize)));
 			RELEASEARRAYOBJECTS(pBase64Data);
 
 			m_mapImageData.insert(std::pair<DWORD, std::shared_ptr<CImageInfo>>(dwSum, pInfo));
 			return pInfo;
 		}
 
-		virtual std::map<std::wstring, std::string>* GetImages()
+		virtual std::string* GetBase64(const int& nRId)
 		{
-			return &m_mapImages;
+			std::map<int, std::string>::iterator iter = m_mapImages.find(nRId - c_iStartingIdForImages);
+			if (iter == m_mapImages.end())
+				return NULL;
+
+			return &iter->second;
 		}
 	};
 

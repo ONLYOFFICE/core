@@ -493,6 +493,10 @@ void draw_object_ole::pptx_convert(oox::pptx_conversion_context & Context)
 	if (Context.get_mediaitems()->is_internal_path(href, folderPath))
 	{
 		std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
+		NSFile::CFileBinary objectFile;
+		objectFile.OpenFile(objectPath);
+		if (objectFile.SizeFile() == 0)
+			return;
 
 		std::wstring prog, extension;
 		oox::_rels_type relsType;

@@ -31,4 +31,5 @@ ADD_DEPENDENCY(kernel, UnicodeConverter, graphics, kernel_network)
 SOURCES += htmlfile2.cpp
 
 HEADERS += htmlfile2.h \
-	./src/StringFinder.h
+	./src/StringFinder.h \
+	./src/Languages.h

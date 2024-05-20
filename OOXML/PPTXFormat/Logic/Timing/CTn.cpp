@@ -138,6 +138,7 @@ namespace PPTX
 				pWriter->WriteAttribute(L"grpId", grpId);
 				pWriter->WriteAttribute(L"afterEffect", afterEffect);
 				pWriter->WriteAttribute(L"nodeType", nodeType);
+				pWriter->WriteAttribute(L"nodePh", nodePh);
 			pWriter->EndAttributes();
 
 			if (stCondLst.IsInit())

@@ -509,9 +509,10 @@ private:
 	Writers::FileWriter&			m_oFileWriter;
     std::wstring					m_sFileInDir;
 	bool							m_bMacro = false;
-	bool							m_bMacroRead = false;
 	bool							m_bOForm = false;
 public:
+	bool							m_bMacroRead = false;
+
 	BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter, bool bMacro = false, bool bOForm = false);
 	int ReadFile();
 	int ReadMainTable();

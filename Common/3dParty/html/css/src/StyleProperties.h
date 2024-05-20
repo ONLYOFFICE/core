@@ -444,6 +444,7 @@ namespace NSCSS
 
 		CBorderSide& operator+=(const CBorderSide& oBorderSide);
 		bool         operator==(const CBorderSide& oBorderSide) const;
+		CBorderSide& operator =(const CBorderSide& oBorderSide);
 	private:
 		CDigit  m_oWidth;
 		CString m_oStyle;
@@ -513,6 +514,8 @@ namespace NSCSS
 
 		CBorder& operator+=(const CBorder& oBorder);
 		bool     operator==(const CBorder& oBorder) const;
+
+		CBorder& operator =(const CBorder& oBorder);
 	private:
 		CBorderSide m_oLeft;
 		CBorderSide m_oTop;

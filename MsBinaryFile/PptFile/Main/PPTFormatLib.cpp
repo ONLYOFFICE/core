@@ -53,7 +53,7 @@ COfficePPTFile::~COfficePPTFile()
     CloseFile();
 }
 
-_UINT32 COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstring & password, bool &bMacros)
+_UINT32 COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstring & password, bool &bMacro)
 {
 	CloseFile();
 	
@@ -76,7 +76,7 @@ _UINT32 COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstr
     PPT::CPPTFileReader* pptReader = (PPT::CPPTFileReader*)m_pReader;
     
 	pptReader->m_oDocumentInfo.m_strPassword = password;
-	pptReader->m_oDocumentInfo.m_bMacros = bMacros;
+	pptReader->m_oDocumentInfo.m_bMacroEnabled = bMacro;
 		
 	if	(pptReader->IsPowerPoint() == false) 
 	{ 
@@ -98,7 +98,7 @@ _UINT32 COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstr
 	//pptReader->ReadEncryptedSummary();
 	pptReader->ReadDocument();
 
-	bMacros	= pptReader->m_oDocumentInfo.m_bMacros;
+	bMacro	= pptReader->m_oDocumentInfo.m_bMacroEnabled;
 	m_Status = READMODE;
 
 	return S_OK;
@@ -109,7 +109,7 @@ bool COfficePPTFile::CloseFile()
 
     PPT::CPPTFileReader* r = (PPT::CPPTFileReader*)m_pReader;	RELEASEOBJECT(r);
 	m_pReader = NULL;
-	return S_OK;
+	return true;
 }
 
 _UINT32 COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring password, bool &bMacros)

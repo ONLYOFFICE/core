@@ -48,6 +48,7 @@ namespace NSCSS
 		void AddParent(const std::wstring& sParentName);
 
 		std::vector<std::wstring> GetParentsName() const;
+		std::set<std::wstring> GetParentsNamesSet() const;
 
 		void SetID(const std::wstring& sId);
 		std::wstring GetId() const;

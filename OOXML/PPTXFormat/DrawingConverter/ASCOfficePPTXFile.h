@@ -74,8 +74,10 @@ public:
 	void SetThemesDir		(std::wstring bsDir);
 	void SetUseSystemFonts	(bool useSystemFonts);
 	
-	void SetIsNoBase64			(bool val);
-    void SetMacroEnabled		(bool val);
+	void SetIsNoBase64		(bool val);
+    
+	void SetMacroEnabled	(bool val);
+	bool GetMacroEnabled	();
 	
 	_UINT32 OpenFileToPPTY		(std::wstring bsInput, std::wstring bsOutput);
     _UINT32 OpenDirectoryToPPTY	(std::wstring bsInput, std::wstring bsOutput);

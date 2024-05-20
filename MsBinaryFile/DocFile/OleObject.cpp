@@ -127,7 +127,6 @@ bool OleObject::processLinkInfoStream( const std::wstring& linkStream )
 			VirtualStreamReader reader( pLinkStream, 0, false);
 			processLinkInfoStream(reader);
 
-			delete pLinkStream;
 			res = true;
 		}
 		if (pLinkStream) delete pLinkStream;

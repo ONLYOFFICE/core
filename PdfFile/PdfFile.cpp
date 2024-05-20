@@ -59,6 +59,7 @@ public:
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) {}
 	int  GetRotate(int nPageIndex) { return 0; }
 	bool IsEditPage() { return false; }
+	bool EditPage(int nPageIndex) { return false; }
 	void AddShapeXML(const std::string& sXML) {}
 	void EndMarkedContent() {}
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath) { return false; }

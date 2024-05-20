@@ -64,8 +64,8 @@ public:
     void SetDstMedia(const std::wstring& strDst);
     void SetTempMedia(const std::wstring& strSrc);
 
-    std::wstring GenerateVideo(const std::wstring& strInput);
-    std::wstring GenerateAudio(const std::wstring& strInput);
+    std::wstring GenerateVideo(const std::wstring& strInput, const std::wstring& strExt = L"");
+    std::wstring GenerateAudio(const std::wstring& strInput, const std::wstring& strExt = L"");
     std::wstring GenerateOleObject(const std::wstring& strInput);
     std::wstring GenerateImage(const std::wstring& strInput);
     std::wstring GenerateImageJPEG(const std::wstring& strInput);

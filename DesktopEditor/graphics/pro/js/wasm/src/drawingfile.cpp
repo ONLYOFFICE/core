@@ -267,6 +267,23 @@ WASM_EXPORT BYTE* ScanPage(CGraphicsFileDrawing* pGraphics, int nPageIndex, int 
 	return pGraphics->GetPageShapes(nPageIndex, mode);
 }
 
+WASM_EXPORT void* GetImageBase64(CGraphicsFileDrawing* pGraphics, int rId)
+{
+	return pGraphics->GetImageBase64(rId);
+}
+WASM_EXPORT int GetImageBase64Len(std::string* p)
+{
+	return (int)p->length();
+}
+WASM_EXPORT char* GetImageBase64Ptr(std::string* p)
+{
+	return (char*)p->c_str();
+}
+WASM_EXPORT void GetImageBase64Free(std::string* p)
+{
+	*p = "";
+}
+
 #ifdef __cplusplus
 }
 #endif

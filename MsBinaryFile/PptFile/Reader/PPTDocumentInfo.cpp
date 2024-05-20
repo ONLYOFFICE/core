@@ -33,7 +33,7 @@
 
 using namespace PPT;
 
-CPPTDocumentInfo::CPPTDocumentInfo() : m_oCurrentUser(), m_bMacros(true), m_pStream(NULL)
+CPPTDocumentInfo::CPPTDocumentInfo() : m_oCurrentUser(), m_bMacroEnabled(true), m_pStream(NULL)
 {
 }
 
@@ -79,14 +79,13 @@ bool CPPTDocumentInfo::ReadFromStream(CRecordCurrentUserAtom *pCurrentUser, POLE
 
         pInfo->m_pDocumentInfo      = this;
 
-        pInfo->m_bEncrypt			= m_oCurrentUser.m_bIsEncrypt;
-        pInfo->m_strPassword		= m_strPassword;
-        pInfo->m_bMacros			= m_bMacros;
+        pInfo->m_bEncrypt = m_oCurrentUser.m_bIsEncrypt;
+        pInfo->m_strPassword = m_strPassword;
+        pInfo->m_bMacroEnabled = m_bMacroEnabled;
 
         bool bResult = pInfo->ReadFromStream(&oUserAtom, pStream);
 
-        m_bMacros					= pInfo->m_bMacros;
-        offsetToEdit				= pInfo->m_oUser.m_nOffsetLastEdit;
+        offsetToEdit = pInfo->m_oUser.m_nOffsetLastEdit;
         m_oCurrentUser.m_bIsEncrypt = pInfo->m_bEncrypt;
 
         if (bResult == false)
@@ -106,7 +105,6 @@ bool CPPTDocumentInfo::ReadFromStream(CRecordCurrentUserAtom *pCurrentUser, POLE
 
         pInfo = NULL;
     }
-
     return true;
 }
 std::wstring CPPTDocumentInfo::GetBinFromStg(const std::wstring& name, _UINT32 nRef)
@@ -146,6 +144,8 @@ bool CPPTDocumentInfo::LoadDocument()
     {
         m_arUsers[0]->ReadExtenalObjects(); // todooo ???? прочитать по всем (см 66864)
         m_arUsers[0]->FromDocument();
+
+        m_bMacroEnabled = m_arUsers[0]->m_bMacroEnabled;
     }
     catch(int) //error code
     {

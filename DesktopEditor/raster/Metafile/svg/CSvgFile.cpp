@@ -42,30 +42,40 @@ bool CSvgFile::GetBounds(double &dX, double &dY, double &dWidth, double &dHeight
 
 	SVG::TRect oWindow = m_oContainer.GetWindow();
 
-	dX      = oWindow.m_oX     .ToDouble(NSCSS::Pixel, SVG_FILE_WIDTH);
-	dY      = oWindow.m_oY     .ToDouble(NSCSS::Pixel, SVG_FILE_HEIGHT);
+	dX = oWindow.m_oX.ToDouble(NSCSS::Pixel, SVG_FILE_WIDTH);
+	dY = oWindow.m_oY.ToDouble(NSCSS::Pixel, SVG_FILE_HEIGHT);
 
 	dWidth  = 0.;
 	dHeight = 0.;
 
 	if (!oWindow.m_oWidth.Empty() && !oWindow.m_oWidth.Zero())
 	{
-		if (NSCSS::Percent != oWindow.m_oWidth.GetUnitMeasure() && !m_oContainer.GetViewBox().m_oWidth.Empty() && !m_oContainer.GetViewBox().m_oWidth.Zero())
-			dWidth = oWindow.m_oWidth.ToDouble(NSCSS::Pixel, m_oContainer.GetViewBox().m_oWidth.ToDouble(NSCSS::Pixel));
+		if (NSCSS::Percent == oWindow.m_oWidth.GetUnitMeasure())
+		{
+			if (!m_oContainer.GetViewBox().m_oWidth.Empty() && !m_oContainer.GetViewBox().m_oWidth.Zero())
+				dWidth = oWindow.m_oWidth.ToDouble(NSCSS::Pixel, m_oContainer.GetViewBox().m_oWidth.ToDouble(NSCSS::Pixel));
+			else
+				dWidth = oWindow.m_oWidth.ToDouble(NSCSS::Pixel, SVG_FILE_WIDTH);
+		}
 		else
 			dWidth = oWindow.m_oWidth.ToDouble(NSCSS::Pixel);
 	}
-	else if (!m_oContainer.GetViewBox().m_oWidth.Empty() && !m_oContainer.GetViewBox().m_oWidth.Zero())
+	else
 		dWidth = m_oContainer.GetViewBox().m_oWidth.ToDouble(NSCSS::Pixel);
 
 	if (!oWindow.m_oHeight.Empty() && !oWindow.m_oHeight.Zero())
 	{
-		if (NSCSS::Percent != oWindow.m_oHeight.GetUnitMeasure() && !m_oContainer.GetViewBox().m_oHeight.Empty() && !m_oContainer.GetViewBox().m_oHeight.Zero())
-			dHeight = oWindow.m_oHeight.ToDouble(NSCSS::Pixel, m_oContainer.GetViewBox().m_oHeight.ToDouble(NSCSS::Pixel));
+		if (NSCSS::Percent == oWindow.m_oHeight.GetUnitMeasure())
+		{
+			if (!m_oContainer.GetViewBox().m_oHeight.Empty() && !m_oContainer.GetViewBox().m_oHeight.Zero())
+				dHeight = oWindow.m_oHeight.ToDouble(NSCSS::Pixel, m_oContainer.GetViewBox().m_oHeight.ToDouble(NSCSS::Pixel));
+			else
+				dHeight = oWindow.m_oHeight.ToDouble(NSCSS::Pixel, SVG_FILE_WIDTH);
+		}
 		else
 			dHeight = oWindow.m_oHeight.ToDouble(NSCSS::Pixel);
 	}
-	else if (!m_oContainer.GetViewBox().m_oHeight.Empty() && !m_oContainer.GetViewBox().m_oHeight.Zero())
+	else
 		dHeight = m_oContainer.GetViewBox().m_oHeight.ToDouble(NSCSS::Pixel);
 
 	if (0. == dWidth)

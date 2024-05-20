@@ -1423,6 +1423,7 @@ void text_linenumbering_configuration::serialize(std::wostream & strm)
 			CP_XML_ATTR_OPT(L"text:count-empty-lines", text_count_empty_lines_);
 			CP_XML_ATTR_OPT(L"text:count-in-text-boxes", text_count_in_text_boxes_);
 			CP_XML_ATTR_OPT(L"text:increment", text_increment_);
+			CP_XML_ATTR_OPT(L"text:start", text_start_);
 			CP_XML_ATTR_OPT(L"text:number-position", text_number_position_); //inner, left, outer, right
 			CP_XML_ATTR_OPT(L"text:offset", text_offset_);
 			CP_XML_ATTR_OPT(L"text:restart-on-page", text_restart_on_page_);

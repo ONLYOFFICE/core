@@ -10,17 +10,18 @@ namespace NSCSS
 {
 	class CStyleUsed
 	{
+		CCompiledStyle m_oStyle;
 		bool m_bIsPStyle;
-		std::wstring m_wsId;
 
 	public:
-		CStyleUsed(const std::wstring& wsId, bool bIsPStyle);
+		CStyleUsed(const CCompiledStyle& oStyle, bool bIsPStyle);
 
 		bool operator==(const CStyleUsed& oUsedStyle) const;
 
 		std::wstring getId();
-		void setId(const std::wstring& sId);
 	};
+
+	static const std::vector<std::wstring> Names_Standard_Styles = {L"a", L"li", L"h1", L"h2", L"h3", L"h4", L"h5", L"h6",L"p", L"div"};
 
 	class CSSCALCULATOR_EXPORT CDocumentStyle
 	{
@@ -28,9 +29,9 @@ namespace NSCSS
 		typedef NSConstValues::NSProperties::ParagraphProperties PProperties;
 		typedef NSConstValues::NSProperties::RunnerProperties    RProperties;
 	
-		std::list<std::wstring> m_arStandardStylesUsed;
-		std::list<std::wstring> m_arStandardStyles;
-		std::list<CStyleUsed>   m_arStyleUsed;
+		std::vector<std::wstring> m_arStandardStylesUsed;
+		std::vector<std::wstring> m_arStandardStyles;
+		std::vector<CStyleUsed>   m_arStyleUsed;
 
 		std::wstring m_sStyle;
 		std::wstring m_sId;

@@ -45,7 +45,11 @@
 		"_DestroyTextInfo",
 		"_IsNeedCMap",
 		"_SetCMapData",
-		"_ScanPage"
+		"_ScanPage",
+		"_GetImageBase64",
+		"_GetImageBase64Len",
+		"_GetImageBase64Ptr",
+		"_GetImageBase64Free"
 	],
 	"include_path": [
 		"wasm/src/lib", 

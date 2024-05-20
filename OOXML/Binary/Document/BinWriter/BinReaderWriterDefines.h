@@ -487,7 +487,10 @@ extern int g_nCurFormatVersion;
 	};}
 	namespace c_oSerProp_secPrPageNumType{enum c_oSerProp_secPrPageNumType
 	{
-		start = 0
+		start = 0,
+		fmt = 1,
+		chapStyle = 2,
+		chapSep = 3
 	};}
 	namespace c_oSerProp_secPrLineNumType{enum c_oSerProp_secPrLineNumType
 	{

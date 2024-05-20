@@ -146,6 +146,13 @@ const std::wstring CBookInfo::GetLanguages() const
     return sLanguages;
 }
 
+const std::wstring CBookInfo::GetLanguage() const
+{
+    if (m_arLanguages.empty())
+        return L"";
+    return m_arLanguages.front();
+}
+
 const std::wstring CBookInfo::GetContibutors() const
 {
     if (m_arContributors.empty())

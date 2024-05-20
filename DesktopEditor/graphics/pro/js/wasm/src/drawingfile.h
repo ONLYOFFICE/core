@@ -220,6 +220,13 @@ public:
 		oRes.ClearWithoutAttack();
 		return res;
 	}
+
+	std::string* GetImageBase64(int nRId)
+	{
+		if (NULL == pImageStorage)
+			return NULL;
+		return pImageStorage->GetBase64(nRId);
+	}
 };
 
 #endif // _WASM_GRAPHICS_

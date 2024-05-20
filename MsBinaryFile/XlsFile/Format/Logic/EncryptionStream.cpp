@@ -78,15 +78,28 @@ namespace XLS
 			BYTE fStream = ((BYTE*)(buf2 + pos))[0]; pos += 1;
 			pos += 4;
 
-			std::wstring name = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)(buf2 + pos), NameSize); pos += NameSize * 2;
+			std::wstring name;
+			
+			if (pos + NameSize < StreamDescriptorArraySize)
+			{
+				name = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)(buf2 + pos), NameSize);
+			}
+			pos += NameSize * 2;
+			
+			if (pos + 1 < StreamDescriptorArraySize && buf2[pos] == 0 && buf2[pos + 1] == 0)
+				pos += 2; // padding???
 
 			std::pair<boost::shared_array<unsigned char>, size_t> data;
-			data.first = boost::shared_array<BYTE>(new BYTE[StreamSize]);
-			data.second = StreamSize;
 
-			memcpy(data.first.get(), buf1 + StreamOffset - 8, StreamSize); // 8 = start stream offset
+			if (StreamSize + StreamOffset < StreamDescriptorArrayOffset)
+			{
+				data.first = boost::shared_array<BYTE>(new BYTE[StreamSize]);
+				data.second = StreamSize;
 
+				memcpy(data.first.get(), buf1 + StreamOffset - 8, StreamSize); // 8 = start stream offset
+			}
 			streams.insert(std::make_pair(name, data));
+
 		}
 
 		delete[]buf1;

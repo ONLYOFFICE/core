@@ -286,6 +286,10 @@ namespace BinXlsxRW{
 	{
 		m_bIsMacro = val;
 	}
+	bool CXlsxSerializer::getMacroEnabled()
+	{
+		return m_bIsMacro;
+	}
 
 	bool CXlsxSerializer::writeChartXlsx(const std::wstring& sDstFile, NSCommon::smart_ptr<OOX::File> &file)
 	{

@@ -136,14 +136,19 @@ class GRAPHICS_DECL CShapeStart : public IAdvancedCommand
 {
 public:
 	CShapeStart();
+	~CShapeStart();
+
+	const std::string& GetShapeXML();
+	Aggplus::CImage*   GetShapeImage();
 
 	void SetShapeXML(const std::string& sShapeXML);
-	const std::string& GetShapeXML();
+	void SetShapeImage(BYTE* pImgData, int nWidth, int nHeight);
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 
 private:
 	std::string m_sShapeXML;
+	Aggplus::CImage* m_pImage;
 };
 
 class GRAPHICS_DECL CEmptyComand : public IAdvancedCommand

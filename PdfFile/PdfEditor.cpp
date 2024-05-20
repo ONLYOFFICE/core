@@ -1288,7 +1288,7 @@ void CPdfEditor::AddShapeXML(const std::string& sXML)
 }
 void CPdfEditor::EndMarkedContent()
 {
-	pWriter->GetPage()->EndMarkedContent();
+	pWriter->GetDocument()->EndShapeXML();
 }
 bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath)
 {

@@ -217,6 +217,7 @@ public:
 	HRESULT EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWidgetsInfo* pFieldInfo, const std::wstring& wsTempDirectory);
 	PdfWriter::CDocument* GetDocument();
 	PdfWriter::CPage*     GetPage();
+	void AddFont(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, const std::wstring& wsFontPath, const LONG& lFaceIndex);
 
 private:
 	PdfWriter::CImageDict* LoadImage(Aggplus::CImage* pImage, BYTE nAlpha);
@@ -224,7 +225,10 @@ private:
 	bool DrawText(unsigned char* pCodes, const unsigned int& unLen, const double& dX, const double& dY);
 	bool DrawTextToRenderer(const unsigned int* unGid, const unsigned int& unLen, const double& dX, const double& dY);
 	bool PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids = NULL);
+	int  IsBase14(const std::wstring& wsFontName);
+	bool GetBaseFont14(const std::wstring& wsFontName, int nBase14);
 	bool UpdateFont();
+	bool FindFontPath(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, std::wstring& wsFontPath, LONG& lFaceIndex);
 	bool GetFontPath(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, std::wstring& wsFontPath, LONG& lFaceIndex);
 	PdfWriter::CFontCidTrueType* GetFont(const std::wstring& wsFontPath, const LONG& lFontIndex);
 	PdfWriter::CFontCidTrueType* GetFont(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic);
@@ -251,6 +255,7 @@ private:
 	PdfWriter::CDocument*        m_pDocument;
 	PdfWriter::CPage*            m_pPage;
 	PdfWriter::CFontCidTrueType* m_pFont;
+	PdfWriter::CFont14*          m_pFont14;
 	PdfWriter::CShading*         m_pShading;
 	PdfWriter::CExtGrState*      m_pShadingExtGrState;
 

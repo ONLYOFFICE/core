@@ -132,8 +132,6 @@ namespace PdfWriter
 			sDA.append(bCaps ? "K" : "k");
 		else if (arr.size() == 1)
 			sDA.append(bCaps ? "G" : "g");
-		// else
-		// 	sDA.append(bCaps ? "SC" : "sc");
 		return sDA;
 	}
 	std::string GetColor(CArrayObject* pArr, bool bCAPS, float dDiff = 0)
@@ -800,6 +798,17 @@ namespace PdfWriter
 		pStream->WriteReal(y3);
 		pStream->WriteStr(" c\012");
 	}
+	void StreamWriteRect(CStream* pStream, double x1, double y1, double x2, double y2)
+	{
+		pStream->WriteReal(x1);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(y1);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(x2);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(y2);
+		pStream->WriteStr(" re\012");
+	}
 	void SreamWriteCircle(CStream* pStream, double cx, double cy, double r)
 	{
 		double bezierCircle = 0.55228475 * r;
@@ -809,7 +818,7 @@ namespace PdfWriter
 		SreamWriteXYCurve(pStream, cx - r, cy - bezierCircle, cx - bezierCircle, cy - r, cx, cy - r);
 		SreamWriteXYCurve(pStream, cx + bezierCircle, cy - r, cx + r, cy - bezierCircle, cx + r, cy);
 	}
-	void DrawLineArrow(CStream* pStream, ELineEndType nType, double x, double y, double dx, double dy, double w)
+	void DrawArrow(CStream* pStream, ELineEndType nType, double x, double y, double dx, double dy, double w)
 	{
 		double lineEndSize1 = 3, pi = 3.14159265358979323846;
 		switch (nType)
@@ -907,6 +916,65 @@ namespace PdfWriter
 		}
 		}
 	}
+	void DrawLineArrow(CStream* pStream, double dBorderSize, double x1, double y1, double x2, double y2, ELineEndType nLE1, ELineEndType nLE2, double dLL = 0, double dLLO = 0, double dLLE = 0)
+	{
+		double dDX = x2 - x1;
+		double dDY = y2 - y1;
+		double dLen = sqrt(dDX * dDX + dDY * dDY);
+		if (dLen > 0)
+		{
+			dDX /= dLen;
+			dDY /= dLen;
+		}
+
+		double lx1, ly1, lx2, ly2;
+		double ax1, ay1, ax2, ay2;
+		double bx1, by1, bx2, by2;
+		if (dLL != 0)
+		{
+			ax1 = x1 + dLLO * dDY;
+			ay1 = y1 - dLLO * dDX;
+			lx1 = ax1 + dLL * dDY;
+			ly1 = ay1 - dLL * dDX;
+			bx1 = lx1 + dLLE * dDY;
+			by1 = ly1 - dLLE * dDX;
+			ax2 = x2 + dLLO * dDY;
+			ay2 = y2 - dLLO * dDX;
+			lx2 = ax2 + dLL * dDY;
+			ly2 = ay2 - dLL * dDX;
+			bx2 = lx2 + dLLE * dDY;
+			by2 = ly2 - dLLE * dDX;
+		}
+		else
+		{
+			lx1 = x1;
+			ly1 = y1;
+			lx2 = x2;
+			ly2 = y2;
+			ax1 = ay1 = ax2 = ay2 = 0;
+			bx1 = by1 = bx2 = by2 = 0;
+		  }
+
+		double tx1, ty1, tx2, ty2;
+		AdjustLineEndpoint(nLE1, lx1, ly1,  dDX,  dDY, dBorderSize, tx1, ty1);
+		AdjustLineEndpoint(nLE2, lx2, ly2, -dDX, -dDY, dBorderSize, tx2, ty2);
+
+		if (dLL)
+		{
+			SreamWriteXYMove(pStream, ax1, ay1);
+			SreamWriteXYLine(pStream, bx1, by1);
+
+			SreamWriteXYMove(pStream, ax2, ay2);
+			SreamWriteXYLine(pStream, bx2, by2);
+		}
+
+		SreamWriteXYMove(pStream, tx1, ty1);
+		SreamWriteXYLine(pStream, tx2, ty2);
+		pStream->WriteStr("S\012");
+
+		DrawArrow(pStream, nLE1, tx1, ty1,  dDX,  dDY, dBorderSize);
+		DrawArrow(pStream, nLE2, tx2, ty2, -dDX, -dDY, dBorderSize);
+	}
 	void CLineAnnotation::SetAP()
 	{
 		CAnnotAppearance* pAppearance = new CAnnotAppearance(m_pXref, this);
@@ -980,62 +1048,7 @@ namespace PdfWriter
 		if (pObj && pObj->GetType() == object_type_REAL)
 			dLLO = ((CRealObject*)pObj)->Get();
 
-		double dDX = dL[2] - dL[0];
-		double dDY = dL[3] - dL[1];
-		double dLen = sqrt(dDX * dDX + dDY * dDY);
-		if (dLen > 0)
-		{
-			dDX /= dLen;
-			dDY /= dLen;
-		}
-
-		double lx1, ly1, lx2, ly2;
-		double ax1, ay1, ax2, ay2;
-		double bx1, by1, bx2, by2;
-		if (dLL != 0)
-		{
-			ax1 = dL[0] + dLLO * dDY;
-			ay1 = dL[1] - dLLO * dDX;
-			lx1 = ax1 + dLL * dDY;
-			ly1 = ay1 - dLL * dDX;
-			bx1 = lx1 + dLLE * dDY;
-			by1 = ly1 - dLLE * dDX;
-			ax2 = dL[2] + dLLO * dDY;
-			ay2 = dL[3] - dLLO * dDX;
-			lx2 = ax2 + dLL * dDY;
-			ly2 = ay2 - dLL * dDX;
-			bx2 = lx2 + dLLE * dDY;
-			by2 = ly2 - dLLE * dDX;
-		}
-		else
-		{
-			lx1 = dL[0];
-			ly1 = dL[1];
-			lx2 = dL[2];
-			ly2 = dL[3];
-			ax1 = ay1 = ax2 = ay2 = 0;
-			bx1 = by1 = bx2 = by2 = 0;
-		  }
-
-		double tx1, ty1, tx2, ty2;
-		AdjustLineEndpoint(m_nLE1, lx1, ly1,  dDX,  dDY, dBorderSize, tx1, ty1);
-		AdjustLineEndpoint(m_nLE2, lx2, ly2, -dDX, -dDY, dBorderSize, tx2, ty2);
-
-		if (dLL != 0)
-		{
-			SreamWriteXYMove(pStream, ax1, ay1);
-			SreamWriteXYLine(pStream, bx1, by1);
-
-			SreamWriteXYMove(pStream, ax2, ay2);
-			SreamWriteXYLine(pStream, bx2, by2);
-		}
-
-		SreamWriteXYMove(pStream, tx1, ty1);
-		SreamWriteXYLine(pStream, tx2, ty2);
-		pStream->WriteStr("S\012");
-
-		DrawLineArrow(pStream, m_nLE1, tx1, ty1,  dDX,  dDY, dBorderSize);
-		DrawLineArrow(pStream, m_nLE2, tx2, ty2, -dDX, -dDY, dBorderSize);
+		DrawLineArrow(pStream, dBorderSize, dL[0], dL[1], dL[2], dL[3], m_nLE1, m_nLE2, dLL, dLLE, dLLO);
 	}
 	//----------------------------------------------------------------------------------------
 	// CPopupAnnotation
@@ -1056,6 +1069,24 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CFreeTextAnnotation::CFreeTextAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotFreeText)
 	{
+	}
+	void CFreeTextAnnotation::SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrC)
+	{
+		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
+		const char* sFontName = pFieldsResources->GetFontName(pFont);
+
+		std::string sDA = GetColor(arrC, false);
+		if (sFontName)
+		{
+			sDA.append(" /");
+			sDA.append(sFontName);
+		}
+
+		sDA.append(" ");
+		sDA.append(std::to_string(dFontSize));
+		sDA.append(" Tf");
+
+		Add("DA", new CStringObject(sDA.c_str()));
 	}
 	void CFreeTextAnnotation::SetQ(BYTE nQ)
 	{
@@ -1100,6 +1131,48 @@ namespace PdfWriter
 
 		for (int i = 0; i < arrCL.size(); ++i)
 			pArray->Add(i % 2 == 0 ? (arrCL[i] + m_dPageX) : (m_dPageH - arrCL[i]));
+	}
+	void CFreeTextAnnotation::SetIC(const std::vector<double>& arrIC)
+	{
+		SetC(arrIC);
+	}
+	void CFreeTextAnnotation::APFromFakePage(CPage* pFakePage)
+	{
+		// xref NULL - тогда у CAnnotAppearanceObject не будет создан stream
+		m_pAppearance = new CAnnotAppearance(NULL, this);
+		if (!m_pAppearance)
+			return;
+		Add("AP", m_pAppearance);
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal((CResourcesDict*)pFakePage->Get("Resources"));
+		m_pXref->Add(pNormal);
+		m_pAppearance->Add("N", pNormal);
+
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+		pNormal->Add("BBox", pArray);
+
+		pArray->Add(GetRect().fLeft);
+		pArray->Add(GetRect().fBottom);
+		pArray->Add(GetRect().fRight);
+		pArray->Add(GetRect().fTop);
+
+		pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		pNormal->Add("Matrix", pArray);
+		pArray->Add(1);
+		pArray->Add(0);
+		pArray->Add(0);
+		pArray->Add(1);
+		pArray->Add(-GetRect().fLeft);
+		pArray->Add(-GetRect().fBottom);
+
+		CDictObject* pFPStream = pFakePage->GetContent();
+		pNormal->SetStream(m_pXref, pFPStream->GetStream(), false);
+		pFPStream->SetStream(NULL);
+		// RELEASEOBJECT(pFPStream); Нельзя удалять - это объект стрима, он уже в xref
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextMarkupAnnotation

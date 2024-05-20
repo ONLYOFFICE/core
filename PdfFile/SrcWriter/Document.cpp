@@ -785,9 +785,24 @@ namespace PdfWriter
 
 		return pForm;
 	}
-    CFont14* CDocument::CreateFont14(EStandard14Fonts eType)
+	CFont14* CDocument::CreateFont14(const std::wstring& wsFontPath, unsigned int unIndex, EStandard14Fonts eType)
 	{
-		return new CFont14(m_pXref, this, eType);
+		CFont14* pFont = FindFont14(wsFontPath, unIndex);
+		if (pFont)
+			return pFont;
+		pFont = new CFont14(m_pXref, this, eType);
+		m_vFonts14.push_back(TFontInfo(wsFontPath, unIndex, pFont));
+		return pFont;
+	}
+	CFont14* CDocument::FindFont14(const std::wstring& wsFontPath, unsigned int unIndex)
+	{
+		for (int nIndex = 0, nCount = m_vFonts14.size(); nIndex < nCount; nIndex++)
+		{
+			TFontInfo& oInfo = m_vFonts14.at(nIndex);
+			if (wsFontPath == oInfo.wsPath && unIndex == oInfo.unIndex)
+				return (CFont14*)oInfo.pFont;
+		}
+		return NULL;
 	}
 	CFontCidTrueType* CDocument::CreateCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex)
 	{
@@ -1491,6 +1506,10 @@ namespace PdfWriter
 		if (p != m_mParents.end())
 			return p->second;
 		return NULL;
+	}
+	CPage* CDocument::CreateFakePage()
+	{
+		return new CPage(this, m_pXref);
 	}
 	bool CDocument::EditCO(const std::vector<int>& arrCO)
 	{

@@ -16,13 +16,13 @@ def _loadLibrary(path):
     os.environ['PATH'] = path + os.pathsep + os.environ['PATH']
 
     os_name = platform.system().lower()
-    library_ext = "dll"
+    library_name = 'docbuilder.c.dll'
     if ("linux" == os_name):
-        library_ext = "so"
+        library_name = 'libdocbuilder.c.so'
     elif ("darwin" == os_name):
-        library_ext = "dylib"
+        library_name = 'libdocbuilder.c.dylib'
 
-    _lib = ctypes.CDLL(path + '/docbuilder.c.' + library_ext)
+    _lib = ctypes.CDLL(path + '/' + library_name)
 
     # init all function signatures
     # ===== CDocBuilderValue =====

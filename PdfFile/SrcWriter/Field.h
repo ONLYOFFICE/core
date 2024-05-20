@@ -344,9 +344,9 @@ namespace PdfWriter
 		CAnnotAppearance(CXref* pXRef, CFieldBase*  pField);
 		CAnnotAppearance(CXref* pXRef, CAnnotation* pAnnot);
 
-		CAnnotAppearanceObject* GetNormal();
-		CAnnotAppearanceObject* GetRollover();
-		CAnnotAppearanceObject* GetDown();
+		CAnnotAppearanceObject* GetNormal(CResourcesDict* pResources = NULL);
+		CAnnotAppearanceObject* GetRollover(CResourcesDict* pResources = NULL);
+		CAnnotAppearanceObject* GetDown(CResourcesDict* pResources = NULL);
 
 	private:
 
@@ -382,7 +382,7 @@ namespace PdfWriter
 	{
 	public:
 		CAnnotAppearanceObject(CXref* pXRef, CFieldBase*  pField);
-		CAnnotAppearanceObject(CXref* pXRef, CAnnotation* pAnnot);
+		CAnnotAppearanceObject(CXref* pXRef, CAnnotation* pAnnot, CResourcesDict* pResources = NULL);
 		void DrawSimpleText(const std::wstring& wsText, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0, double dR = 0.0, double dG = 0.0, double dB = 0.0, const char* sExtGrStateName = NULL, double dW = 1.0, double dH = 1.0, CFontCidTrueType** ppFonts = NULL, double* pShifts = NULL);
 		void DrawPicture(const char* sImageName = NULL, const double& dX = 0.0, const double& dY = 0.0, const double& dW = 0.0, const double& dH = 0.0, const bool& bRespectBorder = false);
 		void StartDrawText(CFontDict* pFont, const double& dFontSize, const double& dR, const double& dG, const double& dB, const char* sExtGStateName, const double& dWidth, const double& dHeight);

@@ -146,7 +146,7 @@ void CShapeStart::SetShapeImage(BYTE* pImgData, int nWidth, int nHeight)
 		m_pImage->Create(pImgData, nWidth, nHeight, -4 * nWidth);
 	}
 }
-const std::string& CShapeStart::GetShapeXML() { return m_sShapeXML; }
+std::string& CShapeStart::GetShapeXML() { return m_sShapeXML; }
 Aggplus::CImage* CShapeStart::GetShapeImage() { return m_pImage; }
 bool CShapeStart::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
 {

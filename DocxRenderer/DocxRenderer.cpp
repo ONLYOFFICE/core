@@ -237,7 +237,14 @@ HRESULT CDocxRenderer::AdvancedCommand(IAdvancedCommand* command)
 	case IAdvancedCommand::AdvancedCommandType::ShapeStart:
 	{
 		CShapeStart* pShape = (CShapeStart*)command;
-		const std::string& sUtf8Shape = pShape->GetShapeXML();
+		std::string& sUtf8Shape = pShape->GetShapeXML();
+		Aggplus::CImage* pImage = pShape->GetShapeImage();
+		if (pImage)
+		{
+			std::shared_ptr<NSDocxRenderer::CImageInfo> pInfo = m_pInternal->m_oDocument.m_oImageManager.GenerateImageID(pImage);
+			std::string sNewId = "r:embed=\"rId" + std::to_string(pInfo->m_nId + c_iStartingIdForImages) + "\"";
+			NSStringUtils::string_replaceA(sUtf8Shape, "r:embed=\"\"", sNewId);
+		}
 		m_pInternal->m_oDocument.m_oCurrentPage.m_arCompleteObjectsXml.push_back(UTF8_TO_U(sUtf8Shape));
 		return S_OK;
 	}

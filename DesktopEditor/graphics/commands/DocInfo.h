@@ -138,8 +138,8 @@ public:
 	CShapeStart();
 	~CShapeStart();
 
-	const std::string& GetShapeXML();
-	Aggplus::CImage*   GetShapeImage();
+	std::string& GetShapeXML();
+	Aggplus::CImage* GetShapeImage();
 
 	void SetShapeXML(const std::string& sShapeXML);
 	void SetShapeImage(BYTE* pImgData, int nWidth, int nHeight);

@@ -13,13 +13,15 @@ def _loadLibrary(path):
     if _lib is not None:
         return
 
-    os.environ['PATH'] = path + os.pathsep + os.environ['PATH']
-
     os_name = platform.system().lower()
-    library_name = 'docbuilder.c.dll'
-    if ("linux" == os_name):
+    library_name = ''
+    if 'windows' == os_name:
+        # modify PATH to load all DLLs
+        os.environ['PATH'] = path + os.pathsep + os.environ['PATH']
+        library_name = 'docbuilder.c.dll'
+    elif 'linux' == os_name:
         library_name = 'libdocbuilder.c.so'
-    elif ("darwin" == os_name):
+    elif 'darwin' == os_name:
         library_name = 'libdocbuilder.c.dylib'
 
     _lib = ctypes.CDLL(path + '/' + library_name)

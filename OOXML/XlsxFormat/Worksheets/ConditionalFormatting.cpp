@@ -1614,7 +1614,7 @@ bool CConditionalFormattingRule::isValid () const
 }
 bool CConditionalFormattingRule::isExtended()
 {
-	//if (m_oDxf.IsInit())		return true;
+	if (m_oDxf.IsInit())		return true;
 
 	if (m_oDataBar.IsInit())	return m_oDataBar->isExtended();
 	if (m_oIconSet.IsInit())	return m_oIconSet->isExtended();

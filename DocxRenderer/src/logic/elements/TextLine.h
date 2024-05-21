@@ -26,6 +26,7 @@ namespace NSDocxRenderer
 		std::shared_ptr<CShape>  m_pDominantShape {nullptr};
 
 		UINT m_iNumDuplicates {0};
+		UINT m_iSplitDistance {0};
 
 		double m_dTopWithMaxAscent{0};
 		double m_dBotWithMaxDescent{0};

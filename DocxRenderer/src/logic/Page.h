@@ -130,7 +130,8 @@ namespace NSDocxRenderer
 		void MergeConts();
 		void DetermineDominantGraphics();
 
-		bool IsShapeBorderBetween(std::shared_ptr<CBaseItem> pFirst, std::shared_ptr<CBaseItem> pSecond) const noexcept;
+		bool IsShapeBorderBetween(std::shared_ptr<CTextLine> pFirst, std::shared_ptr<CTextLine> pSecond) const noexcept;
+		bool IsShapeBorderTrough(std::shared_ptr<CContText> pItem) const noexcept;
 
 		std::shared_ptr<CShape> CreateSingleLineShape(std::shared_ptr<CTextLine>& pLine);
 		std::shared_ptr<CShape> CreateSingleParagraphShape(std::shared_ptr<CParagraph>& pParagraph);

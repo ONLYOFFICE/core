@@ -601,9 +601,9 @@ void CAnnotFieldInfo::CFreeTextAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferRead
 	}
 	if (nFlags & (1 << 22))
 	{
-		m_nRenderLen = pReader->ReadInt();
+		m_nRenderLen = pReader->ReadInt() - 4;
 		m_pRender = pReader->GetCurrentBuffer();
-		pReader->Skip(m_nRenderLen - 4);
+		pReader->Skip(m_nRenderLen);
 	}
 }
 

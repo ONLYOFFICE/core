@@ -70,6 +70,7 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
 {
     PtgPtr last_ptg;
     bool operand_expected = true; // This would help distinguish unary and binary and determine if an argument to a function is missed.
+    bool union_expected = false;
 
     for(std::wstring::const_iterator it = assembled_formula.begin(), itEnd = assembled_formula.end(); it != itEnd;)
     {
@@ -266,6 +267,7 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             if(!ptg_stack.size() || !left_p)
             {
                 operand_expected = true;
+                union_expected = true;
                 continue;// EXCEPT::RT::WrongParenthesisSequence(assembled_formula);
             }
             left_p->incrementParametersNum(); // The count of parameters will be transferred to PtgFuncVar
@@ -416,6 +418,11 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             }
             last_ptg = found_operand;
             operand_expected = false;
+            if(union_expected)
+            {
+                rgce.addPtg(PtgPtr(new PtgUnion));
+                union_expected = false;
+            }
         }
         #pragma endregion
     }
@@ -597,6 +604,12 @@ std::vector<bool> StringPtgParser::PosValArgs(const unsigned int &index) const
             argVector.push_back(false);
             argVector.push_back(true);
             break;
+        case 0x01E1:
+            for(auto i = 0; i < 127; i++)
+            {
+                argVector.push_back(false);
+                argVector.push_back(true);
+            }
 		default:
 			break;
 	}

@@ -1109,7 +1109,8 @@ namespace OOX
 				else if(m_oActivePane == SimpleTypes::Spreadsheet::EActivePane::activepaneTopLeft)
 					ptr->pnnAcct_xlsb = 3;
 			}
-
+            ptr->fFrozen = false;
+            ptr->fFrozenNoSplit = false;
 			if(m_oState.IsInit())
 			{
 				if(m_oState == SimpleTypes::Spreadsheet::EPaneState::panestateFrozenSplit)
@@ -1391,7 +1392,7 @@ namespace OOX
 				if (m_oShowFormulas.IsInit())
 					pWsView->fDspFmlaRt = m_oShowFormulas->m_eValue;
 				else
-					pWsView->fDspFmlaRt = false;
+                    pWsView->fDspFmlaRt = true;
 				if (m_oShowGridLines.IsInit())
 					pWsView->fDspGridRt = m_oShowGridLines->m_eValue;
 				else
@@ -1457,7 +1458,7 @@ namespace OOX
 
 				for(auto i:m_arrItems)
 				{
-					ptr->m_arBrtSel.push_back(i->toBin());
+                    ptr->m_arBrtSel.push_back(i->toBin());
 				}
 				return castedPtr;
            

@@ -1,4 +1,4 @@
-#include "../src/docbuilder_functions.h"
+#include "docbuilder.python/src/docbuilder_functions.h"
 
 #include <string>
 #include <iostream>
@@ -27,7 +27,7 @@ int main()
 {
 	std::wstring sWorkDirectory = NSUtils::GetBuilderDirectory();
 
-#if 1
+#if 0
 	// Simple test that shows builder version if everything is correct
 	CDocBuilder_InitializeWithDirectory(sWorkDirectory.c_str());
 	CDocBuilder* pBuilder = CDocBuilder_Create();

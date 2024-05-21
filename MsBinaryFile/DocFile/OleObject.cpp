@@ -171,7 +171,8 @@ bool OleObject::processPackageStream(const std::wstring& packageStream)
 		POLE::Stream* pPackageStream = new POLE::Stream(oleStorage, packageStream);
 
 		if ((pPackageStream) && (false == pPackageStream->fail()))
-		{
+		{ 
+// AVS_OFFICESTUDIO_FILE_OTHER_PACKAGE_IN_OLE
 			VirtualStreamReader reader(pPackageStream, 0, false);
 
 			size_t sz = reader.GetSize();

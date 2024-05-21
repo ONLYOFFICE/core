@@ -47,6 +47,8 @@
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 
+#include <map>
+
 namespace PdfReader
 {
 
@@ -2495,7 +2497,9 @@ std::map<std::wstring, std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object
 			if (pFontInfo && !pFontInfo->m_wsFontPath.empty())
 			{
 				std::wstring sFontPath = pFontInfo->m_wsFontPath;
-				bool bFreeText = std::find_if(arrFontFreeText.begin(), arrFontFreeText.end(), [&sFontPath](auto&& p) { return p.second == sFontPath; }) != arrFontFreeText.end();
+				bool bFreeText = false;
+				for (std::map<std::wstring, std::wstring>::iterator it = arrFontFreeText.begin(); it != arrFontFreeText.end(); it++)
+					bFreeText = it->second == sFontPath;
 				std::wstring wsFontBaseName = pFontInfo->m_wsFontName;
 				if (wsFontBaseName.length() > 7 && wsFontBaseName.at(6) == '+')
 				{

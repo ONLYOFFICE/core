@@ -14,6 +14,7 @@ namespace NSDocxRenderer
 	void CTextLine::Clear()
 	{
 		m_arConts.clear();
+		m_pLine = nullptr;
 	}
 	void CTextLine::AddCont(std::shared_ptr<CContText> oCont)
 	{

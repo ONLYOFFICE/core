@@ -82,6 +82,9 @@ int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDst, 
 #ifndef DISABLE_FULL_DOCUMENT_CREATION
 	m_pInternal->m_oDocument.m_strDstFilePath = sDst;
 
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = false;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = false;
+
 	if (bIsOutCompress)
 		m_pInternal->m_oDocument.m_strTempDirectory = NSDirectory::CreateDirectoryWithUniqueName(m_pInternal->m_sTempDirectory);
 	else

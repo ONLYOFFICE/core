@@ -47,8 +47,6 @@ namespace NSDocxRenderer
 
 		std::vector<std::shared_ptr<COutputObject>>  m_arOutputObjects;
 
-		CTextLine*               m_pCurrentLine {nullptr};
-
 		bool m_bIsDeleteTextClipPage {true};
 		bool m_bIsRecalcFontSize {true};
 		LONG m_lLastCommand = 0;
@@ -106,10 +104,12 @@ namespace NSDocxRenderer
 		// methods to build text lines
 		void BuildDiacriticalSymbols();
 		void BuildTextLines();
-		void AddContToTextLine(std::shared_ptr<CContText> pCont);
-
 		void AnalyzeTextLines();
-		void AnalyzeConts();
+		void SplitLines();
+		void CalcSelected();
+		void BuildParagraphes();
+
+		void MergeShapes();
 
 		// strikeouts, underlines, highlights, outline
 		void AnalyzeEffects();
@@ -120,23 +120,20 @@ namespace NSDocxRenderer
 		bool IsOutline(std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont);
 
 		void AnalyzeDropCaps();
+		void AnalyzeConts();
 		void AddDiacriticalSymbols();
 		void MergeLinesByVertAlignType();
-		void DetermineTextColumns();
 
 		void AnalyzeShapes();
 		void DetermineLinesType();
 
-		void BuildLines();
+		void MergeConts();
 		void DetermineDominantGraphics();
 
-		void BuildParagraphes();
+		bool IsShapeBorderBetween(std::shared_ptr<CBaseItem> pFirst, std::shared_ptr<CBaseItem> pSecond) const noexcept;
 
 		std::shared_ptr<CShape> CreateSingleLineShape(std::shared_ptr<CTextLine>& pLine);
 		std::shared_ptr<CShape> CreateSingleParagraphShape(std::shared_ptr<CParagraph>& pParagraph);
-
-		void MergeShapes();
-		void CalcSelected();
 
 		// конвертим m_arImages, m_arShapes, m_arParagraphs в xml-строку
 		void ToXml(NSStringUtils::CStringBuilder& oWriter);

@@ -5,7 +5,7 @@ import docbuilder
 
 builder = docbuilder.CDocBuilder()
 
-builder.CreateFile('docx')
+builder.CreateFile(docbuilder.FileTypes.Document.DOCX)
 
 context = builder.GetContext()
 scope = context.CreateScope()
@@ -22,5 +22,5 @@ content[0] = paragraph
 document.Call('InsertContent', content)
 
 dstPath = os.getcwd() + '/result.docx'
-builder.SaveFile('docx', dstPath)
+builder.SaveFile(docbuilder.FileTypes.Document.DOCX, dstPath)
 builder.CloseFile()

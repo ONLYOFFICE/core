@@ -1112,6 +1112,10 @@ namespace PdfWriter
 	{
 		Add("LE", AddLE(nLE).c_str());
 	}
+	void CFreeTextAnnotation::SetRotate(int nRotate)
+	{
+		Add("Rotate", nRotate);
+	}
 	void CFreeTextAnnotation::SetDS(const std::wstring& wsDS)
 	{
 		std::string sValue = U_TO_UTF8(wsDS);

@@ -574,6 +574,7 @@ BYTE* CAnnotFieldInfo::CFreeTextAnnotPr::GetRender(LONG& nLen)
 void CAnnotFieldInfo::CFreeTextAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags)
 {
 	m_nQ = pReader->ReadByte();
+	m_nRotate = pReader->ReadInt();
 	if (nFlags & (1 << 15))
 	{
 		m_dRD[0] = pReader->ReadDouble();

@@ -367,6 +367,7 @@ public:
 		BYTE GetQ()  const;
 		BYTE GetIT() const;
 		BYTE GetLE() const;
+		int GetRotate();
 		const std::wstring& GetDS();
 		void GetRD(double& dRD1, double& dRD2, double& dRD3, double& dRD4);
 		const std::vector<double>& GetCL();
@@ -379,6 +380,7 @@ public:
 		BYTE m_nQ;
 		BYTE m_nIT;
 		BYTE m_nLE;
+		int m_nRotate;
 		std::wstring m_wsDS;
 		double m_dRD[4]{};
 		std::vector<double> m_arrCL;

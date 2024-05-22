@@ -1642,6 +1642,11 @@ CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex
 		m_nQ = oObj.getInt();
 	oObj.free();
 
+	m_nRotate = 0;
+	if (oAnnot.dictLookup("Rotate", &oObj)->isInt())
+		m_nRotate = oObj.getInt();
+	oObj.free();
+
 	// 15 - Различия Rect и фактического размера - RD
 	if (oAnnot.dictLookup("RD", &oObj)->isArray())
 	{
@@ -3662,6 +3667,7 @@ void CAnnotFreeText::ToWASM(NSWasm::CData& oRes)
 	CAnnotMarkup::ToWASM(oRes);
 
 	oRes.WriteBYTE(m_nQ);
+	oRes.AddInt(m_nRotate);
 	if (m_unFlags & (1 << 15))
 	{
 		for (int i = 0; i < 4; ++i)

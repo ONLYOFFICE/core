@@ -1673,7 +1673,7 @@ void GetRCSpanStyle(CAnnotFieldInfo::CMarkupAnnotPr::CFontData* pFontData, NSStr
 		oRC += L"line-through";
 	}
 
-	oRC += L";color:#";
+	oRC += L";color:";
 	oRC.WriteHexColor3((unsigned char)(pFontData->dColor[0] * 255.0),
 					   (unsigned char)(pFontData->dColor[1] * 255.0),
 					   (unsigned char)(pFontData->dColor[2] * 255.0));
@@ -1899,6 +1899,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			}
 			oRC += L"</p></body>";
 			pMarkupAnnot->SetRC(oRC.GetData());
+			// std::wcout << oRC.GetData() << std::endl;
 		}
 		if (nFlags & (1 << 4))
 			pMarkupAnnot->SetCD(pPr->GetCD());

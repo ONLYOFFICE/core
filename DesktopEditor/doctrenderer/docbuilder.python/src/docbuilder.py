@@ -272,6 +272,11 @@ class CDocBuilderValue:
             self._internal = _lib.CDocBuilderValue_CreateWithDouble(ctypes.c_double(value))
         elif isinstance(value, str):
             self._internal = _lib.CDocBuilderValue_CreateWithString(ctypes.c_wchar_p(value))
+        elif isinstance(value, list):
+            length = len(value)
+            self._internal = _lib.CDocBuilderValue_CreateArray(length)
+            for i in range(length):
+                self.Set(i, value[i])
         elif isinstance(value, CDocBuilderValue):
             self._internal = _lib.CDocBuilderValue_Copy(value._internal)
         elif isinstance(value, OBJECT_HANDLE):
@@ -344,9 +349,13 @@ class CDocBuilderValue:
             return None
 
     def SetProperty(self, name, value):
+        if not isinstance(value, CDocBuilderValue):
+            value = CDocBuilderValue(value)
         _lib.CDocBuilderValue_SetProperty(self._internal, ctypes.c_wchar_p(name), value._internal)
 
     def Set(self, key, value):
+        if not isinstance(value, CDocBuilderValue):
+            value = CDocBuilderValue(value)
         if isinstance(key, int):
             _lib.CDocBuilderValue_SetByIndex(self._internal, ctypes.c_int(key), value._internal)
         elif isinstance(key, str):

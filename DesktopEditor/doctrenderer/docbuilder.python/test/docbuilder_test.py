@@ -14,11 +14,14 @@ globalObj = context.GetGlobal()
 
 api = globalObj['Api']
 document = api.Call('GetDocument')
-paragraph = api.Call('CreateParagraph')
-paragraph.Call('SetSpacingAfter', 1000, False)
-paragraph.Call('AddText', 'Hello, World!')
-content = context.CreateArray(1)
-content[0] = paragraph
+paragraph1 = api.Call('CreateParagraph')
+paragraph1.Call('SetSpacingAfter', 1000, False)
+paragraph1.Call('AddText', 'Hello from Python!')
+
+paragraph2 = api.Call('CreateParagraph')
+paragraph2.Call('AddText', 'Goodbye!')
+
+content = [paragraph1, paragraph2]
 document.Call('InsertContent', content)
 
 dstPath = os.getcwd() + '/result.docx'

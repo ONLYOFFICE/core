@@ -314,14 +314,19 @@ namespace OOX
 
 			if(m_oShapeId.IsInit())
 				ptr->shapeId = m_oShapeId->GetValue();
-
-			ptr->fAutoLoad =  m_oAutoLoad->GetValue();
+            if(m_oAutoLoad.IsInit())
+                ptr->fAutoLoad =  m_oAutoLoad->GetValue();
+            else
+                ptr->fAutoLoad = false;
 
 			if(m_oProgId.IsInit())
-				ptr->strProgID.value() =  m_oProgId.get();
+				ptr->strProgID =  m_oProgId.get();
 
 			if(m_oLink.IsInit())
 				ptr->link =  m_oLink.get();
+			else
+				ptr->fLinked = false;
+
 			if(m_oRid.IsInit())
 				ptr->strRelID.value =  m_oRid->GetValue();
 

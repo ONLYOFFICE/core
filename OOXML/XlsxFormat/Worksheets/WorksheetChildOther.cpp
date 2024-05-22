@@ -2659,7 +2659,7 @@ namespace OOX
 				XLS::BaseObjectPtr castedPtr(ptr);
 
 				if (m_oPassword.IsInit())
-					ptr->protpwd = std::stoul(m_oPassword.get());
+                    ptr->protpwd = std::stoul(m_oPassword.get(),nullptr, 16);
 				else	
 					ptr->protpwd = 0;
 

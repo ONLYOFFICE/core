@@ -205,6 +205,22 @@ TEST_F(CPdfFileTest, PdfFromBin)
 	EXPECT_HRESULT_SUCCEEDED(pdfFile->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile));
 }
 
+TEST_F(CPdfFileTest, PdfToPdf)
+{
+	GTEST_SKIP();
+
+	LoadFromFile();
+	pdfFile->CreatePdf();
+
+	for (int i = 0; i < pdfFile->GetPagesCount(); i++)
+	{
+		pdfFile->NewPage();
+		pdfFile->DrawPageOnRenderer(pdfFile, i, NULL);
+	}
+
+	pdfFile->SaveToFile(wsDstFile);
+}
+
 TEST_F(CPdfFileTest, SetMetaData)
 {
 	GTEST_SKIP();

@@ -131,6 +131,7 @@ namespace PdfWriter
 		void      SetStrokeColor(unsigned char unR, unsigned char unG, unsigned char unB);
 		void      SetFillColor(unsigned char unR, unsigned char unG, unsigned char unB);
 		void      Concat(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
+		void      StartTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      SetTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      SetExtGrState(CExtGrState* pExtGrState);
 		void      AddAnnotation(CDictObject* pAnnot);

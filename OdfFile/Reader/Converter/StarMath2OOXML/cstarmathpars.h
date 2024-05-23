@@ -87,6 +87,8 @@ namespace StarMath
 		bool SetFont(const TypeElement& enFont);
 		void SetFontName(const std::wstring& wsNameFont);
 		bool CheckAttribute();
+		unsigned int GetCount();
+		static void ComparingAttributes(CAttribute* pAttributeParent,CAttribute* pAttributeChild);
 		//checking an element for a number from 1 to 9 or from the letter A to F
 		static bool CheckHexPosition(const wchar_t& cToken);
 		bool CheckingForEmptiness();
@@ -165,6 +167,7 @@ namespace StarMath
 		CAttribute* GetAttribute();
 		const TypeElement& GetBaseType();
 		const TypeConversion& GetTypeConversion();
+		void DeleteAttribute();
 	private:
 		CAttribute* m_pAttribute;
 		TypeElement m_enBaseType;

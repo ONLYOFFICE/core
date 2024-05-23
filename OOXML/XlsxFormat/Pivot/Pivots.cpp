@@ -200,7 +200,7 @@ namespace Spreadsheet
 	void CPivotTableFile::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 	{
 		CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
-		if ((xlsb) && (xlsb->m_bWriteToXlsb))
+        if ((xlsb) && (xlsb->m_bWriteToXlsb) && m_oPivotTableDefinition.IsInit())
 		{
 			XLS::BaseObjectPtr object = WriteBin();
 			xlsb->WriteBin(oPath, object.get());
@@ -3550,9 +3550,12 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
     }
 	XLS::BaseObjectPtr CPivotCacheDefinitionFile::WriteBin() const
 	{
-		auto pivotCacheDefStream = m_oPivotCashDefinition->toBin();
 
-		return pivotCacheDefStream;
+        if(m_oPivotCashDefinition.IsInit())
+        {
+            auto pivotCacheDefStream = m_oPivotCashDefinition->toBin();
+            return pivotCacheDefStream;
+        }
 	}
 	void CPivotCacheDefinitionFile::read(const CPath& oRootPath, const CPath& oPath)
 	{
@@ -3583,7 +3586,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		bIsWritten = true;
 		CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
-		if ((xlsb) && (xlsb->m_bWriteToXlsb))
+        if ((xlsb) && (xlsb->m_bWriteToXlsb) && m_oPivotCashDefinition.IsInit())
 		{
 			XLS::BaseObjectPtr object = WriteBin();
 			xlsb->WriteBin(oPath, object.get());
@@ -5039,12 +5042,23 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			auto ptr1(new XLSB::PCDIA);
             ptr1->m_source = XLS::BaseObjectPtr{ptr1};
 			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_oValue.IsInit())
+				ptr->st = m_oValue.get();
+			else
+				ptr->st.setSize(0);
 			if(m_oCaption.IsInit())
 				ptr->info.stCaption = m_oCaption.get();
+			else
+			{
+				ptr->info.stCaption.setSize(0xFFFF);
+				ptr->info.fCaption = false;
+			}
 			if(m_oCalculated.IsInit())
 				ptr->info.fFmla = m_oCalculated.get();
 			if(m_oUnused.IsInit())
 				ptr->info.fGhost = m_oUnused.get();
+			else
+				ptr->info.fGhost = false;
 			if(m_oCount.IsInit())
 				ptr->info.cIMemProps = m_oCount->GetValue();
 			for(auto i:m_arrItems)

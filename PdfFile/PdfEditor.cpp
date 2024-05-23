@@ -873,8 +873,7 @@ bool CPdfEditor::EditPage(int nPageIndex)
 		else if (strcmp("Annots", chKey) == 0)
 		{
 			// ВРЕМЕНО удаление Link аннотаций при редактировании
-			pageObj.dictGetVal(nIndex, &oTemp);
-			if (oTemp.isArray())
+			if (pageObj.dictGetVal(nIndex, &oTemp)->isArray())
 			{
 				PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
 				pPage->Add("Annots", pArray);
@@ -894,11 +893,15 @@ bool CPdfEditor::EditPage(int nPageIndex)
 				oTemp.free();
 				continue;
 			}
+			else
+			{
+				oTemp.free();
+				pageObj.dictGetValNF(nIndex, &oTemp);
+			}
 		}
 		else if (strcmp("Contents", chKey) == 0)
 		{
-			pageObj.dictGetVal(nIndex, &oTemp);
-			if (oTemp.isArray())
+			if (pageObj.dictGetVal(nIndex, &oTemp)->isArray())
 			{
 				DictToCDictObject(&oTemp, pPage, true, chKey);
 				oTemp.free();
@@ -1017,7 +1020,11 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 	else if (oType.isName("Polygon") || oType.isName("PolyLine"))
 		pAnnot = new PdfWriter::CPolygonLineAnnotation(pXref);
 	else if (oType.isName("FreeText"))
+	{
+		std::map<std::wstring, std::wstring> mapFont = pReader->AnnotFonts(&oAnnotRef);
+		m_mFonts.insert(mapFont.begin(), mapFont.end());
 		pAnnot = new PdfWriter::CFreeTextAnnotation(pXref);
+	}
 	else if (oType.isName("Caret"))
 		pAnnot = new PdfWriter::CCaretAnnotation(pXref);
 	else if (oType.isName("Popup"))
@@ -1281,5 +1288,71 @@ void CPdfEditor::AddShapeXML(const std::string& sXML)
 }
 void CPdfEditor::EndMarkedContent()
 {
-	pWriter->GetPage()->EndMarkedContent();
+	pWriter->GetDocument()->EndShapeXML();
+}
+bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath)
+{
+	std::map<std::wstring, std::wstring>::iterator it = m_mFonts.find(wsFontName);
+	if (it == m_mFonts.end())
+		return false;
+	wsFontPath = it->second;
+	if (wsFontName == L"Helvetica")
+		return true;
+	if (wsFontName == L"Helvetica-Bold")
+	{
+		bBold = true;
+		return true;
+	}
+	if (wsFontName == L"Helvetica-Oblique")
+	{
+		bItalic = true;
+		return true;
+	}
+	if (wsFontName == L"Helvetice-BoldOblique")
+	{
+		bBold = true;
+		bItalic = true;
+		return true;
+	}
+	if (wsFontName == L"Courier")
+		return true;
+	if (wsFontName == L"Courier-Bold")
+	{
+		bBold = true;
+		return true;
+	}
+	if (wsFontName == L"Courier-Oblique")
+	{
+		bItalic = true;
+		return true;
+	}
+	if (wsFontName == L"Courier-BoldOblique")
+	{
+		bBold = true;
+		bItalic = true;
+		return true;
+	}
+	if (wsFontName == L"Times")
+		return true;
+	if (wsFontName == L"Times-Bold")
+	{
+		bBold = true;
+		return true;
+	}
+	if (wsFontName == L"Times-Oblique")
+	{
+		bItalic = true;
+		return true;
+	}
+	if (wsFontName == L"Times-BoldOblique")
+	{
+		bBold = true;
+		bItalic = true;
+		return true;
+	}
+	if (wsFontName == L"Symbol")
+		return true;
+	if (wsFontName == L"ZapfDingbats")
+		return true;
+	return false;
 }

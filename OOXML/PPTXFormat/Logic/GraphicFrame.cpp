@@ -904,7 +904,8 @@ namespace PPTX
 		}
 
 		void GraphicFrame::ChartToOlePackageInStorage(OOX::IFileContainer* pRels, const std::wstring &sTempDirectory, int nCurrentGenerateId)
-		{
+		{ 
+// AVS_OFFICESTUDIO_FILE_OTHER_PACKAGE_IN_OLE
 			if (!chartRec.IsInit()) return;
 			if (olePic.IsInit()) return;
 

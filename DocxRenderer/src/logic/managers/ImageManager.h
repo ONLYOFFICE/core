@@ -37,8 +37,6 @@ namespace NSDocxRenderer
 
 		void SaveImage(Aggplus::CImage* pImage, std::shared_ptr<CImageInfo> pInfo);
 
-		std::shared_ptr<CImageInfo> GenerateImageID(Aggplus::CImage* pImage);
-
 		std::shared_ptr<CImageInfo> GenerateImageID(const std::wstring& strFileName);
 
 		void FlipY(Aggplus::CImage* pImage);
@@ -47,5 +45,6 @@ namespace NSDocxRenderer
 
 	public:
 		static CImageInfo::ImageType GetImageType(Aggplus::CImage* pFrame);
+		std::shared_ptr<CImageInfo> GenerateImageID(Aggplus::CImage* pImage);
 	};
 }

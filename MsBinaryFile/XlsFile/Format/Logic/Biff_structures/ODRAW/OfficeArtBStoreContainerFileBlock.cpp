@@ -232,8 +232,13 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 					record.RollRdPtrBack(32);
 				}
 				break;
-			default:
+			case 0xf018:
+			{
 				record.skipNunBytes(rc_header.recLen);
+				return;
+			}break;
+			default: //0xf007 
+				record.RollRdPtrBack(rc_header.size());
 				return;
 		}
 

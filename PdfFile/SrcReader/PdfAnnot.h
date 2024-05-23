@@ -364,6 +364,7 @@ private:
 };
 namespace AnnotMarkup
 {
+std::map<std::wstring, std::wstring> SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, int nTypeFonts = 3);
 std::map<std::wstring, std::wstring> SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, std::vector<CAnnotMarkup::CFontData*>& arrRC, int nTypeFonts = 3);
 std::vector<CAnnotMarkup::CFontData*> ReadRC(const std::string& sRC);
 }

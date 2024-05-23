@@ -267,9 +267,9 @@ XLS::BaseObjectPtr CConditionalFormatValueObject::toBin(bool isIcon)
     else
         ptr1->iType = XLSB::CFVOtype::CFVONUM;
 
-    if(m_oVal.IsInit() && ptr1->iType != XLSB::CFVOtype::CFVOFMLA)
-        ptr1->numParam.data.value = std::stod(m_oVal.get());
-    else if(ptr1->iType.get_type() == XLSB::CFVOtype::CFVOMIN)
+    //if(m_oVal.IsInit() && ptr1->iType != XLSB::CFVOtype::CFVOFMLA)
+        //ptr1->numParam.data.value = std::stod(m_oVal.get());
+    if(ptr1->iType.get_type() == XLSB::CFVOtype::CFVOMIN)
         ptr1->numParam.data.value = 0;
     else if(ptr1->iType.get_type() == XLSB::CFVOtype::CFVOMAX)
         ptr1->numParam.data.value = 0;
@@ -1614,7 +1614,7 @@ bool CConditionalFormattingRule::isValid () const
 }
 bool CConditionalFormattingRule::isExtended()
 {
-	//if (m_oDxf.IsInit())		return true;
+	if (m_oDxf.IsInit())		return true;
 
 	if (m_oDataBar.IsInit())	return m_oDataBar->isExtended();
 	if (m_oIconSet.IsInit())	return m_oIconSet->isExtended();

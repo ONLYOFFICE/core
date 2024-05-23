@@ -23,6 +23,11 @@ namespace NSStringFinder
 		TFoundedData()
 			: m_unBeginPosition(0), m_unEndPosition(0)
 		{}
+
+		bool Empty() const
+		{
+			return 0 == m_unEndPosition || StringType::npos == m_unEndPosition;
+		}
 	};
 
 	template<class CharType, class StringType = std::basic_string<CharType, std::char_traits<CharType>, std::allocator<CharType>>>

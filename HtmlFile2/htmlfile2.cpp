@@ -140,15 +140,22 @@ void WriteEmptyParagraph(NSStringUtils::CStringBuilder* pXml, bool bVahish = fal
 	if (!bInP)
 		pXml->WriteString(L"<w:p><w:pPr>");
 
-	pXml->WriteString(L"<w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/>");
+	pXml->WriteString(L"<w:r><w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/>");
 
 	if (bVahish)
 		pXml->WriteString(L"<w:vanish/>");
 
-	pXml->WriteString(L"</w:rPr>");
+	pXml->WriteString(L"</w:rPr></w:r>");
 
 	if (!bInP)
 		pXml->WriteString(L"</w:pPr></w:p>");
+}
+
+void WriteLine(NSStringUtils::CStringBuilder* pXml, double dHeight, const std::wstring& wsColor)
+{
+	pXml->WriteNodeBegin(L"w:pict");
+	pXml->WriteString(L"<v:rect style=\"width:0;height:" + std::to_wstring(dHeight) + L"pt\" o:hralign=\"center\" o:hrstd=\"t\" o:hr=\"t\" fillcolor=\"#" + wsColor + L"\" stroked=\"f\"/>");
+	pXml->WriteNodeEnd(L"w:pict");
 }
 
 bool ElementInTable(const std::vector<NSCSS::CNode>& arSelectors)
@@ -1883,7 +1890,7 @@ private:
 				oXml->WriteString(L"<w:br/></w:r>");
 			}
 			else
-				WriteEmptyParagraph(oXml);
+				WriteEmptyParagraph(oXml, false, m_bInP);
 
 			m_bWasSpace = true;
 		}
@@ -2038,7 +2045,7 @@ private:
 				sName == L"bgsound"  || sName == L"applet" || sName == L"blink" || sName == L"keygen"|| sName == L"script" ||
 				sName == L"comment"  || sName == L"title"  || sName == L"style")
 		{
-			WriteEmptyParagraph(oXml);
+			WriteEmptyParagraph(oXml, false, m_bInP);
 			sSelectors.pop_back();
 			return;
 		}
@@ -2138,7 +2145,15 @@ private:
 					}
 				}
 				if (bPrint)
-					oXml->WriteString(L"<w:p><w:pPr><w:pBdr><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr></w:p>");
+				{
+					const bool bOpenedP = OpenP(oXml);
+					OpenR(oXml);
+					WriteLine(oXml, 1.5, L"a0a0a0");
+					CloseR(oXml);
+					if (bOpenedP)
+						CloseP(oXml, sSelectors);
+				}
+//					oXml->WriteString(L"<w:p><w:pPr><w:pBdr><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr></w:p>");
 			}
 			// Меню
 			// Маркированный список

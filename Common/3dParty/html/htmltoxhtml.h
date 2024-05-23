@@ -204,15 +204,20 @@ static void ReadMht(const std::string& sMhtContent, std::map<std::string, std::s
 	// Content-Location
 	oData = NSStringFinder::FindPropety(sMhtContent, "content-location", {":"}, {";", "\\n", "\\r"});
 	std::string sContentLocation{oData.m_sValue};
-	unContentPosition = std::max(unContentPosition, oData.m_unEndPosition);
-	unCharsetEnd = std::min(unCharsetEnd, oData.m_unBeginPosition);
+
+	if (!oData.Empty())
+		unContentPosition = std::max(unContentPosition, oData.m_unEndPosition);
 
 	// Content-ID
 	oData = NSStringFinder::FindPropety(sMhtContent, "content-id", {":"}, {";", "\\n", "\\r"});
 	std::string sContentID{oData.m_sValue};
-	unContentPosition = std::max(unContentPosition, oData.m_unEndPosition);
-	unCharsetEnd = std::min(unCharsetEnd, oData.m_unBeginPosition);
-	NSStringFinder::CutInside<std::string>(sContentID, "<", ">");
+
+	if (!oData.Empty())
+	{
+		unContentPosition = std::max(unContentPosition, oData.m_unEndPosition);
+		unCharsetEnd = std::min(unCharsetEnd, oData.m_unBeginPosition);
+		NSStringFinder::CutInside<std::string>(sContentID, "<", ">");
+	}
 
 	if (sContentLocation.empty() && !sContentID.empty())
 		sContentLocation = "cid:" + sContentID;
@@ -220,13 +225,17 @@ static void ReadMht(const std::string& sMhtContent, std::map<std::string, std::s
 	// Content-Transfer-Encoding
 	oData = NSStringFinder::FindPropety(sMhtContent, "content-transfer-encoding", {":"}, {";", "\\n", "\\r"});
 	const std::string sContentEncoding{oData.m_sValue};
-	unContentPosition = std::max(unContentPosition, oData.m_unEndPosition);
-	unCharsetEnd = std::min(unCharsetEnd, oData.m_unBeginPosition);
+
+	if (!oData.Empty())
+	{
+		unContentPosition = std::max(unContentPosition, oData.m_unEndPosition);
+		unCharsetEnd = std::min(unCharsetEnd, oData.m_unBeginPosition);
+	}
 
 	// charset
 	std::string sCharset = "utf-8";
 
-	if (unCharsetBegin < unCharsetEnd)
+	if (std::string::npos != unCharsetEnd && unCharsetBegin < unCharsetEnd)
 	{
 		sCharset = NSStringFinder::FindPropety(sMhtContent.substr(unCharsetBegin, unCharsetEnd - unCharsetBegin), "charset", {"="}, {";", "\\n", "\\r"}).m_sValue;
 		NSStringFinder::CutInside<std::string>(sCharset, "\"");
@@ -250,7 +259,7 @@ static void ReadMht(const std::string& sMhtContent, std::map<std::string, std::s
 			oRes.WriteString("<style>");
 
 		if (NSStringFinder::Equals(sContentEncoding, "base64"))
-			oRes.WriteString(Base64ToString(sContent, sCharset));
+			sContent = Base64ToString(sContent, sCharset);
 		else if (NSStringFinder::EqualOf(sContentEncoding, {"8bit", "7bit"}) || sContentEncoding.empty())
 		{
 			if (!NSStringFinder::Equals(sCharset, "utf-8") && !sCharset.empty())
@@ -258,7 +267,6 @@ static void ReadMht(const std::string& sMhtContent, std::map<std::string, std::s
 				NSUnicodeConverter::CUnicodeConverter oConverter;
 				sContent = U_TO_UTF8(oConverter.toUnicode(sContent, sCharset.data()));
 			}
-			oRes.WriteString(sContent);
 		}
 		else if (NSStringFinder::Equals(sContentEncoding, "quoted-printable"))
 		{
@@ -268,8 +276,12 @@ static void ReadMht(const std::string& sMhtContent, std::map<std::string, std::s
 				NSUnicodeConverter::CUnicodeConverter oConverter;
 				sContent = U_TO_UTF8(oConverter.toUnicode(sContent, sCharset.data()));
 			}
-			oRes.WriteString(sContent);
 		}
+
+		if (NSStringFinder::Equals(sContentType, "text/html"))
+			sContent = U_TO_UTF8(htmlToXhtml(sContent, false));
+
+		oRes.WriteString(sContent);
 
 		if(bAddTagStyle)
 			oRes.WriteString("</style>");

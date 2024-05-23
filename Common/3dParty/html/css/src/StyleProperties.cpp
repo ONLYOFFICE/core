@@ -604,6 +604,11 @@ namespace NSCSS
 		return m_oValue.Empty();
 	}
 
+	bool CColor::None() const
+	{
+		return ColorNone == m_oValue.m_enType;
+	}
+
 	void CColor::Clear()
 	{
 		m_oValue.Clear();
@@ -621,10 +626,10 @@ namespace NSCSS
 		if (m_oOpacity.Empty())
 			return 1.;
 
-		if (Percent == m_oOpacity.GetUnitMeasure())
+		if (UnitMeasure::Percent == m_oOpacity.GetUnitMeasure())
 			return m_oOpacity.ToDouble() / 100.;
 
-		if (None == m_oOpacity.GetUnitMeasure() && m_oOpacity.ToDouble() <= 1.)
+		if (UnitMeasure::None == m_oOpacity.GetUnitMeasure() && m_oOpacity.ToDouble() <= 1.)
 			return m_oOpacity.ToDouble();
 
 		return 1.;
@@ -1476,7 +1481,7 @@ namespace NSCSS
 
 	bool CBorderSide::Empty() const
 	{
-		return m_oWidth.Empty();
+		return m_oWidth.Empty() || m_oColor.None();
 	}
 
 	bool CBorderSide::Zero() const

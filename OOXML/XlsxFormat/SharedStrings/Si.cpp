@@ -164,6 +164,7 @@ namespace OOX
 				if(phonPtr)
 				{
 					ptr->fExtStr = true;
+					ptr->phoneticStr = L"";
 					XLSB::PhRun phRun;
 					phonPtr->toBin(&phRun);
 					if(i < m_arrItems.size() - 1)

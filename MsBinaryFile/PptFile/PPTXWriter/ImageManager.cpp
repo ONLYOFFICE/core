@@ -178,8 +178,7 @@ std::wstring CMediaManager::GenerateMedia(const std::wstring& strInput, const st
     if (strExts == L".video" || strExts == L".audio")
     {
         std::wstring strInput1 = strInput.substr(0, nIndexExt);
-        nIndexExt = strInput1.rfind(wchar_t('.'));
-        strExts = nIndexExt < 0 ? L"" : strInput1.substr(nIndexExt);
+        strExts.clear();
     }
     if (strExts == L".tmp" || strExts.empty()) strExts = strDefaultExt;
 

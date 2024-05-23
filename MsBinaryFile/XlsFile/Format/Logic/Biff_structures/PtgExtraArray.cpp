@@ -99,7 +99,9 @@ void PtgExtraArray::save(CFRecord& record)
 	}
 	else
 	{
-		record << cols << rows;
+		cols++;
+		rows++;
+        record << rows << cols;
 	}
 	for (auto& item : array_)
 	{

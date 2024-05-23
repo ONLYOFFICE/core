@@ -53,8 +53,8 @@ namespace NSImageReSaver
             return;
 
         int nSize = oFile.GetFileSize();
-        if (nSize > 1000)
-            nSize = 1000;
+        if (nSize > 10000)
+            nSize = 10000;
 
         BYTE* data = new BYTE[nSize];
         DWORD dwRead = 0;
@@ -68,22 +68,22 @@ namespace NSImageReSaver
         oFile.CloseFile();
         RELEASEARRAYOBJECTS(data);
 
-        if (std::string::npos == sFind.find("Photoshop") && std::string::npos == sFind.find("photoshop"))
-            return;
+        if (std::string::npos != sFind.find("Photoshop") || std::string::npos != sFind.find("photoshop"))
+        {
+            CBgraFrame oFrame;
+            if (!oFrame.OpenFile(wsFileName))
+                return;
 
-        CBgraFrame oFrame;
-        if (!oFrame.OpenFile(wsFileName))
-            return;
+            oFrame.SetJpegQuality(85.0);
+            if (!oFrame.Encode(pBuffer, nBufferSize, _CXIMAGE_FORMAT_JPG))
+                return;
 
-        oFrame.SetJpegQuality(85.0);
-        if (!oFrame.Encode(pBuffer, nBufferSize, _CXIMAGE_FORMAT_JPG))
-            return;
+            if (!pBuffer || !nBufferSize)
+                return;
 
-        if (!pBuffer || !nBufferSize)
-            return;
-
-        unWidth = (unsigned int)oFrame.get_Width();
-        unHeight = (unsigned int)oFrame.get_Height();
+            unWidth = (unsigned int)oFrame.get_Width();
+            unHeight = (unsigned int)oFrame.get_Height();
+        }
     }
 }
 

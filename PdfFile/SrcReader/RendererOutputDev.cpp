@@ -3094,6 +3094,7 @@ namespace PdfReader
 		pRenderer->CreateFromBgraFrame(pFrame);
 		pRenderer->put_Width (nWidth * 25.4 / 72.0);
 		pRenderer->put_Height(nHeight * 25.4 / 72.0);
+		pRenderer->CommandLong(c_nPenWidth0As1px, 1);
 
 		PDFRectangle box;
 		box.x1 = pBBox[0];

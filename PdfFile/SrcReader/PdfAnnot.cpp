@@ -2987,6 +2987,7 @@ void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFon
 	m_pRenderer->put_Height((m_dy2 - m_dy1 + (2 + m_dHTale) * dHeight / (double)nRasterH) * 25.4 / 72.0);
 	if (nBackgroundColor != 0xFFFFFF)
 		m_pRenderer->CommandLong(c_nDarkMode, 1);
+	m_pRenderer->CommandLong(c_nPenWidth0As1px, 1);
 
 	m_pRendererOut = new RendererOutputDev(m_pRenderer, pFontManager, pFontList);
 	m_pRendererOut->NewPDF(pdfDoc->getXRef());

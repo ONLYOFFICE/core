@@ -93,7 +93,7 @@ void DVParsedFormula::save(CFRecord& record, bool bSave)
 	else
 	{
 		cce = 0;
-        auto cb = 0;
+        _UINT32 cb = 0;
         record << cce << cb;
 	}
 }

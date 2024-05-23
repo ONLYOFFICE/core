@@ -1037,6 +1037,15 @@ namespace PdfWriter
 		m_pGrState->m_oMatrix.x   =   dX * oCTM.m11 + dY * oCTM.m21 + oCTM.x;
 		m_pGrState->m_oMatrix.y   =   dX * oCTM.m12 + dY * oCTM.m22 + oCTM.y;
 	}
+	void CPage::StartTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY)
+	{
+		m_pGrState->m_oMatrix.m11 = dM11;
+		m_pGrState->m_oMatrix.m12 = dM12;
+		m_pGrState->m_oMatrix.m21 = dM21;
+		m_pGrState->m_oMatrix.m22 = dM22;
+		m_pGrState->m_oMatrix.x   =   dX;
+		m_pGrState->m_oMatrix.y   =   dY;
+	}
     void CPage::SetTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY)
 	{
 		CMatrix oInverse = m_pGrState->m_oMatrix.Inverse();

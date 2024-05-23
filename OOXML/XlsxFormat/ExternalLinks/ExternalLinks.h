@@ -123,6 +123,7 @@ namespace OOX
 			virtual std::wstring toXML() const;
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType() const;
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
@@ -146,6 +147,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual std::wstring toXML() const;
 			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
+			std::vector<XLS::BaseObjectPtr> toBin();
 			virtual EElementType getType() const;
 		};
 
@@ -163,7 +165,8 @@ namespace OOX
 			virtual std::wstring toXML() const;
 
 			void fromBin(XLS::BaseObjectPtr& obj);
-
+			XLS::BaseObjectPtr toBin();
+			
 			virtual EElementType getType() const;
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
@@ -189,6 +192,7 @@ namespace OOX
 			virtual std::wstring toXML() const;
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType() const;
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
@@ -211,6 +215,7 @@ namespace OOX
 			virtual std::wstring toXML() const;
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType() const;
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
@@ -234,7 +239,7 @@ namespace OOX
 			virtual std::wstring toXML() const;
 
 			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
-
+			std::vector<XLS::BaseObjectPtr> toBin();
 			virtual EElementType getType() const;
 		};
 

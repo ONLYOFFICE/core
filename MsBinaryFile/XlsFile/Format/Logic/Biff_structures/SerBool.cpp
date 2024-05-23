@@ -60,7 +60,17 @@ void SerBool::load(CFRecord& record)
     if (record.getGlobalWorkbookInfo()->Version < 0x0800)
         record.skipNunBytes(7); // unused
 }
-
+void SerBool::save(CFRecord& record)
+{
+    char serType;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+        serType = 4;
+    else
+        serType = 2;
+    record <<serType <<f;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+        record.reserveNunBytes(7);
+}
 
 const std::wstring SerBool::toString() const
 {

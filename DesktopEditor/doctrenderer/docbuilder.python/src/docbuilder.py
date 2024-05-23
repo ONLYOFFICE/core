@@ -272,6 +272,11 @@ class CDocBuilderValue:
             self._internal = _lib.CDocBuilderValue_CreateWithDouble(ctypes.c_double(value))
         elif isinstance(value, str):
             self._internal = _lib.CDocBuilderValue_CreateWithString(ctypes.c_wchar_p(value))
+        elif isinstance(value, list):
+            length = len(value)
+            self._internal = _lib.CDocBuilderValue_CreateArray(length)
+            for i in range(length):
+                self.Set(i, value[i])
         elif isinstance(value, CDocBuilderValue):
             self._internal = _lib.CDocBuilderValue_Copy(value._internal)
         elif isinstance(value, OBJECT_HANDLE):
@@ -344,9 +349,13 @@ class CDocBuilderValue:
             return None
 
     def SetProperty(self, name, value):
+        if not isinstance(value, CDocBuilderValue):
+            value = CDocBuilderValue(value)
         _lib.CDocBuilderValue_SetProperty(self._internal, ctypes.c_wchar_p(name), value._internal)
 
     def Set(self, key, value):
+        if not isinstance(value, CDocBuilderValue):
+            value = CDocBuilderValue(value)
         if isinstance(key, int):
             _lib.CDocBuilderValue_SetByIndex(self._internal, ctypes.c_int(key), value._internal)
         elif isinstance(key, str):
@@ -537,6 +546,47 @@ class CDocBuilderContext:
 
     def IsError(self):
         return _lib.CDocBuilderContext_IsError(self._internal)
+
+# Constants
+class FileTypes:
+    class Document:
+        _MASK = 0x0040
+        DOCX = _MASK + 0x0001
+        DOC = _MASK + 0x0002
+        ODT = _MASK + 0x0003
+        RTF = _MASK + 0x0004
+        TXT = _MASK + 0x0005
+        DOTX = _MASK + 0x000c
+        OTT = _MASK + 0x000f
+        HTML = _MASK + 0x0012
+
+    class Presentation:
+        _MASK = 0x0080
+        PPTX = _MASK + 0x0001
+        PPT = _MASK + 0x0002
+        ODP = _MASK + 0x0003
+        PPSX = _MASK + 0x0004
+        POTX = _MASK + 0x0007
+        OTP = _MASK + 0x000a
+
+    class Spreadsheet:
+        _MASK = 0x0100
+        XLSX = _MASK + 0x0001
+        XLS = _MASK + 0x0002
+        ODS = _MASK + 0x0003
+        CSV = _MASK + 0x0004
+        XLTX = _MASK + 0x0006
+        OTS = _MASK + 0x0009
+
+    class Graphics:
+        _PDF_MASK = 0x0200
+        PDF = _PDF_MASK + 0x0001
+        PDFA = _PDF_MASK + 0x0009
+
+        _IMAGE_MASK = 0x0400
+        JPG = _IMAGE_MASK + 0x0001
+        PNG = _IMAGE_MASK + 0x0005
+        BMP = _IMAGE_MASK + 0x0008
 
 builder_path = os.path.dirname(os.path.realpath(__file__))
 _loadLibrary(builder_path)

@@ -386,6 +386,86 @@ HRESULT _ChangePassword(const std::wstring& wsPath, const std::wstring& wsPasswo
 
 	return bRes ? S_OK : S_FALSE;
 }
+void StreamGetCTM(XRef* pXref, Object* oStream, double* dCTM)
+{
+	Parser* parser = new Parser(pXref, new Lexer(pXref, oStream), gFalse);
+
+	int nNumArgs = 0;
+	Object oObj;
+	Object pArgs[maxArgs];
+
+	parser->getObj(&oObj);
+	while (!oObj.isEOF())
+	{
+		if (oObj.isCmd())
+		{
+			if (oObj.isCmd("q"))
+			{
+				Object obj;
+				parser->getObj(&obj);
+				while (!obj.isEOF() && !obj.isCmd("Q"))
+				{
+					obj.free();
+					parser->getObj(&obj);
+				}
+				obj.free();
+			}
+			else if (oObj.isCmd("cm") && nNumArgs > 5)
+			{
+				double a1 = dCTM[0];
+				double b1 = dCTM[1];
+				double c1 = dCTM[2];
+				double d1 = dCTM[3];
+
+				dCTM[0] = pArgs[0].getNum() * a1 + pArgs[1].getNum() * c1;
+				dCTM[1] = pArgs[0].getNum() * b1 + pArgs[1].getNum() * d1;
+				dCTM[2] = pArgs[2].getNum() * a1 + pArgs[3].getNum() * c1;
+				dCTM[3] = pArgs[2].getNum() * b1 + pArgs[3].getNum() * d1;
+				dCTM[4] = pArgs[4].getNum() * a1 + pArgs[5].getNum() * c1 + dCTM[4];
+				dCTM[5] = pArgs[4].getNum() * b1 + pArgs[5].getNum() * d1 + dCTM[5];
+			}
+			oObj.free();
+			for (int i = 0; i < nNumArgs; ++i)
+				pArgs[i].free();
+			nNumArgs = 0;
+		}
+		else if (nNumArgs < maxArgs)
+			pArgs[nNumArgs++] = oObj;
+
+		parser->getObj(&oObj);
+	}
+	oObj.free();
+	for (int i = 0; i < nNumArgs; ++i)
+		pArgs[i].free();
+	RELEASEOBJECT(parser);
+}
+void GetCTM(XRef* pXref, Object* oPage, double* dCTM)
+{
+	if (!oPage || !oPage->isDict())
+		return;
+
+	Object oContents;
+	if (!oPage->dictLookup("Contents", &oContents))
+	{
+		oContents.free();
+		return;
+	}
+
+	if (oContents.isArray())
+	{
+		for (int nIndex = 0; nIndex < oContents.arrayGetLength(); ++nIndex)
+		{
+			Object oTemp;
+			oContents.arrayGet(nIndex, &oTemp);
+			if (oTemp.isStream())
+				StreamGetCTM(pXref, &oTemp, dCTM);
+			oTemp.free();
+		}
+	}
+	else if (oContents.isStream())
+		StreamGetCTM(pXref, &oContents, dCTM);
+	oContents.free();
+}
 
 CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, CPdfReader* _pReader, const std::wstring& _wsDstFile, CPdfWriter* _pWriter)
 {
@@ -919,12 +999,15 @@ bool CPdfEditor::EditPage(int nPageIndex)
 		oTemp.free();
 	}
 	pPage->Fix();
+	double dCTM[6] = { 1, 0, 0, 1, 0, 0 };
+	GetCTM(xref, &pageObj, dCTM);
 	pageObj.free();
 
 	// Применение редактирования страницы для writer
 	if (pWriter->EditPage(pPage) && pDoc->EditPage(pXref, pPage, nPageIndex))
 	{
 		bEditPage = true;
+		pPage->StartTransform(dCTM[0], dCTM[1], dCTM[2], dCTM[3], dCTM[4], dCTM[5]);
 		return true;
 	}
 

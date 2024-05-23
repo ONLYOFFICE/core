@@ -239,18 +239,29 @@ xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\">");
             }
             else
                 ptr->valType = XLS::typeDvNone;
-			ptr->fAllowBlank = m_oAllowBlank->GetValue();
+			if(m_oAllowBlank.IsInit())
+				ptr->fAllowBlank = m_oAllowBlank->GetValue();
+			else
+				ptr->fAllowBlank = false;
 			if(m_oError.IsInit())
 				ptr->Error = m_oError.get();
+			else
+				ptr->Error = L"";
 
 			if (m_oErrorTitle.IsInit())
 				ptr->ErrorTitle = m_oErrorTitle.get();
+			else
+				ptr->ErrorTitle = L"";
 
 			if (m_oPrompt.IsInit())
 				ptr->Prompt = m_oPrompt.get();
+			else
+				ptr->Prompt = L"";
 
 			if (m_oPromptTitle.IsInit())
 				ptr->PromptTitle = m_oPromptTitle.get();
+			else
+				ptr->PromptTitle = L"";
             if(m_oErrorStyle.IsInit())
                 ptr->errStyle = m_oErrorStyle->GetValue();
             else
@@ -312,9 +323,9 @@ xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\">");
 			ptr->sqrfx.strValue = m_oSqRef.get();
 
             if(m_oFormula1.IsInit())
-                ptr->formula1 = m_oFormula1->m_sText;
+                ptr->formula1 = m_oFormula1->m_sText;	
             if(m_oFormula2.IsInit())
-            ptr->formula2 = m_oFormula2->m_sText;
+            	ptr->formula2 = m_oFormula2->m_sText;
 
             return objectPtr;
 		}
@@ -630,7 +641,6 @@ xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\">");
 
 			auto beginPtr(new XLSB::BeginDVals);
 			ptr->m_BrtBeginDVals = XLS::BaseObjectPtr{beginPtr};
-            beginPtr->dVals.idvMac =  m_arrItems.size();
             if(m_oDisablePrompts.IsInit())
                 beginPtr->dVals.fWnClosed = m_oDisablePrompts->GetValue();
             else
@@ -648,6 +658,7 @@ xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\">");
 			{
 				ptr->m_arBrtDVal.push_back(i->toBin());
 			}
+			beginPtr->dVals.idvMac = ptr->m_arBrtDVal.size();
 
 			return objectPtr;
 		}

@@ -92,8 +92,12 @@ namespace OOX
 			auto ptr(new XLSB::BeginECTwFldInfo);
 			if(m_oPosition.IsInit())
 				ptr->data.fieldStart = m_oPosition.get();
+            else
+                ptr->data.fieldStart = 0;
 			if(m_oType.IsInit())
 				ptr->data.fieldType = m_oType->GetValue();
+            else
+                ptr->data.fieldType = 0;
 			return XLS::BaseObjectPtr{ptr};
 		}
 		EElementType CTextField::getType() const
@@ -788,41 +792,72 @@ namespace OOX
 		{
 			auto ptr1(new XLSB::ECTXTWIZ);
 			auto ptr(new XLSB::BeginECTxtWiz);
+			ptr1->m_BrtBeginECTxtWiz = XLS::BaseObjectPtr{ptr};
 
 			if(m_oSourceFile.IsInit())
 				ptr->stFile = m_oSourceFile.get();
+			else
+				ptr->stFile.setSize(0);
 			if(m_oFileType.IsInit())
 			{
 				ptr->data.iCpid = m_oFileType->m_eValue;
 				ptr->data.iCpidNew = m_oFileType->m_eValue;
 			}
+			else
+			{
+				ptr->data.iCpid = 1;
+				ptr->data.iCpidNew = 0;
+			}
 			if(m_oDecimal.IsInit())
-				ptr->data.chDecimal = std::stoi(m_oDecimal.get());
+				ptr->data.chDecimal = m_oDecimal.get()[0];
+			else
+				ptr->data.chDecimal = '.';
 			if(m_oDelimiter.IsInit())
-				ptr->data.chCustom = std::stoi(m_oDelimiter.get());
+				ptr->data.chCustom = m_oDelimiter.get()[0];
+			else
+			{
+				ptr->data.chCustom = 0;
+				ptr->data.fCustom = false;
+			}
 			if(m_oThousands.IsInit())
-				ptr->data.chThousSep = std::stoi(m_oThousands.get());
+				ptr->data.chThousSep = m_oThousands.get()[0];
+			else
+				ptr->data.chThousSep = '	';
 			if(m_oFirstRow.IsInit())
 				ptr->data.rowStartAt = m_oFirstRow.get();
 			if(m_oQualifier.IsInit())
 				ptr->data.fTextDelim = m_oQualifier->GetValue();
+			else
+				ptr->data.fTextDelim = 0;
 			if(m_oPrompt.IsInit())
 				ptr->data.fPromptForFile = m_oPrompt.get();
 			if(m_oDelimited.IsInit())
 				ptr->data.fDelimited = m_oDelimited.get();
+			else
+				ptr->data.fDelimited = false;
 			if(m_oTab.IsInit())
 				ptr->data.fTab = m_oTab.get();
+			else
+				ptr->data.fTab = false;
 			if(m_oSpace.IsInit())
 				ptr->data.fSpace = m_oSpace.get();
+			else
+				ptr->data.fSpace = false;
 			if(m_oComma.IsInit())
 				ptr->data.fComma = m_oComma.get();
+			else
+				ptr->data.fComma = false;
 			if(m_oSemicolon.IsInit())
 				ptr->data.fSemiColon = m_oSemicolon.get();
+			else
+				ptr->data.fSemiColon = false;
 			if(m_oConsecutive.IsInit())
 				ptr->data.fConsecutive = m_oConsecutive.get();
+			else
+				ptr->data.fConsecutive = false;
 
 			if(m_oTextFields.IsInit())
-				ptr1->m_ECTWFLDINFOLST = m_oTextFields->toBin();
+                ptr1->m_ECTWFLDINFOLST = m_oTextFields->toBin();
 			return XLS::BaseObjectPtr{ptr1};
 		}
 		EElementType CTextPr::getType() const

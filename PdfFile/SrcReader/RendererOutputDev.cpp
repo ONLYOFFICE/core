@@ -672,7 +672,7 @@ namespace PdfReader
 		m_bTransparentGroupSoftMaskEnd = false;
 
 		if (c_nHtmlRendrerer2 == m_lRendererType)
-			m_bDrawOnlyText = (S_OK == m_pRenderer->CommandLong(c_nCommandLongTypeOnlyText, 0)) ? true : false;
+			m_bDrawOnlyText = S_OK == m_pRenderer->CommandLong(c_nCommandLongTypeOnlyText, 0);
 		else if (c_nHtmlRendrererText == m_lRendererType)
 			m_bDrawOnlyText = true;
 		else
@@ -3941,7 +3941,7 @@ namespace PdfReader
 
 		int   nRenderMode = pGState->getRender();
 
-		if (3 == nRenderMode) // Невидимый текст
+		if (3 == nRenderMode && !m_bDrawOnlyText) // Невидимый текст
 		{
 			return;
 		}
@@ -4052,7 +4052,7 @@ namespace PdfReader
 			}
 		}
 
-		if (nRenderMode == 0 || nRenderMode == 4 || nRenderMode == 6 || (m_bDrawOnlyText && nRenderMode == 2))
+		if (nRenderMode == 0 || nRenderMode == 4 || nRenderMode == 6 || m_bDrawOnlyText)
 		{
 			bool bReplace = false;
 			std::wstring sFontPath;

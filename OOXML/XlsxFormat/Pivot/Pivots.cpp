@@ -445,16 +445,28 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		if (m_oApplyBorderFormats.IsInit())
 			ptr->ibitAtrBdr = m_oApplyBorderFormats.get();
+		else
+			ptr->ibitAtrBdr = false;
 		if (m_oApplyFontFormats.IsInit())
 			ptr->ibitAtrFnt = m_oApplyFontFormats.get();
+		else
+			ptr->ibitAtrFnt = false;
 		if (m_oApplyNumberFormats.IsInit())
 			ptr->ibitAtrNum = m_oApplyNumberFormats.get();
+		else
+			ptr->ibitAtrNum = false;
 		if (m_oApplyPatternFormats.IsInit())
 			ptr->ibitAtrPat = m_oApplyPatternFormats.get();
+		else
+			ptr->ibitAtrPat = false;
 		if (m_oApplyWidthHeightFormats.IsInit())
 			ptr->ibitAtrProt = m_oApplyWidthHeightFormats.get();
+		else
+			ptr->ibitAtrProt = false;
 		if (m_oApplyAlignmentFormats.IsInit())
 			ptr->ibitAtrAlc = m_oApplyAlignmentFormats.get();
+		else
+			ptr->ibitAtrAlc = false;
 
 		if (m_oAsteriskTotals.IsInit())
 		 	ptr->fHideTotAnnotation = m_oAsteriskTotals.get();
@@ -480,105 +492,202 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		if (m_oColHeaderCaption.IsInit()) ptr->irstColHdrName = m_oColHeaderCaption.get();
 		else
 			ptr->fUseColHdrName = false;
-		if (m_oCompact.IsInit()) ptr->fDefaultCompact = m_oCompact.get();
-		if (m_oCompactData.IsInit()) ptr->fCompactData = m_oCompactData.get();
-		if (m_oCreatedVersion.IsInit()) ptr->bVerSxMacro = m_oCreatedVersion->GetValue();
-		if (m_oCustomListSort.IsInit()) ptr->fDontUseCustomLists = !m_oCustomListSort.get();
-		else ptr->fDontUseCustomLists = false;
-		if (m_oDataCaption.IsInit()) ptr->irstData = m_oDataCaption.get();
+		if (m_oCompact.IsInit()) 
+			ptr->fDefaultCompact = m_oCompact.get();
+		else
+			ptr->fDefaultCompact = false;
+		if (m_oCompactData.IsInit()) 
+			ptr->fCompactData = m_oCompactData.get();
+		else
+			ptr->fCompactData = false;
+		if (m_oCreatedVersion.IsInit())
+		 	ptr->bVerSxMacro = m_oCreatedVersion->GetValue();
+		else
+			ptr->bVerSxMacro = false;
+		if (m_oCustomListSort.IsInit()) 
+			ptr->fDontUseCustomLists = !m_oCustomListSort.get();
+		else
+			ptr->fDontUseCustomLists = false;
+		if (m_oDataCaption.IsInit()) 
+			ptr->irstData = m_oDataCaption.get();
 		else
 			ptr->irstData = 0xFFFFFFFF;
-		if (m_oDataOnRows.IsInit()) ptr->fDefaultCompact = m_oDataOnRows.get();
-		if (m_oDataPosition.IsInit()) ptr->ipos4Data = m_oDataPosition->GetValue();
-		else	ptr->ipos4Data = -1;
-		if (m_oDisableFieldList.IsInit()) ptr->fDisableFList = m_oDisableFieldList.get();
-		else ptr->fDisableFList = false;
-		if (m_oEditData.IsInit()) ptr->fEnableDataEd = m_oEditData.get();
+		if (m_oDataOnRows.IsInit()) 
+			ptr->fDefaultCompact = m_oDataOnRows.get();
 		else
-		ptr->fEnableDataEd = false;
-		if (m_oEnableDrill.IsInit()) ptr->fEnableDrilldown = m_oEnableDrill.get();
-		if (m_oEnableFieldProperties.IsInit()) ptr->fEnableFieldDialog = m_oEnableFieldProperties.get();
-		if (m_oEnableWizard.IsInit()) ptr->fEnableWizard = m_oEnableWizard.get();
-		if (m_oErrorCaption.IsInit()) ptr->irstErrorString = m_oErrorCaption.get();
+			ptr->fDefaultCompact = false;
+		if (m_oDataPosition.IsInit()) 
+			ptr->ipos4Data = m_oDataPosition->GetValue();
+		else	
+			ptr->ipos4Data = -1;
+		if (m_oDisableFieldList.IsInit()) 
+			ptr->fDisableFList = m_oDisableFieldList.get();
+		else 
+			ptr->fDisableFList = false;
+		if (m_oEditData.IsInit()) 
+			ptr->fEnableDataEd = m_oEditData.get();
+		else
+			ptr->fEnableDataEd = false;
+		if (m_oEnableDrill.IsInit()) 
+			ptr->fEnableDrilldown = m_oEnableDrill.get();
+		else
+			ptr->fEnableDrilldown = false;
+		if (m_oEnableFieldProperties.IsInit()) 
+			ptr->fEnableFieldDialog = m_oEnableFieldProperties.get();
+		else
+			ptr->fEnableFieldDialog = false;
+		if (m_oEnableWizard.IsInit()) 
+			ptr->fEnableWizard = m_oEnableWizard.get();
+		else
+			ptr->fEnableWizard = false;
+		if (m_oErrorCaption.IsInit()) 
+			ptr->irstErrorString = m_oErrorCaption.get();
 		else
 		{
 			ptr->fEmptyDisplayErrorString = true;
 			ptr->fDisplayErrorString = false;
 		}
-		if (m_oFieldListSortAscending.IsInit()) ptr->fNonDefaultSortInFlist = m_oFieldListSortAscending.get();
-		else ptr->fNonDefaultSortInFlist = false;
-		if (m_oFieldPrintTitles.IsInit()) ptr->fPrintTitles = m_oFieldPrintTitles.get();
-		else ptr->fPrintTitles = false;
-		if (m_oGrandTotalCaption.IsInit()) ptr->irstGrand = m_oGrandTotalCaption.get();
+		if (m_oFieldListSortAscending.IsInit()) 
+			ptr->fNonDefaultSortInFlist = m_oFieldListSortAscending.get();
+		else 
+			ptr->fNonDefaultSortInFlist = false;
+		if (m_oFieldPrintTitles.IsInit()) 
+			ptr->fPrintTitles = m_oFieldPrintTitles.get();
+		else 
+			ptr->fPrintTitles = false;
+		if (m_oGrandTotalCaption.IsInit()) 
+			ptr->irstGrand = m_oGrandTotalCaption.get();
 		else
 			ptr->fDisplayGrand = false;
-		if (m_oGridDropZones.IsInit()) ptr->fNewDropZones = !m_oGridDropZones.get();
-		if (m_oImmersive.IsInit()) ptr->fTurnOffImmersive = m_oImmersive.get();
-		else ptr->fTurnOffImmersive = false;
-		if (m_oIndent.IsInit()) ptr->cIndentInc = m_oIndent->GetValue();
-		if (m_oItemPrintTitles.IsInit()) ptr->fRepeatItemsOnEachPrintedPage = m_oItemPrintTitles.get();
-		if (m_oMdxSubqueries.IsInit()) ptr->fDefaultCompact = m_oMdxSubqueries.get();
-		if (m_oMergeItem.IsInit()) ptr->fMergeLabels = m_oMergeItem.get();
-		else ptr->fMergeLabels = false;
-		if (m_oMinRefreshableVersion.IsInit()) ptr->bVerSxUpdateableMin = m_oMinRefreshableVersion->GetValue();
-		if (m_oMissingCaption.IsInit()) ptr->irstNullString = m_oMissingCaption.get();
+		if (m_oGridDropZones.IsInit()) 
+			ptr->fNewDropZones = !m_oGridDropZones.get();
+		else
+			ptr->fNewDropZones = false;
+		if (m_oImmersive.IsInit()) 
+			ptr->fTurnOffImmersive = m_oImmersive.get();
+		else 
+			ptr->fTurnOffImmersive = false;
+		if (m_oIndent.IsInit()) 
+			ptr->cIndentInc = m_oIndent->GetValue();
+		else
+			ptr->cIndentInc = false;
+		if (m_oItemPrintTitles.IsInit()) 
+			ptr->fRepeatItemsOnEachPrintedPage = m_oItemPrintTitles.get();
+		else
+			ptr->fRepeatItemsOnEachPrintedPage = false;
+		if (m_oMdxSubqueries.IsInit()) 
+			ptr->fDefaultCompact = m_oMdxSubqueries.get();
+		else
+			ptr->fDefaultCompact = false;
+		if (m_oMergeItem.IsInit()) 
+			ptr->fMergeLabels = m_oMergeItem.get();
+		else 
+			ptr->fMergeLabels = false;
+		if (m_oMinRefreshableVersion.IsInit()) 
+			ptr->bVerSxUpdateableMin = m_oMinRefreshableVersion->GetValue();
+		if (m_oMissingCaption.IsInit()) 
+			ptr->irstNullString = m_oMissingCaption.get();
 		else
 			ptr->fEmptyDisplayNullString = true;
-		if (m_oMultipleFieldFilters.IsInit()) ptr->fSingleFilterPerField = !m_oMultipleFieldFilters.get();
+		if (m_oMultipleFieldFilters.IsInit()) 
+			ptr->fSingleFilterPerField = !m_oMultipleFieldFilters.get();
 		if (m_oName.IsInit()) ptr->irstName = m_oName.get();
 		else
 			ptr->irstName = 0xFFFFFFFF;
-		if (m_oOutline.IsInit()) ptr->fDefaultOutline = m_oOutline.get();
-		if (m_oOutlineData.IsInit()) ptr->fOutlineData = m_oOutlineData.get();
-		if (m_oPageOverThenDown.IsInit()) ptr->fAcrossPageLay = m_oPageOverThenDown.get();
-		else ptr->fAcrossPageLay = false;
-		if (m_oPageStyle.IsInit()) ptr->irstPageFieldStyle = m_oPageStyle.get();
+		if (m_oOutline.IsInit()) 
+			ptr->fDefaultOutline = m_oOutline.get();
+		if (m_oOutlineData.IsInit()) 
+			ptr->fOutlineData = m_oOutlineData.get();
+		else
+			ptr->fOutlineData = false;
+		if (m_oPageOverThenDown.IsInit())
+			ptr->fAcrossPageLay = m_oPageOverThenDown.get();
+		else 
+			ptr->fAcrossPageLay = false;
+		if (m_oPageStyle.IsInit()) 
+			ptr->irstPageFieldStyle = m_oPageStyle.get();
 		else
 			ptr->fDisplayPageFieldStyle = false;
-		if (m_oPageWrap.IsInit()) ptr->cWrapPage = m_oPageWrap->GetValue();
+		if (m_oPageWrap.IsInit()) 
+			ptr->cWrapPage = m_oPageWrap->GetValue();
 		else
 			ptr->cWrapPage = 0;
-		if (m_oPivotTableStyle.IsInit()) ptr->irstTableStyle = m_oPivotTableStyle.get();
+		if (m_oPivotTableStyle.IsInit()) 
+			ptr->irstTableStyle = m_oPivotTableStyle.get();
 		else
 			ptr->fDisplayTableStyle = false;
-		if (m_oPreserveFormatting.IsInit()) ptr->fPreserveFormatting = m_oPreserveFormatting.get();
-		if (m_oPrintDrill.IsInit()) ptr->fPrintDrillIndicators = m_oPrintDrill.get();
-		else ptr->fPrintDrillIndicators = false;
-		if (m_oPublished.IsInit()) ptr->fPublished = m_oPublished.get();
-		else ptr->fPublished = false;
-		if (m_oRowGrandTotals.IsInit()) ptr->fRwGrand = m_oRowGrandTotals.get();
-		if (m_oRowHeaderCaption.IsInit()) ptr->irstRwHdrName = m_oRowHeaderCaption.get();
+		if (m_oPreserveFormatting.IsInit()) 
+			ptr->fPreserveFormatting = m_oPreserveFormatting.get();
+		if (m_oPrintDrill.IsInit()) 
+			ptr->fPrintDrillIndicators = m_oPrintDrill.get();
+		else 
+			ptr->fPrintDrillIndicators = false;
+		if (m_oPublished.IsInit()) 
+			ptr->fPublished = m_oPublished.get();
+		else 
+			ptr->fPublished = false;
+		if (m_oRowGrandTotals.IsInit()) 
+			ptr->fRwGrand = m_oRowGrandTotals.get();
+		if (m_oRowHeaderCaption.IsInit()) 
+			ptr->irstRwHdrName = m_oRowHeaderCaption.get();
 		else
 			ptr->fUseRwHdrName = false;
-		if (m_oShowCalcMbrs.IsInit()) ptr->fNotViewCalculatedMembers = !m_oShowCalcMbrs.get();
-		else ptr->fNotViewCalculatedMembers = false;
-		if (m_oShowDataDropDown.IsInit()) ptr->fHideDDData = !m_oShowDataDropDown.get();
-		else ptr->fHideDDData = false;
-		if (m_oShowDataTips.IsInit()) ptr->fNoPivotTips = !m_oShowDataTips.get();
-		else ptr->fNoPivotTips = false;
-		if (m_oShowDrill.IsInit()) ptr->fHideDrillIndicators = !m_oShowDrill.get();
-		else ptr->fHideDrillIndicators = false;
-		if (m_oShowDropZones.IsInit()) ptr->fNoStencil = !m_oShowDropZones.get();
-		else ptr->fNoStencil = false;
-		if (m_oShowEmptyCol.IsInit()) ptr->fIncludeEmptyCol = m_oShowEmptyCol.get();
-		else ptr->fIncludeEmptyCol = false;
-		if (m_oShowEmptyRow.IsInit()) ptr->fIncludeEmptyRw = m_oShowEmptyRow.get();
-		else ptr->fIncludeEmptyRw = false;
-		if (m_oShowError.IsInit()) ptr->fDisplayErrorString = m_oShowError.get();
-		if (m_oShowHeaders.IsInit()) ptr->fNoHeaders = !m_oShowHeaders.get();
-		else ptr->fNoHeaders = false;
-		if (m_oShowItems.IsInit()) ptr->fDisplayImmediateItems = m_oShowItems.get();
-		if (m_oShowMemberPropertyTips.IsInit()) ptr->fMemPropsInTips = m_oShowMemberPropertyTips.get();
-		if (m_oShowMissing.IsInit()) ptr->fDisplayNullString = m_oShowMissing.get();
-		if (m_oShowMultipleLabel.IsInit()) ptr->fPageMultipleItemLabel = m_oShowMultipleLabel.get();
-		if (m_oSubtotalHiddenItems.IsInit()) ptr->fSubtotalHiddenPageItems = m_oSubtotalHiddenItems.get();
-		else ptr->fSubtotalHiddenPageItems = false;
-		if (m_oTag.IsInit()) ptr->irstTag = m_oTag.get();
+		if (m_oShowCalcMbrs.IsInit()) 
+			ptr->fNotViewCalculatedMembers = !m_oShowCalcMbrs.get();
+		else 
+			ptr->fNotViewCalculatedMembers = false;
+		if (m_oShowDataDropDown.IsInit()) 
+			ptr->fHideDDData = !m_oShowDataDropDown.get();
+		else 
+			ptr->fHideDDData = false;
+		if (m_oShowDataTips.IsInit()) 
+			ptr->fNoPivotTips = !m_oShowDataTips.get();
+		else 
+			ptr->fNoPivotTips = false;
+		if (m_oShowDrill.IsInit()) 
+			ptr->fHideDrillIndicators = !m_oShowDrill.get();
+		else 
+			ptr->fHideDrillIndicators = false;
+		if (m_oShowDropZones.IsInit()) 
+			ptr->fNoStencil = !m_oShowDropZones.get();
+		else 
+			ptr->fNoStencil = false;
+		if (m_oShowEmptyCol.IsInit()) 
+			ptr->fIncludeEmptyCol = m_oShowEmptyCol.get();
+		else 
+			ptr->fIncludeEmptyCol = false;
+		if (m_oShowEmptyRow.IsInit()) 
+			ptr->fIncludeEmptyRw = m_oShowEmptyRow.get();
+		else 
+			ptr->fIncludeEmptyRw = false;
+		if (m_oShowError.IsInit()) 
+			ptr->fDisplayErrorString = m_oShowError.get();
+		if (m_oShowHeaders.IsInit())
+			ptr->fNoHeaders = !m_oShowHeaders.get();
+		else 
+			ptr->fNoHeaders = false;
+		if (m_oShowItems.IsInit()) 
+			ptr->fDisplayImmediateItems = m_oShowItems.get();
+		if (m_oShowMemberPropertyTips.IsInit()) 
+			ptr->fMemPropsInTips = m_oShowMemberPropertyTips.get();
+		if (m_oShowMissing.IsInit()) 
+			ptr->fDisplayNullString = m_oShowMissing.get();
+		if (m_oShowMultipleLabel.IsInit()) 
+			ptr->fPageMultipleItemLabel = m_oShowMultipleLabel.get();
+		if (m_oSubtotalHiddenItems.IsInit()) 
+			ptr->fSubtotalHiddenPageItems = m_oSubtotalHiddenItems.get();
+		else 
+			ptr->fSubtotalHiddenPageItems = false;
+		if (m_oTag.IsInit()) 
+			ptr->irstTag = m_oTag.get();
 		else
 			ptr->fDisplayTag = false;
-		if (m_oUpdatedVersion.IsInit()) ptr->bVerSxLastUpdated = m_oUpdatedVersion->GetValue();
-		if (m_oUseAutoFormatting.IsInit()) ptr->fAutoFormat = m_oUseAutoFormatting.get();
-		if (m_oVacatedStyle.IsInit()) ptr->irstVacateStyle = m_oVacatedStyle.get();
+		if (m_oUpdatedVersion.IsInit()) 
+			ptr->bVerSxLastUpdated = m_oUpdatedVersion->GetValue();
+		if (m_oUseAutoFormatting.IsInit()) 
+			ptr->fAutoFormat = m_oUseAutoFormatting.get();
+		if (m_oVacatedStyle.IsInit()) 
+			ptr->irstVacateStyle = m_oVacatedStyle.get();
 		else
 			ptr->fDisplayVacateStyle = false;
 		ptr->sxaxis4Data = 2;
@@ -2831,8 +2940,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		auto ptr(new XLSB::PRFILTER);
 		XLS::BaseObjectPtr objectPtr(ptr);
 		ptr->m_BrtBeginPRFilter = writeAttributes();
-		///@todo дописать конветрацию
-		ptr->m_arPRFITEM.push_back(m_oX->toBinPrfItem());
+        if(m_oX.IsInit())
+            ptr->m_arPRFITEM.push_back(m_oX->toBinPrfItem());
 		return objectPtr;
 	}
 	XLS::BaseObjectPtr CReference::writeAttributes()
@@ -3919,9 +4028,6 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	{
 		auto ptr(new XLSB::PCDFIELDS);
 		XLS::BaseObjectPtr objectPtr(ptr);
-        auto ptr1(new XLSB::BeginPCDFields);
-		ptr1->cFields = m_arrItems.size();
-		ptr->m_BrtBeginPCDFields = XLS::BaseObjectPtr{ptr1};
 		for(auto i:m_arrItems)
 			ptr->m_arPCDFIELD.push_back(i->toBin());
 		return objectPtr;
@@ -4273,7 +4379,13 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	{
 		auto ptr(new XLSB::PCDFATBL);
 		XLS::BaseObjectPtr objectPtr(ptr);
-		ptr->m_BrtBeginPCDFAtbl = writeAttributes();
+		bool hasBolean = false;
+		bool hasStr = false;
+		bool hasDate = false;
+		bool hasMissing = false;
+		bool hasNumber = false;
+		bool hasError = false;
+
 		for(auto i:m_arrItems)
 		{
             
@@ -4282,6 +4394,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				auto valueBool = static_cast<CPivotBooleanValue*>(i);
 				XLS::BaseObjectPtr element = valueBool->toBin();
 				ptr->m_arSource.push_back(element);
+				hasBolean = true;
 				continue;
 			}
             else if(i->getType() == et_x_PivotNoValue)
@@ -4289,6 +4402,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				auto noVal = static_cast<CPivotNoValue*>(i);
 				XLS::BaseObjectPtr element = noVal->toBin();
 				ptr->m_arSource.push_back(element);
+				hasMissing = true;
 				continue;
 			}
             else if(i->getType() == et_x_PivotNumericValue)
@@ -4296,6 +4410,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				auto numVal = static_cast<CPivotNumericValue*>(i);
 				XLS::BaseObjectPtr element = numVal->toBin();
 				ptr->m_arSource.push_back(element);
+				hasNumber = true;
 				continue;
 			}
             else if(i->getType() == et_x_PivotCharacterValue)
@@ -4303,6 +4418,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				auto charVal = static_cast<CPivotCharacterValue*>(i);
 				XLS::BaseObjectPtr element = charVal->toBin();
 				ptr->m_arSource.push_back(element);
+				hasStr = true;
 				continue;
 			}
             else if(i->getType() == et_x_PivotDateTimeValue)
@@ -4310,6 +4426,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				auto dateValue = static_cast<CPivotDateTimeValue*>(i);
 				XLS::BaseObjectPtr element = dateValue->toBin();
 				ptr->m_arSource.push_back(element);
+				hasDate = true;
 				continue;
 			}
             else if(i->getType() == et_x_PivotErrorValue)
@@ -4317,13 +4434,30 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				auto errorVal = static_cast<CPivotErrorValue*>(i);
 				XLS::BaseObjectPtr element = errorVal->toBin();
 				ptr->m_arSource.push_back(element);
+				hasError = true;
+				continue;
+			}
+			else
+			{
+				auto missingVal(new XLSB::PCDIMissing);
+				XLS::BaseObjectPtr element(missingVal);
+				ptr->m_arSource.push_back(element);
+				hasMissing = true;
 				continue;
 			}
 		}
+		UINT8 flags = 0;
+		SETBIT(flags,0, hasBolean);
+		SETBIT(flags,1, hasStr);
+		SETBIT(flags,2, hasDate);
+		SETBIT(flags,3, hasMissing);
+		SETBIT(flags,4, hasNumber);
+		SETBIT(flags,5, hasError);
+		ptr->m_BrtBeginPCDFAtbl = writeAttributes(flags);
 		return objectPtr;
 	}
 
-	XLS::BaseObjectPtr CSharedItems::writeAttributes()
+	XLS::BaseObjectPtr CSharedItems::writeAttributes(const UINT8 flags)
 	{
 		auto ptr(new XLSB::BeginPCDFAtbl);
 		XLS::BaseObjectPtr objectPtr(ptr);
@@ -4373,14 +4507,41 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->xnumMin.data.value = std::stod(m_oMinDate->GetValue());
 			ptr->xnumMax.data.value =std::stod(m_oMaxDate->GetValue());
 		}
-		else
+		else if(m_oMinValue.IsInit() && m_oMaxValue.IsInit())
 		{
 			if(m_oMinValue.IsInit())
 				ptr->xnumMin.data.value = m_oMinValue.get();
 			if(m_oMaxValue.IsInit())
 				ptr->xnumMax.data.value = m_oMaxValue.get();
 		}
-
+		else
+		{
+			ptr->fNumMinMaxValid = false;
+		}
+		bool hasBolean = GETBIT(flags,0);
+		bool hasStr = GETBIT(flags,1);
+		bool hasDate = GETBIT(flags,2);
+		bool hasMissing = GETBIT(flags,3);
+		bool hasNumber = GETBIT(flags,4);
+		bool hasError = GETBIT(flags,5);
+		if(!hasDate)
+			ptr->fNonDates = true;
+		if(!hasDate && hasNumber)
+			ptr->fNumField = true;
+		if(hasStr || hasError || hasBolean)
+		{
+			ptr->fTextEtcField = true;
+			ptr->fHasTextItem = true;
+		}
+		if(hasMissing)
+		{
+			ptr->fHasBlankItem = true;
+			ptr->fTextEtcField = true;
+		}
+		if(hasDate && hasNumber || hasNumber && ptr->fHasTextItem ||hasDate &&  ptr->fHasTextItem)
+		{
+			ptr->fMixedTypesIgnoringBlanks = true;
+		}
 		return objectPtr;
 	}
     void CSharedItems::fromBin(XLS::BaseObjectPtr& obj)
@@ -5049,18 +5210,23 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			if(m_oCaption.IsInit())
 				ptr->info.stCaption = m_oCaption.get();
 			else
-			{
-				ptr->info.stCaption.setSize(0xFFFF);
 				ptr->info.fCaption = false;
-			}
 			if(m_oCalculated.IsInit())
 				ptr->info.fFmla = m_oCalculated.get();
+			else
+				ptr->info.fFmla = false;
 			if(m_oUnused.IsInit())
 				ptr->info.fGhost = m_oUnused.get();
 			else
 				ptr->info.fGhost = false;
 			if(m_oCount.IsInit())
 				ptr->info.cIMemProps = m_oCount->GetValue();
+			else
+				ptr->info.cIMemProps = m_arrItems.size();
+			if(m_oValue.IsInit())
+				ptr->st = m_oValue.get();
+			else
+				ptr->st.setSize(0); 
 			for(auto i:m_arrItems)
 				ptr->info.rgIMemProps.push_back(i->m_oV.get());
 			return objectPtr;
@@ -5073,20 +5239,6 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			XLS::BaseObjectPtr objectPtr(ptr1);
 			if(m_oValue.IsInit())
 				ptr->st = m_oValue.get();
-			if(m_oBold.IsInit())
-				ptr->sxvcellextra->fSrvFmtBold = m_oBold.get();
-			if(m_oItalic.IsInit())
-				ptr->sxvcellextra->fSrvFmtItalic = m_oItalic.get();
-			if(m_oStrike.IsInit())
-			 	ptr->sxvcellextra->fSrvFmtStrikethrough = m_oStrike.get();
-			if(m_oUnderline.IsInit())
-				ptr->sxvcellextra->fSrvFmtUnderline = m_oUnderline.get();
-			if(m_oFormatIndex.IsInit())
-				ptr->sxvcellextra->isfci = m_oFormatIndex->GetValue();
-			if(m_oBackColor.IsInit())
-				ptr->sxvcellextra->cvBack.fromHex(m_oBackColor->GetValue());
-			if(m_oForeColor.IsInit())
-				ptr->sxvcellextra->cvFore.fromHex(m_oForeColor->GetValue());
 			return objectPtr;
 		}
 	}
@@ -5238,12 +5390,20 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			}
 			if(m_oCaption.IsInit())
 				ptr->info.stCaption = m_oCaption.get();
+			else
+				ptr->info.fCaption = false;
 			if(m_oCalculated.IsInit())
 				ptr->info.fFmla = m_oCalculated.get();
+			else
+				ptr->info.fFmla = false;
 			if(m_oUnused.IsInit())
 				ptr->info.fGhost = m_oUnused.get();
+			else
+				ptr->info.fGhost = false;
 			if(m_oCount.IsInit())
 				ptr->info.cIMemProps = m_oCount->GetValue();
+			else
+				ptr->info.cIMemProps = m_arrItems.size();
 			for(auto i:m_arrItems)
 				ptr->info.rgIMemProps.push_back(i->m_oV.get());
 			return objectPtr;
@@ -5265,20 +5425,6 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				else if (m_oValue == L"#N/A") ptr->err = 0x2A;
 				else if (m_oValue == L"#GETTING_DATA") ptr->err = 0x2B;
 			}
-			if(m_oBold.IsInit())
-				ptr->sxvcellextra->fSrvFmtBold = m_oBold.get();
-			if(m_oItalic.IsInit())
-				ptr->sxvcellextra->fSrvFmtItalic = m_oItalic.get();
-			if(m_oStrike.IsInit())
-			 	ptr->sxvcellextra->fSrvFmtStrikethrough = m_oStrike.get();
-			if(m_oUnderline.IsInit())
-				ptr->sxvcellextra->fSrvFmtUnderline = m_oUnderline.get();
-			if(m_oFormatIndex.IsInit())
-				ptr->sxvcellextra->isfci = m_oFormatIndex->GetValue();
-			if(m_oBackColor.IsInit())
-				ptr->sxvcellextra->cvBack.fromHex(m_oBackColor->GetValue());
-			if(m_oForeColor.IsInit())
-				ptr->sxvcellextra->cvFore.fromHex(m_oForeColor->GetValue());
 			return objectPtr;
 		}
 	}
@@ -5441,12 +5587,22 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			XLS::BaseObjectPtr objectPtr(ptr1);
 			if(m_oCaption.IsInit())
 				ptr->info.stCaption = m_oCaption.get();
+			else
+				ptr->info.fCaption = false;
 			if(m_oCalculated.IsInit())
 				ptr->info.fFmla = m_oCalculated.get();
+			else
+				ptr->info.fFmla = false;
 			if(m_oUnused.IsInit())
 				ptr->info.fGhost = m_oUnused.get();
+			else
+				ptr->info.fGhost = false;
 			if(m_oCount.IsInit())
 				ptr->info.cIMemProps = m_oCount->GetValue();
+			else
+				ptr->info.cIMemProps = m_arrItems.size();
+			if(m_oValue.IsInit())
+				ptr->xnum.data.value = m_oValue.get();
 			for(auto i:m_arrItems)
 				ptr->info.rgIMemProps.push_back(i->m_oV.get());
 			return objectPtr;
@@ -5459,25 +5615,6 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			XLS::BaseObjectPtr objectPtr(ptr1);
 			if(m_oValue.IsInit())
 				ptr->xnum.data.value = m_oValue.get();
-            if(m_oBold.IsInit() || m_oItalic.IsInit() || m_oStrike.IsInit()
-            || m_oUnderline.IsInit() || m_oFormatIndex.IsInit() || m_oForeColor.IsInit() ||m_oBackColor.IsInit())
-            {
-                ptr->sxvcellextra.reset(new XLSB::PCDISrvFmt);
-            if(m_oBold.IsInit())
-				ptr->sxvcellextra->fSrvFmtBold = m_oBold.get();
-			if(m_oItalic.IsInit())
-				ptr->sxvcellextra->fSrvFmtItalic = m_oItalic.get();
-			if(m_oStrike.IsInit())
-			 	ptr->sxvcellextra->fSrvFmtStrikethrough = m_oStrike.get();
-			if(m_oUnderline.IsInit())
-				ptr->sxvcellextra->fSrvFmtUnderline = m_oUnderline.get();
-			if(m_oFormatIndex.IsInit())
-				ptr->sxvcellextra->isfci = m_oFormatIndex->GetValue();
-			if(m_oBackColor.IsInit())
-				ptr->sxvcellextra->cvBack.fromHex(m_oBackColor->GetValue());
-			if(m_oForeColor.IsInit())
-				ptr->sxvcellextra->cvFore.fromHex(m_oForeColor->GetValue());
-            }
 			return objectPtr;
 		}
 	}
@@ -5600,12 +5737,20 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			XLS::BaseObjectPtr objectPtr(ptr1);
 			if(m_oCaption.IsInit())
 				ptr->info.stCaption = m_oCaption.get();
+			else
+				ptr->info.fCaption = false;
 			if(m_oCalculated.IsInit())
 				ptr->info.fFmla = m_oCalculated.get();
+			else
+				ptr->info.fFmla = false;
 			if(m_oUnused.IsInit())
 				ptr->info.fGhost = m_oUnused.get();
+			else
+				ptr->info.fGhost = false;
 			if(m_oCount.IsInit())
 				ptr->info.cIMemProps = m_oCount->GetValue();
+			if(m_oValue.IsInit())
+				ptr->datetime.fromString(m_oValue->GetValue());
 			for(auto i:m_arrItems)
 				ptr->info.rgIMemProps.push_back(i->m_oV.get());
 			return objectPtr;
@@ -5722,12 +5867,20 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				ptr->f = m_oValue.get();
 			if(m_oCalculated.IsInit())
 				ptr->info.fFmla = m_oCalculated.get();
+			else 
+				ptr->info.fFmla = false;
 			if(m_oCaption.IsInit())
 				ptr->info.stCaption = m_oCaption.get();
+			else 
+				ptr->info.fCaption = false;
 			if(m_oUnused.IsInit())
 				ptr->info.fGhost = m_oUnused.get();
+			else
+				ptr->info.fGhost = false;
 			if(m_oCount.IsInit())
 				ptr->info.cIMemProps = m_oCount->GetValue();
+			else
+				ptr->info.cIMemProps = m_arrItems.size();
 			for(auto i:m_arrItems)
 				ptr->info.rgIMemProps.push_back(i->m_oV.get());
 			return objectPtr;
@@ -5738,8 +5891,13 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			auto ptr1(new XLSB::PCDI);
             ptr1->m_source = XLS::BaseObjectPtr{ptr};
 			XLS::BaseObjectPtr objectPtr(ptr1);
+			nullable_bool boolVal;
 			if(m_oValue.IsInit())
-				ptr->f = m_oValue.get();
+				boolVal = m_oValue.get();
+			if(boolVal.IsInit())
+				ptr->f = boolVal.get();
+			else
+				ptr->f = false;
 			return objectPtr;
 		}
 	}
@@ -5856,20 +6014,6 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			auto ptr1(new XLSB::PCDI);
             ptr1->m_source = XLS::BaseObjectPtr{ptr};
 			XLS::BaseObjectPtr objectPtr(ptr1);
-			if(m_oBold.IsInit())
-				ptr->sxvcellextra->fSrvFmtBold = m_oBold.get();
-			if(m_oItalic.IsInit())
-				ptr->sxvcellextra->fSrvFmtItalic = m_oItalic.get();
-			if(m_oStrike.IsInit())
-				ptr->sxvcellextra->fSrvFmtStrikethrough = m_oStrike.get();
-			if(m_oUnderline.IsInit())
-				ptr->sxvcellextra->fSrvFmtUnderline = m_oUnderline.get();
-			if(m_oFormatIndex.IsInit())
-				ptr->sxvcellextra->isfci = m_oFormatIndex->GetValue();
-			if(m_oBackColor.IsInit())
-				ptr->sxvcellextra->cvBack.fromHex(m_oBackColor->GetValue());
-			if(m_oForeColor.IsInit())
-				ptr->sxvcellextra->cvFore.fromHex(m_oForeColor->GetValue());
 			return objectPtr;
 		}
 		else

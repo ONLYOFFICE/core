@@ -75,7 +75,7 @@ namespace OOX
 			}
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			XLS::BaseObjectPtr writeAttributes();
+			XLS::BaseObjectPtr writeAttributes(const UINT8 flags);
 
 			nullable_bool		m_oContainsBlank;
 			nullable_bool		m_oContainsDate;
@@ -825,7 +825,7 @@ namespace OOX
 			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
-				return et_x_PivotBooleanValue;
+                return et_x_PivotDateTimeValue;
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);

@@ -22,6 +22,23 @@ static std::string special_handling    = "|html|body|";
 static std::string no_entity_sub       = ""; //"|style|";
 static std::string treat_like_inline   = "|p|";
 
+static std::vector<std::string> html_tags = {"div","span","a","img","p","h1","h2","h3","h4","h5","h6",
+                                             "ul", "ol", "li","table","tr","td","th","br","form","input",
+                                             "button","section","nav","header","footer","main","figure",
+                                             "figcaption","strong","em","i", "b", "u","pre","code","blockquote",
+                                             "hr","script","link","meta","style","title","head","body","html",
+                                             "legend","optgroup","option","select","dl","dt","dd","time",
+                                             "data","abbr","address","area","base","bdi","bdo","cite","col",
+                                             "iframe","video","source","track","textarea","label","fieldset",
+                                             "colgroup","del","ins","details","summary","dialog","embed",
+                                             "kbd","map","mark","menu","meter","object","output","param",
+                                             "progress","q","samp","small","sub","sup","var","wbr","acronym",
+                                             "applet","article","aside","audio","basefont","bgsound","big",
+                                             "blink","canvas","caption","center","command","comment","datalist",
+                                             "dfn","dir","font","frame","frameset","hgroup","isindex","keygen",
+                                             "marquee","nobr","noembed","noframes","noscript","plaintext","rp",
+                                             "rt","ruby","s","strike","tt","tfoot","thead","xmp"};
+
 static void prettyprint(GumboNode*, NSStringUtils::CStringBuilderA& oBuilder);
 static std::string mhtTohtml(const std::string &sFileContent);
 
@@ -566,13 +583,20 @@ static void prettyprint(GumboNode* node, NSStringUtils::CStringBuilderA& oBuilde
 		return;
 	}
 
+	std::string tagname            = get_tag_name(node);
+
+	if (html_tags.end() == std::find(html_tags.begin(), html_tags.end(), tagname))
+	{
+		prettyprint_contents(node, oBuilder);
+		return;
+	}
+
 	std::string close              = "";
 	std::string closeTag           = "";
-	std::string tagname            = get_tag_name(node);
 	std::string key                = "|" + tagname + "|";
 	bool is_empty_tag              = empty_tags.find(key) != std::string::npos;
 	bool no_entity_substitution    = no_entity_sub.find(key) != std::string::npos;
-
+	
 	// determine closing tag type
 	if (is_empty_tag)
 		close = "/";

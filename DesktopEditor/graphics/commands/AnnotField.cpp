@@ -370,15 +370,20 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 	return m_nType != -1;
 }
 
+CAnnotFieldInfo::CMarkupAnnotPr::~CMarkupAnnotPr()
+{
+	for (int i = 0; i < m_arrRC.size(); ++i)
+		RELEASEOBJECT(m_arrRC[i]);
+}
 BYTE   CAnnotFieldInfo::CMarkupAnnotPr::GetRT()      const { return m_nRT; }
 int    CAnnotFieldInfo::CMarkupAnnotPr::GetFlag()    const { return m_nFlag; }
 int    CAnnotFieldInfo::CMarkupAnnotPr::GetPopupID() const { return m_nPopupID; }
 int    CAnnotFieldInfo::CMarkupAnnotPr::GetIRTID()   const { return m_nIRTID; }
 double CAnnotFieldInfo::CMarkupAnnotPr::GetCA()      const { return m_dCA; }
 const std::wstring& CAnnotFieldInfo::CMarkupAnnotPr::GetT()    { return m_wsT; }
-const std::wstring& CAnnotFieldInfo::CMarkupAnnotPr::GetRC()   { return m_wsRC; }
 const std::wstring& CAnnotFieldInfo::CMarkupAnnotPr::GetCD()   { return m_wsCD; }
 const std::wstring& CAnnotFieldInfo::CMarkupAnnotPr::GetSubj() { return m_wsSubj; }
+const std::vector<CAnnotFieldInfo::CMarkupAnnotPr::CFontData*>& CAnnotFieldInfo::CMarkupAnnotPr::GetRC() { return m_arrRC; }
 void CAnnotFieldInfo::CMarkupAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags)
 {
 	m_nFlag = nFlags;
@@ -389,7 +394,26 @@ void CAnnotFieldInfo::CMarkupAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader
 	if (nFlags & (1 << 2))
 		m_dCA = pReader->ReadDouble();
 	if (nFlags & (1 << 3))
-		m_wsRC = pReader->ReadString();
+	{
+		int nFont = pReader->ReadInt();
+		for (int i = 0; i < nFont; ++i)
+		{
+			CFontData* pFont = new CFontData();
+			pFont->nAlignment = pReader->ReadByte();
+			pFont->nFontFlag = pReader->ReadInt();
+			if (pFont->nFontFlag & (1 << 5))
+				pFont->dVAlign = pReader->ReadDouble();
+			if (pFont->nFontFlag & (1 << 6))
+				pFont->sActualFont = pReader->ReadString();
+			pFont->dFontSise = pReader->ReadDouble();
+			pFont->dColor[0] = pReader->ReadDouble();
+			pFont->dColor[1] = pReader->ReadDouble();
+			pFont->dColor[2] = pReader->ReadDouble();
+			pFont->sFontFamily = pReader->ReadString();
+			pFont->sText = pReader->ReadString();
+			m_arrRC.push_back(pFont);
+		}
+	}
 	if (nFlags & (1 << 4))
 		m_wsCD = pReader->ReadString();
 	if (nFlags & (1 << 5))
@@ -541,6 +565,12 @@ BYTE CAnnotFieldInfo::CFreeTextAnnotPr::GetLE() const { return m_nLE; }
 const std::wstring& CAnnotFieldInfo::CFreeTextAnnotPr::GetDS() { return m_wsDS; }
 void CAnnotFieldInfo::CFreeTextAnnotPr::GetRD(double& dRD1, double& dRD2, double& dRD3, double& dRD4) { dRD1 = m_dRD[0]; dRD2 = m_dRD[1]; dRD3 = m_dRD[2]; dRD4 = m_dRD[3]; }
 const std::vector<double>& CAnnotFieldInfo::CFreeTextAnnotPr::GetCL() { return m_arrCL; }
+const std::vector<double>& CAnnotFieldInfo::CFreeTextAnnotPr::GetIC() { return m_arrIC; }
+BYTE* CAnnotFieldInfo::CFreeTextAnnotPr::GetRender(LONG& nLen)
+{
+	nLen = m_nRenderLen;
+	return m_pRender;
+}
 void CAnnotFieldInfo::CFreeTextAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags)
 {
 	m_nQ = pReader->ReadByte();
@@ -563,6 +593,18 @@ void CAnnotFieldInfo::CFreeTextAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferRead
 		m_nLE = pReader->ReadByte();
 	if (nFlags & (1 << 20))
 		m_nIT = pReader->ReadByte();
+	if (nFlags & (1 << 21))
+	{
+		int n = pReader->ReadInt();
+		for (int i = 0; i < n; ++i)
+			m_arrIC.push_back(pReader->ReadDouble());
+	}
+	if (nFlags & (1 << 22))
+	{
+		m_nRenderLen = pReader->ReadInt() - 4;
+		m_pRender = pReader->GetCurrentBuffer();
+		pReader->Skip(m_nRenderLen);
+	}
 }
 
 BYTE CAnnotFieldInfo::CCaretAnnotPr::GetSy() const { return m_nSy; }

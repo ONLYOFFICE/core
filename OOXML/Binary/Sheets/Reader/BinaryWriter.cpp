@@ -6384,6 +6384,11 @@ void BinaryWorksheetTableWriter::WriteDrawings(const OOX::Spreadsheet::CWorkshee
 						{
 							//преобразуем ClientData в CellAnchor
 							OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pElemShape);
+
+							if (pClientData->m_oObjectType.IsInit() && pClientData->m_oObjectType->GetValue() == SimpleTypes::Vml::vmlclientdataobjecttypeNote)
+							{
+								continue;
+							}
 							
 							SimpleTypes::Spreadsheet::CCellAnchorType eAnchorType;
 							eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);

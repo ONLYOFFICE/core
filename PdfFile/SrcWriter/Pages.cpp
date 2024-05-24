@@ -41,6 +41,7 @@
 #include "Pattern.h"
 #include "Document.h"
 #include "Field.h"
+#include "ResourcesDictionary.h"
 
 #ifdef DrawText
 #undef DrawText
@@ -310,9 +311,16 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CPage
 	//----------------------------------------------------------------------------------------
-	CPage::CPage(CDocument* pDocument)
+	CPage::CPage(CDocument* pDocument, CXref* pXref)
 	{
 		Init(pDocument);
+		if (pXref)
+		{
+			AddResource(pXref);
+			m_pContents = new CArrayObject();
+			Add("Contents", m_pContents);
+			AddContents(pXref);
+		}
 	}
 	void CPage::Fix()
 	{
@@ -566,27 +574,13 @@ namespace PdfWriter
 	{
 		return Get("Rotate");
 	}
-    void CPage::AddResource()
+	void CPage::AddResource(CXref* pXref)
 	{
-		// TODO: Переделать на ResourcesDict
-		CDictObject* pResource = new CDictObject();
+		CResourcesDict* pResource = new CResourcesDict(pXref, !pXref, true);
 		if (!pResource)
 			return;
-	
-	    // Не смотря на то, что ProcSet - устаревший объект, добавляем
-	    // его для совместимости	
+
 	    Add("Resources", pResource);
-	
-		CArrayObject* pProcset = new CArrayObject();
-		if (!pProcset)
-			return;	
-	
-		pResource->Add("ProcSet", pProcset);
-		pProcset->Add(new CNameObject("PDF"));
-		pProcset->Add(new CNameObject("Text"));
-		pProcset->Add(new CNameObject("ImageB"));
-		pProcset->Add(new CNameObject("ImageC"));
-		pProcset->Add(new CNameObject("ImageI"));
 	}
     void CPage::BeforeWrite()
 	{
@@ -1043,6 +1037,15 @@ namespace PdfWriter
 		m_pGrState->m_oMatrix.x   =   dX * oCTM.m11 + dY * oCTM.m21 + oCTM.x;
 		m_pGrState->m_oMatrix.y   =   dX * oCTM.m12 + dY * oCTM.m22 + oCTM.y;
 	}
+	void CPage::StartTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY)
+	{
+		m_pGrState->m_oMatrix.m11 = dM11;
+		m_pGrState->m_oMatrix.m12 = dM12;
+		m_pGrState->m_oMatrix.m21 = dM21;
+		m_pGrState->m_oMatrix.m22 = dM22;
+		m_pGrState->m_oMatrix.x   =   dX;
+		m_pGrState->m_oMatrix.y   =   dY;
+	}
     void CPage::SetTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY)
 	{
 		CMatrix oInverse = m_pGrState->m_oMatrix.Inverse();
@@ -1204,6 +1207,15 @@ namespace PdfWriter
 			m_pStream->WriteChar('<');
 			m_pStream->WriteBinary(sText, unLen, NULL);
 			m_pStream->WriteChar('>');
+		}
+		else if (fontType1 == eType)
+		{
+			unLen = unLen / 2;
+			BYTE* sText2 = new BYTE[unLen];
+			for (int i = 0; i < unLen; ++i)
+				sText2[i] = sText[i * 2 + 1];
+			m_pStream->WriteEscapeText(sText2, unLen);
+			RELEASEARRAYOBJECTS(sText2);
 		}
 		else
 		{
@@ -1583,6 +1595,10 @@ namespace PdfWriter
 		m_pContents = new CArrayObject();
 		Add("Contents", m_pContents);
 		AddContents(pXref);
+	}
+	CDictObject* CPage::GetContent() const
+	{
+		return (CDictObject*)m_pContents->Remove(0);
 	}
     int CPage::GetRotate()
     {

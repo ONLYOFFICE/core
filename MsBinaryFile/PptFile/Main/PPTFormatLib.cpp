@@ -109,7 +109,7 @@ bool COfficePPTFile::CloseFile()
 
     PPT::CPPTFileReader* r = (PPT::CPPTFileReader*)m_pReader;	RELEASEOBJECT(r);
 	m_pReader = NULL;
-	return S_OK;
+	return true;
 }
 
 _UINT32 COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring password, bool &bMacros)

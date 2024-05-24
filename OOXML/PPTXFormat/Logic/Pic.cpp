@@ -282,7 +282,9 @@ namespace PPTX
 
 						ooxml_file = ole_file->filename().GetPath() + (bMacro ? L".docm" : L".docx");
 					}
-
+					else if (checker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT)
+					{//todooo
+					}
 					if (0 == nRes)
 					{
 						COfficeUtils oCOfficeUtils(NULL);
@@ -295,6 +297,46 @@ namespace PPTX
 						ole_file->set_MsPackage(true);
 						ole_file->set_filename(ooxml_file, false);
 					}
+				}
+				else if (checker.nFileType == AVS_OFFICESTUDIO_FILE_OTHER_PACKAGE_IN_OLE)
+				{
+					POLE::Storage* storageIn = new POLE::Storage(ole_file->filename().GetPath().c_str());
+					if ((storageIn) && (storageIn->open(false, false))) //storage in storage
+					{
+						POLE::Stream stream(storageIn, L"Package");
+						if (false == stream.fail())
+						{//test package stream??? xls ole -> xlsx ole
+
+							POLE::uint64 size = stream.size();
+							unsigned char* data = new unsigned char[size];
+							stream.read(data, size);
+							storageIn->close();
+
+							std::wstring package = ole_file->filename().GetPath() + L".temp";
+
+							NSFile::CFileBinary file;
+
+							file.CreateFileW(package);
+							file.WriteFile(data, (DWORD)size);
+							file.CloseFile();
+
+							COfficeFileFormatChecker checker2;
+							checker2.isOfficeFile(package);
+							if (checker2.nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN)
+							{
+								std::wstring package2 = package + checker2.GetExtensionByType(checker2.nFileType);
+								
+								file.CreateFileW(package2);
+								file.WriteFile(data, (DWORD)size);
+								file.CloseFile();
+
+								ole_file->set_MsPackage(true);
+								ole_file->set_filename(package2, false);
+							}
+							delete[]data;
+						}
+					}
+					delete storageIn;
 				}
 			}
 
@@ -419,7 +461,7 @@ namespace PPTX
 						delete pXlsxEmbedded;
 					}
 					//else if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX)
-					//{
+					//{ todooo
 					//}
 					else
 					{//unknown ms package
@@ -913,8 +955,7 @@ namespace PPTX
 					bOle = true;
 					pWriter->WriteString(L"<p:graphicFrame><p:nvGraphicFramePr>");
 						pWriter->WriteString(L"<p:cNvPr id=\"" + std::to_wstring(_id) + L"\"");
-						if (false == nvPicPr.cNvPr.name.empty())
-							pWriter->WriteString(L" name=\"" + nvPicPr.cNvPr.name + L"\"");
+						pWriter->WriteString(L" name=\"" + nvPicPr.cNvPr.name + L"\"");
 						pWriter->WriteString(L"/><p:cNvGraphicFramePr>"); 
 						pWriter->WriteString(L"<a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/>");
 						pWriter->WriteString(L"</p:cNvGraphicFramePr>");

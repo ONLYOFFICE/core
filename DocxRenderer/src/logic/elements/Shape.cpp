@@ -944,6 +944,38 @@ namespace NSDocxRenderer
 	}
 	void CShape::ToXmlPptx(NSStringUtils::CStringBuilder &oWriter) const
 	{
+		if (m_eType == eShapeType::stPicture)
+		{
+			// TODO:
+			oWriter.WriteString(L"<p:pic>");
+			oWriter.WriteString(L"<p:nvPicPr>");
+			oWriter.WriteString(L"<p:cNvPr id=\"");
+			oWriter.AddUInt(m_pImageInfo->m_nId);
+			oWriter.WriteString(L"\" name=\"Picture ");
+			oWriter.AddUInt(m_pImageInfo->m_nId);
+			oWriter.WriteString(L"\"/>");
+			oWriter.WriteString(L"<p:cNvPicPr><a:picLocks noChangeAspect=\"1\"/></p:cNvPicPr>");
+			oWriter.WriteString(L"<p:nvPr/>");
+			oWriter.WriteString(L"</p:nvPicPr>");
+
+			oWriter.WriteString(L"<p:blipFill>");
+			oWriter.WriteString(L"<a:blip r:embed=\"rId");
+			oWriter.AddUInt(c_iStartingIdForImages + m_pImageInfo->m_nId);
+			oWriter.WriteString(L"\">");
+			oWriter.WriteString(L"</a:blip>");
+			oWriter.WriteString(L"<a:stretch><a:fillRect/></a:stretch>");
+			oWriter.WriteString(L"</p:blipFill>");
+
+			oWriter.WriteString(L"<p:spPr>");
+			BuildForm(oWriter, true);
+			oWriter.WriteString(L"<a:prstGeom prst=\"rect\">");
+			oWriter.WriteString(L"<a:avLst/>");
+			oWriter.WriteString(L"</a:prstGeom>");
+			oWriter.WriteString(L"</p:spPr>");
+			oWriter.WriteString(L"</p:pic>");
+			return;
+		}
+
 		oWriter.WriteString(L"<p:sp>");
 		oWriter.WriteString(L"<p:spPr>");
 

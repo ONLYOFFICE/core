@@ -68,7 +68,8 @@ void ConvertOle1ToOle2(BYTE *pData, int nSize, std::wstring sOle2Name)
 		{
 			POLE::Stream stream(storageIn, L"Package");
 			if (false == stream.fail())
-			{//test package stream??? xls ole -> xlsx ole
+			{
+// AVS_OFFICESTUDIO_FILE_OTHER_PACKAGE_IN_OLE
 
 				POLE::uint64 size = stream.size();
 				unsigned char* data = new unsigned char[size];

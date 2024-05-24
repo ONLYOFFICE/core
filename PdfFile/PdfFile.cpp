@@ -47,16 +47,21 @@
 class CPdfEditor
 {
 public:
+	int  GetError() { return 0; }
 	void Close() {}
+	bool EditPage(int nPageIndex) { return false; }
+	bool DeletePage(int nPageIndex) { return false; }
+	bool AddPage(int nPageIndex) { return false; }
 	bool EditAnnot(int nPageIndex, int nID) { return false; }
 	bool DeleteAnnot(int nID) { return false; }
 	bool EditWidgets(IAdvancedCommand* pCommand) { return false; }
 	int  GetPagesCount() { return 0; }
-	int  GetRotate(int nPageIndex) { return 0; }
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) {}
+	int  GetRotate(int nPageIndex) { return 0; }
 	bool IsEditPage() { return false; }
 	void AddShapeXML(const std::string& sXML) {}
 	void EndMarkedContent() {}
+	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath) { return false; }
 };
 #endif // BUILDING_WASM_MODULE
 
@@ -880,7 +885,24 @@ HRESULT CPdfFile::put_FontName(const std::wstring& wsName)
 {
 	if (!m_pInternal->pWriter)
 		return S_FALSE;
-	return m_pInternal->pWriter->put_FontName(wsName);
+	std::wstring wsFontName = wsName;
+	if (m_pInternal->pEditor && wsFontName.find(L"Embedded: ") == 0)
+	{
+		wsFontName.erase(0, 10);
+		bool bBold = false, bItalic = false;
+		std::wstring wsFontPath;
+		if (m_pInternal->pEditor->IsBase14(wsFontName, bBold, bItalic, wsFontPath) && (bBold || bItalic))
+		{
+			LONG lStyle = 0;
+			if (bBold)
+				lStyle |= 1;
+			if (bItalic)
+				lStyle |= 2;
+			put_FontStyle(lStyle);
+		}
+		m_pInternal->pWriter->AddFont(wsFontName, bBold, bItalic, wsFontPath, 0);
+	}
+	return m_pInternal->pWriter->put_FontName(wsFontName);
 }
 HRESULT CPdfFile::get_FontPath(std::wstring* wsPath)
 {

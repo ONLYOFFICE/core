@@ -144,6 +144,8 @@ bool CPPTDocumentInfo::LoadDocument()
     {
         m_arUsers[0]->ReadExtenalObjects(); // todooo ???? прочитать по всем (см 66864)
         m_arUsers[0]->FromDocument();
+
+        m_bMacroEnabled = m_arUsers[0]->m_bMacroEnabled;
     }
     catch(int) //error code
     {

@@ -56,12 +56,14 @@ public:
 	bool IsEditPage();
 	void AddShapeXML(const std::string& sXML);
 	void EndMarkedContent();
+	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
 
 private:
 	void GetPageTree(XRef* xref, Object* pPagesRefObj);
 
 	std::wstring wsSrcFile;
 	std::wstring wsPassword;
+	std::map<std::wstring, std::wstring> m_mFonts;
 
 	CPdfReader* pReader;
 	CPdfWriter* pWriter;

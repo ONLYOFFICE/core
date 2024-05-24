@@ -386,6 +386,86 @@ HRESULT _ChangePassword(const std::wstring& wsPath, const std::wstring& wsPasswo
 
 	return bRes ? S_OK : S_FALSE;
 }
+void StreamGetCTM(XRef* pXref, Object* oStream, double* dCTM)
+{
+	Parser* parser = new Parser(pXref, new Lexer(pXref, oStream), gFalse);
+
+	int nNumArgs = 0;
+	Object oObj;
+	Object pArgs[maxArgs];
+
+	parser->getObj(&oObj);
+	while (!oObj.isEOF())
+	{
+		if (oObj.isCmd())
+		{
+			if (oObj.isCmd("q"))
+			{
+				Object obj;
+				parser->getObj(&obj);
+				while (!obj.isEOF() && !obj.isCmd("Q"))
+				{
+					obj.free();
+					parser->getObj(&obj);
+				}
+				obj.free();
+			}
+			else if (oObj.isCmd("cm") && nNumArgs > 5)
+			{
+				double a1 = dCTM[0];
+				double b1 = dCTM[1];
+				double c1 = dCTM[2];
+				double d1 = dCTM[3];
+
+				dCTM[0] = pArgs[0].getNum() * a1 + pArgs[1].getNum() * c1;
+				dCTM[1] = pArgs[0].getNum() * b1 + pArgs[1].getNum() * d1;
+				dCTM[2] = pArgs[2].getNum() * a1 + pArgs[3].getNum() * c1;
+				dCTM[3] = pArgs[2].getNum() * b1 + pArgs[3].getNum() * d1;
+				dCTM[4] = pArgs[4].getNum() * a1 + pArgs[5].getNum() * c1 + dCTM[4];
+				dCTM[5] = pArgs[4].getNum() * b1 + pArgs[5].getNum() * d1 + dCTM[5];
+			}
+			oObj.free();
+			for (int i = 0; i < nNumArgs; ++i)
+				pArgs[i].free();
+			nNumArgs = 0;
+		}
+		else if (nNumArgs < maxArgs)
+			pArgs[nNumArgs++] = oObj;
+
+		parser->getObj(&oObj);
+	}
+	oObj.free();
+	for (int i = 0; i < nNumArgs; ++i)
+		pArgs[i].free();
+	RELEASEOBJECT(parser);
+}
+void GetCTM(XRef* pXref, Object* oPage, double* dCTM)
+{
+	if (!oPage || !oPage->isDict())
+		return;
+
+	Object oContents;
+	if (!oPage->dictLookup("Contents", &oContents))
+	{
+		oContents.free();
+		return;
+	}
+
+	if (oContents.isArray())
+	{
+		for (int nIndex = 0; nIndex < oContents.arrayGetLength(); ++nIndex)
+		{
+			Object oTemp;
+			oContents.arrayGet(nIndex, &oTemp);
+			if (oTemp.isStream())
+				StreamGetCTM(pXref, &oTemp, dCTM);
+			oTemp.free();
+		}
+	}
+	else if (oContents.isStream())
+		StreamGetCTM(pXref, &oContents, dCTM);
+	oContents.free();
+}
 
 CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, CPdfReader* _pReader, const std::wstring& _wsDstFile, CPdfWriter* _pWriter)
 {
@@ -873,8 +953,7 @@ bool CPdfEditor::EditPage(int nPageIndex)
 		else if (strcmp("Annots", chKey) == 0)
 		{
 			// ВРЕМЕНО удаление Link аннотаций при редактировании
-			pageObj.dictGetVal(nIndex, &oTemp);
-			if (oTemp.isArray())
+			if (pageObj.dictGetVal(nIndex, &oTemp)->isArray())
 			{
 				PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
 				pPage->Add("Annots", pArray);
@@ -894,11 +973,15 @@ bool CPdfEditor::EditPage(int nPageIndex)
 				oTemp.free();
 				continue;
 			}
+			else
+			{
+				oTemp.free();
+				pageObj.dictGetValNF(nIndex, &oTemp);
+			}
 		}
 		else if (strcmp("Contents", chKey) == 0)
 		{
-			pageObj.dictGetVal(nIndex, &oTemp);
-			if (oTemp.isArray())
+			if (pageObj.dictGetVal(nIndex, &oTemp)->isArray())
 			{
 				DictToCDictObject(&oTemp, pPage, true, chKey);
 				oTemp.free();
@@ -916,12 +999,15 @@ bool CPdfEditor::EditPage(int nPageIndex)
 		oTemp.free();
 	}
 	pPage->Fix();
+	double dCTM[6] = { 1, 0, 0, 1, 0, 0 };
+	GetCTM(xref, &pageObj, dCTM);
 	pageObj.free();
 
 	// Применение редактирования страницы для writer
 	if (pWriter->EditPage(pPage) && pDoc->EditPage(pXref, pPage, nPageIndex))
 	{
 		bEditPage = true;
+		pPage->StartTransform(dCTM[0], dCTM[1], dCTM[2], dCTM[3], dCTM[4], dCTM[5]);
 		return true;
 	}
 
@@ -1017,7 +1103,11 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 	else if (oType.isName("Polygon") || oType.isName("PolyLine"))
 		pAnnot = new PdfWriter::CPolygonLineAnnotation(pXref);
 	else if (oType.isName("FreeText"))
+	{
+		std::map<std::wstring, std::wstring> mapFont = pReader->AnnotFonts(&oAnnotRef);
+		m_mFonts.insert(mapFont.begin(), mapFont.end());
 		pAnnot = new PdfWriter::CFreeTextAnnotation(pXref);
+	}
 	else if (oType.isName("Caret"))
 		pAnnot = new PdfWriter::CCaretAnnotation(pXref);
 	else if (oType.isName("Popup"))
@@ -1281,5 +1371,71 @@ void CPdfEditor::AddShapeXML(const std::string& sXML)
 }
 void CPdfEditor::EndMarkedContent()
 {
-	pWriter->GetPage()->EndMarkedContent();
+	pWriter->GetDocument()->EndShapeXML();
+}
+bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath)
+{
+	std::map<std::wstring, std::wstring>::iterator it = m_mFonts.find(wsFontName);
+	if (it == m_mFonts.end())
+		return false;
+	wsFontPath = it->second;
+	if (wsFontName == L"Helvetica")
+		return true;
+	if (wsFontName == L"Helvetica-Bold")
+	{
+		bBold = true;
+		return true;
+	}
+	if (wsFontName == L"Helvetica-Oblique")
+	{
+		bItalic = true;
+		return true;
+	}
+	if (wsFontName == L"Helvetice-BoldOblique")
+	{
+		bBold = true;
+		bItalic = true;
+		return true;
+	}
+	if (wsFontName == L"Courier")
+		return true;
+	if (wsFontName == L"Courier-Bold")
+	{
+		bBold = true;
+		return true;
+	}
+	if (wsFontName == L"Courier-Oblique")
+	{
+		bItalic = true;
+		return true;
+	}
+	if (wsFontName == L"Courier-BoldOblique")
+	{
+		bBold = true;
+		bItalic = true;
+		return true;
+	}
+	if (wsFontName == L"Times")
+		return true;
+	if (wsFontName == L"Times-Bold")
+	{
+		bBold = true;
+		return true;
+	}
+	if (wsFontName == L"Times-Oblique")
+	{
+		bItalic = true;
+		return true;
+	}
+	if (wsFontName == L"Times-BoldOblique")
+	{
+		bBold = true;
+		bItalic = true;
+		return true;
+	}
+	if (wsFontName == L"Symbol")
+		return true;
+	if (wsFontName == L"ZapfDingbats")
+		return true;
+	return false;
 }

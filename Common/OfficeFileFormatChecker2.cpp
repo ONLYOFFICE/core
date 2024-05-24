@@ -326,27 +326,33 @@ bool COfficeFileFormatChecker::isOleObjectFile(POLE::Storage *storage)
 				if (sz_obj > 4)
 					Program = ReadStringFromOle(&streamCompObject, sz_obj);
 			}
-			if (std::string::npos != Program.find("Excel") || std::string::npos != UserType.find("Excel"))
+			POLE::Stream streamPackage(storage, L"Package");
+			if (false == streamPackage.fail())
+			{
+				nFileType = AVS_OFFICESTUDIO_FILE_OTHER_PACKAGE_IN_OLE;
+			}
+			else if (std::string::npos != Program.find("Excel") || std::string::npos != UserType.find("Excel"))
 			{
 				if (isXlsFormatFile(storage))
 				{
 					nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
 				}
 			}
-			if (std::string::npos != Program.find("Word") || std::string::npos != UserType.find("Word"))
+			else if (std::string::npos != Program.find("Word") || std::string::npos != UserType.find("Word"))
 			{
 				if (isDocFormatFile(storage))
 				{
 					//nFileType inside
 				}
 			}
-			if (std::string::npos != Program.find("PowerPoint") || std::string::npos != UserType.find("PowerPoint"))
+			else if (std::string::npos != Program.find("PowerPoint") || std::string::npos != UserType.find("PowerPoint"))
 			{
 				if (isPptFormatFile(storage))
 				{
 					nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT;
 				}
 			}
+
 			return true;
 		}
 		else

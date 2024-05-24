@@ -131,6 +131,12 @@ public:
 			rdPtr += sizeof(T);
 			return true;
 		}
+		else if(global_info_ && (global_info_.get()->Version == 0x0800) && (rdPtr + sizeof(T) < MAX_RECORD_SIZE_XLSB))
+		{
+            memcpy(&intData[rdPtr], &val, sizeof(T));
+            rdPtr += sizeof(T);
+            return true;
+		}
 		return false;
 	}
 
@@ -161,7 +167,8 @@ public:
 	CFRecord& operator << (bool& val);
 
 private:
-	static const size_t MAX_RECORD_SIZE = 8224;
+    static const size_t MAX_RECORD_SIZE = 8224;
+	static const size_t MAX_RECORD_SIZE_XLSB = 0xFFFFFFF;
 
 	CFStream::ReceiverItems receiver_items;
 	CFStream::SourceItems source_items;
@@ -172,7 +179,7 @@ private:
     char*  data_;
     BYTE   sizeOfRecordTypeRecordLength; //размер RecordType и RecordLength
 	size_t rdPtr;
-	static char intData[MAX_RECORD_SIZE];
+	static char intData[MAX_RECORD_SIZE_XLSB];
 
 	GlobalWorkbookInfoPtr global_info_;
 };

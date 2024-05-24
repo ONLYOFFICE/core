@@ -90,7 +90,7 @@ namespace PdfWriter
 	class CPage : public CDictObject
 	{
 	public:
-		CPage(CDocument* pDocument);
+		CPage(CDocument* pDocument, CXref* pXref = NULL);
 		CPage(CXref* pXref, CPageTree* pParent, CDocument* pDocument);
 		~CPage();
 
@@ -131,6 +131,7 @@ namespace PdfWriter
 		void      SetStrokeColor(unsigned char unR, unsigned char unG, unsigned char unB);
 		void      SetFillColor(unsigned char unR, unsigned char unG, unsigned char unB);
 		void      Concat(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
+		void      StartTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      SetTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      SetExtGrState(CExtGrState* pExtGrState);
 		void      AddAnnotation(CDictObject* pAnnot);
@@ -165,6 +166,7 @@ namespace PdfWriter
         void      SetRotate(int nRotate);
         int       GetRotate();
 		void      ClearContent(CXref* pXref);
+		CDictObject* GetContent() const;
 
 	private:
 
@@ -176,7 +178,7 @@ namespace PdfWriter
         CObjectBase*  GetRotateItem();
 		TBox          GetMediaBox();
 		void          SetMediaBoxValue(unsigned int unIndex, double dValue);
-		void          AddResource();
+		void          AddResource(CXref* pXref = NULL);
 		void          SetGrMode(EGrMode eMode);
 		void          CheckGrMode(EGrMode eMode);
 		void          WriteText(const BYTE* sText, unsigned int unLen);

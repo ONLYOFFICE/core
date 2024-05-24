@@ -158,6 +158,8 @@
 		this.fontPageIndex = -1;
 		this.fontPageUpdateType = UpdateFontsSource.Undefined;
 		this.fontStreams = {};
+
+		this.scannedImages = {};
 	}
 
 	CFile.prototype["loadFromData"] = function(arrayBuffer)
@@ -1639,6 +1641,37 @@
 
 		Module["_free"](data);
 		return shapes;
+	};
+
+	CFile.prototype["getImageBase64"] = function(rId)
+	{
+		let strId = "" + rId;
+		if (this.scannedImages[strId])
+			return this.scannedImages[strId];
+
+		let strPtr = Module["_GetImageBase64"](this.nativeFile, rId);
+		if (0 == strPtr)
+		{
+			this.scannedImages[strId] = "error";
+			return this.scannedImages[strId];
+		}
+
+		let len = Module["_GetImageBase64Len"](strPtr);
+		let ptr = Module["_GetImageBase64Ptr"](strPtr);
+
+		var buffer = new Uint8Array(Module["HEAP8"].buffer, ptr, len);
+		this.scannedImages[strId] = String.prototype.fromUtf8(buffer, 0, len);
+		Module["_GetImageBase64Free"](strPtr);
+		return this.scannedImages[strId];
+	};
+
+	CFile.prototype["changeImageUrl"] = function(baseUrl, resultUrl)
+	{
+		for (let i in this.scannedImages)
+		{
+			if (this.scannedImages[i] == baseUrl)
+				this.scannedImages[i] = resultUrl;
+		}
 	};
 
 	CFile.prototype.memory = function()

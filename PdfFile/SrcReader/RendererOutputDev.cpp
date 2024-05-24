@@ -672,7 +672,7 @@ namespace PdfReader
 		m_bTransparentGroupSoftMaskEnd = false;
 
 		if (c_nHtmlRendrerer2 == m_lRendererType)
-			m_bDrawOnlyText = (S_OK == m_pRenderer->CommandLong(c_nCommandLongTypeOnlyText, 0)) ? true : false;
+			m_bDrawOnlyText = S_OK == m_pRenderer->CommandLong(c_nCommandLongTypeOnlyText, 0);
 		else if (c_nHtmlRendrererText == m_lRendererType)
 			m_bDrawOnlyText = true;
 		else
@@ -3941,7 +3941,7 @@ namespace PdfReader
 
 		int   nRenderMode = pGState->getRender();
 
-		if (3 == nRenderMode) // Невидимый текст
+		if (3 == nRenderMode && !m_bDrawOnlyText) // Невидимый текст
 		{
 			return;
 		}
@@ -4052,7 +4052,7 @@ namespace PdfReader
 			}
 		}
 
-		if (nRenderMode == 0 || nRenderMode == 4 || nRenderMode == 6 || (m_bDrawOnlyText && nRenderMode == 2))
+		if (nRenderMode == 0 || nRenderMode == 4 || nRenderMode == 6 || m_bDrawOnlyText)
 		{
 			bool bReplace = false;
 			std::wstring sFontPath;
@@ -4196,11 +4196,46 @@ namespace PdfReader
 	}
 	GBool RendererOutputDev::beginMarkedContent(GfxState *state, GString* s)
 	{
+		return gFalse;
+	}
+	GBool RendererOutputDev::beginMCOShapes(GfxState *state, GString *s, Object *ref)
+	{
 		IAdvancedCommand::AdvancedCommandType eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::ShapeStart;
 		if (m_pRenderer->IsSupportAdvancedCommand(eAdvancedCommandType) == S_OK)
 		{
 			CShapeStart* pCommand = new CShapeStart();
 			pCommand->SetShapeXML(s->getCString());
+
+			Object oIm;
+			if (ref && ref->isRef() && ref->fetch(m_pXref, &oIm)->isStream())
+			{
+				Dict *oImDict = oIm.streamGetDict();
+
+				int nLength = 0;
+				Object oLength;
+				if (oImDict->lookup("Length", &oLength)->isInt())
+					nLength = oLength.getInt();
+				oLength.free();
+				if (oImDict->lookup("DL", &oLength)->isInt())
+					nLength = oLength.getInt();
+				oLength.free();
+
+				Stream* pImage = oIm.getStream()->getUndecodedStream();
+				pImage->reset();
+
+				BYTE* pBuffer = new BYTE[nLength];
+				BYTE* pBufferPtr = pBuffer;
+				for (int nI = 0; nI < nLength; ++nI)
+					*pBufferPtr++ = (BYTE)pImage->getChar();
+
+				CBgraFrame oFrame;
+				if (oFrame.Decode(pBuffer, nLength))
+				{
+					pCommand->SetShapeImage(oFrame.get_Data(), oFrame.get_Width(), oFrame.get_Height());
+					oFrame.ClearNoAttack();
+				}
+			}
+			oIm.free();
 			bool bRes = m_pRenderer->AdvancedCommand(pCommand) == S_OK;
 			RELEASEOBJECT(pCommand);
 			if (bRes)

@@ -2145,7 +2145,9 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 	}
 	else
 	{
-		odf_context()->text_context()->start_span(true);
+		bool styled = oox_paragraph->endParaRPr.IsInit() && oox_paragraph->endParaRPr->sz.IsInit();
+
+		odf_context()->text_context()->start_span(styled);
 		odf_context()->text_context()->end_span();
 	}
 	

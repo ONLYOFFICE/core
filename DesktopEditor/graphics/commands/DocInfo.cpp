@@ -129,9 +129,25 @@ bool CDocInfoCommand::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 	return true;
 }
 
-CShapeStart::CShapeStart() : IAdvancedCommand(AdvancedCommandType::ShapeStart) {}
+CShapeStart::CShapeStart() : IAdvancedCommand(AdvancedCommandType::ShapeStart)
+{
+	m_pImage = NULL;
+}
+CShapeStart::~CShapeStart()
+{
+	RELEASEINTERFACE(m_pImage);
+}
 void CShapeStart::SetShapeXML(const std::string& sShapeXML) { m_sShapeXML = sShapeXML; }
-const std::string& CShapeStart::GetShapeXML() { return m_sShapeXML; }
+void CShapeStart::SetShapeImage(BYTE* pImgData, int nWidth, int nHeight)
+{
+	if (pImgData)
+	{
+		m_pImage = new Aggplus::CImage();
+		m_pImage->Create(pImgData, nWidth, nHeight, -4 * nWidth);
+	}
+}
+std::string& CShapeStart::GetShapeXML() { return m_sShapeXML; }
+Aggplus::CImage* CShapeStart::GetShapeImage() { return m_pImage; }
 bool CShapeStart::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
 {
 	m_sShapeXML = pReader->ReadStringA();

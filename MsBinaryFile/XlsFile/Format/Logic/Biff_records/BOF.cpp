@@ -74,6 +74,8 @@ void BOF::readFields(CFRecord& record)
 	
 	if (type_id_ == rt_BOF_BIFF8)
 	{
+		if (vers > 0x0700) vers = 0x0600;
+
 		record >> rupBuild >> rupYear;  // biff 5 - 8
 		
 		if ( record.checkFitReadSafe(8)) // biff 8

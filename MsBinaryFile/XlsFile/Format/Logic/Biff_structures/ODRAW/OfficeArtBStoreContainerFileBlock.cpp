@@ -106,68 +106,68 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 		switch (rc_header.recType)
 		{
 			case OfficeArtRecord::BlipEMF:
+			{
+				pict_type = L".emf";
+				if (rc_header.recInstance == 0x3D4)
+					rgbUid1 = ReadMD4Digest(record);
+				else
 				{
-					pict_type = L".emf";
-					if (rc_header.recInstance == 0x3D4)
-						rgbUid1 = ReadMD4Digest(record);
-					else
-					{
-						rgbUid1 = ReadMD4Digest(record);
-						rgbUid2 = ReadMD4Digest(record);
-					}
-
-					OfficeArtMetafileHeader metafileHeader;	
-					record >> metafileHeader;
-
-					if (metafileHeader.compression == 0)
-					{
-						isCompressed = true;
-						readCompressedData(record, metafileHeader);
-					}
+					rgbUid1 = ReadMD4Digest(record);
+					rgbUid2 = ReadMD4Digest(record);
 				}
-				break;
+
+				OfficeArtMetafileHeader metafileHeader;
+				record >> metafileHeader;
+
+				if (metafileHeader.compression == 0)
+				{
+					isCompressed = true;
+					readCompressedData(record, metafileHeader);
+				}
+			}
+			break;
 			case OfficeArtRecord::BlipWMF:
+			{
+				pict_type = L".wmf";
+				if (rc_header.recInstance == 0x216)
+					rgbUid1 = ReadMD4Digest(record);
+				else
 				{
-					pict_type = L".wmf";
-					if (rc_header.recInstance == 0x216)
-						rgbUid1 = ReadMD4Digest(record);
-					else
-					{
-						rgbUid1 = ReadMD4Digest(record);
-						rgbUid2 = ReadMD4Digest(record);
-					}
-
-					OfficeArtMetafileHeader metafileHeader;	
-					record >> metafileHeader;
-
-					if (metafileHeader.compression == 0)
-					{
-						isCompressed = true;
-						readCompressedData(record, metafileHeader);
-					}
+					rgbUid1 = ReadMD4Digest(record);
+					rgbUid2 = ReadMD4Digest(record);
 				}
-				break;				
+
+				OfficeArtMetafileHeader metafileHeader;
+				record >> metafileHeader;
+
+				if (metafileHeader.compression == 0)
+				{
+					isCompressed = true;
+					readCompressedData(record, metafileHeader);
+				}
+			}
+			break;
 			case OfficeArtRecord::BlipPICT:
+			{
+				pict_type = L".pcz";
+				if (rc_header.recInstance == 0x542)
+					rgbUid1 = ReadMD4Digest(record);
+				else
 				{
-					pict_type = L".pcz";
-					if (rc_header.recInstance == 0x542)
-						rgbUid1 = ReadMD4Digest(record);
-					else
-					{
-						rgbUid1 = ReadMD4Digest(record);
-						rgbUid2 = ReadMD4Digest(record);
-					}
-
-					OfficeArtMetafileHeader metafileHeader;	
-					record >> metafileHeader;
-
-					if (metafileHeader.compression == 0)
-					{
-						isCompressed = true;
-						readCompressedData(record, metafileHeader);
-					}
+					rgbUid1 = ReadMD4Digest(record);
+					rgbUid2 = ReadMD4Digest(record);
 				}
-				break;				
+
+				OfficeArtMetafileHeader metafileHeader;
+				record >> metafileHeader;
+
+				if (metafileHeader.compression == 0)
+				{
+					isCompressed = true;
+					readCompressedData(record, metafileHeader);
+				}
+			}
+			break;
 			case OfficeArtRecord::BlipJPEG:
 				pict_type = L".jpeg";
 				if ((rc_header.recInstance == 0x46A) || (rc_header.recInstance == 0x6E2))
@@ -232,7 +232,12 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 					record.RollRdPtrBack(32);
 				}
 				break;
-			default:
+			case 0xf018:
+			{
+				record.skipNunBytes(rc_header.recLen);
+				return;
+			}break;
+			default: //0xf007 
 				record.RollRdPtrBack(rc_header.size());
 				return;
 		}

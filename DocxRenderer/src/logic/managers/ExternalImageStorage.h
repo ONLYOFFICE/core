@@ -21,7 +21,7 @@ namespace NSDocxRenderer
 
 	public:
 		virtual std::shared_ptr<CImageInfo> GenerateImageID(Aggplus::CImage* pImage) = 0;
-		virtual std::map<std::wstring, std::string>* GetImages() = 0;
+		virtual std::string* GetBase64(const int& nRId) = 0;
 	};
 
 	DOCXRENDERER_DECL_EXPORT IImageStorage* CreateWasmImageStorage();

@@ -45,7 +45,8 @@
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/kernel_network.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/kernel.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/UnicodeConverter.lib")
-	#else
+		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/CryptoPPLib.lib")
+#else
 		#pragma comment(lib, "../../../build/lib/win_64/doctrenderer.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/HtmlRenderer.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/PdfFile.lib")
@@ -58,7 +59,8 @@
 		#pragma comment(lib, "../../../build/lib/win_64/kernel_network.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/kernel.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/UnicodeConverter.lib")
-	#endif
+		#pragma comment(lib, "../../../build/lib/win_64/CryptoPPLib.lib")
+#endif
 	#pragma comment(lib, "../../../Common/3dParty/icu/win_64/build//icuuc.lib")
 #elif defined (_WIN32)
 	#if defined(_DEBUG)
@@ -75,7 +77,8 @@
 		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/kernel.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/kernel_network.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/UnicodeConverter.lib")
-	#else
+		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/CryptoPPLib.lib")
+#else
 		#pragma comment(lib, "../../../build/lib/win_32/doctrenderer.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/HtmlRenderer.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/DocxRenderer.lib")
@@ -89,7 +92,8 @@
 		#pragma comment(lib, "../../../build/lib/win_32/kernel_network.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/kernel.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/UnicodeConverter.lib")
-	#endif
+		#pragma comment(lib, "../../../build/lib/win_32/CryptoPPLib.lib")
+#endif
 		#pragma comment(lib, "../../../Common/3dParty/icu/win_32/build/icuuc.lib")
 #endif
 

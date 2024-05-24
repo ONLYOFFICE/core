@@ -651,6 +651,10 @@ namespace PdfWriter
 			}
 		}
 	}
+	void CDictObject::SetStream(CStream* pStream)
+	{
+		m_pStream = pStream;
+	}
 	void CDictObject::SetStream(CXref* pXref, CStream* pStream, bool bThis)
 	{
 		if (m_pStream)

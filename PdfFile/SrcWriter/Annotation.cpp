@@ -1175,6 +1175,10 @@ namespace PdfWriter
 
 		CDictObject* pFPStream = pFakePage->GetContent();
 		pNormal->SetStream(m_pXref, pFPStream->GetStream(), false);
+#ifndef FILTER_FLATE_DECODE_DISABLED
+		if (m_pDocument->GetCompressionMode() & COMP_TEXT)
+			pNormal->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
 		pFPStream->SetStream(NULL);
 		// RELEASEOBJECT(pFPStream); Нельзя удалять - это объект стрима, он уже в xref
 	}

@@ -2029,6 +2029,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			PdfWriter::CFreeTextAnnotation* pFreeTextAnnot = (PdfWriter::CFreeTextAnnotation*)pAnnot;
 
 			pFreeTextAnnot->SetQ(pFTPr->GetQ());
+			pFreeTextAnnot->SetRotate(pFTPr->GetRotate());
 			if (nFlags & (1 << 15))
 			{
 				double dRD1, dRD2, dRD3, dRD4;

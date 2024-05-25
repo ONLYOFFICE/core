@@ -429,7 +429,7 @@ void CPdfReader::GetPageInfo(int _nPageIndex, double* pdWidth, double* pdHeight,
 	if (!m_pPDFDocument)
 		return;
 
-#if 0 //#ifdef BUILDING_WASM_MODULE
+#ifdef BUILDING_WASM_MODULE
 	*pdWidth  = m_pPDFDocument->getPageCropWidth(nPageIndex);
 	*pdHeight = m_pPDFDocument->getPageCropHeight(nPageIndex);
 #else
@@ -496,7 +496,7 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 		oRendererOut.NewPDF(m_pPDFDocument->getXRef());
 		oRendererOut.SetBreak(pbBreak);
 		int nRotate = 0;
-#if 0 //#ifdef BUILDING_WASM_MODULE
+#ifdef BUILDING_WASM_MODULE
 		nRotate = -m_pPDFDocument->getPageRotate(_nPageIndex + 1);
 #endif
 		m_pPDFDocument->displayPage(&oRendererOut, _nPageIndex + 1, 72.0, 72.0, nRotate, gFalse, gTrue, gFalse);
@@ -744,11 +744,13 @@ void getBookmarks(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out,
 	double dy = 0;
 	double dTop = pLinkDest->getTop();
 	double dHeight = pdfDoc->getPageCropHeight(pg);
+	/*
 	if (pdfDoc->getPageRotate(pg) % 180 != 0)
 	{
 		dHeight = pdfDoc->getPageCropWidth(pg);
 		dTop = pLinkDest->getLeft();
 	}
+	*/
 	if (dTop > 0 && dTop < dHeight)
 		dy = dHeight - dTop;
 
@@ -891,7 +893,7 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 	RELEASEOBJECT(pLinks);
 
 	int nRotate = 0;
-#if 0 //#ifdef BUILDING_WASM_MODULE
+#ifdef BUILDING_WASM_MODULE
 	nRotate = -m_pPDFDocument->getPageRotate(nPageIndex);
 #endif
 

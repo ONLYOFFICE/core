@@ -365,6 +365,7 @@ namespace PdfWriter
 		void SetQ(BYTE nQ);
 		void SetIT(BYTE nIT);
 		void SetLE(BYTE nLE);
+		void SetRotate(int nRotate);
 		void SetDS(const std::wstring& wsDS);
 		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4);
 		void SetCL(const std::vector<double>& arrCL);

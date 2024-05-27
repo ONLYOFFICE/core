@@ -36,7 +36,7 @@
 namespace StarMath
 {
 //class methods CParsStarMath
-	CParserStarMathString::CParserStarMathString():m_iAlignment(0){}
+	CParserStarMathString::CParserStarMathString():m_iAlignment(1){}
 	CParserStarMathString::~CParserStarMathString()
 	{
 		for(CElement* pElement:m_arEquation)
@@ -55,7 +55,7 @@ namespace StarMath
 			if(!m_arEquation.empty())
 				CElementBinOperator::UnaryCheck(pReader,m_arEquation.back());
 			CElement* pTempElement = ParseElement(pReader);
-			AddingAnElementToAnArray(m_arEquation,pTempElement);
+			AddingAnElementToAnArray(m_arEquation,pTempElement,pReader);
 		}
 		if(!pReader->EmptyString())
 		{
@@ -114,7 +114,7 @@ namespace StarMath
 		else return false;
 	}
 
-	bool CParserStarMathString::AddLeftArgument(CElement *pLeftArg, CElement *pElementWhichAdd)
+	bool CParserStarMathString::AddLeftArgument(CElement *pLeftArg, CElement *pElementWhichAdd, CStarMathReader *pReader)
 	{
 		if(pElementWhichAdd!=nullptr)
 		{
@@ -123,7 +123,7 @@ namespace StarMath
 				case TypeElement::BinOperator:
 				{
 					CElementBinOperator* pBinOp = dynamic_cast<CElementBinOperator*>(pElementWhichAdd);
-					if(pBinOp->GetType() == TypeElement::neg || (pBinOp->GetAttribute()!= nullptr && pBinOp->MixedOperators(pBinOp->GetType())))
+					if(pBinOp->GetType() == TypeElement::neg || (pBinOp->GetAttribute() != nullptr && pBinOp->GetAttribute() != pReader->GetBaseAttribute() && pBinOp->MixedOperators(pBinOp->GetType())))
 						return false;
 					else
 						return SetLeft<CElementBinOperator>(pLeftArg, pElementWhichAdd);
@@ -191,13 +191,13 @@ namespace StarMath
 		else
 			return false;
 	}
-	void CParserStarMathString::AddingAnElementToAnArray(std::vector<CElement *> &arrEquation, CElement *pAddElement)
+	void CParserStarMathString::AddingAnElementToAnArray(std::vector<CElement *> &arrEquation, CElement *pAddElement, CStarMathReader *pReader)
 	{
 		if(pAddElement !=nullptr)
 		{
 			if(!arrEquation.empty() && CheckForLeftArgument(pAddElement->GetBaseType()))
 			{
-				if(AddLeftArgument(arrEquation.back(),pAddElement))
+				if(AddLeftArgument(arrEquation.back(),pAddElement,pReader))
 					arrEquation.pop_back();
 			}
 			arrEquation.push_back(pAddElement);
@@ -207,14 +207,14 @@ namespace StarMath
 	{
 		CElement* pNextElement = ParseElement(pReader);
 		if(pLeftElement != nullptr)
-			AddLeftArgument(pLeftElement,pNextElement);
+			AddLeftArgument(pLeftElement,pNextElement,pReader);
 		pLeftElement = pNextElement;
 		pReader->ReadingTheNextToken();
 	}
 	void CParserStarMathString::ReadingElementsWithAttributes(CStarMathReader *pReader, CElement*& pSavingElement)
 	{
 		CElement* pElement = CParserStarMathString::ParseElement(pReader);
-		if(pElement->GetAttribute() != nullptr)
+		if(pElement->GetAttribute() != pReader->GetBaseAttribute())
 		{
 			pReader->ReadingTheNextToken();
 			if(CElementIndex::GetLowerIndex(pReader->GetLocalType()) || CElementIndex::GetUpperIndex(pReader->GetLocalType()))
@@ -222,7 +222,7 @@ namespace StarMath
 				CElement* pIndex = new CElementIndex(pReader->GetLocalType(),pReader->GetTypeConversion());
 				pReader->ClearReader();
 				pIndex->Parse(pReader);
-				AddLeftArgument(pElement,pIndex);
+				AddLeftArgument(pElement,pIndex,pReader);
 				pSavingElement = pIndex;
 			}
 			else
@@ -246,11 +246,11 @@ namespace StarMath
 	void CParserStarMathString::SetBaseSize(const unsigned int &iSize)
 	{
 		if(iSize < 130)
-			m_stBaseAttribute.base_font_size = iSize;
+			m_stBaseAttribute.base_font_size = iSize*2;
 	}
 	void CParserStarMathString::SetBaseAlignment(const unsigned int &iAlignment)
 	{
-		if(iAlignment > 0 && iAlignment < 3)
+		if(iAlignment >= 0 && iAlignment < 3)
 			m_stBaseAttribute.base_alignment = iAlignment;
 	}
 	void CParserStarMathString::SetBaseBold(const bool &bBold)
@@ -274,7 +274,7 @@ namespace StarMath
 			return wsLowerCase;
 	}
 //class methods CAttribute
-	CAttribute::CAttribute(): m_bBold(false),m_bItal(false),m_bPhantom(false),m_bStrike(false),m_iSize(0),m_iAlignment(0),m_unCount(0)
+	CAttribute::CAttribute(): m_bBold(false),m_bItal(false),m_bPhantom(false),m_bStrike(false),m_bParent(false),m_iSize(0),m_iAlignment(0),m_unCount(0)
 	{
 	}
 	CAttribute::~CAttribute()
@@ -451,6 +451,14 @@ namespace StarMath
 	bool CAttribute::EmptyColor()
 	{
 		return m_wsColor.empty();
+	}
+	void CAttribute::SetParent()
+	{
+		m_bParent = true;
+	}
+	bool CAttribute::GetParent()
+	{
+		return m_bParent;
 	}
 	//hex current
 	bool CAttribute::ParseColorAttribute(const std::wstring &wsToken,CStarMathReader* pReader)
@@ -770,9 +778,9 @@ namespace StarMath
 		}
 		else if(pAttribute != nullptr && m_pAttribute!=nullptr && pAttribute != m_pAttribute)
 		{
-			if(m_pAttribute->GetCount() <= 1)
+			if(m_pAttribute->GetCount() <= 1 && !m_pAttribute->GetParent())
 				CAttribute::ComparingAttributes(pAttribute,m_pAttribute);
-			else if(m_pAttribute->GetCount() > 1)
+			else if(m_pAttribute->GetCount() > 1 || m_pAttribute->GetParent())
 			{
 				CAttribute* pTempAttribute = m_pAttribute;
 				m_pAttribute = new CAttribute;
@@ -1141,7 +1149,7 @@ namespace StarMath
 			if(!m_arBrecketValue.empty())
 				CElementBinOperator::UnaryCheck(pReader,m_arBrecketValue.back());
 			CElement* pTempElement = CParserStarMathString::ParseElement(pReader);
-			CParserStarMathString::AddingAnElementToAnArray(m_arBrecketValue,pTempElement);
+			CParserStarMathString::AddingAnElementToAnArray(m_arBrecketValue,pTempElement,pReader);
 		}
 		if(!pReader->EmptyString())
 		{
@@ -2085,7 +2093,7 @@ namespace StarMath
 			if(CElementIndex::GetLowerIndex(pReader->GetLocalType()) || CElementIndex::GetUpperIndex(pReader->GetLocalType()))
 			{
 				CElement* pElement = CParserStarMathString::ParseElement(pReader);
-				CParserStarMathString::AddLeftArgument(m_pLeftArg,pElement);
+				CParserStarMathString::AddLeftArgument(m_pLeftArg,pElement,pReader);
 				m_pLeftArg = pElement;
 			}
 			m_pValueIndex = CParserStarMathString::ParseElement(pReader);
@@ -2093,7 +2101,7 @@ namespace StarMath
 			if(CElementIndex::GetLowerIndex(pReader->GetLocalType()) || CElementIndex::GetUpperIndex(pReader->GetLocalType()))
 			{
 				CElement* pElement = CParserStarMathString::ParseElement(pReader);
-				CParserStarMathString::AddLeftArgument(m_pValueIndex,pElement);
+				CParserStarMathString::AddLeftArgument(m_pValueIndex,pElement,pReader);
 				m_pValueIndex = pElement;
 			}
 		}
@@ -2104,7 +2112,7 @@ namespace StarMath
 			if(CElementIndex::GetLowerIndex(pReader->GetLocalType()) || CElementIndex::GetUpperIndex(pReader->GetLocalType()))
 			{
 				CElement* pElement = CParserStarMathString::ParseElement(pReader);
-				CParserStarMathString::AddLeftArgument(m_pValueIndex,pElement);
+				CParserStarMathString::AddLeftArgument(m_pValueIndex,pElement,pReader);
 				m_pValueIndex = pElement;
 			}
 //			m_pLeftArg = m_pValueIndex;
@@ -2219,7 +2227,10 @@ namespace StarMath
 		if(m_pLeftArg != nullptr && m_pLeftArg->GetAttribute() == nullptr && pAttribute != nullptr)
 			m_pLeftArg->SetAttribute(pAttribute);
 		if(m_pLeftArg != nullptr && m_pLeftArg->GetAttribute() != nullptr)
+		{
+			m_pLeftArg->SetBaseAttribute(pAttribute);
 			this->SetBaseAttribute(m_pLeftArg->GetAttribute());
+		}
 		if(m_pValueIndex != nullptr)
 			m_pValueIndex->SetAttribute(pAttribute);
 		if(m_pLeftArg != nullptr)
@@ -2399,7 +2410,7 @@ namespace StarMath
 			else if(pReader->GetBaseAttribute()!=nullptr)
 				pString->SetAttribute(pReader->GetBaseAttribute());
 				
-			CParserStarMathString::AddLeftArgument(pString,m_pIndex);
+			CParserStarMathString::AddLeftArgument(pString,m_pIndex,pReader);
 			return ;
 		}
 		CElement* pTempElement = CParserStarMathString::ParseElement(pReader);
@@ -2866,6 +2877,7 @@ namespace StarMath
 			m_pBaseAttribute->SetAlignment(pAttribute.base_alignment);
 		if(!m_pBaseAttribute->CheckingForEmptiness())
 			m_pBaseAttribute = nullptr;
+		m_pBaseAttribute->SetParent();
 	}
 	CAttribute* CStarMathReader::GetBaseAttribute()
 	{

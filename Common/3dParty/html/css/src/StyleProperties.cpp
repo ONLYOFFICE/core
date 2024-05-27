@@ -604,6 +604,11 @@ namespace NSCSS
 		return m_oValue.Empty();
 	}
 
+	bool CColor::None() const
+	{
+		return ColorNone == m_oValue.m_enType;
+	}
+
 	void CColor::Clear()
 	{
 		m_oValue.Clear();
@@ -621,10 +626,10 @@ namespace NSCSS
 		if (m_oOpacity.Empty())
 			return 1.;
 
-		if (Percent == m_oOpacity.GetUnitMeasure())
+		if (UnitMeasure::Percent == m_oOpacity.GetUnitMeasure())
 			return m_oOpacity.ToDouble() / 100.;
 
-		if (None == m_oOpacity.GetUnitMeasure() && m_oOpacity.ToDouble() <= 1.)
+		if (UnitMeasure::None == m_oOpacity.GetUnitMeasure() && m_oOpacity.ToDouble() <= 1.)
 			return m_oOpacity.ToDouble();
 
 		return 1.;
@@ -1476,7 +1481,7 @@ namespace NSCSS
 
 	bool CBorderSide::Empty() const
 	{
-		return m_oWidth.Empty();
+		return m_oWidth.Empty() || m_oColor.None();
 	}
 
 	bool CBorderSide::Zero() const
@@ -2212,16 +2217,16 @@ namespace NSCSS
 
 	bool CFont::SetSize(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		const std::map<std::wstring, std::wstring> arAbsoluteFontValues =
-			{{L"xx-small", L"7.5pt"}, {L"x-small", L"10pt"  },
+		const std::vector<std::pair<std::wstring, std::wstring>> arAbsoluteFontValues =
+			{{L"xx-small", L"7.5pt"}, {L"xx-large", L"36pt" },
+			 {L"x-small", L"10pt"  }, {L"x-large", L"24pt"  },
 			 {L"small",    L"12pt" }, {L"medium",  L"13.5pt"},
-			 {L"large",    L"18pt" }, {L"x-large", L"24pt"  },
-			 {L"xx-large", L"36pt" }}; 
+			 {L"large",    L"18pt" }}; 
 
 		size_t unFoundPos = std::wstring::npos;
 		std::wstring wsNewValue(wsValue);
 
-		for (const std::pair<std::wstring, std::wstring> oAbsValue : arAbsoluteFontValues)
+		for (const std::pair<std::wstring, std::wstring>& oAbsValue : arAbsoluteFontValues)
 		{
 			unFoundPos = wsNewValue.find(oAbsValue.first);
 			if (std::wstring::npos != unFoundPos)

@@ -22,6 +22,23 @@ static std::string special_handling    = "|html|body|";
 static std::string no_entity_sub       = ""; //"|style|";
 static std::string treat_like_inline   = "|p|";
 
+static std::vector<std::string> html_tags = {"div","span","a","img","p","h1","h2","h3","h4","h5","h6",
+                                             "ul", "ol", "li","table","tr","td","th","br","form","input",
+                                             "button","section","nav","header","footer","main","figure",
+                                             "figcaption","strong","em","i", "b", "u","pre","code","blockquote",
+                                             "hr","script","link","meta","style","title","head","body","html",
+                                             "legend","optgroup","option","select","dl","dt","dd","time",
+                                             "data","abbr","address","area","base","bdi","bdo","cite","col",
+                                             "iframe","video","source","track","textarea","label","fieldset",
+                                             "colgroup","del","ins","details","summary","dialog","embed",
+                                             "kbd","map","mark","menu","meter","object","output","param",
+                                             "progress","q","samp","small","sub","sup","var","wbr","acronym",
+                                             "applet","article","aside","audio","basefont","bgsound","big",
+                                             "blink","canvas","caption","center","command","comment","datalist",
+                                             "dfn","dir","font","frame","frameset","hgroup","isindex","keygen",
+                                             "marquee","nobr","noembed","noframes","noscript","plaintext","rp",
+                                             "rt","ruby","s","strike","tt","tfoot","thead","xmp"};
+
 static void prettyprint(GumboNode*, NSStringUtils::CStringBuilderA& oBuilder);
 static std::string mhtTohtml(const std::string &sFileContent);
 
@@ -59,39 +76,12 @@ static std::wstring htmlToXhtml(std::string& sFileContent, bool bNeedConvert)
 	if (boost::regex_search(sFileContent, oResult, oRegex))
 		sFileContent.erase(0, oResult.position());
 
-	// Избавление от <a/>
-	size_t posA = sFileContent.find("<a ");
-	while(posA != std::string::npos)
-	{
-		size_t nBegin = sFileContent.find('<',  posA + 1);
-		size_t nEnd   = sFileContent.find("/>", posA);
-		if(nEnd < nBegin)
-			sFileContent.replace(nEnd, 2, "></a>");
-		posA = sFileContent.find("<a ", nBegin);
-	}
-	// Избавление от <title/>
-	posA = sFileContent.find("<title/>");
-	while (posA != std::string::npos)
-	{
-		sFileContent.replace(posA, 8, "<title></title>");
-		posA = sFileContent.find("<title/>", posA);
-	}
-	// Избавление от <script/>
-	posA = sFileContent.find("<script");
-	while (posA != std::string::npos)
-	{
-		size_t nEnd = 0;
-		size_t nEnd1 = sFileContent.find("/>", posA);
-		size_t nEnd2 = sFileContent.find("</script>", posA);
-		if (nEnd1 != std::string::npos)
-			nEnd = nEnd1 + 2;
-		if (nEnd2 != std::string::npos && (nEnd == 0 || (nEnd > 0 && nEnd2 < nEnd)))
-			nEnd = nEnd2 + 9;
-
-		sFileContent.erase(posA, nEnd - posA);
-
-		posA = sFileContent.find("<script", posA);
-	}
+	//Избавление от <a ... />
+	while (NSStringFinder::RemoveEmptyTag(sFileContent, "a"));
+	//Избавление от <title ... />
+	while (NSStringFinder::RemoveEmptyTag(sFileContent, "title"));
+	//Избавление от <script ... />
+	while (NSStringFinder::RemoveEmptyTag(sFileContent, "script"));
 
 	// Gumbo
 	GumboOptions options = kGumboDefaultOptions;
@@ -231,15 +221,20 @@ static void ReadMht(const std::string& sMhtContent, std::map<std::string, std::s
 	// Content-Location
 	oData = NSStringFinder::FindPropety(sMhtContent, "content-location", {":"}, {";", "\\n", "\\r"});
 	std::string sContentLocation{oData.m_sValue};
-	unContentPosition = std::max(unContentPosition, oData.m_unEndPosition);
-	unCharsetEnd = std::min(unCharsetEnd, oData.m_unBeginPosition);
+
+	if (!oData.Empty())
+		unContentPosition = std::max(unContentPosition, oData.m_unEndPosition);
 
 	// Content-ID
 	oData = NSStringFinder::FindPropety(sMhtContent, "content-id", {":"}, {";", "\\n", "\\r"});
 	std::string sContentID{oData.m_sValue};
-	unContentPosition = std::max(unContentPosition, oData.m_unEndPosition);
-	unCharsetEnd = std::min(unCharsetEnd, oData.m_unBeginPosition);
-	NSStringFinder::CutInside<std::string>(sContentID, "<", ">");
+
+	if (!oData.Empty())
+	{
+		unContentPosition = std::max(unContentPosition, oData.m_unEndPosition);
+		unCharsetEnd = std::min(unCharsetEnd, oData.m_unBeginPosition);
+		NSStringFinder::CutInside<std::string>(sContentID, "<", ">");
+	}
 
 	if (sContentLocation.empty() && !sContentID.empty())
 		sContentLocation = "cid:" + sContentID;
@@ -247,13 +242,17 @@ static void ReadMht(const std::string& sMhtContent, std::map<std::string, std::s
 	// Content-Transfer-Encoding
 	oData = NSStringFinder::FindPropety(sMhtContent, "content-transfer-encoding", {":"}, {";", "\\n", "\\r"});
 	const std::string sContentEncoding{oData.m_sValue};
-	unContentPosition = std::max(unContentPosition, oData.m_unEndPosition);
-	unCharsetEnd = std::min(unCharsetEnd, oData.m_unBeginPosition);
+
+	if (!oData.Empty())
+	{
+		unContentPosition = std::max(unContentPosition, oData.m_unEndPosition);
+		unCharsetEnd = std::min(unCharsetEnd, oData.m_unBeginPosition);
+	}
 
 	// charset
 	std::string sCharset = "utf-8";
 
-	if (unCharsetBegin < unCharsetEnd)
+	if (std::string::npos != unCharsetEnd && unCharsetBegin < unCharsetEnd)
 	{
 		sCharset = NSStringFinder::FindPropety(sMhtContent.substr(unCharsetBegin, unCharsetEnd - unCharsetBegin), "charset", {"="}, {";", "\\n", "\\r"}).m_sValue;
 		NSStringFinder::CutInside<std::string>(sCharset, "\"");
@@ -277,7 +276,7 @@ static void ReadMht(const std::string& sMhtContent, std::map<std::string, std::s
 			oRes.WriteString("<style>");
 
 		if (NSStringFinder::Equals(sContentEncoding, "base64"))
-			oRes.WriteString(Base64ToString(sContent, sCharset));
+			sContent = Base64ToString(sContent, sCharset);
 		else if (NSStringFinder::EqualOf(sContentEncoding, {"8bit", "7bit"}) || sContentEncoding.empty())
 		{
 			if (!NSStringFinder::Equals(sCharset, "utf-8") && !sCharset.empty())
@@ -285,7 +284,6 @@ static void ReadMht(const std::string& sMhtContent, std::map<std::string, std::s
 				NSUnicodeConverter::CUnicodeConverter oConverter;
 				sContent = U_TO_UTF8(oConverter.toUnicode(sContent, sCharset.data()));
 			}
-			oRes.WriteString(sContent);
 		}
 		else if (NSStringFinder::Equals(sContentEncoding, "quoted-printable"))
 		{
@@ -295,8 +293,12 @@ static void ReadMht(const std::string& sMhtContent, std::map<std::string, std::s
 				NSUnicodeConverter::CUnicodeConverter oConverter;
 				sContent = U_TO_UTF8(oConverter.toUnicode(sContent, sCharset.data()));
 			}
-			oRes.WriteString(sContent);
 		}
+
+		if (NSStringFinder::Equals(sContentType, "text/html"))
+			sContent = U_TO_UTF8(htmlToXhtml(sContent, false));
+
+		oRes.WriteString(sContent);
 
 		if(bAddTagStyle)
 			oRes.WriteString("</style>");
@@ -581,13 +583,20 @@ static void prettyprint(GumboNode* node, NSStringUtils::CStringBuilderA& oBuilde
 		return;
 	}
 
+	std::string tagname            = get_tag_name(node);
+
+	if (html_tags.end() == std::find(html_tags.begin(), html_tags.end(), tagname))
+	{
+		prettyprint_contents(node, oBuilder);
+		return;
+	}
+
 	std::string close              = "";
 	std::string closeTag           = "";
-	std::string tagname            = get_tag_name(node);
 	std::string key                = "|" + tagname + "|";
 	bool is_empty_tag              = empty_tags.find(key) != std::string::npos;
 	bool no_entity_substitution    = no_entity_sub.find(key) != std::string::npos;
-
+	
 	// determine closing tag type
 	if (is_empty_tag)
 		close = "/";

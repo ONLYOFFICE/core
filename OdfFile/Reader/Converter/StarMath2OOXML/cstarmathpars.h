@@ -50,7 +50,7 @@ namespace StarMath
 
 	struct TBaseAttribute
 	{
-		TBaseAttribute():base_font_size(0),base_alignment(0),base_font_bold(false),base_font_italic(false){};
+		TBaseAttribute():base_font_size(0),base_alignment(1),base_font_bold(false),base_font_italic(false){};
 		unsigned int base_font_size;
 		std::wstring base_font_name;
 		unsigned int base_alignment;
@@ -86,7 +86,11 @@ namespace StarMath
 		void SetColor(const std::wstring& wsColor);
 		bool SetFont(const TypeElement& enFont);
 		void SetFontName(const std::wstring& wsNameFont);
+		void SetParent();
+		bool GetParent();
 		bool CheckAttribute();
+		unsigned int GetCount();
+		static void ComparingAttributes(CAttribute* pAttributeParent,CAttribute* pAttributeChild);
 		//checking an element for a number from 1 to 9 or from the letter A to F
 		static bool CheckHexPosition(const wchar_t& cToken);
 		bool CheckingForEmptiness();
@@ -95,7 +99,7 @@ namespace StarMath
 	private:
 		void RefundOfTheAmountRGB(CStarMathReader* pReader,const int& iRed, const int& iGreen, const int& iBlue);
 		std::wstring m_wsColor,m_wsNameFont;
-		bool m_bBold,m_bItal,m_bPhantom,m_bStrike;
+		bool m_bBold,m_bItal,m_bPhantom,m_bStrike,m_bParent;
 		unsigned int m_iSize,m_iAlignment;
 		unsigned int m_unCount;
 	};
@@ -165,6 +169,7 @@ namespace StarMath
 		CAttribute* GetAttribute();
 		const TypeElement& GetBaseType();
 		const TypeConversion& GetTypeConversion();
+		void DeleteAttribute();
 	private:
 		CAttribute* m_pAttribute;
 		TypeElement m_enBaseType;
@@ -443,13 +448,13 @@ namespace StarMath
 		std::vector<CElement*> Parse(std::wstring& wsParseString,int iTypeConversion = 0);
 		static CElement* ParseElement(CStarMathReader* pReader);
 		//Function for adding a left argument (receives the argument itself and the element to which it needs to be added as input. Works with classes:CElementBinOperator,CElementConnection,CElementSetOperation).
-		static bool AddLeftArgument(CElement* pLeftArg,CElement* pElementWhichAdd);
+		static bool AddLeftArgument(CElement* pLeftArg,CElement* pElementWhichAdd,CStarMathReader* pReader);
 		static bool CheckForLeftArgument(const TypeElement& enType, const bool& bConnection = true);
 		static CElement* ReadingWithoutBracket(CStarMathReader* pReader,const bool& bConnection = true);
 		//checking the element (true if it is newline)
 		static bool CheckNewline(CElement* pElement);
 		//adding an element to the array, checking that it is not empty and adding the left element, if there is one.
-		static void AddingAnElementToAnArray(std::vector<CElement*>& arrEquation,CElement* pAddElement);
+		static void AddingAnElementToAnArray(std::vector<CElement*>& arrEquation,CElement* pAddElement,CStarMathReader* pReader);
 		//Receives the left element as input, reads the next one, if the next element has a higher priority and contains the left element, the element received at the input is passed to it. The entire structure is saved and returned.
 		static void ReadingElementsWithPriorities(CStarMathReader* pReader,CElement*& pLeftElement);
 		//method for parsing indexes with attributes. If there is an attribute present when indexes are read, then all subsequent indexes are applied to the index with the attribute.

@@ -269,7 +269,7 @@ namespace OOX
 			auto ptr = static_cast<XLSB::BeginComment*>(obj.get());
 			if (ptr != nullptr)
 			{
-				m_oRef      = ptr->rfx.toString();
+				m_oRef      = ptr->rfx.toString(true, true);
 				m_oAuthorId = ptr->iauthor;
 				m_oUid      = ptr->guid;
 			}

@@ -822,7 +822,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
         auto ptr = static_cast<XLSB::BeginList*>(obj.get());
         if(ptr != nullptr)
         {
-            m_oRef                      = ptr->rfxList.toString();
+            m_oRef                      = ptr->rfxList.toString(true, true);
 
             if(!ptr->stName.value().empty())
                 m_oName                 = ptr->stName.value();

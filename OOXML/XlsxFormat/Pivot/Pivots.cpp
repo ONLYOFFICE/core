@@ -3446,7 +3446,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
             if(!ptr->pruleheaderdata.rfxLoc.toString().empty()
             && (ptr->pruleheaderdata.rfxLoc.rowFirst!=0 || ptr->pruleheaderdata.rfxLoc.columnFirst!=0))
-                    m_oOffsetRef            = ptr->pruleheaderdata.rfxLoc.toString();
+                    m_oOffsetRef            = ptr->pruleheaderdata.rfxLoc.toString(true, true);
 
             if(!ptr->pruleheaderdata.fLineMode)
                 m_oOutline                  = ptr->pruleheaderdata.fLineMode;
@@ -3570,7 +3570,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             m_oRowPageCount     = ptr->crwPage;
 
             if(!ptr->rfxGeom.toString().empty())
-                m_oRef = ptr->rfxGeom.toString();
+                m_oRef = ptr->rfxGeom.toString(true, true);
         }
     }
 //------------------------------------
@@ -6271,8 +6271,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             if(!ptr->sheetName.value().empty())
                 m_oSheet     = ptr->sheetName.value();
 
-            if(!ptr->range.toString().empty() && ptr->range.toString() != L"A1")
-                m_oRef       = ptr->range.toString();
+            if(!ptr->range.toString().empty() && ptr->range.toString(true, true) != L"A1")
+                m_oRef       = ptr->range.toString(true, true);
 
             if(!ptr->namedRange.value().empty())
                 m_oName      = ptr->namedRange.value();
@@ -6594,7 +6594,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                 m_oSheet            = ptr->irstSheet.value();
 
             if(!ptr->rfx.toString().empty())
-                m_oRef              = ptr->rfx.toString();
+                m_oRef              = ptr->rfx.toString(true, true);
 
             if(!ptr->irstName.value().empty())
                 m_oName             = ptr->irstName.value();

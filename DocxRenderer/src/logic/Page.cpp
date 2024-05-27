@@ -1299,6 +1299,7 @@ namespace NSDocxRenderer
 		for (auto& line : m_arTextLines)
 		{
 			bool is_found = false;
+			bool is_bad_below = false;
 			bool is_create_new = false;
 			size_t insert_index = 0;
 
@@ -1310,26 +1311,26 @@ namespace NSDocxRenderer
 
 				if (!group.closed && is_crossing_h)
 				{
-					if (is_crossing_v && is_crossing_h)
+					if (is_crossing_v)
 					{
 						groups[index].closed = true;
+						continue;
 					}
-					else if (is_found)
-					{
-						groups[insert_index].closed = true;
-						groups[index].closed = true;
-						is_create_new = true;
-					}
-					else
+					if (!is_found && !is_create_new)
 					{
 						is_found = true;
 						insert_index = index;
 					}
+					else
+					{
+						groups[insert_index].closed = true;
+						groups[index].closed = true;
+						is_create_new = true;
+						is_found = false;
+					}
 				}
 			}
-			if (!is_found)
-				is_create_new = true;
-			else
+			if (is_found)
 			{
 				groups[insert_index].left = std::min(groups[insert_index].left, line->m_dLeft);
 				groups[insert_index].right = std::max(groups[insert_index].right, line->m_dRight);
@@ -1337,8 +1338,7 @@ namespace NSDocxRenderer
 				groups[insert_index].top = std::min(groups[insert_index].top, line->m_dTop);
 				line_groups[insert_index].push_back(line);
 			}
-
-			if (is_create_new)
+			else
 			{
 				Group new_group;
 				new_group.left = line->m_dLeft;

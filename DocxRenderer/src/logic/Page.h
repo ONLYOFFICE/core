@@ -109,6 +109,8 @@ namespace NSDocxRenderer
 		void CalcSelected();
 		void BuildParagraphes();
 
+		std::vector<std::vector<std::shared_ptr<CTextLine>>> GetLinesByGroups();
+
 		void MergeShapes();
 
 		// strikeouts, underlines, highlights, outline
@@ -131,7 +133,7 @@ namespace NSDocxRenderer
 		void DetermineDominantGraphics();
 
 		bool IsShapeBorderBetween(std::shared_ptr<CTextLine> pFirst, std::shared_ptr<CTextLine> pSecond) const noexcept;
-		bool IsShapeBorderTrough(std::shared_ptr<CContText> pItem) const noexcept;
+		bool IsShapeBorderTrough(std::shared_ptr<CContText> pItem, double& dXCrossing, double& dYCrossing) const noexcept;
 
 		std::shared_ptr<CShape> CreateSingleLineShape(std::shared_ptr<CTextLine>& pLine);
 		std::shared_ptr<CShape> CreateSingleParagraphShape(std::shared_ptr<CParagraph>& pParagraph);

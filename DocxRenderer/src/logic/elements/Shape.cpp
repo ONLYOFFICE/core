@@ -310,7 +310,7 @@ namespace NSDocxRenderer
 	}
 	void CShape::CheckLineType(std::shared_ptr<CShape>& pFirstShape, std::shared_ptr<CShape>& pSecondShape, bool bIsLast)
 	{
-		if(!pFirstShape || !pSecondShape)
+		if (!pFirstShape || !pSecondShape)
 			return;
 
 		if (!pFirstShape->IsItFitLine() || !pSecondShape->IsItFitLine() || !pFirstShape->IsCorrelated(pSecondShape) ||
@@ -320,11 +320,11 @@ namespace NSDocxRenderer
 		}
 
 		// проверка на двойную линию
-		if(pFirstShape->m_eLineType == eLineType::ltDouble || pFirstShape->m_eLineType == eLineType::ltWavyDouble)
+		if (pFirstShape->m_eLineType == eLineType::ltDouble || pFirstShape->m_eLineType == eLineType::ltWavyDouble)
 		{
-			if(pFirstShape->m_eLineType == eLineType::ltDouble)
+			if (pFirstShape->m_eLineType == eLineType::ltDouble)
 			{
-				if(pFirstShape->m_dTop < pSecondShape->m_dTop)
+				if (pFirstShape->m_dTop < pSecondShape->m_dTop)
 				{
 					pFirstShape->m_eLineType = eLineType::ltDouble;
 					pFirstShape->RecalcWithNewItem(pSecondShape.get());
@@ -337,9 +337,9 @@ namespace NSDocxRenderer
 					pFirstShape = nullptr;
 				}
 			}
-			else if(pFirstShape->m_eLineType == eLineType::ltWavyDouble)
+			else if (pFirstShape->m_eLineType == eLineType::ltWavyDouble)
 			{
-				if(pFirstShape->m_dTop < pSecondShape->m_dTop)
+				if (pFirstShape->m_dTop < pSecondShape->m_dTop)
 				{
 					pFirstShape->m_eLineType = eLineType::ltWavyDouble;
 					pFirstShape->RecalcWithNewItem(pSecondShape.get());

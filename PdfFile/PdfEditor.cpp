@@ -949,7 +949,32 @@ bool CPdfEditor::EditPage(int nPageIndex)
 		Object oTemp;
 		char* chKey = pageObj.dictGetKey(nIndex);
 		if (strcmp("Resources", chKey) == 0)
-			pageObj.dictGetVal(nIndex, &oTemp);
+		{
+			if (pageObj.dictGetVal(nIndex, &oTemp)->isDict())
+			{
+				PdfWriter::CResourcesDict* pDict = new PdfWriter::CResourcesDict(NULL, true, false);
+				pPage->Add("Resources", pDict);
+				for (int nIndex = 0; nIndex < oTemp.dictGetLength(); ++nIndex)
+				{
+					Object oRes;
+					char* chKey2 = oTemp.dictGetKey(nIndex);
+					if (strcmp("Font", chKey2) == 0 || strcmp("ExtGState", chKey2) == 0 || strcmp("XObject", chKey2) == 0 || strcmp("Shading", chKey2) == 0 || strcmp("Pattern", chKey2) == 0)
+						oTemp.dictGetVal(nIndex, &oRes);
+					else
+						oTemp.dictGetValNF(nIndex, &oRes);
+					DictToCDictObject(&oRes, pDict, false, chKey2);
+					oRes.free();
+				}
+
+				oTemp.free();
+				continue;
+			}
+			else
+			{
+				oTemp.free();
+				pageObj.dictGetValNF(nIndex, &oTemp);
+			}
+		}
 		else if (strcmp("Annots", chKey) == 0)
 		{
 			// ВРЕМЕНО удаление Link аннотаций при редактировании

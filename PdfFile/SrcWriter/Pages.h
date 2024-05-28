@@ -55,6 +55,7 @@ namespace PdfWriter
 	class CTextWord;
 	class CFieldBase;
 	class CPage;
+	class CResourcesDict;
 	//----------------------------------------------------------------------------------------
 	// CPageTree
 	//----------------------------------------------------------------------------------------
@@ -173,7 +174,7 @@ namespace PdfWriter
 		void          Init(CDocument* pDocument);
 		void          EllipseArc(double dX, double dY, double dXRad, double dYRad, double dAngle1, double dAngle2, bool bClockDirection);
 		CArrayObject* GetMediaBoxItem();
-		CDictObject*  GetResourcesItem();
+		CResourcesDict* GetResourcesItem();
 		CObjectBase*  GetCropBoxItem();
         CObjectBase*  GetRotateItem();
 		TBox          GetMediaBox();
@@ -182,9 +183,6 @@ namespace PdfWriter
 		void          SetGrMode(EGrMode eMode);
 		void          CheckGrMode(EGrMode eMode);
 		void          WriteText(const BYTE* sText, unsigned int unLen);
-		const char*   GetExtGrStateName(CExtGrState* pState);
-		const char*   GetLocalFontName(CFontDict* pFont);
-		const char*   GetXObjectName(CXObject* pObject);
 		const char*   GetLocalShadingName(CShading* pShading);
 		const char*   GetLocalPatternName(CImageTilePattern* pPattern);
 
@@ -199,15 +197,9 @@ namespace PdfWriter
 		CArrayObject* m_pContents;
 		CStream*     m_pStream;
 		unsigned int m_unCompressionMode;
-		CDictObject* m_pExtGStates;
-		unsigned int m_unExtGStatesCount;
 		EGrMode      m_eGrMode;
 		CGrState*    m_pGrState;
-		CDictObject* m_pFonts;
-		unsigned int m_unFontsCount;
 		CFontDict*   m_pFont;              // Текущий шрифт
-		CDictObject* m_pXObjects;
-		unsigned int m_unXObjectsCount;
 		CDictObject* m_pShadings;
 		unsigned int m_unShadingsCount;
 		CDictObject* m_pPatterns;

@@ -1471,14 +1471,6 @@ namespace NSDocxRenderer
 					paragraph->m_dFirstLine = paragraph->m_arLines[0]->m_dLeft - paragraph->m_dLeft;
 				}
 			}
-			if (m_eTextAssociationType == TextAssociationType::tatPlainParagraph ||
-					m_eTextAssociationType == TextAssociationType::tatPlainLine)
-			{
-				if (ar_paragraphs.empty())
-					paragraph->m_dSpaceBefore = paragraph->m_dTop + c_dCORRECTION_FOR_FIRST_PARAGRAPH;
-				else
-					paragraph->m_dSpaceBefore = paragraph->m_dTop - ar_paragraphs.back()->m_dBaselinePos;
-			}
 
 			ar_paragraphs.push_back(std::move(paragraph));
 			paragraph = std::make_shared<CParagraph>();
@@ -1725,14 +1717,38 @@ namespace NSDocxRenderer
 		if (m_eTextAssociationType == TextAssociationType::tatPlainParagraph ||
 				m_eTextAssociationType == TextAssociationType::tatPlainLine)
 		{
-			CBaseItem* prev = nullptr;
-			for (auto& p : ar_paragraphs)
+			CBaseItem* prev_p = nullptr;
+
+			size_t first_index = 0;
+			size_t second_index = first_index + 1;
+
+			for (; first_index < ar_paragraphs.size(); first_index = second_index++)
 			{
-				if (prev && !p->AreObjectsNoCrossingByHorizontally(prev))
+				auto& first_p = ar_paragraphs[first_index];
+				if (second_index != ar_paragraphs.size())
+				{
+					auto& second_p = ar_paragraphs[second_index];
+					while (second_index < ar_paragraphs.size() && first_p->m_dBaselinePos > second_p->m_dTop)
+						second_index++;
+				}
+
+				if (second_index - first_index == 1)
+				{
+					auto& p = ar_paragraphs[first_index];
+
+					if (!prev_p)
+						p->m_dSpaceBefore = p->m_dTop + c_dCORRECTION_FOR_FIRST_PARAGRAPH;
+					else
+						p->m_dSpaceBefore = p->m_dTop - prev_p->m_dBaselinePos;
+
 					m_arOutputObjects.push_back(p);
+					prev_p = p.get();
+				}
 				else
-					m_arShapes.push_back(CreateSingleParagraphShape(p));
-				prev = p.get();
+				{
+					for (size_t j = first_index; j < second_index; ++j)
+						m_arShapes.push_back(CreateSingleParagraphShape(ar_paragraphs[j]));
+				}
 			}
 		}
 

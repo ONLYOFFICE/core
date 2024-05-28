@@ -23,21 +23,21 @@ static std::string no_entity_sub       = ""; //"|style|";
 static std::string treat_like_inline   = "|p|";
 
 static std::vector<std::string> html_tags = {"div","span","a","img","p","h1","h2","h3","h4","h5","h6",
-                                             "ul", "ol", "li","table","tr","td","th","br","form","input",
-                                             "button","section","nav","header","footer","main","figure",
-                                             "figcaption","strong","em","i", "b", "u","pre","code","blockquote",
-                                             "hr","script","link","meta","style","title","head","body","html",
-                                             "legend","optgroup","option","select","dl","dt","dd","time",
-                                             "data","abbr","address","area","base","bdi","bdo","cite","col",
-                                             "iframe","video","source","track","textarea","label","fieldset",
-                                             "colgroup","del","ins","details","summary","dialog","embed",
-                                             "kbd","map","mark","menu","meter","object","output","param",
-                                             "progress","q","samp","small","sub","sup","var","wbr","acronym",
-                                             "applet","article","aside","audio","basefont","bgsound","big",
-                                             "blink","canvas","caption","center","command","comment","datalist",
-                                             "dfn","dir","font","frame","frameset","hgroup","isindex","keygen",
-                                             "marquee","nobr","noembed","noframes","noscript","plaintext","rp",
-                                             "rt","ruby","s","strike","tt","tfoot","thead","xmp"};
+                                             "ul", "ol", "li","td","tr","table","thead","tbody","tfoot","th",
+                                             "br","form","input","button","section","nav","header","footer",
+                                             "main","figure","figcaption","strong","em","i", "b", "u","pre",
+                                             "code","blockquote","hr","script","link","meta","style","title",
+                                             "head","body","html","legend","optgroup","option","select","dl",
+                                             "dt","dd","time","data","abbr","address","area","base","bdi",
+                                             "bdo","cite","col","iframe","video","source","track","textarea",
+                                             "label","fieldset","colgroup","del","ins","details","summary",
+                                             "dialog","embed","kbd","map","mark","menu","meter","object",
+                                             "output","param","progress","q","samp","small","sub","sup","var",
+                                             "wbr","acronym","applet","article","aside","audio","basefont",
+                                             "bgsound","big","blink","canvas","caption","center","command",
+                                             "comment","datalist","dfn","dir","font","frame","frameset",
+                                             "hgroup","isindex","keygen","marquee","nobr","noembed","noframes",
+                                             "noscript","plaintext","rp","rt","ruby","s","strike","tt","xmp"};
 
 static void prettyprint(GumboNode*, NSStringUtils::CStringBuilderA& oBuilder);
 static std::string mhtTohtml(const std::string &sFileContent);

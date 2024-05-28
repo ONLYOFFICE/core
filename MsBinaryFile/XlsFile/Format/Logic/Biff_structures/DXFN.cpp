@@ -122,7 +122,7 @@ int DXFN::serialize(std::wostream & stream)
 	{
 		CP_XML_NODE(L"dxf")
 		{
-			if(ibitAtrFnt)
+			if (ibitAtrFnt || (xfext && (xfext->mapRgExt.end() != xfext->mapRgExt.find(ExtProp::FontScheme))))
 			{
 				dxffntd.serialize(CP_XML_STREAM());
 			}

@@ -73,33 +73,37 @@ int DXFFntD::serialize(std::wostream & stream)
 {
 	std::map<ExtProp::_type, ExtProp>::iterator pFind;
 	
+	if (parent && parent->xfext)
+		pFind = parent->xfext->mapRgExt.find(ExtProp::FontScheme);
+	
 	CP_XML_WRITER(stream)    
     {
 		CP_XML_NODE(L"font")
-		{	
-			if (!stFontName.value().empty())
-			{
-				std::wstring name = stFontName.value();
-				
-				if (parent->xfext)
-					pFind = parent->xfext->mapRgExt.find(ExtProp::FontScheme);
-				
-				BYTE font_scheme = (parent->xfext && pFind != parent->xfext->mapRgExt.end()) ? pFind->second.extPropData.font_scheme : 0;
+		{
+			std::wstring name = stFontName.value();
 
-				if (global_info->m_pTheme && font_scheme == 0x01)
+			if (parent && parent->xfext)
+			{
+				BYTE font_scheme = (pFind != parent->xfext->mapRgExt.end()) ? pFind->second.extPropData.font_scheme : 0;
+
+				if (global_info && global_info->m_pTheme && font_scheme == 0x01)
 				{
 					name = global_info->m_pTheme->themeElements.fontScheme.majorFont.latin.typeface;
 				}
-				else if (global_info->m_pTheme && font_scheme == 0x02)
+				else if (global_info && global_info->m_pTheme && font_scheme == 0x02)
 				{
 					name = global_info->m_pTheme->themeElements.fontScheme.minorFont.latin.typeface;
 				}
+			}
 
+			if (!name.empty())
+			{
 				CP_XML_NODE(L"name")
 				{
 					CP_XML_ATTR(L"val", name.substr(0, 31));
 				}
 			}
+
 			if (stxp.twpHeight > 20)
 			{
 				CP_XML_NODE(L"sz")
@@ -107,10 +111,10 @@ int DXFFntD::serialize(std::wostream & stream)
 					CP_XML_ATTR(L"val", stxp.twpHeight/20.f);
 				}
 			}
-			if (parent->xfext)
+			if ((parent && parent->xfext) && (pFind == parent->xfext->mapRgExt.end()))
 				pFind = parent->xfext->mapRgExt.find(ExtProp::ForeColor);
 
-			if (parent->xfext && pFind != parent->xfext->mapRgExt.end())
+			if ((parent && parent->xfext) && pFind != parent->xfext->mapRgExt.end())
 			{
 				pFind->second.extPropData.color.serialize(CP_XML_STREAM(), L"color");
 			}

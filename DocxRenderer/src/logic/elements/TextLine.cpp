@@ -66,12 +66,13 @@ namespace NSDocxRenderer
 
 			bool bIsEqual = pFirst->IsEqual(pCurrent.get());
 			bool bIsBigDelta = dDifference > dSpaceDefaultSize;
+			bool bIsSplitDelta = dDifference > dSpaceDefaultSize * 2;
 			bool bIsVeryBigDelta = dDifference > dSpaceWideSize;
 
 			if (bIsBigDelta && pFirst->m_dFirstWordWidth == 0.0)
 				pFirst->m_dFirstWordWidth = pFirst->m_dWidth;
 
-			if (bIsVeryBigDelta)
+			if (bIsVeryBigDelta || (pCurrent->m_bPossibleSplit && bIsSplitDelta))
 			{
 				auto wide_space = std::make_shared<CContText>(pFirst->m_pManager);
 
@@ -103,7 +104,8 @@ namespace NSDocxRenderer
 				m_arConts.insert(m_arConts.begin() + i, wide_space);
 
 				i++;
-				while (!m_arConts[i]) i++;
+				while (!m_arConts[i] && i < m_arConts.size()) i++;
+				if (i == m_arConts.size()) break;
 				pFirst = m_arConts[i];
 			}
 			else if (bIsEqual)

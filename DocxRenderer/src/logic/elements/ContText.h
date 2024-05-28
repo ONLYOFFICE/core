@@ -75,6 +75,8 @@ namespace NSDocxRenderer
 
 		double m_dFirstWordWidth{0};
 
+		bool m_bPossibleSplit{false};
+
 		CContText() = default;
 		CContText(CFontManager* pManager) : m_pManager(pManager) {}
 		CContText(const CContText& rCont);

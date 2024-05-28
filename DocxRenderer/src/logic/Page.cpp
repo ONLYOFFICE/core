@@ -308,7 +308,6 @@ namespace NSDocxRenderer
 		}
 		m_pFontManager->LoadFontByFile(*m_pFont);
 
-		// закомментив это, все гуд
 		//if (fabs(dTextW) < 0.01 || (dTextW > 10))
 		//{
 
@@ -428,7 +427,6 @@ namespace NSDocxRenderer
 	void CPage::BuildTextLines()
 	{
 		std::shared_ptr<CTextLine> curr_line = nullptr;
-
 		for (auto& cont : m_arConts)
 		{
 			if (!cont)
@@ -446,6 +444,7 @@ namespace NSDocxRenderer
 				if (fabs(m_arTextLines[i]->m_dBaselinePos - cont->m_dBaselinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
 				{
 					curr_line = m_arTextLines[i];
+					cont->m_bPossibleSplit = true;
 					curr_line->AddCont(cont);
 					skip = true;
 				}
@@ -1206,58 +1205,22 @@ namespace NSDocxRenderer
 			for (size_t i = 0; i < line->m_arConts.size(); ++i)
 			{
 				bool next = false;
-				bool is_wide_space = line->m_arConts[i] && line->m_arConts[i]->m_oText.ToStdWString() == L" ";
+				bool is_space = line->m_arConts[i] && line->m_arConts[i]->m_oText.ToStdWString() == L" ";
 				bool is_cont_wide = line->m_arConts[i]->m_dWidth > c_dLINE_SPLIT_DISTANCE_MM;
 
 				double x_crossing{};
 				double y_crossing{};
 				bool is_shape_trough = IsShapeBorderTrough(line->m_arConts[i], x_crossing, y_crossing);
-				bool is_crossing_v = !((line->m_dRight < x_crossing) || (line->m_dLeft > x_crossing));
 
-				// rough split cont
-				if (is_shape_trough && is_crossing_v)
-				{
-					double avg_sym_width = line->m_arConts[i]->m_dWidth / line->m_arConts[i]->m_oText.length();
-					double curr_left = line->m_arConts[i]->m_dLeft;
-					std::wstring text = line->m_arConts[i]->m_oText.ToStdWString();
-					for (size_t sym_index = 0; sym_index < line->m_arConts[i]->m_oText.length(); ++sym_index, curr_left += avg_sym_width)
-					{
-						if (curr_left > x_crossing && sym_index && text[sym_index - 1] == L' ')
-						{
-							std::wstring text_first;
-							std::wstring text_second;
-
-							for (size_t j = 0; j < sym_index; ++j)
-								text_first.push_back(text[j]);
-
-							for (size_t j = sym_index; j < line->m_arConts[i]->m_oText.length(); ++j)
-								text_second.push_back(text[j]);
-
-							std::shared_ptr<CContText> cont_first(new CContText(*line->m_arConts[i]));
-							std::shared_ptr<CContText> cont_second(new CContText(*line->m_arConts[i]));
-
-							cont_first->m_oText = text_first;
-							cont_first->m_dRight = curr_left;
-							cont_first->m_dWidth = cont_first->m_dRight - cont_first->m_dLeft;
-
-							cont_second->m_oText = text_second;
-							cont_second->m_dLeft = curr_left + avg_sym_width;
-							cont_second->m_dWidth = cont_second->m_dRight - cont_second->m_dLeft;
-
-							line->m_arConts[i] = cont_first;
-							line->m_arConts.insert(line->m_arConts.begin() + i + 1, cont_second);
-							break;
-						}
-					}
-				}
-
-				if ((is_wide_space && is_cont_wide) || is_shape_trough)
+				if ((i != line->m_arConts.size() - 1 && line->m_arConts[i + 1]->m_bPossibleSplit && is_space)
+						|| (is_space && is_cont_wide)
+						|| is_shape_trough)
 				{
 					std::vector<std::shared_ptr<CContText>> line_conts_first;
 					std::vector<std::shared_ptr<CContText>> line_conts_second;
 
-					// taking last sym or not
-					for (size_t j = 0; j < (is_wide_space ? i : i + 1); ++j)
+					// taking last cont or not
+					for (size_t j = 0; j < (is_space ? i : i + 1); ++j)
 						if (line->m_arConts[j])
 							line_conts_first.push_back(line->m_arConts[j]);
 
@@ -1307,7 +1270,7 @@ namespace NSDocxRenderer
 			{
 				auto& group = groups[index];
 				bool is_crossing_h = !((line->m_dRight <= group.left) || (line->m_dLeft >= group.right));
-				bool is_crossing_v = !((line->m_dBaselinePos <= group.top) || (line->m_dTop >= group.bot));
+				bool is_crossing_v = !((line->m_dBotWithMaxDescent <= group.top) || (line->m_dTopWithMaxAscent >= group.bot));
 
 				if (!group.closed && is_crossing_h)
 				{
@@ -1398,6 +1361,12 @@ namespace NSDocxRenderer
 
 				if (!no_crossing(h_type, v_type))
 				{
+					for (auto& cont : prev_line->m_arConts)
+						cont->CalcSelected();
+
+					for (auto& cont : curr_line->m_arConts)
+						cont->CalcSelected();
+
 					m_arShapes.push_back(CreateSingleLineShape(prev_line));
 					m_arShapes.push_back(CreateSingleLineShape(curr_line));
 					prev_line = nullptr;

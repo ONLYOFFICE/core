@@ -1672,10 +1672,10 @@ private:
 		{
 			std::wstring sName  = m_oLightReader.GetName();
 			if(sName == L"class")
-				oNode.m_wsClass  = m_oLightReader.GetText();
+				oNode.m_wsClass  = EncodeXmlString(m_oLightReader.GetText());
 			else if(sName == L"id")
 			{
-				oNode.m_wsId = m_oLightReader.GetText();
+				oNode.m_wsId = EncodeXmlString(m_oLightReader.GetText());
 				WriteBookmark(oXml, oNode.m_wsId);
 			}
 			else if(sName == L"style")

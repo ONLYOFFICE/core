@@ -3095,6 +3095,9 @@ namespace PdfReader
 		pRenderer->put_Width (nWidth * 25.4 / 72.0);
 		pRenderer->put_Height(nHeight * 25.4 / 72.0);
 		pRenderer->CommandLong(c_nPenWidth0As1px, 1);
+#ifndef BUILDING_WASM_MODULE
+		pRenderer->SetSwapRGB(false);
+#endif
 
 		PDFRectangle box;
 		box.x1 = pBBox[0];

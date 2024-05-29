@@ -3173,6 +3173,28 @@ void odf_drawing_context::end_action()
 	end_element();
 	end_element();
 }
+
+void odf_drawing_context::start_style_columns(int cols, int gap)
+{
+	graphic_format_properties* graphic_props = get_graphic_properties();
+	if (!graphic_props)
+		return;
+
+	if (!graphic_props->style_columns_)
+		graphic_props->style_columns_ = boost::make_shared<style_columns>();
+	
+	graphic_props->style_columns_->fo_column_count_ = cols;
+	graphic_props->style_columns_->fo_column_gap_ = length(gap, length::cm);
+}
+
+void odf_drawing_context::add_style_column()
+{
+}
+
+void odf_drawing_context::end_style_columns()
+{
+}
+
 void odf_drawing_context::set_text_box_min_size(double w_pt, double h_pt)
 {
 	if (impl_->current_drawing_state_.elements_.empty()) return;

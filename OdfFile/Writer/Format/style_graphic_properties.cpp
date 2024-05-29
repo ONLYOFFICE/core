@@ -110,6 +110,11 @@ void graphic_format_properties::apply_from(const graphic_format_properties & Oth
 	_CP_APPLY_PROP(style_background_image_, Other.style_background_image_);
 }
 
+void graphic_format_properties::add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name)
+{
+	
+}
+
 void graphic_format_properties::serialize(std::wostream & _Wostream ,const wchar_t * ns, const wchar_t * name )
 {
 	CP_XML_WRITER(_Wostream)
@@ -175,6 +180,9 @@ void graphic_format_properties::serialize(std::wostream & _Wostream ,const wchar
 			common_border_line_width_attlist_.serialize(CP_GET_XML_NODE());
 			common_padding_attlist_.serialize(CP_GET_XML_NODE());
 			common_background_color_attlist_.serialize(CP_GET_XML_NODE());
+
+			if(style_columns_)
+				style_columns_->serialize(CP_XML_STREAM());
 		}
 	}
 }

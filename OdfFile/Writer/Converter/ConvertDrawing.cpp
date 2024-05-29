@@ -1680,8 +1680,11 @@ void OoxConverter::convert(PPTX::Logic::BodyPr *oox_bodyPr)
 
 	if ((oox_bodyPr->numCol.IsInit()) && (oox_bodyPr->numCol.get() > 1))
 	{
-		//+ style section
-		//+element text:section в котором параграфы
+		int cols = oox_bodyPr->numCol.get();
+		int gap_cms = oox_bodyPr->spcCol.IsInit() ? oox_bodyPr->spcCol.get() / 360000 : 0;
+
+		odf_context()->drawing_context()->start_style_columns(cols, gap_cms);
+		odf_context()->drawing_context()->end_style_columns();
 	}
 	if (oox_bodyPr->rot.IsInit())
 	{

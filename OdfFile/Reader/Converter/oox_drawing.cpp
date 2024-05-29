@@ -579,15 +579,22 @@ void _oox_drawing::serialize_bodyPr(std::wostream & strm, const std::wstring & n
 		CP_XML_NODE(namespace_ + L":bodyPr")
 		{
 			_CP_OPT(double)dPaddingLeft, dPaddingRight, dPaddingTop, dPaddingBottom;
+			_CP_OPT(int) numCol, spcCol;
 			odf_reader::GetProperty(prop,L"text-padding-left"	, dPaddingLeft);
 			odf_reader::GetProperty(prop,L"text-padding-right"	, dPaddingRight);
 			odf_reader::GetProperty(prop,L"text-padding-top"	, dPaddingTop);
 			odf_reader::GetProperty(prop,L"text-padding-bottom"	, dPaddingBottom);
 			
+			odf_reader::GetProperty(prop, L"style_columns_count", numCol);
+			odf_reader::GetProperty(prop, L"style_columns_gap"	, spcCol);
+			
 			if (dPaddingLeft)	CP_XML_ATTR(L"lIns", (int)(*dPaddingLeft));
 			if (dPaddingTop)	CP_XML_ATTR(L"tIns", (int)(*dPaddingTop));
 			if (dPaddingRight)	CP_XML_ATTR(L"rIns", (int)(*dPaddingRight));
 			if (dPaddingBottom)	CP_XML_ATTR(L"bIns", (int)(*dPaddingBottom));
+
+			CP_XML_ATTR_OPT(L"numCol"	, numCol);
+			CP_XML_ATTR_OPT(L"spcCol"	, spcCol);
 
 			if (inGroup == false)
 			{

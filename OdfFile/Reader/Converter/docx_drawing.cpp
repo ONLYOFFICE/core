@@ -288,9 +288,16 @@ void docx_serialize_image_child(std::wostream & strm, _docx_drawing & val)
 				{
 					CP_XML_NODE(L"pic:cNvPr")
 					{
+						_CP_OPT(std::wstring) title, descr;
+						GetProperty(val.additional, L"svg:title", title);
+						GetProperty(val.additional, L"svg:desc", descr);
+
 						//CP_XML_ATTR(L"desc text",L"");
 						CP_XML_ATTR(L"id", val.id + 1);
 						CP_XML_ATTR(L"name", val.name);
+
+						CP_XML_ATTR_OPT(L"title", title);
+						CP_XML_ATTR_OPT(L"descr", descr);
 					
 						//oox_serialize_action(CP_XML_STREAM(), val.action);
 					}
@@ -399,8 +406,15 @@ void docx_serialize_common(std::wostream & strm, _docx_drawing & val)
     {
 		CP_XML_NODE(L"wp:docPr")
 		{
+			_CP_OPT(std::wstring) title, descr;
+			GetProperty(val.additional, L"svg:title", title);
+			GetProperty(val.additional, L"svg:desc", descr);
+
 			CP_XML_ATTR(L"name",	val.name);
 			CP_XML_ATTR(L"id",		0xf000 + val.id + 1);
+
+			CP_XML_ATTR_OPT(L"title", title);
+			CP_XML_ATTR_OPT(L"descr", descr);
 			
 			oox_serialize_action(CP_XML_STREAM(), val.action);
 		}

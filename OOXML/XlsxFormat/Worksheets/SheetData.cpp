@@ -1143,6 +1143,19 @@ namespace OOX
 						formula->formula = m_sText;
 						if(m_oRef.IsInit())
 							formula->rfx = m_oRef.get();
+                        if(!formula->formula.rgce.sequence.empty())
+                        {
+                            auto lastValType = GETBITS(formula->formula.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6);
+                            if(lastValType == 1 || lastValType == 3)
+                            {
+                                SETBITS(formula->formula.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6,2);
+                            }
+                            else if(formula->formula.rgce.sequence.rbegin()->get()->ptg_id.get() == 6424)
+                            {
+                                auto list = static_cast<XLS::PtgList*>(formula->formula.rgce.sequence.rbegin()->get());
+                                list->type_ = 1;
+                            }
+                        }
 							
                     }
                     break;

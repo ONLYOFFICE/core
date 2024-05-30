@@ -69,6 +69,7 @@ namespace OOX
             XLS::GlobalWorkbookInfo* GetGlobalinfo();
             void PrepareSi();
             void PrepareTableFormula();
+            void LinkTables();
             void ReadSheetData();
             void WriteSheetData();
             void SetPropForWriteSheet(const std::wstring &sPath, OOX::CContentTypes& oContentTypes);

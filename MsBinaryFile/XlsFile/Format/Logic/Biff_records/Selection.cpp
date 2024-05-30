@@ -80,12 +80,12 @@ void Selection::readFields(CFRecord& record)
     {
         XLSB::UncheckedSqRfX    sqrfx;
         record >> pnn_xlsb >> rwAct >> colAct >> irefAct >> sqrfx;
-        activeCell = static_cast<std::wstring >(CellRef(rwAct, colAct, true, true));
+        activeCell = CellRef(rwAct, colAct, true, true).toString(true);
         std::wstring  sqref_str;
         int i = 0, cref = sqrfx.rgrfx.size();
 
         std::for_each(sqrfx.rgrfx.begin(), sqrfx.rgrfx.end(), [&](XLSB::UncheckedRfX &refu) {
-            sqref_str += std::wstring (refu.toString(false).c_str()) + ((i == cref - 1) ? L"" : L" ");
+            sqref_str += std::wstring (refu.toString(false, true).c_str()) + ((i == cref - 1) ? L"" : L" ");
         });
 
         sqref = sqref_str;

@@ -122,7 +122,7 @@ namespace OOX
 			m_oDisplay          = ptr->display.value();
 			m_oRid              = ptr->relId.value.value();
 			m_oLocation         = ptr->location.value();
-			m_oRef              = ptr->rfx.toString();
+			m_oRef              = ptr->rfx.toString(true, true);
 			m_oTooltip          = ptr->tooltip.value();
 
 		}

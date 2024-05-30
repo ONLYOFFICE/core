@@ -951,9 +951,16 @@ namespace OOX
 			WritingStringNullableAttrBool(L"ca", m_oCa);
 			WritingStringNullableAttrInt(L"si", m_oSi, m_oSi->GetValue());
 			WritingStringNullableAttrBool(L"bx", m_oBx);
-			writer.WriteString(_T(">"));
-			writer.WriteEncodeXmlStringHHHH(m_sText);
-			writer.WriteString(_T("</f>"));
+			if(!m_sText.empty())
+			{
+				writer.WriteString(_T(">"));
+				writer.WriteEncodeXmlStringHHHH(m_sText);
+				writer.WriteString(_T("</f>"));
+			}
+			else
+			{
+				writer.WriteString(_T("/>"));
+			}
 		}
 		void CFormula::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream)
 		{

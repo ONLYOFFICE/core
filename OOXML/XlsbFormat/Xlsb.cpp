@@ -268,11 +268,9 @@ void OOX::Spreadsheet::CXlsb::WriteSheet(CWorksheet* worksheet)
 }
 void OOX::Spreadsheet::CXlsb::PrepareTableFormula()
 {
-    for(auto &worksheet : m_arWorksheets)
-    {
-        auto lambdaFormula = [&](std::wstring& formula) {
+    auto lambdaFormula = [&](std::wstring& formula) {
             auto str = STR::guidFromStr(formula);
-            if(!str.empty())
+            while(!str.empty())
             {
                 auto guidTableIndex = this->xls_global_info->mapTableGuidsIndex.find(str);
                 if (guidTableIndex != this->xls_global_info->mapTableGuidsIndex.end())
@@ -284,9 +282,11 @@ void OOX::Spreadsheet::CXlsb::PrepareTableFormula()
                         formula.replace(formula.find(str), str.size(), tableName);
                     }
                 }
+                str = STR::guidFromStr(formula);
             }
         };
-
+    for(auto &worksheet : m_arWorksheets)
+    {
         if(worksheet->m_oTableParts.IsInit())
         {
             for(size_t i = 0, length = worksheet->m_oTableParts->m_arrItems.size(); i < length; ++i)
@@ -343,6 +343,16 @@ void OOX::Spreadsheet::CXlsb::PrepareTableFormula()
                 }
 
             }*/
+        }
+    }
+    if(m_pWorkbook && m_pWorkbook->m_oDefinedNames.IsInit())
+    {
+        for(auto defName:m_pWorkbook->m_oDefinedNames->m_arrItems)
+        {
+            if(defName->m_oRef.IsInit())
+            {
+                lambdaFormula(defName->m_oRef.get());
+            }
         }
     }
 }

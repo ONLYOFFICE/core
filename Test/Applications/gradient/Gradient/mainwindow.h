@@ -2,10 +2,13 @@
 #define MAINWINDOW_H
 
 #include <QLabel>
+#include <QList>
 #include <QListWidgetItem>
 #include <QMainWindow>
 #include <QLineEdit>
+#include <QCheckBox>
 #include <QPoint>
+#include <QPixmap>
 #include <QMouseEvent>
 #include <QColorDialog>
 #include <QPainter>
@@ -213,56 +216,33 @@ typedef enum
 	CoonsPatch,
 	CoonsPatchParametric,
 	TensorCoonsPatch,
-	TensorCoonsPatchParametric,
-	Functional
+	TensorCoonsPatchParametric
 } GradientType;
 
-struct Point
+typedef enum
 {
-	Point(double _x = 0, double _y = 0) : x(_x), y(_y)
-	{
-	}
-	double x, y;
-};
-
-struct Color
-{
-	uint r, g, b;
-	Color()
-	{
-		r = b = g = 0;
-	}
-	Color(uint rgb)
-	{
-		b = rgb % 0x100;
-		g = (rgb / 0x100) % 0x100;
-		r = rgb / 0x100 / 0x100;
-	}
-	uint get_color()
-	{
-		return b + g * 0x100 + r * 0x10000;
-	}
-};
+	LinearOffset = 68,
+	RadialOffset = 62,
+	TriangleOffset = 56,
+	CoonsPatchOffset = 32,
+	TensorCoonsPatchOffset = 0
+} GradientOffse;
 
 struct Info
 {
-	GradientType gradient = Linear;
+	GradientType gradient;
+	GradientOffse offset;
 
 	float r0, r1;
 	NSStructures::Point c0, c1;
 	NSStructures::Point p0, p1;
 	bool cont_b, cont_f;
-	std::vector<NSStructures::Point> triangle = {{100, 100}, {300, 200}, {200, 350}};
-	std::vector<NSStructures::Point> curve = {{100, 300}, {50, 250}, {150, 150}, {100, 100},
-											  {150, 50}, {250, 150}, {300, 100}, {250, 150},
-											  {350, 250}, {300, 300}, {250, 350}, {150,250}};
-	std::vector<std::vector<NSStructures::Point>> tensorcurve = {{{100, 300}, {150, 250}, {50, 150}, {100,100}},
-																 {{150, 250}, {170, 230}, {170, 170}, {50, 150}},
-																 {{350, 250}, {230, 230}, {230, 170}, {150, 250}},
-																 {{300, 300}, {250, 250}, {350, 150}, {300, 100}}};
-	std::vector<float> triangle_parametrs = {0.f, 0.5f, 1.f};
-	std::vector<float> curve_parametrs = {0.f, 0.3f, 1.f, 0.6f};
-	std::vector<std::vector<float>> tensor_curve_parametrs = {{0.f, 0.3f}, {1.f, 0.6f}};
+	std::vector<NSStructures::Point> triangle;
+	std::vector<NSStructures::Point> curve;
+	std::vector<std::vector<NSStructures::Point>> tensorcurve;
+	std::vector<float> triangle_parametrs;
+	std::vector<float> curve_parametrs;
+	std::vector<std::vector<float>> tensor_curve_parametrs;
 
 	NSStructures::GradientInfo ginfo;
 	int gradient_type;
@@ -275,15 +255,23 @@ struct Info
 		p = {0.0, 0.2, 0.4, 0.6, 0.8, 1};
 		n_colors = 6;
 		ginfo.shading.shading_type = NSStructures::ShadingInfo::Parametric;
+		triangle.resize(3);
+		curve.resize(12);
+		tensorcurve.resize(4);
+		for (int i = 0; i < tensorcurve.size(); i++)
+		{
+			tensorcurve[i].resize(4);
+		}
+		triangle_parametrs.resize(3);
+		curve_parametrs.resize(4);
+		tensor_curve_parametrs.resize(2);
+		for (int i = 0; i < tensor_curve_parametrs.size(); i++)
+		{
+			tensor_curve_parametrs[i].resize(2);
+		}
 
-		r0 = 0;
-		r1 = 100;
-		c0 = {200, 200};
-		c1 = {200, 200};
-		p0 = {0, 0};
-		p1 = {400, 400};
 		cont_b = cont_f = false;
-	};
+	}
 	~Info()
 	{
 	}
@@ -302,7 +290,7 @@ public:
 	void setPoints(QImage *image);
 	QImage img;
 	QLabel *lable;
-	std::vector<Point> points;
+	std::vector<NSStructures::Point> points;
 	Info info;
 
 private slots:
@@ -310,6 +298,12 @@ private slots:
 	void on_label_test_clicked();
 
 	void on_label_test_mouse_move();
+
+	void on_point_set();
+
+	void on_parametrs_set();
+
+	void on_continue_set();
 
 	void on_actionLinear_Gradient_triggered();
 
@@ -330,6 +324,10 @@ private slots:
 	void on_actionTensor_Coons_Patch_Parametric_triggered();
 
 private:
+	QList<CustomLineEdit *> listOfLines;
+	QList<CustomParametrLineEdit *> listOfParametricLines;
+	QList<QCheckBox *> listOfCheckBox;
+	QList<CustomColorLabel *>listOfColorLabels;
 	Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H

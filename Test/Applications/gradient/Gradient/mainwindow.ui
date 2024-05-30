@@ -26,6 +26,9 @@
       <height>500</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background-color : white;</string>
+    </property>
     <property name="text">
      <string/>
     </property>
@@ -52,7 +55,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>4</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="Linear_Page">
       <widget class="QGroupBox" name="groupBox">
@@ -80,22 +83,6 @@
          <string>X Coordinate, First Point</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="First_X_Coordinate_Input">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>50</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>10</string>
-        </property>
-        <property name="placeholderText">
-         <string>10</string>
-        </property>
-       </widget>
        <widget class="QLabel" name="label_2">
         <property name="geometry">
          <rect>
@@ -107,22 +94,6 @@
         </property>
         <property name="text">
          <string>Y Coordinate, First Point</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="First_Y_Coordinate_Input">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>100</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>10</string>
-        </property>
-        <property name="placeholderText">
-         <string>10</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_3">
@@ -138,7 +109,52 @@
          <string>X Coordinate, Second Point</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="Second_X_Coordinate_Input">
+       <widget class="QLabel" name="label_4">
+        <property name="geometry">
+         <rect>
+          <x>240</x>
+          <y>80</y>
+          <width>179</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Y Coordinate, Second Point</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>10</string>
+        </property>
+        <property name="placeholderText">
+         <string>10</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_2">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>10</string>
+        </property>
+        <property name="placeholderText">
+         <string>10</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_3">
         <property name="geometry">
          <rect>
           <x>240</x>
@@ -154,20 +170,7 @@
          <string>90</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label_4">
-        <property name="geometry">
-         <rect>
-          <x>240</x>
-          <y>80</y>
-          <width>179</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Y Coordinate, Second Point</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="Second_Y_Coordinate_Input">
+       <widget class="CustomLineEdit" name="lineEdit_4">
         <property name="geometry">
          <rect>
           <x>240</x>
@@ -196,7 +199,7 @@
        <property name="title">
         <string>Continue Shading</string>
        </property>
-       <widget class="QCheckBox" name="Continue_Shading_Forward">
+       <widget class="QCheckBox" name="checkBox">
         <property name="geometry">
          <rect>
           <x>20</x>
@@ -208,8 +211,11 @@
         <property name="text">
          <string>Forward</string>
         </property>
+        <property name="tristate">
+         <bool>false</bool>
+        </property>
        </widget>
-       <widget class="QCheckBox" name="Continue_Shading_Backward">
+       <widget class="QCheckBox" name="checkBox_1">
         <property name="geometry">
          <rect>
           <x>20</x>
@@ -237,7 +243,7 @@
        <property name="title">
         <string>Continue Shading</string>
        </property>
-       <widget class="QCheckBox" name="Continue_Shading_Forward_2">
+       <widget class="QCheckBox" name="checkBox_2">
         <property name="geometry">
          <rect>
           <x>20</x>
@@ -250,7 +256,7 @@
          <string>Forward</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="Continue_Shading_Backward_2">
+       <widget class="QCheckBox" name="checkBox_3">
         <property name="geometry">
          <rect>
           <x>20</x>
@@ -289,22 +295,6 @@
          <string>X Coordinate, First Center</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="First_Center_X_Coordinate_Input">
-        <property name="geometry">
-         <rect>
-          <x>20</x>
-          <y>50</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>50</string>
-        </property>
-        <property name="placeholderText">
-         <string>50</string>
-        </property>
-       </widget>
        <widget class="QLabel" name="label_8">
         <property name="geometry">
          <rect>
@@ -316,22 +306,6 @@
         </property>
         <property name="text">
          <string>Y Coordinate, First Center</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="First_Center_Y_Coordinate_Input">
-        <property name="geometry">
-         <rect>
-          <x>20</x>
-          <y>100</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>50</string>
-        </property>
-        <property name="placeholderText">
-         <string>50</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_9">
@@ -347,7 +321,52 @@
          <string>X Coordinate, Second Center</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="Second_Center_X_Coordinate_Input">
+       <widget class="QLabel" name="label_10">
+        <property name="geometry">
+         <rect>
+          <x>230</x>
+          <y>80</y>
+          <width>189</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Y Coordinate, Second Center</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_5">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
+         <string>50</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_6">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
+         <string>50</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_7">
         <property name="geometry">
          <rect>
           <x>230</x>
@@ -363,20 +382,7 @@
          <string>50</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label_10">
-        <property name="geometry">
-         <rect>
-          <x>230</x>
-          <y>80</y>
-          <width>189</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Y Coordinate, Second Center</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="Second_Center_Y_Coordinate_Input">
+       <widget class="CustomLineEdit" name="lineEdit_8">
         <property name="geometry">
          <rect>
           <x>230</x>
@@ -431,7 +437,7 @@
          <string>Second Radius</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="First_Radius_Input">
+       <widget class="CustomLineEdit" name="lineEdit_9">
         <property name="geometry">
          <rect>
           <x>20</x>
@@ -447,7 +453,7 @@
          <string>10</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="Second_Radius_Input">
+       <widget class="CustomLineEdit" name="lineEdit_10">
         <property name="geometry">
          <rect>
           <x>230</x>
@@ -491,22 +497,6 @@
          <string>X Coordinate, First Vertex</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="First_Vertex_X_Coordinate_Input">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>50</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>50</string>
-        </property>
-        <property name="placeholderText">
-         <string>50</string>
-        </property>
-       </widget>
        <widget class="QLabel" name="label_17">
         <property name="geometry">
          <rect>
@@ -518,22 +508,6 @@
         </property>
         <property name="text">
          <string>Y Coordinate, First Vertex</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="First_Vertex_Y_Coordinate_Input">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>100</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>20</string>
-        </property>
-        <property name="placeholderText">
-         <string>20</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_18">
@@ -549,22 +523,6 @@
          <string>X Coordinate, Second Vertex</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="Second_Vertex_X_Coordinate_Input">
-        <property name="geometry">
-         <rect>
-          <x>200</x>
-          <y>50</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>20</string>
-        </property>
-        <property name="placeholderText">
-         <string>20</string>
-        </property>
-       </widget>
        <widget class="QLabel" name="label_19">
         <property name="geometry">
          <rect>
@@ -576,22 +534,6 @@
         </property>
         <property name="text">
          <string>Y Coordinate, Second Vertex</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="Second_Vertex_Y_Coordinate_Input">
-        <property name="geometry">
-         <rect>
-          <x>200</x>
-          <y>100</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>70</string>
-        </property>
-        <property name="placeholderText">
-         <string>70</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_20">
@@ -607,7 +549,84 @@
          <string>X Coordinate, Third Vertex</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="Third_Vertex_X_Coordinate_Input">
+       <widget class="QLabel" name="label_21">
+        <property name="geometry">
+         <rect>
+          <x>410</x>
+          <y>80</y>
+          <width>173</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Y Coordinate, Third Vertex</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_11">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
+         <string>50</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_12">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>20</string>
+        </property>
+        <property name="placeholderText">
+         <string>20</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_13">
+        <property name="geometry">
+         <rect>
+          <x>200</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>20</string>
+        </property>
+        <property name="placeholderText">
+         <string>20</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_14">
+        <property name="geometry">
+         <rect>
+          <x>200</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>70</string>
+        </property>
+        <property name="placeholderText">
+         <string>70</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_15">
         <property name="geometry">
          <rect>
           <x>410</x>
@@ -623,20 +642,7 @@
          <string>80</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label_21">
-        <property name="geometry">
-         <rect>
-          <x>410</x>
-          <y>80</y>
-          <width>173</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Y Coordinate, Third Vertex</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="Third_Vertex_Y_Coordinate_Input">
+       <widget class="CustomLineEdit" name="lineEdit_16">
         <property name="geometry">
          <rect>
           <x>410</x>
@@ -655,32 +661,32 @@
       </widget>
      </widget>
      <widget class="QWidget" name="Coons_Patch_Page">
-      <widget class="QGroupBox" name="groupBox_9">
+      <widget class="QGroupBox" name="groupBox_18">
        <property name="geometry">
         <rect>
-         <x>0</x>
+         <x>20</x>
          <y>0</y>
-         <width>590</width>
+         <width>130</width>
          <height>140</height>
         </rect>
        </property>
        <property name="title">
-        <string>Set Coordinates Of Square Vertices</string>
+        <string>First Vertex</string>
        </property>
        <widget class="QLabel" name="label_33">
         <property name="geometry">
          <rect>
           <x>10</x>
           <y>30</y>
-          <width>118</width>
+          <width>87</width>
           <height>20</height>
          </rect>
         </property>
         <property name="text">
-         <string>First X Coordinate</string>
+         <string>X Coordinate</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="First_Vertex_X_Coordinate_Input_3">
+       <widget class="CustomLineEdit" name="lineEdit_17">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -701,192 +707,18 @@
          <rect>
           <x>10</x>
           <y>80</y>
-          <width>117</width>
+          <width>86</width>
           <height>20</height>
          </rect>
         </property>
         <property name="text">
-         <string>First Y Coordinate</string>
+         <string>Y Coordinate</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="First_Vertex_Y_Coordinate_Input_3">
+       <widget class="CustomLineEdit" name="lineEdit_18">
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>100</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>60</string>
-        </property>
-        <property name="placeholderText">
-         <string>60</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_35">
-        <property name="geometry">
-         <rect>
-          <x>140</x>
-          <y>30</y>
-          <width>140</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Second X Coordinate</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="Second_Vertex_X_Coordinate_Input_3">
-        <property name="geometry">
-         <rect>
-          <x>140</x>
-          <y>50</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>20</string>
-        </property>
-        <property name="placeholderText">
-         <string>20</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_36">
-        <property name="geometry">
-         <rect>
-          <x>140</x>
-          <y>80</y>
-          <width>139</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Second Y Coordinate</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="Second_Vertex_Y_Coordinate_Input_3">
-        <property name="geometry">
-         <rect>
-          <x>140</x>
-          <y>100</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>20</string>
-        </property>
-        <property name="placeholderText">
-         <string>20</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_37">
-        <property name="geometry">
-         <rect>
-          <x>300</x>
-          <y>30</y>
-          <width>125</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Third X Coordinate</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="Third_Vertex_X_Coordinate_Input_3">
-        <property name="geometry">
-         <rect>
-          <x>300</x>
-          <y>50</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>60</string>
-        </property>
-        <property name="placeholderText">
-         <string>60</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_38">
-        <property name="geometry">
-         <rect>
-          <x>300</x>
-          <y>80</y>
-          <width>124</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Third Y Coordinate</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="Third_Vertex_Y_Coordinate_Input_3">
-        <property name="geometry">
-         <rect>
-          <x>300</x>
-          <y>100</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>20</string>
-        </property>
-        <property name="placeholderText">
-         <string>20</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_39">
-        <property name="geometry">
-         <rect>
-          <x>450</x>
-          <y>30</y>
-          <width>133</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Fourth X Coordinate</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="Fourth_Vertex_X_Coordinate_Input_3">
-        <property name="geometry">
-         <rect>
-          <x>450</x>
-          <y>50</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>60</string>
-        </property>
-        <property name="placeholderText">
-         <string>60</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_40">
-        <property name="geometry">
-         <rect>
-          <x>450</x>
-          <y>80</y>
-          <width>128</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Fourth Y Coorfinate</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="Fourth_Vertex_Y_Coordinate_Input_3">
-        <property name="geometry">
-         <rect>
-          <x>450</x>
           <y>100</y>
           <width>113</width>
           <height>28</height>
@@ -900,533 +732,733 @@
         </property>
        </widget>
       </widget>
-      <widget class="QGroupBox" name="groupBox_10">
+      <widget class="QGroupBox" name="groupBox_11">
        <property name="geometry">
         <rect>
-         <x>0</x>
-         <y>140</y>
-         <width>590</width>
-         <height>320</height>
+         <x>200</x>
+         <y>0</y>
+         <width>370</width>
+         <height>140</height>
         </rect>
        </property>
        <property name="title">
-        <string>Set Curvature Coordinates Of Square Edges</string>
+        <string>First Edge</string>
        </property>
-       <widget class="QGroupBox" name="groupBox_11">
+       <widget class="QLabel" name="label_41">
         <property name="geometry">
          <rect>
           <x>10</x>
           <y>30</y>
-          <width>280</width>
-          <height>140</height>
+          <width>118</width>
+          <height>20</height>
          </rect>
         </property>
-        <property name="title">
-         <string>First Edge</string>
+        <property name="text">
+         <string>First X Coordinate</string>
         </property>
-        <widget class="QLabel" name="label_41">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>30</y>
-           <width>118</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>First X Coordinate</string>
-         </property>
-        </widget>
-        <widget class="CustomLineEdit" name="First_X_Coordinate_First_Edge">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>50</y>
-           <width>113</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>10</string>
-         </property>
-         <property name="placeholderText">
-          <string>10</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_43">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>30</y>
-           <width>140</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Second X Coordinate</string>
-         </property>
-        </widget>
-        <widget class="CustomLineEdit" name="Second_X_Coordinate_First_Edge">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>50</y>
-           <width>113</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>30</string>
-         </property>
-         <property name="placeholderText">
-          <string>30</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_44">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>80</y>
-           <width>117</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>First Y Coordinate</string>
-         </property>
-        </widget>
-        <widget class="CustomLineEdit" name="First_Y_Coordinate_First_Edge">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>100</y>
-           <width>113</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>50</string>
-         </property>
-         <property name="placeholderText">
-          <string>50</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_45">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>80</y>
-           <width>139</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Second Y Coordinate</string>
-         </property>
-        </widget>
-        <widget class="CustomLineEdit" name="Second_Y_Coordinate_First_Edge">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>100</y>
-           <width>113</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>30</string>
-         </property>
-         <property name="placeholderText">
-          <string>30</string>
-         </property>
-        </widget>
        </widget>
-       <widget class="QGroupBox" name="groupBox_12">
+       <widget class="QLabel" name="label_43">
         <property name="geometry">
          <rect>
-          <x>300</x>
+          <x>210</x>
           <y>30</y>
-          <width>280</width>
-          <height>140</height>
+          <width>140</width>
+          <height>20</height>
          </rect>
         </property>
-        <property name="title">
-         <string>Second Edge</string>
+        <property name="text">
+         <string>Second X Coordinate</string>
         </property>
-        <widget class="QLabel" name="label_46">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>30</y>
-           <width>118</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>First X Coordinate</string>
-         </property>
-        </widget>
-        <widget class="CustomLineEdit" name="First_X_Coordinate_Second_Edge">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>50</y>
-           <width>113</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>30</string>
-         </property>
-         <property name="placeholderText">
-          <string>30</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_47">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>30</y>
-           <width>140</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Second X Coordinate</string>
-         </property>
-        </widget>
-        <widget class="CustomLineEdit" name="Second_X_Coordinate_Second_Edge">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>50</y>
-           <width>113</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>50</string>
-         </property>
-         <property name="placeholderText">
-          <string>50</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_48">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>80</y>
-           <width>117</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>First Y Coordinate</string>
-         </property>
-        </widget>
-        <widget class="CustomLineEdit" name="First_Y_Coordinate_Second_Edge">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>100</y>
-           <width>113</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>10</string>
-         </property>
-         <property name="placeholderText">
-          <string>10</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_49">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>80</y>
-           <width>140</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Second Y Coordinate</string>
-         </property>
-        </widget>
-        <widget class="CustomLineEdit" name="Second_Y_Coordinate_Second_Edge">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>100</y>
-           <width>113</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>30</string>
-         </property>
-         <property name="placeholderText">
-          <string>30</string>
-         </property>
-        </widget>
        </widget>
-       <widget class="QGroupBox" name="groupBox_13">
+       <widget class="QLabel" name="label_44">
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>170</y>
-          <width>280</width>
-          <height>140</height>
+          <y>80</y>
+          <width>117</width>
+          <height>20</height>
          </rect>
         </property>
-        <property name="title">
-         <string>Third Edge</string>
+        <property name="text">
+         <string>First Y Coordinate</string>
         </property>
-        <widget class="QLabel" name="label_50">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>30</y>
-           <width>118</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>First X Coordinate</string>
-         </property>
-        </widget>
-        <widget class="CustomLineEdit" name="First_X_Coordinate_Third_Edge">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>50</y>
-           <width>113</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>50</string>
-         </property>
-         <property name="placeholderText">
-          <string>50</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_51">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>30</y>
-           <width>140</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Second X Coordinate</string>
-         </property>
-        </widget>
-        <widget class="CustomLineEdit" name="Second_X_Coordinate_Third_Edge">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>50</y>
-           <width>113</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>70</string>
-         </property>
-         <property name="placeholderText">
-          <string>70</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_52">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>80</y>
-           <width>117</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>First Y Coordinate</string>
-         </property>
-        </widget>
-        <widget class="CustomLineEdit" name="First_Y_Coordinate_Third_Edge">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>100</y>
-           <width>113</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>30</string>
-         </property>
-         <property name="placeholderText">
-          <string>30</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_53">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>80</y>
-           <width>140</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Second Y Coordinate</string>
-         </property>
-        </widget>
-        <widget class="CustomLineEdit" name="Second_Y_Coordinate_Third_Edge">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>100</y>
-           <width>113</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>50</string>
-         </property>
-         <property name="placeholderText">
-          <string>50</string>
-         </property>
-        </widget>
        </widget>
-       <widget class="QGroupBox" name="groupBox_14">
+       <widget class="QLabel" name="label_45">
         <property name="geometry">
          <rect>
-          <x>300</x>
-          <y>170</y>
-          <width>280</width>
-          <height>140</height>
+          <x>210</x>
+          <y>80</y>
+          <width>139</width>
+          <height>20</height>
          </rect>
         </property>
-        <property name="title">
-         <string>Fourth Edge</string>
+        <property name="text">
+         <string>Second Y Coordinate</string>
         </property>
-        <widget class="QLabel" name="label_54">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>30</y>
-           <width>118</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>First X Coordinate</string>
-         </property>
-        </widget>
-        <widget class="CustomLineEdit" name="First_X_Coordinate_Fourth_Edge">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>50</y>
-           <width>113</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>50</string>
-         </property>
-         <property name="placeholderText">
-          <string>50</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_55">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>30</y>
-           <width>140</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Second X Coordinate</string>
-         </property>
-        </widget>
-        <widget class="CustomLineEdit" name="Second_X_Coordinate_Fourth_Edge">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>50</y>
-           <width>113</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>30</string>
-         </property>
-         <property name="placeholderText">
-          <string>30</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_56">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>80</y>
-           <width>117</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>First Y Coordinate</string>
-         </property>
-        </widget>
-        <widget class="CustomLineEdit" name="First_Y_Coordinate_Fourth_Edge">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>100</y>
-           <width>113</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>70</string>
-         </property>
-         <property name="placeholderText">
-          <string>70</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_57">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>80</y>
-           <width>140</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Second Y Coordinate</string>
-         </property>
-        </widget>
-        <widget class="CustomLineEdit" name="Second_Y_Coordinate_Fourth_Edge">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>100</y>
-           <width>113</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>50</string>
-         </property>
-         <property name="placeholderText">
-          <string>50</string>
-         </property>
-        </widget>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_19">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>10</string>
+        </property>
+        <property name="placeholderText">
+         <string>10</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_20">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
+         <string>50</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_21">
+        <property name="geometry">
+         <rect>
+          <x>210</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>30</string>
+        </property>
+        <property name="placeholderText">
+         <string>30</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_22">
+        <property name="geometry">
+         <rect>
+          <x>210</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>30</string>
+        </property>
+        <property name="placeholderText">
+         <string>30</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_19">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>140</y>
+         <width>130</width>
+         <height>140</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Second Vertex</string>
+       </property>
+       <widget class="QLabel" name="label_42">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>87</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>X Coordinate</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_116">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>80</y>
+          <width>86</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Y Coordinate</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_23">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>20</string>
+        </property>
+        <property name="placeholderText">
+         <string>20</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_24">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>20</string>
+        </property>
+        <property name="placeholderText">
+         <string>20</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_12">
+       <property name="geometry">
+        <rect>
+         <x>200</x>
+         <y>140</y>
+         <width>370</width>
+         <height>140</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Second Edge</string>
+       </property>
+       <widget class="QLabel" name="label_121">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>118</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>First X Coordinate</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_122">
+        <property name="geometry">
+         <rect>
+          <x>210</x>
+          <y>30</y>
+          <width>140</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Second X Coordinate</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_123">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>80</y>
+          <width>117</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>First Y Coordinate</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_124">
+        <property name="geometry">
+         <rect>
+          <x>210</x>
+          <y>80</y>
+          <width>140</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Second Y Coordinate</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_84">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>30</string>
+        </property>
+        <property name="placeholderText">
+         <string>30</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_85">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>10</string>
+        </property>
+        <property name="placeholderText">
+         <string>10</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_86">
+        <property name="geometry">
+         <rect>
+          <x>210</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
+         <string>50</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_87">
+        <property name="geometry">
+         <rect>
+          <x>210</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>30</string>
+        </property>
+        <property name="placeholderText">
+         <string>30</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_20">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>280</y>
+         <width>130</width>
+         <height>140</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Third Vertex</string>
+       </property>
+       <widget class="QLabel" name="label_117">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>87</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>X Coordinate</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_118">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>80</y>
+          <width>86</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Y Coordinate</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_29">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>60</string>
+        </property>
+        <property name="placeholderText">
+         <string>60</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_30">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>20</string>
+        </property>
+        <property name="placeholderText">
+         <string>20</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_13">
+       <property name="geometry">
+        <rect>
+         <x>200</x>
+         <y>280</y>
+         <width>370</width>
+         <height>140</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Third Edge</string>
+       </property>
+       <widget class="QLabel" name="label_50">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>118</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>First X Coordinate</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_51">
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>30</y>
+          <width>140</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Second X Coordinate</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_52">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>80</y>
+          <width>117</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>First Y Coordinate</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_53">
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>80</y>
+          <width>140</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Second Y Coordinate</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_31">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
+         <string>50</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_32">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>30</string>
+        </property>
+        <property name="placeholderText">
+         <string>30</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_33">
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>70</string>
+        </property>
+        <property name="placeholderText">
+         <string>70</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_34">
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
+         <string>50</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_25">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>420</y>
+         <width>130</width>
+         <height>140</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Fourth Vertex</string>
+       </property>
+       <widget class="QLabel" name="label_119">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>87</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>X Coordinate</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_120">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>80</y>
+          <width>86</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Y Coordinate</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_35">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>60</string>
+        </property>
+        <property name="placeholderText">
+         <string>60</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_36">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>60</string>
+        </property>
+        <property name="placeholderText">
+         <string>60</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_40">
+       <property name="geometry">
+        <rect>
+         <x>200</x>
+         <y>420</y>
+         <width>370</width>
+         <height>140</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Fourth Edge</string>
+       </property>
+       <widget class="QLabel" name="label_183">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>118</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>First X Coordinate</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_184">
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>30</y>
+          <width>140</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Second X Coordinate</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_185">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>80</y>
+          <width>117</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>First Y Coordinate</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_186">
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>80</y>
+          <width>140</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Second Y Coordinate</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_152">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
+         <string>50</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_153">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>70</string>
+        </property>
+        <property name="placeholderText">
+         <string>70</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_154">
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>30</string>
+        </property>
+        <property name="placeholderText">
+         <string>30</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_155">
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
+         <string>50</string>
+        </property>
        </widget>
       </widget>
      </widget>
@@ -1456,22 +1488,6 @@
          <string>First X Coordinate</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="First_X_Coordinate_First_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>50</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>20</string>
-        </property>
-        <property name="placeholderText">
-         <string>20</string>
-        </property>
-       </widget>
        <widget class="QLabel" name="label_83">
         <property name="geometry">
          <rect>
@@ -1483,22 +1499,6 @@
         </property>
         <property name="text">
          <string>First Y Coordinate</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="First_Y_Coordinate_First_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>100</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>60</string>
-        </property>
-        <property name="placeholderText">
-         <string>60</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_84">
@@ -1514,22 +1514,6 @@
          <string>Second X Coordinate</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="Second_X_Coordinate_First_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>140</x>
-          <y>50</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>30</string>
-        </property>
-        <property name="placeholderText">
-         <string>30</string>
-        </property>
-       </widget>
        <widget class="QLabel" name="label_85">
         <property name="geometry">
          <rect>
@@ -1541,22 +1525,6 @@
         </property>
         <property name="text">
          <string>Second Y Coordinate</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="Second_Y_Coordinate_First_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>140</x>
-          <y>100</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>50</string>
-        </property>
-        <property name="placeholderText">
-         <string>50</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_86">
@@ -1572,22 +1540,6 @@
          <string>Third X Coordinate</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="Third_X_Coordinate_First_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>300</x>
-          <y>50</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>10</string>
-        </property>
-        <property name="placeholderText">
-         <string>10</string>
-        </property>
-       </widget>
        <widget class="QLabel" name="label_87">
         <property name="geometry">
          <rect>
@@ -1599,22 +1551,6 @@
         </property>
         <property name="text">
          <string>Third Y Coordinate</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="Third_Y_Coordinate_First_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>300</x>
-          <y>100</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>30</string>
-        </property>
-        <property name="placeholderText">
-         <string>30</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_88">
@@ -1630,7 +1566,116 @@
          <string>Fourth X Coordinate</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="Fourth_X_Coordinate_First_Edge_3">
+       <widget class="QLabel" name="label_89">
+        <property name="geometry">
+         <rect>
+          <x>450</x>
+          <y>80</y>
+          <width>128</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Fourth Y Coorfinate</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_41">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>20</string>
+        </property>
+        <property name="placeholderText">
+         <string>20</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_42">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>60</string>
+        </property>
+        <property name="placeholderText">
+         <string>60</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_43">
+        <property name="geometry">
+         <rect>
+          <x>140</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>30</string>
+        </property>
+        <property name="placeholderText">
+         <string>30</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_44">
+        <property name="geometry">
+         <rect>
+          <x>140</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
+         <string>50</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_45">
+        <property name="geometry">
+         <rect>
+          <x>300</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>10</string>
+        </property>
+        <property name="placeholderText">
+         <string>10</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_46">
+        <property name="geometry">
+         <rect>
+          <x>300</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>30</string>
+        </property>
+        <property name="placeholderText">
+         <string>30</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_47">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -1646,20 +1691,7 @@
          <string>20</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label_89">
-        <property name="geometry">
-         <rect>
-          <x>450</x>
-          <y>80</y>
-          <width>128</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Fourth Y Coorfinate</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="Fourth_Y_Coordinate_First_Edge_3">
+       <widget class="CustomLineEdit" name="lineEdit_48">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -1701,22 +1733,6 @@
          <string>First X Coordinate</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="First_X_Coordinate_Second_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>50</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>30</string>
-        </property>
-        <property name="placeholderText">
-         <string>30</string>
-        </property>
-       </widget>
        <widget class="QLabel" name="label_91">
         <property name="geometry">
          <rect>
@@ -1728,22 +1744,6 @@
         </property>
         <property name="text">
          <string>First Y Coordinate</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="First_Y_Coordinate_Second_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>100</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>50</string>
-        </property>
-        <property name="placeholderText">
-         <string>50</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_92">
@@ -1759,22 +1759,6 @@
          <string>Second X Coordinate</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="Second_X_Coordinate_Second_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>140</x>
-          <y>50</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>34</string>
-        </property>
-        <property name="placeholderText">
-         <string>34</string>
-        </property>
-       </widget>
        <widget class="QLabel" name="label_93">
         <property name="geometry">
          <rect>
@@ -1786,22 +1770,6 @@
         </property>
         <property name="text">
          <string>Second Y Coordinate</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="Second_Y_Coordinate_Second_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>140</x>
-          <y>100</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>46</string>
-        </property>
-        <property name="placeholderText">
-         <string>46</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_94">
@@ -1817,22 +1785,6 @@
          <string>Third X Coordinate</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="Third_X_Coordinate_Second_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>300</x>
-          <y>50</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>34</string>
-        </property>
-        <property name="placeholderText">
-         <string>34</string>
-        </property>
-       </widget>
        <widget class="QLabel" name="label_95">
         <property name="geometry">
          <rect>
@@ -1844,22 +1796,6 @@
         </property>
         <property name="text">
          <string>Third Y Coordinate</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="Third_Y_Coordinate_Second_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>300</x>
-          <y>100</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>34</string>
-        </property>
-        <property name="placeholderText">
-         <string>34</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_96">
@@ -1875,7 +1811,116 @@
          <string>Fourth X Coordinate</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="Fourth_X_Coordinate_Second_Edge_3">
+       <widget class="QLabel" name="label_97">
+        <property name="geometry">
+         <rect>
+          <x>450</x>
+          <y>80</y>
+          <width>128</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Fourth Y Coorfinate</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_49">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>30</string>
+        </property>
+        <property name="placeholderText">
+         <string>30</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_50">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
+         <string>50</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_51">
+        <property name="geometry">
+         <rect>
+          <x>140</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>34</string>
+        </property>
+        <property name="placeholderText">
+         <string>34</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_52">
+        <property name="geometry">
+         <rect>
+          <x>140</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>46</string>
+        </property>
+        <property name="placeholderText">
+         <string>46</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_53">
+        <property name="geometry">
+         <rect>
+          <x>300</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>34</string>
+        </property>
+        <property name="placeholderText">
+         <string>34</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_54">
+        <property name="geometry">
+         <rect>
+          <x>300</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>34</string>
+        </property>
+        <property name="placeholderText">
+         <string>34</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_55">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -1891,20 +1936,7 @@
          <string>10</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label_97">
-        <property name="geometry">
-         <rect>
-          <x>450</x>
-          <y>80</y>
-          <width>128</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Fourth Y Coorfinate</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="Fourth_Y_Coordinate_Second_Edge_3">
+       <widget class="CustomLineEdit" name="lineEdit_56">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -1946,22 +1978,6 @@
          <string>First X Coordinate</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="First_X_Coordinate_Third_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>50</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>70</string>
-        </property>
-        <property name="placeholderText">
-         <string>70</string>
-        </property>
-       </widget>
        <widget class="QLabel" name="label_99">
         <property name="geometry">
          <rect>
@@ -1973,22 +1989,6 @@
         </property>
         <property name="text">
          <string>First Y Coordinate</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="First_Y_Coordinate_Third_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>100</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>50</string>
-        </property>
-        <property name="placeholderText">
-         <string>50</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_100">
@@ -2004,22 +2004,6 @@
          <string>Second X Coordinate</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="Second_X_Coordinate_Third_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>140</x>
-          <y>50</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>46</string>
-        </property>
-        <property name="placeholderText">
-         <string>46</string>
-        </property>
-       </widget>
        <widget class="QLabel" name="label_101">
         <property name="geometry">
          <rect>
@@ -2031,22 +2015,6 @@
         </property>
         <property name="text">
          <string>Second Y Coordinate</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="Second_Y_Coordinate_Third_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>140</x>
-          <y>100</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>46</string>
-        </property>
-        <property name="placeholderText">
-         <string>46</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_102">
@@ -2062,22 +2030,6 @@
          <string>Third X Coordinate</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="Third_X_Coordinate_Third_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>300</x>
-          <y>50</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>46</string>
-        </property>
-        <property name="placeholderText">
-         <string>46</string>
-        </property>
-       </widget>
        <widget class="QLabel" name="label_103">
         <property name="geometry">
          <rect>
@@ -2089,22 +2041,6 @@
         </property>
         <property name="text">
          <string>Third Y Coordinate</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="Third_Y_Coordinate_Third_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>300</x>
-          <y>100</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>34</string>
-        </property>
-        <property name="placeholderText">
-         <string>34</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_104">
@@ -2120,7 +2056,116 @@
          <string>Fourth X Coordinate</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="Fourth_X_Coordinate_Third_Edge_3">
+       <widget class="QLabel" name="label_105">
+        <property name="geometry">
+         <rect>
+          <x>450</x>
+          <y>80</y>
+          <width>128</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Fourth Y Coorfinate</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_57">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>70</string>
+        </property>
+        <property name="placeholderText">
+         <string>70</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_58">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
+         <string>50</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_59">
+        <property name="geometry">
+         <rect>
+          <x>140</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>46</string>
+        </property>
+        <property name="placeholderText">
+         <string>46</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_60">
+        <property name="geometry">
+         <rect>
+          <x>140</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>46</string>
+        </property>
+        <property name="placeholderText">
+         <string>46</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_61">
+        <property name="geometry">
+         <rect>
+          <x>300</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>46</string>
+        </property>
+        <property name="placeholderText">
+         <string>46</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_62">
+        <property name="geometry">
+         <rect>
+          <x>300</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>34</string>
+        </property>
+        <property name="placeholderText">
+         <string>34</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_63">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -2136,20 +2181,7 @@
          <string>30</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label_105">
-        <property name="geometry">
-         <rect>
-          <x>450</x>
-          <y>80</y>
-          <width>128</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Fourth Y Coorfinate</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="Fourth_Y_Coordinate_Third_Edge_3">
+       <widget class="CustomLineEdit" name="lineEdit_64">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -2191,22 +2223,6 @@
          <string>First X Coordinate</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="First_X_Coordinate_Fourth_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>50</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>60</string>
-        </property>
-        <property name="placeholderText">
-         <string>60</string>
-        </property>
-       </widget>
        <widget class="QLabel" name="label_107">
         <property name="geometry">
          <rect>
@@ -2218,22 +2234,6 @@
         </property>
         <property name="text">
          <string>First Y Coordinate</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="First_Y_Coordinate_Fourth_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>100</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>60</string>
-        </property>
-        <property name="placeholderText">
-         <string>60</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_108">
@@ -2249,22 +2249,6 @@
          <string>Second X Coordinate</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="Second_X_Coordinate_Fourth_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>140</x>
-          <y>50</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>50</string>
-        </property>
-        <property name="placeholderText">
-         <string>50</string>
-        </property>
-       </widget>
        <widget class="QLabel" name="label_109">
         <property name="geometry">
          <rect>
@@ -2276,22 +2260,6 @@
         </property>
         <property name="text">
          <string>Second Y Coordinate</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="Second_Y_Coordinate_Fourth_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>140</x>
-          <y>100</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>50</string>
-        </property>
-        <property name="placeholderText">
-         <string>50</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_110">
@@ -2307,22 +2275,6 @@
          <string>Third X Coordinate</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="Third_X_Coordinate_Fourth_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>300</x>
-          <y>50</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>70</string>
-        </property>
-        <property name="placeholderText">
-         <string>70</string>
-        </property>
-       </widget>
        <widget class="QLabel" name="label_111">
         <property name="geometry">
          <rect>
@@ -2334,22 +2286,6 @@
         </property>
         <property name="text">
          <string>Third Y Coordinate</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="Third_Y_Coordinate_Fourth_Edge_3">
-        <property name="geometry">
-         <rect>
-          <x>300</x>
-          <y>100</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>30</string>
-        </property>
-        <property name="placeholderText">
-         <string>30</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_112">
@@ -2365,7 +2301,116 @@
          <string>Fourth X Coordinate</string>
         </property>
        </widget>
-       <widget class="CustomLineEdit" name="Fourth_X_Coordinate_Fourth_Edge_3">
+       <widget class="QLabel" name="label_113">
+        <property name="geometry">
+         <rect>
+          <x>450</x>
+          <y>80</y>
+          <width>128</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Fourth Y Coorfinate</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_65">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>60</string>
+        </property>
+        <property name="placeholderText">
+         <string>60</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_66">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>60</string>
+        </property>
+        <property name="placeholderText">
+         <string>60</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_67">
+        <property name="geometry">
+         <rect>
+          <x>140</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
+         <string>50</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_68">
+        <property name="geometry">
+         <rect>
+          <x>140</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>50</string>
+        </property>
+        <property name="placeholderText">
+         <string>50</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_69">
+        <property name="geometry">
+         <rect>
+          <x>300</x>
+          <y>50</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>70</string>
+        </property>
+        <property name="placeholderText">
+         <string>70</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_70">
+        <property name="geometry">
+         <rect>
+          <x>300</x>
+          <y>100</y>
+          <width>113</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>30</string>
+        </property>
+        <property name="placeholderText">
+         <string>30</string>
+        </property>
+       </widget>
+       <widget class="CustomLineEdit" name="lineEdit_71">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -2381,20 +2426,7 @@
          <string>60</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label_113">
-        <property name="geometry">
-         <rect>
-          <x>450</x>
-          <y>80</y>
-          <width>128</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Fourth Y Coorfinate</string>
-        </property>
-       </widget>
-       <widget class="CustomLineEdit" name="Fourth_Y_Coordinate_Fourth_Edge_3">
+       <widget class="CustomLineEdit" name="lineEdit_72">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -2436,7 +2468,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="page_11">
       <widget class="QGroupBox" name="groupBox_Linear">
@@ -2462,6 +2494,9 @@
         </property>
         <property name="text">
          <string>Rainbow</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
        <widget class="QRadioButton" name="BAW_Colorspace_Radio_Button">
@@ -2584,7 +2619,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>5</number>
     </property>
     <widget class="QWidget" name="page">
      <widget class="QLabel" name="label_5">
@@ -2767,22 +2802,6 @@
         <string>First Vertex Parametr</string>
        </property>
       </widget>
-      <widget class="CustomParametrLineEdit" name="First_Vertex_Parametr_Input_4">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>50</y>
-         <width>113</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>0</string>
-       </property>
-       <property name="placeholderText">
-        <string>0</string>
-       </property>
-      </widget>
       <widget class="QLabel" name="label_78">
        <property name="geometry">
         <rect>
@@ -2794,22 +2813,6 @@
        </property>
        <property name="text">
         <string>Second Vertex Parametr</string>
-       </property>
-      </widget>
-      <widget class="CustomParametrLineEdit" name="Second_Vertex_Parametr_Input_4">
-       <property name="geometry">
-        <rect>
-         <x>270</x>
-         <y>50</y>
-         <width>113</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>0.5</string>
-       </property>
-       <property name="placeholderText">
-        <string>0.5</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_79">
@@ -2825,7 +2828,39 @@
         <string>Third Vertex Parametr</string>
        </property>
       </widget>
-      <widget class="CustomParametrLineEdit" name="Third_Vertex_Parametr_Input_4">
+      <widget class="CustomParametrLineEdit" name="lineEdit_73">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>50</y>
+         <width>113</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="placeholderText">
+        <string>0</string>
+       </property>
+      </widget>
+      <widget class="CustomParametrLineEdit" name="lineEdit_74">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>50</y>
+         <width>113</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0.5</string>
+       </property>
+       <property name="placeholderText">
+        <string>0.5</string>
+       </property>
+      </widget>
+      <widget class="CustomParametrLineEdit" name="lineEdit_75">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -3001,22 +3036,6 @@
         <string>First Vertex Parametr</string>
        </property>
       </widget>
-      <widget class="CustomParametrLineEdit" name="First_Vertex_Parametr_Input_2">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>50</y>
-         <width>113</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>0</string>
-       </property>
-       <property name="placeholderText">
-        <string>0</string>
-       </property>
-      </widget>
       <widget class="QLabel" name="label_74">
        <property name="geometry">
         <rect>
@@ -3028,22 +3047,6 @@
        </property>
        <property name="text">
         <string>Second Vertex Parametr</string>
-       </property>
-      </widget>
-      <widget class="CustomParametrLineEdit" name="Second_Vertex_Parametr_Input_2">
-       <property name="geometry">
-        <rect>
-         <x>270</x>
-         <y>50</y>
-         <width>113</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>0.3</string>
-       </property>
-       <property name="placeholderText">
-        <string>0.3</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_75">
@@ -3059,22 +3062,6 @@
         <string>Third Vertex Parametr</string>
        </property>
       </widget>
-      <widget class="CustomParametrLineEdit" name="Third_Vertex_Parametr_Input_2">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>100</y>
-         <width>113</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>0.6</string>
-       </property>
-       <property name="placeholderText">
-        <string>0.6</string>
-       </property>
-      </widget>
       <widget class="QLabel" name="label_76">
        <property name="geometry">
         <rect>
@@ -3088,7 +3075,55 @@
         <string>Fourth Vertex Parametr</string>
        </property>
       </widget>
-      <widget class="CustomParametrLineEdit" name="Fourth_Vertex_Parametr_Input_2">
+      <widget class="CustomParametrLineEdit" name="lineEdit_76">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>50</y>
+         <width>113</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="placeholderText">
+        <string>0</string>
+       </property>
+      </widget>
+      <widget class="CustomParametrLineEdit" name="lineEdit_77">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>50</y>
+         <width>113</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0.3</string>
+       </property>
+       <property name="placeholderText">
+        <string>0.3</string>
+       </property>
+      </widget>
+      <widget class="CustomParametrLineEdit" name="lineEdit_78">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>100</y>
+         <width>113</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>1</string>
+       </property>
+       <property name="placeholderText">
+        <string>1</string>
+       </property>
+      </widget>
+      <widget class="CustomParametrLineEdit" name="lineEdit_79">
        <property name="geometry">
         <rect>
          <x>270</x>
@@ -3098,7 +3133,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>1</string>
+        <string>0.6</string>
        </property>
        <property name="placeholderText">
         <string>1</string>
@@ -3212,22 +3247,6 @@
         <string>First Vertex Parametr</string>
        </property>
       </widget>
-      <widget class="CustomParametrLineEdit" name="First_Vertex_Parametr_Input_3">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>50</y>
-         <width>113</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>0</string>
-       </property>
-       <property name="placeholderText">
-        <string>0</string>
-       </property>
-      </widget>
       <widget class="QLabel" name="label_70">
        <property name="geometry">
         <rect>
@@ -3239,22 +3258,6 @@
        </property>
        <property name="text">
         <string>Second Vertex Parametr</string>
-       </property>
-      </widget>
-      <widget class="CustomParametrLineEdit" name="Second_Vertex_Parametr_Input_3">
-       <property name="geometry">
-        <rect>
-         <x>270</x>
-         <y>50</y>
-         <width>113</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>0.3</string>
-       </property>
-       <property name="placeholderText">
-        <string>0.3</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_71">
@@ -3270,22 +3273,6 @@
         <string>Third Vertex Parametr</string>
        </property>
       </widget>
-      <widget class="CustomParametrLineEdit" name="Third_Vertex_Parametr_Input_3">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>100</y>
-         <width>113</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>0.6</string>
-       </property>
-       <property name="placeholderText">
-        <string>0.6</string>
-       </property>
-      </widget>
       <widget class="QLabel" name="label_72">
        <property name="geometry">
         <rect>
@@ -3299,10 +3286,42 @@
         <string>Fourth Vertex Parametr</string>
        </property>
       </widget>
-      <widget class="CustomParametrLineEdit" name="Fourth_Vertex_Parametr_Input_3">
+      <widget class="CustomParametrLineEdit" name="lineEdit_80">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>50</y>
+         <width>113</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="placeholderText">
+        <string>0</string>
+       </property>
+      </widget>
+      <widget class="CustomParametrLineEdit" name="lineEdit_81">
        <property name="geometry">
         <rect>
          <x>270</x>
+         <y>50</y>
+         <width>113</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0.3</string>
+       </property>
+       <property name="placeholderText">
+        <string>0.3</string>
+       </property>
+      </widget>
+      <widget class="CustomParametrLineEdit" name="lineEdit_82">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
          <y>100</y>
          <width>113</width>
          <height>28</height>
@@ -3313,6 +3332,22 @@
        </property>
        <property name="placeholderText">
         <string>1</string>
+       </property>
+      </widget>
+      <widget class="CustomParametrLineEdit" name="lineEdit_83">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>100</y>
+         <width>113</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0.6</string>
+       </property>
+       <property name="placeholderText">
+        <string>0.6</string>
        </property>
       </widget>
      </widget>

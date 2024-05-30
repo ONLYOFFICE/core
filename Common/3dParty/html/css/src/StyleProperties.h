@@ -229,6 +229,7 @@ namespace NSCSS
 		bool SetOpacity(const std::wstring& wsValue, unsigned int unLevel = 0, bool bHardMode = true);
 
 		bool Empty() const override;
+		bool None() const;
 		void Clear() override;
 
 		ColorType GetType() const;

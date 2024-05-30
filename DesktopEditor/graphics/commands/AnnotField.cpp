@@ -562,6 +562,7 @@ void CAnnotFieldInfo::CPolygonLineAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferR
 BYTE CAnnotFieldInfo::CFreeTextAnnotPr::GetQ()  const { return m_nQ; }
 BYTE CAnnotFieldInfo::CFreeTextAnnotPr::GetIT() const { return m_nIT; }
 BYTE CAnnotFieldInfo::CFreeTextAnnotPr::GetLE() const { return m_nLE; }
+int CAnnotFieldInfo::CFreeTextAnnotPr::GetRotate() { return m_nRotate; }
 const std::wstring& CAnnotFieldInfo::CFreeTextAnnotPr::GetDS() { return m_wsDS; }
 void CAnnotFieldInfo::CFreeTextAnnotPr::GetRD(double& dRD1, double& dRD2, double& dRD3, double& dRD4) { dRD1 = m_dRD[0]; dRD2 = m_dRD[1]; dRD3 = m_dRD[2]; dRD4 = m_dRD[3]; }
 const std::vector<double>& CAnnotFieldInfo::CFreeTextAnnotPr::GetCL() { return m_arrCL; }
@@ -574,6 +575,7 @@ BYTE* CAnnotFieldInfo::CFreeTextAnnotPr::GetRender(LONG& nLen)
 void CAnnotFieldInfo::CFreeTextAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags)
 {
 	m_nQ = pReader->ReadByte();
+	m_nRotate = pReader->ReadInt();
 	if (nFlags & (1 << 15))
 	{
 		m_dRD[0] = pReader->ReadDouble();

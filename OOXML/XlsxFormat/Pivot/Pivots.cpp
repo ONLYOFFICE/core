@@ -4446,7 +4446,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				continue;
 			}
 		}
-		UINT8 flags = 0;
+		unsigned char flags = 0;
 		SETBIT(flags,0, hasBolean);
 		SETBIT(flags,1, hasStr);
 		SETBIT(flags,2, hasDate);
@@ -4457,7 +4457,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		return objectPtr;
 	}
 
-	XLS::BaseObjectPtr CSharedItems::writeAttributes(const UINT8 flags)
+	XLS::BaseObjectPtr CSharedItems::writeAttributes(const unsigned char flags)
 	{
 		auto ptr(new XLSB::BeginPCDFAtbl);
 		XLS::BaseObjectPtr objectPtr(ptr);

@@ -1597,6 +1597,10 @@ int main(int argc, char* argv[])
 				i += 1;
 				std::cout << "Q " << arrQ[nPathLength] << ", ";
 
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "Rotate " << nPathLength << ", ";
+
 				if (nFlags & (1 << 15))
 				{
 					std::cout << "RD";

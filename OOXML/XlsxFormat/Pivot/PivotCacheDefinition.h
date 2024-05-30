@@ -75,7 +75,7 @@ namespace OOX
 			}
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			XLS::BaseObjectPtr writeAttributes(const UINT8 flags);
+			XLS::BaseObjectPtr writeAttributes(const unsigned char flags);
 
 			nullable_bool		m_oContainsBlank;
 			nullable_bool		m_oContainsDate;

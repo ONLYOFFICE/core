@@ -1347,6 +1347,7 @@
 				}
 				// 0 - left-justified, 1 - centered, 2 - right-justified
 				rec["alignment"] = reader.readByte();
+				rec["Rotate"] = reader.readInt();
 				// Rect and RD differences
 				if (flags & (1 << 15))
 				{

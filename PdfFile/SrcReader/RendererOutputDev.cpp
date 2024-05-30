@@ -3094,6 +3094,10 @@ namespace PdfReader
 		pRenderer->CreateFromBgraFrame(pFrame);
 		pRenderer->put_Width (nWidth * 25.4 / 72.0);
 		pRenderer->put_Height(nHeight * 25.4 / 72.0);
+		pRenderer->CommandLong(c_nPenWidth0As1px, 1);
+#ifndef BUILDING_WASM_MODULE
+		pRenderer->SetSwapRGB(false);
+#endif
 
 		PDFRectangle box;
 		box.x1 = pBBox[0];
@@ -3119,8 +3123,10 @@ namespace PdfReader
 		double xMin, yMin, xMax, yMax;
 		Transform(matrix, pBBox[0], pBBox[1], &xMin, &yMin);
 		Transform(matrix, pBBox[2], pBBox[3], &xMax, &yMax);
-		xMax *= (nX1 - nX0);
-		yMax *= (nY1 - nY0);
+		xMin += nX0 * (xMax - xMin);
+		xMax += nX1 * (xMax - xMin);
+		yMin += nY0 * (yMax - yMin);
+		yMax += nY1 * (yMax - yMin);
 		pGState->moveTo(xMin, yMin);
 		pGState->lineTo(xMax, yMin);
 		pGState->lineTo(xMax, yMax);

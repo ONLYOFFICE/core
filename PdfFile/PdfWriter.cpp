@@ -2029,6 +2029,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			PdfWriter::CFreeTextAnnotation* pFreeTextAnnot = (PdfWriter::CFreeTextAnnotation*)pAnnot;
 
 			pFreeTextAnnot->SetQ(pFTPr->GetQ());
+			pFreeTextAnnot->SetRotate(pFTPr->GetRotate());
 			if (nFlags & (1 << 15))
 			{
 				double dRD1, dRD2, dRD3, dRD4;
@@ -3337,9 +3338,10 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 			// Нам нужно, чтобы левый нижний угол границ нашего пата являлся точкой переноса для матрицы преобразования.
 			PdfWriter::CMatrix* pMatrix = m_pPage->GetTransform();
 			pMatrix->Apply(dL, dT);
+			pMatrix->Apply(dR, dB);
 			PdfWriter::CMatrix oPatternMatrix = *pMatrix;
 			oPatternMatrix.x = dL;
-			oPatternMatrix.y = dT;
+			oPatternMatrix.y = c_BrushTextureModeStretch == lTextureMode ? dT : dB;
 			m_pPage->SetPatternColorSpace(m_pDocument->CreateImageTilePattern(dW, dH, pImage, &oPatternMatrix, PdfWriter::imagetilepatterntype_Default, dXStepSpacing, dYStepSpacing));
 		}
 	}

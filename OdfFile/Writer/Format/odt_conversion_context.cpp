@@ -780,7 +780,10 @@ void odt_conversion_context::set_field_instr()
 	if (std::wstring::npos != res1 && current_fields.back().type == 0)
 	{
 		current_fields.back().type = fieldRef;
-		std::map<std::wstring, std::wstring> options = parse_instr_options(instr.substr(4));
+
+		std::wstring options_str;
+		if (instr.size() > 3) options_str = instr.substr(4);
+		std::map<std::wstring, std::wstring> options = parse_instr_options(options_str);
 
 		for (std::map<std::wstring, std::wstring>::iterator it = options.begin(); it != options.end(); ++it)
 		{

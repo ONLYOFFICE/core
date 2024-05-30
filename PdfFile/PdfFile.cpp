@@ -1244,13 +1244,13 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	case IAdvancedCommand::AdvancedCommandType::ShapeStart:
 	{
 		CShapeStart* pCommand = (CShapeStart*)command;
-		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
+		if (m_pInternal->pEditor)
 			m_pInternal->pEditor->AddShapeXML(pCommand->GetShapeXML());
 		return S_OK;
 	}
 	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:
 	{
-		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
+		if (m_pInternal->pEditor)
 			m_pInternal->pEditor->EndMarkedContent();
 		return S_OK;
 	}
@@ -1263,7 +1263,7 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	case IAdvancedCommand::AdvancedCommandType::PageRotate:
 	{
 		CPageRotate* pCommand = (CPageRotate*)command;
-		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
+		if (m_pInternal->pEditor)
 			m_pInternal->pWriter->PageRotate(pCommand->GetPageRotate());
 		return S_OK;
 	}

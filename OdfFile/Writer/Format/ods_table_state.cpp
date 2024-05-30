@@ -997,16 +997,17 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 
 	ods_conversion_context* ods_context = dynamic_cast<ods_conversion_context*>(context_);
 	
-	//test external link
+	std::wstring odfFormula = formulas_converter_table.convert_formula(formula);
+
+//test external link
 	bool bExternal = !ods_context->externals_.empty();
 	boost::wregex re(L"([\\[]\\d+[\\]])+");
 
 	while(bExternal)
 	{
 		boost::wsmatch result;
-		bExternal = boost::regex_search(formula, result, re);
+		bExternal = boost::regex_search(odfFormula, result, re);
 		if (!bExternal) break;
-
 		
 		std::wstring refExternal = result[1].str();
 		int idExternal = XmlUtils::GetInteger(refExternal.substr(1, refExternal.length() - 1)) - 1;
@@ -1015,33 +1016,28 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 
 		while(idExternal >= 0 && idExternal < (int)ods_context->externals_.size())
 		{
-			size_t pos = formula.find(refExternal);
+			size_t pos = odfFormula.find(refExternal);
 			if (pos == std::wstring::npos)
 				break;
 
 			std::wstring new_formula; 
 			
-			if (pos > 0 && formula[pos - 1] == L'\'')
+			if (pos > 0 && odfFormula[pos - 1] == L'\'')
 			{
-				new_formula = formula.substr(0, pos - 1);
-				new_formula += L"'EXTERNALREF" + ods_context->externals_[idExternal].ref + L"'#";
+				new_formula = odfFormula.substr(0, pos - 1);
+				new_formula += L"'" + ods_context->externals_[idExternal].ref + L"'#";
 				new_formula += L"'";
 			}
 			else
 			{
-				new_formula = formula.substr(0, pos);
-				new_formula += L"'EXTERNALREF" + ods_context->externals_[idExternal].ref + L"'#";
+				new_formula = odfFormula.substr(0, pos);
+				new_formula += L"'" + ods_context->externals_[idExternal].ref + L"'#";
 			}
 			pos += refExternal.length();
-			new_formula += formula.substr(pos, formula.length() - pos);
-			formula = new_formula;
+			new_formula += odfFormula.substr(pos, odfFormula.length() - pos);
+			odfFormula = new_formula;
 		}
 	}
-
-	std::wstring odfFormula = formulas_converter_table.convert_formula(formula);
-
-	XmlUtils::replace_all(odfFormula, L"EXTERNALREF", L"file://");//снятие экранирования
-
 	if ((false == table_parts_.empty()) && (std::wstring::npos != odfFormula.find(L"[")))
 	{
 		for (size_t i = 0; i < table_parts_.size(); i++)
@@ -1389,7 +1385,7 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 
 		bool need_test_cach = false;
 
-		if (cell->attlist_.common_value_and_type_attlist_->office_value_type_)
+		if (!need_cash && cell->attlist_.common_value_and_type_attlist_->office_value_type_)
 		{
 			if (cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Float ||
  				cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Currency ||  

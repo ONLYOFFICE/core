@@ -50,10 +50,10 @@ namespace StarMath {
 			switch(iAlignment)
 			{
 			case 0:
-			wsAlignment = L"center";
+			wsAlignment = L"left";
 			break;
 			case 1:
-			wsAlignment = L"left";
+			wsAlignment = L"center";
 			break;
 			case 2:
 			wsAlignment = L"right";

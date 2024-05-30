@@ -69,7 +69,7 @@ void DXFFntD::load(CFRecord& record)
 	record >> ich >> cch >> iFnt;
 }
 
-int DXFFntD::serialize(std::wostream & stream)
+int DXFFntD::serialize(std::wostream & stream, bool extOnly)
 {
 	std::map<ExtProp::_type, ExtProp>::iterator pFind;
 	
@@ -104,7 +104,7 @@ int DXFFntD::serialize(std::wostream & stream)
 				}
 			}
 
-			if (stxp.twpHeight > 20)
+			if (!extOnly && stxp.twpHeight > 20)
 			{
 				CP_XML_NODE(L"sz")
 				{
@@ -125,68 +125,71 @@ int DXFFntD::serialize(std::wostream & stream)
 					CP_XML_ATTR(L"indexed", icvFore);
 				}
 			}
-            CP_XML_NODE(L"charset")
-            {
-                CP_XML_ATTR(L"val", stxp.bCharSet);
-            }
-			//CP_XML_NODE(L"condense")
-			//{
-			//	CP_XML_ATTR(L"val", 1);
-			//}
-			//CP_XML_NODE(L"extend")
-			//{
-			//	CP_XML_ATTR(L"val", stxp.fExtend);
-			//}
-			CP_XML_NODE(L"family")
+			if (!extOnly)
 			{
-				CP_XML_ATTR(L"val", stxp.bFamily);
-			}
-			if (tsNinch.ftsItalic == 0)
-			{
-				CP_XML_NODE(L"i")
+				CP_XML_NODE(L"charset")
 				{
-					CP_XML_ATTR(L"val", stxp.ts.ftsItalic);
+					CP_XML_ATTR(L"val", stxp.bCharSet);
 				}
-			}
-			if (fBlsNinch == 0)
-			{
-				CP_XML_NODE(L"b")
+				//CP_XML_NODE(L"condense")
+				//{
+				//	CP_XML_ATTR(L"val", 1);
+				//}
+				//CP_XML_NODE(L"extend")
+				//{
+				//	CP_XML_ATTR(L"val", stxp.fExtend);
+				//}
+				CP_XML_NODE(L"family")
 				{
-					CP_XML_ATTR(L"val", stxp.bls == 700 ? 1 : 0);
-				}    
-			}
-			if (tsNinch.ftsStrikeout == 0)
-			{
-				CP_XML_NODE(L"strike")
+					CP_XML_ATTR(L"val", stxp.bFamily);
+				}
+				if (tsNinch.ftsItalic == 0)
 				{
-					CP_XML_ATTR(L"val", stxp.ts.ftsStrikeout);
-				}	
-			}
-			if (fUlsNinch == 0)
-			{
-				CP_XML_NODE(L"u")
-				{
-					switch(stxp.uls)
+					CP_XML_NODE(L"i")
 					{
+						CP_XML_ATTR(L"val", stxp.ts.ftsItalic);
+					}
+				}
+				if (fBlsNinch == 0)
+				{
+					CP_XML_NODE(L"b")
+					{
+						CP_XML_ATTR(L"val", stxp.bls == 700 ? 1 : 0);
+					}
+				}
+				if (tsNinch.ftsStrikeout == 0)
+				{
+					CP_XML_NODE(L"strike")
+					{
+						CP_XML_ATTR(L"val", stxp.ts.ftsStrikeout);
+					}
+				}
+				if (fUlsNinch == 0)
+				{
+					CP_XML_NODE(L"u")
+					{
+						switch (stxp.uls)
+						{
 						case 0:		CP_XML_ATTR(L"val", L"none");			break;
 						case 1:		CP_XML_ATTR(L"val", L"single");			break;
 						case 2:		CP_XML_ATTR(L"val", L"double");			break;
-						case 33:	CP_XML_ATTR(L"val", L"singleAccounting");break;
-						case 34:	CP_XML_ATTR(L"val", L"doubleAccounting");break;
+						case 33:	CP_XML_ATTR(L"val", L"singleAccounting"); break;
+						case 34:	CP_XML_ATTR(L"val", L"doubleAccounting"); break;
+						}
 					}
 				}
-			}
-			if (fSssNinch == 0)
-			{
-				CP_XML_NODE(L"vertAlign")
+				if (fSssNinch == 0)
 				{
-					switch(stxp.sss)
+					CP_XML_NODE(L"vertAlign")
 					{
+						switch (stxp.sss)
+						{
 						case 0:	CP_XML_ATTR(L"val", L"baseline");	break;
-						case 1:	CP_XML_ATTR(L"val", L"superscript");break;
+						case 1:	CP_XML_ATTR(L"val", L"superscript"); break;
 						case 2:	CP_XML_ATTR(L"val", L"subscript");	break;
+						}
+
 					}
-	               
 				}
 			}
 		}

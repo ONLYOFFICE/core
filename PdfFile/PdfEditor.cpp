@@ -62,17 +62,17 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, 
 	{
 		bool b = obj->getBool();
 		AddToObject(b)
-				break;
+		break;
 	}
 	case objInt:
 	{
 		AddToObject(obj->getInt())
-				break;
+		break;
 	}
 	case objReal:
 	{
 		AddToObject(obj->getReal())
-				break;
+		break;
 	}
 	case objString:
 	{
@@ -98,18 +98,17 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, 
 	case objName:
 	{
 		AddToObject(obj->getName())
-				break;
+		break;
 	}
 	case objNull:
 	{
 		AddToObject(new PdfWriter::CNullObject())
-				break;
+		break;
 	}
 	case objArray:
 	{
 		PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
 		AddToObject(pArray)
-
 		for (int nIndex = 0; nIndex < obj->arrayGetLength(); ++nIndex)
 		{
 			obj->arrayGetNF(nIndex, &oTemp);
@@ -122,7 +121,6 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, 
 	{
 		PdfWriter::CDictObject* pDict = new PdfWriter::CDictObject();
 		AddToObject(pDict);
-
 		for (int nIndex = 0; nIndex < obj->dictGetLength(); ++nIndex)
 		{
 			char* chKey = obj->dictGetKey(nIndex);
@@ -137,12 +135,12 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, 
 		PdfWriter::CObjectBase* pBase = new PdfWriter::CObjectBase();
 		pBase->SetRef(obj->getRefNum(), obj->getRefGen());
 		AddToObject(new PdfWriter::CProxyObject(pBase, true))
-				break;
+		break;
 	}
 	case objNone:
 	{
 		AddToObject("None")
-				break;
+		break;
 	}
 	case objStream:
 	case objCmd:
@@ -153,15 +151,14 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, 
 }
 PdfWriter::CDictObject* GetWidgetParent(PDFDoc* pdfDoc, PdfWriter::CDocument* pDoc, Object* pParentRef)
 {
+	if (!pParentRef || !pParentRef->isRef() || !pdfDoc)
+		return NULL;
 	PdfWriter::CDictObject* pParent = pDoc->GetParent(pParentRef->getRefNum());
 	if (pParent)
 		return pParent;
 
-	if (!pParentRef || !pParentRef->isRef() || !pdfDoc)
-		return pParent;
-	XRef* xref = pdfDoc->getXRef();
 	Object oParent;
-	if (!pParentRef->fetch(xref, &oParent)->isDict())
+	if (!pParentRef->fetch(pdfDoc->getXRef(), &oParent)->isDict())
 	{
 		oParent.free();
 		return pParent;
@@ -200,7 +197,6 @@ PdfWriter::CDictObject* GetWidgetParent(PDFDoc* pdfDoc, PdfWriter::CDocument* pD
 	}
 
 	oParent.free();
-
 	return pParent;
 }
 HRESULT _ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword, CPdfReader* _pReader, CPdfWriter* _pWriter)
@@ -525,19 +521,16 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 
 	// Получение каталога и дерева страниц из reader
 	Object catDict, catRefObj, pagesRefObj;
-	if (!xref->getCatalog(&catDict) || !catDict.isDict() || !catDict.dictLookupNF("Pages", &pagesRefObj))
+	if (!xref->getCatalog(&catDict)->isDict() || !catDict.dictLookupNF("Pages", &pagesRefObj))
 	{
-		pagesRefObj.free();
-		catDict.free();
+		pagesRefObj.free(); catDict.free();
 		nError = 3; // Не удалось получить каталог и дерево страниц
 		return;
 	}
 	Object* trailer = xref->getTrailerDict();
-	if (!trailer || !trailer->isDict() || !trailer->dictLookupNF("Root", &catRefObj) || !catRefObj.isRef())
+	if (!trailer || !trailer->isDict() || !trailer->dictLookupNF("Root", &catRefObj)->isRef())
 	{
-		pagesRefObj.free();
-		catDict.free();
-		catRefObj.free();
+		pagesRefObj.free(); catDict.free(); catRefObj.free();
 		nError = 3; // Не удалось получить каталог и дерево страниц
 		return;
 	}
@@ -548,17 +541,14 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 	PdfWriter::CXref* pXref = new PdfWriter::CXref(pDoc, catRef.num);
 	if (!pXref)
 	{
-		pagesRefObj.free();
-		catDict.free();
+		pagesRefObj.free(); catDict.free();
 		nError = 1;
 		return;
 	}
 	PdfWriter::CCatalog* pCatalog = new PdfWriter::CCatalog();
 	if (!pCatalog)
 	{
-		pagesRefObj.free();
-		catDict.free();
-		RELEASEOBJECT(pXref);
+		pagesRefObj.free(); catDict.free(); RELEASEOBJECT(pXref);
 		nError = 1;
 		return;
 	}
@@ -580,8 +570,7 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 				char* chKey = oAcroForm.dictGetKey(nIndex);
 				if (strcmp("DR", chKey) == 0)
 				{
-					oAcroForm.dictGetVal(nIndex, &oTemp2);
-					if (!oTemp2.isDict())
+					if (!oAcroForm.dictGetVal(nIndex, &oTemp2)->isDict())
 					{
 						oTemp2.free();
 						continue;
@@ -601,9 +590,9 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 					for (int nIndex2 = 0; nIndex2 < oTemp2.dictGetLength(); ++nIndex2)
 					{
 						Object oTemp;
-						char* chKey = oTemp2.dictGetKey(nIndex2);
+						char* chKey2 = oTemp2.dictGetKey(nIndex2);
 						oTemp2.dictGetVal(nIndex2, &oTemp);
-						DictToCDictObject(&oTemp, pDR, false, chKey);
+						DictToCDictObject(&oTemp, pDR, false, chKey2);
 						oTemp.free();
 					}
 					oTemp2.free();
@@ -835,22 +824,14 @@ void CPdfEditor::GetPageTree(XRef* xref, Object* pPagesRefObj)
 	if (!pPagesRefObj || !xref || !pDoc)
 		return;
 
-	Object typeDict, pagesObj;
-	if (!pPagesRefObj->isRef() || !pPagesRefObj->fetch(xref, &pagesObj)->isDict())
+	Object pagesObj;
+	if (!pPagesRefObj->isRef() || !pPagesRefObj->fetch(xref, &pagesObj)->isDict("Pages"))
 	{
 		pagesObj.free();
 		return;
 	}
-	if (pagesObj.dictLookup("Type", &typeDict)->isName() && !typeDict.isName("Pages"))
-	{
-		pagesObj.free();
-		typeDict.free();
-		return;
-	}
-	typeDict.free();
 
 	Ref topPagesRef = pPagesRefObj->getRef();
-
 	PdfWriter::CXref* pXref = new PdfWriter::CXref(pDoc, topPagesRef.num);
 	if (!pXref)
 	{

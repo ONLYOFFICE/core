@@ -1075,7 +1075,10 @@ namespace PdfWriter
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
 		const char* sFontName = pFieldsResources->GetFontName(pFont);
 
-		std::string sDA = GetColor(arrC, false);
+		std::vector<double> _arrC = arrC;
+		if (arrC.empty())
+			_arrC = {0};
+		std::string sDA = GetColor(_arrC, false);
 		if (sFontName)
 		{
 			sDA.append(" /");

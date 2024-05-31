@@ -17,7 +17,7 @@
    <property name="enabled">
     <bool>true</bool>
    </property>
-   <widget class="CustomLabel" name="lable_test">
+   <widget class="CustomLabel" name="label_test">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -45,7 +45,7 @@
     <property name="title">
      <string/>
     </property>
-    <widget class="QStackedWidget" name="stackedWidget">
+    <widget class="QStackedWidget" name="stackedWidget_1">
      <property name="geometry">
       <rect>
        <x>10</x>

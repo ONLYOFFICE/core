@@ -3,11 +3,9 @@
 
 #include <QLabel>
 #include <QList>
-#include <QListWidgetItem>
 #include <QMainWindow>
 #include <QLineEdit>
 #include <QCheckBox>
-#include <QPoint>
 #include <QPixmap>
 #include <QMouseEvent>
 #include <QColorDialog>
@@ -78,41 +76,29 @@ public:
 
 	~CustomLabel() {}
 
-	void SetPoints(const std::vector<QPoint>& points)
+	void setPoints(const std::vector<NSStructures::Point>& points)
 	{
 		m_points = points;
 	}
 
-	QPoint GetCheckPoint() const
-	{
-		return checkPoint;
-	}
-
-	QPoint GetMovePoint() const
+	NSStructures::Point getMovePoint() const
 	{
 		return movePoint;
 	}
 
-	size_t GetIndex() const
+	size_t getIndex() const
 	{
 		return index;
 	}
 
-	bool Movable() const
+	bool getMovable() const
 	{
 		return movable;
 	}
 
-	void ResetMovable()
+	void resetMovable()
 	{
-		if (movable)
-		{
-			movable = false;
-		}
-		else
-		{
-			movable = true;
-		}
+		movable = !movable;
 	}
 
 	void setIndex(size_t _index)
@@ -120,17 +106,12 @@ public:
 		index = _index;
 	}
 
-	void Clear()
-	{
-		m_points.clear();
-	}
-
-	bool CheckPointArea()
+	bool checkPointArea()
 	{
 		for (int i = 0; i < m_points.size(); i++)
 		{
-			QRect rect(m_points[i].x() - 5, m_points[i].y() - 5, m_points[i].x() + 5, m_points[i].y() + 5);
-			if (rect.contains(checkPoint))
+			QRect rect(m_points[i].x - 5, m_points[i].y - 5, 10, 10);
+			if (rect.contains(checkPoint.x, checkPoint.y))
 			{
 				index = i;
 				return true;
@@ -146,22 +127,23 @@ signals:
 protected:
 	void mousePressEvent(QMouseEvent *event) override
 	{
-		checkPoint = event->pos();
+		checkPoint = {event->pos().x(), event->pos().y()};
 		emit mousePressed();
 	}
 
 	void mouseMoveEvent(QMouseEvent *event) override
 	{
-		movePoint = event->pos();
+		movePoint = {event->pos().x(), event->pos().y()};
 		emit mouseMoved();
 	}
 
 private:
-	bool movable;
-	size_t index;
-	QPoint movePoint;
-	QPoint checkPoint;
-	std::vector<QPoint> m_points;
+	bool	movable;
+	size_t  index;
+
+	NSStructures::Point				 movePoint;
+	NSStructures::Point 			 checkPoint;
+	std::vector<NSStructures::Point> m_points;
 };
 
 class CustomColorLabel : public QLabel
@@ -175,13 +157,13 @@ public:
 
 	~CustomColorLabel() {}
 
-	void SetColor(QColor color)
+	void setColor(QColor color)
 	{
 		m_color = color;
 		this->setStyleSheet("QLabel { background-color : " + m_color.name() + "; border: 1px solid black; padding 10px;}");
 	}
 
-	QColor GetColor() const
+	QColor getColor() const
 	{
 		return m_color;
 	}
@@ -200,7 +182,7 @@ public slots:
 
 		if (color.isValid())
 		{
-			SetColor(color);
+			setColor(color);
 		}
 	}
 private:
@@ -221,60 +203,36 @@ typedef enum
 
 typedef enum
 {
-	LinearOffset = 68,
-	RadialOffset = 62,
-	TriangleOffset = 56,
-	CoonsPatchOffset = 32,
-	TensorCoonsPatchOffset = 0
+	LinearOffset			= 68,
+	RadialOffset			= 62,
+	TriangleOffset			= 56,
+	CoonsPatchOffset		= 32,
+	TensorCoonsPatchOffset  = 0
 } GradientOffse;
 
 struct Info
 {
-	GradientType gradient;
-	GradientOffse offset;
+	GradientType	gradient;
+	GradientOffse	offset;
 
-	float r0, r1;
-	NSStructures::Point c0, c1;
 	NSStructures::Point p0, p1;
+	NSStructures::Point c0, c1;
+	float				r0, r1;
+	std::vector<NSStructures::Point>				triangle	= std::vector<NSStructures::Point>(3);
+	std::vector<NSStructures::Point>				curve		= std::vector<NSStructures::Point>(12);
+	std::vector<std::vector<NSStructures::Point>>	tensorcurve = std::vector<std::vector<NSStructures::Point>>(4, std::vector<NSStructures::Point>(4));
+
+	std::vector<float>				triangle_parametrs		= std::vector<float>(3);
+	std::vector<float>				curve_parametrs			= std::vector<float>(4);
+	std::vector<std::vector<float>> tensor_curve_parametrs	= std::vector<std::vector<float>>(2, std::vector<float>(2));
+
 	bool cont_b, cont_f;
-	std::vector<NSStructures::Point> triangle;
-	std::vector<NSStructures::Point> curve;
-	std::vector<std::vector<NSStructures::Point>> tensorcurve;
-	std::vector<float> triangle_parametrs;
-	std::vector<float> curve_parametrs;
-	std::vector<std::vector<float>> tensor_curve_parametrs;
 
 	NSStructures::GradientInfo ginfo;
+	std::vector<LONG>	c;
+	std::vector<double>	p;
 	int gradient_type;
-	std::vector<LONG> c;
-	std::vector<double> p;
 	int n_colors;
-	Info() : gradient_type(c_BrushTypePathNewLinearGradient)
-	{
-		c = {(LONG)0xFFff0000, (LONG)0xFFffa500, (LONG)0xFFffff00, (LONG)0xFF008000, (LONG)0xFF0000ff, (LONG)0xFFFF00FF};
-		p = {0.0, 0.2, 0.4, 0.6, 0.8, 1};
-		n_colors = 6;
-		ginfo.shading.shading_type = NSStructures::ShadingInfo::Parametric;
-		triangle.resize(3);
-		curve.resize(12);
-		tensorcurve.resize(4);
-		for (int i = 0; i < tensorcurve.size(); i++)
-		{
-			tensorcurve[i].resize(4);
-		}
-		triangle_parametrs.resize(3);
-		curve_parametrs.resize(4);
-		tensor_curve_parametrs.resize(2);
-		for (int i = 0; i < tensor_curve_parametrs.size(); i++)
-		{
-			tensor_curve_parametrs[i].resize(2);
-		}
-
-		cont_b = cont_f = false;
-	}
-	~Info()
-	{
-	}
 };
 
 class MainWindow : public QMainWindow
@@ -284,26 +242,23 @@ class MainWindow : public QMainWindow
 public:
 	MainWindow(QWidget *parent = nullptr);
 	~MainWindow();
-	void InitializeColors(bool triangle);
-	std::vector<agg::rgba8> QColor2rgba(bool triangle);
-	std::vector<std::vector<agg::rgba8>> QColor2rgbaMatrix();
+
+	void initializeColors(bool triangle);
+	std::vector<agg::rgba8> qColor2rgba(bool triangle);
+	std::vector<std::vector<agg::rgba8>> qColor2rgbaMatrix();
+
 	void setPoints(QImage *image);
-	QImage img;
-	QLabel *lable;
-	std::vector<NSStructures::Point> points;
-	Info info;
+	NSStructures::Point scaleCoord(NSStructures::Point p);
+
+	void lineEdits2Points();
+	void lineEdits2Parametrs();
+	void checkBox2Continue();
 
 private slots:
 
 	void on_label_test_clicked();
 
 	void on_label_test_mouse_move();
-
-	void on_point_set();
-
-	void on_parametrs_set();
-
-	void on_continue_set();
 
 	void on_actionLinear_Gradient_triggered();
 
@@ -324,10 +279,15 @@ private slots:
 	void on_actionTensor_Coons_Patch_Parametric_triggered();
 
 private:
-	QList<CustomLineEdit *> listOfLines;
+	QImage	img;
+	Info	info;
+	std::vector<NSStructures::Point> points;
+
+	QList<QCheckBox *>				listOfCheckBox;
+	QList<CustomLineEdit *>			listOfLines;
+	QList<CustomColorLabel *>		listOfColorLabels;
 	QList<CustomParametrLineEdit *> listOfParametricLines;
-	QList<QCheckBox *> listOfCheckBox;
-	QList<CustomColorLabel *>listOfColorLabels;
+
 	Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H

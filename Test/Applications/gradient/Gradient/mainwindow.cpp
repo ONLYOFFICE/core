@@ -4,16 +4,16 @@
 #include "../../../../DesktopEditor/graphics/pro/Graphics.h"
 #include "../../../../PdfFile/PdfFile.h"
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), img("test.png"), lable(new QLabel)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), img("test.png")
 {
 	ui->setupUi(this);
 
-	listOfLines           = ui->centralwidget->findChildren<CustomLineEdit*>();
-	listOfParametricLines = ui->centralwidget->findChildren<CustomParametrLineEdit*>();
-	listOfCheckBox        = ui->centralwidget->findChildren<QCheckBox*>();
-	listOfColorLabels     = ui->centralwidget->findChildren<CustomColorLabel*>();
+	listOfLines				= ui->centralwidget->findChildren<CustomLineEdit*>();
+	listOfCheckBox			= ui->centralwidget->findChildren<QCheckBox*>();
+	listOfColorLabels		= ui->centralwidget->findChildren<CustomColorLabel*>();
+	listOfParametricLines	= ui->centralwidget->findChildren<CustomParametrLineEdit*>();
 
-	connect(ui->lable_test, SIGNAL(mousePressed()), this, SLOT(on_label_test_clicked()));
+	connect(ui->label_test, SIGNAL(mousePressed()), this, SLOT(on_label_test_clicked()));
 
 	on_actionLinear_Gradient_triggered();
 }
@@ -62,10 +62,10 @@ QImage GenerateImg(std::vector<NSStructures::Point> &points, Info &info, const i
 	NSStructures::GradientInfo ginfo = info.ginfo;
 	ginfo.shading.f_type = NSStructures::ShadingInfo::UseNew;
 	pRasterRenderer->put_BrushGradInfo(ginfo);
-	auto a = info.c;
-	auto b = info.p;
-	LONG *c = a.data();
-	double *p = b.data();
+	auto a		= info.c;
+	auto b		= info.p;
+	LONG *c		= a.data();
+	double *p	= b.data();
 	pRasterRenderer->put_BrushType(info.gradient_type);
 	pRasterRenderer->put_BrushGradientColors(c, p, info.n_colors);
 	pRasterRenderer->PathCommandStart();
@@ -87,116 +87,116 @@ QImage GenerateImg(std::vector<NSStructures::Point> &points, Info &info, const i
 	return img;
 }
 
-void MainWindow::InitializeColors(bool Triangle)
+void MainWindow::initializeColors(bool Triangle)
 {
-	ui->label_80->SetColor(QColor(Qt::red));
-	ui->label_81->SetColor(QColor(Qt::green));
-	ui->label_114->SetColor(QColor(Qt::blue));
+	listOfColorLabels[0]->setColor(QColor(Qt::red));
+	listOfColorLabels[1]->setColor(QColor(Qt::green));
+	listOfColorLabels[2]->setColor(QColor(Qt::blue));
 	if (!Triangle)
 	{
-		ui->label_115->SetColor(QColor(Qt::yellow));
+		listOfColorLabels[3]->setColor(QColor(Qt::yellow));
 	}
 }
 
 void MainWindow::on_actionLinear_Gradient_triggered()
 {
-	ui->stackedWidget->setCurrentIndex(0);
+	ui->stackedWidget_1->setCurrentIndex(0);
 	ui->stackedWidget_2->setCurrentIndex(0);
 	ui->stackedWidget_3->setCurrentIndex(0);
+	info.gradient		= Linear;
+	info.offset			= LinearOffset;
+	info.gradient_type	= c_BrushTypePathNewLinearGradient;
 	ui->statusbar->showMessage("Linear");
-	info.gradient      = Linear;
-	info.offset        = LinearOffset;
-	info.gradient_type = c_BrushTypePathNewLinearGradient;
 }
 
 void MainWindow::on_actionRadial_Gradient_triggered()
 {
-	ui->stackedWidget->setCurrentIndex(1);
+	ui->stackedWidget_1->setCurrentIndex(1);
 	ui->stackedWidget_2->setCurrentIndex(1);
 	ui->stackedWidget_3->setCurrentIndex(0);
+	info.gradient		= Radial;
+	info.offset			= RadialOffset;
+	info.gradient_type	= c_BrushTypePathRadialGradient;
 	ui->statusbar->showMessage("Radial");
-	info.gradient      = Radial;
-	info.offset        = RadialOffset;
-	info.gradient_type = c_BrushTypePathRadialGradient;
 }
 
 void MainWindow::on_actionTriangle_Gradient_triggered()
 {
-	ui->stackedWidget->setCurrentIndex(2);
+	ui->stackedWidget_1->setCurrentIndex(2);
 	ui->stackedWidget_2->setCurrentIndex(2);
 	ui->stackedWidget_3->setCurrentIndex(1);
-	InitializeColors(true);
+	info.gradient		= Triangle;
+	info.offset			= TriangleOffset;
+	info.gradient_type	= c_BrushTypeTriagnleMeshGradient;
+	initializeColors(true);
 	ui->statusbar->showMessage("Triangle");
-	info.gradient      = Triangle;
-	info.offset        = TriangleOffset;
-	info.gradient_type = c_BrushTypeTriagnleMeshGradient;
 }
 
 void MainWindow::on_actionTriangle_Parametric_Gradient_triggered()
 {
-	ui->stackedWidget->setCurrentIndex(2);
+	ui->stackedWidget_1->setCurrentIndex(2);
 	ui->stackedWidget_2->setCurrentIndex(3);
 	ui->stackedWidget_3->setCurrentIndex(0);
+	info.gradient		= TriangleParametric;
+	info.offset			= TriangleOffset;
+	info.gradient_type	= c_BrushTypeTriagnleMeshGradient;
 	ui->statusbar->showMessage("Triangle Parametric");
-	info.gradient      = TriangleParametric;
-	info.offset        = TriangleOffset;
-	info.gradient_type = c_BrushTypeTriagnleMeshGradient;
 }
 
 void MainWindow::on_actionCoons_Patch_Gradient_triggered()
 {
-	ui->stackedWidget->setCurrentIndex(3);
+	ui->stackedWidget_1->setCurrentIndex(3);
 	ui->stackedWidget_2->setCurrentIndex(4);
 	ui->stackedWidget_3->setCurrentIndex(1);
-	InitializeColors(false);
+	info.gradient		= CoonsPatch;
+	info.offset			= CoonsPatchOffset;
+	info.gradient_type	= c_BrushTypeCurveGradient;
+	initializeColors(false);
 	ui->statusbar->showMessage("Coons Patch");
-	info.gradient      = CoonsPatch;
-	info.offset        = CoonsPatchOffset;
-	info.gradient_type = c_BrushTypePathNewLinearGradient;
 }
 
 void MainWindow::on_actionCoons_Patch_Parametric_triggered()
 {
-	ui->stackedWidget->setCurrentIndex(3);
+	ui->stackedWidget_1->setCurrentIndex(3);
 	ui->stackedWidget_2->setCurrentIndex(5);
 	ui->stackedWidget_3->setCurrentIndex(0);
+	info.gradient		= CoonsPatchParametric;
+	info.offset			= CoonsPatchOffset;
+	info.gradient_type	= c_BrushTypeCurveGradient;
 	ui->statusbar->showMessage("Coons Patch Parametric");
-	info.gradient      = CoonsPatchParametric;
-	info.offset        = CoonsPatchOffset;
-	info.gradient_type = c_BrushTypeCurveGradient;
 }
 
 void MainWindow::on_actionTensor_Coons_Patch_Gradient_triggered()
 {
-	ui->stackedWidget->setCurrentIndex(4);
+	ui->stackedWidget_1->setCurrentIndex(4);
 	ui->stackedWidget_2->setCurrentIndex(6);
 	ui->stackedWidget_3->setCurrentIndex(1);
-	InitializeColors(false);
+	info.gradient		= TensorCoonsPatch;
+	info.offset			= TensorCoonsPatchOffset;
+	info.gradient_type	= c_BrushTypeTensorCurveGradient;
+	initializeColors(false);
 	ui->statusbar->showMessage("Tensor Coons Patch");
-	info.gradient      = TensorCoonsPatch;
-	info.offset        = TensorCoonsPatchOffset;
-	info.gradient_type = c_BrushTypePathNewLinearGradient;
 }
 
 void MainWindow::on_actionTensor_Coons_Patch_Parametric_triggered()
 {
-	ui->stackedWidget->setCurrentIndex(4);
+	ui->stackedWidget_1->setCurrentIndex(4);
 	ui->stackedWidget_2->setCurrentIndex(7);
 	ui->stackedWidget_3->setCurrentIndex(0);
+	info.gradient		= TensorCoonsPatchParametric;
+	info.offset			= TensorCoonsPatchOffset;
+	info.gradient_type	= c_BrushTypeTensorCurveGradient;
 	ui->statusbar->showMessage("Tensor Coons Patch Parametric");
-	info.gradient      = TensorCoonsPatchParametric;
-	info.offset        = TensorCoonsPatchOffset;
-	info.gradient_type = c_BrushTypeTensorCurveGradient;
 }
 
 inline agg::rgba8 getRGB(CustomColorLabel *label)
 {
-	return {static_cast<unsigned int>(label->GetColor().red()),
-			static_cast<unsigned int>(label->GetColor().green()),
-			static_cast<unsigned int>(label->GetColor().blue())};
+	return {static_cast<unsigned int>(label->getColor().red()),
+			static_cast<unsigned int>(label->getColor().green()),
+			static_cast<unsigned int>(label->getColor().blue())};
 }
 
-std::vector<agg::rgba8> MainWindow::QColor2rgba(bool triangle)
+std::vector<agg::rgba8> MainWindow::qColor2rgba(bool triangle)
 {
 	std::vector<agg::rgba8> colors;
 
@@ -212,7 +212,7 @@ std::vector<agg::rgba8> MainWindow::QColor2rgba(bool triangle)
 	return colors;
 }
 
-std::vector<std::vector<agg::rgba8>> MainWindow::QColor2rgbaMatrix()
+std::vector<std::vector<agg::rgba8>> MainWindow::qColor2rgbaMatrix()
 {
 	std::vector<std::vector<agg::rgba8>> colors;
 	size_t size = listOfColorLabels.size() / 2;
@@ -230,102 +230,92 @@ std::vector<std::vector<agg::rgba8>> MainWindow::QColor2rgbaMatrix()
 	return colors;
 }
 
-inline void setPoint(QImage *image, int x, int y, QRgb color)
+NSStructures::Point MainWindow::scaleCoord(NSStructures::Point p)
 {
-	image->setPixel(x, y, color);
-	image->setPixel(x - 1, y, color);
-	image->setPixel(x, y - 1, color);
-	image->setPixel(x + 1, y, color);
-	image->setPixel(x, y + 1, color);
+	return {p.x * MM_TO_COORD(ui->label_test->width()), p.y * MM_TO_COORD(ui->label_test->height())};
+}
+
+inline void setPoint(QImage *image, NSStructures::Point p)
+{
+	image->setPixel(p.x, p.y, qRgb(0, 0, 0));
+	image->setPixel(p.x - 1, p.y, qRgb(0, 0, 0));
+	image->setPixel(p.x, p.y - 1, qRgb(0, 0, 0));
+	image->setPixel(p.x + 1, p.y, qRgb(0, 0, 0));
+	image->setPixel(p.x, p.y + 1, qRgb(0, 0, 0));
 }
 
 void MainWindow::setPoints(QImage *image)
 {
-	std::vector<QPoint> points;
+	std::vector<NSStructures::Point> points;
 	switch (info.gradient)
 	{
 	case Linear:
-		setPoint(image, info.p0.x * MM_TO_COORD(ui->lable_test->width()), info.p0.y * MM_TO_COORD(ui->lable_test->height()), qRgb(0, 0, 0));
-		setPoint(image, info.p1.x * MM_TO_COORD(ui->lable_test->width()), info.p1.y * MM_TO_COORD(ui->lable_test->height()), qRgb(0, 0, 0));
-		points.push_back(QPoint(info.p0.x * MM_TO_COORD(ui->lable_test->width()), info.p0.y * MM_TO_COORD(ui->lable_test->height())));
-		points.push_back(QPoint(info.p1.x * MM_TO_COORD(ui->lable_test->width()), info.p1.y * MM_TO_COORD(ui->lable_test->height())));
+		setPoint(image, scaleCoord(info.p0));
+		setPoint(image, scaleCoord(info.p1));
+		points.push_back(scaleCoord(info.p0));
+		points.push_back(scaleCoord(info.p1));
 		break;
 	case Radial:
-		setPoint(image, info.c0.x * MM_TO_COORD(ui->lable_test->width()), info.c0.y * MM_TO_COORD(ui->lable_test->height()), qRgb(0, 0, 0));
-		setPoint(image, info.c1.x * MM_TO_COORD(ui->lable_test->width()), info.c1.y * MM_TO_COORD(ui->lable_test->height()),qRgb(0, 0, 0));
-		points.push_back(QPoint(info.c0.x * MM_TO_COORD(ui->lable_test->width()), info.c0.y * MM_TO_COORD(ui->lable_test->height())));
-		points.push_back(QPoint(info.c1.x * MM_TO_COORD(ui->lable_test->width()), info.c1.y * MM_TO_COORD(ui->lable_test->height())));
+		setPoint(image, scaleCoord(info.c0));
+		setPoint(image, scaleCoord(info.c1));
+		points.push_back(scaleCoord(info.c0));
+		points.push_back(scaleCoord(info.c1));
 		break;
 	case Triangle:
 	case TriangleParametric:
 		for (NSStructures::Point p : info.triangle)
 		{
-			setPoint(image, p.x * MM_TO_COORD(ui->lable_test->width()), p.y * MM_TO_COORD(ui->lable_test->height()), qRgb(0,0,0));
-			points.push_back(QPoint(p.x * MM_TO_COORD(ui->lable_test->width()), p.y * MM_TO_COORD(ui->lable_test->height())));
+			setPoint(image, scaleCoord(p));
+			points.push_back(scaleCoord(p));
 		}
 		break;
 	case CoonsPatch:
-		for (NSStructures::Point p : info.curve)
-		{
-			setPoint(image, p.x, p.y, qRgb(0,0,0));
-			points.push_back(QPoint(p.x, p.y));
-		}
-		break;
 	case CoonsPatchParametric:
-		for (NSStructures::Point p : info.curve)
+		for (int i = 0; i < info.curve.size(); i++)
 		{
-			setPoint(image, p.x * MM_TO_COORD(ui->lable_test->width()), p.y * MM_TO_COORD(ui->lable_test->height()), qRgb(0,0,0));
-			points.push_back(QPoint(p.x * MM_TO_COORD(ui->lable_test->width()), p.y * MM_TO_COORD(ui->lable_test->width())));
+			setPoint(image, scaleCoord(info.curve[i]));
+			points.push_back(scaleCoord(info.curve[i]));
 		}
 		break;
 	case TensorCoonsPatch:
-		for (std::vector<NSStructures::Point> v : info.tensorcurve)
-		{
-			for (NSStructures::Point p : v)
-			{
-				setPoint(image, p.x, p.y, qRgb(0,0,0));
-				points.push_back(QPoint(p.x, p.y));
-			}
-		}
-		break;
 	case TensorCoonsPatchParametric:
 		for (std::vector<NSStructures::Point> v : info.tensorcurve)
 		{
 			for (NSStructures::Point p : v)
 			{
-				setPoint(image, p.x * MM_TO_COORD(ui->lable_test->width()), p.y * MM_TO_COORD(ui->lable_test->height()), qRgb(0,0,0));
-				points.push_back(QPoint(p.x * MM_TO_COORD(ui->lable_test->width()), p.y * MM_TO_COORD(ui->lable_test->width())));
+				setPoint(image, scaleCoord(p));
+				points.push_back(scaleCoord(p));
 			}
 		}
 		break;
 	default:
 		break;
 	}
-	ui->lable_test->SetPoints(points);
+	ui->label_test->setPoints(points);
 }
 
 void MainWindow::on_label_test_clicked()
 {
-	if (ui->lable_test->Movable())
+	if (ui->label_test->getMovable())
 	{
-		ui->lable_test->ResetMovable();
-		disconnect(ui->lable_test, SIGNAL(mouseMoved()), this, SLOT(on_label_test_mouse_move()));
+		ui->label_test->resetMovable();
+		disconnect(ui->label_test, SIGNAL(mouseMoved()), this, SLOT(on_label_test_mouse_move()));
 	}
-	else if (ui->lable_test->CheckPointArea())
+	else if (ui->label_test->checkPointArea())
 	{
-		ui->lable_test->ResetMovable();
-		connect(ui->lable_test, SIGNAL(mouseMoved()), this, SLOT(on_label_test_mouse_move()));
+		ui->label_test->resetMovable();
+		connect(ui->label_test, SIGNAL(mouseMoved()), this, SLOT(on_label_test_mouse_move()));
 	}
 }
 
 void MainWindow::on_label_test_mouse_move()
 {
-	listOfLines[info.offset + 2 * ui->lable_test->GetIndex() + 0]->setText(QString::number(ui->lable_test->GetMovePoint().x() / MM_TO_COORD(ui->lable_test->width())));
-	listOfLines[info.offset + 2 * ui->lable_test->GetIndex() + 1]->setText(QString::number(ui->lable_test->GetMovePoint().y() / MM_TO_COORD(ui->lable_test->height())));
+	listOfLines[info.offset + 2 * ui->label_test->getIndex() + 0]->setText(QString::number(static_cast<int>(ui->label_test->getMovePoint().x) / MM_TO_COORD(ui->label_test->width())));
+	listOfLines[info.offset + 2 * ui->label_test->getIndex() + 1]->setText(QString::number(static_cast<int>(ui->label_test->getMovePoint().y) / MM_TO_COORD(ui->label_test->height())));
 	on_pushButton_clicked();
 }
 
-void MainWindow::on_point_set()
+void MainWindow::lineEdits2Points()
 {
 	//Linear
 	info.p0.x = listOfLines[LinearOffset + 0]->text().toInt();
@@ -366,7 +356,7 @@ void MainWindow::on_point_set()
 	}
 }
 
-void MainWindow::on_parametrs_set()
+void MainWindow::lineEdits2Parametrs()
 {
 	size_t offset = 0;
 
@@ -395,7 +385,7 @@ void MainWindow::on_parametrs_set()
 	}
 }
 
-void MainWindow::on_continue_set()
+void MainWindow::checkBox2Continue()
 {
 	switch (info.gradient)
 	{
@@ -414,13 +404,13 @@ void MainWindow::on_continue_set()
 
 void MainWindow::on_pushButton_clicked()
 {
-	points = {NSStructures::Point(),
-			  NSStructures::Point(ui->lable_test->width(), 0),
-			  NSStructures::Point(ui->lable_test->width(), ui->lable_test->height()),
-			  NSStructures::Point(0, ui->lable_test->height())};
-	on_point_set();
-	on_parametrs_set();
-	on_continue_set();
+	lineEdits2Points();
+	lineEdits2Parametrs();
+	checkBox2Continue();
+	points = {{0, 0},
+			  {ui->label_test->width(), 0},
+			  {ui->label_test->width(), ui->label_test->height()},
+			  {0, ui->label_test->height()}};
 
 	switch (info.gradient)
 	{
@@ -432,7 +422,8 @@ void MainWindow::on_pushButton_clicked()
 		break;
 	case Triangle:
 	case TriangleParametric:
-		info.ginfo = NSStructures::GInfoConstructor::get_triangle(info.triangle, QColor2rgba(true), info.triangle_parametrs, info.gradient == TriangleParametric);
+		info.ginfo = NSStructures::GInfoConstructor::get_triangle(info.triangle, qColor2rgba(true),
+																  info.triangle_parametrs, info.gradient == TriangleParametric);
 		points = {};
 		for (auto p : info.triangle)
 		{
@@ -440,29 +431,14 @@ void MainWindow::on_pushButton_clicked()
 		}
 		break;
 	case CoonsPatch:
-		for(int i = 0; i < info.curve.size(); i++)
-		{
-			info.curve[i].x *= MM_TO_COORD(ui->lable_test->width());
-			info.curve[i].y *= MM_TO_COORD(ui->lable_test->height());
-		}
-		info.ginfo = NSStructures::GInfoConstructor::get_curve(info.curve, info.curve_parametrs, QColor2rgba(false), false);
-		break;
 	case CoonsPatchParametric:
-		info.ginfo = NSStructures::GInfoConstructor::get_curve(info.curve, info.curve_parametrs, QColor2rgba(false),true);
+		info.ginfo = NSStructures::GInfoConstructor::get_curve(info.curve, info.curve_parametrs,
+															   qColor2rgba(false), info.gradient == CoonsPatchParametric);
 		break;
 	case TensorCoonsPatch:
-		for (int i = 0; i < info.tensorcurve.size(); i++)
-		{
-			for (int j = 0; j < info.tensorcurve[i].size(); j++)
-			{
-				info.tensorcurve[i][j].x *= MM_TO_COORD(ui->lable_test->width());
-				info.tensorcurve[i][j].y *= MM_TO_COORD(ui->lable_test->height());
-			}
-		}
-		info.ginfo = NSStructures::GInfoConstructor::get_tensor_curve(info.tensorcurve, info.tensor_curve_parametrs, QColor2rgbaMatrix(), false);
-		break;
 	case TensorCoonsPatchParametric:
-		info.ginfo = NSStructures::GInfoConstructor::get_tensor_curve(info.tensorcurve, info.tensor_curve_parametrs, QColor2rgbaMatrix(), true);
+		info.ginfo = NSStructures::GInfoConstructor::get_tensor_curve(info.tensorcurve, info.tensor_curve_parametrs,
+																	  qColor2rgbaMatrix(), info.gradient == TensorCoonsPatchParametric);
 		break;
 	default:
 		break;
@@ -473,7 +449,8 @@ void MainWindow::on_pushButton_clicked()
 		info.c = {(LONG)0xFFff0000, (LONG)0xFFffa500, (LONG)0xFFffff00, (LONG)0xFF008000, (LONG)0xFF0000ff, (LONG)0xFFFF00FF};
 		info.p = {0.0, 0.2, 0.4, 0.6, 0.8, 1};
 		info.n_colors = 6;
-		info.ginfo.shading.function.set_linear_interpolation({0xFFff0000, 0xFFffa500, 0xFFffff00, 0xFF008000, 0xFF0000ff, 0xFFFF00FF}, {0.0f, 0.2f, 0.4f, 0.6f, 0.8f, 1.0f});
+		info.ginfo.shading.function.set_linear_interpolation({0xFFff0000, 0xFFffa500, 0xFFffff00, 0xFF008000, 0xFF0000ff, 0xFFFF00FF},
+															 {0.0f, 0.2f, 0.4f, 0.6f, 0.8f, 1.0f});
 	}
 	else if (ui->BAW_Colorspace_Radio_Button->isChecked())
 	{
@@ -497,8 +474,8 @@ void MainWindow::on_pushButton_clicked()
 		info.ginfo.shading.function.set_linear_interpolation({0xfff39189, 0xff046582}, {0.0f, 1.0f});
 	}
 
-	QImage pm = GenerateImg(points, info, ui->lable_test->width(), ui->lable_test->height());
+	QImage pm = GenerateImg(points, info, ui->label_test->width(), ui->label_test->height());
 	setPoints(&pm);
-	ui->lable_test->setPixmap(QPixmap::fromImage(pm));
-	ui->lable_test->setScaledContents(true);
+	ui->label_test->setPixmap(QPixmap::fromImage(pm));
+	ui->label_test->setScaledContents(true);
 }

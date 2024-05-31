@@ -79,7 +79,7 @@ void FileSharing::writeFields(CFRecord& record)
             record << fReadOnlyRec;
         else
             {
-                UINT16 defaulTRec = 0;
+                _UINT16 defaulTRec = 0;
                 record << defaulTRec;
             }
         if(!wResPass.empty())

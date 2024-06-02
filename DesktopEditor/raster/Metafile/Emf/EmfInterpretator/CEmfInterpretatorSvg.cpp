@@ -1169,6 +1169,7 @@ namespace MetaFile
 
 		std::wstring wsFontName = pFont->GetFaceName();
 
+#ifndef BUILDING_WASM_MODULE
 		if (!wsFontName.empty())
 		{
 			NSFonts::CFontSelectFormat oFormat;
@@ -1179,6 +1180,7 @@ namespace MetaFile
 			if (NULL != pFontInfo && !StringEquals(wsFontName, pFontInfo->m_wsFontName))
 				wsFontName = L"&apos;" + wsFontName + L"&apos;, &apos;" + pFontInfo->m_wsFontName + L"&apos;";
 		}
+#endif
 
 		if (!wsFontName.empty())
 			arNodeAttributes.push_back({L"font-family", wsFontName});

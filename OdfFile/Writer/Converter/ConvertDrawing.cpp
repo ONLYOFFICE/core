@@ -451,6 +451,11 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 	}
 //--------------------------------------------------------------------------------------
 	odf_ref_image = bExternal ? pathImage : odf_context()->add_image(pathImage);
+
+	if (bExternal && std::wstring::npos == odf_ref_image.find(L"\\") && std::wstring::npos == odf_ref_image.find(L"/"))
+	{
+		odf_ref_image = L"../" + odf_ref_image;
+	}
 	
 	odf_context()->drawing_context()->start_image(odf_ref_image);
 	{

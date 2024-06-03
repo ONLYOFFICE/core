@@ -1578,6 +1578,11 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 	drawing->id			= Context.get_drawing_context().get_current_frame_id();
 	drawing->name		= Context.get_drawing_context().get_current_object_name();
 	drawing->inGroup	= Context.get_drawing_context().in_group();
+
+	if (svg_title_)
+		svg_title_->docx_convert(Context);
+	if(svg_desc_)
+		svg_desc_->docx_convert(Context);
 	
 	common_draw_docx_convert(Context, common_draw_attlists_, drawing);
 //-----------------------------------------------------------------------------------------------------

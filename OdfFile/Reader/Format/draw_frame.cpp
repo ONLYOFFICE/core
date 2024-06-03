@@ -299,6 +299,14 @@ void draw_frame::add_child_element( xml::sax * Reader, const std::wstring & Ns, 
     {
         CP_CREATE_ELEMENT(draw_contour_);        
     }
+	else if (CP_CHECK_NAME(L"svg", L"title"))
+	{
+		CP_CREATE_ELEMENT(svg_title_);
+	}
+	else if (CP_CHECK_NAME(L"svg", L"desc"))
+	{
+		CP_CREATE_ELEMENT(svg_desc_);
+	}
     else
     {
         CP_NOT_APPLICABLE_ELM();

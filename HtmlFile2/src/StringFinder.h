@@ -23,6 +23,11 @@ namespace NSStringFinder
 		TFoundedData()
 			: m_unBeginPosition(0), m_unEndPosition(0)
 		{}
+
+		bool Empty() const
+		{
+			return 0 == m_unEndPosition || StringType::npos == m_unEndPosition;
+		}
 	};
 
 	template<class CharType, class StringType = std::basic_string<CharType, std::char_traits<CharType>, std::allocator<CharType>>>
@@ -133,6 +138,30 @@ namespace NSStringFinder
 	TFoundedData<wchar_t> FindPropety(const std::wstring& wsString, const std::wstring& wsProperty, const std::vector<std::wstring>& arDelimiters, const std::vector<std::wstring>& arEndings, const size_t& unStarting = 0)
 	{
 		return FindPropetyTemplate<wchar_t>(wsString, wsProperty, arDelimiters, arEndings, unStarting);
+	}
+
+	template<class CharType, class StringType = std::basic_string<CharType, std::char_traits<CharType>, std::allocator<CharType>>>
+	bool RemoveEmptyTagTemplate(StringType& sValue, const StringType& sTagName, size_t unStart)
+	{
+		boost::wregex oRegex(L"<\\s*(?i)" + std::wstring(sTagName.begin(), sTagName.end()) + L"\\s*[^>]*/>");
+		boost::match_results<typename StringType::const_iterator> oResult;
+
+		if (unStart >= sValue.length() || !boost::regex_search(sValue.cbegin() + unStart, sValue.cend(), oResult, oRegex))
+			return false;
+
+		sValue.erase(unStart + oResult.position(), oResult.length());
+
+		return true;
+	}
+
+	bool RemoveEmptyTag(std::string& sValue, const std::string& sTagName, size_t unStart = 0)
+	{
+		return RemoveEmptyTagTemplate<char>(sValue, sTagName, unStart);
+	}
+
+	bool RemoveEmptyTag(std::wstring& sValue, const std::wstring& sTagName, size_t unStart = 0)
+	{
+		return RemoveEmptyTagTemplate<wchar_t>(sValue, sTagName, unStart);
 	}
 
 	template <typename StringType, typename StringEndgeType>

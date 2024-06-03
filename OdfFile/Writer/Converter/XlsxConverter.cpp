@@ -1157,6 +1157,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row, OOX::Spreadsheet::C
 			{
 				if (oox_row_prev->m_oCollapsed.IsInit())
 				{
+					if (oox_row->m_oCollapsed->GetValue() != oox_row_prev->m_oCollapsed->GetValue()) bEqual = false;
 				}
 				else bEqual = false;
 			}
@@ -1274,8 +1275,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row, OOX::Spreadsheet::C
 
 	ods_context->start_row(row_number, 1, level, _default);
 	
-	if (oox_row->m_oHidden.IsInit())		ods_context->current_table()->set_row_hidden(true);
-	if (oox_row->m_oCollapsed.IsInit())		ods_context->current_table()->set_row_hidden(true);
+	if (oox_row->m_oHidden.IsInit() && oox_row->m_oHidden->ToBool())		ods_context->current_table()->set_row_hidden(true);
+	if (oox_row->m_oCollapsed.IsInit() && oox_row->m_oCollapsed->ToBool())		ods_context->current_table()->set_row_hidden(true);
 	
 	std::wstring style_cell_name;
 	if (oox_row->m_oS.IsInit() && ( oox_row->m_oCustomFormat.IsInit() && oox_row->m_oCustomFormat->GetValue()==1))
@@ -1352,8 +1353,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCell *oox_cell)
 			if (value_type >=0)		
 				ods_context->current_table()->set_cell_type	(value_type);
 			
-			ods_context->current_table()->set_cell_value (oox_cell->m_oValue->m_sText);
-			//ods_context->current_table()->set_cell_cache (oox_cell->m_oValue->m_sText);
+			ods_context->current_table()->set_cell_value (oox_cell->m_oValue->m_sText, oox_cell->m_oFormula.IsInit());
 		}
 	}
 
@@ -1407,9 +1407,19 @@ void XlsxConverter::convert(OOX::Spreadsheet::CExternalLink *oox_external_link)
 			smart_ptr<OOX::External> fileExternal = file.smart_dynamic_cast<OOX::External>();
 			if (fileExternal.IsInit())
 			{
-				ods_context->add_external_reference(fileExternal->Uri().GetPath());
+				std::wstring filePath = fileExternal->Uri().GetPath();
+
+				if (std::wstring::npos == filePath.find(L"file://"))
+					filePath = L"file://" + filePath;
+				ods_context->add_external_reference(filePath);
 			}
 		}
+		//todooo
+	}
+	if (oox_external_link->m_oFileKey.IsInit() || oox_external_link->m_oInstanceId.IsInit())
+	{
+		//todooo
+
 	}
 	xlsx_current_container = old_container;
 }

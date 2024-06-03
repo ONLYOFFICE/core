@@ -1673,7 +1673,7 @@ void GetRCSpanStyle(CAnnotFieldInfo::CMarkupAnnotPr::CFontData* pFontData, NSStr
 		oRC += L"line-through";
 	}
 
-	oRC += L";color:#";
+	oRC += L";color:";
 	oRC.WriteHexColor3((unsigned char)(pFontData->dColor[0] * 255.0),
 					   (unsigned char)(pFontData->dColor[1] * 255.0),
 					   (unsigned char)(pFontData->dColor[2] * 255.0));
@@ -1899,6 +1899,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			}
 			oRC += L"</p></body>";
 			pMarkupAnnot->SetRC(oRC.GetData());
+			// std::wcout << oRC.GetData() << std::endl;
 		}
 		if (nFlags & (1 << 4))
 			pMarkupAnnot->SetCD(pPr->GetCD());
@@ -2028,6 +2029,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			PdfWriter::CFreeTextAnnotation* pFreeTextAnnot = (PdfWriter::CFreeTextAnnotation*)pAnnot;
 
 			pFreeTextAnnot->SetQ(pFTPr->GetQ());
+			pFreeTextAnnot->SetRotate(pFTPr->GetRotate());
 			if (nFlags & (1 << 15))
 			{
 				double dRD1, dRD2, dRD3, dRD4;
@@ -3219,6 +3221,8 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 		if (m_pDocument->HasImage(wsTexturePath, nAlpha))
 		{
 			pImage = m_pDocument->GetImage(wsTexturePath, nAlpha);
+			nImageH = pImage->GetHeight();
+			nImageW = pImage->GetWidth();
 		}
 		else if (_CXIMAGE_FORMAT_JPG == oImageFormat.eFileType || _CXIMAGE_FORMAT_JP2 == oImageFormat.eFileType)
 		{
@@ -3331,6 +3335,8 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 				// Размеры картинки заданы в пикселях. Размеры тайла - это размеры картинки в пунктах.
 				dW = (double)nImageW * 72.0 / 96.0;
 				dH = (double)nImageH * 72.0 / 96.0;
+
+				dT = dB;
 			}
 
 			// Нам нужно, чтобы левый нижний угол границ нашего пата являлся точкой переноса для матрицы преобразования.

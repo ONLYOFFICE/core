@@ -299,9 +299,10 @@ namespace NSCSS
 		oElement.AddBasicProperties(BProperties::B_CustomStyle, L"1");
 	}
 
-	void CDocumentStyle::SetPStyle   (const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement)
+	void CDocumentStyle::SetPStyle   (const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement, bool bIsLite)
 	{
-		ConvertStyle(oStyle, oXmlElement, true);
+		if (!bIsLite)
+			ConvertStyle(oStyle, oXmlElement, true);
 
 		if (oStyle.Empty())
 			return;
@@ -464,9 +465,10 @@ namespace NSCSS
 		return  L"w:val=\"" + wsStyle + L"\" w:sz=\"" + std::to_wstring(nWidth) + + L"\" w:space=\"" + std::to_wstring(nSpace) + L"\" w:color=\"" + wsColor + L"\"";
 	}
 
-	void CDocumentStyle::SetRStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement)
+	void CDocumentStyle::SetRStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement, bool bIsLite)
 	{
-		ConvertStyle(oStyle, oXmlElement, false);
+		if (!bIsLite)
+			ConvertStyle(oStyle, oXmlElement, false);
 
 		if (oStyle.Empty() && oXmlElement.Empty())
 			return;
@@ -536,11 +538,13 @@ namespace NSCSS
 
 	bool CDocumentStyle::WriteLitePStyle(const CCompiledStyle &oStyle)
 	{
+		Clear();
+
 		if (oStyle.Empty())
 			return false;
 
 		CXmlElement oXmlElement;
-		SetPStyle(oStyle, oXmlElement);
+		SetPStyle(oStyle, oXmlElement, true);
 
 		if (oXmlElement.Empty())
 			return false;
@@ -551,11 +555,13 @@ namespace NSCSS
 
 	bool CDocumentStyle::WriteLiteRStyle(const CCompiledStyle &oStyle)
 	{
+		Clear();
+
 		if (oStyle.Empty())
 			return false;
 
 		CXmlElement oXmlElement;
-		SetRStyle(oStyle, oXmlElement);
+		SetRStyle(oStyle, oXmlElement, true);
 
 		if (oXmlElement.Empty())
 			return false;

@@ -672,7 +672,7 @@ namespace PdfReader
 		m_bTransparentGroupSoftMaskEnd = false;
 
 		if (c_nHtmlRendrerer2 == m_lRendererType)
-			m_bDrawOnlyText = (S_OK == m_pRenderer->CommandLong(c_nCommandLongTypeOnlyText, 0)) ? true : false;
+			m_bDrawOnlyText = S_OK == m_pRenderer->CommandLong(c_nCommandLongTypeOnlyText, 0);
 		else if (c_nHtmlRendrererText == m_lRendererType)
 			m_bDrawOnlyText = true;
 		else
@@ -3094,6 +3094,10 @@ namespace PdfReader
 		pRenderer->CreateFromBgraFrame(pFrame);
 		pRenderer->put_Width (nWidth * 25.4 / 72.0);
 		pRenderer->put_Height(nHeight * 25.4 / 72.0);
+		pRenderer->CommandLong(c_nPenWidth0As1px, 1);
+#ifndef BUILDING_WASM_MODULE
+		pRenderer->SetSwapRGB(false);
+#endif
 
 		PDFRectangle box;
 		box.x1 = pBBox[0];
@@ -3119,8 +3123,10 @@ namespace PdfReader
 		double xMin, yMin, xMax, yMax;
 		Transform(matrix, pBBox[0], pBBox[1], &xMin, &yMin);
 		Transform(matrix, pBBox[2], pBBox[3], &xMax, &yMax);
-		xMax *= (nX1 - nX0);
-		yMax *= (nY1 - nY0);
+		xMin += nX0 * (xMax - xMin);
+		xMax += nX1 * (xMax - xMin);
+		yMin += nY0 * (yMax - yMin);
+		yMax += nY1 * (yMax - yMin);
 		pGState->moveTo(xMin, yMin);
 		pGState->lineTo(xMax, yMin);
 		pGState->lineTo(xMax, yMax);
@@ -3941,7 +3947,7 @@ namespace PdfReader
 
 		int   nRenderMode = pGState->getRender();
 
-		if (3 == nRenderMode) // Невидимый текст
+		if (3 == nRenderMode && !m_bDrawOnlyText) // Невидимый текст
 		{
 			return;
 		}
@@ -4052,7 +4058,7 @@ namespace PdfReader
 			}
 		}
 
-		if (nRenderMode == 0 || nRenderMode == 4 || nRenderMode == 6 || (m_bDrawOnlyText && nRenderMode == 2))
+		if (nRenderMode == 0 || nRenderMode == 4 || nRenderMode == 6 || m_bDrawOnlyText)
 		{
 			bool bReplace = false;
 			std::wstring sFontPath;

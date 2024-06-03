@@ -251,6 +251,7 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
         #pragma region Comma and PtgUnion
         else if(SyntaxPtg::extract_comma(it, itEnd))
         {
+            SyntaxPtg::remove_extraSymbols(it, itEnd);
             PtgParenPtr left_p;
             if(ptg_stack.size() && (left_p = boost::dynamic_pointer_cast<PtgParen>(ptg_stack.top())) && operand_expected)
             {
@@ -488,26 +489,41 @@ const void StringPtgParser::parsePtgTypes(Rgce& rgce)
                 auto refArgs = PosValArgs(funcPtr->getFuncIndex());
                 for(auto j = paramsNum-1; j >= 0; j--)
                 {
-                    if(refArgs.size() > j && refArgs.at(j))
-                    SetPtgType(functionStack.back(), 3);
-                    functionStack.pop_back();
+                    if(!functionStack.empty())
+                    {
+                        if(refArgs.size() > j && refArgs.at(j))
+                        SetPtgType(functionStack.back(), 3);
+                        functionStack.pop_back();
+                    }
                 }
             }
             functionStack.push_back(i);
         }
         else if(ptgId > 1 && ptgId < 15)
         {
-            SetPtgType(functionStack.back(), 3);
-            functionStack.pop_back();
-            SetPtgType(functionStack.back(), 3);
+            if(!functionStack.empty())
+            {
+                SetPtgType(functionStack.back(), 3);
+                functionStack.pop_back();
+            }
+            if(!functionStack.empty())
+            {
+                SetPtgType(functionStack.back(), 3);
+            }
         }
         else if(ptgId > 14 && ptgId < 18)
         {
-            SetPtgType(functionStack.back(), 1);
-            functionStack.pop_back();
-            SetPtgType(functionStack.back(), 1);
+            if(!functionStack.empty())
+            {
+                SetPtgType(functionStack.back(), 1);
+                functionStack.pop_back();
+            }
+            if(!functionStack.empty())
+            {
+                SetPtgType(functionStack.back(), 1);
+            }
         }
-        else if(ptgId > 17 && ptgId < 21)
+        else if(ptgId > 17 && ptgId < 21 && !functionStack.empty())
         {
            SetPtgType(functionStack.back(), 3);
         }

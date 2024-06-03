@@ -48,7 +48,7 @@ public:
 
 	virtual void load(CFRecord& record);
 
-	static const ElementType	type = typeExtProp;
+	static const ElementType type = typeExtProp;
 
 	unsigned short cb;
 
@@ -72,8 +72,8 @@ public:
 	{
 		FullColorExt	color;
 		XFExtGradient	gradient_fill;
-		unsigned char	font_scheme;
-		unsigned short	indent_level;
+		unsigned char	font_scheme = 0;
+		unsigned short	indent_level = 0;
 
 	} extPropData;
 };

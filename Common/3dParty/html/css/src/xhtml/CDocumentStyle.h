@@ -40,8 +40,8 @@ namespace NSCSS
 		void CreateStandardStyle  (const std::wstring& sNameStyle, CXmlElement& oElement);
 		void ConvertStyle         (const NSCSS::CCompiledStyle& oStyle, CXmlElement& oElement, bool bIsPStyle);
 
-		void SetRStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement);
-		void SetPStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement);
+		void SetRStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement, bool bIsLite = false);
+		void SetPStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement, bool bIsLite = false);
 
 		void SetBorderStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement, const PProperties& enBorderProperty);
 	public:

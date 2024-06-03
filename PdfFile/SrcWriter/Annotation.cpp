@@ -1075,7 +1075,10 @@ namespace PdfWriter
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
 		const char* sFontName = pFieldsResources->GetFontName(pFont);
 
-		std::string sDA = GetColor(arrC, false);
+		std::vector<double> _arrC = arrC;
+		if (arrC.empty())
+			_arrC = {0};
+		std::string sDA = GetColor(_arrC, false);
 		if (sFontName)
 		{
 			sDA.append(" /");
@@ -1111,6 +1114,10 @@ namespace PdfWriter
 	void CFreeTextAnnotation::SetLE(BYTE nLE)
 	{
 		Add("LE", AddLE(nLE).c_str());
+	}
+	void CFreeTextAnnotation::SetRotate(int nRotate)
+	{
+		Add("Rotate", nRotate);
 	}
 	void CFreeTextAnnotation::SetDS(const std::wstring& wsDS)
 	{
@@ -1171,6 +1178,10 @@ namespace PdfWriter
 
 		CDictObject* pFPStream = pFakePage->GetContent();
 		pNormal->SetStream(m_pXref, pFPStream->GetStream(), false);
+#ifndef FILTER_FLATE_DECODE_DISABLED
+		if (m_pDocument->GetCompressionMode() & COMP_TEXT)
+			pNormal->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
 		pFPStream->SetStream(NULL);
 		// RELEASEOBJECT(pFPStream); Нельзя удалять - это объект стрима, он уже в xref
 	}

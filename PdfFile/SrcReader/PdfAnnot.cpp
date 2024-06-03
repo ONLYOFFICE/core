@@ -1642,6 +1642,11 @@ CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex
 		m_nQ = oObj.getInt();
 	oObj.free();
 
+	m_nRotate = 0;
+	if (oAnnot.dictLookup("Rotate", &oObj)->isInt())
+		m_nRotate = oObj.getInt();
+	oObj.free();
+
 	// 15 - Различия Rect и фактического размера - RD
 	if (oAnnot.dictLookup("RD", &oObj)->isArray())
 	{
@@ -2982,6 +2987,7 @@ void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFon
 	m_pRenderer->put_Height((m_dy2 - m_dy1 + (2 + m_dHTale) * dHeight / (double)nRasterH) * 25.4 / 72.0);
 	if (nBackgroundColor != 0xFFFFFF)
 		m_pRenderer->CommandLong(c_nDarkMode, 1);
+	m_pRenderer->CommandLong(c_nPenWidth0As1px, 1);
 
 	m_pRendererOut = new RendererOutputDev(m_pRenderer, pFontManager, pFontList);
 	m_pRendererOut->NewPDF(pdfDoc->getXRef());
@@ -3662,6 +3668,7 @@ void CAnnotFreeText::ToWASM(NSWasm::CData& oRes)
 	CAnnotMarkup::ToWASM(oRes);
 
 	oRes.WriteBYTE(m_nQ);
+	oRes.AddInt(m_nRotate);
 	if (m_unFlags & (1 << 15))
 	{
 		for (int i = 0; i < 4; ++i)

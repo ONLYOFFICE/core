@@ -62,8 +62,14 @@ int FullColorExt::serialize(std::wostream & stream, const std::wstring &node_nam
 			case 0: CP_XML_ATTR(L"auto", 1);		break;
 			case 1: CP_XML_ATTR(L"indexed", xclrValue);	break;
 			case 3: CP_XML_ATTR(L"theme", xclrValue);	break;
-			default:
-				CP_XML_ATTR(L"rgb", xclrValue);	break;
+			default:			
+				{
+					BYTE r = GETBITS(xclrValue, 0, 7);
+					BYTE g = GETBITS(xclrValue, 8, 15);
+					BYTE b = GETBITS(xclrValue, 16, 23);
+					BYTE a = GETBITS(xclrValue, 24, 31);
+					CP_XML_ATTR(L"rgb", STR::toARGB(r, g, b, a));	
+				}break;
 			}
 			if (nTintShade != 0)
 			{

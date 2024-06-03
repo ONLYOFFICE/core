@@ -51,6 +51,7 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record) override;
 
 	static const ElementType	type = typeFileSharing;
 

@@ -95,6 +95,7 @@ std::vector<GlobalWorkbookInfo::_xti>				GlobalWorkbookInfo::arXti_External_stat
 std::unordered_map<int, std::wstring>				GlobalWorkbookInfo::mapTableNames_static;
 std::unordered_map<int, std::vector<std::wstring>>	GlobalWorkbookInfo::mapTableColumnNames_static;
 std::vector<std::wstring>							GlobalWorkbookInfo::arDefineNames_static;
+std::unordered_map<int, std::vector<int>>			GlobalWorkbookInfo::mapXtiTables_static;
 
 GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConverter * converter) :	CodePage(code_page), xls_converter(converter)
 {

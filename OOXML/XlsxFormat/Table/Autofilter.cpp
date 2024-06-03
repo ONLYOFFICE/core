@@ -171,7 +171,7 @@ namespace OOX
 					if(ptr != nullptr)
 					{
 						m_oDescending           = ptr->fSortDes;
-						m_oRef                  = ptr->rfx.toString();
+						m_oRef                  = ptr->rfx.toString(true, true);
 						switch (ptr->sortOn)
 						{
 							case 0:
@@ -199,7 +199,7 @@ namespace OOX
 					if(ptr != nullptr)
 					{
 						m_oDescending           = ptr->fSortDes;
-						m_oRef                  = ptr->rfx.toString();
+						m_oRef                  = ptr->rfx.toString(true, true);
 						switch (ptr->sortOn)
 						{
 							case 0:
@@ -1549,7 +1549,7 @@ namespace OOX
 				auto ptr = static_cast<XLSB::BeginAFilter*>(obj.get());
 				if(ptr != nullptr)
 				{
-				   m_oRef = ptr->rfx.toString();
+				   m_oRef = ptr->rfx.toString(true, true);
 				}
 			}
 

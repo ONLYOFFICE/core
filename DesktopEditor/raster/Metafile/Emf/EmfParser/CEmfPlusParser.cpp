@@ -234,6 +234,8 @@ namespace MetaFile
 			m_oStream >> unSize;
 			m_oStream >> m_ulRecordSize;
 
+			m_oStream.SetCurrentBlockSize(m_ulRecordSize);
+
 			unsigned int unRecordPos = m_oStream.Tell();
 
 			LOGGING(ActionNamesEmfPlus[unShType] << L"  DataSize = " << m_ulRecordSize)
@@ -318,6 +320,7 @@ namespace MetaFile
 
 			LOGGING(L"Skip: " << nNeedSkip)
 
+			m_oStream.ClearCurrentBlockSize();
 			m_ulRecordSize = 0;
 		}while(m_oStream.CanRead() >= 12 && !m_bEof);
 

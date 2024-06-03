@@ -933,7 +933,7 @@ namespace OOX
 		{
 			auto ptr = static_cast<XLSB::WsDim*>(obj.get());
 			if (ptr != nullptr)
-				m_oRef = ptr->rfx.toString();
+				m_oRef = ptr->rfx.toString(true, true);
 		}
 
 		CSheetFormatPr::CSheetFormatPr()
@@ -1109,7 +1109,8 @@ namespace OOX
 				else if(m_oActivePane == SimpleTypes::Spreadsheet::EActivePane::activepaneTopLeft)
 					ptr->pnnAcct_xlsb = 3;
 			}
-
+            ptr->fFrozen = false;
+            ptr->fFrozenNoSplit = false;
 			if(m_oState.IsInit())
 			{
 				if(m_oState == SimpleTypes::Spreadsheet::EPaneState::panestateFrozenSplit)
@@ -1391,7 +1392,7 @@ namespace OOX
 				if (m_oShowFormulas.IsInit())
 					pWsView->fDspFmlaRt = m_oShowFormulas->m_eValue;
 				else
-					pWsView->fDspFmlaRt = false;
+                    pWsView->fDspFmlaRt = false;
 				if (m_oShowGridLines.IsInit())
 					pWsView->fDspGridRt = m_oShowGridLines->m_eValue;
 				else
@@ -1457,7 +1458,7 @@ namespace OOX
 
 				for(auto i:m_arrItems)
 				{
-					ptr->m_arBrtSel.push_back(i->toBin());
+                    ptr->m_arBrtSel.push_back(i->toBin());
 				}
 				return castedPtr;
            
@@ -2659,7 +2660,7 @@ namespace OOX
 				XLS::BaseObjectPtr castedPtr(ptr);
 
 				if (m_oPassword.IsInit())
-					ptr->protpwd = std::stoul(m_oPassword.get());
+                    ptr->protpwd = std::stoul(m_oPassword.get(),nullptr, 16);
 				else	
 					ptr->protpwd = 0;
 
@@ -3105,7 +3106,7 @@ namespace OOX
 					m_oName = ptr->xstrName.value();
 
 				if (!ptr->rfx.toString().empty())
-					m_oRef = ptr->rfx.toString();
+					m_oRef = ptr->rfx.toString(true, true);
 
 				if (!ptr->xstrSheet.value().empty())
 					m_oSheet = ptr->xstrSheet.value();

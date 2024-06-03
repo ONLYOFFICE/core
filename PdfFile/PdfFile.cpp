@@ -47,16 +47,21 @@
 class CPdfEditor
 {
 public:
+	int  GetError() { return 0; }
 	void Close() {}
+	bool EditPage(int nPageIndex) { return false; }
+	bool DeletePage(int nPageIndex) { return false; }
+	bool AddPage(int nPageIndex) { return false; }
 	bool EditAnnot(int nPageIndex, int nID) { return false; }
 	bool DeleteAnnot(int nID) { return false; }
 	bool EditWidgets(IAdvancedCommand* pCommand) { return false; }
 	int  GetPagesCount() { return 0; }
-	int  GetRotate(int nPageIndex) { return 0; }
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) {}
-	bool EditPage(int nPageIndex) { return false; }
+	int  GetRotate(int nPageIndex) { return 0; }
+	bool IsEditPage() { return false; }
 	void AddShapeXML(const std::string& sXML) {}
 	void EndMarkedContent() {}
+	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath) { return false; }
 };
 #endif // BUILDING_WASM_MODULE
 
@@ -880,7 +885,24 @@ HRESULT CPdfFile::put_FontName(const std::wstring& wsName)
 {
 	if (!m_pInternal->pWriter)
 		return S_FALSE;
-	return m_pInternal->pWriter->put_FontName(wsName);
+	std::wstring wsFontName = wsName;
+	if (m_pInternal->pEditor && wsFontName.find(L"Embedded: ") == 0)
+	{
+		wsFontName.erase(0, 10);
+		bool bBold = false, bItalic = false;
+		std::wstring wsFontPath;
+		if (m_pInternal->pEditor->IsBase14(wsFontName, bBold, bItalic, wsFontPath) && (bBold || bItalic))
+		{
+			LONG lStyle = 0;
+			if (bBold)
+				lStyle |= 1;
+			if (bItalic)
+				lStyle |= 2;
+			put_FontStyle(lStyle);
+		}
+		m_pInternal->pWriter->AddFont(wsFontName, bBold, bItalic, wsFontPath, 0);
+	}
+	return m_pInternal->pWriter->put_FontName(wsFontName);
 }
 HRESULT CPdfFile::get_FontPath(std::wstring* wsPath)
 {
@@ -1177,6 +1199,13 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	case IAdvancedCommand::AdvancedCommandType::Link:
 	{
 		CLinkCommand* pCommand = (CLinkCommand*)command;
+		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
+		{
+			PdfWriter::CPage* pCurrent = m_pInternal->pWriter->GetPage();
+			m_pInternal->pEditor->EditPage(pCommand->GetPage());
+			m_pInternal->pWriter->GetDocument()->SetCurPage(pCurrent);
+			m_pInternal->pWriter->EditPage(pCurrent);
+		}
 		return m_pInternal->pWriter->AddLink(pCommand->GetX(), pCommand->GetY(), pCommand->GetW(), pCommand->GetH(),
 											 pCommand->GetDestX(), pCommand->GetDestY(), pCommand->GetPage());
 	}
@@ -1194,14 +1223,14 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	case IAdvancedCommand::AdvancedCommandType::Annotaion:
 	{
 		CAnnotFieldInfo* pCommand = (CAnnotFieldInfo*)command;
-		if (m_pInternal->pEditor && m_pInternal->pEditor->EditPage())
+		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
 			m_pInternal->pEditor->EditAnnot(pCommand->GetPage(), pCommand->GetID());
 		return m_pInternal->pWriter->AddAnnotField(m_pInternal->pAppFonts, pCommand);
 	}
 	case IAdvancedCommand::AdvancedCommandType::DeleteAnnot:
 	{
 		CAnnotFieldDelete* pCommand = (CAnnotFieldDelete*)command;
-		if (m_pInternal->pEditor && m_pInternal->pEditor->EditPage())
+		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
 			m_pInternal->pEditor->DeleteAnnot(pCommand->GetID());
 		return S_OK;
 	}
@@ -1215,26 +1244,26 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	case IAdvancedCommand::AdvancedCommandType::ShapeStart:
 	{
 		CShapeStart* pCommand = (CShapeStart*)command;
-		if (m_pInternal->pEditor && m_pInternal->pEditor->EditPage())
+		if (m_pInternal->pEditor)
 			m_pInternal->pEditor->AddShapeXML(pCommand->GetShapeXML());
 		return S_OK;
 	}
 	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:
 	{
-		if (m_pInternal->pEditor && m_pInternal->pEditor->EditPage())
+		if (m_pInternal->pEditor)
 			m_pInternal->pEditor->EndMarkedContent();
 		return S_OK;
 	}
 	case IAdvancedCommand::AdvancedCommandType::PageClear:
 	{
-		if (m_pInternal->pEditor && m_pInternal->pEditor->EditPage())
+		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
 			m_pInternal->pWriter->PageClear();
 		return S_OK;
 	}
 	case IAdvancedCommand::AdvancedCommandType::PageRotate:
 	{
 		CPageRotate* pCommand = (CPageRotate*)command;
-		if (m_pInternal->pEditor && m_pInternal->pEditor->EditPage())
+		if (m_pInternal->pEditor)
 			m_pInternal->pWriter->PageRotate(pCommand->GetPageRotate());
 		return S_OK;
 	}

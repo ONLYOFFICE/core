@@ -205,6 +205,22 @@ TEST_F(CPdfFileTest, PdfFromBin)
 	EXPECT_HRESULT_SUCCEEDED(pdfFile->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile));
 }
 
+TEST_F(CPdfFileTest, PdfToPdf)
+{
+	GTEST_SKIP();
+
+	LoadFromFile();
+	pdfFile->CreatePdf();
+
+	for (int i = 0; i < pdfFile->GetPagesCount(); i++)
+	{
+		pdfFile->NewPage();
+		pdfFile->DrawPageOnRenderer(pdfFile, i, NULL);
+	}
+
+	pdfFile->SaveToFile(wsDstFile);
+}
+
 TEST_F(CPdfFileTest, SetMetaData)
 {
 	GTEST_SKIP();
@@ -305,7 +321,7 @@ TEST_F(CPdfFileTest, EditPdfFromBase64)
 
 	EXPECT_TRUE(NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, pBuffer, &nBufferLen));
 	CConvertFromBinParams* pParams = new CConvertFromBinParams();
-	pParams->m_sMediaDirectory = NSFile::GetProcessDirectory() + L"/media";
+	pParams->m_sMediaDirectory = NSFile::GetProcessDirectory();
 	pdfFile->AddToPdfFromBinary(pBuffer, nBufferLen, pParams);
 
 	RELEASEOBJECT(pParams);

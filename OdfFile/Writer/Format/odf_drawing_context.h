@@ -322,6 +322,10 @@ public:
 		void add_link	(std::wstring href);
 	void end_action();
 
+	void start_style_columns(int cols, int gap);
+		void add_style_column();
+	void end_style_columns();
+
 private:
     class Impl;
     _CP_PTR(Impl) impl_;

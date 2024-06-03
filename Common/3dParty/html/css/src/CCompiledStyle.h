@@ -22,9 +22,6 @@ namespace NSCSS
 		unsigned short int m_nDpi;
 		UnitMeasure m_UnitMeasure;
 
-		CSizeWindow m_oSourceWindow;
-		CSizeWindow m_oDeviceWindow;
-
 	public:
 		NSProperties::CFont       m_oFont;
 		NSProperties::CIndent     m_oMargin;
@@ -41,8 +38,6 @@ namespace NSCSS
 
 		void SetDpi(const unsigned short& uiDpi);
 		void SetUnitMeasure(const UnitMeasure& enUnitMeasure);
-		void SetSizeSourceWindow(const CSizeWindow& oSizeWindow);
-		void SetSizeDeviceWindow(const CSizeWindow& oSizeWindow);
 
 		bool Empty() const;
 
@@ -53,9 +48,12 @@ namespace NSCSS
 		void AddParent(const std::wstring& sParentName);
 
 		std::vector<std::wstring> GetParentsName() const;
+		std::set<std::wstring> GetParentsNamesSet() const;
 
 		void SetID(const std::wstring& sId);
 		std::wstring GetId() const;
+
+		bool HaveThisParent(const std::wstring& wsParentName) const;
 
 		CCompiledStyle& operator+= (const CCompiledStyle& oElement);
 		CCompiledStyle& operator=  (const CCompiledStyle& oElement);

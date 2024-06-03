@@ -87,9 +87,11 @@ XLS::BaseObjectPtr COlapSlicerCacheItem::toBin()
 	if(m_oN.IsInit())
 		ptr->stName = m_oN.get();
 	else
-		ptr->stName = 0xFFFFFFFF;
+        ptr->stName.setSize(0xFFFFFFFF);
 	if(m_oC.IsInit())
 		ptr->stTitle = m_oC.get();
+    else
+        ptr->stTitle.setSize(0xFFFFFFFF);
 	for(auto i:m_oP)
 		if(i.m_oN.IsInit())
 			ptr->parents.push_back(i.m_oN.get());
@@ -281,7 +283,10 @@ XLS::BaseObjectPtr COlapSlicerCacheRange::toBin()
 	if(m_oStartItem.IsInit())
 	{
 		auto ptr1(new XLSB::BeginSlicerCacheSiRange);
-		ptr1->iitemstart = m_oStartItem.get();
+        if(m_oStartItem.IsInit())
+            ptr1->iitemstart = m_oStartItem.get();
+        else
+            ptr1->iitemstart = 0;
 	}
 	for(auto i:m_oI)
 		ptr->m_arBrtSlicerCacheOlapItem.push_back(i.toBin());
@@ -519,6 +524,16 @@ XLS::BaseObjectPtr COlapSlicerCacheSelection::toBin()
 {
 	auto ptr(new XLSB::SlicerCacheSelection);
 	XLS::BaseObjectPtr objectPtr(ptr);
+	if(m_oN.IsInit())
+		ptr->stUniqueName = m_oN.get();
+	else
+        ptr->stUniqueName = L"";
+
+	for(auto i:m_oP)
+	{
+		if(i.m_oN.IsInit())
+			ptr->parents.push_back(i.m_oN.get());
+	}
 
 	return objectPtr;
 }
@@ -647,28 +662,32 @@ XLS::BaseObjectPtr COlapSlicerCacheLevelData::toBin()
 	ptr->m_BrtBeginSlicerCacheLevelData = XLS::BaseObjectPtr{ptr1};
 
 	if(m_oCount.IsInit())
-		ptr1->citem = m_oCount.get();
+        ptr1->citem = m_oCount.get();
+    else
+        ptr1->citem = 0;
 	if(m_oSortOrder.IsInit())
 		ptr1->fSortOrder = m_oSortOrder->GetValue();
+    else
+        ptr1->fSortOrder = false;
 	if(m_oUniqueName.IsInit())
 		ptr1->stUniqueName = m_oUniqueName.get();
 	else
-		ptr1->stUniqueName = 0xFFFFFFFF;
+        ptr1->stUniqueName.setSize(0xFFFFFFFF);
 	if(m_oSourceCaption.IsInit())
 		ptr1->stSourceCaption = m_oSourceCaption.get();
 	else
-		ptr1->stSourceCaption = 0xFFFFFFFF;
+        ptr1->stSourceCaption.setSize(0xFFFFFFFF);
 	if(m_oCrossFilter.IsInit())
 		ptr1->fCrossFilter = m_oCrossFilter->GetValue();
-	if(!m_oRanges.empty())
-	{
+    else
+        ptr1->fCrossFilter = false;
+
 		auto ptr2(new XLSB::SLICERCACHESIRANGES);
 		ptr->m_SLICERCACHESIRANGES = XLS::BaseObjectPtr{ptr2};
 		for(auto i:m_oRanges)
 		{
 			ptr2->m_arSLICERCACHESIRANGE.push_back(i.toBin());
 		}
-	}
 	return objectPtr;
 }
 void COlapSlicerCacheLevelData::ReadAttributes(XLS::BaseObjectPtr& obj)
@@ -1363,10 +1382,10 @@ XLS::BaseObjectPtr COlapSlicerCache::toBin()
 {
 	auto ptr(new XLSB::SLICERCACHEOLAPIMPL);
 	XLS::BaseObjectPtr objectPtr(ptr);
-	if(m_oPivotCacheId.IsInit())
+    if(m_oPivotCacheId.IsInit())
 	{
 		auto ptr1(new XLSB::BeginSlicerCacheOlapImpl);
-		ptr->m_BrtBeginSlicerCacheOlapImpl = XLS::BaseObjectPtr{ptr1};
+        ptr->m_BrtBeginSlicerCacheOlapImpl = XLS::BaseObjectPtr{ptr1};
 		ptr1->ipivotcacheid = m_oPivotCacheId.get();
 	}
 	if(m_oLevels.IsInit())
@@ -1717,7 +1736,7 @@ XLS::BaseObjectPtr CSlicerCacheDefinition::toBin()
 		{
 			XLSB::SlicerCachePivotTable table;
 			i.toBin(&table);
-			ptr2->pivotTables.push_back(table);
+            ptr2->pivotTables.push_back(table);
 		}
 	}
 	if(m_oData.IsInit())

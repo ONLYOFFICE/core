@@ -99,13 +99,12 @@ namespace OOX
 		}
 		void CSheet::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, (L"r:id"),				m_oRid )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"relationships:id"),	m_oRid )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"name"),				m_oName )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"sheetId"),			m_oSheetId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"state"),			m_oState )
-			WritingElement_ReadAttributes_End( oReader )
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"id",		m_oRid )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"name",		m_oName )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"sheetId",	m_oSheetId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"state",	m_oState )
+			WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		void CSheet::ReadAttributes(XLS::BaseObjectPtr& obj)
 		{

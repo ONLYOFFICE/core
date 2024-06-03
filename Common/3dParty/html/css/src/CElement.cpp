@@ -173,26 +173,26 @@ namespace NSCSS
 		return arElements;
 	}
 
-	std::vector<CElement *> CElement::GetPrevElements(const std::vector<std::wstring>::reverse_iterator &arNodesRBegin, const std::vector<std::wstring>::reverse_iterator &arNodesREnd) const
+	std::vector<CElement *> CElement::GetPrevElements(const std::vector<std::wstring>::const_reverse_iterator& oNodesRBegin, const std::vector<std::wstring>::const_reverse_iterator& oNodesREnd) const
 	{
-		if (arNodesRBegin >= arNodesREnd || m_arPrevElements.empty())
+		if (oNodesRBegin >= oNodesREnd || m_arPrevElements.empty())
 			return std::vector<CElement*>();
 
 		std::vector<CElement*> arElements;
 
-		for (std::vector<std::wstring>::reverse_iterator iWord = arNodesRBegin; iWord != arNodesREnd; ++iWord)
+		for (std::vector<std::wstring>::const_reverse_iterator iWord = oNodesRBegin; iWord != oNodesREnd; ++iWord)
 		{
 			if ((*iWord)[0] == L'.' && ((*iWord).find(L" ") != std::wstring::npos))
 			{
 				std::vector<std::wstring> arClasses = NS_STATIC_FUNCTIONS::GetWordsW(*iWord, false, L" ");
-				for (std::wstring sClass : arClasses)
+				for (const std::wstring& wsClass : arClasses)
 				{
 					for (CElement* oPrevElement : m_arPrevElements)
 					{
-						if (oPrevElement->m_sSelector == sClass)
+						if (oPrevElement->m_sSelector == wsClass)
 						{
 							arElements.push_back(oPrevElement);
-							std::vector<CElement*> arTempElements = oPrevElement->GetPrevElements(iWord + 1, arNodesREnd);
+							std::vector<CElement*> arTempElements = oPrevElement->GetPrevElements(iWord + 1, oNodesREnd);
 							arElements.insert(arElements.end(), arTempElements.begin(), arTempElements.end());
 						}
 					}
@@ -205,7 +205,7 @@ namespace NSCSS
 					if (oPrevElement->m_sSelector == *iWord)
 					{
 						arElements.push_back(oPrevElement);
-						std::vector<CElement*> arTempElements = oPrevElement->GetPrevElements(iWord + 1, arNodesREnd);
+						std::vector<CElement*> arTempElements = oPrevElement->GetPrevElements(iWord + 1, oNodesREnd);
 						arElements.insert(arElements.end(), arTempElements.begin(), arTempElements.end());
 	//                    return arElements;
 					}

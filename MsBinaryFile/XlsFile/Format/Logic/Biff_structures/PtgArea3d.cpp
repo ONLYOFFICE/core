@@ -161,7 +161,8 @@ void PtgArea3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool f
 		if (ixals == 0xffff)
 		{
 			std::wstring strRange;
-			if(-1 == itabFirst)
+            if(-1 == itabFirst || global_info->sheets_info.size() <= itabFirst
+                || global_info->sheets_info.size() <= itabLast)
 			{
 				strRange = L"#REF";
 			}

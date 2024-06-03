@@ -47,7 +47,7 @@ public:
 
 	CXmlElement& operator+=(const CXmlElement& oElement);
 	CXmlElement& operator= (const CXmlElement& oelement);
-	bool        operator== (const CXmlElement& oElement);
+	bool        operator== (const CXmlElement& oElement) const;
 };
 
 #endif // CXMLELEMENT_H

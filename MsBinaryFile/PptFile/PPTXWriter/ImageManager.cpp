@@ -72,14 +72,14 @@ void CMediaManager::SetTempMedia(const std::wstring& strSrc)
     OOX::CPath pathSrc(strSrc);
     m_strTempMedia = pathSrc.GetPath();
 }
-std::wstring CMediaManager::GenerateVideo(const std::wstring &strInput)
+std::wstring CMediaManager::GenerateVideo(const std::wstring &strInput, const std::wstring& strExt)
 {
-    return GenerateMedia(strInput, L"video", m_lIndexNextVideo, L".avi");
+    return GenerateMedia(strInput, L"video", m_lIndexNextVideo, strExt.empty() ? L".avi" : strExt);
 }
 
-std::wstring CMediaManager::GenerateAudio(const std::wstring &strInput)
+std::wstring CMediaManager::GenerateAudio(const std::wstring &strInput, const std::wstring& strExt)
 {
-    return GenerateMedia(strInput, L"audio", m_lIndexNextAudio, L".wav");
+    return GenerateMedia(strInput, L"audio", m_lIndexNextAudio, strExt.empty() ? L".wav" : strExt);
 }
 
 std::wstring CMediaManager::GenerateImage(const std::wstring &strInput)
@@ -178,10 +178,15 @@ std::wstring CMediaManager::GenerateMedia(const std::wstring& strInput, const st
     if (strExts == L".video" || strExts == L".audio")
     {
         std::wstring strInput1 = strInput.substr(0, nIndexExt);
-        nIndexExt = strInput1.rfind(wchar_t('.'));
-        strExts = nIndexExt < 0 ? L"" : strInput1.substr(nIndexExt);
+        strExts.clear();
     }
     if (strExts == L".tmp" || strExts.empty()) strExts = strDefaultExt;
+
+    if (strDefaultExt == L"sfil")
+    {
+        strExts = L".wav";
+        //todooo - detect format by file
+    }
 
     std::wstring strMediaName = Template + std::to_wstring(++Indexer);
 
@@ -195,6 +200,7 @@ std::wstring CMediaManager::GenerateMedia(const std::wstring& strInput, const st
     {
         return L"";
     }
+    //todooo ? test format
     if (strOutput != strInput)
     {
         NSDirectory::CreateDirectory(m_strDstMedia);
@@ -214,7 +220,7 @@ void CMediaManager::WriteAudioCollection(const std::vector<PPT::CExFilesInfo> &a
 
     for (auto& audio : audioCont)
     {
-        auto pathAudio = GenerateAudio(audio.m_strFilePath);
+        auto pathAudio = GenerateAudio(audio.m_strFilePath, audio.m_strFileExt);
     }
 }
 

@@ -137,11 +137,13 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     CHtmlFile2 oFile;
     CHtmlParams oFileParams;
 
-    oFileParams.SetAuthors(m_oBookInfo.GetCreators());
-    oFileParams.SetGenres (m_oBookInfo.GetSubjects());
-    oFileParams.SetTitle  (m_oBookInfo.GetTitle());
-    oFileParams.SetDate   (m_oBookInfo.GetDate());
-    oFileParams.SetDescription(m_oBookInfo.GetDescriptions());
+    oFileParams.SetAuthors     (m_oBookInfo.GetCreators());
+    oFileParams.SetGenres      (m_oBookInfo.GetSubjects());
+    oFileParams.SetTitle       (m_oBookInfo.GetTitle());
+    oFileParams.SetDate        (m_oBookInfo.GetDate());
+    oFileParams.SetDescription (m_oBookInfo.GetDescriptions());
+    oFileParams.SetLanguage    (m_oBookInfo.GetLanguage());
+
     oFileParams.SetPageBreakBefore(true);
 
     std::wstring sDocxFileTempDir = m_sTempDir + L"/tmp";

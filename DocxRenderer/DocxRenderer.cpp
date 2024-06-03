@@ -35,6 +35,7 @@
 #include "../OfficeUtils/src/OfficeUtils.h"
 #include "src/logic/Document.h"
 #include "../DesktopEditor/graphics/commands/DocInfo.h"
+#include <algorithm>
 
 class CDocxRenderer_Private
 {
@@ -134,6 +135,14 @@ std::vector<std::wstring> CDocxRenderer::ScanPage(IOfficeDrawingFile* pFile, siz
 		xml_shapes.push_back(writer->GetData());
 		delete writer;
 	}
+	for (const auto& shape : m_pInternal->m_oDocument.m_oCurrentPage.m_arImages)
+	{
+		if (!shape) continue;
+		auto writer = new NSStringUtils::CStringBuilder();
+		shape->ToXml(*writer);
+		xml_shapes.push_back(writer->GetData());
+		delete writer;
+	}
 
 	std::vector<std::wstring>& arComleteObjects = m_pInternal->m_oDocument.m_oCurrentPage.m_arCompleteObjectsXml;
 	if (!arComleteObjects.empty())
@@ -162,6 +171,14 @@ std::vector<std::wstring> CDocxRenderer::ScanPagePptx(IOfficeDrawingFile* pFile,
 		xml_shapes.push_back(writer->GetData());
 		delete writer;
 	}
+	for (const auto& shape : m_pInternal->m_oDocument.m_oCurrentPage.m_arImages)
+	{
+		if (!shape) continue;
+		auto writer = new NSStringUtils::CStringBuilder();
+		shape->ToXmlPptx(*writer);
+		xml_shapes.push_back(writer->GetData());
+		delete writer;
+	}
 
 	std::vector<std::wstring>& arComleteObjects = m_pInternal->m_oDocument.m_oCurrentPage.m_arCompleteObjectsXml;
 	if (!arComleteObjects.empty())
@@ -169,6 +186,11 @@ std::vector<std::wstring> CDocxRenderer::ScanPagePptx(IOfficeDrawingFile* pFile,
 
 	m_pInternal->m_oDocument.Clear();
 	return xml_shapes;
+}
+
+void CDocxRenderer::SetExternalImageStorage(NSDocxRenderer::IImageStorage* pStorage)
+{
+	m_pInternal->m_oDocument.m_oImageManager.m_pExternalStorage = pStorage;
 }
 
 void CDocxRenderer::DrawPage(IOfficeDrawingFile* pFile, size_t nPage)
@@ -224,7 +246,14 @@ HRESULT CDocxRenderer::AdvancedCommand(IAdvancedCommand* command)
 	case IAdvancedCommand::AdvancedCommandType::ShapeStart:
 	{
 		CShapeStart* pShape = (CShapeStart*)command;
-		const std::string& sUtf8Shape = pShape->GetShapeXML();
+		std::string& sUtf8Shape = pShape->GetShapeXML();
+		Aggplus::CImage* pImage = pShape->GetShapeImage();
+		if (pImage)
+		{
+			std::shared_ptr<NSDocxRenderer::CImageInfo> pInfo = m_pInternal->m_oDocument.m_oImageManager.GenerateImageID(pImage);
+			std::string sNewId = "r:embed=\"rId" + std::to_string(pInfo->m_nId + c_iStartingIdForImages) + "\"";
+			NSStringUtils::string_replaceA(sUtf8Shape, "r:embed=\"\"", sNewId);
+		}
 		m_pInternal->m_oDocument.m_oCurrentPage.m_arCompleteObjectsXml.push_back(UTF8_TO_U(sUtf8Shape));
 		return S_OK;
 	}
@@ -653,6 +682,22 @@ HRESULT CDocxRenderer::put_ClipMode(const LONG& lMode)
 //----------------------------------------------------------------------------------------
 HRESULT CDocxRenderer::CommandLong(const LONG& lType, const LONG& lCommand)
 {
+	if (c_nSupportPathTextAsText == lType)
+	{
+		NSStructures::CBrush* pBrush = &m_pInternal->m_oDocument.m_oBrush;
+		if (c_BrushTypeSolid != pBrush->Type)
+			return S_FALSE;
+
+		NSStructures::CPen* pPen = &m_pInternal->m_oDocument.m_oPen;
+		if (pBrush->Color1 != pPen->Color || pBrush->Alpha1 != pPen->Alpha)
+			return S_FALSE;
+
+		Aggplus::CMatrix* pTransform = &m_pInternal->m_oDocument.m_oTransform;
+		if (std::abs(pTransform->z_Rotation()) > 1.0 || pTransform->sx() < 0 || pTransform->sy() < 0)
+			return S_FALSE;
+
+		return S_OK;
+	}
 	return S_OK;
 }
 HRESULT CDocxRenderer::CommandDouble(const LONG& lType, const double& dCommand)

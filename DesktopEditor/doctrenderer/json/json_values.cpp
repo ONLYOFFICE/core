@@ -65,7 +65,7 @@ namespace NSJSON
 
 	bool CPrimitive::isDouble() const
 	{
-		return m_type == ptDouble;
+		return m_type == ptDouble || m_type == ptInteger;
 	}
 
 	bool CPrimitive::isStringA() const

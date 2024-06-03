@@ -307,6 +307,7 @@ enum ElementType
 
     typeStyleFontFace,
 
+	typeSvgTitle,
     typeSvgDesc,
     typeSvgFontFaceUri,
     typeSvgFontFaceFormat,

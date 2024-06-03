@@ -174,6 +174,7 @@ void xml_serialize_image(std::wostream & strm, _xlsx_drawing & val, const std::w
                     CP_XML_NODE(L"a:avLst");
                 }
 				oox_serialize_ln(CP_XML_STREAM(), val.additional);
+				oox_serialize_effects(CP_XML_STREAM(), val.additional);
             } 			
 			xml_serialize_text(CP_XML_STREAM(), val, ns);
         } 
@@ -209,6 +210,7 @@ void xml_serialize_shape(std::wostream & strm, _xlsx_drawing & val, const std::w
 				val.serialize_shape(CP_XML_STREAM());
 				
 				oox_serialize_ln(CP_XML_STREAM(),val.additional, val.lined);
+				oox_serialize_effects(CP_XML_STREAM(), val.additional);
             } // xdr:spPr
 			
 			xml_serialize_text(CP_XML_STREAM(), val, ns);

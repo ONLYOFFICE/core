@@ -170,14 +170,19 @@ int main(int argc, char *argv[])
 		//taType = NSDocxRenderer::TextAssociationType::tatPlainParagraph;
 		taType = NSDocxRenderer::TextAssociationType::tatParagraphToShape;
 
+		NSDocxRenderer::IImageStorage* pExternalImagheStorage = NSDocxRenderer::CreateWasmImageStorage();
+		//oDocxRenderer.SetExternalImageStorage(pExternalImagheStorage);
+
 		oDocxRenderer.SetTextAssociationType(taType);
-		//oDocxRenderer.Convert(pReader, sTextDirOut+sDocx);
+		oDocxRenderer.Convert(pReader, sTextDirOut+sDocx);
 		//auto shapes = oDocxRenderer.ScanPage(pReader, 0);
 
 		//Если сразу нужен zip-архив
 		//oDocxRenderer.Convert(pReader, sPlainParagraphDirOut+sZip);
 #endif
 		RELEASEOBJECT(pReader);
+
+		RELEASEOBJECT(pExternalImagheStorage);
 	}
 
 	pFonts->Release();

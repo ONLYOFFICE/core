@@ -249,6 +249,7 @@ void graphic_format_properties::apply_from(const graphic_format_properties * Oth
      
 
     _CP_APPLY_PROP(style_background_image_,	Other->style_background_image_);
+	_CP_APPLY_PROP(style_columns_, Other->style_columns_);
 }
 
 
@@ -263,10 +264,10 @@ void style_graphic_properties::add_attributes( const xml::attributes_wc_ptr & At
 
 void style_graphic_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-     if (L"style" == Ns && L"background-image" == Name)
-    {
+    if (L"style" == Ns && L"background-image" == Name)
         CP_CREATE_ELEMENT(content_.style_background_image_);
-    }
+	else if(L"style" == Ns && L"columns" == Name)
+		CP_CREATE_ELEMENT(content_.style_columns_);
 
 	//if (CP_CHECK_NAME(L"text", L"list-style") 	
 	//	styles_.add_child_element(Reader, Ns, Name, getContext()); он тут и не нужен по сути... описание есть и в другом сместе

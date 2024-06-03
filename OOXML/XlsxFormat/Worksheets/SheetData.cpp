@@ -66,6 +66,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/PtgRef.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/PtgExp.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/PtgExtraCol.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/PtgList.h"
 
 #include <boost/regex.hpp>
 #include <boost/date_time/gregorian/gregorian.hpp>
@@ -950,9 +951,16 @@ namespace OOX
 			WritingStringNullableAttrBool(L"ca", m_oCa);
 			WritingStringNullableAttrInt(L"si", m_oSi, m_oSi->GetValue());
 			WritingStringNullableAttrBool(L"bx", m_oBx);
-			writer.WriteString(_T(">"));
-			writer.WriteEncodeXmlStringHHHH(m_sText);
-			writer.WriteString(_T("</f>"));
+			if(!m_sText.empty())
+			{
+				writer.WriteString(_T(">"));
+				writer.WriteEncodeXmlStringHHHH(m_sText);
+				writer.WriteString(_T("</f>"));
+			}
+			else
+			{
+				writer.WriteString(_T("/>"));
+			}
 		}
 		void CFormula::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream)
 		{
@@ -1049,7 +1057,7 @@ namespace OOX
                         auto formula = dynamic_cast<XLSB::ShrFmla*>(obj.get());
                         m_sText = formula->formula.getAssembledFormula();
                         m_oRef.Init();
-                        m_oRef = formula->rfx.toString();
+                        m_oRef = formula->rfx.toString(true, true);
                     }
                     break;
                 case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeArray:
@@ -1062,7 +1070,7 @@ namespace OOX
                             m_oAca = formula->fAlwaysCalc;
                         }
                         m_oRef.Init();
-                        m_oRef = formula->rfx.toString();
+                        m_oRef = formula->rfx.toString(true, true);
                     }
                     break;
                 case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeDataTable:
@@ -1077,7 +1085,7 @@ namespace OOX
                         }
 
                         m_oRef.Init();
-                        m_oRef = dataTable->rfx.toString();
+                        m_oRef = dataTable->rfx.toString(true, true);
 
                         if(dataTable->fRw)
                         {
@@ -1121,7 +1129,19 @@ namespace OOX
                     {
                         auto formula = dynamic_cast<XLSB::FmlaBase*>(obj.get());
                         formula->formula = m_sText;
-						
+                        if(!formula->formula.rgce.sequence.empty())
+                        {
+                            auto lastValType = GETBITS(formula->formula.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6);
+                            if(lastValType == 1 || lastValType == 3)
+							{
+                                SETBITS(formula->formula.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6,2);
+							}
+                            else if(formula->formula.rgce.sequence.rbegin()->get()->ptg_id.get() == 6424)
+							{
+								auto list = static_cast<XLS::PtgList*>(formula->formula.rgce.sequence.rbegin()->get());
+								list->type_ = 1;
+							}
+                        }
                     }
                     break;
                 case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared:
@@ -1130,6 +1150,19 @@ namespace OOX
 						formula->formula = m_sText;
 						if(m_oRef.IsInit())
 							formula->rfx = m_oRef.get();
+                        if(!formula->formula.rgce.sequence.empty())
+                        {
+                            auto lastValType = GETBITS(formula->formula.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6);
+                            if(lastValType == 1 || lastValType == 3)
+                            {
+                                SETBITS(formula->formula.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6,2);
+                            }
+                            else if(formula->formula.rgce.sequence.rbegin()->get()->ptg_id.get() == 6424)
+                            {
+                                auto list = static_cast<XLS::PtgList*>(formula->formula.rgce.sequence.rbegin()->get());
+                                list->type_ = 1;
+                            }
+                        }
 							
                     }
                     break;
@@ -1137,25 +1170,26 @@ namespace OOX
                     {
 						auto formula = dynamic_cast<XLSB::ArrFmla*>(obj.get());
 						formula->formula = m_sText;
-						for(auto i:formula->formula.rgce.sequence)
-						{
-							if(i->ptg_id.get() == 37)
-							{
-								i->ptg_id = 101;
-							}
-							if(i->ptg_id.get() == 36)
-							{
-								i->ptg_id = 100;
-							}
-						}
 						if(m_oAca.IsInit())
 						{
 							formula->fAlwaysCalc = m_oAca->GetValue();
 						}
 						if(m_oRef.IsInit())
 							formula->rfx = m_oRef.get();
+                        if(!formula->formula.rgce.sequence.empty())
+                        {
+                            auto lastValType = GETBITS(formula->formula.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6);
+							if(lastValType == 1)
+							{
+                                SETBITS(formula->formula.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6,2);
+							}
+							else if(formula->formula.rgce.sequence.rbegin()->get()->ptg_id.get() == 6424)
+							{
+								auto list = static_cast<XLS::PtgList*>(formula->formula.rgce.sequence.rbegin()->get());
+								list->type_ = 1;
+							}
 							
-						
+                        }
                     }
                     break;
                 case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeDataTable:
@@ -1870,7 +1904,7 @@ namespace OOX
 			{
 				if(checkArrayCell(sourceCellRef, sharedFormulas))
 				{
-					if(!m_oFormula.IsInit())
+                    if(!m_oFormula.IsInit() || m_oFormula->m_sText.empty())
 					{
 						m_oFormula.Init();
 						m_oFormula->m_oT = SimpleTypes::Spreadsheet::cellformulatypeArray;
@@ -2115,6 +2149,40 @@ namespace OOX
 							pSource = error;
 						}
 					}
+                    else if (m_oValue->m_sText == L"#VALUE!")
+					{
+						if(m_oFormula.IsInit())
+						{
+							auto error = new XLSB::FmlaError;
+							error->value = 0x0F;
+							oCell = &error->cell;
+							pSource = error;
+						}
+						else
+						{
+							auto error = new XLSB::CellError;
+							error->value = 0x0F;
+							oCell = &error->cell;
+							pSource = error;
+						}
+					}
+                    else
+                    {
+                        if(m_oFormula.IsInit())
+                        {
+                            auto error = new XLSB::FmlaError;
+                            error->value = 0x0F;
+                            oCell = &error->cell;
+                            pSource = error;
+                        }
+                        else
+                        {
+                            auto error = new XLSB::CellError;
+                            error->value = 0x0F;
+                            oCell = &error->cell;
+                            pSource = error;
+                        }
+                    }
 					}
 					break;
 				case SimpleTypes::Spreadsheet::celltypeBool:
@@ -2453,7 +2521,7 @@ namespace OOX
 
                     }
 
-                    auto wRef = XLSB::RgceLoc(m_oRow.get(), m_oCol.get(), true, true).toString();
+                    auto wRef = XLSB::RgceLoc(m_oRow.get(), m_oCol.get(), true, true).toString(true);
                     m_oRef = std::string(wRef.begin(), wRef.end());
 
                     if(pSource != nullptr)

@@ -42,12 +42,12 @@ namespace XLS
 
 namespace AUX
 {
-	const int			normalizeColumn	(const int column);
-	const int			normalizeRow	(const int row);
+	const int			normalizeColumn	(const int column, const bool xlsb = false);
+	const int			normalizeRow	(const int row, const bool xlsb = false);
 
-	const std::wstring	column2str		(const int column, const bool col_rel);
-	const std::wstring	row2str			(const int row, const bool row_rel);
-    const std::wstring	loc2str			(const int row, const bool row_rel, const int column, const bool col_rel);
+	const std::wstring	column2str		(const int column, const bool col_rel, const bool xlsb = false);
+	const std::wstring	row2str			(const int row, const bool row_rel, const bool xlsb = false);
+    const std::wstring	loc2str			(const int row, const bool row_rel, const int column, const bool col_rel, const bool xlsb = false);
    
 	void				str2loc			(const std::wstring& str, int& row, bool& row_rel, int& column, bool& col_rel);
     void				str2loc			(std::wstring::const_iterator& str_begin, std::wstring::const_iterator& str_end, int& row, bool& row_rel, int& column, bool& col_rel);

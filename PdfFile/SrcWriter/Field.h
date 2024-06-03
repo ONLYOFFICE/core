@@ -344,9 +344,9 @@ namespace PdfWriter
 		CAnnotAppearance(CXref* pXRef, CFieldBase*  pField);
 		CAnnotAppearance(CXref* pXRef, CAnnotation* pAnnot);
 
-		CAnnotAppearanceObject* GetNormal();
-		CAnnotAppearanceObject* GetRollover();
-		CAnnotAppearanceObject* GetDown();
+		CAnnotAppearanceObject* GetNormal(CResourcesDict* pResources = NULL);
+		CAnnotAppearanceObject* GetRollover(CResourcesDict* pResources = NULL);
+		CAnnotAppearanceObject* GetDown(CResourcesDict* pResources = NULL);
 
 	private:
 
@@ -382,13 +382,14 @@ namespace PdfWriter
 	{
 	public:
 		CAnnotAppearanceObject(CXref* pXRef, CFieldBase*  pField);
-		CAnnotAppearanceObject(CXref* pXRef, CAnnotation* pAnnot);
+		CAnnotAppearanceObject(CXref* pXRef, CAnnotation* pAnnot, CResourcesDict* pResources = NULL);
 		void DrawSimpleText(const std::wstring& wsText, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0, double dR = 0.0, double dG = 0.0, double dB = 0.0, const char* sExtGrStateName = NULL, double dW = 1.0, double dH = 1.0, CFontCidTrueType** ppFonts = NULL, double* pShifts = NULL);
 		void DrawPicture(const char* sImageName = NULL, const double& dX = 0.0, const double& dY = 0.0, const double& dW = 0.0, const double& dH = 0.0, const bool& bRespectBorder = false);
 		void StartDrawText(CFontDict* pFont, const double& dFontSize, const double& dR, const double& dG, const double& dB, const char* sExtGStateName, const double& dWidth, const double& dHeight);
 		void DrawTextLine(const double& dX, const double& dY, const unsigned short* pCodes, const unsigned int& unCount, CFontCidTrueType** ppFonts, const double* pShifts);
 		void DrawTextLine(const double &dX, const double &dY, const std::wstring& wsText);
 		void EndDrawText();
+		void AddBBox(double dX, double dY, double dW, double dH);
 
 		void StartDraw(const double& dWidth, const double& dHeight);
 		void StartText(CFontDict* pFont, const double& dFontSize);
@@ -396,7 +397,25 @@ namespace PdfWriter
 		void EndText();
 		void EndDraw();
 
-		void DrawTextComment();
+		void DrawTextCommentN(const std::string& sColor);
+		void DrawTextCommentR(const std::string& sColor);
+		void DrawTextCheck(const std::string& sColor);
+		void DrawTextCheckmark();
+		void DrawTextCircle(const std::string& sColor);
+		void DrawTextCross(const std::string& sColor);
+		void DrawTextCrossHairs(const std::string& sColor);
+		void DrawTextHelp(const std::string& sColor);
+		void DrawTextInsert(const std::string& sColor);
+		void DrawTextKey(const std::string& sColor);
+		void DrawTextNewParagraph(const std::string& sColor);
+		void DrawTextNote(const std::string& sColor);
+		void DrawTextParagraph(const std::string& sColor);
+		void DrawTextRightArrow(const std::string& sColor);
+		void DrawTextRightPointer(const std::string& sColor);
+		void DrawTextStar(const std::string& sColor);
+		void DrawTextUpArrow(const std::string& sColor);
+		void DrawTextUpLeftArrow(const std::string& sColor);
+
 		CStream* GetStream() { return m_pStream; }
 
 		bool        m_bStart;

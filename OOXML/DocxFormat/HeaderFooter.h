@@ -63,6 +63,8 @@ namespace OOX
 		virtual void fromXML(XmlUtils::CXmlNode& oNode);
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
+		void CreateElements(XmlUtils::CXmlLiteReader& oReader, int Depth);
+
 		virtual std::wstring toXML() const;
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const;
 

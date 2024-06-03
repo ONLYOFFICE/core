@@ -82,7 +82,9 @@ namespace BinDocxRW
         void setIsNoBase64Save  (bool val);
         void setIsNoBase64      (bool val);
         void setSaveChartAsImg  (bool val);
-		void setMacroEnabled	(bool val);
 		void setOFormEnabled	(bool val);
+		
+		void setMacroEnabled	(bool val);
+		bool getMacroEnabled();
 	};
 }

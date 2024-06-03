@@ -2366,6 +2366,15 @@ namespace Word
 		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:xAlign", m_oXAlign)
 		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:y", m_oY)
 		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:yAlign", m_oYAlign)
+//2003
+		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:x-align", m_oXAlign)
+		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:y-align", m_oYAlign)
+		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:hanchor", m_oHAnchor)
+		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:vanchor", m_oVAnchor)
+		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:hspace", m_oHSpace)
+		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:vspace", m_oVSpace)
+		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:hrule", m_oHRule)
+
 		WritingElement_ReadAttributes_End(oReader)
 	}
 

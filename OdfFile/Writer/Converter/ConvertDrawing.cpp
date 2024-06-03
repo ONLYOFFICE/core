@@ -451,6 +451,11 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 	}
 //--------------------------------------------------------------------------------------
 	odf_ref_image = bExternal ? pathImage : odf_context()->add_image(pathImage);
+
+	if (bExternal && std::wstring::npos == odf_ref_image.find(L"\\") && std::wstring::npos == odf_ref_image.find(L"/"))
+	{
+		odf_ref_image = L"../" + odf_ref_image;
+	}
 	
 	odf_context()->drawing_context()->start_image(odf_ref_image);
 	{
@@ -1675,8 +1680,11 @@ void OoxConverter::convert(PPTX::Logic::BodyPr *oox_bodyPr)
 
 	if ((oox_bodyPr->numCol.IsInit()) && (oox_bodyPr->numCol.get() > 1))
 	{
-		//+ style section
-		//+element text:section в котором параграфы
+		int cols = oox_bodyPr->numCol.get();
+		int gap_cms = oox_bodyPr->spcCol.IsInit() ? oox_bodyPr->spcCol.get() / 360000 : 0;
+
+		odf_context()->drawing_context()->start_style_columns(cols, gap_cms);
+		odf_context()->drawing_context()->end_style_columns();
 	}
 	if (oox_bodyPr->rot.IsInit())
 	{
@@ -2145,7 +2153,9 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 	}
 	else
 	{
-		odf_context()->text_context()->start_span(true);
+		bool styled = oox_paragraph->endParaRPr.IsInit() && oox_paragraph->endParaRPr->sz.IsInit();
+
+		odf_context()->text_context()->start_span(styled);
 		odf_context()->text_context()->end_span();
 	}
 	

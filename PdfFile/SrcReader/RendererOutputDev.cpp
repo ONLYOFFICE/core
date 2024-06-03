@@ -672,7 +672,7 @@ namespace PdfReader
 		m_bTransparentGroupSoftMaskEnd = false;
 
 		if (c_nHtmlRendrerer2 == m_lRendererType)
-			m_bDrawOnlyText = (S_OK == m_pRenderer->CommandLong(c_nCommandLongTypeOnlyText, 0)) ? true : false;
+			m_bDrawOnlyText = S_OK == m_pRenderer->CommandLong(c_nCommandLongTypeOnlyText, 0);
 		else if (c_nHtmlRendrererText == m_lRendererType)
 			m_bDrawOnlyText = true;
 		else
@@ -3060,6 +3060,12 @@ namespace PdfReader
 		if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
 			return;
 
+		if (nX1 - nX0 == 1 && nY1 - nY0 == 1) // Одно изображение, tilingPattern не требуется
+		{
+			gfx->drawForm(pStream, pResourcesDict, matrix, pBBox);
+			return;
+		}
+
 		if (abs(pBBox[2] - pBBox[0] - dXStep) > 0.001 || abs(pBBox[3] - pBBox[1] - dYStep) > 0.001)
 			return;
 
@@ -3088,6 +3094,10 @@ namespace PdfReader
 		pRenderer->CreateFromBgraFrame(pFrame);
 		pRenderer->put_Width (nWidth * 25.4 / 72.0);
 		pRenderer->put_Height(nHeight * 25.4 / 72.0);
+		pRenderer->CommandLong(c_nPenWidth0As1px, 1);
+#ifndef BUILDING_WASM_MODULE
+		pRenderer->SetSwapRGB(false);
+#endif
 
 		PDFRectangle box;
 		box.x1 = pBBox[0];
@@ -3111,12 +3121,16 @@ namespace PdfReader
 		oImage->Create(pBgraData, nWidth, nHeight, 4 * nWidth);
 
 		double xMin, yMin, xMax, yMax;
-		pGState->getUserClipBBox(&xMin, &yMin, &xMax, &yMax);
-
-		pGState->moveTo(xMin + pBBox[0], yMin + pBBox[1]);
-		pGState->lineTo(xMax + pBBox[2], yMin + pBBox[1]);
-		pGState->lineTo(xMax + pBBox[2], yMax + pBBox[3]);
-		pGState->lineTo(xMin + pBBox[0], yMax + pBBox[3]);
+		Transform(matrix, pBBox[0], pBBox[1], &xMin, &yMin);
+		Transform(matrix, pBBox[2], pBBox[3], &xMax, &yMax);
+		xMin += nX0 * (xMax - xMin);
+		xMax += nX1 * (xMax - xMin);
+		yMin += nY0 * (yMax - yMin);
+		yMax += nY1 * (yMax - yMin);
+		pGState->moveTo(xMin, yMin);
+		pGState->lineTo(xMax, yMin);
+		pGState->lineTo(xMax, yMax);
+		pGState->lineTo(xMin, yMax);
 		pGState->closePath();
 
 		DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
@@ -3933,7 +3947,7 @@ namespace PdfReader
 
 		int   nRenderMode = pGState->getRender();
 
-		if (3 == nRenderMode) // Невидимый текст
+		if (3 == nRenderMode && !m_bDrawOnlyText) // Невидимый текст
 		{
 			return;
 		}
@@ -4044,7 +4058,7 @@ namespace PdfReader
 			}
 		}
 
-		if (nRenderMode == 0 || nRenderMode == 4 || nRenderMode == 6 || (m_bDrawOnlyText && nRenderMode == 2))
+		if (nRenderMode == 0 || nRenderMode == 4 || nRenderMode == 6 || m_bDrawOnlyText)
 		{
 			bool bReplace = false;
 			std::wstring sFontPath;
@@ -4102,7 +4116,38 @@ namespace PdfReader
 				m_pRenderer->put_FontPath(sFontPath);
 		}
 
-		if (nRenderMode == 1 || nRenderMode == 2 || nRenderMode == 5 || nRenderMode == 6)
+		LONG lRendererType = 0;
+		m_pRenderer->get_Type(&lRendererType);
+
+		bool bIsEmulateBold = false;
+		if (c_nDocxWriter == lRendererType && 2 == nRenderMode)
+			bIsEmulateBold = (S_OK == m_pRenderer->CommandLong(c_nSupportPathTextAsText, 0)) ? true : false;
+
+		if (bIsEmulateBold)
+		{
+			m_pRenderer->BeginCommand(c_nStrokeTextType);
+
+			LONG lOldStyle = 0;
+			m_pRenderer->get_FontStyle(&lOldStyle);
+			LONG lNewStyle = lOldStyle;
+
+			if ((lNewStyle & 0x01) == 0)
+			{
+				lNewStyle |= 0x01;
+				m_pRenderer->put_FontStyle(lNewStyle);
+			}
+
+			if (unGid)
+				m_pRenderer->CommandDrawTextEx(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+			else
+				m_pRenderer->CommandDrawText(wsUnicodeText, PDFCoordsToMM(dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+
+			if (lOldStyle != lNewStyle)
+				m_pRenderer->put_FontStyle(lOldStyle);
+
+			m_pRenderer->EndCommand(c_nStrokeTextType);
+		}
+		else if (nRenderMode == 1 || nRenderMode == 2 || nRenderMode == 5 || nRenderMode == 6)
 		{
 			m_pRenderer->BeginCommand(c_nStrokeTextType);
 
@@ -4157,11 +4202,46 @@ namespace PdfReader
 	}
 	GBool RendererOutputDev::beginMarkedContent(GfxState *state, GString* s)
 	{
+		return gFalse;
+	}
+	GBool RendererOutputDev::beginMCOShapes(GfxState *state, GString *s, Object *ref)
+	{
 		IAdvancedCommand::AdvancedCommandType eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::ShapeStart;
 		if (m_pRenderer->IsSupportAdvancedCommand(eAdvancedCommandType) == S_OK)
 		{
 			CShapeStart* pCommand = new CShapeStart();
 			pCommand->SetShapeXML(s->getCString());
+
+			Object oIm;
+			if (ref && ref->isRef() && ref->fetch(m_pXref, &oIm)->isStream())
+			{
+				Dict *oImDict = oIm.streamGetDict();
+
+				int nLength = 0;
+				Object oLength;
+				if (oImDict->lookup("Length", &oLength)->isInt())
+					nLength = oLength.getInt();
+				oLength.free();
+				if (oImDict->lookup("DL", &oLength)->isInt())
+					nLength = oLength.getInt();
+				oLength.free();
+
+				Stream* pImage = oIm.getStream()->getUndecodedStream();
+				pImage->reset();
+
+				BYTE* pBuffer = new BYTE[nLength];
+				BYTE* pBufferPtr = pBuffer;
+				for (int nI = 0; nI < nLength; ++nI)
+					*pBufferPtr++ = (BYTE)pImage->getChar();
+
+				CBgraFrame oFrame;
+				if (oFrame.Decode(pBuffer, nLength))
+				{
+					pCommand->SetShapeImage(oFrame.get_Data(), oFrame.get_Width(), oFrame.get_Height());
+					oFrame.ClearNoAttack();
+				}
+			}
+			oIm.free();
 			bool bRes = m_pRenderer->AdvancedCommand(pCommand) == S_OK;
 			RELEASEOBJECT(pCommand);
 			if (bRes)

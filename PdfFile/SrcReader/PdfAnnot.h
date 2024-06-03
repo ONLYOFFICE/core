@@ -364,6 +364,7 @@ private:
 };
 namespace AnnotMarkup
 {
+std::map<std::wstring, std::wstring> SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, int nTypeFonts = 3);
 std::map<std::wstring, std::wstring> SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, std::vector<CAnnotMarkup::CFontData*>& arrRC, int nTypeFonts = 3);
 std::vector<CAnnotMarkup::CFontData*> ReadRC(const std::string& sRC);
 }
@@ -491,6 +492,7 @@ private:
 	BYTE m_nQ; // Выравнивание текста - Q
 	BYTE m_nIT; // Назначение аннотации
 	BYTE m_nLE; // Стиль окончания линии
+	int m_nRotate;
 	std::string m_sDS; // Строка стиля по умолчанию - DS
 	double m_pRD[4]{}; // Различия Rect и фактического размера
 	std::vector<double> m_arrCFromDA; // Цвет границы

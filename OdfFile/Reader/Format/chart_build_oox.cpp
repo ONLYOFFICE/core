@@ -209,7 +209,7 @@ void object_odf_context::xlsx_convert(oox::xlsx_conversion_context & Context)
 		Context.get_math_context().base_font_bold_ = baseFontBold_;
 		
 		Context.get_math_context().start();
-		office_math_->oox_convert(Context.get_math_context());
+		office_math_->oox_convert(Context.get_math_context(),3);
 	}
 	else if(object_type_ == 4 && office_spreadsheet_)
 	{
@@ -261,7 +261,7 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 		Context.get_math_context().base_font_bold_ = baseFontBold_;
 
 		Context.start_math_formula();
-			office_math_->oox_convert(Context.get_math_context());
+		office_math_->oox_convert(Context.get_math_context(), 2);
 		Context.end_math_formula();
 
 		Context.get_drawing_context().get_text_stream_frame() = temp_stream.str();
@@ -307,7 +307,7 @@ void object_odf_context::pptx_convert(oox::pptx_conversion_context & Context)
 		Context.get_math_context().base_font_bold_ = baseFontBold_;
 
 		Context.get_math_context().start();
-		office_math_->oox_convert(Context.get_math_context());
+		office_math_->oox_convert(Context.get_math_context(), 1);
 	}
 	else if(object_type_ == 4 && office_spreadsheet_)
 	{

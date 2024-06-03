@@ -57,7 +57,7 @@ void Label::readFields(CFRecord& record)
 	
 	record >> cell;
 	
-	if (global_info_->Version == 0x0200)
+	if (global_info_->Version == 0x0200 || global_info_->Version == 0x0400)
 	{
 		ShortXLAnsiString name;
 		record >> name;

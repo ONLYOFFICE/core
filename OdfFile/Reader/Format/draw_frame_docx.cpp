@@ -881,17 +881,17 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		drawing->relativeHeight	= L"2";
         drawing->behindDoc		= L"0";
 
+		if (!drawing->styleWrap)
+			drawing->styleWrap = style_wrap(style_wrap::Parallel);//у опен офис и мс разные дефолты
+
 		if (((drawing->styleWrap && drawing->styleWrap->get_type() == style_wrap::RunThrough) || !drawing->styleWrap) 
 			&& ((styleRunThrough && styleRunThrough->get_type() == run_through::Background) || !styleRunThrough))
         {
            drawing->behindDoc = L"1";  
 		   if (!drawing->styleWrap)
 			   drawing->styleWrap = style_wrap(style_wrap::RunThrough);
-
         }
-		if (!drawing->styleWrap)
-			drawing->styleWrap = style_wrap(style_wrap::Parallel);//у опен офис и мс разные дефолты
-
+		
         _CP_OPT(unsigned int) zIndex = attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_z_index_;
        
 		if (zIndex)//порядок отрисовки объектов
@@ -1578,6 +1578,11 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 	drawing->id			= Context.get_drawing_context().get_current_frame_id();
 	drawing->name		= Context.get_drawing_context().get_current_object_name();
 	drawing->inGroup	= Context.get_drawing_context().in_group();
+
+	if (svg_title_)
+		svg_title_->docx_convert(Context);
+	if(svg_desc_)
+		svg_desc_->docx_convert(Context);
 	
 	common_draw_docx_convert(Context, common_draw_attlists_, drawing);
 //-----------------------------------------------------------------------------------------------------
@@ -1756,8 +1761,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				drawing->type = oox::typeShape;		
 				
 				drawing->additional.push_back(_property(L"fit-to-size",	true));		
-				drawing->additional.push_back(_property(L"text-content",	std::wstring(L"<w:p><m:oMathPara>") + 
-																	content + std::wstring(L"</m:oMathPara></w:p>")));
+				drawing->additional.push_back(_property(L"text-content",	std::wstring(L"<w:p>") +  content + std::wstring(L"</w:p>")));
 			}
 			else
 			{//in text			
@@ -1765,9 +1769,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				
 				if (runState) Context.finish_run();
 
-				Context.output_stream() << L"<m:oMathPara>";
 				Context.output_stream() << content;
-				Context.output_stream() << L"</m:oMathPara>";
 
 				if (runState) Context.add_new_run(_T(""));
 			}

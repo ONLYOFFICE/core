@@ -646,6 +646,11 @@ namespace ZLibZipUtils
 							StringDeque.push_front( aCurDirectories[i] );
 							zipDeque.push_front( zipDir + sDirName );
 						}
+						else if (sDirName == L"_rels")
+						{
+							StringDeque.push_front(aCurDirectories[i]);
+							zipDeque.push_front(zipDir + sDirName);
+						}
 						else
 						{
 							StringDeque.push_back( aCurDirectories[i] );
@@ -663,9 +668,10 @@ namespace ZLibZipUtils
 				{
 					std::wstring cFileName = NSSystemPath::GetFileName(aCurFiles[i]);
 
-					if (std::wstring::npos != cFileName.find(L"mimetype") ||
-							std::wstring::npos != cFileName.find(L"[Content_Types]")) // возможно и полное соответствие
-					{
+                    if (    std::wstring::npos != cFileName.find(L"mimetype") ||
+                            std::wstring::npos != cFileName.find(L"[Content_Types]") ||
+                            cFileName == L".rels")
+                    {
 						file = NSSystemPath::Combine(szText, cFileName);
 						zipFileName = zipDir + cFileName;
 

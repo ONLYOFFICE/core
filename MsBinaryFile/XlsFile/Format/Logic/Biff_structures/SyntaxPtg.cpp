@@ -296,8 +296,9 @@ const bool SyntaxPtg::extract_PtgUnion(std::wstring::const_iterator& first, std:
 const bool SyntaxPtg::is_PtgIsect(std::wstring::const_iterator& first, std::wstring::const_iterator last)
 {
 	static boost::wregex reg_before_comma(L"^ *[,()]");
+    static boost::wregex reg_before_space(L"[,(\\n] *$");
 	static boost::wregex reg_isect(L"^ ");
-	return !boost::regex_search(first, last, reg_before_comma) &&
+    return !boost::regex_search(first, last, reg_before_comma) && !boost::regex_search(first, last, reg_before_space) &&
 			boost::regex_search(first, last, reg_isect);
 }
 
@@ -458,6 +459,14 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 
 		if (XMLSTUFF::isTableFmla(tableName, indexTable))
 		{
+			for(auto i:XLS::GlobalWorkbookInfo::mapXtiTables_static)
+			{
+				for(auto tablIndex:i.second)
+				{
+					if(tablIndex == indexTable)
+						ixti = i.first; 
+				}
+			}
 			ptgList.listIndex = indexTable;
 			ptgList.squareBracketSpace = false;
 			ptgList.commaSpace = false;
@@ -484,7 +493,6 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 
 				insider = results_1.str(0);
 
-				insider = boost::algorithm::erase_all_copy(insider, L"\n");
 				if (insider == L"[#Data]")
 				{
 					if (boost::regex_search(first, last, results_1, reg_inside_table2))
@@ -534,8 +542,7 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 
 				if (boost::regex_search(first, last, results_1, reg_inside_table3))
 				{
-					insider = results_1.str(0);
-                    insider = boost::algorithm::erase_all_copy(insider, L"\n");
+					insider = results_1.str(0);      
 					if (!insider.empty() && insider[0] != '[')
 						insider.erase(0, 1);
 
@@ -547,12 +554,12 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 						if (ptgList.colFirst == 65535)
 						{
 							ptgList.columns = 0x01;
-							ptgList.colFirst = indexColumn;							
+                            ptgList.colFirst = indexColumn;
+                            ptgList.colLast = indexColumn;
 
 							if (boost::regex_search(first, last, results_1, reg_inside_table3))
 							{
-								insider = results_1.str(0);
-                                insider = boost::algorithm::erase_all_copy(insider, L"\n");
+								insider = results_1.str(0);                                
 								if (!insider.empty() && insider[0] != '[')
 									insider.erase(0, 1);
 
@@ -566,8 +573,7 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 							}
 							else if(boost::regex_search(first, last, results_1, reg_inside_table5))
 							{
-								insider = results_1.str(0);
-                                insider = boost::algorithm::erase_all_copy(insider, L"\n");
+								insider = results_1.str(0);                             
 								insider = boost::algorithm::erase_first_copy(insider, L":");
 
 								if (XMLSTUFF::isColumn(boost::algorithm::erase_last_copy(boost::algorithm::erase_first_copy(insider, L"["), L"]"), indexTable, indexColumn))
@@ -588,8 +594,7 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
                 else if(boost::regex_search(first, last, results_1, reg_inside_table5))
 				{
 					insider = results_1.str(0);
-                    insider = boost::algorithm::erase_first_copy(insider, L",");
-                    insider = boost::algorithm::erase_all_copy(insider, L"\n");
+                    insider = boost::algorithm::erase_first_copy(insider, L",");              
 
                     if (XMLSTUFF::isColumn(boost::algorithm::erase_last_copy(boost::algorithm::erase_first_copy(insider, L"["), L"]"), indexTable, indexColumn))
                     {
@@ -597,6 +602,7 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
                         {
                             ptgList.columns = 0x01;
                             ptgList.colFirst = indexColumn;
+                            ptgList.colLast = indexColumn;
                         }
                     }
 					first = results_1[0].second;
@@ -622,6 +628,7 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 				{
 					ptgList.columns = 0x01;
 					ptgList.colFirst = 0;
+                    ptgList.colLast = 0;
 					first = results_1[0].second;
 				}
 				return true;
@@ -629,12 +636,14 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 			else if(boost::regex_search(first, last, results_1, reg_inside_table4))
 			{
 				_UINT16 indexColumn = -1;
-				auto insider = boost::algorithm::erase_all_copy(results_1.str(0), L"\n");
+                ptgList.rowType = 0x00;
+				auto insider = results_1.str(0);
 
 				if (XMLSTUFF::isColumn(boost::algorithm::erase_last_copy(boost::algorithm::erase_first_copy(insider, L"["), L"]"), indexTable, indexColumn))
 				{
 					ptgList.columns = 0x01;
 					ptgList.colFirst = indexColumn;
+                    ptgList.colLast = ptgList.colFirst;
                     first = results_1[0].second;
                     return true;
 				}
@@ -822,6 +831,14 @@ const bool SyntaxPtg::extract_PtgFunc(std::wstring::const_iterator& first, std::
 	return false;
 }
 
+// static
+const void SyntaxPtg::remove_extraSymbols(std::wstring::const_iterator& first, std::wstring::const_iterator& last)
+{
+    while(first != last && (first[0] == L' ' || first[0] == L'\n'))
+	{
+       first++;
+	}
+}
 
 } // namespace XLS
 

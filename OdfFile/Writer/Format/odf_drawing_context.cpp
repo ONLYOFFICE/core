@@ -1471,11 +1471,7 @@ void odf_drawing_context::set_shadow(int type, std::wstring hexColor, _CP_OPT(do
 		hexColor = std::wstring(L"#") + hexColor;
 
 	impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_x_ = length(length(dist_pt, length::pt).get_value_unit(length::cm), length::cm);
-	
-	if (dist_pt_y > 0)
-		impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_y_ = length(length(dist_pt_y, length::pt).get_value_unit(length::cm), length::cm);
-	else
-		impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_y_ = length(length(dist_pt, length::pt).get_value_unit(length::cm), length::cm);
+	impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_y_ = length(length(dist_pt_y, length::pt).get_value_unit(length::cm), length::cm);
 	
 	impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_ = shadow_type1(shadow_type1::Visible);
 	if (opacity) impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_opacity_ = *opacity;
@@ -3177,6 +3173,28 @@ void odf_drawing_context::end_action()
 	end_element();
 	end_element();
 }
+
+void odf_drawing_context::start_style_columns(int cols, int gap)
+{
+	graphic_format_properties* graphic_props = get_graphic_properties();
+	if (!graphic_props)
+		return;
+
+	if (!graphic_props->style_columns_)
+		graphic_props->style_columns_ = boost::make_shared<style_columns>();
+	
+	graphic_props->style_columns_->fo_column_count_ = cols;
+	graphic_props->style_columns_->fo_column_gap_ = length(gap, length::cm);
+}
+
+void odf_drawing_context::add_style_column()
+{
+}
+
+void odf_drawing_context::end_style_columns()
+{
+}
+
 void odf_drawing_context::set_text_box_min_size(double w_pt, double h_pt)
 {
 	if (impl_->current_drawing_state_.elements_.empty()) return;

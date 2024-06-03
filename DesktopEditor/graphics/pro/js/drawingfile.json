@@ -45,7 +45,11 @@
 		"_DestroyTextInfo",
 		"_IsNeedCMap",
 		"_SetCMapData",
-		"_ScanPage"
+		"_ScanPage",
+		"_GetImageBase64",
+		"_GetImageBase64Len",
+		"_GetImageBase64Ptr",
+		"_GetImageBase64Free"
 	],
 	"include_path": [
 		"wasm/src/lib", 
@@ -86,7 +90,7 @@
 	},
 	{
 		"folder": "../../../cximage/CxImage/",
-		"files": ["ximaenc.cpp", "ximaexif.cpp", "ximage.cpp", "ximainfo.cpp", "ximajpg.cpp", "ximalpha.cpp", "ximapal.cpp", "ximasel.cpp", "xmemfile.cpp", "ximapng.cpp", "ximabmp.cpp", "ximatran.cpp", "ximatif.cpp", "tif_xfile.cpp", "ximajas.cpp", "ximagif.cpp", "ximaico.cpp", "ximatga.cpp", "ximapcx.cpp", "ximawbmp.cpp", "ximamng.cpp", "ximapsd.cpp", "ximaska.cpp", "ximaraw.cpp"]
+		"files": ["ximaenc.cpp", "ximaexif.cpp", "ximage.cpp", "ximainfo.cpp", "ximajpg.cpp", "ximalpha.cpp", "ximapal.cpp", "ximasel.cpp", "xmemfile.cpp", "ximapng.cpp", "ximabmp.cpp", "ximatran.cpp", "ximatif.cpp", "tif_xfile.cpp", "ximajas.cpp", "ximagif.cpp", "ximaico.cpp", "ximatga.cpp", "ximapcx.cpp", "ximawbmp.cpp", "ximamng.cpp", "ximapsd.cpp", "ximaska.cpp", "ximaraw.cpp", "ximaint.cpp"]
 	},
 	{
 		"folder": "../../../cximage/jpeg/",

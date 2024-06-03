@@ -2009,10 +2009,10 @@ namespace NSCSS
 
 	CIndent &CIndent::operator+=(const CIndent &oIndent)
 	{
-		m_oTop    = oIndent.m_oTop;
-		m_oRight  = oIndent.m_oRight;
-		m_oBottom = oIndent.m_oBottom;
-		m_oLeft   = oIndent.m_oLeft;
+		if (!oIndent.m_oTop.Empty())    m_oTop    = oIndent.m_oTop;
+		if (!oIndent.m_oRight.Empty())  m_oRight  = oIndent.m_oRight;
+		if (!oIndent.m_oBottom.Empty()) m_oBottom = oIndent.m_oBottom;
+		if (!oIndent.m_oLeft.Empty())   m_oLeft   = oIndent.m_oLeft;
 
 		return *this;
 	}

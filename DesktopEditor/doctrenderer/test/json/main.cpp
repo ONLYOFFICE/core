@@ -247,7 +247,8 @@ TEST_F(CJSONTest, bool_)
 TEST_F(CJSONTest, int_)
 {
 	CValue val = 42;
-	EXPECT_FALSE(val.IsDouble());
+	EXPECT_TRUE(val.IsDouble());
+	EXPECT_TRUE(val.IsInt());
 	JSSmart<CJSValue> jsVal = CJSContext::createInt(42);
 	EXPECT_TRUE(compare(val, jsVal));
 	val = 100;

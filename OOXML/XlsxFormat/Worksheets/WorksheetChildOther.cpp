@@ -1392,7 +1392,7 @@ namespace OOX
 				if (m_oShowFormulas.IsInit())
 					pWsView->fDspFmlaRt = m_oShowFormulas->m_eValue;
 				else
-                    pWsView->fDspFmlaRt = true;
+                    pWsView->fDspFmlaRt = false;
 				if (m_oShowGridLines.IsInit())
 					pWsView->fDspGridRt = m_oShowGridLines->m_eValue;
 				else

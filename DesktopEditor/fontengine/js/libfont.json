@@ -110,7 +110,9 @@
 		"_getcwd=getcwd",
 		"NO_CONSOLE_IO",
 		"BUILD_ZLIB_AS_SOURCES",
-		"IMAGE_CHECKER_DISABLE_XML"
+		"IMAGE_CHECKER_DISABLE_XML",
+
+		"BUILDING_WASM_MODULE"
 	],
 	"compile_files_array": [
 	{

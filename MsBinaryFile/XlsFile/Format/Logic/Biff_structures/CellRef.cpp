@@ -100,7 +100,7 @@ const std::wstring CellRef::toString(const bool xlsb) const
 		{
 			column_norm = maxCol;
 		}
-		return to_string_cache = AUX::loc2str(row_norm, rowRelative, column_norm, colRelative);
+        return to_string_cache = AUX::loc2str(row_norm, rowRelative, column_norm, colRelative, xlsb);
 	}
 	return to_string_cache;
 

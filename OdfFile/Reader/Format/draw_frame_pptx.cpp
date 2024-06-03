@@ -179,6 +179,9 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 			Context.get_slide_context().set_property(odf_reader::_property(L"border_width_top", Compute_BorderWidth(properties, sideTop)));
 			Context.get_slide_context().set_property(odf_reader::_property(L"border_width_right", Compute_BorderWidth(properties, sideRight)));
 			Context.get_slide_context().set_property(odf_reader::_property(L"border_width_bottom", Compute_BorderWidth(properties, sideBottom)));
+
+			if (properties->style_columns_)
+				properties->style_columns_->pptx_convert(Context);
 		}
 
 		Context.get_slide_context().set_fill(fill);

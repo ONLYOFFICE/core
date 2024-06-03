@@ -84,7 +84,7 @@ void PtgStr::loadFields(CFRecord& record)
 	{
 		string_ = string_.substr(1, string_.length() - 2);
 	}
-    else if (pos1 > -1 && pos1 != pos2)
+    else if (pos1 > -1)
 	{//012_JKH.OPEN.INFO.PRICE.VO...
 		boost::algorithm::replace_all(string_, L"\"", L"\"\"");
 	}

@@ -182,6 +182,12 @@ std::wstring CMediaManager::GenerateMedia(const std::wstring& strInput, const st
     }
     if (strExts == L".tmp" || strExts.empty()) strExts = strDefaultExt;
 
+    if (strDefaultExt == L"sfil")
+    {
+        strExts = L".wav";
+        //todooo - detect format by file
+    }
+
     std::wstring strMediaName = Template + std::to_wstring(++Indexer);
 
     std::wstring strOutput = m_strDstMedia + strMediaName + strExts;

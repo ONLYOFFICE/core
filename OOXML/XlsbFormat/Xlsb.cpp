@@ -347,6 +347,67 @@ void OOX::Spreadsheet::CXlsb::PrepareTableFormula()
     }
 }
 
+void OOX::Spreadsheet::CXlsb::LinkTables()
+{
+    {
+        bool tablesExist = false;
+        for(auto worksheet:m_arWorksheets)
+        {
+            if(worksheet->m_oTableParts.IsInit())
+            tablesExist = true;
+        }
+        if(!tablesExist)
+            return;
+    }
+    for(auto xti:XLS::GlobalWorkbookInfo::arXti_External_static)
+    {
+        if(xti.itabFirst != xti.itabLast)
+        {
+            continue;
+        }
+        auto sheetName = xti.link;
+        if(!m_pWorkbook || !m_pWorkbook->m_oSheets.IsInit())
+            continue;
+        OOX::Spreadsheet::CSheet * bundle;
+        for(auto i:m_pWorkbook->m_oSheets->m_arrItems)
+        {
+            if(i->m_oName.IsInit() && i->m_oName.get() == sheetName)
+            {
+                bundle = i;
+            }
+        }
+        if(!bundle || !bundle->m_oRid.IsInit())
+            continue;
+        auto FilePtr =  m_pWorkbook->Find(bundle->m_oRid->GetValue());
+        if(!FilePtr.IsInit() || !(OOX::Spreadsheet::FileTypes::Worksheet == FilePtr->type()))
+            continue;
+        auto WorksheetFile = static_cast<OOX::Spreadsheet::CWorksheet*>(FilePtr.GetPointer());
+        if(!WorksheetFile->m_oTableParts.IsInit())
+            continue;
+        for(auto tablePart : WorksheetFile->m_oTableParts->m_arrItems)
+        {
+            if(tablePart->m_oRId.IsInit())
+            {
+                auto tableFilePtr = WorksheetFile->Find(tablePart->m_oRId->GetValue());
+                if(tableFilePtr.IsInit() && OOX::Spreadsheet::FileTypes::Table == tableFilePtr->type())
+                {
+                    auto tableFile = static_cast<OOX::Spreadsheet::CTableFile*>(tableFilePtr.GetPointer());
+                    if(tableFile->m_oTable.IsInit() && tableFile->m_oTable->m_oId.IsInit())
+                    {
+                        if(!XLS::GlobalWorkbookInfo::mapXtiTables_static.count(xti.itabFirst))
+                        {
+                            XLS::GlobalWorkbookInfo::mapXtiTables_static.emplace(xti.itabFirst, std::vector<int>());
+                        }
+                        XLS::GlobalWorkbookInfo::mapXtiTables_static.at(xti.itabFirst).push_back(tableFile->m_oTable->m_oId->GetValue());
+                        
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 
 
 

@@ -1326,7 +1326,14 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 					m_oCount = ptr->m_arEXTCONNECTION.size();
 
 					for (auto &connection : ptr->m_arEXTCONNECTION)
+					{	auto connPtr = new CConnection(connection);
+						if(connPtr->m_oType.IsInit() &&(connPtr->m_oType.get() == 0x66))
+						{
+							delete connPtr;
+							continue;
+						}
 						m_arrItems.push_back(new CConnection(connection));
+					}
 				}
 			}
 		XLS::BaseObjectPtr CConnections::toBin()
@@ -1412,7 +1419,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		}
 		void CConnectionsFile::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			if (false == m_oConnections.IsInit()) return;
+			if (false == m_oConnections.IsInit() || !m_oConnections.get().m_arrItems.size()) return;
 
 			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
 			if ((xlsb) && (xlsb->m_bWriteToXlsb))

@@ -420,22 +420,37 @@ namespace OOX
 
 				if (m_oReadOnlyRecommended.IsInit())
 					ptr->fReadOnlyRec = m_oReadOnlyRecommended.get();
-				ptr->stUserName = m_oUserName.get();
-				ptr->ipdPasswordData.szAlgName = m_oAlgorithmName->GetValue();
-				ptr->dwSpinCount = m_oSpinCount->GetValue();
+                if(m_oUserName.IsInit())
+                    ptr->stUserName = m_oUserName.get();
+                else
+                    ptr->stUserName = L"";
+                if(m_oAlgorithmName.IsInit())
+                    ptr->ipdPasswordData.szAlgName = m_oAlgorithmName->GetValue();
+                else
+                    ptr->ipdPasswordData.szAlgName = L"";
+                if(m_oSpinCount.IsInit())
+                    ptr->dwSpinCount = m_oSpinCount->GetValue();
+                else
+                    ptr->dwSpinCount = 0;
 
 				auto len = 0;
-				auto bytes = ptr->ipdPasswordData.rgbHash.rgbData.data();
-				std::string strData = {m_oHashValue.get().begin(), m_oHashValue.get().end()};
-				NSFile::CBase64Converter::Decode(strData.c_str(), strData.size(),
-					bytes, len);
+                if(m_oHashValue.IsInit())
+                {
+                    auto bytes = ptr->ipdPasswordData.rgbHash.rgbData.data();
+                    std::string strData = {m_oHashValue.get().begin(), m_oHashValue.get().end()};
+                    NSFile::CBase64Converter::Decode(strData.c_str(), strData.size(),
+                        bytes, len);
+                }
 				ptr->ipdPasswordData.rgbHash.cbLength = len;
 
 				auto len1 = 0;
-				auto bytes1 = ptr->ipdPasswordData.rgbSalt.rgbData.data();
-				std::string strData1 = {m_oSaltValue.get().begin(), m_oSaltValue.get().end()};
-				NSFile::CBase64Converter::Decode(strData1.c_str(), strData1.size(),
-					bytes1, len1);
+                if(m_oSaltValue.IsInit())
+                {
+                    auto bytes1 = ptr->ipdPasswordData.rgbSalt.rgbData.data();
+                    std::string strData1 = {m_oSaltValue.get().begin(), m_oSaltValue.get().end()};
+                    NSFile::CBase64Converter::Decode(strData1.c_str(), strData1.size(),
+                        bytes1, len1);
+                }
 				ptr->ipdPasswordData.rgbSalt.cbLength = len1;
 
 			}
@@ -445,8 +460,16 @@ namespace OOX
 				objectPtr = XLS::BaseObjectPtr{ptr};
 				if (m_oReadOnlyRecommended.IsInit())
 					ptr->fReadOnlyRec = m_oReadOnlyRecommended.get();
-				ptr->stUserName = m_oUserName.get();
-				ptr->wResPass = m_oPassword.get();
+                else
+                    ptr->fReadOnlyRec = false;
+                if(m_oUserName.IsInit())
+                    ptr->stUserName = m_oUserName.get();
+                else
+                    ptr->stUserName.setSize(0xFFFFFFFF);
+                if(m_oPassword.IsInit())
+                    ptr->wResPass = m_oPassword.get();
+                else
+                    ptr->wResPass = L"";
 			}
 			return objectPtr;
 		}

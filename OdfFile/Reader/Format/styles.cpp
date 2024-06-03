@@ -867,6 +867,15 @@ void style_columns::add_child_element( xml::sax * Reader, const std::wstring & N
     }
 }
 
+void style_columns::pptx_convert(oox::pptx_conversion_context& Context)
+{
+	if(fo_column_count_)
+		Context.get_slide_context().set_property(odf_reader::_property(L"style_columns_count", (int)fo_column_count_.get()));
+
+	if(fo_column_gap_)
+		Context.get_slide_context().set_property(odf_reader::_property(L"style_columns_gap", (int)fo_column_gap_->get_value_unit(length::emu)));
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_column::ns = L"style";
 const wchar_t * style_column::name = L"column";

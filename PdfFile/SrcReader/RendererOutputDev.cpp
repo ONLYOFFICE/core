@@ -3077,8 +3077,8 @@ namespace PdfReader
 		dWidth  = dWidth  * dDpiX / 25.4;
 		dHeight = dHeight * dDpiY / 25.4;
 
-		int nWidth  = round(dXStep * dWidth / pGState->getPageWidth());
-		int nHeight = round(dYStep * dHeight / pGState->getPageHeight());
+		int nWidth  = dXStep * dWidth / pGState->getPageWidth();
+		int nHeight = dYStep * dHeight / pGState->getPageHeight();
 
 		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
 		memset(pBgraData, 0, nWidth * nHeight * 4);

@@ -162,6 +162,9 @@ namespace NSDocxRenderer
 		std::sort(m_arConts.begin(), m_arConts.end(), [] (const cont_ptr_t& a, const cont_ptr_t& b) {
 			return a->m_dLeft < b->m_dLeft;
 		});
+
+		if (m_arConts.size() == 1 && m_arConts[0] && m_arConts[0]->m_dFirstWordWidth == 0.0)
+			m_arConts[0]->m_dFirstWordWidth = m_arConts[0]->m_dWidth;
 	}
 
 	void CTextLine::RecalcSizes()

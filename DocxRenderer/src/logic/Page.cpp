@@ -1177,6 +1177,16 @@ namespace NSDocxRenderer
 			if (!shape)
 				continue;
 
+			const double out_of_page_coeff = 1.1;
+			bool is_out_of_page = shape->m_dTop < 0 ||
+					shape->m_dBaselinePos > this->m_dHeight * out_of_page_coeff ||
+					shape->m_dLeft < 0 ||
+					shape->m_dRight > this->m_dWidth * out_of_page_coeff;
+			bool is_too_big = shape->m_dWidth > c_dSHAPE_TROUGH_MAX_MM || shape->m_dHeight > c_dSHAPE_TROUGH_MAX_MM;
+
+			if (is_too_big || is_out_of_page)
+				continue;
+
 			double& s_left = shape->m_dLeft;
 			double& s_right = shape->m_dRight;
 			double& s_top = shape->m_dTop;

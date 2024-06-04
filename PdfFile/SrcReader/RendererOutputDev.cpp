@@ -3077,8 +3077,11 @@ namespace PdfReader
 		dWidth  = dWidth  * dDpiX / 25.4;
 		dHeight = dHeight * dDpiY / 25.4;
 
-		int nWidth  = dXStep * dWidth / pGState->getPageWidth();
-		int nHeight = dYStep * dHeight / pGState->getPageHeight();
+		dWidth  *= (dXStep / pGState->getPageWidth());
+		dHeight *= (dYStep / pGState->getPageHeight());
+
+		int nWidth  = round(dWidth);
+		int nHeight = round(dHeight);
 
 		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
 		memset(pBgraData, 0, nWidth * nHeight * 4);
@@ -3092,8 +3095,8 @@ namespace PdfReader
 		NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
 		pRenderer->SetFontManager(m_pFontManager);
 		pRenderer->CreateFromBgraFrame(pFrame);
-		pRenderer->put_Width (nWidth * 25.4 / 72.0);
-		pRenderer->put_Height(nHeight * 25.4 / 72.0);
+		pRenderer->put_Width (dWidth  * 25.4 / 72.0);
+		pRenderer->put_Height(dHeight * 25.4 / 72.0);
 		pRenderer->CommandLong(c_nPenWidth0As1px, 1);
 #ifndef BUILDING_WASM_MODULE
 		pRenderer->SetSwapRGB(false);

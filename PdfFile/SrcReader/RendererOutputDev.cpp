@@ -3152,6 +3152,10 @@ namespace PdfReader
 			m_pRenderer->DrawPath(c_nWindingFillMode);
 			GRenderer->SetSwapRGB(true);
 		}
+		else
+		{
+			m_pRenderer->DrawPath(c_nWindingFillMode);
+		}
 #else
 		m_pRenderer->DrawPath(c_nWindingFillMode);
 #endif
@@ -3159,6 +3163,7 @@ namespace PdfReader
 		m_pRenderer->PathCommandEnd();
 		m_pRenderer->EndCommand(c_nImageType);
 		m_pRenderer->put_BrushType(brush);
+		m_pRenderer->put_BrushTextureImage(NULL);
 
 		pGState->clearPath();
 		RELEASEINTERFACE(oImage);

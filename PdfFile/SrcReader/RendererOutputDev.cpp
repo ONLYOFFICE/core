@@ -3098,9 +3098,7 @@ namespace PdfReader
 		pRenderer->put_Width (dWidth  * 25.4 / 72.0);
 		pRenderer->put_Height(dHeight * 25.4 / 72.0);
 		pRenderer->CommandLong(c_nPenWidth0As1px, 1);
-#ifndef BUILDING_WASM_MODULE
 		pRenderer->SetSwapRGB(false);
-#endif
 
 		PDFRectangle box;
 		box.x1 = pBBox[0];
@@ -3149,21 +3147,8 @@ namespace PdfReader
 		m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
 		m_pRenderer->put_BrushTextureAlpha(alpha);
 		m_pRenderer->BeginCommand(c_nImageType);
-#ifdef BUILDING_WASM_MODULE
-		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
-		{
-			// oImage BGRA
-			GRenderer->SetSwapRGB(false);
-			m_pRenderer->DrawPath(c_nWindingFillMode);
-			GRenderer->SetSwapRGB(true);
-		}
-		else
-		{
-			m_pRenderer->DrawPath(c_nWindingFillMode);
-		}
-#else
+
 		m_pRenderer->DrawPath(c_nWindingFillMode);
-#endif
 
 		m_pRenderer->PathCommandEnd();
 		m_pRenderer->EndCommand(c_nImageType);

@@ -1440,7 +1440,11 @@ namespace NSDoctRenderer
 					bIsNoError = (0 == this->OpenFile(_builder_params[0].c_str(), _builder_params[1].c_str()));
 				else if ("CreateFile" == sFuncNum)
 				{
-					if (L"docx" == _builder_params[0] || L"docxf" == _builder_params[0] || L"oform" == _builder_params[0])
+					if (L"docx" == _builder_params[0] ||
+						L"docxf" == _builder_params[0] ||
+						L"oform" == _builder_params[0] ||
+						L"pdf" == _builder_params[0] ||
+						L"form" == _builder_params[0])
 						bIsNoError = this->CreateFile(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX);
 					else if (L"pptx" == _builder_params[0])
 						bIsNoError = this->CreateFile(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX);

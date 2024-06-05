@@ -110,6 +110,8 @@ namespace NSDoctRenderer
 			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM;
 		else if (L"html" == sExt)
 			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER;
+		else if (L"form" == sExt)
+			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF;
 		return nFormat;
 	}
 }
@@ -619,7 +621,10 @@ namespace NSDoctRenderer
 
 			if (type & AVS_OFFICESTUDIO_FILE_DOCUMENT)
 			{
-				sEmptyPath = sEmptyPath + L"new.docx";
+				if (type == AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF)
+					sEmptyPath = sEmptyPath + L"new.pdf";
+				else
+					sEmptyPath = sEmptyPath + L"new.docx";
 				m_nFileType = 0;
 			}
 			else if (type & AVS_OFFICESTUDIO_FILE_PRESENTATION)

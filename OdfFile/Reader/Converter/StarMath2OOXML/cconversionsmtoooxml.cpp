@@ -221,9 +221,6 @@ namespace StarMath {
 					pXmlWrite->WriteAttribute(L"typeface",pAttribute->GetFontName());
 				else
 					pXmlWrite->WriteAttribute(L"typeface",L"Cambria Math");
-				// pXmlWrite->WriteAttribute(L"panose",L"02040503050406030204");
-				// pXmlWrite->WriteAttribute(L"pitchFamily",L"18");
-				// pXmlWrite->WriteAttribute(L"charset",L"0");
 				pXmlWrite->WriteNodeEnd(L"w",true,true);
 				pXmlWrite->WriteNodeEnd(L"a:rPr",false);
 			}
@@ -234,21 +231,18 @@ namespace StarMath {
 				pXmlWrite->WriteNodeEnd(L"w",true,false);
 				pXmlWrite->WriteNodeBegin(L"a:latin",true);
 				pXmlWrite->WriteAttribute(L"typeface",L"Cambria Math");
-				// pXmlWrite->WriteAttribute(L"panose",L"02040503050406030204");
-				// pXmlWrite->WriteAttribute(L"pitchFamily",L"18");
-				// pXmlWrite->WriteAttribute(L"charset",L"0");
 				pXmlWrite->WriteNodeEnd(L"w",true,true);
 				pXmlWrite->WriteNodeEnd(L"a:rPr",false);
 			}
 		}
 	}
-	void CConversionSMtoOOXML::PropertiesMFPR(bool bType, XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion)
+	void CConversionSMtoOOXML::PropertiesMFPR(const std::wstring &wsType, XmlUtils::CXmlWriter* pXmlWrite, CAttribute* pAttribute, const TypeConversion &enTypeConversion)
 	{
 		pXmlWrite->WriteNodeBegin(L"m:fPr",false);
-		if(bType)
+		if(!wsType.empty())
 		{
 			pXmlWrite->WriteNodeBegin(L"m:type",true);
-			pXmlWrite->WriteAttribute(L"m:val",L"lin");
+			pXmlWrite->WriteAttribute(L"m:val",wsType);
 			pXmlWrite->WriteNodeEnd(L"w",true,true);
 		}
 		WriteCtrlPrNode(pXmlWrite,pAttribute,enTypeConversion);
@@ -360,10 +354,13 @@ namespace StarMath {
 				BracketTypeNotation(L"\u23A3",L"\u23A6",pXmlWrite);
 				break;
 			case TypeElement::lline:
-				BracketTypeNotation(L"\u23AA",L"\u23AA",pXmlWrite);
+				BracketTypeNotation(L"\u007C",L"\u007C",pXmlWrite);
 				break;
 			case TypeElement::ldline:
 				BracketTypeNotation(L"\u2016",L"\u2016",pXmlWrite);
+				break;
+			case TypeElement::abs:
+				BracketTypeNotation(L"\u007C",L"\u007C",pXmlWrite);
 				break;
 		}
 		pXmlWrite->WriteNodeBegin(L"m:ctrlPr");

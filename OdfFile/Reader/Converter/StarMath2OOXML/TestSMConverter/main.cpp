@@ -1404,6 +1404,16 @@ TEST(SMConvectorTest,FuctionWithAttributeAndIndex)
 	EXPECT_EQ(oTest.GetOOXML(),wsXmlString);
 }
 
+TEST(SMConvectorTest,UnarPlusMinus)
+{
+	std::wstring wsString = L"2 color red + - 4 over 10";
+	StarMath::CParserStarMathString oTemp;
+	StarMath::CConversionSMtoOOXML oTest;
+	oTest.StartConversion(oTemp.Parse(wsString));
+	std::wstring wsXmlString = L"<m:oMathPara><m:oMathParaPr><m:jc m:val=\"center\" /></m:oMathParaPr><m:oMath><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /></w:rPr><m:t>2</m:t></m:r><m:f><m:fPr><m:ctrlPr><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /></w:rPr></m:ctrlPr></m:fPr><m:num><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /><w:color w:val=\"FF0000\" /></w:rPr><m:t>+</m:t></m:r><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /><w:color w:val=\"FF0000\" /></w:rPr><m:t>-</m:t></m:r><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /><w:color w:val=\"FF0000\" /></w:rPr><m:t>4</m:t></m:r></m:num><m:den><m:r><w:rPr><w:rFonts w:hAnsi=\"Cambria Math\" w:ascii=\"Cambria Math\" /><w:sz w:val=\"30\" /><w:szCs w:val=\"30\" /></w:rPr><m:t>10</m:t></m:r></m:den></m:f></m:oMath></m:oMathPara>";
+	EXPECT_EQ(oTest.GetOOXML(),wsXmlString);
+}
+
 //TEST(SMConvectorTest,AttributeMatrix)
 //{
 //	std::wstring wsString = L"";

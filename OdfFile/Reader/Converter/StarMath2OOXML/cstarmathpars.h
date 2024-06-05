@@ -459,6 +459,7 @@ namespace StarMath
 		static void ReadingElementsWithPriorities(CStarMathReader* pReader,CElement*& pLeftElement);
 		//method for parsing indexes with attributes. If there is an attribute present when indexes are read, then all subsequent indexes are applied to the index with the attribute.
 		static void ReadingElementsWithAttributes(CStarMathReader* pReader,CElement*& pSavingElement);
+		static void ParsElementAddingToArray(CStarMathReader* pReader, std::vector<CElement*>& arElements);
 		void SetAlignment(const unsigned int& iAlignment);
 		const unsigned int& GetAlignment();
 		void SetBaseFont(const std::wstring& wsNameFont);

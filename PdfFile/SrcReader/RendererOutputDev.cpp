@@ -3077,8 +3077,11 @@ namespace PdfReader
 		dWidth  = dWidth  * dDpiX / 25.4;
 		dHeight = dHeight * dDpiY / 25.4;
 
-		int nWidth  = round(dXStep * dWidth / pGState->getPageWidth());
-		int nHeight = round(dYStep * dHeight / pGState->getPageHeight());
+		dWidth  *= (dXStep / pGState->getPageWidth());
+		dHeight *= (dYStep / pGState->getPageHeight());
+
+		int nWidth  = round(dWidth);
+		int nHeight = round(dHeight);
 
 		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
 		memset(pBgraData, 0, nWidth * nHeight * 4);
@@ -3092,8 +3095,8 @@ namespace PdfReader
 		NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
 		pRenderer->SetFontManager(m_pFontManager);
 		pRenderer->CreateFromBgraFrame(pFrame);
-		pRenderer->put_Width (nWidth * 25.4 / 72.0);
-		pRenderer->put_Height(nHeight * 25.4 / 72.0);
+		pRenderer->put_Width (dWidth  * 25.4 / 72.0);
+		pRenderer->put_Height(dHeight * 25.4 / 72.0);
 		pRenderer->CommandLong(c_nPenWidth0As1px, 1);
 #ifndef BUILDING_WASM_MODULE
 		pRenderer->SetSwapRGB(false);
@@ -3123,10 +3126,12 @@ namespace PdfReader
 		double xMin, yMin, xMax, yMax;
 		Transform(matrix, pBBox[0], pBBox[1], &xMin, &yMin);
 		Transform(matrix, pBBox[2], pBBox[3], &xMax, &yMax);
-		xMin += nX0 * (xMax - xMin);
-		xMax += nX1 * (xMax - xMin);
-		yMin += nY0 * (yMax - yMin);
-		yMax += nY1 * (yMax - yMin);
+		double dW = xMax - xMin;
+		double dH = yMax - yMin;
+		xMin += (double)nX0 * dW;
+		xMax += (double)nX1 * dW;
+		yMin += (double)nY0 * dH;
+		yMax += (double)nY1 * dH;
 		pGState->moveTo(xMin, yMin);
 		pGState->lineTo(xMax, yMin);
 		pGState->lineTo(xMax, yMax);

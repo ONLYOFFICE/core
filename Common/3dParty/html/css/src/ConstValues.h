@@ -87,6 +87,7 @@ namespace NSCSS
 				R_Color,
 				R_U,
 				R_Highlight,
+				R_Shd,
 				R_SmallCaps,
 				R_Kern
 			} RunnerProperties;

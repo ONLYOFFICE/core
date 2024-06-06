@@ -16,8 +16,9 @@
 
 #define MaxNumberRepetitions 6
 
-inline static std::wstring      StringifyValueList(const KatanaArray* oValues);
-inline static std::wstring      StringifyValue(const KatanaValue* oValue);
+inline static std::wstring StringifyValueList(const KatanaArray* oValues);
+inline static std::wstring StringifyValue(const KatanaValue* oValue);
+inline static bool         IsTableElement(const std::wstring& wsNameTag);
 
 bool operator<(const std::vector<NSCSS::CNode> &arLeftSelectors, const std::vector<NSCSS::CNode> &arRightSelectors)
 {
@@ -510,22 +511,27 @@ namespace NSCSS
 		std::vector<std::wstring> arNodes = CalculateAllNodes(arSelectors);
 		std::vector<std::wstring> arPrevNodes;
 		bool bInTable = false;
-
+		
 		for (size_t i = 0; i < arSelectors.size(); ++i)
 		{
 			oStyle.AddParent(arSelectors[i].m_wsName);
 
 			// Скидываем некоторые внешние стили, которые внутри таблицы переопределяются
 			if (L"table" == arSelectors[i].m_wsName)
-				bInTable = true;
-
-			if (bInTable)
 			{
 				oStyle.m_oFont.GetLineHeight().Clear();
 				oStyle.m_oPadding.Clear();
 				oStyle.m_oMargin.Clear();
+				bInTable = true;
+			}
+
+			if (bInTable)
+			{
+				oStyle.m_oBackground.Clear();
 				oStyle.m_oBorder.Clear();
 			}
+
+			bInTable = IsTableElement(arSelectors[i].m_wsName);
 
 			CCompiledStyle oTempStyle;
 
@@ -778,6 +784,13 @@ inline static std::wstring StringifyValue(const KatanaValue* oValue)
 	}
 
 	return str;
+}
+
+inline static bool IsTableElement(const std::wstring& wsNameTag)
+{
+	return  L"td" == wsNameTag || L"tr" == wsNameTag || L"table" == wsNameTag || 
+	        L"tbody" == wsNameTag || L"thead" == wsNameTag || L"tfoot" == wsNameTag ||
+	        L"th" == wsNameTag;
 }
 
 

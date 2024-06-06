@@ -3072,11 +3072,14 @@ namespace OOX
 
 			if (m_oId.IsInit())
 				ptr->relId.value = m_oId->GetValue();
+			else
+				ptr->relId.value = L"";
 
 			if (m_oName.IsInit())
 				ptr->xstrName = m_oName.get();
             else
             {
+				ptr->xstrName = L"";
                 ptr->fName = false;
                 ptr->fBuiltin = false;
             }
@@ -3257,15 +3260,15 @@ namespace OOX
 				beginPtr->iiftab = m_oFunction->GetValue();
             else
                 beginPtr->iiftab = 0;
-			if(m_oFunction.IsInit())
+            if(m_oLink.IsInit())
 				beginPtr->fLinkConsol = m_oLink->GetValue();
             else
                 beginPtr->fLinkConsol = false;
-			if(m_oFunction.IsInit())
+            if(m_oStartLabels.IsInit())
 				beginPtr->fLeftCat = m_oStartLabels->GetValue();
             else
                 beginPtr->fLeftCat = false;
-			if(m_oFunction.IsInit())
+            if(m_oTopLabels.IsInit())
 				beginPtr->fTopCat = m_oTopLabels->GetValue();
             else
                 beginPtr->fTopCat = false;

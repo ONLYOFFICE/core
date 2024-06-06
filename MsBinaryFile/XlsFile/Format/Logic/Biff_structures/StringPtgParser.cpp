@@ -218,7 +218,8 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             {
                 // EXCEPT::RT::WrongParenthesisSequence(assembled_formula);
             }
-            ptg_stack.pop(); // pop PtgParen that is now stored in left_p
+            if(!ptg_stack.empty())
+                ptg_stack.pop(); // pop PtgParen that is now stored in left_p
             last_ptg = left_p;
             PtgFuncVarPtr func_var;
             if(ptg_stack.size() && boost::dynamic_pointer_cast<PtgFunc>(ptg_stack.top()))
@@ -237,14 +238,15 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
                 last_ptg = ptg_stack.top();
                 ptg_stack.pop(); // pop PtgFuncVar
             }
-            else // If there is no function name before the left parenthesis
+            else if(left_p)// If there is no function name before the left parenthesis
             {
                 for (size_t i = 0; i < left_p->getParametersNum(); ++i)
                 {
                     rgce.addPtg(PtgPtr(new PtgUnion));
                 }
             }
-            rgce.addPtg(last_ptg);
+            if(last_ptg)
+                rgce.addPtg(last_ptg);
             operand_expected = false;
         }
         #pragma endregion

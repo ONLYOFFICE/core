@@ -155,6 +155,8 @@ namespace Spreadsheet
 		XLS::BaseObjectPtr objectPtr(ptr);
 		if(m_oName.IsInit())
 			ptr->stStyleName = m_oName.get();
+		else
+			ptr->stStyleName.setSize(0xFFFFFFFF);
 		if(m_oShowColumnStripes.IsInit())
 			ptr->fColumnStripes = m_oShowColumnStripes->GetValue();
 		if(m_oShowFirstColumn.IsInit())
@@ -287,7 +289,7 @@ namespace Spreadsheet
         else
             ptr1->nDxfInsertRow = 0xFFFFFFFF;
 
-        if(m_oHeaderRowDxfId.IsInit())
+        if(m_oHeaderRowCellStyle.IsInit())
             ptr1->stStyleHeader = m_oHeaderRowCellStyle.get();
         else
             ptr1->stStyleHeader.setSize(0xFFFFFFFF);

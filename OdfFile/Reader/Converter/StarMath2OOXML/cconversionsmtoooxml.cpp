@@ -62,7 +62,7 @@ namespace StarMath {
 			wsAlignment = L"center";
 			break;
 			}
-			if(arPars[0]->GetTypeConversion() == TypeConversion::pptx)
+			if(arPars[0]->GetTypeConversion() == TypeConversion::pptx || arPars[0]->GetTypeConversion() == TypeConversion::xlsx)
 			{
 				wsNodeMath += L" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\"";
 				wsNodeMathPara += L" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\"";

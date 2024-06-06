@@ -1687,10 +1687,10 @@ namespace StarMath
 		m_wsType = L"\u2190";
 		break;
 		case TypeElement::uparrow:
-		m_wsType = L"\U0001F809";
+		m_wsType = L"\u2191";
 		break;
 		case TypeElement::downarrow:
-		m_wsType = L"\U0001F80B";
+		m_wsType = L"\u2193";
 		break;
 		case TypeElement::dotsaxis:
 		m_wsType = L"\u22EF";

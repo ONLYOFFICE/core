@@ -81,24 +81,22 @@ namespace PdfWriter
 		m_pCurPage          = NULL;
 		m_nCurPageNum       = -1;
 		m_pCurImage         = NULL;
-		m_unFormFields      = 0;
 		m_pInfo             = NULL;
 		m_pTrailer          = NULL;
 		m_pResources        = NULL;
+		m_pMetaData         = NULL;
 		m_bEncrypt          = false;
 		m_pEncryptDict      = NULL;
+		m_unFormFields      = 0;
 		m_unCompressMode    = COMP_NONE;
-		m_pJbig2            = NULL;
 		memset((void*)m_sTTFontTag, 0x00, 8);
+		m_pJbig2            = NULL;
+		m_pDefaultCheckBoxFont = NULL;
 		m_pTransparencyGroup = NULL;
 		m_pFreeTypeLibrary  = NULL;
+		m_bPDFAConformance	= false;
 		m_pAcroForm         = NULL;
 		m_pFieldsResources  = NULL;
-		m_pDefaultCheckBoxFont = NULL;
-		m_wsDocumentID      = L"";
-		m_wsFilePath        = L"";
-
-		m_bPDFAConformance	= false;
 	}
 	CDocument::~CDocument()
 	{

@@ -709,6 +709,8 @@ namespace NSDocxRenderer
 
 	void CShape::BuildPictureProperties(NSStringUtils::CStringBuilder &oWriter) const
 	{
+		// TODO: Clip path as geometry + tile!!!
+
 		oWriter.WriteString(L"<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
 
 		oWriter.WriteString(L"<pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
@@ -944,9 +946,10 @@ namespace NSDocxRenderer
 	}
 	void CShape::ToXmlPptx(NSStringUtils::CStringBuilder &oWriter) const
 	{
-		if (m_eType == eShapeType::stPicture)
+		if (m_eType == eShapeType::stPicture ||
+			m_eType == eShapeType::stVectorTexture)
 		{
-			// TODO:
+			// TODO: Clip path as geometry + tile!!!
 			oWriter.WriteString(L"<p:pic>");
 			oWriter.WriteString(L"<p:nvPicPr>");
 			oWriter.WriteString(L"<p:cNvPr id=\"");

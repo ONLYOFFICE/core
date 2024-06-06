@@ -5,7 +5,6 @@ sys.path.append('../../../../build_tools/scripts')
 import config
 import base
 import os
-import build
 
 base_directory = os.getcwd()
 

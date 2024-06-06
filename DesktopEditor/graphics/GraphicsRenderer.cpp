@@ -563,10 +563,10 @@ HRESULT CGraphicsRenderer::get_BrushTextureImage(Aggplus::CImage** pImage)
 }
 HRESULT CGraphicsRenderer::put_BrushTextureImage(Aggplus::CImage *pImage)
 {
-	if (NULL == pImage)
-		return S_FALSE;
-
 	RELEASEINTERFACE(m_oBrush.Image);
+
+	if (NULL == pImage)
+		return S_OK;
 
 	m_oBrush.Image = pImage;
 	m_oBrush.Image->AddRef();

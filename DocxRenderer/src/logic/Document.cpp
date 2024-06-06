@@ -635,7 +635,10 @@ namespace NSDocxRenderer
 			double y = 0;
 			double w = 0;
 			double h = 0;
-			pInfo = m_oImageManager.WriteImage(m_oBrush.TexturePath, x, y, w, h);
+			if (m_oBrush.Image)
+				pInfo = m_oImageManager.WriteImage(m_oBrush.Image, x, y, w, h);
+			else
+				pInfo = m_oImageManager.WriteImage(m_oBrush.TexturePath, x, y, w, h);
 		}
 
 		m_oCurrentPage.DrawPath(nType, pInfo);

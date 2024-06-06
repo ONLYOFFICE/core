@@ -44,7 +44,7 @@ namespace StarMath {
 		~CConversionSMtoOOXML();
 		void StartConversion(std::vector<CElement*> arPars, const unsigned int& iAlignment = 1);
 		static void StandartProperties(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion& enTypeConversion);
-		static void PropertiesMFPR(bool bType,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion);
+		static void PropertiesMFPR(const std::wstring& wsType,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion);
 		static void PropertiesNaryPr(const TypeElement& enTypeOp,bool bEmptySub,bool bEmptySup,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion);
 		static void PropertiesFuncPr(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion);
 		static void WriteNodeConversion(const std::wstring& wsNameBlock,CElement* pValueBlock,XmlUtils::CXmlWriter* pXmlWrite);

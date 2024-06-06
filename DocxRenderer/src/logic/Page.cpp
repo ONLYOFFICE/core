@@ -1013,6 +1013,8 @@ namespace NSDocxRenderer
 				{
 					for (auto& pCont : line->m_arConts)
 					{
+						if (!pCont)
+							continue;
 						if (base_line->m_dLeft > pCont->m_dLeft)
 							base_line->m_dLeft = pCont->m_dLeft;
 						if (base_line->m_dRight < pCont->m_dRight)

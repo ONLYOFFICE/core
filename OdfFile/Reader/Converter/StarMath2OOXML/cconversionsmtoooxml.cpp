@@ -62,7 +62,7 @@ namespace StarMath {
 			wsAlignment = L"center";
 			break;
 			}
-			if(arPars[0]->GetTypeConversion() == TypeConversion::pptx)
+			if(arPars[0]->GetTypeConversion() == TypeConversion::pptx || arPars[0]->GetTypeConversion() == TypeConversion::xlsx)
 			{
 				wsNodeMath += L" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\"";
 				wsNodeMathPara += L" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\"";
@@ -221,9 +221,6 @@ namespace StarMath {
 					pXmlWrite->WriteAttribute(L"typeface",pAttribute->GetFontName());
 				else
 					pXmlWrite->WriteAttribute(L"typeface",L"Cambria Math");
-				// pXmlWrite->WriteAttribute(L"panose",L"02040503050406030204");
-				// pXmlWrite->WriteAttribute(L"pitchFamily",L"18");
-				// pXmlWrite->WriteAttribute(L"charset",L"0");
 				pXmlWrite->WriteNodeEnd(L"w",true,true);
 				pXmlWrite->WriteNodeEnd(L"a:rPr",false);
 			}
@@ -234,21 +231,18 @@ namespace StarMath {
 				pXmlWrite->WriteNodeEnd(L"w",true,false);
 				pXmlWrite->WriteNodeBegin(L"a:latin",true);
 				pXmlWrite->WriteAttribute(L"typeface",L"Cambria Math");
-				// pXmlWrite->WriteAttribute(L"panose",L"02040503050406030204");
-				// pXmlWrite->WriteAttribute(L"pitchFamily",L"18");
-				// pXmlWrite->WriteAttribute(L"charset",L"0");
 				pXmlWrite->WriteNodeEnd(L"w",true,true);
 				pXmlWrite->WriteNodeEnd(L"a:rPr",false);
 			}
 		}
 	}
-	void CConversionSMtoOOXML::PropertiesMFPR(bool bType, XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion)
+	void CConversionSMtoOOXML::PropertiesMFPR(const std::wstring &wsType, XmlUtils::CXmlWriter* pXmlWrite, CAttribute* pAttribute, const TypeConversion &enTypeConversion)
 	{
 		pXmlWrite->WriteNodeBegin(L"m:fPr",false);
-		if(bType)
+		if(!wsType.empty())
 		{
 			pXmlWrite->WriteNodeBegin(L"m:type",true);
-			pXmlWrite->WriteAttribute(L"m:val",L"lin");
+			pXmlWrite->WriteAttribute(L"m:val",wsType);
 			pXmlWrite->WriteNodeEnd(L"w",true,true);
 		}
 		WriteCtrlPrNode(pXmlWrite,pAttribute,enTypeConversion);
@@ -342,7 +336,7 @@ namespace StarMath {
 		switch(enTypeBracket)
 		{
 			case TypeElement::langle:
-				BracketTypeNotation(L"\u2329",L"\u232A",pXmlWrite);
+				BracketTypeNotation(L"\u27E8",L"\u27E9",pXmlWrite);
 				break;
 			case TypeElement::square:
 				BracketTypeNotation(L"\u005B",L"\u005D",pXmlWrite);
@@ -354,16 +348,19 @@ namespace StarMath {
 				BracketTypeNotation(L"\u007B",L"\u007D",pXmlWrite);
 				break;
 			case TypeElement::lceil:
-				BracketTypeNotation(L"\u23A1",L"\u23A4",pXmlWrite);
+				BracketTypeNotation(L"\u2308",L"\u2309",pXmlWrite);
 				break;
 			case TypeElement::lfloor:
-				BracketTypeNotation(L"\u23A3",L"\u23A6",pXmlWrite);
+				BracketTypeNotation(L"\u230A",L"\u230B",pXmlWrite);
 				break;
 			case TypeElement::lline:
-				BracketTypeNotation(L"\u23AA",L"\u23AA",pXmlWrite);
+				BracketTypeNotation(L"\u007C",L"\u007C",pXmlWrite);
 				break;
 			case TypeElement::ldline:
 				BracketTypeNotation(L"\u2016",L"\u2016",pXmlWrite);
+				break;
+			case TypeElement::abs:
+				BracketTypeNotation(L"\u007C",L"\u007C",pXmlWrite);
 				break;
 		}
 		pXmlWrite->WriteNodeBegin(L"m:ctrlPr");

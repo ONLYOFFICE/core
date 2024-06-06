@@ -336,7 +336,7 @@ namespace StarMath {
 		switch(enTypeBracket)
 		{
 			case TypeElement::langle:
-				BracketTypeNotation(L"\u2329",L"\u232A",pXmlWrite);
+				BracketTypeNotation(L"\u27E8",L"\u27E9",pXmlWrite);
 				break;
 			case TypeElement::square:
 				BracketTypeNotation(L"\u005B",L"\u005D",pXmlWrite);
@@ -348,10 +348,10 @@ namespace StarMath {
 				BracketTypeNotation(L"\u007B",L"\u007D",pXmlWrite);
 				break;
 			case TypeElement::lceil:
-				BracketTypeNotation(L"\u23A1",L"\u23A4",pXmlWrite);
+				BracketTypeNotation(L"\u2308",L"\u2309",pXmlWrite);
 				break;
 			case TypeElement::lfloor:
-				BracketTypeNotation(L"\u23A3",L"\u23A6",pXmlWrite);
+				BracketTypeNotation(L"\u230A",L"\u230B",pXmlWrite);
 				break;
 			case TypeElement::lline:
 				BracketTypeNotation(L"\u007C",L"\u007C",pXmlWrite);

@@ -1920,9 +1920,9 @@ namespace OOX
 				{
 					if(m_oValue->m_sText == L"TRUE" || m_oValue->m_sText == L"FALSE")
 						m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeBool);
-					else if(std::all_of(m_oValue->m_sText.begin(), m_oValue->m_sText.end(), [](const char c) { return std::isdigit(c); }) && m_oValue->m_sText.size() <= 10)
+                    else if(std::all_of(m_oValue->m_sText.begin(), m_oValue->m_sText.end(), [](const char c) { return std::isdigit(c); }) && m_oValue->m_sText.size() <= 10 && m_oValue->m_sText.size() > 0)
 					{
-						if(m_oValue->m_sText.size() < 10)
+                        if(m_oValue->m_sText.size() < 10 )
 						{
 							intCache = std::stoi(m_oValue->m_sText);
 							m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
@@ -1939,7 +1939,7 @@ namespace OOX
 					}
 					
 					if((m_oValue->m_sText.find(L".") == std::string::npos || m_oValue->m_sText.find(L".") == m_oValue->m_sText.rfind(L".")) 
-						&& m_oValue->m_sText.size() <=17)
+                        && m_oValue->m_sText.size() <=17 && m_oValue->m_sText.size() > 0)
 					{
 						if(m_oValue->m_sText.size() < 17)
 						{

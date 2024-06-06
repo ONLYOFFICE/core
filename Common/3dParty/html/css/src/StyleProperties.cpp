@@ -609,6 +609,11 @@ namespace NSCSS
 		return ColorNone == m_oValue.m_enType;
 	}
 
+	bool CColor::Url() const
+	{
+		return ColorUrl == m_oValue.m_enType;
+	}
+
 	void CColor::Clear()
 	{
 		m_oValue.Clear();
@@ -1283,6 +1288,11 @@ namespace NSCSS
 	const CColor& CBackground::GetColor() const
 	{
 		return m_oColor;
+	}
+	
+	void CBackground::Clear()
+	{
+		m_oColor.Clear();
 	}
 
 	bool CBackground::Empty() const

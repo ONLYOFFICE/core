@@ -254,8 +254,9 @@ namespace NSCSS
 
 	bool CDigit::operator==(const CDigit &oDigit) const
 	{
-		return (std::abs(oDigit.m_oValue - m_oValue) <= DBL_EPSILON) && 
-		       m_enUnitMeasure == oDigit.m_enUnitMeasure;
+		return (Empty() && oDigit.Empty()) || 
+		       ((std::abs(oDigit.m_oValue - m_oValue) <= DBL_EPSILON) && 
+		       m_enUnitMeasure == oDigit.m_enUnitMeasure);
 	}
 
 	bool CDigit::operator!=(const double &oValue) const

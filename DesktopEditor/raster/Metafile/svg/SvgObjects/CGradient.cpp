@@ -52,37 +52,21 @@ namespace SVG
 
 	bool CGradient::Apply(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds)
 	{
-		if (NULL == pRenderer)
+		if (NULL == pRenderer || m_arObjects.empty())
 			return false;
 
-		if (m_arObjects.empty())
-		{
-			if (m_wsXlinkHref.empty() || NULL == pFile)
-				return false;
+		std::vector<LONG> arColors;
+		std::vector<double> arPositions;
 
-			CGradient *pGradiend = dynamic_cast<CGradient*>(pFile->GetMarkedObject(m_wsXlinkHref));
-
-			if (NULL == pGradiend)
-				return false;
-			
-			pGradiend->Apply(pRenderer, pFile, oObjectBounds);
-		}
-		else
+		for (const CStopElement* pStopElement : m_arObjects)
 		{
-			std::vector<LONG> arColors;
-			std::vector<double> arPositions;
-	
-			for (const CStopElement* pStopElement : m_arObjects)
-			{
-				arColors.push_back(((unsigned int)(pStopElement->GetColor().ToInt() | ((unsigned char)(255. * pStopElement->GetColor().GetOpacity()) << 24))));
-				arPositions.push_back(pStopElement->GetOffset().ToDouble());
-			}
-	
-			pRenderer->put_BrushGradientColors(arColors.data(), arPositions.data(), arColors.size());
+			arColors.push_back(((unsigned int)(pStopElement->GetColor().ToInt() | ((unsigned char)(255. * pStopElement->GetColor().GetOpacity()) << 24))));
+			arPositions.push_back(pStopElement->GetOffset().ToDouble());
 		}
-		
+
+		pRenderer->put_BrushGradientColors(arColors.data(), arPositions.data(), arColors.size());
 		pRenderer->put_BrushTransform(m_oTransform.GetMatrix().GetFinalValue());
-		
+
 		return true;
 	}
 	
@@ -108,6 +92,31 @@ namespace SVG
 		pRenderer->BrushBounds(oNewBounds.m_dLeft, oNewBounds.m_dTop, oNewBounds.m_dRight - oNewBounds.m_dLeft, oNewBounds.m_dBottom - oNewBounds.m_dTop);
 	}
 
+	CGradient *CGradient::GetRefGradient(const CSvgFile *pFile) const
+	{
+		if (m_wsXlinkHref.empty() || NULL == pFile)
+			return NULL;
+
+		CGradient *pGradiend = dynamic_cast<CGradient*>(pFile->GetMarkedObject(m_wsXlinkHref));
+
+		if (NULL == pGradiend)
+			return NULL;
+
+		CGradient *pRefGradient = pGradiend->GetRefGradient(pFile);
+
+		return (NULL != pRefGradient) ? pRefGradient : pGradiend;
+	}
+
+	bool CGradient::ApplyRefGradient(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) const
+	{
+		CGradient *pRefGradient = GetRefGradient(pFile);
+
+		if (NULL == pRefGradient)
+			return false;
+
+		return pRefGradient->Apply(pRenderer, pFile, oObjectBounds);
+	}
+
 	CLinearGradient::CLinearGradient(XmlUtils::CXmlNode& oNode)
 		: CGradient(oNode)
 	{
@@ -120,10 +129,8 @@ namespace SVG
 	bool CLinearGradient::Apply(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds)
 	{
 		if (!CGradient::Apply(pRenderer, pFile, oObjectBounds))
-			return false;
+			return ApplyRefGradient(pRenderer, pFile, oObjectBounds);
 
-		pRenderer->put_BrushType(c_BrushTypePathGradient1);
-		
 		if (m_oX1 == m_oX2 && m_oY1 == m_oY2)
 		{
 			pRenderer->put_BrushType(c_BrushTypeSolid);
@@ -131,6 +138,8 @@ namespace SVG
 			pRenderer->put_BrushAlpha1(m_arObjects.back()->GetOffset().ToInt());
 			return true;
 		}
+
+		pRenderer->put_BrushType(c_BrushTypePathGradient1);
 
 		double dAngle = 0.;
 
@@ -171,8 +180,8 @@ namespace SVG
 	bool CRadialGradient::Apply(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds)
 	{
 		if (!CGradient::Apply(pRenderer, pFile, oObjectBounds) || m_oR.Zero())
-			return false;
-		
+			return ApplyRefGradient(pRenderer, pFile, oObjectBounds);
+
 		double dCX = (oObjectBounds.m_dRight + oObjectBounds.m_dLeft) / 2.;
 		double dCY = (oObjectBounds.m_dBottom + oObjectBounds.m_dTop) / 2.;
 		double dR  = oObjectBounds.m_dBottom - oObjectBounds.m_dTop;

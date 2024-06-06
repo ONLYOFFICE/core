@@ -174,6 +174,7 @@ typedef enum
 struct TTableStyles
 {
 	NSCSS::NSProperties::CIndent m_oPadding;
+	NSCSS::NSProperties::CIndent m_oMargin;
 	NSCSS::NSProperties::CBorder m_oBorder;
 	NSCSS::NSProperties::CDigit  m_oWidth;
 
@@ -188,7 +189,7 @@ struct TTableStyles
 
 	bool Empty() const
 	{
-		return m_oPadding.Empty() && m_oBorder.Empty() && m_oWidth.Empty() && -1 == m_nCellSpacing && false == m_bHaveBorderAttribute && m_wsAlign.empty();
+		return m_oPadding.Empty() && m_oMargin.Empty() && m_oBorder.Empty() && m_oWidth.Empty() && -1 == m_nCellSpacing && false == m_bHaveBorderAttribute && m_wsAlign.empty();
 	}
 };
 
@@ -665,6 +666,11 @@ public:
 		m_oStyles.m_oPadding = oPadding;
 	}
 
+	void SetMargin(const NSCSS::NSProperties::CIndent& oMargin)
+	{
+		m_oStyles.m_oMargin = oMargin;
+	}
+
 	const NSCSS::NSProperties::CIndent& GetPadding() const
 	{
 		return m_oStyles.m_oPadding;
@@ -791,18 +797,18 @@ public:
 			if (NSCSS::UnitMeasure::Percent == m_oStyles.m_oWidth.GetUnitMeasure())
 				oTable += L"<w:tblW w:w=\"" + std::to_wstring(m_oStyles.m_oWidth.ToInt(NSCSS::UnitMeasure::Percent, 5000)) + L"\" w:type=\"pct\"/>";
 			else
-			{
-				int nWidth;
-				if (NSCSS::UnitMeasure::None != m_oStyles.m_oWidth.GetUnitMeasure())
-					nWidth = m_oStyles.m_oWidth.ToInt(NSCSS::UnitMeasure::Twips);
-				else
-					nWidth = static_cast<int>(NSCSS::CUnitMeasureConverter::ConvertPx(m_oStyles.m_oWidth.ToDouble(), NSCSS::UnitMeasure::Twips, 96) + 0.5);
-
-				oTable += L"<w:tblW w:w=\"" + std::to_wstring(nWidth) + L"\" w:type=\"dxa\"/>";
-			}
+				oTable += L"<w:tblInd w:w=\"" + std::to_wstring(m_oStyles.m_oWidth.ToInt(NSCSS::UnitMeasure::Twips)) + L"\" w:type=\"dxa\"/>";
 		}
 		else
 			oTable += L"<w:tblW w:w=\"0\" w:type=\"auto\"/>";
+
+		if (!m_oStyles.m_oMargin.GetLeft().Empty() && !m_oStyles.m_oMargin.GetLeft().Zero())
+		{
+			if (NSCSS::UnitMeasure::Percent == m_oStyles.m_oMargin.GetLeft().GetUnitMeasure())
+				oTable += L"<w:tblInd w:w=\"" + std::to_wstring(m_oStyles.m_oMargin.GetLeft().ToInt(NSCSS::UnitMeasure::Percent, 5000)) + L"\" w:type=\"pct\"/>";
+			else
+				oTable += L"<w:tblInd w:w=\"" + std::to_wstring(m_oStyles.m_oMargin.GetLeft().ToInt(NSCSS::UnitMeasure::Twips)) + L"\" w:type=\"dxa\"/>";
+		}
 
 		if (!m_oStyles.m_wsAlign.empty())
 			oTable += L"<w:jc w:val=\"" + m_oStyles.m_wsAlign + L"\"/>";
@@ -1176,7 +1182,7 @@ public:
 			m_oStylesXml += L"<w:lang w:val=\"" + ((!wsCurrentLanguage.empty()) ? wsCurrentLanguage : DEFAULT_LANGUAGE) + L"\" w:eastAsia=\"en-US\" w:bidi=\"ar-SA\"/>";
 			m_oStylesXml += L"</w:rPr></w:rPrDefault>";
 
-			m_oStylesXml += L"<w:pPrDefault><w:pPr><w:spacing w:after=\"200\" w:line=\"276\" w:lineRule=\"auto\"/></w:pPr></w:pPrDefault>";
+//			m_oStylesXml += L"<w:pPrDefault><w:pPr><w:spacing w:after=\"200\" w:line=\"276\" w:lineRule=\"auto\"/></w:pPr></w:pPrDefault>";
 		}
 
 		// normal по умолчанию
@@ -1740,15 +1746,16 @@ private:
 		readStream(&m_oDocXml, sSelectors, { false, false, true, false, -1, L"", L"" });
 	}
 
-	void readInside (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, const std::wstring& sName)
+	bool readInside (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, const std::wstring& sName)
 	{
+		//TODO:: обработать все варианты return'а
+
 		if(sName == L"#text")
 		{
 			std::wstring sText = m_oLightReader.GetText();
 
-			size_t find = sText.find_first_not_of(L" \n\t\r");
-			if (find == std::wstring::npos)
-				return;
+			if (sText.end() == std::find_if_not(sText.begin(), sText.end(), [](wchar_t wchChar){ return iswspace(wchChar);}))
+				return false;
 
 			bool bInT = m_bInT;
 
@@ -1812,7 +1819,7 @@ private:
 				}
 
 				if (sText.empty())
-					return;
+					return true;
 			}
 			else
 				ReplaceSpaces(sText);
@@ -1834,11 +1841,11 @@ private:
 				CloseR(oXml);
 			}
 
-			return;
+			return true;
 		}
 
 		std::wstring sNote = GetSubClass(oXml, sSelectors);
-
+		bool bResult = true;
 		// Ссылка
 		// Область ссылки
 		if(sName == L"a" || sName == L"area")
@@ -1849,7 +1856,7 @@ private:
 		{
 			CTextSettings oTSR(oTS);
 			oTSR.AddRStyle(L"<w:b/><w:bCs/>");
-			readStream(oXml, sSelectors, oTSR);
+			bResult = readStream(oXml, sSelectors, oTSR);
 		}
 		// Направление текста
 		else if(sName == L"bdo")
@@ -1862,21 +1869,21 @@ private:
 
 			CTextSettings oTSBdo(oTS);
 			oTSBdo.bBdo = (sDir == L"rtl");
-			readStream(oXml, sSelectors, oTSBdo);
+			bResult = readStream(oXml, sSelectors, oTSBdo);
 		}
 		// Отмена направления текста
 		else if(sName == L"bdi")
 		{
 			CTextSettings oTSBdo(oTS);
 			oTSBdo.bBdo = false;
-			readStream(oXml, sSelectors, oTSBdo);
+			bResult = readStream(oXml, sSelectors, oTSBdo);
 		}
 		// Увеличивает размер шрифта
 		else if(sName == L"big")
 		{
 			CTextSettings oTSR(oTS);
 			oTSR.AddRStyle(L"<w:sz w:val=\"26\"/>");
-			readStream(oXml, sSelectors, oTSR);
+			bResult = readStream(oXml, sSelectors, oTSR);
 		}
 		// Перенос строки
 		else if(sName == L"br")
@@ -1898,7 +1905,7 @@ private:
 		{
 			CTextSettings oTSP(oTS);
 			oTSP.AddPStyle(L"<w:jc w:val=\"center\"/>");
-			readStream(oXml, sSelectors, oTSP);
+			bResult = readStream(oXml, sSelectors, oTSP);
 		}
 		// Цитата, обычно выделяется курсивом
 		// Новый термин, обычно выделяется курсивом
@@ -1909,7 +1916,7 @@ private:
 		{
 			CTextSettings oTSR(oTS);
 			oTSR.AddRStyle(L"<w:i/><w:iCs/>");
-			readStream(oXml, sSelectors, oTSR);
+			bResult = readStream(oXml, sSelectors, oTSR);
 		}
 		// Код
 		// Моноширинный шрифт, например, Consolas
@@ -1918,14 +1925,14 @@ private:
 		{
 			CTextSettings oTSR(oTS);
 			oTSR.AddRStyle(L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>");
-			readStream(oXml, sSelectors, oTSR);
+			bResult = readStream(oXml, sSelectors, oTSR);
 		}
 		// Зачеркнутый текст
 		else if(sName == L"del" || sName == L"s")
 		{
 			CTextSettings oTSR(oTS);
 			oTSR.AddRStyle(L"<w:strike/>");
-			readStream(oXml, sSelectors, oTSR);
+			bResult = readStream(oXml, sSelectors, oTSR);
 		}
 		else if(sName == L"font")
 		{
@@ -1966,7 +1973,7 @@ private:
 				}
 			}
 			m_oLightReader.MoveToElement();
-			readStream(oXml, sSelectors, oTS);
+			bResult = readStream(oXml, sSelectors, oTS);
 		}
 		// Картинки
 		else if(sName == L"img")
@@ -1976,14 +1983,14 @@ private:
 		{
 			CTextSettings oTSR(oTS);
 			oTSR.AddRStyle(L"<w:u w:val=\"single\"/>");
-			readStream(oXml, sSelectors, oTSR);
+			bResult = readStream(oXml, sSelectors, oTSR);
 		}
 		// Выделенный текст, обычно выделяется желтым
 		else if(sName == L"mark")
 		{
 			CTextSettings oTSR(oTS);
 			oTSR.AddRStyle(L"<w:highlight w:val=\"yellow\"/>");
-			readStream(oXml, sSelectors, oTSR);
+			bResult = readStream(oXml, sSelectors, oTSR);
 		}
 		// Цитата, выделенная кавычками, обычно выделяется курсивом
 		else if(sName == L"q")
@@ -2014,21 +2021,21 @@ private:
 		{
 			CTextSettings oTSR(oTS);
 			oTSR.AddRStyle(L"<w:vertAlign w:val=\"superscript\"/>");
-			readStream(oXml, sSelectors, oTSR);
+			bResult = readStream(oXml, sSelectors, oTSR);
 		}
 		// Уменьшает размер шрифта
 		else if(sName == L"small")
 		{
 			CTextSettings oTSR(oTS);
 			oTSR.AddRStyle(L"<w:sz w:val=\"18\"/>");
-			readStream(oXml, sSelectors, oTSR);
+			bResult = readStream(oXml, sSelectors, oTSR);
 		}
 		// Текст нижнего регистра
 		else if(sName == L"sub")
 		{
 			CTextSettings oTSR(oTS);
 			oTSR.AddRStyle(L"<w:vertAlign w:val=\"subscript\"/>");
-			readStream(oXml, sSelectors, oTSR);
+			bResult = readStream(oXml, sSelectors, oTSR);
 		}
 		// Векторная картинка
 		else if(sName == L"svg" || (sName.length() > 3 && sName.compare(sName.length() - 3, 3, L"svg") == 0))
@@ -2047,28 +2054,28 @@ private:
 		{
 			WriteEmptyParagraph(oXml, false, m_bInP);
 			sSelectors.pop_back();
-			return;
+			return true;
 		}
 		else if (sName == L"span")
 		{
 			if (sSelectors.back().m_wsClass == L"MsoFootnoteReference")
 			{
 				sSelectors.pop_back();
-				return;
+				return false;
 			}
-			readStream(oXml, sSelectors, oTS);
+			bResult = readStream(oXml, sSelectors, oTS);
 		}
 		else if (sName == L"nobr")
 		{
 			CTextSettings oTSPre(oTS);
 			oTSPre.bPre = true;
-			readStream(oXml, sSelectors, oTSPre);
+			bResult = readStream(oXml, sSelectors, oTSPre);
 		}
 		// Без нового абзаца
 		else if(sName == L"basefont" || sName == L"button" || sName == L"label" || sName == L"data" || sName == L"object" ||
 				sName == L"noscript" || sName == L"output" || sName == L"abbr"  || sName == L"time" || sName == L"ruby"   ||
 				sName == L"progress" || sName == L"hgroup" || sName == L"meter" || sName == L"acronym")
-			readStream(oXml, sSelectors, oTS);
+			bResult = readStream(oXml, sSelectors, oTS);
 		// С нового абзаца
 		else
 		{
@@ -2079,14 +2086,14 @@ private:
 			{
 				CTextSettings oTSR(oTS);
 				oTSR.AddRStyle(L"<w:i/><w:iCs/>");
-				readStream(oXml, sSelectors, oTSR);
+				bResult = readStream(oXml, sSelectors, oTSR);
 			}
 			// Определение термина, отступ от левого края
 			else if(sName == L"dd")
 			{
 				CTextSettings oTSP(oTS);
 				oTSP.sPStyle += L"<w:ind w:left=\"567\"/>";
-				readStream(oXml, sSelectors, oTSP);
+				bResult = readStream(oXml, sSelectors, oTSP);
 			}
 			// aside возможно использовать для сносок в epub
 			else if (sName == L"aside" || sName == L"div")
@@ -2123,7 +2130,7 @@ private:
 					m_oNoteXml.WriteString(L"</w:footnote>");
 				}
 				else
-					readStream(oXml, sSelectors, oTS);
+					bResult = readStream(oXml, sSelectors, oTS);
 			}
 			// С нового абзаца
 			else if(sName == L"article" || sName == L"header" || sName == L"blockquote" || sName == L"main" || sName == L"dir" ||
@@ -2131,7 +2138,7 @@ private:
 					sName == L"details" || sName == L"option" || sName == L"dt"  || sName == L"p"    ||
 					sName == L"section" || sName == L"figure" || sName == L"dl"  || sName == L"legend"     || sName == L"map"  ||
 					sName == L"h1" || sName == L"h2" || sName == L"h3" || sName == L"h4" || sName == L"h5" || sName == L"h6")
-				readStream(oXml, sSelectors, oTS);
+				bResult = readStream(oXml, sSelectors, oTS);
 			// Горизонтальная линия
 			else if(sName == L"hr")
 			{
@@ -2168,7 +2175,7 @@ private:
 				CTextSettings oTSPre(oTS);
 				sSelectors.back().m_wsStyle += L"; font-family:Consolas";
 				oTSPre.bPre = true;
-				readStream(oXml, sSelectors, oTSPre);
+				bResult = readStream(oXml, sSelectors, oTSPre);
 			}
 			// Таблицы
 			else if(sName == L"table")
@@ -2178,16 +2185,16 @@ private:
 			{
 				CTextSettings oTSP(oTS);
 				oTSP.AddPStyle(L"<w:pBdr><w:left w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr>");
-				readStream(oXml, sSelectors, oTSP);
+				bResult = readStream(oXml, sSelectors, oTSP);
 			}
 			else if (sName == L"xml")
 			{
 				sSelectors.pop_back();
-				return;
+				return false;
 			}
 			// Неизвестный тэг. Выделять ли его абзацем?
 			else
-				readStream(oXml, sSelectors, oTS);
+				bResult =readStream(oXml, sSelectors, oTS);
 
 			readNote(oXml, sSelectors, sNote);
 			sNote = L"";
@@ -2196,6 +2203,7 @@ private:
 		}
 		readNote(oXml, sSelectors, sNote);
 		sSelectors.pop_back();
+		return bResult;
 	}
 
 	bool readStream (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool bInsertEmptyP = false)
@@ -2212,11 +2220,24 @@ private:
 			}
 			return false;
 		}
+
+		bool bResult = false;
+
 		do
 		{
-			readInside(oXml, sSelectors, oTS, m_oLightReader.GetName());
+			if (readInside(oXml, sSelectors, oTS, m_oLightReader.GetName()))
+				bResult = true;
 		} while(m_oLightReader.ReadNextSiblingNode2(nDeath));
-		return true;
+
+		if (!bResult && bInsertEmptyP)
+		{
+			wrP(oXml, sSelectors, oTS);
+			wrRPr(oXml, sSelectors, oTS);
+			CloseP(oXml, sSelectors);
+			m_bInP = false;
+		}
+
+		return bResult;
 	}
 
 	void CalculateCellStyles(CTableCell* pCell, const std::vector<NSCSS::CNode>& arSelectors)
@@ -2410,6 +2431,7 @@ private:
 		oTable.SetWidth(oStyle.m_oDisplay.GetWidth());
 		oTable.SetBorder(oStyle.m_oBorder);
 		oTable.SetPadding(oStyle.m_oPadding);
+		oTable.SetMargin(oStyle.m_oMargin);
 		oTable.SetAlign(oStyle.m_oDisplay.GetHAlign().ToWString());
 		//------
 

@@ -145,10 +145,35 @@
 #include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 
 #include <codecvt>
+#include "boost/date_time/gregorian/gregorian.hpp"
 namespace OOX
 {
 namespace Spreadsheet
 {
+
+	std::wstring getDateFromExcelTime(double excelDate)
+	{
+		boost::gregorian::date date(1899, boost::gregorian::Dec, 30);
+		XLSB::PCDIDateTime datetime;
+		_UINT64 days = std::floor(excelDate);
+		excelDate -= days;
+		date += boost::gregorian::date_duration(days);
+		datetime.yr = date.year();
+		datetime.mon = date.month();
+		datetime.dom = date.day();
+		if(excelDate > 0)
+		{
+			excelDate *= 24;
+			datetime.hr = std::floor(excelDate);
+			excelDate -= datetime.hr;
+			excelDate *= 60;
+			datetime.min = std::floor(excelDate);
+			excelDate -= datetime.min;
+			datetime.sec = std::floor(excelDate*60);
+		}
+		return datetime.value();
+	
+	}
 
     //struct NullDeleter {template<typename T> void operator()(T*) {} };
     void CPivotTableFile::readBin(const CPath& oPath)
@@ -4695,8 +4720,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
             if(ptr->fDateInField && !ptr->fMixedTypesIgnoringBlanks && ptr->fNumMinMaxValid)
             {
-                m_oMinDate              = std::to_wstring(ptr->xnumMin.data.value);
-                m_oMaxDate              = std::to_wstring(ptr->xnumMax.data.value);
+                m_oMinDate              = getDateFromExcelTime(ptr->xnumMin.data.value);
+                m_oMaxDate              = getDateFromExcelTime(ptr->xnumMax.data.value);
             }
             else if(ptr->fNumField && ptr->fNumMinMaxValid)
             {
@@ -5093,8 +5118,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
             if(ptr->fDates)
             {
-                m_oStartDate = std::to_wstring(ptr->xnumStart.data.value);
-                m_oEndDate   = std::to_wstring(ptr->xnumEnd.data.value);
+                m_oStartDate = getDateFromExcelTime(ptr->xnumStart.data.value);
+                m_oEndDate   = getDateFromExcelTime(ptr->xnumEnd.data.value);
             }
             else
             {

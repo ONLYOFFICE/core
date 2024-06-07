@@ -2020,7 +2020,10 @@ else if (m_oType == SimpleTypes::Spreadsheet::ECfType::timePeriod)
 else if (m_oType == SimpleTypes::Spreadsheet::ECfType::aboveAverage)
 {
     ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_ABOVEAVERAGE;
-    ptr->iParam = m_oStdDev->GetValue();
+    if(m_oStdDev.IsInit())
+        ptr->iParam = m_oStdDev->GetValue();
+    else
+        ptr->iParam = 0;
 }
 else if (m_oType == SimpleTypes::Spreadsheet::ECfType::duplicateValues)
 {
@@ -2046,7 +2049,10 @@ else if (m_oType == SimpleTypes::Spreadsheet::ECfType::iconSet)
 else if (m_oType == SimpleTypes::Spreadsheet::ECfType::top10)
 {
     ptr->iType = XLSB::CFType::CF_TYPE_FILTER;
-    ptr->iParam = m_oRank->GetValue();
+    if(m_oRank.IsInit())
+        ptr->iParam = m_oRank->GetValue();
+    else
+        ptr->iParam = 1;
     ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_FILTER;
 }
 

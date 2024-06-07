@@ -2031,7 +2031,14 @@ namespace OOX
 					break;
 				case SimpleTypes::Spreadsheet::celltypeError:
 					{
-					if (m_oValue->m_sText == L"#NULL!")
+                    if(!m_oValue.IsInit())
+                    {
+                        auto error = new XLSB::CellError;
+                        error->value = 0x00;
+                        oCell = &error->cell;
+                        pSource = error;
+                    }
+                    else if (m_oValue->m_sText == L"#NULL!")
 					{	if(m_oFormula.IsInit())
 						{
 							auto error = new XLSB::FmlaError;
@@ -2205,10 +2212,28 @@ namespace OOX
 					break;
 				case SimpleTypes::Spreadsheet::celltypeSharedString:
 					{
-						auto pCellIsst(new XLSB::CellIsst);
-						pCellIsst->value = std::stoi(m_oValue->m_sText);
-						oCell = &pCellIsst->cell;
-						pSource = pCellIsst;
+                        if(m_oValue.IsInit())
+                        {
+                            auto pCellIsst(new XLSB::CellIsst);
+                            pCellIsst->value = std::stoi(m_oValue->m_sText);
+                            oCell = &pCellIsst->cell;
+                            pSource = pCellIsst;
+                        }
+                        else if(m_oFormula.IsInit())
+                        {
+                            auto str(new XLSB::FmlaString);
+                            str->value = L"";
+                            oCell = &str->cell;
+                            pSource = str;
+
+                        }
+                        else
+                        {
+                            auto pCellblank = new(XLSB::CellBlank);
+                            oCell = &pCellblank->cell;
+                            oCell->fPhShow = false;
+                            pSource = pCellblank;
+                        }
 					}
 					break;
 				case SimpleTypes::Spreadsheet::celltypeInlineStr:
@@ -2255,6 +2280,13 @@ namespace OOX
                                 pSource = str;
                             }
                         }
+						else if(m_oFormula.IsInit())
+						{
+							auto str(new XLSB::FmlaString);
+							str->value = L"";
+							oCell = &str->cell;
+							pSource = str;
+						}
 						else
 						{
 							auto pCellblank = new(XLSB::CellBlank);

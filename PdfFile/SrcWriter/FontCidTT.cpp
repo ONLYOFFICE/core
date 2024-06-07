@@ -470,7 +470,16 @@ namespace PdfWriter
 		for (unsigned short ushCurCode = 0, ushCodesCount = m_vCodeToGid.size(); ushCurCode < ushCodesCount; ushCurCode++)
 		{
 			if (unGID == m_vCodeToGid.at(ushCurCode))
+			{
+				if (m_vUnicodes.at(ushCurCode).empty() && unCount)
+				{
+					std::vector<unsigned int> vUnicodes;
+					for (unsigned int i = 0; i < unCount; i++)
+						vUnicodes.push_back(pUnicodes[i]);
+					m_vUnicodes[ushCurCode] = vUnicodes;
+				}
 				return ushCurCode;
+			}
 		}
 
 		if (!OpenFontFace())
@@ -492,6 +501,17 @@ namespace PdfWriter
 		// Если данный символ составной (CompositeGlyf), тогда мы должны учесть все его дочерные символы (subglyfs)
 		if (0 == FT_Load_Glyph(m_pFace, unGID, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE))
 		{
+			if (0 != m_pFace->units_per_EM)
+			{
+				m_vWidths.push_back((unsigned int)m_pFace->glyph->metrics.horiAdvance * 1000 / m_pFace->units_per_EM);
+				m_vGlypWidths.push_back((unsigned int)(m_pFace->glyph->metrics.width) * 1000 / m_pFace->units_per_EM);
+			}
+			else
+			{
+				m_vWidths.push_back((unsigned int)m_pFace->glyph->metrics.horiAdvance);
+				m_vGlypWidths.push_back((unsigned int)(m_pFace->glyph->metrics.width) * 1000 / m_pFace->units_per_EM);
+			}
+
 			for (int nSubIndex = 0; nSubIndex < m_pFace->glyph->num_subglyphs; nSubIndex++)
 			{
 				FT_Int       nSubGID;
@@ -502,17 +522,9 @@ namespace PdfWriter
 				FT_Get_SubGlyph_Info(m_pFace->glyph, nSubIndex, &nSubGID, &unFlags, &nArg1, &nArg2, &oMatrix);
 
 				m_mGlyphs.insert(std::pair<unsigned short, bool>(nSubGID, true));
-			}
 
-			if (0 != m_pFace->units_per_EM)
-			{
-				m_vWidths.push_back((unsigned int)m_pFace->glyph->metrics.horiAdvance * 1000 / m_pFace->units_per_EM);
-				m_vGlypWidths.push_back((unsigned int)(m_pFace->glyph->metrics.width) * 1000 / m_pFace->units_per_EM);
-			}
-			else
-			{
-				m_vWidths.push_back((unsigned int)m_pFace->glyph->metrics.horiAdvance);
-				m_vGlypWidths.push_back((unsigned int)(m_pFace->glyph->metrics.width) * 1000 / m_pFace->units_per_EM);
+				EncodeGID(nSubGID, NULL, 0); // TODO необходимо верно указать Unicode для случая записи подсимволов
+				FT_Load_Glyph(m_pFace, unGID, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE);
 			}
 		}
 		else

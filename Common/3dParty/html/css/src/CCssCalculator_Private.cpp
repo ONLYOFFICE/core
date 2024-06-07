@@ -511,13 +511,16 @@ namespace NSCSS
 		std::vector<std::wstring> arNodes = CalculateAllNodes(arSelectors);
 		std::vector<std::wstring> arPrevNodes;
 		bool bInTable = false;
-		
+
 		for (size_t i = 0; i < arSelectors.size(); ++i)
 		{
 			oStyle.AddParent(arSelectors[i].m_wsName);
 
 			// Скидываем некоторые внешние стили, которые внутри таблицы переопределяются
 			if (L"table" == arSelectors[i].m_wsName)
+				bInTable = true;
+
+			if (bInTable)
 			{
 				oStyle.m_oFont.GetLineHeight().Clear();
 				oStyle.m_oPadding.Clear();

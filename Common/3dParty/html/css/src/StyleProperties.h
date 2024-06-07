@@ -136,7 +136,7 @@ namespace NSCSS
 		void Clear() override;
 
 		void ConvertTo(UnitMeasure enUnitMeasure, double dPrevValue = 0.);
-		
+
 		int          ToInt()     const override;
 		double       ToDouble()  const override;
 		std::wstring ToWString() const override;
@@ -230,6 +230,7 @@ namespace NSCSS
 
 		bool Empty() const override;
 		bool None() const;
+		bool Url() const;
 		void Clear() override;
 
 		ColorType GetType() const;
@@ -384,6 +385,7 @@ namespace NSCSS
 
 		const CColor& GetColor() const;
 
+		void Clear();
 		bool Empty()  const;
 		bool IsNone() const;
 

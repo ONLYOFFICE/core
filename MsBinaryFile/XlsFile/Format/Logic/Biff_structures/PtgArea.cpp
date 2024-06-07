@@ -148,7 +148,10 @@ void PtgArea::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool ful
             }
         }
     }
-    ptg_stack.push(range.toString());
+	if(global_info->Version < 0x0800)
+    	ptg_stack.push(range.toString());
+	else
+		ptg_stack.push(range.toString(true, true));
 
 }
 

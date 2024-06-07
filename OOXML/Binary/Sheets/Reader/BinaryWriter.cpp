@@ -5619,14 +5619,40 @@ void BinaryWorksheetTableWriter::WriteCell(const OOX::Spreadsheet::CCell& oCell)
 	{
 
         double dValue = 0;
-        try
-        {
-            dValue = XmlUtils::GetDouble(oCell.m_oValue->ToString());
-        }
-        catch(...)
-        {   //1.3912059045063478e-310
-            //Lighting Load Calculation.xls
-        }
+		if(oCell.m_oType.IsInit() && oCell.m_oType->m_eValue == SimpleTypes::Spreadsheet::celltypeError)
+		{
+            auto errorText = oCell.m_oValue->m_sText;
+			if(errorText == L"#NULL!")
+				dValue = 0x00;
+			else if(errorText == L"#DIV/0!")
+				dValue = 0x07;
+			else if(errorText == L"#VALUE!")
+				dValue = 0x0F;
+			else if(errorText == L"#REF!")
+				dValue = 0x17;
+			else if(errorText == L"#NAME?")
+				dValue = 0x1D;
+			else if(errorText == L"#NUM!")
+				dValue = 0x24;
+			else if(errorText == L"#N/A")
+				dValue = 0x2A;
+			else if(errorText == L"#GETTING_DATA")
+				dValue = 0x2B;
+			else
+				dValue = 0x0;
+		}
+		else
+		{
+			try
+			{
+				dValue = XmlUtils::GetDouble(oCell.m_oValue->ToString());
+			}
+			catch(...)
+			{   //1.3912059045063478e-310
+				//Lighting Load Calculation.xls
+			}
+		}
+	
 
 		nCurPos = m_oBcw.WriteItemStart(c_oSerCellTypes::Value);
 		m_oBcw.m_oStream.WriteDoubleReal(dValue);
@@ -5953,7 +5979,8 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 			pFormControlPr = pFileCtrlProp->m_oFormControlPr.GetPointer();
 		}
 		else
-		{
+		{	//using controls without activeX causes bugs
+			continue;
 			smart_ptr<OOX::ActiveX_xml> pActiveX_xml = pFileControl.smart_dynamic_cast<OOX::ActiveX_xml>();
 
 			if ((pActiveX_xml.IsInit()) && (pActiveX_xml->m_oObject.IsInit()))

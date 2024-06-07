@@ -1862,7 +1862,7 @@ XLS::BaseObjectPtr CConditionalFormattingRule::WriteAttributes(const  XLS::CellR
     else
         ptr->strParam.setSize(0xFFFFFFFF);
 
-    if(!m_arrFormula.empty())
+    if(!m_arrFormula.empty() && !m_arrFormula.front()->m_sText.empty())
     {
         ptr->rgce1 = m_arrFormula.front()->m_sText;
         m_arrFormula.erase(m_arrFormula.begin());
@@ -1872,7 +1872,7 @@ XLS::BaseObjectPtr CConditionalFormattingRule::WriteAttributes(const  XLS::CellR
     {
         ptr->cbFmla1 = 0;
     }
-    if(!m_arrFormula.empty())
+    if(!m_arrFormula.empty() && !m_arrFormula.front()->m_sText.empty())
     {
         ptr->rgce2 = m_arrFormula.front()->m_sText;
         m_arrFormula.erase(m_arrFormula.begin());
@@ -1882,7 +1882,7 @@ XLS::BaseObjectPtr CConditionalFormattingRule::WriteAttributes(const  XLS::CellR
     {
         ptr->cbFmla2 = 0;
     }
-    if(!m_arrFormula.empty())
+    if(!m_arrFormula.empty() && !m_arrFormula.front()->m_sText.empty())
     {
         ptr->rgce3 = m_arrFormula.front()->m_sText;
         m_arrFormula.erase(m_arrFormula.begin());

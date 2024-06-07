@@ -1862,7 +1862,7 @@ XLS::BaseObjectPtr CConditionalFormattingRule::WriteAttributes(const  XLS::CellR
     else
         ptr->strParam.setSize(0xFFFFFFFF);
 
-    if(!m_arrFormula.empty())
+    if(!m_arrFormula.empty() && !m_arrFormula.front()->m_sText.empty())
     {
         ptr->rgce1 = m_arrFormula.front()->m_sText;
         m_arrFormula.erase(m_arrFormula.begin());
@@ -1872,7 +1872,7 @@ XLS::BaseObjectPtr CConditionalFormattingRule::WriteAttributes(const  XLS::CellR
     {
         ptr->cbFmla1 = 0;
     }
-    if(!m_arrFormula.empty())
+    if(!m_arrFormula.empty() && !m_arrFormula.front()->m_sText.empty())
     {
         ptr->rgce2 = m_arrFormula.front()->m_sText;
         m_arrFormula.erase(m_arrFormula.begin());
@@ -1882,7 +1882,7 @@ XLS::BaseObjectPtr CConditionalFormattingRule::WriteAttributes(const  XLS::CellR
     {
         ptr->cbFmla2 = 0;
     }
-    if(!m_arrFormula.empty())
+    if(!m_arrFormula.empty() && !m_arrFormula.front()->m_sText.empty())
     {
         ptr->rgce3 = m_arrFormula.front()->m_sText;
         m_arrFormula.erase(m_arrFormula.begin());
@@ -2020,7 +2020,10 @@ else if (m_oType == SimpleTypes::Spreadsheet::ECfType::timePeriod)
 else if (m_oType == SimpleTypes::Spreadsheet::ECfType::aboveAverage)
 {
     ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_ABOVEAVERAGE;
-    ptr->iParam = m_oStdDev->GetValue();
+    if(m_oStdDev.IsInit())
+        ptr->iParam = m_oStdDev->GetValue();
+    else
+        ptr->iParam = 0;
 }
 else if (m_oType == SimpleTypes::Spreadsheet::ECfType::duplicateValues)
 {
@@ -2046,7 +2049,10 @@ else if (m_oType == SimpleTypes::Spreadsheet::ECfType::iconSet)
 else if (m_oType == SimpleTypes::Spreadsheet::ECfType::top10)
 {
     ptr->iType = XLSB::CFType::CF_TYPE_FILTER;
-    ptr->iParam = m_oRank->GetValue();
+    if(m_oRank.IsInit())
+        ptr->iParam = m_oRank->GetValue();
+    else
+        ptr->iParam = 1;
     ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_FILTER;
 }
 

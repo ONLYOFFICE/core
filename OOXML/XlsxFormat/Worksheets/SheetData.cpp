@@ -1920,9 +1920,9 @@ namespace OOX
 				{
 					if(m_oValue->m_sText == L"TRUE" || m_oValue->m_sText == L"FALSE")
 						m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeBool);
-					else if(std::all_of(m_oValue->m_sText.begin(), m_oValue->m_sText.end(), [](const char c) { return std::isdigit(c); }) && m_oValue->m_sText.size() <= 10)
+                    else if(std::all_of(m_oValue->m_sText.begin(), m_oValue->m_sText.end(), [](const char c) { return std::isdigit(c); }) && m_oValue->m_sText.size() <= 10 && m_oValue->m_sText.size() > 0)
 					{
-						if(m_oValue->m_sText.size() < 10)
+                        if(m_oValue->m_sText.size() < 10 )
 						{
 							intCache = std::stoi(m_oValue->m_sText);
 							m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
@@ -1939,7 +1939,7 @@ namespace OOX
 					}
 					
 					if((m_oValue->m_sText.find(L".") == std::string::npos || m_oValue->m_sText.find(L".") == m_oValue->m_sText.rfind(L".")) 
-						&& m_oValue->m_sText.size() <=17)
+                        && m_oValue->m_sText.size() <=17 && m_oValue->m_sText.size() > 0)
 					{
 						if(m_oValue->m_sText.size() < 17)
 						{
@@ -2031,7 +2031,14 @@ namespace OOX
 					break;
 				case SimpleTypes::Spreadsheet::celltypeError:
 					{
-					if (m_oValue->m_sText == L"#NULL!")
+                    if(!m_oValue.IsInit())
+                    {
+                        auto error = new XLSB::CellError;
+                        error->value = 0x00;
+                        oCell = &error->cell;
+                        pSource = error;
+                    }
+                    else if (m_oValue->m_sText == L"#NULL!")
 					{	if(m_oFormula.IsInit())
 						{
 							auto error = new XLSB::FmlaError;
@@ -2205,10 +2212,28 @@ namespace OOX
 					break;
 				case SimpleTypes::Spreadsheet::celltypeSharedString:
 					{
-						auto pCellIsst(new XLSB::CellIsst);
-						pCellIsst->value = std::stoi(m_oValue->m_sText);
-						oCell = &pCellIsst->cell;
-						pSource = pCellIsst;
+                        if(m_oValue.IsInit())
+                        {
+                            auto pCellIsst(new XLSB::CellIsst);
+                            pCellIsst->value = std::stoi(m_oValue->m_sText);
+                            oCell = &pCellIsst->cell;
+                            pSource = pCellIsst;
+                        }
+                        else if(m_oFormula.IsInit())
+                        {
+                            auto str(new XLSB::FmlaString);
+                            str->value = L"";
+                            oCell = &str->cell;
+                            pSource = str;
+
+                        }
+                        else
+                        {
+                            auto pCellblank = new(XLSB::CellBlank);
+                            oCell = &pCellblank->cell;
+                            oCell->fPhShow = false;
+                            pSource = pCellblank;
+                        }
 					}
 					break;
 				case SimpleTypes::Spreadsheet::celltypeInlineStr:
@@ -2255,6 +2280,13 @@ namespace OOX
                                 pSource = str;
                             }
                         }
+						else if(m_oFormula.IsInit())
+						{
+							auto str(new XLSB::FmlaString);
+							str->value = L"";
+							oCell = &str->cell;
+							pSource = str;
+						}
 						else
 						{
 							auto pCellblank = new(XLSB::CellBlank);
@@ -2426,7 +2458,7 @@ namespace OOX
             {
                 m_oRow = ptr->m_Row;
                 auto pCELLMETA = static_cast<XLSB::CELLMETA*>(ptr->m_CELLMETA.get());
-                if(pCELLMETA != nullptr)
+                if(pCELLMETA != nullptr && false) // not convert without metadata file conversion
                 {
                     auto pCellMeta = static_cast<XLSB::CellMeta*>(pCELLMETA->m_BrtCellMeta.get());
                     if(pCellMeta != nullptr && pCellMeta->icmb)

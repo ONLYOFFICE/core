@@ -6301,7 +6301,7 @@ int BinaryWorksheetsTableReader::ReadCells(BYTE type, long length, void* poResul
 				bMoveText = true;
 				oCell.m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeStr);
 			}
-			if (bMoveText)
+            if (bMoveText && SimpleTypes::Spreadsheet::celltypeSharedString == eCellType)
 			{
                 int nValue = XmlUtils::GetInteger(oCell.m_oValue->ToString());
 
@@ -6320,6 +6320,26 @@ int BinaryWorksheetsTableReader::ReadCells(BYTE type, long length, void* poResul
 					}
 				}
 			}
+            else if(bMoveText && SimpleTypes::Spreadsheet::celltypeError == eCellType)
+            {
+                int nValue = XmlUtils::GetInteger(oCell.m_oValue->ToString());
+                std::wstring errText;
+                switch(nValue)
+                {
+                    case 0x00: errText = L"#NULL!"; break;
+                    case 0x07: errText = L"#DIV/0!"; break;
+                    case 0x0F: errText = L"#VALUE!"; break;
+                    case 0x17: errText = L"#REF!"; break;
+                    case 0x1D: errText = L"#NAME?"; break;
+                    case 0x24: errText = L"#NUM!"; break;
+                    case 0x2A: errText = L"#N/A"; break;
+                    case 0x2B: errText = L"#GETTING_DATA"; break;
+                    default:
+                        errText = L"#NULL!";
+                    break;
+                };
+                oCell.m_oValue->m_sText = errText;
+            }
 		}
 		if (NULL == m_oSaveParams.pCSVWriter)
 		{

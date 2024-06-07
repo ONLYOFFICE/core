@@ -359,6 +359,7 @@ namespace OOX
 					}
 					else if ((sName == L"dataDisplayOptions16") && (false == oReader.IsEmptyNode()))
 					{
+						m_sAdditionalNamespace = L"xmlns:c16r3=\"http://schemas.microsoft.com/office/drawing/2017/03/chart\"";
 						int nCurDepth1 = oReader.GetDepth();
 						while (oReader.ReadNextSiblingNode(nCurDepth1))
 						{
@@ -597,8 +598,7 @@ namespace OOX
 					writer.StartNode(L"c16r3:dispNaAsBlank");
 						writer.StartAttributes();
 							writer.WriteAttribute(L"val", *m_oDataDisplayNaAsBlank);
-						writer.EndAttributes();
-					writer.EndNode(L"c16r3:dispNaAsBlank");
+						writer.EndAttributesAndNode();
 				writer.EndNode(L"c16r3:dataDisplayOptions16");
 				sResult += writer.GetData().c_str();
 			}

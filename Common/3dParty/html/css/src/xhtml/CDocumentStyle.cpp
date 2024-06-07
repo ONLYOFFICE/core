@@ -11,6 +11,11 @@
 #define DEFAULT_LINEHEIGHT 240
 #define LINEHEIGHTSCALE 10 // Значение LineHeight в OOXML должно быть в 10 раз больше чем указано в стиле
 
+#define VALUE_TO_INT(value, unit_measure) \
+	(NSCSS::UnitMeasure::None != value.GetUnitMeasure()) ? \
+		value.ToInt(unit_measure) : \
+		static_cast<int>(NSCSS::CUnitMeasureConverter::ConvertPx(value.ToDouble(), unit_measure, 96) + 0.5)
+
 namespace NSCSS
 {
 	CStyleUsed::CStyleUsed(const CCompiledStyle &oStyle, bool bIsPStyle)
@@ -336,10 +341,12 @@ namespace NSCSS
 		sSpacingValue.reserve(128);
 
 		if (!oStyle.m_oMargin.GetTop().Empty() && !oStyle.m_oMargin.GetTop().Zero())
-			sSpacingValue += L"w:before=\""  + std::to_wstring(oStyle.m_oMargin.GetTop().ToInt(NSCSS::Twips))    + L"\" ";
+			sSpacingValue += L"w:before=\""  + std::to_wstring(VALUE_TO_INT(oStyle.m_oMargin.GetTop(), NSCSS::Twips))    + L"\"  w:beforeAutospacing=\"0\" ";
 
 		if (!oStyle.m_oMargin.GetBottom().Empty() && !oStyle.m_oMargin.GetBottom().Zero())
-			sSpacingValue += L"w:after=\""   + std::to_wstring(oStyle.m_oMargin.GetBottom().ToInt(NSCSS::Twips)) + L"\" ";
+			sSpacingValue += L"w:after=\""   + std::to_wstring(VALUE_TO_INT(oStyle.m_oMargin.GetBottom(), NSCSS::Twips)) + L"\"  w:afterAutospacing=\"0\" ";
+		else if (oStyle.m_oMargin.GetBottom().Zero() || bInTable)
+			sSpacingValue += L"w:after=\"0\" ";
 
 		if (!oStyle.m_oFont.GetLineHeight().Empty() && !oStyle.m_oFont.GetLineHeight().Zero())
 		{
@@ -348,6 +355,8 @@ namespace NSCSS
 
 			sSpacingValue += L" w:line=\"" + wsLine + L"\" w:lineRule=\"" + wsLineRule + L"\"";
 		}
+		else if (oStyle.m_oFont.GetLineHeight().Zero() || bInTable)
+			sSpacingValue += L"w:lineRule=\"auto\" w:line=\"240\"";
 
 		if (!sSpacingValue.empty())
 			oXmlElement.AddPropertiesInP(PProperties::P_Spacing, sSpacingValue);

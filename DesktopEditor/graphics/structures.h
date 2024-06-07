@@ -442,6 +442,8 @@ namespace NSStructures
 			Alpha2 = other.Alpha2;
 
 			Image     = other.Image;
+			if (Image)
+				((IGrObject*)Image)->AddRef();
 			Transform = other.Transform;
 
 			TexturePath = other.TexturePath;

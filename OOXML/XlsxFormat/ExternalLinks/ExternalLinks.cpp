@@ -1497,10 +1497,16 @@ namespace Spreadsheet
 		ptr->m_BrtBeginSupBook = XLS::BaseObjectPtr{new XLSB::BeginSupBook};
 		auto castedBook = static_cast<XLSB::BeginSupBook*>(ptr->m_BrtBeginSupBook.get());
 		if (m_oDdeService.IsInit())
-				castedBook->string1 = m_oDdeService.get();
+			castedBook->string1 = m_oDdeService.get();
+		else
+			castedBook->string1 = L"";
 		if (m_oDdeTopic.IsInit())
-				castedBook->string2 = m_oDdeTopic.get();
-		ptr->m_DDEOLELINK = m_oDdeItems->toBin();
+			castedBook->string2 = m_oDdeTopic.get();
+		else
+			castedBook->string2 = L"";
+		if(m_oDdeItems.IsInit())
+			ptr->m_DDEOLELINK = m_oDdeItems->toBin();
+		castedBook->sbt = 0x0001;
         return ptr;
 	}
 
@@ -1764,13 +1770,18 @@ namespace Spreadsheet
 		XLSB::EXTERNALLINKPtr COleLink(new XLSB::EXTERNALLINK);
 		COleLink->m_BrtBeginSupBook = XLS::BaseObjectPtr{new XLSB::BeginSupBook};
 		auto castedBook = static_cast<XLSB::BeginSupBook*>(COleLink->m_BrtBeginSupBook.get());
-
+		castedBook->sbt = 0x0002;
 		if(m_oRid.IsInit())
 			castedBook->string1 = m_oRid->ToString();
+        else
+            castedBook->string1 = L"";
 		if(m_oProgId.IsInit())
 			castedBook->string2 = m_oProgId.get();
+        else
+            castedBook->string2 = L"";
 
-		COleLink->m_DDEOLELINK = m_oOleItems->toBin();
+        if(m_oOleItems.IsInit())
+            COleLink->m_DDEOLELINK = m_oOleItems->toBin();
 		return COleLink;
 	}
 	void COleLink::ReadAttributes(XLS::BaseObjectPtr& obj)
@@ -1885,9 +1896,9 @@ namespace Spreadsheet
 		{
 			if (m_oExternalBook.IsInit())
 				externalLinkStreamStream->m_EXTERNALLINK = m_oExternalBook->toBin();
-			if (m_oDdeLink.IsInit())
+			else if (m_oDdeLink.IsInit())
 				externalLinkStreamStream->m_EXTERNALLINK = m_oDdeLink->toBin();
-			if (m_oOleLink.IsInit())
+			else if (m_oOleLink.IsInit())
 				externalLinkStreamStream->m_EXTERNALLINK = m_oOleLink->toBin();
 		}
 		return externalLinkStreamStream;

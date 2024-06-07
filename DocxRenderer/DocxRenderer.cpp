@@ -473,8 +473,23 @@ HRESULT CDocxRenderer::put_BrushGradientColors(LONG* pColors, double* pPositions
 	// TODO:
 	return S_OK;
 }
-HRESULT CDocxRenderer::get_BrushTextureImage(Aggplus::CImage** pImage) { return S_OK; }
-HRESULT CDocxRenderer::put_BrushTextureImage(Aggplus::CImage* pImage) { return S_OK; }
+HRESULT CDocxRenderer::get_BrushTextureImage(Aggplus::CImage** pImage)
+{
+	*pImage = m_pInternal->m_oDocument.m_oBrush.Image;
+	return S_OK;
+}
+HRESULT CDocxRenderer::put_BrushTextureImage(Aggplus::CImage* pImage)
+{
+	RELEASEINTERFACE(m_pInternal->m_oDocument.m_oBrush.Image);
+
+	if (NULL == pImage)
+		return S_FALSE;
+
+	m_pInternal->m_oDocument.m_oBrush.Image = pImage;
+	m_pInternal->m_oDocument.m_oBrush.Image->AddRef();
+
+	return S_OK;
+}
 HRESULT CDocxRenderer::get_BrushTransform(Aggplus::CMatrix& oMatrix) { return S_OK; }
 HRESULT CDocxRenderer::put_BrushTransform(const Aggplus::CMatrix& oMatrix) { return S_OK; }
 //----------------------------------------------------------------------------------------

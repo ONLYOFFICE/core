@@ -559,6 +559,7 @@ class FileTypes:
         DOTX = _MASK + 0x000c
         OTT = _MASK + 0x000f
         HTML = _MASK + 0x0012
+        OFORM_PDF = _MASK + 0x0017
 
     class Presentation:
         _MASK = 0x0080

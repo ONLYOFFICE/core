@@ -141,7 +141,7 @@ void PtgAreaN::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 
     else
     {
-        ptg_stack.push((areaXlsb + cell_base_ref).toString(true));
+        ptg_stack.push((areaXlsb + cell_base_ref).toString(true, true));
     }
 }
 

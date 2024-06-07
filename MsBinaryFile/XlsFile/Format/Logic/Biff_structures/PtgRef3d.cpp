@@ -147,7 +147,7 @@ void PtgRef3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
     }
     else
     {
-        cell_ref = rgce_loc_xlsb.toString();
+        cell_ref = rgce_loc_xlsb.toString(true);
     }
 
 	if (global_info->Version < 0x0600)

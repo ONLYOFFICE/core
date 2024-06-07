@@ -2862,7 +2862,7 @@ namespace OOX
 			{
 				auto ptr(new XLSB::CsProtection);
 				objectPtr =  XLS::BaseObjectPtr{ptr};
-				ptr->protpwd = std::stoul(m_oPassword.get());
+                ptr->protpwd = std::stoul(m_oPassword.get(), nullptr, 16);
 				if(m_oObjects.IsInit())
 					ptr->fObjects  = m_oObjects->GetValue();
 				else

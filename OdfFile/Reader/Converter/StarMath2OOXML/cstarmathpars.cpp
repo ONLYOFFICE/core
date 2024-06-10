@@ -1247,13 +1247,8 @@ namespace StarMath
 					continue;
 				if(CheckMline(pTemp))
 				{
-					pXmlWrite->WriteNodeBegin(L"m:r",false);
-					CConversionSMtoOOXML::StandartProperties(pXmlWrite,GetAttribute(),GetTypeConversion());
-					pXmlWrite->WriteNodeBegin(L"m:t",false);
-					pXmlWrite->WriteString(L"\u007C");
-					pXmlWrite->WriteNodeEnd(L"m:t",false,false);
-					pXmlWrite->WriteNodeEnd(L"m:r",false,false);
-					continue;
+					pXmlWrite->WriteNodeEnd(L"m:e",false,false);
+					pXmlWrite->WriteNodeBegin(L"m:e",false);
 				}
 				CConversionSMtoOOXML::ElementConversion(pXmlWrite,pTemp);
 			}

@@ -330,39 +330,10 @@ namespace StarMath {
 		pXmlWrite->WriteNodeEnd(L"m:funcPr",false,false);
 	}
 
-	void CConversionSMtoOOXML::PropertiesDPr(XmlUtils::CXmlWriter *pXmlWrite, const TypeElement &enTypeBracket,CAttribute* pAttribute,const TypeConversion &enTypeConversion)
+	void CConversionSMtoOOXML::PropertiesDPr(XmlUtils::CXmlWriter *pXmlWrite, const std::wstring &wsOpenBracket, std::wstring &wsCloseBracket, CAttribute* pAttribute, const TypeConversion &enTypeConversion, const TypeElement &enTypeBracket)
 	{
 		pXmlWrite->WriteNodeBegin(L"m:dPr",false);
-		switch(enTypeBracket)
-		{
-			case TypeElement::langle:
-				BracketTypeNotation(L"\u27E8",L"\u27E9",pXmlWrite);
-				break;
-			case TypeElement::square:
-				BracketTypeNotation(L"\u005B",L"\u005D",pXmlWrite);
-				break;
-			case TypeElement::ldbracket:
-				BracketTypeNotation(L"\u27E6",L"\u27E7",pXmlWrite);
-				break;
-			case TypeElement::lbrace:
-				BracketTypeNotation(L"\u007B",L"\u007D",pXmlWrite);
-				break;
-			case TypeElement::lceil:
-				BracketTypeNotation(L"\u2308",L"\u2309",pXmlWrite);
-				break;
-			case TypeElement::lfloor:
-				BracketTypeNotation(L"\u230A",L"\u230B",pXmlWrite);
-				break;
-			case TypeElement::lline:
-				BracketTypeNotation(L"\u007C",L"\u007C",pXmlWrite);
-				break;
-			case TypeElement::ldline:
-				BracketTypeNotation(L"\u2016",L"\u2016",pXmlWrite);
-				break;
-			case TypeElement::abs:
-				BracketTypeNotation(L"\u007C",L"\u007C",pXmlWrite);
-				break;
-		}
+		BracketTypeNotation(wsOpenBracket,wsCloseBracket,pXmlWrite);
 		pXmlWrite->WriteNodeBegin(L"m:ctrlPr");
 		StandartProperties(pXmlWrite,pAttribute,enTypeConversion);
 		pXmlWrite->WriteNodeEnd(L"m:ctrlPr",false,false);
@@ -370,12 +341,24 @@ namespace StarMath {
 	}
 	void CConversionSMtoOOXML::BracketTypeNotation(const std::wstring &wsOpenBracket, const std::wstring &wsCloseBracket, XmlUtils::CXmlWriter *pXmlWrite)
 	{
-		pXmlWrite->WriteNodeBegin(L"m:begChr", true);
-		pXmlWrite->WriteAttribute(L"m:val",wsOpenBracket);
-		pXmlWrite->WriteNodeEnd(L"w",true,true);
-		pXmlWrite->WriteNodeBegin(L"m:endChr", true);
-		pXmlWrite->WriteAttribute(L"m:val", wsCloseBracket);
-		pXmlWrite->WriteNodeEnd(L"w",true,true);
+		if(!wsOpenBracket.empty())
+		{
+			pXmlWrite->WriteNodeBegin(L"m:begChr", true);
+			if(wsOpenBracket == L"none")
+				pXmlWrite->WriteAttribute(L"m:val",L"");
+			else
+				pXmlWrite->WriteAttribute(L"m:val",wsOpenBracket);
+			pXmlWrite->WriteNodeEnd(L"w",true,true);
+		}
+		if(!wsCloseBracket.empty())
+		{
+			pXmlWrite->WriteNodeBegin(L"m:endChr", true);
+			if(wsCloseBracket == L"none")
+				pXmlWrite->WriteAttribute(L"m:val",L"");
+			else
+				pXmlWrite->WriteAttribute(L"m:val", wsCloseBracket);
+			pXmlWrite->WriteNodeEnd(L"w",true,true);
+		}
 	}
 	void CConversionSMtoOOXML::PropertiesMPr(XmlUtils::CXmlWriter *pXmlWrite, const TypeElement &enTypeMatrix,CAttribute* pAttribute,const TypeConversion &enTypeConversion)
 	{

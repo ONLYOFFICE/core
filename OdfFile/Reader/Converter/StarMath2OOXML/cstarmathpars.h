@@ -135,6 +135,7 @@ namespace StarMath
 		void SetString(const std::wstring& wsToken);
 		void FindingTheEndOfParentheses();
 		void IteratorNullification();
+		void SettingTheIteratorToTheClosingBracket();
 		void ReadingTheNextToken();
 		void SetMarkForUnar(const bool& bMark);
 		bool GetMarkForUnar();
@@ -150,7 +151,7 @@ namespace StarMath
 		CAttribute* m_pAttribute;
 		CAttribute* m_pBaseAttribute;
 		TypeConversion m_enTypeCon;
-		std::stack<std::wstring::iterator> m_stBracket;
+		std::stack<std::wstring::iterator> m_stBracket,m_stCloseBracket;
 	};
 
 	class CElement
@@ -296,7 +297,7 @@ namespace StarMath
 	class CElementBracket: public CElement
 	{
 	public:
-		CElementBracket(const TypeElement& enType,const TypeConversion &enTypeConversion);
+		CElementBracket(const TypeElement& enType,const TypeConversion &enTypeConversion,const bool& bScalability = false);
 		virtual ~CElementBracket();
 		void SetBracketValue(const std::vector<CElement*>& arValue);
 		static TypeElement GetBracketOpen(const std::wstring& wsToken);
@@ -307,8 +308,10 @@ namespace StarMath
 		void Parse(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
 		bool CheckMline(CElement* pElement);
-		TypeElement m_enTypeBracket;
+		std::wstring DefiningBracket(const TypeElement& enTypeBracket);
+		TypeElement m_enTypeBracket,m_enLeftBracket,m_enRightBracket;
 		std::vector<CElement*> m_arBrecketValue;
+		bool m_bScalability;
 	};
 
 	class CElementBracketWithIndex: public CElement

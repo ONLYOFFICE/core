@@ -478,9 +478,13 @@ const void StringPtgParser::parsePtgTypes(Rgce& rgce)
                 auto paramsNum = funcPtr->getParametersNum();
                 auto refArgs = PosValArgs(funcPtr->getFuncIndex());
                 for(auto j = paramsNum-1; j >= 0; j--)
-                {  if(refArgs.size() > j && refArgs.at(j))
-                    SetPtgType(functionStack.back(), 3);
-                    functionStack.pop_back();
+                {
+                    if(!functionStack.empty())
+                    {
+                        if(refArgs.size() > j && refArgs.at(j))
+                        SetPtgType(functionStack.back(), 3);
+                        functionStack.pop_back();
+                    }
                 }
                 ///check and change fixed num of args
             }

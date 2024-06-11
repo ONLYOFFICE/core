@@ -470,13 +470,16 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 					if (last_paragraph_style)
 					{
 						const style_paragraph_properties* last_style_paragraph_props = last_paragraph_style->content()->get_style_paragraph_properties();
-						const paragraph_format_properties& last_paragraph_props = last_paragraph_style->content()->get_style_paragraph_properties()->content_;
-						length_or_percent last_margin_bottom = last_paragraph_props.fo_margin_bottom_.get_value_or(length_or_percent(length(0.0, length::cm)));
+						if (last_style_paragraph_props)
+						{
+							const paragraph_format_properties& last_paragraph_props = last_style_paragraph_props->content_;
+							length_or_percent last_margin_bottom = last_paragraph_props.fo_margin_bottom_.get_value_or(length_or_percent(length(0.0, length::cm)));
 
-						if (fo_margin_top_->get_length().get_value_unit(length::cm) > last_margin_bottom.get_length().get_value_unit(length::cm))
-							margin_top = _CP_OPT(length_or_percent)(length(fo_margin_top_->get_length().get_value_unit(length::cm) - last_margin_bottom.get_length().get_value_unit(length::cm), length::cm));
-						else
-							margin_top = _CP_OPT(length_or_percent)(length(0.0, length::cm));
+							if (fo_margin_top_->get_length().get_value_unit(length::cm) > last_margin_bottom.get_length().get_value_unit(length::cm))
+								margin_top = _CP_OPT(length_or_percent)(length(fo_margin_top_->get_length().get_value_unit(length::cm) - last_margin_bottom.get_length().get_value_unit(length::cm), length::cm));
+							else
+								margin_top = _CP_OPT(length_or_percent)(length(0.0, length::cm));
+						}
 					}
 					
                     std::wstring w_before = pptx_process_margin(margin_top, length::pt, 100.0);

@@ -102,7 +102,7 @@ const int normalizeRow(const int row, const bool xlsb)
 		maxRow = 65536;
 	}
 	int norm_row = row;
-    while(norm_row > maxRow)
+    while(norm_row >= maxRow)
 	{
         norm_row -= maxRow;
 	}

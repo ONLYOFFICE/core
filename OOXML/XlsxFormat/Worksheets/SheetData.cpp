@@ -2691,7 +2691,7 @@ namespace OOX
 				if (parseRefA(m_oRef->c_str(), nRow, nCol))
 				{
 					bRes = true;
-					nRow--;
+					//nRow--;
 					nCol--;
 				}
 			}

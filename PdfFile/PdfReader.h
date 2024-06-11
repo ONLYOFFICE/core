@@ -82,7 +82,7 @@ public:
 	BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget  = -1, const char* sView  = NULL, const char* sBView = NULL);
 	BYTE* GetAPAnnots  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot   = -1, const char* sView  = NULL);
 	BYTE* GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase64 = false, int nBWidget = -1, const char* sIView = NULL);
-	std::map<std::wstring, std::wstring> AnnotFonts(Object* pRefAnnot);
+	std::map<std::wstring, std::wstring> GetAnnotFonts(Object* pRefAnnot);
 
 private:
 	PDFDoc*                m_pPDFDocument;

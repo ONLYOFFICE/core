@@ -323,12 +323,17 @@ namespace OOX
 				ptr->strProgID =  m_oProgId.get();
 
 			if(m_oLink.IsInit())
+			{
+				ptr->fLinked = true;
 				ptr->link =  m_oLink.get();
+			}
 			else
 				ptr->fLinked = false;
 
 			if(m_oRid.IsInit())
 				ptr->strRelID.value =  m_oRid->GetValue();
+			else
+				ptr->strRelID.value.setSize(0);
 
 			return objectPtr;
 		}

@@ -210,7 +210,7 @@ namespace OOX
 				ptr->shapeId = m_oShapeId->GetValue();
 			else
 				ptr->shapeId = 1;
-			if (!m_oName.IsInit())
+            if (m_oName.IsInit())
 				ptr->strName = m_oName.get();
 			else
 				ptr->strName = L"";

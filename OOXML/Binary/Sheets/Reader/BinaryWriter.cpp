@@ -5979,8 +5979,7 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 			pFormControlPr = pFileCtrlProp->m_oFormControlPr.GetPointer();
 		}
 		else
-		{	//using controls without activeX causes bugs
-			continue;
+		{
 			smart_ptr<OOX::ActiveX_xml> pActiveX_xml = pFileControl.smart_dynamic_cast<OOX::ActiveX_xml>();
 
 			if ((pActiveX_xml.IsInit()) && (pActiveX_xml->m_oObject.IsInit()))
@@ -6091,257 +6090,256 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 
 void BinaryWorksheetTableWriter::WriteControlPr(OOX::Spreadsheet::CControlPr* pControlPr, OOX::Spreadsheet::CFormControlPr* pFormControlPr)
 {
-	if (!pControlPr) return;
-	if (!pFormControlPr) return;
+	if (!pControlPr && !pFormControlPr) return;
 
 	int nCurPos = 0;
 
-	if (pFormControlPr->m_oObjectType.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oObjectType.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::ObjectType);
 		m_oBcw.m_oStream.WriteBYTE(pFormControlPr->m_oObjectType->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pControlPr->m_oAltText.IsInit())
+	if (pControlPr && pControlPr->m_oAltText.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerControlTypes::AltText);
 		m_oBcw.m_oStream.WriteStringW(*pControlPr->m_oAltText);
 	}
-	if (pControlPr->m_oAutoFill.IsInit())
+	if (pControlPr && pControlPr->m_oAutoFill.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::AutoFill);
 		m_oBcw.m_oStream.WriteBOOL(*pControlPr->m_oAutoFill);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pControlPr->m_oAutoLine.IsInit())
+	if (pControlPr && pControlPr->m_oAutoLine.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::AutoLine);
 		m_oBcw.m_oStream.WriteBOOL(*pControlPr->m_oAutoLine);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pControlPr->m_oAutoPict.IsInit())
+	if (pControlPr && pControlPr->m_oAutoPict.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::AutoPict);
 		m_oBcw.m_oStream.WriteBOOL(*pControlPr->m_oAutoPict);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pControlPr->m_oDefaultSize.IsInit())
+	if (pControlPr && pControlPr->m_oDefaultSize.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::DefaultSize);
 		m_oBcw.m_oStream.WriteBOOL(*pControlPr->m_oDefaultSize);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pControlPr->m_oDisabled.IsInit())
+	if (pControlPr && pControlPr->m_oDisabled.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::Disabled);
 		m_oBcw.m_oStream.WriteBOOL(*pControlPr->m_oDisabled);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pControlPr->m_oLocked.IsInit())
+	if (pControlPr && pControlPr->m_oLocked.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::Locked);
 		m_oBcw.m_oStream.WriteBOOL(*pControlPr->m_oLocked);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pControlPr->m_oPrint.IsInit())
+	if (pControlPr && pControlPr->m_oPrint.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::Print);
 		m_oBcw.m_oStream.WriteBOOL(*pControlPr->m_oPrint);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pControlPr->m_oRecalcAlways.IsInit())
+	if (pControlPr && pControlPr->m_oRecalcAlways.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::RecalcAlways);
 		m_oBcw.m_oStream.WriteBOOL(*pControlPr->m_oRecalcAlways);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if(pControlPr->m_oMacro.IsInit())
+	if(pControlPr && pControlPr->m_oMacro.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerControlTypes::Macro);
 		m_oBcw.m_oStream.WriteStringW(*pControlPr->m_oMacro);
 	}
-	if(pFormControlPr->m_oFmlaGroup.IsInit())
+	if(pFormControlPr && pFormControlPr->m_oFmlaGroup.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerControlTypes::FmlaGroup);
 		m_oBcw.m_oStream.WriteStringW(*pFormControlPr->m_oFmlaGroup);
 	}
-	if(pFormControlPr->m_oFmlaLink.IsInit())
+	if(pFormControlPr && pFormControlPr->m_oFmlaLink.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerControlTypes::FmlaLink);
 		m_oBcw.m_oStream.WriteStringW(*pFormControlPr->m_oFmlaLink);
 	}
-	if(pFormControlPr->m_oFmlaRange.IsInit())
+	if(pFormControlPr && pFormControlPr->m_oFmlaRange.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerControlTypes::FmlaRange);
 		m_oBcw.m_oStream.WriteStringW(*pFormControlPr->m_oFmlaRange);
 	}
-	if(pFormControlPr->m_oFmlaTxbx.IsInit())
+	if(pFormControlPr && pFormControlPr->m_oFmlaTxbx.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerControlTypes::FmlaTxbx);
 		m_oBcw.m_oStream.WriteStringW(*pFormControlPr->m_oFmlaTxbx);
 	}
-	if (pFormControlPr->m_oDropLines.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oDropLines.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::DropLines);
 		m_oBcw.m_oStream.WriteLONG(pFormControlPr->m_oDropLines->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oChecked.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oChecked.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::Checked);
 		m_oBcw.m_oStream.WriteBYTE(pFormControlPr->m_oChecked->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oDropStyle.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oDropStyle.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::DropStyle);
 		m_oBcw.m_oStream.WriteBYTE(pFormControlPr->m_oDropStyle->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oDx.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oDx.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::Dx);
 		m_oBcw.m_oStream.WriteLONG(pFormControlPr->m_oDx->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oInc.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oInc.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::Inc);
 		m_oBcw.m_oStream.WriteLONG(pFormControlPr->m_oInc->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oMin.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oMin.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::Min);
 		m_oBcw.m_oStream.WriteLONG(pFormControlPr->m_oMin->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oMax.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oMax.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::Max);
 		m_oBcw.m_oStream.WriteLONG(pFormControlPr->m_oMax->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oPage.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oPage.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::Page);
 		m_oBcw.m_oStream.WriteLONG(pFormControlPr->m_oPage->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oSel.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oSel.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::Sel);
 		m_oBcw.m_oStream.WriteLONG(pFormControlPr->m_oSel->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oSelType.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oSelType.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::SelType);
 		m_oBcw.m_oStream.WriteBYTE(pFormControlPr->m_oSelType->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oTextHAlign.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oTextHAlign.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::TextHAlign);
 		m_oBcw.m_oStream.WriteBYTE(pFormControlPr->m_oTextHAlign->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oTextVAlign.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oTextVAlign.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::TextVAlign);
 		m_oBcw.m_oStream.WriteBYTE(pFormControlPr->m_oTextVAlign->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oVal.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oVal.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::Val);
 		m_oBcw.m_oStream.WriteLONG(*pFormControlPr->m_oVal);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oWidthMin.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oWidthMin.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::WidthMin);
 		m_oBcw.m_oStream.WriteLONG(pFormControlPr->m_oWidthMin->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oEditVal.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oEditVal.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::EditVal);
 		m_oBcw.m_oStream.WriteBYTE(pFormControlPr->m_oEditVal->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oColored.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oColored.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::Colored);
 		m_oBcw.m_oStream.WriteBOOL(*pFormControlPr->m_oColored);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oFirstButton.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oFirstButton.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::FirstButton);
 		m_oBcw.m_oStream.WriteBOOL(*pFormControlPr->m_oFirstButton);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oHoriz.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oHoriz.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::Horiz);
 		m_oBcw.m_oStream.WriteBOOL(*pFormControlPr->m_oHoriz);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oJustLastX.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oJustLastX.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::JustLastX);
 		m_oBcw.m_oStream.WriteBOOL(*pFormControlPr->m_oJustLastX);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oLockText.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oLockText.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::LockText);
 		m_oBcw.m_oStream.WriteBOOL(*pFormControlPr->m_oLockText);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oNoThreeD.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oNoThreeD.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::NoThreeD);
 		m_oBcw.m_oStream.WriteBOOL(*pFormControlPr->m_oNoThreeD);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oNoThreeD2.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oNoThreeD2.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::NoThreeD2);
 		m_oBcw.m_oStream.WriteBOOL(*pFormControlPr->m_oNoThreeD2);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if(pFormControlPr->m_oMultiSel.IsInit())
+	if(pFormControlPr && pFormControlPr->m_oMultiSel.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerControlTypes::MultiSel);
 		m_oBcw.m_oStream.WriteStringW(*pFormControlPr->m_oMultiSel);
 	}
-	if (pFormControlPr->m_oMultiLine.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oMultiLine.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::MultiLine);
 		m_oBcw.m_oStream.WriteBOOL(*pFormControlPr->m_oMultiLine);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oVerticalBar.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oVerticalBar.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::VerticalBar);
 		m_oBcw.m_oStream.WriteBOOL(*pFormControlPr->m_oVerticalBar);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oPasswordEdit.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oPasswordEdit.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::PasswordEdit);
 		m_oBcw.m_oStream.WriteBOOL(*pFormControlPr->m_oPasswordEdit);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (pFormControlPr->m_oText.IsInit())
+	if (pFormControlPr && pFormControlPr->m_oText.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerControlTypes::Text);
 		m_oBcw.m_oStream.WriteStringW(*pFormControlPr->m_oText);
 
 	}
-	if(pFormControlPr->m_oItemLst.IsInit())
+	if(pFormControlPr && pFormControlPr->m_oItemLst.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::ItemLst);
 		for (size_t i = 0; i < pFormControlPr->m_oItemLst->m_arrItems.size(); ++i)

@@ -590,6 +590,6 @@ namespace NSDocxRenderer
 
 	double CContText::CalculateThinSpace() const noexcept
 	{
-		return m_dSpaceWidthMM * 0.40;
+		return m_dSpaceWidthMM * 0.4;
 	}
 }

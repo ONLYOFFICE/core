@@ -132,7 +132,8 @@ namespace NSDocxRenderer
 		void MergeConts();
 		void DetermineDominantGraphics();
 
-		bool IsShapeBorderBetween(std::shared_ptr<CTextLine> pFirst, std::shared_ptr<CTextLine> pSecond) const noexcept;
+		bool IsShapeBorderBetweenVertical(std::shared_ptr<CTextLine> pFirst, std::shared_ptr<CTextLine> pSecond) const noexcept;
+		bool IsShapeBorderBetweenHorizontal(std::shared_ptr<CTextLine> pFirst, std::shared_ptr<CTextLine> pSecond) const noexcept;
 		bool IsShapeBorderTrough(std::shared_ptr<CContText> pItem, double& dXCrossing, double& dYCrossing) const noexcept;
 
 		std::shared_ptr<CShape> CreateSingleLineShape(std::shared_ptr<CTextLine>& pLine);
@@ -141,5 +142,13 @@ namespace NSDocxRenderer
 		// конвертим m_arImages, m_arShapes, m_arParagraphs в xml-строку
 		void ToXml(NSStringUtils::CStringBuilder& oWriter);
 		void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter);
+
+		std::shared_ptr<CContText> m_pCurrCont {nullptr};
+
+		NSStructures::CFont m_oPrevFont;
+		NSStructures::CBrush m_oPrevBrush;
+
+		Point m_oPrevPoint;
+		std::vector<std::pair<Point, Point>> m_arLines;
 	};
 }

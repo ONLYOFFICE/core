@@ -3,6 +3,12 @@
 
 namespace NSDocxRenderer
 {
+	struct Point
+	{
+		double x;
+		double y;
+	};
+
 	class CVectorGraphics
 	{
 	public:
@@ -12,12 +18,6 @@ namespace NSDocxRenderer
 			vgtLine = 1,
 			vgtCurve = 2,
 			vgtClose = 3
-		};
-
-		struct Point
-		{
-			double x;
-			double y;
 		};
 
 		struct PathCommand

@@ -165,12 +165,27 @@ namespace NSDocxRenderer
 	{
 		m_pTransform->TransformPoint(dX, dY);
 		m_oVector.MoveTo(dX, dY);
+
+		m_oPrevPoint.x = dX;
+		m_oPrevPoint.y = dY;
 	}
 
 	void CPage::LineTo(double& dX, double& dY)
 	{
 		m_pTransform->TransformPoint(dX, dY);
 		m_oVector.LineTo(dX, dY);
+
+		Point new_point;
+		new_point.x = dX;
+		new_point.y = dY;
+
+		std::pair<Point, Point> new_line;
+		new_line.first = m_oPrevPoint;
+		new_line.second = new_point;
+
+		m_arLines.push_back(new_line);
+
+		m_oPrevPoint = new_point;
 	}
 
 	void CPage::CurveTo(double& x1, double& y1, double& x2, double& y2, double& x3, double& y3)
@@ -180,6 +195,9 @@ namespace NSDocxRenderer
 		m_pTransform->TransformPoint(x3, y3);
 
 		m_oVector.CurveTo(x1, y1, x2, y2, x3, y3);
+
+		m_oPrevPoint.x = x3;
+		m_oPrevPoint.y = y3;
 	}
 
 	void CPage::PathStart()
@@ -279,11 +297,8 @@ namespace NSDocxRenderer
 		const double& fBaseLineOffset)
 	{
 		// 9 - \t
-		if (pUnicodes != nullptr && nCount == 1 && (IsSpaceUtf32(*pUnicodes) || *pUnicodes == 9))
-		{
-			//note пробелы не нужны, добавляются при анализе
+		if (*pUnicodes == 9)
 			return;
-		}
 
 		double dTextX = fX;
 		double dTextY = fY;
@@ -301,7 +316,7 @@ namespace NSDocxRenderer
 					oText[i] = ' ';
 
 		// иногда приходит неверный? размер, нужно перемерить (XPS)
-		if(m_bIsRecalcFontSize)
+		if (m_bIsRecalcFontSize)
 		{
 			m_pFont->Size *= ((m_pTransform->sx() + m_pTransform->sy()) / 2);
 			m_bIsRecalcFontSize = false;
@@ -329,11 +344,40 @@ namespace NSDocxRenderer
 		}
 
 		//}
-		double dBaseLinePos = dTextY + fBaseLineOffset;
+		auto oMetrics = m_pFontManager->GetFontMetrics();
+		_h = m_pFontManager->GetFontHeight();
+
+		double baseline = dTextY + fBaseLineOffset;
+		double top = baseline - _h;
+		double height = baseline - top;
+		double left = dTextX;
+		double width = _w;
+		double right = left + _w;
+
+
+		// if new text is close to current cont
+//		if (m_pCurrCont != nullptr &&
+//				fabs(m_pCurrCont->m_dBaselinePos - baseline) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
+//				m_oPrevFont.IsEqual2(m_pFont) &&
+//				m_oPrevBrush.IsEqual(m_pBrush) &&
+//				(fabs(m_pCurrCont->m_dRight - left) < m_pCurrCont->CalculateThinSpace()))
+//		{
+//			if (IsSpaceUtf32(oText) && m_pCurrCont->m_dFirstWordWidth == 0.0)
+//				m_pCurrCont->m_dFirstWordWidth = m_pCurrCont->m_dWidth;
+
+//			m_pCurrCont->m_oText += oText;
+//			m_pCurrCont->m_arSymbolLefts.push_back(left);
+
+//			m_pCurrCont->m_dRight = std::max(m_pCurrCont->m_dRight, right);
+//			m_pCurrCont->m_dTop = std::min(m_pCurrCont->m_dTop, top);
+//			m_pCurrCont->m_dBaselinePos = std::max(m_pCurrCont->m_dBaselinePos, baseline);
+
+//			m_pCurrCont->m_dWidth = m_pCurrCont->m_dRight - m_pCurrCont->m_dLeft;
+//			m_pCurrCont->m_dHeight = m_pCurrCont->m_dBaselinePos - m_pCurrCont->m_dTop;
+//			return;
+//		}
 
 		auto pCont = std::make_shared<CContText>(m_pFontManager);
-
-		auto oMetrics = m_pFontManager->GetFontMetrics();
 		auto oParams = m_pFontManager->GetFontSelectParams();
 
 		// use forced fold option
@@ -342,17 +386,16 @@ namespace NSDocxRenderer
 			bForcedBold = true;
 
 		m_pFontSelector->SelectFont(oParams, oMetrics, oText);
-		_h = m_pFontManager->GetFontHeight();
 
-		pCont->m_dBaselinePos = dBaseLinePos;
-		pCont->m_dTop         = pCont->m_dBaselinePos - _h;
-		pCont->m_dHeight      = pCont->m_dBaselinePos - pCont->m_dTop;
-
-		pCont->m_dLeft        = dTextX;
-		pCont->m_dWidth       = _w;
-		pCont->m_dRight       = dTextX + _w;
+		pCont->m_dBaselinePos = baseline;
+		pCont->m_dTop         = top;
+		pCont->m_dHeight      = height;
+		pCont->m_dLeft        = left;
+		pCont->m_dWidth       = width;
+		pCont->m_dRight       = right;
 
 		pCont->m_oText        = oText;
+		pCont->m_arSymbolLefts.push_back(left);
 
 		double font_size = m_pFont->Size;
 		double em_height = oMetrics.dEmHeight;
@@ -387,6 +430,9 @@ namespace NSDocxRenderer
 		pCont->m_bWriteStyleRaw = m_bWriteStyleRaw;
 		m_pParagraphStyleManager->UpdateAvgFontSize(m_pFont->Size);
 		m_arConts.push_back(pCont);
+//		m_pCurrCont = pCont;
+//		m_oPrevFont = *m_pFont;
+//		m_oPrevBrush = *m_pBrush;
 	}
 
 	void CPage::Analyze()
@@ -894,9 +940,9 @@ namespace NSDocxRenderer
 	{
 		auto h_type = pCont->CBaseItem::GetHorizontalCrossingType(pShape.get());
 
-		double dSomeBaseLine1 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.75;
+		double dSomeBaseLine1 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.70;
 		double dSomeBaseLine2 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.5;
-		double dSomeBaseLine3 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.25;
+		double dSomeBaseLine3 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.3;
 
 		bool bIf1 = pShape->m_eGraphicsType == eGraphicsType::gtRectangle;
 
@@ -1133,38 +1179,38 @@ namespace NSDocxRenderer
 		}
 	}
 
-	bool CPage::IsShapeBorderBetween(std::shared_ptr<CTextLine> pFirst, std::shared_ptr<CTextLine> pSecond) const noexcept
+	bool CPage::IsShapeBorderBetweenVertical(std::shared_ptr<CTextLine> pFirst, std::shared_ptr<CTextLine> pSecond) const noexcept
 	{
 		double left = std::min(pFirst->m_dRight, pSecond->m_dRight);
 		double right = std::max(pFirst->m_dLeft, pSecond->m_dLeft);
+		double top = std::min(pFirst->m_dTopWithMaxAscent, pSecond->m_dTopWithMaxAscent);
+		double bot = std::max(pFirst->m_dBotWithMaxDescent, pSecond->m_dBotWithMaxDescent);
+
+		std::shared_ptr<CContText> dummy_cont = std::make_shared<CContText>();
+		dummy_cont->m_dLeft = left;
+		dummy_cont->m_dRight = right;
+		dummy_cont->m_dTopWithAscent = top;
+		dummy_cont->m_dBotWithDescent = bot;
+
+		double dx, dy;
+		return IsShapeBorderTrough(dummy_cont, dx, dy);
+	}
+
+	bool CPage::IsShapeBorderBetweenHorizontal(std::shared_ptr<CTextLine> pFirst, std::shared_ptr<CTextLine> pSecond) const noexcept
+	{
+		double left = std::min(pFirst->m_dLeft, pSecond->m_dLeft);
+		double right = std::max(pFirst->m_dRight, pSecond->m_dRight);
 		double top = std::min(pFirst->m_dBotWithMaxDescent, pSecond->m_dBotWithMaxDescent);
 		double bot = std::max(pFirst->m_dTopWithMaxAscent, pSecond->m_dTopWithMaxAscent);
 
-		for (const auto& shape : m_arShapes)
-		{
-			if (!shape)
-				continue;
+		std::shared_ptr<CContText> dummy_cont = std::make_shared<CContText>();
+		dummy_cont->m_dLeft = left;
+		dummy_cont->m_dRight = right;
+		dummy_cont->m_dTopWithAscent = top;
+		dummy_cont->m_dBotWithDescent = bot;
 
-			double& s_left = shape->m_dLeft;
-			double& s_right = shape->m_dRight;
-			double& s_top = shape->m_dTop;
-			double& s_bot = shape->m_dBaselinePos;
-
-			bool lines_condition = shape->m_eSimpleLineType != eSimpleLineType::sltUnknown &&
-				!((s_right < left) || (s_left > right)) &&
-				!((s_bot < top) || (s_top > bot));
-
-			bool rectangle_condition = shape->m_eGraphicsType == eGraphicsType::gtRectangle &&
-					shape->m_eSimpleLineType == eSimpleLineType::sltUnknown &&
-					!((s_right < left) || (s_left > right)) &&
-					!((s_bot < top) || (s_top > bot)) &&
-					!(s_top < top && s_bot > bot && s_left < left && s_right > right);
-
-			if (lines_condition || rectangle_condition)
-				return true;
-
-		}
-		return false;
+		double dx, dy;
+		return IsShapeBorderTrough(dummy_cont, dx, dy);
 	}
 
 	bool CPage::IsShapeBorderTrough(std::shared_ptr<CContText> pItem, double& dXCrossing, double& dYCrossing) const noexcept
@@ -1694,7 +1740,7 @@ namespace NSDocxRenderer
 			// если между линий шейп - делим
 			for (size_t index = 0; index < ar_positions.size() - 1; ++index)
 			{
-				if (IsShapeBorderBetween(text_lines[index], text_lines[index + 1]))
+				if (IsShapeBorderBetweenVertical(text_lines[index], text_lines[index + 1]))
 					ar_delims[index] = true;
 			}
 

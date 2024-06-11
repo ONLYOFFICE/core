@@ -77,6 +77,8 @@ namespace NSDocxRenderer
 
 		bool m_bPossibleSplit{false};
 
+		std::vector<double> m_arSymbolLefts;
+
 		CContText() = default;
 		CContText(CFontManager* pManager) : m_pManager(pManager) {}
 		CContText(const CContText& rCont);

@@ -69,7 +69,7 @@ namespace NSDocxRenderer
 			bool bIsSplitDelta = dDifference > dSpaceDefaultSize * 2;
 			bool bIsVeryBigDelta = dDifference > dSpaceWideSize;
 
-			if (bIsBigDelta && pFirst->m_dFirstWordWidth == 0.0)
+			if ((IsSpaceUtf32(pCurrent->m_oText[0]) || bIsBigDelta) && pFirst->m_dFirstWordWidth == 0.0)
 				pFirst->m_dFirstWordWidth = pFirst->m_dWidth;
 
 			if (bIsVeryBigDelta || (pCurrent->m_bPossibleSplit && bIsSplitDelta))

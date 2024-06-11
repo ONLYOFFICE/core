@@ -74,6 +74,7 @@
 #include "../../../XlsxFormat/Workbook/Metadata.h"
 
 #include "../../../../DesktopEditor/common/Directory.h"
+#include "../../../../Common/OfficeFileFormatChecker.h"
 
 namespace BinXlsxRW 
 {
@@ -8587,11 +8588,18 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 				//write dummy header and main table
 				oXlsbWriter.WriteStringUtf8(WriteFileHeader(0, g_nFormatVersionNoBase64));
 				oXlsbWriter.WriteReserved(GetMainTableSize());
-				int nDataStartPos = oXlsbWriter.GetPositionAbsolute();
+				int nDataStartPos = oXlsbWriter.GetPositionAbsolute();				
+				
+				// retest fileType - 1 || 4
+				COfficeFileFormatChecker checker;
+				if (checker.isOOXFormatFile(sInputDir, true))
+				{
+					fileType = (checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB) ? 4 : 1;
+				}
 				
 				if (fileType == 1)
 				{
-					pXlsx->m_pXlsbWriter = &oXlsbWriter;
+					pXlsx->m_pXlsbWriter = &oXlsbWriter; // todooo xlsb -> xlst without xlsx write folder 
 				}
 				//parse
 				pXlsx->Read(OOX::CPath(sInputDir));

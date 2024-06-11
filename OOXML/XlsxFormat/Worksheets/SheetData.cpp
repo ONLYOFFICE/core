@@ -2212,7 +2212,7 @@ namespace OOX
 					break;
 				case SimpleTypes::Spreadsheet::celltypeSharedString:
 					{
-                        if(m_oValue.IsInit())
+                        if(m_oValue.IsInit() && !m_oFormula.IsInit())
                         {
                             auto pCellIsst(new XLSB::CellIsst);
                             pCellIsst->value = std::stoi(m_oValue->m_sText);

@@ -357,7 +357,8 @@ extern int g_nCurFormatVersion;
 		Tab_Item_Val = 43,
 		SuppressLineNumbers = 44,
 		CnfStyle = 45,
-		SnapToGrid = 46
+		SnapToGrid = 46,
+		Bidi = 47
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{
@@ -416,7 +417,8 @@ extern int g_nCurFormatVersion;
 		Reflection = 52,
 		Glow = 53,
 		Props3d = 54,
-		Scene3d = 55
+		Scene3d = 55,
+		Kern = 56
 	};}
 	namespace c_oSerProp_rowPrType{enum c_oSerProp_rowPrType
 	{

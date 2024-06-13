@@ -2444,9 +2444,10 @@ std::map<std::wstring, std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object
 			continue;
 
 		std::string sFontName = arrRC[i]->sFontFamily;
+		std::wstring wsFontName = UTF8_TO_U(sFontName);
 		bool bBold = (bool)((arrRC[i]->unFontFlags >> 0) & 1);
 		bool bItalic = (bool)((arrRC[i]->unFontFlags >> 1) & 1);
-		bool bBase = sFontName == "Courier" || sFontName == "Helvetica" || sFontName == "Symbol" || sFontName == "Times New Roman" || sFontName == "ZapfDingbats";
+		bool bBase = isBaseFont(wsFontName) || sFontName == "Times New Roman";
 		if ((nTypeFonts & 2) && bBase)
 		{
 			if (sFontName == "Times New Roman")
@@ -2472,7 +2473,6 @@ std::map<std::wstring, std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object
 
 			const unsigned char* pData14 = NULL;
 			unsigned int nSize14 = 0;
-			std::wstring wsFontName = UTF8_TO_U(sFontName);
 			if (!NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(wsFontName) && GetBaseFont(wsFontName, pData14, nSize14))
 				NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFontName, (BYTE*)pData14, nSize14, false);
 			std::string sFontNameBefore = arrRC[i]->sFontFamily;
@@ -2496,7 +2496,7 @@ std::map<std::wstring, std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object
 				oFontSelect.bBold = new INT(1);
 			if (bItalic)
 				oFontSelect.bItalic = new INT(1);
-			oFontSelect.wsName = new std::wstring(UTF8_TO_U(sFontName));
+			oFontSelect.wsName = new std::wstring(wsFontName);
 
 			NSFonts::CFontInfo* pFontInfo = pAppFontList->GetByParams(oFontSelect);
 			if (pFontInfo && !pFontInfo->m_wsFontPath.empty())

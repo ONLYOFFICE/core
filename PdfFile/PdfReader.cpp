@@ -981,7 +981,7 @@ BYTE* CPdfReader::GetWidgets()
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
-std::map<std::wstring, std::wstring> CPdfReader::AnnotFonts(Object* pRefAnnot)
+std::map<std::wstring, std::wstring> CPdfReader::GetAnnotFonts(Object* pRefAnnot)
 {
 	return PdfReader::AnnotMarkup::SetFont(m_pPDFDocument, pRefAnnot, m_pFontManager, m_pFontList, 3);
 }

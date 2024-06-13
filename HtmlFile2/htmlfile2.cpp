@@ -962,12 +962,19 @@ private:
 	NSStringUtils::CStringBuilder m_oNoteXml;     // footnotes.xml
 	NSStringUtils::CStringBuilder m_oNumberXml;   // numbering.xml
 
-	bool m_bInP;         // <w:p> открыт?
-	bool m_bInR;         // <w:r> открыт?
-	bool m_bInT;         // <w:t> открыт?
-	bool m_bWasPStyle;   // <w:pStyle> записан?
-	bool m_bWasSpace;    // Был пробел?
-	bool m_bInHyperlink; // <w:hyperlink> открыт?
+	struct TState
+	{
+		bool m_bInP;         // <w:p> открыт?
+		bool m_bInR;         // <w:r> открыт?
+		bool m_bInT;         // <w:t> открыт?
+		bool m_bWasPStyle;   // <w:pStyle> записан?
+		bool m_bWasSpace;    // Был пробел?
+		bool m_bInHyperlink; // <w:hyperlink> открыт?
+
+		TState()
+			: m_bInP(false), m_bInR(false), m_bInT(false), m_bWasPStyle(false), m_bWasSpace(true), m_bInHyperlink(false)
+		{}
+	} m_oState;
 
 	std::vector<std::wstring>            m_arrImages;  // Картинки
 	std::map<std::wstring, std::wstring> m_mFootnotes; // Сноски
@@ -975,8 +982,7 @@ private:
 public:
 
 	CHtmlFile2_Private() 
-		: m_nFootnoteId(1), m_nHyperlinkId(1), m_nNumberingId(1), m_nId(1),
-		  m_bInP(false), m_bInR(false), m_bInT(false), m_bWasPStyle(false), m_bWasSpace(true), m_bInHyperlink(false)
+		: m_nFootnoteId(1), m_nHyperlinkId(1), m_nNumberingId(1), m_nId(1)
 	{
 		m_oPageData.SetSize  (std::to_wstring(DEFAULT_PAGE_WIDTH) + L"tw " + std::to_wstring(DEFAULT_PAGE_HEIGHT) + L"tw", 0, true);
 		m_oPageData.SetMargin(L"1440tw 1440tw 1440tw 1440tw", 0, true);
@@ -1240,7 +1246,7 @@ public:
 			oRelsWriter.CloseFile();
 		}
 
-		if (m_bInP)
+		if (m_oState.m_bInP)
 			m_oDocXml.WriteString(L"</w:p>");
 
 		m_oDocXml.WriteString(L"<w:sectPr w:rsidR=\"0007083F\" w:rsidRPr=\"0007083F\" w:rsidSect=\"0007612E\">");
@@ -1522,12 +1528,12 @@ public:
 
 	void PageBreakBefore()
 	{
-		if (!m_bInP)
+		if (!m_oState.m_bInP)
 			m_oDocXml.WriteString(L"<w:p>");
 
 		m_oDocXml.WriteString(L"<w:pPr><w:pageBreakBefore/></w:pPr>");
 
-		if (!m_bInP)
+		if (!m_oState.m_bInP)
 			m_oDocXml.WriteString(L"</w:p>");
 	}
 
@@ -1572,75 +1578,75 @@ private:
 
 	bool OpenP(NSStringUtils::CStringBuilder* pXml)
 	{
-		if (m_bInP)
+		if (m_oState.m_bInP)
 			return false;
 
 		pXml->WriteString(L"<w:p>");
-		m_bInP = true;
-		m_bWasPStyle = false;
+		m_oState.m_bInP = true;
+		m_oState.m_bWasPStyle = false;
 
 		return true;
 	}
 
 	bool OpenR(NSStringUtils::CStringBuilder* pXml)
 	{
-		if (m_bInR)
+		if (m_oState.m_bInR)
 			return false;
 
 		pXml->WriteString(L"<w:r>");
-		m_bInR = true;
+		m_oState.m_bInR = true;
 		return true;
 	}
 
 	void CloseR(NSStringUtils::CStringBuilder* pXml)
 	{
-		if (!m_bInR)
+		if (!m_oState.m_bInR)
 			return;
 
 		pXml->WriteString(L"</w:r>");
-		m_bInR = false;
+		m_oState.m_bInR = false;
 	}
 
 	bool OpenT(NSStringUtils::CStringBuilder* pXml)
 	{
-		if (m_bInT)
+		if (m_oState.m_bInT)
 			return false;
 
 		pXml->WriteString(L"<w:t xml:space=\"preserve\">");
-		m_bInT = true;
+		m_oState.m_bInT = true;
 		return true;
 	}
 
 	void CloseT(NSStringUtils::CStringBuilder* pXml)
 	{
-		if (!m_bInT)
+		if (!m_oState.m_bInT)
 			return;
 
 		pXml->WriteString(L"</w:t>");
-		m_bInT = false;
+		m_oState.m_bInT = false;
 	}
 
 	void CloseP(NSStringUtils::CStringBuilder* pXml, const std::vector<NSCSS::CNode>& arSelectors)
 	{
-		m_bWasSpace = true;
+		m_oState.m_bWasSpace = true;
 
-		if (!m_bInP)
+		if (!m_oState.m_bInP)
 			return;
 
 		CloseT(pXml);
 		CloseR(pXml);
 
-		if (m_bInHyperlink)
+		if (m_oState.m_bInHyperlink)
 		{
 			if (arSelectors.rend() != std::find_if(arSelectors.rbegin(), arSelectors.rend(), [](const NSCSS::CNode& oNode) { return L"a" == oNode.m_wsName; }))
 			{
 				pXml->WriteString(L"</w:hyperlink>");
-				m_bInHyperlink = false;
+				m_oState.m_bInHyperlink = false;
 			}
 		}
 
 		pXml->WriteString(L"</w:p>");
-		m_bInP = false;
+		m_oState.m_bInP = false;
 	}
 
 	void WriteBookmark(NSStringUtils::CStringBuilder* pXml, const std::wstring& wsId)
@@ -1757,7 +1763,7 @@ private:
 			if (sText.end() == std::find_if_not(sText.begin(), sText.end(), [](wchar_t wchChar){ return iswspace(wchChar);}))
 				return false;
 
-			bool bInT = m_bInT;
+			bool bInT = m_oState.m_bInT;
 
 			if (!oTS.sRStyle.empty() || oTS.bPre)
 			{
@@ -1765,10 +1771,10 @@ private:
 				CloseR(oXml);
 			}
 
-			if (oTS.bAddSpaces && m_bInP && !m_bInR && !iswspace(sText.front()) && !m_bWasSpace)
+			if (oTS.bAddSpaces && m_oState.m_bInP && !m_oState.m_bInR && !iswspace(sText.front()) && !m_oState.m_bWasSpace)
 			{
 				oXml->WriteString(L"<w:r><w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/></w:rPr><w:t xml:space=\"preserve\"> </w:t></w:r>");
-				m_bWasSpace = true;
+				m_oState.m_bWasSpace = true;
 			}
 
 			std::wstring sPStyle = wrP(oXml, sSelectors, oTS);
@@ -1824,14 +1830,14 @@ private:
 			else
 				ReplaceSpaces(sText);
 
-			if (std::iswspace(sText.front()) && m_bWasSpace)
+			if (std::iswspace(sText.front()) && m_oState.m_bWasSpace)
 				sText.erase(0, 1);
 
-			if (oTS.bMergeText && !m_bWasSpace && bInT)
+			if (oTS.bMergeText && !m_oState.m_bWasSpace && bInT)
 				oXml->WriteEncodeXmlString(L" ");
 
 			if (!sText.empty())
-				m_bWasSpace = std::iswspace(sText.back());
+				m_oState.m_bWasSpace = std::iswspace(sText.back());
 
 			oXml->WriteEncodeXmlString(sText);
 
@@ -1888,7 +1894,7 @@ private:
 		// Перенос строки
 		else if(sName == L"br")
 		{
-			if (m_bInP)
+			if (m_oState.m_bInP)
 			{
 				oXml->WriteString(L"<w:r>");
 				NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
@@ -1897,9 +1903,9 @@ private:
 				oXml->WriteString(L"<w:br/></w:r>");
 			}
 			else
-				WriteEmptyParagraph(oXml, false, m_bInP);
+				WriteEmptyParagraph(oXml, false, m_oState.m_bInP);
 
-			m_bWasSpace = true;
+			m_oState.m_bWasSpace = true;
 		}
 		else if(sName == L"center")
 		{
@@ -2052,7 +2058,7 @@ private:
 				sName == L"bgsound"  || sName == L"applet" || sName == L"blink" || sName == L"keygen"|| sName == L"script" ||
 				sName == L"comment"  || sName == L"title"  || sName == L"style")
 		{
-			WriteEmptyParagraph(oXml, false, m_bInP);
+			WriteEmptyParagraph(oXml, false, m_oState.m_bInP);
 			sSelectors.pop_back();
 			return true;
 		}
@@ -2079,21 +2085,24 @@ private:
 		// С нового абзаца
 		else
 		{
-			CloseP(oXml, sSelectors);
+			NSStringUtils::CStringBuilder oXmlData;
+			TState oCurentState{m_oState};
+
+			CloseP(&oXmlData, sSelectors);
 
 			// Адрес
 			if(sName == L"address")
 			{
 				CTextSettings oTSR(oTS);
 				oTSR.AddRStyle(L"<w:i/><w:iCs/>");
-				bResult = readStream(oXml, sSelectors, oTSR);
+				bResult = readStream(&oXmlData, sSelectors, oTSR);
 			}
 			// Определение термина, отступ от левого края
 			else if(sName == L"dd")
 			{
 				CTextSettings oTSP(oTS);
 				oTSP.sPStyle += L"<w:ind w:left=\"567\"/>";
-				bResult = readStream(oXml, sSelectors, oTSP);
+				bResult = readStream(&oXmlData, sSelectors, oTSP);
 			}
 			// aside возможно использовать для сносок в epub
 			else if (sName == L"aside" || sName == L"div")
@@ -2130,7 +2139,7 @@ private:
 					m_oNoteXml.WriteString(L"</w:footnote>");
 				}
 				else
-					bResult = readStream(oXml, sSelectors, oTS);
+					bResult = readStream(&oXmlData, sSelectors, oTS);
 			}
 			// С нового абзаца
 			else if(sName == L"article" || sName == L"header" || sName == L"blockquote" || sName == L"main" || sName == L"dir" ||
@@ -2138,7 +2147,7 @@ private:
 					sName == L"details" || sName == L"option" || sName == L"dt"  || sName == L"p"    ||
 					sName == L"section" || sName == L"figure" || sName == L"dl"  || sName == L"legend"     || sName == L"map"  ||
 					sName == L"h1" || sName == L"h2" || sName == L"h3" || sName == L"h4" || sName == L"h5" || sName == L"h6")
-				bResult = readStream(oXml, sSelectors, oTS);
+				bResult = readStream(&oXmlData, sSelectors, oTS);
 			// Горизонтальная линия
 			else if(sName == L"hr")
 			{
@@ -2153,39 +2162,39 @@ private:
 				}
 				if (bPrint)
 				{
-					const bool bOpenedP = OpenP(oXml);
-					OpenR(oXml);
-					WriteLine(oXml, 1.5, L"a0a0a0");
-					CloseR(oXml);
+					const bool bOpenedP = OpenP(&oXmlData);
+					OpenR(&oXmlData);
+					WriteLine(&oXmlData, 1.5, L"a0a0a0");
+					CloseR(&oXmlData);
 					if (bOpenedP)
-						CloseP(oXml, sSelectors);
+						CloseP(&oXmlData, sSelectors);
 				}
 //					oXml->WriteString(L"<w:p><w:pPr><w:pBdr><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr></w:p>");
 			}
 			// Меню
 			// Маркированный список
 			else if(sName == L"menu" || sName == L"ul" || sName == L"select" || sName == L"datalist")
-				readLi(oXml, sSelectors, oTS, true);
+				readLi(&oXmlData, sSelectors, oTS, true);
 			// Нумерованный список
 			else if(sName == L"ol")
-				readLi(oXml, sSelectors, oTS, false);
+				readLi(&oXmlData, sSelectors, oTS, false);
 			// Предварительно форматированный текст
 			else if(sName == L"pre" || sName == L"xmp")
 			{
 				CTextSettings oTSPre(oTS);
 				sSelectors.back().m_wsStyle += L"; font-family:Consolas";
 				oTSPre.bPre = true;
-				bResult = readStream(oXml, sSelectors, oTSPre);
+				bResult = readStream(&oXmlData, sSelectors, oTSPre);
 			}
 			// Таблицы
 			else if(sName == L"table")
-				ParseTable(oXml, sSelectors, oTS);
+				ParseTable(&oXmlData, sSelectors, oTS);
 			// Текст с границами
 			else if(sName == L"textarea" || sName == L"fieldset")
 			{
 				CTextSettings oTSP(oTS);
 				oTSP.AddPStyle(L"<w:pBdr><w:left w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr>");
-				bResult = readStream(oXml, sSelectors, oTSP);
+				bResult = readStream(&oXmlData, sSelectors, oTSP);
 			}
 			else if (sName == L"xml")
 			{
@@ -2194,12 +2203,17 @@ private:
 			}
 			// Неизвестный тэг. Выделять ли его абзацем?
 			else
-				bResult =readStream(oXml, sSelectors, oTS);
+				bResult = readStream(&oXmlData, sSelectors, oTS);
 
-			readNote(oXml, sSelectors, sNote);
+			readNote(&oXmlData, sSelectors, sNote);
 			sNote = L"";
 
-			CloseP(oXml, sSelectors);
+			CloseP(&oXmlData, sSelectors);
+
+			if (bResult)
+				oXml->WriteString(oXmlData.GetData());
+			else
+				m_oState = oCurentState;
 		}
 		readNote(oXml, sSelectors, sNote);
 		sSelectors.pop_back();
@@ -2216,7 +2230,7 @@ private:
 				wrP(oXml, sSelectors, oTS);
 				wrRPr(oXml, sSelectors, oTS);
 				CloseP(oXml, sSelectors);
-				m_bInP = false;
+				m_oState.m_bInP = false;
 			}
 			return false;
 		}
@@ -2234,7 +2248,7 @@ private:
 			wrP(oXml, sSelectors, oTS);
 			wrRPr(oXml, sSelectors, oTS);
 			CloseP(oXml, sSelectors);
-			m_bInP = false;
+			m_oState.m_bInP = false;
 		}
 
 		return bResult;
@@ -2345,7 +2359,7 @@ private:
 				}
 
 				m_oLightReader.MoveToElement();
-				m_bWasPStyle = false;
+				m_oState.m_bWasPStyle = false;
 
 				// Читаем th. Ячейка заголовка таблицы. Выравнивание посередине. Выделяется полужирным
 				if(m_oLightReader.GetName() == L"th")
@@ -2365,9 +2379,9 @@ private:
 				if (pRow->GetIndex() == MAXCOLUMNSINTABLE - 1)
 				{
 					CTextSettings oTrTS{oTS};
-					oTrTS.bMergeText = true;
-					oTrTS.bAddSpaces = true;
-					m_bWasSpace      = true;
+					oTrTS.bMergeText     = true;
+					oTrTS.bAddSpaces     = true;
+					m_oState.m_bWasSpace = true;
 
 					while (m_oLightReader.ReadNextSiblingNode(nTrDepth) && (L"td" == m_oLightReader.GetName() || L"th" == m_oLightReader.GetName()))
 					{
@@ -2610,14 +2624,12 @@ private:
 		if (bCross && sFootnote == L"href")
 			sFootnote = sRef.substr(sRef.find('#') + 1);
 
-		const bool bInP(m_bInP);
-
 		wrP(oXml, sSelectors, oTS);
 
 		// Перекрестная ссылка внутри файла
 		if(bCross)
 		{
-			m_bInHyperlink = true;
+			m_oState.m_bInHyperlink = true;
 			oXml->WriteString(L"<w:hyperlink w:tooltip=\"Current Document\" w:anchor=\"");
 			size_t nSharp = sRef.find('#');
 			if(nSharp == std::wstring::npos)
@@ -2638,7 +2650,7 @@ private:
 			oRelationshipXml->WriteEncodeXmlString(sRef);
 			oRelationshipXml->WriteString(L"\" TargetMode=\"External\"/>");
 
-			m_bInHyperlink = true;
+			m_oState.m_bInHyperlink = true;
 			// Пишем в document.xml
 			oXml->WriteString(L"<w:hyperlink w:tooltip=\"");
 			oXml->WriteEncodeXmlString(sNote);
@@ -2652,16 +2664,16 @@ private:
 			oXml->WriteString(L"<w:r>");
 			wrRPr(oXml, sSelectors, oTS);
 			oXml->WriteString(L"<w:t xml:space=\"preserve\">");
-			oXml->WriteEncodeXmlString(sAlt);
+			oXml->WriteEncodeXmlString(!sAlt.empty() ? sAlt : L" ");
 			oXml->WriteString(L"</w:t></w:r>");
 		}
 
-		if (m_bInP)
+		if (m_oState.m_bInP)
 		{
-			if (m_bInHyperlink)
+			if (m_oState.m_bInHyperlink)
 			{
 				oXml->WriteString(L"</w:hyperlink>");
-				m_bInHyperlink = false;
+				m_oState.m_bInHyperlink = false;
 			}
 
 			bool bFootnote = false;
@@ -2686,8 +2698,7 @@ private:
 					oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteRef/></w:r>");
 			}
 
-			if (!bInP)
-				CloseP(oXml, sSelectors);
+			CloseP(oXml, sSelectors);
 		}
 
 		sNote.clear();
@@ -2778,7 +2789,7 @@ private:
 		{
 			//TODO:: реализовать отображение того, что картинку не удалось получить
 			if (wsSrc.empty())
-				WriteEmptyParagraph(oXml, false, m_bInP);
+				WriteEmptyParagraph(oXml, false, m_oState.m_bInP);
 			else
 			{
 				m_oDocXmlRels.WriteString(L"<Relationship Id=\"rId");
@@ -2910,7 +2921,7 @@ private:
 	{
 		OpenP(oXml);
 
-		if (m_bWasPStyle)
+		if (m_oState.m_bWasPStyle)
 			return L"";
 
 		std::vector<std::pair<size_t, NSCSS::CNode>> temporary;
@@ -2969,14 +2980,14 @@ private:
 
 		oXml->WriteString(oTS.sPStyle + L' ' + sPSettings);
 		oXml->WriteNodeEnd(L"w:pPr");
-		m_bWasPStyle = true;
+		m_oState.m_bWasPStyle = true;
 
 		return sPStyle;
 	}
 
 	std::wstring wrRPr(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
 	{
-		if (!m_bInP)
+		if (!m_oState.m_bInP)
 			return L"";
 
 		NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetCompiledStyle(sSelectors, true);

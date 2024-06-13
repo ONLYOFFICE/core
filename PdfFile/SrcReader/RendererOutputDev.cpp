@@ -1158,15 +1158,13 @@ namespace PdfReader
 
 						if (oFontObject.isDict())
 						{
-							char *sFontName = NULL, *sFontFamily = NULL, *sFontStretch = NULL;
-							int nFontWeight = 0, nItalicAngle = 0, nAscent = 0, nDescent = 0, nLeading = 0;
-							int nCapHeight = 0, nXHeight = 0, nStemV = 0, nStemH = 0, nAvgWidth = 0, nMaxWidth = 0, nMissingWidth = 0;
-							Array *pBBox = NULL;
-							int arrBBox[4] ={ 0, 0, 0, 0 };
+							std::string sFontName, sFontFamily;
+							int nFontWeight = 0, nItalicAngle = 0, nAscent = 0, nDescent = 0;
+							int nCapHeight = 0, nXHeight = 0, nStemV = 0, nStemH = 0, nMissingWidth = 0;
+							int arrBBox[4] = { 0, 0, 0, 0 };
 
-							Dict *pFontDict = oFontObject.getDict();
 							Object oFontDescriptor;
-							if (pFontDict->lookup("FontDescriptor", &oFontDescriptor)->isDict())
+							if (oFontObject.dictLookup("FontDescriptor", &oFontDescriptor)->isDict())
 							{
 								Object oDictItem;
 								// FontName
@@ -1179,28 +1177,19 @@ namespace PdfReader
 								if (oDictItem.isName()) sFontFamily = oDictItem.getName();
 								oDictItem.free();
 
-								// FontStretch
-								oFontDescriptor.dictLookup("FontStretch", &oDictItem);
-								if (oDictItem.isName()) sFontStretch = oDictItem.getName();
-								oDictItem.free();
-
 								// FontWeight
 								oFontDescriptor.dictLookup("FontWeight", &oDictItem);
 								if (oDictItem.isInt()) nFontWeight = oDictItem.getInt();
 								oDictItem.free();
 
 								// FontBBox
-								oFontDescriptor.dictLookup("FontBBox", &oDictItem);
-								if (oDictItem.isArray()) pBBox = oDictItem.getArray();
-								if (4 == pBBox->getLength())
+								if (oFontDescriptor.dictLookup("FontBBox", &oDictItem)->isArray() && oDictItem.arrayGetLength() == 4)
 								{
 									for (int nIndex = 0; nIndex < 4; nIndex++)
 									{
 										Object oArrayItem;
-										pBBox->get(nIndex, &oArrayItem);
-										if (oArrayItem.isInt())
+										if (oDictItem.arrayGet(nIndex, &oArrayItem)->isInt())
 											arrBBox[nIndex] = oArrayItem.getInt();
-
 										oArrayItem.free();
 									}
 								}
@@ -1214,11 +1203,6 @@ namespace PdfReader
 								// Ascent
 								oFontDescriptor.dictLookup("Ascent", &oDictItem);
 								if (oDictItem.isInt()) nAscent = oDictItem.getInt();
-								oDictItem.free();
-
-								// Leading
-								oFontDescriptor.dictLookup("Leading", &oDictItem);
-								if (oDictItem.isInt()) nLeading = oDictItem.getInt();
 								oDictItem.free();
 
 								// CapHeight
@@ -1246,16 +1230,6 @@ namespace PdfReader
 								if (oDictItem.isInt()) nDescent = oDictItem.getInt();
 								oDictItem.free();
 
-								// AvgWidth
-								oFontDescriptor.dictLookup("AvgWidth", &oDictItem);
-								if (oDictItem.isInt()) nAvgWidth = oDictItem.getInt();
-								oDictItem.free();
-
-								// MaxWidth
-								oFontDescriptor.dictLookup("MaxWidth", &oDictItem);
-								if (oDictItem.isInt()) nMaxWidth = oDictItem.getInt();
-								oDictItem.free();
-
 								// MissingWidth
 								oFontDescriptor.dictLookup("MissingWidth", &oDictItem);
 								if (oDictItem.isInt()) nMissingWidth = oDictItem.getInt();
@@ -1265,8 +1239,8 @@ namespace PdfReader
 							oFontDescriptor.free();
 
 							fprintf(pFile, "StartFontMetrics 3.0\n");
-							if (NULL != sFontName) fprintf(pFile, "FontName %s\n", sFontName);
-							if (NULL != sFontFamily) fprintf(pFile, "FamilyName %s\n", sFontFamily);
+							if (!sFontName.empty()) fprintf(pFile, "FontName %s\n", sFontName.c_str());
+							if (!sFontFamily.empty()) fprintf(pFile, "FamilyName %s\n", sFontFamily.c_str());
 							if (nFontWeight >= 550) fprintf(pFile, "Weight Bold\n");
 
 							fprintf(pFile, "ItalicAngle %d\n", nItalicAngle);
@@ -1282,38 +1256,24 @@ namespace PdfReader
 
 							int nFirstChar = 0;
 							Object oDictItem;
-							pFontDict->lookup("FirstChar", &oDictItem);
-							if (oDictItem.isInt()) nFirstChar = oDictItem.getInt();
+							if (oFontObject.dictLookup("FirstChar", &oDictItem)->isInt()) nFirstChar = oDictItem.getInt();
 							oDictItem.free();
 
-							int nLastChar = nFirstChar;
-							pFontDict->lookup("LastChar", &oDictItem);
-							if (oDictItem.isInt()) nLastChar = oDictItem.getInt();
-							oDictItem.free();
-
-							Array *pWidths = NULL;
-							pFontDict->lookup("Widths", &oDictItem);
-							if (oDictItem.isArray()) pWidths = oDictItem.getArray();
-
-							int nCount = nLastChar - nFirstChar + 1;
 							Gfx8BitFont *pT1Font = (Gfx8BitFont *)pFont;
-
-							if (NULL != pWidths)
+							if (oFontObject.dictLookup("Widths", &oDictItem)->isArray())
 							{
-								int nWidthsCount = pWidths->getLength();
+								int nWidthsCount = oDictItem.arrayGetLength();
 								fprintf(pFile, "StartCharMetrics %d\n", nWidthsCount);
 								for (int nIndex = 0; nIndex < nWidthsCount; nIndex++)
 								{
 									int nWidth = nMissingWidth;
 									Object oArrayItem;
-									pWidths->get(nIndex, &oArrayItem);
-									if (oArrayItem.isInt()) nWidth = oArrayItem.getInt();
+									if (oDictItem.arrayGet(nIndex, &oArrayItem)->isInt()) nWidth = oArrayItem.getInt();
 									oArrayItem.free();
 
 									char **ppEncoding = pT1Font->getEncoding();
 
-
-									if (NULL != ppEncoding && NULL != ppEncoding[nIndex])
+									if (ppEncoding && ppEncoding[nIndex])
 										fprintf(pFile, "C %d ; WX %d ; N %s ;\n", nIndex + nFirstChar, nWidth, ppEncoding[nIndex]);
 									else
 										fprintf(pFile, "C %d ; WX %d ;\n", nIndex + nFirstChar, nWidth);
@@ -1322,6 +1282,7 @@ namespace PdfReader
 							}
 							oDictItem.free();
 						}
+						oFontObject.free();
 					}
 					fclose(pFile);
 				}

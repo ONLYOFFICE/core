@@ -913,6 +913,12 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 		m_oBcw.m_oStream.WriteRecord1(0, *rPr->m_oScene3d);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
+	if (rPr->m_oKern.IsInit() && rPr->m_oKern->m_oVal.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::Kern);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(rPr->m_oKern.get().m_oVal.get().ToHps());
+	}
 }
 void Binary_rPrWriter::Write_rPrChange(const OOX::Logic::CRPrChange& rPrChange)
 {
@@ -1138,7 +1144,12 @@ void Binary_pPrWriter::Write_pPr(const OOX::Logic::CParagraphProperty& pPr)
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(pPr.m_oSnapToGrid->m_oVal.ToBool());
 	}
-}
+	if (pPr.m_oBidi.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_pPrType::Bidi);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(pPr.m_oBidi->m_oVal.ToBool());
+	}}
 void Binary_pPrWriter::WritePPrChange(const OOX::Logic::CPPrChange& pPrChange)
 {
 	int nCurPos = 0;

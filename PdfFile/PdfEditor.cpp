@@ -1110,7 +1110,7 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 		pAnnot = new PdfWriter::CPolygonLineAnnotation(pXref);
 	else if (oType.isName("FreeText"))
 	{
-		std::map<std::wstring, std::wstring> mapFont = pReader->AnnotFonts(&oAnnotRef);
+		std::map<std::wstring, std::wstring> mapFont = pReader->GetAnnotFonts(&oAnnotRef);
 		m_mFonts.insert(mapFont.begin(), mapFont.end());
 		pAnnot = new PdfWriter::CFreeTextAnnotation(pXref);
 	}

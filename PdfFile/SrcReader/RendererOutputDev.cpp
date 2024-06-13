@@ -763,7 +763,35 @@ namespace PdfReader
 	}
 	void RendererOutputDev::updateLineWidth(GfxState *pGState)
 	{
-		m_pRenderer->put_PenSize(PDFCoordsToMM(pGState->getLineWidth()));
+		double dWidth = pGState->getLineWidth();
+		double* ctm = pGState->getCTM();
+		double dDet = ctm[0] * ctm[3] - ctm[1] * ctm[2];
+
+		if (abs(dDet) < 0.000001)
+		{
+			m_pRenderer->put_PenSize(PDFCoordsToMM(dWidth));
+			return;
+		}
+
+		double inverse_ctm[4] = {};
+		dDet = 1.0 / dDet;
+		inverse_ctm[0] =  ctm[3] * dDet;
+		inverse_ctm[1] = -ctm[1] * dDet;
+		inverse_ctm[2] = -ctm[2] * dDet;
+		inverse_ctm[3] =  ctm[0] * dDet;
+
+		double dX = dWidth, dY = dWidth;
+		Distance(ctm, dX, dY, &dX, &dY);
+		if ((abs(dX) <= 1.0 && abs(dY) <= 1.0) || dWidth == 0)
+		{
+			dX = dY = 72.0 / 600.0;
+			Distance(inverse_ctm, dX, dY, &dX, &dY);
+			double dWidthMinSize = std::min(abs(dX), abs(dY));
+			if (dWidth < dWidthMinSize)
+				dWidth = dWidthMinSize;
+		}
+
+		m_pRenderer->put_PenSize(PDFCoordsToMM(dWidth));
 	}
 	void RendererOutputDev::updateStrokeAdjust(GfxState *pGState)
 	{
@@ -4970,8 +4998,14 @@ namespace PdfReader
 	}
 	void RendererOutputDev::Transform(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY)
 	{
-		*pdDeviceX = dUserX * pMatrix[0] + dUserY * pMatrix[2] + pMatrix[4];
-		*pdDeviceY = dUserX * pMatrix[1] + dUserY * pMatrix[3] + pMatrix[5];
+		Distance(pMatrix, dUserX, dUserY, pdDeviceX, pdDeviceY);
+		*pdDeviceX += pMatrix[4];
+		*pdDeviceY += pMatrix[5];
+	}
+	void RendererOutputDev::Distance(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY)
+	{
+		*pdDeviceX = dUserX * pMatrix[0] + dUserY * pMatrix[2];
+		*pdDeviceY = dUserX * pMatrix[1] + dUserY * pMatrix[3];
 	}
 	void RendererOutputDev::DoPath(GfxState *pGState, GfxPath *pPath, double dPageHeight, double *pCTM, GfxClipMatrix* pCTM2)
 	{

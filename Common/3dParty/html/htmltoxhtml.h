@@ -39,7 +39,9 @@ static std::vector<std::string> html_tags = {"div","span","a","img","p","h1","h2
                                              "hgroup","isindex","keygen","marquee","nobr","noembed","noframes",
                                              "noscript","plaintext","rp","rt","ruby","s","strike","tt","xmp"};
 
-static void prettyprint(GumboNode*, NSStringUtils::CStringBuilderA& oBuilder);
+static std::vector<std::string> unchecked_nodes_new = {"svg"};
+
+static void prettyprint(GumboNode*, NSStringUtils::CStringBuilderA& oBuilder, bool bCheckValidNode = true);
 static std::string mhtTohtml(const std::string &sFileContent);
 
 // Заменяет в строке s все символы s1 на s2
@@ -51,6 +53,11 @@ static void replace_all(std::string& s, const std::string& s1, const std::string
 		s.replace(pos, s1.length(), s2);
 		pos = s.find(s1, pos + s2.length());
 	}
+}
+
+static bool IsUnckeckedNodes(const std::string& sValue)
+{
+	return unchecked_nodes_new.end() != std::find(unchecked_nodes_new.begin(), unchecked_nodes_new.end(), sValue);
 }
 
 static std::wstring htmlToXhtml(std::string& sFileContent, bool bNeedConvert)
@@ -527,7 +534,7 @@ static void build_attributes(const GumboVector* attribs, bool no_entities, NSStr
 	}
 }
 
-static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA& contents)
+static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA& contents, bool bCheckValidNode)
 {
 	std::string key             = "|" + get_tag_name(node) + "|";
 	bool no_entity_substitution = no_entity_sub.find(key) != std::string::npos;
@@ -558,7 +565,7 @@ static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA
 			contents.WriteString(val);
 		}
 		else if ((child->type == GUMBO_NODE_ELEMENT) || (child->type == GUMBO_NODE_TEMPLATE))
-			prettyprint(child, contents);
+			prettyprint(child, contents, bCheckValidNode);
 		else if (child->type == GUMBO_NODE_WHITESPACE)
 		{
 			if (keep_whitespace || is_inline || is_like_inline)
@@ -573,21 +580,24 @@ static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA
 	}
 }
 
-static void prettyprint(GumboNode* node, NSStringUtils::CStringBuilderA& oBuilder)
+static void prettyprint(GumboNode* node, NSStringUtils::CStringBuilderA& oBuilder, bool bCheckValidNode)
 {
 	// special case the document node
 	if (node->type == GUMBO_NODE_DOCUMENT)
 	{
 		build_doctype(node, oBuilder);
-		prettyprint_contents(node, oBuilder);
+		prettyprint_contents(node, oBuilder, bCheckValidNode);
 		return;
 	}
 
 	std::string tagname            = get_tag_name(node);
 
-	if (html_tags.end() == std::find(html_tags.begin(), html_tags.end(), tagname))
+	if (bCheckValidNode)
+		bCheckValidNode = !IsUnckeckedNodes(tagname);
+
+	if (bCheckValidNode && html_tags.end() == std::find(html_tags.begin(), html_tags.end(), tagname))
 	{
-		prettyprint_contents(node, oBuilder);
+		prettyprint_contents(node, oBuilder, bCheckValidNode);
 		return;
 	}
 
@@ -612,7 +622,7 @@ static void prettyprint(GumboNode* node, NSStringUtils::CStringBuilderA& oBuilde
 	oBuilder.WriteString(close + ">");
 
 	// prettyprint your contents
-	prettyprint_contents(node, oBuilder);
+	prettyprint_contents(node, oBuilder, bCheckValidNode);
 	oBuilder.WriteString(closeTag);
 }
 

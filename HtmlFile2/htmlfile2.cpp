@@ -2706,6 +2706,9 @@ private:
 		if (sExtention == L"octet-stream")
 			sExtention = L"jpg";
 
+		if (NotValidExtension(sExtention))
+			return bRes;
+
 		nBase = sSrcM.find(L"base64", nEndBase);
 		if (nBase == std::wstring::npos)
 			return bRes;

@@ -105,6 +105,7 @@ enum class TypeElement{
 	lfloor,
 	lline,
 	ldline,
+	left,
 	//attribute
 	ital,
 	bold,
@@ -358,6 +359,7 @@ enum class TypeElement{
 	rline,
 	rdline,
 	right,
+	none,
 	//op
 	from,
 	to,

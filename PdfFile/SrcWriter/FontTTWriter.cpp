@@ -321,7 +321,6 @@ namespace PdfWriter
 			0, 0,                   // idDelta[0]
 			0, 0                    // pad to a mulitple of four bytes
 		};
-
 		static char arrNameTab[8] =
 		{
 			0, 0,			// format
@@ -491,6 +490,7 @@ namespace PdfWriter
 			}
 			pLocaTable[m_nGlyphs].nLen = 0;
 			qsort(pLocaTable, m_nGlyphs + 1, sizeof(TrueTypeLoca), &CompareTrueTypeLocaIndex);
+			pLocaTable[m_nGlyphs].nLen = 0;
 			nPos = 0;
 
 			for (i = 0; i <= m_nGlyphs; ++i)
@@ -623,11 +623,11 @@ namespace PdfWriter
 			arrNewCmapTable[0] = 0;           // table version number = 0
 			arrNewCmapTable[1] = 0;           //
 			arrNewCmapTable[2] = 0;           // number of encoding tables = 1
-			arrNewCmapTable[3] = 1;           //                          
+			arrNewCmapTable[3] = 1;           //
 			arrNewCmapTable[4] = 0;           // platform ID = 1 (MacOS) // Эти два поля обязательно должны
 			arrNewCmapTable[5] = 1;           //                         // иметь таки значения, иначе, Adobe
 			arrNewCmapTable[6] = 0;           // encoding ID = 0         // Acrobat может открыть данный шрифт.
-			arrNewCmapTable[7] = 0;           //                         // 
+			arrNewCmapTable[7] = 0;           //
 			arrNewCmapTable[8] = 0;           // offset of subtable
 			arrNewCmapTable[9] = 0;           //
 			arrNewCmapTable[10] = 0;          //
@@ -645,8 +645,8 @@ namespace PdfWriter
 
 			for (i = 0; i < unCodesCount; ++i)
 			{
-				arrNewCmapTable[22 + 2 * i]     = pCodeToGID[i] >> 8;
-				arrNewCmapTable[22 + 2 * i + 1] = pCodeToGID[i] & 0xff;
+				arrNewCmapTable[22 + 2 * i]     = (char)(pCodeToGID[i] >> 8);
+				arrNewCmapTable[22 + 2 * i + 1] = (char)(pCodeToGID[i] & 0xff);
 			}
 		}
 		else

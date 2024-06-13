@@ -488,15 +488,20 @@ namespace NSCSS
 		if (oStyle.m_oText.GetDecoration().m_oLine.Underline())
 			oXmlElement.AddPropertiesInR(RProperties::R_U, (!oStyle.m_oText.GetDecoration().m_oStyle.Empty()) ? oStyle.m_oText.GetDecoration().m_oStyle.ToWString() : L"single");
 
+		if (!oStyle.m_oBackground.GetColor().Empty() && !oStyle.m_oBackground.GetColor().None() && !oStyle.m_oBackground.GetColor().Url())
+			oXmlElement.AddPropertiesInR(RProperties::R_Shd, oStyle.m_oBackground.GetColor().ToWString());
+
+		/*
 		const std::wstring wsHighlight{oStyle.m_oBackground.GetColor().EquateToColor({{{0,   0,   0},   L"black"},    {{0,   0,   255}, L"blue"},      {{0,   255, 255}, L"cyan"}, 
-		                                                                              {{0,   255, 0},   L"green"},    {{255, 0,   255}, L"magenta"},   {{255, 0,   0},   L"red"}, 
-		                                                                              {{255, 255, 0},   L"yellow"},   {{255, 255, 255}, L"white"},     {{0,   0,   139}, L"darkBlue"}, 
-		                                                                              {{0,   139, 139}, L"darkCyan"}, {{0,   100, 0},   L"darkGreen"}, {{139, 0,   139}, L"darkMagenta"}, 
-		                                                                              {{139, 0,   0},   L"darkRed"},  {{128, 128, 0},   L"darkYellow"},{{169, 169, 169}, L"darkGray"},
-		                                                                              {{211, 211, 211}, L"lightGray"}})};
+																					  {{0,   255, 0},   L"green"},    {{255, 0,   255}, L"magenta"},   {{255, 0,   0},   L"red"}, 
+																					  {{255, 255, 0},   L"yellow"},   {{255, 255, 255}, L"white"},     {{0,   0,   139}, L"darkBlue"}, 
+																					  {{0,   139, 139}, L"darkCyan"}, {{0,   100, 0},   L"darkGreen"}, {{139, 0,   139}, L"darkMagenta"}, 
+																					  {{139, 0,   0},   L"darkRed"},  {{128, 128, 0},   L"darkYellow"},{{169, 169, 169}, L"darkGray"},
+																					  {{211, 211, 211}, L"lightGray"}})};
 
 		if (L"none" != wsHighlight)
 			oXmlElement.AddPropertiesInR(RProperties::R_Highlight, wsHighlight);
+		*/
 
 		oXmlElement.AddPropertiesInR(RProperties::R_Color, oStyle.m_oText.GetColor().ToWString());
 

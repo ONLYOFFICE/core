@@ -624,14 +624,9 @@ namespace Aggplus
 		default:	break;
 		}
 
-		double dWidth		 = pPen->Size;
-		double dWidthMinSize = 1.0 / sqrt(abs(m_oFullTransform.m_internal->m_agg_mtx.determinant()));
-
-		if ((0 == dWidth && !m_bIntegerGrid) || dWidth < dWidthMinSize)
-		{
-			if (m_bIs0PenWidthAs1px)
-				dWidth = dWidthMinSize;
-		}
+		double dWidth = pPen->Size;
+		if (0 == dWidth && !m_bIntegerGrid && m_bIs0PenWidthAs1px)
+			dWidth = 1.0 / sqrt(abs(m_oFullTransform.m_internal->m_agg_mtx.determinant()));
 		
 		double dblMiterLimit = pPen->MiterLimit;
 		
@@ -762,7 +757,7 @@ namespace Aggplus
 			}
 			}
 
-			dWidthMinSize = 1.0 / sqrt(abs(m_oCoordTransform.m_internal->m_agg_mtx.determinant()));
+			double dWidthMinSize = 1.0 / sqrt(abs(m_oCoordTransform.m_internal->m_agg_mtx.determinant()));
 			if ((0 == dWidth && !m_bIntegerGrid) || dWidth < dWidthMinSize)
 				dWidth = dWidthMinSize;
 

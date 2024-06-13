@@ -626,7 +626,11 @@ namespace Aggplus
 
 		double dWidth = pPen->Size;
 		if (0 == dWidth && !m_bIntegerGrid && m_bIs0PenWidthAs1px)
-			dWidth = 1.0 / sqrt(abs(m_oFullTransform.m_internal->m_agg_mtx.determinant()));
+		{
+			double dSqrtDet = sqrt(abs(m_oFullTransform.m_internal->m_agg_mtx.determinant()));
+			if (0 != dSqrtDet)
+				dWidth = 1.0 / dSqrtDet;
+		}
 		
 		double dblMiterLimit = pPen->MiterLimit;
 		

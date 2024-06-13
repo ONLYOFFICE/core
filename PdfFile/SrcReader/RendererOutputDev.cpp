@@ -1177,11 +1177,6 @@ namespace PdfReader
 								if (oDictItem.isName()) sFontFamily = oDictItem.getName();
 								oDictItem.free();
 
-								// FontStretch
-								// oFontDescriptor.dictLookup("FontStretch", &oDictItem);
-								// if (oDictItem.isName()) sFontStretch = oDictItem.getName();
-								// oDictItem.free();
-
 								// FontWeight
 								oFontDescriptor.dictLookup("FontWeight", &oDictItem);
 								if (oDictItem.isInt()) nFontWeight = oDictItem.getInt();
@@ -1210,11 +1205,6 @@ namespace PdfReader
 								if (oDictItem.isInt()) nAscent = oDictItem.getInt();
 								oDictItem.free();
 
-								// Leading
-								// oFontDescriptor.dictLookup("Leading", &oDictItem);
-								// if (oDictItem.isInt()) nLeading = oDictItem.getInt();
-								// oDictItem.free();
-
 								// CapHeight
 								oFontDescriptor.dictLookup("CapHeight", &oDictItem);
 								if (oDictItem.isInt()) nCapHeight = oDictItem.getInt();
@@ -1239,16 +1229,6 @@ namespace PdfReader
 								oFontDescriptor.dictLookup("Descent", &oDictItem);
 								if (oDictItem.isInt()) nDescent = oDictItem.getInt();
 								oDictItem.free();
-
-								// AvgWidth
-								// oFontDescriptor.dictLookup("AvgWidth", &oDictItem);
-								// if (oDictItem.isInt()) nAvgWidth = oDictItem.getInt();
-								// oDictItem.free();
-
-								// MaxWidth
-								// oFontDescriptor.dictLookup("MaxWidth", &oDictItem);
-								// if (oDictItem.isInt()) nMaxWidth = oDictItem.getInt();
-								// oDictItem.free();
 
 								// MissingWidth
 								oFontDescriptor.dictLookup("MissingWidth", &oDictItem);

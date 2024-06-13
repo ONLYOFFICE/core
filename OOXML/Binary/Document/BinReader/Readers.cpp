@@ -1544,6 +1544,11 @@ int Binary_pPrReader::Read_SecPr(BYTE type, long length, void* poResult)
 		pSectPr->m_oRtlGutter.Init();
 		pSectPr->m_oRtlGutter->m_oVal.FromBool(m_oBufferedStream.GetBool());
 	}
+	else if (c_oSerProp_secPrType::docGrid == type)
+	{
+		pSectPr->m_oDocGrid.Init();
+		READ1_DEF(length, res, this->ReadDocGrid, pSectPr->m_oDocGrid.GetPointer());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -1573,6 +1578,30 @@ int Binary_pPrReader::ReadFootnotePr(BYTE type, long length, void* poResult)
 		pFtnProps->m_oPos.Init();
 		pFtnProps->m_oPos->m_oVal.Init();
 		pFtnProps->m_oPos->m_oVal->SetValue((SimpleTypes::EFtnPos)m_oBufferedStream.GetUChar());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int Binary_pPrReader::ReadDocGrid(BYTE type, long length, void* poResult)
+{
+	ComplexTypes::Word::CDocGrid* pDocGrid = static_cast<ComplexTypes::Word::CDocGrid*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	
+	if (c_oSerProp_DocGrid::Type == type)
+	{
+		pDocGrid->m_oType.Init();
+		pDocGrid->m_oType->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else if (c_oSerProp_DocGrid::CharSpace == type)
+	{
+		pDocGrid->m_oCharSpace.Init();
+		pDocGrid->m_oCharSpace->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSerProp_DocGrid::LinePitch == type)
+	{
+		pDocGrid->m_oLinePitch.Init();
+		pDocGrid->m_oLinePitch->SetValue(m_oBufferedStream.GetLong());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

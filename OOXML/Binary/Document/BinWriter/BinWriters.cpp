@@ -1526,6 +1526,12 @@ void Binary_pPrWriter::WriteSectPr (OOX::Logic::CSectionProperty* pSectPr)
 			m_oBcw.m_oStream.WriteBOOL(pSectPr->m_oRtlGutter->m_oVal.ToBool());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (pSectPr->m_oDocGrid.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrType::docGrid);
+		WriteDocGrid(pSectPr->m_oDocGrid.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void Binary_pPrWriter::WritePageSettings(OOX::Logic::CSectionProperty* pSectPr)
 {
@@ -1772,6 +1778,29 @@ void Binary_pPrWriter::WriteColumns(const OOX::Logic::CColumns& columns)
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_Columns::Column);
 		WriteColumn(*columns.m_arrColumns[i]);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+}
+void Binary_pPrWriter::WriteDocGrid(ComplexTypes::Word::CDocGrid& docGrid)
+{
+	int nCurPos = 0;
+
+	if (docGrid.m_oType.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_DocGrid::Type);
+		m_oBcw.m_oStream.WriteBYTE(docGrid.m_oType->GetValue());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (docGrid.m_oCharSpace.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_DocGrid::CharSpace);
+		m_oBcw.m_oStream.WriteLONG(docGrid.m_oCharSpace->GetValue());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (docGrid.m_oLinePitch.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_DocGrid::LinePitch);
+		m_oBcw.m_oStream.WriteLONG(docGrid.m_oLinePitch->GetValue());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 }

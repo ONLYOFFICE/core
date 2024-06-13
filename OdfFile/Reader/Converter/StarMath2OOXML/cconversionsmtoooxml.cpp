@@ -330,7 +330,7 @@ namespace StarMath {
 		pXmlWrite->WriteNodeEnd(L"m:funcPr",false,false);
 	}
 
-	void CConversionSMtoOOXML::PropertiesDPr(XmlUtils::CXmlWriter *pXmlWrite, const std::wstring &wsOpenBracket, std::wstring &wsCloseBracket, CAttribute* pAttribute, const TypeConversion &enTypeConversion, const TypeElement &enTypeBracket)
+	void CConversionSMtoOOXML::PropertiesDPr(XmlUtils::CXmlWriter *pXmlWrite, const std::wstring &wsOpenBracket,const std::wstring &wsCloseBracket, CAttribute* pAttribute, const TypeConversion &enTypeConversion, const TypeElement &enTypeBracket)
 	{
 		pXmlWrite->WriteNodeBegin(L"m:dPr",false);
 		BracketTypeNotation(wsOpenBracket,wsCloseBracket,pXmlWrite);

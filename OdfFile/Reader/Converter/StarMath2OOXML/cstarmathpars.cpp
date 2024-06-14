@@ -1518,7 +1518,7 @@ namespace StarMath
 		case TypeElement::abs:
 		{
 			pXmlWrite->WriteNodeBegin(L"m:d",false);
-//			CConversionSMtoOOXML::PropertiesDPr(pXmlWrite,TypeElement::abs,GetAttribute(),GetTypeConversion());
+			CConversionSMtoOOXML::PropertiesDPr(pXmlWrite,L"\u007C",L"\u007C",GetAttribute(),GetTypeConversion(),TypeElement::abs);
 			CConversionSMtoOOXML::WriteNodeConversion(L"m:e",m_pValue,pXmlWrite);
 			pXmlWrite->WriteNodeEnd(L"m:d",false,false);
 			break;

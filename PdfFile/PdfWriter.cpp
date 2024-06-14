@@ -2924,35 +2924,38 @@ bool CPdfWriter::PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen
 	m_oPath.AddText(m_pFont, pCodes, unLen * 2, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), m_oFont.GetSize(), MM_2_PT(m_oFont.GetCharSpace()));
 	return true;
 }
-int CPdfWriter::IsBase14(const std::wstring& wsName)
+int CPdfWriter::IsEmbeddedBase14(const std::wstring& wsName)
 {
-	if (wsName == L"Helvetica")
+	if (wsName.find(L"Embedded: ") != 0)
+		return -1;
+	std::wstring sSub = wsName.substr(0, 10);
+	if (sSub == L"Helvetica")
 		return 0;
-	if (wsName == L"Helvetica-Bold")
+	if (sSub == L"Helvetica-Bold")
 		return 1;
-	if (wsName == L"Helvetica-Oblique")
+	if (sSub == L"Helvetica-Oblique")
 		return 2;
-	if (wsName == L"Helvetice-BoldOblique")
+	if (sSub == L"Helvetice-BoldOblique")
 		return 3;
-	if (wsName == L"Courier")
+	if (sSub == L"Courier")
 		return 4;
-	if (wsName == L"Courier-Bold")
+	if (sSub == L"Courier-Bold")
 		return 5;
-	if (wsName == L"Courier-Oblique")
+	if (sSub == L"Courier-Oblique")
 		return 6;
-	if (wsName == L"Courier-BoldOblique")
+	if (sSub == L"Courier-BoldOblique")
 		return 7;
-	if (wsName == L"Times")
+	if (sSub == L"Times")
 		return 8;
-	if (wsName == L"Times-Bold")
+	if (sSub == L"Times-Bold")
 		return 9;
-	if (wsName == L"Times-Oblique")
+	if (sSub == L"Times-Oblique")
 		return 10;
-	if (wsName == L"Times-BoldOblique")
+	if (sSub == L"Times-BoldOblique")
 		return 11;
-	if (wsName == L"Symbol")
+	if (sSub == L"Symbol")
 		return 12;
-	if (wsName == L"ZapfDingbats")
+	if (sSub == L"ZapfDingbats")
 		return 13;
 	return -1;
 }
@@ -2972,14 +2975,18 @@ bool CPdfWriter::UpdateFont()
 {
 	m_bNeedUpdateTextFont = false;
 	m_pFont14 = NULL;
+
 	std::wstring wsFontPath = m_oFont.GetPath();
 	LONG lFaceIndex         = m_oFont.GetFaceIndex();
 	if (L"" == wsFontPath)
 	{
 		std::wstring wsFontName = m_oFont.GetName();
-		int nBase14 = IsBase14(wsFontName);
+		int nBase14 = IsEmbeddedBase14(wsFontName);
 		if (nBase14 >= 0 && GetBaseFont14(wsFontName, nBase14))
+		{
+			m_pFont = NULL;
 			return true;
+		}
 		if (!GetFontPath(wsFontName, m_oFont.IsBold(), m_oFont.IsItalic(), wsFontPath, lFaceIndex))
 		{
 			m_pFont = NULL;
@@ -2987,10 +2994,10 @@ bool CPdfWriter::UpdateFont()
 		}
 	}
 
+	m_pFont = NULL;
 	m_oFont.SetNeedDoBold(false);
 	m_oFont.SetNeedDoItalic(false);
 
-	m_pFont = NULL;
 	if (L"" != wsFontPath)
 	{
 		m_pFont = GetFont(wsFontPath, lFaceIndex);
@@ -3456,6 +3463,30 @@ unsigned char* CPdfWriter::EncodeString(const unsigned int *pUnicodes, const uns
 	{
 		if (!UpdateFont())
 			return NULL;
+	}
+
+	if (m_pFont14)
+	{
+		unsigned char* pCodes = new unsigned char[unCount * 2];
+		if (!pCodes)
+			return NULL;
+
+		for (unsigned int unIndex = 0; unIndex < unCount; unIndex++)
+		{
+			bool bNew = false;
+			if (pGIDs)
+				m_pFont14->EncodeUnicode(pGIDs[unIndex], pUnicodes[unIndex], bNew);
+			if (bNew)
+			{
+				TBBoxAdvance oBox = m_pFontManager->MeasureChar2(*pUnicodes);
+				double dWidth = oBox.fAdvanceX / m_oFont.GetSize() * 1000.0;
+				m_pFont14->AddWidth(dWidth);
+			}
+
+			pCodes[2 * unIndex + 0] = (pUnicodes[unIndex] >> 8) & 0xFF;
+			pCodes[2 * unIndex + 1] = pUnicodes[unIndex] & 0xFF;
+		}
+		return pCodes;
 	}
 
 	if (!m_pFont)

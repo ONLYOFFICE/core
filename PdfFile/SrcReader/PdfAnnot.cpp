@@ -2504,7 +2504,13 @@ std::map<std::wstring, std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object
 				std::wstring sFontPath = pFontInfo->m_wsFontPath;
 				bool bFreeText = false;
 				for (std::map<std::wstring, std::wstring>::iterator it = arrFontFreeText.begin(); it != arrFontFreeText.end(); it++)
-					bFreeText = it->second == sFontPath;
+				{
+					if (it->second == sFontPath)
+					{
+						bFreeText = true;
+						break;
+					}
+				}
 				std::wstring wsFontBaseName = pFontInfo->m_wsFontName;
 				if (wsFontBaseName.length() > 7 && wsFontBaseName.at(6) == '+')
 				{

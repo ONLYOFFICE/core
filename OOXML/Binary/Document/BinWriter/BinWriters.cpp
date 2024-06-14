@@ -1781,7 +1781,7 @@ void Binary_pPrWriter::WriteColumns(const OOX::Logic::CColumns& columns)
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 }
-void Binary_pPrWriter::WriteDocGrid(ComplexTypes::Word::CDocGrid& docGrid)
+void Binary_pPrWriter::WriteDocGrid(const ComplexTypes::Word::CDocGrid& docGrid)
 {
 	int nCurPos = 0;
 

@@ -211,7 +211,6 @@ public:
 	bool EditPage(PdfWriter::CPage* pNewPage);
 	bool AddPage(int nPageIndex);
 	bool EditClose();
-	void PageClear();
 	void PageRotate(int nRotate);
 	void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
 	HRESULT EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWidgetsInfo* pFieldInfo, const std::wstring& wsTempDirectory);

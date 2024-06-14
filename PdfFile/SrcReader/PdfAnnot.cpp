@@ -2470,6 +2470,7 @@ std::map<std::wstring, std::wstring> AnnotMarkup::SetFont(PDFDoc* pdfDoc, Object
 				else if (bItalic)
 					sFontName += "-Oblique";
 			}
+			wsFontName = UTF8_TO_U(sFontName);
 
 			const unsigned char* pData14 = NULL;
 			unsigned int nSize14 = 0;

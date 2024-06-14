@@ -2928,7 +2928,7 @@ int CPdfWriter::IsEmbeddedBase14(const std::wstring& wsName)
 {
 	if (wsName.find(L"Embedded: ") != 0)
 		return -1;
-	std::wstring sSub = wsName.substr(0, 10);
+	std::wstring sSub = wsName.substr(10);
 	if (sSub == L"Helvetica")
 		return 0;
 	if (sSub == L"Helvetica-Bold")

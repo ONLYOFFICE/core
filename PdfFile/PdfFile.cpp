@@ -53,12 +53,13 @@ public:
 	bool DeletePage(int nPageIndex) { return false; }
 	bool AddPage(int nPageIndex) { return false; }
 	bool EditAnnot(int nPageIndex, int nID) { return false; }
-	bool DeleteAnnot(int nID) { return false; }
+	bool DeleteAnnot(int nID, Object* oAnnots = NULL) { return false; }
 	bool EditWidgets(IAdvancedCommand* pCommand) { return false; }
 	int  GetPagesCount() { return 0; }
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) {}
 	int  GetRotate(int nPageIndex) { return 0; }
 	bool IsEditPage() { return false; }
+	void ClearPage() {}
 	void AddShapeXML(const std::string& sXML) {}
 	void EndMarkedContent() {}
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath) { return false; }
@@ -1257,7 +1258,7 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	case IAdvancedCommand::AdvancedCommandType::PageClear:
 	{
 		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
-			m_pInternal->pWriter->PageClear();
+			m_pInternal->pEditor->ClearPage();
 		return S_OK;
 	}
 	case IAdvancedCommand::AdvancedCommandType::PageRotate:

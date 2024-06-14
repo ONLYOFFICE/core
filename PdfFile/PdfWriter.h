@@ -211,7 +211,6 @@ public:
 	bool EditPage(PdfWriter::CPage* pNewPage);
 	bool AddPage(int nPageIndex);
 	bool EditClose();
-	void PageClear();
 	void PageRotate(int nRotate);
 	void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
 	HRESULT EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWidgetsInfo* pFieldInfo, const std::wstring& wsTempDirectory);
@@ -225,7 +224,7 @@ private:
 	bool DrawText(unsigned char* pCodes, const unsigned int& unLen, const double& dX, const double& dY);
 	bool DrawTextToRenderer(const unsigned int* unGid, const unsigned int& unLen, const double& dX, const double& dY);
 	bool PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids = NULL);
-	int  IsBase14(const std::wstring& wsFontName);
+	int  IsEmbeddedBase14(const std::wstring& wsFontName);
 	bool GetBaseFont14(const std::wstring& wsFontName, int nBase14);
 	bool UpdateFont();
 	bool FindFontPath(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, std::wstring& wsFontPath, LONG& lFaceIndex);

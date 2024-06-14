@@ -469,7 +469,7 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 	wsPassword = _wsPassword;
 	pReader    = _pReader;
 	pWriter    = _pWriter;
-	bEditPage  = false;
+	m_nEditPage  = -1;
 	nError     = 0;
 
 	PDFDoc* pPDFDocument = pReader->GetPDFDocument();
@@ -812,7 +812,7 @@ void CPdfEditor::Close()
 
 	pReader = NULL;
 	pWriter = NULL;
-	bEditPage = false;
+	m_nEditPage = -1;
 }
 int CPdfEditor::GetError()
 {
@@ -958,20 +958,13 @@ bool CPdfEditor::EditPage(int nPageIndex)
 		}
 		else if (strcmp("Annots", chKey) == 0)
 		{
-			// ВРЕМЕНО удаление Link аннотаций при редактировании
 			if (pageObj.dictGetVal(nIndex, &oTemp)->isArray())
 			{
 				PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
 				pPage->Add("Annots", pArray);
 				for (int nIndex = 0; nIndex < oTemp.arrayGetLength(); ++nIndex)
 				{
-					Object oAnnot, oSubtype;
-					if (oTemp.arrayGet(nIndex, &oAnnot)->isDict("Annot") && oAnnot.dictLookup("Subtype", &oSubtype)->isName("Link"))
-					{
-						oAnnot.free(); oSubtype.free();
-						continue;
-					}
-					oAnnot.free(); oSubtype.free();
+					Object oAnnot;
 					oTemp.arrayGetNF(nIndex, &oAnnot);
 					DictToCDictObject(&oAnnot, pArray, false, "");
 					oAnnot.free();
@@ -1012,7 +1005,7 @@ bool CPdfEditor::EditPage(int nPageIndex)
 	// Применение редактирования страницы для writer
 	if (pWriter->EditPage(pPage) && pDoc->EditPage(pXref, pPage, nPageIndex))
 	{
-		bEditPage = true;
+		m_nEditPage = nPageIndex;
 		pPage->StartTransform(dCTM[0], dCTM[1], dCTM[2], dCTM[3], dCTM[4], dCTM[5]);
 		return true;
 	}
@@ -1261,7 +1254,7 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 	RELEASEOBJECT(pXref);
 	return false;
 }
-bool CPdfEditor::DeleteAnnot(int nID)
+bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 {
 	PDFDoc* pPDFDocument = pReader->GetPDFDocument();
 	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
@@ -1269,27 +1262,33 @@ bool CPdfEditor::DeleteAnnot(int nID)
 		return false;
 
 	XRef* xref = pPDFDocument->getXRef();
-	std::pair<int, int> pPageRef;
-	pPageRef.first  = pDoc->GetCurPage()->GetObjId();
-	pPageRef.second = pDoc->GetCurPage()->GetGenNo();
-	if (!xref || pPageRef.first == 0)
-		return false;
-
-	// Получение объекта аннотации
-	Object pageRefObj, pageObj, oAnnots;
-	pageRefObj.initRef(pPageRef.first, pPageRef.second);
-	if (!pageRefObj.fetch(xref, &pageObj)->isDict() || !pageObj.dictLookup("Annots", &oAnnots)->isArray())
+	bool bClear = false;
+	if (!oAnnots)
 	{
-		pageRefObj.free(); pageObj.free(); oAnnots.free();
-		return false;
+		std::pair<int, int> pPageRef = pDoc->GetPageRef(m_nEditPage);
+		if (pPageRef.first == 0)
+			return false;
+
+		oAnnots = new Object();
+		bClear = true;
+
+		// Получение объекта аннотации
+		Object pageRefObj, pageObj;
+		pageRefObj.initRef(pPageRef.first, pPageRef.second);
+		if (!pageRefObj.fetch(xref, &pageObj)->isDict() || !pageObj.dictLookup("Annots", oAnnots)->isArray())
+		{
+			pageRefObj.free(); pageObj.free(); oAnnots->free();
+			RELEASEOBJECT(oAnnots);
+			return false;
+		}
+		pageRefObj.free(); pageObj.free();
 	}
-	pageRefObj.free(); pageObj.free();
 
 	bool bRes = false;
-	for (int i = 0; i < oAnnots.arrayGetLength(); ++i)
+	for (int i = 0; i < oAnnots->arrayGetLength(); ++i)
 	{
 		Object oAnnotRef, oAnnot;
-		if (oAnnots.arrayGetNF(i, &oAnnotRef)->isRef() && oAnnotRef.getRefNum() == nID)
+		if (oAnnots->arrayGetNF(i, &oAnnotRef)->isRef() && oAnnotRef.getRefNum() == nID)
 		{
 			bRes = pDoc->DeleteAnnot(oAnnotRef.getRefNum(), oAnnotRef.getRefGen());
 			if (oAnnotRef.fetch(xref, &oAnnot)->isDict())
@@ -1300,16 +1299,21 @@ bool CPdfEditor::DeleteAnnot(int nID)
 				oPopupRef.free();
 			}
 		}
-		else if (oAnnots.arrayGet(i, &oAnnot)->isDict())
+		else if (oAnnots->arrayGet(i, &oAnnot)->isDict())
 		{
 			Object oIRTRef;
 			if (oAnnot.dictLookupNF("IRT", &oIRTRef)->isRef() && oIRTRef.getRefNum() == nID)
-				DeleteAnnot(oAnnotRef.getRefNum());
+				DeleteAnnot(oAnnotRef.getRefNum(), oAnnots);
 			oIRTRef.free();
 		}
 		oAnnotRef.free(); oAnnot.free();
 	}
-	oAnnots.free();
+
+	if (bClear)
+	{
+		oAnnots->free();
+		RELEASEOBJECT(oAnnots);
+	}
 
 	return bRes;
 }
@@ -1369,7 +1373,43 @@ int CPdfEditor::GetRotate(int nPageIndex)
 }
 bool CPdfEditor::IsEditPage()
 {
-	return bEditPage;
+	return m_nEditPage >= 0;
+}
+void CPdfEditor::ClearPage()
+{
+	PDFDoc* pPDFDocument = pReader->GetPDFDocument();
+	XRef* xref = pPDFDocument->getXRef();
+	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
+	std::pair<int, int> pPageRef = pDoc->GetPageRef(m_nEditPage);
+
+	// Получение объекта страницы
+	Object pageRefObj, pageObj;
+	pageRefObj.initRef(pPageRef.first, pPageRef.second);
+	if (!pageRefObj.fetch(xref, &pageObj)->isDict())
+	{
+		pageObj.free(); pageRefObj.free();
+		return;
+	}
+	pageRefObj.free();
+
+	Object oAnnots;
+	// ВРЕМЕННО удаление Link аннотаций при редактировании
+	if (pageObj.dictLookup("Annots", &oAnnots)->isArray())
+	{
+		for (int nIndex = 0; nIndex < oAnnots.arrayGetLength(); ++nIndex)
+		{
+			Object oAnnot, oSubtype, oAnnotRef;
+			if (oAnnots.arrayGet(nIndex, &oAnnot)->isDict("Annot") && oAnnot.dictLookup("Subtype", &oSubtype)->isName("Link"))
+			{
+				oAnnots.arrayGetNF(nIndex, &oAnnotRef);
+				DeleteAnnot(oAnnotRef.getRefNum(), &oAnnots);
+			}
+			oAnnot.free(); oSubtype.free(); oAnnotRef.free();
+		}
+	}
+	pageObj.free();
+
+	pDoc->ClearPage();
 }
 void CPdfEditor::AddShapeXML(const std::string& sXML)
 {

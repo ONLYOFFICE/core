@@ -37,6 +37,7 @@
 #include "../../DesktopEditor/xmlsec/src/include/CertificateCommon.h"
 #include "../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h"
 #include "../PdfFile.h"
+#include "../../DjVuFile/DjVu.h"
 
 class CPdfFileTest : public testing::Test
 {
@@ -142,6 +143,42 @@ CApplicationFontsWorker* CPdfFileTest::oWorker = NULL;
 NSFonts::IApplicationFonts* CPdfFileTest::pApplicationFonts = NULL;
 std::wstring CPdfFileTest::wsTempDir;
 
+TEST_F(CPdfFileTest, DjVuToPdf)
+{
+	GTEST_SKIP();
+
+	CDjVuFile* pFile = new CDjVuFile(pApplicationFonts);
+
+	ASSERT_TRUE(pFile->LoadFromFile(NSFile::GetProcessDirectory() + L"/test.djvu"));
+
+	pdfFile->CreatePdf();
+
+	int nPagesCount = pFile->GetPagesCount();
+	for (int i = 0; i < nPagesCount; ++i)
+	{
+		pdfFile->NewPage();
+		pdfFile->BeginCommand(c_nPageType);
+
+		double dPageDpiX, dPageDpiY;
+		double dWidth, dHeight;
+		pFile->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+
+		dWidth *= 25.4 / dPageDpiX;
+		dHeight *= 25.4 / dPageDpiY;
+
+		pdfFile->put_Width(dWidth);
+		pdfFile->put_Height(dHeight);
+
+		pFile->DrawPageOnRenderer(pdfFile, i, NULL);
+
+		pdfFile->EndCommand(c_nPageType);
+	}
+
+	pdfFile->SaveToFile(wsDstFile);
+
+	RELEASEOBJECT(pFile);
+}
+
 TEST_F(CPdfFileTest, GetMetaData)
 {
 	GTEST_SKIP();
@@ -199,7 +236,7 @@ TEST_F(CPdfFileTest, PdfBinToPng)
 
 TEST_F(CPdfFileTest, PdfFromBin)
 {
-	GTEST_SKIP();
+	//GTEST_SKIP();
 
 	pdfFile->CreatePdf();
 	EXPECT_HRESULT_SUCCEEDED(pdfFile->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile));
@@ -290,7 +327,7 @@ TEST_F(CPdfFileTest, EditPdf)
 
 TEST_F(CPdfFileTest, EditPdfFromBase64)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	LoadFromFile();
 	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));

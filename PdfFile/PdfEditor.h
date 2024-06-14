@@ -48,12 +48,13 @@ public:
 	bool DeletePage(int nPageIndex);
 	bool AddPage(int nPageIndex);
 	bool EditAnnot(int nPageIndex, int nID);
-	bool DeleteAnnot(int nID);
+	bool DeleteAnnot(int nID, Object* oAnnots = NULL);
 	bool EditWidgets(IAdvancedCommand* pCommand);
 	int  GetPagesCount();
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
 	int  GetRotate(int nPageIndex);
 	bool IsEditPage();
+	void ClearPage();
 	void AddShapeXML(const std::string& sXML);
 	void EndMarkedContent();
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
@@ -69,7 +70,7 @@ private:
 	CPdfWriter* pWriter;
 
 	int nError;
-	bool bEditPage;
+	int m_nEditPage;
 };
 
 #endif // _PDF_EDITOR_H

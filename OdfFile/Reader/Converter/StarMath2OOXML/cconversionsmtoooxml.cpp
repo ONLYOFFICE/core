@@ -207,6 +207,8 @@ namespace StarMath {
 					pXmlWrite->WriteAttribute(L"b",L"1");
 				if(pAttribute->GetItal())
 					pXmlWrite->WriteAttribute(L"i",L"1");
+				if(pAttribute->GetStrike())
+					pXmlWrite->WriteAttribute(L"strike",L"sngStrike");
 				pXmlWrite->WriteNodeEnd(L"w",true,false);
 				if(!pAttribute->GetColor().empty())
 				{

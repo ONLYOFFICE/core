@@ -886,24 +886,29 @@ HRESULT CPdfFile::put_FontName(const std::wstring& wsName)
 {
 	if (!m_pInternal->pWriter)
 		return S_FALSE;
-	std::wstring wsFontName = wsName;
-	if (m_pInternal->pEditor && wsFontName.find(L"Embedded: ") == 0)
+	std::wstring wsFont = wsName;
+	if (m_pInternal->pEditor && wsName.find(L"Embedded: ") == 0)
 	{
-		wsFontName.erase(0, 10);
+		std::wstring sSub = wsName.substr(10);
 		bool bBold = false, bItalic = false;
 		std::wstring wsFontPath;
-		if (m_pInternal->pEditor->IsBase14(wsFontName, bBold, bItalic, wsFontPath) && (bBold || bItalic))
+		if (m_pInternal->pEditor->IsBase14(sSub, bBold, bItalic, wsFontPath))
 		{
-			LONG lStyle = 0;
-			if (bBold)
-				lStyle |= 1;
-			if (bItalic)
-				lStyle |= 2;
-			put_FontStyle(lStyle);
+			if (bBold || bItalic)
+			{
+				LONG lStyle = 0;
+				if (bBold)
+					lStyle |= 1;
+				if (bItalic)
+					lStyle |= 2;
+				put_FontStyle(lStyle);
+			}
 		}
-		m_pInternal->pWriter->AddFont(wsFontName, bBold, bItalic, wsFontPath, 0);
+		else
+			wsFont = sSub;
+		m_pInternal->pWriter->AddFont(wsFont, bBold, bItalic, wsFontPath, 0);
 	}
-	return m_pInternal->pWriter->put_FontName(wsFontName);
+	return m_pInternal->pWriter->put_FontName(wsFont);
 }
 HRESULT CPdfFile::get_FontPath(std::wstring* wsPath)
 {

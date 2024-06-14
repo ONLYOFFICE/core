@@ -50,7 +50,7 @@ namespace SVG
 			{
 				if (oNode->m_wsClass.find(L' ') != std::wstring::npos)
 				{
-					std::vector<std::wstring> arClasses = NSCSS::NS_STATIC_FUNCTIONS::GetWordsW(oNode->m_wsClass, L" ");
+					std::vector<std::wstring> arClasses = NSCSS::NS_STATIC_FUNCTIONS::GetWordsW(oNode->m_wsClass, false, L" ");
 
 					if (arClasses.size() > 1)
 						arClasses.resize(unique(arClasses.begin(),arClasses.end()) - arClasses.begin());
@@ -82,7 +82,7 @@ namespace SVG
 
 			if (arWords.back()[0] == L'.')
 			{
-				arClasses = NSCSS::NS_STATIC_FUNCTIONS::GetWordsW(arWords.back(), L" ");
+				arClasses = NSCSS::NS_STATIC_FUNCTIONS::GetWordsW(arWords.back(), false, L" ");
 				arNextNodes.push_back(arWords.back());
 				arWords.pop_back();
 			}

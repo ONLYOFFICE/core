@@ -516,22 +516,14 @@ namespace NSCSS
 		{
 			oStyle.AddParent(arSelectors[i].m_wsName);
 
-			// Скидываем некоторые внешние стили, которые внутри таблицы переопределяются
-			if (L"table" == arSelectors[i].m_wsName)
-			{
-				oStyle.m_oFont.GetLineHeight().Clear();
-				oStyle.m_oPadding.Clear();
-				oStyle.m_oMargin.Clear();
-				bInTable = true;
-			}
+			if (!bInTable)
+				bInTable = IsTableElement(arSelectors[i].m_wsName);
 
 			if (bInTable)
 			{
 				oStyle.m_oBackground.Clear();
 				oStyle.m_oBorder.Clear();
 			}
-
-			bInTable = IsTableElement(arSelectors[i].m_wsName);
 
 			CCompiledStyle oTempStyle;
 
@@ -559,6 +551,14 @@ namespace NSCSS
 				oTempStyle.AddStyle(arSelectors[i].m_wsStyle, i + 1, true);
 
 			oStyle += oTempStyle;
+
+			// Скидываем некоторые внешние стили, которые внутри таблицы переопределяются
+			if (bInTable && i < arSelectors.size() - 1)
+			{
+				oStyle.m_oFont.GetLineHeight().Clear();
+				oStyle.m_oPadding.Clear();
+				oStyle.m_oMargin.Clear();
+			}
 		}
 
 		oStyle.SetID(arSelectors.back().m_wsName + ((!arSelectors.back().m_wsClass.empty()) ? L'.' + arSelectors.back().m_wsClass : L"") + ((arSelectors.back().m_wsId.empty()) ? L"" : L'#' + arSelectors.back().m_wsId) + L'-' + std::to_wstring(++m_nCountNodes));

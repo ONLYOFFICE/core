@@ -625,11 +625,18 @@ namespace Aggplus
 		}
 
 		double dWidth = pPen->Size;
-		if (0 == dWidth && !m_bIntegerGrid && m_bIs0PenWidthAs1px)
+		if (!m_bIntegerGrid && m_bIs0PenWidthAs1px)
 		{
-			double dSqrtDet = sqrt(abs(m_oFullTransform.m_internal->m_agg_mtx.determinant()));
-			if (0 != dSqrtDet)
-				dWidth = 1.0 / dSqrtDet;
+			double dWidthMinSize, dSqrtDet = sqrt(abs(m_oFullTransform.m_internal->m_agg_mtx.determinant()));
+			if (0 == dWidth)
+			{
+				double dX = 0.72, dY = 0.72;
+				agg::trans_affine invert = ~m_oFullTransform.m_internal->m_agg_mtx;
+				invert.transform_2x2(&dX, &dY);
+				dWidth = std::min(abs(dX), abs(dY));
+			}
+			else if (0 != dSqrtDet && dWidth < (dWidthMinSize = 1.0 / dSqrtDet))
+				dWidth = dWidthMinSize;
 		}
 		
 		double dblMiterLimit = pPen->MiterLimit;

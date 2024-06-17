@@ -763,35 +763,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::updateLineWidth(GfxState *pGState)
 	{
-		double dWidth = pGState->getLineWidth();
-		double* ctm = pGState->getCTM();
-		double dDet = ctm[0] * ctm[3] - ctm[1] * ctm[2];
-
-		if (abs(dDet) < 0.000001)
-		{
-			m_pRenderer->put_PenSize(PDFCoordsToMM(dWidth));
-			return;
-		}
-
-		double inverse_ctm[4] = {};
-		dDet = 1.0 / dDet;
-		inverse_ctm[0] =  ctm[3] * dDet;
-		inverse_ctm[1] = -ctm[1] * dDet;
-		inverse_ctm[2] = -ctm[2] * dDet;
-		inverse_ctm[3] =  ctm[0] * dDet;
-
-		double dX = dWidth, dY = dWidth;
-		Distance(ctm, dX, dY, &dX, &dY);
-		if ((abs(dX) <= 1.0 && abs(dY) <= 1.0) || dWidth == 0)
-		{
-			dX = dY = 72.0 / 600.0;
-			Distance(inverse_ctm, dX, dY, &dX, &dY);
-			double dWidthMinSize = std::min(abs(dX), abs(dY));
-			if (dWidth < dWidthMinSize)
-				dWidth = dWidthMinSize;
-		}
-
-		m_pRenderer->put_PenSize(PDFCoordsToMM(dWidth));
+		m_pRenderer->put_PenSize(PDFCoordsToMM(pGState->getLineWidth()));
 	}
 	void RendererOutputDev::updateStrokeAdjust(GfxState *pGState)
 	{

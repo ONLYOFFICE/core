@@ -4196,6 +4196,7 @@ void BinaryWorkbookTableWriter::WriteTimelineCachePivotTable(OOX::Spreadsheet::C
 		m_oBcw.m_oStream.WriteLONG(*pPivotTable->m_oTabId);
 	}
 }
+std::set<std::wstring> removableSlicers = {};
 void BinaryWorkbookTableWriter::WriteSlicerCaches(OOX::Spreadsheet::CWorkbook& workbook, const OOX::Spreadsheet::CSlicerCaches& oSlicerCaches)
 {
 	int nCurPos = 0;
@@ -4207,11 +4208,15 @@ void BinaryWorkbookTableWriter::WriteSlicerCaches(OOX::Spreadsheet::CWorkbook& w
 			if (pFile.IsInit() && OOX::Spreadsheet::FileTypes::SlicerCache == pFile->type())
 			{
 				OOX::Spreadsheet::CSlicerCacheFile* pSlicerCacheFile = static_cast<OOX::Spreadsheet::CSlicerCacheFile*>(pFile.GetPointer());
-				if(pSlicerCacheFile->m_oSlicerCacheDefinition.IsInit())
+                if(pSlicerCacheFile->m_oSlicerCacheDefinition.IsInit() && pSlicerCacheFile->m_oSlicerCacheDefinition->m_oPivotTables.empty())//fix after pivot cache writing
 				{
 					nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::SlicerCache);
 					m_oBcw.m_oStream.WriteRecord2(0, pSlicerCacheFile->m_oSlicerCacheDefinition);
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+				else if(pSlicerCacheFile->m_oSlicerCacheDefinition.IsInit() && pSlicerCacheFile->m_oSlicerCacheDefinition->m_oName.IsInit())
+				{
+					removableSlicers.emplace(pSlicerCacheFile->m_oSlicerCacheDefinition->m_oName.get());
 				}
 			}
 		}
@@ -8362,9 +8367,17 @@ void BinaryWorksheetTableWriter::WriteSlicers(OOX::Spreadsheet::CWorksheet& oWor
 				OOX::Spreadsheet::CSlicerFile* pSlicerFile = static_cast<OOX::Spreadsheet::CSlicerFile*>(pFile.GetPointer());
 				if(pSlicerFile->m_oSlicers.IsInit())
 				{
-					nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Slicer);
-					m_oBcw.m_oStream.WriteRecord2(0, pSlicerFile->m_oSlicers);
-					m_oBcw.WriteItemEnd(nCurPos);
+					//removing pivot based slicers
+                    auto removable = std::remove_if(pSlicerFile->m_oSlicers->m_oSlicer.begin(), pSlicerFile->m_oSlicers->m_oSlicer.end(),
+					[](OOX::Spreadsheet::CSlicer slicer) { return slicer.m_oCache.IsInit() &&
+					removableSlicers.find(slicer.m_oCache.get()) != removableSlicers.end(); });
+                    pSlicerFile->m_oSlicers->m_oSlicer.erase(removable, pSlicerFile->m_oSlicers->m_oSlicer.end());
+					if(!pSlicerFile->m_oSlicers->m_oSlicer.empty())
+					{
+						nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Slicer);
+						m_oBcw.m_oStream.WriteRecord2(0, pSlicerFile->m_oSlicers);
+						m_oBcw.WriteItemEnd(nCurPos);
+					}
 				}
 			}
 		}

@@ -484,25 +484,25 @@ namespace OOX
 				m_oDataValidations->toXML2(writer, true);
 				sResult += writer.GetData().c_str();
 			}
-			if (m_oSlicerList.IsInit())
+			if (m_oSlicerList.IsInit() && !m_oSlicerList->m_oSlicer.empty())
 			{
 				NSStringUtils::CStringBuilder writer;
 				m_oSlicerList->toXML(writer, L"x14:slicerList");
 				sResult += writer.GetData().c_str();
 			}
-			if (m_oSlicerListExt.IsInit())
+			if (m_oSlicerListExt.IsInit() && !m_oSlicerListExt->m_oSlicer.empty())
 			{
 				NSStringUtils::CStringBuilder writer;
 				m_oSlicerListExt->toXML(writer, L"x14:slicerList");
 				sResult += writer.GetData().c_str();
 			}
-			if (m_oSlicerCaches.IsInit())
+			if (m_oSlicerCaches.IsInit() && !m_oSlicerCaches->m_oSlicerCache.empty())
 			{
 				NSStringUtils::CStringBuilder writer;
 				m_oSlicerCaches->toXML(writer, L"slicerCaches", L"x14:");
 				sResult += writer.GetData().c_str();
 			}
-			if (m_oSlicerCachesExt.IsInit())
+			if (m_oSlicerCachesExt.IsInit() && !m_oSlicerCachesExt->m_oSlicerCache.empty())
 			{
 				NSStringUtils::CStringBuilder writer;
 				m_oSlicerCachesExt->toXML(writer, L"slicerCaches", L"x15:");

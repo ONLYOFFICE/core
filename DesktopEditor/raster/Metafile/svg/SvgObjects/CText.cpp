@@ -129,6 +129,14 @@ namespace SVG
 
 		if (mAttributes.end() != mAttributes.find(L"text-decoration"))
 			m_oText.SetDecoration(mAttributes.at(L"text-decoration"), ushLevel, bHardMode);
+
+		//POSITION
+		if (mAttributes.end() != mAttributes.find(L"rotate"))
+		{
+			double dX, dY;
+			CalculatePosition(dX, dY);
+			m_oTransformtaion.m_oTransform.RotateAt(NSCSS::NS_STATIC_FUNCTIONS::ReadDouble(mAttributes.at(L"rotate")), dX, dY);
+		}
 	}
 
 	bool CTSpan::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
@@ -141,10 +149,8 @@ namespace SVG
 		if (!StartPath(pRenderer, pFile, oOldMatrix, oMode))
 			return false;
 
-		TBounds oBounds{(NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.}};
-
-		double dX = m_oX.ToDouble(NSCSS::Pixel, oBounds.m_dRight - oBounds.m_dLeft);
-		double dY = m_oY.ToDouble(NSCSS::Pixel, oBounds.m_dBottom - oBounds.m_dTop);
+		double dX, dY;
+		CalculatePosition(dX, dY);
 
 		ApplyFont(pRenderer, dX, dY);
 
@@ -181,10 +187,10 @@ namespace SVG
 
 	void CTSpan::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
 	{
-            if (ApplyStroke(pRenderer, &pStyles->m_oStroke, true))
+		if (ApplyStroke(pRenderer, &pStyles->m_oStroke, true))
 			nTypePath += c_nStroke;
 
-            if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true))
+		if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true))
 			nTypePath += c_nWindingFillMode;
 	}
 
@@ -366,12 +372,20 @@ namespace SVG
 		}
 	}
 
+	void CTSpan::CalculatePosition(double &dX, double &dY) const
+	{
+		TBounds oBounds{(NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.}};
+
+		dX = m_oX.ToDouble(NSCSS::Pixel, oBounds.m_dRight - oBounds.m_dLeft);
+		dY = m_oY.ToDouble(NSCSS::Pixel, oBounds.m_dBottom - oBounds.m_dTop);
+	}
+
 	void CTSpan::Normalize(IRenderer *pRenderer, double &dX, double &dY, double &dFontHeight) const
 	{
 		if (NULL == pRenderer)
 			return;
 
-		Aggplus::CMatrix oCurrentMatrix(m_oTransformtaion.m_oTransform.GetMatrix().GetFinalValue(NSCSS::NSProperties::TransformRotate));
+		Aggplus::CMatrix oCurrentMatrix(m_oTransformtaion.m_oTransform.GetMatrix().GetFinalValue());
 
 		double dXScale = 1., dYScale = 1.;
 

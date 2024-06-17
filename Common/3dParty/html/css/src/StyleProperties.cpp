@@ -1350,6 +1350,26 @@ namespace NSCSS
 		return true;
 	}
 
+	void CTransform::Translate(double dOffsetX, double dOffsetY)
+	{
+		m_oMatrix.AddValue({dOffsetX, dOffsetY}, TransformTranslate);
+	}
+
+	void CTransform::Scale(double dScaleX, double dScaleY)
+	{
+		m_oMatrix.AddValue({dScaleX, dScaleY}, TransformScale);
+	}
+
+	void CTransform::Rotate(double dValue)
+	{
+		m_oMatrix.AddValue({dValue}, TransformRotate);
+	}
+
+	void CTransform::RotateAt(double dValue, double dX, double dY)
+	{
+		m_oMatrix.AddValue({dValue, dX, dY}, TransformRotate);
+	}
+
 	const CMatrix& CTransform::GetMatrix() const
 	{
 		return m_oMatrix;

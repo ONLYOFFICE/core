@@ -408,6 +408,11 @@ namespace NSCSS
 		bool SetMatrix(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetMatrix(const Aggplus::CMatrix &oMatrix);
 
+		void Translate(double dOffsetX, double dOffsetY);
+		void Scale(double dScaleX, double dScaleY);
+		void Rotate(double dValue);
+		void RotateAt(double dValue, double dX, double dY);
+
 		const CMatrix& GetMatrix() const;
 
 		bool Empty() const;

@@ -1478,7 +1478,7 @@ namespace PdfWriter
 	void CPage::SetRotate(int nRotate)
 	{
 		// The value shall be a multiple of 90
-		if (nRotate > 0 && nRotate % 90 == 0)
+		if (nRotate % 90 == 0)
 			Add("Rotate", nRotate % 360);
 	}
 	void CPage::ClearContent(CXref* pXref)

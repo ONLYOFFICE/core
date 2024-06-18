@@ -580,6 +580,8 @@ void _oox_drawing::serialize_bodyPr(std::wostream & strm, const std::wstring & n
 		{
 			_CP_OPT(double)dPaddingLeft, dPaddingRight, dPaddingTop, dPaddingBottom;
 			_CP_OPT(int) numCol, spcCol;
+			_CP_OPT(bool) is_math_formula;
+
 			odf_reader::GetProperty(prop,L"text-padding-left"	, dPaddingLeft);
 			odf_reader::GetProperty(prop,L"text-padding-right"	, dPaddingRight);
 			odf_reader::GetProperty(prop,L"text-padding-top"	, dPaddingTop);
@@ -587,12 +589,24 @@ void _oox_drawing::serialize_bodyPr(std::wostream & strm, const std::wstring & n
 			
 			odf_reader::GetProperty(prop, L"style_columns_count", numCol);
 			odf_reader::GetProperty(prop, L"style_columns_gap"	, spcCol);
-			
-			if (dPaddingLeft)	CP_XML_ATTR(L"lIns", (int)(*dPaddingLeft));
-			if (dPaddingTop)	CP_XML_ATTR(L"tIns", (int)(*dPaddingTop));
-			if (dPaddingRight)	CP_XML_ATTR(L"rIns", (int)(*dPaddingRight));
-			if (dPaddingBottom)	CP_XML_ATTR(L"bIns", (int)(*dPaddingBottom));
 
+			odf_reader::GetProperty(prop, L"is-math-formula", is_math_formula);
+			
+			if (is_math_formula && *is_math_formula)
+			{
+				CP_XML_ATTR(L"lIns", 0);
+				CP_XML_ATTR(L"tIns", 0);
+				CP_XML_ATTR(L"rIns", 0);
+				CP_XML_ATTR(L"bIns", 0);
+			}
+			else
+			{
+				if (dPaddingLeft)	CP_XML_ATTR(L"lIns", (int)(*dPaddingLeft));
+				if (dPaddingTop)	CP_XML_ATTR(L"tIns", (int)(*dPaddingTop));
+				if (dPaddingRight)	CP_XML_ATTR(L"rIns", (int)(*dPaddingRight));
+				if (dPaddingBottom)	CP_XML_ATTR(L"bIns", (int)(*dPaddingBottom));
+			}
+			
 			CP_XML_ATTR_OPT(L"numCol"	, numCol);
 			CP_XML_ATTR_OPT(L"spcCol"	, spcCol);
 
@@ -609,7 +623,8 @@ void _oox_drawing::serialize_bodyPr(std::wostream & strm, const std::wstring & n
 				{
 					_CP_OPT(int)	iWrap;
 					odf_reader::GetProperty(prop, L"text-wrap", iWrap);
-					if ((iWrap) && (*iWrap == 0))
+
+					if (((iWrap) && (*iWrap == 0)) || ((is_math_formula) && (*is_math_formula)))
 						CP_XML_ATTR(L"wrap", L"none");
 				}
 			}

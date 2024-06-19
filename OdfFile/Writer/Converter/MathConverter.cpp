@@ -529,6 +529,7 @@ namespace Oox2Odf
 	bool OoxConverter::convert(OOX::Logic::COpEmu *oox_op_emu)
 	{
 		if (!oox_op_emu) return false;
+		if (!oox_op_emu->m_val.IsInit()) return false;
 
 		if (oox_op_emu->m_val->ToBool())// == L"true") ||(oox_op_emu->m_val == L"1"))
 			return true;
@@ -854,6 +855,7 @@ namespace Oox2Odf
 	std::wstring OoxConverter::convert(OOX::Logic::CType *oox_type)
 	{
 		if (!oox_type) return L"";
+		if (!oox_type->m_val.IsInit()) return L"";
 
 		std::wstring val  = oox_type->m_val->ToString();
 
@@ -1031,6 +1033,7 @@ namespace Oox2Odf
 	bool OoxConverter::convert(OOX::Logic::CPos *oox_pos)
 	{
 		if (!oox_pos) return false;
+		if (!oox_pos->m_val.IsInit()) return false;
 
 		if (oox_pos->m_val->ToString() == L"top") return true;
 		else return false;
@@ -1626,6 +1629,7 @@ std::wstring str1, str2;
 	bool OoxConverter::convert(OOX::Logic::CSubHide *oox_subHide)
 	{
 		if (!oox_subHide) return false;
+		if (!oox_subHide->m_val.IsInit()) return false;
 
 		bool result = oox_subHide->m_val->ToBool();
 		return result;
@@ -1634,6 +1638,8 @@ std::wstring str1, str2;
 	bool OoxConverter::convert(OOX::Logic::CSupHide *oox_supHide)
 	{
 		if (!oox_supHide) return false;
+		if (!oox_supHide->m_val.IsInit()) return false;
+
 		bool result = oox_supHide->m_val->ToBool();
 		return result;
 	}
@@ -1651,7 +1657,7 @@ std::wstring str1, str2;
 			tmp->stretchy_ = false;
 		}
 		
-		if (!oox_chr)
+		if (!oox_chr || (oox_chr && !oox_chr->m_val.IsInit()))
 		{
 			annotation() += L"int ";
 			elm->add_text(L"∫");
@@ -1747,7 +1753,8 @@ std::wstring str1, str2;
 	bool OoxConverter::convert(OOX::Logic::CDegHide *oox_deg_hide)
 	{
 		if (!oox_deg_hide) return false;	
-		
+		if (!oox_deg_hide->m_val.IsInit()) return false;
+
 		return oox_deg_hide->m_val->ToBool();
 	}
 

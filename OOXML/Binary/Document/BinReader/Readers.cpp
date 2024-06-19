@@ -875,7 +875,13 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 			pRPr->m_oSnapToGrid.Init();
 			pRPr->m_oSnapToGrid->m_oVal.FromBool(m_oBufferedStream.GetBool());
 		}break;	
-	default:
+		case c_oSerProp_rPrType::Kern:
+		{
+			pRPr->m_oKern.Init(); pRPr->m_oKern->m_oVal.Init();
+			pRPr->m_oKern->m_oVal->FromHps(m_oBufferedStream.GetLong());
+		}break;
+		
+		default:
 		res = c_oSerConstants::ReadUnknown;
 		break;
 	}
@@ -1035,6 +1041,16 @@ int Binary_pPrReader::ReadContent(BYTE type, long length, void* poResult)
 	{
 		pPPr->m_oCnfStyle.Init();
 		READ1_DEF(length, res, this->ReadCnfStyle, pPPr->m_oCnfStyle.GetPointer());
+	}break;
+	case c_oSerProp_pPrType::SnapToGrid:
+	{
+		pPPr->m_oSnapToGrid.Init();
+		pPPr->m_oSnapToGrid->m_oVal.FromBool(m_oBufferedStream.GetBool());
+	}break;
+	case c_oSerProp_pPrType::Bidi:
+	{
+		pPPr->m_oBidi.Init();
+		pPPr->m_oBidi->m_oVal.FromBool(m_oBufferedStream.GetBool());
 	}break;
 	default:
 		res = c_oSerConstants::ReadUnknown;
@@ -1871,6 +1887,21 @@ int Binary_pPrReader::Read_pageNumType(BYTE type, long length, void* poResult)
 	{
 		pCPageNumber->m_oStart.Init();
 		pCPageNumber->m_oStart->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSerProp_secPrPageNumType::fmt == type)
+	{
+		pCPageNumber->m_oFmt.Init();
+		pCPageNumber->m_oFmt->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else if (c_oSerProp_secPrPageNumType::chapStyle == type)
+	{
+		pCPageNumber->m_oChapStyle.Init();
+		pCPageNumber->m_oChapStyle->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSerProp_secPrPageNumType::chapSep == type)
+	{
+		pCPageNumber->m_oChapSep.Init();
+		pCPageNumber->m_oChapSep->SetValueFromByte(m_oBufferedStream.GetUChar());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

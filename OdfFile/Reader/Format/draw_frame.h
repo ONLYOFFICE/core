@@ -177,6 +177,9 @@ public:
 
     office_element_ptr						draw_contour_; // draw-contour-polygon or draw-contour-path
 
+    office_element_ptr                      svg_title_;
+    office_element_ptr                      svg_desc_;
+
     friend class odf_document;
     friend class draw_image;
 	friend class draw_chart;

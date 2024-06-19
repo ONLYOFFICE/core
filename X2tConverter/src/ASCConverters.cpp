@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -462,18 +462,26 @@ namespace NExtractTools
 			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
 			nRes = doct_bin2image(eFromType, sFrom, sTo, params, convertParams);
 		}
-		else if (0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatTo))
+		else if (0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatTo) || 
+						AVS_OFFICESTUDIO_FILE_OTHER_OOXML == nFormatTo ||
+						AVS_OFFICESTUDIO_FILE_OTHER_ODF == nFormatTo)
 		{
 			std::wstring sDocxDir = combinePath(convertParams.m_sTempDir, L"docx_unpacked");
 			if (true == NSDirectory::CreateDirectory(sDocxDir))
 			{
-				params.m_bMacro = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM == nFormatTo;
+				params.m_bMacro = AVS_OFFICESTUDIO_FILE_OTHER_OOXML == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM == nFormatTo;
 
 				convertParams.m_sTempResultOOXMLDirectory = sDocxDir;
 				nRes = doct_bin2docx_dir(sFrom, sTo, params, convertParams);
 				if (SUCCEEDED_X2T(nRes))
 				{
-					nRes = fromDocxDir(sDocxDir, sTo, nFormatTo, params, convertParams);
+					std::wstring sFileToCurrent = *params.m_sFileTo;
+					params.changeFormatFromPost(*params.m_nFormatFrom, params.m_bMacro);
+
+					if (NULL != params.m_nFormatTo)
+						nFormatTo = *params.m_nFormatTo;
+
+					nRes = fromDocxDir(sDocxDir, *params.m_sFileTo, nFormatTo, params, convertParams);
 				}
 			}
 			else
@@ -503,7 +511,9 @@ namespace NExtractTools
 			{
 				nRes = docxflat2odt(sFrom, sTo, params, convertParams);
 			}
-			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo)
+			else if (	AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo || 
+						AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatTo || 
+						AVS_OFFICESTUDIO_FILE_OTHER_OOXML == nFormatTo)
 			{
 				nRes = docxflat2docx(sFrom, sTo, params, convertParams);
 			}
@@ -526,7 +536,6 @@ namespace NExtractTools
 		}
 		else
 		{
-			std::wstring sDocxFile;
 			std::wstring sDocxDir = combinePath(convertParams.m_sTempDir, L"docx_unpacked");
 			NSDirectory::CreateDirectory(sDocxDir);
 
@@ -534,14 +543,13 @@ namespace NExtractTools
 				AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM == nFormatFrom ||
 				AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF == nFormatFrom)
 			{
-				sDocxFile = sFrom;
-				convertParams.m_sTempParamOOXMLFile = sDocxFile;
+				convertParams.m_sTempParamOOXMLFile = sFrom;
 				if (params.getFromChanges())
 				{
 					params.setFromChanges(false);
-					nRes = apply_changes(sFrom, sTo, NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT, sDocxFile, params, convertParams);
+					nRes = apply_changes(sFrom, sTo, NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT, convertParams.m_sTempParamOOXMLFile, params, convertParams);
 				}
-				nRes = zip2dir(sDocxFile, sDocxDir);
+				nRes = zip2dir(convertParams.m_sTempParamOOXMLFile, sDocxDir);
 
 				if (false == SUCCEEDED_X2T(nRes))
 				{
@@ -782,6 +790,10 @@ namespace NExtractTools
 				convertParams.m_bIsTemplate = false;
 				nRes = xlsx_dir2ods(sFrom, sTo, params, convertParams);
 			}
+			else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB == nFormatTo)
+			{
+				nRes = xlsx_dir2xlsb(sFrom, sTo, params, convertParams);
+			}
 			// else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatTo)
 			//{
 			//	nRes = xlsx_dir2csv(sFrom, sTo, sTemp, params);
@@ -812,6 +824,10 @@ namespace NExtractTools
 		{
 			nRes = xlst_bin2csv(sFrom, sTo, params, convertParams);
 		}
+		else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB == nFormatTo)
+		{
+			nRes = xlst_bin2xlsb(sFrom, sTo, params, convertParams);
+		}
 		else if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
 		{
 			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::XLST;
@@ -822,7 +838,9 @@ namespace NExtractTools
 			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::XLST;
 			nRes = doct_bin2image(eFromType, sFrom, sTo, params, convertParams);
 		}
-		else if (0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo))
+		else if (0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo) ||
+						AVS_OFFICESTUDIO_FILE_OTHER_OOXML == nFormatTo ||
+						AVS_OFFICESTUDIO_FILE_OTHER_ODF == nFormatTo)
 		{
 			std::wstring sXlsxDir = combinePath(convertParams.m_sTempDir, L"xlsx_unpacked");
 			if (true == NSDirectory::CreateDirectory(sXlsxDir))
@@ -832,8 +850,13 @@ namespace NExtractTools
 				nRes = xlst_bin2xlsx_dir(sFrom, sTo, params, convertParams);
 				if (SUCCEEDED_X2T(nRes))
 				{
-					std::wstring sXlsxFile;
-					nRes = fromXlsxDir(sXlsxDir, sTo, nFormatTo, params, convertParams);
+					std::wstring sFileToCurrent = *params.m_sFileTo;
+					params.changeFormatFromPost(*params.m_nFormatFrom, params.m_bMacro);
+
+					if (NULL != params.m_nFormatTo)
+						nFormatTo = *params.m_nFormatTo;
+
+					nRes = fromXlsxDir(sXlsxDir, *params.m_sFileTo, nFormatTo, params, convertParams);
 				}
 			}
 			else
@@ -1148,7 +1171,9 @@ namespace NExtractTools
 			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::PPTT;
 			nRes = doct_bin2image(eFromType, sFrom, sTo, params, convertParams);
 		}
-		else if (0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & nFormatTo))
+		else if (0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & nFormatTo) ||
+						AVS_OFFICESTUDIO_FILE_OTHER_OOXML == nFormatTo ||
+						AVS_OFFICESTUDIO_FILE_OTHER_ODF == nFormatTo)
 		{
 			std::wstring sPptxDir = combinePath(convertParams.m_sTempDir, L"pptx_unpacked");
 
@@ -1162,7 +1187,13 @@ namespace NExtractTools
 				nRes = pptt_bin2pptx_dir(sFrom, sTo, params, convertParams);
 				if (SUCCEEDED_X2T(nRes))
 				{
-					nRes = fromPptxDir(sPptxDir, sTo, nFormatTo, params, convertParams);
+					std::wstring sFileToCurrent = *params.m_sFileTo;
+					params.changeFormatFromPost(*params.m_nFormatFrom, params.m_bMacro);
+
+					if (NULL != params.m_nFormatTo)
+						nFormatTo = *params.m_nFormatTo;
+
+					nRes = fromPptxDir(sPptxDir, *params.m_sFileTo, nFormatTo, params, convertParams);
 				}
 			}
 			else
@@ -1322,6 +1353,28 @@ namespace NExtractTools
 			else
 				nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 		}
+		else if ((0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo)) || AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
+		{
+			std::wstring sToRender = convertParams.m_sTempParamOOXMLFile;
+			if (sToRender.empty())
+			{
+				sToRender = combinePath(convertParams.m_sTempDir, L"toRender.vsdx");
+				nRes = dir2zip(sFrom, sToRender);
+			}
+			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::VSDT;
+			if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
+			{
+				convertParams.m_sInternalMediaDirectory = sFrom;
+				nRes = doct_bin2pdf(eFromType, sToRender, sTo, params, convertParams);
+			}
+			else if (0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
+			{
+				convertParams.m_sInternalMediaDirectory = sFrom;
+				nRes = doct_bin2image(eFromType, sToRender, sTo, params, convertParams);
+			}
+			else
+				nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+		}
 		else
 			nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 		return nRes;
@@ -1335,11 +1388,10 @@ namespace NExtractTools
 			nFormatTo = *params.m_nFormatTo;
 
 		_UINT32 nRes = 0;
-		std::wstring sVsdxFile;
 		std::wstring sVsdxDir = combinePath(convertParams.m_sTempDir, L"xsdx_unpacked");
 		NSDirectory::CreateDirectory(sVsdxDir);
 
-		if (AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX == nFormatFrom)
+		if (0 != (AVS_OFFICESTUDIO_FILE_DRAW & nFormatFrom))
 		{
 			convertParams.m_sTempParamOOXMLFile = sFrom;
 			if (params.getFromChanges())
@@ -1347,12 +1399,18 @@ namespace NExtractTools
 				params.setFromChanges(false);
 				nRes = apply_changes(sFrom, sTo, NSDoctRenderer::DoctRendererFormat::FormatFile::VSDT, convertParams.m_sTempParamOOXMLFile, params, convertParams);
 			}
-			nRes = zip2dir(sVsdxFile, sVsdxDir);
+			nRes = zip2dir(sFrom, sVsdxDir);
 		}
 		else
 			nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 		if (SUCCEEDED_X2T(nRes))
 		{
+			std::wstring sFileToCurrent = *params.m_sFileTo;
+			params.changeFormatFromPost(*params.m_nFormatFrom, params.m_bMacro);
+
+			if (NULL != params.m_nFormatTo)
+				nFormatTo = *params.m_nFormatTo;
+			
 			nRes = fromVsdxDir(sVsdxDir, sTo, nFormatTo, params, convertParams);
 		}
 		return nRes;
@@ -1363,8 +1421,9 @@ namespace NExtractTools
 	_UINT32 fromInputParams(InputParams& oInputParams)
 	{
 		TConversionDirection conversion = oInputParams.getConversionDirection();
-		std::wstring sFileFrom = *oInputParams.m_sFileFrom;
-		std::wstring sFileTo = *oInputParams.m_sFileTo;
+		
+		std::wstring sFileFrom = oInputParams.m_sFileFrom  ? *oInputParams.m_sFileFrom : L"";
+		std::wstring sFileTo = oInputParams.m_sFileTo ? *oInputParams.m_sFileTo : L"";
 
 		int nFormatFrom = AVS_OFFICESTUDIO_FILE_UNKNOWN;
 		if (NULL != oInputParams.m_nFormatFrom)
@@ -1547,6 +1606,13 @@ namespace NExtractTools
 			oInputParams.m_bMacro = true;
 			oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM);
 			result = xlst2xlsx(sFileFrom, sFileTo, oInputParams, oConvertParams);
+		}
+		break;
+		case TCD_XLST2XLSB:
+		{
+			oInputParams.m_bMacro = true;
+			oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB);
+			result = xlst2xlsb(sFileFrom, sFileTo, oInputParams, oConvertParams);
 		}
 		break;
 		case TCD_XLST2XLTX:
@@ -2019,9 +2085,12 @@ namespace NExtractTools
 		{
 			result = fromDraw(sFileFrom, nFormatFrom, oInputParams, oConvertParams);
 		}break;
+		case TCD_XLSX2XLSB:
+		{
+			result = xlsx2xlsb(sFileFrom, sFileTo, oInputParams, oConvertParams);
+		}break;
 		// TCD_FB22DOCT,
 		// TCD_FB22DOCT_BIN,
-
 		// TCD_EPUB2DOCX,
 		// TCD_EPUB2DOCT,
 		// TCD_EPUB2DOCT_BIN,

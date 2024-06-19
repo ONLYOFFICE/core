@@ -590,6 +590,15 @@ void odt_conversion_context::start_hyperlink(const std::wstring& link, const std
 	text_a* hyperlink = dynamic_cast<text_a*>(hyperlink_elm.get());
 	if (hyperlink)
 	{
+		if (location == L"_top")
+			hyperlink->office_target_frame_name_ = odf_types::target_frame_name::Top;
+		else if (location == L"_blank")
+			hyperlink->office_target_frame_name_ = odf_types::target_frame_name::Blank;
+		else if (location == L"_self")
+			hyperlink->office_target_frame_name_ = odf_types::target_frame_name::Self;
+		else if (location == L"_parent")
+			hyperlink->office_target_frame_name_ = odf_types::target_frame_name::Parent;
+
 		hyperlink->common_xlink_attlist_.href_	= link + (location.empty() ? L"" : (L"#" + location));
 		hyperlink->common_xlink_attlist_.type_	= xlink_type::Simple;
 		
@@ -766,6 +775,36 @@ void odt_conversion_context::set_field_instr()
 		current_fields.back().type = fieldPageRef;
 		if (instr.length() > 9)
 			current_fields.back().value = instr.substr(9, instr.length() - 5);
+	}
+	res1 = instr.find(L"REF");
+	if (std::wstring::npos != res1 && current_fields.back().type == 0)
+	{
+		current_fields.back().type = fieldRef;
+
+		std::wstring options_str;
+		if (instr.size() > 3) options_str = instr.substr(4);
+		std::map<std::wstring, std::wstring> options = parse_instr_options(options_str);
+
+		for (std::map<std::wstring, std::wstring>::iterator it = options.begin(); it != options.end(); ++it)
+		{
+			if (it->first == L" ")//field-argument
+			{
+				current_fields.back().value = it->second;
+				boost::algorithm::trim(current_fields.back().value);
+			}
+			else if (it->first == L"h")
+			{
+				current_fields.back().bHyperlinks = true;
+			}
+			else if (it->first == L"p")
+			{
+				current_fields.back().format = L"direction";
+			}
+			else if (it->first == L"r" || it->first == L"n")
+			{
+				current_fields.back().format = L"number";
+			}
+		}
 	}
 	res1 = instr.find(L"PAGE");
 	if (std::wstring::npos != res1 && current_fields.back().type == 0)

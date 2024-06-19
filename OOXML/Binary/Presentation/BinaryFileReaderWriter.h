@@ -273,11 +273,13 @@ namespace NSBinPptxRW
 		std::vector<CSeekTableEntry> m_arMainTables;
 
 	public:
-		_INT32	m_lCxCurShape;	//emu
-		_INT32	m_lCyCurShape;
+		double	m_dCxCurShape;	//emu
+		double	m_dCyCurShape;
 
-		_INT32	m_lXCurShape;
-		_INT32	m_lYCurShape;
+		double	m_dXCurShape;
+		double	m_dYCurShape;
+
+		bool m_bInGroup = false;
 
 		BYTE*	GetBuffer();
 		virtual _UINT32	GetPosition();
@@ -468,7 +470,7 @@ namespace NSBinPptxRW
 	{
 	private:
 		NSStringUtils::CStringBuilder*				m_pWriter;
-		std::map<std::wstring, _relsGeneratorInfo>	m_mapImages;
+		std::map<std::wstring, _relsGeneratorInfo>	m_mapRelsImages;
 		std::map<std::wstring, unsigned int>		m_mapLinks;
 	public:
 		unsigned int								m_lNextRelsID;
@@ -533,6 +535,7 @@ namespace NSBinPptxRW
 		_INT32							m_nCountCharts = 1;
 		_INT32							m_nCountDiagram = 1;
 		_INT32							m_nCountActiveX = 1;
+		_INT32							m_nThemeOverrideCount = 1;
 
 		BinDocxRW::CDocxSerializer*		m_pMainDocument;
 		int								m_nDocumentType;

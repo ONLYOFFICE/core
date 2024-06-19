@@ -33,6 +33,7 @@
 
 #include "../SharedStrings/Si.h"
 #include "../../Common/SimpleTypes_Shared.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CellRef.h"
 
 namespace NSBinPptxRW
 {
@@ -97,7 +98,9 @@ namespace OOX
 			CTextXLSB m_oValue;
 			CFormulaXLSB m_oFormula;
 			nullable<CSi> m_oRichText;
-
+			
+			nullable_uint m_oCellMetadata;
+			nullable_uint m_oValueMetadata;
 		protected:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -125,6 +128,11 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 
+		struct sharedFormula
+		{
+			std::vector<XLS::CellRef> shrFmla;
+			std::vector<std::pair<XLS::CellRangeRef, XLS::CellRef>> arrfmla;
+		};
 		class CFormula : public WritingElement
 		{
 		public:
@@ -141,6 +149,7 @@ namespace OOX
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream);
 			void fromXLSBExt (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nFlags);
             void fromBin(XLS::BaseObjectPtr& obj, SimpleTypes::Spreadsheet::ECellFormulaType eType);
+            void toBin(XLS::BaseObjectPtr& obj);
 
 			virtual EElementType getType () const;
 
@@ -215,6 +224,7 @@ namespace OOX
 
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, _UINT32 nRow);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin(sharedFormula &sharedFormulas);
 
 			virtual EElementType getType () const;
 
@@ -234,9 +244,10 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadComment(XmlUtils::CXmlLiteReader& oReader, CCommentItem* pComment);
+			bool checkArrayCell(XLS::CellRef &cellref, const sharedFormula& ArrFmlas);
 
 			void AfterRead();
-	//----------- 2003			
+	//----------- 2003
 			void After2003Read();
 
 			nullable<CCommentItem> pCommentItem;
@@ -247,11 +258,11 @@ namespace OOX
 			nullable_int iAcross;
 			nullable_int iDown;
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oCellMetadata;
-			nullable<SimpleTypes::COnOff>						m_oShowPhonetic;
-			nullable_uint										m_oStyle;
 			nullable<SimpleTypes::Spreadsheet::CCellTypeType>	m_oType;
-			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oValueMetadata;
+			nullable<SimpleTypes::COnOff> m_oShowPhonetic;
+			nullable_uint			m_oStyle;
+			nullable_uint			m_oCellMetadata;
+			nullable_uint			m_oValueMetadata;
 
 			nullable<std::string>	m_oRef;
 			nullable_uint			m_oRow;
@@ -259,7 +270,7 @@ namespace OOX
 			nullable<CFormula>		m_oFormula;
 			nullable<CSi>			m_oRichText;
 			nullable<CText>			m_oValue;
-//-----------------------------			
+//-----------------------------
 			nullable_string			m_oCacheValue;
 		};
 
@@ -281,8 +292,9 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromXMLToXLSB(XmlUtils::CXmlLiteReader& oReader, NSBinPptxRW::CXlsbBinaryWriter& oStream, CCellXLSB& oCell);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
-			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;            
+			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
                         void fromBin(XLS::BaseObjectPtr& obj);
+						XLS::BaseObjectPtr toBin(sharedFormula &sharedFormulas);
 
 			virtual EElementType getType () const;
 
@@ -324,11 +336,12 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType () const;
-		
+
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oXlsbPos;
-		
+
 			std::map<int, std::map<int, unsigned int>>	m_mapStyleMerges2003; // map(row, map(col, style))
 			void StyleFromMapStyleMerges2003(std::map<int, unsigned int> &mapStyleMerges);
 			void AfterRead();

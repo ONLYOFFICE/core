@@ -69,7 +69,7 @@ namespace utils//////////////////////////////////////////// ОБЩАЯ хрен�
 {
 	std::wstring convert_date(int date)
 	{
-		boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration(date - 2);
+		boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration( date - (date < 60 ? 1 : 2)); //29.02.1900
 
 		std::wstring date_str;
 
@@ -100,9 +100,9 @@ namespace utils//////////////////////////////////////////// ОБЩАЯ хрен�
 		}
 		return convert_date(iDate);
 	}
-	std::wstring convert_time(double dTime)
+	std::wstring convert_time(double dTime, bool bPT)
 	{
-		//12H15M42S
+		//12H15M42S - pt
 		int hours = 0, minutes = 0;
 		double sec = 0;
 
@@ -110,23 +110,20 @@ namespace utils//////////////////////////////////////////// ОБЩАЯ хрен�
 
 		double millisec = day.total_milliseconds() * dTime;
 
-
 		sec = millisec / 1000.;
 		hours = (int)(sec / 60. / 60.);
-		minutes = (int)((sec - (hours * 60 * 60)) / 60.);
-		sec = sec - (hours * 60 + minutes) * 60.;
+		minutes = (int)((sec - (hours * (int)60 * (int)60)) / 60.);
+		sec = sec - (hours * (int)60 + minutes) * 60.;
 
 		int sec1 = (int)sec;
 
 		std::wstring time_str =
 			(hours < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(hours)
-			//+ std::wstring(L"H") +
-			+ std::wstring(L":") +
+			+ (bPT ? std::wstring(L"H") : std::wstring(L":")) +
 			(minutes < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(minutes)
-			//+ std::wstring(L"M") +
-			+ std::wstring(L":") +
-			(sec1 < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(sec1);
-			//+ std::wstring(L"S");
+			+ (bPT ? std::wstring(L"M") : std::wstring(L":")) +
+			(sec1 < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(sec1)
+			+ (bPT ? std::wstring(L"S") : std::wstring(L""));
 
 		return time_str;
 	}
@@ -148,7 +145,7 @@ namespace utils//////////////////////////////////////////// ОБЩАЯ хрен�
 		std::wstring sDate, sTime;
 		if (dTime > 0)
 		{
-			sTime = convert_time(dTime);
+			sTime = convert_time(dTime, false);
 		}
 		if (nDate > 0)
 		{
@@ -173,8 +170,7 @@ namespace utils//////////////////////////////////////////// ОБЩАЯ хрен�
 		{
 			return oox_time;
 		}
-		//PT12H15M42S
-		return std::wstring(L"PT") + convert_time(dTime);
+		return std::wstring(L"PT") + convert_time(dTime, true);
 	}
 };
 
@@ -1001,16 +997,17 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 
 	ods_conversion_context* ods_context = dynamic_cast<ods_conversion_context*>(context_);
 	
-	//test external link
+	std::wstring odfFormula = formulas_converter_table.convert_formula(formula);
+
+//test external link
 	bool bExternal = !ods_context->externals_.empty();
 	boost::wregex re(L"([\\[]\\d+[\\]])+");
 
 	while(bExternal)
 	{
 		boost::wsmatch result;
-		bExternal = boost::regex_search(formula, result, re);
+		bExternal = boost::regex_search(odfFormula, result, re);
 		if (!bExternal) break;
-
 		
 		std::wstring refExternal = result[1].str();
 		int idExternal = XmlUtils::GetInteger(refExternal.substr(1, refExternal.length() - 1)) - 1;
@@ -1019,33 +1016,28 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 
 		while(idExternal >= 0 && idExternal < (int)ods_context->externals_.size())
 		{
-			size_t pos = formula.find(refExternal);
+			size_t pos = odfFormula.find(refExternal);
 			if (pos == std::wstring::npos)
 				break;
 
 			std::wstring new_formula; 
 			
-			if (pos > 0 && formula[pos - 1] == L'\'')
+			if (pos > 0 && odfFormula[pos - 1] == L'\'')
 			{
-				new_formula = formula.substr(0, pos - 1);
-				new_formula += L"'EXTERNALREF" + ods_context->externals_[idExternal].ref + L"'#";
+				new_formula = odfFormula.substr(0, pos - 1);
+				new_formula += L"'" + ods_context->externals_[idExternal].ref + L"'#";
 				new_formula += L"'";
 			}
 			else
 			{
-				new_formula = formula.substr(0, pos);
-				new_formula += L"'EXTERNALREF" + ods_context->externals_[idExternal].ref + L"'#";
+				new_formula = odfFormula.substr(0, pos);
+				new_formula += L"'" + ods_context->externals_[idExternal].ref + L"'#";
 			}
 			pos += refExternal.length();
-			new_formula += formula.substr(pos, formula.length() - pos);
-			formula = new_formula;
+			new_formula += odfFormula.substr(pos, odfFormula.length() - pos);
+			odfFormula = new_formula;
 		}
 	}
-
-	std::wstring odfFormula = formulas_converter_table.convert_formula(formula);
-
-	XmlUtils::replace_all(odfFormula, L"EXTERNALREF", L"file://");//снятие экранирования
-
 	if ((false == table_parts_.empty()) && (std::wstring::npos != odfFormula.find(L"[")))
 	{
 		for (size_t i = 0; i < table_parts_.size(); i++)
@@ -1393,7 +1385,7 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 
 		bool need_test_cach = false;
 
-		if (cell->attlist_.common_value_and_type_attlist_->office_value_type_)
+		if (!need_cash && cell->attlist_.common_value_and_type_attlist_->office_value_type_)
 		{
 			if (cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Float ||
  				cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Currency ||  
@@ -1952,7 +1944,7 @@ void ods_table_state::end_conditional_format()
 {
 	current_level_.pop_back();
 }
-void ods_table_state::start_conditional_rule(int rule_type, _CP_OPT(unsigned int) rank, _CP_OPT(bool) bottom, _CP_OPT(bool) percent)
+void ods_table_state::start_conditional_rule(int rule_type, _CP_OPT(unsigned int) rank, _CP_OPT(bool) bottom, _CP_OPT(bool) percent, _CP_OPT(bool) above, _CP_OPT(bool) equal, _CP_OPT(int) stdDev)
 {
 	office_element_ptr elm;
 
@@ -1995,18 +1987,27 @@ void ods_table_state::start_conditional_rule(int rule_type, _CP_OPT(unsigned int
 						table = L"'" + table + L"'";
 					}
 				}
-				condition->attr_.calcext_base_cell_address_ = table + col + row;
+				condition->attr_.calcext_base_cell_address_ = (table.empty() ? L"" : (table + L".")) + col + row;
 			}
 			switch(rule_type)
 			{
-				case 0:	condition->attr_.calcext_value_		= L"above-average";		break;
+				case 0:
+				{
+					if (equal) condition->attr_.calcext_value_ = above.get_value_or(true) ? L"above-equal-average" : L"below-equal-average";
+					else condition->attr_.calcext_value_ = above.get_value_or(true) ? L"above-average" : L"below-average";
+
+					if (stdDev)
+					{
+						condition->attr_.loext_stdDev_ = *stdDev;
+					}
+				}break;
 				case 1:	condition->attr_.calcext_value_		= L"begins-with()";		break;
-				case 4: condition->attr_.calcext_value_		= L"contains-text()";	break;
+				case 4: condition->attr_.calcext_value_		= L"formula-is()";		break;
 				case 5: condition->attr_.calcext_value_		= L"is-error";			break;
 				case 6: condition->attr_.calcext_value_		= L"contains-text()";	break;
 				case 8: condition->attr_.calcext_value_		= L"duplicate";			break;
 				case 9: condition->attr_.calcext_value_		= L"formula-is()";		break;
-				case 11: condition->attr_.calcext_value_	= L"not-contains-text()"; break;
+				case 11: condition->attr_.calcext_value_	= L"formula-is()";		break;
 				case 12: condition->attr_.calcext_value_	= L"is-no-error";		break;
 				case 13: condition->attr_.calcext_value_	= L"not-contains-text()"; break;
 				case 15:
@@ -2039,16 +2040,18 @@ void ods_table_state::end_conditional_rule()
 void ods_table_state::set_conditional_formula(const std::wstring& formula)
 {
 	calcext_condition* condition = dynamic_cast<calcext_condition*>	 (current_level_.back().get());
-
 	if (!condition) return;
 
 	std::wstring odfFormula = formulas_converter_table.convert_conditional_formula(formula);
 		
-	std::wstring operator_;
+	std::wstring operator_ = condition->attr_.calcext_value_.get_value_or(L"");
+	
+	if (std::wstring::npos != operator_.find(L"is-no-error") || 
+		std::wstring::npos != operator_.find(L"is-error"))
+		return;
+	
 	bool s = false;
 	bool split = false;
-
-	operator_ = condition->attr_.calcext_value_.get_value_or(L"");
 
 	size_t f_start = operator_.find(L"("); 
 	size_t f_end = operator_.rfind(L")"); 
@@ -2084,18 +2087,18 @@ void ods_table_state::set_conditional_time(int period)
 	{
 		switch (period)
 		{
-		case 1: date_is->attr_.calcext_date_ = odf_types::time_period::yesterday; break;
-		case 2: date_is->attr_.calcext_date_ = odf_types::time_period::tomorrow; break;
-		case 3: date_is->attr_.calcext_date_ = odf_types::time_period::last7Days; break;
-		case 4: date_is->attr_.calcext_date_ = odf_types::time_period::thisMonth; break;
-		case 5: date_is->attr_.calcext_date_ = odf_types::time_period::lastMonth; break;
-		case 6: date_is->attr_.calcext_date_ = odf_types::time_period::nextMonth; break;
-		case 7: date_is->attr_.calcext_date_ = odf_types::time_period::thisWeek; break;
-		case 8: date_is->attr_.calcext_date_ = odf_types::time_period::lastWeek; break;
-		case 9: date_is->attr_.calcext_date_ = odf_types::time_period::nextWeek; break;
+		case 1: date_is->attr_.calcext_date_ = odf_types::time_period::lastMonth; break;
+		case 2: date_is->attr_.calcext_date_ = odf_types::time_period::lastWeek; break;
+		case 3: date_is->attr_.calcext_date_ = odf_types::time_period::nextMonth; break;
+		case 4: date_is->attr_.calcext_date_ = odf_types::time_period::nextWeek; break;
+		case 5: date_is->attr_.calcext_date_ = odf_types::time_period::thisMonth; break;
+		case 6: date_is->attr_.calcext_date_ = odf_types::time_period::thisWeek; break;
+		case 7: date_is->attr_.calcext_date_ = odf_types::time_period::today; break;
+		case 8: date_is->attr_.calcext_date_ = odf_types::time_period::tomorrow; break;
+		case 9: date_is->attr_.calcext_date_ = odf_types::time_period::yesterday; break;
 		case 0:
 		default:
-			date_is->attr_.calcext_date_ = odf_types::time_period::today;
+			date_is->attr_.calcext_date_ = odf_types::time_period::last7Days;
 		}
 	}
 }
@@ -2250,7 +2253,7 @@ void ods_table_state::set_conditional_databar_color(_CP_OPT(color)& color)
 
 	if (cond_format)
 	{
-		cond_format->attr_.calcext_positive_color_ = color;
+		cond_format->attr_.positive_color_ = color;
 	}
 }
 void ods_table_state::set_conditional_databar_axis_color(_CP_OPT(color)& color)
@@ -2259,7 +2262,7 @@ void ods_table_state::set_conditional_databar_axis_color(_CP_OPT(color)& color)
 
 	if (cond_format)
 	{
-		cond_format->attr_.calcext_axis_color_ = color;
+		cond_format->attr_.axis_color_ = color;
 	}
 }
 void ods_table_state::set_conditional_databar_negative_color(_CP_OPT(color)& color)
@@ -2268,7 +2271,7 @@ void ods_table_state::set_conditional_databar_negative_color(_CP_OPT(color)& col
 
 	if (cond_format)
 	{
-		cond_format->attr_.calcext_negative_color_ = color;
+		cond_format->attr_.negative_color_ = color;
 	}
 }
 void ods_table_state::set_conditional_databar_axis_position(const std::wstring& type)
@@ -2277,9 +2280,35 @@ void ods_table_state::set_conditional_databar_axis_position(const std::wstring& 
 
 	if (cond_format)
 	{
-		cond_format->attr_.calcext_axis_position_ = type;
+		cond_format->attr_.axis_position_ = type;
 	}
+}
+void ods_table_state::set_conditional_databar_gradient(bool val)
+{
+	calcext_data_bar* cond_format = dynamic_cast<calcext_data_bar*>(current_level_.back().get());
 
+	if (cond_format)
+	{
+		cond_format->attr_.gradient_ = val;
+	}
+}
+void ods_table_state::set_conditional_databar_max(unsigned int val)
+{
+	calcext_data_bar* cond_format = dynamic_cast<calcext_data_bar*>(current_level_.back().get());
+
+	if (cond_format)
+	{
+		cond_format->attr_.max_length_ = val;
+	}
+}
+void ods_table_state::set_conditional_databar_min(unsigned int val)
+{
+	calcext_data_bar* cond_format = dynamic_cast<calcext_data_bar*>(current_level_.back().get());
+
+	if (cond_format)
+	{
+		cond_format->attr_.min_length_ = val;
+	}
 }
 
 }

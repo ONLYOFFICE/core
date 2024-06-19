@@ -564,6 +564,10 @@ namespace NExtractTools
 				}
 				sFileToExt = getExtentionByRasterFormat(nRasterFormat);
 			}
+
+			int nSaveFlags = (nSaveType & 0xF0) >> 4;
+			nSaveType = nSaveType & 0x0F;
+
 			int nPagesCount = pReader->GetPagesCount();
 			if (bIsOnlyFirst)
 				nPagesCount = 1;
@@ -572,12 +576,23 @@ namespace NExtractTools
 				int nRasterWCur = nRasterW;
 				int nRasterHCur = nRasterH;
 
+				double dPageDpiX, dPageDpiY;
+				double dWidth, dHeight;
+				pReader->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+
+				if (nSaveFlags & 0x0F)
+				{
+					if (((dWidth < dHeight) && (nRasterWCur > nRasterHCur)) ||
+						((dWidth > dHeight) && (nRasterWCur < nRasterHCur)))
+					{
+						int nTmp = nRasterWCur;
+						nRasterWCur = nRasterHCur;
+						nRasterHCur = nTmp;
+					}
+				}
+
 				if (1 == nSaveType)
 				{
-					double dPageDpiX, dPageDpiY;
-					double dWidth, dHeight;
-					pReader->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-
 					double dKoef1 = nRasterWCur / dWidth;
 					double dKoef2 = nRasterHCur / dHeight;
 					if (dKoef1 > dKoef2)
@@ -926,7 +941,7 @@ namespace NExtractTools
 
 				CDocxRenderer oDocxRenderer(pApplicationFonts);
 
-				NSDocxRenderer::TextAssociationType taType = NSDocxRenderer::tatPlainLine;
+				NSDocxRenderer::TextAssociationType taType = NSDocxRenderer::TextAssociationType::tatPlainLine;
 				if (params.m_oTextParams)
 				{
 					InputParamsText *oTextParams = params.m_oTextParams;
@@ -936,16 +951,16 @@ namespace NExtractTools
 						switch (*oTextParams->m_nTextAssociationType)
 						{
 						case 0:
-							taType = NSDocxRenderer::tatBlockChar;
+							taType = NSDocxRenderer::TextAssociationType::tatBlockChar;
 							break;
 						case 1:
-							taType = NSDocxRenderer::tatBlockLine;
+							taType = NSDocxRenderer::TextAssociationType::tatBlockLine;
 							break;
 						case 2:
-							taType = NSDocxRenderer::tatPlainLine;
+							taType = NSDocxRenderer::TextAssociationType::tatPlainLine;
 							break;
 						case 3:
-							taType = NSDocxRenderer::tatPlainParagraph;
+							taType = NSDocxRenderer::TextAssociationType::tatPlainParagraph;
 							break;
 						default:
 							break;

@@ -74,6 +74,75 @@ namespace OOX
 			{
 				ReadAttributes(obj);
 			}
+			XLS::BaseObjectPtr CWorkbookView::toBin()
+			{
+                auto ptr(new XLSB::BookView);
+				XLS::BaseObjectPtr objectPtr(ptr);
+
+                if (m_oActiveTab.IsInit())
+                {
+                    ptr->itabCur = m_oActiveTab->GetValue();
+                }
+                else
+                {
+                    ptr->itabCur = 0;
+                }
+
+                if (m_oAutoFilterDateGrouping.IsInit())
+                    ptr->fNoAFDateGroup = m_oAutoFilterDateGrouping->GetValue();
+                if (m_oFirstSheet.IsInit())
+                    ptr->itabFirst = m_oFirstSheet->GetValue();
+                else
+                    ptr->itabFirst = 0;
+                if (m_oMinimized.IsInit())
+                    ptr->fIconic = m_oMinimized->GetValue();
+                else
+                    ptr->fIconic = false;
+                if (m_oShowHorizontalScroll.IsInit())
+                    ptr->fDspHScroll = m_oShowHorizontalScroll->GetValue();
+                if (m_oShowSheetTabs.IsInit())
+                    ptr->fBotAdornment = m_oShowSheetTabs->GetValue();
+                if (m_oShowVerticalScroll.IsInit())
+                    ptr->fDspVScroll = m_oShowVerticalScroll->GetValue();
+                if (m_oTabRatio.IsInit())
+                    ptr->wTabRatio = m_oTabRatio->GetValue();
+                else
+                    ptr->wTabRatio = 600;
+                if (m_oWindowHeight.IsInit())
+                    ptr->dyWn = m_oWindowHeight->GetValue();
+                else
+                    ptr->dyWn = 12750;
+                if (m_oWindowWidth.IsInit())
+                    ptr->dxWn = m_oWindowWidth->GetValue();
+                else
+                    ptr->dxWn = 21240;
+                if (m_oXWindow.IsInit())
+                    ptr->xWn = m_oXWindow->GetValue() * 6;
+                else
+                    ptr->xWn = 2280;
+                if (m_oYWindow.IsInit())
+                    ptr->yWn = m_oYWindow->GetValue() * 110;
+                else
+                    ptr->yWn = 1650;
+
+                if (m_oVisibility == SimpleTypes::Spreadsheet::EVisibleType::visibleHidden)
+                {
+                    ptr->fHidden = true;
+                    ptr->fVeryHidden = false;
+                }
+                else if (m_oVisibility == SimpleTypes::Spreadsheet::EVisibleType::visibleVeryHidden)
+                {
+                    ptr->fHidden = false;
+                    ptr->fVeryHidden = true;
+                }
+                else
+                {
+                    ptr->fHidden = false;
+                    ptr->fVeryHidden = false;
+                }
+
+				return objectPtr;
+			}
 			EElementType CWorkbookView::getType () const
 			{
 				return et_x_WorkbookView;
@@ -182,6 +251,14 @@ namespace OOX
 				{
 					m_arrItems.push_back(new CWorkbookView(workbookView));
 				}
+			}
+			std::vector<XLS::BaseObjectPtr> CBookViews::toBin()
+			{
+				std::vector<XLS::BaseObjectPtr> ptrVector{};
+				for(auto i:m_arrItems)
+					ptrVector.push_back(i->toBin());
+
+				return ptrVector;
 			}
 			EElementType CBookViews::getType () const
 			{

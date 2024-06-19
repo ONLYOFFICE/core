@@ -61,6 +61,7 @@ public:
 	std::wostream & autofilter();
 	std::wostream & tableParts();
 	std::wostream & conditionalFormatting();
+	std::wostream & conditionalFormattingEx();
 	std::wostream & picture_background();
 	std::wostream & dataValidations();
 	std::wostream & dataValidationsX14();

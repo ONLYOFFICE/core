@@ -590,11 +590,7 @@ namespace NSDirectory
 	int GetFilesCount(const std::wstring& path, const bool& recursive)
 	{
 		std::vector<std::wstring> arrFiles = NSDirectory::GetFiles(path, recursive);
-#if defined(_WIN32) || defined (_WIN64)
 		return (int)arrFiles.size();
-#endif
-		return (int)arrFiles.size() + 1;
-		// ???
 	}
 	bool PathIsDirectory(const std::wstring& pathName)
 	{

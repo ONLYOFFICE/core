@@ -807,8 +807,8 @@ void GlobalsSubstream::UpdateDefineNames()
 			else
 			{
 				std::vector<std::wstring> ar(ind_sheet + 1);
-			
-				ar[ind_sheet] = value;
+                if(ar.size() > ind_sheet)
+                    ar[ind_sheet] = value;
 				//ar.push_back(value);
 
 				global_info_->mapDefineNames.insert(std::make_pair(name, ar));

@@ -751,6 +751,15 @@ void docx_conversion_context::end_document()
 	output_document_->get_docProps_files().set_app(package::simple_element::create(L"app.xml", dump_settings_app()));
 	output_document_->get_docProps_files().set_core(package::simple_element::create(L"core.xml", dump_settings_core()));
 
+	std::wstring settings_custom = dump_settings_custom();
+	if (false == settings_custom.empty())
+	{
+		output_document_->get_docProps_files().set_custom(package::simple_element::create(L"custom.xml", settings_custom));
+		output_document_->get_content_types_file().content()->add_override(L"/docProps/custom.xml", L"application/vnd.openxmlformats-officedocument.custom-properties+xml");
+		output_document_->get_rels_files().add(
+	relationship(L"rCstmId", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/custom-properties", L"docProps/custom.xml"));
+	}
+
 	for (size_t i = 0; i < charts_.size(); i++)
     {
 		package::chart_content_ptr content = package::chart_content::create();
@@ -895,6 +904,24 @@ std::wstring  docx_conversion_context::dump_settings_app()
 					CP_XML_STREAM() << *odf_document_->odf_context().DocProps().paragraph_count_;
 				}
 			}
+		}
+	}
+	return output.str();
+}
+std::wstring  docx_conversion_context::dump_settings_custom()
+{
+	std::wstring user_defined = odf_document_->odf_context().DocProps().dump_user_defined();
+	if (user_defined.empty()) return L"";
+
+	std::wstringstream output;
+	CP_XML_WRITER(output)
+	{
+		CP_XML_NODE(L"Properties")
+		{
+			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/officeDocument/2006/custom-properties");
+			CP_XML_ATTR(L"xmlns:vt", L"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes");
+
+			CP_XML_STREAM() << user_defined;
 		}
 	}
 	return output.str();
@@ -2377,7 +2404,7 @@ void docx_conversion_context::start_text_changes (const std::wstring &id)
 
 		if (state_.in_paragraph_)
 		{
-			std::wstring format_change = L" w:date=\"" + state.date + L"\" w:author=\"" + state.author + L"\"";
+			std::wstring format_change = L" w:date=\"" + state.date + L"\" w:author=\"" + XmlUtils::EncodeXmlString(state.author) + L"\"";
 
 			finish_run();
 			state.in_drawing = get_drawing_state_content();
@@ -2438,7 +2465,7 @@ void docx_conversion_context::start_changes(bool in_para)
 
 		std::wstring change_attr;
 		change_attr += L" w:date=\"" + state.date + L"\"";
-		change_attr += L" w:author=\"" + state.author + L"\"";
+		change_attr += L" w:author=\"" + XmlUtils::EncodeXmlString(state.author) + L"\"";
 
 		if (state.oox_id == 0)
 		{

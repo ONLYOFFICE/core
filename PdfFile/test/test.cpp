@@ -37,6 +37,7 @@
 #include "../../DesktopEditor/xmlsec/src/include/CertificateCommon.h"
 #include "../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h"
 #include "../PdfFile.h"
+#include "../../DjVuFile/DjVu.h"
 
 class CPdfFileTest : public testing::Test
 {
@@ -142,6 +143,42 @@ CApplicationFontsWorker* CPdfFileTest::oWorker = NULL;
 NSFonts::IApplicationFonts* CPdfFileTest::pApplicationFonts = NULL;
 std::wstring CPdfFileTest::wsTempDir;
 
+TEST_F(CPdfFileTest, DjVuToPdf)
+{
+	GTEST_SKIP();
+
+	CDjVuFile* pFile = new CDjVuFile(pApplicationFonts);
+
+	ASSERT_TRUE(pFile->LoadFromFile(NSFile::GetProcessDirectory() + L"/test.djvu"));
+
+	pdfFile->CreatePdf();
+
+	int nPagesCount = pFile->GetPagesCount();
+	for (int i = 0; i < nPagesCount; ++i)
+	{
+		pdfFile->NewPage();
+		pdfFile->BeginCommand(c_nPageType);
+
+		double dPageDpiX, dPageDpiY;
+		double dWidth, dHeight;
+		pFile->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+
+		dWidth *= 25.4 / dPageDpiX;
+		dHeight *= 25.4 / dPageDpiY;
+
+		pdfFile->put_Width(dWidth);
+		pdfFile->put_Height(dHeight);
+
+		pFile->DrawPageOnRenderer(pdfFile, i, NULL);
+
+		pdfFile->EndCommand(c_nPageType);
+	}
+
+	pdfFile->SaveToFile(wsDstFile);
+
+	RELEASEOBJECT(pFile);
+}
+
 TEST_F(CPdfFileTest, GetMetaData)
 {
 	GTEST_SKIP();
@@ -149,27 +186,25 @@ TEST_F(CPdfFileTest, GetMetaData)
 	BYTE* pMetaData = NULL;
 	DWORD nMetaLength = 0;
 
-	if (pdfFile->GetMetaData(wsSrcFile, L"Test0", &pMetaData, nMetaLength))
+	if (pdfFile->GetMetaData(wsSrcFile, L"ONLYOFFICEFORM", &pMetaData, nMetaLength))
 	{
 		NSFile::CFileBinary oFile;
-		if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/resGetMetaData0.png"))
+		if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/ONLYOFFICEFORM.docxf"))
 			oFile.WriteFile(pMetaData, nMetaLength);
 		oFile.CloseFile();
 
 		EXPECT_TRUE(pMetaData);
 	}
 	RELEASEARRAYOBJECTS(pMetaData);
+}
 
-	if (pdfFile->GetMetaData(wsSrcFile, L"Test1", &pMetaData, nMetaLength))
-	{
-		NSFile::CFileBinary oFile;
-		if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/resGetMetaData1.png"))
-			oFile.WriteFile(pMetaData, nMetaLength);
-		oFile.CloseFile();
+TEST_F(CPdfFileTest, ValidMetaData)
+{
+	GTEST_SKIP();
 
-		EXPECT_TRUE(pMetaData);
-	}
-	RELEASEARRAYOBJECTS(pMetaData);
+	LoadFromFile();
+
+	std::cout << "ValidMetaData " << (pdfFile->ValidMetaData() ? "true" : "false") << std::endl;
 }
 
 TEST_F(CPdfFileTest, PdfBinToPng)
@@ -201,10 +236,26 @@ TEST_F(CPdfFileTest, PdfBinToPng)
 
 TEST_F(CPdfFileTest, PdfFromBin)
 {
-	GTEST_SKIP();
+	//GTEST_SKIP();
 
 	pdfFile->CreatePdf();
 	EXPECT_HRESULT_SUCCEEDED(pdfFile->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile));
+}
+
+TEST_F(CPdfFileTest, PdfToPdf)
+{
+	GTEST_SKIP();
+
+	LoadFromFile();
+	pdfFile->CreatePdf();
+
+	for (int i = 0; i < pdfFile->GetPagesCount(); i++)
+	{
+		pdfFile->NewPage();
+		pdfFile->DrawPageOnRenderer(pdfFile, i, NULL);
+	}
+
+	pdfFile->SaveToFile(wsDstFile);
 }
 
 TEST_F(CPdfFileTest, SetMetaData)
@@ -215,14 +266,9 @@ TEST_F(CPdfFileTest, SetMetaData)
 
 	BYTE* pFileData = NULL;
 	DWORD nFileSize;
-	std::wstring sFile = NSFile::GetProcessDirectory() + L"/res0.png";
+	std::wstring sFile = NSFile::GetProcessDirectory() + L"/ONLYOFFICEFORM.docxf";
 	EXPECT_TRUE(NSFile::CFileBinary::ReadAllBytes(sFile, &pFileData, nFileSize));
-	pdfFile->AddMetaData(L"Test0", pFileData, nFileSize);
-	RELEASEARRAYOBJECTS(pFileData);
-
-	sFile = NSFile::GetProcessDirectory() + L"/res1.png";
-	EXPECT_TRUE(NSFile::CFileBinary::ReadAllBytes(sFile, &pFileData, nFileSize));
-	pdfFile->AddMetaData(L"Test1", pFileData, nFileSize);
+	pdfFile->AddMetaData(L"ONLYOFFICEFORM", pFileData, nFileSize);
 	RELEASEARRAYOBJECTS(pFileData);
 
 	EXPECT_HRESULT_SUCCEEDED(pdfFile->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile));
@@ -281,7 +327,7 @@ TEST_F(CPdfFileTest, EditPdf)
 
 TEST_F(CPdfFileTest, EditPdfFromBase64)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	LoadFromFile();
 	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
@@ -311,8 +357,11 @@ TEST_F(CPdfFileTest, EditPdfFromBase64)
 	}
 
 	EXPECT_TRUE(NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, pBuffer, &nBufferLen));
-	pdfFile->AddToPdfFromBinary(pBuffer, nBufferLen, NULL);
+	CConvertFromBinParams* pParams = new CConvertFromBinParams();
+	pParams->m_sMediaDirectory = NSFile::GetProcessDirectory();
+	pdfFile->AddToPdfFromBinary(pBuffer, nBufferLen, pParams);
 
+	RELEASEOBJECT(pParams);
 	RELEASEARRAYOBJECTS(pBuffer);
 	RELEASEARRAYOBJECTS(pFileContent);
 

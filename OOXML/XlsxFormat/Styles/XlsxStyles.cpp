@@ -61,6 +61,8 @@
 #include "../../XlsbFormat/Biff12_unions/STYLES.h"
 #include "../../XlsbFormat/Biff12_unions/DXFS.h"
 
+#include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -123,7 +125,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_if(oReader, L"ss:ID", m_sId)
 				WritingElement_ReadAttributes_Read_if(oReader, L"ss:Name", m_sName)
 				WritingElement_ReadAttributes_Read_if(oReader, L"ss:Parent", m_sParentId)
-				WritingElement_ReadAttributes_End(oReader)
+			WritingElement_ReadAttributes_End(oReader)
 		}
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -209,6 +211,44 @@ namespace OOX
 				//stylesStream.reset();
 
 			}
+		}
+		XLS::BaseObjectPtr CStyles::WriteBin() const
+		{
+			XLSB::StylesStreamPtr stylesStream(new XLSB::StylesStream);
+			XLS::BaseObjectPtr objectPtr(stylesStream);
+			if (m_oNumFmts.IsInit())
+    			stylesStream->m_FMTS = m_oNumFmts->toBin();
+
+			if (m_oFonts.IsInit())
+				stylesStream->m_FONTS = m_oFonts->toBin();
+
+			if (m_oFills.IsInit())
+				stylesStream->m_FILLS = m_oFills->toBin();
+
+            if (m_oBorders.IsInit())
+                stylesStream->m_BORDERS = m_oBorders->toBin();
+
+            if (m_oCellStyleXfs.IsInit())
+                stylesStream->m_CELLSTYLEXFS = m_oCellStyleXfs->toBin();
+
+			if (m_oCellXfs.IsInit())
+				stylesStream->m_CELLXFS = m_oCellXfs->toBin();
+
+			if (m_oCellStyles.IsInit())
+				stylesStream->m_STYLES = m_oCellStyles->toBin();
+
+			if (m_oDxfs.IsInit())
+				stylesStream->m_DXFS = m_oDxfs->toBin();
+
+			if (m_oTableStyles.IsInit())
+				stylesStream->m_TABLESTYLES = m_oTableStyles->toBin();
+
+			if (m_oColors.IsInit())
+				stylesStream->m_COLORPALETTE = m_oColors->toBin();
+
+            if (m_oExtLst.IsInit())
+                stylesStream->m_FRTSTYLESHEET = m_oExtLst->toBinStyles();
+			return objectPtr;
 		}
 		void CStyles::read(const CPath& oPath)
 		{
@@ -324,6 +364,14 @@ namespace OOX
 		}
 		void CStyles::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if ((xlsb) && (xlsb->m_bWriteToXlsb))
+			{
+				XLS::BaseObjectPtr object = WriteBin();
+				xlsb->WriteBin(oPath, object.get());
+			}
+			else
+			{
 			NSStringUtils::CStringBuilder sXml;
 
 			sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
@@ -341,7 +389,7 @@ xmlns:x16r2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/02/main\">"
 
 			std::wstring sPath = oPath.GetPath();
 			NSFile::CFileBinary::SaveToFile(sPath.c_str(), sXml.GetData());
-
+			}
 			oContent.Registration(type().OverrideType(), oDirectory, oPath.GetFilename());
 		}
 		void CStyles::AfterRead()
@@ -395,7 +443,7 @@ xmlns:x16r2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/02/main\">"
 				cell_style->m_oName = L"Normal";
 
 				m_oCellStyles->m_arrItems.push_back(cell_style);
-				
+
 				CXfs *cell_xfs = new CXfs();
 				cell_xfs->m_oXfId = iXfs;
 
@@ -758,6 +806,11 @@ xmlns:x16r2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/02/main\">"
 		}
 		const OOX::FileType CStyles::type() const
 		{
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if ((xlsb) && (xlsb->m_bWriteToXlsb))
+			{
+				return OOX::SpreadsheetBin::FileTypes::StylesBin;
+			}
 			return OOX::Spreadsheet::FileTypes::Styles;
 		}
 		const CPath CStyles::DefaultDirectory() const
@@ -766,7 +819,18 @@ xmlns:x16r2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/02/main\">"
 		}
 		const CPath CStyles::DefaultFileName() const
 		{
-			return type().DefaultFileName();
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if ((xlsb) && (xlsb->m_bWriteToXlsb))
+			{
+				CPath name = type().DefaultFileName();
+
+				name.SetExtention(L"bin");
+				return name;
+			}
+			else
+			{
+				return type().DefaultFileName();
+			}
 		}
 		const CPath& CStyles::GetReadPath()
 		{

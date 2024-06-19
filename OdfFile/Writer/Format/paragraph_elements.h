@@ -42,6 +42,7 @@
 #include "../../DataTypes/targetframename.h"
 #include "../../DataTypes/noteclass.h"
 #include "../../DataTypes/bibliography.h"
+#include "../../DataTypes/referenceformat.h"
 
 #include "../../DataTypes/common_attlists.h"
 
@@ -211,7 +212,33 @@ public:
     std::wstring text_name_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_bookmark_end);
+//-------------------------------------------------------------------------------------------------------------------
+// text:bookmark-ref
+//-------------------------------------------------------------------------------------------------------------------
+class text_bookmark_ref : public office_element_impl<text_bookmark_ref>
+{
+public:
+    static const wchar_t* ns;
+    static const wchar_t* name;
 
+    static const ElementType type = typeTextBookmarkRef;
+
+    text_bookmark_ref() {};
+    text_bookmark_ref(const std::wstring& Name) : ref_name_(Name) {};
+
+    virtual void create_child_element(const std::wstring& Ns, const std::wstring& Name); 
+    virtual void add_child_element(const office_element_ptr& child_element);
+    virtual void add_text(const std::wstring& Text);
+
+    virtual void serialize(std::wostream& _Wostream);
+
+    _CP_OPT(std::wstring) ref_name_;
+    _CP_OPT(odf_types::reference_format) reference_format_;
+    
+    _CP_OPT(std::wstring) text_;
+    office_element_ptr_array content_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_bookmark_ref);
 // text:reference-mark
 //---------------------------------------------------------------------------------------------------
 class text_reference_mark : public office_element_impl<text_reference_mark>
@@ -920,18 +947,17 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeTextSequenceRef;
-    
+    static const ElementType type = typeTextSequenceRef;    
  
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream);
 
-	_CP_OPT(std::wstring)	reference_format_;//caption, category-and-value, value, chapter, direction, page, text, number, number-all-superior, number-no-superior
-	_CP_OPT(std::wstring)	ref_name_;
+    _CP_OPT(odf_types::reference_format) reference_format_;
+	_CP_OPT(std::wstring) ref_name_;
    
-	std::wstring			content_;
+	std::wstring content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_sequence_ref);
 //-------------------------------------------------------------------------------------------------------------------

@@ -131,6 +131,7 @@ public:
     _CP_OPT(odf_types::wrap_option)			fo_wrap_option_;
     
     office_element_ptr		style_background_image_;        
+    office_element_ptr      style_columns_;
 };
 typedef boost::shared_ptr<graphic_format_properties> graphic_format_properties_ptr;
 

@@ -36,7 +36,7 @@
 namespace cpdoccore { 
 namespace odf_reader {
 	
-document_context::document_context() : last_paragraph(NULL)
+document_context::document_context() : last_paragraph(NULL), is_old_version(false)
 {            
 }
 

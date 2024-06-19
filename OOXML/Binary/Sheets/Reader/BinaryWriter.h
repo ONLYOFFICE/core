@@ -84,6 +84,23 @@ namespace OOX
 		class CTimelineStyle;
 		class CTimelineStyles;
 		class CTimelineStyleElement;
+		
+		class CMetadata;
+		class CFutureMetadata;
+		class CFutureMetadataBlock;
+		class CMetadataBlocks;
+		class CMetadataBlock;
+		class CMetadataRecord;
+		class CMetadataTypes;
+		class CMetadataType;
+		class CMdxMetadata;
+		class CMdxKPI;
+		class CMdxMemeberProp;
+		class CMdxTuple;
+		class CMdx;
+		class CMdxSet;
+		class CMetadataStrings;
+		class CMetadataStringIndex;
 	}
 }
 
@@ -188,6 +205,7 @@ namespace BinXlsxRW
 		void WriteWorkbookView(const OOX::Spreadsheet::CWorkbookView& workbookView);
 		void WriteDefinedNames(const OOX::Spreadsheet::CDefinedNames& definedNames);
         void WriteCalcPr(const OOX::Spreadsheet::CCalcPr& CCalcPr);
+		
 		void WriteConnections(const OOX::Spreadsheet::CConnections& connections);
 		void WriteConnection(const OOX::Spreadsheet::CConnection& connection);
 		void WriteConnectionDbPr(const OOX::Spreadsheet::CDbPr& dbPr);
@@ -197,6 +215,7 @@ namespace BinXlsxRW
 		void WriteConnectionTextField(const OOX::Spreadsheet::CTextField& textField);
 		void WriteConnectionWebPr(const OOX::Spreadsheet::CWebPr& webPr);
 		void WriteConnectionRangePr(const OOX::Spreadsheet::CRangePr& rangePr);
+		
 		void WriteExternalReferences(const OOX::Spreadsheet::CExternalReferences& externalReferences, OOX::Spreadsheet::CWorkbook& workbook);
 		void WriteExternalBook(const OOX::Spreadsheet::CExternalBook& externalBook, OOX::Spreadsheet::CExternalLink* pExternalLink);
 		void WriteExternalAlternateUrls(const OOX::Spreadsheet::CAlternateUrls& alternateUrls, OOX::Spreadsheet::CExternalLink* pExternalLink);
@@ -207,6 +226,7 @@ namespace BinXlsxRW
 		void WriteExternalSheetData(const OOX::Spreadsheet::CExternalSheetData& sheetData);
 		void WriteExternalRow(const OOX::Spreadsheet::CExternalRow& row);
 		void WriteExternalCell(const OOX::Spreadsheet::CExternalCell& cell);
+		
 		void WriteOleLink(const OOX::Spreadsheet::COleLink& oleLink, const std::wstring& sLink);
 		void WriteOleItem(const OOX::Spreadsheet::COleItem& oleItem);
 		void WriteDdeLink(const OOX::Spreadsheet::CDdeLink& ddeLink);
@@ -216,6 +236,7 @@ namespace BinXlsxRW
 		void WriteDefinedName(const OOX::Spreadsheet::CDefinedName& definedName);
 		void WriteSlicerCaches(OOX::Spreadsheet::CWorkbook& workbook, const OOX::Spreadsheet::CSlicerCaches& oSlicerCaches);
 		void WriteFileSharing(const OOX::Spreadsheet::CFileSharing& fileSharing);
+		
 		void WriteTimelineCaches(OOX::Spreadsheet::CWorkbook& workbook, const OOX::Spreadsheet::CTimelineCacheRefs& oTimelineCacheRefs);
 		void WriteTimelineCache(OOX::Spreadsheet::CTimelineCacheDefinition* pTimelineCache);
 		void WriteTimelineState(OOX::Spreadsheet::CTimelineState* pState);
@@ -224,6 +245,22 @@ namespace BinXlsxRW
 		void WriteTimelineCachePivotTable(OOX::Spreadsheet::CTimelineCachePivotTable* pPivotTable);
 		void WriteTimelineRange(OOX::Spreadsheet::CTimelineRange* pTimelineRange);
 		
+		void WriteMetadata(OOX::Spreadsheet::CMetadata* pMetadata);
+		void WriteMetadataTypes(OOX::Spreadsheet::CMetadataTypes* pMetadataTypes);
+		void WriteMetadataType(OOX::Spreadsheet::CMetadataType* pMetadataType);
+		void WriteMetadataStrings(OOX::Spreadsheet::CMetadataStrings* pMetadataStrings);
+		void WriteMdxMetadata(OOX::Spreadsheet::CMdxMetadata* pMdxMetadata);
+		void WriteMdx(OOX::Spreadsheet::CMdx* pMdx);
+		void WriteMetadataBlocks(OOX::Spreadsheet::CMetadataBlocks* pMetadataBlocks);
+		void WriteMetadataBlock(OOX::Spreadsheet::CMetadataBlock* pMetadataBlock);
+		void WriteMetadataRecord(OOX::Spreadsheet::CMetadataRecord* pMetadataRecord);
+		void WriteFutureMetadata(OOX::Spreadsheet::CFutureMetadata* pMetadata);
+		void WriteFutureMetadataBlock(OOX::Spreadsheet::CFutureMetadataBlock* pMetadataBlock);
+		void WriteMdxTuple(OOX::Spreadsheet::CMdxTuple* pMdxTuple);
+		void WriteMdxSet(OOX::Spreadsheet::CMdxSet* pMdxSet);
+		void WriteMdxKPI(OOX::Spreadsheet::CMdxKPI* pMdxKPI);
+		void WriteMdxMemeberProp(OOX::Spreadsheet::CMdxMemeberProp* pMdxMemeberProp);
+		void WriteMetadataStringIndex(OOX::Spreadsheet::CMetadataStringIndex* pStringIndex);
 	};
 	class BinaryPersonTableWriter
 	{

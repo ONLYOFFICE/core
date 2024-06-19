@@ -49,7 +49,7 @@ typedef shared_ptr<office_element>::Type office_element_ptr;
 
 struct number_format_state
 {
-	int oox_num_fmt;//дефолтные (по документации - номера 0-163, за исключением некоторых)
+	int oox_num_fmt;//дефолтные
 
 	odf_types::office_value_type::type ods_type;
 
@@ -59,6 +59,7 @@ struct number_format_state
 
 	unsigned int language_code;
 	std::wstring currency_str;
+	unsigned int currency_pos = 0;
 };
 
 class odf_number_styles_context
@@ -67,7 +68,7 @@ public:
     odf_number_styles_context();
 	void set_odf_context(odf_conversion_context * Context);
 
-	number_format_state		&	add_or_find(int oox_num_fmt, std::wstring formatCode = L"");
+	number_format_state & add_or_find(int oox_num_fmt, std::wstring formatCode = L"");
 	void process_styles(office_element_ptr root );
 
 private:
@@ -81,7 +82,7 @@ private:
 	void detect_format(number_format_state & state);
 
 ////////////////
-	odf_conversion_context			*odf_context_;
+	odf_conversion_context *odf_context_;
 	std::vector<office_element_ptr>	styles_elments;
 
 //////////////////
@@ -94,8 +95,6 @@ private:
 	void create_percentage_style(number_format_state & state, office_element_ptr & root_elm);
 
 	void create_numbers(number_format_state & state, office_element_ptr & elm, office_element_ptr & root_elm);
-
-
 };
 }
 }

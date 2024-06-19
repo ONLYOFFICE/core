@@ -55,19 +55,52 @@ std::wstring convert_border_style(const odf_types::border_style& borderStyle)
 {
 	std::wstring retVal = L"none";
    
-	if (borderStyle.initialized())
+    if (borderStyle.initialized())
     {
-        if (borderStyle.get_style() == odf_types::border_style::none || borderStyle.is_none())
-           retVal = L"none";
-        else if (borderStyle.get_style() == odf_types::border_style::double_)
-            retVal = L"double";
-        else if (borderStyle.get_style() == odf_types::border_style::dotted)
-            retVal = L"dotted";
-        else if (borderStyle.get_style() == odf_types::border_style::dashed)
-            retVal = L"dashed";
-        else
+        double pt = borderStyle.get_length().get_value_unit(odf_types::length::pt);
 
-            retVal = L"thin";            
+        if (borderStyle.get_style() == odf_types::border_style::none || borderStyle.is_none())
+        {
+            retVal = L"none";
+        }
+        else if (borderStyle.get_style() == odf_types::border_style::double_)
+        {
+            retVal = L"double";
+        }
+        else if (borderStyle.get_style() == odf_types::border_style::dotted)
+        {
+            retVal = L"dotted";
+        }
+        else if (borderStyle.get_style() == odf_types::border_style::dashed)
+        {
+            if (pt > 1.5) retVal = L"mediumDashed";
+            else retVal = L"dashed";
+        }
+        else if (borderStyle.get_style() == odf_types::border_style::dash_dot)
+        {
+            if (pt > 1.5) retVal = L"mediumDashDot";
+            else retVal = L"dashDot";
+        }
+        else if (borderStyle.get_style() == odf_types::border_style::dash_dot_dot)
+        {
+            if (pt > 1.5) retVal = L"mediumDashDotDot";
+            else retVal = L"dashDotDot";
+        }
+        else if (borderStyle.get_style() == odf_types::border_style::fine_dashed)
+        {
+            retVal = L"slantDashDot";
+        }
+        else if (borderStyle.get_style() == odf_types::border_style::double_thin)
+        {
+            retVal = L"double";
+        }
+        else
+        { 
+            if (pt > 2.) retVal = L"thick";
+            else if (pt > 1.5) retVal = L"medium";  
+            else if (pt < 0.1) retVal = L"hair";
+            else retVal = L"thin";
+        }          
     }
     return retVal;
 }

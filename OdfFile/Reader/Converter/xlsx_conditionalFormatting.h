@@ -50,11 +50,14 @@ public:
 	void add_rule(int type);
 
 	void set_formula(std::wstring f);
-	void set_dataBar(_CP_OPT(int) min, _CP_OPT(int) max);
+
+	void set_dataBar(_CP_OPT(unsigned int) min, _CP_OPT(unsigned int) max);
+	void set_gradient(bool val);
 
 	void set_dxf	(int dxf_id);
 	void set_showVal(bool val);
 	void set_time_period(int val);
+	void set_stdDev(int val);
 
 	void add_sfv	(int type, std::wstring value);
 	void add_color	(std::wstring col);
@@ -66,6 +69,7 @@ public:
 	void set_icon_set_type(int type);
 
     void serialize(std::wostream & _Wostream);
+	void serializeEx(std::wostream& _Wostream);
 private:
     class Impl;
     _CP_SCOPED_PTR(Impl) impl_;

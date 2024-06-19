@@ -30,6 +30,7 @@
  *
  */
 
+#include "../DocxFlat.h"
 #include "VmlOfficeDrawing.h"
 
 namespace OOX
@@ -1268,19 +1269,32 @@ namespace OOX
 		{
 			ReadAttributes( oReader );
 
-			if ( oReader.IsEmptyNode() )
-				return;
-
-			int nCurDepth = oReader.GetDepth();
-			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
+			if (false == oReader.IsEmptyNode())
 			{
-				std::wstring sName = oReader.GetName();
-				if ( L"o:FieldCodes" == sName )
-					m_oFieldCodes = oReader;
-				else if ( L"o:LinkType" == sName )
-					m_oLinkType = oReader;
-				else if ( L"o:LockedField" == sName )
-					m_oLockedField = oReader;
+				int nCurDepth = oReader.GetDepth();
+				while (oReader.ReadNextSiblingNode(nCurDepth))
+				{
+					std::wstring sName = oReader.GetName();
+					if (L"o:FieldCodes" == sName)
+						m_oFieldCodes = oReader;
+					else if (L"o:LinkType" == sName)
+						m_oLinkType = oReader;
+					else if (L"o:LockedField" == sName)
+						m_oLockedField = oReader;
+				}
+			}
+			
+			OOX::CDocxFlat* docx_flat = dynamic_cast<OOX::CDocxFlat*>(m_pMainDocument);
+			if (docx_flat && false == m_oId.IsInit() && m_sObjectId.IsInit())
+			{
+				std::map<std::wstring, NSCommon::smart_ptr<OOX::File>>::iterator pFind = docx_flat->m_mapOleData.find(*m_sObjectId);
+
+				if (pFind != docx_flat->m_mapOleData.end())
+				{
+					const OOX::RId rId = docx_flat->m_currentContainer->Add(pFind->second);
+					m_oId.Init();
+					m_oId->SetValue(rId.get());
+				}
 			}
 		}
 		std::wstring COLEObject::toXML() const

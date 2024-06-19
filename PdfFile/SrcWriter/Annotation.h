@@ -349,6 +349,9 @@ namespace PdfWriter
 	};
 	class CFreeTextAnnotation : public CMarkupAnnotation
 	{
+	private:
+		CAnnotAppearance* m_pAppearance;
+
 	public:
 		CFreeTextAnnotation(CXref* pXref);
 		EAnnotType GetAnnotationType() const override
@@ -356,12 +359,17 @@ namespace PdfWriter
 			return AnnotFreeText;
 		}
 
+		void APFromFakePage(CPage* pFakePage);
+		void SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrC);
+
 		void SetQ(BYTE nQ);
 		void SetIT(BYTE nIT);
 		void SetLE(BYTE nLE);
+		void SetRotate(int nRotate);
 		void SetDS(const std::wstring& wsDS);
 		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4);
 		void SetCL(const std::vector<double>& arrCL);
+		void SetIC(const std::vector<double>& arrIC);
 	};
 	class CCaretAnnotation : public CMarkupAnnotation
 	{

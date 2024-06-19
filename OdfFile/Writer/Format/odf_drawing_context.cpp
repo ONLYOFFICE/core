@@ -433,7 +433,7 @@ void odf_drawing_context::start_group()
 	//if (!impl_->current_drawing_state_.description_.empty())
 	//	group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_ = impl_->current_drawing_state_.description_;
 	if (impl_->current_drawing_state_.hidden_)
-		group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_ = L"printer";
+		group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_ = L"printer"; // L"none" ??? 
 	if (!impl_->current_drawing_state_.xml_id_.empty())
 		group->xml_id_ = impl_->current_drawing_state_.xml_id_;
 	
@@ -630,7 +630,7 @@ void odf_drawing_context::end_drawing()
 		if (impl_->current_drawing_state_.z_order_ >= 0)
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_z_index_ = impl_->current_drawing_state_.z_order_;
 		if (impl_->current_drawing_state_.hidden_)
-			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_ = L"printer";
+			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_ = L"printer"; // L"none" ??? 
 		if (!impl_->current_drawing_state_.xml_id_.empty())
 			draw->xml_id_ = impl_->current_drawing_state_.xml_id_;
 
@@ -1178,15 +1178,17 @@ void odf_drawing_context::end_shape()
 					
 					enhanced->attlist_.draw_glue_points_	= shape_define->glue_points;
 					enhanced->attlist_.draw_sub_view_size_	= shape_define->sub_view_size;
+					enhanced->attlist_.glue_points_leaving_directions_ = shape_define->glue_points_leaving_directions;
 
 					enhanced->attlist_.draw_path_stretchpoint_x_ = shape_define->path_stretchpoint_x;
 					enhanced->attlist_.draw_path_stretchpoint_y_ = shape_define->path_stretchpoint_y;
 
-					if (!shape_define->modifiers.empty())
-					{
-						enhanced->attlist_.draw_modifiers_ = shape_define->modifiers;
-					}
-					else if (impl_->current_drawing_state_.oox_shape_ && !impl_->current_drawing_state_.oox_shape_->modifiers.empty())
+					//if (!shape_define->modifiers.empty())
+					//{
+					//	enhanced->attlist_.draw_modifiers_ = shape_define->modifiers;
+					//}
+					
+					if (impl_->current_drawing_state_.oox_shape_ && !impl_->current_drawing_state_.oox_shape_->modifiers.empty())
 					{
 						enhanced->attlist_.draw_modifiers_ = impl_->current_drawing_state_.oox_shape_->modifiers;
 					}
@@ -1469,11 +1471,7 @@ void odf_drawing_context::set_shadow(int type, std::wstring hexColor, _CP_OPT(do
 		hexColor = std::wstring(L"#") + hexColor;
 
 	impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_x_ = length(length(dist_pt, length::pt).get_value_unit(length::cm), length::cm);
-	
-	if (dist_pt_y > 0)
-		impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_y_ = length(length(dist_pt_y, length::pt).get_value_unit(length::cm), length::cm);
-	else
-		impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_y_ = length(length(dist_pt, length::pt).get_value_unit(length::cm), length::cm);
+	impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_y_ = length(length(dist_pt_y, length::pt).get_value_unit(length::cm), length::cm);
 	
 	impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_ = shadow_type1(shadow_type1::Visible);
 	if (opacity) impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_opacity_ = *opacity;
@@ -2759,12 +2757,13 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 	{
 		switch(mode)
 		{
+			case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
+				paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbLr);
+				break;
 			case 5://textverticaltypeWordArtVert:
 			case 6://textverticaltypeWordArtVertRtl:
-			case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
 			case 3://SimpleTypes::textverticaltypeVert: 
 			case 2://SimpleTypes::textverticaltypeMongolianVert:
-				
 				paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
 				break;
 			case 0://SimpleTypes::textverticaltypeEaVert: 
@@ -2780,9 +2779,11 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 	{
 		switch(mode)
 		{
+			case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
+				impl_->current_paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbLr);
+				break;
 			case 5://textverticaltypeWordArtVert:
 			case 6://textverticaltypeWordArtVertRtl:
-			case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
 			case 3://SimpleTypes::textverticaltypeVert: 
 			case 2://SimpleTypes::textverticaltypeMongolianVert:
 				impl_->current_paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
@@ -3172,6 +3173,28 @@ void odf_drawing_context::end_action()
 	end_element();
 	end_element();
 }
+
+void odf_drawing_context::start_style_columns(int cols, int gap)
+{
+	graphic_format_properties* graphic_props = get_graphic_properties();
+	if (!graphic_props)
+		return;
+
+	if (!graphic_props->style_columns_)
+		graphic_props->style_columns_ = boost::make_shared<style_columns>();
+	
+	graphic_props->style_columns_->fo_column_count_ = cols;
+	graphic_props->style_columns_->fo_column_gap_ = length(gap, length::cm);
+}
+
+void odf_drawing_context::add_style_column()
+{
+}
+
+void odf_drawing_context::end_style_columns()
+{
+}
+
 void odf_drawing_context::set_text_box_min_size(double w_pt, double h_pt)
 {
 	if (impl_->current_drawing_state_.elements_.empty()) return;

@@ -217,28 +217,6 @@ namespace ZLibZipUtils
 
 	/*========================================================================================================*/
 
-	/* change_file_date : change the date/time of a file
-	 filename : the filename of the file where date/time must be modified
-	 dosdate : the new date at the MSDos format (4 bytes)
-	 tmu_date : the SAME new date at the tm_unz format */
-	static void change_file_date( const wchar_t *filename, uLong dosdate, tm_unz tmu_date )
-	{
-#if defined(_WIN32) || defined (_WIN64)
-		HANDLE hFile;
-		FILETIME ftm,ftLocal,ftCreate,ftLastAcc,ftLastWrite;
-
-		hFile = CreateFileW(filename,GENERIC_READ | GENERIC_WRITE,
-							0,NULL,OPEN_EXISTING,0,NULL);
-		GetFileTime(hFile,&ftCreate,&ftLastAcc,&ftLastWrite);
-		DosDateTimeToFileTime((WORD)(dosdate>>16),(WORD)dosdate,&ftLocal);
-		LocalFileTimeToFileTime(&ftLocal,&ftm);
-		SetFileTime(hFile,&ftm,&ftLastAcc,&ftm);
-		CloseHandle(hFile);
-#endif
-	}
-
-	/*========================================================================================================*/
-
 	static void replace_all(std::string& subject, const std::string& search, const std::string& replace)
 	{
 		size_t pos = 0;
@@ -380,13 +358,22 @@ namespace ZLibZipUtils
 							break;
 						}
 				}
+				// ?
 				while (err>0);
-
-				//close вызовется в oFile
-
 				if (err==0)
 				{
-					change_file_date(write_filename, file_info.dosDate, file_info.tmu_date);
+					oFile.CloseFile();
+
+					struct tm time;
+					memset(&time, 0, sizeof(struct tm));
+					time.tm_sec = file_info.tmu_date.tm_sec;
+					time.tm_min = file_info.tmu_date.tm_min;
+					time.tm_hour = file_info.tmu_date.tm_hour;
+					time.tm_mday = file_info.tmu_date.tm_mday;
+					time.tm_mon = file_info.tmu_date.tm_mon + 1;
+					time.tm_year = file_info.tmu_date.tm_year;
+
+					NSFile::CFileBinary::SetTime(write_filename, &time);
 				}
 			}
 
@@ -564,29 +551,37 @@ namespace ZLibZipUtils
 
 	/*========================================================================================================*/
 
-	int oneZipFile(zipFile & zf, zip_fileinfo* zi, std::wstring & file_name, std::wstring & zip_file_name, int method, int compressionLevel, bool bDateTime)
+	int oneZipFile(zipFile & zf, std::wstring & file_name, std::wstring & zip_file_name, int method, int compressionLevel, bool bDateTime)
 	{
 		int err = -1;
-
 		NSFile::CFileBinary oFile;
 
 		zip_fileinfo zinfo;
-		zinfo.dosDate = zinfo.external_fa = zinfo.internal_fa = 0;
-		zinfo.tmz_date.tm_sec = zinfo.tmz_date.tm_min = zinfo.tmz_date.tm_hour = 0;
-		zinfo.tmz_date.tm_mday = 1;
-		zinfo.tmz_date.tm_mon = 0;
-		zinfo.tmz_date.tm_year = 1980;
+		zinfo.dosDate = 0;
+		zinfo.external_fa = 0;
+		zinfo.internal_fa = 0;
 
-		zip_fileinfo* zi_new = zi ? zi : &zinfo;
-		if (bDateTime )
+		if (bDateTime)
 		{
-			zi_new->dosDate = oFile.GetDateTime(file_name);
+			struct tm edited;
+			bool ok = NSFile::CFileBinary::GetTime(file_name, &edited);
+			if (ok)
+			{
+				zinfo.tmz_date.tm_sec = edited.tm_sec;
+				zinfo.tmz_date.tm_min = edited.tm_min;
+				zinfo.tmz_date.tm_hour = edited.tm_hour;
+				zinfo.tmz_date.tm_mday = edited.tm_mday;
+				zinfo.tmz_date.tm_mon = edited.tm_mon - 1;
+				zinfo.tmz_date.tm_year = edited.tm_year;
+			}
 		}
-		if(oFile.OpenFile(file_name))
+		zip_fileinfo* zi_new = bDateTime ? &zinfo : NULL;
+
+		if (oFile.OpenFile(file_name))
 		{
 			DWORD dwSizeRead;
 			BYTE* pData = new BYTE[oFile.GetFileSize()];
-			if(oFile.ReadFile(pData, oFile.GetFileSize(), dwSizeRead))
+			if (oFile.ReadFile(pData, oFile.GetFileSize(), dwSizeRead))
 			{
 				std::string zipFileNameA = codepage_issue_fixToOEM(zip_file_name);
 
@@ -596,7 +591,7 @@ namespace ZLibZipUtils
 			}
 			RELEASEARRAYOBJECTS(pData);
 		}
-		return 0;
+		return err;
 	}
 	int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback* progress, bool sorted, int method, int compressionLevel, bool bDateTime )
 	{
@@ -651,6 +646,11 @@ namespace ZLibZipUtils
 							StringDeque.push_front( aCurDirectories[i] );
 							zipDeque.push_front( zipDir + sDirName );
 						}
+						else if (sDirName == L"_rels")
+						{
+							StringDeque.push_front(aCurDirectories[i]);
+							zipDeque.push_front(zipDir + sDirName);
+						}
 						else
 						{
 							StringDeque.push_back( aCurDirectories[i] );
@@ -668,13 +668,14 @@ namespace ZLibZipUtils
 				{
 					std::wstring cFileName = NSSystemPath::GetFileName(aCurFiles[i]);
 
-					if (std::wstring::npos != cFileName.find(L"mimetype") ||
-							std::wstring::npos != cFileName.find(L"[Content_Types]")) // возможно и полное соответствие
-					{
+                    if (    std::wstring::npos != cFileName.find(L"mimetype") ||
+                            std::wstring::npos != cFileName.find(L"[Content_Types]") ||
+                            cFileName == L".rels")
+                    {
 						file = NSSystemPath::Combine(szText, cFileName);
 						zipFileName = zipDir + cFileName;
 
-						oneZipFile(zf, NULL, file, zipFileName, 0, compressionLevel, bDateTime);
+						oneZipFile(zf, file, zipFileName, 0, compressionLevel, bDateTime);
 
 						aCurFiles.erase(aCurFiles.begin() + i, aCurFiles.begin() + i + 1);
 						break;
@@ -687,7 +688,7 @@ namespace ZLibZipUtils
 					file = NSSystemPath::Combine(szText, cFileName);
 					zipFileName = zipDir + cFileName;
 
-					oneZipFile(zf, NULL, file, zipFileName, method, compressionLevel, bDateTime);
+					oneZipFile(zf, file, zipFileName, method, compressionLevel, bDateTime);
 
 					if ( progress != NULL )
 					{
@@ -724,15 +725,32 @@ namespace ZLibZipUtils
 	{
 		int err = -1;
 
-		if ( ( inputFile != NULL ) && ( outputFile != NULL ) )
+		if (( inputFile != NULL) && (outputFile != NULL))
 		{
 			NSFile::CFileBinary oFile;
 
 			zip_fileinfo zinfo;
-			zinfo.external_fa = zinfo.internal_fa = 0;
-			zinfo.dosDate = bDateTime ? oFile.GetDateTime(inputFile) : 0;
+			zinfo.dosDate = 0;
+			zinfo.external_fa = 0;
+			zinfo.internal_fa = 0;
 
-			if(oFile.OpenFile(inputFile))
+			if (bDateTime)
+			{
+				struct tm edited;
+				bool ok = NSFile::CFileBinary::GetTime(inputFile, &edited);
+				if (ok)
+				{
+					zinfo.tmz_date.tm_sec = edited.tm_sec;
+					zinfo.tmz_date.tm_min = edited.tm_min;
+					zinfo.tmz_date.tm_hour = edited.tm_hour;
+					zinfo.tmz_date.tm_mday = edited.tm_mday;
+					zinfo.tmz_date.tm_mon = edited.tm_mon - 1;
+					zinfo.tmz_date.tm_year = edited.tm_year;
+				}
+			}
+			zip_fileinfo* zi_new = bDateTime ? &zinfo : NULL;
+
+			if (oFile.OpenFile(inputFile))
 			{
 				DWORD dwSizeRead;
 				BYTE* pData = new BYTE[oFile.GetFileSize()];
@@ -741,26 +759,10 @@ namespace ZLibZipUtils
 					zipFile zf = zipOpenHelp(outputFile);
 					if (zf)
 					{
-						wstring inputFileName( inputFile );
-
-						wstring::size_type pos = 0;
-						static const wstring::size_type npos = -1;
-
-						pos = inputFileName.find_last_of( L'\\' );
-
-						wstring zipFileName;
-
-						if ( pos != npos )
-						{
-							zipFileName = wstring( ( inputFileName.begin() + pos + 1 ), inputFileName.end() );
-						}
-						else
-						{
-							zipFileName = wstring( inputFileName.begin(), inputFileName.end() );
-						}
+						wstring zipFileName = NSFile::GetFileName(inputFile);
 						std::string zipFileNameA = codepage_issue_fixToOEM(zipFileName);
 
-						err = zipOpenNewFileInZip( zf, zipFileNameA.c_str(), &zinfo, NULL, 0, NULL, 0, NULL, method, compressionLevel );
+						err = zipOpenNewFileInZip( zf, zipFileNameA.c_str(), zi_new, NULL, 0, NULL, 0, NULL, method, compressionLevel );
 						err = zipWriteInFileInZip( zf, pData, dwSizeRead );
 						err = zipCloseFileInZip( zf );
 						err = zipClose( zf, NULL );
@@ -843,13 +845,13 @@ namespace ZLibZipUtils
 	int UnzipToDir(unzFile uf, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password, bool opt_extract_without_path, bool clearOutputDirectory )
 	{
 		int err = -1;
-		
+
 		if ( uf != NULL && unzipDir != NULL )
 		{
-            if (NSDirectory::Exists(unzipDir))
-                err = 0;
+			if (NSDirectory::Exists(unzipDir))
+				err = 0;
 
-            if ( clearOutputDirectory )
+			if ( clearOutputDirectory )
 			{
 				ClearDirectory( unzipDir );
 			}

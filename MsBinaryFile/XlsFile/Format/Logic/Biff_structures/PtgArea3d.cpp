@@ -153,7 +153,7 @@ void PtgArea3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool f
     if(global_info->Version < 0x0800)
         range_ref = area.toString();
     else
-        range_ref = areaXlsb.toString();
+        range_ref = areaXlsb.toString(true, true);
 
 	if (global_info->Version < 0x0600)
 	{
@@ -161,7 +161,8 @@ void PtgArea3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool f
 		if (ixals == 0xffff)
 		{
 			std::wstring strRange;
-			if(-1 == itabFirst)
+            if(-1 == itabFirst || global_info->sheets_info.size() <= itabFirst
+                || global_info->sheets_info.size() <= itabLast)
 			{
 				strRange = L"#REF";
 			}

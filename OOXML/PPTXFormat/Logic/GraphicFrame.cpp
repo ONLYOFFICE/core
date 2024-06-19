@@ -530,6 +530,14 @@ namespace PPTX
 
 			if (olePic.is_init())
 			{
+				if (nvGraphicFramePr.IsInit())
+				{
+					if (olePic->nvPicPr.cNvPr.id < 1)
+						olePic->nvPicPr.cNvPr.id = nvGraphicFramePr->cNvPr.id;
+					
+					if (olePic->nvPicPr.cNvPr.name.empty())
+						olePic->nvPicPr.cNvPr.name = nvGraphicFramePr->cNvPr.name;
+				}
 				olePic->toPPTY(pWriter);
 				return;
 			}
@@ -896,7 +904,8 @@ namespace PPTX
 		}
 
 		void GraphicFrame::ChartToOlePackageInStorage(OOX::IFileContainer* pRels, const std::wstring &sTempDirectory, int nCurrentGenerateId)
-		{
+		{ 
+// AVS_OFFICESTUDIO_FILE_OTHER_PACKAGE_IN_OLE
 			if (!chartRec.IsInit()) return;
 			if (olePic.IsInit()) return;
 

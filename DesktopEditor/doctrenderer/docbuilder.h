@@ -357,6 +357,7 @@ namespace NSDoctRenderer
 		/**
 		 * Creates a new file. The type of the file which will be created needs to be set.
 		 * @param type The type of the file to be created set as a hexadecimal integer for the C++ code or docx, xlsx or pptx for the .docbuilder script file (see AVS_OFFICESTUDIO_FILE_XXX values).
+		 * Possible values for wchar_t version: "docx", "pptx", "xlsx", "pdf", "form"
 		 * @return True if the operation is successful
 		 */
 		bool CreateFile(const int& type);

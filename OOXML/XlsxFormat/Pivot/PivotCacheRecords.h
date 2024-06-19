@@ -57,7 +57,7 @@ namespace OOX
             WritingElement_XlsbConstructors(CPivotCacheRecord)
 			CPivotCacheRecord(){}
 			virtual ~CPivotCacheRecord() {}
-			
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -68,6 +68,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_PivotCacheRecord;
@@ -96,11 +97,12 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_PivotCacheRecords;
 			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);		
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
@@ -114,7 +116,7 @@ namespace OOX
 			CPivotCacheRecordsFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
-				
+
 				m_pData = NULL;
 				m_nDataLength = 0;
 			}
@@ -145,12 +147,10 @@ namespace OOX
 				memcpy(m_pData, pData, length);
             }
             void readBin(const CPath& oPath);
+			XLS::BaseObjectPtr WriteBin() const;
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
-			virtual const OOX::FileType type() const
-			{
-				return OOX::Spreadsheet::FileTypes::PivotCacheRecords;
-			}
+			virtual const OOX::FileType type() const;
 			virtual const CPath DefaultDirectory() const
 			{
 				return type().DefaultDirectory();
@@ -165,11 +165,12 @@ namespace OOX
 			}
 //---------------------------------------------------------------------
 			nullable<CPivotCacheRecords> m_oPivotCacheRecords;
-	//--------- 
+	//---------
 			BYTE *m_pData = NULL;
 			DWORD m_nDataLength = 0;
 		private:
-			CPath m_oReadPath;			
+			CPath m_oReadPath;
+			std::wstring prepareData() const;
 		};
 	} //Spreadsheet
 } // namespace OOX

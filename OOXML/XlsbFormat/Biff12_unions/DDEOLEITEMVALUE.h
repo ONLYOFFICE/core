@@ -51,6 +51,6 @@ namespace XLSB
         XLS::BaseObjectPtr   m_source;
 
     };
-
+    typedef boost::shared_ptr<DDEOLEITEMVALUE> DDEOLEITEMVALUEPtr;
 } // namespace XLSB
 

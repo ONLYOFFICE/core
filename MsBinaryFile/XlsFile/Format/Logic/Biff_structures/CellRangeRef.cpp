@@ -116,45 +116,57 @@ BiffStructurePtr CellRangeRef::clone()
 	return BiffStructurePtr(new CellRangeRef(*this));
 }
 
-const std::wstring CellRangeRef::toString(const bool useShortForm) const
+const std::wstring CellRangeRef::toString(const bool useShortForm, const bool xlsb) const
 {
 	if(to_string_cache.empty())
 	{
-        int rowLast_norm		= AUX::normalizeRow		(rowLast);
-        int rowFirst_norm		= AUX::normalizeRow		(rowFirst);
-        int columnFirst_norm	= AUX::normalizeColumn	(columnFirst);
-        int columnLast_norm		= AUX::normalizeColumn	(columnLast);
+        int rowLast_norm		= AUX::normalizeRow		(rowLast, xlsb);
+        int rowFirst_norm		= AUX::normalizeRow		(rowFirst, xlsb);
+        int columnFirst_norm	= AUX::normalizeColumn	(columnFirst, xlsb);
+        int columnLast_norm		= AUX::normalizeColumn	(columnLast, xlsb);
+		int maxCol = 0;
+		int maxRow = 0;
+		if(xlsb)
+		{
+			maxCol = 16383;
+			maxRow = 1048575;
+		}
+		else
+		{
+			maxCol = 255;
+			maxRow = 65535;
+		}
 		
-		if(0 == rowFirst_norm && 65535 == rowLast_norm ) // whole column or range of columns
+		if(0 == rowFirst_norm && maxRow == rowLast_norm ) // whole column or range of columns
 		{
 			if(useShortForm)
 			{
-				return to_string_cache = AUX::column2str(columnFirst_norm, columnFirstRelative) + L':' + AUX::column2str(columnLast_norm, columnLastRelative);
+                return to_string_cache = AUX::column2str(columnFirst_norm, columnFirstRelative, xlsb) + L':' + AUX::column2str(columnLast_norm, columnLastRelative, xlsb);
 			}
 			else
 			{
-				rowLast_norm = 1048575;
+				rowLast_norm = maxRow;
 			}
 		}
-		if(0 == columnFirst_norm && 255 == columnLast_norm) // whole row or range of rows
+		if(0 == columnFirst_norm && maxCol == columnLast_norm) // whole row or range of rows
 		{
 			if(useShortForm)
 			{
-				return to_string_cache = AUX::row2str(rowFirst_norm, rowFirstRelative) + L':' + AUX::row2str(rowLast_norm, rowLastRelative);
+                return to_string_cache = AUX::row2str(rowFirst_norm, rowFirstRelative, xlsb) + L':' + AUX::row2str(rowLast_norm, rowLastRelative, xlsb);
 			}
 			else
 			{
-				columnLast_norm = 16383;
+				columnLast_norm = maxCol;
 			}
 		}
 		if(columnLast_norm == columnFirst_norm && rowFirst_norm == rowLast_norm) // single cell
 		{
-			return to_string_cache = AUX::loc2str(rowFirst_norm, rowFirstRelative, columnFirst_norm, columnFirstRelative);
+            return to_string_cache = AUX::loc2str(rowFirst_norm, rowFirstRelative, columnFirst_norm, columnFirstRelative, xlsb);
 		}
 		else
 		{
-			return to_string_cache = AUX::loc2str(rowFirst_norm, rowFirstRelative, columnFirst_norm, columnFirstRelative) + 
-				L':' + AUX::loc2str(rowLast_norm, rowLastRelative, columnLast_norm, columnLastRelative);
+            return to_string_cache = AUX::loc2str(rowFirst_norm, rowFirstRelative, columnFirst_norm, columnFirstRelative, xlsb) +
+                L':' + AUX::loc2str(rowLast_norm, rowLastRelative, columnLast_norm, columnLastRelative, xlsb);
 		}
 	}
 	return to_string_cache;
@@ -186,12 +198,16 @@ void CellRangeRef::fromString(const std::wstring& str)
 		}
 
 		rowFirst = 0;
-		rowLast = 65535;
+        rowLast = 1048576;
+        rowFirstRelative = false;
+        rowLastRelative = false;
 	}
 	if(-1 == columnFirst || -1 == columnLast) // no column specified - means whole row or range of rows
 	{
 		columnFirst = 0;
-		columnLast = 255;
+        columnLast = 16384;
+        columnFirstRelative = false;
+        columnLastRelative = false;
 	}
 	to_string_cache.clear();
 }

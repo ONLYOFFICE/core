@@ -132,7 +132,7 @@ std::wstring RtfChar::RenderToOOX(RenderParameter oRenderParameter)
             std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_oProperty.m_nRevauth);
             std::wstring sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttm).c_str());
 			
-			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + XmlUtils::EncodeXmlString(sAuthor) + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_oProperty.m_nRevised = PROP_DEF;
 		}
 		if (m_oProperty.m_nDeleted != PROP_DEF)
@@ -142,7 +142,7 @@ std::wstring RtfChar::RenderToOOX(RenderParameter oRenderParameter)
             std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_oProperty.m_nRevauthDel);
             std::wstring sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttmDel).c_str());
 			
-			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + XmlUtils::EncodeXmlString(sAuthor) + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_oProperty.m_nDeleted = PROP_DEF;
 		}
         sResult += L"<w:r>";
@@ -173,7 +173,7 @@ std::wstring RtfChar::RenderToOOX(RenderParameter oRenderParameter)
                 std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_oProperty.m_nRevauth);
                 std::wstring sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttm).c_str());
 				
-				sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+				sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + XmlUtils::EncodeXmlString(sAuthor) + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 				m_oProperty.m_nRevised = PROP_DEF;
 			}
 			if (m_oProperty.m_nDeleted != PROP_DEF)
@@ -183,7 +183,7 @@ std::wstring RtfChar::RenderToOOX(RenderParameter oRenderParameter)
                 std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_oProperty.m_nRevauthDel);
                 std::wstring sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttmDel).c_str());
 				
-				sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+				sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + XmlUtils::EncodeXmlString(sAuthor) + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 				m_oProperty.m_nDeleted = PROP_DEF;
 			}
 			sResult += m_oProperty.RenderToOOX(oRenderParameter);//w:rPr внутри
@@ -415,7 +415,7 @@ std::wstring RtfCharSpecial::RenderToOOX(RenderParameter oRenderParameter)
             std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_oProperty.m_nRevauth);
             std::wstring sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttm).c_str());
 			
-			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + XmlUtils::EncodeXmlString(sAuthor) + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_oProperty.m_nRevised = PROP_DEF;
 		}
 		if (m_oProperty.m_nDeleted != PROP_DEF)
@@ -425,7 +425,7 @@ std::wstring RtfCharSpecial::RenderToOOX(RenderParameter oRenderParameter)
             std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_oProperty.m_nRevauthDel);
             std::wstring sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttmDel).c_str());
 			
-			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + XmlUtils::EncodeXmlString(sAuthor) + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_oProperty.m_nDeleted = PROP_DEF;
 		}
 		sResult += L"<w:r>";

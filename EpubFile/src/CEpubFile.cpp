@@ -69,19 +69,25 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     COfficeUtils oOfficeUtils;
 
     wchar_t* password = NULL;
-    if (oOfficeUtils.ExtractToDirectory(sInputFile, m_sTempDir.c_str(), password, 1) != S_OK)
+    if (oOfficeUtils.ExtractToDirectory(sInputFile, m_sTempDir.c_str(), password, 0) != S_OK)
         return S_FALSE;
 
     std::wstring sFileContent;
     std::wstring sContent;
-    if (!NSFile::CFileBinary::ReadAllTextUtf8(m_sTempDir + L"/container.xml", sFileContent))
+    if (!NSFile::CFileBinary::ReadAllTextUtf8(m_sTempDir + L"/META-INF/container.xml", sFileContent))
         return S_FALSE;
     size_t nContent = sFileContent.find(L"full-path");
     if (nContent != std::wstring::npos)
     {
         nContent += 11;
-        sContent = NSFile::GetFileName(sFileContent.substr(nContent, sFileContent.find(L'\"', nContent) - nContent));
+        sContent = sFileContent.substr(nContent, sFileContent.find(L'\"', nContent) - nContent);
     }
+
+    std::wstring sContentPath;
+
+    if (std::wstring::npos != sContent.find(L'/') || std::wstring::npos != sContent.find(L'\\'))
+        sContentPath = NSFile::GetDirectoryName(sContent);
+
     sContent = m_sTempDir + (sContent.empty() ? L"/content.opf" : L'/' + sContent);
 
     XmlUtils::CXmlLiteReader oXmlLiteReader;
@@ -137,11 +143,13 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     CHtmlFile2 oFile;
     CHtmlParams oFileParams;
 
-    oFileParams.SetAuthors(m_oBookInfo.GetCreators());
-    oFileParams.SetGenres (m_oBookInfo.GetSubjects());
-    oFileParams.SetTitle  (m_oBookInfo.GetTitle());
-    oFileParams.SetDate   (m_oBookInfo.GetDate());
-    oFileParams.SetDescription(m_oBookInfo.GetDescriptions());
+    oFileParams.SetAuthors     (m_oBookInfo.GetCreators());
+    oFileParams.SetGenres      (m_oBookInfo.GetSubjects());
+    oFileParams.SetTitle       (m_oBookInfo.GetTitle());
+    oFileParams.SetDate        (m_oBookInfo.GetDate());
+    oFileParams.SetDescription (m_oBookInfo.GetDescriptions());
+    oFileParams.SetLanguage    (m_oBookInfo.GetLanguage());
+
     oFileParams.SetPageBreakBefore(true);
 
     std::wstring sDocxFileTempDir = m_sTempDir + L"/tmp";
@@ -153,7 +161,7 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     {
         std::wstring sFile = m_mapRefs[oContent.m_sID].GetRef();
         replace_all(sFile, L"%20", L" ");
-        arFiles.push_back(m_sTempDir + L"/" + sFile);
+        arFiles.push_back(m_sTempDir + ((!sContentPath.empty()) ? (L"/" + sContentPath) : L"" ) + L"/" + sFile);
     }
 
 #ifdef _DEBUG

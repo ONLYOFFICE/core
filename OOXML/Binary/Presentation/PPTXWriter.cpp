@@ -57,6 +57,10 @@ namespace NSBinPptxRW
 		CPPTXWriter::~CPPTXWriter()
 		{
 		}
+		bool CPPTXWriter::GetMacroEnabled()
+		{
+			return m_oPresentation.m_bMacroEnabled;
+		}
 		void CPPTXWriter::Init(std::wstring strFolder, bool bMacro)
 		{
 			m_strDstFolder = strFolder;

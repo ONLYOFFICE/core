@@ -1,13 +1,134 @@
 #include "ImageManager.h"
-#include "../DesktopEditor/common/Directory.h"
+#include "../../../../DesktopEditor/common/Directory.h"
+#include "../../resources/Constants.h"
 
 namespace NSDocxRenderer
 {
-	void CImageManager::NewDocument()
+	IImageStorage::IImageStorage(){}
+	IImageStorage::~IImageStorage(){}
+
+	class CDataImageStorage : public IImageStorage
 	{
-		m_strDstMedia = L"";
+	private:
+		std::map<DWORD, std::shared_ptr<CImageInfo>> m_mapImageData;
+		std::map<int, std::string> m_mapImages;
+
+		int m_lMaxSizeImage{1200};
+		int m_lNextIDImage{0};
+
+		CCalculatorCRC32 m_oCRC;
+
+	public:
+		CDataImageStorage() : IImageStorage()
+		{
+		}
+		virtual ~CDataImageStorage()
+		{
+		}
+
+		virtual std::shared_ptr<CImageInfo> GenerateImageID(Aggplus::CImage* pImage)
+		{
+			BYTE* pData = pImage->GetData();
+			DWORD nWidth = pImage->GetWidth();
+			DWORD nHeight = pImage->GetHeight();
+			long nStride = pImage->GetStride();
+
+			int nSize = pImage->GetStride() * nHeight;
+			if (nSize < 0)
+				nSize = -nSize;
+
+			DWORD dwSum = m_oCRC.Calc(pData, nSize);
+
+			auto find = m_mapImageData.find(dwSum);
+			if (find != m_mapImageData.end())
+				return find->second;
+
+			++m_lNextIDImage;
+
+			auto pInfo = std::make_shared<NSDocxRenderer::CImageInfo>();
+			pInfo->m_nId = m_lNextIDImage;
+			pInfo->m_eType = CImageManager::GetImageType(pImage);
+			pInfo->m_strFileName = L"image" + std::to_wstring(pInfo->m_nId) + ((pInfo->m_eType == CImageInfo::itJPG) ? L".jpg" : L".png");
+
+			CBgraFrame oBgraFrame;
+			oBgraFrame.put_Width(nWidth);
+			oBgraFrame.put_Height(nHeight);
+			oBgraFrame.put_Stride(nStride);
+			oBgraFrame.put_Data(pData);
+			bool bIsResized = false;
+
+			if (nWidth > m_lMaxSizeImage || nHeight > m_lMaxSizeImage)
+			{
+				int lW = 0;
+				int lH = 0;
+				double dAspect = (double)nWidth / nHeight;
+
+				if (nWidth >= nHeight)
+				{
+					lW = m_lMaxSizeImage;
+					lH = (int)((double)lW / dAspect);
+					if (lH < 1) lH = 1;
+				}
+				else
+				{
+					lH = m_lMaxSizeImage;
+					lW = (int)(dAspect * lH);
+					if (lW < 1) lW = 1;
+				}
+
+				bIsResized = true;
+				oBgraFrame.Resize(lW, lH, false);
+			}
+
+			BYTE* pEncodeBuffer = NULL;
+			int nEncodeBufferSize = 0;
+			oBgraFrame.Encode(pEncodeBuffer, nEncodeBufferSize, (pInfo->m_eType == CImageInfo::itJPG) ? 3 : 4);
+
+			if (!bIsResized)
+				oBgraFrame.put_Data(NULL);
+
+			int nBase64DataSize = NSBase64::Base64EncodeGetRequiredLength(nEncodeBufferSize);
+			int nHeaderSize = (pInfo->m_eType == CImageInfo::itPNG) ? 22 : 23;
+
+			char* pBase64Data = new char[nBase64DataSize + nHeaderSize];
+			if (pInfo->m_eType == CImageInfo::itPNG)
+				memcpy(pBase64Data, "data:image/png;base64,", nHeaderSize);
+			else
+				memcpy(pBase64Data, "data:image/jpeg;base64,", nHeaderSize);
+
+			NSBase64::Base64Encode(pEncodeBuffer, nEncodeBufferSize, (BYTE*)pBase64Data + nHeaderSize, &nBase64DataSize, NSBase64::B64_BASE64_FLAG_NOCRLF);
+			RELEASEARRAYOBJECTS(pEncodeBuffer);
+
+			m_mapImages.insert(std::pair<int, std::string>((int)pInfo->m_nId, std::string(pBase64Data, nHeaderSize + nBase64DataSize)));
+			RELEASEARRAYOBJECTS(pBase64Data);
+
+			m_mapImageData.insert(std::pair<DWORD, std::shared_ptr<CImageInfo>>(dwSum, pInfo));
+			return pInfo;
+		}
+
+		virtual std::string* GetBase64(const int& nRId)
+		{
+			std::map<int, std::string>::iterator iter = m_mapImages.find(nRId - c_iStartingIdForImages);
+			if (iter == m_mapImages.end())
+				return NULL;
+
+			return &iter->second;
+		}
+	};
+
+	IImageStorage* CreateWasmImageStorage()
+	{
+		return new CDataImageStorage();
+	}
+}
+
+namespace NSDocxRenderer
+{
+	void CImageManager::Clear()
+	{
+		m_strDstMedia	= L"";
 		m_lMaxSizeImage = 1200;
-		m_lNextIDImage = 0;
+		m_lNextIDImage	= 0;
 
 		m_mapImageData.clear();
 		m_mapImagesFile.clear();
@@ -35,27 +156,11 @@ namespace NSDocxRenderer
 		NSFile::CFileBinary::Copy(strFileSrc, strFileDst);
 	}
 
-	void CImageManager::SaveEmptyImage(std::shared_ptr<CImageInfo> pInfo)
+	void CImageManager::SaveImage(const std::wstring& strFileSrc, std::shared_ptr<CImageInfo> pInfo)
 	{
-		Aggplus::CImage oFrame;
-
-		int nW = 10;
-		int nH = 10;
-		int nMax = nW * nH;
-		BYTE* pDataExternal = new BYTE[nMax * 4];
-		memset(pDataExternal, 0xFF, 4 * nMax);
-
-		BYTE* pDataCurrent = pDataExternal + 3;
-		for (int i = 0; i < nMax; i++, pDataCurrent += 4)
-			*pDataCurrent = 0;
-
-		oFrame.Create(pDataExternal, nW, nH, 4 * nW, true);
-
-		pInfo->m_eType = CImageInfo::itPNG;
-		pInfo->m_strFileName += (L"image" + std::to_wstring(pInfo->m_nId) + L".png");
-
-		oFrame.SaveFile(m_strDstMedia + L"/" + pInfo->m_strFileName, 4);
-		delete[] pDataExternal;
+		Aggplus::CImage oFrame(strFileSrc);
+		if (nullptr != oFrame.GetData())
+			return SaveImage(&oFrame, pInfo);
 	}
 
 	void CImageManager::SaveImage(Aggplus::CImage* pImage, std::shared_ptr<CImageInfo> pInfo)
@@ -102,6 +207,9 @@ namespace NSDocxRenderer
 
 	std::shared_ptr<CImageInfo> CImageManager::GenerateImageID(Aggplus::CImage* pImage)
 	{
+		if (m_pExternalStorage)
+			return m_pExternalStorage->GenerateImageID(pImage);
+
 		BYTE* pData = pImage->GetData();
 		int nSize = pImage->GetStride() * pImage->GetHeight();
 		if (nSize < 0)
@@ -128,29 +236,10 @@ namespace NSDocxRenderer
 		if (find != m_mapImagesFile.end())
 			return find->second;
 
-		Aggplus::CImage oFrame(strFileName);
-
-		if (nullptr == oFrame.GetData())
-		{
-			if (m_pEmptyInfo)
-				return m_pEmptyInfo;
-
-			++m_lNextIDImage;
-			m_pEmptyInfo = std::make_shared<CImageInfo>();
-			m_pEmptyInfo->m_nId = m_lNextIDImage;
-			m_pEmptyInfo->m_eType = CImageInfo::itPNG;
-			m_pEmptyInfo->m_strFileName += (L"image" + std::to_wstring(m_pEmptyInfo->m_nId) + L".png");
-
-			// можно не сохранять - но тогда несуществующие картинки.
-			// создадим пустую - и посмотрим на жалобы
-			SaveEmptyImage(m_pEmptyInfo);
-			return m_pEmptyInfo;
-		}
-
 		++m_lNextIDImage;
 		auto pInfo = std::make_shared<CImageInfo>();
 		pInfo->m_nId = m_lNextIDImage;
-		SaveImage(&oFrame, pInfo);
+		SaveImage(strFileName, pInfo);
 		m_mapImagesFile.insert(std::pair<std::wstring, std::shared_ptr<CImageInfo>>(strFileName, pInfo));
 
 		return pInfo;
@@ -201,8 +290,8 @@ namespace NSDocxRenderer
 			memcpy(pBuffer, pBufferEnd, stride);
 			memcpy(pBufferEnd, pBufferMem, stride);
 
-			pBuffer += stride;
-			pBufferEnd -= stride;
+			pBuffer		+= stride;
+			pBufferEnd	-= stride;
 		}
 
 		RELEASEARRAYOBJECTS(pBufferMem);
@@ -224,7 +313,7 @@ namespace NSDocxRenderer
 		if ((w * 4) != stride)
 			return;
 
-		DWORD* pBufferDWORD = (DWORD*)pBuffer;
+		DWORD* pBufferDWORD	= (DWORD*)pBuffer;
 
 		LONG lW2 = w / 2;
 		for (LONG lIndexV = 0; lIndexV < h; ++lIndexV)
@@ -241,4 +330,4 @@ namespace NSDocxRenderer
 			}
 		}
 	}
-} // namespace NSDocxRenderer
+}

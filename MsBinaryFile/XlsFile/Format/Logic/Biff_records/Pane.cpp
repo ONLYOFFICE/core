@@ -69,7 +69,7 @@ void Pane::readFields(CFRecord& record)
     else
     {
         record >> xnumXSplit >> xnumYSplit >> rwTop >> colLeft >> pnnAcct_xlsb;
-        topLeftCell = static_cast<std::wstring >(CellRef(rwTop, colLeft, true, true));
+        topLeftCell = CellRef(rwTop, colLeft, true, true).toString(true);
 
         unsigned char flags;
         record >> flags;

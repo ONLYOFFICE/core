@@ -58,7 +58,7 @@ public:
 
 	static const ElementType	type = typeCellRangeRef;
 
-	const std::wstring	toString(const bool useShortForm = true) const;
+	const std::wstring	toString(const bool useShortForm = true, const bool xlsb = false) const;
 	void				fromString(const std::wstring& str);
 	operator std::wstring  () const;
 
@@ -110,7 +110,16 @@ template<class NameProducer, class RwType, class ColType, RELATIVE_INFO rel_info
 class CellRangeRef_T : public CellRangeRef
 {
 public:
-    CellRangeRef_T(const std::wstring & str_ref) : CellRangeRef(str_ref) {}
+    CellRangeRef_T(const std::wstring & str_ref) : CellRangeRef(str_ref)
+	{
+        if(sizeof(RwType) < 4)
+        {
+            columnFirst = AUX::normalizeColumn(columnFirst);
+			columnLast = AUX::normalizeColumn(columnLast);
+            rowFirst = AUX::normalizeRow(rowFirst);
+			rowLast = AUX::normalizeRow(rowLast);
+        }
+    }
     CellRangeRef_T() {}
 
 	template<class otherNameProducer, class otherRwType, class otherColType, RELATIVE_INFO otherRel_info>
@@ -185,24 +194,44 @@ public:
 
 	void save(CFRecord& record) override
 	{
-		RwType rwFirst;
-		RwType rwLast;
-		ColType colFirst;
-		ColType colLast;
+        RwType rwFirst = rowFirst;
+        RwType rwLast = rowLast;
+        ColType colFirst = 0;
+        ColType colLast = 0;
+		
+		auto version = record.getGlobalWorkbookInfo()->Version;
 
-		rwFirst = rowFirst;
-		rwLast = rowLast;
-
-		switch (rel_info)
+		if (version < 0x0800)
 		{
-		case rel_Present:
-			colFirst = (columnFirst >> 2) << 2;
-			colLast = (columnLast >> 2) << 2;
-			break;
-		case rel_Absent:
-			colFirst = columnFirst;
-			colLast = columnLast;
-			break;
+			switch (rel_info)
+			{
+			case rel_Present:
+				colFirst = (columnFirst >> 2) << 2;
+				colLast = (columnLast >> 2) << 2;
+				break;
+			case rel_Absent:
+				colFirst = columnFirst;
+				colLast = columnLast;
+				break;
+			}
+		}
+		else
+		{
+			if(rel_info == rel_Present)
+			{
+				SETBITS(colFirst, 0, 13, columnFirst);
+				SETBIT(colFirst, 14, columnFirstRelative);
+				SETBIT(colFirst, 15, rowFirstRelative);
+
+				SETBITS(colLast, 0, 13, columnLast);
+				SETBIT(colLast, 14, columnLastRelative);
+				SETBIT(colLast, 15, rowLastRelative);
+			}
+			else if(rel_info == rel_Absent)
+			{
+				colFirst = columnFirst;
+				colLast = columnLast;
+			}
 		}
 		record << rwFirst << rwLast << colFirst << colLast;
 	}

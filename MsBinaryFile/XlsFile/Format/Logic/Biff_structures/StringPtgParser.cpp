@@ -70,6 +70,7 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
 {
     PtgPtr last_ptg;
     bool operand_expected = true; // This would help distinguish unary and binary and determine if an argument to a function is missed.
+    bool union_expected = false;
 
     for(std::wstring::const_iterator it = assembled_formula.begin(), itEnd = assembled_formula.end(); it != itEnd;)
     {
@@ -217,7 +218,8 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             {
                 // EXCEPT::RT::WrongParenthesisSequence(assembled_formula);
             }
-            ptg_stack.pop(); // pop PtgParen that is now stored in left_p
+            if(!ptg_stack.empty())
+                ptg_stack.pop(); // pop PtgParen that is now stored in left_p
             last_ptg = left_p;
             PtgFuncVarPtr func_var;
             if(ptg_stack.size() && boost::dynamic_pointer_cast<PtgFunc>(ptg_stack.top()))
@@ -236,20 +238,22 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
                 last_ptg = ptg_stack.top();
                 ptg_stack.pop(); // pop PtgFuncVar
             }
-            else // If there is no function name before the left parenthesis
+            else if(left_p)// If there is no function name before the left parenthesis
             {
                 for (size_t i = 0; i < left_p->getParametersNum(); ++i)
                 {
                     rgce.addPtg(PtgPtr(new PtgUnion));
                 }
             }
-            rgce.addPtg(last_ptg);
+            if(last_ptg)
+                rgce.addPtg(last_ptg);
             operand_expected = false;
         }
         #pragma endregion
         #pragma region Comma and PtgUnion
         else if(SyntaxPtg::extract_comma(it, itEnd))
         {
+            SyntaxPtg::remove_extraSymbols(it, itEnd);
             PtgParenPtr left_p;
             if(ptg_stack.size() && (left_p = boost::dynamic_pointer_cast<PtgParen>(ptg_stack.top())) && operand_expected)
             {
@@ -265,7 +269,9 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             }
             if(!ptg_stack.size() || !left_p)
             {
-                // EXCEPT::RT::WrongParenthesisSequence(assembled_formula);
+                operand_expected = true;
+                union_expected = true;
+                continue;// EXCEPT::RT::WrongParenthesisSequence(assembled_formula);
             }
             left_p->incrementParametersNum(); // The count of parameters will be transferred to PtgFuncVar
             last_ptg = left_p; // PtgParen. Mostly to differ unary and binary minuses and pluses
@@ -280,6 +286,7 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             unsigned int number;
             unsigned short ixti;
 			PtgList ptgList(PtgList::fixed_id);
+            ptgList.type_ = 0x00;
 
             if(SyntaxPtg::extract_PtgBool(it, itEnd, operand_str))
             {
@@ -301,11 +308,18 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             {
                 if(SyntaxPtg::extract_PtgArea(it, itEnd, operand_str))
                 {
-                    rgce.addPtg(found_operand = OperandPtgPtr(new PtgArea3d(ixti, operand_str, OperandPtg::ptg_VALUE, rgce.getLocation())));
+                    rgce.addPtg(found_operand = OperandPtgPtr(new PtgArea3d(ixti, operand_str, OperandPtg::ptg_REFERENCE, rgce.getLocation())));
                 }
                 else if(SyntaxPtg::extract_PtgRef(it, itEnd, operand_str))
                 {
-                    rgce.addPtg(found_operand = OperandPtgPtr(new PtgRef3d(ixti, operand_str, OperandPtg::ptg_VALUE, rgce.getLocation())));
+                    auto pos = std::find_if(XLS::GlobalWorkbookInfo::arXti_External_static.cbegin(), XLS::GlobalWorkbookInfo::arXti_External_static.cend(),
+                            [&](XLS::GlobalWorkbookInfo::_xti i) {
+                        return i.iSup == ixti;
+                    });
+                    if(pos->itabFirst == pos->itabLast)
+                        rgce.addPtg(found_operand = OperandPtgPtr(new PtgRef3d(ixti, operand_str, OperandPtg::ptg_VALUE, rgce.getLocation())));
+                    else
+                        rgce.addPtg(found_operand = OperandPtgPtr(new PtgRef3d(ixti, operand_str, OperandPtg::ptg_REFERENCE, rgce.getLocation())));
                 }
                 else if(SyntaxPtg::extract_PtgRefErr(it, itEnd))
                 {
@@ -313,11 +327,14 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
                 }
 				else if (SyntaxPtg::extract_PtgList(it, itEnd, ptgList, ixti))// Shall be placed strongly before PtgArea and PtgRef
 				{
+                    if((ptgList.rowType == 0x10 || ptgList.rowType == 0x08 || ptgList.rowType == 0x02)
+                        && ptgList.columns == 0x01)
+                    ptgList.type_ = 0x01;
 					rgce.addPtg(found_operand = OperandPtgPtr(new PtgList(ptgList)));
 				}
 				else if (SyntaxPtg::extract_PtgName(it, itEnd, number))// Shall be placed strongly before PtgArea and PtgRef
 				{
-					rgce.addPtg(found_operand = OperandPtgPtr(new PtgNameX(ixti, number, OperandPtg::ptg_VALUE)));
+					rgce.addPtg(found_operand = OperandPtgPtr(new PtgNameX(ixti, number, OperandPtg::ptg_REFERENCE)));
 				}
                 else
                 {
@@ -326,7 +343,7 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             }
             else if(SyntaxPtg::extract_PtgName(it, itEnd, number))// Shall be placed strongly before PtgArea and PtgRef
             {
-                rgce.addPtg(found_operand = OperandPtgPtr(new PtgName(number, OperandPtg::ptg_VALUE)));
+                rgce.addPtg(found_operand = OperandPtgPtr(new PtgName(number, OperandPtg::ptg_REFERENCE)));
             }
 			else if (SyntaxPtg::extract_PtgList(it, itEnd, ptgList))// Shall be placed strongly before PtgArea and PtgRef
 			{
@@ -336,11 +353,11 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             {
                 if(L"SharedParsedFormula" == tag_name || L"CFParsedFormulaNoCCE" == tag_name)
                 {
-                    found_operand = OperandPtgPtr(new PtgAreaN(operand_str, OperandPtg::ptg_VALUE, rgce.getLocation()));
+                    found_operand = OperandPtgPtr(new PtgAreaN(operand_str, OperandPtg::ptg_REFERENCE, rgce.getLocation()));
                 }
                 else
                 {
-                    found_operand = OperandPtgPtr(new PtgArea(operand_str, OperandPtg::ptg_VALUE));
+                    found_operand = OperandPtgPtr(new PtgArea(operand_str, OperandPtg::ptg_REFERENCE));
                 }
                 rgce.addPtg(found_operand);
             }
@@ -348,11 +365,11 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             {
                 if(L"SharedParsedFormula" == tag_name || L"CFParsedFormulaNoCCE" == tag_name)
                 {
-                    found_operand = OperandPtgPtr(new PtgRefN(operand_str, OperandPtg::ptg_VALUE, rgce.getLocation()));
+                    found_operand = OperandPtgPtr(new PtgRefN(operand_str, OperandPtg::ptg_REFERENCE, rgce.getLocation()));
                 }
                 else
                 {
-                    found_operand = OperandPtgPtr(new PtgRef(operand_str, OperandPtg::ptg_VALUE));
+                    found_operand = OperandPtgPtr(new PtgRef(operand_str, OperandPtg::ptg_REFERENCE));
                 }
                 rgce.addPtg(found_operand);
             }
@@ -364,7 +381,25 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             {
                 rgce.addPtg(found_operand = OperandPtgPtr(new PtgNum(operand_str)));
             }
-
+            else if(SyntaxPtg::extract_PtgFunc(it, itEnd, operand_str))
+            {
+                PtgPtr func;
+                if((func = PtgFunc::create(operand_str, OperandPtg::ptg_REFERENCE)) ||
+                    (func = PtgFuncVar::create(operand_str, OperandPtg::ptg_REFERENCE)))
+                {
+                    ptg_stack.push(func);
+                }
+                else
+                {
+                    func = PtgFuncVar::create(L"USER_DEFINED_FUNCTION", OperandPtg::ptg_REFERENCE);
+                    if(!func)
+                    {
+                        // EXCEPT::LE::WhatIsTheFuck("Ftab_Cetab doesn't contain info about user-defined function (0xFF).", __FUNCTION__);
+                    }
+                    ptg_stack.push(func);
+                    rgce.addPtg(PtgPtr(new PtgNameX(operand_str,  OperandPtg::ptg_REFERENCE)));
+                }
+            }
             else if(SyntaxPtg::extract_UndefinedName(it, itEnd)) // Shall be placed strongly after extract_PtgName
             {
                 rgce.addPtg(found_operand = OperandPtgPtr(new PtgErr(L"#REF!")));
@@ -375,31 +410,22 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
                 rgce.addPtg(found_operand = OperandPtgPtr(new PtgArray(OperandPtg::ptg_ARRAY)));
                 rgb.addPtg(PtgPtr(new PtgExtraArray(operand_str)));
             }
-            else if(SyntaxPtg::extract_PtgFunc(it, itEnd, operand_str))
-            {
-                PtgPtr func;
-                if((func = PtgFunc::create(operand_str, OperandPtg::ptg_VALUE)) ||
-                    (func = PtgFuncVar::create(operand_str, OperandPtg::ptg_VALUE)))
-                {
-                    ptg_stack.push(func);
-                }
-                else
-                {
-                    func = PtgFuncVar::create(L"USER_DEFINED_FUNCTION", OperandPtg::ptg_VALUE);
-                    if(!func)
-                    {
-                        // EXCEPT::LE::WhatIsTheFuck("Ftab_Cetab doesn't contain info about user-defined function (0xFF).", __FUNCTION__);
-                    }
-                    ptg_stack.push(func);
-                    rgce.addPtg(PtgPtr(new PtgNameX(operand_str,  OperandPtg::ptg_VALUE)));
-                }
-            }
+
             else
             {
+               //add error name to prevent endless formula conversion
+                rgce.sequence.clear();
+                rgce.addPtg(found_operand = OperandPtgPtr(new PtgErr(L"#NAME?")));
+                break;
                 // EXCEPT::RT::WrongFormulaString("Unknown operand format in formula.", assembled_formula);
             }
             last_ptg = found_operand;
             operand_expected = false;
+            if(union_expected)
+            {
+                rgce.addPtg(PtgPtr(new PtgUnion));
+                union_expected = false;
+            }
         }
         #pragma endregion
     }
@@ -417,10 +443,200 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             return false;
         }
     }
+    parsePtgTypes(rgce);
     return true;
 }
 
+void SetPtgType(PtgPtr ptg, const char type)
+{
+    if(ptg->ptg_id.get() > 0x1F && ptg->ptg_id.get() <= 0x7D )
+    {
+        SETBITS(ptg->ptg_id.get(),5,6,type);
+    }
+    else if(ptg->ptg_id.get() == 0x1918)
+    {
+        auto list = static_cast<XLS::PtgList*>(ptg.get());
+        list->type_ = type - 1;
+    }
+}
 
+const void StringPtgParser::parsePtgTypes(Rgce& rgce)
+{
+    PtgVector functionStack;
+    for(auto i:rgce.sequence)
+    {
+        if(!i->ptg_id.is_initialized())
+            continue;
+        auto ptgId = i->ptg_id.get();
+        
+        auto untypedId = GETBITS(ptgId, 0, 4);
+        if(ptgId > 21)
+        {
+            if(untypedId == 1)
+            {
+                auto funcPtr = dynamic_cast<PtgFunc*>(i.get());
+                auto paramsNum = funcPtr->getParametersNum();
+                auto refArgs = PosValArgs(funcPtr->getFuncIndex());
+                for(auto j = paramsNum-1; j >= 0; j--)
+                {
+                    if(!functionStack.empty())
+                    {
+                        if(refArgs.size() > j && refArgs.at(j))
+                        SetPtgType(functionStack.back(), 3);
+                        functionStack.pop_back();
+                    }
+                }
+                ///check and change fixed num of args
+            }
+            else if(untypedId == 2)
+            {
+                auto funcPtr = dynamic_cast<PtgFuncVar*>(i.get());
+                auto paramsNum = funcPtr->getParamsNum();
+                auto refArgs = PosValArgs(funcPtr->getFuncIndex());
+                for(auto j = paramsNum-1; j >= 0; j--)
+                {
+                    if(!functionStack.empty())
+                    {
+                        if(refArgs.size() > j && refArgs.at(j))
+                        SetPtgType(functionStack.back(), 3);
+                        functionStack.pop_back();
+                    }
+                }
+            }
+            functionStack.push_back(i);
+        }
+        else if(ptgId > 1 && ptgId < 15)
+        {
+            if(!functionStack.empty())
+            {
+                SetPtgType(functionStack.back(), 3);
+                functionStack.pop_back();
+            }
+            if(!functionStack.empty())
+            {
+                SetPtgType(functionStack.back(), 3);
+            }
+        }
+        else if(ptgId > 14 && ptgId < 18)
+        {
+            if(!functionStack.empty())
+            {
+                SetPtgType(functionStack.back(), 1);
+                functionStack.pop_back();
+            }
+            if(!functionStack.empty())
+            {
+                SetPtgType(functionStack.back(), 1);
+            }
+        }
+        else if(ptgId > 17 && ptgId < 21 && !functionStack.empty())
+        {
+           SetPtgType(functionStack.back(), 3);
+        }
+        else if(ptgId == 21)
+        {
+            continue;
+        }
+        else
+        {
+            functionStack.push_back(i);
+        }
+
+    }
+}
+
+std::vector<bool> StringPtgParser::PosValArgs(const unsigned int &index) const
+{
+	std::vector<bool> argVector;
+	switch(index)
+	{
+		case 0x0001: case 0x0002: case 0x0003: case 0x000F: case 0x000B: 
+        case 0x0010: case 0x0011: case 0x0012: case 0x0014: case 0x0015: case 0x0016: case 0x0017: case 0x0018:  case 0x001A: case 0x001C:
+        case 0x0020: case 0x0021: case 0x0026: case 0x0036: 
+        case 0x0040: case 0x0043: case 0x0044: case 0x0045: case 0x0047: case 0x0048: case 0x0049: case 0x004F:
+        case 0x0051: case 0x0053: case 0x0054: case 0x0056: case 0x0057: case 0x0058: 
+        case 0x0060: case 0x0062: case 0x0063: case 0x0064: case 0x006F:
+        case 0x0070: case 0x0071: case 0x0072: case 0x0076: case 0x0079: case 0x007B:case 0x007D: case 0x007E:case 0x007F:
+        case 0x0080: case 0x0081: case 0x0085: case 0x0086: case 0x0087: case 0x008C: case 0x008D:
+        case 0x0096: case 0x0097: case 0x009D:
+        case 0x00A2: case 0x00A3: case 0x00A4: case 0x00AC:
+        case 0x00B1: case 0x00B3: case 0x00B4: case 0x00B5: case 0x00B8: case 0x00B9: case 0x00BA: case 0x00BE:
+        case 0x00C0: case 0x00C6: case 0x00C8: case 0x00C9:
+        case 0x00D6: case 0x00D7:
+        case 0x00E0: case 0x00E2: case 0x00E5: case 0x00E6: case 0x00E7: case 0x00E8: case 0x00E9: case 0x00EA: case 0x00ED:
+        case 0x00F4: case 0x00F8: case 0x00FB: case 0x00FE:
+        case 0x0100: case 0x0101: case 0x0105: case 0x0106: case 0x0107: case 0x010F:
+        case 0x0117: case 0x011B: case 0x011C:
+        case 0x0126: case 0x0128: case 0x012A:
+        case 0x0156: case 0x0157: case 0x0158:
+        case 0x0160:
+        case 0x0170: case 0x0171: case 0x0172: case 0x0173: case 0x0174: case 0x0175: case 0x0176: case 0x0177: case 0x0178: case 0x0179: case 0x017A:  case 0x017C:
+        case 0x01DF:
+        case 0x01E0:
+			argVector.push_back(true);
+			break;
+		case 0x000D: case 0x001B: case 0x001E: case 0x0027: case 0x0030: case 0x0046: case 0x005B: case 0x005D:
+        case 0x0061: case 0x0067: case 0x006B: case 0x006D: case 0x0073: case 0x0074: case 0x0075:
+        case 0x0084: case 0x0088: case 0x0089: case 0x008A: case 0x008B: case 0x0093: case 0x0094: case 0x00A5: case 0x00AF:
+        case 0x00B0: case 0x00B2: case 0x00BB: case 0x00BC: case 0x00C5: case 0x00CC:
+        case 0x00D0: case 0x00D1: case 0x00D4: case 0x00D5: case 0x00EF: case 0x00FD: case 0x0102: case 0x0108: case 0x010C: 
+        case 0x0112: case 0x0113: case 0x0114: case 0x011D: case 0x0120: case 0x012B: case 0x012F:
+        case 0x0130: case 0x0131: case 0x0132: case 0x0133: case 0x0134: case 0x0136: case 0x0137: case 0x013A: case 0x013B:
+        case 0x014C: case 0x0151: case 0x0153: case 0x015C: case 0x0161: case 0x0162: case 0x0165: case 0x0167:
+            argVector.push_back(true);
+            argVector.push_back(true);
+            break;
+        case 0x000E: case 0x001F: case 0x0041: case 0x0042: case 0x0052: case 0x007A: case 0x007C: case 0x008E: case 0x0091:
+        case 0x009E: case 0x00A0: case 0x00CD: case 0x00CE: case 0x00D2: case 0x00D3: case 0x00DC: case 0x0103: case 0x0104:
+        case 0x0109: case 0x010A: case 0x010B: case 0x0115: case 0x0116: case 0x0118: case 0x0119: case 0x011A: case 0x011F:
+        case 0x0122: case 0x0123: case 0x0124: case 0x0127: case 0x0129: case 0x012C: case 0x012D:
+        case 0x0135: case 0x014F: case 0x0154: case 0x015F: case 0x017E:
+            argVector.push_back(true);
+            argVector.push_back(true);
+            argVector.push_back(true);
+            break;
+        case 0x006E: case 0x0077: case 0x0078: case 0x008F: case 0x009F: case 0x00AB: case 0x00B6: case 0x00CF: case 0x00F2: case 0x00F3:
+        case 0x0111: case 0x011E: case 0x0121: case 0x0125: case 0x012E: case 0x013C: case 0x013D: case 0x014E: case 0x0155: case 0x015E:
+        case 0x0163: case 0x017F: case 0x01DD:
+            argVector.push_back(true);
+            argVector.push_back(true);
+            argVector.push_back(true);
+            argVector.push_back(true);
+            break;
+        case 0x0038: case 0x0039: case 0x003A: case 0x003B: case 0x0090: case 0x009A: case 0x009B: case 0x009C: case 0x00DB:
+        case 0x00F6: case 0x00F7: case 0x010E: case 0x0110: case 0x0164:
+            argVector.push_back(true);
+            argVector.push_back(true);
+            argVector.push_back(true);
+            argVector.push_back(true);
+            argVector.push_back(true);
+            break;
+        case 0x001D:
+            argVector.push_back(false);
+            argVector.push_back(true);
+            argVector.push_back(true);
+            argVector.push_back(true);
+        case 0x0159: case 0x0145: case 0x0146: case 0x0147: case 0x0148:
+            argVector.push_back(false);
+            argVector.push_back(true);
+            break;
+        case 0x0066: case 0x0065:
+            argVector.push_back(true);
+            argVector.push_back(false);
+            argVector.push_back(false);
+            argVector.push_back(true);
+            break;
+        case 0x01E1:
+            for(auto i = 0; i < 127; i++)
+            {
+                argVector.push_back(false);
+                argVector.push_back(true);
+            }
+		default:
+			break;
+	}
+	return argVector;
+}
 
 } // namespace XLS
 

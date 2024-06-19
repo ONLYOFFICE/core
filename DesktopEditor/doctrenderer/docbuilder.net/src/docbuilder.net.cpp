@@ -50,7 +50,8 @@ namespace docbuilder_net
 			TXT = MASK + 0x0005,
 			DOTX = MASK + 0x000c,
 			OTT = MASK + 0x000f,
-			HTML = MASK + 0x0012
+			HTML = MASK + 0x0012,
+			OFORM_PDF = MASK + 0x0017
 		};
 
 		public enum class Spreadsheet : int

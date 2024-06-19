@@ -212,6 +212,123 @@ xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\">");
 
 			return result1 || result2;
 		}
+		XLS::BaseObjectPtr CDataValidation::toBin()
+		{
+			auto ptr(new XLSB::DVal);
+			XLS::BaseObjectPtr objectPtr(ptr);
+            if(m_oType.IsInit())
+            {
+                if (m_oType->GetValue() == SimpleTypes::Spreadsheet::EDataValidationType::validationTypeNone)
+                    ptr->valType = XLS::typeDvNone;
+                else if (m_oType->GetValue() == SimpleTypes::Spreadsheet::EDataValidationType::validationTypeWhole)
+                    ptr->valType = XLS::typeDvWhole;
+                else if (m_oType->GetValue() == SimpleTypes::Spreadsheet::EDataValidationType::validationTypeDecimal)
+                    ptr->valType = XLS::typeDvDecimal;
+                else if (m_oType->GetValue() == SimpleTypes::Spreadsheet::EDataValidationType::validationTypeList)
+                    ptr->valType = XLS::typeDvList;
+                else if (m_oType->GetValue() == SimpleTypes::Spreadsheet::EDataValidationType::validationTypeDate)
+                    ptr->valType = XLS::typeDvDate;
+                else if (m_oType->GetValue() == SimpleTypes::Spreadsheet::EDataValidationType::validationTypeTime)
+                    ptr->valType = XLS::typeDvTime;
+                else if (m_oType->GetValue() == SimpleTypes::Spreadsheet::EDataValidationType::validationTypeTextLength)
+                    ptr->valType = XLS::typeDvTextLength;
+                else if (m_oType->GetValue() == SimpleTypes::Spreadsheet::EDataValidationType::validationTypeCustom)
+                    ptr->valType = XLS::typeDvCustom;
+                else
+                    ptr->valType = XLS::typeDvNone;
+            }
+            else
+                ptr->valType = XLS::typeDvNone;
+			if(m_oAllowBlank.IsInit())
+				ptr->fAllowBlank = m_oAllowBlank->GetValue();
+			else
+				ptr->fAllowBlank = false;
+			if(m_oError.IsInit())
+				ptr->Error = m_oError.get();
+			else
+				ptr->Error = L"";
+
+			if (m_oErrorTitle.IsInit())
+				ptr->ErrorTitle = m_oErrorTitle.get();
+			else
+				ptr->ErrorTitle = L"";
+
+			if (m_oPrompt.IsInit())
+				ptr->Prompt = m_oPrompt.get();
+			else
+				ptr->Prompt = L"";
+
+			if (m_oPromptTitle.IsInit())
+				ptr->PromptTitle = m_oPromptTitle.get();
+			else
+				ptr->PromptTitle = L"";
+            if(m_oErrorStyle.IsInit())
+                ptr->errStyle = m_oErrorStyle->GetValue();
+            else
+                ptr->errStyle = 0;
+            if(m_oImeMode.IsInit())
+            {
+                if(m_oImeMode == SimpleTypes::Spreadsheet::EDataValidationImeMode::imeModeOn)
+                {
+                    ptr->mdImeMode = 0x01;
+                }
+                else if(m_oImeMode == SimpleTypes::Spreadsheet::EDataValidationImeMode::imeModeOff)
+                {
+                    ptr->mdImeMode = 0x02;
+                }
+                else
+                {
+                    ptr->mdImeMode = m_oImeMode->GetValue();
+                }
+            }
+            else
+                 ptr->mdImeMode = 0;
+            if(m_oOperator.IsInit())
+            {
+                if (m_oOperator->GetValue() == SimpleTypes::Spreadsheet::EDataValidationOperator::operatorBetween)
+                    ptr->typOperator = XLS::_typOperatorDv::operatorDvBetween;
+                else if (m_oOperator->GetValue() == SimpleTypes::Spreadsheet::EDataValidationOperator::operatorNotBetween)
+                    ptr->typOperator = XLS::_typOperatorDv::operatorDvNotBetween;
+                else if (m_oOperator->GetValue() == SimpleTypes::Spreadsheet::EDataValidationOperator::operatorEqual)
+                    ptr->typOperator = XLS::_typOperatorDv::operatorDvEquals;
+                else if (m_oOperator->GetValue() == SimpleTypes::Spreadsheet::EDataValidationOperator::operatorNotEqual)
+                    ptr->typOperator = XLS::_typOperatorDv::operatorDvNotEquals;
+                else if (m_oOperator->GetValue() == SimpleTypes::Spreadsheet::EDataValidationOperator::operatorGreaterThan)
+                    ptr->typOperator = XLS::_typOperatorDv::operatorDvGreaterThan;
+                else if (m_oOperator->GetValue() == SimpleTypes::Spreadsheet::EDataValidationOperator::operatorLessThan)
+                    ptr->typOperator = XLS::_typOperatorDv::operatorDvLessThan;
+                else if (m_oOperator->GetValue() == SimpleTypes::Spreadsheet::EDataValidationOperator::operatorGreaterThanOrEqual)
+                    ptr->typOperator = XLS::_typOperatorDv::operatorDvGreaterThanOrEqual;
+                else if (m_oOperator->GetValue() == SimpleTypes::Spreadsheet::EDataValidationOperator::operatorLessThanOrEqual)
+                    ptr->typOperator = XLS::_typOperatorDv::operatorDvLessThanOrEqual;
+                else
+                    ptr->typOperator = XLS::_typOperatorDv::operatorDvBetween;
+            }
+            else
+                ptr->typOperator = XLS::_typOperatorDv::operatorDvBetween;
+
+            if(m_oShowDropDown.IsInit())
+                ptr->fSuppressCombo = m_oShowDropDown->GetValue();
+            else
+                ptr->fSuppressCombo = false;
+            if(m_oShowErrorMessage.IsInit())
+                ptr->fShowErrorMsg = m_oShowErrorMessage->GetValue();
+            else
+                ptr->fShowErrorMsg = false;
+            if(m_oShowInputMessage.IsInit())
+                ptr->fShowInputMsg = m_oShowInputMessage->GetValue();
+            else
+                ptr->fShowInputMsg = false;
+            if(m_oSqRef.IsInit())
+			ptr->sqrfx.strValue = m_oSqRef.get();
+
+            if(m_oFormula1.IsInit())
+                ptr->formula1 = m_oFormula1->m_sText;	
+            if(m_oFormula2.IsInit())
+            	ptr->formula2 = m_oFormula2->m_sText;
+
+            return objectPtr;
+		}
 		void CDataValidation::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
@@ -515,6 +632,35 @@ xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\">");
 				}
 			}
 			m_oCount = m_arrItems.size();
+		}
+        XLS::BaseObjectPtr CDataValidations::toBin()
+    	{
+			XLS::BaseObjectPtr objectPtr;
+			auto ptr(new XLSB::DVALS);
+			objectPtr = XLS::BaseObjectPtr{ptr};
+
+			auto beginPtr(new XLSB::BeginDVals);
+			ptr->m_BrtBeginDVals = XLS::BaseObjectPtr{beginPtr};
+            if(m_oDisablePrompts.IsInit())
+                beginPtr->dVals.fWnClosed = m_oDisablePrompts->GetValue();
+            else
+                beginPtr->dVals.fWnClosed = false;
+            if(m_oXWindow.IsInit())
+                beginPtr->dVals.xLeft = m_oXWindow->GetValue();
+            else
+                beginPtr->dVals.xLeft = 0;
+            if(m_oYWindow.IsInit())
+                beginPtr->dVals.yTop = m_oYWindow->GetValue();
+            else
+                beginPtr->dVals.yTop = false;
+
+			for(auto i:m_arrItems)
+			{
+				ptr->m_arBrtDVal.push_back(i->toBin());
+			}
+			beginPtr->dVals.idvMac = ptr->m_arBrtDVal.size();
+
+			return objectPtr;
 		}
 		void CDataValidations::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{

@@ -219,6 +219,13 @@ namespace NSJSBase
 	{
 		m_internal->context = [[JSContext alloc] init];
 
+#ifdef _DEBUG
+		if (@available(macOS 10.11, iOS 16.0, *))
+		{
+			JSGlobalContextSetInspectable(m_internal->context.JSGlobalContextRef, true);
+		}
+#endif
+
 		ASC_THREAD_ID nThreadId = NSThreads::GetCurrentThreadId();
 		MoveToThread(&nThreadId);
 		if (CGlobalContext::GetInstance().IsOldVersion())

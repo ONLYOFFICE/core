@@ -320,165 +320,167 @@ bool BinDocxRW::CDocxSerializer::CreateDocxFolders(std::wstring strDirectory, st
 }
 bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sThemePath, const std::wstring& sMediaPath, const std::wstring& sEmbedPath)
 {
-	bool bResultOk = false;
 	RELEASEOBJECT(m_pCurFileWriter);
 	
 	NSFile::CFileBinary oFile;
-	if(oFile.OpenFile(sSrcFileName))
+	if (false == oFile.OpenFile(sSrcFileName)) return false;
+	
+	bool bResultOk = false;
+
+	DWORD nBase64DataSize = 0;
+	BYTE* pBase64Data = new BYTE[oFile.GetFileSize()];
+	oFile.ReadFile(pBase64Data, oFile.GetFileSize(), nBase64DataSize);
+	oFile.CloseFile();
+
+	//проверяем формат
+	bool bValidFormat = false;
+	std::wstring sSignature(g_sFormatSignature);
+	int nSigLength = (int)sSignature.length();
+
+	if ((int)nBase64DataSize > nSigLength)
 	{
-		DWORD nBase64DataSize = 0;
-		BYTE* pBase64Data = new BYTE[oFile.GetFileSize()];
-		oFile.ReadFile(pBase64Data, oFile.GetFileSize(), nBase64DataSize);
-		oFile.CloseFile();
-
-		//проверяем формат
-		bool bValidFormat = false;
-        std::wstring sSignature(g_sFormatSignature);
-        int nSigLength = (int)sSignature.length();
-		
-		if ((int)nBase64DataSize > nSigLength)
+		std::string sCurSig((char*)pBase64Data, nSigLength);
+		if (sSignature == std::wstring(sCurSig.begin(), sCurSig.end()))
 		{
-            std::string sCurSig((char*)pBase64Data, nSigLength);
-            if(sSignature == std::wstring(sCurSig.begin(), sCurSig.end()))
-			{
-                bValidFormat = true;
-            }
+			bValidFormat = true;
 		}
-		if(bValidFormat)
-		{
-			//Читаем из файла версию и длину base64
-			int nIndex = nSigLength;
-			int nType = 0;
-            std::string version = "";
-            std::string dst_len = "";
-			
-			while (nIndex < nBase64DataSize)
-			{
-				nIndex++;
-				BYTE _c = pBase64Data[nIndex];
-				if (_c == ';')
-				{
-					if(0 == nType)
-					{
-						nType = 1;
-						continue;
-					}
-                    else
-					{
-						nIndex++;
-						break;
-					}
-				}
-				if(0 == nType)
-                    version += _c;
-				else
-                    dst_len += _c;
-			}
-			int nVersion = g_nFormatVersion;
-			if(!version.empty())
-			{
-				version = version.substr(1);
-				g_nCurFormatVersion = nVersion = std::stoi(version.c_str());
-			}
-			bool bIsNoBase64 = nVersion == g_nFormatVersionNoBase64;
+	}
+	if (bValidFormat)
+	{
+		//Читаем из файла версию и длину base64
+		int nIndex = nSigLength;
+		int nType = 0;
+		std::string version = "";
+		std::string dst_len = "";
 
-			NSBinPptxRW::CDrawingConverter oDrawingConverter;
-			NSBinPptxRW::CBinaryFileReader& oBufferedStream = *oDrawingConverter.m_pReader;
-			int nDataSize = 0;
-			BYTE* pData = NULL;
-			if (!bIsNoBase64)
+		while (nIndex < nBase64DataSize)
+		{
+			nIndex++;
+			BYTE _c = pBase64Data[nIndex];
+			if (_c == ';')
 			{
-				nDataSize = atoi(dst_len.c_str());
-				pData = new BYTE[nDataSize];
-				if(Base64::Base64Decode((const char*)(pBase64Data + nIndex), nBase64DataSize - nIndex, pData, &nDataSize))
+				if (0 == nType)
 				{
-					oBufferedStream.Init(pData, 0, nDataSize);
+					nType = 1;
+					continue;
 				}
 				else
 				{
-					RELEASEARRAYOBJECTS(pData);
+					nIndex++;
+					break;
 				}
+			}
+			if (0 == nType)
+				version += _c;
+			else
+				dst_len += _c;
+		}
+		int nVersion = g_nFormatVersion;
+		if (!version.empty())
+		{
+			version = version.substr(1);
+			g_nCurFormatVersion = nVersion = std::stoi(version.c_str());
+		}
+		bool bIsNoBase64 = nVersion == g_nFormatVersionNoBase64;
+
+		NSBinPptxRW::CDrawingConverter oDrawingConverter;
+		NSBinPptxRW::CBinaryFileReader& oBufferedStream = *oDrawingConverter.m_pReader;
+		int nDataSize = 0;
+		BYTE* pData = NULL;
+		if (!bIsNoBase64)
+		{
+			nDataSize = atoi(dst_len.c_str());
+			pData = new BYTE[nDataSize];
+			if (Base64::Base64Decode((const char*)(pBase64Data + nIndex), nBase64DataSize - nIndex, pData, &nDataSize))
+			{
+				oBufferedStream.Init(pData, 0, nDataSize);
 			}
 			else
 			{
-				nDataSize = nBase64DataSize;
-				pData = pBase64Data;
-				oBufferedStream.Init(pData, 0, nDataSize);
-				oBufferedStream.Seek(nIndex);
-			}
-
-			
-			if (NULL != pData)
-			{
-				oDrawingConverter.SetMainDocument(this);
-                oDrawingConverter.SetDstPath(sDstPath + FILE_SEPARATOR_STR + L"word");
-
-				oDrawingConverter.SetMediaDstPath(sMediaPath);
-				oDrawingConverter.SetEmbedDstPath(sEmbedPath);
-				
-				m_pCurFileWriter = new Writers::FileWriter(sDstPath, m_sFontDir, false, nVersion, &oDrawingConverter, sThemePath);
-
-	//папка с картинками
-				std::wstring strFileInDir = NSSystemPath::GetDirectoryName(sSrcFileName);
-                std::wstring sFileInDir = strFileInDir.c_str();
-
-                oDrawingConverter.SetSrcPath(sFileInDir);
-				
-				BinaryFileReader oBinaryFileReader(sFileInDir, oBufferedStream, *m_pCurFileWriter, m_bIsMacro, m_bIsOForm);
-				oBinaryFileReader.ReadFile();
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//themes
-				m_pCurFileWriter->m_oTheme.Write(sThemePath);
-
-				OOX::CContentTypes *pContentTypes = oDrawingConverter.GetContentTypes();
-	//docProps
-                OOX::CPath pathDocProps = sDstPath + FILE_SEPARATOR_STR + _T("docProps");
-                NSDirectory::CreateDirectory(pathDocProps.GetPath());
-				
-                OOX::CPath DocProps = std::wstring(_T("docProps"));
-
-				if (NULL != m_pCurFileWriter->m_pApp)
-				{
-					m_pCurFileWriter->m_pApp->write(pathDocProps + FILE_SEPARATOR_STR + _T("app.xml"), DocProps, *pContentTypes);
-				}
-				else
-				{
-					OOX::CApp pApp(NULL);
-					pApp.SetDefaults();
-					pApp.write(pathDocProps + FILE_SEPARATOR_STR + _T("app.xml"), DocProps, *pContentTypes);
-				}
-
-				if (NULL != m_pCurFileWriter->m_pCore)
-				{
-					m_pCurFileWriter->m_pCore->write(pathDocProps + FILE_SEPARATOR_STR + _T("core.xml"), DocProps, *pContentTypes);
-				}
-				else
-				{
-					OOX::CCore pCore(NULL);
-					pCore.SetDefaults();
-					pCore.write(pathDocProps + FILE_SEPARATOR_STR + _T("core.xml"), DocProps, *pContentTypes);
-				}
-
-				if (NULL != m_pCurFileWriter->m_pCustomProperties)
-				{
-					m_pCurFileWriter->m_pCustomProperties->write(pathDocProps + FILE_SEPARATOR_STR + _T("custom.xml"), DocProps, *pContentTypes);
-				}
-
-/////////////////////////////////////////////////////////////////////////////////////
-				m_pCurFileWriter->Write();
-				pContentTypes->Write(sDstPath);
-
-				bResultOk = true;
-
-			}
-			if (!bIsNoBase64)
-			{
 				RELEASEARRAYOBJECTS(pData);
 			}
+		}
+		else
+		{
+			nDataSize = nBase64DataSize;
+			pData = pBase64Data;
+			oBufferedStream.Init(pData, 0, nDataSize);
+			oBufferedStream.Seek(nIndex);
+		}
+
+		if (NULL != pData)
+		{
+			oDrawingConverter.SetMainDocument(this);
+			oDrawingConverter.SetDstPath(sDstPath + FILE_SEPARATOR_STR + L"word");
+
+			oDrawingConverter.SetMediaDstPath(sMediaPath);
+			oDrawingConverter.SetEmbedDstPath(sEmbedPath);
+
+			m_pCurFileWriter = new Writers::FileWriter(sDstPath, m_sFontDir, false, nVersion, &oDrawingConverter, sThemePath);
+
+			//папка с картинками
+			std::wstring strFileInDir = NSSystemPath::GetDirectoryName(sSrcFileName);
+			std::wstring sFileInDir = strFileInDir.c_str();
+
+			oDrawingConverter.SetSrcPath(sFileInDir);
+
+			BinaryFileReader oBinaryFileReader(sFileInDir, oBufferedStream, *m_pCurFileWriter, m_bIsMacro, m_bIsOForm);
+			oBinaryFileReader.ReadFile();
+
+			m_bIsMacro = m_bIsMacro && oBinaryFileReader.m_bMacroRead;
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//themes
+			m_pCurFileWriter->m_oTheme.Write(sThemePath);
+
+			OOX::CContentTypes* pContentTypes = oDrawingConverter.GetContentTypes();
+	//docProps
+			OOX::CPath pathDocProps = sDstPath + FILE_SEPARATOR_STR + _T("docProps");
+			NSDirectory::CreateDirectory(pathDocProps.GetPath());
+
+			OOX::CPath DocProps = std::wstring(_T("docProps"));
+
+			if (NULL != m_pCurFileWriter->m_pApp)
+			{
+				m_pCurFileWriter->m_pApp->write(pathDocProps + FILE_SEPARATOR_STR + _T("app.xml"), DocProps, *pContentTypes);
+			}
+			else
+			{
+				OOX::CApp pApp(NULL);
+				pApp.SetDefaults();
+				pApp.write(pathDocProps + FILE_SEPARATOR_STR + _T("app.xml"), DocProps, *pContentTypes);
+			}
+
+			if (NULL != m_pCurFileWriter->m_pCore)
+			{
+				m_pCurFileWriter->m_pCore->write(pathDocProps + FILE_SEPARATOR_STR + _T("core.xml"), DocProps, *pContentTypes);
+			}
+			else
+			{
+				OOX::CCore pCore(NULL);
+				pCore.SetDefaults();
+				pCore.write(pathDocProps + FILE_SEPARATOR_STR + _T("core.xml"), DocProps, *pContentTypes);
+			}
+
+			if (NULL != m_pCurFileWriter->m_pCustomProperties)
+			{
+				m_pCurFileWriter->m_pCustomProperties->write(pathDocProps + FILE_SEPARATOR_STR + _T("custom.xml"), DocProps, *pContentTypes);
+			}
+
+			/////////////////////////////////////////////////////////////////////////////////////
+			m_pCurFileWriter->Write();
+			pContentTypes->Write(sDstPath);
+
+			bResultOk = true;
 
 		}
-		RELEASEARRAYOBJECTS(pBase64Data);
+		if (!bIsNoBase64)
+		{
+			RELEASEARRAYOBJECTS(pData);
+		}
+
 	}
+	RELEASEARRAYOBJECTS(pBase64Data);
+
 	return bResultOk;
 }
 bool BinDocxRW::CDocxSerializer::getXmlContent(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, std::wstring& sOutputXml)
@@ -613,6 +615,10 @@ void BinDocxRW::CDocxSerializer::setMacroEnabled(bool val)
 {
 	m_bIsMacro = val;
 }
+bool BinDocxRW::CDocxSerializer::getMacroEnabled()
+{
+	return m_bIsMacro;
+}
 void BinDocxRW::CDocxSerializer::setOFormEnabled(bool val)
 {
 	m_bIsOForm = val;
@@ -623,9 +629,12 @@ bool BinDocxRW::CDocxSerializer::unpackageFile(const std::wstring& sSrcFileName,
 	
 	return file.unpackage(sSrcFileName, sDstPath);
 }
-bool BinDocxRW::CDocxSerializer::convertFlat(const std::wstring& sSrcFileName, const std::wstring& sDstPath)
+bool BinDocxRW::CDocxSerializer::convertFlat(const std::wstring& sSrcFileName, const std::wstring& sDstPath, bool &bMacro, const std::wstring& sTempPath)
 {
-	OOX::CDocxFlat docxflat(sSrcFileName);
+	OOX::CDocxFlat docxflat;
+	
+	docxflat.m_sTempPath = sTempPath;
+	docxflat.read(sSrcFileName);
 
 	if (false == docxflat.m_pDocument.IsInit())
 		return false;
@@ -637,6 +646,8 @@ bool BinDocxRW::CDocxSerializer::convertFlat(const std::wstring& sSrcFileName, c
 		NSCommon::smart_ptr<OOX::File> file = docxflat.m_pDocument.GetPointer(); file.AddRef();
 		docx.Add(file);
 		docx.m_oMain.document = docxflat.m_pDocument.GetPointer();
+		
+		bMacro = bMacro && docxflat.m_pDocument->m_bMacroEnabled;
 	}
 	if (docxflat.m_pApp.IsInit())
 	{
@@ -648,6 +659,7 @@ bool BinDocxRW::CDocxSerializer::convertFlat(const std::wstring& sSrcFileName, c
 		NSCommon::smart_ptr<OOX::File> file(docxflat.m_pCore.GetPointer()); file.AddRef();
 		docx.Add(file);
 	}	
+
 	//docxflat.m_oBgPict.GetPointer();
 
 	return docx.Write(sDstPath);

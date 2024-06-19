@@ -153,7 +153,7 @@ namespace NSOnlineOfficeBinToPdf
 		Undefined  = 255
 	};
 
-	bool AddBinToPdf(CPdfFile* pPdf, BYTE* pBuffer, unsigned int nLen, CConvertFromBinParams* pParams)
+	bool AddBinToPdf(CPdfFile* pPdf, BYTE* pBuffer, unsigned int nBufferLen, CConvertFromBinParams* pParams)
 	{
 		CMetafileToRenderterPDF oCorrector(pPdf);
 		oCorrector.SetTempDirectory(pPdf->GetTempDirectory());
@@ -167,7 +167,7 @@ namespace NSOnlineOfficeBinToPdf
 				oCorrector.InitPicker(pPdf->GetFonts());
 		}
 
-		NSOnlineOfficeBinToPdf::CBufferReader oReader(pBuffer, (int)nLen);
+		NSOnlineOfficeBinToPdf::CBufferReader oReader(pBuffer, (int)nBufferLen);
 
 		while (oReader.Check())
 		{
@@ -191,9 +191,16 @@ namespace NSOnlineOfficeBinToPdf
 				break;
 			}
 			case AddCommandType::AddPage:
+			{
+				pPdf->AddPage(nPageNum);
+
+				NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(oReader.GetCurrentBuffer(), (LONG)(nLen - 9) , &oCorrector);
+				oReader.Skip(nLen - 9);
+				break;
+			}
 			case AddCommandType::RemovePage:
 			{
-				// TODO: version 7.6+
+				pPdf->DeletePage(nPageNum);
 				break;
 			}
 			case AddCommandType::WidgetInfo:

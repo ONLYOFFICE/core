@@ -67,7 +67,7 @@ namespace BinDocxRW
         bool saveToFile     (const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sTempPath);
 		
 		bool unpackageFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath);
-		bool convertFlat(const std::wstring& sSrcFileName, const std::wstring& sDstPath);
+		bool convertFlat(const std::wstring& sSrcFileName, const std::wstring& sDstPath, bool& bMacro, const std::wstring& sTempPath);
 
         bool CreateDocxFolders(std::wstring strDirectory, std::wstring& sThemePath, std::wstring& sMediaPath, std::wstring& sEmbedPath);
 		
@@ -82,7 +82,9 @@ namespace BinDocxRW
         void setIsNoBase64Save  (bool val);
         void setIsNoBase64      (bool val);
         void setSaveChartAsImg  (bool val);
-		void setMacroEnabled	(bool val);
 		void setOFormEnabled	(bool val);
+		
+		void setMacroEnabled	(bool val);
+		bool getMacroEnabled();
 	};
 }

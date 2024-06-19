@@ -41,6 +41,7 @@
 #include "Pattern.h"
 #include "Document.h"
 #include "Field.h"
+#include "ResourcesDictionary.h"
 
 #ifdef DrawText
 #undef DrawText
@@ -310,9 +311,16 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CPage
 	//----------------------------------------------------------------------------------------
-	CPage::CPage(CDocument* pDocument)
+	CPage::CPage(CDocument* pDocument, CXref* pXref)
 	{
 		Init(pDocument);
+		if (pXref)
+		{
+			AddResource(pXref);
+			m_pContents = new CArrayObject();
+			Add("Contents", m_pContents);
+			AddContents(pXref);
+		}
 	}
 	void CPage::Fix()
 	{
@@ -377,32 +385,10 @@ namespace PdfWriter
 		if (pRotate && pRotate->GetType() == object_type_NUMBER)
 			Add("Rotate", ((CNumberObject*)pRotate)->Get() % 360);
 
-		CDictObject* pResources = GetResourcesItem();
+		CResourcesDict* pResources = GetResourcesItem();
 		if (pResources)
 		{
-			// Инициализация текущего fonts
-			CObjectBase* pFonts = pResources->Get("Font");
-			if (pFonts && pFonts->GetType() == object_type_DICT)
-			{
-				m_pFonts = (CDictObject*)pFonts;
-				m_unFontsCount = 0;
-			}
-
-			// Инициализация текущего ExtGStates
-			CObjectBase* pExtGStates = pResources->Get("ExtGState");
-			if (pExtGStates && pExtGStates->GetType() == object_type_DICT)
-			{
-				m_pExtGStates = (CDictObject*)pExtGStates;
-				m_unExtGStatesCount = m_pExtGStates->GetSize();
-			}
-
-			// Инициализация текущего XObject
-			CObjectBase* pXObject = pResources->Get("XObject");
-			if (pXObject && pXObject->GetType() == object_type_DICT)
-			{
-				m_pXObjects = (CDictObject*)pXObject;
-				m_unXObjectsCount = m_pXObjects->GetSize();
-			}
+			pResources->Fix();
 
 			// Инициализация текущего Shading
 			CObjectBase* pShading = pResources->Get("Shading");
@@ -457,13 +443,7 @@ namespace PdfWriter
 		m_eGrMode   = grmode_PAGE;
 		m_pGrState  = new CGrState(NULL);
 
-		m_pExtGStates       = NULL;
-		m_unExtGStatesCount = 0;
-		m_pFonts            = NULL;
 		m_pFont             = NULL;
-		m_unFontsCount      = 0;
-		m_pXObjects         = NULL;
-		m_unXObjectsCount   = 0;
 		m_pShadings         = NULL;
 		m_unShadingsCount   = 0;
 		m_pPatterns         = NULL;
@@ -534,7 +514,7 @@ namespace PdfWriter
 	{
 		return (CArrayObject*)Get("MediaBox");
 	}
-	CDictObject*  CPage::GetResourcesItem()
+	CResourcesDict*  CPage::GetResourcesItem()
 	{
 		CObjectBase* pObject = Get("Resources");
 
@@ -556,7 +536,7 @@ namespace PdfWriter
 			}
 		}
 
-		return (CDictObject*)pObject;
+		return (CResourcesDict*)pObject;
 	}
 	CObjectBase*  CPage::GetCropBoxItem()
 	{
@@ -566,27 +546,13 @@ namespace PdfWriter
 	{
 		return Get("Rotate");
 	}
-    void CPage::AddResource()
+	void CPage::AddResource(CXref* pXref)
 	{
-		// TODO: Переделать на ResourcesDict
-		CDictObject* pResource = new CDictObject();
+		CResourcesDict* pResource = new CResourcesDict(pXref, !pXref, true);
 		if (!pResource)
 			return;
-	
-	    // Не смотря на то, что ProcSet - устаревший объект, добавляем
-	    // его для совместимости	
+
 	    Add("Resources", pResource);
-	
-		CArrayObject* pProcset = new CArrayObject();
-		if (!pProcset)
-			return;	
-	
-		pResource->Add("ProcSet", pProcset);
-		pProcset->Add(new CNameObject("PDF"));
-		pProcset->Add(new CNameObject("Text"));
-		pProcset->Add(new CNameObject("ImageB"));
-		pProcset->Add(new CNameObject("ImageC"));
-		pProcset->Add(new CNameObject("ImageI"));
 	}
     void CPage::BeforeWrite()
 	{
@@ -1043,6 +1009,15 @@ namespace PdfWriter
 		m_pGrState->m_oMatrix.x   =   dX * oCTM.m11 + dY * oCTM.m21 + oCTM.x;
 		m_pGrState->m_oMatrix.y   =   dX * oCTM.m12 + dY * oCTM.m22 + oCTM.y;
 	}
+	void CPage::StartTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY)
+	{
+		m_pGrState->m_oMatrix.m11 = dM11;
+		m_pGrState->m_oMatrix.m12 = dM12;
+		m_pGrState->m_oMatrix.m21 = dM21;
+		m_pGrState->m_oMatrix.m22 = dM22;
+		m_pGrState->m_oMatrix.x   =   dX;
+		m_pGrState->m_oMatrix.y   =   dY;
+	}
     void CPage::SetTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY)
 	{
 		CMatrix oInverse = m_pGrState->m_oMatrix.Inverse();
@@ -1082,45 +1057,16 @@ namespace PdfWriter
 		// Operator   : gs
 		// Description: устанавливаем сразу все настройки данного графического состояния(ExtGState)
 
-		const char* sGsName = GetExtGrStateName(pState);
+		CResourcesDict* pResources = GetResourcesItem();
+		if (!pResources)
+			return;
+
+		const char* sGsName = pResources->GetExtGrStateName(pState);
 		if (!sGsName)
 			return;
 
 		m_pStream->WriteEscapeName(sGsName);
 		m_pStream->WriteStr(" gs\012");
-	}
-	const char*   CPage::GetExtGrStateName(CExtGrState* pState)
-	{
-		const char *sKey;
-
-		if (!m_pExtGStates)
-		{
-			CDictObject* pResources = (CDictObject*)GetResourcesItem();
-			if (!pResources)
-				return NULL;
-
-			m_pExtGStates = new CDictObject();
-			if (!m_pExtGStates)
-				return NULL;
-
-			pResources->Add("ExtGState", m_pExtGStates);
-		}
-
-		sKey = m_pExtGStates->GetKey(pState);
-		if (!sKey)
-		{
-			// Если ExtGState не зарегистрирован в Resource, регистрируем.
-			char sExtGrStateName[LIMIT_MAX_NAME_LEN + 1];
-			char *pPointer;
-			char *pEndPointer = sExtGrStateName + LIMIT_MAX_NAME_LEN;
-
-			pPointer = (char*)StrCpy(sExtGrStateName, "E", pEndPointer);
-			ItoA(pPointer, ++m_unExtGStatesCount, pEndPointer);
-			m_pExtGStates->Add(sExtGrStateName, pState);
-			sKey = m_pExtGStates->GetKey(pState);
-		}
-
-		return sKey;
 	}
 	void CPage::AddAnnotation(CDictObject* pAnnot)
 	{
@@ -1204,6 +1150,15 @@ namespace PdfWriter
 			m_pStream->WriteChar('<');
 			m_pStream->WriteBinary(sText, unLen, NULL);
 			m_pStream->WriteChar('>');
+		}
+		else if (fontType1 == eType)
+		{
+			unLen = unLen / 2;
+			BYTE* sText2 = new BYTE[unLen];
+			for (int i = 0; i < unLen; ++i)
+				sText2[i] = sText[i * 2 + 1];
+			m_pStream->WriteEscapeText(sText2, unLen);
+			RELEASEARRAYOBJECTS(sText2);
 		}
 		else
 		{
@@ -1309,7 +1264,11 @@ namespace PdfWriter
 		// Description: Устанавливаем фонт и размер фонта
 
         dSize = std::min((double)MAX_FONTSIZE, std::max(0.0, dSize));
-		const char* sFontName = GetLocalFontName(pFont);
+		CResourcesDict* pResources = GetResourcesItem();
+		if (!pResources)
+			return;
+
+		const char* sFontName = pResources->GetFontName(pFont);
 		if (!sFontName)
 			return;
 
@@ -1319,46 +1278,6 @@ namespace PdfWriter
 		m_pStream->WriteStr(" Tf\012");
 
 		m_pFont = pFont;
-	}
-	const char*   CPage::GetLocalFontName(CFontDict* pFont)
-	{
-		if (!m_pFonts)
-		{
-			CDictObject* pResources = GetResourcesItem();
-			if (!pResources)
-				return NULL;
-
-			m_pFonts = new CDictObject();
-			if (!m_pFonts)
-				return NULL;
-
-			pResources->Add("Font", m_pFonts);
-		}
-
-		const char *sKey = m_pFonts->GetKey(pFont);
-		if (!sKey)
-		{
-			// если фонт не зарегистрирован в ресурсах, тогда регистрируем его
-			char sFontName[LIMIT_MAX_NAME_LEN + 1];
-			char *pPointer = NULL;
-			char *pEndPointer = sFontName + LIMIT_MAX_NAME_LEN;
-
-			++m_unFontsCount;
-			while (m_unFontsCount < LIMIT_MAX_DICT_ELEMENT)
-			{
-				if (m_pFonts->Get("F" + std::to_string(m_unFontsCount)))
-					++m_unFontsCount;
-				else
-					break;
-			}
-
-			pPointer = (char*)StrCpy(sFontName, "F", pEndPointer);
-			ItoA(pPointer, m_unFontsCount, pEndPointer);
-			m_pFonts->Add(sFontName, pFont);
-			sKey = m_pFonts->GetKey(pFont);
-		}
-
-		return sKey;
 	}
     void CPage::SetTextRenderingMode(ETextRenderingMode eMode)
 	{
@@ -1397,8 +1316,11 @@ namespace PdfWriter
 	}
     void CPage::ExecuteXObject(CXObject* pXObject)
 	{
-		const char* sXObjectName = GetXObjectName(pXObject);
+		CResourcesDict* pResources = GetResourcesItem();
+		if (!pResources)
+			return;
 
+		const char* sXObjectName = pResources->GetXObjectName(pXObject);
 		if (!sXObjectName)
 			return;
 
@@ -1411,36 +1333,6 @@ namespace PdfWriter
 		Concat(dWidth, 0, 0, dHeight, dX, dY);
 		ExecuteXObject(pImage);
 		GrRestore();
-	}
-	const char*   CPage::GetXObjectName(CXObject* pObject)
-	{
-		if (!m_pXObjects)
-		{
-			CDictObject* pResources = GetResourcesItem();
-			if (!pResources)
-				return NULL;
-
-			m_pXObjects = new CDictObject();
-			if (!m_pXObjects)
-				return NULL;
-
-			pResources->Add("XObject", m_pXObjects);
-		}
-
-		const char* sKey = m_pXObjects->GetKey(pObject);
-		if (!sKey)
-		{
-			char sXObjName[LIMIT_MAX_NAME_LEN + 1];
-			char *pPointer;
-			char *pEndPointer = sXObjName + LIMIT_MAX_NAME_LEN;
-
-			pPointer = (char*)StrCpy(sXObjName, "X", pEndPointer);
-			ItoA(pPointer, ++m_unXObjectsCount, pEndPointer);
-			m_pXObjects->Add(sXObjName, pObject);
-			sKey = m_pXObjects->GetKey(pObject);
-		}
-
-		return sKey;
 	}
     void CPage::DrawShading(CShading* pShading)
 	{
@@ -1488,8 +1380,17 @@ namespace PdfWriter
 			char *pPointer;
 			char *pEndPointer = sShadingName + LIMIT_MAX_NAME_LEN;
 
+			++m_unShadingsCount;
+			while (m_unShadingsCount < LIMIT_MAX_DICT_ELEMENT)
+			{
+				if (m_pShadings->Get("S" + std::to_string(m_unShadingsCount)))
+					++m_unShadingsCount;
+				else
+					break;
+			}
+
 			pPointer = (char*)StrCpy(sShadingName, "S", pEndPointer);
-			ItoA(pPointer, ++m_unShadingsCount, pEndPointer);
+			ItoA(pPointer, m_unShadingsCount, pEndPointer);
 			m_pShadings->Add(sShadingName, pShading);
 			sKey = m_pShadings->GetKey(pShading);
 		}
@@ -1518,9 +1419,17 @@ namespace PdfWriter
 			char *pPointer;
 			char *pEndPointer = sPatternName + LIMIT_MAX_NAME_LEN;
 
+			++m_unPatternsCount;
+			while (m_unPatternsCount < LIMIT_MAX_DICT_ELEMENT)
+			{
+				if (m_pPatterns->Get("P" + std::to_string(m_unPatternsCount)))
+					++m_unPatternsCount;
+				else
+					break;
+			}
+
 			pPointer = (char*)StrCpy(sPatternName, "P", pEndPointer);
-			ItoA(pPointer, m_unPatternsCount + 1, pEndPointer);
-			m_unPatternsCount++;
+			ItoA(pPointer, m_unPatternsCount, pEndPointer);
 			m_pPatterns->Add(sPatternName, pPattern);
 			sKey = m_pPatterns->GetKey(pPattern);
 		}
@@ -1569,21 +1478,50 @@ namespace PdfWriter
 	void CPage::SetRotate(int nRotate)
 	{
 		// The value shall be a multiple of 90
-		if (nRotate > 0 && nRotate % 90 == 0)
-		{
-			CNumberObject* pRotate = (CNumberObject*)GetRotateItem();
-			if (pRotate)
-				Add("Rotate", (nRotate + pRotate->Get()) % 360);
-			else
-				Add("Rotate", nRotate % 360);
-		}
+		if (nRotate % 90 == 0)
+			Add("Rotate", nRotate % 360);
+	}
+	void CPage::ClearContent(CXref* pXref)
+	{
+		m_pContents = new CArrayObject();
+		Add("Contents", m_pContents);
+		AddContents(pXref);
+	}
+	CDictObject* CPage::GetContent() const
+	{
+		return (CDictObject*)m_pContents->Remove(0);
 	}
     int CPage::GetRotate()
     {
         CNumberObject* pRotate = (CNumberObject*)GetRotateItem();
         return pRotate ? pRotate->Get() : 0;
     }
-    //----------------------------------------------------------------------------------------
+	void CPage::BeginMarkedContent(const std::string& sName)
+	{
+		// Operator   : BMC
+		// Description: Начало маркированного контента
+
+		m_pStream->WriteEscapeName(sName.c_str());
+		m_pStream->WriteStr(" BMC\012");
+	}
+	void CPage::BeginMarkedContentDict(const std::string& sName, CDictObject* pBDC)
+	{
+		// Operator   : BDC
+		// Description: Начало маркированного контента со списком свойств
+
+		m_pStream->WriteEscapeName(sName.c_str());
+		m_pStream->WriteChar(' ');
+		m_pStream->Write(pBDC, NULL);
+		m_pStream->WriteStr(" BDC\012");
+	}
+	void CPage::EndMarkedContent()
+	{
+		// Operator   : EMC
+		// Description: Конец маркированного контента
+
+		m_pStream->WriteStr("EMC\012");
+	}
+	//----------------------------------------------------------------------------------------
 	// CTextWord
 	//----------------------------------------------------------------------------------------
 	CTextWord::CTextWord()

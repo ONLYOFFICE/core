@@ -152,7 +152,17 @@ namespace NExtractTools
 	// doct_bin => html
 	_UINT32 doct_bin2html_internal(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		std::wstring sFileFromDir = NSDirectory::GetFolderPath(sFrom);
+		_UINT32 nRes = 0;
+		std::wstring sTargetBin;
+		if (params.getFromChanges())
+		{
+			params.setFromChanges(false);
+			nRes = apply_changes(sFrom, sTo, NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT, sTargetBin, params, convertParams);
+		}
+		else
+			sTargetBin = sFrom;
+		
+		std::wstring sFileFromDir = NSDirectory::GetFolderPath(sTargetBin);
 		std::wstring sImagesDirectory = combinePath(sFileFromDir, L"media");
 		std::wstring sHtmlFile = combinePath(convertParams.m_sTempDir, L"index.html");
 		if (!NSDirectory::Exists(sImagesDirectory))
@@ -161,17 +171,21 @@ namespace NExtractTools
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
 		std::wstring sXml = getDoctXml(NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT,
 									   NSDoctRenderer::DoctRendererFormat::FormatFile::HTML,
-									   sFrom, sHtmlFile, sImagesDirectory, convertParams.m_sThemesDir, -1, L"", params);
+									   sTargetBin, sHtmlFile, sImagesDirectory, convertParams.m_sThemesDir, -1, L"", params);
 
 		std::wstring sResult;
 		oDoctRenderer.Execute(sXml, sResult);
+		
+		// удаляем EditorWithChanges, потому что он не в Temp
+		if (sFrom != sTargetBin)
+			NSFile::CFileBinary::Remove(sTargetBin);
 
 		if (sResult.find(L"error") != std::wstring::npos)
 		{
 			std::wcerr << L"DoctRenderer:" << sResult << std::endl;
 			return AVS_FILEUTILS_ERROR_CONVERT;
 		}
-		return 0;
+		return nRes;
 	}
 
 	// doct_bin -> epub

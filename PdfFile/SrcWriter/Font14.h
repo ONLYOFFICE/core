@@ -46,6 +46,16 @@ namespace PdfWriter
 		{
 			return fontType1;
 		}
+		unsigned int GetWidth(unsigned short ushCode);
+		void         AddWidth(unsigned int nWidth);
+		unsigned short EncodeUnicode(const unsigned int& unGID, const unsigned int& unUnicode, bool& bNew);
+		unsigned short EncodeGID(const unsigned int& unGID, bool& bNew);
+
+	private:
+		unsigned short                         m_ushCodesCount;
+		std::map<unsigned int, unsigned short> m_mUnicodeToCode;
+		std::vector<unsigned int>              m_vCodeToGid;
+		std::vector<unsigned int>              m_vWidths;
 
 	};
 }

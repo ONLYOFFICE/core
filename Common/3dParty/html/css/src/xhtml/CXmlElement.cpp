@@ -27,7 +27,7 @@ CXmlElement::CXmlElement(const std::wstring& sNameDefaultElement)
 
 bool CXmlElement::Empty() const
 {
-	return m_mBasicValues.empty() && m_mPStyleValues.empty() && m_mRStyleValues.empty();
+	return m_mPStyleValues.empty() && m_mRStyleValues.empty() && m_mBasicValues.find(CSSProperties::BasicProperties::B_BasedOn) == m_mBasicValues.end();
 }
 
 void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
@@ -35,7 +35,19 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 	if (!Empty())
 		Clear();
 
-	if (sNameDefaultElement == L"li")
+	if (sNameDefaultElement == L"p")
+	{
+		AddBasicProperties(CSSProperties::BasicProperties::B_Type, L"paragraph");
+		AddBasicProperties(CSSProperties::BasicProperties::B_StyleId, L"p");
+		AddBasicProperties(CSSProperties::BasicProperties::B_Name, L"Normal (Web)");
+		AddBasicProperties(CSSProperties::BasicProperties::B_BasedOn, L"normal");
+		AddBasicProperties(CSSProperties::BasicProperties::B_UiPriority, L"99");
+		AddBasicProperties(CSSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
+		AddBasicProperties(CSSProperties::BasicProperties::B_SemiHidden, L"true");
+
+//		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
+	}
+	else if (sNameDefaultElement == L"li")
 	{
 		AddBasicProperties(CSSProperties::BasicProperties::B_Type, L"paragraph");
 		AddBasicProperties(CSSProperties::BasicProperties::B_StyleId, L"li");
@@ -55,7 +67,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h1-c");
 
 		AddPropertiesInP(CSSProperties::ParagraphProperties::P_OutlineLvl, L"0");
-		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"480\"");
+//		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
 	}
 	else if (sNameDefaultElement == L"h2")
 	{
@@ -66,7 +78,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h2-c");
 
 		AddPropertiesInP(CSSProperties::ParagraphProperties::P_OutlineLvl, L"1");
-		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"400\"");
+//		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
 	}
 	else if (sNameDefaultElement == L"h3")
 	{
@@ -77,7 +89,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h3-c");
 
 		AddPropertiesInP(CSSProperties::ParagraphProperties::P_OutlineLvl, L"2");
-		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"360\"");
+//		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
 	}
 	else if (sNameDefaultElement == L"h4")
 	{
@@ -88,7 +100,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h4-c");
 
 		AddPropertiesInP(CSSProperties::ParagraphProperties::P_OutlineLvl, L"3");
-		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"320\"");
+//		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
 	}
 	else if (sNameDefaultElement == L"h5")
 	{
@@ -99,7 +111,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h5-c");
 
 		AddPropertiesInP(CSSProperties::ParagraphProperties::P_OutlineLvl, L"4");
-		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"280\"");
+//		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
 
 	}
 	else if (sNameDefaultElement == L"h6")
@@ -111,7 +123,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h6-c");
 
 		AddPropertiesInP(CSSProperties::ParagraphProperties::P_OutlineLvl, L"5");
-		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"280\"");
+//		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
 	}
 	else if (sNameDefaultElement == L"h1-c")
 	{
@@ -122,9 +134,9 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_UiPriority, L"9");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h1");
 
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, DEFAULTFONTNAME);
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"44");
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"48");
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_Kern, L"36");
 	}
 	else if (sNameDefaultElement == L"h2-c")
 	{
@@ -136,9 +148,8 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h2");
 
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, DEFAULTFONTNAME);
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"33");
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"36");
 	}
 	else if (sNameDefaultElement == L"h3-c")
 	{
@@ -150,9 +161,8 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h3");
 
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, DEFAULTFONTNAME);
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"26");
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"27");
 	}
 	else if (sNameDefaultElement == L"h4-c")
 	{
@@ -164,9 +174,8 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h4");
 
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, DEFAULTFONTNAME);
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"24");
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"22");
 	}
 	else if (sNameDefaultElement == L"h5-c")
 	{
@@ -178,9 +187,8 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h5");
 
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, DEFAULTFONTNAME);
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"20");
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"18");
 	}
 	else if (sNameDefaultElement == L"h6-c")
 	{
@@ -192,28 +200,8 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h6");
 
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, DEFAULTFONTNAME);
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"15");
-	}
-	else if (sNameDefaultElement == L"p-c")
-	{
-		AddBasicProperties(CSSProperties::BasicProperties::B_Type, L"character");
-		AddBasicProperties(CSSProperties::BasicProperties::B_StyleId, L"p-c");
-		AddBasicProperties(CSSProperties::BasicProperties::B_CustomStyle, L"1");
-		AddBasicProperties(CSSProperties::BasicProperties::B_Name, L"Paragraph character");
-		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"p");
-
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, DEFAULTFONTNAME);
-	}
-	else if (sNameDefaultElement == L"p")
-	{
-		AddBasicProperties(CSSProperties::BasicProperties::B_Type, L"paragraph");
-		AddBasicProperties(CSSProperties::BasicProperties::B_StyleId, L"p");
-		AddBasicProperties(CSSProperties::BasicProperties::B_CustomStyle, L"1");
-		AddBasicProperties(CSSProperties::BasicProperties::B_Name, L"Paragraph");
-		AddBasicProperties(CSSProperties::BasicProperties::B_BasedOn, L"normal");
-		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"p-c");
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
 	}
 	else if (sNameDefaultElement == L"div-c")
 	{
@@ -222,8 +210,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_CustomStyle, L"1");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Name, L"Div character");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"div");
-
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, DEFAULTFONTNAME);
 	}
 	else if (sNameDefaultElement == L"div")
 	{
@@ -242,9 +228,9 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_UiPriority, L"99");
 		AddBasicProperties(CSSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
 
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"24");
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_Color, L"0000FF");
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_U, L"single");
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, DEFAULTFONTNAME);
 	}
 	else if (sNameDefaultElement == L"a")
 	{
@@ -312,7 +298,7 @@ CXmlElement& CXmlElement::operator=(const CXmlElement& oElement)
 	return *this;
 }
 
-bool CXmlElement::operator==(const CXmlElement &oElement)
+bool CXmlElement::operator==(const CXmlElement &oElement) const
 {
 	return m_mBasicValues == oElement.m_mBasicValues &&
 	       m_mPStyleValues == oElement.m_mPStyleValues &&
@@ -364,22 +350,22 @@ std::wstring CXmlElement::ConvertPStyle(bool bIsLite) const
 
 			case CSSProperties::ParagraphProperties::P_TopBorder:
 			{
-				sPBdr += L"<w:top" + oItem.second + L"/>";
+				sPBdr += L"<w:top " + oItem.second + L"/>";
 				break;
 			}
 			case CSSProperties::ParagraphProperties::P_LeftBorder:
 			{
-				sPBdr += L"<w:left" + oItem.second + L"/>";
+				sPBdr += L"<w:left " + oItem.second + L"/>";
 				break;
 			}
 			case CSSProperties::ParagraphProperties::P_BottomBorder:
 			{
-				sPBdr += L"<w:bottom" + oItem.second + L"/>";
+				sPBdr += L"<w:bottom " + oItem.second + L"/>";
 				break;
 			}
 			case CSSProperties::ParagraphProperties::P_RightBorder:
 			{
-				sPBdr += L"<w:right" + oItem.second + L"/>";
+				sPBdr += L"<w:right " + oItem.second + L"/>";
 				break;
 			}
 			case CSSProperties::ParagraphProperties::P_KeepLines:
@@ -429,8 +415,8 @@ std::wstring CXmlElement::ConvertRStyle(bool bIsLite) const
 			}
 			case CSSProperties::RunnerProperties::R_Sz:
 			{
-				sRStyle += L"<w:sz w:val=\"" + oItem.second +
-				           L"\"/>" + L"<w:szCs w:val=\"" + oItem.second + L"\"/>";
+				sRStyle += L"<w:sz w:val=\""   + oItem.second + L"\"/>" + 
+				           L"<w:szCs w:val=\"" + oItem.second + L"\"/>";
 				break;
 			}
 			case CSSProperties::RunnerProperties::R_B:
@@ -462,17 +448,29 @@ std::wstring CXmlElement::ConvertRStyle(bool bIsLite) const
 					sRStyle += L"<w:u w:val=\"" + oItem.second + L"\"/>";
 				break;
 			}
-//			case CSSProperties::RunnerProperties::R_Highlight:
-//			{
-//				sRStyle += L"<w:highlight w:val=\"" + oItem.second + L"\"/>";
-//				break;
-//			}
+			case CSSProperties::RunnerProperties::R_Highlight:
+			{
+				if (!oItem.second.empty())
+					sRStyle += L"<w:highlight w:val=\"" + oItem.second + L"\"/>";
+				break;
+			}
+			case CSSProperties::RunnerProperties::R_Shd:
+			{
+				if (!oItem.second.empty())
+					sRStyle += L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + oItem.second + L"\"/>";
+				break;
+			}
 			case CSSProperties::RunnerProperties::R_SmallCaps:
 			{
 				if (oItem.second == L"smallCaps")
 					sRStyle += L"<w:smallCaps/>";
 				else if (oItem.second == L"normal")
 					sRStyle += L"<w:smallCaps w:val=\"false\"/>";
+				break;
+			}
+			case CSSProperties::RunnerProperties::R_Kern:
+			{
+				sRStyle += L"<w:kern w:val=\"" + oItem.second + L"\"/>";
 				break;
 			}
 			default:
@@ -519,12 +517,19 @@ std::wstring CXmlElement::ConvertBasicInfoStyle() const
 			}
 			case CSSProperties::BasicProperties::B_UnhideWhenUsed:
 			{
-				sBasicInfo += L"<w:unhideWhenUsed/>";
+				if (L"true" == oItem.second)
+					sBasicInfo += L"<w:unhideWhenUsed/>";
 				break;
 			}
 			case CSSProperties::BasicProperties::B_UiPriority:
 			{
 				sBasicInfo += L"<w:uiPriority w:val=\"" + oItem.second + L"\"/>";
+				break;
+			}
+			case CSSProperties::BasicProperties::B_SemiHidden:
+			{
+				if (L"true" == oItem.second)
+					sBasicInfo += L"<w:semiHidden/>";
 				break;
 			}
 			default:
@@ -598,7 +603,7 @@ std::wstring CXmlElement::GetPStyle(bool bIsLite) const
 {
 	if (bIsLite)
 		return ConvertPStyle(true);
-		
+
 	return GetStyle(true, true, false);
 }
 
@@ -606,7 +611,7 @@ std::wstring CXmlElement::GetRStyle(bool bIsLite) const
 {
 	if (bIsLite)
 		return ConvertRStyle(true);
-		
+
 	return GetStyle(true, false, true);
 }
 

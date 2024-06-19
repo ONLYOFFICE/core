@@ -111,7 +111,7 @@ void BulletsConverter::ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, CTextPFR
         pLnSpc->m_name = L"a:lnSpc";
 
         if (val > 0)
-            pLnSpc->spcPct = val * 12.5;
+            pLnSpc->spcPts = val * 12.5;
         else if (val < 0 && val > -13200)
             pLnSpc->spcPct = val * -1000;
 

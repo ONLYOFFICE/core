@@ -7,6 +7,7 @@
 #include "../../../../../../DjVuFile/DjVu.h"
 #include "../../../../../../PdfFile/PdfFile.h"
 #include "../../../../../../HtmlRenderer/include/HTMLRendererText.h"
+#include "../../../../../../DocxRenderer/DocxRenderer.h"
 #include "serialize.h"
 
 class CGraphicsFileDrawing
@@ -16,12 +17,14 @@ private:
 	NSFonts::IApplicationFonts* pApplicationFonts;
 	NSFonts::IFontManager* pFontManager;
 	NSHtmlRenderer::CHTMLRendererText* pTextRenderer;
+	NSDocxRenderer::IImageStorage* pImageStorage;
 	int nType;
 public:
 	CGraphicsFileDrawing(NSFonts::IApplicationFonts* pFonts)
 	{
 		pReader = NULL;
 		pTextRenderer = NULL;
+		pImageStorage = NULL;
 		pApplicationFonts = pFonts;
 		pApplicationFonts->AddRef();
 
@@ -39,6 +42,7 @@ public:
 		RELEASEOBJECT(pTextRenderer);
 		RELEASEOBJECT(pFontManager);
 		RELEASEINTERFACE(pApplicationFonts);
+		RELEASEOBJECT(pImageStorage);
 		nType = -1;
 	}
 	bool Open(BYTE* data, DWORD length, int _nType, const char* password)
@@ -184,6 +188,44 @@ public:
 	void DestroyText()
 	{
 		RELEASEOBJECT(pTextRenderer);
+	}
+
+	BYTE* GetPageShapes(const int& nPageIndex, int mode)
+	{
+		if (NULL == pImageStorage)
+			pImageStorage = NSDocxRenderer::CreateWasmImageStorage();
+
+		CDocxRenderer oRenderer(pApplicationFonts);
+		oRenderer.SetExternalImageStorage(pImageStorage);
+		oRenderer.SetTextAssociationType(NSDocxRenderer::TextAssociationType::tatParagraphToShape);
+		
+		std::vector<std::wstring> arShapes;
+		if (0 == mode)
+		 	arShapes = oRenderer.ScanPage(pReader, nPageIndex);
+		else
+		 	arShapes = oRenderer.ScanPagePptx(pReader, nPageIndex);
+
+		int nLen = (int)arShapes.size();
+
+		NSWasm::CData oRes;
+		oRes.SkipLen();
+		oRes.AddInt(nLen);
+
+		for (int i = 0; i < nLen; ++i)
+			oRes.WriteString(arShapes[i]);
+
+		oRes.WriteLen();
+
+		BYTE* res = oRes.GetBuffer();
+		oRes.ClearWithoutAttack();
+		return res;
+	}
+
+	std::string* GetImageBase64(int nRId)
+	{
+		if (NULL == pImageStorage)
+			return NULL;
+		return pImageStorage->GetBase64(nRId);
 	}
 };
 

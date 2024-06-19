@@ -34,6 +34,9 @@
 
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../XlsbFormat/Biff12_records/Style.h"
+#include "../../XlsbFormat/Biff12_records/BeginStyles.h"
+
+#include "../../XlsbFormat/Biff12_unions/STYLES.h"
 
 namespace OOX
 {
@@ -71,6 +74,36 @@ namespace OOX
 		 {
 			 ReadAttributes(obj);
 		 }
+		XLS::BaseObjectPtr CCellStyle::toBin()
+		{
+			auto ptr(new XLSB::Style);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_oBuiltinId.IsInit())
+            {
+                ptr->fBuiltIn = true;
+                ptr->iStyBuiltIn = m_oBuiltinId->GetValue();
+            }
+            else
+                ptr->fBuiltIn = false;
+			if (m_oCustomBuiltin.IsInit())
+				ptr->fCustom = m_oCustomBuiltin->GetValue();
+            else
+                ptr->fCustom = false;
+			if (m_oHidden.IsInit())
+				ptr->fHidden = m_oHidden->GetValue();
+            else
+                ptr->fHidden = false;
+			if (m_oILevel.IsInit())
+				ptr->iLevel = m_oILevel->GetValue();
+            else
+                ptr->iLevel = 0;
+			if (m_oName.IsInit())
+				ptr->stName = m_oName.get();
+			if (m_oXfId.IsInit())
+				ptr->ixf = m_oXfId->GetValue();
+
+			return objectPtr;
+		}
 		EElementType CCellStyle::getType () const
 		{
 			return et_x_CellStyle;
@@ -159,6 +192,18 @@ namespace OOX
 				 m_arrItems.push_back(pXfs);
 			 }
 		 }
+		XLS::BaseObjectPtr CCellStyles::toBin()
+		{
+			auto ptr(new XLSB::STYLES);
+			auto ptr1(new XLSB::BeginStyles);
+			ptr->m_BrtBeginStyles = XLS::BaseObjectPtr{ptr1}; 
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			for(auto i:m_arrItems)
+				ptr->m_arBrtStyle.push_back(i->toBin());
+			ptr1->cstyles = ptr->m_arBrtStyle.size();
+			return objectPtr;
+		}
 		EElementType CCellStyles::getType () const
 		{
 			return et_x_CellStyles;

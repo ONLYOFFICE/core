@@ -35,6 +35,8 @@
 
 #include "../../Common/SimpleTypes_Shared.h"
 
+#include "../../XlsbFormat/Biff12_unions/HLINKS.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -73,6 +75,32 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		XLS::BaseObjectPtr CHyperlink::toBin()
+		{
+			auto castedPtr(new XLSB::HLink);
+			XLS::BaseObjectPtr ptr(castedPtr);
+
+			if(m_oDisplay.IsInit())
+				castedPtr->display = m_oDisplay.get();
+            else
+                castedPtr->display = L"";
+			if(m_oRid.IsInit())
+				castedPtr->relId.value = m_oRid->GetValue();
+            else
+                castedPtr->relId.value = L"";
+			if(m_oLocation.IsInit())
+				castedPtr->location = m_oLocation.get();
+            else
+                castedPtr->location = L"";
+			if(m_oRef.IsInit())
+				castedPtr->rfx = m_oRef.get();
+			if(m_oTooltip.IsInit())
+				castedPtr->tooltip = m_oTooltip.get();
+            else
+                castedPtr->tooltip = L"";
+
+			return ptr;
+		}
 		EElementType CHyperlink::getType () const
 		{
 			return et_x_Hyperlink;
@@ -94,7 +122,7 @@ namespace OOX
 			m_oDisplay          = ptr->display.value();
 			m_oRid              = ptr->relId.value.value();
 			m_oLocation         = ptr->location.value();
-			m_oRef              = ptr->rfx.toString();
+			m_oRef              = ptr->rfx.toString(true, true);
 			m_oTooltip          = ptr->tooltip.value();
 
 		}
@@ -160,6 +188,19 @@ namespace OOX
 				pHyperlink->fromBin(hyperlink);
 			}
 		}
+		XLS::BaseObjectPtr CHyperlinks::toBin()
+		{
+
+			auto castedPtr(new XLSB::HLINKS);
+			XLS::BaseObjectPtr ptr(castedPtr);
+
+			for(auto i:m_arrItems)
+			{
+				castedPtr->m_arHlinks.push_back(i->toBin());
+			}
+			return ptr;
+		}
+
 		EElementType CHyperlinks::getType () const
 			{
 				return et_x_Hyperlinks;

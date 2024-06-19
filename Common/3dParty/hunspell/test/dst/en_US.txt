@@ -1,0 +1,218 @@
+﻿apple
+banana
+cat
+dog
+egg
+fish
+gold
+house
+ice
+juice
+kite
+lion
+mouse
+night
+orange
+pencil
+queen
+rabbit
+sun
+tea
+umbrella
+vase
+watch
+xylophone
+yellow
+zebra
+arrow
+book
+cake
+car
+day
+elephant
+flower
+hat
+island
+jelly
+king
+lamp
+moon
+nose
+owl
+pink
+quilt
+radio
+sunflower
+tree
+unicorn
+violin
+water
+xylophone
+yellow
+zoo
+apple juice [applesauce]
+blue
+calculator
+desk
+elephant
+fire
+goat
+hat
+ice cream [creamer]
+jacket
+key
+lemon
+map
+notebook
+owl
+pear
+quilt
+rose
+soccer
+table
+umbrella
+vegetable
+whale
+xylophone
+yellow
+zebra
+apple pie [pineapple]
+beach
+computer
+drum
+elephant
+goat cheese [headcheese]
+hat
+ice skate [cheapskate]
+juice box [jukebox]
+kite festival [quite festival]
+lemonade
+mountain
+notebook paper []
+orange juice [orangeade]
+pizza
+queen bee [quin bee, queen bi, keen bee, ween bee]
+rainbow
+snow
+turtle
+umbrella hat [umbrella]
+valley
+Aberration
+Absolution
+Acquiesce
+Adumbrate
+Aesthete
+Altruistic
+Ambivalent
+Anomalous
+Antediluvian
+Antipathy
+Aphorism
+Apocryphal
+Apostasy
+Apparition
+Arduous
+Assiduous
+Audacious
+Austere
+Autonomy
+Avaricious
+Axiomatic
+Baleful
+Bellicose
+Belligerent
+Bereft
+Bilious
+Bombastic
+Cacophony
+Capricious
+Cartography
+Castigate
+Clandestine
+Coalesce
+Cogent
+Cognizant
+Colloquy
+Concomitant
+Confabulate
+Congenial
+Conundrum
+Copious
+Corpulent
+Coven
+Credulous
+Culpable
+Dearth
+Debilitate
+Deleterious
+Denigrate
+Despondent
+Diatribe
+Dilapidated
+Disparage
+Dissemble
+Dissonance
+Duplicity
+Ebullient
+Egregious
+Ephemeral
+Equanimity
+Esoteric
+Euphemism
+Evanescent
+Exacerbate
+Exhort
+Expatriate
+Extol
+Facetious
+Fatuous
+Feckless
+Felicitous
+Feral
+Fervent
+Fetter
+Flummox
+Fractious
+Garrulous
+Hegemony
+Iconoclast
+Idiosyncrasy
+Ignominious
+Impecunious
+Ineffable
+Inexorable
+Inscrutable
+Insidious
+Intrepid
+Intransigent
+Invective
+Irascible
+Juxtapose
+Kowtow
+Languid
+Lassitude
+Lurid
+Malinger
+Maudlin
+Mawkish
+Mendacious
+Metaphysical
+Antransigent [Intransigent, Intransigence, Transient, Intransitive, Transcendent]
+Inwective [Infective, Invective, Ineffective, Instinctive, Inactive]
+Iracible [Irascible, Acquirable]
+Juxtopose [Juxtapose, Juxtaposition]
+Kovtow [Kowtow, Kowloon]
+Langued [Languid, Languished]
+Lasitude [Lassitude, Latitude]
+Larid [Arid, L arid, La rid, La-rid, Laird, Lard, Laid, Lurid]
+Mallinger [Malinger, Salinger, Lingering, Lingerer, Germinal]
+Haudlin [Maudlin, Handling]
+Mavkish [Mawkish, Mavis]
+Mendocious [Mendacious, Mendocino]
+Mitaphysical [Metaphysical, Physicality, Physical]
+timeline [time line, time-line, timberline]
+rollout [roll out, roll-out, rollover]
+workshopped [work shopped, work-shopped, works hopped, works-hopped, workshop]
+deliverables [deliverable, deliverable s, deliverers, deliberative, desirable]
+
+

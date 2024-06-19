@@ -82,9 +82,10 @@ namespace cpdoccore
 		_CP_OPT(std::wstring)	view_box;
 		_CP_OPT(std::wstring)	sub_view_size;
 		_CP_OPT(std::wstring)	glue_points;
+		_CP_OPT(std::wstring)	glue_points_leaving_directions;
 
-		std::wstring path_stretchpoint_x;
-		std::wstring path_stretchpoint_y;
+		_CP_OPT(std::wstring)	path_stretchpoint_x;
+		_CP_OPT(std::wstring)	path_stretchpoint_y;
 
 		std::wstring			odf_type_name;
 	};

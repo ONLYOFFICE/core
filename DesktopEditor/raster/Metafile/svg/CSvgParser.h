@@ -1,7 +1,6 @@
 #ifndef CSVGPARSER_H
 #define CSVGPARSER_H
 
-#include "../../graphics/pro/Fonts.h"
 #include "../../../common/Directory.h"
 #include "../../../xml/include/xmlutils.h"
 

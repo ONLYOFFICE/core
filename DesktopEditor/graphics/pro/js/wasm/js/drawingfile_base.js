@@ -158,6 +158,8 @@
 		this.fontPageIndex = -1;
 		this.fontPageUpdateType = UpdateFontsSource.Undefined;
 		this.fontStreams = {};
+
+		this.scannedImages = {};
 	}
 
 	CFile.prototype["loadFromData"] = function(arrayBuffer)
@@ -261,6 +263,7 @@
 			rec["H"] = reader.readInt();
 			rec["Dpi"] = reader.readInt();
 			rec["Rotate"] = reader.readInt();
+			rec["originIndex"] = i;
 			rec.fonts = [];
 			rec.fontsUpdateType = UpdateFontsSource.Undefined;
 			rec.text = null;
@@ -308,9 +311,20 @@
 		return this.StartID;
 	};
 
+	function getOriginPage(pages, originIndex)
+	{
+		for (let i = 0; i < pages.length; ++i)
+		{
+			if (pages[i]["originIndex"] == originIndex)
+				return pages[i];
+		}
+		return null;
+	}
+
 	CFile.prototype["getPagePixmap"] = function(pageIndex, width, height, backgroundColor)
 	{
-		if (this.pages[pageIndex].fonts.length > 0)
+		let page = getOriginPage(this.pages, pageIndex);
+		if (!page || page.fonts.length > 0)
 		{
 			// waiting fonts
 			return null;
@@ -320,7 +334,7 @@
 		let retValue = Module["_GetPixmap"](this.nativeFile, pageIndex, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor);
 		this.unlockPageNumForFontsLoader();
 
-		if (this.pages[pageIndex].fonts.length > 0)
+		if (page.fonts.length > 0)
 		{
 			// waiting fonts
 			Module["_free"](retValue);
@@ -330,7 +344,8 @@
 	};
 	CFile.prototype["getGlyphs"] = function(pageIndex)
 	{
-		if (this.pages[pageIndex].fonts.length > 0)
+		let page = getOriginPage(this.pages, pageIndex);
+		if (!page || page.fonts.length > 0)
 		{
 			// waiting fonts
 			return null;
@@ -343,7 +358,7 @@
 		// you need to call destroyTextInfo()
 		this.unlockPageNumForFontsLoader();
 
-		if (this.pages[pageIndex].fonts.length > 0)
+		if (page.fonts.length > 0)
 		{
 			// waiting fonts
 			retValue = null;
@@ -1125,7 +1140,33 @@
 					rec["CA"] = reader.readDouble();
 				// RC
 				if (flags & (1 << 3))
-					rec["RC"] = reader.readString();
+				{
+					let n = reader.readInt();
+					rec["RC"] = [];
+					for (let i = 0; i < n; ++i)
+					{
+						let oFont = {};
+						// 0 - left, 1 - centered, 2 - right, 3 - justify
+						oFont["alignment"] = reader.readByte();
+						let nFontFlag = reader.readInt();
+						oFont["bold"] = (nFontFlag >> 0) & 1;
+						oFont["italic"] = (nFontFlag >> 1) & 1;
+						oFont["strikethrough"] = (nFontFlag >> 3) & 1;
+						oFont["underlined"] = (nFontFlag >> 4) & 1;
+						if (nFontFlag & (1 << 5))
+							oFont["vertical"] = reader.readDouble();
+						if (nFontFlag & (1 << 6))
+							oFont["actual"] = reader.readString();
+						oFont["size"] = reader.readDouble();
+						oFont["color"] = [];
+						oFont["color"].push(reader.readDouble2());
+						oFont["color"].push(reader.readDouble2());
+						oFont["color"].push(reader.readDouble2());
+						oFont["name"] = reader.readString();
+						oFont["text"] = reader.readString();
+						rec["RC"].push(oFont);
+					}
+				}
 				// CreationDate
 				if (flags & (1 << 4))
 					rec["CreationDate"] = reader.readString();
@@ -1306,6 +1347,7 @@
 				}
 				// 0 - left-justified, 1 - centered, 2 - right-justified
 				rec["alignment"] = reader.readByte();
+				rec["Rotate"] = reader.readInt();
 				// Rect and RD differences
 				if (flags & (1 << 15))
 				{
@@ -1573,6 +1615,64 @@
 		Module["_free"](ext);
 		
 		return res;
+	};
+
+	CFile.prototype["scanPage"] = function(page, mode)
+	{
+		let data = Module["_ScanPage"](this.nativeFile, page, (mode === undefined) ? 0 : mode);
+		if (data == 0)
+			return [];
+
+		let lenArray = new Int32Array(Module["HEAP8"].buffer, data, 4);
+		if (lenArray == null)
+			return [];
+
+		let len = lenArray[0];
+		if (0 == len)
+			return [];
+
+		let buffer = new Uint8Array(Module["HEAP8"].buffer, data + 4, len);
+		let reader = new CBinaryReader(buffer, 0, len);
+
+		let shapesCount = reader.readInt();
+		let shapes = new Array(shapesCount);
+
+		for (let i = 0; i < shapesCount; i++)
+			shapes[i] = reader.readString();
+
+		Module["_free"](data);
+		return shapes;
+	};
+
+	CFile.prototype["getImageBase64"] = function(rId)
+	{
+		let strId = "" + rId;
+		if (this.scannedImages[strId])
+			return this.scannedImages[strId];
+
+		let strPtr = Module["_GetImageBase64"](this.nativeFile, rId);
+		if (0 == strPtr)
+		{
+			this.scannedImages[strId] = "error";
+			return this.scannedImages[strId];
+		}
+
+		let len = Module["_GetImageBase64Len"](strPtr);
+		let ptr = Module["_GetImageBase64Ptr"](strPtr);
+
+		var buffer = new Uint8Array(Module["HEAP8"].buffer, ptr, len);
+		this.scannedImages[strId] = String.prototype.fromUtf8(buffer, 0, len);
+		Module["_GetImageBase64Free"](strPtr);
+		return this.scannedImages[strId];
+	};
+
+	CFile.prototype["changeImageUrl"] = function(baseUrl, resultUrl)
+	{
+		for (let i in this.scannedImages)
+		{
+			if (this.scannedImages[i] == baseUrl)
+				this.scannedImages[i] = resultUrl;
+		}
 	};
 
 	CFile.prototype.memory = function()

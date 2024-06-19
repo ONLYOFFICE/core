@@ -97,9 +97,6 @@ public:
 	bool EditPage   (int nPageIndex);
 	bool DeletePage (int nPageIndex);
 	bool AddPage    (int nPageIndex);
-	bool EditAnnot  (int nPageIndex, int nID);
-	bool DeleteAnnot(int nID);
-	bool EditWidgets(IAdvancedCommand* pCommand);
 	HRESULT ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword = L"");
 #endif
 
@@ -128,6 +125,7 @@ public:
 	virtual std::wstring GetInfo();
 	virtual BYTE* GetStructure();
 	virtual BYTE* GetLinks(int nPageIndex);
+	bool ValidMetaData();
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();
 	BYTE* GetWidgets();

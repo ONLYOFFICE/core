@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="oox">
@@ -24,6 +24,9 @@
     </Filter>
     <Filter Include="elements">
       <UniqueIdentifier>{67b2bf43-5673-4a6f-82cb-fe4be01aee5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="starmath">
+      <UniqueIdentifier>{7d3e34d2-a224-4d68-9144-4889bbcc3698}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -481,6 +484,14 @@
     <ClCompile Include="..\..\Reader\Converter\pptx_animation_context.cpp">
       <Filter>oox\pptx</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\cconversionsmtoooxml.cpp">
+      <Filter>starmath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\cstarmathpars.cpp">
+      <Filter>starmath</Filter>
+    <ClCompile Include="..\..\Reader\Format\office_drawing.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Reader\Format\abstract_xml.h">
@@ -933,6 +944,17 @@
     <ClInclude Include="..\..\Reader\Converter\convertoo2oox.h" />
     <ClInclude Include="..\..\Reader\Converter\pptx_animation_context.h">
       <Filter>oox\pptx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\cconversionsmtoooxml.h">
+      <Filter>starmath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\cstarmathpars.h">
+      <Filter>starmath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\typeselements.h">
+      <Filter>starmath</Filter>
+    <ClInclude Include="..\..\Reader\Format\office_drawing.h">
+      <Filter>elements</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -67,6 +67,7 @@ public:
     office_element_ptr_array	style_column_;
 
 };
+typedef shared_ptr<style_columns>::Type style_columns_ptr;
 
 CP_REGISTER_OFFICE_ELEMENT2(style_columns);
 
@@ -91,6 +92,7 @@ public:
     _CP_OPT(odf_types::length)		fo_space_after_;
     
 };
+typedef shared_ptr<style_column>::Type style_column_ptr;
 
 CP_REGISTER_OFFICE_ELEMENT2(style_column);
 
@@ -115,6 +117,7 @@ public:
     _CP_OPT(odf_types::vertical_align) style_vertical_align_;	// default top
     _CP_OPT(odf_types::color)			style_color_;			// default #000000
 };
+typedef shared_ptr<style_column_sep>::Type style_column_sep_ptr;
 
 CP_REGISTER_OFFICE_ELEMENT2(style_column_sep);
 
@@ -144,6 +147,7 @@ public:
     office_element_ptr								style_columns_;
     office_element_ptr								style_background_image_;
 };
+typedef shared_ptr<style_section_properties>::Type style_section_properties_ptr;
 
 CP_REGISTER_OFFICE_ELEMENT2(style_section_properties);
 }

@@ -602,6 +602,18 @@ bool odf_text_context::start_field(int type, const std::wstring& value, const st
 		{
 			create_element(L"text", L"text-input", elm, odf_context_);
 		}break;
+		case fieldRef:
+		{
+			create_element(L"text", L"bookmark-ref", elm, odf_context_);
+			text_bookmark_ref* ref = dynamic_cast<text_bookmark_ref*>(elm.get());
+			if (ref)
+			{
+				if (false == value.empty()) ref->ref_name_ = value;
+
+				ref->reference_format_ = odf_types::reference_format::parse(format.empty() ? L"text" : format);
+
+			}
+		}break;
 	}
 
 	if (elm)
@@ -669,9 +681,14 @@ void odf_text_context::add_hyperlink (const std::wstring & link, const std::wstr
 	if (!display.empty())
 		hyperlink->add_text(display);
 ////////////////////////////
-
-	hyperlink->common_xlink_attlist_.href_	= link + (location.empty() ? L"" : (L"#" + location));
-	hyperlink->common_xlink_attlist_.type_	= xlink_type::Simple;
+	
+	if (!link.empty())
+	{
+		hyperlink->common_xlink_attlist_.href_ = link + (location.empty() ? L"" : (L"#" + location));
+		hyperlink->common_xlink_attlist_.type_ = xlink_type::Simple;
+	}
+	else 
+		odf_context_->add_hyperlink(elm, location);
 	
 	if (false == current_level_.empty())
 		current_level_.back().elm->add_child_element(elm);

@@ -2,34 +2,6 @@
 
 namespace NSCSS
 {
-	CSizeWindow::CSizeWindow()
-		: m_ushWidth(0), m_ushHeight(0)
-	{}
-
-	CSizeWindow::CSizeWindow(unsigned short unWidth, unsigned short unHeight)
-		: m_ushWidth(unWidth), m_ushHeight(unHeight)
-	{}
-
-	bool CSizeWindow::Empty() const
-	{
-		return ((0 == m_ushWidth) && (0 == m_ushHeight));
-	}
-
-	void CSizeWindow::Clear()
-	{
-		m_ushWidth = m_ushHeight = 0;
-	}
-
-	bool CSizeWindow::operator==(const CSizeWindow &oSizeWindow) const
-	{
-		return ((m_ushWidth == oSizeWindow.m_ushWidth) && (m_ushHeight == oSizeWindow.m_ushHeight));
-	}
-
-	bool CSizeWindow::operator!=(const CSizeWindow &oSizeWindow) const
-	{
-		return ((m_ushWidth != oSizeWindow.m_ushWidth) || (m_ushHeight != oSizeWindow.m_ushHeight));
-	}
-
 	bool StatistickElement::operator<(const StatistickElement &oStatistickElement) const
 	{
 		return sValue < oStatistickElement.sValue;
@@ -98,7 +70,7 @@ namespace NSCSS
 			{L"deepskyblue",        L"00BFFF"}, {L"dodgerblue",            L"1E90FF"}, {L"cornflowerblue",L"6495ED"},
 			{L"mediumdlateblue",    L"7B68EE"}, {L"royalblue",             L"4169E1"}, {L"blue",          L"0000FF"},                                                                   {L"LightCoral", L"#F08080"}, {L"LightCoral", L"#F08080"}, {L"LightCoral", L"#F08080"},
 			{L"mediumblue",         L"0000CD"}, {L"darkblue",              L"00008B"}, {L"navy",          L"000080"},
-			{L"midnightblue",       L"191970"},
+			{L"midnightblue",       L"191970"}, {L"navyblue",              L"A0B0E0"},
 			/* White tones */
 			{L"white",              L"FFFFFF"}, {L"snow",                  L"FFFAFA"}, {L"honeydew",      L"F0FFF0"},
 			{L"mintcream",          L"F5FFFA"}, {L"azure",                 L"F0FFFF"}, {L"aliceblue",     L"F0F8FF"},

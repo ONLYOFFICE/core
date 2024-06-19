@@ -157,7 +157,8 @@ namespace PdfWriter
 					      
 		CImageDict*       CreateImage();
 		CXObject*         CreateForm(CImageDict* pImage, const std::string& sName);
-		CFont14*          CreateFont14(EStandard14Fonts eType);
+		CFont14*          CreateFont14(const std::wstring& wsFontPath, unsigned int unIndex, EStandard14Fonts eType);
+		CFont14*          FindFont14  (const std::wstring& wsFontPath, unsigned int unIndex);
 		CFontCidTrueType* CreateCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
 		CFontCidTrueType* FindCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
 		CFontTrueType*    CreateTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
@@ -178,6 +179,12 @@ namespace PdfWriter
 		CSignatureField*  CreateSignatureField();
 		CDateTimeField*   CreateDateTimeField();
 		bool              CheckFieldName(CFieldBase* pField, const std::string& sName);
+
+		bool              HasImage(const std::wstring& wsImagePath, BYTE nAlpha);
+		CImageDict*       GetImage(const std::wstring& wsImagePath, BYTE nAlpha);
+		void              AddImage(const std::wstring& wsImagePath, BYTE nAlpha, CImageDict* pImage);
+		CImageDict*       GetCurImage() { return m_pCurImage; }
+		void              SetCurImage(CImageDict* pImage) { m_pCurImage = pImage; }
 					  
 		bool              CreatePageTree(CXref* pXref, CPageTree* pPageTree);
 		bool              EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, CXref* pXref, CCatalog* pCatalog, CEncryptDict* pEncrypt, int nFormField);
@@ -196,8 +203,12 @@ namespace PdfWriter
 		CDictObject*      GetParent(int nID);
 		CPage*            GetCurPage() { return m_pCurPage; }
 		void              SetCurPage(CPage* pPage) { m_pCurPage = pPage; }
+		CPage*            CreateFakePage();
 		bool              EditCO(const std::vector<int>& arrCO);
 		const std::map<int, CAnnotation*>& GetAnnots() { return m_mAnnotations; }
+		void              AddShapeXML(const std::string& sXML);
+		void              EndShapeXML();
+		void              ClearPage();
 	private:		  
 					  
 		char*             GetTTFontTag();
@@ -245,6 +256,19 @@ namespace PdfWriter
 			CImageDict* pImage;
 			ICertificate* pCertificate;
 		};
+		struct TImageInfo
+		{
+			TImageInfo(const std::wstring& _wsImagePath, BYTE _nAlpha, CImageDict* _pImage)
+			{
+				wsImagePath = _wsImagePath;
+				nAlpha = _nAlpha;
+				pImage = _pImage;
+			}
+
+			std::wstring wsImagePath;
+			BYTE nAlpha;
+			CImageDict* pImage;
+		};
 
 		CCatalog*                          m_pCatalog;
 		COutline*                          m_pOutlines;
@@ -253,6 +277,7 @@ namespace PdfWriter
 		CPageTree*                         m_pPageTree;
 		CPage*                             m_pCurPage;
 		int                                m_nCurPageNum;
+		CImageDict*                        m_pCurImage;
 		CInfoDict*                         m_pInfo;
 		CDictObject*                       m_pTrailer;
 		CDictObject*                       m_pResources;
@@ -260,6 +285,7 @@ namespace PdfWriter
 		bool                               m_bEncrypt;
 		CEncryptDict*                      m_pEncryptDict;
 		std::vector<TSignatureInfo>        m_vSignatures;
+		std::vector<TImageInfo>            m_vImages;
 		unsigned int                       m_unFormFields;
 		unsigned int                       m_unCompressMode;
 		std::vector<CExtGrState*>          m_vExtGrStates;
@@ -270,6 +296,7 @@ namespace PdfWriter
 		std::vector<CShading*>             m_vShadings;
 		std::vector<TFontInfo>             m_vCidTTFonts;
 		std::vector<TFontInfo>             m_vTTFonts;
+		std::vector<TFontInfo>             m_vFonts14;
 		CFont14*                           m_pDefaultCheckBoxFont;
 		CDictObject*                       m_pTransparencyGroup;
 		std::vector<CFontCidTrueType*>     m_vFreeTypeFonts;
@@ -280,6 +307,7 @@ namespace PdfWriter
 		CDictObject*                       m_pAcroForm;
 		CResourcesDict*                    m_pFieldsResources;
 		std::vector<CRadioGroupField*>     m_vRadioGroups;
+		std::vector<CDictObject*>          m_vMetaOForms;
 		std::map<std::string, CFieldBase*> m_mFields;
 		std::map<int, CAnnotation*>        m_mAnnotations;
 		std::map<int, CDictObject*>        m_mParents;

@@ -453,7 +453,7 @@ namespace NExtractTools
 				else
 				{
 					COfficeUtils oCOfficeUtils(NULL);
-					hRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sOOXMLDir, sTo, true)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+					hRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sOOXMLDir, sTo, false)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 				}
 			}
 			else if (AVS_ERROR_DRM == hRes)

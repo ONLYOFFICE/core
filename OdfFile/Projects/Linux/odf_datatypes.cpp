@@ -153,3 +153,4 @@
 #include "../../DataTypes/sparklines.cpp"
 #include "../../DataTypes/tabledatatype.cpp"
 #include "../../DataTypes/tableoperator.cpp"
+#include "../../DataTypes/referenceformat.cpp"

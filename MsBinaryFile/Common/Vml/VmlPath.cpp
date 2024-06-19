@@ -852,6 +852,8 @@ namespace ODRAW
 
 		for (size_t nIndex = 0; nIndex < oArray.size(); ++nIndex)
 		{
+			if (oArray[nIndex].empty()) continue;
+
 			CPartPath part;
 
 			part.x = m_lX;

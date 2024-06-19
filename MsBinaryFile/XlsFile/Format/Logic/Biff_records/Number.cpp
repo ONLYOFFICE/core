@@ -94,7 +94,7 @@ int Number::serialize(std::wostream & stream)
 	return 0;
 }
 //---------------------------------------------------------------------------------
-Integer_BIFF2::Integer_BIFF2()
+Integer_BIFF2::Integer_BIFF2() : num(0)
 {}
 Integer_BIFF2::~Integer_BIFF2()
 {}
@@ -106,7 +106,18 @@ void Integer_BIFF2::readFields(CFRecord& record)
 {
 	global_info_ = record.getGlobalWorkbookInfo();
 
-	record >> cell >> num;
+	record >> cell;
+
+	if (record.getRdPtr() + 2 < record.getDataSize())
+	{
+		record >> num;
+	}
+	else
+	{
+		_INT16 num_2byte = 0;
+		record >> num_2byte;
+		num = num_2byte;
+	}
 }
 const CellRef Integer_BIFF2::getLocation() const
 {

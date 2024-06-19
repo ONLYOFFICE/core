@@ -516,7 +516,6 @@ namespace Settings
 	}
 	void CCompatSetting::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
-		// Читаем атрибуты
 		if ( oReader.GetAttributesCount() <= 0 )
 			return;
 				
@@ -554,6 +553,15 @@ namespace Settings
 			wsName = oReader.GetName();
 		}
 		oReader.MoveToElement();
+
+		if (m_sName.IsInit() && (*m_sName == L"compatibilityMode") && m_sVal.IsInit())
+		{
+			CDocxFlat* flat_docx = dynamic_cast<CDocxFlat*>(m_pMainDocument);
+			if (flat_docx)
+			{
+				flat_docx->m_sCompatibilityMode = *m_sVal;
+			}
+		}
 	}
 	
 	//--------------------------------------------------------------------------------
@@ -669,24 +677,49 @@ namespace Settings
 				m_oLayoutRawTableWidth = oReader;
 			else if ( L"w:layoutTableRowsApart" == sName )
 				m_oLayoutTableRowsApart = oReader;
-			else if ( L"w:useWord97LineBreakRules" == sName )
+			else if ( L"w:useWord97LineBreakRules" == sName ) 
 				m_oUseWord97LineBreakRules = oReader;
+			else if (L"w:breakWrappedTables" == sName)
+			{
+				m_oDoNotBreakWrappedTables = oReader;
+				m_oDoNotBreakWrappedTables->m_oVal.FromBool(!m_oDoNotBreakWrappedTables->m_oVal.ToBool());
+			}
 			else if ( L"w:doNotBreakWrappedTables" == sName )
 				m_oDoNotBreakWrappedTables = oReader;
+			else if (L"w:snapToGridInCell" == sName)
+			{
+				m_oDoNotSnapToGridInCell = oReader;
+				m_oDoNotSnapToGridInCell->m_oVal.FromBool(!m_oDoNotSnapToGridInCell->m_oVal.ToBool());
+			}
 			else if ( L"w:doNotSnapToGridInCell" == sName )
 				m_oDoNotSnapToGridInCell = oReader;
 			else if ( L"w:selectFldWithFirstOrLastChar" == sName )
 				m_oSelectFldWithFirstOrLastChar = oReader;
 			else if ( L"w:applyBreakingRules" == sName )
 				m_oApplyBreakingRules = oReader;
+			else if (L"w:wrapTextWithPunct" == sName)
+			{
+				m_oDoNotWrapTextWithPunct = oReader;
+				m_oDoNotWrapTextWithPunct->m_oVal.FromBool(!m_oDoNotWrapTextWithPunct->m_oVal.ToBool());
+			}
 			else if ( L"w:doNotWrapTextWithPunct" == sName )
 				m_oDoNotWrapTextWithPunct = oReader;
+			else if (L"w:useAsianBreakRules" == sName)
+			{
+				m_oDoNotUseEastAsianBreakRules = oReader;
+				m_oDoNotUseEastAsianBreakRules->m_oVal.FromBool(!m_oDoNotUseEastAsianBreakRules->m_oVal.ToBool());
+			}
 			else if ( L"w:doNotUseEastAsianBreakRules" == sName )
 				m_oDoNotUseEastAsianBreakRules = oReader;
 			else if ( L"w:useWord2002TableStyleRules" == sName )
 				m_oUseWord2002TableStyleRules = oReader;
 			else if ( L"w:growAutofit" == sName )
 				m_oGrowAutofit = oReader;
+			else if (L"w:dontGrowAutofit" == sName)
+			{
+				m_oGrowAutofit = oReader;
+				m_oGrowAutofit->m_oVal.FromBool(!m_oGrowAutofit->m_oVal.ToBool());
+			}
 			else if ( L"w:useFELayout" == sName )
 				m_oUseFELayout = oReader;
 			else if ( L"w:useNormalStyleForList" == sName )
@@ -724,7 +757,7 @@ namespace Settings
 				OOX::Settings::CCompatSetting *oCS = new OOX::Settings::CCompatSetting();
 				*oCS = oReader;
 
-				if (oCS)m_arrCompatSettings.push_back( oCS );
+				if (oCS) m_arrCompatSettings.push_back( oCS );
 			}
 		}
 	}

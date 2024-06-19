@@ -54,6 +54,7 @@ namespace OOX
 			virtual ~CSharedStrings();
 
 			void readBin(const CPath& oPath);
+			XLS::BaseObjectPtr WriteBin() const;
 			virtual void read(const CPath& oPath);
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;

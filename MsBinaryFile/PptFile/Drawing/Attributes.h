@@ -83,22 +83,27 @@ namespace PPT
             eftHyperlink = 3,
             eftObject = 4,
             eftSlide = 5,
-            eftFile = 6
+            eftFile = 6,
+            eftOleObject = 7
         };
 
-        ExFilesType     m_type = eftNone;
-        _UINT32	    m_dwID = 0;
-        std::wstring    m_strFilePath = L"";
-        std::wstring    m_name;
+        ExFilesType m_type = ExFilesType::eftNone;
+        
+        _UINT32  m_dwID = 0;
+        std::wstring m_strFilePath;
+        std::wstring m_strFileExt;
+
+        std::wstring m_name;
+        std::wstring m_progName;
 
         // clip
-        double			m_dStartTime = 0.0;
-        double			m_dEndTime = 1.0;
+        double m_dStartTime = 0.0;
+        double m_dEndTime = 1.0;
 
         // loop
-        bool			m_bLoop = false;
-        bool                        m_fNarration = false; // isNarration pptx
-        bool                        m_fRewind = false;
+        bool m_bLoop = false;
+        bool m_fNarration = false; // isNarration pptx
+        bool m_fRewind = false;
 
         CExFilesInfo()
         {
@@ -168,6 +173,7 @@ namespace PPT
         std::vector<CExFilesInfo>	m_arHyperlinks;
         std::vector<CExFilesInfo>	m_arSlides;
         std::vector<CExFilesInfo>   m_arFiles;
+        std::vector<CExFilesInfo>   m_arOleObjects;
 
         std::vector<CExFilesInfo>	m_arAudioCollection;
 
@@ -177,9 +183,10 @@ namespace PPT
             m_arImages.clear();
             m_arAudios.clear();
             m_arAudioCollection.clear();
+            m_arOleObjects.clear();
         }
 
-        CExMedia() : m_arVideos(), m_arImages(), m_arAudios()
+        CExMedia()
         {
         }
 
@@ -198,6 +205,8 @@ namespace PPT
                 m_arImages.push_back(oSrc.m_arImages[i]);
             for (size_t i = 0; i < oSrc.m_arVideos.size(); i++)
                 m_arAudios.push_back(oSrc.m_arAudios[i]);
+            for (size_t i = 0; i < oSrc.m_arOleObjects.size(); i++)
+                m_arOleObjects.push_back(oSrc.m_arOleObjects[i]);
 
             return *this;
         }
@@ -266,6 +275,19 @@ namespace PPT
 
             return NULL;
         }
+        CExFilesInfo* LockOleObject(_UINT32 dwID)
+        {
+            size_t nCount = m_arOleObjects.size();
+            for (size_t i = 0; i < nCount; ++i)
+            {
+                if (dwID == m_arOleObjects[i].m_dwID)
+                {
+                    return &m_arOleObjects[i];
+                }
+            }
+
+            return NULL;
+        }
         CExFilesInfo* LockAudioFromCollection(_UINT32 dwID)
         {
             size_t nCount = m_arAudioCollection.size();
@@ -300,6 +322,12 @@ namespace PPT
             if (NULL != pInfo)
             {
                 eType = CExFilesInfo::eftAudio;
+                return pInfo;
+            }
+            pInfo = LockOleObject(dwID);
+            if (NULL != pInfo)
+            {
+                eType = CExFilesInfo::eftOleObject;
                 return pInfo;
             }
             pInfo = LockSlide(dwID);

@@ -80,10 +80,28 @@ namespace OOX
 			nullable<OOX::Logic::CDrawing> m_oDrawing;
 			nullable<OOX::Vml::CBackground> m_oBackground;
 		};
+		
+		class CDocSuppData : public WritingElement
+		{//Word 2003 XML Reference
+		public:
+			WritingElement_AdditionMethods(CDocSuppData)
+			CDocSuppData(OOX::Document* pMain = NULL);
+			virtual ~CDocSuppData();
 
-		//Word 2003 XML Reference
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+		public:
+			nullable<OOX::Logic::CBinData> m_oBinData;
+		};
 		class CBgPict : public WritingElement
-		{
+		{//Word 2003 XML Reference
 		public:
 			WritingElement_AdditionMethods(CBgPict)
 			CBgPict(OOX::Document *pMain = NULL);
@@ -104,7 +122,6 @@ namespace OOX
 			nullable_string						m_oBackgroundType;
 			nullable<OOX::Vml::CBackground>		m_oBackground;
 		};
-
 	}
 
 	//--------------------------------------------------------------------------------

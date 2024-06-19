@@ -49,11 +49,11 @@ public:
 	virtual void load(CFRecord& record);
 	int serialize(std::wostream & stream, const std::wstring &sNode);
 
-	static const ElementType	type = typeFullColorExt;
+	static const ElementType type = typeFullColorExt;
 
-	unsigned short xclrType;
-	short nTintShade;
-	_UINT32 xclrValue;
+	unsigned short xclrType = 0;
+	short nTintShade = 0;
+	_UINT32 xclrValue = 0;
 };
 
 } // namespace XLS

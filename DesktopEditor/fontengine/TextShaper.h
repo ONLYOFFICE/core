@@ -70,6 +70,7 @@ namespace NSShaper
 
 	GRAPHICS_DECL bool FT_Get_Glyph_Render_Params(void* face, int render_mode, CExternalPointer* result);
 	GRAPHICS_DECL unsigned char* FT_Get_Glyph_Render_Buffer(void* face);
+	GRAPHICS_DECL int FT_Get_Glyph_Render_BufferSize(void* face);
 
 	GRAPHICS_DECL void FT_Glyph_Get_CBox(void* glyph, unsigned int bbox_mode, CExternalPointer* result);
 

@@ -7,19 +7,23 @@
 #include "CSvgParser.h"
 #include "SvgObjects/CStyle.h"
 
-class CSvgFile
+#define SVG_DECL_IMPORT Q_DECL_IMPORT
+
+class SVG_DECL_IMPORT CSvgFile
 {
 	public:
 		CSvgFile();
 		~CSvgFile();
 
 		bool ReadFromBuffer(BYTE* pBuffer, unsigned int unSize);
+		bool ReadFromWString(const std::wstring& wsContext);
 		bool OpenFromFile(const std::wstring& wsFile);
 
 		bool GetBounds(double& dX, double& dY, double& dWidth, double& dHeight) const;
 		const SVG::CSvgCalculator* GetSvgCalculator() const;
 
 		void SetFontManager(NSFonts::IFontManager* pFontManager);
+		void SetWorkingDirectory(const std::wstring& wsWorkingDirectory);
 
 		bool MarkObject(SVG::CObject* pObject);
 		SVG::CObject* GetMarkedObject(const std::wstring& wsId) const;

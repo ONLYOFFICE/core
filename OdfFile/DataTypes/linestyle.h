@@ -41,7 +41,7 @@ namespace cpdoccore { namespace odf_types {
 class line_style
 {
 public:
-    enum style 
+    enum style
     {
         None,
         Solid,
@@ -50,7 +50,8 @@ public:
         LongDash,
         DotDash,
         DotDotDash,
-        Wave
+        Wave,
+        Double 
     };
 
     line_style()

@@ -198,6 +198,14 @@ static const std::wstring _ooxDashStyle[]=
 	L"dash",
 	L"dashDot",
 	L"sysDashDotDot"
+	L"solid",
+	L"solid",
+	L"solid",
+	L"solid",
+	L"solid",
+	L"none",
+	L"dash",
+	L"solid"
 };
 static const std::wstring _vmlDashStyle[]=
 {
@@ -207,7 +215,15 @@ static const std::wstring _vmlDashStyle[]=
 	L"dash",
 	L"dash",
 	L"dashdot",
-	L"shortdashdotdot"
+	L"shortdashdotdot",
+	L"solid",
+	L"solid",
+	L"solid",
+	L"solid",
+	L"solid",
+	L"none",
+	L"dash",
+	L"solid"
 };
 
 void oox_serialize_effects(std::wostream & strm, const std::vector<odf_reader::_property> & prop)
@@ -312,7 +328,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 	odf_reader::GetProperty(prop, L"stroke-width"	, dStrokeWidth);
 	odf_reader::GetProperty(prop, L"stroke-opacity"	, dStrokeOpacity);
 	odf_reader::GetProperty(prop, L"stroke-gradient-name", sStrokeGradient);
-	
+
 	if ((!strStrokeColor && !iStroke && !dStrokeWidth) && !always_draw) return;
 
 	CP_XML_WRITER(strm)

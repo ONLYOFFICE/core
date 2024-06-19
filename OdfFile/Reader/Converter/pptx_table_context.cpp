@@ -299,13 +299,13 @@ void convert_border_style(const odf_types::border_style& borderStyle, pptx_borde
 
         switch(borderStyle.get_style())
         {
-            case odf_types::border_style::none:              border.none = true;				break;
-            case odf_types::border_style::double_:           border.cmpd = L"dbl";              break;
-            case odf_types::border_style::dotted:            border.prstDash = L"dot";          break;
-            case odf_types::border_style::dashed:            border.prstDash = L"dash";         break;
-            case odf_types::border_style::long_dash:         border.prstDash = L"lgDash";       break;
-            case odf_types::border_style::dot_dash:          border.prstDash = L"dashDot";      break;
-            case odf_types::border_style::dot_dot_dash:      border.prstDash = L"lgDashDotDot"; break;
+            case odf_types::border_style::none:				border.none = true;				break;
+            case odf_types::border_style::double_:			border.cmpd = L"dbl";              break;
+            case odf_types::border_style::dotted:			border.prstDash = L"dot";          break;
+            case odf_types::border_style::dash:				border.prstDash = L"dash";         break;
+            case odf_types::border_style::long_dash:		border.prstDash = L"lgDash";       break;
+            case odf_types::border_style::dot_dash:			border.prstDash = L"dashDot";      break;
+            case odf_types::border_style::dot_dot_dash:		border.prstDash = L"lgDashDotDot"; break;
         }
 	}
 }

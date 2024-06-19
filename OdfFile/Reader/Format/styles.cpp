@@ -88,12 +88,10 @@ std::wstring process_border(const border_style	& borderStyle,
         switch(borderStyle.get_style())
         {
         case border_style::none:        w_val = L"none";    break;
-        case border_style::solid:
-        case border_style::single:
-                                        w_val = L"single";  break;
+		case border_style::solid:		w_val = L"single";  break;
         case border_style::double_:     w_val = L"double";  break;
         case border_style::dotted:      w_val = L"dotted";  break;
-        case border_style::dashed:      w_val = L"dashed";  break;
+        case border_style::dash:		w_val = L"dashed";  break;
         case border_style::groove:      w_val = L"thinThickMediumGap";  break;
         case border_style::ridge:       w_val = L"thickThinMediumGap";  break;
         case border_style::inset:       w_val = L"inset";  break;

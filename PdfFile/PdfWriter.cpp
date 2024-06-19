@@ -865,8 +865,10 @@ HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::w
 	{
 		m_oBrush.SetTexturePath(sTextureOldPath);
 
-		if (NSFile::CFileBinary::Exists(sTextureTmpPath))
-			NSFile::CFileBinary::Remove(sTextureTmpPath);
+		// We do not delete the temporary file - it will still be used.
+		// It must be deleted along with the temporary directory
+		//if (NSFile::CFileBinary::Exists(sTextureTmpPath))
+		//	NSFile::CFileBinary::Remove(sTextureTmpPath);
 	}
 
 	return S_OK;

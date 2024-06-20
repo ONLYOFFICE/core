@@ -284,11 +284,8 @@ namespace NSDocxRenderer
 		const double& fBaseLineOffset)
 	{
 		// 9 - \t
-		if (pUnicodes != nullptr && nCount == 1 && (IsSpaceUtf32(*pUnicodes) || *pUnicodes == 9))
-		{
-			//note пробелы не нужны, добавляются при анализе
+		if (*pUnicodes == 9)
 			return;
-		}
 
 		double dTextX = fX;
 		double dTextY = fY;
@@ -814,10 +811,16 @@ namespace NSDocxRenderer
 					eVerticalCrossingType eVType = curr_cont->CBaseItem::GetVerticalCrossingType(shape.get());
 					eHorizontalCrossingType eHType = curr_cont->GetHorizontalCrossingType(shape.get());
 
+					bool is_width_equal = (pCurrLine->m_dWidth * 1.05 - shape->m_dWidth) > 0;
+
 					bool bIsNotComplicatedFigure = shape->m_eGraphicsType != eGraphicsType::gtComplicatedFigure;
 					bool bIsLineCrossingText = IsLineCrossingText(shape.get(), curr_cont.get(), eHType);
-					bool bIsItHighlightingBackground = IsItHighlightingBackground(shape.get(), curr_cont.get(), eHType);
-					bool bIsLineBelowText = IsLineBelowText(shape.get(), curr_cont.get(), eHType);
+
+					bool bIsItHighlightingBackground = is_width_equal &&
+							IsItHighlightingBackground(shape.get(), curr_cont.get(), eHType)  &&
+							pCurrLine->m_dHeight * 1.5 > shape->m_dHeight;
+
+					bool bIsLineBelowText = is_width_equal && IsLineBelowText(shape.get(), curr_cont.get(), eHType);
 
 					if (bIsLineCrossingText)
 					{
@@ -928,9 +931,9 @@ namespace NSDocxRenderer
 
 	bool CPage::IsItHighlightingBackground(const CShape *pShape, CContText* pCont, const eHorizontalCrossingType& eHType)
 	{
-		double dSomeBaseLine1 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.75;
+		double dSomeBaseLine1 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.7;
 		double dSomeBaseLine2 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.5;
-		double dSomeBaseLine3 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.25;
+		double dSomeBaseLine3 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.3;
 
 		bool bIf1 = pShape->m_eGraphicsType == eGraphicsType::gtRectangle;
 

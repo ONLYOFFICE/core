@@ -71,14 +71,18 @@ public:
 
 	std::wstring m_sInputFolder;
 	std::wstring m_sOutputFolder;
+	std::wstring m_sDirToCheck;
 
 	std::wstring m_sConvertParams;
 
 	bool m_bIsStandard;
 	bool m_bIsDiffAllInOne;
 	bool m_bDiffOnly{false};
+	bool m_bTroughDocx{false};
+	bool m_bTroughDocxWas{false};
 
 	NSCriticalSection::CRITICAL_SECTION m_oCS;
+	NSCriticalSection::CRITICAL_SECTION m_oCountCS;
 	NSCriticalSection::CRITICAL_SECTION m_oCS_OfficeUtils;
 
 	std::vector<CFileLog> m_arFileLogs;
@@ -117,6 +121,7 @@ public:
 		m_bIsDiffAllInOne = true;
 
 		m_oCS.InitializeCriticalSection();
+		m_oCountCS.InitializeCriticalSection();
 		m_oCS_OfficeUtils.InitializeCriticalSection();
 
 		m_nProgressPrevLen = 0;
@@ -124,6 +129,7 @@ public:
 	~CInternalWorker()
 	{
 		m_oCS.DeleteCriticalSection();
+		m_oCountCS.DeleteCriticalSection();
 		m_oCS_OfficeUtils.DeleteCriticalSection();
 	}
 
@@ -135,6 +141,7 @@ public:
 	void OpenDir(std::wstring sDir)
 	{
 		m_sInputFolder = sDir;
+		m_sDirToCheck = m_sInputFolder;
 		if (m_bDiffOnly)
 		{
 			m_files = NSDirectory::GetDirectories(m_sInputFolder);
@@ -171,8 +178,8 @@ public:
 		else
 			m_arFileLogsError.push_back(CFileLog(sFile, nReturnCode, nCheckReport));
 
-		if (m_nProgressPrevLen > 0)
-			std::cout << "\r";
+		 if (m_nProgressPrevLen > 0)
+			 std::cout << "\r";
 
 		std::wstring sFileLog = GetFileNameForLog(sFile);
 
@@ -192,7 +199,7 @@ public:
 			++nNewLen;
 		}
 
-		std::cout << message;
+		 std::cout << message;
 	}
 
 	std::wstring GetFileNameForLog(const std::wstring& sFile)
@@ -291,21 +298,26 @@ public:
 	}
 
 
-	int GenerateDiff(const std::wstring strDirIn, const std::wstring strDirOut, const std::wstring strDiffs)
+	int GenerateDiff(const std::wstring& strDirIn, const std::wstring& strDirOut, const std::wstring& strDiffs)
 	{
-		int nCountInPages = GetPagesCount(strDirIn);
-		int nCountOutPages = GetPagesCount(strDirOut);
+		auto dir_in = CorrectPathW(strDirIn);
+		auto dir_out = CorrectPathW(strDirOut);
+		auto dir_diffs = CorrectPathW(strDiffs);
+
+		int nCountInPages = GetPagesCount(dir_in);
+		int nCountOutPages = GetPagesCount(dir_out);
 		int checkCode = crcEqual;
+
 
 		if (nCountInPages != nCountOutPages)
 		{
 			if (nCountInPages > nCountOutPages)
 				nCountInPages = nCountOutPages;
 
-			if (!NSDirectory::Exists(strDiffs))
-				NSDirectory::CreateDirectories(CorrectPathW(strDiffs));
+			if (!NSDirectory::Exists(dir_diffs))
+				NSDirectory::CreateDirectories(CorrectPathW(dir_diffs));
 
-			std::wstring sFilePagesDiff = strDiffs + L"/pages_count";
+			std::wstring sFilePagesDiff = CorrectPathW(dir_diffs + L"/pages_count");
 			NSFile::CFileBinary oFile;
 			oFile.CreateFileW(sFilePagesDiff);
 			oFile.CloseFile();
@@ -315,9 +327,9 @@ public:
 
 		for (int nPage = 0; nPage < nCountInPages; ++nPage)
 		{
-			std::wstring sPageI = strDirIn + L"/image" + std::to_wstring(nPage + 1) + L".png";
-			std::wstring sPageO = strDirOut + L"/image" + std::to_wstring(nPage + 1) + L".png";
-			std::wstring sPageDiff = strDiffs + L"/image" + std::to_wstring(nPage + 1) + L".png";
+			std::wstring sPageI = dir_in + FILE_SEPARATOR_STR + L"image" + std::to_wstring(nPage + 1) + L".png";
+			std::wstring sPageO = dir_out + FILE_SEPARATOR_STR + L"image" + std::to_wstring(nPage + 1) + L".png";
+			std::wstring sPageDiff = dir_diffs + FILE_SEPARATOR_STR + L"image" + std::to_wstring(nPage + 1) + L".png";
 
 			CBgraFrame frameI;
 			frameI.OpenFile(sPageI);
@@ -333,8 +345,8 @@ public:
 
 			if (nW_I != nW_O || nH_I != nH_O)
 			{
-				if (!NSDirectory::Exists(strDiffs))
-					NSDirectory::CreateDirectories(CorrectPathW(strDiffs));
+				if (!NSDirectory::Exists(dir_diffs))
+					NSDirectory::CreateDirectories(CorrectPathW(dir_diffs));
 
 				std::wstring sFilePagesDiff = sPageDiff;
 				NSFile::CFileBinary oFile;
@@ -460,8 +472,8 @@ public:
 
 			if (nDivExist > 7)
 			{
-				if (!NSDirectory::Exists(strDiffs))
-					NSDirectory::CreateDirectories(CorrectPathW(strDiffs));
+				if (!NSDirectory::Exists(dir_diffs))
+					NSDirectory::CreateDirectories(CorrectPathW(dir_diffs));
 
 				if (!m_bIsDiffAllInOne)
 				{
@@ -515,8 +527,50 @@ public:
 	CInternalWorker* m_pInternal;
 	std::wstring m_file;
 	std::wstring m_folder_dst;
+	std::wstring m_dir_to_check;
 	int m_format;
 	bool m_bDiffOnly{false};
+	bool m_docx{false};
+
+private:
+	std::wstring GetXml(const std::wstring& directory,
+		int format,
+		const std::wstring& process,
+		const std::wstring& additional)
+	{
+		NSStringUtils::CStringBuilder oBuilder;
+		oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?><TaskQueueDataConvert><m_sFileFrom>");
+
+		oBuilder.WriteEncodeXmlString(m_file);
+		oBuilder.WriteString(L"</m_sFileFrom><m_sFileTo>");
+
+		oBuilder.WriteEncodeXmlString(directory);
+		if(format & AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX)
+		{
+			auto filename_ext = NSFile::GetFileName(m_file);
+			auto ext = NSFile::GetFileExtention(m_file);
+			auto filename = filename_ext.substr(0, filename_ext.size() - ext.size() - 1);
+			oBuilder.WriteEncodeXmlString(FILE_SEPARATOR_STR + filename + L".docx");
+		}
+		oBuilder.WriteString(L"</m_sFileTo><m_nFormatTo>");
+		oBuilder.WriteString(std::to_wstring(format));
+		oBuilder.WriteString(L"</m_nFormatTo><m_sThemeDir>./</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional><m_sAllFontsPath>");
+		oBuilder.WriteString(process + L"/fonts");
+		oBuilder.WriteString(L"/AllFonts.js</m_sAllFontsPath><m_nCsvTxtEncoding>46</m_nCsvTxtEncoding><m_nCsvDelimiter>4</m_nCsvDelimiter>");
+
+		oBuilder.WriteString(L"<m_sFontDir>");
+		oBuilder.WriteEncodeXmlString(process + L"/fonts");
+		oBuilder.WriteString(L"</m_sFontDir>");
+
+//		oBuilder.WriteString(L"<m_oTextParams><m_nTextAssociationType>3</m_nTextAssociationType></m_oTextParams>");
+		oBuilder.WriteString(L"<m_oThumbnail><format>4</format><aspect>2</aspect><first>false</first><zip>false</zip><width>1000</width><height>1000</height></m_oThumbnail>");
+		oBuilder.WriteString(L"<m_sJsonParams>{&quot;spreadsheetLayout&quot;:{&quot;gridLines&quot;:true,&quot;headings&quot;:true,&quot;fitToHeight&quot;:1,&quot;fitToWidth&quot;:1,&quot;orientation&quot;:&quot;landscape&quot;}}</m_sJsonParams>");
+
+		oBuilder.WriteString(additional);
+		oBuilder.WriteString(L"</TaskQueueDataConvert>");
+
+		return oBuilder.GetData();
+	}
 
 public:
 	CConverter(CInternalWorker* pWorker) : NSThreads::CBaseThread()
@@ -536,7 +590,7 @@ public:
 			std::wstring strDirIn = m_file;
 			std::wstring strDirOut = m_folder_dst;
 
-			std::wstring strDiffsMain = NSFile::GetDirectoryName(strDirOut) + L"/DIFF";
+			std::wstring strDiffsMain = NSFile::GetDirectoryName(strDirOut) + L"/" + L"DIFF";
 			std::wstring strDiffs = strDiffsMain + L"/" + NSFile::GetFileName(m_file);
 
 			int checkCode = m_pInternal->GenerateDiff(strDirIn, strDirOut, strDiffs);
@@ -550,7 +604,6 @@ public:
 		if (true)
 		{
 			CTemporaryCS oCS(&m_pInternal->m_oCS_OfficeUtils);
-
 			COfficeFileFormatChecker oChecker;
 			bIsOfficeFile = oChecker.isOfficeFile(m_file);
 			if (bIsOfficeFile)
@@ -588,36 +641,15 @@ public:
 		NSStringUtils::string_replace(m_file, L"//", L"\\\\");
 #endif
 
-		NSDirectory::CreateDirectory(sDirectoryDst);
+		NSDirectory::CreateDirectories(CorrectPathW(sDirectoryDst));
 
-		NSStringUtils::CStringBuilder oBuilder;
-		oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?><TaskQueueDataConvert><m_sFileFrom>");
-
-		oBuilder.WriteEncodeXmlString(m_file);
-		oBuilder.WriteString(L"</m_sFileFrom><m_sFileTo>");
-
-		oBuilder.WriteEncodeXmlString(sDirectoryDst);
-		oBuilder.WriteString(L"</m_sFileTo><m_nFormatTo>");
-		oBuilder.WriteString(std::to_wstring(AVS_OFFICESTUDIO_FILE_IMAGE));
-		oBuilder.WriteString(L"</m_nFormatTo><m_sThemeDir>./</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional><m_sAllFontsPath>");
-		oBuilder.WriteString(sProcess + L"/fonts");
-		oBuilder.WriteString(L"/AllFonts.js</m_sAllFontsPath><m_nCsvTxtEncoding>46</m_nCsvTxtEncoding><m_nCsvDelimiter>4</m_nCsvDelimiter>");
-
-		oBuilder.WriteString(L"<m_sFontDir>");
-		oBuilder.WriteEncodeXmlString(sProcess + L"/fonts");
-		oBuilder.WriteString(L"</m_sFontDir>");
-
-		oBuilder.WriteString(L"<m_oThumbnail><format>4</format><aspect>2</aspect><first>false</first><zip>false</zip><width>1000</width><height>1000</height></m_oThumbnail>");
-		oBuilder.WriteString(L"<m_sJsonParams>{&quot;spreadsheetLayout&quot;:{&quot;gridLines&quot;:true,&quot;headings&quot;:true,&quot;fitToHeight&quot;:1,&quot;fitToWidth&quot;:1,&quot;orientation&quot;:&quot;landscape&quot;}}</m_sJsonParams>");
-
+		std::wstring additional = L"";
 		if (!m_pInternal->m_sConvertParams.empty())
-			oBuilder.WriteString(m_pInternal->m_sConvertParams);
+			additional = m_pInternal->m_sConvertParams;
 
-		oBuilder.WriteString(L"</TaskQueueDataConvert>");
-
-		std::wstring sXmlConvert = oBuilder.GetData();
-
-		std::wstring sTempFileForParams = sDirectoryDst + L"/params.xml";
+		int format = m_docx ? AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX : AVS_OFFICESTUDIO_FILE_IMAGE;
+		std::wstring sXmlConvert = GetXml(sDirectoryDst, format, sProcess, additional);
+		std::wstring sTempFileForParams = sDirectoryDst + L"/" + L"params.xml";
 		NSFile::CFileBinary::SaveToFile(sTempFileForParams, sXmlConvert, true);
 
 		if (NSDirectory::Exists(sProcess + L"/converter"))
@@ -638,20 +670,16 @@ public:
 		DWORD dwTime2 = NSTimers::GetTickCount();
 
 		int checkCode = crcEqual;
-
-		if (!m_pInternal->m_bIsStandard)
+		if (!m_pInternal->m_bIsStandard && !m_docx)
 		{
 			// смотрим разницу
-			std::wstring strDirIn = NSFile::GetDirectoryName(m_file);
+			std::wstring strDirIn = m_dir_to_check;
 			std::wstring strDirOut = sDirectoryDst;
 
-			std::wstring strDiffsMain = NSFile::GetDirectoryName(strDirOut) + L"/DIFF";
+			std::wstring strDiffsMain = NSFile::GetDirectoryName(strDirOut) + L"/" + L"DIFF";
 			std::wstring strDiffs = strDiffsMain + L"/" + NSFile::GetFileName(m_file);
-
 			checkCode = m_pInternal->GenerateDiff(strDirIn, strDirOut, strDiffs);
 		}
-
-		m_bRunThread = FALSE;
 
 		m_pInternal->OnConvertFile(this, nReturnCode, (int)(dwTime2 - dwTime1), checkCode);
 		return 0;
@@ -660,21 +688,49 @@ public:
 
 CConverter* CInternalWorker::GetNextConverter()
 {
+	const std::wstring wsep = FILE_SEPARATOR_STR;
 	if (m_nCurrent >= m_nCount)
+			return NULL;
+
+	if ((NSFile::GetFileExtention(m_files[m_nCurrent]) != L"pdf" && m_bTroughDocx) ||
+			(NSFile::GetFileExtention(m_files[m_nCurrent]) != L"docx" && m_bTroughDocxWas))
+	{
+		{
+			++m_nCurrent;
+			++m_nCurrentComplete;
+		}
+		GetNextConverter();
 		return NULL;
+	}
+
+	std::wstring sName = NSFile::GetFileName(m_files[m_nCurrent]);
+	std::wstring sExt = NSFile::GetFileExtention(sName);
+	std::wstring sFilenameNoExt = sName.substr(0, sName.size() - sExt.size() - 1);
 
 	CConverter* pConverter = new CConverter(this);
 	pConverter->DestroyOnFinish();
 	pConverter->m_file = m_files[m_nCurrent];
 	pConverter->m_bDiffOnly = m_bDiffOnly;
+	pConverter->m_docx = m_bTroughDocx;
 	++m_nCurrent;
-	std::wstring sName = NSFile::GetFileName(pConverter->m_file);
 
-	pConverter->m_folder_dst = m_sOutputFolder + L"/" + sName;
-	NSDirectory::CreateDirectory(pConverter->m_folder_dst);
+	if (m_bTroughDocxWas)
+			pConverter->m_dir_to_check = m_sDirToCheck + wsep + L"DOCX" + wsep + sFilenameNoExt + L".pdf";
+		else
+			pConverter->m_dir_to_check = NSFile::GetDirectoryName(pConverter->m_file);
+
+	if (m_bTroughDocx)
+		pConverter->m_folder_dst = m_sOutputFolder + wsep + L"DOCX" + wsep + sName;
+	else if (m_bTroughDocxWas) // all in the same folder
+		pConverter->m_folder_dst = m_sOutputFolder + wsep + L"DOCX" + wsep + sFilenameNoExt + L".pdf";
+	else
+		pConverter->m_folder_dst = m_sOutputFolder + wsep + sName;
 
 	if (m_bIsStandard)
-		NSFile::CFileBinary::Copy(pConverter->m_file, pConverter->m_folder_dst + L"/" + sName);
+	{
+		NSDirectory::CreateDirectories(CorrectPathW(pConverter->m_folder_dst));
+		NSFile::CFileBinary::Copy(pConverter->m_file, pConverter->m_folder_dst + wsep + sName);
+	}
 
 	pConverter->Start(0);
 	return pConverter;
@@ -700,6 +756,30 @@ void CInternalWorker::Start(int nCores)
 
 	for (int i = 0; i < nSizeInit; ++i)
 		GetNextConverter();
+
+	oCS.LeaveCS();
+
+	while (IsWork())
+		NSThreads::Sleep(500);
+
+	if (m_bTroughDocx)
+	{
+		m_nCurrent = 0;
+		m_nCurrentComplete = 0;
+		m_files.clear();
+		m_bTroughDocx = false;
+		m_bTroughDocxWas = true;
+		auto copy = m_sDirToCheck;
+		OpenDir(m_sOutputFolder + FILE_SEPARATOR_STR + L"DOCX");
+		m_sDirToCheck = copy;
+	}
+
+	for (int i = 0; i < nSizeInit; ++i)
+		GetNextConverter();
+
+	while (IsWork())
+		NSThreads::Sleep(500);
+
 }
 
 void CInternalWorker::Cancel()
@@ -765,6 +845,7 @@ int main(int argc, char** argv)
 	std::vector<std::wstring> arFontsDirs;
 	bool bIsStandard = false;
 	bool bDiffOnly = false;
+	bool bTroughDocx = false;
 	std::wstring strInputFolder = L"";
 	std::wstring strOutputFolder = L"";
 	bool bIsUseSystemFonts = true;
@@ -808,9 +889,14 @@ int main(int argc, char** argv)
 			{
 				bIsStandard = true;
 			}
+			else if (sKey == L"--trough-docx")
+			{
+				bTroughDocx = true;
+			}
 			else if (sKey == L"--diff-only")
 			{
 				bDiffOnly = true;
+				bTroughDocx = false;
 			}
 			else if (sKey == L"--use-system-fonts")
 			{
@@ -889,14 +975,13 @@ int main(int argc, char** argv)
 	oWorker.OpenDir(strInputFolder);
 	oWorker.m_sOutputFolder = strOutputFolder;
 	oWorker.m_bIsStandard = bIsStandard;
+	oWorker.m_bTroughDocx = bTroughDocx;
 	oWorker.m_sConvertParams = strAdditionalParams;
 
 	if (!NSDirectory::Exists(strOutputFolder))
-		NSDirectory::CreateDirectories(strOutputFolder);
+		NSDirectory::CreateDirectories(CorrectPathW(strOutputFolder));
 
 	oWorker.Start(nCores);
-	while (oWorker.IsWork())
-		NSThreads::Sleep(500);
 
 	DWORD dwTime2 = NSTimers::GetTickCount();
 

@@ -49,10 +49,12 @@ SOURCES += \
 # paths
 HEADERS += \
 	./../GraphicsPath_private.h \
-	./../GraphicsPath.h
+	./../GraphicsPath.h \
+	./../GraphicsPathClip.h
 
 SOURCES += \
-	./../GraphicsPath.cpp
+	./../GraphicsPath.cpp \
+	./../GraphicsPathClip.cpp
 
 # alpha mask
 HEADERS += \

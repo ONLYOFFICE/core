@@ -817,7 +817,11 @@ int ChartSheetSubstream::serialize_legend (std::wostream & _stream, const std::w
 	while (it != m_mapTypeChart.end())
 	{
 		CRT * crt = dynamic_cast<CRT*>(parent0->m_arCRT[it->first].get());
-
+		if (crt == NULL)
+		{
+			++it;
+			continue;
+		}
 		LD * ld = dynamic_cast<LD*>(crt->m_LD.get());
 		if (ld == NULL)
 		{

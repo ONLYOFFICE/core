@@ -832,6 +832,31 @@ const bool SyntaxPtg::extract_PtgFunc(std::wstring::const_iterator& first, std::
 }
 
 // static
+const bool SyntaxPtg::extract_FutureFunction(const std::wstring &funcName, unsigned int& out_num)
+{
+	std::wstring tempName = funcName;
+    if(tempName.substr(0, 6) != L"_xlfn.")
+	{
+        tempName = L"_xlfn." + tempName;
+	}
+	std::set<std::wstring> futureFuncNames = {L"_xlfn.DAYS", L"_xlfn.NETWORKDAYS.INTL" };
+	if(futureFuncNames.find(tempName) != futureFuncNames.end())
+	{
+		auto funcNum = XMLSTUFF::definenames2index(tempName);
+		if(funcNum != 0xFFFFFFFF)
+		{
+			out_num = funcNum;
+		}
+		else
+		{
+			out_num = XMLSTUFF::AddDefinedName(tempName);
+		}
+		return true;
+	}
+	return false;
+}
+
+// static
 const void SyntaxPtg::remove_extraSymbols(std::wstring::const_iterator& first, std::wstring::const_iterator& last)
 {
     while(first != last && (first[0] == L' ' || first[0] == L'\n'))

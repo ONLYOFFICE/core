@@ -241,12 +241,29 @@ namespace OOX
 				}
 			}
 		}
+		std::vector<XLS::BaseObjectPtr> CDefinedNames::AddFutureFunctions(const _UINT32 namesStart)
+		{
+			std::vector<XLS::BaseObjectPtr> FunctionsVector;
+			if(XLS::GlobalWorkbookInfo::arDefineNames_static.empty())
+				return FunctionsVector;
+			for(auto i = namesStart; i < XLS::GlobalWorkbookInfo::arDefineNames_static.size(); i++)
+			{
+				FunctionsVector.push_back(createFutureFunction(XLS::GlobalWorkbookInfo::arDefineNames_static[i]));
+			}
+			return FunctionsVector;
+		}
 		std::vector<XLS::BaseObjectPtr> CDefinedNames::toBin()
 		{
 			std::vector<XLS::BaseObjectPtr> objectVector;
 
 			for(auto i:m_arrItems)
 				objectVector.push_back(i->toBin());
+			
+			auto functionsVector = AddFutureFunctions(m_arrItems.size());
+			if(!functionsVector.empty())
+			{
+				std::copy(functionsVector.begin(), functionsVector.end(), std::back_inserter(objectVector));
+			}
 
 			return objectVector;
 		}
@@ -272,6 +289,32 @@ namespace OOX
 		void CDefinedNames::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
+		XLS::BaseObjectPtr CDefinedNames::createFutureFunction(const std::wstring& funcName)
+		{
+			auto ptr(new XLSB::Name);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			ptr->fHidden = true;
+			ptr->fFunc = true;
+			ptr->fOB = false;
+			ptr->fProc = true;
+			ptr->fCalcExp = false;
+			ptr->fGrp = true;
+			ptr->fPublished = false;
+			ptr->fBuiltin = false;
+			ptr->fWorkbookParam = false;
+			ptr->comment.setSize(0xFFFFFFFF);
+			ptr->itab  = 0xFFFFFFFF;
+
+			ptr->fFutureFunction = true;
+			ptr->name = funcName;
+			ptr->rgce.parseStringFormula(L"#NAME?", L"");
+			ptr->description.setSize(0xFFFFFFFF);
+			ptr->helpTopic.setSize(0xFFFFFFFF);
+			ptr->unusedstring1.setSize(0xFFFFFFFF);
+			ptr->unusedstring2.setSize(0xFFFFFFFF);
+			return objectPtr;
+		}
 
 	} //Spreadsheet
 } // namespace OOX

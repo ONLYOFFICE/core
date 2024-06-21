@@ -389,6 +389,13 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
                 {
                     ptg_stack.push(func);
                 }
+                else if(SyntaxPtg::extract_FutureFunction(operand_str, number))
+                {
+                    func = PtgFuncVar::create(L"USER_DEFINED_FUNCTION", OperandPtg::ptg_REFERENCE);
+                    PtgPtr FuncName = PtgPtr(new PtgName(number, OperandPtg::ptg_REFERENCE));
+                    ptg_stack.push(func);
+                    rgce.addPtg(FuncName);
+                }
                 else
                 {
                     func = PtgFuncVar::create(L"USER_DEFINED_FUNCTION", OperandPtg::ptg_REFERENCE);

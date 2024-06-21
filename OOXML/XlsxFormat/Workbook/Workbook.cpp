@@ -306,6 +306,10 @@ namespace OOX
 			{
                 workBookStream->m_arBrtName = m_oDefinedNames->toBin();
 			}
+			else
+			{
+				workBookStream->m_arBrtName = m_oDefinedNames->AddFutureFunctions(0);
+			}
 			if (m_oWorkbookProtection.IsInit())
 				workBookStream->m_BrtBookProtection = m_oWorkbookProtection->toBin();
 

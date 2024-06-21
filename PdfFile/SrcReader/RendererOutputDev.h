@@ -102,9 +102,6 @@ namespace PdfReader
 		NSCriticalSection::CRITICAL_SECTION m_oCS;       // Критическая секция
 	};
 
-	NSFonts::CFontInfo* GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontManager, GfxFont* pFont, std::wstring& wsFontBaseName);
-	void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName);
-	void CheckFontStylePDF(std::wstring& sName, bool& bBold, bool& bItalic);
 	//-------------------------------------------------------------------------------------------------------------------------------
 	template <typename T>
 	inline static double PDFCoordsToMM(T tX)
@@ -250,12 +247,8 @@ namespace PdfReader
 		virtual void endStringOp(GfxState *pGState);
 		virtual void drawString(GfxState *pGState, GString *seString);
 		virtual void drawChar(GfxState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY, CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen);
-        GBool beginType3Char(GfxState *state, double x, double y,
-                             double dx, double dy,
-                             CharCode code, Unicode *u, int uLen) {
-            return false;
-        }
-		void endType3Char(GfxState *pGState);
+		GBool beginType3Char(GfxState *state, double x, double y, double dx, double dy, CharCode code, Unicode *u, int uLen) override;
+		void endType3Char(GfxState *pGState) override;
 		void Type3D0(GfxState *pGState, double dWx, double dWy);
 		void Type3D1(GfxState *pGState, double dWx, double dWy, double dBLx, double dBLy, double dTRx, double dTRy);
 		//----- Дополнительные функции
@@ -295,6 +288,9 @@ namespace PdfReader
 		{
 			m_pbBreak = pbBreak;
 		}
+		static NSFonts::CFontInfo* GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontManager, GfxFont* pFont, std::wstring& wsFontBaseName);
+		static void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName);
+		static void CheckFontStylePDF(std::wstring& sName, bool& bBold, bool& bItalic);
 
 	private:
 

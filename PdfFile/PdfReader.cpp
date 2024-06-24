@@ -1414,7 +1414,7 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
-void GetPageAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, PdfReader::CPdfFontList *pFontList, NSWasm::CData& oRes, std::map<std::wstring, std::wstring>& m_mFonts, int nPageIndex)
+void GetPageAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, PdfReader::CPdfFontList *pFontList, NSWasm::CData& oRes, int nPageIndex)
 {
 	Page* pPage = pdfDoc->getCatalog()->getPage(nPageIndex + 1);
 	if (!pPage)
@@ -1517,10 +1517,10 @@ BYTE* CPdfReader::GetAnnots(int nPageIndex)
 	oRes.SkipLen();
 
 	if (nPageIndex >= 0)
-		GetPageAnnots(m_pPDFDocument, m_pFontManager, m_pFontList, oRes, m_mFonts, nPageIndex);
+		GetPageAnnots(m_pPDFDocument, m_pFontManager, m_pFontList, oRes, nPageIndex);
 	else
 		for (int nPage = 0, nLastPage = m_pPDFDocument->getNumPages(); nPage < nLastPage; ++nPage)
-			GetPageAnnots(m_pPDFDocument, m_pFontManager, m_pFontList, oRes, m_mFonts, nPage);
+			GetPageAnnots(m_pPDFDocument, m_pFontManager, m_pFontList, oRes, nPage);
 
 	oRes.WriteLen();
 	BYTE* bRes = oRes.GetBuffer();
@@ -1637,4 +1637,8 @@ BYTE* CPdfReader::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, 
 	BYTE* bRes = oRes.GetBuffer();
 	oRes.ClearWithoutAttack();
 	return bRes;
+}
+std::map<std::wstring, std::wstring> CPdfReader::GetAnnotFonts(Object* pRefAnnot)
+{
+	return PdfReader::CAnnotFonts::GetAnnotFont(m_pPDFDocument, m_pFontManager, m_pFontList, pRefAnnot);
 }

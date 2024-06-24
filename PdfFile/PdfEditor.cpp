@@ -1007,6 +1007,14 @@ bool CPdfEditor::EditPage(int nPageIndex)
 	{
 		m_nEditPage = nPageIndex;
 		pPage->StartTransform(dCTM[0], dCTM[1], dCTM[2], dCTM[3], dCTM[4], dCTM[5]);
+		pPage->SetStrokeColor(0, 0, 0);
+		pPage->SetFillColor(0, 0, 0);
+		pPage->SetExtGrState(pDoc->GetExtGState(255, 255));
+		pPage->BeginText();
+		pPage->SetCharSpace(0);
+		pPage->SetTextRenderingMode(PdfWriter::textrenderingmode_Fill);
+		pPage->SetHorizontalScalling(100);
+		pPage->EndText();
 		return true;
 	}
 

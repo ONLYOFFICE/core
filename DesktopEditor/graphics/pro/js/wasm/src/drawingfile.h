@@ -135,14 +135,14 @@ public:
 			return ((CPdfFile*)pReader)->GetWidgets();
 		return NULL;
 	}
-	BYTE* GetWidgetFonts(int nTypeFonts)
+	BYTE* GetAnnotFonts(int nTypeFonts)
 	{
 		if (nType == 0)
 		{
 			if (nTypeFonts == 1)
-				return ((CPdfFile*)pReader)->GetWidgetEmbeddedFonts();
+				return ((CPdfFile*)pReader)->GetAnnotEmbeddedFonts();
 			if (nTypeFonts == 2)
-				return ((CPdfFile*)pReader)->GetWidgetStandardFonts();
+				return ((CPdfFile*)pReader)->GetAnnotStandardFonts();
 		}
 		return NULL;
 	}

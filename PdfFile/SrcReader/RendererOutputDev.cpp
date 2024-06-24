@@ -99,7 +99,7 @@ namespace PdfReader
 		return bRet;
 	}
 
-	void CheckFontStylePDF(std::wstring& sName, bool& bBold, bool& bItalic)
+	void RendererOutputDev::CheckFontStylePDF(std::wstring& sName, bool& bBold, bool& bItalic)
 	{
 		if (sName.length() > 7 && sName.at(6) == '+')
 		{
@@ -155,7 +155,7 @@ namespace PdfReader
 		bool bBold   = false;
 		bool bItalic = false;
 
-		CheckFontStylePDF(sName, bBold, bItalic);
+		RendererOutputDev::CheckFontStylePDF(sName, bBold, bItalic);
 
 		if (format)
 		{
@@ -891,7 +891,7 @@ namespace PdfReader
 	{
 
 	}
-	NSFonts::CFontInfo* GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontManager, GfxFont* pFont, std::wstring& wsFontBaseName)
+	NSFonts::CFontInfo* RendererOutputDev::GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontManager, GfxFont* pFont, std::wstring& wsFontBaseName)
 	{
 		NSFonts::CFontInfo* pFontInfo = NULL;
 		if (!pFontManager)
@@ -1008,7 +1008,7 @@ namespace PdfReader
 		pFontInfo = pFontManager->GetFontInfoByParams(oFontSelect);
 		return pFontInfo;
 	}
-	void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName)
+	void RendererOutputDev::GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName)
 	{
 		wsFileName = L"";
 		wsFontName = L"";
@@ -3990,7 +3990,10 @@ namespace PdfReader
 			else
 			{
 				// Договорились, что если нельзя точно составить юникодные значения, тогда отдаем NULL
-				wsUnicodeText = L"";
+				if (pFont->getType() == fontType3)
+					wsUnicodeText = NSStringExt::CConverter::GetUnicodeFromUTF32(pUnicode, nUnicodeLen);
+				else
+					wsUnicodeText = L"";
 			}
 		}
 
@@ -4025,7 +4028,7 @@ namespace PdfReader
 				unsigned int lUnicode = (unsigned int)wsUnicodeText[0];
 				long lStyle;
 				m_pRenderer->get_FontStyle(&lStyle);
-				m_pFontManager->LoadFontFromFile(sFontPath, 0, 10, 72, 72);
+				m_pFontManager->LoadFontFromFile(sFontPath, 0, dOldSize, 72, 72);
 
 				NSFonts::IFontFile* pFontFile = m_pFontManager->GetFile();
 				if (pFontFile)
@@ -4144,6 +4147,15 @@ namespace PdfReader
 		m_pRenderer->put_FontSize(dOldSize);
 	}
 
+	GBool RendererOutputDev::beginType3Char(GfxState *state, double x, double y, double dx, double dy, CharCode code, Unicode *u, int uLen)
+	{
+		if (!m_bDrawOnlyText)
+			return false;
+
+		//drawChar(state, x, y, dx, dy, 0, 0, code, 1, u, uLen);
+
+		return false;
+	}
 	void RendererOutputDev::endType3Char(GfxState *pGState)
 	{
 		return;

@@ -316,17 +316,18 @@ void convert_border_style(const odf_types::border_style& borderStyle, pptx_borde
 //tri (Thin Thick Thin Triple Lines) Three lines: thin, thick, thin
 void process_border(pptx_border_edge & borderEdge, _CP_OPT(odf_types::border_style) & borderStyle)
 {
-	borderEdge.present = false;
+	borderEdge.present = true;
     if (borderStyle)
     {
- 		borderEdge.present = true;
-
-
         borderEdge.color = borderStyle->get_color().get_hex_value();
 		borderEdge.width = boost::lexical_cast<int>(borderStyle->get_length().get_value_unit(odf_types::length::emu));
         
 		convert_border_style(*borderStyle, borderEdge);
-   }
+	}
+	else
+	{
+		borderEdge.none = true;
+	}
 }
 void oox_serialize_border(std::wostream & strm, std::wstring Node, pptx_border_edge & content)
 {

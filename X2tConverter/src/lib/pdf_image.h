@@ -39,6 +39,7 @@
 #include "../../../HtmlRenderer/include/HTMLRenderer3.h"
 #include "../../../PdfFile/PdfFile.h"
 #include "../../../XpsFile/XpsFile.h"
+#include "../../../OfficeUtils/src/ZipFolder.h"
 
 #include "common.h"
 
@@ -653,7 +654,8 @@ namespace NExtractTools
 	bool applyChangesPdf(const std::wstring& sFrom, const std::wstring& sTo,
 						 NSFonts::IApplicationFonts* pApplicationFonts,
 						 InputParams& params, ConvertParams& convertParams,
-						 std::vector<std::wstring>& changes)
+						 std::vector<std::wstring>& changes,
+						 const std::wstring& sResultDirectory)
 	{
 		CPdfFile oPdfResult(pApplicationFonts);
 		oPdfResult.SetTempDirectory(convertParams.m_sTempDir);
@@ -674,14 +676,58 @@ namespace NExtractTools
 		oConvertParams.m_sInternalMediaDirectory = NSFile::GetDirectoryName(sFrom);
 		oConvertParams.m_sMediaDirectory = oConvertParams.m_sInternalMediaDirectory;
 
-		for (std::vector<std::wstring>::const_iterator i = changes.begin(); i != changes.end(); i++)
+		if (!sResultDirectory.empty() && !params.getDontSaveAdditional())
 		{
-			BYTE* pChangesData = NULL;
-			DWORD dwChangesSize = 0;
-			if (NSFile::CFileBinary::ReadAllBytes(*i, &pChangesData, dwChangesSize))
+			//apply and zip changes
+			CZipFolderMemory oFolderWithChanges = CZipFolderMemory();
+			for (std::vector<std::wstring>::const_iterator i = changes.begin(); i != changes.end(); i++)
 			{
-				oPdfResult.AddToPdfFromBinary(pChangesData, (unsigned int)dwChangesSize, &oConvertParams);
-				RELEASEARRAYOBJECTS(pChangesData);
+				BYTE* pChangesData = NULL;
+				DWORD dwChangesSize = 0;
+				if (NSFile::CFileBinary::ReadAllBytes(*i, &pChangesData, dwChangesSize))
+				{
+					//add changes to zip
+					std::wstring sFilename = NSSystemPath::GetFileName(*i);
+					oFolderWithChanges.write(sFilename, pChangesData, dwChangesSize);
+					//apply changes
+					oPdfResult.AddToPdfFromBinary(pChangesData, (unsigned int)dwChangesSize, &oConvertParams);
+					RELEASEARRAYOBJECTS(pChangesData);
+				}
+			}
+			//add images
+			//todo pDoctRenderer->GetImagesInChanges need or not?
+			std::wstring sImagesDirectory = combinePath(oConvertParams.m_sMediaDirectory, L"media");
+			std::vector<std::wstring> aImages = NSDirectory::GetFiles(sImagesDirectory);
+			for (std::vector<std::wstring>::const_iterator i = aImages.begin(); i != aImages.end(); i++)
+			{
+				BYTE* pImageData = NULL;
+				DWORD dwImageSize = 0;
+				if (NSFile::CFileBinary::ReadAllBytes(*i, &pImageData, dwImageSize))
+				{
+					std::wstring sFilename = NSSystemPath::GetFileName(*i);
+					oFolderWithChanges.write(sFilename, pImageData, dwImageSize);
+				}
+			}
+			//save changes.zip
+			IFolder::CBuffer* pBuffer = oFolderWithChanges.finalize();
+			std::wstring sToChanges = combinePath(sResultDirectory, L"changes.zip");
+			NSFile::CFileBinary oFile;
+			oFile.CreateFileW(sToChanges);
+			oFile.WriteFile(pBuffer->Buffer, pBuffer->Size);
+			oFile.CloseFile();
+			RELEASEOBJECT(pBuffer);
+		}
+		else
+		{
+			for (std::vector<std::wstring>::const_iterator i = changes.begin(); i != changes.end(); i++)
+			{
+				BYTE* pChangesData = NULL;
+				DWORD dwChangesSize = 0;
+				if (NSFile::CFileBinary::ReadAllBytes(*i, &pChangesData, dwChangesSize))
+				{
+					oPdfResult.AddToPdfFromBinary(pChangesData, (unsigned int)dwChangesSize, &oConvertParams);
+					RELEASEARRAYOBJECTS(pChangesData);
+				}
 			}
 		}
 
@@ -703,6 +749,7 @@ namespace NExtractTools
 		{
 			if (params.getFromChanges())
 			{
+				params.setFromChanges(false);
 				std::wstring sChangesDir = NSDirectory::GetFolderPath(sFrom) + FILE_SEPARATOR_STR + L"changes";
 				std::vector<std::wstring> arChanges = NSDirectory::GetFiles(sChangesDir);
 
@@ -710,7 +757,8 @@ namespace NExtractTools
 				if (NSFile::CFileBinary::Exists(sFrom))
 					NSFile::CFileBinary::Remove(sFrom);
 
-				if (!applyChangesPdf(sFromSrc, sFrom, pApplicationFonts, params, convertParams, arChanges))
+				std::wstring sResultDirectory = NSDirectory::GetFolderPath(sTo);
+				if (!applyChangesPdf(sFromSrc, sFrom, pApplicationFonts, params, convertParams, arChanges, sResultDirectory))
 				{
 					if (NSFile::CFileBinary::Exists(sFrom))
 						NSFile::CFileBinary::Remove(sFrom);

@@ -875,9 +875,10 @@ namespace NExtractTools
 				}
 				if (!bContinue)
 				{
-					if (!sToResult.empty() && !params.getDontSaveAdditional())
+					if (!params.getDontSaveAdditional())
 					{
-						copyImagesFromChanges(&oDoctRenderer, sImagesDirectory, sChangesDir,NSDirectory::GetFolderPath(sToResult));
+						//create changes.zip next to result file
+						copyImagesFromChanges(&oDoctRenderer, sImagesDirectory, sChangesDir,NSDirectory::GetFolderPath(*params.m_sFileTo));
 					}
 					break;
 				}

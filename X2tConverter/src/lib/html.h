@@ -179,9 +179,10 @@ namespace NExtractTools
 		{
 			if (!params.getDontSaveAdditional())
 			{
+				//create changes.zip next to result file
 				std::wstring sBinDir = NSDirectory::GetFolderPath(sFrom);
 				std::wstring sChangesDir = sBinDir + FILE_SEPARATOR_STR + L"changes";
-				copyImagesFromChanges(&oDoctRenderer, sImagesDirectory, sChangesDir, NSDirectory::GetFolderPath(sTo));
+				copyImagesFromChanges(&oDoctRenderer, sImagesDirectory, sChangesDir, NSDirectory::GetFolderPath(*params.m_sFileTo));
 			}
 		}
 		return nRes;

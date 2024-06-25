@@ -2,6 +2,7 @@
 #define CSYMBOL_H
 
 #include "CContainer.h"
+#include "../../../graphics/pro/Fonts.h"
 
 namespace SVG
 {

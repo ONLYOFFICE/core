@@ -152,12 +152,15 @@ namespace SVG
 		double dX, dY;
 		CalculatePosition(dX, dY);
 
-		ApplyFont(pRenderer, dX, dY);
-
-		pRenderer->CommandDrawText(m_wsText, dX, dY, 0, 0);
-
-		for (const CRenderedObject* pTSpan : m_arObjects)
-			pTSpan->Draw(pRenderer, pFile, oMode, pOtherStyles);
+		if (!UseExternalFont(pFile))
+		{
+			ApplyFont(pRenderer, dX, dY);
+	
+			pRenderer->CommandDrawText(m_wsText, dX, dY, 0, 0);
+	
+			for (const CRenderedObject* pTSpan : m_arObjects)
+				pTSpan->Draw(pRenderer, pFile, oMode, pOtherStyles);
+		}
 
 		EndPath(pRenderer, pFile, oOldMatrix, oMode, pOtherStyles);
 
@@ -291,6 +294,24 @@ namespace SVG
 		pRenderer->put_BrushType(c_BrushTypeSolid);
 		pRenderer->put_BrushColor1(m_oStyles.m_oFill.ToInt());
 		pRenderer->put_BrushAlpha1(255);
+	}
+	
+	bool CTSpan::UseExternalFont(const CSvgFile *pFile) const
+	{
+		std::wstring wsFontFamily = DefaultFontFamily;
+
+		if (!m_oFont.GetFamily().Empty())
+		{
+			wsFontFamily = m_oFont.GetFamily().ToWString();
+			CorrectFontFamily(wsFontFamily);
+		}
+
+		CFont *pFont = pFile->GetFont(wsFontFamily);
+
+		if (NULL == pFont)
+			return false;
+
+		return true;
 	}
 
 	TBounds CTSpan::GetBounds() const

@@ -116,6 +116,7 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 			$$METAFILE_PATH/svg/SvgObjects/CText.h \
 			$$METAFILE_PATH/svg/SvgObjects/CUse.h \
 			$$METAFILE_PATH/svg/SvgObjects/CPolyline.h \
+			$$METAFILE_PATH/svg/SvgObjects/CFont.h \
 			$$METAFILE_PATH/svg/SvgObjects/CStyle.h \
 			$$METAFILE_PATH/svg/SvgObjects/CObjectBase.h \
 			$$METAFILE_PATH/svg/SvgUtils.h
@@ -139,6 +140,7 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 			$$METAFILE_PATH/svg/SvgObjects/CText.cpp \
 			$$METAFILE_PATH/svg/SvgObjects/CUse.cpp \
 			$$METAFILE_PATH/svg/SvgObjects/CPolyline.cpp \
+			$$METAFILE_PATH/svg/SvgObjects/CFont.cpp \
 			$$METAFILE_PATH/svg/SvgObjects/CObjectBase.cpp \
 			$$METAFILE_PATH/svg/SvgObjects/CStyle.cpp
 

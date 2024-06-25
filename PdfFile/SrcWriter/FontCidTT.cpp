@@ -171,7 +171,7 @@ namespace PdfWriter
 
 		if (m_pXref->IsPDFA())
 		{
-			pFontDescriptor->Add("CIDSet", new CDictObject(m_pXref));
+			//pFontDescriptor->Add("CIDSet", new CDictObject(m_pXref));
 		}
 	}
 	bool CFontCidTrueType::HaveChar(const unsigned int &unUnicode)

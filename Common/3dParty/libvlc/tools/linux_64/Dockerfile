@@ -80,6 +80,10 @@ CMD cd /vlc && \
     make -j$CORES install-strip && \
 # correct build files
     cd build/linux_64 && \
+# copy libva libraries
+    cd lib && \
+    (for f in $(find /usr/lib/x86_64-linux-gnu/ -name 'libva*.so*'); do cp $f . ; done;) && \
+    cd .. && \
 # convert all symlinks to files
     (for f in $(find . -type l); do cp --remove-destination $(readlink -f $f) $f; done;) && \
 # delete all .la files

@@ -34,6 +34,8 @@
 #include "CurrencyReader.h"
 
 #include <cmath>
+#include <regex>
+#include <sstream>
 
 const std::wstring DefaultPercentFormat = L"0.0%";
 
@@ -161,4 +163,23 @@ bool DigitReader::checkCommonFractionFormat(const double &numerator, const std::
     }
     format = L"?/?";
 	dvalue = numerator/denominator;
+}
+
+bool DigitReader::ReadScientific(const std::wstring &value, std::wstring &digit, std::wstring &format)
+{
+	std::wregex scientificRegex(L"(^[+-]?(\\d+\\.?\\d*)([eE][+-]?\\d+))$");
+	if(std::regex_search(value, scientificRegex))
+	{
+        auto doubleVal = std::stod(value);
+       
+	    std::wstringstream ss;
+		ss.precision(14); // Установить точность
+		ss.setf(std::ios::scientific);
+		ss << doubleVal;
+		digit = ss.str();
+
+		format = L"0.00000E+00";
+		return true;
+	}
+	return false;
 }

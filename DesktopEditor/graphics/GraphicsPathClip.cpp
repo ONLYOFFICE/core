@@ -17,79 +17,6 @@ Segment::Segment(PointF *points, bool isCurve) : IsCurve(isCurve)
 	}
 }
 
-bool CPathForClip::isClockwise()
-{
-	double area = 0.0;
-	for (size_t i = 0; i < GetPointCount(); i++)
-	{
-		area += getArea(i, isCurvePoint(i + 1));
-		if (isCurvePoint(i + 1)) i += 2;
-	}
-	return area >= 0;
-}
-
-void CPathForClip::Reverse()
-{
-	for (size_t i = 0; i < GetPointCount(); i++)
-	{
-		if (isCurvePoint(i))
-		{
-			double x0, y0, x1, y1;
-			this->m_internal->m_agg_ps.vertex(i, &x0, &y0);
-			this->m_internal->m_agg_ps.vertex(i + 1, &x1, &y1);
-			this->m_internal->m_agg_ps.modify_vertex(i, x1, y1);
-			this->m_internal->m_agg_ps.modify_vertex(i + 1, x0, y0);
-			i += 2;
-		}
-	}
-}
-
-std::vector<Segment> CPathForClip::getSegments()
-{
-	std::vector<Segment> segments;
-	for (size_t i = 0; i < GetPointCount(); i++)
-	{
-		bool isCurve = isCurvePoint(i + 1);
-		PointF* points = getPoints(i, isCurve ? 4 : 2);
-		segments.push_back(Segment(points, isCurve));
-	}
-	return segments;
-}
-
-bool CPathForClip::isCurvePoint(size_t idx)
-{
-	return this->m_internal->m_agg_ps.command(idx) == agg::path_cmd_curve4;
-}
-
-PointF* CPathForClip::getPoints(size_t idx, size_t count)
-{
-	PointF* points = new PointF[count];
-	for (size_t i = 0; i < count; i++)
-	{
-        double x,y;
-		this->m_internal->m_agg_ps.vertex(idx + i, &x, &y);
-        points[i] = PointF(x, y);
-	}
-	return points;
-}
-
-double CPathForClip::getArea(size_t idx, bool isCurve)
-{
-	if (isCurve)
-	{
-		PointF* points = getPoints(idx, 4);
-		return 3 * ((points[3].Y - points[0].Y)	* (points[1].X + points[2].X)
-					- (points[3].X - points[0].X) * (points[1].Y * points[2].Y)
-					+ points[1].Y * (points[0].X - points[2].X)
-					- points[1].X * (points[0].Y - points[2].Y)
-					+ points[3].Y * (points[2].X + points[0].X / 3)
-					- points[3].X * (points[2].Y - points[0].Y / 3)) / 20;
-	}
-
-	PointF* points = getPoints(idx, 2);
-	return (points[1].Y * points[0].X - points[1].X * points[0].Y) / 20;
-}
-
 CGraphicsPathClip::CGraphicsPathClip(CPathForClip path1, CPathForClip path2, BooleanOpType op) : Path1(path1), Path2(path2), Op(op)
 {
 	traceBoolean();
@@ -100,8 +27,20 @@ void CGraphicsPathClip::traceBoolean()
 	if ((Op == Subtraction || Op == Exclusion) && Path1.isClockwise() && Path2.isClockwise())
 		Path2.Reverse();
 
-	Segments1 = Path1.getSegments();
-	Segments2 = Path2.getSegments();
+	Segments1 = getSegments(Path1);
+	Segments2 = getSegments(Path2);
+}
+
+std::vector<Segment> CGraphicsPathClip::getSegments(CGraphicsPath path)
+{
+	std::vector<Segment> segments;
+	for (size_t i = 0; i < path.GetPointCount(); i++)
+	{
+		bool isCurve = path.isCurvePoint(i + 1);
+		PointF* points = path.getPoints(i, isCurve ? 4 : 2);
+		segments.push_back(Segment(points, isCurve));
+	}
+	return segments;
 }
 
 bool CGraphicsPathClip::intersetsBounds()
@@ -137,5 +76,17 @@ std::vector<RectF> CGraphicsPathClip::getBoundsForSegments(std::vector<Segment> 
 								   std::max(segments[i].P0.Y, segments[i].P1.Y)));
 	}
 	return bounds;
+}
+
+RectF CGraphicsPathClip::findBoundsCollisions()
+{
+	std::vector<RectF> bounds1 = getBoundsForSegments(Segments1);
+	std::vector<RectF> bounds2 = getBoundsForSegments(Segments2);
+	std::vector<RectF> allBounds = {bounds1.begin(), bounds1.end(), bounds2.begin(), bounds2.end()};
+
+	size_t primaryAxis1 = 0,
+		primaryAxis2 = 2,
+		secondaryAxis1 = 1,
+		secondaryAxis2 = 3;
 }
 }

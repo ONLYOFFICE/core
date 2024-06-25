@@ -25,26 +25,14 @@ struct Segment
 	Segment(PointF* points, bool isCurve);
 };
 
-class CPathForClip : public CGraphicsPath
-{
-public:
-	bool isClockwise();
-	void Reverse();
-	std::vector<Segment> getSegments();
-
-protected:
-	bool isCurvePoint(size_t idx);
-	PointF* getPoints(size_t idx, size_t count);
-	double getArea(size_t idx, bool isCurve);
-};
-
 class CGraphicsPathClip
 {
 public:
-	CGraphicsPathClip(CPathForClip path1, CPathForClip path2, BooleanOpType op);
+	CGraphicsPathClip(CGraphicsPath path1, CGraphicsPath path2, BooleanOpType op);
 
 protected:
 	void traceBoolean();
+	std::vector<Segment> getSegments(CGraphicsPath path);
 	bool intersetsBounds();
 	std::vector<RectF> getBoundsForSegments(std::vector<Segment> segments);
 	RectF findBoundsCollisions();
@@ -53,8 +41,8 @@ protected:
 private:
 	BooleanOpType Op;
 
-	CPathForClip Path1;
-	CPathForClip Path2;
+	CGraphicsPath Path1;
+	CGraphicsPath Path2;
 
 	std::vector<Segment> Segments1;
 	std::vector<Segment> Segments2;

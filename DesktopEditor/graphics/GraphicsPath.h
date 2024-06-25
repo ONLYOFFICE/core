@@ -99,6 +99,13 @@ namespace Aggplus
         Status AddArc2(double fX, double fY, double fWidth, double fHeight, double fStartAngle, double fSweepAngle);
         bool IsPointInPath(const double& x, const double& y);
 
+		//Methods for Path Clip
+		bool isClockwise();
+		void Reverse();
+		bool isCurvePoint(size_t idx);
+		PointF* getPoints(size_t idx, size_t count);
+		double getArea(size_t idx, bool isCurve);
+
     public:
         CGraphicsPath_private* m_internal;
     };

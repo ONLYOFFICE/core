@@ -869,6 +869,12 @@ public:
 				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"SimHei", 34));
 				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Meiryo", 35));
 
+#ifdef _MAC
+				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"PingFang SC", 36));
+				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"PingFang TC", 37));
+				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"PingFang HK", 38));
+#endif
+
 				NSFonts::CApplicationFontsSymbols oApplicationChecker;
 
 				// приоритеты шрифтов. по имени (все стили)

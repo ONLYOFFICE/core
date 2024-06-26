@@ -99,7 +99,7 @@ namespace PdfReader
 		return bRet;
 	}
 
-	void CheckFontStylePDF(std::wstring& sName, bool& bBold, bool& bItalic)
+	void RendererOutputDev::CheckFontStylePDF(std::wstring& sName, bool& bBold, bool& bItalic)
 	{
 		if (sName.length() > 7 && sName.at(6) == '+')
 		{
@@ -155,7 +155,7 @@ namespace PdfReader
 		bool bBold   = false;
 		bool bItalic = false;
 
-		CheckFontStylePDF(sName, bBold, bItalic);
+		RendererOutputDev::CheckFontStylePDF(sName, bBold, bItalic);
 
 		if (format)
 		{
@@ -763,35 +763,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::updateLineWidth(GfxState *pGState)
 	{
-		double dWidth = pGState->getLineWidth();
-		double* ctm = pGState->getCTM();
-		double dDet = ctm[0] * ctm[3] - ctm[1] * ctm[2];
-
-		if (abs(dDet) < 0.000001)
-		{
-			m_pRenderer->put_PenSize(PDFCoordsToMM(dWidth));
-			return;
-		}
-
-		double inverse_ctm[4] = {};
-		dDet = 1.0 / dDet;
-		inverse_ctm[0] =  ctm[3] * dDet;
-		inverse_ctm[1] = -ctm[1] * dDet;
-		inverse_ctm[2] = -ctm[2] * dDet;
-		inverse_ctm[3] =  ctm[0] * dDet;
-
-		double dX = dWidth, dY = dWidth;
-		Distance(ctm, dX, dY, &dX, &dY);
-		if ((abs(dX) <= 1.0 && abs(dY) <= 1.0) || dWidth == 0)
-		{
-			dX = dY = 72.0 / 600.0;
-			Distance(inverse_ctm, dX, dY, &dX, &dY);
-			double dWidthMinSize = std::min(abs(dX), abs(dY));
-			if (dWidth < dWidthMinSize)
-				dWidth = dWidthMinSize;
-		}
-
-		m_pRenderer->put_PenSize(PDFCoordsToMM(dWidth));
+		m_pRenderer->put_PenSize(PDFCoordsToMM(pGState->getLineWidth()));
 	}
 	void RendererOutputDev::updateStrokeAdjust(GfxState *pGState)
 	{
@@ -919,7 +891,7 @@ namespace PdfReader
 	{
 
 	}
-	NSFonts::CFontInfo* GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontManager, GfxFont* pFont, std::wstring& wsFontBaseName)
+	NSFonts::CFontInfo* RendererOutputDev::GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontManager, GfxFont* pFont, std::wstring& wsFontBaseName)
 	{
 		NSFonts::CFontInfo* pFontInfo = NULL;
 		if (!pFontManager)
@@ -1036,7 +1008,7 @@ namespace PdfReader
 		pFontInfo = pFontManager->GetFontInfoByParams(oFontSelect);
 		return pFontInfo;
 	}
-	void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName)
+	void RendererOutputDev::GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName)
 	{
 		wsFileName = L"";
 		wsFontName = L"";
@@ -4018,7 +3990,10 @@ namespace PdfReader
 			else
 			{
 				// Договорились, что если нельзя точно составить юникодные значения, тогда отдаем NULL
-				wsUnicodeText = L"";
+				if (pFont->getType() == fontType3)
+					wsUnicodeText = NSStringExt::CConverter::GetUnicodeFromUTF32(pUnicode, nUnicodeLen);
+				else
+					wsUnicodeText = L"";
 			}
 		}
 
@@ -4053,7 +4028,7 @@ namespace PdfReader
 				unsigned int lUnicode = (unsigned int)wsUnicodeText[0];
 				long lStyle;
 				m_pRenderer->get_FontStyle(&lStyle);
-				m_pFontManager->LoadFontFromFile(sFontPath, 0, 10, 72, 72);
+				m_pFontManager->LoadFontFromFile(sFontPath, 0, dOldSize, 72, 72);
 
 				NSFonts::IFontFile* pFontFile = m_pFontManager->GetFile();
 				if (pFontFile)
@@ -4172,6 +4147,15 @@ namespace PdfReader
 		m_pRenderer->put_FontSize(dOldSize);
 	}
 
+	GBool RendererOutputDev::beginType3Char(GfxState *state, double x, double y, double dx, double dy, CharCode code, Unicode *u, int uLen)
+	{
+		if (!m_bDrawOnlyText)
+			return false;
+
+		//drawChar(state, x, y, dx, dy, 0, 0, code, 1, u, uLen);
+
+		return false;
+	}
 	void RendererOutputDev::endType3Char(GfxState *pGState)
 	{
 		return;

@@ -117,8 +117,8 @@ struct CActionResetForm  final : public CAction
 class CAnnotAP final
 {
 public:
-	CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, const char* sView, const char* sButtonView, AcroFormField* pField);
-	CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, const char* sView, Object* oAnnotRef);
+	CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, const char* sView, const char* sButtonView, AcroFormField* pField);
+	CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, const char* sView, Object* oAnnotRef);
 	~CAnnotAP();
 
 	void ToWASM(NSWasm::CData& oRes);
@@ -209,9 +209,6 @@ private:
 //------------------------------------------------------------------------
 // PdfReader::CWidgetAnnot
 //------------------------------------------------------------------------
-
-bool GetFontFromAP(PDFDoc* pdfDoc, AcroFormField* pField, Object* oR, Object* oFonts, Object* oFontRef, std::string& sFontKey);
-std::wstring GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oFonts, Object* oFontRef, int nTypeFonts, std::string& sFontName, std::string& sActualFontName, bool& bBold, bool& bItalic);
 
 class CAnnotWidget : public CAnnot
 {
@@ -345,6 +342,7 @@ public:
 	};
 
 	void SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList);
+	static std::vector<CAnnotMarkup::CFontData*> ReadRC(const std::string& sRC);
 
 protected:
 	CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
@@ -362,12 +360,6 @@ private:
 	std::string m_sSubj; // Краткое описание
 	std::vector<CFontData*> m_arrRC; // Форматированный текст
 };
-namespace AnnotMarkup
-{
-std::map<std::wstring, std::wstring> SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, int nTypeFonts = 3);
-std::map<std::wstring, std::wstring> SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, std::vector<CAnnotMarkup::CFontData*>& arrRC, int nTypeFonts = 3);
-std::vector<CAnnotMarkup::CFontData*> ReadRC(const std::string& sRC);
-}
 
 //------------------------------------------------------------------------
 // PdfReader::CAnnotText
@@ -611,6 +603,23 @@ private:
 	std::vector<int> m_arrCO; // Порядок вычислений - CO
 	std::vector<CAnnotParent*> m_arrParents; // Родительские Fields
 	std::vector<CAnnot*> m_arrAnnots;
+};
+
+//------------------------------------------------------------------------
+// PdfReader::CAnnotFonts
+//------------------------------------------------------------------------
+
+class CAnnotFonts final
+{
+public:
+	static bool IsBaseFont(const std::wstring& wsName);
+	static std::map<std::wstring, std::wstring> GetAllFonts(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList);
+	static std::wstring GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oFontRef, std::string& sFontName, std::string& sActualFontName, bool& bBold, bool& bItalic);
+	static bool GetFontFromAP(PDFDoc* pdfDoc, AcroFormField* pField, Object* oFontRef, std::string& sFontKey);
+	static std::map<std::wstring, std::wstring> GetAnnotFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oAnnotRef);
+	static std::map<std::wstring, std::wstring> GetFreeTextFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef, std::vector<CAnnotMarkup::CFontData*>& arrRC);
+private:
+	static bool FindFonts(Object* oStream, int nDepth, Object* oResFonts);
 };
 
 }

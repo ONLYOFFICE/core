@@ -413,17 +413,17 @@ BYTE* CPdfFile::GetWidgets()
 		return NULL;
 	return m_pInternal->pReader->GetWidgets();
 }
-BYTE* CPdfFile::GetWidgetEmbeddedFonts()
+BYTE* CPdfFile::GetAnnotEmbeddedFonts()
 {
 	if (!m_pInternal->pReader)
 		return NULL;
-	return m_pInternal->pReader->GetWidgetFonts(1);
+	return m_pInternal->pReader->GetFonts(false);
 }
-BYTE* CPdfFile::GetWidgetStandardFonts()
+BYTE* CPdfFile::GetAnnotStandardFonts()
 {
 	if (!m_pInternal->pReader)
 		return NULL;
-	return m_pInternal->pReader->GetWidgetFonts(2);
+	return m_pInternal->pReader->GetFonts(true);
 }
 std::wstring CPdfFile::GetFontPath(const std::wstring& wsFontName)
 {

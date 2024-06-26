@@ -75,7 +75,7 @@ public:
 	BYTE* GetStructure();
 	BYTE* GetLinks(int nPageIndex);
 	BYTE* GetWidgets();
-	BYTE* GetWidgetFonts(int nTypeFonts);
+	BYTE* GetFonts(bool bStandart);
 	BYTE* GetAnnots(int nPageIndex = -1);
 	BYTE* GetShapes(int nPageIndex);
 	BYTE* VerifySign(const std::wstring& sFile, ICertificate* pCertificate, int nWidget = -1);

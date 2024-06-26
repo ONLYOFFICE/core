@@ -574,6 +574,11 @@ int ComputeMarginX(const style_page_layout_properties				* pagePropertiesNode,
                 svgX = *attlists_.position_.svg_x_;
         }
     }
+	else
+	{
+		if (attlists_.position_.svg_x_)
+			svgX = *attlists_.position_.svg_x_;
+	}
 	return get_value_emu (svgX);
 }
 

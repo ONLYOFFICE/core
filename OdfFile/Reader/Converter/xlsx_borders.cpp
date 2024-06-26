@@ -71,17 +71,17 @@ std::wstring convert_border_style(const odf_types::border_style& borderStyle)
         {
             retVal = L"dotted";
         }
-        else if (borderStyle.get_style() == odf_types::border_style::dashed)
+        else if (borderStyle.get_style() == odf_types::border_style::dash)
         {
             if (pt > 1.5) retVal = L"mediumDashed";
             else retVal = L"dashed";
         }
-        else if (borderStyle.get_style() == odf_types::border_style::dash_dot)
+        else if (borderStyle.get_style() == odf_types::border_style::dot_dash)
         {
             if (pt > 1.5) retVal = L"mediumDashDot";
             else retVal = L"dashDot";
         }
-        else if (borderStyle.get_style() == odf_types::border_style::dash_dot_dot)
+        else if (borderStyle.get_style() == odf_types::border_style::dot_dot_dash)
         {
             if (pt > 1.5) retVal = L"mediumDashDotDot";
             else retVal = L"dashDotDot";

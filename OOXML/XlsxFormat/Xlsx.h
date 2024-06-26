@@ -73,6 +73,8 @@ namespace OOX
 			void CreateWorkbook ();
 			void CreateSharedStrings ();
 			void CreateStyles ();
+
+			bool hasPivot();
 			
 			PPTX::Theme  *GetTheme () const;
 

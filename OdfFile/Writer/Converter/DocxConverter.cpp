@@ -1964,6 +1964,10 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty* oox_section_pr, bool b
 				header_min = length(-length_cm, length::cm);
 				header.reset();
 			}
+			else
+			{
+				top = length(length_cm, length::cm);
+			}
 		}
 		else
 		{

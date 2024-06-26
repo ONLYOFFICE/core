@@ -44,25 +44,20 @@ public:
     {
         none,
         solid,
-        double_,
         dotted,
-        dashed,
-        dot_dashed,
+        dash,
         long_dash,
         dot_dash,
         dot_dot_dash,
-        single,
         groove,
+        double_,
         ridge,
         inset,
         outset,
         hidden,
-        dash_dot,
-        dash_dot_dot,
         fine_dashed,
         double_thin
     };
-
     border_style(){none_ = true;}
 
     border_style(const std::wstring & Value);

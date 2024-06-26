@@ -321,6 +321,8 @@ namespace OOX
 
 			if(m_oProgId.IsInit())
 				ptr->strProgID =  m_oProgId.get();
+			else
+				ptr->strProgID.setSize(0);
 
 			if(m_oLink.IsInit())
 			{

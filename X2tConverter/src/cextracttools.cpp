@@ -875,25 +875,10 @@ namespace NExtractTools
 				}
 				if (!bContinue)
 				{
-					if (!sToResult.empty() && !params.getDontSaveAdditional())
+					if (!params.getDontSaveAdditional())
 					{
-						std::vector<std::wstring> aImages = oDoctRenderer.GetImagesInChanges();
-						// todo сделать interface у COfficeUtils, чтобы можно было делать архив из файлов в разных папках.
-						for (size_t i = 0; i < aImages.size(); ++i)
-						{
-							std::wstring sImageName = aImages[i];
-							std::wstring sImage = sImagesDirectory + FILE_SEPARATOR_STR + sImageName;
-							std::wstring sImageCopy = sChangesDir + FILE_SEPARATOR_STR + sImageName;
-							NSFile::CFileBinary::Copy(sImage, sImageCopy);
-						}
-						////copy doct for version history
-						// std::wstring sBinCopy = sChangesDir + FILE_SEPARATOR_STR + NSSystemPath::GetFileName(sBinFrom);
-						// NSFile::CFileBinary::Copy(sBinFrom, sBinCopy);
-
-						std::wstring sToResultDir = NSDirectory::GetFolderPath(sToResult);
-						std::wstring sTo = sToResultDir + FILE_SEPARATOR_STR + L"changes.zip";
-						COfficeUtils oCOfficeUtils(NULL);
-						oCOfficeUtils.CompressFileOrDirectory(sChangesDir, sTo);
+						//create changes.zip next to result file
+						copyImagesFromChanges(&oDoctRenderer, sImagesDirectory, sChangesDir,NSDirectory::GetFolderPath(*params.m_sFileTo));
 					}
 					break;
 				}
@@ -902,6 +887,28 @@ namespace NExtractTools
 		else
 			sBinTo = sBinFrom;
 		return 0;
+	}
+
+	bool copyImagesFromChanges(NSDoctRenderer::CDoctrenderer* pDoctRenderer,
+							   const std::wstring& sSrcImagesDir, const std::wstring& sChangesDir,
+							   const std::wstring& sResultDirectory)
+	{
+		std::vector<std::wstring> aImages = pDoctRenderer->GetImagesInChanges();
+		// todo сделать interface у COfficeUtils, чтобы можно было делать архив из файлов в разных папках.
+		for (size_t i = 0; i < aImages.size(); ++i)
+		{
+			std::wstring sImageName = aImages[i];
+			std::wstring sImage = sSrcImagesDir + FILE_SEPARATOR_STR + sImageName;
+			std::wstring sImageCopy = sChangesDir + FILE_SEPARATOR_STR + sImageName;
+			NSFile::CFileBinary::Copy(sImage, sImageCopy);
+		}
+		////copy doct for version history
+		// std::wstring sBinCopy = sChangesDir + FILE_SEPARATOR_STR + NSSystemPath::GetFileName(sBinFrom);
+		// NSFile::CFileBinary::Copy(sBinFrom, sBinCopy);
+
+		std::wstring sTo = sResultDirectory + FILE_SEPARATOR_STR + L"changes.zip";
+		COfficeUtils oCOfficeUtils(NULL);
+		return (S_OK == oCOfficeUtils.CompressFileOrDirectory(sChangesDir, sTo)) ? true : false;
 	}
 
 	bool InputParams::checkInputLimits()

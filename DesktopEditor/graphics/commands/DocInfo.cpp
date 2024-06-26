@@ -164,3 +164,24 @@ bool CPageRotate::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafile
 	return true;
 }
 
+CHeadings::CHeadings() : IAdvancedCommand(AdvancedCommandType::Headings) {}
+const std::vector<CHeadings::CHeading>& CHeadings::GetHeading() { return m_arrHeading; }
+bool CHeadings::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
+{
+	int nHeadings = pReader->ReadInt();
+	for (int i = 0; i < nHeadings; ++i)
+		m_arrHeading.push_back(ReadHeading(pReader));
+	return true;
+}
+CHeadings::CHeading CHeadings::ReadHeading(NSOnlineOfficeBinToPdf::CBufferReader* pReader)
+{
+	CHeading oHeading;
+	oHeading.wsTitle = pReader->ReadString();
+	oHeading.nPage = pReader->ReadInt();
+	oHeading.dX = pReader->ReadDouble();
+	oHeading.dY = pReader->ReadDouble();
+	int nHeadings = pReader->ReadInt();
+	for (int i = 0; i < nHeadings; ++i)
+		oHeading.arrHeading.push_back(ReadHeading(pReader));
+	return oHeading;
+}

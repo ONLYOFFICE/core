@@ -86,6 +86,8 @@ const std::vector<std::string> TxtFile::readAnsiOrCodePage() // == readUtf8witho
 const std::vector<std::wstring> TxtFile::readUnicodeFromBytes(char *file_data, long file_size)
 {
     std::vector<std::wstring> result;
+	if (file_size < 3) return result;
+
     long start_pos = 2;	// skip Header
 
     for (long end_pos = start_pos; end_pos + 1 < file_size; end_pos += 2)

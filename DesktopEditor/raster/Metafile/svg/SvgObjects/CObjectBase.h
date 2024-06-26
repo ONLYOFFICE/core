@@ -135,6 +135,7 @@ namespace SVG
 		friend class CTSpan;
 		friend class CImage;
 		friend class CCircle;
+		friend class CSwitch;
 		friend class CPolygon;
 		friend class CEllipse;
 		friend class CPolyline;

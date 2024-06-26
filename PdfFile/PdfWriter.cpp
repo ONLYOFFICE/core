@@ -2820,6 +2820,7 @@ PdfWriter::CImageDict* CPdfWriter::LoadImage(Aggplus::CImage* pImage, BYTE nAlph
 	bool bAlpha = false;
 
 	CBgraFrame oFrame;
+	/*
 	if (m_pDocument->IsPDFA())
 	{
 		BYTE* pCopyImage = new BYTE[4 * nImageW * nImageH];
@@ -2846,6 +2847,7 @@ PdfWriter::CImageDict* CPdfWriter::LoadImage(Aggplus::CImage* pImage, BYTE nAlph
 		oFrame.put_Stride(-4* nImageW);
 	}
 	else
+	*/
 	{
 		BYTE* pDataMem = pData;
 		for (int nIndex = 0, nSize = nImageW * nImageH; nIndex < nSize; nIndex++)

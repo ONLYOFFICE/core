@@ -38,6 +38,7 @@
 #include <boost/algorithm/string/erase.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include "PtgList.h"
+#include "FutureFunctionParser.h"
 
 #include "../../../../../OOXML/Base/Unit.h"
 
@@ -835,12 +836,8 @@ const bool SyntaxPtg::extract_PtgFunc(std::wstring::const_iterator& first, std::
 const bool SyntaxPtg::extract_FutureFunction(const std::wstring &funcName, unsigned int& out_num)
 {
 	std::wstring tempName = funcName;
-    if(tempName.substr(0, 6) != L"_xlfn.")
-	{
-        tempName = L"_xlfn." + tempName;
-	}
-	std::set<std::wstring> futureFuncNames = {L"_xlfn.DAYS", L"_xlfn.NETWORKDAYS.INTL" };
-	if(futureFuncNames.find(tempName) != futureFuncNames.end())
+	
+	if(XLS::FutureFunctionParser::GetFutureFunction(tempName))
 	{
 		auto funcNum = XMLSTUFF::definenames2index(tempName);
 		if(funcNum != 0xFFFFFFFF)

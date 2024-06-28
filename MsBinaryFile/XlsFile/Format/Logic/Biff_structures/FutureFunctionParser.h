@@ -1,5 +1,5 @@
-﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+/*
+ * (c) Copyright Ascensio System SIA 2010-2024
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,55 +29,23 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #pragma once
 
-#include "OperandPtg.h"
-#include "Cetab.h"
-#include "Ftab_Cetab.h"
+#include <string>
+#include <vector>
 
 namespace XLS
 {
 
-class CFRecord;
 
-class PtgFuncVar : public OperandPtg
+class FutureFunctionParser
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgFuncVar)
-	PtgFuncVar(const unsigned short func_index, const unsigned char data_type);
 public:
-	PtgFuncVar(const unsigned short full_ptg_id);
-	BiffStructurePtr clone();
+    static const bool GetFutureFunction(std::wstring& functionName);
+    static std::vector<bool> GetArgumentList( const std::wstring& functionName);
 
-	static PtgPtr create(const std::wstring& word, const unsigned char data_type);
-	
-	void loadFields(CFRecord& record) override;
-
-	void writeFields(CFRecord& record) override;	
-
-	void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false) override;
-
-	void setParamsNum(const unsigned char num);
-
-	const unsigned char getParamsNum();
-	
-	const bool getFCeFunc();
-
-	const unsigned short getFuncIndex() const;
-
-	const std::wstring getFutureFuncName() const;
-	void setFutureFuncName(std::wstring name);
-
-	static const unsigned short fixed_id = 0x02;
-private:
-	unsigned char cparams;
-	Ftab_Cetab tab;
-	bool fCeFunc;
-	_CP_OPT(std::wstring) futureFuncName;
-	GlobalWorkbookInfoPtr global_info_;
 };
-
-typedef boost::shared_ptr<PtgFuncVar> PtgFuncVarPtr;
 
 
 } // namespace XLS
-

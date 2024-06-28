@@ -9,6 +9,8 @@ namespace SVG
 
 		if (!wsUnicode.empty())
 			m_wchUnicode = wsUnicode[0];
+
+		m_oHorizAdvX.SetValue(oNode.GetAttributeOrValue(L"horiz-adv-x"));
 	}
 
 	wchar_t CGlyph::GetUnicode() const
@@ -29,6 +31,8 @@ namespace SVG
 		m_oArguments.m_wsFontVariant = oNode.GetAttribute(L"font-variant");
 		m_oArguments.m_wsFontStyle   = oNode.GetAttribute(L"font-style");
 		m_oArguments.m_wsFontWidght  = oNode.GetAttribute(L"font-weight");
+
+		m_oHorizAdvX.SetValue(oNode.GetAttributeOrValue(L"horiz-adv-x"));
 	}
 
 	CFont::~CFont()
@@ -45,6 +49,55 @@ namespace SVG
 
 	bool CFont::Apply(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds)
 	{
+		return false;
+	}
+
+	bool CFont::Draw(const std::wstring &wsText, double dX, double dY, IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pStyles) const
+	{
+		if (NULL == pRenderer)
+			return false;
+		
+		double dM11, dM12, dM21, dM22, dRx, dRy;
+
+		pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
+
+		Aggplus::CMatrix oMatrix(dM11, dM12, dM21, dM22, dRx, dRy);
+		oMatrix.Translate(dX, dY);
+
+		pRenderer->SetTransform(dM11, dM12, dM21, -dM22, oMatrix.tx(), oMatrix.ty());
+
+		MGlyphsMap::const_iterator itFound;
+		TBounds oGlyphBounds;
+
+		for (wchar_t wchGlyph : wsText)
+		{
+			itFound = m_mGlyphs.find(wchGlyph);
+
+			if (m_mGlyphs.cend() == itFound)
+			{
+				if (NULL == m_pMissingGlyph)
+					continue;
+
+				m_pMissingGlyph->Draw(pRenderer, pFile, oMode, pStyles);
+				oMatrix.Translate(m_oHorizAdvX.ToDouble(NSCSS::Pixel), 0);
+			}
+			else
+			{
+				itFound->second->Draw(pRenderer, pFile, oMode, pStyles);
+
+				if (!itFound->second->m_oHorizAdvX.Empty())
+					oMatrix.Translate(itFound->second->m_oHorizAdvX.ToDouble(NSCSS::Pixel), 0);
+				else
+					oMatrix.Translate(m_oHorizAdvX.ToDouble(NSCSS::Pixel), 0);
+			}
+
+			oMatrix.Translate(std::abs(oGlyphBounds.m_dRight - oGlyphBounds.m_dLeft), 0);
+
+			pRenderer->SetTransform(dM11, dM12, dM21, -dM22, oMatrix.tx(), oMatrix.ty());
+		}
+
+		pRenderer->SetTransform(dM11, dM12, dM21, dM22, dRx, dRy);
+
 		return true;
 	}
 

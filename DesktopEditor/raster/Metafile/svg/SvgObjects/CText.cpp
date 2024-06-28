@@ -4,6 +4,7 @@
 #include "../SvgUtils.h"
 #include "../CSvgFile.h"
 #include "CContainer.h"
+#include "CFont.h"
 #include "CStyle.h"
 
 #ifndef MININT8
@@ -152,7 +153,7 @@ namespace SVG
 		double dX, dY;
 		CalculatePosition(dX, dY);
 
-		if (!UseExternalFont(pFile))
+		if (!UseExternalFont(pFile, dX, dY, pRenderer, pFile, oMode, pOtherStyles))
 		{
 			ApplyFont(pRenderer, dX, dY);
 	
@@ -296,7 +297,7 @@ namespace SVG
 		pRenderer->put_BrushAlpha1(255);
 	}
 	
-	bool CTSpan::UseExternalFont(const CSvgFile *pFile) const
+	bool CTSpan::UseExternalFont(const CSvgFile *pFile, double dX, double dY, IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
 		std::wstring wsFontFamily = DefaultFontFamily;
 
@@ -310,6 +311,8 @@ namespace SVG
 
 		if (NULL == pFont)
 			return false;
+
+		pFont->Draw(m_wsText, dX, dY, pRenderer, pFile, oMode, pOtherStyles);
 
 		return true;
 	}

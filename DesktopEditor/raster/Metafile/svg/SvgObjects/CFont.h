@@ -12,7 +12,10 @@ namespace SVG
 
 		wchar_t GetUnicode() const;
 	private:
-		wchar_t m_wchUnicode;
+		wchar_t  m_wchUnicode;
+		SvgDigit m_oHorizAdvX;
+
+		friend class CFont;
 	};
 
 	class CFontFace
@@ -40,13 +43,18 @@ namespace SVG
 		void SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode) override;
 
 		bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) override;
+		bool Draw(const std::wstring& wsText, double dX, double dY, IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pStyles = NULL) const;
 	private:
 		void ParseGlyphs(XmlUtils::CXmlNode& oNode);
 
 		TFontArguments m_oArguments;
 
-		std::map<wchar_t, CGlyph*> m_mGlyphs;
+		typedef std::map<wchar_t, CGlyph*> MGlyphsMap;
+
+		MGlyphsMap m_mGlyphs;
 		CPath *m_pMissingGlyph;
+
+		SvgDigit m_oHorizAdvX;
 	};
 }
 

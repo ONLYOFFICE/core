@@ -175,8 +175,10 @@ int SERIESAXIS::serialize(std::wostream & _stream)
 			}
 		}
 //-----------------------------------------------------------------------------------
-		m_AXS->serialize(_stream);
-
+		if (m_AXS)
+		{
+			m_AXS->serialize(_stream);
+		}
 		if (cat_ser_range)
 		{
 			CP_XML_NODE(L"c:crosses")

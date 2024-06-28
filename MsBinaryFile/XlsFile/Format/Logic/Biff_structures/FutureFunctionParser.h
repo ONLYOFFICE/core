@@ -45,6 +45,11 @@ public:
     static const bool GetFutureFunction(std::wstring& functionName);
     static std::vector<bool> GetArgumentList( const std::wstring& functionName);
 
+private:
+    FutureFunctionParser();
+    static FutureFunctionParser& init();
+    std::map<std::wstring, std::vector<bool>> FutureFunctions;
+
 };
 
 

@@ -35,15 +35,6 @@
 
 namespace XLS
 {
-    std::map<std::wstring, std::vector<bool>> FutureFunctionArgs = 
-    {
-        {
-            L"_xlfn.DAYS",{0,1,1}
-        },
-        {
-            L"_xlfn.NETWORKDAYS.INTL",{0, 0, 0, 1, 0}
-        }
-    };
 
     const bool FutureFunctionParser::GetFutureFunction(std::wstring& functionName)
     {
@@ -52,7 +43,8 @@ namespace XLS
         {
             tempName = L"_xlfn." + tempName;
         }
-        if(FutureFunctionArgs.find(tempName) != FutureFunctionArgs.end())
+        auto functions = init();
+        if(functions.FutureFunctions.find(tempName) != functions.FutureFunctions.end())
         {
             functionName = tempName;
             return true;
@@ -63,12 +55,25 @@ namespace XLS
     std::vector<bool> FutureFunctionParser::GetArgumentList( const std::wstring& functionName)
     {
         std::vector<bool> argVector;
-        auto findedFunc = FutureFunctionArgs.find(functionName);
-        if(findedFunc != FutureFunctionArgs.end())
+        auto functions = init();
+        auto findedFunc = functions.FutureFunctions.find(functionName);
+        if(findedFunc != functions.FutureFunctions.end())
         {
             argVector = findedFunc->second;
         }
         return argVector;
+    }
+
+    FutureFunctionParser& FutureFunctionParser::init()
+    {
+        static FutureFunctionParser parser;
+        return parser;
+    }
+
+    FutureFunctionParser::FutureFunctionParser()
+    {
+        FutureFunctions.emplace (L"_xlfn.DAYS", std::vector<bool>{0,1,1});
+        FutureFunctions.emplace(L"_xlfn.NETWORKDAYS.INTL",std::vector<bool>{0, 0, 0, 1, 0});
     }
 
 } // namespace XLS

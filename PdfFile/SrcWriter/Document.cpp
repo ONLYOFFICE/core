@@ -80,24 +80,23 @@ namespace PdfWriter
 		m_pPageTree         = NULL;
 		m_pCurPage          = NULL;
 		m_nCurPageNum       = -1;
-		m_unFormFields      = 0;
+		m_pCurImage         = NULL;
 		m_pInfo             = NULL;
 		m_pTrailer          = NULL;
 		m_pResources        = NULL;
+		m_pMetaData         = NULL;
 		m_bEncrypt          = false;
 		m_pEncryptDict      = NULL;
+		m_unFormFields      = 0;
 		m_unCompressMode    = COMP_NONE;
-		m_pJbig2            = NULL;
 		memset((void*)m_sTTFontTag, 0x00, 8);
+		m_pJbig2            = NULL;
+		m_pDefaultCheckBoxFont = NULL;
 		m_pTransparencyGroup = NULL;
 		m_pFreeTypeLibrary  = NULL;
+		m_bPDFAConformance	= false;
 		m_pAcroForm         = NULL;
 		m_pFieldsResources  = NULL;
-		m_pDefaultCheckBoxFont = NULL;
-		m_wsDocumentID      = L"";
-		m_wsFilePath        = L"";
-
-		m_bPDFAConformance	= false;
 	}
 	CDocument::~CDocument()
 	{
@@ -172,6 +171,8 @@ namespace PdfWriter
 		m_vFillAlpha.clear();
 		m_vStrokeAlpha.clear();
 		m_vRadioGroups.clear();
+		m_vMetaOForms.clear();
+		m_vImages.clear();
 
 		m_pTransparencyGroup = NULL;
 
@@ -190,6 +191,7 @@ namespace PdfWriter
 		m_pPageTree         = NULL;
 		m_pCurPage          = NULL;
 		m_nCurPageNum       = 0;
+		m_pCurImage         = NULL;
 		m_unFormFields      = 0;
 		m_bEncrypt          = false;
 		m_pEncryptDict      = NULL;
@@ -212,6 +214,8 @@ namespace PdfWriter
 		m_vTTFonts.clear();
 		m_vFreeTypeFonts.clear();
 		m_vSignatures.clear();
+		m_vMetaOForms.clear();
+		m_vImages.clear();
 		if (m_pFreeTypeLibrary)
 		{
 			FT_Done_FreeType(m_pFreeTypeLibrary);
@@ -310,6 +314,12 @@ namespace PdfWriter
 
 		pID->Add(new CBinaryObject(pEncrypt->m_anEncryptID, 16));
 		pID->Add(new CBinaryObject(pEncrypt->m_anEncryptID, 16));
+
+		if (m_pMetaData)
+			m_pMetaData->SetID(new CBinaryObject(pEncrypt->m_anEncryptID, 16));
+
+		for (int i = 0; i < m_vMetaOForms.size(); ++i)
+			m_vMetaOForms[i]->Add("ID", new CBinaryObject(pEncrypt->m_anEncryptID, 16));
 	}
     void CDocument::SetPasswords(const std::wstring & wsOwnerPassword, const std::wstring & wsUserPassword)
 	{
@@ -437,6 +447,27 @@ namespace PdfWriter
 	{
 		if (!m_pMetaData)
 			return false;
+
+		CBinaryObject* sID = NULL;
+		CArrayObject* pID = (CArrayObject*)m_pTrailer->Get("ID");
+		if (!pID)
+		{
+			BYTE arrId[16];
+			CEncryptDict::CreateId(m_pInfo, m_pXref, (BYTE*)arrId);
+
+			pID = new CArrayObject();
+			m_pTrailer->Add("ID", pID);
+
+			pID->Add(new CBinaryObject(arrId, 16));
+			pID->Add(new CBinaryObject(arrId, 16));
+
+			sID = new CBinaryObject(arrId, 16);
+		}
+		else
+			sID = (CBinaryObject*)pID->Get(1)->Copy();
+
+		m_pMetaData->SetID(sID);
+
 		return m_pMetaData->AddMetaData(sMetaName, pMetaData, nMetaLength);
 	}
 	CDictObject* CDocument::CreatePageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix)
@@ -513,9 +544,6 @@ namespace PdfWriter
 	}
     CExtGrState* CDocument::GetExtGState(double dAlphaStroke, double dAlphaFill, EBlendMode eMode, int nStrokeAdjustment)
 	{
-		if (IsPDFA())
-			return NULL;
-
 		CExtGrState* pExtGrState = FindExtGrState(dAlphaStroke, dAlphaFill, eMode, nStrokeAdjustment);
 
 		if (!pExtGrState)
@@ -543,9 +571,6 @@ namespace PdfWriter
 	}
     CExtGrState* CDocument::GetStrokeAlpha(double dAlpha)
 	{
-		if (IsPDFA())
-			return NULL;
-
 		CExtGrState* pExtGrState = NULL;
 		for (unsigned int unIndex = 0, unCount = m_vStrokeAlpha.size(); unIndex < unCount; unIndex++)
 		{
@@ -566,9 +591,6 @@ namespace PdfWriter
 	}
     CExtGrState* CDocument::GetFillAlpha(double dAlpha)
 	{
-		if (IsPDFA())
-			return NULL;
-
 		CExtGrState* pExtGrState = NULL;
 		for (unsigned int unIndex = 0, unCount = m_vFillAlpha.size(); unIndex < unCount; unIndex++)
 		{
@@ -698,9 +720,89 @@ namespace PdfWriter
 	{
 		return new CImageDict(m_pXref, this);
 	}
-    CFont14* CDocument::CreateFont14(EStandard14Fonts eType)
+	CXObject* CDocument::CreateForm(CImageDict* pImage, const std::string& sName)
 	{
-		return new CFont14(m_pXref, this, eType);
+		if (!pImage)
+			return NULL;
+
+		std::string sFrmName = "FRM" + sName;
+		std::string sImgName = "Img" + sName;
+
+		CXObject* pForm = new CXObject();
+		CStream* pStream = new CMemoryStream();
+		pForm->SetStream(m_pXref, pStream);
+
+#ifndef FILTER_FLATE_DECODE_DISABLED
+		if (m_unCompressMode & COMP_TEXT)
+			pForm->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
+		double dOriginW = pImage->GetWidth();
+		double dOriginH = pImage->GetHeight();
+		pForm->SetWidth(dOriginW);
+		pForm->SetHeight(dOriginH);
+
+		CArrayObject* pBBox = new CArrayObject();
+		pForm->Add("BBox", pBBox);
+		pBBox->Add(0);
+		pBBox->Add(0);
+		pBBox->Add(dOriginW);
+		pBBox->Add(dOriginH);
+		pForm->Add("FormType", 1);
+		CArrayObject* pFormMatrix = new CArrayObject();
+		pForm->Add("Matrix", pFormMatrix);
+		pFormMatrix->Add(1);
+		pFormMatrix->Add(0);
+		pFormMatrix->Add(0);
+		pFormMatrix->Add(1);
+		pFormMatrix->Add(0);
+		pFormMatrix->Add(0);
+		pForm->Add("Name", sFrmName.c_str());
+		pForm->SetName(sFrmName);
+
+		CDictObject* pFormRes = new CDictObject();
+		CArrayObject* pFormResProcset = new CArrayObject();
+		pFormRes->Add("ProcSet", pFormResProcset);
+		pFormResProcset->Add(new CNameObject("PDF"));
+		pFormResProcset->Add(new CNameObject("ImageC"));
+		CDictObject* pFormResXObject = new CDictObject();
+		pFormRes->Add("XObject", pFormResXObject);
+
+		pFormResXObject->Add(sImgName, pImage);
+		pForm->Add("Resources", pFormRes);
+
+		pForm->Add("Subtype", "Form");
+		pForm->Add("Type", "XObject");
+
+		pStream->WriteStr("q\012");
+		pStream->WriteReal(dOriginW);
+		pStream->WriteStr(" 0 0 ");
+		pStream->WriteReal(dOriginH);
+		pStream->WriteStr(" 0 0 cm\012/");
+		pStream->WriteStr(sImgName.c_str());
+		pStream->WriteStr(" Do\012Q");
+
+		GetFieldsResources()->AddXObjectWithName(sFrmName.c_str(), pForm);
+
+		return pForm;
+	}
+	CFont14* CDocument::CreateFont14(const std::wstring& wsFontPath, unsigned int unIndex, EStandard14Fonts eType)
+	{
+		CFont14* pFont = FindFont14(wsFontPath, unIndex);
+		if (pFont)
+			return pFont;
+		pFont = new CFont14(m_pXref, this, eType);
+		m_vFonts14.push_back(TFontInfo(wsFontPath, unIndex, pFont));
+		return pFont;
+	}
+	CFont14* CDocument::FindFont14(const std::wstring& wsFontPath, unsigned int unIndex)
+	{
+		for (int nIndex = 0, nCount = m_vFonts14.size(); nIndex < nCount; nIndex++)
+		{
+			TFontInfo& oInfo = m_vFonts14.at(nIndex);
+			if (wsFontPath == oInfo.wsPath && unIndex == oInfo.unIndex)
+				return (CFont14*)oInfo.pFont;
+		}
+		return NULL;
 	}
 	CFontCidTrueType* CDocument::CreateCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex)
 	{
@@ -1155,6 +1257,34 @@ namespace PdfWriter
 
 		return pField;
 	}
+	bool CDocument::HasImage(const std::wstring& wsImagePath, BYTE nAlpha)
+	{
+		for (size_t i = 0, nSize = m_vImages.size(); i < nSize; ++i)
+		{
+			if (m_vImages[i].wsImagePath == wsImagePath && m_vImages[i].nAlpha == nAlpha)
+				return true;
+		}
+		return false;
+	}
+	CImageDict* CDocument::GetImage(const std::wstring& wsImagePath, BYTE nAlpha)
+	{
+		for (size_t i = 0, nSize = m_vImages.size(); i < nSize; ++i)
+		{
+			if (m_vImages[i].wsImagePath == wsImagePath && m_vImages[i].nAlpha == nAlpha)
+			{
+				m_pCurImage = m_vImages[i].pImage;
+				return m_vImages[i].pImage;
+			}
+		}
+		return NULL;
+	}
+	void CDocument::AddImage(const std::wstring& wsImagePath, BYTE nAlpha, CImageDict* pImage)
+	{
+		if (!pImage)
+			return;
+		m_pCurImage = pImage;
+		m_vImages.push_back({wsImagePath, nAlpha, pImage});
+	}
 	bool CDocument::CheckFieldName(CFieldBase* pField, const std::string& sName)
 	{
 		CFieldBase* pBase = m_mFields[sName];
@@ -1273,17 +1403,6 @@ namespace PdfWriter
 		if (pAcroForm && pAcroForm->GetType() == object_type_DICT)
 			m_pAcroForm = (CDictObject*)pAcroForm;
 
-		if (m_pAcroForm)
-		{
-			CObjectBase* pFieldsResources = m_pAcroForm->Get("DR");
-			if (pFieldsResources && pFieldsResources->GetType() == object_type_DICT)
-			{
-				// TODO необходимо перенести текущие поля DR
-				m_pFieldsResources = new CResourcesDict(m_pXref, false, true);
-				m_pAcroForm->Add("DR", m_pFieldsResources);
-			}
-		}
-
 		if (pEncrypt)
 		{
 			m_pEncryptDict = pEncrypt;
@@ -1292,6 +1411,16 @@ namespace PdfWriter
 
 		m_unFormFields = nFormField;
 		m_wsFilePath = wsPath;
+		return true;
+	}
+	bool CDocument::EditResources(CXref* pXref, CResourcesDict* pResources)
+	{
+		if (!pResources || !EditXref(pXref))
+			return false;
+
+		CheckAcroForm();
+		m_pAcroForm->Add("DR", pResources);
+		m_pFieldsResources = pResources;
 		return true;
 	}
 	std::pair<int, int> CDocument::GetPageRef(int nPageIndex)
@@ -1382,6 +1511,10 @@ namespace PdfWriter
 			return p->second;
 		return NULL;
 	}
+	CPage* CDocument::CreateFakePage()
+	{
+		return new CPage(this, m_pXref);
+	}
 	bool CDocument::EditCO(const std::vector<int>& arrCO)
 	{
 		if (arrCO.empty())
@@ -1410,35 +1543,6 @@ namespace PdfWriter
 		}
 
 		return true;
-	}
-	void CDocument::UpdateButtonImg(const std::vector<PdfWriter::CImageDict*>& arrButtonImg)
-	{
-		for (auto it = m_mAnnotations.begin(); it != m_mAnnotations.end(); it++)
-		{
-			CAnnotation* pAnnot = it->second;
-			if (pAnnot->GetAnnotationType() != AnnotWidget || ((CWidgetAnnotation*)pAnnot)->GetWidgetType() != WidgetPushbutton)
-				continue;
-
-			CPushButtonWidget* pPBWidget = (CPushButtonWidget*)pAnnot;
-			if (pPBWidget->m_nI >= 0)
-			{
-				std::string sFrmName = "FRM" + std::to_string(it->first) + "I";
-				std::string sImgName = "Img" + std::to_string(pPBWidget->m_nI);
-				pPBWidget->SetAP(arrButtonImg[pPBWidget->m_nI], "I", sImgName, sFrmName);
-			}
-			if (pPBWidget->m_nRI >= 0)
-			{
-				std::string sFrmName = "FRM" + std::to_string(it->first) + "RI";
-				std::string sImgName = "Img" + std::to_string(pPBWidget->m_nRI);
-				pPBWidget->SetAP(arrButtonImg[pPBWidget->m_nRI], "RI", sImgName, sFrmName);
-			}
-			if (pPBWidget->m_nIX >= 0)
-			{
-				std::string sFrmName = "FRM" + std::to_string(it->first) + "IX";
-				std::string sImgName = "Img" + std::to_string(pPBWidget->m_nIX);
-				pPBWidget->SetAP(arrButtonImg[pPBWidget->m_nIX], "IX", sImgName, sFrmName);
-			}
-		}
 	}
 	CPage* CDocument::AddPage(int nPageIndex)
 	{
@@ -1522,13 +1626,28 @@ namespace PdfWriter
 
 		// Вторая часть идентификатора должна обновляться
 		CObjectBase* pID = m_pTrailer->Get("ID");
-		if (pID && pID->GetType() == object_type_ARRAY)
+		if ((pID && pID->GetType() == object_type_ARRAY) || !m_vMetaOForms.empty())
 		{
 			BYTE arrId[16];
 			CEncryptDict::CreateId(m_pInfo, m_pXref, (BYTE*)arrId);
 
-			CObjectBase* pObject = ((CArrayObject*)pID)->Get(1, false);
-			((CArrayObject*)pID)->Insert(pObject, new CBinaryObject(arrId, 16), true);
+			CArrayObject* pArrID = (CArrayObject*)pID;
+			if (pArrID)
+			{
+				CObjectBase* pObject = pArrID->Get(1, false);
+				pArrID->Insert(pObject, new CBinaryObject(arrId, 16), true);
+			}
+			else
+			{
+				pArrID = new CArrayObject();
+				m_pTrailer->Add("ID", pArrID);
+
+				pArrID->Add(new CBinaryObject(arrId, 16));
+				pArrID->Add(new CBinaryObject(arrId, 16));
+			}
+
+			for (int i = 0; i < m_vMetaOForms.size(); ++i)
+				m_vMetaOForms[i]->Add("ID", new CBinaryObject(arrId, 16));
 		}
 
 		CEncrypt* pEncrypt = NULL;
@@ -1652,5 +1771,95 @@ namespace PdfWriter
 		for (CXref* XRef : vXRefForWrite)
 			RELEASEOBJECT(XRef);
 		vXRefForWrite.clear();
+	}
+	void CDocument::AddShapeXML(const std::string& sXML)
+	{
+		CDictObject* pResources = (CDictObject*)m_pCurPage->Get("Resources");
+		if (!pResources)
+		{
+			pResources = new CDictObject();
+			m_pCurPage->Add("Resources", pResources);
+		}
+		CDictObject* pProperties = (CDictObject*)pResources->Get("Properties");
+		if (!pProperties)
+		{
+			pProperties = new CDictObject();
+			pResources->Add("Properties", pProperties);
+		}
+		CObjectBase* pObj = pProperties->Get("OShapes");
+		if (pObj && pObj->GetType() != object_type_DICT)
+		{
+			pProperties->Remove("OShapes");
+			pObj = NULL;
+		}
+		CDictObject* pMetaOForm = (CDictObject*)pObj;
+		if (!pMetaOForm)
+		{
+			pMetaOForm = new CDictObject();
+			m_pXref->Add(pMetaOForm);
+			pMetaOForm->Add("Type", "OShapes");
+			pProperties->Add("OShapes", pMetaOForm);
+			m_vMetaOForms.push_back(pMetaOForm);
+
+			CBinaryObject* sID = NULL;
+			CArrayObject* pID = (CArrayObject*)m_pTrailer->Get("ID");
+			if (!pID)
+			{
+				BYTE arrId[16];
+				CEncryptDict::CreateId(m_pInfo, m_pXref, (BYTE*)arrId);
+
+				pID = new CArrayObject();
+				m_pTrailer->Add("ID", pID);
+
+				pID->Add(new CBinaryObject(arrId, 16));
+				pID->Add(new CBinaryObject(arrId, 16));
+
+				sID = new CBinaryObject(arrId, 16);
+			}
+			else
+				sID = (CBinaryObject*)pID->Get(1)->Copy();
+			pMetaOForm->Add("ID", sID);
+		}
+		CArrayObject* pArrayMeta = (CArrayObject*)pMetaOForm->Get("Metadata");
+		if (!pArrayMeta)
+		{
+			pArrayMeta = new CArrayObject();
+			pMetaOForm->Add("Metadata", pArrayMeta);
+			CArrayObject* pArrayImage = new CArrayObject();
+			pMetaOForm->Add("Image", pArrayImage);
+		}
+		pArrayMeta->Add(new CStringObject(sXML.c_str()));
+
+		CDictObject* pBDC = new CDictObject();
+		pBDC->Add("MCID", pArrayMeta->GetCount() - 1);
+		m_pCurPage->BeginMarkedContentDict("OShapes", pBDC);
+		RELEASEOBJECT(pBDC);
+	}
+	void CDocument::EndShapeXML()
+	{
+		CDictObject* pResources = (CDictObject*)m_pCurPage->Get("Resources");
+		if (!pResources)
+			return;
+		CDictObject* pProperties = (CDictObject*)pResources->Get("Properties");
+		if (!pProperties)
+			return;
+		CObjectBase* pObj = pProperties->Get("OShapes");
+		if (!pObj || pObj->GetType() != object_type_DICT)
+			return;
+		CDictObject* pMetaOForm = (CDictObject*)pObj;
+		CArrayObject* pArrayImage = (CArrayObject*)pMetaOForm->Get("Image");
+		if (!pArrayImage)
+			return;
+
+		pObj = m_pCurImage;
+		if (!pObj)
+			pObj = new PdfWriter::CNullObject();
+		pArrayImage->Add(pObj);
+
+		m_pCurPage->EndMarkedContent();
+	}
+	void CDocument::ClearPage()
+	{
+		m_pCurPage->ClearContent(m_pXref);
 	}
 }

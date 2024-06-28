@@ -81,6 +81,10 @@ namespace MetaFile
 		Close();
 		RELEASEINTERFACE(m_pFontManager);
 	}
+	void CMetaFile::SetImageSize(int nWidth, int nHeight)
+	{
+		// for meta with empty size
+	}
 
 	std::wstring CMetaFile::ConvertToSvg(unsigned int unWidth, unsigned int unHeight)
 	{
@@ -508,10 +512,6 @@ namespace MetaFile
 		m_oSvmFile.Close();
 	#endif
 
-	#ifdef METAFILE_SUPPORT_SVG
-		m_oSvgFile.Close();
-	#endif
-
 		m_lType  = 0;
 	}
 
@@ -527,11 +527,11 @@ namespace MetaFile
 		#ifdef METAFILE_SUPPORT_WMF_EMF
 			case c_lMetaWmf:
 			{
-				const TRectD& oRect = m_oWmfFile.GetBounds();
-				*pdX = oRect.Left;
-				*pdY = oRect.Top;
-				*pdW = oRect.Right - oRect.Left;
-				*pdH = oRect.Bottom - oRect.Top;
+				TRectL* pRect = m_oWmfFile.GetBounds();
+				*pdX = pRect->Left;
+				*pdY = pRect->Top;
+				*pdW = pRect->Right - pRect->Left;
+				*pdH = pRect->Bottom - pRect->Top;
 				break;
 			}
 			case c_lMetaEmf:

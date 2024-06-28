@@ -50,6 +50,7 @@
 #include "office_text.h"
 #include "office_spreadsheet.h"
 #include "office_presentation.h"
+#include "office_drawing.h"
 #include "office_chart.h"
 #include "office_annotation.h"
 #include "office_settings.h"
@@ -539,6 +540,10 @@ int odf_document::Impl::GetMimetype(std::wstring value)
 	else if (std::wstring::npos != value.find(L"application/vnd.sun.xml.impress"))
 	{
 		return 6;
+	}
+	else if (std::wstring::npos != value.find(L"application/vnd.oasis.opendocument.graphics"))
+	{
+		return 7;
 	}
 	return 0;
 }

@@ -39,13 +39,15 @@ namespace PPT
 class CPPTDocumentInfo
 {
 public:
+    friend class CPPTUserInfo;
+
     _commonInfo*                    m_pCommonInfo = NULL;
     
     CCurrentUser					m_oCurrentUser;
 	std::vector<CPPTUserInfo*>		m_arUsers;
 	std::map<int, std::wstring>		m_mapStoreImageFile;
     std::wstring					m_strPassword;
-	bool							m_bMacros;
+	bool							m_bMacroEnabled;
 
 	std::wstring					m_app_xml;
 	std::wstring					m_core_xml;
@@ -57,5 +59,9 @@ public:
 
     bool ReadFromStream(CRecordCurrentUserAtom* pCurrentUser, POLE::Stream* pStream);
     bool LoadDocument();
+    
+    std::wstring GetBinFromStg(const std::wstring& name, _UINT32 nRef);
+private:
+    POLE::Stream* m_pStream;
 };
 }

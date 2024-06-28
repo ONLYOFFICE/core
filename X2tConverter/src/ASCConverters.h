@@ -56,7 +56,7 @@ namespace NExtractTools
 	typedef std::function<_UINT32(const std::wstring&, const std::wstring&, InputParams&, ConvertParams&)> CONVERT_FUNC;
 
 	// zip
-	_UINT32 dir2zip(const std::wstring& sFrom, const std::wstring& sTo, bool bSorted = false, int method = 8 /*Z_DEFLATED*/, short level = -1, bool bDateTime = false);
+	_UINT32 dir2zip(const std::wstring& sFrom, const std::wstring& sTo, bool bSorted = false, int method = 8 /*Z_DEFLATED*/, short level = -1, bool bDateTime = true);
 	_UINT32 zip2dir(const std::wstring& sFrom, const std::wstring& sTo);
 	DECLARE_CONVERT_FUNC(dir2zipMscrypt);
 

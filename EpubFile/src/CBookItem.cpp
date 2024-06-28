@@ -63,10 +63,7 @@ bool CBookItem::ReadItem(XmlUtils::CXmlLiteReader& oXmlLiteReader, int depth)
         std::wstring sAttributeValue = oXmlLiteReader.GetText();
 
         if (sAttributeName == L"href")
-        {
-            sAttributeValue = URLDecode(sAttributeValue);
-            m_sRef = NSFile::GetFileName(sAttributeValue);
-        }
+            m_sRef = URLDecode(sAttributeValue);
         else if (sAttributeName == L"id")
             m_sID = sAttributeValue;
         else if (sAttributeName == L"media-type")

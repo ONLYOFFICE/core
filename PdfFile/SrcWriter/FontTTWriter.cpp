@@ -321,7 +321,6 @@ namespace PdfWriter
 			0, 0,                   // idDelta[0]
 			0, 0                    // pad to a mulitple of four bytes
 		};
-
 		static char arrNameTab[8] =
 		{
 			0, 0,			// format
@@ -623,11 +622,11 @@ namespace PdfWriter
 			arrNewCmapTable[0] = 0;           // table version number = 0
 			arrNewCmapTable[1] = 0;           //
 			arrNewCmapTable[2] = 0;           // number of encoding tables = 1
-			arrNewCmapTable[3] = 1;           //                          
+			arrNewCmapTable[3] = 1;           //
 			arrNewCmapTable[4] = 0;           // platform ID = 1 (MacOS) // Эти два поля обязательно должны
 			arrNewCmapTable[5] = 1;           //                         // иметь таки значения, иначе, Adobe
 			arrNewCmapTable[6] = 0;           // encoding ID = 0         // Acrobat может открыть данный шрифт.
-			arrNewCmapTable[7] = 0;           //                         // 
+			arrNewCmapTable[7] = 0;           //
 			arrNewCmapTable[8] = 0;           // offset of subtable
 			arrNewCmapTable[9] = 0;           //
 			arrNewCmapTable[10] = 0;          //

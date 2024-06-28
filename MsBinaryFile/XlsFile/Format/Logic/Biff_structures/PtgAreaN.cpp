@@ -95,7 +95,6 @@ void PtgAreaN::loadFields(CFRecord& record)
     {
         record >> area;
     }
-
     else
     {
         record >> areaXlsb;
@@ -142,7 +141,7 @@ void PtgAreaN::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 
     else
     {
-        ptg_stack.push((areaXlsb + cell_base_ref).toString());
+        ptg_stack.push((areaXlsb + cell_base_ref).toString(true, true));
     }
 }
 

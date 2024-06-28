@@ -95,6 +95,7 @@ namespace NExtractTools
 		TCD_XLTM2XLSM,
 		TCD_XLSB2XLST,
 		TCD_XLSX2XLSB,
+		TCD_XLST2XLSB,
 
 		TCD_PPTX2PPTT,
 		TCD_PPTT2PPTX,
@@ -915,6 +916,8 @@ namespace NExtractTools
 					sSaveType = _T(" saveFileType='3'");
 				else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == *m_nFormatTo)
 					nFileType = 2;
+				else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB == *m_nFormatTo)
+					nFileType = 4;
 			}
 			sRes = L"<xmlOptions><fileOptions fileType='" + std::to_wstring(nFileType);
 			sRes += L"' codePage='" + std::to_wstring(nCsvEncoding);
@@ -961,6 +964,15 @@ namespace NExtractTools
 				if (TCD_AUTO != eRes)
 					return eRes;
 
+				if ((nFormatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF ||
+					 nFormatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM ||
+					 nFormatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF) &&
+					 nFormatTo == AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF)
+				{
+					nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF;
+					*m_nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF;
+				}
+
 				if (NULL != m_oMailMergeSend)
 					eRes = TCD_MAILMERGE;
 				else if ((AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == nFormatFrom) && 0 != (AVS_OFFICESTUDIO_FILE_OTHER & nFormatTo))
@@ -968,25 +980,25 @@ namespace NExtractTools
 				else if ((AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == nFormatFrom) && (0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo) || (AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatTo)))
 					eRes = TCD_SPREADSHEET2;
 				else if (0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatFrom))
-                    eRes = TCD_DOCUMENT2;
-                else if (0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatFrom))
-                    eRes = TCD_SPREADSHEET2;
-                else if (0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & nFormatFrom))
-                    eRes = TCD_PRESENTATION2;
-                else if (0 != (AVS_OFFICESTUDIO_FILE_DRAW & nFormatFrom))
-                    eRes = TCD_DRAW2;
-                else if (0 != (AVS_OFFICESTUDIO_FILE_TEAMLAB & nFormatFrom))
-                    eRes = TCD_T2;
-                else if (AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatFrom)
-                    eRes = TCD_DOCT_BIN2;
-                else if (AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatFrom)
-                    eRes = TCD_XLST_BIN2;
-                else if (AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == nFormatFrom)
-                    eRes = TCD_PPTT_BIN2;
-                else if (0 != (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM & nFormatFrom))
-                    eRes = TCD_CROSSPLATFORM2;
-                else if (AVS_OFFICESTUDIO_FILE_CANVAS_PDF == nFormatFrom)
-                    eRes = TCD_CANVAS_PDF2;
+					eRes = TCD_DOCUMENT2;
+				else if (0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatFrom))
+					eRes = TCD_SPREADSHEET2;
+				else if (0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & nFormatFrom))
+					eRes = TCD_PRESENTATION2;
+				else if (0 != (AVS_OFFICESTUDIO_FILE_DRAW & nFormatFrom))
+					eRes = TCD_DRAW2;
+				else if (0 != (AVS_OFFICESTUDIO_FILE_TEAMLAB & nFormatFrom))
+					eRes = TCD_T2;
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatFrom)
+					eRes = TCD_DOCT_BIN2;
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatFrom)
+					eRes = TCD_XLST_BIN2;
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == nFormatFrom)
+					eRes = TCD_PPTT_BIN2;
+				else if (0 != (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM & nFormatFrom))
+					eRes = TCD_CROSSPLATFORM2;
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_PDF == nFormatFrom)
+					eRes = TCD_CANVAS_PDF2;
 				else if (AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO == nFormatFrom)
 					eRes = TCD_MSCRYPT2;
 				else if (AVS_OFFICESTUDIO_FILE_OTHER_MS_MITCRYPTO == nFormatFrom)
@@ -1164,7 +1176,6 @@ namespace NExtractTools
 					formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2 ||
 					formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_MOBI ||
 					formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT ||
-					formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT ||
 					formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER ||
 					formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF)
 				{
@@ -1305,6 +1316,10 @@ namespace NExtractTools
 		NSDoctRenderer::DoctRendererFormat::FormatFile eType,
 		std::wstring& sBinTo,
 		const InputParams& params, const ConvertParams& convertParams);
+
+	bool copyImagesFromChanges(NSDoctRenderer::CDoctrenderer* pDoctRenderer,
+							   const std::wstring& sSrcImagesDir, const std::wstring& sChangesDir,
+							   const std::wstring& sResultDirectory);
 
 } // namespace NExtractTools
 #endif // CEXTRACTTOOLS_H

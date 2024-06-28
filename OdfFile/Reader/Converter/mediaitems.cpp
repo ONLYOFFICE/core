@@ -64,7 +64,7 @@ bool is_internal(const std::wstring & uri, const std::wstring & packetRoot)
 	std::wstring testRoot = pathRoot.GetPath();
 	std::wstring testFile = pathFile.GetPath();
 
-	return (NSFile::CFileBinary::Exists(resultPath) || NSDirectory::Exists(mediaPath)) && (std::wstring::npos != testFile.find(testRoot));
+	return (NSFile::CFileBinary::Exists(testFile) || NSDirectory::Exists(testFile)) && (std::wstring::npos != testFile.find(testRoot));
 }
 
 mediaitems::item::item(std::wstring const & _href,_rels_type _type, std::wstring const & _outputName,
@@ -270,6 +270,7 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, _rels_type type,
 	}
 	else if ( type == typeMsObject || type == typeOleObject)
 	{
+		isMediaInternal = is_internal(href, odf_packet_);
 		sub_path = L"embeddings/";
 	}
 	else if ( type == typeControlProps)

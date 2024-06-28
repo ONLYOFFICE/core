@@ -55,7 +55,6 @@ m_pStorageDecrypt(NULL),
 m_pDecryptor(NULL),
 m_arOffsetPictures()
 {
-    m_VbaProjectStg = NULL;
     m_pDocumentInfo = NULL;
     m_lIndexThisUser = -1;
 
@@ -90,7 +89,6 @@ void CPPTUserInfo::Clear()
 
     RELEASEOBJECT(m_pDecryptor);
     RELEASEOBJECT(m_pStorageDecrypt);
-    RELEASEOBJECT(m_VbaProjectStg);
 
     for (std::map<_UINT32, CRecordSlide*>::iterator pPair = m_mapSlides.begin(); pPair != m_mapSlides.end(); ++pPair)
     {
@@ -411,51 +409,7 @@ bool CPPTUserInfo::ReadDocumentPersists(POLE::Stream* pStream)
             m_mapHandoutMasters.insert(std::pair<_UINT32, CRecordSlide*>(0, pSlide));
         }
     }
-    if (m_bMacros)
-    {
-        m_bMacros = false;
-        std::vector<CRecordDocInfoListContainer*> oArrayDocInfo;
-        m_oDocument.GetRecordsByType(&oArrayDocInfo, true, true);
 
-        CRecordVBAInfoAtom* pVbaAtom = nullptr;
-        if (!oArrayDocInfo.empty())
-            pVbaAtom = oArrayDocInfo[0]->getVBAInfoAtom();
-
-        if (pVbaAtom)
-        {
-            if (pVbaAtom->m_nHasMacros)
-            {
-                nIndexPsrRef = m_mapOffsetInPIDs.find(pVbaAtom->m_nObjStgDataRef);
-
-                if (m_mapOffsetInPIDs.end() != nIndexPsrRef)
-                {
-                    offset_stream = nIndexPsrRef->second;
-                    StreamUtils::StreamSeek(offset_stream, pStream);
-
-                    POLE::Stream* pStreamTmp = pStream;
-                    if (m_pDecryptor)
-                    {
-                        DecryptStream(pStream, pVbaAtom->m_nObjStgDataRef);
-                        pStreamTmp = m_arStreamDecrypt.back()->stream_;
-                    }
-                    oHeader.ReadFromStream(pStreamTmp);
-
-                    m_VbaProjectStg = new CRecordVbaProjectStg(m_pDocumentInfo->m_pCommonInfo->tempPath);
-                    m_VbaProjectStg->ReadFromStream(oHeader, pStreamTmp);
-
-                    if (m_VbaProjectStg->m_sFileName.empty())
-                    {
-                        RELEASEOBJECT(m_VbaProjectStg);
-                    }
-                    else
-                    {
-                        m_sVbaProjectFile = m_VbaProjectStg->m_sFileName;
-                        m_bMacros = true;
-                    }
-                }
-            }
-        }
-    }
     return true;
 }
 //--------------------------------------------------------------------------------------------
@@ -506,6 +460,27 @@ void CPPTUserInfo::ReadExtenalObjects()
     {
         m_bIsSetupEmpty = TRUE;
         m_arrBlipStore[0]->SetUpPicturesInfos(&m_arOffsetPictures);
+    }
+    
+    if (m_bMacroEnabled)
+    {
+        m_bMacroEnabled = false;
+        std::vector<CRecordDocInfoListContainer*> oArrayDocInfo;
+        m_oDocument.GetRecordsByType(&oArrayDocInfo, true, true);
+
+        CRecordVBAInfoAtom* pVbaAtom = nullptr;
+        if (!oArrayDocInfo.empty())
+            pVbaAtom = oArrayDocInfo[0]->getVBAInfoAtom();
+
+        if (pVbaAtom)
+        {
+            if (pVbaAtom->m_nHasMacros)
+            {
+                m_sVbaProjectFile = m_pDocumentInfo->GetBinFromStg(L"vbaProject.bin", pVbaAtom->m_nObjStgDataRef);
+
+                m_bMacroEnabled = (false == m_sVbaProjectFile.empty());
+            }
+        }
     }
 }
 
@@ -2380,9 +2355,10 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
             {
                 PPT::CExFilesInfo oInfo;
 
-                oInfo.m_strFilePath = m_oExMedia.m_strPresentationDirectory + FILE_SEPARATOR_STR + oArrayStrings[0]->m_strText + L".audio";
+                oInfo.m_strFilePath = m_oExMedia.m_strPresentationDirectory + FILE_SEPARATOR_STR + L"audio" + std::to_wstring(m_oExMedia.m_arAudioCollection.size() + 1) + L".audio";
                 oInfo.m_dwID = (_UINT32)XmlUtils::GetInteger(oArrayStrings[2]->m_strText.c_str());
                 oInfo.m_name = oArrayStrings[0]->m_strText;
+                oInfo.m_strFileExt = oArrayStrings[1]->m_strText;
 
                 m_oExMedia.m_arAudioCollection.push_back(oInfo);
                 oArrayData[0]->SaveToFile(oInfo.m_strFilePath);
@@ -2394,15 +2370,22 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
         return;
 
     // читаем видео ----------------------------------------------
-    std::vector<CRecordExVideoContainer*> oArray;
-    pExObjects->GetRecordsByType(&oArray, true);
+    std::vector<CRecordExVideoContainer*> oArrayVideo;
+    pExObjects->GetRecordsByType(&oArrayVideo, true);
 
-    for (size_t nIndex = 0; nIndex < oArray.size(); ++nIndex)
+    for (size_t nIndex = 0; nIndex < oArrayVideo.size(); ++nIndex)
     {
-        LoadExVideo(oArray[nIndex]);
+        LoadExVideo(oArrayVideo[nIndex]);
     }
+    // читаем ole ----------------------------------------------
+    std::vector<CRecordExOleEmbedContainer*> oArrayObj;
+    pExObjects->GetRecordsByType(&oArrayObj, true);
 
-    oArray.clear();
+    for (size_t nIndex = 0; nIndex < oArrayObj.size(); ++nIndex)
+    {
+        LoadExOleObject(oArrayObj[nIndex]);
+    }
+    oArrayObj.clear();
     // -----------------------------------------------------------
 
     // читаем аудио ----------------------------------------------
@@ -2528,8 +2511,44 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
 
     }
 }
+void CPPTUserInfo::LoadExOleObject(CRecordsContainer* pExObject)
+{
+    //exOleEmbedAtom
+    //exOleObjAtom
+    //menuNameAtom
+    //progIdAtom
+    //clipboardNameAtom
+    //metafile(variable)
 
+    std::vector<CRecordExOleEmbedAtom*> oArrayExOleEmbed;
+    std::vector<CRecordExOleObjAtom*> oArrayExOleObj;
+    std::vector<CRecordCString*> oArrayCString;
 
+    pExObject->GetRecordsByType(&oArrayExOleEmbed, false);
+    pExObject->GetRecordsByType(&oArrayExOleObj, false);
+    pExObject->GetRecordsByType(&oArrayCString, false);
+
+     if (1 == oArrayExOleObj.size())
+     {
+         PPT::CExFilesInfo oInfo;
+
+         oInfo.m_dwID = oArrayExOleObj[0]->m_nExObjID;
+
+         if (oArrayCString.size() > 0)
+            oInfo.m_name = oArrayCString[0]->m_strText;
+
+         if (oArrayCString.size() > 1)
+             oInfo.m_progName = oArrayCString[1]->m_strText;
+
+         oInfo.m_strFilePath = m_pDocumentInfo->GetBinFromStg(L"", oArrayExOleObj[0]->m_nPersistID); // ExOleObjStg || ExControlStg
+         
+         m_oExMedia.m_arOleObjects.push_back(oInfo);
+     }
+
+     oArrayExOleEmbed.clear();
+     oArrayExOleObj.clear();
+     oArrayCString.clear();
+}
 
 void CPPTUserInfo::LoadExVideo(CRecordsContainer* pExObject)
 {

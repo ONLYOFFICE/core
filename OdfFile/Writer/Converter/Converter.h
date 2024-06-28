@@ -542,6 +542,7 @@ public:
 		void convert(PPTX::Logic::NvPr							*oox_nvPr);
 		void convert(PPTX::Logic::Paragraph						*oox_para, PPTX::Logic::TextListStyle *oox_list_style = NULL);		
 		void convert(PPTX::Logic::TextListStyle					*oox_list_style);
+		void convert(PPTX::Logic::Hyperlink						*oox_hyperlink);
 		
 		void convert_list_level	(PPTX::Logic::TextParagraphPr	*oox_para_props, int level);
 

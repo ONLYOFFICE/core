@@ -57,7 +57,7 @@ namespace OOX
             WritingElement_XlsbConstructors(CSharedItems)
 			CSharedItems(){}
 			virtual ~CSharedItems() {}
-			
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -68,12 +68,14 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_SharedItems;
 			}
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			XLS::BaseObjectPtr writeAttributes(const unsigned char flags);
 
 			nullable_bool		m_oContainsBlank;
 			nullable_bool		m_oContainsDate;
@@ -83,7 +85,7 @@ namespace OOX
 			nullable_bool		m_oContainsNumber;
 			nullable_bool		m_oContainsSemiMixedTypes;
 			nullable_bool		m_oContainsString;
-			
+
 			nullable_bool									m_oLongText;
 			nullable_double									m_oMinValue;
 			nullable_double									m_oMaxValue;
@@ -98,7 +100,7 @@ namespace OOX
             WritingElement_XlsbConstructors(COLAPGroupItems)
 			COLAPGroupItems(){}
 			virtual ~COLAPGroupItems() {}
-			
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -109,6 +111,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_OLAPGroupItems;
@@ -124,7 +127,7 @@ namespace OOX
             WritingElement_XlsbConstructors(CDiscreteGroupingProperties)
 			CDiscreteGroupingProperties(){}
 			virtual ~CDiscreteGroupingProperties() {}
-			
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -135,6 +138,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_DiscreteGroupingProperties;
@@ -150,7 +154,7 @@ namespace OOX
             WritingElement_XlsbConstructors(CRangeGroupingProperties)
 			CRangeGroupingProperties(){}
 			virtual ~CRangeGroupingProperties() {}
-			
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -161,6 +165,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_RangeGroupingProperties;
@@ -177,9 +182,9 @@ namespace OOX
 			nullable<SimpleTypes::CDateTime>	m_oEndDate;
 
 			nullable_double						m_oStartNum;
-			nullable_double						m_oEndNum;			
+			nullable_double						m_oEndNum;
 			nullable_double						m_oGroupInterval;
-			
+
 		};
 		class CFieldGroupProperties : public WritingElement
 		{
@@ -188,7 +193,7 @@ namespace OOX
             WritingElement_XlsbConstructors(CFieldGroupProperties)
 			CFieldGroupProperties(){}
 			virtual ~CFieldGroupProperties() {}
-			
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -199,6 +204,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_FieldGroupProperties;
@@ -208,7 +214,7 @@ namespace OOX
 
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oBase;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oPar;
-			
+
 			nullable<CDiscreteGroupingProperties>	m_oDiscretePr;
 			nullable<CRangeGroupingProperties>		m_oRangePr;
 			nullable<COLAPGroupItems>				m_oGroupItems;
@@ -220,7 +226,7 @@ namespace OOX
             WritingElement_XlsbConstructors(CPivotCacheField)
 			CPivotCacheField(){}
 			virtual ~CPivotCacheField() {}
-			
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -230,11 +236,13 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			XLS::BaseObjectPtr toBin();
             void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_PivotCacheField;
 			}
+			XLS::BaseObjectPtr writeAttributes();
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
@@ -252,7 +260,7 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oLevel;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oMappingCount;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oNumFmtId;
-			
+
 			nullable<CSharedItems>							m_oSharedItems;
 			//nullable<CMemberPropertiesMap>				m_oMpMap;
 			nullable<CFieldGroupProperties>					m_oFieldGroup;
@@ -265,7 +273,7 @@ namespace OOX
             WritingElement_XlsbConstructors(CPivotCacheFields)
 			CPivotCacheFields(){}
 			virtual ~CPivotCacheFields() {}
-			
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -276,6 +284,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_PivotCacheFields;
@@ -291,7 +300,7 @@ namespace OOX
             WritingElement_XlsbConstructors(CRangeSet)
 			CRangeSet(){}
 			virtual ~CRangeSet() {}
-			
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -302,6 +311,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_RangeSet;
@@ -325,7 +335,7 @@ namespace OOX
             WritingElement_XlsbConstructors(CRangeSets)
 			CRangeSets(){}
 			virtual ~CRangeSets() {}
-			
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -336,6 +346,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_RangeSets;
@@ -351,7 +362,7 @@ namespace OOX
             WritingElement_XlsbConstructors(CPageItem)
 			CPageItem(){}
 			virtual ~CPageItem() {}
-			
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -362,6 +373,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_PageItem;
@@ -378,7 +390,7 @@ namespace OOX
             WritingElement_XlsbConstructors(CPageItems)
 			CPageItems(){}
 			virtual ~CPageItems() {}
-			
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -389,6 +401,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_PageItems;
@@ -404,7 +417,7 @@ namespace OOX
             WritingElement_XlsbConstructors(CPageItemValues)
 			CPageItemValues(){}
 			virtual ~CPageItemValues() {}
-			
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -415,6 +428,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_PageItemValues;
@@ -447,12 +461,13 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_ConsolidationSource;
 			}
             void ReadAttributes(XLS::BaseObjectPtr& obj);
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);		
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 	//----------
 			nullable_bool				m_oAutoPage;
 
@@ -466,7 +481,7 @@ namespace OOX
             WritingElement_XlsbConstructors(CWorksheetSource)
 			CWorksheetSource(){}
 			virtual ~CWorksheetSource() {}
-			
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -477,6 +492,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_WorksheetSource;
@@ -511,12 +527,13 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_PivotCacheSource;
 			}
             void ReadAttributes(XLS::BaseObjectPtr& obj);
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);		
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 	//----------
 			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oConnectionId;
 			nullable<SimpleTypes::Spreadsheet::CSourceCacheType>	m_oType;
@@ -524,7 +541,7 @@ namespace OOX
 			nullable<CConsolidationSource>							m_oConsolidation;
 			nullable<CWorksheetSource>								m_oWorksheetSource;
 			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
-		};        
+		};
 		class CPivotCacheDefinition : public WritingElement
 		{
 		public:
@@ -547,12 +564,14 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_PivotCacheDefinition;
 			}
+			XLS::BaseObjectPtr writeAttributes();
             void ReadAttributes(XLS::BaseObjectPtr& obj);
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);		
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 	//----------
 			nullable_bool									m_oBackgroundQuery;
 			nullable_bool									m_oEnableRefresh;
@@ -591,10 +610,10 @@ namespace OOX
 			CPivotCacheDefinitionFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
-				
+
 				m_pData = NULL;
 				m_nDataLength = 0;
-               
+
 				bIsWritten = false;
 			}
 			CPivotCacheDefinitionFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
@@ -626,9 +645,9 @@ namespace OOX
                     const std::string srIdRecordsA( srIdRecords.begin(), srIdRecords.end() );
                     std::string rIdAttr = " r:id=\""+ srIdRecordsA +"\"";
                     m_nDataLength = length + (long)rIdAttr.length();
-                   
+
 					m_pData = new BYTE[m_nDataLength];
-                   
+
 					long nTreshold = 220;
                     memcpy(m_pData, pData, nTreshold);
                     memcpy(m_pData + nTreshold, rIdAttr.c_str(), rIdAttr.length());
@@ -642,12 +661,10 @@ namespace OOX
                 }
             }
             void readBin(const CPath& oPath);
+			XLS::BaseObjectPtr WriteBin() const;
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
-			virtual const OOX::FileType type() const
-			{
-				return OOX::Spreadsheet::FileTypes::PivotCacheDefinition;
-			}
+			virtual const OOX::FileType type() const;
 			virtual const CPath DefaultDirectory() const
 			{
 				return type().DefaultDirectory();
@@ -664,7 +681,7 @@ namespace OOX
 			nullable<CPivotCacheDefinition> m_oPivotCashDefinition;
 		private:
 			CPath m_oReadPath;
-			
+
 			BYTE *m_pData;
 			long m_nDataLength;
 
@@ -678,7 +695,7 @@ namespace OOX
             WritingElement_XlsbConstructors(CPivotCharacterValue)
 			CPivotCharacterValue(){}
 			virtual ~CPivotCharacterValue() {}
-			
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -689,19 +706,20 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_PivotCharacterValue;
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
-			
+
 			nullable_string		m_oValue;
 			nullable_string		m_oCaption;
 			nullable_bool		m_oCalculated;
 			nullable_bool		m_oUnused;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
-			
+
 			nullable_bool									m_oBold;
 			nullable_bool									m_oItalic;
 			nullable_bool									m_oStrike;
@@ -711,7 +729,7 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oFormatIndex;
 
 			//tpls
-		};	
+		};
 		class CPivotBooleanValue : public WritingElementWithChilds<CMemberPropertyIndex>
 		{
 		public:
@@ -719,7 +737,7 @@ namespace OOX
             WritingElement_XlsbConstructors(CPivotBooleanValue)
 			CPivotBooleanValue(){}
 			virtual ~CPivotBooleanValue() {}
-			
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -730,6 +748,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_PivotBooleanValue;
@@ -742,7 +761,7 @@ namespace OOX
 			nullable_bool		m_oCalculated;
 			nullable_bool		m_oUnused;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
-		};		
+		};
 		class CPivotNumericValue : public WritingElementWithChilds<CMemberPropertyIndex>
 		{
 		public:
@@ -750,7 +769,7 @@ namespace OOX
             WritingElement_XlsbConstructors(CPivotNumericValue)
 			CPivotNumericValue(){}
 			virtual ~CPivotNumericValue() {}
-			
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -761,19 +780,20 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_PivotNumericValue;
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
-			
+
 			nullable_double		m_oValue;
 			nullable_string		m_oCaption;
 			nullable_bool		m_oCalculated;
 			nullable_bool		m_oUnused;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
-			
+
 			nullable_bool									m_oBold;
 			nullable_bool									m_oItalic;
 			nullable_bool									m_oStrike;
@@ -783,7 +803,7 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oFormatIndex;
 
 			//tpls
-		};		
+		};
 		class CPivotDateTimeValue : public WritingElementWithChilds<CMemberPropertyIndex>
 		{
 		public:
@@ -791,7 +811,7 @@ namespace OOX
             WritingElement_XlsbConstructors(CPivotDateTimeValue)
 			CPivotDateTimeValue(){}
 			virtual ~CPivotDateTimeValue() {}
-			
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -802,13 +822,14 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
-				return et_x_PivotBooleanValue;
+                return et_x_PivotDateTimeValue;
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
-			
+
 			nullable<SimpleTypes::CDateTime>	m_oValue;
 			nullable_string						m_oCaption;
 			nullable_bool						m_oCalculated;
@@ -822,7 +843,7 @@ namespace OOX
             WritingElement_XlsbConstructors(CPivotErrorValue)
 			CPivotErrorValue(){}
 			virtual ~CPivotErrorValue() {}
-			
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -833,19 +854,20 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_PivotErrorValue;
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
-			
+
 			nullable_string		m_oValue;
 			nullable_string		m_oCaption;
 			nullable_bool		m_oCalculated;
 			nullable_bool		m_oUnused;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
-			
+
 			nullable_bool									m_oBold;
 			nullable_bool									m_oItalic;
 			nullable_bool									m_oStrike;
@@ -855,7 +877,7 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oFormatIndex;
 
 			//tpls
-		};	
+		};
 		class CPivotNoValue : public WritingElementWithChilds<CMemberPropertyIndex>
 		{
 		public:
@@ -863,7 +885,7 @@ namespace OOX
             WritingElement_XlsbConstructors(CPivotNoValue)
 			CPivotNoValue(){}
 			virtual ~CPivotNoValue() {}
-			
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -874,18 +896,19 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_PivotNoValue;
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
-			
+
 			nullable_string		m_oCaption;
 			nullable_bool		m_oCalculated;
 			nullable_bool		m_oUnused;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
-			
+
 			nullable_bool									m_oBold;
 			nullable_bool									m_oItalic;
 			nullable_bool									m_oStrike;
@@ -895,7 +918,7 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oFormatIndex;
 
 			//tpls
-		};		
-		
+		};
+
 	} //Spreadsheet
 } // namespace OOX

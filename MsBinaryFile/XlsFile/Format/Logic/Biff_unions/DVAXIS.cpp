@@ -86,7 +86,11 @@ const bool DVAXIS::loadContent(BinProcessor& proc)
 	m_Axis = elements_.back();
 	elements_.pop_back();
 
-	proc.mandatory<Begin>();				elements_.pop_back();
+	if (!proc.mandatory<Begin>())
+	{
+		return true;
+	}
+	elements_.pop_back();
 	
 	if (proc.optional<ValueRange>())
 	{
@@ -186,7 +190,10 @@ int DVAXIS::serialize(std::wostream & _stream)
 			}
 		}
 //----------------------------------------------------------------------------------------------
-		m_AXS->serialize(_stream);
+		if (m_AXS)
+		{
+			m_AXS->serialize(_stream);
+		}
 
 		if (value_range)
 		{

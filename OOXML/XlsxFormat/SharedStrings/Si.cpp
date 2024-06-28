@@ -130,6 +130,61 @@ namespace OOX
 					m_arrItems.push_back( pItem );
 			}
 		}
+		XLS::BaseObjectPtr CSi::toBin() const
+		{
+			auto sString(new XLSB::SSTItem);
+			XLS::BaseObjectPtr objectPtr(sString);
+			auto ptr = &sString->richStr;
+			ptr->fExtStr = false;
+			ptr->fRichStr = false;
+			for(auto i = 0; i < m_arrItems.size(); i++)
+			{
+				
+				
+				if(m_arrItems[i]->getType() == OOX::et_x_t)
+				{
+					auto text = static_cast<CText*>(m_arrItems[i]);
+					ptr->str = text->ToString();
+					continue;
+				}
+				
+				if(m_arrItems[i]->getType() == OOX::et_x_r)
+				{
+					auto crunPtr = static_cast<CRun*>(m_arrItems[i]);
+					ptr->fRichStr = true;
+					USHORT ind = 0;
+					ptr->str = ptr->str.value() + crunPtr->toBin(ind);
+					XLSB::StrRun run;
+					run.ifnt = ind;
+					run.ich = ptr->str.value().size();
+					ptr->rgsStrRun.push_back(run);
+					continue;
+				}
+				auto phonPtr = static_cast<CPhonetic*>(m_arrItems[i]);
+				if(phonPtr)
+				{
+					ptr->fExtStr = true;
+					ptr->phoneticStr = L"";
+					XLSB::PhRun phRun;
+					phonPtr->toBin(&phRun);
+					if(i < m_arrItems.size() - 1)
+					{
+						auto ph = static_cast<CRPh*>(m_arrItems[i+1]);
+						if(ph)
+						{
+							auto phoneticStr  = ph->toBin(&phRun);
+							if(!phoneticStr.empty())
+								ptr->phoneticStr = phoneticStr;
+						}
+						i++;
+					}
+
+					ptr->rgsPhRun.push_back(phRun);
+				}
+			}
+
+			return objectPtr;
+		}
 		void CSi::fromBin(XLS::BiffStructure& obj, bool flagIsComment)
 		{
 			auto ptr = static_cast<XLSB::RichStr*>(&obj);

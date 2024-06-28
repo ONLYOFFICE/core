@@ -68,7 +68,7 @@ void CCommandManager::Flush()
     size_t nCommandsCount = m_vCommands.size();
     if (nCommandsCount > 0)
     {
-        PdfWriter::CPage* pPage = m_pRenderer->m_pPage;
+        PdfWriter::CPage* pPage = m_pRenderer->GetPage();
         pPage->GrSave();
 
         pPage->SetTransform(m_oTransform.m11, m_oTransform.m12, m_oTransform.m21, m_oTransform.m22, m_oTransform.dx, m_oTransform.dy);
@@ -177,7 +177,7 @@ void CCommandManager::Flush()
                 double         dX        = pText->GetX();
                 double         dY        = pText->GetY();
                 double         dTextSize = pText->GetSize();
-                double         dWidth    = ((PdfWriter::CFontCidTrueType*)pText->GetFont())->GetWidth(ushCode) / 1000.0 * dTextSize;
+                double         dWidth    = pText->GetFont()->GetWidth(ushCode) / 1000.0 * dTextSize;
 
                 if (!oTextLine.Add(pCodes, unLen, dX, dY, dWidth, dTextSize))
                 {

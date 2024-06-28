@@ -55,6 +55,7 @@ namespace SimpleTypes
 		class CPaneState;
 		class CSheetViewType;
 		class CDataConsolidateFunction;
+		class CUserProtectedRangeType;
 	}
 }
 
@@ -79,6 +80,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType() const;
 
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
@@ -108,6 +110,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
+			std::vector<XLS::BaseObjectPtr> toBin();
 			virtual EElementType getType() const;
 		};
 
@@ -169,6 +172,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const;
 
 		private:
@@ -199,6 +203,8 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toBinCs();
 			virtual EElementType getType () const;
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
@@ -241,6 +247,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const;
 
 		private:
@@ -269,6 +276,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
+			XLS::BaseObjectPtr toBin();
 			void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const;
 
@@ -295,6 +303,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const;
 
 		private:
@@ -328,6 +337,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const;
 
 		private:
@@ -357,6 +367,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const;
 
 		private:
@@ -388,6 +399,8 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toBinCs();
 			virtual EElementType getType () const;
 
 		private:
@@ -433,6 +446,8 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toBinCs();
 			virtual EElementType getType () const;
 		};
 
@@ -451,6 +466,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			void toBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const;
 
 		private:
@@ -477,6 +493,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			void toBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const;
 
 		private:
@@ -505,6 +522,8 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toBinCs();
 			virtual EElementType getType () const;
 
 		private:
@@ -564,6 +583,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
+			XLS::BaseObjectPtr toBin();
 			void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const;
 
@@ -601,6 +621,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const;
 
 		private:
@@ -644,6 +665,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const;
 
 		private:
@@ -669,6 +691,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const;
 
 		private:
@@ -699,6 +722,8 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBinColumn();
+			XLS::BaseObjectPtr toBinRow();
 
 			virtual EElementType getType () const;
 
@@ -726,6 +751,8 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toBinCS();
 			virtual EElementType getType () const;
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
@@ -771,6 +798,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const;
 
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
@@ -797,6 +825,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const;
 
 		private:
@@ -821,6 +850,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const;
 
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
@@ -841,6 +871,7 @@ namespace OOX
 			{
 				nullable_string id;
 				nullable_string name;
+				nullable<SimpleTypes::Spreadsheet::CUserProtectedRangeType> type;
 			};
 
 			WritingElement_AdditionMethods(CUserProtectedRange)
@@ -860,6 +891,7 @@ namespace OOX
 			nullable_string m_oName;
 			nullable_string m_oSqref;
 			nullable_string m_oText;
+			nullable<SimpleTypes::Spreadsheet::CUserProtectedRangeType> m_oType;
 
 			std::vector<_UsersGroupsDesc> m_arUsers;
 			std::vector<_UsersGroupsDesc> m_arUsersGroups;

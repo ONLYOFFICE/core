@@ -92,6 +92,19 @@ void odp_page_state::set_page_duration(int id)
 	page_properties_->content_.presentation_page_duration_  = id;
 }
 
+void odp_page_state::hide_page()
+{
+	style* office_page_style_ = dynamic_cast<style*>(page_style_elm_.get());
+	if (!office_page_style_)
+		return;
+
+	drawing_page_properties* page_props = office_page_style_->content_.get_drawing_page_properties();
+	if (!page_props)
+		return;
+
+	page_props->presentation_visibility_ = presentation_visibility::hidden;
+}
+
 void odp_page_state::set_layout_page(std::wstring name)
 {
 	if (name.empty())return;
@@ -390,6 +403,18 @@ void odp_page_state::set_anim_animation_to(const std::wstring& val)
 	anim_levels.back().animate_attlist->smil_to_ = val;
 }
 
+void odp_page_state::set_anim_animation_type(const odf_types::svg_type& val)
+{
+	if (anim_levels.empty())		return;
+	if (!anim_levels.back().attlist)return;
+
+	anim_animate* animate = dynamic_cast<anim_animate*>(anim_levels.back().elm.get());
+	if (!animate)
+		return;
+
+	anim_levels.back().animate_attlist->svg_type_ = val;
+}
+
 void odp_page_state::set_anim_transition_filter_mode(const std::wstring& val)
 {
 	if (anim_levels.empty())		return;
@@ -602,19 +627,19 @@ void odp_page_state::set_transition_speed(int val)
 		{
 			if (page_properties_)
 				page_properties_->content_.presentation_transition_speed_ = L"fast";
-			trans->common_attlist_.smil_dur_ = odf_types::clockvalue(2000);
+			trans->common_attlist_.smil_dur_ = odf_types::clockvalue(250);
 		}
 		if (val == 1)
 		{
 			if (page_properties_)
 				page_properties_->content_.presentation_transition_speed_ = L"medium";
-			trans->common_attlist_.smil_dur_ = odf_types::clockvalue(3000);
+			trans->common_attlist_.smil_dur_ = odf_types::clockvalue(500);
 		}
 		if (val == 2)
 		{
 			if (page_properties_)
 				page_properties_->content_.presentation_transition_speed_ = L"slow";
-			trans->common_attlist_.smil_dur_ = odf_types::clockvalue(4000);
+			trans->common_attlist_.smil_dur_ = odf_types::clockvalue(1000);
 		}
 	}
 }

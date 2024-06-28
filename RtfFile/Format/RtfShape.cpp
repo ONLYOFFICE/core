@@ -867,7 +867,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
             std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_oCharProperty.m_nRevauth);
             std::wstring sDate(RtfUtility::convertDateTime(m_oCharProperty.m_nRevdttm).c_str());
 			
-			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + XmlUtils::EncodeXmlString(sAuthor) + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_oCharProperty.m_nRevised = PROP_DEF;
 		}
 		if (m_oCharProperty.m_nDeleted != PROP_DEF)
@@ -877,7 +877,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
             std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_oCharProperty.m_nRevauthDel);
             std::wstring sDate(RtfUtility::convertDateTime(m_oCharProperty.m_nRevdttmDel).c_str());
 			
-			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + XmlUtils::EncodeXmlString(sAuthor) + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_oCharProperty.m_nDeleted = PROP_DEF;
 		}
         std::wstring sCharProp = m_oCharProperty.RenderToOOX(oRenderParameter);
@@ -1017,10 +1017,14 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 				nWidth -= m_oPicture->m_nCropR;
 
 			double nHeight = m_oPicture->m_nHeightGoal * m_oPicture->m_dScaleY / 100.f;
+			
 			if( PROP_DEF != m_oPicture->m_nCropT )
 				nHeight -= m_oPicture->m_nCropT;
 			if( PROP_DEF != m_oPicture->m_nCropB )
 				nHeight -= m_oPicture->m_nCropB;
+
+			nWidth = std::abs(nWidth);
+			nHeight = std::abs(nHeight);
 
 			if (oRenderParameter.nType ==  RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2)
 				sStyle += L"width:" + XmlUtils::ToString(RtfUtility::Twip2pt(nWidth), L"%.2f") + L";height:" + XmlUtils::ToString(RtfUtility::Twip2pt(nHeight), L"%.2f") + L";";

@@ -1,5 +1,8 @@
 #include "json_values.h"
 
+// for string <=> wstring conversion
+#include "../../common/File.h"
+
 namespace NSJSON
 {
 	IBaseValue::IBaseValue()
@@ -62,7 +65,7 @@ namespace NSJSON
 
 	bool CPrimitive::isDouble() const
 	{
-		return m_type == ptDouble;
+		return m_type == ptDouble || m_type == ptInteger;
 	}
 
 	bool CPrimitive::isStringA() const
@@ -113,6 +116,12 @@ namespace NSJSON
 	{
 		if (m_type == ptStringA)
 			return m_string;
+
+		if (m_type == ptStringW)
+		{
+			return U_TO_UTF8(m_wstring);
+		}
+
 #ifdef JSON_DEBUG
 		throw std::bad_cast();
 #endif
@@ -123,6 +132,12 @@ namespace NSJSON
 	{
 		if (m_type == ptStringW)
 			return m_wstring;
+
+		if (m_type == ptStringA)
+		{
+			return UTF8_TO_U(m_string);
+		}
+
 #ifdef JSON_DEBUG
 		throw std::bad_cast();
 #endif

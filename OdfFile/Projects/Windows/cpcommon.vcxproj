@@ -249,9 +249,11 @@
     <ClInclude Include="..\..\DataTypes\percentorscale.h" />
     <ClInclude Include="..\..\DataTypes\presentationclass.h" />
     <ClInclude Include="..\..\DataTypes\presentationnodetype.h" />
+    <ClInclude Include="..\..\DataTypes\presentationvisibility.h" />
     <ClInclude Include="..\..\DataTypes\presetclass.h" />
     <ClInclude Include="..\..\DataTypes\presetid.h" />
     <ClInclude Include="..\..\DataTypes\punctuationwrap.h" />
+    <ClInclude Include="..\..\DataTypes\referenceformat.h" />
     <ClInclude Include="..\..\DataTypes\rotationalign.h" />
     <ClInclude Include="..\..\DataTypes\runthrough.h" />
     <ClInclude Include="..\..\DataTypes\scripttype.h" />
@@ -378,9 +380,11 @@
     <ClCompile Include="..\..\DataTypes\percentorscale.cpp" />
     <ClCompile Include="..\..\DataTypes\presentationclass.cpp" />
     <ClCompile Include="..\..\DataTypes\presentationnodetype.cpp" />
+    <ClCompile Include="..\..\DataTypes\presentationvisibility.cpp" />
     <ClCompile Include="..\..\DataTypes\presetclass.cpp" />
     <ClCompile Include="..\..\DataTypes\presetid.cpp" />
     <ClCompile Include="..\..\DataTypes\punctuationwrap.cpp" />
+    <ClCompile Include="..\..\DataTypes\referenceformat.cpp" />
     <ClCompile Include="..\..\DataTypes\rotationalign.cpp" />
     <ClCompile Include="..\..\DataTypes\runthrough.cpp" />
     <ClCompile Include="..\..\DataTypes\scripttype.cpp" />

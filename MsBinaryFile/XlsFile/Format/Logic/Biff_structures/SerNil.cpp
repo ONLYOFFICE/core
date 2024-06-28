@@ -51,6 +51,12 @@ void SerNil::load(CFRecord& record)
 	record.skipNunBytes(8); // reserved/unused
 }
 
+void SerNil::save(CFRecord& record)
+{
+    record.reserveNunBytes(9);
+}
+
+
 const std::wstring SerNil::toString() const
 {
 	return L"";

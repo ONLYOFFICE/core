@@ -219,6 +219,13 @@ namespace NSJSBase
 	{
 		m_internal->context = [[JSContext alloc] init];
 
+#ifdef _DEBUG
+		if (@available(macOS 10.11, iOS 16.0, *))
+		{
+			JSGlobalContextSetInspectable(m_internal->context.JSGlobalContextRef, true);
+		}
+#endif
+
 		ASC_THREAD_ID nThreadId = NSThreads::GetCurrentThreadId();
 		MoveToThread(&nThreadId);
 		if (CGlobalContext::GetInstance().IsOldVersion())
@@ -385,6 +392,25 @@ namespace NSJSBase
 		CJSValueJSC* _value = new CJSValueJSC();
 		_value->value = [JSValue valueWithJSValueRef:oValueJSRef inContext:m_internal->context];
 		return _value;
+	}
+
+	std::string CJSContext::JSON_Stringify(JSSmart<CJSValue> value)
+	{
+		CJSValueJSC* _value = static_cast<CJSValueJSC*>(value.GetPointer());
+		JSStringRef ret = JSValueCreateJSONString(m_internal->context.JSGlobalContextRef, _value->value.JSValueRef, 0, nullptr);
+		if (ret == nullptr)
+			return "";
+
+		const size_t nBufferSize = JSStringGetMaximumUTF8CStringSize(ret);
+		char* buffer = new char[nBufferSize];
+		if (buffer == nullptr)
+			return "";
+
+		JSStringGetUTF8CString(ret, buffer, nBufferSize);
+		std::string sRet(buffer);
+		delete[] buffer;
+
+		return sRet;
 	}
 
 	void CJSContext::MoveToThread(ASC_THREAD_ID* id)

@@ -484,6 +484,20 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 		NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
 
 		oContent.Registration(type().OverrideType(), oDirectory, oPath.GetFilename());
+		if(m_oId.IsInit())
+		{
+			smart_ptr<OOX::File> pFileControlBin;
+			pFileControlBin = this->Find(OOX::RId(m_oId->GetValue()));
+	
+			smart_ptr<OOX::ActiveX_bin> pActiveX_bin = pFileControlBin.smart_dynamic_cast<OOX::ActiveX_bin>();
+
+			if (pActiveX_bin.IsInit())
+			{
+				oContent.Registration(pActiveX_bin->type().OverrideType(), oDirectory, pActiveX_bin->filename().GetFilename());
+			}
+		}
+		
+		
 		IFileContainer::Write(oPath, oDirectory, oContent);
 	}
 	//---------------------------------------------------------------------------------------------------------

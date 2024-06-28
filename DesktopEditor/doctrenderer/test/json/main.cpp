@@ -180,32 +180,18 @@ public:
 						return false;
 				}
 			}
-			else if (value.IsStringA())
-			{
-				if (makeExpects)
-					EXPECT_TRUE(jsValue->isString());
-				if (!jsValue->isString())
-					return false;
-
-				std::string val = value.ToStringA();
-				std::string jsVal = jsValue->toStringA();
-				if (makeExpects)
-					EXPECT_EQ(val, jsVal);
-				if (val != jsVal)
-					return false;
-			}
 			else
 			{
 				if (makeExpects)
 				{
-					EXPECT_TRUE(value.IsStringW());
+					EXPECT_TRUE(value.IsString());
 					EXPECT_TRUE(jsValue->isString());
 				}
 				if (!jsValue->isString())
 					return false;
 
-				std::wstring val = value.ToStringW();
-				std::wstring jsVal = jsValue->toStringW();
+				std::string val = value.ToStringA();
+				std::string jsVal = jsValue->toStringA();
 				if (makeExpects)
 					EXPECT_EQ(val, jsVal);
 				if (val != jsVal)
@@ -261,7 +247,8 @@ TEST_F(CJSONTest, bool_)
 TEST_F(CJSONTest, int_)
 {
 	CValue val = 42;
-	EXPECT_FALSE(val.IsDouble());
+	EXPECT_TRUE(val.IsDouble());
+	EXPECT_TRUE(val.IsInt());
 	JSSmart<CJSValue> jsVal = CJSContext::createInt(42);
 	EXPECT_TRUE(compare(val, jsVal));
 	val = 100;
@@ -338,9 +325,16 @@ TEST_F(CJSONTest, array_from_static_method)
 	arr[2][0] = true;
 	arr[2][1] = 2.5;
 	EXPECT_TRUE(arr[3].IsUndefined());
+#ifdef JSON_DEBUG
+	EXPECT_THROW(arr[100].IsUndefined(), std::out_of_range);
+	EXPECT_THROW(arr[-1].IsUndefined(), std::out_of_range);
+	EXPECT_THROW(arr[5] = 1, std::out_of_range);
+#else
 	EXPECT_TRUE(arr[100].IsUndefined());
 	EXPECT_TRUE(arr[-1].IsUndefined());
 	arr[5] = 1;
+#endif
+	EXPECT_EQ(arr.GetCount(), 4);
 	JSSmart<CJSArray> jsArr = CJSContext::createArray(4);
 	jsArr->set(0, CJSContext::createNull());
 	jsArr->set(1, CJSContext::createInt(42));
@@ -357,9 +351,16 @@ TEST_F(CJSONTest, array_from_initializer_list)
 {
 	CValue arr = {CValue::CreateNull(), 42, {true, 2.5}, CValue::CreateUndefined()};
 	EXPECT_TRUE(arr[3].IsUndefined());
+#ifdef JSON_DEBUG
+	EXPECT_THROW(arr[100].IsUndefined(), std::out_of_range);
+	EXPECT_THROW(arr[-1].IsUndefined(), std::out_of_range);
+	EXPECT_THROW(arr[5] = 1, std::out_of_range);
+#else
 	EXPECT_TRUE(arr[100].IsUndefined());
 	EXPECT_TRUE(arr[-1].IsUndefined());
 	arr[5] = 1;
+#endif
+	EXPECT_EQ(arr.GetCount(), 4);
 	JSSmart<CJSArray> jsArr = CJSContext::createArray(4);
 	jsArr->set(0, CJSContext::createNull());
 	jsArr->set(1, CJSContext::createInt(42));
@@ -377,14 +378,22 @@ TEST_F(CJSONTest, array_empty)
 	CValue arr = CValue::CreateArray(0);
 	EXPECT_TRUE(arr.IsArray());
 	EXPECT_EQ(arr.GetCount(), 0);
+#ifdef JSON_DEBUG
+	EXPECT_THROW(arr[0].IsUndefined(), std::out_of_range);
+#else
 	EXPECT_TRUE(arr[0].IsUndefined());
+#endif
 }
 
 TEST_F(CJSONTest, array_negative_size)
 {
 	CValue arr = CValue::CreateArray(-1);
 	EXPECT_TRUE(arr.IsUndefined());
-	EXPECT_TRUE(arr[100].IsUndefined());
+#ifdef JSON_DEBUG
+	EXPECT_THROW(arr[0].IsUndefined(), std::bad_cast);
+#else
+	EXPECT_TRUE(arr[0].IsUndefined());
+#endif
 }
 
 TEST_F(CJSONTest, typed_array_externalize)
@@ -510,11 +519,19 @@ TEST_F(CJSONTest, constants)
 TEST_F(CJSONTest, wrong_usage)
 {
 	CValue val = 42;
+#ifdef JSON_DEBUG
+	EXPECT_THROW(val["name"].IsUndefined(), std::bad_cast);
+	EXPECT_THROW(val[0].IsUndefined(), std::bad_cast);
+	EXPECT_THROW(val.GetPropertyNames(), std::bad_cast);
+	EXPECT_THROW(val.GetCount(), std::bad_cast);
+	EXPECT_THROW(val.GetData(), std::bad_cast);
+#else
 	EXPECT_TRUE(val["name"].IsUndefined());
 	EXPECT_TRUE(val[0].IsUndefined());
 	EXPECT_TRUE(val.GetPropertyNames().empty());
 	EXPECT_EQ(val.GetCount(), 0);
 	EXPECT_EQ(val.GetData(), nullptr);
+#endif
 	EXPECT_DOUBLE_EQ(val.ToDouble(), 42.0);
 #ifdef JSON_DEBUG
 	EXPECT_THROW((bool)val, std::bad_cast);
@@ -534,41 +551,62 @@ TEST_F(CJSONTest, wrong_usage)
 	EXPECT_THROW((bool)val, std::bad_cast);
 	EXPECT_THROW((int)val, std::bad_cast);
 	EXPECT_THROW((double)val, std::bad_cast);
-	EXPECT_THROW((std::wstring)val, std::bad_cast);
 #else
 	EXPECT_EQ((bool)val, false);
 	EXPECT_EQ((int)val, 0);
 	EXPECT_EQ((double)val, 0.0);
-	EXPECT_EQ((std::wstring)val, L"");
 #endif
+	EXPECT_EQ((std::wstring)val, L"test");
 
-	val = L"тест";
+	val = L"test";
 #ifdef JSON_DEBUG
 	EXPECT_THROW((bool)val, std::bad_cast);
 	EXPECT_THROW((int)val, std::bad_cast);
 	EXPECT_THROW((double)val, std::bad_cast);
-	EXPECT_THROW((std::string)val, std::bad_cast);
 #else
 	EXPECT_EQ((bool)val, false);
 	EXPECT_EQ((int)val, 0);
 	EXPECT_EQ((double)val, 0.0);
-	EXPECT_EQ((std::string)val, "");
 #endif
+	EXPECT_EQ((std::string)val, "test");
 
 	val = CValue::CreateObject();
 #ifdef JSON_DEBUG
+	EXPECT_THROW(val[0].IsUndefined(), std::bad_cast);
 	EXPECT_THROW((bool)val, std::bad_cast);
 	EXPECT_THROW((int)val, std::bad_cast);
 	EXPECT_THROW((double)val, std::bad_cast);
 	EXPECT_THROW((std::string)val, std::bad_cast);
 	EXPECT_THROW((std::wstring)val, std::bad_cast);
 #else
+	EXPECT_TRUE(val[0].IsUndefined());
 	EXPECT_EQ((bool)val, false);
 	EXPECT_EQ((int)val, 0);
 	EXPECT_EQ((double)val, 0.0);
 	EXPECT_EQ((std::string)val, "");
 	EXPECT_EQ((std::wstring)val, L"");
 #endif
+}
+
+TEST_F(CJSONTest, is_init)
+{
+	CValue val;
+	EXPECT_FALSE(val.IsInit());
+	val = CValue::CreateNull();
+	EXPECT_FALSE(val.IsInit());
+	val = 42;
+	EXPECT_TRUE(val.IsInit());
+	CValue val2 = val;
+	val2 = CValue::CreateUndefined();
+	EXPECT_TRUE(val.IsInit());
+	EXPECT_FALSE(val2.IsInit());
+	CValueRef ref = val;
+	ref = CValue::CreateUndefined();
+	EXPECT_FALSE(val.IsInit());
+	EXPECT_FALSE(ref.IsInit());
+	ref = 3;
+	EXPECT_TRUE(val.IsInit());
+	EXPECT_TRUE(ref.IsInit());
 }
 
 // ----------- toJS() tests -----------

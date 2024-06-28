@@ -132,4 +132,43 @@ public:
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 };
 
+class GRAPHICS_DECL CShapeStart : public IAdvancedCommand
+{
+public:
+	CShapeStart();
+	~CShapeStart();
+
+	std::string& GetShapeXML();
+	Aggplus::CImage* GetShapeImage();
+
+	void SetShapeXML(const std::string& sShapeXML);
+	void SetShapeImage(BYTE* pImgData, int nWidth, int nHeight);
+
+	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
+
+private:
+	std::string m_sShapeXML;
+	Aggplus::CImage* m_pImage;
+};
+
+class GRAPHICS_DECL CEmptyComand : public IAdvancedCommand
+{
+public:
+	CEmptyComand(AdvancedCommandType nType);
+};
+
+class GRAPHICS_DECL CPageRotate : public IAdvancedCommand
+{
+public:
+	CPageRotate();
+
+	int GetPageRotate();
+
+	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
+
+private:
+	int m_nPageRotate;
+};
+
+
 #endif // _BUILD_DOCINFO_H_

@@ -116,6 +116,11 @@ public:
 		cch_ = str.length();
 		return *this;
     }
+	XLUnicodeString_T operator=(const bool& boolVal)
+	{
+        cch_ = 0;
+		return *this;
+	}
 	const size_t getStructSizeWouldWritten() const // Number of unsigned chars that would be written
 	{
 		return recalculateStructSize();

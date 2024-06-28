@@ -356,6 +356,12 @@ namespace NSShaper
 		return ((FT_Face)face)->glyph->bitmap.buffer;
 	}
 
+	int FT_Get_Glyph_Render_BufferSize(void* face)
+	{
+		FT_GlyphSlot slot = ((FT_Face)face)->glyph;
+		return slot->bitmap.pitch * slot->bitmap.rows;
+	}
+
 	bool FT_Get_Glyph_Render_Params(void* face, int render_mode, CExternalPointer* result)
 	{
 		FT_GlyphSlot slot = ((FT_Face)face)->glyph;

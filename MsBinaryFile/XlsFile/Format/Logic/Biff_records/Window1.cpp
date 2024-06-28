@@ -55,16 +55,21 @@ void Window1::readFields(CFRecord& record)
 {
     if (record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
-		unsigned short flags;
-        _INT16 xWn_2b;
-        _INT16 yWn_2b;
-        _INT16 dxWn_2b;
-        _INT16 dyWn_2b;
-        _UINT16 itabCur_2b;
-        _UINT16 itabFirst_2b;
-        _UINT16 wTabRatio_2b;
+        BYTE flags = 0, reserved;
+        _INT16 xWn_2b = 0;
+        _INT16 yWn_2b = 0;
+        _INT16 dxWn_2b = 0;
+        _INT16 dyWn_2b = 0;
+        _UINT16 itabCur_2b = 0;
+        _UINT16 itabFirst_2b = 0;
+        _UINT16 wTabRatio_2b = 0;
 
-        record >> xWn_2b >> yWn_2b >> dxWn_2b >> dyWn_2b >> flags >> itabCur_2b >> itabFirst_2b >> ctabSel >> wTabRatio_2b;
+        record >> xWn_2b >> yWn_2b >> dxWn_2b >> dyWn_2b >> flags;
+
+        if (record.getGlobalWorkbookInfo()->Version > 0x0400)
+        {
+            record >> reserved >> itabCur_2b >> itabFirst_2b >> ctabSel >> wTabRatio_2b;
+        }
 
         fHidden			= GETBIT(flags, 0);
         fIconic			= GETBIT(flags, 1);

@@ -42,7 +42,12 @@ CFParsedFormula::CFParsedFormula(const CellRef& cell_base_ref) :	ParsedFormula(c
 
 CFParsedFormula& CFParsedFormula::operator=(const std::wstring& value)
 {
-	ParsedFormula::operator = (value);
+    parseStringFormula(value, L"CFParsedFormulaNoCCE");
+	auto ptgType = GETBITS(rgce.sequence.back()->getPtgId(),5,6);
+	if(ptgType == 1)
+	{
+		SETBITS(rgce.sequence.back()->ptg_id.get(),5,6,2);
+	} 
 	return *this;
 }
 

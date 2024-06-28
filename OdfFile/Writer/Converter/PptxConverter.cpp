@@ -84,6 +84,7 @@
 #include "../Format/odf_text_context.h"
 #include "../Format/odf_drawing_context.h"
 #include "../Format/office_event_listeners.h"
+#include "../Format/paragraph_elements.h"
 
 #include "../Format/styles.h"
 #include "../Format/style_presentation.h"
@@ -349,6 +350,9 @@ std::wstring PptxConverter::convert(PPTX::Logic::TablePartStyle* style, const st
 		odp_context->drawing_context()->start_line_properties();
 			convert(style->tcStyle->tcBdr.GetPointer(), style_state->get_paragraph_properties());
 		odp_context->drawing_context()->end_line_properties();		
+
+		convert(style_state->get_graphic_properties(), style_state->get_table_cell_properties());
+		convert(style_state->get_paragraph_properties(), style_state->get_table_cell_properties());
 	}
 	convert(style->tcTxStyle.GetPointer(), style_state->get_text_properties());
 
@@ -1014,6 +1018,7 @@ void PptxConverter::convert(PPTX::Logic::AnimMotion* oox_anim_motion)
 		return;
 
 	odp_context->current_slide().start_timing_motion();
+	odp_context->current_slide().set_anim_attribute_name(odf_types::smil_attribute_name::x);
 
 	convert(&oox_anim_motion->cBhvr);
 
@@ -1100,26 +1105,26 @@ void PptxConverter::convert(PPTX::Logic::AnimRot* oox_anim_rot)
 	if (!oox_anim_rot)
 		return;
 
-	odp_context->current_slide().start_timing_transform();
-	odp_context->current_slide().set_anim_transform_type(odf_types::svg_type::rotate);
+	odp_context->current_slide().start_timing_anim();
+	odp_context->current_slide().set_anim_animation_type(odf_types::svg_type::rotate);
 
 	convert(&oox_anim_rot->cBhvr);
 
 	const double odp_mulipyer = 60000.0;
 	if (oox_anim_rot->from.IsInit())
 	{
-		odp_context->current_slide().set_anim_transform_from(std::to_wstring(*oox_anim_rot->from / odp_mulipyer));
+		odp_context->current_slide().set_anim_animation_from(std::to_wstring(*oox_anim_rot->from / odp_mulipyer));
 	}
 	if (oox_anim_rot->to.IsInit())
 	{
-		odp_context->current_slide().set_anim_transform_to(std::to_wstring(*oox_anim_rot->to / odp_mulipyer));
+		odp_context->current_slide().set_anim_animation_to(std::to_wstring(*oox_anim_rot->to / odp_mulipyer));
 	}
 	if (oox_anim_rot->by.IsInit())
 	{
-		odp_context->current_slide().set_anim_transform_by(std::to_wstring(*oox_anim_rot->by / odp_mulipyer));
+		odp_context->current_slide().set_anim_animation_by(std::to_wstring(*oox_anim_rot->by / odp_mulipyer));
 	}
 
-	odp_context->current_slide().end_timing_transform();
+	odp_context->current_slide().end_timing_anim();
 }
 
 void PptxConverter::convert(PPTX::Logic::AnimScale* oox_anim_scale)
@@ -1176,6 +1181,43 @@ void PptxConverter::convert(PPTX::Logic::Audio* oox_audio)
 	odp_context->current_slide().end_anim_audio();
 }
 
+void PptxConverter::convert(odf_writer::graphic_format_properties* graphic_props, odf_writer::style_table_cell_properties* table_cell_props)
+{
+	if (!graphic_props)
+		return;
+	if (!table_cell_props)
+		return;
+
+	using namespace odf_types;
+
+	if(graphic_props->common_draw_fill_attlist_.draw_fill_color_)
+		table_cell_props->content_.common_background_color_attlist_.fo_background_color_ = background_color(*graphic_props->common_draw_fill_attlist_.draw_fill_color_);
+
+	odf_types::color color_ = graphic_props->svg_stroke_color_.get_value_or(odf_types::color(L"#FFFFFF"));
+	// odf_types::draw_fill draw_fill_ = graphic_props->common_draw_fill_attlist_.draw_fill_.get_value_or(draw_fill(draw_fill::solid));
+	odf_types::length length_ = graphic_props->svg_stroke_width_.get_value_or(length(1, length::pt)).get_length();
+
+	table_cell_props->content_.common_border_attlist_.fo_border_bottom_ = odf_types::border_style(color_, border_style::solid, length_);
+}
+
+void PptxConverter::convert(odf_writer::paragraph_format_properties* paragraph_props, odf_writer::style_table_cell_properties* table_cell_props)
+{
+	if (!paragraph_props)
+		return;
+	if (!table_cell_props)
+		return;
+
+	if (paragraph_props->common_border_attlist_.fo_border_)
+	{
+		table_cell_props->content_.common_border_attlist_.fo_border_left_	= *paragraph_props->common_border_attlist_.fo_border_;
+		table_cell_props->content_.common_border_attlist_.fo_border_top_	= *paragraph_props->common_border_attlist_.fo_border_;
+		table_cell_props->content_.common_border_attlist_.fo_border_right_	= *paragraph_props->common_border_attlist_.fo_border_;
+		table_cell_props->content_.common_border_attlist_.fo_border_bottom_ = *paragraph_props->common_border_attlist_.fo_border_;
+	}
+	else 
+		table_cell_props->content_.common_border_attlist_ = paragraph_props->common_border_attlist_;		
+}
+
 void PptxConverter::convert_common()
 {
 	if (presentation->sldSz.IsInit())
@@ -1218,6 +1260,7 @@ std::wstring PptxConverter::convert_animation_scale_values(int x, int y)
 
 	return ss.str();
 }
+
 std::wstring PptxConverter::get_page_name(PPTX::Logic::CSld* oox_slide, _typePages type)
 {
 	if (!oox_slide)
@@ -1238,22 +1281,44 @@ std::wstring PptxConverter::get_page_name(PPTX::Logic::CSld* oox_slide, _typePag
 
 void PptxConverter::fill_in_deferred_hyperlinks()
 {
-	for (auto hyperlink : odp_context->get_deferred_hyperlinks())
+	auto links = odp_context->get_deferred_hyperlinks();
+	auto slidenames_vec = std::vector<std::pair<std::wstring, std::wstring>>(odp_context->map_slidenames_.begin(), odp_context->map_slidenames_.end());
+
+	for (size_t i = 0; i < links.size(); i++)
 	{
+		const auto& hyperlink = links[i];
+
 		cpdoccore::odf_writer::presentation_event_listener* event_listener = dynamic_cast<cpdoccore::odf_writer::presentation_event_listener*>(hyperlink.first.get());
+		cpdoccore::odf_writer::text_a*	text = dynamic_cast<cpdoccore::odf_writer::text_a*>(hyperlink.first.get());
 		const std::wstring& slidename = hyperlink.second;
 
-		if (!event_listener)
-			continue;
-
+		std::wstring href;
 		auto hrefIt = odp_context->map_slidenames_.find(slidename);
-		if (hrefIt == odp_context->map_slidenames_.end())
+		if (slidename == L"previous-page" && i > 0)
+			href = slidenames_vec[i - 1].second;
+		else if (slidename == L"next-page" && i < slidenames_vec.size() - 2)
+			href = slidenames_vec[i + 1].second;
+		else if (slidename == L"first-page")
+			href = slidenames_vec[0].second;
+		else if (slidename == L"last-page")
+			href = slidenames_vec[slidenames_vec.size() - 1].second;
+		else if (hrefIt == odp_context->map_slidenames_.end())
 			continue;
+		else
+			href = hrefIt->second;
 
-		event_listener->attlist_.common_xlink_attlist_.href_ = std::wstring(L"#") + hrefIt->second;
-		event_listener->attlist_.common_xlink_attlist_.type_ = xlink_type::Simple;
-		event_listener->attlist_.common_xlink_attlist_.show_ = xlink_show::Embed;
-		event_listener->attlist_.common_xlink_attlist_.actuate_ = xlink_actuate::OnRequest;
+		if (event_listener)
+		{
+			event_listener->attlist_.common_xlink_attlist_.href_ = std::wstring(L"#") + href;
+			event_listener->attlist_.common_xlink_attlist_.type_ = xlink_type::Simple;
+			event_listener->attlist_.common_xlink_attlist_.show_ = xlink_show::Embed;
+			event_listener->attlist_.common_xlink_attlist_.actuate_ = xlink_actuate::OnRequest;
+		}
+		else if (text)
+		{
+			text->common_xlink_attlist_.href_ = std::wstring(L"#") + href;
+			text->common_xlink_attlist_.type_ = xlink_type::Simple;
+		}
 	}
 }
 
@@ -1406,11 +1471,14 @@ void PptxConverter::convert_slides()
 
 		odp_context->add_page_name(get_page_name(slide->cSld.GetPointer(), Slide));
 		convert_slide	(slide->cSld.GetPointer(), current_txStyles, true, bShowMasterSp, Slide);
+		convert			(slide->timing.GetPointer());
 		convert			(slide->comments.GetPointer());
 		convert			(slide->Note.GetPointer());
 		
 		convert			(slide->transition.GetPointer());
-		convert			(slide->timing.GetPointer());
+
+		if (!bShow)
+			odp_context->hide_slide();
 
 
 		odp_context->end_slide();
@@ -1762,22 +1830,35 @@ void PptxConverter::convert(PPTX::Logic::EightDirectionTransition	*oox_transitio
 	if (!oox_transition) return;
 
 	if (oox_transition->name == L"cover")
-		odp_context->current_slide().set_transition_type(1);
+		odp_context->current_slide().set_transition_type(35);
 	if (oox_transition->name == L"pull")
 		odp_context->current_slide().set_transition_type(35);
 
-	if (oox_transition->dir.IsInit())
-	{
-			 if (oox_transition->dir->get() == L"d")	odp_context->current_slide().set_transition_subtype(L"fromTop");
-		else if (oox_transition->dir->get() == L"l")	odp_context->current_slide().set_transition_subtype(L"fromRight");
-		else if (oox_transition->dir->get() == L"r")	odp_context->current_slide().set_transition_subtype(L"fromLeft");
-		else if (oox_transition->dir->get() == L"u")	odp_context->current_slide().set_transition_subtype(L"fromBottom");
+	const std::wstring default_subtype = L"l";
+	std::wstring dir = oox_transition->dir.get_value_or(default_subtype);
+	if (dir.empty())
+		dir = default_subtype;
 
-		else if (oox_transition->dir->get() == L"rd")	odp_context->current_slide().set_transition_subtype(L"horizontalLeft");
-		else if (oox_transition->dir->get() == L"lu")	odp_context->current_slide().set_transition_subtype(L"horizontalRight");
-		else if (oox_transition->dir->get() == L"ld")	odp_context->current_slide().set_transition_subtype(L"verticalRight");
-		else if (oox_transition->dir->get() == L"ru")	odp_context->current_slide().set_transition_subtype(L"verticalLeft");
+		 if (dir == L"d")	odp_context->current_slide().set_transition_subtype(L"fromTop");
+	else if (dir == L"l")	odp_context->current_slide().set_transition_subtype(L"fromRight");
+	else if (dir == L"r")	odp_context->current_slide().set_transition_subtype(L"fromLeft");
+	else if (dir == L"u")	odp_context->current_slide().set_transition_subtype(L"fromBottom");
+
+	if(oox_transition->name == L"cover")
+	{
+			 if (dir == L"rd")	odp_context->current_slide().set_transition_subtype(L"fromTopLeft");
+		else if (dir == L"lu")	odp_context->current_slide().set_transition_subtype(L"fromBottomRight");
+		else if (dir == L"ld")	odp_context->current_slide().set_transition_subtype(L"fromTopRight");
+		else if (dir == L"ru")	odp_context->current_slide().set_transition_subtype(L"fromBottomLeft");
 	}
+	else
+	{
+			 if (dir == L"rd")	odp_context->current_slide().set_transition_subtype(L"horizontalLeft");
+		else if (dir == L"lu")	odp_context->current_slide().set_transition_subtype(L"horizontalRight");
+		else if (dir == L"ld")	odp_context->current_slide().set_transition_subtype(L"verticalRight");
+		else if (dir == L"ru")	odp_context->current_slide().set_transition_subtype(L"verticalLeft");
+	}
+	
 }
 void PptxConverter::convert(PPTX::Logic::OptionalBlackTransition *oox_transition)
 {
@@ -1837,8 +1918,19 @@ void PptxConverter::convert(PPTX::Logic::SplitTransition *oox_transition)
 {
 	if (!oox_transition) return;
 	//name == split
+
+	const std::wstring& orient	= oox_transition->orient.get_value_or(L"horz");
+	const std::wstring& dir		= oox_transition->dir.get_value_or(L"out");
+
 	odp_context->current_slide().set_transition_type(3);
-	odp_context->current_slide().set_transition_subtype(L"vertical");
+
+	if(orient == L"horz" || orient == L"")
+		odp_context->current_slide().set_transition_subtype(L"horizontal");
+	else if (orient == L"vert")
+		odp_context->current_slide().set_transition_subtype(L"vertical");
+
+	if (dir == L"in")
+		odp_context->current_slide().set_transition_direction(L"reverse");
 }
 void PptxConverter::convert(PPTX::Logic::ZoomTransition *oox_transition)
 {
@@ -2162,27 +2254,27 @@ void PptxConverter::convert(PPTX::Logic::TableProperties *oox_table_pr)
 			if (!table_style.default_.empty())
 				odp_context->slide_context()->table_context()->set_default_cell_properties(table_style.default_);
 			
-			if (oox_table_pr->FirstRow.is_init() && !table_style.first_row_.empty())
+			if (oox_table_pr->FirstRow.get_value_or(false) && !table_style.first_row_.empty())
 			{
 				odp_context->slide_context()->table_context()->set_first_row_cell_properties(table_style.first_row_);
 			}
-			if (oox_table_pr->FirstCol.is_init() && !table_style.first_col_.empty())
+			if (oox_table_pr->FirstCol.get_value_or(false) && !table_style.first_col_.empty())
 			{
 				odp_context->slide_context()->table_context()->set_first_col_cell_properties(table_style.first_col_);
 			}
-			if (oox_table_pr->BandRow.is_init() && !table_style.band_row_.empty())
+			if (oox_table_pr->BandRow.get_value_or(false) && !table_style.band_row_.empty())
 			{
 				odp_context->slide_context()->table_context()->set_band_row_cell_properties(table_style.band_row_);
 			}
-			if (oox_table_pr->BandCol.is_init() && !table_style.band_col_.empty())
+			if (oox_table_pr->BandCol.get_value_or(false) && !table_style.band_col_.empty())
 			{
 				odp_context->slide_context()->table_context()->set_band_col_cell_properties(table_style.band_col_);
 			}
-			if (oox_table_pr->LastRow.is_init() && !table_style.last_row_.empty())
+			if (oox_table_pr->LastRow.get_value_or(false) && !table_style.last_row_.empty())
 			{
 				odp_context->slide_context()->table_context()->set_last_row_cell_properties(table_style.last_row_);
 			}
-			if (oox_table_pr->LastCol.is_init() && !table_style.last_col_.empty())
+			if (oox_table_pr->LastCol.get_value_or(false) && !table_style.last_col_.empty())
 			{
 				odp_context->slide_context()->table_context()->set_last_col_cell_properties(table_style.last_col_);
 			}
@@ -2217,8 +2309,6 @@ void PptxConverter::convert(PPTX::Logic::Table *oox_table)
 	
 	convert(oox_table->tableProperties.GetPointer());
 
-	odp_context->slide_context()->start_table_columns();
-
 	for (size_t i = 0; i < oox_table->TableCols.size(); i++)
 	{
 		double width = -1;
@@ -2229,7 +2319,6 @@ void PptxConverter::convert(PPTX::Logic::Table *oox_table)
 		odp_context->slide_context()->add_table_column(width);
 
 	}
-	odp_context->slide_context()->end_table_columns();	
 
 	odp_context->slide_context()->table_context()->set_table_size(oox_table->TableCols.size(), oox_table->TableRows.size());
 

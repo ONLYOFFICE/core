@@ -1224,9 +1224,9 @@ namespace SimpleTypes
 	{
 		switch (this->m_eValue)
 		{
-		case oletypeEmbed	: return L"embed";
-		case oletypeLink	: return L"link";
-		default				: return L"embed";
+		case oletypeEmbed	: return L"Embed";
+		case oletypeLink	: return L"Link";
+		default				: return L"Embed";
 		}
 	}
 

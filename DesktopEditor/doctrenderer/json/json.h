@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#ifndef JSON_DECL
 #ifdef JSBASE_NO_USE_DYNAMIC_LIBRARY
 #define JSON_DECL
 #else
@@ -16,9 +17,14 @@
 #define JSON_DECL Q_DECL_IMPORT
 #endif
 #endif
+#endif
 
 // uncomment to enable exceptions throwing
 //#define JSON_DEBUG
+
+#ifdef JSON_DEBUG
+#include <stdexcept>
+#endif
 
 namespace NSJSON
 {
@@ -51,6 +57,10 @@ namespace NSJSON
 		 */
 		bool IsNull() const;
 		/**
+		 * Returns true if the value is not undefined or null.
+		 */
+		bool IsInit() const;
+		/**
 		 * Returns true if the value is a boolean value.
 		 */
 		bool IsBool() const;
@@ -65,11 +75,7 @@ namespace NSJSON
 		/**
 		 * Returns true if the value is a string.
 		 */
-		bool IsStringA() const;
-		/**
-		 * Returns true if the value is a wstring.
-		 */
-		bool IsStringW() const;
+		bool IsString() const;
 		/**
 		 * Returns true if the value is an array.
 		 */

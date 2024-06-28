@@ -1,91 +1,88 @@
 #pragma once
-#include "../DesktopEditor/common/StringBuilder.h"
+#include "../../../../DesktopEditor/common/StringBuilder.h"
+#include "../../resources/Constants.h"
+#include <vector>
+#include <memory>
 
 namespace NSDocxRenderer
 {
-    enum class eVerticalCrossingType
-    {
-        vctUnknown,
-        vctCurrentInsideNext,
-        vctCurrentOutsideNext,
-        vctCurrentAboveNext,
-        vctCurrentBelowNext,
-        vctDublicate,
-        vctTopBordersMatch,
-        vctBottomBordersMatch,
-        vctNoCrossingCurrentAboveNext,
-        vctNoCrossingCurrentBelowNext
-    };
+	// взаимное расположение по вертикали со следующим объектом
+	enum class eVerticalCrossingType
+	{
+		vctUnknown,
+		vctCurrentInsideNext,
+		vctCurrentOutsideNext,
+		vctCurrentAboveNext,
+		vctCurrentBelowNext,
+		vctDublicate,
+		vctTopAndBottomBordersMatch,
+		vctTopBorderMatch,
+		vctBottomBorderMatch,
+		vctNoCrossingCurrentAboveNext,
+		vctNoCrossingCurrentBelowNext
+	};
 
-    enum class eHorizontalCrossingType
-    {
-        hctUnknown,
-        hctCurrentInsideNext,
-        hctCurrentOutsideNext,
-        hctCurrentLeftOfNext,
-        hctCurrentRightOfNext,
-        hctDublicate,
-        hctLeftBordersMatch,
-        hctRightBordersMatch,
-        hctNoCrossingCurrentLeftOfNext,
-        hctNoCrossingCurrentRightOfNext
-    };
+	// взаимное расположение по горизонтали со следующим объектом
+	enum class eHorizontalCrossingType
+	{
+		hctUnknown,
+		hctCurrentInsideNext,
+		hctCurrentOutsideNext,
+		hctCurrentLeftOfNext,
+		hctCurrentRightOfNext,
+		hctDublicate,
+		hctLeftAndRightBordersMatch,
+		hctLeftBorderMatch,
+		hctRightBorderMatch,
+		hctNoCrossingCurrentLeftOfNext,
+		hctNoCrossingCurrentRightOfNext
+	};
 
-    class CBaseItem
-    {
-    public:
-        enum class ElemType
-        {
-            etContText	= 0,
-            etTextLine  = 1,
-            etParagraph	= 2,
-            etImage		= 3,
-            etShape		= 4,
-            etOldShape  = 5,
-        };
+	class CBaseItem
+	{
+	public:
+		double m_dTop {0.0};
+		double m_dBaselinePos {0.0};
+		double m_dHeight {0.0};
 
-        ElemType m_eType;
+		double m_dLeft {0.0};
+		double m_dRight {0.0};
+		double m_dWidth {0.0};
 
-        bool m_bIsNotNecessaryToUse {false};
+		CBaseItem() = default;
+		virtual ~CBaseItem() = default;
 
-        //General
-        double m_dLeft {0.0};
-        double m_dTop {0.0};
-        double m_dWidth {0.0};
-        double m_dHeight {0.0};
+		virtual void Clear() = 0;
+		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const = 0;
+		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const = 0;
 
-        //Secondary
-        double m_dBaselinePos {0.0};
-        double m_dRight {0.0};
+		virtual eVerticalCrossingType GetVerticalCrossingType(const CBaseItem* oSrc) const;
+		virtual eHorizontalCrossingType GetHorizontalCrossingType(const CBaseItem* oSrc) const;
+		virtual void RecalcWithNewItem(const CBaseItem* pObj);
 
-    public:
-        CBaseItem(const ElemType& eType): m_eType(eType) {}
-        virtual ~CBaseItem() {}
+		bool AreObjectsNoCrossingByVertically(const CBaseItem* pObj) const noexcept;
+		bool AreObjectsNoCrossingByHorizontally(const CBaseItem* pObj) const noexcept;
 
-        CBaseItem& operator=(const CBaseItem& oSrc);
+		CBaseItem& operator=(const CBaseItem& oSrc);
+	};
 
-        friend bool operator == (const CBaseItem& lh, const CBaseItem& rh)
-        {
-            return (lh.m_dLeft == rh.m_dLeft) ? true : false;
-        }
+	class COutputObject : public CBaseItem
+	{
+	public:
+		enum class eOutputType
+		{
+			etAny		= 0,
+			etParagraph = 1,
+			etShape     = 2,
+			etTable     = 3
+		};
 
-        friend bool operator < (const CBaseItem& lh, const CBaseItem& rh)
-        {
-            return (lh.m_dLeft < rh.m_dLeft) ? true : false;
-        }
+		COutputObject() : m_eType(eOutputType::etAny) {}
+		COutputObject(eOutputType eType) : m_eType(eType) {}
+		virtual ~COutputObject() = default;
 
-        friend bool operator > (const CBaseItem& lh, const CBaseItem& rh)
-        {
-            return (lh.m_dLeft > rh.m_dLeft) ? true : false;
-        }
+		COutputObject& operator= (const COutputObject& oObj);
 
-        virtual bool IsBigger(const CBaseItem* oSrc);
-        virtual bool IsBiggerOrEqual(const CBaseItem* oSrc);
-
-        virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) = 0;
-        virtual void Clear() = 0;
-
-        eVerticalCrossingType GetVerticalCrossingType(const CBaseItem* oSrc);
-        eHorizontalCrossingType GetHorizontalCrossingType(const CBaseItem* oSrc);
-    };
+		eOutputType m_eType;
+	};
 }

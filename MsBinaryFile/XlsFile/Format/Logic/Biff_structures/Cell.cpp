@@ -59,7 +59,8 @@ void Cell::load(CFRecord& record)
 {
 	record >> rw >> col;
 
-	if (record.getGlobalWorkbookInfo()->Version == 0x0200)
+	if (record.getGlobalWorkbookInfo()->Version == 0x0200 ||
+		record.getGlobalWorkbookInfo()->Version == 0x0400)
 	{
 		unsigned char flags1, flags2, flags3;
 

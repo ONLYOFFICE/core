@@ -881,17 +881,17 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		drawing->relativeHeight	= L"2";
         drawing->behindDoc		= L"0";
 
+		if (!drawing->styleWrap)
+			drawing->styleWrap = style_wrap(style_wrap::Parallel);//у опен офис и мс разные дефолты
+
 		if (((drawing->styleWrap && drawing->styleWrap->get_type() == style_wrap::RunThrough) || !drawing->styleWrap) 
 			&& ((styleRunThrough && styleRunThrough->get_type() == run_through::Background) || !styleRunThrough))
         {
            drawing->behindDoc = L"1";  
 		   if (!drawing->styleWrap)
 			   drawing->styleWrap = style_wrap(style_wrap::RunThrough);
-
         }
-		if (!drawing->styleWrap)
-			drawing->styleWrap = style_wrap(style_wrap::Parallel);//у опен офис и мс разные дефолты
-
+		
         _CP_OPT(unsigned int) zIndex = attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_z_index_;
        
 		if (zIndex)//порядок отрисовки объектов
@@ -1578,6 +1578,11 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 	drawing->id			= Context.get_drawing_context().get_current_frame_id();
 	drawing->name		= Context.get_drawing_context().get_current_object_name();
 	drawing->inGroup	= Context.get_drawing_context().in_group();
+
+	if (svg_title_)
+		svg_title_->docx_convert(Context);
+	if(svg_desc_)
+		svg_desc_->docx_convert(Context);
 	
 	common_draw_docx_convert(Context, common_draw_attlists_, drawing);
 //-----------------------------------------------------------------------------------------------------
@@ -1644,18 +1649,21 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 	try
 	{
         std::wstring href		= xlink_attlist_.href_.get_value_or(L"");
-		std::wstring tempPath	= Context.root()->get_temp_folder();
 		std::wstring odfPath	= Context.root()->get_folder();
-
+		std::wstring tempPath	= Context.root()->get_temp_folder();
+		
 		if (!odf_document_ && false == href.empty())
 		{
 			if (href[0] == L'#') href = href.substr(1);
-			std::wstring objectPath = odfPath + FILE_SEPARATOR_STR + href;
 
-			// normalize path ???? todooo
-			XmlUtils::replace_all( objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
+			if (Context.get_mediaitems()->is_internal_path(href, odfPath))
+			{
+				std::wstring objectPath = odfPath + FILE_SEPARATOR_STR + href;
+				// normalize path ???? todooo
 
-            odf_document_ = odf_document_ptr(new odf_document(objectPath, tempPath, L""));
+				XmlUtils::replace_all(objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
+				odf_document_ = odf_document_ptr(new odf_document(objectPath, tempPath, L""));
+			}
 		}
 //---------------------------------------------------------------------------------------------------------------------
 		office_element* contentSubDoc	= odf_document_ ? odf_document_->get_impl()->get_content() : NULL;
@@ -1753,8 +1761,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				drawing->type = oox::typeShape;		
 				
 				drawing->additional.push_back(_property(L"fit-to-size",	true));		
-				drawing->additional.push_back(_property(L"text-content",	std::wstring(L"<w:p><m:oMathPara>") + 
-																	content + std::wstring(L"</m:oMathPara></w:p>")));
+				drawing->additional.push_back(_property(L"text-content",	std::wstring(L"<w:p>") +  content + std::wstring(L"</w:p>")));
 			}
 			else
 			{//in text			
@@ -1762,9 +1769,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				
 				if (runState) Context.finish_run();
 
-				Context.output_stream() << L"<m:oMathPara>";
 				Context.output_stream() << content;
-				Context.output_stream() << L"</m:oMathPara>";
 
 				if (runState) Context.add_new_run(_T(""));
 			}
@@ -1807,25 +1812,35 @@ void draw_object_ole::docx_convert(oox::docx_conversion_context & Context)
 
 //------------------------------------------------
 	std::wstring href		= xlink_attlist_.href_.get_value_or(L"");
-	std::wstring folderPath = Context.root()->get_folder();
-	std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
-
 	if (href.empty()) return;
 
 	draw_frame*	frame = Context.get_drawing_context().get_current_frame();		//owner
 	if (!frame) return;
 	
-	oox::_docx_drawing * drawing = dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get());
+	if (href.empty()) return;
+
+	oox::_docx_drawing* drawing = dynamic_cast<oox::_docx_drawing*>(frame->oox_drawing_.get());
 	if (!drawing) return;
-			
-	std::wstring extension;
-	detectObject(objectPath, drawing->objectProgId, extension, drawing->type);
 
-	NSFile::CFileBinary::Copy(objectPath, objectPath + extension);
+	std::wstring folderPath = Context.root()->get_folder();
+	if (Context.get_mediaitems()->is_internal_path(href, folderPath))
+	{
+		std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
 
-	bool isMediaInternal	= true;
-	drawing->objectId = Context.get_mediaitems()->add_or_find(href + extension, drawing->type, isMediaInternal, href, Context.get_type_place());
+		std::wstring extension;
+		detectObject(objectPath, drawing->objectProgId, extension, drawing->type);
 
+		NSFile::CFileBinary::Copy(objectPath, objectPath + extension);
+
+		bool isMediaInternal = true;
+		drawing->objectId = Context.get_mediaitems()->add_or_find(href + extension, drawing->type, isMediaInternal, href, Context.get_type_place());
+	}
+	else
+	{
+		bool isMediaInternal = false;
+		drawing->objectId = Context.get_mediaitems()->add_or_find(href, oox::typeOleObject, isMediaInternal, href, Context.get_type_place());
+
+	}
 }
 void draw_control::docx_convert(oox::docx_conversion_context & Context)
 {

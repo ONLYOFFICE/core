@@ -439,6 +439,7 @@ void common_value_and_type_attlist::apply_from(const common_value_and_type_attli
 void common_value_and_type_attlist::serialize(CP_ATTR_NODE)
 {
 	CP_XML_ATTR_OPT(L"office:value-type", office_value_type_);
+    CP_XML_ATTR_OPT(L"calcext:value-type", office_value_type_);
     CP_XML_ATTR_OPT(L"office:value", office_value_);
 	if (office_value_)
 	{

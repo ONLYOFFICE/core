@@ -136,6 +136,9 @@ namespace NExtractTools
 
 			nRes = oCXlsxSerializer.loadFromFile(sTargetBin, sTo, sXmlOptions, sMediaPath, sEmbedPath);
 		}
+		// удаляем EditorWithChanges, потому что он не в Temp
+		if (sFrom != sTargetBin)
+			NSFile::CFileBinary::Remove(sTargetBin);
 		return nRes;
 	}
 

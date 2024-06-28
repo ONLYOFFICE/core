@@ -65,12 +65,12 @@ namespace PdfReader
 		
 	};
 
-	class CFontList
+	class CPdfFontList
 	{
 	public:
 
-		CFontList();
-		~CFontList();
+		CPdfFontList();
+		~CPdfFontList();
 		void LoadFromFile(std::wstring wsDirPath);
 		void SaveToFile(std::wstring wsDirPath);
 		bool Find(Ref oRef, TFontEntry *pEntry);
@@ -102,9 +102,6 @@ namespace PdfReader
 		NSCriticalSection::CRITICAL_SECTION m_oCS;       // Критическая секция
 	};
 
-	NSFonts::CFontInfo* GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontManager, GfxFont* pFont, std::wstring& wsFontBaseName);
-	void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName);
-	void CheckFontStylePDF(std::wstring& sName, bool& bBold, bool& bItalic);
 	//-------------------------------------------------------------------------------------------------------------------------------
 	template <typename T>
 	inline static double PDFCoordsToMM(T tX)
@@ -123,7 +120,7 @@ namespace PdfReader
 	class RendererOutputDev : public OutputDev
 	{
 	public:
-        RendererOutputDev(IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CFontList *pFontList = NULL);
+		RendererOutputDev(IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList = NULL);
 		virtual ~RendererOutputDev();
 
 		virtual GBool upsideDown()
@@ -136,11 +133,7 @@ namespace PdfReader
 		}
 		virtual GBool useTilingPatternFill()
         {
-			// TODO Доделать поддержку различных параметров TilingPattern
-			if (m_bDrawOnlyText)
-				return true;
-
-			return false;
+			return true;
 		}
 		virtual GBool useFunctionalShadedFills()
 		{
@@ -254,14 +247,14 @@ namespace PdfReader
 		virtual void endStringOp(GfxState *pGState);
 		virtual void drawString(GfxState *pGState, GString *seString);
 		virtual void drawChar(GfxState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY, CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen);
-        GBool beginType3Char(GfxState *state, double x, double y,
-                             double dx, double dy,
-                             CharCode code, Unicode *u, int uLen) {
-            return false;
-        }
-		void endType3Char(GfxState *pGState);
+		GBool beginType3Char(GfxState *state, double x, double y, double dx, double dy, CharCode code, Unicode *u, int uLen) override;
+		void endType3Char(GfxState *pGState) override;
 		void Type3D0(GfxState *pGState, double dWx, double dWy);
 		void Type3D1(GfxState *pGState, double dWx, double dWy, double dBLx, double dBLy, double dTRx, double dTRy);
+		//----- Дополнительные функции
+		virtual GBool beginMarkedContent(GfxState *state, GString *s) override;
+		virtual GBool beginMCOShapes(GfxState *state, GString *s, Object *ref) override;
+		virtual void endMarkedContent(GfxState *state) override;
 		//----- Вывод картинок
 		virtual void drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
 		virtual void setSoftMaskFromImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
@@ -295,10 +288,14 @@ namespace PdfReader
 		{
 			m_pbBreak = pbBreak;
 		}
+		static NSFonts::CFontInfo* GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontManager, GfxFont* pFont, std::wstring& wsFontBaseName);
+		static void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName);
+		static void CheckFontStylePDF(std::wstring& sName, bool& bBold, bool& bItalic);
 
 	private:
 
 		void Transform(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY);
+		void Distance(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY);
 		void DoPath(GfxState *pGState, GfxPath *pPath, double dPageHeight, double *pCTM, GfxClipMatrix* pCTM2 = NULL);
 		void ClipToText(const std::wstring& wsFontName, const std::wstring& wsFontPath, double dFontSize, int nFontStyle, double* pMatrix, const std::wstring& wsText, double dX, double dY, double dWidth = 0, double dHeight = 0, double dBaseLineOffset = 0);
 		void updateClip(GfxState *pGState);
@@ -314,7 +311,7 @@ namespace PdfReader
 		//GfxTextClip                   *m_pBufferTextClip;
 
 		XRef                         *m_pXref;           // Таблица Xref для данного PDF-документа
-		CFontList                    *m_pFontList;
+		CPdfFontList                    *m_pFontList;
 
 		bool                         *m_pbBreak;         // Внешняя остановка рендерера
 

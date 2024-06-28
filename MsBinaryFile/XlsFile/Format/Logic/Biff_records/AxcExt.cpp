@@ -105,20 +105,26 @@ int AxcExt::serialize(std::wostream & _stream)
 				CP_XML_ATTR(L"val", catMinor);
 			}
 		}	
-		if ( fAutoBase == false)
+		if ( fAutoBase == false && duBase < 3)
 		{
 			CP_XML_NODE(L"c:baseTimeUnit")
 			{
 				CP_XML_ATTR(L"val", DateUnit[duBase]);
 			}
 		}
-		CP_XML_NODE(L"c:majorTimeUnit")
+		if ( duMajor < 3)
 		{
-			CP_XML_ATTR(L"val", DateUnit[duMajor]);
+			CP_XML_NODE(L"c:majorTimeUnit")
+			{
+				CP_XML_ATTR(L"val", DateUnit[duMajor]);
+			}
 		}
-		CP_XML_NODE(L"c:minorTimeUnit")
+		if (duMinor < 3)
 		{
-			CP_XML_ATTR(L"val", DateUnit[duMinor]);
+			CP_XML_NODE(L"c:minorTimeUnit")
+			{
+				CP_XML_ATTR(L"val", DateUnit[duMinor]);
+			}
 		}
 	}
 	return 0;

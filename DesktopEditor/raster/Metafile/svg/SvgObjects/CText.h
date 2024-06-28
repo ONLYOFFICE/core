@@ -36,6 +36,8 @@ namespace SVG
 		double GetWidth() const;
 		void CorrectFontFamily(std::wstring& wsFontFamily) const;
 
+		void CalculatePosition(double& dX, double& dY) const;
+
 		void Normalize(IRenderer* pRenderer, double& dX, double& dY, double& dFontHeight) const;
 		void SetPosition(const Point& oPosition);
 

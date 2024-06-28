@@ -170,6 +170,7 @@ public:
 
 private:
 	void process_common_properties(drawing_object_description& obj, _pptx_drawing & drawing);
+	void process_crop(const drawing_object_description& obj, _pptx_drawing& drawing, const std::wstring& filename);
 
 	void process_shape	(drawing_object_description& obj, _pptx_drawing & drawing);
     void process_image	(drawing_object_description& obj, _pptx_drawing & drawing);
@@ -288,6 +289,8 @@ void pptx_slide_context::default_set()
 	impl_->object_description_.svg_rect_	= boost::none;
 	impl_->object_description_.connector_	= false;
 	impl_->object_description_.lined_		= false;
+
+	impl_->object_description_.hidden_ = false;
 
 	impl_->object_description_.start_shape_id			= boost::none;
 	impl_->object_description_.start_shape_glue_point	= boost::none;
@@ -464,6 +467,10 @@ void pptx_slide_context::set_name(std::wstring const & name)
 void pptx_slide_context::set_id(std::wstring const& id)
 {
 	impl_->object_description_.xml_id_ = id;
+}
+void pptx_slide_context::set_hidden(bool val)
+{
+	impl_->object_description_.hidden_ = val;
 }
 
 void pptx_slide_context::start_shape(int type)
@@ -688,8 +695,7 @@ void pptx_slide_context::Impl::process_image(drawing_object_description& obj, _p
 	}
 
 	std::wstring fileName = odfPacket_ + FILE_SEPARATOR_STR + obj.xlink_href_;			
-	drawing.fill.bitmap->bCrop  = odf_reader::parse_clipping(obj.clipping_string_, fileName, drawing.fill.bitmap->cropRect, get_mediaitems()->applicationFonts());
-	drawing.fill.bitmap->bStretch = true;
+	process_crop(obj, drawing, fileName);
 	
 	if ((sColorMode) && (*sColorMode == L"greyscale"))
 		drawing.fill.bitmap->luminance	= true;
@@ -748,6 +754,9 @@ void pptx_slide_context::Impl::process_shape(drawing_object_description & obj, _
 		drawing.fill.bitmap->rId = get_mediaitems()->add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref, oox::document_place);
 		
 		add_additional_rels(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);
+
+		std::wstring fileName = odfPacket_ + FILE_SEPARATOR_STR + drawing.fill.bitmap->xlink_href_;
+		process_crop(obj, drawing, fileName);
 	}
 		
 	std::wstring rId = get_mediaitems()->add_or_find(L"", typeShape, isMediaInternal, ref, oox::document_place);
@@ -838,11 +847,18 @@ void pptx_slide_context::Impl::process_common_properties(drawing_object_descript
 		val = (int)(0.5 + odf_types::length(pic.svg_rect_->cy, odf_types::length::pt).get_value_unit(odf_types::length::emu));
 		if ( val >=0 ) drawing.cy = val;
 	}
-	
+
+	drawing.hidden		= pic.hidden_;
 	drawing.additional	= pic.additional_;
 	drawing.hlinks		= pic.hlinks_;
 	drawing.action		= pic.action_;
 	drawing.fill		= pic.fill_;
+}
+
+void pptx_slide_context::Impl::process_crop(const drawing_object_description& obj, _pptx_drawing& drawing, const std::wstring& filename)
+{
+	drawing.fill.bitmap->bCrop = odf_reader::parse_clipping(obj.clipping_string_, filename, drawing.fill.bitmap->cropRect, get_mediaitems()->applicationFonts());
+	drawing.fill.bitmap->bStretch = true;
 }
 
 void pptx_slide_context::dump_rels(rels & Rels)

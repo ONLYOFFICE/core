@@ -3291,5 +3291,129 @@ namespace SimpleTypes
 			}
 			return L"unselectedItemWithData";
 		}
+
+		EMdxKPIProperty CMdxKPIProperty::FromString(const std::wstring& sValue)
+		{
+			if (L"v" == sValue)
+				this->m_eValue = mdxKPIProperty_v;
+			else if (L"g" == sValue)
+				this->m_eValue = mdxKPIProperty_g;
+			else if (L"s" == sValue)
+				this->m_eValue = mdxKPIProperty_s;
+			else if (L"t" == sValue)
+				this->m_eValue = mdxKPIProperty_t;
+			else if (L"w" == sValue)
+				this->m_eValue = mdxKPIProperty_w;
+			else if (L"m" == sValue)
+				this->m_eValue = mdxKPIProperty_m;
+			else
+				this->m_eValue = mdxKPIProperty_v;
+			return this->m_eValue;
+		}
+		std::wstring CMdxKPIProperty::ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case mdxKPIProperty_v: return L"v"; break;
+			case mdxKPIProperty_g: return L"g"; break;
+			case mdxKPIProperty_s: return L"s"; break;
+			case mdxKPIProperty_t: return L"t"; break;
+			case mdxKPIProperty_w: return L"w"; break;
+			case mdxKPIProperty_m: return L"m"; break;
+			}
+			return L"v";
+		}
+		
+		EMdxSetOrder CMdxSetOrder::FromString(const std::wstring& sValue)
+		{
+			if (L"u" == sValue)
+				this->m_eValue = mdxSetOrder_u;
+			else if (L"a" == sValue)
+				this->m_eValue = mdxSetOrder_a;
+			else if (L"d" == sValue)
+				this->m_eValue = mdxSetOrder_d;
+			else if (L"aa" == sValue)
+				this->m_eValue = mdxSetOrder_aa;
+			else if (L"ad" == sValue)
+				this->m_eValue = mdxSetOrder_ad;
+			else if (L"na" == sValue)
+				this->m_eValue = mdxSetOrder_na;
+			else if (L"nd" == sValue)
+				this->m_eValue = mdxSetOrder_nd;
+			else
+				this->m_eValue = mdxSetOrder_u;
+			return this->m_eValue;
+		}
+		std::wstring CMdxSetOrder::ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case mdxSetOrder_u: return L"u"; break;
+			case mdxSetOrder_a: return L"a"; break;
+			case mdxSetOrder_d: return L"d"; break;
+			case mdxSetOrder_aa: return L"aa"; break;
+			case mdxSetOrder_ad: return L"ad"; break;
+			case mdxSetOrder_na: return L"na"; break;
+			case mdxSetOrder_nd: return L"nd"; break;
+			}
+			return L"v";
+		}
+
+		EMdxFunctionType CMdxFunctionType::FromString(const std::wstring& sValue)
+		{
+			if (L"m" == sValue)
+				this->m_eValue = mdxFunctionType_m;
+			else if (L"v" == sValue)
+				this->m_eValue = mdxFunctionType_v;
+			else if (L"s" == sValue)
+				this->m_eValue = mdxFunctionType_s;
+			else if (L"c" == sValue)
+				this->m_eValue = mdxFunctionType_c;
+			else if (L"r" == sValue)
+				this->m_eValue = mdxFunctionType_r;
+			else if (L"p" == sValue)
+				this->m_eValue = mdxFunctionType_p;
+			else if (L"k" == sValue)
+				this->m_eValue = mdxFunctionType_k;
+			else
+				this->m_eValue = mdxFunctionType_m;
+			return this->m_eValue;
+		}
+		std::wstring CMdxFunctionType::ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case mdxFunctionType_m: return L"m"; break;
+			case mdxFunctionType_v: return L"v"; break;
+			case mdxFunctionType_s: return L"s"; break;
+			case mdxFunctionType_c: return L"c"; break;
+			case mdxFunctionType_r: return L"r"; break;
+			case mdxFunctionType_p: return L"p"; break;
+			case mdxFunctionType_k: return L"k"; break;
+			}
+			return L"v";
+		}
+		EUserProtectedRangeType CUserProtectedRangeType::FromString(const std::wstring& sValue)
+		{
+			if (L"notView" == sValue)
+				this->m_eValue = typeNotView;
+			else if (L"view" == sValue)
+				this->m_eValue = typeView;
+			else if (L"edit" == sValue)
+				this->m_eValue = typeEdit;
+			else
+				this->m_eValue = typeEdit;
+			return this->m_eValue;
+		}
+		std::wstring CUserProtectedRangeType::ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case typeNotView: return L"notView"; break;
+			case typeView: return L"view"; break;
+			case typeEdit: return L"edit"; break;
+			}
+			return L"edit";
+		}
 	}// Spreadsheet
 } // SimpleTypes

@@ -456,6 +456,7 @@ namespace PdfWriter
 		{
 			return m_pStream;
 		}
+		void SetStream(CStream* pStream);
 		unsigned int GetFilter() const
 		{
 			return m_unFilter;

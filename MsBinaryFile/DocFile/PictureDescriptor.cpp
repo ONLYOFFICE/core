@@ -310,7 +310,7 @@ namespace DocFileFormat
 				if ( stPicName != NULL )
 				{
 					std::wstring picName;
-					FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &picName, stPicName, cchPicName, ENCODING_WINDOWS_1250 );
+					FormatUtils::GetWStringFromBytes( picName, stPicName, cchPicName, ENCODING_WINDOWS_1250 );
 					RELEASEARRAYOBJECTS(stPicName);
 				}
 			}					

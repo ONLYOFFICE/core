@@ -1,5 +1,6 @@
 #include "graphics.h"
 #include "../common/Base64.h"
+#include "../raster/Metafile/MetaFileCommon.h"
 
 #include <string>
 #include <iostream>
@@ -1132,28 +1133,30 @@ namespace NSGraphics
 	}
 	std::string CGraphics::toDataURL(std::wstring type)
 	{
-		std::wstring sPath = NSFile::CFileBinary::CreateTempFileWithUniqueName(m_sApplicationImagesDirectory, L"img");
 #ifdef _DEBUG
-		std::wcout << "toDataURL " << sPath << std::endl;
+		std::wcout << "toDataURL " << type << std::endl;
 #endif
-		m_oFrame.SaveFile(sPath, _CXIMAGE_FORMAT_PNG);
+		std::wstring sFormat = (type.length() > 6) ? type.substr(6) : type;
 
-		NSFile::CFileBinary oReader;
-		if (oReader.OpenFile(sPath))
+		BYTE* pDataImage = NULL;
+		int nDataImageSize = 0;
+		int nImageFormat = _CXIMAGE_FORMAT_PNG;
+		if ((L"jpg" == sFormat) ||(L"jpeg" == sFormat))
+			nImageFormat = _CXIMAGE_FORMAT_JPG;
+
+		std::string sRes = "";
+		if (m_oFrame.Encode(pDataImage, nDataImageSize, nImageFormat))
 		{
-			DWORD dwFileSize = oReader.GetFileSize();
-			BYTE* pFileContent = new BYTE[dwFileSize];
-			DWORD dwReaded;
-			oReader.ReadFile(pFileContent, dwFileSize, dwReaded);
-			oReader.CloseFile();
-
-			NSFile::CFileBinary::Remove(sPath);
-			int nEncodeLen = NSBase64::Base64EncodeGetRequiredLength(dwFileSize);
-			BYTE* pImageData = new BYTE[nEncodeLen];
-			if (TRUE == NSBase64::Base64Encode(pFileContent, dwFileSize, pImageData, &nEncodeLen))
-				return "data:" + U_TO_UTF8(type) + ";base64, " + std::string((char*)pImageData, nEncodeLen);
+			char* cData64 = NULL;
+			int nData64Dst = 0;
+			if (NSFile::CBase64Converter::Encode(pDataImage, nDataImageSize, cData64, nData64Dst, NSBase64::B64_BASE64_FLAG_NOCRLF))
+			{
+				sRes = ("data:" + U_TO_UTF8(type) + ";base64," + std::string(cData64, nData64Dst));
+			}
+			RELEASEARRAYOBJECTS(cData64);
 		}
-		return "";
+		RELEASEARRAYOBJECTS(pDataImage);
+		return sRes;
 	}
 	CColor CGraphics::GetPenColor()
 	{
@@ -1235,7 +1238,7 @@ namespace NSGraphics
 				pMetafile->GetBounds(&x, &y, &w, &h);
 
 				sName += L"png";
-				pMetafile->ConvertToRaster(sName.c_str(), 4, 1000);
+				MetaFile::ConvertToRasterMaxSize(pMetafile, sName.c_str(), 4, 1000);
 
 				RELEASEOBJECT(pMetafile);
 			}
@@ -1370,5 +1373,15 @@ namespace NSGraphics
 		CTransform oRes;
 		m_pRenderer->GetTransform(&oRes.sx, &oRes.shy, &oRes.shx, &oRes.sy, &oRes.tx, &oRes.ty);
 		return oRes;
+	}
+
+	void CGraphics::CreateLayer(double opacity)
+	{
+		m_pRenderer->BeginCommand(c_nLayerType);
+		m_pRenderer->put_LayerOpacity(opacity);
+	}
+	void CGraphics::BlendLayer()
+	{
+		m_pRenderer->EndCommand(c_nLayerType);
 	}
 }

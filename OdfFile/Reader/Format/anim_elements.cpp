@@ -309,31 +309,31 @@ static _CP_OPT(std::wstring) pptx_convert_smil_attribute_name(const odf_types::s
 
 	switch (smil_attribute_name_.get_type())
 	{
-	case smil_attribute_name::charColor:		result = boost::none;
-	case smil_attribute_name::charFontName:		result = boost::none;
-	case smil_attribute_name::charHeight:		result = boost::none;
-	case smil_attribute_name::charPosture:		result = boost::none;
-	case smil_attribute_name::charUnderline:	result = boost::none;
-	case smil_attribute_name::charWeight:		result = boost::none;
-	case smil_attribute_name::color:			result = L"style.color";
-	case smil_attribute_name::fill:				result = L"fill.type";
-	case smil_attribute_name::fillColor:		result = L"fillcolor";
-	case smil_attribute_name::fillStyle:		result = boost::none;
-	case smil_attribute_name::fillOn:			result = L"fill.on";
-	case smil_attribute_name::height:			result = L"ppt_h";
-	case smil_attribute_name::lineColor:		result = boost::none;
-	case smil_attribute_name::lineStyle:		result = boost::none;
-	case smil_attribute_name::opacity:			result = L"style.opacity";
-	case smil_attribute_name::rotate:			result = L"style.rotation";
-	case smil_attribute_name::stroke:			result = L"stroke.on";
-	case smil_attribute_name::strokeColor:		result = L"stroke.color";
-	case smil_attribute_name::skewX:			result = L"xshear";
-	case smil_attribute_name::skewY:			result = boost::none;
-	case smil_attribute_name::visibility:		result = L"style.visibility";
-	case smil_attribute_name::width:			result = L"ppt_w";
-	case smil_attribute_name::x:				result = L"ppt_x";
-	case smil_attribute_name::y:				result = L"ppt_y";
-	case smil_attribute_name::dim:				result = L"ppt_c";
+	case smil_attribute_name::charColor:		result = boost::none;			break;
+	case smil_attribute_name::charFontName:		result = boost::none;			break;
+	case smil_attribute_name::charHeight:		result = boost::none;			break;
+	case smil_attribute_name::charPosture:		result = boost::none;			break;
+	case smil_attribute_name::charUnderline:	result = boost::none;			break;
+	case smil_attribute_name::charWeight:		result = boost::none;			break;
+	case smil_attribute_name::color:			result = L"style.color";		break;
+	case smil_attribute_name::fill:				result = L"fill.type";			break;
+	case smil_attribute_name::fillColor:		result = L"fillcolor";			break;
+	case smil_attribute_name::fillStyle:		result = boost::none;			break;
+	case smil_attribute_name::fillOn:			result = L"fill.on";			break;
+	case smil_attribute_name::height:			result = L"ppt_h";				break;
+	case smil_attribute_name::lineColor:		result = boost::none;			break;
+	case smil_attribute_name::lineStyle:		result = boost::none;			break;
+	case smil_attribute_name::opacity:			result = L"style.opacity";		break;
+	case smil_attribute_name::rotate:			result = L"style.rotation";		break;
+	case smil_attribute_name::stroke:			result = L"stroke.on";			break;
+	case smil_attribute_name::strokeColor:		result = L"stroke.color";		break;
+	case smil_attribute_name::skewX:			result = L"xshear";				break;
+	case smil_attribute_name::skewY:			result = boost::none;			break;
+	case smil_attribute_name::visibility:		result = L"style.visibility";	break;
+	case smil_attribute_name::width:			result = L"ppt_w";				break;
+	case smil_attribute_name::x:				result = L"ppt_x";				break;
+	case smil_attribute_name::y:				result = L"ppt_y";				break;
+	case smil_attribute_name::dim:				result = L"ppt_c";				break;
 	}
 
 	return result;
@@ -502,6 +502,14 @@ static _CP_OPT(int) pptx_convert_preset_subtype(const std::wstring& preset_class
 					pptx_preset_subtype = 5;
 				else if (preset_subtype_ == L"across")
 					pptx_preset_subtype = 10;
+			} 
+			break;
+			case 6:
+			{
+				if (preset_subtype_ == L"out")
+					pptx_preset_subtype = 16;
+				else if (preset_subtype_ == L"in")
+					pptx_preset_subtype = 32;
 			}
 			break;
 			case 17:
@@ -1177,8 +1185,6 @@ void anim_transitionFilter::convert_slide_transition_filter(oox::pptx_conversion
 		else if (filter_attlist_.smil_subtype_.get() == L"combHorizontal") { type = L"comb"; dir = L"horz"; }
 		break;
 	case smil_transition_type::slideWipe:
-		type = L"pull";
-		break;
 	case smil_transition_type::boxWipe:
 		type = L"cover";
 		break;
@@ -1229,20 +1235,20 @@ void anim_transitionFilter::convert_slide_transition_filter(oox::pptx_conversion
 				else dir = L"d";
 			}
 
-			if (filter_attlist_.smil_subtype_.get() == L"fromTop")		dir = L"d";
+			if (filter_attlist_.smil_subtype_.get() == L"fromTop")				dir = L"d";
 			else if (filter_attlist_.smil_subtype_.get() == L"fromLeft")		dir = L"r";
 			else if (filter_attlist_.smil_subtype_.get() == L"fromRight")		dir = L"l";
-			else if (filter_attlist_.smil_subtype_.get() == L"fromBottom")	dir = L"u";
+			else if (filter_attlist_.smil_subtype_.get() == L"fromBottom")		dir = L"u";
 
 			else if (filter_attlist_.smil_subtype_.get() == L"topRight")		dir = L"ld";
-			else if (filter_attlist_.smil_subtype_.get() == L"bottomLeft")	dir = L"lu";
-			else if (filter_attlist_.smil_subtype_.get() == L"bottomRight")	dir = L"ru";
-			else if (filter_attlist_.smil_subtype_.get() == L"topLeft")		dir = L"rd";
+			else if (filter_attlist_.smil_subtype_.get() == L"bottomLeft")		dir = L"lu";
+			else if (filter_attlist_.smil_subtype_.get() == L"bottomRight")		dir = L"ru";
+			else if (filter_attlist_.smil_subtype_.get() == L"topLeft")			dir = L"rd";
 
-			else if (filter_attlist_.smil_subtype_.get() == L"fromTopLeft")	dir = L"rd";
-			else if (filter_attlist_.smil_subtype_.get() == L"fromBottomLeft")dir = L"ru";
+			else if (filter_attlist_.smil_subtype_.get() == L"fromTopLeft")		dir = L"rd";
+			else if (filter_attlist_.smil_subtype_.get() == L"fromBottomLeft")	dir = L"ru";
 			else if (filter_attlist_.smil_subtype_.get() == L"fromTopRight")	dir = L"ld";
-			else if (filter_attlist_.smil_subtype_.get() == L"fromBottomRight")dir = L"lu";
+			else if (filter_attlist_.smil_subtype_.get() == L"fromBottomRight")	dir = L"lu";
 
 		}
 

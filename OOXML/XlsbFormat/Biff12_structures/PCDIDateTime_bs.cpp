@@ -87,15 +87,54 @@ namespace XLSB
 	void PCDIDateTime::fromString(const std::wstring& str)
     {
 		std::string ts(str.begin(), str.end());
-		boost::posix_time::ptime pt(boost::posix_time::time_from_string(ts));
-		tm pt_tm = boost::posix_time::to_tm(pt);
-
-		yr = pt_tm.tm_year;
-		mon = pt_tm.tm_mon;
-		dom = pt_tm.tm_mday;
-		hr = pt_tm.tm_hour;
-		min = pt_tm.tm_min;
-		sec = pt_tm.tm_sec;
+        boost::posix_time::ptime pt;
+        bool timeValid = false;
+        try
+        {
+            pt = (boost::posix_time::time_from_string(ts));
+            timeValid = true;
+        }
+        catch(std::exception)
+         {}
+        if(!timeValid)
+        {
+            try
+            {
+                pt = (boost::posix_time::from_iso_string(ts));
+                timeValid = true;
+            }
+            catch(std::exception)
+             {}
+        }
+        if(!timeValid)
+        {
+            try
+            {
+                pt = (boost::posix_time::from_iso_extended_string(ts));
+                timeValid = true;
+            }
+            catch(std::exception)
+             {}
+        }
+        if(timeValid)
+        {
+            tm pt_tm = boost::posix_time::to_tm(pt);
+            yr = pt_tm.tm_year;
+            mon = pt_tm.tm_mon;
+            dom = pt_tm.tm_mday;
+            hr = pt_tm.tm_hour;
+            min = pt_tm.tm_min;
+            sec = pt_tm.tm_sec;
+        }
+        else
+        {
+            yr = 0;
+            mon = 0;
+            dom = 0;
+            hr = 0;
+            min = 0;
+            sec = 0;
+        }
     }
 
 

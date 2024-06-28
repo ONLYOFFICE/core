@@ -179,10 +179,10 @@ namespace PdfWriter
 
 		m_dHeight  = pFace->height;
 		m_dDescent = pFace->descender;
+		m_dAscent  = pFace->ascender;
 		m_dUnitsPerEm = pFace->units_per_EM;
 		m_dMaxY = pFace->bbox.yMax;
 		m_dMinY = pFace->bbox.yMin;
-		// m_dHeight = pFace->glyph->metrics.vertAdvance;
 
 		CArrayObject* pBBox = new CArrayObject();
 		pBBox->Add(xMin);

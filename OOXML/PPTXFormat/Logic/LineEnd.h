@@ -59,13 +59,11 @@ namespace PPTX
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
-		public:
 			nullable_limit<Limit::LineEndType> type;
 			nullable_limit<Limit::LineEndSize> w;
 			nullable_limit<Limit::LineEndSize> len;
 
-		public:
-			std::wstring m_name;
+			mutable std::wstring m_name;
 
 		protected:
 			virtual void FillParentPointersForChilds();

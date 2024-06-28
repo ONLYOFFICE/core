@@ -80,7 +80,7 @@ void PtgName::writeFields(CFRecord& record)
 	{
 		record.reserveNunBytes(12);
 	}
-	else
+    else if(record.getGlobalWorkbookInfo()->Version < 0x0800 )
 	{
 		record.reserveNunBytes(2);
 	}
@@ -102,7 +102,7 @@ void PtgName::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool ful
 
 	std::wstring ptg;
 	
-	if ((global_info) && (nameindex <= global_info->arDefineNames.size()))
+    if ((global_info) && (nameindex <= global_info->arDefineNames.size()) && nameindex)
 	{
 		ptg = global_info->arDefineNames[nameindex-1];
 	}

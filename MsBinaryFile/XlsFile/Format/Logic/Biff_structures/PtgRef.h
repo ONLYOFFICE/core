@@ -56,7 +56,7 @@ public:
 
 	static const unsigned short fixed_id = 0x04;
 
-private:
+
     RgceLoc loc;
     XLSB::RgceLoc loc_xlsb;
 

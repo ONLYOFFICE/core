@@ -117,8 +117,8 @@ struct CActionResetForm  final : public CAction
 class CAnnotAP final
 {
 public:
-	CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, const char* sView, const char* sButtonView, AcroFormField* pField);
-	CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, const char* sView, Object* oAnnotRef);
+	CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, const char* sView, const char* sButtonView, AcroFormField* pField);
+	CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, const char* sView, Object* oAnnotRef);
 	~CAnnotAP();
 
 	void ToWASM(NSWasm::CData& oRes);
@@ -131,11 +131,19 @@ private:
 		std::string sASName;
 		BYTE* pAP;
 	};
+
 	void WriteAppearance(unsigned int nColor, CAnnotAPView* pView);
 	BYTE GetBlendMode();
+	void Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex);
+	void Init(AcroFormField* pField);
+	void Init(Object* oAnnot);
+	void Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, int nPageIndex, AcroFormField* pField, const char* sView, const char* sButtonView);
+	void Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, Object* oAnnotRef, const char* sView);
+	void Clear();
 
 	unsigned int m_unRefNum; // Номер ссылки на объект
 	double m_dx1, m_dy1, m_dx2, m_dy2;
+	double m_dCropX, m_dCropY;
 	double m_dWScale, m_dHScale;
 	double m_dWTale;
 	double m_dHTale;
@@ -146,14 +154,6 @@ private:
 	CBgraFrame* m_pFrame;
 	RendererOutputDev* m_pRendererOut;
 	NSGraphics::IGraphicsRenderer* m_pRenderer;
-
-	void Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex);
-	void Init(AcroFormField* pField);
-	void Init(Object* oAnnot);
-	void Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, int nPageIndex, AcroFormField* pField, const char* sView, const char* sButtonView);
-	void Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, Object* oAnnotRef, const char* sView);
-
-	void Clear();
 };
 
 //------------------------------------------------------------------------
@@ -170,8 +170,11 @@ public:
 protected:
 	CAnnot(PDFDoc* pdfDoc, AcroFormField* pField);
 	CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+	std::string DictLookupString(Object* pObj, const char* sName, int nByte);
 
-	double m_dHeight; // Высота холста, для Y трансормации
+	unsigned int m_unFlags;
+	double m_dHeight; // Высота холста, для Y трансформации
+	double m_dX; // Смещение по X для трансформации
 
 private:
 	struct CBorderType final
@@ -212,14 +215,15 @@ class CAnnotWidget : public CAnnot
 public:
 	virtual ~CAnnotWidget();
 
-	void SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CFontList *pFontList);
+	void SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList);
+	void SetButtonFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList);
 
 protected:
 	CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField);
 
+	std::string FieldLookupString(AcroFormField* pField, const char* sName, int nByte);
 	virtual void ToWASM(NSWasm::CData& oRes) override;
 
-	unsigned int m_unFlags;
 	BYTE m_nType; // Тип - FT + флаги
 	unsigned int m_unFieldFlag; // Флаг - Ff
 
@@ -241,6 +245,7 @@ private:
 	std::string m_sFontKey; // Уникальный идентификатор шрифта
 	std::string m_sFontName; // Имя шрифта - из DA
 	std::string m_sActualFontName; // Имя замененного шрифта
+	std::string m_sButtonFontName; // Имя шрифта кнопки
 };
 
 class CAnnotWidgetBtn final : public CAnnotWidget
@@ -314,17 +319,36 @@ private:
 };
 
 //------------------------------------------------------------------------
-// PdfReader::CMarkupAnnot
+// PdfReader::CAnnotMarkup
 //------------------------------------------------------------------------
 
-class CMarkupAnnot : public CAnnot
+class CAnnotMarkup : public CAnnot
 {
+public:
+	struct CFontData final
+	{
+		bool bFind;
+		BYTE nAlign;
+		unsigned int unFontFlags; // 0 Bold, 1 Italic, 3 зачеркнутый, 4 подчеркнутый, 5 vertical-align, 6 actual font
+		double dFontSise;
+		double dVAlign;
+		double dColor[3];
+		std::string sFontFamily;
+		std::string sActualFont;
+		std::string sText;
+
+		CFontData() : bFind(false), nAlign(0), unFontFlags(4), dFontSise(10), dVAlign(0), dColor{0, 0, 0} {}
+		CFontData(const CFontData& oFont);
+	};
+
+	void SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList);
+	static std::vector<CAnnotMarkup::CFontData*> ReadRC(const std::string& sRC);
+
 protected:
-	CMarkupAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+	CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+	virtual ~CAnnotMarkup();
 
 	virtual void ToWASM(NSWasm::CData& oRes) override;
-
-	unsigned int m_unFlags;
 
 private:
 	BYTE m_nRT; // Тип аннотации-ответа
@@ -332,16 +356,16 @@ private:
 	unsigned int m_unRefNumIRT; // Номер ссылки на аннотацию-ответ
 	double m_dCA; // Значение непрозрачности
 	std::string m_sT; // Текстовая метка, пользователь добавивший аннотацию
-	std::string m_sRC; // Форматированный текст для отображения во всплывающем окне
 	std::string m_sCreationDate; // Дата создания
 	std::string m_sSubj; // Краткое описание
+	std::vector<CFontData*> m_arrRC; // Форматированный текст
 };
 
 //------------------------------------------------------------------------
 // PdfReader::CAnnotText
 //------------------------------------------------------------------------
 
-class CAnnotText final : public CMarkupAnnot
+class CAnnotText final : public CAnnotMarkup
 {
 public:
 	CAnnotText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
@@ -357,7 +381,7 @@ private:
 // PdfReader::CAnnotInk
 //------------------------------------------------------------------------
 
-class CAnnotInk final : public CMarkupAnnot
+class CAnnotInk final : public CAnnotMarkup
 {
 public:
 	CAnnotInk(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
@@ -372,7 +396,7 @@ private:
 // PdfReader::CAnnotLine
 //------------------------------------------------------------------------
 
-class CAnnotLine final : public CMarkupAnnot
+class CAnnotLine final : public CAnnotMarkup
 {
 public:
 	CAnnotLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
@@ -396,7 +420,7 @@ private:
 // PdfReader::CAnnotTextMarkup
 //------------------------------------------------------------------------
 
-class CAnnotTextMarkup final : public CMarkupAnnot
+class CAnnotTextMarkup final : public CAnnotMarkup
 {
 public:
 	CAnnotTextMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
@@ -412,7 +436,7 @@ private:
 // PdfReader::CAnnotSquareCircle
 //------------------------------------------------------------------------
 
-class CAnnotSquareCircle final : public CMarkupAnnot
+class CAnnotSquareCircle final : public CAnnotMarkup
 {
 public:
 	CAnnotSquareCircle(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
@@ -429,7 +453,7 @@ private:
 // PdfReader::CAnnotPolygonPolyline
 //------------------------------------------------------------------------
 
-class CAnnotPolygonLine final : public CMarkupAnnot
+class CAnnotPolygonLine final : public CAnnotMarkup
 {
 public:
 	CAnnotPolygonLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
@@ -449,7 +473,7 @@ private:
 // PdfReader::CAnnotFreeText
 //------------------------------------------------------------------------
 
-class CAnnotFreeText final : public CMarkupAnnot
+class CAnnotFreeText final : public CAnnotMarkup
 {
 public:
 	CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
@@ -460,6 +484,7 @@ private:
 	BYTE m_nQ; // Выравнивание текста - Q
 	BYTE m_nIT; // Назначение аннотации
 	BYTE m_nLE; // Стиль окончания линии
+	int m_nRotate;
 	std::string m_sDS; // Строка стиля по умолчанию - DS
 	double m_pRD[4]{}; // Различия Rect и фактического размера
 	std::vector<double> m_arrCFromDA; // Цвет границы
@@ -470,7 +495,7 @@ private:
 // PdfReader::CAnnotCaret
 //------------------------------------------------------------------------
 
-class CAnnotCaret final : public CMarkupAnnot
+class CAnnotCaret final : public CAnnotMarkup
 {
 public:
 	CAnnotCaret(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
@@ -486,7 +511,7 @@ private:
 // PdfReader::CAnnotFileAttachment
 //------------------------------------------------------------------------
 
-class CAnnotFileAttachment final : public CMarkupAnnot
+class CAnnotFileAttachment final : public CAnnotMarkup
 {
 public:
 	CAnnotFileAttachment(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
@@ -545,7 +570,7 @@ private:
 class CAnnots
 {
 public:
-	CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList *pFontList);
+	CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList);
 	~CAnnots();
 
 	void ToWASM(NSWasm::CData& oRes);
@@ -567,6 +592,7 @@ private:
 		unsigned int unRefNumParent; // Номер ссылки на объект родителя
 		std::vector<int> arrI;
 		std::vector<std::string> arrV;
+		std::vector<std::string> arrOpt;
 		std::string sT;
 		std::string sV;
 		std::string sDV;
@@ -577,6 +603,23 @@ private:
 	std::vector<int> m_arrCO; // Порядок вычислений - CO
 	std::vector<CAnnotParent*> m_arrParents; // Родительские Fields
 	std::vector<CAnnot*> m_arrAnnots;
+};
+
+//------------------------------------------------------------------------
+// PdfReader::CAnnotFonts
+//------------------------------------------------------------------------
+
+class CAnnotFonts final
+{
+public:
+	static bool IsBaseFont(const std::wstring& wsName);
+	static std::map<std::wstring, std::wstring> GetAllFonts(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList);
+	static std::wstring GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oFontRef, std::string& sFontName, std::string& sActualFontName, bool& bBold, bool& bItalic);
+	static bool GetFontFromAP(PDFDoc* pdfDoc, AcroFormField* pField, Object* oFontRef, std::string& sFontKey);
+	static std::map<std::wstring, std::wstring> GetAnnotFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oAnnotRef);
+	static std::map<std::wstring, std::wstring> GetFreeTextFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef, std::vector<CAnnotMarkup::CFontData*>& arrRC);
+private:
+	static bool FindFonts(Object* oStream, int nDepth, Object* oResFonts);
 };
 
 }

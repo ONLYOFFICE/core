@@ -53,7 +53,7 @@ public:
 	static const ElementType	type = typeXFExtGradient;
 
 	XFPropGradient			gradient;
-	_UINT32					cGradStops;
+	_UINT32					cGradStops = 0;
 	std::vector<GradStop>	rgGradStops;
 };
 

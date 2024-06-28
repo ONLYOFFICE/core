@@ -61,34 +61,36 @@ public:
 	int GetError();
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();
+	bool ValidMetaData();
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
 	void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
 	std::wstring GetInfo();
 	std::wstring GetFontPath(const std::wstring& wsFontName);
 
-	NSFonts::IFontManager* GetFontManager() { return m_pFontManager; }
 	std::wstring ToXml(const std::wstring& wsXmlPath, bool isPrintStreams = false);
-	PDFDoc* GetPDFDocument() { return m_pPDFDocument; }
 	void ChangeLength(DWORD nLength);
+	NSFonts::IFontManager* GetFontManager() { return m_pFontManager; }
+	PDFDoc* GetPDFDocument() { return m_pPDFDocument; }
 
 	BYTE* GetStructure();
 	BYTE* GetLinks(int nPageIndex);
 	BYTE* GetWidgets();
-	BYTE* GetWidgetFonts(int nTypeFonts);
+	BYTE* GetFonts(bool bStandart);
 	BYTE* GetAnnots(int nPageIndex = -1);
+	BYTE* GetShapes(int nPageIndex);
 	BYTE* VerifySign(const std::wstring& sFile, ICertificate* pCertificate, int nWidget = -1);
 	BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget  = -1, const char* sView  = NULL, const char* sBView = NULL);
-	BYTE* GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, bool bBase64 = false, int nBWidget = -1, const char* sIView = NULL);
 	BYTE* GetAPAnnots  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot   = -1, const char* sView  = NULL);
+	BYTE* GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase64 = false, int nBWidget = -1, const char* sIView = NULL);
+	std::map<std::wstring, std::wstring> GetAnnotFonts(Object* pRefAnnot);
 
 private:
-	IOfficeDrawingFile* m_pRenderer;
-	PDFDoc*            m_pPDFDocument;
-	std::wstring       m_wsTempFolder;
+	PDFDoc*                m_pPDFDocument;
+	std::wstring           m_wsTempFolder;
 	NSFonts::IFontManager* m_pFontManager;
-	PdfReader::CFontList*  m_pFontList;
-	DWORD              m_nFileLength;
-	int                m_eError;
+	PdfReader::CPdfFontList*  m_pFontList;
+	DWORD                  m_nFileLength;
+	int                    m_eError;
 	std::map<std::wstring, std::wstring> m_mFonts;
 };
 

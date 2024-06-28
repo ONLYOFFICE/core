@@ -16,6 +16,12 @@ DEFINES += PDFFILE_USE_DYNAMIC_LIBRARY
 
 ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network)
 
+#CONFIG += use_openssl_hash
+use_openssl_hash {
+    DEFINES += USE_OPENSSL_HASH
+    INCLUDEPATH += $$PWD/../Common/3dParty/openssl/openssl/include
+}
+
 # PdfReader
 
 core_windows {
@@ -199,9 +205,11 @@ SOURCES += \
 HEADERS += PdfFile.h \
            PdfWriter.h \
            PdfReader.h \
+           PdfEditor.h \
            OnlineOfficeBinToPdf.h
 
 SOURCES += PdfFile.cpp \
            PdfWriter.cpp \
            PdfReader.cpp \
+           PdfEditor.cpp \
            OnlineOfficeBinToPdf.cpp

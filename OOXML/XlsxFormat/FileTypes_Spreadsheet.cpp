@@ -155,12 +155,28 @@ namespace OOX
 												L"http://schemas.microsoft.com/office/2011/relationships/timelineCache",
 												L"timelineCaches/timelineCache", true, true);
 			//onlyoffice workbook comments
-			const FileType WorkbookComments(L"", L"workbookComments.bin",
+			const FileType WorkbookComments	(L"", L"workbookComments.bin",
 												L"",
 												L"http://schemas.onlyoffice.com/workbookComments");
+			
+			const FileType Metadata			(L"", L"metadata.xml",
+												L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheetMetadata+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/sheetMetadata");
 
 
-			const FileType SpreadsheetFlat(L"", L"", L"", L"");		
+			const FileType RdRichValue		(L"richData", L"rdrichvalue.xml",
+												L"application/vnd.ms-excel.rdrichvalue+xml",
+												L"http://schemas.microsoft.com/office/2017/06/relationships/rdRichValue");
+
+			const FileType RdRichValueStructure(L"richData", L"rdrichvaluestructure.xml",
+												L"application/vnd.ms-excel.rdrichvaluestructure+xml",
+												L"http://schemas.microsoft.com/office/2017/06/relationships/rdRichValueStructure");
+
+			const FileType RdRichValueTypes	(L"richData", L"rdRichValueTypes..xml",
+												L"application/vnd.ms-excel.rdrichvaluetypes+xml",
+												L"http://schemas.microsoft.com/office/2017/06/relationships/rdRichValueTypes");
+
+			const FileType SpreadsheetFlat	(L"", L"", L"", L"");
 
 		} // namespace FileTypes
 	}

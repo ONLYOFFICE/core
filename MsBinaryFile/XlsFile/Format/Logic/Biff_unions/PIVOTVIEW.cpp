@@ -100,7 +100,8 @@ const bool PIVOTVIEW::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}
 //-------------------------------------------------------------------------------------------------
-	PIVOTCACHEDEFINITION* pivot_cache = dynamic_cast<PIVOTCACHEDEFINITION*>(global_info_->arPIVOTCACHEDEFINITION[view->iCache].get());
+	PIVOTCACHEDEFINITION* pivot_cache = view->iCache < global_info_->arPIVOTCACHEDEFINITION.size() ? 
+										dynamic_cast<PIVOTCACHEDEFINITION*>(global_info_->arPIVOTCACHEDEFINITION[view->iCache].get()) : NULL;
 	if (pivot_cache)
 	{
 		SXSRC*			src			= dynamic_cast<SXSRC*>		(pivot_cache->m_SXSRC.get());

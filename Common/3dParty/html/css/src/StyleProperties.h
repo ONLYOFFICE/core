@@ -54,6 +54,11 @@ namespace NSCSS
 			}
 		}
 
+		static bool LevelIsSame(const CValue& oFirstValue, const CValue& oSecondValue)
+		{
+			return oFirstValue.m_unLevel == oSecondValue.m_unLevel;
+		}
+
 		bool operator==(const T& oValue) const { return m_oValue == oValue; }
 		bool operator>=(const T& oValue) const { return m_oValue >= oValue; }
 		bool operator<=(const T& oValue) const { return m_oValue <= oValue; }
@@ -81,8 +86,8 @@ namespace NSCSS
 				return *this;
 
 			m_oValue     = oValue.m_oValue;
-			m_unLevel    = std::max(m_unLevel, oValue.m_unLevel);
-			m_bImportant = std::max(m_bImportant, oValue.m_bImportant);
+			m_unLevel    = oValue.m_unLevel;
+			m_bImportant = oValue.m_bImportant;
 
 			return *this;
 		}
@@ -124,13 +129,14 @@ namespace NSCSS
 		CDigit(double dValue, unsigned int unLevel, bool bImportant = false);
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel = 0, bool bHardMode = true) override;
+		bool SetValue(const CDigit& oValue);
 
 		bool Empty() const override;
 		bool Zero() const;
 		void Clear() override;
 
 		void ConvertTo(UnitMeasure enUnitMeasure, double dPrevValue = 0.);
-		
+
 		int          ToInt()     const override;
 		double       ToDouble()  const override;
 		std::wstring ToWString() const override;
@@ -143,6 +149,9 @@ namespace NSCSS
 
 		bool operator==(const double& oValue) const;
 		bool operator==(const CDigit& oDigit) const;
+
+		bool operator!=(const double& oValue) const;
+		bool operator!=(const CDigit& oDigit) const;
 
 		CDigit operator+(const CDigit& oDigit) const;
 		CDigit operator-(const CDigit& oDigit) const;
@@ -220,6 +229,8 @@ namespace NSCSS
 		bool SetOpacity(const std::wstring& wsValue, unsigned int unLevel = 0, bool bHardMode = true);
 
 		bool Empty() const override;
+		bool None() const;
+		bool Url() const;
 		void Clear() override;
 
 		ColorType GetType() const;
@@ -229,6 +240,7 @@ namespace NSCSS
 		int ToInt() const override;
 		double ToDouble() const override;
 		std::wstring ToWString() const override;
+		std::wstring EquateToColor(const std::vector<std::pair<TRGB, std::wstring>>& arColors) const;
 		TRGB ToRGB() const;
 	};
 
@@ -277,7 +289,7 @@ namespace NSCSS
 		CEnum();
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode) override;
-		void SetMapping(const std::map<std::wstring, int>& mMap);
+		void SetMapping(const std::map<std::wstring, int>& mMap, int nDefaulvalue = -1);
 
 		bool Empty() const override;
 		void Clear() override;
@@ -370,19 +382,18 @@ namespace NSCSS
 
 		bool SetColor     (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetBackground(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
-		void InBorder();
 
 		const CColor& GetColor() const;
-		bool IsInBorder()        const;
 
-		bool Empty() const;
+		void Clear();
+		bool Empty()  const;
+		bool IsNone() const;
 
 		CBackground& operator =(const CBackground& oBackground);
 		CBackground& operator+=(const CBackground& oBackground);
 		bool         operator==(const CBackground& oBackground) const;
 	private:
 		CColor m_oColor;
-		bool   m_bInBorder;
 	};
 
 	class CTransform
@@ -396,6 +407,11 @@ namespace NSCSS
 
 		bool SetMatrix(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetMatrix(const Aggplus::CMatrix &oMatrix);
+
+		void Translate(double dOffsetX, double dOffsetY);
+		void Scale(double dScaleX, double dScaleY);
+		void Rotate(double dValue);
+		void RotateAt(double dValue, double dX, double dY);
 
 		const CMatrix& GetMatrix() const;
 
@@ -411,6 +427,8 @@ namespace NSCSS
 	{
 	public:
 		CBorderSide();
+
+		void Clear();
 
 		static void Equation(CBorderSide &oFirstBorderSide, CBorderSide &oSecondBorderSide);
 
@@ -429,9 +447,12 @@ namespace NSCSS
 		const CColor&  GetColor() const;
 
 		bool Empty() const;
+		bool Zero()  const;
+		bool Valid() const;
 
 		CBorderSide& operator+=(const CBorderSide& oBorderSide);
 		bool         operator==(const CBorderSide& oBorderSide) const;
+		CBorderSide& operator =(const CBorderSide& oBorderSide);
 	private:
 		CDigit  m_oWidth;
 		CString m_oStyle;
@@ -440,10 +461,18 @@ namespace NSCSS
 		bool    m_bBlock;
 	};
 
+	typedef enum
+	{
+		Collapse,
+		Separate
+	} BorderCollapse;
+	
 	class CBorder
 	{
 	public:
 		CBorder();
+
+		void Clear();
 
 		static void Equation(CBorder &oFirstBorder, CBorder &oSecondBorder);
 
@@ -451,6 +480,7 @@ namespace NSCSS
 		bool SetWidth(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetStyle(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetColor(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetCollapse(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 
 		//Left Side
 		bool SetLeftSide       (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
@@ -480,7 +510,10 @@ namespace NSCSS
 		void Unblock();
 
 		bool Empty() const;
+		bool Zero() const;
 		bool EqualSides() const;
+
+		const CEnum& GetCollapse() const;
 
 		const CBorderSide& GetLeftBorder()   const;
 		const CBorderSide& GetTopBorder()    const;
@@ -489,11 +522,15 @@ namespace NSCSS
 
 		CBorder& operator+=(const CBorder& oBorder);
 		bool     operator==(const CBorder& oBorder) const;
+
+		CBorder& operator =(const CBorder& oBorder);
 	private:
 		CBorderSide m_oLeft;
 		CBorderSide m_oTop;
 		CBorderSide m_oRight;
 		CBorderSide m_oBottom;
+		
+		CEnum m_enCollapse;
 	};
 
 	class CTextDecorationLine
@@ -513,6 +550,7 @@ namespace NSCSS
 		bool LineThrough() const;
 
 		CTextDecorationLine &operator+=(const CTextDecorationLine& oTextDecoration);
+		bool operator==(const CTextDecorationLine& oTextDecorationLine) const;
 	};
 
 	struct TTextDecoration
@@ -522,6 +560,7 @@ namespace NSCSS
 		CColor              m_oColor;
 
 		TTextDecoration& operator+=(const TTextDecoration& oTextDecoration);
+		bool operator==(const TTextDecoration& oTextDecoration) const;
 	};
 
 	class CText
@@ -561,33 +600,40 @@ namespace NSCSS
 	public:
 		CIndent();
 
+		void Clear();
+
 		static void Equation(CIndent &oFirstMargin, CIndent &oSecondMargin);
+
+		bool Equals() const;
 
 		void SetPermisson(bool bPermission);
 
-		bool AddValue  (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
-		bool AddLeft   (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
-		bool AddTop    (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
-		bool AddRight  (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
-		bool AddBottom (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
-		
-		void UpdateAll(double dFontSize);
-		void UpdateLeft(double dFontSize);
-		void UpdateTop(double dFontSize);
-		void UpdateRight(double dFontSize);
-		void UpdateBottom(double dFontSize);
+		bool SetValues (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetTop    (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetRight  (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetBottom (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetLeft   (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 
-		const CDigit& GetLeft  () const;
+		void UpdateAll   (double dFontSize);
+		void UpdateTop   (double dFontSize);
+		void UpdateRight (double dFontSize);
+		void UpdateBottom(double dFontSize);
+		void UpdateLeft  (double dFontSize);
+
 		const CDigit& GetTop   () const;
 		const CDigit& GetRight () const;
 		const CDigit& GetBottom() const;
+		const CDigit& GetLeft  () const;
 
 		bool Empty() const;
+		bool Zero() const;
 
-		CIndent& operator+=(const CIndent& oMargin);
-		bool     operator==(const CIndent& oMargin) const;
+		CIndent& operator+=(const CIndent& oIndent);
+		bool     operator==(const CIndent& oIndent) const;
+		bool     operator!=(const CIndent& oIndent) const;
 	private:
-		bool AddValue(CDigit& oValue, const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetValues(const std::wstring& wsTopValue, const std::wstring& wsRightValue, const std::wstring& wsBottomValue, const std::wstring& wsLeftValue, unsigned int unLevel, bool bHardMode = false);
+		void UpdateSide(CDigit& oSide, double dFontSize);
 
 		CDigit m_oLeft;
 		CDigit m_oTop;
@@ -623,6 +669,7 @@ namespace NSCSS
 
 		const CDigit&  GetSize()       const;
 		const CDigit&  GetLineHeight() const;
+		CDigit&  GetLineHeight();
 		const CString& GetFamily()     const;
 		const CString& GetStretch()    const;
 		const CString& GetStyle()      const;
@@ -642,8 +689,29 @@ namespace NSCSS
 		CString m_oStyle;
 		CString m_oVariant;
 		CString m_oWeight;
+	};
 
-		TTextDecoration m_oTextDecoration;
+	class CPage
+	{
+	public:
+		CPage();
+
+		bool SetMargin (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetSize   (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetFooter (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetHeader (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+
+		const CDigit&  GetWidth()  const;
+		const CDigit&  GetHeight() const;
+		const CIndent& GetMargin() const;
+		const CDigit&  GetFooter() const;
+		const CDigit&  GetHeader() const;
+	private:
+		CDigit  m_oWidth;
+		CDigit  m_oHeight;
+		CIndent m_oMargin;
+		CDigit  m_oFooter;
+		CDigit  m_oHeader;
 	};
 	}
 }

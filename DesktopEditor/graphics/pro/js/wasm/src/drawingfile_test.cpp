@@ -3,6 +3,7 @@
 #include "../../../../raster/BgraFrame.h"
 #include "../../../../raster/ImageFileFormatChecker.h"
 #include "../../../../../common/File.h"
+#include "../../../../../common/StringBuilder.h"
 #include "drawingfile.cpp"
 
 unsigned char READ_BYTE(BYTE* x)
@@ -225,7 +226,7 @@ void ReadAnnot(BYTE* pWidgets, int& i)
 		{
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << (double)nPathLength / 100.0 << " ";
+			std::cout << (double)nPathLength / 10000.0 << " ";
 		}
 		std::cout << ", ";
 	}
@@ -356,6 +357,21 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			}
 			std::cout << ", ";
 		}
+		if (nFlags & (1 << 6))
+		{
+			int nILength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Opt [";
+
+			for (int j = 0; j < nILength; ++j)
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << " " << std::string((char*)(pWidgets + i), nPathLength);
+				i += nPathLength;
+			}
+			std::cout << " ], ";
+		}
 
 		std::cout << std::endl;
 	}
@@ -400,7 +416,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			{
 				nPathLength = READ_INT(pWidgets + i);
 				i += 4;
-				std::cout << " " << (double)nPathLength / 100.0;
+				std::cout << " " << (double)nPathLength / 10000.0;
 			}
 			std::cout << ", ";
 		}
@@ -464,7 +480,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			{
 				nPathLength = READ_INT(pWidgets + i);
 				i += 4;
-				std::cout << (double)nPathLength / 100.0 << " ";
+				std::cout << (double)nPathLength / 10000.0 << " ";
 			}
 			std::cout << ", ";
 		}
@@ -484,7 +500,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			{
 				nPathLength = READ_INT(pWidgets + i);
 				i += 4;
-				std::cout << (double)nPathLength / 100.0 << " ";
+				std::cout << (double)nPathLength / 10000.0 << " ";
 			}
 			std::cout << ", ";
 		}
@@ -506,6 +522,13 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Name " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
+		}
+		if (nFlags & (1 << 19))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Font button " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 			i += nPathLength;
 		}
 
@@ -1086,7 +1109,7 @@ int main(int argc, char* argv[])
 			free(pWidgetsAP);
 
 		int bBase64 = 1;
-		BYTE* pWidgetsMK = GetButtonIcons(pGrFile, nWidth, nHeight, 0xFFFFFF, nTestPage, bBase64, -1, -1);
+		BYTE* pWidgetsMK = GetButtonIcons(pGrFile, 0xFFFFFF, nTestPage, bBase64, -1, -1);
 		nLength = READ_INT(pWidgetsMK);
 		i = 4;
 		nLength -= 4;
@@ -1216,11 +1239,84 @@ int main(int argc, char* argv[])
 					std::cout << "CA " << (double)nPathLength / 100.0 << ", ";
 				}
 				if (nFlags & (1 << 3))
-				{
-					nPathLength = READ_INT(pAnnots + i);
+				{					
+					std::cout << "RC {";
+
+					int nFontLength = READ_INT(pAnnots + i);
 					i += 4;
-					std::cout << "RC " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
-					i += nPathLength;
+					for (int j = 0; j < nFontLength; ++j)
+					{
+						std::cout << std::endl << "span" << j << " { ";
+
+						nPathLength = READ_BYTE(pAnnots + i);
+						i += 1;
+						std::string arrTextAlign[] = {"Left", "Center", "Right", "Justify"};
+						std::cout << "text-align: " << arrTextAlign[nPathLength];
+
+						std::cout << "; font-style:";
+						int nFontFlag = READ_INT(pAnnots + i);
+						i += 4;
+						if (nFontFlag & (1 << 0))
+							std::cout << "Bold ";
+						if (nFontFlag & (1 << 1))
+							std::cout << "Italic ";
+						if (nFontFlag & (1 << 3))
+							std::cout << "Strike ";
+						if (nFontFlag & (1 << 4))
+							std::cout << "Underline ";
+						if (nFontFlag & (1 << 5))
+						{
+							nPathLength = READ_INT(pAnnots + i);
+							i += 4;
+							std::cout << "; vertical-align:" << (double)nPathLength / 100.0;
+						}
+						if (nFontFlag & (1 << 6))
+						{
+							nPathLength = READ_INT(pAnnots + i);
+							i += 4;
+							std::cout << "; font-actual:" << std::string((char*)(pAnnots + i), nPathLength) << "; ";
+							i += nPathLength;
+						}
+
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << "; font-size:" << (double)nPathLength / 100.0;
+
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << "; font-color:" << (double)nPathLength / 10000.0 << " ";
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << (double)nPathLength / 10000.0 << " ";
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << (double)nPathLength / 10000.0 << "; ";
+
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::string sFontName((char*)(pAnnots + i), nPathLength);
+						std::cout << "font-family:" << sFontName << "; ";
+						i += nPathLength;
+
+						BYTE* pFont = GetFontBinary(pGrFile, (char*)sFontName.c_str());
+						if (pFont)
+						{
+							std::cout << "FIND; ";
+							free(pFont);
+						}
+						else
+							std::cout << "NO; ";
+
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::string sText = std::string((char*)(pAnnots + i), nPathLength);
+						NSStringUtils::string_replaceA(sText, "\r", "\n");
+						std::cout << "text:" << sText << " ";
+						i += nPathLength;
+
+						std::cout << "} ";
+					}
+					std::cout << "}, " << std::endl;
 				}
 				if (nFlags & (1 << 4))
 				{
@@ -1310,7 +1406,7 @@ int main(int argc, char* argv[])
 					{
 						nPathLength = READ_INT(pAnnots + i);
 						i += 4;
-						std::cout << " " << (double)nPathLength / 100.0;
+						std::cout << " " << (double)nPathLength / 10000.0;
 					}
 					std::cout << ", ";
 				}
@@ -1425,7 +1521,7 @@ int main(int argc, char* argv[])
 					{
 						nPathLength = READ_INT(pAnnots + i);
 						i += 4;
-						std::cout << (double)nPathLength / 100.0 << " ";
+						std::cout << (double)nPathLength / 10000.0 << " ";
 					}
 					std::cout << ", ";
 				}
@@ -1467,7 +1563,7 @@ int main(int argc, char* argv[])
 					{
 						nPathLength = READ_INT(pAnnots + i);
 						i += 4;
-						std::cout << " " << (double)nPathLength / 100.0;
+						std::cout << " " << (double)nPathLength / 10000.0;
 					}
 					std::cout << ", ";
 				}
@@ -1500,6 +1596,10 @@ int main(int argc, char* argv[])
 				nPathLength = READ_BYTE(pAnnots + i);
 				i += 1;
 				std::cout << "Q " << arrQ[nPathLength] << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "Rotate " << nPathLength << ", ";
 
 				if (nFlags & (1 << 15))
 				{
@@ -1557,7 +1657,7 @@ int main(int argc, char* argv[])
 					{
 						nPathLength = READ_INT(pAnnots + i);
 						i += 4;
-						std::cout << " " << (double)nPathLength / 100.0;
+						std::cout << " " << (double)nPathLength / 10000.0;
 					}
 					std::cout << ", ";
 				}
@@ -1675,7 +1775,7 @@ int main(int argc, char* argv[])
 				}
 			}
 
-			std::cout << std::endl;
+			std::cout << std::endl << std::endl;
 		}
 
 		if (pAnnots)

@@ -19,6 +19,11 @@ isEmpty(PUBLISHER_NAME){
 	PUBLISHER_NAME = $$cat(copyright.txt)
 }
 
+DEST_MAKEFILE_NAME = $$(DEST_MAKEFILE_NAME)
+!isEmpty(DEST_MAKEFILE_NAME){
+	MAKEFILE = $${DEST_MAKEFILE_NAME}
+}
+
 APPLICATION_NAME_DEFAULT = $$(APPLICATION_NAME_DEFAULT)
 !isEmpty(APPLICATION_NAME_DEFAULT){
 	DEFINES += "APPLICATION_NAME_DEFAULT=$${APPLICATION_NAME_DEFAULT}"
@@ -229,6 +234,14 @@ core_linux {
 		QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN\'"
 		QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN/system\'"
 		QMAKE_LFLAGS += -Wl,--disable-new-dtags
+
+		!disable_rpath_addon {
+			RUN_PATH_ADDON = $$(RUN_PATH_ADDON)
+			!isEmpty(RUN_PATH_ADDON){
+				RUN_PATH_ADDON_ARRAY = $$split(RUN_PATH_ADDON, ";;")
+				for(rpath_item, RUN_PATH_ADDON_ARRAY):QMAKE_LFLAGS += "-Wl,-rpath,\'$$rpath_item\'"
+			}
+		}
 	}
 }
 
@@ -291,6 +304,12 @@ core_ios {
 	CONFIG(iphonesimulator, iphoneos|iphonesimulator): {
 		message("iphonesimulator")
 		CORE_BUILDS_PLATFORM_PREFIX = ios_simulator
+
+		QMAKE_CFLAGS += -fembed-bitcode
+		QMAKE_CXXFLAGS += -fembed-bitcode
+		QMAKE_LFLAGS += -fembed-bitcode
+		QMAKE_CFLAGS += -fobjc-arc
+		QMAKE_CXXFLAGS += -fobjc-arc
 	} else {
 
 		QMAKE_IOS_DEPLOYMENT_TARGET = 11.0
@@ -298,6 +317,7 @@ core_ios {
 		QMAKE_CFLAGS += -fembed-bitcode
 		QMAKE_CXXFLAGS += -fembed-bitcode
 		QMAKE_LFLAGS += -fembed-bitcode
+		QMAKE_CFLAGS += -fobjc-arc
 		QMAKE_CXXFLAGS += -fobjc-arc
 
 		bundle_xcframeworks {
@@ -358,6 +378,7 @@ core_android {
 	CORE_BUILDS_PLATFORM_PREFIX = $$replace(CORE_BUILDS_PLATFORM_PREFIX, "-", "_")
 	CORE_BUILDS_PLATFORM_PREFIX = $$replace(CORE_BUILDS_PLATFORM_PREFIX, "armeabi_v7", "armv7")
 	CORE_BUILDS_PLATFORM_PREFIX = $$replace(CORE_BUILDS_PLATFORM_PREFIX, "armv7a", "armv7")
+	CORE_BUILDS_PLATFORM_PREFIX_DST = $$replace(CORE_BUILDS_PLATFORM_PREFIX, "android_", "")
 
 	!isEmpty(OO_DESTDIR_BUILD_OVERRIDE) {
 		isEqual(CORE_BUILDS_PLATFORM_PREFIX, android_arm64_v8a):OO_DESTDIR_BUILD_OVERRIDE=$$OO_DESTDIR_BUILD_OVERRIDE/arm64-v8a

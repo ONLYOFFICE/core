@@ -86,6 +86,7 @@
 #include "../../DataTypes/percentorscale.cpp"
 #include "../../DataTypes/presentationclass.cpp"
 #include "../../DataTypes/presentationnodetype.cpp"
+#include "../../DataTypes/presentationvisibility.cpp"
 #include "../../DataTypes/presetclass.cpp"
 #include "../../DataTypes/presetid.cpp"
 #include "../../DataTypes/punctuationwrap.cpp"
@@ -152,3 +153,4 @@
 #include "../../DataTypes/sparklines.cpp"
 #include "../../DataTypes/tabledatatype.cpp"
 #include "../../DataTypes/tableoperator.cpp"
+#include "../../DataTypes/referenceformat.cpp"

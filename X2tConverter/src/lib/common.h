@@ -125,9 +125,12 @@ namespace NExtractTools
 			std::wstring sData;
 			if (NSFile::CFileBinary::ReadAllTextUtf8(sContentTypesPath, sData))
 			{
-				sData = string_replaceAll(sData, L"</Types>", sCT + L"</Types>");
-				if (false == NSFile::CFileBinary::SaveToFile(sContentTypesPath, sData, true))
-					nRes = AVS_FILEUTILS_ERROR_CONVERT;
+				if (std::wstring::npos == sData.find(sCT))
+				{
+					sData = string_replaceAll(sData, L"</Types>", sCT + L"</Types>");
+					if (false == NSFile::CFileBinary::SaveToFile(sContentTypesPath, sData, true))
+						nRes = AVS_FILEUTILS_ERROR_CONVERT;
+				}
 			}
 		}
 		return nRes;
@@ -450,7 +453,7 @@ namespace NExtractTools
 				else
 				{
 					COfficeUtils oCOfficeUtils(NULL);
-					hRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sOOXMLDir, sTo, true)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+					hRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sOOXMLDir, sTo, false)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 				}
 			}
 			else if (AVS_ERROR_DRM == hRes)

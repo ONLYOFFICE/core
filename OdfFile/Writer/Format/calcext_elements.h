@@ -56,10 +56,13 @@ class calcext_data_bar_attr
 public:
    	void serialize(CP_ATTR_NODE);   
 
-	_CP_OPT(odf_types::color) calcext_axis_color_;
-	_CP_OPT(odf_types::color) calcext_positive_color_;
-	_CP_OPT(odf_types::color) calcext_negative_color_;
-    _CP_OPT(std::wstring) calcext_axis_position_;
+    _CP_OPT(odf_types::color) axis_color_;
+	_CP_OPT(odf_types::color) positive_color_;
+	_CP_OPT(odf_types::color) negative_color_;
+    _CP_OPT(std::wstring) axis_position_;
+    _CP_OPT(odf_types::Bool) gradient_;
+    _CP_OPT(unsigned int) min_length_;
+    _CP_OPT(unsigned int) max_length_;
 };
 
 class calcext_condition_attr
@@ -70,7 +73,7 @@ public:
 	_CP_OPT(std::wstring)	calcext_base_cell_address_;
 	_CP_OPT(std::wstring)	calcext_apply_style_name_;
 	_CP_OPT(std::wstring)	calcext_value_;
-
+    _CP_OPT(int)	        loext_stdDev_;
 };
 class calcext_icon_set_attr
 {

@@ -49,15 +49,14 @@ public:
 
 	virtual void load(CFRecord& record);
 
-
-    int twpHeight;
+    int twpHeight = 0;
 	Ts ts;
-	short bls;
-	short sss;
+	short bls = 0;
+	short sss = 0;
 	
-	unsigned char uls;
-	unsigned char bFamily;
-	unsigned char bCharSet;
+	unsigned char uls = 0;
+	unsigned char bFamily = 0;
+	unsigned char bCharSet = 0;
 };
 
 } // namespace XLS

@@ -146,6 +146,9 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 				oox::_oox_fill fill;
 				Compute_GraphicFill(properties->content().common_draw_fill_attlist_, office_element_ptr(), Context.root(), fill);
 				Context.get_slide_context().add_background(fill);
+
+				bool is_page_visible = properties->content().presentation_visibility_.get_value_or(presentation_visibility::visible).get_type() == presentation_visibility::visible;
+				Context.current_slide().set_show(is_page_visible);
 			
 				//часть свойств переходов между слайдами тута
 				
@@ -204,7 +207,6 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 	}
 
 	Context.end_page();
-	Context.get_slide_context().get_animation_context().clear();
 
  	if (presentation_notes_)
 	{

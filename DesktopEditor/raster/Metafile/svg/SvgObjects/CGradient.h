@@ -47,6 +47,9 @@ namespace SVG
 		bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) override;
 		void ApplyTransform(IRenderer *pRenderer, const TBounds& oBounds, double& dAngle) const;
 	private:
+		CGradient* GetRefGradient(const CSvgFile *pFile) const;
+		bool ApplyRefGradient(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) const;
+
 		std::wstring  m_wsXlinkHref;
 		GradientUnits m_enGradientUnits;
 		SpreadMethod  m_enSpreadMethod;

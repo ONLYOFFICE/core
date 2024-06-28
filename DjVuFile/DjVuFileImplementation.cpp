@@ -896,7 +896,12 @@ XmlUtils::CXmlNode CDjVuFileImplementation::ParseText(GP<DjVuImage> pPage)
 		XmlUtils::CXmlNode hiddenText;
 		XmlUtils::CXmlNode pageColumn;
 		XmlUtils::CXmlNode region;
-		hiddenText.FromXmlStringA(NSDjvu::MakeCString(pageText));
+		std::string sPageText = NSDjvu::MakeCString(pageText);
+		if (!hiddenText.FromXmlStringA(sPageText))
+		{
+			std::wstring sPageTextW = UTF8_TO_U(sPageText);
+			hiddenText.FromXmlString(sPageTextW);
+		}
 		hiddenText.GetNode(L"PAGECOLUMN", pageColumn);
 		pageColumn.GetNode(L"REGION", region);
 		region.GetNode(L"PARAGRAPH", paragraph);

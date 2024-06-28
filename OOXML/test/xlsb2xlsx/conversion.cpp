@@ -92,8 +92,29 @@ public:
     static std::wstring tempDir;
 };
 
+class FmlaTest : public ::testing::Test 
+{
+public:
+
+    static void SetUpTestCase() 
+    {
+        
+        tempDir = GetWorkDir();
+        processTestFile(tempDir, L"fmla.xlsb", L"result.xlsx", L"fmla.xlsx");
+    }
+
+
+    static void TearDownTestCase() 
+    {
+        RemoveWorkDir(tempDir);
+    }
+
+    static std::wstring tempDir;
+};
+
 std::wstring SimpleTests1::tempDir = L"";
 std::wstring SimpleTests2::tempDir = L"";
+std::wstring FmlaTest::tempDir = L"";
 
 _UINT32 readFiles(const std::wstring &filePath, const std::wstring &examplePath, std::wstring &fileContent, std::wstring &exampleContent )
 {
@@ -243,3 +264,65 @@ TEST_F(SimpleTests2, WorksheetsTest)
     ASSERT_TRUE(boost::algorithm::equals(content1, content2));
 }
 
+TEST_F(FmlaTest, ContentTypesTest)
+{
+    auto tempDir = FmlaTest::tempDir;
+    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"[Content_Types].xml");
+    std::wstring path2(tempDir + FILE_SEPARATOR_STR + L"example_unpacked"+ FILE_SEPARATOR_STR + L"[Content_Types].xml");
+    std::wstring content1;
+    std::wstring content2;
+    ASSERT_EQ(readFiles(path1, path2, content1, content2), 0);
+    ASSERT_TRUE(boost::algorithm::equals(content1, content2));
+}
+
+TEST_F(FmlaTest, WorkbookTest)
+{
+    auto tempDir = FmlaTest::tempDir;
+    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"workbook.xml");
+    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"workbook.xml");
+    std::wstring content1;
+    std::wstring content2;
+    ASSERT_EQ(readFiles(path1, path2, content1, content2), 0);
+    ASSERT_TRUE(boost::algorithm::equals(content1, content2));
+}
+
+TEST_F(FmlaTest, StylesTest)
+{
+    auto tempDir = FmlaTest::tempDir;
+    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"styles.xml");
+    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"styles.xml");
+    std::wstring content1;
+    std::wstring content2;
+    ASSERT_EQ(readFiles(path1, path2, content1, content2), 0);
+    ASSERT_TRUE(boost::algorithm::equals(content1, content2));
+}
+
+TEST_F(FmlaTest, SharedStringsTest)
+{
+    auto tempDir = FmlaTest::tempDir;
+    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"sharedStrings.xml");
+    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"sharedStrings.xml");
+    std::wstring content1;
+    std::wstring content2;
+    ASSERT_EQ(readFiles(path1, path2, content1, content2), 0);
+    ASSERT_TRUE(boost::algorithm::equals(content1, content2));
+}
+
+TEST_F(FmlaTest, WorksheetsTest)
+{
+    auto tempDir = FmlaTest::tempDir;
+    std::wstring path1(tempDir + FILE_SEPARATOR_STR + L"result_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"worksheets" + FILE_SEPARATOR_STR + L"sheet1.xml");
+    std::wstring path2(tempDir + FILE_SEPARATOR_STR +L"example_unpacked"+ FILE_SEPARATOR_STR + L"xl" + 
+        FILE_SEPARATOR_STR + L"worksheets" + FILE_SEPARATOR_STR + L"sheet1.xml");
+    std::wstring content1;
+    std::wstring content2;
+    ASSERT_EQ(readFiles(path1, path2, content1, content2), 0);
+    ASSERT_TRUE(boost::algorithm::equals(content1, content2));
+}

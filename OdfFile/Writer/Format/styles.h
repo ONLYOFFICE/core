@@ -94,6 +94,7 @@ class graphic_format_properties;
 class paragraph_format_properties;
 class chart_format_properties;
 class text_format_properties;
+class drawing_page_properties;
 
 class style_content : noncopyable
 {
@@ -108,6 +109,7 @@ public:
 	paragraph_format_properties*	get_paragraph_properties();
 	chart_format_properties*		get_chart_properties();
 	text_format_properties*			get_text_properties();
+    drawing_page_properties*        get_drawing_page_properties();
 //add & get
 	graphic_format_properties*		add_get_style_graphic_properties();
 	text_format_properties*			add_get_style_text_properties();
@@ -839,7 +841,8 @@ public:
 	_CP_OPT(odf_types::Bool)			text_count_empty_lines_;
 	_CP_OPT(odf_types::Bool)			text_count_in_text_boxes_;
 	_CP_OPT(unsigned int)				text_increment_;
-	_CP_OPT(std::wstring)				text_number_position_; //inner, left, outer, right
+    _CP_OPT(unsigned int)				text_start_;
+    _CP_OPT(std::wstring)				text_number_position_; //inner, left, outer, right
 	_CP_OPT(odf_types::length)			text_offset_;
 	_CP_OPT(odf_types::Bool)			text_restart_on_page_;
 

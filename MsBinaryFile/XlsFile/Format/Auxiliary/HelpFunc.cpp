@@ -48,31 +48,34 @@
 
 namespace AUX
 {
-const int normalizeColumn(const int column)
+const int normalizeColumn(const int column, const bool xlsb)
 {
-    if ((column & 0x00004000) == 0x00004000)
-    {
-        return 0x00004000 - 1;
-    }
-    else
-    {
-        int norm_col = column;
-        while (norm_col > 16383)
-        {
-            norm_col -= 16384;
-        }
-        while (norm_col < 0)
-        {
-            norm_col += 16384; // It is correct. must be on the second place after 16383
-        }
-        return norm_col;
-    }
+	int maxCol = 0;
+	if(xlsb)
+	{
+		maxCol = 16383;
+	}
+	else
+	{
+		maxCol = 255;
+	}
+	int norm_col = column;
+	while (norm_col > maxCol)
+	{
+		norm_col -= (maxCol+1);
+	}
+	while (norm_col < 0)
+	{
+		norm_col += (maxCol+1); // It is correct. must be on the second place after maxCol(16383 or 255)
+	}
+	return norm_col;
+   
 }
 
 
-const std::wstring column2str(const int column, const bool col_rel)
+const std::wstring column2str(const int column, const bool col_rel, const bool xlsb)
 {
-	int column_value = normalizeColumn(column);
+	int column_value = normalizeColumn(column, xlsb);
 	const int radix = L'Z' - L'A' + 1;
 	std::wstring ret_val;
 	++column_value;
@@ -87,31 +90,40 @@ const std::wstring column2str(const int column, const bool col_rel)
 }
 
 
-const int normalizeRow(const int row)
+const int normalizeRow(const int row, const bool xlsb)
 {
-	int norm_row = row;
-    while(norm_row > 1048576)
+	int maxRow = 0;
+	if(xlsb)
 	{
-        norm_row -= 0x100000;
+		maxRow = 1048576;
+	}
+	else
+	{
+		maxRow = 65536;
+	}
+	int norm_row = row;
+    while(norm_row >= maxRow)
+	{
+        norm_row -= maxRow;
 	}
 	while(norm_row < 0)
 	{
-        norm_row += 0x100000; // It is correct. must be on the second place after 1048576
+        norm_row += maxRow; // It is correct. must be on the second place after 1048576
 	}
 	return norm_row;
 }
 
 
-const std::wstring row2str(const int row, const bool row_rel)
+const std::wstring row2str(const int row, const bool row_rel, const bool xlsb)
 {
-	int row_value = normalizeRow(row);
+	int row_value = normalizeRow(row, xlsb);
 	return  (row_rel ? L"" : L"$") + STR::int2wstr(row_value + 1, 10);
 }
 
 
-const std::wstring loc2str(const int row, const bool row_rel, const int column, const bool col_rel)
+const std::wstring loc2str(const int row, const bool row_rel, const int column, const bool col_rel, const bool xlsb)
 {
-	return column2str(column, col_rel) + row2str(row, row_rel);
+	return column2str(column, col_rel, xlsb) + row2str(row, row_rel, xlsb);
 }
 
 
@@ -130,9 +142,9 @@ const int str2column(std::wstring::const_iterator& str_begin, std::wstring::cons
 		column = (column + 1) * radix + (symb - L'A');
 	}
 
-	if(column > 255)
+	if(column > 16384)
 	{
-		column = 255;
+		column = 16384;
 	}
 
 	return column;
@@ -152,9 +164,9 @@ const int str2row(std::wstring::const_iterator& str_begin, std::wstring::const_i
 		row = row * 10 + (symb - L'0');
 	}
 	--row;
-	if(row > 65535)
+	if(row > 1048576)
 	{
-		row = 65535;
+		row = 1048576;
 	}
 	return row;
 }
@@ -692,6 +704,28 @@ unsigned short sheetsnames2ixti(std::wstring name)
 	return 0xFFFF;
 }
 
+ unsigned short AddMultysheetXti(const std::wstring& name, const _INT32& firstIxti, const _INT32& secondIxti)
+ {
+     auto pos1 = std::find_if(XLS::GlobalWorkbookInfo::arXti_External_static.cbegin(), XLS::GlobalWorkbookInfo::arXti_External_static.cend(),
+             [&](XLS::GlobalWorkbookInfo::_xti i) {
+         return i.iSup == firstIxti;
+     });
+
+     auto pos2 = std::find_if(XLS::GlobalWorkbookInfo::arXti_External_static.cbegin(), XLS::GlobalWorkbookInfo::arXti_External_static.cend(),
+             [&](XLS::GlobalWorkbookInfo::_xti i) {
+         return i.iSup == secondIxti;
+     });
+     if (pos1 == XLS::GlobalWorkbookInfo::arXti_External_static.cend() || pos2 == XLS::GlobalWorkbookInfo::arXti_External_static.cend())
+         return 0;
+     XLS::GlobalWorkbookInfo::_xti newXti;
+     newXti.iSup = XLS::GlobalWorkbookInfo::arXti_External_static.size();
+     newXti.itabFirst = pos1->itabFirst;
+     newXti.itabLast = pos2->itabFirst;
+     newXti.link = name;
+     XLS::GlobalWorkbookInfo::arXti_External_static.push_back(newXti);
+     return newXti.iSup;
+ }
+
 unsigned int definenames2index(std::wstring name)
 {
 	unsigned int index;
@@ -736,6 +770,20 @@ bool isColumn(const std::wstring& columnName, _UINT32 listIndex, _UINT16& indexC
 	}
 	return false;
 }
-
+unsigned int getColumnsCount(_UINT32 listIndex)
+{
+    auto arrColumn = XLS::GlobalWorkbookInfo::mapTableColumnNames_static.find(listIndex);
+	if(arrColumn != XLS::GlobalWorkbookInfo::mapTableColumnNames_static.end())
+	{
+		auto counter = 0;
+		for(auto i:arrColumn->second)
+		{
+			if(!i.empty())
+				counter++;
+		}
+		return counter;
+	}
+	return 0;
+}
 } //namespace XMLSTUFF
 

@@ -428,7 +428,7 @@ void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 		if (series == NULL) continue;
 
 		SerParent *parent = dynamic_cast<SerParent*>(series->m_SerParent.get());
-		if ( parent )
+		if ( (parent) && (parent->series > 0 && parent->series <= charts->m_arSERIESFORMAT.size()))
 		{
 			SERIESFORMAT *series_owner = dynamic_cast<SERIESFORMAT *>(charts->m_arSERIESFORMAT[parent->series - 1].get());
 			if (series_owner)
@@ -817,7 +817,11 @@ int ChartSheetSubstream::serialize_legend (std::wostream & _stream, const std::w
 	while (it != m_mapTypeChart.end())
 	{
 		CRT * crt = dynamic_cast<CRT*>(parent0->m_arCRT[it->first].get());
-
+		if (crt == NULL)
+		{
+			++it;
+			continue;
+		}
 		LD * ld = dynamic_cast<LD*>(crt->m_LD.get());
 		if (ld == NULL)
 		{

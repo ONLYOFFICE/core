@@ -621,9 +621,13 @@ namespace oox {
 	{
 		return state()->serialize_protection(_Wostream);
 	}
-	void xlsx_table_context::serialize_conditionalFormatting(std::wostream& _Wostream)
+	void xlsx_table_context::serialize_condFormatting(std::wostream& _Wostream)
 	{
-		return state()->serialize_conditionalFormatting(_Wostream);
+		return state()->serialize_condFormatting(_Wostream);
+	}
+	void xlsx_table_context::serialize_condFormattingEx(std::wostream& _Wostream)
+	{
+		return state()->serialize_condFormattingEx(_Wostream);
 	}
 	void xlsx_table_context::serialize_merge_cells(std::wostream& _Wostream)
 	{

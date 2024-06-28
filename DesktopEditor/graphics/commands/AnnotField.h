@@ -36,41 +36,29 @@
 #include "../MetafileToRendererReader.h"
 class IMetafileToRenderter;
 
-// void Set(const BYTE& n) { m_n = n; }
-// BYTE Get() const { return m_n; }
-
-// void Set(const int& n) { m_n = n; }
-// int Get() const { return m_n; }
-
-// void Set(const double& d) { m_d = d; }
-// double Get() const { return m_d; }
-
-// void Set(const std::wstring& ws) { m_ws = ws; }
-// const std::wstring& Get() const { return m_ws; }
-
 class GRAPHICS_DECL CAnnotFieldInfo : public IAdvancedCommand
 {
 public:
-	class CWidgetAnnotPr
+	class GRAPHICS_DECL CWidgetAnnotPr
 	{
 	public:
-		class CButtonWidgetPr
+		class GRAPHICS_DECL CButtonWidgetPr
 		{
 		public:
-			BYTE GetS() const  { return m_nS; }
-			BYTE GetTP() const { return m_nTP; }
-			BYTE GetSW() const { return m_nSW; }
-			BYTE GetStyle()  const { return m_nStyle; }
-			int  GetIFFlag() const { return m_nIFFlag; }
-			int  GetI()      const { return m_nI; }
-			int  GetRI()     const { return m_nRI; }
-			int  GetIX()     const { return m_nIX; }
-			void GetA(double& dA1, double& dA2) const { dA1 = m_dA1; dA2 = m_dA2; }
-			const std::wstring& GetV()  const { return m_wsV; }
-			const std::wstring& GetCA() const { return m_wsCA; }
-			const std::wstring& GetRC() const { return m_wsRC; }
-			const std::wstring& GetAC() const { return m_wsAC; }
-			const std::wstring& GetAP_N_Yes() const { return m_wsAP_N_Yes; }
+			BYTE GetS()      const;
+			BYTE GetTP()     const;
+			BYTE GetSW()     const;
+			BYTE GetStyle()  const;
+			int  GetIFFlag() const;
+			int  GetI()      const;
+			int  GetRI()     const;
+			int  GetIX()     const;
+			void GetA(double& dA1, double& dA2);
+			const std::wstring& GetV();
+			const std::wstring& GetCA();
+			const std::wstring& GetRC();
+			const std::wstring& GetAC();
+			const std::wstring& GetAP_N_Yes();
 
 			void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, BYTE nType, int nFlags);
 
@@ -91,13 +79,13 @@ public:
 			std::wstring m_wsAP_N_Yes;
 		};
 
-		class CTextWidgetPr
+		class GRAPHICS_DECL CTextWidgetPr
 		{
 		public:
-			int GetMaxLen() const { return m_nMaxLen; }
-			const std::wstring& GetV()   const { return m_wsV; }
-			const std::wstring& GetRV()  const { return m_wsRV; }
-			const std::wstring& GetAPV() const { return m_wsAPV; }
+			int GetMaxLen() const;
+			const std::wstring& GetV();
+			const std::wstring& GetRV();
+			const std::wstring& GetAPV();
 
 			void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags, int nWidgetFlag);
 
@@ -108,15 +96,15 @@ public:
 			std::wstring m_wsAPV;
 		};
 
-		class CChoiceWidgetPr
+		class GRAPHICS_DECL CChoiceWidgetPr
 		{
 		public:
-			int GetTI() const { return m_nTI; }
-			const std::wstring& GetV()                 const { return m_wsV; }
-			const std::wstring& GetAPV()               const { return m_wsAPV; }
-			const std::vector<int>& GetI()             const { return m_arrI; }
-			const std::vector<std::wstring>& GetArrV() const { return m_arrV; }
-			const std::vector< std::pair<std::wstring, std::wstring> >& GetOpt() const { return m_arrOpt; }
+			int GetTI() const;
+			const std::wstring& GetV();
+			const std::wstring& GetAPV();
+			const std::vector<int>& GetI();
+			const std::vector<std::wstring>& GetArrV();
+			const std::vector< std::pair<std::wstring, std::wstring> >& GetOpt();
 
 			void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
 
@@ -129,57 +117,56 @@ public:
 			std::vector< std::pair<std::wstring, std::wstring> > m_arrOpt;
 		};
 
-		class CSignatureWidgetPr
+		class GRAPHICS_DECL CSignatureWidgetPr
 		{
 
 		};
 
-		class CActionWidget
+		class GRAPHICS_DECL CActionWidget
 		{
 		public:
-			CActionWidget() : pNext(NULL) {}
-			~CActionWidget() { RELEASEOBJECT(pNext); }
+			CActionWidget();
+			~CActionWidget();
 
 			BYTE nKind;
 			BYTE nFlags;
 			BYTE nActionType;
 			int  nInt1;
-			double dD[4];
+			double dD[4]{};
 			std::wstring wsType;
 			std::wstring wsStr1;
 			std::vector<std::wstring> arrStr;
 			CActionWidget* pNext;
 		};
 
-	public:
 		CWidgetAnnotPr(BYTE nType);
 		~CWidgetAnnotPr();
 
-		BYTE GetQ()    const { return m_nQ; }
-		BYTE GetH()    const { return m_nH; }
-		BYTE GetType() const { return m_nType; }
-		int  GetR()    const { return m_nR; }
-		int  GetFlag()      const { return m_nFlag; }
-		int  GetFlags()     const { return m_nFlags; }
-		int  GetParentID()  const { return m_nParentID; }
-		int  GetFontStyle() const { return m_nFontStyle; }
-		double GetFontSize()   const { return m_dFS; }
-		double GetFontSizeAP() const { return m_dFSAP; }
-		const std::wstring& GetTU() const { return m_wsTU; }
-		const std::wstring& GetDS() const { return m_wsDS; }
-		const std::wstring& GetDV() const { return m_wsDV; }
-		const std::wstring& GetT()  const { return m_wsT; }
-		const std::wstring& GetFontName()  const { return m_wsFN; }
-		const std::wstring& GetFontKey()   const { return m_wsFK; }
-		const std::vector<double>& GetTC() const { return m_arrTC; }
-		const std::vector<double>& GetBC() const { return m_arrBC; }
-		const std::vector<double>& GetBG() const { return m_arrBG; }
-		const std::vector<CActionWidget*> GetActions() const { return m_arrAction; }
+		BYTE GetQ()    const;
+		BYTE GetH()    const;
+		BYTE GetType() const;
+		int  GetR()    const;
+		int  GetFlag()      const;
+		int  GetFlags()     const;
+		int  GetParentID()  const;
+		int  GetFontStyle() const;
+		double GetFontSize()   const;
+		double GetFontSizeAP() const;
+		const std::wstring& GetTU();
+		const std::wstring& GetDS();
+		const std::wstring& GetDV();
+		const std::wstring& GetT();
+		const std::wstring& GetFontName();
+		const std::wstring& GetFontKey();
+		const std::vector<double>& GetTC();
+		const std::vector<double>& GetBC();
+		const std::vector<double>& GetBG();
+		const std::vector<CActionWidget*>& GetActions();
 
-		CButtonWidgetPr*    GetButtonWidgetPr()    { return m_pButtonPr; }
-		CTextWidgetPr*      GetTextWidgetPr()      { return m_pTextPr; }
-		CChoiceWidgetPr*    GetChoiceWidgetPr()    { return m_pChoicePr; }
-		CSignatureWidgetPr* GetSignatureWidgetPr() { return m_pSignaturePr; }
+		CButtonWidgetPr*    GetButtonWidgetPr();
+		CTextWidgetPr*      GetTextWidgetPr();
+		CChoiceWidgetPr*    GetChoiceWidgetPr();
+		CSignatureWidgetPr* GetSignatureWidgetPr();
 
 		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, BYTE nType);
 
@@ -211,18 +198,32 @@ public:
 		CSignatureWidgetPr* m_pSignaturePr;
 	};
 
-	class CMarkupAnnotPr
+	class GRAPHICS_DECL CMarkupAnnotPr
 	{
 	public:
-		BYTE   GetRT()      const { return m_nRT; }
-		int    GetFlag()    const { return m_nFlag; }
-		int    GetPopupID() const { return m_nPopupID; }
-		int    GetIRTID()   const { return m_nIRTID; }
-		double GetCA()      const { return m_dCA; }
-		const std::wstring& GetT()    const { return m_wsT; }
-		const std::wstring& GetRC()   const { return m_wsRC; }
-		const std::wstring& GetCD()   const { return m_wsCD; }
-		const std::wstring& GetSubj() const { return m_wsSubj; }
+		struct GRAPHICS_DECL CFontData
+		{
+			BYTE nAlignment;
+			int nFontFlag;
+			double dFontSise;
+			double dVAlign;
+			double dColor[3];
+			std::wstring sFontFamily;
+			std::wstring sActualFont;
+			std::wstring sText;
+		};
+
+		virtual ~CMarkupAnnotPr();
+
+		BYTE   GetRT()      const;
+		int    GetFlag()    const;
+		int    GetPopupID() const;
+		int    GetIRTID()   const;
+		double GetCA()      const;
+		const std::wstring& GetT();
+		const std::wstring& GetCD();
+		const std::wstring& GetSubj();
+		const std::vector<CFontData*>& GetRC();
 
 		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
 
@@ -236,17 +237,18 @@ public:
 		std::wstring m_wsRC;
 		std::wstring m_wsCD;
 		std::wstring m_wsSubj;
+		std::vector<CFontData*> m_arrRC;
 	};
 
-	class CTextAnnotPr
+	class GRAPHICS_DECL CTextAnnotPr
 	{
 	public:
-		CTextAnnotPr() : m_bOpen(false), m_nName(2), m_nState(7), m_nStateModel(2) {}
+		CTextAnnotPr();
 
-		bool IsOpen()        const { return m_bOpen; }
-		BYTE GetName()       const { return m_nName; }
-		BYTE GetState()      const { return m_nState; }
-		BYTE GetStateModel() const { return m_nStateModel; }
+		bool IsOpen()        const;
+		BYTE GetName()       const;
+		BYTE GetState()      const;
+		BYTE GetStateModel() const;
 
 		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
 
@@ -257,10 +259,10 @@ public:
 		BYTE m_nStateModel;
 	};
 
-	class CInkAnnotPr
+	class GRAPHICS_DECL CInkAnnotPr
 	{
 	public:
-		const std::vector< std::vector<double> >& GetInkList() const { return m_arrInkList; }
+		const std::vector< std::vector<double> >& GetInkList();
 
 		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader);
 
@@ -268,19 +270,19 @@ public:
 		std::vector< std::vector<double> > m_arrInkList;
 	};
 
-	class CLineAnnotPr
+	class GRAPHICS_DECL CLineAnnotPr
 	{
 	public:
-		bool IsCap()    const { return m_bCap; }
-		BYTE GetIT()    const { return m_nIT; }
-		BYTE GetCP()    const { return m_nCP; }
-		double GetLL()  const { return m_dLL; }
-		double GetLLE() const { return m_dLLE; }
-		double GetLLO() const { return m_dLLO; }
-		void GetLE(BYTE& nLE1, BYTE& nLE2) const { nLE1 = m_nLE[0]; nLE2 = m_nLE[1]; }
-		void GetL(double& dL1, double& dL2, double& dL3, double& dL4) const { dL1 = m_dL[0]; dL2 = m_dL[1]; dL3 = m_dL[2]; dL4 = m_dL[3]; }
-		void GetCO(double& dCO1, double& dCO2) const { dCO1 = m_dCO[0]; dCO2 = m_dCO[1]; }
-		const std::vector<double>& GetIC()     const { return m_arrIC; }
+		bool IsCap()    const;
+		BYTE GetIT()    const;
+		BYTE GetCP()    const;
+		double GetLL()  const;
+		double GetLLE() const;
+		double GetLLO() const;
+		void GetLE(BYTE& nLE1, BYTE& nLE2);
+		void GetL(double& dL1, double& dL2, double& dL3, double& dL4);
+		void GetCO(double& dCO1, double& dCO2);
+		const std::vector<double>& GetIC();
 
 		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
 
@@ -291,17 +293,17 @@ public:
 		double m_dLL;
 		double m_dLLE;
 		double m_dLLO;
-		BYTE   m_nLE[2];
-		double m_dL[4];
-		double m_dCO[2];
+		BYTE   m_nLE[2]{};
+		double m_dL[4]{};
+		double m_dCO[2]{};
 		std::vector<double> m_arrIC;
 	};
 
-	class CTextMarkupAnnotPr
+	class GRAPHICS_DECL CTextMarkupAnnotPr
 	{
 	public:
-		BYTE GetSubtype() const { return m_nSubtype; }
-		const std::vector<double>& GetQuadPoints() const { return m_arrQuadPoints; }
+		BYTE GetSubtype() const;
+		const std::vector<double>& GetQuadPoints();
 
 		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, BYTE nType);
 
@@ -310,46 +312,46 @@ public:
 		std::vector<double> m_arrQuadPoints;
 	};
 
-	class CSquareCircleAnnotPr
+	class GRAPHICS_DECL CSquareCircleAnnotPr
 	{
 	public:
-		BYTE GetSubtype() const { return m_nSubtype; }
-		void GetRD(double& dRD1, double& dRD2, double& dRD3, double& dRD4) const { dRD1 = m_dRD[0]; dRD2 = m_dRD[1]; dRD3 = m_dRD[2]; dRD4 = m_dRD[3]; }
-		const std::vector<double>& GetIC() const { return m_arrIC; }
+		BYTE GetSubtype() const;
+		void GetRD(double& dRD1, double& dRD2, double& dRD3, double& dRD4);
+		const std::vector<double>& GetIC();
 
 		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, BYTE nType, int nFlags);
 
 	private:
 		BYTE m_nSubtype;
-		double m_dRD[4];
+		double m_dRD[4]{};
 		std::vector<double> m_arrIC;
 	};
 
-	class CPolygonLineAnnotPr
+	class GRAPHICS_DECL CPolygonLineAnnotPr
 	{
 	public:
-		BYTE GetIT()      const { return m_nIT; }
-		BYTE GetSubtype() const { return m_nSubtype; }
-		void GetLE(BYTE& nLE1, BYTE& nLE2)       const { nLE1 = m_nLE[0]; nLE2 = m_nLE[1]; }
-		const std::vector<double>& GetIC()       const { return m_arrIC; }
-		const std::vector<double>& GetVertices() const { return m_arrVertices; }
+		BYTE GetIT()      const;
+		BYTE GetSubtype() const;
+		void GetLE(BYTE& nLE1, BYTE& nLE2);
+		const std::vector<double>& GetIC();
+		const std::vector<double>& GetVertices();
 
 		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, BYTE nType, int nFlags);
 
 	private:
 		BYTE m_nIT;
 		BYTE m_nSubtype;
-		BYTE m_nLE[2];
+		BYTE m_nLE[2]{};
 		std::vector<double> m_arrIC;
 		std::vector<double> m_arrVertices;
 	};
 
-	class CPopupAnnotPr
+	class GRAPHICS_DECL CPopupAnnotPr
 	{
 	public:
-		bool IsOpen()      const { return m_bOpen; }
-		int  GetFlag()     const { return m_nFlag; }
-		int  GetParentID() const { return m_nParentID; }
+		bool IsOpen()      const;
+		int  GetFlag()     const;
+		int  GetParentID() const;
 
 		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader);
 
@@ -359,15 +361,18 @@ public:
 		int  m_nParentID;
 	};
 
-	class CFreeTextAnnotPr
+	class GRAPHICS_DECL CFreeTextAnnotPr
 	{
 	public:
-		BYTE GetQ()  const { return m_nQ; }
-		BYTE GetIT() const { return m_nIT; }
-		BYTE GetLE() const { return m_nLE; }
-		const std::wstring& GetDS() const { return m_wsDS; }
-		void GetRD(double& dRD1, double& dRD2, double& dRD3, double& dRD4) const { dRD1 = m_dRD[0]; dRD2 = m_dRD[1]; dRD3 = m_dRD[2]; dRD4 = m_dRD[3]; }
-		const std::vector<double>& GetCL() const { return m_arrCL; }
+		BYTE GetQ()  const;
+		BYTE GetIT() const;
+		BYTE GetLE() const;
+		int GetRotate();
+		const std::wstring& GetDS();
+		void GetRD(double& dRD1, double& dRD2, double& dRD3, double& dRD4);
+		const std::vector<double>& GetCL();
+		const std::vector<double>& GetIC();
+		BYTE* GetRender(LONG& nLen);
 
 		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
 
@@ -375,16 +380,20 @@ public:
 		BYTE m_nQ;
 		BYTE m_nIT;
 		BYTE m_nLE;
+		int m_nRotate;
 		std::wstring m_wsDS;
 		double m_dRD[4]{};
 		std::vector<double> m_arrCL;
+		std::vector<double> m_arrIC;
+		LONG m_nRenderLen;
+		BYTE* m_pRender;
 	};
 
-	class CCaretAnnotPr
+	class GRAPHICS_DECL CCaretAnnotPr
 	{
 	public:
-		BYTE GetSy()  const { return m_nSy; }
-		void GetRD(double& dRD1, double& dRD2, double& dRD3, double& dRD4) const { dRD1 = m_dRD[0]; dRD2 = m_dRD[1]; dRD3 = m_dRD[2]; dRD4 = m_dRD[3]; }
+		BYTE GetSy() const;
+		void GetRD(double& dRD1, double& dRD2, double& dRD3, double& dRD4);
 
 		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
 
@@ -393,32 +402,22 @@ public:
 		double m_dRD[4]{};
 	};
 
-private:
-	struct CBorder
-	{
-		BYTE   nType;
-		double dWidth;
-		std::vector<double> arrDash;
-	};
-
-public:
 	CAnnotFieldInfo();
 	virtual ~CAnnotFieldInfo();
 
 	void SetType(int nType);
-	bool IsValid() const;
 
-	void GetBounds(double& dX1, double& dY1, double& dX2, double& dY2) const;
-	void   GetBorder(BYTE& nType, double& dWidth, std::vector<double>& arrDash);
-	int    GetFlag()      const { return m_nFlag; }
-	int    GetID()        const { return m_nID; }
-	int    GetAnnotFlag() const { return m_nAnnotFlag; }
-	int    GetPage()      const { return m_nPage; }
-	void   GetBE(BYTE& nS, double& dI) { nS = m_pBE.first; dI = m_pBE.second; }
-	const std::wstring& GetNM() const { return m_wsNM; }
-	const std::wstring& GetLM() const { return m_wsLM; }
-	const std::wstring& GetContents() const { return m_wsContents; }
-	const std::vector<double>& GetC() const { return m_arrC; }
+	void  GetBounds(double& dX1, double& dY1, double& dX2, double& dY2);
+	void  GetBorder(BYTE& nType, double& dWidth, std::vector<double>& arrDash);
+	int   GetFlag()      const;
+	int   GetID()        const;
+	int   GetAnnotFlag() const;
+	int   GetPage()      const;
+	void  GetBE(BYTE& nS, double& dI);
+	const std::wstring& GetNM();
+	const std::wstring& GetLM();
+	const std::wstring& GetContents();
+	const std::vector<double>& GetC();
 
 	bool IsWidget()          const;
 	bool IsButtonWidget()    const;
@@ -436,21 +435,28 @@ public:
 	bool IsFreeText()        const;
 	bool IsCaret()           const;
 
-	CMarkupAnnotPr*       GetMarkupAnnotPr()       { return m_pMarkupPr; }
-	CTextAnnotPr*         GetTextAnnotPr()         { return m_pTextPr; }
-	CInkAnnotPr*          GetInkAnnotPr()          { return m_pInkPr; }
-	CLineAnnotPr*         GetLineAnnotPr()         { return m_pLinePr; }
-	CTextMarkupAnnotPr*   GetTextMarkupAnnotPr()   { return m_pTextMarkupPr; }
-	CSquareCircleAnnotPr* GetSquareCircleAnnotPr() { return m_pSquareCirclePr; }
-	CPolygonLineAnnotPr*  GetPolygonLineAnnotPr()  { return m_pPolygonLinePr; }
-	CPopupAnnotPr*        GetPopupAnnotPr()        { return m_pPopupPr; }
-	CFreeTextAnnotPr*     GetFreeTextAnnotPr()     { return m_pFreeTextPr; }
-	CCaretAnnotPr*        GetCaretAnnotPr()        { return m_pCaretPr; }
-	CWidgetAnnotPr*       GetWidgetAnnotPr()       { return m_pWidgetPr; }
+	CMarkupAnnotPr*       GetMarkupAnnotPr();
+	CTextAnnotPr*         GetTextAnnotPr();
+	CInkAnnotPr*          GetInkAnnotPr();
+	CLineAnnotPr*         GetLineAnnotPr();
+	CTextMarkupAnnotPr*   GetTextMarkupAnnotPr();
+	CSquareCircleAnnotPr* GetSquareCircleAnnotPr();
+	CPolygonLineAnnotPr*  GetPolygonLineAnnotPr();
+	CPopupAnnotPr*        GetPopupAnnotPr();
+	CFreeTextAnnotPr*     GetFreeTextAnnotPr();
+	CCaretAnnotPr*        GetCaretAnnotPr();
+	CWidgetAnnotPr*       GetWidgetAnnotPr();
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 
 private:
+	struct CBorder
+	{
+		BYTE   nType;
+		double dWidth;
+		std::vector<double> arrDash;
+	};
+
 	int          m_nType;
 	double       m_dX1;
 	double       m_dY1;
@@ -484,9 +490,9 @@ class GRAPHICS_DECL CAnnotFieldDelete : public IAdvancedCommand
 {
 public:
 	CAnnotFieldDelete();
-	virtual ~CAnnotFieldDelete() {}
+	virtual ~CAnnotFieldDelete();
 
-	int GetID() { return m_nID; }
+	int GetID();
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 
@@ -512,9 +518,9 @@ public:
 	CWidgetsInfo();
 	virtual ~CWidgetsInfo();
 
-	const std::vector<int>& GetCO() const { return m_arrCO; }
-	const std::vector<std::wstring>& GetButtonImg() const { return m_arrButtonImg; }
-	const std::vector<CParent*>& GetParents() const { return m_arrParents; }
+	const std::vector<int>& GetCO();
+	const std::vector<std::wstring>& GetButtonImg();
+	const std::vector<CParent*>& GetParents();
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 

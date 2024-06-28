@@ -118,6 +118,8 @@ namespace PPT
 
         m_oManager.Clear();
         m_oManager.SetDstMedia(m_strDestPath + FILE_SEPARATOR_STR + L"ppt" + FILE_SEPARATOR_STR + L"media" + FILE_SEPARATOR_STR);
+        m_oManager.SetDstEmbeddings(m_strDestPath + FILE_SEPARATOR_STR + L"ppt" + FILE_SEPARATOR_STR + L"embeddings" + FILE_SEPARATOR_STR);
+       
         m_oManager.SetTempMedia(m_pUserInfo->m_pDocumentInfo->m_pCommonInfo->tempPath);
         
         m_pShapeWriter->InitNextId();
@@ -164,6 +166,7 @@ namespace PPT
         m_pDocument = pDocument;
         m_oManager.Clear();
         m_oManager.SetDstMedia(m_strDestPath + FILE_SEPARATOR_STR + L"ppt" + FILE_SEPARATOR_STR + L"media" + FILE_SEPARATOR_STR);
+        m_oManager.SetDstEmbeddings(m_strDestPath + FILE_SEPARATOR_STR + L"ppt" + FILE_SEPARATOR_STR + L"embeddings" + FILE_SEPARATOR_STR);
 
         m_pShapeWriter->InitNextId();
 
@@ -221,6 +224,7 @@ namespace PPT
             <Default Extension=\"xml\" ContentType=\"application/xml\"/>\
             <Default Extension=\"gif\" ContentType=\"image/gif\"/>\
             <Default Extension=\"emf\" ContentType=\"image/x-emf\"/>\
+            <Default Extension=\"pct\" ContentType=\"image/unknown\"/>\
             <Default Extension=\"wav\" ContentType=\"audio/wav\"/>\
             <Default Extension=\"wma\" ContentType=\"audio/x-ms-wma\"/>\
             <Default Extension=\"mp3\" ContentType=\"audio/unknown\"/>\
@@ -235,7 +239,7 @@ namespace PPT
             <Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.oleObject\" />\
             <Default Extension=\"jpg\" ContentType=\"image/jpeg\"/>";
 
-        if (m_pDocument->m_bMacros)
+        if (m_pDocument->m_bMacroEnabled)
         {
             strContentTypes += L"<Override PartName=\"/ppt/presentation.xml\" ContentType=\"application/vnd.ms-powerpoint.presentation.macroEnabled.main+xml\" />\
                 <Override PartName=\"/ppt/vbaProject.bin\" ContentType=\"application/vnd.ms-office.vbaProject\" />";
@@ -531,7 +535,7 @@ namespace PPT
         strPresRels += L"<Relationship Id=\"rId" + std::to_wstring(nCurrentRels++) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/tableStyles\" Target=\"tableStyles.xml\"/>";
         strPresRels += L"<Relationship Id=\"rId" + std::to_wstring(nCurrentRels++) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/viewProps\" Target=\"viewProps.xml\"/>";
 
-        if (m_pDocument->m_bMacros)
+        if (m_pDocument->m_bMacroEnabled)
         {
             std::wstring strVbaProject = m_strDestPath + FILE_SEPARATOR_STR + L"ppt" + FILE_SEPARATOR_STR + L"vbaProject.bin";
 
@@ -588,7 +592,6 @@ namespace PPT
     {
         std::wstring strPptDirectory = m_strDestPath + FILE_SEPARATOR_STR + L"ppt" + FILE_SEPARATOR_STR;
 
-        NSDirectory::CreateDirectory(strPptDirectory + L"media");
         NSDirectory::CreateDirectory(strPptDirectory + L"theme");
         NSDirectory::CreateDirectory(strPptDirectory + L"slideMasters");
         NSDirectory::CreateDirectory(strPptDirectory + L"slideMasters" + FILE_SEPARATOR_STR + L"_rels");
@@ -1543,7 +1546,14 @@ namespace PPT
         }
 
         oWriter.WriteString(std::wstring(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
-        oWriter.WriteString(std::wstring(L"<p:sld xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\""));
+        oWriter.WriteString(std::wstring(L"<p:sld \
+xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
+xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\""));        
+        
         if (!pSlide->m_bShowMasterShapes)
             oWriter.WriteString(std::wstring(L" showMasterSp=\"0\""));
         if (pSlide->m_bHidden)

@@ -153,12 +153,6 @@ namespace MetaFile
 		if (oNewClipRect.Top > oNewClipRect.Bottom)
 			std::swap(oNewClipRect.Top, oNewClipRect.Bottom);
 
-		NodeAttributes arNodeAttributes;
-
-		AddTransform(arNodeAttributes, pTransform);
-
-		WriteNodeBegin(L"g", arNodeAttributes);
-
 		wsNewSvg.erase(unFirstPos, unSecondPos - unFirstPos);
 
 		std::wstring wsClip = L"x=\"" + ConvertToWString(oRect.Left) + L"\" y=\"" + ConvertToWString(oRect.Top) + L"\" " +
@@ -167,9 +161,17 @@ namespace MetaFile
 
 		wsNewSvg.insert(unFirstPos, wsClip);
 
+		NodeAttributes arNodeAttributes;
+
+		AddTransform(arNodeAttributes, pTransform);
+
+		if (!arNodeAttributes.empty())
+			WriteNodeBegin(L"g", arNodeAttributes);
+
 		m_pXmlWriter->WriteString(wsNewSvg);
 
-		WriteNodeEnd(L"g");
+		if (!arNodeAttributes.empty())
+			WriteNodeEnd(L"g");
 	}
 
 	void CInterpretatorSvgBase::WriteNode(const std::wstring &wsNodeName, const NodeAttributes &arAttributes, const std::wstring &wsValueNode)
@@ -281,6 +283,7 @@ namespace MetaFile
 
 		std::wstring wsFontName = pFont->GetFaceName();
 
+#ifndef BUILDING_WASM_MODULE
 		if (!wsFontName.empty())
 		{
 			NSFonts::CFontSelectFormat oFormat;
@@ -291,6 +294,7 @@ namespace MetaFile
 			if (NULL != pFontInfo && !StringEquals(wsFontName, pFontInfo->m_wsFontName))
 				wsFontName = L"&apos;" + wsFontName + L"&apos;, &apos;" + pFontInfo->m_wsFontName + L"&apos;";
 		}
+#endif
 
 		if (!wsFontName.empty())
 			arNodeAttributes.push_back({L"font-family", wsFontName});
@@ -530,7 +534,6 @@ namespace MetaFile
 			                               {L"y",      ConvertToWString(dY)},
 			                               {L"width",  ConvertToWString(dW)},
 			                               {L"height", ConvertToWString(dH)},
-			                               {L"preserveAspectRatio", L"xMinYMin slice"},
 			                               {L"xlink:href", L"data:image/png;base64," + wsValue}};
 
 			AddTransform(arAttributes, &oTransform);
@@ -626,11 +629,6 @@ namespace MetaFile
 			default: arAttributes.push_back({L"stroke", CalculateColor(pPen->GetColor(), pPen->GetAlpha())}); break;
 		}
 
-		double dStrokeWidth = CalculatePenWidth();
-
-		arAttributes.push_back({L"stroke-width",      ConvertToWString(dStrokeWidth)});
-		arAttributes.push_back({L"stroke-miterlimit", ConvertToWString(pPen->GetMiterLimit())});
-
 		unsigned int unMetaPenStyle = pPen->GetStyle();
 		unsigned int ulPenStyle     = unMetaPenStyle & PS_STYLE_MASK;
 		unsigned int ulPenStartCap  = unMetaPenStyle & PS_STARTCAP_MASK;
@@ -638,7 +636,7 @@ namespace MetaFile
 		unsigned int ulPenJoin      = unMetaPenStyle & PS_JOIN_MASK;
 
 		// svg не поддерживает разные стили для разных сторон линии
-		std::wstring wsLineCap;
+		std::wstring wsLineCap, wsLineJoin;
 
 		if (PS_ENDCAP_ROUND == ulPenEndCap)
 			wsLineCap = L"round";
@@ -653,15 +651,29 @@ namespace MetaFile
 			wsLineCap = L"square";
 		else if (PS_STARTCAP_ROUND == ulPenStartCap)
 			wsLineCap = L"round";
-
-		arAttributes.push_back({L"stroke-linecap", wsLineCap});
-
+		
 		if (PS_JOIN_MITER == ulPenJoin)
-			arAttributes.push_back({L"stroke-linejoin", L"miter"});
+			wsLineJoin = L"miter";
 		else if (PS_JOIN_BEVEL == ulPenJoin)
-			arAttributes.push_back({L"stroke-linejoin", L"bevel"});
+			wsLineJoin = L"bevel";
 		else if (PS_JOIN_ROUND == ulPenJoin)
-			arAttributes.push_back({L"stroke-linejoin", L"round"});
+			wsLineJoin = L"round";
+
+		double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
+
+		if (Equals(0, dStrokeWidth) || (Equals(1, dStrokeWidth) && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
+		{
+			dStrokeWidth = 1;
+			arAttributes.push_back({L"vector-effect", L"non-scaling-stroke"});
+
+			wsLineCap  = L"butt";
+			wsLineJoin = L"miter";
+		}
+
+		arAttributes.push_back({L"stroke-width",      ConvertToWString(dStrokeWidth)});
+		arAttributes.push_back({L"stroke-miterlimit", ConvertToWString(pPen->GetMiterLimit())});
+		arAttributes.push_back({L"stroke-linecap",    wsLineCap});
+		arAttributes.push_back({L"stroke-linejoin", wsLineJoin});
 
 		double* arDatas = NULL;
 		unsigned int unDataSize = 0;
@@ -791,12 +803,6 @@ namespace MetaFile
 			oOldTransform.Copy(pTransform);
 		else
 			oOldTransform.Copy(m_pParser->GetTransform());
-
-//		if (std::fabs(oOldTransform.M11) > MAXTRANSFORMSCALE || std::fabs(oOldTransform.M22) > MAXTRANSFORMSCALE)
-//		{
-//			oOldTransform.M11 /= std::fabs(oOldTransform.M11);
-//			oOldTransform.M22 /= std::fabs(oOldTransform.M22);
-//		}
 
 		bool bScale = false, bTranslate = false;
 
@@ -1014,7 +1020,12 @@ namespace MetaFile
 		double dStrokeWidth  = 1. / m_pParser->GetTransform()->M11;
 
 		if (NULL != m_pParser->GetPen())
-			dStrokeWidth = CalculatePenWidth();
+		{
+			dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
+	
+			if (Equals(0, dStrokeWidth) || PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK))
+				dStrokeWidth = 1;
+		}
 
 		std::wstring wsStrokeColor = CalculateColor(m_pParser->GetBrush()->GetColor(), m_pParser->GetBrush()->GetAlpha());
 
@@ -1094,7 +1105,12 @@ namespace MetaFile
 		double dStrokeWidth  = 1. / m_pParser->GetTransform()->M11;
 
 		if (NULL != m_pParser->GetPen())
-			dStrokeWidth = CalculatePenWidth();
+		{
+			dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
+	
+			if (Equals(0, dStrokeWidth) || PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK))
+				dStrokeWidth = 1;
+		}
 
 		std::wstring wsWidth  = ConvertToWString(dStrokeWidth * unWidth);
 		std::wstring wsHeight = ConvertToWString(dStrokeWidth * unHeight);
@@ -1206,29 +1222,14 @@ namespace MetaFile
 			}
 
 			m_wsDefs += L"<radialGradient id=\"" + wsStyleId + L"\"" + wsIndlude + L">" +
-						L"<stop offset=\"0%\" stop-color=\""   + CalculateColor(pBrush->GetColor(), pBrush->GetAlpha())  + L"\"/>" +
-			            L"<stop offset=\"100%\" stop-color=\"" + CalculateColor(pBrush->GetColor(), pBrush->GetAlpha2()) + L"\"/>" +
+			            L"<stop offset=\"0%\" stop-color=\""   + CalculateColor(pBrush->GetColor(),  pBrush->GetAlpha() ) + L"\"/>" +
+			            L"<stop offset=\"100%\" stop-color=\"" + CalculateColor(pBrush->GetColor2(), pBrush->GetAlpha2()) + L"\"/>" +
 			            L"</radialGradient>";
 
 			return wsStyleId;
 		}
 
 		return std::wstring();
-	}
-	
-	double CInterpretatorSvgBase::CalculatePenWidth() const
-	{
-		double dPenWidth = 1.;
-
-		if (NULL != m_pParser->GetPen())
-		{
-			dPenWidth = std::fabs(m_pParser->GetPen()->GetWidth());
-
-			if (PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK) || Equals(0., dPenWidth))
-				dPenWidth = m_oViewport.GetWidth() / m_oSizeWindow.X * m_pParser->GetDpi() / 96.;
-		}
-
-		return dPenWidth;
 	}
 
 	CHatchGenerator::CHatchGenerator()

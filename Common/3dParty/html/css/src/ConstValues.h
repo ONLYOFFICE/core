@@ -16,21 +16,6 @@ namespace NSCSS
 		ScalingDirectionY = 2
 	} ScalingDirection;
 
-	struct CSizeWindow
-	{
-		unsigned short m_ushWidth;
-		unsigned short m_ushHeight;
-
-		CSizeWindow();
-		CSizeWindow(unsigned short unWidth, unsigned short unHeight);
-
-		bool Empty() const;
-		void Clear();
-
-		bool operator==(const CSizeWindow& oSizeWindow) const;
-		bool operator!=(const CSizeWindow& oSizeWindow) const;
-	};
-
 	struct StatistickElement
 	{
 		enum TypeElement
@@ -61,66 +46,69 @@ namespace NSCSS
 		{
 			typedef enum
 			{
-				B_CustomStyle = 0,
-				B_StyleId = 1,
-				B_Type = 2,
-				B_Default = 3,
+				B_CustomStyle,
+				B_StyleId,
+				B_Type,
+				B_Default,
 
-				B_Name = 4,
-				B_BasedOn = 5,
-				B_QFormat = 6,
-				B_Link = 7,
-				B_UnhideWhenUsed = 8,
-				B_UiPriority = 9,
+				B_Name,
+				B_BasedOn,
+				B_QFormat,
+				B_Link,
+				B_UnhideWhenUsed,
+				B_UiPriority,
+				B_SemiHidden
 			} BasicProperties;
 
 			typedef enum
 			{
-				P_Jc = 0,
-				P_Spacing = 1,
-				P_ContextualSpacing = 2,
-				P_Ind = 3,
-				P_OutlineLvl = 4,
-				P_Shd = 5,
+				P_Jc,
+				P_Spacing,
+				P_ContextualSpacing,
+				P_Ind,
+				P_OutlineLvl,
+				P_Shd,
 				// <pBdr>
-					P_TopBorder = 6,
-					P_LeftBorder = 7,
-					P_BottomBorder = 8,
-					P_RightBorder = 9,
+					P_TopBorder,
+					P_LeftBorder,
+					P_BottomBorder,
+					P_RightBorder,
 				// </pBdr>
-				P_KeepLines = 10,
-				P_KeepNext = 11,
+				P_KeepLines,
+				P_KeepNext,
 			} ParagraphProperties;
 
 			typedef enum
 			{
-				R_RFonts = 0,
-				R_Sz = 1,
-				R_B = 2,
-				R_I = 3,
-				R_Color = 4,
-				R_U = 5,
-				R_Highlight = 6,
-				R_SmallCaps = 7
+				R_RFonts ,
+				R_Sz,
+				R_B,
+				R_I,
+				R_Color,
+				R_U,
+				R_Highlight,
+				R_Shd,
+				R_SmallCaps,
+				R_Kern
 			} RunnerProperties;
 
 			typedef enum
 			{
-				T_TblInd = 0,
+				T_TblInd ,
 				// <tblCellMar>
-					T_CellTop = 1,
-					T_CellLeft = 2,
-					T_CellBottom = 3,
-					T_CellRight = 4,
+					T_CellTop,
+					T_CellLeft,
+					T_CellBottom,
+					T_CellRight,
 				// <tblCellMar>
 
 				// <tblBorders>
-					T_BorderTop = 5,
-					T_BorderLeft = 6,
-					T_BorderBottom = 7,
-					T_BorderRight = 8,
-					T_BorderInsideH = 9,
-					T_BorderInsideV = 10
+					T_BorderTop ,
+					T_BorderLeft,
+					T_BorderBottom,
+					T_BorderRight,
+					T_BorderInsideH,
+					T_BorderInsideV 
 				// </tblBorders>
 			} TableProperties;
 		}

@@ -56,8 +56,11 @@ public:
         ridge,
         inset,
         outset,
-        hidden
-
+        hidden,
+        dash_dot,
+        dash_dot_dot,
+        fine_dashed,
+        double_thin
     };
 
     border_style(){none_ = true;}

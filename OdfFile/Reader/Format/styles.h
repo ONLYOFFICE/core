@@ -676,6 +676,8 @@ public:
     static const ElementType type = typeStyleColumns;
     CPDOCCORE_DEFINE_VISITABLE();
 
+    virtual void pptx_convert(oox::pptx_conversion_context& Context);
+
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -967,6 +969,8 @@ private:
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+
+    int DetectPageSize(double w, double h);
 };
 CP_REGISTER_OFFICE_ELEMENT2(style_page_layout_properties);
 //-------------------------------------------------------------------------------------------------------------------------
@@ -1022,7 +1026,8 @@ public:
 	_CP_OPT(bool)						text_count_empty_lines_;
 	_CP_OPT(bool)						text_count_in_text_boxes_;
 	_CP_OPT(unsigned int)				text_increment_;
-	_CP_OPT(std::wstring)				text_number_position_; //inner, left, outer, right
+    _CP_OPT(unsigned int)				text_start_;
+    _CP_OPT(std::wstring)				text_number_position_; //inner, left, outer, right
 	_CP_OPT(odf_types::length)			text_offset_;
 	_CP_OPT(bool)						text_restart_on_page_;
 

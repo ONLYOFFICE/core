@@ -749,9 +749,9 @@ namespace MetaFile
 		return m_pDC->GetMapMode();
 	}
 
-	double CEmfParserBase::GetDpi()
+	USHORT CEmfParserBase::GetDpi()
 	{
-		return 96.;
+		return 96;
 	}
 
 	IRegion *CEmfParserBase::GetRegion()

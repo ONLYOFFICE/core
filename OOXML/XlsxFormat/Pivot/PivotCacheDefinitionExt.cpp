@@ -54,6 +54,34 @@ void CPivotCacheDefinitionExt::fromXML(XmlUtils::CXmlLiteReader& oReader)
         return;
     oReader.ReadTillEnd();
 }
+XLS::BaseObjectPtr CPivotCacheDefinitionExt::toBin()
+{
+    auto ptr(new XLSB::PCD14);
+    XLS::BaseObjectPtr objectPtr(ptr);
+    auto ptr1(new XLSB::BeginPCD14);
+    if(m_oSlicerData.IsInit())
+        ptr1->fSlicerData = m_oSlicerData.get();
+    else
+        ptr1->fSlicerData = false;
+    if(m_oSrvSupportAddCalcMems.IsInit())
+        ptr1->fSrvSupportAddCalcMems = m_oSrvSupportAddCalcMems.get();
+    else
+        ptr1->fSrvSupportAddCalcMems = false;
+    if(m_oSrvSupportSubQueryCalcMem.IsInit())
+        ptr1->fSrvSupportSubQueryCalcMem = m_oSrvSupportSubQueryCalcMem.get();
+    else
+        ptr1->fSrvSupportSubQueryCalcMem = false;
+    if(m_oSrvSupportSubQueryNonVisual.IsInit())
+        ptr1->fSrvSupportSubQueryNonVisual = m_oSrvSupportSubQueryNonVisual.get();
+    else
+        ptr1->fSrvSupportSubQueryNonVisual = false;
+    ptr->m_BrtBeginPCD14 = XLS::BaseObjectPtr{ptr1};
+    if(m_oPivotCacheId.IsInit())
+        ptr1->icacheId = m_oPivotCacheId.get();
+    else
+        ptr1->icacheId = 0;
+    return objectPtr;
+}
 void CPivotCacheDefinitionExt::fromBin(XLS::BaseObjectPtr& obj)
 {
     if(obj->get_type() == XLS::typePCD14)

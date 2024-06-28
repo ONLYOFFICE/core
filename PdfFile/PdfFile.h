@@ -97,9 +97,6 @@ public:
 	bool EditPage   (int nPageIndex);
 	bool DeletePage (int nPageIndex);
 	bool AddPage    (int nPageIndex);
-	bool EditAnnot  (int nPageIndex, int nID);
-	bool DeleteAnnot(int nID);
-	bool EditWidgets(IAdvancedCommand* pCommand);
 	HRESULT ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword = L"");
 #endif
 
@@ -128,16 +125,17 @@ public:
 	virtual std::wstring GetInfo();
 	virtual BYTE* GetStructure();
 	virtual BYTE* GetLinks(int nPageIndex);
+	bool ValidMetaData();
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();
 	BYTE* GetWidgets();
-	BYTE* GetWidgetEmbeddedFonts();
-	BYTE* GetWidgetStandardFonts();
+	BYTE* GetAnnotEmbeddedFonts();
+	BYTE* GetAnnotStandardFonts();
 	BYTE* GetAnnots    (int nPageIndex = -1);
 	BYTE* VerifySign   (const std::wstring& sFile, ICertificate* pCertificate, int nWidget = -1);
 	BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget  = -1, const char* sView  = NULL, const char* sBView = NULL);
-	BYTE* GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, bool bBase64 = false, int nBWidget = -1, const char* sIView = NULL);
 	BYTE* GetAPAnnots  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot   = -1, const char* sView  = NULL);
+	BYTE* GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase64 = false, int nBWidget = -1, const char* sIView = NULL);
 	std::wstring GetFontPath(const std::wstring& wsFontName);
 
 	// --- WRITER ---

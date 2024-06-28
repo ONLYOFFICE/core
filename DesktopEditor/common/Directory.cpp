@@ -60,6 +60,10 @@ namespace NSDirectory
 #if !defined(_WIN32) && !defined (_WIN64)
 	static bool is_directory_exist(char* dir)
 	{
+#ifdef __ANDROID__
+		if (0 == strcmp("/storage/emulated", dir))
+			return true;
+#endif
 		struct stat st;
 		bool bRes = (0 == stat(dir, &st)) && S_ISDIR(st.st_mode);
 		return bRes;
@@ -586,11 +590,7 @@ namespace NSDirectory
 	int GetFilesCount(const std::wstring& path, const bool& recursive)
 	{
 		std::vector<std::wstring> arrFiles = NSDirectory::GetFiles(path, recursive);
-#if defined(_WIN32) || defined (_WIN64)
 		return (int)arrFiles.size();
-#endif
-		return (int)arrFiles.size() + 1;
-		// ???
 	}
 	bool PathIsDirectory(const std::wstring& pathName)
 	{

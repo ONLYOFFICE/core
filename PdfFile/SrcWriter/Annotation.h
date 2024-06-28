@@ -41,6 +41,37 @@
 namespace PdfWriter
 {
 	class CDestination;
+	enum ELineIntentType
+	{
+		LineDimension = 0,
+		LineArrow
+	};
+	enum ELineEndType
+	{
+		Square = 0,
+		Circle,
+		Diamond,
+		OpenArrow,
+		ClosedArrow,
+		None,
+		Butt,
+		ROpenArrow,
+		RClosedArrow,
+		Slash
+	};
+	enum ECaptionPositioning
+	{
+		Inline = 0,
+		Top
+	};
+	enum EBorderType
+	{
+		Solid = 0,
+		Beveled,
+		Dashed,
+		Inset,
+		Underline
+	};
 
 	class CAction : public CDictObject
 	{
@@ -106,12 +137,12 @@ namespace PdfWriter
 			CBorderType()
 			{
 				bHave  = false;
-				nType  = 0;
-				dWidth = 0;
+				nType  = EBorderType::Solid;
+				dWidth = 1;
 			}
 
 			bool bHave;
-			BYTE nType;
+			EBorderType nType;
 			double dWidth;
 			std::vector<double> arrDash;
 		};
@@ -121,7 +152,8 @@ namespace PdfWriter
 		CXref* m_pXref;
 		TRect  m_oRect;
 		double m_dPageWidth  = 0;
-		double m_dPageHeight = 0;
+		double m_dPageH = 0;
+		double m_dPageX = 0;
 		CDocument* m_pDocument;
 
 	public:
@@ -142,7 +174,7 @@ namespace PdfWriter
 		void SetRect(const TRect& oRect);
 		void SetBorder(BYTE nType, double dWidth, const std::vector<double>& arrDash);
 		void SetAnnotFlag(const int& nAnnotFlag);
-		void SetPage(CPage* pPage);
+		void SetPage(CPage* pPage, double dW = 0, double dH = 0, double dX = 0);
 		void SetBE(BYTE nType, const double& dBE);
 		void SetContents(const std::wstring& wsText);
 		void SetNM(const std::wstring& wsNM);
@@ -154,7 +186,7 @@ namespace PdfWriter
 		void SetDocument(CDocument* pDocument);
 		CDocument* GetDocument();
 		bool HaveBorder()       { return m_oBorder.bHave; }
-		BYTE GetBorderType()    { return m_oBorder.nType; }
+		EBorderType GetBorderType() { return m_oBorder.nType; }
 		double GetBorderWidth() { return m_oBorder.dWidth; }
 		std::string GetBorderDash();
 		double GetWidth()  { return abs(m_oRect.fRight - m_oRect.fLeft); }
@@ -246,6 +278,9 @@ namespace PdfWriter
 	};
 	class CLineAnnotation : public CMarkupAnnotation
 	{
+	private:
+		ELineEndType m_nLE1, m_nLE2;
+		double dL[4];
 	public:
 		CLineAnnotation(CXref* pXref);
 		EAnnotType GetAnnotationType() const override
@@ -263,6 +298,8 @@ namespace PdfWriter
 		void SetL(const double& dL1, const double& dL2, const double& dL3, const double& dL4);
 		void SetCO(const double& dCO1, const double& dCO2);
 		void SetIC(const std::vector<double>& arrIC);
+
+		void SetAP();
 	};
 	class CTextMarkupAnnotation : public CMarkupAnnotation
 	{
@@ -312,6 +349,9 @@ namespace PdfWriter
 	};
 	class CFreeTextAnnotation : public CMarkupAnnotation
 	{
+	private:
+		CAnnotAppearance* m_pAppearance;
+
 	public:
 		CFreeTextAnnotation(CXref* pXref);
 		EAnnotType GetAnnotationType() const override
@@ -319,12 +359,17 @@ namespace PdfWriter
 			return AnnotFreeText;
 		}
 
+		void APFromFakePage(CPage* pFakePage);
+		void SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrC);
+
 		void SetQ(BYTE nQ);
 		void SetIT(BYTE nIT);
 		void SetLE(BYTE nLE);
+		void SetRotate(int nRotate);
 		void SetDS(const std::wstring& wsDS);
 		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4);
 		void SetCL(const std::vector<double>& arrCL);
+		void SetIC(const std::vector<double>& arrIC);
 	};
 	class CCaretAnnotation : public CMarkupAnnotation
 	{
@@ -344,8 +389,6 @@ namespace PdfWriter
 		EWidgetType m_nSubtype;
 		CDictObject* m_pMK;
 		CDictObject* m_pParent;
-		CDictObject* m_pAA;
-		CDictObject* m_pA;
 
 		CFontCidTrueType* m_pFont;
 		double m_dFontSize;
@@ -355,8 +398,6 @@ namespace PdfWriter
 		CAnnotAppearance* m_pAppearance;
 		double m_dFontSizeAP;
 		std::vector<double> m_arrTC;
-		std::vector<double> m_arrBC;
-		std::vector<double> m_arrBG;
 		BYTE m_nQ;
 
 		void CheckMK();
@@ -398,10 +439,11 @@ namespace PdfWriter
 		double GetFontSize()   { return m_dFontSize; }
 		bool GetFontIsBold()   { return m_bBold; }
 		bool GetFontIsItalic() { return m_bItalic; }
-		bool HaveBG() { return !m_arrBG.empty(); }
-		bool HaveBC() { return !m_arrBC.empty(); }
+		bool HaveBG();
+		bool HaveBC();
 		BYTE GetQ() { return m_nQ; }
 
+		void SetEmptyAP();
 		void SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts);
 		void StartAP();
 		void AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts = NULL, const double* pShifts = NULL);
@@ -413,11 +455,13 @@ namespace PdfWriter
 		bool m_bRespectBorders;
 		bool m_bConstantProportions;
 		BYTE m_nScaleType;
+		BYTE m_nTP;
 		double m_dShiftX;
 		double m_dShiftY;
 		std::wstring m_wsCA;
+		std::wstring m_wsRC;
+		std::wstring m_wsAC;
 		CDictObject* m_pIF;
-		std::string m_sCaptionForAP;
 
 		void CheckIF();
 
@@ -438,8 +482,12 @@ namespace PdfWriter
 		void SetRC(const std::wstring& wsRC);
 		void SetAC(const std::wstring& wsAC);
 
-		void SetAP(CImageDict* pImage, const std::string& sAP, const std::string& sImgName, const std::string& sFrmName);
-		void SetCaptionAP(unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts);
+		void SetAP(CXObject* pForm, BYTE nAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, double dLineW, double dLineH, CFontCidTrueType** ppFonts);
+		const std::wstring& GetCA() { return m_wsCA; }
+		const std::wstring& GetRC() { return m_wsRC; }
+		const std::wstring& GetAC() { return m_wsAC; }
+		BYTE GetTP() { return m_nTP; }
+		bool GetRespectBorder() { return m_bRespectBorders; }
 
 		int m_nI, m_nRI, m_nIX;
 	};
@@ -462,6 +510,7 @@ namespace PdfWriter
 	{
 	private:
 		std::string m_sV;
+		bool m_bAPV;
 
 	public:
 		CTextWidget(CXref* pXref);
@@ -469,10 +518,12 @@ namespace PdfWriter
 		void SetMaxLen(const int& nMaxLen);
 		void SetV (const std::wstring& wsV);
 		void SetRV(const std::wstring& wsRV);
+		void SetAPV() { m_bAPV = true; }
 
 		bool IsCombFlag();
 		bool IsMultiLine();
 		unsigned int GetMaxLen();
+		bool HaveAPV() { return m_bAPV; }
 	};
 	class CChoiceWidget : public CWidgetAnnotation
 	{

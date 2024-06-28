@@ -41,9 +41,12 @@
 #include "../../XlsbFormat/Biff12_unions/DXF.h"
 #include "../../XlsbFormat/Biff12_unions/FRTDXF.h"
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
+#include "../../XlsbFormat/Biff12_records/BeginDXFs.h"
 
 #include "../../Common/SimpleTypes_Shared.h"
 #include <boost/algorithm/string.hpp>
+
+#include "../../XlsbFormat/Biff12_unions/DXFS.h"
 
 namespace OOX
 {
@@ -196,6 +199,23 @@ namespace OOX
 			}
 
 		}
+		XLS::BaseObjectPtr CDxf::toBin()
+		{
+			auto ptr(new XLSB::DXF);
+			auto ptr1(new XLSB::FRTDXF);
+			ptr1->m_BrtDXF = XLS::BaseObjectPtr{ptr};
+			XLS::BaseObjectPtr objectPtr(ptr1);
+			NSStringUtils::CStringBuilder writer;
+			toXML(writer);
+			XmlUtils::CXmlLiteReader oReader;
+			auto stringData = writer.GetData();
+
+			if ( !oReader.FromString(stringData))
+                        return objectPtr;
+			ptr->deserialize(oReader);
+
+			return objectPtr;
+		}
 		EElementType CDxf::getType () const
 		{
 			return et_x_Dxf;
@@ -299,6 +319,21 @@ namespace OOX
 				else
 					m_arrItems.push_back(new CDxf(dxf));
 			}
+		}
+		XLS::BaseObjectPtr CDxfs::toBin()
+		{
+			auto ptr(new XLSB::DXFS);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::BeginDXFs);
+			ptr->m_BrtBeginDXFs = XLS::BaseObjectPtr{ptr1};
+			for(auto i:m_arrItems)
+			{
+				auto udxf(new XLSB::uDXF);
+				udxf->m_BrtFRTDXF = i->toBin();
+				ptr->m_aruDXF.push_back(XLS::BaseObjectPtr{udxf});
+			}
+			ptr1->cdxfs = ptr->m_aruDXF.size();
+			return objectPtr;
 		}
 		void CDxfs::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{

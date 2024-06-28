@@ -31,6 +31,7 @@
  */
 #include "Path.h"
 #include "File.h"
+#include <stack>
 
 #if defined(_WIN32) || defined (_WIN64)
 #include <tchar.h>
@@ -110,7 +111,7 @@ namespace NSSystemPath
 	}
 
 	template<class CHAR, class STRING = std::basic_string<CHAR, std::char_traits<CHAR>, std::allocator<CHAR>>>
-	STRING NormalizePathTemplate(const STRING& strFileName)
+	STRING NormalizePathTemplate(const STRING& strFileName, const bool& canHead = false)
 	{
 		const CHAR* pData = strFileName.c_str();
 		int nLen          = (int) strFileName.length();
@@ -123,6 +124,12 @@ namespace NSSystemPath
 		int nCurrentSlash   = -1;
 		int nCurrentW       = 0;
 		bool bIsUp          = false;
+
+		if (canHead)
+		{
+			nCurrentSlash = 0;
+			pSlashPoints[0] = 0;
+		}
 
 		if (pData[nCurrent] == '/' || pData[nCurrent] == '\\')
 		{
@@ -177,12 +184,69 @@ namespace NSSystemPath
 		return result;
 	}
 
-	std::string NormalizePath(const std::string& strFileName)
+	std::string NormalizePath(const std::string& strFileName, const bool& canHead)
 	{
-		return NormalizePathTemplate<char>(strFileName);
+		return NormalizePathTemplate<char>(strFileName, canHead);
 	}
-	std::wstring NormalizePath(const std::wstring& strFileName)
+	std::wstring NormalizePath(const std::wstring& strFileName, const bool& canHead)
 	{
-		return NormalizePathTemplate<wchar_t>(strFileName);
+		return NormalizePathTemplate<wchar_t>(strFileName, canHead);
 	}
+
+	std::wstring ShortenPath(const std::wstring &strPath, const bool& bRemoveExternalPath)
+	{
+		std::stack<std::wstring> arStack;
+		std::wstring wsToken;
+
+		for (size_t i = 0; i < strPath.size(); ++i) 
+		{
+			if (L'/' == strPath[i] || L'\\' == strPath[i])
+			{
+				if (L".." == wsToken)
+				{
+					if (!arStack.empty() && L".." != arStack.top())
+						arStack.pop();
+					else
+						arStack.push(wsToken);
+				}
+				else if (L"." != wsToken && !wsToken.empty())
+					arStack.push(wsToken);
+	
+				wsToken.clear();
+			}
+			else
+				wsToken += strPath[i];
+		}
+
+		if (L".." == wsToken)
+		{
+			if (!arStack.empty() && L".." == arStack.top())
+				arStack.pop();
+			else
+				arStack.push(wsToken);
+		}
+		else if (L"." != wsToken && !wsToken.empty())
+			arStack.push(wsToken);
+
+		wsToken.clear();
+
+		if (arStack.empty())
+			return std::wstring();
+
+		std::wstring wsNewPath;
+
+		while (!arStack.empty()) 
+		{
+			if (bRemoveExternalPath && L".." == arStack.top())
+				break;
+
+			wsNewPath = arStack.top() + L'/' + wsNewPath;
+			arStack.pop();
+		}
+
+		wsNewPath.pop_back();
+
+		return wsNewPath;
+	}
+	
 }

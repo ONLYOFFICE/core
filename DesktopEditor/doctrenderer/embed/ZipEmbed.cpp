@@ -2,6 +2,7 @@
 #include "../../raster/BgraFrame.h"
 #include "../../graphics/pro/Image.h"
 #include "../../raster/ImageFileFormatChecker.h"
+#include "server.h"
 
 JSSmart<CJSValue> CZipEmbed::open(JSSmart<CJSValue> typedArray_or_Folder)
 {
@@ -18,7 +19,8 @@ JSSmart<CJSValue> CZipEmbed::open(JSSmart<CJSValue> typedArray_or_Folder)
 	}
 	else if (typedArray_or_Folder->isString())
 	{
-		m_pFolder = new CFolderSystem(typedArray_or_Folder->toStringW());
+		if (!CServerInstance::getInstance().IsEnable())
+			m_pFolder = new CFolderSystem(typedArray_or_Folder->toStringW());
 	}
 
 	if (!m_pFolder)
@@ -174,7 +176,7 @@ JSSmart<CJSValue> CZipEmbed::encodeImageData(JSSmart<CJSValue> typedArray, JSSma
 	if (oFrame.Encode(pBuffer, nEncodedSize, format->toInt32()))
 	{
 		BYTE* pData = NSAllocator::Alloc((size_t)nEncodedSize);
-		memcpy(pData, oFrame.get_Data(), (size_t)nEncodedSize);
+		memcpy(pData, pBuffer, (size_t)nEncodedSize);
 		oFrame.FreeEncodedMemory(pBuffer);
 		oFrame.put_Data(NULL);
 
@@ -228,7 +230,7 @@ JSSmart<CJSValue> CZipEmbed::encodeImage(JSSmart<CJSValue> typedArray, JSSmart<C
 			if (oFrame.Encode(pBuffer, nEncodedSize, format->toInt32()))
 			{
 				BYTE* pData = NSAllocator::Alloc((size_t)nEncodedSize);
-				memcpy(pData, oFrame.get_Data(), (size_t)nEncodedSize);
+				memcpy(pData, pBuffer, (size_t)nEncodedSize);
 				oFrame.FreeEncodedMemory(pBuffer);
 				oFrame.put_Data(NULL);
 

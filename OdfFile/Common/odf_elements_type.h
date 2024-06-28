@@ -307,6 +307,7 @@ enum ElementType
 
     typeStyleFontFace,
 
+	typeSvgTitle,
     typeSvgDesc,
     typeSvgFontFaceUri,
     typeSvgFontFaceFormat,
@@ -574,6 +575,7 @@ enum ElementType
 	typeOfficeScripts,
 	typeOfficeScript,
 	typeOfficePresentation,
+	typeOfficeDrawing,
 	typeOfficeChart,
 	typeOfficeEventListeners,
   

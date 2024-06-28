@@ -103,6 +103,10 @@ const int PtgFunc::getParametersNum() const
 	return iftab.getParamsNum();
 }
 
+const unsigned short PtgFunc::getFuncIndex() const
+{
+	return iftab.getIndex();
+}
 
 } // namespace XLS
 

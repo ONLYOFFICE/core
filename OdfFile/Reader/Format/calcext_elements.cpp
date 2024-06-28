@@ -60,6 +60,7 @@ void calcext_data_bar_attr::add_attributes( const xml::attributes_wc_ptr & Attri
 	CP_APPLY_ATTR(L"calcext:min-length",		min_length_);
 	CP_APPLY_ATTR(L"calcext:max-length",		max_length_);
 	CP_APPLY_ATTR(L"calcext:axis-position",		axis_position_);
+	CP_APPLY_ATTR(L"calcext:gradient",			gradient_);
 }
 
 void calcext_icon_set_attr::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -72,6 +73,7 @@ void calcext_condition_attr::add_attributes( const xml::attributes_wc_ptr & Attr
 	CP_APPLY_ATTR(L"calcext:base-cell-address",	base_cell_address_);
 	CP_APPLY_ATTR(L"calcext:apply-style-name",	apply_style_name_);
 	CP_APPLY_ATTR(L"calcext:value",				value_);
+	CP_APPLY_ATTR(L"loext:stdDev", loext_stdDev_);
 }
 void calcext_date_is_attr::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -180,6 +182,9 @@ void calcext_data_bar::xlsx_convert(oox::xlsx_conversion_context & Context)
 	if (attr_.axis_position_)
 		Context.get_conditionalFormatting_context().set_axis_position(*attr_.axis_position_);
 
+	if (attr_.gradient_)
+		Context.get_conditionalFormatting_context().set_gradient(*attr_.gradient_);
+
 	Context.get_conditionalFormatting_context().set_dataBar(attr_.min_length_, attr_.max_length_);
 
 	for (size_t i = 0 ; i < content_.size(); i++)
@@ -233,7 +238,7 @@ void calcext_icon_set::xlsx_convert(oox::xlsx_conversion_context & Context)
 	}
 }
 	
-// calcext_formatting_entry
+///  calcext:formatting-entry
 //---------------------------------------------------------------------------------------------------------
 const wchar_t * calcext_formatting_entry::ns	= L"calcext";
 const wchar_t * calcext_formatting_entry::name	= L"formatting-entry";
@@ -309,6 +314,9 @@ void calcext_condition::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	if (dxfId >= 0)
 		Context.get_conditionalFormatting_context().set_dxf(dxfId);
+
+	if (attr_.loext_stdDev_)
+		Context.get_conditionalFormatting_context().set_stdDev(*attr_.loext_stdDev_);
 }
 // calcext_condition
 //---------------------------------------------------------------------------------------------------------

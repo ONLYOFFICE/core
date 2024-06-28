@@ -203,7 +203,8 @@ public:
 
 	void set_background (std::wstring rId) { tableBackground_ = rId; }
 
-	void serialize_conditionalFormatting	(std::wostream & _Wostream);
+	void serialize_condFormatting			(std::wostream & _Wostream);
+	void serialize_condFormattingEx			(std::wostream& _Wostream);
 	void serialize_table_format				(std::wostream & _Wostream);
 	void serialize_merge_cells				(std::wostream & _Wostream);
     void serialize_hyperlinks				(std::wostream & _Wostream);

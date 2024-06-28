@@ -194,7 +194,18 @@ namespace NSFile
 		static bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, wchar_t *wsMode, wchar_t *wsExt, wchar_t *wsFolder, wchar_t* wsName = NULL);
 		static FILE* OpenFileNative(const std::wstring& sFileName, const std::wstring& sMode);
 
-		static unsigned long GetDateTime(const std::wstring & strFileName);
+		// returns true if everything is OK;
+		// you can set ptmLastWrite / ptmLastAccess to nullptr if you are not going to use them;
+		// tm_wday && tm_yday && tm_isdst is unused on windows
+		static bool GetTime(const std::wstring& sFilename,
+				struct tm* ptmLastWrite = nullptr,
+				struct tm* ptmLastAccess = nullptr);
+
+		// returns true if everything is OK;
+		// you can set ptmLastWrite / ptmLastAccess to nullptr if you are not going to change them
+		static bool SetTime(const std::wstring& sFilename,
+				struct tm* ptmLastWrite = nullptr,
+				struct tm* ptmLastAccess = nullptr);
 	};
 
 	class KERNEL_DECL CBase64Converter

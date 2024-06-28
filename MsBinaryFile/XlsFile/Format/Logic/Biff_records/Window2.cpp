@@ -152,7 +152,7 @@ void Window2::readFields(CFRecord& record)
 
             record >> xlView >> rwTop >> colLeft;
 
-            topLeftCell = static_cast<std::wstring >(CellRef(rwTop, colLeft, true, true));
+            topLeftCell = CellRef(rwTop, colLeft, true, true).toString(true);
 
             BYTE	icvHdr_1b;
             record >> icvHdr_1b;

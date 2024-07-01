@@ -50,7 +50,8 @@ SOURCES += \
 HEADERS += \
 	./../GraphicsPath_private.h \
 	./../GraphicsPath.h \
-	./../GraphicsPathClip.h
+	./../GraphicsPathClip.h \
+	./../clip_math.h
 
 SOURCES += \
 	./../GraphicsPath.cpp \

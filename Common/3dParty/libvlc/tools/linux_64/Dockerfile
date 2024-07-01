@@ -80,11 +80,16 @@ CMD cd /vlc && \
     make -j$CORES install-strip && \
 # correct build files
     cd build/linux_64 && \
+# change rpaths
+    echo "CHANGING RPATHS..." && \
+    /vlc/change-rpaths.sh && \
 # copy libva libraries
     (for f in $(find /usr/lib/x86_64-linux-gnu/ -name 'libva*.so*'); do cp $f lib; done;) && \
 # convert all symlinks to files
+    echo "CONVERTING SYMLINKS..." && \
     (for f in $(find . -type l); do cp --remove-destination $(readlink -f $f) $f; done;) && \
 # delete all .la files
     find lib -name "*.la" -type f -delete && \
 # generate plugins.dat
+    echo "GENERATING plugins.dat..." && \
     lib/vlc/vlc-cache-gen lib/vlc/plugins

@@ -127,7 +127,7 @@ int DVAXIS::serialize(std::wostream & _stream)
 	Axis		*axis			= dynamic_cast<Axis*>		(m_Axis.get());
 	CRTMLFRT	*crtMltFrt		= dynamic_cast<CRTMLFRT*>	(m_CRTMLFRT.get());
 	
-	int axes_type = axis->wType + 1;
+	int axes_type = axis ? axis->wType + 1 : 1;
 
 	bool bLogarithScale = false;
 

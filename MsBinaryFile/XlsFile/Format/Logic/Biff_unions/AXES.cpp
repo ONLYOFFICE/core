@@ -245,6 +245,9 @@ int AXES::serialize(std::wostream & _stream, bool secondary)
 	{
 		for (size_t i = 0 ; i < m_arAxes.size(); i++)
 		{
+			if (!m_arAxes[i])
+				continue;
+
 			IVAXIS		* iv	= dynamic_cast<IVAXIS*>		(m_arAxes[i].get());
 			DVAXIS		* dv	= dynamic_cast<DVAXIS*>		(m_arAxes[i].get());
 			SERIESAXIS	* ser	= dynamic_cast<SERIESAXIS*>	(m_arAxes[i].get());
@@ -272,6 +275,7 @@ int AXES::serialize(std::wostream & _stream, bool secondary)
 				for ( size_t h = 0 ; h < m_arATTACHEDLABEL.size(); h++)
 				{
 					ATTACHEDLABEL	*l_= dynamic_cast<ATTACHEDLABEL *>	(m_arATTACHEDLABEL[h].get() );
+					if (!l_) continue;
 					
 					if (l_->m_iLinkObject == 2 && l_->m_bUsed == false && (dv || ser))
 					{

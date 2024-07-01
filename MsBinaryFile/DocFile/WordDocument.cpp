@@ -644,17 +644,12 @@ namespace DocFileFormat
 		}
 		m_sTempDecryptFileName	= m_sTempFolder + FILE_SEPARATOR_STR + L"~tempFile.doc";
 		
-		POLE::Storage *storageIn	= m_pStorage->GetStorage();
-		POLE::Storage *storageOut	= new POLE::Storage(m_sTempDecryptFileName.c_str());
+		POLE::Storage *storageIn = m_pStorage->GetStorage();
+		CFCPP::CompoundFile* storageOut = new CFCPP::CompoundFile(CFCPP::Ver_3, CFCPP::Default);
 
 		if (!storageOut || !storageIn) return false;
 		
-		if (!storageOut->open(true, true))
-		{
-			delete storageOut;
-			return false;
-		}
-		DecryptStream( 0, L"/", storageIn, storageOut, Decryptor);
+		DecryptStream( 0, L"/", storageIn, storageOut->RootStorage(), Decryptor);
 
 		//std::list<std::string> listStream = storageIn->entries();
 
@@ -676,7 +671,8 @@ namespace DocFileFormat
 
 		//}
 
-		storageOut->close();
+		bool result = storageOut->Save(m_sTempDecryptFileName);
+		storageOut->Close();
 		delete storageOut;
 
 //reset streams
@@ -695,10 +691,10 @@ namespace DocFileFormat
 		{
 			if (!m_pStorage->GetStream (L"0Table", &TableStream))	m_pStorage->GetStream (L"1Table", &TableStream);
 		}
-		return true;
+		return result;
 	}
 
-	void WordDocument::DecryptStream( int level, std::wstring path, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor)
+	void WordDocument::DecryptStream( int level, std::wstring path, POLE::Storage* storageIn, std::shared_ptr<CFCPP::CFStorage> storageOut, CRYPT::Decryptor* Decryptor)
 	{
 		std::list<std::wstring> entries, entries_files, entries_dir;
 		entries = storageIn->entries_with_prefix( path );
@@ -721,7 +717,8 @@ namespace DocFileFormat
 		{
 			std::wstring fullname = path + *it;
 	       
-			DecryptStream( level + 1, fullname + L"/", storageIn, storageOut, Decryptor );
+			std::shared_ptr<CFCPP::CFStorage> storageOutNew = storageOut->AddStorage(*it);
+			DecryptStream( level + 1, fullname + L"/", storageIn, storageOutNew, Decryptor );
 
 		}    
 	//if (bSortFiles)
@@ -729,8 +726,6 @@ namespace DocFileFormat
 
 		for( std::list<std::wstring>::iterator it = entries_files.begin(); it != entries_files.end(); ++it )
 		{
-			std::wstring fullname_create = path + *it;
-
 			if (it->at(0) < 32)
 			{
 				*it = it->substr(1);  // without prefix
@@ -748,10 +743,10 @@ namespace DocFileFormat
 			{
 				bDecrypt = true;
 			}	
-			DecryptStream(fullname_open, storageIn, fullname_create, storageOut, Decryptor, bDecrypt);
+			DecryptStream(fullname_open, storageIn, *it, storageOut, Decryptor, bDecrypt);
 		}  
 	}
-	bool WordDocument::DecryptStream(std::wstring streamName_open, POLE::Storage * storageIn, std::wstring streamName_create, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor, bool bDecrypt)
+	bool WordDocument::DecryptStream(std::wstring streamName_open, POLE::Storage* storageIn, std::wstring streamName_create, std::shared_ptr<CFCPP::CFStorage> storageOut, CRYPT::Decryptor* Decryptor, bool bDecrypt)
 	{
 		POLE::Stream *stream = new POLE::Stream(storageIn, streamName_open);
 		if (!stream) return false;
@@ -759,7 +754,7 @@ namespace DocFileFormat
 		stream->seek(0);
 		POLE::uint64 size_stream = stream->size();
 		
-		POLE::Stream *streamNew = new POLE::Stream(storageOut, streamName_create, true, size_stream);
+		std::shared_ptr<CFCPP::CFStream> streamNew = storageOut->AddStream(streamName_create);
 		if (!streamNew) return false;
 
 		unsigned char* data_stream = new unsigned char[size_stream];
@@ -794,14 +789,11 @@ namespace DocFileFormat
 		if (data_store)
 			memcpy(data_stream, data_store, size_data_store);
 
-		streamNew->write(data_stream, size_stream);
+		streamNew->Write((char*)data_stream, 0, size_stream);
 
 		RELEASEARRAYOBJECTS(data_store);
 		RELEASEARRAYOBJECTS(data_stream);
 
-		streamNew->flush();
-				
-		delete streamNew;
 		delete stream;
 		
 		return true;

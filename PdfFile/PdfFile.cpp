@@ -1182,6 +1182,7 @@ HRESULT CPdfFile::IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedComma
 	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:
 	case IAdvancedCommand::AdvancedCommandType::PageClear:
 	case IAdvancedCommand::AdvancedCommandType::PageRotate:
+	case IAdvancedCommand::AdvancedCommandType::Headings:
 		return S_OK;
 	default:
 		break;
@@ -1271,6 +1272,11 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 		CPageRotate* pCommand = (CPageRotate*)command;
 		if (m_pInternal->pEditor)
 			m_pInternal->pWriter->PageRotate(pCommand->GetPageRotate());
+		return S_OK;
+	}
+	case IAdvancedCommand::AdvancedCommandType::Headings:
+	{
+		m_pInternal->pWriter->SetHeadings((CHeadings*)command);
 		return S_OK;
 	}
 	default:

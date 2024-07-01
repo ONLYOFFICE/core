@@ -170,5 +170,29 @@ private:
 	int m_nPageRotate;
 };
 
+class GRAPHICS_DECL CHeadings : public IAdvancedCommand
+{
+public:
+	struct CHeading
+	{
+		std::wstring wsTitle;
+		int nPage;
+		double dX;
+		double dY;
+		std::vector<CHeading> arrHeading;
+	};
+
+	CHeadings();
+
+	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
+
+	const std::vector<CHeading>& GetHeading();
+
+private:
+	std::vector<CHeading> m_arrHeading;
+
+	CHeading ReadHeading(NSOnlineOfficeBinToPdf::CBufferReader* pReader);
+};
+
 
 #endif // _BUILD_DOCINFO_H_

@@ -760,14 +760,14 @@ namespace Aggplus
 		return this->m_internal->m_agg_ps.command(idx) == agg::path_cmd_curve4;
 	}
 
-	PointF* CGraphicsPath::getPoints(size_t idx, size_t count)
+	std::vector<PointF> CGraphicsPath::getPoints(size_t idx, size_t count)
 	{
-		PointF* points = new PointF[count];
+		std::vector<PointF> points;
 		for (size_t i = 0; i < count; i++)
 		{
 			double x,y;
 			this->m_internal->m_agg_ps.vertex(idx + i, &x, &y);
-			points[i] = PointF(x, y);
+			points.push_back(PointF(REAL(x), REAL(y)));
 		}
 		return points;
 	}
@@ -776,7 +776,7 @@ namespace Aggplus
 	{
 		if (isCurve)
 		{
-			PointF* points = getPoints(idx, 4);
+			std::vector<PointF> points = getPoints(idx, 4);
 			return 3 * ((points[3].Y - points[0].Y)	* (points[1].X + points[2].X)
 						- (points[3].X - points[0].X) * (points[1].Y * points[2].Y)
 						+ points[1].Y * (points[0].X - points[2].X)
@@ -784,8 +784,7 @@ namespace Aggplus
 						+ points[3].Y * (points[2].X + points[0].X / 3)
 						- points[3].X * (points[2].Y - points[0].Y / 3)) / 20;
 		}
-
-		PointF* points = getPoints(idx, 2);
+		std::vector<PointF> points = getPoints(idx, 2);
 		return (points[1].Y * points[0].X - points[1].X * points[0].Y) / 20;
 	}
 }

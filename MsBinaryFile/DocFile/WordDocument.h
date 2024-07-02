@@ -60,6 +60,7 @@
 #include "IVisitable.h"
 
 #include "../../Common/MS-LCID.h"
+#include "../../Common/cfcpp/compoundfile.h"
 
 namespace CRYPT
 {
@@ -114,10 +115,10 @@ namespace DocFileFormat
 	private:
 		bool LoadDocumentFlat();
 
-		bool DecryptOfficeFile	(CRYPT::Decryptor* Decryptor);
+		bool DecryptOfficeFile (CRYPT::Decryptor* Decryptor);
 		
-		bool DecryptStream		(std::wstring streamName_open, POLE::Storage * storageIn, std::wstring streamName_create, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor, bool bDecrypt);
-		void DecryptStream		(int level, std::wstring streamName, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor);
+		bool DecryptStream (std::wstring streamName_open, POLE::Storage* storageIn, std::wstring streamName_create, std::shared_ptr<CFCPP::CFStorage> storageOut, CRYPT::Decryptor* Decryptor, bool bDecrypt);
+		void DecryptStream (int level, std::wstring streamName, POLE::Storage* storageIn, std::shared_ptr<CFCPP::CFStorage> storageOut, CRYPT::Decryptor* Decryptor);
 		
 		inline OfficeArtContent* GetOfficeArt ()
 		{

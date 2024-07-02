@@ -40,6 +40,7 @@
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/graphics/pro/Image.h"
 #include "../../DesktopEditor/graphics/commands/FormField.h"
+#include "../../DesktopEditor/graphics/commands/DocInfo.h"
 #include "../../DesktopEditor/graphics/commands/AnnotField.h"
 #include "../../DesktopEditor/xmlsec/src/include/Certificate.h"
 #include "SrcWriter/States.h"
@@ -217,6 +218,7 @@ public:
 	PdfWriter::CDocument* GetDocument();
 	PdfWriter::CPage*     GetPage();
 	void AddFont(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, const std::wstring& wsFontPath, const LONG& lFaceIndex);
+	void SetHeadings(CHeadings* pCommand);
 
 private:
 	PdfWriter::CImageDict* LoadImage(Aggplus::CImage* pImage, BYTE nAlpha);

@@ -152,6 +152,7 @@ public:
 		ShapeEnd    = 8,
 		PageClear   = 9,
 		PageRotate  = 10,
+		Headings    = 11,
 
 		Undefined   = 255
 	};

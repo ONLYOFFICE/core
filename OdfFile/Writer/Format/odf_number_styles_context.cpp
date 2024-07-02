@@ -423,19 +423,20 @@ void odf_number_styles_context::create_number_style(number_format_state & state,
 		create_numbers(state, elm, root_elm);
 	}
 }
-void odf_number_styles_context::create_numbers(number_format_state & state, office_element_ptr & elm, office_element_ptr & root_elm)
+void odf_number_styles_context::create_numbers(number_format_state& state, office_element_ptr& elm, office_element_ptr& root_elm)
 {
 	_CP_OPT(int) min_digit, min_decimal;
+	_CP_OPT(int) separate;
 
-	switch(state.ods_type)
+	switch (state.ods_type)
 	{
-		case office_value_type::Currency:
-		case office_value_type::Percentage:
-		case office_value_type::Float:		create_element(L"number", L"number", elm, odf_context_); break;
-		case office_value_type::Scientific:	create_element(L"number", L"scientific-number", elm, odf_context_); break;
-		case office_value_type::Fraction:	create_element(L"number", L"fraction", elm, odf_context_); break;
+	case office_value_type::Currency:
+	case office_value_type::Percentage:
+	case office_value_type::Float:		create_element(L"number", L"number", elm, odf_context_); break;
+	case office_value_type::Scientific:	create_element(L"number", L"scientific-number", elm, odf_context_); break;
+	case office_value_type::Fraction:	create_element(L"number", L"fraction", elm, odf_context_); break;
 	}
-	
+
 	office_element_ptr elm_text;
 
 	bool bText = false;
@@ -473,74 +474,90 @@ void odf_number_styles_context::create_numbers(number_format_state & state, offi
 		if (indNumber < 0)
 			indNumber = 0;
 
-		std::wstring str1,str2;
-		boost::wregex re1(L"([^0-9.,]+)");
-		boost::wsmatch result;
-		boost::wregex re2(L"([^#.,]+)");
-		
+		// split by space, find #0 - use it ... ???? 
+		std::wstring str1;
+		boost::wregex re1(L"([^#0.,]+)");
+
 		str1 = boost::regex_replace(splits[indNumber], re1, L"", boost::match_default | boost::format_all);
-		str2 = boost::regex_replace(splits[indNumber], re2, L"", boost::match_default | boost::format_all);
 
-		if (str1.length() < str2.length()) str1 = str2;
+		size_t pos_separate_1000 = str1.find(L",");
+		size_t pos_separate_decimal = str1.find(L".");
 
-		std::vector<std::wstring> numbers;
-		boost::algorithm::split(numbers, str1, boost::algorithm::is_any_of(L".,"), boost::algorithm::token_compress_on);
-
-		int ind = 1;//
-		for (size_t i = 0; i < numbers.size(); i++)
+		if (pos_separate_decimal != std::wstring::npos)
 		{
-			if (numbers[i].empty())continue;
+			std::wstring str2;
+			boost::wregex re2(L"([^0]+)");
 
-			if (ind == 1) min_digit = numbers[i].length();
-			if (ind == 2) min_decimal = numbers[i].length();
-			ind++;
+			str2 = boost::regex_replace(str1.substr(pos_separate_decimal), re2, L"", boost::match_default | boost::format_all);
+
+			if (false == str2.empty())
+				min_decimal = str2.length();
+
+			str1 = str1.substr(0, pos_separate_decimal);
+		}
+		else
+		{
+			min_decimal = 0;
+		}
+		{
+			std::wstring str2;
+			boost::wregex re2(L"([^0]+)");
+
+			str2 = boost::regex_replace(str1, re2, L"", boost::match_default | boost::format_all);
+
+			if (false == str2.empty())
+				min_digit = str2.length();
+		}
+		if (pos_separate_1000 != std::wstring::npos)
+		{
+			separate = str1.length() - pos_separate_1000 - 1;
 		}
 
 		if (bText && root_elm)
 		{
-			int res1 = (int) splits[indText].find(L"\""); 
-			int res2 = (int) splits[indText].find(L"\"", res1 + 1);
+			int res1 = (int)splits[indText].find(L"\"");
+			int res2 = (int)splits[indText].find(L"\"", res1 + 1);
 
 			if (res2 > 0)
 			{
 				std::wstring text = splits[indText].substr(res1 + 1, res2 - res1 - 1);
 
 				if (!text.empty())
-				{					
+				{
 					if (indText < indNumber) text = text + L" ";
 					else					 text = L" " + text;
 
 					create_element(L"number", L"text", elm_text, odf_context_);
 					number_text* number_text_ = dynamic_cast<number_text*>(elm_text.get());
-					
+
 					if (number_text_)
-						number_text_->add_text(text); 
+						number_text_->add_text(text);
 				}
 			}
 		}
 	}
-			
+
 	number_number* number_ = dynamic_cast<number_number*>(elm.get());
 	if (number_)
 	{
-		number_->number_min_integer_digits_	= min_digit;
-		number_->number_decimal_places_		= min_digit ? min_decimal.get_value_or(0) : min_decimal;
+		number_->number_min_integer_digits_ = min_digit;
+		number_->number_decimal_places_ = min_decimal.get_value_or(0);
 
-		if (root_elm && bText)
+		if (separate)
 			number_->number_grouping_ = true;
 	}
 	number_scientific_number* scientific_ = dynamic_cast<number_scientific_number*>(elm.get());
 	if (scientific_)
 	{
-		scientific_->number_min_integer_digits_	= min_digit;
-		scientific_->number_decimal_places_		= min_decimal;
-		scientific_->number_min_exponent_digits_= min_digit;
-		scientific_->number_min_decimal_places_	= min_decimal;
+		scientific_->number_min_integer_digits_ = min_digit;
+		scientific_->number_decimal_places_ = min_decimal;
+		scientific_->number_min_exponent_digits_ = min_digit;
+		scientific_->number_min_decimal_places_ = min_decimal;
 		scientific_->number_forced_exponent_sign_ = true;
-		
-		if (root_elm && bText)
+
+		if (separate)
 			scientific_->number_grouping_ = true;
-	}	
+	}
 	number_fraction* fraction_ = dynamic_cast<number_fraction*>(elm.get());
 	if (fraction_)
 	{
@@ -548,7 +565,7 @@ void odf_number_styles_context::create_numbers(number_format_state & state, offi
 		fraction_->number_min_numerator_digits_ = min_digit;
 		fraction_->number_min_denominator_digits_ = min_digit;
 
-		if (root_elm && bText)
+		if (separate)
 			fraction_->number_grouping_ = true;
 	}
 	if (root_elm)

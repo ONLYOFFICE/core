@@ -171,6 +171,15 @@ void CCommandManager::Flush()
                     isNeedDoItalic = pText->IsNeedDoItalic();
                 }
 
+				if (!pText->GetPUA().empty())
+				{
+					oTextLine.Flush(pPage);
+					PdfWriter::CDictObject* pBDC = new PdfWriter::CDictObject();
+					pBDC->Add("ActualText", new PdfWriter::CStringObject(pText->GetPUA().c_str(), true));
+					pPage->BeginMarkedContentDict("Span", pBDC);
+					RELEASEOBJECT(pBDC);
+				}
+
                 unsigned char* pCodes    = pText->GetCodes();
                 unsigned short ushCode   = (pCodes[0] << 8) + pCodes[1];
                 unsigned int   unLen     = pText->GetCodesLen();
@@ -187,6 +196,12 @@ void CCommandManager::Flush()
                         pPage->DrawText(dX, dY, pCodes, unLen);
                     }
                 }
+
+				if (!pText->GetPUA().empty())
+				{
+					oTextLine.Flush(pPage);
+					pPage->EndMarkedContent();
+				}
             }
 
             oTextLine.Flush(pPage);

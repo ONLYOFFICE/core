@@ -402,13 +402,14 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
                 }
                 else
                 {
+                    SyntaxPtg::extract_CustomFunction(operand_str, number);
                     func = PtgFuncVar::create(L"USER_DEFINED_FUNCTION", OperandPtg::ptg_REFERENCE);
                     if(!func)
                     {
                         // EXCEPT::LE::WhatIsTheFuck("Ftab_Cetab doesn't contain info about user-defined function (0xFF).", __FUNCTION__);
                     }
                     ptg_stack.push(func);
-                    rgce.addPtg(PtgPtr(new PtgNameX(operand_str,  OperandPtg::ptg_REFERENCE)));
+                    rgce.addPtg(PtgPtr(new PtgName(number,  OperandPtg::ptg_REFERENCE)));
                 }
             }
             else if(SyntaxPtg::extract_UndefinedName(it, itEnd)) // Shall be placed strongly after extract_PtgName

@@ -109,6 +109,7 @@ namespace OOX
 
 		private:
 			XLS::BaseObjectPtr createFutureFunction(const std::wstring& funcName);
+			XLS::BaseObjectPtr createCustomFunction(const std::wstring& custom);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 

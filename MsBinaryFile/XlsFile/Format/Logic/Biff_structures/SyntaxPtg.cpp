@@ -854,6 +854,20 @@ const bool SyntaxPtg::extract_FutureFunction(const std::wstring &funcName, unsig
 }
 
 // static
+const void SyntaxPtg::extract_CustomFunction(const std::wstring &funcName, unsigned int& out_num)
+{
+	auto funcNum = XMLSTUFF::definenames2index(funcName);
+	if(funcNum != 0xFFFFFFFF)
+	{
+		out_num = funcNum;
+	}
+	else
+	{
+		out_num = XMLSTUFF::AddDefinedName(funcName);
+	}
+}
+
+// static
 const void SyntaxPtg::remove_extraSymbols(std::wstring::const_iterator& first, std::wstring::const_iterator& last)
 {
     while(first != last && (first[0] == L' ' || first[0] == L'\n'))

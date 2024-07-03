@@ -248,7 +248,14 @@ namespace OOX
 				return FunctionsVector;
 			for(auto i = namesStart; i < XLS::GlobalWorkbookInfo::arDefineNames_static.size(); i++)
 			{
-				FunctionsVector.push_back(createFutureFunction(XLS::GlobalWorkbookInfo::arDefineNames_static[i]));
+                if(XLS::GlobalWorkbookInfo::arDefineNames_static[i].substr(0, 6) == L"_xlfn.")
+				{
+					FunctionsVector.push_back(createFutureFunction(XLS::GlobalWorkbookInfo::arDefineNames_static[i]));
+				}
+				else
+				{
+					FunctionsVector.push_back(createCustomFunction(XLS::GlobalWorkbookInfo::arDefineNames_static[i]));
+				}
 			}
 			return FunctionsVector;
 		}
@@ -294,6 +301,7 @@ namespace OOX
 			auto ptr(new XLSB::Name);
 			XLS::BaseObjectPtr objectPtr(ptr);
 
+			ptr->chKey = 0;
 			ptr->fHidden = true;
 			ptr->fFunc = true;
 			ptr->fOB = false;
@@ -313,6 +321,34 @@ namespace OOX
 			ptr->helpTopic.setSize(0xFFFFFFFF);
 			ptr->unusedstring1.setSize(0xFFFFFFFF);
 			ptr->unusedstring2.setSize(0xFFFFFFFF);
+			return objectPtr;
+		}
+
+		XLS::BaseObjectPtr CDefinedNames::createCustomFunction(const std::wstring& funcName)
+		{
+			auto ptr(new XLSB::Name);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			ptr->chKey = 0;
+			ptr->fHidden = false;
+			ptr->fFunc = true;
+			ptr->fOB = true;
+			ptr->fProc = true;
+			ptr->fCalcExp = false;
+			ptr->fGrp = false;
+			ptr->fPublished = false;
+			ptr->fBuiltin = false;
+			ptr->fWorkbookParam = false;
+			ptr->itab  = 0xFFFFFFFF;
+			ptr->comment.setSize(0xFFFFFFFF);
+
+			ptr->description.setSize(0xFFFFFFFF);
+			ptr->helpTopic.setSize(0xFFFFFFFF);
+			ptr->unusedstring1.setSize(0xFFFFFFFF);
+			ptr->unusedstring2.setSize(0xFFFFFFFF);
+
+			ptr->fFutureFunction = false;
+			ptr->name = funcName;
 			return objectPtr;
 		}
 

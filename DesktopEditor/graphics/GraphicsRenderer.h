@@ -353,7 +353,7 @@ public:
         void SetAlphaMask(Aggplus::CAlphaMask* pAlphaMask);
 
 	// layer methods
-	HRESULT put_LayerOpacity(double dValue);
+	virtual HRESULT put_LayerOpacity(double dValue) override;
 
 	// smart methods
 	void drawHorLine(BYTE align, double y, double x, double r, double penW)

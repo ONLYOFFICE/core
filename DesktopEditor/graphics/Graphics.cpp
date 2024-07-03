@@ -1332,7 +1332,15 @@ namespace Aggplus
 		m_frame_buffer.ren_buf().attach(pBuffer, m_frame_buffer.ren_buf().width(), m_frame_buffer.ren_buf().height(), m_frame_buffer.ren_buf().stride());
 
 		if (NULL == m_pAlphaMask)
-			Aggplus::BlendTo(pCurrentGraphicsLayer, m_frame_buffer.pixfmt());
+		{
+			if (m_nBlendMode != agg::comp_op_src_over && m_nBlendMode != agg::comp_op_multiply && m_nBlendMode != agg::comp_op_screen)
+			{
+				pixfmt_type_comp pixfmt(m_frame_buffer.ren_buf(), m_nBlendMode);
+				Aggplus::BlendTo(pCurrentGraphicsLayer, pixfmt, m_nBlendMode);
+			}
+			else
+				Aggplus::BlendTo(pCurrentGraphicsLayer, m_frame_buffer.pixfmt());
+		}
 		else
 		{
 			switch(m_pAlphaMask->GetDataType())
@@ -1503,10 +1511,8 @@ namespace Aggplus
 			typedef agg::renderer_scanline_aa_solid<comp_renderer_type> solid_comp_renderer_type;
 			solid_comp_renderer_type ren_solid;
 			comp_renderer_type ren_base;
-			pixfmt_type_comp pixfmt;
+			pixfmt_type_comp pixfmt(m_frame_buffer.ren_buf(), m_nBlendMode);
 
-			pixfmt.attach(m_frame_buffer.ren_buf());
-			pixfmt.comp_op(m_nBlendMode);
 			ren_base.attach(pixfmt);
 			ren_solid.attach(ren_base);
 

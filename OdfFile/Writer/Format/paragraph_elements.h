@@ -658,8 +658,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeTextSequence;
-    
+    static const ElementType type = typeTextSequence;    
  
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -765,7 +764,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType	type		= typeTextTocMarkStart;    
+    static const ElementType type = typeTextTocMarkStart;    
 	
 
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
@@ -786,7 +785,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType	type		= typeTextTocMarkEnd;    
+    static const ElementType type = typeTextTocMarkEnd;    
 	
 
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
@@ -806,7 +805,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType	type		= typeTextTocMark;    
+    static const ElementType type = typeTextTocMark;    
 	
 
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
@@ -827,7 +826,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType	type		= typeTextAlphabeticalIndexMarkStart;    
+    static const ElementType type = typeTextAlphabeticalIndexMarkStart;    
 	
 
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
@@ -853,7 +852,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType	type		= typeTextAlphabeticalIndexMarkEnd;    
+    static const ElementType type = typeTextAlphabeticalIndexMarkEnd;    
 	
 
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
@@ -873,8 +872,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType	type		= typeTextAlphabeticalIndexMark;    
-	
+    static const ElementType type = typeTextAlphabeticalIndexMark;    	
 
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
@@ -899,7 +897,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType	type		= typeTextBibliographyMark;
+    static const ElementType type = typeTextBibliographyMark;
 
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
@@ -969,8 +967,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeTextDropDown;
-    
+    static const ElementType type = typeTextDropDown;    
  
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element		( const office_element_ptr & child_element);
@@ -993,8 +990,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeTextLabel;
-    
+    static const ElementType type = typeTextLabel;    
  
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
@@ -1007,5 +1003,33 @@ public:
     _CP_OPT(std::wstring)	text_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_label);
+//-------------------------------------------------------------------------------------------------------------------
+//text:user-defined
+//---------------------------------------------------------------------------------------------------
+class text_user_defined : public office_element_impl<text_user_defined>
+{
+public:
+    static const wchar_t* ns;
+    static const wchar_t* name;
+
+    static const ElementType type = typeTextUserDefined;
+
+    virtual void create_child_element(const std::wstring& Ns, const std::wstring& Name) {}
+    virtual void add_child_element(const office_element_ptr& child_element);
+
+    virtual void add_text(const std::wstring& Text);
+    virtual void serialize(std::wostream& _Wostream);
+
+    std::wstring get_text_content();
+
+    _CP_OPT(std::wstring) style_data_style_name_;
+    _CP_OPT(std::wstring) text_name_;
+    _CP_OPT(odf_types::Bool) text_fixed_;
+    odf_types::common_value_and_type_attlist office_value_;
+
+    _CP_OPT(std::wstring) text_;
+    office_element_ptr_array content_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_user_defined);
 } // namespace odf_writer
 } // namespace cpdoccore

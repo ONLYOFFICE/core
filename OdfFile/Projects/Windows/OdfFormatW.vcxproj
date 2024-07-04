@@ -62,7 +62,9 @@
     <ClCompile Include="..\..\Writer\Format\odp_slide_context.cpp" />
     <ClCompile Include="..\..\Writer\Format\ods_conversion_context.cpp" />
     <ClCompile Include="..\..\Writer\Format\ods_table_context.cpp" />
-    <ClCompile Include="..\..\Writer\Format\ods_table_state.cpp" />
+    <ClCompile Include="..\..\Writer\Format\ods_table_state.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="..\..\Writer\Format\odt_conversion_context.cpp" />
     <ClCompile Include="..\..\Writer\Format\office_annotation.cpp" />
     <ClCompile Include="..\..\Writer\Format\office_body.cpp" />

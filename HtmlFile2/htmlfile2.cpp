@@ -2816,7 +2816,7 @@ private:
 				sExtention != L"tga" && sExtention != L"tpic" && sExtention != L"tiff" && sExtention != L"tif"  && sExtention != L"wmf" && sExtention != L"wmz";
 	}
 
-	void ImageAlternative(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, const std::wstring& wsAlt, const std::wstring& wsSrc)
+	void ImageAlternative(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, const std::wstring& wsAlt, const std::wstring& wsSrc, unsigned int unWidth, unsigned int unHeight)
 	{
 		if (wsAlt.empty())
 		{
@@ -2853,19 +2853,43 @@ private:
 	{
 		std::wstring wsAlt, sSrcM;
 		bool bRes = false;
+		unsigned int unWidth = 0, unHeight = 0;
+
 		while (m_oLightReader.MoveToNextAttribute())
 		{
-			std::wstring wsName = m_oLightReader.GetName();
+			const std::wstring wsName = m_oLightReader.GetName();
 			if (wsName == L"alt")
 				wsAlt = m_oLightReader.GetText();
 			else if (wsName == L"src")
 				sSrcM = m_oLightReader.GetText();
+			else if (wsName == L"width")
+			{
+				NSCSS::NSProperties::CDigit oDigit;
+				if (oDigit.SetValue(m_oLightReader.GetText()))
+				{
+					if (NSCSS::UnitMeasure::None == oDigit.GetUnitMeasure())
+						unWidth = static_cast<int>(NSCSS::CUnitMeasureConverter::ConvertPx(oDigit.ToDouble(), NSCSS::Inch, 96) * 914400);
+					else
+						unWidth = static_cast<int>(oDigit.ToDouble(NSCSS::Inch) * 914400);
+				}
+			}
+			else if (wsName == L"height")
+			{
+				NSCSS::NSProperties::CDigit oDigit;
+				if (oDigit.SetValue(m_oLightReader.GetText()))
+				{
+					if (NSCSS::UnitMeasure::None == oDigit.GetUnitMeasure())
+						unHeight = static_cast<int>(NSCSS::CUnitMeasureConverter::ConvertPx(oDigit.ToDouble(), NSCSS::Inch, 96) * 914400 + 0.5);
+					else
+						unHeight = static_cast<int>(oDigit.ToDouble(NSCSS::Inch) * 914400 + 0.5);
+				}
+			}
 		}
 		m_oLightReader.MoveToElement();
 
 		if (sSrcM.empty())
 		{
-			ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM);
+			ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM, unWidth, unHeight);
 			return;
 		}
 
@@ -2896,7 +2920,7 @@ private:
 			std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
 			if (NotValidExtension(sExtention))
 			{
-				ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM);
+				ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM, unWidth, unHeight);
 				return;
 			}
 
@@ -2942,11 +2966,11 @@ private:
 		}
 
 		if (!bRes)
-			ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM);
+			ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM, unWidth, unHeight);
 		else
 		{
 			wrP(oXml, sSelectors, oTS);
-			ImageRels(oXml, nImageId, sImageSrc, sExtention);
+			ImageRels(oXml, nImageId, sImageSrc, sExtention, unWidth, unHeight);
 		}
 	}
 
@@ -3082,7 +3106,7 @@ private:
 		pXml->WriteString(L"</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>");
 	}
 
-	void ImageRels  (NSStringUtils::CStringBuilder* oXml, int nImageId, const std::wstring& sImageSrc, const std::wstring& sExtention)
+	void ImageRels  (NSStringUtils::CStringBuilder* oXml, int nImageId, const std::wstring& sImageSrc, const std::wstring& sExtention, unsigned int unWidth = 0, unsigned int unHeight = 0)
 	{
 		bool bNew = nImageId < 0;
 		if (bNew)
@@ -3107,6 +3131,9 @@ private:
 			m_oDocXmlRels.WriteEncodeXmlString(sImageName);
 			m_oDocXmlRels.WriteString(L"\"/>");
 		}
+
+		if (0 != unWidth && 0 != unHeight)
+			return WriteImage(oXml, unWidth, unHeight, sImageId);
 
 		// Получаем размеры картинки
 		int nHy = oBgraFrame.get_Height();

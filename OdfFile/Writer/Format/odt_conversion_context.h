@@ -101,6 +101,9 @@ public:
 	void start_drop_down();
 	void end_drop_down();
 
+	void start_user_defined();
+	void end_user_defined();
+
 	void start_table_of_content ();
 	void end_table_of_content ();
 
@@ -223,6 +226,7 @@ private:
 
 	std::map<std::wstring, int>			mapSequenceDecls;
 	std::map<int, std::wstring>			mapBookmarks;
+	std::map<std::wstring, std::wstring>mapUserDefineds;
 
 	void add_to_root();
 
@@ -237,6 +241,8 @@ private:
 		std::wstring	instrText;
 
 		_CP_OPT(color)	color_;
+
+		office_element_ptr elm;
 
 		short			status = 0;//0, 1, 2, 3 - init, prapare, start, finish
 		bool			in_span = false;

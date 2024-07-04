@@ -1490,7 +1490,7 @@ namespace MetaFile
 			switch ((int)pImage->GetMetafileType())
 			{
 				case MetafileDataTypeEmf:
-				case MetafileDataTypeEmfPlusOnly:
+				// case MetafileDataTypeEmfPlusOnly:
 				case MetafileDataTypeEmfPlusDual:
 					return DrawMetafile<CEmfParser>(pBuffer, unSizeBuffer, oSrcRect, arPoints);
 				case MetafileDataTypeWmf:

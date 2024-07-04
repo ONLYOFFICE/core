@@ -1859,7 +1859,7 @@ namespace OOX
 				ptr->m_Row = m_oRow.get();
 			}
 			XLS::BaseObjectPtr objectPtr(ptr);
-			if(m_oCellMetadata.IsInit() || m_oValueMetadata.IsInit())
+			if((m_oCellMetadata.IsInit() || m_oValueMetadata.IsInit()) && false)
 			{
 				auto pCellMeta(new XLSB::CELLMETA);
 				ptr->m_CELLMETA = XLS::BaseObjectPtr{pCellMeta};

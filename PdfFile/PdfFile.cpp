@@ -49,7 +49,7 @@ class CPdfEditor
 public:
 	int  GetError() { return 0; }
 	void Close() {}
-	bool EditPage(int nPageIndex) { return false; }
+	bool EditPage(int nPageIndex, bool bSet = true) { return false; }
 	bool DeletePage(int nPageIndex) { return false; }
 	bool AddPage(int nPageIndex) { return false; }
 	bool EditAnnot(int nPageIndex, int nID) { return false; }
@@ -1207,12 +1207,7 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	{
 		CLinkCommand* pCommand = (CLinkCommand*)command;
 		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
-		{
-			PdfWriter::CPage* pCurrent = m_pInternal->pWriter->GetPage();
-			m_pInternal->pEditor->EditPage(pCommand->GetPage());
-			m_pInternal->pWriter->GetDocument()->SetCurPage(pCurrent);
-			m_pInternal->pWriter->EditPage(pCurrent);
-		}
+			m_pInternal->pEditor->EditPage(pCommand->GetPage(), false);
 		return m_pInternal->pWriter->AddLink(pCommand->GetX(), pCommand->GetY(), pCommand->GetW(), pCommand->GetH(),
 											 pCommand->GetDestX(), pCommand->GetDestY(), pCommand->GetPage());
 	}

@@ -4414,6 +4414,7 @@ namespace PdfReader
 		pMask->reset();
 		pImageStream->reset();
 
+		BYTE nAlpha = pGState->getFillOpacity() * 255;
 		if (nWidth != nMaskWidth || nHeight != nMaskHeight)
 		{
 			unsigned char *pMaskBuffer = new(std::nothrow) unsigned char[nMaskWidth * nMaskHeight];
@@ -4459,7 +4460,7 @@ namespace PdfReader
 					if (unMask && !bMaskInvert)
 						pBufferPtr[nIndex + 3] = 0;
 					else
-						pBufferPtr[nIndex + 3] = 255;
+						pBufferPtr[nIndex + 3] = nAlpha;
 
 					nIndex += 4;
 				}
@@ -4487,7 +4488,7 @@ namespace PdfReader
 					if (unMask && !bMaskInvert)
 						pBufferPtr[nIndex + 3] = 0;
 					else
-						pBufferPtr[nIndex + 3] = 255;
+						pBufferPtr[nIndex + 3] = nAlpha;
 
 					nIndex += 4;
 				}
@@ -4749,7 +4750,7 @@ namespace PdfReader
 		else
 		{
 			m_pRenderer->BeginCommand(c_nLayerType);
-			m_pRenderer->put_LayerIsolated(bIsolated);
+			//m_pRenderer->put_LayerIsolated(bIsolated);
 		}
 	}
 	void RendererOutputDev::endTransparencyGroup(GfxState *pGState)

@@ -37,7 +37,6 @@
 #include "../../DesktopEditor/graphics/pro/Graphics.h"
 #include "../../DesktopEditor/graphics/TemporaryCS.h"
 #include "../../DesktopEditor/graphics/structures.h"
-//#include "../PdfReader.h"
 #include "../lib/xpdf/Gfx.h"
 
 #include "../lib/xpdf/OutputDev.h"
@@ -308,10 +307,8 @@ namespace PdfReader
 		double                        m_arrMatrix[6];
         NSFonts::IFontManager*        m_pFontManager;
 
-		//GfxTextClip                   *m_pBufferTextClip;
-
 		XRef                         *m_pXref;           // Таблица Xref для данного PDF-документа
-		CPdfFontList                    *m_pFontList;
+		CPdfFontList                 *m_pFontList;
 
 		bool                         *m_pbBreak;         // Внешняя остановка рендерера
 
@@ -319,17 +316,7 @@ namespace PdfReader
 		bool                          m_bClipChanged;
 
 		bool                          m_bTiling;
-		bool                          m_bTransparentGroup;
-		bool                          m_bIsolatedTransparentGroup;
-		bool                          m_bTransparentGroupSoftMask;
-		bool                          m_bTransparentGroupSoftMaskEnd;
-		std::vector<bool>             m_arrTransparentGroupSoftMask;
-
-        /*
-		unsigned char*                m_pSoftMask;
-		int                           m_nSoftMaskWidth;
-		int                           m_nSoftMaskHeight;
-        */
+		GfxState*                     m_pGStateSoftMask;
 
         bool                          m_bDrawOnlyText; // Special option for html-renderer
 

@@ -403,6 +403,16 @@ public:
 		UNUSED_VARIABLE(dValue);
 		return S_FALSE;
 	}
+	virtual HRESULT put_LayerIsolated(bool bIsolated)
+	{
+		UNUSED_VARIABLE(bIsolated);
+		return S_FALSE;
+	}
+	virtual HRESULT put_AlphaMaskIsolated(bool bIsolated)
+	{
+		UNUSED_VARIABLE(bIsolated);
+		return S_FALSE;
+	}
 };
 
 #define PROPERTY_RENDERER(NameBase, Name, Type)    \

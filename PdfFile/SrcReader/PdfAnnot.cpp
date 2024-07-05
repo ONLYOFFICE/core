@@ -820,7 +820,7 @@ std::map<std::wstring, std::wstring> CAnnotFonts::GetAnnotFont(PDFDoc* pdfDoc, N
 		bool bBold = false, bItalic = false;
 		std::wstring sFontPath = GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef, sFontName, sActualFontName, bBold, bItalic);
 		oFontRef.free();
-		if (sFontPath.empty() || IsBaseFont(sFontPath))
+		if (sFontPath.empty() || IsBaseFont(sFontPath) || !sActualFontName.empty())
 			continue;
 
 		std::wstring wsFontName = UTF8_TO_U(sFontName);

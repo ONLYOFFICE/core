@@ -1397,6 +1397,45 @@ namespace Aggplus
 		return Ok;
 	}
 
+	Status CGraphics::SetLayerIsolated(bool bIsolated)
+	{
+		if (m_arLayers.empty())
+			return WrongState;
+
+		UINT unSize = m_frame_buffer.ren_buf().width() * m_frame_buffer.ren_buf().height() * m_frame_buffer.pix_size;
+		if (bIsolated)
+			memset(m_arLayers.top()->GetBuffer(), 0x00, unSize);
+		else
+			memcpy(m_arLayers.top()->GetBuffer(), m_pPixels, unSize);
+
+		return Ok;
+	}
+
+	Status CGraphics::SetAlphaMaskIsolated(bool bIsolated)
+	{
+		if (m_arLayers.empty())
+			return WrongState;
+
+		UINT unSize = m_frame_buffer.ren_buf().width() * m_frame_buffer.ren_buf().height() * m_frame_buffer.pix_size;
+		if (bIsolated)
+		{
+			memset(m_arLayers.top()->GetBuffer(), 0x00, unSize);
+		}
+		else
+		{
+			BYTE* pBuffer = m_arLayers.top()->GetBuffer();
+			for (unsigned int i = 0; i < unSize; i = i + 4)
+			{
+				pBuffer[i + 0] = 0x00;
+				pBuffer[i + 1] = 0x00;
+				pBuffer[i + 2] = 0x00;
+				pBuffer[i + 3] = 0xFF;
+			}
+		}
+
+		return Ok;
+	}
+
 	void CGraphics::CalculateFullTransform()
 	{
 		m_oFullTransform = m_oCoordTransform;

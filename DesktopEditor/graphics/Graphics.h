@@ -414,6 +414,8 @@ public:
 	
 	Status SetLayerSettings(const TGraphicsLayerSettings& oSettings);
 	Status SetLayerOpacity(double dOpacity);
+	Status SetLayerIsolated(bool bIsolated);
+	Status SetAlphaMaskIsolated(bool bIsolated);
 
 	void CalculateFullTransform();
 	bool IsClip();

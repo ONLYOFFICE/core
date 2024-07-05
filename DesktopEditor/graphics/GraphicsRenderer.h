@@ -350,10 +350,12 @@ public:
 	inline double GetPixH() { return m_pRenderer->GetPixH(); }
 
 	// alpha mask methods
-        void SetAlphaMask(Aggplus::CAlphaMask* pAlphaMask);
+	void SetAlphaMask(Aggplus::CAlphaMask* pAlphaMask);
 
 	// layer methods
 	virtual HRESULT put_LayerOpacity(double dValue) override;
+	virtual HRESULT put_LayerIsolated(bool bIsolated) override;
+	virtual HRESULT put_AlphaMaskIsolated(bool bIsolated) override;
 
 	// smart methods
 	void drawHorLine(BYTE align, double y, double x, double r, double penW)

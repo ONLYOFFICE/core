@@ -597,7 +597,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::restoreState(GfxState *pGState)
 	{
-		if (m_pGStateSoftMask)
+		if (m_pGStateSoftMask == pGState)
 		{
 			m_pRenderer->EndCommand(c_nResetMaskType);
 			m_pGStateSoftMask = NULL;
@@ -4742,9 +4742,15 @@ namespace PdfReader
 	void RendererOutputDev::beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask)
 	{
 		if (bForSoftMask)
+		{
 			m_pRenderer->BeginCommand(c_nMaskType);
+			m_pRenderer->put_AlphaMaskIsolated(bIsolated);
+		}
 		else
+		{
 			m_pRenderer->BeginCommand(c_nLayerType);
+			m_pRenderer->put_LayerIsolated(bIsolated);
+		}
 	}
 	void RendererOutputDev::endTransparencyGroup(GfxState *pGState)
 	{
@@ -4757,8 +4763,8 @@ namespace PdfReader
 	}
 	void RendererOutputDev::setSoftMask(GfxState *pGState, double *pBBox, GBool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor)
 	{
-		m_pGStateSoftMask = pGState;
 		m_pRenderer->EndCommand(c_nMaskType);
+		m_pGStateSoftMask = pGState;
 	}
 	void RendererOutputDev::clearSoftMask(GfxState *pGState)
 	{

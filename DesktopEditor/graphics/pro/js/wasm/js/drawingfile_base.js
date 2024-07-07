@@ -352,7 +352,18 @@
 		}
 
 		this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Page);
-		let retValue = Module["_GetGlyphs"](this.nativeFile, pageIndex);
+		let isCrashed = false;
+		let retValue = null;
+
+		try
+		{
+			retValue = Module["_GetGlyphs"](this.nativeFile, pageIndex);
+		}
+		catch (err)
+		{
+			retValue = null;
+			isCrashed = true;
+		}
 		// there is no need to delete the result; this buffer is used as a text buffer 
 		// for text commands on other pages. After receiving ALL text pages, 
 		// you need to call destroyTextInfo()
@@ -362,10 +373,11 @@
 		{
 			// waiting fonts
 			retValue = null;
+			isCrashed = false;
 		}
 
 		if (null == retValue)
-			return null;
+			return isCrashed ? [] : null;
 
 		let lenArray = new Int32Array(Module["HEAP8"].buffer, retValue, 5);
 		let len = lenArray[0];

@@ -432,9 +432,11 @@ namespace PdfReader
 
 		if (bResult)
 		{
+#ifndef BUILDING_WASM_MODULE
 			// Шрифт нашелся, но пока им пользоваться нельзя, потому что он загружается в параллельном потоке
 			while (!pEntry->bAvailable)
 				NSThreads::Sleep(10);
+#endif
 		}
 
 		RELEASEOBJECT(pCS);
@@ -449,9 +451,11 @@ namespace PdfReader
 
 		if (bResult)
 		{
+#ifndef BUILDING_WASM_MODULE
 			// Шрифт нашелся, но пока им пользоваться нельзя, потому что он загружается в параллельном потоке
 			while (!(*ppEntry)->bAvailable)
 				NSThreads::Sleep(10);
+#endif
 		}
 
 		if (!bResult)

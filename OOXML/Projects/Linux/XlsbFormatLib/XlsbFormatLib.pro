@@ -51,6 +51,7 @@ SOURCES += \
 	../../../XlsbFormat/PivotCacheRecordsStream.cpp \
 	../../../XlsbFormat/PivotTableStream.cpp \
 	../../../XlsbFormat/PivotCacheDefStream.cpp \
+	../../../XlsbFormat/MetadataStream.cpp \
 ### Biff12_records
 	../../../XlsbFormat/Biff12_records/BeginBook.cpp \
 	../../../XlsbFormat/Biff12_records/FRTBegin.cpp \
@@ -683,6 +684,7 @@ SOURCES += \
 	../../../XlsbFormat/Biff12_records/EndPivotCacheIDs.cpp \
 	../../../XlsbFormat/Biff12_records/BeginPivotCacheID.cpp \
 	../../../XlsbFormat/Biff12_records/EndPivotCacheID.cpp \
+	../../../XlsbFormat/Biff12_records/BeginEsmdtinfo.cpp \
 ### Biff12_structures
 	../../../XlsbFormat/Biff12_structures/LPByteBuf.cpp \
 	../../../XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -1051,6 +1053,7 @@ SOURCES += \
 	../../../XlsbFormat/Biff12_unions/PCDH15_bu.cpp \
 	../../../XlsbFormat/Biff12_unions/PIVOTCACHEIDS.cpp \
 	../../../XlsbFormat/Biff12_unions/PIVOTCACHEID.cpp \
+	../../../XlsbFormat/Biff12_unions/ESMDTINFO.cpp \
 }
 HEADERS += \
 	../../../XlsbFormat/Biff12_unions/COMMENTS.h \
@@ -1069,6 +1072,7 @@ HEADERS += \
 	../../../XlsbFormat/PivotCacheRecordsStream.h \
 	../../../XlsbFormat/PivotTableStream.h \
 	../../../XlsbFormat/PivotCacheDefStream.h \
+	../../../XlsbFormat/MetadataStream.h \
 	../../../XlsbFormat/Xlsb.h \
 	../../../XlsbFormat/XlsbElementsType.h \
 ### Biff12_records
@@ -1708,6 +1712,7 @@ HEADERS += \
 	../../../XlsbFormat/Biff12_records/EndPivotCacheIDs.h \
 	../../../XlsbFormat/Biff12_records/BeginPivotCacheID.h \
 	../../../XlsbFormat/Biff12_records/EndPivotCacheID.h \
+	../../../XlsbFormat/Biff12_records/BeginEsmdtinfo.h \
 ### Biff12_structures
 	../../../XlsbFormat/Biff12_structures/ACProductVersion.h \
 	../../../XlsbFormat/Biff12_structures/Blxf.h \
@@ -2076,3 +2081,4 @@ HEADERS += \
 	../../../XlsbFormat/Biff12_unions/PCDH15.h \
 	../../../XlsbFormat/Biff12_unions/PIVOTCACHEIDS.h \
 	../../../XlsbFormat/Biff12_unions/PIVOTCACHEID.h \
+	../../../XlsbFormat/Biff12_unions/ESMDTINFO.h \

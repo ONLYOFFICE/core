@@ -443,7 +443,7 @@ namespace OOX
 			virtual ~CMetadataFile();
 
 			//void readBin(const CPath& oPath);
-			//XLS::BaseObjectPtr WriteBin() const;
+			XLS::BaseObjectPtr WriteBin() const;
 			virtual void read(const CPath& oPath);
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
 

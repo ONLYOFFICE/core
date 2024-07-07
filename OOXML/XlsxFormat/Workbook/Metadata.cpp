@@ -31,6 +31,8 @@
  */
 #include "Metadata.h"
 
+#include "../../XlsbFormat/Xlsb.h"
+
 #include "../FileTypes_Spreadsheet.h"
 
 #include "../../Common/SimpleTypes_Shared.h"
@@ -41,6 +43,8 @@
 
 #include "../../Binary/Presentation/XmlWriter.h"
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
+
+#include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 
 namespace OOX
 {
@@ -948,6 +952,11 @@ xmlns:xda=\"http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray\
 		}
 		const OOX::FileType CMetadataFile::type() const
 		{
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if ((xlsb) && (xlsb->m_bWriteToXlsb))
+			{
+				return OOX::SpreadsheetBin::FileTypes::MetadataBin;
+			}
 			return OOX::Spreadsheet::FileTypes::Metadata;
 		}
 		const CPath CMetadataFile::DefaultDirectory() const
@@ -956,7 +965,17 @@ xmlns:xda=\"http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray\
 		}
 		const CPath CMetadataFile::DefaultFileName() const
 		{
-			return type().DefaultFileName();
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if ((xlsb) && (xlsb->m_bWriteToXlsb))
+			{
+				CPath name = type().DefaultFileName();
+				name.SetExtention(L"bin");
+				return name;
+			}
+			else
+			{
+				return type().DefaultFileName();
+			}
 		}
 		const CPath& CMetadataFile::GetReadPath()
 		{
@@ -975,6 +994,12 @@ xmlns:xda=\"http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray\
 				return;
 
 			m_oMetadata = oReader;
+		}
+		XLS::BaseObjectPtr CMetadataFile::WriteBin() const
+		{
+			XLS::BaseObjectPtr objectPtr;
+
+			return objectPtr;
 		}
 		void CMetadataFile::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{

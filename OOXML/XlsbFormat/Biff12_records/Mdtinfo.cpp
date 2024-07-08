@@ -29,78 +29,69 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "MetadataStream.h"
 
-#include "Biff12_records/CommonRecords.h"
-#include "Biff12_unions/ESMDTINFO.h"
-#include "Biff12_records/BeginMetadata.h"
-#include "Biff12_records/EndMetadata.h"
+#include "Mdtinfo.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-MetadataStream::MetadataStream()
-{
-}
+    Mdtinfo::Mdtinfo()
+    {
+    }
 
-MetadataStream::~MetadataStream()
-{
-}
+    Mdtinfo::~Mdtinfo()
+    {
+    }
 
+    BaseObjectPtr Mdtinfo::clone()
+    {
+        return BaseObjectPtr(new Mdtinfo(*this));
+    }
 
-BaseObjectPtr MetadataStream::clone()
-{
-        return BaseObjectPtr(new MetadataStream(*this));
-}
+    void Mdtinfo::readFields(XLS::CFRecord& record)
+    {
+        //record >> cMdtinfo;
+    }
 
-const bool MetadataStream::loadContent(BinProcessor& proc)
-{	
-	/*while (true)
+	void Mdtinfo::writeFields(XLS::CFRecord& record)
 	{
-            CFRecordType::TypeId type = proc.getNextRecordType();
+		_UINT32 flags = 0;
 
-            if (type == rt_NONE) break;
+        SETBIT(flags, 0, fGhostRw);
+		SETBIT(flags, 1, fGhostCol);
+        SETBIT(flags, 2, fEdit);
+        SETBIT(flags, 3, fDelete);
+        SETBIT(flags, 4, fCopy);
+        SETBIT(flags, 5, fPasteAll);
+        SETBIT(flags, 6, fPasteFmlas);
+        SETBIT(flags, 7, fPasteValues);
+        SETBIT(flags, 8, fPasteFmts);
+        SETBIT(flags, 9, fPasteComments);
+        SETBIT(flags, 10, fPasteDv);
+        SETBIT(flags, 11, fPasteBorders);
+        SETBIT(flags, 12, fPasteColWidths);
+        SETBIT(flags, 13, fPasteNumFmts);
+        SETBIT(flags, 14, fMerge);
+        SETBIT(flags, 15, fSplitFirst);
+        SETBIT(flags, 16, fSplitAll);
+        SETBIT(flags, 17, fRwColShift);
+        SETBIT(flags, 18, fClearAll);
+        SETBIT(flags, 19, fClearFmts);
+        SETBIT(flags, 20, fClearContents);
+        SETBIT(flags, 21, fClearComments);
+        SETBIT(flags, 22, fAssign);
 
-            switch(type)
-            {
-                case rt_BeginComments:
-                {
-                    if (proc.optional<COMMENTS>())
-                    {
-                        m_COMMENTS = elements_.back();
-                        elements_.pop_back();
-                    }
-                }break;
-
-                default://skip
-                {
-                    proc.SkipRecord();
-                }break;
-            }
+        SETBIT(flags, 28, fCanCoerce);
+        SETBIT(flags, 29, fAdjust);
+        SETBIT(flags, 30, fCellMeta);
+        SETBIT(flags, 31, 1);
+        
+        record << flags << metadataID << stName;
+        
 	}
-*/
-	return true;
-}
 
-const bool MetadataStream::saveContent(XLS::BinProcessor & proc)
-{
-    proc.mandatory<XLSB::BeginMetadata>();
-	if (m_ESMDTINFO != nullptr)
-		proc.mandatory(*m_ESMDTINFO);
-    if (m_ESSTR != nullptr)
-		proc.mandatory(*m_ESSTR);
-    if (m_ESMDX != nullptr)
-		proc.mandatory(*m_ESMDX);
-    if (m_ESFMD != nullptr)
-		proc.mandatory(*m_ESFMD);
-    if (m_ESMBD != nullptr)
-		proc.mandatory(*m_ESMBD);
-    if (m_FRTMetadata != nullptr)
-		proc.mandatory(*m_FRTMetadata);    
-    proc.mandatory<XLSB::EndMetadata>();
-	return true;
-}
 
 } // namespace XLSB
+

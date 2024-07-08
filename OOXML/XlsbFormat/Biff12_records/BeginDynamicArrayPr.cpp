@@ -29,78 +29,32 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "MetadataStream.h"
 
-#include "Biff12_records/CommonRecords.h"
-#include "Biff12_unions/ESMDTINFO.h"
-#include "Biff12_records/BeginMetadata.h"
-#include "Biff12_records/EndMetadata.h"
+#include "BeginDynamicArrayPr.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-MetadataStream::MetadataStream()
-{
-}
+    BeginDynamicArrayPr::BeginDynamicArrayPr()
+    {
+    }
 
-MetadataStream::~MetadataStream()
-{
-}
+    BeginDynamicArrayPr::~BeginDynamicArrayPr()
+    {
+    }
 
+    BaseObjectPtr BeginDynamicArrayPr::clone()
+    {
+        return BaseObjectPtr(new BeginDynamicArrayPr(*this));
+    }
 
-BaseObjectPtr MetadataStream::clone()
-{
-        return BaseObjectPtr(new MetadataStream(*this));
-}
-
-const bool MetadataStream::loadContent(BinProcessor& proc)
-{	
-	/*while (true)
+	void BeginDynamicArrayPr::writeFields(XLS::CFRecord& record)
 	{
-            CFRecordType::TypeId type = proc.getNextRecordType();
-
-            if (type == rt_NONE) break;
-
-            switch(type)
-            {
-                case rt_BeginComments:
-                {
-                    if (proc.optional<COMMENTS>())
-                    {
-                        m_COMMENTS = elements_.back();
-                        elements_.pop_back();
-                    }
-                }break;
-
-                default://skip
-                {
-                    proc.SkipRecord();
-                }break;
-            }
+		record << FRTheader;
 	}
-*/
-	return true;
-}
 
-const bool MetadataStream::saveContent(XLS::BinProcessor & proc)
-{
-    proc.mandatory<XLSB::BeginMetadata>();
-	if (m_ESMDTINFO != nullptr)
-		proc.mandatory(*m_ESMDTINFO);
-    if (m_ESSTR != nullptr)
-		proc.mandatory(*m_ESSTR);
-    if (m_ESMDX != nullptr)
-		proc.mandatory(*m_ESMDX);
-    if (m_ESFMD != nullptr)
-		proc.mandatory(*m_ESFMD);
-    if (m_ESMBD != nullptr)
-		proc.mandatory(*m_ESMBD);
-    if (m_FRTMetadata != nullptr)
-		proc.mandatory(*m_FRTMetadata);    
-    proc.mandatory<XLSB::EndMetadata>();
-	return true;
-}
 
 } // namespace XLSB
+

@@ -30,39 +30,36 @@
  *
  */
 
-#include "ESMDTINFO.h"
-#include "../Biff12_records/BeginEsmdtinfo.h"
-#include "../Biff12_records/EndEsmdtinfo.h"
-#include "../Biff12_records/Mdtinfo.h"
+#include "DYNAMICARRAYMETADATA.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    ESMDTINFO::ESMDTINFO()
+    DYNAMICARRAYMETADATA::DYNAMICARRAYMETADATA()
     {
     }
 
-    ESMDTINFO::~ESMDTINFO()
+    DYNAMICARRAYMETADATA::~DYNAMICARRAYMETADATA()
     {
     }
 
-    BaseObjectPtr ESMDTINFO::clone()
+    BaseObjectPtr DYNAMICARRAYMETADATA::clone()
     {
-        return BaseObjectPtr(new ESMDTINFO(*this));
+        return BaseObjectPtr(new DYNAMICARRAYMETADATA(*this));
     }
 
-    //ESMDTINFO = BrtBeginESMDTINFO COMMENTAUTHORS COMMENTLIST *FRT BrtEndESMDTINFO
-    const bool ESMDTINFO::loadContent(BinProcessor& proc)
+    //DYNAMICARRAYMETADATA = BrtBeginDYNAMICARRAYMETADATA COMMENTAUTHORS COMMENTLIST *FRT BrtEndDYNAMICARRAYMETADATA
+    const bool DYNAMICARRAYMETADATA::loadContent(BinProcessor& proc)
     {
-        /*if (proc.optional<BeginESMDTINFO>())
+        /*if (proc.optional<BeginDYNAMICARRAYMETADATA>())
         {
-			m_bBrtBeginESMDTINFO = true;
+			m_bBrtBeginDYNAMICARRAYMETADATA = true;
             elements_.pop_back();
         }
 		else
-			m_bBrtBeginESMDTINFO = false;
+			m_bBrtBeginDYNAMICARRAYMETADATA = false;
 
         if (proc.optional<COMMENTAUTHORS>())
         {
@@ -82,27 +79,24 @@ namespace XLSB
             elements_.pop_back();
             count--;
         }
-        if (proc.optional<EndESMDTINFO>())
+        if (proc.optional<EndDYNAMICARRAYMETADATA>())
         {
-            m_bBrtEndESMDTINFO = true;
+            m_bBrtEndDYNAMICARRAYMETADATA = true;
             elements_.pop_back();
         }
 		else
-			m_bBrtEndESMDTINFO = false;*/
+			m_bBrtEndDYNAMICARRAYMETADATA = false;*/
 
         return true;
     }
 
-	const bool ESMDTINFO::saveContent(XLS::BinProcessor & proc)
+	const bool DYNAMICARRAYMETADATA::saveContent(XLS::BinProcessor & proc)
 	{
-		if (m_BrtBeginESMDTINFO != nullptr)
-			proc.mandatory(*m_BrtBeginESMDTINFO);
-
-		for(auto i:BrtMdtinfos)
-            proc.mandatory(*i);
-         proc.mandatory<XLSB::EndEsmdtinfo>();
-
-		
+		if (BeginDynamicArrayPr != nullptr)
+			proc.mandatory(*BeginDynamicArrayPr);
+        if (EndDynamicArrayPr != nullptr)
+			proc.mandatory(*EndDynamicArrayPr);
+        
 		return true;
 	}
 

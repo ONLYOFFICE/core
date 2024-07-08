@@ -63,9 +63,9 @@ namespace XLSB
 		XLS::BaseObjectPtr m_ESMDTINFO;
 		XLS::BaseObjectPtr m_ESSTR;
         XLS::BaseObjectPtr m_ESMDX;
-        std::vector<XLS::BaseObjectPtr> m_ESFMDs;
-        std::vector<XLS::BaseObjectPtr> m_ESMBDs;
-        XLS::BaseObjectPtr               m_FRTMetadata;
+        XLS::BaseObjectPtr m_ESFMD;
+        XLS::BaseObjectPtr m_ESMBD;
+        XLS::BaseObjectPtr m_FRTMetadata;
         bool							 m_bEndMetadata;
 
 

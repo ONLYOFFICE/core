@@ -684,7 +684,17 @@ SOURCES += \
 	../../../XlsbFormat/Biff12_records/EndPivotCacheIDs.cpp \
 	../../../XlsbFormat/Biff12_records/BeginPivotCacheID.cpp \
 	../../../XlsbFormat/Biff12_records/EndPivotCacheID.cpp \
+	../../../XlsbFormat/Biff12_records/BeginMetadata.cpp \
+	../../../XlsbFormat/Biff12_records/EndMetadata.cpp \
 	../../../XlsbFormat/Biff12_records/BeginEsmdtinfo.cpp \
+	../../../XlsbFormat/Biff12_records/EndEsmdtinfo.cpp \
+	../../../XlsbFormat/Biff12_records/Mdtinfo.cpp \
+	../../../XlsbFormat/Biff12_records/BeginEsfmd.cpp \
+	../../../XlsbFormat/Biff12_records/EndEsfmd.cpp \
+	../../../XlsbFormat/Biff12_records/BeginDynamicArrayPr.cpp \
+	../../../XlsbFormat/Biff12_records/EndDynamicArrayPr.cpp \
+	../../../XlsbFormat/Biff12_records/BeginRichValueBlock.cpp \
+	../../../XlsbFormat/Biff12_records/EndRichValueBlock.cpp \
 ### Biff12_structures
 	../../../XlsbFormat/Biff12_structures/LPByteBuf.cpp \
 	../../../XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -1054,6 +1064,10 @@ SOURCES += \
 	../../../XlsbFormat/Biff12_unions/PIVOTCACHEIDS.cpp \
 	../../../XlsbFormat/Biff12_unions/PIVOTCACHEID.cpp \
 	../../../XlsbFormat/Biff12_unions/ESMDTINFO.cpp \
+	../../../XlsbFormat/Biff12_unions/ESFMD.cpp \
+	../../../XlsbFormat/Biff12_unions/FMD.cpp \
+	../../../XlsbFormat/Biff12_unions/DYNAMICARRAYMETADATA.cpp \
+	../../../XlsbFormat/Biff12_unions/RICHDATAMETADATA.cpp \
 }
 HEADERS += \
 	../../../XlsbFormat/Biff12_unions/COMMENTS.h \
@@ -1712,7 +1726,17 @@ HEADERS += \
 	../../../XlsbFormat/Biff12_records/EndPivotCacheIDs.h \
 	../../../XlsbFormat/Biff12_records/BeginPivotCacheID.h \
 	../../../XlsbFormat/Biff12_records/EndPivotCacheID.h \
+	../../../XlsbFormat/Biff12_records/BeginMetadata.h \
+	../../../XlsbFormat/Biff12_records/EndMetadata.h \
 	../../../XlsbFormat/Biff12_records/BeginEsmdtinfo.h \
+	../../../XlsbFormat/Biff12_records/EndEsmdtinfo.h \
+	../../../XlsbFormat/Biff12_records/Mdtinfo.h \
+	../../../XlsbFormat/Biff12_records/BeginEsfmd.h \
+	../../../XlsbFormat/Biff12_records/EndEsfmd.h \
+	../../../XlsbFormat/Biff12_records/BeginDynamicArrayPr.h \
+	../../../XlsbFormat/Biff12_records/EndDynamicArrayPr.h \
+	../../../XlsbFormat/Biff12_records/BeginRichValueBlock.h \
+	../../../XlsbFormat/Biff12_records/EndRichValueBlock.h \
 ### Biff12_structures
 	../../../XlsbFormat/Biff12_structures/ACProductVersion.h \
 	../../../XlsbFormat/Biff12_structures/Blxf.h \
@@ -2082,3 +2106,7 @@ HEADERS += \
 	../../../XlsbFormat/Biff12_unions/PIVOTCACHEIDS.h \
 	../../../XlsbFormat/Biff12_unions/PIVOTCACHEID.h \
 	../../../XlsbFormat/Biff12_unions/ESMDTINFO.h \
+	../../../XlsbFormat/Biff12_unions/ESFMD.h \
+	../../../XlsbFormat/Biff12_unions/FMD.h \
+	../../../XlsbFormat/Biff12_unions/DYNAMICARRAYMETADATA.h \
+	../../../XlsbFormat/Biff12_unions/RICHDATAMETADATA.h \

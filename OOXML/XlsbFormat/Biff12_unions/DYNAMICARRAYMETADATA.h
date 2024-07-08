@@ -29,78 +29,32 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "MetadataStream.h"
+#pragma once
 
-#include "Biff12_records/CommonRecords.h"
-#include "Biff12_unions/ESMDTINFO.h"
-#include "Biff12_records/BeginMetadata.h"
-#include "Biff12_records/EndMetadata.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
 
-MetadataStream::MetadataStream()
-{
-}
+    class DYNAMICARRAYMETADATA: public XLS::CompositeObject
+    {
+        BASE_OBJECT_DEFINE_CLASS_NAME(DYNAMICARRAYMETADATA)
+    public:
+        DYNAMICARRAYMETADATA();
+        ~DYNAMICARRAYMETADATA();
 
-MetadataStream::~MetadataStream()
-{
-}
+        XLS::BaseObjectPtr clone();
 
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
-BaseObjectPtr MetadataStream::clone()
-{
-        return BaseObjectPtr(new MetadataStream(*this));
-}
+		
+        XLS::BaseObjectPtr     BeginDynamicArrayPr;
+        XLS::BaseObjectPtr     EndDynamicArrayPr;
 
-const bool MetadataStream::loadContent(BinProcessor& proc)
-{	
-	/*while (true)
-	{
-            CFRecordType::TypeId type = proc.getNextRecordType();
-
-            if (type == rt_NONE) break;
-
-            switch(type)
-            {
-                case rt_BeginComments:
-                {
-                    if (proc.optional<COMMENTS>())
-                    {
-                        m_COMMENTS = elements_.back();
-                        elements_.pop_back();
-                    }
-                }break;
-
-                default://skip
-                {
-                    proc.SkipRecord();
-                }break;
-            }
-	}
-*/
-	return true;
-}
-
-const bool MetadataStream::saveContent(XLS::BinProcessor & proc)
-{
-    proc.mandatory<XLSB::BeginMetadata>();
-	if (m_ESMDTINFO != nullptr)
-		proc.mandatory(*m_ESMDTINFO);
-    if (m_ESSTR != nullptr)
-		proc.mandatory(*m_ESSTR);
-    if (m_ESMDX != nullptr)
-		proc.mandatory(*m_ESMDX);
-    if (m_ESFMD != nullptr)
-		proc.mandatory(*m_ESFMD);
-    if (m_ESMBD != nullptr)
-		proc.mandatory(*m_ESMBD);
-    if (m_FRTMetadata != nullptr)
-		proc.mandatory(*m_FRTMetadata);    
-    proc.mandatory<XLSB::EndMetadata>();
-	return true;
-}
+    };
 
 } // namespace XLSB
+

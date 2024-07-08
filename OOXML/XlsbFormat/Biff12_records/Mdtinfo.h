@@ -29,78 +29,60 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "MetadataStream.h"
+#pragma once
 
-#include "Biff12_records/CommonRecords.h"
-#include "Biff12_unions/ESMDTINFO.h"
-#include "Biff12_records/BeginMetadata.h"
-#include "Biff12_records/EndMetadata.h"
-
-using namespace XLS;
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
+#include "../../XlsxFormat/WritingElement.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/XLWideString.h"
 
 namespace XLSB
 {
+    // Logical representation of BrtMdtinfo record in BIFF12
+    class Mdtinfo: public XLS::BiffRecord
+    {
+            BIFF_RECORD_DEFINE_TYPE_INFO(Mdtinfo)
+            BASE_OBJECT_DEFINE_CLASS_NAME(Mdtinfo)
+        public:
+            Mdtinfo();
+            ~Mdtinfo();
 
-MetadataStream::MetadataStream()
-{
-}
+            XLS::BaseObjectPtr clone();
 
-MetadataStream::~MetadataStream()
-{
-}
+            void readFields(XLS::CFRecord& record) override;
+			void writeFields(XLS::CFRecord& record) override;
 
+            _UINT32 metadataID;
+            XLWideString stName;
 
-BaseObjectPtr MetadataStream::clone()
-{
-        return BaseObjectPtr(new MetadataStream(*this));
-}
+            bool fGhostRw;
+            bool fGhostCol;
+            bool fEdit;
+            bool fDelete;
+            bool fCopy;
+            bool fPasteAll;
+            bool fPasteFmlas;
+            bool fPasteValues;
+            bool fPasteFmts;
+            bool fPasteComments;
+            bool fPasteDv;
+            bool fPasteBorders;
+            bool fPasteColWidths;
+            bool fPasteNumFmts;
+            bool fMerge;
+            bool fSplitFirst;
+            bool fSplitAll;
+            bool fRwColShift;
+            bool fClearAll;
+            bool fClearFmts;
+            bool fClearContents;
+            bool fClearComments;
+            bool fAssign;
+            bool fCanCoerce;
+            bool fAdjust;
+            bool fCellMeta;
 
-const bool MetadataStream::loadContent(BinProcessor& proc)
-{	
-	/*while (true)
-	{
-            CFRecordType::TypeId type = proc.getNextRecordType();
-
-            if (type == rt_NONE) break;
-
-            switch(type)
-            {
-                case rt_BeginComments:
-                {
-                    if (proc.optional<COMMENTS>())
-                    {
-                        m_COMMENTS = elements_.back();
-                        elements_.pop_back();
-                    }
-                }break;
-
-                default://skip
-                {
-                    proc.SkipRecord();
-                }break;
-            }
-	}
-*/
-	return true;
-}
-
-const bool MetadataStream::saveContent(XLS::BinProcessor & proc)
-{
-    proc.mandatory<XLSB::BeginMetadata>();
-	if (m_ESMDTINFO != nullptr)
-		proc.mandatory(*m_ESMDTINFO);
-    if (m_ESSTR != nullptr)
-		proc.mandatory(*m_ESSTR);
-    if (m_ESMDX != nullptr)
-		proc.mandatory(*m_ESMDX);
-    if (m_ESFMD != nullptr)
-		proc.mandatory(*m_ESFMD);
-    if (m_ESMBD != nullptr)
-		proc.mandatory(*m_ESMBD);
-    if (m_FRTMetadata != nullptr)
-		proc.mandatory(*m_FRTMetadata);    
-    proc.mandatory<XLSB::EndMetadata>();
-	return true;
-}
+            //static const XLS::ElementType	type = XLS::typeMdtinfo;
+    };
 
 } // namespace XLSB
+

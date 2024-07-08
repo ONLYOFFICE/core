@@ -30,39 +30,38 @@
  *
  */
 
-#include "ESMDTINFO.h"
-#include "../Biff12_records/BeginEsmdtinfo.h"
-#include "../Biff12_records/EndEsmdtinfo.h"
-#include "../Biff12_records/Mdtinfo.h"
+#include "RICHDATAMETADATA.h"
+#include "../Biff12_records/BeginRichValueBlock.h"
+#include "../Biff12_records/EndRichValueBlock.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    ESMDTINFO::ESMDTINFO()
+    RICHDATAMETADATA::RICHDATAMETADATA()
     {
     }
 
-    ESMDTINFO::~ESMDTINFO()
+    RICHDATAMETADATA::~RICHDATAMETADATA()
     {
     }
 
-    BaseObjectPtr ESMDTINFO::clone()
+    BaseObjectPtr RICHDATAMETADATA::clone()
     {
-        return BaseObjectPtr(new ESMDTINFO(*this));
+        return BaseObjectPtr(new RICHDATAMETADATA(*this));
     }
 
-    //ESMDTINFO = BrtBeginESMDTINFO COMMENTAUTHORS COMMENTLIST *FRT BrtEndESMDTINFO
-    const bool ESMDTINFO::loadContent(BinProcessor& proc)
+    //RICHDATAMETADATA = BrtBeginRICHDATAMETADATA COMMENTAUTHORS COMMENTLIST *FRT BrtEndRICHDATAMETADATA
+    const bool RICHDATAMETADATA::loadContent(BinProcessor& proc)
     {
-        /*if (proc.optional<BeginESMDTINFO>())
+        /*if (proc.optional<BeginRICHDATAMETADATA>())
         {
-			m_bBrtBeginESMDTINFO = true;
+			m_bBrtBeginRICHDATAMETADATA = true;
             elements_.pop_back();
         }
 		else
-			m_bBrtBeginESMDTINFO = false;
+			m_bBrtBeginRICHDATAMETADATA = false;
 
         if (proc.optional<COMMENTAUTHORS>())
         {
@@ -82,27 +81,23 @@ namespace XLSB
             elements_.pop_back();
             count--;
         }
-        if (proc.optional<EndESMDTINFO>())
+        if (proc.optional<EndRICHDATAMETADATA>())
         {
-            m_bBrtEndESMDTINFO = true;
+            m_bBrtEndRICHDATAMETADATA = true;
             elements_.pop_back();
         }
 		else
-			m_bBrtEndESMDTINFO = false;*/
+			m_bBrtEndRICHDATAMETADATA = false;*/
 
         return true;
     }
 
-	const bool ESMDTINFO::saveContent(XLS::BinProcessor & proc)
+	const bool RICHDATAMETADATA::saveContent(XLS::BinProcessor & proc)
 	{
-		if (m_BrtBeginESMDTINFO != nullptr)
-			proc.mandatory(*m_BrtBeginESMDTINFO);
-
-		for(auto i:BrtMdtinfos)
-            proc.mandatory(*i);
-         proc.mandatory<XLSB::EndEsmdtinfo>();
-
-		
+		if (BeginRichValueBlock != nullptr)
+			proc.mandatory(*BeginRichValueBlock);
+        
+        proc.mandatory<XLSB::EndRichValueBlock>();
 		return true;
 	}
 

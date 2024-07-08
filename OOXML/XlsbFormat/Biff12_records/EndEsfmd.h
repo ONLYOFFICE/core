@@ -29,78 +29,25 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "MetadataStream.h"
+#pragma once
 
-#include "Biff12_records/CommonRecords.h"
-#include "Biff12_unions/ESMDTINFO.h"
-#include "Biff12_records/BeginMetadata.h"
-#include "Biff12_records/EndMetadata.h"
-
-using namespace XLS;
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
+#include "../../XlsxFormat/WritingElement.h"
 
 namespace XLSB
 {
+    // Logical representation of BrtEndEsfmd record in BIFF12
+    class EndEsfmd: public XLS::BiffRecord
+    {
+            BIFF_RECORD_DEFINE_TYPE_INFO(EndEsfmd)
+            BASE_OBJECT_DEFINE_CLASS_NAME(EndEsfmd)
+        public:
+            EndEsfmd();
+            ~EndEsfmd();
 
-MetadataStream::MetadataStream()
-{
-}
-
-MetadataStream::~MetadataStream()
-{
-}
-
-
-BaseObjectPtr MetadataStream::clone()
-{
-        return BaseObjectPtr(new MetadataStream(*this));
-}
-
-const bool MetadataStream::loadContent(BinProcessor& proc)
-{	
-	/*while (true)
-	{
-            CFRecordType::TypeId type = proc.getNextRecordType();
-
-            if (type == rt_NONE) break;
-
-            switch(type)
-            {
-                case rt_BeginComments:
-                {
-                    if (proc.optional<COMMENTS>())
-                    {
-                        m_COMMENTS = elements_.back();
-                        elements_.pop_back();
-                    }
-                }break;
-
-                default://skip
-                {
-                    proc.SkipRecord();
-                }break;
-            }
-	}
-*/
-	return true;
-}
-
-const bool MetadataStream::saveContent(XLS::BinProcessor & proc)
-{
-    proc.mandatory<XLSB::BeginMetadata>();
-	if (m_ESMDTINFO != nullptr)
-		proc.mandatory(*m_ESMDTINFO);
-    if (m_ESSTR != nullptr)
-		proc.mandatory(*m_ESSTR);
-    if (m_ESMDX != nullptr)
-		proc.mandatory(*m_ESMDX);
-    if (m_ESFMD != nullptr)
-		proc.mandatory(*m_ESFMD);
-    if (m_ESMBD != nullptr)
-		proc.mandatory(*m_ESMBD);
-    if (m_FRTMetadata != nullptr)
-		proc.mandatory(*m_FRTMetadata);    
-    proc.mandatory<XLSB::EndMetadata>();
-	return true;
-}
+            XLS::BaseObjectPtr clone();
+            //static const XLS::ElementType	type = XLS::typeEndEsfmd;
+    };
 
 } // namespace XLSB
+

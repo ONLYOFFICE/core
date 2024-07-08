@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2024
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,32 +29,25 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
+#include "EndEsfmd.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class ESMDTINFO: public XLS::CompositeObject
+    EndEsfmd::EndEsfmd()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(ESMDTINFO)
-    public:
-        ESMDTINFO();
-        ~ESMDTINFO();
+    }
 
-        XLS::BaseObjectPtr clone();
+    EndEsfmd::~EndEsfmd()
+    {
+    }
 
-		const bool loadContent(XLS::BinProcessor& proc) override;
-		const bool saveContent(XLS::BinProcessor& proc) override;
-
-		XLS::BaseObjectPtr               m_BrtBeginESMDTINFO;
-        std::vector<XLS::BaseObjectPtr>  BrtMdtinfos;
-		bool			                 m_bBrtEndESMDTINFO;
-
-    };
-
+    BaseObjectPtr EndEsfmd::clone()
+    {
+        return BaseObjectPtr(new EndEsfmd(*this));
+    }
 } // namespace XLSB
 

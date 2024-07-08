@@ -29,78 +29,82 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "MetadataStream.h"
 
-#include "Biff12_records/CommonRecords.h"
-#include "Biff12_unions/ESMDTINFO.h"
-#include "Biff12_records/BeginMetadata.h"
-#include "Biff12_records/EndMetadata.h"
+#include "ESFMD.h"
+
+#include "../Biff12_records/BeginEsfmd.h"
+#include "../Biff12_records/EndEsfmd.h"
+
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-MetadataStream::MetadataStream()
-{
-}
+    ESFMD::ESFMD()
+    {
+    }
 
-MetadataStream::~MetadataStream()
-{
-}
+    ESFMD::~ESFMD()
+    {
+    }
 
+    BaseObjectPtr ESFMD::clone()
+    {
+        return BaseObjectPtr(new ESFMD(*this));
+    }
 
-BaseObjectPtr MetadataStream::clone()
-{
-        return BaseObjectPtr(new MetadataStream(*this));
-}
+    //ESFMD = BrtBeginESFMD COMMENTAUTHORS COMMENTLIST *FRT BrtEndESFMD
+    const bool ESFMD::loadContent(BinProcessor& proc)
+    {
+        /*if (proc.optional<BeginESFMD>())
+        {
+			m_bBrtBeginESFMD = true;
+            elements_.pop_back();
+        }
+		else
+			m_bBrtBeginESFMD = false;
 
-const bool MetadataStream::loadContent(BinProcessor& proc)
-{	
-	/*while (true)
+        if (proc.optional<COMMENTAUTHORS>())
+        {
+            m_COMMENTAUTHORS = elements_.back();
+            elements_.pop_back();
+        }
+        if (proc.optional<COMMENTLIST>())
+        {
+            m_COMMENTLIST = elements_.back();
+            elements_.pop_back();
+        }
+        int count = proc.repeated<FRT>(0, 0);
+
+        while(count > 0)
+        {
+            //m_arFRT.insert(m_arFRT.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
+        }
+        if (proc.optional<EndESFMD>())
+        {
+            m_bBrtEndESFMD = true;
+            elements_.pop_back();
+        }
+		else
+			m_bBrtEndESFMD = false;*/
+
+        return true;
+    }
+
+	const bool ESFMD::saveContent(XLS::BinProcessor & proc)
 	{
-            CFRecordType::TypeId type = proc.getNextRecordType();
+		if (m_BrtBeginESFMD != nullptr)
+			proc.mandatory(*m_BrtBeginESFMD);
 
-            if (type == rt_NONE) break;
-
-            switch(type)
-            {
-                case rt_BeginComments:
-                {
-                    if (proc.optional<COMMENTS>())
-                    {
-                        m_COMMENTS = elements_.back();
-                        elements_.pop_back();
-                    }
-                }break;
-
-                default://skip
-                {
-                    proc.SkipRecord();
-                }break;
-            }
+		for(auto i:FMDs)
+            proc.mandatory(*i);
+        proc.mandatory<XLSB::EndEsfmd>();
+		
+		return true;
 	}
-*/
-	return true;
-}
-
-const bool MetadataStream::saveContent(XLS::BinProcessor & proc)
-{
-    proc.mandatory<XLSB::BeginMetadata>();
-	if (m_ESMDTINFO != nullptr)
-		proc.mandatory(*m_ESMDTINFO);
-    if (m_ESSTR != nullptr)
-		proc.mandatory(*m_ESSTR);
-    if (m_ESMDX != nullptr)
-		proc.mandatory(*m_ESMDX);
-    if (m_ESFMD != nullptr)
-		proc.mandatory(*m_ESFMD);
-    if (m_ESMBD != nullptr)
-		proc.mandatory(*m_ESMBD);
-    if (m_FRTMetadata != nullptr)
-		proc.mandatory(*m_FRTMetadata);    
-    proc.mandatory<XLSB::EndMetadata>();
-	return true;
-}
 
 } // namespace XLSB
+

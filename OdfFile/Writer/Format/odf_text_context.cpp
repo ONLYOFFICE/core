@@ -528,11 +528,11 @@ void odf_text_context::end_list()
 }
 //------------------------------------------------------------------------------------------  LIST
 
-bool odf_text_context::start_field(int type, const std::wstring& value, const std::wstring& format)
+office_element_ptr odf_text_context::start_field(int type, const std::wstring& value, const std::wstring& format)
 {
-	if (single_paragraph_ == true) return false;
-
 	office_element_ptr elm;
+
+	if (single_paragraph_ == true) return elm;
 
 	switch(type)
 	{
@@ -614,6 +614,15 @@ bool odf_text_context::start_field(int type, const std::wstring& value, const st
 
 			}
 		}break;
+		case fieldUserDefined:
+		{
+			create_element(L"text", L"user-defined", elm, odf_context_);
+			text_user_defined* user_defined = dynamic_cast<text_user_defined*>(elm.get());
+			if (user_defined)
+			{
+				if (false == value.empty()) user_defined->text_name_ = value;
+			}
+		}break;
 	}
 
 	if (elm)
@@ -622,10 +631,8 @@ bool odf_text_context::start_field(int type, const std::wstring& value, const st
 		start_element(elm);
 
 		current_level_.back().type = 3;
-	
-		return true;
-	}
-	return false;
+		}
+	return elm;
 }
 
 void odf_text_context::end_field()

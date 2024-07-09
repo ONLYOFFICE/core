@@ -520,6 +520,11 @@ office_element_ptr odf_conversion_context::start_tabs()
 	create_element(L"style", L"tab-stops", temporary_.elm, this, true);
 	return temporary_.elm;
 }
+void odf_conversion_context::add_meta(const office_element_ptr& elm)
+{
+	if (!elm) return;
+	objects_[current_object_]->meta.push_back(elm);
+}
 void odf_conversion_context::add_meta(const std::wstring & ns, const std::wstring & name, const std::wstring & content)
 {
 	if (name.empty()) return;

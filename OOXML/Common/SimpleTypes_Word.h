@@ -639,7 +639,7 @@ namespace SimpleTypes
 		CFFName();
 
 		std::wstring GetValue() const;
-		void    SetValue(std::wstring &sValue);
+		void SetValue(std::wstring &sValue);
 
 		std::wstring FromString(const std::wstring &sValue);
 		std::wstring ToString  () const;
@@ -894,7 +894,6 @@ namespace SimpleTypes
 		void Parse3();
 		int	HexToInt(int nHex);
 
-	private:
 		std::wstring m_sValue;
 
 		unsigned char m_unR = 0;

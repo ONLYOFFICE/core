@@ -59,6 +59,7 @@ namespace odf_writer
 		fieldDate,
 		fieldTime,
 		fieldRef,
+		fieldUserDefined,
 
 		fieldBibliography = 0xff + 1,
 		fieldIndex,
@@ -112,8 +113,8 @@ public:
 
 	void add_element_in_span_or_par(office_element_ptr & elm);
  	
-	bool start_field		(int type, const std::wstring& value, const std::wstring& format);
-	void end_field			();
+	office_element_ptr start_field(int type, const std::wstring& value, const std::wstring& format);
+	void end_field();
 
 	void start_span			(bool styled = false); 
     void end_span			();

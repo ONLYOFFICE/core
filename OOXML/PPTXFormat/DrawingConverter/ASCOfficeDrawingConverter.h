@@ -94,6 +94,7 @@ namespace PPTX
 		class Xfrm;
 		class Shape;
 		class ClrMap;
+		class UniColor;
 	}
 
 	class CStringTrimmer
@@ -298,7 +299,8 @@ namespace NSBinPptxRW
         void CheckPenShape          (PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);
 		void CheckBorderShape		(PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);
 
-        void LoadCoordSize			(XmlUtils::CXmlNode& oNode, ::CShapePtr pShape);
+		void ConvertColor			(PPTX::Logic::UniColor& uniColor, nullable_string& sColor, nullable_string& sOpacity);
+		void LoadCoordSize			(XmlUtils::CXmlNode& oNode, ::CShapePtr pShape);
 		void LoadCoordPos			(XmlUtils::CXmlNode& oNode, ::CShapePtr pShape);
        
 		std::wstring GetDrawingMainProps (XmlUtils::CXmlNode& oNode, PPTX::CCSS& oCssStyles, CSpTreeElemProps& oProps);

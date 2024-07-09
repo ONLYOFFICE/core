@@ -1481,8 +1481,7 @@ private:
 	_CP_OPT(odf_types::Bool)					text_fixed_;
 	odf_types::common_value_and_type_attlist	office_value_;
 	
-	office_element_ptr	text_;    
-
+	office_element_ptr	text_;  
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_user_defined);
 //---------------------------------------------------------------------------------------------------

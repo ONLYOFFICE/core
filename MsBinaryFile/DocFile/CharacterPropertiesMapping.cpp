@@ -586,7 +586,9 @@ namespace DocFileFormat
 				if ( _styleChpx )
 				{
 					StyleSheetDescription* thisStyle = _doc->Styles->Styles->at( styleId );
-					styleId = (unsigned short)thisStyle->istdBase;
+
+					if (thisStyle)
+						styleId = (unsigned short)thisStyle->istdBase;
 				}
 
 				//build the style hierarchy

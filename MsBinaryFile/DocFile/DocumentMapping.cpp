@@ -278,7 +278,7 @@ namespace DocFileFormat
 			{
 				//get the FC range for this run
 
-				int fcChpxStart	=	chpxFcs ? chpxFcs->at(i) : fc;
+				int fcChpxStart	=	((chpxFcs) && (i < chpxFcs->size())) ? chpxFcs->at(i) : fc;
 				int fcChpxEnd	=	fcEnd;
 				
 				if ((chpxFcs) && ( i < chpxFcs->size() - 1))

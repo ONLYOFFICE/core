@@ -45,6 +45,7 @@
 #include "../../PPTXFormat/Logic/Colors/SchemeClr.h"
 #include "../../PPTXFormat/Logic/Colors/SysClr.h"
 #include "../../PPTXFormat/Logic/Effects/AlphaModFix.h"
+#include "../../PPTXFormat/Logic/Effects/Duotone.h"
 #include "../../PPTXFormat/PPTX.h"
 #include "../../PPTXFormat/LegacyDiagramText.h"
 
@@ -3085,7 +3086,7 @@ void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUt
 		std::vector<PPTX::Logic::UniColor*>		arColorsNew;
 		std::vector<int>						arPos;
 		std::vector<int>						arPosNew;
-		std::map<PPTX::Logic::UniColor*, int>	arGradMap;
+		std::map<int, PPTX::Logic::UniColor*>	arGradMap;
 
 		int R = 255, G = 255, B = 255;
 
@@ -3224,13 +3225,13 @@ void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUt
 				XmlMacroReadAttributeBase(oNodeP, L"angle", sAngle);
 				XmlMacroReadAttributeBase(oNodeP, L"colors", sColors);
 
-				if (sType.is_init())
+				if (sType.is_init()) 
 				{
-					if (*sType == L"gradient")          eFillType = etGradFill;
-					else	if (*sType == L"gradientradial")	eFillType = etGradFill;
-					else	if (*sType == L"pattern")           eFillType = etPattFill;
-					else	if (*sType == L"tile")              eFillType = etBlipFill;
-					else	if (*sType == L"frame")             eFillType = etBlipFill;
+					if (*sType == L"gradient") eFillType = etGradFill;
+					else	if (*sType == L"gradientradial") eFillType = etGradFill;
+					else	if (*sType == L"pattern") eFillType = etPattFill;
+					else	if (*sType == L"tile") eFillType = etBlipFill;
+					else	if (*sType == L"frame") eFillType = etBlipFill;
 				}
 				else
 				{
@@ -3366,7 +3367,9 @@ void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUt
 
 					for (size_t i = 0; i < arSplit.size(); i++)
 					{
-						int p = (int)arSplit[i].find(L" ");
+						size_t p = arSplit[i].find(L" ");
+						if (p == std::wstring::npos)
+							continue;
 
 						std::wstring strPos = arSplit[i].substr(0, p);
 						std::wstring strColor = arSplit[i].substr(p + 1);
@@ -3387,7 +3390,7 @@ void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUt
 							arColors.push_back(oColor);
 							arPos.push_back((int)pos);
 
-							arGradMap.insert(std::pair<PPTX::Logic::UniColor*, int>(oColor, (int)pos));
+							arGradMap.insert(std::make_pair((int)pos, oColor));
 						}
 					}
 				}
@@ -4871,7 +4874,49 @@ void CDrawingConverter::CheckBorderShape(PPTX::Logic::SpTreeElem* oElem, XmlUtil
 		}
 	}
 }
+void CDrawingConverter::ConvertColor(PPTX::Logic::UniColor & uniColor, nullable_string & sColor, nullable_string& sOpacity)
+{
+	int R = 255;
+	int G = 255;
+	int B = 255;
 
+	uniColor.Color = new PPTX::Logic::SrgbClr();
+	if (sColor.is_init())
+	{
+		ODRAW::CColor color;
+		if (sColor.is_init() && (std::wstring::npos != sColor->find(L"fill")))
+		{
+			std::wstring sColorEffect = *sColor;
+			if (sColorEffect.length() > 5)
+				sColorEffect = sColorEffect.substr(5);
+
+			int resR, resG, resB;
+			GetColorWithEffect(sColorEffect, R, G, B, resR, resG, resB);
+
+			uniColor.Color->SetRGB(resR, resG, resB);
+		}
+		else
+		{
+			if (NS_DWC_Common::getColorFromString(*sColor, color))
+			{
+				R = color.R;
+				G = color.G;
+				B = color.B;
+			}
+		}
+	}
+	uniColor.Color->SetRGB(R, G, B);
+	if (sOpacity.is_init())
+	{
+		BYTE lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity);
+
+		PPTX::Logic::ColorModifier oMod;
+		oMod.name = L"alpha";
+		int nA = (int)(lAlpha * 100000.0 / 255.0);
+		oMod.val = nA;
+		uniColor.Color->Modifiers.push_back(oMod);
+	}
+}
 void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape)
 {
 	if (!oElem) return;
@@ -4960,30 +5005,42 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
     XmlUtils::CXmlNode oNodeFill = oNode.ReadNode(L"v:fill");
 	if (oNodeFill.IsValid() && !pPPTShape->IsWordArt())
 	{
-		nullable_string sType;
-        XmlMacroReadAttributeBase(oNodeFill, L"type", sType);
-
-		sOpacity.reset();
-        XmlMacroReadAttributeBase(oNodeFill, L"opacity", sOpacity);
-
+		nullable_string sOpacity;
+		nullable_string sOpacity2;
+		nullable_string sColor2;
 		nullable_string sColor;
-        XmlMacroReadAttributeBase(oNodeFill, L"color", sColor);
+		nullable_string sType;
+		nullable_string sFocus;
+		nullable_string sFocusSize;
+		nullable<SimpleTypes::Vml::CVml_Vector2D_Percentage> oFocusPosition;
+		nullable_string sAngle;
+		nullable_string sColors;
+		nullable_string sRotate;
+
+		XmlMacroReadAttributeBase(oNodeFill, L"rotate", sRotate);
+		XmlMacroReadAttributeBase(oNodeFill, L"opacity", sOpacity);
+		XmlMacroReadAttributeBase(oNodeFill, L"opacity2", sOpacity2);
+		XmlMacroReadAttributeBase(oNodeFill, L"color", sColor);
+		XmlMacroReadAttributeBase(oNodeFill, L"color2", sColor2);
+		XmlMacroReadAttributeBase(oNodeFill, L"type", sType);
+		XmlMacroReadAttributeBase(oNodeFill, L"focus", sFocus);
+		XmlMacroReadAttributeBase(oNodeFill, L"focussize", sFocusSize);
+		XmlMacroReadAttributeBase(oNodeFill, L"angle", sAngle);
+		XmlMacroReadAttributeBase(oNodeFill, L"colors", sColors);		
+		XmlMacroReadAttributeBase(oNodeFill, L"focusposition", oFocusPosition);
+
 		if (sColor.is_init())
 		{
-			ODRAW::CColor color;
-			if (NS_DWC_Common::getColorFromString(*sColor, color))
-			{
-				PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
-				pSolid->m_namespace = L"a";
-				pSolid->Color.Color = new PPTX::Logic::SrgbClr();
-				pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
+			PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+			pSolid->m_namespace = L"a";
 
-				pSpPr->Fill.m_type = PPTX::Logic::UniFill::solidFill;
-				pSpPr->Fill.Fill = pSolid;
+			ConvertColor(pSolid->Color, sColor, sOpacity);
 
-				if (!sFillColor.is_init())
-					sFillColor = sColor;
-			}
+			pSpPr->Fill.m_type = PPTX::Logic::UniFill::solidFill;
+			pSpPr->Fill.Fill = pSolid;
+
+			if (!sFillColor.is_init())
+				sFillColor = sColor;
 		}
 		if (!sColor.is_init()) sColor = sFillColor;
 
@@ -5013,100 +5070,84 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 
             if (sType.is_init() && ((*sType == L"tile") || (*sType == L"pattern")))
 			{
-				pBlipFill->tile = new PPTX::Logic::Tile();				
+				pBlipFill->tile = new PPTX::Logic::Tile();		
+
+				if (*sType == L"pattern")
+				{					
+					PPTX::Logic::Duotone* pDuotone = new PPTX::Logic::Duotone();
+					
+					PPTX::Logic::UniColor fgClr;
+					ConvertColor(fgClr, sColor, sOpacity);
+					pDuotone->Colors.push_back(fgClr);
+
+					PPTX::Logic::UniColor bgClr;
+					ConvertColor(bgClr, sColor2, sOpacity2);
+					pDuotone->Colors.push_back(bgClr);
+
+					PPTX::Logic::UniEffect effect;
+					effect.InitPointer(pDuotone);
+					pBlipFill->blip->Effects.push_back(effect);
+				}
 			}
 			else
 			{
 				pBlipFill->stretch = new PPTX::Logic::Stretch();				
 			}
 		}		
-		nullable_string sRotate;
-        XmlMacroReadAttributeBase(oNodeFill, L"rotate", sRotate);
 
-		nullable_string sMethod;
-        XmlMacroReadAttributeBase(oNodeFill, L"method", sMethod);
-		
-		nullable_string sColor2;
-        XmlMacroReadAttributeBase(oNodeFill, L"color2", sColor2);
-		
-		nullable_string sOpacity2;
-		XmlMacroReadAttributeBase(oNodeFill, L"o:opacity2", sOpacity2);
-
-		nullable_string sFocus;
-        XmlMacroReadAttributeBase(oNodeFill, L"focus", sFocus);
-
-		nullable<SimpleTypes::Vml::CVml_Vector2D_Percentage> oFocusPosition;
-		XmlMacroReadAttributeBase(oNodeFill, L"focusposition", oFocusPosition);
-		
-        if (sType.is_init() && (*sType == L"gradient" || *sType == L"gradientradial" || *sType == L"gradientRadial"))
+        if ((sType.is_init() && (*sType == L"gradient" || *sType == L"gradientradial" || *sType == L"gradientRadial")) || 
+			(sFocus.is_init() || sColors.is_init() || sAngle.is_init() || sFocusSize.is_init() || oFocusPosition.is_init()))
 		{
 			PPTX::Logic::GradFill* pGradFill = new PPTX::Logic::GradFill();
             pGradFill->m_namespace = L"a";
 		
-			PPTX::Logic::Gs Gs_;
-			Gs_.color.Color = new PPTX::Logic::SrgbClr();
-
-			if (sColor.is_init())
+			if (sColors.is_init())
 			{
-				ODRAW::CColor color;
-				if (NS_DWC_Common::getColorFromString(*sColor, color))
+				std::vector<std::wstring> arSplit;
+				boost::algorithm::split(arSplit, sColors.get(), boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
+
+				for (size_t i = 0; i < arSplit.size(); i++)
 				{
-					R = color.R;
-					G = color.G;
-					B = color.B;
+					size_t p = arSplit[i].find(L" ");
+					if (p == std::wstring::npos)
+						continue;
+
+					std::wstring strPos = arSplit[i].substr(0, p);
+					std::wstring strColor = arSplit[i].substr(p + 1);
+
+					double pos = XmlUtils::GetDouble(strPos);
+
+					PPTX::Logic::Gs Gs_;
+					ODRAW::CColor color;
+					if (NS_DWC_Common::getColorFromString(strColor, color))
+					{
+						Gs_.color.Color = new PPTX::Logic::SrgbClr();
+						Gs_.color.Color->SetRGB(color.R, color.G, color.B);
+
+						if (pos <= 1)
+							pos = 100000 * pos;
+						else
+							pos = pos / 65536 * 100000;
+						
+						Gs_.pos = pos;
+						pGradFill->GsLst.push_back(Gs_);
+					}
 				}
 			}
-			Gs_.color.Color->SetRGB(R, G, B);
-			if (sOpacity.is_init())
-			{
-				BYTE lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity);
-
-				PPTX::Logic::ColorModifier oMod;
-				oMod.name = L"alpha";
-				int nA = (int)(lAlpha * 100000.0 / 255.0);
-				oMod.val = nA;
-				Gs_.color.Color->Modifiers.push_back(oMod);
-			}
-			Gs_.pos = 0;
-			pGradFill->GsLst.push_back(Gs_);
-
-			if (sColor2.is_init() || sOpacity2.is_init())
+			else
 			{
 				PPTX::Logic::Gs Gs_;
-				Gs_.color.Color = new PPTX::Logic::SrgbClr();
+				ConvertColor(Gs_.color, sColor, sOpacity);
+				
+				Gs_.pos = 0;
+				pGradFill->GsLst.push_back(Gs_);
 
-				if (sColor2.is_init() && (std::wstring::npos != sColor2->find(L"fill")))
-				{
-                    std::wstring sColorEffect = *sColor2;
-                    if (sColorEffect.length() > 5)
-                        sColorEffect = sColorEffect.substr(5);
-
-                    int resR, resG, resB;
-                    GetColorWithEffect(sColorEffect, R, G, B, resR, resG, resB);
-
-                    Gs_.color.Color->SetRGB(resR, resG, resB);
-				}
-				else
-				{
-					ODRAW::CColor color;
-					if (sColor2.is_init() && NS_DWC_Common::getColorFromString(*sColor2, color))
-					{
-						R = color.R;
-						G = color.G;
-						B = color.B;
-					}
-					Gs_.color.Color->SetRGB(R, G, B);
-				}
-				if (sOpacity2.is_init())
-				{
-					BYTE lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity2);
-
-					PPTX::Logic::ColorModifier oMod;
-					oMod.name = L"alpha";
-					int nA = (int)(lAlpha * 100000.0 / 255.0);
-					oMod.val = nA;
-					Gs_.color.Color->Modifiers.push_back(oMod);
-				}
+			}
+			if (false == sColors.is_init() && (sColor2.is_init() || sOpacity2.is_init()))
+			{
+				PPTX::Logic::Gs Gs_;
+				ConvertColor(Gs_.color, sColor2, sOpacity2);
+				
 				Gs_.pos = 100 * 1000;
 				pGradFill->GsLst.push_back( Gs_ );
 			}
@@ -5123,19 +5164,34 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 			}
 			//todooo method
 
-			if (oFocusPosition.is_init() && (*sType == L"gradientradial" || *sType == L"gradientRadial"))
+			if (*sType == L"gradientradial" || *sType == L"gradientRadial")
 			{
+				double x = 0, y = 0;
+				if (oFocusPosition.is_init())
+				{
+					x = oFocusPosition->GetX();
+					y = oFocusPosition->GetY();
+				}
 				pGradFill->path.Init();
 				pGradFill->path->path = 2;
 				pGradFill->path->rect.Init();
-				pGradFill->path->rect->b = XmlUtils::ToString(100 - int(oFocusPosition->GetY() * 100)) + L"%";
-				pGradFill->path->rect->t = XmlUtils::ToString(int(oFocusPosition->GetY() * 100)) + L"%";
-				pGradFill->path->rect->l = XmlUtils::ToString(oFocusPosition->GetX() * 100) + L"%";
-				pGradFill->path->rect->r = XmlUtils::ToString(100 - int(oFocusPosition->GetX() * 100)) + L"%";
+
+				pGradFill->path->rect->b = XmlUtils::ToString(100 - int( y * 100)) + L"%";
+				pGradFill->path->rect->r = XmlUtils::ToString(100 - int(x * 100)) + L"%";
+				pGradFill->path->rect->t = XmlUtils::ToString(int(y * 100)) + L"%";
+				pGradFill->path->rect->l = XmlUtils::ToString(int(x * 100)) + L"%";
 			}
 			else
 			{
-				if (sRotate.is_init())
+				if (sAngle.is_init())
+				{
+					int nAngle = XmlUtils::GetInteger(*sAngle);
+					
+					pGradFill->lin = new PPTX::Logic::Lin();
+					pGradFill->lin->scaled = 1;
+					pGradFill->lin->ang = (nAngle >= 0 ? nAngle : (360 + nAngle)) * 60000;
+				}
+				else if (sRotate.is_init())
 				{
 					pGradFill->lin = new PPTX::Logic::Lin();
 					pGradFill->lin->scaled = 1;
@@ -5150,29 +5206,31 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 			pSpPr->Fill.Fill = pGradFill;
 		}	
 
-		if (sOpacity.is_init())
+
+		if (*sType == L"pattern" && pSpPr->Fill.m_type != PPTX::Logic::UniFill::blipFill)
+		{
+			PPTX::Logic::PattFill* pPattFill = new PPTX::Logic::PattFill();
+			pPattFill->m_namespace = L"a";
+
+			ConvertColor(pPattFill->fgClr, sColor, sOpacity);
+			ConvertColor(pPattFill->bgClr, sColor2, sOpacity2);
+
+			pSpPr->Fill.m_type = PPTX::Logic::UniFill::pattFill;
+			pSpPr->Fill.Fill = pPattFill;
+		}
+
+		if (sOpacity.is_init() && pSpPr->Fill.is<PPTX::Logic::BlipFill>())
 		{
 			BYTE lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity);
 
-			if (pSpPr->Fill.is<PPTX::Logic::SolidFill>())
-			{
-				PPTX::Logic::ColorModifier oMod;
-                oMod.name = L"alpha";
-				int nA = (int)(lAlpha * 100000.0 / 255.0);
-				oMod.val = nA;
-				pSpPr->Fill.as<PPTX::Logic::SolidFill>().Color.Color->Modifiers.push_back(oMod);
-			}
-			else if (pSpPr->Fill.is<PPTX::Logic::BlipFill>())
-			{
-				PPTX::Logic::AlphaModFix* pAlphaMod = new PPTX::Logic::AlphaModFix();
-				int nA = (int)(lAlpha * 100000.0 / 255.0);
-				pAlphaMod->amt = nA;
+			PPTX::Logic::AlphaModFix* pAlphaMod = new PPTX::Logic::AlphaModFix();
+			int nA = (int)(lAlpha * 100000.0 / 255.0);
+			pAlphaMod->amt = nA;
 
-				PPTX::Logic::UniEffect oEff;
-				oEff.InitPointer(pAlphaMod);
+			PPTX::Logic::UniEffect oEff;
+			oEff.InitPointer(pAlphaMod);
 
-				pSpPr->Fill.as<PPTX::Logic::BlipFill>().blip->Effects.push_back(oEff);
-			}
+			pSpPr->Fill.as<PPTX::Logic::BlipFill>().blip->Effects.push_back(oEff);
 		}
 	}
 	if (true)
@@ -5353,26 +5411,18 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 	if (pPPTShape->IsWordArt())
 		return;
 
-	nullable_string sStrokeColor;
+	nullable_string sStrokeColor, sStrokeOpacity;
     XmlMacroReadAttributeBase(oNode, L"strokecolor", sStrokeColor);
 	if (sStrokeColor.is_init())
 	{
-		ODRAW::CColor color;
-		if (NS_DWC_Common::getColorFromString(*sStrokeColor, color))
-		{
-			pPPTShape->m_bIsStroked = true;
+		pPPTShape->m_bIsStroked = true;
+		PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+		pSolid->m_namespace = L"a";
 
-			if (!pSpPr->ln.is_init())
-				pSpPr->ln = new PPTX::Logic::Ln();
+		ConvertColor(pSolid->Color, sStrokeColor, sStrokeOpacity);
 
-			PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
-			pSolid->m_namespace = L"a";
-			pSolid->Color.Color = new PPTX::Logic::SrgbClr();
-			pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
-
-			pSpPr->ln->Fill.m_type = PPTX::Logic::UniFill::solidFill;
-			pSpPr->ln->Fill.Fill = pSolid;
-		}
+		pSpPr->ln->Fill.m_type = PPTX::Logic::UniFill::solidFill;
+		pSpPr->ln->Fill.Fill = pSolid;
 	}
 
 	nullable<SimpleTypes::CEmu> oStrokeWeight;

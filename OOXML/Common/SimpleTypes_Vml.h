@@ -1530,7 +1530,7 @@ namespace SimpleTypes
 		SimpleTypes_DefaultString(CVml_Vector2D_Percentage)
 
 		private:
-			double m_dX; //
+		double m_dX; //
 		double m_dY; //
 	};
 
@@ -1698,12 +1698,11 @@ namespace SimpleTypes
 		void   SetPercentage(double dValue);
 
 		virtual double FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
+		virtual std::wstring ToString() const;
 
 		SimpleTypes_DefaultD(CVml_1_65536_Or_Percentage)
 
-		private:
-			double m_dValue;
+		double m_dValue;
 	};
 
 	//--------------------------------------------------------------------------------

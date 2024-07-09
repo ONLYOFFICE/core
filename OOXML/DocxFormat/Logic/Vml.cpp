@@ -2022,9 +2022,6 @@ namespace OOX
 		}
 		void CFill::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			std::wstring sColors;
-
-			// Читаем атрибуты
 			if ( oReader.GetAttributesCount() <= 0 )
 				return;
 			
@@ -2046,7 +2043,7 @@ namespace OOX
 				case 'c':
 					if      (L"color"  == wsName ) m_oColor   = oReader.GetText();
 					else if (L"color2" == wsName ) m_oColor2  = oReader.GetText();
-					else if (L"colors" == wsName ) sColors    = oReader.GetText();
+					else if (L"colors" == wsName ) m_oColors    = oReader.GetText();
 					break;
 
 				case 'i':
@@ -2102,8 +2099,6 @@ namespace OOX
 				wsName = oReader.GetName();
 			}
 			oReader.MoveToElement();
-
-			// TO DO: сделать парсер цветов CFill::m_arrColors
 		}
 		std::wstring CFill::toXML() const
 		{
@@ -2119,18 +2114,19 @@ namespace OOX
 				sResult += L"opacity=\"" + m_oOpacity->ToString() + L"\" ";
 
 			ComplexTypes_WriteAttribute (L"color=\"", m_oColor);
-			ComplexTypes_WriteAttribute (L"color2=\"",	  m_oColor2);
-			ComplexTypes_WriteAttribute3(L"src=\"",       m_sSrc );
-			ComplexTypes_WriteAttribute3(L"o:href=\"",    m_sHref );
+			ComplexTypes_WriteAttribute (L"color2=\"", m_oColor2);
+			ComplexTypes_WriteAttribute3(L"src=\"", m_sSrc );
+			ComplexTypes_WriteAttribute3(L"o:href=\"", m_sHref );
 			ComplexTypes_WriteAttribute3(L"o:althref=\"", m_sAltHref );
-			ComplexTypes_WriteAttribute (L"size=\"",      m_oSize );
-			ComplexTypes_WriteAttribute (L"origin=\"",    m_oOrigin );
-			ComplexTypes_WriteAttribute (L"position=\"",  m_oPosition );
+			ComplexTypes_WriteAttribute (L"size=\"", m_oSize );
+			ComplexTypes_WriteAttribute (L"origin=\"", m_oOrigin );
+			ComplexTypes_WriteAttribute (L"position=\"", m_oPosition );
 
 			if ((m_oAspect.IsInit()) && (SimpleTypes::imageaspectIgnore != m_oAspect->GetValue() ))
 				sResult += L"aspect=\"" + m_oAspect->ToString() + L"\" ";
 
-			// TO DO: Сделать запись m_arrColors
+			if (m_oColors.IsInit())
+				sResult += L"colors=\"" + *m_oColors + L"\" ";
 
 			ComplexTypes_WriteAttribute (L"angle=\"", m_oAngle );
 
@@ -2150,7 +2146,7 @@ namespace OOX
 				sResult += L"method=\"" + m_oMethod->ToString() + L"\" ";
 
 			ComplexTypes_WriteAttribute (L"o:detectmouseclick=\"", m_oDetectMouseClick );
-			ComplexTypes_WriteAttribute3(L"o:title=\"",            m_sTitle );
+			ComplexTypes_WriteAttribute3(L"o:title=\"", m_sTitle );
 
 			if ( m_oOpacity2.IsInit() )
 				sResult += L"o:opacity2=\"" + m_oOpacity2->ToString() + L"\" ";
@@ -2161,7 +2157,7 @@ namespace OOX
 			if (( m_oRotate.IsInit()) && m_oRotate->GetBool())
 				sResult += L"rotate=\"true\" ";
 
-			ComplexTypes_WriteAttribute (L"r:id=\"",    m_rId );
+			ComplexTypes_WriteAttribute (L"r:id=\"", m_rId );
 			ComplexTypes_WriteAttribute (L"o:relid=\"", m_oRelId );
 
 			sResult += L">";

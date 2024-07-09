@@ -16,7 +16,8 @@
 
 namespace MetaFile
 {
-	CEmfParser::CEmfParser() : m_pEmfPlusParser(NULL){}
+	CEmfParser::CEmfParser()
+	    : m_pEmfPlusParser(NULL), m_bOnlyEmfPlus(false) {}
 
 	CEmfParser::~CEmfParser()
 	{
@@ -75,6 +76,12 @@ namespace MetaFile
 
 			if (0 == ulRecordIndex && EMR_HEADER != ulType)
 				return SetError();
+
+			if (m_bOnlyEmfPlus && ulType != EMR_HEADER && ulType != EMR_EOF && ulType != EMR_GDICOMMENT)
+			{
+				m_oStream.Skip(m_ulRecordSize);
+				continue;
+			}
 
 			switch (ulType)
 			{
@@ -251,6 +258,11 @@ namespace MetaFile
 	void CEmfParser::SetStream(BYTE *pBuf, unsigned int unSize)
 	{
 		m_oStream.SetStream(pBuf, unSize);
+	}
+
+	void CEmfParser::SetOnlyEmfPlus(bool bValue)
+	{
+		m_bOnlyEmfPlus = bValue;
 	}
 
 	bool CEmfParser::ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight)

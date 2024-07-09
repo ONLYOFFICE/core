@@ -1,6 +1,7 @@
 #include "CSvgFile.h"
 
 #include "SvgObjects/CContainer.h"
+#include "SvgObjects/CFont.h"
 
 #define SVG_FILE_WIDTH  300
 #define SVG_FILE_HEIGHT 150
@@ -132,6 +133,16 @@ SVG::CObject *CSvgFile::GetMarkedObject(const std::wstring &wsId) const
 	return NULL;
 }
 
+SVG::CFont *CSvgFile::GetFont(const std::wstring &wsFontFamily) const
+{
+	FontsFaceMap::const_iterator itFound = std::find_if(m_mFontsFace.cbegin(), m_mFontsFace.cend(), [&wsFontFamily](const std::pair<std::wstring, std::wstring>& oValue){ return wsFontFamily == oValue.first; });
+	
+	if (m_mFontsFace.cend() == itFound)
+		return NULL;
+
+	return dynamic_cast<SVG::CFont*>(GetMarkedObject(itFound->second));
+}
+
 std::wstring CSvgFile::GetWorkingDirectory() const
 {
 	return m_wsWorkingDirectory;
@@ -140,6 +151,11 @@ std::wstring CSvgFile::GetWorkingDirectory() const
 void CSvgFile::AddStyles(const std::wstring &wsStyles)
 {
 	m_oSvgCalculator.AddStyles(wsStyles);
+}
+
+void CSvgFile::AddFontFace(const SVG::TFontArguments& oArguments, const std::wstring &wsId)
+{
+	m_mFontsFace.insert(std::make_pair(oArguments.m_wsFontFamily, wsId));
 }
 
 bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight)

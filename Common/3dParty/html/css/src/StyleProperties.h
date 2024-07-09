@@ -21,6 +21,7 @@ namespace NSCSS
 		friend class CDigit;
 		friend class CColor;
 		friend class CEnum;
+		friend class CURL;
 
 		T            m_oValue;
 		unsigned int m_unLevel;
@@ -180,6 +181,22 @@ namespace NSCSS
 		bool operator==(const TRGB& oRGB) const;
 	};
 
+	class CURL
+	{
+	public:
+		CURL();
+
+		bool Empty() const;
+		bool LinkToId() const;
+
+		void Clear();
+
+		bool SetValue(const std::wstring& wsValue);
+		std::wstring GetValue() const;
+	private:
+		std::wstring m_wsValue;
+	};
+	
 	typedef enum
 	{
 		ColorEmpty,
@@ -189,39 +206,8 @@ namespace NSCSS
 		ColorUrl
 	} ColorType;
 
-	class Q_DECL_EXPORT CColorValue
+	class CColor : public CValue<void*>
 	{
-	public:
-		CColorValue();
-		CColorValue(const CColorValue& oColorValue);
-		~CColorValue();
-
-		void SetRGB(unsigned char uchR, unsigned char uchG, unsigned char uchB);
-		void SetRGB(const TRGB& oRGB);
-		void SetHEX(const std::wstring& wsValue);
-		void SetUrl(const std::wstring& wsValue);
-		void SetNone();
-
-		void Clear();
-
-		bool Empty() const;
-
-		ColorType    m_enType;
-		void*        m_pColor = NULL;
-
-		std::wstring GetColor() const;
-
-		bool         operator==(const CColorValue& oColorValue) const;
-		CColorValue& operator= (const CColorValue& oColorValue);
-	};
-
-	class CColor : public CValue<CColorValue>
-	{
-		CDigit m_oOpacity;
-		static TRGB ConvertHEXtoRGB(const std::wstring& wsValue);
-		static std::wstring ConvertRGBtoHEX(const TRGB& oValue);
-		static std::wstring CutURL(const std::wstring& wsValue);
-		void SetEmpty(unsigned int unLevel = 0);
 	public:
 		CColor();
 
@@ -242,6 +228,19 @@ namespace NSCSS
 		std::wstring ToWString() const override;
 		std::wstring EquateToColor(const std::vector<std::pair<TRGB, std::wstring>>& arColors) const;
 		TRGB ToRGB() const;
+
+		static TRGB ConvertHEXtoRGB(const std::wstring& wsValue);
+		static std::wstring ConvertRGBtoHEX(const TRGB& oValue);
+	private:
+		CDigit    m_oOpacity;
+		ColorType m_enType;
+
+		void SetEmpty(unsigned int unLevel = 0);
+		void SetRGB(unsigned char uchR, unsigned char uchG, unsigned char uchB);
+		void SetRGB(const TRGB& oRGB);
+		void SetHEX(const std::wstring& wsValue);
+		void SetUrl(const std::wstring& wsValue);
+		void SetNone();
 	};
 
 	typedef enum

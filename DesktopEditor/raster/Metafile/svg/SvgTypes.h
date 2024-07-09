@@ -14,6 +14,7 @@ namespace SVG
 	#define SvgDigit     NSCSS::NSProperties::CDigit
 	#define SvgString    NSCSS::NSProperties::CString
 	#define SvgColor     NSCSS::NSProperties::CColor
+	#define SvgURL       NSCSS::NSProperties::CURL
 	#define SvgEnum      NSCSS::NSProperties::CEnum
 
 	#define SvgTransform NSCSS::NSProperties::CTransform

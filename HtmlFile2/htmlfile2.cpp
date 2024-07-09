@@ -72,18 +72,21 @@ struct CTextSettings
 {
 	bool bBdo; // Реверс текста
 	bool bPre; // Сохранение форматирования (Сохранение пробелов, табуляций, переносов строк)
+	bool bQ;   // Цитата
 	bool bAddSpaces; // Добавлять пробелы перед текстом?
 	bool bMergeText; // Объединять подяр идущий текст в 1?
 	int  nLi;  // Уровень списка
 	std::wstring sRStyle; // w:rStyle
 	std::wstring sPStyle; // w:pStyle
 
-	CTextSettings(bool _bBdo, bool _bPre, bool _bAddSpaces, bool _bMergeText, int _nLi, const std::wstring& _sRStyle, const std::wstring& _sPStyle) :
-		bBdo(_bBdo), bPre(_bPre), bAddSpaces(_bAddSpaces), bMergeText(_bMergeText), nLi(_nLi), sRStyle(_sRStyle), sPStyle(_sPStyle) 
+	NSCSS::CCompiledStyle oPriorityStyle;
+
+	CTextSettings()
+		: bBdo(false), bPre(false), bQ(false), bAddSpaces(true), bMergeText(false), nLi(-1)
 	{}
 
 	CTextSettings(const CTextSettings& oTS) :
-		bBdo(oTS.bBdo), bPre(oTS.bPre), bAddSpaces(oTS.bAddSpaces), bMergeText(oTS.bMergeText), nLi(oTS.nLi), sRStyle(oTS.sRStyle), sPStyle(oTS.sPStyle) 
+		bBdo(oTS.bBdo), bPre(oTS.bPre), bQ(oTS.bQ), bAddSpaces(oTS.bAddSpaces), bMergeText(oTS.bMergeText), nLi(oTS.nLi), sRStyle(oTS.sRStyle), sPStyle(oTS.sPStyle)
 	{}
 
 	void AddRStyle(const std::wstring& wsStyle)
@@ -1824,7 +1827,7 @@ private:
 		m_oDocXml.WriteString(L"\"/>");
 		*/
 
-		readStream(&m_oDocXml, sSelectors, { false, false, true, false, -1, L"", L"" });
+		readStream(&m_oDocXml, sSelectors, {});
 	}
 
 	bool readInside (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, const std::wstring& sName)
@@ -1858,8 +1861,14 @@ private:
 			if (OpenR(oXml))
 			{
 				sRStyle = wrRPr(oXml, sSelectors, oTS);
+
+				if (oTS.bQ)
+					oXml->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
+
 				OpenT(oXml);
 			}
+			else if (oTS.bQ)
+				oXml->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
 
 			if(oTS.bBdo)
 				std::reverse(sText.begin(), sText.end());
@@ -1916,6 +1925,9 @@ private:
 
 			oXml->WriteEncodeXmlString(sText);
 
+			if (oTS.bQ)
+				oXml->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
+
 			if (!oTS.bMergeText)
 			{
 				CloseT(oXml);
@@ -1942,11 +1954,7 @@ private:
 		// Направление текста
 		else if(sName == L"bdo")
 		{
-			std::wstring sDir;
-			while(m_oLightReader.MoveToNextAttribute())
-				if(m_oLightReader.GetName() == L"dir")
-					sDir = m_oLightReader.GetText();
-			m_oLightReader.MoveToElement();
+			const std::wstring sDir{GetArgumentValue(L"dir")};
 
 			CTextSettings oTSBdo(oTS);
 			oTSBdo.bBdo = (sDir == L"rtl");
@@ -2076,26 +2084,9 @@ private:
 		// Цитата, выделенная кавычками, обычно выделяется курсивом
 		else if(sName == L"q")
 		{
-			wrP(oXml, sSelectors, oTS);
-			oXml->WriteString(L"<w:r>");
-			std::wstring sRStyle = wrRPr(oXml, sSelectors, oTS);
-			oXml->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t></w:r>");
-
-			CTextSettings oTSR(oTS);
-			oTSR.AddRStyle(L"<w:i/><w:iCs/>");
-			readStream(oXml, sSelectors, oTSR);
-
-			wrP(oXml, sSelectors, oTS);
-			oXml->WriteString(L"<w:r>");
-			if (!sRStyle.empty())
-			{
-				oXml->WriteString(L"<w:rPr><w:rStyle w:val=\"");
-				oXml->WriteString(sRStyle);
-				oXml->WriteString(L"\"/>");
-				oXml->WriteString(oTS.sRStyle);
-				oXml->WriteString(L"</w:rPr>");
-			}
-			oXml->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t></w:r>");
+			CTextSettings oTSQ(oTS);
+			oTSQ.bQ = true;
+			bResult = readStream(oXml, sSelectors, oTSQ);
 		}
 		// Текст верхнего регистра
 		else if(sName == L"rt" || sName == L"sup")
@@ -2881,35 +2872,18 @@ private:
 
 	void ImageAlternative(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, const std::wstring& wsAlt, const std::wstring& wsSrc, unsigned int unWidth, unsigned int unHeight)
 	{
-		if (wsAlt.empty())
-		{
-			//TODO:: реализовать отображение того, что картинку не удалось получить
-			if (wsSrc.empty())
-				WriteEmptyParagraph(oXml, false, m_oState.m_bInP);
-			else
-			{
-				m_oDocXmlRels.WriteString(L"<Relationship Id=\"rId");
-				m_oDocXmlRels.WriteString(std::to_wstring(m_nId));
-				m_oDocXmlRels.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"");
-				m_oDocXmlRels.WriteEncodeXmlString(wsSrc);
-				m_oDocXmlRels.WriteString(L"\" TargetMode=\"External\"/>");
+		m_oDocXmlRels.WriteString(L"<Relationship Id=\"rId");
+		m_oDocXmlRels.WriteString(std::to_wstring(m_nId));
+		m_oDocXmlRels.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"");
+		m_oDocXmlRels.WriteEncodeXmlString(wsSrc);
+		m_oDocXmlRels.WriteString(L"\" TargetMode=\"External\"/>");
 
-				const bool bOpenedP{OpenP(oXml)};
+		const bool bOpenedP{OpenP(oXml)};
 
-				WriteEmptyImage(oXml, 304800, 304800);
+		WriteEmptyImage(oXml, 304800, 304800, L"", wsAlt);
 
-				if (bOpenedP)
-					CloseP(oXml, sSelectors);
-			}
-			return;
-		}
-
-		wrP(oXml, sSelectors, oTS);
-		oXml->WriteString(L"<w:r>");
-		wrRPr(oXml, sSelectors, oTS);
-		oXml->WriteString(L"<w:t xml:space=\"preserve\">");
-		oXml->WriteEncodeXmlString(wsAlt);
-		oXml->WriteString(L"</w:t></w:r>");
+		if (bOpenedP)
+			CloseP(oXml, sSelectors);
 	}
 
 	void readImage  (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
@@ -3163,13 +3137,13 @@ private:
 		pXml->WriteString(L"\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>");
 	}
 
-	void WriteEmptyImage(NSStringUtils::CStringBuilder* pXml, int nWidth, int nHeight)
+	void WriteEmptyImage(NSStringUtils::CStringBuilder* pXml, int nWidth, int nHeight, const std::wstring& wsName = L"", const std::wstring& wsDescr = L"")
 	{
 		pXml->WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstring(nWidth) + L"\" cy=\"" + std::to_wstring(nHeight) + L"\"/><wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
-		pXml->WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_nId - 7) + L"\" name=\"\"/>");
+		pXml->WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_nId - 7) + L"\" name=\"" + wsName + L"\" descr=\"" + wsDescr + L"\"/>");
 		pXml->WriteString(L"<wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/></wp:cNvGraphicFramePr>");
 		pXml->WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
-		pXml->WriteString(L"<pic:nvPicPr><pic:cNvPr id=\"0\" name=\"\"/><pic:cNvPicPr><a:picLocks noChangeAspect=\"1\" noChangeArrowheads=\"1\"/></pic:cNvPicPr></pic:nvPicPr>");
+		pXml->WriteString(L"<pic:nvPicPr><pic:cNvPr id=\"0\" name=\"" + wsName + L"\" descr=\"" + wsDescr + L"\"/><pic:cNvPicPr><a:picLocks noChangeAspect=\"1\" noChangeArrowheads=\"1\"/></pic:cNvPicPr></pic:nvPicPr>");
 		pXml->WriteString(L"<pic:blipFill><a:blip r:link=\"rId" + std::to_wstring(m_nId++) + L"\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:srcRect/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>");
 		pXml->WriteString(L"<pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" + std::to_wstring(nWidth) + L"\" cy=\"" + std::to_wstring(nHeight) + L"\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></pic:spPr>");
 		pXml->WriteString(L"</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>");

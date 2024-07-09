@@ -147,5 +147,7 @@ namespace NSDocxRenderer
 
 		NSStructures::CFont m_oPrevFont;
 		NSStructures::CBrush m_oPrevBrush;
+
+		size_t m_nShapeOrder = 0;
 	};
 }

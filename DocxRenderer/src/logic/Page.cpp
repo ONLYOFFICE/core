@@ -265,6 +265,7 @@ namespace NSDocxRenderer
 			pShape->m_oPen.Size *= dDeterminant;
 
 			pShape->SetVector(std::move(m_oVector));
+			pShape->m_nOrder = ++m_nShapeOrder;
 			m_arShapes.push_back(pShape);
 		}
 	}
@@ -494,6 +495,13 @@ namespace NSDocxRenderer
 	{
 		if (m_arShapes.empty())
 			return;
+
+		using shape_ptr_t = std::shared_ptr<CShape>;
+		std::sort(m_arShapes.begin(), m_arShapes.end(), [] (const shape_ptr_t& a, const shape_ptr_t& b) {
+			if (!a) return false;
+			if (!b) return true;
+			return a->m_nOrder < b->m_nOrder;
+		});
 
 		using shape_ref_ptr_t = std::reference_wrapper<std::shared_ptr<CShape>>;
 		for (size_t i = 0; i < m_arShapes.size() - 1; i++)

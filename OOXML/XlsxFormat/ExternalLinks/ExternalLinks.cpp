@@ -206,6 +206,7 @@ namespace Spreadsheet
 		{
 			auto supBits(new XLSB::SupNameBits(type));
 			ptr->m_BrtSupNameBits = XLS::BaseObjectPtr{supBits};
+			supBits->sbt = 0x0000;
 			supBits->contentsExtName.iSheet = m_oSheetId->GetValue();
 			supBits->contentsExtName.fBuiltIn = false;
 		}
@@ -1329,12 +1330,19 @@ namespace Spreadsheet
 		{
 			ptr->m_BrtSupNameBits = XLS::BaseObjectPtr{new XLSB::SupNameBits(type)};
 			auto ptrSupNameBits = static_cast<XLSB::SupNameBits*>(ptr->m_BrtSupNameBits.get());
+			ptrSupNameBits->sbt = 0x0001;
 			if(m_oOle.IsInit())
+			{
 				ptrSupNameBits->contentsDDE.fOLE = m_oOle->ToBool();
+			}
 			if(m_oAdvise.IsInit())
+			{
 				ptrSupNameBits->contentsDDE.fWantAdvise  = m_oAdvise->ToBool();
+			}
 			if(m_oPreferPic.IsInit())
+			{
 				ptrSupNameBits->contentsDDE.fWantPict = m_oPreferPic->ToBool();
+			}
 		}
 		return ptr;
 	}
@@ -1591,6 +1599,7 @@ namespace Spreadsheet
 		{
 			coleItem->m_BrtSupNameBits = XLS::BaseObjectPtr{new XLSB::SupNameBits(type)};
 			auto ptrSupNameBits = static_cast<XLSB::SupNameBits*>(coleItem->m_BrtSupNameBits.get());
+			ptrSupNameBits->sbt = 0x0002;
 			if(m_oIcon.IsInit())
 				ptrSupNameBits->contentsOLE.fIcon = m_oIcon->ToBool();
 			if(m_oAdvise.IsInit())

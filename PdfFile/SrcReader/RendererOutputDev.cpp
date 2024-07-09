@@ -38,12 +38,9 @@
 #include "../lib/fofi/FoFiType1C.h"
 #include "../lib/fofi/FoFiIdentifier.h"
 #include "../lib/xpdf/Page.h"
-#include "../lib/xpdf/CMap.h"
 #include "../lib/xpdf/Dict.h"
 #include "../lib/xpdf/Stream.h"
 #include "../lib/xpdf/PDFDoc.h"
-//#include "FontFileTrueType.h"
-//#include "FontFileType1C.h"
 #include "../lib/xpdf/CharCodeToUnicode.h"
 #include "RendererOutputDev.h"
 #include "XmlUtils.h"
@@ -3794,8 +3791,8 @@ namespace PdfReader
 		{
 			m_pRenderer->put_FontSize(-dOldSize * dTextScale);
 
-			pNewTm[0] = pTm[0] * dITextScale * pGState->getHorizScaling();
-			pNewTm[1] = pTm[1] * dITextScale * pGState->getHorizScaling();
+			pNewTm[0] = -pTm[0] * dITextScale * pGState->getHorizScaling();
+			pNewTm[1] = -pTm[1] * dITextScale * pGState->getHorizScaling();
 			pNewTm[2] = pTm[2] * dITextScale;
 			pNewTm[3] = pTm[3] * dITextScale;
 			pNewTm[4] = dX;

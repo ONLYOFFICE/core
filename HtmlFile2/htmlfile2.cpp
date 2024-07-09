@@ -979,6 +979,7 @@ private:
 	NSStringUtils::CStringBuilder m_oDocXml;      // document.xml
 	NSStringUtils::CStringBuilder m_oNoteXml;     // footnotes.xml
 	NSStringUtils::CStringBuilder m_oNumberXml;   // numbering.xml
+	NSStringUtils::CStringBuilder m_oWebSettings; // webSettings.xml
 
 	struct TState
 	{
@@ -997,6 +998,7 @@ private:
 	std::vector<std::wstring>            m_arrImages;  // Картинки
 	std::map<std::wstring, std::wstring> m_mFootnotes; // Сноски
 	std::map<std::wstring, UINT>         m_mBookmarks; // Закладки
+	std::map<std::wstring, UINT>         m_mDivs;      // Div элементы
 public:
 
 	CHtmlFile2_Private() 
@@ -1019,6 +1021,7 @@ public:
 		m_oDocXml          .Clear();
 		m_oNoteXml         .Clear();
 		m_oNumberXml       .Clear();
+		m_oWebSettings     .Clear();
 	}
 
 	// Проверяет наличие тэга html
@@ -1098,15 +1101,6 @@ public:
 		{
 			oSettingsWriter.WriteStringUTF8(sSettings);
 			oSettingsWriter.CloseFile();
-		}
-
-		// webSettings.xml
-		std::wstring sWebSettings = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:webSettings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:optimizeForBrowser/></w:webSettings>";
-		NSFile::CFileBinary oWebWriter;
-		if (oWebWriter.CreateFileW(m_sDst + L"/word/webSettings.xml"))
-		{
-			oWebWriter.WriteStringUTF8(sWebSettings);
-			oWebWriter.CloseFile();
 		}
 
 		// numbering.xml
@@ -1192,6 +1186,7 @@ public:
 		m_oNoteXml     += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:footnotes xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" mc:Ignorable=\"w14 w15 wp14\">";
 		m_oNoteXml     += L"<w:footnote w:type=\"separator\" w:id=\"-1\"><w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r><w:separator/></w:r></w:p></w:footnote><w:footnote w:type=\"continuationSeparator\" w:id=\"0\"><w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r><w:continuationSeparator/></w:r></w:p></w:footnote>";
 		m_oStylesXml   += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:styles xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" mc:Ignorable=\"w14 w15\">";
+		m_oWebSettings += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:webSettings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:optimizeForBrowser/>";
 
 		m_nId += 7;
 
@@ -1320,6 +1315,18 @@ public:
 		{
 			oNumberingWriter.WriteStringUTF8(m_oNumberXml.GetData());
 			oNumberingWriter.CloseFile();
+		}
+
+		// webSettings.xml
+		if (!m_mDivs.empty())
+			m_oWebSettings.WriteString(L"</w:divs>");
+
+		m_oWebSettings.WriteString(L"</w:webSettings>");
+		NSFile::CFileBinary oWebSettingsWriter;
+		if (oWebSettingsWriter.CreateFileW(m_sDst + L"/word/webSettings.xml"))
+		{
+			oWebSettingsWriter.WriteStringUTF8(m_oWebSettings.GetData());
+			oWebSettingsWriter.CloseFile();
 		}
 	}
 
@@ -1690,6 +1697,56 @@ private:
 		pXml->WriteString(L"\"/><w:bookmarkEnd w:id=\"");
 		pXml->WriteString(sCrossId);
 		pXml->WriteString(L"\"/>");
+	}
+
+	std::wstring WriteDiv(NSStringUtils::CStringBuilder* pXml, std::vector<NSCSS::CNode>& sSelectors, CTextSettings& oTS)
+	{
+		if (NULL == pXml || sSelectors.empty())
+			return std::wstring();
+
+		const std::wstring wsKeyWord{sSelectors.back().m_wsName};
+
+		std::map<std::wstring, UINT>::const_iterator itFound = m_mDivs.find(wsKeyWord);
+
+		if (m_mDivs.end() != itFound)
+			return std::to_wstring(itFound->second);
+
+		const std::wstring wsId{std::to_wstring(m_mDivs.size() + 1)};
+
+		if (m_mDivs.empty())
+			pXml->WriteString(L"<w:divs>");
+
+		m_oStylesCalculator.GetCompiledStyle(oTS.oPriorityStyle, sSelectors);
+
+		INT nMarLeft  = 720;
+		INT nMarRight = 720;
+
+		if (!oTS.oPriorityStyle.m_oMargin.GetLeft().Empty() && !oTS.oPriorityStyle.m_oMargin.GetLeft().Zero())
+			nMarLeft  = oTS.oPriorityStyle.m_oMargin.GetLeft().ToInt(NSCSS::Twips, m_oPageData.GetWidth().ToInt(NSCSS::Twips));
+
+		if (!oTS.oPriorityStyle.m_oMargin.GetRight().Empty() && !oTS.oPriorityStyle.m_oMargin.GetRight().Zero())
+			nMarRight = oTS.oPriorityStyle.m_oMargin.GetRight().ToInt(NSCSS::Twips, m_oPageData.GetWidth().ToInt(NSCSS::Twips));
+
+		if (L"blockquote" == wsKeyWord)
+		{
+			pXml->WriteString(L"<w:div w:id=\"" + wsId + L"\">");
+			pXml->WriteString(L"<w:blockQuote w:val=\"1\"/>");
+			pXml->WriteString(L"<w:marLeft w:val=\"" + std::to_wstring(nMarLeft) + L"\"/>");
+			pXml->WriteString(L"<w:marRight w:val=\"" + std::to_wstring(nMarRight) + L"\"/>");
+			pXml->WriteString(L"<w:marTop w:val=\"100\"/>");
+			pXml->WriteString(L"<w:marBottom w:val=\"100\"/>");
+			pXml->WriteString(L"<w:divBdr>");
+			pXml->WriteString(L"<w:top w:val=\"none\" w:sz=\"0\" w:space=\"0\" w:color=\"auto\"/>");
+			pXml->WriteString(L"<w:left w:val=\"none\" w:sz=\"0\" w:space=\"0\" w:color=\"auto\"/>");
+			pXml->WriteString(L"<w:bottom w:val=\"none\" w:sz=\"0\" w:space=\"0\" w:color=\"auto\"/>");
+			pXml->WriteString(L"<w:right w:val=\"none\" w:sz=\"0\" w:space=\"0\" w:color=\"auto\"/>");
+			pXml->WriteString(L"</w:divBdr>");
+			pXml->WriteString(L"</w:div>");
+		}
+
+		m_mDivs.insert(std::make_pair(wsKeyWord, m_mDivs.size() + 1));
+
+		return wsId;
 	}
 
 	std::wstring GetSubClass(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors)
@@ -2159,8 +2216,14 @@ private:
 				else
 					bResult = readStream(&oXmlData, sSelectors, oTS);
 			}
+			else if (sName == L"blockquote")
+			{
+				CTextSettings oNewTS{oTS};
+				oNewTS.sPStyle += L"<w:divId w:val=\"" + WriteDiv(&m_oWebSettings, sSelectors, oNewTS) + L"\"/>";
+				bResult = readStream(&oXmlData, sSelectors, oNewTS);
+			}
 			// С нового абзаца
-			else if(sName == L"article" || sName == L"header" || sName == L"blockquote" || sName == L"main" || sName == L"dir" ||
+			else if(sName == L"article" || sName == L"header" || sName == L"main" || sName == L"dir" ||
 					sName == L"summary" || sName == L"footer" || sName == L"nav" || sName == L"figcaption" || sName == L"form" ||
 					sName == L"details" || sName == L"option" || sName == L"dt"  || sName == L"p"    ||
 					sName == L"section" || sName == L"figure" || sName == L"dl"  || sName == L"legend"     || sName == L"map"  ||
@@ -2997,6 +3060,12 @@ private:
 		NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
 
 		NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);
+
+		if (!oTS.oPriorityStyle.Empty())
+		{
+			NSCSS::CCompiledStyle oPriorityStyle{oTS.oPriorityStyle};
+			NSCSS::CCompiledStyle::StyleEquation(oPriorityStyle, oStyle);
+		}
 
 		std::wstring sPStyle = GetStyle(oStyle, true);
 

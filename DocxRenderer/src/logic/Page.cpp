@@ -165,27 +165,12 @@ namespace NSDocxRenderer
 	{
 		m_pTransform->TransformPoint(dX, dY);
 		m_oVector.MoveTo(dX, dY);
-
-		m_oPrevPoint.x = dX;
-		m_oPrevPoint.y = dY;
 	}
 
 	void CPage::LineTo(double& dX, double& dY)
 	{
 		m_pTransform->TransformPoint(dX, dY);
 		m_oVector.LineTo(dX, dY);
-
-		Point new_point;
-		new_point.x = dX;
-		new_point.y = dY;
-
-		std::pair<Point, Point> new_line;
-		new_line.first = m_oPrevPoint;
-		new_line.second = new_point;
-
-		m_arLines.push_back(new_line);
-
-		m_oPrevPoint = new_point;
 	}
 
 	void CPage::CurveTo(double& x1, double& y1, double& x2, double& y2, double& x3, double& y3)
@@ -195,9 +180,6 @@ namespace NSDocxRenderer
 		m_pTransform->TransformPoint(x3, y3);
 
 		m_oVector.CurveTo(x1, y1, x2, y2, x3, y3);
-
-		m_oPrevPoint.x = x3;
-		m_oPrevPoint.y = y3;
 	}
 
 	void CPage::PathStart()
@@ -356,26 +338,23 @@ namespace NSDocxRenderer
 
 
 		// if new text is close to current cont
-//		if (m_pCurrCont != nullptr &&
-//				fabs(m_pCurrCont->m_dBaselinePos - baseline) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
-//				m_oPrevFont.IsEqual2(m_pFont) &&
-//				m_oPrevBrush.IsEqual(m_pBrush) &&
-//				(fabs(m_pCurrCont->m_dRight - left) < m_pCurrCont->CalculateThinSpace()))
-//		{
-//			if (IsSpaceUtf32(oText) && m_pCurrCont->m_dFirstWordWidth == 0.0)
-//				m_pCurrCont->m_dFirstWordWidth = m_pCurrCont->m_dWidth;
+		if (m_pCurrCont != nullptr &&
+				fabs(m_pCurrCont->m_dBaselinePos - baseline) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
+				m_oPrevFont.IsEqual2(m_pFont) &&
+				m_oPrevBrush.IsEqual(m_pBrush) &&
+				(fabs(m_pCurrCont->m_dRight - left) < m_pCurrCont->CalculateThinSpace()))
+		{
+			m_pCurrCont->m_oText += oText;
+			m_pCurrCont->m_arSymbolLefts.push_back(left);
 
-//			m_pCurrCont->m_oText += oText;
-//			m_pCurrCont->m_arSymbolLefts.push_back(left);
+			m_pCurrCont->m_dRight = std::max(m_pCurrCont->m_dRight, right);
+			m_pCurrCont->m_dTop = std::min(m_pCurrCont->m_dTop, top);
+			m_pCurrCont->m_dBaselinePos = std::max(m_pCurrCont->m_dBaselinePos, baseline);
 
-//			m_pCurrCont->m_dRight = std::max(m_pCurrCont->m_dRight, right);
-//			m_pCurrCont->m_dTop = std::min(m_pCurrCont->m_dTop, top);
-//			m_pCurrCont->m_dBaselinePos = std::max(m_pCurrCont->m_dBaselinePos, baseline);
-
-//			m_pCurrCont->m_dWidth = m_pCurrCont->m_dRight - m_pCurrCont->m_dLeft;
-//			m_pCurrCont->m_dHeight = m_pCurrCont->m_dBaselinePos - m_pCurrCont->m_dTop;
-//			return;
-//		}
+			m_pCurrCont->m_dWidth = m_pCurrCont->m_dRight - m_pCurrCont->m_dLeft;
+			m_pCurrCont->m_dHeight = m_pCurrCont->m_dBaselinePos - m_pCurrCont->m_dTop;
+			return;
+		}
 
 		auto pCont = std::make_shared<CContText>(m_pFontManager);
 		auto oParams = m_pFontManager->GetFontSelectParams();
@@ -430,9 +409,10 @@ namespace NSDocxRenderer
 		pCont->m_bWriteStyleRaw = m_bWriteStyleRaw;
 		m_pParagraphStyleManager->UpdateAvgFontSize(m_pFont->Size);
 		m_arConts.push_back(pCont);
-//		m_pCurrCont = pCont;
-//		m_oPrevFont = *m_pFont;
-//		m_oPrevBrush = *m_pBrush;
+
+		m_pCurrCont = pCont;
+		m_oPrevFont = *m_pFont;
+		m_oPrevBrush = *m_pBrush;
 	}
 
 	void CPage::Analyze()
@@ -828,7 +808,7 @@ namespace NSDocxRenderer
 
 				for (size_t k = 0; k < curr_line->m_arConts.size(); ++k)
 				{
-					auto& curr_cont = curr_line->m_arConts[k];
+					std::shared_ptr<CContText> curr_cont = curr_line->m_arConts[k];
 					if (!curr_cont)
 						continue;
 
@@ -836,50 +816,72 @@ namespace NSDocxRenderer
 
 					bool is_crossing_text = IsLineCrossingText(shape, curr_cont) && is_width_equal;
 					bool is_below_text = IsLineBelowText(shape, curr_cont) && is_width_equal;
-
 					bool is_outline = IsOutline(shape, curr_cont);
-
-					// often highlight is rectangle whose height is equal to height of the line.
 					bool is_highlight = IsHighlight(shape, curr_cont) && curr_line->m_dHeight * 1.5 > shape->m_dHeight;
 
-					if (is_crossing_text)
+					bool is_smth_true = is_crossing_text || is_below_text || is_outline || is_highlight;
+					if (is_smth_true)
 					{
-						curr_cont->m_bIsStrikeoutPresent = true;
-						if (shape->m_eLineType == eLineType::ltDouble)
-							curr_cont->m_bIsDoubleStrikeout = true;
-					}
+						// if crossing a part of cont - split it
+						if (shape->m_dLeft > curr_cont->m_dLeft)
+						{
+							auto another_cont = curr_cont->Split(shape->m_dLeft);
+							if (another_cont != nullptr)
+							{
+								curr_line->m_arConts.insert(curr_line->m_arConts.begin() + k, another_cont);
+								++k;
+								curr_cont = another_cont;
+							}
+						}
+						if (shape->m_dRight < curr_cont->m_dRight)
+						{
+							auto another_cont = curr_cont->Split(shape->m_dRight);
+							if (another_cont != nullptr)
+							{
+								curr_line->m_arConts.insert(curr_line->m_arConts.begin() + k + 1, another_cont);
+								++k;
+							}
+						}
 
-					else if (is_below_text)
-					{
-						curr_cont->m_bIsUnderlinePresent = true;
-						curr_cont->m_eUnderlineType  = shape->m_eLineType;
-						curr_cont->m_lUnderlineColor = shape->m_dHeight > 0.3 ? shape->m_oBrush.Color1 : shape->m_oPen.Color;
-					}
+						if (is_crossing_text)
+						{
+							curr_cont->m_bIsStrikeoutPresent = true;
+							if (shape->m_eLineType == eLineType::ltDouble)
+								curr_cont->m_bIsDoubleStrikeout = true;
+						}
 
-					else if (is_highlight)
-					{
-						curr_cont->m_pShape = shape;
-						curr_cont->m_bIsHighlightPresent = true;
-						curr_cont->m_lHighlightColor = shape->m_oBrush.Color1;
-					}
+						else if (is_below_text)
+						{
+							curr_cont->m_bIsUnderlinePresent = true;
+							curr_cont->m_eUnderlineType  = shape->m_eLineType;
+							curr_cont->m_lUnderlineColor = shape->m_dHeight > 0.3 ? shape->m_oBrush.Color1 : shape->m_oPen.Color;
+						}
 
-					else if (is_outline)
-					{
-						auto oBrush = curr_cont->m_pFontStyle->oBrush;
-						oBrush.Color1 = shape->m_oPen.Color;
+						else if (is_highlight)
+						{
+							curr_cont->m_pShape = shape;
+							curr_cont->m_bIsHighlightPresent = true;
+							curr_cont->m_lHighlightColor = shape->m_oBrush.Color1;
+						}
 
-						curr_cont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(oBrush,
-							curr_cont->m_pFontStyle->wsFontName,
-							curr_cont->m_pFontStyle->dFontSize,
-							curr_cont->m_pFontStyle->bItalic,
-							curr_cont->m_pFontStyle->bBold);
+						else if (is_outline)
+						{
+							auto oBrush = curr_cont->m_pFontStyle->oBrush;
+							oBrush.Color1 = shape->m_oPen.Color;
 
-						curr_cont->m_bIsShadowPresent = true;
-						curr_cont->m_bIsOutlinePresent = true;
+							curr_cont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(oBrush,
+								curr_cont->m_pFontStyle->wsFontName,
+								curr_cont->m_pFontStyle->dFontSize,
+								curr_cont->m_pFontStyle->bItalic,
+								curr_cont->m_pFontStyle->bBold);
+
+							curr_cont->m_bIsShadowPresent = true;
+							curr_cont->m_bIsOutlinePresent = true;
+						}
 					}
 
 					// проверили - удаляем
-					if (is_crossing_text || is_below_text || is_outline || is_highlight)
+					if (is_smth_true)
 						shape_used = true;
 				}
 			}
@@ -1141,6 +1143,37 @@ namespace NSDocxRenderer
 			 pCurrLine->MergeConts();
 		}
 		DetermineDominantGraphics();
+
+		// first word width setup
+		for (auto& line : m_arTextLines)
+		{
+			if (!line)
+				continue;
+
+			bool next_line = false;
+			for (auto& cont : line->m_arConts)
+			{
+				if (!cont)
+					continue;
+
+				auto text = cont->m_oText.ToStdWString();
+				for (size_t i = 0; i < text.size(); ++i)
+				{
+					if (text[i] == L' ')
+					{
+						line->m_dFirstWordWidth = cont->m_arSymbolLefts[i] - line->m_dLeft;
+						next_line = true;
+						break;
+					}
+				}
+				if (next_line)
+					break;
+			}
+			if (next_line)
+				continue;
+
+			line->m_dFirstWordWidth = line->m_dWidth;
+		}
 	}
 
 	void CPage::DetermineDominantGraphics()
@@ -1704,8 +1737,8 @@ namespace NSDocxRenderer
 				}
 
 				std::shared_ptr<CContText> cont = line_bot->m_arConts[0];
-				double line_with_first_right = line_top->m_dRight + cont->m_dFirstWordWidth;
-				double line_with_first_left = line_top->m_dLeft - cont->m_dFirstWordWidth;
+				double line_with_first_right = line_top->m_dRight + line_bot->m_dFirstWordWidth;
+				double line_with_first_left = line_top->m_dLeft - line_bot->m_dFirstWordWidth;
 
 				curr_max_right = std::max(curr_max_right, line_bot->m_dRight);
 				curr_min_left = std::min(curr_min_left, line_bot->m_dLeft);

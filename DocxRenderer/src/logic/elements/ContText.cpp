@@ -69,6 +69,12 @@ namespace NSDocxRenderer
 		m_dBotWithDescent = rCont.m_dBotWithDescent;
 
 		m_oSelectedFont = rCont.m_oSelectedFont;
+		m_bPossibleSplit = rCont.m_bPossibleSplit;
+
+		m_arSymbolLefts.clear();
+		m_arSymbolLefts.resize(rCont.m_arSymbolLefts.size());
+		for (size_t i = 0; i < rCont.m_arSymbolLefts.size(); ++i)
+			m_arSymbolLefts[i] = rCont.m_arSymbolLefts[i];
 
 		return *this;
 	}
@@ -94,6 +100,57 @@ namespace NSDocxRenderer
 			m_oSelectedSizes.dWidth = dBoxWidth;
 			m_oSelectedSizes.dHeight = dBoxHeight;
 		}
+	}
+
+
+	size_t CContText::GetLength() const noexcept
+	{
+		return m_oText.length();
+	}
+
+	std::shared_ptr<CContText> CContText::Split(size_t index)
+	{
+		const size_t len = GetLength();
+		if (index >= len - 1)
+			return nullptr;
+
+		auto cont = std::make_shared<CContText>(*this);
+		cont->m_oText = m_oText.substr(index + 1, (len - (index + 1)));
+		cont->m_dLeft = m_arSymbolLefts[index + 1];
+		cont->m_dWidth = cont->m_dRight - cont->m_dLeft;
+
+		cont->m_arSymbolLefts.clear();
+		for (size_t i = index + 1; i < len; ++i)
+			cont->m_arSymbolLefts.push_back(m_arSymbolLefts[i]);
+
+		m_oText = m_oText.substr(0, index + 1);
+		m_dRight = m_arSymbolLefts[index + 1];
+		m_dWidth = m_dRight - m_dLeft;
+		m_arSymbolLefts.resize(index + 1);
+		m_bPossibleSplit = false;
+
+		return cont;
+	}
+	std::shared_ptr<CContText> CContText::Split(double dLeft)
+	{
+		if (dLeft < m_dLeft)
+			return nullptr;
+
+		auto it = std::lower_bound(m_arSymbolLefts.begin(), m_arSymbolLefts.end(), dLeft);
+
+		if (it == m_arSymbolLefts.end())
+			return nullptr;
+
+		size_t index = std::distance(m_arSymbolLefts.begin(), it);
+
+		// if a little overlapped the next one - take the previous one
+		if (abs(m_arSymbolLefts[index] - dLeft) < c_dTHE_STRING_X_PRECISION_MM)
+			index--;
+
+		if (index < 0)
+			return nullptr;
+
+		return Split(index);
 	}
 
 	eVerticalCrossingType CContText::GetVerticalCrossingType(const CContText* pCont) const noexcept
@@ -553,6 +610,7 @@ namespace NSDocxRenderer
 				pSecondCont->m_pCont = pFirstCont;
 				pFirstCont->m_eVertAlignType = eVertAlignType::vatBase;
 				pFirstCont->m_pCont = pSecondCont;
+				pFirstCont->m_bPossibleSplit = false;
 				return true;
 			}
 			else if (bIf2 && bIf5)
@@ -561,6 +619,7 @@ namespace NSDocxRenderer
 				pSecondCont->m_pCont = pFirstCont;
 				pFirstCont->m_eVertAlignType = eVertAlignType::vatBase;
 				pFirstCont->m_pCont = pSecondCont;
+				pFirstCont->m_bPossibleSplit = false;
 				return true;
 			}
 			else if (bIf1 && bIf6)
@@ -569,6 +628,7 @@ namespace NSDocxRenderer
 				pFirstCont->m_pCont = pSecondCont;
 				pSecondCont->m_eVertAlignType = eVertAlignType::vatBase;
 				pSecondCont->m_pCont = pFirstCont;
+				pSecondCont->m_bPossibleSplit = false;
 				return true;
 			}
 			else if (bIf2 && bIf6)
@@ -577,6 +637,7 @@ namespace NSDocxRenderer
 				pFirstCont->m_pCont = pSecondCont;
 				pSecondCont->m_eVertAlignType = eVertAlignType::vatBase;
 				pSecondCont->m_pCont = pFirstCont;
+				pSecondCont->m_bPossibleSplit = false;
 				return true;
 			}
 		}

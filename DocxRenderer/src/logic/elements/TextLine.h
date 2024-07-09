@@ -30,6 +30,8 @@ namespace NSDocxRenderer
 		double m_dTopWithMaxAscent{0};
 		double m_dBotWithMaxDescent{0};
 
+		double m_dFirstWordWidth{0.0};
+
 	public:
 		CTextLine() = default;
 		virtual ~CTextLine();

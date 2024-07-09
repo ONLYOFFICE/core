@@ -69,16 +69,14 @@ namespace NSDocxRenderer
 			bool bIsSplitDelta = dDifference > dSpaceDefaultSize * 2;
 			bool bIsVeryBigDelta = dDifference > dSpaceWideSize;
 
-			if ((IsSpaceUtf32(pCurrent->m_oText[0]) || bIsBigDelta) && pFirst->m_dFirstWordWidth == 0.0)
-				pFirst->m_dFirstWordWidth = pFirst->m_dWidth;
-
-			if (bIsVeryBigDelta || (pCurrent->m_bPossibleSplit && bIsSplitDelta))
+			if (bIsBigDelta || (pCurrent->m_bPossibleSplit && bIsSplitDelta))
 			{
 				auto wide_space = std::make_shared<CContText>(pFirst->m_pManager);
 
 				// sets all members for wide_space except highlight things
 				auto set_base = [&pFirst, &pCurrent, &wide_space] () {
 					wide_space->m_dLeft = pFirst->m_dRight;
+					wide_space->m_arSymbolLefts.push_back(wide_space->m_dLeft);
 					wide_space->m_dRight = pCurrent->m_dLeft;
 					wide_space->m_dWidth = wide_space->m_dRight - wide_space->m_dLeft;
 					wide_space->m_oText = L" ";
@@ -113,11 +111,17 @@ namespace NSDocxRenderer
 				if (!bIsBigDelta)
 				{
 					pFirst->m_oText += pCurrent->m_oText;
+					for (auto left : pCurrent->m_arSymbolLefts)
+						pFirst->m_arSymbolLefts.push_back(left);
 				}
 				else
 				{
 					pFirst->m_oText += uint32_t(' ');
 					pFirst->m_oText += pCurrent->m_oText;
+
+					pFirst->m_arSymbolLefts.push_back(pFirst->m_dRight);
+					for (auto left : pCurrent->m_arSymbolLefts)
+						pFirst->m_arSymbolLefts.push_back(left);
 				}
 
 				pFirst->m_dWidth = pCurrent->m_dRight - pFirst->m_dLeft;
@@ -141,13 +145,16 @@ namespace NSDocxRenderer
 						{
 							pFirst->m_oText += L" ";
 							pFirst->m_dWidth += (pCurrent->m_dLeft - pFirst->m_dRight);
+							pFirst->m_arSymbolLefts.push_back(pFirst->m_dRight);
 						}
 						else
 						{
 							NSStringUtils::CStringUTF32 oNewText = L" ";
 							oNewText += pCurrent->m_oText;
 							pCurrent->m_oText = oNewText;
-							pCurrent->m_dWidth += (pCurrent->m_dLeft - pFirst->m_dRight);
+							pCurrent->m_dLeft = pFirst->m_dRight;
+							pCurrent->m_dWidth = pCurrent->m_dRight - pCurrent->m_dLeft;
+							pCurrent->m_arSymbolLefts.insert(pCurrent->m_arSymbolLefts.begin(), pCurrent->m_dLeft);
 						}
 					}
 				}
@@ -162,9 +169,6 @@ namespace NSDocxRenderer
 		std::sort(m_arConts.begin(), m_arConts.end(), [] (const cont_ptr_t& a, const cont_ptr_t& b) {
 			return a->m_dLeft < b->m_dLeft;
 		});
-
-		if (m_arConts.size() == 1 && m_arConts[0] && m_arConts[0]->m_dFirstWordWidth == 0.0)
-			m_arConts[0]->m_dFirstWordWidth = m_arConts[0]->m_dWidth;
 	}
 
 	void CTextLine::RecalcSizes()

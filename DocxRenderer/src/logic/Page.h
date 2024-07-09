@@ -147,8 +147,5 @@ namespace NSDocxRenderer
 
 		NSStructures::CFont m_oPrevFont;
 		NSStructures::CBrush m_oPrevBrush;
-
-		Point m_oPrevPoint;
-		std::vector<std::pair<Point, Point>> m_arLines;
 	};
 }

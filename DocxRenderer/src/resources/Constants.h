@@ -19,6 +19,7 @@ const double c_dDegreeToAngle = 60000.0;
 
 const double c_dSTANDART_STRING_HEIGHT_MM       = 4.2333333333333334;
 const double c_dTHE_SAME_STRING_Y_PRECISION_MM  = 0.01;
+const double c_dTHE_SAME_STRING_X_PRECISION_MM  = 0.01;
 const double c_dLINE_DISTANCE_ERROR_MM          = 0.03;
 const double c_dERROR_OF_PARAGRAPH_BORDERS_MM   = 1.0;
 const double c_dERROR_GAP                       = 1.5;

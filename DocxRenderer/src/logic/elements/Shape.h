@@ -53,9 +53,6 @@ namespace NSDocxRenderer
 		std::vector<std::shared_ptr<COutputObject>> m_arOutputObjects;
 		std::shared_ptr<CImageInfo> m_pImageInfo{nullptr};
 
-	private:
-
-
 	public:
 		CShape();
 		CShape(std::shared_ptr<CImageInfo> pInfo, const std::wstring& strDstMedia);

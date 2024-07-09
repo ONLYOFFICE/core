@@ -35,14 +35,13 @@ namespace NSDocxRenderer
 	public:
 		// utils
 		std::shared_ptr<const CFontStyle> m_pFontStyle{nullptr};
-		CFontManager* m_pManager                      {nullptr};
 
-		// background graphics
-		std::shared_ptr<CShape> m_pShape              {nullptr};
+		CFontManager* m_pManager        {nullptr};
+		std::shared_ptr<CShape> m_pShape{nullptr};
 
 		// super/sub script
-		std::weak_ptr<CContText> m_pCont              {};
-		eVertAlignType m_eVertAlignType               {eVertAlignType::vatUnknown};
+		std::weak_ptr<CContText> m_pCont {};
+		eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
 
 		// highlights
 		bool m_bIsStrikeoutPresent{false};
@@ -72,9 +71,6 @@ namespace NSDocxRenderer
 
 		bool m_bIsAddBrEnd{false};
 		bool m_bWriteStyleRaw{false};
-
-		double m_dFirstWordWidth{0};
-
 		bool m_bPossibleSplit{false};
 
 		std::vector<double> m_arSymbolLefts;
@@ -89,8 +85,13 @@ namespace NSDocxRenderer
 		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
 		virtual eVerticalCrossingType GetVerticalCrossingType(const CContText* pItem) const noexcept;
 
-		// calc sizes in selected font (uses m_pFontStyle & m_pManager)
+		// calc sizes in selected font (uses m_oSelectedFont & m_pManager)
 		void CalcSelected();
+
+		size_t GetLength() const noexcept;
+
+		std::shared_ptr<CContText> Split(size_t index);
+		std::shared_ptr<CContText> Split(double dLeft);
 
 		CContText& operator=(const CContText& rCont);
 		bool IsEqual(const CContText* pCont) const noexcept;

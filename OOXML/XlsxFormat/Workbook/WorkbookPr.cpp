@@ -261,26 +261,26 @@ namespace OOX
 				auto ptr(new XLSB::BookProtectionIso);
 				objectPtr = XLS::BaseObjectPtr{ptr};
 
-                if(m_oLockRevision.IsInit())
-                    ptr->wFlags.fLockRevision = m_oLockRevision->GetValue();
-                else
-                    ptr->wFlags.fLockRevision = false;
-                if(m_oLockStructure.IsInit())
-                    ptr->wFlags.fLockStructure = m_oLockStructure->GetValue();
-                else
-                    ptr->wFlags.fLockStructure = false;
-                if(m_oLockWindows.IsInit())
-                    ptr->wFlags.fLockWindow = m_oLockWindows->GetValue();
-                else
-                    ptr->wFlags.fLockWindow = false;
-                if(m_oWorkbookAlgorithmName.IsInit())
-                    ptr->ipdBookPasswordData.szAlgName = m_oWorkbookAlgorithmName->GetValue();
-                else
-                    ptr->ipdBookPasswordData.szAlgName.setSize(0xFFFFFFFF);
-                if(m_oWorkbookSpinCount.IsInit())
-                    ptr->dwBookSpinCount = m_oWorkbookSpinCount->GetValue();
-                else
-                    ptr->dwBookSpinCount = 100000;
+				if(m_oLockRevision.IsInit())
+					ptr->wFlags.fLockRevision = m_oLockRevision->GetValue();
+				else
+					ptr->wFlags.fLockRevision = false;
+				if(m_oLockStructure.IsInit())
+					ptr->wFlags.fLockStructure = m_oLockStructure->GetValue();
+				else
+					ptr->wFlags.fLockStructure = false;
+				if(m_oLockWindows.IsInit())
+					ptr->wFlags.fLockWindow = m_oLockWindows->GetValue();
+				else
+					ptr->wFlags.fLockWindow = false;
+				if(m_oWorkbookAlgorithmName.IsInit())
+					ptr->ipdBookPasswordData.szAlgName = m_oWorkbookAlgorithmName->GetValue();
+				else
+					ptr->ipdBookPasswordData.szAlgName.setSize(0xFFFFFFFF);
+				if(m_oWorkbookSpinCount.IsInit())
+					ptr->dwBookSpinCount = m_oWorkbookSpinCount->GetValue();
+				else
+					ptr->dwBookSpinCount = 100000;
 
 				if(m_oWorkbookHashValue.IsInit())
 				{

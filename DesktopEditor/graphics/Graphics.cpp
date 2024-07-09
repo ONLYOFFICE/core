@@ -1333,7 +1333,7 @@ namespace Aggplus
 
 		if (NULL == m_pAlphaMask)
 		{
-			if (m_nBlendMode != agg::comp_op_src_over && m_nBlendMode != agg::comp_op_multiply && m_nBlendMode != agg::comp_op_screen)
+			if (m_nBlendMode != agg::comp_op_src_over)// && m_nBlendMode != agg::comp_op_multiply && m_nBlendMode != agg::comp_op_screen && m_nBlendMode != agg::comp_op_darken)
 			{
 				pixfmt_type_comp pixfmt(m_frame_buffer.ren_buf(), m_nBlendMode);
 				Aggplus::BlendTo(pCurrentGraphicsLayer, pixfmt, m_nBlendMode);

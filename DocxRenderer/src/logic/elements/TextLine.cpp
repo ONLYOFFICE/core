@@ -76,6 +76,7 @@ namespace NSDocxRenderer
 				// sets all members for wide_space except highlight things
 				auto set_base = [&pFirst, &pCurrent, &wide_space] () {
 					wide_space->m_dLeft = pFirst->m_dRight;
+					wide_space->m_arSymbolLefts.clear();
 					wide_space->m_arSymbolLefts.push_back(wide_space->m_dLeft);
 					wide_space->m_dRight = pCurrent->m_dLeft;
 					wide_space->m_dWidth = wide_space->m_dRight - wide_space->m_dLeft;

@@ -134,6 +134,8 @@ namespace NSDocxRenderer
 			pShape = nullptr;
 
 			this->m_eGraphicsType = eGraphicsType::gtComplicatedFigure;
+			this->m_eLineType = eLineType::ltUnknown;
+			this->m_eSimpleLineType = eSimpleLineType::sltUnknown;
 			return true;
 		}
 		return false;
@@ -328,12 +330,14 @@ namespace NSDocxRenderer
 				{
 					pFirstShape->m_eLineType = eLineType::ltDouble;
 					pFirstShape->RecalcWithNewItem(pSecondShape.get());
+					pFirstShape->m_oVector.Join(std::move(pSecondShape->m_oVector));
 					pSecondShape = nullptr;
 				}
 				else
 				{
 					pSecondShape->m_eLineType = eLineType::ltDouble;
 					pSecondShape->RecalcWithNewItem(pFirstShape.get());
+					pSecondShape->m_oVector.Join(std::move(pFirstShape->m_oVector));
 					pFirstShape = nullptr;
 				}
 			}
@@ -343,12 +347,14 @@ namespace NSDocxRenderer
 				{
 					pFirstShape->m_eLineType = eLineType::ltWavyDouble;
 					pFirstShape->RecalcWithNewItem(pSecondShape.get());
+					pFirstShape->m_oVector.Join(std::move(pSecondShape->m_oVector));
 					pSecondShape = nullptr;
 				}
 				else
 				{
 					pSecondShape->m_eLineType = eLineType::ltWavyDouble;
 					pSecondShape->RecalcWithNewItem(pFirstShape.get());
+					pSecondShape->m_oVector.Join(std::move(pFirstShape->m_oVector));
 					pFirstShape = nullptr;
 				}
 			}
@@ -365,12 +371,14 @@ namespace NSDocxRenderer
 				{
 					pFirstShape->m_eLineType = eLineType::ltDouble;
 					pFirstShape->RecalcWithNewItem(pSecondShape.get());
+					pFirstShape->m_oVector.Join(std::move(pSecondShape->m_oVector));
 					pSecondShape = nullptr;
 				}
 				else
 				{
 					pSecondShape->m_eLineType = eLineType::ltDouble;
 					pSecondShape->RecalcWithNewItem(pFirstShape.get());
+					pSecondShape->m_oVector.Join(std::move(pFirstShape->m_oVector));
 					pFirstShape = nullptr;
 				}
 			}
@@ -380,12 +388,14 @@ namespace NSDocxRenderer
 				{
 					pFirstShape->m_eLineType = eLineType::ltWavyDouble;
 					pFirstShape->RecalcWithNewItem(pSecondShape.get());
+					pFirstShape->m_oVector.Join(std::move(pSecondShape->m_oVector));
 					pSecondShape = nullptr;
 				}
 				else
 				{
 					pSecondShape->m_eLineType = eLineType::ltWavyDouble;
 					pSecondShape->RecalcWithNewItem(pFirstShape.get());
+					pSecondShape->m_oVector.Join(std::move(pFirstShape->m_oVector));
 					pFirstShape = nullptr;
 				}
 			}
@@ -452,6 +462,7 @@ namespace NSDocxRenderer
 			}
 
 			pFirstShape->RecalcWithNewItem(pSecondShape.get());
+			pFirstShape->m_oVector.Join(std::move(pSecondShape->m_oVector));
 			pSecondShape = nullptr;
 			return;
 		}
@@ -558,6 +569,7 @@ namespace NSDocxRenderer
 		if (passed)
 		{
 			pFirstShape->RecalcWithNewItem(pSecondShape.get());
+			pFirstShape->m_oVector.Join(std::move(pSecondShape->m_oVector));
 			pSecondShape = nullptr;
 		}
 	}

@@ -489,6 +489,18 @@ namespace NSDocxRenderer
 			curr_line->AddCont(cont);
 			m_arTextLines.push_back(curr_line);
 		}
+
+		for (size_t i = 0; i < m_arTextLines.size(); i++)
+		{
+			bool only_spaces = true;
+			for (auto& cont : m_arTextLines[i]->m_arConts)
+				for (size_t j = 0; j < cont->m_oText.length(); ++j)
+					if (!IsSpaceUtf32(cont->m_oText[j]))
+						only_spaces = false;
+
+			if (only_spaces)
+				m_arTextLines.erase(m_arTextLines.begin() + i, m_arTextLines.begin() + i + 1);
+		}
 	}
 
 	void CPage::MergeShapes()
@@ -1306,9 +1318,9 @@ namespace NSDocxRenderer
 		for (size_t index = 0; index < m_arTextLines.size(); ++index)
 		{
 			auto& line = m_arTextLines[index];
+			bool next_line = false;
 			for (size_t i = 0; i < line->m_arConts.size(); ++i)
 			{
-				bool next = false;
 				bool is_space = line->m_arConts[i] && line->m_arConts[i]->m_oText.ToStdWString() == L" ";
 				bool is_cont_wide = line->m_arConts[i]->m_dWidth > c_dLINE_SPLIT_DISTANCE_MM;
 
@@ -1338,11 +1350,23 @@ namespace NSDocxRenderer
 					line_first->AddConts(line_conts_first);
 					line_second->AddConts(line_conts_second);
 
-					m_arTextLines.push_back(line_second);
-					m_arTextLines[index] = line_first;
+					if (!line_second->m_arConts.empty())
+						m_arTextLines.push_back(line_second);
+
+					if (m_arTextLines[index]->m_arConts.empty())
+					{
+						m_arTextLines.erase(m_arTextLines.begin() + index, m_arTextLines.begin() + index + 1);
+						index--;
+					}
+					else
+						m_arTextLines[index] = line_first;
+
+					next_line = true;
 					break;
 				}
 			}
+			if (next_line)
+				continue;
 		}
 		using line_ptr_t = std::shared_ptr<CTextLine>;
 		std::sort(m_arTextLines.begin(), m_arTextLines.end(), [] (const line_ptr_t& a, const line_ptr_t& b) {

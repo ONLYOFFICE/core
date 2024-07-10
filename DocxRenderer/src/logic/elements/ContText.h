@@ -41,7 +41,7 @@ namespace NSDocxRenderer
 
 		// super/sub script
 		std::weak_ptr<CContText> m_pCont {};
-		eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
+		eVertAlignType m_eVertAlignType  {eVertAlignType::vatUnknown};
 
 		// highlights
 		bool m_bIsStrikeoutPresent{false};
@@ -66,14 +66,11 @@ namespace NSDocxRenderer
 		double m_dTopWithAscent{0};
 		double m_dBotWithDescent{0};
 
-		NSStringUtils::CStringUTF32 m_oText{};
 		UINT m_iNumDuplicates{0};
 
 		bool m_bIsAddBrEnd{false};
 		bool m_bWriteStyleRaw{false};
 		bool m_bPossibleSplit{false};
-
-		std::vector<double> m_arSymbolLefts;
 
 		CContText() = default;
 		CContText(CFontManager* pManager) : m_pManager(pManager) {}
@@ -89,6 +86,17 @@ namespace NSDocxRenderer
 		void CalcSelected();
 
 		size_t GetLength() const noexcept;
+		void AddTextBack(const NSStringUtils::CStringUTF32& oText, const std::vector<double>& arSymWidths);
+		void AddTextFront(const NSStringUtils::CStringUTF32& oText, const std::vector<double>& arSymWidths);
+		void SetText(const NSStringUtils::CStringUTF32& oText, const std::vector<double>& arSymWidths);
+
+		void AddSymBack(uint32_t cSym, double nWidth);
+		void AddSymFront(uint32_t cSym, double nWidth);
+		void SetSym(uint32_t cSym, double nWidth);
+
+		const NSStringUtils::CStringUTF32& GetText() const noexcept;
+		const std::vector<double>& GetSymWidths() const noexcept;
+		const std::vector<double> GetSymLefts() const noexcept;
 
 		std::shared_ptr<CContText> Split(size_t index);
 		std::shared_ptr<CContText> Split(double dLeft);
@@ -98,6 +106,8 @@ namespace NSDocxRenderer
 
 		UINT GetNumberOfFeatures() const noexcept;
 		bool IsDuplicate(CContText *pCont, eVerticalCrossingType eVType) const noexcept;
+
+		bool IsOnlySpaces();
 
 		// check font effect and delete not needed cont
 		// return true if was deleted
@@ -113,7 +123,10 @@ namespace NSDocxRenderer
 			eVerticalCrossingType eVType,
 			eHorizontalCrossingType eHType);
 
-		double CalculateWideSpace() const noexcept;
-		double CalculateThinSpace() const noexcept;
+		double CalculateSpace() const noexcept;
+
+	private:
+		NSStringUtils::CStringUTF32 m_oText{};
+		std::vector<double> m_arSymWidths{};
 	};
 }

@@ -71,10 +71,10 @@ namespace NSDocxRenderer
 		m_oSelectedFont = rCont.m_oSelectedFont;
 		m_bPossibleSplit = rCont.m_bPossibleSplit;
 
-		m_arSymbolLefts.clear();
-		m_arSymbolLefts.resize(rCont.m_arSymbolLefts.size());
-		for (size_t i = 0; i < rCont.m_arSymbolLefts.size(); ++i)
-			m_arSymbolLefts[i] = rCont.m_arSymbolLefts[i];
+		m_arSymWidths.clear();
+		m_arSymWidths.resize(rCont.m_arSymWidths.size());
+		for (size_t i = 0; i < rCont.m_arSymWidths.size(); ++i)
+			m_arSymWidths[i] = rCont.m_arSymWidths[i];
 
 		return *this;
 	}
@@ -114,19 +114,21 @@ namespace NSDocxRenderer
 		if (index >= len - 1)
 			return nullptr;
 
+		auto lefts = GetSymLefts();
+
 		auto cont = std::make_shared<CContText>(*this);
 		cont->m_oText = m_oText.substr(index + 1, (len - (index + 1)));
-		cont->m_dLeft = m_arSymbolLefts[index + 1];
+		cont->m_dLeft = lefts[index + 1];
 		cont->m_dWidth = cont->m_dRight - cont->m_dLeft;
 
-		cont->m_arSymbolLefts.clear();
+		cont->m_arSymWidths.clear();
 		for (size_t i = index + 1; i < len; ++i)
-			cont->m_arSymbolLefts.push_back(m_arSymbolLefts[i]);
+			cont->m_arSymWidths.push_back(m_arSymWidths[i]);
 
 		m_oText = m_oText.substr(0, index + 1);
-		m_dRight = m_arSymbolLefts[index + 1];
+		m_dRight = cont->m_dLeft;
 		m_dWidth = m_dRight - m_dLeft;
-		m_arSymbolLefts.resize(index + 1);
+		m_arSymWidths.resize(index + 1);
 		m_bPossibleSplit = false;
 
 		return cont;
@@ -136,19 +138,24 @@ namespace NSDocxRenderer
 		if (dLeft < m_dLeft)
 			return nullptr;
 
-		auto it = std::lower_bound(m_arSymbolLefts.begin(), m_arSymbolLefts.end(), dLeft);
+		auto lefts = GetSymLefts();
+		auto it = std::lower_bound(lefts.begin(), lefts.end(), dLeft);
 
-		if (it == m_arSymbolLefts.end())
+		if (it == lefts.end())
 			return nullptr;
 
-		size_t index = std::distance(m_arSymbolLefts.begin(), it);
-
-		// if a little overlapped the next one - take the previous one
-		if (abs(m_arSymbolLefts[index] - dLeft) < c_dTHE_STRING_X_PRECISION_MM)
-			index--;
-
-		if (index < 0)
+		size_t index = std::distance(lefts.begin(), it);
+		if (index == 0)
 			return nullptr;
+
+		index--;
+
+		 // if a little overlapped the next one - take the previous one
+		 if (abs(lefts[index] - dLeft) < c_dTHE_STRING_X_PRECISION_MM)
+			 index--;
+
+		 if (index == 0)
+			 return nullptr;
 
 		return Split(index);
 	}
@@ -495,6 +502,99 @@ namespace NSDocxRenderer
 		return false;
 	}
 
+	bool CContText::IsOnlySpaces()
+	{
+		bool only_spaces = true;
+		for (size_t j = 0; j < m_oText.length(); ++j)
+		{
+			if (!IsSpaceUtf32(m_oText[j]))
+			{
+				only_spaces = false;
+				break;
+			}
+		}
+		return only_spaces;
+	}
+
+	void CContText::AddTextBack(const NSStringUtils::CStringUTF32& oText, const std::vector<double>& arSymWidths)
+	{
+		m_oText += oText;
+		for (auto& w : arSymWidths)
+		{
+			m_arSymWidths.push_back(w);
+			m_dWidth += w;
+		}
+		m_dRight = m_dLeft + m_dWidth;
+	}
+	void CContText::AddTextFront(const NSStringUtils::CStringUTF32& oText, const std::vector<double>& arSymWidths)
+	{
+		m_oText = oText + m_oText;
+
+		auto ar_sym_w = m_arSymWidths;
+		m_arSymWidths = arSymWidths;
+
+		for (auto& w : ar_sym_w)
+			m_arSymWidths.push_back(w);
+	}
+	void CContText::SetText(const NSStringUtils::CStringUTF32& oText, const std::vector<double>& arSymWidths)
+	{
+		m_oText = oText;
+		m_arSymWidths.clear();
+		m_dWidth = 0;
+		for (auto& w : arSymWidths)
+		{
+			m_arSymWidths.push_back(w);
+			m_dWidth += w;
+		}
+		m_dRight = m_dLeft + m_dWidth;
+	}
+
+	void CContText::AddSymBack(uint32_t cSym, double nWidth)
+	{
+		m_oText += cSym;
+		m_arSymWidths.push_back(nWidth);
+		m_dWidth += nWidth;
+		m_dRight = m_dLeft + m_dWidth;
+
+	}
+	void CContText::AddSymFront(uint32_t cSym, double nWidth)
+	{
+		NSStringUtils::CStringUTF32 text;
+		text += cSym;
+		text += m_oText;
+		m_oText = text;
+		m_arSymWidths.insert(m_arSymWidths.begin(), nWidth);
+	}
+	void CContText::SetSym(uint32_t cSym, double nWidth)
+	{
+		m_oText = L"";
+		m_oText += cSym;
+		m_arSymWidths.clear();
+		m_arSymWidths.push_back(nWidth);
+		m_dWidth = nWidth;
+		m_dRight = m_dLeft + m_dWidth;
+	}
+
+	const NSStringUtils::CStringUTF32& CContText::GetText() const noexcept
+	{
+		return m_oText;
+	}
+	const std::vector<double>& CContText::GetSymWidths() const noexcept
+	{
+		return m_arSymWidths;
+	}
+	const std::vector<double> CContText::GetSymLefts() const noexcept
+	{
+		std::vector<double> lefts;
+		double left = m_dLeft;
+		for (auto& w : m_arSymWidths)
+		{
+			lefts.push_back(left);
+			left += w;
+		}
+		return lefts;
+	}
+
 	bool CContText::CheckFontEffects
 		(std::shared_ptr<CContText>& pFirstCont,
 		std::shared_ptr<CContText>& pSecondCont,
@@ -644,13 +744,8 @@ namespace NSDocxRenderer
 		return false;
 	}
 
-	double CContText::CalculateWideSpace() const noexcept
+	double CContText::CalculateSpace() const noexcept
 	{
-		return m_dSpaceWidthMM * 3;
-	}
-
-	double CContText::CalculateThinSpace() const noexcept
-	{
-		return m_dSpaceWidthMM * 0.4;
+		return m_dSpaceWidthMM;
 	}
 }

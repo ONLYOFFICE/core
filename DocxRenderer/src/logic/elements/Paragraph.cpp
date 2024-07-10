@@ -194,7 +194,7 @@ namespace NSDocxRenderer
 			while(!pLastCont)
 				pLastCont = pLine->m_arConts[--iNumConts];
 
-			pLastCont->m_oText += L" ";
+			pLastCont->AddSymBack(c_SPACE_SYM, 0);
 		}
 	}
 }

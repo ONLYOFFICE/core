@@ -60,27 +60,32 @@ namespace NSDocxRenderer
 			if (!pCurrent)
 				continue;
 
-			double dSpaceDefaultSize = pCurrent->CalculateThinSpace();
-			double dSpaceWideSize = pCurrent->CalculateWideSpace();
+			double dSpaceDefaultSize = pCurrent->CalculateSpace();
 			double dDifference = fabs(pCurrent->m_dLeft - pFirst->m_dRight);
 
 			bool bIsEqual = pFirst->IsEqual(pCurrent.get());
-			bool bIsBigDelta = dDifference > dSpaceDefaultSize;
-			bool bIsSplitDelta = dDifference > dSpaceDefaultSize * 2;
-			bool bIsVeryBigDelta = dDifference > dSpaceWideSize;
+			bool bIsSpaceDelta = dDifference > dSpaceDefaultSize * 0.4;
+			bool bIsWideSpaceDelta = dDifference > dSpaceDefaultSize * 3;
 
-			if (bIsBigDelta || (pCurrent->m_bPossibleSplit && bIsSplitDelta))
+			if (bIsWideSpaceDelta || (pCurrent->m_bPossibleSplit && bIsSpaceDelta))
 			{
 				auto wide_space = std::make_shared<CContText>(pFirst->m_pManager);
 
 				// sets all members for wide_space except highlight things
 				auto set_base = [&pFirst, &pCurrent, &wide_space] () {
 					wide_space->m_dLeft = pFirst->m_dRight;
-					wide_space->m_arSymbolLefts.clear();
-					wide_space->m_arSymbolLefts.push_back(wide_space->m_dLeft);
 					wide_space->m_dRight = pCurrent->m_dLeft;
 					wide_space->m_dWidth = wide_space->m_dRight - wide_space->m_dLeft;
-					wide_space->m_oText = L" ";
+
+					wide_space->m_dBaselinePos = pCurrent->m_dBaselinePos;
+					wide_space->m_dTop = pCurrent->m_dTop;
+
+					wide_space->m_dTopWithAscent = pCurrent->m_dTopWithAscent;
+					wide_space->m_dBotWithDescent = pCurrent->m_dBotWithDescent;
+
+					wide_space->m_dHeight = pCurrent->m_dHeight;
+
+					wide_space->SetSym(c_SPACE_SYM, wide_space->m_dRight - wide_space->m_dLeft);
 					wide_space->m_pFontStyle = pFirst->m_pFontStyle;
 					wide_space->m_pShape = nullptr;
 					wide_space->m_iNumDuplicates = 0;
@@ -109,25 +114,15 @@ namespace NSDocxRenderer
 			}
 			else if (bIsEqual)
 			{
-				if (!bIsBigDelta)
+				if (!bIsSpaceDelta)
 				{
-					pFirst->m_oText += pCurrent->m_oText;
-					for (auto left : pCurrent->m_arSymbolLefts)
-						pFirst->m_arSymbolLefts.push_back(left);
+					pFirst->AddTextBack(pCurrent->GetText(), pCurrent->GetSymWidths());
 				}
 				else
 				{
-					pFirst->m_oText += uint32_t(' ');
-					pFirst->m_oText += pCurrent->m_oText;
-
-					pFirst->m_arSymbolLefts.push_back(pFirst->m_dRight);
-					for (auto left : pCurrent->m_arSymbolLefts)
-						pFirst->m_arSymbolLefts.push_back(left);
+					pFirst->AddSymBack(c_SPACE_SYM, pCurrent->m_dLeft - pFirst->m_dRight);
+					pFirst->AddTextBack(pCurrent->GetText(), pCurrent->GetSymWidths());
 				}
-
-				pFirst->m_dWidth = pCurrent->m_dRight - pFirst->m_dLeft;
-				pFirst->m_dRight = pCurrent->m_dRight;
-
 				if (pFirst->m_pCont.expired())
 				{
 					pFirst->m_pCont = pCurrent->m_pCont;
@@ -137,27 +132,12 @@ namespace NSDocxRenderer
 			}
 			else
 			{
-				if (bIsBigDelta)
+				if (bIsSpaceDelta)
 				{
-					if (!IsSpaceUtf32(pFirst->m_oText[pFirst->m_oText.length()-1]) &&
-							!IsSpaceUtf32(pCurrent->m_oText[0]))
-					{
-						if (pFirst->GetNumberOfFeatures() <= pCurrent->GetNumberOfFeatures())
-						{
-							pFirst->m_oText += L" ";
-							pFirst->m_dWidth += (pCurrent->m_dLeft - pFirst->m_dRight);
-							pFirst->m_arSymbolLefts.push_back(pFirst->m_dRight);
-						}
-						else
-						{
-							NSStringUtils::CStringUTF32 oNewText = L" ";
-							oNewText += pCurrent->m_oText;
-							pCurrent->m_oText = oNewText;
-							pCurrent->m_dLeft = pFirst->m_dRight;
-							pCurrent->m_dWidth = pCurrent->m_dRight - pCurrent->m_dLeft;
-							pCurrent->m_arSymbolLefts.insert(pCurrent->m_arSymbolLefts.begin(), pCurrent->m_dLeft);
-						}
-					}
+					if (pFirst->GetNumberOfFeatures() <= pCurrent->GetNumberOfFeatures())
+						pFirst->AddSymBack(c_SPACE_SYM, pCurrent->m_dLeft - pFirst->m_dRight);
+					else
+						pCurrent->AddSymFront(c_SPACE_SYM, pCurrent->m_dLeft - pFirst->m_dRight);
 				}
 				pFirst = pCurrent;
 			}
@@ -182,7 +162,7 @@ namespace NSDocxRenderer
 		m_dRight = 0.0;
 		m_dHeight = 0.0;
 
-		for(const auto& cont : m_arConts)
+		for (const auto& cont : m_arConts)
 			if(cont)
 				RecalcWithNewItem(cont.get());
 	}
@@ -279,7 +259,7 @@ namespace NSDocxRenderer
 		size_t len = 0;
 		for (const auto& cont : m_arConts)
 			if (cont)
-				len += cont->m_oText.length();
+				len += cont->GetLength();
 
 		return len;
 	}

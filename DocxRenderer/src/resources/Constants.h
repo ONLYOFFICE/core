@@ -1,5 +1,6 @@
 #pragma once
 #include "../../../DesktopEditor/common/Types.h"
+#include <type_traits>
 
 #define USING_DELETE_DUPLICATING_CONTS 0 // 0 - все сточки-дубликаты превращаются в shape, 1 - строчки дубликаты удаляются
 // #define USE_DEFAULT_FONT_TO_RECALC
@@ -20,7 +21,7 @@ const double c_dDegreeToAngle = 60000.0;
 const double c_dSTANDART_STRING_HEIGHT_MM       = 4.2333333333333334;
 const double c_dTHE_SAME_STRING_Y_PRECISION_MM  = 0.01;
 const double c_dTHE_SAME_STRING_X_PRECISION_MM  = 0.01;
-const double c_dLINE_DISTANCE_ERROR_MM          = 0.03;
+const double c_dLINE_DISTANCE_ERROR_MM          = 0.3;
 const double c_dERROR_OF_PARAGRAPH_BORDERS_MM   = 1.0;
 const double c_dERROR_GAP                       = 1.5;
 const double c_dCENTER_POSITION_ERROR_MM        = 1.5;
@@ -45,6 +46,8 @@ const UINT   c_iGreyColor2 = 0x999999;
 const double c_dSTANDART_LEFT_INDENT_MM = 30;
 const double c_dSTANDART_RIGHT_INDENT_MM = 15;
 const double c_dSTANDART_FIRSTLINE_INDENT_MM = 12.5;
+
+const uint32_t c_SPACE_SYM = 0x20;
 
 const UINT   c_iStartingIdForImages = 6;
 constexpr size_t c_nAntiZero = ~0;

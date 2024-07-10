@@ -343,10 +343,15 @@ namespace NSDocxRenderer
 				fabs(m_pCurrCont->m_dBaselinePos - baseline) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
 				m_oPrevFont.IsEqual2(m_pFont) &&
 				m_oPrevBrush.IsEqual(m_pBrush) &&
-				(fabs(m_pCurrCont->m_dRight - left) < m_pCurrCont->CalculateThinSpace()))
+				(fabs(m_pCurrCont->m_dRight - left) < m_pCurrCont->CalculateSpace() * 0.4))
 		{
-			m_pCurrCont->m_oText += oText;
-			m_pCurrCont->m_arSymbolLefts.push_back(left);
+			// just in case if oText contains more than 1 symbol
+			std::vector<double> ar_widths;
+			double avg_width = abs(right - left) / oText.length();
+			for (size_t i = 0; i < oText.length(); ++i)
+				ar_widths.push_back(avg_width);
+
+			m_pCurrCont->AddTextBack(oText, ar_widths);
 
 			m_pCurrCont->m_dRight = std::max(m_pCurrCont->m_dRight, right);
 			m_pCurrCont->m_dTop = std::min(m_pCurrCont->m_dTop, top);
@@ -371,11 +376,17 @@ namespace NSDocxRenderer
 		pCont->m_dTop         = top;
 		pCont->m_dHeight      = height;
 		pCont->m_dLeft        = left;
-		pCont->m_dWidth       = width;
-		pCont->m_dRight       = right;
 
-		pCont->m_oText        = oText;
-		pCont->m_arSymbolLefts.push_back(left);
+		// just in case if oText contains more than 1 symbol
+		std::vector<double> ar_widths;
+		double avg_width = abs(right - left) / oText.length();
+		for (size_t i = 0; i < oText.length(); ++i)
+			ar_widths.push_back(avg_width);
+
+		pCont->SetText(oText, ar_widths);
+
+		pCont->m_dWidth = width;
+		pCont->m_dRight = right;
 
 		double font_size = m_pFont->Size;
 		double em_height = oMetrics.dEmHeight;
@@ -452,8 +463,14 @@ namespace NSDocxRenderer
 	void CPage::BuildDiacriticalSymbols()
 	{
 		for (size_t i = 0; i < m_arConts.size(); i++)
-			if (m_arConts[i] && m_arConts[i]->m_oText.length() == 1 && IsDiacriticalMark(m_arConts[i]->m_oText[0]))
-				m_arDiacriticalSymbols.push_back(std::move(m_arConts[i]));
+		{
+			if (m_arConts[i] && m_arConts[i]->GetText().length() == 1)
+			{
+				auto text = m_arConts[i]->GetText();
+				if (IsDiacriticalMark(text[0]))
+					m_arDiacriticalSymbols.push_back(std::move(m_arConts[i]));
+			}
+		}
 	}
 
 	void CPage::BuildTextLines()
@@ -494,9 +511,11 @@ namespace NSDocxRenderer
 		{
 			bool only_spaces = true;
 			for (auto& cont : m_arTextLines[i]->m_arConts)
-				for (size_t j = 0; j < cont->m_oText.length(); ++j)
-					if (!IsSpaceUtf32(cont->m_oText[j]))
-						only_spaces = false;
+				if (!cont->IsOnlySpaces())
+				{
+					only_spaces = false;
+					break;
+				}
 
 			if (only_spaces)
 				m_arTextLines.erase(m_arTextLines.begin() + i, m_arTextLines.begin() + i + 1);
@@ -654,7 +673,7 @@ namespace NSDocxRenderer
 		{
 			auto& line = m_arTextLines[i];
 			for (auto& cont : line->m_arConts)
-				if (cont && cont->m_pFontStyle->dFontSize > 2 * avg_font_size && cont->m_oText.length() == 1)
+				if (cont && cont->m_pFontStyle->dFontSize > 2 * avg_font_size && cont->GetText().length() == 1)
 					possible_caps.push_back({cont, line});
 		}
 
@@ -695,7 +714,7 @@ namespace NSDocxRenderer
 				*static_cast<CBaseItem*>(drop_cap.get()) = *drop_cap_cont;
 				drop_cap->nLines = num_of_lines;
 				drop_cap->wsFont = drop_cap_cont->m_pFontStyle->wsFontName;
-				drop_cap->wsText = drop_cap_cont->m_oText.ToStdWString();
+				drop_cap->wsText = drop_cap_cont->GetText().ToStdWString();
 
 				drop_cap->nFontSize = static_cast<LONG>(drop_cap_cont->m_pFontStyle->dFontSize * 2);
 				drop_caps.push_back(std::move(drop_cap));
@@ -1047,13 +1066,13 @@ namespace NSDocxRenderer
 
 						if ((bIf1 && bIf6) || (bIf2 && bIf7) || (bIf4 && bIf8) || (bIf5 && bIf7))
 						{
-							cont->m_oText += d_sym->m_oText;
+							auto text = d_sym->GetText();
+							cont->AddSymBack(text[0], 0);
 						}
 						else if (bIf3 && bIf7)
 						{
-							NSStringUtils::CStringUTF32 oText(d_sym->m_oText);
-							oText += cont->m_oText;
-							cont->m_oText = oText;
+							auto text = d_sym->GetText();
+							cont->AddSymFront(text[0], 0);
 						}
 						d_sym = nullptr;
 						isBreak = true;
@@ -1171,20 +1190,23 @@ namespace NSDocxRenderer
 				continue;
 
 			bool next_line = false;
+			double width = 0;
 			for (auto& cont : line->m_arConts)
 			{
 				if (!cont)
 					continue;
 
-				auto text = cont->m_oText.ToStdWString();
+				auto text = cont->GetText().ToStdWString();
+				auto ar_widths = cont->GetSymWidths();
 				for (size_t i = 0; i < text.size(); ++i)
 				{
 					if (text[i] == L' ')
 					{
-						line->m_dFirstWordWidth = cont->m_arSymbolLefts[i] - line->m_dLeft;
+						line->m_dFirstWordWidth = width;
 						next_line = true;
 						break;
 					}
+					width += ar_widths[i];
 				}
 				if (next_line)
 					break;
@@ -1321,7 +1343,7 @@ namespace NSDocxRenderer
 			bool next_line = false;
 			for (size_t i = 0; i < line->m_arConts.size(); ++i)
 			{
-				bool is_space = line->m_arConts[i] && line->m_arConts[i]->m_oText.ToStdWString() == L" ";
+				bool is_space = line->m_arConts[i] && line->m_arConts[i]->GetText().ToStdWString() == L" ";
 				bool is_cont_wide = line->m_arConts[i]->m_dWidth > c_dLINE_SPLIT_DISTANCE_MM;
 
 				double x_crossing{};

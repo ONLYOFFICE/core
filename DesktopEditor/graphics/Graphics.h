@@ -402,6 +402,7 @@ public:
 
 	//Работа с альфа-маской
 	Status SetAlphaMask(CAlphaMask* pAlphaMask);
+	inline CAlphaMask* GetAlphaMask() { return m_pAlphaMask; }
 	Status StartCreatingAlphaMask();
 	Status EndCreatingAlphaMask();
 	Status ResetAlphaMask();
@@ -416,6 +417,7 @@ public:
 	Status SetLayerOpacity(double dOpacity);
 	Status SetLayerIsolated(bool bIsolated);
 	Status SetAlphaMaskIsolated(bool bIsolated);
+	Status SetAlphaMaskType(EMaskDataType oType);
 
 	void CalculateFullTransform();
 	bool IsClip();
@@ -425,6 +427,8 @@ public:
 
 	inline double GetPixW() { return m_dWidthPix; }
 	inline double GetPixH() { return m_dHeightPix; }
+	unsigned int GetLayerW();
+	unsigned int GetLayerH();
 
 protected:
 

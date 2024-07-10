@@ -1236,7 +1236,9 @@ namespace Aggplus
 		if (m_pAlphaMask)
 			m_pAlphaMask->AddRef();
 
-		return CreateLayer();
+		return Ok;
+
+		//return CreateLayer();
 	}
 
 	Status CGraphics::StartCreatingAlphaMask()
@@ -1355,6 +1357,11 @@ namespace Aggplus
 					Aggplus::BlendTo<agg::one_component_mask_u8>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pAlphaMask->GetBuffer(), m_pAlphaMask->GetStep());
 					break;
 				}
+				case EMaskDataType::Alpha4Buffer:
+				{
+				Aggplus::BlendTo<agg::four_component_mask_u8>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pAlphaMask->GetBuffer(), m_pAlphaMask->GetStep());
+				break;
+				}
 			}
 		}
 
@@ -1436,6 +1443,15 @@ namespace Aggplus
 		return Ok;
 	}
 
+	Status CGraphics::SetAlphaMaskType(EMaskDataType oType)
+	{
+		if (!m_pAlphaMask)
+			return WrongState;
+
+		m_pAlphaMask->SetDataType(oType);
+		return Ok;
+	}
+
 	void CGraphics::CalculateFullTransform()
 	{
 		m_oFullTransform = m_oCoordTransform;
@@ -1445,6 +1461,16 @@ namespace Aggplus
 	bool CGraphics::IsClip()
 	{
 		return m_oClip.IsClip();
+	}
+
+	unsigned int CGraphics::GetLayerW()
+	{
+		return m_frame_buffer.ren_buf().width();
+	}
+
+	unsigned int CGraphics::GetLayerH()
+	{
+		return m_frame_buffer.ren_buf().height();
 	}
 
 	template<class Renderer>

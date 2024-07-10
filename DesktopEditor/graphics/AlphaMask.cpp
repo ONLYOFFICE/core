@@ -33,7 +33,13 @@ namespace Aggplus
 		{
 		case EMaskDataType::ImageBuffer: return 4;
 		case EMaskDataType::AlphaBuffer: return 1;
+		case EMaskDataType::Alpha4Buffer: return 4;
 		}
+	}
+
+	void CAlphaMask::SetDataType(EMaskDataType oType)
+	{
+		m_enDataType = oType;
 	}
 
 	Status CAlphaMask::Create(UINT unWidth, UINT unHeight, EMaskDataType eDataType)

@@ -52,6 +52,7 @@
 #include "../../DesktopEditor/common/Array.h"
 #include "../../DesktopEditor/graphics/BaseThread.h"
 #include "../../DesktopEditor/graphics/commands/DocInfo.h"
+#include "../../DesktopEditor/graphics/AlphaMask.h"
 #include "../Resources/BaseFonts.h"
 #include <new>
 
@@ -548,7 +549,6 @@ namespace PdfReader
 
 		m_pbBreak = NULL;
 
-		m_pGStateSoftMask = NULL;
 		m_bDrawOnlyText = false;
 		m_bClipChanged = true;
 	}
@@ -584,6 +584,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::endPage()
 	{
+		m_pRenderer->EndCommand(c_nResetMaskType);
 		m_pRenderer->EndCommand(c_nPageType);
 	}
 	void RendererOutputDev::saveState(GfxState *pGState)
@@ -591,18 +592,38 @@ namespace PdfReader
 		m_sClip.push_back(GfxClip());
 		m_bClipChanged = true;
 		updateAll(pGState);
+
+		Aggplus::CAlphaMask* pAlphaMask = NULL;
+		GfxState* pGStateSoftMask = NULL;
+		if (!m_sStates.empty() && m_sStates.back().pAlphaMask)
+		{
+			pAlphaMask = m_sStates.back().pAlphaMask;
+			pGStateSoftMask = m_sStates.back().pGStateSoftMask;
+		}
+		m_sStates.push_back(GfxOutputState());
+		m_sStates.back().pGState = pGState;
+		m_sStates.back().pAlphaMask = pAlphaMask;
+		m_sStates.back().pGStateSoftMask = pGStateSoftMask;
 	}
 	void RendererOutputDev::restoreState(GfxState *pGState)
 	{
-		if (m_pGStateSoftMask == pGState)
+		NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
+		if (GRenderer)
 		{
-			m_pRenderer->EndCommand(c_nResetMaskType);
-			m_pGStateSoftMask = NULL;
+			if (m_sStates.back().pAlphaMask && !GRenderer->GetAlphaMask())
+				GRenderer->SetAlphaMask(m_sStates.back().pAlphaMask);
+			if (m_sStates.back().pGStateSoftMask == pGState)
+			{
+				m_pRenderer->EndCommand(c_nResetMaskType);
+				RELEASEINTERFACE(m_sStates.back().pAlphaMask);
+			}
 		}
 		if (!m_sClip.empty())
 			m_sClip.pop_back();
 		m_bClipChanged = true;
 		updateAll(pGState);
+
+		m_sStates.pop_back();
 	}
 	void RendererOutputDev::updateCTM(GfxState *pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32)
 	{
@@ -4739,6 +4760,10 @@ namespace PdfReader
 	}
 	void RendererOutputDev::beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask)
 	{
+		NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
+		if (!GRenderer)
+			return;
+
 		if (bForSoftMask)
 		{
 			m_pRenderer->BeginCommand(c_nMaskType);
@@ -4746,8 +4771,11 @@ namespace PdfReader
 		}
 		else
 		{
-			m_pRenderer->BeginCommand(c_nLayerType);
-			//m_pRenderer->put_LayerIsolated(bIsolated);
+			if (!GRenderer->GetAlphaMask())
+			{
+				m_pRenderer->BeginCommand(c_nLayerType);
+				//m_pRenderer->put_LayerIsolated(bIsolated);
+			}
 		}
 	}
 	void RendererOutputDev::endTransparencyGroup(GfxState *pGState)
@@ -4755,22 +4783,38 @@ namespace PdfReader
 	}
 	void RendererOutputDev::paintTransparencyGroup(GfxState *pGState, double *pBBox)
 	{
+		NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
+		if (!GRenderer)
+			return;
+
 		double dOpacity = std::min(1.0, std::max(0.0, pGState->getFillOpacity()));
 		m_pRenderer->put_LayerOpacity(dOpacity);
+		if (m_sStates.back().pAlphaMask && !GRenderer->GetAlphaMask())
+			GRenderer->SetAlphaMask(m_sStates.back().pAlphaMask);
 		m_pRenderer->EndCommand(c_nLayerType);
 	}
 	void RendererOutputDev::setSoftMask(GfxState *pGState, double *pBBox, GBool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor)
 	{
+		NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
+		if (!GRenderer)
+			return;
+
 		m_pRenderer->EndCommand(c_nMaskType);
-		m_pGStateSoftMask = pGState;
+		if (bAlpha)
+			GRenderer->put_AlphaMaskType(Aggplus::EMaskDataType::Alpha4Buffer);
+		m_sStates.back().pGStateSoftMask = m_sStates.back().pGState;
+		m_sStates.back().pAlphaMask = GRenderer->GetAlphaMask();
+		m_sStates.back().pAlphaMask->AddRef();
 	}
 	void RendererOutputDev::clearSoftMask(GfxState *pGState)
 	{
-		if (m_pGStateSoftMask)
-		{
-			m_pRenderer->EndCommand(c_nResetMaskType);
-			m_pGStateSoftMask = NULL;
-		}
+		NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
+		if (!GRenderer)
+			return;
+
+		GRenderer->SetAlphaMask(NULL);
+		m_sStates.back().pAlphaMask = NULL;
+		m_sStates.back().pGStateSoftMask = NULL;
 	}
 	void RendererOutputDev::NewPDF(XRef *pXref)
 	{

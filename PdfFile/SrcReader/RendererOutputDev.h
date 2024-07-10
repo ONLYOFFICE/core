@@ -292,6 +292,15 @@ namespace PdfReader
 		static void CheckFontStylePDF(std::wstring& sName, bool& bBold, bool& bItalic);
 
 	private:
+		struct GfxOutputState
+		{
+			GfxState* pGState;
+
+			GfxState* pGStateSoftMask;
+			Aggplus::CAlphaMask* pAlphaMask;
+
+			GfxOutputState() : pGState(NULL), pGStateSoftMask(NULL), pAlphaMask(NULL) {}
+		};
 
 		void Transform(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY);
 		void Distance(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY);
@@ -312,11 +321,11 @@ namespace PdfReader
 
 		bool                         *m_pbBreak;         // Внешняя остановка рендерера
 
+		std::deque<GfxOutputState>    m_sStates;
 		std::deque<GfxClip>           m_sClip;
 		bool                          m_bClipChanged;
 
 		bool                          m_bTiling;
-		GfxState*                     m_pGStateSoftMask;
 
         bool                          m_bDrawOnlyText; // Special option for html-renderer
 

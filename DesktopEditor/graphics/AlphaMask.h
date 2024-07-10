@@ -11,7 +11,8 @@ namespace Aggplus
 	enum class EMaskDataType
 	{
 		ImageBuffer,
-		AlphaBuffer
+		AlphaBuffer,
+		Alpha4Buffer
 	};
 
 	class GRAPHICS_DECL CAlphaMask : public IGrObject
@@ -25,6 +26,7 @@ namespace Aggplus
 		EMaskDataType GetDataType() const;
 		UINT          GetStep() const;
 
+		void SetDataType(EMaskDataType oType);
 		Status Create(UINT unWidth, UINT unHeight, EMaskDataType eDataType);
 		Status LoadFromBuffer(BYTE* pBuffer, EMaskDataType eDataType, bool bExternalBuffer = true);
 	private:

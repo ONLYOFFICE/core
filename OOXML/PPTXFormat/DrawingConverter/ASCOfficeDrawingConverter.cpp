@@ -5076,13 +5076,13 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 				{					
 					PPTX::Logic::Duotone* pDuotone = new PPTX::Logic::Duotone();
 					
-					PPTX::Logic::UniColor fgClr;
-					ConvertColor(fgClr, sColor, sOpacity);
-					pDuotone->Colors.push_back(fgClr);
-
 					PPTX::Logic::UniColor bgClr;
 					ConvertColor(bgClr, sColor2, sOpacity2);
 					pDuotone->Colors.push_back(bgClr);
+
+					PPTX::Logic::UniColor fgClr;
+					ConvertColor(fgClr, sColor, sOpacity);
+					pDuotone->Colors.push_back(fgClr);
 
 					PPTX::Logic::UniEffect effect;
 					effect.InitPointer(pDuotone);
@@ -5401,8 +5401,8 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 
 	if (!pPPTShape->m_bIsStroked)
 	{
-		if (!pSpPr->ln.is_init())
-			pSpPr->ln = new PPTX::Logic::Ln();
+		if (!pSpPr->ln.IsInit())
+			pSpPr->ln.Init();
 
 		pSpPr->ln->Fill.m_type = PPTX::Logic::UniFill::noFill;
 		pSpPr->ln->Fill.Fill = new PPTX::Logic::NoFill();
@@ -5415,7 +5415,11 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
     XmlMacroReadAttributeBase(oNode, L"strokecolor", sStrokeColor);
 	if (sStrokeColor.is_init())
 	{
+		if (!pSpPr->ln.IsInit())
+			pSpPr->ln.Init();
+
 		pPPTShape->m_bIsStroked = true;
+
 		PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
 		pSolid->m_namespace = L"a";
 

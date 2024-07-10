@@ -122,10 +122,10 @@ namespace PPTX
 							{
 								sType = L"pattern";
 								ARGB = oDuotone.Colors[0].GetRGBColor(oTheme, oClrMap, ARGB);
-								strAttr += L" fillcolor=\"" + GetHexColor(ARGB) + L"\"";
+								color2 = L" color2=\"" + GetHexColor(ARGB) + L"\"";
 
 								ARGB = oDuotone.Colors[1].GetRGBColor(oTheme, oClrMap, ARGB);
-								color2 = L" color2=\"" + GetHexColor(ARGB) + L"\"";
+								strAttr += L" fillcolor=\"" + GetHexColor(ARGB) + L"\"";
 							}
 						}
 					}

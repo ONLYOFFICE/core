@@ -37,7 +37,6 @@
 #include "../../DesktopEditor/graphics/pro/Graphics.h"
 #include "../../DesktopEditor/graphics/TemporaryCS.h"
 #include "../../DesktopEditor/graphics/structures.h"
-//#include "../PdfReader.h"
 #include "../lib/xpdf/Gfx.h"
 
 #include "../lib/xpdf/OutputDev.h"
@@ -293,6 +292,15 @@ namespace PdfReader
 		static void CheckFontStylePDF(std::wstring& sName, bool& bBold, bool& bItalic);
 
 	private:
+		struct GfxOutputState
+		{
+			GfxState* pGState;
+
+			GfxState* pGStateSoftMask;
+			Aggplus::CAlphaMask* pAlphaMask;
+
+			GfxOutputState() : pGState(NULL), pGStateSoftMask(NULL), pAlphaMask(NULL) {}
+		};
 
 		void Transform(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY);
 		void Distance(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY);
@@ -308,28 +316,16 @@ namespace PdfReader
 		double                        m_arrMatrix[6];
         NSFonts::IFontManager*        m_pFontManager;
 
-		//GfxTextClip                   *m_pBufferTextClip;
-
 		XRef                         *m_pXref;           // Таблица Xref для данного PDF-документа
-		CPdfFontList                    *m_pFontList;
+		CPdfFontList                 *m_pFontList;
 
 		bool                         *m_pbBreak;         // Внешняя остановка рендерера
 
+		std::deque<GfxOutputState>    m_sStates;
 		std::deque<GfxClip>           m_sClip;
 		bool                          m_bClipChanged;
 
 		bool                          m_bTiling;
-		bool                          m_bTransparentGroup;
-		bool                          m_bIsolatedTransparentGroup;
-		bool                          m_bTransparentGroupSoftMask;
-		bool                          m_bTransparentGroupSoftMaskEnd;
-		std::vector<bool>             m_arrTransparentGroupSoftMask;
-
-        /*
-		unsigned char*                m_pSoftMask;
-		int                           m_nSoftMaskWidth;
-		int                           m_nSoftMaskHeight;
-        */
 
         bool                          m_bDrawOnlyText; // Special option for html-renderer
 

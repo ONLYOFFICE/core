@@ -117,12 +117,14 @@ XORCrypt::XORCrypt(int type, unsigned short key, unsigned short hash, std::wstri
     m_nKey(0),
     m_nHash(0)
 {
+    m_VerifyPassword = false;
+
+    if (password.empty()) return;
+
 	if (type == 1) m_nRotateDistance = 7; //doc
 	else if (type == 2) m_nRotateDistance = 2; //xls
 
     memset( m_pnKey, 0, sizeof( m_pnKey ) );
-
-	m_VerifyPassword = false;
 
 	size_t nLen = password.length();
 	if (nLen > 16) return;

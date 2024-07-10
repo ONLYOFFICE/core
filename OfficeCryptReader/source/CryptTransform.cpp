@@ -570,6 +570,11 @@ bool ECMADecryptor::SetPassword(std::wstring _password)
 
 	if (password.empty()) return false;
 	
+	if (cryptData.keySize > 64 || cryptData.keySize < 1)  return false;
+	if (cryptData.hashSize > 64 || cryptData.hashSize < 1)  return false;
+	if (cryptData.blockSize > 64 || cryptData.blockSize < 1)  return false;
+	if (cryptData.saltSize > 64 || cryptData.saltSize < 1)  return false;
+
 	_buf pPassword		(password);
 	_buf pSalt			(cryptData.saltValue);
 	_buf empty			(NULL, 0, false);

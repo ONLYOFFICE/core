@@ -375,7 +375,7 @@ namespace NSCSS
 
 	bool CDigit::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (wsValue.empty() || (CHECK_CONDITIONS && !bHardMode) || unLevel < m_unLevel)
+		if (wsValue.empty() || (CHECK_CONDITIONS && !bHardMode))
 			return false;
 
 		std::wstring wsNewValue = wsValue;
@@ -432,6 +432,13 @@ namespace NSCSS
 		       uchBlue  == oRGB.uchBlue;
 	}
 
+	bool TRGB::operator!=(const TRGB& oRGB) const
+	{
+		return uchRed   != oRGB.uchRed   ||
+		       uchGreen != oRGB.uchGreen ||
+		       uchBlue  != oRGB.uchBlue;
+	}
+
 	TRGB CColor::ConvertHEXtoRGB(const std::wstring &wsValue)
 	{
 		TRGB oRGB;
@@ -457,6 +464,44 @@ namespace NSCSS
 		swprintf(arTemp, tempLen, L"%02X%02X%02X", oValue.uchRed, oValue.uchGreen, oValue.uchBlue);
 
 		return std::wstring(arTemp, 6);
+	}
+
+	bool CColor::operator==(const CColor& oColor) const
+	{
+		if (m_enType != oColor.m_enType || m_oOpacity != oColor.m_oOpacity)
+			return false;
+
+		switch(m_enType)
+		{
+			case ColorEmpty:
+			case ColorNone:
+				return true;
+			case ColorRGB:
+				return (*static_cast<TRGB*>(m_oValue)) == (*static_cast<TRGB*>(oColor.m_oValue));
+			case ColorHEX:
+				return (*static_cast<std::wstring*>(m_oValue)) == (*static_cast<std::wstring*>(oColor.m_oValue));
+			case ColorUrl:
+				return (*static_cast<CURL*>(m_oValue)) == (*static_cast<CURL*>(oColor.m_oValue));
+		}
+	}
+
+	bool CColor::operator!=(const CColor& oColor) const
+	{
+		if (m_enType != oColor.m_enType || m_oOpacity != oColor.m_oOpacity)
+			return true;
+
+		switch(m_enType)
+		{
+			case ColorEmpty:
+			case ColorNone:
+				return false;
+			case ColorRGB:
+				return (*static_cast<TRGB*>(m_oValue)) != (*static_cast<TRGB*>(oColor.m_oValue));
+			case ColorHEX:
+				return (*static_cast<std::wstring*>(m_oValue)) != (*static_cast<std::wstring*>(oColor.m_oValue));
+			case ColorUrl:
+				return (*static_cast<CURL*>(m_oValue)) != (*static_cast<CURL*>(oColor.m_oValue));
+		}
 	}
 
 	CColor::CColor()
@@ -1473,6 +1518,10 @@ namespace NSCSS
 		: m_bBlock(false)
 	{}
 
+	CBorderSide::CBorderSide(const CBorderSide& oBorderSide)
+		: m_oWidth(oBorderSide.m_oWidth), m_oStyle(oBorderSide.m_oStyle), m_oColor(oBorderSide.m_oColor), m_bBlock(oBorderSide.m_bBlock)
+	{}
+
 	void CBorderSide::Clear()
 	{
 		m_oWidth.Clear();
@@ -1618,6 +1667,13 @@ namespace NSCSS
 		return m_oWidth == oBorderSide.m_oWidth &&
 		       m_oStyle == oBorderSide.m_oStyle &&
 		       m_oColor == oBorderSide.m_oColor;
+	}
+
+	bool CBorderSide::operator!=(const CBorderSide& oBorderSide) const
+	{
+		return m_oWidth != oBorderSide.m_oWidth ||
+		       m_oStyle != oBorderSide.m_oStyle ||
+		       m_oColor != oBorderSide.m_oColor;
 	}
 
 	CBorderSide &CBorderSide::operator =(const CBorderSide &oBorderSide)
@@ -1863,6 +1919,14 @@ namespace NSCSS
 		       m_oTop    == oBorder.m_oTop   &&
 		       m_oRight  == oBorder.m_oRight &&
 		       m_oBottom == oBorder.m_oBottom;
+	}
+
+	bool CBorder::operator!=(const CBorder& oBorder) const
+	{
+		return m_oLeft   != oBorder.m_oLeft  ||
+		       m_oTop    != oBorder.m_oTop   ||
+		       m_oRight  != oBorder.m_oRight ||
+		       m_oBottom != oBorder.m_oBottom;
 	}
 
 	CBorder &CBorder::operator =(const CBorder &oBorder)
@@ -2535,6 +2599,16 @@ namespace NSCSS
 	std::wstring CURL::GetValue() const
 	{
 		return m_wsValue;
+	}
+
+	bool CURL::operator==(const CURL& oValue) const
+	{
+		return m_wsValue == oValue.m_wsValue;
+	}
+
+	bool CURL::operator!=(const CURL& oValue) const
+	{
+		return m_wsValue != oValue.m_wsValue;
 	}
 
 	CEnum::CEnum()

@@ -75,13 +75,13 @@ namespace NSCSS
 			return *this;
 		}
 
-		CValue& operator =(const T& oValue)
+		virtual CValue& operator =(const T& oValue)
 		{
 			//m_oValue = oValue.m_oValue;
 			return *this;
 		}
 
-		CValue& operator+=(const CValue& oValue)
+		virtual CValue& operator+=(const CValue& oValue)
 		{
 			if (m_unLevel > oValue.m_unLevel || (m_bImportant && !oValue.m_bImportant) || oValue.Empty())
 				return *this;
@@ -93,9 +93,14 @@ namespace NSCSS
 			return *this;
 		}
 
-		bool operator==(const CValue& oValue) const
+		virtual bool operator==(const CValue& oValue) const
 		{
 			return m_oValue == oValue.m_oValue;
+		}
+
+		virtual bool operator!=(const CValue& oValue) const
+		{
+			return m_oValue != oValue.m_oValue;
 		}
 	};
 
@@ -179,6 +184,7 @@ namespace NSCSS
 		bool Empty() const;
 
 		bool operator==(const TRGB& oRGB) const;
+		bool operator!=(const TRGB& oRGB) const;
 	};
 
 	class CURL
@@ -193,6 +199,9 @@ namespace NSCSS
 
 		bool SetValue(const std::wstring& wsValue);
 		std::wstring GetValue() const;
+
+		bool operator==(const CURL& oValue) const;
+		bool operator!=(const CURL& oValue) const;
 	private:
 		std::wstring m_wsValue;
 	};
@@ -231,6 +240,9 @@ namespace NSCSS
 
 		static TRGB ConvertHEXtoRGB(const std::wstring& wsValue);
 		static std::wstring ConvertRGBtoHEX(const TRGB& oValue);
+
+		bool operator==(const CColor& oColor) const;
+		bool operator!=(const CColor& oColor) const;
 	private:
 		CDigit    m_oOpacity;
 		ColorType m_enType;
@@ -426,6 +438,7 @@ namespace NSCSS
 	{
 	public:
 		CBorderSide();
+		CBorderSide(const CBorderSide& oBorderSide);
 
 		void Clear();
 
@@ -451,6 +464,7 @@ namespace NSCSS
 
 		CBorderSide& operator+=(const CBorderSide& oBorderSide);
 		bool         operator==(const CBorderSide& oBorderSide) const;
+		bool         operator!=(const CBorderSide& oBorderSide) const;
 		CBorderSide& operator =(const CBorderSide& oBorderSide);
 	private:
 		CDigit  m_oWidth;
@@ -521,7 +535,7 @@ namespace NSCSS
 
 		CBorder& operator+=(const CBorder& oBorder);
 		bool     operator==(const CBorder& oBorder) const;
-
+		bool     operator!=(const CBorder& oBorder) const;
 		CBorder& operator =(const CBorder& oBorder);
 	private:
 		CBorderSide m_oLeft;

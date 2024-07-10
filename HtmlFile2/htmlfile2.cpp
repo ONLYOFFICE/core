@@ -102,39 +102,6 @@ struct CTextSettings
 	}
 };
 
-std::wstring CreateBorders(const NSCSS::NSProperties::CBorder& oBorder, const NSCSS::NSProperties::CIndent* pPadding = NULL)
-{
-	if (oBorder.EqualSides() && (NULL == pPadding || pPadding->Equals()))
-	{
-		const std::wstring wsBorderStyle = NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetLeftBorder(), ((NULL == pPadding) ? NULL : (&(pPadding->GetLeft()))));
-
-		return L"<w:top "    + wsBorderStyle + L"/>" +
-			   L"<w:left "   + wsBorderStyle + L"/>" +
-			   L"<w:bottom " + wsBorderStyle + L"/>" +
-			   L"<w:right "  + wsBorderStyle + L"/>";
-	}
-	else
-	{
-		std::wstring wsTable;
-
-		if (oBorder.GetTopBorder().Valid())
-			wsTable += L"<w:top "    + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetTopBorder(), ((NULL == pPadding) ? NULL : (&(pPadding->GetTop()))))       + L"/>";
-
-		if (oBorder.GetLeftBorder().Valid())
-			wsTable += L"<w:left "   + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetLeftBorder(), ((NULL == pPadding) ? NULL : (&(pPadding->GetLeft()))))     + L"/>";
-
-		if (oBorder.GetBottomBorder().Valid())
-			wsTable += L"<w:bottom " + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetBottomBorder(), ((NULL == pPadding) ? NULL : (&(pPadding->GetBottom())))) + L"/>";
-
-		if (oBorder.GetRightBorder().Valid())
-			wsTable += L"<w:right "  + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetRightBorder(), ((NULL == pPadding) ? NULL : (&(pPadding->GetRight()))))   + L"/>";
-
-		return wsTable;
-	}
-
-	return L"";
-}
-
 void WriteEmptyParagraph(NSStringUtils::CStringBuilder* pXml, bool bVahish = false, bool bInP = false)
 {
 	if (NULL == pXml)
@@ -186,8 +153,17 @@ struct TTableStyles
 
 	std::wstring m_wsAlign;
 
+	enum ETableRules
+	{
+		All,
+		Group,
+		Cols,
+		None,
+		Rows
+	} m_enRules;
+
 	TTableStyles()
-		: m_nCellSpacing(-1), m_bHaveBorderAttribute(false)
+		: m_nCellSpacing(-1), m_bHaveBorderAttribute(false), m_enRules(All)
 	{}
 
 	bool Empty() const
@@ -195,6 +171,67 @@ struct TTableStyles
 		return m_oPadding.Empty() && m_oMargin.Empty() && m_oBorder.Empty() && m_oWidth.Empty() && -1 == m_nCellSpacing && false == m_bHaveBorderAttribute && m_wsAlign.empty();
 	}
 };
+
+std::wstring CreateBorders(const NSCSS::NSProperties::CBorder& oBorder, const NSCSS::NSProperties::CIndent* pPadding = NULL, bool bAddIntermediateLines = false, TTableStyles::ETableRules enTableRule = TTableStyles::ETableRules::None)
+{
+	std::wstring wsTable;
+
+	if (oBorder.EqualSides() && (NULL == pPadding || pPadding->Equals()))
+	{
+		const std::wstring wsBorderStyle = NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetLeftBorder(), ((NULL == pPadding) ? NULL : (&(pPadding->GetLeft()))));
+
+		wsTable = L"<w:top "    + wsBorderStyle + L"/>" + L"<w:left "   + wsBorderStyle + L"/>" +
+		          L"<w:bottom " + wsBorderStyle + L"/>" + L"<w:right "  + wsBorderStyle + L"/>";
+	}
+	else
+	{
+
+		if (oBorder.GetTopBorder().Valid())
+			wsTable += L"<w:top "    + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetTopBorder(), ((NULL == pPadding) ? NULL : (&(pPadding->GetTop()))))       + L"/>";
+
+		if (oBorder.GetLeftBorder().Valid())
+			wsTable += L"<w:left "   + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetLeftBorder(), ((NULL == pPadding) ? NULL : (&(pPadding->GetLeft()))))     + L"/>";
+
+		if (oBorder.GetBottomBorder().Valid())
+			wsTable += L"<w:bottom " + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetBottomBorder(), ((NULL == pPadding) ? NULL : (&(pPadding->GetBottom())))) + L"/>";
+
+		if (oBorder.GetRightBorder().Valid())
+			wsTable += L"<w:right "  + NSCSS::CDocumentStyle::CalculateBorderStyle(oBorder.GetRightBorder(), ((NULL == pPadding) ? NULL : (&(pPadding->GetRight()))))   + L"/>";
+	}
+
+	if (!bAddIntermediateLines)
+		return wsTable;
+
+	if (TTableStyles::ETableRules::Rows == enTableRule || TTableStyles::ETableRules::All == enTableRule)
+	{
+		NSCSS::NSProperties::CBorderSide oNewSide(oBorder.GetBottomBorder());
+		oNewSide.SetWidth(L"1pt", 0, true);
+
+		wsTable += L"<w:insideH " + NSCSS::CDocumentStyle::CalculateBorderStyle(oNewSide) + L"/>";
+	}
+
+	if (TTableStyles::ETableRules::Cols == enTableRule || TTableStyles::ETableRules::All == enTableRule)
+	{
+		NSCSS::NSProperties::CBorderSide oNewSide(oBorder.GetRightBorder());
+		oNewSide.SetWidth(L"1pt", 0, true);
+
+		wsTable += L"<w:insideV " + NSCSS::CDocumentStyle::CalculateBorderStyle(oNewSide) + L"/>";
+	}
+
+	return wsTable;
+}
+
+std::wstring CreateBorders(const std::wstring& wsStyle, UINT unSize, UINT unSpace, const std::wstring& wsAuto)
+{
+	const std::wstring wsBodyBorder{L"w:val=\"" + wsStyle + L"\" w:sz=\"" + std::to_wstring(unSize) + L"\" w:space=\"" + std::to_wstring(unSpace) + L"\" w:color=\"" + wsAuto + L"\""};
+
+	return L"<w:top "    + wsBodyBorder + L"/>" +
+	       L"<w:left "   + wsBodyBorder + L"/>" +
+	       L"<w:bottom " + wsBodyBorder + L"/>" +
+	       L"<w:right "  + wsBodyBorder + L"/>";
+}
+
+#define CreateOutsetBorders(enType) CreateBorders(L"outset", 6, 0, L"auto", enType)
 
 struct TTableRowStyle
 {
@@ -283,6 +320,15 @@ public:
 		return pCell;
 	}
 
+	static CTableCell* CreateEmpty(const TTableCellStyle* pStyle)
+	{
+		CTableCell *pCell = new CTableCell(1, 1, false, true);
+
+		pCell->m_oStyles.Copy(pStyle);
+
+		return pCell;
+	}
+
 	void SetMode(ERowParseMode eMode)
 	{
 		m_enMode = eMode;
@@ -339,6 +385,26 @@ public:
 	void SetBorder(const NSCSS::NSProperties::CBorder& oBorder)
 	{
 		m_oStyles.m_oBorder = oBorder;
+	}
+
+	void ClearTopBorder()
+	{
+		m_oStyles.m_oBorder.SetTopSide(L"none", 0, true);
+	}
+
+	void ClearLeftBorder()
+	{
+		m_oStyles.m_oBorder.SetLeftSide(L"none", 0, true);
+	}
+
+	void ClearBottomBorder()
+	{
+		m_oStyles.m_oBorder.SetBottomSide(L"none", 0, true);
+	}
+
+	void ClearRightBorder()
+	{
+		m_oStyles.m_oBorder.SetRightSide(L"none", 0, true);
 	}
 
 	void SetPadding(const NSCSS::NSProperties::CIndent& oPadding)
@@ -402,10 +468,10 @@ public:
 		else if (1 < m_unRowSpan)
 			oCell += L"<w:vMerge w:val=\"restart\"/>";
 
-		if (!m_oStyles.m_oBorder.Zero() && !m_oStyles.m_oBorder.Empty())
+		if (!m_oStyles.m_oBorder.Zero() && !m_oStyles.m_oBorder.Empty() && m_oStyles.m_oBorder != oTableStyles.m_oBorder)
 			oCell += L"<w:tcBorders>" + CreateBorders(m_oStyles.m_oBorder) + L"</w:tcBorders>";
-		else if (oTableStyles.m_bHaveBorderAttribute)
-			oCell += L"<w:tcBorders><w:top w:val=\"outset\" w:sz=\"6\" w:space=\"0\" w:color=\"auto\"/><w:left w:val=\"outset\" w:sz=\"6\" w:space=\"0\" w:color=\"auto\"/><w:bottom w:val=\"outset\" w:sz=\"6\" w:space=\"0\" w:color=\"auto\"/><w:right w:val=\"outset\" w:sz=\"6\" w:space=\"0\" w:color=\"auto\"/></w:tcBorders>";
+		// else if (oTableStyles.m_bHaveBorderAttribute)
+		// 	oCell += L"<w:tcBorders>" + CreateOutsetBorders(oTableStyles.m_enRules) + L"</w:tcBorders>";
 
 		if (!m_oStyles.m_oBackground.Empty())
 		{
@@ -564,7 +630,7 @@ public:
 		return m_arCells.size();
 	}
 
-	std::wstring ConvertToOOXML(const TTableStyles& oTableStyles)
+	std::wstring	ConvertToOOXML(const TTableStyles& oTableStyles)
 	{
 		if (m_arCells.empty())
 			return std::wstring();
@@ -699,6 +765,23 @@ public:
 		m_oStyles.m_wsAlign = wsValue;
 	}
 
+	void SetRules(const std::wstring& wsValue)
+	{
+		if (wsValue.empty())
+			return;
+
+		if (NSStringFinder::Equals(wsValue, L"all"))
+			m_oStyles.m_enRules = TTableStyles::ETableRules::All;
+		else if (NSStringFinder::Equals(wsValue, L"group"))
+			m_oStyles.m_enRules = TTableStyles::ETableRules::Group;
+		else if (NSStringFinder::Equals(wsValue, L"cols"))
+			m_oStyles.m_enRules = TTableStyles::ETableRules::Cols;
+		else if (NSStringFinder::Equals(wsValue, L"none"))
+			m_oStyles.m_enRules = TTableStyles::ETableRules::None;
+		else if (NSStringFinder::Equals(wsValue, L"rows"))
+			m_oStyles.m_enRules = TTableStyles::ETableRules::Rows;
+	}
+
 	void HaveBorderAttribute()
 	{
 		m_oStyles.m_bHaveBorderAttribute = true;
@@ -780,6 +863,9 @@ public:
 
 		for (CTableRow* pRow : m_arRows)
 		{
+			if (NULL == pRow || 0 == pRow->GetCount())
+				continue;
+
 			for (UINT unIndex = pRow->GetIndex(); unIndex < unMaxIndex; ++unIndex)
 				pRow->InsertCell(CTableCell::CreateEmpty(), unIndex);
 		}
@@ -820,7 +906,7 @@ public:
 			oTable += L"<w:tblCellSpacing w:w=\"" + std::to_wstring(m_oStyles.m_nCellSpacing) + L"\" w:type=\"dxa\"/>";
 
 		if (!m_oStyles.m_oBorder.Empty() && !m_oStyles.m_oBorder.Zero())
-			oTable += L"<w:tblBorders>" + CreateBorders(m_oStyles.m_oBorder) + L"</w:tblBorders>";
+			oTable += L"<w:tblBorders>" + CreateBorders(m_oStyles.m_oBorder, NULL, true, m_oStyles.m_enRules) + L"</w:tblBorders>";
 
 		if (!m_oStyles.m_oPadding.Empty() && !m_oStyles.m_oPadding.Zero())
 		{
@@ -2506,6 +2592,9 @@ private:
 
 		if (sSelectors.back().m_mAttributes.end() != sSelectors.back().m_mAttributes.find(L"cellpadding"))
 			oStyle.m_oPadding.SetValues(sSelectors.back().m_mAttributes[L"cellpadding"] + L"px", 0, true);
+
+		if (sSelectors.back().m_mAttributes.end() != sSelectors.back().m_mAttributes.find(L"rules"))
+			oTable.SetRules(sSelectors.back().m_mAttributes[L"rules"]);
 
 		if (oStyle.m_oBorder.GetCollapse() == NSCSS::NSProperties::BorderCollapse::Collapse)
 			oTable.SetCellSpacing(0);

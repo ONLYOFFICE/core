@@ -123,7 +123,7 @@ namespace NSGraphics
 		//alpha mask methods
 		virtual void SetAlphaMask(Aggplus::CAlphaMask* pAlphaMask) = 0;
 		virtual Aggplus::CAlphaMask* GetAlphaMask() = 0;
-		virtual void put_AlphaMaskType(Aggplus::EMaskDataType oType) = 0;
+		virtual void TEST() = 0;
 
 		// smart methods
 		virtual void drawHorLine(BYTE align, double y, double x, double r, double penW) = 0;

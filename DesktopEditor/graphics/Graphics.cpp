@@ -68,6 +68,7 @@ namespace Aggplus
 		m_dDpiTile = -1;
 
 		m_pAlphaMask = NULL;
+		m_pPDFAlphaMask = NULL;
 
 		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
 		m_nBlendMode = agg::comp_op_src_over;
@@ -106,6 +107,7 @@ namespace Aggplus
 		m_dDpiTile = -1;
 
 		m_pAlphaMask = NULL;
+		m_pPDFAlphaMask = NULL;
 
 		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
 		m_nBlendMode = agg::comp_op_src_over;
@@ -149,6 +151,7 @@ namespace Aggplus
 		m_dDpiTile = -1;
 
 		m_pAlphaMask = NULL;
+		m_pPDFAlphaMask = NULL;
 
 		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
 		m_nBlendMode = agg::comp_op_src_over;
@@ -1236,9 +1239,7 @@ namespace Aggplus
 		if (m_pAlphaMask)
 			m_pAlphaMask->AddRef();
 
-		return Ok;
-
-		//return CreateLayer();
+		return CreateLayer();
 	}
 
 	Status CGraphics::StartCreatingAlphaMask()
@@ -1287,7 +1288,7 @@ namespace Aggplus
 		const unsigned int unWidth  = m_frame_buffer.ren_buf().width();
 		const unsigned int unHeight = m_frame_buffer.ren_buf().height();
 
-		m_frame_buffer.create(unWidth, unHeight, false, nStride, pGraphicsLayer->GetBuffer());
+		m_frame_buffer.create(unWidth, unHeight, nStride > 0, nStride, pGraphicsLayer->GetBuffer());
 
 		return Ok;
 	}
@@ -1304,7 +1305,7 @@ namespace Aggplus
 
 		memset(pBuffer, 0x00, unSize);
 
-		m_frame_buffer.create(unWidth, unHeight, false, nStride, pBuffer);
+		m_frame_buffer.create(unWidth, unHeight, nStride > 0, nStride, pBuffer);
 
 		m_arLayers.push(new CGraphicsLayer(pBuffer, false));
 		return Ok;
@@ -1335,7 +1336,7 @@ namespace Aggplus
 
 		if (NULL == m_pAlphaMask)
 		{
-			if (m_nBlendMode != agg::comp_op_src_over)// && m_nBlendMode != agg::comp_op_multiply && m_nBlendMode != agg::comp_op_screen && m_nBlendMode != agg::comp_op_darken)
+			if (m_nBlendMode != agg::comp_op_src_over)
 			{
 				pixfmt_type_comp pixfmt(m_frame_buffer.ren_buf(), m_nBlendMode);
 				Aggplus::BlendTo(pCurrentGraphicsLayer, pixfmt, m_nBlendMode);
@@ -1376,6 +1377,21 @@ namespace Aggplus
 
 		CGraphicsLayer *pCurrentGraphicsLayer = m_arLayers.top();
 		m_arLayers.pop();
+
+		BYTE* pBuffer = NULL;
+
+		if (!m_arLayers.empty())
+			pBuffer = m_arLayers.top()->GetBuffer();
+		else
+			pBuffer = m_pPixels;
+
+		if (NULL == pBuffer)
+		{
+			RELEASEINTERFACE(pCurrentGraphicsLayer);
+			return WrongState;
+		}
+
+		m_frame_buffer.ren_buf().attach(pBuffer, m_frame_buffer.ren_buf().width(), m_frame_buffer.ren_buf().height(), m_frame_buffer.ren_buf().stride());
 
 		RELEASEINTERFACE(pCurrentGraphicsLayer);
 		return Ok;
@@ -1443,13 +1459,59 @@ namespace Aggplus
 		return Ok;
 	}
 
-	Status CGraphics::SetAlphaMaskType(EMaskDataType oType)
+	void CGraphics::TEST(int i, CBrush* pBrush, CGraphicsPath* pPath)
 	{
-		if (!m_pAlphaMask)
-			return WrongState;
+		if (i == 1)
+		{
+			EndCreatingAlphaMask();
+			RemoveLayer();
+		}
+		if (i == 2)
+		{
+			// FillPath
+			if (NULL == pBrush)
+				return;
 
-		m_pAlphaMask->SetDataType(oType);
-		return Ok;
+			m_rasterizer.get_rasterizer().reset();
+
+			agg::path_storage p2(pPath->m_internal->m_agg_ps);
+			typedef agg::conv_transform<agg::path_storage> trans_type;
+
+			trans_type* ptrans			= NULL;
+			agg::trans_affine* paffine	= NULL;
+			if (!m_bIntegerGrid)
+				ptrans = new trans_type(p2, m_oFullTransform.m_internal->m_agg_mtx);
+			else
+			{
+				paffine = new agg::trans_affine();
+				ptrans = new trans_type(p2, *paffine);
+			}
+
+			typedef agg::conv_curve<trans_type> conv_crv_type;
+			conv_crv_type c_c_path(*ptrans);
+
+			m_rasterizer.get_rasterizer().add_path(c_c_path);
+
+			m_rasterizer.get_rasterizer().filling_rule(pPath->m_internal->m_bEvenOdd ? agg::fill_even_odd : agg::fill_non_zero);
+
+			// DoFillPath
+			CColor clr;
+			((CBrushSolid*)pBrush)->GetColor(&clr);
+
+			// TEST
+			agg::rendering_buffer g_alpha_mask_rbuf;
+			g_alpha_mask_rbuf.attach(m_pAlphaMask->GetBuffer(), m_frame_buffer.ren_buf().width(), m_frame_buffer.ren_buf().height(), m_frame_buffer.ren_buf().stride());
+			agg::alpha_mask_rgba32a am(g_alpha_mask_rbuf);
+			agg::scanline_u8_am<agg::alpha_mask_rgba32a> sl(am);
+
+			// DoFillPathSolid
+			typedef agg::renderer_scanline_aa_solid<base_renderer_type> solid_renderer_type;
+			solid_renderer_type ren_fine(m_frame_buffer.ren_base());
+			ren_fine.color(clr.GetAggColor());
+
+			// render_scanlines
+			agg::render_scanlines(m_rasterizer.get_rasterizer(), sl, ren_fine);
+		}
 	}
 
 	void CGraphics::CalculateFullTransform()
@@ -1478,13 +1540,17 @@ namespace Aggplus
 	{
 		if (!m_oClip.IsClip())
 		{
+			//if (m_pPDFAlphaMask)
+			//{
+			//	return agg::render_scanlines(m_rasterizer.get_rasterizer(), m_pPDFAlphaMask.GetScanline(), ren);
+			//}
 			agg::render_scanlines(m_rasterizer.get_rasterizer(), m_rasterizer.get_scanline(), ren);
 		}
 		else
 		{
 			if (!m_oClip.IsClip2())
 			{
-				typedef agg::scanline_p8                               sbool_scanline_type;
+				typedef agg::scanline_p8 sbool_scanline_type;
 
 				sbool_scanline_type sl_result;
 				sbool_scanline_type sl1;
@@ -1495,16 +1561,13 @@ namespace Aggplus
 			}
 			else
 			{
-				typedef agg::scanline_p8                               sbool_scanline_type;
+				typedef agg::scanline_p8 sbool_scanline_type;
 
 				sbool_scanline_type sl_result;
 				sbool_scanline_type sl1;
 				sbool_scanline_type sl2;
 
-				sbool_scanline_type sl;
-
-				agg::sbool_combine_shapes_aa(agg::sbool_and, m_rasterizer.get_rasterizer(),
-											 (1 == m_oClip.m_lCurStorage) ? m_oClip.m_storage1 :	m_oClip.m_storage2,	sl1, sl2, sl_result, ren);
+				agg::sbool_combine_shapes_aa(agg::sbool_and, m_rasterizer.get_rasterizer(), (1 == m_oClip.m_lCurStorage) ? m_oClip.m_storage1 : m_oClip.m_storage2, sl1, sl2, sl_result, ren);
 			}
 		}
 	}

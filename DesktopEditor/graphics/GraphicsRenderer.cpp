@@ -1436,9 +1436,40 @@ HRESULT CGraphicsRenderer::put_AlphaMaskIsolated(bool bIsolated)
 	return m_pRenderer->SetAlphaMaskIsolated(bIsolated);
 }
 
-void CGraphicsRenderer::put_AlphaMaskType(Aggplus::EMaskDataType oType)
+void CGraphicsRenderer::TEST()
 {
-	m_pRenderer->SetAlphaMaskType(oType);
+	m_pRenderer->CreateLayer();
+
+	m_pPath->MoveTo(100, 100);
+	m_pPath->LineTo(100, 200);
+	m_pPath->LineTo(200, 200);
+	m_pPath->LineTo(200, 100);
+	m_pPath->CloseFigure();
+
+	m_oBrush.Color1 = 0;
+	m_oBrush.Alpha1 = 255;
+
+	DrawPath(c_nWindingFillMode);
+
+	m_pRenderer->TEST(1);
+
+	m_pPath->Reset();
+
+	m_pPath->MoveTo(50, 50);
+	m_pPath->LineTo(50, 150);
+	m_pPath->LineTo(150, 150);
+	m_pPath->LineTo(150, 50);
+	m_pPath->CloseFigure();
+	m_pPath->SetRuler(false);
+
+	m_oBrush.Color1 = 255;
+	m_oBrush.Alpha1 = 255;
+
+	Aggplus::CBrush* pBrush = CreateBrush(&m_oBrush);
+
+	m_pRenderer->TEST(2, pBrush, m_pPath);
+
+	RELEASEOBJECT(pBrush);
 }
 
 void CGraphicsRenderer::put_GlobalAlphaEnabled(const bool& bEnabled, const double& dVal)

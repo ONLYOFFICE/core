@@ -282,6 +282,7 @@ protected:
 	CClipMulti  m_oClip;
 
 	CAlphaMask* m_pAlphaMask;
+	CAlphaMask* m_pPDFAlphaMask;
 
 	std::stack<CGraphicsLayer*> m_arLayers;
 
@@ -417,7 +418,8 @@ public:
 	Status SetLayerOpacity(double dOpacity);
 	Status SetLayerIsolated(bool bIsolated);
 	Status SetAlphaMaskIsolated(bool bIsolated);
-	Status SetAlphaMaskType(EMaskDataType oType);
+
+	void TEST(int i, CBrush* pBrush = NULL, CGraphicsPath* pPath = NULL);
 
 	void CalculateFullTransform();
 	bool IsClip();

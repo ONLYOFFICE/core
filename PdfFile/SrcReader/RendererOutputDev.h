@@ -186,6 +186,7 @@ namespace PdfReader
 			else
 				return false;
 		}
+		void TEST();
 		//---------------------------------------------------------------------------------------------------------------------------
 		virtual void startPage(int nPageIndex, GfxState *pGState);
 		virtual void endPage();

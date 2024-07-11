@@ -23,11 +23,10 @@ namespace Aggplus
 		unsigned int unSrcH = oSrc.height();
 
 		BYTE nOpacity = pLayer->GetSettings().m_uchOpacity;
-		bool bStride = oSrc.stride() < 0;
 
 		for (unsigned int unY = 0; unY < unSrcH; ++unY)
 		{
-			pDstBuffer = oSrc.row_ptr(bStride ? unSrcH - unY - 1: unY);
+			pDstBuffer = oSrc.row_ptr(unY);
 			for (unsigned int unX = 0; unX < unSrcW; ++unX)
 			{
 				uchAlpha = (SrcPixelFormatRenderer::base_mask + nOpacity * pSrcBuffer[order_type::A]) >> 8;
@@ -70,11 +69,10 @@ namespace Aggplus
 		unsigned int unSrcH = oSrc.height();
 
 		BYTE nOpacity = pLayer->GetSettings().m_uchOpacity;
-		bool bStride = oSrc.stride() < 0;
 
 		for (unsigned int unY = 0; unY < unSrcH; ++unY)
 		{
-			pDstBuffer = oSrc.row_ptr(bStride ? unSrcH - unY - 1: unY);
+			pDstBuffer = oSrc.row_ptr(unY);
 			for (unsigned int unX = 0; unX < unSrcW; ++unX)
 			{
 				uchAlpha = (SrcPixelFormatRenderer::base_mask + nOpacity * pSrcBuffer[order_type::A]) >> 8;
@@ -108,11 +106,10 @@ namespace Aggplus
 		unsigned int unSrcH = oSrc.height();
 
 		BYTE nOpacity = pLayer->GetSettings().m_uchOpacity;
-		bool bStride = oSrc.stride() < 0;
 
 		for (unsigned int unY = 0; unY < unSrcH; ++unY)
 		{
-			pDstBuffer = oSrc.row_ptr(bStride ? unSrcH - unY - 1: unY);
+			pDstBuffer = oSrc.row_ptr(unY);
 			for (unsigned int unX = 0; unX < unSrcW; ++unX)
 			{
 				uchAlpha = ((SrcPixelFormatRenderer::base_mask + nOpacity * pSrcBuffer[order_type::A] * AlphaMaskFunction::calculate(pSrcAlphaMaskBuffer)) >> 16);

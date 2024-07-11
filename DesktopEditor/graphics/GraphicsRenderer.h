@@ -359,7 +359,8 @@ public:
 	virtual HRESULT put_LayerOpacity(double dValue) override;
 	virtual HRESULT put_LayerIsolated(bool bIsolated) override;
 	virtual HRESULT put_AlphaMaskIsolated(bool bIsolated) override;
-	virtual void put_AlphaMaskType(Aggplus::EMaskDataType oType) override;
+
+	virtual void TEST() override;
 
 	// smart methods
 	void drawHorLine(BYTE align, double y, double x, double r, double penW)

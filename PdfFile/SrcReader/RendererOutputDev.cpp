@@ -563,6 +563,16 @@ namespace PdfReader
 		//            delete m_pBufferTextClip;
 
 	}
+	void RendererOutputDev::TEST()
+	{
+		if (c_nGrRenderer != m_lRendererType)
+			return;
+		NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
+		if (!GRenderer)
+			return;
+
+		GRenderer->TEST();
+	}
 	void RendererOutputDev::startPage(int nPageIndex, GfxState *pGState)
 	{
 		if (nPageIndex < 0)
@@ -581,9 +591,15 @@ namespace PdfReader
 			m_bDrawOnlyText = true;
 		else
 			m_bDrawOnlyText = false;
+
+		TEST();
 	}
 	void RendererOutputDev::endPage()
 	{
+		m_pRenderer->EndCommand(c_nResetMaskType);
+		m_pRenderer->EndCommand(c_nResetMaskType);
+		m_pRenderer->EndCommand(c_nResetMaskType);
+		m_pRenderer->EndCommand(c_nResetMaskType);
 		m_pRenderer->EndCommand(c_nResetMaskType);
 		m_pRenderer->EndCommand(c_nPageType);
 	}
@@ -4800,11 +4816,11 @@ namespace PdfReader
 			return;
 
 		m_pRenderer->EndCommand(c_nMaskType);
-		if (bAlpha)
-			GRenderer->put_AlphaMaskType(Aggplus::EMaskDataType::Alpha4Buffer);
 		m_sStates.back().pGStateSoftMask = m_sStates.back().pGState;
 		m_sStates.back().pAlphaMask = GRenderer->GetAlphaMask();
 		m_sStates.back().pAlphaMask->AddRef();
+		if (bAlpha)
+			m_sStates.back().pAlphaMask->SetDataType(Aggplus::EMaskDataType::Alpha4Buffer);
 	}
 	void RendererOutputDev::clearSoftMask(GfxState *pGState)
 	{

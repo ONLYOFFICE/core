@@ -698,6 +698,9 @@ SOURCES += \
 	../../../XlsbFormat/Biff12_records/BeginEsstr.cpp \
 	../../../XlsbFormat/Biff12_records/EndEsstr.cpp \
 	../../../XlsbFormat/Biff12_records/Str.cpp \
+	../../../XlsbFormat/Biff12_records/BeginEsmdb.cpp \
+	../../../XlsbFormat/Biff12_records/EndEsmdb.cpp \
+	../../../XlsbFormat/Biff12_records/Mdb.cpp \
 ### Biff12_structures
 	../../../XlsbFormat/Biff12_structures/LPByteBuf.cpp \
 	../../../XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -752,6 +755,7 @@ SOURCES += \
 	../../../XlsbFormat/Biff12_structures/SXET.cpp \
 	../../../XlsbFormat/Biff12_structures/PCDIAddlInfo.cpp \
 	../../../XlsbFormat/Biff12_structures/SdSetSortOrder.cpp \
+	../../../XlsbFormat/Biff12_structures/Mdir.cpp \
 ### Biff12_unions
 	../../../XlsbFormat/Biff12_unions/FRT.cpp \
 	../../../XlsbFormat/Biff12_unions/ACUID.cpp \
@@ -1072,6 +1076,7 @@ SOURCES += \
 	../../../XlsbFormat/Biff12_unions/DYNAMICARRAYMETADATA.cpp \
 	../../../XlsbFormat/Biff12_unions/RICHDATAMETADATA.cpp \
 	../../../XlsbFormat/Biff12_unions/ESSTR.cpp \
+	../../../XlsbFormat/Biff12_unions/ESMDB.cpp \
 }
 HEADERS += \
 	../../../XlsbFormat/Biff12_unions/COMMENTS.h \
@@ -1744,6 +1749,9 @@ HEADERS += \
 	../../../XlsbFormat/Biff12_records/BeginEsstr.h \
 	../../../XlsbFormat/Biff12_records/EndEsstr.h \
 	../../../XlsbFormat/Biff12_records/Str.h \
+	../../../XlsbFormat/Biff12_records/BeginEsmdb.h \
+	../../../XlsbFormat/Biff12_records/EndEsmdb.h \
+	../../../XlsbFormat/Biff12_records/Mdb.h \
 ### Biff12_structures
 	../../../XlsbFormat/Biff12_structures/ACProductVersion.h \
 	../../../XlsbFormat/Biff12_structures/Blxf.h \
@@ -1798,6 +1806,7 @@ HEADERS += \
 	../../../XlsbFormat/Biff12_structures/SXET.h \
 	../../../XlsbFormat/Biff12_structures/PCDIAddlInfo.h \
 	../../../XlsbFormat/Biff12_structures/SdSetSortOrder.h \
+	../../../XlsbFormat/Biff12_structures/Mdir.h \
 ### Biff12_unions
 	../../../XlsbFormat/Biff12_unions/ACABSPATH.h \
 	../../../XlsbFormat/Biff12_unions/ACCELLTABLE.h \
@@ -2118,3 +2127,4 @@ HEADERS += \
 	../../../XlsbFormat/Biff12_unions/DYNAMICARRAYMETADATA.h \
 	../../../XlsbFormat/Biff12_unions/RICHDATAMETADATA.h \
 	../../../XlsbFormat/Biff12_unions/ESSTR.h \
+	../../../XlsbFormat/Biff12_unions/ESMDB.h \

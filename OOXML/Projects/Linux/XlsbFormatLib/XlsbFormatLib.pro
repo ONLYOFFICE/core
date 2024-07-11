@@ -703,6 +703,8 @@ SOURCES += \
 	../../../XlsbFormat/Biff12_records/Mdb.cpp \
 	../../../XlsbFormat/Biff12_records/BeginEsmdx.cpp \
 	../../../XlsbFormat/Biff12_records/EndEsmdx.cpp \
+	../../../XlsbFormat/Biff12_records/BeginMdx.cpp \
+	../../../XlsbFormat/Biff12_records/EndMdx.cpp \
 ### Biff12_structures
 	../../../XlsbFormat/Biff12_structures/LPByteBuf.cpp \
 	../../../XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -1080,6 +1082,7 @@ SOURCES += \
 	../../../XlsbFormat/Biff12_unions/ESSTR.cpp \
 	../../../XlsbFormat/Biff12_unions/ESMDB.cpp \
 	../../../XlsbFormat/Biff12_unions/ESMDX.cpp \
+	../../../XlsbFormat/Biff12_unions/MDX.cpp \
 }
 HEADERS += \
 	../../../XlsbFormat/Biff12_unions/COMMENTS.h \
@@ -1757,6 +1760,8 @@ HEADERS += \
 	../../../XlsbFormat/Biff12_records/Mdb.h \
 	../../../XlsbFormat/Biff12_records/BeginEsmdx.h \
 	../../../XlsbFormat/Biff12_records/EndEsmdx.h \
+	../../../XlsbFormat/Biff12_records/BeginMdx.h \
+	../../../XlsbFormat/Biff12_records/EndMdx.h \
 ### Biff12_structures
 	../../../XlsbFormat/Biff12_structures/ACProductVersion.h \
 	../../../XlsbFormat/Biff12_structures/Blxf.h \
@@ -2134,3 +2139,4 @@ HEADERS += \
 	../../../XlsbFormat/Biff12_unions/ESSTR.h \
 	../../../XlsbFormat/Biff12_unions/ESMDB.h \
 	../../../XlsbFormat/Biff12_unions/ESMDX.h \
+	../../../XlsbFormat/Biff12_unions/MDX.h \

@@ -30,86 +30,36 @@
  *
  */
 
-#include "MDX.h"
-#include "MDXMBRPROP.h"
-
-#include "../Biff12_records/BeginMdx.h"
-#include "../Biff12_records/EndMdx.h"
+#include "BeginMdxMbrProp.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    MDX::MDX()
+    BeginMdxMbrProp::BeginMdxMbrProp()
     {
     }
 
-    MDX::~MDX()
+    BeginMdxMbrProp::~BeginMdxMbrProp()
     {
     }
 
-    BaseObjectPtr MDX::clone()
+    BaseObjectPtr BeginMdxMbrProp::clone()
     {
-        return BaseObjectPtr(new MDX(*this));
+        return BaseObjectPtr(new BeginMdxMbrProp(*this));
     }
 
-    //MDX = BrtBeginMDX COMMENTAUTHORS COMMENTLIST *FRT BrtEndMDX
-    const bool MDX::loadContent(BinProcessor& proc)
+    void BeginMdxMbrProp::readFields(XLS::CFRecord& record)
     {
-        /*if (proc.optional<BeginMDX>())
-        {
-			m_bBrtBeginMDX = true;
-            elements_.pop_back();
-        }
-		else
-			m_bBrtBeginMDX = false;
-
-        if (proc.optional<COMMENTAUTHORS>())
-        {
-            m_COMMENTAUTHORS = elements_.back();
-            elements_.pop_back();
-        }
-        if (proc.optional<COMMENTLIST>())
-        {
-            m_COMMENTLIST = elements_.back();
-            elements_.pop_back();
-        }
-        int count = proc.repeated<FRT>(0, 0);
-
-        while(count > 0)
-        {
-            //m_arFRT.insert(m_arFRT.begin(), elements_.back());
-            elements_.pop_back();
-            count--;
-        }
-        if (proc.optional<EndMDX>())
-        {
-            m_bBrtEndMDX = true;
-            elements_.pop_back();
-        }
-		else
-			m_bBrtEndMDX = false;*/
-
-        return true;
+        record >> istrMbr >> istrProp;
     }
 
-	const bool MDX::saveContent(XLS::BinProcessor & proc)
+	void BeginMdxMbrProp::writeFields(XLS::CFRecord& record)
 	{
-		if (m_BrtBeginMdx != nullptr)
-			proc.mandatory(*m_BrtBeginMdx);
-        if(MDXTUPLE != nullptr)
-            proc.mandatory(*MDXTUPLE);
-        else if(MDXSET != nullptr)
-            proc.mandatory(*MDXSET);
-        else if(MDXMBRPROP != nullptr)
-            proc.mandatory(*MDXMBRPROP);
-        else if(MDXKPI != nullptr)
-            proc.mandatory(*MDXKPI);
-        proc.mandatory<XLSB::EndMdx>();
-		
-		return true;
+		record << istrMbr << istrProp;
 	}
+
 
 } // namespace XLSB
 

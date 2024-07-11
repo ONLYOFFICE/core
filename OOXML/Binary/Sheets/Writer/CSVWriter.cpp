@@ -796,6 +796,10 @@ void CSVWriter::Impl::WriteCell(OOX::Spreadsheet::CCell *pCell)
 
 		}
 	}
+	else if (pCell->m_oFormula.IsInit())
+	{
+		sCellValue = pCell->m_oFormula->m_sText;
+	}
 
 	// Escape cell value
 	if (m_bJSON)

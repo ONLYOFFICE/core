@@ -730,13 +730,7 @@ namespace Aggplus
 
 	bool CGraphicsPath::isClockwise()
 	{
-		double area = 0.0;
-		for (size_t i = 0; i < GetPointCount(); i++)
-		{
-			area += getArea(i, isCurvePoint(i + 1));
-			if (isCurvePoint(i + 1)) i += 2;
-		}
-		return area >= 0;
+		return getArea() >= 0;
 	}
 
 	void CGraphicsPath::Reverse()
@@ -772,12 +766,24 @@ namespace Aggplus
 		return points;
 	}
 
+	double CGraphicsPath::getArea()
+	{
+		double area = 0.0;
+		for (size_t i = 0; i < GetPointCount(); i++)
+		{
+			area += getArea(i, isCurvePoint(i + 1));
+			if (isCurvePoint(i + 1)) i += 2;
+		}
+		return area;
+	}
+
 	double CGraphicsPath::getArea(size_t idx, bool isCurve)
 	{
+		float area;
 		if (isCurve)
 		{
 			std::vector<PointF> points = getPoints(idx, 4);
-			return 3 * ((points[3].Y - points[0].Y)	* (points[1].X + points[2].X)
+			area = 3 * ((points[3].Y - points[0].Y)	* (points[1].X + points[2].X)
 						- (points[3].X - points[0].X) * (points[1].Y * points[2].Y)
 						+ points[1].Y * (points[0].X - points[2].X)
 						- points[1].X * (points[0].Y - points[2].Y)
@@ -785,7 +791,8 @@ namespace Aggplus
 						- points[3].X * (points[2].Y - points[0].Y / 3)) / 20;
 		}
 		std::vector<PointF> points = getPoints(idx, 2);
-		return (points[1].Y * points[0].X - points[1].X * points[0].Y) / 20;
+		area = (points[1].Y * points[0].X - points[1].X * points[0].Y) / 20;
+		return area;
 	}
 }
 

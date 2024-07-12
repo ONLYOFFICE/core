@@ -7,10 +7,12 @@ include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 ADD_DEPENDENCY(UnicodeConverter, kernel)
 
 SOURCES +=  $$PWD/cconversionsmtoooxml.cpp \
+    $$PWD/cooxml2odf.cpp \
     $$PWD/cstarmathpars.cpp
 
 HEADERS += \
     $$PWD/cconversionsmtoooxml.h \
+    $$PWD/cooxml2odf.h \
     $$PWD/cstarmathpars.h \
     $$PWD/typeConversion.h \
     $$PWD/typeselements.h

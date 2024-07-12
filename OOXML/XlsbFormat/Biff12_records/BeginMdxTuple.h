@@ -31,31 +31,45 @@
  */
 #pragma once
 
+#include "../Biff12_structures/SrvFmtCV.h"
+#include "../Biff12_structures/SrvFmtData.h"
+
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/XLWideString.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
 namespace XLSB
 {
-
-    enum class KPIProp {KPIPROPVALUE = 1, KPIPROPGOAL, KPIPROPSTATUS, KPIPROPTREND, KPIPROPWEIGHT, KPIPROPCURRENTTIMEMEMBER};
-
-    // Logical representation of BrtBeginMdxKpi record in BIFF12
-    class BeginMdxKpi: public XLS::BiffRecord
+    // Logical representation of BrtBeginMdxTuple record in BIFF12
+    class BeginMdxTuple: public XLS::BiffRecord
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(BeginMdxKpi)
-            BASE_OBJECT_DEFINE_CLASS_NAME(BeginMdxKpi)
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginMdxTuple)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginMdxTuple)
         public:
-            BeginMdxKpi();
-            ~BeginMdxKpi();
+            BeginMdxTuple();
+            ~BeginMdxTuple();
 
             XLS::BaseObjectPtr clone();
 
             void readFields(XLS::CFRecord& record) override;
 			void writeFields(XLS::CFRecord& record) override;
 
-            _INT32     istrKPIName;
-            KPIProp    kpiprop;
-            _INT32     istrMbrKPI; 
+            _INT32     cMbrs;
+            SrvFmtCV   dwSrvFmtBack;
+            SrvFmtCV   dwSrvFmtFore;
+
+            bool       fSrvFmtNum;
+            bool       fSrvFmtNumCurrency;
+            bool       fSrvFmtNumStr;
+            bool       fSrvFmtBack;
+            bool       fSrvFmtFore;
+            bool       fSrvFmtItalic;
+            bool       fSrvFmtUnderline;
+            bool       fSrvFmtBold;
+            bool       fSrvFmtStrikethrough;
+
+            XLNullableWideString        stSfnum;
+            SrvFmtDataPtr               dSfnum; 
     };
 
 } // namespace XLSB

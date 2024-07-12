@@ -29,34 +29,73 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
-#include "../../XlsxFormat/WritingElement.h"
+#include "MDXTUPLE.h"
+
+#include "../Biff12_records/BeginMDXTUPLE.h"
+#include "../Biff12_records/EndMDXTUPLE.h"
+#include "../Biff12_records/MdxMbrIstr.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    enum class KPIProp {KPIPROPVALUE = 1, KPIPROPGOAL, KPIPROPSTATUS, KPIPROPTREND, KPIPROPWEIGHT, KPIPROPCURRENTTIMEMEMBER};
-
-    // Logical representation of BrtBeginMdxKpi record in BIFF12
-    class BeginMdxKpi: public XLS::BiffRecord
+    MDXTUPLE::MDXTUPLE()
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(BeginMdxKpi)
-            BASE_OBJECT_DEFINE_CLASS_NAME(BeginMdxKpi)
-        public:
-            BeginMdxKpi();
-            ~BeginMdxKpi();
+    }
 
-            XLS::BaseObjectPtr clone();
+    MDXTUPLE::~MDXTUPLE()
+    {
+    }
 
-            void readFields(XLS::CFRecord& record) override;
-			void writeFields(XLS::CFRecord& record) override;
+    BaseObjectPtr MDXTUPLE::clone()
+    {
+        return BaseObjectPtr(new MDXTUPLE(*this));
+    }
 
-            _INT32     istrKPIName;
-            KPIProp    kpiprop;
-            _INT32     istrMbrKPI; 
-    };
+    //MDXTUPLE = BrtBeginMDXTUPLE COMMENTAUTHORS COMMENTLIST *FRT BrtEndMDXTUPLE
+    const bool MDXTUPLE::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginMdxTuple>())
+        {
+			m_BrtBeginMdxTuple = elements_.back();
+            elements_.pop_back();
+        }
+
+        auto count = proc.repeated<MdxMbrIstr>(0, 0);
+
+        while(count > 0)
+        {
+            MdxMbrIstrs.insert(MdxMbrIstrs.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
+        }
+        
+        if (proc.optional<EndMdxTuple>())
+        {
+            m_BrtEndMdxTuple = true;
+            elements_.pop_back();
+        }
+		else
+			m_BrtEndMdxTuple = false;
+
+        return m_BrtBeginMdxTuple && m_BrtEndMdxTuple;
+    }
+
+	const bool MDXTUPLE::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginMdxTuple != nullptr)
+			proc.mandatory(*m_BrtBeginMdxTuple);
+
+        for(auto i:MdxMbrIstrs)
+        {
+            proc.mandatory(*i);
+        }
+        proc.mandatory<XLSB::EndMdxTuple>();
+		
+		return true;
+	}
 
 } // namespace XLSB
 

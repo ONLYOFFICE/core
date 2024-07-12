@@ -34,28 +34,20 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
+
+
 namespace XLSB
 {
-
-    enum class KPIProp {KPIPROPVALUE = 1, KPIPROPGOAL, KPIPROPSTATUS, KPIPROPTREND, KPIPROPWEIGHT, KPIPROPCURRENTTIMEMEMBER};
-
-    // Logical representation of BrtBeginMdxKpi record in BIFF12
-    class BeginMdxKpi: public XLS::BiffRecord
+    // Logical representation of BrtEndMdxTuple record in BIFF12
+    class EndMdxTuple: public XLS::BiffRecord
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(BeginMdxKpi)
-            BASE_OBJECT_DEFINE_CLASS_NAME(BeginMdxKpi)
+            BIFF_RECORD_DEFINE_TYPE_INFO(EndMdxTuple)
+            BASE_OBJECT_DEFINE_CLASS_NAME(EndMdxTuple)
         public:
-            BeginMdxKpi();
-            ~BeginMdxKpi();
+            EndMdxTuple();
+            ~EndMdxTuple();
 
             XLS::BaseObjectPtr clone();
-
-            void readFields(XLS::CFRecord& record) override;
-			void writeFields(XLS::CFRecord& record) override;
-
-            _INT32     istrKPIName;
-            KPIProp    kpiprop;
-            _INT32     istrMbrKPI; 
     };
 
 } // namespace XLSB

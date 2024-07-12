@@ -710,6 +710,8 @@ SOURCES += \
 	../../../XlsbFormat/Biff12_records/BeginMdxKpi.cpp \
 	../../../XlsbFormat/Biff12_records/EndMdxKpi.cpp \
 	../../../XlsbFormat/Biff12_records/MdxMbrIstr.cpp \
+	../../../XlsbFormat/Biff12_records/BeginMdxTuple.cpp \
+	../../../XlsbFormat/Biff12_records/EndMdxTuple.cpp \
 ### Biff12_structures
 	../../../XlsbFormat/Biff12_structures/LPByteBuf.cpp \
 	../../../XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -765,6 +767,7 @@ SOURCES += \
 	../../../XlsbFormat/Biff12_structures/PCDIAddlInfo.cpp \
 	../../../XlsbFormat/Biff12_structures/SdSetSortOrder.cpp \
 	../../../XlsbFormat/Biff12_structures/Mdir.cpp \
+	../../../XlsbFormat/Biff12_structures/SrvFmtData.cpp \
 ### Biff12_unions
 	../../../XlsbFormat/Biff12_unions/FRT.cpp \
 	../../../XlsbFormat/Biff12_unions/ACUID.cpp \
@@ -1090,6 +1093,7 @@ SOURCES += \
 	../../../XlsbFormat/Biff12_unions/MDX.cpp \
 	../../../XlsbFormat/Biff12_unions/MDXMBRPROP.cpp \
 	../../../XlsbFormat/Biff12_unions/MDXKPI.cpp \
+	../../../XlsbFormat/Biff12_unions/MDXTUPLE.cpp \
 }
 HEADERS += \
 	../../../XlsbFormat/Biff12_unions/COMMENTS.h \
@@ -1774,6 +1778,8 @@ HEADERS += \
 	../../../XlsbFormat/Biff12_records/BeginMdxKpi.h \
 	../../../XlsbFormat/Biff12_records/EndMdxKpi.h \
 	../../../XlsbFormat/Biff12_records/MdxMbrIstr.h \
+	../../../XlsbFormat/Biff12_records/BeginMdxTuple.h \
+	../../../XlsbFormat/Biff12_records/EndMdxTuple.h \
 ### Biff12_structures
 	../../../XlsbFormat/Biff12_structures/ACProductVersion.h \
 	../../../XlsbFormat/Biff12_structures/Blxf.h \
@@ -1829,6 +1835,7 @@ HEADERS += \
 	../../../XlsbFormat/Biff12_structures/PCDIAddlInfo.h \
 	../../../XlsbFormat/Biff12_structures/SdSetSortOrder.h \
 	../../../XlsbFormat/Biff12_structures/Mdir.h \
+	../../../XlsbFormat/Biff12_structures/SrvFmtData.h \
 ### Biff12_unions
 	../../../XlsbFormat/Biff12_unions/ACABSPATH.h \
 	../../../XlsbFormat/Biff12_unions/ACCELLTABLE.h \
@@ -2154,3 +2161,4 @@ HEADERS += \
 	../../../XlsbFormat/Biff12_unions/MDX.h \
 	../../../XlsbFormat/Biff12_unions/MDXMBRPROP.h \
 	../../../XlsbFormat/Biff12_unions/MDXKPI.h \
+	../../../XlsbFormat/Biff12_unions/MDXTUPLE.h \

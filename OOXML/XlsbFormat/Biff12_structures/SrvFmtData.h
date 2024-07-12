@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2024
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,34 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #pragma once
 
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
-#include "../../XlsxFormat/WritingElement.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/XLWideString.h"
+
 
 namespace XLSB
 {
-
-    enum class KPIProp {KPIPROPVALUE = 1, KPIPROPGOAL, KPIPROPSTATUS, KPIPROPTREND, KPIPROPWEIGHT, KPIPROPCURRENTTIMEMEMBER};
-
-    // Logical representation of BrtBeginMdxKpi record in BIFF12
-    class BeginMdxKpi: public XLS::BiffRecord
+    enum class SrvFmtNumber: _UINT32 {GENERAL = 0x00000000, PERCENT = 0x0000000E, DATE = 0x00000013};
+    class SrvFmtData : public XLS::BiffStructure
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(BeginMdxKpi)
-            BASE_OBJECT_DEFINE_CLASS_NAME(BeginMdxKpi)
-        public:
-            BeginMdxKpi();
-            ~BeginMdxKpi();
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(SrvFmtData)
+    public:
+        SrvFmtData();
+        ~SrvFmtData();
+       XLS::BiffStructurePtr clone();
 
-            XLS::BaseObjectPtr clone();
+        static const XLS::ElementType	type = XLS::typeBiffStructure;
 
-            void readFields(XLS::CFRecord& record) override;
-			void writeFields(XLS::CFRecord& record) override;
-
-            _INT32     istrKPIName;
-            KPIProp    kpiprop;
-            _INT32     istrMbrKPI; 
+        void load(XLS::CFRecord& record) override;
+		void save(XLS::CFRecord& record) override;
+        
+        _UINT32                dwSrvFmtData;
     };
 
-} // namespace XLSB
+typedef boost::shared_ptr<SrvFmtData> SrvFmtDataPtr;
 
+}   // namespace XLSB

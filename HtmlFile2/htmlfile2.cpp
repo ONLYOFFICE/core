@@ -48,6 +48,10 @@
 
 #define SAVE_NORMALIZED_HTML 0
 
+#define RELEASE_VECTOR(vector_object, object_type) \
+	for (object_type* pElement : vector_object) \
+		RELEASEOBJECT(pElement) \
+
 std::wstring rStyle = L" a area b strong bdo bdi big br center cite dfn em i var code kbd samp tt del s font img ins u mark q rt sup small sub svg input basefont button label data object noscript output abbr time ruby progress hgroup meter span acronym ";
 
 // Ячейка таблицы
@@ -674,6 +678,57 @@ private:
 	std::vector<CTableCell*> m_arCells;
 };
 
+class CTableCol
+{
+public:
+	CTableCol(XmlUtils::CXmlLiteReader& oLiteReader)
+		: m_unSpan(1)
+	{
+		while (oLiteReader.MoveToNextAttribute())
+		{
+			if (L"span" == oLiteReader.GetName())
+				m_unSpan = NSStringFinder::ToInt(oLiteReader.GetText(), 1);
+			else if (L"style" == oLiteReader.GetName())
+				m_wsStyle = oLiteReader.GetText();
+		}
+
+		oLiteReader.MoveToElement();
+	}
+private:
+	UINT m_unSpan;
+	std::wstring m_wsStyle;
+};
+
+class CTableColgroup
+{
+public:
+	CTableColgroup(XmlUtils::CXmlLiteReader& oLiteReader)
+		: m_unWidth(0)
+	{
+		while (oLiteReader.MoveToNextAttribute())
+		{
+			if (L"width" == oLiteReader.GetName())
+				m_unWidth = NSStringFinder::ToInt(oLiteReader.GetText());
+		}
+
+		oLiteReader.MoveToElement();
+	}
+
+	~CTableColgroup()
+	{
+		RELEASE_VECTOR(m_arCols, CTableCol)
+	}
+
+	void AddCol(CTableCol* pCol)
+	{
+		if (NULL != pCol)
+			m_arCols.push_back(pCol);
+	}
+private:
+	std::vector<CTableCol*> m_arCols;
+	UINT m_unWidth;
+};
+
 class CTable
 {
 public:
@@ -682,8 +737,8 @@ public:
 
 	~CTable()
 	{
-		for (CTableRow* pRow : m_arRows)
-			RELEASEOBJECT(pRow);
+		RELEASE_VECTOR(m_arRows, CTableRow)
+		RELEASE_VECTOR(m_arColgroups, CTableColgroup)
 	}
 
 	CTableRow* operator[](UINT unIndex)
@@ -780,6 +835,12 @@ public:
 			m_oStyles.m_enRules = TTableStyles::ETableRules::None;
 		else if (NSStringFinder::Equals(wsValue, L"rows"))
 			m_oStyles.m_enRules = TTableStyles::ETableRules::Rows;
+	}
+
+	void AddColgroup(CTableColgroup* pElement)
+	{
+		if (NULL != pElement)
+			m_arColgroups.push_back(pElement);
 	}
 
 	void HaveBorderAttribute()
@@ -965,6 +1026,8 @@ private:
 	std::vector<UINT> m_arMinColspan;
 
 	NSStringUtils::CStringBuilder m_oCaption;
+
+	std::vector<CTableColgroup*> m_arColgroups;
 
 	TTableStyles m_oStyles;
 };
@@ -2452,6 +2515,33 @@ private:
 		sSelectors.pop_back();
 		return;
 	}
+
+	void ParseTableColspan(CTable& oTable)
+	{
+		CTableColgroup *pColgroup = new CTableColgroup(m_oLightReader);
+
+		if (NULL == pColgroup)
+			return;
+
+		oTable.AddColgroup(pColgroup);
+
+		const int nDeath = m_oLightReader.GetDepth();
+		if (m_oLightReader.IsEmptyNode() || !m_oLightReader.ReadNextSiblingNode2(nDeath))
+			return;
+
+		do
+		{
+			if (L"col" != m_oLightReader.GetName())
+				continue;
+
+			CTableCol *pCol = new CTableCol(m_oLightReader);
+
+			if (NULL == pCol)
+				continue;
+
+			pColgroup->AddCol(pCol);
+		} while(m_oLightReader.ReadNextSiblingNode2(nDeath));
+	}
 	
 	struct TRowspanElement
 	{
@@ -2624,6 +2714,8 @@ private:
 				ParseTableRows(oTable, sSelectors, oTS, ERowParseMode::ParseModeBody);
 			else if(sName == L"tfoot")
 				ParseTableRows(oTable, sSelectors, oTS,  ERowParseMode::ParseModeFoother);
+			else if (sName == L"colgroup")
+				ParseTableColspan(oTable);
 
 			sSelectors.pop_back();
 		}

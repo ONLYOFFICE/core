@@ -1416,24 +1416,9 @@ void CGraphicsRenderer::SetAlphaMask(Aggplus::CAlphaMask *pAlphaMask)
 	m_pRenderer->SetAlphaMask(pAlphaMask);
 }
 
-Aggplus::CAlphaMask* CGraphicsRenderer::GetAlphaMask()
-{
-	return m_pRenderer->GetAlphaMask();
-}
-
 HRESULT CGraphicsRenderer::put_LayerOpacity(double dValue)
 {
 	return m_pRenderer->SetLayerOpacity(dValue);
-}
-
-HRESULT CGraphicsRenderer::put_LayerIsolated(bool bIsolated)
-{
-	return m_pRenderer->SetLayerIsolated(bIsolated);
-}
-
-HRESULT CGraphicsRenderer::put_AlphaMaskIsolated(bool bIsolated)
-{
-	return m_pRenderer->SetAlphaMaskIsolated(bIsolated);
 }
 
 void CGraphicsRenderer::TEST()
@@ -1451,7 +1436,7 @@ void CGraphicsRenderer::TEST()
 
 	DrawPath(c_nWindingFillMode);
 
-	m_pRenderer->TEST(1);
+	m_pRenderer->CreateSoftMask();
 
 	m_pPath->Reset();
 
@@ -1460,16 +1445,11 @@ void CGraphicsRenderer::TEST()
 	m_pPath->LineTo(150, 150);
 	m_pPath->LineTo(150, 50);
 	m_pPath->CloseFigure();
-	m_pPath->SetRuler(false);
 
 	m_oBrush.Color1 = 255;
 	m_oBrush.Alpha1 = 255;
 
-	Aggplus::CBrush* pBrush = CreateBrush(&m_oBrush);
-
-	m_pRenderer->TEST(2, pBrush, m_pPath);
-
-	RELEASEOBJECT(pBrush);
+	DrawPath(c_nWindingFillMode);
 }
 
 void CGraphicsRenderer::put_GlobalAlphaEnabled(const bool& bEnabled, const double& dVal)

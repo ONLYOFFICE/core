@@ -117,12 +117,9 @@ namespace NSGraphics
 		virtual void Stroke() = 0;
 		virtual double GetPixW() = 0;
 		virtual double GetPixH() = 0;
-		virtual unsigned int GetLayerW() = 0;
-		virtual unsigned int GetLayerH() = 0;
 
 		//alpha mask methods
 		virtual void SetAlphaMask(Aggplus::CAlphaMask* pAlphaMask) = 0;
-		virtual Aggplus::CAlphaMask* GetAlphaMask() = 0;
 		virtual void TEST() = 0;
 
 		// smart methods

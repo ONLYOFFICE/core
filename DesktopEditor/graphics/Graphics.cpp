@@ -68,7 +68,7 @@ namespace Aggplus
 		m_dDpiTile = -1;
 
 		m_pAlphaMask = NULL;
-		m_pPDFAlphaMask = NULL;
+		m_pSoftMask  = NULL;
 
 		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
 		m_nBlendMode = agg::comp_op_src_over;
@@ -107,7 +107,7 @@ namespace Aggplus
 		m_dDpiTile = -1;
 
 		m_pAlphaMask = NULL;
-		m_pPDFAlphaMask = NULL;
+		m_pSoftMask  = NULL;
 
 		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
 		m_nBlendMode = agg::comp_op_src_over;
@@ -151,7 +151,7 @@ namespace Aggplus
 		m_dDpiTile = -1;
 
 		m_pAlphaMask = NULL;
-		m_pPDFAlphaMask = NULL;
+		m_pSoftMask  = NULL;
 
 		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
 		m_nBlendMode = agg::comp_op_src_over;
@@ -167,6 +167,7 @@ namespace Aggplus
 #endif
 
 		RELEASEINTERFACE(m_pAlphaMask);
+		RELEASEINTERFACE(m_pSoftMask);
 
 		while (!m_arLayers.empty())
 		{
@@ -1276,6 +1277,42 @@ namespace Aggplus
 		return Ok;
 	}
 
+	Status CGraphics::CreateSoftMask()
+	{
+		if (m_arLayers.empty())
+			return WrongState;
+
+		CGraphicsLayer *pCurrentGraphicsLayer = m_arLayers.top();
+		m_arLayers.pop();
+
+		if (pCurrentGraphicsLayer->Empty())
+			return GenericError;
+
+		BYTE* pBuffer = pCurrentGraphicsLayer->GetBuffer();
+
+		pCurrentGraphicsLayer->ClearBuffer(false);
+
+		RELEASEINTERFACE(pCurrentGraphicsLayer);
+		RELEASEINTERFACE(m_pSoftMask);
+
+		m_pSoftMask = new CSoftMask(pBuffer, m_frame_buffer.ren_buf().width(), m_frame_buffer.ren_buf().height(), EMaskDataType::Alpha4Buffer, false);
+
+		if (!m_arLayers.empty())
+			pBuffer = m_arLayers.top()->GetBuffer();
+		else
+			pBuffer = m_pPixels;
+
+		if (!pBuffer)
+		{
+			RELEASEINTERFACE(pCurrentGraphicsLayer);
+			return WrongState;
+		}
+
+		m_frame_buffer.ren_buf().attach(pBuffer, m_frame_buffer.ren_buf().width(), m_frame_buffer.ren_buf().height(), m_frame_buffer.ren_buf().stride());
+
+		return Ok;
+	}
+
 	Status CGraphics::AddLayer(CGraphicsLayer *pGraphicsLayer)
 	{
 		if (NULL == pGraphicsLayer || pGraphicsLayer->Empty())
@@ -1358,11 +1395,6 @@ namespace Aggplus
 					Aggplus::BlendTo<agg::one_component_mask_u8>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pAlphaMask->GetBuffer(), m_pAlphaMask->GetStep());
 					break;
 				}
-				case EMaskDataType::Alpha4Buffer:
-				{
-				Aggplus::BlendTo<agg::four_component_mask_u8>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pAlphaMask->GetBuffer(), m_pAlphaMask->GetStep());
-				break;
-				}
 			}
 		}
 
@@ -1420,100 +1452,6 @@ namespace Aggplus
 		return Ok;
 	}
 
-	Status CGraphics::SetLayerIsolated(bool bIsolated)
-	{
-		if (m_arLayers.empty())
-			return WrongState;
-
-		UINT unSize = m_frame_buffer.ren_buf().width() * m_frame_buffer.ren_buf().height() * m_frame_buffer.pix_size;
-		if (bIsolated)
-			memset(m_arLayers.top()->GetBuffer(), 0x00, unSize);
-		else
-			memcpy(m_arLayers.top()->GetBuffer(), m_pPixels, unSize);
-
-		return Ok;
-	}
-
-	Status CGraphics::SetAlphaMaskIsolated(bool bIsolated)
-	{
-		if (m_arLayers.empty())
-			return WrongState;
-
-		UINT unSize = m_frame_buffer.ren_buf().width() * m_frame_buffer.ren_buf().height() * m_frame_buffer.pix_size;
-		if (bIsolated)
-		{
-			memset(m_arLayers.top()->GetBuffer(), 0x00, unSize);
-		}
-		else
-		{
-			BYTE* pBuffer = m_arLayers.top()->GetBuffer();
-			for (unsigned int i = 0; i < unSize; i = i + 4)
-			{
-				pBuffer[i + 0] = 0x00;
-				pBuffer[i + 1] = 0x00;
-				pBuffer[i + 2] = 0x00;
-				pBuffer[i + 3] = 0xFF;
-			}
-		}
-
-		return Ok;
-	}
-
-	void CGraphics::TEST(int i, CBrush* pBrush, CGraphicsPath* pPath)
-	{
-		if (i == 1)
-		{
-			EndCreatingAlphaMask();
-			RemoveLayer();
-		}
-		if (i == 2)
-		{
-			// FillPath
-			if (NULL == pBrush)
-				return;
-
-			m_rasterizer.get_rasterizer().reset();
-
-			agg::path_storage p2(pPath->m_internal->m_agg_ps);
-			typedef agg::conv_transform<agg::path_storage> trans_type;
-
-			trans_type* ptrans			= NULL;
-			agg::trans_affine* paffine	= NULL;
-			if (!m_bIntegerGrid)
-				ptrans = new trans_type(p2, m_oFullTransform.m_internal->m_agg_mtx);
-			else
-			{
-				paffine = new agg::trans_affine();
-				ptrans = new trans_type(p2, *paffine);
-			}
-
-			typedef agg::conv_curve<trans_type> conv_crv_type;
-			conv_crv_type c_c_path(*ptrans);
-
-			m_rasterizer.get_rasterizer().add_path(c_c_path);
-
-			m_rasterizer.get_rasterizer().filling_rule(pPath->m_internal->m_bEvenOdd ? agg::fill_even_odd : agg::fill_non_zero);
-
-			// DoFillPath
-			CColor clr;
-			((CBrushSolid*)pBrush)->GetColor(&clr);
-
-			// TEST
-			agg::rendering_buffer g_alpha_mask_rbuf;
-			g_alpha_mask_rbuf.attach(m_pAlphaMask->GetBuffer(), m_frame_buffer.ren_buf().width(), m_frame_buffer.ren_buf().height(), m_frame_buffer.ren_buf().stride());
-			agg::alpha_mask_rgba32a am(g_alpha_mask_rbuf);
-			agg::scanline_u8_am<agg::alpha_mask_rgba32a> sl(am);
-
-			// DoFillPathSolid
-			typedef agg::renderer_scanline_aa_solid<base_renderer_type> solid_renderer_type;
-			solid_renderer_type ren_fine(m_frame_buffer.ren_base());
-			ren_fine.color(clr.GetAggColor());
-
-			// render_scanlines
-			agg::render_scanlines(m_rasterizer.get_rasterizer(), sl, ren_fine);
-		}
-	}
-
 	void CGraphics::CalculateFullTransform()
 	{
 		m_oFullTransform = m_oCoordTransform;
@@ -1525,25 +1463,18 @@ namespace Aggplus
 		return m_oClip.IsClip();
 	}
 
-	unsigned int CGraphics::GetLayerW()
-	{
-		return m_frame_buffer.ren_buf().width();
-	}
-
-	unsigned int CGraphics::GetLayerH()
-	{
-		return m_frame_buffer.ren_buf().height();
-	}
-
 	template<class Renderer>
 	void CGraphics::render_scanlines(Renderer& ren)
 	{
 		if (!m_oClip.IsClip())
 		{
-			//if (m_pPDFAlphaMask)
-			//{
-			//	return agg::render_scanlines(m_rasterizer.get_rasterizer(), m_pPDFAlphaMask.GetScanline(), ren);
-			//}
+			if (m_pSoftMask)
+			{
+				if (m_pSoftMask->GetDataType() == EMaskDataType::ImageBuffer)
+					return agg::render_scanlines(m_rasterizer.get_rasterizer(), m_pSoftMask->GetScanlineImage(), ren);
+				if (m_pSoftMask->GetDataType() == EMaskDataType::Alpha4Buffer)
+					return agg::render_scanlines(m_rasterizer.get_rasterizer(), m_pSoftMask->GetScanlineABuffer(), ren);
+			}
 			agg::render_scanlines(m_rasterizer.get_rasterizer(), m_rasterizer.get_scanline(), ren);
 		}
 		else

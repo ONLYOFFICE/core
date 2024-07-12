@@ -62,6 +62,8 @@ namespace XLSB
 			m_BrtBeginMdxSet = elements_.back();
             elements_.pop_back();
         }
+        else 
+            return false;
 
         auto count = proc.repeated<MdxMbrIstr>(0, 0);
 

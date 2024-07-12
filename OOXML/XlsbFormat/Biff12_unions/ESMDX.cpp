@@ -31,10 +31,10 @@
  */
 
 #include "ESMDX.h"
+#include "MDX.h"
 
 #include "../Biff12_records/BeginEsmdx.h"
 #include "../Biff12_records/EndEsmdx.h"
-
 
 using namespace XLS;
 
@@ -54,50 +54,39 @@ namespace XLSB
         return BaseObjectPtr(new ESMDX(*this));
     }
 
-    //ESMDX = BrtBeginESMDX COMMENTAUTHORS COMMENTLIST *FRT BrtEndESMDX
     const bool ESMDX::loadContent(BinProcessor& proc)
     {
-        /*if (proc.optional<BeginESMDX>())
+        if (proc.optional<BeginEsmdx>())
         {
-			m_bBrtBeginESMDX = true;
+			m_BrtBeginEsmdx = elements_.back();
             elements_.pop_back();
         }
 		else
-			m_bBrtBeginESMDX = false;
+			return false;
 
-        if (proc.optional<COMMENTAUTHORS>())
-        {
-            m_COMMENTAUTHORS = elements_.back();
-            elements_.pop_back();
-        }
-        if (proc.optional<COMMENTLIST>())
-        {
-            m_COMMENTLIST = elements_.back();
-            elements_.pop_back();
-        }
-        int count = proc.repeated<FRT>(0, 0);
+        int count = proc.repeated<MDX>(0, 0);
 
         while(count > 0)
         {
-            //m_arFRT.insert(m_arFRT.begin(), elements_.back());
+            MDXs.insert(MDXs.begin(), elements_.back());
             elements_.pop_back();
             count--;
         }
-        if (proc.optional<EndESMDX>())
+        if (proc.optional<EndEsmdx>())
         {
-            m_bBrtEndESMDX = true;
+            m_bBrtEndEsmdx = true;
             elements_.pop_back();
         }
 		else
-			m_bBrtEndESMDX = false;*/
+			m_bBrtEndEsmdx = false;
 
-        return true;
+        return m_BrtBeginEsmdx && m_bBrtEndEsmdx;
     }
 
 	const bool ESMDX::saveContent(XLS::BinProcessor & proc)
 	{
-		if (m_BrtBeginESMDX != nullptr)
-			proc.mandatory(*m_BrtBeginESMDX);
+		if (m_BrtBeginEsmdx != nullptr)
+			proc.mandatory(*m_BrtBeginEsmdx);
 
 		for(auto i:MDXs)
             proc.mandatory(*i);

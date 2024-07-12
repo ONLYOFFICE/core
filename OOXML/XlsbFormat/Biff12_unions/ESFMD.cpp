@@ -31,6 +31,7 @@
  */
 
 #include "ESFMD.h"
+#include "FMD.h"
 
 #include "../Biff12_records/BeginEsfmd.h"
 #include "../Biff12_records/EndEsfmd.h"
@@ -54,55 +55,43 @@ namespace XLSB
         return BaseObjectPtr(new ESFMD(*this));
     }
 
-    //ESFMD = BrtBeginESFMD COMMENTAUTHORS COMMENTLIST *FRT BrtEndESFMD
+    //ESFMD = BrtBeginEsfmd COMMENTAUTHORS COMMENTLIST *FRT BrtEndEsfmd
     const bool ESFMD::loadContent(BinProcessor& proc)
     {
-        /*if (proc.optional<BeginESFMD>())
+        if (proc.optional<BeginEsfmd>())
         {
-			m_bBrtBeginESFMD = true;
+			m_BrtBeginEsfmd = elements_.back();
             elements_.pop_back();
         }
 		else
-			m_bBrtBeginESFMD = false;
+			return false;
 
-        if (proc.optional<COMMENTAUTHORS>())
-        {
-            m_COMMENTAUTHORS = elements_.back();
-            elements_.pop_back();
-        }
-        if (proc.optional<COMMENTLIST>())
-        {
-            m_COMMENTLIST = elements_.back();
-            elements_.pop_back();
-        }
-        int count = proc.repeated<FRT>(0, 0);
+        int count = proc.repeated<FMD>(0, 0);
 
         while(count > 0)
         {
-            //m_arFRT.insert(m_arFRT.begin(), elements_.back());
+            FMDs.insert(FMDs.begin(), elements_.back());
             elements_.pop_back();
             count--;
         }
-        if (proc.optional<EndESFMD>())
+        if (proc.optional<EndEsfmd>())
         {
-            m_bBrtEndESFMD = true;
+            m_bBrtEndEsfmd = true;
             elements_.pop_back();
         }
 		else
-			m_bBrtEndESFMD = false;*/
+			m_bBrtEndEsfmd = false;
 
-        return true;
+        return m_BrtBeginEsfmd && m_bBrtEndEsfmd;
     }
 
 	const bool ESFMD::saveContent(XLS::BinProcessor & proc)
 	{
-		if (m_BrtBeginESFMD != nullptr)
-			proc.mandatory(*m_BrtBeginESFMD);
-
+		if (m_BrtBeginEsfmd != nullptr)
+			proc.mandatory(*m_BrtBeginEsfmd);
 		for(auto i:FMDs)
             proc.mandatory(*i);
         proc.mandatory<XLSB::EndEsfmd>();
-		
 		return true;
 	}
 

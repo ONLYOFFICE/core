@@ -63,6 +63,8 @@ namespace XLSB
             m_BrtBeginEsstr = elements_.back();
             elements_.pop_back();
         }
+        else 
+            return false;
 
         int countStr = proc.repeated<Str>(0, 0);
 
@@ -82,7 +84,6 @@ namespace XLSB
 			m_BrtEndEsstr = false;
 
         return m_BrtBeginEsstr && m_BrtEndEsstr;
-        return true;
     }
 
 	const bool ESSTR::saveContent(BinProcessor& proc)

@@ -33,8 +33,6 @@
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
 
-
-
 namespace XLSB
 {
 
@@ -53,7 +51,6 @@ namespace XLSB
 		bool                   m_BrtBeginFMD;
         XLS::BaseObjectPtr     DYNAMICARRAYMETADATA;
         XLS::BaseObjectPtr     RICHDATAMETADATA;
-        XLS::BaseObjectPtr     FRT;
 		bool			       m_bBrtEndFMD;
 
     };

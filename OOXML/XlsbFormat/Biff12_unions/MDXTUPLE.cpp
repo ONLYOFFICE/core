@@ -32,8 +32,8 @@
 
 #include "MDXTUPLE.h"
 
-#include "../Biff12_records/BeginMDXTUPLE.h"
-#include "../Biff12_records/EndMDXTUPLE.h"
+#include "../Biff12_records/BeginMdxTuple.h"
+#include "../Biff12_records/EndMdxTuple.h"
 #include "../Biff12_records/MdxMbrIstr.h"
 
 using namespace XLS;
@@ -62,7 +62,8 @@ namespace XLSB
 			m_BrtBeginMdxTuple = elements_.back();
             elements_.pop_back();
         }
-
+        else
+            return false;
         auto count = proc.repeated<MdxMbrIstr>(0, 0);
 
         while(count > 0)
@@ -85,16 +86,15 @@ namespace XLSB
 
 	const bool MDXTUPLE::saveContent(XLS::BinProcessor & proc)
 	{
-		if (m_BrtBeginMdxTuple != nullptr)
-			proc.mandatory(*m_BrtBeginMdxTuple);
+        if (m_BrtBeginMdxTuple != nullptr)
+            proc.mandatory(*m_BrtBeginMdxTuple);
 
         for(auto i:MdxMbrIstrs)
         {
             proc.mandatory(*i);
         }
         proc.mandatory<XLSB::EndMdxTuple>();
-		
-		return true;
+        return true;
 	}
 
 } // namespace XLSB

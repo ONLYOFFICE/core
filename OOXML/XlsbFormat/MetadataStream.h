@@ -42,7 +42,6 @@
 
 namespace XLSB
 {
-
     class MetadataStream;
     typedef boost::shared_ptr<MetadataStream>		MetadataStreamPtr;
 
@@ -56,20 +55,15 @@ namespace XLSB
         XLS::BaseObjectPtr clone();
 
         const bool loadContent(XLS::BinProcessor& proc) override;
-		const bool saveContent(XLS::BinProcessor& proc) override;
+        const bool saveContent(XLS::BinProcessor& proc) override;
 
-
-        bool							 m_bBeginMetadata;
-		XLS::BaseObjectPtr m_ESMDTINFO;
-		XLS::BaseObjectPtr m_ESSTR;
-        XLS::BaseObjectPtr m_ESMDX;
-        XLS::BaseObjectPtr m_ESFMD;
-        XLS::BaseObjectPtr m_ESMBD;
-        XLS::BaseObjectPtr m_FRTMetadata;
-        bool							 m_bEndMetadata;
-
-
+        bool                            m_bBeginMetadata;
+		XLS::BaseObjectPtr              m_ESMDTINFO;
+		XLS::BaseObjectPtr              m_ESSTR;
+        XLS::BaseObjectPtr              m_ESMDX;
+        XLS::BaseObjectPtr              m_ESFMD;
+        XLS::BaseObjectPtr              m_ESMBD;
+        bool                            m_bEndMetadata;
 
     };
-
 }

@@ -32,6 +32,9 @@
 
 #include "MDX.h"
 #include "MDXMBRPROP.h"
+#include "MDXKPI.h"
+#include "MDXSET.h"
+#include "MDXTUPLE.h"
 
 #include "../Biff12_records/BeginMdx.h"
 #include "../Biff12_records/EndMdx.h"
@@ -54,42 +57,40 @@ namespace XLSB
         return BaseObjectPtr(new MDX(*this));
     }
 
-    //MDX = BrtBeginMDX COMMENTAUTHORS COMMENTLIST *FRT BrtEndMDX
+    //MDX = BrtBeginMdx COMMENTAUTHORS COMMENTLIST *FRT BrtEndMdx
     const bool MDX::loadContent(BinProcessor& proc)
     {
-        /*if (proc.optional<BeginMDX>())
+        if (proc.optional<BeginMdx>())
         {
-			m_bBrtBeginMDX = true;
+			m_BrtBeginMdx = elements_.back();
             elements_.pop_back();
         }
 		else
-			m_bBrtBeginMDX = false;
+			m_BrtBeginMdx = false;
 
-        if (proc.optional<COMMENTAUTHORS>())
+        if(proc.optional<MDXSET>())
         {
-            m_COMMENTAUTHORS = elements_.back();
-            elements_.pop_back();
+            m_MDXSET = elements_.back();
         }
-        if (proc.optional<COMMENTLIST>())
+        else if(proc.optional<MDXMBRPROP>())
         {
-            m_COMMENTLIST = elements_.back();
-            elements_.pop_back();
+            m_MDXMBRPROP = elements_.back();
         }
-        int count = proc.repeated<FRT>(0, 0);
-
-        while(count > 0)
+        else if(proc.optional<MDXKPI>())
         {
-            //m_arFRT.insert(m_arFRT.begin(), elements_.back());
-            elements_.pop_back();
-            count--;
+            m_MDXKPI = elements_.back();
         }
-        if (proc.optional<EndMDX>())
+        else if(proc.optional<MDXTUPLE>())
         {
-            m_bBrtEndMDX = true;
+            m_MDXTUPLE = elements_.back();
+        }
+        if (proc.optional<EndMdx>())
+        {
+            m_bBrtEndMdx = true;
             elements_.pop_back();
         }
 		else
-			m_bBrtEndMDX = false;*/
+			m_bBrtEndMdx = false;
 
         return true;
     }
@@ -98,14 +99,14 @@ namespace XLSB
 	{
 		if (m_BrtBeginMdx != nullptr)
 			proc.mandatory(*m_BrtBeginMdx);
-        if(MDXTUPLE != nullptr)
-            proc.mandatory(*MDXTUPLE);
-        else if(MDXSET != nullptr)
-            proc.mandatory(*MDXSET);
-        else if(MDXMBRPROP != nullptr)
-            proc.mandatory(*MDXMBRPROP);
-        else if(MDXKPI != nullptr)
-            proc.mandatory(*MDXKPI);
+        if(m_MDXTUPLE != nullptr)
+            proc.mandatory(*m_MDXTUPLE);
+        else if(m_MDXSET != nullptr)
+            proc.mandatory(*m_MDXSET);
+        else if(m_MDXMBRPROP != nullptr)
+            proc.mandatory(*m_MDXMBRPROP);
+        else if(m_MDXKPI != nullptr)
+            proc.mandatory(*m_MDXKPI);
         proc.mandatory<XLSB::EndMdx>();
 		
 		return true;

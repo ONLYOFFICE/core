@@ -50,9 +50,9 @@ namespace XLSB
 		const bool loadContent(XLS::BinProcessor& proc) override;
 		const bool saveContent(XLS::BinProcessor& proc) override;
 
-		XLS::BaseObjectPtr               m_BrtBeginESMDX;
+		XLS::BaseObjectPtr               m_BrtBeginEsmdx;
         std::vector<XLS::BaseObjectPtr>  MDXs;
-		bool			                 m_bBrtEndESMDX;
+		bool			                 m_bBrtEndEsmdx;
 
     };
 

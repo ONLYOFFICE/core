@@ -62,7 +62,8 @@ namespace XLSB
 			m_BrtBeginMdxKpi = elements_.back();
             elements_.pop_back();
         }
-
+        else 
+            return false;
         
         if (proc.optional<EndMdxKpi>())
         {

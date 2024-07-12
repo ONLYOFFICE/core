@@ -63,6 +63,8 @@ namespace XLSB
             m_BrtBeginESMDB = elements_.back();
             elements_.pop_back();
         }
+        else
+            return false;
 
         int countMdb = proc.repeated<Mdb>(0, 0);
 
@@ -82,7 +84,6 @@ namespace XLSB
 			m_BrtEndESMDB = false;
 
         return m_BrtBeginESMDB && m_BrtEndESMDB;
-        return true;
     }
 
 	const bool ESMDB::saveContent(BinProcessor& proc)

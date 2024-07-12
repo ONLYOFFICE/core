@@ -33,6 +33,11 @@
 
 #include "Biff12_records/CommonRecords.h"
 #include "Biff12_unions/ESMDTINFO.h"
+#include "Biff12_unions/ESSTR.h"
+#include "Biff12_unions/ESMDX.h"
+#include "Biff12_unions/ESFMD.h"
+#include "Biff12_unions/ESMDB.h"
+
 #include "Biff12_records/BeginMetadata.h"
 #include "Biff12_records/EndMetadata.h"
 
@@ -52,55 +57,83 @@ MetadataStream::~MetadataStream()
 
 BaseObjectPtr MetadataStream::clone()
 {
-        return BaseObjectPtr(new MetadataStream(*this));
+    return BaseObjectPtr(new MetadataStream(*this));
 }
 
 const bool MetadataStream::loadContent(BinProcessor& proc)
 {	
-	/*while (true)
-	{
-            CFRecordType::TypeId type = proc.getNextRecordType();
+    while (true)
+    {
+        CFRecordType::TypeId type = proc.getNextRecordType();
 
-            if (type == rt_NONE) break;
+        if (type == rt_NONE) break;
 
-            switch(type)
+        switch(type)
+        {
+        case rt_BeginEsmdtinfo:
+        {
+            if (proc.optional<ESMDTINFO>())
             {
-                case rt_BeginComments:
-                {
-                    if (proc.optional<COMMENTS>())
-                    {
-                        m_COMMENTS = elements_.back();
-                        elements_.pop_back();
-                    }
-                }break;
-
-                default://skip
-                {
-                    proc.SkipRecord();
-                }break;
+                m_ESMDTINFO = elements_.back();
+                elements_.pop_back();
             }
-	}
-*/
+        }break;
+        case rt_BeginEsstr:
+        {
+            if (proc.optional<ESSTR>())
+            {
+                m_ESSTR = elements_.back();
+                elements_.pop_back();
+            }
+        }break;
+        case rt_BeginEsmdx:
+        {
+            if (proc.optional<ESMDX>())
+            {
+                m_ESMDX = elements_.back();
+                elements_.pop_back();
+            }
+        }break;
+        case rt_BeginEsfmd:
+        {
+            if (proc.optional<ESFMD>())
+            {
+                m_ESFMD = elements_.back();
+                elements_.pop_back();
+            }
+        }break;
+        case rt_BeginEsmdb:
+        {
+            if (proc.optional<ESMDB>())
+            {
+                m_ESMBD = elements_.back();
+                elements_.pop_back();
+            }
+        }break;
+        default://skip
+        {
+            proc.SkipRecord();
+        }break;
+        }
+    }
 	return true;
 }
 
 const bool MetadataStream::saveContent(XLS::BinProcessor & proc)
 {
     proc.mandatory<XLSB::BeginMetadata>();
-	if (m_ESMDTINFO != nullptr)
-		proc.mandatory(*m_ESMDTINFO);
+    if (m_ESMDTINFO != nullptr)
+        proc.mandatory(*m_ESMDTINFO);
     if (m_ESSTR != nullptr)
-		proc.mandatory(*m_ESSTR);
+        proc.mandatory(*m_ESSTR);
     if (m_ESMDX != nullptr)
-		proc.mandatory(*m_ESMDX);
+        proc.mandatory(*m_ESMDX);
     if (m_ESFMD != nullptr)
-		proc.mandatory(*m_ESFMD);
+        proc.mandatory(*m_ESFMD);
     if (m_ESMBD != nullptr)
-		proc.mandatory(*m_ESMBD);
-    if (m_FRTMetadata != nullptr)
-		proc.mandatory(*m_FRTMetadata);    
+        proc.mandatory(*m_ESMBD);   
     proc.mandatory<XLSB::EndMetadata>();
-	return true;
+    return true;
 }
 
 } // namespace XLSB

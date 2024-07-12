@@ -54,44 +54,27 @@ namespace XLSB
         return BaseObjectPtr(new MDXMBRPROP(*this));
     }
 
-    //MDXMBRPROP = BrtBeginMDXMBRPROP COMMENTAUTHORS COMMENTLIST *FRT BrtEndMDXMBRPROP
+    //MDXMBRPROP = BrtBeginMdxMbrProp COMMENTAUTHORS COMMENTLIST *FRT BrtEndMdxMbrProp
     const bool MDXMBRPROP::loadContent(BinProcessor& proc)
     {
-        /*if (proc.optional<BeginMDXMBRPROP>())
+        if (proc.optional<BeginMdxMbrProp>())
         {
-			m_bBrtBeginMDXMBRPROP = true;
+			m_BrtBeginMdxMbrProp = elements_.back();
             elements_.pop_back();
         }
 		else
-			m_bBrtBeginMDXMBRPROP = false;
+			return false;
 
-        if (proc.optional<COMMENTAUTHORS>())
+        if (proc.optional<EndMdxMbrProp>())
         {
-            m_COMMENTAUTHORS = elements_.back();
-            elements_.pop_back();
-        }
-        if (proc.optional<COMMENTLIST>())
-        {
-            m_COMMENTLIST = elements_.back();
-            elements_.pop_back();
-        }
-        int count = proc.repeated<FRT>(0, 0);
-
-        while(count > 0)
-        {
-            //m_arFRT.insert(m_arFRT.begin(), elements_.back());
-            elements_.pop_back();
-            count--;
-        }
-        if (proc.optional<EndMDXMBRPROP>())
-        {
-            m_bBrtEndMDXMBRPROP = true;
+            m_bBrtEndMdxMbrProp = true;
             elements_.pop_back();
         }
 		else
-			m_bBrtEndMDXMBRPROP = false;*/
+			m_bBrtEndMdxMbrProp = false;
+            
+        return m_BrtBeginMdxMbrProp && m_bBrtEndMdxMbrProp;
 
-        return true;
     }
 
 	const bool MDXMBRPROP::saveContent(XLS::BinProcessor & proc)

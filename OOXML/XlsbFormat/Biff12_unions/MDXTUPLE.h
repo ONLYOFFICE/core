@@ -33,8 +33,6 @@
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
 
-
-
 namespace XLSB
 {
 

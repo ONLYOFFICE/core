@@ -53,7 +53,7 @@ namespace XLSB
     //FMD = BrtBeginFMD COMMENTAUTHORS COMMENTLIST *FRT BrtEndFMD
     const bool FMD::loadContent(BinProcessor& proc)
     {
-        /*if (proc.optional<BeginFMD>())
+       /* if (proc.optional<BeginFMD>())
         {
 			m_bBrtBeginFMD = true;
             elements_.pop_back();
@@ -96,8 +96,6 @@ namespace XLSB
 			proc.mandatory(*DYNAMICARRAYMETADATA);
         else if(RICHDATAMETADATA != nullptr)
             proc.mandatory(*RICHDATAMETADATA);
-        else if(FRT != nullptr)
-            proc.mandatory(*FRT);
 		return true;
 	}
 

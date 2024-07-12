@@ -51,10 +51,10 @@ namespace XLSB
 		const bool saveContent(XLS::BinProcessor& proc) override;
 
 		XLS::BaseObjectPtr               m_BrtBeginMdx;
-        XLS::BaseObjectPtr               MDXTUPLE;
-        XLS::BaseObjectPtr               MDXSET;
-        XLS::BaseObjectPtr               MDXMBRPROP;
-        XLS::BaseObjectPtr               MDXKPI;
+        XLS::BaseObjectPtr               m_MDXTUPLE;
+        XLS::BaseObjectPtr               m_MDXSET;
+        XLS::BaseObjectPtr               m_MDXMBRPROP;
+        XLS::BaseObjectPtr               m_MDXKPI;
 		bool			                 m_bBrtEndMdx;
 
     };

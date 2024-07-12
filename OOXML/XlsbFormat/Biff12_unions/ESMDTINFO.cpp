@@ -53,57 +53,43 @@ namespace XLSB
         return BaseObjectPtr(new ESMDTINFO(*this));
     }
 
-    //ESMDTINFO = BrtBeginESMDTINFO COMMENTAUTHORS COMMENTLIST *FRT BrtEndESMDTINFO
+
     const bool ESMDTINFO::loadContent(BinProcessor& proc)
     {
-        /*if (proc.optional<BeginESMDTINFO>())
+        if (proc.optional<BeginEsmdtinfo>())
         {
-			m_bBrtBeginESMDTINFO = true;
+            m_BrtBeginEsmdtinfo = elements_.back();
             elements_.pop_back();
         }
-		else
-			m_bBrtBeginESMDTINFO = false;
+        else
+            return false;
 
-        if (proc.optional<COMMENTAUTHORS>())
-        {
-            m_COMMENTAUTHORS = elements_.back();
-            elements_.pop_back();
-        }
-        if (proc.optional<COMMENTLIST>())
-        {
-            m_COMMENTLIST = elements_.back();
-            elements_.pop_back();
-        }
-        int count = proc.repeated<FRT>(0, 0);
-
+        int count = proc.repeated<Mdtinfo>(0, 0);
         while(count > 0)
         {
-            //m_arFRT.insert(m_arFRT.begin(), elements_.back());
+            BrtMdtinfos.insert(BrtMdtinfos.begin(), elements_.back());
             elements_.pop_back();
             count--;
         }
-        if (proc.optional<EndESMDTINFO>())
+        if (proc.optional<EndEsmdtinfo>())
         {
-            m_bBrtEndESMDTINFO = true;
+            m_bBrtEndEsmdtinfo = true;
             elements_.pop_back();
         }
-		else
-			m_bBrtEndESMDTINFO = false;*/
+        else
+            m_bBrtEndEsmdtinfo = false;
 
-        return true;
+        return m_BrtBeginEsmdtinfo && m_bBrtEndEsmdtinfo;
     }
 
 	const bool ESMDTINFO::saveContent(XLS::BinProcessor & proc)
 	{
-		if (m_BrtBeginESMDTINFO != nullptr)
-			proc.mandatory(*m_BrtBeginESMDTINFO);
-
-		for(auto i:BrtMdtinfos)
+        if (m_BrtBeginEsmdtinfo != nullptr)
+            proc.mandatory(*m_BrtBeginEsmdtinfo);
+        for(auto i:BrtMdtinfos)
             proc.mandatory(*i);
-         proc.mandatory<XLSB::EndEsmdtinfo>();
-
-		
-		return true;
+        proc.mandatory<XLSB::EndEsmdtinfo>();
+        return true;
 	}
 
 } // namespace XLSB

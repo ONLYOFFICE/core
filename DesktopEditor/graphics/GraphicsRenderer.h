@@ -351,6 +351,8 @@ public:
 
 	// alpha mask methods
 	void SetAlphaMask(Aggplus::CAlphaMask* pAlphaMask);
+	virtual Aggplus::CSoftMask* CreateSoftMask(bool bAlpha) override;
+	virtual void SetSoftMask(Aggplus::CSoftMask* pSoftMask) override;
 
 	// layer methods
 	virtual HRESULT put_LayerOpacity(double dValue) override;

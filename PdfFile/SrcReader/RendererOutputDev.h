@@ -296,11 +296,9 @@ namespace PdfReader
 		struct GfxOutputState
 		{
 			GfxState* pGState;
+			Aggplus::CSoftMask* pSoftMask;
 
-			GfxState* pGStateSoftMask;
-			Aggplus::CAlphaMask* pAlphaMask;
-
-			GfxOutputState() : pGState(NULL), pGStateSoftMask(NULL), pAlphaMask(NULL) {}
+			GfxOutputState() : pGState(NULL), pSoftMask(NULL) {}
 		};
 
 		void Transform(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY);

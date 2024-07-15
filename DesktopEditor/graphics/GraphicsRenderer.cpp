@@ -1416,6 +1416,16 @@ void CGraphicsRenderer::SetAlphaMask(Aggplus::CAlphaMask *pAlphaMask)
 	m_pRenderer->SetAlphaMask(pAlphaMask);
 }
 
+Aggplus::CSoftMask* CGraphicsRenderer::CreateSoftMask(bool bAlpha)
+{
+	return m_pRenderer->CreateSoftMask(bAlpha);
+}
+
+void CGraphicsRenderer::SetSoftMask(Aggplus::CSoftMask* pSoftMask)
+{
+	m_pRenderer->SetSoftMask(pSoftMask);
+}
+
 HRESULT CGraphicsRenderer::put_LayerOpacity(double dValue)
 {
 	return m_pRenderer->SetLayerOpacity(dValue);
@@ -1436,7 +1446,7 @@ void CGraphicsRenderer::TEST()
 
 	DrawPath(c_nWindingFillMode);
 
-	m_pRenderer->CreateSoftMask();
+	m_pRenderer->CreateSoftMask(true);
 
 	m_pPath->Reset();
 

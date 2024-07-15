@@ -120,6 +120,8 @@ namespace NSGraphics
 
 		//alpha mask methods
 		virtual void SetAlphaMask(Aggplus::CAlphaMask* pAlphaMask) = 0;
+		virtual Aggplus::CSoftMask* CreateSoftMask(bool bAlpha) = 0;
+		virtual void SetSoftMask(Aggplus::CSoftMask* pSoftMask) = 0;
 		virtual void TEST() = 0;
 
 		// smart methods

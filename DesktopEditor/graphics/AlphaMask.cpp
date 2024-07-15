@@ -68,12 +68,12 @@ namespace Aggplus
 
 
 	CSoftMask::CSoftMask() : m_pImageData(NULL), m_pAlphaBufferData(NULL) {}
-	CSoftMask::CSoftMask(BYTE* pBuffer, UINT unWidth, UINT unHeight, EMaskDataType enDataType, bool bExternalBuffer)
+	CSoftMask::CSoftMask(BYTE* pBuffer, UINT unWidth, UINT unHeight, EMaskDataType enDataType, bool bExternalBuffer, bool bFlip)
 	{
 		m_pImageData = NULL;
 		m_pAlphaBufferData = NULL;
 
-		LoadFromBuffer(pBuffer, unWidth, unHeight, enDataType, bExternalBuffer);
+		LoadFromBuffer(pBuffer, unWidth, unHeight, enDataType, bExternalBuffer, bFlip);
 	}
 	CSoftMask::~CSoftMask()
 	{
@@ -120,14 +120,14 @@ namespace Aggplus
 		return Ok;
 	}
 
-	Status CSoftMask::LoadFromBuffer(BYTE *pBuffer, UINT unWidth, UINT unHeight, EMaskDataType enDataType, bool bExternalBuffer)
+	Status CSoftMask::LoadFromBuffer(BYTE *pBuffer, UINT unWidth, UINT unHeight, EMaskDataType enDataType, bool bExternalBuffer, bool bFlip)
 	{
 		if (NULL == pBuffer || 0 == unWidth || 0 == unHeight)
 			return InvalidParameter;
 
 		m_bExternalBuffer = bExternalBuffer;
 
-		Set(pBuffer, unWidth, unHeight, enDataType);
+		Set(pBuffer, unWidth, unHeight, enDataType, bFlip);
 
 		return Ok;
 	}
@@ -157,10 +157,10 @@ namespace Aggplus
 		return m_oRenderingBuffer;
 	}
 
-	void CSoftMask::Set(BYTE* pBuffer, UINT unWidth, UINT unHeight, EMaskDataType enDataType)
+	void CSoftMask::Set(BYTE* pBuffer, UINT unWidth, UINT unHeight, EMaskDataType enDataType, bool bFlip)
 	{
 		m_enDataType = enDataType;
-		m_oRenderingBuffer.attach(pBuffer, unWidth, unHeight, GetStep() * unWidth);
+		m_oRenderingBuffer.attach(pBuffer, unWidth, unHeight, (bFlip ? -1 : 1) * GetStep() * unWidth);
 
 		switch (enDataType)
 		{

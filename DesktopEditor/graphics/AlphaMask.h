@@ -58,14 +58,14 @@ namespace Aggplus
 	{
 	public:
 		CSoftMask();
-		CSoftMask(BYTE* pBuffer, UINT unWidth, UINT unHeight, EMaskDataType enDataType, bool bExternalBuffer = true);
+		CSoftMask(BYTE* pBuffer, UINT unWidth, UINT unHeight, EMaskDataType enDataType, bool bExternalBuffer = true, bool bFlip = false);
 		virtual ~CSoftMask();
 
 		EMaskDataType GetDataType() const;
 		UINT GetStep() const;
 
 		Status Create(UINT unWidth, UINT unHeight, EMaskDataType enDataType);
-		Status LoadFromBuffer(BYTE* pBuffer, UINT unWidth, UINT unHeight, EMaskDataType enDataType, bool bExternalBuffer = true);
+		Status LoadFromBuffer(BYTE* pBuffer, UINT unWidth, UINT unHeight, EMaskDataType enDataType, bool bExternalBuffer = true, bool bFlip = false);
 
 		agg::rendering_buffer& GetRenderingBuffer();
 		RenBaseBGRA32&         GetRendererBaseImage();
@@ -73,7 +73,7 @@ namespace Aggplus
 		ScanlineBGRA32A&       GetScanlineABuffer();
 		BYTE*                  GetBuffer();
 	private:
-		void Set(BYTE* pBuffer, UINT unWidth, UINT unHeight, EMaskDataType enDataType);
+		void Set(BYTE* pBuffer, UINT unWidth, UINT unHeight, EMaskDataType enDataType, bool bFlip = false);
 
 		agg::rendering_buffer           m_oRenderingBuffer;
 		EMaskDataType                   m_enDataType;

@@ -33,8 +33,6 @@
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
 
-
-
 namespace XLSB
 {
 
@@ -51,8 +49,8 @@ namespace XLSB
 		const bool saveContent(XLS::BinProcessor& proc) override;
 
 		
-        XLS::BaseObjectPtr     BeginRichValueBlock;
-        bool     EndRichValueBlock;
+        XLS::BaseObjectPtr      m_BeginRichValueBlock;
+        bool                    m_EndRichValueBlock;
 
     };
 

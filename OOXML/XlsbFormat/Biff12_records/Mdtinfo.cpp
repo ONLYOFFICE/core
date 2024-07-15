@@ -52,7 +52,37 @@ namespace XLSB
 
     void Mdtinfo::readFields(XLS::CFRecord& record)
     {
-        //record >> cMdtinfo;
+        _UINT32 flags = 0;
+        record >> flags >> metadataID >> stName;
+
+        fGhostRw = GETBIT(flags, 0);
+        fGhostCol = GETBIT(flags, 1);
+        fEdit = GETBIT(flags, 2);
+        fDelete = GETBIT(flags, 3);
+        fCopy = GETBIT(flags, 4);
+        fPasteAll = GETBIT(flags, 5);
+        fPasteFmlas = GETBIT(flags, 6);
+        fPasteValues = GETBIT(flags, 7);
+        fPasteFmts = GETBIT(flags, 8);
+        fPasteComments = GETBIT(flags, 9);
+        fPasteDv = GETBIT(flags, 10);
+        fPasteBorders = GETBIT(flags, 11);
+        fPasteColWidths = GETBIT(flags, 12);
+        fPasteNumFmts = GETBIT(flags, 13);
+        fMerge = GETBIT(flags, 14);
+        fSplitFirst = GETBIT(flags, 15);
+        fSplitAll = GETBIT(flags, 16);
+        fRwColShift = GETBIT(flags, 17);
+        fClearAll = GETBIT(flags, 18);
+        fClearFmts = GETBIT(flags, 19);
+        fClearContents = GETBIT(flags, 20);
+        fClearComments = GETBIT(flags, 21);
+        fAssign = GETBIT(flags, 22);
+
+        fCanCoerce = GETBIT(flags, 28);
+        fAdjust = GETBIT(flags, 29);
+        fCellMeta = GETBIT(flags, 30);
+
     }
 
 	void Mdtinfo::writeFields(XLS::CFRecord& record)
@@ -91,7 +121,6 @@ namespace XLSB
         record << flags << metadataID << stName;
         
 	}
-
 
 } // namespace XLSB
 

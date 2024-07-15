@@ -29,32 +29,26 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
+#include "BeginFmd.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class DYNAMICARRAYMETADATA: public XLS::CompositeObject
+    BeginFmd::BeginFmd()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(DYNAMICARRAYMETADATA)
-    public:
-        DYNAMICARRAYMETADATA();
-        ~DYNAMICARRAYMETADATA();
+    }
 
-        XLS::BaseObjectPtr clone();
+    BeginFmd::~BeginFmd()
+    {
+    }
 
-		const bool loadContent(XLS::BinProcessor& proc) override;
-		const bool saveContent(XLS::BinProcessor& proc) override;
-
-		
-        XLS::BaseObjectPtr     m_BeginDynamicArrayPr;
-        XLS::BaseObjectPtr     m_EndDynamicArrayPr;
-
-    };
+    BaseObjectPtr BeginFmd::clone()
+    {
+        return BaseObjectPtr(new BeginFmd(*this));
+    }
 
 } // namespace XLSB
 

@@ -31,6 +31,13 @@
  */
 
 #include "FMD.h"
+#include "FRT.h"
+#include "DYNAMICARRAYMETADATA.h"
+#include "RICHDATAMETADATA.h"
+
+#include "../Biff12_records/BeginFmd.h"
+#include "../Biff12_records/EndFmd.h"
+
 
 using namespace XLS;
 
@@ -50,52 +57,51 @@ namespace XLSB
         return BaseObjectPtr(new FMD(*this));
     }
 
-    //FMD = BrtBeginFMD COMMENTAUTHORS COMMENTLIST *FRT BrtEndFMD
+    //FMD = BrtBeginFmd COMMENTAUTHORS COMMENTLIST *FRT BrtEndFmd
     const bool FMD::loadContent(BinProcessor& proc)
     {
-       /* if (proc.optional<BeginFMD>())
+        if (proc.optional<BeginFmd>())
         {
-			m_bBrtBeginFMD = true;
+			m_BrtBeginFmd = true;
             elements_.pop_back();
         }
 		else
-			m_bBrtBeginFMD = false;
+			m_BrtBeginFmd = false;
 
-        if (proc.optional<COMMENTAUTHORS>())
-        {
-            m_COMMENTAUTHORS = elements_.back();
-            elements_.pop_back();
-        }
-        if (proc.optional<COMMENTLIST>())
-        {
-            m_COMMENTLIST = elements_.back();
-            elements_.pop_back();
-        }
-        int count = proc.repeated<FRT>(0, 0);
+       
 
-        while(count > 0)
+
+        if (proc.optional<DYNAMICARRAYMETADATA>())
         {
-            //m_arFRT.insert(m_arFRT.begin(), elements_.back());
+            m_DYNAMICARRAYMETADATA = elements_.back();
             elements_.pop_back();
-            count--;
         }
-        if (proc.optional<EndFMD>())
+        else if (proc.optional<RICHDATAMETADATA>())
         {
-            m_bBrtEndFMD = true;
+            m_RICHDATAMETADATA = elements_.back();
+            elements_.pop_back();
+        }
+        else if(proc.optional<FRT>())
+        {
+            elements_.pop_back();
+        }
+        if (proc.optional<EndFmd>())
+        {
+            m_bBrtEndFmd = true;
             elements_.pop_back();
         }
 		else
-			m_bBrtEndFMD = false;*/
+			m_bBrtEndFmd = false;
 
-        return true;
+        return m_BrtBeginFmd && m_bBrtEndFmd;
     }
 
 	const bool FMD::saveContent(XLS::BinProcessor & proc)
 	{
-		if (DYNAMICARRAYMETADATA != nullptr)
-			proc.mandatory(*DYNAMICARRAYMETADATA);
-        else if(RICHDATAMETADATA != nullptr)
-            proc.mandatory(*RICHDATAMETADATA);
+		if (m_DYNAMICARRAYMETADATA != nullptr)
+			proc.mandatory(*m_DYNAMICARRAYMETADATA);
+        else if(m_RICHDATAMETADATA != nullptr)
+            proc.mandatory(*m_RICHDATAMETADATA);
 		return true;
 	}
 

@@ -32,6 +32,8 @@
 
 #include "DYNAMICARRAYMETADATA.h"
 
+#include "../Biff12_records/BeginDynamicArrayPr.h"
+#include "../Biff12_records/EndDynamicArrayPr.h"
 using namespace XLS;
 
 namespace XLSB
@@ -53,49 +55,32 @@ namespace XLSB
     //DYNAMICARRAYMETADATA = BrtBeginDYNAMICARRAYMETADATA COMMENTAUTHORS COMMENTLIST *FRT BrtEndDYNAMICARRAYMETADATA
     const bool DYNAMICARRAYMETADATA::loadContent(BinProcessor& proc)
     {
-        /*if (proc.optional<BeginDYNAMICARRAYMETADATA>())
+        if (proc.optional<BeginDynamicArrayPr>())
         {
-			m_bBrtBeginDYNAMICARRAYMETADATA = true;
+			m_BeginDynamicArrayPr = elements_.back();
             elements_.pop_back();
         }
 		else
-			m_bBrtBeginDYNAMICARRAYMETADATA = false;
+			return false;
 
-        if (proc.optional<COMMENTAUTHORS>())
+     
+        if (proc.optional<EndDynamicArrayPr>())
         {
-            m_COMMENTAUTHORS = elements_.back();
-            elements_.pop_back();
-        }
-        if (proc.optional<COMMENTLIST>())
-        {
-            m_COMMENTLIST = elements_.back();
-            elements_.pop_back();
-        }
-        int count = proc.repeated<FRT>(0, 0);
-
-        while(count > 0)
-        {
-            //m_arFRT.insert(m_arFRT.begin(), elements_.back());
-            elements_.pop_back();
-            count--;
-        }
-        if (proc.optional<EndDYNAMICARRAYMETADATA>())
-        {
-            m_bBrtEndDYNAMICARRAYMETADATA = true;
+            m_EndDynamicArrayPr = elements_.back();
             elements_.pop_back();
         }
 		else
-			m_bBrtEndDYNAMICARRAYMETADATA = false;*/
+			m_EndDynamicArrayPr = false;
 
-        return true;
+        return m_BeginDynamicArrayPr && m_EndDynamicArrayPr;
     }
 
 	const bool DYNAMICARRAYMETADATA::saveContent(XLS::BinProcessor & proc)
 	{
-		if (BeginDynamicArrayPr != nullptr)
-			proc.mandatory(*BeginDynamicArrayPr);
-        if (EndDynamicArrayPr != nullptr)
-			proc.mandatory(*EndDynamicArrayPr);
+		if (m_BeginDynamicArrayPr != nullptr)
+			proc.mandatory(*m_BeginDynamicArrayPr);
+        if (m_EndDynamicArrayPr != nullptr)
+			proc.mandatory(*m_EndDynamicArrayPr);
         
 		return true;
 	}

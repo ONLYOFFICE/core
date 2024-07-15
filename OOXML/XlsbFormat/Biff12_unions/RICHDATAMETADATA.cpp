@@ -55,47 +55,30 @@ namespace XLSB
     //RICHDATAMETADATA = BrtBeginRICHDATAMETADATA COMMENTAUTHORS COMMENTLIST *FRT BrtEndRICHDATAMETADATA
     const bool RICHDATAMETADATA::loadContent(BinProcessor& proc)
     {
-        /*if (proc.optional<BeginRICHDATAMETADATA>())
+        if (proc.optional<BeginRichValueBlock>())
         {
-			m_bBrtBeginRICHDATAMETADATA = true;
+			m_BeginRichValueBlock = elements_.back();
             elements_.pop_back();
         }
 		else
-			m_bBrtBeginRICHDATAMETADATA = false;
+			return false;
 
-        if (proc.optional<COMMENTAUTHORS>())
+       
+        if (proc.optional<XLSB::EndRichValueBlock>())
         {
-            m_COMMENTAUTHORS = elements_.back();
-            elements_.pop_back();
-        }
-        if (proc.optional<COMMENTLIST>())
-        {
-            m_COMMENTLIST = elements_.back();
-            elements_.pop_back();
-        }
-        int count = proc.repeated<FRT>(0, 0);
-
-        while(count > 0)
-        {
-            //m_arFRT.insert(m_arFRT.begin(), elements_.back());
-            elements_.pop_back();
-            count--;
-        }
-        if (proc.optional<EndRICHDATAMETADATA>())
-        {
-            m_bBrtEndRICHDATAMETADATA = true;
+            m_EndRichValueBlock = true;
             elements_.pop_back();
         }
 		else
-			m_bBrtEndRICHDATAMETADATA = false;*/
+			m_EndRichValueBlock = false;
 
-        return true;
+        return m_BeginRichValueBlock && m_EndRichValueBlock;
     }
 
 	const bool RICHDATAMETADATA::saveContent(XLS::BinProcessor & proc)
 	{
-		if (BeginRichValueBlock != nullptr)
-			proc.mandatory(*BeginRichValueBlock);
+		if (m_BeginRichValueBlock != nullptr)
+			proc.mandatory(*m_BeginRichValueBlock);
         
         proc.mandatory<XLSB::EndRichValueBlock>();
 		return true;

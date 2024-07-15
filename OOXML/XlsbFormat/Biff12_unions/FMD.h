@@ -48,10 +48,10 @@ namespace XLSB
 		const bool loadContent(XLS::BinProcessor& proc) override;
 		const bool saveContent(XLS::BinProcessor& proc) override;
 
-		bool                   m_BrtBeginFMD;
-        XLS::BaseObjectPtr     DYNAMICARRAYMETADATA;
-        XLS::BaseObjectPtr     RICHDATAMETADATA;
-		bool			       m_bBrtEndFMD;
+		bool                   m_BrtBeginFmd;
+        XLS::BaseObjectPtr     m_DYNAMICARRAYMETADATA;
+        XLS::BaseObjectPtr     m_RICHDATAMETADATA;
+		bool			       m_bBrtEndFmd;
 
     };
 

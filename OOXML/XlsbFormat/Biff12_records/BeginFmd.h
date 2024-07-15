@@ -31,29 +31,21 @@
  */
 #pragma once
 
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
-
-
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
+#include "../../XlsxFormat/WritingElement.h"
 
 namespace XLSB
 {
-
-    class DYNAMICARRAYMETADATA: public XLS::CompositeObject
+    // Logical representation of BrtBeginFmd record in BIFF12
+    class BeginFmd: public XLS::BiffRecord
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(DYNAMICARRAYMETADATA)
-    public:
-        DYNAMICARRAYMETADATA();
-        ~DYNAMICARRAYMETADATA();
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginFmd)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginFmd)
+        public:
+            BeginFmd();
+            ~BeginFmd();
 
-        XLS::BaseObjectPtr clone();
-
-		const bool loadContent(XLS::BinProcessor& proc) override;
-		const bool saveContent(XLS::BinProcessor& proc) override;
-
-		
-        XLS::BaseObjectPtr     m_BeginDynamicArrayPr;
-        XLS::BaseObjectPtr     m_EndDynamicArrayPr;
-
+            XLS::BaseObjectPtr clone();
     };
 
 } // namespace XLSB

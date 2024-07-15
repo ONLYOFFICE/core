@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2024
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,29 +31,25 @@
  */
 #pragma once
 
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
+#include "../../XlsxFormat/WritingElement.h"
 
 
 
 namespace XLSB
 {
-
-    class DYNAMICARRAYMETADATA: public XLS::CompositeObject
+    // Logical representation of BrtEndFmd record in BIFF12
+    class EndFmd: public XLS::BiffRecord
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(DYNAMICARRAYMETADATA)
-    public:
-        DYNAMICARRAYMETADATA();
-        ~DYNAMICARRAYMETADATA();
+            BIFF_RECORD_DEFINE_TYPE_INFO(EndFmd)
+            BASE_OBJECT_DEFINE_CLASS_NAME(EndFmd)
+        public:
+            EndFmd();
+            ~EndFmd();
 
-        XLS::BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-		const bool loadContent(XLS::BinProcessor& proc) override;
-		const bool saveContent(XLS::BinProcessor& proc) override;
-
-		
-        XLS::BaseObjectPtr     m_BeginDynamicArrayPr;
-        XLS::BaseObjectPtr     m_EndDynamicArrayPr;
-
+            //static const XLS::ElementType	type = XLS::typeEndFmd;
     };
 
 } // namespace XLSB

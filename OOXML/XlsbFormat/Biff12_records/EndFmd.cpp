@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2024
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,32 +29,26 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
+#include "EndFmd.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class DYNAMICARRAYMETADATA: public XLS::CompositeObject
+    EndFmd::EndFmd()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(DYNAMICARRAYMETADATA)
-    public:
-        DYNAMICARRAYMETADATA();
-        ~DYNAMICARRAYMETADATA();
+    }
 
-        XLS::BaseObjectPtr clone();
+    EndFmd::~EndFmd()
+    {
+    }
 
-		const bool loadContent(XLS::BinProcessor& proc) override;
-		const bool saveContent(XLS::BinProcessor& proc) override;
-
-		
-        XLS::BaseObjectPtr     m_BeginDynamicArrayPr;
-        XLS::BaseObjectPtr     m_EndDynamicArrayPr;
-
-    };
+    BaseObjectPtr EndFmd::clone()
+    {
+        return BaseObjectPtr(new EndFmd(*this));
+    }
 
 } // namespace XLSB
 

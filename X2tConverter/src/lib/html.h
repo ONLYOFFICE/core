@@ -153,16 +153,10 @@ namespace NExtractTools
 	_UINT32 doct_bin2html_internal(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
 		_UINT32 nRes = 0;
-		std::wstring sTargetBin;
 		if (params.getFromChanges())
-		{
 			params.setFromChanges(false);
-			nRes = apply_changes(sFrom, sTo, NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT, sTargetBin, params, convertParams);
-		}
-		else
-			sTargetBin = sFrom;
-		
-		std::wstring sFileFromDir = NSDirectory::GetFolderPath(sTargetBin);
+
+		std::wstring sFileFromDir = NSDirectory::GetFolderPath(sFrom);
 		std::wstring sImagesDirectory = combinePath(sFileFromDir, L"media");
 		std::wstring sHtmlFile = combinePath(convertParams.m_sTempDir, L"index.html");
 		if (!NSDirectory::Exists(sImagesDirectory))
@@ -171,19 +165,25 @@ namespace NExtractTools
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
 		std::wstring sXml = getDoctXml(NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT,
 									   NSDoctRenderer::DoctRendererFormat::FormatFile::HTML,
-									   sTargetBin, sHtmlFile, sImagesDirectory, convertParams.m_sThemesDir, -1, L"", params);
+									   sFrom, sHtmlFile, sImagesDirectory, convertParams.m_sThemesDir, -1, L"", params);
 
 		std::wstring sResult;
 		oDoctRenderer.Execute(sXml, sResult);
 		
-		// удаляем EditorWithChanges, потому что он не в Temp
-		if (sFrom != sTargetBin)
-			NSFile::CFileBinary::Remove(sTargetBin);
-
 		if (sResult.find(L"error") != std::wstring::npos)
 		{
 			std::wcerr << L"DoctRenderer:" << sResult << std::endl;
 			return AVS_FILEUTILS_ERROR_CONVERT;
+		}
+		else
+		{
+			if (!params.getDontSaveAdditional())
+			{
+				//create changes.zip next to result file
+				std::wstring sBinDir = NSDirectory::GetFolderPath(sFrom);
+				std::wstring sChangesDir = sBinDir + FILE_SEPARATOR_STR + L"changes";
+				copyImagesFromChanges(&oDoctRenderer, sImagesDirectory, sChangesDir, NSDirectory::GetFolderPath(*params.m_sFileTo));
+			}
 		}
 		return nRes;
 	}

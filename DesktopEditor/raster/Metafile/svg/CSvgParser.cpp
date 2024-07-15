@@ -13,6 +13,7 @@
 #include "SvgObjects/CPattern.h"
 #include "SvgObjects/CEllipse.h"
 #include "SvgObjects/CSymbol.h"
+#include "SvgObjects/CSwitch.h"
 #include "SvgObjects/CMarker.h"
 #include "SvgObjects/CCircle.h"
 #include "SvgObjects/CStyle.h"
@@ -167,6 +168,11 @@ namespace SVG
 		{
 			pObject = CTextPath::Create(oElement, pParent, m_pFontManager, pFile);
 			ReadChildrens(oElement, (CTextPath*)pObject, pFile);
+		}
+		else if (L"switch" == wsElementName)
+		{
+			pObject = new CSwitch(oElement, pParent);
+			ReadChildrens(oElement, (CSwitch*)pObject, pFile);
 		}
 		//defs
 		else if (L"defs" == wsElementName)

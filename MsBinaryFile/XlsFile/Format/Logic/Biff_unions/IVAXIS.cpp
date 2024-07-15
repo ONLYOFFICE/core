@@ -134,7 +134,7 @@ int IVAXIS::serialize(std::wostream & _stream)
 	Axis		* axis			= dynamic_cast<Axis*>		(m_Axis.get());
 	AxcExt		* axcExt		= dynamic_cast<AxcExt*>		(m_AxcExt.get());
 
-	int axes_type = axis->wType + 1;
+	int axes_type = axis ? axis->wType + 1 : 1;
 
 	CP_XML_WRITER(_stream)    
 	{
@@ -145,7 +145,7 @@ int IVAXIS::serialize(std::wostream & _stream)
 		
 		CP_XML_NODE(L"c:scaling")
 		{
-			if (cat_ser_range->fReversed)
+			if (cat_ser_range && cat_ser_range->fReversed)
 			{
 				CP_XML_NODE(L"c:orientation"){  CP_XML_ATTR(L"val", L"maxMin"); }
 			}else
@@ -175,7 +175,8 @@ int IVAXIS::serialize(std::wostream & _stream)
 			}
 		}
 //-----------------------------------------------------------------------------------
-		m_AXS->serialize(_stream);
+		if (m_AXS)
+			m_AXS->serialize(_stream);
 
 		if (m_AxcExt)
 			m_AxcExt->serialize(_stream);
@@ -188,10 +189,9 @@ int IVAXIS::serialize(std::wostream & _stream)
 				else									CP_XML_ATTR(L"val", L"autoZero");
 			}
 		}
-		if (m_CatLab)
+		CatLab* label = m_CatLab ? dynamic_cast<CatLab*>(m_CatLab.get()) : NULL;
+		if (label)
 		{
-			CatLab *label = dynamic_cast<CatLab*>(m_CatLab.get());
-
 			CP_XML_NODE(L"c:lblAlgn")
 			{
 				switch(label->at)

@@ -236,7 +236,7 @@ TEST_F(CPdfFileTest, PdfBinToPng)
 
 TEST_F(CPdfFileTest, PdfFromBin)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	pdfFile->CreatePdf();
 	EXPECT_HRESULT_SUCCEEDED(pdfFile->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile));
@@ -327,7 +327,7 @@ TEST_F(CPdfFileTest, EditPdf)
 
 TEST_F(CPdfFileTest, EditPdfFromBase64)
 {
-	GTEST_SKIP();
+	//GTEST_SKIP();
 
 	LoadFromFile();
 	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
@@ -391,8 +391,11 @@ TEST_F(CPdfFileTest, EditPdfFromBin)
 	EXPECT_TRUE(oFile.ReadFile(pFileContent, dwFileSize, dwReaded));
 	oFile.CloseFile();
 
-	pdfFile->AddToPdfFromBinary(pFileContent, dwReaded, NULL);
+	CConvertFromBinParams* pParams = new CConvertFromBinParams();
+	pParams->m_sMediaDirectory = NSFile::GetProcessDirectory();
+	pdfFile->AddToPdfFromBinary(pFileContent, dwReaded, pParams);
 
+	RELEASEOBJECT(pParams);
 	RELEASEARRAYOBJECTS(pFileContent);
 
 	pdfFile->Close();

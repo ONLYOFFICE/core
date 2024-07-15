@@ -6583,13 +6583,28 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		auto ptr(new XLSB::BeginPCDSCSet);
 		XLS::BaseObjectPtr objectPtr(ptr);
 		if(m_oSheet.IsInit())
+		{
+			ptr->fLoadSheet = true;
 			ptr->irstSheet = m_oSheet.get();
+		}
+		else
+			ptr->fLoadSheet = false;
 		if(m_oRef.IsInit())
 			ptr->rfx = m_oRef.get();
 		if(m_oName.IsInit())
+		{
 			ptr->irstName = m_oName.get();
+			ptr->fName = true;
+		}
+		else
+			ptr->fName = false;
 		if(m_oRid.IsInit())
+		{
+			ptr->fLoadRelId = true;
 			ptr->irstRelId.value = m_oRid->GetValue();
+		}
+		else
+			ptr->fLoadRelId = false;
 		if(m_oI1.IsInit())
 			ptr->rgiItem[0] = m_oI1->GetValue();
 		if(m_oI2.IsInit())

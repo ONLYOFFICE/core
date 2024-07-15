@@ -1317,5 +1317,9 @@ namespace NExtractTools
 		std::wstring& sBinTo,
 		const InputParams& params, const ConvertParams& convertParams);
 
+	bool copyImagesFromChanges(NSDoctRenderer::CDoctrenderer* pDoctRenderer,
+							   const std::wstring& sSrcImagesDir, const std::wstring& sChangesDir,
+							   const std::wstring& sResultDirectory);
+
 } // namespace NExtractTools
 #endif // CEXTRACTTOOLS_H

@@ -832,7 +832,7 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 		m_oBcw.WriteTrackRevision(rPr->m_oMoveTo.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
-	if (rPr->m_oW.IsInit())
+	if (rPr->m_oW.IsInit() && rPr->m_oW->m_oVal.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::CompressText);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
@@ -2266,7 +2266,7 @@ void Binary_tblPrWriter::WriteRowPr(const OOX::Logic::CTableRowProperties& rowPr
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 	//Jc
-	if (rowPr.m_oJc.IsInit())
+	if (rowPr.m_oJc.IsInit() && rowPr.m_oJc->m_oVal.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rowPrType::Jc);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);

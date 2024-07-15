@@ -43,6 +43,7 @@
 #include "SrcWriter/Font14.h"
 #include "SrcWriter/Destination.h"
 #include "SrcWriter/Field.h"
+#include "SrcWriter/Outline.h"
 
 #include "../DesktopEditor/graphics/Image.h"
 #include "../DesktopEditor/graphics/structures.h"
@@ -621,6 +622,19 @@ HRESULT CPdfWriter::put_FontFaceIndex(const int& nFaceIndex)
 //----------------------------------------------------------------------------------------
 // Функции для вывода текста
 //----------------------------------------------------------------------------------------
+bool UnicodePUA(unsigned int unUnicode)
+{
+	return (unUnicode >= 0xE000 && unUnicode <= 0xF8FF) || (unUnicode >= 0xF0000 && unUnicode <= 0xFFFFD) || (unUnicode >= 0x100000 && unUnicode <= 0x10FFFD);
+}
+bool UnicodesPUA(unsigned int* pUnicodes, unsigned int unLen)
+{
+	for (int i = 0; i < unLen; ++i)
+	{
+		if (UnicodePUA(pUnicodes[i]))
+			return true;
+	}
+	return false;
+}
 HRESULT CPdfWriter::CommandDrawTextCHAR(const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH)
 {
 	if (!IsPageValid())
@@ -628,7 +642,7 @@ HRESULT CPdfWriter::CommandDrawTextCHAR(const LONG& lUnicode, const double& dX, 
 
 	unsigned int unUnicode = lUnicode;
 	unsigned char* pCodes = EncodeString(&unUnicode, 1);
-	return DrawText(pCodes, 2, dX, dY) ? S_OK : S_FALSE;
+	return DrawText(pCodes, 2, dX, dY, UnicodePUA(unUnicode) ? NSStringExt::CConverter::GetUtf8FromUTF32(&unUnicode, 1) : "") ? S_OK : S_FALSE;
 }
 HRESULT CPdfWriter::CommandDrawText(const std::wstring& wsUnicodeText, const double& dX, const double& dY, const double& dW, const double& dH)
 {
@@ -641,6 +655,9 @@ HRESULT CPdfWriter::CommandDrawText(const std::wstring& wsUnicodeText, const dou
 		return S_FALSE;
 
 	unsigned char* pCodes = EncodeString(pUnicodes, unLen);
+	std::string sPUA;
+	if (UnicodesPUA(pUnicodes, unLen))
+		sPUA = NSStringExt::CConverter::GetUtf8FromUTF32(pUnicodes, unLen);
 	delete[] pUnicodes;
 
 	if (!pCodes)
@@ -677,11 +694,12 @@ HRESULT CPdfWriter::CommandDrawText(const std::wstring& wsUnicodeText, const dou
 		pText->SetMode(PdfWriter::textrenderingmode_Invisible);
 		if (fabs(dStringWidth) > 0.001)
 			pText->SetHorScaling(dResultWidth / dStringWidth * 100);
+		pText->SetPUA(sPUA);
 
 		return S_OK;
 	}
 
-	return DrawText(pCodes, unLen * 2, dX, dY) ? S_OK : S_FALSE;
+	return DrawText(pCodes, unLen * 2, dX, dY, sPUA) ? S_OK : S_FALSE;
 }
 HRESULT CPdfWriter::CommandDrawTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH)
 {
@@ -693,7 +711,7 @@ HRESULT CPdfWriter::CommandDrawTextExCHAR(const LONG& lUnicode, const LONG& lGid
 	unsigned char* pCodes = EncodeGID(unGID, &unUnicode, 1);
 	if (!pCodes)
 		return DrawTextToRenderer(&unGID, 1, dX, dY) ? S_OK : S_FALSE;
-	return DrawText(pCodes, 2, dX, dY) ? S_OK : S_FALSE;
+	return DrawText(pCodes, 2, dX, dY, UnicodePUA(unUnicode) ? NSStringExt::CConverter::GetUtf8FromUTF32(&unUnicode, 1) : "") ? S_OK : S_FALSE;
 }
 HRESULT CPdfWriter::CommandDrawTextEx(const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int unGidsCount, const double& dX, const double& dY, const double& dW, const double& dH)
 {
@@ -731,10 +749,13 @@ HRESULT CPdfWriter::CommandDrawTextEx(const std::wstring& wsUnicodeText, const u
 	}
 
 	unsigned char* pCodes = EncodeString(pUnicodes, unLen, pGids);
+	std::string sPUA;
+	if (UnicodesPUA(pUnicodes, unLen))
+		sPUA = NSStringExt::CConverter::GetUtf8FromUTF32(pUnicodes, unLen);
 	RELEASEARRAYOBJECTS(pUnicodes);
 	if (!pCodes)
 		return DrawTextToRenderer(pGids, unGidsCount, dX, dY) ? S_OK : S_FALSE;
-	return DrawText(pCodes, unLen * 2, dX, dY) ? S_OK : S_FALSE;
+	return DrawText(pCodes, unLen * 2, dX, dY, sPUA) ? S_OK : S_FALSE;
 }
 HRESULT CPdfWriter::CommandDrawTextCHAR2(unsigned int* pUnicodes, const unsigned int& unUnicodeCount, const unsigned int& unGid, const double& dX, const double& dY, const double& dW, const double& dH)
 {
@@ -744,7 +765,7 @@ HRESULT CPdfWriter::CommandDrawTextCHAR2(unsigned int* pUnicodes, const unsigned
 	unsigned char* pCodes = EncodeGID(unGid, pUnicodes, unUnicodeCount);
 	if (!pCodes)
 		return DrawTextToRenderer(&unGid, 1, dX, dY) ? S_OK : S_FALSE;
-	return DrawText(pCodes, 2, dX, dY) ? S_OK : S_FALSE;
+	return DrawText(pCodes, 2, dX, dY, UnicodesPUA(pUnicodes, unUnicodeCount) ? NSStringExt::CConverter::GetUtf8FromUTF32(pUnicodes, unUnicodeCount) : "") ? S_OK : S_FALSE;
 }
 //----------------------------------------------------------------------------------------
 // Маркеры команд
@@ -2443,6 +2464,29 @@ HRESULT CPdfWriter::AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, 
 {
 	return m_pDocument->AddMetaData(sMetaName, pMetaData, nMetaLength) ? S_OK : S_FALSE;
 }
+void CreateOutlines(PdfWriter::CDocument* m_pDocument, const std::vector<CHeadings::CHeading>& arrHeadings, PdfWriter::COutline* pParent)
+{
+	for (int i = 0; i < arrHeadings.size(); ++i)
+	{
+		std::string sTitle = U_TO_UTF8(arrHeadings[i].wsTitle);
+		PdfWriter::COutline* pOutline = m_pDocument->CreateOutline(pParent, sTitle.c_str());
+		PdfWriter::CPage* pPageD = m_pDocument->GetPage(arrHeadings[i].nPage);
+		PdfWriter::CDestination* pDest = m_pDocument->CreateDestination(pPageD);
+		if (pDest)
+		{
+			pOutline->SetDestination(pDest);
+			pDest->SetXYZ(arrHeadings[i].dX, arrHeadings[i].dY, 0);
+		}
+		CreateOutlines(m_pDocument, arrHeadings[i].arrHeading, pOutline);
+	}
+}
+void CPdfWriter::SetHeadings(CHeadings* pCommand)
+{
+	if (!m_pDocument || !pCommand)
+		return;
+
+	CreateOutlines(m_pDocument, pCommand->GetHeading(), NULL);
+}
 //----------------------------------------------------------------------------------------
 // Дополнительные функции Pdf рендерера
 //----------------------------------------------------------------------------------------
@@ -2796,6 +2840,7 @@ PdfWriter::CImageDict* CPdfWriter::LoadImage(Aggplus::CImage* pImage, BYTE nAlph
 	bool bAlpha = false;
 
 	CBgraFrame oFrame;
+	/*
 	if (m_pDocument->IsPDFA())
 	{
 		BYTE* pCopyImage = new BYTE[4 * nImageW * nImageH];
@@ -2822,6 +2867,7 @@ PdfWriter::CImageDict* CPdfWriter::LoadImage(Aggplus::CImage* pImage, BYTE nAlph
 		oFrame.put_Stride(-4* nImageW);
 	}
 	else
+	*/
 	{
 		BYTE* pDataMem = pData;
 		for (int nIndex = 0, nSize = nImageW * nImageH; nIndex < nSize; nIndex++)
@@ -2880,7 +2926,7 @@ PdfWriter::CImageDict* CPdfWriter::DrawImage(Aggplus::CImage* pImage, const doub
 	
 	return pPdfImage;
 }
-bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, const double& dX, const double& dY)
+bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, const double& dX, const double& dY, const std::string& sPUA)
 {
 	if (!pCodes || !unLen)
 		return false;
@@ -2899,6 +2945,7 @@ bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, cons
 	pText->SetCharSpace(MM_2_PT(m_oFont.GetCharSpace()));
 	pText->SetNeedDoBold(m_oFont.IsNeedDoBold());
 	pText->SetNeedDoItalic(m_oFont.IsNeedDoItalic());
+	pText->SetPUA(sPUA);
 
 	return true;
 }

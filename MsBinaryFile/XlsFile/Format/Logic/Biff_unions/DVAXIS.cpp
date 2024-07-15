@@ -86,7 +86,11 @@ const bool DVAXIS::loadContent(BinProcessor& proc)
 	m_Axis = elements_.back();
 	elements_.pop_back();
 
-	proc.mandatory<Begin>();				elements_.pop_back();
+	if (!proc.mandatory<Begin>())
+	{
+		return true;
+	}
+	elements_.pop_back();
 	
 	if (proc.optional<ValueRange>())
 	{
@@ -123,7 +127,7 @@ int DVAXIS::serialize(std::wostream & _stream)
 	Axis		*axis			= dynamic_cast<Axis*>		(m_Axis.get());
 	CRTMLFRT	*crtMltFrt		= dynamic_cast<CRTMLFRT*>	(m_CRTMLFRT.get());
 	
-	int axes_type = axis->wType + 1;
+	int axes_type = axis ? axis->wType + 1 : 1;
 
 	bool bLogarithScale = false;
 
@@ -186,7 +190,10 @@ int DVAXIS::serialize(std::wostream & _stream)
 			}
 		}
 //----------------------------------------------------------------------------------------------
-		m_AXS->serialize(_stream);
+		if (m_AXS)
+		{
+			m_AXS->serialize(_stream);
+		}
 
 		if (value_range)
 		{

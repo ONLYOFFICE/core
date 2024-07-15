@@ -258,7 +258,7 @@ int SS::serialize_default(std::wostream & _stream, int series_type, int ind )
 
 		CP_XML_NODE(L"c:spPr")
 		{
-			if (m_isAutoFill && series_type != CHART_TYPE_Line && series_type != CHART_TYPE_Scatter) //line & scatter
+			if (m_isAutoFill && series_type != CHART_TYPE_Line && series_type != CHART_TYPE_Scatter && ind < 57) //line & scatter
 			{			
 				CP_XML_NODE(L"a:solidFill")
 				{
@@ -378,11 +378,14 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 					else
 					{
 						if ((m_isVaried) && (*m_isVaried == false)) ind = 0;
-						CP_XML_NODE(L"a:solidFill")
+						if (ind < 57)
 						{
-							CP_XML_NODE(L"a:srgbClr")
+							CP_XML_NODE(L"a:solidFill")
 							{
-								CP_XML_ATTR(L"val",  default_series_fill_color[ind]);		
+								CP_XML_NODE(L"a:srgbClr")
+								{
+									CP_XML_ATTR(L"val", default_series_fill_color[ind]);
+								}
 							}
 						}
 					}

@@ -1492,21 +1492,27 @@ namespace MetaFile
 				case MetafileDataTypeEmf:
 				case MetafileDataTypeEmfPlusOnly:
 				case MetafileDataTypeEmfPlusDual:
-					return DrawMetafile<CEmfParser>(pBuffer, unSizeBuffer, oSrcRect, arPoints);
+				{
+					CEmfParser oParser;
+					oParser.SetOnlyEmfPlus(MetafileDataTypeEmfPlusOnly == pImage->GetMetafileType());
+					return DrawMetafile(oParser, pBuffer, unSizeBuffer, oSrcRect, arPoints);
+				}
 				case MetafileDataTypeWmf:
 				case MetafileDataTypeWmfPlaceable:
-					return DrawMetafile<CWmfParser>(pBuffer, unSizeBuffer, oSrcRect, arPoints);
+				{
+					CWmfParser oParser;
+					return DrawMetafile(oParser, pBuffer, unSizeBuffer, oSrcRect, arPoints);
+				}
 			}
 		}
 	}
 
 	template<typename MetafileType>
-	void CEmfPlusParser::DrawMetafile(BYTE *pBuffer, unsigned int unSize, const TEmfPlusRectF &oSrcRect, const std::vector<TEmfPlusPointF> &arPoints)
+	void CEmfPlusParser::DrawMetafile(MetafileType& oParser, BYTE *pBuffer, unsigned int unSize, const TEmfPlusRectF &oSrcRect, const std::vector<TEmfPlusPointF> &arPoints)
 	{
 		if (NULL == pBuffer || 0 == unSize || 3 != arPoints.size())
 			return;
 
-		MetafileType oParser;
 		oParser.SetStream(pBuffer, unSize);
 		oParser.SetFontManager(GetFontManager());
 		oParser.Scan();

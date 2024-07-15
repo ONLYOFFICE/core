@@ -876,7 +876,7 @@ void CPdfEditor::GetPageTree(XRef* xref, Object* pPagesRefObj)
 	}
 	kidsArrObj.free();
 }
-bool CPdfEditor::EditPage(int nPageIndex)
+bool CPdfEditor::EditPage(int nPageIndex, bool bSet)
 {
 	PDFDoc* pPDFDocument = pReader->GetPDFDocument();
 	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
@@ -886,8 +886,12 @@ bool CPdfEditor::EditPage(int nPageIndex)
 	PdfWriter::CPage* pEditPage = pDoc->GetEditPage(nPageIndex);
 	if (pEditPage)
 	{
-		pDoc->SetCurPage(pEditPage);
-		pWriter->EditPage(pEditPage);
+		if (bSet)
+		{
+			pDoc->SetCurPage(pEditPage);
+			pWriter->EditPage(pEditPage);
+			m_nEditPage = nPageIndex;
+		}
 		return true;
 	}
 
@@ -1003,10 +1007,22 @@ bool CPdfEditor::EditPage(int nPageIndex)
 	pageObj.free();
 
 	// Применение редактирования страницы для writer
-	if (pWriter->EditPage(pPage) && pDoc->EditPage(pXref, pPage, nPageIndex))
+	if (pDoc->EditPage(pXref, pPage, nPageIndex))
 	{
-		m_nEditPage = nPageIndex;
+		if (bSet)
+		{
+			pWriter->EditPage(pPage);
+			m_nEditPage = nPageIndex;
+		}
 		pPage->StartTransform(dCTM[0], dCTM[1], dCTM[2], dCTM[3], dCTM[4], dCTM[5]);
+		pPage->SetStrokeColor(0, 0, 0);
+		pPage->SetFillColor(0, 0, 0);
+		pPage->SetExtGrState(pDoc->GetExtGState(255, 255));
+		pPage->BeginText();
+		pPage->SetCharSpace(0);
+		pPage->SetTextRenderingMode(PdfWriter::textrenderingmode_Fill);
+		pPage->SetHorizontalScalling(100);
+		pPage->EndText();
 		return true;
 	}
 

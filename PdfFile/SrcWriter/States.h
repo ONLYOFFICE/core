@@ -143,6 +143,10 @@ public:
     {
         m_bNeedDoBold = bBold;
     }
+	inline void           SetPUA(const std::string& sPUA)
+	{
+		m_sPUA = sPUA;
+	}
     inline PdfWriter::CFontDict*     GetFont() const
     {
         return m_pFont;
@@ -179,6 +183,10 @@ public:
     {
         return m_bNeedDoBold;
     }
+	inline std::string    GetPUA() const
+	{
+		return m_sPUA;
+	}
 
 private:
 
@@ -196,6 +204,7 @@ private:
     double         m_dCharSpace;
     int            m_nMode;
     double         m_dHorScaling;
+	std::string    m_sPUA;
 };
 struct TFontInfo
 {

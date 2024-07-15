@@ -49,7 +49,7 @@ class CPdfEditor
 public:
 	int  GetError() { return 0; }
 	void Close() {}
-	bool EditPage(int nPageIndex) { return false; }
+	bool EditPage(int nPageIndex, bool bSet = true) { return false; }
 	bool DeletePage(int nPageIndex) { return false; }
 	bool AddPage(int nPageIndex) { return false; }
 	bool EditAnnot(int nPageIndex, int nID) { return false; }
@@ -413,17 +413,17 @@ BYTE* CPdfFile::GetWidgets()
 		return NULL;
 	return m_pInternal->pReader->GetWidgets();
 }
-BYTE* CPdfFile::GetWidgetEmbeddedFonts()
+BYTE* CPdfFile::GetAnnotEmbeddedFonts()
 {
 	if (!m_pInternal->pReader)
 		return NULL;
-	return m_pInternal->pReader->GetWidgetFonts(1);
+	return m_pInternal->pReader->GetFonts(false);
 }
-BYTE* CPdfFile::GetWidgetStandardFonts()
+BYTE* CPdfFile::GetAnnotStandardFonts()
 {
 	if (!m_pInternal->pReader)
 		return NULL;
-	return m_pInternal->pReader->GetWidgetFonts(2);
+	return m_pInternal->pReader->GetFonts(true);
 }
 std::wstring CPdfFile::GetFontPath(const std::wstring& wsFontName)
 {
@@ -1182,6 +1182,7 @@ HRESULT CPdfFile::IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedComma
 	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:
 	case IAdvancedCommand::AdvancedCommandType::PageClear:
 	case IAdvancedCommand::AdvancedCommandType::PageRotate:
+	case IAdvancedCommand::AdvancedCommandType::Headings:
 		return S_OK;
 	default:
 		break;
@@ -1206,12 +1207,7 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	{
 		CLinkCommand* pCommand = (CLinkCommand*)command;
 		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
-		{
-			PdfWriter::CPage* pCurrent = m_pInternal->pWriter->GetPage();
-			m_pInternal->pEditor->EditPage(pCommand->GetPage());
-			m_pInternal->pWriter->GetDocument()->SetCurPage(pCurrent);
-			m_pInternal->pWriter->EditPage(pCurrent);
-		}
+			m_pInternal->pEditor->EditPage(pCommand->GetPage(), false);
 		return m_pInternal->pWriter->AddLink(pCommand->GetX(), pCommand->GetY(), pCommand->GetW(), pCommand->GetH(),
 											 pCommand->GetDestX(), pCommand->GetDestY(), pCommand->GetPage());
 	}
@@ -1271,6 +1267,11 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 		CPageRotate* pCommand = (CPageRotate*)command;
 		if (m_pInternal->pEditor)
 			m_pInternal->pWriter->PageRotate(pCommand->GetPageRotate());
+		return S_OK;
+	}
+	case IAdvancedCommand::AdvancedCommandType::Headings:
+	{
+		m_pInternal->pWriter->SetHeadings((CHeadings*)command);
 		return S_OK;
 	}
 	default:

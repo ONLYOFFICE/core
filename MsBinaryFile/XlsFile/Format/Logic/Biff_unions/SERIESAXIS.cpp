@@ -134,7 +134,7 @@ int SERIESAXIS::serialize(std::wostream & _stream)
 	CatSerRange * cat_ser_range = dynamic_cast<CatSerRange*>(m_CatSerRange.get());
 	Axis		* axis			= dynamic_cast<Axis*>		(m_Axis.get());
 
-	int axes_type = axis->wType + 1;
+	int axes_type = axis ? axis->wType + 1 : 0;
 
 	CP_XML_WRITER(_stream)    
 	{
@@ -145,7 +145,7 @@ int SERIESAXIS::serialize(std::wostream & _stream)
 		
 		CP_XML_NODE(L"c:scaling")
 		{
-			if (cat_ser_range->fReversed)
+			if (cat_ser_range && cat_ser_range->fReversed)
 			{
 				CP_XML_NODE(L"c:orientation"){  CP_XML_ATTR(L"val", L"maxMin"); }
 			}else
@@ -175,8 +175,10 @@ int SERIESAXIS::serialize(std::wostream & _stream)
 			}
 		}
 //-----------------------------------------------------------------------------------
-		m_AXS->serialize(_stream);
-
+		if (m_AXS)
+		{
+			m_AXS->serialize(_stream);
+		}
 		if (cat_ser_range)
 		{
 			CP_XML_NODE(L"c:crosses")

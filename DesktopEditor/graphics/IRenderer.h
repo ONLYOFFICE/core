@@ -152,6 +152,7 @@ public:
 		ShapeEnd    = 8,
 		PageClear   = 9,
 		PageRotate  = 10,
+		Headings    = 11,
 
 		Undefined   = 255
 	};
@@ -400,6 +401,16 @@ public:
 	virtual HRESULT put_LayerOpacity(double dValue)
 	{
 		UNUSED_VARIABLE(dValue);
+		return S_FALSE;
+	}
+	virtual HRESULT put_LayerIsolated(bool bIsolated)
+	{
+		UNUSED_VARIABLE(bIsolated);
+		return S_FALSE;
+	}
+	virtual HRESULT put_AlphaMaskIsolated(bool bIsolated)
+	{
+		UNUSED_VARIABLE(bIsolated);
 		return S_FALSE;
 	}
 };

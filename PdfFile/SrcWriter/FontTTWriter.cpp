@@ -490,7 +490,6 @@ namespace PdfWriter
 			}
 			pLocaTable[m_nGlyphs].nLen = 0;
 			qsort(pLocaTable, m_nGlyphs + 1, sizeof(TrueTypeLoca), &CompareTrueTypeLocaIndex);
-			pLocaTable[m_nGlyphs].nLen = 0;
 			nPos = 0;
 
 			for (i = 0; i <= m_nGlyphs; ++i)
@@ -645,8 +644,8 @@ namespace PdfWriter
 
 			for (i = 0; i < unCodesCount; ++i)
 			{
-				arrNewCmapTable[22 + 2 * i]     = (char)(pCodeToGID[i] >> 8);
-				arrNewCmapTable[22 + 2 * i + 1] = (char)(pCodeToGID[i] & 0xff);
+				arrNewCmapTable[22 + 2 * i]     = pCodeToGID[i] >> 8;
+				arrNewCmapTable[22 + 2 * i + 1] = pCodeToGID[i] & 0xff;
 			}
 		}
 		else

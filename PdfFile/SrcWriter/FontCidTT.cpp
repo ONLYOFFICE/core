@@ -171,7 +171,7 @@ namespace PdfWriter
 
 		if (m_pXref->IsPDFA())
 		{
-			pFontDescriptor->Add("CIDSet", new CDictObject(m_pXref));
+			//pFontDescriptor->Add("CIDSet", new CDictObject(m_pXref));
 		}
 	}
 	bool CFontCidTrueType::HaveChar(const unsigned int &unUnicode)
@@ -357,10 +357,14 @@ namespace PdfWriter
 		pS->WriteStr(c_sToUnicodeHeader);
 		pS->WriteStr(c_sToUnicodeInfo);
 
+		int pCodesCount = pS->Tell();
+		int nCodesCount = 0;
 		pS->WriteInt(m_ushCodesCount);
 		pS->WriteStr(" beginbfchar\n");
 		for (unsigned short ushCode = 0; ushCode < m_ushCodesCount; ushCode++)
 		{
+			if (!m_mGlyphs[m_vCodeToGid[ushCode]])
+				continue;
 			pS->WriteChar('<');
 			pS->WriteHex(ushCode, 4);
 			pS->WriteStr("> <");
@@ -384,9 +388,12 @@ namespace PdfWriter
 			}
 
 			pS->WriteStr(">\n");
+			nCodesCount++;
 		}
 		pS->WriteStr("endbfchar\n");
-		m_pToUnicodeStream->WriteStr(c_sToUnicodeFooter);
+		pS->WriteStr(c_sToUnicodeFooter);
+		pS->Seek(pCodesCount, SeekSet);
+		pS->WriteInt(nCodesCount);
 	}
 	void CFontCidTrueType::CloseFontFace()
 	{
@@ -521,7 +528,7 @@ namespace PdfWriter
 				FT_Matrix    oMatrix;
 				FT_Get_SubGlyph_Info(m_pFace->glyph, nSubIndex, &nSubGID, &unFlags, &nArg1, &nArg2, &oMatrix);
 
-				m_mGlyphs.insert(std::pair<unsigned short, bool>(nSubGID, true));
+				m_mGlyphs.insert(std::pair<unsigned short, bool>(nSubGID, false));
 
 				EncodeGID(nSubGID, NULL, 0); // TODO необходимо верно указать Unicode для случая записи подсимволов
 				FT_Load_Glyph(m_pFace, unGID, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE);

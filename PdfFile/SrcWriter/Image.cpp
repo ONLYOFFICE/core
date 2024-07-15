@@ -289,9 +289,6 @@ namespace PdfWriter
 	}
 	void CImageDict::LoadSMask(const BYTE* pBgra, unsigned int unWidth, unsigned int unHeight, unsigned char unAlpha, bool bVerFlip)
 	{
-		if (m_pDocument->IsPDFA())
-			return;
-
 		CMemoryStream* pStream = new CMemoryStream(unWidth * unHeight);
 		if (!pStream)
 			return;

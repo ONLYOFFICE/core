@@ -59,10 +59,10 @@ namespace NSDocxRenderer
 		double m_dRight;
 		double m_dBottom;
 
-		double m_dLeftDefault;
-		double m_dTopDefault;
-		double m_dRightDefault;
-		double m_dBottomDefault;
+		const double m_dLeftDefault;
+		const double m_dTopDefault;
+		const double m_dRightDefault;
+		const double m_dBottomDefault;
 
 		void ResetBorders();
 	};

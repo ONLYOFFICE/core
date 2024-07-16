@@ -504,8 +504,48 @@ namespace NSCSS
 		}
 	}
 
+	CColor& CColor::operator =(const CColor& oColor)
+	{
+		m_enType   = oColor.m_enType;
+		m_oOpacity = oColor.m_oOpacity;
+
+		switch(m_enType)
+		{
+			case ColorEmpty:
+			case ColorNone:
+				break;
+			case ColorRGB:
+			{
+				m_oValue = new TRGB{(*static_cast<TRGB*>(oColor.m_oValue))};
+				break;
+			}
+			case ColorHEX:
+			{
+				m_oValue = new std::wstring(*static_cast<std::wstring*>(oColor.m_oValue));
+				break;
+			}
+			case ColorUrl:
+			{
+				m_oValue = new CURL(*static_cast<CURL*>(oColor.m_oValue));
+				break;
+			}
+		}
+
+		return *this;
+	}
+
+	CColor& CColor::operator+=(const CColor& oColor)
+	{
+		if (m_unLevel > oColor.m_unLevel || (m_bImportant && !oColor.m_bImportant) || oColor.Empty())
+			return *this;
+
+		*this = oColor;
+
+		return *this;
+	}
+
 	CColor::CColor()
-		: CValue(NULL, 0, false), m_oOpacity(1.)
+		: CValue(NULL, 0, false), m_oOpacity(1.), m_enType(ColorEmpty)
 	{}
 
 	void CColor::SetEmpty(unsigned int unLevel)

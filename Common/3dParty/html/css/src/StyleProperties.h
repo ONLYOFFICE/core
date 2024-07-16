@@ -243,6 +243,9 @@ namespace NSCSS
 
 		bool operator==(const CColor& oColor) const;
 		bool operator!=(const CColor& oColor) const;
+
+		CColor& operator =(const CColor& oColor);
+		CColor& operator+=(const CColor& oColor);
 	private:
 		CDigit    m_oOpacity;
 		ColorType m_enType;

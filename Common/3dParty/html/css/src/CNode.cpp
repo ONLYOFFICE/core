@@ -5,7 +5,7 @@ namespace NSCSS
 	CNode::CNode()
 	{}
 
-	CNode::CNode(std::wstring wsName, std::wstring wsClass, std::wstring wsId)
+	CNode::CNode(const std::wstring& wsName, const std::wstring& wsClass, const std::wstring& wsId)
 		: m_wsName(wsName), m_wsClass(wsClass), m_wsId(wsId)
 	{}
 

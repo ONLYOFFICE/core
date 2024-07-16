@@ -88,8 +88,13 @@ namespace XLSB
 
 	const bool ESSTR::saveContent(BinProcessor& proc)
 	{
-		if (m_BrtBeginEsstr != nullptr)
-			proc.mandatory(*m_BrtBeginEsstr);
+		if (m_BrtBeginEsstr == nullptr)
+        {
+            auto beginPtr(new BeginEsstr);
+            beginPtr->Cstr = m_BrtStrs.size();
+            m_BrtBeginEsstr = BaseObjectPtr(beginPtr);
+        }
+        proc.mandatory(*m_BrtBeginEsstr);
 
 		for(auto i : m_BrtStrs)
             proc.mandatory(*i);

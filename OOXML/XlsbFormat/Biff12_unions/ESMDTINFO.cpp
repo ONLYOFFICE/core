@@ -84,8 +84,14 @@ namespace XLSB
 
 	const bool ESMDTINFO::saveContent(XLS::BinProcessor & proc)
 	{
-        if (m_BrtBeginEsmdtinfo != nullptr)
-            proc.mandatory(*m_BrtBeginEsmdtinfo);
+        if (m_BrtBeginEsmdtinfo == nullptr)
+        {
+            auto beginPtr(new BeginEsmdtinfo);
+            beginPtr->cMdtinfo = BrtMdtinfos.size();
+            m_BrtBeginEsmdtinfo = BaseObjectPtr{beginPtr};
+        }
+        proc.mandatory(*m_BrtBeginEsmdtinfo);
+
         for(auto i:BrtMdtinfos)
             proc.mandatory(*i);
         proc.mandatory<XLSB::EndEsmdtinfo>();

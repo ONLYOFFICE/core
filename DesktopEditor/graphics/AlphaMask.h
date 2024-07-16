@@ -62,8 +62,11 @@ namespace Aggplus
 		virtual ~CSoftMask();
 
 		EMaskDataType GetDataType() const;
-		UINT GetStep() const;
+		unsigned int GetStep() const;
+		unsigned int GetWidth() const;
+		unsigned int GetHeight() const;
 
+		void SetType(EMaskDataType enDataType);
 		Status Create(UINT unWidth, UINT unHeight, EMaskDataType enDataType);
 		Status LoadFromBuffer(BYTE* pBuffer, UINT unWidth, UINT unHeight, EMaskDataType enDataType, bool bExternalBuffer = true, bool bFlip = false);
 
@@ -75,10 +78,12 @@ namespace Aggplus
 	private:
 		void Set(BYTE* pBuffer, UINT unWidth, UINT unHeight, EMaskDataType enDataType, bool bFlip = false);
 
-		agg::rendering_buffer           m_oRenderingBuffer;
-		EMaskDataType                   m_enDataType;
-		bool                            m_bExternalBuffer;
-	public:
+		agg::rendering_buffer m_oRenderingBuffer;
+		EMaskDataType         m_enDataType;
+		bool                  m_bExternalBuffer;
+		unsigned int          m_unWidth;
+		unsigned int          m_unHeight;
+
 		typedef TAlphaMaskData<agg::pixfmt_bgra32, agg::alpha_mask_bgra32gray> AMaskFromImage;
 		typedef TAlphaMaskData<agg::pixfmt_bgra32, agg::alpha_mask_bgra32a>    AMaskFromABuffer;
 

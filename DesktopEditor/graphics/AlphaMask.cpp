@@ -67,7 +67,7 @@ namespace Aggplus
 
 
 
-	CSoftMask::CSoftMask() : m_pImageData(NULL), m_pAlphaBufferData(NULL) {}
+	CSoftMask::CSoftMask() : m_pImageData(NULL), m_pAlphaBufferData(NULL), m_unWidth(0), m_unHeight(0) {}
 	CSoftMask::CSoftMask(BYTE* pBuffer, UINT unWidth, UINT unHeight, EMaskDataType enDataType, bool bExternalBuffer, bool bFlip)
 	{
 		m_pImageData = NULL;
@@ -86,18 +86,52 @@ namespace Aggplus
 			m_oRenderingBuffer.attach(NULL, 0, 0, 0);
 		}
 
-		RELEASEOBJECT(m_pImageData)
-		RELEASEOBJECT(m_pAlphaBufferData)
+		RELEASEOBJECT(m_pImageData);
+		RELEASEOBJECT(m_pAlphaBufferData);
 	}
 
 	EMaskDataType CSoftMask::GetDataType() const { return m_enDataType; }
-	UINT CSoftMask::GetStep() const
+	unsigned int CSoftMask::GetStep() const
 	{
 		switch(m_enDataType)
 		{
 		case EMaskDataType::ImageBuffer: return 4;
 		case EMaskDataType::AlphaBuffer: return 1;
 		case EMaskDataType::Alpha4Buffer: return 4;
+		}
+	}
+	unsigned int CSoftMask::GetWidth() const
+	{
+		return m_unWidth;
+	}
+	unsigned int CSoftMask::GetHeight() const
+	{
+		return m_unHeight;
+	}
+
+	void CSoftMask::SetType(EMaskDataType enDataType)
+	{
+		m_enDataType = enDataType;
+
+		RELEASEOBJECT(m_pImageData);
+		RELEASEOBJECT(m_pAlphaBufferData);
+
+		switch (enDataType)
+		{
+		case EMaskDataType::ImageBuffer:
+		{
+			m_pImageData = new AMaskFromImage(m_oRenderingBuffer);
+			m_pImageData->m_oRendererBase.attach(m_pImageData->m_oPixfmt);
+			m_pImageData->m_oAlphaMask.attach(m_oRenderingBuffer);
+			break;
+		}
+		case EMaskDataType::Alpha4Buffer:
+		{
+			m_pAlphaBufferData = new AMaskFromABuffer(m_oRenderingBuffer);
+			m_pAlphaBufferData->m_oRendererBase.attach(m_pAlphaBufferData->m_oPixfmt);
+			m_pAlphaBufferData->m_oAlphaMask.attach(m_oRenderingBuffer);
+			break;
+		}
 		}
 	}
 
@@ -159,25 +193,10 @@ namespace Aggplus
 
 	void CSoftMask::Set(BYTE* pBuffer, UINT unWidth, UINT unHeight, EMaskDataType enDataType, bool bFlip)
 	{
-		m_enDataType = enDataType;
+		m_unWidth  = unWidth;
+		m_unHeight = unHeight;
 		m_oRenderingBuffer.attach(pBuffer, unWidth, unHeight, (bFlip ? -1 : 1) * GetStep() * unWidth);
 
-		switch (enDataType)
-		{
-		case EMaskDataType::ImageBuffer:
-		{
-			m_pImageData = new AMaskFromImage(m_oRenderingBuffer);
-			m_pImageData->m_oRendererBase.attach(m_pImageData->m_oPixfmt);
-			m_pImageData->m_oAlphaMask.attach(m_oRenderingBuffer);
-			break;
-		}
-		case EMaskDataType::Alpha4Buffer:
-		{
-			m_pAlphaBufferData = new AMaskFromABuffer(m_oRenderingBuffer);
-			m_pAlphaBufferData->m_oRendererBase.attach(m_pAlphaBufferData->m_oPixfmt);
-			m_pAlphaBufferData->m_oAlphaMask.attach(m_oRenderingBuffer);
-			break;
-		}
-		}
+		SetType(enDataType);
 	}
 }

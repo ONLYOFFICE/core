@@ -300,6 +300,13 @@ namespace PdfReader
 
 			GfxOutputState() : pGState(NULL), pSoftMask(NULL) {}
 		};
+		struct GfxOutputCS
+		{
+			bool bKnockout;
+			GfxColorSpace* pBlendingCS;
+
+			GfxOutputCS() : bKnockout(false), pBlendingCS(NULL) {}
+		};
 
 		void Transform(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY);
 		void Distance(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY);
@@ -320,10 +327,12 @@ namespace PdfReader
 
 		bool                         *m_pbBreak;         // Внешняя остановка рендерера
 
+		std::deque<GfxOutputCS>       m_sCS;
 		std::deque<GfxOutputState>    m_sStates;
 		std::deque<GfxClip>           m_sClip;
 		bool                          m_bClipChanged;
 
+		Aggplus::CSoftMask*           m_pSoftMask;
 		bool                          m_bTiling;
 
         bool                          m_bDrawOnlyText; // Special option for html-renderer

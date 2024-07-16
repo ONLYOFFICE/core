@@ -9,10 +9,10 @@
 namespace NSDocxRenderer
 {
 	CVectorGraphics::CVectorGraphics()
-			: m_dLeftDefault(std::numeric_limits<double>().max()),
-			  m_dRightDefault(std::numeric_limits<double>().min()),
-			  m_dTopDefault(std::numeric_limits<double>().max()),
-			  m_dBottomDefault(std::numeric_limits<double>().min())
+		: m_dLeftDefault(std::numeric_limits<double>().max()),
+		  m_dRightDefault(std::numeric_limits<double>().min()),
+		  m_dTopDefault(std::numeric_limits<double>().max()),
+		  m_dBottomDefault(std::numeric_limits<double>().min())
 	{
 		ResetBorders();
 	}

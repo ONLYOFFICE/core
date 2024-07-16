@@ -150,12 +150,12 @@ namespace NSDocxRenderer
 
 		index--;
 
-		 // if a little overlapped the next one - take the previous one
-		 if (abs(lefts[index] - dLeft) < c_dTHE_STRING_X_PRECISION_MM)
-			 index--;
+		// if a little overlapped the next one - take the previous one
+		if (abs(lefts[index] - dLeft) < c_dTHE_STRING_X_PRECISION_MM)
+			index--;
 
-		 if (index == 0)
-			 return nullptr;
+		if (index == 0)
+			return nullptr;
 
 		return Split(index);
 	}
@@ -179,7 +179,7 @@ namespace NSDocxRenderer
 			return  eVerticalCrossingType::vctCurrentAboveNext;
 
 		else if (this_top > other_top && this_bot > other_bot &&
-				(this_top <= other_bot || fabs(this_top - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
+				 (this_top <= other_bot || fabs(this_top - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
 			return  eVerticalCrossingType::vctCurrentBelowNext;
 
 		else if (this_top == other_top && this_bot == other_bot &&
@@ -596,10 +596,10 @@ namespace NSDocxRenderer
 	}
 
 	bool CContText::CheckFontEffects
-		(std::shared_ptr<CContText>& pFirstCont,
-		std::shared_ptr<CContText>& pSecondCont,
-		eVerticalCrossingType eVType,
-		eHorizontalCrossingType eHType)
+	(std::shared_ptr<CContText>& pFirstCont,
+	 std::shared_ptr<CContText>& pSecondCont,
+	 eVerticalCrossingType eVType,
+	 eHorizontalCrossingType eHType)
 	{
 		//Условие пересечения по вертикали
 		bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext; //текущий cont выше
@@ -679,20 +679,20 @@ namespace NSDocxRenderer
 	}
 
 	bool CContText::CheckVertAlignTypeBetweenConts
-		(std::shared_ptr<CContText> pFirstCont,
-		std::shared_ptr<CContText> pSecondCont,
-		eVerticalCrossingType eVType,
-		eHorizontalCrossingType eHType)
+	(std::shared_ptr<CContText> pFirstCont,
+	 std::shared_ptr<CContText> pSecondCont,
+	 eVerticalCrossingType eVType,
+	 eHorizontalCrossingType eHType)
 	{
 
 		bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext ||
-			eVType == eVerticalCrossingType::vctCurrentInsideNext;
+				eVType == eVerticalCrossingType::vctCurrentInsideNext;
 
 		bool bIf2 = eVType == eVerticalCrossingType::vctCurrentBelowNext;
 
 		bool bIf3 = (eHType == eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext ||
-			eHType == eHorizontalCrossingType::hctCurrentLeftOfNext) &&
-			fabs(pFirstCont->m_dRight - pSecondCont->m_dLeft) < c_dTHE_STRING_X_PRECISION_MM * 3;
+					 eHType == eHorizontalCrossingType::hctCurrentLeftOfNext) &&
+				fabs(pFirstCont->m_dRight - pSecondCont->m_dLeft) < c_dTHE_STRING_X_PRECISION_MM * 3;
 
 		bool bIf4 = (eHType == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext ||
 					 eHType == eHorizontalCrossingType::hctCurrentRightOfNext) &&

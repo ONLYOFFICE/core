@@ -9,7 +9,6 @@ namespace NSDocxRenderer
 
 	CShape::CShape()
 	{
-		COutputObject::m_eType = COutputObject::eOutputType::etShape;
 		m_nRelativeHeight = m_gRelativeHeight;
 		m_gRelativeHeight += c_iStandartRelativeHeight;
 	}
@@ -97,10 +96,10 @@ namespace NSDocxRenderer
 		if(
 				// только для фигур
 				(pShape->m_eGraphicsType == eGraphicsType::gtComplicatedFigure ||
-				pShape->m_eGraphicsType == eGraphicsType::gtRectangle) &&
+				 pShape->m_eGraphicsType == eGraphicsType::gtRectangle) &&
 
 				(this->m_eGraphicsType == eGraphicsType::gtComplicatedFigure ||
-				this->m_eGraphicsType == eGraphicsType::gtRectangle) &&
+				 this->m_eGraphicsType == eGraphicsType::gtRectangle) &&
 
 				// все совпадает
 				pShape->m_eType == this->m_eType &&
@@ -316,7 +315,7 @@ namespace NSDocxRenderer
 			return;
 
 		if (!pFirstShape->IsItFitLine() || !pSecondShape->IsItFitLine() || !pFirstShape->IsCorrelated(pSecondShape) ||
-			fabs(pFirstShape->m_dHeight - pSecondShape->m_dHeight) > c_dGRAPHICS_ERROR_IN_LINES_MM) // линия должна быть одного размера по высоте
+				fabs(pFirstShape->m_dHeight - pSecondShape->m_dHeight) > c_dGRAPHICS_ERROR_IN_LINES_MM) // линия должна быть одного размера по высоте
 		{
 			return;
 		}
@@ -474,14 +473,14 @@ namespace NSDocxRenderer
 			if (pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHDot)
 			{
 				if ((pFirstShape->m_eLineType == eLineType::ltUnknown || pFirstShape->m_eLineType == eLineType::ltDotted ||
-					pFirstShape->m_eLineType == eLineType::ltDottedHeavy) && pSecondShape->m_eLineType == eLineType::ltUnknown)
+					 pFirstShape->m_eLineType == eLineType::ltDottedHeavy) && pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
 					pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltDottedHeavy : eLineType::ltDotted;
 					passed = true;
 				}
 				else if ((pFirstShape->m_eLineType == eLineType::ltDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotHeavy ||
-					pFirstShape->m_eLineType == eLineType::ltDotDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotDotHeavy) &&
-					pSecondShape->m_eLineType == eLineType::ltUnknown)
+						  pFirstShape->m_eLineType == eLineType::ltDotDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotDotHeavy) &&
+						 pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
 					pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltDashDotDotHeavy : eLineType::ltDotDotDash;
 					pFirstShape->m_eSimpleLineType = eSimpleLineType::sltHDot;
@@ -491,13 +490,13 @@ namespace NSDocxRenderer
 			else if (pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHDash)
 			{
 				if ((pFirstShape->m_eLineType == eLineType::ltDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotHeavy) &&
-					pSecondShape->m_eLineType == eLineType::ltUnknown)
+						pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
 					pFirstShape->m_eSimpleLineType = eSimpleLineType::sltHDash;
 					passed = true;
 				}
 				else if ((pFirstShape->m_eLineType == eLineType::ltDotDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotDotHeavy) &&
-					pSecondShape->m_eLineType == eLineType::ltUnknown)
+						 pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
 					pFirstShape->m_eSimpleLineType = eSimpleLineType::sltHDash;
 					passed = true;
@@ -959,7 +958,7 @@ namespace NSDocxRenderer
 	void CShape::ToXmlPptx(NSStringUtils::CStringBuilder &oWriter) const
 	{
 		if (m_eType == eShapeType::stPicture ||
-			m_eType == eShapeType::stVectorTexture)
+				m_eType == eShapeType::stVectorTexture)
 		{
 			// TODO: Clip path as geometry + tile!!!
 			oWriter.WriteString(L"<p:pic>");

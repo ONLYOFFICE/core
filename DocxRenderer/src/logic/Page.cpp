@@ -6,21 +6,21 @@
 
 namespace NSDocxRenderer
 {
-	CPage::CPage(NSFonts::IApplicationFonts* pFonts)
+	CPage::CPage()
 	{
 	}
 
 	void CPage::Init(NSStructures::CFont* pFont,
-		NSStructures::CPen* pPen,
-		NSStructures::CBrush* pBrush,
-		NSStructures::CShadow* pShadow,
-		NSStructures::CEdgeText* pEdge,
-		Aggplus::CMatrix* pMatrix,
-		Aggplus::CGraphicsPathSimpleConverter* pSimple,
-		CFontStyleManager* pFontStyleManager,
-		CFontManager *pFontManager,
-		CFontSelector* pFontSelector,
-		CParagraphStyleManager* pParagraphStyleManager)
+					 NSStructures::CPen* pPen,
+					 NSStructures::CBrush* pBrush,
+					 NSStructures::CShadow* pShadow,
+					 NSStructures::CEdgeText* pEdge,
+					 Aggplus::CMatrix* pMatrix,
+					 Aggplus::CGraphicsPathSimpleConverter* pSimple,
+					 CFontStyleManager* pFontStyleManager,
+					 CFontManager *pFontManager,
+					 CFontSelector* pFontSelector,
+					 CParagraphStyleManager* pParagraphStyleManager)
 	{
 		m_pFont     = pFont;
 		m_pPen      = pPen;
@@ -271,13 +271,13 @@ namespace NSDocxRenderer
 	}
 
 	void CPage::CollectTextData(const PUINT pUnicodes,
-		const PUINT pGids,
-		const UINT& nCount,
-		const double& fX,
-		const double& fY,
-		const double& fWidth,
-		const double& fHeight,
-		const double& fBaseLineOffset)
+								const PUINT pGids,
+								const UINT& nCount,
+								const double& fX,
+								const double& fY,
+								const double& fWidth,
+								const double& fHeight,
+								const double& fBaseLineOffset)
 	{
 		// 9 - \t
 		if (*pUnicodes == 9)
@@ -398,10 +398,10 @@ namespace NSDocxRenderer
 		// первичное получение стиля для текущего символа
 		// при дальнейшем анализе может измениться
 		pCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(*m_pBrush,
-			m_pFontSelector->GetSelectedName(),
-			m_pFont->Size,
-			m_pFontSelector->IsSelectedItalic(),
-			m_pFontSelector->IsSelectedBold() || bForcedBold);
+																	 m_pFontSelector->GetSelectedName(),
+																	 m_pFont->Size,
+																	 m_pFontSelector->IsSelectedItalic(),
+																	 m_pFontSelector->IsSelectedBold() || bForcedBold);
 
 		pCont->m_dSpaceWidthMM = m_pFontManager->GetSpaceWidthMM();
 
@@ -582,8 +582,8 @@ namespace NSDocxRenderer
 		for (size_t i = 0; i < m_arShapes.size(); ++i)
 		{
 			if (!m_arShapes[i] || m_arShapes[i]->m_dHeight > c_dMAX_LINE_HEIGHT_MM || // рассматриваем только тонкие объекты
-				(m_arShapes[i]->m_eGraphicsType != eGraphicsType::gtRectangle &&
-				m_arShapes[i]->m_eGraphicsType != eGraphicsType::gtCurve))
+					(m_arShapes[i]->m_eGraphicsType != eGraphicsType::gtRectangle &&
+					 m_arShapes[i]->m_eGraphicsType != eGraphicsType::gtCurve))
 			{
 				continue;
 			}
@@ -909,10 +909,10 @@ namespace NSDocxRenderer
 							oBrush.Color1 = shape->m_oPen.Color;
 
 							curr_cont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(oBrush,
-								curr_cont->m_pFontStyle->wsFontName,
-								curr_cont->m_pFontStyle->dFontSize,
-								curr_cont->m_pFontStyle->bItalic,
-								curr_cont->m_pFontStyle->bBold);
+																							 curr_cont->m_pFontStyle->wsFontName,
+																							 curr_cont->m_pFontStyle->dFontSize,
+																							 curr_cont->m_pFontStyle->bItalic,
+																							 curr_cont->m_pFontStyle->bBold);
 
 							curr_cont->m_bIsShadowPresent = true;
 							curr_cont->m_bIsOutlinePresent = true;
@@ -1119,18 +1119,7 @@ namespace NSDocxRenderer
 
 	void CPage::ToXml(NSStringUtils::CStringBuilder& oWriter)
 	{
-		bool bIsTextShapePresent = false;
-
-		for (size_t i = 0; i < m_arOutputObjects.size(); ++i)
-		{
-			if (m_arOutputObjects[i]->m_eType == COutputObject::eOutputType::etShape)
-			{
-				bIsTextShapePresent = true;
-				break;
-			}
-		}
-
-		bool bIsNeedWP = bIsTextShapePresent || !m_arImages.empty() || !m_arShapes.empty();
+		bool bIsNeedWP = !m_arImages.empty() || !m_arShapes.empty();
 
 		if (bIsNeedWP)
 		{
@@ -1179,7 +1168,7 @@ namespace NSDocxRenderer
 				if (pCurrCont->m_iNumDuplicates > 0)
 					pCurrLine->m_iNumDuplicates = std::max(pCurrLine->m_iNumDuplicates, pCurrCont->m_iNumDuplicates);
 			}
-			 pCurrLine->MergeConts();
+			pCurrLine->MergeConts();
 		}
 		DetermineDominantGraphics();
 
@@ -1316,8 +1305,8 @@ namespace NSDocxRenderer
 			double& s_bot = shape->m_dBaselinePos;
 
 			bool lines_condition = shape->m_eSimpleLineType != eSimpleLineType::sltUnknown &&
-				!((s_right < left) || (s_left > right)) &&
-				!((s_bot < top) || (s_top > bot));
+					!((s_right < left) || (s_left > right)) &&
+					!((s_bot < top) || (s_top > bot));
 
 			bool rectangle_condition = shape->m_eGraphicsType == eGraphicsType::gtRectangle &&
 					shape->m_eSimpleLineType == eSimpleLineType::sltUnknown &&
@@ -1473,9 +1462,9 @@ namespace NSDocxRenderer
 	{
 		auto no_crossing = [] (const eHorizontalCrossingType& h_type, const eVerticalCrossingType& v_type) {
 			return h_type == eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext ||
-				h_type == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext ||
-				v_type == eVerticalCrossingType::vctNoCrossingCurrentAboveNext ||
-				v_type == eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
+					h_type == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext ||
+					v_type == eVerticalCrossingType::vctNoCrossingCurrentAboveNext ||
+					v_type == eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
 		};
 
 		// линии из которых сделаем шейпы
@@ -1807,15 +1796,7 @@ namespace NSDocxRenderer
 					continue;
 
 				if (diff <= 0)
-				{
-//						if (diff > -c_dERROR_GAP)
-//						{
-//							auto& last_cont = line_top->m_arConts[line_top->m_arConts.size() - 1];
-//							last_cont->m_bIsAddBrEnd = true;
-//						}
-//						else
-						continue;
-				}
+					continue;
 				else
 				{
 					ar_delims[index] = true;
@@ -1853,7 +1834,7 @@ namespace NSDocxRenderer
 		}
 
 		else if (m_eTextAssociationType == TextAssociationType::tatPlainParagraph ||
-				m_eTextAssociationType == TextAssociationType::tatParagraphToShape)
+				 m_eTextAssociationType == TextAssociationType::tatParagraphToShape)
 		{
 			for (auto& g : line_groups)
 				build_paragraphs(g);
@@ -1903,7 +1884,7 @@ namespace NSDocxRenderer
 		}
 
 		else if (m_eTextAssociationType == TextAssociationType::tatParagraphToShape ||
-				m_eTextAssociationType == TextAssociationType::tatShapeLine)
+				 m_eTextAssociationType == TextAssociationType::tatShapeLine)
 		{
 			for (auto& p : ar_paragraphs)
 				m_arShapes.push_back(CreateSingleParagraphShape(p));

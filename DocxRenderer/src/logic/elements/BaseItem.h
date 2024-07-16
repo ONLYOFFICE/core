@@ -65,24 +65,4 @@ namespace NSDocxRenderer
 
 		CBaseItem& operator=(const CBaseItem& oSrc);
 	};
-
-	class COutputObject : public CBaseItem
-	{
-	public:
-		enum class eOutputType
-		{
-			etAny		= 0,
-			etParagraph = 1,
-			etShape     = 2,
-			etTable     = 3
-		};
-
-		COutputObject() : m_eType(eOutputType::etAny) {}
-		COutputObject(eOutputType eType) : m_eType(eType) {}
-		virtual ~COutputObject() = default;
-
-		COutputObject& operator= (const COutputObject& oObj);
-
-		eOutputType m_eType;
-	};
 }

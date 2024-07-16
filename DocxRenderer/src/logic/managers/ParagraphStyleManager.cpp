@@ -52,7 +52,7 @@ namespace NSDocxRenderer
 	void CParagraphStyleManager::ToXml(NSStringUtils::CStringBuilder& oWriter)
 	{
 		for(auto& val : m_arDefaultParagraphStyles)
-				val.ToXml(oWriter);
+			val.ToXml(oWriter);
 	}
 }
 

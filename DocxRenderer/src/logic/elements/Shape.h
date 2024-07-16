@@ -16,7 +16,7 @@ namespace NSDocxRenderer
 		gtNoGraphics,
 	};
 
-	class CShape : public COutputObject
+	class CShape : public CBaseItem
 	{
 	public:
 		enum class eShapeType
@@ -51,7 +51,7 @@ namespace NSDocxRenderer
 		eSimpleLineType m_eSimpleLineType{eSimpleLineType::sltUnknown};
 		eLineType m_eLineType            {eLineType::ltUnknown};
 
-		std::vector<std::shared_ptr<COutputObject>> m_arOutputObjects;
+		std::vector<std::shared_ptr<CBaseItem>> m_arOutputObjects;
 		std::shared_ptr<CImageInfo> m_pImageInfo{nullptr};
 
 	public:

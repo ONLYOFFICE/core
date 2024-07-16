@@ -39,6 +39,7 @@
 #include "Biff12_unions/ESMDB.h"
 
 #include "Biff12_records/BeginMetadata.h"
+#include "Biff12_records/BeginEsmdb.h"
 #include "Biff12_records/EndMetadata.h"
 
 using namespace XLS;
@@ -106,7 +107,11 @@ const bool MetadataStream::loadContent(BinProcessor& proc)
         {
             if (proc.optional<ESMDB>())
             {
-                m_ESMBD = elements_.back();
+                auto beginPtr = static_cast<BeginEsmdb*>(static_cast<ESMDB*>(elements_.back().get())->m_BrtBeginEsmdb.get());
+                if(beginPtr->fCellMeta)
+                    m_CellMetadataBlocks = elements_.back();
+                else
+                    m_ValueMetadataBlocks = elements_.back();
                 elements_.pop_back();
             }
         }break;
@@ -130,8 +135,10 @@ const bool MetadataStream::saveContent(XLS::BinProcessor & proc)
         proc.mandatory(*m_ESMDX);
     if (m_ESFMD != nullptr)
         proc.mandatory(*m_ESFMD);
-    if (m_ESMBD != nullptr)
-        proc.mandatory(*m_ESMBD);   
+    if (m_CellMetadataBlocks != nullptr)
+        proc.mandatory(*m_CellMetadataBlocks);
+    if (m_ValueMetadataBlocks != nullptr)
+        proc.mandatory(*m_ValueMetadataBlocks);   
     proc.mandatory<XLSB::EndMetadata>();
     return true;
 }

@@ -62,7 +62,8 @@ namespace XLSB
 		XLS::BaseObjectPtr              m_ESSTR;
         XLS::BaseObjectPtr              m_ESMDX;
         XLS::BaseObjectPtr              m_ESFMD;
-        XLS::BaseObjectPtr              m_ESMBD;
+        XLS::BaseObjectPtr              m_CellMetadataBlocks;
+        XLS::BaseObjectPtr              m_ValueMetadataBlocks;
         bool                            m_bEndMetadata;
 
     };

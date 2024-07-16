@@ -57,10 +57,10 @@ namespace XLSB
     //ESMDB = [BrtESMDB] [BrtValueMeta]
     const bool ESMDB::loadContent(BinProcessor& proc)
     {
-        m_BrtEndESMDB = false;
+        m_BrtEndEsmdb = false;
         if (proc.optional<BeginEsmdb>())
         {
-            m_BrtBeginESMDB = elements_.back();
+            m_BrtBeginEsmdb = elements_.back();
             elements_.pop_back();
         }
         else
@@ -77,19 +77,19 @@ namespace XLSB
 
         if (proc.optional<EndEsmdb>())
         {
-			m_BrtEndESMDB = true;
+			m_BrtEndEsmdb = true;
             elements_.pop_back();
         }
 		else
-			m_BrtEndESMDB = false;
+			m_BrtEndEsmdb = false;
 
-        return m_BrtBeginESMDB && m_BrtEndESMDB;
+        return m_BrtEndEsmdb && m_BrtEndEsmdb;
     }
 
 	const bool ESMDB::saveContent(BinProcessor& proc)
 	{
-		if (m_BrtBeginESMDB != nullptr)
-			proc.mandatory(*m_BrtBeginESMDB);
+		if (m_BrtBeginEsmdb != nullptr)
+			proc.mandatory(*m_BrtBeginEsmdb);
 
 		for(auto i : m_BrtMdbs)
             proc.mandatory(*i);

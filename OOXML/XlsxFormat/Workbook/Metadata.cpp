@@ -35,9 +35,12 @@
 #include "../../XlsbFormat/MetadataStream.h"
 #include "../../XlsbFormat/Biff12_unions/ESSTR.h"
 #include "../../XlsbFormat/Biff12_unions/ESMDTINFO.h"
+#include "../../XlsbFormat/Biff12_unions/ESMDB.h"
 
 #include "../../XlsbFormat/Biff12_records/Str.h"
 #include "../../XlsbFormat/Biff12_records/Mdtinfo.h"
+#include "../../XlsbFormat/Biff12_records/Mdb.h"
+#include "../../XlsbFormat/Biff12_records/BeginEsmdb.h"
 
 #include "../FileTypes_Spreadsheet.h"
 
@@ -452,14 +455,14 @@ namespace OOX
 			}
 			writer.WriteString(L"</metadataStrings>");
 		}
-        XLS::BaseObjectPtr CMetadataStrings::toBin() const
-        {
-            auto ptr(new XLSB::ESSTR);
-            for(auto str:m_arrItems)
-                ptr->m_BrtStrs.push_back(str->toBin());
-            XLS::BaseObjectPtr objectPtr(ptr);
-            return objectPtr;
-        }
+		XLS::BaseObjectPtr CMetadataStrings::toBin() const
+		{
+			auto ptr(new XLSB::ESSTR);
+			for(auto str:m_arrItems)
+				ptr->m_BrtStrs.push_back(str->toBin());
+			XLS::BaseObjectPtr objectPtr(ptr);
+			return objectPtr;
+		}
 		//--------------------------------------------------------------------------------------------------------
 		CMetadataString::CMetadataString() {}
 		CMetadataString::~CMetadataString() {}
@@ -474,16 +477,16 @@ namespace OOX
 		{
 			return et_x_MetadataString;
 		}
-        XLS::BaseObjectPtr CMetadataString::toBin() const
-        {
-            auto ptr(new XLSB::Str);
-            XLS::BaseObjectPtr objectPtr(ptr);
-            if(m_oV.IsInit())
-                ptr->stText = m_oV.get();
-            else
-                ptr->stText = L"";
-            return objectPtr;
-        }
+		XLS::BaseObjectPtr CMetadataString::toBin() const
+		{
+			auto ptr(new XLSB::Str);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_oV.IsInit())
+				ptr->stText = m_oV.get();
+			else
+				ptr->stText = L"";
+			return objectPtr;
+		}
 		void CMetadataString::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
 			writer.WriteString(L"<s");
@@ -585,6 +588,26 @@ namespace OOX
 			}
 			writer.WriteString(L"</bk>");
 		}
+		XLS::BaseObjectPtr CMetadataBlock::toBin() const
+		{
+			auto ptr(new XLSB::Mdb);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			ptr->cMdir = m_arrItems.size();
+			for(auto item : m_arrItems)
+			{
+				XLSB::Mdir dir;
+				if(item->m_oT.IsInit())
+					dir.imdt = item->m_oT.get();
+				else
+					dir.imdt = 0;
+				if(item->m_oV.IsInit())
+					dir.mdd = item->m_oV.get();
+				else
+					dir.mdd = 0;
+				ptr->rgMdir.push_back(dir);
+			}
+			return objectPtr;
+		}
 		//-------------------------------------------------------------------------------------
 		CMetadataBlocks::CMetadataBlocks() {}
 		CMetadataBlocks::~CMetadataBlocks() {}
@@ -609,7 +632,7 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nCurDepth))
 			{
-				std::wstring  sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if (L"bk" == sName)
 				{
@@ -633,6 +656,20 @@ namespace OOX
 				}
 			}
 			writer.WriteString(L"</" + m_sName + L">");
+		}
+		XLS::BaseObjectPtr CMetadataBlocks::toBin(const bool cellMeta) const
+		{
+			auto ptr(new XLSB::ESMDB);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::BeginEsmdb);
+			ptr->m_BrtBeginEsmdb = XLS::BaseObjectPtr(ptr1);
+			ptr1->fCellMeta = cellMeta;
+
+			for(auto i:m_arrItems)
+				ptr->m_BrtMdbs.push_back(i->toBin());
+			ptr1->CMdb = ptr->m_BrtMdbs.size();
+
+			return objectPtr;
 		}
 		//-------------------------------------------------------------------------------------
 		CMetadataTypes::CMetadataTypes() {}
@@ -681,16 +718,16 @@ namespace OOX
 			}
 			writer.WriteString(L"</metadataTypes>");
 		}
-        XLS::BaseObjectPtr CMetadataTypes::toBin() const
-        {
-            auto ptr(new XLSB::ESMDTINFO);
-            XLS::BaseObjectPtr objectPtr(ptr);
-            for(auto i :m_arrItems)
-            {
-                ptr->BrtMdtinfos.push_back(i->toBin());
-            }
-            return objectPtr;
-        }
+		XLS::BaseObjectPtr CMetadataTypes::toBin() const
+		{
+			auto ptr(new XLSB::ESMDTINFO);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			for(auto i :m_arrItems)
+			{
+				ptr->BrtMdtinfos.push_back(i->toBin());
+			}
+			return objectPtr;
+		}
 		//--------------------------------------------------------------------------------------------------------
 		CMetadataType::CMetadataType() {}
 		CMetadataType::~CMetadataType() {}
@@ -776,71 +813,71 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"cellMeta", m_oCellMeta)
 			WritingElement_ReadAttributes_End(oReader)
 		}
-        XLS::BaseObjectPtr CMetadataType::toBin() const
-        {
-            auto ptr(new XLSB::Mdtinfo);
-            XLS::BaseObjectPtr objectPtr(ptr);
-            if(m_oMinSupportedVersion.IsInit())
-                ptr->metadataID = m_oMinSupportedVersion.get();
-            else
-                ptr->metadataID = 0;
-            if(m_oName.IsInit())
-                ptr->stName = m_oName.get();
-            else
-                ptr->stName = L"";
+		XLS::BaseObjectPtr CMetadataType::toBin() const
+		{
+			auto ptr(new XLSB::Mdtinfo);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_oMinSupportedVersion.IsInit())
+				ptr->metadataID = m_oMinSupportedVersion.get();
+			else
+				ptr->metadataID = 0;
+			if(m_oName.IsInit())
+				ptr->stName = m_oName.get();
+			else
+				ptr->stName = L"";
 
-            if(m_oGhostRow.IsInit())
-                ptr->fGhostRw = m_oGhostRow.get();
-            if(m_oGhostCol.IsInit())
-                ptr->fGhostCol = m_oGhostCol.get();
-            if(m_oEdit.IsInit())
-                ptr->fEdit = m_oEdit.get();
-            if(m_oDelete.IsInit())
-                ptr->fDelete = m_oDelete.get();
-            if(m_oCopy.IsInit())
-                ptr->fCopy = m_oCopy.get();
-            if(m_oPasteAll.IsInit())
-                ptr->fPasteAll = m_oPasteAll.get();
-            if(m_oPasteFormulas.IsInit())
-                ptr->fPasteFmlas = m_oPasteFormulas.get();
-            if(m_oPasteValues.IsInit())
-                ptr->fPasteValues = m_oPasteValues.get();
-            if(m_oPasteFormats.IsInit())
-                ptr->fPasteFmts = m_oPasteFormats.get();
-            if(m_oPasteComments.IsInit())
-                ptr->fPasteComments = m_oPasteComments.get();
-            if(m_oPasteDataValidation.IsInit())
-                ptr->fPasteDv = m_oPasteDataValidation.get();
-            if(m_oPasteBorders.IsInit())
-                ptr->fPasteBorders = m_oPasteBorders.get();
-            if(m_oPasteColWidths.IsInit())
-                ptr->fPasteColWidths = m_oPasteColWidths.get();
-            if(m_oPasteNumberFormats.IsInit())
-                ptr->fPasteNumFmts = m_oPasteNumberFormats.get();
-            if(m_oMerge.IsInit())
-                ptr->fMerge = m_oMerge.get();
-            if(m_oSplitFirst.IsInit())
-                ptr->fSplitFirst = m_oSplitFirst.get();
-            if(m_oSplitAll.IsInit())
-                ptr->fSplitAll = m_oSplitAll.get();
-            if(m_oRowColShift.IsInit())
-                ptr->fRwColShift = m_oRowColShift.get();
-            if(m_oClearAll.IsInit())
-                ptr->fClearAll = m_oClearAll.get();
-            if(m_oClearFormats.IsInit())
-                ptr->fClearFmts = m_oClearFormats.get();
-            if(m_oClearContents.IsInit())
-                ptr->fClearContents = m_oClearContents.get();
-            if(m_oClearComments.IsInit())
-                ptr->fClearComments = m_oClearComments.get();
-            if(m_oAssign.IsInit())
-                ptr->fAssign = m_oAssign.get();
-            if(m_oCoerce.IsInit())
-                ptr->fCanCoerce = m_oCoerce.get();
-            if(m_oCellMeta.IsInit())
-                ptr->fCellMeta = m_oCellMeta.get();
-            return objectPtr;
-        }
+			if(m_oGhostRow.IsInit())
+				ptr->fGhostRw = m_oGhostRow.get();
+			if(m_oGhostCol.IsInit())
+				ptr->fGhostCol = m_oGhostCol.get();
+			if(m_oEdit.IsInit())
+				ptr->fEdit = m_oEdit.get();
+			if(m_oDelete.IsInit())
+				ptr->fDelete = m_oDelete.get();
+			if(m_oCopy.IsInit())
+				ptr->fCopy = m_oCopy.get();
+			if(m_oPasteAll.IsInit())
+				ptr->fPasteAll = m_oPasteAll.get();
+			if(m_oPasteFormulas.IsInit())
+				ptr->fPasteFmlas = m_oPasteFormulas.get();
+			if(m_oPasteValues.IsInit())
+				ptr->fPasteValues = m_oPasteValues.get();
+			if(m_oPasteFormats.IsInit())
+				ptr->fPasteFmts = m_oPasteFormats.get();
+			if(m_oPasteComments.IsInit())
+				ptr->fPasteComments = m_oPasteComments.get();
+			if(m_oPasteDataValidation.IsInit())
+				ptr->fPasteDv = m_oPasteDataValidation.get();
+			if(m_oPasteBorders.IsInit())
+				ptr->fPasteBorders = m_oPasteBorders.get();
+			if(m_oPasteColWidths.IsInit())
+				ptr->fPasteColWidths = m_oPasteColWidths.get();
+			if(m_oPasteNumberFormats.IsInit())
+				ptr->fPasteNumFmts = m_oPasteNumberFormats.get();
+			if(m_oMerge.IsInit())
+				ptr->fMerge = m_oMerge.get();
+			if(m_oSplitFirst.IsInit())
+				ptr->fSplitFirst = m_oSplitFirst.get();
+			if(m_oSplitAll.IsInit())
+				ptr->fSplitAll = m_oSplitAll.get();
+			if(m_oRowColShift.IsInit())
+				ptr->fRwColShift = m_oRowColShift.get();
+			if(m_oClearAll.IsInit())
+				ptr->fClearAll = m_oClearAll.get();
+			if(m_oClearFormats.IsInit())
+				ptr->fClearFmts = m_oClearFormats.get();
+			if(m_oClearContents.IsInit())
+				ptr->fClearContents = m_oClearContents.get();
+			if(m_oClearComments.IsInit())
+				ptr->fClearComments = m_oClearComments.get();
+			if(m_oAssign.IsInit())
+				ptr->fAssign = m_oAssign.get();
+			if(m_oCoerce.IsInit())
+				ptr->fCanCoerce = m_oCoerce.get();
+			if(m_oCellMeta.IsInit())
+				ptr->fCellMeta = m_oCellMeta.get();
+			return objectPtr;
+		}
 		//--------------------------------------------------------------------------------------------------------
 		CFutureMetadataBlock::CFutureMetadataBlock() {}
 		CFutureMetadataBlock::~CFutureMetadataBlock() {}
@@ -960,16 +997,20 @@ namespace OOX
 		{
 			return et_x_Metadata;
 		}
-        XLS::BaseObjectPtr CMetadata::toBin() const
-        {
-            XLSB::MetadataStreamPtr streamPtr(new XLSB::MetadataStream);
+		XLS::BaseObjectPtr CMetadata::toBin() const
+		{
+			XLSB::MetadataStreamPtr streamPtr(new XLSB::MetadataStream);
 
-            if(m_oMetadataStrings.IsInit())
-                streamPtr->m_ESSTR = m_oMetadataStrings->toBin();
-            if(m_oMetadataTypes.IsInit())
-                streamPtr->m_ESMDTINFO = m_oMetadataTypes->toBin();
+			if(m_oMetadataStrings.IsInit())
+				streamPtr->m_ESSTR = m_oMetadataStrings->toBin();
+			if(m_oMetadataTypes.IsInit())
+				streamPtr->m_ESMDTINFO = m_oMetadataTypes->toBin();
+			if(m_oCellMetadata.IsInit())
+				streamPtr->m_CellMetadataBlocks = m_oCellMetadata->toBin(true);
+			if(m_oValueMetadata.IsInit())
+				streamPtr->m_ValueMetadataBlocks = m_oValueMetadata->toBin(false);
 			return streamPtr;
-        }
+		}
 		void CMetadata::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
 			writer.WriteString(L"<metadata \
@@ -1105,29 +1146,29 @@ xmlns:xda=\"http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray\
 			m_oMetadata = oReader;
 		}
 		XLS::BaseObjectPtr CMetadataFile::WriteBin() const
-		{   
+		{
 			return m_oMetadata->toBin();
 		}
 		void CMetadataFile::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
 			if (false == m_oMetadata.IsInit()) return;
 
-            CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
 			if ((xlsb) && (xlsb->m_bWriteToXlsb))
 			{
 				auto object = WriteBin();
 				xlsb->WriteBin(oPath, object.get());
 			}
-            else
-            {
-                NSStringUtils::CStringBuilder sXml;
+			else
+			{
+				NSStringUtils::CStringBuilder sXml;
 
-                sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
-                m_oMetadata->toXML(sXml);
+				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+				m_oMetadata->toXML(sXml);
 
-                std::wstring sPath = oPath.GetPath();
-                NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
-            }
+				std::wstring sPath = oPath.GetPath();
+				NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
+			}
 
 			oContent.Registration(type().OverrideType(), oDirectory, oPath.GetFilename());
 		}

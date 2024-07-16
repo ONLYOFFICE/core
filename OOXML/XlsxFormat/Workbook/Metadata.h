@@ -215,7 +215,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
-            XLS::BaseObjectPtr toBin() const;
+			XLS::BaseObjectPtr toBin() const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
@@ -325,7 +325,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
-            XLS::BaseObjectPtr toBin() const;
+ 			XLS::BaseObjectPtr toBin() const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
@@ -344,6 +344,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
+			XLS::BaseObjectPtr toBin() const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
@@ -360,6 +361,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
+			XLS::BaseObjectPtr toBin(const bool cellMeta) const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
@@ -380,7 +382,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
-            XLS::BaseObjectPtr toBin() const;
+			XLS::BaseObjectPtr toBin() const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
@@ -422,7 +424,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
-            XLS::BaseObjectPtr toBin() const;
+			XLS::BaseObjectPtr toBin() const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 

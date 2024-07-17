@@ -565,16 +565,6 @@ namespace PdfReader
 		//            delete m_pBufferTextClip;
 
 	}
-	void RendererOutputDev::TEST()
-	{
-		if (c_nGrRenderer != m_lRendererType)
-			return;
-		NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
-		if (!GRenderer)
-			return;
-
-		GRenderer->TEST();
-	}
 	void RendererOutputDev::startPage(int nPageIndex, GfxState *pGState)
 	{
 		if (nPageIndex < 0)

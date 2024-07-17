@@ -100,12 +100,12 @@ namespace Aggplus
         bool IsPointInPath(const double& x, const double& y);
 
 		//Methods for Path Clip
-		bool isClockwise();
+		bool IsClockwise();
 		void Reverse();
-		bool isCurvePoint(size_t idx);
-		std::vector<PointF> getPoints(size_t idx, size_t count);
-		double getArea();
-		double getArea(size_t idx, bool isCurve);
+		bool IsCurvePoint(size_t idx);
+		std::vector<PointF> GetPoints(size_t idx, size_t count);
+		double GetArea();
+		double GetArea(size_t idx, bool isCurve);
 
     public:
         CGraphicsPath_private* m_internal;

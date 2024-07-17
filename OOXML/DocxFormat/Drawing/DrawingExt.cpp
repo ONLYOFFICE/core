@@ -69,6 +69,9 @@
 #include "../../XlsbFormat/Biff12_unions/TABLESLICERSEX.h"
 #include "../../XlsbFormat/Biff12_unions/FRTWORKBOOK.h"
 #include "../../XlsbFormat/Biff12_unions/FRTPIVOTCACHEDEF.h"
+#include "../../XlsbFormat/Biff12_unions/FMD.h"
+#include "../../XlsbFormat/Biff12_unions/DYNAMICARRAYMETADATA.h"
+#include "../../XlsbFormat/Biff12_unions/RICHDATAMETADATA.h"
 #include "../../XlsbFormat/Biff12_records/FRTBegin.h"
 
 namespace OOX
@@ -907,6 +910,31 @@ namespace OOX
 				}
 			}
             return objectPtr;
+		}
+		XLS::BaseObjectPtr COfficeArtExtensionList::toBinMetadata()
+		{
+			XLS::BaseObjectPtr objectPtr;
+			if(m_arrExt.empty())
+				return objectPtr;
+			for(auto i:m_arrExt)
+			{
+                if(i->m_sUri == L"{bdbb8cdc-fa1e-496e-a857-3c3f30c029c3}")
+				{
+					auto ptr(new XLSB::FMD);
+					objectPtr = XLS::BaseObjectPtr(ptr);
+					auto ptr1(new XLSB::DYNAMICARRAYMETADATA);
+					ptr->m_DYNAMICARRAYMETADATA = XLS::BaseObjectPtr{ptr1};
+					ptr1->m_EndDynamicArrayPr = i->m_oDynamicArrayProperties->toBin();
+				}
+				else if(i->m_sUri == L"{3E2802C4-A4D2-4D8B-9148-E3BE6C30E623}")
+				{
+					auto ptr(new XLSB::FMD);
+					objectPtr = XLS::BaseObjectPtr(ptr);
+					auto ptr1(new XLSB::RICHDATAMETADATA);
+					ptr1->m_BeginRichValueBlock = i->m_oRichValueBlock->toBin();
+				}
+			}
+			return objectPtr;
 		}
 		void COfficeArtExtensionList::fromBin(XLS::BaseObjectPtr& obj)
         {

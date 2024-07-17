@@ -51,7 +51,7 @@ namespace XLSB
 		const bool saveContent(XLS::BinProcessor& proc) override;
 
 		
-        XLS::BaseObjectPtr     m_BeginDynamicArrayPr;
+        bool                   m_BeginDynamicArrayPr;
         XLS::BaseObjectPtr     m_EndDynamicArrayPr;
 
     };

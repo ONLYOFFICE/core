@@ -57,7 +57,7 @@ namespace XLSB
     {
         if (proc.optional<BeginDynamicArrayPr>())
         {
-			m_BeginDynamicArrayPr = elements_.back();
+			m_BeginDynamicArrayPr = true;
             elements_.pop_back();
         }
 		else
@@ -77,8 +77,7 @@ namespace XLSB
 
 	const bool DYNAMICARRAYMETADATA::saveContent(XLS::BinProcessor & proc)
 	{
-		if (m_BeginDynamicArrayPr != nullptr)
-			proc.mandatory(*m_BeginDynamicArrayPr);
+        proc.mandatory<BeginDynamicArrayPr>();
         if (m_EndDynamicArrayPr != nullptr)
 			proc.mandatory(*m_EndDynamicArrayPr);
         

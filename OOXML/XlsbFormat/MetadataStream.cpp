@@ -97,10 +97,12 @@ const bool MetadataStream::loadContent(BinProcessor& proc)
         }break;
         case rt_BeginEsfmd:
         {
-            if (proc.optional<ESFMD>())
+            int count = proc.repeated<ESFMD>(0, 0);
+            while(count > 0)
             {
-                m_ESFMD = elements_.back();
+                m_ESFMDs.insert(m_ESFMDs.begin(), elements_.back());
                 elements_.pop_back();
+                count--;
             }
         }break;
         case rt_BeginEsmdb:
@@ -133,8 +135,8 @@ const bool MetadataStream::saveContent(XLS::BinProcessor & proc)
         proc.mandatory(*m_ESSTR);
     if (m_ESMDX != nullptr)
         proc.mandatory(*m_ESMDX);
-    if (m_ESFMD != nullptr)
-        proc.mandatory(*m_ESFMD);
+    for(auto i:m_ESFMDs)
+        proc.mandatory(*i);
     if (m_CellMetadataBlocks != nullptr)
         proc.mandatory(*m_CellMetadataBlocks);
     if (m_ValueMetadataBlocks != nullptr)

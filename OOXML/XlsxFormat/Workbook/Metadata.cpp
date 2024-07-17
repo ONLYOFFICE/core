@@ -36,11 +36,17 @@
 #include "../../XlsbFormat/Biff12_unions/ESSTR.h"
 #include "../../XlsbFormat/Biff12_unions/ESMDTINFO.h"
 #include "../../XlsbFormat/Biff12_unions/ESMDB.h"
+#include "../../XlsbFormat/Biff12_unions/ESFMD.h"
+#include "../../XlsbFormat/Biff12_unions/FMD.h"
+
 
 #include "../../XlsbFormat/Biff12_records/Str.h"
 #include "../../XlsbFormat/Biff12_records/Mdtinfo.h"
 #include "../../XlsbFormat/Biff12_records/Mdb.h"
 #include "../../XlsbFormat/Biff12_records/BeginEsmdb.h"
+#include "../../XlsbFormat/Biff12_records/BeginEsfmd.h"
+#include "../../XlsbFormat/Biff12_records/EndDynamicArrayPr.h"
+#include "../../XlsbFormat/Biff12_records/BeginRichValueBlock.h"
 
 #include "../FileTypes_Spreadsheet.h"
 
@@ -916,6 +922,10 @@ namespace OOX
 					m_oExtLst = oReader;
 			}
 		}
+		XLS::BaseObjectPtr CFutureMetadataBlock::toBin() const
+		{
+			return m_oExtLst->toBinMetadata();
+		}
 		//-------------------------------------------------------------------------------------
 		CFutureMetadata::CFutureMetadata() {}
 		CFutureMetadata::~CFutureMetadata()
@@ -976,6 +986,21 @@ namespace OOX
 			}
 			writer.WriteString(L"</futureMetadata>");
 		}
+		XLS::BaseObjectPtr CFutureMetadata::toBin() const
+		{
+			auto ptr(new XLSB::ESFMD);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::BeginEsfmd);
+			ptr->m_BrtBeginEsfmd = XLS::BaseObjectPtr(ptr1);
+			if(m_oName.IsInit())
+				ptr1->stName = m_oName.get();
+			else
+				ptr1->stName = L"";
+			ptr1->cFmd = m_arrItems.size();
+			for(auto i:m_arrItems)
+				ptr->FMDs.push_back(i->toBin());
+			return objectPtr;
+		}
 		//--------------------------------------------------------------------------------------------------------
 		CMetadata::CMetadata() {}
 		CMetadata::~CMetadata()
@@ -1009,6 +1034,10 @@ namespace OOX
 				streamPtr->m_CellMetadataBlocks = m_oCellMetadata->toBin(true);
 			if(m_oValueMetadata.IsInit())
 				streamPtr->m_ValueMetadataBlocks = m_oValueMetadata->toBin(false);
+			for(auto i : m_arFutureMetadata)
+			{
+				streamPtr->m_ESFMDs.push_back(i->toBin());
+			}
 			return streamPtr;
 		}
 		void CMetadata::toXML(NSStringUtils::CStringBuilder& writer) const
@@ -1207,6 +1236,18 @@ xmlns:xda=\"http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray\
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"fCollapsed", m_oFCollapsed)
 			WritingElement_ReadAttributes_End(oReader)
 		}
+		XLS::BaseObjectPtr CDynamicArrayProperties::toBin()
+		{
+			auto ptr(new XLSB::EndDynamicArrayPr);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			ptr->fDynamic = false;
+			ptr->fCollapsed = false;
+			if(m_oFDynamic.IsInit())
+				ptr->fDynamic = m_oFDynamic.get();
+			if(m_oFCollapsed.IsInit())
+				ptr->fCollapsed = m_oFCollapsed.get();
+			return objectPtr;
+		}
 //-------------------------------------------------------------------------------------------------------------------------------------
 		CRichValueBlock::CRichValueBlock() {}
 		CRichValueBlock::~CRichValueBlock() {}
@@ -1239,6 +1280,16 @@ xmlns:xda=\"http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray\
 			WritingElement_ReadAttributes_Start(oReader)
 				WritingElement_ReadAttributes_Read_if(oReader, L"i", m_oI)
 			WritingElement_ReadAttributes_End(oReader)
+		}
+		XLS::BaseObjectPtr CRichValueBlock::toBin()
+		{
+			auto ptr(new XLSB::BeginRichValueBlock);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_oI.IsInit())
+				ptr->irv = m_oI.get();
+			else
+				ptr->irv = 0;
+			return objectPtr;
 		}
 	}
 

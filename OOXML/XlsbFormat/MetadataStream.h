@@ -57,14 +57,14 @@ namespace XLSB
         const bool loadContent(XLS::BinProcessor& proc) override;
         const bool saveContent(XLS::BinProcessor& proc) override;
 
-        bool                            m_bBeginMetadata;
-		XLS::BaseObjectPtr              m_ESMDTINFO;
-		XLS::BaseObjectPtr              m_ESSTR;
-        XLS::BaseObjectPtr              m_ESMDX;
-        XLS::BaseObjectPtr              m_ESFMD;
-        XLS::BaseObjectPtr              m_CellMetadataBlocks;
-        XLS::BaseObjectPtr              m_ValueMetadataBlocks;
-        bool                            m_bEndMetadata;
+        bool                                m_bBeginMetadata;
+		XLS::BaseObjectPtr                  m_ESMDTINFO;
+		XLS::BaseObjectPtr                  m_ESSTR;
+        XLS::BaseObjectPtr                  m_ESMDX;
+        std::vector<XLS::BaseObjectPtr>     m_ESFMDs;
+        XLS::BaseObjectPtr                  m_CellMetadataBlocks;
+        XLS::BaseObjectPtr                  m_ValueMetadataBlocks;
+        bool                                m_bEndMetadata;
 
     };
 }

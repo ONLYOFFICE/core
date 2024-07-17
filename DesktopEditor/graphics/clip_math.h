@@ -1,7 +1,6 @@
 #include "aggplustypes.h"
 
 #include <vector>
-#include <tuple>
 #include <algorithm>
 
 #define EPSILON 1e-12
@@ -118,7 +117,7 @@ float clamp(float value, float mn, float mx)
 
 int getIterations(float a, float b)
 {
-	float n1 = 2, n2 = 16;
+	float n1 = 2.0, n2 = 16.0;
 	return std::max(n1, std::min(n2, ceil(abs(b - a) * 32)));
 }
 
@@ -279,13 +278,22 @@ float getSignedDistance(float px, float py, float vx, float vy, float x, float y
 {
 	vx -= px;
 	vy -= py;
-	return vx == 0 ? (vx > 0 ? x - px : px - x)
-				   : vy == 0 ? (vx < 0 ? y - py : py - y)
-							 : ((x - px) * vy - (y - py) * vx) / (
-								vy > vx
-									? vy * sqrt(1 + (vx * vx) / (vy * vy))
-									: vx * sqrt(1 + (vy * vy) / (vx * vx))
-							 );
+
+	bool vx0 = vx == 0,
+		 vxG = vx > 0,
+		 vxL = vx < 0,
+		 vy0 = vy == 0,
+		 vyG = vy > vx;
+
+	float distX = vxG ? x - px : px - x,
+		  distY = vxL ? y - py : py - y,
+		  distGY = vy * sqrt(1 + (vx * vx) / (vy * vy)),
+		  distGX = vx * sqrt(1 + (vy * vy) / (vx * vx)),
+		  distXY = ((x - px) * vy - (y - py) * vx) / (vyG ? distGY : distGX);
+
+	return vx0 ? (distX)
+				   : vy0 ? (distY)
+							 : distXY;
 }
 
 float getDistance(float px, float py, float vx, float vy, float x, float y)
@@ -300,16 +308,20 @@ float getDistance(float px, float py, float vx, float vy, float x, float y)
 			return std::abs(y - py);
 		else
 			return std::abs(py -y);
-	return std::abs(((x- px) * vy - (y - py) * vx) / (
-						vy > vx ? vy * sqrt(1 + (vx * vx) / (vy * vy))
-								: vx * sqrt(1 + (vy * vy) / (vx * vx))));
+
+	bool dir = vy > vx;
+	float dist = (x- px) * vy - (y - py) * vx,
+		  epsY = vy * sqrt(1 + (vx * vx) / (vy * vy)),
+		  epsX = vx * sqrt(1 + (vy * vy) / (vx * vx));
+
+	return  dist / (dir ? epsY : epsX);
 }
 
 float getDistance(float x1, float y1, float x2, float y2)
 {
 	float x = x1 - x2,
-		   y = y1 - y2,
-		   d = x * x + y * y;
+		  y = y1 - y2,
+		  d = x * x + y * y;
 	return sqrt(d);
 }
 
@@ -321,16 +333,16 @@ float getDistance(Aggplus::PointF point1, Aggplus::PointF point2)
 std::pair<float, float> split(float v)
 {
 	float x = v * 134217729,
-		   y = v - x,
-		   hi = y + x,
-		   lo = v - hi;
+		  y = v - x,
+		  hi = y + x,
+		  lo = v - hi;
 	return std::pair<float, float>(hi, lo);
 }
 
 float getDiscriminant(float a, float b, float c)
 {
 	float D = b * b - a * c,
-		   E = b * b + a * c;
+		  E = b * b + a * c;
 	if (abs(D) * 3 < E)
 	{
 		std::pair<float, float> ad = split(a),
@@ -379,7 +391,7 @@ int solveQuadratic(float a, float b, float c, std::vector<float>& roots,
 		if (D >= -MACHINE_EPSILON)
 		{
 			float Q = D < 0 ? 0 : sqrt(D),
-				   R = b + (b < 0 ? -Q : Q);
+				  R = b + (b < 0 ? -Q : Q);
 			if (R == 0)
 			{
 				x1 = c / a;
@@ -394,7 +406,7 @@ int solveQuadratic(float a, float b, float c, std::vector<float>& roots,
 	}
 	int count = 0;
 	float minB = mn - EPSILON,
-		   maxB = mx + EPSILON;
+		  maxB = mx + EPSILON;
 	if (x1 > minB && x1 < maxB)
 	{
 		roots.push_back(clamp(x1, mn, mx));

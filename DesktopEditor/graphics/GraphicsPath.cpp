@@ -728,16 +728,16 @@ namespace Aggplus
         return rasterizer.hit_test((int)x, (int)y);
     }
 
-	bool CGraphicsPath::isClockwise()
+	bool CGraphicsPath::IsClockwise()
 	{
-		return getArea() >= 0;
+		return GetArea() >= 0;
 	}
 
 	void CGraphicsPath::Reverse()
 	{
 		for (size_t i = 0; i < GetPointCount(); i++)
 		{
-			if (isCurvePoint(i))
+			if (IsCurvePoint(i))
 			{
 				double x0, y0, x1, y1;
 				this->m_internal->m_agg_ps.vertex(i, &x0, &y0);
@@ -749,12 +749,12 @@ namespace Aggplus
 		}
 	}
 
-	bool CGraphicsPath::isCurvePoint(size_t idx)
+	bool CGraphicsPath::IsCurvePoint(size_t idx)
 	{
 		return this->m_internal->m_agg_ps.command(idx) == agg::path_cmd_curve4;
 	}
 
-	std::vector<PointF> CGraphicsPath::getPoints(size_t idx, size_t count)
+	std::vector<PointF> CGraphicsPath::GetPoints(size_t idx, size_t count)
 	{
 		std::vector<PointF> points;
 		for (size_t i = 0; i < count; i++)
@@ -766,23 +766,23 @@ namespace Aggplus
 		return points;
 	}
 
-	double CGraphicsPath::getArea()
+	double CGraphicsPath::GetArea()
 	{
 		double area = 0.0;
 		for (size_t i = 0; i < GetPointCount(); i++)
 		{
-			area += getArea(i, isCurvePoint(i + 1));
-			if (isCurvePoint(i + 1)) i += 2;
+			area += GetArea(i, IsCurvePoint(i + 1));
+			if (IsCurvePoint(i + 1)) i += 2;
 		}
 		return area;
 	}
 
-	double CGraphicsPath::getArea(size_t idx, bool isCurve)
+	double CGraphicsPath::GetArea(size_t idx, bool isCurve)
 	{
 		float area;
 		if (isCurve)
 		{
-			std::vector<PointF> points = getPoints(idx, 4);
+			std::vector<PointF> points = GetPoints(idx, 4);
 			area = 3 * ((points[3].Y - points[0].Y)	* (points[1].X + points[2].X)
 						- (points[3].X - points[0].X) * (points[1].Y * points[2].Y)
 						+ points[1].Y * (points[0].X - points[2].X)
@@ -790,7 +790,7 @@ namespace Aggplus
 						+ points[3].Y * (points[2].X + points[0].X / 3)
 						- points[3].X * (points[2].Y - points[0].Y / 3)) / 20;
 		}
-		std::vector<PointF> points = getPoints(idx, 2);
+		std::vector<PointF> points = GetPoints(idx, 2);
 		area = (points[1].Y * points[0].X - points[1].X * points[0].Y) / 20;
 		return area;
 	}

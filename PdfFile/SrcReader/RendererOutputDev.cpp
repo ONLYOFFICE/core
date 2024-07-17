@@ -3142,6 +3142,12 @@ namespace PdfReader
 		case 7:
 			int nComps = ((GfxPatchMeshShading *) pShading)->getNComps();
 			int nPatches = ((GfxPatchMeshShading *) pShading)->getNPatches();
+
+			NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
+			if (GRenderer)
+				GRenderer->SetSoftMask(NULL);
+			m_pRenderer->BeginCommand(c_nLayerType);
+
 			for (int i = 0; i < nPatches; i++) {
 				GfxPatch *patch = ((GfxPatchMeshShading *) pShading)->getPatch(i);
 				pGState->clearPath();
@@ -3161,6 +3167,11 @@ namespace PdfReader
 				pGState->closePath();
 				PatchMeshFill(pGState, patch, (GfxPatchMeshShading *) pShading);
 			}
+
+			if (GRenderer)
+				GRenderer->SetSoftMask(m_pSoftMask);
+			m_pRenderer->EndCommand(c_nLayerType);
+
 			return true;
 
 		}
@@ -3485,7 +3496,7 @@ namespace PdfReader
 			}
 		}
 		std::vector<std::vector<agg::rgba8>> colors(2, std::vector<agg::rgba8>(2));
-		GfxDeviceRGBColorSpace ColorSpace;
+		GfxColorSpace *ColorSpace = pShading->getColorSpace();
 		for (int i = 0; i < 2; i ++)
 		{
 			for (int j = 0; j < 2; j++)
@@ -3494,7 +3505,7 @@ namespace PdfReader
 				pShading->getColor(patch->color[i][j], &c);
 				GfxRGB draw_color;
 				// RenderingIntent in this case does nothing but it's an obligatory arguments
-				ColorSpace.getRGB(&c, &draw_color, gfxRenderingIntentAbsoluteColorimetric);
+				ColorSpace->getRGB(&c, &draw_color, gfxRenderingIntentAbsoluteColorimetric);
 				colors[j][i] = {colToByte(draw_color.b), colToByte(draw_color.g), colToByte(draw_color.r), (unsigned)alpha};
 			}
 		}

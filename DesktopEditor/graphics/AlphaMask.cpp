@@ -193,8 +193,9 @@ namespace Aggplus
 
 	void CSoftMask::Set(BYTE* pBuffer, UINT unWidth, UINT unHeight, EMaskDataType enDataType, bool bFlip)
 	{
-		m_unWidth  = unWidth;
-		m_unHeight = unHeight;
+		m_enDataType = enDataType;
+		m_unWidth    = unWidth;
+		m_unHeight   = unHeight;
 		m_oRenderingBuffer.attach(pBuffer, unWidth, unHeight, (bFlip ? -1 : 1) * GetStep() * unWidth);
 
 		SetType(enDataType);

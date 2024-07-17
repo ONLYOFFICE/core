@@ -357,8 +357,6 @@ public:
 	// layer methods
 	virtual HRESULT put_LayerOpacity(double dValue) override;
 
-	virtual void TEST() override;
-
 	// smart methods
 	void drawHorLine(BYTE align, double y, double x, double r, double penW)
     {

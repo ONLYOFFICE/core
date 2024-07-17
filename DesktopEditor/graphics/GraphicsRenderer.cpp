@@ -1431,37 +1431,6 @@ HRESULT CGraphicsRenderer::put_LayerOpacity(double dValue)
 	return m_pRenderer->SetLayerOpacity(dValue);
 }
 
-void CGraphicsRenderer::TEST()
-{
-	m_pRenderer->CreateLayer();
-
-	m_pPath->MoveTo(100, 100);
-	m_pPath->LineTo(100, 200);
-	m_pPath->LineTo(200, 200);
-	m_pPath->LineTo(200, 100);
-	m_pPath->CloseFigure();
-
-	m_oBrush.Color1 = 0;
-	m_oBrush.Alpha1 = 255;
-
-	DrawPath(c_nWindingFillMode);
-
-	m_pRenderer->CreateSoftMask(true);
-
-	m_pPath->Reset();
-
-	m_pPath->MoveTo(50, 50);
-	m_pPath->LineTo(50, 150);
-	m_pPath->LineTo(150, 150);
-	m_pPath->LineTo(150, 50);
-	m_pPath->CloseFigure();
-
-	m_oBrush.Color1 = 255;
-	m_oBrush.Alpha1 = 255;
-
-	DrawPath(c_nWindingFillMode);
-}
-
 void CGraphicsRenderer::put_GlobalAlphaEnabled(const bool& bEnabled, const double& dVal)
 {
 	m_bGlobalAlphaEnabled = bEnabled;

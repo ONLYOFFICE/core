@@ -5025,6 +5025,7 @@ namespace SimpleTypes
 		else if (L"w" == sValue) this->m_eValue = constraintType_w;
 		else if (L"wArH" == sValue) this->m_eValue = constraintType_wArH;
 		else if (L"wOff" == sValue) this->m_eValue = constraintType_wOff;
+		else if (L"hOff" == sValue) this->m_eValue = constraintType_hOff;
 		else this->m_eValue = constraintType_none;
 
 		return this->m_eValue;
@@ -5097,6 +5098,7 @@ namespace SimpleTypes
 		case constraintType_w: return L"w";
 		case constraintType_wArH: return L"wArH";
 		case constraintType_wOff: return L"wOff";
+		case constraintType_hOff: return L"hOff";
 		default: return L"none";
 		}
 	}

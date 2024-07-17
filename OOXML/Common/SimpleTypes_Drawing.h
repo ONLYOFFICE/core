@@ -2111,7 +2111,8 @@ namespace SimpleTypes
 		constraintType_userZ = 59,
 		constraintType_w = 60,
 		constraintType_wArH = 61,
-		constraintType_wOff = 62
+		constraintType_wOff = 62,
+		constraintType_hOff = 63
 	};
 
 	DEFINE_SIMPLE_TYPE(CConstraintType, EConstraintType, constraintType_none)

@@ -1387,32 +1387,32 @@ namespace Aggplus
 		{
 			switch(m_pAlphaMask->GetDataType())
 			{
-				case EMaskDataType::ImageBuffer:
-				{
-					Aggplus::BlendTo<agg::rgb_to_gray_mask_u8<2, 1, 0>>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pAlphaMask->GetBuffer(), m_pAlphaMask->GetStep());
-					break;
-				}
-				case EMaskDataType::AlphaBuffer:
-				{
-					Aggplus::BlendTo<agg::one_component_mask_u8>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pAlphaMask->GetBuffer(), m_pAlphaMask->GetStep());
-					break;
-				}
+			case EMaskDataType::ImageBuffer:
+			{
+				Aggplus::BlendTo<agg::rgb_to_gray_mask_u8<2, 1, 0>>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pAlphaMask->GetBuffer(), m_pAlphaMask->GetStep());
+				break;
+			}
+			case EMaskDataType::AlphaBuffer:
+			{
+				Aggplus::BlendTo<agg::one_component_mask_u8>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pAlphaMask->GetBuffer(), m_pAlphaMask->GetStep());
+				break;
+			}
 			}
 		}
 		else if (m_pSoftMask)
 		{
 			switch(m_pSoftMask->GetDataType())
 			{
-				case EMaskDataType::ImageBuffer:
-				{
-					Aggplus::BlendTo<agg::rgb_to_gray_mask_u8<2, 1, 0>>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pSoftMask->GetBuffer(), m_pSoftMask->GetStep());
-					break;
-				}
-				case EMaskDataType::Alpha4Buffer:
-				{
-					Aggplus::BlendTo<agg::one_component_mask_u8>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pSoftMask->GetBuffer() + 3, m_pSoftMask->GetStep());
-					break;
-				}
+			case EMaskDataType::ImageBuffer:
+			{
+				Aggplus::BlendTo<agg::rgb_to_gray_mask_u8<2, 1, 0>>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pSoftMask->GetBuffer(), m_pSoftMask->GetStep());
+				break;
+			}
+			case EMaskDataType::Alpha4Buffer:
+			{
+				Aggplus::BlendTo<agg::one_component_mask_u8>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pSoftMask->GetBuffer() + 3, m_pSoftMask->GetStep());
+				break;
+			}
 			}
 		}
 		else

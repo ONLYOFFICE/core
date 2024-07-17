@@ -610,8 +610,7 @@ namespace PdfReader
 		m_pSoftMask = m_sStates.back().pSoftMask;
 		if (c_nGrRenderer == m_lRendererType)
 		{
-			NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
-			if (GRenderer)
+			if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
 				GRenderer->SetSoftMask(m_pSoftMask);
 		}
 
@@ -4770,9 +4769,6 @@ namespace PdfReader
 	{
 		if (c_nGrRenderer != m_lRendererType)
 			return;
-		NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
-		if (!GRenderer)
-			return;
 
 		m_pRenderer->BeginCommand(c_nLayerType);
 		m_sCS.push_back(GfxOutputCS());
@@ -4786,9 +4782,6 @@ namespace PdfReader
 	void RendererOutputDev::paintTransparencyGroup(GfxState *pGState, double *pBBox)
 	{
 		if (c_nGrRenderer != m_lRendererType)
-			return;
-		NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
-		if (!GRenderer)
 			return;
 
 		double dOpacity = std::min(1.0, std::max(0.0, pGState->getFillOpacity()));
@@ -4853,11 +4846,8 @@ namespace PdfReader
 	{
 		if (c_nGrRenderer != m_lRendererType)
 			return;
-		NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
-		if (!GRenderer)
-			return;
-
-		GRenderer->SetSoftMask(NULL);
+		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
+			GRenderer->SetSoftMask(NULL);
 		RELEASEINTERFACE(m_pSoftMask);
 	}
 	void RendererOutputDev::NewPDF(XRef *pXref)

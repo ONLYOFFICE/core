@@ -1,3 +1,6 @@
+#ifndef GRAPHICSPATHCLIP_H
+#define GRAPHICSPATHCLIP_H
+
 #include "GraphicsPath.h"
 #include "clip_math.h"
 #include <unordered_map>
@@ -133,7 +136,7 @@ public:
 	//BooleanOp
 	void TraceBoolean();
 	void TracePaths();
-	//void reorientPaths(); TODO
+	//void reorientPaths();
 
 	//Path
 	void	PreparePath(CGraphicsPath* path, size_t id, std::vector<Segment>& segments,
@@ -173,7 +176,7 @@ public:
 
 	//Location
 	void DivideLocations();
-	void AddLocation(Curve curve1, Curve curve2, int t1, int t2, bool overlap = false);
+	void AddLocation(Curve curve1, Curve curve2, float t1, float t2, bool overlap = false);
 	void InsertLocation(Location loc);
 
 	//Util
@@ -210,3 +213,5 @@ private:
 	bool OverlapOnly[2] = {false, false};
 };
 }
+
+#endif //GRAPHICSPATHCLIP_H

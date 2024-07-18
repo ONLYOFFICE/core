@@ -54,8 +54,8 @@ namespace XLSB
             void readFields(XLS::CFRecord& record) override;
 			void writeFields(XLS::CFRecord& record) override;
 
-            _INT32     istr;
-            bool       fCubeSet;
+            _INT32     istr = 0;
+            bool       fCubeSet = false;
 
     };
 

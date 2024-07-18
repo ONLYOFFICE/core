@@ -54,19 +54,19 @@ namespace XLSB
             void readFields(XLS::CFRecord& record) override;
 			void writeFields(XLS::CFRecord& record) override;
 
-            _INT32     cMbrs;
+            _INT32     cMbrs = 0;
             SrvFmtCV   dwSrvFmtBack;
             SrvFmtCV   dwSrvFmtFore;
 
-            bool       fSrvFmtNum;
-            bool       fSrvFmtNumCurrency;
-            bool       fSrvFmtNumStr;
-            bool       fSrvFmtBack;
-            bool       fSrvFmtFore;
-            bool       fSrvFmtItalic;
-            bool       fSrvFmtUnderline;
-            bool       fSrvFmtBold;
-            bool       fSrvFmtStrikethrough;
+            bool       fSrvFmtNum = false;
+            bool       fSrvFmtNumCurrency = false;
+            bool       fSrvFmtNumStr = false;
+            bool       fSrvFmtBack = false;
+            bool       fSrvFmtFore = false;
+            bool       fSrvFmtItalic = false;
+            bool       fSrvFmtUnderline = false;
+            bool       fSrvFmtBold = false;
+            bool       fSrvFmtStrikethrough = false;
 
             XLNullableWideString        stSfnum;
             SrvFmtDataPtr               dSfnum; 

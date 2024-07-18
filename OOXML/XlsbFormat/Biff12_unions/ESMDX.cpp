@@ -85,8 +85,13 @@ namespace XLSB
 
 	const bool ESMDX::saveContent(XLS::BinProcessor & proc)
 	{
-		if (m_BrtBeginEsmdx != nullptr)
-			proc.mandatory(*m_BrtBeginEsmdx);
+		if (m_BrtBeginEsmdx == nullptr)
+        {
+            auto beginPtr(new BeginEsmdx);
+            beginPtr->cMdx = MDXs.size();
+            m_BrtBeginEsmdx = BaseObjectPtr{beginPtr};
+        }
+        proc.mandatory(*m_BrtBeginEsmdx);
 
 		for(auto i:MDXs)
             proc.mandatory(*i);

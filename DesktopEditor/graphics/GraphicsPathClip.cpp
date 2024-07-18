@@ -180,12 +180,12 @@ float Curve::GetSquaredLineLength()
 
 float Curve::GetTimeOf(PointF point)
 {
-	PointF	p0 = PointF(Segment1.P.X, Segment1.P.Y),
-			p3 = PointF(Segment2.P.X, Segment2.P.Y);
+	PointF	p0 = PointF(Segment1.P),
+			p3 = PointF(Segment2.P);
 	float	d0 = getDistance(point.X, point.Y, p0.X, p0.Y),
 			d3 = getDistance(point.X, point.Y, p3.X, p3.Y);
 
-	if (d0 > GEOMETRIC_EPSILON && d3 > GEOMETRIC_EPSILON)
+	if (d0 > EPSILON && d3 > EPSILON)
 	{
 		std::vector<float> coords = {point.X, point.Y},
 						   roots;
@@ -533,8 +533,8 @@ int Curve::SolveCubic(size_t coord, int value, std::vector<float>& roots,
 	std::vector<float> v = coord == 0 ? GetXValues() : GetYValues();
 	float a, b, c, d;
 
-	if (!(v[0] < value && v[3] < value && v[1] < value && v[2] < value ||
-		  v[0] > value && v[3] > value && v[1] > value && v[2] > value))
+	if (!((v[0] < value && v[3] < value && v[1] < value && v[2] < value) ||
+		  (v[0] > value && v[3] > value && v[1] > value && v[2] > value)))
 	{
 		c = 3 * (v[1] - v[0]);
 		b = 3 * (v[2] - v[1]) - c;
@@ -551,7 +551,7 @@ int Curve::SolveCubic(float a, float b, float c, float d,
 	int count = 0;
 	float f = max(abs(a), abs(b), abs(c), abs(d));
 	float x, b1, c2, qd, q;
-	if (f < 1e-8 || f < 1e8)
+	if (f < 1e-8 || f > 1e8)
 	{
 		f = pow(2, -round(log2(f)));
 		a *= f;
@@ -608,8 +608,11 @@ int Curve::SolveCubic(float a, float b, float c, float d,
 	count = solveQuadratic(a, b1, c2, roots, mn, mx);
 	bool xInRoots = count > 0 && x != roots[0] && x != roots[1],
 		 xInEps = x > mn - EPSILON && x < mx + EPSILON;
-	if (x == FLT_MAX && (count == 0 || xInRoots) && (xInEps))
-		roots[count++] = x;
+	if (x != FLT_MAX && (count == 0 || xInRoots) && (xInEps))
+	{
+		roots.push_back(clamp(x, mn, mx));
+		count++;
+	}
 	return count;
 }
 
@@ -853,7 +856,7 @@ CGraphicsPath CGraphicsPathClip::GetResult()
 
 void CGraphicsPathClip::TraceBoolean()
 {
-	if ((Op == Subtraction || Op == Exclusion) && 
+	if ((Op == Subtraction || Op == Exclusion) ^
 		Path1->IsClockwise() ^
 		Path2->IsClockwise())
 		Path2->Reverse();
@@ -913,10 +916,10 @@ void CGraphicsPathClip::TracePaths()
 			 inter2 = seg2.Inters != nullptr;
 		bool over1 = inter1 && seg1.Inters->Overlap,
 			 over2 = inter2 && seg1.Inters->Overlap;
-		int	o1 = over1 ? 1 : -1,
-			i1 = inter1 ? 1 : -1,
-			id = seg1.Id != seg2.Id ? seg1.Id - seg2.Id
-									: seg1.Index - seg2.Index;
+		bool o1 = over1 ? false : true,
+			 i1 = inter1 ? false : true,
+			id = seg1.Id != seg2.Id ? seg1.Id - seg2.Id < 0
+									 : seg1.Index - seg2.Index < 0;
 		return over1 ^ over2 ? o1 : inter1 ? i1 : id;  
 	});
 
@@ -1141,12 +1144,12 @@ std::vector<std::vector<float>> CGraphicsPathClip::GetBoundsForCurves(
 	std::vector<std::vector<float>> bounds;
 	for (size_t i = 0; i < curves.size(); i++)
 	{
-	std::vector<float>	x = curves[i].GetXValues(),
-						y = curves[i].GetYValues();
-	bounds.push_back({min(x[0], x[1], x[2], x[3]),
-					  min(y[0], y[1], y[2], y[3]),
-					  max(x[0], x[1], x[2], x[3]),
-					  max(y[0], y[1], y[2], y[3])});
+		std::vector<float>	x = curves[i].GetXValues(),
+							y = curves[i].GetYValues();
+		bounds.push_back({min(x[0], x[1], x[2], x[3]),
+						  min(y[0], y[1], y[2], y[3]),
+						  max(x[0], x[1], x[2], x[3]),
+						  max(y[0], y[1], y[2], y[3])});
 	}
 	return bounds;
 }
@@ -1184,8 +1187,11 @@ std::vector<std::vector<int>> CGraphicsPathClip::FindBoundsCollisions(
 	bool sweepVertical,
 	bool onlySweep)
 {
+	bool self = bounds1 == bounds2;
+
 	std::vector<std::vector<float>> allBounds(bounds1);
-	std::copy(bounds2.begin(), bounds2.end(), std::back_inserter(allBounds));
+	if (!self)
+		std::copy(bounds2.begin(), bounds2.end(), std::back_inserter(allBounds));
 	size_t	allLength = allBounds.size(),
 			length1 = bounds1.size();
 
@@ -1202,7 +1208,7 @@ std::vector<std::vector<int>> CGraphicsPathClip::FindBoundsCollisions(
 	std::sort(allIdicesByPri1.begin(),
 			  allIdicesByPri1.end(),
 	[&allBounds, &pri1](size_t i1, size_t i2){
-		return allBounds[i1][pri1] < allBounds[i2][pri1];
+				  return allBounds[i1][pri1] < allBounds[i2][pri1];
 	});
 
 	std::vector<int> activeIndicesByPri2;
@@ -1212,17 +1218,17 @@ std::vector<std::vector<int>> CGraphicsPathClip::FindBoundsCollisions(
 		int curIndex = allIdicesByPri1[i];
 		std::vector<float> curBounds = allBounds[curIndex];
 		std::vector<int> curCollisions;
-		size_t origIndex = curIndex - length1;
 		bool isCurrent1 = curIndex < length1,
-		isCurrent2 = !isCurrent1;
+			 isCurrent2 = self || !isCurrent1;
+		int origIndex = self ? curIndex : curIndex - length1;
 		if (!activeIndicesByPri2.empty())
 		{
 			size_t pruneCount = 
-				binarySearch(allBounds, activeIndicesByPri2, pri2, 
-							 curBounds[pri1] - GEOMETRIC_EPSILON) + 1;
+				binarySearch(allBounds, activeIndicesByPri2, pri2,
+							 curBounds[pri1] - tolerance) + 1;
 			activeIndicesByPri2.erase(activeIndicesByPri2.begin(), 
 									  activeIndicesByPri2.begin() + pruneCount);
-			if (onlySweep)
+			if (self && onlySweep)
 			{
 				curCollisions.insert(curCollisions.end(),
 									 activeIndicesByPri2.begin(),
@@ -1233,43 +1239,45 @@ std::vector<std::vector<int>> CGraphicsPathClip::FindBoundsCollisions(
 					allCollisions[activeIndex].push_back(origIndex);
 				}
 			}
-		else
-		{
-			float	curSec1 = curBounds[sec2],
-					curSec2 = curBounds[sec1];
-			for (int j = 0; j < activeIndicesByPri2.size(); j++)
+			else
 			{
-				int activeIndex = activeIndicesByPri2[j];
-				std::vector<float> activeBounds = allBounds[activeIndex];
-				bool isActive1 = activeIndex < length1,
-					 isActive2 = !isActive1,
-					 isActive1Or2 = (isCurrent1 && isActive2 || isCurrent2 && isActive1),
-					 inRange1 = curSec1 <= activeBounds[sec2] + tolerance,
-					 inRange2 = curSec2 >= activeBounds[sec1] - tolerance;
-				if (onlySweep || isActive1Or2 && (inRange2 && inRange1))
+				float	curSec2 = curBounds[sec2],
+						curSec1 = curBounds[sec1];
+				for (int j = 0; j < activeIndicesByPri2.size(); j++)
 				{
-					if (isCurrent1 && isActive2)
-						curCollisions.push_back(activeIndex - length1);
-					if (isCurrent2 && isActive1)
-						allCollisions[activeIndex].push_back(origIndex);
+					int activeIndex = activeIndicesByPri2[j];
+					std::vector<float> activeBounds = allBounds[activeIndex];
+					bool isActive1 = activeIndex < length1,
+						isActive2 = self || !isActive1,
+						isActive1Or2 = ((isCurrent1 && isActive2) || (isCurrent2 && isActive1)),
+						inRange1 = curSec1 <= activeBounds[sec2] + tolerance,
+						inRange2 = curSec2 >= activeBounds[sec1] - tolerance;
+					if (onlySweep || (isActive1Or2 && (inRange2 && inRange1)))
+					{
+						if (isCurrent1 && isActive2)
+							curCollisions.push_back(self ? activeIndex : activeIndex - length1);
+						if (isCurrent2 && isActive1)
+							allCollisions[activeIndex].push_back(origIndex);
+					}
 				}
 			}
 		}
-	}
-	if (isCurrent1)
-	{
-		allCollisions[curIndex] = curCollisions;
-	}
-	if (activeIndicesByPri2.size() > 0)
-	{
-		float curPri2 = curBounds[pri2];
-		int index = binarySearch(allBounds, activeIndicesByPri2, pri2, curPri2);
-		activeIndicesByPri2.insert(activeIndicesByPri2.begin() + index + 1, curIndex);
-	}
-	else
-	{
-		activeIndicesByPri2.push_back(curIndex);
-	}
+		if (isCurrent1)
+		{
+			if (bounds1 == bounds2)
+				curCollisions.push_back(curIndex);
+			allCollisions[curIndex] = curCollisions;
+		}
+		if (activeIndicesByPri2.size() > 0)
+		{
+			float curPri2 = curBounds[pri2];
+			int index = binarySearch(allBounds, activeIndicesByPri2, pri2, curPri2);
+			activeIndicesByPri2.insert(activeIndicesByPri2.begin() + (1 + index), curIndex);
+		}
+		else
+		{
+			activeIndicesByPri2.push_back(curIndex);
+		}
 	}
 	for (auto& c : allCollisions)
 	{
@@ -1376,11 +1384,8 @@ void CGraphicsPathClip::GetIntersection()
 			for (size_t j = 0; j < collisions1.size(); j++)
 			{
 				int index2 = collisions1[j];
-				if (index2 > index1)
-				{
-					Curve curve2 = Curves2[index2];
-					GetCurveIntersection(curve1, curve2);
-				}
+				Curve curve2 = Curves2[index2];
+				GetCurveIntersection(curve1, curve2);
 			}
 		}
 	}
@@ -1604,7 +1609,7 @@ void CGraphicsPathClip::DivideLocations()
 			tMax = 1 - tMin,
 			prevTime = -1.0;
 
-	for (size_t i = Locations.size() - 1; i >= 0; i--)
+	for (int i = Locations.size() - 1; i >= 0; i--)
 	{
 		Location loc = Locations[i];
 		float	origTime = loc.Time,
@@ -1688,7 +1693,7 @@ void CGraphicsPathClip::InsertLocation(Location loc)
 }
 
 void CGraphicsPathClip::AddLocation(Curve curve1, Curve curve2,
-									int t1, int t2, bool overlap)
+									float t1, float t2, bool overlap)
 {
 	bool excludeStart = !overlap && 
 						GetPreviousCurve(curve1) == curve2,

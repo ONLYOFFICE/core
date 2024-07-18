@@ -1,3 +1,6 @@
+#ifndef CLIPMATH_H
+#define CLIPMATH_H
+
 #include "aggplustypes.h"
 
 #include <vector>
@@ -118,13 +121,13 @@ float clamp(float value, float mn, float mx)
 int getIterations(float a, float b)
 {
 	float n1 = 2.0, n2 = 16.0;
-	return std::max(n1, std::min(n2, ceil(abs(b - a) * 32)));
+	return std::max(n1, std::min(n2, ceilf(abs(b - a) * 32)));
 }
 
 float CurveLength(float t, float ax, float bx, float cx, float ay, float by, float cy)
 {
-	float dx = ((ax * t) + bx) * t + cx,
-		dy = ((ax * t) + bx) * t + cx;
+	float	dx = ((ax * t) + bx) * t + cx,
+			dy = ((ay * t) + by) * t + cy;
 	return sqrt(dx * dx + dy * dy);
 }
 
@@ -182,7 +185,7 @@ float findRoot(float& length, float& start, float offset, float ax, float bx,
 Aggplus::PointF intersect(float p1x, float p1y, float v1x, float v1y, float p2x, float p2y, float v2x, float v2y)
 {
 	v1x -= p1x;
-	v1x -= p1y;
+	v1y -= p1y;
 	v2x -= p2x;
 	v2y -= p2y;
 
@@ -236,8 +239,8 @@ std::vector<std::vector<Aggplus::PointF>> getConvexHull(float dq0, float dq1, fl
 
 float clipConvexHullPart(std::vector<Aggplus::PointF> part, bool top, float threshold)
 {
-	float px = part[0].X,
-		py = part[0].Y;
+	float	px = part[0].X,
+			py = part[0].Y;
 	for (size_t i = 1; i < part.size(); i++)
 	{
 		float qx = part[i].X,
@@ -261,8 +264,8 @@ float clipConvexHull(std::vector<Aggplus::PointF> top, std::vector<Aggplus::Poin
 
 int binarySearch(std::vector<std::vector<float>> allBounds, std::vector<int> indices, size_t coord, float value)
 {
-	int lo = 0,
-		hi = indices.size();
+	int lo = 0;
+	size_t hi = indices.size();
 	while(lo < hi)
 	{
 		int mid = (hi + lo) >> 1;
@@ -332,7 +335,7 @@ float getDistance(Aggplus::PointF point1, Aggplus::PointF point2)
 
 std::pair<float, float> split(float v)
 {
-	float x = v * 134217729,
+	float x = v * 134217729.0,
 		  y = v - x,
 		  hi = y + x,
 		  lo = v - hi;
@@ -353,9 +356,9 @@ float getDiscriminant(float a, float b, float c)
 					p + 2 * bd.first * bd.second) + 
 				   bd.second * bd.second,
 			  q = a * c,
-			  dq = (ad.first * cd.first - 
-					q + ad.first * cd.second + 
-					ad.second * cd.first) + 
+			  dq = (ad.first * cd.first -
+					q + ad.first * cd.second +
+					ad.second * cd.first) +
 				   ad.second * cd.second;
 		D = (p - q) - (dp - dq);
 	}
@@ -376,12 +379,12 @@ int solveQuadratic(float a, float b, float c, std::vector<float>& roots,
 	{
 		b *= -0.5;
 		float D = getDiscriminant(a, b, c);
-		if (abs(D) < MACHINE_EPSILON)
+		if (D != 0 && abs(D) < MACHINE_EPSILON)
 		{
 			float f = max(abs(a), abs(b), abs(c));
 			if (f < 1e-8 || f < 1e8)
 			{
-				f = pow(2, -round(log2(f)));
+				f = powf(2, -roundf(log2(f)));
 				a *= f;
 				b *= f;
 				c *= f;
@@ -407,15 +410,17 @@ int solveQuadratic(float a, float b, float c, std::vector<float>& roots,
 	int count = 0;
 	float minB = mn - EPSILON,
 		  maxB = mx + EPSILON;
-	if (x1 > minB && x1 < maxB)
+	if (x1 != FLT_MAX && x1 > minB && x1 < maxB)
 	{
 		roots.push_back(clamp(x1, mn, mx));
 		count++;
 	}
-	if (x2 != x1 && x2 > minB && x2 < maxB)
+	if (x2 != x1 && x2 != FLT_MAX && x2 > minB && x2 < maxB)
 	{
 		roots.push_back(clamp(x2, mn, mx));
 		count++;
 	}
 	return count;
 }
+
+#endif //CLIPMATH_H

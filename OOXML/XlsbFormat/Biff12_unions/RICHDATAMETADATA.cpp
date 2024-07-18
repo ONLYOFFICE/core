@@ -33,6 +33,8 @@
 #include "RICHDATAMETADATA.h"
 #include "../Biff12_records/BeginRichValueBlock.h"
 #include "../Biff12_records/EndRichValueBlock.h"
+#include "../Biff12_records/FRTBegin.h"
+#include "../Biff12_records/FRTEnd.h"
 
 using namespace XLS;
 
@@ -55,6 +57,11 @@ namespace XLSB
     //RICHDATAMETADATA = BrtBeginRICHDATAMETADATA COMMENTAUTHORS COMMENTLIST *FRT BrtEndRICHDATAMETADATA
     const bool RICHDATAMETADATA::loadContent(BinProcessor& proc)
     {
+        if (proc.optional<FRTBegin>())
+        {
+            m_BrtFRTBegin = elements_.back();
+            elements_.pop_back();
+        }
         if (proc.optional<BeginRichValueBlock>())
         {
 			m_BeginRichValueBlock = elements_.back();
@@ -71,16 +78,28 @@ namespace XLSB
         }
 		else
 			m_EndRichValueBlock = false;
+        if (proc.optional<FRTEnd>())
+        {
+            m_BrtFRTEnd = true;
+            elements_.pop_back();
+        }
+        else
+            m_BrtFRTEnd = false;
 
-        return m_BeginRichValueBlock && m_EndRichValueBlock;
+        return m_BrtFRTBegin && m_BeginRichValueBlock && m_EndRichValueBlock && m_BrtFRTEnd;
     }
 
 	const bool RICHDATAMETADATA::saveContent(XLS::BinProcessor & proc)
 	{
+        if(m_BrtFRTBegin != nullptr)
+            proc.mandatory(*m_BrtFRTBegin);
+        else
+            proc.mandatory<FRTBegin>();
 		if (m_BeginRichValueBlock != nullptr)
 			proc.mandatory(*m_BeginRichValueBlock);
         
         proc.mandatory<XLSB::EndRichValueBlock>();
+        proc.mandatory<FRTEnd>();
 		return true;
 	}
 

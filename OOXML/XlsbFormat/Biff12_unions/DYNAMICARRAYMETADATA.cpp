@@ -34,6 +34,8 @@
 
 #include "../Biff12_records/BeginDynamicArrayPr.h"
 #include "../Biff12_records/EndDynamicArrayPr.h"
+#include "../Biff12_records/FRTBegin.h"
+#include "../Biff12_records/FRTEnd.h"
 using namespace XLS;
 
 namespace XLSB
@@ -55,6 +57,11 @@ namespace XLSB
     //DYNAMICARRAYMETADATA = BrtBeginDYNAMICARRAYMETADATA COMMENTAUTHORS COMMENTLIST *FRT BrtEndDYNAMICARRAYMETADATA
     const bool DYNAMICARRAYMETADATA::loadContent(BinProcessor& proc)
     {
+        if (proc.optional<FRTBegin>())
+        {
+            m_BrtFRTBegin = elements_.back();
+            elements_.pop_back();
+        }
         if (proc.optional<BeginDynamicArrayPr>())
         {
 			m_BeginDynamicArrayPr = true;
@@ -71,15 +78,27 @@ namespace XLSB
         }
 		else
 			m_EndDynamicArrayPr = false;
+        if (proc.optional<FRTEnd>())
+        {
+            m_BrtFRTEnd = true;
+            elements_.pop_back();
+        }
+        else
+            m_BrtFRTEnd = false;
 
-        return m_BeginDynamicArrayPr && m_EndDynamicArrayPr;
+        return m_BrtFRTBegin && m_BeginDynamicArrayPr && m_EndDynamicArrayPr && m_BrtFRTEnd;
     }
 
 	const bool DYNAMICARRAYMETADATA::saveContent(XLS::BinProcessor & proc)
 	{
+        if(m_BrtFRTBegin != nullptr)
+            proc.mandatory(*m_BrtFRTBegin);
+        else
+            proc.mandatory<FRTBegin>();
         proc.mandatory<BeginDynamicArrayPr>();
         if (m_EndDynamicArrayPr != nullptr)
 			proc.mandatory(*m_EndDynamicArrayPr);
+        proc.mandatory<FRTEnd>();
         
 		return true;
 	}

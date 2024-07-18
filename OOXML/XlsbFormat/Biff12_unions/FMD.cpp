@@ -98,10 +98,12 @@ namespace XLSB
 
 	const bool FMD::saveContent(XLS::BinProcessor & proc)
 	{
+        proc.mandatory<BeginFmd>();
 		if (m_DYNAMICARRAYMETADATA != nullptr)
 			proc.mandatory(*m_DYNAMICARRAYMETADATA);
         else if(m_RICHDATAMETADATA != nullptr)
             proc.mandatory(*m_RICHDATAMETADATA);
+        proc.mandatory<EndFmd>();
 		return true;
 	}
 

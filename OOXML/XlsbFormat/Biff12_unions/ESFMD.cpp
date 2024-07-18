@@ -35,6 +35,7 @@
 
 #include "../Biff12_records/BeginEsfmd.h"
 #include "../Biff12_records/EndEsfmd.h"
+#include "../Biff12_unions/FRT.h"
 
 
 using namespace XLS;
@@ -74,6 +75,13 @@ namespace XLSB
             elements_.pop_back();
             count--;
         }
+
+        while (proc.optional<FRT>())
+        {
+            //m_arFRT.push_back(elements_.back());
+            elements_.pop_back();
+        }
+        
         if (proc.optional<EndEsfmd>())
         {
             m_bBrtEndEsfmd = true;

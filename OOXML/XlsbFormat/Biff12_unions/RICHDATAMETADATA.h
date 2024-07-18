@@ -48,9 +48,10 @@ namespace XLSB
 		const bool loadContent(XLS::BinProcessor& proc) override;
 		const bool saveContent(XLS::BinProcessor& proc) override;
 
-		
+		XLS::BaseObjectPtr      m_BrtFRTBegin;
         XLS::BaseObjectPtr      m_BeginRichValueBlock;
         bool                    m_EndRichValueBlock;
+        bool                    m_BrtFRTEnd;
 
     };
 

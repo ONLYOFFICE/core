@@ -114,7 +114,7 @@ namespace OOX
 
 			const FileType MetadataBin	(L"", L"metadata.bin",
 													L"application/vnd.ms-excel.sheetMetadata",
-													L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/metadata");
+													L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/sheetMetadata");
 
 		} // namespace FileTypes
 	}

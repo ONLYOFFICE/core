@@ -911,6 +911,16 @@ namespace OOX
 			}
 			return objectPtr;
 		}
+		void CMetadataTypes::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::ESMDTINFO*>(obj.get());
+			m_oCount = ptr->BrtMdtinfos.size();
+
+			for(auto i : ptr->BrtMdtinfos)
+			{
+				m_arrItems.push_back(new CMetadataType(i));
+			}
+		}
 		//--------------------------------------------------------------------------------------------------------
 		CMetadataType::CMetadataType() {}
 		CMetadataType::~CMetadataType() {}
@@ -1061,6 +1071,37 @@ namespace OOX
 				ptr->fCellMeta = m_oCellMeta.get();
 			return objectPtr;
 		}
+		void CMetadataType::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::Mdtinfo*>(obj.get());
+			m_oName = ptr->stName;
+			m_oMinSupportedVersion = ptr->metadataID;
+			m_oGhostRow = ptr->fGhostRw;
+			m_oGhostCol = ptr->fGhostCol;
+			m_oEdit = ptr->fEdit;
+			m_oDelete = ptr->fDelete;
+			m_oCopy = ptr->fCopy;
+			m_oPasteAll = ptr->fPasteAll;
+			m_oPasteFormulas = ptr->fPasteFmlas;
+			m_oPasteValues = ptr->fPasteValues;
+			m_oPasteFormats = ptr->fPasteFmts;
+			m_oPasteComments = ptr->fPasteComments;
+			m_oPasteDataValidation = ptr->fPasteDv;
+			m_oPasteBorders = ptr->fPasteBorders;
+			m_oPasteColWidths = ptr->fPasteColWidths;
+			m_oPasteNumberFormats = ptr->fPasteNumFmts;
+			m_oMerge = ptr->fMerge;
+			m_oSplitFirst = ptr->fSplitFirst;
+			m_oSplitAll = ptr->fSplitAll;
+			m_oRowColShift = ptr->fRwColShift;
+			m_oClearAll = ptr->fClearAll;
+			m_oClearFormats = ptr->fClearFmts;
+			m_oClearContents = ptr->fClearContents;
+			m_oClearComments = ptr->fClearComments;
+			m_oAssign = ptr->fAssign;
+			m_oCoerce = ptr->fCanCoerce;
+			m_oCellMeta = ptr->fCellMeta;
+		}
 		//--------------------------------------------------------------------------------------------------------
 		CFutureMetadataBlock::CFutureMetadataBlock() {}
 		CFutureMetadataBlock::~CFutureMetadataBlock() {}
@@ -1204,6 +1245,8 @@ namespace OOX
 			auto streamPtr = static_cast<XLSB::MetadataStream*>(obj.get());
 			if(streamPtr->m_ESSTR != nullptr)
 				m_oMetadataStrings = streamPtr->m_ESSTR;
+			if(streamPtr->m_ESMDTINFO != nullptr)
+				m_oMetadataTypes = streamPtr->m_ESMDTINFO;
 		}
 		XLS::BaseObjectPtr CMetadata::toBin() const
 		{

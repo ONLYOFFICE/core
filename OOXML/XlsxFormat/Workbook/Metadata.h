@@ -280,6 +280,7 @@ namespace OOX
 		class CMetadataType : public WritingElement
 		{
 		public:
+			WritingElement_XlsbConstructors(CMetadataType)
 			WritingElement_AdditionMethods(CMetadataType)
 			CMetadataType();
 			virtual ~CMetadataType();
@@ -287,6 +288,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
+			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin() const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -328,6 +330,7 @@ namespace OOX
 		class CMetadataTypes : public WritingElementWithChilds<CMetadataType>
 		{
 		public:
+			WritingElement_XlsbConstructors(CMetadataTypes)
 			WritingElement_AdditionMethods(CMetadataTypes)
 			CMetadataTypes();
 			virtual ~CMetadataTypes();
@@ -335,6 +338,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
+			void fromBin(XLS::BaseObjectPtr& obj);
  			XLS::BaseObjectPtr toBin() const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);

@@ -41,8 +41,10 @@ namespace oox {
 class xlsx_xml_worksheet::Impl
 {
 public:
-    Impl(std::wstring const & name, bool hidden) : name_(name), hidden_(hidden) {}
-    std::wstring name_;
+    Impl(std::wstring const & name, bool hidden, const std::wstring& external) : name_(name), hidden_(hidden), external_(external) {}
+    
+	std::wstring external_;
+	std::wstring name_;
 	bool hidden_;
   
 	void clear()
@@ -110,21 +112,21 @@ bool xlsx_xml_worksheet::hidden() const
 {
     return impl_->hidden_;
 }
-
-xlsx_xml_worksheet_ptr xlsx_xml_worksheet::create(std::wstring const & name, bool hidden)
+std::wstring xlsx_xml_worksheet::external_ref() const
 {
-    return boost::make_shared<xlsx_xml_worksheet>(name, hidden);
+	return impl_->external_;
 }
-
-xlsx_xml_worksheet::xlsx_xml_worksheet(std::wstring const & name, bool hidden)
- : impl_(new xlsx_xml_worksheet::Impl(name, hidden))
+xlsx_xml_worksheet_ptr xlsx_xml_worksheet::create(std::wstring const & name, bool hidden, const std::wstring& external)
+{
+    return boost::make_shared<xlsx_xml_worksheet>(name, hidden, external);
+}
+xlsx_xml_worksheet::xlsx_xml_worksheet(std::wstring const & name, bool hidden, const std::wstring& external)
+ : impl_(new xlsx_xml_worksheet::Impl(name, hidden, external))
 {
 }
-
 xlsx_xml_worksheet::~xlsx_xml_worksheet()
 {
 }
-
 std::wostream & xlsx_xml_worksheet::cols()
 {
     return impl_->cols_;
@@ -214,7 +216,14 @@ rels & xlsx_xml_worksheet::sheet_rels()
 {
     return impl_->sheet_rels_;
 }
-
+void xlsx_xml_worksheet::write_external_to(std::wostream& strm)
+{
+	if (impl_->sheetData_.rdbuf()->in_avail() != 0)
+	{
+		impl_->sheetData_.flush();
+		strm << impl_->sheetData_.rdbuf();
+	}
+}
 void xlsx_xml_worksheet::write_to(std::wostream & strm)
 {
     CP_XML_WRITER(strm)

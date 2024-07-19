@@ -153,7 +153,6 @@ struct TTableStyles
 	NSCSS::NSProperties::CDigit  m_oWidth;
 
 	int  m_nCellSpacing;
-	bool m_bHaveBorderAttribute;
 
 	std::wstring m_wsAlign;
 
@@ -167,12 +166,12 @@ struct TTableStyles
 	} m_enRules;
 
 	TTableStyles()
-		: m_nCellSpacing(-1), m_bHaveBorderAttribute(false), m_enRules(None)
+		: m_nCellSpacing(-1), m_enRules(None)
 	{}
 
 	bool Empty() const
 	{
-		return m_oPadding.Empty() && m_oMargin.Empty() && m_oBorder.Empty() && m_oWidth.Empty() && -1 == m_nCellSpacing && false == m_bHaveBorderAttribute && m_wsAlign.empty();
+		return m_oPadding.Empty() && m_oMargin.Empty() && m_oBorder.Empty() && m_oWidth.Empty() && -1 == m_nCellSpacing && m_wsAlign.empty();
 	}
 };
 
@@ -834,16 +833,6 @@ public:
 	{
 		if (NULL != pElement)
 			m_arColgroups.push_back(pElement);
-	}
-
-	void HaveBorderAttribute()
-	{
-		m_oStyles.m_bHaveBorderAttribute = true;
-	}
-
-	bool IsHaveBorderAttribute() const
-	{
-		return m_oStyles.m_bHaveBorderAttribute;
 	}
 
 	void RecalculateMaxColumns()
@@ -2113,7 +2102,7 @@ private:
 		else if(sName == L"big")
 		{
 			CTextSettings oTSR(oTS);
-			oTSR.AddRStyle(L"<w:sz w:val=\"26\"/>");
+			oTSR.AddRStyle(L"<w:sz w:val=\"26\"/><w:szCs w:val=\"26\"/>");
 			bResult = readStream(oXml, sSelectors, oTSR);
 		}
 		// Перенос строки
@@ -2150,12 +2139,24 @@ private:
 			bResult = readStream(oXml, sSelectors, oTSR);
 		}
 		// Код
-		// Моноширинный шрифт, например, Consolas
+		// Моноширинный шрифт, например, Courier New
 		// Результат скрипта
-		else if(sName == L"code" || sName == L"kbd" || sName == L"samp" || sName == L"tt")
+		else if(sName == L"code" || sName == L"tt")
 		{
 			CTextSettings oTSR(oTS);
-			oTSR.AddRStyle(L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>");
+			oTSR.AddRStyle(L"<w:rFonts w:ascii=\"Courier New\" w:hAnsi=\"Courier New\"/><w:sz w:val=\"20\"/><w:szCs w:val=\"20\"/>");
+			bResult = readStream(oXml, sSelectors, oTSR);
+		}
+		else if (sName == L"kbd")
+		{
+			CTextSettings oTSR(oTS);
+			oTSR.AddRStyle(L"<w:rFonts w:ascii=\"Courier New\" w:hAnsi=\"Courier New\"/><w:sz w:val=\"20\"/><w:szCs w:val=\"20\"/><w:b/><w:bCs/>");
+			bResult = readStream(oXml, sSelectors, oTSR);
+		}
+		else if (sName == L"samp")
+		{
+			CTextSettings oTSR(oTS);
+			oTSR.AddRStyle(L"<w:rFonts w:ascii=\"Courier New\" w:hAnsi=\"Courier New\"/>");
 			bResult = readStream(oXml, sSelectors, oTSR);
 		}
 		// Зачеркнутый текст
@@ -2358,7 +2359,7 @@ private:
 			// С нового абзаца
 			else if(sName == L"article" || sName == L"header" || sName == L"main" || sName == L"dir" ||
 					sName == L"summary" || sName == L"footer" || sName == L"nav" || sName == L"figcaption" || sName == L"form" ||
-					sName == L"details" || sName == L"option" || sName == L"dt"  || sName == L"p"    ||
+					sName == L"option" || sName == L"dt"  || sName == L"p"    ||
 					sName == L"section" || sName == L"figure" || sName == L"dl"  || sName == L"legend"     || sName == L"map"  ||
 					sName == L"h1" || sName == L"h2" || sName == L"h3" || sName == L"h4" || sName == L"h5" || sName == L"h6")
 				bResult = readStream(&oXmlData, sSelectors, oTS);
@@ -2409,6 +2410,70 @@ private:
 				CTextSettings oTSP(oTS);
 				oTSP.AddPStyle(L"<w:pBdr><w:left w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr>");
 				bResult = readStream(&oXmlData, sSelectors, oTSP);
+			}
+			else if (sName == L"details")
+			{
+				bool bOpened = false;
+				if (m_oLightReader.MoveToFirstAttribute())
+				{
+					do
+					{
+						bOpened = (L"open" == m_oLightReader.GetName());
+					} while (m_oLightReader.MoveToNextAttribute() && !bOpened);
+				}
+				m_oLightReader.MoveToElement();
+
+				int nDeath = m_oLightReader.GetDepth();
+				if(m_oLightReader.IsEmptyNode() || !m_oLightReader.ReadNextSiblingNode2(nDeath))
+				{
+					sSelectors.pop_back();
+					return false;
+				}
+
+				NSStringUtils::CStringBuilder oSummary;
+				NSStringUtils::CStringBuilder oBody;
+
+				const TState oCurrentState{m_oState};
+				TState oSummaryState{m_oState};
+				TState oBodyState{m_oState};
+
+				do
+				{
+					if (L"summary" == m_oLightReader.GetName())
+					{
+						m_oState = oSummaryState;
+						if (0 == oSummary.GetSize())
+						{
+							OpenP(&oSummary);
+							OpenR(&oSummary);
+							OpenT(&oSummary);
+							oSummary.WriteString((bOpened) ? L"\u25BD" : L"\u25B7");
+						}
+
+						readStream(&oSummary, sSelectors, oTS);
+						CloseP(&oSummary, sSelectors);
+						oSummaryState = m_oState;
+						m_oState = oCurrentState;
+					}
+					else if (bOpened)
+					{
+						m_oState = oBodyState;
+						readStream(&oBody, sSelectors, oTS);
+						CloseP(&oBody, sSelectors);
+						oBodyState = m_oState;
+						m_oState = oCurrentState;
+					}
+				} while (m_oLightReader.ReadNextSiblingNode2(nDeath));
+
+				oXmlData.WriteString(oSummary.GetData());
+
+				if (bOpened)
+				{
+					m_oState = oBodyState;
+					oXmlData.WriteString(oBody.GetData());
+				}
+
+				bResult = true;
 			}
 			else if (sName == L"xml")
 			{
@@ -2682,6 +2747,9 @@ private:
 
 		CTable oTable;
 
+		NSCSS::CCompiledStyle oStyle;
+		m_oStylesCalculator.GetCompiledStyle(oStyle, sSelectors);
+
 		//Table styles
 		if (sSelectors.back().m_mAttributes.end() != sSelectors.back().m_mAttributes.find(L"border"))
 		{
@@ -2689,15 +2757,17 @@ private:
 
 			if (0 < nWidth)
 			{
-				sSelectors.back().m_mAttributes[L"border"] = L"outset " + std::to_wstring(nWidth) + L"px auto";
-				oTable.HaveBorderAttribute();
+				oStyle.m_oBorder.SetStyle(L"outset",  0, true);
+				oStyle.m_oBorder.SetWidth(nWidth,     0, true);
+				oStyle.m_oBorder.SetColor(L"auto", 0, true);
+				oTable.SetRules(L"all");
 			}
 			else
-				sSelectors.back().m_mAttributes[L"border"] = L"none";
+			{
+				oStyle.m_oBorder.SetNone(0, true);
+				oTable.SetRules(L"none");
+			}
 		}
-
-		NSCSS::CCompiledStyle oStyle;
-		m_oStylesCalculator.GetCompiledStyle(oStyle, sSelectors);
 
 		if (sSelectors.back().m_mAttributes.end() != sSelectors.back().m_mAttributes.find(L"cellpadding"))
 			oStyle.m_oPadding.SetValues(sSelectors.back().m_mAttributes[L"cellpadding"] + L"px", 0, true);
@@ -2783,10 +2853,10 @@ private:
 		if(m_oLightReader.IsEmptyNode())
 			return;
 
-		std::wstring sStart = L"1";
+		int nStart = 1;
 		while(m_oLightReader.MoveToNextAttribute())
 			if(m_oLightReader.GetName() == L"start")
-				sStart = m_oLightReader.GetText();
+				nStart = NSStringFinder::ToInt(m_oLightReader.GetText(), 1);
 		m_oLightReader.MoveToElement();
 
 		int nDeath = m_oLightReader.GetDepth();
@@ -2819,10 +2889,19 @@ private:
 				continue;
 			}
 
+			std::wstring wsValue;
+
 			GetSubClass(oXml, sSelectors);
 			while(m_oLightReader.MoveToNextAttribute())
+			{
 				if(m_oLightReader.GetName() == L"value")
-					sStart = m_oLightReader.GetText();
+				{
+					if (sName == L"option")
+						wsValue = m_oLightReader.GetText();
+					else
+						nStart = NSStringFinder::ToInt(m_oLightReader.GetText(), 1);
+				}
+			}
 			m_oLightReader.MoveToElement();
 
 			CloseP(oXml, sSelectors);
@@ -2846,6 +2925,15 @@ private:
 			wrP(oXml, sSelectors, oTSLiP);
 			oTSLiP.sPStyle = wsOldPStyle;
 
+			if (!wsValue.empty())
+			{
+				OpenR(oXml);
+				OpenT(oXml);
+				oXml->WriteEncodeXmlString(wsValue);
+				CloseT(oXml);
+				CloseR(oXml);
+			}
+
 			readStream(oXml, sSelectors, oTSLiP);
 
 			CloseP(oXml, sSelectors);
@@ -2855,26 +2943,27 @@ private:
 		// Нумерованный список
 		if(!bType)
 		{
+			const std::wstring wsStart(std::to_wstring(nStart));
 			m_oNumberXml.WriteString(L"<w:abstractNum w:abstractNumId=\"");
 			m_oNumberXml.WriteString(std::to_wstring(m_nNumberingId++));
 			m_oNumberXml.WriteString(L"\"><w:multiLevelType w:val=\"hybridMultilevel\"/><w:lvl w:ilvl=\"0\"><w:start w:val=\"");
-			m_oNumberXml.WriteString(sStart);
+			m_oNumberXml.WriteString(wsStart);
 			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%1.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"709\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"1\"><w:start w:val=\"");
-			m_oNumberXml.WriteString(sStart);
+			m_oNumberXml.WriteString(wsStart);
 			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%2.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"1429\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"2\"><w:start w:val=\"");
-			m_oNumberXml.WriteString(sStart);
+			m_oNumberXml.WriteString(wsStart);
 			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%3.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"2149\" w:hanging=\"180\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"3\"><w:start w:val=\"");
-			m_oNumberXml.WriteString(sStart);
+			m_oNumberXml.WriteString(wsStart);
 			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%4.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"2869\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"4\"><w:start w:val=\"");
-			m_oNumberXml.WriteString(sStart);
+			m_oNumberXml.WriteString(wsStart);
 			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%5.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"3589\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"5\"><w:start w:val=\"");
-			m_oNumberXml.WriteString(sStart);
+			m_oNumberXml.WriteString(wsStart);
 			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%6.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"4309\" w:hanging=\"180\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"6\"><w:start w:val=\"");
-			m_oNumberXml.WriteString(sStart);
+			m_oNumberXml.WriteString(wsStart);
 			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%7.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"5029\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"7\"><w:start w:val=\"");
-			m_oNumberXml.WriteString(sStart);
+			m_oNumberXml.WriteString(wsStart);
 			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%8.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"5749\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"8\"><w:start w:val=\"");
-			m_oNumberXml.WriteString(sStart);
+			m_oNumberXml.WriteString(wsStart);
 			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%9.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"6469\" w:hanging=\"180\"/></w:pPr></w:lvl></w:abstractNum>");
 		}
 	}
@@ -3728,14 +3817,15 @@ std::wstring CTableCell::ConvertToOOXML(const CTable& oTable, UINT unColumnNumbe
 
 	const TTableStyles oTableStyles{oTable.GetTableStyles()};
 
-	if (!oCellStyle.m_oBorder.Zero() && !oCellStyle.m_oBorder.Empty() && oCellStyle.m_oBorder != oTableStyles.m_oBorder)
+	if (!oCellStyle.m_oBorder.Empty() && !oCellStyle.m_oBorder.Zero() /*&& oCellStyle.m_oBorder != oTableStyles.m_oBorder*/)
 		oCell += L"<w:tcBorders>" + CreateBorders(oCellStyle.m_oBorder, &oCellStyle.m_oPadding) + L"</w:tcBorders>";
 	else if (TTableStyles::ETableRules::Groups == oTable.GetTableStyles().m_enRules && oTable.HaveColgroups())
 	{
-		oCell += L"<w:tcBorders>" + oTable.CalculateSidesToClean(unColumnNumber) + L"</w:tcBorders>";
+		const std::wstring wsBorders{oTable.CalculateSidesToClean(unColumnNumber)};
+
+		if (!wsBorders.empty())
+			oCell += L"<w:tcBorders>" + wsBorders + L"</w:tcBorders>";
 	}
-	// else if (oTableStyles.m_bHaveBorderAttribute)
-	// 	oCell += L"<w:tcBorders>" + CreateOutsetBorders(oTableStyles.m_enRules) + L"</w:tcBorders>";
 
 	if (!oCellStyle.m_oBackground.Empty())
 	{

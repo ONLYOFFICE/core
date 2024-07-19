@@ -136,6 +136,7 @@ namespace NSCSS
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel = 0, bool bHardMode = true) override;
 		bool SetValue(const CDigit& oValue);
+		bool SetValue(double dValue, unsigned int unLevel, bool bHardMode);
 
 		bool Empty() const override;
 		bool Zero() const;
@@ -449,8 +450,11 @@ namespace NSCSS
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetWidth(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetWidth(double dValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetStyle(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetColor(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+
+		void SetNone(unsigned int unLevel, bool bHardMode);
 
 		void Block();
 		void Unblock();
@@ -494,6 +498,7 @@ namespace NSCSS
 
 		bool SetSides(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetWidth(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetWidth(double dValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetStyle(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetColor(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetCollapse(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
@@ -521,6 +526,8 @@ namespace NSCSS
 		bool SetWidthBottomSide(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetStyleBottomSide(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetColorBottomSide(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+
+		void SetNone(unsigned int unLevel, bool bHardMode = false);
 
 		void Block();
 		void Unblock();

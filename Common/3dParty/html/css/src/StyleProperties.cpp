@@ -420,6 +420,17 @@ namespace NSCSS
 		return true;
 	}
 
+	bool CDigit::SetValue(double dValue, unsigned int unLevel, bool bHardMode)
+	{
+		if (CHECK_CONDITIONS && !bHardMode)
+			return false;
+
+		m_oValue  = dValue;
+		m_unLevel = unLevel;
+
+		return true;
+	}
+
 	bool TRGB::Empty() const
 	{
 		return 0 == uchRed && 0 == uchGreen && 0 == uchBlue;
@@ -1583,9 +1594,7 @@ namespace NSCSS
 
 		if (L"none" == wsValue)
 		{
-			SetColor(L"#ffffff", unLevel, bHardMode);
-			SetStyle(L"solid", unLevel, bHardMode);
-			SetWidth(L"0",unLevel,bHardMode);
+			SetNone(unLevel, bHardMode);
 			return true;
 		}
 
@@ -1625,6 +1634,11 @@ namespace NSCSS
 		return m_oWidth.SetValue(wsNewValue, unLevel, bHardMode);
 	}
 
+	bool CBorderSide::SetWidth(double dValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oWidth.SetValue(dValue, unLevel, bHardMode);
+	}
+
 	bool CBorderSide::SetStyle(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oStyle.SetValue(wsValue, {std::make_pair(L"dotted", L"dotted"), std::make_pair(L"dashed", L"dashed"), std::make_pair(L"solid", L"single"),
@@ -1635,6 +1649,13 @@ namespace NSCSS
 	bool CBorderSide::SetColor(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oColor.SetValue(wsValue, unLevel, bHardMode);
+	}
+
+	void CBorderSide::SetNone(unsigned int unLevel, bool bHardMode)
+	{
+		SetColor(L"#ffffff", unLevel, bHardMode);
+		SetStyle(L"solid", unLevel, bHardMode);
+		SetWidth(L"0",unLevel,bHardMode);
 	}
 
 	void CBorderSide::Block()
@@ -1771,6 +1792,18 @@ namespace NSCSS
 		return bResult;
 	}
 
+	bool CBorder::SetWidth(double dValue, unsigned int unLevel, bool bHardMode)
+	{
+		bool bResult = false;
+
+		if (m_oLeft  .SetWidth(dValue, unLevel, bHardMode)) bResult = true;
+		if (m_oTop   .SetWidth(dValue, unLevel, bHardMode)) bResult = true;
+		if (m_oRight .SetWidth(dValue, unLevel, bHardMode)) bResult = true;
+		if (m_oBottom.SetWidth(dValue, unLevel, bHardMode)) bResult = true;
+
+		return bResult;
+	}
+
 	bool CBorder::SetStyle(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		bool bResult = false;
@@ -1878,6 +1911,14 @@ namespace NSCSS
 	bool CBorder::SetColorBottomSide(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oBottom.SetColor(wsValue, unLevel, bHardMode);
+	}
+
+	void CBorder::SetNone(unsigned int unLevel, bool bHardMode)
+	{
+		m_oLeft  .SetNone(unLevel, bHardMode);
+		m_oTop   .SetNone(unLevel, bHardMode);
+		m_oRight .SetNone(unLevel, bHardMode);
+		m_oBottom.SetNone(unLevel, bHardMode);
 	}
 
 	void CBorder::Block()
@@ -2429,10 +2470,10 @@ namespace NSCSS
 	bool CFont::SetSize(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		const std::vector<std::pair<std::wstring, std::wstring>> arAbsoluteFontValues =
-			{{L"xx-small", L"7.5pt"}, {L"xx-large", L"36pt" },
-			 {L"x-small", L"10pt"  }, {L"x-large", L"24pt"  },
-			 {L"small",    L"12pt" }, {L"medium",  L"13.5pt"},
-			 {L"large",    L"18pt" }}; 
+		    {{L"xx-small", L"7.5pt"}, {L"xx-large", L"36pt" },
+		     {L"x-small",  L"10pt" }, {L"x-large",  L"24pt"  },
+		     {L"small",    L"12pt" }, {L"medium",   L"13.5pt"},
+		     {L"large",    L"18pt" }};
 
 		size_t unFoundPos = std::wstring::npos;
 		std::wstring wsNewValue(wsValue);

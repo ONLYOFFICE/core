@@ -791,6 +791,17 @@ namespace OOX
 			}
 			return objectPtr;
 		}
+		void CMetadataBlock::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::Mdb*>(obj.get());
+			for(auto i : ptr->rgMdir)
+			{
+				auto  record(new CMetadataRecord);
+				record->m_oT = i.imdt;
+				record->m_oV = i.mdd;
+				m_arrItems.push_back(record);
+			}
+		}
 		//-------------------------------------------------------------------------------------
 		CMetadataBlocks::CMetadataBlocks() {}
 		CMetadataBlocks::~CMetadataBlocks() {}
@@ -853,6 +864,13 @@ namespace OOX
 			ptr1->CMdb = ptr->m_BrtMdbs.size();
 
 			return objectPtr;
+		}
+		void CMetadataBlocks::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::ESMDB*>(obj.get());
+			m_oCount = ptr->m_BrtMdbs.size();
+			for(auto i: ptr->m_BrtMdbs)
+				m_arrItems.push_back(new CMetadataBlock(i));
 		}
 		//-------------------------------------------------------------------------------------
 		CMetadataTypes::CMetadataTypes() {}
@@ -1247,6 +1265,10 @@ namespace OOX
 				m_oMetadataStrings = streamPtr->m_ESSTR;
 			if(streamPtr->m_ESMDTINFO != nullptr)
 				m_oMetadataTypes = streamPtr->m_ESMDTINFO;
+            if(streamPtr->m_ValueMetadataBlocks != nullptr)
+                m_oValueMetadata = streamPtr->m_ValueMetadataBlocks;
+            if(streamPtr->m_CellMetadataBlocks != nullptr)
+                m_oCellMetadata = streamPtr->m_CellMetadataBlocks;
 		}
 		XLS::BaseObjectPtr CMetadata::toBin() const
 		{

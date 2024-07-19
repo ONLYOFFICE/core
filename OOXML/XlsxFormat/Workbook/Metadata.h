@@ -215,6 +215,7 @@ namespace OOX
 		class CMetadataString : public WritingElement
 		{
 		public:
+			WritingElement_XlsbConstructors(CMetadataString)
 			WritingElement_AdditionMethods(CMetadataString)
 			CMetadataString();
 			virtual ~CMetadataString();
@@ -222,6 +223,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
+			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin() const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -383,6 +385,7 @@ namespace OOX
 		class CMetadataStrings : public WritingElementWithChilds<CMetadataString>
 		{
 		public:
+			WritingElement_XlsbConstructors(CMetadataStrings)
 			WritingElement_AdditionMethods(CMetadataStrings)
 			CMetadataStrings();
 			virtual ~CMetadataStrings();
@@ -390,6 +393,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
+			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin() const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -433,6 +437,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
+			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin() const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -458,7 +463,7 @@ namespace OOX
 			CMetadataFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
 			virtual ~CMetadataFile();
 
-			//void readBin(const CPath& oPath);
+			void readBin(const CPath& oPath);
 			XLS::BaseObjectPtr WriteBin() const;
 			virtual void read(const CPath& oPath);
 			virtual void read(const CPath& oRootPath, const CPath& oPath);

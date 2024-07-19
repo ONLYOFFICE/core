@@ -632,6 +632,13 @@ namespace OOX
 			XLS::BaseObjectPtr objectPtr(ptr);
 			return objectPtr;
 		}
+		void CMetadataStrings::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::ESSTR*>(obj.get());
+			m_oCount = ptr->m_BrtStrs.size();
+			for(auto i:ptr->m_BrtStrs)
+				m_arrItems.push_back(new CMetadataString(i));
+		}
 		//--------------------------------------------------------------------------------------------------------
 		CMetadataString::CMetadataString() {}
 		CMetadataString::~CMetadataString() {}
@@ -655,6 +662,13 @@ namespace OOX
 			else
 				ptr->stText = L"";
 			return objectPtr;
+		}
+		void CMetadataString::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			if(obj == nullptr)
+				return;
+			auto ptr = static_cast<XLSB::Str*>(obj.get());
+			m_oV =  ptr->stText;
 		}
 		void CMetadataString::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
@@ -1185,6 +1199,12 @@ namespace OOX
 		{
 			return et_x_Metadata;
 		}
+		void CMetadata::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto streamPtr = static_cast<XLSB::MetadataStream*>(obj.get());
+			if(streamPtr->m_ESSTR != nullptr)
+				m_oMetadataStrings = streamPtr->m_ESSTR;
+		}
 		XLS::BaseObjectPtr CMetadata::toBin() const
 		{
 			XLSB::MetadataStreamPtr streamPtr(new XLSB::MetadataStream);
@@ -1329,15 +1349,35 @@ xmlns:xda=\"http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray\
 		{
 			m_oReadPath = oPath;
 
-			XmlUtils::CXmlLiteReader oReader;
+			if (m_oReadPath.GetExtention() == _T(".bin"))
+			{
+				readBin(m_oReadPath);
+			}
+			else
+			{
+				XmlUtils::CXmlLiteReader oReader;
 
-			if (!oReader.FromFile(oPath.GetPath()))
-				return;
+				if (!oReader.FromFile(oPath.GetPath()))
+					return;
 
-			if (!oReader.ReadNextNode())
-				return;
+				if (!oReader.ReadNextNode())
+					return;
 
-			m_oMetadata = oReader;
+				m_oMetadata = oReader;
+			}
+		}
+		void CMetadataFile::readBin(const CPath& oPath)
+		{
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if (xlsb)
+			{
+				XLSB::MetadataStreamPtr streamPtr(new XLSB::MetadataStream);
+
+				xlsb->ReadBin(oPath, streamPtr.get());
+				XLS::BaseObjectPtr objectPtr(streamPtr);
+                m_oMetadata = CMetadata();
+				m_oMetadata->fromBin(objectPtr);
+			}
 		}
 		XLS::BaseObjectPtr CMetadataFile::WriteBin() const
 		{

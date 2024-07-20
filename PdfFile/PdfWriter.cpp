@@ -1192,14 +1192,6 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 		}
 	}
 
-	PdfWriter::CFontTrueType* pFontTT = NULL;
-	if (oInfo.IsTextField() || oInfo.IsDropDownList())
-	{
-		pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
-		if (!pFontTT)
-			return S_OK;
-	}
-
 	double dX, dY, dW, dH;
 	oInfo.GetBounds(dX, dY, dW, dH);
 
@@ -1337,6 +1329,7 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 
 		if (!isPlaceHolder)
 			pField->SetTextValue(wsValue);
+		PdfWriter::CFontTrueType* pFontTT = NULL;
 
 		if (!isComb && pPr->IsMultiLine())
 		{
@@ -1356,6 +1349,8 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 				pCodes2[unIndex] = ushCode;
 				pWidths[unIndex] = ppFonts[unIndex]->GetWidth(pCodes[unIndex]);
 			}
+
+			pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
 			
 			m_oLinesManager.Init(pCodes2, pWidths, unLen, ushSpaceCode, ushNewLineCode, pFontTT->GetLineHeight(), pFontTT->GetAscent());
 			
@@ -1459,6 +1454,8 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 		RELEASEARRAYOBJECTS(pCodes);
 		RELEASEARRAYOBJECTS(ppFonts);
 
+		if (pField->GetFont() && pField->GetFont() != m_pFont && pField->GetFont()->GetFontType() == PdfWriter::fontCIDType2)
+			pFontTT = m_pDocument->CreateTrueTypeFont((PdfWriter::CFontCidTrueType*)pField->GetFont());
 		pField->SetDefaultAppearance(pFontTT, m_oFont.GetSize(), PdfWriter::TRgb(oColor.r, oColor.g, oColor.b));
 
 		std::wstring wsPlaceHolder = pPr->GetPlaceHolder();
@@ -1529,6 +1526,11 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 		pField->SetComboFlag(true);
 		pField->SetEditFlag(pPr->IsEditComboBox());
 
+		PdfWriter::CFontTrueType* pFontTT = NULL;
+		if (pField->GetFont() && pField->GetFont() != m_pFont && pField->GetFont()->GetFontType() == PdfWriter::fontCIDType2)
+			pFontTT = m_pDocument->CreateTrueTypeFont((PdfWriter::CFontCidTrueType*)pField->GetFont());
+		else
+			pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
 		pField->SetDefaultAppearance(pFontTT, m_oFont.GetSize(), oInfo.IsPlaceHolder() ? oPlaceHolderColor : oNormalColor);
 
 		if (!pPr->GetPlaceHolder().empty())

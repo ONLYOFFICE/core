@@ -165,7 +165,7 @@ namespace PdfWriter
 		const TRgb& GetNormalColor();
 		const TRgb& GetPlaceHolderColor();
 		void SetFormat(const CFormFieldInfo::CTextFormFormat* pFormat);
-
+		CFontDict* GetFont();
 
 	protected:
 
@@ -194,6 +194,7 @@ namespace PdfWriter
 		TRgb              m_oPlaceHolderColor;
 		CDictObject*      m_pFocus;
 		CDictObject*      m_pBlur;
+		CFontDict*        m_pFont;
 	};
 
 	class CTextField : public CFieldBase
@@ -417,6 +418,7 @@ namespace PdfWriter
 		void DrawTextUpLeftArrow(const std::string& sColor);
 
 		CStream* GetStream() { return m_pStream; }
+		CFontDict* GetFont() { return m_pFont; }
 
 		bool        m_bStart;
 

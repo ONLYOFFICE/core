@@ -77,6 +77,7 @@ namespace PdfWriter
 		m_pAppearance = NULL;
 		m_pFocus      = NULL;
 		m_pBlur       = NULL;
+		m_pFont       = NULL;
 	}
 	void CFieldBase::SetReadOnlyFlag(bool isReadOnly)
 	{
@@ -268,6 +269,7 @@ namespace PdfWriter
 		}
 
 		pNormal->DrawSimpleText(wsValue, pCodes, unCount, pFont, dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), ppFonts, pShifts);
+		m_pFont = pNormal->GetFont();
 	}
 	void CFieldBase::StartTextAppearance(CFontDict* pFont, const double& dFontSize, const TRgb& oColor, const double& dAlpha)
 	{
@@ -288,6 +290,7 @@ namespace PdfWriter
 		}
 
 		pNormal->StartDrawText(pFont, dFontSize, oColor.r, oColor.g, oColor.b, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
+		m_pFont = pNormal->GetFont();
 	}
 	void CFieldBase::AddLineToTextAppearance(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts, const double* pShifts)
 	{
@@ -296,6 +299,7 @@ namespace PdfWriter
 
 		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
 		pNormal->DrawTextLine(dX, dY, pCodes, unCodesCount, ppFonts, pShifts);
+		m_pFont = pNormal->GetFont();
 	}
 	void CFieldBase::EndTextAppearance()
 	{
@@ -697,6 +701,10 @@ namespace PdfWriter
 			scriptV = prefix + scriptF + postfix;
 			AddScriptToAA("F", scriptF, pAA);
 		}
+	}
+	CFontDict* CFieldBase::GetFont()
+	{
+		return m_pFont;
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextField

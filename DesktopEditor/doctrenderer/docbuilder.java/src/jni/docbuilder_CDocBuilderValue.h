@@ -13,7 +13,7 @@ extern "C" {
  * Signature: ()J
  */
 JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1Create
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -21,7 +21,7 @@ JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1Create
  * Signature: (J)J
  */
 JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1Copy
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -29,7 +29,7 @@ JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1Copy
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_docbuilder_CDocBuilderValue_c_1Destroy
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -37,7 +37,7 @@ JNIEXPORT void JNICALL Java_docbuilder_CDocBuilderValue_c_1Destroy
  * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_docbuilder_CDocBuilderValue_c_1IsEmpty
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -45,7 +45,7 @@ JNIEXPORT jboolean JNICALL Java_docbuilder_CDocBuilderValue_c_1IsEmpty
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_docbuilder_CDocBuilderValue_c_1Clear
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -53,7 +53,7 @@ JNIEXPORT void JNICALL Java_docbuilder_CDocBuilderValue_c_1Clear
  * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_docbuilder_CDocBuilderValue_c_1IsNull
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -61,7 +61,7 @@ JNIEXPORT jboolean JNICALL Java_docbuilder_CDocBuilderValue_c_1IsNull
  * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_docbuilder_CDocBuilderValue_c_1IsUndefined
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -69,7 +69,7 @@ JNIEXPORT jboolean JNICALL Java_docbuilder_CDocBuilderValue_c_1IsUndefined
  * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_docbuilder_CDocBuilderValue_c_1IsInt
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -77,7 +77,7 @@ JNIEXPORT jboolean JNICALL Java_docbuilder_CDocBuilderValue_c_1IsInt
  * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_docbuilder_CDocBuilderValue_c_1IsDouble
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -85,7 +85,7 @@ JNIEXPORT jboolean JNICALL Java_docbuilder_CDocBuilderValue_c_1IsDouble
  * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_docbuilder_CDocBuilderValue_c_1IsString
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -93,7 +93,7 @@ JNIEXPORT jboolean JNICALL Java_docbuilder_CDocBuilderValue_c_1IsString
  * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_docbuilder_CDocBuilderValue_c_1IsFunction
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -101,7 +101,7 @@ JNIEXPORT jboolean JNICALL Java_docbuilder_CDocBuilderValue_c_1IsFunction
  * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_docbuilder_CDocBuilderValue_c_1IsObject
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -109,7 +109,7 @@ JNIEXPORT jboolean JNICALL Java_docbuilder_CDocBuilderValue_c_1IsObject
  * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_docbuilder_CDocBuilderValue_c_1IsArray
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -117,7 +117,7 @@ JNIEXPORT jboolean JNICALL Java_docbuilder_CDocBuilderValue_c_1IsArray
  * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_docbuilder_CDocBuilderValue_c_1GetLength
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -125,7 +125,7 @@ JNIEXPORT jint JNICALL Java_docbuilder_CDocBuilderValue_c_1GetLength
  * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_docbuilder_CDocBuilderValue_c_1ToBool
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -133,7 +133,7 @@ JNIEXPORT jboolean JNICALL Java_docbuilder_CDocBuilderValue_c_1ToBool
  * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_docbuilder_CDocBuilderValue_c_1ToInt
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -141,7 +141,7 @@ JNIEXPORT jint JNICALL Java_docbuilder_CDocBuilderValue_c_1ToInt
  * Signature: (J)D
  */
 JNIEXPORT jdouble JNICALL Java_docbuilder_CDocBuilderValue_c_1ToDouble
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -149,7 +149,7 @@ JNIEXPORT jdouble JNICALL Java_docbuilder_CDocBuilderValue_c_1ToDouble
  * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_docbuilder_CDocBuilderValue_c_1ToString
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -157,7 +157,7 @@ JNIEXPORT jstring JNICALL Java_docbuilder_CDocBuilderValue_c_1ToString
  * Signature: (JLjava/lang/String;)J
  */
 JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1GetProperty
-  (JNIEnv *, jobject, jlong, jstring);
+  (JNIEnv *, jclass, jlong, jstring);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -165,7 +165,7 @@ JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1GetProperty
  * Signature: (JI)J
  */
 JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1GetByIndex
-  (JNIEnv *, jobject, jlong, jint);
+  (JNIEnv *, jclass, jlong, jint);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -173,7 +173,7 @@ JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1GetByIndex
  * Signature: (JLjava/lang/String;J)V
  */
 JNIEXPORT void JNICALL Java_docbuilder_CDocBuilderValue_c_1SetProperty
-  (JNIEnv *, jobject, jlong, jstring, jlong);
+  (JNIEnv *, jclass, jlong, jstring, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -181,7 +181,7 @@ JNIEXPORT void JNICALL Java_docbuilder_CDocBuilderValue_c_1SetProperty
  * Signature: (JIJ)V
  */
 JNIEXPORT void JNICALL Java_docbuilder_CDocBuilderValue_c_1SetByIndex
-  (JNIEnv *, jobject, jlong, jint, jlong);
+  (JNIEnv *, jclass, jlong, jint, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -189,7 +189,7 @@ JNIEXPORT void JNICALL Java_docbuilder_CDocBuilderValue_c_1SetByIndex
  * Signature: (Z)J
  */
 JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1CreateWithBool
-  (JNIEnv *, jobject, jboolean);
+  (JNIEnv *, jclass, jboolean);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -197,7 +197,7 @@ JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1CreateWithBool
  * Signature: (I)J
  */
 JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1CreateWithInt
-  (JNIEnv *, jobject, jint);
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -205,7 +205,7 @@ JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1CreateWithInt
  * Signature: (D)J
  */
 JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1CreateWithDouble
-  (JNIEnv *, jobject, jdouble);
+  (JNIEnv *, jclass, jdouble);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -213,7 +213,7 @@ JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1CreateWithDouble
  * Signature: (Ljava/lang/String;)J
  */
 JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1CreateWithString
-  (JNIEnv *, jobject, jstring);
+  (JNIEnv *, jclass, jstring);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -221,7 +221,7 @@ JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1CreateWithString
  * Signature: ()J
  */
 JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1CreateUndefined
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -229,7 +229,7 @@ JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1CreateUndefined
  * Signature: ()J
  */
 JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1CreateNull
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -237,7 +237,7 @@ JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1CreateNull
  * Signature: (I)J
  */
 JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1CreateArray
-  (JNIEnv *, jobject, jint);
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -245,7 +245,7 @@ JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1CreateArray
  * Signature: (JLjava/lang/String;)J
  */
 JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1Call0
-  (JNIEnv *, jobject, jlong, jstring);
+  (JNIEnv *, jclass, jlong, jstring);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -253,7 +253,7 @@ JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1Call0
  * Signature: (JLjava/lang/String;J)J
  */
 JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1Call1
-  (JNIEnv *, jobject, jlong, jstring, jlong);
+  (JNIEnv *, jclass, jlong, jstring, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -261,7 +261,7 @@ JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1Call1
  * Signature: (JLjava/lang/String;JJ)J
  */
 JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1Call2
-  (JNIEnv *, jobject, jlong, jstring, jlong, jlong);
+  (JNIEnv *, jclass, jlong, jstring, jlong, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -269,7 +269,7 @@ JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1Call2
  * Signature: (JLjava/lang/String;JJJ)J
  */
 JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1Call3
-  (JNIEnv *, jobject, jlong, jstring, jlong, jlong, jlong);
+  (JNIEnv *, jclass, jlong, jstring, jlong, jlong, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -277,7 +277,7 @@ JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1Call3
  * Signature: (JLjava/lang/String;JJJJ)J
  */
 JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1Call4
-  (JNIEnv *, jobject, jlong, jstring, jlong, jlong, jlong, jlong);
+  (JNIEnv *, jclass, jlong, jstring, jlong, jlong, jlong, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -285,7 +285,7 @@ JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1Call4
  * Signature: (JLjava/lang/String;JJJJJ)J
  */
 JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1Call5
-  (JNIEnv *, jobject, jlong, jstring, jlong, jlong, jlong, jlong, jlong);
+  (JNIEnv *, jclass, jlong, jstring, jlong, jlong, jlong, jlong, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderValue
@@ -293,7 +293,7 @@ JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1Call5
  * Signature: (JLjava/lang/String;JJJJJJ)J
  */
 JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderValue_c_1Call6
-  (JNIEnv *, jobject, jlong, jstring, jlong, jlong, jlong, jlong, jlong, jlong);
+  (JNIEnv *, jclass, jlong, jstring, jlong, jlong, jlong, jlong, jlong, jlong);
 
 #ifdef __cplusplus
 }

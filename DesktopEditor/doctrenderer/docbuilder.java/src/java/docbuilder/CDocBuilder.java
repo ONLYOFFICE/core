@@ -1,10 +1,98 @@
 package docbuilder;
 
 public class CDocBuilder {
+    public CDocBuilder() {
+        c_internal = c_Create();
+    }
 
-    private long c_internal = 0;
+    protected void finalize() {
+        c_Destroy(c_internal);
+    }
 
-    // NATIVE METHODS:
+    public int openFile(String path, String params) {
+        return c_OpenFile(c_internal, path, params);
+    }
+
+    public boolean createFile(int type) {
+        return c_CreateFileByType(c_internal, type);
+    }
+
+    public boolean createFile(String extension) {
+        return c_CreateFileByExtension(c_internal, extension);
+    }
+
+    public void setTmpFolder(String folder) {
+        c_SetTmpFolder(c_internal, folder);
+    }
+
+    public int saveFile(int type, String path) {
+        return c_SaveFileByType(c_internal, type, path);
+    }
+
+    public int saveFile(int type, String path, String params) {
+        return c_SaveFileByTypeWithParams(c_internal, type, path, params);
+    }
+
+    public int saveFile(String extension, String path) {
+        return c_SaveFileByExtension(c_internal, extension, path);
+    }
+
+    public int saveFile(String extension, String path, String params) {
+        return c_SaveFileByExtensionWithParams(c_internal, extension, path, params);
+    }
+
+    public void closeFile() {
+        c_CloseFile(c_internal);
+    }
+
+    public boolean executeCommand(String command) {
+        return c_ExecuteCommand(c_internal, command);
+    }
+
+    public boolean executeCommand(String command, CDocBuilderValue retValue) {
+        return c_ExecuteCommandWithRetValue(c_internal, command, retValue.c_internal);
+    }
+
+    public boolean run(String path) {
+        return c_Run(c_internal, path);
+    }
+
+    public boolean runText(String commands) {
+        return c_RunText(c_internal, commands);
+    }
+
+    public void setProperty(String param, String value) {
+        c_SetProperty(c_internal, param, value);
+    }
+
+    public void writeData(String path, String value, boolean append) {
+        c_WriteData(c_internal, path, value, append);
+    }
+
+    public boolean isSaveWithDoctrendererMode() {
+        return c_IsSaveWithDoctrendererMode(c_internal);
+    }
+
+    public String getVersion() {
+        return c_GetVersion(c_internal);
+    }
+
+    public CDocBuilderContext getContext() {
+        return new CDocBuilderContext(c_GetContext(c_internal));
+    }
+
+    public static void initialize() {
+        c_Initialize();
+    }
+
+    public static void dispose() {
+        c_Dispose();
+    }
+
+
+    long c_internal = 0;
+
+    // Native static methods
     private static native long c_Create();
     private static native void c_Destroy(long self);
 

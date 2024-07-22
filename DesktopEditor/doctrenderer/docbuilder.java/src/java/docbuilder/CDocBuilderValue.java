@@ -5,7 +5,7 @@ public class CDocBuilderValue {
         c_internal = c_Create();
     }
 
-    private CDocBuilderValue(long internal) {
+    CDocBuilderValue(long internal) {
         c_internal = internal;
     }
 
@@ -174,9 +174,9 @@ public class CDocBuilderValue {
     }
 
 
-    private long c_internal = 0;
+    long c_internal = 0;
 
-    // NATIVE METHODS:
+    // Native static methods
     private static native long c_Create();
     private static native long c_Copy(long other);
     private static native void c_Destroy(long self);

@@ -5207,7 +5207,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 		}	
 
 
-		if (*sType == L"pattern" && pSpPr->Fill.m_type != PPTX::Logic::UniFill::blipFill)
+		if ((sType.IsInit() && (*sType == L"pattern")) && pSpPr->Fill.m_type != PPTX::Logic::UniFill::blipFill)
 		{
 			PPTX::Logic::PattFill* pPattFill = new PPTX::Logic::PattFill();
 			pPattFill->m_namespace = L"a";

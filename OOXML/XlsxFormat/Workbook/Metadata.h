@@ -48,6 +48,7 @@ namespace OOX
 		class CMdxKPI : public WritingElement
 		{
 		public:
+			WritingElement_XlsbConstructors(CMdxKPI)
 			WritingElement_AdditionMethods(CMdxKPI)
 			CMdxKPI();
 			virtual ~CMdxKPI();
@@ -55,6 +56,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
+			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin() const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -71,6 +73,7 @@ namespace OOX
 		class CMdxMemeberProp : public WritingElement
 		{
 		public:
+			WritingElement_XlsbConstructors(CMdxMemeberProp)
 			WritingElement_AdditionMethods(CMdxMemeberProp)
 			CMdxMemeberProp();
 			virtual ~CMdxMemeberProp();
@@ -78,6 +81,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
+			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin() const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -93,6 +97,7 @@ namespace OOX
 		class CMetadataStringIndex : public WritingElement
 		{
 		public:
+			WritingElement_XlsbConstructors(CMetadataStringIndex)
 			WritingElement_AdditionMethods(CMetadataStringIndex)
 			CMetadataStringIndex();
 			virtual ~CMetadataStringIndex();
@@ -100,6 +105,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
+			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin() const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -115,6 +121,7 @@ namespace OOX
 		class CMdxSet : public WritingElementWithChilds<CMetadataStringIndex>
 		{
 		public:
+			WritingElement_XlsbConstructors(CMdxSet)
 			WritingElement_AdditionMethods(CMdxSet)
 			CMdxSet();
 			virtual ~CMdxSet();
@@ -122,6 +129,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
+			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin() const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -138,6 +146,7 @@ namespace OOX
 		class CMdxTuple : public WritingElementWithChilds<CMetadataStringIndex>
 		{
 		public:
+			WritingElement_XlsbConstructors(CMdxTuple)
 			WritingElement_AdditionMethods(CMdxTuple)
 			CMdxTuple();
 			virtual ~CMdxTuple();
@@ -145,6 +154,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
+			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin() const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -168,6 +178,7 @@ namespace OOX
 		class CMdx : public WritingElement
 		{
 		public:
+			WritingElement_XlsbConstructors(CMdx)
 			WritingElement_AdditionMethods(CMdx)
 			CMdx();
 			virtual ~CMdx();
@@ -175,6 +186,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
+			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin() const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -196,6 +208,7 @@ namespace OOX
 		class CMdxMetadata : public WritingElementWithChilds<CMdx>
 		{
 		public:
+			WritingElement_XlsbConstructors(CMdxMetadata)
 			WritingElement_AdditionMethods(CMdxMetadata)
 			CMdxMetadata();
 			virtual ~CMdxMetadata();
@@ -203,6 +216,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
+			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin() const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);

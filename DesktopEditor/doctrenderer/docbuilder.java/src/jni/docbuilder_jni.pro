@@ -29,10 +29,10 @@ core_mac:JAVA_ARCH = darwin
 
 INCLUDEPATH += $$JDK_PATH/include/$$JAVA_ARCH
 
-
-
 SOURCES += \
-	docbuilder_CDocBuilderValue.cpp
+	docbuilder_CDocBuilderValue.cpp \
+	docbuilder_CDocBuilder.cpp
 
 HEADERS += \
-	docbuilder_CDocBuilderValue.h
+	docbuilder_CDocBuilderValue.h \
+	docbuilder_CDocBuilder.h

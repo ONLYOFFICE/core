@@ -85,14 +85,21 @@ public class CDocBuilder {
         c_Initialize();
     }
 
+    public static void initialize(String directory) {
+        c_InitializeWithDirectory(directory);
+    }
+
     public static void dispose() {
         c_Dispose();
     }
 
+    // Native code
+    static {
+        System.loadLibrary("docbuilder.jni");
+    }
 
     long c_internal = 0;
 
-    // Native static methods
     private static native long c_Create();
     private static native void c_Destroy(long self);
 

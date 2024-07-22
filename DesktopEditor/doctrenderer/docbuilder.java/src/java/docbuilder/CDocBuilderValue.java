@@ -173,10 +173,13 @@ public class CDocBuilderValue {
         return new CDocBuilderValue(c_Call6(c_internal, name, p1.c_internal, p2.c_internal, p3.c_internal, p4.c_internal, p5.c_internal, p6.c_internal));
     }
 
+    // Native code
+    static {
+        System.loadLibrary("docbuilder.jni");
+    }
 
     long c_internal = 0;
 
-    // Native static methods
     private static native long c_Create();
     private static native long c_Copy(long other);
     private static native void c_Destroy(long self);

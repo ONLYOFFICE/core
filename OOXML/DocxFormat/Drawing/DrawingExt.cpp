@@ -1186,6 +1186,32 @@ namespace OOX
                     }
                 }
             }
+			else if (obj->get_type() == XLS::typeFMD)
+            {
+                auto ptr = static_cast<XLSB::FMD*>(obj.get());
+
+                if (ptr != nullptr)
+                {
+                    if (ptr->m_DYNAMICARRAYMETADATA != nullptr)
+                    {
+                        OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+                        oExt->m_sUri = L"{bdbb8cdc-fa1e-496e-a857-3c3f30c029c3}";
+                        oExt->m_sAdditionalNamespace = L"xmlns:xda=\"http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray\"";
+						oExt->m_oDynamicArrayProperties = ptr->m_DYNAMICARRAYMETADATA;
+                        if (oExt)
+                            m_arrExt.push_back( oExt );
+                    }
+					else if(ptr->m_RICHDATAMETADATA != nullptr)
+					{
+						OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+                        oExt->m_sUri = L"{3E2802C4-A4D2-4D8B-9148-E3BE6C30E623}";
+                        oExt->m_sAdditionalNamespace = L"xmlns:xlrd=\"http://schemas.microsoft.com/office/spreadsheetml/2017/richdata\"";
+						oExt->m_oRichValueBlock = ptr->m_RICHDATAMETADATA;
+                        if (oExt)
+                            m_arrExt.push_back( oExt );
+					}
+                }
+            }
         }
 		EElementType COfficeArtExtensionList::getType() const
 		{

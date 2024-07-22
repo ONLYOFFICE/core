@@ -117,6 +117,10 @@ const bool MetadataStream::loadContent(BinProcessor& proc)
                 elements_.pop_back();
             }
         }break;
+        case rt_EndMetadata:
+        {
+            return true;
+        }break;
         default://skip
         {
             proc.SkipRecord();

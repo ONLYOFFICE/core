@@ -36,21 +36,22 @@
 namespace XLSB
 {
 
-    class FMD: public XLS::CompositeObject
-    {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FMD)
-    public:
-        FMD();
-        ~FMD();
+ 	class FMD: public XLS::CompositeObject
+	{
+		BASE_OBJECT_DEFINE_CLASS_NAME(FMD)
+	public:
+		FMD();
+		~FMD();
 
-        XLS::BaseObjectPtr clone();
+		XLS::BaseObjectPtr clone();
 
 		const bool loadContent(XLS::BinProcessor& proc) override;
 		const bool saveContent(XLS::BinProcessor& proc) override;
-
+        static const XLS::ElementType	type = XLS::typeFMD;
+        
 		bool                   m_BrtBeginFmd;
-        XLS::BaseObjectPtr     m_DYNAMICARRAYMETADATA;
-        XLS::BaseObjectPtr     m_RICHDATAMETADATA;
+	    XLS::BaseObjectPtr     m_DYNAMICARRAYMETADATA;
+		XLS::BaseObjectPtr     m_RICHDATAMETADATA;
 		bool			       m_bBrtEndFmd;
 
     };

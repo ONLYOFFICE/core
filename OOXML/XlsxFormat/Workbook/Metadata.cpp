@@ -44,6 +44,8 @@
 #include "../../XlsbFormat/Biff12_unions/MDXMBRPROP.h"
 #include "../../XlsbFormat/Biff12_unions/MDXSET.h"
 #include "../../XlsbFormat/Biff12_unions/MDXTUPLE.h"
+#include "../../XlsbFormat/Biff12_unions/DYNAMICARRAYMETADATA.h"
+#include "../../XlsbFormat/Biff12_unions/RICHDATAMETADATA.h"
 
 #include "../../XlsbFormat/Biff12_records/Str.h"
 #include "../../XlsbFormat/Biff12_records/Mdtinfo.h"
@@ -1162,6 +1164,11 @@ namespace OOX
 		{
 			return m_oExtLst->toBinMetadata();
 		}
+		void CFutureMetadataBlock::fromBin(XLS::BaseObjectPtr& obj)
+		{
+            m_oExtLst = OOX::Drawing::COfficeArtExtensionList();
+			m_oExtLst->fromBin(obj);
+		}
 		//-------------------------------------------------------------------------------------
 		CFutureMetadata::CFutureMetadata() {}
 		CFutureMetadata::~CFutureMetadata()
@@ -1237,6 +1244,20 @@ namespace OOX
 				ptr->FMDs.push_back(i->toBin());
 			return objectPtr;
 		}
+		void CFutureMetadata::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::ESFMD*>(obj.get());
+			if(ptr->m_BrtBeginEsfmd != nullptr)
+			{
+				auto beginPtr = static_cast<XLSB::BeginEsfmd*>(ptr->m_BrtBeginEsfmd.get());
+				m_oName = beginPtr->stName;
+			}
+			for(auto i : ptr->FMDs)
+			{
+				m_arrItems.push_back(new CFutureMetadataBlock(i));
+			}
+			m_oCount = m_arrItems.size();
+		}
 		//--------------------------------------------------------------------------------------------------------
 		CMetadata::CMetadata() {}
 		CMetadata::~CMetadata()
@@ -1269,6 +1290,8 @@ namespace OOX
                 m_oValueMetadata = streamPtr->m_ValueMetadataBlocks;
             if(streamPtr->m_CellMetadataBlocks != nullptr)
                 m_oCellMetadata = streamPtr->m_CellMetadataBlocks;
+			for(auto i : streamPtr->m_ESFMDs)
+				m_arFutureMetadata.push_back(new CFutureMetadata(i));
 		}
 		XLS::BaseObjectPtr CMetadata::toBin() const
 		{
@@ -1518,6 +1541,13 @@ xmlns:xda=\"http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray\
 				ptr->fCollapsed = m_oFCollapsed.get();
 			return objectPtr;
 		}
+		void CDynamicArrayProperties::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::DYNAMICARRAYMETADATA*>(obj.get());
+			auto endPtr = static_cast<XLSB::EndDynamicArrayPr*>(ptr->m_EndDynamicArrayPr.get());
+			m_oFDynamic = endPtr->fDynamic;
+			m_oFCollapsed = endPtr->fCollapsed;
+		}
 //-------------------------------------------------------------------------------------------------------------------------------------
 		CRichValueBlock::CRichValueBlock() {}
 		CRichValueBlock::~CRichValueBlock() {}
@@ -1560,6 +1590,14 @@ xmlns:xda=\"http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray\
 			else
 				ptr->irv = 0;
 			return objectPtr;
+		}
+		void CRichValueBlock::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::RICHDATAMETADATA*>(obj.get());
+			if(ptr->m_BeginRichValueBlock == nullptr)
+				return;
+			auto ptr1 = static_cast<XLSB::BeginRichValueBlock*>(ptr->m_BeginRichValueBlock.get());
+			m_oI = ptr1->irv;
 		}
 	}
 

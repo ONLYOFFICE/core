@@ -261,6 +261,7 @@ namespace OOX
 		class CFutureMetadataBlock : public WritingElement
 		{
 		public:
+			WritingElement_XlsbConstructors(CFutureMetadataBlock)
 			WritingElement_AdditionMethods(CFutureMetadataBlock)
 			CFutureMetadataBlock();
 			virtual ~CFutureMetadataBlock();
@@ -268,6 +269,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
+			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin() const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -414,6 +416,7 @@ namespace OOX
 		class CFutureMetadata : public WritingElementWithChilds<CFutureMetadataBlock>
 		{
 		public:
+			WritingElement_XlsbConstructors(CFutureMetadata)
 			WritingElement_AdditionMethods(CFutureMetadata)
 			CFutureMetadata();
 			virtual ~CFutureMetadata();
@@ -421,6 +424,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
+			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin() const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -492,6 +496,7 @@ namespace OOX
 		class CDynamicArrayProperties : public WritingElement
 		{
 		public:
+			WritingElement_XlsbConstructors(CDynamicArrayProperties)
 			WritingElement_AdditionMethods(CDynamicArrayProperties)
 			CDynamicArrayProperties();
 			virtual ~CDynamicArrayProperties();
@@ -499,6 +504,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
+			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -516,6 +522,7 @@ namespace OOX
 		class CRichValueBlock : public WritingElement
 		{
 		public:
+			WritingElement_XlsbConstructors(CRichValueBlock)
 			WritingElement_AdditionMethods(CRichValueBlock)
 			CRichValueBlock();
 			virtual ~CRichValueBlock();
@@ -523,6 +530,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
+			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);

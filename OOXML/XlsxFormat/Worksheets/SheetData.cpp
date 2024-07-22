@@ -2458,7 +2458,7 @@ namespace OOX
             {
                 m_oRow = ptr->m_Row;
                 auto pCELLMETA = static_cast<XLSB::CELLMETA*>(ptr->m_CELLMETA.get());
-                if(pCELLMETA != nullptr && false) // not convert without metadata file conversion
+                if(pCELLMETA != nullptr)
                 {
                     auto pCellMeta = static_cast<XLSB::CellMeta*>(pCELLMETA->m_BrtCellMeta.get());
                     if(pCellMeta != nullptr && pCellMeta->icmb)

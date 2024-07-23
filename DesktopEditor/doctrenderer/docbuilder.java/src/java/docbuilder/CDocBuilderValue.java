@@ -145,31 +145,31 @@ public class CDocBuilderValue {
         return new CDocBuilderValue(c_CreateArray(length));
     }
 
-    public CDocBuilderValue Call(String name) {
+    public CDocBuilderValue call(String name) {
         return new CDocBuilderValue(c_Call0(c_internal, name));
     }
 
-    public CDocBuilderValue Call(String name, CDocBuilderValue p1) {
+    public CDocBuilderValue call(String name, CDocBuilderValue p1) {
         return new CDocBuilderValue(c_Call1(c_internal, name, p1.c_internal));
     }
 
-    public CDocBuilderValue Call(String name, CDocBuilderValue p1, CDocBuilderValue p2) {
+    public CDocBuilderValue call(String name, CDocBuilderValue p1, CDocBuilderValue p2) {
         return new CDocBuilderValue(c_Call2(c_internal, name, p1.c_internal, p2.c_internal));
     }
 
-    public CDocBuilderValue Call(String name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3) {
+    public CDocBuilderValue call(String name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3) {
         return new CDocBuilderValue(c_Call3(c_internal, name, p1.c_internal, p2.c_internal, p3.c_internal));
     }
 
-    public CDocBuilderValue Call(String name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4) {
+    public CDocBuilderValue call(String name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4) {
         return new CDocBuilderValue(c_Call4(c_internal, name, p1.c_internal, p2.c_internal, p3.c_internal, p4.c_internal));
     }
 
-    public CDocBuilderValue Call(String name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4, CDocBuilderValue p5) {
+    public CDocBuilderValue call(String name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4, CDocBuilderValue p5) {
         return new CDocBuilderValue(c_Call5(c_internal, name, p1.c_internal, p2.c_internal, p3.c_internal, p4.c_internal, p5.c_internal));
     }
 
-    public CDocBuilderValue Call(String name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4, CDocBuilderValue p5, CDocBuilderValue p6) {
+    public CDocBuilderValue call(String name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4, CDocBuilderValue p5, CDocBuilderValue p6) {
         return new CDocBuilderValue(c_Call6(c_internal, name, p1.c_internal, p2.c_internal, p3.c_internal, p4.c_internal, p5.c_internal, p6.c_internal));
     }
 

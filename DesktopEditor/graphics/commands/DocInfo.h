@@ -177,7 +177,6 @@ public:
 	{
 		std::wstring wsTitle;
 		int nPage;
-		double dX;
 		double dY;
 		std::vector<CHeading> arrHeading;
 	};
@@ -191,7 +190,7 @@ public:
 private:
 	std::vector<CHeading> m_arrHeading;
 
-	CHeading ReadHeading(NSOnlineOfficeBinToPdf::CBufferReader* pReader);
+	int ReadHeading(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nPredLevel, std::vector<CHeading>* arrHeading);
 };
 
 

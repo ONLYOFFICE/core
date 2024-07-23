@@ -32,9 +32,11 @@ INCLUDEPATH += $$JDK_PATH/include/$$JAVA_ARCH
 SOURCES += \
 	docbuilder_CDocBuilderValue.cpp \
 	docbuilder_CDocBuilder.cpp \
-	docbuilder_CDocBuilderContextScope.cpp
+	docbuilder_CDocBuilderContextScope.cpp \
+	docbuilder_CDocBuilderContext.cpp
 
 HEADERS += \
 	docbuilder_CDocBuilderValue.h \
 	docbuilder_CDocBuilder.h \
-	docbuilder_CDocBuilderContextScope.h
+	docbuilder_CDocBuilderContextScope.h \
+	docbuilder_CDocBuilderContext.h

@@ -125,10 +125,19 @@ void WriteEmptyParagraph(NSStringUtils::CStringBuilder* pXml, bool bVahish = fal
 		pXml->WriteString(L"</w:pPr></w:p>");
 }
 
-void WriteLine(NSStringUtils::CStringBuilder* pXml, double dHeight, const std::wstring& wsColor)
+void WriteLine(NSStringUtils::CStringBuilder* pXml, const std::wstring& wsAlign, const std::wstring& wsColor, bool bShade, double dSize, double dWidth)
 {
+	if (dWidth < 0)
+		dWidth = -dWidth;
+
+	if (dSize < 0)
+		dSize = -dSize;
+
+	if (dWidth > 100)
+		dWidth = 0;
+
 	pXml->WriteNodeBegin(L"w:pict");
-	pXml->WriteString(L"<v:rect style=\"width:0;height:" + std::to_wstring(dHeight) + L"pt\" o:hralign=\"center\" o:hrstd=\"t\" o:hr=\"t\" fillcolor=\"#" + wsColor + L"\" stroked=\"f\"/>");
+	pXml->WriteString(L"<v:rect style=\"height:" + std::to_wstring(dSize) + L"pt\"" + ((0. != dWidth) ? (L" o:hrpct=\"" + std::to_wstring((int)(10. * dWidth)) + L"\"") : L"") + L" o:hralign=\"" + wsAlign + L"\" o:hrstd=\"t\" " + ((bShade) ? L"o:hrnoshade=\"t\" " : L"") + L"o:hr=\"t\" fillcolor=\"#" + wsColor + L"\" stroked=\"f\"/>");
 	pXml->WriteNodeEnd(L"w:pict");
 }
 
@@ -2310,7 +2319,7 @@ private:
 			else if(sName == L"dd")
 			{
 				CTextSettings oTSP(oTS);
-				oTSP.sPStyle += L"<w:ind w:left=\"567\"/>";
+				oTSP.AddPStyle(L"<w:ind w:left=\"720\"/>");
 				bResult = readStream(&oXmlData, sSelectors, oTSP);
 			}
 			// aside возможно использовать для сносок в epub
@@ -2357,7 +2366,7 @@ private:
 				bResult = readStream(&oXmlData, sSelectors, oNewTS);
 			}
 			// С нового абзаца
-			else if(sName == L"article" || sName == L"header" || sName == L"main" || sName == L"dir" ||
+			else if(sName == L"article" || sName == L"header" || sName == L"main" ||
 					sName == L"summary" || sName == L"footer" || sName == L"nav" || sName == L"figcaption" || sName == L"form" ||
 					sName == L"option" || sName == L"dt"  || sName == L"p"    ||
 					sName == L"section" || sName == L"figure" || sName == L"dl"  || sName == L"legend"     || sName == L"map"  ||
@@ -2377,9 +2386,45 @@ private:
 				}
 				if (bPrint)
 				{
+					NSCSS::NSProperties::CDigit oSize, oWidth;
+					NSCSS::NSProperties::CColor oColor;
+					bool bShade = false;
+					std::wstring wsAlign{L"center"};
+
+					if (m_oLightReader.MoveToFirstAttribute())
+					{
+						std::wstring wsAttributeName;
+						do
+						{
+							wsAttributeName =  m_oLightReader.GetName();
+
+							if (L"align" == wsAttributeName)
+							{
+								const std::wstring wsValue{m_oLightReader.GetText()};
+
+								if (NSStringFinder::Equals(L"left", wsValue))
+									wsAlign = L"left";
+								else if (NSStringFinder::Equals(L"right", wsValue))
+									wsAlign = L"right";
+								else if (NSStringFinder::Equals(L"center", wsValue))
+									wsAlign = L"center";
+							}
+							if (L"color" == wsAttributeName)
+								oColor.SetValue(m_oLightReader.GetText());
+							else if (L"noshade" == wsAttributeName)
+								bShade = true;
+							else if (L"size" == wsAttributeName)
+								oSize.SetValue(m_oLightReader.GetText());
+							else if (L"width" == wsAttributeName)
+								oWidth.SetValue(m_oLightReader.GetText());
+						} while (m_oLightReader.MoveToNextAttribute());
+
+						m_oLightReader.MoveToElement();
+					}
+
 					const bool bOpenedP = OpenP(&oXmlData);
 					OpenR(&oXmlData);
-					WriteLine(&oXmlData, 1.5, L"a0a0a0");
+					WriteLine(&oXmlData, wsAlign, (!oColor.Empty()) ? oColor.ToWString() : L"a0a0a0", bShade, (!oSize.Empty()) ? oSize.ToDouble(NSCSS::Point) : 1.5, (NSCSS::UnitMeasure::Percent == oWidth.GetUnitMeasure()) ? oWidth.ToDouble() : 0);
 					CloseR(&oXmlData);
 					if (bOpenedP)
 						CloseP(&oXmlData, sSelectors);
@@ -2388,7 +2433,7 @@ private:
 			}
 			// Меню
 			// Маркированный список
-			else if(sName == L"menu" || sName == L"ul" || sName == L"select" || sName == L"datalist")
+			else if(sName == L"menu" || sName == L"ul" || sName == L"select" || sName == L"datalist" || sName == L"dir")
 				readLi(&oXmlData, sSelectors, oTS, true);
 			// Нумерованный список
 			else if(sName == L"ol")

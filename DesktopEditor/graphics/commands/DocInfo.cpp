@@ -164,48 +164,60 @@ bool CPageRotate::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafile
 	return true;
 }
 
+CHeadings::CHeading::CHeading()
+{
+	nPage = 0;
+	dY = 0.0;
+	pParent = NULL;
+}
+CHeadings::CHeading::~CHeading()
+{
+	for (int i = 0; i < arrHeading.size(); ++i)
+		RELEASEOBJECT(arrHeading[i]);
+}
+
 CHeadings::CHeadings() : IAdvancedCommand(AdvancedCommandType::Headings) {}
-const std::vector<CHeadings::CHeading>& CHeadings::GetHeading() { return m_arrHeading; }
+CHeadings::~CHeadings()
+{
+	for (int i = 0; i < m_arrHeading.size(); ++i)
+		RELEASEOBJECT(m_arrHeading[i]);
+}
+const std::vector<CHeadings::CHeading*>& CHeadings::GetHeading() { return m_arrHeading; }
 bool CHeadings::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
 {
 	int nPredLevel = 0;
-	std::vector<CHeading>* arrPredHeading = &m_arrHeading;
-	std::vector<CHeading>* arrHeading = &m_arrHeading;
+	std::vector<CHeading*>* arrHeading = &m_arrHeading;
+	CHeading* pParent = NULL;
 	int nHeadings = pReader->ReadInt();
 	for (int i = 0; i < nHeadings; ++i)
 	{
 		int nLevel = pReader->ReadInt();
+		// TODO если первым заголовком приходит заголовок 1+ уровня
 		// TODO если различие уровня вложенности на 2+
 		if (nLevel > nPredLevel)
 		{
-			arrPredHeading = arrHeading;
-			arrHeading = &arrHeading->back().arrHeading;
-			nPredLevel = nLevel;
+			pParent = arrHeading->back();
+			arrHeading = &pParent->arrHeading;
 		}
 		else if (nLevel < nPredLevel)
 		{
-			arrHeading = arrPredHeading;
-			arrPredHeading = 0; // TODO получить предыдущий массив на возврате
-			nPredLevel = nLevel;
+			pParent = pParent ? pParent->pParent : NULL;
+			arrHeading = &pParent->arrHeading;
 		}
-		else
-		{
-			//m_arrHeading.push_back(oHeading);
-		}
+		nPredLevel = nLevel;
 
-		//ReadHeading(pReader, nPredLevel, arrHeading);
+		CHeading* pHeading = new CHeading();
+		pHeading->nPage = pReader->ReadInt();
+		pHeading->dY = pReader->ReadDouble();
+		pHeading->wsTitle = pReader->ReadString();
+		pHeading->pParent = pParent;
 
-		CHeading oHeading;
-		oHeading.nPage = pReader->ReadInt();
-		oHeading.dY = pReader->ReadDouble();
-		oHeading.wsTitle = pReader->ReadString();
-
-		arrHeading->push_back(oHeading);
+		arrHeading->push_back(pHeading);
 	}
 	return true;
 }
 
-int CHeadings::ReadHeading(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nPredLevel, std::vector<CHeading>* arrHeading)
+int CHeadings::ReadHeading(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nPredLevel, std::vector<CHeading*>* arrHeading)
 {
 	CHeading oHeading;
 	oHeading.nPage = pReader->ReadInt();

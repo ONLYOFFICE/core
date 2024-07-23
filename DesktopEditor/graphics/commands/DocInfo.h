@@ -178,19 +178,24 @@ public:
 		std::wstring wsTitle;
 		int nPage;
 		double dY;
-		std::vector<CHeading> arrHeading;
+		CHeading* pParent;
+		std::vector<CHeading*> arrHeading;
+
+		CHeading();
+		~CHeading();
 	};
 
 	CHeadings();
+	~CHeadings();
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 
-	const std::vector<CHeading>& GetHeading();
+	const std::vector<CHeading*>& GetHeading();
 
 private:
-	std::vector<CHeading> m_arrHeading;
+	std::vector<CHeading*> m_arrHeading;
 
-	int ReadHeading(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nPredLevel, std::vector<CHeading>* arrHeading);
+	int ReadHeading(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nPredLevel, std::vector<CHeading*>* arrHeading);
 };
 
 

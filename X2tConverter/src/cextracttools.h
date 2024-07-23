@@ -1038,8 +1038,15 @@ namespace NExtractTools
 			{
 				if (isEmptyFile())
 				{
-					m_nCsvTxtEncoding = new int(getEncodingByContent());
-					m_sCsvDelimiterChar = new std::wstring(L",");
+					if (!m_nCsvTxtEncoding)
+					{
+						m_nCsvTxtEncoding = new int(getEncodingByContent()); //-1 ???
+					}
+					if (!m_nCsvDelimiter && !m_sCsvDelimiterChar)
+					{
+						m_sCsvDelimiterChar = new std::wstring(L",");
+					}
+					eRes = TCD_ERROR; // ???
 				}
 				else
 				{
@@ -1058,8 +1065,25 @@ namespace NExtractTools
 						std::wstring sFilePath = NSSystemPath::GetDirectoryName(*m_sFileTo) + FILE_SEPARATOR_STR + _T("settings.json");
 						NSFile::CFileBinary::SaveToFile(sFilePath, oBuilder.GetData());
 						copyOrigin(*m_sFileFrom, *m_sFileTo);
+					
+						eRes = TCD_ERROR;
 					}
-					eRes = TCD_ERROR;
+					else
+					{
+						if (!m_nCsvTxtEncoding)
+						{
+							m_nCsvTxtEncoding = new int(getEncodingByContent());
+
+							if (*m_nCsvTxtEncoding < 0)
+							{
+								*m_nCsvTxtEncoding = 46; // utf-8
+							}
+						}
+						if (!m_nCsvDelimiter && !m_sCsvDelimiterChar)
+						{
+							m_sCsvDelimiterChar = new std::wstring(L","); // TCSVD_COMMA
+						}
+					}
 				}
 			}
 			return eRes;

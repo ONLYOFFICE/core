@@ -5,6 +5,10 @@ public class CDocBuilderContextScope {
         c_internal = c_Create();
     }
 
+    CDocBuilderContextScope(long internal) {
+        c_internal = internal;
+    }
+
     public CDocBuilderContextScope(CDocBuilderContextScope other) {
         c_internal = c_Copy(other.c_internal);
     }
@@ -15,10 +19,6 @@ public class CDocBuilderContextScope {
 
     public void close() {
         c_Close(c_internal);
-    }
-
-    CDocBuilderContextScope(long internal) {
-        c_internal = internal;
     }
 
     // Native code

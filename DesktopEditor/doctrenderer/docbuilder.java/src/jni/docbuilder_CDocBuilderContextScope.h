@@ -9,34 +9,34 @@ extern "C" {
 #endif
 /*
  * Class:     docbuilder_CDocBuilderContextScope
- * Method:    CDocBuilderContextScope_Create
+ * Method:    c_Create
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderContextScope_CDocBuilderContextScope_1Create
+JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderContextScope_c_1Create
   (JNIEnv *, jclass);
 
 /*
  * Class:     docbuilder_CDocBuilderContextScope
- * Method:    CDocBuilderContextScope_Copy
+ * Method:    c_Copy
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderContextScope_CDocBuilderContextScope_1Copy
+JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilderContextScope_c_1Copy
   (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderContextScope
- * Method:    CDocBuilderContextScope_Destroy
+ * Method:    c_Destroy
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_docbuilder_CDocBuilderContextScope_CDocBuilderContextScope_1Destroy
+JNIEXPORT void JNICALL Java_docbuilder_CDocBuilderContextScope_c_1Destroy
   (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     docbuilder_CDocBuilderContextScope
- * Method:    CDocBuilderContextScope_Close
+ * Method:    c_Close
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_docbuilder_CDocBuilderContextScope_CDocBuilderContextScope_1Close
+JNIEXPORT void JNICALL Java_docbuilder_CDocBuilderContextScope_c_1Close
   (JNIEnv *, jclass, jlong);
 
 #ifdef __cplusplus

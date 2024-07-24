@@ -167,6 +167,7 @@ bool CPageRotate::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafile
 CHeadings::CHeading::CHeading()
 {
 	nPage = 0;
+	dX = 0.0;
 	dY = 0.0;
 	pParent = NULL;
 }
@@ -185,29 +186,30 @@ CHeadings::~CHeadings()
 const std::vector<CHeadings::CHeading*>& CHeadings::GetHeading() { return m_arrHeading; }
 bool CHeadings::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
 {
-	int nPredLevel = 0;
+	int nPredLevel = 0, nHeaderLevel = 0;
 	std::vector<CHeading*>* arrHeading = &m_arrHeading;
 	CHeading* pParent = NULL;
 	int nHeadings = pReader->ReadInt();
 	for (int i = 0; i < nHeadings; ++i)
 	{
 		int nLevel = pReader->ReadInt();
-		// TODO если первым заголовком приходит заголовок 1+ уровня
-		// TODO если различие уровня вложенности на 2+
-		if (nLevel > nPredLevel)
+		if (nLevel > nPredLevel && i > 0)
 		{
+			nHeaderLevel = nPredLevel;
 			pParent = arrHeading->back();
 			arrHeading = &pParent->arrHeading;
 		}
-		else if (nLevel < nPredLevel)
+		else if (nLevel < nPredLevel && nLevel <= nHeaderLevel)
 		{
+			nHeaderLevel = nLevel;
 			pParent = pParent ? pParent->pParent : NULL;
-			arrHeading = &pParent->arrHeading;
+			arrHeading = pParent ? &pParent->arrHeading : &m_arrHeading;
 		}
 		nPredLevel = nLevel;
 
 		CHeading* pHeading = new CHeading();
 		pHeading->nPage = pReader->ReadInt();
+		pHeading->dX = pReader->ReadDouble();
 		pHeading->dY = pReader->ReadDouble();
 		pHeading->wsTitle = pReader->ReadString();
 		pHeading->pParent = pParent;
@@ -215,26 +217,4 @@ bool CHeadings::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileTo
 		arrHeading->push_back(pHeading);
 	}
 	return true;
-}
-
-int CHeadings::ReadHeading(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nPredLevel, std::vector<CHeading*>* arrHeading)
-{
-	CHeading oHeading;
-	oHeading.nPage = pReader->ReadInt();
-	oHeading.dY = pReader->ReadDouble();
-	oHeading.wsTitle = pReader->ReadString();
-
-	//int nLevel = pReader->ReadInt();
-	//if (nLevel > nPredLevel)
-	//{
-	//	arrHeading.back().arrHeading.push_back(oHeading);
-	//}
-	//else if (nLevel < nPredLevel)
-	//{
-	//
-	//}
-	//else
-	//{
-	//	arrHeading.push_back(oHeading);
-	//}
 }

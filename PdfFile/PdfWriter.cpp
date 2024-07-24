@@ -2477,7 +2477,7 @@ void CreateOutlines(PdfWriter::CDocument* m_pDocument, const std::vector<CHeadin
 		if (pDest)
 		{
 			pOutline->SetDestination(pDest);
-			pDest->SetXYZ(0, arrHeadings[i]->dY, 0);
+			pDest->SetXYZ(MM_2_PT(arrHeadings[i]->dX), pPageD->GetHeight() - MM_2_PT(arrHeadings[i]->dY), 0);
 		}
 		CreateOutlines(m_pDocument, arrHeadings[i]->arrHeading, pOutline);
 	}

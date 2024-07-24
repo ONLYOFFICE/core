@@ -322,8 +322,8 @@ float getDistance(float px, float py, float vx, float vy, float x, float y)
 
 float getDistance(float x1, float y1, float x2, float y2)
 {
-	float x = x1 - x2,
-		  y = y1 - y2,
+	float x = x2 - x1,
+		  y = y2 - y1,
 		  d = x * x + y * y;
 	return sqrt(d);
 }
@@ -360,7 +360,7 @@ float getDiscriminant(float a, float b, float c)
 					q + ad.first * cd.second +
 					ad.second * cd.first) +
 				   ad.second * cd.second;
-		D = (p - q) - (dp - dq);
+		D = (p - q) + (dp - dq);
 	}
 	return D;
 }

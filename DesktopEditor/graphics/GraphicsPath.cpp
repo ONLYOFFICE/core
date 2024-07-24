@@ -728,7 +728,7 @@ namespace Aggplus
         return rasterizer.hit_test((int)x, (int)y);
     }
 
-	bool CGraphicsPath::IsClockwise()
+	bool CGraphicsPath::IsClockwise() const
 	{
 		return GetArea() >= 0;
 	}
@@ -749,12 +749,12 @@ namespace Aggplus
 		}
 	}
 
-	bool CGraphicsPath::IsCurvePoint(size_t idx)
+	bool CGraphicsPath::IsCurvePoint(size_t idx) const
 	{
 		return this->m_internal->m_agg_ps.command(idx) == agg::path_cmd_curve4;
 	}
 
-	std::vector<PointF> CGraphicsPath::GetPoints(size_t idx, size_t count)
+	std::vector<PointF> CGraphicsPath::GetPoints(size_t idx, size_t count) const
 	{
 		std::vector<PointF> points;
 		for (size_t i = 0; i < count; i++)
@@ -766,7 +766,7 @@ namespace Aggplus
 		return points;
 	}
 
-	double CGraphicsPath::GetArea()
+	double CGraphicsPath::GetArea() const
 	{
 		double area = 0.0;
 		for (size_t i = 0; i < GetPointCount(); i++)
@@ -777,7 +777,7 @@ namespace Aggplus
 		return area;
 	}
 
-	double CGraphicsPath::GetArea(size_t idx, bool isCurve)
+	double CGraphicsPath::GetArea(size_t idx, bool isCurve) const
 	{
 		float area;
 		if (isCurve)

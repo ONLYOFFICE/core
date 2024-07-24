@@ -2680,7 +2680,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf_types::
 		}
 		else
 		{
-			result = OOX::Spreadsheet::CIndexedColors::GetDefaultRGBAByIndex(ind, ucR, ucG, ucB, ucA);
+			result = ind < 64 ? OOX::Spreadsheet::CIndexedColors::GetDefaultRGBAByIndex(ind, ucR, ucG, ucB, ucA) : false;
 		}
 	}
 	if (result == true)

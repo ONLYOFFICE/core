@@ -316,6 +316,9 @@ namespace DocFileFormat
 
 //todooo oбъединить с shape_mapping		
 
+
+		int nColorRGBBase = 0xffffff;
+
 		for (size_t i = 0; i < options.size(); i++)
 		{
 			ODRAW::OfficeArtFOPTEPtr & iter = options[i];
@@ -355,7 +358,7 @@ namespace DocFileFormat
 				if (!pict->brcBottom)
 				{
 					ODRAW::OfficeArtCOLORREF bottomColor((_UINT32)iter->op);
-					m_context->_doc->CorrectColor(bottomColor);
+					m_context->_doc->CorrectColor(bottomColor, nColorRGBBase);
 					if (false == bottomColor.sColorRGB.empty())
 						m_pXmlWriter->WriteAttribute(L"o:borderbottomcolor", L"#" + bottomColor.sColorRGB);
 				}
@@ -364,7 +367,7 @@ namespace DocFileFormat
 				if (!pict->brcLeft)
 				{
 					ODRAW::OfficeArtCOLORREF leftColor((_UINT32)iter->op);
-					m_context->_doc->CorrectColor(leftColor);
+					m_context->_doc->CorrectColor(leftColor, nColorRGBBase);
 					if (false == leftColor.sColorRGB.empty())
 						m_pXmlWriter->WriteAttribute(L"o:borderleftcolor", L"#" + leftColor.sColorRGB);
 				}
@@ -373,7 +376,7 @@ namespace DocFileFormat
 				if (!pict->brcRight)
 				{
 					ODRAW::OfficeArtCOLORREF rightColor((_UINT32)iter->op);
-					m_context->_doc->CorrectColor(rightColor);
+					m_context->_doc->CorrectColor(rightColor, nColorRGBBase);
 					if (false == rightColor.sColorRGB.empty())
 						m_pXmlWriter->WriteAttribute(L"o:borderrightcolor", L"#" + rightColor.sColorRGB);
 				}
@@ -382,7 +385,7 @@ namespace DocFileFormat
 				if (!pict->brcTop)
 				{
 					ODRAW::OfficeArtCOLORREF topColor((_UINT32)iter->op);
-					m_context->_doc->CorrectColor(topColor);
+					m_context->_doc->CorrectColor(topColor, nColorRGBBase);
 					if (false == topColor.sColorRGB.empty())
 						m_pXmlWriter->WriteAttribute(L"o:bordertopcolor", L"#" + topColor.sColorRGB);
 				}

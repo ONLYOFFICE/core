@@ -147,7 +147,7 @@ void Java_docbuilder_CDocBuilderValue_c_1SetByIndex(JNIEnv* env, jclass cls, jlo
 {
 	CDocBuilderValue* pSelf = reinterpret_cast<CDocBuilderValue*>(self);
 	CDocBuilderValue* pValue = reinterpret_cast<CDocBuilderValue*>(value);
-	pSelf->Set((int)index, pValue);
+	pSelf->Set((int)index, *pValue);
 }
 
 jlong Java_docbuilder_CDocBuilderValue_c_1CreateWithBool(JNIEnv* env, jclass cls, jboolean value)

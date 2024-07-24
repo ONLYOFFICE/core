@@ -37,7 +37,7 @@ public class Program {
 
         CDocBuilderValue content = context.createArray(2);
         content.set(0, paragraph1);
-        content.set(1, paragraph1);
+        content.set(1, paragraph2);
 
         document.call("InsertContent", content);
 

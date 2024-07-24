@@ -16,6 +16,7 @@ enum BooleanOpType
 };
 
 struct Location;
+struct Winding;
 
 struct Segment
 {
@@ -30,14 +31,13 @@ struct Segment
 	size_t Id;
 
 	CGraphicsPath *Path;
-	Location *Inters;
-
-	std::unordered_map<std::string, float> Winding;
+	std::shared_ptr<Location> Inters;
+	std::shared_ptr<Winding> Wind;
 	
 	Segment();
-	Segment(std::vector<PointF> points, bool isCurve,
+	Segment(const std::vector<PointF>& points, bool isCurve,
 			size_t index, size_t id, CGraphicsPath* path);
-	Segment(PointF p, PointF hi, PointF ho);
+	Segment(const PointF& p, const PointF& hi, const PointF& ho);
 
 	bool IsValid(BooleanOpType op);
 	bool operator==(const Segment& other);
@@ -50,49 +50,43 @@ struct Curve
 	Segment Segment2;
 	
 	Curve();
-	Curve(Segment segment1, Segment segment2);
-	Curve(std::vector<float> values);
+	Curve(const Segment& segment1, const Segment& segment2);
+	Curve(const std::vector<float>& values);
 	Curve(float x0, float y0, float x1, float y1,
 		  float x2, float y2, float x3, float y3);
 
-	std::vector<float> GetXValues();
-	std::vector<float> GetYValues();
-	std::vector<float> GetPeeks();
+	std::vector<float> GetXValues() const;
+	std::vector<float> GetYValues() const;
+	std::vector<float> GetPeeks() const;
 
-	float	GetLength(float a = 0, float b = 1);
-	float	GetSquaredLineLength();
-	float	GetTimeOf(PointF point);
-	float	GetTimeAt(float offset);
-	PointF	Get(float t, int type);
-	PointF	GetPoint(float t);
-	PointF	GetTangent(float t);
-	PointF	GetTangent(float t, float offset, bool inside, PointF p);
-	Curve	GetPart(float from, float to);
-	std::vector<Curve> GetMonoCurves(bool dir);
-	std::vector<std::pair<int, int>> GetOverlaps(Curve curve);
+	float	GetLength(float a = 0, float b = 1) const;
+	float	GetSquaredLineLength() const;
+	float	GetTimeOf(const PointF& point) const ;
+	float	GetTimeAt(float offset) const;
+	PointF	Get(float t, int type) const;
+	PointF	GetPoint(float t) const;
+	PointF	GetTangent(float t) const;
+	PointF	GetTangent(float t, float offset, bool inside, const PointF& p) const;
+	Curve	GetPart(float from, float to) const;
+	std::vector<Curve> GetMonoCurves(bool dir) const;
+	std::vector<std::pair<int, int>> GetOverlaps(const Curve& curve) const;
 	std::vector<float> GetCurveLineIntersection(float px, float py,
-												float vx, float vy);
+												float vx, float vy) const;
 	
-	std::vector<Curve> Subdivide(float t);
-	Curve	DivideAtTime(float time, std::vector<Segment> segments,
-					   std::vector<Curve> curves);
+	std::vector<Curve> Subdivide(float t) const;
+	Curve	DivideAtTime(float time, std::vector<Segment>& segments,
+						std::vector<Curve>& curves);
 	
 	int	SolveCubic(size_t coord, int value, std::vector<float>& roots,
-				   float mn, float mx);
+				   float mn, float mx) const;
 	int SolveCubic(float a, float b, float c, float d, std::vector<float>& roots,
-				   float mn, float mx);
+				   float mn, float mx) const;
 
 	void Flip();
 	void ClearHandles();
 
-	bool IsStraight();
-	bool HasHandle();
-	bool AddWinding(std::vector<Curve> curves, bool dir, bool& onPath,
-					bool& onAnyPath, Curve* cPrev, std::vector<float>& roots,
-					std::unordered_map<std::string, float>* map);
-	bool HandleCurve(std::vector<Curve> curves, bool dir, bool& onPath,
-					 bool& onAnyPath, Curve* cPrev, std::vector<float>& roots,
-					 std::unordered_map<std::string, float>* map);
+	bool IsStraight() const;
+	bool HasHandle() const ;
 
 	bool operator==(const Curve& other);
 	bool operator!=(const Curve& other);
@@ -105,12 +99,12 @@ struct Location
 	float Time;
 	bool  Overlap;
 
-	Location* Inters;
-	Location* Next;
-	Location* Prev;
+	std::shared_ptr<Location> Inters;
+	std::shared_ptr<Location> Next;
+	std::shared_ptr<Location> Prev;
 	
 	Location();
-	Location(Curve curve, float time, bool overlap);
+	Location(const Curve& curve, float time, bool overlap);
 
 	bool IsTouching();
 	bool operator==(const Location& other);
@@ -124,14 +118,53 @@ struct Branch
 	PointF HI;
 
 	Branch();
-	Branch(float start, std::vector<Segment> crosings, PointF hi);
+	Branch(float start, const std::vector<Segment>& crosings, const PointF& hi);
+};
+
+struct Winding
+{
+	std::vector<float> Roots;
+	std::vector<Curve> Curves;
+
+	Curve C;
+	Curve Prev;
+
+	bool OnPath;
+	bool OnAnyPath;
+	bool Direction;
+
+	float W;
+	float Quality;
+	float WindingLeft;
+	float WindingRight;
+	float PointAbscissas;
+	float PointOrdinat;
+	float PathWindingLeft;
+	float PathWindingRight;
+	float PointAbscissasLeft;
+	float PointAbscissasRight;
+
+	Winding();
+
+	void Reset();
+	void SetDirection(bool direction);
+	void SetPoint(const PointF& point);
+	void SetCurve(const Curve& curve);
+	void SetCurves(const std::vector<Curve>& curves);
+
+	bool AddWinding();
+	bool HandleCurve();
+	bool GetWinding();
+
+	bool IsFirst(Curve curve);
+	Curve GetPrev(Curve curve);
 };
 
 class GRAPHICS_DECL CGraphicsPathClip
 {
 public:
 	CGraphicsPathClip(CGraphicsPath* path1, CGraphicsPath* path2, BooleanOpType op);
-	CGraphicsPath GetResult();
+	CGraphicsPath* GetResult();
 	
 	//BooleanOp
 	void TraceBoolean();
@@ -139,67 +172,60 @@ public:
 	//void reorientPaths();
 
 	//Path
-	void	PreparePath(CGraphicsPath* path, size_t id, std::vector<Segment>& segments,
-					std::vector<Curve>& curves);
-	Curve	GetCurve(Segment segment);
-	Curve	GetPreviousCurve(Curve curve);
-	Curve	GetNextCurve(Curve curve);
-	Segment GetNextSegment(Segment segment);
-	std::vector<Curve> GetCurves(std::vector<int> indices);
-	std::vector<Segment> GetCrossing(Segment seg, std::vector<Segment>& starts,
-									bool collectStart);
+	void	PreparePath(CGraphicsPath *path, size_t id, std::vector<Segment>& segments,
+						std::vector<Curve>& curves);
+	void	InsertSegment(const Segment& segment);
+	Curve	GetCurve(const Segment& segment) const;
+	Curve	GetPreviousCurve(Curve curve) const;
+	Curve	GetNextCurve(Curve curve) const;
+	Segment GetNextSegment(Segment segment) const;
+	std::vector<Curve> GetCurves(const std::vector<int>& indices) const;
+	std::vector<Segment> GetCrossing(const Segment& seg, std::vector<Segment>& starts,
+									bool collectStart) const;
 
 	//Bounds
-	std::vector<std::vector<float>> GetBoundsForCurves(std::vector<Curve> curves);
-	std::vector<std::vector<int>> FindCurveBoundsCollisions(std::vector<Curve> curves1,
-															std::vector<Curve> curves2,
+	std::vector<std::vector<float>> GetBoundsForCurves(const std::vector<Curve>& curves) const;
+	std::vector<std::vector<int>> FindCurveBoundsCollisions(const std::vector<Curve>& curves1,
+															const std::vector<Curve>& curves2,
 															float tolerance,
 															bool bothAxis = false);
-	std::vector<std::vector<int>> FindBoundsCollisions(std::vector<std::vector<float>> bounds1,
-													   std::vector<std::vector<float>> bounds2,
+	std::vector<std::vector<int>> FindBoundsCollisions(const std::vector<std::vector<float>>& bounds1,
+													   const std::vector<std::vector<float>>& bounds2,
 													   float tolerance,
 													   bool sweepVertical = false,
 													   bool onlySweep = false);
 
 	//Intersection
-	bool IsCrossing(Location loc);
-	bool FilterIntersections(Location loc);
+	bool IsCrossing(std::shared_ptr<Location> loc);
+	bool FilterIntersections(std::shared_ptr<Location> loc);
 	bool IntersectsBounds();
 	void GetIntersection();
-	void GetCurveIntersection(Curve curve1, Curve curve2);
-	void LinkIntersection(Location *form, Location *to);
-	void AddLineIntersection(Curve curve1, Curve curve2, bool flip);
-	void AddCurveLineIntersection(Curve curve1, Curve curve2, bool flip);
-	int	 AddCurveIntersection(Curve curve1, Curve curve2, bool flip,
-							int recursion = 0, int calls = 0, float tMin = 0,
-							float tMax = 1, float uMin = 0, float uMax = 1);
+	void GetCurveIntersection(const Curve& curve1, const Curve& curve2);
+	void LinkIntersection(std::shared_ptr<Location> form, std::shared_ptr<Location> to);
+	void AddLineIntersection(const Curve& curve1, const Curve& curve2, bool flip);
+	void AddCurveLineIntersection(const Curve& curve1, const Curve& curve2, bool flip);
+	int	 AddCurveIntersection(const Curve& curve1, const Curve& curve2, bool flip,
+							  int recursion = 0, int calls = 0, float tMin = 0,
+							  float tMax = 1, float uMin = 0, float uMax = 1);
 
 	//Location
 	void DivideLocations();
-	void AddLocation(Curve curve1, Curve curve2, float t1, float t2, bool overlap = false);
-	void InsertLocation(Location loc);
+	void AddLocation(Curve curve1,Curve curve2, float t1, float t2, bool overlap = false);
+	void InsertLocation(std::shared_ptr<Location> loc);
 
 	//Util
-	std::unordered_map<std::string, float> InicializeMap();
-	std::unordered_map<std::string, float>* InicializeMap(float x, float y);
-	std::vector<Curve>*** InicializeMap(std::vector<std::vector<int>> collisions);
-	void ClearMap(std::vector<Curve>*** map);
-	void ClearCurveHandles(std::vector<Curve> curves);
-	void AddOffsets(std::vector<float>& offsets, Curve curve, bool end);
-	void PropagateWinding(Segment segment, std::vector<Curve>*** map);
-	void Collect(Segment seg, std::vector<Segment>& crossing, std::vector<Segment>& starts,
-				Location *inter, Location *end, bool collectStarts);
-
-	static bool GetWinding(std::vector<Curve> curves, bool dir,
-						   bool& onPath, bool& onAnyPath, Curve *cPrev,
-						   std::vector<float>& roots,
-						   std::unordered_map<std::string, float>* map);
+	void ClearCurveHandles(std::vector<Curve>& curves);
+	void AddOffsets(std::vector<float>& offsets, const Curve& curve, bool end);
+	void PropagateWinding(Segment segment, std::vector<std::vector<Curve>> map);
+	void Collect(const Segment& seg, std::vector<Segment>& crossing, std::vector<Segment>& starts,
+				 std::shared_ptr<Location> inter, std::shared_ptr<Location> end,
+				 bool collectStarts) const;
 private:
 	BooleanOpType Op;
 
-	CGraphicsPath* Path1;
-	CGraphicsPath* Path2;
-	CGraphicsPath  Result;
+	CGraphicsPath *Path1;
+	CGraphicsPath *Path2;
+	CGraphicsPath *Result;
 
 	std::vector<Segment> Segments;
 	std::vector<Segment> Segments1;
@@ -209,7 +235,7 @@ private:
 	std::vector<Curve> Curves1;
 	std::vector<Curve> Curves2;
 
-	std::vector<Location> Locations;
+	std::vector<std::shared_ptr<Location>> Locations;
 	bool OverlapOnly[2] = {false, false};
 };
 }

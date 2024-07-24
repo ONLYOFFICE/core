@@ -512,10 +512,10 @@ namespace PdfWriter
 
 		return new COutline(pParent, sTitle, m_pXref);
 	}
-	CDestination* CDocument::CreateDestination(CPage* pPage)
+	CDestination* CDocument::CreateDestination(CPage* pPage, bool bInline)
 	{
 		if (pPage)
-			return new CDestination(pPage, m_pXref);
+			return new CDestination(pPage, m_pXref, bInline);
 		return NULL;
 	}
     CExtGrState* CDocument::FindExtGrState(double dAlphaStroke, double dAlphaFill, EBlendMode eMode, int nStrokeAdjustment)

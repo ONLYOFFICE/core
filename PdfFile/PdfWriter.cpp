@@ -2473,7 +2473,7 @@ void CreateOutlines(PdfWriter::CDocument* m_pDocument, const std::vector<CHeadin
 		std::string sTitle = U_TO_UTF8(arrHeadings[i]->wsTitle);
 		PdfWriter::COutline* pOutline = m_pDocument->CreateOutline(pParent, sTitle.c_str());
 		PdfWriter::CPage* pPageD = m_pDocument->GetPage(arrHeadings[i]->nPage);
-		PdfWriter::CDestination* pDest = m_pDocument->CreateDestination(pPageD);
+		PdfWriter::CDestination* pDest = m_pDocument->CreateDestination(pPageD, true);
 		if (pDest)
 		{
 			pOutline->SetDestination(pDest);

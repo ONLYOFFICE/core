@@ -452,6 +452,7 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 				{
 					Context.get_slide_context().set_property(_property(L"fit-to-size", true));
 					Context.get_slide_context().set_property(_property(L"text-content", text_content));
+					Context.get_slide_context().set_property(_property(L"is-math-formula", true)); // do not wrap math formulas
 				}
 				else
 				{

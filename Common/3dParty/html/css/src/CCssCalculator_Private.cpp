@@ -157,28 +157,34 @@ namespace NSCSS
 
 	std::vector<CElement*> CCssCalculator_Private::FindElements(std::vector<std::wstring> &arNodes, std::vector<std::wstring> &arNextNodes, bool bIsSettings)
 	{
+		if (arNodes.empty())
+			return {};
+
 		std::vector<CElement*> arFindedElements;
 
 		std::wstring wsName, wsId;
 		std::vector<std::wstring> arClasses;
 
-		if (arNodes.back()[0] == L'#')
+		if (!arNodes.empty() && arNodes.back()[0] == L'#')
 		{
 			wsId = arNodes.back();
 			arNodes.pop_back();
 			arNextNodes.push_back(wsId);
 		}
 
-		if (arNodes.back()[0] == L'.')
+		if (!arNodes.empty() && arNodes.back()[0] == L'.')
 		{
 			arClasses = NS_STATIC_FUNCTIONS::GetWordsW(arNodes.back(), false, L" ");
 			arNextNodes.push_back(arNodes.back());
 			arNodes.pop_back();
 		}
 
-		wsName = arNodes.back();
-		arNodes.pop_back();
-		arNextNodes.push_back(wsName);
+		if (!arNodes.empty())
+		{
+			wsName = arNodes.back();
+			arNodes.pop_back();
+			arNextNodes.push_back(wsName);
+		}
 
 		const std::map<std::wstring, CElement*>::const_iterator oFindName = m_mData.find(wsName);
 		std::map<std::wstring, CElement*>::const_iterator oFindId;

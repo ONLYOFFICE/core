@@ -1817,6 +1817,15 @@ private:
 		m_oState.m_bInP = false;
 	}
 
+	void WriteSpace(NSStringUtils::CStringBuilder* pXml)
+	{
+		if (NULL == pXml)
+			return;
+
+		pXml->WriteString(L"<w:r><w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/></w:rPr><w:t xml:space=\"preserve\"> </w:t></w:r>");
+		m_oState.m_bWasSpace = true;
+	}
+
 	void WriteBookmark(NSStringUtils::CStringBuilder* pXml, const std::wstring& wsId)
 	{
 		if (NULL == pXml)
@@ -1990,10 +1999,7 @@ private:
 			}
 
 			if (oTS.bAddSpaces && m_oState.m_bInP && !m_oState.m_bInR && !iswspace(sText.front()) && !m_oState.m_bWasSpace)
-			{
-				oXml->WriteString(L"<w:r><w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/></w:rPr><w:t xml:space=\"preserve\"> </w:t></w:r>");
-				m_oState.m_bWasSpace = true;
-			}
+				WriteSpace(oXml);
 
 			std::wstring sPStyle = wrP(oXml, sSelectors, oTS);
 			std::wstring sRStyle;
@@ -2241,7 +2247,7 @@ private:
 			bResult = readStream(oXml, sSelectors, oTSQ);
 		}
 		// Текст верхнего регистра
-		else if(sName == L"rt" || sName == L"sup")
+		else if(sName == L"sup")
 		{
 			CTextSettings oTSR(oTS);
 			oTSR.AddRStyle(L"<w:vertAlign w:val=\"superscript\"/>");
@@ -2271,7 +2277,7 @@ private:
 		else if(sName == L"input")
 			readInput(oXml, sSelectors, oTS);
 		// Игнорируются тэги выполняющие скрипт
-		else if(sName == L"template" || sName == L"canvas" || sName == L"video" || sName == L"math" || sName == L"rp"    ||
+		else if(sName == L"template" || sName == L"canvas" || sName == L"video" || sName == L"math" ||
 				sName == L"command"  || sName == L"iframe" || sName == L"embed" || sName == L"wbr"  || sName == L"audio" ||
 				sName == L"bgsound"  || sName == L"applet" || sName == L"blink" || sName == L"keygen"|| sName == L"script" ||
 				sName == L"comment"  || sName == L"title"  || sName == L"style")
@@ -2297,7 +2303,7 @@ private:
 		}
 		// Без нового абзаца
 		else if(sName == L"basefont" || sName == L"button" || sName == L"label" || sName == L"data" || sName == L"object" ||
-				sName == L"noscript" || sName == L"output" || sName == L"abbr"  || sName == L"time" || sName == L"ruby"   ||
+				sName == L"noscript" || sName == L"output" || sName == L"abbr"  || sName == L"time" ||
 				sName == L"progress" || sName == L"hgroup" || sName == L"meter" || sName == L"acronym")
 			bResult = readStream(oXml, sSelectors, oTS);
 		// С нового абзаца
@@ -2429,11 +2435,10 @@ private:
 					if (bOpenedP)
 						CloseP(&oXmlData, sSelectors);
 				}
-//					oXml->WriteString(L"<w:p><w:pPr><w:pBdr><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr></w:p>");
 			}
 			// Меню
 			// Маркированный список
-			else if(sName == L"menu" || sName == L"ul" || sName == L"select" || sName == L"datalist" || sName == L"dir")
+			else if(sName == L"ul" || sName == L"menu" || sName == L"select" || sName == L"datalist" || sName == L"dir")
 				readLi(&oXmlData, sSelectors, oTS, true);
 			// Нумерованный список
 			else if(sName == L"ol")
@@ -2442,13 +2447,15 @@ private:
 			else if(sName == L"pre" || sName == L"xmp")
 			{
 				CTextSettings oTSPre(oTS);
-				sSelectors.back().m_wsStyle += L"; font-family:Consolas";
+				sSelectors.back().m_wsStyle += L"; font-family:Courier New";
 				oTSPre.bPre = true;
 				bResult = readStream(&oXmlData, sSelectors, oTSPre);
 			}
 			// Таблицы
 			else if(sName == L"table")
-				ParseTable(&oXmlData, sSelectors, oTS);
+				bResult = ParseTable(&oXmlData, sSelectors, oTS);
+			else if(sName == L"ruby")
+				bResult = ParseRuby(&oXmlData, sSelectors, oTS);
 			// Текст с границами
 			else if(sName == L"textarea" || sName == L"fieldset")
 			{
@@ -2785,10 +2792,130 @@ private:
 		}
 	}
 
-	void ParseTable(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
+	bool ParseRuby(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
 	{
 		if(m_oLightReader.IsEmptyNode())
-			return;
+			return false;
+
+		const int nDepth = m_oLightReader.GetDepth();
+
+		#ifdef DESABLE_RUBY_SUPPORT
+
+		wrP(oXml, sSelectors, oTS);
+
+		while (m_oLightReader.ReadNextSiblingNode2(nDepth))
+		{
+			GetSubClass(NULL, sSelectors);
+
+			if (L"rp" == sSelectors.back().m_wsName)
+			{
+				sSelectors.pop_back();
+				continue;
+			}
+			else if (L"rt" == sSelectors.back().m_wsName)
+				readStream(oXml, sSelectors, oTS);
+			else
+				readInside(oXml, sSelectors, oTS, sSelectors.back().m_wsName);
+
+			sSelectors.pop_back();
+		}
+
+		CloseP(oXml, sSelectors);
+
+		return true;
+		#endif
+
+		NSStringUtils::CStringBuilder oBase;
+		NSStringUtils::CStringBuilder oRT;
+
+		TState oRtState{m_oState};
+		oRtState.m_bInP = true;
+
+		TState oBaseState{m_oState};
+		oBaseState.m_bInP = true;
+
+		while (m_oLightReader.ReadNextSiblingNode2(nDepth))
+		{
+			GetSubClass(NULL, sSelectors);
+
+			CTextSettings oNewSettings{oTS};
+
+			NSCSS::CCompiledStyle oStyle{m_oStylesCalculator.GetCompiledStyle(sSelectors)};
+
+			const std::wstring wsHighlight{oStyle.m_oBackground.GetColor().EquateToColor({{{0,   0,   0},   L"black"},    {{0,   0,   255}, L"blue"},      {{0,   255, 255}, L"cyan"},
+			                                                                              {{0,   255, 0},   L"green"},    {{255, 0,   255}, L"magenta"},   {{255, 0,   0},   L"red"},
+			                                                                              {{255, 255, 0},   L"yellow"},   {{255, 255, 255}, L"white"},     {{0,   0,   139}, L"darkBlue"},
+			                                                                              {{0,   139, 139}, L"darkCyan"}, {{0,   100, 0},   L"darkGreen"}, {{139, 0,   139}, L"darkMagenta"},
+			                                                                              {{139, 0,   0},   L"darkRed"},  {{128, 128, 0},   L"darkYellow"},{{169, 169, 169}, L"darkGray"},
+			                                                                              {{211, 211, 211}, L"lightGray"}})};
+
+			if (L"none" != wsHighlight)
+				oNewSettings.AddRStyle(L"<w:shd w:val=\"" + wsHighlight + L"\"/>");
+
+			if (L"rt" == sSelectors.back().m_wsName)
+			{
+				std::swap(m_oState, oRtState);
+				readStream(&oRT, sSelectors, oNewSettings);
+				std::swap(m_oState, oRtState);
+			}
+			else if (L"rp" == sSelectors.back().m_wsName)
+			{
+				sSelectors.pop_back();
+				continue;
+			}
+			else if (L"#text" == sSelectors.back().m_wsName)
+			{
+				std::swap(m_oState, oBaseState);
+				readInside(&oBase, sSelectors, oNewSettings, sSelectors.back().m_wsName);
+				std::swap(m_oState, oBaseState);
+			}
+			sSelectors.pop_back();
+		}
+
+		WriteSpace(&oBase);
+
+		wrP(oXml, sSelectors, oTS);
+
+		if (0 != oRT.GetSize())
+		{
+			NSCSS::CCompiledStyle oStyle{m_oStylesCalculator.GetCompiledStyle(sSelectors)};
+
+			int nFontSize = 24;
+
+			if (!oStyle.m_oFont.GetSize().Empty() && !oStyle.m_oFont.GetSize().Zero())
+				nFontSize = oStyle.m_oFont.GetSize().ToInt(NSCSS::Point) * 2;
+
+			bool bConsistsChineseCharacters = false;
+
+			const std::vector<NSCSS::CNode>::const_reverse_iterator oFound{std::find_if(sSelectors.crbegin(), sSelectors.crend(), [](const NSCSS::CNode& oNode){ return oNode.m_mAttributes.cend() != oNode.m_mAttributes.find(L"lang");})};
+
+			if (sSelectors.crend() != oFound)
+			{
+				const size_t unFound{oFound->m_mAttributes.at(L"lang").find(L"-")};
+
+				if (std::wstring::npos != unFound)
+					bConsistsChineseCharacters = ConsistsChineseCharacters(oFound->m_mAttributes.at(L"lang").substr(0, unFound));
+			}
+
+			OpenR(oXml);
+			oXml->WriteString(L"<w:ruby><w:rubyPr><w:rubyAlign w:val=\"" + std::wstring((bConsistsChineseCharacters) ? L"distributeSpace" : L"center") + L"\"/><w:hps w:val=\"" + std::to_wstring(nFontSize) + L"\"/><w:hpsRaise w:val=\"" + std::to_wstring(nFontSize - 2) + L"\"/><w:hpsBaseText w:val=\"" + std::to_wstring(nFontSize) + L"\"/></w:rubyPr>");
+			oXml->WriteString(L"<w:rt>" + oRT.GetData() + L"</w:rt>");
+			oXml->WriteString(L"<w:rubyBase>" + oBase.GetData() + L"</w:rubyBase>");
+			oXml->WriteString(L"</w:ruby>");
+			CloseR(oXml);
+		}
+		else
+			oXml->WriteString(oBase.GetData());
+
+		CloseP(oXml, sSelectors);
+
+		return true;
+	}
+
+	bool ParseTable(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
+	{
+		if(m_oLightReader.IsEmptyNode())
+			return false;
 
 		CTable oTable;
 
@@ -2858,6 +2985,8 @@ private:
 		oTable.CompleteTable();
 		oXml->WriteString(oTable.ConvertToOOXML());
 		WriteEmptyParagraph(oXml, true);
+
+		return true;
 	}
 
 	void readInput  (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
@@ -2934,24 +3063,34 @@ private:
 				continue;
 			}
 
+			CloseP(oXml, sSelectors);
+
+			CTextSettings oTSLiP(oTS);
+
 			std::wstring wsValue;
+			const std::wstring wsParentName{(!sSelectors.empty()) ? sSelectors.back().m_wsName : L""};
 
 			GetSubClass(oXml, sSelectors);
+
+			std::wstring wsArgumentName;
+
 			while(m_oLightReader.MoveToNextAttribute())
 			{
-				if(m_oLightReader.GetName() == L"value")
+				wsArgumentName = m_oLightReader.GetName();
+
+				if(L"value" == wsArgumentName && L"datalist" == wsParentName)
 				{
 					if (sName == L"option")
 						wsValue = m_oLightReader.GetText();
 					else
 						nStart = NSStringFinder::ToInt(m_oLightReader.GetText(), 1);
 				}
+				else if (L"disabled" == wsArgumentName)
+					oTSLiP.AddRStyle(L"<w:color w:val=\"808080\"/>");
+				else if (L"selected" == wsArgumentName)
+					oTSLiP.AddRStyle(L"<w:u w:val=\"single\"/>");
 			}
 			m_oLightReader.MoveToElement();
-
-			CloseP(oXml, sSelectors);
-
-			CTextSettings oTSLiP(oTS);
 
 			if (std::wstring::npos != oTS.sPStyle.find(L"<w:numPr>"))
 			{

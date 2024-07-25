@@ -5,6 +5,18 @@
 
 namespace NSDocxRenderer
 {
+	bool IsTextOnlySpaces(const NSStringUtils::CStringUTF32& oText)
+	{
+		bool only_spaces = true;
+		for (size_t j = 0; j < oText.length(); ++j)
+			if (!IsSpaceUtf32(oText.at(j)))
+			{
+				only_spaces = false;
+				break;
+			}
+		return only_spaces;
+	}
+
 	CSelectedSizes::CSelectedSizes(const CSelectedSizes& oSelectedSizes)
 	{
 		*this = oSelectedSizes;
@@ -502,27 +514,28 @@ namespace NSDocxRenderer
 		return false;
 	}
 
-	bool CContText::IsOnlySpaces()
+	bool CContText::IsOnlySpaces() const
 	{
-		bool only_spaces = true;
-		for (size_t j = 0; j < m_oText.length(); ++j)
-		{
-			if (!IsSpaceUtf32(m_oText[j]))
-			{
-				only_spaces = false;
-				break;
-			}
-		}
-		return only_spaces;
+		return IsTextOnlySpaces(m_oText);
 	}
 
 	void CContText::AddTextBack(const NSStringUtils::CStringUTF32& oText, const std::vector<double>& arSymWidths)
 	{
-		m_oText += oText;
-		for (auto& w : arSymWidths)
+		bool is_space_twice = m_oText.at(m_oText.length() - 1) == c_SPACE_SYM &&
+				oText.at(0) == c_SPACE_SYM;
+
+		for (size_t i = 0; i < arSymWidths.size(); ++i)
 		{
+			auto& w = arSymWidths[i];
+			if (i == 0 && is_space_twice)
+			{
+				m_arSymWidths.back() = m_arSymWidths.back() + arSymWidths[i];
+				m_dWidth += arSymWidths[i];
+				continue;
+			}
 			m_arSymWidths.push_back(w);
 			m_dWidth += w;
+			m_oText += oText.at(i);
 		}
 		m_dRight = m_dLeft + m_dWidth;
 	}
@@ -551,8 +564,15 @@ namespace NSDocxRenderer
 
 	void CContText::AddSymBack(uint32_t cSym, double nWidth)
 	{
-		m_oText += cSym;
-		m_arSymWidths.push_back(nWidth);
+		bool is_space_twice = m_oText.at(m_oText.length() - 1) == c_SPACE_SYM && cSym == c_SPACE_SYM;
+
+		if (is_space_twice)
+			m_arSymWidths.back() += nWidth;
+		else
+		{
+			m_arSymWidths.push_back(nWidth);
+			m_oText += cSym;
+		}
 		m_dWidth += nWidth;
 		m_dRight = m_dLeft + m_dWidth;
 
@@ -573,6 +593,13 @@ namespace NSDocxRenderer
 		m_arSymWidths.push_back(nWidth);
 		m_dWidth = nWidth;
 		m_dRight = m_dLeft + m_dWidth;
+	}
+	void CContText::RemoveLastSym()
+	{
+		m_oText = m_oText.substr(0, m_oText.length() - 1);
+		m_dWidth -= m_arSymWidths[m_arSymWidths.size() - 1];
+		m_dRight = m_dLeft + m_dWidth;
+		m_arSymWidths.resize(m_arSymWidths.size() - 1);
 	}
 
 	const NSStringUtils::CStringUTF32& CContText::GetText() const noexcept

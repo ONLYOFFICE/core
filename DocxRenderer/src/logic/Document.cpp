@@ -628,19 +628,14 @@ namespace NSDocxRenderer
 	HRESULT CDocument::DrawPath(long nType)
 	{
 		std::shared_ptr<CImageInfo> pInfo = nullptr;
-
 		if ((nType > 0xFF) && (c_BrushTypeTexture == m_oBrush.Type))
 		{
-			double x = 0;
-			double y = 0;
-			double w = 0;
-			double h = 0;
+			double x = 0, y = 0, w = 0, h = 0;
 			if (m_oBrush.Image)
 				pInfo = m_oImageManager.WriteImage(m_oBrush.Image, x, y, w, h);
 			else
 				pInfo = m_oImageManager.WriteImage(m_oBrush.TexturePath, x, y, w, h);
 		}
-
 		m_oCurrentPage.DrawPath(nType, pInfo);
 		return S_OK;
 	}

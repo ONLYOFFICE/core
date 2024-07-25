@@ -93,6 +93,7 @@ namespace NSDocxRenderer
 		void AddSymBack(uint32_t cSym, double nWidth);
 		void AddSymFront(uint32_t cSym, double nWidth);
 		void SetSym(uint32_t cSym, double nWidth);
+		void RemoveLastSym();
 
 		const NSStringUtils::CStringUTF32& GetText() const noexcept;
 		const std::vector<double>& GetSymWidths() const noexcept;
@@ -107,7 +108,7 @@ namespace NSDocxRenderer
 		UINT GetNumberOfFeatures() const noexcept;
 		bool IsDuplicate(CContText *pCont, eVerticalCrossingType eVType) const noexcept;
 
-		bool IsOnlySpaces();
+		bool IsOnlySpaces() const;
 
 		// check font effect and delete not needed cont
 		// return true if was deleted

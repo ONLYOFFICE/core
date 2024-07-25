@@ -42,7 +42,7 @@ CStringUTF32::CStringUTF32(const vector<uint32_t> &other): m_vec(other) {}
 
 CStringUTF32::CStringUTF32(const uint32_t* data, const size_t& len)
 {
-    m_vec.reserve(len);
+	m_vec.reserve(len);
     for (size_t i = 0; i < len; ++i)
         this->m_vec.push_back(data[i]);
 }
@@ -151,4 +151,13 @@ CStringUTF32 CStringUTF32::substr(size_t start, size_t count) const
     result.m_vec.reserve(count);
     result.m_vec.insert(result.m_vec.end(), m_vec.begin() + start, m_vec.begin() + start + count);
     return result;
+}
+
+const uint32_t& CStringUTF32::at(size_t index) const
+{
+	return this->m_vec.at(index);
+}
+uint32_t& CStringUTF32::at(size_t index)
+{
+	return this->m_vec.at(index);
 }

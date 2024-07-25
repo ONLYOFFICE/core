@@ -64,7 +64,7 @@ namespace NSDocxRenderer
 			double dDifference = fabs(pCurrent->m_dLeft - pFirst->m_dRight);
 
 			bool bIsEqual = pFirst->IsEqual(pCurrent.get());
-			bool bIsSpaceDelta = dDifference > dSpaceDefaultSize * 0.4;
+			bool bIsSpaceDelta = dDifference > dSpaceDefaultSize * 0.5;
 			bool bIsWideSpaceDelta = dDifference > dSpaceDefaultSize * 3;
 
 			if (bIsWideSpaceDelta || (pCurrent->m_bPossibleSplit && bIsSpaceDelta))
@@ -123,6 +123,7 @@ namespace NSDocxRenderer
 					pFirst->AddSymBack(c_SPACE_SYM, pCurrent->m_dLeft - pFirst->m_dRight);
 					pFirst->AddTextBack(pCurrent->GetText(), pCurrent->GetSymWidths());
 				}
+
 				if (pFirst->m_pCont.expired())
 				{
 					pFirst->m_pCont = pCurrent->m_pCont;

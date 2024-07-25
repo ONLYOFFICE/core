@@ -70,6 +70,9 @@ namespace NSStringUtils
         CStringUTF32 &operator += (const uint32_t& symbol);
 
         CStringUTF32 substr(size_t start, size_t count) const;
+
+		const uint32_t& at(size_t index) const;
+		uint32_t& at(size_t index);
     };
 }
 

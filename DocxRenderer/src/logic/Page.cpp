@@ -73,91 +73,44 @@ namespace NSDocxRenderer
 	// image commands
 	void CPage::WriteImage(const std::shared_ptr<CImageInfo> pInfo, double& fX, double& fY, double& fWidth, double& fHeight)
 	{
-		auto pImage = std::make_shared<CShape>(pInfo, L"");
-		pImage->m_eType = CShape::eShapeType::stPicture;
+		auto image = std::make_shared<CShape>(pInfo, L"");
+		image->m_eType = CShape::eShapeType::stPicture;
 
-		double dRotation = m_pTransform->z_Rotation();
+		double rotation = m_pTransform->z_Rotation();
 
-		if (fabs(dRotation) < 5.0)
-		{
-			double x1 = fX;
-			double y1 = fY;
-			double x2 = fX + fWidth;
-			double y2 = fY + fHeight;
+		Point p1(fX, fY);
+		Point p2(fX + fWidth, fY + fHeight);
 
-			m_pTransform->TransformPoint(x1, y1);
-			m_pTransform->TransformPoint(x2, y2);
+		m_pTransform->TransformPoint(p1.x, p1.y);
+		m_pTransform->TransformPoint(p2.x, p2.y);
 
-			if (x1 <= x2)
-			{
-				pImage->m_dLeft     = x1;
-				pImage->m_dWidth    = x2 - x1;
-			}
-			else
-			{
-				pImage->m_dLeft     = x2;
-				pImage->m_dWidth    = x1 - x2;
-			}
+		// rotate - calc all 4 points - rotate it back
+		Point c((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
+		Aggplus::CMatrix rotate_matrix;
+		rotate_matrix.RotateAt(-rotation, c.x, c.y, Aggplus::MatrixOrderAppend);
 
-			if (y1 <= y2)
-			{
-				pImage->m_dTop      = y1;
-				pImage->m_dHeight   = y2 - y1;
-			}
-			else
-			{
-				pImage->m_dTop      = y2;
-				pImage->m_dHeight   = y1 - y2;
-			}
+		rotate_matrix.TransformPoint(p1.x, p1.y);
+		rotate_matrix.TransformPoint(p2.x, p2.y);
 
-			pImage->m_dRotate = 0.0;
-		}
-		else
-		{
-			double x1 = fX;
-			double y1 = fY;
-			double x2 = fX + fWidth;
-			double y2 = fY + fHeight;
+		Point p3(p1.x, p2.y);
+		Point p4(p2.x, p1.y);
 
-			Aggplus::CMatrix oTemp  = *m_pTransform;
+		image->m_dBaselinePos = std::max({p1.y, p2.y, p3.y, p4.y});
+		image->m_dTop = std::min({p1.y, p2.y, p3.y, p4.y});
+		image->m_dLeft = std::min({p1.x, p2.x, p3.x, p4.x});
+		image->m_dRight = std::max({p1.x, p2.x, p3.x, p4.x});
 
-			double dCx = (x1 + x2) / 2;
-			double dCy = (y1 + y2) / 2;
-			m_pTransform->TransformPoint(dCx, dCy);
-			oTemp.RotateAt(-dRotation, dCx, dCy, Aggplus::MatrixOrderAppend);
+		image->m_dHeight = image->m_dBaselinePos - image->m_dTop;
+		image->m_dWidth = image->m_dRight - image->m_dLeft;
+		image->m_dRotate = rotation;
 
-			oTemp.TransformPoint(x1, y1);
-			oTemp.TransformPoint(x2, y2);
+//		rotate_matrix.RotateAt(rotation, c.x, c.y, Aggplus::MatrixOrderAppend);
+//		rotate_matrix.TransformPoint(p1.x, p1.y);
+//		rotate_matrix.TransformPoint(p2.x, p2.y);
+//		rotate_matrix.TransformPoint(p3.x, p3.y);
+//		rotate_matrix.TransformPoint(p4.x, p4.y);
 
-			if (x1 <= x2)
-			{
-				pImage->m_dLeft     = x1;
-				pImage->m_dWidth    = x2 - x1;
-			}
-			else
-			{
-				pImage->m_dLeft     = x2;
-				pImage->m_dWidth    = x1 - x2;
-			}
-
-			if (y1 <= y2)
-			{
-				pImage->m_dTop      = y1;
-				pImage->m_dHeight   = y2 - y1;
-			}
-			else
-			{
-				pImage->m_dTop      = y2;
-				pImage->m_dHeight   = y1 - y2;
-			}
-
-			pImage->m_dRotate = dRotation;
-		}
-
-		pImage->m_dBaselinePos = pImage->m_dTop + pImage->m_dHeight;
-		pImage->m_dRight = pImage->m_dLeft + pImage->m_dWidth;
-
-		m_arImages.push_back(pImage);
+		m_arImages.push_back(image);
 	}
 
 	// path commands
@@ -265,6 +218,14 @@ namespace NSDocxRenderer
 			pShape->m_oPen.Size *= dDeterminant;
 
 			pShape->SetVector(std::move(m_oVector));
+
+			// big white shape with page width & height skip
+			if (fabs(pShape->m_dHeight - m_dHeight) <= c_dSHAPE_X_OFFSET * 2 &&
+				fabs(pShape->m_dWidth - m_dWidth) <= c_dSHAPE_X_OFFSET * 2 &&
+					pShape->m_oBrush.Color1 == c_iWhiteColor &&
+					m_nShapeOrder == 0)
+				return;
+
 			pShape->m_nOrder = ++m_nShapeOrder;
 			m_arShapes.push_back(pShape);
 		}
@@ -337,13 +298,12 @@ namespace NSDocxRenderer
 		double width = _w;
 		double right = left + _w;
 
-
 		// if new text is close to current cont
 		if (m_pCurrCont != nullptr &&
 				fabs(m_pCurrCont->m_dBaselinePos - baseline) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
 				m_oPrevFont.IsEqual2(m_pFont) &&
 				m_oPrevBrush.IsEqual(m_pBrush) &&
-				(fabs(m_pCurrCont->m_dRight - left) < m_pCurrCont->CalculateSpace() * 0.4))
+				(fabs(m_pCurrCont->m_dRight - left) < m_pCurrCont->CalculateSpace() * 0.5))
 		{
 			// just in case if oText contains more than 1 symbol
 			std::vector<double> ar_widths;
@@ -466,8 +426,8 @@ namespace NSDocxRenderer
 		{
 			if (m_arConts[i] && m_arConts[i]->GetText().length() == 1)
 			{
-				auto text = m_arConts[i]->GetText();
-				if (IsDiacriticalMark(text[0]))
+				const auto& text = m_arConts[i]->GetText();
+				if (IsDiacriticalMark(text.at(0)))
 					m_arDiacriticalSymbols.push_back(std::move(m_arConts[i]));
 			}
 		}
@@ -511,12 +471,13 @@ namespace NSDocxRenderer
 		{
 			bool only_spaces = true;
 			for (auto& cont : m_arTextLines[i]->m_arConts)
+			{
 				if (!cont->IsOnlySpaces())
 				{
 					only_spaces = false;
 					break;
 				}
-
+			}
 			if (only_spaces)
 				m_arTextLines.erase(m_arTextLines.begin() + i, m_arTextLines.begin() + i + 1);
 		}
@@ -1066,13 +1027,11 @@ namespace NSDocxRenderer
 
 						if ((bIf1 && bIf6) || (bIf2 && bIf7) || (bIf4 && bIf8) || (bIf5 && bIf7))
 						{
-							auto text = d_sym->GetText();
-							cont->AddSymBack(text[0], 0);
+							cont->AddSymBack(d_sym->GetText().at(0), 0);
 						}
 						else if (bIf3 && bIf7)
 						{
-							auto text = d_sym->GetText();
-							cont->AddSymFront(text[0], 0);
+							cont->AddSymFront(d_sym->GetText().at(0), 0);
 						}
 						d_sym = nullptr;
 						isBreak = true;
@@ -1185,11 +1144,11 @@ namespace NSDocxRenderer
 				if (!cont)
 					continue;
 
-				auto text = cont->GetText().ToStdWString();
+				const auto& text = cont->GetText();
 				auto ar_widths = cont->GetSymWidths();
-				for (size_t i = 0; i < text.size(); ++i)
+				for (size_t i = 0; i < text.length(); ++i)
 				{
-					if (text[i] == L' ')
+					if (text.at(i) == c_SPACE_SYM)
 					{
 						line->m_dFirstWordWidth = width;
 						next_line = true;

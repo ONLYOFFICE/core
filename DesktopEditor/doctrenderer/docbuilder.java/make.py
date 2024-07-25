@@ -15,10 +15,15 @@ if __name__ == "__main__":
         if file.endswith('.java'):
             java_files += ' docbuilder/' + file
 
+    java_utils_files = ' docbuilder/utils/Utils.java'
+
     if args.jar:
         # TODO
         print('JAR build is not supported yet :(')
     else:
         classes_dir = file_dir + '/build/classes'
         headers_dir = file_dir + '/src/jni'
+        # build all main Java classes
         os.system('javac -d ' + classes_dir + (' -h ' + headers_dir if args.headers else '') + java_files)
+        # build class from utils
+        os.system('javac -d ' + classes_dir + (' -h ' + headers_dir + '/utils' if args.headers else '') + java_utils_files)

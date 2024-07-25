@@ -5,7 +5,7 @@ public class Program {
         String workDirectory = "C:/Program Files/ONLYOFFICE/DocumentBuilder";
         String resultPath = "result.docx";
 
-        // TODO: Update system PATH at runtime
+        docbuilder.utils.Utils.addToPath(workDirectory);
 
         test(workDirectory, resultPath);
 

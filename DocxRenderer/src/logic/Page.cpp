@@ -303,13 +303,16 @@ namespace NSDocxRenderer
 				fabs(m_pCurrCont->m_dBaselinePos - baseline) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
 				m_oPrevFont.IsEqual2(m_pFont) &&
 				m_oPrevBrush.IsEqual(m_pBrush) &&
-				(fabs(m_pCurrCont->m_dRight - left) < m_pCurrCont->CalculateSpace() * 0.5))
+				(fabs(m_pCurrCont->m_dRight - left) < m_pCurrCont->CalculateSpace() * 0.4))
 		{
 			// just in case if oText contains more than 1 symbol
 			std::vector<double> ar_widths;
 			double avg_width = abs(right - left) / oText.length();
 			for (size_t i = 0; i < oText.length(); ++i)
+			{
+				if (oText.at(i) == c_SPACE_SYM) m_pCurrCont->m_pFontStyle->UpdateAvgSpaceWidth(avg_width);
 				ar_widths.push_back(avg_width);
+			}
 
 			m_pCurrCont->AddTextBack(oText, ar_widths);
 
@@ -337,11 +340,22 @@ namespace NSDocxRenderer
 		pCont->m_dHeight      = height;
 		pCont->m_dLeft        = left;
 
+		// первичное получение стиля для текущего символа
+		// при дальнейшем анализе может измениться
+		pCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(*m_pBrush,
+																	 m_pFontSelector->GetSelectedName(),
+																	 m_pFont->Size,
+																	 m_pFontSelector->IsSelectedItalic(),
+																	 m_pFontSelector->IsSelectedBold() || bForcedBold);
+
 		// just in case if oText contains more than 1 symbol
 		std::vector<double> ar_widths;
 		double avg_width = abs(right - left) / oText.length();
 		for (size_t i = 0; i < oText.length(); ++i)
+		{
+			if (oText.at(i) == c_SPACE_SYM) pCont->m_pFontStyle->UpdateAvgSpaceWidth(avg_width);
 			ar_widths.push_back(avg_width);
+		}
 
 		pCont->SetText(oText, ar_widths);
 
@@ -354,15 +368,6 @@ namespace NSDocxRenderer
 
 		pCont->m_dTopWithAscent = pCont->m_dBaselinePos - (oMetrics.dAscent * ratio) - oMetrics.dBaselineOffset;
 		pCont->m_dBotWithDescent = pCont->m_dBaselinePos + (oMetrics.dDescent * ratio) - oMetrics.dBaselineOffset;
-
-		// первичное получение стиля для текущего символа
-		// при дальнейшем анализе может измениться
-		pCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(*m_pBrush,
-																	 m_pFontSelector->GetSelectedName(),
-																	 m_pFont->Size,
-																	 m_pFontSelector->IsSelectedItalic(),
-																	 m_pFontSelector->IsSelectedBold() || bForcedBold);
-
 		pCont->m_dSpaceWidthMM = m_pFontManager->GetSpaceWidthMM();
 
 		if (m_bUseDefaultFont)

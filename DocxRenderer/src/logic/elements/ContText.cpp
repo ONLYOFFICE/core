@@ -562,36 +562,36 @@ namespace NSDocxRenderer
 		m_dRight = m_dLeft + m_dWidth;
 	}
 
-	void CContText::AddSymBack(uint32_t cSym, double nWidth)
+	void CContText::AddSymBack(uint32_t cSym, double dWidth)
 	{
 		bool is_space_twice = m_oText.at(m_oText.length() - 1) == c_SPACE_SYM && cSym == c_SPACE_SYM;
 
 		if (is_space_twice)
-			m_arSymWidths.back() += nWidth;
+			m_arSymWidths.back() += dWidth;
 		else
 		{
-			m_arSymWidths.push_back(nWidth);
+			m_arSymWidths.push_back(dWidth);
 			m_oText += cSym;
 		}
-		m_dWidth += nWidth;
+		m_dWidth += dWidth;
 		m_dRight = m_dLeft + m_dWidth;
 
 	}
-	void CContText::AddSymFront(uint32_t cSym, double nWidth)
+	void CContText::AddSymFront(uint32_t cSym, double dWidth)
 	{
 		NSStringUtils::CStringUTF32 text;
 		text += cSym;
 		text += m_oText;
 		m_oText = text;
-		m_arSymWidths.insert(m_arSymWidths.begin(), nWidth);
+		m_arSymWidths.insert(m_arSymWidths.begin(), dWidth);
 	}
-	void CContText::SetSym(uint32_t cSym, double nWidth)
+	void CContText::SetSym(uint32_t cSym, double dWidth)
 	{
 		m_oText = L"";
 		m_oText += cSym;
 		m_arSymWidths.clear();
-		m_arSymWidths.push_back(nWidth);
-		m_dWidth = nWidth;
+		m_arSymWidths.push_back(dWidth);
+		m_dWidth = dWidth;
 		m_dRight = m_dLeft + m_dWidth;
 	}
 	void CContText::RemoveLastSym()

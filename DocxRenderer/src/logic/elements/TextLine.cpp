@@ -60,11 +60,13 @@ namespace NSDocxRenderer
 			if (!pCurrent)
 				continue;
 
-			double dSpaceDefaultSize = pCurrent->CalculateSpace();
-			double dDifference = fabs(pCurrent->m_dLeft - pFirst->m_dRight);
+			double avg_space = pCurrent->m_pFontStyle->GetAvgSpaceWidth();
+
+			double dSpaceDefaultSize = avg_space != 0.0 ? avg_space * 0.9 : pCurrent->CalculateSpace() * 0.4;
+			double dDifference = pCurrent->m_dLeft - pFirst->m_dRight;
 
 			bool bIsEqual = pFirst->IsEqual(pCurrent.get());
-			bool bIsSpaceDelta = dDifference > dSpaceDefaultSize * 0.5;
+			bool bIsSpaceDelta = dDifference > dSpaceDefaultSize;
 			bool bIsWideSpaceDelta = dDifference > dSpaceDefaultSize * 3;
 
 			if (bIsWideSpaceDelta || (pCurrent->m_bPossibleSplit && bIsSpaceDelta))

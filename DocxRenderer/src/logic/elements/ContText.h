@@ -34,7 +34,7 @@ namespace NSDocxRenderer
 	{
 	public:
 		// utils
-		std::shared_ptr<const CFontStyle> m_pFontStyle{nullptr};
+		std::shared_ptr<CFontStyle> m_pFontStyle{nullptr};
 
 		CFontManager* m_pManager        {nullptr};
 		std::shared_ptr<CShape> m_pShape{nullptr};
@@ -90,9 +90,9 @@ namespace NSDocxRenderer
 		void AddTextFront(const NSStringUtils::CStringUTF32& oText, const std::vector<double>& arSymWidths);
 		void SetText(const NSStringUtils::CStringUTF32& oText, const std::vector<double>& arSymWidths);
 
-		void AddSymBack(uint32_t cSym, double nWidth);
-		void AddSymFront(uint32_t cSym, double nWidth);
-		void SetSym(uint32_t cSym, double nWidth);
+		void AddSymBack(uint32_t cSym, double dWidth);
+		void AddSymFront(uint32_t cSym, double dWidth);
+		void SetSym(uint32_t cSym, double dWidth);
 		void RemoveLastSym();
 
 		const NSStringUtils::CStringUTF32& GetText() const noexcept;

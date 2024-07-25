@@ -197,7 +197,7 @@ namespace NSDocxRenderer
 			auto text = pLastCont->GetText();
 			auto last_sym = text[text.length() - 1];
 
-			if (last_sym != c_SPACE_SYM)
+			if (last_sym != c_SPACE_SYM && m_arLines.size() != 1)
 				pLastCont->AddSymBack(c_SPACE_SYM, 0);
 		}
 	}

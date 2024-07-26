@@ -105,16 +105,19 @@ public class CDocBuilderValue {
         return new CDocBuilderValue(c_GetByIndex(c_internal, index));
     }
 
-    public void setProperty(String name, CDocBuilderValue value) {
-        c_SetProperty(c_internal, name, value.c_internal);
+    public void setProperty(String name, Object value) {
+        CDocBuilderValue docBuilderValue = getValueFromObject(value);
+        c_SetProperty(c_internal, name, docBuilderValue.c_internal);
     }
 
-    public void set(String name, CDocBuilderValue value) {
-        c_SetProperty(c_internal, name, value.c_internal);
+    public void set(String name, Object value) {
+        CDocBuilderValue docBuilderValue = getValueFromObject(value);
+        c_SetProperty(c_internal, name, docBuilderValue.c_internal);
     }
 
-    public void set(int index, CDocBuilderValue value) {
-        c_SetByIndex(c_internal, index, value.c_internal);
+    public void set(int index, Object value) {
+        CDocBuilderValue docBuilderValue = getValueFromObject(value);
+        c_SetByIndex(c_internal, index, docBuilderValue.c_internal);
     }
 
     public CDocBuilderValue(boolean value) {
@@ -133,6 +136,32 @@ public class CDocBuilderValue {
         c_internal = c_CreateWithString(value);
     }
 
+    public CDocBuilderValue(Object[] values) {
+        int length = values.length;
+        c_internal = c_CreateArray(length);
+        for (int i = 0; i < length; i++) {
+            this.set(i, getValueFromObject(values[i]));
+        }
+    }
+
+    static CDocBuilderValue getValueFromObject(Object obj) {
+        if (obj instanceof CDocBuilderValue) {
+            return (CDocBuilderValue)obj;
+        } else if (obj instanceof Boolean) {
+            return new CDocBuilderValue((Boolean)obj);
+        } else if (obj instanceof Integer) {
+            return new CDocBuilderValue((Integer)obj);
+        } else if (obj instanceof Double) {
+            return new CDocBuilderValue((Double)obj);
+        } else if (obj instanceof String) {
+            return new CDocBuilderValue((String)obj);
+        } else if (obj instanceof Object[]) {
+            return new CDocBuilderValue((Object[])obj);
+        } else {
+            throw new IllegalArgumentException("Unsupported type for CDocBuilderValue");
+        }
+    }
+
     public static CDocBuilderValue createUndefined() {
         return new CDocBuilderValue(c_CreateUndefined());
     }
@@ -149,28 +178,49 @@ public class CDocBuilderValue {
         return new CDocBuilderValue(c_Call0(c_internal, name));
     }
 
-    public CDocBuilderValue call(String name, CDocBuilderValue p1) {
-        return new CDocBuilderValue(c_Call1(c_internal, name, p1.c_internal));
+    public CDocBuilderValue call(String name, Object p1) {
+        CDocBuilderValue pValue1 = getValueFromObject(p1);
+        return new CDocBuilderValue(c_Call1(c_internal, name, pValue1.c_internal));
     }
 
-    public CDocBuilderValue call(String name, CDocBuilderValue p1, CDocBuilderValue p2) {
-        return new CDocBuilderValue(c_Call2(c_internal, name, p1.c_internal, p2.c_internal));
+    public CDocBuilderValue call(String name, Object p1, Object p2) {
+        CDocBuilderValue pValue1 = getValueFromObject(p1);
+        CDocBuilderValue pValue2 = getValueFromObject(p2);
+        return new CDocBuilderValue(c_Call2(c_internal, name, pValue1.c_internal, pValue2.c_internal));
     }
 
-    public CDocBuilderValue call(String name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3) {
-        return new CDocBuilderValue(c_Call3(c_internal, name, p1.c_internal, p2.c_internal, p3.c_internal));
+    public CDocBuilderValue call(String name, Object p1, Object p2, Object p3) {
+        CDocBuilderValue pValue1 = getValueFromObject(p1);
+        CDocBuilderValue pValue2 = getValueFromObject(p2);
+        CDocBuilderValue pValue3 = getValueFromObject(p3);
+        return new CDocBuilderValue(c_Call3(c_internal, name, pValue1.c_internal, pValue2.c_internal, pValue3.c_internal));
     }
 
-    public CDocBuilderValue call(String name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4) {
-        return new CDocBuilderValue(c_Call4(c_internal, name, p1.c_internal, p2.c_internal, p3.c_internal, p4.c_internal));
+    public CDocBuilderValue call(String name, Object p1, Object p2, Object p3, Object p4) {
+        CDocBuilderValue pValue1 = getValueFromObject(p1);
+        CDocBuilderValue pValue2 = getValueFromObject(p2);
+        CDocBuilderValue pValue3 = getValueFromObject(p3);
+        CDocBuilderValue pValue4 = getValueFromObject(p4);
+        return new CDocBuilderValue(c_Call4(c_internal, name, pValue1.c_internal, pValue2.c_internal, pValue3.c_internal, pValue4.c_internal));
     }
 
-    public CDocBuilderValue call(String name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4, CDocBuilderValue p5) {
-        return new CDocBuilderValue(c_Call5(c_internal, name, p1.c_internal, p2.c_internal, p3.c_internal, p4.c_internal, p5.c_internal));
+    public CDocBuilderValue call(String name, Object p1, Object p2, Object p3, Object p4, Object p5) {
+        CDocBuilderValue pValue1 = getValueFromObject(p1);
+        CDocBuilderValue pValue2 = getValueFromObject(p2);
+        CDocBuilderValue pValue3 = getValueFromObject(p3);
+        CDocBuilderValue pValue4 = getValueFromObject(p4);
+        CDocBuilderValue pValue5 = getValueFromObject(p5);
+        return new CDocBuilderValue(c_Call5(c_internal, name, pValue1.c_internal, pValue2.c_internal, pValue3.c_internal, pValue4.c_internal, pValue5.c_internal));
     }
 
-    public CDocBuilderValue call(String name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4, CDocBuilderValue p5, CDocBuilderValue p6) {
-        return new CDocBuilderValue(c_Call6(c_internal, name, p1.c_internal, p2.c_internal, p3.c_internal, p4.c_internal, p5.c_internal, p6.c_internal));
+    public CDocBuilderValue call(String name, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6) {
+        CDocBuilderValue pValue1 = getValueFromObject(p1);
+        CDocBuilderValue pValue2 = getValueFromObject(p2);
+        CDocBuilderValue pValue3 = getValueFromObject(p3);
+        CDocBuilderValue pValue4 = getValueFromObject(p4);
+        CDocBuilderValue pValue5 = getValueFromObject(p5);
+        CDocBuilderValue pValue6 = getValueFromObject(p6);
+        return new CDocBuilderValue(c_Call6(c_internal, name, pValue1.c_internal, pValue2.c_internal, pValue3.c_internal, pValue4.c_internal, pValue5.c_internal, pValue6.c_internal));
     }
 
     // Native code

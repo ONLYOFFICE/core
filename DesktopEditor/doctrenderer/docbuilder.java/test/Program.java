@@ -28,16 +28,14 @@ public class Program {
         CDocBuilderValue document = api.call("GetDocument");
         CDocBuilderValue paragraph1 = api.call("CreateParagraph");
 
-        // TODO: autowrapping?
-        paragraph1.call("SetSpacingAfter", new CDocBuilderValue(1000), new CDocBuilderValue(false));
-        paragraph1.call("AddText", new CDocBuilderValue("Hello from Java!"));
+        paragraph1.call("SetSpacingAfter", 1000, false);
+        paragraph1.call("AddText", "Hello from Java!");
 
         CDocBuilderValue paragraph2 = api.call("CreateParagraph");
-        paragraph2.call("AddText", new CDocBuilderValue("Goodbye!"));
+        paragraph2.call("AddText", "Goodbye!");
 
-        CDocBuilderValue content = context.createArray(2);
-        content.set(0, paragraph1);
-        content.set(1, paragraph2);
+        CDocBuilderValue[] paragraphs = { paragraph1, paragraph2 };
+        CDocBuilderValue content = new CDocBuilderValue(paragraphs);
 
         document.call("InsertContent", content);
 

@@ -37,9 +37,10 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CDestination
 	//----------------------------------------------------------------------------------------
-	CDestination::CDestination(CPage* pPage, CXref* pXref)
+	CDestination::CDestination(CPage* pPage, CXref* pXref, bool bInline)
 	{
-		pXref->Add(this);
+		if (!bInline)
+			pXref->Add(this);
 
 		// Первый элемент массива должен быть страницей, которой принадлежит объект
 		Add((CObjectBase*)pPage);

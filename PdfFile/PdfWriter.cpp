@@ -2466,20 +2466,20 @@ HRESULT CPdfWriter::AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, 
 {
 	return m_pDocument->AddMetaData(sMetaName, pMetaData, nMetaLength) ? S_OK : S_FALSE;
 }
-void CreateOutlines(PdfWriter::CDocument* m_pDocument, const std::vector<CHeadings::CHeading>& arrHeadings, PdfWriter::COutline* pParent)
+void CreateOutlines(PdfWriter::CDocument* m_pDocument, const std::vector<CHeadings::CHeading*>& arrHeadings, PdfWriter::COutline* pParent)
 {
 	for (int i = 0; i < arrHeadings.size(); ++i)
 	{
-		std::string sTitle = U_TO_UTF8(arrHeadings[i].wsTitle);
+		std::string sTitle = U_TO_UTF8(arrHeadings[i]->wsTitle);
 		PdfWriter::COutline* pOutline = m_pDocument->CreateOutline(pParent, sTitle.c_str());
-		PdfWriter::CPage* pPageD = m_pDocument->GetPage(arrHeadings[i].nPage);
-		PdfWriter::CDestination* pDest = m_pDocument->CreateDestination(pPageD);
+		PdfWriter::CPage* pPageD = m_pDocument->GetPage(arrHeadings[i]->nPage);
+		PdfWriter::CDestination* pDest = m_pDocument->CreateDestination(pPageD, true);
 		if (pDest)
 		{
 			pOutline->SetDestination(pDest);
-			pDest->SetXYZ(arrHeadings[i].dX, arrHeadings[i].dY, 0);
+			pDest->SetXYZ(MM_2_PT(arrHeadings[i]->dX), pPageD->GetHeight() - MM_2_PT(arrHeadings[i]->dY), 0);
 		}
-		CreateOutlines(m_pDocument, arrHeadings[i].arrHeading, pOutline);
+		CreateOutlines(m_pDocument, arrHeadings[i]->arrHeading, pOutline);
 	}
 }
 void CPdfWriter::SetHeadings(CHeadings* pCommand)

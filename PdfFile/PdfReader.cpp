@@ -763,8 +763,7 @@ void getBookmarks(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out,
 	LinkAction* pLinkAction = pOutlineItem->getAction();
 	if (!pLinkAction)
 		return;
-	LinkActionKind kind = pLinkAction->getKind();
-	if (kind != actionGoTo)
+	if (pLinkAction->getKind() != actionGoTo)
 		return;
 
 	GString* str = ((LinkGoTo*)pLinkAction)->getNamedDest();

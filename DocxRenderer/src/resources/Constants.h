@@ -19,8 +19,8 @@ const double c_dPtToEMU  	= 12700.0;
 const double c_dDegreeToAngle = 60000.0;
 
 const double c_dSTANDART_STRING_HEIGHT_MM       = 4.2333333333333334;
-const double c_dTHE_SAME_STRING_Y_PRECISION_MM  = 0.01;
-const double c_dTHE_SAME_STRING_X_PRECISION_MM  = 0.01;
+const double c_dTHE_SAME_STRING_Y_PRECISION_MM  = 0.02;
+const double c_dTHE_SAME_STRING_X_PRECISION_MM  = 0.02;
 const double c_dLINE_DISTANCE_ERROR_MM          = 0.3;
 const double c_dERROR_OF_PARAGRAPH_BORDERS_MM   = 1.0;
 const double c_dERROR_GAP                       = 1.5;
@@ -36,6 +36,8 @@ const double c_dLINE_DISTANCE_MAX_MM            = 50.0;
 const double c_dSHAPE_TROUGH_MAX_MM             = 120.0;
 const double c_dLINE_SPLIT_DISTANCE_MM          = 10.0;
 const double c_dSHAPE_X_OFFSET                  = 1.5;
+const double c_dAVERAGE_SPACE_WIDTH_COEF        = 0.9;
+const double c_dSPACE_WIDTH_COEF                = 0.4;
 
 const UINT   c_iWhiteColor = 0xFFFFFF;
 const UINT   c_iBlackColor = 0x000000;

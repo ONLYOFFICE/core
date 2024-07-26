@@ -302,8 +302,7 @@ namespace NSDocxRenderer
 		if (m_pCurrCont != nullptr &&
 				fabs(m_pCurrCont->m_dBaselinePos - baseline) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
 				m_oPrevFont.IsEqual2(m_pFont) &&
-				m_oPrevBrush.IsEqual(m_pBrush) &&
-				(fabs(m_pCurrCont->m_dRight - left) < m_pCurrCont->CalculateSpace() * 0.4))
+				m_oPrevBrush.IsEqual(m_pBrush))
 		{
 			// just in case if oText contains more than 1 symbol
 			std::vector<double> ar_widths;
@@ -314,15 +313,37 @@ namespace NSDocxRenderer
 				ar_widths.push_back(avg_width);
 			}
 
-			m_pCurrCont->AddTextBack(oText, ar_widths);
+			double avg_space_width = m_pCurrCont->m_pFontStyle->GetAvgSpaceWidth();
+			double space_width = avg_space_width != 0.0 ?
+					avg_space_width * c_dAVERAGE_SPACE_WIDTH_COEF :
+					m_pCurrCont->CalculateSpace() * c_dSPACE_WIDTH_COEF;
 
-			m_pCurrCont->m_dRight = std::max(m_pCurrCont->m_dRight, right);
-			m_pCurrCont->m_dTop = std::min(m_pCurrCont->m_dTop, top);
-			m_pCurrCont->m_dBaselinePos = std::max(m_pCurrCont->m_dBaselinePos, baseline);
+			bool is_added = false;
 
-			m_pCurrCont->m_dWidth = m_pCurrCont->m_dRight - m_pCurrCont->m_dLeft;
-			m_pCurrCont->m_dHeight = m_pCurrCont->m_dBaselinePos - m_pCurrCont->m_dTop;
-			return;
+			// some_text+more_text
+			if (fabs(m_pCurrCont->m_dRight - left) < space_width && right > m_pCurrCont->m_dRight)
+			{
+				m_pCurrCont->AddTextBack(oText, ar_widths);
+				m_pCurrCont->m_dRight = right;
+				is_added = true;
+
+			}
+			// more_text+some_text
+			else if (fabs(m_pCurrCont->m_dLeft - right) < space_width && left < m_pCurrCont->m_dLeft)
+			{
+				m_pCurrCont->AddTextFront(oText, ar_widths);
+				m_pCurrCont->m_dLeft = left;
+				is_added = true;
+			}
+
+			if (is_added)
+			{
+				m_pCurrCont->m_dTop = std::min(m_pCurrCont->m_dTop, top);
+				m_pCurrCont->m_dBaselinePos = std::max(m_pCurrCont->m_dBaselinePos, baseline);
+				m_pCurrCont->m_dHeight = m_pCurrCont->m_dBaselinePos - m_pCurrCont->m_dTop;
+				m_pCurrCont->m_dWidth = m_pCurrCont->m_dRight - m_pCurrCont->m_dLeft;
+				return;
+			}
 		}
 
 		auto pCont = std::make_shared<CContText>(m_pFontManager);

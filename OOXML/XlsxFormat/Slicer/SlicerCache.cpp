@@ -287,6 +287,8 @@ XLS::BaseObjectPtr COlapSlicerCacheRange::toBin()
             ptr1->iitemstart = m_oStartItem.get();
         else
             ptr1->iitemstart = 0;
+        ptr1->crange = m_oI.size();
+        ptr->m_BrtBeginSlicerCacheSiRange = XLS::BaseObjectPtr{ptr1};
 	}
 	for(auto i:m_oI)
 		ptr->m_arBrtSlicerCacheOlapItem.push_back(i.toBin());
@@ -1211,7 +1213,7 @@ XLS::BaseObjectPtr CTabularSlicerCache::toBin()
 	auto ptr(new XLSB::SLICERCACHENATIVEITEMS);
 	XLS::BaseObjectPtr objectPtr(ptr);
 	auto ptr1(new XLSB::BeginSlicerCacheNative);
-	ptr->m_BrtSlicerCacheNativeItem = XLS::BaseObjectPtr{ptr1};
+	ptr->m_BrtBeginSlicerCacheNative= XLS::BaseObjectPtr{ptr1};
 	if(m_oPivotCacheId.IsInit())
 		ptr1->dwcacheId = m_oPivotCacheId.get();
 	if(m_oSortOrder.IsInit())

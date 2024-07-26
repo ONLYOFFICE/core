@@ -117,13 +117,11 @@ namespace NSGraphics
 		virtual void Stroke() = 0;
 		virtual double GetPixW() = 0;
 		virtual double GetPixH() = 0;
-		virtual unsigned int GetLayerW() = 0;
-		virtual unsigned int GetLayerH() = 0;
 
 		//alpha mask methods
 		virtual void SetAlphaMask(Aggplus::CAlphaMask* pAlphaMask) = 0;
-		virtual Aggplus::CAlphaMask* GetAlphaMask() = 0;
-		virtual void put_AlphaMaskType(Aggplus::EMaskDataType oType) = 0;
+		virtual Aggplus::CSoftMask* CreateSoftMask(bool bAlpha) = 0;
+		virtual void SetSoftMask(Aggplus::CSoftMask* pSoftMask) = 0;
 
 		// smart methods
 		virtual void drawHorLine(BYTE align, double y, double x, double r, double penW) = 0;

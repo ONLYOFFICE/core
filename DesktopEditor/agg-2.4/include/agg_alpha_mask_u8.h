@@ -31,12 +31,6 @@ namespace agg
         static unsigned calculate(const int8u* p) { return *p; }
     };
 
-	//===================================================four_component_mask_u8
-	struct four_component_mask_u8
-	{
-		static unsigned calculate(const int8u* p) { return p[3]; }
-	};
-    
 
     //=====================================================rgb_to_gray_mask_u8
     template<unsigned R, unsigned G, unsigned B>

@@ -1416,29 +1416,19 @@ void CGraphicsRenderer::SetAlphaMask(Aggplus::CAlphaMask *pAlphaMask)
 	m_pRenderer->SetAlphaMask(pAlphaMask);
 }
 
-Aggplus::CAlphaMask* CGraphicsRenderer::GetAlphaMask()
+Aggplus::CSoftMask* CGraphicsRenderer::CreateSoftMask(bool bAlpha)
 {
-	return m_pRenderer->GetAlphaMask();
+	return m_pRenderer->CreateSoftMask(bAlpha);
+}
+
+void CGraphicsRenderer::SetSoftMask(Aggplus::CSoftMask* pSoftMask)
+{
+	m_pRenderer->SetSoftMask(pSoftMask);
 }
 
 HRESULT CGraphicsRenderer::put_LayerOpacity(double dValue)
 {
 	return m_pRenderer->SetLayerOpacity(dValue);
-}
-
-HRESULT CGraphicsRenderer::put_LayerIsolated(bool bIsolated)
-{
-	return m_pRenderer->SetLayerIsolated(bIsolated);
-}
-
-HRESULT CGraphicsRenderer::put_AlphaMaskIsolated(bool bIsolated)
-{
-	return m_pRenderer->SetAlphaMaskIsolated(bIsolated);
-}
-
-void CGraphicsRenderer::put_AlphaMaskType(Aggplus::EMaskDataType oType)
-{
-	m_pRenderer->SetAlphaMaskType(oType);
 }
 
 void CGraphicsRenderer::put_GlobalAlphaEnabled(const bool& bEnabled, const double& dVal)

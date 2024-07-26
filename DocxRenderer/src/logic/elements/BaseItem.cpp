@@ -153,10 +153,4 @@ namespace NSDocxRenderer
 		m_dWidth = m_dRight - m_dLeft;
 		m_dHeight = m_dBaselinePos - m_dTop;
 	}
-
-	COutputObject& COutputObject::operator= (const COutputObject& oObj)
-	{
-		m_eType = oObj.m_eType;
-		return *this;
-	}
 }

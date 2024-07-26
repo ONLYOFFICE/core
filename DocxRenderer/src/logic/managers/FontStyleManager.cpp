@@ -23,23 +23,23 @@ namespace NSDocxRenderer
 			val->ToXml(oWriter);
 	}
 
-	std::shared_ptr<const CFontStyle> CFontStyleManager::GetOrAddFontStyle(const CFontStyle& oFontStyle)
+	std::shared_ptr<CFontStyle> CFontStyleManager::GetOrAddFontStyle(const CFontStyle& oFontStyle)
 	{
 		return GetOrAddFontStyle(oFontStyle.oBrush,
-						  oFontStyle.wsFontName,
-						  oFontStyle.dFontSize,
-						  oFontStyle.bItalic,
-						  oFontStyle.bBold);
+								 oFontStyle.wsFontName,
+								 oFontStyle.dFontSize,
+								 oFontStyle.bItalic,
+								 oFontStyle.bBold);
 	}
-	std::shared_ptr<const CFontStyle> CFontStyleManager::GetOrAddFontStyle(const NSStructures::CBrush& oBrush,
-								   const std::wstring& wsFontName,
-								   double dFontSize,
-								   bool bItalic,
-								   bool bBold)
+	std::shared_ptr<CFontStyle> CFontStyleManager::GetOrAddFontStyle(const NSStructures::CBrush& oBrush,
+																	 const std::wstring& wsFontName,
+																	 double dFontSize,
+																	 bool bItalic,
+																	 bool bBold)
 	{
 		for(auto it = m_arFontStyles.begin(); it != m_arFontStyles.end(); ++it)
 		{
-			if(oBrush.Type == (*it)->oBrush.Type &&
+			if (oBrush.Type == (*it)->oBrush.Type &&
 					oBrush.Color1 == (*it)->oBrush.Color1 &&
 					oBrush.Color2 == (*it)->oBrush.Color2 &&
 					oBrush.Alpha1 == (*it)->oBrush.Alpha1 &&
@@ -52,7 +52,7 @@ namespace NSDocxRenderer
 				auto val = *it;
 
 				// в начало списка
-				if(it != m_arFontStyles.begin())
+				if (it != m_arFontStyles.begin())
 				{
 					m_arFontStyles.erase(it);
 					m_arFontStyles.push_front(val);

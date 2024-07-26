@@ -34,15 +34,14 @@ namespace NSDocxRenderer
 	{
 	public:
 		// utils
-		std::shared_ptr<const CFontStyle> m_pFontStyle{nullptr};
-		CFontManager* m_pManager                      {nullptr};
+		std::shared_ptr<CFontStyle> m_pFontStyle{nullptr};
 
-		// background graphics
-		std::shared_ptr<CShape> m_pShape              {nullptr};
+		CFontManager* m_pManager        {nullptr};
+		std::shared_ptr<CShape> m_pShape{nullptr};
 
 		// super/sub script
-		std::weak_ptr<CContText> m_pCont              {};
-		eVertAlignType m_eVertAlignType               {eVertAlignType::vatUnknown};
+		std::weak_ptr<CContText> m_pCont {};
+		eVertAlignType m_eVertAlignType  {eVertAlignType::vatUnknown};
 
 		// highlights
 		bool m_bIsStrikeoutPresent{false};
@@ -67,13 +66,11 @@ namespace NSDocxRenderer
 		double m_dTopWithAscent{0};
 		double m_dBotWithDescent{0};
 
-		NSStringUtils::CStringUTF32 m_oText{};
 		UINT m_iNumDuplicates{0};
 
 		bool m_bIsAddBrEnd{false};
 		bool m_bWriteStyleRaw{false};
-
-		double m_dFirstWordWidth{0};
+		bool m_bPossibleSplit{false};
 
 		CContText() = default;
 		CContText(CFontManager* pManager) : m_pManager(pManager) {}
@@ -85,8 +82,25 @@ namespace NSDocxRenderer
 		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
 		virtual eVerticalCrossingType GetVerticalCrossingType(const CContText* pItem) const noexcept;
 
-		// calc sizes in selected font (uses m_pFontStyle & m_pManager)
+		// calc sizes in selected font (uses m_oSelectedFont & m_pManager)
 		void CalcSelected();
+
+		size_t GetLength() const noexcept;
+		void AddTextBack(const NSStringUtils::CStringUTF32& oText, const std::vector<double>& arSymWidths);
+		void AddTextFront(const NSStringUtils::CStringUTF32& oText, const std::vector<double>& arSymWidths);
+		void SetText(const NSStringUtils::CStringUTF32& oText, const std::vector<double>& arSymWidths);
+
+		void AddSymBack(uint32_t cSym, double dWidth);
+		void AddSymFront(uint32_t cSym, double dWidth);
+		void SetSym(uint32_t cSym, double dWidth);
+		void RemoveLastSym();
+
+		const NSStringUtils::CStringUTF32& GetText() const noexcept;
+		const std::vector<double>& GetSymWidths() const noexcept;
+		const std::vector<double> GetSymLefts() const noexcept;
+
+		std::shared_ptr<CContText> Split(size_t index);
+		std::shared_ptr<CContText> Split(double dLeft);
 
 		CContText& operator=(const CContText& rCont);
 		bool IsEqual(const CContText* pCont) const noexcept;
@@ -94,21 +108,26 @@ namespace NSDocxRenderer
 		UINT GetNumberOfFeatures() const noexcept;
 		bool IsDuplicate(CContText *pCont, eVerticalCrossingType eVType) const noexcept;
 
+		bool IsOnlySpaces() const;
+
 		// check font effect and delete not needed cont
 		// return true if was deleted
 		static bool CheckFontEffects
-			(std::shared_ptr<CContText>& pFirstCont,
-			std::shared_ptr<CContText>& pSecondCont,
-			eVerticalCrossingType eVType,
-			eHorizontalCrossingType eHType);
+		(std::shared_ptr<CContText>& pFirstCont,
+		 std::shared_ptr<CContText>& pSecondCont,
+		 eVerticalCrossingType eVType,
+		 eHorizontalCrossingType eHType);
 
 		static bool CheckVertAlignTypeBetweenConts
-			(std::shared_ptr<CContText> pFirstCont,
-			std::shared_ptr<CContText> pSecondCont,
-			eVerticalCrossingType eVType,
-			eHorizontalCrossingType eHType);
+		(std::shared_ptr<CContText> pFirstCont,
+		 std::shared_ptr<CContText> pSecondCont,
+		 eVerticalCrossingType eVType,
+		 eHorizontalCrossingType eHType);
 
-		double CalculateWideSpace() const noexcept;
-		double CalculateThinSpace() const noexcept;
+		double CalculateSpace() const noexcept;
+
+	private:
+		NSStringUtils::CStringUTF32 m_oText{};
+		std::vector<double> m_arSymWidths{};
 	};
 }

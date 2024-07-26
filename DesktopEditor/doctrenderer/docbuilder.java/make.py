@@ -17,13 +17,20 @@ if __name__ == "__main__":
 
     java_utils_files = ' docbuilder/utils/Utils.java'
 
+    # BUILD
+    classes_dir = file_dir + '/build/classes'
+    headers_dir = file_dir + '/src/jni'
+    # build all main Java classes
+    os.system('javac -d ' + classes_dir + (' -h ' + headers_dir if args.headers else '') + java_files)
+    # build class from utils
+    os.system('javac -d ' + classes_dir + (' -h ' + headers_dir + '/utils' if args.headers else '') + java_utils_files)
+
+    # PACKING TO JAR
     if args.jar:
-        # TODO
-        print('JAR build is not supported yet :(')
-    else:
-        classes_dir = file_dir + '/build/classes'
-        headers_dir = file_dir + '/src/jni'
-        # build all main Java classes
-        os.system('javac -d ' + classes_dir + (' -h ' + headers_dir if args.headers else '') + java_files)
-        # build class from utils
-        os.system('javac -d ' + classes_dir + (' -h ' + headers_dir + '/utils' if args.headers else '') + java_utils_files)
+        os.chdir(classes_dir)
+        class_files = ''
+        for file in os.listdir('docbuilder'):
+            if file.endswith('.class'):
+                class_files += ' docbuilder/' + file
+        class_utils_files = ' docbuilder/utils/Utils.class'
+        os.system('jar -cvf ../libs/docbuilder.jar ' + class_files + class_utils_files)

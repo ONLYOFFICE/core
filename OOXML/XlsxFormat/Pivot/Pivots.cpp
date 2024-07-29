@@ -2032,7 +2032,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		if(m_oItemIndex.IsInit())
 			ptr->iCache = m_oItemIndex->GetValue();
         else
-            ptr->iCache = 0;
+            ptr->iCache = -1;
 		if(m_oItemType.IsInit())
 		{
 			if(m_oItemType == SimpleTypes::Spreadsheet::EPivotItemType::typeData)
@@ -2420,10 +2420,6 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->fItemsDrilledByDefault = m_oDefaultAttributeDrillState.get();
 		else
 			ptr->fItemsDrilledByDefault = false;
-		if(m_oDefaultSubtotal.IsInit())
-			ptr->fDefault = m_oDefaultSubtotal.get();
-		else
-			ptr->fDefault = false;
 		if(m_oDragOff.IsInit())
 			ptr->fDragToHide = m_oDragOff.get();
 		else
@@ -2609,12 +2605,15 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->fVar = m_oVarSubtotal.get();
 		else
             ptr->fVar = false;
-        if(!ptr->fVar && !ptr->fVarp && !ptr->fStdevp && !ptr->fStdevp
-           && !ptr->fCount && !ptr->fMin && !ptr->fMax && !ptr->fAverage
-           && !ptr->fCounta && !ptr->fSum )
-            ptr->fDefault = true;
-        else
-            ptr->fDefault = false;
+		ptr->fDefault = false;
+		if(m_oItems.IsInit())
+		{
+			for(auto i: m_oItems->m_arrItems)
+			{
+				if(i->m_oItemType.IsInit() && i->m_oItemType == SimpleTypes::Spreadsheet::EPivotItemType::typeDefault)
+					ptr->fDefault = true;
+			}
+		}
 
 		return objectPtr;
 	}

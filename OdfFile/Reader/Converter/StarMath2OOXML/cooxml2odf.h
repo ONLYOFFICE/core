@@ -9,10 +9,11 @@ namespace StarMath
 {
 	struct StValuePr
 	{
-		StValuePr():wsTypeName(L""),wsBegBracket(L""),wsEndBracket(L"")
+		StValuePr():wsTypeName(L""),wsBegBracket(L""),wsEndBracket(L""),wsChr(L""),bSupHide(false),bSubHide(false)
 		{}
-		std::wstring wsTypeName;
+		std::wstring wsTypeName,wsChr;
 		std::wstring wsBegBracket,wsEndBracket;
+		bool bSupHide,bSubHide;
 	};
 	class COOXml2Odf
 	{
@@ -28,10 +29,27 @@ namespace StarMath
 		StValuePr ConversionFpr(OOX::Logic::CFPr* pFpr);
 		std::wstring ConversionType(OOX::Logic::CType* pType);
 		void ConversionMd(OOX::Logic::CDelimiter* pDel);
+		void ConversionNary(OOX::Logic::CNary* pNary);
+		void ConversionSsub(OOX::Logic::CSSub* pSsub);
+		void ConversionSub(OOX::Logic::CSub* pSub, OOX::Logic::CElement *pElement);
+		void ConversionSub(OOX::Logic::CSub* pSub);
+		void ConversionSsup(OOX::Logic::CSSup* pSsup);
+		void ConversionSup(OOX::Logic::CSup* pSup,OOX::Logic::CElement* pElement);
+		void ConversionSup(OOX::Logic::CSup* pSup);
+		void ConversionElement(OOX::Logic::CElement* pElement);
+		void ConversionMRun(OOX::Logic::CMRun* pMRun);
+		void ConversionAcc(OOX::Logic::CAcc* pAcc);
+		void ConversionFunc(OOX::Logic::CFunc* pFunc);
 		StValuePr ConversionMdPr(OOX::Logic::CDelimiterPr* pDelPr);
+		StValuePr ConversionNaryPr(OOX::Logic::CNaryPr* pNaryPr);
 		std::wstring ConversionBegBracket(OOX::Logic::CBegChr* pBegChr);
 		std::wstring ConversionEndBracket(OOX::Logic::CEndChr* pEndChr);
-		std::wstring ParsingText(std::wstring::iterator &itStart, std::wstring::iterator &itEnd,bool& bMrowClose,bool& bMrowOpen);
+		std::wstring ParsingText(std::wstring::iterator &itStart, std::wstring::iterator &itEnd);
+		std::wstring ConversionChr(OOX::Logic::CChr* pChr);
+		std::wstring ToStringChr(const std::wstring& wsChr);
+		bool IsDigit(const std::wstring& wsDigit);
+		bool IsAlpha(const std::wstring& wsAlpha);
+		bool IsSpecialSymbol(const std::wstring& wsSpecial);
 		void EndOdf();
 	private:
 		XmlUtils::CXmlWriter* m_pXmlWrite;

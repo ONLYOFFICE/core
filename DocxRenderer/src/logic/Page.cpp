@@ -222,8 +222,7 @@ namespace NSDocxRenderer
 			// big white shape with page width & height skip
 			if (fabs(pShape->m_dHeight - m_dHeight) <= c_dSHAPE_X_OFFSET * 2 &&
 				fabs(pShape->m_dWidth - m_dWidth) <= c_dSHAPE_X_OFFSET * 2 &&
-					pShape->m_oBrush.Color1 == c_iWhiteColor &&
-					m_nShapeOrder == 0)
+					pShape->m_oBrush.Color1 == c_iWhiteColor)
 				return;
 
 			pShape->m_nOrder = ++m_nShapeOrder;
@@ -1156,40 +1155,6 @@ namespace NSDocxRenderer
 			pCurrLine->MergeConts();
 		}
 		DetermineDominantGraphics();
-
-		// first word width setup
-		for (auto& line : m_arTextLines)
-		{
-			if (!line)
-				continue;
-
-			bool next_line = false;
-			double width = 0;
-			for (auto& cont : line->m_arConts)
-			{
-				if (!cont)
-					continue;
-
-				const auto& text = cont->GetText();
-				auto ar_widths = cont->GetSymWidths();
-				for (size_t i = 0; i < text.length(); ++i)
-				{
-					if (text.at(i) == c_SPACE_SYM)
-					{
-						line->m_dFirstWordWidth = width;
-						next_line = true;
-						break;
-					}
-					width += ar_widths[i];
-				}
-				if (next_line)
-					break;
-			}
-			if (next_line)
-				continue;
-
-			line->m_dFirstWordWidth = line->m_dWidth;
-		}
 	}
 
 	void CPage::DetermineDominantGraphics()
@@ -1630,10 +1595,14 @@ namespace NSDocxRenderer
 			// параграф будет набиваться строчками
 			auto paragraph = std::make_shared<CParagraph>();
 
+			// calcs first word widths
+			for (auto& line : text_lines)
+				line->CalcFirstWordWidth();
+
 			// calcs spacings & positions
 			for (size_t index = 0; index < text_lines.size() - 1; ++index)
 			{
-				ar_spacings[index] = text_lines[index + 1]->m_dBaselinePos - text_lines[index]->m_dTop;
+				ar_spacings[index] = text_lines[index + 1]->m_dTop - text_lines[index]->m_dBaselinePos;
 				avg_spacing = (avg_spacing / (avg_spacing_n + 1)) * avg_spacing_n + (ar_spacings[index] / (avg_spacing_n + 1));
 
 				auto& left_curr = text_lines[index]->m_dLeft;

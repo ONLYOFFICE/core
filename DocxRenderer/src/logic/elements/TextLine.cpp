@@ -157,6 +157,34 @@ namespace NSDocxRenderer
 		});
 	}
 
+	void CTextLine::CalcFirstWordWidth()
+	{
+		bool is_done = false;
+		double width = 0;
+		for (auto& cont : m_arConts)
+		{
+			if (!cont)
+				continue;
+
+			const auto& text = cont->GetText();
+			auto ar_widths = cont->GetSymWidths();
+			for (size_t i = 0; i < text.length(); ++i)
+			{
+				if (text.at(i) == c_SPACE_SYM)
+				{
+					m_dFirstWordWidth = width;
+					is_done = true;
+					break;
+				}
+				width += ar_widths[i];
+			}
+			if (is_done)
+				break;
+		}
+		if (!is_done)
+			m_dFirstWordWidth = m_dWidth;
+	}
+
 	void CTextLine::RecalcSizes()
 	{
 		m_dLeft = 0.0;

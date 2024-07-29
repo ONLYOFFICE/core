@@ -44,6 +44,7 @@ namespace NSDocxRenderer
 		void AddCont(std::shared_ptr<CContText> pCont);
 		void AddConts(const std::vector<std::shared_ptr<CContText>>& arConts);
 		void MergeConts();
+		void CalcFirstWordWidth();
 		void RecalcSizes();
 		void SetVertAlignType(const eVertAlignType& oType);
 

@@ -146,6 +146,59 @@ bool ElementInTable(const std::vector<NSCSS::CNode>& arSelectors)
 	return arSelectors.crend() != std::find_if(arSelectors.crbegin(), arSelectors.crend(), [](const NSCSS::CNode& oNode) { return L"table" == oNode.m_wsName; });
 }
 
+UINT GetFontSizeLevel(UINT unFontSize)
+{
+	if (unFontSize <= 18)
+		return 1;
+	else if (unFontSize <= 22)
+		return 2;
+	else if (unFontSize <= 26)
+		return 3;
+	else if (unFontSize <= 30)
+		return 4;
+	else if (unFontSize <= 40)
+		return 5;
+	else if (unFontSize <= 59)
+		return 6;
+	else
+		return 7;
+}
+
+UINT GetFontSizeByLevel(UINT unLevel)
+{
+	if (0 == unLevel)
+		return 15;
+	else if (unLevel > 7)
+		return 72;
+
+	switch (unLevel)
+	{
+		case 1: return 15;
+		case 2: return 20;
+		case 3: return 24;
+		case 4: return 27;
+		case 5: return 36;
+		case 6: return 48;
+		case 7: return 72;
+	}
+	return 24;
+}
+
+int CalculateFontChange(const std::vector<NSCSS::CNode>& arSelectors)
+{
+	int nFontChange = 0;
+
+	for (const NSCSS::CNode& oNode : arSelectors)
+	{
+		if (L"big" == oNode.m_wsName)
+			++nFontChange;
+		else if (L"small" == oNode.m_wsName)
+			--nFontChange;
+	}
+
+	return nFontChange;
+}
+
 typedef enum
 {
 	ParseModeHeader,
@@ -2113,13 +2166,6 @@ private:
 			oTSBdo.bBdo = false;
 			bResult = readStream(oXml, sSelectors, oTSBdo);
 		}
-		// Увеличивает размер шрифта
-		else if(sName == L"big")
-		{
-			CTextSettings oTSR(oTS);
-			oTSR.AddRStyle(L"<w:sz w:val=\"26\"/><w:szCs w:val=\"26\"/>");
-			bResult = readStream(oXml, sSelectors, oTSR);
-		}
 		// Перенос строки
 		else if(sName == L"br")
 		{
@@ -2175,7 +2221,7 @@ private:
 			bResult = readStream(oXml, sSelectors, oTSR);
 		}
 		// Зачеркнутый текст
-		else if(sName == L"del" || sName == L"s")
+		else if(sName == L"del" || sName == L"s" || sName == L"strike")
 		{
 			CTextSettings oTSR(oTS);
 			oTSR.AddRStyle(L"<w:strike/>");
@@ -2253,13 +2299,6 @@ private:
 			oTSR.AddRStyle(L"<w:vertAlign w:val=\"superscript\"/>");
 			bResult = readStream(oXml, sSelectors, oTSR);
 		}
-		// Уменьшает размер шрифта
-		else if(sName == L"small")
-		{
-			CTextSettings oTSR(oTS);
-			oTSR.AddRStyle(L"<w:sz w:val=\"18\"/>");
-			bResult = readStream(oXml, sSelectors, oTSR);
-		}
 		// Текст нижнего регистра
 		else if(sName == L"sub")
 		{
@@ -2303,8 +2342,8 @@ private:
 		}
 		// Без нового абзаца
 		else if(sName == L"basefont" || sName == L"button" || sName == L"label" || sName == L"data" || sName == L"object" ||
-				sName == L"noscript" || sName == L"output" || sName == L"abbr"  || sName == L"time" ||
-				sName == L"progress" || sName == L"hgroup" || sName == L"meter" || sName == L"acronym")
+				sName == L"noscript" || sName == L"output" || sName == L"abbr"  || sName == L"time" || sName == L"small"  ||
+				sName == L"progress" || sName == L"hgroup" || sName == L"meter" || sName == L"acronym" || sName == L"big")
 			bResult = readStream(oXml, sSelectors, oTS);
 		// С нового абзаца
 		else
@@ -3491,18 +3530,6 @@ private:
 		if (m_oState.m_bWasPStyle)
 			return L"";
 
-		std::vector<std::pair<size_t, NSCSS::CNode>> temporary;
-		size_t i = 0;
-		while(i != sSelectors.size())
-		{
-			if (sSelectors[i].Empty() && rStyle.find(L' ' + sSelectors[i].m_wsName + L' ') != std::wstring::npos)
-			{
-				temporary.push_back(std::make_pair(i, sSelectors[i]));
-				sSelectors.erase(sSelectors.begin() + i);
-			}
-			else
-				i++;
-		}
 		NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetCompiledStyle(sSelectors, true);
 		NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
 
@@ -3522,25 +3549,6 @@ private:
 		m_oXmlStyle.WriteLitePStyle(oStyleSetting);
 		std::wstring sPSettings = m_oXmlStyle.GetStyle();
 		m_oXmlStyle.Clear();
-
-		for(int i = temporary.size() - 1; i >= 0; i--)
-			sSelectors.insert(sSelectors.begin() + temporary[i].first, temporary[i].second);
-
-		// Если в таблице, то игнориуются Paragraph Borders
-		bool bInTable = false;
-		for (const NSCSS::CNode& item : sSelectors)
-			if (item.m_wsName == L"table")
-				bInTable = true;
-		if (bInTable)
-		{
-			size_t nBdr = sPSettings.find(L"<w:pBdr>");
-			if (nBdr != std::wstring::npos)
-			{
-				size_t nBdrEnd = sPSettings.find(L"</w:pBdr>", nBdr);
-				if (nBdrEnd != std::wstring::npos)
-					sPSettings.erase(nBdr, nBdrEnd + 9 - nBdr);
-			}
-		}
 
 		oXml->WriteNodeBegin(L"w:pPr");
 
@@ -3574,7 +3582,22 @@ private:
 		const std::wstring sRSettings = m_oXmlStyle.GetStyle();
 		m_oXmlStyle.Clear();
 
-		if (!sRStyle.empty() || !oTS.sRStyle.empty())
+		std::wstring wsFontSize;
+
+		const int nCalculatedFontChange{CalculateFontChange(sSelectors)};
+
+		if (0 != nCalculatedFontChange)
+		{
+			int nFontSizeLevel{static_cast<int>((oStyle.m_oFont.Empty()) ? 3 : GetFontSizeLevel(oStyle.m_oFont.GetSize().ToInt(NSCSS::Point) * 2))};
+
+			nFontSizeLevel += nCalculatedFontChange;
+
+			const UINT unFontSize{GetFontSizeByLevel(nFontSizeLevel)};
+
+			wsFontSize += L"<w:sz w:val=\"" + std::to_wstring(unFontSize) + L"\"/><w:szCs w:val=\"" + std::to_wstring(unFontSize) + L"\"/>";
+		}
+
+		if (!sRStyle.empty() || !oTS.sRStyle.empty() || !wsFontSize.empty())
 		{
 			oXml->WriteString(L"<w:rPr>");
 			if (!sRStyle.empty())
@@ -3584,7 +3607,7 @@ private:
 				oXml->WriteString(L"\"/>");
 			}
 
-			oXml->WriteString(oTS.sRStyle + L' ' + sRSettings);
+			oXml->WriteString(oTS.sRStyle + L' ' + wsFontSize + L' ' + sRSettings);
 			oXml->WriteString(L"</w:rPr>");
 		}
 		return sRStyle;

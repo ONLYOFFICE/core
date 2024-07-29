@@ -120,7 +120,9 @@ bool OOX::Spreadsheet::CXlsb::WriteBin(const CPath& oFilePath, XLS::BaseObject* 
 	XLS::BinWriterProcessor proc(writer, objStream);
 	proc.mandatory(*objStream);
 
-    m_binaryWriter->WriteFile(m_binaryWriter->GetBuffer(), (static_cast<NSBinPptxRW::CBinaryFileWriter*>(m_binaryWriter.get()))->GetPosition());
+    auto writeSucced = m_binaryWriter->WriteFile(m_binaryWriter->GetBuffer(), (static_cast<NSBinPptxRW::CBinaryFileWriter*>(m_binaryWriter.get()))->GetPosition());
+    if(writeSucced)
+        (static_cast<NSBinPptxRW::CBinaryFileWriter*>(m_binaryWriter.get()))->SetPosition(0);
 	m_binaryWriter->CloseFile();
 
 	return true;
@@ -130,7 +132,7 @@ void OOX::Spreadsheet::CXlsb::WriteSheetData()
 {
     for(auto &worksheet : m_arWorksheets)
     {
-		
+
         //для оптимизации по памяти сразу записываем в файл все листы
         if(m_bWriteToXlsb)
         {
@@ -409,7 +411,7 @@ void OOX::Spreadsheet::CXlsb::LinkTables()
                             XLS::GlobalWorkbookInfo::mapXtiTables_static.emplace(xti.itabFirst, std::vector<int>());
                         }
                         XLS::GlobalWorkbookInfo::mapXtiTables_static.at(xti.itabFirst).push_back(tableFile->m_oTable->m_oId->GetValue());
-                        
+
                     }
                 }
             }

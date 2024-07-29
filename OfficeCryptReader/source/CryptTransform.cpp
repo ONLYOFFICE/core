@@ -309,7 +309,8 @@ _buf GenerateOdfKey(_buf & pSalt, _buf & pPassword, int keySize, int spin, CRYPT
 
     if (algorithm == CRYPT_METHOD::None)
     {
-        pPassword_hash = pPassword;   }
+        pPassword_hash = pPassword;
+    }
     else
     {
         pPassword_hash = HashAppend(pPassword, empty, algorithm);
@@ -842,24 +843,47 @@ void ODFWriteProtect::GetCryptData(_odfWriteProtectData &_data)
 
 void ODFWriteProtect::Generate()
 {
+    //сгенерить соль
+    RandomPool prng;
+    SecByteBlock seed_salt(16);
+    OS_GenerateRandomBlock(false, seed_salt, seed_salt.size());
+    if (prng.CanIncorporateEntropy())
+    {
+        prng.IncorporateEntropy(seed_salt, seed_salt.size());
+    }
+
     std::string passw_ansi = std::string(password.begin(), password.end());
     _buf pPassword	(passw_ansi);
-   _buf pSalt		(data.saltValue);
+    _buf pSalt		(seed_salt.data(), seed_salt.size());
 
     _buf pHash = GenerateOdfKey(pSalt, pPassword, 16, data.spinCount, CRYPT_METHOD::None);
 
+    data.saltValue = std::string((char*)pSalt.ptr, pSalt.size);
     data.hashValue = std::string((char*)pHash.ptr, pHash.size);
 }
 bool ODFWriteProtect::Verify()
 {
     std::string passw_ansi = std::string(password.begin(), password.end());
+
     _buf pPassword	(passw_ansi);
-    _buf pSalt		(data.saltValue);
-    _buf pHash		(data.hashValue);
+    _buf pHash (data.hashValue);
 
-    _buf pHashTest = GenerateOdfKey(pSalt, pPassword, 16, data.spinCount, CRYPT_METHOD::None);
+    if (data.hashAlgorithm == CRYPT_METHOD::PBKDF2)
+    {
+        _buf pSalt (data.saltValue);
 
-    return (pHashTest == pHash);
+        _buf pHashTest = GenerateOdfKey(pSalt, pPassword, 16, data.spinCount, CRYPT_METHOD::None);
+
+        return (pHashTest == pHash);
+    }
+    else
+    {
+        _buf empty (NULL, 0, false);
+
+        _buf pHashTest = HashAppend(empty, pPassword, data.hashAlgorithm);
+
+        return (pHashTest == pHash);
+    }
 }
 //----------------------------------------------------------------------------------------------------------
 void ECMAWriteProtect::SetPassword (const std::wstring &password_)

@@ -305,8 +305,15 @@ _buf GenerateOdfKey(_buf & pSalt, _buf & pPassword, int keySize, int spin, CRYPT
 {
 	_buf pKey		(keySize);
 	_buf empty		(NULL, 0, false);
+    _buf pPassword_hash;
 
-	_buf pPassword_hash = HashAppend(pPassword, empty, algorithm);
+    if (algorithm == CRYPT_METHOD::None)
+    {
+        pPassword_hash = pPassword;   }
+    else
+    {
+        pPassword_hash = HashAppend(pPassword, empty, algorithm);
+    }
 
 	PKCS5_PBKDF2_HMAC<SHA1> pbkdf;
 		
@@ -819,36 +826,40 @@ void ECMADecryptor::Decrypt(unsigned char* data_inp, int size, unsigned char*& d
 	}
 }
 //-----------------------------------------------------------------------------------------------------------
-void odfWriteProtect::SetPassword (const std::wstring &password_)
+void ODFWriteProtect::SetPassword (const std::wstring &password_)
 {
 	password = password_;
 }
-void odfWriteProtect::SetProtectKey (const std::string &key)
-{
-	protect_key = key;
-}
-void odfWriteProtect::SetProtectAlgorithm (const CRYPT_METHOD::_hashAlgorithm &alg)
-{
-	hash = alg;
-}
-void odfWriteProtect::Generate()
-{
-	_buf pPassword	(password);
-	_buf empty		(NULL, 0, false);		
 
-	_buf pHashTest = HashAppend(empty, pPassword, hash);
-		
-	protect_key = std::string((char*)pHashTest.ptr, pHashTest.size);
-}
-bool odfWriteProtect::Verify()
+void ODFWriteProtect::SetCryptData(_odfWriteProtectData &_data)
 {
-	_buf pPassword	(password);
-	_buf empty		(NULL, 0, false);		
-	_buf pHash		(protect_key);
+    data = _data;
+}
+void ODFWriteProtect::GetCryptData(_odfWriteProtectData &_data)
+{
+    _data = data;
+}
 
-	_buf pHashTest = HashAppend(empty, pPassword, hash);
-		
-	return (pHashTest == pHash);
+void ODFWriteProtect::Generate()
+{
+    std::string passw_ansi = std::string(password.begin(), password.end());
+    _buf pPassword	(passw_ansi);
+   _buf pSalt		(data.saltValue);
+
+    _buf pHash = GenerateOdfKey(pSalt, pPassword, 16, data.spinCount, CRYPT_METHOD::None);
+
+    data.hashValue = std::string((char*)pHash.ptr, pHash.size);
+}
+bool ODFWriteProtect::Verify()
+{
+    std::string passw_ansi = std::string(password.begin(), password.end());
+    _buf pPassword	(passw_ansi);
+    _buf pSalt		(data.saltValue);
+    _buf pHash		(data.hashValue);
+
+    _buf pHashTest = GenerateOdfKey(pSalt, pPassword, 16, data.spinCount, CRYPT_METHOD::None);
+
+    return (pHashTest == pHash);
 }
 //----------------------------------------------------------------------------------------------------------
 void ECMAWriteProtect::SetPassword (const std::wstring &password_)

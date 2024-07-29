@@ -1093,3 +1093,22 @@ bool ECMACryptFile::WriteAdditional(const std::wstring &file_name, const std::ws
 
 	return true;
 }
+
+bool TestOdfProtect(const std::wstring &passward, const std::string &salt, const std::string &hash, int count)
+{
+    CRYPT::ODFWriteProtect test;
+
+    CRYPT::_odfWriteProtectData ver1;
+
+    ver1.hashAlgorithm = CRYPT_METHOD::PBKDF2;
+    ver1.hashValue = DecodeBase64(hash);
+    ver1.saltValue = DecodeBase64(salt);
+    ver1.spinCount = count;
+
+    test.SetCryptData(ver1);
+    test.SetPassword(passward);
+    bool result_ver1 = test.Verify();
+
+    return result_ver1;
+}
+

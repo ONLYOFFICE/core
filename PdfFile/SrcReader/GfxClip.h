@@ -37,6 +37,7 @@
 #include <string>
 #include <math.h>
 #include "../lib/xpdf/GfxState.h"
+#include "../../DesktopEditor/common/Types.h"
 #include "MemoryUtils.h"
 
 struct GfxClipMatrix
@@ -351,6 +352,8 @@ public:
     ~GfxClip()
     {
         delete m_pTextClip;
+		for (int i = 0; i < m_vPaths.size(); ++i)
+			RELEASEOBJECT(m_vPaths[i]);
     }
 
     void AddPath(GfxPath *pPath, double *Matrix, bool bEo)

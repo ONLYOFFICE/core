@@ -95,6 +95,7 @@ CPdfFile::~CPdfFile()
 	RELEASEOBJECT(m_pInternal->pWriter);
 	RELEASEOBJECT(m_pInternal->pReader);
 	RELEASEOBJECT(m_pInternal->pEditor);
+	RELEASEOBJECT(m_pInternal);
 }
 NSFonts::IFontManager* CPdfFile::GetFontManager()
 {

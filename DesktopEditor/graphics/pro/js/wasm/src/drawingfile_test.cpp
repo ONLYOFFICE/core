@@ -1796,6 +1796,7 @@ int main(int argc, char* argv[])
 	}
 
 	Close(pGrFile);
+	RELEASEARRAYOBJECTS(pFileData);
 	RELEASEARRAYOBJECTS(pCMapData);
 
 	return 0;

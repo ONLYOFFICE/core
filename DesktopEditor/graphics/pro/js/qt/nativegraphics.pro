@@ -677,7 +677,6 @@ HEADERS += \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/BaseItem.h \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/ContText.h \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/DropCap.h \
-	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/Image.h \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/Paragraph.h \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/Shape.h \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/TextLine.h \
@@ -702,7 +701,6 @@ SOURCES += \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/BaseItem.cpp \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/ContText.cpp \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/DropCap.cpp \
-	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/Image.cpp \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/Paragraph.cpp \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/Shape.cpp \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/TextLine.cpp \

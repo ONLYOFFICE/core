@@ -614,7 +614,6 @@ std::wstring CPdfReader::GetInfo()
 	std::wstring sRes = L"{";
 
 	Object oInfo;
-	m_pPDFDocument->getDocInfo(&oInfo);
 	if (m_pPDFDocument->getDocInfo(&oInfo)->isDict())
 	{
 		auto fDictLookup = [&oInfo](const char* sName, const wchar_t* wsName)
@@ -953,6 +952,7 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 		if (!sLink)
 			continue;
 		std::string link(sLink->getCString(), sLink->getLength());
+		RELEASEOBJECT(sLink);
 		size_t find = link.find("http://");
 		if (find == std::string::npos)
 			find = link.find("https://");
@@ -966,6 +966,7 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 			oLinks.m_arLinks.push_back({link, 0, x1, y1, x2 - x1, y2 - y1});
 		}
 	}
+	RELEASEOBJECT(pWordList);
 	RELEASEOBJECT(pTextOut);
 
 	return oLinks.Serialize();

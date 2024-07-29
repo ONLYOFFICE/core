@@ -2439,6 +2439,7 @@ void CAnnots::getParents(XRef* xref, Object* oFieldRef)
 			TextString* s = new TextString(oOptJ.getString());
 			pAnnotParent->arrOpt.push_back(NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength()));
 			delete s;
+			oOptJ.free();
 		}
 		if (!pAnnotParent->arrOpt.empty())
 			pAnnotParent->unFlags |= (1 << 6);
@@ -2455,6 +2456,8 @@ void CAnnots::getParents(XRef* xref, Object* oFieldRef)
 		getParents(xref, &oParentRefObj);
 	}
 	oParentRefObj.free();
+
+	oField.free();
 }
 
 //------------------------------------------------------------------------

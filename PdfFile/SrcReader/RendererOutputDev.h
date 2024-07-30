@@ -233,10 +233,6 @@ namespace PdfReader
 		virtual void EndSimpleTilingFill();
 		//----- Path clipping
 		virtual void clip(GfxState *pGState);
-		virtual void clipAttack(GfxState *pGState)
-		{
-			updateClipAttack(pGState);
-		}
 		virtual void eoClip(GfxState *pGState);
 		virtual void clipToStrokePath(GfxState *pGState);
 		virtual void clipToPath(GfxState *pGState, GfxPath *pPath, double *pMatrix, bool bEO);
@@ -296,8 +292,15 @@ namespace PdfReader
 		{
 			GfxState* pGState;
 			Aggplus::CSoftMask* pSoftMask;
+			GfxClip* pClip;
+			GfxTextClip* pTextClip;
 
-			GfxOutputState() : pGState(NULL), pSoftMask(NULL) {}
+			GfxOutputState() : pGState(NULL), pSoftMask(NULL), pClip(NULL), pTextClip(NULL) {}
+			~GfxOutputState()
+			{
+				RELEASEOBJECT(pClip);
+				RELEASEOBJECT(pTextClip);
+			}
 		};
 		struct GfxOutputCS
 		{
@@ -312,7 +315,6 @@ namespace PdfReader
 		void DoPath(GfxState *pGState, GfxPath *pPath, double dPageHeight, double *pCTM, GfxClipMatrix* pCTM2 = NULL);
 		void ClipToText(const std::wstring& wsFontName, const std::wstring& wsFontPath, double dFontSize, int nFontStyle, double* pMatrix, const std::wstring& wsText, double dX, double dY, double dWidth = 0, double dHeight = 0, double dBaseLineOffset = 0);
 		void updateClip(GfxState *pGState);
-		void updateClipAttack(GfxState *pGState);
 		void DoTransform(double *pMatrix, double *pdShiftX, double *pdShiftY, bool bText = false);
 	private:
 
@@ -328,7 +330,6 @@ namespace PdfReader
 
 		std::deque<GfxOutputCS>       m_sCS;
 		std::deque<GfxOutputState>    m_sStates;
-		std::deque<GfxClip>           m_sClip;
 		bool                          m_bClipChanged;
 
 		Aggplus::CSoftMask*           m_pSoftMask;

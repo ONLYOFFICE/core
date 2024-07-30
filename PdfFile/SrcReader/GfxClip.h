@@ -346,12 +346,10 @@ class GfxClip
 public:
     GfxClip()
     {
-        m_pTextClip = new GfxTextClip();
     }
 
     ~GfxClip()
     {
-        delete m_pTextClip;
 		for (int i = 0; i < m_vPaths.size(); ++i)
 			RELEASEOBJECT(m_vPaths[i]);
     }
@@ -393,15 +391,6 @@ public:
         m_bChanged = b;
     }
 
-    GfxTextClip *GetTextClip() const
-    {
-        return m_pTextClip;
-    }
-
-    GfxClip(const GfxClip &c) {
-        m_pTextClip  = new GfxTextClip(c.GetTextClip());
-    };
-
     std::vector<GfxClipMatrix> m_vMatrix;
 private:
 
@@ -409,7 +398,6 @@ private:
     std::vector<GfxPath *> m_vPaths;
     std::vector<bool> m_vPathsClipEo;
     bool m_bChanged;
-    GfxTextClip *m_pTextClip;
 };
 
 

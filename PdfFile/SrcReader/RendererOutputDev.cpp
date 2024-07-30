@@ -592,10 +592,6 @@ namespace PdfReader
 	}
 	void RendererOutputDev::saveState(GfxState *pGState)
 	{
-		m_sClip.push_back(GfxClip());
-		m_bClipChanged = true;
-		updateAll(pGState);
-
 		m_sStates.push_back(GfxOutputState());
 		m_sStates.back().pGState = pGState;
 		if (m_pSoftMask)
@@ -603,6 +599,8 @@ namespace PdfReader
 			m_pSoftMask->AddRef();
 			m_sStates.back().pSoftMask = m_pSoftMask;
 		}
+
+		updateAll(pGState);
 	}
 	void RendererOutputDev::restoreState(GfxState *pGState)
 	{
@@ -614,12 +612,9 @@ namespace PdfReader
 				GRenderer->SetSoftMask(m_pSoftMask);
 		}
 
-		if (!m_sClip.empty())
-			m_sClip.pop_back();
-		m_bClipChanged = true;
-		updateAll(pGState);
-
+		m_bClipChanged = m_sStates.back().pClip;
 		m_sStates.pop_back();
+		updateAll(pGState);
 	}
 	void RendererOutputDev::updateCTM(GfxState *pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32)
 	{
@@ -3548,7 +3543,7 @@ namespace PdfReader
 		if (m_bDrawOnlyText)
 			return;
 
-		this->clipAttack(pGState);
+		updateClip(pGState);
 
 		m_pRenderer->BeginCommand(c_nPDFTilingFill);
 
@@ -3593,11 +3588,9 @@ namespace PdfReader
 		if (m_bDrawOnlyText)
 			return;
 
-		if (m_sClip.empty())
-		{
-			m_sClip.push_back(GfxClip());
-		}
-		m_sClip.back().AddPath(pGState->getPath(), pGState->getCTM(), false);
+		if (!m_sStates.back().pClip)
+			m_sStates.back().pClip = new GfxClip();
+		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), false);
 		m_bClipChanged = true;
 		updateClip(pGState);
 	}
@@ -3606,11 +3599,9 @@ namespace PdfReader
 		if (m_bDrawOnlyText)
 			return;
 
-		if (m_sClip.empty())
-		{
-			m_sClip.push_back(GfxClip());
-		}
-		m_sClip.back().AddPath(pGState->getPath(), pGState->getCTM(), true);
+		if (!m_sStates.back().pClip)
+			m_sStates.back().pClip = new GfxClip();
+		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), true);
 		m_bClipChanged = true;
 		updateClip(pGState);
 	}
@@ -3619,11 +3610,9 @@ namespace PdfReader
 		if (m_bDrawOnlyText)
 			return;
 
-		if (m_sClip.empty())
-		{
-			m_sClip.push_back(GfxClip());
-		}
-		m_sClip.back().AddPath(pGState->getPath(), pGState->getCTM(), false);
+		if (!m_sStates.back().pClip)
+			m_sStates.back().pClip = new GfxClip();
+		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), false);
 		m_bClipChanged = true;
 		updateClip(pGState);
 	}
@@ -4021,13 +4010,12 @@ namespace PdfReader
 			m_pRenderer->get_FontPath(&wsTempFontPath);
 			m_pRenderer->get_FontSize(&dTempFontSize);
 			m_pRenderer->get_FontStyle(&lTempFontStyle);
-			//            tmpchange
-			if (m_sClip.empty())
-			{
-				m_sClip.push_back(GfxClip());
-			}
-			m_sClip.back().GetTextClip()->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsClipText, 0 + dShiftX, /*-fabs(pFont->getFontBBox()[3]) * dTfs*/ + dShiftY, 0, 0, 0);
+			// tmpchange
+			if (!m_sStates.back().pTextClip)
+				m_sStates.back().pTextClip = new GfxTextClip();
+			m_sStates.back().pTextClip->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsClipText, 0 + dShiftX, /*-fabs(pFont->getFontBBox()[3]) * dTfs*/ + dShiftY, 0, 0, 0);
 			m_bClipChanged = true;
+			updateClip(pGState);
 		}
 
 		m_pRenderer->put_FontSize(dOldSize);
@@ -4296,8 +4284,6 @@ namespace PdfReader
 		if (m_bDrawOnlyText)
 			return;
 
-		double dPageHeight = pGState->getPageHeight();
-
 		int nBufferSize = 4 * nWidth * nHeight;
 		if (nBufferSize < 1)
 			return;
@@ -4309,7 +4295,7 @@ namespace PdfReader
 		int nComponentsCount = pColorMap->getNumPixelComps();
 
 		// Пишем данные в pBufferPtr
-		ImageStream *pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
+		ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
 		pImageStream->reset();
 
 		unsigned char unAlpha = std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
@@ -4318,6 +4304,7 @@ namespace PdfReader
 		int nComps = pImageStream->getComps();
 		int nWidthMax = nStride / nComps;
 		int nCheckWidth = std::min(nWidth, nWidthMax);
+		GfxRenderingIntent intent = pGState->getRenderingIntent();
 
 		// fast realization for some colorspaces (for wasm module)
 		int nColorMapType = pColorMap->getFillType();
@@ -4351,7 +4338,7 @@ namespace PdfReader
 				else
 				{
 					GfxRGB oRGB;
-					pColorMap->getRGB(pLine, &oRGB, gfxRenderingIntentAbsoluteColorimetric);
+					pColorMap->getRGB(pLine, &oRGB, intent);
 					pLineDst[0] = colToByte(oRGB.b);
 					pLineDst[1] = colToByte(oRGB.g);
 					pLineDst[2] = colToByte(oRGB.r);
@@ -4384,7 +4371,7 @@ namespace PdfReader
 		arrMatrix[2] =    -pCTM[2];
 		arrMatrix[3] =  -(-pCTM[3]);
 		arrMatrix[4] =     pCTM[2] + pCTM[4];
-		arrMatrix[5] =  -(pCTM[3] + pCTM[5]) + dPageHeight;
+		arrMatrix[5] =  -(pCTM[3] + pCTM[5]) + pGState->getPageHeight();
 
 		double dShiftX = 0, dShiftY = 0;
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
@@ -4925,45 +4912,39 @@ namespace PdfReader
 	}
 	void RendererOutputDev::updateClip(GfxState *pGState)
 	{
-		if (m_bDrawOnlyText)
-			return;
-
-		if (m_bTiling)
-			return;
-
-		updateClipAttack(pGState);
-	}
-	void RendererOutputDev::updateClipAttack(GfxState *pGState)
-	{
-		if (!m_bClipChanged)
+		if (m_bDrawOnlyText || m_bTiling || !m_bClipChanged)
 			return;
 
 		m_pRenderer->BeginCommand(c_nResetClipType);
 		m_pRenderer->EndCommand(c_nResetClipType);
 
-		if (m_sClip.empty())
-			return;
-
-		//for (int i = m_sClip.size() - 1; i >= 0; i--)
-		for (int i = 0; i < m_sClip.size(); i++)
+		for (int i = 0; i < m_sStates.size(); i++)
 		{
-			for (int nIndex = 0; nIndex < m_sClip[i].GetPathNum(); nIndex++)
+			GfxClip* pClip = m_sStates[i].pClip;
+			if (pClip)
 			{
-				GfxPath *pPath  = m_sClip[i].GetPath(nIndex);
-				bool    bFlag   = m_sClip[i].GetClipEo(nIndex);
+			for (int nIndex = 0; nIndex < pClip->GetPathNum(); nIndex++)
+			{
+				GfxPath *pPath  = pClip->GetPath(nIndex);
+				bool    bFlag   = pClip->GetClipEo(nIndex);
 
 				int     nClipFlag = bFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
 				nClipFlag |= c_nClipRegionIntersect;
 
 				m_pRenderer->BeginCommand(c_nClipType);
 				m_pRenderer->put_ClipMode(nClipFlag);
-				DoPath(pGState, pPath, pGState->getPageHeight(), pGState->getCTM(), &m_sClip[i].m_vMatrix[nIndex]);
+				DoPath(pGState, pPath, pGState->getPageHeight(), pGState->getCTM(), &pClip->m_vMatrix[nIndex]);
 				m_pRenderer->EndCommand(c_nPathType);
 				m_pRenderer->EndCommand(c_nClipType);
 				m_pRenderer->PathCommandEnd();
 			}
+			}
 
-			int nTextClipCount = m_sClip[i].GetTextClip()->GetTextsCount();
+			GfxTextClip* pTextClip = m_sStates[i].pTextClip;
+			if (!pTextClip)
+				continue;
+
+			int nTextClipCount = pTextClip->GetTextsCount();
 			if (nTextClipCount > 0)
 			{
 				m_pRenderer->BeginCommand(c_nClipType);
@@ -4975,7 +4956,7 @@ namespace PdfReader
 					wchar_t *wsFontName, *wsFontPath;
 					int lFontStyle;
 					double dFontSize = 10, dX = 0, dY = 0, dWidth = 0, dHeight = 0, dBaseLineOffset = 0;
-					wchar_t *wsText = m_sClip[i].GetTextClip()->GetText(nIndex, &dX, &dY, &dWidth, &dHeight, &dBaseLineOffset, &wsFontName, &wsFontPath, &dFontSize, &lFontStyle);
+					wchar_t *wsText = pTextClip->GetText(nIndex, &dX, &dY, &dWidth, &dHeight, &dBaseLineOffset, &wsFontName, &wsFontPath, &dFontSize, &lFontStyle);
 
 					m_pRenderer->put_FontName(wsFontName);
 					m_pRenderer->put_FontPath(wsFontPath);
@@ -4983,7 +4964,7 @@ namespace PdfReader
 					m_pRenderer->put_FontStyle(lFontStyle);
 
 					double dShiftX = 0, dShiftY = 0;
-					DoTransform(m_sClip[i].GetTextClip()->GetMatrix(nIndex), &dShiftX, &dShiftY, true);
+					DoTransform(pTextClip->GetMatrix(nIndex), &dShiftX, &dShiftY, true);
 
 					// TODO: нужна нормальная конвертация
 					int nLen = 0;
@@ -5019,8 +5000,6 @@ namespace PdfReader
 		}
 
 		m_bClipChanged = false;
-
-
 		updateFont(pGState);
 	}
 	void RendererOutputDev::DoTransform(double *pMatrix, double *pdShiftX, double *pdShiftY, bool bText)

@@ -23,7 +23,7 @@ public class CDocBuilderContextScope {
 
     // Native code
     static {
-        System.loadLibrary("docbuilder.jni");
+        docbuilder.utils.NativeLibraryLoader.loadLibraries();
     }
 
     long c_internal = 0;

@@ -5,8 +5,6 @@ public class Program {
         String workDirectory = "C:/Program Files/ONLYOFFICE/DocumentBuilder";
         String resultPath = "result.docx";
 
-        docbuilder.utils.Utils.addToPath(workDirectory);
-
         test(workDirectory, resultPath);
 
         // Need to explicitly call System.gc() because finalizers might not automatically get called

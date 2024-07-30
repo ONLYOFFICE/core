@@ -31,5 +31,6 @@ if __name__ == "__main__":
         for file in os.listdir('docbuilder'):
             if file.endswith('.class'):
                 class_files += ' docbuilder/' + file
-        class_utils_files = ' docbuilder/utils/Utils.class'
-        os.system('jar -cvf ../libs/docbuilder.jar ' + class_files + class_utils_files)
+        class_utils_file = ' docbuilder/utils/NativeLibraryLoader.class'
+        class_files += class_utils_file
+        os.system('jar -cvf ../libs/docbuilder.jar ' + class_files)

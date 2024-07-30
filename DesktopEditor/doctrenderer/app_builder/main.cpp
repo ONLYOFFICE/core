@@ -147,6 +147,7 @@ int main(int argc, char *argv[])
 	std::wstring sBuildFile = UTF8_TO_U(sBuildFileA);
 #endif
 
+	bool bResult = true;
 	if (true)
 	{
 		NSDoctRenderer::CDocBuilder oBuilder;
@@ -159,9 +160,9 @@ int main(int argc, char *argv[])
 
 		parse_args(&oBuilder, argc - 1, argv);
 
-		oBuilder.Run(sBuildFile.c_str());
+		bResult = oBuilder.Run(sBuildFile.c_str());
 	}
 
 	NSDoctRenderer::CDocBuilder::Dispose();
-	return 0;
+	return bResult ? 0 : 1;
 }

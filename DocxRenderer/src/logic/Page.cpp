@@ -303,14 +303,11 @@ namespace NSDocxRenderer
 				m_oPrevFont.IsEqual2(m_pFont) &&
 				m_oPrevBrush.IsEqual(m_pBrush))
 		{
-			// just in case if oText contains more than 1 symbol
-			std::vector<double> ar_widths;
-			double avg_width = abs(right - left) / oText.length();
+
+			double avg_width = width / oText.length();
 			for (size_t i = 0; i < oText.length(); ++i)
-			{
-				if (oText.at(i) == c_SPACE_SYM) m_pCurrCont->m_pFontStyle->UpdateAvgSpaceWidth(avg_width);
-				ar_widths.push_back(avg_width);
-			}
+				if (oText.at(i) == c_SPACE_SYM)
+					m_pCurrCont->m_pFontStyle->UpdateAvgSpaceWidth(avg_width);
 
 			double avg_space_width = m_pCurrCont->m_pFontStyle->GetAvgSpaceWidth();
 			double space_width = avg_space_width != 0.0 ?
@@ -322,16 +319,24 @@ namespace NSDocxRenderer
 			// some_text+more_text
 			if (fabs(m_pCurrCont->m_dRight - left) < space_width && right > m_pCurrCont->m_dRight)
 			{
+				double left_avg_width = (right - m_pCurrCont->m_dRight) / oText.length();
+				std::vector<double> ar_widths;
+				for (size_t i = 0; i < oText.length(); ++i)
+					ar_widths.push_back(left_avg_width);
+
 				m_pCurrCont->AddTextBack(oText, ar_widths);
-				m_pCurrCont->m_dRight = right;
 				is_added = true;
 
 			}
 			// more_text+some_text
 			else if (fabs(m_pCurrCont->m_dLeft - right) < space_width && left < m_pCurrCont->m_dLeft)
 			{
+				double right_avg_width = (m_pCurrCont->m_dLeft - left) / oText.length();
+				std::vector<double> ar_widths;
+				for (size_t i = 0; i < oText.length(); ++i)
+					ar_widths.push_back(right_avg_width);
+
 				m_pCurrCont->AddTextFront(oText, ar_widths);
-				m_pCurrCont->m_dLeft = left;
 				is_added = true;
 			}
 
@@ -842,7 +847,7 @@ namespace NSDocxRenderer
 					bool is_crossing_text = IsLineCrossingText(shape, curr_cont) && is_width_equal;
 					bool is_below_text = IsLineBelowText(shape, curr_cont) && is_width_equal;
 					bool is_outline = IsOutline(shape, curr_cont);
-					bool is_highlight = IsHighlight(shape, curr_cont) && curr_line->m_dHeight * 1.5 > shape->m_dHeight;
+					bool is_highlight = IsHighlight(shape, curr_cont) && curr_line->m_dHeight * 1.5 > shape->m_dHeight && is_width_equal;
 
 					bool is_smth_true = is_crossing_text || is_below_text || is_outline || is_highlight;
 					if (is_smth_true)

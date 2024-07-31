@@ -214,6 +214,11 @@ int  CAnnotFieldInfo::GetID()        const { return m_nID; }
 int  CAnnotFieldInfo::GetAnnotFlag() const { return m_nAnnotFlag; }
 int  CAnnotFieldInfo::GetPage()      const { return m_nPage; }
 void CAnnotFieldInfo::GetBE(BYTE& nS, double& dI) { nS = m_pBE.first; dI = m_pBE.second; }
+BYTE* CAnnotFieldInfo::GetRender(LONG& nLen)
+{
+	nLen = m_nRenderLen;
+	return m_pRender;
+}
 const std::wstring& CAnnotFieldInfo::GetNM() { return m_wsNM; }
 const std::wstring& CAnnotFieldInfo::GetLM() { return m_wsLM; }
 const std::wstring& CAnnotFieldInfo::GetContents() { return m_wsContents; }
@@ -337,6 +342,12 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 	}
 	if (nFlags & (1 << 5))
 		m_wsLM = pReader->ReadString();
+	if (nFlags & (1 << 6))
+	{
+		m_nRenderLen = pReader->ReadInt() - 4;
+		m_pRender = pReader->GetCurrentBuffer();
+		pReader->Skip(m_nRenderLen);
+	}
 
 	if (IsMarkup())
 	{
@@ -567,11 +578,6 @@ const std::wstring& CAnnotFieldInfo::CFreeTextAnnotPr::GetDS() { return m_wsDS; 
 void CAnnotFieldInfo::CFreeTextAnnotPr::GetRD(double& dRD1, double& dRD2, double& dRD3, double& dRD4) { dRD1 = m_dRD[0]; dRD2 = m_dRD[1]; dRD3 = m_dRD[2]; dRD4 = m_dRD[3]; }
 const std::vector<double>& CAnnotFieldInfo::CFreeTextAnnotPr::GetCL() { return m_arrCL; }
 const std::vector<double>& CAnnotFieldInfo::CFreeTextAnnotPr::GetIC() { return m_arrIC; }
-BYTE* CAnnotFieldInfo::CFreeTextAnnotPr::GetRender(LONG& nLen)
-{
-	nLen = m_nRenderLen;
-	return m_pRender;
-}
 void CAnnotFieldInfo::CFreeTextAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags)
 {
 	m_nQ = pReader->ReadByte();
@@ -600,12 +606,6 @@ void CAnnotFieldInfo::CFreeTextAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferRead
 		int n = pReader->ReadInt();
 		for (int i = 0; i < n; ++i)
 			m_arrIC.push_back(pReader->ReadDouble());
-	}
-	if (nFlags & (1 << 22))
-	{
-		m_nRenderLen = pReader->ReadInt() - 4;
-		m_pRender = pReader->GetCurrentBuffer();
-		pReader->Skip(m_nRenderLen);
 	}
 }
 

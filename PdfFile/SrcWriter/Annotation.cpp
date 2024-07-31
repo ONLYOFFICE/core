@@ -165,6 +165,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CAnnotation::CAnnotation(CXref* pXref, EAnnotType eType)
 	{
+		m_pAppearance = NULL;
 		m_pDocument = NULL;
 		m_pXref = pXref;
 
@@ -296,6 +297,48 @@ namespace PdfWriter
 		}
 		sRes.append(" ] 0 d\012");
 		return sRes;
+	}
+	void CAnnotation::APFromFakePage(CPage* pFakePage)
+	{
+		// xref NULL - тогда у CAnnotAppearanceObject не будет создан stream
+		m_pAppearance = new CAnnotAppearance(NULL, this);
+		if (!m_pAppearance)
+			return;
+		Add("AP", m_pAppearance);
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal((CResourcesDict*)pFakePage->Get("Resources"));
+		m_pXref->Add(pNormal);
+		m_pAppearance->Add("N", pNormal);
+
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+		pNormal->Add("BBox", pArray);
+
+		pArray->Add(GetRect().fLeft);
+		pArray->Add(GetRect().fBottom);
+		pArray->Add(GetRect().fRight);
+		pArray->Add(GetRect().fTop);
+
+		pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		pNormal->Add("Matrix", pArray);
+		pArray->Add(1);
+		pArray->Add(0);
+		pArray->Add(0);
+		pArray->Add(1);
+		pArray->Add(-GetRect().fLeft);
+		pArray->Add(-GetRect().fBottom);
+
+		CDictObject* pFPStream = pFakePage->GetContent();
+		pNormal->SetStream(m_pXref, pFPStream->GetStream(), false);
+#ifndef FILTER_FLATE_DECODE_DISABLED
+		if (m_pDocument->GetCompressionMode() & COMP_TEXT)
+			pNormal->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
+		pFPStream->SetStream(NULL);
+		// RELEASEOBJECT(pFPStream); Нельзя удалять - это объект стрима, он уже в xref
 	}
 	//----------------------------------------------------------------------------------------
 	// CMarkupAnnotation
@@ -1142,48 +1185,6 @@ namespace PdfWriter
 	void CFreeTextAnnotation::SetIC(const std::vector<double>& arrIC)
 	{
 		SetC(arrIC);
-	}
-	void CFreeTextAnnotation::APFromFakePage(CPage* pFakePage)
-	{
-		// xref NULL - тогда у CAnnotAppearanceObject не будет создан stream
-		m_pAppearance = new CAnnotAppearance(NULL, this);
-		if (!m_pAppearance)
-			return;
-		Add("AP", m_pAppearance);
-		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal((CResourcesDict*)pFakePage->Get("Resources"));
-		m_pXref->Add(pNormal);
-		m_pAppearance->Add("N", pNormal);
-
-		CArrayObject* pArray = new CArrayObject();
-		if (!pArray)
-			return;
-		pNormal->Add("BBox", pArray);
-
-		pArray->Add(GetRect().fLeft);
-		pArray->Add(GetRect().fBottom);
-		pArray->Add(GetRect().fRight);
-		pArray->Add(GetRect().fTop);
-
-		pArray = new CArrayObject();
-		if (!pArray)
-			return;
-
-		pNormal->Add("Matrix", pArray);
-		pArray->Add(1);
-		pArray->Add(0);
-		pArray->Add(0);
-		pArray->Add(1);
-		pArray->Add(-GetRect().fLeft);
-		pArray->Add(-GetRect().fBottom);
-
-		CDictObject* pFPStream = pFakePage->GetContent();
-		pNormal->SetStream(m_pXref, pFPStream->GetStream(), false);
-#ifndef FILTER_FLATE_DECODE_DISABLED
-		if (m_pDocument->GetCompressionMode() & COMP_TEXT)
-			pNormal->SetFilter(STREAM_FILTER_FLATE_DECODE);
-#endif
-		pFPStream->SetStream(NULL);
-		// RELEASEOBJECT(pFPStream); Нельзя удалять - это объект стрима, он уже в xref
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextMarkupAnnotation

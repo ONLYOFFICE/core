@@ -1852,6 +1852,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	}
 	if (nFlags & (1 << 5))
 		pAnnot->SetLM(oInfo.GetLM());
+	bool bRender = (nFlags >> 6) & 1;
 
 	if (oInfo.IsMarkup())
 	{
@@ -1969,6 +1970,12 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			PdfWriter::CInkAnnotation* pInkAnnot = (PdfWriter::CInkAnnotation*)pAnnot;
 
 			pInkAnnot->SetInkList(pPr->GetInkList());
+			if (bRender)
+			{
+				LONG nLen = 0;
+				BYTE* pRender = oInfo.GetRender(nLen);
+				DrawAP(pAnnot, pRender, nLen);
+			}
 		}
 		else if (oInfo.IsLine())
 		{
@@ -2006,6 +2013,14 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			}
 
 			pLineAnnot->SetAP();
+			/*
+			if (bRender)
+			{
+				LONG nLen = 0;
+				BYTE* pRender = oInfo.GetRender(nLen);
+				DrawAP(pAnnot, pRender, nLen);
+			}
+			*/
 		}
 		else if (oInfo.IsTextMarkup())
 		{
@@ -2029,6 +2044,12 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			}
 			if (nFlags & (1 << 16))
 				pSquareCircleAnnot->SetIC(pPr->GetIC());
+			if (bRender)
+			{
+				LONG nLen = 0;
+				BYTE* pRender = oInfo.GetRender(nLen);
+				DrawAP(pAnnot, pRender, nLen);
+			}
 		}
 		else if (oInfo.IsPolygonLine())
 		{
@@ -2047,6 +2068,12 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pPolygonLineAnnot->SetIC(pPr->GetIC());
 			if (nFlags & (1 << 20))
 				pPolygonLineAnnot->SetIT(pPr->GetIT());
+			if (bRender)
+			{
+				LONG nLen = 0;
+				BYTE* pRender = oInfo.GetRender(nLen);
+				DrawAP(pAnnot, pRender, nLen);
+			}
 		}
 		else if (oInfo.IsFreeText())
 		{
@@ -2075,25 +2102,13 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pFreeTextAnnot->SetIT(pFTPr->GetIT());
 			if (nFlags & (1 << 21))
 				pFreeTextAnnot->SetIC(pFTPr->GetIC());
-			if (nFlags & (1 << 22))
+			if (bRender)
 			{
-				PdfWriter::CPage* pCurPage = m_pPage;
-				PdfWriter::CPage* pFakePage = m_pDocument->CreateFakePage();
-				m_pPage = pFakePage;
-				m_pDocument->SetCurPage(pFakePage);
-
 				LONG nLen = 0;
-				BYTE* pRender = pFTPr->GetRender(nLen);
-				IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pRenderer);
-				NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLen, pCorrector);
-				RELEASEOBJECT(pCorrector);
-
-				pFreeTextAnnot->APFromFakePage(pFakePage);
-
-				m_pPage = pCurPage;
-				m_pDocument->SetCurPage(pCurPage);
-				RELEASEOBJECT(pFakePage);
+				BYTE* pRender = oInfo.GetRender(nLen);
+				DrawAP(pAnnot, pRender, nLen);
 			}
+
 			PdfWriter::CFontDict* pFont = m_pFont;
 			if (m_pFont14)
 				pFont = m_pFont14;
@@ -3629,6 +3644,26 @@ std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl, const std::ws
 		NSFile::CFileBinary::Remove(sTempFile);
 
 	return L"";
+}
+void CPdfWriter::DrawAP(PdfWriter::CAnnotation* pAnnot, BYTE* pRender, LONG nLenRender)
+{
+	if (!pAnnot || !pRender)
+		return;
+
+	PdfWriter::CPage* pCurPage = m_pPage;
+	PdfWriter::CPage* pFakePage = m_pDocument->CreateFakePage();
+	m_pPage = pFakePage;
+	m_pDocument->SetCurPage(pFakePage);
+
+	IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pRenderer);
+	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);
+	RELEASEOBJECT(pCorrector);
+
+	pAnnot->APFromFakePage(pFakePage);
+
+	m_pPage = pCurPage;
+	m_pDocument->SetCurPage(pCurPage);
+	RELEASEOBJECT(pFakePage);
 }
 void CPdfWriter::DrawTextWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CTextWidget* pTextWidget, const std::wstring& wsValue)
 {

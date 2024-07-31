@@ -3,6 +3,7 @@
 #include <numeric>
 #include <limits>
 
+#include "../../../DesktopEditor/graphics/pro/Graphics.h"
 #include "VectorGraphics.h"
 
 
@@ -16,6 +17,17 @@ namespace NSDocxRenderer
 	{
 		ResetBorders();
 	}
+	CVectorGraphics::CVectorGraphics(const CVectorGraphics& other)
+		: CVectorGraphics()
+	{
+		*this = other;
+	}
+	CVectorGraphics::CVectorGraphics(CVectorGraphics&& other)
+		: CVectorGraphics()
+	{
+		*this = std::move(other);
+	}
+
 
 	CVectorGraphics::~CVectorGraphics()
 	{
@@ -34,6 +46,18 @@ namespace NSDocxRenderer
 		m_dBottom = other.m_dBottom;
 
 		other.Clear();
+		return *this;
+	}
+	CVectorGraphics& CVectorGraphics::operator=(const CVectorGraphics& other)
+	{
+		if (this == &other)
+			return *this;
+
+		m_arData = other.m_arData;
+		m_dLeft = other.m_dLeft;
+		m_dTop = other.m_dTop;
+		m_dRight = other.m_dRight;
+		m_dBottom = other.m_dBottom;
 		return *this;
 	}
 
@@ -136,5 +160,20 @@ namespace NSDocxRenderer
 	{
 		Point point = {x, y};
 		CheckPoint(point);
+	}
+	void CVectorGraphics::Rotate(const double& rotation)
+	{
+		Point center((m_dLeft + m_dRight) / 2, (m_dTop + m_dBottom) / 2);
+		ResetBorders();
+
+		Aggplus::CMatrix rotate_matrix;
+		rotate_matrix.RotateAt(rotation, center.x, center.y, Aggplus::MatrixOrderAppend);
+
+		for (auto& command : m_arData)
+			for (auto& point : command.points)
+			{
+				rotate_matrix.TransformPoint(point.x, point.y);
+				CheckPoint(point);
+			}
 	}
 }

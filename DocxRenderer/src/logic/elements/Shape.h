@@ -23,7 +23,6 @@ namespace NSDocxRenderer
 		{
 			stUnknown,
 			stTextBox,
-			stPicture,
 			stVectorGraphics,
 			stVectorTexture,
 			stGroup,
@@ -36,10 +35,10 @@ namespace NSDocxRenderer
 		NSStructures::CBrush m_oBrush{};
 		NSStructures::CPen m_oPen    {};
 
-		CVectorGraphics m_oVector    {};
-		std::wstring m_strDstMedia   {};
+		CVectorGraphics m_oVector     {};
+		std::wstring m_strDstMedia    {};
 
-		double m_dRotate {0.0};
+		double m_dRotation {0.0};
 		size_t m_nOrder  {0};
 
 		bool m_bIsNoFill    {true};
@@ -63,6 +62,7 @@ namespace NSDocxRenderer
 		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter)const override final;
 
 		void SetVector(CVectorGraphics&& oVector);
+		void CalcNoRotVector();
 
 		// tries merge shape, return true if ok and pShape was deleted
 		bool TryMergeShape(std::shared_ptr<CShape>& pShape);
@@ -97,6 +97,8 @@ namespace NSDocxRenderer
 		static void CheckLineType(std::shared_ptr<CShape>& pFirstShape, std::shared_ptr<CShape>& pSecondShape, bool bIsLast = false);
 
 	private:
+		CVectorGraphics m_oNoRotVector{};
+
 		UINT m_nShapeId{0};
 		UINT m_nRelativeHeight{0};
 

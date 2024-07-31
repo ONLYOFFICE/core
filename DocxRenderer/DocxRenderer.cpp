@@ -135,14 +135,6 @@ std::vector<std::wstring> CDocxRenderer::ScanPage(IOfficeDrawingFile* pFile, siz
 		xml_shapes.push_back(writer->GetData());
 		delete writer;
 	}
-	for (const auto& shape : m_pInternal->m_oDocument.m_oCurrentPage.m_arImages)
-	{
-		if (!shape) continue;
-		auto writer = new NSStringUtils::CStringBuilder();
-		shape->ToXml(*writer);
-		xml_shapes.push_back(writer->GetData());
-		delete writer;
-	}
 
 	std::vector<std::wstring>& arComleteObjects = m_pInternal->m_oDocument.m_oCurrentPage.m_arCompleteObjectsXml;
 	if (!arComleteObjects.empty())
@@ -164,14 +156,6 @@ std::vector<std::wstring> CDocxRenderer::ScanPagePptx(IOfficeDrawingFile* pFile,
 
 	std::vector<std::wstring> xml_shapes;
 	for (const auto& shape : m_pInternal->m_oDocument.m_oCurrentPage.m_arShapes)
-	{
-		if (!shape) continue;
-		auto writer = new NSStringUtils::CStringBuilder();
-		shape->ToXmlPptx(*writer);
-		xml_shapes.push_back(writer->GetData());
-		delete writer;
-	}
-	for (const auto& shape : m_pInternal->m_oDocument.m_oCurrentPage.m_arImages)
 	{
 		if (!shape) continue;
 		auto writer = new NSStringUtils::CStringBuilder();

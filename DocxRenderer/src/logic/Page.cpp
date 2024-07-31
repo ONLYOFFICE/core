@@ -50,7 +50,6 @@ namespace NSDocxRenderer
 		m_arConts.clear();
 		m_arTextLines.clear();
 		m_arDiacriticalSymbols.clear();
-		m_arImages.clear();
 		m_arShapes.clear();
 		m_arOutputObjects.clear();
 		m_oVector.Clear();
@@ -73,9 +72,6 @@ namespace NSDocxRenderer
 	// image commands
 	void CPage::WriteImage(const std::shared_ptr<CImageInfo> pInfo, double& fX, double& fY, double& fWidth, double& fHeight)
 	{
-		auto image = std::make_shared<CShape>(pInfo, L"");
-		image->m_eType = CShape::eShapeType::stPicture;
-
 		double rotation = m_pTransform->z_Rotation();
 
 		Point p1(fX, fY);
@@ -84,7 +80,6 @@ namespace NSDocxRenderer
 		m_pTransform->TransformPoint(p1.x, p1.y);
 		m_pTransform->TransformPoint(p2.x, p2.y);
 
-		// rotate - calc all 4 points - rotate it back
 		Point c((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
 		Aggplus::CMatrix rotate_matrix;
 		rotate_matrix.RotateAt(-rotation, c.x, c.y, Aggplus::MatrixOrderAppend);
@@ -95,22 +90,20 @@ namespace NSDocxRenderer
 		Point p3(p1.x, p2.y);
 		Point p4(p2.x, p1.y);
 
-		image->m_dBaselinePos = std::max({p1.y, p2.y, p3.y, p4.y});
-		image->m_dTop = std::min({p1.y, p2.y, p3.y, p4.y});
-		image->m_dLeft = std::min({p1.x, p2.x, p3.x, p4.x});
-		image->m_dRight = std::max({p1.x, p2.x, p3.x, p4.x});
+		rotate_matrix.RotateAt(2 * rotation, c.x, c.y, Aggplus::MatrixOrderAppend);
+		rotate_matrix.TransformPoint(p1.x, p1.y);
+		rotate_matrix.TransformPoint(p2.x, p2.y);
+		rotate_matrix.TransformPoint(p3.x, p3.y);
+		rotate_matrix.TransformPoint(p4.x, p4.y);
 
-		image->m_dHeight = image->m_dBaselinePos - image->m_dTop;
-		image->m_dWidth = image->m_dRight - image->m_dLeft;
-		image->m_dRotate = rotation;
-
-//		rotate_matrix.RotateAt(rotation, c.x, c.y, Aggplus::MatrixOrderAppend);
-//		rotate_matrix.TransformPoint(p1.x, p1.y);
-//		rotate_matrix.TransformPoint(p2.x, p2.y);
-//		rotate_matrix.TransformPoint(p3.x, p3.y);
-//		rotate_matrix.TransformPoint(p4.x, p4.y);
-
-		m_arImages.push_back(image);
+		m_oVector.Clear();
+		m_oVector.MoveTo(p1.x, p1.y);
+		m_oVector.LineTo(p3.x, p3.y);
+		m_oVector.LineTo(p2.x, p2.y);
+		m_oVector.LineTo(p4.x, p4.y);
+		m_oVector.LineTo(p1.x, p1.y);
+		m_oVector.Close();
+		DrawPath(c_nWindingFillMode, pInfo);
 	}
 
 	// path commands
@@ -152,82 +145,85 @@ namespace NSDocxRenderer
 
 	void CPage::DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo)
 	{
-		double dLeft, dRight, dTop, dBottom;
-		dLeft = m_oVector.GetLeft();
-		dRight = m_oVector.GetRight();
-		dTop = m_oVector.GetTop();
-		dBottom = m_oVector.GetBottom();
-		if ((dLeft <= dRight) && (dTop <= dBottom))
+//		m_oVector.Clear();
+//		m_oVector.MoveTo(110.57, 20);
+//		m_oVector.LineTo(191.82, 63.140);
+//		m_oVector.LineTo(114.449, 208.88);
+//		m_oVector.LineTo(33.194, 165.74);
+//		m_oVector.LineTo(110.57, 20);
+
+		double rotation = m_pTransform->z_Rotation();
+		double left = m_oVector.GetLeft();
+		double right = m_oVector.GetRight();
+		double top = m_oVector.GetTop();
+		double bot = m_oVector.GetBottom();
+
+		if (!m_arShapes.empty())
 		{
-			if (!m_arShapes.empty())
-			{
-				auto& pLastShape = m_arShapes.back();
+			auto& pLastShape = m_arShapes.back();
 
-				if (pLastShape->m_dLeft == dLeft &&
-						pLastShape->m_dTop == dTop &&
-						pLastShape->m_dWidth == dRight - dLeft &&
-						pLastShape->m_dHeight == dBottom - dTop)
+			if (pLastShape->m_dLeft == left && pLastShape->m_dTop == top &&
+					pLastShape->m_dWidth == right - left && pLastShape->m_dHeight == bot - top)
+			{
+				if (0x00 != (lType & 0x01))
 				{
-					if (0x00 != (lType & 0x01))
-					{
-						pLastShape->m_bIsNoStroke = false;
-						pLastShape->m_oPen = *m_pPen;
-					}
-					if (0x00 != (lType >> 8))
-					{
-						pLastShape->m_bIsNoFill = false;
-						pLastShape->m_oBrush = *m_pBrush;
-					}
-					return;
+					pLastShape->m_bIsNoStroke = false;
+					pLastShape->m_oPen = *m_pPen;
 				}
-			}
-
-			auto pShape = std::make_shared<CShape>();
-
-			if (pInfo)
-			{
-				pShape->m_pImageInfo = pInfo;
-				pShape->m_eType = CShape::eShapeType::stVectorTexture;
-			}
-			else
-			{
-				pShape->m_eType = CShape::eShapeType::stVectorGraphics;
-			}
-
-			if (0x00 != (lType & 0x01))
-			{
-				pShape->m_bIsNoStroke = false;
-				pShape->m_oPen = *m_pPen;
-			}
-			if (0x00 != (lType >> 8))
-			{
-				pShape->m_bIsNoFill = false;
-				pShape->m_oBrush = *m_pBrush;
-			}
-
-			if (pShape->m_bIsNoStroke)
-			{
-				if ((fabs(dLeft - dRight) < 0.3) || (fabs(dTop - dBottom) < 0.3))
+				if (0x00 != (lType >> 8))
 				{
-					pShape->m_oPen.Color = m_pBrush->Color1;
-					pShape->m_oPen.Alpha = m_pBrush->Alpha1;
+					pLastShape->m_bIsNoFill = false;
+					pLastShape->m_oBrush = *m_pBrush;
 				}
-			}
-
-			double dDeterminant = sqrt(fabs(m_pTransform->Determinant()));
-			pShape->m_oPen.Size *= dDeterminant;
-
-			pShape->SetVector(std::move(m_oVector));
-
-			// big white shape with page width & height skip
-			if (fabs(pShape->m_dHeight - m_dHeight) <= c_dSHAPE_X_OFFSET * 2 &&
-				fabs(pShape->m_dWidth - m_dWidth) <= c_dSHAPE_X_OFFSET * 2 &&
-					pShape->m_oBrush.Color1 == c_iWhiteColor)
 				return;
-
-			pShape->m_nOrder = ++m_nShapeOrder;
-			m_arShapes.push_back(pShape);
+			}
 		}
+
+		auto pShape = std::make_shared<CShape>();
+		if (pInfo)
+		{
+			pShape->m_pImageInfo = pInfo;
+			pShape->m_eType = CShape::eShapeType::stVectorTexture;
+		}
+		else
+		{
+			pShape->m_eType = CShape::eShapeType::stVectorGraphics;
+		}
+
+		if (0x00 != (lType & 0x01))
+		{
+			pShape->m_bIsNoStroke = false;
+			pShape->m_oPen = *m_pPen;
+		}
+		if (0x00 != (lType >> 8))
+		{
+			pShape->m_bIsNoFill = false;
+			pShape->m_oBrush = *m_pBrush;
+		}
+
+		if (pShape->m_bIsNoStroke)
+		{
+			if ((fabs(left - right) < 0.3) || (fabs(top - bot) < 0.3))
+			{
+				pShape->m_oPen.Color = m_pBrush->Color1;
+				pShape->m_oPen.Alpha = m_pBrush->Alpha1;
+			}
+		}
+
+		double dDeterminant = sqrt(fabs(m_pTransform->Determinant()));
+		pShape->m_oPen.Size *= dDeterminant;
+
+		pShape->SetVector(std::move(m_oVector));
+
+		// big white shape with page width & height skip
+		if (fabs(pShape->m_dHeight - m_dHeight) <= c_dSHAPE_X_OFFSET * 2 &&
+			fabs(pShape->m_dWidth - m_dWidth) <= c_dSHAPE_X_OFFSET * 2 &&
+				pShape->m_oBrush.Color1 == c_iWhiteColor)
+			return;
+
+		pShape->m_nOrder = ++m_nShapeOrder;
+		pShape->m_dRotation = rotation;
+		m_arShapes.push_back(pShape);
 	}
 
 	void CPage::CollectTextData(const PUINT pUnicodes,
@@ -442,6 +438,9 @@ namespace NSDocxRenderer
 
 		// merge shapes
 		MergeShapes();
+
+		// calc shapes paths with no rotation to write
+		CalcShapesRotation();
 	}
 
 	void CPage::Record(NSStringUtils::CStringBuilder& oWriter, bool bIsLastPage)
@@ -535,6 +534,14 @@ namespace NSDocxRenderer
 				continue;
 
 			next_val.get()->TryMergeShape(val.get());
+		}
+	}
+	void CPage::CalcShapesRotation()
+	{
+		for (auto& shape : m_arShapes)
+		{
+			if (!shape || fabs(shape->m_dRotation) < c_dMIN_ROTATION) continue;
+			shape->CalcNoRotVector();
 		}
 	}
 
@@ -1108,7 +1115,7 @@ namespace NSDocxRenderer
 
 	void CPage::ToXml(NSStringUtils::CStringBuilder& oWriter)
 	{
-		bool bIsNeedWP = !m_arImages.empty() || !m_arShapes.empty();
+		bool bIsNeedWP = !m_arShapes.empty();
 
 		if (bIsNeedWP)
 		{
@@ -1116,11 +1123,6 @@ namespace NSDocxRenderer
 			//note при удалении строки откуда-то добавляется <w:p/> в начале страницы (если есть графика и текст), что добавляет дополнительную строку и сдвигает текст
 			oWriter.WriteString(L"<w:pPr><w:spacing w:line=\"1\" w:lineRule=\"exact\"/></w:pPr>");
 		}
-
-		for (const auto& image : m_arImages)
-			if (image)
-				image->ToXml(oWriter);
-
 
 		for (const auto& shape : m_arShapes)
 			if (shape)

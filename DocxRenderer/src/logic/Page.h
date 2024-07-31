@@ -40,7 +40,6 @@ namespace NSDocxRenderer
 		std::vector<std::shared_ptr<CContText>>	 m_arConts;
 		std::vector<std::shared_ptr<CTextLine>>  m_arTextLines;
 		std::vector<std::shared_ptr<CContText>>  m_arDiacriticalSymbols;
-		std::vector<std::shared_ptr<CShape>>     m_arImages;
 		std::vector<std::shared_ptr<CShape>>     m_arShapes;
 
 		std::vector<std::wstring>   m_arCompleteObjectsXml;
@@ -110,6 +109,7 @@ namespace NSDocxRenderer
 		std::vector<std::vector<std::shared_ptr<CTextLine>>> GetLinesByGroups();
 
 		void MergeShapes();
+		void CalcShapesRotation();
 
 		// strikeouts, underlines, highlights, outline
 		void AnalyzeEffects();

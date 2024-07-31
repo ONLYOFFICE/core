@@ -85,6 +85,14 @@ namespace NSDocxRenderer
 
 		m_dBaselinePos = m_dTop + m_dHeight;
 		m_dRight = m_dLeft + m_dWidth;
+
+		CalcNoRotVector();
+	}
+
+	void CShape::CalcNoRotVector()
+	{
+		m_oNoRotVector = m_oVector;
+		m_oNoRotVector.Rotate(-m_dRotation);
 	}
 
 	bool CShape::TryMergeShape(std::shared_ptr<CShape>& pShape)
@@ -142,20 +150,29 @@ namespace NSDocxRenderer
 
 	std::wstring CShape::PathToWString() const
 	{
-		auto arData = m_oVector.GetData();
+		auto& vector = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector : m_oVector;
+		auto& data = vector.GetData();
 
-		if(arData.empty())
+		if (data.empty())
 			return m_strDstMedia;
+
+		double left = vector.GetLeft();
+		double right = vector.GetRight();
+		double top = vector.GetTop();
+		double bot = vector.GetBottom();
+
+		double width = right - left;
+		double height = bot - top;
 
 		NSStringUtils::CStringBuilder oWriter;
 
 		oWriter.WriteString(L"<a:path w=\"");
-		oWriter.AddInt(static_cast<int>(m_dWidth * c_dMMToEMU));
+		oWriter.AddInt(static_cast<int>(width * c_dMMToEMU));
 		oWriter.WriteString(L"\" h=\"");
-		oWriter.AddInt(static_cast<int>(m_dHeight * c_dMMToEMU));
+		oWriter.AddInt(static_cast<int>(height * c_dMMToEMU));
 		oWriter.WriteString(L"\">");
 
-		for(auto& path_command : arData)
+		for(auto& path_command : data)
 		{
 			switch (path_command.type)
 			{
@@ -178,8 +195,8 @@ namespace NSDocxRenderer
 
 			for(auto& point : path_command.points)
 			{
-				LONG lX = static_cast<LONG>((point.x - m_dLeft) * c_dMMToEMU);
-				LONG lY = static_cast<LONG>((point.y - m_dTop) * c_dMMToEMU);
+				LONG lX = static_cast<LONG>((point.x - left) * c_dMMToEMU);
+				LONG lY = static_cast<LONG>((point.y - top) * c_dMMToEMU);
 
 				oWriter.WriteString(L"<a:pt x=\"");
 				oWriter.AddInt(static_cast<int>(lX));
@@ -608,24 +625,32 @@ namespace NSDocxRenderer
 
 		oWriter.WriteString(L"<wp:simplePos x=\"0\" y=\"0\"/>");
 
+		double left = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetLeft() : m_dLeft;
+		double right = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetRight() : m_dRight;
+		double top = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetTop() : m_dTop;
+		double bot = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetBottom() : m_dBaselinePos;
+
+		double width = right - left;
+		double height = bot - top;
+
 		oWriter.WriteString(L"<wp:positionH relativeFrom=\"page\">");
 		oWriter.WriteString(L"<wp:posOffset>");
-		oWriter.AddInt(static_cast<int>(m_dLeft * c_dMMToEMU));
+		oWriter.AddInt(static_cast<int>(left * c_dMMToEMU));
 		oWriter.WriteString(L"</wp:posOffset>");
 		oWriter.WriteString(L"</wp:positionH>");
 
 		oWriter.WriteString(L"<wp:positionV relativeFrom=\"page\">");
 		oWriter.WriteString(L"<wp:posOffset>");
-		oWriter.AddInt(static_cast<int>(m_dTop * c_dMMToEMU));
+		oWriter.AddInt(static_cast<int>(top * c_dMMToEMU));
 		oWriter.WriteString(L"</wp:posOffset>");
 		oWriter.WriteString(L"</wp:positionV>");
 
 		//координаты конца границы шейпа
 		oWriter.WriteString(L"<wp:extent");
 		oWriter.WriteString(L" cx=\"");
-		oWriter.AddInt(static_cast<int>(m_dWidth * c_dMMToEMU));
+		oWriter.AddInt(static_cast<int>(width * c_dMMToEMU));
 		oWriter.WriteString(L"\" cy=\"");
-		oWriter.AddInt(static_cast<int>(m_dHeight * c_dMMToEMU));
+		oWriter.AddInt(static_cast<int>(height * c_dMMToEMU));
 		oWriter.WriteString(L"\"/>");
 
 		oWriter.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>"); //Этот элемент определяет дополнительное расстояние, которое должно быть добавлено к каждому краю изображения, чтобы компенсировать любые эффекты рисования, применяемые к объекту DrawingML
@@ -637,9 +662,6 @@ namespace NSDocxRenderer
 		{
 		case eShapeType::stTextBox:
 			oWriter.WriteString(L"\" name=\"Text Box ");
-			break;
-		case eShapeType::stPicture:
-			oWriter.WriteString(L"\" name=\"Picture ");
 			break;
 		case eShapeType::stVectorGraphics:
 			oWriter.WriteString(L"\" name=\"Freeform: Shape ");
@@ -674,7 +696,6 @@ namespace NSDocxRenderer
 
 		switch (m_eType)
 		{
-		case eShapeType::stPicture:
 		case eShapeType::stVectorTexture:
 			BuildPictureProperties(oWriter);
 			break;
@@ -815,7 +836,7 @@ namespace NSDocxRenderer
 			//Нет заливки
 			oWriter.WriteString(L"<a:noFill/>");
 		}
-		else
+		else if (m_eType != CShape::eShapeType::stVectorTexture)
 		{
 			//Есть заливка
 			oWriter.WriteString(L"<a:solidFill>");
@@ -869,12 +890,20 @@ namespace NSDocxRenderer
 
 	void CShape::BuildForm(NSStringUtils::CStringBuilder &oWriter, const bool& bIsLT) const
 	{
+		double left = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetLeft() : m_dLeft;
+		double right = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetRight() : m_dRight;
+		double top = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetTop() : m_dTop;
+		double bot = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetBottom() : m_dBaselinePos;
+
+		double height = bot - top;
+		double width = right - left;
+
 		// отвечает за размеры прямоугольного фрейма шейпа
 		oWriter.WriteString(L"<a:xfrm");
-		if (fabs(m_dRotate) > 0.01)
+		if (fabs(m_dRotation) > c_dMIN_ROTATION)
 		{
 			oWriter.WriteString(L" rot=\"");
-			oWriter.AddInt(static_cast<int>(m_dRotate * c_dDegreeToAngle));
+			oWriter.AddInt(static_cast<int>(m_dRotation * c_dDegreeToAngle));
 			oWriter.WriteString(L"\"");
 		}
 		oWriter.WriteString(L">");
@@ -886,17 +915,17 @@ namespace NSDocxRenderer
 		else
 		{
 			oWriter.WriteString(L"<a:off x=\"");
-			oWriter.AddInt(static_cast<int>(m_dLeft * c_dMMToEMU));
+			oWriter.AddInt(static_cast<int>(left * c_dMMToEMU));
 			oWriter.WriteString(L"\" y=\"");
-			oWriter.AddInt(static_cast<int>(m_dTop * c_dMMToEMU));
+			oWriter.AddInt(static_cast<int>(top * c_dMMToEMU));
 			oWriter.WriteString(L"\"/>");
 		}
 
 		oWriter.WriteString(L"<a:ext");
 		oWriter.WriteString(L" cx=\"");
-		oWriter.AddInt(static_cast<int>(m_dWidth * c_dMMToEMU));
+		oWriter.AddInt(static_cast<int>(width * c_dMMToEMU));
 		oWriter.WriteString(L"\" cy=\"");
-		oWriter.AddInt(static_cast<int>(m_dHeight * c_dMMToEMU));
+		oWriter.AddInt(static_cast<int>(height * c_dMMToEMU));
 		oWriter.WriteString(L"\"/>");
 
 		oWriter.WriteString(L"</a:xfrm>");
@@ -957,8 +986,7 @@ namespace NSDocxRenderer
 	}
 	void CShape::ToXmlPptx(NSStringUtils::CStringBuilder &oWriter) const
 	{
-		if (m_eType == eShapeType::stPicture ||
-				m_eType == eShapeType::stVectorTexture)
+		if (m_eType == eShapeType::stVectorTexture)
 		{
 			// TODO: Clip path as geometry + tile!!!
 			oWriter.WriteString(L"<p:pic>");
@@ -982,9 +1010,7 @@ namespace NSDocxRenderer
 
 			oWriter.WriteString(L"<p:spPr>");
 			BuildForm(oWriter, true);
-			oWriter.WriteString(L"<a:prstGeom prst=\"rect\">");
-			oWriter.WriteString(L"<a:avLst/>");
-			oWriter.WriteString(L"</a:prstGeom>");
+			BuildGraphicProperties(oWriter);
 			oWriter.WriteString(L"</p:spPr>");
 			oWriter.WriteString(L"</p:pic>");
 			return;

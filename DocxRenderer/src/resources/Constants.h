@@ -38,6 +38,7 @@ const double c_dLINE_SPLIT_DISTANCE_MM          = 10.0;
 const double c_dSHAPE_X_OFFSET                  = 1.5;
 const double c_dAVERAGE_SPACE_WIDTH_COEF        = 0.9;
 const double c_dSPACE_WIDTH_COEF                = 0.4;
+const double c_dMIN_ROTATION                    = 0.01;
 
 const UINT   c_iWhiteColor = 0xFFFFFF;
 const UINT   c_iBlackColor = 0x000000;

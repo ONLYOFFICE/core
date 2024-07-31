@@ -31,9 +31,12 @@ namespace NSDocxRenderer
 		};
 
 		CVectorGraphics();
+		CVectorGraphics(const CVectorGraphics& other);
+		CVectorGraphics(CVectorGraphics&& other);
 		~CVectorGraphics();
 
 		CVectorGraphics& operator=(CVectorGraphics&& other);
+		CVectorGraphics& operator=(const CVectorGraphics& other);
 
 		const std::list<PathCommand>& GetData() const;
 
@@ -54,6 +57,7 @@ namespace NSDocxRenderer
 		void Clear();
 		void CheckPoint(const Point& point);
 		void CheckPoint(const double& x, const double& y);
+		void Rotate(const double& rotation);
 
 	private:
 		std::list<PathCommand> m_arData;

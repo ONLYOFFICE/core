@@ -2987,6 +2987,12 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 
 		CheckBorderShape(elem, oNodeShape, pPPTShape);
 
+////test
+//		NSBinPptxRW::CXmlWriter oXml;
+//		elem->toXmlWriter(&oXml);
+//		std::wstring test = oXml.GetXmlString();
+
+		
 	}
 }
 void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUtils::CXmlNode& oNodeShape, CPPTShape* pPPTShape)
@@ -5196,7 +5202,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 			//}
 			//todooo method
 
-			if (oType->GetValue() == SimpleTypes::filltypeGradientRadial)
+			if (oType.IsInit() && oType->GetValue() == SimpleTypes::filltypeGradientRadial)
 			{
 				double x = 0, y = 0;
 				if (oFocusPosition.is_init())

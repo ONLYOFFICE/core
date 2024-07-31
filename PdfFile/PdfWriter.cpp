@@ -2012,15 +2012,13 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pLineAnnot->SetCO(dCO1, dCO2);
 			}
 
-			pLineAnnot->SetAP();
-			/*
+			//pLineAnnot->SetAP();
 			if (bRender)
 			{
 				LONG nLen = 0;
 				BYTE* pRender = oInfo.GetRender(nLen);
 				DrawAP(pAnnot, pRender, nLen);
 			}
-			*/
 		}
 		else if (oInfo.IsTextMarkup())
 		{

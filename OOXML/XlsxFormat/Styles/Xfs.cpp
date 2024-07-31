@@ -95,18 +95,27 @@ namespace OOX
             if(m_oIndent.IsInit())
                 ptr->cIndent = m_oIndent.get();
             if(m_oJustifyLastLine.IsInit())
-			ptr->fJustLast = m_oJustifyLastLine->GetValue();
+				ptr->fJustLast = m_oJustifyLastLine->GetValue();
+			else
+				ptr->fJustLast = false;
             if(m_oReadingOrder.IsInit())
-			ptr->iReadOrder = m_oReadingOrder.get();
-            if(m_oRelativeIndent.IsInit())
-			ptr->iReadOrder = m_oRelativeIndent.get();
+				ptr->iReadOrder = m_oReadingOrder.get();
+            else if(m_oRelativeIndent.IsInit())
+				ptr->iReadOrder = m_oRelativeIndent.get();
+			else
+				ptr->iReadOrder = 0;
             if(m_oShrinkToFit.IsInit())
-			ptr->fShrinkToFit = m_oShrinkToFit->GetValue();
+				ptr->fShrinkToFit = m_oShrinkToFit->GetValue();
+			else
+				ptr->fShrinkToFit = false;
             if(m_oTextRotation.IsInit())
-			ptr->trot = m_oTextRotation.get();
+				ptr->trot = m_oTextRotation.get();
+			else
+				ptr->trot = 0;
             if(m_oWrapText.IsInit())
-			ptr->fWrap = m_oWrapText->GetValue();
-
+				ptr->fWrap = m_oWrapText->GetValue();
+			else
+				ptr->fWrap = false;
 			if (m_oHorizontal == SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentGeneral)
 				ptr->alc = 0;
 			else if (m_oHorizontal == SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentLeft)
@@ -413,7 +422,7 @@ namespace OOX
             if(!m_oProtection.IsInit())
                 m_oProtection.Init();
 			m_oProtection->toBin(objectPtr);
-			
+
 			if(m_oApplyAlignment.IsInit())
                 ptr->fAtrAlc = m_oApplyAlignment->GetValue();
 			else

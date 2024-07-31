@@ -78,6 +78,12 @@ namespace OOX
 				ptr->bGreen = m_oRgb->Get_G();
 				ptr->bBlue = m_oRgb->Get_B();
 			}
+			else
+			{
+				ptr->bRed = 0;
+				ptr->bGreen = 0;
+				ptr->bBlue = 0;
+			}
 			return objectPtr;
 		}
 		EElementType CRgbColor::getType () const

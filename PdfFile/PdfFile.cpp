@@ -291,7 +291,6 @@ bool CPdfFile::GetMetaData(const std::wstring& sFile, const std::wstring& sMetaN
 	if (!oFile.OpenFile(sFile) || !oFile.SeekFile(nStreamBegin + nMetaOffset) || !oFile.ReadFile(pBuffer, nMetaLength, nReadBytes))
 	{
 		RELEASEARRAYOBJECTS(pBuffer);
-		pMetaData = NULL;
 		oFile.CloseFile();
 		return false;
 	}

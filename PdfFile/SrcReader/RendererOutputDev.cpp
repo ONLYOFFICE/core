@@ -274,154 +274,6 @@ namespace PdfReader
 		m_oCS.DeleteCriticalSection();
 		Clear();
 	}
-	void        CPdfFontList::LoadFromFile(std::wstring wsDirPath)
-	{
-		return;
-		//Clear();
-
-		//CStringW wsFilePath = wsDirPath + CStringW( _T("/FontList.rsc") );
-		//XmlUtils::CXmlNode oMainNode;
-
-		//if ( !oMainNode.FromXmlFile( wsFilePath ) )
-		//    return;
-
-		//if ( _T("PDFFontList") == oMainNode.getName() )
-		//{
-		//    std::vector<XmlUtils::CXmlNode> oFonts;
-		//    oMainNode.GetNodes( _T("Font"), oFonts );
-		//    for ( int nIndex = 0; nIndex < oFonts.GetCount(); nIndex++ )
-		//    {
-		//        XmlUtils::CXmlNode oFont;
-		//        Ref oRef;
-		//        CStringW sFilePath;
-		//        int nLength = 0;
-		//        unsigned short *pCodeToGid = NULL, *pCodeToUnicode = NULL;
-
-		//        if ( oFonts.GetAt( nIndex, oFont ) )
-		//        {
-		//            XmlUtils::CXmlNode oNode;
-		//            CStringW sValue;
-
-		//            if ( oFont.GetNode( _T("ID"), oNode ) )
-		//            {
-		//                sValue = oNode.GetAttribute( _T("num") );
-		//                oRef.num = XmlUtils::GetInteger( sValue );
-		//                sValue = oNode.GetAttribute( _T("gen") );
-		//                oRef.gen = XmlUtils::GetInteger( sValue );
-		//            }
-
-		//            if ( oFont.GetNode( _T("FilePath"), oNode ) )
-		//            {
-		//                sFilePath = oNode.GetAttribute( _T("value") );
-		//            }
-		//            if ( oFont.GetNode( _T("CodeToGid"), oNode ) )
-		//            {
-		//                sValue = oNode.GetAttribute( _T("length") );
-		//                nLength = XmlUtils::GetInteger( sValue );
-		//                pCodeToGid = (unsigned short *)MemUtilsMalloc( sizeof(unsigned short) * nLength );
-		//                if ( !pCodeToGid )
-		//                    return;
-
-		//                std::vector<XmlUtils::CXmlNode> oArray;
-		//                oNode.GetNodes( _T("Entry"), oArray );
-		//                for ( int nCurIndex = 0; nCurIndex < oArray.GetCount() && nCurIndex < nLength; nCurIndex++ )
-		//                {
-		//                    XmlUtils::CXmlNode oArrayItem;
-		//                    if ( oArray.GetAt( nCurIndex, oArrayItem ) )
-		//                    {
-		//                        sValue = oArrayItem.GetAttribute( _T("value") );
-		//                        pCodeToGid[nCurIndex] = XmlUtils::GetInteger( sValue );
-		//                    }
-		//                    else
-		//                        pCodeToGid[nCurIndex] = 0;
-		//                }
-		//            }
-		//            if ( oFont.GetNode( _T("CodeToUnicode"), oNode ) )
-		//            {
-		//                sValue = oNode.GetAttribute( _T("length") );
-		//                nLength = XmlUtils::GetInteger( sValue );
-		//                pCodeToUnicode = (int *)MemUtilsMalloc( sizeof(int) * nLength );
-		//                if ( !pCodeToUnicode )
-		//                    return;
-
-		//                std::vector<XmlUtils::CXmlNode> oArray;
-		//                oNode.GetNodes( _T("Entry"), oArray );
-		//                for ( int nCurIndex = 0; nCurIndex < oArray.GetCount() && nCurIndex < nLength; nCurIndex++ )
-		//                {
-		//                    XmlUtils::CXmlNode oArrayItem;
-		//                    if ( oArray.GetAt( nCurIndex, oArrayItem ) )
-		//                    {
-		//                        sValue = oArrayItem.GetAttribute( _T("value") );
-		//                        pCodeToUnicode[nCurIndex] = XmlUtils::GetInteger( sValue );
-		//                    }
-		//                    else
-		//                        pCodeToUnicode[nCurIndex] = 0;
-		//                }
-		//            }
-
-		//        }
-
-		//        Add( oRef, sFilePath, pCodeToGid, pCodeToUnicode, nLength );
-		//    }
-		//}
-	}
-	void        CPdfFontList::SaveToFile(std::wstring wsDirPath)
-	{
-		return;
-		//CStringW wsFilePath = wsDirPath + CStringW( _T("/FontList.rsc") );
-		//XmlUtils::CXmlWriter oWriter;
-
-		//oWriter.WriteNodeBegin( _T("PDFFontList") );
-
-		//for ( int nIndex = 0; nIndex < (int)m_arrList.GetCount(); nIndex++ )
-		//{
-		//    TFontEntry oEntry = m_arrList.GetAt( nIndex );
-		//    oWriter.WriteNodeBegin( _T("Font") );
-
-
-		//    oWriter.WriteNodeBegin( _T("ID"), true );
-		//    oWriter.WriteAttribute( _T("num"), oEntry.oRef.num );
-		//    oWriter.WriteAttribute( _T("gen"), oEntry.oRef.gen );
-		//    oWriter.WriteNodeEnd( _T("ID"), true, true );
-
-		//    oWriter.WriteNodeBegin( _T("FilePath"), true );
-		//    oWriter.WriteAttribute( _T("value"), oEntry.wsFilePath );
-		//    oWriter.WriteNodeEnd( _T("FilePath"), true, true );
-
-		//    if ( NULL != oEntry.pCodeToGID )
-		//    {
-		//        oWriter.WriteNodeBegin( _T("CodeToGid"), true );
-		//        oWriter.WriteAttribute( _T("length"), oEntry.nLen );
-		//        oWriter.WriteNodeEnd( _T("CodeToGid"), true, false );
-		//        for ( int nCurIndex = 0; nCurIndex < oEntry.nLen; nCurIndex++ )
-		//        {
-		//            oWriter.WriteNodeBegin( _T("Entry"), true );
-		//            oWriter.WriteAttribute( _T("value"), oEntry.pCodeToGID[nCurIndex] );
-		//            oWriter.WriteNodeEnd( _T("Entry"), true, true );
-		//        }
-		//        oWriter.WriteNodeEnd( _T("CodeToGid") );
-		//    }
-
-		//    if ( NULL != oEntry.pCodeToUnicode )
-		//    {
-		//        oWriter.WriteNodeBegin( _T("CodeToUnicode"), true );
-		//        oWriter.WriteAttribute( _T("length"), oEntry.nLen );
-		//        oWriter.WriteNodeEnd( _T("CodeToUnicode"), true, false );
-		//        for ( int nCurIndex = 0; nCurIndex < oEntry.nLen; nCurIndex++ )
-		//        {
-		//            oWriter.WriteNodeBegin( _T("Entry"), true );
-		//            oWriter.WriteAttribute( _T("value"), oEntry.pCodeToUnicode[nCurIndex] );
-		//            oWriter.WriteNodeEnd( _T("Entry"), true, true );
-		//        }
-		//        oWriter.WriteNodeEnd( _T("CodeToUnicode") );
-		//    }
-
-		//    oWriter.WriteNodeEnd( _T("Font") );
-		//}
-		//oWriter.WriteNodeEnd( _T("PDFFontList") );
-
-		//oWriter.SaveToFile( wsFilePath );
-	}
 	bool        CPdfFontList::Find(Ref oRef, TFontEntry *pEntry)
 	{
 		CTemporaryCS* pCS = new CTemporaryCS(&m_oCS);
@@ -454,7 +306,7 @@ namespace PdfReader
 
 		if (!bResult)
 		{
-			(*ppEntry) = Add(oRef, L"", NULL, NULL, 0, 0);
+			(*ppEntry) = Add(oRef, std::wstring(), NULL, NULL, 0, 0);
 			(*ppEntry)->bAvailable = false;
 		}
 
@@ -462,7 +314,7 @@ namespace PdfReader
 
 		return bResult;
 	}
-	TFontEntry* CPdfFontList::Add(Ref oRef, std::wstring wsFileName, int *pCodeToGID, int *pCodeToUnicode, unsigned int unLenGID, unsigned int unLenUnicode)
+	TFontEntry* CPdfFontList::Add(Ref oRef, const std::wstring& wsFileName, int *pCodeToGID, int *pCodeToUnicode, unsigned int unLenGID, unsigned int unLenUnicode)
 	{
 		// Данная функция приходит только из Find2, поэтому проверять есть ли данный шрифт уже не надо
 		CTemporaryCS* pCS = new CTemporaryCS(&m_oCS);
@@ -526,7 +378,6 @@ namespace PdfReader
 	RendererOutputDev::RendererOutputDev(IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList)
 	{
 		m_pFontManager  = pFontManager;
-		m_pFontManager  = pFontManager;
 		m_pFontList     = pFontList;
 
 		m_bTiling       = false;
@@ -547,6 +398,7 @@ namespace PdfReader
 			m_pRenderer->get_Type(&m_lRendererType);
 		}
 
+		m_pXref = NULL;
 		m_pbBreak = NULL;
 		m_pSoftMask = NULL;
 
@@ -572,7 +424,6 @@ namespace PdfReader
 
 		m_pRenderer->BeginCommand(c_nPageType);
 
-		// Переводим пункты в миллиметры
 		m_arrMatrix[0] = 1; m_arrMatrix[1] = 0;
 		m_arrMatrix[2] = 0; m_arrMatrix[3] = 1;
 		m_arrMatrix[4] = 0; m_arrMatrix[5] = 0;
@@ -583,8 +434,6 @@ namespace PdfReader
 			m_bDrawOnlyText = true;
 		else
 			m_bDrawOnlyText = false;
-
-		//TEST();
 	}
 	void RendererOutputDev::endPage()
 	{
@@ -2918,7 +2767,7 @@ namespace PdfReader
 
 		m_pRenderer->EndCommand(c_nPathType);
 	}
-	void RendererOutputDev::tilingPatternFill(GfxState *pGState, Gfx *gfx, Object *pStream, int nPaintType, int nTilingType, Dict *pResourcesDict, double *matrix, double *pBBox,
+	void RendererOutputDev::tilingPatternFill(GfxState *pGState, Gfx *gfx, Object *pStream, int nPaintType, int nTilingType, Dict *pResourcesDict, double* pMatrix, double *pBBox,
 											  int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep)
 	{
 		if (m_bDrawOnlyText)
@@ -2926,7 +2775,7 @@ namespace PdfReader
 
 		if (nX1 - nX0 == 1 && nY1 - nY0 == 1) // Одно изображение, tilingPattern не требуется
 		{
-			gfx->drawForm(pStream, pResourcesDict, matrix, pBBox);
+			gfx->drawForm(pStream, pResourcesDict, pMatrix, pBBox);
 			return;
 		}
 
@@ -2986,8 +2835,8 @@ namespace PdfReader
 		oImage->Create(pBgraData, nWidth, nHeight, 4 * nWidth);
 
 		double xMin, yMin, xMax, yMax;
-		Transform(matrix, pBBox[0], pBBox[1], &xMin, &yMin);
-		Transform(matrix, pBBox[2], pBBox[3], &xMax, &yMax);
+		Transform(pMatrix, pBBox[0], pBBox[1], &xMin, &yMin);
+		Transform(pMatrix, pBBox[2], pBBox[3], &xMax, &yMax);
 		double dW = xMax - xMin;
 		double dH = yMax - yMin;
 		xMin += (double)nX0 * dW;
@@ -3039,7 +2888,7 @@ namespace PdfReader
 		m_bTiling = false;
 	}
 
-	GBool RendererOutputDev::shadedFill(GfxState *pGState, GfxShading *pShading)
+	GBool RendererOutputDev::shadedFill(GfxState* pGState, GfxShading* pShading)
 	{
 		double x0, y0, x1, x2, y1, y2, r1, r2;
 		double xmin, xmax, ymin, ymax, r;
@@ -3181,7 +3030,7 @@ namespace PdfReader
 		}
 		NSStructures::GradientInfo info = NSStructures::GInfoConstructor::get_functional(x1, x2, y1, y2, mapping);
 
-		float cur_x = 0, cur_y = 0;
+		float cur_y = 0;
 		float delta_x = (x2 - x1) / info.shading.function.get_resolution();
 		float delta_y = (y2 - y1) / info.shading.function.get_resolution();
 
@@ -3189,7 +3038,7 @@ namespace PdfReader
 
 		for (size_t i = 0; i < info.shading.function.get_resolution(); i++)
 		{
-			cur_x = 0;
+			float cur_x = 0;
 			for (size_t j = 0; j < info.shading.function.get_resolution(); j++)
 			{
 				GfxColor c;
@@ -3510,33 +3359,25 @@ namespace PdfReader
 		pGState->clearPath();
 		return true;
 	}
-	void RendererOutputDev::StartShadedFill(GfxState *pGState)
+	void RendererOutputDev::StartShadedFill()
 	{
-		if (m_bDrawOnlyText)
-			return;
-
-		m_pRenderer->BeginCommand(c_nComplexFigureType);
+		if (!m_bDrawOnlyText)
+			m_pRenderer->BeginCommand(c_nComplexFigureType);
 	}
 	void RendererOutputDev::EndShadedFill()
 	{
-		if (m_bDrawOnlyText)
-			return;
-
-		m_pRenderer->EndCommand(c_nComplexFigureType);
+		if (!m_bDrawOnlyText)
+			m_pRenderer->EndCommand(c_nComplexFigureType);
 	}
 	void RendererOutputDev::StartTilingFillIteration()
 	{
-		if (m_bDrawOnlyText)
-			return;
-
-		m_pRenderer->BeginCommand(c_nPDFTilingFillIteration);
+		if (!m_bDrawOnlyText)
+			m_pRenderer->BeginCommand(c_nPDFTilingFillIteration);
 	}
 	void RendererOutputDev::EndTilingFillIteration()
 	{
-		if (m_bDrawOnlyText)
-			return;
-
-		m_pRenderer->EndCommand(c_nPDFTilingFillIteration);
+		if (!m_bDrawOnlyText)
+			m_pRenderer->EndCommand(c_nPDFTilingFillIteration);
 	}
 	void RendererOutputDev::StartSimpleTilingFill(GfxState *pGState, int  nX0, int nY0, int nX1, int nY1, double dStepX, double dStepY, double dXMin, double dYMin, double dXMax, double dYMax, double* pMatrix)
 	{
@@ -3578,10 +3419,8 @@ namespace PdfReader
 	}
 	void RendererOutputDev::EndSimpleTilingFill()
 	{
-		if (m_bDrawOnlyText)
-			return;
-
-		m_pRenderer->EndCommand(c_nPDFTilingFill);
+		if (!m_bDrawOnlyText)
+			m_pRenderer->EndCommand(c_nPDFTilingFill);
 	}
 	void RendererOutputDev::clip(GfxState *pGState)
 	{
@@ -4527,13 +4366,8 @@ namespace PdfReader
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 		m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
 	}
-	void RendererOutputDev::drawSoftMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream,
-												int nWidth, int nHeight,
-												GfxImageColorMap *pColorMap,
-												Object *maskRef, Stream *pMaskStream,
-												int nMaskWidth, int nMaskHeight,
-												GfxImageColorMap *pMaskColorMap,
-												double *pMatteColor, GBool interpolate)
+	void RendererOutputDev::drawSoftMaskedImage(GfxState* pGState, Object* pRef, Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, Object* maskRef, Stream* pMaskStream,
+												int nMaskWidth, int nMaskHeight, GfxImageColorMap* pMaskColorMap, double* pMatteColor, GBool interpolate)
 	{
 		if (m_bDrawOnlyText)
 			return;
@@ -4584,8 +4418,8 @@ namespace PdfReader
 
 			if (0 != nWidth && 0 != nMaskHeight && 0 != nHeight && 0 != nMaskWidth)
 			{
-				ImageStream *pSMaskStream = new ImageStream(pMaskStream, nMaskWidth, pMaskColorMap->getNumPixelComps(), pMaskColorMap->getBits());
-				unsigned char *pAlpha = new(std::nothrow) unsigned char[nMaskWidth * nMaskHeight];
+				ImageStream* pSMaskStream = new ImageStream(pMaskStream, nMaskWidth, pMaskColorMap->getNumPixelComps(), pMaskColorMap->getBits());
+				unsigned char* pAlpha = new(std::nothrow) unsigned char[nMaskWidth * nMaskHeight];
 				if (pSMaskStream && pAlpha)
 				{
 					pSMaskStream->reset();
@@ -4681,7 +4515,7 @@ namespace PdfReader
 		}
 		else
 		{
-			ImageStream *pSMaskStream = new ImageStream(pMaskStream, nMaskWidth, pMaskColorMap->getNumPixelComps(), pMaskColorMap->getBits());
+			ImageStream* pSMaskStream = new ImageStream(pMaskStream, nMaskWidth, pMaskColorMap->getNumPixelComps(), pMaskColorMap->getBits());
 			pSMaskStream->reset();
 
 			unsigned char unAlpha = 0;
@@ -4843,14 +4677,8 @@ namespace PdfReader
 	}
 	void RendererOutputDev::Transform(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY)
 	{
-		Distance(pMatrix, dUserX, dUserY, pdDeviceX, pdDeviceY);
-		*pdDeviceX += pMatrix[4];
-		*pdDeviceY += pMatrix[5];
-	}
-	void RendererOutputDev::Distance(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY)
-	{
-		*pdDeviceX = dUserX * pMatrix[0] + dUserY * pMatrix[2];
-		*pdDeviceY = dUserX * pMatrix[1] + dUserY * pMatrix[3];
+		*pdDeviceX = dUserX * pMatrix[0] + dUserY * pMatrix[2] + pMatrix[4];
+		*pdDeviceY = dUserX * pMatrix[1] + dUserY * pMatrix[3] + pMatrix[5];
 	}
 	void RendererOutputDev::DoPath(GfxState *pGState, GfxPath *pPath, double dPageHeight, double *pCTM, GfxClipMatrix* pCTM2)
 	{
@@ -4858,7 +4686,6 @@ namespace PdfReader
 			return;
 
 		double arrMatrix[6];
-		//double *pCTM = pGState->getCTM();
 		arrMatrix[0] =  pCTM[0];
 		arrMatrix[1] = -pCTM[1];
 		arrMatrix[2] =  pCTM[2];
@@ -4925,10 +4752,9 @@ namespace PdfReader
 			{
 			for (int nIndex = 0; nIndex < pClip->GetPathNum(); nIndex++)
 			{
-				GfxPath *pPath  = pClip->GetPath(nIndex);
-				bool    bFlag   = pClip->GetClipEo(nIndex);
-
-				int     nClipFlag = bFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
+				GfxPath *pPath = pClip->GetPath(nIndex);
+				bool    bFlag  = pClip->GetClipEo(nIndex);
+				int  nClipFlag = bFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
 				nClipFlag |= c_nClipRegionIntersect;
 
 				m_pRenderer->BeginCommand(c_nClipType);
@@ -5006,31 +4832,22 @@ namespace PdfReader
 	{
 		if (1 == pMatrix[0] && 0 == pMatrix[1] && 0 == pMatrix[2] && 1 == pMatrix[3] && !bText)
 		{
-			if (0 == pMatrix[4] && 0 == pMatrix[5])
-			{
-				m_pRenderer->ResetTransform();
-				m_arrMatrix[0] = 1; m_arrMatrix[1] = 0;
-				m_arrMatrix[2] = 0; m_arrMatrix[3] = 1;
-				m_arrMatrix[4] = 0; m_arrMatrix[5] = 0;
-			}
-			else
+			if (pMatrix[4] || pMatrix[5])
 			{
 				*pdShiftX = pMatrix[4];
 				*pdShiftY = pMatrix[5];
-				m_pRenderer->ResetTransform();
-				m_arrMatrix[0] = 1;          m_arrMatrix[1] = 0;
-				m_arrMatrix[2] = 0;          m_arrMatrix[3] = 1;
-				m_arrMatrix[4] = 0;          m_arrMatrix[5] = 0;
 			}
+			m_pRenderer->ResetTransform();
+			m_arrMatrix[0] = 1; m_arrMatrix[1] = 0;
+			m_arrMatrix[2] = 0; m_arrMatrix[3] = 1;
+			m_arrMatrix[4] = 0; m_arrMatrix[5] = 0;
 		}
 		else if (m_arrMatrix[0] == pMatrix[0] && m_arrMatrix[1] == pMatrix[1] && m_arrMatrix[2] == pMatrix[2] && m_arrMatrix[3] == pMatrix[3]
 				 && m_arrMatrix[4] == pMatrix[4]  && m_arrMatrix[5] == pMatrix[5] && !bText)
 		{
-			double dNewX = pMatrix[4], dNewY = pMatrix[5];
 			double dIDet = 1 / (pMatrix[0] * pMatrix[3] - pMatrix[1] * pMatrix[2]);
-
-			*pdShiftX = ((dNewX - m_arrMatrix[4]) * m_arrMatrix[3] - (dNewY - m_arrMatrix[5]) * m_arrMatrix[1]) * dIDet;
-			*pdShiftY = ((dNewY - m_arrMatrix[5]) * m_arrMatrix[0] - (dNewX - m_arrMatrix[4]) * m_arrMatrix[2]) * dIDet;
+			*pdShiftX = ((pMatrix[4] - m_arrMatrix[4]) * m_arrMatrix[3] - (pMatrix[5] - m_arrMatrix[5]) * m_arrMatrix[1]) * dIDet;
+			*pdShiftY = ((pMatrix[5] - m_arrMatrix[5]) * m_arrMatrix[0] - (pMatrix[4] - m_arrMatrix[4]) * m_arrMatrix[2]) * dIDet;
 		}
 		else
 		{

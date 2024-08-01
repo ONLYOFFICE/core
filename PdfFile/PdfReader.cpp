@@ -518,7 +518,7 @@ bool CPdfReader::ValidMetaData()
 
 	Object oTID, oID2;
 	Object* pTrailerDict = xref->getTrailerDict();
-	if (!pTrailerDict || !pTrailerDict->dictLookup("ID", &oTID)->isArray() || !oTID.arrayGet(1, &oID2)->isString())
+	if (!pTrailerDict->dictLookup("ID", &oTID)->isArray() || !oTID.arrayGet(1, &oID2)->isString())
 	{
 		oID.free(); oTID.free(); oID2.free();
 		return false;
@@ -1000,7 +1000,7 @@ BYTE* CPdfReader::GetFonts(bool bStandart)
 	int nFontsPos = oRes.GetSize();
 	oRes.AddInt(nFonts);
 
-	for (std::map<std::wstring, std::wstring>::iterator it = m_mFonts.begin(); it != m_mFonts.end(); it++)
+	for (std::map<std::wstring, std::wstring>::iterator it = m_mFonts.begin(); it != m_mFonts.end(); ++it)
 	{
 		if (PdfReader::CAnnotFonts::IsBaseFont(it->second))
 		{
@@ -1546,7 +1546,7 @@ BYTE* CPdfReader::GetShapes(int nPageIndex)
 
 	Object oTID, oID2;
 	Object* pTrailerDict = xref->getTrailerDict();
-	if (!pTrailerDict || !pTrailerDict->dictLookup("ID", &oTID)->isArray() || !oTID.arrayGet(1, &oID2)->isString() || oID2.getString()->cmp(oID.getString()) != 0)
+	if (!pTrailerDict->dictLookup("ID", &oTID)->isArray() || !oTID.arrayGet(1, &oID2)->isString() || oID2.getString()->cmp(oID.getString()) != 0)
 	{
 		oMetaOForm.free(); oID.free(); oTID.free(); oID2.free();
 		return NULL;

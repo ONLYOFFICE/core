@@ -70,12 +70,10 @@ namespace PdfReader
 
 		CPdfFontList();
 		~CPdfFontList();
-		void LoadFromFile(std::wstring wsDirPath);
-		void SaveToFile(std::wstring wsDirPath);
 		bool Find(Ref oRef, TFontEntry *pEntry);
 		bool Find2(Ref oRef, TFontEntry **ppEntry);
 		void Remove(Ref oRef);
-		TFontEntry *Add(Ref oRef, std::wstring wsFileName, int *pCodeToGID, int *pCodeToUnicode, unsigned int nLenGID, unsigned int nLenUnicode);
+		TFontEntry *Add(Ref oRef, const std::wstring& wsFileName, int *pCodeToGID, int *pCodeToUnicode, unsigned int unLenGID, unsigned int unLenUnicode);
 		void Clear();
 		bool GetFont(Ref *pRef, TFontEntry *pEntry);
 	private:
@@ -219,18 +217,18 @@ namespace PdfReader
 		virtual void tilingPatternFill(GfxState *pGState, Gfx *gfx, Object *pStream, int nPaintType, int nTilingType, Dict *pResourcesDict, double *pMatrix, double *pBBox, int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep);
 		virtual void StartTilingFill(GfxState *pGState);
 		virtual void EndTilingFill();
-		virtual GBool shadedFill(GfxState *state, GfxShading *shading);
-		virtual bool FunctionShadedFill(GfxState *pGState, GfxFunctionShading *pShading);
-		virtual bool AxialShadedFill(GfxState *pGState, GfxAxialShading    *pShading);
-		virtual bool RadialShadedFill(GfxState *pGState, GfxRadialShading   *pShading);
-		virtual bool GouraundTriangleFill(GfxState *pGState, const std::vector<GfxColor*> &colors, const std::vector<NSStructures::Point> &points);
-		virtual bool PatchMeshFill(GfxState *pGState, GfxPatch* pPatch, GfxPatchMeshShading *pShading);
-		virtual void StartShadedFill(GfxState *pGState);
-		virtual void EndShadedFill();
-		virtual void StartTilingFillIteration();
-		virtual void EndTilingFillIteration();
-		virtual void StartSimpleTilingFill(GfxState *pGState, int  nX0, int nY0, int nX1, int nY1, double dStepX, double dStepY, double dXMin, double dYMin, double dXMax, double dYMax, double* pMatrix);
-		virtual void EndSimpleTilingFill();
+		virtual GBool shadedFill(GfxState* pGState, GfxShading* shading) override;
+		bool FunctionShadedFill(GfxState* pGState, GfxFunctionShading* pShading);
+		bool AxialShadedFill(GfxState* pGState, GfxAxialShading* pShading);
+		bool RadialShadedFill(GfxState* pGState, GfxRadialShading* pShading);
+		bool GouraundTriangleFill(GfxState* pGState, const std::vector<GfxColor*>& colors, const std::vector<NSStructures::Point>& points);
+		bool PatchMeshFill(GfxState* pGState, GfxPatch* pPatch, GfxPatchMeshShading* pShading);
+		void StartShadedFill();
+		void EndShadedFill();
+		void StartTilingFillIteration();
+		void EndTilingFillIteration();
+		void StartSimpleTilingFill(GfxState* pGState, int  nX0, int nY0, int nX1, int nY1, double dStepX, double dStepY, double dXMin, double dYMin, double dXMax, double dYMax, double* pMatrix);
+		void EndSimpleTilingFill();
 		//----- Path clipping
 		virtual void clip(GfxState *pGState);
 		virtual void eoClip(GfxState *pGState);
@@ -272,11 +270,11 @@ namespace PdfReader
 										 GfxImageColorMap *pMaskColorMap,
 										 double *pMatte, GBool interpolate) override;
 		//----- Transparency groups и SMasks
-		virtual void beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask);
-		virtual void endTransparencyGroup(GfxState *pGState);
-		virtual void paintTransparencyGroup(GfxState *pGState, double *pBBox);
-		virtual void setSoftMask(GfxState *pGState, double *pBBox, GBool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor);
-		virtual void clearSoftMask(GfxState *pGState);
+		virtual void beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask) override;
+		virtual void endTransparencyGroup(GfxState *pGState) override;
+		virtual void paintTransparencyGroup(GfxState *pGState, double *pBBox) override;
+		virtual void setSoftMask(GfxState *pGState, double *pBBox, GBool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor) override;
+		virtual void clearSoftMask(GfxState *pGState) override;
 		//----- Дополнительные функции для данного устройства
 		void NewPDF(XRef *pXref);
 		void SetBreak(bool* pbBreak)
@@ -311,7 +309,6 @@ namespace PdfReader
 		};
 
 		void Transform(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY);
-		void Distance(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY);
 		void DoPath(GfxState *pGState, GfxPath *pPath, double dPageHeight, double *pCTM, GfxClipMatrix* pCTM2 = NULL);
 		void ClipToText(const std::wstring& wsFontName, const std::wstring& wsFontPath, double dFontSize, int nFontStyle, double* pMatrix, const std::wstring& wsText, double dX, double dY, double dWidth = 0, double dHeight = 0, double dBaseLineOffset = 0);
 		void updateClip(GfxState *pGState);
@@ -323,8 +320,8 @@ namespace PdfReader
 		double                        m_arrMatrix[6];
         NSFonts::IFontManager*        m_pFontManager;
 
-		XRef                         *m_pXref;           // Таблица Xref для данного PDF-документа
-		CPdfFontList                 *m_pFontList;
+		XRef*                         m_pXref; // Таблица Xref для данного PDF-документа
+		CPdfFontList*                 m_pFontList;
 
 		bool                         *m_pbBreak;         // Внешняя остановка рендерера
 

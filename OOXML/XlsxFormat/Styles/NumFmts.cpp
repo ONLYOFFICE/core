@@ -91,8 +91,12 @@ namespace OOX
 			XLS::BaseObjectPtr objectPtr(ptr);
 			if(m_oFormatCode.IsInit())
 				ptr->stFmtCode = m_oFormatCode.get();
+			else
+				ptr->stFmtCode = L"";
 			if(m_oNumFmtId.IsInit())
 				ptr->ifmt = m_oNumFmtId->GetValue();
+			else
+				ptr->ifmt = 5;
 
 			return objectPtr;
 		}

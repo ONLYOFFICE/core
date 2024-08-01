@@ -605,7 +605,8 @@ void WorkBookStream::UpdateDefineNames(XLS::GlobalWorkbookInfo* global_info_)
                 if (name != L"CHISQDIST" &&
                     name != L"CHISQINV" &&
                     name != L"CURRENT" &&
-                    name != L"EFFECTIVE")
+                    name != L"EFFECTIVE" &&
+                    name.substr(0, 6) != L"_xlfn.")
                 name = L"_xludf." + name;
             }
         }

@@ -58,6 +58,7 @@
 #include "SyntaxPtg.h"
 #include "Rgce.h"
 #include "RgbExtra.h"
+#include "FutureFunctionParser.h"
 
 #include <boost/regex.hpp>
 
@@ -389,15 +390,26 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
                 {
                     ptg_stack.push(func);
                 }
+                else if(SyntaxPtg::extract_FutureFunction(operand_str, number))
+                {
+                    func = PtgFuncVar::create(L"USER_DEFINED_FUNCTION", OperandPtg::ptg_REFERENCE);
+                    auto funcPtr = dynamic_cast<PtgFuncVar*>(func.get());
+                    funcPtr->setFutureFuncName(operand_str);
+    
+                    PtgPtr FuncName = PtgPtr(new PtgName(number, OperandPtg::ptg_REFERENCE));
+                    ptg_stack.push(func);
+                    rgce.addPtg(FuncName);
+                }
                 else
                 {
+                    SyntaxPtg::extract_CustomFunction(operand_str, number);
                     func = PtgFuncVar::create(L"USER_DEFINED_FUNCTION", OperandPtg::ptg_REFERENCE);
                     if(!func)
                     {
                         // EXCEPT::LE::WhatIsTheFuck("Ftab_Cetab doesn't contain info about user-defined function (0xFF).", __FUNCTION__);
                     }
                     ptg_stack.push(func);
-                    rgce.addPtg(PtgPtr(new PtgNameX(operand_str,  OperandPtg::ptg_REFERENCE)));
+                    rgce.addPtg(PtgPtr(new PtgName(number,  OperandPtg::ptg_REFERENCE)));
                 }
             }
             else if(SyntaxPtg::extract_UndefinedName(it, itEnd)) // Shall be placed strongly after extract_PtgName
@@ -492,7 +504,16 @@ const void StringPtgParser::parsePtgTypes(Rgce& rgce)
             {
                 auto funcPtr = dynamic_cast<PtgFuncVar*>(i.get());
                 auto paramsNum = funcPtr->getParamsNum();
-                auto refArgs = PosValArgs(funcPtr->getFuncIndex());
+                auto FuncIndex = funcPtr->getFuncIndex();
+                std::vector<bool> refArgs;
+                if(FuncIndex != 0x00FF)
+                    refArgs = PosValArgs(FuncIndex);
+                else if(funcPtr->getFutureFuncName() != L"")
+                {
+                    auto futureFuncName = funcPtr->getFutureFuncName();
+                    XLS::FutureFunctionParser::GetFutureFunction(futureFuncName);
+                    refArgs = XLS::FutureFunctionParser::GetArgumentList(futureFuncName);
+                }
                 for(auto j = paramsNum-1; j >= 0; j--)
                 {
                     if(!functionStack.empty())

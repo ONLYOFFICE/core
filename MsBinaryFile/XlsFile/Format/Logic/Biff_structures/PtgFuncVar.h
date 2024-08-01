@@ -64,12 +64,15 @@ public:
 
 	const unsigned short getFuncIndex() const;
 
+	const std::wstring getFutureFuncName() const;
+	void setFutureFuncName(std::wstring name);
+
 	static const unsigned short fixed_id = 0x02;
 private:
 	unsigned char cparams;
 	Ftab_Cetab tab;
 	bool fCeFunc;
-
+	_CP_OPT(std::wstring) futureFuncName;
 	GlobalWorkbookInfoPtr global_info_;
 };
 

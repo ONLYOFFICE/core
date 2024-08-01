@@ -103,12 +103,20 @@ namespace OOX
 					castedPtr->fHidden = false;
 				if(m_oMax.IsInit())
 					castedPtr->colLast = m_oMax->m_eValue - 1;
+				else
+                    castedPtr->colLast = 16383;
 				if(m_oMin.IsInit())
 					castedPtr->colFirst  = m_oMin->m_eValue - 1;
+				else
+					castedPtr->colFirst = 0;
 				if(m_oOutlineLevel.IsInit())
 					castedPtr->iOutLevel =  m_oOutlineLevel->m_eValue;
+				else
+					castedPtr->iOutLevel = false;
 				if(m_oPhonetic.IsInit())
 					castedPtr->fPhonetic = m_oPhonetic->ToBool();
+				else
+					castedPtr->fPhonetic = false;
 				if(m_oStyle.IsInit())
 					castedPtr->ixfeXLSB = m_oStyle->m_eValue;
                 else
@@ -119,6 +127,8 @@ namespace OOX
 					if(m_oWidth->GetValue() > 0)
 						castedPtr->coldx           = m_oWidth->GetValue() * 256;
 				}
+				else
+					castedPtr->coldx = 2304; ///standart col width(9) * 256
 				return ptr;
 			}
 			EElementType CCol::getType() const

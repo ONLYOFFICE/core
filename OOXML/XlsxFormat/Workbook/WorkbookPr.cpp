@@ -438,6 +438,8 @@ namespace OOX
 
 				if (m_oReadOnlyRecommended.IsInit())
 					ptr->fReadOnlyRec = m_oReadOnlyRecommended.get();
+				else
+					ptr->fReadOnlyRec = false;
                 if(m_oUserName.IsInit())
                     ptr->stUserName = m_oUserName.get();
                 else

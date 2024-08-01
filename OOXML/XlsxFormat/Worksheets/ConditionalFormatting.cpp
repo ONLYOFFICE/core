@@ -1841,6 +1841,8 @@ XLS::BaseObjectPtr CConditionalFormattingRule::WriteAttributes(const  XLS::CellR
         ptr->dxfId = 0;
     if(m_oPriority.IsInit())
         ptr->iPri = m_oPriority->GetValue();
+    else
+        ptr->iPri = 1;
     if(m_oStopIfTrue.IsInit())
         ptr->fStopTrue = m_oStopIfTrue->GetValue();
     else

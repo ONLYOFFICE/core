@@ -70,12 +70,12 @@ namespace OOX
 		{
 			auto ptr(new XLSB::SUP);
 			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::SupBookSrc);
+			ptr->m_source = XLS::BaseObjectPtr{ptr1};
 			if(m_oRid.IsInit())
-			{
-				auto ptr1(new XLSB::SupBookSrc);
-				ptr->m_source = XLS::BaseObjectPtr{ptr1};
 				ptr1->strRelID.value = m_oRid->GetValue();
-			}
+			else
+				ptr1->strRelID.value.setSize(0xFFFFFFFF);
 
 			return objectPtr;
 		}

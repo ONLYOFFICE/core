@@ -160,5 +160,18 @@ const unsigned short PtgFuncVar::getFuncIndex() const
 }
 
 
+const std::wstring PtgFuncVar::getFutureFuncName() const
+{
+	if(futureFuncName.has_value())
+	{
+		return futureFuncName.get();
+	}
+	return L"";
+}
+void PtgFuncVar::setFutureFuncName(std::wstring name)
+{
+	futureFuncName = name;
+}
+
 } // namespace XLS
 

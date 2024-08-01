@@ -94,8 +94,12 @@ namespace Spreadsheet
 		XLS::BaseObjectPtr objectPtr(ptr);
 		if(m_oAltText.IsInit())
 			ptr->stAltText = m_oAltText.get();
+		else
+			ptr->stAltText.setSize(0xFFFFFFFF);
 		if(m_oAltTextSummary.IsInit())
 			ptr->stAltTextSummary = m_oAltTextSummary.get();
+		else
+			ptr->stAltTextSummary.setSize(0xFFFFFFFF);
 		return objectPtr;
 	}
 	void CAltTextTable::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -159,12 +163,20 @@ namespace Spreadsheet
 			ptr->stStyleName.setSize(0xFFFFFFFF);
 		if(m_oShowColumnStripes.IsInit())
 			ptr->fColumnStripes = m_oShowColumnStripes->GetValue();
+		else
+            ptr->fColumnStripes = false;
 		if(m_oShowFirstColumn.IsInit())
 			ptr->fFirstColumn = m_oShowFirstColumn->GetValue();
+		else
+			ptr->fFirstColumn = false;
 		if(m_oShowLastColumn.IsInit())
 			ptr->fLastColumn = m_oShowLastColumn->GetValue();
+		else
+			ptr->fLastColumn = false;
 		if(m_oShowRowStripes.IsInit())
 			ptr->fRowStripes = m_oShowRowStripes->GetValue();
+		else
+			ptr->fRowStripes = false;
 		return objectPtr;
 	}
     void CTableStyleInfo::ReadAttributes(XLS::BaseObjectPtr& obj)
@@ -350,7 +362,7 @@ namespace Spreadsheet
         else if (m_oTotalsRowFunction == SimpleTypes::Spreadsheet::ETotalsRowFunction::totalrowfunctionCustom)
             ptr1->ilta = XLSB::ListTotalRowFunction::ILTA_CUSTOM;
         else
-        ptr1->ilta = XLSB::ListTotalRowFunction::ILTA_NONE;
+        	ptr1->ilta = XLSB::ListTotalRowFunction::ILTA_NONE;
 
         if(m_oCalculatedColumnFormula.IsInit())
         {
@@ -744,6 +756,8 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
             ptr1->fPublished = false;
         if(m_oId.IsInit())
             ptr1->idList = m_oId->GetValue();
+		else
+			ptr1->idList = 0;
 
         if(m_oTableType.IsInit())
         {
@@ -1446,16 +1460,24 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 
 		if(m_oNextId.IsInit())
 			ptr->idFieldNext = m_oNextId->GetValue();
+		else
+			ptr->idFieldNext = 0;
 		if(m_oMinimumVersion.IsInit())
 			ptr->wVerBeforeRefreshAlert = m_oMinimumVersion->GetValue();
+		else
+			ptr->wVerBeforeRefreshAlert = 0;
 		if(m_FieldIdWrapped.IsInit())
 			ptr->fidWrapped = m_FieldIdWrapped.get();
         else
             ptr->fidWrapped = false;
 		if(m_HeadersInLastRefresh.IsInit())
 			ptr->fTitlesOld = m_HeadersInLastRefresh.get();
+		else
+			ptr->fTitlesOld = false;;
 		if(m_PreserveSortFilterLayout.IsInit())
 			ptr->fPersist = m_PreserveSortFilterLayout.get();
+		else
+			ptr->fPersist = false;
 		if(m_UnboundColumnsLeft.IsInit())
 			ptr->ccolExtraLeft = m_UnboundColumnsLeft->GetValue();
         else

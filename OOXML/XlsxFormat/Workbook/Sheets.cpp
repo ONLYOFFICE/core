@@ -74,9 +74,18 @@ namespace OOX
 			auto ptr(new XLSB::BundleSh);
 			XLS::BaseObjectPtr objectPtr(ptr);
 
-			ptr->strRelID.value = m_oRid->GetValue();
-			ptr->strName = m_oName.get();
-			ptr->iTabID = m_oSheetId->GetValue();
+            if(m_oRid.IsInit())
+				ptr->strRelID.value = m_oRid->GetValue();
+			else
+				ptr->strRelID.value.setSize(0xFFFFFFFF);
+            if(m_oName.IsInit())
+				ptr->strName = m_oName.get();
+			else
+				ptr->strName = L"";
+            if(m_oSheetId.IsInit())
+				ptr->iTabID = m_oSheetId->GetValue();
+			else
+				ptr->iTabID = 0;
 
 			if(m_oState == SimpleTypes::Spreadsheet::EVisibleType::visibleVisible)
 				ptr->hsState = XLSB::BundleSh::ST_SheetState::VISIBLE;

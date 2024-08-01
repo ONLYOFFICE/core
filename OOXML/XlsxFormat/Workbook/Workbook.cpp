@@ -103,8 +103,12 @@ namespace OOX
 
 			if(m_oCacheId.IsInit())
 				ptr1->idSx = m_oCacheId->GetValue();
+			else
+				ptr1->idSx = 0;
 			if(m_oRid.IsInit())
 				ptr1->irstcacheRelID.value = m_oRid->GetValue();
+			else
+				ptr1->irstcacheRelID.value.setSize(0xFFFFFFFF);
 			return objectPtr;
 		}
 		EElementType CWorkbookPivotCache::getType() const

@@ -1,0 +1,24 @@
+<<<<<<<
+        if (m_con_state == con_closing) {
+            LOG("Connection opened while closing." << endl);
+            this->close();
+            return;
+        }
+
+        LOG("Connected." << endl);
+        m_con_state = con_opened;
+        m_con = con;
+        m_reconn_made = 0;
+=======
+        con_state con_state_old = m_con_state;
+        LOG("Connected." << endl);
+        m_con_state = con_opened;
+        m_con = con;
+        m_reconn_made = 0;
+
+        if (con_state_old == con_closing) {
+            LOG("Connection opened while closing." << endl);
+            this->close();
+            return;
+        }
+>>>>>>>

@@ -88,6 +88,17 @@ namespace NSNetwork
                     m_base->listener->onError("");
             }
 
+            void event_onReconnecting()
+            {
+                CTemporaryCS oCS(&m_oCS_Events);
+                m_connecting_in_process = true;
+            }
+            void event_onReconnect(unsigned, unsigned)
+            {
+                CTemporaryCS oCS(&m_oCS_Events);
+                m_connecting_in_process = false;
+            }
+
         public:
             virtual void open(const std::map<std::string, std::string>& query) override
             {
@@ -95,6 +106,10 @@ namespace NSNetwork
                 m_socket->set_open_listener (std::bind(&CIOWebSocket_private_tls::event_onConnected, this));
                 m_socket->set_close_listener(std::bind(&CIOWebSocket_private_tls::event_onClose, this, std::placeholders::_1));
                 m_socket->set_fail_listener (std::bind(&CIOWebSocket_private_tls::event_onFail, this));
+
+                m_socket->set_reconnect_listener(std::bind(&CIOWebSocket_private_tls::event_onReconnect, this,
+                                                 std::placeholders::_1, std::placeholders::_2));
+                m_socket->set_reconnecting_listener(std::bind(&CIOWebSocket_private_tls::event_onReconnecting, this));
 
                 sio::message::ptr objAuth = sio::object_message::create();
                 //std::string sAuth;

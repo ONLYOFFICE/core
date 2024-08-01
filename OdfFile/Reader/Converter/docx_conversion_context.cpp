@@ -1042,6 +1042,52 @@ std::wstring  docx_conversion_context::dump_settings_document()
             _CP_OPT(std::wstring)  strVal;
             _CP_OPT(int)   intVal;
 
+			strVal = root()->odf_context().Settings().find_by_name(L"modifyPasswordInfo");
+			if (strVal)
+			{
+				CP_XML_NODE(L"w:writeProtection")
+				{
+					strVal = root()->odf_context().Settings().find_by_name(L"modify:crypt-name");
+					if (strVal)
+					{
+						CP_XML_ATTR(L"w:cryptProviderType", *strVal);
+						CP_XML_ATTR(L"w:cryptAlgorithmClass", L"hash");
+						CP_XML_ATTR(L"w:cryptAlgorithmType", L"typeAny");
+
+						strVal = root()->odf_context().Settings().find_by_name(L"modify:algorithm-name");
+						if (strVal)
+						{
+							if (*strVal == L"SHA-512")	CP_XML_ATTR(L"w:cryptAlgorithmSid", L"14");
+							if (*strVal == L"SHA-386")	CP_XML_ATTR(L"w:cryptAlgorithmSid", L"13");
+							if (*strVal == L"SHA-256")	CP_XML_ATTR(L"w:cryptAlgorithmSid", L"12");
+							if (*strVal == L"SHA-1")	CP_XML_ATTR(L"w:cryptAlgorithmSid", L"4");
+						}
+
+						strVal = root()->odf_context().Settings().find_by_name(L"modify:iteration-count");
+						if (strVal) CP_XML_ATTR(L"w:cryptSpinCount", *strVal);
+
+						strVal = root()->odf_context().Settings().find_by_name(L"modify:hash");
+						if (strVal) CP_XML_ATTR(L"w:hash", *strVal);
+
+						strVal = root()->odf_context().Settings().find_by_name(L"modify:salt");
+						if (strVal) CP_XML_ATTR(L"w:salt", *strVal);
+					}
+					else
+					{
+						strVal = root()->odf_context().Settings().find_by_name(L"modify:algorithm-name");
+						if (strVal) CP_XML_ATTR(L"w:algorithmName", *strVal);
+
+						strVal = root()->odf_context().Settings().find_by_name(L"modify:hash");
+						if (strVal) CP_XML_ATTR(L"w:hashValue", *strVal);
+
+						strVal = root()->odf_context().Settings().find_by_name(L"modify:salt");
+						if (strVal) CP_XML_ATTR(L"w:saltValue", *strVal);
+
+						strVal = root()->odf_context().Settings().find_by_name(L"modify:iteration-count");
+						if (strVal) CP_XML_ATTR(L"w:spinCount", *strVal);
+					}
+				}
+			}
 			if (odf_reader::GetProperty(settings_properties_,L"evenAndOddHeaders", boolVal))
 			{
 				CP_XML_NODE(L"w:evenAndOddHeaders");

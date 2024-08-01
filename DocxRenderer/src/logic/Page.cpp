@@ -222,8 +222,7 @@ namespace NSDocxRenderer
 			// big white shape with page width & height skip
 			if (fabs(pShape->m_dHeight - m_dHeight) <= c_dSHAPE_X_OFFSET * 2 &&
 				fabs(pShape->m_dWidth - m_dWidth) <= c_dSHAPE_X_OFFSET * 2 &&
-					pShape->m_oBrush.Color1 == c_iWhiteColor &&
-					m_nShapeOrder == 0)
+					pShape->m_oBrush.Color1 == c_iWhiteColor)
 				return;
 
 			pShape->m_nOrder = ++m_nShapeOrder;
@@ -304,14 +303,11 @@ namespace NSDocxRenderer
 				m_oPrevFont.IsEqual2(m_pFont) &&
 				m_oPrevBrush.IsEqual(m_pBrush))
 		{
-			// just in case if oText contains more than 1 symbol
-			std::vector<double> ar_widths;
-			double avg_width = abs(right - left) / oText.length();
+
+			double avg_width = width / oText.length();
 			for (size_t i = 0; i < oText.length(); ++i)
-			{
-				if (oText.at(i) == c_SPACE_SYM) m_pCurrCont->m_pFontStyle->UpdateAvgSpaceWidth(avg_width);
-				ar_widths.push_back(avg_width);
-			}
+				if (oText.at(i) == c_SPACE_SYM)
+					m_pCurrCont->m_pFontStyle->UpdateAvgSpaceWidth(avg_width);
 
 			double avg_space_width = m_pCurrCont->m_pFontStyle->GetAvgSpaceWidth();
 			double space_width = avg_space_width != 0.0 ?
@@ -323,16 +319,24 @@ namespace NSDocxRenderer
 			// some_text+more_text
 			if (fabs(m_pCurrCont->m_dRight - left) < space_width && right > m_pCurrCont->m_dRight)
 			{
+				double left_avg_width = (right - m_pCurrCont->m_dRight) / oText.length();
+				std::vector<double> ar_widths;
+				for (size_t i = 0; i < oText.length(); ++i)
+					ar_widths.push_back(left_avg_width);
+
 				m_pCurrCont->AddTextBack(oText, ar_widths);
-				m_pCurrCont->m_dRight = right;
 				is_added = true;
 
 			}
 			// more_text+some_text
 			else if (fabs(m_pCurrCont->m_dLeft - right) < space_width && left < m_pCurrCont->m_dLeft)
 			{
+				double right_avg_width = (m_pCurrCont->m_dLeft - left) / oText.length();
+				std::vector<double> ar_widths;
+				for (size_t i = 0; i < oText.length(); ++i)
+					ar_widths.push_back(right_avg_width);
+
 				m_pCurrCont->AddTextFront(oText, ar_widths);
-				m_pCurrCont->m_dLeft = left;
 				is_added = true;
 			}
 
@@ -843,7 +847,7 @@ namespace NSDocxRenderer
 					bool is_crossing_text = IsLineCrossingText(shape, curr_cont) && is_width_equal;
 					bool is_below_text = IsLineBelowText(shape, curr_cont) && is_width_equal;
 					bool is_outline = IsOutline(shape, curr_cont);
-					bool is_highlight = IsHighlight(shape, curr_cont) && curr_line->m_dHeight * 1.5 > shape->m_dHeight;
+					bool is_highlight = IsHighlight(shape, curr_cont) && curr_line->m_dHeight * 1.5 > shape->m_dHeight && is_width_equal;
 
 					bool is_smth_true = is_crossing_text || is_below_text || is_outline || is_highlight;
 					if (is_smth_true)
@@ -1156,40 +1160,6 @@ namespace NSDocxRenderer
 			pCurrLine->MergeConts();
 		}
 		DetermineDominantGraphics();
-
-		// first word width setup
-		for (auto& line : m_arTextLines)
-		{
-			if (!line)
-				continue;
-
-			bool next_line = false;
-			double width = 0;
-			for (auto& cont : line->m_arConts)
-			{
-				if (!cont)
-					continue;
-
-				const auto& text = cont->GetText();
-				auto ar_widths = cont->GetSymWidths();
-				for (size_t i = 0; i < text.length(); ++i)
-				{
-					if (text.at(i) == c_SPACE_SYM)
-					{
-						line->m_dFirstWordWidth = width;
-						next_line = true;
-						break;
-					}
-					width += ar_widths[i];
-				}
-				if (next_line)
-					break;
-			}
-			if (next_line)
-				continue;
-
-			line->m_dFirstWordWidth = line->m_dWidth;
-		}
 	}
 
 	void CPage::DetermineDominantGraphics()
@@ -1630,10 +1600,14 @@ namespace NSDocxRenderer
 			// параграф будет набиваться строчками
 			auto paragraph = std::make_shared<CParagraph>();
 
+			// calcs first word widths
+			for (auto& line : text_lines)
+				line->CalcFirstWordWidth();
+
 			// calcs spacings & positions
 			for (size_t index = 0; index < text_lines.size() - 1; ++index)
 			{
-				ar_spacings[index] = text_lines[index + 1]->m_dBaselinePos - text_lines[index]->m_dTop;
+				ar_spacings[index] = text_lines[index + 1]->m_dTop - text_lines[index]->m_dBaselinePos;
 				avg_spacing = (avg_spacing / (avg_spacing_n + 1)) * avg_spacing_n + (ar_spacings[index] / (avg_spacing_n + 1));
 
 				auto& left_curr = text_lines[index]->m_dLeft;

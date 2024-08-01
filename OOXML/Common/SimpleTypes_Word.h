@@ -2114,6 +2114,7 @@ namespace SimpleTypes
 		cryptalgoritmnameSHA384     = 8,
 		cryptalgoritmnameSHA512     = 9,
 		cryptalgoritmnameWHIRLPOOL  = 10,
+		cryptalgoritmnamePBKDF2		= 11
 	};
 
 	DEFINE_SIMPLE_TYPE(CCryptAlgoritmName, ECryptAlgoritmName, cryptalgoritmnameUnknown)

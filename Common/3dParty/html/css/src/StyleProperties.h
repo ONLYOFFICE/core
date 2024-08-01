@@ -136,7 +136,7 @@ namespace NSCSS
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel = 0, bool bHardMode = true) override;
 		bool SetValue(const CDigit& oValue);
-		bool SetValue(double dValue, unsigned int unLevel, bool bHardMode);
+		bool SetValue(const double& dValue, unsigned int unLevel, bool bHardMode);
 
 		bool Empty() const override;
 		bool Zero() const;
@@ -450,7 +450,7 @@ namespace NSCSS
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetWidth(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
-		bool SetWidth(double dValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetWidth(const double& dValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetStyle(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetColor(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 
@@ -493,37 +493,45 @@ namespace NSCSS
 		CBorder();
 
 		void Clear();
+		void ClearLeftSide();
+		void ClearTopSide();
+		void ClearRightSide();
+		void ClearBottomSide();
 
 		static void Equation(CBorder &oFirstBorder, CBorder &oSecondBorder);
 
-		bool SetSides(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
-		bool SetWidth(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
-		bool SetWidth(double dValue, unsigned int unLevel, bool bHardMode = false);
-		bool SetStyle(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
-		bool SetColor(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetSides(const std::wstring& wsValue,    unsigned int unLevel, bool bHardMode = false);
+		bool SetWidth(const std::wstring& wsValue,    unsigned int unLevel, bool bHardMode = false);
+		bool SetWidth(const double& dValue,           unsigned int unLevel, bool bHardMode = false);
+		bool SetStyle(const std::wstring& wsValue,    unsigned int unLevel, bool bHardMode = false);
+		bool SetColor(const std::wstring& wsValue,    unsigned int unLevel, bool bHardMode = false);
 		bool SetCollapse(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 
 		//Left Side
 		bool SetLeftSide       (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetWidthLeftSide  (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetWidthLeftSide  (const double& dValue,        unsigned int unLevel, bool bHardMode = false);
 		bool SetStyleLeftSide  (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetColorLeftSide  (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 
 		//Top Side
 		bool SetTopSide        (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetWidthTopSide   (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetWidthTopSide   (const double& dValue,        unsigned int unLevel, bool bHardMode = false);
 		bool SetStyleTopSide   (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetColorTopSide   (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 
 		//Right Side
 		bool SetRightSide      (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetWidthRightSide (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetWidthRightSide (const double& dValue,        unsigned int unLevel, bool bHardMode = false);
 		bool SetStyleRightSide (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetColorRightSide (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 
 		//Bottom Side
 		bool SetBottomSide     (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetWidthBottomSide(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetWidthBottomSide(const double& dValue,        unsigned int unLevel, bool bHardMode = false);
 		bool SetStyleBottomSide(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetColorBottomSide(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 

@@ -52,8 +52,6 @@
 	for (object_type* pElement : vector_object) \
 		RELEASEOBJECT(pElement) \
 
-std::wstring rStyle = L" a area b strong bdo bdi big br center cite dfn em i var code kbd samp tt del s font img ins u mark q rt sup small sub svg input basefont button label data object noscript output abbr time ruby progress hgroup meter span acronym ";
-
 // Ячейка таблицы
 struct CTc
 {
@@ -83,15 +81,27 @@ struct CTextSettings
 	std::wstring sRStyle; // w:rStyle
 	std::wstring sPStyle; // w:pStyle
 
+	enum ETextMode
+	{
+		Normal,
+		Superscript,
+		Subscript
+	} eTextMode;
+
 	NSCSS::CCompiledStyle oPriorityStyle;
 
 	CTextSettings()
-		: bBdo(false), bPre(false), bQ(false), bAddSpaces(true), bMergeText(false), nLi(-1)
+		: bBdo(false), bPre(false), bQ(false), bAddSpaces(true), bMergeText(false), nLi(-1), eTextMode(Normal)
 	{}
 
 	CTextSettings(const CTextSettings& oTS) :
 		bBdo(oTS.bBdo), bPre(oTS.bPre), bQ(oTS.bQ), bAddSpaces(oTS.bAddSpaces), bMergeText(oTS.bMergeText), nLi(oTS.nLi), sRStyle(oTS.sRStyle), sPStyle(oTS.sPStyle)
 	{}
+
+	bool HaveRStyles() const
+	{
+		return !sRStyle.empty() || Normal != eTextMode;
+	}
 
 	void AddRStyle(const std::wstring& wsStyle)
 	{
@@ -199,6 +209,18 @@ int CalculateFontChange(const std::vector<NSCSS::CNode>& arSelectors)
 	return nFontChange;
 }
 
+#define FIRST_ELEMENT 0x00000001
+#define LAST_ELEMENT  0x00000002
+#define MID_ELEMENT   0x00000004
+
+#define PARSE_MODE_HEADER  0x00000100
+#define PARSE_MODE_BODY    0x00000200
+#define PARSE_MODE_FOOTHER 0x00000400
+
+#define COL_POSITION_MASK 0x0000000F
+#define ROW_POSITION_MASK 0x000000F0
+#define PARSE_MODE_MASK   0x00000F00
+
 typedef enum
 {
 	ParseModeHeader,
@@ -297,6 +319,12 @@ std::wstring CreateBorders(const std::wstring& wsStyle, UINT unSize, UINT unSpac
 
 #define CreateOutsetBorders(enType) CreateBorders(L"outset", 6, 0, L"auto", enType)
 
+std::wstring CreateDefaultBorder(std::wstring wsSideName)
+{
+	std::transform(wsSideName.begin(), wsSideName.end(), wsSideName.begin(), std::towlower);
+	return L"<w:" + wsSideName + L" w:val=\"single\" w:sz=\"1\" w:space=\"0\" w:color=\"auto\"/>";
+}
+
 struct TTableRowStyle
 {
 	UINT m_unMaxIndex;
@@ -373,16 +401,16 @@ class CTableCell
 {
 public:
 	CTableCell() 
-		: m_unColspan(1), m_unRowSpan(1), m_bIsMerged(false), m_bIsEmpty(false), m_enMode(ParseModeBody)
+		: m_unColspan(1), m_unRowSpan(1), m_bIsMerged(false), m_bIsEmpty(false)
 	{}
 
 	CTableCell(UINT unColspan, UINT unRowspan, bool bIsMerged, bool bIsEmpty)
-		: m_unColspan(unColspan), m_unRowSpan(unRowspan), m_bIsMerged(bIsMerged), m_bIsEmpty(bIsEmpty), m_enMode(ParseModeBody)
+		: m_unColspan(unColspan), m_unRowSpan(unRowspan), m_bIsMerged(bIsMerged), m_bIsEmpty(bIsEmpty)
 	{}
 
 	CTableCell(CTableCell& oCell)
 		: m_unColspan(oCell.m_unColspan), m_unRowSpan(oCell.m_unRowSpan), m_bIsMerged(oCell.m_bIsMerged), 
-		  m_bIsEmpty(oCell.m_bIsEmpty), m_enMode(oCell.m_enMode), m_oStyles(oCell.m_oStyles)
+		  m_bIsEmpty(oCell.m_bIsEmpty), m_oStyles(oCell.m_oStyles)
 	{
 		m_oData.SetText(oCell.m_oData.GetData());
 	}
@@ -413,11 +441,6 @@ public:
 		pCell->m_oStyles.Copy(pStyle);
 
 		return pCell;
-	}
-
-	void SetMode(ERowParseMode eMode)
-	{
-		m_enMode = eMode;
 	}
 
 	void SetColspan(UINT unColspan, UINT unCurrentIndex)
@@ -518,14 +541,13 @@ public:
 		m_oStyles.m_oBackground = oColor;
 	}
 
-	std::wstring ConvertToOOXML(const CTable& oTable, UINT unColumnNumber);
+	std::wstring ConvertToOOXML(const CTable& oTable, UINT unColumnNumber, int nInstruction);
 private:
 	UINT m_unColspan;
 	UINT m_unRowSpan;
 
 	bool m_bIsMerged;
 	bool m_bIsEmpty;
-	ERowParseMode m_enMode;
 
 	TTableCellStyle m_oStyles;
 	NSStringUtils::CStringBuilder m_oData;
@@ -633,7 +655,7 @@ public:
 		return m_arCells.size();
 	}
 
-	std::wstring ConvertToOOXML(const CTable& oTable);
+	std::wstring ConvertToOOXML(const CTable& oTable, int nInstruction);
 
 	CTableCell* operator[](UINT unIndex)
 	{
@@ -734,6 +756,10 @@ public:
 
 	~CTable()
 	{
+		for (std::vector<CTableRow*>& arHeaders : m_arHeaders)
+			RELEASE_VECTOR(arHeaders, CTableRow)
+
+		RELEASE_VECTOR(m_arFoother, CTableRow)
 		RELEASE_VECTOR(m_arRows, CTableRow)
 		RELEASE_VECTOR(m_arColgroups, CTableColgroup)
 	}
@@ -818,7 +844,22 @@ public:
 		return std::wstring();
 	}
 
-	void AddRow(CTableRow* pRow)
+	void AddRows(std::vector<CTableRow*>& m_arRows, ERowParseMode eParseMode = ERowParseMode::ParseModeBody)
+	{
+		if (m_arRows.empty())
+			return;
+
+		if (ERowParseMode::ParseModeFoother == eParseMode && !m_arFoother.empty())
+			eParseMode = ERowParseMode::ParseModeHeader;
+
+		if (ERowParseMode::ParseModeHeader == eParseMode)
+			m_arHeaders.push_back({});
+
+		for (CTableRow* pRow : m_arRows)
+			AddRow(pRow, eParseMode);
+	}
+
+	void AddRow(CTableRow* pRow, ERowParseMode eParseMode = ERowParseMode::ParseModeBody)
 	{
 		if (NULL == pRow)
 			return;
@@ -831,7 +872,28 @@ public:
 				m_arMinColspan[unIndex] = (*pRow)[unIndex]->GetColspan();
 		}
 
-		m_arRows.push_back(pRow);
+		switch (eParseMode)
+		{
+			default:
+			case ERowParseMode::ParseModeBody:
+			{
+				m_arRows.push_back(pRow);
+				break;
+			}
+			case ERowParseMode::ParseModeHeader:
+			{
+				if (m_arHeaders.empty())
+					m_arHeaders.push_back({});
+
+				m_arHeaders.back().push_back(pRow);
+				break;
+			}
+			case ERowParseMode::ParseModeFoother:
+			{
+				m_arFoother.push_back(pRow);
+				break;
+			}
+		}
 	}
 
 	void AddCaption(NSStringUtils::CStringBuilder& oCaption)
@@ -1056,15 +1118,37 @@ public:
 			oTable.WriteNodeEnd(L"w:tr");
 		}
 
-		for (CTableRow* pRow : m_arRows)
-			oTable += pRow->ConvertToOOXML(*this);
+		#define CONVERT_ROWS(rows, mode) \
+		{ \
+			for (UINT unRowIndex = 0; unRowIndex < rows.size(); ++unRowIndex) \
+			{ \
+				int nInstruction = 0; \
+				if (0 == unRowIndex) \
+					nInstruction |= FIRST_ELEMENT << 4; \
+				if (rows.size() - 1 == unRowIndex) \
+					nInstruction |= LAST_ELEMENT << 4; \
+				else if (0 != unRowIndex) \
+					nInstruction |= MID_ELEMENT << 4; \
+				nInstruction |= mode; \
+				oTable += rows[unRowIndex]->ConvertToOOXML(*this, nInstruction); \
+			} \
+		}
+
+		for (std::vector<CTableRow*>& arRows : m_arHeaders)
+			CONVERT_ROWS(arRows, PARSE_MODE_HEADER)
+
+		CONVERT_ROWS(m_arRows,    PARSE_MODE_BODY)
+		CONVERT_ROWS(m_arFoother, PARSE_MODE_FOOTHER)
 
 		oTable.WriteNodeEnd(L"w:tbl");
 
 		return oTable.GetData();
 	}
 private:
-	std::vector<CTableRow*> m_arRows;
+	std::vector<std::vector<CTableRow*>> m_arHeaders;
+	std::vector<CTableRow*>              m_arFoother;
+	std::vector<CTableRow*>              m_arRows;
+
 	std::vector<UINT> m_arMinColspan;
 
 	NSStringUtils::CStringBuilder m_oCaption;
@@ -1395,7 +1479,7 @@ public:
 			m_oStylesXml += L"<w:rFonts w:ascii=\"" + DEFAULT_FONT_FAMILY + L"\" w:eastAsia=\"" + DEFAULT_FONT_FAMILY + L"\"  w:hAnsi=\"" + DEFAULT_FONT_FAMILY + L"\" w:cs=\"" + DEFAULT_FONT_FAMILY + L"\"/>";
 			m_oStylesXml += L"<w:sz w:val=\"" + std::to_wstring(DEFAULT_FONT_SIZE) + L"\"/><w:szCs w:val=\"" + std::to_wstring(DEFAULT_FONT_SIZE) + L"\"/>";
 			m_oStylesXml += L"<w:lang w:val=\"" + ((!wsCurrentLanguage.empty()) ? wsCurrentLanguage : DEFAULT_LANGUAGE) + L"\" w:eastAsia=\"en-US\" w:bidi=\"ar-SA\"/>";
-			m_oStylesXml += L"</w:rPr></w:rPrDefault>";
+			m_oStylesXml += L"</w:rPr></w:rPrDefault><w:pPrDefault/>";
 
 //			m_oStylesXml += L"<w:pPrDefault><w:pPr><w:spacing w:after=\"200\" w:line=\"276\" w:lineRule=\"auto\"/></w:pPr></w:pPrDefault>";
 		}
@@ -2043,7 +2127,7 @@ private:
 			if (sText.end() == std::find_if_not(sText.begin(), sText.end(), [](wchar_t wchChar){ return iswspace(wchChar);}))
 				return false;
 
-			bool bInT = m_oState.m_bInT;
+			const bool bInT = m_oState.m_bInT;
 
 			if (!oTS.sRStyle.empty() || oTS.bPre)
 			{
@@ -2051,7 +2135,7 @@ private:
 				CloseR(oXml);
 			}
 
-			if (oTS.bAddSpaces && m_oState.m_bInP && !m_oState.m_bInR && !iswspace(sText.front()) && !m_oState.m_bWasSpace)
+			if (oTS.bAddSpaces && m_oState.m_bInP && !m_oState.m_bInR && !iswspace(sText.front()) && !m_oState.m_bWasSpace && CTextSettings::Normal == oTS.eTextMode)
 				WriteSpace(oXml);
 
 			std::wstring sPStyle = wrP(oXml, sSelectors, oTS);
@@ -2296,14 +2380,14 @@ private:
 		else if(sName == L"sup")
 		{
 			CTextSettings oTSR(oTS);
-			oTSR.AddRStyle(L"<w:vertAlign w:val=\"superscript\"/>");
+			oTSR.eTextMode = CTextSettings::Superscript;
 			bResult = readStream(oXml, sSelectors, oTSR);
 		}
 		// Текст нижнего регистра
 		else if(sName == L"sub")
 		{
 			CTextSettings oTSR(oTS);
-			oTSR.AddRStyle(L"<w:vertAlign w:val=\"subscript\"/>");
+			oTSR.eTextMode = CTextSettings::Subscript;
 			bResult = readStream(oXml, sSelectors, oTSR);
 		}
 		// Векторная картинка
@@ -2486,7 +2570,7 @@ private:
 			else if(sName == L"pre" || sName == L"xmp")
 			{
 				CTextSettings oTSPre(oTS);
-				sSelectors.back().m_wsStyle += L"; font-family:Courier New";
+				oTSPre.AddRStyle(L"<w:rFonts w:ascii=\"Courier New\" w:hAnsi=\"Courier New\"/><w:sz w:val=\"20\"/><w:szCs w:val=\"20\"/>");
 				oTSPre.bPre = true;
 				bResult = readStream(&oXmlData, sSelectors, oTSPre);
 			}
@@ -2729,6 +2813,7 @@ private:
 	void ParseTableRows(CTable& oTable, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, ERowParseMode eMode)
 	{
 		std::vector<TRowspanElement> arRowspanElements;
+		std::vector<CTableRow*>      arRows;
 
 		int nDeath = m_oLightReader.GetDepth();
 		while (m_oLightReader.ReadNextSiblingNode(nDeath))
@@ -2759,8 +2844,6 @@ private:
 
 				if (NULL == pCell)
 					continue;
-
-				pCell->SetMode(eMode);
 
 				GetSubClass(pCell->GetData(), sSelectors);
 
@@ -2826,9 +2909,10 @@ private:
 			}
 
 			sSelectors.pop_back();
-
-			oTable.AddRow(pRow);
+			arRows.push_back(pRow);
 		}
+
+		oTable.AddRows(arRows, eMode);
 	}
 
 	bool ParseRuby(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
@@ -2962,29 +3046,73 @@ private:
 		m_oStylesCalculator.GetCompiledStyle(oStyle, sSelectors);
 
 		//Table styles
-		if (sSelectors.back().m_mAttributes.end() != sSelectors.back().m_mAttributes.find(L"border"))
-		{
-			const int nWidth = NSStringFinder::ToInt(sSelectors.back().m_mAttributes[L"border"]);
+		std::wstring wsFrame;
 
-			if (0 < nWidth)
+		for (const std::pair<std::wstring, std::wstring> oArgument : sSelectors.back().m_mAttributes)
+		{
+			if (L"border" == oArgument.first)
 			{
-				oStyle.m_oBorder.SetStyle(L"outset",  0, true);
-				oStyle.m_oBorder.SetWidth(nWidth,     0, true);
-				oStyle.m_oBorder.SetColor(L"auto", 0, true);
-				oTable.SetRules(L"all");
+				const int nWidth = NSStringFinder::ToInt(oArgument.second);
+
+				if (0 < nWidth)
+				{
+					oStyle.m_oBorder.SetStyle(L"outset",  0, true);
+					oStyle.m_oBorder.SetWidth(nWidth,     0, true);
+					oStyle.m_oBorder.SetColor(L"auto", 0, true);
+					oTable.SetRules(L"all");
+				}
+				else
+				{
+					oStyle.m_oBorder.SetNone(0, true);
+					oTable.SetRules(L"none");
+				}
 			}
-			else
-			{
-				oStyle.m_oBorder.SetNone(0, true);
-				oTable.SetRules(L"none");
-			}
+			else if (L"cellpadding" == oArgument.first)
+				oStyle.m_oPadding.SetValues(oArgument.second + L"px", 0, true);
+			else if (L"rules" == oArgument.first)
+				oTable.SetRules(oArgument.second);
+			else if (L"frame" == oArgument.first)
+				wsFrame = oArgument.second;
 		}
 
-		if (sSelectors.back().m_mAttributes.end() != sSelectors.back().m_mAttributes.find(L"cellpadding"))
-			oStyle.m_oPadding.SetValues(sSelectors.back().m_mAttributes[L"cellpadding"] + L"px", 0, true);
+		if (!wsFrame.empty() && oStyle.m_oBorder.Empty())
+		{
+			#define SetDefaultBorderSide(side) \
+				oStyle.m_oBorder.SetStyle##side(L"solid", 0, true); \
+				oStyle.m_oBorder.SetWidth##side(1,        0, true); \
+				oStyle.m_oBorder.SetColor##side(L"black", 0, true);
 
-		if (sSelectors.back().m_mAttributes.end() != sSelectors.back().m_mAttributes.find(L"rules"))
-			oTable.SetRules(sSelectors.back().m_mAttributes[L"rules"]);
+			if (NSStringFinder::Equals(L"border", wsFrame))
+			{
+				SetDefaultBorderSide()
+			}
+			else if (NSStringFinder::Equals(L"above", wsFrame))
+			{
+				SetDefaultBorderSide(TopSide)
+			}
+			else if (NSStringFinder::Equals(L"below", wsFrame))
+			{
+				SetDefaultBorderSide(BottomSide)
+			}
+			else if (NSStringFinder::Equals(L"hsides", wsFrame))
+			{
+				SetDefaultBorderSide(TopSide)
+				SetDefaultBorderSide(BottomSide)
+			}
+			else if (NSStringFinder::Equals(L"vsides", wsFrame))
+			{
+				SetDefaultBorderSide(LeftSide)
+				SetDefaultBorderSide(RightSide)
+			}
+			else if (NSStringFinder::Equals(L"rhs", wsFrame))
+			{
+				SetDefaultBorderSide(RightSide)
+			}
+			else if (NSStringFinder::Equals(L"lhs", wsFrame))
+			{
+				SetDefaultBorderSide(LeftSide)
+			}
+		}
 
 		if (oStyle.m_oBorder.GetCollapse() == NSCSS::NSProperties::BorderCollapse::Collapse)
 			oTable.SetCellSpacing(0);
@@ -3009,11 +3137,11 @@ private:
 			if(sName == L"caption")
 				ParseTableCaption(oTable, sSelectors, oTS);
 			if(sName == L"thead")
-				ParseTableRows(oTable, sSelectors, oTS,  ERowParseMode::ParseModeHeader);
+				ParseTableRows(oTable, sSelectors, oTS, ERowParseMode::ParseModeHeader);
 			if(sName == L"tbody")
 				ParseTableRows(oTable, sSelectors, oTS, ERowParseMode::ParseModeBody);
 			else if(sName == L"tfoot")
-				ParseTableRows(oTable, sSelectors, oTS,  ERowParseMode::ParseModeFoother);
+				ParseTableRows(oTable, sSelectors, oTS, ERowParseMode::ParseModeFoother);
 			else if (sName == L"colgroup")
 				ParseTableColspan(oTable);
 
@@ -3597,7 +3725,7 @@ private:
 			wsFontSize += L"<w:sz w:val=\"" + std::to_wstring(unFontSize) + L"\"/><w:szCs w:val=\"" + std::to_wstring(unFontSize) + L"\"/>";
 		}
 
-		if (!sRStyle.empty() || !oTS.sRStyle.empty() || !wsFontSize.empty())
+		if (!sRStyle.empty() || oTS.HaveRStyles() || !wsFontSize.empty())
 		{
 			oXml->WriteString(L"<w:rPr>");
 			if (!sRStyle.empty())
@@ -3607,7 +3735,23 @@ private:
 				oXml->WriteString(L"\"/>");
 			}
 
-			oXml->WriteString(oTS.sRStyle + L' ' + wsFontSize + L' ' + sRSettings);
+			switch (oTS.eTextMode)
+			{
+				case CTextSettings::Subscript:
+				{
+					oXml->WriteString(L"<w:vertAlign w:val=\"subscript\"/>");
+					break;
+				}
+				case CTextSettings::Superscript:
+				{
+					oXml->WriteString(L"<w:vertAlign w:val=\"superscript\"/>");
+					break;
+				}
+				default:
+					break;
+			}
+
+			oXml->WriteString(oTS.sRStyle + wsFontSize + sRSettings);
 			oXml->WriteString(L"</w:rPr>");
 		}
 		return sRStyle;
@@ -3940,7 +4084,7 @@ HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const s
 	return S_OK;
 }
 
-std::wstring CTableRow::ConvertToOOXML(const CTable& oTable)
+std::wstring CTableRow::ConvertToOOXML(const CTable& oTable, int nInstruction)
 {
 	if (m_arCells.empty())
 		return std::wstring();
@@ -3967,21 +4111,32 @@ std::wstring CTableRow::ConvertToOOXML(const CTable& oTable)
 	}
 
 	for (UINT unIndex = 0; unIndex < m_arCells.size();)
-		oRow += m_arCells[unIndex]->ConvertToOOXML(oTable, ++unIndex);
+	{
+		int nNewInstruction{nInstruction};
+
+		if (0 == unIndex)
+			nNewInstruction |= FIRST_ELEMENT;
+		if (m_arCells.size() - 1 == unIndex)
+			nNewInstruction |= LAST_ELEMENT;
+		else if (0 != unIndex)
+			nNewInstruction |= MID_ELEMENT;
+
+		oRow += m_arCells[unIndex]->ConvertToOOXML(oTable, ++unIndex, nNewInstruction);
+	}
 
 	oRow.WriteNodeEnd(L"w:tr");
 
 	return oRow.GetData();
 }
 
-std::wstring CTableCell::ConvertToOOXML(const CTable& oTable, UINT unColumnNumber)
+std::wstring CTableCell::ConvertToOOXML(const CTable& oTable, UINT unColumnNumber, int nInstruction)
 {
 	NSStringUtils::CStringBuilder oCell;
 
 	oCell.WriteNodeBegin(L"w:tc");
 	oCell.WriteNodeBegin(L"w:tcPr");
 
-	if (ParseModeHeader == m_enMode)
+	if (PARSE_MODE_HEADER == (nInstruction & PARSE_MODE_MASK))
 		oCell += L"<w:tblHeader/>";
 
 	TTableCellStyle oCellStyle(m_oStyles);
@@ -4026,9 +4181,17 @@ std::wstring CTableCell::ConvertToOOXML(const CTable& oTable, UINT unColumnNumbe
 
 	if (!oCellStyle.m_oBorder.Empty() && !oCellStyle.m_oBorder.Zero() /*&& oCellStyle.m_oBorder != oTableStyles.m_oBorder*/)
 		oCell += L"<w:tcBorders>" + CreateBorders(oCellStyle.m_oBorder, &oCellStyle.m_oPadding) + L"</w:tcBorders>";
-	else if (TTableStyles::ETableRules::Groups == oTable.GetTableStyles().m_enRules && oTable.HaveColgroups())
+	else if (TTableStyles::ETableRules::Groups == oTable.GetTableStyles().m_enRules)
 	{
-		const std::wstring wsBorders{oTable.CalculateSidesToClean(unColumnNumber)};
+		std::wstring wsBorders;
+
+		if (oTable.HaveColgroups())
+			wsBorders += oTable.CalculateSidesToClean(unColumnNumber);
+
+		if (PARSE_MODE_HEADER == (nInstruction & PARSE_MODE_MASK) && (((nInstruction & ROW_POSITION_MASK) >> 4) & LAST_ELEMENT))
+			wsBorders += CreateDefaultBorder(L"bottom");
+		else if (PARSE_MODE_FOOTHER == (nInstruction & PARSE_MODE_MASK) && (((nInstruction & ROW_POSITION_MASK) >> 4) & FIRST_ELEMENT))
+			wsBorders += CreateDefaultBorder(L"top");
 
 		if (!wsBorders.empty())
 			oCell += L"<w:tcBorders>" + wsBorders + L"</w:tcBorders>";

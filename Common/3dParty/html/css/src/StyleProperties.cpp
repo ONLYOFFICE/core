@@ -420,7 +420,7 @@ namespace NSCSS
 		return true;
 	}
 
-	bool CDigit::SetValue(double dValue, unsigned int unLevel, bool bHardMode)
+	bool CDigit::SetValue(const double& dValue, unsigned int unLevel, bool bHardMode)
 	{
 		if (CHECK_CONDITIONS && !bHardMode)
 			return false;
@@ -1634,7 +1634,7 @@ namespace NSCSS
 		return m_oWidth.SetValue(wsNewValue, unLevel, bHardMode);
 	}
 
-	bool CBorderSide::SetWidth(double dValue, unsigned int unLevel, bool bHardMode)
+	bool CBorderSide::SetWidth(const double& dValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oWidth.SetValue(dValue, unLevel, bHardMode);
 	}
@@ -1754,9 +1754,29 @@ namespace NSCSS
 
 	void CBorder::Clear()
 	{
-		m_oLeft  .Clear();
-		m_oTop   .Clear();
-		m_oRight .Clear();
+		ClearLeftSide();
+		ClearTopSide();
+		ClearRightSide();
+		ClearBottomSide();
+	}
+
+	void CBorder::ClearLeftSide()
+	{
+		m_oLeft.Clear();
+	}
+
+	void CBorder::ClearTopSide()
+	{
+		m_oTop.Clear();
+	}
+
+	void CBorder::ClearRightSide()
+	{
+		m_oRight.Clear();
+	}
+
+	void CBorder::ClearBottomSide()
+	{
 		m_oBottom.Clear();
 	}
 
@@ -1792,7 +1812,7 @@ namespace NSCSS
 		return bResult;
 	}
 
-	bool CBorder::SetWidth(double dValue, unsigned int unLevel, bool bHardMode)
+	bool CBorder::SetWidth(const double& dValue, unsigned int unLevel, bool bHardMode)
 	{
 		bool bResult = false;
 
@@ -1843,6 +1863,11 @@ namespace NSCSS
 		return m_oLeft.SetWidth(wsValue, unLevel, bHardMode);
 	}
 
+	bool CBorder::SetWidthLeftSide(const double& dValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oLeft.SetWidth(dValue, unLevel, bHardMode);
+	}
+
 	bool CBorder::SetStyleLeftSide(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oLeft.SetStyle(wsValue, unLevel, bHardMode);
@@ -1861,6 +1886,11 @@ namespace NSCSS
 	bool CBorder::SetWidthTopSide(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oTop.SetWidth(wsValue, unLevel, bHardMode);
+	}
+
+	bool CBorder::SetWidthTopSide(const double& dValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oTop.SetWidth(dValue, unLevel, bHardMode);
 	}
 
 	bool CBorder::SetStyleTopSide(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -1883,6 +1913,11 @@ namespace NSCSS
 		return m_oRight.SetWidth(wsValue, unLevel, bHardMode);
 	}
 
+	bool CBorder::SetWidthRightSide(const double& dValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oRight.SetWidth(dValue, unLevel, bHardMode);
+	}
+
 	bool CBorder::SetStyleRightSide(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oRight.SetStyle(wsValue, unLevel, bHardMode);
@@ -1901,6 +1936,11 @@ namespace NSCSS
 	bool CBorder::SetWidthBottomSide(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oBottom.SetWidth(wsValue, unLevel, bHardMode);
+	}
+
+	bool CBorder::SetWidthBottomSide(const double& dValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oBottom.SetWidth(dValue, unLevel, bHardMode);
 	}
 
 	bool CBorder::SetStyleBottomSide(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)

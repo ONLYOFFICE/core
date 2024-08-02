@@ -8,6 +8,14 @@ def makedirs(dir):
         os.makedirs(dir)
     return
 
+# return all files with extension `ext` in directory `dir` as string
+def getFilesInDir(dir, ext):
+    files = '';
+    for file in os.listdir(dir):
+        if file.endswith(ext):
+            files += ' ' + dir + '/' + file
+    return files
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Build Java wrapper for docbuilder library')
     parser.add_argument('-H', '--headers', action='store_true', help='Generate C++ JNI header files')
@@ -17,13 +25,8 @@ if __name__ == "__main__":
     file_dir = os.path.dirname(os.path.realpath(__file__));
     os.chdir(file_dir + '/src/java')
 
-    java_files = ''
-    for file in os.listdir('docbuilder'):
-        if file.endswith('.java'):
-            java_files += ' docbuilder/' + file
-
-    java_utils_file = ' docbuilder/utils/NativeLibraryLoader.java'
-    java_files += java_utils_file
+    java_files = getFilesInDir('docbuilder', '.java')
+    java_files += getFilesInDir('docbuilder/utils', '.java')
 
     # BUILD
     classes_dir = file_dir + '/build/classes'
@@ -35,11 +38,7 @@ if __name__ == "__main__":
     # PACKING TO JAR
     if not args.no_jar:
         os.chdir(classes_dir)
-        class_files = ''
-        for file in os.listdir('docbuilder'):
-            if file.endswith('.class'):
-                class_files += ' docbuilder/' + file
-        class_utils_file = ' docbuilder/utils/NativeLibraryLoader.class'
-        class_files += class_utils_file
+        class_files = getFilesInDir('docbuilder', '.class')
+        class_files += getFilesInDir('docbuilder/utils', '.class')
         makedirs('../libs')
         os.system('jar -cvf ../libs/docbuilder.jar ' + class_files)

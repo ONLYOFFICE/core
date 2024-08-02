@@ -60,8 +60,9 @@ namespace OOX
 		void SetCreator(std::wstring sVal);
 		void SetLastModifiedBy(std::wstring sVal);
 
-		PPTX::Core* ToPptxCore();
-		void FromPptxCore(PPTX::Core* pCore);
+		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		nullable_string m_sCategory;
 		nullable_string m_sContentStatus;

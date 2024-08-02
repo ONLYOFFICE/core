@@ -128,6 +128,7 @@ public:
 	
 	void add_meta(const std::wstring & ns, const std::wstring & name, const std::wstring & content);
 	void add_meta(const office_element_ptr &elm);
+	void add_meta_user_define(const std::wstring& name, const std::wstring& content);
 	
 	virtual odf_style_context_ptr	styles_context();
 	virtual void					set_styles_context(odf_style_context_ptr styles_context);

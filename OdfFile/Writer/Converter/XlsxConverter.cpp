@@ -170,6 +170,7 @@ bool XlsxConverter::convertDocument()
 	ods_context->start_document();
 
 	convert_meta(xlsx_document->m_pApp, xlsx_document->m_pCore);
+	convert_customs(xlsx_document);
 	convert_styles();
 
 	convert_sheets();

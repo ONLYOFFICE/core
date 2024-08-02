@@ -32,12 +32,12 @@
 #pragma once
 
 #include "File.h"
+#include "WritingElement.h"
 #include "../Base/Nullable.h"
 
-namespace PPTX
-{
-	class App;
-}
+#include "../PPTXFormat/Logic/PartTitle.h"
+#include "../PPTXFormat/Logic/HeadingVariant.h"
+
 namespace OOX
 {
 	class CApp : public OOX::File
@@ -58,37 +58,43 @@ namespace OOX
 		void SetDefaults();
 		void SetRequiredDefaults();
 
-		PPTX::App* ToPptxApp();
-		void FromPptxApp(PPTX::App* pApp);
+		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		// TO DO: DigSig
-		//        HeadingPairs
 		//        HLinks
-		//        TitlesOfParts
 
-        nullable_string	m_sApplication;
+		nullable_string	m_sApplication;
 		nullable_string	m_sAppVersion;
 		nullable_int	m_nCharacters;
 		nullable_int	m_nCharactersWithSpaces;
-        nullable_string	m_sCompany;
+		nullable_string	m_sCompany;
 		nullable_int	m_nDocSecurity;
 		nullable_int	m_nHiddenSlides;
-        nullable_string	m_sHyperlinkBase;
+		nullable_string	m_sHyperlinkBase;
 		nullable_bool	m_bHyperlinksChanged;
 		nullable_int	m_nLines;
 		nullable_bool	m_bLinksUpToDate;
-        nullable_string	m_sManager;
+		nullable_string	m_sManager;
 		nullable_int	m_nMMClips;
 		nullable_int	m_nNotes;
 		nullable_int	m_nPages;
 		nullable_int	m_nParagraphs;
-        nullable_string	m_sPresentationForm;
+		nullable_string	m_sPresentationForm;
 		nullable_bool	m_bScaleCrop;
 		nullable_bool	m_bSharedDoc;
 		nullable_int	m_nSlides;
-        nullable_string	m_sTemplate;
+		nullable_string	m_sTemplate;
 		nullable_int	m_nTotalTime;
 		nullable_int	m_nWords;
+
+		std::vector<PPTX::Logic::HeadingVariant> HeadingPairs;
+		std::vector<PPTX::Logic::PartTitle> TitlesOfParts;
+	private:
+		nullable_int m_VectorSize;
+		nullable_int m_Headings;
 	};
+
 } // namespace OOX
 

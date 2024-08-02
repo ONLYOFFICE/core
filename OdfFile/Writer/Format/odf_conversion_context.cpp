@@ -35,6 +35,7 @@
 #include "office_spreadsheet.h"
 #include "office_scripts.h"
 #include "office_chart.h"
+#include "office_meta.h"
 
 #include "office_elements_create.h"
 
@@ -524,6 +525,21 @@ void odf_conversion_context::add_meta(const office_element_ptr& elm)
 {
 	if (!elm) return;
 	objects_[current_object_]->meta.push_back(elm);
+}
+void odf_conversion_context::add_meta_user_define(const std::wstring& name, const std::wstring& content)
+{
+	office_element_ptr elm;
+	create_element(L"meta", L"user-defined", elm, this, true);
+
+	meta_user_defined* meta_user = dynamic_cast<meta_user_defined*>(elm.get());
+	if (meta_user)
+	{
+		meta_user->meta_name_ = name;
+		meta_user->content_ = content;
+		meta_user->meta_value_type_ = odf_types::office_value_type::String;
+
+		add_meta(elm);
+	}
 }
 void odf_conversion_context::add_meta(const std::wstring & ns, const std::wstring & name, const std::wstring & content)
 {

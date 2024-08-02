@@ -40,6 +40,9 @@
 #include "office_elements.h"
 #include "office_elements_create.h"
 
+#include "../../DataTypes/common_attlists.h"
+#include "../../DataTypes/officevaluetype.h"
+
 namespace cpdoccore { 
 namespace odf_writer {
 
@@ -267,7 +270,8 @@ public:
 	_CP_OPT(int)	syllable_count_;
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name) {}
-	virtual void add_child_element(const office_element_ptr & child_element) {}	virtual void serialize(std::wostream & _Wostream);
+	virtual void add_child_element(const office_element_ptr & child_element) {}	
+	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(meta_document_statistic);
 
@@ -281,10 +285,11 @@ public:
     static const ElementType type = typeOfficeMetaUserDefined;
 
 	std::wstring meta_name_;
- 	std::wstring content_;
+	std::wstring content_;
+	_CP_OPT(odf_types::office_value_type) meta_value_type_;
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name) {}
-	virtual void add_child_element(const office_element_ptr & child_element) {}	virtual void add_text(const std::wstring & Text);
+	virtual void add_child_element(const office_element_ptr & child_element) {}	
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(meta_user_defined);

@@ -52,12 +52,10 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(HeadingVariant)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-		public:
 			nullable_limit<Limit::VariantType>		m_type;
 			nullable_string							m_strContent;
 			nullable_int							m_iContent;
@@ -71,14 +69,12 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(CVariantVStream)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
-		public:
 			nullable_string				m_strVersion;
 			nullable_string				m_strContent;
 		protected:
@@ -90,7 +86,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(CVariant)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
@@ -100,7 +95,7 @@ namespace PPTX
 			eVariantType getVariantType() const;
 			static eVariantType getTypeByString(const std::wstring& sName);
 			static std::wstring getStringByType(const eVariantType& eType);
-		public:
+
 			nullable<eVariantType>					m_eType;
 			nullable_string							m_strContent;
 			nullable_int							m_iContent;
@@ -120,14 +115,13 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(CVariantVector)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			eVariantType getVariantType() const;
-		public:
+
 			nullable<eVariantType>					m_eBaseType;
 			nullable_int							m_nSize;
 
@@ -141,14 +135,13 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(CVariantArray)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			eVariantType getVariantType() const;
-		public:
+			
 			nullable<eVariantType>					m_eBaseType;
 			nullable_string							m_strLBounds;
 			nullable_string							m_strUBounds;
@@ -163,20 +156,18 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(CustomProperty)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
-		public:
-			nullable_string							m_strFmtid;
-			nullable_string							m_strLinkTarget;
-			nullable_string							m_strName;
-			nullable_int							m_nPid;
+			nullable_string m_strFmtid;
+			nullable_string m_strLinkTarget;
+			nullable_string m_strName;
+			nullable_int m_nPid;
 
-			nullable<CVariant>						m_oContent;
+			nullable<CVariant> m_oContent;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

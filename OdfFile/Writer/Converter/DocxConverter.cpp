@@ -222,6 +222,7 @@ bool DocxConverter::convertDocument()
 
 	convert_settings(); 
 	convert_meta(app, core);
+	convert_customs(docx_document);
 
 	convert_document();
 

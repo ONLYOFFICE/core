@@ -341,8 +341,12 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 
 			if (iStroke)
 			{
-				if (iStroke.get() == 0 || bWordArt) fill = ns + L":noFill";
-				else dash_style =  _ooxDashStyle[iStroke.get()];	
+				int Val = iStroke.get();
+				if (Val == 0 || bWordArt) fill = ns + L":noFill";
+				else if (Val < sizeof(_ooxDashStyle))
+				{
+					dash_style = _ooxDashStyle[Val];
+				}
 			}
 			
 			if ((dStrokeWidth) && (*dStrokeWidth >= 0) && fill != ns + L":noFill")

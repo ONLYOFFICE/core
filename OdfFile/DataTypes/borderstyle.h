@@ -71,14 +71,14 @@ public:
     bool is_none()     const    { return none_; }
 
     const length     & get_length()const { return length_; }
-    const type       & get_style() const { return style_; }
+    const type       & get_style() const { return (none_ ? none : style_); }
     const color      & get_color() const { return color_; }
 
 private:
     bool        none_;
     bool        initialized_;
     length      length_;
-    type        style_;
+    type        style_ = none;
     color       color_;
 };
 

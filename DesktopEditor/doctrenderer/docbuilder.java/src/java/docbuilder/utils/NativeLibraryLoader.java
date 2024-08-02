@@ -2,6 +2,7 @@ package docbuilder.utils;
 
 public class NativeLibraryLoader {
     static {
+        // TODO: name of icu libraries differ between systems. Handle that.
         System.loadLibrary("icudt58");
         System.loadLibrary("icuuc58");
         System.loadLibrary("UnicodeConverter");

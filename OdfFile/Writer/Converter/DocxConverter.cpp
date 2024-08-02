@@ -3618,7 +3618,7 @@ void DocxConverter::convert_settings()
 		if (settings->m_oDocumentProtection->m_oAlgorithmName.IsInit()) algorithm = settings->m_oDocumentProtection->m_oAlgorithmName->ToString();
 		else if (settings->m_oDocumentProtection->m_oCryptAlgorithmSid.IsInit())
 		{
-			switch (*settings->m_oWriteProtection->m_oCryptAlgorithmSid)
+			switch (*settings->m_oDocumentProtection->m_oCryptAlgorithmSid)
 			{
 			case 1: algorithm = L"MD2"; break;
 			case 2: algorithm = L"MD4"; break;

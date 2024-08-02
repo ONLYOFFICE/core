@@ -1,5 +1,7 @@
 package docbuilder;
 
+import docbuilder.utils.NativeLibraryLoader;
+
 public class CDocBuilder {
     public CDocBuilder() {
         c_internal = c_Create();
@@ -86,6 +88,8 @@ public class CDocBuilder {
     }
 
     public static void initialize(String directory) {
+        if (directory.isEmpty())
+            directory = NativeLibraryLoader.getLibPath().toString();
         c_InitializeWithDirectory(directory);
     }
 

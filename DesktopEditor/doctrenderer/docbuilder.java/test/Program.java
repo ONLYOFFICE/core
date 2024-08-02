@@ -2,18 +2,17 @@ import docbuilder.*;
 
 public class Program {
     public static void main(String[] args) {
-        String workDirectory = "C:/Program Files/ONLYOFFICE/DocumentBuilder";
         String resultPath = "result.docx";
 
-        test(workDirectory, resultPath);
+        test(resultPath);
 
         // Need to explicitly call System.gc() because finalizers might not automatically get called
         // Note: Even System.gc() can not guarantee that finalizers will be actually called. Possible memory leaks!
         System.gc();
     }
 
-    public static void test(String workDirectory, String resultPath) {
-        CDocBuilder.initialize(workDirectory);
+    public static void test(String resultPath) {
+        CDocBuilder.initialize("");
         CDocBuilder builder = new CDocBuilder();
         builder.createFile(FileTypes.Document.DOCX);
 

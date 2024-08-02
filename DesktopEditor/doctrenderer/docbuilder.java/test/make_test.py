@@ -20,10 +20,10 @@ if __name__ == "__main__":
 
     if args.builder_dir:
         builder_dir = args.builder_dir
-        os.system('java -cp ../build/libs/docbuilder.jar' + os.pathsep + 'build/classes -Djava.library.path=\"' + builder_dir + '\" Program')
+        os.system('java -cp ' + builder_dir + '/docbuilder.jar' + os.pathsep + 'build/classes Program')
     else:
         makedirs('build/classes')
         os.system('javac -d build/classes -cp ../build/libs/docbuilder.jar ' + java_file)
         print('Program was built successfully')
-        print('Run it with:    java -cp \"../build/libs/docbuilder.jar' + os.pathsep + 'build/classes\" -D\"java.library.path\"=\"path_to_docbuilder\" Program')
-        print('Or just run:    python make_test.py --run \"path_to_docbuilder\"')
+        print('Run it with:    java -cp \"/path/to/docbuilder/docbuilder.jar' + os.pathsep + 'build/classes\" Program')
+        print('Or just run:    python make_test.py --run \"/path/to/docbuilder\"')

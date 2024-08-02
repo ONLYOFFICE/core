@@ -1,5 +1,7 @@
 import os
 import argparse
+import re
+import platform
 
 # NOTE: In JDK 8 and earlier, `javac` does not create the directories specified in the -d option if they do not already exist
 #       So we need to create them manually
@@ -13,7 +15,11 @@ def getFilesInDir(dir, ext):
     files = '';
     for file in os.listdir(dir):
         if file.endswith(ext):
+            # for non-windows systems '$'-symbol in file names should be escaped
+            if platform.system().lower() != 'windows':
+                file = re.sub(r'\$', r'\\$', file)
             files += ' ' + dir + '/' + file
+    
     return files
 
 if __name__ == "__main__":

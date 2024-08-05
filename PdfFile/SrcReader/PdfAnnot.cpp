@@ -32,6 +32,8 @@
 
 #include "PdfAnnot.h"
 #include "RendererOutputDev.h"
+#include "Adaptors.h"
+
 #include "../lib/xpdf/TextString.h"
 #include "../lib/xpdf/Link.h"
 #include "../lib/xpdf/Annot.h"

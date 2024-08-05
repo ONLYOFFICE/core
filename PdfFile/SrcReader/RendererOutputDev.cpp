@@ -45,6 +45,7 @@
 #include "RendererOutputDev.h"
 #include "XmlUtils.h"
 
+#include "../../DesktopEditor/graphics/pro/Graphics.h"
 #include "../../DesktopEditor/graphics/Image.h"
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/common/File.h"
@@ -163,6 +164,12 @@ namespace PdfReader
 				format->bItalic = new INT(1);
 		}
 	}
+
+	void Transform(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY)
+	{
+		*pdDeviceX = dUserX * pMatrix[0] + dUserY * pMatrix[2] + pMatrix[4];
+		*pdDeviceY = dUserX * pMatrix[1] + dUserY * pMatrix[3] + pMatrix[5];
+	}
 }
 
 class CMemoryFontStream
@@ -274,7 +281,7 @@ namespace PdfReader
 		m_oCS.DeleteCriticalSection();
 		Clear();
 	}
-	bool        CPdfFontList::Find(Ref oRef, TFontEntry *pEntry)
+	bool CPdfFontList::Find(Ref oRef, TFontEntry* pEntry)
 	{
 		CTemporaryCS* pCS = new CTemporaryCS(&m_oCS);
 
@@ -291,7 +298,7 @@ namespace PdfReader
 
 		return bResult;
 	}
-	bool        CPdfFontList::Find2(Ref oRef, TFontEntry **ppEntry)
+	bool CPdfFontList::Find2(Ref oRef, TFontEntry** ppEntry)
 	{
 		CTemporaryCS* pCS = new CTemporaryCS(&m_oCS);
 
@@ -314,14 +321,12 @@ namespace PdfReader
 
 		return bResult;
 	}
-	TFontEntry* CPdfFontList::Add(Ref oRef, const std::wstring& wsFileName, int *pCodeToGID, int *pCodeToUnicode, unsigned int unLenGID, unsigned int unLenUnicode)
+	TFontEntry* CPdfFontList::Add(Ref oRef, const std::wstring& wsFileName, int* pCodeToGID, int* pCodeToUnicode, unsigned int unLenGID, unsigned int unLenUnicode)
 	{
 		// Данная функция приходит только из Find2, поэтому проверять есть ли данный шрифт уже не надо
 		CTemporaryCS* pCS = new CTemporaryCS(&m_oCS);
 
-		TFontEntry *pNewEntry = new TFontEntry;
-		pNewEntry->oRef.gen      = oRef.gen;
-		pNewEntry->oRef.num      = oRef.num;
+		TFontEntry* pNewEntry = new TFontEntry;
 		pNewEntry->wsFilePath     = wsFileName;
 		pNewEntry->pCodeToGID     = pCodeToGID;
 		pNewEntry->pCodeToUnicode = pCodeToUnicode;
@@ -349,7 +354,7 @@ namespace PdfReader
 			m_oFontMap.erase(oPos);
 		}
 	}
-	void        CPdfFontList::Clear()
+	void CPdfFontList::Clear()
 	{
 		for (auto const &oIt : m_oFontMap)
 		{
@@ -363,7 +368,7 @@ namespace PdfReader
 		}
 		m_oFontMap.clear();
 	}
-	bool        CPdfFontList::GetFont(Ref *pRef, TFontEntry *pEntry)
+	bool CPdfFontList::GetFont(Ref* pRef, TFontEntry* pEntry)
 	{
 		TFontEntry* pFindEntry = Lookup(*pRef);
 		if (NULL == pFindEntry)
@@ -372,10 +377,20 @@ namespace PdfReader
 		*pEntry = *pFindEntry;
 		return true;
 	}
+	TFontEntry* CPdfFontList::Lookup(Ref& oRef)
+	{
+		CRefFontMap::const_iterator oPos = m_oFontMap.find(oRef);
+		return m_oFontMap.end() == oPos ? NULL : oPos->second;
+	}
+	void CPdfFontList::Add(Ref& oRef, TFontEntry* pFontEntry)
+	{
+		// До вызова данной функции надо проверять есть ли элемент с данным ключом
+		m_oFontMap.insert(std::pair<Ref, TFontEntry*>(oRef, pFontEntry));
+	}
 	//--------------------------------------------------------------------------------------
 	// RendererOutputDev
 	//--------------------------------------------------------------------------------------
-	RendererOutputDev::RendererOutputDev(IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList)
+	RendererOutputDev::RendererOutputDev(IRenderer* pRenderer, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList)
 	{
 		m_pFontManager  = pFontManager;
 		m_pFontList     = pFontList;
@@ -3873,14 +3888,6 @@ namespace PdfReader
 	{
 		return;
 	}
-	void RendererOutputDev::Type3D0(GfxState *pGState, double dWx, double dWy)
-	{
-		return;
-	}
-	void RendererOutputDev::Type3D1(GfxState *pGState, double dWx, double dWy, double dBLx, double dBLy, double dTRx, double dTRy)
-	{
-		return;
-	}
 	GBool RendererOutputDev::beginMarkedContent(GfxState *state, GString* s)
 	{
 		return gFalse;
@@ -4118,103 +4125,165 @@ namespace PdfReader
 		return isMask;
 	}
 
+	bool RendererOutputDev::ReadDCT(Aggplus::CImage* pImageRes, Object *pRef, Stream *pStream)
+	{
+		Object oIm;
+		int nLength = 0;
+		if (pRef && pRef->isRef() && pRef->fetch(m_pXref, &oIm)->isStream())
+		{
+			Object oLength;
+			if (oIm.streamGetDict()->lookup("Length", &oLength)->isInt())
+				nLength = oLength.getInt();
+			oLength.free();
+		}
+		oIm.free();
+		if (!nLength)
+			return false;
+
+		BYTE* pBuffer = new BYTE[nLength];
+		StreamKind nSKB = pStream->getBaseStream()->getKind();
+		if (nSKB == strFile)
+		{
+			FileStream* pFS = (FileStream*)(pStream->getBaseStream());
+			int nReadData = pFS->getBlock((char*)pBuffer, nLength);
+			if (nReadData != nLength)
+			{
+				RELEASEARRAYOBJECTS(pBuffer);
+				return false;
+			}
+		}
+		else if (nSKB == strWeird)
+		{
+			MemStream* pMemory = dynamic_cast<MemStream*>(pStream->getBaseStream());
+			if (pMemory)
+			{
+				int nReadData = pMemory->getBlock((char*)pBuffer, nLength);
+				if (nReadData != nLength)
+				{
+					RELEASEARRAYOBJECTS(pBuffer);
+					return false;
+				}
+			}
+		}
+
+		unsigned int nFileType = 0;
+		if (pStream->getKind() == strDCT)
+			nFileType = _CXIMAGE_FORMAT_JPG;
+
+		CBgraFrame oFrame;
+		if (oFrame.Decode(pBuffer, nLength, nFileType))
+		{
+			pImageRes->Create(oFrame.get_Data(), oFrame.get_Width(), oFrame.get_Height(), -4 * oFrame.get_Width());
+			oFrame.ClearNoAttack();
+			return true;
+		}
+
+		RELEASEARRAYOBJECTS(pBuffer);
+		return false;
+	}
 	void RendererOutputDev::drawImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate)
 	{
 		if (m_bDrawOnlyText)
 			return;
 
-		int nBufferSize = 4 * nWidth * nHeight;
-		if (nBufferSize < 1)
-			return;
+		Aggplus::CImage oImage;
+		StreamKind nSK = pStream->getKind();
 
-		unsigned char *pBufferPtr = new(std::nothrow) unsigned char[nBufferSize];
-		if (!pBufferPtr)
-			return;
-
-		int nComponentsCount = pColorMap->getNumPixelComps();
-
-		// Пишем данные в pBufferPtr
-		ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
-		pImageStream->reset();
-
-		unsigned char unAlpha = std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
-
-		int nStride = pImageStream->getVals();
-		int nComps = pImageStream->getComps();
-		int nWidthMax = nStride / nComps;
-		int nCheckWidth = std::min(nWidth, nWidthMax);
-		GfxRenderingIntent intent = pGState->getRenderingIntent();
-
-		// fast realization for some colorspaces (for wasm module)
-		int nColorMapType = pColorMap->getFillType();
-		GfxColorComp** pColorMapLookup = pColorMap->getLookup();
-		if (!pColorMapLookup)
-			nColorMapType = 0;
-
-		for (int nY = nHeight - 1; nY >= 0; --nY)
+		// Чтение jpeg через cximage происходит быстрее чем через xpdf на ~40%
+		if (nSK != strDCT || ReadDCT(&oImage, pRef, pStream))
 		{
-			unsigned char* pLine = pImageStream->getLine();
-			unsigned char* pLineDst = pBufferPtr + 4 * nWidth * nY;
+			int nBufferSize = 4 * nWidth * nHeight;
+			if (nBufferSize < 1)
+				return;
 
-			if (!pLine)
+			unsigned char *pBufferPtr = new(std::nothrow) unsigned char[nBufferSize];
+			if (!pBufferPtr)
+				return;
+
+			int nComponentsCount = pColorMap->getNumPixelComps();
+
+			// Пишем данные в pBufferPtr
+			ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
+			pImageStream->reset();
+
+			unsigned char unAlpha = std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
+
+			int nStride = pImageStream->getVals();
+			int nComps = pImageStream->getComps();
+			int nWidthMax = nStride / nComps;
+			int nCheckWidth = std::min(nWidth, nWidthMax);
+			GfxRenderingIntent intent = pGState->getRenderingIntent();
+
+			// fast realization for some colorspaces (for wasm module)
+			int nColorMapType = pColorMap->getFillType();
+			GfxColorComp** pColorMapLookup = pColorMap->getLookup();
+			if (!pColorMapLookup)
+				nColorMapType = 0;
+
+			for (int nY = nHeight - 1; nY >= 0; --nY)
 			{
-				memset(pLineDst, 0, 4 * nWidth);
-				continue;
+				unsigned char* pLine = pImageStream->getLine();
+				unsigned char* pLineDst = pBufferPtr + 4 * nWidth * nY;
+
+				if (!pLine)
+				{
+					memset(pLineDst, 0, 4 * nWidth);
+					continue;
+				}
+
+				for (int nX = 0; nX < nCheckWidth; ++nX)
+				{
+					if (2 == nColorMapType)
+					{
+						pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+						pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
+						pLineDst[0] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
+					}
+					else if (1 == nColorMapType)
+					{
+						pLineDst[0] = pLineDst[1] = pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+					}
+					else
+					{
+						GfxRGB oRGB;
+						pColorMap->getRGB(pLine, &oRGB, intent);
+						pLineDst[0] = colToByte(oRGB.b);
+						pLineDst[1] = colToByte(oRGB.g);
+						pLineDst[2] = colToByte(oRGB.r);
+					}
+
+					if (pMaskColors && CheckMask(nComponentsCount, pMaskColors, pLine))
+						pLineDst[3] = 0;
+					else
+						pLineDst[3] = unAlpha;
+
+					pLine += nComps;
+					pLineDst += 4;
+				}
 			}
 
-			for (int nX = 0; nX < nCheckWidth; ++nX)
-			{
-				if (2 == nColorMapType)
-				{
-					pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
-					pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
-					pLineDst[0] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
-				}
-				else if (1 == nColorMapType)
-				{
-					pLineDst[0] = pLineDst[1] = pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
-				}
-				else
-				{
-					GfxRGB oRGB;
-					pColorMap->getRGB(pLine, &oRGB, intent);
-					pLineDst[0] = colToByte(oRGB.b);
-					pLineDst[1] = colToByte(oRGB.g);
-					pLineDst[2] = colToByte(oRGB.r);
-				}
+			oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 
-				if (pMaskColors && CheckMask(nComponentsCount, pMaskColors, pLine))
-					pLineDst[3] = 0;
-				else
-					pLineDst[3] = unAlpha;
-
-				pLine += nComps;
-				pLineDst += 4;
-			}
+			pImageStream->close();
+			delete pImageStream;
 		}
 
-		Aggplus::CImage oImage;
-		oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
-
-		pImageStream->close();
-		delete pImageStream;
-
 		double arrMatrix[6];
-		double *pCTM = pGState->getCTM();
+		double* pCTM = pGState->getCTM();
 		//  Исходное предобразование
 		//             |1  0  0|   |pCTM[0] pCTM[1] 0|
 		// arrMatrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
 		//             |0  1  1|   |pCTM[4] pCTM[5] 1|
-		arrMatrix[0] =     pCTM[0];
-		arrMatrix[1] =  -pCTM[1];
-		arrMatrix[2] =    -pCTM[2];
-		arrMatrix[3] =  -(-pCTM[3]);
-		arrMatrix[4] =     pCTM[2] + pCTM[4];
-		arrMatrix[5] =  -(pCTM[3] + pCTM[5]) + pGState->getPageHeight();
+		arrMatrix[0] = pCTM[0];
+		arrMatrix[1] = -pCTM[1];
+		arrMatrix[2] = -pCTM[2];
+		arrMatrix[3] = pCTM[3];
+		arrMatrix[4] = pCTM[2] + pCTM[4];
+		arrMatrix[5] = -(pCTM[3] + pCTM[5]) + pGState->getPageHeight();
 
 		double dShiftX = 0, dShiftY = 0;
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
-		m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
+		m_pRenderer->DrawImage(&oImage, dShiftX, dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
 	}
 	void RendererOutputDev::drawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Object* pStreamRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate)
 	{
@@ -4229,7 +4298,7 @@ namespace PdfReader
 			// If the mask is higher resolution than the image, use
 			// drawSoftMaskedImage() instead.
 
-			GfxImageColorMap *maskColorMap;
+			GfxImageColorMap* maskColorMap;
 			Object maskDecode, decodeLow, decodeHigh;
 
 			decodeLow.initInt(bMaskInvert ? 0 : 1);
@@ -4519,10 +4588,10 @@ namespace PdfReader
 			pSMaskStream->reset();
 
 			unsigned char unAlpha = 0;
-			for (int nY = nHeight - 1; nY >= 0; nY--)
+			for (int nY = nMaskHeight - 1; nY >= 0; --nY)
 			{
-				int nIndex = 4 * nY * nWidth;
-				for (int nX = 0; nX < nWidth; nX++)
+				int nIndex = 4 * nY * nMaskWidth;
+				for (int nX = 0; nX < nMaskWidth; ++nX)
 				{
 					pSMaskStream->getPixel(&unAlpha);
 					GfxGray oGray;
@@ -4674,11 +4743,6 @@ namespace PdfReader
 	void RendererOutputDev::NewPDF(XRef *pXref)
 	{
 		m_pXref = pXref;
-	}
-	void RendererOutputDev::Transform(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY)
-	{
-		*pdDeviceX = dUserX * pMatrix[0] + dUserY * pMatrix[2] + pMatrix[4];
-		*pdDeviceY = dUserX * pMatrix[1] + dUserY * pMatrix[3] + pMatrix[5];
 	}
 	void RendererOutputDev::DoPath(GfxState *pGState, GfxPath *pPath, double dPageHeight, double *pCTM, GfxClipMatrix* pCTM2)
 	{

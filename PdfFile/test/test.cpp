@@ -143,42 +143,6 @@ CApplicationFontsWorker* CPdfFileTest::oWorker = NULL;
 NSFonts::IApplicationFonts* CPdfFileTest::pApplicationFonts = NULL;
 std::wstring CPdfFileTest::wsTempDir;
 
-TEST_F(CPdfFileTest, DjVuToPdf)
-{
-	GTEST_SKIP();
-
-	CDjVuFile* pFile = new CDjVuFile(pApplicationFonts);
-
-	ASSERT_TRUE(pFile->LoadFromFile(NSFile::GetProcessDirectory() + L"/test.djvu"));
-
-	pdfFile->CreatePdf();
-
-	int nPagesCount = pFile->GetPagesCount();
-	for (int i = 0; i < nPagesCount; ++i)
-	{
-		pdfFile->NewPage();
-		pdfFile->BeginCommand(c_nPageType);
-
-		double dPageDpiX, dPageDpiY;
-		double dWidth, dHeight;
-		pFile->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-
-		dWidth *= 25.4 / dPageDpiX;
-		dHeight *= 25.4 / dPageDpiY;
-
-		pdfFile->put_Width(dWidth);
-		pdfFile->put_Height(dHeight);
-
-		pFile->DrawPageOnRenderer(pdfFile, i, NULL);
-
-		pdfFile->EndCommand(c_nPageType);
-	}
-
-	pdfFile->SaveToFile(wsDstFile);
-
-	RELEASEOBJECT(pFile);
-}
-
 TEST_F(CPdfFileTest, GetMetaData)
 {
 	GTEST_SKIP();
@@ -293,7 +257,7 @@ TEST_F(CPdfFileTest, ConvertToRaster)
 	for (i = 0; i < pdfFile->GetPagesCount(); i++)
 	{
 		pdfFile->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-		pdfFile->ConvertToRaster(i, NSFile::GetProcessDirectory() + L"/res" + std::to_wstring(i) + L".png", 4, dWidth, dHeight, true, pdfFile->GetFontManager());
+		pdfFile->ConvertToRaster(i, NSFile::GetProcessDirectory() + L"/res/res" + std::to_wstring(i) + L".png", 4, dWidth, dHeight, true, pdfFile->GetFontManager());
 	}
 }
 

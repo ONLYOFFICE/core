@@ -468,14 +468,14 @@ namespace NSStructures
 		{
 			GradientInfo ginfo;
 			ginfo.shading.triangle = points;
+			ginfo.shading.shading_type = ShadingInfo::Parametric;
+			ginfo.shading.function = ColorFunction<agg::rgba8>(256, t0, t1);
+			ginfo.continue_shading_f = false;
+			ginfo.continue_shading_b = false;
 			if (parametric)
 			{
 				ginfo.shading.triangle_parameters = params;
-				ginfo.shading.f_type = ShadingInfo::UseNew;
-				ginfo.shading.function = ColorFunction<agg::rgba8>(256, t0, t1);
 				ginfo.shading.shading_type = ShadingInfo::Parametric;
-				ginfo.continue_shading_f = false;
-				ginfo.continue_shading_b = false;
 			}
 			else
 			{
@@ -513,7 +513,10 @@ namespace NSStructures
 			ginfo.shading.patch[2][0] = curve_points[10];
 			ginfo.shading.patch[1][0] = curve_points[11];
 
-
+			ginfo.shading.f_type = ShadingInfo::UseNew;
+			ginfo.shading.function = ColorFunction<agg::rgba8>(256, t0, t1);
+			ginfo.continue_shading_f = false;
+			ginfo.continue_shading_b = false;
 
 			if (parametric)
 			{
@@ -522,11 +525,7 @@ namespace NSStructures
 				ginfo.shading.patch_parameters[0][1] = curve_parametrs[1];
 				ginfo.shading.patch_parameters[1][0] = curve_parametrs[3];
 				ginfo.shading.patch_parameters[1][1] = curve_parametrs[2];
-				ginfo.shading.f_type = ShadingInfo::UseNew;
-				ginfo.shading.function = ColorFunction<agg::rgba8>(256, t0, t1);
 				ginfo.shading.shading_type = ShadingInfo::Parametric;
-				ginfo.continue_shading_f = false;
-				ginfo.continue_shading_b = false;
 			}
 			else
 			{
@@ -549,14 +548,15 @@ namespace NSStructures
 
 			ginfo.shading.patch = curve_poits;
 
+			ginfo.shading.f_type = ShadingInfo::UseNew;
+			ginfo.shading.function = ColorFunction<agg::rgba8>(256, t0, t1);
+			ginfo.continue_shading_f = false;
+			ginfo.continue_shading_b = false;
+
 			if (parametric)
 			{
 				ginfo.shading.patch_parameters = curve_parametrs;
-				ginfo.shading.f_type = ShadingInfo::UseNew;
-				ginfo.shading.function = ColorFunction<agg::rgba8>(256, t0, t1);
 				ginfo.shading.shading_type = ShadingInfo::Parametric;
-				ginfo.continue_shading_f = false;
-				ginfo.continue_shading_b = false;
 			}
 			else
 			{

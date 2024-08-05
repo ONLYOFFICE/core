@@ -4181,7 +4181,7 @@ namespace PdfReader
 		RELEASEARRAYOBJECTS(pBuffer);
 		return false;
 	}
-	void RendererOutputDev::drawImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate)
+	void RendererOutputDev::drawImage(GfxState* pGState, Object* pRef, Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, int* pMaskColors, GBool bInlineImg, GBool interpolate)
 	{
 		if (m_bDrawOnlyText)
 			return;
@@ -4190,7 +4190,7 @@ namespace PdfReader
 		StreamKind nSK = pStream->getKind();
 
 		// Чтение jpeg через cximage происходит быстрее чем через xpdf на ~40%
-		if (nSK != strDCT || ReadDCT(&oImage, pRef, pStream))
+		if (nSK != strDCT || !ReadDCT(&oImage, pRef, pStream))
 		{
 			int nBufferSize = 4 * nWidth * nHeight;
 			if (nBufferSize < 1)

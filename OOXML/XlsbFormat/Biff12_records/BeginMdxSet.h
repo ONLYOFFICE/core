@@ -36,7 +36,7 @@
 
 namespace XLSB
 {
-    enum class SdSetSortOrder_2: _UINT32 {SSONONE = 0x00000000, SSOASC, SSODESC, SSOALPHAASC, SSOALPHADESC, SSONATURALASC, SSONATURALDESC};
+    enum class SdSetSortOrderMdx: _UINT32 {SSONONE = 0x00000000, SSOASC, SSODESC, SSOALPHAASC, SSOALPHADESC, SSONATURALASC, SSONATURALDESC};
     // Logical representation of BrtBeginMdxSet record in BIFF12
     class BeginMdxSet: public XLS::BiffRecord
     {
@@ -52,7 +52,7 @@ namespace XLSB
 			void writeFields(XLS::CFRecord& record) override;
 
             _INT32              istrSetDef;
-            SdSetSortOrder_2    sso;
+            SdSetSortOrderMdx   sso;
             _INT32              cMbrsSortBy;
            
     };

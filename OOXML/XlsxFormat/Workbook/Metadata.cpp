@@ -61,7 +61,6 @@
 #include "../../XlsbFormat/Biff12_records/BeginMdxTuple.h"
 #include "../../XlsbFormat/Biff12_records/MdxMbrIstr.h"
 
-
 #include "../FileTypes_Spreadsheet.h"
 
 #include "../../Common/SimpleTypes_Shared.h"
@@ -273,7 +272,7 @@ namespace OOX
 
 			ptr1->istrSetDef = 0;
 			ptr1->cMbrsSortBy = 0;
-			ptr1->sso = XLSB::SdSetSortOrder::SSONONE;
+			ptr1->sso = XLSB::SdSetSortOrderMdx::SSONONE;
 			
 			if(m_oNs.IsInit())
 				ptr1->istrSetDef = m_oNs.get();
@@ -283,7 +282,7 @@ namespace OOX
 			{
 				auto orderNum = static_cast<_UINT32>(m_oO->GetValue());
 				if(orderNum >= 0 && orderNum <=6)
-					ptr1->sso = static_cast<XLSB::SdSetSortOrder>(orderNum);
+					ptr1->sso = static_cast<XLSB::SdSetSortOrderMdx>(orderNum);
 			}
 			for(auto i:m_arrItems)
 				ptr->MdxMbrIstrs.push_back(i->toBin());

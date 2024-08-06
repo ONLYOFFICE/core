@@ -81,10 +81,6 @@ namespace MetaFile
 		Close();
 		RELEASEINTERFACE(m_pFontManager);
 	}
-	void CMetaFile::SetImageSize(int nWidth, int nHeight)
-	{
-		// for meta with empty size
-	}
 
 	std::wstring CMetaFile::ConvertToSvg(unsigned int unWidth, unsigned int unHeight)
 	{

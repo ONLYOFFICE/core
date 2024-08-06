@@ -40,6 +40,7 @@
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/SystemUtils.h"
 #include "../../../DesktopEditor/graphics/pro/Image.h"
+#include "../../../DesktopEditor/raster/Metafile/MetaFileCommon.h"
 #include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 #include "../../../OOXML/Base/Base.h"
 
@@ -52,12 +53,10 @@ static void ConvertSvmToImage(std::wstring &file_svm, std::wstring &file_png, NS
     MetaFile::IMetaFile* pMetaFile = MetaFile::Create(pAppFonts);
 
     if (pMetaFile->LoadFromFile(file_svm.c_str()))
-	{
-		double w, h, x, y;
-        pMetaFile->GetBounds(&x, &y, &w, &h);
-        pMetaFile->ConvertToRaster(file_png.c_str(), 4, w);
+    {
+        MetaFile::ConvertToRasterMaxSize(pMetaFile, file_png.c_str(), _CXIMAGE_FORMAT_PNG, 1000);
         pMetaFile->Close();
-	}
+    }
 
     RELEASEOBJECT(pMetaFile);
 }

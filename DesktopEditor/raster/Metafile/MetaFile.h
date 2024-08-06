@@ -62,7 +62,6 @@ namespace MetaFile
 		CMetaFile(NSFonts::IApplicationFonts *pAppFonts);
 		virtual ~CMetaFile();
 
-		void SetImageSize(int nWidth, int nHeight);
 		bool LoadFromFile(const wchar_t* wsFilePath);
 		bool LoadFromBuffer(BYTE* pBuffer, unsigned int unSize);
 		bool DrawOnRenderer(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);

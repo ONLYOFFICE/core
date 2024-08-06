@@ -42,64 +42,64 @@
 
 namespace Aggplus
 {
-    class CGraphicsPath_private;
-    class GRAPHICS_DECL CGraphicsPath : public NSFonts::ISimpleGraphicsPath
-    {
-    public:
-        CGraphicsPath();
-        ~CGraphicsPath();
+	class CGraphicsPath_private;
+	class GRAPHICS_DECL CGraphicsPath : public NSFonts::ISimpleGraphicsPath
+	{
+	public:
+		CGraphicsPath();
+		~CGraphicsPath();
 
-        CGraphicsPath* Clone();
+		CGraphicsPath* Clone();
 
-        Status Reset();
-        void SetRuler(bool bEvenOdd);
+		Status Reset();
+		void SetRuler(bool bEvenOdd);
 
-        Status StartFigure();
-        Status CloseFigure();
-        bool Is_poly_closed();
-        Status MoveTo(double x, double y);
-        Status LineTo(double x, double y);
-        Status CurveTo(double x1, double y1, double x2, double y2, double x3, double y3);
+		Status StartFigure();
+		Status CloseFigure();
+		bool Is_poly_closed();
+		Status MoveTo(double x, double y);
+		Status LineTo(double x, double y);
+		Status CurveTo(double x1, double y1, double x2, double y2, double x3, double y3);
 
-        // методы, которые просто будем сводить к трем основным
-        Status AddLine(double x1, double y1, double x2, double y2);
-        Status AddLines(double* pPoints, int nCount);
-        Status AddBezier(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4);
-        Status AddBeziers(double* pPoints, int nCount);
-        Status AddCurve(double* pPoints, int nCount);
-        Status AddEllipse(double x, double y, double width, double height);
-        Status AddRectangle(double x, double y, double width, double height);
-        Status AddPolygon(double* pPoints, int nCount);
-        Status AddPath(const CGraphicsPath& oPath);
-        Status AddArc(double x, double y, double width, double height, double startAngle, double sweepAngle);
+		// методы, которые просто будем сводить к трем основным
+		Status AddLine(double x1, double y1, double x2, double y2);
+		Status AddLines(double* pPoints, int nCount);
+		Status AddBezier(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4);
+		Status AddBeziers(double* pPoints, int nCount);
+		Status AddCurve(double* pPoints, int nCount);
+		Status AddEllipse(double x, double y, double width, double height);
+		Status AddRectangle(double x, double y, double width, double height);
+		Status AddPolygon(double* pPoints, int nCount);
+		Status AddPath(const CGraphicsPath& oPath);
+		Status AddArc(double x, double y, double width, double height, double startAngle, double sweepAngle);
 
-        ULONG GetPointCount() const;
-        Status GetPathPoints(PointF* points, int count) const;
-        Status GetLastPoint(double& x, double& y);
-        Status GetPathPoints(double* points, int count) const;
-        void GetBounds(double& left, double& top, double& width, double& height);
+		ULONG GetPointCount() const;
+		Status GetPathPoints(PointF* points, int count) const;
+		Status GetLastPoint(double& x, double& y);
+		Status GetPathPoints(double* points, int count) const;
+		void GetBounds(double& left, double& top, double& width, double& height);
 
-        Status Transform(const CMatrix* matrix);
-        virtual bool _MoveTo(double x, double y);
-        virtual bool _LineTo(double x, double y);
-        virtual bool _CurveTo(double x1, double y1, double x2, double y2, double x3, double y3);
-        virtual bool _Close();
+		Status Transform(const CMatrix* matrix);
+		virtual bool _MoveTo(double x, double y);
+		virtual bool _LineTo(double x, double y);
+		virtual bool _CurveTo(double x1, double y1, double x2, double y2, double x3, double y3);
+		virtual bool _Close();
 
-        Status AddString(const std::wstring& strText, NSFonts::IFontManager* pFont, double x, double y);
-        Status AddString(const unsigned int* pGids, const unsigned int nGidsCount, NSFonts::IFontManager* pFont, double x, double y);
-        Status AddStringC(const LONG& lText, NSFonts::IFontManager* pFont, double x, double y);
-        void z_Stroke(const double& size);
-        void Widen(const double& size, const Aggplus::LineJoin& join, const CMatrix* matrix, float flatness);
+		Status AddString(const std::wstring& strText, NSFonts::IFontManager* pFont, double x, double y);
+		Status AddString(const unsigned int* pGids, const unsigned int nGidsCount, NSFonts::IFontManager* pFont, double x, double y);
+		Status AddStringC(const LONG& lText, NSFonts::IFontManager* pFont, double x, double y);
+		void z_Stroke(const double& size);
+		void Widen(const double& size, const Aggplus::LineJoin& join, const CMatrix* matrix, float flatness);
 
-        int EllipseArc(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection);
-        double AngToEllPrm(double fAngle, double fXRad, double fYRad);
-        int EllipseArc2(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection);
-        int EllipseArc3(double fX, double fY, double fXRad, double fYRad, double dAngle1, double dAngle2, double *pfXCur, double *pfYCur, INT bClockDirection = FALSE);
-        int Ellipse(double fX, double fY, double fXRad, double fYRad);
-        Status AddArc2(double fX, double fY, double fWidth, double fHeight, double fStartAngle, double fSweepAngle);
-        bool IsPointInPath(const double& x, const double& y);
+		int EllipseArc(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection);
+		double AngToEllPrm(double fAngle, double fXRad, double fYRad);
+		int EllipseArc2(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection);
+		int EllipseArc3(double fX, double fY, double fXRad, double fYRad, double dAngle1, double dAngle2, double* pfXCur, double* pfYCur, INT bClockDirection = FALSE);
+		int Ellipse(double fX, double fY, double fXRad, double fYRad);
+		Status AddArc2(double fX, double fY, double fWidth, double fHeight, double fStartAngle, double fSweepAngle);
+		bool IsPointInPath(const double& x, const double& y);
 
-		//Methods for Path Clip
+		// Methods for Path Clip
 		bool IsClockwise() const;
 		void Reverse();
 		bool IsCurvePoint(size_t idx) const;
@@ -107,68 +107,78 @@ namespace Aggplus
 		double GetArea() const;
 		double GetArea(size_t idx, bool isCurve) const;
 
-    public:
-        CGraphicsPath_private* m_internal;
-    };
+	public:
+		CGraphicsPath_private* m_internal;
+	};
 
-    class CGraphicsPathSimpleConverter_private;
-    class GRAPHICS_DECL CGraphicsPathSimpleConverter : public NSFonts::ISimpleGraphicsPath
-    {
-    private:
-        IRenderer* m_pRenderer;
-        CGraphicsPathSimpleConverter_private* m_internal;
+	class CGraphicsPathSimpleConverter_private;
+	class GRAPHICS_DECL CGraphicsPathSimpleConverter : public NSFonts::ISimpleGraphicsPath
+	{
+	private:
+		IRenderer* m_pRenderer;
+		CGraphicsPathSimpleConverter_private* m_internal;
 
-    public:
-        CGraphicsPathSimpleConverter();
-        ~CGraphicsPathSimpleConverter();
+	public:
+		CGraphicsPathSimpleConverter();
+		~CGraphicsPathSimpleConverter();
 
-    public:
-        void SetRenderer(IRenderer* pRenderer);
-        IRenderer* GetRenderer(INT bIsAddref = FALSE);
+	public:
+		void SetRenderer(IRenderer* pRenderer);
+		IRenderer* GetRenderer(INT bIsAddref = FALSE);
 
-    public:
-        bool PathCommandMoveTo(double fX, double fY);
-        bool PathCommandLineTo(double fX, double fY);
-        bool PathCommandLinesTo(double* pPoints, LONG lCount);
-        bool PathCommandCurveTo(double fX1, double fY1, double fX2, double fY2, double fX3, double fY3);
-        bool PathCommandCurvesTo(double* pData, LONG lCount);
-        bool PathCommandArcTo(double fX, double fY, double fWidth, double fHeight, double fStartAngle, double fSweepAngle);
-        bool PathCommandClose();
-        bool PathCommandEnd();
-        bool PathCommandStart();
-        bool PathCommandGetCurrentPoint(double* fX, double* fY);
-        bool PathCommandText(const std::wstring& bsText, NSFonts::IFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset);
-        bool PathCommandTextEx(std::wstring& bsText, std::wstring& bsGidText, NSFonts::IFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags);
+	public:
+		bool PathCommandMoveTo(double fX, double fY);
+		bool PathCommandLineTo(double fX, double fY);
+		bool PathCommandLinesTo(double* pPoints, LONG lCount);
+		bool PathCommandCurveTo(double fX1, double fY1, double fX2, double fY2, double fX3, double fY3);
+		bool PathCommandCurvesTo(double* pData, LONG lCount);
+		bool PathCommandArcTo(double fX, double fY, double fWidth, double fHeight, double fStartAngle, double fSweepAngle);
+		bool PathCommandClose();
+		bool PathCommandEnd();
+		bool PathCommandStart();
+		bool PathCommandGetCurrentPoint(double* fX, double* fY);
+		bool PathCommandText(const std::wstring& bsText, NSFonts::IFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset);
+		bool
+		PathCommandTextEx(std::wstring& bsText, std::wstring& bsGidText, NSFonts::IFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags);
 
-        bool PathCommandText2(const int* pUnicodes, const int* pGids, const int& nCount, NSFonts::IFontManager* pManager,
-                              const double& x, const double& y, const double& w, const double& h);
-        bool PathCommandText2(const std::wstring& sUnicodes, const int* pGids, const int& nCount, NSFonts::IFontManager* pManager,
-                              const double& x, const double& y, const double& w, const double& h);
+		bool PathCommandText2(const int* pUnicodes, const int* pGids, const int& nCount, NSFonts::IFontManager* pManager, const double& x, const double& y, const double& w, const double& h);
+		bool PathCommandText2(const std::wstring& sUnicodes, const int* pGids, const int& nCount, NSFonts::IFontManager* pManager, const double& x, const double& y, const double& w, const double& h);
 
-        bool PathCommandGetBounds(double& left, double& top, double& width, double &height);
+		bool PathCommandGetBounds(double& left, double& top, double& width, double& height);
 
-    public:
+	public:
+		virtual bool _MoveTo(double x, double y);
+		virtual bool _LineTo(double x, double y);
+		virtual bool _CurveTo(double x1, double y1, double x2, double y2, double x3, double y3);
+		virtual bool _Close();
+		bool _Reset();
+		bool _Start();
 
-        virtual bool _MoveTo(double x, double y);
-        virtual bool _LineTo(double x, double y);
-        virtual bool _CurveTo(double x1, double y1, double x2, double y2, double x3, double y3);
-        virtual bool _Close();
-        bool _Reset();
-        bool _Start();
+	protected:
+		bool AddString(const std::wstring& bstrText, NSFonts::IFontManager* pFont, double x, double y);
 
-    protected:
-        bool AddString(const std::wstring& bstrText, NSFonts::IFontManager* pFont, double x, double y);
+		int EllipseArc(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection);
+		double AngToEllPrm(double fAngle, double fXRad, double fYRad);
+		int EllipseArc2(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection);
+		int EllipseArc3(double fX, double fY, double fXRad, double fYRad, double dAngle1, double dAngle2, double* pfXCur, double* pfYCur, INT bClockDirection = FALSE);
+		int Ellipse(double fX, double fY, double fXRad, double fYRad);
 
-        int EllipseArc(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection);
-        double AngToEllPrm(double fAngle, double fXRad, double fYRad);
-        int EllipseArc2(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection);
-        int EllipseArc3(double fX, double fY, double fXRad, double fYRad, double dAngle1, double dAngle2, double *pfXCur, double *pfYCur, INT bClockDirection = FALSE);
-        int Ellipse(double fX, double fY, double fXRad, double fYRad);
+		bool AddArc(double fX, double fY, double fWidth, double fHeight, double fStartAngle, double fSweepAngle);
 
-        bool AddArc(double fX, double fY, double fWidth, double fHeight, double fStartAngle, double fSweepAngle);
+		bool Is_poly_closed();
+	};
 
-        bool Is_poly_closed();
-    };
-}
+	enum BooleanOpType
+	{
+		Intersection   = 2,
+		Union          = 1,
+		Subtraction    = 1,
+		Exclusion      = 3,
+		Division       = 4
+	};
+
+	GRAPHICS_DECL CGraphicsPath* BooleanOperation(CGraphicsPath* path1, CGraphicsPath* path2, BooleanOpType op);
+
+} // namespace Aggplus
 
 #endif // _BUILD_GRAPHICSPATH_H_

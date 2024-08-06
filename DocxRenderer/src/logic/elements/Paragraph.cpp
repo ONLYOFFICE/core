@@ -23,12 +23,14 @@ namespace NSDocxRenderer
 		if(!m_wsStyleId.empty()) oWriter.WriteString(L"<w:pStyle w:val=\"" + m_wsStyleId + L"\"/>");
 
 		oWriter.WriteString(L"<w:spacing");
+
+		oWriter.WriteString(L" w:before=\"");
 		if (m_dSpaceBefore > 0)
-		{
-			oWriter.WriteString(L" w:before=\"");
 			oWriter.AddInt(static_cast<int>(m_dSpaceBefore * c_dMMToDx));
-			oWriter.WriteString(L"\"");
-		}
+		else
+			oWriter.AddInt(static_cast<int>(0));
+		oWriter.WriteString(L"\"");
+
 
 		if (m_dSpaceAfter > 0)
 		{
@@ -192,7 +194,11 @@ namespace NSDocxRenderer
 			while(!pLastCont)
 				pLastCont = pLine->m_arConts[--iNumConts];
 
-			pLastCont->m_oText += L" ";
+			auto text = pLastCont->GetText();
+			auto last_sym = text[text.length() - 1];
+
+			if (last_sym != c_SPACE_SYM && m_arLines.size() != 1)
+				pLastCont->AddSymBack(c_SPACE_SYM, 0);
 		}
 	}
 }

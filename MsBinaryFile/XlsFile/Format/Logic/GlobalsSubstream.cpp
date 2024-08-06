@@ -170,7 +170,13 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	{
 		CFRecordType::TypeId type = proc.getNextRecordType();
 		
-		if (type == rt_NONE) break;
+		if (type == rt_NONE)
+		{
+			proc.SkipRecord();
+			type = proc.getNextRecordType();
+			if (type == rt_NONE)
+				break;
+		}
 		if (type == rt_EOF) 
 		{
 			proc.mandatory<EOF_T>();

@@ -41,7 +41,7 @@ namespace PdfWriter
 	class CDestination : public CArrayObject
 	{
 	public:
-		CDestination(CPage* pPage, CXref* pXref);
+		CDestination(CPage* pPage, CXref* pXref, bool bInline = false);
 		bool IsValid() const;
 		void SetXYZ  (float fLeft, float fTop, float fZoom);
 		void SetFit  ();

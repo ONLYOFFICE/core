@@ -2845,7 +2845,7 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 		{
 			pCNvPr->hidden = true;
 		}
-		
+
 		CSpTreeElemProps oProps;
 		oProps.IsTop = bIsTop;
 		std::wstring strMainPos = GetDrawingMainProps(oNodeShape, oCSSParser, oProps);
@@ -2986,6 +2986,13 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 		CheckBrushShape(elem, oNodeShape, pPPTShape);
 
 		CheckBorderShape(elem, oNodeShape, pPPTShape);
+
+////test
+//		NSBinPptxRW::CXmlWriter oXml;
+//		elem->toXmlWriter(&oXml);
+//		std::wstring test = oXml.GetXmlString();
+
+		
 	}
 }
 void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUtils::CXmlNode& oNodeShape, CPPTShape* pPPTShape)
@@ -4548,8 +4555,14 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 		oWriter.EndNode(L"wp14:pctHeight");
 		oWriter.EndNode(L"wp14:sizeRelV");
 	}
+	nullable_string alt_content;
+	XmlMacroReadAttributeBase(oNode, L"alt", alt_content);
 
-	std::wstring strId = L"<wp:docPr id=\"" + std::to_wstring(m_lNextId) + L"\" name=\"" + originalId + L"\"" + (bHidden ? L" hidden=\"true\"" : L"") + L"/>";
+	std::wstring strId = L"<wp:docPr id=\"" + std::to_wstring(m_lNextId) + 
+		L"\" name=\"" + originalId + L"\"" + 
+		(alt_content.IsInit() ? L" descr=\"" + *alt_content + L"\"" : L"") + 
+		(bHidden ? L" hidden=\"true\"" : L"") + L"/>";
+	
 	m_lNextId++;
 
 	oWriter.WriteString(strId);
@@ -5009,11 +5022,11 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 		nullable_string sOpacity2;
 		nullable_string sColor2;
 		nullable_string sColor;
-		nullable_string sType;
-		nullable_string sFocus;
-		nullable_string sFocusSize;
+		nullable < SimpleTypes::CFillType> oType;
+		nullable<SimpleTypes::CFixedPercentage> oFocus;
+		nullable<SimpleTypes::Vml::CVml_Vector2D_Percentage> oFocusSize;
 		nullable<SimpleTypes::Vml::CVml_Vector2D_Percentage> oFocusPosition;
-		nullable_string sAngle;
+		nullable<SimpleTypes::CDecimalNumber> oAngle;
 		nullable_string sColors;
 		nullable_string sRotate;
 
@@ -5022,10 +5035,10 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 		XmlMacroReadAttributeBase(oNodeFill, L"opacity2", sOpacity2);
 		XmlMacroReadAttributeBase(oNodeFill, L"color", sColor);
 		XmlMacroReadAttributeBase(oNodeFill, L"color2", sColor2);
-		XmlMacroReadAttributeBase(oNodeFill, L"type", sType);
-		XmlMacroReadAttributeBase(oNodeFill, L"focus", sFocus);
-		XmlMacroReadAttributeBase(oNodeFill, L"focussize", sFocusSize);
-		XmlMacroReadAttributeBase(oNodeFill, L"angle", sAngle);
+		XmlMacroReadAttributeBase(oNodeFill, L"type", oType);
+		XmlMacroReadAttributeBase(oNodeFill, L"focus", oFocus);
+		XmlMacroReadAttributeBase(oNodeFill, L"focussize", oFocusSize);
+		XmlMacroReadAttributeBase(oNodeFill, L"angle", oAngle);
 		XmlMacroReadAttributeBase(oNodeFill, L"colors", sColors);		
 		XmlMacroReadAttributeBase(oNodeFill, L"focusposition", oFocusPosition);
 
@@ -5068,11 +5081,11 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 			pBlipFill->blip = new PPTX::Logic::Blip();
 			pBlipFill->blip->embed = new OOX::RId(*sRid);
 
-            if (sType.is_init() && ((*sType == L"tile") || (*sType == L"pattern")))
+            if (oType.is_init() && ((oType->GetValue() == SimpleTypes::filltypeTile) || (oType->GetValue() == SimpleTypes::filltypePattern)))
 			{
 				pBlipFill->tile = new PPTX::Logic::Tile();		
 
-				if (*sType == L"pattern")
+				if (oType->GetValue() == SimpleTypes::filltypePattern)
 				{					
 					PPTX::Logic::Duotone* pDuotone = new PPTX::Logic::Duotone();
 					
@@ -5095,12 +5108,16 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 			}
 		}		
 
-        if ((sType.is_init() && (*sType == L"gradient" || *sType == L"gradientradial" || *sType == L"gradientRadial")) || 
-			(sFocus.is_init() || sColors.is_init() || sAngle.is_init() || sFocusSize.is_init() || oFocusPosition.is_init()))
+		if ((oType.is_init() && (oType->GetValue() == SimpleTypes::filltypeGradient ||
+			oType->GetValue() == SimpleTypes::filltypeGradientRadial ||
+			oType->GetValue() == SimpleTypes::filltypeGradientCenter)) ||
+			(oFocus.is_init() || sColors.is_init() || oAngle.is_init() || oFocusSize.is_init() || oFocusPosition.is_init()))
 		{
 			PPTX::Logic::GradFill* pGradFill = new PPTX::Logic::GradFill();
-            pGradFill->m_namespace = L"a";
-		
+			pGradFill->m_namespace = L"a";
+			pGradFill->rotWithShape = false;
+
+			int nAngle = oAngle.is_init() ? (oAngle->GetValue() < - 90 ? oAngle->GetValue() + 180 : oAngle->GetValue() + 90  ) : 90;
 			if (sColors.is_init())
 			{
 				std::vector<std::wstring> arSplit;
@@ -5128,7 +5145,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 							pos = 100000 * pos;
 						else
 							pos = pos / 65536 * 100000;
-						
+
 						Gs_.pos = pos;
 						pGradFill->GsLst.push_back(Gs_);
 					}
@@ -5136,35 +5153,56 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 			}
 			else
 			{
-				PPTX::Logic::Gs Gs_;
-				ConvertColor(Gs_.color, sColor, sOpacity);
-				
-				Gs_.pos = 0;
-				pGradFill->GsLst.push_back(Gs_);
+				PPTX::Logic::Gs Gs_1;
+				ConvertColor(Gs_1.color, sColor, sOpacity);
 
-			}
-			if (false == sColors.is_init() && (sColor2.is_init() || sOpacity2.is_init()))
-			{
-				PPTX::Logic::Gs Gs_;
-				ConvertColor(Gs_.color, sColor2, sOpacity2);
+				PPTX::Logic::Gs Gs_2;
+				ConvertColor(Gs_2.color, sColor2, sOpacity2);
+
+				double focusPoint = oFocus.IsInit() ? abs(oFocus->GetValue()) : 0;
+				bool bColorsInvert = ((oFocus.IsInit() && oFocus->GetValue() > 0 && nAngle == 0) || 
+					((oFocus.IsInit() && oFocus->GetValue() < 0) && false == oAngle.is_init()));
 				
-				Gs_.pos = 100 * 1000;
-				pGradFill->GsLst.push_back( Gs_ );
+				if (focusPoint > 0 && focusPoint < 100)
+				{
+					PPTX::Logic::Gs Gs_3;
+					
+					Gs_1.pos = 0;
+					Gs_3.pos = focusPoint * 1000;
+					Gs_2.pos = 100 * 1000;
+
+					if (bColorsInvert)
+					{
+						Gs_3.color = Gs_1.color;
+						Gs_1.color = Gs_2.color;
+					}
+					else
+					{
+						Gs_3.color = Gs_2.color;
+						Gs_2.color = Gs_1.color;
+					}
+					pGradFill->GsLst.push_back(Gs_3);
+				}
+				else
+				{
+					Gs_2.pos = focusPoint * 1000;
+					Gs_1.pos = (100 - focusPoint) * 1000;
+				}
+
+				pGradFill->GsLst.push_back(Gs_1);
+				pGradFill->GsLst.push_back(Gs_2);
 			}
-			if (pGradFill->GsLst.size() == 1)	//Sindicatum.docx
-			{
-				PPTX::Logic::Gs Gs_; 
-				Gs_.pos = 0;
-				Gs_.color.Color = new PPTX::Logic::SrgbClr(); Gs_.color.Color->SetRGB(0xff, 0xff, 0xff);
-				
-				if (pGradFill->GsLst[0].pos == 0)
-					Gs_.pos = 100 * 1000;
-				
-				pGradFill->GsLst.push_back( Gs_ );
-			}
+			//if (pGradFill->GsLst.size() == 1)	//Sindicatum.docx
+			//{
+			//	PPTX::Logic::Gs Gs_; 
+			//	Gs_.pos = pGradFill->GsLst[0].pos == 0 ? 100 * 1000 : 0;
+			//	Gs_.color.Color = new PPTX::Logic::SrgbClr(); Gs_.color.Color->SetRGB(0xff, 0xff, 0xff);
+			//	
+			//	pGradFill->GsLst.push_back( Gs_ );
+			//}
 			//todooo method
 
-			if (*sType == L"gradientradial" || *sType == L"gradientRadial")
+			if (oType.IsInit() && oType->GetValue() == SimpleTypes::filltypeGradientRadial)
 			{
 				double x = 0, y = 0;
 				if (oFocusPosition.is_init())
@@ -5175,20 +5213,23 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 				pGradFill->path.Init();
 				pGradFill->path->path = 2;
 				pGradFill->path->rect.Init();
+				pGradFill->path->rect->m_name = L"a:fillToRect";
 
 				pGradFill->path->rect->b = XmlUtils::ToString(100 - int( y * 100)) + L"%";
 				pGradFill->path->rect->r = XmlUtils::ToString(100 - int(x * 100)) + L"%";
 				pGradFill->path->rect->t = XmlUtils::ToString(int(y * 100)) + L"%";
 				pGradFill->path->rect->l = XmlUtils::ToString(int(x * 100)) + L"%";
+
+				pGradFill->tileRect.Init();
+				pGradFill->tileRect->m_name = L"a:tileRect";
 			}
 			else
 			{
-				if (sAngle.is_init())
+				pGradFill->lin = new PPTX::Logic::Lin();
+				pGradFill->lin->scaled = 1;
+
+				if (nAngle != 0)
 				{
-					int nAngle = XmlUtils::GetInteger(*sAngle);
-					
-					pGradFill->lin = new PPTX::Logic::Lin();
-					pGradFill->lin->scaled = 1;
 					pGradFill->lin->ang = (nAngle >= 0 ? nAngle : (360 + nAngle)) * 60000;
 				}
 				else if (sRotate.is_init())
@@ -5207,7 +5248,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 		}	
 
 
-		if ((sType.IsInit() && (*sType == L"pattern")) && pSpPr->Fill.m_type != PPTX::Logic::UniFill::blipFill)
+		if ((oType.IsInit() && oType->GetValue() == SimpleTypes::filltypePattern) && pSpPr->Fill.m_type != PPTX::Logic::UniFill::blipFill)
 		{
 			PPTX::Logic::PattFill* pPattFill = new PPTX::Logic::PattFill();
 			pPattFill->m_namespace = L"a";

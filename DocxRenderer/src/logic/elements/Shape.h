@@ -16,7 +16,7 @@ namespace NSDocxRenderer
 		gtNoGraphics,
 	};
 
-	class CShape : public COutputObject
+	class CShape : public CBaseItem
 	{
 	public:
 		enum class eShapeType
@@ -40,6 +40,7 @@ namespace NSDocxRenderer
 		std::wstring m_strDstMedia   {};
 
 		double m_dRotate {0.0};
+		size_t m_nOrder  {0};
 
 		bool m_bIsNoFill    {true};
 		bool m_bIsNoStroke  {true};
@@ -50,11 +51,8 @@ namespace NSDocxRenderer
 		eSimpleLineType m_eSimpleLineType{eSimpleLineType::sltUnknown};
 		eLineType m_eLineType            {eLineType::ltUnknown};
 
-		std::vector<std::shared_ptr<COutputObject>> m_arOutputObjects;
+		std::vector<std::shared_ptr<CBaseItem>> m_arOutputObjects;
 		std::shared_ptr<CImageInfo> m_pImageInfo{nullptr};
-
-	private:
-
 
 	public:
 		CShape();

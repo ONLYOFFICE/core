@@ -36,8 +36,6 @@
 #include "../../../../Common/OfficeFileFormatChecker.h"
 
 #include "../../Presentation/FontCutter.h"
-#include "../../../PPTXFormat/App.h"
-#include "../../../PPTXFormat/Core.h"
 #include "../../../PPTXFormat/Logic/HeadingVariant.h"
 #include "../../Sheets/Reader/BinaryWriter.h"
 #include "BinEquationWriter.h"
@@ -9653,18 +9651,14 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sSrcPath)
 	if ((pDocx) && (pDocx->m_pApp))
 	{
 		nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::App);
-		PPTX::App* pAppTmp = pDocx->m_pApp->ToPptxApp();
-		pAppTmp->toPPTY(&oBufferedStream);
-		delete pAppTmp;
+		pDocx->m_pApp->toPPTY(&oBufferedStream);
 		this->WriteTableEnd(nCurPos);
 	}
 
 	if ((pDocx) && (pDocx->m_pCore))
 	{
 		nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Core);
-		PPTX::Core* pCoreTmp = pDocx->m_pCore->ToPptxCore();
-		pCoreTmp->toPPTY(&oBufferedStream);
-		delete pCoreTmp;
+		pDocx->m_pCore->toPPTY(&oBufferedStream);
 		this->WriteTableEnd(nCurPos);
 	}
 	if (NULL != m_oParamsWriter.m_pTheme)

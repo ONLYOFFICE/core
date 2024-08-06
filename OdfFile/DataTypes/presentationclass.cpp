@@ -132,7 +132,7 @@ std::wstring presentation_class::get_type_ms()
 			res = L"body";
 			break;
 		case page:
-			res = L"pic";
+			res = L"sldImg";
 			break;
 	}
 	return res;

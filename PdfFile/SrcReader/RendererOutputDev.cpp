@@ -548,6 +548,7 @@ namespace PdfReader
 		}
 
 		m_pbBreak = NULL;
+		m_pSoftMask = NULL;
 
 		m_bDrawOnlyText = false;
 		m_bClipChanged = true;
@@ -555,6 +556,7 @@ namespace PdfReader
 	RendererOutputDev::~RendererOutputDev()
 	{
 		m_pRenderer = NULL;
+		RELEASEINTERFACE(m_pSoftMask);
 
 		//        if (m_sClip)  tmpchange
 		//            delete m_sClip;
@@ -581,10 +583,11 @@ namespace PdfReader
 			m_bDrawOnlyText = true;
 		else
 			m_bDrawOnlyText = false;
+
+		//TEST();
 	}
 	void RendererOutputDev::endPage()
 	{
-		m_pRenderer->EndCommand(c_nResetMaskType);
 		m_pRenderer->EndCommand(c_nPageType);
 	}
 	void RendererOutputDev::saveState(GfxState *pGState)
@@ -593,31 +596,24 @@ namespace PdfReader
 		m_bClipChanged = true;
 		updateAll(pGState);
 
-		Aggplus::CAlphaMask* pAlphaMask = NULL;
-		GfxState* pGStateSoftMask = NULL;
-		if (!m_sStates.empty() && m_sStates.back().pAlphaMask)
-		{
-			pAlphaMask = m_sStates.back().pAlphaMask;
-			pGStateSoftMask = m_sStates.back().pGStateSoftMask;
-		}
 		m_sStates.push_back(GfxOutputState());
 		m_sStates.back().pGState = pGState;
-		m_sStates.back().pAlphaMask = pAlphaMask;
-		m_sStates.back().pGStateSoftMask = pGStateSoftMask;
+		if (m_pSoftMask)
+		{
+			m_pSoftMask->AddRef();
+			m_sStates.back().pSoftMask = m_pSoftMask;
+		}
 	}
 	void RendererOutputDev::restoreState(GfxState *pGState)
 	{
-		NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
-		if (GRenderer)
+		RELEASEINTERFACE(m_pSoftMask);
+		m_pSoftMask = m_sStates.back().pSoftMask;
+		if (c_nGrRenderer == m_lRendererType)
 		{
-			if (m_sStates.back().pAlphaMask && !GRenderer->GetAlphaMask())
-				GRenderer->SetAlphaMask(m_sStates.back().pAlphaMask);
-			if (m_sStates.back().pGStateSoftMask == pGState)
-			{
-				m_pRenderer->EndCommand(c_nResetMaskType);
-				RELEASEINTERFACE(m_sStates.back().pAlphaMask);
-			}
+			if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
+				GRenderer->SetSoftMask(m_pSoftMask);
 		}
+
 		if (!m_sClip.empty())
 			m_sClip.pop_back();
 		m_bClipChanged = true;
@@ -3135,6 +3131,12 @@ namespace PdfReader
 		case 7:
 			int nComps = ((GfxPatchMeshShading *) pShading)->getNComps();
 			int nPatches = ((GfxPatchMeshShading *) pShading)->getNPatches();
+
+			NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
+			if (GRenderer)
+				GRenderer->SetSoftMask(NULL);
+			m_pRenderer->BeginCommand(c_nLayerType);
+
 			for (int i = 0; i < nPatches; i++) {
 				GfxPatch *patch = ((GfxPatchMeshShading *) pShading)->getPatch(i);
 				pGState->clearPath();
@@ -3154,6 +3156,11 @@ namespace PdfReader
 				pGState->closePath();
 				PatchMeshFill(pGState, patch, (GfxPatchMeshShading *) pShading);
 			}
+
+			if (GRenderer)
+				GRenderer->SetSoftMask(m_pSoftMask);
+			m_pRenderer->EndCommand(c_nLayerType);
+
 			return true;
 
 		}
@@ -3478,7 +3485,7 @@ namespace PdfReader
 			}
 		}
 		std::vector<std::vector<agg::rgba8>> colors(2, std::vector<agg::rgba8>(2));
-		GfxDeviceRGBColorSpace ColorSpace;
+		GfxColorSpace *ColorSpace = pShading->getColorSpace();
 		for (int i = 0; i < 2; i ++)
 		{
 			for (int j = 0; j < 2; j++)
@@ -3487,7 +3494,7 @@ namespace PdfReader
 				pShading->getColor(patch->color[i][j], &c);
 				GfxRGB draw_color;
 				// RenderingIntent in this case does nothing but it's an obligatory arguments
-				ColorSpace.getRGB(&c, &draw_color, gfxRenderingIntentAbsoluteColorimetric);
+				ColorSpace->getRGB(&c, &draw_color, gfxRenderingIntentAbsoluteColorimetric);
 				colors[j][i] = {colToByte(draw_color.b), colToByte(draw_color.g), colToByte(draw_color.r), (unsigned)alpha};
 			}
 		}
@@ -4760,61 +4767,88 @@ namespace PdfReader
 	}
 	void RendererOutputDev::beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask)
 	{
-		NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
-		if (!GRenderer)
+		if (c_nGrRenderer != m_lRendererType)
 			return;
 
-		if (bForSoftMask)
-		{
-			m_pRenderer->BeginCommand(c_nMaskType);
-			m_pRenderer->put_AlphaMaskIsolated(bIsolated);
-		}
-		else
-		{
-			if (!GRenderer->GetAlphaMask())
-			{
-				m_pRenderer->BeginCommand(c_nLayerType);
-				//m_pRenderer->put_LayerIsolated(bIsolated);
-			}
-		}
+		m_pRenderer->BeginCommand(c_nLayerType);
+		m_sCS.push_back(GfxOutputCS());
+		m_sCS.back().bKnockout = bKnockout;
+		m_sCS.back().pBlendingCS = pBlendingColorSpace;
+		// TODO if (bKnockout)
 	}
 	void RendererOutputDev::endTransparencyGroup(GfxState *pGState)
 	{
 	}
 	void RendererOutputDev::paintTransparencyGroup(GfxState *pGState, double *pBBox)
 	{
-		NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
-		if (!GRenderer)
+		if (c_nGrRenderer != m_lRendererType)
 			return;
 
 		double dOpacity = std::min(1.0, std::max(0.0, pGState->getFillOpacity()));
 		m_pRenderer->put_LayerOpacity(dOpacity);
-		if (m_sStates.back().pAlphaMask && !GRenderer->GetAlphaMask())
-			GRenderer->SetAlphaMask(m_sStates.back().pAlphaMask);
 		m_pRenderer->EndCommand(c_nLayerType);
+
+		m_sCS.pop_back();
+	}
+	int luminosity(BYTE* p)
+	{
+		return (p[2]*77 + p[1]*150 + p[0]*29) >> 8;
 	}
 	void RendererOutputDev::setSoftMask(GfxState *pGState, double *pBBox, GBool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor)
 	{
+		if (c_nGrRenderer != m_lRendererType)
+			return;
 		NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
 		if (!GRenderer)
 			return;
 
-		m_pRenderer->EndCommand(c_nMaskType);
-		if (bAlpha)
-			GRenderer->put_AlphaMaskType(Aggplus::EMaskDataType::Alpha4Buffer);
-		m_sStates.back().pGStateSoftMask = m_sStates.back().pGState;
-		m_sStates.back().pAlphaMask = GRenderer->GetAlphaMask();
-		m_sStates.back().pAlphaMask->AddRef();
+		RELEASEINTERFACE(m_pSoftMask);
+
+		m_pSoftMask = GRenderer->CreateSoftMask(bAlpha);
+		m_pSoftMask->AddRef();
+
+		if (!bAlpha && m_sCS.back().pBlendingCS)
+		{
+			GfxRGB c;
+			m_sCS.back().pBlendingCS->getRGB(pBackdropColor, &c, GfxRenderingIntent::gfxRenderingIntentAbsoluteColorimetric);
+			DWORD dwColor = colToByte(c.r) + colToByte(c.g) * 0x100 + colToByte(c.b) * 0x100 * 0x100;
+			// TODO цвет фона мягкой маски должен быть установлен в dwColor
+		}
+
+		if (pTransferFunc)
+		{
+			BYTE* pSource = m_pSoftMask->GetBuffer();
+			int nWidth = m_pSoftMask->GetWidth();
+			int nHeight = m_pSoftMask->GetHeight();
+
+			for (int y = 0; y < nHeight; ++y)
+			{
+				for (int x = 0; x < nWidth; ++x)
+				{
+					int dLum = bAlpha ? pSource[y * nWidth * 4 + x * 4 + 3] : luminosity(pSource + y * nWidth * 4 + x * 4);
+
+					double dLumIn, dLumOut;
+					dLumIn = (double)dLum / 256.0;
+					pTransferFunc->transform(&dLumIn, &dLumOut);
+					dLum = (int)(dLumOut * 255.0 + 0.5);
+
+					pSource[y * nWidth * 4 + x * 4 + 3] = dLum;
+				}
+			}
+
+			if (!bAlpha) // pTransferFunc преобразовала результат luminosity маски в alpha маску
+				m_pSoftMask->SetType(Aggplus::EMaskDataType::Alpha4Buffer);
+		}
+
+		m_sCS.pop_back();
 	}
 	void RendererOutputDev::clearSoftMask(GfxState *pGState)
 	{
-		NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
-		if (!GRenderer)
+		if (c_nGrRenderer != m_lRendererType)
 			return;
-
-		GRenderer->SetAlphaMask(NULL);
-		m_sStates.back().pAlphaMask = NULL;
-		m_sStates.back().pGStateSoftMask = NULL;
+		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
+			GRenderer->SetSoftMask(NULL);
+		RELEASEINTERFACE(m_pSoftMask);
 	}
 	void RendererOutputDev::NewPDF(XRef *pXref)
 	{

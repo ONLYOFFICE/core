@@ -230,8 +230,8 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing & val)
 					{
 						CP_XML_NODE(L"p:ph")
 						{
-							CP_XML_ATTR(L"type", val.place_holder_type_);
-							if (val.place_holder_idx_ > 0)	CP_XML_ATTR(L"idx", val.place_holder_idx_);
+							CP_XML_ATTR(L"type",	val.place_holder_type_);
+							CP_XML_ATTR(L"idx",		(uint32_t)val.place_holder_idx_);
 							
 							if (val.place_holder_type_ == L"dt")	{	CP_XML_ATTR(L"sz", L"half");	}
 							if (val.place_holder_type_ == L"ftr")	{	CP_XML_ATTR(L"sz", L"quarter");	}

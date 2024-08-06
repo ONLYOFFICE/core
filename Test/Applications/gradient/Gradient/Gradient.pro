@@ -1,5 +1,7 @@
 QT += core gui widgets
 
+QMAKE_CXXFLAGS += /permissive-
+
 SOURCES += \
     main.cpp \
     mainwindow.cpp

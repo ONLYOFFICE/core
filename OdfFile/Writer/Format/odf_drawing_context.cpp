@@ -1643,6 +1643,13 @@ void odf_drawing_context::set_z_order(int id)
 
 	impl_->current_drawing_state_.z_order_ = id + 1;
 }
+int odf_drawing_context::get_formulas_count()
+{
+	if (!impl_->current_drawing_state_.oox_shape_)
+		return 0;
+
+	return impl_->current_drawing_state_.oox_shape_->equations.size();
+}
 void odf_drawing_context::set_path(std::wstring path_string)
 {
 	impl_->current_drawing_state_.path_ = path_string;

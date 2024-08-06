@@ -174,6 +174,7 @@ const wchar_t * meta_user_defined::name = L"user-defined";
 void meta_user_defined::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"meta:name", meta_name_, std::wstring(L""));
+	CP_APPLY_ATTR(L"meta:value-type", meta_value_type_);	
 }
 
 void meta_user_defined::add_text(const std::wstring & text)

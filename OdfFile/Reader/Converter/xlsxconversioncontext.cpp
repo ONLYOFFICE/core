@@ -138,7 +138,7 @@ void xlsx_conversion_context::end_document()
 
 	if (sheets_.empty())
 	{ // owncloud new document  ... oO
-		start_table(L"Sheet1", L"", false);
+		start_table(L"Sheet1", L"", L"");
 		current_sheet().cols() << L"<col min=\"1\" max=\"1024\" width=\"11.6\" customWidth=\"0\"/>";
 		end_table();
 	}

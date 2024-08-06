@@ -212,6 +212,7 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 	{
 		Context.start_page_notes();
 		presentation_notes_->pptx_convert(Context);
+		Context.get_slide_context().process_drawings();
 		Context.end_page_notes();
 	}  
 }

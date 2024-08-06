@@ -44,38 +44,34 @@ namespace NSDocxRenderer
 		std::vector<std::shared_ptr<CShape>>     m_arShapes;
 
 		std::vector<std::wstring>   m_arCompleteObjectsXml;
-
-		std::vector<std::shared_ptr<COutputObject>>  m_arOutputObjects;
-
-		CTextLine*               m_pCurrentLine {nullptr};
+		std::vector<std::shared_ptr<CBaseItem>>  m_arOutputObjects;
 
 		bool m_bIsDeleteTextClipPage {true};
 		bool m_bIsRecalcFontSize {true};
 		LONG m_lLastCommand = 0;
 
-		CPage(NSFonts::IApplicationFonts* pFonts);
+		CPage();
 		~CPage();
 
 		void Init(NSStructures::CFont* pFont,
-			NSStructures::CPen* pPen,
-			NSStructures::CBrush* pBrush,
-			NSStructures::CShadow* pShadow,
-			NSStructures::CEdgeText* pEdge,
-			Aggplus::CMatrix* pMatrix,
-			Aggplus::CGraphicsPathSimpleConverter* pSimple,
-			CFontStyleManager* pStyleManager,
-			CFontManager *pFontManager,
-			CFontSelector* pFontSelector,
-			CParagraphStyleManager* pParagraphStyleManager);
+				  NSStructures::CPen* pPen,
+				  NSStructures::CBrush* pBrush,
+				  NSStructures::CShadow* pShadow,
+				  NSStructures::CEdgeText* pEdge,
+				  Aggplus::CMatrix* pMatrix,
+				  Aggplus::CGraphicsPathSimpleConverter* pSimple,
+				  CFontStyleManager* pStyleManager,
+				  CFontManager *pFontManager,
+				  CFontSelector* pFontSelector,
+				  CParagraphStyleManager* pParagraphStyleManager);
 
 		void BeginCommand(DWORD lType);
 		void Clear();
 
-		//удаляем то, что выходит за границы страницы
+		// удаляем то, что выходит за границы страницы
 		void DeleteTextClipPage();
 
 		// image commands
-		//набивается содержимым вектор m_arImages
 		void WriteImage(const std::shared_ptr<CImageInfo> pInfo, double& fX, double& fY, double& fWidth, double& fHeight);
 
 		// path commands
@@ -89,54 +85,66 @@ namespace NSDocxRenderer
 		//набивается содержимым вектор m_arShapes
 		void DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo);
 
-		//набивается содержимым вектор m_arTextData
 		void CollectTextData(const PUINT pUnicodes,
-			const PUINT pGids,
-			const UINT& nCount,
-			const double& fX,
-			const double& fY,
-			const double& fWidth,
-			const double& fHeight,
-			const double& fBaseLineOffset);
+							 const PUINT pGids,
+							 const UINT& nCount,
+							 const double& fX,
+							 const double& fY,
+							 const double& fWidth,
+							 const double& fHeight,
+							 const double& fBaseLineOffset);
 
 		void Analyze();
 		void Record(NSStringUtils::CStringBuilder& oWriter, bool bIsLastPage);
 
 	private:
+
 		// methods to build text lines
 		void BuildDiacriticalSymbols();
 		void BuildTextLines();
-		void AddContToTextLine(std::shared_ptr<CContText> pCont);
-
 		void AnalyzeTextLines();
-		void AnalyzeConts();
-		void DetermineStrikeoutsUnderlinesHighlights();
+		void SplitLines();
+		void CalcSelected();
+		void BuildParagraphes();
+
+		std::vector<std::vector<std::shared_ptr<CTextLine>>> GetLinesByGroups();
+
+		void MergeShapes();
+
+		// strikeouts, underlines, highlights, outline
+		void AnalyzeEffects();
+
+		bool IsLineCrossingText(std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont);
+		bool IsLineBelowText(std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont);
+		bool IsHighlight(std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont);
+		bool IsOutline(std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont);
 
 		void AnalyzeDropCaps();
+		void AnalyzeConts();
 		void AddDiacriticalSymbols();
 		void MergeLinesByVertAlignType();
-		void DetermineTextColumns();
-
-		bool IsLineCrossingText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
-		bool IsLineBelowText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
-		bool IsItHighlightingBackground(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
 
 		void AnalyzeShapes();
 		void DetermineLinesType();
 
-		void BuildLines();
+		void MergeConts();
 		void DetermineDominantGraphics();
 
-		void BuildParagraphes();
+		bool IsShapeBorderBetweenVertical(std::shared_ptr<CTextLine> pFirst, std::shared_ptr<CTextLine> pSecond) const noexcept;
+		bool IsShapeBorderBetweenHorizontal(std::shared_ptr<CTextLine> pFirst, std::shared_ptr<CTextLine> pSecond) const noexcept;
+		bool IsShapeBorderTrough(std::shared_ptr<CContText> pItem, double& dXCrossing, double& dYCrossing) const noexcept;
 
 		std::shared_ptr<CShape> CreateSingleLineShape(std::shared_ptr<CTextLine>& pLine);
 		std::shared_ptr<CShape> CreateSingleParagraphShape(std::shared_ptr<CParagraph>& pParagraph);
 
-		void MergeShapes();
-		void CalcSelected();
-
 		// конвертим m_arImages, m_arShapes, m_arParagraphs в xml-строку
 		void ToXml(NSStringUtils::CStringBuilder& oWriter);
 		void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter);
+
+		std::shared_ptr<CContText> m_pCurrCont {nullptr};
+		NSStructures::CFont m_oPrevFont;
+		NSStructures::CBrush m_oPrevBrush;
+
+		size_t m_nShapeOrder = 0;
 	};
 }

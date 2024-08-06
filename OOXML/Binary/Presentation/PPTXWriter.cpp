@@ -1109,7 +1109,7 @@ namespace NSBinPptxRW
 		}
 		void CPPTXWriter::SetRequiredDefaultsApp()
 		{
-			m_oApp.AppVersion.reset(NULL);
+			m_oApp.m_sAppVersion.reset(NULL);
 			std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
 			if (sApplication.empty())
 				sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
@@ -1117,20 +1117,20 @@ namespace NSBinPptxRW
 			std::string s = VALUE2STR(INTVER);
 			sApplication += L"/" + std::wstring(s.begin(), s.end());
 #endif
-			m_oApp.Application = sApplication;
+			m_oApp.m_sApplication = sApplication;
 		}
 		void CPPTXWriter::CreateDefaultApp()
 		{
-			m_oApp.TotalTime = 0;
-			m_oApp.Words = 0;
+			m_oApp.m_nTotalTime = 0;
+			m_oApp.m_nWords = 0;
 			SetRequiredDefaultsApp();
-			m_oApp.PresentationFormat = L"On-screen Show (4:3)";
-			m_oApp.Paragraphs = 0;
-			m_oApp.Slides = (int)m_arSlides.size();
-			m_oApp.Notes = (int)m_arSlides.size();
-			m_oApp.HiddenSlides = 0;
-			m_oApp.MMClips = 2;
-			m_oApp.ScaleCrop = false;
+			m_oApp.m_sPresentationForm = L"On-screen Show (4:3)";
+			m_oApp.m_nParagraphs = 0;
+			m_oApp.m_nSlides = (int)m_arSlides.size();
+			m_oApp.m_nNotes = (int)m_arSlides.size();
+			m_oApp.m_nHiddenSlides = 0;
+			m_oApp.m_nMMClips = 2;
+			m_oApp.m_bScaleCrop = false;
 
 			int nCountThemes = (int)m_arSlideMasters.size();
 			int nCountSlides = (int)m_arSlides.size();
@@ -1162,35 +1162,35 @@ namespace NSBinPptxRW
 				m_oApp.TitlesOfParts[nCountThemes + i].m_title = s;
 			}
 
-			m_oApp.LinksUpToDate = false;
-			m_oApp.SharedDoc = false;
-			m_oApp.HyperlinksChanged = false;
+			m_oApp.m_bLinksUpToDate = false;
+			m_oApp.m_bSharedDoc = false;
+			m_oApp.m_bHyperlinksChanged = false;
 		}
 		void CPPTXWriter::SetRequiredDefaultsCore()
 		{
-			if (!m_oCore.creator.IsInit())
+			if (!m_oCore.m_sCreator.IsInit())
 			{
 				std::wstring sCreator = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvCreator);
 				if (!sCreator.empty())
-					m_oCore.creator = sCreator;
+					m_oCore.m_sCreator = sCreator;
 			}
-			if (!m_oCore.created.IsInit())
+			if (!m_oCore.m_sCreated.IsInit())
 			{
 				std::wstring sCreated = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvCreated);
 				if (!sCreated.empty())
-					m_oCore.created = sCreated;
+					m_oCore.m_sCreated = sCreated;
 			}
 			std::wstring sLastModifiedBy = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvLastModifiedBy);
 			if (!sLastModifiedBy.empty())
-				m_oCore.lastModifiedBy = sLastModifiedBy;
+				m_oCore.m_sLastModifiedBy = sLastModifiedBy;
 			std::wstring sModified = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvModified);
 			if (!sModified.empty())
-				m_oCore.modified = sModified;
+				m_oCore.m_sModified = sModified;
 		}
 		void CPPTXWriter::CreateDefaultCore()
 		{
 //			m_oCore.creator  = _T("");
-			m_oCore.lastModifiedBy = _T("");
+			m_oCore.m_sLastModifiedBy = _T("");
 		}
 		void CPPTXWriter::CreateDefaultViewProps()
 		{

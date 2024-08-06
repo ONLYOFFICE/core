@@ -7,7 +7,7 @@
 namespace NSDocxRenderer
 {
 	CDocument::CDocument(IRenderer* pRenderer, NSFonts::IApplicationFonts* pFonts) :
-		m_pAppFonts(pFonts), m_oCurrentPage(pFonts), m_oFontManager(pFonts), m_oFontSelector(pFonts)
+		m_pAppFonts(pFonts), m_oCurrentPage(), m_oFontManager(pFonts), m_oFontSelector(pFonts)
 	{
 		m_oSimpleGraphicsConverter.SetRenderer(pRenderer);
 	}
@@ -628,19 +628,14 @@ namespace NSDocxRenderer
 	HRESULT CDocument::DrawPath(long nType)
 	{
 		std::shared_ptr<CImageInfo> pInfo = nullptr;
-
 		if ((nType > 0xFF) && (c_BrushTypeTexture == m_oBrush.Type))
 		{
-			double x = 0;
-			double y = 0;
-			double w = 0;
-			double h = 0;
+			double x = 0, y = 0, w = 0, h = 0;
 			if (m_oBrush.Image)
 				pInfo = m_oImageManager.WriteImage(m_oBrush.Image, x, y, w, h);
 			else
 				pInfo = m_oImageManager.WriteImage(m_oBrush.TexturePath, x, y, w, h);
 		}
-
 		m_oCurrentPage.DrawPath(nType, pInfo);
 		return S_OK;
 	}
@@ -817,16 +812,16 @@ namespace NSDocxRenderer
 		m_lCurrentCommandType = 0;
 
 		m_oCurrentPage.Init(&m_oFont,
-			&m_oPen,
-			&m_oBrush,
-			&m_oShadow,
-			&m_oEdge,
-			&m_oTransform,
-			&m_oSimpleGraphicsConverter,
-			&m_oFontStyleManager,
-			&m_oFontManager,
-			&m_oFontSelector,
-			&m_oParagraphStyleManager);
+							&m_oPen,
+							&m_oBrush,
+							&m_oShadow,
+							&m_oEdge,
+							&m_oTransform,
+							&m_oSimpleGraphicsConverter,
+							&m_oFontStyleManager,
+							&m_oFontManager,
+							&m_oFontSelector,
+							&m_oParagraphStyleManager);
 
 		m_oImageManager.Clear();
 		m_oFontStyleManager.Clear();

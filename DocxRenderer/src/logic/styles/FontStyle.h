@@ -18,6 +18,8 @@ namespace NSDocxRenderer
 		bool operator==(const CFontStyle& oSrc);
 
 		void ToXml(NSStringUtils::CStringBuilder& oWriter);
+		void UpdateAvgSpaceWidth(double dWidth);
+		double GetAvgSpaceWidth() const;
 
 		std::wstring wsFontStyleId {L""};
 		NSStructures::CBrush oBrush;
@@ -26,8 +28,11 @@ namespace NSDocxRenderer
 		bool bItalic {false};
 		bool bBold {false};
 
+
 	private:
 		const std::wstring m_wsIdStart = L"fontstyle";
+		double dAvgSpaceWidth {0};
+		size_t m_nN {0};
 	};
 }
 

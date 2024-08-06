@@ -139,15 +139,7 @@ void odt_conversion_context::end_document()
 		office_element_ptr elm;
 		for (std::map<std::wstring, std::wstring>::iterator it = mapUserDefineds.begin(); it != mapUserDefineds.end(); ++it)
 		{
-			create_element(L"meta", L"user-defined", elm, this, true);
-			
-			meta_user_defined * meta_user = dynamic_cast<meta_user_defined*>(elm.get());
-			if (meta_user)
-			{
-				meta_user->meta_name_ = it->first;
-				meta_user->add_text(it->second);
-				add_meta(elm);
-			}
+			add_meta_user_define(it->first, it->second);
 		}
 	}
 	if (controls_context()->is_exist_content())

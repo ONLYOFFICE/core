@@ -94,7 +94,13 @@ struct _color
 	int				index = -1;
 	bool			bScheme = false;
 
-	void SetRGB(unsigned char nR, unsigned char  nG, unsigned char  nB);
+	void SetRGB(unsigned char nR, unsigned char  nG, unsigned char  nB)
+	{
+		nRGB = (nR << 16) | (nG << 8) | nB;
+		sRGB = STR::toRGB(nR, nG, nB);
+
+		index = -1;
+	}
 
 	unsigned char  GetB() { return (unsigned char )(nRGB);}
 	unsigned char  GetG() { return (unsigned char )(nRGB>>8);}

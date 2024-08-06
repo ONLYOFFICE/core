@@ -618,9 +618,24 @@ void odf_document::Impl::parse_settings(office_element *element)
 				{
 					if (conf_item_set->config_name_ == L"ModifyPasswordInfo")
 					{
+						context_->Settings().add(L"modifyPasswordInfo", L"");
+
 						for (auto info_elm = conf_item_set->content_.begin(); info_elm != conf_item_set->content_.end(); ++info_elm)
 						{
 							settings_config_item *info = dynamic_cast<settings_config_item *>(info_elm->get());
+							if (info)
+							{
+								context_->Settings().add(L"modify:" + info->config_name_, info->content_);
+							}
+						}
+					}
+					else if (conf_item_set->config_name_ == L"OOXMLModifyPasswordInfo")
+					{
+						context_->Settings().add(L"modifyPasswordInfo", L"");
+
+						for (auto info_elm = conf_item_set->content_.begin(); info_elm != conf_item_set->content_.end(); ++info_elm)
+						{
+							settings_config_item* info = dynamic_cast<settings_config_item*>(info_elm->get());
 							if (info)
 							{
 								context_->Settings().add(L"modify:" + info->config_name_, info->content_);

@@ -323,15 +323,24 @@ namespace DocFileFormat
 		ODRAW::OfficeArtFOPTEPtr	opConnectAngles;
 		ODRAW::OfficeArtFOPTEPtr	opConnectLocs;
 
+		int nColorRGBBase = 0xffffff, nFillType = 0;
+
+		bool bFlipColors = false;
+		
+		boost::optional<double> fill_left;
+		boost::optional<double> fill_top;
+		boost::optional<double> fill_right;
+		boost::optional<double> fill_bottom;
+
 		for (size_t i = 0; i < options.size(); i++)
 		{
 			ODRAW::OfficeArtFOPTEPtr & iter = options[i];
 			switch (iter->opid)
 			{
-	//BOOLEANS
+				//BOOLEANS
 			case ODRAW::geometryBooleanProperties:
 			{
-				ODRAW::GeometryBooleanProperties *booleans = dynamic_cast<ODRAW::GeometryBooleanProperties*>(iter.get());
+				ODRAW::GeometryBooleanProperties* booleans = dynamic_cast<ODRAW::GeometryBooleanProperties*>(iter.get());
 				if (booleans->fUsefLineOK && !booleans->fLineOK)
 				{
 					bStroked = false;
@@ -352,7 +361,7 @@ namespace DocFileFormat
 			break;
 			case ODRAW::fillStyleBooleanProperties:
 			{
-				ODRAW::FillStyleBooleanProperties *booleans = dynamic_cast<ODRAW::FillStyleBooleanProperties *>(iter.get());
+				ODRAW::FillStyleBooleanProperties* booleans = dynamic_cast<ODRAW::FillStyleBooleanProperties*>(iter.get());
 				if (booleans->fUsefFilled && !booleans->fFilled)
 				{
 					bFilled = false;
@@ -365,7 +374,7 @@ namespace DocFileFormat
 			}break;
 			case ODRAW::lineStyleBooleanProperties:
 			{
-				ODRAW::LineStyleBooleanProperties *booleans = dynamic_cast<ODRAW::LineStyleBooleanProperties *>(iter.get());
+				ODRAW::LineStyleBooleanProperties* booleans = dynamic_cast<ODRAW::LineStyleBooleanProperties*>(iter.get());
 				if (booleans->fUsefLine && !booleans->fLine)
 				{
 					bStroked = false;
@@ -383,14 +392,14 @@ namespace DocFileFormat
 			break;
 			case ODRAW::groupShapeBooleanProperties:
 			{
-				ODRAW::GroupShapeBooleanProperties *booleans = dynamic_cast<ODRAW::GroupShapeBooleanProperties *>(iter.get());
+				ODRAW::GroupShapeBooleanProperties* booleans = dynamic_cast<ODRAW::GroupShapeBooleanProperties*>(iter.get());
 				if (booleans->fUsefLayoutInCell)
 				{
 					layoutInCell = booleans->fLayoutInCell;
 				}
 			}
 			break;
-	// GEOMETRY
+			// GEOMETRY
 			case ODRAW::shapePath:
 			{
 				bHavePath = true;
@@ -483,7 +492,7 @@ namespace DocFileFormat
 			case ODRAW::lineColor:
 			{
 				ODRAW::OfficeArtCOLORREF lineColor((_UINT32)iter->op);
-				m_context->_doc->CorrectColor(lineColor);
+				m_context->_doc->CorrectColor(lineColor, nColorRGBBase);
 				if (false == lineColor.sColorRGB.empty() && !pShape->fBackground)
 					m_pXmlWriter->WriteAttribute(L"strokecolor", (std::wstring(L"#") + lineColor.sColorRGB));
 			}break;
@@ -542,18 +551,20 @@ namespace DocFileFormat
 				case 3:	m_pXmlWriter->WriteAttribute(L"o:connectortype", L"none");		break;
 				}
 			}break;
-	// FILL
+			// FILL
 			case ODRAW::fillColor:
 			{
 				ODRAW::OfficeArtCOLORREF fillColor((_UINT32)iter->op);
-				m_context->_doc->CorrectColor(fillColor);
+				m_context->_doc->CorrectColor(fillColor, nColorRGBBase);
 				if (false == fillColor.sColorRGB.empty())
 					m_pXmlWriter->WriteAttribute(L"fillcolor", (std::wstring(L"#") + fillColor.sColorRGB));
+
+				nColorRGBBase = fillColor.nColorRGB;
 			}break;
 			case ODRAW::fillBackColor:
 			{
 				ODRAW::OfficeArtCOLORREF fillBackColor((_UINT32)iter->op);
-				m_context->_doc->CorrectColor(fillBackColor);
+				m_context->_doc->CorrectColor(fillBackColor, nColorRGBBase);
 
 				if (false == fillBackColor.sColorRGB.empty())
 					appendValueAttribute(&m_fill, L"color2", (std::wstring(L"#") + fillBackColor.sColorRGB));
@@ -573,13 +584,47 @@ namespace DocFileFormat
 			}break;
 			case ODRAW::fillFocus:
 			{
-                appendValueAttribute(&m_fill, L"focus", (std::to_wstring(iter->op) + L"%"));
-				appendValueAttribute(&m_fill, L"focusposition", L".5, .5");
+				appendValueAttribute(&m_fill, L"focus", (std::to_wstring(iter->op) + L"%"));
 				appendValueAttribute(&m_fill, L"focussize", L"");
 			}break;
 			case ODRAW::fillType:
 			{
-				appendValueAttribute(&m_fill, L"type", getFillType(iter->op));
+				nFillType = iter->op;
+				appendValueAttribute(&m_fill, L"type", getFillType(nFillType));
+				if (nFillType == 6)
+				{
+					fill_top = 0.5;
+					fill_left = 0.5;
+				}
+
+				//if (nFillType == 7) bFlipColors = true;
+			}break;
+			case ODRAW::fillToLeft:
+			{
+				ODRAW::FixedPoint* point = dynamic_cast<ODRAW::FixedPoint*>(iter.get());
+				if (point) fill_left = point->dVal;
+			}break;
+			case ODRAW::fillToTop:
+			{
+				ODRAW::FixedPoint* point = dynamic_cast<ODRAW::FixedPoint*>(iter.get());
+				if (point) fill_top = point->dVal;
+			}break;
+			case ODRAW::fillToRight:
+			{
+				ODRAW::FixedPoint* point = dynamic_cast<ODRAW::FixedPoint*>(iter.get());
+				if (point) fill_right = point->dVal;
+			}break;
+			case ODRAW::fillToBottom:
+			{
+				ODRAW::FixedPoint* point = dynamic_cast<ODRAW::FixedPoint*>(iter.get());
+				if (point) fill_bottom = point->dVal;
+			}break;
+			case ODRAW::fillRectLeft:
+			case ODRAW::fillRectTop:
+			case ODRAW::fillRectRight:
+			case ODRAW::fillRectBottom:
+			{
+
 			}break;
 			case ODRAW::fillBlip:
 			{
@@ -630,7 +675,7 @@ namespace DocFileFormat
 			case ODRAW::shadowColor:
 			{
 				ODRAW::OfficeArtCOLORREF shadowColor((_UINT32)iter->op);
-				m_context->_doc->CorrectColor(shadowColor);
+				m_context->_doc->CorrectColor(shadowColor, nColorRGBBase);
 				if (false == shadowColor.sColorRGB.empty())
 					appendValueAttribute(&m_shadow, L"color", (std::wstring(L"#") + shadowColor.sColorRGB));
 			}break;
@@ -930,6 +975,18 @@ namespace DocFileFormat
 					nProperty = iter->op;
 				}break;
 			}
+		}
+
+		if (fill_top || fill_left)
+		{
+			std::wstring focusposition;
+			if (fill_left) focusposition += FormatUtils::DoubleToFormattedWideString(*fill_left, L"%.2f");
+			if (fill_top)
+			{
+				focusposition += L",";
+				focusposition += FormatUtils::DoubleToFormattedWideString(*fill_top, L"%.2f");
+			}
+			appendValueAttribute(&m_fill, L"focusposition", focusposition);
 		}
 
 		ODRAW::PVertices*		pVP	= dynamic_cast<ODRAW::PVertices*>(opVerticles.get());

@@ -47,8 +47,6 @@
 
 #include "../../../PPTXFormat/Theme.h"
 #include "../../../../MsBinaryFile/Common/Vml/toVmlConvert.h"
-#include "../../../PPTXFormat/App.h"
-#include "../../../PPTXFormat/Core.h"
 #include "../../../PPTXFormat/Logic/HeadingVariant.h"
 #include "../../../PPTXFormat/Logic/Shape.h"
 
@@ -8864,11 +8862,8 @@ int BinaryFileReader::ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW:
 		{
 			case c_oSerTableTypes::App:
 			{
-				PPTX::App oApp(NULL);
-				oApp.fromPPTY(&oBufferedStream);
-				
 				OOX::CApp* pApp = new OOX::CApp(NULL);
-				pApp->FromPptxApp(&oApp);
+				pApp->fromPPTY(&oBufferedStream);
 				pApp->SetRequiredDefaults();
 				oXlsx.m_pApp = pApp;
 				smart_ptr<OOX::File> oCurFile(pApp);
@@ -8876,11 +8871,8 @@ int BinaryFileReader::ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW:
 			}break;			
 			case c_oSerTableTypes::Core:
 			{
-				PPTX::Core oCore(NULL);
-				oCore.fromPPTY(&oBufferedStream);
-				
 				OOX::CCore* pCore = new OOX::CCore(NULL);
-				pCore->FromPptxCore(&oCore);
+				pCore->fromPPTY(&oBufferedStream);
 				pCore->SetRequiredDefaults();
 				oXlsx.m_pCore = pCore;
 				smart_ptr<OOX::File> oCurFile(pCore);

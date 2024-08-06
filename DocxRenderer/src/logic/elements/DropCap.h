@@ -5,7 +5,7 @@
 
 namespace NSDocxRenderer
 {
-	class CDropCap : public COutputObject
+	class CDropCap : public CBaseItem
 	{
 	public:
 		size_t nLines;

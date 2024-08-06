@@ -2455,12 +2455,20 @@ namespace OOX
 				ptr->unRwCol = m_oId->GetValue();
 			if(m_oMan.IsInit())
 				ptr->fMan = m_oMan->GetValue();
-			if(m_oMax.IsInit())
-				ptr->unColRwStrt = m_oMax->GetValue();
-			if(m_oMin.IsInit())
-				ptr->unColRwEnd = m_oMin->GetValue();
+            else
+                ptr->fMan = false;
+            if(m_oMin.IsInit())
+                ptr->unColRwStrt = m_oMin->GetValue();
+            else
+                ptr->unColRwStrt  = 0;
+            if(m_oMax.IsInit())
+                ptr->unColRwEnd = m_oMax->GetValue();
+            else
+                ptr->unColRwEnd = 0;
 			if(m_oPt.IsInit())
 				ptr->fPivot = m_oPt->GetValue();
+            else
+                ptr->fPivot = false;
 
 			return objectPtr;
 		}
@@ -2558,8 +2566,12 @@ namespace OOX
 			ptr->m_BrtBeginRwBrk = XLS::BaseObjectPtr{rowPtr};
 			if(m_oCount.IsInit())
 				rowPtr->ibrkMac = m_oCount->GetValue();
+			else
+				rowPtr->ibrkMac = m_arrItems.size();
 			if(m_oManualBreakCount.IsInit())
 				rowPtr->ibrkManMac = m_oManualBreakCount->GetValue();
+			else
+				rowPtr->ibrkManMac = rowPtr->ibrkMac;
 			for(auto i:m_arrItems)
 			{
 				ptr->m_arBrtBrk.push_back(i->toBin());

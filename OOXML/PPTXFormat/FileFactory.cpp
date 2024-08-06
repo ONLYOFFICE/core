@@ -34,8 +34,6 @@
 #include "FileMap.h"
 #include "FileTypes.h"
 
-#include "App.h"
-#include "Core.h"
 #include "Theme.h"
 #include "HandoutMaster.h"
 #include "Presentation.h"
@@ -72,7 +70,8 @@
 #include "../DocxFormat/External/HyperLink.h"
 #include "../DocxFormat/UnknowTypeFile.h"
 #include "../DocxFormat/CustomXml.h"
-
+#include "../DocxFormat/App.h"
+#include "../DocxFormat/Core.h"
 
 namespace PPTX
 {
@@ -84,9 +83,9 @@ namespace PPTX
 		}
 		
 		if (relation.Type() == OOX::FileTypes::App)
-			return smart_ptr<OOX::File>(new PPTX::App(pMain, filename, map));
+			return smart_ptr<OOX::File>(new OOX::CApp(pMain, filename));
 		else if (relation.Type() == OOX::FileTypes::Core)
-			return smart_ptr<OOX::File>(new PPTX::Core(pMain, filename, map));
+			return smart_ptr<OOX::File>(new OOX::CCore(pMain, filename));
 		else if (relation.Type() == OOX::FileTypes::CustomProperties)
 			return smart_ptr<OOX::File>(new PPTX::CustomProperties(pMain, filename, map));
 		else if (relation.Type() == OOX::Presentation::FileTypes::Presentation || 

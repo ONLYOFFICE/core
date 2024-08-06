@@ -35,8 +35,6 @@
 #include "../BinWriter/BinReaderWriterDefines.h"
 #include "../../Sheets/Writer/BinaryReader.h"
 
-#include "../../../PPTXFormat/App.h"
-#include "../../../PPTXFormat/Core.h"
 #include "../../../PPTXFormat/Logic/HeadingVariant.h"
 
 #include "../../../DocxFormat/Settings/Settings.h"
@@ -10200,20 +10198,16 @@ int BinaryFileReader::ReadMainTable()
 			//	break;
 		case c_oSerTableTypes::App:
 		{
-			PPTX::App oApp(NULL);
-			oApp.fromPPTY(&m_oBufferedStream);
 			OOX::CApp* pApp = new OOX::CApp(NULL);
-			pApp->FromPptxApp(&oApp);
+			pApp->fromPPTY(&m_oBufferedStream);
 			pApp->SetRequiredDefaults();
 			m_oFileWriter.m_pApp = pApp;
 		}
 		break;
 		case c_oSerTableTypes::Core:
 		{
-			PPTX::Core oCore(NULL);
-			oCore.fromPPTY(&m_oBufferedStream);
 			OOX::CCore* pCore = new OOX::CCore(NULL);
-			pCore->FromPptxCore(&oCore);
+			pCore->fromPPTY(&m_oBufferedStream);
 			pCore->SetRequiredDefaults();
 			m_oFileWriter.m_pCore = pCore;
 		}

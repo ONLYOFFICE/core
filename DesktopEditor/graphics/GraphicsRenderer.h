@@ -348,18 +348,14 @@ public:
 
 	inline double GetPixW() { return m_pRenderer->GetPixW(); }
 	inline double GetPixH() { return m_pRenderer->GetPixH(); }
-	inline unsigned int GetLayerW() override { return m_pRenderer->GetLayerW(); }
-	inline unsigned int GetLayerH() override { return m_pRenderer->GetLayerH(); }
 
 	// alpha mask methods
 	void SetAlphaMask(Aggplus::CAlphaMask* pAlphaMask);
-	Aggplus::CAlphaMask* GetAlphaMask();
+	virtual Aggplus::CSoftMask* CreateSoftMask(bool bAlpha) override;
+	virtual void SetSoftMask(Aggplus::CSoftMask* pSoftMask) override;
 
 	// layer methods
 	virtual HRESULT put_LayerOpacity(double dValue) override;
-	virtual HRESULT put_LayerIsolated(bool bIsolated) override;
-	virtual HRESULT put_AlphaMaskIsolated(bool bIsolated) override;
-	virtual void put_AlphaMaskType(Aggplus::EMaskDataType oType) override;
 
 	// smart methods
 	void drawHorLine(BYTE align, double y, double x, double r, double penW)

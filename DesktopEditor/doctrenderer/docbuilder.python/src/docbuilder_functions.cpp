@@ -95,7 +95,7 @@ const wchar_t* CDocBuilderValue_ToString(CDocBuilderValue* self)
 	CString strValue = self->ToString();
 	size_t len = wcslen(strValue.c_str());
 	wchar_t* strRes = new wchar_t[len + 1];
-	memcpy(strRes, strValue.c_str(), (len + 1) + sizeof(wchar_t));
+	memcpy(strRes, strValue.c_str(), (len + 1) * sizeof(wchar_t));
 	return strRes;
 }
 

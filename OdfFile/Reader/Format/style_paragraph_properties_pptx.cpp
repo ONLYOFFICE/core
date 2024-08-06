@@ -484,7 +484,7 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
                     std::wstring w_before = pptx_process_margin(margin_top, length::pt, 100.0);
 					CP_XML_NODE(L"a:spcPts")
 					{
-						CP_XML_ATTR(L"val",w_before);
+						CP_XML_ATTR(L"val", w_before);
 					}
 				}
 				else

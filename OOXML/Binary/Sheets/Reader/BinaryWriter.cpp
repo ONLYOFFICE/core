@@ -38,8 +38,6 @@
 #include "../../../../Common/OfficeFileErrorDescription.h"
 
 #include "../../Presentation/FontCutter.h"
-#include "../../../PPTXFormat/App.h"
-#include "../../../PPTXFormat/Core.h"
 #include "../../../PPTXFormat/Logic/HeadingVariant.h"
 
 #include "../../../XlsxFormat/Xlsx.h"
@@ -8777,14 +8775,14 @@ void BinaryFileWriter::WriteContent(OOX::Document *pDocument, NSFontCutter::CEmb
 	if(pXlsx && pXlsx->m_pApp)
 	{
 		nCurPos = this->WriteTableStart(c_oSerTableTypes::App);
-		pXlsx->m_pApp->ToPptxApp()->toPPTY(&m_oBcw->m_oStream);
+		pXlsx->m_pApp->toPPTY(&m_oBcw->m_oStream);
 		this->WriteTableEnd(nCurPos);
 	}
 
 	if(pXlsx && pXlsx->m_pCore)
 	{
 		nCurPos = this->WriteTableStart(c_oSerTableTypes::Core);
-		pXlsx->m_pCore->ToPptxCore()->toPPTY(&m_oBcw->m_oStream);
+		pXlsx->m_pCore->toPPTY(&m_oBcw->m_oStream);
 		this->WriteTableEnd(nCurPos);
 	}
 

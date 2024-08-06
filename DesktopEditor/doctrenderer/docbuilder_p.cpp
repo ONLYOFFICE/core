@@ -1338,7 +1338,7 @@ namespace NSDoctRenderer
 				while (_start2 < _currentPos && (commands[_start2] == '\t' || commands[_start2] == ' '))
 					++_start2;
 
-				if (_currentPos > _start2 && (commands[_start2] != '#' && commands[_start2] != '/'))
+				if (_currentPos > _start2 && (commands[_start2] != '#'))
 				{
 					_commands.push_back(std::string(commands + _start2, _currentPos - _start2));
 					// DEBUG

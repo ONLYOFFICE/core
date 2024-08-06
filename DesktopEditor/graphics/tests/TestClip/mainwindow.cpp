@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "../../GraphicsPathClip.h"
+#include "../../BooleanOperations.h"
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -27,7 +27,7 @@ void MainWindow::AddPath(NSGraphics::IGraphicsRenderer* pathRenderer, Aggplus::C
 	pathRenderer->BeginCommand(c_nPathType);
 
 	size_t length = path->GetPointCount();
-	std::vector<Aggplus::PointF> points = path->GetPoints(0, length);
+	std::vector<Aggplus::PointD> points = path->GetPoints(0, length);
 	pathRenderer->PathCommandMoveTo(points[0].X, points[0].Y);
 
 	for (size_t i = 1; i < length; i++)
@@ -174,40 +174,40 @@ void MainWindow::on_pushButton_6_clicked()
 void MainWindow::on_pushButton_10_clicked()
 {
 	PrepareClip();
-	Aggplus::CGraphicsPathClip clip(Path1, Path2, Aggplus::Union);
-	Draw(clip.GetResult());
+	Aggplus::CGraphicsPath* result = Aggplus::BooleanOperation(Path1, Path2, Aggplus::Union);
+	Draw(result);
 }
 
 
 void MainWindow::on_pushButton_7_clicked()
 {
 	PrepareClip();
-	Aggplus::CGraphicsPathClip clip(Path1, Path2, Aggplus::Intersection);
-	Draw(clip.GetResult());
+	Aggplus::CGraphicsPath* result = Aggplus::BooleanOperation(Path1, Path2, Aggplus::Intersection);
+	Draw(result);
 }
 
 
 void MainWindow::on_pushButton_8_clicked()
 {
 	PrepareClip();
-	Aggplus::CGraphicsPathClip clip(Path1, Path2, Aggplus::Subtraction);
-	Draw(clip.GetResult());
+	Aggplus::CGraphicsPath* result = Aggplus::BooleanOperation(Path1, Path2, Aggplus::Subtraction);
+	Draw(result);
 }
 
 
 void MainWindow::on_pushButton_11_clicked()
 {
 	PrepareClip();
-	Aggplus::CGraphicsPathClip clip(Path1, Path2, Aggplus::Division);
-	Draw(clip.GetResult());
+	Aggplus::CGraphicsPath* result = Aggplus::BooleanOperation(Path1, Path2, Aggplus::Division);
+	Draw(result);
 }
 
 
 void MainWindow::on_pushButton_14_clicked()
 {
 	PrepareClip();
-	Aggplus::CGraphicsPathClip clip(Path1, Path2, Aggplus::Exclusion);
-	Draw(clip.GetResult());
+	Aggplus::CGraphicsPath* result = Aggplus::BooleanOperation(Path1, Path2, Aggplus::Exclusion);
+	Draw(result);
 }
 
 

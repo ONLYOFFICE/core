@@ -6,16 +6,15 @@
 #include <vector>
 #include <algorithm>
 
-#define EPSILON 1e-12
-#define GEOMETRIC_EPSILON 1e-7
-#define TIME_EPSILON 1e-8
-#define MACHINE_EPSILON 1.12e-16
-#define CURVETIME_EPSILON 1e-8
-#define LINE_EPSILON 1e-9
-#define WINDING_EPSILON 1e-9
-#define QUALITI_EPSILON 1e-6
-
-const std::vector<float> abscissas[16] = {
+const double EPSILON = 1e-12;
+const double GEOMETRIC_EPSILON = 1e-7;
+const double TIME_EPSILON = 1e-8;
+const double MACHINE_EPSILON = 1.12e-16;
+const double CURVETIME_EPSILON = 1e-8;
+const double LINE_EPSILON = 1e-9;
+const double WINDING_EPSILON = 1e-9;
+const double QUALITI_EPSILON = 1e-6;
+const std::vector<double> ABSCISSAS[16] = {
 	{0.5773502691896257645091488},
 	{0,0.7745966692414833770358531}, 
 	{0.3399810435848562648026658,0.8611363115940525752239465},
@@ -45,7 +44,7 @@ const std::vector<float> abscissas[16] = {
 		0.9445750230732325760779884,0.9894009349916499325961542}
 };
 
-const std::vector<float> weight[16] {
+const std::vector<double> weight[16] {
 	{1},
 	{0.8888888888888888888888889,0.5555555555555555555555556},
     {0.6521451548625461426269361,0.3478548451374538573730639},
@@ -77,89 +76,89 @@ const std::vector<float> weight[16] {
 		0.0622535239386478928628438,0.0271524594117540948517806}
 };
 
-float max(float v1, float v2, float v3, float v4)
+double max(double v1, double v2, double v3, double v4)
 {
 	return std::max(std::max(v1, v2), std::max(v3, v4));
 }
 
-float max(float v1, float v2, float v3)
+double max(double v1, double v2, double v3)
 {
 	return std::max(std::max(v1, v2), v3);
 }
 
-float min(float v1, float v2, float v3, float v4)
+double min(double v1, double v2, double v3, double v4)
 {
 	return std::min(std::min(v1, v2), std::min(v3, v4));
 }
 
-float min(float v1, float v2, float v3)
+double min(double v1, double v2, double v3)
 {
 	return std::min(std::min(v1, v2), v3);
 }
 
-bool isZero(float value)
+bool isZero(double value)
 {
     return value >= -EPSILON && value <= EPSILON;
 }
 
-bool isMachineZero(float value)
+bool isMachineZero(double value)
 {
 	return value >= -MACHINE_EPSILON && value <= MACHINE_EPSILON;
 }
 
-bool isInRange(float angle, float mn, float mx)
+bool isInRange(double angle, double mn, double mx)
 {
 	return mn < mx ? angle > mn && angle < mx
 				   : angle > mn || angle < mx;
 }
 
-float clamp(float value, float mn, float mx)
+double clamp(double value, double mn, double mx)
 {
 	return value < mn ? mn : value > mx ? mx : value;
 }
 
-int getIterations(float a, float b)
+int getIterations(double a, double b)
 {
-	float n1 = 2.0, n2 = 16.0;
-	return std::max(n1, std::min(n2, ceilf(abs(b - a) * 32)));
+	double n1 = 2.0, n2 = 16.0;
+	return std::max(n1, std::min(n2, ceil(abs(b - a) * 32)));
 }
 
-float CurveLength(float t, float ax, float bx, float cx, float ay, float by, float cy)
+double CurveLength(double t, double ax, double bx, double cx, double ay, double by, double cy)
 {
-	float	dx = ((ax * t) + bx) * t + cx,
+	double	dx = ((ax * t) + bx) * t + cx,
 			dy = ((ay * t) + by) * t + cy;
 	return sqrt(dx * dx + dy * dy);
 }
 
-float integrate(float ax, float bx, float cx, float ay, float by, float cy, size_t n = 16)
+double integrate(double ax, double bx, double cx, double ay, double by, double cy, size_t n = 16)
 {
-	std::vector<float> x = abscissas[n - 2],
+	std::vector<double> x = ABSCISSAS[n - 2],
 		w = weight[n - 2];
-	float sum = 0.0;
+	double sum = 0.0;
 
 	for (size_t i = 0; i < x.size(); i++)
 	{
-		float Ax = 0.5 * x[i];
+		double Ax = 0.5 * x[i];
 		sum += w[i] * (CurveLength(0.5 + Ax, ax, bx, cx, ay, by, cy) +
 					   CurveLength(0.5 - Ax, ax, bx, cx, ay, by, cy));
 	}
 	return 0.5 * sum;
 }
 
-float fLength(float t, float& length, float& start, float offset, 
-			  float ax, float bx, float cx, float ay, float by, float cy)
+double fLength(double t, double& length, double& start, double offset,
+			  double ax, double bx, double cx, double ay, double by, double cy)
 {
 	length += integrate(ax, bx, cx, ay, by, cy, getIterations(start, t));
 	start = t;
 	return length - offset;
 }
 
-float findRoot(float& length, float& start, float offset, float ax, float bx, 
-			   float cx, float ay, float by, float cy, float x, float a, float b)
+double findRoot(double& length, double& start, double offset, double ax, double bx,
+			   double cx, double ay, double by, double cy, double x, double a, double b)
 {
 	for (size_t i = 0; i < 32; i++)
 	{
-		float fx = fLength(x, length, start, offset, ax, bx, cx, ay, by, cy),
+		double fx = fLength(x, length, start, offset, ax, bx, cx, ay, by, cy),
 			  dx = fx / CurveLength(x, ax, bx, cx, ay, by, cy),
 			  nx = x - dx;
 		
@@ -182,17 +181,17 @@ float findRoot(float& length, float& start, float offset, float ax, float bx,
 	return clamp(x, a, b);
 }
 
-Aggplus::PointF intersect(float p1x, float p1y, float v1x, float v1y, float p2x, float p2y, float v2x, float v2y)
+Aggplus::PointD intersect(double p1x, double p1y, double v1x, double v1y, double p2x, double p2y, double v2x, double v2y)
 {
 	v1x -= p1x;
 	v1y -= p1y;
 	v2x -= p2x;
 	v2y -= p2y;
 
-	float cross = v1x * v2y - v1y * v2x;
+	double cross = v1x * v2y - v1y * v2x;
 	if (!isMachineZero(cross))
 	{
-		float dx = p1x - p2x,
+		double dx = p1x - p2x,
 			  dy = p1y - p2y,
 			  u1 = (v2x * dy - v2y * dx) / cross,
 			  u2 = (v1x * dy - v1y * dx) / cross,
@@ -202,21 +201,21 @@ Aggplus::PointF intersect(float p1x, float p1y, float v1x, float v1y, float p2x,
 		if (uMin < u1 && u1 < uMax && uMin < u2 && u2 < uMax)
 		{
 			u1 = u1 <= 0 ? 0 : u1 >= 1 ? 1 : u1;
-			return Aggplus::PointF(p1x + u1 * v1x, p1y + u1 * v1y);
+			return Aggplus::PointD(p1x + u1 * v1x, p1y + u1 * v1y);
 		}
 	}
-	return Aggplus::PointF();
+	return Aggplus::PointD();
 }
 
-std::vector<std::vector<Aggplus::PointF>> getConvexHull(float dq0, float dq1, float dq2, float dq3)
+std::vector<std::vector<Aggplus::PointD>> getConvexHull(double dq0, double dq1, double dq2, double dq3)
 {
-	Aggplus::PointF p0 = Aggplus::PointF(0, dq0),
-					p1 = Aggplus::PointF(1 / 3, dq1),
-					p2 = Aggplus::PointF(2 / 3, dq2),
-					p3 = Aggplus::PointF(1, dq3);
-	float dist1 = dq1 - (2 * dq0 + dq3) / 3,
+	Aggplus::PointD p0 = Aggplus::PointD(0, dq0),
+					p1 = Aggplus::PointD(1 / 3, dq1),
+					p2 = Aggplus::PointD(2 / 3, dq2),
+					p3 = Aggplus::PointD(1, dq3);
+	double dist1 = dq1 - (2 * dq0 + dq3) / 3,
 		  dist2 = dq2 - (dq0 + 2 * dq3) / 3;
-	std::vector<std::vector<Aggplus::PointF>> hull;
+	std::vector<std::vector<Aggplus::PointD>> hull;
 	
 	if (dist1 * dist2 < 0)
 	{
@@ -224,7 +223,7 @@ std::vector<std::vector<Aggplus::PointF>> getConvexHull(float dq0, float dq1, fl
 	}
 	else
 	{
-		float distRatio = dist1 / dist2;
+		double distRatio = dist1 / dist2;
 		if (distRatio >= 2)
 			hull = {{p0, p1, p3}, {p0, p3}};
 		else if (distRatio <= 0.5)
@@ -237,22 +236,22 @@ std::vector<std::vector<Aggplus::PointF>> getConvexHull(float dq0, float dq1, fl
 	return hull;
 }
 
-float clipConvexHullPart(std::vector<Aggplus::PointF> part, bool top, float threshold)
+double clipConvexHullPart(std::vector<Aggplus::PointD> part, bool top, double threshold)
 {
-	float	px = part[0].X,
+	double	px = part[0].X,
 			py = part[0].Y;
 	for (size_t i = 1; i < part.size(); i++)
 	{
-		float qx = part[i].X,
+		double qx = part[i].X,
 			qy = part[i].Y;
 
 		if (top ? qy >= threshold : qy <= threshold)
 			return qy == threshold ? qx : px + (threshold - py) * (qx - px) / (qy - py);
 	}
-	return FLT_MIN;
+	return DBL_MIN;
 }
 
-float clipConvexHull(std::vector<Aggplus::PointF> top, std::vector<Aggplus::PointF> bottom, float dMin, float dMax)
+double clipConvexHull(std::vector<Aggplus::PointD> top, std::vector<Aggplus::PointD> bottom, double dMin, double dMax)
 {
 	if (top[0].Y < dMin)
 		return clipConvexHullPart(top, true, dMin);
@@ -262,7 +261,7 @@ float clipConvexHull(std::vector<Aggplus::PointF> top, std::vector<Aggplus::Poin
 		return top[0].X;
 }
 
-int binarySearch(std::vector<std::vector<float>> allBounds, std::vector<int> indices, size_t coord, float value)
+int binarySearch(std::vector<std::vector<double>> allBounds, std::vector<int> indices, size_t coord, double value)
 {
 	int lo = 0;
 	size_t hi = indices.size();
@@ -277,7 +276,7 @@ int binarySearch(std::vector<std::vector<float>> allBounds, std::vector<int> ind
 	return lo - 1;
 }
 
-float getSignedDistance(float px, float py, float vx, float vy, float x, float y)
+double getSignedDistance(double px, double py, double vx, double vy, double x, double y)
 {
 	vx -= px;
 	vy -= py;
@@ -288,7 +287,7 @@ float getSignedDistance(float px, float py, float vx, float vy, float x, float y
 		 vy0 = vy == 0,
 		 vyG = vy > vx;
 
-	float distX = vxG ? x - px : px - x,
+	double distX = vxG ? x - px : px - x,
 		  distY = vxL ? y - py : py - y,
 		  distGY = vy * sqrt(1 + (vx * vx) / (vy * vy)),
 		  distGX = vx * sqrt(1 + (vy * vy) / (vx * vx)),
@@ -299,7 +298,7 @@ float getSignedDistance(float px, float py, float vx, float vy, float x, float y
 							 : distXY;
 }
 
-float getDistance(float px, float py, float vx, float vy, float x, float y)
+double getDistance(double px, double py, double vx, double vy, double x, double y)
 {
 	if (vx == 0)
 		if (vy > 0)
@@ -313,45 +312,45 @@ float getDistance(float px, float py, float vx, float vy, float x, float y)
 			return std::abs(py -y);
 
 	bool dir = vy > vx;
-	float dist = (x- px) * vy - (y - py) * vx,
+	double dist = (x- px) * vy - (y - py) * vx,
 		  epsY = vy * sqrt(1 + (vx * vx) / (vy * vy)),
 		  epsX = vx * sqrt(1 + (vy * vy) / (vx * vx));
 
 	return  dist / (dir ? epsY : epsX);
 }
 
-float getDistance(float x1, float y1, float x2, float y2)
+double getDistance(double x1, double y1, double x2, double y2)
 {
-	float x = x2 - x1,
+	double x = x2 - x1,
 		  y = y2 - y1,
 		  d = x * x + y * y;
 	return sqrt(d);
 }
 
-float getDistance(Aggplus::PointF point1, Aggplus::PointF point2)
+double getDistance(Aggplus::PointD point1, Aggplus::PointD point2)
 {
 	return getDistance(point1.X, point1.Y, point2.X, point2.Y);
 }
 
-std::pair<float, float> split(float v)
+std::pair<double, double> split(double v)
 {
-	float x = v * 134217729.0,
+	double x = v * 134217729.0,
 		  y = v - x,
 		  hi = y + x,
 		  lo = v - hi;
-	return std::pair<float, float>(hi, lo);
+	return std::pair<double, double>(hi, lo);
 }
 
-float getDiscriminant(float a, float b, float c)
+double getDiscriminant(double a, double b, double c)
 {
-	float D = b * b - a * c,
+	double D = b * b - a * c,
 		  E = b * b + a * c;
 	if (abs(D) * 3 < E)
 	{
-		std::pair<float, float> ad = split(a),
+		std::pair<double, double> ad = split(a),
 								bd = split(b),
 								cd = split(c);
-		float p = b * b,
+		double p = b * b,
 			  dp = (bd.first * bd.first - 
 					p + 2 * bd.first * bd.second) + 
 				   bd.second * bd.second,
@@ -365,10 +364,10 @@ float getDiscriminant(float a, float b, float c)
 	return D;
 }
 
-int solveQuadratic(float a, float b, float c, std::vector<float>& roots, 
-				   float mn, float mx)
+int solveQuadratic(double a, double b, double c, std::vector<double>& roots,
+				   double mn, double mx)
 {
-	float x1 = FLT_MAX, x2 = FLT_MAX;
+	double x1 = DBL_MAX, x2 = DBL_MAX;
 	if (abs(a) < EPSILON)
 	{
 		if (abs(b) < EPSILON)
@@ -378,10 +377,10 @@ int solveQuadratic(float a, float b, float c, std::vector<float>& roots,
 	else
 	{
 		b *= -0.5;
-		float D = getDiscriminant(a, b, c);
+		double D = getDiscriminant(a, b, c);
 		if (D != 0 && abs(D) < MACHINE_EPSILON)
 		{
-			float f = max(abs(a), abs(b), abs(c));
+			double f = max(abs(a), abs(b), abs(c));
 			if (f < 1e-8 || f < 1e8)
 			{
 				f = powf(2, -roundf(log2(f)));
@@ -393,7 +392,7 @@ int solveQuadratic(float a, float b, float c, std::vector<float>& roots,
 		}
 		if (D >= -MACHINE_EPSILON)
 		{
-			float Q = D < 0 ? 0 : sqrt(D),
+			double Q = D < 0 ? 0 : sqrt(D),
 				  R = b + (b < 0 ? -Q : Q);
 			if (R == 0)
 			{
@@ -408,14 +407,14 @@ int solveQuadratic(float a, float b, float c, std::vector<float>& roots,
 		}
 	}
 	int count = 0;
-	float minB = mn - EPSILON,
+	double minB = mn - EPSILON,
 		  maxB = mx + EPSILON;
-	if (x1 != FLT_MAX && x1 > minB && x1 < maxB)
+	if (x1 != DBL_MAX && x1 > minB && x1 < maxB)
 	{
 		roots.push_back(clamp(x1, mn, mx));
 		count++;
 	}
-	if (x2 != x1 && x2 != FLT_MAX && x2 > minB && x2 < maxB)
+	if (x2 != x1 && x2 != DBL_MAX && x2 > minB && x2 < maxB)
 	{
 		roots.push_back(clamp(x2, mn, mx));
 		count++;

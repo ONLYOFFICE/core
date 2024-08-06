@@ -50,12 +50,12 @@ SOURCES += \
 HEADERS += \
 	./../GraphicsPath_private.h \
 	./../GraphicsPath.h \
-	./../GraphicsPathClip.h \
-	./../clip_math.h
+	./../BooleanOperations.h \
+	./../boolean_operations_math.h
 
 SOURCES += \
 	./../GraphicsPath.cpp \
-	./../GraphicsPathClip.cpp
+	./../BooleanOperations.cpp
 
 # alpha mask
 HEADERS += \

@@ -1,9 +1,14 @@
-#include "GraphicsPathClip.h"
+#include "BooleanOperations.h"
 
 namespace Aggplus {
-Segment::Segment() {}
+Segment::Segment() :
+	P(PointD()),
+	HI(PointD()),
+	HO(PointD()),
+	Id(0),
+	Index(0) {}
 
-Segment::Segment(const std::vector<PointF>& points, bool isCurve,
+Segment::Segment(const std::vector<PointD>& points, bool isCurve,
 				 size_t index, size_t id, CGraphicsPath* path) :
 	P(points[0]),
 	IsCurve(isCurve),
@@ -14,66 +19,68 @@ Segment::Segment(const std::vector<PointF>& points, bool isCurve,
 {
 	if (IsCurve)
 	{
-		HI = PointF(points[1].X - P.X, points[1].Y - P.Y);
-		HO = PointF(points[2].X - P.X, points[2].Y - P.Y);
+		HI = PointD(points[1].X - P.X, points[1].Y - P.Y);
+		HO = PointD(points[2].X - P.X, points[2].Y - P.Y);
 	}
 }
 
-Segment::Segment(const PointF& p, const PointF& hi, const PointF& ho) :
+Segment::Segment(const PointD& p, const PointD& hi, const PointD& ho) :
 	P(p),
 	HI(hi),
 	HO(ho),
 	IsCurve(false)
 {
-	if (!hi.Equals(PointF()) || !ho.Equals(PointF()))
+	if (!hi.Equals(PointD()) || !ho.Equals(PointD()))
 		IsCurve = true;
 }
 
-bool Segment::IsValid(BooleanOpType op)
+bool Segment::IsValid(BooleanOpType op) const
 {
 	bool cmpOp1 = op == static_cast<int>(Wind->W),
-		 cmpOp2 = !(op == Union && Wind->W == 2.0),
+		 cmpOp2 = op == Union && Wind->W == 2.0,
 		 rWind = Wind->WindingLeft != 0.0,
 		 lWind = Wind->WindingRight != 0.0;
-	return !Visited && cmpOp1 && cmpOp2 && rWind && lWind;
+	return !Visited && cmpOp1 && !(cmpOp2 && rWind && lWind);
 }
 
-bool Segment::operator==(const Segment& other)
+bool Segment::operator==(const Segment& other) const
 {
-	return P.Equals(other.P) && HI.Equals(other.HI) && HO.Equals(other.HO);
+	return (Index == other.Index) && (Id == other.Id);
 }
 
-bool Segment::operator!=(const Segment& other)
+bool Segment::operator!=(const Segment& other) const
 {
 	return !operator==(other);
 }
 
-Curve::Curve() {}
+Curve::Curve() :
+	Segment1(Segment()),
+	Segment2(Segment()){}
 
 Curve::Curve(const Segment& segment1, const Segment& segment2) :
 	Segment1(segment1),
 	Segment2(segment2) {}
 
-Curve::Curve(const std::vector<float>& values)
+Curve::Curve(const std::vector<double>& values)
 {
 	if (values.size() == 4)
 	{
-		Segment1 = Segment(PointF(values[0], values[1]), 
-						   PointF(), 
-						   PointF());
-		Segment2 = Segment(PointF(values[2], values[3]), 
-						   PointF(), 
-						   PointF());
+		Segment1 = Segment(PointD(values[0], values[1]),
+						   PointD(),
+						   PointD());
+		Segment2 = Segment(PointD(values[2], values[3]),
+						   PointD(),
+						   PointD());
 	}
 	else if (values.size() == 8)
 	{
-		Segment1 = Segment(PointF(values[0], values[1]), 
-						   PointF(), 
-						   PointF());
-		Segment2 = Segment(PointF(values[6], values[7]), 
-						   PointF(values[2] - values[6], 
+		Segment1 = Segment(PointD(values[0], values[1]),
+						   PointD(),
+						   PointD());
+		Segment2 = Segment(PointD(values[6], values[7]),
+						   PointD(values[2] - values[6],
 								  values[3] - values[7]),
-						   PointF(values[4] - values[6], 
+						   PointD(values[4] - values[6],
 								  values[5] - values[7]));
 	}
 	else
@@ -83,14 +90,14 @@ Curve::Curve(const std::vector<float>& values)
 	}
 }
 
-Curve::Curve(float x0, float y0, float x1, float y1, 
-			 float x2, float y2, float x3, float y3)
+Curve::Curve(double x0, double y0, double x1, double y1,
+			 double x2, double y2, double x3, double y3)
 {
-	Segment1 = Segment(PointF(x0, y0), PointF(), PointF());
-	Segment2 = Segment(PointF(x3, y3), PointF(x1, y1), PointF(x2, y2));
+	Segment1 = Segment(PointD(x0, y0), PointD(), PointD());
+	Segment2 = Segment(PointD(x3, y3), PointD(x1, y1), PointD(x2, y2));
 }
 
-std::vector<float> Curve::GetXValues() const
+std::vector<double> Curve::GetXValues() const
 {
 	if (IsStraight())
 		return {Segment1.P.X, Segment1.P.X, Segment2.P.X, Segment2.P.X};
@@ -98,7 +105,7 @@ std::vector<float> Curve::GetXValues() const
 			Segment2.P.X + Segment2.HO.X, Segment2.P.X};
 }
 
-std::vector<float> Curve::GetYValues() const
+std::vector<double> Curve::GetYValues() const
 {
 	if (IsStraight())
 		return {Segment1.P.Y, Segment1.P.Y, Segment2.P.Y, Segment2.P.Y};
@@ -108,12 +115,12 @@ std::vector<float> Curve::GetYValues() const
 			Segment2.P.Y};
 }
 
-std::vector<float> Curve::GetPeeks() const
+std::vector<double> Curve::GetPeeks() const
 {
-	std::vector<float>	x = GetXValues(),
+	std::vector<double>	x = GetXValues(),
 						y = GetYValues(),
 						roots;
-	float	ax = -x[0] + 3 * x[1] - 3 * x[2] + x[3],
+	double	ax = -x[0] + 3 * x[1] - 3 * x[2] + x[3],
 			bx =  3 * x[0] - 6 * x[1] + 3 * x[2],
 			cx = -3 * x[0] + 3 * x[1],
 			ay = -y[0] + 3 * y[1] - 3 * y[2] + y[3],
@@ -130,7 +137,7 @@ std::vector<float> Curve::GetPeeks() const
 	return roots;
 }
 
-float Curve::GetLength(float a, float b) const
+double Curve::GetLength(double a, double b) const
 {
 	if(IsStraight())
 	{
@@ -139,13 +146,13 @@ float Curve::GetLength(float a, float b) const
 			c = Subdivide(b)[0];
 		if (a > 0)
 			c = Subdivide(a)[1];
-		float	dx = c.Segment2.P.X - c.Segment1.P.X,
+		double	dx = c.Segment2.P.X - c.Segment1.P.X,
 				dy = c.Segment2.P.Y - c.Segment1.P.Y;
 		return sqrt(dx * dx + dy * dy);
 	}
-	std::vector<float>	x = GetXValues(),
+	std::vector<double>	x = GetXValues(),
 						y = GetYValues();
-	float	ax = 9 * (x[1] - x[2]) + 3 * (x[3] - x[0]),
+	double	ax = 9 * (x[1] - x[2]) + 3 * (x[3] - x[0]),
 			bx = 6 * (x[0] + x[2]) - 12 * x[1],
 			cx = 3 * (x[1] - x[0]),
 			ay = 9 * (y[1] - y[2]) + 3 * (y[3] - y[0]),
@@ -154,30 +161,30 @@ float Curve::GetLength(float a, float b) const
 	return integrate(ax, bx, cx, ay, by, cy);
 }
 
-float Curve::GetSquaredLineLength() const
+double Curve::GetSquaredLineLength() const
 {
-	float	x = Segment2.P.X - Segment1.P.X,
+	double	x = Segment2.P.X - Segment1.P.X,
 			y = Segment2.P.Y - Segment1.P.Y;
 	return x * x + y * y;
 }
 
-float Curve::GetTimeOf(const PointF& point) const
+double Curve::GetTimeOf(const PointD& point) const
 {
-	PointF	p0 = Segment1.P,
+	PointD	p0 = Segment1.P,
 			p3 = Segment2.P;
-	float	d0 = getDistance(point.X, point.Y, p0.X, p0.Y),
+	double	d0 = getDistance(point.X, point.Y, p0.X, p0.Y),
 			d3 = getDistance(point.X, point.Y, p3.X, p3.Y);
 
 	if (d0 > EPSILON && d3 > EPSILON)
 	{
-		std::vector<float> coords = {point.X, point.Y},
+		std::vector<double> coords = {point.X, point.Y},
 						   roots;
 		for (size_t c = 0; c < 2; c++)
 		{
 			int count = SolveCubic(c, coords[c], roots, 0.0, 1.0);
 			for (int i = 0; i < count; i++)
 			{
-				float u = roots[i];
+				double u = roots[i];
 				if (u > 1 || u < 0)
 					return - 1;
 				if (getDistance(point, GetPoint(u)) <= GEOMETRIC_EPSILON)
@@ -190,14 +197,14 @@ float Curve::GetTimeOf(const PointF& point) const
 	return firstDist ? 0 : secondDist ? 1 : - 1;
 }
 
-float Curve::GetTimeAt(float offset) const
+double Curve::GetTimeAt(double offset) const
 {
 	bool forward = offset > 0;
-	float start = !forward ? 1 : 0;
+	double start = !forward ? 1 : 0;
 	if (offset == 0)
 		return start;
 
-	float	a = forward ? start : 0,
+	double	a = forward ? start : 0,
 			b = forward ? 1 : start,
 			rangeLength = GetLength(a, b),
 			diff = abs(offset) - rangeLength;
@@ -207,11 +214,11 @@ float Curve::GetTimeAt(float offset) const
 	else if (diff > EPSILON)
 		return FLT_MIN;
 
-	float	guess = offset / rangeLength,
+	double	guess = offset / rangeLength,
 			length = 0;
-	std::vector<float>	x = GetXValues(),
+	std::vector<double>	x = GetXValues(),
 						y = GetYValues();
-	float	ax = 9 * (x[1] - x[2]) + 3 * (x[3] - x[0]),
+	double	ax = 9 * (x[1] - x[2]) + 3 * (x[3] - x[0]),
 			bx = 6 * (x[0] + x[2]) - 12 * x[1],
 			cx = 3 * (x[1] - x[0]),
 			ay = 9 * (y[1] - y[2]) + 3 * (y[3] - y[0]),
@@ -221,9 +228,9 @@ float Curve::GetTimeAt(float offset) const
 					ay, by, cy, start + guess, a, b);
 }
 
-PointF Curve::Get(float t, int type) const
+PointD Curve::Get(double t, int type) const
 {
-	std::vector<float>	x = GetXValues(),
+	std::vector<double>	x = GetXValues(),
 						y = GetYValues();
 
 	if (isZero(x[1] - x[0]) && isZero(y[1] - y[0]))
@@ -236,7 +243,7 @@ PointF Curve::Get(float t, int type) const
 		x[2] = x[3];
 		y[2] = y[3];
 	}
-	float	cx = 3 * (x[1] - x[0]),
+	double	cx = 3 * (x[1] - x[0]),
 			bx = 3 * (x[2] - x[1]) - cx,
 			ax = x[3] - x[0] - cx - bx,
 			cy = 3 * (y[1] - y[0]),
@@ -249,7 +256,7 @@ PointF Curve::Get(float t, int type) const
 
 	if (type == 1)
 	{
-		float	tMin = CURVETIME_EPSILON,
+		double	tMin = CURVETIME_EPSILON,
 				tMax = 1 - tMin;
 	
 		if (t < tMin)
@@ -274,36 +281,36 @@ PointF Curve::Get(float t, int type) const
 			y0 = y[2] - y[1];
 		}
 
-		float len = sqrt(x0 * x0 + y0 * y0);
+		double len = sqrt(x0 * x0 + y0 * y0);
 		if (len != 0.0)
 		{
 			x0 /= len;
 			y0 /= len;
 		}
 	}
-	return PointF(x0, y0);
+	return PointD(x0, y0);
 }
 
-PointF Curve::GetPoint(float t) const
+PointD Curve::GetPoint(double t) const
 {
 	return Get(t, 0);
 }
 
-PointF Curve::GetTangent(float t) const
+PointD Curve::GetTangent(double t) const
 {
 	return Get(t, 1);
 }
 
-PointF Curve::GetTangent(float t, float offset,
-						 bool inside, const PointF& p) const
+PointD Curve::GetTangent(double t, double offset,
+						 bool inside, const PointD& p) const
 {
 	if (inside)
 		return GetTangent(t);
-	PointF point =  GetPoint(GetTimeAt(offset));
-	return PointF(point.X - p.X, point.Y - p.Y);
+	PointD point =  GetPoint(GetTimeAt(offset));
+	return PointD(point.X - p.X, point.Y - p.Y);
 }
 
-Curve Curve::GetPart(float from, float to) const
+Curve Curve::GetPart(double from, double to) const
 {
 	Curve result;
 	if (from > to)
@@ -320,19 +327,17 @@ Curve Curve::GetPart(float from, float to) const
 std::vector<Curve> Curve::GetMonoCurves(bool dir) const
 {
 	std::vector<Curve>	curves;
-	std::vector<float>	x = GetXValues(),
-						y = GetYValues(),
-						o = dir ? x : y;
-	bool cmpO1 = (o[0] >= o[1]) == (o[1] >= o[2]),
-		 cmpO2 = (o[1] >= o[2]) == (o[2] >= o[3]);
+	std::vector<double>	x = dir ? GetXValues() : GetYValues();
+	bool cmpO1 = (x[0] >= x[1]) == (x[1] >= x[2]),
+		 cmpO2 = (x[1] >= x[2]) == (x[2] >= x[3]);
 	if ((cmpO1 && cmpO2) || IsStraight())
 		curves.push_back(*this);
 	else
 	{
-		std::vector<float> roots;
-		float	a = 3 * (o[1] - o[2]) - o[0] + o[3],
-				b = 2 * (o[0] + o[2]) - 4 * o[1],
-				c = o[1] - o[0],
+		std::vector<double> roots;
+		double	a = 3 * (x[1] - x[2]) - x[0] + x[3],
+				b = 2 * (x[0] + x[2]) - 4 * x[1],
+				c = x[1] - x[0],
 				tMin = CURVETIME_EPSILON,
 				tMax = 1 - tMin,
 				n = solveQuadratic(a, b, c, roots, tMin, tMax);
@@ -341,7 +346,7 @@ std::vector<Curve> Curve::GetMonoCurves(bool dir) const
 		else
 		{
 			std::sort(roots.begin(), roots.end());
-			float t = roots[0];
+			double t = roots[0];
 			std::vector<Curve> parts = Subdivide(t);
 			curves.push_back(parts[0]);
 			if (n > 1)
@@ -363,11 +368,11 @@ std::vector<std::pair<int, int>> Curve::GetOverlaps(const Curve& curve) const
 		 straight1 = this->IsStraight(),
 		 straight2 = curve.IsStraight(),
 		 straightBoth = straight1 && straight2;
-	std::vector<float>	x1 = GetXValues(),
+	std::vector<double>	x1 = GetXValues(),
 						x2 = GetYValues(),
 						y1 = curve.GetXValues(),
 						y2 = curve.GetYValues();
-	float	px = swap ? x2[0] : x1[0],
+	double	px = swap ? x2[0] : x1[0],
 			py = swap ? y2[0] : y1[0],
 			vx = swap ? x2[3] - px : x1[3] - px,
 			vy = swap ? y2[3] - py : y1[3] - py;
@@ -378,12 +383,12 @@ std::vector<std::pair<int, int>> Curve::GetOverlaps(const Curve& curve) const
 		std::swap(y1, y2);
 	}
 	
-	float	d20 = getDistance(px, py, vx, vy, x2[0], y2[0]),
+	double	d20 = getDistance(px, py, vx, vy, x2[0], y2[0]),
 			d23 = getDistance(px, py, vx, vy, x2[3], y2[3]);
 
 	if (d20 < GEOMETRIC_EPSILON && d23 < GEOMETRIC_EPSILON)
 	{
-		float	d11 = getDistance(px, py, vx, vy, x1[1], y1[1]),
+		double	d11 = getDistance(px, py, vx, vy, x1[1], y1[1]),
 				d12 = getDistance(px, py, vx, vy, x1[2], y1[2]),
 				d21 = getDistance(px, py, vx, vy, x2[1], y2[1]),
 				d22 = getDistance(px, py, vx, vy, x2[2], y2[2]);
@@ -411,7 +416,7 @@ std::vector<std::pair<int, int>> Curve::GetOverlaps(const Curve& curve) const
 	{
 		int i1 = i & 1,
 			t1 = i >> 1;
-		float t2 = i1 == 0	? GetTimeOf(t1 == 1	? curve.Segment2.P : curve.Segment1.P)
+		double t2 = i1 == 0	? GetTimeOf(t1 == 1	? curve.Segment2.P : curve.Segment1.P)
 							: curve.GetTimeOf(t1 == 1 ? Segment2.P : Segment1.P);
 		if (t2 != -1)
 		{
@@ -431,7 +436,7 @@ std::vector<std::pair<int, int>> Curve::GetOverlaps(const Curve& curve) const
 	{
 		Curve	o1 = GetPart(pairs[0].first, pairs[1].first),
 				o2 = curve.GetPart(pairs[0].second, pairs[1].second);
-		float	dox = abs(o2.Segment2.HO.X - o1.Segment2.HO.X),
+		double	dox = abs(o2.Segment2.HO.X - o1.Segment2.HO.X),
 				doy = abs(o2.Segment2.HO.Y - o1.Segment2.HO.Y),
 				dix = abs(o2.Segment2.HI.X - o1.Segment2.HI.X),
 				diy = abs(o2.Segment2.HI.Y - o1.Segment2.HI.Y);
@@ -444,24 +449,24 @@ std::vector<std::pair<int, int>> Curve::GetOverlaps(const Curve& curve) const
 	return pairs;
 }
 
-std::vector<float> Curve::GetCurveLineIntersection(float px, float py,
-													float vx, float vy) const
+std::vector<double> Curve::GetCurveLineIntersection(double px, double py,
+													double vx, double vy) const
 {
 	if (isZero(vx) && isZero(vy))
 	{
-		float t = GetTimeOf(PointF(px, py));
-		return t == -1 ? std::vector<float>() : std::vector<float>({t});
+		double t = GetTimeOf(PointD(px, py));
+		return t == -1 ? std::vector<double>() : std::vector<double>({t});
 	}
 
-	float	angle = std::atan(-vy / vx),
+	double	angle = std::atan(-vy / vx),
 			sin = std::sin(angle),
 			cos = std::cos(angle);
-	std::vector<float>	x = GetXValues(),
+	std::vector<double>	x = GetXValues(),
 						y = GetYValues(),
 						rv, roots;
 	for (size_t i = 0; i < 8; i++)
 	{
-		float	cx = (i % 2) == 0 ? x[i / 2] : y[i / 2],
+		double	cx = (i % 2) == 0 ? x[i / 2] : y[i / 2],
 				cy = (i % 2) == 0 ? y[i / 2] : x[i / 2];
 		rv.push_back(cx * cos - cy * sin);
 		rv.push_back(cx * sin + cy * cos);
@@ -471,11 +476,11 @@ std::vector<float> Curve::GetCurveLineIntersection(float px, float py,
 	return roots;
 }
 
-std::vector<Curve> Curve::Subdivide(float t) const
+std::vector<Curve> Curve::Subdivide(double t) const
 {
-	std::vector<float>	x = GetXValues(),
+	std::vector<double>	x = GetXValues(),
 						y = GetYValues();
-	float x2[6], y2[6], u = 1 - t;
+	double x2[6], y2[6], u = 1 - t;
 
 	x2[0] = u * x[0] + t * x[1], y2[0] = u * y[0] + t * y[1],
 	x2[1] = u * x[1] + t * x[2], y2[1] = u * y[1] + t * y[2],
@@ -488,10 +493,10 @@ std::vector<Curve> Curve::Subdivide(float t) const
 			Curve(x2[5], y2[5], x2[4], y2[4], x2[2], y2[2], x[3], y[3])};
 }
 
-Curve Curve::DivideAtTime(float time, std::vector<Segment>& segments,
+Curve Curve::DivideAtTime(double time, std::vector<Segment>& segments,
 						  std::vector<Curve>& curves)
 {
-	float	tMin = CURVETIME_EPSILON,
+	double	tMin = CURVETIME_EPSILON,
 			tMax = 1 - tMin;
 
 	if (time >= tMin && time <= tMax)
@@ -508,18 +513,6 @@ Curve Curve::DivideAtTime(float time, std::vector<Segment>& segments,
 								  Segment1.Id,
 								  Segment1.Path);
 
-		// segments.insert(segments.begin() + Segment1.Index + 1, segment);
-		// for (size_t i = segment.Index + 1; i < segments.size(); i++)
-		// 	segments[i].Index++;
-
-		// curves.clear();
-		// for (size_t i = 0; i < segments.size(); i++)
-		// {
-		// 	curves.push_back(Curve(segments[i], i == (segments.size() - 1) ?
-		// 											  segments[0] :
-		// 											  segments[i + 1]));
-		// }
-
 		Segment seg2 = Segment2;
 		this->Segment2 = segment;
 		return Curve(segment, seg2);
@@ -527,12 +520,12 @@ Curve Curve::DivideAtTime(float time, std::vector<Segment>& segments,
 	return Curve();
 }
 
-int Curve::SolveCubic(size_t coord, int value, std::vector<float>& roots,
-					float mn, float mx) const
+int Curve::SolveCubic(size_t coord, int value, std::vector<double>& roots,
+					double mn, double mx) const
 {
 	int count = 0;
-	std::vector<float> v = coord == 0 ? GetXValues() : GetYValues();
-	float a, b, c, d;
+	std::vector<double> v = coord == 0 ? GetXValues() : GetYValues();
+	double a, b, c, d;
 
 	if (!((v[0] < value && v[3] < value && v[1] < value && v[2] < value) ||
 		  (v[0] > value && v[3] > value && v[1] > value && v[2] > value)))
@@ -546,12 +539,12 @@ int Curve::SolveCubic(size_t coord, int value, std::vector<float>& roots,
 	return count;
 }
 
-int Curve::SolveCubic(float a, float b, float c, float d,
-					std::vector<float>& roots, float mn, float mx) const
+int Curve::SolveCubic(double a, double b, double c, double d,
+					std::vector<double>& roots, double mn, double mx) const
 {
 	int count = 0;
-	float f = max(abs(a), abs(b), abs(c), abs(d));
-	float x, b1, c2, qd, q;
+	double f = max(abs(a), abs(b), abs(c), abs(d));
+	double x, b1, c2, qd, q;
 	if (f < 1e-8 || f > 1e8)
 	{
 		f = pow(2, -round(log2(f)));
@@ -566,7 +559,7 @@ int Curve::SolveCubic(float a, float b, float c, float d,
 		a = b;
 		b1 = c;
 		c2 = d;
-		x = FLT_MAX;
+		x = DBL_MAX;
 	}
 	else if (abs(d) <EPSILON)
 	{
@@ -581,7 +574,7 @@ int Curve::SolveCubic(float a, float b, float c, float d,
 		c2 = b1 * x + c;
 		qd = (a * x + b1) * x + c2;
 		q = c2 * x + d;
-		float t = q / a,
+		double t = q / a,
 			  r = pow(abs(t), 1 / 3),
 			  s = t < 0 ? -1 : 1,
 			  td = -qd / a,
@@ -610,7 +603,7 @@ int Curve::SolveCubic(float a, float b, float c, float d,
 	bool xInRoots1 = count > 0 && x != roots[0],
 		 xInRoots2 = count > 1 && x != roots[1],
 		 xInEps = x > mn - EPSILON && x < mx + EPSILON;
-	if (x != FLT_MAX && (count == 0 || xInRoots1 || xInRoots2) && (xInEps))
+	if (x != DBL_MAX && (count == 0 || xInRoots1 || xInRoots2) && (xInEps))
 	{
 		roots.push_back(clamp(x, mn, mx));
 		count++;
@@ -626,8 +619,8 @@ void Curve::Flip()
 
 void Curve::ClearHandles()
 {
-	Segment2.HI = PointF();
-	Segment2.HO = PointF();
+	Segment2.HI = PointD();
+	Segment2.HO = PointD();
 }
 
 bool Curve::HasHandle() const
@@ -643,13 +636,13 @@ bool Curve::IsStraight() const
 	return !Segment2.IsCurve;
 }
 
-bool Curve::operator==(const Curve& other)
+bool Curve::operator==(const Curve& other) const
 {
 	return Segment1 == other.Segment1 && 
 		   Segment2 == other.Segment2;
 }
 
-bool Curve::operator!=(const Curve& other)
+bool Curve::operator!=(const Curve& other) const
 {
 	return !operator ==(other);
 }
@@ -661,7 +654,7 @@ Location::Location() :
 	Next(nullptr),
 	Prev(nullptr) {}
 
-Location::Location(const Curve& curve, float time, bool overlap) :
+Location::Location(const Curve& curve, double time, bool overlap) :
 	C(curve),
 	Time(time),
 	Overlap(overlap) {}
@@ -680,7 +673,7 @@ bool Location::IsTouching()
 								  c2.Segment1.P.X,
 								  c2.Segment1.P.Y,
 								  c2.Segment2.P.X,
-								  c2.Segment2.P.Y).Equals(PointF());
+								  c2.Segment2.P.Y).Equals(PointD());
 }
 
 bool Location::operator==(const Location& other)
@@ -688,21 +681,35 @@ bool Location::operator==(const Location& other)
 	return C == other.C && Time == other.Time && Overlap == other.Overlap; 
 }
 
-Branch::Branch() : Start(0.0), HI(PointF()) {}
+Branch::Branch() :
+	Start(0.0),
+	HI(PointD()) {}
 
-Branch::Branch(float start, const std::vector<Segment>& crossings, const PointF& hi) :
+Branch::Branch(double start, const std::vector<Segment>& crossings, const PointD& hi) :
 	Start(start),
 	Crossings(crossings),
 	HI(hi) {}
 
 Winding::Winding() :
+	Prev(Curve()),
 	OnPath(false),
+	OnAnyPath(false),
+	DontFlip(false),
 	W(0.0),
 	Quality(1.0),
 	WindingLeft(0.0),
 	WindingRight(0.0),
 	PathWindingLeft(0.0),
 	PathWindingRight(0.0) {}
+
+void Winding::Copy(Winding* wind)
+{
+	OnAnyPath		= wind->OnAnyPath;
+	W				= wind->W;
+	Quality			= wind->Quality;
+	WindingLeft 	= wind->WindingLeft;
+	WindingRight	= wind->WindingRight;
+}
 
 void Winding::Reset()
 {
@@ -717,78 +724,71 @@ void Winding::SetDirection(bool direction)
 	Direction = direction;
 }
 
-void Winding::SetPoint(const PointF& point)
+void Winding::SetPoint(const PointD& point)
 {
-	PointAbscissas = point.X;
-	PointOrdinat = point.Y;
-	PointAbscissasLeft = point.X - WINDING_EPSILON;
-	PointAbscissasRight = point.X + WINDING_EPSILON;
+	PointAbscissas		= Direction ? point.Y : point.X;
+	PointOrdinat		= Direction ? point.X : point.Y;
+	PointAbscissasLeft	= PointAbscissas - WINDING_EPSILON;
+	PointAbscissasRight	= PointAbscissas + WINDING_EPSILON;
 }
 
-void Winding::SetCurve(const Curve& curve)
+void Winding::SetCurves(const std::vector<Curve>& curvesHor, const std::vector<Curve>& curvesVer)
 {
-	C = curve;
+	Curves = Direction ? curvesHor : curvesVer;
+	CurvesHor = curvesHor;
+	CurvesVer = curvesVer;
 }
 
-void Winding::SetCurves(const std::vector<Curve>& curves)
+Winding* Winding::AddWinding(const Curve& curve)
 {
-	Curves = curves;
-}
-
-bool Winding::AddWinding()
-{
-	std::vector<float>	x = C.GetXValues(),
-						y = C.GetYValues(),
+	std::vector<double>	x = Direction ? curve.GetXValues() : curve.GetYValues(),
+						y = Direction ? curve.GetYValues() : curve.GetXValues(),
 						xPrev = Prev.GetXValues(),
-						yPrev = Prev.GetYValues(),
-						o = Direction ? x : y;
-	bool res = false;
+						yPrev = Prev.GetYValues();
 
-	if (PointOrdinat < std::min(o[0], o[3]) ||
-		PointOrdinat > std::max(o[0], o[3]))
-		return res;
+	if (PointOrdinat < std::min(x[0], x[3]) ||
+		PointOrdinat > std::max(x[0], x[3]))
+		return nullptr;
 
-	std::vector<float> a = Direction ? y : x;
-
-	if (o[0] == o[3])
+	if (x[0] == x[3])
 	{
-		bool a0InRange = a[0] < PointAbscissasRight &&
-						 a[3] > PointAbscissasLeft,
-			 a3InRange = a[3] < PointAbscissasRight &&
-						 a[0] > PointAbscissasLeft;
+		bool a0InRange = y[0] < PointAbscissasRight &&
+						 y[3] > PointAbscissasLeft,
+			 a3InRange = y[3] < PointAbscissasRight &&
+						 y[0] > PointAbscissasLeft;
 		if (a0InRange || a3InRange)
 			OnPath = true;
-		return res;
+		return nullptr;
 	}
 
-	int t;
-	if (PointOrdinat == o[0] || PointOrdinat == o[3])
-		t = PointOrdinat == o[0] ? 0 : 1;
-	else if (PointAbscissasLeft > max(a[0], a[1], a[2], a[3]) ||
-			 PointAbscissasRight < min(a[0], a[1], a[2], a[3]))
-		t = 1;
+	double t;
+	if (PointOrdinat == x[0] || PointOrdinat == x[3])
+		t = PointOrdinat == x[0] ? 0.0 : 1.0;
+	else if (PointAbscissasLeft > max(y[0], y[1], y[2], y[3]) ||
+			 PointAbscissasRight < min(y[0], y[1], y[2], y[3]))
+		t = 1.0;
 	else
 	{
-		int count =	C.SolveCubic(Direction ? 0 : 1, PointOrdinat,
-								 Roots, 0, 1);
-		t = count > 0 ? Roots[0] : 1;
+		int count =	curve.SolveCubic(Direction ? 0 : 1, PointOrdinat,
+									 Roots, 0, 1);
+		t = count > 0 ? Roots[0] : 1.0;
 	}
 
-	float abscis;
-	if (t == 0 || t == 1)
-		abscis = t == 0 ? a[0] : a[3];
+	double abscis;
+	if (t == 0.0 || t == 1.0)
+		abscis = t == 0.0 ? y[0] : y[3];
 	else
 	{
-		PointF pt = C.GetPoint(t);
+		PointD pt = curve.GetPoint(t);
 		abscis = Direction ? pt.Y : pt.X;
 	}
 
-	int		winding = o[0] > o[3] ? 1 : -1;
+	double	winding = x[0] > x[3] ? 1.0 : -1.0;
 	bool	dirDiff = Direction ? xPrev[0] > xPrev[3] : yPrev[0] > yPrev[3];
-	int		windingPrev = dirDiff ? 1 : -1;
-	float	a3Prev = Direction ? yPrev[3] : yPrev[0];
+	double	windingPrev = dirDiff ? 1.0 : -1.0;
+	double	a3Prev = Direction ? yPrev[3] : xPrev[3];
 
-	if (PointOrdinat != o[0])
+	if (PointOrdinat != x[0])
 	{
 		if (abscis < PointAbscissasLeft)
 			PathWindingLeft += winding;
@@ -797,20 +797,20 @@ bool Winding::AddWinding()
 		else
 			OnPath = true;
 
-		if (abscis > PointAbscissas - QUALITI_EPSILON &&
-			abscis < PointAbscissas + QUALITI_EPSILON)
+		if (abscis > (PointAbscissas - QUALITI_EPSILON) &&
+			abscis < (PointAbscissas + QUALITI_EPSILON))
 			Quality /= 2;
 	}
 	else
 	{
 		if (winding != windingPrev)
 		{
-			if (a[0] < PointAbscissasLeft)
+			if (y[0] < PointAbscissasLeft)
 				PathWindingLeft += winding;
-			else if (a[0] > PointAbscissasRight)
+			else if (y[0] > PointAbscissasRight)
 				PathWindingRight += winding;
 		}
-		else if (a[0] != a3Prev)
+		else if (y[0] != a3Prev)
 		{
 			if (a3Prev < PointAbscissasRight && abscis > PointAbscissasRight)
 			{
@@ -825,121 +825,128 @@ bool Winding::AddWinding()
 		}
 		Quality /= 4;
 	}
-	Prev = C;
+	Prev = curve;
 
-	PointF	pt = C.GetTangent(t);
+	PointD	pt = curve.GetTangent(t);
 	bool	inRange = abscis > PointAbscissasLeft &&
 					  abscis < PointAbscissasRight &&
-					  Direction ? pt.X : pt.Y == 0.0;
-	if (!inRange)
-		return false;
-	return	GetWinding();
+					  (Direction ? pt.X : pt.Y) == 0.0;
+	if (DontFlip || !inRange)
+		return nullptr;
+
+	Winding* newWind	= new Winding;
+	newWind->DontFlip	= true;
+	newWind->SetDirection(!Direction);
+	newWind->SetPoint(PointD(PointAbscissas, PointOrdinat));
+	newWind->SetCurves(CurvesHor, CurvesVer);
+	newWind->GetWinding();
+	return newWind;
 }
 
-bool Winding::HandleCurve()
+Winding* Winding::HandleCurve(const Curve& curve)
 {
-	std::vector<float>	x = C.GetXValues(),
-						y = C.GetYValues(),
-						o = Direction ? x : y;
+	std::vector<double>	x = Direction ? curve.GetXValues() : curve.GetYValues(),
+						y = Direction ? curve.GetYValues() : curve.GetXValues();
 
-	if (PointOrdinat <= max(o[0], o[1], o[2], o[3]) &&
-		PointOrdinat >= min(o[0], o[1], o[2], o[3]))
+	if (PointOrdinat <= max(x[0], x[1], x[2], x[3]) &&
+		PointOrdinat >= min(x[0], x[1], x[2], x[3]))
 	{
-		std::vector<float> a = Direction ? y : x;
 		std::vector<Curve> monoCurves;
-		if (PointAbscissasLeft > max(a[0], a[1], a[2], a[3]) ||
-			PointAbscissasRight < min(a[0], a[1], a[2], a[3]))
-			monoCurves.push_back(C);
+		if (PointAbscissasLeft > max(y[0], y[1], y[2], y[3]) ||
+			PointAbscissasRight < min(y[0], y[1], y[2], y[3]))
+			monoCurves.push_back(curve);
 		else
-			monoCurves = C.GetMonoCurves(Direction);
+			monoCurves = curve.GetMonoCurves(Direction);
 		for (const auto& c : monoCurves)
 		{
-			C = c;
-			if (AddWinding())
-				return true;
+			Winding* wind = AddWinding(c);
+			if (wind != nullptr)
+				return wind;
 		}
 	}
-	return false;
+	return nullptr;
 }
 
-bool Winding::GetWinding()
+void Winding::GetWinding()
 {
-	int ia = Direction ? 1 : 0,
-		io = ia ^ 1;
-
 	for (size_t i = 0; i < Curves.size(); i++)
 	{
-		C = Curves[i];
-		size_t id = C.Segment1.Id;
-
-		if (i == 0 || Curves[i - 1].Segment1.Id != id)
+		Curve close;
+		if (i == 0 || Curves[i - 1].Segment1.Id != Curves[i].Segment1.Id)
 		{
 			Prev = Curve();
+			bool path1 = Curves[i].Segment1.Id == 1;
+			if (!Curves[i].Segment1.Path->Is_poly_closed())
+			{
+				close = path1 ? Curve(Curves1[Curves1.size() - 1].Segment2, Curves[i].Segment1)
+							  : Curve(Curves2[Curves2.size() - 1].Segment2, Curves[i].Segment1);
+				std::vector<double> x = close.GetXValues(),
+									y = close.GetYValues();
+				if ((Direction ? x[0] : y[0]) != (Direction ? x[3] : y[3]))
+					Prev = close;
+			}
+
 			if (Prev == Curve())
 			{
-				Prev = C;
-				Curve prev = Curves[Curves.size() - 1];
-				while (prev != C)
+				Prev = Curves[i];
+				Curve prev = path1 ? Curves1[Curves1.size() - 1]
+								   : Curves2[Curves2.size() - 1];
+				while (prev != Curve() && prev != Curves[i])
 				{
-					std::vector<float> v = prev.GetXValues(),
-						y = prev.GetYValues();
-					std::copy(y.begin(), y.end(), std::back_inserter(v));
+					std::vector<double>	x = prev.GetXValues(),
+										y = prev.GetYValues();
 
-					if (v[io] != v[io + 6])
+					if ((Direction ? x[0] : y[0]) != (Direction ? x[3] : y[3]))
 					{
 						Prev = prev;
 						break;
 					}
-					if (IsFirst(prev))
-						break;
-					prev = GetPrev(prev);
+					prev = GetPreviousCurve(prev);
 				}
 			}
 		}
 
-		if (HandleCurve())
-			return true;
-
-		if (i + 1 == Curves.size() || Curves[i + 1].Segment1.Id != id)
-			if (OnPath && PathWindingLeft == 0.0 && PathWindingRight)
-				PathWindingLeft = PathWindingRight =
-					C.Segment1.Path->IsClockwise() ^ Direction ? 1 : -1;
-
-		WindingLeft += PathWindingLeft;
-		WindingRight += PathWindingRight;
-		PathWindingLeft = PathWindingRight = 0.0;
-		if (OnPath)
+		Winding* wind = HandleCurve(Curves[i]);
+		if (wind != nullptr)
 		{
-			OnAnyPath = true;
-			OnPath = false;
+			this->Copy(wind);
+			return;
+		}
+
+		if (i + 1 == Curves.size() || Curves[i + 1].Segment1.Id != Curves[i].Segment1.Id)
+		{
+			if (close != Curve())
+			{
+				Winding* wind1 = HandleCurve(close);
+				if (wind1 != nullptr)
+				{
+					this->Copy(wind);
+					return;
+				}
+			}
+
+			if (OnPath && PathWindingLeft == 0.0 && PathWindingRight == 0.0)
+				PathWindingLeft = PathWindingRight =
+					Curves[i].Segment1.Path->IsClockwise() ^ Direction ? 1.0 : -1.0;
+
+			WindingLeft += PathWindingLeft;
+			WindingRight += PathWindingRight;
+			PathWindingLeft = PathWindingRight = 0.0;
+			if (OnPath)
+			{
+				OnAnyPath = true;
+				OnPath = false;
+			}
 		}
 	}
 
 	WindingLeft = abs(WindingLeft);
 	WindingRight = abs(WindingRight);
 
-	return true;
+	return;
 }
 
-bool Winding::IsFirst(Curve curve)
-{
-	for (size_t i = 0; i < Curves.size(); i++)
-		if (Curves[i] == curve && i == 0)
-			return true;
-
-	return false;
-}
-
-Curve Winding::GetPrev(Curve curve)
-{
-	for (size_t i = 0; i < Curves.size(); i++)
-		if (Curves[i] == curve)
-			return Curves[i - 1];
-
-	return Curve();
-}
-
-CGraphicsPathClip::CGraphicsPathClip(CGraphicsPath* path1,
+CBooleanOperations::CBooleanOperations(CGraphicsPath* path1,
 									CGraphicsPath* path2,
 									BooleanOpType op) :
 	Op(op),
@@ -950,12 +957,12 @@ CGraphicsPathClip::CGraphicsPathClip(CGraphicsPath* path1,
 	TraceBoolean();
 }
 
-CGraphicsPath *CGraphicsPathClip::GetResult()
+CGraphicsPath *CBooleanOperations::GetResult()
 {
 	return Result;
 }
 
-void CGraphicsPathClip::TraceBoolean()
+void CBooleanOperations::TraceBoolean()
 {
 	if ((Op == Subtraction || Op == Exclusion) ^
 		Path1->IsClockwise() ^
@@ -967,7 +974,7 @@ void CGraphicsPathClip::TraceBoolean()
 	GetIntersection();
 	
 	int length = Locations.size() - 1;
-	for (int i = length; i >=0; i--)
+	for (int i = length; i >= 0; i--)
 	{
 		InsertLocation(Locations[i]->Inters);
 	}
@@ -998,7 +1005,7 @@ void CGraphicsPathClip::TraceBoolean()
 		{
 			std::shared_ptr<Location> loc = s.Inters;
 			
-			if (s.Wind->Curves.empty())
+			if (!(bool)s.Wind)
 				PropagateWinding(s, curveCollisionsMap);
 
 			if (!((bool)loc && loc->Overlap))
@@ -1012,7 +1019,7 @@ void CGraphicsPathClip::TraceBoolean()
 	}
 }
 
-void CGraphicsPathClip::TracePaths()
+void CBooleanOperations::TracePaths()
 {
 	std::vector<Segment> starts;
 
@@ -1022,7 +1029,7 @@ void CGraphicsPathClip::TracePaths()
 		bool inter1 = (bool)seg1.Inters,
 			 inter2 = (bool)seg2.Inters,
 			 over1 = inter1 && seg1.Inters->Overlap,
-			 over2 = inter2 && seg1.Inters->Overlap,
+			 over2 = inter2 && seg2.Inters->Overlap,
 			 o1 = over1 ? false : true,
 			 i1 = inter1 ? false : true,
 			 id = seg1.Id != seg2.Id ? seg1.Id - seg2.Id < 0
@@ -1030,12 +1037,13 @@ void CGraphicsPathClip::TracePaths()
 		return over1 ^ over2 ? o1 : inter1 ? i1 : id;
 	});
 
-	for (auto& s : Segments)
+	for (size_t i = 0; i < Segments.size(); i++)
 	{
+		Segment s = Segments[i];
 		std::vector<Branch> branches;
 		std::vector<Segment> visited;
 		Branch branch;
-		PointF hi = PointF();
+		PointD hi = PointD();
 		bool valid = s.IsValid(Op),
 			 finished = false,
 			 closed = true,
@@ -1060,17 +1068,14 @@ void CGraphicsPathClip::TracePaths()
 			}
 
 			if (first)
-			{
 				Result->StartFigure();
-				first = false;
-			}
 
 			if (finished)
 			{
 				if (s.Index == 0 || s.Index == s.Id == 1 ? Segments1.size() - 1
-														 : Segments2.size() - 1)
+														   : Segments2.size() - 1)
 					closed = s.Path->Is_poly_closed();
-				s.Visited = true;
+				Segments[i].Visited = true;
 				break;
 			}
 
@@ -1123,7 +1128,10 @@ void CGraphicsPathClip::TracePaths()
 			}
 
 			if (first)
+			{
 				Result->MoveTo(s.P.X, s.P.Y);
+				first = false;
+			}
 			else if (s.IsCurve)
 				Result->CurveTo(s.P.X + hi.X, s.P.Y + hi.Y,
 							   s.P.X + s.HO.X, s.P.Y + s.HO.Y,
@@ -1131,9 +1139,9 @@ void CGraphicsPathClip::TracePaths()
 			else
 				Result->LineTo(s.P.X, s.P.Y);
 			s.Path = Result;
-			s.Visited = true;
+			Segments[i].Visited = true;
 			visited.push_back(s);
-			Segment next = GetNextSegment(s);
+			Segment next = Segments[i++];
 			s = next;
 			hi = next.HI;
 		}
@@ -1149,35 +1157,37 @@ void CGraphicsPathClip::TracePaths()
 	}
 }
 
-void CGraphicsPathClip::PreparePath(CGraphicsPath* path, size_t id,
+void CBooleanOperations::PreparePath(CGraphicsPath* path, size_t id,
 									std::vector<Segment>& segments, 
 									std::vector<Curve>& curves)
 {
 	for (size_t i = 0; i < path->GetPointCount(); i++)
 	{
 		bool isCurve = path->IsCurvePoint(i);
-		std::vector<PointF> points = path->GetPoints(i, isCurve ? 3 : 1);
+		std::vector<PointD> points = path->GetPoints(i, isCurve ? 3 : 1);
 		segments.push_back(Segment(points, isCurve, i, id, path));
 		if (isCurve)
 			i += 2;
 	}
 
-	for (size_t i = 0; i < segments.size(); i++)
+	for (size_t i = 0; i < segments.size() - 1; i++)
 	{
-		curves.push_back(Curve(segments[i], i == (segments.size() - 1) ?
-											segments[0] : 
-											segments[i + 1]));
+		curves.push_back(Curve(segments[i], segments[i + 1]));
 	}
 }
 
-void CGraphicsPathClip::InsertSegment(const Segment& segment)
+void CBooleanOperations::InsertSegment(const Segment& segment)
 {
 	if (segment.Id == 1)
 	{
 		Segments1.insert(Segments1.begin() + segment.Index, segment);
 		for (size_t i = segment.Index + 1; i < Segments1.size(); i++)
+		{
+			for (auto& l : Locations)
+				if (l->S == Segments1[i])
+					l->S.Index++;
 			Segments1[i].Index++;
-
+		}
 		Curves1.clear();
 		for (size_t i = 0; i < Segments1.size(); i++)
 		{
@@ -1190,8 +1200,12 @@ void CGraphicsPathClip::InsertSegment(const Segment& segment)
 	{
 		Segments2.insert(Segments2.begin() + segment.Index, segment);
 		for (size_t i = segment.Index + 1; i < Segments2.size(); i++)
+		{
+			for (auto& l : Locations)
+				if (l->S == Segments2[i])
+					l->S.Index++;
 			Segments2[i].Index++;
-
+		}
 		Curves2.clear();
 		for (size_t i = 0; i < Segments2.size(); i++)
 		{
@@ -1202,51 +1216,70 @@ void CGraphicsPathClip::InsertSegment(const Segment& segment)
 	}
 }
 
-Curve CGraphicsPathClip::GetCurve(const Segment& segment) const
+Curve CBooleanOperations::GetCurve(const Segment& segment) const
 {
+	if (segment.Index == 0)
+		return Curve();
 	if (segment.Id == 1)
-		return Curves1[segment.Index];
-	return Curves2[segment.Index];
+		return Curves1[segment.Index - 1];
+	return Curves2[segment.Index - 1];
 }
 
-Curve CGraphicsPathClip::GetPreviousCurve(Curve curve) const
+Curve Winding::GetPreviousCurve(const Curve& curve) const
+{
+	size_t index = curve.Segment1.Index;
+	if (index == 0)
+		return Curve();
+	return curve.Segment1.Id == 1 ? Curves1[index - 1] : Curves2[index - 1];
+}
+
+Curve CBooleanOperations::GetPreviousCurve(const Curve& curve) const
 {
 	bool path1 = curve.Segment1.Id == 1;
-	if (curve.Segment1.Path->Is_poly_closed() && curve.Segment1.Index == 0)
-		return	path1 ? Curves1[Curves1.size() - 1]
-					  : Curves2[Curves2.size() - 1];
+	size_t length = path1 ? Curves1.size()
+						: Curves2.size();
+	if (curve.Segment1.Index == 0)
+	{
+		if (curve.Segment1.Path->Is_poly_closed())
+			return path1 ? Curves1[length - 1] : Curves2[length - 1];
+		else
+			return Curve();
+	}
 	return	path1 ? Curves1[curve.Segment1.Index - 1]
 				  : Curves2[curve.Segment1.Index - 1];
 }
 
-Curve CGraphicsPathClip::GetNextCurve(Curve curve) const
+Curve CBooleanOperations::GetNextCurve(const Curve& curve) const
 {
 	bool path1 = curve.Segment1.Id == 1;
 	size_t last = path1 ? Curves1.size() - 1 
 						: Curves2.size() - 1;
-	if (curve.Segment1.Path->Is_poly_closed() && curve.Segment1.Index == last)
-		return path1 ? Curves1[0] : Curves2[0];
+	if (curve.Segment1.Index == last)
+	{
+		if (curve.Segment1.Path->Is_poly_closed())
+			return path1 ? Curves1[0] : Curves2[0];
+		else
+			return Curve();
+	}
 	return	path1 ? Curves1[curve.Segment1.Index + 1]
 				  : Curves2[curve.Segment1.Index + 1];
 }
 
-Segment CGraphicsPathClip::GetNextSegment(Segment segment) const
+Segment CBooleanOperations::GetNextSegment(const Segment& segment) const
 {
 	bool path1 = segment.Id == 1;
-	std::vector<Segment> segments = path1 ? Segments1 : Segments2;
-	size_t length = segments.size();
-	for (size_t i = 0; i < length; i++)
+	size_t length = path1 ? Segments1.size() : Segments2.size();
+	if (segment.Index == (length - 1))
 	{
-		if (segments[i] == segment)
-		{
-			if (i == length - 1)
-				return segments[0];
-			return segments[i + 1];
-		}
+		if (segment.Path->Is_poly_closed())
+			return path1 ? Segments1[0] : Segments2[0];
+		else
+			return Segment();
 	}
+	return path1 ? Segments1[segment.Index + 1] : Segments2[segment.Index + 1];
 }
 
-std::vector<Curve> CGraphicsPathClip::GetCurves(const std::vector<int>& indices) const
+std::vector<Curve> CBooleanOperations::GetCurves(const std::vector<int>& indices) const
 {
 	std::vector<Curve> list;
 	for (const auto& i : indices)
@@ -1254,7 +1287,7 @@ std::vector<Curve> CGraphicsPathClip::GetCurves(const std::vector<int>& indices)
 	return list;
 }
 
-std::vector<Segment> CGraphicsPathClip::GetCrossing(const Segment& seg,
+std::vector<Segment> CBooleanOperations::GetCrossing(const Segment& seg,
 													std::vector<Segment>& starts,
 													bool collectStart) const
 {
@@ -1268,6 +1301,7 @@ std::vector<Segment> CGraphicsPathClip::GetCrossing(const Segment& seg,
 	if (loc != nullptr)
 	{
 		Collect(seg, crossing, starts, loc, nullptr, collectStart);
+		loc = start;
 
 		while (loc != nullptr && loc->Prev != nullptr)
 			loc = loc->Prev;
@@ -1276,13 +1310,13 @@ std::vector<Segment> CGraphicsPathClip::GetCrossing(const Segment& seg,
 	return crossing;
 }
 
-std::vector<std::vector<float>> CGraphicsPathClip::GetBoundsForCurves(
+std::vector<std::vector<double>> CBooleanOperations::GetBoundsForCurves(
 	const std::vector<Curve>& curves) const
 {
-	std::vector<std::vector<float>> bounds;
+	std::vector<std::vector<double>> bounds;
 	for (size_t i = 0; i < curves.size(); i++)
 	{
-		std::vector<float>	x = curves[i].GetXValues(),
+		std::vector<double>	x = curves[i].GetXValues(),
 							y = curves[i].GetYValues();
 		bounds.push_back({min(x[0], x[1], x[2], x[3]),
 						  min(y[0], y[1], y[2], y[3]),
@@ -1292,14 +1326,14 @@ std::vector<std::vector<float>> CGraphicsPathClip::GetBoundsForCurves(
 	return bounds;
 }
 
-std::vector<std::vector<int>> CGraphicsPathClip::FindCurveBoundsCollisions(
+std::vector<std::vector<int>> CBooleanOperations::FindCurveBoundsCollisions(
 	const std::vector<Curve>& curves1,
 	const std::vector<Curve>& curves2,
-	float tolerance, 
+	double tolerance,
 	bool bothAxis) 
 {
-	std::vector<std::vector<float>> bounds1 = GetBoundsForCurves(curves1);
-	std::vector<std::vector<float>> bounds2 = GetBoundsForCurves(curves2);
+	std::vector<std::vector<double>> bounds1 = GetBoundsForCurves(curves1);
+	std::vector<std::vector<double>> bounds2 = GetBoundsForCurves(curves2);
 
 	if (bothAxis)
 	{
@@ -1318,16 +1352,16 @@ std::vector<std::vector<int>> CGraphicsPathClip::FindCurveBoundsCollisions(
 	return FindBoundsCollisions(bounds1, bounds2, tolerance);
 }
 
-std::vector<std::vector<int>> CGraphicsPathClip::FindBoundsCollisions(
-	const std::vector<std::vector<float>>& bounds1,
-	const std::vector<std::vector<float>>& bounds2,
-	float tolerance,
+std::vector<std::vector<int>> CBooleanOperations::FindBoundsCollisions(
+	const std::vector<std::vector<double>>& bounds1,
+	const std::vector<std::vector<double>>& bounds2,
+	double tolerance,
 	bool sweepVertical,
 	bool onlySweep)
 {
 	bool self = bounds1 == bounds2;
 
-	std::vector<std::vector<float>> allBounds(bounds1);
+	std::vector<std::vector<double>> allBounds(bounds1);
 	if (!self)
 		std::copy(bounds2.begin(), bounds2.end(), std::back_inserter(allBounds));
 	size_t	allLength = allBounds.size(),
@@ -1354,7 +1388,7 @@ std::vector<std::vector<int>> CGraphicsPathClip::FindBoundsCollisions(
 	for (size_t i = 0; i < allLength; i++)
 	{
 		int curIndex = allIdicesByPri1[i];
-		std::vector<float> curBounds = allBounds[curIndex];
+		std::vector<double> curBounds = allBounds[curIndex];
 		std::vector<int> curCollisions;
 		bool isCurrent1 = curIndex < length1,
 			 isCurrent2 = self || !isCurrent1;
@@ -1368,9 +1402,10 @@ std::vector<std::vector<int>> CGraphicsPathClip::FindBoundsCollisions(
 									  activeIndicesByPri2.begin() + pruneCount);
 			if (self && onlySweep)
 			{
-				curCollisions.insert(curCollisions.end(),
-									 activeIndicesByPri2.begin(),
-									 activeIndicesByPri2.end());
+				if (isCurrent1)
+					curCollisions.insert(curCollisions.end(),
+										 activeIndicesByPri2.begin(),
+										 activeIndicesByPri2.end());
 				for (size_t j = 0; j < activeIndicesByPri2.size(); j++)
 				{
 					int activeIndex = activeIndicesByPri2[j];
@@ -1379,12 +1414,12 @@ std::vector<std::vector<int>> CGraphicsPathClip::FindBoundsCollisions(
 			}
 			else
 			{
-				float	curSec2 = curBounds[sec2],
+				double	curSec2 = curBounds[sec2],
 						curSec1 = curBounds[sec1];
 				for (int j = 0; j < activeIndicesByPri2.size(); j++)
 				{
 					int activeIndex = activeIndicesByPri2[j];
-					std::vector<float> activeBounds = allBounds[activeIndex];
+					std::vector<double> activeBounds = allBounds[activeIndex];
 					bool isActive1 = activeIndex < length1,
 						isActive2 = self || !isActive1,
 						isActive1Or2 = ((isCurrent1 && isActive2) || (isCurrent2 && isActive1)),
@@ -1408,7 +1443,7 @@ std::vector<std::vector<int>> CGraphicsPathClip::FindBoundsCollisions(
 		}
 		if (activeIndicesByPri2.size() > 0)
 		{
-			float curPri2 = curBounds[pri2];
+			double curPri2 = curBounds[pri2];
 			int index = binarySearch(allBounds, activeIndicesByPri2, pri2, curPri2);
 			activeIndicesByPri2.insert(activeIndicesByPri2.begin() + (1 + index), curIndex);
 		}
@@ -1425,12 +1460,12 @@ std::vector<std::vector<int>> CGraphicsPathClip::FindBoundsCollisions(
 	return allCollisions;
 }
 
-bool CGraphicsPathClip::IsCrossing(std::shared_ptr<Location> loc)
+bool CBooleanOperations::IsCrossing(std::shared_ptr<Location> loc)
 {
 	if(loc->Inters == nullptr)
 		return false;
 
-	float	t1 = loc->Time,
+	double	t1 = loc->Time,
 			t2 = loc->Inters->Time,
 			tMin = CURVETIME_EPSILON,
 			tMax = 1 - tMin;
@@ -1450,7 +1485,7 @@ bool CGraphicsPathClip::IsCrossing(std::shared_ptr<Location> loc)
 	if (t2 > tMax)
 		c4 = GetNextCurve(c4);
 	
-	std::vector<float> offsets;
+	std::vector<double> offsets;
 
 	if (!t1Inside)
 	{
@@ -1463,17 +1498,17 @@ bool CGraphicsPathClip::IsCrossing(std::shared_ptr<Location> loc)
 		AddOffsets(offsets, c4, false);
 	}
 
-	PointF	pt = loc->C.Segment1.P;
-	float	offset = FLT_MAX;
+	PointD	pt = loc->C.Segment1.P;
+	double	offset = DBL_MAX;
 	for (const auto& o : offsets)
 		if (o < offset)
 			offset = o;
 
-	PointF	v2 = c2.GetTangent(t1, offset, t1Inside, pt),
+	PointD	v2 = c2.GetTangent(t1, offset, t1Inside, pt),
 			v1 = c1.GetTangent(t1, offset, t1Inside, pt),
 			v4 = c4.GetTangent(t2, offset, t2Inside, pt),
 			v3 = c3.GetTangent(t2, offset, t2Inside, pt);
-	float	a1 = atan(v1.Y / v1.X) * 180 / M_PI,
+	double	a1 = atan(v1.Y / v1.X) * 180 / M_PI,
 			a2 = atan(v2.Y / v2.X) * 180 / M_PI,
 			a3 = atan(v3.Y / v3.X) * 180 / M_PI,
 			a4 = atan(v4.Y / v4.X) * 180 / M_PI;
@@ -1487,12 +1522,12 @@ bool CGraphicsPathClip::IsCrossing(std::shared_ptr<Location> loc)
 	return t1Inside ? inRange1 : inRange2;
 }
 
-bool CGraphicsPathClip::FilterIntersections(std::shared_ptr<Location> loc)
+bool CBooleanOperations::FilterIntersections(std::shared_ptr<Location> loc)
 {
 	return loc->Overlap || IsCrossing(loc);
 }
 
-bool CGraphicsPathClip::IntersectsBounds()
+bool CBooleanOperations::IntersectsBounds()
 {
 	RectF_T<double> rect1, rect2;
 	Path1->GetBounds(rect1.X, rect1.Y, rect1.Width, rect1.Height);
@@ -1504,7 +1539,7 @@ bool CGraphicsPathClip::IntersectsBounds()
 			(rect2.Y < rect1.Y + rect2.Height + EPSILON);
 }
 
-void CGraphicsPathClip::GetIntersection()
+void CBooleanOperations::GetIntersection()
 {
 	if (!IntersectsBounds())
 		return;
@@ -1527,14 +1562,14 @@ void CGraphicsPathClip::GetIntersection()
 	}
 }
 
-void CGraphicsPathClip::GetCurveIntersection(const Curve& curve1, const Curve& curve2)
+void CBooleanOperations::GetCurveIntersection(const Curve& curve1, const Curve& curve2)
 {
-	std::vector<float>	x1 = curve1.GetXValues(),
+	std::vector<double>	x1 = curve1.GetXValues(),
 						y1 = curve1.GetYValues(),
 						x2 = curve2.GetXValues(),
 						y2 = curve2.GetYValues();
 
-	float	minX1 = min(x1[0], x1[1], x1[2], x1[3]),
+	double	minX1 = min(x1[0], x1[1], x1[2], x1[3]),
 			maxX1 = max(x1[0], x1[1], x1[2], x1[3]),
 			minY1 = min(y1[0], y1[1], y1[2], y1[3]),
 			maxY1 = max(y1[0], y1[1], y1[2], y1[3]),
@@ -1578,7 +1613,7 @@ void CGraphicsPathClip::GetCurveIntersection(const Curve& curve1, const Curve& c
 				{
 					int t1 = i >> 1,
 						t2 = i & 1;
-					PointF	p1 = t1 == 0 ? curve1.Segment1.P
+					PointD	p1 = t1 == 0 ? curve1.Segment1.P
 										 : curve1.Segment2.P,
 							p2 = t2 == 0 ? curve2.Segment1.P
 										 : curve2.Segment2.P;
@@ -1590,7 +1625,7 @@ void CGraphicsPathClip::GetCurveIntersection(const Curve& curve1, const Curve& c
 	}
 }
 
-void CGraphicsPathClip::LinkIntersection(std::shared_ptr<Location> from,
+void CBooleanOperations::LinkIntersection(std::shared_ptr<Location> from,
 										 std::shared_ptr<Location> to)
 {
 	std::shared_ptr<Location> prev = from;
@@ -1613,49 +1648,49 @@ void CGraphicsPathClip::LinkIntersection(std::shared_ptr<Location> from,
 	}
 }
 
-void CGraphicsPathClip::AddLineIntersection(const Curve& curve1, const Curve& curve2, bool flip)
+void CBooleanOperations::AddLineIntersection(const Curve& curve1, const Curve& curve2, bool flip)
 {
-	std::vector<float>	x1 = curve1.GetXValues(),
+	std::vector<double>	x1 = curve1.GetXValues(),
 						y1 = curve1.GetYValues(),
 						x2 = curve2.GetXValues(),
 						y2 = curve2.GetYValues();
-	PointF pt = intersect(x1[0], y1[0], x1[3], y1[3], x2[0], y2[0], x2[3], y2[3]);
-	if (!pt.Equals(PointF()))
+	PointD pt = intersect(x1[0], y1[0], x1[3], y1[3], x2[0], y2[0], x2[3], y2[3]);
+	if (!pt.Equals(PointD()))
 	{
 		AddLocation(curve1, curve2, curve1.GetTimeOf(pt), curve2.GetTimeOf(pt));
 	}
 }
 
-void CGraphicsPathClip::AddCurveLineIntersection(const Curve& curve1, const Curve& curve2, bool flip)
+void CBooleanOperations::AddCurveLineIntersection(const Curve& curve1, const Curve& curve2, bool flip)
 {
-	std::vector<float>	x2 = curve2.GetXValues(),
+	std::vector<double>	x2 = curve2.GetXValues(),
 						y2 = curve2.GetYValues(),
 						roots = curve1.GetCurveLineIntersection(x2[0], y2[0],
 																x2[3] - x2[0],
 																y2[3] - y2[0]);
 	for (const auto& r : roots)
 	{
-		float	t1 = r;
-		PointF	p1 = curve1.GetPoint(t1);
-		float	t2 = curve2.GetTimeOf(p1);
+		double	t1 = r;
+		PointD	p1 = curve1.GetPoint(t1);
+		double	t2 = curve2.GetTimeOf(p1);
 		if (flip) std::swap(t1, t2);
 		if (t2 != -1)
 			AddLocation(flip ? curve2 :curve1, flip ? curve1 : curve2, t1, t2);
 	}
 }
 
-int CGraphicsPathClip::AddCurveIntersection(const Curve& curve1, const Curve& curve2, bool flip,
-											int recursion, int calls, float tMin,
-											float tMax, float uMin, float uMax)
+int CBooleanOperations::AddCurveIntersection(const Curve& curve1, const Curve& curve2, bool flip,
+											int recursion, int calls, double tMin,
+											double tMax, double uMin, double uMax)
 {
 	if (++calls >= 4096 || ++recursion >= 40)
 		return calls;
 	
-	std::vector<float>	x1 = curve1.GetXValues(),
+	std::vector<double>	x1 = curve1.GetXValues(),
 						y1 = curve1.GetYValues(),
 						x2 = curve2.GetXValues(),
 						y2 = curve2.GetYValues();
-	float	d1 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x2[1], y2[1]),
+	double	d1 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x2[1], y2[1]),
 			d2 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x2[2], y2[2]),
 			factor = d1 * d2 > 0 ? 3 / 4 : 4 / 9,
 			dMin = factor * min(0, d1, d2),
@@ -1664,8 +1699,8 @@ int CGraphicsPathClip::AddCurveIntersection(const Curve& curve1, const Curve& cu
 			dp1 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[1], y1[1]),
 			dp2 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[2], y1[2]),
 			dp3 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[3], y1[3]);
-	std::vector<std::vector<PointF>> hull = getConvexHull(dp0, dp1, dp2, dp3);
-	std::vector<PointF>	top = hull[0],
+	std::vector<std::vector<PointD>> hull = getConvexHull(dp0, dp1, dp2, dp3);
+	std::vector<PointD>	top = hull[0],
 						bottom = hull[1],
 						reverseBottom = {bottom[1], bottom[0]},
 						reverseTop;
@@ -1673,36 +1708,36 @@ int CGraphicsPathClip::AddCurveIntersection(const Curve& curve1, const Curve& cu
 		reverseTop = {top[2], top[1], top[0]};
 	else
 		reverseTop = {top[3], top[2], top[1], top[0]};
-	float tMinClip, tMaxClip;
+	double tMinClip, tMaxClip;
 	if ((d1 == 0 && d2 == 0 && dp0 == 0 && dp1 == 0 && dp2 == 0 && dp3 == 0) ||
 		(tMinClip = clipConvexHull(top, bottom, dMin, dMax)) == FLT_MIN ||
 		(tMaxClip = clipConvexHull(reverseTop, reverseBottom, dMin, dMax)) == FLT_MIN)
 		return calls;
 	
-	float	tMinNew = tMin + (tMax - tMin) * tMinClip,
+	double	tMinNew = tMin + (tMax - tMin) * tMinClip,
 			tMaxNew = tMin + (tMax - tMin) * tMaxClip;
 	
 	if (std::max(uMax - uMin, tMaxNew - tMinNew) < LINE_EPSILON)
 	{
-		float	t = (tMinNew + tMaxNew) / 2,
+		double	t = (tMinNew + tMaxNew) / 2,
 				u = (uMin + uMax) / 2;
 		Curve	c1 = flip ? curve2 : curve1,
 				c2 = flip ? curve1 : curve2;
-		float	t1 = flip ? u : t,
+		double	t1 = flip ? u : t,
 				t2 = flip ? t : u;
 		AddLocation(c1, c2, t1, t2);
 	}
 	else
 	{
 		Curve curve = curve1.GetPart(tMinClip, tMaxClip);
-		float uDiff = uMax - uMin;
+		double uDiff = uMax - uMin;
 
 		if (tMaxClip - tMinClip > 0.8)
 		{
 			if (tMaxNew - tMinNew > uDiff)
 			{
 				std::vector<Curve> parts = curve1.Subdivide(0.5);
-				float t = (tMinNew + tMaxNew) / 2;
+				double t = (tMinNew + tMaxNew) / 2;
 				calls = AddCurveIntersection(curve2, parts[0], !flip, recursion,
 											calls, uMin, uMax, tMinNew, t);
 				calls = AddCurveIntersection(curve2, parts[1], !flip, recursion,
@@ -1711,7 +1746,7 @@ int CGraphicsPathClip::AddCurveIntersection(const Curve& curve1, const Curve& cu
 			else
 			{
 				std::vector<Curve> parts = curve2.Subdivide(0.5);
-				float u = (uMin + uMax) / 2;
+				double u = (uMin + uMax) / 2;
 				calls = AddCurveIntersection(parts[0], curve1, !flip, recursion,
 											calls, uMin, u, tMinNew, tMaxNew);
 				calls = AddCurveIntersection(parts[1], curve1, !flip, recursion,
@@ -1731,12 +1766,12 @@ int CGraphicsPathClip::AddCurveIntersection(const Curve& curve1, const Curve& cu
 	return calls;
 }
 
-void CGraphicsPathClip::DivideLocations()
+void CBooleanOperations::DivideLocations()
 {
 	std::vector<Curve> clearCurves;
 	bool	ClearHandles = false;
 	Curve	prevCurve;
-	float	tMin = CURVETIME_EPSILON,
+	double	tMin = CURVETIME_EPSILON,
 			tMax = 1 - tMin,
 			prevTime = -1.0;
 
@@ -1744,7 +1779,7 @@ void CGraphicsPathClip::DivideLocations()
 	{
 		std::shared_ptr<Location> loc = Locations[i];
 		std::vector<std::shared_ptr<Location>> renormLocs;
-		float	origTime = loc->Time,
+		double	origTime = loc->Time,
 				time = loc->Time;
 		Segment segment;
 		Curve	curve = loc->C;
@@ -1782,7 +1817,6 @@ void CGraphicsPathClip::DivideLocations()
 				clearCurves.push_back(newCurve);
 			}
 			segment = newCurve.Segment1;
-			InsertSegment(segment);
 		}
 		std::shared_ptr<Location>	inter = segment.Inters,
 									dest = loc->Inters;
@@ -1799,12 +1833,13 @@ void CGraphicsPathClip::DivideLocations()
 		else
 			segment.Inters = dest;
 
+		InsertSegment(segment);
 		loc->S = segment;
 	}
 	ClearCurveHandles(clearCurves);
 }
 
-void CGraphicsPathClip::InsertLocation(std::shared_ptr<Location> loc)
+void CBooleanOperations::InsertLocation(std::shared_ptr<Location> loc)
 {
 	if (Locations.empty())
 	{
@@ -1823,10 +1858,10 @@ void CGraphicsPathClip::InsertLocation(std::shared_ptr<Location> loc)
 		if (loc == loc1)
 			return;
 
-		float diffId = loc->C.Segment1.Id - loc1->C.Segment1.Id,
-			diffT = (loc->C.Segment1.Index + loc->Time) - (loc1->C.Segment1.Index + loc1->Time);
-		bool self = loc->C.Segment1.Id == loc1->C.Segment1.Id;
-		float diff = self ? (diffT) : (diffId);
+		double diffId = loc->C.Segment1.Id - loc1->C.Segment1.Id,
+			  diffT = (loc->C.Segment1.Index + loc->Time) - (loc1->C.Segment1.Index + loc1->Time);
+		bool  self = loc->C.Segment1.Id == loc1->C.Segment1.Id;
+		double diff = self ? (diffT) : (diffId);
 		if (diff < 0)
 			r = mid - 1;
 		else
@@ -1835,12 +1870,12 @@ void CGraphicsPathClip::InsertLocation(std::shared_ptr<Location> loc)
 	Locations.insert(Locations.begin() + l, loc);
 }
 
-void CGraphicsPathClip::AddLocation(Curve curve1, Curve curve2,
-									float t1, float t2, bool overlap)
+void CBooleanOperations::AddLocation(Curve curve1, Curve curve2,
+									double t1, double t2, bool overlap)
 {
 	bool excludeStart = !overlap &&	GetPreviousCurve(curve1) == curve2,
 		 excludeEnd = !overlap && curve1 != curve2 && GetNextCurve(curve1) == curve2;
-	float	tMin = CURVETIME_EPSILON,
+	double	tMin = CURVETIME_EPSILON,
 			tMax = 1 - tMin;
 
 	if (t1 >= (excludeStart ? tMin : 0) &&
@@ -1859,30 +1894,30 @@ void CGraphicsPathClip::AddLocation(Curve curve1, Curve curve2,
 	}
 }
 
-void CGraphicsPathClip::ClearCurveHandles(std::vector<Curve>& curves)
+void CBooleanOperations::ClearCurveHandles(std::vector<Curve>& curves)
 {
 	for (auto& c : curves)
 		c.ClearHandles();
 }
 
-void CGraphicsPathClip::AddOffsets(std::vector<float>& offsets,
+void CBooleanOperations::AddOffsets(std::vector<double>& offsets,
 								   const Curve& curve, bool end)
 {
-	std::vector<float> roots = curve.GetPeeks();
+	std::vector<double> roots = curve.GetPeeks();
 	size_t	count = roots.size();
 	bool	first = end && count != 0,
 			second = !end && count != 0;
-	float	offset = curve.GetLength(first ? roots[count - 1] : 0,
+	double	offset = curve.GetLength(first ? roots[count - 1] : 0,
 									second ? roots[0] : 1);
 	offsets.push_back(count != 0 ? offset : offset / 32);
 }
 
-void CGraphicsPathClip::PropagateWinding(Segment segment,
+void CBooleanOperations::PropagateWinding(Segment segment,
 										std::vector<std::vector<Curve>> curveCollisonsMap)
 {
-	std::vector<std::tuple<Segment, Curve, float>> chain;
+	std::vector<std::tuple<Segment, Curve, double>> chain;
 	Segment start = segment;
-	float totalLength = 0;
+	double totalLength = 0;
 	Winding winding;
 	winding.Quality = -1.0;
 
@@ -1891,40 +1926,42 @@ void CGraphicsPathClip::PropagateWinding(Segment segment,
 		Curve curve = GetCurve(segment);
 		if (curve != Curve())
 		{
-			float length = curve.GetLength();
+			double length = curve.GetLength();
 			totalLength += length;
 			chain.push_back({segment, curve, length});
 		}
 		segment = GetNextSegment(segment);
-	} while (!(bool)segment.Inters && segment != start);
+	} while (segment != Segment() && !(bool)segment.Inters && segment != start);
 
-	float	offsets[3] = {0.5, 0.25, 0.75},
+	double	offsets[3] = {0.5, 0.25, 0.75},
 			tMin = 1e-3,
 			tMax = 1 - tMin;
 
 	for (size_t i = 0; i < 3 && winding.Quality < 0.5; i++)
 	{
-		float length = totalLength * offsets[i];
+		double length = totalLength * offsets[i];
 		for (size_t j = 0; j < chain.size(); j++)
 		{
-			std::tuple<Segment, Curve, float> entry = chain[j];
-			float curveLength = std::get<2>(entry);
+			std::tuple<Segment, Curve, double> entry = chain[j];
+			double curveLength = std::get<2>(entry);
 			Winding wind, map;
 
-			if (length < curveLength)
+			if (length <= curveLength)
 			{
 				Curve	curve = std::get<1>(entry);
 				size_t	id = curve.Segment1.Id;
-				float	t = clamp(curve.GetTimeAt(length), tMin, tMax);
-				PointF	pt = curve.GetPoint(t);
-				bool	dir = abs(curve.GetTangent(t).Y) < sqrt(2);
+				double	t = clamp(curve.GetTimeAt(length), tMin, tMax);
+				PointD	pt = curve.GetPoint(t);
+				bool	dir = abs(curve.GetTangent(t).Y) < sqrt(1/2);
 				map.SetDirection(dir);
 				map.SetPoint(pt);
+				map.Curves1 = Curves1;
+				map.Curves2 = Curves2;
 				
 				if (Op == Subtraction)
 				{
-					map.SetCurves(id == 1 ? Curves1 : Curves2);
-					float windPath = (std::max(map.PathWindingLeft,
+					map.SetCurves(Curves1, Curves2);
+					double windPath = (std::max(map.PathWindingLeft,
 											   map.PathWindingRight));
 
 					if ((id == 1 && windPath != 0.0) ||
@@ -1944,11 +1981,9 @@ void CGraphicsPathClip::PropagateWinding(Segment segment,
 
 				size_t index = id == 1 ? curve.Segment1.Index
 									   : Curves1.size() + curve.Segment1.Index;
-				std::vector<Curve> newCurvesHor = id == 1 ? curveCollisonsMap[2 * index]
-														  : curveCollisonsMap[2 * index],
-								   newCurvesVer = id == 1 ? curveCollisonsMap[2 * index + 1]
-														  : curveCollisonsMap[2 * index + 1];
-				map.SetCurves(dir ? newCurvesHor : newCurvesVer);
+				std::vector<Curve> newCurvesHor = curveCollisonsMap[2 * index],
+								   newCurvesVer = curveCollisonsMap[2 * index + 1];
+				map.SetCurves(newCurvesVer, newCurvesHor);
 				map.GetWinding();
 				
 				wind.W = std::max(map.WindingLeft, map.WindingRight);
@@ -1966,34 +2001,56 @@ void CGraphicsPathClip::PropagateWinding(Segment segment,
 	}
 
 	for (int j = chain.size() - 1; j >= 0; j--)
-		Segments[std::get<0>(chain[j]).Index].Wind = std::make_shared<Winding>(winding);
+	{
+		if (std::get<0>(chain[j]).Id == 1)
+			Segments[std::get<0>(chain[j]).Index].Wind =
+				std::make_shared<Winding>(winding);
+		else
+			Segments[std::get<0>(chain[j]).Index + Segments1.size()].Wind =
+				std::make_shared<Winding>(winding);
+	}
 }
 
-void CGraphicsPathClip::Collect(const Segment& seg, std::vector<Segment>& crossing,
+void CBooleanOperations::Collect(const Segment& seg, std::vector<Segment>& crossing,
 								std::vector<Segment>& starts, std::shared_ptr<Location> inter,
 								std::shared_ptr<Location> end, bool collectStarts) const
 {
 	while ((bool)inter && inter != end)
 	{
-		Segment other = inter->S,
+		Segment other = inter->S.Id == 1 ? Segments[inter->S.Index]
+										 : Segments[Segments1.size() + inter->S.Index],
 				next;
 		size_t last = other.Id == 1 ? Segments1.size() - 1 
 									: Segments2.size() - 1;
 		if (other.Index == last)
-			next = other.Id == 1 ? Segments1[0] : Segments2[0];
+			next = other.Id == 1 ? Segments[0] : Segments[Segments1.size()];
 		else
-			next = GetNextSegment(other);
+			next = other.Id == 1 ? Segments[other.Index + 1]
+								 : Segments[Segments1.size() + other.Index + 1];
 
 		std::shared_ptr<Location> nextInter = next.Inters;
+		Segment nextInterS;
 
-		if ((other != seg && other.Index == 0) ||
-			next.Index == 0 ||
-			(other.IsValid(Op) && next.IsValid(Op)) ||
-			((bool)nextInter && nextInter->S.IsValid(Op)))
+		if ((bool)nextInter)
+			nextInterS = nextInter->S.Id == 1 ? Segments[nextInter->S.Index]
+											  : Segments[Segments1.size() + nextInter->S.Index];
+
+		if (other != seg && ((other.Index == 0 && other.Id == 0) ||
+			(next.Index == 0 && next.Id == 0) ||
+			(other.IsValid(Op) && (next.IsValid(Op) ||
+			(bool)nextInter && nextInterS.IsValid(Op)))))
 			crossing.push_back(other);
+
 		if (collectStarts)
 			starts.push_back(other);
+
+		inter = inter->Next;
 	}
-	inter = inter->Next;
+}
+
+CGraphicsPath* BooleanOperation(CGraphicsPath *path1, CGraphicsPath *path2, BooleanOpType op)
+{
+	CBooleanOperations operation(path1, path2, op);
+	return operation.GetResult();
 }
 }

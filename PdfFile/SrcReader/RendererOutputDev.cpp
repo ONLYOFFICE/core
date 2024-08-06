@@ -4125,7 +4125,7 @@ namespace PdfReader
 		return isMask;
 	}
 
-	bool RendererOutputDev::ReadDCT(Aggplus::CImage* pImageRes, Object *pRef, Stream *pStream)
+	bool RendererOutputDev::ReadImage(Aggplus::CImage* pImageRes, Object *pRef, Stream *pStream)
 	{
 		Object oIm;
 		int nLength = 0;
@@ -4140,35 +4140,39 @@ namespace PdfReader
 		if (!nLength)
 			return false;
 
-		BYTE* pBuffer = new BYTE[nLength];
 		StreamKind nSKB = pStream->getBaseStream()->getKind();
+		Stream* pStrIn = NULL;
 		if (nSKB == strFile)
+			pStrIn = (FileStream*)(pStream->getBaseStream());
+		else if (nSKB == strWeird)
+			pStrIn = dynamic_cast<MemStream*>(pStream->getBaseStream());
+
+		BYTE* pBuffer = new BYTE[nLength];
+		if (!pStrIn)
 		{
-			FileStream* pFS = (FileStream*)(pStream->getBaseStream());
-			int nReadData = pFS->getBlock((char*)pBuffer, nLength);
-			if (nReadData != nLength)
+			RELEASEARRAYOBJECTS(pBuffer);
+			return false;
+		}
+
+		unsigned int nFileType = 0;
+		StreamKind nSK = pStream->getKind();
+		if (nSK == strDCT)
+		{
+			nFileType = _CXIMAGE_FORMAT_JPG;
+			if (pStrIn->getBlock((char*)pBuffer, nLength) != nLength)
 			{
 				RELEASEARRAYOBJECTS(pBuffer);
 				return false;
 			}
 		}
-		else if (nSKB == strWeird)
+		else if (nSK == strFlate)
 		{
-			MemStream* pMemory = dynamic_cast<MemStream*>(pStream->getBaseStream());
-			if (pMemory)
+			if (pStrIn->getBlock((char*)pBuffer, nLength) != nLength)
 			{
-				int nReadData = pMemory->getBlock((char*)pBuffer, nLength);
-				if (nReadData != nLength)
-				{
-					RELEASEARRAYOBJECTS(pBuffer);
-					return false;
-				}
+				RELEASEARRAYOBJECTS(pBuffer);
+				return false;
 			}
 		}
-
-		unsigned int nFileType = 0;
-		if (pStream->getKind() == strDCT)
-			nFileType = _CXIMAGE_FORMAT_JPG;
 
 		CBgraFrame oFrame;
 		if (oFrame.Decode(pBuffer, nLength, nFileType))
@@ -4190,7 +4194,7 @@ namespace PdfReader
 		StreamKind nSK = pStream->getKind();
 
 		// Чтение jpeg через cximage происходит быстрее чем через xpdf на ~40%
-		if (nSK != strDCT || !ReadDCT(&oImage, pRef, pStream))
+		if ((nSK != strDCT && nSK != strFlate) || !ReadImage(&oImage, pRef, pStream))
 		{
 			int nBufferSize = 4 * nWidth * nHeight;
 			if (nBufferSize < 1)

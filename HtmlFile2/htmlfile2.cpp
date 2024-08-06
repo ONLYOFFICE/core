@@ -46,9 +46,12 @@
 #define DEFAULT_FONT_FAMILY std::wstring(L"Times New Roman")
 #define DEFAULT_FONT_SIZE 24
 
+#define DEFAULT_IMAGE_WIDTH  304800
+#define DEFAULT_IMAGE_HEIGHT 304800
+
 #define SAVE_NORMALIZED_HTML 0
 
-#define RELEASE_VECTOR(vector_object, object_type) \
+#define RELEASE_VECTOR_PTR(vector_object, object_type) \
 	for (object_type* pElement : vector_object) \
 		RELEASEOBJECT(pElement) \
 
@@ -113,6 +116,31 @@ struct CTextSettings
 	{
 		if (std::wstring::npos == sPStyle.find(wsStyle))
 			sPStyle += wsStyle;
+	}
+};
+
+struct TImageData
+{
+	UINT m_unWidth;
+	UINT m_unHeight;
+
+	int m_nHSpace;
+	int m_nVSpace;
+
+	std::wstring m_wsAlign;
+
+	TImageData()
+	    : m_unWidth(0), m_unHeight(0), m_nHSpace(0), m_nVSpace(0), m_wsAlign(L"left")
+	{}
+
+	bool ZeroSize() const
+	{
+		return 0 == m_unWidth || 0 == m_unHeight;
+	}
+
+	bool ZeroSpaces() const
+	{
+		return 0 == m_nHSpace && 0 == m_nVSpace;
 	}
 };
 
@@ -724,7 +752,7 @@ public:
 
 	~CTableColgroup()
 	{
-		RELEASE_VECTOR(m_arCols, CTableCol)
+		RELEASE_VECTOR_PTR(m_arCols, CTableCol)
 	}
 
 	bool Empty() const
@@ -757,11 +785,11 @@ public:
 	~CTable()
 	{
 		for (std::vector<CTableRow*>& arHeaders : m_arHeaders)
-			RELEASE_VECTOR(arHeaders, CTableRow)
+			RELEASE_VECTOR_PTR(arHeaders, CTableRow)
 
-		RELEASE_VECTOR(m_arFoother, CTableRow)
-		RELEASE_VECTOR(m_arRows, CTableRow)
-		RELEASE_VECTOR(m_arColgroups, CTableColgroup)
+		RELEASE_VECTOR_PTR(m_arFoother, CTableRow)
+		RELEASE_VECTOR_PTR(m_arRows, CTableRow)
+		RELEASE_VECTOR_PTR(m_arColgroups, CTableColgroup)
 	}
 
 	CTableRow* operator[](UINT unIndex)
@@ -1502,6 +1530,8 @@ public:
 //		m_oStylesXml += L"<w:style w:type=\"table\" w:default=\"1\" w:styleId=\"table-based\"><w:name w:val=\"Normal Table\"/><w:uiPriority w:val=\"99\"/><w:semiHidden/><w:unhideWhenUsed/><w:tblPr><w:tblInd w:w=\"0\" w:type=\"dxa\"/><w:tblCellMar><w:top w:w=\"0\" w:type=\"dxa\"/><w:left w:w=\"108\" w:type=\"dxa\"/><w:bottom w:w=\"0\" w:type=\"dxa\"/><w:right w:w=\"108\" w:type=\"dxa\"/></w:tblCellMar></w:tblPr></w:style><w:style w:type=\"table\" w:styleId=\"table\"><w:name w:val=\"Table Grid\"/><w:basedOn w:val=\"table-based\"/><w:uiPriority w:val=\"59\"/><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:tblPr><w:tblBorders><w:top w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:left w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:bottom w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:right w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:insideH w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:insideV w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/></w:tblBorders></w:tblPr></w:style>";
 		// Сноски
 		m_oStylesXml += L"<w:style w:type=\"character\" w:styleId=\"footnote\"><w:name w:val=\"footnote reference\"/><w:uiPriority w:val=\"99\"/><w:unhideWhenUsed/><w:rPr><w:vertAlign w:val=\"superscript\"/></w:rPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"footnote-p\"><w:name w:val=\"footnote text\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"footnote-c\"/><w:uiPriority w:val=\"99\"/><w:semiHidden/><w:unhideWhenUsed/><w:rPr><w:sz w:val=\"18\"/></w:rPr><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"40\"/></w:pPr></w:style><w:style w:type=\"character\" w:styleId=\"footnote-c\" w:customStyle=\"1\"><w:name w:val=\"footnote text character\"/><w:link w:val=\"footnote-p\"/><w:uiPriority w:val=\"99\"/><w:rPr><w:sz w:val=\"18\"/></w:rPr></w:style>";
+		// Web стиль по-умолчанию
+		m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"noraml-web\"><w:name w:val=\"Normal (Web)\"/><w:basedOn w:val=\"normal\"/><w:uiPriority w:val=\"99\"/><w:semiHidden/><w:unhideWhenUsed/><w:pPr><w:spacing w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"/></w:pPr></w:style>";
 	}
 
 	// Читает файл
@@ -1959,7 +1989,9 @@ private:
 		if (NULL == pXml)
 			return;
 
-		pXml->WriteString(L"<w:r><w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/></w:rPr><w:t xml:space=\"preserve\"> </w:t></w:r>");
+		OpenR(pXml);
+		pXml->WriteString(L"<w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/></w:rPr><w:t xml:space=\"preserve\"> </w:t>");
+		CloseR(pXml);
 		m_oState.m_bWasSpace = true;
 	}
 
@@ -2226,6 +2258,22 @@ private:
 		// Область ссылки
 		if(sName == L"a" || sName == L"area")
 			readA(oXml, sSelectors, oTS, sNote);
+		else if (sName == L"abbr")
+		{
+			if (!sNote.empty())
+			{
+				wrP(oXml, sSelectors, oTS);
+				const std::wstring wsName{L"Bookmark" + std::to_wstring(m_mBookmarks.size() + 1)};
+				m_mBookmarks.insert(std::make_pair(wsName, m_mBookmarks.size() + 1));
+				oXml->WriteString(L"<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r><w:r><w:instrText>HYPERLINK  \\l \"" + wsName + L"\" \\o \"");
+				oXml->WriteEncodeXmlString(sNote);
+				oXml->WriteString(L"\"</w:instrText></w:r>");
+				oXml->WriteString(L"<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>");
+				bResult = readStream(oXml, sSelectors, oTS);
+				oXml->WriteString(L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>");
+				sNote.clear();
+			}
+		}
 		// Полужирный текст
 		// Акцентированный текст
 		else if(sName == L"b" || sName == L"strong")
@@ -2255,11 +2303,12 @@ private:
 		{
 			if (m_oState.m_bInP)
 			{
-				oXml->WriteString(L"<w:r>");
+				OpenR(oXml);
 				NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
 				if(oStyle.m_oText.GetAlign() == L"both")
 					oXml->WriteString(L"<w:tab/>");
-				oXml->WriteString(L"<w:br/></w:r>");
+				oXml->WriteString(L"<w:br/>");
+				CloseR(oXml);
 			}
 			else
 				WriteEmptyParagraph(oXml, false, m_oState.m_bInP);
@@ -2426,7 +2475,7 @@ private:
 		}
 		// Без нового абзаца
 		else if(sName == L"basefont" || sName == L"button" || sName == L"label" || sName == L"data" || sName == L"object" ||
-				sName == L"noscript" || sName == L"output" || sName == L"abbr"  || sName == L"time" || sName == L"small"  ||
+				sName == L"noscript" || sName == L"output" || sName == L"time" || sName == L"small"  ||
 				sName == L"progress" || sName == L"hgroup" || sName == L"meter" || sName == L"acronym" || sName == L"big")
 			bResult = readStream(oXml, sSelectors, oTS);
 		// С нового абзаца
@@ -2660,7 +2709,6 @@ private:
 				bResult = readStream(&oXmlData, sSelectors, oTS);
 
 			readNote(&oXmlData, sSelectors, sNote);
-			sNote = L"";
 
 			CloseP(&oXmlData, sSelectors);
 
@@ -3179,11 +3227,12 @@ private:
 		if(!sValue.empty())
 		{
 			wrP(oXml, sSelectors, oTS);
-			oXml->WriteString(L"<w:r>");
+			OpenR(oXml);
 			wrRPr(oXml, sSelectors, oTS);
-			oXml->WriteString(L"<w:t xml:space=\"preserve\">");
+			OpenT(oXml);
 			oXml->WriteEncodeXmlString(sValue + L' ');
-			oXml->WriteString(L"</w:t></w:r>");
+			CloseT(oXml);
+			CloseR(oXml);
 		}
 
 		readStream(oXml, sSelectors, oTS, ElementInTable(sSelectors));
@@ -3211,13 +3260,15 @@ private:
 				{
 					if(m_oLightReader.GetName() != L"label")
 						continue;
+
 					CloseP(oXml, sSelectors);
 					wrP(oXml, sSelectors, oTS);
-					oXml->WriteString(L"<w:r>");
+					OpenR(oXml);
 					wrRPr(oXml, sSelectors, oTS);
-					oXml->WriteString(L"<w:t xml:space=\"preserve\">");
+					OpenT(oXml);
 					oXml->WriteEncodeXmlString(m_oLightReader.GetText());
-					oXml->WriteString(L"</w:t></w:r>");
+					CloseT(oXml);
+					CloseR(oXml);
 				}
 				m_oLightReader.MoveToElement();
 				readLi(oXml, sSelectors, oTS, true);
@@ -3345,6 +3396,7 @@ private:
 				sFootnote = L"href";
 		}
 		m_oLightReader.MoveToElement();
+
 		if(sNote.empty())
 			sNote = sRef;
 
@@ -3388,11 +3440,12 @@ private:
 
 		if(!readStream(oXml, sSelectors, oTS))
 		{
-			oXml->WriteString(L"<w:r>");
+			OpenR(oXml);
 			wrRPr(oXml, sSelectors, oTS);
-			oXml->WriteString(L"<w:t xml:space=\"preserve\">");
+			OpenT(oXml);
 			oXml->WriteEncodeXmlString(!sAlt.empty() ? sAlt : L" ");
-			oXml->WriteString(L"</w:t></w:r>");
+			CloseT(oXml);
+			CloseR(oXml);
 		}
 
 		if (m_oState.m_bInP)
@@ -3416,13 +3469,19 @@ private:
 				if (!bFootnote)
 				{
 					std::wstring sFootnoteID = std::to_wstring(m_nFootnoteId++);
-					oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"");
+					OpenR(oXml);
+					oXml->WriteString(L"<w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"");
 					oXml->WriteString(sFootnoteID);
-					oXml->WriteString(L"\"/></w:r>");
+					oXml->WriteString(L"\"/>");
+					CloseR(oXml);
 					m_mFootnotes.insert(std::make_pair(sFootnote, sFootnoteID));
 				}
 				else
-					oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteRef/></w:r>");
+				{
+					OpenR(oXml);
+					oXml->WriteString(L"<w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteRef/>");
+					CloseR(oXml);
+				}
 			}
 
 			CloseP(oXml, sSelectors);
@@ -3510,7 +3569,7 @@ private:
 				sExtention != L"tga" && sExtention != L"tpic" && sExtention != L"tiff" && sExtention != L"tif"  && sExtention != L"wmf" && sExtention != L"wmz";
 	}
 
-	void ImageAlternative(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, const std::wstring& wsAlt, const std::wstring& wsSrc, unsigned int unWidth, unsigned int unHeight)
+	void ImageAlternative(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, const std::wstring& wsAlt, const std::wstring& wsSrc, const TImageData& oImageData)
 	{
 		m_oDocXmlRels.WriteString(L"<Relationship Id=\"rId");
 		m_oDocXmlRels.WriteString(std::to_wstring(m_nId));
@@ -3520,7 +3579,7 @@ private:
 
 		const bool bOpenedP{OpenP(oXml)};
 
-		WriteEmptyImage(oXml, 304800, 304800, L"", wsAlt);
+		WriteEmptyImage(oXml, (0 != oImageData.m_unWidth) ? oImageData.m_unWidth : DEFAULT_IMAGE_WIDTH, (0 != oImageData.m_unHeight) ? oImageData.m_unHeight : DEFAULT_IMAGE_HEIGHT, L"", wsAlt);
 
 		if (bOpenedP)
 			CloseP(oXml, sSelectors);
@@ -3530,7 +3589,19 @@ private:
 	{
 		std::wstring wsAlt, sSrcM;
 		bool bRes = false;
-		unsigned int unWidth = 0, unHeight = 0;
+		TImageData oImageData;
+
+		#define READ_IMAGE_DATA(data) \
+		{ \
+			NSCSS::NSProperties::CDigit oDigit; \
+			if (oDigit.SetValue(m_oLightReader.GetText())) \
+			{ \
+				if (NSCSS::UnitMeasure::None == oDigit.GetUnitMeasure()) \
+					data = static_cast<int>(NSCSS::CUnitMeasureConverter::ConvertPx(oDigit.ToDouble(), NSCSS::Inch, 96) * 914400); \
+				else \
+					data = static_cast<int>(oDigit.ToDouble(NSCSS::Inch) * 914400); \
+			} \
+		}\
 
 		while (m_oLightReader.MoveToNextAttribute())
 		{
@@ -3540,33 +3611,19 @@ private:
 			else if (wsName == L"src")
 				sSrcM = m_oLightReader.GetText();
 			else if (wsName == L"width")
-			{
-				NSCSS::NSProperties::CDigit oDigit;
-				if (oDigit.SetValue(m_oLightReader.GetText()))
-				{
-					if (NSCSS::UnitMeasure::None == oDigit.GetUnitMeasure())
-						unWidth = static_cast<int>(NSCSS::CUnitMeasureConverter::ConvertPx(oDigit.ToDouble(), NSCSS::Inch, 96) * 914400);
-					else
-						unWidth = static_cast<int>(oDigit.ToDouble(NSCSS::Inch) * 914400);
-				}
-			}
+				READ_IMAGE_DATA(oImageData.m_unWidth)
 			else if (wsName == L"height")
-			{
-				NSCSS::NSProperties::CDigit oDigit;
-				if (oDigit.SetValue(m_oLightReader.GetText()))
-				{
-					if (NSCSS::UnitMeasure::None == oDigit.GetUnitMeasure())
-						unHeight = static_cast<int>(NSCSS::CUnitMeasureConverter::ConvertPx(oDigit.ToDouble(), NSCSS::Inch, 96) * 914400 + 0.5);
-					else
-						unHeight = static_cast<int>(oDigit.ToDouble(NSCSS::Inch) * 914400 + 0.5);
-				}
-			}
+				READ_IMAGE_DATA(oImageData.m_unHeight)
+			else if (wsName == L"hspace")
+				READ_IMAGE_DATA(oImageData.m_nHSpace)
+			else if (wsName == L"vspace")
+				READ_IMAGE_DATA(oImageData.m_nVSpace)
 		}
 		m_oLightReader.MoveToElement();
 
 		if (sSrcM.empty())
 		{
-			ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM, unWidth, unHeight);
+			ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM, oImageData);
 			return;
 		}
 
@@ -3597,7 +3654,7 @@ private:
 			std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
 			if (NotValidExtension(sExtention))
 			{
-				ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM, unWidth, unHeight);
+				ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM, oImageData);
 				return;
 			}
 
@@ -3643,11 +3700,11 @@ private:
 		}
 
 		if (!bRes)
-			ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM, unWidth, unHeight);
+			ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM, oImageData);
 		else
 		{
 			wrP(oXml, sSelectors, oTS);
-			ImageRels(oXml, nImageId, sImageSrc, sExtention, unWidth, unHeight);
+			ImageRels(oXml, nImageId, sImageSrc, sExtention, oImageData);
 		}
 	}
 
@@ -3670,6 +3727,9 @@ private:
 		}
 
 		std::wstring sPStyle = GetStyle(oStyle, true);
+
+		if (sPStyle.empty() && !ElementInTable(sSelectors))
+			sPStyle = L"noraml-web";
 
 		if (sPStyle.empty() && oTS.sPStyle.empty())
 			return L"";
@@ -3757,39 +3817,79 @@ private:
 		return sRStyle;
 	}
 
-	void WriteImage(NSStringUtils::CStringBuilder* pXml, int nWidth, int nHeight, const std::wstring& wsId)
+	void WriteImage(NSStringUtils::CStringBuilder* pXml, const TImageData& oImageData, const std::wstring& wsId)
 	{
+		if (NULL == pXml)
+			return;
+
+		OpenR(pXml);
+
 		// Пишем в document.xml
-		pXml->WriteString(L"<w:r><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"");
-		pXml->WriteString(std::to_wstring(nWidth));
-		pXml->WriteString(L"\" cy=\"");
-		pXml->WriteString(std::to_wstring(nHeight));
-		pXml->WriteString(L"\"/><wp:docPr id=\"");
-		pXml->WriteString(wsId);
-		pXml->WriteString(L"\" name=\"\"/><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:nvPicPr><pic:cNvPr id=\"");
-		pXml->WriteString(wsId);
-		pXml->WriteString(L"\" name=\"\"/><pic:cNvPicPr></pic:cNvPicPr></pic:nvPicPr><pic:blipFill><a:blip r:embed=\"rPic");
-		pXml->WriteString(wsId);
-		pXml->WriteString(L"\"/><a:stretch/></pic:blipFill><pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"");
-		pXml->WriteString(std::to_wstring(nWidth));
-		pXml->WriteString(L"\" cy=\"");
-		pXml->WriteString(std::to_wstring(nHeight));
-		pXml->WriteString(L"\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>");
+		if (oImageData.ZeroSpaces())
+		{
+			pXml->WriteString(L"<w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"");
+			pXml->WriteString(std::to_wstring(oImageData.m_unWidth));
+			pXml->WriteString(L"\" cy=\"");
+			pXml->WriteString(std::to_wstring(oImageData.m_unHeight));
+			pXml->WriteString(L"\"/><wp:docPr id=\"");
+			pXml->WriteString(wsId);
+			pXml->WriteString(L"\" name=\"Picture " + wsId + L"\"/><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:nvPicPr><pic:cNvPr id=\"");
+			pXml->WriteString(wsId);
+			pXml->WriteString(L"\" name=\"Picture " + wsId + L"\"/><pic:cNvPicPr></pic:cNvPicPr></pic:nvPicPr><pic:blipFill><a:blip r:embed=\"rPic");
+			pXml->WriteString(wsId);
+			pXml->WriteString(L"\"/><a:stretch/></pic:blipFill><pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"");
+			pXml->WriteString(std::to_wstring(oImageData.m_unWidth));
+			pXml->WriteString(L"\" cy=\"");
+			pXml->WriteString(std::to_wstring(oImageData.m_unHeight));
+			pXml->WriteString(L"\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing>");
+		}
+		else
+		{
+			pXml->WriteString(L"<w:rPr><w:noProof/></w:rPr><w:drawing>");
+			pXml->WriteString(L"<wp:anchor distT=\"" + std::to_wstring(oImageData.m_nHSpace) + L"\" distB=\"" + std::to_wstring(oImageData.m_nHSpace) + L"\" distL=\"" + std::to_wstring(oImageData.m_nVSpace) + L"\" distR=\"" + std::to_wstring(oImageData.m_nVSpace) + L"\" simplePos=\"0\" relativeHeight=\"251658240\" behindDoc=\"0\" locked=\"0\" layoutInCell=\"1\" allowOverlap=\"0\">");
+			pXml->WriteString(L"<wp:simplePos x=\"0\" y=\"0\"/>");
+			pXml->WriteString(L"<wp:positionH relativeFrom=\"column\"><wp:align>" + oImageData.m_wsAlign + L"</wp:align></wp:positionH>");
+			pXml->WriteString(L"<wp:positionV relativeFrom=\"line\"><wp:posOffset>0</wp:posOffset></wp:positionV>");
+			pXml->WriteString(L"<wp:extent cx=\"" + std::to_wstring(oImageData.m_unWidth) + L"\" cy=\"" + std::to_wstring(oImageData.m_unHeight) + L"\"/>");
+			pXml->WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
+			pXml->WriteString(L"<wp:wrapSquare wrapText=\"bothSides\"/>");
+			pXml->WriteString(L"<wp:docPr id=\"" + wsId + L"\" name=\"Picture " + wsId + L"\"/>");
+			pXml->WriteString(L"<wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/></wp:cNvGraphicFramePr>");
+			pXml->WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
+			pXml->WriteString(L"<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
+			pXml->WriteString(L"<pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
+			pXml->WriteString(L"<pic:nvPicPr><pic:cNvPr id=\"" + wsId + L"\" name=\"Picture " + wsId + L"\"/>");
+			pXml->WriteString(L"<pic:cNvPicPr><a:picLocks noChangeAspect=\"1\" noChangeArrowheads=\"1\"/></pic:cNvPicPr></pic:nvPicPr>");
+			pXml->WriteString(L"<pic:blipFill><a:blip r:link=\"rPic" + wsId + L"\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:srcRect/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>");
+			pXml->WriteString(L"<pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" + std::to_wstring(oImageData.m_unWidth) + L"\" cy=\"" + std::to_wstring(oImageData.m_unHeight) + L"\"/></a:xfrm>");
+			pXml->WriteString(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></pic:spPr></pic:pic></a:graphicData></a:graphic>");
+			pXml->WriteString(L"<wp14:sizeRelH relativeFrom=\"page\"><wp14:pctWidth>0</wp14:pctWidth></wp14:sizeRelH><wp14:sizeRelV relativeFrom=\"page\"><wp14:pctHeight>0</wp14:pctHeight></wp14:sizeRelV>");
+			pXml->WriteString(L"</wp:anchor></w:drawing>");
+		}
+
+		CloseR(pXml);
 	}
 
 	void WriteEmptyImage(NSStringUtils::CStringBuilder* pXml, int nWidth, int nHeight, const std::wstring& wsName = L"", const std::wstring& wsDescr = L"")
 	{
-		pXml->WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstring(nWidth) + L"\" cy=\"" + std::to_wstring(nHeight) + L"\"/><wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
+		if (NULL == pXml)
+			return;
+
+		OpenR(pXml);
+
+		pXml->WriteString(L"<w:rPr><w:noProof/></w:rPr><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstring(nWidth) + L"\" cy=\"" + std::to_wstring(nHeight) + L"\"/><wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
 		pXml->WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_nId - 7) + L"\" name=\"" + wsName + L"\" descr=\"" + wsDescr + L"\"/>");
 		pXml->WriteString(L"<wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/></wp:cNvGraphicFramePr>");
 		pXml->WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
 		pXml->WriteString(L"<pic:nvPicPr><pic:cNvPr id=\"0\" name=\"" + wsName + L"\" descr=\"" + wsDescr + L"\"/><pic:cNvPicPr><a:picLocks noChangeAspect=\"1\" noChangeArrowheads=\"1\"/></pic:cNvPicPr></pic:nvPicPr>");
 		pXml->WriteString(L"<pic:blipFill><a:blip r:link=\"rId" + std::to_wstring(m_nId++) + L"\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:srcRect/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>");
 		pXml->WriteString(L"<pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" + std::to_wstring(nWidth) + L"\" cy=\"" + std::to_wstring(nHeight) + L"\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></pic:spPr>");
-		pXml->WriteString(L"</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>");
+		pXml->WriteString(L"</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing>");
+
+		CloseR(pXml);
 	}
 
-	void ImageRels  (NSStringUtils::CStringBuilder* oXml, int nImageId, const std::wstring& sImageSrc, const std::wstring& sExtention, unsigned int unWidth = 0, unsigned int unHeight = 0)
+	void ImageRels  (NSStringUtils::CStringBuilder* oXml, int nImageId, const std::wstring& sImageSrc, const std::wstring& sExtention, const TImageData& oImageData = TImageData())
 	{
 		bool bNew = nImageId < 0;
 		if (bNew)
@@ -3815,38 +3915,41 @@ private:
 			m_oDocXmlRels.WriteString(L"\"/>");
 		}
 
-		if (0 != unWidth && 0 != unHeight)
-			return WriteImage(oXml, unWidth, unHeight, sImageId);
+		if (!oImageData.ZeroSize())
+			return WriteImage(oXml, oImageData, sImageId);
+
+		TImageData oNewImageData{oImageData};
 
 		// Получаем размеры картинки
-		int nHy = oBgraFrame.get_Height();
-		int nWx = oBgraFrame.get_Width();
-		if (nWx > nHy)
+		oNewImageData.m_unWidth  = oBgraFrame.get_Width();
+		oNewImageData.m_unHeight = oBgraFrame.get_Height();
+
+		if (oNewImageData.m_unWidth > oNewImageData.m_unHeight)
 		{
-			int nW = nWx * 9525;
+			int nW = oNewImageData.m_unWidth * 9525;
 			nW = (nW > 7000000 ? 7000000 : nW);
-			nHy = (int)((double)nHy * (double)nW / (double)nWx);
-			nWx = nW;
+			oNewImageData.m_unHeight = (int)((double)oNewImageData.m_unHeight * (double)nW / (double)oNewImageData.m_unWidth);
+			oNewImageData.m_unWidth = nW;
 		}
 		else
 		{
-			int nH = nHy * 9525;
+			int nH = oNewImageData.m_unHeight * 9525;
 			nH = (nH > 8000000 ? 8000000 : nH);
-			int nW = (int)((double)nWx * (double)nH / (double)nHy);
+			int nW = (int)((double)oNewImageData.m_unWidth * (double)nH / (double)oNewImageData.m_unHeight);
 			if (nW > 7000000)
 			{
 				nW = 7000000;
-				nHy = (int)((double)nHy * (double)nW / (double)nWx);
+				oNewImageData.m_unHeight = (int)((double)oNewImageData.m_unHeight * (double)nW / (double)oNewImageData.m_unWidth);
 			}
 			else
-				nHy = nH;
-			nWx = nW;
+				oNewImageData.m_unHeight = nH;
+			oNewImageData.m_unWidth = nW;
 		}
 
-		WriteImage(oXml, nWx, nHy, sImageId);
+		WriteImage(oXml, oNewImageData, sImageId);
 	}
 
-	void readNote   (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const std::wstring& sNote)
+	void readNote   (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, std::wstring& sNote)
 	{
 		if(sNote.empty())
 			return;
@@ -3861,6 +3964,8 @@ private:
 		m_oNoteXml.WriteString(L"\"><w:p><w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr><w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r><w:r><w:t xml:space=\"preserve\">");
 		m_oNoteXml.WriteEncodeXmlString(sNote);
 		m_oNoteXml.WriteString(L"</w:t></w:r></w:p></w:footnote>");
+
+		sNote.clear();
 	}
 
 	bool readSVG    (const std::wstring& wsSvg)

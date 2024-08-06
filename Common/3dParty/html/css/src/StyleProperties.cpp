@@ -519,6 +519,7 @@ namespace NSCSS
 	{
 		m_enType   = oColor.m_enType;
 		m_oOpacity = oColor.m_oOpacity;
+		m_unLevel  = oColor.m_unLevel;
 
 		switch(m_enType)
 		{

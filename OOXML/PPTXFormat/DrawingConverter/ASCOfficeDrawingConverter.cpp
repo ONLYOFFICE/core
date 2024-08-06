@@ -2654,21 +2654,31 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 				std::wstring	sTextInsetMode	= oNodeTextBox.GetAttribute(L"o:insetmode");
 								sTextboxStyle	= oNodeTextBox.GetAttribute(L"style");
 
-				if (L"" != sTextInset && ((L"" == sTextInsetMode) || (L"custom" == sTextInsetMode)))
+				if (sTextInsetMode.empty() || L"custom" == sTextInsetMode)
 				{
-					PPTX::CStringTrimmer oTrimmer;
-					oTrimmer.m_Separator = (wchar_t)',';
-					oTrimmer.LoadFromString(sTextInset);
+					if (!sTextInset.empty())
+					{
+						PPTX::CStringTrimmer oTrimmer;
+						oTrimmer.m_Separator = (wchar_t)',';
+						oTrimmer.LoadFromString(sTextInset);
 
-					double dTextMarginLeft		= oTrimmer.GetParameter(0, 0.1);
-					double dTextMarginTop		= oTrimmer.GetParameter(1, 0.05);
-					double dTextMarginRight		= oTrimmer.GetParameter(2, 0.1);
-					double dTextMarginBottom	= oTrimmer.GetParameter(3, 0.05);
+						double dTextMarginLeft = oTrimmer.GetParameter(0, 0.1);
+						double dTextMarginTop = oTrimmer.GetParameter(1, 0.05);
+						double dTextMarginRight = oTrimmer.GetParameter(2, 0.1);
+						double dTextMarginBottom = oTrimmer.GetParameter(3, 0.05);
 
-					pShape->oTextBoxBodyPr->lIns = (int)(12700 * dTextMarginLeft	+ 0.5);
-					pShape->oTextBoxBodyPr->tIns = (int)(12700 * dTextMarginTop		+ 0.5);
-					pShape->oTextBoxBodyPr->rIns = (int)(12700 * dTextMarginRight	+ 0.5);
-					pShape->oTextBoxBodyPr->bIns = (int)(12700 * dTextMarginBottom	+ 0.5);
+						pShape->oTextBoxBodyPr->lIns = (int)(12700 * dTextMarginLeft + 0.5);
+						pShape->oTextBoxBodyPr->tIns = (int)(12700 * dTextMarginTop + 0.5);
+						pShape->oTextBoxBodyPr->rIns = (int)(12700 * dTextMarginRight + 0.5);
+						pShape->oTextBoxBodyPr->bIns = (int)(12700 * dTextMarginBottom + 0.5);
+					}
+					else
+					{
+						pShape->oTextBoxBodyPr->lIns = 12700;
+						pShape->oTextBoxBodyPr->tIns = 12700;
+						pShape->oTextBoxBodyPr->rIns = 12700;
+						pShape->oTextBoxBodyPr->bIns = 12700;
+					}
 				}
 
 				if (!sTextboxStyle.empty())

@@ -76,8 +76,9 @@ namespace XLSB
             m_EndDynamicArrayPr = elements_.back();
             elements_.pop_back();
         }
-		else
-			m_EndDynamicArrayPr = false;
+        else
+            m_EndDynamicArrayPr = XLS::BaseObjectPtr();
+
         if (proc.optional<FRTEnd>())
         {
             m_BrtFRTEnd = true;

@@ -65,8 +65,8 @@ namespace XLSB
 			m_BrtBeginMdx = elements_.back();
             elements_.pop_back();
         }
-		else
-			m_BrtBeginMdx = false;
+        else
+            m_BrtBeginMdx = BaseObjectPtr();
 
         if(proc.optional<MDXSET>())
         {

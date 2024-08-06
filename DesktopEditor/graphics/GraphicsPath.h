@@ -103,7 +103,7 @@ namespace Aggplus
 		bool IsClockwise() const;
 		void Reverse();
 		bool IsCurvePoint(size_t idx) const;
-		std::vector<PointF> GetPoints(size_t idx, size_t count) const;
+		std::vector<PointD> GetPoints(size_t idx, size_t count) const;
 		double GetArea() const;
 		double GetArea(size_t idx, bool isCurve) const;
 

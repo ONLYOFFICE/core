@@ -170,6 +170,10 @@ namespace PdfReader
 		*pdDeviceX = dUserX * pMatrix[0] + dUserY * pMatrix[2] + pMatrix[4];
 		*pdDeviceY = dUserX * pMatrix[1] + dUserY * pMatrix[3] + pMatrix[5];
 	}
+	inline int luminosity(BYTE* p)
+	{
+		return (p[2]*77 + p[1]*150 + p[0]*29) >> 8;
+	}
 }
 
 class CMemoryFontStream
@@ -3947,23 +3951,16 @@ namespace PdfReader
 			RELEASEOBJECT(pCommand);
 		}
 	}
-	void RendererOutputDev::drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight,GBool bInvert, GBool bInlineImage, GBool interpolate)
+	void RendererOutputDev::drawImageMask(GfxState* pGState, Object* pRef, Stream* pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate)
 	{
-		if (m_bDrawOnlyText)
+		if (m_bDrawOnlyText || pGState->getFillColorSpace()->isNonMarking())
 			return;
-
-		if (pGState->getFillColorSpace()->isNonMarking())
-		{
-			return;
-		}
-
-		double dPageHeight = pGState->getPageHeight();
 
 		int nBufferSize = 4 * nWidth * nHeight;
 		if (nBufferSize < 1)
 			return;
 
-		unsigned char *pBufferPtr = new(std::nothrow) unsigned char[nBufferSize];
+		BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufferSize];
 		if (!pBufferPtr)
 			return;
 
@@ -3971,73 +3968,75 @@ namespace PdfReader
 		oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 
 		// Пишем данные в pBufferPtr
-		ImageStream *pImageStream = new ImageStream(pStream, nWidth, 1, 1);
-
+		ImageStream* pImageStream = new ImageStream(pStream, nWidth, 1, 1);
 		pImageStream->reset();
 
 		GfxColorSpace* pColorSpace = pGState->getFillColorSpace();
 		GfxRGB oRGB;
 		pColorSpace->getRGB(pGState->getFillColor(), &oRGB, GfxRenderingIntent::gfxRenderingIntentAbsoluteColorimetric);
 
-		unsigned char r = colToByte(oRGB.r);
-		unsigned char g = colToByte(oRGB.g);
-		unsigned char b = colToByte(oRGB.b);
+		BYTE r = colToByte(oRGB.r);
+		BYTE g = colToByte(oRGB.g);
+		BYTE b = colToByte(oRGB.b);
+		BYTE unAlpha = std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
+		int nInvert = bInvert ? 1 : 0;
 
-		unsigned char unAlpha = std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
-		int nInvert = (bInvert ? 1 : 0);
-		for (int nY = nHeight - 1; nY >= 0; nY--)
+		for (int nY = nHeight - 1; nY >= 0; --nY)
 		{
-			unsigned char *pMask = NULL;
-			int nX = 0;
-			for (nX = 0, pMask = pImageStream->getLine(); nX < nWidth; nX++)
+			BYTE* pMask = pImageStream->getLine();
+			int nIndex = 4 * nY * nWidth;
+			for (int nX = 0; nX < nWidth; ++nX)
 			{
-				int nIndex = 4 * (nX + nY * nWidth);
-				unsigned char unPixel = *pMask++ ^ nInvert;
-				pBufferPtr[nIndex + 0] = unPixel ? 255 : b;
-				pBufferPtr[nIndex + 1] = unPixel ? 255 : g;
-				pBufferPtr[nIndex + 2] = unPixel ? 255 : r;
-				pBufferPtr[nIndex + 3] = unPixel ? 0 : unAlpha;
+				BYTE unPixel = *pMask++ ^ nInvert;
+				if (unPixel)
+				{
+					pBufferPtr[nIndex + 0] = 255;
+					pBufferPtr[nIndex + 1] = 255;
+					pBufferPtr[nIndex + 2] = 255;
+					pBufferPtr[nIndex + 3] = 0;
+				}
+				else
+				{
+					pBufferPtr[nIndex + 0] = b;
+					pBufferPtr[nIndex + 1] = g;
+					pBufferPtr[nIndex + 2] = r;
+					pBufferPtr[nIndex + 3] = unAlpha;
+				}
+				nIndex += 4;
 			}
 		}
 
 		delete pImageStream;
 
 		double arrMatrix[6];
-		double *pCTM = pGState->getCTM();
+		double* pCTM = pGState->getCTM();
 
 		//  Исходное предобразование
 		//              |1  0  0|   |pCTM[0] pCTM[1] 0|
 		// arrMattrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
 		//              |0  1  1|   |pCTM[4] pCTM[5] 1|
 
-		arrMatrix[0] =     pCTM[0];
-		arrMatrix[1] =  -pCTM[1];
-		arrMatrix[2] =    -pCTM[2];
-		arrMatrix[3] =  -(-pCTM[3]);
-		arrMatrix[4] =     pCTM[2] + pCTM[4];
-		arrMatrix[5] =  -(pCTM[3] + pCTM[5]) + dPageHeight;
+		arrMatrix[0] = pCTM[0];
+		arrMatrix[1] = -pCTM[1];
+		arrMatrix[2] = -pCTM[2];
+		arrMatrix[3] = pCTM[3];
+		arrMatrix[4] = pCTM[2] + pCTM[4];
+		arrMatrix[5] = -(pCTM[3] + pCTM[5]) + pGState->getPageHeight();
 
 		double dShiftX = 0, dShiftY = 0;
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
-		m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
+		m_pRenderer->DrawImage(&oImage, dShiftX, dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
 	}
-	void RendererOutputDev::setSoftMaskFromImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate)
+	void RendererOutputDev::setSoftMaskFromImageMask(GfxState* pGState, Object* pRef, Stream* pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate)
 	{
-		if (m_bDrawOnlyText)
+		if (m_bDrawOnlyText || pGState->getFillColorSpace()->isNonMarking())
 			return;
-
-		if (pGState->getFillColorSpace()->isNonMarking())
-		{
-			return;
-		}
-
-		double dPageHeight = pGState->getPageHeight();
 
 		int nBufferSize = 4 * nWidth * nHeight;
 		if (nBufferSize < 1)
 			return;
 
-		unsigned char *pBufferPtr = new(std::nothrow) unsigned char[nBufferSize];
+		BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufferSize];
 		if (!pBufferPtr)
 			return;
 
@@ -4048,8 +4047,7 @@ namespace PdfReader
 		oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth, true);
 
 		// Пишем данные в pBufferPtr
-		ImageStream *pImageStream = new ImageStream(pStream, nWidth, 1, 1);
-
+		ImageStream* pImageStream = new ImageStream(pStream, nWidth, 1, 1);
 		pImageStream->reset();
 
 		GfxColorSpace* pColorSpace = pGState->getFillColorSpace();
@@ -4058,30 +4056,39 @@ namespace PdfReader
 		GfxPattern* pPattern = pGState->getFillPattern();
 		if (pPattern && pPattern->getType() == 2)
 		{
-			GfxShading *pShading = ((GfxShadingPattern*)pPattern)->getShading();
+			GfxShading* pShading = ((GfxShadingPattern*)pPattern)->getShading();
 			pColorSpace = pShading->getColorSpace();
 			if (pShading->getHasBackground())
 				pColorSpace->getRGB(pShading->getBackground(), &oRGB, GfxRenderingIntent::gfxRenderingIntentAbsoluteColorimetric);
 		}
 
-		unsigned char r = colToByte(oRGB.r);
-		unsigned char g = colToByte(oRGB.g);
-		unsigned char b = colToByte(oRGB.b);
+		BYTE r = colToByte(oRGB.r);
+		BYTE g = colToByte(oRGB.g);
+		BYTE b = colToByte(oRGB.b);
+		BYTE unAlpha = std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
+		int nInvert = bInvert ? 1 : 0;
 
-		double dAlphaKoef = pGState->getFillOpacity();
-		int nInvert = (bInvert ? 1 : 0);
-		for (int nY = nHeight - 1; nY >= 0; nY--)
+		for (int nY = nHeight - 1; nY >= 0; --nY)
 		{
-			unsigned char *pMask = NULL;
-			int nX = 0;
+			BYTE* pMask = pImageStream->getLine();
 			int nIndex = 4 * nY * nWidth;
-			for (nX = 0, pMask = pImageStream->getLine(); nX < nWidth; nX++)
+			for (int nX = 0; nX < nWidth; ++nX)
 			{
-				unsigned char unPixel = *pMask++ ^ nInvert;
-				pBufferPtr[nIndex + 0] = unPixel ? 255 : b;
-				pBufferPtr[nIndex + 1] = unPixel ? 255 : g;
-				pBufferPtr[nIndex + 2] = unPixel ? 255 : r;
-				pBufferPtr[nIndex + 3] = unPixel ? 0 : (unsigned char)(255.0 * dAlphaKoef);
+				BYTE unPixel = *pMask++ ^ nInvert;
+				if (unPixel)
+				{
+					pBufferPtr[nIndex + 0] = 255;
+					pBufferPtr[nIndex + 1] = 255;
+					pBufferPtr[nIndex + 2] = 255;
+					pBufferPtr[nIndex + 3] = 0;
+				}
+				else
+				{
+					pBufferPtr[nIndex + 0] = b;
+					pBufferPtr[nIndex + 1] = g;
+					pBufferPtr[nIndex + 2] = r;
+					pBufferPtr[nIndex + 3] = unAlpha;
+				}
 				nIndex += 4;
 			}
 		}
@@ -4089,28 +4096,28 @@ namespace PdfReader
 		delete pImageStream;
 
 		double arrMatrix[6];
-		double *pCTM = pGState->getCTM();
+		double* pCTM = pGState->getCTM();
 
 		//  Исходное предобразование
 		//              |1  0  0|   |pCTM[0] pCTM[1] 0|
 		// arrMattrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
 		//              |0  1  1|   |pCTM[4] pCTM[5] 1|
 
-		arrMatrix[0] =     pCTM[0];
-		arrMatrix[1] =  -pCTM[1];
-		arrMatrix[2] =    -pCTM[2];
-		arrMatrix[3] =  -(-pCTM[3]);
-		arrMatrix[4] =     pCTM[2] + pCTM[4];
-		arrMatrix[5] =  -(pCTM[3] + pCTM[5]) + dPageHeight;
+		arrMatrix[0] = pCTM[0];
+		arrMatrix[1] = -pCTM[1];
+		arrMatrix[2] = -pCTM[2];
+		arrMatrix[3] = pCTM[3];
+		arrMatrix[4] = pCTM[2] + pCTM[4];
+		arrMatrix[5] = -(pCTM[3] + pCTM[5]) + pGState->getPageHeight();
 
 		double dShiftX = 0, dShiftY = 0;
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
-		m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
+		m_pRenderer->DrawImage(&oImage, dShiftX, dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
 
 		setSoftMask(pGState, bbox, 0, NULL, NULL);
 	}
 
-	OO_INLINE bool CheckMask(const int& nComponentsCount, const int* pMaskColors, const unsigned char* pLine)
+	OO_INLINE bool CheckMask(const int& nComponentsCount, const int* pMaskColors, const BYTE* pLine)
 	{
 		bool isMask = true;
 		for (int nCompIndex = 0; nCompIndex < nComponentsCount; ++nCompIndex)
@@ -4121,11 +4128,10 @@ namespace PdfReader
 				break;
 			}
 		}
-
 		return isMask;
 	}
 
-	bool RendererOutputDev::ReadImage(Aggplus::CImage* pImageRes, Object *pRef, Stream *pStream)
+	bool RendererOutputDev::ReadImage(Aggplus::CImage* pImageRes, Object* pRef, Stream* pStream)
 	{
 		Object oIm;
 		int nLength = 0;
@@ -4140,42 +4146,18 @@ namespace PdfReader
 		if (!nLength)
 			return false;
 
-		StreamKind nSKB = pStream->getBaseStream()->getKind();
-		Stream* pStrIn = NULL;
-		if (nSKB == strFile)
-			pStrIn = (FileStream*)(pStream->getBaseStream());
-		else if (nSKB == strWeird)
-			pStrIn = dynamic_cast<MemStream*>(pStream->getBaseStream());
-
 		BYTE* pBuffer = new BYTE[nLength];
-		if (!pStrIn)
+		Stream* pS = pStream->getUndecodedStream();
+		pS->reset();
+		nLength = pS->getBlock((char*)pBuffer, nLength);
+		if (!nLength)
 		{
 			RELEASEARRAYOBJECTS(pBuffer);
 			return false;
 		}
 
-		unsigned int nFileType = 0;
-		StreamKind nSK = pStream->getKind();
-		if (nSK == strDCT)
-		{
-			nFileType = _CXIMAGE_FORMAT_JPG;
-			if (pStrIn->getBlock((char*)pBuffer, nLength) != nLength)
-			{
-				RELEASEARRAYOBJECTS(pBuffer);
-				return false;
-			}
-		}
-		else if (nSK == strFlate)
-		{
-			if (pStrIn->getBlock((char*)pBuffer, nLength) != nLength)
-			{
-				RELEASEARRAYOBJECTS(pBuffer);
-				return false;
-			}
-		}
-
 		CBgraFrame oFrame;
-		if (oFrame.Decode(pBuffer, nLength, nFileType))
+		if (oFrame.Decode(pBuffer, nLength, _CXIMAGE_FORMAT_JPG))
 		{
 			pImageRes->Create(oFrame.get_Data(), oFrame.get_Width(), oFrame.get_Height(), -4 * oFrame.get_Width());
 			oFrame.ClearNoAttack();
@@ -4194,13 +4176,13 @@ namespace PdfReader
 		StreamKind nSK = pStream->getKind();
 
 		// Чтение jpeg через cximage происходит быстрее чем через xpdf на ~40%
-		if ((nSK != strDCT && nSK != strFlate) || !ReadImage(&oImage, pRef, pStream))
+		if (nSK != strDCT || !ReadImage(&oImage, pRef, pStream))
 		{
 			int nBufferSize = 4 * nWidth * nHeight;
 			if (nBufferSize < 1)
 				return;
 
-			unsigned char *pBufferPtr = new(std::nothrow) unsigned char[nBufferSize];
+			BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufferSize];
 			if (!pBufferPtr)
 				return;
 
@@ -4210,12 +4192,9 @@ namespace PdfReader
 			ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
 			pImageStream->reset();
 
-			unsigned char unAlpha = std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
-
-			int nStride = pImageStream->getVals();
+			BYTE unAlpha = std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
 			int nComps = pImageStream->getComps();
-			int nWidthMax = nStride / nComps;
-			int nCheckWidth = std::min(nWidth, nWidthMax);
+			int nCheckWidth = std::min(nWidth, pImageStream->getVals() / nComps);
 			GfxRenderingIntent intent = pGState->getRenderingIntent();
 
 			// fast realization for some colorspaces (for wasm module)
@@ -4226,8 +4205,8 @@ namespace PdfReader
 
 			for (int nY = nHeight - 1; nY >= 0; --nY)
 			{
-				unsigned char* pLine = pImageStream->getLine();
-				unsigned char* pLineDst = pBufferPtr + 4 * nWidth * nY;
+				BYTE* pLine = pImageStream->getLine();
+				BYTE* pLineDst = pBufferPtr + 4 * nWidth * nY;
 
 				if (!pLine)
 				{
@@ -4289,7 +4268,7 @@ namespace PdfReader
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 		m_pRenderer->DrawImage(&oImage, dShiftX, dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
 	}
-	void RendererOutputDev::drawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Object* pStreamRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate)
+	void RendererOutputDev::drawMaskedImage(GfxState* pGState, Object* pRef, Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, Object* pStreamRef, Stream* pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate)
 	{
 		if (m_bDrawOnlyText)
 			return;
@@ -4324,7 +4303,7 @@ namespace PdfReader
 		if (nBufferSize < 1)
 			return;
 
-		unsigned char *pBufferPtr = new(std::nothrow) unsigned char[nBufferSize];
+		BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufferSize];
 		if (!pBufferPtr)
 			return;
 
@@ -4332,13 +4311,12 @@ namespace PdfReader
 		oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 
 		// Пишем данные в pBufferPtr
-		ImageStream *pImageStream = new ImageStream(pStream, nWidth, pColorMap->getNumPixelComps(), pColorMap->getBits());
-		ImageStream *pMask = new ImageStream(pMaskStream, nMaskWidth, 1, 1);
-
+		ImageStream* pImageStream = new ImageStream(pStream, nWidth, pColorMap->getNumPixelComps(), pColorMap->getBits());
+		ImageStream* pMask = new ImageStream(pMaskStream, nMaskWidth, 1, 1);
 		pMask->reset();
 		pImageStream->reset();
 
-		BYTE nAlpha = pGState->getFillOpacity() * 255;
+		BYTE unAlpha = std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
 		if (nWidth != nMaskWidth || nHeight != nMaskHeight)
 		{
 			unsigned char *pMaskBuffer = new(std::nothrow) unsigned char[nMaskWidth * nMaskHeight];
@@ -4384,7 +4362,7 @@ namespace PdfReader
 					if (unMask && !bMaskInvert)
 						pBufferPtr[nIndex + 3] = 0;
 					else
-						pBufferPtr[nIndex + 3] = nAlpha;
+						pBufferPtr[nIndex + 3] = unAlpha;
 
 					nIndex += 4;
 				}
@@ -4394,12 +4372,12 @@ namespace PdfReader
 		}
 		else
 		{
-			unsigned char unPixel[4] ={ 0, 0, 0, 0 };
-			unsigned char unMask = 0;
-			for (int nY = nHeight - 1; nY >= 0; nY--)
+			BYTE unPixel[4] = { 0, 0, 0, 0 };
+			BYTE unMask = 0;
+			for (int nY = nHeight - 1; nY >= 0; --nY)
 			{
 				int nIndex = 4 * nY * nWidth;
-				for (int nX = 0; nX < nWidth; nX++)
+				for (int nX = 0; nX < nWidth; ++nX)
 				{
 					pImageStream->getPixel(unPixel);
 					pMask->getPixel(&unMask);
@@ -4408,11 +4386,7 @@ namespace PdfReader
 					pBufferPtr[nIndex + 0] = colToByte(oRGB.b);
 					pBufferPtr[nIndex + 1] = colToByte(oRGB.g);
 					pBufferPtr[nIndex + 2] = colToByte(oRGB.r);
-
-					if (unMask && !bMaskInvert)
-						pBufferPtr[nIndex + 3] = 0;
-					else
-						pBufferPtr[nIndex + 3] = nAlpha;
+					pBufferPtr[nIndex + 3] = unMask && !bMaskInvert ? 0 : unAlpha;
 
 					nIndex += 4;
 				}
@@ -4423,21 +4397,21 @@ namespace PdfReader
 		delete pImageStream;
 
 		double arrMatrix[6];
-		double *pCTM = pGState->getCTM();
+		double* pCTM = pGState->getCTM();
 		//  Исходное предобразование
 		//             |1  0  0|   |pCTM[0] pCTM[1] 0|
 		// arrMatrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
 		//             |0  1  1|   |pCTM[4] pCTM[5] 1|
-		arrMatrix[0] =     pCTM[0];
-		arrMatrix[1] =  -pCTM[1];
-		arrMatrix[2] =    -pCTM[2];
-		arrMatrix[3] =  -(-pCTM[3]);
-		arrMatrix[4] =     pCTM[2] + pCTM[4];
-		arrMatrix[5] =  -(pCTM[3] + pCTM[5]) + dPageHeight;
+		arrMatrix[0] = pCTM[0];
+		arrMatrix[1] = -pCTM[1];
+		arrMatrix[2] = -pCTM[2];
+		arrMatrix[3] = pCTM[3];
+		arrMatrix[4] = pCTM[2] + pCTM[4];
+		arrMatrix[5] = -(pCTM[3] + pCTM[5]) + dPageHeight;
 
 		double dShiftX = 0, dShiftY = 0;
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
-		m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
+		m_pRenderer->DrawImage(&oImage, dShiftX, dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
 	}
 	void RendererOutputDev::drawSoftMaskedImage(GfxState* pGState, Object* pRef, Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, Object* maskRef, Stream* pMaskStream,
 												int nMaskWidth, int nMaskHeight, GfxImageColorMap* pMaskColorMap, double* pMatteColor, GBool interpolate)
@@ -4451,7 +4425,7 @@ namespace PdfReader
 		if (nBufferSize < 1)
 			return;
 
-		unsigned char *pBufferPtr = new(std::nothrow) unsigned char[nBufferSize];
+		BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufferSize];
 		if (!pBufferPtr)
 			return;
 
@@ -4459,15 +4433,15 @@ namespace PdfReader
 		oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 
 		// Пишем данные в pBufferPtr
-		ImageStream *pImageStream = new ImageStream(pStream, nWidth, pColorMap->getNumPixelComps(), pColorMap->getBits());
+		ImageStream* pImageStream = new ImageStream(pStream, nWidth, pColorMap->getNumPixelComps(), pColorMap->getBits());
 		pImageStream->reset();
 
 		double dAlphaKoef = pGState->getFillOpacity();
 		unsigned char unPixel[4] = { 0, 0, 0, 0 };
-		for (int nY = nHeight - 1; nY >= 0; nY--)
+		for (int nY = nHeight - 1; nY >= 0; --nY)
 		{
 			int nIndex = 4 * nY * nWidth;
-			for (int nX = 0; nX < nWidth; nX++)
+			for (int nX = 0; nX < nWidth; ++nX)
 			{
 				pImageStream->getPixel(unPixel);
 				GfxRGB oRGB;
@@ -4591,7 +4565,7 @@ namespace PdfReader
 			ImageStream* pSMaskStream = new ImageStream(pMaskStream, nMaskWidth, pMaskColorMap->getNumPixelComps(), pMaskColorMap->getBits());
 			pSMaskStream->reset();
 
-			unsigned char unAlpha = 0;
+			BYTE unAlpha = 0;
 			for (int nY = nMaskHeight - 1; nY >= 0; --nY)
 			{
 				int nIndex = 4 * nY * nMaskWidth;
@@ -4612,54 +4586,51 @@ namespace PdfReader
 		{
 			GfxRGB oMatteRGB;
 			GfxColor oColor;
-			for (int i = 0; i < pColorMap->getNumPixelComps(); ++i) {
+			for (int i = 0; i < pColorMap->getNumPixelComps(); ++i)
 				oColor.c[i] = dblToCol(pMatteColor[i]);
-			}
 			pColorMap->getColorSpace()->getRGB(&oColor, &oMatteRGB, gfxRenderingIntentAbsoluteColorimetric);
 
-			unsigned char unMatteR = colToByte(oMatteRGB.r);
-			unsigned char unMatteG = colToByte(oMatteRGB.g);
-			unsigned char unMatteB = colToByte(oMatteRGB.b);
+			BYTE unMatteR = colToByte(oMatteRGB.r);
+			BYTE unMatteG = colToByte(oMatteRGB.g);
+			BYTE unMatteB = colToByte(oMatteRGB.b);
 
-			for (int nIndex = 0; nIndex < nHeight * nWidth * 4; nIndex += 4)
+			for (int nIndex = 0; nIndex < nBufferSize; nIndex += 4)
 			{
-				unsigned char unA = pBufferPtr[nIndex + 3];
-
-				if (0 == unA)
+				BYTE unA = pBufferPtr[nIndex + 3];
+				if (unA)
+				{
+					double dK = 255.0 / unA;
+					pBufferPtr[nIndex + 0] = std::max(0, std::min(255, int((pBufferPtr[nIndex + 0] - unMatteB) * dK + unMatteB)));
+					pBufferPtr[nIndex + 1] = std::max(0, std::min(255, int((pBufferPtr[nIndex + 1] - unMatteG) * dK + unMatteG)));
+					pBufferPtr[nIndex + 2] = std::max(0, std::min(255, int((pBufferPtr[nIndex + 2] - unMatteR) * dK + unMatteR)));
+				}
+				else
 				{
 					pBufferPtr[nIndex + 0] = 255;
 					pBufferPtr[nIndex + 1] = 255;
 					pBufferPtr[nIndex + 2] = 255;
 				}
-				else
-				{
-					double dK = 255.0 / unA;
-
-					pBufferPtr[nIndex + 0] = std::max(0, std::min(255, int((pBufferPtr[nIndex + 0] - unMatteB) * dK + unMatteB)));
-					pBufferPtr[nIndex + 1] = std::max(0, std::min(255, int((pBufferPtr[nIndex + 1] - unMatteG) * dK + unMatteG)));
-					pBufferPtr[nIndex + 2] = std::max(0, std::min(255, int((pBufferPtr[nIndex + 2] - unMatteR) * dK + unMatteR)));
-				}
 			}
 		}
 
 		double arrMatrix[6];
-		double *pCTM = pGState->getCTM();
+		double* pCTM = pGState->getCTM();
 		//  Исходное предобразование
 		//              |1  0  0|   |pCTM[0] pCTM[1] 0|
 		// arrMattrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
 		//              |0  1  1|   |pCTM[4] pCTM[5] 1|
-		arrMatrix[0] =     pCTM[0];
-		arrMatrix[1] =  -pCTM[1];
-		arrMatrix[2] =    -pCTM[2];
-		arrMatrix[3] =  -(-pCTM[3]);
-		arrMatrix[4] =     pCTM[2] + pCTM[4];
-		arrMatrix[5] =  -(pCTM[3] + pCTM[5]) + dPageHeight;
+		arrMatrix[0] = pCTM[0];
+		arrMatrix[1] = -pCTM[1];
+		arrMatrix[2] = -pCTM[2];
+		arrMatrix[3] = pCTM[3];
+		arrMatrix[4] = pCTM[2] + pCTM[4];
+		arrMatrix[5] = -(pCTM[3] + pCTM[5]) + dPageHeight;
 
 		double dShiftX = 0, dShiftY = 0;
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
-		m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
+		m_pRenderer->DrawImage(&oImage, dShiftX, dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
 	}
-	void RendererOutputDev::beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask)
+	void RendererOutputDev::beginTransparencyGroup(GfxState* pGState, double* pBBox, GfxColorSpace* pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask)
 	{
 		if (c_nGrRenderer != m_lRendererType)
 			return;
@@ -4670,10 +4641,10 @@ namespace PdfReader
 		m_sCS.back().pBlendingCS = pBlendingColorSpace;
 		// TODO if (bKnockout)
 	}
-	void RendererOutputDev::endTransparencyGroup(GfxState *pGState)
+	void RendererOutputDev::endTransparencyGroup(GfxState* pGState)
 	{
 	}
-	void RendererOutputDev::paintTransparencyGroup(GfxState *pGState, double *pBBox)
+	void RendererOutputDev::paintTransparencyGroup(GfxState* pGState, double* pBBox)
 	{
 		if (c_nGrRenderer != m_lRendererType)
 			return;
@@ -4683,10 +4654,6 @@ namespace PdfReader
 		m_pRenderer->EndCommand(c_nLayerType);
 
 		m_sCS.pop_back();
-	}
-	int luminosity(BYTE* p)
-	{
-		return (p[2]*77 + p[1]*150 + p[0]*29) >> 8;
 	}
 	void RendererOutputDev::setSoftMask(GfxState *pGState, double *pBBox, GBool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor)
 	{

@@ -98,7 +98,11 @@ border_style& border_style::operator =(const border_style& Value)
 
     return *this;
 }
-border_style::border_style(const std::wstring & Value) : initialized_(false), none_(false)
+border_style::border_style() : initialized_(false), none_(true), style_(none)
+{
+}
+
+border_style::border_style(const std::wstring & Value) : initialized_(false), none_(false), style_(none)
 {
     if (Value.empty()) return;
 
@@ -163,6 +167,21 @@ border_style::border_style(const color & color_,  const type & style_, const len
 		none_ = false;
 
     initialized_ = true;
+}
+bool border_style::initialized() const    { return initialized_; }
+bool border_style::is_none()     const    { return none_; }
+
+const length& border_style::get_length()const
+{
+    return length_;
+}
+const border_style::type& border_style::get_style() const
+{
+    return style_;
+}
+const color& border_style::get_color() const
+{
+    return color_;
 }
 
 

@@ -58,7 +58,7 @@ public:
         fine_dashed,
         double_thin
     };
-    border_style(){none_ = true;}
+    border_style();
 
     border_style(const std::wstring & Value);
     border_style(const border_style & Value);
@@ -67,16 +67,16 @@ public:
     static border_style parse(const std::wstring & Str);
     border_style& operator=(const border_style& ob);
 public:
-    bool initialized() const    { return initialized_; }
-    bool is_none()     const    { return none_; }
+    bool initialized() const;
+    bool is_none()     const;
 
-    const length     & get_length()const { return length_; }
-    const type       & get_style() const { return (none_ ? none : style_); }
-    const color      & get_color() const { return color_; }
+    const length     & get_length()const;
+    const type       & get_style() const;
+    const color      & get_color() const;
 
 private:
-    bool        none_;
-    bool        initialized_;
+    bool        none_ = true;
+    bool        initialized_ = false;
     length      length_;
     type        style_ = none;
     color       color_;

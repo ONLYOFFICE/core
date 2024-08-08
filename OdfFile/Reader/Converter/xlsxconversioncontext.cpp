@@ -740,9 +740,9 @@ void xlsx_conversion_context::end_span()
 	get_text_context()->end_span();
 }
 
-void xlsx_conversion_context::start_table_cell(const std::wstring & formula, size_t columnsSpanned, size_t rowsSpanned)
+void xlsx_conversion_context::start_table_cell(size_t columnsSpanned, size_t rowsSpanned)
 {
-    get_table_context().start_cell(formula, columnsSpanned, rowsSpanned);
+    get_table_context().start_cell(columnsSpanned, rowsSpanned);
 }
 
 bool xlsx_conversion_context::in_table_cell()

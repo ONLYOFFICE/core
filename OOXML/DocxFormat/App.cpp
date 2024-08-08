@@ -152,7 +152,7 @@ namespace OOX
 	void CApp::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 	{
 		std::wstring sXml;
-		sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\" xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\">");
+		sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
 
 		NSBinPptxRW::CXmlWriter oWriter;
 		toXmlWriter(&oWriter);

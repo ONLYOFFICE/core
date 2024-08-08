@@ -39,13 +39,17 @@ namespace NSCSS
 
 		std::wstring wsNewValue = wsValue;
 
-		bool bImportant = CutImportant(wsNewValue);
+		const bool bImportant{CutImportant(wsNewValue)};
 
 		if (m_bImportant && !bImportant)
 			return false;
 
+		if (UINT_MAX == unLevel)
+			m_unLevel++;
+		else
+			m_unLevel = unLevel;
+
 		m_oValue     = wsNewValue;
-		m_unLevel    = unLevel;
 		m_bImportant = bImportant;
 
 		return true;
@@ -58,15 +62,19 @@ namespace NSCSS
 
 		std::wstring wsNewValue = wsValue;
 
-		bool bImportant = CutImportant(wsNewValue);
+		const bool bImportant{CutImportant(wsNewValue)};
 
 		if (m_bImportant && !bImportant)
 			return false;
 
 		if (arValiableValues.end() != std::find(arValiableValues.begin(), arValiableValues.end(), wsNewValue))
 		{
+			if (UINT_MAX == unLevel)
+				m_unLevel++;
+			else
+				m_unLevel = unLevel;
+
 			m_oValue     = wsNewValue;
-			m_unLevel    = unLevel;
 			m_bImportant = bImportant;
 
 			return true;
@@ -82,7 +90,7 @@ namespace NSCSS
 
 		std::wstring wsNewValue = wsValue;
 
-		bool bImportant = CutImportant(wsNewValue);
+		const bool bImportant{CutImportant(wsNewValue)};
 
 		if (m_bImportant && !bImportant)
 			return false;
@@ -91,8 +99,12 @@ namespace NSCSS
 
 		if (arValiableValues.end() != oFoundValue)
 		{
+			if (UINT_MAX == unLevel)
+				m_unLevel++;
+			else
+				m_unLevel = unLevel;
+
 			m_oValue     = oFoundValue->second;
-			m_unLevel    = unLevel;
 			m_bImportant = bImportant;
 
 			return true;
@@ -109,7 +121,7 @@ namespace NSCSS
 	void CString::Clear()
 	{
 		m_oValue.clear();
-		m_unLevel    = NULL;
+		m_unLevel    = 0;
 		m_bImportant = false;
 	}
 
@@ -183,7 +195,7 @@ namespace NSCSS
 	void CDigit::Clear()
 	{
 		m_oValue        = DBL_MAX;
-		m_unLevel       = NULL;
+		m_unLevel       = 0;
 		m_enUnitMeasure = None;
 		m_bImportant    = false;
 	}
@@ -380,15 +392,19 @@ namespace NSCSS
 
 		std::wstring wsNewValue = wsValue;
 
-		bool bImportant = CutImportant(wsNewValue); //TODO:: иногда мы знаем, что "!important" точно не встретится
-		                                            // возможно стоит добавить ещё метод
+		const bool bImportant{CutImportant(wsNewValue)}; //TODO:: иногда мы знаем, что "!important" точно не встретится
+		                                                 // возможно стоит добавить ещё метод
 		if (m_bImportant && !bImportant)
 			return false;
 
 		if (!CUnitMeasureConverter::GetValue(wsValue, m_oValue, m_enUnitMeasure))
 			return false;
 
-		m_unLevel       = unLevel;
+		if (UINT_MAX == unLevel)
+			m_unLevel++;
+		else
+			m_unLevel = unLevel;
+
 		m_bImportant    = bImportant;
 
 		return true;
@@ -426,7 +442,11 @@ namespace NSCSS
 			return false;
 
 		m_oValue  = dValue;
-		m_unLevel = unLevel;
+
+		if (UINT_MAX == unLevel)
+			m_unLevel++;
+		else
+			m_unLevel = unLevel;
 
 		return true;
 	}
@@ -652,33 +672,25 @@ namespace NSCSS
 
 		std::wstring wsNewValue(wsValue);
 
-		bool bImportant = CutImportant(wsNewValue);
+		const bool bImportant = CutImportant(wsNewValue);
 
 		std::transform(wsNewValue.begin(), wsNewValue.end(), wsNewValue.begin(), std::towlower);
+		NS_STATIC_FUNCTIONS::RemoveSpaces(wsNewValue);
 
 		if (m_bImportant && !bImportant)
 			return false;
 
+		bool bResult{false};
+
 		if (wsNewValue[0] == L'#')
 		{
 			SetHEX(wsNewValue.substr(1, wsNewValue.length() - 1));
-			m_unLevel    = unLevel;
-			m_bImportant = bImportant;
-			return true;
+			bResult = true;
 		}
-		else if (L"none" == wsNewValue)
+		else if (L"none" == wsNewValue || wsNewValue == L"transparent")
 		{
 			SetNone();
-			m_unLevel    = unLevel;
-			m_bImportant = bImportant;
-			return true;
-		}
-		else if (wsNewValue == L"transparent")
-		{
-			SetNone();
-			m_unLevel    = unLevel;
-			m_bImportant = bImportant;
-			return true;
+			bResult = true;
 		}
 		else if (10 <= wsNewValue.length() && wsNewValue.substr(0, 3) == L"rgb")
 		{
@@ -711,9 +723,7 @@ namespace NSCSS
 			if (wsNewValue.substr(0, 4) == L"rgba" && 4 == arValues.size())
 				m_oOpacity.SetValue(arValues[3], unLevel, bHardMode);
 
-			m_unLevel    = unLevel;
-			m_bImportant = bImportant;
-			return true;
+			bResult = true;
 		}
 
 		if (5 <= wsNewValue.length())
@@ -721,23 +731,30 @@ namespace NSCSS
 			SetUrl(wsValue);
 
 			if (m_enType == ColorUrl)
+				bResult = true;
+		}
+
+		if (!bResult)
+		{
+			const std::map<std::wstring, std::wstring>::const_iterator oHEX = NSConstValues::COLORS.find(wsNewValue);
+			if (oHEX != NSConstValues::COLORS.end())
 			{
-				m_unLevel    = unLevel;
-				m_bImportant = bImportant;;
-				return true;
+				SetHEX(oHEX->second);
+				bResult = true;
 			}
 		}
 
-		const std::map<std::wstring, std::wstring>::const_iterator oHEX = NSConstValues::COLORS.find(wsNewValue);
-		if (oHEX != NSConstValues::COLORS.end())
-		{
-			SetHEX(oHEX->second);
-			m_unLevel    = unLevel;
-			m_bImportant = bImportant;
-			return true;
-		}
+		if (!bResult)
+			return false;
 
-		return false;
+		m_bImportant = bImportant;
+
+		if (UINT_MAX == unLevel)
+			m_unLevel++;
+		else
+			m_unLevel = unLevel;
+
+		return true;
 	}
 
 	bool CColor::SetOpacity(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -2073,6 +2090,7 @@ namespace NSCSS
 		CString::Equation(oFirstText.m_oAlign,      oSecondText.m_oAlign);
 //		CString::Equation(oFirstText.m_oDecoration, oSecondText.m_oDecoration);
 		CColor ::Equation(oFirstText.m_oColor,      oSecondText.m_oColor);
+		CColor ::Equation(oFirstText.m_oHighlight,  oSecondText.m_oHighlight);
 	}
 
 	bool CText::SetIndent(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -2108,6 +2126,11 @@ namespace NSCSS
 		return m_oColor.SetValue(wsValue, unLevel, bHardMode);
 	}
 
+	bool CText::SetHighlight(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oHighlight.SetValue(wsValue, unLevel, bHardMode);
+	}
+
 	const CDigit& CText::GetIndent() const
 	{
 		return m_oIndent;
@@ -2126,6 +2149,11 @@ namespace NSCSS
 	const CColor& CText::GetColor() const
 	{
 		return m_oColor;
+	}
+
+	const CColor& CText::GetHighlight() const
+	{
+		return m_oHighlight;
 	}
 
 	bool CText::Empty() const
@@ -2155,6 +2183,7 @@ namespace NSCSS
 		m_oAlign      += oText.m_oAlign;
 		m_oDecoration += oText.m_oDecoration;
 		m_oColor      += oText.m_oColor;
+		m_oHighlight  += oText.m_oHighlight;
 
 		return *this;
 	}
@@ -2164,7 +2193,8 @@ namespace NSCSS
 		return m_oIndent     == oText.m_oIndent     &&
 		       m_oAlign      == oText.m_oAlign      &&
 		       m_oDecoration == oText.m_oDecoration &&
-		       m_oColor      == oText.m_oColor;
+		       m_oColor      == oText.m_oColor      &&
+		       m_oHighlight  == oText.m_oHighlight;
 	}
 
 	// MARGIN
@@ -2227,9 +2257,19 @@ namespace NSCSS
 		return m_oTop.SetValue(wsValue, unLevel, bHardMode);
 	}
 
+	bool CIndent::SetTop(const double& dValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oTop.SetValue(dValue, unLevel, bHardMode);
+	}
+
 	bool CIndent::SetRight(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oRight.SetValue(wsValue, unLevel, bHardMode);
+	}
+
+	bool CIndent::SetRight(const double& dValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oRight.SetValue(dValue, unLevel, bHardMode);
 	}
 
 	bool CIndent::SetBottom(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -2237,9 +2277,19 @@ namespace NSCSS
 		return m_oBottom.SetValue(wsValue, unLevel, bHardMode);
 	}
 
+	bool CIndent::SetBottom(const double& dValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oBottom.SetValue(dValue, unLevel, bHardMode);
+	}
+
 	bool CIndent::SetLeft(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oLeft.SetValue(wsValue, unLevel, bHardMode);
+	}
+
+	bool CIndent::SetLeft(const double& dValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oLeft.SetValue(dValue, unLevel, bHardMode);
 	}
 
 	void CIndent::UpdateAll(double dFontSize)
@@ -2529,6 +2579,11 @@ namespace NSCSS
 		return m_oSize.SetValue(wsNewValue, unLevel, bHardMode);
 	}
 
+	bool CFont:: SetSize(const double& dValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oSize.SetValue(dValue, unLevel, bHardMode);
+	}
+
 	bool CFont::SetLineHeight(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oLineHeight.SetValue(wsValue, unLevel, bHardMode);
@@ -2536,13 +2591,13 @@ namespace NSCSS
 
 	bool CFont::SetFamily(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		std::wstring wsNewFamily(wsValue);
+		// std::wstring wsNewFamily(wsValue);
 
 //		if (wsNewFamily.end() == wsNewFamily.erase(std::remove(wsNewFamily.begin(), wsNewFamily.end(), L'\''), wsNewFamily.end()) &&
 //		    wsNewFamily.end() == wsNewFamily.erase(std::remove(wsNewFamily.begin(), wsNewFamily.end(), L'"'),  wsNewFamily.end()))
 //			return false;
 
-		std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsW(wsNewFamily, false, L"\"\',");
+		std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsW(wsValue, false, L"\"\',");
 
 		for (std::vector<std::wstring>::iterator iWord = arWords.begin(); iWord != arWords.end(); ++iWord)
 		{

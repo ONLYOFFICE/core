@@ -35,7 +35,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 	if (!Empty())
 		Clear();
 
-	if (sNameDefaultElement == L"p")
+/*	if (sNameDefaultElement == L"p")
 	{
 		AddBasicProperties(CSSProperties::BasicProperties::B_Type, L"paragraph");
 		AddBasicProperties(CSSProperties::BasicProperties::B_StyleId, L"p");
@@ -47,7 +47,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 
 //		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
 	}
-	else if (sNameDefaultElement == L"li")
+	else */if (sNameDefaultElement == L"li")
 	{
 		AddBasicProperties(CSSProperties::BasicProperties::B_Type, L"paragraph");
 		AddBasicProperties(CSSProperties::BasicProperties::B_StyleId, L"li");

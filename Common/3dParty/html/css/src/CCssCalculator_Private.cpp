@@ -567,12 +567,17 @@ namespace NSCSS
 			}
 		}
 
-		oStyle.SetID(arSelectors.back().m_wsName + ((!arSelectors.back().m_wsClass.empty()) ? L'.' + arSelectors.back().m_wsClass : L"") + ((arSelectors.back().m_wsId.empty()) ? L"" : L'#' + arSelectors.back().m_wsId) + L'-' + std::to_wstring(++m_nCountNodes));
+		oStyle.SetID(CalculateStyleId(arSelectors.back()));
 
 		if (!bIsSettings && !oStyle.Empty())
 			m_mUsedStyles[arSelectors] = oStyle;
 
 		return true;
+	}
+
+	std::wstring CCssCalculator_Private::CalculateStyleId(const CNode& oNode)
+	{
+		return oNode.m_wsName + ((!oNode.m_wsClass.empty()) ? L'.' + oNode.m_wsClass : L"") + ((oNode.m_wsId.empty()) ? L"" : L'#' + oNode.m_wsId) + L'-' + std::to_wstring(++m_nCountNodes);
 	}
 
 	bool CCssCalculator_Private::CalculatePageStyle(NSProperties::CPage &oPageData, const std::vector<CNode> &arSelectors)

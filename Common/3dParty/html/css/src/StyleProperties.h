@@ -13,6 +13,8 @@ namespace NSCSS
 {
 	namespace NSProperties
 	{
+	#define NEXT_LEVEL UINT_MAX, true
+
 	template<typename T>
 	class CValue
 	{
@@ -605,11 +607,13 @@ namespace NSCSS
 		bool SetAlign     (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetDecoration(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetColor     (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetHighlight (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 
 		const CDigit&          GetIndent()     const;
 		const CString&         GetAlign()      const;
 		const TTextDecoration& GetDecoration() const;
 		const CColor&          GetColor()      const;
+		const CColor&          GetHighlight()  const;
 
 		bool Empty() const;
 
@@ -624,6 +628,7 @@ namespace NSCSS
 		CDigit          m_oIndent;
 		CString         m_oAlign;
 		CColor          m_oColor;
+		CColor          m_oHighlight;
 	};
 
 	class CIndent
@@ -641,9 +646,13 @@ namespace NSCSS
 
 		bool SetValues (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetTop    (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetTop    (const double& dValue,        unsigned int unLevel, bool bHardMode = false);
 		bool SetRight  (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetRight  (const double& dValue,        unsigned int unLevel, bool bHardMode = false);
 		bool SetBottom (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetBottom (const double& dValue,        unsigned int unLevel, bool bHardMode = false);
 		bool SetLeft   (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetLeft   (const double& dValue,        unsigned int unLevel, bool bHardMode = false);
 
 		void UpdateAll   (double dFontSize);
 		void UpdateTop   (double dFontSize);
@@ -683,6 +692,7 @@ namespace NSCSS
 
 		bool SetValue         (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetSize          (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetSize          (const double& dValue,        unsigned int unLevel, bool bHardMode = false);
 		bool SetLineHeight    (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetFamily        (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetStretch       (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);

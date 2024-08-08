@@ -30,6 +30,7 @@
  *
  */
 
+#include "RendererOutputDev.h"
 #include "Adaptors.h"
 #include "../lib/xpdf/ErrorCodes.h"
 #include "../lib/xpdf/GfxState.h"
@@ -42,7 +43,6 @@
 #include "../lib/xpdf/Stream.h"
 #include "../lib/xpdf/PDFDoc.h"
 #include "../lib/xpdf/CharCodeToUnicode.h"
-#include "RendererOutputDev.h"
 #include "XmlUtils.h"
 
 #include "../../DesktopEditor/graphics/pro/Graphics.h"
@@ -54,6 +54,7 @@
 #include "../../DesktopEditor/graphics/BaseThread.h"
 #include "../../DesktopEditor/graphics/commands/DocInfo.h"
 #include "../../DesktopEditor/graphics/AlphaMask.h"
+//#include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../Resources/BaseFonts.h"
 #include <new>
 
@@ -165,7 +166,7 @@ namespace PdfReader
 		}
 	}
 
-	void Transform(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY)
+	void Transform(double* pMatrix, double dUserX, double dUserY, double* pdDeviceX, double* pdDeviceY)
 	{
 		*pdDeviceX = dUserX * pMatrix[0] + dUserY * pMatrix[2] + pMatrix[4];
 		*pdDeviceY = dUserX * pMatrix[1] + dUserY * pMatrix[3] + pMatrix[5];
@@ -348,7 +349,7 @@ namespace PdfReader
 		CRefFontMap::iterator oPos = m_oFontMap.find(oRef);
 		if (m_oFontMap.end() != oPos)
 		{
-			TFontEntry *pEntry = oPos->second;
+			TFontEntry* pEntry = oPos->second;
 			if (NULL != pEntry)
 			{
 				MemUtilsFree(pEntry->pCodeToGID);
@@ -362,7 +363,7 @@ namespace PdfReader
 	{
 		for (auto const &oIt : m_oFontMap)
 		{
-			TFontEntry *pEntry = oIt.second;
+			TFontEntry* pEntry = oIt.second;
 			if (NULL != pEntry)
 			{
 				MemUtilsFree(pEntry->pCodeToGID);
@@ -428,15 +429,8 @@ namespace PdfReader
 	{
 		m_pRenderer = NULL;
 		RELEASEINTERFACE(m_pSoftMask);
-
-		//        if (m_sClip)  tmpchange
-		//            delete m_sClip;
-
-		//        if (m_pBufferTextClip) tmpchange
-		//            delete m_pBufferTextClip;
-
 	}
-	void RendererOutputDev::startPage(int nPageIndex, GfxState *pGState)
+	void RendererOutputDev::startPage(int nPageIndex, GfxState* pGState)
 	{
 		if (nPageIndex < 0)
 			return;
@@ -458,7 +452,7 @@ namespace PdfReader
 	{
 		m_pRenderer->EndCommand(c_nPageType);
 	}
-	void RendererOutputDev::saveState(GfxState *pGState)
+	void RendererOutputDev::saveState(GfxState* pGState)
 	{
 		m_sStates.push_back(GfxOutputState());
 		m_sStates.back().pGState = pGState;
@@ -470,7 +464,7 @@ namespace PdfReader
 
 		updateAll(pGState);
 	}
-	void RendererOutputDev::restoreState(GfxState *pGState)
+	void RendererOutputDev::restoreState(GfxState* pGState)
 	{
 		RELEASEINTERFACE(m_pSoftMask);
 		m_pSoftMask = m_sStates.back().pSoftMask;
@@ -484,12 +478,12 @@ namespace PdfReader
 		m_sStates.pop_back();
 		updateAll(pGState);
 	}
-	void RendererOutputDev::updateCTM(GfxState *pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32)
+	void RendererOutputDev::updateCTM(GfxState* pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32)
 	{
 	}
-	void RendererOutputDev::updateLineDash(GfxState *pGState)
+	void RendererOutputDev::updateLineDash(GfxState* pGState)
 	{
-		double *pDash  = NULL;
+		double* pDash  = NULL;
 		int     nSize  = 0;
 		double  dStart = 0;
 		pGState->getLineDash(&pDash, &nSize, &dStart);
@@ -522,10 +516,10 @@ namespace PdfReader
 		if (bOffCopy)
 			delete[] pDash;
 	}
-	void RendererOutputDev::updateFlatness(GfxState *pGState)
+	void RendererOutputDev::updateFlatness(GfxState* pGState)
 	{
 	}
-	void RendererOutputDev::updateLineJoin(GfxState *pGState)
+	void RendererOutputDev::updateLineJoin(GfxState* pGState)
 	{
 		int nJoinStyle = pGState->getLineJoin();
 		if (1 == nJoinStyle)
@@ -535,7 +529,7 @@ namespace PdfReader
 
 		m_pRenderer->put_PenLineJoin(nJoinStyle);
 	}
-	void RendererOutputDev::updateLineCap(GfxState *pGState)
+	void RendererOutputDev::updateLineCap(GfxState* pGState)
 	{
 		int nCapStyle = pGState->getLineCap();
 		if (1 == nCapStyle)
@@ -546,21 +540,21 @@ namespace PdfReader
 		m_pRenderer->put_PenLineStartCap(nCapStyle);
 		m_pRenderer->put_PenLineEndCap(nCapStyle);
 	}
-	void RendererOutputDev::updateMiterLimit(GfxState *pGState)
+	void RendererOutputDev::updateMiterLimit(GfxState* pGState)
 	{
 		m_pRenderer->put_PenMiterLimit(PDFCoordsToMM(pGState->getMiterLimit()));
 	}
-	void RendererOutputDev::updateLineWidth(GfxState *pGState)
+	void RendererOutputDev::updateLineWidth(GfxState* pGState)
 	{
 		m_pRenderer->put_PenSize(PDFCoordsToMM(pGState->getLineWidth()));
 	}
-	void RendererOutputDev::updateStrokeAdjust(GfxState *pGState)
+	void RendererOutputDev::updateStrokeAdjust(GfxState* pGState)
 	{
 	}
-	void RendererOutputDev::updateFillColor(GfxState *pGState)
+	void RendererOutputDev::updateFillColor(GfxState* pGState)
 	{
-		GfxColor *pColor = pGState->getFillColor();
-		GfxColorSpace *pColorSpace = pGState->getFillColorSpace();
+		GfxColor* pColor = pGState->getFillColor();
+		GfxColorSpace* pColorSpace = pGState->getFillColorSpace();
 
 		GfxRGB c;
 
@@ -569,10 +563,10 @@ namespace PdfReader
 		m_pRenderer->put_BrushColor1(dwColor);
 		m_pRenderer->put_BrushColor2(dwColor);
 	}
-	void RendererOutputDev::updateStrokeColor(GfxState *pGState)
+	void RendererOutputDev::updateStrokeColor(GfxState* pGState)
 	{
-		GfxColor *pColor = pGState->getStrokeColor();
-		GfxColorSpace *pColorSpace = pGState->getStrokeColorSpace();
+		GfxColor* pColor = pGState->getStrokeColor();
+		GfxColorSpace* pColorSpace = pGState->getStrokeColorSpace();
 
 		GfxRGB c;
 
@@ -581,7 +575,7 @@ namespace PdfReader
 
 		m_pRenderer->put_PenColor(dwColor);
 	}
-	void RendererOutputDev::updateBlendMode(GfxState *pGState)
+	void RendererOutputDev::updateBlendMode(GfxState* pGState)
 	{
 		NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
 		if (((GlobalParamsAdaptor*)globalParams)->getDrawFormField() || !GRenderer)
@@ -647,16 +641,16 @@ namespace PdfReader
 			break;
 		}
 	}
-	void RendererOutputDev::updateFillOpacity(GfxState *pGState)
+	void RendererOutputDev::updateFillOpacity(GfxState* pGState)
 	{
 		m_pRenderer->put_BrushAlpha1(std::min(255, std::max(0, int(pGState->getFillOpacity() * 255))));
 		m_pRenderer->put_BrushAlpha2(std::min(255, std::max(0, int(pGState->getFillOpacity() * 255))));
 	}
-	void RendererOutputDev::updateStrokeOpacity(GfxState *pGState)
+	void RendererOutputDev::updateStrokeOpacity(GfxState* pGState)
 	{
 		m_pRenderer->put_PenAlpha(std::min(255, std::max(0, int(pGState->getStrokeOpacity() * 255))));
 	}
-	void RendererOutputDev::updateAll(GfxState *pGState)
+	void RendererOutputDev::updateAll(GfxState* pGState)
 	{
 		updateCTM(pGState, pGState->getCTM()[0], pGState->getCTM()[1], pGState->getCTM()[2], pGState->getCTM()[3], pGState->getCTM()[4], pGState->getCTM()[5]);
 		updateLineDash(pGState);
@@ -676,7 +670,7 @@ namespace PdfReader
 		updateFont(pGState);
 		updateClip(pGState);
 	}
-	void RendererOutputDev::updateRender(GfxState *pGState)
+	void RendererOutputDev::updateRender(GfxState* pGState)
 	{
 
 	}
@@ -686,7 +680,7 @@ namespace PdfReader
 		if (!pFontManager)
 			return pFontInfo;
 
-		Ref *pRef = pFont->getID();
+		Ref* pRef = pFont->getID();
 		Object oRefObject, oFontObject;
 		oRefObject.initRef(pRef->num, pRef->gen);
 		oRefObject.fetch(pXref, &oFontObject);
@@ -696,12 +690,11 @@ namespace PdfReader
 		CheckFontNamePDF(wsFontBaseName, &oFontSelect);
 		if (oFontObject.isDict())
 		{
-			Dict *pFontDict = oFontObject.getDict();
+			Dict* pFontDict = oFontObject.getDict();
 			Object oFontDescriptor;
 			if (pFontDict->lookup("FontDescriptor", &oFontDescriptor)->isDict())
 			{
 				Object oDictItem;
-				// FontName
 				oFontDescriptor.dictLookup("FontName", &oDictItem);
 				if (oDictItem.isName())
 					oFontSelect.wsName = AStringToPWString(oDictItem.getName());
@@ -709,23 +702,18 @@ namespace PdfReader
 					oFontSelect.wsName = new std::wstring(wsFontBaseName);
 				oDictItem.free();
 
-				// FontFamily
 				oFontDescriptor.dictLookup("FontFamily", &oDictItem);
 				oDictItem.free();
 
-				// FontStretch
 				oFontDescriptor.dictLookup("FontStretch", &oDictItem);
 				oDictItem.free();
 
-				// FontWeight
 				oFontDescriptor.dictLookup("FontWeight", &oDictItem);
 				oDictItem.free();
 
-				// FontBBox
 				oFontDescriptor.dictLookup("FontBBox", &oDictItem);
 				oDictItem.free();
 
-				// ItalicAngle
 				oFontDescriptor.dictLookup("ItalicAngle", &oDictItem);
 				if (oDictItem.isInt() && 0 != oDictItem.getInt())
 				{
@@ -734,27 +722,22 @@ namespace PdfReader
 				}
 				oDictItem.free();
 
-				// Ascent
 				oFontDescriptor.dictLookup("Ascent", &oDictItem);
 				if (oDictItem.isInt()) oFontSelect.shAscent = new SHORT(oDictItem.getInt());
 				oDictItem.free();
 
-				// Leading
 				oFontDescriptor.dictLookup("Leading", &oDictItem);
 				if (oDictItem.isInt()) oFontSelect.shLineGap = new SHORT(oDictItem.getInt());
 				oDictItem.free();
 
-				// CapHeight
 				oFontDescriptor.dictLookup("CapHeight", &oDictItem);
 				if (oDictItem.isInt()) oFontSelect.shCapHeight = new SHORT(oDictItem.getInt());
 				oDictItem.free();
 
-				// XHeight
 				oFontDescriptor.dictLookup("XHeight", &oDictItem);
 				if (oDictItem.isInt()) oFontSelect.shXHeight = new SHORT(oDictItem.getInt());
 				oDictItem.free();
 
-				// StemV
 				oFontDescriptor.dictLookup("StemV", &oDictItem);
 				if (oDictItem.isNum())
 				{
@@ -764,25 +747,20 @@ namespace PdfReader
 				}
 				oDictItem.free();
 
-				// StemH
 				oFontDescriptor.dictLookup("StemH", &oDictItem);
 				oDictItem.free();
 
-				// Descent
 				oFontDescriptor.dictLookup("Descent", &oDictItem);
 				if (oDictItem.isInt()) oFontSelect.shDescent = new SHORT(oDictItem.getInt());
 				oDictItem.free();
 
-				// AvgWidth
 				oFontDescriptor.dictLookup("AvgWidth", &oDictItem);
 				if (oDictItem.isInt()) oFontSelect.shAvgCharWidth = new SHORT(oDictItem.getInt());
 				oDictItem.free();
 
-				// MaxWidth
 				oFontDescriptor.dictLookup("MaxWidth", &oDictItem);
 				oDictItem.free();
 
-				// MissingWidth
 				oFontDescriptor.dictLookup("MissingWidth", &oDictItem);
 				oDictItem.free();
 
@@ -797,11 +775,11 @@ namespace PdfReader
 		pFontInfo = pFontManager->GetFontInfoByParams(oFontSelect);
 		return pFontInfo;
 	}
-	void RendererOutputDev::GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName)
+	void RendererOutputDev::GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName)
 	{
 		wsFileName = L"";
 		wsFontName = L"";
-		TFontEntry *pEntry = NULL;
+		TFontEntry* pEntry = NULL;
 		// MEMERR string dealocation pEntry
 		if (!pFontList->Find2((*pFont->getID()), &pEntry))
 		{
@@ -818,7 +796,7 @@ namespace PdfReader
 			std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(pFont->getName());
 			if (wsFontBaseName.empty())
 				wsFontBaseName = L"Helvetica";
-			const unsigned char* pData14 = NULL;
+			const BYTE* pData14 = NULL;
 			unsigned int nSize14 = 0;
 #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
 			CMemoryFontStream oMemoryFontStream;
@@ -852,7 +830,7 @@ namespace PdfReader
 #else
 				FILE* pTempFile = NULL;
 				if (!NSFile::CFileBinary::OpenTempFile(&wsTempFileName, &pTempFile, L"wb", (wchar_t*)wsExt.c_str(),
-													   (wchar_t*)((GlobalParamsAdaptor *)globalParams)->GetTempFolder().c_str(), NULL))
+													   (wchar_t*)((GlobalParamsAdaptor*)globalParams)->GetTempFolder().c_str(), NULL))
 				{
 					if (L"" != wsTempFileName)
 						NSFile::CFileBinary::Remove(wsTempFileName);
@@ -911,7 +889,7 @@ namespace PdfReader
 					FILE* pFile = NSFile::CFileBinary::OpenFileNative(wsAfmPath, L"wb");
 					if (pFile)
 					{
-						Ref *pRef = pFont->getID();
+						Ref* pRef = pFont->getID();
 						Object oRefObject, oFontObject;
 						oRefObject.initRef(pRef->num, pRef->gen);
 						oRefObject.fetch(pXref, &oFontObject);
@@ -928,22 +906,18 @@ namespace PdfReader
 							if (oFontObject.dictLookup("FontDescriptor", &oFontDescriptor)->isDict())
 							{
 								Object oDictItem;
-								// FontName
 								oFontDescriptor.dictLookup("FontName", &oDictItem);
 								if (oDictItem.isName()) sFontName = oDictItem.getName();
 								oDictItem.free();
 
-								// FontFamily
 								oFontDescriptor.dictLookup("FontFamily", &oDictItem);
 								if (oDictItem.isName()) sFontFamily = oDictItem.getName();
 								oDictItem.free();
 
-								// FontWeight
 								oFontDescriptor.dictLookup("FontWeight", &oDictItem);
 								if (oDictItem.isInt()) nFontWeight = oDictItem.getInt();
 								oDictItem.free();
 
-								// FontBBox
 								if (oFontDescriptor.dictLookup("FontBBox", &oDictItem)->isArray() && oDictItem.arrayGetLength() == 4)
 								{
 									for (int nIndex = 0; nIndex < 4; nIndex++)
@@ -956,42 +930,34 @@ namespace PdfReader
 								}
 								oDictItem.free();
 
-								// ItalicAngle
 								oFontDescriptor.dictLookup("ItalicAngle", &oDictItem);
 								if (oDictItem.isInt()) nItalicAngle = oDictItem.getInt();
 								oDictItem.free();
 
-								// Ascent
 								oFontDescriptor.dictLookup("Ascent", &oDictItem);
 								if (oDictItem.isInt()) nAscent = oDictItem.getInt();
 								oDictItem.free();
 
-								// CapHeight
 								oFontDescriptor.dictLookup("CapHeight", &oDictItem);
 								if (oDictItem.isInt()) nCapHeight = oDictItem.getInt();
 								oDictItem.free();
 
-								// XHeight
 								oFontDescriptor.dictLookup("XHeight", &oDictItem);
 								if (oDictItem.isInt()) nXHeight = oDictItem.getInt();
 								oDictItem.free();
 
-								// StemV
 								oFontDescriptor.dictLookup("StemV", &oDictItem);
 								if (oDictItem.isInt()) nStemV = oDictItem.getInt();
 								oDictItem.free();
 
-								// StemH
 								oFontDescriptor.dictLookup("StemH", &oDictItem);
 								if (oDictItem.isInt()) nStemH = oDictItem.getInt();
 								oDictItem.free();
 
-								// Descent
 								oFontDescriptor.dictLookup("Descent", &oDictItem);
 								if (oDictItem.isInt()) nDescent = oDictItem.getInt();
 								oDictItem.free();
 
-								// MissingWidth
 								oFontDescriptor.dictLookup("MissingWidth", &oDictItem);
 								if (oDictItem.isInt()) nMissingWidth = oDictItem.getInt();
 								oDictItem.free();
@@ -1020,7 +986,7 @@ namespace PdfReader
 							if (oFontObject.dictLookup("FirstChar", &oDictItem)->isInt()) nFirstChar = oDictItem.getInt();
 							oDictItem.free();
 
-							Gfx8BitFont *pT1Font = (Gfx8BitFont *)pFont;
+							Gfx8BitFont* pT1Font = (Gfx8BitFont*)pFont;
 							if (oFontObject.dictLookup("Widths", &oDictItem)->isArray())
 							{
 								int nWidthsCount = oDictItem.arrayGetLength();
@@ -1032,7 +998,7 @@ namespace PdfReader
 									if (oDictItem.arrayGet(nIndex, &oArrayItem)->isInt()) nWidth = oArrayItem.getInt();
 									oArrayItem.free();
 
-									char **ppEncoding = pT1Font->getEncoding();
+									char** ppEncoding = pT1Font->getEncoding();
 
 									if (ppEncoding && ppEncoding[nIndex])
 										fprintf(pFile, "C %d ; WX %d ; N %s ;\n", nIndex + nFirstChar, nWidth, ppEncoding[nIndex]);
@@ -1123,7 +1089,7 @@ namespace PdfReader
 #else
 			else if ([&oMemoryFontStream, wsFontBaseName]()
 			{
-				const unsigned char* pData14 = NULL;
+				const BYTE* pData14 = NULL;
 				unsigned int nSize14 = 0;
 				if (PdfReader::GetBaseFont(wsFontBaseName, pData14, nSize14))
 				{
@@ -1170,163 +1136,12 @@ namespace PdfReader
 					pEntry->bAvailable = true;
 					return;
 				}
-
-				// Записываем файл с кодировкой. (Специально для перезаписи в PDF)
-				/*
-				if (c_nPDFWriter == m_lRendererType)
-				{
-					std::wstring wsExt;
-					if (!pFont->isCIDFont())
-					{
-						wsExt = L".non";
-					}
-					else if (pFont->isCIDFont())
-					{
-						wsExt = L".cid_non";
-					}
-
-					FILE* pTempFile = NULL;
-					if (!NSFile::CFileBinary::OpenTempFile(&wsTempFileName, &pTempFile, L"wb", (wchar_t*)wsExt.c_str(),
-														   (wchar_t*)((GlobalParamsAdaptor*)globalParams)->GetTempFolder().c_str(), NULL))
-					{
-						if (L"" != wsTempFileName)
-							NSFile::CFileBinary::Remove(wsTempFileName);
-
-						pEntry->bAvailable = true;
-						return;
-					}
-					fclose(pTempFile);
-
-					// Копируем файл, для создания уникального имени, чтобы связать с файлом с кодировкой
-					if (NSFile::CFileBinary::Copy(wsFileName, wsTempFileName))
-					{
-						wsFileName = wsTempFileName;
-					}
-					else
-					{
-						NSFile::CFileBinary::Remove(wsTempFileName);
-						wsTempFileName = L"";
-					}
-
-					if (L"" != wsTempFileName)
-					{
-						std::wstring wsSplitFileName, wsSplitFileExt;
-						SpitPathExt(wsFileName, &wsSplitFileName, &wsSplitFileExt);
-						std::wstring wsEncodingPath = wsSplitFileName + L".enc";
-
-						CXmlWriter oXmlWriter;
-
-						Ref *pRef = pFont->getID();
-						Object oRefObject, oFontObject;
-						oRefObject.initRef(pRef->num, pRef->gen);
-						oRefObject.fetch(m_pXref, &oFontObject);
-						oRefObject.free();
-
-						if (oFontObject.isDict())
-						{
-							Dict *pFontDict = oFontObject.getDict();
-
-							int nEncodingType = -1; // Объекта Encoding нет
-							int nBaseEncoding = -1;
-
-							Object oDictItem;
-							pFontDict->lookup("Encoding", &oDictItem);
-							if (oDictItem.isDict())
-							{
-								nEncodingType = 1; // Encoding - идет отдельным объектом
-
-								Object oTemp;
-								oDictItem.dictLookup("BaseEncoding", &oTemp);
-
-								if (oTemp.isName("MacRomanEncoding"))
-									nBaseEncoding = 0;
-								else if (oTemp.isName("MacExpertEncoding"))
-									nBaseEncoding = 1;
-								else if (oTemp.isName("WinAnsiEncoding"))
-									nBaseEncoding = 2;
-
-								oTemp.free();
-							}
-							else if (oDictItem.isName("MacRomanEncoding"))
-							{
-								nEncodingType = 0;
-								nBaseEncoding = 0;
-							}
-							else if (oDictItem.isName("MacExpertEncoding"))
-							{
-								nEncodingType = 0;
-								nBaseEncoding = 1;
-							}
-							else if (oDictItem.isName("WinAnsiEncoding"))
-							{
-								nEncodingType = 0;
-								nBaseEncoding = 2;
-							}
-							else
-							{
-								nEncodingType = -1;
-							}
-
-							oXmlWriter.WriteNodeBegin(L"Encoding", true);
-							oXmlWriter.WriteAttribute(L"type", nEncodingType);
-							oXmlWriter.WriteAttribute(L"base", nBaseEncoding);
-							oXmlWriter.WriteNodeEnd(L"Encoding", true, false);
-
-							// Differences
-							if (oDictItem.isDict())
-							{
-								Object oDifferences;
-								oDictItem.dictLookup("Differences", &oDifferences);
-								if (oDifferences.isArray())
-								{
-									int nArrayLen = oDifferences.arrayGetLength();
-									oXmlWriter.WriteNodeBegin(L"Differences", true);
-									oXmlWriter.WriteAttribute(L"count", nArrayLen);
-									oXmlWriter.WriteNodeEnd(L"Differences", true, false);
-
-									for (int nIndex = 0; nIndex < nArrayLen; ++nIndex)
-									{
-										Object oTemp;
-										oDifferences.arrayGet(nIndex, &oTemp);
-										if (oTemp.isInt())
-										{
-											int nCode = oTemp.getInt();
-											oXmlWriter.WriteNodeBegin(L"Code", true);
-											oXmlWriter.WriteAttribute(L"value", nCode);
-											oXmlWriter.WriteNodeEnd(L"Code", true, true);
-										}
-										else if (oTemp.isName())
-										{
-											char *sName = oTemp.getName();
-											oXmlWriter.WriteNodeBegin(L"Name", true);
-											oXmlWriter.WriteAttribute(L"value", AStringToWString(sName));
-											oXmlWriter.WriteNodeEnd(L"Name", true, true);
-										}
-										else
-										{
-											// TODO: Неправильный тип записи
-										}
-										oTemp.free();
-									}
-
-									oXmlWriter.WriteNodeEnd(L"Differences");
-								}
-								oDifferences.free();
-							}
-							oDictItem.free();
-							oXmlWriter.WriteNodeEnd(L"Encoding");
-						}
-						oFontObject.free();
-						oXmlWriter.SaveToFile(wsEncodingPath);
-					}
-				}
-				*/
 			}
 			// Здесь мы грузим кодировки
-			int *pCodeToGID = NULL, *pCodeToUnicode = NULL;
+			int* pCodeToGID = NULL, *pCodeToUnicode = NULL;
 			int nLen = 0;
-			FoFiTrueType *pTTFontFile  = NULL;
-			FoFiType1C   *pT1CFontFile = NULL;
+			FoFiTrueType* pTTFontFile  = NULL;
+			FoFiType1C*   pT1CFontFile = NULL;
 #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
 			FoFiIdentifierType fofiType = FoFiIdentifier::identifyStream(&readFromMemoryStream, &oMemoryFontStream);
 			oMemoryFontStream.toStart();
@@ -1351,7 +1166,7 @@ namespace PdfReader
 
 					if (pTTFontFile)
 					{
-						pCodeToGID = ((Gfx8BitFont *)pFont)->getCodeToGIDMap(pTTFontFile);
+						pCodeToGID = ((Gfx8BitFont*)pFont)->getCodeToGIDMap(pTTFontFile);
 						nLen = 256;
 
 						delete pTTFontFile;
@@ -1365,7 +1180,7 @@ namespace PdfReader
 				}
 				else if (L"" != wsFileName && (pFont8bit = dynamic_cast<Gfx8BitFont*>(pFont)))
 				{
-					char **ppEncoding = pFont8bit->getEncoding();
+					char** ppEncoding = pFont8bit->getEncoding();
 					if (!ppEncoding)
 						break;
 
@@ -1373,7 +1188,7 @@ namespace PdfReader
 						break;
 
 					pFontManager->LoadFontFromFile(wsFileName, 0, 1, 72, 72);
-					pCodeToGID = (int *)MemUtilsMallocArray(256, sizeof(int));
+					pCodeToGID = (int*)MemUtilsMallocArray(256, sizeof(int));
 					if (!pCodeToGID)
 						break;
 
@@ -1399,7 +1214,7 @@ namespace PdfReader
 					Gfx8BitFont* pFont8bit = dynamic_cast<Gfx8BitFont*>(pFont);
 					if (L"" != wsFileName && pFont8bit && pFont8bit->getHasEncoding())
 					{
-						char **ppEncoding = pFont8bit->getEncoding();
+						char** ppEncoding = pFont8bit->getEncoding();
 						if (!ppEncoding)
 							break;
 
@@ -1407,7 +1222,7 @@ namespace PdfReader
 							break;
 
 						pFontManager->LoadFontFromFile(wsFileName, 0, 1, 72, 72);
-						pCodeToGID = (int *)MemUtilsMallocArray(256, sizeof(int));
+						pCodeToGID = (int*)MemUtilsMallocArray(256, sizeof(int));
 						if (!pCodeToGID)
 							break;
 
@@ -1433,7 +1248,7 @@ namespace PdfReader
 #endif
 				if (pTTFontFile)
 				{
-					pCodeToGID = ((Gfx8BitFont *)pFont)->getCodeToGIDMap(pTTFontFile);
+					pCodeToGID = ((Gfx8BitFont*)pFont)->getCodeToGIDMap(pTTFontFile);
 					nLen = 256;
 
 					delete pTTFontFile;
@@ -1552,8 +1367,8 @@ namespace PdfReader
 				nLen = 0;
 				if (L"" != wsFileName && bFontSubstitution)
 				{
-					CharCodeToUnicode *pCodeToUnicode = NULL;
-					if ((pCodeToUnicode = ((GfxCIDFont *)pFont)->getToUnicode()))
+					CharCodeToUnicode* pCodeToUnicode = NULL;
+					if ((pCodeToUnicode = ((GfxCIDFont*)pFont)->getToUnicode()))
 					{
 #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
 						pTTFontFile = FoFiTrueType::make((char*)oMemoryFontStream.m_pData, oMemoryFontStream.m_nSize, 0);
@@ -1575,7 +1390,7 @@ namespace PdfReader
 							{
 								// CID -> Unicode -> GID
 								nLen = pCodeToUnicode->getLength();
-								pCodeToGID = (int *)MemUtilsMallocArray(nLen, sizeof(int));
+								pCodeToGID = (int*)MemUtilsMallocArray(nLen, sizeof(int));
 								for (int nCode = 0; nCode < nLen; ++nCode)
 								{
 									Unicode arrUnicodeBuffer[8];
@@ -1602,14 +1417,14 @@ namespace PdfReader
 						pCodeToUnicode->decRefCnt();
 					}
 				}
-				else if (((GfxCIDFont *)pFont)->getCIDToGID())
+				else if (((GfxCIDFont*)pFont)->getCIDToGID())
 				{
-					nLen = ((GfxCIDFont *)pFont)->getCIDToGIDLen();
-					pCodeToGID = (int *)MemUtilsMallocArray(nLen, sizeof(int));
+					nLen = ((GfxCIDFont*)pFont)->getCIDToGIDLen();
+					pCodeToGID = (int*)MemUtilsMallocArray(nLen, sizeof(int));
 					if (!pCodeToGID)
 						break;
 
-					memcpy(pCodeToGID, ((GfxCIDFont *)pFont)->getCIDToGID(), nLen * sizeof(int));
+					memcpy(pCodeToGID, ((GfxCIDFont*)pFont)->getCIDToGID(), nLen * sizeof(int));
 				}
 
 				break;
@@ -1628,12 +1443,12 @@ namespace PdfReader
 			int nToUnicodeLen = 0;
 			if (pFont->isCIDFont())
 			{
-				GfxCIDFont *pCIDFont = (GfxCIDFont *)pFont;
-				CharCodeToUnicode *pToUnicode = pCIDFont->getToUnicode();
+				GfxCIDFont* pCIDFont = (GfxCIDFont*)pFont;
+				CharCodeToUnicode* pToUnicode = pCIDFont->getToUnicode();
 				if (NULL != pToUnicode)
 				{
 					nToUnicodeLen = pToUnicode->getLength();
-					pCodeToUnicode = (int *)MemUtilsMallocArray(nToUnicodeLen, sizeof(int));
+					pCodeToUnicode = (int*)MemUtilsMallocArray(nToUnicodeLen, sizeof(int));
 
 					if (pCodeToUnicode)
 					{
@@ -1654,11 +1469,11 @@ namespace PdfReader
 			{
 				// memory troubles here
 
-				CharCodeToUnicode *pToUnicode = ((Gfx8BitFont *)pFont)->getToUnicode();
+				CharCodeToUnicode* pToUnicode = ((Gfx8BitFont*)pFont)->getToUnicode();
 				if (NULL != pToUnicode)
 				{
 					nToUnicodeLen = pToUnicode->getLength();
-					pCodeToUnicode = (int *)MemUtilsMallocArray(nToUnicodeLen, sizeof(int));//literally here
+					pCodeToUnicode = (int*)MemUtilsMallocArray(nToUnicodeLen, sizeof(int));//literally here
 
 					if (pCodeToUnicode)
 					{
@@ -1674,1004 +1489,6 @@ namespace PdfReader
 					pToUnicode->decRefCnt();
 				}
 			}
-
-			// Записываем файл с настройками шрифта (Специально для перезаписи в PDF)
-			/*
-			if (L"" != wsFileName && c_nPDFWriter == m_lRendererType)
-			{
-				std::wstring wsSplitFileName, wsSplitFileExt;
-				SpitPathExt(wsFileName, &wsSplitFileName, &wsSplitFileExt);
-				std::wstring wsEncodingPath = wsSplitFileName + L".enc";
-
-				GfxFontType eFontType = pFont->getType();
-				if (fontType1 == eFontType || fontType1C == eFontType || fontType1COT == eFontType || fontTrueType == eFontType || fontTrueTypeOT == eFontType)
-				{
-					// Запись информации для простых шрифтов
-					CXmlWriter oXmlWriter;
-
-					Ref *pRef = pFont->getID();
-					Object oRefObject, oFontObject;
-					oRefObject.initRef(pRef->num, pRef->gen);
-					oRefObject.fetch(m_pXref, &oFontObject);
-					oRefObject.free();
-
-					if (oFontObject.isDict())
-					{
-						Dict *pFontDict = oFontObject.getDict();
-
-						int nEncodingType = -1; // Объекта Encoding нет
-						int nBaseEncoding = -1;
-
-						Object oDictItem;
-						pFontDict->lookup("Encoding", &oDictItem);
-						if (oDictItem.isDict())
-						{
-							nEncodingType = 1; // Encoding - идет отдельным объектом
-
-							Object oTemp;
-							oDictItem.dictLookup("BaseEncoding", &oTemp);
-
-							if (oTemp.isName("MacRomanEncoding"))
-								nBaseEncoding = 0;
-							else if (oTemp.isName("MacExpertEncoding"))
-								nBaseEncoding = 1;
-							else if (oTemp.isName("WinAnsiEncoding"))
-								nBaseEncoding = 2;
-
-							oTemp.free();
-						}
-						else if (oDictItem.isName("MacRomanEncoding"))
-						{
-							nEncodingType = 0;
-							nBaseEncoding = 0;
-						}
-						else if (oDictItem.isName("MacExpertEncoding"))
-						{
-							nEncodingType = 0;
-							nBaseEncoding = 1;
-						}
-						else if (oDictItem.isName("WinAnsiEncoding"))
-						{
-							nEncodingType = 0;
-							nBaseEncoding = 2;
-						}
-						else
-						{
-							nEncodingType = -1;
-						}
-
-						oXmlWriter.WriteNodeBegin(L"PDF-resources");
-						oXmlWriter.WriteNodeBegin(L"Encoding", true);
-						oXmlWriter.WriteAttribute(L"type", nEncodingType);
-						oXmlWriter.WriteAttribute(L"base", nBaseEncoding);
-						oXmlWriter.WriteNodeEnd(L"Encoding", true, false);
-
-						// Differences
-						if (oDictItem.isDict())
-						{
-							Object oDifferences;
-							oDictItem.dictLookup("Differences", &oDifferences);
-							if (oDifferences.isArray())
-							{
-								int nArrayLen = oDifferences.arrayGetLength();
-								oXmlWriter.WriteNodeBegin(L"Differences", true);
-								oXmlWriter.WriteAttribute(L"count", nArrayLen);
-								oXmlWriter.WriteNodeEnd(L"Differences", true, false);
-
-								for (int nIndex = 0; nIndex < nArrayLen; ++nIndex)
-								{
-									Object oTemp;
-									oDifferences.arrayGet(nIndex, &oTemp);
-									if (oTemp.isInt())
-									{
-										int nCode = oTemp.getInt();
-										oXmlWriter.WriteNodeBegin(L"Code", true);
-										oXmlWriter.WriteAttribute(L"value", nCode);
-										oXmlWriter.WriteNodeEnd(L"Code", true, true);
-									}
-									else if (oTemp.isName())
-									{
-										char* sName = oTemp.getName();
-										oXmlWriter.WriteNodeBegin(L"Name", true);
-										oXmlWriter.WriteAttribute(L"value", AStringToWString(sName));
-										oXmlWriter.WriteNodeEnd(L"Name", true, true);
-									}
-									else
-									{
-										// TO DO: Error "Wrong type in font encoding resource differences"
-									}
-									oTemp.free();
-								}
-
-								oXmlWriter.WriteNodeEnd(L"Differences");
-							}
-							oDifferences.free();
-						}
-						oDictItem.free();
-						oXmlWriter.WriteNodeEnd(L"Encoding");
-
-						pFontDict->lookup("BaseFont", &oDictItem);
-						if (oDictItem.isName())
-						{
-							oXmlWriter.WriteNodeBegin(L"FontBase", true);
-							oXmlWriter.WriteAttribute(L"value", AStringToWString(oDictItem.getName()));
-							oXmlWriter.WriteNodeEnd(L"FontBase", true, true);
-						}
-						oDictItem.free();
-
-						pFontDict->lookup("ToUnicode", &oDictItem);
-						if (oDictItem.isStream())
-						{
-							oXmlWriter.WriteNodeBegin(L"ToUnicode");
-
-							std::string sBuffer;
-							if (true)
-							{
-								oDictItem.streamReset();
-								int nChar = 0;
-								while ((nChar = oDictItem.streamGetChar()) != EOF)
-								{
-									sBuffer+=(char)nChar;
-								}
-								oDictItem.streamClose();
-
-								CBase64 oBase64;
-								oBase64.Encode((unsigned char*)sBuffer.c_str(), sBuffer.length());
-
-								oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
-							}
-
-							oXmlWriter.WriteNodeEnd(L"ToUnicode");
-						}
-						oDictItem.free();
-
-
-						oXmlWriter.WriteNodeBegin(L"FontDescriptor");
-
-						Object oFontDescriptor;
-						if (pFontDict->lookup("FontDescriptor", &oFontDescriptor)->isDict())
-						{
-							// FontName
-							oFontDescriptor.dictLookup("FontName", &oDictItem);
-							if (oDictItem.isName())
-							{
-								oXmlWriter.WriteNodeBegin(L"FontName", true);
-								oXmlWriter.WriteAttribute(L"value", AStringToWString(oDictItem.getName()));
-								oXmlWriter.WriteNodeEnd(L"FontName", true);
-							}
-							oDictItem.free();
-
-							// FontFamily
-							oFontDescriptor.dictLookup("FontFamily", &oDictItem);
-							if (oDictItem.isName())
-							{
-								oXmlWriter.WriteNodeBegin(L"FontFamily", true);
-								oXmlWriter.WriteAttribute(L"value", AStringToWString(oDictItem.getName()));
-								oXmlWriter.WriteNodeEnd(L"FontFamily", true);
-							}
-							oDictItem.free();
-
-							// FontStretch
-							oFontDescriptor.dictLookup("FontStretch", &oDictItem);
-							if (oDictItem.isName())
-							{
-								oXmlWriter.WriteNodeBegin(L"FontStretch", true);
-								oXmlWriter.WriteAttribute(L"value", AStringToWString(oDictItem.getName()));
-								oXmlWriter.WriteNodeEnd(L"FontStretch", true);
-							}
-							oDictItem.free();
-
-							// FontWeight
-							oFontDescriptor.dictLookup("FontWeight", &oDictItem);
-							if (oDictItem.isInt())
-							{
-								oXmlWriter.WriteNodeBegin(L"FontWeight", true);
-								oXmlWriter.WriteAttribute(L"value", oDictItem.getInt());
-								oXmlWriter.WriteNodeEnd(L"FontWeight", true);
-							}
-							oDictItem.free();
-
-							// FontWeight
-							oFontDescriptor.dictLookup("Flags", &oDictItem);
-							if (oDictItem.isInt())
-							{
-								oXmlWriter.WriteNodeBegin(L"Flags", true);
-								oXmlWriter.WriteAttribute(L"value", oDictItem.getInt());
-								oXmlWriter.WriteNodeEnd(L"Flags", true);
-							}
-							oDictItem.free();
-
-							// FontBBox
-							oFontDescriptor.dictLookup("FontBBox", &oDictItem);
-							if (oDictItem.isArray())
-							{
-								Array *pBBox = oDictItem.getArray();
-								if (NULL != pBBox && 4 == pBBox->getLength())
-								{
-									oXmlWriter.WriteNodeBegin(L"FontBBox", true);
-									for (int nIndex = 0; nIndex < 4; nIndex++)
-									{
-										Object oArrayItem;
-										pBBox->get(nIndex, &oArrayItem);
-										if (oArrayItem.isInt())
-										{
-											std::wstring wsValue = L"value" + std::to_wstring(nIndex);
-											oXmlWriter.WriteAttribute(wsValue, oArrayItem.getInt());
-										}
-
-										oArrayItem.free();
-									}
-									oXmlWriter.WriteNodeEnd(L"FontBBox", true);
-								}
-							}
-							oDictItem.free();
-
-							// ItalicAngle
-							oFontDescriptor.dictLookup("ItalicAngle", &oDictItem);
-							if (oDictItem.isInt())
-							{
-								oXmlWriter.WriteNodeBegin(L"ItalicAngle", true);
-								oXmlWriter.WriteAttribute(L"value", oDictItem.getInt());
-								oXmlWriter.WriteNodeEnd(L"ItalicAngle", true);
-							}
-							oDictItem.free();
-
-							// Ascent
-							oFontDescriptor.dictLookup("Ascent", &oDictItem);
-							if (oDictItem.isInt())
-							{
-								oXmlWriter.WriteNodeBegin(L"Ascent", true);
-								oXmlWriter.WriteAttribute(L"value", oDictItem.getInt());
-								oXmlWriter.WriteNodeEnd(L"Ascent", true);
-							}
-							oDictItem.free();
-
-							// Leading
-							oFontDescriptor.dictLookup("Leading", &oDictItem);
-							if (oDictItem.isInt())
-							{
-								oXmlWriter.WriteNodeBegin(L"Leading", true);
-								oXmlWriter.WriteAttribute(L"value", oDictItem.getInt());
-								oXmlWriter.WriteNodeEnd(L"Leading", true);
-							}
-							oDictItem.free();
-
-							// CapHeight
-							oFontDescriptor.dictLookup("CapHeight", &oDictItem);
-							if (oDictItem.isInt())
-							{
-								oXmlWriter.WriteNodeBegin(L"CapHeight", true);
-								oXmlWriter.WriteAttribute(L"value", oDictItem.getInt());
-								oXmlWriter.WriteNodeEnd(L"CapHeight", true);
-							}
-							oDictItem.free();
-
-							// XHeight
-							oFontDescriptor.dictLookup("XHeight", &oDictItem);
-							if (oDictItem.isInt())
-							{
-								oXmlWriter.WriteNodeBegin(L"XHeight", true);
-								oXmlWriter.WriteAttribute(L"value", oDictItem.getInt());
-								oXmlWriter.WriteNodeEnd(L"XHeight", true);
-							}
-							oDictItem.free();
-
-							// StemV
-							oFontDescriptor.dictLookup("StemV", &oDictItem);
-							if (oDictItem.isInt())
-							{
-								oXmlWriter.WriteNodeBegin(L"StemV", true);
-								oXmlWriter.WriteAttribute(L"value", oDictItem.getInt());
-								oXmlWriter.WriteNodeEnd(L"StemV", true);
-							}
-							oDictItem.free();
-
-							// StemH
-							oFontDescriptor.dictLookup("StemH", &oDictItem);
-							if (oDictItem.isInt())
-							{
-								oXmlWriter.WriteNodeBegin(L"StemH", true);
-								oXmlWriter.WriteAttribute(L"value", oDictItem.getInt());
-								oXmlWriter.WriteNodeEnd(L"StemH", true);
-							}
-							oDictItem.free();
-
-							// Descent
-							oFontDescriptor.dictLookup("Descent", &oDictItem);
-							if (oDictItem.isInt())
-							{
-								oXmlWriter.WriteNodeBegin(L"Descent", true);
-								oXmlWriter.WriteAttribute(L"value", oDictItem.getInt());
-								oXmlWriter.WriteNodeEnd(L"Descent", true);
-							}
-							oDictItem.free();
-
-							// AvgWidth
-							oFontDescriptor.dictLookup("AvgWidth", &oDictItem);
-							if (oDictItem.isInt())
-							{
-								oXmlWriter.WriteNodeBegin(L"AvgWidth", true);
-								oXmlWriter.WriteAttribute(L"value", oDictItem.getInt());
-								oXmlWriter.WriteNodeEnd(L"AvgWidth", true);
-							}
-							oDictItem.free();
-
-							// MaxWidth
-							oFontDescriptor.dictLookup("MaxWidth", &oDictItem);
-							if (oDictItem.isInt())
-							{
-								oXmlWriter.WriteNodeBegin(L"MaxWidth", true);
-								oXmlWriter.WriteAttribute(L"value", oDictItem.getInt());
-								oXmlWriter.WriteNodeEnd(L"MaxWidth", true);
-							}
-							oDictItem.free();
-
-							// MissingWidth
-							oFontDescriptor.dictLookup("MissingWidth", &oDictItem);
-							if (oDictItem.isInt())
-							{
-								oXmlWriter.WriteNodeBegin(L"MissingWidth", true);
-								oXmlWriter.WriteAttribute(L"value", oDictItem.getInt());
-								oXmlWriter.WriteNodeEnd(L"MissingWidth", true);
-							}
-							oDictItem.free();
-
-						}
-						oFontDescriptor.free();
-						oXmlWriter.WriteNodeEnd(L"FontDescriptor");
-
-						int nFirstChar = 0;
-						pFontDict->lookup("FirstChar", &oDictItem);
-						if (oDictItem.isInt()) nFirstChar = oDictItem.getInt();
-						oDictItem.free();
-
-						int nLastChar = 0;
-						pFontDict->lookup("LastChar", &oDictItem);
-						if (oDictItem.isInt()) nLastChar = oDictItem.getInt();
-						oDictItem.free();
-
-						Array *pWidths = NULL;
-						pFontDict->lookup("Widths", &oDictItem);
-						if (oDictItem.isArray())
-						{
-							oXmlWriter.WriteNodeBegin(L"Widths", true);
-							oXmlWriter.WriteAttribute(L"FirstChar", nFirstChar);
-							oXmlWriter.WriteAttribute(L"LastChar", nLastChar);
-							oXmlWriter.WriteNodeEnd(L"Widths", true, false);
-
-							Array *pWidths = oDictItem.getArray();
-							int nWidthsCount = pWidths->getLength();
-							for (int nIndex = 0; nIndex < nWidthsCount; nIndex++)
-							{
-								Object oArrayItem;
-								pWidths->get(nIndex, &oArrayItem);
-								if (oArrayItem.isInt())
-								{
-									oXmlWriter.WriteNodeBegin(L"Width", true);
-									oXmlWriter.WriteAttribute(L"value", oArrayItem.getInt());
-									oXmlWriter.WriteNodeEnd(L"Width", true);
-								}
-								oArrayItem.free();
-							}
-							oXmlWriter.WriteNodeEnd(L"Widths");
-						}
-						oDictItem.free();
-						oXmlWriter.WriteNodeEnd(L"PDF-resources");
-					}
-					oFontObject.free();
-					oXmlWriter.SaveToFile(wsEncodingPath);
-				}
-				else if (fontCIDType0 == eFontType || fontCIDType0C == eFontType || fontCIDType0COT == eFontType || fontCIDType2 == eFontType || fontCIDType2OT == eFontType)
-				{
-					// Пишем файл с кодировкой CMap
-					std::wstring wsCMapPath = wsSplitFileName + L".cmap";
-					if (pFont->isCIDFont())
-					{
-						GfxCIDFont *pCIDFont = (GfxCIDFont *)pFont;
-						//                        if (NULL != pCIDFont->GetCMap()) todo toxml
-						//                            pCIDFont->GetCMap()->ToXml(wsCMapPath);
-					}
-
-					CXmlWriter oXmlWriter;
-					Ref *pRef = pFont->getID();
-					Object oRefObject, oFontObject;
-					oRefObject.initRef(pRef->num, pRef->gen);
-					oRefObject.fetch(m_pXref, &oFontObject);
-					oRefObject.free();
-					if (oFontObject.isDict())
-					{
-						Dict *pFontDict = oFontObject.getDict();
-						oXmlWriter.WriteNodeBegin(L"PDF-resources");
-						Object oDictItem;
-						pFontDict->lookup("BaseFont", &oDictItem);
-						if (oDictItem.isName())
-						{
-							oXmlWriter.WriteNodeBegin(L"Type0", true);
-							oXmlWriter.WriteAttribute(L"value", AStringToWString(oDictItem.getName()));
-							oXmlWriter.WriteNodeEnd(L"Type0", true, false);
-						}
-						else
-						{
-							oXmlWriter.WriteNodeBegin(L"Type0");
-						}
-						oDictItem.free();
-
-						pFontDict->lookup("ToUnicode", &oDictItem);
-						if (oDictItem.isStream())
-						{
-							oXmlWriter.WriteNodeBegin(L"ToUnicode");
-
-							std::string sBuffer;
-							oDictItem.streamReset();
-							int nChar = 0;
-							while ((nChar = oDictItem.streamGetChar()) != EOF)
-							{
-								sBuffer+=(char)nChar;
-							}
-							oDictItem.streamClose();
-
-							CBase64 oBase64;
-							oBase64.Encode((unsigned char*)sBuffer.c_str(), sBuffer.length());
-
-							oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
-							oXmlWriter.WriteNodeEnd(L"ToUnicode");
-						}
-						oDictItem.free();
-
-						pFontDict->lookup("Encoding", &oDictItem);
-						if (oDictItem.isName())
-						{
-							oXmlWriter.WriteNodeBegin(L"Encoding", true);
-							oXmlWriter.WriteAttribute(L"name", AStringToWString(oDictItem.getName()));
-							oXmlWriter.WriteNodeEnd(L"Encoding", true, true);
-						}
-						else if (oDictItem.isStream())
-						{
-							oXmlWriter.WriteNodeBegin(L"Encoding");
-
-							Dict *pEncodingDict = oDictItem.streamGetDict();
-							if (NULL != pEncodingDict)
-							{
-								Object oEncItem;
-								pEncodingDict->lookup("CMapName", &oEncItem);
-								if (oEncItem.isName())
-								{
-									oXmlWriter.WriteNodeBegin(L"CMapName", true);
-									oXmlWriter.WriteAttribute(L"name", AStringToWString(oEncItem.getName()));
-									oXmlWriter.WriteNodeEnd(L"CMapName", true, true);
-								}
-								oEncItem.free();
-
-								pEncodingDict->lookup("CIDSystemInfo", &oEncItem);
-								if (oEncItem.isDict())
-								{
-									Dict *pCIDInfo = oEncItem.getDict();
-
-									if (NULL != pCIDInfo)
-									{
-										oXmlWriter.WriteNodeBegin(L"CIDSystemInfo");
-
-										Object oCIDInfoItem;
-										pCIDInfo->lookup("Registry", &oCIDInfoItem);
-										if (oCIDInfoItem.isString())
-										{
-											oXmlWriter.WriteNodeBegin(L"Registry", true);
-											oXmlWriter.WriteAttribute(L"string", AStringToWString(oCIDInfoItem.getString()->getCString()));
-											oXmlWriter.WriteNodeEnd(L"Registry", true, true);
-										}
-										oCIDInfoItem.free();
-
-										pCIDInfo->lookup("Ordering", &oCIDInfoItem);
-										if (oCIDInfoItem.isString())
-										{
-											oXmlWriter.WriteNodeBegin(L"Ordering", true);
-											oXmlWriter.WriteAttribute(L"string", AStringToWString(oCIDInfoItem.getString()->getCString()));
-											oXmlWriter.WriteNodeEnd(L"Ordering", true, true);
-										}
-										oCIDInfoItem.free();
-
-										pCIDInfo->lookup("Supplement", &oCIDInfoItem);
-										if (oCIDInfoItem.isInt())
-										{
-											oXmlWriter.WriteNodeBegin(L"Supplement", true);
-											oXmlWriter.WriteAttribute(L"integer", oCIDInfoItem.getInt());
-											oXmlWriter.WriteNodeEnd(L"Supplement", true, true);
-										}
-										oCIDInfoItem.free();
-
-										oXmlWriter.WriteNodeEnd(L"CIDSystemInfo");
-									}
-								}
-								oEncItem.free();
-
-								pEncodingDict->lookup("WMode", &oEncItem);
-								if (oEncItem.isInt())
-								{
-									oXmlWriter.WriteNodeBegin(L"WMode", true);
-									oXmlWriter.WriteAttribute(L"integer", oEncItem.getInt());
-									oXmlWriter.WriteNodeEnd(L"WMode", true, true);
-								}
-								oEncItem.free();
-
-								pEncodingDict->lookup("UseCMap", &oEncItem);
-								if (oEncItem.isName())
-								{
-									oXmlWriter.WriteNodeBegin(L"UseCMap", true);
-									oXmlWriter.WriteAttribute(L"name", AStringToWString(oEncItem.getName()));
-									oXmlWriter.WriteNodeEnd(L"UseCMap", true, true);
-								}
-								else if (oEncItem.isStream())
-								{
-									oXmlWriter.WriteNodeBegin(L"UseCMap");
-
-									std::string sBuffer;
-									oEncItem.streamReset();
-									int nChar = 0;
-									while ((nChar = oEncItem.streamGetChar()) != EOF)
-									{
-										sBuffer+=(char)nChar;
-									}
-									oEncItem.streamClose();
-
-									CBase64 oBase64;
-									oBase64.Encode((unsigned char*)sBuffer.c_str(), sBuffer.length());
-
-									oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
-
-									oXmlWriter.WriteNodeEnd(L"UseCMap");
-								}
-								oEncItem.free();
-							}
-
-							oXmlWriter.WriteNodeBegin(L"Stream");
-							std::string sBuffer;
-							oDictItem.streamReset();
-							int nChar = 0;
-							while ((nChar = oDictItem.streamGetChar()) != EOF)
-							{
-								sBuffer+=(char)nChar;
-							}
-							oDictItem.streamClose();
-
-							CBase64 oBase64;
-							oBase64.Encode((unsigned char*)sBuffer.c_str(), sBuffer.length());
-
-							oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
-
-							oXmlWriter.WriteNodeEnd(L"Stream");
-							oXmlWriter.WriteNodeEnd(L"Encoding");
-						}
-						oDictItem.free();
-
-						pFontDict->lookup("DescendantFonts", &oDictItem);
-						if (oDictItem.isArray())
-						{
-							Array *pArray =  oDictItem.getArray();
-							if (1 == pArray->getLength())
-							{
-								Object oDescFont;
-								pArray->get(0, &oDescFont);
-
-								if (oDescFont.isDict())
-								{
-									Dict *pDescFont = oDescFont.getDict();
-									if (NULL != pDescFont)
-									{
-										oXmlWriter.WriteNodeBegin(L"DescendantFonts");
-
-										Object oFontItem;
-										pDescFont->lookup("Subtype", &oFontItem);
-										if (oFontItem.isName())
-										{
-											oXmlWriter.WriteNodeBegin(L"Subtype", true);
-											oXmlWriter.WriteAttribute(L"name", AStringToWString(oFontItem.getName()));
-											oXmlWriter.WriteNodeEnd(L"Subtype", true, true);
-										}
-										oFontItem.free();
-
-										pDescFont->lookup("BaseFont", &oFontItem);
-										if (oFontItem.isName())
-										{
-											oXmlWriter.WriteNodeBegin(L"BaseFont", true);
-											oXmlWriter.WriteAttribute(L"name", AStringToWString(oFontItem.getName()));
-											oXmlWriter.WriteNodeEnd(L"BaseFont", true, true);
-										}
-										oFontItem.free();
-
-										pDescFont->lookup("CIDSystemInfo", &oFontItem);
-										if (oFontItem.isDict())
-										{
-											Dict *pCIDInfo = oFontItem.getDict();
-											if (NULL != pCIDInfo)
-											{
-												oXmlWriter.WriteNodeBegin(L"CIDSystemInfo");
-
-												Object oCIDInfoItem;
-												pCIDInfo->lookup("Registry", &oCIDInfoItem);
-												if (oCIDInfoItem.isString())
-												{
-													oXmlWriter.WriteNodeBegin(L"Registry", true);
-													oXmlWriter.WriteAttribute(L"string", AStringToWString(oCIDInfoItem.getString()->getCString()));
-													oXmlWriter.WriteNodeEnd(L"Registry", true, true);
-												}
-												oCIDInfoItem.free();
-
-												pCIDInfo->lookup("Ordering", &oCIDInfoItem);
-												if (oCIDInfoItem.isString())
-												{
-													oXmlWriter.WriteNodeBegin(L"Ordering", true);
-													oXmlWriter.WriteAttribute(L"string", AStringToWString(oCIDInfoItem.getString()->getCString()));
-													oXmlWriter.WriteNodeEnd(L"Ordering", true, true);
-												}
-												oCIDInfoItem.free();
-
-												pCIDInfo->lookup("Supplement", &oCIDInfoItem);
-												if (oCIDInfoItem.isInt())
-												{
-													oXmlWriter.WriteNodeBegin(L"Supplement", true);
-													oXmlWriter.WriteAttribute(L"integer", oCIDInfoItem.getInt());
-													oXmlWriter.WriteNodeEnd(L"Supplement", true, true);
-												}
-												oCIDInfoItem.free();
-
-												oXmlWriter.WriteNodeEnd(L"CIDSystemInfo");
-											}
-										}
-										oFontItem.free();
-
-										pDescFont->lookup("FontDescriptor", &oFontItem);
-										if (oFontItem.isDict())
-										{
-											Dict *pFontDescriptor = oFontItem.getDict();
-											if (NULL != pFontDescriptor)
-											{
-												oXmlWriter.WriteNodeBegin(L"FontDescriptor");
-												Object oItemFD;
-
-												pFontDescriptor->lookup("FontName", &oItemFD);
-												if (oItemFD.isName())
-												{
-													oXmlWriter.WriteNodeBegin(L"FontName", true);
-													oXmlWriter.WriteAttribute(L"name", AStringToWString(oItemFD.getName()));
-													oXmlWriter.WriteNodeEnd(L"FontName", true, true);
-												}
-												oItemFD.free();
-
-												pFontDescriptor->lookup("FontStretch", &oItemFD);
-												if (oItemFD.isName())
-												{
-													oXmlWriter.WriteNodeBegin(L"FontStretch", true);
-													oXmlWriter.WriteAttribute(L"name", AStringToWString(oItemFD.getName()));
-													oXmlWriter.WriteNodeEnd(L"FontStretch", true, true);
-												}
-												oItemFD.free();
-
-												pFontDescriptor->lookup("FontWeight", &oItemFD);
-												if (oItemFD.isInt())
-												{
-													oXmlWriter.WriteNodeBegin(L"FontWeight", true);
-													oXmlWriter.WriteAttribute(L"number", oItemFD.getInt());
-													oXmlWriter.WriteNodeEnd(L"FontWeight", true, true);
-												}
-												oItemFD.free();
-
-												pFontDescriptor->lookup("Flags", &oItemFD);
-												if (oItemFD.isInt())
-												{
-													oXmlWriter.WriteNodeBegin(L"Flags", true);
-													oXmlWriter.WriteAttribute(L"integer", oItemFD.getInt());
-													oXmlWriter.WriteNodeEnd(L"Flags", true, true);
-												}
-												oItemFD.free();
-
-												pFontDescriptor->lookup("FontBBox", &oItemFD);
-												if (oItemFD.isArray())
-												{
-													Array *pBBox = oItemFD.getArray();
-													if (NULL != pBBox && 4 == pBBox->getLength())
-													{
-														oXmlWriter.WriteNodeBegin(L"FontBBox", true);
-														for (int nIndex = 0; nIndex < 4; nIndex++)
-														{
-															Object oArrayItem;
-															pBBox->get(nIndex, &oArrayItem);
-															if (oArrayItem.isInt())
-															{
-																std::wstring wsValue = L"value" + std::to_wstring(nIndex);
-																oXmlWriter.WriteAttribute(wsValue, oArrayItem.getInt());
-															}
-
-															oArrayItem.free();
-														}
-														oXmlWriter.WriteNodeEnd(L"FontBBox", true);
-													}
-												}
-												oItemFD.free();
-
-												pFontDescriptor->lookup("ItalicAngle", &oItemFD);
-												if (oItemFD.isInt())
-												{
-													oXmlWriter.WriteNodeBegin(L"ItalicAngle", true);
-													oXmlWriter.WriteAttribute(L"number", oItemFD.getInt());
-													oXmlWriter.WriteNodeEnd(L"ItalicAngle", true, true);
-												}
-												oItemFD.free();
-
-												pFontDescriptor->lookup("Ascent", &oItemFD);
-												if (oItemFD.isInt())
-												{
-													oXmlWriter.WriteNodeBegin(L"Ascent", true);
-													oXmlWriter.WriteAttribute(L"number", oItemFD.getInt());
-													oXmlWriter.WriteNodeEnd(L"Ascent", true, true);
-												}
-												oItemFD.free();
-
-												pFontDescriptor->lookup("Descent", &oItemFD);
-												if (oItemFD.isInt())
-												{
-													oXmlWriter.WriteNodeBegin(L"Descent", true);
-													oXmlWriter.WriteAttribute(L"number", oItemFD.getInt());
-													oXmlWriter.WriteNodeEnd(L"Descent", true, true);
-												}
-												oItemFD.free();
-
-												pFontDescriptor->lookup("Leading", &oItemFD);
-												if (oItemFD.isInt())
-												{
-													oXmlWriter.WriteNodeBegin(L"Leading", true);
-													oXmlWriter.WriteAttribute(L"number", oItemFD.getInt());
-													oXmlWriter.WriteNodeEnd(L"Leading", true, true);
-												}
-												oItemFD.free();
-
-												pFontDescriptor->lookup("CapHeight", &oItemFD);
-												if (oItemFD.isInt())
-												{
-													oXmlWriter.WriteNodeBegin(L"CapHeight", true);
-													oXmlWriter.WriteAttribute(L"number", oItemFD.getInt());
-													oXmlWriter.WriteNodeEnd(L"CapHeight", true, true);
-												}
-												oItemFD.free();
-
-												pFontDescriptor->lookup("XHeight", &oItemFD);
-												if (oItemFD.isInt())
-												{
-													oXmlWriter.WriteNodeBegin(L"XHeight", true);
-													oXmlWriter.WriteAttribute(L"number", oItemFD.getInt());
-													oXmlWriter.WriteNodeEnd(L"XHeight", true, true);
-												}
-												oItemFD.free();
-
-												pFontDescriptor->lookup("StemV", &oItemFD);
-												if (oItemFD.isInt())
-												{
-													oXmlWriter.WriteNodeBegin(L"StemV", true);
-													oXmlWriter.WriteAttribute(L"number", oItemFD.getInt());
-													oXmlWriter.WriteNodeEnd(L"StemV", true, true);
-												}
-												oItemFD.free();
-
-												pFontDescriptor->lookup("StemH", &oItemFD);
-												if (oItemFD.isInt())
-												{
-													oXmlWriter.WriteNodeBegin(L"StemH", true);
-													oXmlWriter.WriteAttribute(L"number", oItemFD.getInt());
-													oXmlWriter.WriteNodeEnd(L"StemH", true, true);
-												}
-												oItemFD.free();
-
-												pFontDescriptor->lookup("AvgWidth", &oItemFD);
-												if (oItemFD.isInt())
-												{
-													oXmlWriter.WriteNodeBegin(L"AvgWidth", true);
-													oXmlWriter.WriteAttribute(L"number", oItemFD.getInt());
-													oXmlWriter.WriteNodeEnd(L"AvgWidth", true, true);
-												}
-												oItemFD.free();
-
-												pFontDescriptor->lookup("MaxWidth", &oItemFD);
-												if (oItemFD.isInt())
-												{
-													oXmlWriter.WriteNodeBegin(L"MaxWidth", true);
-													oXmlWriter.WriteAttribute(L"number", oItemFD.getInt());
-													oXmlWriter.WriteNodeEnd(L"MaxWidth", true, true);
-												}
-												oItemFD.free();
-
-												pFontDescriptor->lookup("MissingWidth", &oItemFD);
-												if (oItemFD.isInt())
-												{
-													oXmlWriter.WriteNodeBegin(L"MissingWidth", true);
-													oXmlWriter.WriteAttribute(L"number", oItemFD.getInt());
-													oXmlWriter.WriteNodeEnd(L"MissingWidth", true, true);
-												}
-												oItemFD.free();
-
-												// TODO: Тут надо реализовать чтени полей /Style, /Lang, /FD, /CIDSet
-
-												oXmlWriter.WriteNodeEnd(L"FontDescriptor");
-											}
-										}
-										oFontItem.free();
-
-										pDescFont->lookup("DW", &oFontItem);
-										if (oFontItem.isInt())
-										{
-											oXmlWriter.WriteNodeBegin(L"DW", true);
-											oXmlWriter.WriteAttribute(L"integer", oFontItem.getInt());
-											oXmlWriter.WriteNodeEnd(L"DW", true, true);
-										}
-										oFontItem.free();
-
-										pDescFont->lookup("W", &oFontItem);
-										if (oFontItem.isArray())
-										{
-											Array *pArray = oFontItem.getArray();
-											if (NULL != pArray)
-											{
-												oXmlWriter.WriteNodeBegin(L"W");
-
-												for (int nIndex = 0; nIndex < pArray->getLength(); nIndex++)
-												{
-													Object oArrayItem;
-													pArray->get(nIndex, &oArrayItem);
-													if (oArrayItem.isInt())
-													{
-														oXmlWriter.WriteNodeBegin(L"Int", true);
-														oXmlWriter.WriteAttribute(L"value", oArrayItem.getInt());
-														oXmlWriter.WriteNodeEnd(L"Int", true, true);
-													}
-													else if (oArrayItem.isArray())
-													{
-														Array *pWArray = oArrayItem.getArray();
-														if (NULL != pWArray)
-														{
-															oXmlWriter.WriteNodeBegin(L"Array");
-															for (int nWIndex = 0; nWIndex < pWArray->getLength(); nWIndex++)
-															{
-																Object oWArrayItem;
-																pWArray->get(nWIndex, &oWArrayItem);
-																if (oWArrayItem.isInt())
-																{
-																	oXmlWriter.WriteNodeBegin(L"Int", true);
-																	oXmlWriter.WriteAttribute(L"value", oWArrayItem.getInt());
-																	oXmlWriter.WriteNodeEnd(L"Int", true, true);
-																}
-																oWArrayItem.free();
-															}
-															oXmlWriter.WriteNodeEnd(L"Array");
-														}
-													}
-													oArrayItem.free();
-												}
-
-												oXmlWriter.WriteNodeEnd(L"W");
-											}
-										}
-										oFontItem.free();
-
-										pDescFont->lookup("DW2", &oFontItem);
-										if (oFontItem.isArray())
-										{
-											Array *pArray = oFontItem.getArray();
-											if (NULL != pArray && 2 == pArray->getLength())
-											{
-												oXmlWriter.WriteNodeBegin(L"DW2", true);
-
-												Object oArrayItem;
-												pArray->get(0, &oArrayItem);
-												if (oArrayItem.isInt())
-												{
-													oXmlWriter.WriteAttribute(L"value0", oArrayItem.getInt());
-												}
-												oArrayItem.free();
-
-												pArray->get(1, &oArrayItem);
-												if (oArrayItem.isInt())
-												{
-													oXmlWriter.WriteAttribute(L"value1", oArrayItem.getInt());
-												}
-												oArrayItem.free();
-
-												oXmlWriter.WriteNodeEnd(L"DW2", true, true);
-											}
-										}
-										oFontItem.free();
-
-										pDescFont->lookup("W2", &oFontItem);
-										if (oFontItem.isArray())
-										{
-											Array *pArray = oFontItem.getArray();
-											if (NULL != pArray)
-											{
-												oXmlWriter.WriteNodeBegin(L"W2");
-
-												for (int nIndex = 0; nIndex < pArray->getLength(); nIndex++)
-												{
-													Object oArrayItem;
-													pArray->get(nIndex, &oArrayItem);
-													if (oArrayItem.isInt())
-													{
-														oXmlWriter.WriteNodeBegin(L"Int", true);
-														oXmlWriter.WriteAttribute(L"value", oArrayItem.getInt());
-														oXmlWriter.WriteNodeEnd(L"Int", true, true);
-													}
-													else if (oArrayItem.isArray())
-													{
-														Array *pWArray = oArrayItem.getArray();
-														if (NULL != pWArray)
-														{
-															oXmlWriter.WriteNodeBegin(L"Array");
-															for (int nWIndex = 0; nWIndex < pWArray->getLength(); nWIndex++)
-															{
-																Object oWArrayItem;
-																pWArray->get(nWIndex, &oWArrayItem);
-																if (oWArrayItem.isInt())
-																{
-																	oXmlWriter.WriteNodeBegin(L"Int", true);
-																	oXmlWriter.WriteAttribute(L"value", oWArrayItem.getInt());
-																	oXmlWriter.WriteNodeEnd(L"Int", true, true);
-																}
-																oWArrayItem.free();
-															}
-															oXmlWriter.WriteNodeEnd(L"Array");
-														}
-													}
-													oArrayItem.free();
-												}
-
-												oXmlWriter.WriteNodeEnd(L"W2");
-											}
-										}
-										oFontItem.free();
-
-										pDescFont->lookup("CIDToGIDMap", &oFontItem);
-										if (oFontItem.isName())
-										{
-											oXmlWriter.WriteNodeBegin(L"CIDToGIDMap", true);
-											oXmlWriter.WriteAttribute(L"name", AStringToWString(oFontItem.getName()));
-											oXmlWriter.WriteNodeEnd(L"CIDToGIDMap", true, true);
-										}
-										else if (oFontItem.isStream())
-										{
-											oXmlWriter.WriteNodeBegin(L"CIDToGIDMap");
-
-											std::string sBuffer;
-											oFontItem.streamReset();
-											int nChar = 0;
-											while ((nChar = oFontItem.streamGetChar()) != EOF)
-											{
-												sBuffer+=(char)nChar;
-											}
-											oFontItem.streamClose();
-
-											CBase64 oBase64;
-											oBase64.Encode((unsigned char*)sBuffer.c_str(), sBuffer.length());
-
-											oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
-
-											oXmlWriter.WriteNodeEnd(L"CIDToGIDMap");
-										}
-										oFontItem.free();
-
-
-										oXmlWriter.WriteNodeEnd(L"DescendantFonts");
-									}
-								}
-								oDescFont.free();
-							}
-						}
-						oDictItem.free();
-
-						oXmlWriter.WriteNodeEnd(L"Type0");
-						oXmlWriter.WriteNodeEnd(L"PDF-resources");
-					}
-					oFontObject.free();
-
-					oXmlWriter.SaveToFile(wsEncodingPath);
-				}
-			}
-			*/
 
 			// Обрежем индекс у FontName, если он есть
 			if (wsFontName.empty())
@@ -2715,14 +1532,14 @@ namespace PdfReader
 			wsFontName = pEntry->wsFontName;
 		}
 	}
-	void RendererOutputDev::updateFont(GfxState *pGState)
+	void RendererOutputDev::updateFont(GfxState* pGState)
 	{
 		// Проверяем наличие списка со шрифтами
-		if (NULL == m_pFontList)
+		if (!m_pFontList)
 			return;
 
-		GfxFont *pFont = pGState->getFont();
-		if (NULL == pFont)
+		GfxFont* pFont = pGState->getFont();
+		if (!pFont)
 			return;
 
 		m_pRenderer->put_FontSize(pGState->getFontSize());
@@ -2731,13 +1548,13 @@ namespace PdfReader
 		std::wstring wsFontName = L"";
 		GetFont(m_pXref, m_pFontManager, m_pFontList, pFont, wsFileName, wsFontName);
 
-		if (L"" != wsFileName)
+		if (!wsFileName.empty())
 		{
 			m_pRenderer->put_FontPath(wsFileName);
 			m_pRenderer->put_FontName(wsFontName);
 		}
 	}
-	void RendererOutputDev::stroke(GfxState *pGState)
+	void RendererOutputDev::stroke(GfxState* pGState)
 	{
 		if (m_bDrawOnlyText)
 			return;
@@ -2747,7 +1564,7 @@ namespace PdfReader
 
 		m_pRenderer->EndCommand(c_nPathType);
 	}
-	void RendererOutputDev::fill(GfxState *pGState)
+	void RendererOutputDev::fill(GfxState* pGState)
 	{
 		if (m_bDrawOnlyText)
 			return;
@@ -2756,7 +1573,7 @@ namespace PdfReader
 		m_pRenderer->DrawPath(c_nWindingFillMode);
 		m_pRenderer->EndCommand(c_nPathType);
 	}
-	void RendererOutputDev::eoFill(GfxState *pGState)
+	void RendererOutputDev::eoFill(GfxState* pGState)
 	{
 		if (m_bDrawOnlyText)
 			return;
@@ -2766,7 +1583,7 @@ namespace PdfReader
 
 		m_pRenderer->EndCommand(c_nPathType);
 	}
-	void RendererOutputDev::FillStroke(GfxState *pGState)
+	void RendererOutputDev::FillStroke(GfxState* pGState)
 	{
 		if (m_bDrawOnlyText)
 			return;
@@ -2776,7 +1593,7 @@ namespace PdfReader
 
 		m_pRenderer->EndCommand(c_nPathType);
 	}
-	void RendererOutputDev::EoFillStroke(GfxState *pGState)
+	void RendererOutputDev::EoFillStroke(GfxState* pGState)
 	{
 		if (m_bDrawOnlyText)
 			return;
@@ -2786,7 +1603,7 @@ namespace PdfReader
 
 		m_pRenderer->EndCommand(c_nPathType);
 	}
-	void RendererOutputDev::tilingPatternFill(GfxState *pGState, Gfx *gfx, Object *pStream, int nPaintType, int nTilingType, Dict *pResourcesDict, double* pMatrix, double *pBBox,
+	void RendererOutputDev::tilingPatternFill(GfxState* pGState, Gfx* gfx, Object* pStream, int nPaintType, int nTilingType, Dict* pResourcesDict, double* pMatrix, double* pBBox,
 											  int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep)
 	{
 		if (m_bDrawOnlyText)
@@ -2890,7 +1707,7 @@ namespace PdfReader
 		pGState->clearPath();
 		RELEASEINTERFACE(oImage);
 	}
-	void RendererOutputDev::StartTilingFill(GfxState *pGState)
+	void RendererOutputDev::StartTilingFill(GfxState* pGState)
 	{
 		if (m_bDrawOnlyText)
 			return;
@@ -2911,14 +1728,14 @@ namespace PdfReader
 	{
 		double x0, y0, x1, x2, y1, y2, r1, r2;
 		double xmin, xmax, ymin, ymax, r;
-		double *matrix;
+		double* matrix;
 
 		int nTriangles = 0, nPatches = 0;
 		switch (pShading->getType())
 		{
 		case 1:
-			((GfxFunctionShading *)pShading)->getDomain(&x0, &y0, &x1, &y1);
-			matrix = ((GfxFunctionShading *)pShading)->getMatrix();
+			((GfxFunctionShading*)pShading)->getDomain(&x0, &y0, &x1, &y1);
+			matrix = ((GfxFunctionShading*)pShading)->getMatrix();
 			pGState->moveTo(x0 * matrix[0] + y0 * matrix[2] + matrix[4],
 					x0 * matrix[1] + y0 * matrix[3] + matrix[5]);
 			pGState->lineTo(x1 * matrix[0] + y0 * matrix[2] + matrix[4],
@@ -2928,12 +1745,10 @@ namespace PdfReader
 			pGState->lineTo(x0 * matrix[0] + y1 * matrix[2] + matrix[4],
 					x0 * matrix[1] + y1 * matrix[3] + matrix[5]);
 			pGState->closePath();
-			FunctionShadedFill(pGState, (GfxFunctionShading *) pShading);
+			FunctionShadedFill(pGState, (GfxFunctionShading*) pShading);
 			return true;
 		case 2:
 			pGState->getUserClipBBox(&xmin, &ymin, &xmax, &ymax);
-			//pGState->clearPath();
-
 
 			pGState->moveTo(xmin, ymin);
 			pGState->lineTo(xmin, ymax);
@@ -2943,7 +1758,7 @@ namespace PdfReader
 			AxialShadedFill(pGState, (GfxAxialShading* )pShading);
 			return true;
 		case 3:
-			((GfxRadialShading *)pShading)->getCoords(&x1, &y1, &r1, &x2, &y2, &r2);
+			((GfxRadialShading*)pShading)->getCoords(&x1, &y1, &r1, &x2, &y2, &r2);
 
 			r = std::max(r1,r2);
 			xmin = std::min(x1, x2) - 2 * r;
@@ -2960,21 +1775,21 @@ namespace PdfReader
 			return true;
 		case 4:
 		case 5:
-			nTriangles = ((GfxGouraudTriangleShading *) pShading)->getNTriangles();
+			nTriangles = ((GfxGouraudTriangleShading*) pShading)->getNTriangles();
 
 			for (int i = 0; i < nTriangles; i++) {
-				int nComps = ((GfxGouraudTriangleShading *) pShading)->getNComps();
+				int nComps = ((GfxGouraudTriangleShading*) pShading)->getNComps();
 				double x1,x2,x3,y1,y2,y3;
-				double *c1 =  new double[nComps];
-				double *c2 =  new double[nComps];
-				double *c3 =  new double[nComps];
+				double* c1 =  new double[nComps];
+				double* c2 =  new double[nComps];
+				double* c3 =  new double[nComps];
 
 				GfxColor col1, col2, col3;
 
-				((GfxGouraudTriangleShading *) pShading)->getTriangle(i, &x1, &y1, c1, &x2, &y2, c2, &x3, &y3, c3);
-				((GfxGouraudTriangleShading *) pShading)->getColor(c1, &col1);
-				((GfxGouraudTriangleShading *) pShading)->getColor(c2, &col2);
-				((GfxGouraudTriangleShading *) pShading)->getColor(c3, &col3);
+				((GfxGouraudTriangleShading*) pShading)->getTriangle(i, &x1, &y1, c1, &x2, &y2, c2, &x3, &y3, c3);
+				((GfxGouraudTriangleShading*) pShading)->getColor(c1, &col1);
+				((GfxGouraudTriangleShading*) pShading)->getColor(c2, &col2);
+				((GfxGouraudTriangleShading*) pShading)->getColor(c3, &col3);
 
 				pGState->clearPath();
 
@@ -2992,8 +1807,8 @@ namespace PdfReader
 			return true;
 		case 6:
 		case 7:
-			int nComps = ((GfxPatchMeshShading *) pShading)->getNComps();
-			int nPatches = ((GfxPatchMeshShading *) pShading)->getNPatches();
+			int nComps = ((GfxPatchMeshShading*)pShading)->getNComps();
+			int nPatches = ((GfxPatchMeshShading*)pShading)->getNPatches();
 
 			NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
 			if (GRenderer)
@@ -3001,7 +1816,7 @@ namespace PdfReader
 			m_pRenderer->BeginCommand(c_nLayerType);
 
 			for (int i = 0; i < nPatches; i++) {
-				GfxPatch *patch = ((GfxPatchMeshShading *) pShading)->getPatch(i);
+				GfxPatch* patch = ((GfxPatchMeshShading*)pShading)->getPatch(i);
 				pGState->clearPath();
 				pGState->moveTo(patch->x[0][0], patch->y[0][0]);
 				pGState->curveTo(patch->x[0][1], patch->y[0][1],
@@ -3017,7 +1832,7 @@ namespace PdfReader
 						patch->x[1][0], patch->y[1][0],
 						patch->x[0][0], patch->y[0][0]);
 				pGState->closePath();
-				PatchMeshFill(pGState, patch, (GfxPatchMeshShading *) pShading);
+				PatchMeshFill(pGState, patch, (GfxPatchMeshShading*)pShading);
 			}
 
 			if (GRenderer)
@@ -3030,7 +1845,7 @@ namespace PdfReader
 		return false;
 	}
 
-	bool RendererOutputDev::FunctionShadedFill(GfxState *pGState, GfxFunctionShading *pShading)
+	bool RendererOutputDev::FunctionShadedFill(GfxState* pGState, GfxFunctionShading* pShading)
 	{
 		if (m_bDrawOnlyText)
 			return true;
@@ -3053,7 +1868,7 @@ namespace PdfReader
 		float delta_x = (x2 - x1) / info.shading.function.get_resolution();
 		float delta_y = (y2 - y1) / info.shading.function.get_resolution();
 
-		GfxColorSpace *ColorSpace = pShading->getColorSpace();
+		GfxColorSpace* ColorSpace = pShading->getColorSpace();
 
 		for (size_t i = 0; i < info.shading.function.get_resolution(); i++)
 		{
@@ -3084,7 +1899,7 @@ namespace PdfReader
 		pGState->clearPath();
 		return true;
 	}
-	bool RendererOutputDev::AxialShadedFill(GfxState *pGState, GfxAxialShading *pShading)
+	bool RendererOutputDev::AxialShadedFill(GfxState* pGState, GfxAxialShading* pShading)
 	{
 		if (m_bDrawOnlyText)
 			return true;
@@ -3094,41 +1909,6 @@ namespace PdfReader
 
 		long brush;
 		m_pRenderer->get_BrushType(&brush);
-
-		/*
-		IRenderer* pLastRenderer = m_pRenderer;
-		BYTE* pBgraData = NULL;
-		CBgraFrame* pFrame = NULL;
-		double dpi, dWidth, dHeight;
-		m_pRenderer->get_DpiX(&dpi);
-		// TODO что если размеры не равны размерам m_pSoftMask
-		pLastRenderer->get_Width(&dWidth);
-		pLastRenderer->get_Height(&dHeight);
-		int nWidth  = dWidth  * 96 / dpi;
-		int nHeight = dHeight * 96 / dpi;
-		if (m_pSoftMask)
-		{
-			NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
-			m_pRenderer = pRenderer;
-
-			pBgraData = new BYTE[nWidth * nHeight * 4];
-			memset(pBgraData, 0xff, nWidth * nHeight * 4);
-
-			pFrame = new CBgraFrame();
-			pFrame->put_Data(pBgraData);
-			pFrame->put_Width(nWidth);
-			pFrame->put_Height(nHeight);
-			// TODO bIsFlip = true ~ 4
-			pFrame->put_Stride(-4 * nWidth);
-
-			pRenderer->CreateFromBgraFrame(pFrame);
-			// TODO проверить
-			pRenderer->SetSwapRGB(true);
-
-			pRenderer->put_Width(dWidth);
-			pRenderer->put_Height(dHeight);
-		}
-		*/
 
 		DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
 
@@ -3147,7 +1927,7 @@ namespace PdfReader
 		NSStructures::GradientInfo info = NSStructures::GInfoConstructor::get_linear({x1, y1}, {x2, y2}, t0, t1,
 																					 pShading->getExtend0(), pShading->getExtend1());
 
-		GfxColorSpace *ColorSpace = pShading->getColorSpace();
+		GfxColorSpace* ColorSpace = pShading->getColorSpace();
 		float delta = (t1 - t0) / info.shading.function.get_resolution();
 		float t = t0;
 		for (size_t i = 0; i < info.shading.function.get_resolution(); i++)
@@ -3174,59 +1954,12 @@ namespace PdfReader
 
 		m_pRenderer->EndCommand(c_nPathType);
 
-		/*
-		if (m_pSoftMask)
-		{
-			for (int nY = m_nSoftMaskHeight - 1; nY >= 0; nY--)
-			{
-				int nIndex = 4 * nY * m_nSoftMaskWidth;
-				for (int nX = 0; nX < m_nSoftMaskWidth; nX++)
-				{
-					if (m_pSoftMask[nIndex + 3])
-					{
-						m_pSoftMask[nIndex + 0] = pBgraData[nIndex + 0];
-						m_pSoftMask[nIndex + 1] = pBgraData[nIndex + 1];
-						m_pSoftMask[nIndex + 2] = pBgraData[nIndex + 2];
-					}
-					nIndex += 4;
-				}
-			}
-
-			pFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res3.png", _CXIMAGE_FORMAT_PNG);
-			RELEASEOBJECT(m_pRenderer);
-			m_pRenderer = pLastRenderer;
-
-			Aggplus::CImage oImage;
-			oImage.Create(m_pSoftMask, m_nSoftMaskWidth, m_nSoftMaskHeight, -4 * m_nSoftMaskWidth, true);
-
-			double arrMatrix[6];
-			double* pCTM = m_pCTMSoftMask;
-
-			//  Исходное предобразование
-			//              |1  0  0|   |pCTM[0] pCTM[1] 0|
-			// arrMattrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
-			//              |0  1  1|   |pCTM[4] pCTM[5] 1|
-
-			arrMatrix[0] =     pCTM[0];
-			arrMatrix[1] =  -pCTM[1];
-			arrMatrix[2] =    -pCTM[2];
-			arrMatrix[3] =  -(-pCTM[3]);
-			arrMatrix[4] =     pCTM[2] + pCTM[4];
-			arrMatrix[5] =  -(pCTM[3] + pCTM[5]) + pGState->getPageHeight();
-
-			double dShiftX = 0, dShiftY = 0;
-			DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
-			m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
-			oImage.SaveFile(NSFile::GetProcessDirectory() + L"/res2.png", _CXIMAGE_FORMAT_PNG);
-		}
-		*/
-
 		m_pRenderer->put_BrushType(brush);
 
 		pGState->clearPath();
 		return true;
 	}
-	bool RendererOutputDev::RadialShadedFill(GfxState *pGState, GfxRadialShading *pShading)
+	bool RendererOutputDev::RadialShadedFill(GfxState* pGState, GfxRadialShading* pShading)
 	{
 		if (m_bDrawOnlyText)
 			return true;
@@ -3254,7 +1987,7 @@ namespace PdfReader
 		NSStructures::GradientInfo info = NSStructures::GInfoConstructor::get_radial({x1, y1}, {x2, y2}, r1, r2,
 																					 t0, t1, pShading->getExtend0(), pShading->getExtend1());
 
-		GfxColorSpace *ColorSpace = pShading->getColorSpace();;
+		GfxColorSpace* ColorSpace = pShading->getColorSpace();;
 		float delta = (t1 - t0) / info.shading.function.get_resolution();
 		float t = t0;
 		for (size_t i = 0; i < info.shading.function.get_resolution(); i++)
@@ -3279,7 +2012,7 @@ namespace PdfReader
 		pGState->clearPath();
 		return true;
 	}
-	bool RendererOutputDev::GouraundTriangleFill(GfxState *pGState, const std::vector<GfxColor*> &colors, const std::vector<NSStructures::Point> &points)
+	bool RendererOutputDev::GouraundTriangleFill(GfxState* pGState, const std::vector<GfxColor*> &colors, const std::vector<NSStructures::Point> &points)
 	{
 		if (m_bDrawOnlyText)
 			return true;
@@ -3321,7 +2054,7 @@ namespace PdfReader
 		m_pRenderer->put_BrushType(brush);
 		return true;
 	}
-	bool RendererOutputDev::PatchMeshFill(GfxState *pGState, GfxPatch *patch, GfxPatchMeshShading *pShading)
+	bool RendererOutputDev::PatchMeshFill(GfxState* pGState, GfxPatch* patch, GfxPatchMeshShading* pShading)
 	{
 		if (m_bDrawOnlyText)
 			return true;
@@ -3348,7 +2081,7 @@ namespace PdfReader
 			}
 		}
 		std::vector<std::vector<agg::rgba8>> colors(2, std::vector<agg::rgba8>(2));
-		GfxColorSpace *ColorSpace = pShading->getColorSpace();
+		GfxColorSpace* ColorSpace = pShading->getColorSpace();
 		for (int i = 0; i < 2; i ++)
 		{
 			for (int j = 0; j < 2; j++)
@@ -3398,7 +2131,7 @@ namespace PdfReader
 		if (!m_bDrawOnlyText)
 			m_pRenderer->EndCommand(c_nPDFTilingFillIteration);
 	}
-	void RendererOutputDev::StartSimpleTilingFill(GfxState *pGState, int  nX0, int nY0, int nX1, int nY1, double dStepX, double dStepY, double dXMin, double dYMin, double dXMax, double dYMax, double* pMatrix)
+	void RendererOutputDev::StartSimpleTilingFill(GfxState* pGState, int  nX0, int nY0, int nX1, int nY1, double dStepX, double dStepY, double dXMin, double dYMin, double dXMax, double dYMax, double* pMatrix)
 	{
 		if (m_bDrawOnlyText)
 			return;
@@ -3441,7 +2174,7 @@ namespace PdfReader
 		if (!m_bDrawOnlyText)
 			m_pRenderer->EndCommand(c_nPDFTilingFill);
 	}
-	void RendererOutputDev::clip(GfxState *pGState)
+	void RendererOutputDev::clip(GfxState* pGState)
 	{
 		if (m_bDrawOnlyText)
 			return;
@@ -3452,7 +2185,7 @@ namespace PdfReader
 		m_bClipChanged = true;
 		updateClip(pGState);
 	}
-	void RendererOutputDev::eoClip(GfxState *pGState)
+	void RendererOutputDev::eoClip(GfxState* pGState)
 	{
 		if (m_bDrawOnlyText)
 			return;
@@ -3463,7 +2196,7 @@ namespace PdfReader
 		m_bClipChanged = true;
 		updateClip(pGState);
 	}
-	void RendererOutputDev::clipToStrokePath(GfxState *pGState)
+	void RendererOutputDev::clipToStrokePath(GfxState* pGState)
 	{
 		if (m_bDrawOnlyText)
 			return;
@@ -3474,7 +2207,7 @@ namespace PdfReader
 		m_bClipChanged = true;
 		updateClip(pGState);
 	}
-	void RendererOutputDev::clipToPath(GfxState *pGState, GfxPath *pPath, double *pMatrix, bool bEO)
+	void RendererOutputDev::clipToPath(GfxState* pGState, GfxPath* pPath, double* pMatrix, bool bEO)
 	{
 		if (m_bDrawOnlyText)
 			return;
@@ -3488,7 +2221,7 @@ namespace PdfReader
 		m_pRenderer->EndCommand(c_nPathType);
 		m_pRenderer->EndCommand(c_nClipType);
 	}
-	void RendererOutputDev::ClipToText(const std::wstring& wsFontName, const std::wstring& wsFontPath, double dFontSize, int nFontStyle, double *pMatrix, const std::wstring& wsText, double dX, double dY, double dWidth, double dHeight, double dBaseLineOffset)
+	void RendererOutputDev::ClipToText(const std::wstring& wsFontName, const std::wstring& wsFontPath, double dFontSize, int nFontStyle, double* pMatrix, const std::wstring& wsText, double dX, double dY, double dWidth, double dHeight, double dBaseLineOffset)
 	{
 		if (m_bDrawOnlyText)
 			return;
@@ -3517,27 +2250,14 @@ namespace PdfReader
 			RELEASEARRAYOBJECTS(pGids);
 		}
 	}
-	void RendererOutputDev::endTextObject(GfxState *pGState)
+	void RendererOutputDev::endTextObject(GfxState* pGState)
 	{
-		//        if (NULL != m_pBufferTextClip) tmpchange
-		//        {
-		//            updateClip(pGState);
-		//
-		//            RELEASEOBJECT(m_pBufferTextClip);
-		//        }
 	}
-	void RendererOutputDev::beginStringOp(GfxState *pGState)
+	void RendererOutputDev::beginStringOp(GfxState* pGState)
 	{
 		m_pRenderer->BeginCommand(c_nTextType);
 
 		int nRenderMode = pGState->getRender();
-
-		// Обработка Clip
-		//        if (nRenderMode >= 4) tmpchange
-		//        {
-		//            RELEASEOBJECT(m_pBufferTextClip);
-		//            m_pBufferTextClip = new GfxTextClip();
-		//        }
 
 		// Обработка Stroke
 		if (1 == nRenderMode || 2 == nRenderMode || 5 == nRenderMode || 6 == nRenderMode)
@@ -3553,7 +2273,7 @@ namespace PdfReader
 			//            ::SysFreeString( bsPen );
 		}
 	}
-	void RendererOutputDev::endStringOp(GfxState *pGState)
+	void RendererOutputDev::endStringOp(GfxState* pGState)
 	{
 
 		int nRenderMode = pGState->getRender();
@@ -3561,9 +2281,6 @@ namespace PdfReader
 		// Добавляем в Clipping Path текст
 		if (nRenderMode >= 4)
 		{
-			//            if (m_pBufferTextClip) tmpchange
-			//                pGState->GetClip()->AppendTextClip(m_pBufferTextClip);
-
 			updateFont(pGState);
 		}
 
@@ -3577,7 +2294,7 @@ namespace PdfReader
 
 		m_pRenderer->EndCommand(c_nTextType);
 	}
-	void RendererOutputDev::drawString(GfxState *pGState, GString *seString)
+	void RendererOutputDev::drawString(GfxState* pGState, GString* seString)
 	{
 		// Проверяем наличие списка со шрифтами
 		if (NULL == m_pFontList)
@@ -3593,9 +2310,9 @@ namespace PdfReader
 		if (3 == nRendererMode) // Невидимый текст
 			return;
 
-		double *pCTM  = pGState->getCTM();
-		double *pTm   = pGState->getTextMat();
-		GfxFont *pFont = pGState->getFont();
+		double* pCTM  = pGState->getCTM();
+		double* pTm   = pGState->getTextMat();
+		GfxFont* pFont = pGState->getFont();
 
 		unsigned int unGidsCount = seString->getLength();
 		unsigned int* pGids = new unsigned int[unGidsCount];
@@ -3623,7 +2340,7 @@ namespace PdfReader
 		m_pRenderer->CommandDrawTextEx(wsUnicodeText, pGids, unGidsCount, PDFCoordsToMM(100), PDFCoordsToMM(100), 0, PDFCoordsToMM(0));
 		RELEASEARRAYOBJECTS(pGids);
 	}
-	void RendererOutputDev::drawChar(GfxState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY, CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen)
+	void RendererOutputDev::drawChar(GfxState* pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY, CharCode nCode, int nBytesCount, Unicode* pUnicode, int nUnicodeLen)
 	{
 		// Проверяем наличие списка со шрифтами
 		if (NULL == m_pFontList)
@@ -3717,7 +2434,7 @@ namespace PdfReader
 		{
 			if (isCIDFont)
 			{
-				// Значит кодировка была Identity-H или Identity-V, что означает, что иходные коды и есть юникодные значения
+				// Значит кодировка была Identity-H или Identity-V, что означает, что исходные коды и есть юникодные значения
 				wsUnicodeText = (wchar_t(nCode));
 			}
 			else
@@ -3879,7 +2596,7 @@ namespace PdfReader
 		m_pRenderer->put_FontSize(dOldSize);
 	}
 
-	GBool RendererOutputDev::beginType3Char(GfxState *state, double x, double y, double dx, double dy, CharCode code, Unicode *u, int uLen)
+	GBool RendererOutputDev::beginType3Char(GfxState* state, double x, double y, double dx, double dy, CharCode code, Unicode* u, int uLen)
 	{
 		if (!m_bDrawOnlyText)
 			return false;
@@ -3888,15 +2605,15 @@ namespace PdfReader
 
 		return false;
 	}
-	void RendererOutputDev::endType3Char(GfxState *pGState)
+	void RendererOutputDev::endType3Char(GfxState* pGState)
 	{
 		return;
 	}
-	GBool RendererOutputDev::beginMarkedContent(GfxState *state, GString* s)
+	GBool RendererOutputDev::beginMarkedContent(GfxState* state, GString* s)
 	{
 		return gFalse;
 	}
-	GBool RendererOutputDev::beginMCOShapes(GfxState *state, GString *s, Object *ref)
+	GBool RendererOutputDev::beginMCOShapes(GfxState* state, GString* s, Object* ref)
 	{
 		IAdvancedCommand::AdvancedCommandType eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::ShapeStart;
 		if (m_pRenderer->IsSupportAdvancedCommand(eAdvancedCommandType) == S_OK)
@@ -3907,7 +2624,7 @@ namespace PdfReader
 			Object oIm;
 			if (ref && ref->isRef() && ref->fetch(m_pXref, &oIm)->isStream())
 			{
-				Dict *oImDict = oIm.streamGetDict();
+				Dict* oImDict = oIm.streamGetDict();
 
 				int nLength = 0;
 				Object oLength;
@@ -3941,7 +2658,7 @@ namespace PdfReader
 		}
 		return gFalse;
 	}
-	void RendererOutputDev::endMarkedContent(GfxState *state)
+	void RendererOutputDev::endMarkedContent(GfxState* state)
 	{
 		IAdvancedCommand::AdvancedCommandType eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::ShapeEnd;
 		if (m_pRenderer->IsSupportAdvancedCommand(eAdvancedCommandType) == S_OK)
@@ -4147,13 +2864,46 @@ namespace PdfReader
 			return false;
 
 		BYTE* pBuffer = new BYTE[nLength];
-		Stream* pS = pStream->getUndecodedStream();
-		pS->reset();
-		nLength = pS->getBlock((char*)pBuffer, nLength);
-		if (!nLength)
+		/*
+		if (pStream->getKind() == strFlate)
 		{
-			RELEASEARRAYOBJECTS(pBuffer);
-			return false;
+			Stream* pS = pStream->getBaseStream();
+			nLength = pS->getBlock((char*)pBuffer, nLength);
+			if (!nLength)
+			{
+				RELEASEARRAYOBJECTS(pBuffer);
+				return false;
+			}
+
+			COfficeUtils oOU;
+			if (oOU.IsArchive(pBuffer, nLength))
+			{
+				ULONG pDstBufferLen = nLength * 10;
+				BYTE* pDstBuffer = new BYTE[pDstBufferLen];
+
+				if (oOU.Uncompress(pDstBuffer, &pDstBufferLen, pBuffer, nLength) != S_OK)
+				{
+					RELEASEARRAYOBJECTS(pDstBuffer);
+					RELEASEARRAYOBJECTS(pBuffer);
+					return false;
+				}
+
+				RELEASEARRAYOBJECTS(pBuffer);
+				pBuffer = pDstBuffer;
+				nLength = pDstBufferLen;
+			}
+		}
+		else
+		*/
+		{
+			Stream* pS = pStream->getUndecodedStream();
+			pS->reset();
+			nLength = pS->getBlock((char*)pBuffer, nLength);
+			if (!nLength)
+			{
+				RELEASEARRAYOBJECTS(pBuffer);
+				return false;
+			}
 		}
 
 		CBgraFrame oFrame;
@@ -4161,6 +2911,7 @@ namespace PdfReader
 		{
 			pImageRes->Create(oFrame.get_Data(), oFrame.get_Width(), oFrame.get_Height(), -4 * oFrame.get_Width());
 			oFrame.ClearNoAttack();
+			RELEASEARRAYOBJECTS(pBuffer);
 			return true;
 		}
 
@@ -4176,7 +2927,7 @@ namespace PdfReader
 		StreamKind nSK = pStream->getKind();
 
 		// Чтение jpeg через cximage происходит быстрее чем через xpdf на ~40%
-		if (nSK != strDCT || !ReadImage(&oImage, pRef, pStream))
+		if (true || pMaskColors || (nSK != strDCT) || !ReadImage(&oImage, pRef, pStream))
 		{
 			int nBufferSize = 4 * nWidth * nHeight;
 			if (nBufferSize < 1)
@@ -4245,10 +2996,10 @@ namespace PdfReader
 				}
 			}
 
-			oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
-
 			pImageStream->close();
 			delete pImageStream;
+
+			oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 		}
 
 		double arrMatrix[6];
@@ -4319,7 +3070,7 @@ namespace PdfReader
 		BYTE unAlpha = std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
 		if (nWidth != nMaskWidth || nHeight != nMaskHeight)
 		{
-			unsigned char *pMaskBuffer = new(std::nothrow) unsigned char[nMaskWidth * nMaskHeight];
+			BYTE* pMaskBuffer = new(std::nothrow) BYTE[nMaskWidth * nMaskHeight];
 			if (!pMaskBuffer)
 			{
 				delete pMask;
@@ -4327,7 +3078,7 @@ namespace PdfReader
 				return;
 			}
 
-			unsigned char unMask = 0;
+			BYTE unMask = 0;
 			for (int nY = nMaskHeight - 1; nY >= 0; nY--)
 			{
 				int nIndex = nY * nMaskWidth;
@@ -4341,7 +3092,7 @@ namespace PdfReader
 			double dScaleWidth  = (double)nWidth / (double)nMaskWidth;
 			double dScaleHeight = (double)nHeight / (double)nMaskHeight;
 
-			unsigned char unPixel[4] ={ 0, 0, 0, 0 };
+			BYTE unPixel[4] ={ 0, 0, 0, 0 };
 			for (int nY = nHeight - 1; nY >= 0; nY--)
 			{
 				int nIndex = 4 * nY * nWidth;
@@ -4419,46 +3170,49 @@ namespace PdfReader
 		if (m_bDrawOnlyText)
 			return;
 
-		double dPageHeight = pGState->getPageHeight();
-
 		int nBufferSize = 4 * nWidth * nHeight;
 		if (nBufferSize < 1)
 			return;
 
-		BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufferSize];
-		if (!pBufferPtr)
-			return;
-
 		Aggplus::CImage oImage;
-		oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 
-		// Пишем данные в pBufferPtr
-		ImageStream* pImageStream = new ImageStream(pStream, nWidth, pColorMap->getNumPixelComps(), pColorMap->getBits());
-		pImageStream->reset();
-
-		double dAlphaKoef = pGState->getFillOpacity();
-		unsigned char unPixel[4] = { 0, 0, 0, 0 };
-		for (int nY = nHeight - 1; nY >= 0; --nY)
+		if (true || pStream->getKind() != strDCT || !ReadImage(&oImage, pRef, pStream))
 		{
-			int nIndex = 4 * nY * nWidth;
-			for (int nX = 0; nX < nWidth; ++nX)
+			BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufferSize];
+			if (!pBufferPtr)
+				return;
+
+			// Пишем данные в pBufferPtr
+			ImageStream* pImageStream = new ImageStream(pStream, nWidth, pColorMap->getNumPixelComps(), pColorMap->getBits());
+			pImageStream->reset();
+
+			BYTE unPixel[4] = { 0, 0, 0, 0 };
+			for (int nY = nHeight - 1; nY >= 0; --nY)
 			{
-				pImageStream->getPixel(unPixel);
-				GfxRGB oRGB;
-				pColorMap->getRGB(unPixel, &oRGB, gfxRenderingIntentAbsoluteColorimetric);
-				pBufferPtr[nIndex + 0] = colToByte(oRGB.b);
-				pBufferPtr[nIndex + 1] = colToByte(oRGB.g);
-				pBufferPtr[nIndex + 2] = colToByte(oRGB.r);
-				pBufferPtr[nIndex + 3] = 255;
+				int nIndex = 4 * nY * nWidth;
+				for (int nX = 0; nX < nWidth; ++nX)
+				{
+					pImageStream->getPixel(unPixel);
+					GfxRGB oRGB;
+					pColorMap->getRGB(unPixel, &oRGB, gfxRenderingIntentAbsoluteColorimetric);
+					pBufferPtr[nIndex + 0] = colToByte(oRGB.b);
+					pBufferPtr[nIndex + 1] = colToByte(oRGB.g);
+					pBufferPtr[nIndex + 2] = colToByte(oRGB.r);
+					pBufferPtr[nIndex + 3] = 255;
 
-				nIndex += 4;
+					nIndex += 4;
+				}
 			}
-		}
-		delete pImageStream;
+			delete pImageStream;
 
+			oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
+		}
+
+		BYTE* pBufferPtr = oImage.GetData();
+		double dAlphaKoef = pGState->getFillOpacity();
 		if (nWidth != nMaskWidth || nHeight != nMaskHeight)
 		{
-			// TO DO: Здесь сделан элементарный вариант масштабирования маски.
+			// TODO: Здесь сделан элементарный вариант масштабирования маски.
 			//        Надо улучшить алгоритм.
 
 			bool bResize = true;
@@ -4466,12 +3220,12 @@ namespace PdfReader
 			if (0 != nWidth && 0 != nMaskHeight && 0 != nHeight && 0 != nMaskWidth)
 			{
 				ImageStream* pSMaskStream = new ImageStream(pMaskStream, nMaskWidth, pMaskColorMap->getNumPixelComps(), pMaskColorMap->getBits());
-				unsigned char* pAlpha = new(std::nothrow) unsigned char[nMaskWidth * nMaskHeight];
+				BYTE* pAlpha = new(std::nothrow) BYTE[nMaskWidth * nMaskHeight];
 				if (pSMaskStream && pAlpha)
 				{
 					pSMaskStream->reset();
 
-					unsigned char unAlpha = 0;
+					BYTE unAlpha = 0;
 					for (int i = 0, nCount = nMaskWidth * nMaskHeight; i < nCount; ++i)
 					{
 						pSMaskStream->getPixel(&unAlpha);
@@ -4489,8 +3243,8 @@ namespace PdfReader
 
 					if (nWidth != nMaxW || nHeight != nMaxH)
 					{
-						unsigned char* pImageBuffer = pBufferPtr;
-						pBufferPtr = new(std::nothrow) unsigned char[4 * nMaxW * nMaxH];
+						BYTE* pImageBuffer = pBufferPtr;
+						pBufferPtr = new(std::nothrow) BYTE[4 * nMaxW * nMaxH];
 						if (!pBufferPtr)
 						{
 							delete[] pImageBuffer;
@@ -4514,7 +3268,7 @@ namespace PdfReader
 								pBufferPtr[nIndex + 0] = pImageBuffer[nNearestImageMatch + 0];
 								pBufferPtr[nIndex + 1] = pImageBuffer[nNearestImageMatch + 1];
 								pBufferPtr[nIndex + 2] = pImageBuffer[nNearestImageMatch + 2];
-								pBufferPtr[nIndex + 3] = (unsigned char)(pAlpha[nNearestAlphaMatch] * dAlphaKoef);
+								pBufferPtr[nIndex + 3] = (BYTE)(pAlpha[nNearestAlphaMatch] * dAlphaKoef);
 								nIndex += 4;
 							}
 						}
@@ -4530,7 +3284,7 @@ namespace PdfReader
 							{
 								int nNearestAlphaMatch =  (((int)((nHeight - 1 - nY) * dAlphaScaleHeight) * nMaskWidth) + ((int)(nX * dAlphaScaleWidth)));
 
-								pBufferPtr[nIndex + 3] = (unsigned char)(pAlpha[nNearestAlphaMatch] * dAlphaKoef);
+								pBufferPtr[nIndex + 3] = (BYTE)(pAlpha[nNearestAlphaMatch] * dAlphaKoef);
 								nIndex += 4;
 							}
 						}
@@ -4556,7 +3310,7 @@ namespace PdfReader
 			{
 				for (int i = 3, nCount = nWidth * nHeight * 4; i < nCount; i += 4)
 				{
-					pBufferPtr[i] = (unsigned char)(255.0 * dAlphaKoef);
+					pBufferPtr[i] = (BYTE)(255.0 * dAlphaKoef);
 				}
 			}
 		}
@@ -4574,7 +3328,7 @@ namespace PdfReader
 					pSMaskStream->getPixel(&unAlpha);
 					GfxGray oGray;
 					pMaskColorMap->getGray(&unAlpha, &oGray, GfxRenderingIntent::gfxRenderingIntentAbsoluteColorimetric);
-					pBufferPtr[nIndex + 3] = (unsigned char)(colToByte(oGray) * dAlphaKoef);
+					pBufferPtr[nIndex + 3] = (BYTE)(colToByte(oGray) * dAlphaKoef);
 					nIndex += 4;
 				}
 			}
@@ -4624,7 +3378,7 @@ namespace PdfReader
 		arrMatrix[2] = -pCTM[2];
 		arrMatrix[3] = pCTM[3];
 		arrMatrix[4] = pCTM[2] + pCTM[4];
-		arrMatrix[5] = -(pCTM[3] + pCTM[5]) + dPageHeight;
+		arrMatrix[5] = -(pCTM[3] + pCTM[5]) + pGState->getPageHeight();
 
 		double dShiftX = 0, dShiftY = 0;
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
@@ -4655,7 +3409,7 @@ namespace PdfReader
 
 		m_sCS.pop_back();
 	}
-	void RendererOutputDev::setSoftMask(GfxState *pGState, double *pBBox, GBool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor)
+	void RendererOutputDev::setSoftMask(GfxState* pGState, double* pBBox, GBool bAlpha, Function* pTransferFunc, GfxColor* pBackdropColor)
 	{
 		if (c_nGrRenderer != m_lRendererType)
 			return;
@@ -4703,7 +3457,7 @@ namespace PdfReader
 
 		m_sCS.pop_back();
 	}
-	void RendererOutputDev::clearSoftMask(GfxState *pGState)
+	void RendererOutputDev::clearSoftMask(GfxState* pGState)
 	{
 		if (c_nGrRenderer != m_lRendererType)
 			return;
@@ -4711,11 +3465,11 @@ namespace PdfReader
 			GRenderer->SetSoftMask(NULL);
 		RELEASEINTERFACE(m_pSoftMask);
 	}
-	void RendererOutputDev::NewPDF(XRef *pXref)
+	void RendererOutputDev::NewPDF(XRef* pXref)
 	{
 		m_pXref = pXref;
 	}
-	void RendererOutputDev::DoPath(GfxState *pGState, GfxPath *pPath, double dPageHeight, double *pCTM, GfxClipMatrix* pCTM2)
+	void RendererOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double dPageHeight, double* pCTM, GfxClipMatrix* pCTM2)
 	{
 		if (m_bDrawOnlyText)
 			return;
@@ -4745,7 +3499,7 @@ namespace PdfReader
 
 		for (int nSubPathIndex = 0, nSubPathCount = pPath->getNumSubpaths(); nSubPathIndex < nSubPathCount; ++nSubPathIndex)
 		{
-			GfxSubpath *pSubpath = pPath->getSubpath(nSubPathIndex);
+			GfxSubpath* pSubpath = pPath->getSubpath(nSubPathIndex);
 			int nPointsCount = pSubpath->getNumPoints();
 
 			m_pRenderer->PathCommandMoveTo(PDFCoordsToMM(pSubpath->getX(0) + dShiftX), PDFCoordsToMM(pSubpath->getY(0) + dShiftY));
@@ -4772,7 +3526,7 @@ namespace PdfReader
 			}
 		}
 	}
-	void RendererOutputDev::updateClip(GfxState *pGState)
+	void RendererOutputDev::updateClip(GfxState* pGState)
 	{
 		if (m_bDrawOnlyText || m_bTiling || !m_bClipChanged)
 			return;
@@ -4787,7 +3541,7 @@ namespace PdfReader
 			{
 			for (int nIndex = 0; nIndex < pClip->GetPathNum(); nIndex++)
 			{
-				GfxPath *pPath = pClip->GetPath(nIndex);
+				GfxPath* pPath = pClip->GetPath(nIndex);
 				bool    bFlag  = pClip->GetClipEo(nIndex);
 				int  nClipFlag = bFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
 				nClipFlag |= c_nClipRegionIntersect;
@@ -4814,10 +3568,10 @@ namespace PdfReader
 
 				for (int nIndex = 0; nIndex < nTextClipCount; nIndex++)
 				{
-					wchar_t *wsFontName, *wsFontPath;
+					wchar_t* wsFontName, *wsFontPath;
 					int lFontStyle;
 					double dFontSize = 10, dX = 0, dY = 0, dWidth = 0, dHeight = 0, dBaseLineOffset = 0;
-					wchar_t *wsText = pTextClip->GetText(nIndex, &dX, &dY, &dWidth, &dHeight, &dBaseLineOffset, &wsFontName, &wsFontPath, &dFontSize, &lFontStyle);
+					wchar_t* wsText = pTextClip->GetText(nIndex, &dX, &dY, &dWidth, &dHeight, &dBaseLineOffset, &wsFontName, &wsFontPath, &dFontSize, &lFontStyle);
 
 					m_pRenderer->put_FontName(wsFontName);
 					m_pRenderer->put_FontPath(wsFontPath);
@@ -4829,7 +3583,7 @@ namespace PdfReader
 
 					// TODO: нужна нормальная конвертация
 					int nLen = 0;
-					wchar_t *wsTextTmp = wsText;
+					wchar_t* wsTextTmp = wsText;
 					if (wsTextTmp)
 					{
 						while (*wsTextTmp)
@@ -4863,7 +3617,7 @@ namespace PdfReader
 		m_bClipChanged = false;
 		updateFont(pGState);
 	}
-	void RendererOutputDev::DoTransform(double *pMatrix, double *pdShiftX, double *pdShiftY, bool bText)
+	void RendererOutputDev::DoTransform(double* pMatrix, double* pdShiftX, double* pdShiftY, bool bText)
 	{
 		if (1 == pMatrix[0] && 0 == pMatrix[1] && 0 == pMatrix[2] && 1 == pMatrix[3] && !bText)
 		{

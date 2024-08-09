@@ -2195,25 +2195,54 @@ private:
 
 				if (oTS.bQ)
 					oXml->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
-
-				OpenT(oXml);
 			}
-			else if (oTS.bQ)
+
+			if (oTS.bQ)
 				oXml->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
 
 			if(oTS.bPre)
 			{
-				size_t nAfter = sText.find_first_of(L"\n\r");
+				if (L'\n' == sText.front() || L'\r' == sText.front())
+					sText.erase(0, 1);
+
+				size_t nAfter = sText.find_first_of(L"\n\r\t");
 				while(nAfter != std::wstring::npos)
 				{
+					if (L'\t' == sText[0])
+					{
+						oXml->WriteString(L"<w:tab/>");
+						sText.erase(0, 1);
+
+						if (0 == nAfter)
+						{
+							nAfter = sText.find_first_of(L"\n\r\t");
+							continue;
+						}
+
+						nAfter--;
+					}
+
+					OpenT(oXml);
 					oXml->WriteEncodeXmlString(sText.c_str(), nAfter);
-					oXml->WriteString(L"</w:t></w:r></w:p><w:p>");
-					oXml->WriteString(oPPr.GetData());
-					oXml->WriteNodeBegin(L"w:r");
+					CloseT(oXml);
+					CloseR(oXml);
+
+					if (L'\t' == sText[nAfter])
+					{
+						sText.erase(0, nAfter);
+						nAfter = 1;
+					}
+					else
+					{
+						CloseP(oXml, sSelectors);
+						OpenP(oXml);
+						oXml->WriteString(oPPr.GetData());
+						sText.erase(0, nAfter + 1);
+						nAfter = 0;
+					}
+					OpenR(oXml);
 					oXml->WriteString(oRPr.GetData());
-					oXml->WriteString(L"<w:t xml:space=\"preserve\">");
-					sText.erase(0, nAfter + 1);
-					nAfter = sText.find_first_of(L"\n\r");
+					nAfter = sText.find_first_of(L"\n\r\t", nAfter);
 				}
 
 				if (sText.empty())
@@ -2222,16 +2251,26 @@ private:
 			else
 				ReplaceSpaces(sText);
 
-			if (std::iswspace(sText.front()) && m_oState.m_bWasSpace)
+			if (!sText.empty() && L'\t' == sText[0])
+			{
+				oXml->WriteString(L"<w:tab/>");
+				sText.erase(0, 1);
+			}
+
+			if (!oTS.bPre && !sText.empty() && std::iswspace(sText.front()) && m_oState.m_bWasSpace)
 				sText.erase(0, 1);
 
-			if (oTS.bMergeText && !m_oState.m_bWasSpace && bInT)
-				oXml->WriteEncodeXmlString(L" ");
-
 			if (!sText.empty())
+			{
+				OpenT(oXml);
+
+				if (oTS.bMergeText && !m_oState.m_bWasSpace && bInT && !oTS.bPre)
+					oXml->WriteEncodeXmlString(L" ");
+
 				m_oState.m_bWasSpace = std::iswspace(sText.back());
 
-			oXml->WriteEncodeXmlString(sText);
+				oXml->WriteEncodeXmlString(sText);
+			}
 
 			if (oTS.bQ)
 				oXml->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
@@ -2645,6 +2684,8 @@ private:
 				CTextSettings oTSPre(oTS);
 				oTSPre.oAdditionalStyle.m_oFont.SetFamily(L"Courier New", NEXT_LEVEL);
 				oTSPre.oAdditionalStyle.m_oFont.SetSize(20, NEXT_LEVEL);
+				oTSPre.oAdditionalStyle.m_oMargin.SetTop(0, NEXT_LEVEL);
+				oTSPre.oAdditionalStyle.m_oMargin.SetBottom(0, NEXT_LEVEL);
 				oTSPre.bPre = true;
 				bResult = readStream(&oXmlData, sSelectors, oTSPre);
 			}

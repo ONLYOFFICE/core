@@ -341,12 +341,14 @@ namespace NSCSS
 		sSpacingValue.reserve(128);
 
 		if (!oStyle.m_oMargin.GetTop().Empty() && !oStyle.m_oMargin.GetTop().Zero())
-			sSpacingValue += L"w:before=\""  + std::to_wstring(VALUE_TO_INT(oStyle.m_oMargin.GetTop(), NSCSS::Twips))    + L"\"  w:beforeAutospacing=\"0\" ";
+			sSpacingValue += L"w:before=\""  + std::to_wstring(VALUE_TO_INT(oStyle.m_oMargin.GetTop(), NSCSS::Twips))    + L"\" w:beforeAutospacing=\"0\"";
+		else if (oStyle.m_oMargin.GetBottom().Zero() || bInTable)
+			sSpacingValue += L"w:before=\"0\" w:beforeAutospacing=\"0\"";
 
 		if (!oStyle.m_oMargin.GetBottom().Empty() && !oStyle.m_oMargin.GetBottom().Zero())
-			sSpacingValue += L"w:after=\""   + std::to_wstring(VALUE_TO_INT(oStyle.m_oMargin.GetBottom(), NSCSS::Twips)) + L"\"  w:afterAutospacing=\"0\" ";
+			sSpacingValue += L" w:after=\""   + std::to_wstring(VALUE_TO_INT(oStyle.m_oMargin.GetBottom(), NSCSS::Twips)) + L"\" w:afterAutospacing=\"0\"";
 		else if (oStyle.m_oMargin.GetBottom().Zero() || bInTable)
-			sSpacingValue += L"w:after=\"0\" ";
+			sSpacingValue += L" w:after=\"0\" w:afterAutospacing=\"0\"";
 
 		if (!oStyle.m_oFont.GetLineHeight().Empty() && !oStyle.m_oFont.GetLineHeight().Zero())
 		{
@@ -356,7 +358,7 @@ namespace NSCSS
 			sSpacingValue += L" w:line=\"" + wsLine + L"\" w:lineRule=\"" + wsLineRule + L"\"";
 		}
 		else if (oStyle.m_oFont.GetLineHeight().Zero() || bInTable)
-			sSpacingValue += L"w:lineRule=\"auto\" w:line=\"240\"";
+			sSpacingValue += L" w:lineRule=\"auto\" w:line=\"240\"";
 
 		if (!sSpacingValue.empty())
 			oXmlElement.AddPropertiesInP(PProperties::P_Spacing, sSpacingValue);

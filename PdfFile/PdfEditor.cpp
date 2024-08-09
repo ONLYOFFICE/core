@@ -33,6 +33,7 @@
 
 #include "../DesktopEditor/common/Path.h"
 
+#include "SrcReader/Adaptors.h"
 #include "lib/xpdf/PDFDoc.h"
 #include "lib/xpdf/AcroForm.h"
 #include "lib/xpdf/TextString.h"

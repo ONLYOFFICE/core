@@ -95,6 +95,7 @@ CPdfFile::~CPdfFile()
 	RELEASEOBJECT(m_pInternal->pWriter);
 	RELEASEOBJECT(m_pInternal->pReader);
 	RELEASEOBJECT(m_pInternal->pEditor);
+	RELEASEOBJECT(m_pInternal);
 }
 NSFonts::IFontManager* CPdfFile::GetFontManager()
 {
@@ -290,7 +291,6 @@ bool CPdfFile::GetMetaData(const std::wstring& sFile, const std::wstring& sMetaN
 	if (!oFile.OpenFile(sFile) || !oFile.SeekFile(nStreamBegin + nMetaOffset) || !oFile.ReadFile(pBuffer, nMetaLength, nReadBytes))
 	{
 		RELEASEARRAYOBJECTS(pBuffer);
-		pMetaData = NULL;
 		oFile.CloseFile();
 		return false;
 	}

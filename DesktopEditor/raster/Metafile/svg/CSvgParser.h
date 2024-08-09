@@ -2,6 +2,7 @@
 #define CSVGPARSER_H
 
 #include "../../../common/Directory.h"
+#include "../../../graphics/pro/Fonts.h"
 #include "../../../xml/include/xmlutils.h"
 
 #include "SvgObjects/CContainer.h"
@@ -29,6 +30,7 @@ namespace SVG
 		bool ReadChildrens(XmlUtils::CXmlNode& oElement, CContainer<ObjectType>* pContainer, CSvgFile* pFile, CRenderedObject* pParent = NULL) const;
 
 		bool ScanStyles(XmlUtils::CXmlNode& oElement, CSvgFile* pFile) const;
+		void ParseStyles(const std::wstring& wsStyles, CSvgFile *pFile) const;
 
 		void UpdateStyles(CObject* pObject, CSvgFile* pFile) const;
 		bool MarkObject(CObject* pObject, CSvgFile* pFile) const;

@@ -18,7 +18,7 @@ namespace NSCSS
 
 	public:
 		CNode();
-		CNode(std::wstring wsName, std::wstring wsClass, std::wstring wsId);
+		CNode(const std::wstring& wsName, const std::wstring& wsClass, const std::wstring& wsId);
 
 		bool Empty() const;
 

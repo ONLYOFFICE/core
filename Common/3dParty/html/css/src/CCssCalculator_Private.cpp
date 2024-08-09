@@ -157,28 +157,34 @@ namespace NSCSS
 
 	std::vector<CElement*> CCssCalculator_Private::FindElements(std::vector<std::wstring> &arNodes, std::vector<std::wstring> &arNextNodes, bool bIsSettings)
 	{
+		if (arNodes.empty())
+			return {};
+
 		std::vector<CElement*> arFindedElements;
 
 		std::wstring wsName, wsId;
 		std::vector<std::wstring> arClasses;
 
-		if (arNodes.back()[0] == L'#')
+		if (!arNodes.empty() && arNodes.back()[0] == L'#')
 		{
 			wsId = arNodes.back();
 			arNodes.pop_back();
 			arNextNodes.push_back(wsId);
 		}
 
-		if (arNodes.back()[0] == L'.')
+		if (!arNodes.empty() && arNodes.back()[0] == L'.')
 		{
 			arClasses = NS_STATIC_FUNCTIONS::GetWordsW(arNodes.back(), false, L" ");
 			arNextNodes.push_back(arNodes.back());
 			arNodes.pop_back();
 		}
 
-		wsName = arNodes.back();
-		arNodes.pop_back();
-		arNextNodes.push_back(wsName);
+		if (!arNodes.empty())
+		{
+			wsName = arNodes.back();
+			arNodes.pop_back();
+			arNextNodes.push_back(wsName);
+		}
 
 		const std::map<std::wstring, CElement*>::const_iterator oFindName = m_mData.find(wsName);
 		std::map<std::wstring, CElement*>::const_iterator oFindId;
@@ -561,12 +567,17 @@ namespace NSCSS
 			}
 		}
 
-		oStyle.SetID(arSelectors.back().m_wsName + ((!arSelectors.back().m_wsClass.empty()) ? L'.' + arSelectors.back().m_wsClass : L"") + ((arSelectors.back().m_wsId.empty()) ? L"" : L'#' + arSelectors.back().m_wsId) + L'-' + std::to_wstring(++m_nCountNodes));
+		oStyle.SetID(CalculateStyleId(arSelectors.back()));
 
 		if (!bIsSettings && !oStyle.Empty())
 			m_mUsedStyles[arSelectors] = oStyle;
 
 		return true;
+	}
+
+	std::wstring CCssCalculator_Private::CalculateStyleId(const CNode& oNode)
+	{
+		return oNode.m_wsName + ((!oNode.m_wsClass.empty()) ? L'.' + oNode.m_wsClass : L"") + ((oNode.m_wsId.empty()) ? L"" : L'#' + oNode.m_wsId) + L'-' + std::to_wstring(++m_nCountNodes);
 	}
 
 	bool CCssCalculator_Private::CalculatePageStyle(NSProperties::CPage &oPageData, const std::vector<CNode> &arSelectors)

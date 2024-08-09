@@ -141,7 +141,9 @@ namespace NS_STATIC_FUNCTIONS
 
 		while (std::wstring::npos != unEnd)
 		{
-			arWords.emplace_back(wsLine.data() + unStart, unEnd - unStart + ((bWithSigns) ? 1 : 0));
+			if (unStart != unEnd)
+				arWords.emplace_back(wsLine.data() + unStart, unEnd - unStart + ((bWithSigns) ? 1 : 0));
+
 			unStart = wsLine.find_first_not_of(wsDelimiters, unEnd);
 			unEnd = wsLine.find_first_of(wsDelimiters, unStart);
 		}

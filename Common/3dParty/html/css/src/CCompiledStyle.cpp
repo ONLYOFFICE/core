@@ -34,6 +34,9 @@ namespace NSCSS
 
 	CCompiledStyle& CCompiledStyle::operator+= (const CCompiledStyle &oElement)
 	{
+		if (oElement.Empty())
+			return *this;
+
 		m_oBackground   += oElement.m_oBackground;
 		m_oBorder       += oElement.m_oBorder;
 		m_oFont         += oElement.m_oFont;
@@ -41,6 +44,9 @@ namespace NSCSS
 		m_oPadding      += oElement.m_oPadding;
 		m_oText         += oElement.m_oText;
 		m_oDisplay      += oElement.m_oDisplay;
+
+		if (!oElement.m_sId.empty())
+			m_sId += L'+' + oElement.m_sId;
 
 		return *this;
 	}

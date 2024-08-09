@@ -23,6 +23,11 @@ namespace NSCSS
 		return m_pInternal->GetCompiledStyle(oStyle, arSelectors, bIsSettings, unitMeasure);
 	}
 
+	std::wstring CCssCalculator::CalculateStyleId(const CNode& oNode)
+	{
+		return m_pInternal->CalculateStyleId(oNode);
+	}
+
 	bool CCssCalculator::CalculatePageStyle(NSProperties::CPage& oPageData, const std::vector<CNode> &arSelectors)
 	{
 		return m_pInternal->CalculatePageStyle(oPageData, arSelectors);

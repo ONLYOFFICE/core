@@ -523,10 +523,7 @@ namespace NSCSS
 		Clear();
 
 		if(oStyle.GetId().empty())
-		{
-			m_sId = L"normal";
 			return false;
-		}
 
 		CStyleUsed structStyle(oStyle, false);
 
@@ -589,10 +586,7 @@ namespace NSCSS
 		Clear();
 
 		if(oStyle.GetId().empty())
-		{
-			m_sId = L"normal";
-			return true;
-		}
+			return false;
 
 		CStyleUsed structStyle(oStyle, true);
 		std::vector<CStyleUsed>::iterator oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);

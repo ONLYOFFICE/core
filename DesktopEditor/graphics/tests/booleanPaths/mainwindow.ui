@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>947</width>
+    <width>1124</width>
     <height>553</height>
    </rect>
   </property>
@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="label">
+   <widget class="CustomLabel" name="label">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -32,8 +32,8 @@
      <rect>
       <x>520</x>
       <y>0</y>
-      <width>421</width>
-      <height>411</height>
+      <width>610</width>
+      <height>500</height>
      </rect>
     </property>
     <property name="title">
@@ -45,454 +45,242 @@
        <x>10</x>
        <y>10</y>
        <width>191</width>
-       <height>300</height>
+       <height>320</height>
       </rect>
      </property>
      <property name="title">
       <string>Path1</string>
      </property>
-     <widget class="QPushButton" name="pushButton">
+     <widget class="CustomButton" name="pushButton">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>40</y>
+        <width>83</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Rectangle</string>
+      </property>
+     </widget>
+     <widget class="CustomButton" name="pushButton_4">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>80</y>
+        <width>83</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Ellipse</string>
+      </property>
+     </widget>
+     <widget class="CustomButton" name="pushButton_6">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>120</y>
+        <width>83</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Triangle</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>40</y>
-        <width>80</width>
-        <height>24</height>
+        <y>160</y>
+        <width>63</width>
+        <height>20</height>
        </rect>
       </property>
       <property name="text">
-       <string>MoveTo</string>
+       <string>Coords:</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="lineEdit">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>40</y>
-        <width>31</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>50</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_2">
+     <widget class="QLabel" name="label_4">
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>90</y>
-        <width>80</width>
-        <height>24</height>
+        <y>180</y>
+        <width>170</width>
+        <height>130</height>
        </rect>
       </property>
       <property name="text">
-       <string>LineTo</string>
+       <string/>
       </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit_2">
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>40</y>
-        <width>31</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>110</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_3">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>170</y>
-        <width>80</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>CurveTo</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit_3">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>90</y>
-        <width>30</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>100</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit_4">
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>90</y>
-        <width>30</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>120</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit_5">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>140</y>
-        <width>30</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>120</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit_6">
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>140</y>
-        <width>30</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>70</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit_7">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>170</y>
-        <width>30</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>100</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit_8">
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>170</y>
-        <width>30</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>90</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit_9">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>200</y>
-        <width>30</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>50</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit_10">
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>200</y>
-        <width>30</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>50</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_9">
-      <property name="geometry">
-       <rect>
-        <x>50</x>
-        <y>250</y>
-        <width>80</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Reset</string>
+      <property name="wordWrap">
+       <bool>true</bool>
       </property>
      </widget>
     </widget>
     <widget class="QGroupBox" name="groupBox_3">
      <property name="geometry">
       <rect>
-       <x>220</x>
+       <x>210</x>
        <y>10</y>
        <width>191</width>
-       <height>300</height>
+       <height>320</height>
       </rect>
      </property>
      <property name="title">
       <string>Path2</string>
      </property>
-     <widget class="QPushButton" name="pushButton_4">
+     <widget class="CustomButton" name="pushButton_7">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>40</y>
+        <width>83</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Rectangle</string>
+      </property>
+     </widget>
+     <widget class="CustomButton" name="pushButton_10">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>80</y>
+        <width>83</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Ellipse</string>
+      </property>
+     </widget>
+     <widget class="CustomButton" name="pushButton_12">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>120</y>
+        <width>83</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Triangle</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_3">
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>40</y>
-        <width>80</width>
-        <height>24</height>
+        <y>160</y>
+        <width>63</width>
+        <height>20</height>
        </rect>
       </property>
       <property name="text">
-       <string>MoveTo</string>
+       <string>Coords:</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_5">
+     <widget class="QLabel" name="label_5">
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>90</y>
-        <width>80</width>
-        <height>24</height>
+        <y>180</y>
+        <width>170</width>
+        <height>130</height>
        </rect>
       </property>
       <property name="text">
-       <string>LineTo</string>
+       <string/>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_6">
+    </widget>
+    <widget class="QGroupBox" name="groupBox_4">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>10</y>
+       <width>191</width>
+       <height>320</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Result</string>
+     </property>
+     <widget class="QLabel" name="label_6">
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>170</y>
-        <width>80</width>
-        <height>24</height>
+        <y>160</y>
+        <width>63</width>
+        <height>20</height>
        </rect>
       </property>
       <property name="text">
-       <string>CurveTo</string>
+       <string>Coords:</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="lineEdit_11">
+     <widget class="QLabel" name="label_7">
       <property name="geometry">
        <rect>
-        <x>100</x>
+        <x>10</x>
+        <y>180</y>
+        <width>170</width>
+        <height>130</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="BooleanButton" name="pushButton_15">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>120</y>
+        <width>83</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Subtract</string>
+      </property>
+     </widget>
+     <widget class="BooleanButton" name="pushButton_16">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>80</y>
+        <width>83</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Intersect</string>
+      </property>
+     </widget>
+     <widget class="BooleanButton" name="pushButton_17">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
         <y>40</y>
-        <width>31</width>
-        <height>24</height>
+        <width>83</width>
+        <height>29</height>
        </rect>
       </property>
       <property name="text">
-       <string>130</string>
+       <string>Unite</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="lineEdit_12">
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>40</y>
-        <width>31</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>130</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit_13">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>90</y>
-        <width>31</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>130</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit_14">
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>90</y>
-        <width>31</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>130</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit_15">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>140</y>
-        <width>31</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>90</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit_16">
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>140</y>
-        <width>31</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>100</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit_17">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>170</y>
-        <width>31</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>50</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit_18">
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>170</y>
-        <width>31</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>110</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit_19">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>200</y>
-        <width>31</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>80</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit_20">
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>200</y>
-        <width>31</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>70</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_12">
-      <property name="geometry">
-       <rect>
-        <x>60</x>
-        <y>250</y>
-        <width>80</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Reset</string>
-      </property>
-     </widget>
-    </widget>
-    <widget class="QPushButton" name="pushButton_7">
-     <property name="geometry">
-      <rect>
-       <x>170</x>
-       <y>340</y>
-       <width>80</width>
-       <height>24</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Intersect</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_8">
-     <property name="geometry">
-      <rect>
-       <x>280</x>
-       <y>340</y>
-       <width>80</width>
-       <height>24</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Subtract</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_10">
-     <property name="geometry">
-      <rect>
-       <x>60</x>
-       <y>340</y>
-       <width>80</width>
-       <height>24</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Unite</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_11">
-     <property name="geometry">
-      <rect>
-       <x>110</x>
-       <y>370</y>
-       <width>80</width>
-       <height>24</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Divide</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_14">
-     <property name="geometry">
-      <rect>
-       <x>230</x>
-       <y>370</y>
-       <width>80</width>
-       <height>24</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Exclude</string>
-     </property>
     </widget>
    </widget>
   </widget>
@@ -501,13 +289,200 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>947</width>
-     <height>21</height>
+     <width>1124</width>
+     <height>25</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CustomButton</class>
+   <extends>QPushButton</extends>
+   <header>mainwindow.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BooleanButton</class>
+   <extends>QPushButton</extends>
+   <header>mainwindow.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CustomLabel</class>
+   <extends>QLabel</extends>
+   <header>mainwindow.h</header>
+   <slots>
+    <signal>mousePress()</signal>
+   </slots>
+  </customwidget>
+ </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>DrawPath1()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>591</x>
+     <y>89</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>473</x>
+     <y>276</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_4</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>DrawPath1()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>591</x>
+     <y>209</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>473</x>
+     <y>276</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_6</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>DrawPath1()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>591</x>
+     <y>289</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>473</x>
+     <y>276</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_7</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>DrawPath2()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>791</x>
+     <y>89</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>473</x>
+     <y>276</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_10</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>DrawPath2()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>791</x>
+     <y>209</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>473</x>
+     <y>276</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_12</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>DrawPath2()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>791</x>
+     <y>289</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>473</x>
+     <y>276</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_15</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>BooleanOp()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>991</x>
+     <y>169</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>561</x>
+     <y>276</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_16</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>BooleanOp()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>991</x>
+     <y>129</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>561</x>
+     <y>276</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_17</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>BooleanOp()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>991</x>
+     <y>89</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>561</x>
+     <y>276</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>label</sender>
+   <signal>mousePress()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>CheckMousePress()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>249</x>
+     <y>274</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>561</x>
+     <y>276</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>DrawPath1()</slot>
+  <slot>DrawPath2()</slot>
+  <slot>BooleanOp()</slot>
+  <slot>CheckMousePress()</slot>
+ </slots>
 </ui>

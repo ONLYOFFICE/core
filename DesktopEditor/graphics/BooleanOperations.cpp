@@ -839,6 +839,8 @@ Winding* Winding::AddWinding(const Curve& curve)
 	newWind->SetDirection(!Direction);
 	newWind->SetPoint(PointD(PointAbscissas, PointOrdinat));
 	newWind->SetCurves(CurvesHor, CurvesVer);
+	newWind->Curves1 = Curves1;
+	newWind->Curves2 = Curves2;
 	newWind->GetWinding();
 	return newWind;
 }
@@ -1218,11 +1220,11 @@ void CBooleanOperations::InsertSegment(const Segment& segment)
 
 Curve CBooleanOperations::GetCurve(const Segment& segment) const
 {
-	if (segment.Index == 0)
-		return Curve();
-	if (segment.Id == 1)
-		return Curves1[segment.Index - 1];
-	return Curves2[segment.Index - 1];
+	bool path1 = segment.Id == 1;
+	if (segment.Path->Is_poly_closed() &&
+		segment.Index == (path1 ? Segments1.size() - 1 : Segments2.size() - 1))
+		return path1 ? Curves1[segment.Index - 1] : Curves2[segment.Index - 1];
+	return path1 ? Curves1[segment.Index] : Curves2[segment.Index];
 }
 
 Curve Winding::GetPreviousCurve(const Curve& curve) const
@@ -1983,7 +1985,7 @@ void CBooleanOperations::PropagateWinding(Segment segment,
 									   : Curves1.size() + curve.Segment1.Index;
 				std::vector<Curve> newCurvesHor = curveCollisonsMap[2 * index],
 								   newCurvesVer = curveCollisonsMap[2 * index + 1];
-				map.SetCurves(newCurvesVer, newCurvesHor);
+				map.SetCurves(newCurvesHor, newCurvesVer);
 				map.GetWinding();
 				
 				wind.W = std::max(map.WindingLeft, map.WindingRight);

@@ -1,21 +1,129 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "../../GraphicsPath.h"
+
+CustomLabel::CustomLabel(QWidget *parent) : QLabel(parent)
+{
+	setMouseTracking(true);
+}
+
+QPointF CustomLabel::GetStartPoint() const noexcept
+{
+	return StartP;
+}
+
+double CustomLabel::GetDifferenceX() const noexcept
+{
+	return CurrP.x() - StartP.x();
+}
+
+double CustomLabel::GetDifferenceY() const noexcept
+{
+	return CurrP.y() - StartP.y();
+}
+
+bool CustomLabel::GetMovable() const noexcept
+{
+	return Movable;
+}
+
+void CustomLabel::ResetMovable() noexcept
+{
+	Movable = !Movable;
+}
+
+void CustomLabel::mousePressEvent(QMouseEvent *event)
+{
+	StartP = event->pos();
+	ResetMovable();
+	emit mousePress();
+}
+
+void CustomLabel::mouseMoveEvent(QMouseEvent *event)
+{
+	CurrP = event->pos();
+	emit mouseMove();
+}
+
+CustomButton::CustomButton(QWidget *parent) : QPushButton(parent)
+{
+	connect(this, &QPushButton::clicked, this, &CustomButton::SetFigure);
+}
+
+void CustomButton::SetFigure() noexcept
+{
+	MainWindow::Figure = this->text();
+}
+
+BooleanButton::BooleanButton(QWidget *parent) : QPushButton(parent)
+{
+	connect(this, &QPushButton::clicked, this, &BooleanButton::SetCommand);
+}
+
+void BooleanButton::SetCommand() noexcept
+{
+	if (this->text() == "Unite")
+		MainWindow::Op = Aggplus::Union;
+	else if (this->text() == "Intersect")
+		MainWindow::Op = Aggplus::Intersection;
+	else
+		MainWindow::Op = Aggplus::Subtraction;
+}
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
+	, Path1(new Aggplus::CGraphicsPath)
+	, Path2(new Aggplus::CGraphicsPath)
 	, ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
-	Path1 = new Aggplus::CGraphicsPath;
-	Path1->StartFigure();
-	Path2 = new Aggplus::CGraphicsPath;
-	Path2->StartFigure();
 }
 
 MainWindow::~MainWindow()
 {
+	delete Path1;
+	delete Path2;
 	delete ui;
+}
+
+Aggplus::CGraphicsPath* MainWindow::SetPath(double offsetX, double offsetY)
+{
+	Aggplus::CGraphicsPath *path = new Aggplus::CGraphicsPath;
+
+	path->StartFigure();
+	if (Figure == "Rectangle")
+	{
+		path->MoveTo(RECTANGLE[0] + offsetX,
+					 RECTANGLE[1] + offsetY);
+		path->LineTo(RECTANGLE[0] + RECTANGLE[2] + offsetX,
+					 RECTANGLE[1] + offsetY);
+		path->LineTo(RECTANGLE[0] + RECTANGLE[2] + offsetX,
+					 RECTANGLE[1] + RECTANGLE[3] + offsetY);
+		path->LineTo(RECTANGLE[0] + offsetX,
+					 RECTANGLE[1] + RECTANGLE[3] + offsetY);
+		path->LineTo(RECTANGLE[0] + offsetX,
+					 RECTANGLE[1] + offsetY);
+	}
+	else if (Figure == "Ellipse")
+	{
+		path->AddEllipse(RECTANGLE[0] + offsetX,
+						 RECTANGLE[1] + offsetY,
+						 RECTANGLE[2],
+						 RECTANGLE[3]);
+	}
+	else
+	{
+		path->MoveTo(TRIANGLE[0] + offsetX,
+					 TRIANGLE[1] + offsetY);
+		path->LineTo(TRIANGLE[2] + offsetX,
+					 TRIANGLE[3] + offsetY);
+		path->LineTo(TRIANGLE[4] + offsetX,
+					 TRIANGLE[5] + offsetY);
+		path->LineTo(TRIANGLE[0] + offsetX,
+					 TRIANGLE[1] + offsetY);
+	}
+	path->CloseFigure();
+
+	return path;
 }
 
 void MainWindow::AddPath(NSGraphics::IGraphicsRenderer* pathRenderer, Aggplus::CGraphicsPath* path)
@@ -50,6 +158,7 @@ void MainWindow::AddPath(NSGraphics::IGraphicsRenderer* pathRenderer, Aggplus::C
 
 void MainWindow::Draw(Aggplus::CGraphicsPath *path)
 {
+	ui->label->clear();
 	QImage img(ui->label->width(), ui->label->height(), QImage::Format_RGB888);
 
 	NSGraphics::IGraphicsRenderer* pathRenderer = NSGraphics::Create();
@@ -92,133 +201,99 @@ void MainWindow::Draw(Aggplus::CGraphicsPath *path)
 	ui->label->setPixmap(QPixmap::fromImage(img));
 }
 
-void MainWindow::AddCommand(Aggplus::CGraphicsPath *path, agg::path_commands_e cmd,
-							float x0, float y0, float x1, float y1, float x2, float y2)
+void MainWindow::SetCoords(QLabel *label, Aggplus::CGraphicsPath *path)
 {
-	switch (cmd)
-	{
-	case agg::path_cmd_move_to:
-		path->MoveTo(x0, y0);
-		break;
-	case agg::path_cmd_line_to:
-		if (path->GetPointCount() == 0)
-			return;
-		path->LineTo(x0, y0);
-		break;
-	case agg::path_cmd_curve4:
-		if (path->GetPointCount() == 0)
-			return;
-		path->CurveTo(x1, y1, x2, y2, x0, y0);
-		break;
-	default:
-		break;
-	}
-	Draw();
+	size_t length = path->GetPointCount();
+	std::vector<Aggplus::PointD> points = path->GetPoints(0, length);
+	QString text = "";
+
+	for (size_t i = 0; i < length; i++)
+		text += "(" + QString::number(points[i].X) +
+				"; " + QString::number(points[i].Y) + "); ";
+
+	label->setText(text);
 }
 
-void MainWindow::PrepareClip()
+void MainWindow::DrawPath1()
+{
+	Path1 = SetPath(Offsets[0], Offsets[1]);
+	Draw();
+	SetCoords(ui->label_4, Path1);
+}
+
+void MainWindow::DrawPath2()
+{
+	Path2 = SetPath(Offsets[2], Offsets[3]);
+	Draw();
+	SetCoords(ui->label_5, Path2);
+}
+
+void MainWindow::BooleanOp()
 {
 	if (Path1->GetPointCount() == 0 || Path2->GetPointCount() == 0)
 		return;
 
-	Path1->CloseFigure();
-	Path2->CloseFigure();
-}
-
-void MainWindow::Reset(Aggplus::CGraphicsPath *path)
-{
-	path->Reset();
-	path->StartFigure();
-	Draw();
-}
-
-void MainWindow::on_pushButton_clicked()
-{
-	AddCommand(Path1, agg::path_cmd_move_to, ui->lineEdit->text().toFloat(), ui->lineEdit_2->text().toFloat());
-}
-
-void MainWindow::on_pushButton_2_clicked()
-{
-	AddCommand(Path1, agg::path_cmd_line_to, ui->lineEdit_3->text().toFloat(), ui->lineEdit_4->text().toFloat());
-}
-
-
-void MainWindow::on_pushButton_3_clicked()
-{
-	AddCommand(Path1, agg::path_cmd_curve4, ui->lineEdit_5->text().toFloat(), ui->lineEdit_6->text().toFloat(),
-			   ui->lineEdit_7->text().toFloat(), ui->lineEdit_8->text().toFloat(),ui->lineEdit_9->text().toFloat(),
-			   ui->lineEdit_10->text().toFloat());
-}
-
-
-void MainWindow::on_pushButton_4_clicked()
-{
-	AddCommand(Path2, agg::path_cmd_move_to, ui->lineEdit_11->text().toFloat(), ui->lineEdit_12->text().toFloat());
-}
-
-
-void MainWindow::on_pushButton_5_clicked()
-{
-	AddCommand(Path2, agg::path_cmd_line_to, ui->lineEdit_13->text().toFloat(), ui->lineEdit_14->text().toFloat());
-}
-
-
-void MainWindow::on_pushButton_6_clicked()
-{
-	AddCommand(Path2, agg::path_cmd_curve4, ui->lineEdit_15->text().toFloat(), ui->lineEdit_16->text().toFloat(),
-			   ui->lineEdit_17->text().toFloat(), ui->lineEdit_18->text().toFloat(),ui->lineEdit_19->text().toFloat(),
-			   ui->lineEdit_20->text().toFloat());
-}
-
-
-void MainWindow::on_pushButton_10_clicked()
-{
-	PrepareClip();
-	Aggplus::CGraphicsPath* result = Aggplus::BooleanOperation(Path1, Path2, Aggplus::Union);
+	Aggplus::CGraphicsPath *result = Aggplus::BooleanOperation(Path1, Path2, Op);
 	Draw(result);
+	SetCoords(ui->label_7, result);
+	Path1->Reset();
+	Path2->Reset();
 }
 
-
-void MainWindow::on_pushButton_7_clicked()
+void MainWindow::CheckMousePress()
 {
-	PrepareClip();
-	Aggplus::CGraphicsPath* result = Aggplus::BooleanOperation(Path1, Path2, Aggplus::Intersection);
-	Draw(result);
+	if (!ui->label->GetMovable())
+	{
+		Move1 = false;
+		Move2 = false;
+		disconnect(ui->label, SIGNAL(mouseMove()), this, SLOT(Move()));
+		return;
+	}
+
+	QRectF rect1(RECTANGLE[0] + Offsets[0],
+				 RECTANGLE[1] + Offsets[1],
+				 RECTANGLE[2],
+				 RECTANGLE[3]),
+		   rect2(RECTANGLE[0] + Offsets[2],
+				 RECTANGLE[1] + Offsets[3],
+				 RECTANGLE[2],
+				 RECTANGLE[3]);
+
+	Move1 = rect1.contains(ui->label->GetStartPoint()) && Path1->GetPointCount() != 0;
+	Move2 = rect2.contains(ui->label->GetStartPoint()) && Path2->GetPointCount() != 0;
+	if (Move1 || Move2)
+	{
+		for (size_t i = 0; i < 4; i++)
+			OldOffsets[i] = Offsets[i];
+		connect(ui->label, SIGNAL(mouseMove()), this, SLOT(Move()));
+	}
 }
 
-
-void MainWindow::on_pushButton_8_clicked()
+inline double CheckOffset(double offset, double min, double max)
 {
-	PrepareClip();
-	Aggplus::CGraphicsPath* result = Aggplus::BooleanOperation(Path1, Path2, Aggplus::Subtraction);
-	Draw(result);
+	return std::max(min, std::min(max, offset));
 }
 
-
-void MainWindow::on_pushButton_11_clicked()
+void MainWindow::Move()
 {
-	PrepareClip();
-	Aggplus::CGraphicsPath* result = Aggplus::BooleanOperation(Path1, Path2, Aggplus::Division);
-	Draw(result);
+	if (Move1)
+	{
+		Offsets[0] = CheckOffset(OldOffsets[0] + ui->label->GetDifferenceX(),
+								 static_cast<double>(ui->label->x()),
+								 static_cast<double>(ui->label->width()));
+		Offsets[1] = CheckOffset(OldOffsets[1] + ui->label->GetDifferenceY(),
+								 static_cast<double>(ui->label->y()),
+								 static_cast<double>(ui->label->height()));
+		DrawPath1();
+	}
+	if (Move2)
+	{
+		Offsets[2] = CheckOffset(OldOffsets[2] + ui->label->GetDifferenceX(),
+								 static_cast<double>(ui->label->x()),
+								 static_cast<double>(ui->label->width()));
+		Offsets[3] = CheckOffset(OldOffsets[3] + ui->label->GetDifferenceY(),
+								 static_cast<double>(ui->label->y()),
+								 static_cast<double>(ui->label->height()));
+		DrawPath2();
+	}
 }
-
-
-void MainWindow::on_pushButton_14_clicked()
-{
-	PrepareClip();
-	Aggplus::CGraphicsPath* result = Aggplus::BooleanOperation(Path1, Path2, Aggplus::Exclusion);
-	Draw(result);
-}
-
-
-void MainWindow::on_pushButton_9_clicked()
-{
-	Reset(Path1);
-}
-
-
-void MainWindow::on_pushButton_12_clicked()
-{
-	Reset(Path2);
-}
-

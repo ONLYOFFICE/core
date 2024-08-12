@@ -153,7 +153,7 @@ namespace SVG
 		double dX, dY;
 		CalculatePosition(dX, dY);
 
-		if (!UseExternalFont(pFile, dX, dY, pRenderer, pFile, oMode, pOtherStyles))
+		if (!UseExternalFont(pFile, dX, dY, pRenderer, oMode, pOtherStyles))
 		{
 			ApplyFont(pRenderer, dX, dY);
 	
@@ -297,7 +297,7 @@ namespace SVG
 		pRenderer->put_BrushAlpha1(255);
 	}
 	
-	bool CTSpan::UseExternalFont(const CSvgFile *pFile, double dX, double dY, IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CTSpan::UseExternalFont(const CSvgFile *pFile, double dX, double dY, IRenderer *pRenderer, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
 		std::wstring wsFontFamily = DefaultFontFamily;
 

@@ -51,9 +51,6 @@ class CustomButton : public QPushButton
 
 public:
 	CustomButton(QWidget *parent = nullptr);
-
-public slots:
-	void SetFigure() noexcept;
 };
 
 class BooleanButton : public QPushButton
@@ -62,9 +59,6 @@ class BooleanButton : public QPushButton
 
 public:
 	BooleanButton(QWidget *parent = nullptr);
-
-public slots:
-	void SetCommand() noexcept;
 };
 
 class MainWindow : public QMainWindow
@@ -80,16 +74,20 @@ public:
 	void Draw(Aggplus::CGraphicsPath *path = nullptr);
 	void SetCoords(QLabel* label, Aggplus::CGraphicsPath* path);
 
-private slots:
 	void DrawPath1();
 	void DrawPath2();
 	void BooleanOp();
+
+private slots:	
 	void CheckMousePress();
 	void Move();
 
+	void SetCommand();
+	void SetFigure();
+
 public:
-	static inline QString Figure;
-	static inline Aggplus::BooleanOpType Op;
+	QString Figure;
+	Aggplus::BooleanOpType Op;
 
 	double Offsets[4] = {100.0, 100.0, 200.0, 200.0};
 	double OldOffsets[4];

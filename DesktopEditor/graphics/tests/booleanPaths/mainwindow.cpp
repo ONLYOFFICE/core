@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <vector>
 
 CustomLabel::CustomLabel(QWidget *parent) : QLabel(parent)
 {
@@ -46,27 +47,29 @@ void CustomLabel::mouseMoveEvent(QMouseEvent *event)
 
 CustomButton::CustomButton(QWidget *parent) : QPushButton(parent)
 {
-	connect(this, &QPushButton::clicked, this, &CustomButton::SetFigure);
-}
-
-void CustomButton::SetFigure() noexcept
-{
-	MainWindow::Figure = this->text();
 }
 
 BooleanButton::BooleanButton(QWidget *parent) : QPushButton(parent)
 {
-	connect(this, &QPushButton::clicked, this, &BooleanButton::SetCommand);
 }
 
-void BooleanButton::SetCommand() noexcept
+std::vector<QObject*> GetChildsByClassName(QObject* parent, const QString& name)
 {
-	if (this->text() == "Unite")
-		MainWindow::Op = Aggplus::Union;
-	else if (this->text() == "Intersect")
-		MainWindow::Op = Aggplus::Intersection;
-	else
-		MainWindow::Op = Aggplus::Subtraction;
+	std::vector<QObject*> res;
+	foreach (QObject* child, parent->children())
+	{
+		if (QString(child->metaObject()->className()) == name)
+			res.push_back(child);
+		else
+		{
+			if (!child->children().empty())
+			{
+				std::vector<QObject*> resChilds = GetChildsByClassName(child, name);
+				res.insert(res.end(), resChilds.begin(), resChilds.end());
+			}
+		}
+	}
+	return res;
 }
 
 MainWindow::MainWindow(QWidget *parent)
@@ -76,6 +79,43 @@ MainWindow::MainWindow(QWidget *parent)
 	, ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
+
+	Figure = "";
+	Op = Aggplus::Intersection;
+
+	std::vector<QObject*> arrPathButtons = GetChildsByClassName(this, "CustomButton");
+	std::vector<QObject*> arrBooleanButtons = GetChildsByClassName(this, "BooleanButton");
+
+	for (std::vector<QObject*>::iterator i = arrPathButtons.begin(); i != arrPathButtons.end(); i++)
+		connect((QPushButton*)(*i), &QPushButton::clicked, this, &MainWindow::SetFigure);
+
+	for (std::vector<QObject*>::iterator i = arrBooleanButtons.begin(); i != arrBooleanButtons.end(); i++)
+		connect((QPushButton*)(*i), &QPushButton::clicked, this, &MainWindow::SetCommand);
+}
+
+void MainWindow::SetFigure()
+{
+	QPushButton* sender = (QPushButton*)this->sender();
+	Figure = sender->text();
+
+	if (((QGroupBox*)sender->parentWidget())->title() == "Path1")
+		DrawPath1();
+
+	if (((QGroupBox*)sender->parentWidget())->title() == "Path2")
+		DrawPath2();
+}
+
+void MainWindow::SetCommand()
+{
+	QString text = ((QPushButton*)sender())->text();
+	if (text == "Unite")
+		Op = Aggplus::Union;
+	else if (text == "Intersect")
+		Op = Aggplus::Intersection;
+	else
+		Op = Aggplus::Subtraction;
+
+	BooleanOp();
 }
 
 MainWindow::~MainWindow()
@@ -159,25 +199,27 @@ void MainWindow::AddPath(NSGraphics::IGraphicsRenderer* pathRenderer, Aggplus::C
 void MainWindow::Draw(Aggplus::CGraphicsPath *path)
 {
 	ui->label->clear();
-	QImage img(ui->label->width(), ui->label->height(), QImage::Format_RGB888);
 
 	NSGraphics::IGraphicsRenderer* pathRenderer = NSGraphics::Create();
 	NSFonts::IFontManager* fmp = NSFonts::NSFontManager::Create();
 	pathRenderer->SetFontManager(fmp);
 
-	BYTE* pData = new BYTE[4 * ui->label->width() * ui->label->height()];
+	int nW = ui->label->width();
+	int nH = ui->label->height();
+
+	BYTE* pData = new BYTE[4 * nW * nH];
 
 	CBgraFrame oFrame;
 	oFrame.put_Data(pData);
-	oFrame.put_Width(ui->label->width());
-	oFrame.put_Height(ui->label->height());
-	oFrame.put_Stride(4 * ui->label->width());
+	oFrame.put_Width(nW);
+	oFrame.put_Height(nH);
+	oFrame.put_Stride(4 * nW);
 
 	pathRenderer->CreateFromBgraFrame(&oFrame);
 	pathRenderer->SetSwapRGB(true);
 
-	pathRenderer->put_Width(ui->label->width());
-	pathRenderer->put_Height(ui->label->height());
+	pathRenderer->put_Width(nW);
+	pathRenderer->put_Height(nH);
 
 	if (path != nullptr)
 	{
@@ -189,15 +231,9 @@ void MainWindow::Draw(Aggplus::CGraphicsPath *path)
 		AddPath(pathRenderer, Path2);
 	}
 
-	unsigned int* pData32 = (unsigned int*)pData;
-	for (size_t i = 0; i < img.size().width(); i++)
-	{
-		for (size_t j = 0; j < img.size().height(); j++)
-		{
-			img.setPixelColor(j, i, pData32[j + i * ui->label->width()]);
-		}
-	}
-
+	QImage img = QImage(pData, nW, nH, QImage::Format_RGBA8888, [](void *data){
+		delete [] (BYTE*)data;
+	});
 	ui->label->setPixmap(QPixmap::fromImage(img));
 }
 
@@ -216,6 +252,7 @@ void MainWindow::SetCoords(QLabel *label, Aggplus::CGraphicsPath *path)
 
 void MainWindow::DrawPath1()
 {
+	if (Path1) delete Path1;
 	Path1 = SetPath(Offsets[0], Offsets[1]);
 	Draw();
 	SetCoords(ui->label_4, Path1);
@@ -223,6 +260,7 @@ void MainWindow::DrawPath1()
 
 void MainWindow::DrawPath2()
 {
+	if (Path2) delete Path2;
 	Path2 = SetPath(Offsets[2], Offsets[3]);
 	Draw();
 	SetCoords(ui->label_5, Path2);

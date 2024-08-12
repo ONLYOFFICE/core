@@ -98,12 +98,8 @@ namespace NSJSBase
 					if (pCacheData)
 					{
 						// save cache to file
-						NSFile::CFileBinary oFileTest;
-						if (oFileTest.CreateFileW(Path))
-						{
-							oFileTest.WriteFile(pCacheData->data, (DWORD)pCacheData->length);
-							oFileTest.CloseFile();
-						}
+						oFileTest.WriteFile(pCacheData->data, (DWORD)pCacheData->length);
+						oFileTest.CloseFile();
 					}
 				}
 

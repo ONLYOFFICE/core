@@ -67,7 +67,7 @@ namespace formulasconvert {
 		std::wstring convert_named_expr(const std::wstring& expr, bool withTableName, bool bAbsoluteAlways);
 		
 		static std::wstring replace_named_ref_formater(boost::wsmatch const & what);
-		static std::wstring replace_named_ref_formater1(boost::wsmatch const & what);
+		static std::wstring replace_named_ref_formater_2(boost::wsmatch const & what);
 		//static std::wstring replace_cell_range_formater(boost::wsmatch const & what);
 		
 		void replace_named_formula(std::wstring & expr, bool w = true);
@@ -440,19 +440,54 @@ namespace formulasconvert {
 			return ref1 + (ref2.empty() ? L"" : (L":" + ref2) );
 		}
 	}
-	std::wstring odf2oox_converter::Impl::replace_named_ref_formater1(boost::wsmatch const & what)
+	std::wstring odf2oox_converter::Impl::replace_named_ref_formater_2(boost::wsmatch const & what)
 	{
-		boost::wregex complexRef(L"(?:\'([^\']*)\'#){0,1}\\${0,1}([^\\.]+?){0,1}\\.(\\${0,1}[\\w^0-9]+\\${0,1}\\d+)(?::\\.(\\${0,1}[\\w^0-9]+\\${0,1}\\d+)){0,1}");
-//									  'external'#  $   Sheet2         . A1								 : ( $   Sheet2)? . B5   
-		std::wstring expr = what[1].str();
-		const std::wstring res = boost::regex_replace(
-			expr,
-			complexRef,
-			&replace_named_ref_formater,
-			boost::match_default | boost::format_all);
-		expr = res; 
+		const size_t sz = what.size();
 
-		return expr;
+		//if (sz < 6) return what[0].str();
+
+		std::wstring c0 = what[0].str();
+		std::wstring sheet1 = what[1].str();
+		std::wstring ref1 = what[2].str();
+		std::wstring ref2 = what[3].str();
+
+		XmlUtils::replace_all(sheet1, L"$", L"");
+		XmlUtils::replace_all(ref2, L":", L"");
+
+		std::wstring result;
+
+		if (std::wstring::npos != sheet1.find(L" "))
+		{
+			if (sheet1[0] != L'\'')
+			{
+				sheet1 = L"'" + sheet1 + L"'";
+			}
+		}
+
+		table_name_ = sheet1;
+
+		if (convert_with_absolute)
+		{
+			size_t col = 0, row = 0;
+			oox::getCellAddressInv(ref1, col, row);
+
+			ref1 = oox::getCellAddress(col, row, true);
+
+			if (false == ref2.empty())
+			{
+				oox::getCellAddressInv(ref2, col, row);
+				ref2 = oox::getCellAddress(col, row, true);
+			}
+		}
+
+		if (convert_with_TableName)
+		{
+			return (sheet1.empty() ? L"" : (sheet1 + L"!")) + ref1 + (ref2.empty() ? L"" : (L":" + ref2));
+		}
+		else
+		{
+			return ref1 + (ref2.empty() ? L"" : (L":" + ref2));
+		}
 	}
 
 
@@ -487,13 +522,13 @@ namespace formulasconvert {
 		if (result == expr)
 		{
 			//bad formula ???
-			boost::wregex complexRef_2(L"\\[{0,1}(?:\'([^\']*)\'#){0,1}\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)(?::\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)){0,1}\\]{0,1}");
-			//									  'external'#  $   Sheet2         . A1								 : ( $   Sheet2)? . B5   
+			boost::wregex complexRef_2(L"\\$([^\\.]+?)?\\.(\\$[a-zA-Z]*\\d*)(\\:\\$[a-zA-Z]*\\d*)?");
+			//	$ Sheet2  . $ A1		 : ( $   Sheet2)? . $ B5   
 
 			result = boost::regex_replace(
 				expr,
 				complexRef_2,
-				&replace_named_ref_formater,
+				&replace_named_ref_formater_2,
 				boost::match_default | boost::format_all);
 		}
 		return result;

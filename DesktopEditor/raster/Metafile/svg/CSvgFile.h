@@ -9,6 +9,12 @@
 
 #define SVG_DECL_IMPORT Q_DECL_IMPORT
 
+namespace SVG 
+{
+	struct TFontArguments;
+	class CFont;
+}
+
 class SVG_DECL_IMPORT CSvgFile
 {
 	public:
@@ -28,9 +34,12 @@ class SVG_DECL_IMPORT CSvgFile
 		bool MarkObject(SVG::CObject* pObject);
 		SVG::CObject* GetMarkedObject(const std::wstring& wsId) const;
 
+		SVG::CFont* GetFont(const std::wstring& wsFontFamily) const;
+
 		std::wstring GetWorkingDirectory() const;
-		
+
 		void AddStyles(const std::wstring& wsStyles);
+		void AddFontFace(const SVG::TFontArguments& oArguments, const std::wstring& wsId);
 
 		bool Draw(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
 	private:
@@ -44,6 +53,9 @@ class SVG_DECL_IMPORT CSvgFile
 
 		MarkedMap    m_mMarkedObjects;
 		std::wstring m_wsWorkingDirectory;
+
+		typedef std::map<std::wstring, std::wstring> FontsFaceMap;
+		FontsFaceMap m_mFontsFace;
 };
 
 #endif // CSVGFILE_H

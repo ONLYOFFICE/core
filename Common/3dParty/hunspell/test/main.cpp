@@ -33,6 +33,7 @@
 #include "../../../../Common/3dParty/hunspell/hunspell/src/hunspell/hunspell.h"
 #include "../../../../DesktopEditor/common/StringExt.h"
 #include "../../../../DesktopEditor/common/Directory.h"
+#include <iostream>
 
 bool CheckCaret(std::vector<std::wstring>& words)
 {
@@ -85,11 +86,36 @@ std::wstring CheckWord(Hunhandle* pDic, const std::wstring& sWord, const bool& b
 	return sResult;
 }
 
+#if defined(_WIN32) || defined(_WIN64)
+#define USE_WCHAR_ARGC
+#endif
+
+#ifdef USE_WCHAR_ARGC
+std::wstring GetParam(wchar_t* arg)
+{
+	return std::wstring(arg);
+}
+#else
+std::wstring GetParam(char* arg)
+{
+	return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE *)arg, (LONG)strlen(arg));
+}
+#endif
+
+#ifdef USE_WCHAR_ARGC
+int wmain(int argc, wchar_t *argv[])
+#else
 int main(int argc, char *argv[])
+#endif
 {
 	std::wstring sSrcDir = NSFile::GetProcessDirectory() + L"/../src";
 	std::wstring sDstDir = NSFile::GetProcessDirectory() + L"/../dst";
 	std::wstring sDictionariesDir = NSFile::GetProcessDirectory() + L"/../../../../../../dictionaries";
+
+	if (argc > 1) sSrcDir = GetParam(argv[1]);
+	if (argc > 2) sDstDir = GetParam(argv[2]);
+	if (argc > 3) sDictionariesDir = GetParam(argv[3]);
+
 	std::vector<std::wstring> arSrcFiles = NSDirectory::GetFiles(sSrcDir);
 
 	for (int i = 0, len = (int)arSrcFiles.size(); i < len; ++i)
@@ -125,6 +151,8 @@ int main(int argc, char *argv[])
 		Hunspell_destroy(pDictionary);
 
 		NSFile::CFileBinary::SaveToFile(sFileDst, sResult, true);
+
+		std::cout << "[" << (i + 1) << " of " << (int)arSrcFiles.size() << "] " << U_TO_UTF8(sName) << std::endl;
 	}
 
 	return 0;

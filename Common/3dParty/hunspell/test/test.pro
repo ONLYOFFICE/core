@@ -6,7 +6,7 @@
 
 QT -= core gui
 
-TARGET = test
+TARGET = dictionariestester
 CONFIG += console
 CONFIG -= app_bundle
 
@@ -26,4 +26,4 @@ core_linux:LIBS += -lz
 
 SOURCES += main.cpp
 
-DESTDIR = $$PWD/build
+DESTDIR = $$CORE_BUILDS_BINARY_PATH

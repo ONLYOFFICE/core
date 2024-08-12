@@ -92,16 +92,20 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 			{
 				if(GlobalsSubstream_found)
 				{
-					Log::error("Multiple GLOBALS substreams found in intermediate XML.");
-					return false;
+					Log::error("Multiple GLOBALS substreams found");
+					return true;
 				}
-				Log::event("Globals substream detected");
+				else
+				{
+					Log::event("Globals substream detected");
+				}
                 GlobalsSubstream global_substream(code_page_);
                 if((proc.mandatory(global_substream)) && (elements_.size() > 0))
 				{
 					GlobalsSubstream_found = true;
-					
-					m_GlobalsSubstream = elements_.back(); elements_.pop_back();
+					m_GlobalsSubstream = elements_.back();
+
+					elements_.pop_back();
 				}
 				if (!GlobalsSubstream_found) return false;
 			}
@@ -110,7 +114,7 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 			{
 				if(!GlobalsSubstream_found)
 				{
-					Log::error("GLOBALS substream is not the first substream in intermediate XML.");
+					Log::error("GLOBALS substream is not the first substream");
 					return false;
 				}
 				Log::event("Worksheet or Dialog substream detected");

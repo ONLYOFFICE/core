@@ -54,6 +54,7 @@
 #include "../DesktopEditor/common/StringExt.h"
 #include "../DesktopEditor/graphics/GraphicsPath.h"
 #include "../DesktopEditor/graphics/MetafileToRenderer.h"
+#include "../DesktopEditor/raster/Metafile/MetaFileCommon.h"
 
 #include "../UnicodeConverter/UnicodeConverter.h"
 #include "../Common/Network/FileTransporter/include/FileTransporter.h"
@@ -72,6 +73,8 @@
 
 #define MM_2_PT(X) ((X) * 72.0 / 25.4)
 #define PT_2_MM(X) ((X) * 25.4 / 72.0)
+
+#define MM_TO_PT(value) (value * 300.0 / 25.4)
 
 #define LONG_2_BOOL(X) ((X) ? true : false)
 
@@ -92,49 +95,30 @@
 static const long c_BrushTypeLinearGradient = 8001;
 static const long c_BrushTypeRadialGradient = 8002;
 
-void GetMetafileRasterSize(MetaFile::IMetaFile* pMetafile, const double& dWidth, int& nW, int& nH)
+Aggplus::CImage* ConvertMetafile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsPath, const std::wstring& wsTempDirectory, double dWidth = -1, double dHeight = -1)
 {
-	double dNewW = std::max(10.0, dWidth) / 25.4 * 300;
-
-	/* old version:
-	nW = (int)nW;
-	nH = -1;
-	return;
-	*/
-
-
-	double dX, dY, dW, dH;
-	pMetafile->GetBounds(&dX, &dY, &dW, &dH);
-
-	if (dW < 0) dW = -dW;
-	if (dH < 0) dH = -dH;
-
-	if (dW < 0.1) dW = 0.1;
-	if (dH < 0.1) dH = 0.1;
-
-	double dNewH = dNewW * dH / dW;
-
-	double dOneMaxSize = 2000;
-
-	if (dNewW > dOneMaxSize || dNewH > dOneMaxSize)
+	CImageFileFormatChecker oImageFormat(wsPath);
+	if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType ||
+		_CXIMAGE_FORMAT_EMF == oImageFormat.eFileType ||
+		_CXIMAGE_FORMAT_SVM == oImageFormat.eFileType ||
+		_CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
 	{
-		if (dNewW > dNewH)
-		{
-			dNewH *= (dOneMaxSize / dNewW);
-			dNewW = dOneMaxSize;
-		}
+		MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
+
+		if (NULL == pMeta || !pMeta->LoadFromFile(wsPath.c_str()))
+			return new Aggplus::CImage(wsPath);
+
+		if (0 < dWidth || 0 < dHeight)
+			pMeta->ConvertToRaster(wsTempDirectory.c_str(), _CXIMAGE_FORMAT_PNG, MM_2_PT(dWidth), MM_2_PT(dHeight));
 		else
-		{
-			dW *= (dOneMaxSize / dNewH);
-			dNewH = dOneMaxSize;
-		}
+			MetaFile::ConvertToRasterMaxSize(pMeta, wsTempDirectory.c_str(), _CXIMAGE_FORMAT_PNG, 2000);
+
+		RELEASEOBJECT(pMeta);
+
+		return new Aggplus::CImage(wsTempDirectory);
 	}
 
-	if (dNewW < 1) dNewW = 1;
-	if (dNewH < 1) dNewH = 1;
-
-	nW = (int)dNewW;
-	nH = (int)dNewH;
+	return new Aggplus::CImage(wsPath);
 }
 
 //----------------------------------------------------------------------------------------
@@ -1059,31 +1043,7 @@ HRESULT CPdfWriter::DrawImageFromFile(NSFonts::IApplicationFonts* pAppFonts, con
 	std::wstring sTempImagePath = GetDownloadFile(wsImagePathSrc, wsTempDirectory);
 	std::wstring wsImagePath = sTempImagePath.empty() ? wsImagePathSrc : sTempImagePath;
 
-	Aggplus::CImage* pAggImage = NULL;
-
-	CImageFileFormatChecker oImageFormat(wsImagePath);
-	if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType ||
-			_CXIMAGE_FORMAT_EMF == oImageFormat.eFileType ||
-			_CXIMAGE_FORMAT_SVM == oImageFormat.eFileType ||
-			_CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
-	{
-		// TODO: Реализовать отрисовку метафайлов по-нормальному
-		MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
-		pMeta->LoadFromFile(wsImagePath.c_str());
-
-		std::wstring wsTempFile = GetTempFile(wsTempDirectory);
-		int nW = 0, nH = 0;
-		GetMetafileRasterSize(pMeta, dW, nW, nH);
-		pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, nW, nH);
-
-		RELEASEOBJECT(pMeta);
-
-		pAggImage = new Aggplus::CImage(wsTempFile);
-	}
-	else
-	{
-		pAggImage = new Aggplus::CImage(wsImagePath);
-	}
+	Aggplus::CImage* pAggImage = ConvertMetafile(pAppFonts, wsImagePath, GetTempFile(wsTempDirectory), MM_TO_PT(dW), MM_TO_PT(dH));
 
 	HRESULT hRes = S_OK;
 	PdfWriter::CImageDict* pPdfImage = NULL;
@@ -1585,28 +1545,7 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 		PdfWriter::CImageDict* pImage = NULL;
 		if (wsPath.length())
 		{
-			Aggplus::CImage* pCImage = NULL;
-			CImageFileFormatChecker oImageFormat(wsPath);
-			if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType ||
-				_CXIMAGE_FORMAT_EMF == oImageFormat.eFileType ||
-				_CXIMAGE_FORMAT_SVM == oImageFormat.eFileType ||
-				_CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
-			{
-				MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
-				pMeta->LoadFromFile(wsPath.c_str());
-
-				std::wstring wsTempFile = GetTempFile(wsTempDirectory);
-				int nW = 0, nH = 0;
-				GetMetafileRasterSize(pMeta, dW, nW, nH);
-				pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, nW, nH);
-
-				RELEASEOBJECT(pMeta);
-
-				pCImage = new Aggplus::CImage(wsTempFile);
-			}
-			else
-				pCImage = new Aggplus::CImage(wsPath);
-
+			Aggplus::CImage* pCImage = ConvertMetafile(pAppFonts, wsPath, GetTempFile(wsTempDirectory), MM_TO_PT(dW), MM_TO_PT(dH));
 			pImage = LoadImage(pCImage, 255);
 			RELEASEOBJECT(pCImage);
 		}
@@ -2681,28 +2620,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		std::wstring sTempImagePath = GetDownloadFile(wsPath, wsTempDirectory);
 		std::wstring wsImagePath = sTempImagePath.empty() ? wsPath : sTempImagePath;
 
-		Aggplus::CImage* pCImage = NULL;
-		CImageFileFormatChecker oImageFormat(wsImagePath);
-		if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType ||
-			_CXIMAGE_FORMAT_EMF == oImageFormat.eFileType ||
-			_CXIMAGE_FORMAT_SVM == oImageFormat.eFileType ||
-			_CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
-		{
-			MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
-			pMeta->LoadFromFile(wsPath.c_str());
-
-			std::wstring wsTempFile = GetTempFile(wsTempDirectory);
-			int nW = 0, nH = 0;
-			GetMetafileRasterSize(pMeta, 10, nW, nH);
-			pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, nW, nH);
-
-			RELEASEOBJECT(pMeta);
-
-			pCImage = new Aggplus::CImage(wsTempFile);
-		}
-		else
-			pCImage = new Aggplus::CImage(wsImagePath);
-
+		Aggplus::CImage* pCImage = ConvertMetafile(pAppFonts, wsImagePath, GetTempFile(wsTempDirectory));
 		PdfWriter::CImageDict* pImage = LoadImage(pCImage, 255);
 		RELEASEOBJECT(pCImage);
 

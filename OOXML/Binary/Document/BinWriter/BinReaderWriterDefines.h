@@ -884,7 +884,13 @@ extern int g_nCurFormatVersion;
 		AutoHyphenation = 21,
 		HyphenationZone = 22,
 		DoNotHyphenateCaps = 23,
-		ConsecutiveHyphenLimit = 24
+		ConsecutiveHyphenLimit = 24,
+		DrawingGridHorizontalOrigin = 25,
+		DrawingGridHorizontalSpacing = 26,
+		DrawingGridVerticalOrigin = 27,
+		DrawingGridVerticalSpacing = 28,
+		DisplayHorizontalDrawingGridEvery = 29,
+		DisplayVerticalDrawingGridEvery = 30
 	};}
 	namespace c_oSer_MathPrType{enum c_oSer_SettingsType
 	{

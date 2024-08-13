@@ -8799,6 +8799,42 @@ void BinarySettingsTableWriter::WriteSettingsContent(OOX::CSettings& oSettings, 
 		m_oBcw.m_oStream.WriteLONG(*oSettings.m_oConsecutiveHyphenLimit->m_oVal);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if ((oSettings.m_oDrawingGridHorizontalOrigin.IsInit()) && (oSettings.m_oDrawingGridHorizontalOrigin->m_oVal.IsInit()))
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::DrawingGridHorizontalOrigin);
+		m_oBcw.m_oStream.WriteLONG(oSettings.m_oDrawingGridHorizontalOrigin->m_oVal->ToTwips());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if ((oSettings.m_oDrawingGridHorizontalSpacing.IsInit()) && (oSettings.m_oDrawingGridHorizontalSpacing->m_oVal.IsInit()))
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::DrawingGridHorizontalSpacing);
+		m_oBcw.m_oStream.WriteLONG(oSettings.m_oDrawingGridHorizontalSpacing->m_oVal->ToTwips());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if ((oSettings.m_oDrawingGridVerticalOrigin.IsInit()) && (oSettings.m_oDrawingGridVerticalOrigin->m_oVal.IsInit()))
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::DrawingGridVerticalOrigin);
+		m_oBcw.m_oStream.WriteLONG(oSettings.m_oDrawingGridVerticalOrigin->m_oVal->ToTwips());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if ((oSettings.m_oDrawingGridVerticalSpacing.IsInit()) && (oSettings.m_oDrawingGridVerticalSpacing->m_oVal.IsInit()))
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::DrawingGridVerticalSpacing);
+		m_oBcw.m_oStream.WriteLONG(oSettings.m_oDrawingGridVerticalSpacing->m_oVal->ToTwips());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if ((oSettings.m_oDisplayHorizontalDrawingGridEvery.IsInit()) && (oSettings.m_oDisplayHorizontalDrawingGridEvery->m_oVal.IsInit()))
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::DisplayHorizontalDrawingGridEvery);
+		m_oBcw.m_oStream.WriteLONG(*oSettings.m_oDisplayHorizontalDrawingGridEvery->m_oVal);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if ((oSettings.m_oDisplayVerticalDrawingGridEvery.IsInit()) && (oSettings.m_oDisplayVerticalDrawingGridEvery->m_oVal.IsInit()))
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::DisplayVerticalDrawingGridEvery);
+		m_oBcw.m_oStream.WriteLONG(*oSettings.m_oDisplayVerticalDrawingGridEvery->m_oVal);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 };
 void BinarySettingsTableWriter::WriteMathPr(const OOX::Logic::CMathPr &pMathPr)
 {

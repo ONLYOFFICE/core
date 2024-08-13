@@ -2925,9 +2925,10 @@ namespace PdfReader
 
 		Aggplus::CImage oImage;
 		StreamKind nSK = pStream->getKind();
+		int nComponentsCount = pColorMap->getNumPixelComps();
 
 		// Чтение jpeg через cximage происходит быстрее чем через xpdf на ~40%
-		if (true || pMaskColors || (nSK != strDCT) || !ReadImage(&oImage, pRef, pStream))
+		if (nComponentsCount != 3 || pMaskColors || (nSK != strDCT) || !ReadImage(&oImage, pRef, pStream))
 		{
 			int nBufferSize = 4 * nWidth * nHeight;
 			if (nBufferSize < 1)
@@ -2936,8 +2937,6 @@ namespace PdfReader
 			BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufferSize];
 			if (!pBufferPtr)
 				return;
-
-			int nComponentsCount = pColorMap->getNumPixelComps();
 
 			// Пишем данные в pBufferPtr
 			ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
@@ -3175,8 +3174,9 @@ namespace PdfReader
 			return;
 
 		Aggplus::CImage oImage;
+		int nComponentsCount = pColorMap->getNumPixelComps();
 
-		if (true || pStream->getKind() != strDCT || !ReadImage(&oImage, pRef, pStream))
+		if (nComponentsCount != 3 || pStream->getKind() != strDCT || !ReadImage(&oImage, pRef, pStream))
 		{
 			BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufferSize];
 			if (!pBufferPtr)

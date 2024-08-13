@@ -22,7 +22,6 @@ include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 ADD_DEPENDENCY(UnicodeConverter kernel hunspell)
 
 core_windows:LIBS += -lgdi32 -ladvapi32 -luser32 -lshell32
-core_linux:LIBS += -lz
 
 SOURCES += main.cpp
 

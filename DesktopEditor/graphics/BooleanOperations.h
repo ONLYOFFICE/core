@@ -162,7 +162,7 @@ namespace Aggplus
 		// void reorientPaths();
 
 		// Path
-		void PreparePath(CGraphicsPath* path, size_t id, std::vector<Segment>& segments, std::vector<Curve>& curves);
+		void PreparePath(CGraphicsPath* path, size_t id, std::vector<Segment>& segments, std::vector<Curve>& curves, bool reverse = false);
 		void InsertSegment(const Segment& segment);
 		Curve GetCurve(const Segment& segment) const;
 		Curve GetPreviousCurve(const Curve& curve) const;

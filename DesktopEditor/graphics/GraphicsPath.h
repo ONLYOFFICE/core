@@ -170,9 +170,9 @@ namespace Aggplus
 
 	enum BooleanOpType
 	{
-		Intersection   = 2,
-		Union          = 1,
-		Subtraction    = 1,
+		Intersection   = 1,
+		Union          = 0,
+		Subtraction    = 3,
 		Exclusion      = 3,
 		Division       = 4
 	};

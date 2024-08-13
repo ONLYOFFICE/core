@@ -1192,6 +1192,16 @@ int Binary_pPrReader::ReadSpacing(BYTE type, long length, void* poResult)
 		pSpacing->m_oAfterAutospacing.Init();
 		pSpacing->m_oAfterAutospacing->FromBool(m_oBufferedStream.GetBool());
 		break;
+	case c_oSerProp_pPrType::Spacing_AfterLines:
+	{
+		pSpacing->m_oAfterLines.Init();
+		pSpacing->m_oAfterLines->SetValue(m_oBufferedStream.GetLong());
+	}break;
+	case c_oSerProp_pPrType::Spacing_BeforeLines:
+	{
+		pSpacing->m_oBeforeLines.Init();
+		pSpacing->m_oBeforeLines->SetValue(m_oBufferedStream.GetLong());
+	}break;
 	default:
 		res = c_oSerConstants::ReadUnknown;
 		break;

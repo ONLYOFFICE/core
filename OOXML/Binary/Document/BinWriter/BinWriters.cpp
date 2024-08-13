@@ -1238,6 +1238,18 @@ void Binary_pPrWriter::WriteSpacing(const ComplexTypes::Word::CSpacing& Spacing)
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(Spacing.m_oAfter->ToTwips());
 	}
+	if (false != Spacing.m_oAfterLines.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_pPrType::Spacing_AfterLines);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(Spacing.m_oAfterLines->GetValue());
+	}
+	if (false != Spacing.m_oBeforeLines.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_pPrType::Spacing_BeforeLines);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(Spacing.m_oBeforeLines->GetValue());
+	}	
 }
 void Binary_pPrWriter::WriteTabs(const OOX::Logic::CTabs& Tab, const nullable<ComplexTypes::Word::CInd>& oInd)
 {

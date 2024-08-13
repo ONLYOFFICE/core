@@ -358,7 +358,9 @@ extern int g_nCurFormatVersion;
 		SuppressLineNumbers = 44,
 		CnfStyle = 45,
 		SnapToGrid = 46,
-		Bidi = 47
+		Bidi = 47,
+		Spacing_AfterLines = 48,
+		Spacing_BeforeLines = 49
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{

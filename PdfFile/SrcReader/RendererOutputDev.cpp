@@ -54,7 +54,7 @@
 #include "../../DesktopEditor/graphics/BaseThread.h"
 #include "../../DesktopEditor/graphics/commands/DocInfo.h"
 #include "../../DesktopEditor/graphics/AlphaMask.h"
-//#include "../../OfficeUtils/src/OfficeUtils.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../Resources/BaseFonts.h"
 #include <new>
 
@@ -2864,46 +2864,13 @@ namespace PdfReader
 			return false;
 
 		BYTE* pBuffer = new BYTE[nLength];
-		/*
-		if (pStream->getKind() == strFlate)
+		Stream* pS = pStream->getUndecodedStream();
+		pS->reset();
+		nLength = pS->getBlock((char*)pBuffer, nLength);
+		if (!nLength)
 		{
-			Stream* pS = pStream->getBaseStream();
-			nLength = pS->getBlock((char*)pBuffer, nLength);
-			if (!nLength)
-			{
-				RELEASEARRAYOBJECTS(pBuffer);
-				return false;
-			}
-
-			COfficeUtils oOU;
-			if (oOU.IsArchive(pBuffer, nLength))
-			{
-				ULONG pDstBufferLen = nLength * 10;
-				BYTE* pDstBuffer = new BYTE[pDstBufferLen];
-
-				if (oOU.Uncompress(pDstBuffer, &pDstBufferLen, pBuffer, nLength) != S_OK)
-				{
-					RELEASEARRAYOBJECTS(pDstBuffer);
-					RELEASEARRAYOBJECTS(pBuffer);
-					return false;
-				}
-
-				RELEASEARRAYOBJECTS(pBuffer);
-				pBuffer = pDstBuffer;
-				nLength = pDstBufferLen;
-			}
-		}
-		else
-		*/
-		{
-			Stream* pS = pStream->getUndecodedStream();
-			pS->reset();
-			nLength = pS->getBlock((char*)pBuffer, nLength);
-			if (!nLength)
-			{
-				RELEASEARRAYOBJECTS(pBuffer);
-				return false;
-			}
+			RELEASEARRAYOBJECTS(pBuffer);
+			return false;
 		}
 
 		CBgraFrame oFrame;

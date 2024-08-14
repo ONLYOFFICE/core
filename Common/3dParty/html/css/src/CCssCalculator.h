@@ -22,6 +22,7 @@ namespace NSCSS
 		CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors, const bool& bIsSettings = false, const UnitMeasure& unitMeasure = Point) const;
 		bool GetCompiledStyle(CCompiledStyle& oStyle, const std::vector<CNode> &arSelectors, const bool& bIsSettings = false, const UnitMeasure& unitMeasure = Point) const;
 
+		std::wstring CalculateStyleId(const CNode& oNode);
 		bool CalculatePageStyle(NSProperties::CPage& oPageData, const std::vector<CNode> &arSelectors);
 
 		// void AddStyle(const std::vector<std::string>& sSelectors, const std::string& sStyle);

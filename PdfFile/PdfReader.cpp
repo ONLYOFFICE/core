@@ -518,7 +518,7 @@ bool CPdfReader::ValidMetaData()
 
 	Object oTID, oID2;
 	Object* pTrailerDict = xref->getTrailerDict();
-	if (!pTrailerDict || !pTrailerDict->dictLookup("ID", &oTID)->isArray() || !oTID.arrayGet(1, &oID2)->isString())
+	if (!pTrailerDict->dictLookup("ID", &oTID)->isArray() || !oTID.arrayGet(1, &oID2)->isString())
 	{
 		oID.free(); oTID.free(); oID2.free();
 		return false;
@@ -614,7 +614,6 @@ std::wstring CPdfReader::GetInfo()
 	std::wstring sRes = L"{";
 
 	Object oInfo;
-	m_pPDFDocument->getDocInfo(&oInfo);
 	if (m_pPDFDocument->getDocInfo(&oInfo)->isDict())
 	{
 		auto fDictLookup = [&oInfo](const char* sName, const wchar_t* wsName)
@@ -953,6 +952,7 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 		if (!sLink)
 			continue;
 		std::string link(sLink->getCString(), sLink->getLength());
+		RELEASEOBJECT(sLink);
 		size_t find = link.find("http://");
 		if (find == std::string::npos)
 			find = link.find("https://");
@@ -966,6 +966,7 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 			oLinks.m_arLinks.push_back({link, 0, x1, y1, x2 - x1, y2 - y1});
 		}
 	}
+	RELEASEOBJECT(pWordList);
 	RELEASEOBJECT(pTextOut);
 
 	return oLinks.Serialize();
@@ -999,7 +1000,7 @@ BYTE* CPdfReader::GetFonts(bool bStandart)
 	int nFontsPos = oRes.GetSize();
 	oRes.AddInt(nFonts);
 
-	for (std::map<std::wstring, std::wstring>::iterator it = m_mFonts.begin(); it != m_mFonts.end(); it++)
+	for (std::map<std::wstring, std::wstring>::iterator it = m_mFonts.begin(); it != m_mFonts.end(); ++it)
 	{
 		if (PdfReader::CAnnotFonts::IsBaseFont(it->second))
 		{
@@ -1545,7 +1546,7 @@ BYTE* CPdfReader::GetShapes(int nPageIndex)
 
 	Object oTID, oID2;
 	Object* pTrailerDict = xref->getTrailerDict();
-	if (!pTrailerDict || !pTrailerDict->dictLookup("ID", &oTID)->isArray() || !oTID.arrayGet(1, &oID2)->isString() || oID2.getString()->cmp(oID.getString()) != 0)
+	if (!pTrailerDict->dictLookup("ID", &oTID)->isArray() || !oTID.arrayGet(1, &oID2)->isString() || oID2.getString()->cmp(oID.getString()) != 0)
 	{
 		oMetaOForm.free(); oID.free(); oTID.free(); oID2.free();
 		return NULL;

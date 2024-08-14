@@ -358,7 +358,9 @@ extern int g_nCurFormatVersion;
 		SuppressLineNumbers = 44,
 		CnfStyle = 45,
 		SnapToGrid = 46,
-		Bidi = 47
+		Bidi = 47,
+		Spacing_AfterLines = 48,
+		Spacing_BeforeLines = 49
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{
@@ -884,7 +886,13 @@ extern int g_nCurFormatVersion;
 		AutoHyphenation = 21,
 		HyphenationZone = 22,
 		DoNotHyphenateCaps = 23,
-		ConsecutiveHyphenLimit = 24
+		ConsecutiveHyphenLimit = 24,
+		DrawingGridHorizontalOrigin = 25,
+		DrawingGridHorizontalSpacing = 26,
+		DrawingGridVerticalOrigin = 27,
+		DrawingGridVerticalSpacing = 28,
+		DisplayHorizontalDrawingGridEvery = 29,
+		DisplayVerticalDrawingGridEvery = 30
 	};}
 	namespace c_oSer_MathPrType{enum c_oSer_SettingsType
 	{

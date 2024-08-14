@@ -2654,21 +2654,31 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 				std::wstring	sTextInsetMode	= oNodeTextBox.GetAttribute(L"o:insetmode");
 								sTextboxStyle	= oNodeTextBox.GetAttribute(L"style");
 
-				if (L"" != sTextInset && ((L"" == sTextInsetMode) || (L"custom" == sTextInsetMode)))
+				if (sTextInsetMode.empty() || L"custom" == sTextInsetMode)
 				{
-					PPTX::CStringTrimmer oTrimmer;
-					oTrimmer.m_Separator = (wchar_t)',';
-					oTrimmer.LoadFromString(sTextInset);
+					if (!sTextInset.empty())
+					{
+						PPTX::CStringTrimmer oTrimmer;
+						oTrimmer.m_Separator = (wchar_t)',';
+						oTrimmer.LoadFromString(sTextInset);
 
-					double dTextMarginLeft		= oTrimmer.GetParameter(0, 0.1);
-					double dTextMarginTop		= oTrimmer.GetParameter(1, 0.05);
-					double dTextMarginRight		= oTrimmer.GetParameter(2, 0.1);
-					double dTextMarginBottom	= oTrimmer.GetParameter(3, 0.05);
+						double dTextMarginLeft = oTrimmer.GetParameter(0, 0.1);
+						double dTextMarginTop = oTrimmer.GetParameter(1, 0.05);
+						double dTextMarginRight = oTrimmer.GetParameter(2, 0.1);
+						double dTextMarginBottom = oTrimmer.GetParameter(3, 0.05);
 
-					pShape->oTextBoxBodyPr->lIns = (int)(12700 * dTextMarginLeft	+ 0.5);
-					pShape->oTextBoxBodyPr->tIns = (int)(12700 * dTextMarginTop		+ 0.5);
-					pShape->oTextBoxBodyPr->rIns = (int)(12700 * dTextMarginRight	+ 0.5);
-					pShape->oTextBoxBodyPr->bIns = (int)(12700 * dTextMarginBottom	+ 0.5);
+						pShape->oTextBoxBodyPr->lIns = (int)(12700 * dTextMarginLeft + 0.5);
+						pShape->oTextBoxBodyPr->tIns = (int)(12700 * dTextMarginTop + 0.5);
+						pShape->oTextBoxBodyPr->rIns = (int)(12700 * dTextMarginRight + 0.5);
+						pShape->oTextBoxBodyPr->bIns = (int)(12700 * dTextMarginBottom + 0.5);
+					}
+					else
+					{
+						pShape->oTextBoxBodyPr->lIns = 12700;
+						pShape->oTextBoxBodyPr->tIns = 12700;
+						pShape->oTextBoxBodyPr->rIns = 12700;
+						pShape->oTextBoxBodyPr->bIns = 12700;
+					}
 				}
 
 				if (!sTextboxStyle.empty())
@@ -4934,23 +4944,23 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 {
 	if (!oElem) return;
 
-	PPTX::Logic::Shape* pShape		= dynamic_cast<PPTX::Logic::Shape*>	(oElem->GetElem().operator ->());
-	PPTX::Logic::Pic*	pPicture	= dynamic_cast<PPTX::Logic::Pic*>	(oElem->GetElem().operator ->());
+	PPTX::Logic::Shape* pShape = dynamic_cast<PPTX::Logic::Shape*>	(oElem->GetElem().operator ->());
+	PPTX::Logic::Pic* pPicture = dynamic_cast<PPTX::Logic::Pic*>	(oElem->GetElem().operator ->());
 
-	PPTX::Logic::SpPr *pSpPr = NULL;
+	PPTX::Logic::SpPr* pSpPr = NULL;
 
-	if (pShape)		pSpPr = &pShape->spPr; 	
+	if (pShape)		pSpPr = &pShape->spPr;
 	if (pPicture)	pSpPr = &pPicture->spPr;
 
 	if (!pSpPr) return;
-	
+
 	int R = 255;
-    int G = 255;
-    int B = 255;
+	int G = 255;
+	int B = 255;
 
 	nullable_string sFillColor;
-    XmlMacroReadAttributeBase(oNode, L"fillcolor", sFillColor);
-	
+	XmlMacroReadAttributeBase(oNode, L"fillcolor", sFillColor);
+
 	if (sFillColor.is_init() && !pPPTShape->IsWordArt())
 	{
 		ODRAW::CColor color;
@@ -4965,26 +4975,26 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 			pSpPr->Fill.Fill = pSolid;
 		}
 	}
-    else if (!pPPTShape->IsWordArt())
-    {
-        // default fillcolor in vml = white
-        PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
-        pSolid->m_namespace = L"a";
-        pSolid->Color.Color = new PPTX::Logic::SrgbClr();
-        pSolid->Color.Color->SetRGB(R, G, B);
+	else if (!pPPTShape->IsWordArt())
+	{
+		// default fillcolor in vml = white
+		PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+		pSolid->m_namespace = L"a";
+		pSolid->Color.Color = new PPTX::Logic::SrgbClr();
+		pSolid->Color.Color->SetRGB(R, G, B);
 
 		pSpPr->Fill.m_type = PPTX::Logic::UniFill::solidFill;
-        pSpPr->Fill.Fill = pSolid;
-    }
+		pSpPr->Fill.Fill = pSolid;
+	}
 
 	nullable_string sFilled;
-    XmlMacroReadAttributeBase(oNode, L"filled", sFilled);
+	XmlMacroReadAttributeBase(oNode, L"filled", sFilled);
 	if (sFilled.is_init())
 	{
-        if (*sFilled == L"false" || *sFilled == L"f")
+		if (*sFilled == L"false" || *sFilled == L"f")
 		{
 			PPTX::Logic::NoFill* pNoFill = new PPTX::Logic::NoFill();
-            pNoFill->m_namespace = L"a";
+			pNoFill->m_namespace = L"a";
 
 			pSpPr->Fill.m_type = PPTX::Logic::UniFill::noFill;
 			pSpPr->Fill.Fill = pNoFill;
@@ -4993,14 +5003,15 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 	else if (!pPPTShape->m_bIsFilled)
 	{
 		PPTX::Logic::NoFill* pNoFill = new PPTX::Logic::NoFill();
-        pNoFill->m_namespace = L"a";
+		pNoFill->m_namespace = L"a";
 
 		pSpPr->Fill.m_type = PPTX::Logic::UniFill::noFill;
 		pSpPr->Fill.Fill = pNoFill;
 	}
 
+	nullable_string sColor = sFillColor;
 	nullable_string sOpacity;
-    XmlMacroReadAttributeBase(oNode, L"opacity", sOpacity);
+	XmlMacroReadAttributeBase(oNode, L"opacity", sOpacity);
 	if (sOpacity.is_init())
 	{
 		BYTE lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity);
@@ -5008,20 +5019,18 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 		if (pSpPr->Fill.is<PPTX::Logic::SolidFill>())
 		{
 			PPTX::Logic::ColorModifier oMod;
-            oMod.name = L"alpha";
+			oMod.name = L"alpha";
 			int nA = (int)(lAlpha * 100000.0 / 255.0);
 			oMod.val = nA;
 			pSpPr->Fill.as<PPTX::Logic::SolidFill>().Color.Color->Modifiers.push_back(oMod);
 		}
 	}
 
-    XmlUtils::CXmlNode oNodeFill = oNode.ReadNode(L"v:fill");
+	XmlUtils::CXmlNode oNodeFill = oNode.ReadNode(L"v:fill");
 	if (oNodeFill.IsValid() && !pPPTShape->IsWordArt())
 	{
-		nullable_string sOpacity;
 		nullable_string sOpacity2;
 		nullable_string sColor2;
-		nullable_string sColor;
 		nullable < SimpleTypes::CFillType> oType;
 		nullable<SimpleTypes::CFixedPercentage> oFocus;
 		nullable<SimpleTypes::Vml::CVml_Vector2D_Percentage> oFocusSize;
@@ -5039,11 +5048,11 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 		XmlMacroReadAttributeBase(oNodeFill, L"focus", oFocus);
 		XmlMacroReadAttributeBase(oNodeFill, L"focussize", oFocusSize);
 		XmlMacroReadAttributeBase(oNodeFill, L"angle", oAngle);
-		XmlMacroReadAttributeBase(oNodeFill, L"colors", sColors);		
+		XmlMacroReadAttributeBase(oNodeFill, L"colors", sColors);
 		XmlMacroReadAttributeBase(oNodeFill, L"focusposition", oFocusPosition);
 
-		if (sColor.is_init())
-		{
+		if (sColor.IsInit() || sOpacity.IsInit())
+		{//reset exactly
 			PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
 			pSolid->m_namespace = L"a";
 
@@ -5055,7 +5064,6 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 			if (!sFillColor.is_init())
 				sFillColor = sColor;
 		}
-		if (!sColor.is_init()) sColor = sFillColor;
 
 		nullable_string sRid;
         XmlMacroReadAttributeBase(oNodeFill, L"r:id", sRid);

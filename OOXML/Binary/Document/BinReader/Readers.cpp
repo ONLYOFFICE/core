@@ -1192,6 +1192,16 @@ int Binary_pPrReader::ReadSpacing(BYTE type, long length, void* poResult)
 		pSpacing->m_oAfterAutospacing.Init();
 		pSpacing->m_oAfterAutospacing->FromBool(m_oBufferedStream.GetBool());
 		break;
+	case c_oSerProp_pPrType::Spacing_AfterLines:
+	{
+		pSpacing->m_oAfterLines.Init();
+		pSpacing->m_oAfterLines->SetValue(m_oBufferedStream.GetLong());
+	}break;
+	case c_oSerProp_pPrType::Spacing_BeforeLines:
+	{
+		pSpacing->m_oBeforeLines.Init();
+		pSpacing->m_oBeforeLines->SetValue(m_oBufferedStream.GetLong());
+	}break;
 	default:
 		res = c_oSerConstants::ReadUnknown;
 		break;
@@ -4052,6 +4062,40 @@ int Binary_SettingsTableReader::ReadSettings(BYTE type, long length, void* poRes
 	{
 		pSettings->m_oConsecutiveHyphenLimit.Init();
 		pSettings->m_oConsecutiveHyphenLimit->m_oVal = m_oBufferedStream.GetLong();
+	}
+	else if (c_oSer_SettingsType::DrawingGridHorizontalOrigin == type)
+	{
+		pSettings->m_oDrawingGridHorizontalOrigin.Init();
+		pSettings->m_oDrawingGridHorizontalOrigin->m_oVal.Init();
+		pSettings->m_oDrawingGridHorizontalOrigin->m_oVal->FromTwips(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSer_SettingsType::DrawingGridHorizontalSpacing == type)
+	{
+		pSettings->m_oDrawingGridHorizontalSpacing.Init();
+		pSettings->m_oDrawingGridHorizontalSpacing->m_oVal.Init();
+		pSettings->m_oDrawingGridHorizontalSpacing->m_oVal->FromTwips(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSer_SettingsType::DrawingGridVerticalOrigin == type)
+	{
+		pSettings->m_oDrawingGridVerticalOrigin.Init();
+		pSettings->m_oDrawingGridVerticalOrigin->m_oVal.Init();
+		pSettings->m_oDrawingGridVerticalOrigin->m_oVal->FromTwips(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSer_SettingsType::DrawingGridVerticalSpacing == type)
+	{
+		pSettings->m_oDrawingGridVerticalSpacing.Init();
+		pSettings->m_oDrawingGridVerticalSpacing->m_oVal.Init();
+		pSettings->m_oDrawingGridVerticalSpacing->m_oVal->FromTwips(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSer_SettingsType::DisplayHorizontalDrawingGridEvery == type)
+	{
+		pSettings->m_oDisplayHorizontalDrawingGridEvery.Init();
+		pSettings->m_oDisplayHorizontalDrawingGridEvery->m_oVal = m_oBufferedStream.GetLong();
+	}
+	else if (c_oSer_SettingsType::DisplayVerticalDrawingGridEvery == type)
+	{
+		pSettings->m_oDisplayVerticalDrawingGridEvery.Init();
+		pSettings->m_oDisplayVerticalDrawingGridEvery->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

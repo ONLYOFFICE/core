@@ -31,6 +31,8 @@ namespace SVG
 		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile* pFile, int& nTypePath) const override;
 		void ApplyFont(IRenderer* pRenderer, double& dX, double& dY) const;
 
+		bool UseExternalFont(const CSvgFile* pFile, double dX, double dY, IRenderer* pRenderer, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL) const;
+
 		TBounds GetBounds() const override;
 
 		double GetWidth() const;

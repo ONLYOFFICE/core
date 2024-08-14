@@ -30,30 +30,32 @@
  *
  */
 
-#include "gtest/gtest.h"
+#pragma once
 
-#include "entrance.h"
-#include "motion.h"
-#include "audio.h"
-#include "interactions.h"
+#include <gtest/gtest.h>
+#include <boost/smart_ptr.hpp>
 
-int main(int argc, char* argv[])
+#include "..\..\..\..\OOXML\DocxFormat\Docx.h"
+#include "..\..\..\..\OOXML\DocxFormat\DocxFlat.h"
+#include "..\..\..\..\OOXML\DocxFormat\Document.h"
+
+#include "..\..\..\..\OOXML\DocxFormat\Logic\Run.h"
+#include "..\..\..\..\OOXML\DocxFormat\Logic\Paragraph.h"
+#include "..\..\..\..\OOXML\DocxFormat\Logic\ParagraphProperty.h"
+#include "..\..\..\..\OOXML\DocxFormat\Logic\Run.h"
+#include "..\..\..\..\OOXML\DocxFormat\Logic\RunProperty.h"
+
+class ODT2DOCX_ConversionEnvironment : public testing::Environment
 {
-	::testing::InitGoogleTest(&argc, argv);
+public:
+	ODT2DOCX_ConversionEnvironment(const std::wstring& filename);
 
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationEntranceEnvironment);
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationMotionEnvironment);
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationAudioEnvironment);
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationPlayAudioEnvironment);	
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationOpenDocumentEnvironment);
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationRunProgramEnvironment);
-	
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_EntranceAnimationEnvironment);
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_AudioAnimationEnvironment);
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_InteractionAnimationEnvironment);
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_PlayAudioAnimationEnvironment);
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_OpenDocumentAnimationEnvironment);
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_RunProgramAnimationEnvironment);
-	
-	return RUN_ALL_TESTS();
-}
+	OOX::CDocx* GetDocument();
+
+	virtual void SetUp() override;
+	virtual void TearDown() override;
+
+private:
+	std::wstring mFilename;
+	OOX::CDocx* mDocx;
+};

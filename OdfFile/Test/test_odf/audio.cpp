@@ -111,7 +111,7 @@ TEST_F(ODP2OOX_AnimationAudioTest, set)
 	const auto& mainArray = GetMainSequenceArray();
 	ASSERT_GE(mainArray.size(), 1);
 	const auto& actions = GetInnermostPar(mainArray[0])->AnimationActionArray;
-	ASSERT_EQ(actions.size(), 3);
+	ASSERT_EQ(actions.size(), 4);
 	const auto set = dynamic_cast<pptx_animation_context::Impl::_set*>(actions[0].get());
 	ASSERT_NE(set, nullptr);
 }
@@ -123,7 +123,7 @@ TEST_F(ODP2OOX_AnimationAudioTest, anim_1)
 	const auto& mainArray = GetMainSequenceArray();
 	ASSERT_GE(mainArray.size(), 1);
 	const auto& actions = GetInnermostPar(mainArray[0])->AnimationActionArray;
-	ASSERT_EQ(actions.size(), 3);
+	ASSERT_EQ(actions.size(), 4);
 	const auto anim = dynamic_cast<pptx_animation_context::Impl::_anim*>(actions[1].get());
 	ASSERT_NE(anim, nullptr);
 }
@@ -135,7 +135,7 @@ TEST_F(ODP2OOX_AnimationAudioTest, anim_2)
 	const auto& mainArray = GetMainSequenceArray();
 	ASSERT_GE(mainArray.size(), 1);
 	const auto& actions = GetInnermostPar(mainArray[0])->AnimationActionArray;
-	ASSERT_EQ(actions.size(), 3);
+	ASSERT_EQ(actions.size(), 4);
 	const auto anim = dynamic_cast<pptx_animation_context::Impl::_anim*>(actions[2].get());
 	ASSERT_NE(anim, nullptr);
 }

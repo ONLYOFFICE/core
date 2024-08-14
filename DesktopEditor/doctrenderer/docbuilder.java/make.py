@@ -10,7 +10,7 @@ def makedirs(dir):
         os.makedirs(dir)
     return
 
-def is_javac_available():
+def is_javac_available(javac):
     try:
         process = subprocess.Popen([javac, '-version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         ret = process.wait()
@@ -53,7 +53,7 @@ if __name__ == "__main__":
     else:
         print('Warning: environment variable JAVA_HOME wasn\'t set. Default Java compiler will be used (if any).')
 
-    if not is_javac_available():
+    if not is_javac_available(javac):
         print('Error: javac is not available')
         exit()
 

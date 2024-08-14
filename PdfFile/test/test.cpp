@@ -36,9 +36,8 @@
 #include "../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 #include "../../DesktopEditor/xmlsec/src/include/CertificateCommon.h"
 #include "../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h"
-#include "../../DesktopEditor/graphics/pro/Graphics.h"
+#include "../../DesktopEditor/raster/BgraFrame.h"
 #include "../PdfFile.h"
-#include "../../DjVuFile/DjVu.h"
 
 class CPdfFileTest : public testing::Test
 {
@@ -257,7 +256,7 @@ TEST_F(CPdfFileTest, SetMetaData)
 
 TEST_F(CPdfFileTest, ConvertToRaster)
 {
-	GTEST_SKIP();
+	//GTEST_SKIP();
 
 	LoadFromFile();
 
@@ -420,7 +419,7 @@ TEST_F(CPdfFileTest, ChangePasswordToPassword)
 
 TEST_F(CPdfFileTest, ImgDiff)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	LoadFromFile();
 

@@ -1,6 +1,5 @@
 import os
 import argparse
-import re
 import platform
 import subprocess
 
@@ -11,14 +10,19 @@ def makedirs(dir):
         os.makedirs(dir)
     return
 
+def is_javac_available():
+    try:
+        process = subprocess.Popen([javac, '-version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        ret = process.wait()
+        return ret == 0
+    except Exception:
+        return False
+
 # return all files with extension `ext` in directory `dir` as string
 def getFilesInDir(dir, ext):
     files = [];
     for file in os.listdir(dir):
         if file.endswith(ext):
-            # for non-windows systems '$'-symbol in file names should be escaped
-            if platform.system().lower() != 'windows':
-                file = re.sub(r'\$', r'\\$', file)
             files.append(os.path.join(dir, file))
 
     return files
@@ -42,10 +46,15 @@ if __name__ == "__main__":
     java_home = os.environ.get('JAVA_HOME')
     if java_home:
         javac = os.path.join(java_home, 'bin', 'javac' + ext)
+        if not os.path.exists(javac):
+            print('Error: Cannot find: ' + javac)
+            exit()
         jar = os.path.join(java_home, 'bin', 'jar' + ext)
+    else:
+        print('Warning: environment variable JAVA_HOME wasn\'t set. Default Java compiler will be used (if any).')
 
-    if not os.path.exists(javac):
-        print('Error: Cannot find: ' + javac)
+    if not is_javac_available():
+        print('Error: javac is not available')
         exit()
 
     # BUILD
@@ -53,7 +62,7 @@ if __name__ == "__main__":
     makedirs(classes_dir + '/docbuilder/utils')
     headers_dir = file_dir + '/src/jni'
     # build all Java classes
-    subprocess.call([javac, '-d', classes_dir] + java_files, cwd=os.getcwd())
+    subprocess.call([javac, '-d', classes_dir] + java_files, cwd=os.getcwd(), stderr=subprocess.STDOUT)
 
     # PACKING TO JAR
     if not args.no_jar:
@@ -61,4 +70,4 @@ if __name__ == "__main__":
         class_files = getFilesInDir('docbuilder', '.class')
         class_files += getFilesInDir('docbuilder/utils', '.class')
         makedirs('../libs')
-        subprocess.call([jar, '-cvf', '../libs/docbuilder.jar'] + class_files, cwd=os.getcwd())
+        subprocess.call([jar, '-cvf', '../libs/docbuilder.jar'] + class_files, cwd=os.getcwd(), stderr=subprocess.STDOUT)

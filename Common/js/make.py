@@ -113,6 +113,11 @@ def exec_wasm(data, work, compiler_flags, wasm):
   if not wasm:
     engine_js_content = engine_js_content.replace("//polyfill", polyfill_js_content)
 
+  if "replaces" in data:
+    for item in data["replaces"]:
+      replace_file_content = base.readFile(data["replaces"][item])      
+      engine_js_content = engine_js_content.replace("//" + item, replace_file_content)
+
   # write new version
   base.writeFile(data["res_folder"] + "/" + data["name"] + ("" if wasm else "_ie") + ".js", engine_js_content)
   base.copy_file("./" + data["name"] + (".wasm" if wasm else ".js.mem"), data["res_folder"] + "/" + data["name"] + (".wasm" if wasm else ".js.mem"))

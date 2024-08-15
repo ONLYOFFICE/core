@@ -45,15 +45,15 @@ protected:
 	static CApplicationFontsWorker* oWorker;
 	static NSFonts::IApplicationFonts* pApplicationFonts;
 	static std::wstring wsTempDir;
+	static std::wstring wsSrcFile;
+	static std::wstring wsDstFile;
+
+	static std::wstring strDirIn;
+	static std::wstring strDirOut;
+	static std::wstring strDiffs;
 
 public:
 	CPdfFile* pdfFile;
-	std::wstring wsSrcFile;
-	std::wstring wsDstFile;
-
-	std::wstring strDirIn;
-	std::wstring strDirOut;
-	std::wstring strDiffs;
 
 public:
 	static void SetUpTestSuite()
@@ -69,9 +69,25 @@ public:
 		pApplicationFonts = oWorker->Check();
 
 		wsTempDir = NSFile::GetProcessDirectory() + L"/pdftemp";
+		wsSrcFile = NSFile::GetProcessDirectory() + L"/test.pdf";
+		wsDstFile = NSFile::GetProcessDirectory() + L"/test2.pdf";
 
-		if (!NSDirectory::Exists(wsTempDir))
-			NSDirectory::CreateDirectory(wsTempDir);
+		strDirIn  = NSFile::GetProcessDirectory() + L"/resI";
+		strDirOut = NSFile::GetProcessDirectory() + L"/resO";
+		strDiffs  = NSFile::GetProcessDirectory() + L"/resD";
+
+		if (NSDirectory::Exists(wsTempDir))
+			NSDirectory::DeleteDirectory(wsTempDir);
+		NSDirectory::CreateDirectory(wsTempDir);
+		if (NSDirectory::Exists(strDirIn))
+			NSDirectory::DeleteDirectory(strDirIn);
+		NSDirectory::CreateDirectory(strDirIn);
+		if (NSDirectory::Exists(strDirOut))
+			NSDirectory::DeleteDirectory(strDirOut);
+		NSDirectory::CreateDirectory(strDirOut);
+		if (NSDirectory::Exists(strDiffs))
+			NSDirectory::DeleteDirectory(strDiffs);
+		NSDirectory::CreateDirectory(strDiffs);
 	}
 	static void TearDownTestSuite()
 	{
@@ -131,13 +147,6 @@ public:
 
 	virtual void SetUp() override
 	{
-		wsSrcFile = NSFile::GetProcessDirectory() + L"/test.pdf";
-		wsDstFile = NSFile::GetProcessDirectory() + L"/test2.pdf";
-
-		strDirIn  = NSFile::GetProcessDirectory() + L"/resI";
-		strDirOut = NSFile::GetProcessDirectory() + L"/resO";
-		strDiffs  = NSFile::GetProcessDirectory() + L"/resD";
-
 		pdfFile = new CPdfFile(pApplicationFonts);
 		pdfFile->SetTempDirectory(wsTempDir);
 	}
@@ -150,6 +159,11 @@ public:
 CApplicationFontsWorker* CPdfFileTest::oWorker = NULL;
 NSFonts::IApplicationFonts* CPdfFileTest::pApplicationFonts = NULL;
 std::wstring CPdfFileTest::wsTempDir;
+std::wstring CPdfFileTest::wsSrcFile;
+std::wstring CPdfFileTest::wsDstFile;
+std::wstring CPdfFileTest::strDirIn;
+std::wstring CPdfFileTest::strDirOut;
+std::wstring CPdfFileTest::strDiffs;
 
 TEST_F(CPdfFileTest, GetMetaData)
 {

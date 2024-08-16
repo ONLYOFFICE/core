@@ -88,6 +88,8 @@ namespace NSGraphics
 
 		virtual void SetSwapRGB(bool bValue) = 0;
 		virtual void SetTileImageDpi(const double& dDpi) = 0;
+		virtual void Save() = 0;
+		virtual void Restore() = 0;
 
 	public:
 		virtual void CreateFromBgraFrame(CBgraFrame* pFrame) = 0;

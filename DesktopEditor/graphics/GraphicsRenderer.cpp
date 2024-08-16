@@ -1483,6 +1483,7 @@ public:
     double                          m_dGlobalAlpha;
     bool                            m_bGlobalAlphaEnabled;
     bool                            m_bIntegerGrid;
+    unsigned int                    m_nBlendMode;
 
     Aggplus::CGraphics_ClipState    m_oClipState;
 };
@@ -1503,6 +1504,7 @@ void CGraphicsRenderer::Save()
     pState->m_bGlobalAlphaEnabled   = m_bGlobalAlphaEnabled;
 
     pState->m_bIntegerGrid  = m_pRenderer->m_bIntegerGrid;
+    pState->m_nBlendMode    = m_pRenderer->m_nBlendMode;
 
     m_arStates.push_back(pState);
 }
@@ -1524,6 +1526,7 @@ void CGraphicsRenderer::Restore()
     ApplyTransform(&pState->m_oTransform);
     this->put_IntegerGrid(pState->m_bIntegerGrid);
     this->put_GlobalAlphaEnabled(pState->m_bGlobalAlphaEnabled, pState->m_dGlobalAlpha);
+    this->put_BlendMode(pState->m_nBlendMode);
 
     m_pRenderer->ResetClip();
     for (std::vector<Aggplus::CGraphics_ClipStateRecord*>::iterator i = pState->m_oClipState.Records.begin(); i != pState->m_oClipState.Records.end(); i++)

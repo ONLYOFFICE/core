@@ -124,8 +124,8 @@ public:
     virtual void SetSwapRGB(bool bValue){ if (m_pRenderer) m_pRenderer->m_bSwapRGB = bValue; }
     virtual void SetTileImageDpi(const double& dDpi) { if (m_pRenderer) m_pRenderer->m_dDpiTile = dDpi; }
 
-    void Save();
-    void Restore();
+    virtual void Save();
+    virtual void Restore();
 
 public:
 // тип рендерера-----------------------------------------------------------------------------

@@ -2998,9 +2998,9 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 		CheckBorderShape(elem, oNodeShape, pPPTShape);
 
 ////test
-//		NSBinPptxRW::CXmlWriter oXml;
-//		elem->toXmlWriter(&oXml);
-//		std::wstring test = oXml.GetXmlString();
+		//NSBinPptxRW::CXmlWriter oXml;
+		//elem->toXmlWriter(&oXml);
+		//std::wstring test = oXml.GetXmlString();
 
 		
 	}
@@ -4899,9 +4899,9 @@ void CDrawingConverter::CheckBorderShape(PPTX::Logic::SpTreeElem* oElem, XmlUtil
 }
 void CDrawingConverter::ConvertColor(PPTX::Logic::UniColor & uniColor, nullable_string & sColor, nullable_string& sOpacity)
 {
-	int R = 255;
-	int G = 255;
-	int B = 255;
+	int R = uniColor.is_init() ? uniColor.Color->red : 255;
+	int G = uniColor.is_init() ? uniColor.Color->green : 255;
+	int B = uniColor.is_init() ? uniColor.Color->blue : 255;
 
 	uniColor.Color = new PPTX::Logic::SrgbClr();
 	if (sColor.is_init())
@@ -4916,7 +4916,9 @@ void CDrawingConverter::ConvertColor(PPTX::Logic::UniColor & uniColor, nullable_
 			int resR, resG, resB;
 			GetColorWithEffect(sColorEffect, R, G, B, resR, resG, resB);
 
-			uniColor.Color->SetRGB(resR, resG, resB);
+			R = resR;
+			G = resG;
+			B = resB;
 		}
 		else
 		{
@@ -5164,7 +5166,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 				PPTX::Logic::Gs Gs_1;
 				ConvertColor(Gs_1.color, sColor, sOpacity);
 
-				PPTX::Logic::Gs Gs_2;
+				PPTX::Logic::Gs Gs_2 = Gs_1;
 				ConvertColor(Gs_2.color, sColor2, sOpacity2);
 
 				double focusPoint = oFocus.IsInit() ? abs(oFocus->GetValue()) : 0;

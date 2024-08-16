@@ -54,7 +54,7 @@
 #include "../../DesktopEditor/graphics/BaseThread.h"
 #include "../../DesktopEditor/graphics/commands/DocInfo.h"
 #include "../../DesktopEditor/graphics/AlphaMask.h"
-//#include "../../OfficeUtils/src/OfficeUtils.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../Resources/BaseFonts.h"
 #include <new>
 
@@ -2864,46 +2864,13 @@ namespace PdfReader
 			return false;
 
 		BYTE* pBuffer = new BYTE[nLength];
-		/*
-		if (pStream->getKind() == strFlate)
+		Stream* pS = pStream->getUndecodedStream();
+		pS->reset();
+		nLength = pS->getBlock((char*)pBuffer, nLength);
+		if (!nLength)
 		{
-			Stream* pS = pStream->getBaseStream();
-			nLength = pS->getBlock((char*)pBuffer, nLength);
-			if (!nLength)
-			{
-				RELEASEARRAYOBJECTS(pBuffer);
-				return false;
-			}
-
-			COfficeUtils oOU;
-			if (oOU.IsArchive(pBuffer, nLength))
-			{
-				ULONG pDstBufferLen = nLength * 10;
-				BYTE* pDstBuffer = new BYTE[pDstBufferLen];
-
-				if (oOU.Uncompress(pDstBuffer, &pDstBufferLen, pBuffer, nLength) != S_OK)
-				{
-					RELEASEARRAYOBJECTS(pDstBuffer);
-					RELEASEARRAYOBJECTS(pBuffer);
-					return false;
-				}
-
-				RELEASEARRAYOBJECTS(pBuffer);
-				pBuffer = pDstBuffer;
-				nLength = pDstBufferLen;
-			}
-		}
-		else
-		*/
-		{
-			Stream* pS = pStream->getUndecodedStream();
-			pS->reset();
-			nLength = pS->getBlock((char*)pBuffer, nLength);
-			if (!nLength)
-			{
-				RELEASEARRAYOBJECTS(pBuffer);
-				return false;
-			}
+			RELEASEARRAYOBJECTS(pBuffer);
+			return false;
 		}
 
 		CBgraFrame oFrame;
@@ -2925,9 +2892,10 @@ namespace PdfReader
 
 		Aggplus::CImage oImage;
 		StreamKind nSK = pStream->getKind();
+		int nComponentsCount = pColorMap->getNumPixelComps();
 
 		// Чтение jpeg через cximage происходит быстрее чем через xpdf на ~40%
-		if (true || pMaskColors || (nSK != strDCT) || !ReadImage(&oImage, pRef, pStream))
+		if (nComponentsCount != 3 || pMaskColors || (nSK != strDCT) || !ReadImage(&oImage, pRef, pStream))
 		{
 			int nBufferSize = 4 * nWidth * nHeight;
 			if (nBufferSize < 1)
@@ -2936,8 +2904,6 @@ namespace PdfReader
 			BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufferSize];
 			if (!pBufferPtr)
 				return;
-
-			int nComponentsCount = pColorMap->getNumPixelComps();
 
 			// Пишем данные в pBufferPtr
 			ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
@@ -3175,8 +3141,9 @@ namespace PdfReader
 			return;
 
 		Aggplus::CImage oImage;
+		int nComponentsCount = pColorMap->getNumPixelComps();
 
-		if (true || pStream->getKind() != strDCT || !ReadImage(&oImage, pRef, pStream))
+		if (nComponentsCount != 3 || pStream->getKind() != strDCT || !ReadImage(&oImage, pRef, pStream))
 		{
 			BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufferSize];
 			if (!pBufferPtr)

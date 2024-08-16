@@ -54,7 +54,6 @@
 #include "../../DesktopEditor/graphics/BaseThread.h"
 #include "../../DesktopEditor/graphics/commands/DocInfo.h"
 #include "../../DesktopEditor/graphics/AlphaMask.h"
-#include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../Resources/BaseFonts.h"
 #include <new>
 
@@ -461,6 +460,14 @@ namespace PdfReader
 			m_sStates.back().pSoftMask = m_pSoftMask;
 		}
 
+		// Выходит дольше из-за копирования Clip, Pen, Brush,
+		// но не имеет смысла, т.к. Restore всё равно перенакладывает все Clip с нуля
+		//if (c_nGrRenderer == m_lRendererType)
+		//{
+		//	NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
+		//	GRenderer->Save();
+		//}
+		//else
 		updateAll(pGState);
 	}
 	void RendererOutputDev::restoreState(GfxState* pGState)
@@ -475,6 +482,7 @@ namespace PdfReader
 
 		bool bClipChanged = m_sStates.back().pClip || m_sStates.back().pTextClip;
 		m_sStates.pop_back();
+
 		updateAll(pGState);
 		if (bClipChanged)
 			UpdateAllClip(pGState);
@@ -653,7 +661,6 @@ namespace PdfReader
 	}
 	void RendererOutputDev::updateAll(GfxState* pGState)
 	{
-		updateCTM(pGState, pGState->getCTM()[0], pGState->getCTM()[1], pGState->getCTM()[2], pGState->getCTM()[3], pGState->getCTM()[4], pGState->getCTM()[5]);
 		updateLineDash(pGState);
 		updateFlatness(pGState);
 		updateLineJoin(pGState);
@@ -2863,44 +2870,13 @@ namespace PdfReader
 			return false;
 
 		BYTE* pBuffer = new BYTE[nLength];
-		if (pStream->getKind() == strFlate)
+		Stream* pS = pStream->getUndecodedStream();
+		pS->reset();
+		nLength = pS->getBlock((char*)pBuffer, nLength);
+		if (!nLength)
 		{
-			Stream* pS = pStream->getBaseStream();
-			nLength = pS->getBlock((char*)pBuffer, nLength);
-			if (!nLength)
-			{
-				RELEASEARRAYOBJECTS(pBuffer);
-				return false;
-			}
-
-			COfficeUtils oOU;
-			if (oOU.IsArchive(pBuffer, nLength))
-			{
-				ULONG pDstBufferLen = nLength * 10;
-				BYTE* pDstBuffer = new BYTE[pDstBufferLen];
-
-				if (oOU.Uncompress(pDstBuffer, &pDstBufferLen, pBuffer, nLength) != S_OK)
-				{
-					RELEASEARRAYOBJECTS(pDstBuffer);
-					RELEASEARRAYOBJECTS(pBuffer);
-					return false;
-				}
-
-				RELEASEARRAYOBJECTS(pBuffer);
-				pBuffer = pDstBuffer;
-				nLength = pDstBufferLen;
-			}
-		}
-		else
-		{
-			Stream* pS = pStream->getUndecodedStream();
-			pS->reset();
-			nLength = pS->getBlock((char*)pBuffer, nLength);
-			if (!nLength)
-			{
-				RELEASEARRAYOBJECTS(pBuffer);
-				return false;
-			}
+			RELEASEARRAYOBJECTS(pBuffer);
+			return false;
 		}
 
 		CBgraFrame oFrame;

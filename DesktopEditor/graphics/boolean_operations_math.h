@@ -108,8 +108,8 @@ bool isMachineZero(double value)
 
 bool isInRange(double angle, double mn, double mx)
 {
-	return mn < mx ? angle > mn && angle < mx
-				   : angle > mn || angle < mx;
+	return (mn < mx) ? (angle > mn && angle < mx)
+					 : (angle > mn || angle < mx);
 }
 
 double clamp(double value, double mn, double mx)
@@ -130,25 +130,28 @@ double CurveLength(double t, double ax, double bx, double cx, double ay, double 
 	return sqrt(dx * dx + dy * dy);
 }
 
-double integrate(double ax, double bx, double cx, double ay, double by, double cy, size_t n = 16)
+double integrate(double ax, double bx, double cx, double ay, double by, double cy,
+				 double a, double b, size_t n = 16)
 {
 	std::vector<double> x = ABSCISSAS[n - 2],
 		w = weight[n - 2];
-	double sum = 0.0;
+	double A = (b - a) * 0.5,
+		   B = A + a;
+	double sum = n & 1 ? CurveLength(B, ax, bx, cx, ay, by, cy) : 0;
 
-	for (size_t i = 0; i < x.size(); i++)
+	for (size_t i = 0; i < (n + 1) >> 1; i++)
 	{
-		double Ax = 0.5 * x[i];
-		sum += w[i] * (CurveLength(0.5 + Ax, ax, bx, cx, ay, by, cy) +
-					   CurveLength(0.5 - Ax, ax, bx, cx, ay, by, cy));
+		double Ax = A * x[i];
+		sum += w[i] * (CurveLength(B + Ax, ax, bx, cx, ay, by, cy) +
+					   CurveLength(B - Ax, ax, bx, cx, ay, by, cy));
 	}
-	return 0.5 * sum;
+	return A * sum;
 }
 
 double fLength(double t, double& length, double& start, double offset,
-			  double ax, double bx, double cx, double ay, double by, double cy)
+			   double ax, double bx, double cx, double ay, double by, double cy)
 {
-	length += integrate(ax, bx, cx, ay, by, cy, getIterations(start, t));
+	length += integrate(ax, bx, cx, ay, by, cy, start, t, getIterations(start, t));
 	start = t;
 	return length - offset;
 }
@@ -162,7 +165,7 @@ double findRoot(double& length, double& start, double offset, double ax, double 
 			  dx = fx / CurveLength(x, ax, bx, cx, ay, by, cy),
 			  nx = x - dx;
 		
-		if (abs(x) < EPSILON)
+		if (abs(dx) < EPSILON)
 		{
 			x = nx;
 			break;

@@ -19,18 +19,19 @@ namespace Aggplus
 		bool IsCurve;
 		bool Visited;
 
-		size_t Index;
-		size_t Id;
+		int Index;
+		int Id;
 
 		CGraphicsPath* Path;
 		std::shared_ptr<Location> Inters;
 		std::shared_ptr<Winding> Wind;
 
 		Segment();
-		Segment(const std::vector<PointD>& points, bool isCurve, size_t index, size_t id, CGraphicsPath* path);
+		Segment(const std::vector<PointD>& points, bool isCurve, int index, int id, CGraphicsPath* path);
 		Segment(const PointD& p, const PointD& hi, const PointD& ho);
 
 		bool IsValid(BooleanOpType op) const;
+		bool Equals(const PointD& other) const;
 		bool operator==(const Segment& other) const;
 		bool operator!=(const Segment& other) const;
 	};
@@ -48,7 +49,6 @@ namespace Aggplus
 		std::vector<double> GetXValues() const;
 		std::vector<double> GetYValues() const;
 		std::vector<double> GetPeeks() const;
-
 		double GetLength(double a = 0, double b = 1) const;
 		double GetSquaredLineLength() const;
 		double GetTimeOf(const PointD& point) const;
@@ -57,15 +57,15 @@ namespace Aggplus
 		PointD GetPoint(double t) const;
 		PointD GetTangent(double t) const;
 		PointD GetTangent(double t, double offset, bool inside, const PointD& p) const;
-		Curve GetPart(double from, double to) const;
-		std::vector<Curve> GetMonoCurves(bool dir) const;
-		std::vector<std::pair<int, int>> GetOverlaps(const Curve& curve) const;
+		Curve  GetPart(double from, double to) const;
+		std::vector<Curve>  GetMonoCurves(bool dir) const;
 		std::vector<double> GetCurveLineIntersection(double px, double py, double vx, double vy) const;
+		std::vector<std::pair<int, int>> GetOverlaps(const Curve& curve) const;
 
 		std::vector<Curve> Subdivide(double t) const;
 		Curve DivideAtTime(double time, std::vector<Segment>& segments, std::vector<Curve>& curves);
 
-		int SolveCubic(size_t coord, int value, std::vector<double>& roots, double mn, double mx) const;
+		int SolveCubic(int coord, double value, std::vector<double>& roots, double mn, double mx) const;
 		int SolveCubic(double a, double b, double c, double d, std::vector<double>& roots, double mn, double mx) const;
 
 		void Flip();
@@ -73,7 +73,6 @@ namespace Aggplus
 
 		bool IsStraight() const;
 		bool HasHandle() const;
-
 		bool operator==(const Curve& other) const;
 		bool operator!=(const Curve& other) const;
 	};
@@ -162,7 +161,7 @@ namespace Aggplus
 		// void reorientPaths();
 
 		// Path
-		void PreparePath(CGraphicsPath* path, size_t id, std::vector<Segment>& segments, std::vector<Curve>& curves, bool reverse = false);
+		void PreparePath(CGraphicsPath* path, int id, std::vector<Segment>& segments, std::vector<Curve>& curves, bool reverse = false);
 		void InsertSegment(const Segment& segment);
 		Curve GetCurve(const Segment& segment) const;
 		Curve GetPreviousCurve(const Curve& curve) const;
@@ -186,7 +185,8 @@ namespace Aggplus
 		void LinkIntersection(std::shared_ptr<Location> form, std::shared_ptr<Location> to);
 		void AddLineIntersection(const Curve& curve1, const Curve& curve2, bool flip);
 		void AddCurveLineIntersection(const Curve& curve1, const Curve& curve2, bool flip);
-		int AddCurveIntersection(const Curve& curve1, const Curve& curve2, bool flip, int recursion = 0, int calls = 0, double tMin = 0, double tMax = 1, double uMin = 0, double uMax = 1);
+		int  AddCurveIntersection(const Curve& curve1, const Curve& curve2, bool flip, int recursion = 0, int calls = 0, double tMin = 0, double tMax = 1, double uMin = 0, double uMax = 1);
+		int  CheckInters(const PointD& point, const Segment& segment, const Curve& curve) const;
 
 		// Location
 		void DivideLocations();
@@ -194,6 +194,7 @@ namespace Aggplus
 		void InsertLocation(std::shared_ptr<Location> loc);
 
 		// Util
+		void SetVisited(const Segment& segment);
 		void ClearCurveHandles(std::vector<Curve>& curves);
 		void AddOffsets(std::vector<double>& offsets, const Curve& curve, bool end);
 		void PropagateWinding(Segment segment, std::vector<std::vector<Curve>> map);

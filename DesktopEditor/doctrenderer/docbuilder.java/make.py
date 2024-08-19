@@ -2,6 +2,7 @@ import os
 import argparse
 import platform
 import subprocess
+import re
 
 # NOTE: In JDK 8 and earlier, `javac` does not create the directories specified in the -d option if they do not already exist
 #       So we need to create them manually
@@ -17,6 +18,30 @@ def is_javac_available(javac):
         return ret == 0
     except Exception:
         return False
+
+def get_jdk_version(javac):
+    try:
+        process = subprocess.Popen([javac, '-version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = process.communicate()
+        output = stdout if stdout else stderr
+        if not output:
+            return 0
+
+        javac_version_str = output.decode('utf-8').strip()
+        match = re.search('(\d+)\.(\d+)\.', javac_version_str)
+        if not match:
+            return 0
+
+        major_version = int(match.group(1))
+        minor_version = int(match.group(2))
+
+        # for JDK 9 and earlier command `javac -version` would give '1.x.xx'
+        if major_version == 1:
+            return minor_version
+        return major_version
+
+    except Exception:
+        return 0
 
 # return all files with extension `ext` in directory `dir` as string
 def getFilesInDir(dir, ext):
@@ -39,7 +64,7 @@ if __name__ == "__main__":
     java_files = getFilesInDir('docbuilder', '.java')
     java_files += getFilesInDir('docbuilder/utils', '.java')
 
-    # INITIALIZE JAVA TOOLS
+    # INITIALIZE JDK TOOLS
     javac = 'javac'
     jar = 'jar'
     ext = '.exe' if platform.system().lower() == 'windows' else ''
@@ -57,12 +82,22 @@ if __name__ == "__main__":
         print('Error: javac is not available')
         exit()
 
+    # CHECK JDK VERSION
+    jdk_version = get_jdk_version(javac)
+    if jdk_version < 8:
+        print('Error: javac version is not supported')
+        exit()
+
+    release_flags = []
+    if jdk_version > 8:
+        release_flags = ['--release', '8']
+
     # BUILD
     classes_dir = file_dir + '/build/classes'
     makedirs(classes_dir + '/docbuilder/utils')
     headers_dir = file_dir + '/src/jni'
     # build all Java classes
-    subprocess.call([javac, '-d', classes_dir] + java_files, cwd=os.getcwd(), stderr=subprocess.STDOUT)
+    subprocess.call([javac, '-d', classes_dir] + release_flags + java_files, cwd=os.getcwd(), stderr=subprocess.STDOUT)
 
     # PACKING TO JAR
     if not args.no_jar:

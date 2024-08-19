@@ -733,22 +733,6 @@ namespace Aggplus
 		return GetArea() >= 0;
 	}
 
-	void CGraphicsPath::Reverse()
-	{
-		for (size_t i = 0; i < GetPointCount(); i++)
-		{
-			if (IsCurvePoint(i))
-			{
-				double x0, y0, x1, y1;
-				this->m_internal->m_agg_ps.vertex(i, &x0, &y0);
-				this->m_internal->m_agg_ps.vertex(i + 1, &x1, &y1);
-				this->m_internal->m_agg_ps.modify_vertex(i, x1, y1);
-				this->m_internal->m_agg_ps.modify_vertex(i + 1, x0, y0);
-				i += 2;
-			}
-		}
-	}
-
 	bool CGraphicsPath::IsCurvePoint(size_t idx) const
 	{
 		return this->m_internal->m_agg_ps.command(idx) == agg::path_cmd_curve4;

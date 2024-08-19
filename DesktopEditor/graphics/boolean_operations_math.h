@@ -10,6 +10,7 @@ const double EPSILON = 1e-12;
 const double GEOMETRIC_EPSILON = 1e-7;
 const double TIME_EPSILON = 1e-8;
 const double MACHINE_EPSILON = 1.12e-16;
+const double TRIGANOMETRIC_EPSILON = 1e-8;
 const double CURVETIME_EPSILON = 1e-8;
 const double LINE_EPSILON = 1e-9;
 const double WINDING_EPSILON = 1e-9;
@@ -115,6 +116,13 @@ bool isInRange(double angle, double mn, double mx)
 double clamp(double value, double mn, double mx)
 {
 	return value < mn ? mn : value > mx ? mx : value;
+}
+
+bool isCollinear(const Aggplus::PointD& p1, const Aggplus::PointD& p2)
+{
+	return abs(p1.X * p2.X + p1.Y * p2.Y) <=
+		   sqrt((p1.X * p1.X + p1.Y * p1.Y) * (p2.X * p2.X + p2.Y * p2.Y))
+												 * TRIGANOMETRIC_EPSILON;
 }
 
 int getIterations(double a, double b)
@@ -297,8 +305,8 @@ double getSignedDistance(double px, double py, double vx, double vy, double x, d
 		  distXY = ((x - px) * vy - (y - py) * vx) / (vyG ? distGY : distGX);
 
 	return vx0 ? (distX)
-				   : vy0 ? (distY)
-							 : distXY;
+			   : vy0 ? (distY)
+					 : distXY;
 }
 
 double getDistance(double px, double py, double vx, double vy, double x, double y)

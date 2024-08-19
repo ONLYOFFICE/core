@@ -16,6 +16,9 @@ DEFINES += DOCTRENDERER_USE_DYNAMIC_LIBRARY_BUILDING
 DEFINES += JSBASE_USE_DYNAMIC_LIBRARY_BUILDING
 ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network)
 
+# drawingfile support
+ADD_DEPENDENCY(PdfFile, XpsFile, DjVuFile, DocxRenderer)
+
 #CONFIG += build_xp
 #CONFIG += v8_version_60
 core_android:DEFINES += DISABLE_MEMORY_LIMITATION
@@ -31,7 +34,8 @@ SOURCES += \
 	docbuilder.cpp \
 	docbuilder_p.cpp \
 	graphics.cpp \
-	hash.cpp
+	hash.cpp \
+	drawingfile.cpp
 
 SOURCES += \
 	../../Common/OfficeFileFormatChecker2.cpp \
@@ -43,7 +47,8 @@ HEADERS += \
 	nativecontrol.h \
 	graphics.h \
 	hash.h \
-	server.h
+	server.h \
+	drawingfile.h
 
 HEADERS += \
 	embed/PointerEmbed.h \
@@ -56,6 +61,7 @@ HEADERS += \
 	embed/TextMeasurerEmbed.h \
 	embed/HashEmbed.h \
 	embed/Default.h \
+	embed/DrawingFileEmbed.h \
 	js_internal/js_base.h
 
 SOURCES += \
@@ -68,7 +74,8 @@ SOURCES += \
 	embed/NativeBuilderDocumentEmbed.cpp \
 	embed/TextMeasurerEmbed.cpp \
 	embed/HashEmbed.cpp \
-	embed/Default.cpp
+	embed/Default.cpp \
+	embed/DrawingFileEmbed.cpp
 
 # Serialize objects to JS
 HEADERS += \

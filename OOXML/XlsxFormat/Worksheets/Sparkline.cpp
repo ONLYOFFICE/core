@@ -111,6 +111,10 @@ namespace OOX
 			if(m_oSqRef.IsInit())
 			{
 				XLSB::FRTSqref sqref;
+				sqref.fAdjDelete = false;
+				sqref.fDoAdjust = false;
+				sqref.fAdjChange = false;
+				sqref.fEdit = false;
 				sqref.sqrfx.strValue = m_oSqRef.get();
 				ptr->FRTheader.rgSqrefs.array.push_back(sqref);
 				ptr->FRTheader.fSqref = true;

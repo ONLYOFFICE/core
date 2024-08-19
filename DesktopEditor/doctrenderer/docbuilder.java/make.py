@@ -28,12 +28,12 @@ def get_jdk_version(javac):
             return 0
 
         javac_version_str = output.decode('utf-8').strip()
-        match = re.search('(\d+)\.(\d+)\.', javac_version_str)
+        match = re.search('(\d+)(?:\.(\d+))?', javac_version_str)
         if not match:
             return 0
 
         major_version = int(match.group(1))
-        minor_version = int(match.group(2))
+        minor_version = int(match.group(2)) if match.group(2) else 0
 
         # for JDK 9 and earlier command `javac -version` would give '1.x.xx'
         if major_version == 1:

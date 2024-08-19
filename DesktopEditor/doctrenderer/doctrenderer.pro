@@ -34,8 +34,7 @@ SOURCES += \
 	docbuilder.cpp \
 	docbuilder_p.cpp \
 	graphics.cpp \
-	hash.cpp \
-	drawingfile.cpp
+	hash.cpp
 
 SOURCES += \
 	../../Common/OfficeFileFormatChecker2.cpp \

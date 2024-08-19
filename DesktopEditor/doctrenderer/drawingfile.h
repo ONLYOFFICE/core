@@ -80,33 +80,90 @@ public:
 	}
 
 public:
+	static void InitFontsGlobalStorage()
+	{
+		NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
+	}
+
+	static NSFonts::IFontsMemoryStorage* GetFontsStorage()
+	{
+		return NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+	}
+
+public:
 	bool OpenFile(const std::wstring& sFile, const std::wstring& sPassword)
 	{
 		CloseFile();
 
 		if (NULL == m_pFile)
 		{
-			m_pFile = new CPdfFile(NULL);
+			m_pFile = new CPdfFile(m_pApplicationFonts);
 			if (!m_pFile->LoadFromFile(sFile, L"", sPassword, sPassword))
+			{
 				RELEASEOBJECT(m_pFile);
+			}
 			else
 				m_nType = 0;
 		}
 
 		if (NULL == m_pFile)
 		{
-			m_pFile = new CXpsFile(NULL);
+			m_pFile = new CXpsFile(m_pApplicationFonts);
 			if (!m_pFile->LoadFromFile(sFile, L"", sPassword, sPassword))
+			{
 				RELEASEOBJECT(m_pFile);
+			}
 			else
 				m_nType = 2;
 		}
 
 		if (NULL == m_pFile)
 		{
-			m_pFile = new CDjVuFile(NULL);
+			m_pFile = new CDjVuFile(m_pApplicationFonts);
 			if (!m_pFile->LoadFromFile(sFile, L"", sPassword, sPassword))
+			{
 				RELEASEOBJECT(m_pFile);
+			}
+			else
+				m_nType = 1;
+		}
+
+		return m_pFile ? true : false;
+	}
+
+	bool OpenFile(BYTE* data, LONG size, const std::wstring& sPassword)
+	{
+		CloseFile();
+
+		if (NULL == m_pFile)
+		{
+			m_pFile = new CPdfFile(m_pApplicationFonts);
+			if (!m_pFile->LoadFromMemory(data, size, L"", sPassword, sPassword))
+			{
+				RELEASEOBJECT(m_pFile);
+			}
+			else
+				m_nType = 0;
+		}
+
+		if (NULL == m_pFile)
+		{
+			m_pFile = new CXpsFile(m_pApplicationFonts);
+			if (!m_pFile->LoadFromMemory(data, size, L"", sPassword, sPassword))
+			{
+				RELEASEOBJECT(m_pFile);
+			}
+			else
+				m_nType = 2;
+		}
+
+		if (NULL == m_pFile)
+		{
+			m_pFile = new CDjVuFile(m_pApplicationFonts);
+			if (!m_pFile->LoadFromMemory(data, size, L"", sPassword, sPassword))
+			{
+				RELEASEOBJECT(m_pFile);
+			}
 			else
 				m_nType = 1;
 		}
@@ -357,9 +414,8 @@ public:
 		return 0;
 	}
 
-	BYTE* GetFontBinary(char* path)
+	BYTE* GetFontBinary(const std::string& sPathA)
 	{
-		std::string sPathA(path);
 		std::wstring sFontName = UTF8_TO_U(sPathA);
 
 		std::wstring sFontFile;
@@ -369,7 +425,7 @@ public:
 		if (sFontFile.empty())
 			sFontFile = sFontName;
 
-		NSFonts::IFontsMemoryStorage* pStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+		NSFonts::IFontsMemoryStorage* pStorage = GetFontsStorage();
 		if (pStorage)
 		{
 			NSFonts::IFontStream* pStream = pStorage->Get(sFontFile);

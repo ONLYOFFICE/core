@@ -1234,8 +1234,10 @@ namespace NSDocxRenderer
 		dummy_cont->m_dTopWithAscent = top;
 		dummy_cont->m_dBotWithDescent = bot;
 
-		double dx, dy;
-		return IsShapeBorderTrough(dummy_cont, dx, dy);
+		double dx = 0, dy = 0;
+		bool is_shape_trough = IsShapeBorderTrough(dummy_cont, dx, dy);
+		if (is_shape_trough && dy * 2 > bot - top) return true;
+		return false;
 	}
 
 	bool CPage::IsShapeBorderBetweenHorizontal(std::shared_ptr<CTextLine> pFirst, std::shared_ptr<CTextLine> pSecond) const noexcept
@@ -1251,8 +1253,10 @@ namespace NSDocxRenderer
 		dummy_cont->m_dTopWithAscent = top;
 		dummy_cont->m_dBotWithDescent = bot;
 
-		double dx, dy;
-		return IsShapeBorderTrough(dummy_cont, dx, dy);
+		double dx = 0, dy = 0;
+		bool is_shape_trough = IsShapeBorderTrough(dummy_cont, dx, dy);
+		if (is_shape_trough && dx * 2 > right - left) return true;
+		return false;
 	}
 
 	bool CPage::IsShapeBorderTrough(std::shared_ptr<CContText> pItem, double& dXCrossing, double& dYCrossing) const noexcept
@@ -1272,7 +1276,8 @@ namespace NSDocxRenderer
 					shape->m_dBaselinePos > this->m_dHeight * out_of_page_coeff ||
 					shape->m_dLeft < 0 ||
 					shape->m_dRight > this->m_dWidth * out_of_page_coeff;
-			bool is_too_big = shape->m_dWidth > c_dSHAPE_TROUGH_MAX_MM || shape->m_dHeight > c_dSHAPE_TROUGH_MAX_MM;
+			bool is_too_big = ((shape->m_dWidth > c_dSHAPE_TROUGH_MAX_MM || shape->m_dHeight > c_dSHAPE_TROUGH_MAX_MM) &&
+					(shape->m_eSimpleLineType == eSimpleLineType::sltUnknown));
 
 			if (is_too_big || is_out_of_page)
 				continue;
@@ -1294,8 +1299,8 @@ namespace NSDocxRenderer
 
 			if (lines_condition || rectangle_condition)
 			{
-				dXCrossing = s_left + (s_right - s_left) / 2;
-				dYCrossing = s_top + (s_bot - s_top) / 2;
+				dXCrossing = std::min(right, s_right) - std::max(left, s_left);
+				dYCrossing = std::min(bot, s_bot) - std::max(top, s_top);
 				return true;
 			}
 		}
@@ -1790,7 +1795,7 @@ namespace NSDocxRenderer
 			// если между линий шейп - делим
 			for (size_t index = 0; index < ar_positions.size() - 1; ++index)
 			{
-				if (IsShapeBorderBetweenVertical(text_lines[index], text_lines[index + 1]))
+				if (IsShapeBorderBetweenHorizontal(text_lines[index], text_lines[index + 1]))
 					ar_delims[index] = true;
 			}
 

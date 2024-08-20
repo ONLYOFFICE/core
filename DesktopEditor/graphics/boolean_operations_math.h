@@ -220,30 +220,30 @@ Aggplus::PointD intersect(double p1x, double p1y, double v1x, double v1y, double
 
 std::vector<std::vector<Aggplus::PointD>> getConvexHull(double dq0, double dq1, double dq2, double dq3)
 {
-	Aggplus::PointD p0 = Aggplus::PointD(0, dq0),
-					p1 = Aggplus::PointD(1 / 3, dq1),
-					p2 = Aggplus::PointD(2 / 3, dq2),
-					p3 = Aggplus::PointD(1, dq3);
-	double dist1 = dq1 - (2 * dq0 + dq3) / 3,
-		  dist2 = dq2 - (dq0 + 2 * dq3) / 3;
+	Aggplus::PointD p0 = Aggplus::PointD(0.0, dq0),
+					p1 = Aggplus::PointD(1.0 / 3.0, dq1),
+					p2 = Aggplus::PointD(2.0 / 3.0, dq2),
+					p3 = Aggplus::PointD(1.0, dq3);
+	double dist1 = dq1 - (2.0 * dq0 + dq3) / 3.0,
+		  dist2 = dq2 - (dq0 + 2.0 * dq3) / 3.0;
 	std::vector<std::vector<Aggplus::PointD>> hull;
 	
-	if (dist1 * dist2 < 0)
+	if (dist1 * dist2 < 0.0)
 	{
 		hull = {{p0, p1, p3}, {p0, p2, p3}};
 	}
 	else
 	{
 		double distRatio = dist1 / dist2;
-		if (distRatio >= 2)
+		if (distRatio >= 2.0)
 			hull = {{p0, p1, p3}, {p0, p3}};
 		else if (distRatio <= 0.5)
 			hull = {{p0, p2, p3}, {p0, p3}};
 		else
 			hull = {{p0, p1, p2, p3}, {p0, p3}};
 	}
-	if (dist1 < 0 || dist2 < 0)
-		std::swap(hull[0], hull[1]);
+	if (dist1 < 0.0 || dist2 < 0.0)
+		std::reverse(hull.begin(), hull.end());
 	return hull;
 }
 
@@ -253,11 +253,13 @@ double clipConvexHullPart(std::vector<Aggplus::PointD> part, bool top, double th
 			py = part[0].Y;
 	for (size_t i = 1; i < part.size(); i++)
 	{
-		double qx = part[i].X,
-			qy = part[i].Y;
+		double	qx = part[i].X,
+				qy = part[i].Y;
 
 		if (top ? qy >= threshold : qy <= threshold)
 			return qy == threshold ? qx : px + (threshold - py) * (qx - px) / (qy - py);
+		px = qx;
+		py = qy;
 	}
 	return DBL_MIN;
 }
@@ -287,26 +289,32 @@ int binarySearch(std::vector<std::vector<double>> allBounds, std::vector<int> in
 	return lo - 1;
 }
 
-double getSignedDistance(double px, double py, double vx, double vy, double x, double y)
+double getSignedDistance(double px, double py, double vx, double vy, double x, double y, bool asVector = false)
 {
-	vx -= px;
-	vy -= py;
+	if (!asVector)
+	{
+		vx -= px;
+		vy -= py;
+	}
 
-	bool vx0 = vx == 0,
-		 vxG = vx > 0,
-		 vxL = vx < 0,
-		 vy0 = vy == 0,
-		 vyG = vy > vx;
+	bool vx0 = vx == 0.0,
+		 vyG = vy > 0.0,
+		 vxL = vx < 0.0,
+		 vy0 = vy == 0.0,
+		 vyGvx = vy > vx;
 
-	double distX = vxG ? x - px : px - x,
-		  distY = vxL ? y - py : py - y,
-		  distGY = vy * sqrt(1 + (vx * vx) / (vy * vy)),
-		  distGX = vx * sqrt(1 + (vy * vy) / (vx * vx)),
-		  distXY = ((x - px) * vy - (y - py) * vx) / (vyG ? distGY : distGX);
+	double distX = vyG ? x - px : px - x,
+		   distY = vxL ? y - py : py - y,
+		   distGY = vy * sqrt(1.0 + (vx * vx) / (vy * vy)),
+		   distGX = vx * sqrt(1.0 + (vy * vy) / (vx * vx)),
+		   distXY = ((x - px) * vy - (y - py) * vx) / (vyGvx ? distGY : distGX);
 
-	return vx0 ? (distX)
-			   : vy0 ? (distY)
-					 : distXY;
+	return vx0 ? distX : vy0 ? distY : distXY;
+}
+
+double getDistance(double px, double py, double vx, double vy, double x, double y, bool asVector)
+{
+	return abs(getSignedDistance(px, py, vx, vy, x, y, asVector));
 }
 
 double getDistance(double px, double py, double vx, double vy, double x, double y)

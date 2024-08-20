@@ -3515,7 +3515,6 @@ namespace PdfReader
 		m_pRenderer->BeginCommand(c_nClipType);
 		m_pRenderer->put_ClipMode(nClipFlag);
 		DoPath(pGState, pPath, pGState->getPageHeight(), pGState->getCTM(), &pClip->m_vMatrix[nIndex]);
-		m_pRenderer->EndCommand(c_nPathType);
 		m_pRenderer->EndCommand(c_nClipType);
 		m_pRenderer->PathCommandEnd();
 	}
@@ -3569,7 +3568,6 @@ namespace PdfReader
 			}
 		}
 
-		m_pRenderer->EndCommand(c_nPathType);
 		m_pRenderer->EndCommand(c_nClipType);
 		m_pRenderer->PathCommandEnd();
 		m_pRenderer->EndConvertCoordsToIdentity();

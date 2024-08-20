@@ -971,8 +971,6 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	free(pInfo);
-
 	// CMAP
 	BYTE* pCMapData = NULL;
 	if (IsNeedCMap(pGrFile))
@@ -990,6 +988,9 @@ int main(int argc, char* argv[])
 		// RASTER
 		if (true)
 		{
+			nWidth  = READ_INT(pInfo + i * 16 + 12);
+			nHeight = READ_INT(pInfo + i * 16 + 16);
+
 			BYTE* res = NULL;
 			res = GetPixmap(pGrFile, i, nWidth, nHeight, 0xFFFFFF);
 
@@ -1005,6 +1006,8 @@ int main(int argc, char* argv[])
 			RELEASEARRAYOBJECTS(res);
 		}
 	}
+
+	free(pInfo);
 
 	// LINKS
 	if (false && nPagesCount > 0)

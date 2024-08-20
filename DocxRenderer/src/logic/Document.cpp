@@ -521,33 +521,29 @@ namespace NSDocxRenderer
 		if (c_nPageType == lType && m_bIsDisablePageCommand)
 			return S_OK;
 
-		m_lCurrentCommandType = (LONG)lType;
+		m_lCurrentCommandType = static_cast<LONG>(lType);
 		m_oCurrentPage.BeginCommand(lType);
 
 		return S_OK;
 	}
 	HRESULT CDocument::EndCommand(DWORD lType)
 	{
-		if (c_nPageType == lType && m_bIsDisablePageCommand)
-			return S_OK;
-
-		m_lCurrentCommandType = -1;
-		m_oCurrentPage.m_lCurrentCommand = m_lCurrentCommandType;
-
-		if (c_nPageType == lType)
+		if (lType == c_nPageType)
 		{
+			if (m_bIsDisablePageCommand)
+				return S_OK;
+
+			m_lCurrentCommandType = -1;
+			m_oCurrentPage.m_lCurrentCommand = m_lCurrentCommandType;
+
 			auto pWriter = new NSStringUtils::CStringBuilder();
 			pWriter->AddSize(100000);
 			m_oCurrentPage.Analyze();
 			m_oCurrentPage.Record(*pWriter, m_lPageNum >= m_lNumberPages - 1);
 			m_mapXmlString[m_lPageNum] = pWriter;
 		}
-		else if (c_nPathType == lType)
-		{
-			m_oCurrentPage.PathEnd();
-		}
-
-		return S_OK;
+		else
+			m_oCurrentPage.EndCommand(lType);
 	}
 	//-------- Функции для работы с Graphics Path -----------------------------------------------
 	HRESULT CDocument::PathCommandMoveTo(double fX, double fY)
@@ -719,12 +715,12 @@ namespace NSDocxRenderer
 	}
 	HRESULT CDocument::get_ClipMode(LONG* plMode)
 	{
-		*plMode = m_lClipMode;
+		*plMode = m_oCurrentPage.m_lClipMode;
 		return S_OK;
 	}
 	HRESULT CDocument::put_ClipMode(LONG lMode)
 	{
-		m_lClipMode = lMode;
+		m_oCurrentPage.m_lClipMode = lMode;
 		return S_OK;
 	}
 
@@ -751,12 +747,10 @@ namespace NSDocxRenderer
 			double dCentreX = (dLeft + dWidth / 2.0);
 			double dCentreY = (dTop + dHeight / 2.0);
 
-			oMatrix.Translate(-dCentreX, -dCentreY	, Aggplus::MatrixOrderAppend);
-
-			oMatrix.Rotate(dAngle			, Aggplus::MatrixOrderAppend);
-			oMatrix.Scale(m11, m22					, Aggplus::MatrixOrderAppend);
-
-			oMatrix.Translate(dCentreX, dCentreY	, Aggplus::MatrixOrderAppend);
+			oMatrix.Translate(-dCentreX, -dCentreY, Aggplus::MatrixOrderAppend);
+			oMatrix.Rotate(dAngle, Aggplus::MatrixOrderAppend);
+			oMatrix.Scale(m11, m22, Aggplus::MatrixOrderAppend);
+			oMatrix.Translate(dCentreX, dCentreY, Aggplus::MatrixOrderAppend);
 		}
 
 		m_oTransform = oMatrix;

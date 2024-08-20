@@ -28,9 +28,7 @@ namespace NSDocxRenderer
 		CFontSelector					m_oFontSelector;
 
 		CPage							m_oCurrentPage;
-
 		LONG							m_lCurrentCommandType {0};
-		LONG							m_lClipMode;
 
 		double							m_dWidth  {0.0};
 		double							m_dHeight {0.0};

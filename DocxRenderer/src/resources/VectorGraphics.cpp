@@ -9,7 +9,7 @@
 
 namespace NSDocxRenderer
 {
-	CVectorGraphics::CVectorGraphics()
+	CVectorGraphics::CVectorGraphics() noexcept
 		: m_dLeftDefault(std::numeric_limits<double>().max()),
 		  m_dRightDefault(std::numeric_limits<double>().min()),
 		  m_dTopDefault(std::numeric_limits<double>().max()),
@@ -17,12 +17,12 @@ namespace NSDocxRenderer
 	{
 		ResetBorders();
 	}
-	CVectorGraphics::CVectorGraphics(const CVectorGraphics& other)
+	CVectorGraphics::CVectorGraphics(const CVectorGraphics& other) noexcept
 		: CVectorGraphics()
 	{
 		*this = other;
 	}
-	CVectorGraphics::CVectorGraphics(CVectorGraphics&& other)
+	CVectorGraphics::CVectorGraphics(CVectorGraphics&& other) noexcept
 		: CVectorGraphics()
 	{
 		*this = std::move(other);
@@ -33,13 +33,12 @@ namespace NSDocxRenderer
 	{
 		m_arData.clear();
 	}
-	CVectorGraphics& CVectorGraphics::operator=(CVectorGraphics&& other)
+	CVectorGraphics& CVectorGraphics::operator=(CVectorGraphics&& other) noexcept
 	{
 		if (this == &other)
 			return *this;
 
 		m_arData = std::move(other.m_arData);
-
 		m_dLeft = other.m_dLeft;
 		m_dTop = other.m_dTop;
 		m_dRight = other.m_dRight;
@@ -48,7 +47,7 @@ namespace NSDocxRenderer
 		other.Clear();
 		return *this;
 	}
-	CVectorGraphics& CVectorGraphics::operator=(const CVectorGraphics& other)
+	CVectorGraphics& CVectorGraphics::operator=(const CVectorGraphics& other) noexcept
 	{
 		if (this == &other)
 			return *this;
@@ -85,6 +84,10 @@ namespace NSDocxRenderer
 	{
 		return m_dBottom;
 	}
+	bool CVectorGraphics::IsEmpty() const noexcept
+	{
+		return m_arData.empty();
+	}
 
 	const std::list<CVectorGraphics::PathCommand>& CVectorGraphics::GetData() const
 	{
@@ -94,7 +97,7 @@ namespace NSDocxRenderer
 	void CVectorGraphics::MoveTo(const double &x1, const double &y1)
 	{
 		Point point = {x1, y1};
-		eVectorGraphicsType type = eVectorGraphicsType::vgtMove;
+		ePathCommandType type = ePathCommandType::pctMove;
 		m_arData.push_back({type, {point}});
 
 		CheckPoint(point);
@@ -103,7 +106,7 @@ namespace NSDocxRenderer
 	void CVectorGraphics::LineTo(const double &x1, const double &y1)
 	{
 		Point point = {x1, y1};
-		eVectorGraphicsType type = eVectorGraphicsType::vgtLine;
+		ePathCommandType type = ePathCommandType::pctLine;
 		m_arData.push_back({type, {point}});
 
 		CheckPoint(point);
@@ -114,7 +117,7 @@ namespace NSDocxRenderer
 								  const double &x3, const double &y3)
 	{
 		std::list<Point> points = {{x1, y1}, {x2, y2}, {x3, y3}};
-		eVectorGraphicsType type = eVectorGraphicsType::vgtCurve;
+		ePathCommandType type = ePathCommandType::pctCurve;
 		m_arData.push_back({type, points});
 
 		for(auto& point : points)
@@ -123,7 +126,7 @@ namespace NSDocxRenderer
 
 	void CVectorGraphics::Close()
 	{
-		eVectorGraphicsType type = eVectorGraphicsType::vgtClose;
+		ePathCommandType type = ePathCommandType::pctClose;
 		m_arData.push_back({type, {}});
 	}
 
@@ -149,14 +152,14 @@ namespace NSDocxRenderer
 		other.Clear();
 	}
 
-	void CVectorGraphics::CheckPoint(const Point& point)
+	void CVectorGraphics::CheckPoint(const Point& point) noexcept
 	{
 		if (m_dLeft > point.x) m_dLeft = point.x;
 		if (m_dRight < point.x) m_dRight = point.x;
 		if (m_dTop > point.y) m_dTop = point.y;
 		if (m_dBottom < point.y) m_dBottom = point.y;
 	}
-	void CVectorGraphics::CheckPoint(const double& x, const double& y)
+	void CVectorGraphics::CheckPoint(const double& x, const double& y) noexcept
 	{
 		Point point = {x, y};
 		CheckPoint(point);

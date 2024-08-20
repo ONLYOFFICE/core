@@ -15,7 +15,8 @@ namespace NSDocxRenderer
 		double m_dWidth {0.0};
 		double m_dHeight {0.0};
 
-		LONG m_lCurrentCommand {0};
+		LONG m_lCurrentCommand{0};
+		LONG m_lClipMode{0};
 
 		TextAssociationType m_eTextAssociationType {TextAssociationType::tatPlainParagraph};
 
@@ -35,7 +36,9 @@ namespace NSDocxRenderer
 		CParagraphStyleManager*     m_pParagraphStyleManager{nullptr};
 		CFontManager*               m_pFontManager          {nullptr};
 		CFontSelector*				m_pFontSelector         {nullptr};
-		CVectorGraphics             m_oVector;
+
+		CVectorGraphics             m_oCurrVectorGraphics;
+		CVectorGraphics				m_oClipVectorGraphics;
 
 		std::vector<std::shared_ptr<CContText>>	 m_arConts;
 		std::vector<std::shared_ptr<CTextLine>>  m_arTextLines;
@@ -47,7 +50,6 @@ namespace NSDocxRenderer
 
 		bool m_bIsDeleteTextClipPage {true};
 		bool m_bIsRecalcFontSize {true};
-		LONG m_lLastCommand = 0;
 
 		CPage();
 		~CPage();
@@ -65,6 +67,7 @@ namespace NSDocxRenderer
 				  CParagraphStyleManager* pParagraphStyleManager);
 
 		void BeginCommand(DWORD lType);
+		void EndCommand(DWORD lType);
 		void Clear();
 
 		// удаляем то, что выходит за границы страницы
@@ -146,5 +149,6 @@ namespace NSDocxRenderer
 		NSStructures::CBrush m_oPrevBrush;
 
 		size_t m_nShapeOrder = 0;
+		bool m_bIsClipPath {false};
 	};
 }

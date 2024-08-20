@@ -59,19 +59,19 @@ namespace NSDocxRenderer
 		for(auto& path_command : arData)
 			switch (path_command.type)
 			{
-			case CVectorGraphics::eVectorGraphicsType::vgtMove:
+			case CVectorGraphics::ePathCommandType::pctMove:
 				nPeacks++;
 				break;
 
-			case CVectorGraphics::eVectorGraphicsType::vgtLine:
+			case CVectorGraphics::ePathCommandType::pctLine:
 				nPeacks++;
 				break;
 
-			case CVectorGraphics::eVectorGraphicsType::vgtCurve:
+			case CVectorGraphics::ePathCommandType::pctCurve:
 				nCurves++;
 				break;
 
-			case CVectorGraphics::eVectorGraphicsType::vgtClose:
+			case CVectorGraphics::ePathCommandType::pctClose:
 			default:
 				break;
 			}
@@ -176,19 +176,19 @@ namespace NSDocxRenderer
 		{
 			switch (path_command.type)
 			{
-			case CVectorGraphics::eVectorGraphicsType::vgtMove:
+			case CVectorGraphics::ePathCommandType::pctMove:
 				oWriter.WriteString(L"<a:moveTo>");
 				break;
 
-			case CVectorGraphics::eVectorGraphicsType::vgtLine:
+			case CVectorGraphics::ePathCommandType::pctLine:
 				oWriter.WriteString(L"<a:lnTo>");
 				break;
 
-			case CVectorGraphics::eVectorGraphicsType::vgtCurve:
+			case CVectorGraphics::ePathCommandType::pctCurve:
 				oWriter.WriteString(L"<a:cubicBezTo>");
 				break;
 
-			case CVectorGraphics::eVectorGraphicsType::vgtClose:
+			case CVectorGraphics::ePathCommandType::pctClose:
 			default:
 				break;
 			}
@@ -207,19 +207,19 @@ namespace NSDocxRenderer
 
 			switch (path_command.type)
 			{
-			case CVectorGraphics::eVectorGraphicsType::vgtMove:
+			case CVectorGraphics::ePathCommandType::pctMove:
 				oWriter.WriteString(L"</a:moveTo>");
 				break;
 
-			case CVectorGraphics::eVectorGraphicsType::vgtLine:
+			case CVectorGraphics::ePathCommandType::pctLine:
 				oWriter.WriteString(L"</a:lnTo>");
 				break;
 
-			case CVectorGraphics::eVectorGraphicsType::vgtCurve:
+			case CVectorGraphics::ePathCommandType::pctCurve:
 				oWriter.WriteString(L"</a:cubicBezTo>");
 				break;
 
-			case CVectorGraphics::eVectorGraphicsType::vgtClose:
+			case CVectorGraphics::ePathCommandType::pctClose:
 			default:
 				break;
 			}

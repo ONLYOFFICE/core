@@ -41,8 +41,22 @@ namespace NSDocxRenderer
 
 	void CPage::BeginCommand(DWORD lType)
 	{
-		m_lLastCommand = m_lCurrentCommand;
-		m_lCurrentCommand = lType;
+		m_lCurrentCommand = static_cast<LONG>(lType);
+
+		if (lType == c_nClipType)
+			m_bIsClipPath = true;
+	}
+	void CPage::EndCommand(DWORD lType)
+	{
+		m_lCurrentCommand = -1;
+
+		if (lType == c_nPathType)
+			PathEnd();
+		else if (lType == c_nClipType)
+		{
+			m_bIsClipPath = false;
+			m_oClipVectorGraphics = std::move(m_oCurrVectorGraphics);
+		}
 	}
 
 	void CPage::Clear()
@@ -52,7 +66,7 @@ namespace NSDocxRenderer
 		m_arDiacriticalSymbols.clear();
 		m_arShapes.clear();
 		m_arOutputObjects.clear();
-		m_oVector.Clear();
+		m_oCurrVectorGraphics.Clear();
 		m_arCompleteObjectsXml.clear();
 	}
 
@@ -96,13 +110,13 @@ namespace NSDocxRenderer
 		rotate_matrix.TransformPoint(p3.x, p3.y);
 		rotate_matrix.TransformPoint(p4.x, p4.y);
 
-		m_oVector.Clear();
-		m_oVector.MoveTo(p1.x, p1.y);
-		m_oVector.LineTo(p3.x, p3.y);
-		m_oVector.LineTo(p2.x, p2.y);
-		m_oVector.LineTo(p4.x, p4.y);
-		m_oVector.LineTo(p1.x, p1.y);
-		m_oVector.Close();
+		m_oCurrVectorGraphics.Clear();
+		m_oCurrVectorGraphics.MoveTo(p1.x, p1.y);
+		m_oCurrVectorGraphics.LineTo(p3.x, p3.y);
+		m_oCurrVectorGraphics.LineTo(p2.x, p2.y);
+		m_oCurrVectorGraphics.LineTo(p4.x, p4.y);
+		m_oCurrVectorGraphics.LineTo(p1.x, p1.y);
+		m_oCurrVectorGraphics.Close();
 		DrawPath(c_nWindingFillMode, pInfo);
 	}
 
@@ -110,13 +124,13 @@ namespace NSDocxRenderer
 	void CPage::MoveTo(double& dX, double& dY)
 	{
 		m_pTransform->TransformPoint(dX, dY);
-		m_oVector.MoveTo(dX, dY);
+		m_oCurrVectorGraphics.MoveTo(dX, dY);
 	}
 
 	void CPage::LineTo(double& dX, double& dY)
 	{
 		m_pTransform->TransformPoint(dX, dY);
-		m_oVector.LineTo(dX, dY);
+		m_oCurrVectorGraphics.LineTo(dX, dY);
 	}
 
 	void CPage::CurveTo(double& x1, double& y1, double& x2, double& y2, double& x3, double& y3)
@@ -125,7 +139,7 @@ namespace NSDocxRenderer
 		m_pTransform->TransformPoint(x2, y2);
 		m_pTransform->TransformPoint(x3, y3);
 
-		m_oVector.CurveTo(x1, y1, x2, y2, x3, y3);
+		m_oCurrVectorGraphics.CurveTo(x1, y1, x2, y2, x3, y3);
 	}
 
 	void CPage::PathStart()
@@ -134,29 +148,29 @@ namespace NSDocxRenderer
 
 	void CPage::PathEnd()
 	{
-		m_oVector.End();
+		m_oCurrVectorGraphics.End();
 	}
 
 	void CPage::PathClose()
 	{
-		m_oVector.Close();
+		m_oCurrVectorGraphics.Close();
 	}
 
 
 	void CPage::DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo)
 	{
-//		m_oVector.Clear();
-//		m_oVector.MoveTo(110.57, 20);
-//		m_oVector.LineTo(191.82, 63.140);
-//		m_oVector.LineTo(114.449, 208.88);
-//		m_oVector.LineTo(33.194, 165.74);
-//		m_oVector.LineTo(110.57, 20);
+//		m_oCurrVectorGraphics.Clear();
+//		m_oCurrVectorGraphics.MoveTo(110.57, 20);
+//		m_oCurrVectorGraphics.LineTo(191.82, 63.140);
+//		m_oCurrVectorGraphics.LineTo(114.449, 208.88);
+//		m_oCurrVectorGraphics.LineTo(33.194, 165.74);
+//		m_oCurrVectorGraphics.LineTo(110.57, 20);
 
 		double rotation = m_pTransform->z_Rotation();
-		double left = m_oVector.GetLeft();
-		double right = m_oVector.GetRight();
-		double top = m_oVector.GetTop();
-		double bot = m_oVector.GetBottom();
+		double left = m_oCurrVectorGraphics.GetLeft();
+		double right = m_oCurrVectorGraphics.GetRight();
+		double top = m_oCurrVectorGraphics.GetTop();
+		double bot = m_oCurrVectorGraphics.GetBottom();
 
 		if (!m_arShapes.empty())
 		{
@@ -213,7 +227,12 @@ namespace NSDocxRenderer
 		double dDeterminant = sqrt(fabs(m_pTransform->Determinant()));
 		pShape->m_oPen.Size *= dDeterminant;
 
-		pShape->SetVector(std::move(m_oVector));
+		if (!m_oClipVectorGraphics.IsEmpty())
+		{
+			// TODO clip!
+		}
+
+		pShape->SetVector(std::move(m_oCurrVectorGraphics));
 
 		// big white shape with page width & height skip
 		if (fabs(pShape->m_dHeight - m_dHeight) <= c_dSHAPE_X_OFFSET * 2 &&
@@ -224,6 +243,8 @@ namespace NSDocxRenderer
 		pShape->m_nOrder = ++m_nShapeOrder;
 		pShape->m_dRotation = rotation;
 		m_arShapes.push_back(pShape);
+
+		m_oClipVectorGraphics.Clear();
 	}
 
 	void CPage::CollectTextData(const PUINT pUnicodes,

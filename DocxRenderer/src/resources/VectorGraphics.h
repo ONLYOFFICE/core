@@ -16,27 +16,27 @@ namespace NSDocxRenderer
 	class CVectorGraphics
 	{
 	public:
-		enum class eVectorGraphicsType
+		enum class ePathCommandType
 		{
-			vgtMove = 0,
-			vgtLine = 1,
-			vgtCurve = 2,
-			vgtClose = 3
+			pctMove = 0,
+			pctLine = 1,
+			pctCurve = 2,
+			pctClose = 3
 		};
 
 		struct PathCommand
 		{
-			eVectorGraphicsType type;
+			ePathCommandType type;
 			std::list<Point> points;
 		};
 
-		CVectorGraphics();
-		CVectorGraphics(const CVectorGraphics& other);
-		CVectorGraphics(CVectorGraphics&& other);
+		CVectorGraphics() noexcept;
+		CVectorGraphics(const CVectorGraphics& other) noexcept;
+		CVectorGraphics(CVectorGraphics&& other) noexcept;
 		~CVectorGraphics();
 
-		CVectorGraphics& operator=(CVectorGraphics&& other);
-		CVectorGraphics& operator=(const CVectorGraphics& other);
+		CVectorGraphics& operator=(CVectorGraphics&& other) noexcept;
+		CVectorGraphics& operator=(const CVectorGraphics& other) noexcept;
 
 		const std::list<PathCommand>& GetData() const;
 
@@ -44,6 +44,7 @@ namespace NSDocxRenderer
 		double GetTop() const noexcept;
 		double GetRight() const noexcept;
 		double GetBottom() const noexcept;
+		bool IsEmpty() const noexcept;
 
 		void MoveTo(const double& x1, const double& y1);
 		void LineTo(const double& x1, const double& y1);
@@ -55,8 +56,8 @@ namespace NSDocxRenderer
 		void Join(CVectorGraphics&& other);
 
 		void Clear();
-		void CheckPoint(const Point& point);
-		void CheckPoint(const double& x, const double& y);
+		void CheckPoint(const Point& point) noexcept;
+		void CheckPoint(const double& x, const double& y) noexcept;
 		void Rotate(const double& rotation);
 
 	private:

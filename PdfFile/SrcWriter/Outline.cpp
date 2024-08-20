@@ -57,7 +57,7 @@ namespace PdfWriter
 
 		pXref->Add(this);
 
-		CStringObject* pString = new CStringObject(sTitle);
+		CStringObject* pString = new CStringObject(sTitle, true);
 		if (!pString)
 			return;
 

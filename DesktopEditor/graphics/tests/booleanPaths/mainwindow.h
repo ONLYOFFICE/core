@@ -29,7 +29,6 @@ public:
 	double GetDifferenceY() const noexcept;
 
 	bool GetMovable()	const noexcept;
-	void ResetMovable()	noexcept;
 
 signals:
 	void mousePress();
@@ -38,6 +37,7 @@ signals:
 protected:
 	void mousePressEvent(QMouseEvent *event) override;
 	void mouseMoveEvent(QMouseEvent *event) override;
+	void mouseReleaseEvent(QMouseEvent *event) override;
 
 private:
 	bool Movable	= false;
@@ -69,8 +69,8 @@ public:
 	MainWindow(QWidget *parent = nullptr);
 	~MainWindow();
 
-	Aggplus::CGraphicsPath* SetPath(double offsetX, double offsetY);
-	void AddPath(NSGraphics::IGraphicsRenderer* pathRenderer, Aggplus::CGraphicsPath* path);
+	Aggplus::CGraphicsPath* SetPath(double offsetX, double offsetY, QString Figure);
+	void AddPath(NSGraphics::IGraphicsRenderer* pathRenderer, Aggplus::CGraphicsPath* path, bool isResult = false);
 	void Draw(Aggplus::CGraphicsPath *path = nullptr);
 	void SetCoords(QLabel* label, Aggplus::CGraphicsPath* path);
 
@@ -86,7 +86,8 @@ private slots:
 	void SetFigure();
 
 public:
-	QString Figure;
+	QString Figure1;
+	QString Figure2;
 	Aggplus::BooleanOpType Op;
 
 	double Offsets[4] = {100.0, 100.0, 200.0, 200.0};

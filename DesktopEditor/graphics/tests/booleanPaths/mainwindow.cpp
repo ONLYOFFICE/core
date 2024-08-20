@@ -27,15 +27,17 @@ bool CustomLabel::GetMovable() const noexcept
 	return Movable;
 }
 
-void CustomLabel::ResetMovable() noexcept
-{
-	Movable = !Movable;
-}
-
 void CustomLabel::mousePressEvent(QMouseEvent *event)
 {
 	StartP = event->pos();
-	ResetMovable();
+	Movable = true;
+	emit mousePress();
+}
+
+void CustomLabel::mouseReleaseEvent(QMouseEvent *event)
+{
+	CurrP = event->pos();
+	Movable = false;
 	emit mousePress();
 }
 
@@ -80,7 +82,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
 	ui->setupUi(this);
 
-	Figure = "";
+	Figure1 = "";
+	Figure2 = "";
 	Op = Aggplus::Intersection;
 
 	std::vector<QObject*> arrPathButtons = GetChildsByClassName(this, "CustomButton");
@@ -96,13 +99,18 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::SetFigure()
 {
 	QPushButton* sender = (QPushButton*)this->sender();
-	Figure = sender->text();
 
 	if (((QGroupBox*)sender->parentWidget())->title() == "Path1")
+	{
+		Figure1 = sender->text();
 		DrawPath1();
+	}
 
 	if (((QGroupBox*)sender->parentWidget())->title() == "Path2")
+	{
+		Figure2 = sender->text();
 		DrawPath2();
+	}
 }
 
 void MainWindow::SetCommand()
@@ -125,7 +133,7 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
-Aggplus::CGraphicsPath* MainWindow::SetPath(double offsetX, double offsetY)
+Aggplus::CGraphicsPath* MainWindow::SetPath(double offsetX, double offsetY, QString Figure)
 {
 	Aggplus::CGraphicsPath *path = new Aggplus::CGraphicsPath;
 
@@ -166,7 +174,7 @@ Aggplus::CGraphicsPath* MainWindow::SetPath(double offsetX, double offsetY)
 	return path;
 }
 
-void MainWindow::AddPath(NSGraphics::IGraphicsRenderer* pathRenderer, Aggplus::CGraphicsPath* path)
+void MainWindow::AddPath(NSGraphics::IGraphicsRenderer* pathRenderer, Aggplus::CGraphicsPath* path, bool isResult)
 {
 	if (path->GetPointCount() == 0)
 		return;
@@ -190,6 +198,13 @@ void MainWindow::AddPath(NSGraphics::IGraphicsRenderer* pathRenderer, Aggplus::C
 			pathRenderer->PathCommandLineTo(points[i].X, points[i].Y);
 	}
 
+	if (isResult)
+	{
+		pathRenderer->put_BrushColor1(0xFF0000);
+		pathRenderer->Fill();
+	}
+
+	pathRenderer->put_PenColor(!isResult ? 0x000000 : 0x0000FF);
 	pathRenderer->DrawPath(c_nStroke);
 
 	pathRenderer->EndCommand(c_nPathType);
@@ -221,14 +236,12 @@ void MainWindow::Draw(Aggplus::CGraphicsPath *path)
 	pathRenderer->put_Width(nW);
 	pathRenderer->put_Height(nH);
 
+	AddPath(pathRenderer, Path1);
+	AddPath(pathRenderer, Path2);
+
 	if (path != nullptr)
 	{
-		AddPath(pathRenderer, path);
-	}
-	else
-	{
-		AddPath(pathRenderer, Path1);
-		AddPath(pathRenderer, Path2);
+		AddPath(pathRenderer, path, true);
 	}
 
 	QImage img = QImage(pData, nW, nH, QImage::Format_RGBA8888, [](void *data){
@@ -253,7 +266,7 @@ void MainWindow::SetCoords(QLabel *label, Aggplus::CGraphicsPath *path)
 void MainWindow::DrawPath1()
 {
 	if (Path1) delete Path1;
-	Path1 = SetPath(Offsets[0], Offsets[1]);
+	Path1 = SetPath(Offsets[0], Offsets[1], Figure1);
 	Draw();
 	SetCoords(ui->label_4, Path1);
 }
@@ -261,7 +274,7 @@ void MainWindow::DrawPath1()
 void MainWindow::DrawPath2()
 {
 	if (Path2) delete Path2;
-	Path2 = SetPath(Offsets[2], Offsets[3]);
+	Path2 = SetPath(Offsets[2], Offsets[3], Figure2);
 	Draw();
 	SetCoords(ui->label_5, Path2);
 }
@@ -274,8 +287,6 @@ void MainWindow::BooleanOp()
 	Aggplus::CGraphicsPath *result = Aggplus::BooleanOperation(Path1, Path2, Op);
 	Draw(result);
 	SetCoords(ui->label_7, result);
-	Path1->Reset();
-	Path2->Reset();
 }
 
 void MainWindow::CheckMousePress()
@@ -299,6 +310,8 @@ void MainWindow::CheckMousePress()
 
 	Move1 = rect1.contains(ui->label->GetStartPoint()) && Path1->GetPointCount() != 0;
 	Move2 = rect2.contains(ui->label->GetStartPoint()) && Path2->GetPointCount() != 0;
+	if (Move2)
+		Move1 = false;
 	if (Move1 || Move2)
 	{
 		for (size_t i = 0; i < 4; i++)

@@ -35,9 +35,6 @@ namespace BinDocxRW
 {
 const double eps     = 0.001;
 
-const int border_None   = 0x0000;
-const int border_Single = 0x0001;
-
 const int align_Right   = 0;
 const int align_Left    = 1;
 const int align_Center  = 2;

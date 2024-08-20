@@ -1052,7 +1052,7 @@ void CBooleanOperations::TraceBoolean()
 	int length = Locations.size() - 1;
 	for (int i = length; i >= 0; i--)
 	{
-		InsertLocation(Locations[i]->Inters);
+		InsertLocation(Locations[i]->Inters, false);
 	}
 
 	DivideLocations();
@@ -1062,8 +1062,19 @@ void CBooleanOperations::TraceBoolean()
 
 	for (const auto& l : Locations)
 	{
+		Winding winding;
 		Segment start = l->S,
 			s = GetNextSegment(l->S);
+
+		// if (getDistance(s.P, l->S.P) < GEOMETRIC_EPSILON)
+		// {
+		// 	winding.W = 1;
+		// 	if (s.Id == 1 )
+		// 		Segments1[s.Index].Wind = std::make_shared<Winding>(winding);
+		// 	else
+		// 		Segments2[s.Index].Wind = std::make_shared<Winding>(winding);
+		// 	s = GetNextSegment(s);
+		// }
 
 		if (s == Segment() || (bool)s.Inters || s == start)
 			continue;
@@ -1072,7 +1083,6 @@ void CBooleanOperations::TraceBoolean()
 		for (const auto& c : (s.Id == 1 ? Curves2 : Curves1))
 			count += CheckInters(PointD(), s, c);
 
-		Winding winding;
 		winding.W = count % 2;
 
 		do
@@ -1160,7 +1170,14 @@ void CBooleanOperations::PreparePath(CGraphicsPath* path, int id,
 		{
 			std::vector<PointD> points = path->GetPoints(isCurve ? i - 2 : i, isCurve ? 3 : 1);
 			std::reverse(points.begin(), points.end());
-			segments.push_back(Segment(points, isCurve, idx++, id, path));
+			if (isCurve && i - 2 == 0)
+			{
+				segments[0].IsCurve = true;
+				segments[0].HI = PointD(points[0].X - segments[0].P.X, points[0].Y - segments[0].P.Y);
+				segments[0].HO = PointD(points[1].X - segments[0].P.X, points[1].Y - segments[0].P.Y);
+			}
+			else
+				segments.push_back(Segment(points, isCurve, idx++, id, path));
 			if (isCurve) i -= 2;
 			isCurve = path->IsCurvePoint(i);
 		}
@@ -1171,7 +1188,14 @@ void CBooleanOperations::PreparePath(CGraphicsPath* path, int id,
 		{
 			bool isCurve = path->IsCurvePoint(i);
 			std::vector<PointD> points = path->GetPoints(i, isCurve ? 3 : 1);
-			segments.push_back(Segment(points, isCurve, idx++, id, path));
+			if (isCurve && i + 2 == length)
+			{
+				segments[0].IsCurve = true;
+				segments[0].HI = PointD(points[0].X - segments[0].P.X, points[0].Y - segments[0].P.Y);
+				segments[0].HO = PointD(points[1].X - segments[0].P.X, points[1].Y - segments[0].P.Y);
+			}
+			else
+				segments.push_back(Segment(points, isCurve, idx++, id, path));
 			if (isCurve) i += 2;
 		}
 	}
@@ -1903,13 +1927,15 @@ void CBooleanOperations::InsertLocation(std::shared_ptr<Location> loc, bool over
 		int mid = (l + r) >> 1;
 		std::shared_ptr<Location> loc1 = Locations[mid];
 
-		if (isZero(loc->C.GetPoint(loc->Time).X - loc1->C.GetPoint(loc1->Time).X) &&
-			isZero(loc->C.GetPoint(loc->Time).Y - loc1->C.GetPoint(loc1->Time).Y) &&
-			loc->C.Segment1.Id == loc1->C.Segment1.Id)
+		if (getDistance(loc->C.GetPoint(loc->Time), loc1->C.GetPoint(loc1->Time)) <= GEOMETRIC_EPSILON
+			&& loc->C.Segment1.Id == loc1->C.Segment1.Id)
 			return;
 
 		if (overlap)
 		{
+			if (getDistance(loc->C.GetPoint(loc->Time), loc->Inters->C.GetPoint(loc->Inters->Time)) > GEOMETRIC_EPSILON)
+				return;
+
 			for (int i = mid - 1; i >= -1; i--)
 			{
 				std::shared_ptr<Location> loc2 = Locations[((i % length) + length) % length];
@@ -1963,7 +1989,7 @@ void CBooleanOperations::AddLocation(Curve curve1, Curve curve2,
 			loc1->Inters = loc2;
 			loc2->Inters = loc1;
 			if (FilterIntersections(loc1))
-				InsertLocation(loc1);
+				InsertLocation(loc1, overlap);
 		}
 	}
 }

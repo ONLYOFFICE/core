@@ -185,13 +185,13 @@ namespace Aggplus
 		void LinkIntersection(std::shared_ptr<Location> form, std::shared_ptr<Location> to);
 		void AddLineIntersection(const Curve& curve1, const Curve& curve2, bool flip);
 		void AddCurveLineIntersection(const Curve& curve1, const Curve& curve2, bool flip);
-		int  AddCurveIntersection(const Curve& curve1, const Curve& curve2, bool flip, int recursion = 0, int calls = 0, double tMin = 0, double tMax = 1, double uMin = 0, double uMax = 1);
+		int  AddCurveIntersection(Curve curve1, Curve curve2, const Curve& startCurve1, const Curve& startCurve2, bool flip, int recursion = 0, int calls = 0, double tMin = 0, double tMax = 1, double uMin = 0, double uMax = 1);
 		int  CheckInters(const PointD& point, const Segment& segment, const Curve& curve) const;
 
 		// Location
 		void DivideLocations();
 		void AddLocation(Curve curve1, Curve curve2, double t1, double t2, bool overlap = false);
-		void InsertLocation(std::shared_ptr<Location> loc);
+		void InsertLocation(std::shared_ptr<Location> loc, bool overlap = false);
 
 		// Util
 		void SetVisited(const Segment& segment);

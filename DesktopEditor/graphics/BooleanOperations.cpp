@@ -329,13 +329,25 @@ PointD Curve::GetTangent(double t, double offset,
 
 Curve Curve::GetPart(double from, double to) const
 {
-	Curve result;
+	Curve result = *this;
 	if (from > to)
 		std::swap(from, to);
 	if (from > 0)
+	{
 		result = Subdivide(from)[1];
+		result.Segment2.HI.X -= result.Segment2.P.X;
+		result.Segment2.HI.Y -= result.Segment2.P.Y;
+		result.Segment2.HO.X -= result.Segment2.P.X;
+		result.Segment2.HO.Y -= result.Segment2.P.Y;
+	}
 	if (to < 1)
-		result = Subdivide((to - from) / (1 - from))[0];
+	{
+		result = result.Subdivide((to - from) / (1 - from))[0];
+		result.Segment2.HI.X -= result.Segment2.P.X;
+		result.Segment2.HI.Y -= result.Segment2.P.Y;
+		result.Segment2.HO.X -= result.Segment2.P.X;
+		result.Segment2.HO.Y -= result.Segment2.P.Y;
+	}
 	if (from > to)
 		result.Flip();
 	return result;
@@ -386,8 +398,8 @@ std::vector<std::pair<int, int>> Curve::GetOverlaps(const Curve& curve) const
 		 straight2 = curve.IsStraight(),
 		 straightBoth = straight1 && straight2;
 	std::vector<double>	x1 = GetXValues(),
-						x2 = GetYValues(),
-						y1 = curve.GetXValues(),
+						y1 = GetYValues(),
+						x2 = curve.GetXValues(),
 						y2 = curve.GetYValues();
 	double	px = swap ? x2[0] : x1[0],
 			py = swap ? y2[0] : y1[0],
@@ -400,15 +412,15 @@ std::vector<std::pair<int, int>> Curve::GetOverlaps(const Curve& curve) const
 		std::swap(y1, y2);
 	}
 	
-	double	d20 = getDistance(px, py, vx, vy, x2[0], y2[0]),
-			d23 = getDistance(px, py, vx, vy, x2[3], y2[3]);
+	double	d20 = getDistance(px, py, vx, vy, x2[0], y2[0], true),
+			d23 = getDistance(px, py, vx, vy, x2[3], y2[3], true);
 
 	if (d20 < GEOMETRIC_EPSILON && d23 < GEOMETRIC_EPSILON)
 	{
-		double	d11 = getDistance(px, py, vx, vy, x1[1], y1[1]),
-				d12 = getDistance(px, py, vx, vy, x1[2], y1[2]),
-				d21 = getDistance(px, py, vx, vy, x2[1], y2[1]),
-				d22 = getDistance(px, py, vx, vy, x2[2], y2[2]);
+		double	d11 = getDistance(px, py, vx, vy, x1[1], y1[1], true),
+				d12 = getDistance(px, py, vx, vy, x1[2], y1[2], true),
+				d21 = getDistance(px, py, vx, vy, x2[1], y2[1], true),
+				d22 = getDistance(px, py, vx, vy, x2[2], y2[2], true);
 
 		if (!straightBoth &&
 			d11 < GEOMETRIC_EPSILON &&
@@ -445,6 +457,9 @@ std::vector<std::pair<int, int>> Curve::GetOverlaps(const Curve& curve) const
 					 abs(pair.second - pairs[0].second) > TIME_EPSILON)
 			pairs.push_back(pair);
 		}
+
+		if (i > 2 && pairs.empty())
+			break;
 	}
 
 	if (pairs.size() != 2)
@@ -1625,7 +1640,7 @@ void CBooleanOperations::GetCurveIntersection(const Curve& curve1, const Curve& 
 			else if (straight1 || straight2)
 				AddCurveLineIntersection(c1, c2, flip);
 			else
-				AddCurveIntersection(c1, c2, flip);
+				AddCurveIntersection(c1, c2, c1, c2, flip);
 			if (!straight || Locations.size() == before)
 			{
 				for (int i = 0; i < 4; i++)
@@ -1698,7 +1713,7 @@ void CBooleanOperations::AddCurveLineIntersection(const Curve& curve1, const Cur
 	}
 }
 
-int CBooleanOperations::AddCurveIntersection(const Curve& curve1, const Curve& curve2, bool flip,
+int CBooleanOperations::AddCurveIntersection(Curve curve1, Curve curve2, const Curve& startCurve1, const Curve& startCurve2, bool flip,
 											int recursion, int calls, double tMin,
 											double tMax, double uMin, double uMax)
 {
@@ -1711,7 +1726,7 @@ int CBooleanOperations::AddCurveIntersection(const Curve& curve1, const Curve& c
 						y2 = curve2.GetYValues();
 	double	d1 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x2[1], y2[1]),
 			d2 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x2[2], y2[2]),
-			factor = d1 * d2 > 0 ? 3 / 4 : 4 / 9,
+			factor = (d1 * d2) > 0 ? 3.0 / 4.0 : 4.0 / 9.0,
 			dMin = factor * min(0, d1, d2),
 			dMax = factor * max(0, d1, d2),
 			dp0 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[0], y1[0]),
@@ -1720,17 +1735,13 @@ int CBooleanOperations::AddCurveIntersection(const Curve& curve1, const Curve& c
 			dp3 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[3], y1[3]);
 	std::vector<std::vector<PointD>> hull = getConvexHull(dp0, dp1, dp2, dp3);
 	std::vector<PointD>	top = hull[0],
-						bottom = hull[1],
-						reverseBottom = {bottom[1], bottom[0]},
-						reverseTop;
-	if (top.size() == 3)
-		reverseTop = {top[2], top[1], top[0]};
-	else
-		reverseTop = {top[3], top[2], top[1], top[0]};
-	double tMinClip, tMaxClip;
-	if ((d1 == 0 && d2 == 0 && dp0 == 0 && dp1 == 0 && dp2 == 0 && dp3 == 0) ||
-		(tMinClip = clipConvexHull(top, bottom, dMin, dMax)) == FLT_MIN ||
-		(tMaxClip = clipConvexHull(reverseTop, reverseBottom, dMin, dMax)) == FLT_MIN)
+						bottom = hull[1];
+	double tMinClip = clipConvexHull(top, bottom, dMin, dMax);
+	std::reverse(top.begin(), top.end());
+	std::reverse(bottom.begin(), bottom.end());
+	double tMaxClip = clipConvexHull(top, bottom, dMin, dMax);
+	if ((d1 == 0 && d2 == 0 && dp0 == 0 && dp1 == 0 && dp2 == 0 && dp3 == 0)
+		|| tMinClip == DBL_MIN || tMaxClip == DBL_MIN)
 		return calls;
 	
 	double	tMinNew = tMin + (tMax - tMin) * tMinClip,
@@ -1740,15 +1751,15 @@ int CBooleanOperations::AddCurveIntersection(const Curve& curve1, const Curve& c
 	{
 		double	t = (tMinNew + tMaxNew) / 2,
 				u = (uMin + uMax) / 2;
-		Curve	c1 = flip ? curve2 : curve1,
-				c2 = flip ? curve1 : curve2;
+		Curve	c1 = flip ? startCurve2 : startCurve1,
+				c2 = flip ? startCurve1 : startCurve2;
 		double	t1 = flip ? u : t,
 				t2 = flip ? t : u;
 		AddLocation(c1, c2, t1, t2);
 	}
 	else
 	{
-		Curve curve = curve1.GetPart(tMinClip, tMaxClip);
+		curve1 = curve1.GetPart(tMinClip, tMaxClip);
 		double uDiff = uMax - uMin;
 
 		if (tMaxClip - tMinClip > 0.8)
@@ -1757,29 +1768,45 @@ int CBooleanOperations::AddCurveIntersection(const Curve& curve1, const Curve& c
 			{
 				std::vector<Curve> parts = curve1.Subdivide(0.5);
 				double t = (tMinNew + tMaxNew) / 2;
-				calls = AddCurveIntersection(curve2, parts[0], !flip, recursion,
-											calls, uMin, uMax, tMinNew, t);
-				calls = AddCurveIntersection(curve2, parts[1], !flip, recursion,
-											calls, uMin, uMax, t, tMaxNew);
+				parts[0].Segment2.HI.X -= parts[0].Segment2.P.X;
+				parts[0].Segment2.HI.Y -= parts[0].Segment2.P.Y;
+				parts[0].Segment2.HO.X -= parts[0].Segment2.P.X;
+				parts[0].Segment2.HO.Y -= parts[0].Segment2.P.Y;
+				parts[1].Segment2.HI.X -= parts[1].Segment2.P.X;
+				parts[1].Segment2.HI.Y -= parts[1].Segment2.P.Y;
+				parts[1].Segment2.HO.X -= parts[1].Segment2.P.X;
+				parts[1].Segment2.HO.Y -= parts[1].Segment2.P.Y;
+				calls = AddCurveIntersection(curve2, parts[0], startCurve2, startCurve1,
+											!flip, recursion, calls, uMin, uMax, tMinNew, t);
+				calls = AddCurveIntersection(curve2, parts[1], startCurve2, startCurve1,
+											!flip, recursion, calls, uMin, uMax, t, tMaxNew);
 			}
 			else
 			{
 				std::vector<Curve> parts = curve2.Subdivide(0.5);
 				double u = (uMin + uMax) / 2;
-				calls = AddCurveIntersection(parts[0], curve1, !flip, recursion,
-											calls, uMin, u, tMinNew, tMaxNew);
-				calls = AddCurveIntersection(parts[1], curve1, !flip, recursion,
-											calls, u, uMax, tMinNew, tMaxNew);
+				parts[0].Segment2.HI.X -= parts[0].Segment2.P.X;
+				parts[0].Segment2.HI.Y -= parts[0].Segment2.P.Y;
+				parts[0].Segment2.HO.X -= parts[0].Segment2.P.X;
+				parts[0].Segment2.HO.Y -= parts[0].Segment2.P.Y;
+				parts[1].Segment2.HI.X -= parts[1].Segment2.P.X;
+				parts[1].Segment2.HI.Y -= parts[1].Segment2.P.Y;
+				parts[1].Segment2.HO.X -= parts[1].Segment2.P.X;
+				parts[1].Segment2.HO.Y -= parts[1].Segment2.P.Y;
+				calls = AddCurveIntersection(parts[0], curve1, startCurve2, startCurve1,
+											!flip, recursion, calls, uMin, u, tMinNew, tMaxNew);
+				calls = AddCurveIntersection(parts[1], curve1, startCurve2, startCurve1,
+											!flip, recursion, calls, u, uMax, tMinNew, tMaxNew);
 			}
 		}
 		else
 		{
 			if (uDiff == 0 || uDiff >= LINE_EPSILON)
-				calls = AddCurveIntersection(curve1, curve2, flip, recursion,
-											calls, uMin, uMax, tMinNew, tMaxNew);
+				calls = AddCurveIntersection(curve2, curve1, startCurve2, startCurve1,
+											!flip, recursion, calls, uMin, uMax, tMinNew, tMaxNew);
 			else
-				calls = AddCurveIntersection(curve1, curve2, flip, recursion,
-											calls, tMinNew, tMaxNew, uMin, uMax);
+				calls = AddCurveIntersection(curve1, curve2, startCurve1, startCurve2,
+											flip, recursion, calls, tMinNew, tMaxNew, uMin, uMax);
 		}
 	}
 	return calls;
@@ -1860,7 +1887,7 @@ void CBooleanOperations::DivideLocations()
 	ClearCurveHandles(clearCurves);
 }
 
-void CBooleanOperations::InsertLocation(std::shared_ptr<Location> loc)
+void CBooleanOperations::InsertLocation(std::shared_ptr<Location> loc, bool overlap)
 {
 	if (Locations.empty())
 	{
@@ -1881,8 +1908,32 @@ void CBooleanOperations::InsertLocation(std::shared_ptr<Location> loc)
 			loc->C.Segment1.Id == loc1->C.Segment1.Id)
 			return;
 
+		if (overlap)
+		{
+			for (int i = mid - 1; i >= -1; i--)
+			{
+				std::shared_ptr<Location> loc2 = Locations[((i % length) + length) % length];
+				if (getDistance(loc->C.GetPoint(loc->Time), loc2->C.GetPoint(loc2->Time)) > GEOMETRIC_EPSILON)
+					break;
+				if (isZero(loc->C.GetPoint(loc->Time).X - loc2->C.GetPoint(loc2->Time).X) &&
+					isZero(loc->C.GetPoint(loc->Time).Y - loc2->C.GetPoint(loc2->Time).Y) &&
+					loc->C.Segment1.Id == loc2->C.Segment1.Id)
+					return;
+			}
+			for (int i = mid + 1; i <= length; i++)
+			{
+				std::shared_ptr<Location> loc2 = Locations[((i % length) + length) % length];
+				if (getDistance(loc->C.GetPoint(loc->Time), loc2->C.GetPoint(loc2->Time)) > GEOMETRIC_EPSILON)
+					break;
+				if (isZero(loc->C.GetPoint(loc->Time).X - loc2->C.GetPoint(loc2->Time).X) &&
+					isZero(loc->C.GetPoint(loc->Time).Y - loc2->C.GetPoint(loc2->Time).Y) &&
+					loc->C.Segment1.Id == loc2->C.Segment1.Id)
+					return;
+			}
+		}
+
 		double diffId = loc->C.Segment1.Id - loc1->C.Segment1.Id,
-			  diffT = (loc->C.Segment1.Index + loc->Time) - (loc1->C.Segment1.Index + loc1->Time);
+			   diffT = (loc->C.Segment1.Index + loc->Time) - (loc1->C.Segment1.Index + loc1->Time);
 		bool  self = loc->C.Segment1.Id == loc1->C.Segment1.Id;
 		double diff = self ? (diffT) : (diffId);
 		if (diff < 0)

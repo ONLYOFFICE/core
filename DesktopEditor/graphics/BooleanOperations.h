@@ -153,6 +153,7 @@ namespace Aggplus
 	{
 	public:
 		CBooleanOperations(CGraphicsPath* path1, CGraphicsPath* path2, BooleanOpType op);
+		~CBooleanOperations();
 		CGraphicsPath* GetResult();
 
 		// BooleanOp
@@ -216,7 +217,8 @@ namespace Aggplus
 		std::vector<Curve> Curves2;
 
 		std::vector<std::shared_ptr<Location>> Locations;
-		bool OverlapOnly[2] = {true, true};
+
+		bool IsDeleted;
 	};
 } // namespace Aggplus
 

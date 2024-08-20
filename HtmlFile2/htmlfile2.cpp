@@ -3472,7 +3472,10 @@ private:
 		if (bCross && sFootnote == L"href")
 			sFootnote = sRef.substr(sRef.find('#') + 1);
 
-		wrP(oXml, sSelectors, oTS);
+		if (!OpenP(oXml))
+			CloseR(oXml);
+		else
+			wrP(oXml, sSelectors, oTS);
 
 		// Перекрестная ссылка внутри файла
 		if(bCross)
@@ -3553,7 +3556,7 @@ private:
 				}
 			}
 
-			CloseP(oXml, sSelectors);
+			// CloseP(oXml, sSelectors);
 		}
 
 		sNote.clear();

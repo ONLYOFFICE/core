@@ -1070,7 +1070,7 @@ public:
 			if (NSCSS::UnitMeasure::Percent == m_oStyles.m_oWidth.GetUnitMeasure())
 				oTable += L"<w:tblW w:w=\"" + std::to_wstring(m_oStyles.m_oWidth.ToInt(NSCSS::UnitMeasure::Percent, 5000)) + L"\" w:type=\"pct\"/>";
 			else
-				oTable += L"<w:tblInd w:w=\"" + std::to_wstring(m_oStyles.m_oWidth.ToInt(NSCSS::UnitMeasure::Twips)) + L"\" w:type=\"dxa\"/>";
+				oTable += L"<w:tblW w:w=\"" + std::to_wstring(m_oStyles.m_oWidth.ToInt(NSCSS::UnitMeasure::Twips)) + L"\" w:type=\"dxa\"/>";
 		}
 		else
 			oTable += L"<w:tblW w:w=\"0\" w:type=\"auto\"/>";
@@ -3004,10 +3004,13 @@ private:
 					oTrTS.bAddSpaces     = true;
 					m_oState.m_bWasSpace = true;
 
-					while (m_oLightReader.ReadNextSiblingNode(nTrDepth) && (L"td" == m_oLightReader.GetName() || L"th" == m_oLightReader.GetName()))
+					while (m_oLightReader.ReadNextSiblingNode(nTrDepth))
 					{
+						if (L"td" != m_oLightReader.GetName() && L"th" != m_oLightReader.GetName())
+							continue;
+
 						GetSubClass(pCell->GetData(), sSelectors);
-						readStream(pCell->GetData(), sSelectors, oTrTS, true);
+						readStream(pCell->GetData(), sSelectors, oTrTS);
 						sSelectors.pop_back();
 					}
 				}
@@ -3037,8 +3040,7 @@ private:
 
 		const int nDepth = m_oLightReader.GetDepth();
 
-		#ifdef DESABLE_RUBY_SUPPORT
-
+		#ifdef DISABLE_RUBY_SUPPORT
 		wrP(oXml, sSelectors, oTS);
 
 		while (m_oLightReader.ReadNextSiblingNode2(nDepth))
@@ -3472,7 +3474,10 @@ private:
 		if (bCross && sFootnote == L"href")
 			sFootnote = sRef.substr(sRef.find('#') + 1);
 
-		wrP(oXml, sSelectors, oTS);
+		if (!OpenP(oXml))
+			CloseR(oXml);
+		else
+			wrP(oXml, sSelectors, oTS);
 
 		// Перекрестная ссылка внутри файла
 		if(bCross)
@@ -3553,7 +3558,7 @@ private:
 				}
 			}
 
-			CloseP(oXml, sSelectors);
+			// CloseP(oXml, sSelectors);
 		}
 
 		sNote.clear();

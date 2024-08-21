@@ -164,6 +164,8 @@ public:
 	bool inViewTable;
 	bool inView;
 
+	_CP_OPT(double) tab_distance_;
+
 	std::map<std::wstring, std::wstring> map_user_defineds;
 };
 
@@ -255,6 +257,17 @@ void settings_container::add_view(const std::wstring & name, const std::wstring 
 		impl_->common_view.map_[name] = impl_->common_view.array_.size() - 1;    
 	}
 }
+
+void settings_container::set_tab_distance(double pt)
+{
+	impl_->tab_distance_ = pt * 20;
+}
+
+_CP_OPT(double) settings_container::get_tab_distance()
+{
+	return impl_->tab_distance_;
+}
+
 std::pair<std::wstring, std::wstring> settings_container::get_table_view(int index_view, const std::wstring & table_name, int index)
 {
 	std::pair<std::wstring, std::wstring> value;

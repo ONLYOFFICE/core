@@ -562,6 +562,8 @@ namespace OOX
 			XLS::BaseObjectPtr objectPtr(ptr);
 			if(m_oBlackAndWhite.IsInit())
 				ptr->fNoColor  = m_oBlackAndWhite->m_eValue;
+			else
+				ptr->fNoColor = false;
 			if (ptr->fNoColor && m_oCellComments.IsInit())
 			{
 				if (m_oCellComments == SimpleTypes::Spreadsheet::ECellComments::cellcommentsAtEnd)
@@ -577,9 +579,13 @@ namespace OOX
 
 			if (m_oDraft.IsInit())
 				ptr->fDraft = m_oDraft->m_eValue;
+			else
+				ptr->fDraft = false;
 
 			if (m_oErrors.IsInit())
 				ptr->iErrors = m_oErrors->m_eValue;
+			else
+				ptr->iErrors = 0;
 
 			if (m_oFirstPageNumber.IsInit())
 				ptr->iPageStart = m_oFirstPageNumber->m_eValue;
@@ -643,7 +649,9 @@ namespace OOX
 
 			if (m_oVerticalDpi.IsInit())
 				ptr->iVRes = m_oVerticalDpi->m_eValue;
-
+			else
+				ptr->iVRes = 0;
+			ptr->fEndNotes = false;
 			return objectPtr;
 		}
 		XLS::BaseObjectPtr CPageSetup::toBinCs()
@@ -653,6 +661,8 @@ namespace OOX
 
 			if(m_oBlackAndWhite.IsInit())
 				ptr->fNoColor  = m_oBlackAndWhite->m_eValue;
+			else
+				ptr->fNoColor = false;
 			if (ptr->fNoColor)
 			{
 				if (m_oCellComments == SimpleTypes::Spreadsheet::ECellComments::cellcommentsAtEnd)
@@ -660,19 +670,24 @@ namespace OOX
 				else if(m_oCellComments == SimpleTypes::Spreadsheet::ECellComments::cellcommentsAsDisplayed)
 					ptr->fNotes = false;
 			}
-
+			ptr->fEndNotes = false;
 			if (m_oCopies.IsInit())
 				ptr->iCopies = m_oCopies->m_eValue;
+			else
+				ptr->iCopies = 0;
 
 			if (m_oDraft.IsInit())
 				ptr->fDraft = m_oDraft->m_eValue;
-
+			else
+				ptr->fDraft = 0;
 			if (m_oFirstPageNumber.IsInit())
 				ptr->iPageStart = m_oFirstPageNumber->m_eValue;
-
+			else
+				ptr->iPageStart = 0;
 			if (m_oHorizontalDpi.IsInit())
 				ptr->iRes = m_oHorizontalDpi->m_eValue;
-
+			else
+				ptr->iRes = 0;
 			if (m_oRId.IsInit())
 				ptr->szRelID = m_oRId->GetValue();
 
@@ -686,12 +701,22 @@ namespace OOX
 
 			if (m_oPaperSize.IsInit())
 				ptr->iPaperSize = m_oPaperSize->m_eValue;
+			else
+				ptr->iPaperSize = 9;
+
+			if (m_oScale.IsInit())
+				ptr->iScale = m_oScale->m_eValue;
+			else
+				ptr->iScale = 100;
 
 			if (m_oUseFirstPageNumber.IsInit())
 				ptr->fUsePage = m_oUseFirstPageNumber->m_eValue;
-
+			else
+				ptr->fUsePage = false;
 			if (m_oVerticalDpi.IsInit())
 				ptr->iVRes = m_oVerticalDpi->m_eValue;
+			else
+				ptr->iVRes = 0;
 			return objectPtr;
 		}
 

@@ -873,6 +873,9 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 				list_style_name = odt_context->styles_context()->lists_styles().get_style_name(list_style_id); 
 				odt_context->styles_context()->last_state()->set_list_style_name(list_style_name);
 			}
+			
+			if(oox_paragraph->m_oParagraphProperty)
+				convert(oox_paragraph->m_oParagraphProperty->m_oRPr.GetPointer(), text_properties);
 		}
 		if (odt_context->in_drop_cap())
 		{

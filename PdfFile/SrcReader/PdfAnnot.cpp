@@ -1846,7 +1846,10 @@ CAnnotTextMarkup::CAnnotTextMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageI
 	oObj.free();
 
 	if (sType == "Highlight")
+	{
 		m_nSubtype = 8;
+		m_unAFlags &= ~(1 << 6);
+	}
 	else if (sType == "Underline")
 		m_nSubtype = 9;
 	else if (sType == "Squiggly")

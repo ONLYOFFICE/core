@@ -37,6 +37,7 @@
 #include "../../DesktopEditor/xmlsec/src/include/CertificateCommon.h"
 #include "../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h"
 #include "../../DesktopEditor/raster/BgraFrame.h"
+#include "../../DjVuFile/DjVu.h"
 #include "../PdfFile.h"
 
 class CPdfFileTest : public testing::Test
@@ -164,6 +165,17 @@ std::wstring CPdfFileTest::wsDstFile;
 std::wstring CPdfFileTest::strDirIn;
 std::wstring CPdfFileTest::strDirOut;
 std::wstring CPdfFileTest::strDiffs;
+
+TEST_F(CPdfFileTest, DjVuToPdf)
+{
+	GTEST_SKIP();
+
+	CDjVuFile* pDjVu = new CDjVuFile(pApplicationFonts);
+	pDjVu->LoadFromFile(NSFile::GetProcessDirectory() + L"/test.djvu");
+	pDjVu->ConvertToPdf(wsDstFile);
+
+	RELEASEOBJECT(pDjVu);
+}
 
 TEST_F(CPdfFileTest, GetMetaData)
 {

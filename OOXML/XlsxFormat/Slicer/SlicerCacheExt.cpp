@@ -652,6 +652,10 @@ XLS::BaseObjectPtr CSlicerRef::toBin()
 	XLS::BaseObjectPtr objectPtr(ptr);
 	auto ptr1(new XLSB::BeginSlicerEx);
 	ptr1->FRTheader.relID.relId = m_oRId->GetValue();
+	ptr1->FRTheader.fRelID = true;
+	ptr1->FRTheader.fRef = false;
+	ptr1->FRTheader.fSqref = false;
+	ptr1->FRTheader.fFormula = false;
 	ptr->m_BrtBeginSlicerEx = XLS::BaseObjectPtr{ptr1};
 
 	return objectPtr;
@@ -662,6 +666,10 @@ XLS::BaseObjectPtr CSlicerRef::toBinTable()
 	XLS::BaseObjectPtr objectPtr(ptr);
 	auto ptr1(new XLSB::BeginSlicerEx);
 	ptr1->FRTheader.relID.relId = m_oRId->GetValue();
+	ptr1->FRTheader.fRelID = true;
+	ptr1->FRTheader.fRef = false;
+	ptr1->FRTheader.fSqref = false;
+	ptr1->FRTheader.fFormula = false;
 	ptr->m_BrtBeginSlicerEx = XLS::BaseObjectPtr{ptr1};
 
 	return objectPtr;

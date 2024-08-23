@@ -101,6 +101,7 @@ namespace Aggplus
 
 		// Methods for Path Clip
 		bool IsClockwise() const;
+		bool IsMovePoint(size_t idx) const;
 		bool IsCurvePoint(size_t idx) const;
 		std::vector<PointD> GetPoints(size_t idx, size_t count) const;
 		double GetArea() const;

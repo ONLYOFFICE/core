@@ -733,6 +733,11 @@ namespace Aggplus
 		return GetArea() >= 0;
 	}
 
+	bool CGraphicsPath::IsMovePoint(size_t idx) const
+	{
+		return this->m_internal->m_agg_ps.command(idx) == agg::path_cmd_move_to;
+	}
+
 	bool CGraphicsPath::IsCurvePoint(size_t idx) const
 	{
 		return this->m_internal->m_agg_ps.command(idx) == agg::path_cmd_curve4;

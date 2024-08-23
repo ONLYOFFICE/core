@@ -1057,43 +1057,54 @@ void CBooleanOperations::TraceBoolean()
 
 	GetIntersection();
 
-	int length = Locations.size() - 1;
-	for (int i = 0; i <= length; i++)
+	if (!Locations.empty())
 	{
-		int before = Locations.size();
-		InsertLocation(Locations[i]->Inters, false);
-		if (before == Locations.size())
-			Locations.erase(Locations.begin() + i);
+		int length = Locations.size() - 1;
+		for (int i = 0; i <= length; i++)
+		{
+			int before = Locations.size();
+			InsertLocation(Locations[i]->Inters, false);
+			if (before == Locations.size())
+				Locations.erase(Locations.begin() + i);
+		}
+
+		DivideLocations();
+
+		for (const auto& l : Locations)
+		{
+			Winding winding;
+			Segment start = l->S,
+				s = GetNextSegment(l->S);
+
+			if (s == Segment() || (bool)s.Inters || s == start)
+				continue;
+
+			int count = 0;
+			for (const auto& c : (s.Id == 1 ? Curves2 : Curves1))
+				count += CheckInters(PointD(), s, c);
+
+			winding.W = count % 2;
+
+			do
+			{
+				if (s.Id == 1 )
+					Segments1[s.Index].Wind = std::make_shared<Winding>(winding);
+				else
+					Segments2[s.Index].Wind = std::make_shared<Winding>(winding);
+				s = GetNextSegment(s);
+			} while (s != Segment() && !(bool)s.Inters && s != start);
+		}
 	}
-
-	DivideLocations();
-
-	if (Locations.empty())
-		return;
-
-	for (const auto& l : Locations)
+	else
 	{
 		Winding winding;
-		Segment start = l->S,
-			s = GetNextSegment(l->S);
+		winding.W = 0;
 
-		if (s == Segment() || (bool)s.Inters || s == start)
-			continue;
+		for (auto& s : Segments1)
+			s.Wind = std::make_shared<Winding>(winding);
 
-		int count = 0;
-		for (const auto& c : (s.Id == 1 ? Curves2 : Curves1))
-			count += CheckInters(PointD(), s, c);
-
-		winding.W = count % 2;
-
-		do
-		{
-			if (s.Id == 1 )
-				Segments1[s.Index].Wind = std::make_shared<Winding>(winding);
-			else
-				Segments2[s.Index].Wind = std::make_shared<Winding>(winding);
-			s = GetNextSegment(s);
-		} while (s != Segment() && !(bool)s.Inters && s != start);
+		for (auto& s : Segments2)
+			s.Wind = std::make_shared<Winding>(winding);
 	}
 
 	Segments = Segments1;
@@ -1127,7 +1138,7 @@ void CBooleanOperations::TracePaths()
 			 start = true;
 		while (valid)
 		{
-			if (Op != Union && Op != Subtraction || !start)
+			if (!start || Op == Intersection && s.Inters)
 				SetVisited(s);
 			if (start)
 			{
@@ -1152,7 +1163,7 @@ void CBooleanOperations::TracePaths()
 				SetVisited(prev.Inters->S);
 				valid = s.IsValid(Op);
 			}
-		}
+		}			
 	}
 	Result->CloseFigure();
 }
@@ -1273,11 +1284,7 @@ void CBooleanOperations::InsertSegment(const Segment& segment, const Segment& ha
 
 Curve CBooleanOperations::GetCurve(const Segment& segment) const
 {
-	bool path1 = segment.Id == 1;
-	if (segment.Path->Is_poly_closed() &&
-		segment.Index == (path1 ? Segments1.size() - 1 : Segments2.size() - 1))
-		return path1 ? Curves1[segment.Index - 1] : Curves2[segment.Index - 1];
-	return path1 ? Curves1[segment.Index] : Curves2[segment.Index];
+	return segment.Id == 1 ? Curves1[segment.Index] : Curves2[segment.Index];
 }
 
 Curve Winding::GetPreviousCurve(const Curve& curve) const
@@ -1837,37 +1844,27 @@ int CBooleanOperations::AddCurveIntersection(Curve curve1, Curve curve2, const C
 
 void CBooleanOperations::DivideLocations()
 {
-	std::vector<std::shared_ptr<Location>> result;
-	std::vector<Curve> clearCurves;
-	bool	ClearHandles = false;
-	Curve	prevCurve;
 	double	tMin = CURVETIME_EPSILON,
-			tMax = 1 - tMin,
-			prevTime = -1.0;
+			tMax = 1 - tMin;
 
 	for (int i = Locations.size() - 1; i >= 0; i--)
 	{
 		std::shared_ptr<Location> loc = Locations[i];
 		double	origTime = loc->Time,
-				time = loc->Time;
-		Segment segment, handles;
-		Curve	curve = loc->C;
-		Curve	newCurve;
+				time = origTime,
+				prevTime;
+		Segment segment;
+		Curve	curve = GetCurve(loc->C.Segment1),
+				newCurve, prevCurve;
 		bool updateHandles = false;
 
-		// if (loc->C != prevCurve)
-		// {
-		// 	ClearHandles = !curve.HasHandle();
-		// 	prevCurve = curve;
-		// }
-		// else if (prevTime >= tMin)
-		// {
-		// 	time /= prevTime;
-		// }
+		if (loc->C != prevCurve)
+			prevCurve = loc->C;
+		else if (prevTime >= tMin)
+			time /= prevTime;
 
-		// curve = loc->C.Segment1.Id == 1 ? Curves1[loc->C.Segment1.Index]
-		// 								: Curves2[loc->C.Segment1.Index];
-		// prevTime = origTime;
+		prevTime = origTime;
+
 		if (time < tMin)
 		{
 			segment = curve.Segment1;
@@ -1881,11 +1878,6 @@ void CBooleanOperations::DivideLocations()
 			newCurve = curve.Segment1.Id == 1 ?
 					   curve.DivideAtTime(time, Segments1, Curves1) :
 					   curve.DivideAtTime(time, Segments2, Curves2);
-			if (ClearHandles)
-			{
-				clearCurves.push_back(curve);
-				clearCurves.push_back(newCurve);
-			}			
 			segment = newCurve.Segment1;
 			updateHandles = true;
 		}
@@ -1907,7 +1899,6 @@ void CBooleanOperations::DivideLocations()
 		InsertSegment(segment, newCurve.Segment2, updateHandles);
 		loc->S = segment;
 	}
-	ClearCurveHandles(clearCurves);
 }
 
 void CBooleanOperations::InsertLocation(std::shared_ptr<Location> loc, bool overlap)

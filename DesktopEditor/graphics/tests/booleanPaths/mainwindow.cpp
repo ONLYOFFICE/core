@@ -194,6 +194,8 @@ void MainWindow::AddPath(NSGraphics::IGraphicsRenderer* pathRenderer, Aggplus::C
 											 points[i + 1].Y,points[i + 2].X, points[i + 2].Y);
 			i += 2;
 		}
+		else if (path->IsMovePoint(i))
+			pathRenderer->PathCommandMoveTo(points[i].X, points[i].Y);
 		else
 			pathRenderer->PathCommandLineTo(points[i].X, points[i].Y);
 	}

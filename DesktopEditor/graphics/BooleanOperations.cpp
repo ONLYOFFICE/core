@@ -7,7 +7,8 @@ Segment::Segment() :
 	HI(PointD()),
 	HO(PointD()),
 	Id(0),
-	Index(0) {}
+	Index(0),
+	Winding(0) {}
 
 Segment::Segment(const std::vector<PointD>& points, bool isCurve,
 				 int index, int id, CGraphicsPath* path) :
@@ -15,6 +16,7 @@ Segment::Segment(const std::vector<PointD>& points, bool isCurve,
 	Visited(false),
 	Index(index), 
 	Id(id),
+	Winding(0),
 	Path(path)
 {
 	if (IsCurve)
@@ -37,6 +39,19 @@ Segment::Segment(const PointD& p, const PointD& hi, const PointD& ho) :
 		IsCurve = true;
 }
 
+void Segment::SetHandles(const PointD &hi, const PointD &ho)
+{
+	IsCurve = true;
+	HI = PointD(hi.X - P.X, hi.Y - P.Y);
+	HO = PointD(ho.X - P.X, ho.Y - P.Y);
+}
+
+void Segment::UpdateHandles(const PointD &hi, const PointD &ho)
+{
+	HI = hi;
+	HO = ho;
+}
+
 bool Segment::IsValid(BooleanOpType op) const
 {
 	if (Visited)
@@ -45,19 +60,14 @@ bool Segment::IsValid(BooleanOpType op) const
 		return true;
 	if (op == Subtraction)
 	{
-		if (Id == 1 && Wind->W == 0)
+		if (Id == 1 && Winding == 0)
 			return true;
-		else if (Id == 2 && Wind->W == 1)
+		else if (Id == 2 && Winding == 1)
 			return true;
 	}
-	else if (Wind->W == op)
+	else if (Winding == op)
 		return true;
 	return false;
-}
-
-bool Segment::Equals(const PointD& other) const
-{
-	return isZero(P.X - other.X) && isZero(P.Y - other.Y);
 }
 
 bool Segment::operator==(const Segment& other) const
@@ -353,43 +363,6 @@ Curve Curve::GetPart(double from, double to) const
 	return result;
 }
 
-std::vector<Curve> Curve::GetMonoCurves(bool dir) const
-{
-	std::vector<Curve>	curves;
-	std::vector<double>	x = dir ? GetXValues() : GetYValues();
-	bool cmpO1 = (x[0] >= x[1]) == (x[1] >= x[2]),
-		 cmpO2 = (x[1] >= x[2]) == (x[2] >= x[3]);
-	if ((cmpO1 && cmpO2) || IsStraight())
-		curves.push_back(*this);
-	else
-	{
-		std::vector<double> roots;
-		double	a = 3 * (x[1] - x[2]) - x[0] + x[3],
-				b = 2 * (x[0] + x[2]) - 4 * x[1],
-				c = x[1] - x[0],
-				tMin = CURVETIME_EPSILON,
-				tMax = 1 - tMin,
-				n = solveQuadratic(a, b, c, roots, tMin, tMax);
-		if (n == 0)
-			curves.push_back(*this);
-		else
-		{
-			std::sort(roots.begin(), roots.end());
-			double t = roots[0];
-			std::vector<Curve> parts = Subdivide(t);
-			curves.push_back(parts[0]);
-			if (n > 1)
-			{
-				t = (roots[1] - t) / (1- t);
-				parts = Subdivide(t);
-				curves.push_back(parts[0]);
-			}
-			curves.push_back(parts[1]);
-		}
-	}
-	return curves;
-}
-
 std::vector<std::pair<int, int>> Curve::GetOverlaps(const Curve& curve) const
 {
 	bool swap = this->GetSquaredLineLength() <
@@ -525,8 +498,7 @@ std::vector<Curve> Curve::Subdivide(double t) const
 			Curve(x2[5], y2[5], x2[4], y2[4], x2[2], y2[2], x[3], y[3])};
 }
 
-Curve Curve::DivideAtTime(double time, std::vector<Segment>& segments,
-						  std::vector<Curve>& curves)
+Curve Curve::DivideAtTime(double time)
 {
 	double	tMin = CURVETIME_EPSILON,
 			tMax = 1 - tMin;
@@ -537,26 +509,26 @@ Curve Curve::DivideAtTime(double time, std::vector<Segment>& segments,
 		Curve	left = parts[0],
 				right = parts[1];
 
-		std::vector<PointD> points({left.Segment2.P});
-		if (!IsStraight())
-			points.insert(points.begin(), {PointD(), PointD()});
-		Segment segment = Segment(points,
-								  !IsStraight(),
+		Segment segment = Segment({left.Segment2.P},
+								  false,
 								  Segment1.Index + 1,
 								  Segment1.Id,
 								  Segment1.Path);
 
-		segment.HI = PointD(left.Segment2.HI.X - left.Segment2.P.X,
-							left.Segment2.HI.Y - left.Segment2.P.Y);
-		segment.HO = PointD(left.Segment2.HO.X - left.Segment2.P.X,
-							 left.Segment2.HO.Y - left.Segment2.P.Y);
-		Segment2.HI = PointD(right.Segment2.HI.X - right.Segment2.P.X,
-							 right.Segment2.HI.Y - right.Segment2.P.Y);
-		Segment2.HO = PointD(right.Segment2.HO.X - right.Segment2.P.X,
-							 right.Segment2.HO.Y - right.Segment2.P.Y);
-		Segment tmp = Segment2;
-		Segment2 = segment;
-		return Curve(segment, tmp);
+		if (!IsStraight())
+		{
+			segment.SetHandles(left.Segment2.HI, left.Segment2.HO);
+			Segment2.SetHandles(right.Segment2.HI, right.Segment2.HO);
+		}
+		// segment.HI = PointD(left.Segment2.HI.X - left.Segment2.P.X,
+		// 					left.Segment2.HI.Y - left.Segment2.P.Y);
+		// segment.HO = PointD(left.Segment2.HO.X - left.Segment2.P.X,
+		// 					 left.Segment2.HO.Y - left.Segment2.P.Y);
+		// Segment2.HI = PointD(right.Segment2.HI.X - right.Segment2.P.X,
+		// 					 right.Segment2.HI.Y - right.Segment2.P.Y);
+		// Segment2.HO = PointD(right.Segment2.HO.X - right.Segment2.P.X,
+		// 					 right.Segment2.HO.Y - right.Segment2.P.Y);
+		return Curve(segment, Segment2);
 	}
 	return Curve();
 }
@@ -658,20 +630,6 @@ void Curve::Flip()
 	std::swap(Segment1.HI, Segment1.HO);
 }
 
-void Curve::ClearHandles()
-{
-	Segment2.HI = PointD();
-	Segment2.HO = PointD();
-}
-
-bool Curve::HasHandle() const
-{
-	return	!isZero(Segment2.HI.X) ||
-			!isZero(Segment2.HI.Y) ||
-			!isZero(Segment2.HO.X) ||
-			!isZero(Segment2.HO.Y);
-}
-
 bool Curve::IsStraight() const
 {
 	return !Segment2.IsCurve;
@@ -719,279 +677,12 @@ bool Location::IsTouching()
 								  c2.Segment2.P.Y).Equals(PointD());
 }
 
-bool Location::operator==(const Location& other)
-{
-	return isZero(C.GetPoint(Time).X - other.C.GetPoint(other.Time).X) &&
-		   isZero(C.GetPoint(Time).Y - other.C.GetPoint(other.Time).Y) &&
-		   C.Segment1.Id == other.C.Segment1.Id;
-}
-
-Branch::Branch() :
-	Start(0.0),
-	HI(PointD()) {}
-
-Branch::Branch(double start, const std::vector<Segment>& crossings, const PointD& hi) :
-	Start(start),
-	Crossings(crossings),
-	HI(hi) {}
-
-Winding::Winding() :
-	Prev(Curve()),
-	OnPath(false),
-	OnAnyPath(false),
-	DontFlip(false),
-	W(0.0),
-	Quality(1.0),
-	WindingLeft(0.0),
-	WindingRight(0.0),
-	PathWindingLeft(0.0),
-	PathWindingRight(0.0) {}
-
-void Winding::Copy(Winding* wind)
-{
-	OnAnyPath		= wind->OnAnyPath;
-	W				= wind->W;
-	Quality			= wind->Quality;
-	WindingLeft 	= wind->WindingLeft;
-	WindingRight	= wind->WindingRight;
-}
-
-void Winding::Reset()
-{
-	OnPath = false;
-	OnAnyPath = false;
-	Roots.clear();
-	Prev = Curve();
-}
-
-void Winding::SetDirection(bool direction)
-{
-	Direction = direction;
-}
-
-void Winding::SetPoint(const PointD& point)
-{
-	PointAbscissas		= Direction ? point.Y : point.X;
-	PointOrdinat		= Direction ? point.X : point.Y;
-	PointAbscissasLeft	= PointAbscissas - WINDING_EPSILON;
-	PointAbscissasRight	= PointAbscissas + WINDING_EPSILON;
-}
-
-void Winding::SetCurves(const std::vector<Curve>& curvesHor, const std::vector<Curve>& curvesVer)
-{
-	Curves = Direction ? curvesHor : curvesVer;
-	CurvesHor = curvesHor;
-	CurvesVer = curvesVer;
-}
-
-Winding* Winding::AddWinding(const Curve& curve)
-{
-	std::vector<double>	x = Direction ? curve.GetXValues() : curve.GetYValues(),
-						y = Direction ? curve.GetYValues() : curve.GetXValues(),
-						xPrev = Prev.GetXValues(),
-						yPrev = Prev.GetYValues();
-
-	if (PointOrdinat < std::min(x[0], x[3]) ||
-		PointOrdinat > std::max(x[0], x[3]))
-		return nullptr;
-
-	if (x[0] == x[3])
-	{
-		bool a0InRange = y[0] < PointAbscissasRight &&
-						 y[3] > PointAbscissasLeft,
-			 a3InRange = y[3] < PointAbscissasRight &&
-						 y[0] > PointAbscissasLeft;
-		if (a0InRange || a3InRange)
-			OnPath = true;
-		return nullptr;
-	}
-
-	double t;
-	if (PointOrdinat == x[0] || PointOrdinat == x[3])
-		t = PointOrdinat == x[0] ? 0.0 : 1.0;
-	else if (PointAbscissasLeft > max(y[0], y[1], y[2], y[3]) ||
-			 PointAbscissasRight < min(y[0], y[1], y[2], y[3]))
-		t = 1.0;
-	else
-	{
-		int count =	curve.SolveCubic(Direction ? 0 : 1, PointOrdinat,
-									 Roots, 0, 1);
-		t = count > 0 ? Roots[0] : 1.0;
-	}
-
-	double abscis;
-	if (t == 0.0 || t == 1.0)
-		abscis = t == 0.0 ? y[0] : y[3];
-	else
-	{
-		PointD pt = curve.GetPoint(t);
-		abscis = Direction ? pt.Y : pt.X;
-	}
-
-	double	winding = x[0] > x[3] ? 1.0 : -1.0;
-	bool	dirDiff = Direction ? xPrev[0] > xPrev[3] : yPrev[0] > yPrev[3];
-	double	windingPrev = dirDiff ? 1.0 : -1.0;
-	double	a3Prev = Direction ? yPrev[3] : xPrev[3];
-
-	if (PointOrdinat != x[0])
-	{
-		if (abscis < PointAbscissasLeft)
-			PathWindingLeft += winding;
-		else if (abscis > PointAbscissasRight)
-			PathWindingRight += winding;
-		else
-			OnPath = true;
-
-		if (abscis > (PointAbscissas - QUALITI_EPSILON) &&
-			abscis < (PointAbscissas + QUALITI_EPSILON))
-			Quality /= 2;
-	}
-	else
-	{
-		if (winding != windingPrev)
-		{
-			if (y[0] < PointAbscissasLeft)
-				PathWindingLeft += winding;
-			else if (y[0] > PointAbscissasRight)
-				PathWindingRight += winding;
-		}
-		else if (y[0] != a3Prev)
-		{
-			if (a3Prev < PointAbscissasRight && abscis > PointAbscissasRight)
-			{
-				PathWindingRight += winding;
-				OnPath = true;
-			}
-			else if (a3Prev > PointAbscissasLeft && abscis < PointAbscissasLeft)
-			{
-				PathWindingLeft += winding;
-				OnPath = true;
-			}
-		}
-		Quality /= 4;
-	}
-	Prev = curve;
-
-	PointD	pt = curve.GetTangent(t);
-	bool	inRange = abscis > PointAbscissasLeft &&
-					  abscis < PointAbscissasRight &&
-					  (Direction ? pt.X : pt.Y) == 0.0;
-	if (DontFlip || !inRange)
-		return nullptr;
-
-	Winding* newWind	= new Winding;
-	newWind->DontFlip	= true;
-	newWind->SetDirection(!Direction);
-	newWind->SetPoint(PointD(PointAbscissas, PointOrdinat));
-	newWind->SetCurves(CurvesHor, CurvesVer);
-	newWind->Curves1 = Curves1;
-	newWind->Curves2 = Curves2;
-	newWind->GetWinding();
-	return newWind;
-}
-
-Winding* Winding::HandleCurve(const Curve& curve)
-{
-	std::vector<double>	x = Direction ? curve.GetXValues() : curve.GetYValues(),
-						y = Direction ? curve.GetYValues() : curve.GetXValues();
-
-	if (PointOrdinat <= max(x[0], x[1], x[2], x[3]) &&
-		PointOrdinat >= min(x[0], x[1], x[2], x[3]))
-	{
-		std::vector<Curve> monoCurves;
-		if (PointAbscissasLeft > max(y[0], y[1], y[2], y[3]) ||
-			PointAbscissasRight < min(y[0], y[1], y[2], y[3]))
-			monoCurves.push_back(curve);
-		else
-			monoCurves = curve.GetMonoCurves(Direction);
-		for (const auto& c : monoCurves)
-		{
-			Winding* wind = AddWinding(c);
-			if (wind != nullptr)
-				return wind;
-		}
-	}
-	return nullptr;
-}
-
-void Winding::GetWinding()
-{
-	for (int i = 0; i < Curves.size(); i++)
-	{
-		Curve close;
-		if (i == 0 || Curves[i - 1].Segment1.Id != Curves[i].Segment1.Id)
-		{
-			Prev = Curve();
-			bool path1 = Curves[i].Segment1.Id == 1;
-			if (!Curves[i].Segment1.Path->Is_poly_closed())
-			{
-				close = path1 ? Curve(Curves1[Curves1.size() - 1].Segment2, Curves[i].Segment1)
-							  : Curve(Curves2[Curves2.size() - 1].Segment2, Curves[i].Segment1);
-				std::vector<double> x = close.GetXValues(),
-									y = close.GetYValues();
-				if ((Direction ? x[0] : y[0]) != (Direction ? x[3] : y[3]))
-					Prev = close;
-			}
-
-			if (Prev == Curve())
-			{
-				Prev = Curves[i];
-				Curve prev = path1 ? Curves1[Curves1.size() - 1]
-								   : Curves2[Curves2.size() - 1];
-				while (prev != Curve() && prev != Curves[i])
-				{
-					std::vector<double>	x = prev.GetXValues(),
-										y = prev.GetYValues();
-
-					if ((Direction ? x[0] : y[0]) != (Direction ? x[3] : y[3]))
-					{
-						Prev = prev;
-						break;
-					}
-					prev = GetPreviousCurve(prev);
-				}
-			}
-		}
-
-		Winding* wind = HandleCurve(Curves[i]);
-		if (wind != nullptr)
-		{
-			this->Copy(wind);
-			return;
-		}
-
-		if (i + 1 == Curves.size() || Curves[i + 1].Segment1.Id != Curves[i].Segment1.Id)
-		{
-			if (close != Curve())
-			{
-				Winding* wind1 = HandleCurve(close);
-				if (wind1 != nullptr)
-				{
-					this->Copy(wind);
-					return;
-				}
-			}
-
-			if (OnPath && PathWindingLeft == 0.0 && PathWindingRight == 0.0)
-				PathWindingLeft = PathWindingRight =
-					Curves[i].Segment1.Path->IsClockwise() ^ Direction ? 1.0 : -1.0;
-
-			WindingLeft += PathWindingLeft;
-			WindingRight += PathWindingRight;
-			PathWindingLeft = PathWindingRight = 0.0;
-			if (OnPath)
-			{
-				OnAnyPath = true;
-				OnPath = false;
-			}
-		}
-	}
-
-	WindingLeft = abs(WindingLeft);
-	WindingRight = abs(WindingRight);
-
-	return;
-}
+// bool Location::operator==(const Location& other)
+// {
+// 	return isZero(C.GetPoint(Time).X - other.C.GetPoint(other.Time).X) &&
+// 		   isZero(C.GetPoint(Time).Y - other.C.GetPoint(other.Time).Y) &&
+// 		   C.Segment1.Id == other.C.Segment1.Id;
+// }
 
 CBooleanOperations::CBooleanOperations(CGraphicsPath* path1,
 									CGraphicsPath* path2,
@@ -1020,7 +711,7 @@ CGraphicsPath *CBooleanOperations::GetResult()
 int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment, const Curve& curve) const
 {
 	PointD pt = intersect(point.X, point.Y, segment.P.X, segment.P.Y, curve.Segment1.P.X, curve.Segment1.P.Y, curve.Segment2.P.X, curve.Segment2.P.Y);
-	if (curve.Segment1.Equals(pt) || curve.Segment2.Equals(pt))
+	if (curve.Segment1.P.Equals(pt) || curve.Segment2.P.Equals(pt))
 	{
 		PointD newPoint = PointD(point.X + GEOMETRIC_EPSILON, point.Y);
 		return CheckInters(newPoint, segment, curve);
@@ -1057,60 +748,38 @@ void CBooleanOperations::TraceBoolean()
 
 	GetIntersection();
 
-	if (!Locations.empty())
+	int length = Locations.size() - 1;
+	for (int i = 0; i <= length; i++)
 	{
-		int length = Locations.size() - 1;
-		for (int i = 0; i <= length; i++)
-		{
-			int before = Locations.size();
-			InsertLocation(Locations[i]->Inters, false);
-			if (before == Locations.size())
-				Locations.erase(Locations.begin() + i);
-		}
-
-		DivideLocations();
-
-		for (const auto& l : Locations)
-		{
-			Winding winding;
-			Segment start = l->S,
-				s = GetNextSegment(l->S);
-
-			if (s == Segment() || (bool)s.Inters || s == start)
-				continue;
-
-			int count = 0;
-			for (const auto& c : (s.Id == 1 ? Curves2 : Curves1))
-				count += CheckInters(PointD(), s, c);
-
-			winding.W = count % 2;
-
-			do
-			{
-				if (s.Id == 1 )
-					Segments1[s.Index].Wind = std::make_shared<Winding>(winding);
-				else
-					Segments2[s.Index].Wind = std::make_shared<Winding>(winding);
-				s = GetNextSegment(s);
-			} while (s != Segment() && !(bool)s.Inters && s != start);
-		}
-	}
-	else
-	{
-		Winding winding;
-		winding.W = 0;
-
-		for (auto& s : Segments1)
-			s.Wind = std::make_shared<Winding>(winding);
-
-		for (auto& s : Segments2)
-			s.Wind = std::make_shared<Winding>(winding);
+		int before = Locations.size();
+		InsertLocation(Locations[i]->Inters, false);
+		if (before == Locations.size())
+			Locations.erase(Locations.begin() + i);
 	}
 
-	Segments = Segments1;
-	Segments.insert(Segments.end(), Segments2.begin(), Segments2.end());	
-	Curves = Curves1;
-	Curves.insert(Curves.end(), Curves2.begin(), Curves2.end());
+	DivideLocations();
+
+	for (const auto& l : Locations)
+	{
+		Segment start = l->S,
+			s = GetNextSegment(l->S);
+
+		if (s == Segment() || (bool)s.Inters || s == start)
+			continue;
+
+		int count = 0;
+		for (const auto& c : (s.Id == 1 ? Curves2 : Curves1))
+			count += CheckInters(PointD(), s, c);
+
+		do
+		{
+			if (s.Id == 1 )
+				Segments1[s.Index].Winding = count % 2;
+			else
+				Segments2[s.Index].Winding = count % 2;
+			s = GetNextSegment(s);
+		} while (s != Segment() && !(bool)s.Inters && s != start);
+	}
 
 	TracePaths();
 }
@@ -1118,22 +787,18 @@ void CBooleanOperations::TraceBoolean()
 void CBooleanOperations::SetVisited(const Segment& segment)
 {
 	if (segment.Id == 1)
-	{
 		Segments1[segment.Index].Visited = true;
-		Segments[segment.Index].Visited = true;
-	}
 	else
-	{
 		Segments2[segment.Index].Visited = true;
-		Segments[segment.Index + Segments1.size()].Visited = true;
-	}
 }
 
 void CBooleanOperations::TracePaths()
 {
+	size_t length = Segments1.size();
 	Result->StartFigure();
-	for (auto& s : Segments)
+	for (size_t i = 0; i < length + Segments2.size(); i++)
 	{
+		Segment s = i >= length ? Segments2[i - length] : Segments1[i];
 		bool valid = s.IsValid(Op),
 			 start = true;
 		while (valid)
@@ -1184,9 +849,10 @@ void CBooleanOperations::PreparePath(CGraphicsPath* path, int id,
 			std::reverse(points.begin(), points.end());
 			if (isCurve && i - 2 == 0)
 			{
-				segments[0].IsCurve = true;
-				segments[0].HI = PointD(points[0].X - segments[0].P.X, points[0].Y - segments[0].P.Y);
-				segments[0].HO = PointD(points[1].X - segments[0].P.X, points[1].Y - segments[0].P.Y);
+				segments[0].SetHandles(points[0], points[1]);
+				// segments[0].IsCurve = true;
+				// segments[0].HI = PointD(points[0].X - segments[0].P.X, points[0].Y - segments[0].P.Y);
+				// segments[0].HO = PointD(points[1].X - segments[0].P.X, points[1].Y - segments[0].P.Y);
 			}
 			else
 				segments.push_back(Segment(points, isCurve, idx++, id, path));
@@ -1202,9 +868,10 @@ void CBooleanOperations::PreparePath(CGraphicsPath* path, int id,
 			std::vector<PointD> points = path->GetPoints(i, isCurve ? 3 : 1);
 			if (isCurve && i + 2 == length)
 			{
-				segments[0].IsCurve = true;
-				segments[0].HI = PointD(points[0].X - points[2].X, points[0].Y - points[2].Y);
-				segments[0].HO = PointD(points[1].X - points[2].X, points[1].Y - points[2].Y);
+				segments[0].SetHandles(points[0], points[1]);
+				// segments[0].IsCurve = true;
+				// segments[0].HI = PointD(points[0].X - points[2].X, points[0].Y - points[2].Y);
+				// segments[0].HO = PointD(points[1].X - points[2].X, points[1].Y - points[2].Y);
 			}
 			else
 				segments.push_back(Segment(points, isCurve, idx++, id, path));
@@ -1213,9 +880,7 @@ void CBooleanOperations::PreparePath(CGraphicsPath* path, int id,
 	}
 	length = segments.size();
 	for (int i = 0; i < length; i++)
-	{
 		curves.push_back(Curve(segments[i], i == (length - 1) ? segments[0] : segments[i + 1]));
-	}
 }
 
 void CBooleanOperations::InsertSegment(const Segment& segment, const Segment& handles, bool updateHandles)
@@ -1223,58 +888,48 @@ void CBooleanOperations::InsertSegment(const Segment& segment, const Segment& ha
 	if (segment.Id == 1)
 	{
 		int length = Segments1.size(),
-			index = segment.Index;
-		if (getDistance(segment.P, Segments1[index == length ? 0 : index].P) <= GEOMETRIC_EPSILON)
+			index = segment.Index == length ? 0 : segment.Index;
+		if (getDistance(segment.P, Segments1[index].P) <= GEOMETRIC_EPSILON)
 		{
-			Segments1[index == length ? 0 : index] = segment;
+			Segments1[length ? 0 : index] = segment;
 			return;
 		}
-		Segments1.insert(Segments1.begin() + index, segment);
-		for (int i = index + 1; i < length + 1; i++)
-		{
+		Segments1.insert(Segments1.begin() + segment.Index, segment);
+
+		for (int i = segment.Index + 1; i < length + 1; i++)
 			Segments1[i].Index++;
-		}
+
 		if (updateHandles)
-		{
-			Segments1[index == length ? 0 : index + 1].HI = handles.HI;
-			Segments1[index == length ? 0 : index + 1].HO = handles.HO;
-		}
+			Segments1[index == length ? 0 : index + 1].UpdateHandles(handles.HI, handles.HO);
+
 		Curves1.clear();
 		for (int i = 0; i < length + 1; i++)
-		{
 			Curves1.push_back(Curve(Segments1[i], i == (Segments1.size() - 1) ?
-													  Segments1[0] :
-													  Segments1[i + 1]));
-		}
+														Segments1[0] :
+														Segments1[i + 1]));
 	}
 	else
 	{
 		int length = Segments2.size(),
-			   index = segment.Index;
-		if (segment.P.Equals(Segments2[index == length ? 0 : index].P) &&
-			segment.HI.Equals(Segments2[index == length ? 0 : index].HI) &&
-			segment.HO.Equals(Segments2[index == length ? 0 : index].HO))
+			index = segment.Index == length ? 0 : segment.Index;
+		if (getDistance(segment.P, Segments2[index].P) <= GEOMETRIC_EPSILON)
 		{
-			Segments2[index == length ? 0 : index] = segment;
+			Segments2[index] = segment;
 			return;
 		}
-		Segments2.insert(Segments2.begin() + index, segment);
+		Segments2.insert(Segments2.begin() + segment.Index, segment);
+
 		for (int i = segment.Index + 1; i < length + 1; i++)
-		{
 			Segments2[i].Index++;
-		}
+
 		if (updateHandles)
-		{
-			Segments2[index == length ? 0 : index + 1].HI = handles.HI;
-			Segments2[index == length ? 0 : index + 1].HO = handles.HO;
-		}
+			Segments2[index == length ? 0 : index + 1].UpdateHandles(handles.HI, handles.HO);
+
 		Curves2.clear();
 		for (int i = 0; i < length + 1; i++)
-		{
 			Curves2.push_back(Curve(Segments2[i], i == (Segments2.size() - 1) ?
-													  Segments2[0] :
-													  Segments2[i + 1]));
-		}
+														Segments2[0] :
+														Segments2[i + 1]));
 	}
 
 	for (auto& l : Locations)
@@ -1285,14 +940,6 @@ void CBooleanOperations::InsertSegment(const Segment& segment, const Segment& ha
 Curve CBooleanOperations::GetCurve(const Segment& segment) const
 {
 	return segment.Id == 1 ? Curves1[segment.Index] : Curves2[segment.Index];
-}
-
-Curve Winding::GetPreviousCurve(const Curve& curve) const
-{
-	int index = curve.Segment1.Index;
-	if (index == 0)
-		return Curve();
-	return curve.Segment1.Id == 1 ? Curves1[index - 1] : Curves2[index - 1];
 }
 
 Curve CBooleanOperations::GetPreviousCurve(const Curve& curve) const
@@ -1341,37 +988,6 @@ Segment CBooleanOperations::GetNextSegment(const Segment& segment) const
 	return path1 ? Segments1[segment.Index + 1] : Segments2[segment.Index + 1];
 }
 
-std::vector<Curve> CBooleanOperations::GetCurves(const std::vector<int>& indices) const
-{
-	std::vector<Curve> list;
-	for (const auto& i : indices)
-		list.push_back(Curves[i]);
-	return list;
-}
-
-std::vector<Segment> CBooleanOperations::GetCrossing(const Segment& seg,
-													std::vector<Segment>& starts,
-													bool collectStart) const
-{
-	std::vector<Segment> crossing;
-	std::shared_ptr<Location>	loc = seg.Inters,
-								start = loc;
-	
-	if (collectStart)
-		starts = {seg};
-
-	if (loc != nullptr)
-	{
-		Collect(seg, crossing, starts, loc, nullptr, collectStart);
-		loc = start;
-
-		while (loc != nullptr && loc->Prev != nullptr)
-			loc = loc->Prev;
-		Collect(seg, crossing, starts, loc, start, collectStart);
-	}
-	return crossing;
-}
-
 std::vector<std::vector<double>> CBooleanOperations::GetBoundsForCurves(
 	const std::vector<Curve>& curves) const
 {
@@ -1388,61 +1004,34 @@ std::vector<std::vector<double>> CBooleanOperations::GetBoundsForCurves(
 	return bounds;
 }
 
-std::vector<std::vector<int>> CBooleanOperations::FindCurveBoundsCollisions(
-	const std::vector<Curve>& curves1,
-	const std::vector<Curve>& curves2,
-	double tolerance,
-	bool bothAxis) 
+std::vector<std::vector<int>> CBooleanOperations::FindCurveBoundsCollisions()
 {
-	std::vector<std::vector<double>> bounds1 = GetBoundsForCurves(curves1);
-	std::vector<std::vector<double>> bounds2 = GetBoundsForCurves(curves2);
+	std::vector<std::vector<double>> bounds1 = GetBoundsForCurves(Curves1);
+	std::vector<std::vector<double>> bounds2 = GetBoundsForCurves(Curves2);
 
-	if (bothAxis)
-	{
-		std::vector<std::vector<int>> hor = 
-			FindBoundsCollisions(bounds1, bounds2, tolerance, false, true);
-		std::vector<std::vector<int>> ver = 
-			FindBoundsCollisions(bounds1, bounds2, tolerance, true, true);
-		std::vector<std::vector<int>> list;
-		for (int i = 0; i < hor.size(); i++)
-		{
-			list.push_back(hor[i]);
-			list.push_back(ver[i]);
-		}
-		return list;
-	}
-	return FindBoundsCollisions(bounds1, bounds2, tolerance);
+	return FindBoundsCollisions(bounds1, bounds2);
 }
 
 std::vector<std::vector<int>> CBooleanOperations::FindBoundsCollisions(
 	const std::vector<std::vector<double>>& bounds1,
-	const std::vector<std::vector<double>>& bounds2,
-	double tolerance,
-	bool sweepVertical,
-	bool onlySweep)
+	const std::vector<std::vector<double>>& bounds2)
 {
 	bool self = bounds1 == bounds2;
 
 	std::vector<std::vector<double>> allBounds(bounds1);
 	if (!self)
 		std::copy(bounds2.begin(), bounds2.end(), std::back_inserter(allBounds));
+
 	int	allLength = allBounds.size(),
-			length1 = bounds1.size();
-
-	int	pri1 = sweepVertical ? 1 : 0,
-			pri2 = pri1 + 2,
-			sec1 = sweepVertical ? 0 : 1,
-			sec2 = sec1 + 2;
-
+		length1 = bounds1.size();
 	std::vector<int> allIdicesByPri1(allLength);
 	for (int i = 0; i < allLength; i++)
-	{
 		allIdicesByPri1[i] = i;
-	}
+
 	std::sort(allIdicesByPri1.begin(),
 			  allIdicesByPri1.end(),
-	[&allBounds, &pri1](int i1, int i2){
-				  return allBounds[i1][pri1] < allBounds[i2][pri1];
+	[&allBounds](int i1, int i2){
+				  return allBounds[i1][0] < allBounds[i2][0];
 	});
 
 	std::vector<int> activeIndicesByPri2;
@@ -1455,45 +1044,33 @@ std::vector<std::vector<int>> CBooleanOperations::FindBoundsCollisions(
 		bool isCurrent1 = curIndex < length1,
 			 isCurrent2 = self || !isCurrent1;
 		int origIndex = self ? curIndex : curIndex - length1;
+
 		if (!activeIndicesByPri2.empty())
 		{
-			int pruneCount =
-				binarySearch(allBounds, activeIndicesByPri2, pri2,
-							 curBounds[pri1] - tolerance) + 1;
-			activeIndicesByPri2.erase(activeIndicesByPri2.begin(), 
+			int pruneCount = binarySearch(allBounds, activeIndicesByPri2, 2,
+										  curBounds[0] - GEOMETRIC_EPSILON) + 1;
+
+			activeIndicesByPri2.erase(activeIndicesByPri2.begin(),
 									  activeIndicesByPri2.begin() + pruneCount);
-			if (self && onlySweep)
+
+			double	curSec2 = curBounds[3],
+					curSec1 = curBounds[1];
+			for (int j = 0; j < activeIndicesByPri2.size(); j++)
 			{
-				if (isCurrent1)
-					curCollisions.insert(curCollisions.end(),
-										 activeIndicesByPri2.begin(),
-										 activeIndicesByPri2.end());
-				for (int j = 0; j < activeIndicesByPri2.size(); j++)
+				int activeIndex = activeIndicesByPri2[j];
+				std::vector<double> activeBounds = allBounds[activeIndex];
+				bool isActive1 = activeIndex < length1,
+					 isActive2 = self || !isActive1,
+					 isActive1Or2 = (isCurrent1 && isActive2) || (isCurrent2 && isActive1),
+					 inRange1 = curSec1 <= activeBounds[3] + GEOMETRIC_EPSILON,
+					 inRange2 = curSec2 >= activeBounds[1] - GEOMETRIC_EPSILON;
+
+				if (isActive1Or2 && (inRange2 && inRange1))
 				{
-					int activeIndex = activeIndicesByPri2[j];
-					allCollisions[activeIndex].push_back(origIndex);
-				}
-			}
-			else
-			{
-				double	curSec2 = curBounds[sec2],
-						curSec1 = curBounds[sec1];
-				for (int j = 0; j < activeIndicesByPri2.size(); j++)
-				{
-					int activeIndex = activeIndicesByPri2[j];
-					std::vector<double> activeBounds = allBounds[activeIndex];
-					bool isActive1 = activeIndex < length1,
-						isActive2 = self || !isActive1,
-						isActive1Or2 = ((isCurrent1 && isActive2) || (isCurrent2 && isActive1)),
-						inRange1 = curSec1 <= activeBounds[sec2] + tolerance,
-						inRange2 = curSec2 >= activeBounds[sec1] - tolerance;
-					if (onlySweep || (isActive1Or2 && (inRange2 && inRange1)))
-					{
-						if (isCurrent1 && isActive2)
-							curCollisions.push_back(self ? activeIndex : activeIndex - length1);
-						if (isCurrent2 && isActive1)
-							allCollisions[activeIndex].push_back(origIndex);
-					}
+					if (isCurrent1 && isActive2)
+						curCollisions.push_back(self ? activeIndex : activeIndex - length1);
+					if (isCurrent2 && isActive1)
+						allCollisions[activeIndex].push_back(origIndex);
 				}
 			}
 		}
@@ -1505,20 +1082,18 @@ std::vector<std::vector<int>> CBooleanOperations::FindBoundsCollisions(
 		}
 		if (activeIndicesByPri2.size() > 0)
 		{
-			double curPri2 = curBounds[pri2];
-			int index = binarySearch(allBounds, activeIndicesByPri2, pri2, curPri2);
+			double curPri2 = curBounds[2];
+			int index = binarySearch(allBounds, activeIndicesByPri2, 2, curPri2);
+
 			activeIndicesByPri2.insert(activeIndicesByPri2.begin() + (1 + index), curIndex);
 		}
 		else
-		{
 			activeIndicesByPri2.push_back(curIndex);
-		}
 	}
+
 	for (auto& c : allCollisions)
-	{
-		if (!c.empty())
 		std::sort(c.begin(), c.end());
-	}
+
 	return allCollisions;
 }
 
@@ -1567,15 +1142,15 @@ bool CBooleanOperations::IsCrossing(std::shared_ptr<Location> loc)
 			offset = o;
 
 	PointD	v2 = c2.GetTangent(t1, offset, t1Inside, pt),
-			v1 = t1Inside ? PointD(-v2.X, -v2.Y)
-						  : c1.GetTangent(t1, -offset, false, pt),
+			v1 = t1Inside ? PointD(-v2.X, -v2.Y) : c1.GetTangent(t1, -offset, false, pt),
 			v4 = c4.GetTangent(t2, offset, t2Inside, pt),
-			v3 = t2Inside ? PointD(-v4.X, -v4.Y)
-						  : c3.GetTangent(t2, -offset, false, pt);
+			v3 = t2Inside ? PointD(-v4.X, -v4.Y) : c3.GetTangent(t2, -offset, false, pt);
+
 	double	a1 = v1.Equals(PointD()) ? 0.0 : atan2(v1.Y, v1.X) * 180 / M_PI,
 			a2 = v2.Equals(PointD()) ? 0.0 : atan2(v2.Y, v2.X) * 180 / M_PI,
 			a3 = v3.Equals(PointD()) ? 0.0 : atan2(v3.Y, v3.X) * 180 / M_PI,
 			a4 = v4.Equals(PointD()) ? 0.0 : atan2(v4.Y, v4.X) * 180 / M_PI;
+
 	bool	inRange34 = isInRange(a1, a3, a4) ^ isInRange(a2, a3, a4),
 			inRange43 = isInRange(a1, a4, a3) ^ isInRange(a2, a4, a3),
 			inRange1 = inRange34 && inRange43,
@@ -1608,8 +1183,7 @@ void CBooleanOperations::GetIntersection()
 	if (!IntersectsBounds())
 		return;
 
-	std::vector<std::vector<int>> boundsCollisions =
-		FindCurveBoundsCollisions(Curves1, Curves2, GEOMETRIC_EPSILON);
+	std::vector<std::vector<int>> boundsCollisions = FindCurveBoundsCollisions();
 	for (int index1 = 0; index1 < Curves1.size(); index1++)
 	{
 		Curve curve1 = Curves1[index1];
@@ -1645,8 +1219,7 @@ void CBooleanOperations::GetCurveIntersection(const Curve& curve1, const Curve& 
 	if (maxX1 + EPSILON > minX2 && minX1 - EPSILON < maxX2 &&
 		maxY1 + EPSILON > minY2 && minY1 - EPSILON < maxY2)
 	{
-		std::vector<std::pair<int, int>> overlaps =
-			curve1.GetOverlaps(curve2);
+		std::vector<std::pair<int, int>> overlaps = curve1.GetOverlaps(curve2);
 		if (!overlaps.empty())
 		{
 			for (int i = 0; i < 2; i++)
@@ -1662,29 +1235,14 @@ void CBooleanOperations::GetCurveIntersection(const Curve& curve1, const Curve& 
 					straight2 = curve2.IsStraight(),
 					straight = straight1 && straight2,
 					flip = straight1 && !straight2;
-			int	before = Locations.size();
 			Curve	c1 = flip ? curve2 : curve1,
 					c2 = flip ? curve1 : curve2;
 			if (straight)
-				AddLineIntersection(c1, c2, flip);
+				AddLineIntersection(c1, c2);
 			else if (straight1 || straight2)
 				AddCurveLineIntersection(c1, c2, flip);
 			else
 				AddCurveIntersection(c1, c2, c1, c2, flip);
-			// if (!straight || Locations.size() == before)
-			// {
-			// 	for (int i = 0; i < 4; i++)
-			// 	{
-			// 		int t1 = i >> 1,
-			// 			t2 = i & 1;
-			// 		PointD	p1 = t1 == 0 ? curve1.Segment1.P
-			// 							 : curve1.Segment2.P,
-			// 				p2 = t2 == 0 ? curve2.Segment1.P
-			// 							 : curve2.Segment2.P;
-			// 		if (getDistance(p1, p2) <= EPSILON)
-			// 			AddLocation(curve1, curve2, t1, t2, false);
-			// 	}
-			// }
 		}
 	}
 }
@@ -1712,7 +1270,7 @@ void CBooleanOperations::LinkIntersection(std::shared_ptr<Location> from,
 	}
 }
 
-void CBooleanOperations::AddLineIntersection(const Curve& curve1, const Curve& curve2, bool flip)
+void CBooleanOperations::AddLineIntersection(const Curve& curve1, const Curve& curve2)
 {
 	std::vector<double>	x1 = curve1.GetXValues(),
 						y1 = curve1.GetYValues(),
@@ -1720,18 +1278,14 @@ void CBooleanOperations::AddLineIntersection(const Curve& curve1, const Curve& c
 						y2 = curve2.GetYValues();
 	PointD pt = intersect(x1[0], y1[0], x1[3], y1[3], x2[0], y2[0], x2[3], y2[3]);
 	if (!pt.Equals(PointD()))
-	{
 		AddLocation(curve1, curve2, curve1.GetTimeOf(pt), curve2.GetTimeOf(pt));
-	}
 }
 
 void CBooleanOperations::AddCurveLineIntersection(const Curve& curve1, const Curve& curve2, bool flip)
 {
 	std::vector<double>	x2 = curve2.GetXValues(),
 						y2 = curve2.GetYValues(),
-						roots = curve1.GetCurveLineIntersection(x2[0], y2[0],
-																x2[3] - x2[0],
-																y2[3] - y2[0]);
+						roots = curve1.GetCurveLineIntersection(x2[0], y2[0], x2[3] - x2[0], y2[3] - y2[0]);
 	for (const auto& r : roots)
 	{
 		double	t1 = r;
@@ -1743,9 +1297,10 @@ void CBooleanOperations::AddCurveLineIntersection(const Curve& curve1, const Cur
 	}
 }
 
-int CBooleanOperations::AddCurveIntersection(Curve curve1, Curve curve2, const Curve& startCurve1, const Curve& startCurve2, bool flip,
-											int recursion, int calls, double tMin,
-											double tMax, double uMin, double uMax)
+int CBooleanOperations::AddCurveIntersection(Curve curve1, Curve curve2, const Curve& startCurve1,
+											 const Curve& startCurve2, bool flip,
+											 int recursion, int calls, double tMin,
+											 double tMax, double uMin, double uMax)
 {
 	if (++calls >= 4096 || ++recursion >= 40)
 		return calls;
@@ -1754,6 +1309,7 @@ int CBooleanOperations::AddCurveIntersection(Curve curve1, Curve curve2, const C
 						y1 = curve1.GetYValues(),
 						x2 = curve2.GetXValues(),
 						y2 = curve2.GetYValues();
+
 	double	d1 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x2[1], y2[1]),
 			d2 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x2[2], y2[2]),
 			factor = (d1 * d2) > 0 ? 3.0 / 4.0 : 4.0 / 9.0,
@@ -1763,13 +1319,16 @@ int CBooleanOperations::AddCurveIntersection(Curve curve1, Curve curve2, const C
 			dp1 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[1], y1[1]),
 			dp2 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[2], y1[2]),
 			dp3 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[3], y1[3]);
+
 	std::vector<std::vector<PointD>> hull = getConvexHull(dp0, dp1, dp2, dp3);
 	std::vector<PointD>	top = hull[0],
 						bottom = hull[1];
+
 	double tMinClip = clipConvexHull(top, bottom, dMin, dMax);
 	std::reverse(top.begin(), top.end());
 	std::reverse(bottom.begin(), bottom.end());
 	double tMaxClip = clipConvexHull(top, bottom, dMin, dMax);
+
 	if ((d1 == 0 && d2 == 0 && dp0 == 0 && dp1 == 0 && dp2 == 0 && dp3 == 0)
 		|| tMinClip == DBL_MIN || tMaxClip == DBL_MIN)
 		return calls;
@@ -1798,14 +1357,16 @@ int CBooleanOperations::AddCurveIntersection(Curve curve1, Curve curve2, const C
 			{
 				std::vector<Curve> parts = curve1.Subdivide(0.5);
 				double t = (tMinNew + tMaxNew) / 2;
-				parts[0].Segment2.HI.X -= parts[0].Segment2.P.X;
-				parts[0].Segment2.HI.Y -= parts[0].Segment2.P.Y;
-				parts[0].Segment2.HO.X -= parts[0].Segment2.P.X;
-				parts[0].Segment2.HO.Y -= parts[0].Segment2.P.Y;
-				parts[1].Segment2.HI.X -= parts[1].Segment2.P.X;
-				parts[1].Segment2.HI.Y -= parts[1].Segment2.P.Y;
-				parts[1].Segment2.HO.X -= parts[1].Segment2.P.X;
-				parts[1].Segment2.HO.Y -= parts[1].Segment2.P.Y;
+				parts[0].Segment2.SetHandles(parts[0].Segment2.HI, parts[0].Segment2.HO);
+				parts[1].Segment2.SetHandles(parts[1].Segment2.HI, parts[1].Segment2.HO);
+				// parts[0].Segment2.HI.X -= parts[0].Segment2.P.X;
+				// parts[0].Segment2.HI.Y -= parts[0].Segment2.P.Y;
+				// parts[0].Segment2.HO.X -= parts[0].Segment2.P.X;
+				// parts[0].Segment2.HO.Y -= parts[0].Segment2.P.Y;
+				// parts[1].Segment2.HI.X -= parts[1].Segment2.P.X;
+				// parts[1].Segment2.HI.Y -= parts[1].Segment2.P.Y;
+				// parts[1].Segment2.HO.X -= parts[1].Segment2.P.X;
+				// parts[1].Segment2.HO.Y -= parts[1].Segment2.P.Y;
 				calls = AddCurveIntersection(curve2, parts[0], startCurve2, startCurve1,
 											!flip, recursion, calls, uMin, uMax, tMinNew, t);
 				calls = AddCurveIntersection(curve2, parts[1], startCurve2, startCurve1,
@@ -1815,14 +1376,16 @@ int CBooleanOperations::AddCurveIntersection(Curve curve1, Curve curve2, const C
 			{
 				std::vector<Curve> parts = curve2.Subdivide(0.5);
 				double u = (uMin + uMax) / 2;
-				parts[0].Segment2.HI.X -= parts[0].Segment2.P.X;
-				parts[0].Segment2.HI.Y -= parts[0].Segment2.P.Y;
-				parts[0].Segment2.HO.X -= parts[0].Segment2.P.X;
-				parts[0].Segment2.HO.Y -= parts[0].Segment2.P.Y;
-				parts[1].Segment2.HI.X -= parts[1].Segment2.P.X;
-				parts[1].Segment2.HI.Y -= parts[1].Segment2.P.Y;
-				parts[1].Segment2.HO.X -= parts[1].Segment2.P.X;
-				parts[1].Segment2.HO.Y -= parts[1].Segment2.P.Y;
+				parts[0].Segment2.SetHandles(parts[0].Segment2.HI, parts[0].Segment2.HO);
+				parts[1].Segment2.SetHandles(parts[1].Segment2.HI, parts[1].Segment2.HO);
+				// parts[0].Segment2.HI.X -= parts[0].Segment2.P.X;
+				// parts[0].Segment2.HI.Y -= parts[0].Segment2.P.Y;
+				// parts[0].Segment2.HO.X -= parts[0].Segment2.P.X;
+				// parts[0].Segment2.HO.Y -= parts[0].Segment2.P.Y;
+				// parts[1].Segment2.HI.X -= parts[1].Segment2.P.X;
+				// parts[1].Segment2.HI.Y -= parts[1].Segment2.P.Y;
+				// parts[1].Segment2.HO.X -= parts[1].Segment2.P.X;
+				// parts[1].Segment2.HO.Y -= parts[1].Segment2.P.Y;
 				calls = AddCurveIntersection(parts[0], curve1, startCurve2, startCurve1,
 											!flip, recursion, calls, uMin, u, tMinNew, tMaxNew);
 				calls = AddCurveIntersection(parts[1], curve1, startCurve2, startCurve1,
@@ -1876,10 +1439,11 @@ void CBooleanOperations::DivideLocations()
 		else
 		{
 			newCurve = curve.Segment1.Id == 1 ?
-					   curve.DivideAtTime(time, Segments1, Curves1) :
-					   curve.DivideAtTime(time, Segments2, Curves2);
+					   curve.DivideAtTime(time) :
+					   curve.DivideAtTime(time);
 			segment = newCurve.Segment1;
-			updateHandles = true;
+			if (!newCurve.IsStraight())
+				updateHandles = true;
 		}
 		std::shared_ptr<Location>	inter = segment.Inters,
 									dest = loc->Inters;
@@ -1931,27 +1495,35 @@ void CBooleanOperations::InsertLocation(std::shared_ptr<Location> loc, bool over
 				std::shared_ptr<Location> loc2 = Locations[((i % length) + length) % length];
 				if (getDistance(loc->C.GetPoint(loc->Time), loc2->C.GetPoint(loc2->Time)) > GEOMETRIC_EPSILON)
 					break;
-				if (isZero(loc->C.GetPoint(loc->Time).X - loc2->C.GetPoint(loc2->Time).X) &&
-					isZero(loc->C.GetPoint(loc->Time).Y - loc2->C.GetPoint(loc2->Time).Y) &&
+				if (getDistance(loc->C.GetPoint(loc->Time), loc2->C.GetPoint(loc2->Time)) <= GEOMETRIC_EPSILON &&
 					loc->C.Segment1.Id == loc2->C.Segment1.Id)
 					return;
+
+				// if (isZero(loc->C.GetPoint(loc->Time).X - loc2->C.GetPoint(loc2->Time).X) &&
+				// 	isZero(loc->C.GetPoint(loc->Time).Y - loc2->C.GetPoint(loc2->Time).Y) &&
+				// 	loc->C.Segment1.Id == loc2->C.Segment1.Id)
+				// 	return;
 			}
 			for (int i = mid + 1; i <= length; i++)
 			{
 				std::shared_ptr<Location> loc2 = Locations[((i % length) + length) % length];
 				if (getDistance(loc->C.GetPoint(loc->Time), loc2->C.GetPoint(loc2->Time)) > GEOMETRIC_EPSILON)
 					break;
-				if (isZero(loc->C.GetPoint(loc->Time).X - loc2->C.GetPoint(loc2->Time).X) &&
-					isZero(loc->C.GetPoint(loc->Time).Y - loc2->C.GetPoint(loc2->Time).Y) &&
+				if (getDistance(loc->C.GetPoint(loc->Time), loc2->C.GetPoint(loc2->Time)) <= GEOMETRIC_EPSILON &&
 					loc->C.Segment1.Id == loc2->C.Segment1.Id)
 					return;
+
+				// if (isZero(loc->C.GetPoint(loc->Time).X - loc2->C.GetPoint(loc2->Time).X) &&
+				// 	isZero(loc->C.GetPoint(loc->Time).Y - loc2->C.GetPoint(loc2->Time).Y) &&
+				// 	loc->C.Segment1.Id == loc2->C.Segment1.Id)
+				// 	return;
 			}
 		}
 
-		double diffId = loc->C.Segment1.Id - loc1->C.Segment1.Id,
-			   diffT = (loc->C.Segment1.Index + loc->Time) - (loc1->C.Segment1.Index + loc1->Time);
-		bool  self = loc->C.Segment1.Id == loc1->C.Segment1.Id;
-		double diff = self ? (diffT) : (diffId);
+		double	diffId = loc->C.Segment1.Id - loc1->C.Segment1.Id,
+				diffT = (loc->C.Segment1.Index + loc->Time) - (loc1->C.Segment1.Index + loc1->Time);
+		bool	self = loc->C.Segment1.Id == loc1->C.Segment1.Id;
+		double	diff = self ? (diffT) : (diffId);
 		if (diff < 0)
 			r = mid - 1;
 		else
@@ -1984,12 +1556,6 @@ void CBooleanOperations::AddLocation(Curve curve1, Curve curve2,
 	}
 }
 
-void CBooleanOperations::ClearCurveHandles(std::vector<Curve>& curves)
-{
-	for (auto& c : curves)
-		c.ClearHandles();
-}
-
 void CBooleanOperations::AddOffsets(std::vector<double>& offsets,
 								   const Curve& curve, bool end)
 {
@@ -2000,142 +1566,6 @@ void CBooleanOperations::AddOffsets(std::vector<double>& offsets,
 	double	offset = curve.GetLength(first ? roots[count - 1] : 0,
 									second ? roots[0] : 1);
 	offsets.push_back(count != 0 ? offset : offset / 32);
-}
-
-void CBooleanOperations::PropagateWinding(Segment segment,
-										std::vector<std::vector<Curve>> curveCollisonsMap)
-{
-	std::vector<std::tuple<Segment, Curve, double>> chain;
-	Segment start = segment;
-	double totalLength = 0;
-	Winding winding;
-	winding.Quality = -1.0;
-
-	do
-	{
-		Curve curve = GetCurve(segment);
-		if (curve != Curve())
-		{
-			double length = curve.GetLength();
-			totalLength += length;
-			chain.push_back({segment, curve, length});
-		}
-		segment = GetNextSegment(segment);
-	} while (segment != Segment() && !(bool)segment.Inters && segment != start);
-
-	double	offsets[3] = {0.5, 0.25, 0.75},
-			tMin = 1e-3,
-			tMax = 1 - tMin;
-
-	for (int i = 0; i < 3 && winding.Quality < 0.5; i++)
-	{
-		double length = totalLength * offsets[i];
-		for (int j = 0; j < chain.size(); j++)
-		{
-			std::tuple<Segment, Curve, double> entry = chain[j];
-			double curveLength = std::get<2>(entry);
-			Winding wind, map;
-
-			if (length <= curveLength)
-			{
-				Curve	curve = std::get<1>(entry);
-				int	id = curve.Segment1.Id;
-				double	t = clamp(curve.GetTimeAt(length), tMin, tMax);
-				PointD	pt = curve.GetPoint(t);
-				bool	dir = abs(curve.GetTangent(t).Y) < sqrt(1/2);
-				map.SetDirection(dir);
-				map.SetPoint(pt);
-				map.Curves1 = Curves1;
-				map.Curves2 = Curves2;
-				
-				if (Op == Subtraction)
-				{
-					map.SetCurves(Curves1, Curves2);
-					double windPath = (std::max(map.PathWindingLeft,
-											   map.PathWindingRight));
-
-					if ((id == 1 && windPath != 0.0) ||
-						(id == 2 && windPath == 0.0))
-					{
-						if (map.Quality < 1.0)
-							continue;
-						else
-						{
-							wind.W = 0.0;
-							wind.Quality = 1.0;
-						}
-					}
-
-					map.Reset();
-				}
-
-				int index = id == 1 ? curve.Segment1.Index
-									   : Curves1.size() + curve.Segment1.Index;
-				std::vector<Curve> newCurvesHor = curveCollisonsMap[2 * index],
-								   newCurvesVer = curveCollisonsMap[2 * index + 1];
-				map.SetCurves(newCurvesHor, newCurvesVer);
-				map.GetWinding();
-				
-				wind.W = std::max(map.WindingLeft, map.WindingRight);
-				wind.Quality = map.Quality;
-				wind.WindingLeft = map.WindingLeft;
-				wind.WindingRight = map.WindingRight;
-				wind.OnPath = map.OnAnyPath ? true : false;
-
-				if (wind.Quality > winding.Quality)
-					winding = wind;
-				break;
-			}
-			length -= curveLength;
-		}
-	}
-
-	for (int j = chain.size() - 1; j >= 0; j--)
-	{
-		if (std::get<0>(chain[j]).Id == 1)
-			Segments[std::get<0>(chain[j]).Index].Wind =
-				std::make_shared<Winding>(winding);
-		else
-			Segments[std::get<0>(chain[j]).Index + Segments1.size()].Wind =
-				std::make_shared<Winding>(winding);
-	}
-}
-
-void CBooleanOperations::Collect(const Segment& seg, std::vector<Segment>& crossing,
-								std::vector<Segment>& starts, std::shared_ptr<Location> inter,
-								std::shared_ptr<Location> end, bool collectStarts) const
-{
-	while ((bool)inter && inter != end)
-	{
-		Segment other = inter->S.Id == 1 ? Segments[inter->S.Index]
-										 : Segments[Segments1.size() + inter->S.Index],
-				next;
-		int last = other.Id == 1 ? Segments1.size() - 1
-									: Segments2.size() - 1;
-		if (other.Index == last)
-			next = other.Id == 1 ? Segments[0] : Segments[Segments1.size()];
-		else
-			next = other.Id == 1 ? Segments[other.Index + 1]
-								 : Segments[Segments1.size() + other.Index + 1];
-
-		std::shared_ptr<Location> nextInter = next.Inters;
-		Segment nextInterS;
-
-		if ((bool)nextInter)
-			nextInterS = nextInter->S.Id == 1 ? Segments[nextInter->S.Index]
-											  : Segments[Segments1.size() + nextInter->S.Index];
-
-		if (other != seg && ((other.Index == 0 && other.Id == 0) ||
-			(next.Index == 0 && next.Id == 0) ||
-			(other.IsValid(Op) && (next.IsValid(Op) ||
-			(bool)nextInter && nextInterS.IsValid(Op)))))
-			crossing.push_back(other);
-
-		if (collectStarts)
-			starts.push_back(other);
-
-		inter = inter->Next;
-	}
 }
 
 CGraphicsPath* BooleanOperation(CGraphicsPath *path1, CGraphicsPath *path2, BooleanOpType op)

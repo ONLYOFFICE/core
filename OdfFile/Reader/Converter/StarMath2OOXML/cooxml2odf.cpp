@@ -15,9 +15,9 @@ namespace StarMath
 	void COOXml2Odf::StartConversion(OOX::Logic::COMathPara *pMathPara)
 	{
 		m_pXmlWrite->WriteNodeBegin(L"math",true);
-		m_pXmlWrite->WriteAttribute(L"xmln",L"http:\/\/www.w3.org/1998/Math/MathML");
+		m_pXmlWrite->WriteAttribute(L"xmlns",L"http:\/\/www.w3.org/1998/Math/MathML");
 		m_pXmlWrite->WriteAttribute(L"display",L"block");
-		m_pXmlWrite->WriteNodeEnd(L"w",true,true);
+		m_pXmlWrite->WriteNodeEnd(L"w",true,false);
 		m_pXmlWrite->WriteNodeBegin(L"semantics",false);
 		if(pMathPara == nullptr)
 		{
@@ -31,14 +31,14 @@ namespace StarMath
 		}
 		m_pXmlWrite->WriteNodeBegin(L"annotation",true);
 		m_pXmlWrite->WriteAttribute(L"encoding",L"StarMath 5.0");
-		m_pXmlWrite->WriteNodeEnd(L"w",true,true);
+		m_pXmlWrite->WriteNodeEnd(L"w",true,false);
 		m_pXmlWrite->WriteString(m_wsAnnotationStarMath);
 		EndOdf();
 		NSFile::CFileBinary oOriginal;
 		oOriginal.CreateFile(L"X:/Rabotka/Original.txt");
 		oOriginal.WriteStringUTF8(m_pXmlWrite->GetXmlString());
 	}
-	void COOXml2Odf::NodeDefinition(OOX::WritingElement *pNode)
+	void COOXml2Odf::NodeDefinition(OOX::WritingElement *pNode,const bool& bMatrix)
 	{
 		if(pNode == nullptr)
 			return;
@@ -82,6 +82,16 @@ namespace StarMath
 		case OOX::EElementType::et_m_box:
 		{
 			ConversionBox(dynamic_cast<OOX::Logic::CBox*>(pNode));
+			break;
+		}
+		case OOX::EElementType::et_m_m:
+		{
+			ConversionMatrix(dynamic_cast<OOX::Logic::CMatrix*>(pNode));
+			break;
+		}
+		case OOX::EElementType::et_m_e:
+		{
+			ConversionElement(dynamic_cast<OOX::Logic::CElement*>(pNode),bMatrix);
 			break;
 		}
 		default:
@@ -188,10 +198,12 @@ namespace StarMath
 			}
 			else
 			{
-				m_pXmlWrite->WriteNodeEnd(L"w",true,true);
-				NodeDefinition(pMf->m_oNum.GetPointer());
+				m_pXmlWrite->WriteNodeEnd(L"w",true,false);
+//				NodeDefinition(pMf->m_oNum.GetPointer());
+				ConversionVectorWritingElement(pMf->m_oNum.GetPointer()->m_arrItems);
 				m_wsAnnotationStarMath += L"over ";
-				NodeDefinition(pMf->m_oDen.GetPointer());
+//				NodeDefinition(pMf->m_oDen.GetPointer());
+				ConversionVectorWritingElement(pMf->m_oDen.GetPointer()->m_arrItems);
 			}
 			m_pXmlWrite->WriteNodeEnd(L"mfrac",false,false);
 		}
@@ -325,11 +337,10 @@ namespace StarMath
 		for(int i = 0; i < pSup->m_arrItems.size();i++)
 			NodeDefinition(pSup->m_arrItems[i]);
 	}
-	void COOXml2Odf::ConversionElement(OOX::Logic::CElement *pElement)
+	void COOXml2Odf::ConversionElement(OOX::Logic::CElement *pElement,const bool& bMatrix)
 	{
 		if(pElement == nullptr) return;
-		for(int i = 0; i < pElement->m_arrItems.size();i++)
-			NodeDefinition(pElement->m_arrItems[i]);
+		ConversionVectorWritingElement(pElement->m_arrItems);	
 	}
 	std::vector<COneElement*> COOXml2Odf::ConversionMRun(OOX::Logic::CMRun *pMRun)
 	{
@@ -421,19 +432,25 @@ namespace StarMath
 			if(L'+' == cOneElement || L'-' == cOneElement) return true;
 		return false;
 	}
+	bool COOXml2Odf::СomparingAttributes(StValuePr *pRight, StValuePr *pLeft)
+	{
+		if(pRight->m_wsColor != pLeft->m_wsColor)
+			return false;
+		return true;
+	}
 	void COOXml2Odf::ConversionAcc(OOX::Logic::CAcc *pAcc)
 	{
-		std::wstring wsSymbol = pAcc->m_oAccPr->m_oChr.IsInit() ? pAcc->m_oAccPr->m_oChr.get().m_val->GetValue() : L"";
-//		TranslationDiacritSign(wsSymbol);
-		//конвертация свойств
+		std::wstring wsSymbol = pAcc->m_oAccPr->m_oChr.IsInit() ? pAcc->m_oAccPr->m_oChr.get().m_val->GetValue() : L"",wsSign;
+		wsSign = TranslationDiacritSign(wsSymbol);
+		m_wsAnnotationStarMath += wsSign + L" ";
 		m_pXmlWrite->WriteNodeBegin(L"mover",true);
 		m_pXmlWrite->WriteAttribute(L"accent",L"true");
-		m_pXmlWrite->WriteNodeEnd(L"w",true,true);
+		m_pXmlWrite->WriteNodeEnd(L"w",true,false);
 		ConversionElement(pAcc->m_oElement.GetPointer());
 		m_pXmlWrite->WriteNodeBegin(L"mo",true);
 		m_pXmlWrite->WriteAttribute(L"stretchy",L"false");
-		m_pXmlWrite->WriteNodeEnd(L"w",false,false);
-		m_pXmlWrite->WriteString(wsSymbol);
+		m_pXmlWrite->WriteNodeEnd(L"w",true,false);
+		m_pXmlWrite->WriteString(wsSign);
 		m_pXmlWrite->WriteNodeEnd(L"mo",false,false);
 		m_pXmlWrite->WriteNodeEnd(L"mover",false,false);
 	}
@@ -453,7 +470,7 @@ namespace StarMath
 	{
 		pXmlWrite->WriteNodeBegin(L"mo",true);
 		pXmlWrite->WriteAttribute(L"stretchy",L"false");
-		pXmlWrite->WriteNodeEnd(L"w",true,true);
+		pXmlWrite->WriteNodeEnd(L"w",true,false);
 		pXmlWrite->WriteString(wsSymbol);
 		pXmlWrite->WriteNodeEnd(L"mo",false,false);
 	}
@@ -467,7 +484,10 @@ namespace StarMath
 	{
 		StValuePr* stTempPr = new StValuePr;
 		if(pRPr == nullptr)
+		{
+			delete stTempPr;
 			return nullptr;
+		}
 		bool bRpr(false);
 		if(pRPr->m_oColor.GetPointer() != nullptr)
 		{
@@ -481,9 +501,12 @@ namespace StarMath
 		if(bRpr == true)
 			return stTempPr;
 		else
+		{
+			delete stTempPr;
 			return nullptr;
+		}
 	}
-	void COOXml2Odf::ConversionTextVector(std::vector<COneElement *> &arLine, std::vector<COneElement *> &arNewLine)
+	void COOXml2Odf::ConversionTextVector(std::vector<COneElement *> &arLine, std::vector<COneElement *> &arNewLine, const bool &bMatrix)
 	{
 		if(!arLine.empty())
 		{
@@ -501,6 +524,12 @@ namespace StarMath
 							arNewLine.push_back(pTempElement);
 							pTempElement = pElement;
 						}
+					}
+					else if(pTempElement->GetType() == TypeElement::String && СomparingAttributes(pTempElement->GetAttribute(),pElement->GetAttribute()))
+					{
+						CNumberOrLetter* pFirst = dynamic_cast<CNumberOrLetter*>(pTempElement);
+						CNumberOrLetter* pSecond = dynamic_cast<CNumberOrLetter*>(pElement);
+						pFirst->AddingStrings(pSecond->GetString());
 					}
 					else
 					{
@@ -539,11 +568,21 @@ namespace StarMath
 		if(!arNewLine.empty())
 		{
 			arLine.clear();
-			for(COneElement* pElement:arNewLine)
-				pElement->Conversion(m_pXmlWrite,m_wsAnnotationStarMath);
+			for(int i = 0;i< arNewLine.size();i++)
+			{
+				if(bMatrix == true)
+					m_pXmlWrite->WriteNodeBegin(L"mtd",false);
+				arNewLine[i]->Conversion(m_pXmlWrite,m_wsAnnotationStarMath);
+				if(bMatrix == true)
+				{
+					if(i+1<arNewLine.size())
+						m_wsAnnotationStarMath += L"# ";
+					m_pXmlWrite->WriteNodeEnd(L"mtd",false,false);
+				}
+			}
 		}
 	}
-	void COOXml2Odf::ConversionVectorWritingElement(std::vector<OOX::WritingElement *> arWrElements)
+	void COOXml2Odf::ConversionVectorWritingElement(std::vector<OOX::WritingElement *> arWrElements,const bool& bMatrix)
 	{
 		std::vector<COneElement*> arLine,arNewLine;
 		for(int i = 0; i < arWrElements.size() ;i++)
@@ -556,20 +595,86 @@ namespace StarMath
 			else
 			{
 				if(!arLine.empty())
+					ConversionTextVector(arLine,arNewLine,bMatrix);
+				if(bMatrix == true)
+					m_pXmlWrite->WriteNodeBegin(L"mtd",false);
+				NodeDefinition(arWrElements[i],true);
+				if(bMatrix == true)
 				{
-					ConversionTextVector(arLine,arNewLine);
-					NodeDefinition(arWrElements[i]);
-				}
-				else
-				{
-					NodeDefinition(arWrElements[i]);
+					m_pXmlWrite->WriteNodeEnd(L"mtd",false,false);
+					if(i+1 < arWrElements.size())
+						m_wsAnnotationStarMath += L"# ";
 				}
 			}
 		}
 		if(!arLine.empty())
 		{
-			ConversionTextVector(arLine,arNewLine);
+			ConversionTextVector(arLine,arNewLine,bMatrix);
 		}
+	}
+	std::wstring COOXml2Odf::TranslationDiacritSign(std::wstring &wsSymbol)
+	{
+		if( L"\u0308" == wsSymbol) 
+		{
+			wsSymbol = L"\u0308";
+			return L"ddot";
+		}
+		else return L"";
+	}
+	void COOXml2Odf::ConversionMatrix(OOX::Logic::CMatrix* pMatrix)
+	{
+		if(pMatrix == nullptr)
+			return;
+		bool bStyle = ConversionCMPr(dynamic_cast<OOX::Logic::CMPr*>(pMatrix->m_arrItems[0]));
+		m_wsAnnotationStarMath += L"matrix{";
+		m_pXmlWrite->WriteNodeBegin(L"mtable",false);
+		for(int i = 1;i<pMatrix->m_arrItems.size();i++)
+		{
+			if(OOX::EElementType::et_m_mr == pMatrix->m_arrItems[i]->getType())
+				ConversionMr(dynamic_cast<OOX::Logic::CMr*>(pMatrix->m_arrItems[i]));
+			if(i+1 < pMatrix->m_arrItems.size())
+				m_wsAnnotationStarMath += L"## ";
+		}
+		m_pXmlWrite->WriteNodeEnd(L"mtable",false,false);
+		if(bStyle == true)
+			m_pXmlWrite->WriteNodeEnd(L"mstyle",false,false);
+		m_wsAnnotationStarMath += L"} ";
+	}
+	void COOXml2Odf::ConversionMr(OOX::Logic::CMr *pMr)
+	{
+		if(pMr == nullptr)
+			return;
+		m_pXmlWrite->WriteNodeBegin(L"mtr",false);
+//		for(int i = 0;i<pMr->m_arrItems.size();i++)
+//		{
+//			m_pXmlWrite->WriteNodeBegin(L"mtd",false);
+//			NodeDefinition(pMr->m_arrItems[i]);
+//			m_pXmlWrite->WriteNodeEnd(L"mtd",false,false);
+//			if(i + 1 < pMr->m_arrItems.size())
+//				m_wsAnnotationStarMath += L"# ";
+			
+//		}
+		ConversionVectorWritingElement(pMr->m_arrItems,true);
+		m_pXmlWrite->WriteNodeEnd(L"mtr",false,false);
+	}
+	bool COOXml2Odf::ConversionCtrlPr(OOX::Logic::CCtrlPr *pCtrlPr)
+	{
+		if(pCtrlPr == nullptr)
+			return false;
+		if(pCtrlPr->m_oRPr.GetPointer() != nullptr)
+		{
+			bool bStyle;
+			StValuePr* pValue = ConversionRunProperties(dynamic_cast<OOX::Logic::CRunProperty*>(pCtrlPr->m_oRPr.GetPointer()));
+			COneElement::ConversionAttribute(pValue,bStyle,m_pXmlWrite,m_wsAnnotationStarMath);
+			return bStyle;
+		}
+		return false;
+	}
+	bool COOXml2Odf::ConversionCMPr(OOX::Logic::CMPr *pMPr)
+	{
+		if(pMPr == nullptr)
+			return false;
+		return ConversionCtrlPr(dynamic_cast<OOX::Logic::CCtrlPr*>(pMPr->m_oCtrlPr.GetPointer()));
 	}
 //class COneElement
 	COneElement::COneElement():m_stAttribute(nullptr),m_bStyle(false)
@@ -607,19 +712,24 @@ namespace StarMath
 	{
 		return m_stAttribute;
 	}
-	void COneElement::ConversionAttribute(XmlUtils::CXmlWriter *pXmlWrite, std::wstring &wsAnnotation)
+	void COneElement::ConversionAttribute(StValuePr* pAttribute,bool& bStyle,XmlUtils::CXmlWriter *pXmlWrite, std::wstring &wsAnnotation)
 	{
-		if(!m_stAttribute->m_wsColor.empty())
+		if(!pAttribute->m_wsColor.empty())
 		{
 			pXmlWrite->WriteNodeBegin(L"mstyle",true);
-			std::wstring wsColor = L"#" + m_stAttribute->m_wsColor;
+			std::wstring wsColor = L"#" + pAttribute->m_wsColor;
 			pXmlWrite->WriteAttribute(L"mathcolor",wsColor);
 			pXmlWrite->WriteNodeEnd(L"w",true,false);
-			m_bStyle = true;
-			wsAnnotation += L"color hex " + m_stAttribute->m_wsColor + L" ";  
+			bStyle = true;
+			wsAnnotation += L"color hex " + pAttribute->m_wsColor + L" ";  
 		}
+		delete pAttribute;
 	}
 	bool COneElement::CheckStyle()
+	{
+		return m_bStyle;
+	}
+	bool& COneElement::GetStyle()
 	{
 		return m_bStyle;
 	}
@@ -634,7 +744,7 @@ namespace StarMath
 	{}
 	void CNumberOrLetter::Conversion(XmlUtils::CXmlWriter *pXmlWrite, std::wstring &wsAnnotation)
 	{
-		ConversionAttribute(pXmlWrite,wsAnnotation);
+		COneElement::ConversionAttribute(GetAttribute(),GetStyle(),pXmlWrite,wsAnnotation);
 		switch(m_enTypeElement)
 		{
 		case StarMath::TypeElement::number:
@@ -662,6 +772,14 @@ namespace StarMath
 	}
 	void CNumberOrLetter::Parse(std::wstring::iterator &itStart, std::wstring::iterator &itEnd)
 	{}
+	const std::wstring& CNumberOrLetter::GetString()
+	{
+		return m_wsElement;
+	}
+	void CNumberOrLetter::AddingStrings(const std::wstring &wsString)
+	{
+		m_wsElement += wsString;
+	}
 //class CBinOperator
 	CBinOperator::~CBinOperator()
 	{
@@ -679,7 +797,7 @@ namespace StarMath
 	void CBinOperator::Conversion(XmlUtils::CXmlWriter *pXmlWrite, std::wstring &wsAnnotation)
 	{
 		pXmlWrite->WriteNodeBegin(L"mrow",false);
-		ConversionAttribute(pXmlWrite,wsAnnotation);
+		COneElement::ConversionAttribute(GetAttribute(),GetStyle(),pXmlWrite,wsAnnotation);
 		if(m_pLeftArg != nullptr)
 			m_pLeftArg->Conversion(pXmlWrite,wsAnnotation);
 		COOXml2Odf::RecordingMoNode(m_wsSymbolBinOp,pXmlWrite);

@@ -27,11 +27,12 @@ namespace StarMath
 		COOXml2Odf();
 		~COOXml2Odf();
 		void StartConversion(OOX::Logic::COMathPara* pMathPara);
-		void NodeDefinition(OOX::WritingElement* pNode);
+		void NodeDefinition(OOX::WritingElement* pNode, const bool &bMatrix = false);
 		void ConversionMath(OOX::Logic::COMath* pMath);
 		std::vector<COneElement *> ConversionMT(OOX::Logic::CMText* pMt);
 		void ConversionMF(OOX::Logic::CFraction* pMf);
-		StValuePr ConversionCtrlPr(OOX::Logic::CCtrlPr* pCtrlPr);
+		bool ConversionCtrlPr(OOX::Logic::CCtrlPr* pCtrlPr);
+		bool ConversionCMPr(OOX::Logic::CMPr* pMPr);
 		StValuePr ConversionFpr(OOX::Logic::CFPr* pFpr);
 		std::wstring ConversionType(OOX::Logic::CType* pType);
 		void ConversionMd(OOX::Logic::CDelimiter* pDel);
@@ -42,18 +43,21 @@ namespace StarMath
 		void ConversionSsup(OOX::Logic::CSSup* pSsup);
 		void ConversionSup(OOX::Logic::CSup* pSup,OOX::Logic::CElement* pElement);
 		void ConversionSup(OOX::Logic::CSup* pSup);
-		void ConversionElement(OOX::Logic::CElement* pElement);
+		void ConversionElement(OOX::Logic::CElement* pElement, const bool &bMatrix = false);
 		std::vector<COneElement *> ConversionMRun(OOX::Logic::CMRun* pMRun);
 		void ConversionAcc(OOX::Logic::CAcc* pAcc);
 		void ConversionFunc(OOX::Logic::CFunc* pFunc);
 		void ConversionBox(OOX::Logic::CBox* pBox);
-		void ConversionTextVector(std::vector<COneElement*>& arLine,std::vector<COneElement*>& arNewLine);
-		void ConversionVectorWritingElement(std::vector<OOX::WritingElement*> arWrElements);
+		void ConversionTextVector(std::vector<COneElement*>& arLine,std::vector<COneElement*>& arNewLine,const bool& bMatrix = false);
+		void ConversionVectorWritingElement(std::vector<OOX::WritingElement*> arWrElements,const bool& bMatrix = false);
+		void ConversionMatrix(OOX::Logic::CMatrix *pMatrix);
+		void ConversionMr(OOX::Logic::CMr* pMr);
 		StValuePr *ConversionRunProperties(OOX::Logic::CRunProperty* pRPr);
 		StValuePr ConversionMdPr(OOX::Logic::CDelimiterPr* pDelPr);
 		StValuePr ConversionNaryPr(OOX::Logic::CNaryPr* pNaryPr);
 		std::wstring ConversionBegBracket(OOX::Logic::CBegChr* pBegChr);
 		std::wstring ConversionEndBracket(OOX::Logic::CEndChr* pEndChr);
+		std::wstring TranslationDiacritSign(std::wstring &wsSymbol);
 		static std::wstring ParsingText(std::wstring::iterator &itStart, std::wstring::iterator &itEnd);
 		std::wstring ConversionChr(OOX::Logic::CChr* pChr);
 		std::wstring ToStringChr(const std::wstring& wsChr);
@@ -61,6 +65,7 @@ namespace StarMath
 		static bool IsDigit(const std::wstring& wsDigit);
 		static bool IsAlpha(const std::wstring& wsAlpha);
 		static bool IsSpecialSymbol(const std::wstring& wsSpecial);
+		bool СomparingAttributes(StValuePr* pRight,StValuePr* pLeft);
 		void EndOdf();
 	private:
 		XmlUtils::CXmlWriter* m_pXmlWrite;
@@ -79,8 +84,9 @@ namespace StarMath
 		TypeElement GetType();
 		void SetAttribute(StValuePr* stAttribute);
 		StValuePr* GetAttribute();
-		void ConversionAttribute(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation);
+		static void ConversionAttribute(StValuePr* pAttribute,bool& bStyle,XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation);
 		bool CheckStyle();
+		bool& GetStyle();
 	private:
 		TypeElement m_enType;
 		StValuePr* m_stAttribute;
@@ -97,6 +103,8 @@ namespace StarMath
 		virtual ~CNumberOrLetter();
 		void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation) override;
 		void Parse(std::wstring::iterator &itStart, std::wstring::iterator &itEnd) override;
+		const std::wstring& GetString();
+		void AddingStrings(const std::wstring& wsString);
 	private:
 		std::wstring m_wsElement;
 		TypeElement m_enTypeElement;

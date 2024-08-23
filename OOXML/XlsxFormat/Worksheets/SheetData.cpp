@@ -1970,7 +1970,7 @@ namespace OOX
 						wchar_t *tail;
 						long double tempVal = std::wcstold(m_oValue->m_sText.c_str(), &tail);
 						if(*tail == L'\0')
-							if(tempVal <= DBL_MAX)
+							if(tempVal <= DBL_MAX && tempVal >= -DBL_MAX)
 							{
 								m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
 								realCache = tempVal;

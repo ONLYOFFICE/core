@@ -584,8 +584,8 @@ std::vector<bool> StringPtgParser::PosValArgs(const unsigned int &index) const
         case 0x00B1: case 0x00B3: case 0x00B4: case 0x00B5: case 0x00B8: case 0x00B9: case 0x00BA: case 0x00BE:
         case 0x00C0: case 0x00C6: case 0x00C8: case 0x00C9:
         case 0x00D6: case 0x00D7:
-        case 0x00E0: case 0x00E2: case 0x00E5: case 0x00E6: case 0x00E7: case 0x00E8: case 0x00E9: case 0x00EA: case 0x00ED:
-        case 0x00F4: case 0x00F8: case 0x00FB: case 0x00FE:
+        case 0x00E0: case 0x00E2: case 0x00E5: case 0x00E6: case 0x00E7: case 0x00E8: case 0x00E9: case 0x00EA: case 0x00EC: case 0x00ED:
+        case 0x00F1: case 0x00F4: case 0x00F8: case 0x00FB: case 0x00FE:
         case 0x0100: case 0x0101: case 0x0105: case 0x0106: case 0x0107: case 0x010F:
         case 0x0117: case 0x011B: case 0x011C:
         case 0x0126: case 0x0128: case 0x012A:
@@ -594,7 +594,7 @@ std::vector<bool> StringPtgParser::PosValArgs(const unsigned int &index) const
         case 0x0170: case 0x0171: case 0x0172: case 0x0173: case 0x0174: case 0x0175: case 0x0176: case 0x0177: case 0x0178: case 0x0179: case 0x017A:  case 0x017C:
         case 0x01DF:
         case 0x01E0:
-			argVector.push_back(true);
+			argVector = {true};
 			break;
 		case 0x000D: case 0x001B: case 0x001E: case 0x0027: case 0x0030: case 0x0046: case 0x005B: case 0x005D:
         case 0x0061: case 0x0067: case 0x006B: case 0x006D: case 0x0073: case 0x0074: case 0x0075:
@@ -604,48 +604,57 @@ std::vector<bool> StringPtgParser::PosValArgs(const unsigned int &index) const
         case 0x0112: case 0x0113: case 0x0114: case 0x011D: case 0x0120: case 0x012B: case 0x012F:
         case 0x0130: case 0x0131: case 0x0132: case 0x0133: case 0x0134: case 0x0136: case 0x0137: case 0x013A: case 0x013B:
         case 0x014C: case 0x0151: case 0x0153: case 0x015C: case 0x0161: case 0x0162: case 0x0165: case 0x0167:
-            argVector.push_back(true);
-            argVector.push_back(true);
+            argVector = {true, true};
             break;
         case 0x000E: case 0x001F: case 0x0041: case 0x0042: case 0x0052: case 0x007A: case 0x007C: case 0x008E: case 0x0091:
-        case 0x009E: case 0x00A0: case 0x00CD: case 0x00CE: case 0x00D2: case 0x00D3: case 0x00DC: case 0x0103: case 0x0104:
-        case 0x0109: case 0x010A: case 0x010B: case 0x0115: case 0x0116: case 0x0118: case 0x0119: case 0x011A: case 0x011F:
+        case 0x009E: case 0x00A0: case 0x00CD: case 0x00CE: case 0x00D2: case 0x00D3: case 0x00DC: case 0x00F0: case 0x0103: 
+        case 0x0104: case 0x0109: case 0x010A: case 0x010B: case 0x0115: case 0x0116: case 0x0118: case 0x0119: case 0x011A: case 0x011F:
         case 0x0122: case 0x0123: case 0x0124: case 0x0127: case 0x0129: case 0x012C: case 0x012D:
         case 0x0135: case 0x014F: case 0x0154: case 0x015F: case 0x017E:
-            argVector.push_back(true);
-            argVector.push_back(true);
-            argVector.push_back(true);
+            argVector = {true, true, true};
             break;
         case 0x006E: case 0x0077: case 0x0078: case 0x008F: case 0x009F: case 0x00AB: case 0x00B6: case 0x00CF: case 0x00F2: case 0x00F3:
         case 0x0111: case 0x011E: case 0x0121: case 0x0125: case 0x012E: case 0x013C: case 0x013D: case 0x014E: case 0x0155: case 0x015E:
         case 0x0163: case 0x017F: case 0x01DD:
-            argVector.push_back(true);
-            argVector.push_back(true);
-            argVector.push_back(true);
-            argVector.push_back(true);
+            argVector = {true, true, true, true};
             break;
         case 0x0038: case 0x0039: case 0x003A: case 0x003B: case 0x0090: case 0x009A: case 0x009B: case 0x009C: case 0x00DB:
         case 0x00F6: case 0x00F7: case 0x010E: case 0x0110: case 0x0164:
-            argVector.push_back(true);
-            argVector.push_back(true);
-            argVector.push_back(true);
-            argVector.push_back(true);
-            argVector.push_back(true);
+            argVector = {true, true, true, true, true};
+            break;
+        case 0x003C: case 0x00A7: case 0x00A8:
+            argVector = {true, true, true, true, true, true};
+            break;
+        case 0x0068: case 0x00DE:
+            argVector = {true, true, true, true, true, true, true};
+            break;
+        case 0x0152:
+            argVector = {true, true, true, true, true, true, true, true, true};
+            break;
+        case 0x00D8: case 0x017D:
+            argVector = {true, false, true};
+            break;
+        case 0x01DE:
+            argVector = {true, false, true, true, true};
+            break;
+        case 0x0145: case 0x0146: case 0x0147: case 0x0148: case 0x0159: case 0x015A: case 0x003E: case 0x006C: case 0x0092:
+        case 0x014B: case 0x01E3:
+            argVector = {false, true};
+            break;
+        case 0x003D: case 0x00BF: case 0x0144: case 0x0149:
+            argVector = {false, true, true};
             break;
         case 0x001D:
-            argVector.push_back(false);
-            argVector.push_back(true);
-            argVector.push_back(true);
-            argVector.push_back(true);
-        case 0x0159: case 0x0145: case 0x0146: case 0x0147: case 0x0148:
-            argVector.push_back(false);
-            argVector.push_back(true);
+            argVector = {false, true, true, true};
             break;
-        case 0x0066: case 0x0065:
-            argVector.push_back(true);
-            argVector.push_back(false);
-            argVector.push_back(false);
-            argVector.push_back(true);
+        case 0x004E:
+            argVector = {false, true, true, true, true};
+            break;
+        case 0x0066: case 0x0065: case 0x0098:
+            argVector = {true, false, false, true};
+            break;
+        case 0x0099:
+            argVector = {true, false, false, true};
             break;
         case 0x01E1:
             for(auto i = 0; i < 127; i++)
@@ -653,6 +662,28 @@ std::vector<bool> StringPtgParser::PosValArgs(const unsigned int &index) const
                 argVector.push_back(false);
                 argVector.push_back(true);
             }
+            break;
+        case 0x01E2: case 0x01E4:
+            argVector = {false, false, true};
+            for(auto i = 0; i < 126; i++)
+            {
+                argVector.push_back(false);
+                argVector.push_back(true);
+            }
+            break;
+        case 0x0095: case 0x00E4: case 0x014A: case 0x0150: case 0x017B:
+            for(auto i = 0; i < 255; i++)
+            {
+                argVector.push_back(true);
+            }
+            break;
+        case 0x0166:
+            argVector = {false, false};
+            for(auto i = 0; i < 253; i++)
+            {
+                argVector.push_back(true);
+            }
+            break;
 		default:
 			break;
 	}

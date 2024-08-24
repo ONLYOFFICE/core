@@ -35,6 +35,7 @@ namespace NSDocxRenderer
 		CVectorGraphics() noexcept;
 		CVectorGraphics(const CVectorGraphics& other) noexcept;
 		CVectorGraphics(CVectorGraphics&& other) noexcept;
+		CVectorGraphics(const Aggplus::CGraphicsPath& other) noexcept;
 		~CVectorGraphics();
 
 		CVectorGraphics& operator=(CVectorGraphics&& other) noexcept;
@@ -62,7 +63,10 @@ namespace NSDocxRenderer
 		void CheckPoint(const double& x, const double& y) noexcept;
 		void Rotate(const double& rotation);
 
-		Aggplus::CGraphicsPath GetGraphicsPath() noexcept;
+		// pointer because of no Aggplus::CGraphicsPath(const Aggplus::CGraphicsPath&)
+		Aggplus::CGraphicsPath* GetGraphicsPath() noexcept;
+
+		static Aggplus::BooleanOpType GetOpType(long nClipType);
 
 	private:
 		std::list<PathCommand> m_arData;

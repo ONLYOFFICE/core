@@ -743,6 +743,17 @@ namespace Aggplus
 		return this->m_internal->m_agg_ps.command(idx) == agg::path_cmd_curve4;
 	}
 
+	bool CGraphicsPath::IsClosePoint(size_t idx) const
+	{
+		return this->m_internal->m_agg_ps.command(idx) == agg::path_cmd_end_poly;
+	}
+
+	bool CGraphicsPath::IsLinePoint(size_t idx) const
+	{
+		return this->m_internal->m_agg_ps.command(idx) == agg::path_cmd_line_to;
+	}
+
+
 	std::vector<PointD> CGraphicsPath::GetPoints(size_t idx, size_t count) const
 	{
 		std::vector<PointD> points;

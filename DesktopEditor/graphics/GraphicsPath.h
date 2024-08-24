@@ -103,6 +103,8 @@ namespace Aggplus
 		bool IsClockwise() const;
 		bool IsMovePoint(size_t idx) const;
 		bool IsCurvePoint(size_t idx) const;
+		bool IsClosePoint(size_t idx) const;
+		bool IsLinePoint(size_t idx) const;
 		std::vector<PointD> GetPoints(size_t idx, size_t count) const;
 		double GetArea() const;
 		double GetArea(size_t idx, bool isCurve) const;

@@ -233,9 +233,12 @@ namespace NSDocxRenderer
 
 		if (!m_oClipVectorGraphics.IsEmpty())
 		{
-			Aggplus::CGraphicsPath path1 = m_oClipVectorGraphics.GetGraphicsPath();
-			Aggplus::CGraphicsPath path2 = m_oCurrVectorGraphics.GetGraphicsPath();
-			Aggplus::CGraphicsPath* result_path = Aggplus::CalcBooleanOperation(&path1, &path2, Aggplus::BooleanOpType::Union);
+			std::unique_ptr<Aggplus::CGraphicsPath> path1(m_oClipVectorGraphics.GetGraphicsPath());
+			std::unique_ptr<Aggplus::CGraphicsPath> path2(m_oCurrVectorGraphics.GetGraphicsPath());
+			auto op = CVectorGraphics::GetOpType(m_lClipMode);
+
+			CVectorGraphics new_vector_graphics(*Aggplus::CalcBooleanOperation(path1.get(), path2.get(), op));
+			m_oCurrVectorGraphics = std::move(new_vector_graphics);
 		}
 
 		pShape->SetVector(std::move(m_oCurrVectorGraphics));

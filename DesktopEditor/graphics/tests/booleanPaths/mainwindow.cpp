@@ -286,7 +286,7 @@ void MainWindow::BooleanOp()
 	if (Path1->GetPointCount() == 0 || Path2->GetPointCount() == 0)
 		return;
 
-	Aggplus::CGraphicsPath *result = Aggplus::BooleanOperation(Path1, Path2, Op);
+	Aggplus::CGraphicsPath *result = Aggplus::CalcBooleanOperation(Path1, Path2, Op);
 	Draw(result);
 	SetCoords(ui->label_7, result);
 }

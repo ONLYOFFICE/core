@@ -96,7 +96,7 @@ namespace Aggplus
 		// bool operator==(const Location& other);
 	};
 
-	class GRAPHICS_DECL CBooleanOperations
+	class CBooleanOperations
 	{
 	public:
 		CBooleanOperations(CGraphicsPath* path1, CGraphicsPath* path2, BooleanOpType op);

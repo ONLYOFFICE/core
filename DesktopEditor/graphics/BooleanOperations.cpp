@@ -1568,7 +1568,7 @@ void CBooleanOperations::AddOffsets(std::vector<double>& offsets,
 	offsets.push_back(count != 0 ? offset : offset / 32);
 }
 
-CGraphicsPath* BooleanOperation(CGraphicsPath *path1, CGraphicsPath *path2, BooleanOpType op)
+CGraphicsPath* CalcBooleanOperation(CGraphicsPath *path1, CGraphicsPath *path2, BooleanOpType op)
 {
 	CBooleanOperations operation(path1, path2, op);
 	return operation.GetResult();

@@ -3,7 +3,6 @@
 #include <memory>
 
 #include "../../../DesktopEditor/graphics/GraphicsPath.h"
-#include "../../../DesktopEditor/graphics/BooleanOperations.h"
 
 #include "elements/DropCap.h"
 #include "../resources/Constants.h"
@@ -236,7 +235,7 @@ namespace NSDocxRenderer
 		{
 			Aggplus::CGraphicsPath path1 = m_oClipVectorGraphics.GetGraphicsPath();
 			Aggplus::CGraphicsPath path2 = m_oCurrVectorGraphics.GetGraphicsPath();
-			Aggplus::CBooleanOperations operation(&path1, &path2, Aggplus::BooleanOpType::Union);
+			Aggplus::CGraphicsPath* result_path = Aggplus::CalcBooleanOperation(&path1, &path2, Aggplus::BooleanOpType::Union);
 		}
 
 		pShape->SetVector(std::move(m_oCurrVectorGraphics));

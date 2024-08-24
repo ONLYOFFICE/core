@@ -177,7 +177,7 @@ namespace Aggplus
 		Division       = 4
 	};
 
-	GRAPHICS_DECL CGraphicsPath* BooleanOperation(CGraphicsPath* path1, CGraphicsPath* path2, BooleanOpType op);
+	GRAPHICS_DECL CGraphicsPath* CalcBooleanOperation(CGraphicsPath* path1, CGraphicsPath* path2, BooleanOpType op);
 
 } // namespace Aggplus
 

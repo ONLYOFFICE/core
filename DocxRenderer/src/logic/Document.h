@@ -1,9 +1,11 @@
 ﻿#pragma once
-#include "Page.h"
 #include "../../../DesktopEditor/common/Directory.h"
+
+#include "Page.h"
 #include "managers/ImageManager.h"
 #include "managers/FontStyleManager.h"
 #include "managers/ParagraphStyleManager.h"
+
 
 namespace NSDocxRenderer
 {

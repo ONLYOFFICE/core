@@ -5,7 +5,6 @@
 #include "../../../../DesktopEditor/graphics/structures.h"
 #include "../../../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../../../DesktopEditor/common/StringUTF32.h"
-#include "../../../../DesktopEditor/common/StringExt.h"
 
 namespace NSDocxRenderer
 {

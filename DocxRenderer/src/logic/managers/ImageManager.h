@@ -1,6 +1,7 @@
 #pragma once
 #include "../../../../DesktopEditor/common/CalculatorCRC32.h"
-#include "./ExternalImageStorage.h"
+
+#include "ExternalImageStorage.h"
 
 namespace NSDocxRenderer
 {

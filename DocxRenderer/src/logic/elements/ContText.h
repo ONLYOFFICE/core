@@ -1,8 +1,9 @@
 #pragma once
-#include "BaseItem.h"
 #include "../../../../DesktopEditor/common/StringBuilder.h"
+
+#include "BaseItem.h"
 #include "../managers/FontManager.h"
-#include "../managers/FontStyleManager.h"
+#include "../styles/FontStyle.h"
 #include "../../resources/Constants.h"
 #include "../../resources/LinesTable.h"
 

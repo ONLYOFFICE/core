@@ -2,7 +2,6 @@
 #include "ContText.h"
 #include "BaseItem.h"
 
-
 namespace NSDocxRenderer
 {
 	class CTextLine : public CBaseItem

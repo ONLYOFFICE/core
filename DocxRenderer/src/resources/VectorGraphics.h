@@ -1,4 +1,6 @@
 #pragma once
+#include "../../../DesktopEditor/graphics/GraphicsPath.h"
+
 #include <list>
 
 namespace NSDocxRenderer
@@ -59,6 +61,8 @@ namespace NSDocxRenderer
 		void CheckPoint(const Point& point) noexcept;
 		void CheckPoint(const double& x, const double& y) noexcept;
 		void Rotate(const double& rotation);
+
+		Aggplus::CGraphicsPath GetGraphicsPath() noexcept;
 
 	private:
 		std::list<PathCommand> m_arData;

@@ -1,7 +1,11 @@
 #include "FontManager.h"
-#include "../../resources/Constants.h"
+
 #include "../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../../../DesktopEditor/common/Directory.h"
+#include "../../../../DesktopEditor/common/StringExt.h"
+
+#include "../../resources/Constants.h"
+
 
 namespace NSDocxRenderer
 {

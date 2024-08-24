@@ -1,4 +1,5 @@
 #include "DropCap.h"
+
 #include "../../resources/Constants.h"
 
 namespace NSDocxRenderer

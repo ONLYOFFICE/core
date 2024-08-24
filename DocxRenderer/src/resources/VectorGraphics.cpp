@@ -1,11 +1,11 @@
+#include "VectorGraphics.h"
+
 #include <algorithm>
 #include <string.h>
 #include <numeric>
 #include <limits>
 
-#include "../../../DesktopEditor/graphics/pro/Graphics.h"
-#include "VectorGraphics.h"
-
+#include "../../../DesktopEditor/graphics/Matrix.h"
 
 namespace NSDocxRenderer
 {
@@ -178,5 +178,28 @@ namespace NSDocxRenderer
 				rotate_matrix.TransformPoint(point.x, point.y);
 				CheckPoint(point);
 			}
+	}
+	Aggplus::CGraphicsPath CVectorGraphics::GetGraphicsPath() noexcept
+	{
+		Aggplus::CGraphicsPath ret_value;
+		for (const auto& path : m_arData)
+		{
+			if (path.type == ePathCommandType::pctMove)
+				ret_value.MoveTo(path.points.front().x, path.points.front().y);
+			else if (path.type == ePathCommandType::pctLine)
+				ret_value.LineTo(path.points.front().x, path.points.front().y);
+			else if (path.type == ePathCommandType::pctClose)
+				ret_value.CloseFigure();
+			else if (path.type == ePathCommandType::pctCurve)
+			{
+				std::vector<Point> points;
+				for (const auto& point : path.points)
+					points.push_back(point);
+				ret_value.CurveTo(points[0].x, points[0].y,
+						points[1].x, points[1].y,
+						points[2].x, points[2].y);
+			}
+		}
+		return ret_value;
 	}
 }

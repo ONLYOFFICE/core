@@ -1,4 +1,5 @@
 #include "ContText.h"
+
 #include "../../resources/ColorTable.h"
 #include "../../resources/SingletonTemplate.h"
 #include "../../resources/utils.h"

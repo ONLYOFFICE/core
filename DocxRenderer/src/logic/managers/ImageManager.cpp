@@ -1,5 +1,7 @@
 #include "ImageManager.h"
+
 #include "../../../../DesktopEditor/common/Directory.h"
+
 #include "../../resources/Constants.h"
 
 namespace NSDocxRenderer

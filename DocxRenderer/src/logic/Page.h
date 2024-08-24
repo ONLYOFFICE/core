@@ -1,11 +1,11 @@
 ﻿#pragma once
-#include "../../../DesktopEditor/graphics/pro/Graphics.h"
+#include "../../../DesktopEditor/graphics/GraphicsPath.h"
+
 #include "elements/Paragraph.h"
 #include "elements/Shape.h"
 #include "managers/FontStyleManager.h"
 #include "managers/ParagraphStyleManager.h"
-#include "styles/ParagraphStyle.h"
-#include "elements/DropCap.h"
+#include "convert_params.h"
 
 namespace NSDocxRenderer
 {

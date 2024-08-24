@@ -1,9 +1,10 @@
 #pragma once
-#include "Paragraph.h"
-#include "TextLine.h"
+#include "../../../../DesktopEditor/graphics/structures.h"
+
 #include "../../resources/ImageInfo.h"
 #include "../../resources/LinesTable.h"
 #include "../../resources/VectorGraphics.h"
+#include "BaseItem.h"
 
 namespace NSDocxRenderer
 {

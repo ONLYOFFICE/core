@@ -1,5 +1,7 @@
 #include "Document.h"
 
+#include "../../../DesktopEditor/common/StringExt.h"
+
 #ifndef DISABLE_FULL_DOCUMENT_CREATION
 #include "./../resources/resources.h"
 #endif

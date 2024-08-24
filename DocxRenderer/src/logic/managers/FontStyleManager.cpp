@@ -1,4 +1,5 @@
 #include "FontStyleManager.h"
+
 #include <utility>
 
 namespace NSDocxRenderer

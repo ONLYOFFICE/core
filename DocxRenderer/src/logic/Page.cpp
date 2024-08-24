@@ -1,8 +1,13 @@
 #include "Page.h"
-#include "../resources/Constants.h"
-#include "../resources/SingletonTemplate.h"
-#include "../resources/utils.h"
+
 #include <memory>
+
+#include "../../../DesktopEditor/graphics/GraphicsPath.h"
+#include "../../../DesktopEditor/graphics/BooleanOperations.h"
+
+#include "elements/DropCap.h"
+#include "../resources/Constants.h"
+#include "../resources/utils.h"
 
 namespace NSDocxRenderer
 {
@@ -229,7 +234,9 @@ namespace NSDocxRenderer
 
 		if (!m_oClipVectorGraphics.IsEmpty())
 		{
-			// TODO clip!
+			Aggplus::CGraphicsPath path1 = m_oClipVectorGraphics.GetGraphicsPath();
+			Aggplus::CGraphicsPath path2 = m_oCurrVectorGraphics.GetGraphicsPath();
+			Aggplus::CBooleanOperations operation(&path1, &path2, Aggplus::BooleanOpType::Union);
 		}
 
 		pShape->SetVector(std::move(m_oCurrVectorGraphics));

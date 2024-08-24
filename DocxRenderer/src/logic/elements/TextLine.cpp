@@ -1,4 +1,5 @@
 #include "TextLine.h"
+
 #include "../../logic/elements/Shape.h"
 #include "../../resources/Constants.h"
 #include "../../resources/utils.h"

@@ -318,6 +318,11 @@ void pptx_slide_context::set_use_image_replacement()
 	impl_->use_image_replacement_ = true;
 }
 
+void pptx_slide_context::set_is_placeHolder(bool is_placeholder)
+{
+	impl_->object_description_.additional_.push_back(odf_reader::_property(L"IsPlaceholder", is_placeholder));
+}
+
 void pptx_slide_context::set_placeHolder_type(std::wstring typeHolder)
 {
 	if (typeHolder == L"ftr")	impl_->footer		= true;
@@ -772,6 +777,10 @@ void pptx_slide_context::Impl::process_shape(drawing_object_description & obj, _
 		GetProperty(obj.additional_, L"PlaceHolderIdx", iPlaceHolderIdx);
 		if (iPlaceHolderIdx) drawing.place_holder_idx_ = *iPlaceHolderIdx;
 	}
+
+	_CP_OPT(bool) is_placeholder;
+	GetProperty(obj.additional_, L"IsPlaceholder", is_placeholder);
+	drawing.place_holder_ = is_placeholder.get_value_or(false);
 
 	drawing.sub_type = obj.shape_type_;
 

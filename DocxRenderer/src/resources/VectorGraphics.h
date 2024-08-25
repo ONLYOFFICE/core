@@ -63,10 +63,7 @@ namespace NSDocxRenderer
 		void CheckPoint(const double& x, const double& y) noexcept;
 		void Rotate(const double& rotation);
 
-		// pointer because of no Aggplus::CGraphicsPath(const Aggplus::CGraphicsPath&)
-		Aggplus::CGraphicsPath* GetGraphicsPath() noexcept;
-
-		static Aggplus::BooleanOpType GetOpType(long nClipType);
+		static CVectorGraphics CalcBoolean(const CVectorGraphics& vg1, const CVectorGraphics& vg2, long clipType);
 
 	private:
 		std::list<PathCommand> m_arData;
@@ -81,6 +78,10 @@ namespace NSDocxRenderer
 		const double m_dRightDefault;
 		const double m_dBottomDefault;
 
-		void ResetBorders();
+		void ResetBorders() noexcept;
+
+		// pointer because of no Aggplus::CGraphicsPath(const Aggplus::CGraphicsPath&)
+		Aggplus::CGraphicsPath* GetGraphicsPath() const noexcept;
+		static Aggplus::BooleanOpType GetOpType(long nClipType);
 	};
 }

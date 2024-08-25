@@ -85,7 +85,7 @@ namespace NSDocxRenderer
 		return *this;
 	}
 
-	void CVectorGraphics::ResetBorders()
+	void CVectorGraphics::ResetBorders() noexcept
 	{
 		m_dLeft = m_dLeftDefault;
 		m_dTop = m_dTopDefault;
@@ -204,7 +204,22 @@ namespace NSDocxRenderer
 				CheckPoint(point);
 			}
 	}
-	Aggplus::CGraphicsPath* CVectorGraphics::GetGraphicsPath() noexcept
+
+	// ClipRegionTypeWinding = 0x0000;
+	// ClipRegionTypeEvenOdd = 0x0001;
+	// ClipRegionIntersect = 0x0000;
+	// ClipRegionUnion = 0x0100;
+	// ClipRegionXor = 0x0200;
+	// ClipRegionDiff = 0x0400;
+	CVectorGraphics CVectorGraphics::CalcBoolean(const CVectorGraphics& vg1, const CVectorGraphics& vg2, long clipType)
+	{
+		std::unique_ptr<Aggplus::CGraphicsPath> path1(vg1.GetGraphicsPath());
+		std::unique_ptr<Aggplus::CGraphicsPath> path2(vg2.GetGraphicsPath());
+		auto op = GetOpType(clipType);
+		return CVectorGraphics(*Aggplus::CalcBooleanOperation(path1.get(), path2.get(), op));
+	}
+
+	Aggplus::CGraphicsPath* CVectorGraphics::GetGraphicsPath() const noexcept
 	{
 		Aggplus::CGraphicsPath* ret_value = new Aggplus::CGraphicsPath();
 		for (const auto& path : m_arData)

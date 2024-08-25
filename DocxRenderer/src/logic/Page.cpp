@@ -59,7 +59,13 @@ namespace NSDocxRenderer
 		else if (lType == c_nClipType)
 		{
 			m_bIsClipPath = false;
-			m_oClipVectorGraphics = std::move(m_oCurrVectorGraphics);
+			if (!m_oClipVectorGraphics.IsEmpty())
+			{
+//				m_oClipVectorGraphics = CVectorGraphics::CalcBoolean(m_oClipVectorGraphics,m_oCurrVectorGraphics, m_lClipMode);
+//				m_oCurrVectorGraphics.Clear();
+			}
+			else
+				m_oClipVectorGraphics = std::move(m_oCurrVectorGraphics);
 		}
 	}
 
@@ -163,13 +169,6 @@ namespace NSDocxRenderer
 
 	void CPage::DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo)
 	{
-//		m_oCurrVectorGraphics.Clear();
-//		m_oCurrVectorGraphics.MoveTo(110.57, 20);
-//		m_oCurrVectorGraphics.LineTo(191.82, 63.140);
-//		m_oCurrVectorGraphics.LineTo(114.449, 208.88);
-//		m_oCurrVectorGraphics.LineTo(33.194, 165.74);
-//		m_oCurrVectorGraphics.LineTo(110.57, 20);
-
 		double rotation = m_pTransform->z_Rotation();
 		double left = m_oCurrVectorGraphics.GetLeft();
 		double right = m_oCurrVectorGraphics.GetRight();
@@ -233,11 +232,10 @@ namespace NSDocxRenderer
 
 		if (!m_oClipVectorGraphics.IsEmpty())
 		{
-			std::unique_ptr<Aggplus::CGraphicsPath> path1(m_oClipVectorGraphics.GetGraphicsPath());
-			std::unique_ptr<Aggplus::CGraphicsPath> path2(m_oCurrVectorGraphics.GetGraphicsPath());
-			auto op = CVectorGraphics::GetOpType(m_lClipMode);
-
-			CVectorGraphics new_vector_graphics(*Aggplus::CalcBooleanOperation(path1.get(), path2.get(), op));
+			CVectorGraphics new_vector_graphics = CVectorGraphics::CalcBoolean(
+						m_oCurrVectorGraphics,
+						m_oClipVectorGraphics,
+						m_lClipMode);
 			m_oCurrVectorGraphics = std::move(new_vector_graphics);
 		}
 

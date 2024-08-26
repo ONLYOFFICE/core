@@ -133,7 +133,7 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
-Aggplus::CGraphicsPath* MainWindow::SetPath(double offsetX, double offsetY, QString Figure)
+Aggplus::CGraphicsPath* MainWindow::SetPath(double scale, double offsetX, double offsetY, QString Figure)
 {
 	Aggplus::CGraphicsPath *path = new Aggplus::CGraphicsPath;
 
@@ -142,12 +142,12 @@ Aggplus::CGraphicsPath* MainWindow::SetPath(double offsetX, double offsetY, QStr
 	{
 		path->MoveTo(RECTANGLE[0] + offsetX,
 					 RECTANGLE[1] + offsetY);
-		path->LineTo(RECTANGLE[0] + RECTANGLE[2] + offsetX,
+		path->LineTo(RECTANGLE[0] + scale * RECTANGLE[2] + offsetX,
 					 RECTANGLE[1] + offsetY);
-		path->LineTo(RECTANGLE[0] + RECTANGLE[2] + offsetX,
-					 RECTANGLE[1] + RECTANGLE[3] + offsetY);
+		path->LineTo(RECTANGLE[0] + scale * RECTANGLE[2] + offsetX,
+					 RECTANGLE[1] + scale * RECTANGLE[3] + offsetY);
 		path->LineTo(RECTANGLE[0] + offsetX,
-					 RECTANGLE[1] + RECTANGLE[3] + offsetY);
+					 RECTANGLE[1] + scale * RECTANGLE[3] + offsetY);
 		path->LineTo(RECTANGLE[0] + offsetX,
 					 RECTANGLE[1] + offsetY);
 	}
@@ -155,8 +155,8 @@ Aggplus::CGraphicsPath* MainWindow::SetPath(double offsetX, double offsetY, QStr
 	{
 		path->AddEllipse(RECTANGLE[0] + offsetX,
 						 RECTANGLE[1] + offsetY,
-						 RECTANGLE[2],
-						 RECTANGLE[3]);
+						 scale * RECTANGLE[2],
+						 scale * RECTANGLE[3]);
 	}
 	else
 	{
@@ -268,7 +268,7 @@ void MainWindow::SetCoords(QLabel *label, Aggplus::CGraphicsPath *path)
 void MainWindow::DrawPath1()
 {
 	if (Path1) delete Path1;
-	Path1 = SetPath(Offsets[0], Offsets[1], Figure1);
+	Path1 = SetPath(Scale[0], Offsets[0], Offsets[1], Figure1);
 	Draw();
 	SetCoords(ui->label_4, Path1);
 }
@@ -276,7 +276,7 @@ void MainWindow::DrawPath1()
 void MainWindow::DrawPath2()
 {
 	if (Path2) delete Path2;
-	Path2 = SetPath(Offsets[2], Offsets[3], Figure2);
+	Path2 = SetPath(Scale[1], Offsets[2], Offsets[3], Figure2);
 	Draw();
 	SetCoords(ui->label_5, Path2);
 }
@@ -303,12 +303,12 @@ void MainWindow::CheckMousePress()
 
 	QRectF rect1(RECTANGLE[0] + Offsets[0],
 				 RECTANGLE[1] + Offsets[1],
-				 RECTANGLE[2],
-				 RECTANGLE[3]),
+				 Scale[0] * RECTANGLE[2],
+				 Scale[0] * RECTANGLE[3]),
 		   rect2(RECTANGLE[0] + Offsets[2],
 				 RECTANGLE[1] + Offsets[3],
-				 RECTANGLE[2],
-				 RECTANGLE[3]);
+				 Scale[1] * RECTANGLE[2],
+				 Scale[1] * RECTANGLE[3]);
 
 	Move1 = rect1.contains(ui->label->GetStartPoint()) && Path1->GetPointCount() != 0;
 	Move2 = rect2.contains(ui->label->GetStartPoint()) && Path2->GetPointCount() != 0;
@@ -350,3 +350,17 @@ void MainWindow::Move()
 		DrawPath2();
 	}
 }
+
+void MainWindow::on_horizontalSlider_sliderMoved(int position)
+{
+	Scale[0] = position / 100.0;
+	DrawPath1();
+}
+
+
+void MainWindow::on_horizontalSlider_2_sliderMoved(int position)
+{
+	Scale[1] = position / 100.0;
+	DrawPath2();
+}
+

@@ -748,37 +748,60 @@ void CBooleanOperations::TraceBoolean()
 
 	GetIntersection();
 
-	int length = Locations.size() - 1;
-	for (int i = 0; i <= length; i++)
+	if (Locations.empty())
 	{
-		int before = Locations.size();
-		InsertLocation(Locations[i]->Inters, false);
-		if (before == Locations.size())
-			Locations.erase(Locations.begin() + i);
-	}
-
-	DivideLocations();
-
-	for (const auto& l : Locations)
-	{
-		Segment start = l->S,
-			s = GetNextSegment(l->S);
-
-		if (s == Segment() || (bool)s.Inters || s == start)
-			continue;
-
-		int count = 0;
-		for (const auto& c : (s.Id == 1 ? Curves2 : Curves1))
-			count += CheckInters(PointD(), s, c);
-
-		do
+		for (auto& s : Segments1)
 		{
-			if (s.Id == 1 )
-				Segments1[s.Index].Winding = count % 2;
-			else
-				Segments2[s.Index].Winding = count % 2;
-			s = GetNextSegment(s);
-		} while (s != Segment() && !(bool)s.Inters && s != start);
+			int count = 0;
+			for (const auto& c : Curves2)
+				count += CheckInters(PointD(), s, c);
+
+			s.Winding = count % 2;
+		}
+
+		for (auto& s : Segments2)
+		{
+			int count = 0;
+			for (const auto& c : Curves1)
+				count += CheckInters(PointD(), s, c);
+
+			s.Winding = count % 2;
+		}
+	}
+	else
+	{
+		int length = Locations.size() - 1;
+		for (int i = 0; i <= length; i++)
+		{
+			int before = Locations.size();
+			InsertLocation(Locations[i]->Inters, false);
+			if (before == Locations.size())
+				Locations.erase(Locations.begin() + i);
+		}
+
+		DivideLocations();
+
+		for (const auto& l : Locations)
+		{
+			Segment start = l->S,
+				s = GetNextSegment(l->S);
+
+			if (s == Segment() || (bool)s.Inters || s == start)
+				continue;
+
+			int count = 0;
+			for (const auto& c : (s.Id == 1 ? Curves2 : Curves1))
+				count += CheckInters(PointD(), s, c);
+
+			do
+			{
+				if (s.Id == 1 )
+					Segments1[s.Index].Winding = count % 2;
+				else
+					Segments2[s.Index].Winding = count % 2;
+				s = GetNextSegment(s);
+			} while (s != Segment() && !(bool)s.Inters && s != start);
+		}
 	}
 
 	TracePaths();

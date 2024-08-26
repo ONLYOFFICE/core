@@ -45,7 +45,7 @@
        <x>10</x>
        <y>10</y>
        <width>191</width>
-       <height>320</height>
+       <height>480</height>
       </rect>
      </property>
      <property name="title">
@@ -94,7 +94,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>160</y>
+        <y>270</y>
         <width>63</width>
         <height>20</height>
        </rect>
@@ -107,9 +107,9 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>180</y>
+        <y>290</y>
         <width>170</width>
-        <height>130</height>
+        <height>180</height>
        </rect>
       </property>
       <property name="text">
@@ -119,6 +119,28 @@
        <bool>true</bool>
       </property>
      </widget>
+     <widget class="QSlider" name="horizontalSlider">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>190</y>
+        <width>160</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="minimum">
+       <number>1</number>
+      </property>
+      <property name="maximum">
+       <number>200</number>
+      </property>
+      <property name="sliderPosition">
+       <number>100</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
     </widget>
     <widget class="QGroupBox" name="groupBox_3">
      <property name="geometry">
@@ -126,7 +148,7 @@
        <x>210</x>
        <y>10</y>
        <width>191</width>
-       <height>320</height>
+       <height>480</height>
       </rect>
      </property>
      <property name="title">
@@ -175,7 +197,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>160</y>
+        <y>270</y>
         <width>63</width>
         <height>20</height>
        </rect>
@@ -188,9 +210,9 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>180</y>
+        <y>290</y>
         <width>170</width>
-        <height>130</height>
+        <height>180</height>
        </rect>
       </property>
       <property name="text">
@@ -198,6 +220,28 @@
       </property>
       <property name="wordWrap">
        <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QSlider" name="horizontalSlider_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>190</y>
+        <width>160</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="minimum">
+       <number>1</number>
+      </property>
+      <property name="maximum">
+       <number>200</number>
+      </property>
+      <property name="sliderPosition">
+       <number>100</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
      </widget>
     </widget>
@@ -290,7 +334,7 @@
      <x>0</x>
      <y>0</y>
      <width>1124</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

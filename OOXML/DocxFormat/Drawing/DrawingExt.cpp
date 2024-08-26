@@ -1068,6 +1068,7 @@ namespace OOX
                     {
                         OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
                         oExt->m_sUri = L"{504A1905-F514-4f6f-8877-14C23A59335A}";
+						oExt->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
                         oExt->m_oAltTextTable = ptr->m_BrtList14;
 
                         if (oExt)

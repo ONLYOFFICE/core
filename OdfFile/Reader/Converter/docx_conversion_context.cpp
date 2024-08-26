@@ -1107,6 +1107,16 @@ std::wstring  docx_conversion_context::dump_settings_document()
 			{
 				CP_XML_NODE(L"w:mirrorMargins");
 			}
+
+			_CP_OPT(double) tabDistance = root()->odf_context().Settings().get_tab_distance();
+
+			if (tabDistance)
+			{
+				CP_XML_NODE(L"w:defaultTabStop")
+				{
+					CP_XML_ATTR(L"w:val", *tabDistance);
+				}
+			}
 			
 			CP_XML_NODE(L"w:compat")
 			{

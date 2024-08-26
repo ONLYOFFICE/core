@@ -84,6 +84,7 @@ public:
 	void set_connector_end_glue_point		(int gluePoint);
 	void set_connector_draw_type			(const std::wstring& drawType);
 
+	void set_is_placeHolder(bool is_placeholder);
 	void set_placeHolder_type	(std::wstring typeHolder);
 	void set_placeHolder_idx	(int idx);
 

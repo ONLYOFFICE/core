@@ -36,6 +36,7 @@
 #include "../../DataTypes/noteclass.h"
 
 #include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <boost/shared_ptr.hpp>
 #include <list>
 
@@ -66,6 +67,7 @@ namespace cpdoccore {
 		class style_columns;
 		class form_element;
 		class text_linenumbering_configuration;
+		class text_list_style;
 
 		namespace text
 		{
@@ -896,7 +898,11 @@ public:
     void end_list				();
     void start_list_item		(bool restart = false);
     void end_list_item	();
-    
+
+	size_t get_list_style_level() { return list_style_stack_.size(); }
+	size_t get_list_style_occurances(const std::wstring& styleName) { return list_styles_occurances_[styleName]; }
+	const std::vector<std::wstring>& get_list_style_stack() const { return list_style_stack_; }
+
 	void serialize_list_properties(std::wostream & strm);
 	void serialize_paragraph_style(std::wostream & strm, const std::wstring & ParentId, bool in_styles = false);
    
@@ -1086,6 +1092,9 @@ private:
 	std::map<std::wstring, std::vector<odf_reader::office_element_ptr>> mapAlphabeticals;
 
 	std::vector<std::wstring>											arBibliography;
+
+	std::vector<_CP_PTR(odf_reader::text_list_style)>					restarted_list_styles;
+	std::unordered_map<std::wstring, size_t>							list_styles_occurances_;
 };
 
 }

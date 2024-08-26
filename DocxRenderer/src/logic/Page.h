@@ -149,6 +149,5 @@ namespace NSDocxRenderer
 		NSStructures::CBrush m_oPrevBrush;
 
 		size_t m_nShapeOrder = 0;
-		bool m_bIsClipPath {false};
 	};
 }

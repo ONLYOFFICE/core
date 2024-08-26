@@ -41,6 +41,13 @@ namespace NSDocxRenderer
 		CVectorGraphics& operator=(CVectorGraphics&& other) noexcept;
 		CVectorGraphics& operator=(const CVectorGraphics& other) noexcept;
 
+		bool operator<(const CVectorGraphics& other) const noexcept;
+		bool operator>(const CVectorGraphics& other) const noexcept;
+		bool operator==(const CVectorGraphics& other) const noexcept;
+		bool operator!=(const CVectorGraphics& other) const noexcept;
+		bool operator<=(const CVectorGraphics& other) const noexcept;
+		bool operator>=(const CVectorGraphics& other) const noexcept;
+
 		const std::list<PathCommand>& GetData() const;
 
 		double GetLeft() const noexcept;

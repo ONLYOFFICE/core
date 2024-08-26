@@ -7,6 +7,8 @@
 
 #include "../../../DesktopEditor/graphics/Matrix.h"
 
+#include "Constants.h";
+
 namespace NSDocxRenderer
 {
 	CVectorGraphics::CVectorGraphics() noexcept
@@ -83,6 +85,46 @@ namespace NSDocxRenderer
 		m_dRight = other.m_dRight;
 		m_dBottom = other.m_dBottom;
 		return *this;
+	}
+
+	bool CVectorGraphics::operator<(const CVectorGraphics& other) const noexcept
+	{
+		return m_dBottom < other.m_dBottom &&
+				m_dTop > other.m_dTop &&
+				m_dRight < other.m_dRight &&
+				m_dLeft > other.m_dLeft;
+	}
+	bool CVectorGraphics::operator>(const CVectorGraphics& other) const noexcept
+	{
+		return m_dBottom > other.m_dBottom &&
+				m_dTop < other.m_dTop &&
+				m_dRight > other.m_dRight &&
+				m_dLeft < other.m_dLeft;
+	}
+	bool CVectorGraphics::operator==(const CVectorGraphics& other) const noexcept
+	{
+		return fabs(m_dBottom - other.m_dBottom < c_dGRAPHICS_ERROR_MM) &&
+				fabs(m_dTop - other.m_dTop < c_dGRAPHICS_ERROR_MM) &&
+				fabs(m_dRight - other.m_dRight < c_dGRAPHICS_ERROR_MM) &&
+				fabs(m_dLeft - other.m_dLeft < c_dGRAPHICS_ERROR_MM);
+	}
+	bool CVectorGraphics::operator!=(const CVectorGraphics& other) const noexcept
+	{
+		return !(*this == other);
+	}
+	bool CVectorGraphics::operator<=(const CVectorGraphics& other) const noexcept
+	{
+		return m_dBottom - c_dGRAPHICS_ERROR_MM < other.m_dBottom &&
+				m_dTop + c_dGRAPHICS_ERROR_MM > other.m_dTop &&
+				m_dRight - c_dGRAPHICS_ERROR_MM < other.m_dRight &&
+				m_dLeft + c_dGRAPHICS_ERROR_MM > other.m_dLeft;
+	}
+	bool CVectorGraphics::operator>=(const CVectorGraphics& other) const noexcept
+	{
+		return m_dBottom + c_dGRAPHICS_ERROR_MM > other.m_dBottom &&
+				m_dTop - c_dGRAPHICS_ERROR_MM < other.m_dTop &&
+				m_dRight + c_dGRAPHICS_ERROR_MM > other.m_dRight &&
+				m_dLeft - c_dGRAPHICS_ERROR_MM < other.m_dLeft;
 	}
 
 	void CVectorGraphics::ResetBorders() noexcept

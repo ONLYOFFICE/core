@@ -46,9 +46,6 @@ namespace NSDocxRenderer
 	void CPage::BeginCommand(DWORD lType)
 	{
 		m_lCurrentCommand = static_cast<LONG>(lType);
-
-		if (lType == c_nClipType)
-			m_bIsClipPath = true;
 	}
 	void CPage::EndCommand(DWORD lType)
 	{
@@ -58,11 +55,10 @@ namespace NSDocxRenderer
 			PathEnd();
 		else if (lType == c_nClipType)
 		{
-			m_bIsClipPath = false;
 			if (!m_oClipVectorGraphics.IsEmpty())
 			{
-//				m_oClipVectorGraphics = CVectorGraphics::CalcBoolean(m_oClipVectorGraphics,m_oCurrVectorGraphics, m_lClipMode);
-//				m_oCurrVectorGraphics.Clear();
+				m_oClipVectorGraphics = CVectorGraphics::CalcBoolean(m_oClipVectorGraphics, m_oCurrVectorGraphics, m_lClipMode);
+				m_oCurrVectorGraphics.Clear();
 			}
 			else
 				m_oClipVectorGraphics = std::move(m_oCurrVectorGraphics);

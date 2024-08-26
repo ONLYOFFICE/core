@@ -916,17 +916,6 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"\"/>");
 		}
 
-		for (const auto& pImage : m_oImageManager.m_mapImagesFile)
-		{
-			auto pInfo = pImage.second;;
-
-			oWriter.WriteString(L"<Relationship Id=\"rId");
-			oWriter.AddInt(c_iStartingIdForImages + pInfo->m_nId);
-			oWriter.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/");
-			oWriter.WriteString(pInfo->m_strFileName);
-			oWriter.WriteString(L"\"/>");
-		}
-
 		oWriter.WriteString(L"</Relationships>");
 
 		NSFile::CFileBinary::SaveToFile(m_strTempDirectory + L"/word/_rels/document.xml.rels", oWriter.GetData());

@@ -740,6 +740,19 @@ namespace NSDocxRenderer
 
 		oWriter.WriteString(L"</a:graphicData>");
 	}
+	void CShape::BuildBlipFill(NSStringUtils::CStringBuilder &oWriter) const
+	{
+		oWriter.WriteString(L"<a:blip r:embed=\"rId");
+		oWriter.AddUInt(c_iStartingIdForImages + m_pImageInfo->m_nId);
+		oWriter.WriteString(L"\">");
+		oWriter.WriteString(L"<a:alphaModFix/>");
+		oWriter.WriteString(L"</a:blip>");
+//		oWriter.WriteString(L"<a:tile/>");
+		oWriter.WriteString(L"<a:srcRect/>");
+		oWriter.WriteString(L"<a:stretch>");
+		oWriter.WriteString(L"<a:fillRect/>");
+		oWriter.WriteString(L"</a:stretch>");
+	}
 
 	void CShape::BuildPictureProperties(NSStringUtils::CStringBuilder &oWriter) const
 	{
@@ -761,15 +774,7 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"</pic:cNvPicPr>");
 		oWriter.WriteString(L"</pic:nvPicPr>");
 		oWriter.WriteString(L"<pic:blipFill>");
-		oWriter.WriteString(L"<a:blip r:embed=\"rId");
-		oWriter.AddUInt(c_iStartingIdForImages + m_pImageInfo->m_nId);
-		oWriter.WriteString(L"\">");
-		oWriter.WriteString(L"<a:alphaModFix/>");
-		oWriter.WriteString(L"</a:blip>");
-		oWriter.WriteString(L"<a:srcRect/>");
-		oWriter.WriteString(L"<a:stretch>");
-		oWriter.WriteString(L"<a:fillRect/>");
-		oWriter.WriteString(L"</a:stretch>");
+		BuildBlipFill(oWriter);
 		oWriter.WriteString(L"</pic:blipFill>");
 		oWriter.WriteString(L"<pic:spPr bwMode=\"auto\">");
 
@@ -1003,11 +1008,7 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"</p:nvPicPr>");
 
 			oWriter.WriteString(L"<p:blipFill>");
-			oWriter.WriteString(L"<a:blip r:embed=\"rId");
-			oWriter.AddUInt(c_iStartingIdForImages + m_pImageInfo->m_nId);
-			oWriter.WriteString(L"\">");
-			oWriter.WriteString(L"</a:blip>");
-			oWriter.WriteString(L"<a:stretch><a:fillRect/></a:stretch>");
+			BuildBlipFill(oWriter);
 			oWriter.WriteString(L"</p:blipFill>");
 
 			oWriter.WriteString(L"<p:spPr>");

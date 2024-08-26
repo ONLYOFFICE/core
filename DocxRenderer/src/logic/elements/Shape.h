@@ -87,6 +87,7 @@ namespace NSDocxRenderer
 		void BuildTextBox(NSStringUtils::CStringBuilder &oWriter) const;
 		void BuildTextBoxParams(NSStringUtils::CStringBuilder &oWriter) const;
 		void BuildForm(NSStringUtils::CStringBuilder &oWriter, const bool& bIsLT = false) const;
+		void BuildBlipFill(NSStringUtils::CStringBuilder &oWriter) const;
 
 		static void ResetRelativeHeight();
 

@@ -420,6 +420,7 @@ SOURCES +=  \
 	$$LOGIC_DIR/Biff_structures/FrtRefHeaderNoGrbit.cpp \
 	$$LOGIC_DIR/Biff_structures/FrtRefHeaderU.cpp \
 	$$LOGIC_DIR/Biff_structures/Ftab_Cetab.cpp \
+        $$LOGIC_DIR/Biff_structures/FutureFunctionParser.cpp \
 	$$LOGIC_DIR/Biff_structures/FtCblsData.cpp \
 	$$LOGIC_DIR/Biff_structures/FtCf.cpp \
 	$$LOGIC_DIR/Biff_structures/FtCmo.cpp \

@@ -90,6 +90,8 @@ namespace OOX
 
                 if (m_oAutoFilterDateGrouping.IsInit())
                     ptr->fNoAFDateGroup = m_oAutoFilterDateGrouping->GetValue();
+				else
+					ptr->fNoAFDateGroup = false;
                 if (m_oFirstSheet.IsInit())
                     ptr->itabFirst = m_oFirstSheet->GetValue();
                 else

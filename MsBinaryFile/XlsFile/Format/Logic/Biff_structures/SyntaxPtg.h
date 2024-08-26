@@ -86,6 +86,8 @@ public:
 	static const bool extract_RightParenthesis(std::wstring::const_iterator& first, std::wstring::const_iterator last);
 
 	static const bool extract_PtgFunc(std::wstring::const_iterator& first, std::wstring::const_iterator last, std::wstring& out_str);
+	static const bool extract_FutureFunction(const std::wstring &funcName, unsigned int& out_num);
+	static const void extract_CustomFunction(const std::wstring &funcName, unsigned int& out_num);
 	static const void remove_extraSymbols(std::wstring::const_iterator& first, std::wstring::const_iterator& last);
 };
 

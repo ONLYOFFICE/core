@@ -3022,6 +3022,148 @@
     <ClCompile Include="..\..\..\XlsbFormat\WorkBookStream.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\WorkSheetStream.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Xlsb.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\MetadataStream.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginDynamicArrayPr.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginEsfmd.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginEsmdb.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginEsmdtinfo.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginEsmdx.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginEsstr.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginFmd.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginMdx.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginMdxKpi.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginMdxMbrProp.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginMdxSet.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginMdxTuple.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginMetadata.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginRichValueBlock.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndDynamicArrayPr.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndEsfmd.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndEsmdb.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndEsmdtinfo.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndEsmdx.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndEsstr.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndFmd.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndMdx.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndMdxKpi.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndMdxMbrProp.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndMdxSet.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndMdxTuple.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndMetadata.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndRichValueBlock.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\Mdb.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\Mdtinfo.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\MdxMbrIstr.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\Str.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\Mdir.cpp">
+      <Filter>structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\SrvFmtData.cpp">
+      <Filter>structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\DYNAMICARRAYMETADATA.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\ESFMD.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\ESMDB.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\ESMDTINFO.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\ESMDX.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\ESSTR.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\FMD.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\MDX.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\MDXKPI.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\MDXMBRPROP.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\MDXSET.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\MDXTUPLE.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\RICHDATAMETADATA.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\AbsPath15.h">
@@ -6050,5 +6192,147 @@
     <ClInclude Include="..\..\..\XlsbFormat\WorkSheetStream.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Xlsb.h" />
     <ClInclude Include="..\..\..\XlsbFormat\XlsbElementsType.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\MetadataStream.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginDynamicArrayPr.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginEsfmd.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginEsmdb.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginEsmdtinfo.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginEsmdx.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginEsstr.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginFmd.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginMdx.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginMdxKpi.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginMdxMbrProp.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginMdxSet.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginMdxTuple.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginMetadata.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginRichValueBlock.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndDynamicArrayPr.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndEsfmd.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndEsmdb.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndEsmdtinfo.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndEsmdx.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndEsstr.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndFmd.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndMdx.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndMdxKpi.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndMdxMbrProp.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndMdxSet.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndMdxTuple.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndMetadata.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndRichValueBlock.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\Mdb.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\Mdtinfo.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\MdxMbrIstr.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\Str.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\Mdir.h">
+      <Filter>structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\SrvFmtData.h">
+      <Filter>structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\DYNAMICARRAYMETADATA.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\ESFMD.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\ESMDB.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\ESMDTINFO.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\ESMDX.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\ESSTR.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\FMD.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\MDX.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\MDXKPI.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\MDXMBRPROP.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\MDXSET.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\MDXTUPLE.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\RICHDATAMETADATA.h">
+      <Filter>unions</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

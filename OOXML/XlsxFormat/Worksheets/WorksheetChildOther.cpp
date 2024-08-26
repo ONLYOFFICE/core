@@ -446,22 +446,29 @@ namespace OOX
 
 			if(m_oLeft.IsInit())
                 ptr->xnumLeft.data.value = std::round(m_oLeft->GetValue()) / 100;
+			else
+				ptr->xnumLeft.data.value = 0;
 
 			if(m_oTop.IsInit())
                 ptr->xnumTop.data.value = std::round(m_oTop->GetValue()) / 100;
-
+			else
+				ptr->xnumTop.data.value = 0;
 			if(m_oRight.IsInit())
                 ptr->xnumRight.data.value = std::round(m_oRight->GetValue()) / 100;
-
+			else
+				ptr->xnumRight.data.value = 0;
 			if(m_oBottom.IsInit())
                 ptr->xnumBottom.data.value = std::round(m_oBottom->GetValue()) / 100;
-
+			else
+				ptr->xnumBottom.data.value = 0;
 			if(m_oHeader.IsInit())
                 ptr->xnumHeader.data.value = std::round(m_oHeader->GetValue()) / 100;
-
+			else
+				ptr->xnumHeader.data.value = 0;
 			if(m_oFooter.IsInit())
                 ptr->xnumFooter.data.value = std::round(m_oFooter->GetValue()) / 100;
-
+			else
+				ptr->xnumFooter.data.value = 0;
 			return objPtr;
 		}
 		EElementType CPageMargins::getType() const
@@ -871,15 +878,22 @@ namespace OOX
 			XLS::BaseObjectPtr objectPtr(ptr);
 			if(m_oGridLines.IsInit())
 				ptr->fPrintGrid = m_oGridLines->m_eValue;
+			else
+				ptr->fPrintGrid = false;
 			if(m_oGridLinesSet.IsInit())
 				ptr->fPrintGrid = m_oGridLinesSet->m_eValue;
 			if(m_oHeadings.IsInit())
 				ptr->fPrintHeaders = m_oHeadings->m_eValue;
+			else
+				ptr->fPrintHeaders = false;
 			if(m_oHorizontalCentered.IsInit())
 				ptr->fHCenter = m_oHorizontalCentered->m_eValue;
+			else
+				ptr->fHCenter = false;
 			if(m_oVerticalCentered.IsInit())
 				ptr->fVCenter = m_oVerticalCentered->m_eValue;
-
+			else
+				ptr->fVCenter = false;
 			return objectPtr;
 		}
 		EElementType CPrintOptions::getType() const
@@ -1497,10 +1511,16 @@ namespace OOX
 			XLS::BaseObjectPtr castedPtr(pWsView);
 			if(m_oTabSelected.IsInit())
 				pWsView->fSelected = m_oTabSelected->m_eValue;
+			else
+				pWsView->fSelected = false;
 			if(m_oWorkbookViewId.IsInit())
 				pWsView->iWbkView = m_oWorkbookViewId->m_eValue;
+			else
+				pWsView->iWbkView = 0;
 			if(m_oZoomScale.IsInit())
 				pWsView->wScale = m_oZoomScale->m_eValue;
+			else
+				pWsView->wScale = 100;
 			return castedPtr;
 		}
 		EElementType CSheetView::getType() const
@@ -1934,10 +1954,16 @@ namespace OOX
 
 			if(m_oCodeName.IsInit())
 				ptr->strName = m_oCodeName.get();
+			else
+                ptr->strName.value.setSize(0xFFFFFFFF);
 			if(m_oPublished.IsInit())
 				ptr->fPublish = m_oPublished->GetValue();
+			else
+				ptr->fPublish = false;
 			if(m_oTabColor.IsInit())
 				ptr->brtcolorTab = m_oTabColor->toColor();
+			else
+				ptr->brtcolorTab = m_oTabColor->GetDefaultColor();
 			return XLS::BaseObjectPtr{ptr};
 		}
 		
@@ -2185,13 +2211,21 @@ namespace OOX
 			ptr->m_BrtBeginHeaderFooter = XLS::BaseObjectPtr{castedBegin};
 
 			if(m_oAlignWithMargins.IsInit())
-			castedBegin->fHFAlignMargins = m_oAlignWithMargins->m_eValue;
+				castedBegin->fHFAlignMargins = m_oAlignWithMargins->m_eValue;
+			else
+				castedBegin->fHFAlignMargins = false;
 			if(m_oDifferentFirst.IsInit())
-			castedBegin->fHFDiffFirst = m_oDifferentFirst->m_eValue;
+				castedBegin->fHFDiffFirst = m_oDifferentFirst->m_eValue;
+			else
+				castedBegin->fHFDiffFirst = false;
 			if(m_oDifferentOddEven.IsInit())
-			castedBegin->fHFDiffOddEven = m_oDifferentOddEven->m_eValue;
+				castedBegin->fHFDiffOddEven = m_oDifferentOddEven->m_eValue;
+			else
+				castedBegin->fHFDiffOddEven = false;
 			if(m_oScaleWithDoc.IsInit())
-			castedBegin->fHFScaleWithDoc = m_oScaleWithDoc->m_eValue;
+				castedBegin->fHFScaleWithDoc = m_oScaleWithDoc->m_eValue;
+			else
+				castedBegin->fHFScaleWithDoc = false;
 
 			if(m_oOddHeader.IsInit())
 				castedBegin->stHeader = m_oOddHeader->m_sText;
@@ -2376,6 +2410,8 @@ namespace OOX
 
 			if(m_oId.IsInit())
 				ptr->rgb.value = m_oId->GetValue();
+			else
+				ptr->rgb.value.setSize(0XFFFFFFFF);
 
 			return objectPtr;
 		}

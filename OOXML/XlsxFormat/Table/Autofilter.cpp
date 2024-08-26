@@ -403,9 +403,14 @@ namespace OOX
 			{
 				auto ptr(new XLSB::ColorFilter);
 				XLS::BaseObjectPtr objectPtr(ptr);
-				ptr->fCellColor = m_oCellColor->GetValue();
-				ptr->dxfid = m_oDxfId->GetValue();
-
+                if(m_oCellColor.IsInit())
+					ptr->fCellColor = m_oCellColor->GetValue();
+				else
+					ptr->fCellColor = false;
+                if(m_oDxfId.IsInit())
+					ptr->dxfid = m_oDxfId->GetValue();
+				else
+					ptr->dxfid = 0;
 				return objectPtr;
 			}
 			EElementType CColorFilter::getType () const
@@ -549,15 +554,21 @@ namespace OOX
 					else if (m_oType == SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM12)
 						ptr->cft = 0x00000027;
 				}
+				else
+					ptr->cft = 0x00000000;
 				if (m_oVal.IsInit())
 				{
 					ptr->xNumValue.data.value = m_oVal->GetValue();
 				}
+				else
+					ptr->xNumValue.data.value = 0;
 
 				if (m_oMaxVal.IsInit())
 				{
 					ptr->xNumValueMax.data.value = m_oMaxVal->GetValue();
 				}
+				else
+					ptr->xNumValueMax.data.value = 0;
 				return objectPtr;
 			}
 			EElementType CDynamicFilter::getType () const
@@ -1026,13 +1037,32 @@ namespace OOX
 				{
 					ptr->dntChecked = 0x00000005;
 				}
-
-				ptr->dom = m_oDay->GetValue();
-				ptr->hour = m_oHour->GetValue();
-				ptr->min = m_oMinute->GetValue();
-				ptr->mon = m_oMonth->GetValue();
-				ptr->sec = m_oSecond->GetValue();
-				ptr->yr = m_oYear->GetValue();
+				else
+					ptr->dntChecked = 0x00000000;
+                if(m_oDay.IsInit())
+					ptr->dom = m_oDay->GetValue();
+				else
+					ptr->dom = 0;
+                if(m_oHour.IsInit())
+					ptr->hour = m_oHour->GetValue();
+				else
+					ptr->hour = 0;
+                if(m_oMinute.IsInit())
+					ptr->min = m_oMinute->GetValue();
+				else
+					ptr->min = 0;
+                if(m_oMonth.IsInit())
+					ptr->mon = m_oMonth->GetValue();
+				else
+					ptr->mon = 0;
+                if(m_oSecond.IsInit())
+					ptr->sec = m_oSecond->GetValue();
+				else
+					ptr->sec = 0;
+                if(m_oYear.IsInit())
+					ptr->yr = m_oYear->GetValue();
+				else
+					ptr->yr = 0;
 				return objectPtr;
 			}
 			EElementType CDateGroupItem::getType () const
@@ -1266,16 +1296,20 @@ namespace OOX
 
 				if (m_oFilterVal.IsInit())
 					ptr->xNumValue.data.value = m_oFilterVal->GetValue();
-
+				else
+					ptr->xNumValue.data.value = 0;
 				if (m_oPercent.IsInit())
 					ptr->fPercent = m_oPercent->GetValue();
-
+				else
+					ptr->fPercent = false;
 				if (m_oTop.IsInit())
 					ptr->fTop = m_oTop->GetValue();
-
+				else
+					ptr->fTop = 0;
 				if (m_oVal.IsInit())
 					ptr->xNumFilter.data.value = m_oVal->GetValue();
-
+				else
+					ptr->xNumFilter.data.value = 0;
 				return objectPtr;
 			}
 			EElementType CTop10::getType () const
@@ -1403,11 +1437,16 @@ namespace OOX
 
 				if(m_oColId.IsInit())
 					beginfilter->dwCol = m_oColId->GetValue();
+				else
+					beginfilter->dwCol = 0;
 				if(m_oHiddenButton.IsInit())
 					beginfilter->fHideArrow = m_oHiddenButton->GetValue();
+				else
+					beginfilter->fHideArrow = false;
 				if(m_oShowButton.IsInit())
 					beginfilter->fNoBtn = m_oShowButton->GetValue();
-
+				else
+					beginfilter->fNoBtn = false;
 				if(m_oColorFilter.IsInit())
 					ptr->m_source = m_oColorFilter->toBin();
 				else if(m_oDynamicFilter.IsInit())

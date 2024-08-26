@@ -726,6 +726,12 @@ unsigned short sheetsnames2ixti(std::wstring name)
      return newXti.iSup;
  }
 
+ unsigned int AddDefinedName(const std::wstring& name)
+ {
+	XLS::GlobalWorkbookInfo::arDefineNames_static.push_back(name);
+	return (XLS::GlobalWorkbookInfo::arDefineNames_static.size());
+ }
+
 unsigned int definenames2index(std::wstring name)
 {
 	unsigned int index;

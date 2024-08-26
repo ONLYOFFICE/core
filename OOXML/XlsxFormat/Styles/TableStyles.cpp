@@ -335,6 +335,8 @@ namespace OOX
                 beginStyle->rgchName =	m_oName.get();
             else if(m_oDisplayName.IsInit())
                 beginStyle->rgchName =	m_oDisplayName.get();
+			else
+				beginStyle->rgchName = L"";
 
 			for(auto i:m_arrItems)
 				ptr->m_arBrtTableStyleElement.push_back(i->toBin());

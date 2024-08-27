@@ -7,12 +7,12 @@ JSSmart<CJSValue> MoveMemoryToJS(BYTE* pWasmData)
 
 	int nLen = 0;
 	memcpy(&nLen, pWasmData, sizeof(int));
-	if (0 >= nLen)
+	if (4 >= nLen)
 		return CJSContext::createNull();
 
-	size_t nBufferSize = (size_t)nLen;
+	size_t nBufferSize = (size_t)(nLen - 4);
 	BYTE* pMemory = NSJSBase::NSAllocator::Alloc(nBufferSize);
-	memcpy(pMemory, pWasmData, nBufferSize);
+	memcpy(pMemory, pWasmData + 4, nBufferSize);
 	free(pWasmData);
 
 	return NSJSBase::CJSContext::createUint8Array(pMemory, (int)nBufferSize, false);
@@ -111,5 +111,9 @@ JSSmart<CJSValue> CDrawingFileEmbed::ScanPage(JSSmart<CJSValue> nPageIndex, JSSm
 JSSmart<CJSValue> CDrawingFileEmbed::GetImageBase64(JSSmart<CJSValue> rId)
 {
 	std::string* pData = (std::string*)m_pFile->GetImageBase64(rId->toInt32());
-	return pData ? CJSContext::createString(*pData) : CJSContext::createNull();
+	if (!pData)
+		return CJSContext::createNull();
+	JSSmart<CJSValue> ret = CJSContext::createString(*pData);
+	*pData = "";
+	return ret;
 }

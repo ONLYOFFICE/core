@@ -40,24 +40,53 @@
 
 namespace NSDoctRenderer
 {
+	class CAdditionalData
+	{
+	public:
+		CAdditionalData() {}
+		virtual ~CAdditionalData() {}
+		virtual std::string getParam(const std::wstring& name) { return ""; }
+	};
+
+	class CDocBuilderParams
+	{
+	public:
+		CDocBuilderParams() :
+			  m_bCheckFonts(false),
+			  m_sWorkDir(L""),
+			  m_bSaveWithDoctrendererMode(false),
+			  m_sArgumentJSON(""),
+			  m_bIsSystemFonts(true)
+		{
+		}
+
+	public:
+		bool m_bCheckFonts;
+		std::wstring m_sWorkDir;
+		bool m_bSaveWithDoctrendererMode;
+		std::string m_sArgumentJSON;
+
+		bool m_bIsSystemFonts;
+		std::vector<std::wstring> m_arFontDirs;
+	};
+
 	class CDoctRendererConfig
 	{
 	public:
-		std::vector<std::wstring> m_arrFiles;
+		std::wstring m_strSdkPath;
 
-		std::vector<std::wstring> m_arDoctSDK;
-		std::vector<std::wstring> m_arPpttSDK;
-		std::vector<std::wstring> m_arXlstSDK;
-		std::vector<std::wstring> m_arVsdtSDK;
+		std::vector<std::wstring> m_arrFiles;
 
 		std::wstring m_strAllFonts;
 		bool m_bIsNotUseConfigAllFontsDir;
+
+		bool m_bIsUseCache;
 
 		std::wstring m_sConsoleLogFile;
 		std::wstring m_sErrorsLogFile;
 
 	public:
-		CDoctRendererConfig() : m_bIsNotUseConfigAllFontsDir(false)
+		CDoctRendererConfig() : m_bIsNotUseConfigAllFontsDir(false), m_bIsUseCache(true)
 		{
 		}
 
@@ -92,10 +121,6 @@ namespace NSDoctRenderer
 		void Parse(const std::wstring& sWorkDir)
 		{
 			m_arrFiles.clear();
-			m_arDoctSDK.clear();
-			m_arPpttSDK.clear();
-			m_arXlstSDK.clear();
-			m_arVsdtSDK.clear();
 
 			std::wstring sConfigDir = sWorkDir + L"/";
 			std::wstring sConfigPath = sConfigDir + L"DoctRenderer.config";
@@ -149,40 +174,16 @@ namespace NSDoctRenderer
 						}
 					}
 				}
-				m_arrFiles.push_back(bIsAbsoluteFontsPath ? m_strAllFonts : private_GetFile(sConfigDir, m_strAllFonts));
+
+				if (!bIsAbsoluteFontsPath)
+					m_strAllFonts = private_GetFile(sConfigDir, m_strAllFonts);
 			}
 
-			std::wstring sSdkPath = oNode.ReadNodeText(L"sdkjs");
-			if (!sSdkPath.empty())
+			m_strSdkPath = oNode.ReadNodeText(L"sdkjs");
+			if (!m_strSdkPath.empty())
 			{
-				if (!NSDirectory::Exists(sSdkPath))
-					sSdkPath = sConfigDir + sSdkPath;
-
-				std::wstring sFontsPath = sSdkPath + L"/common/libfont/engine";
-				if (!sFontsPath.empty())
-				{
-#ifdef SUPPORT_HARFBUZZ_SHAPER
-					sFontsPath += L"/fonts_native.js";
-#else
-					sFontsPath += L"/fonts_ie.js";
-#endif
-				}
-
-				m_arDoctSDK.push_back(sSdkPath + L"/word/sdk-all-min.js");
-				m_arDoctSDK.push_back(sFontsPath);
-				m_arDoctSDK.push_back(sSdkPath + L"/word/sdk-all.js");
-
-				m_arPpttSDK.push_back(sSdkPath + L"/slide/sdk-all-min.js");
-				m_arPpttSDK.push_back(sFontsPath);
-				m_arPpttSDK.push_back(sSdkPath + L"/slide/sdk-all.js");
-
-				m_arXlstSDK.push_back(sSdkPath + L"/cell/sdk-all-min.js");
-				m_arXlstSDK.push_back(sFontsPath);
-				m_arXlstSDK.push_back(sSdkPath + L"/cell/sdk-all.js");
-
-				m_arVsdtSDK.push_back(sSdkPath + L"/draw/sdk-all-min.js");
-				m_arVsdtSDK.push_back(sFontsPath);
-				m_arVsdtSDK.push_back(sSdkPath + L"/draw/sdk-all.js");
+				if (!NSDirectory::Exists(m_strSdkPath))
+					m_strSdkPath = sConfigDir + m_strSdkPath;
 			}
 
 			m_sConsoleLogFile = oNode.ReadNodeText(L"LogFileConsoleLog");
@@ -193,7 +194,35 @@ namespace NSDoctRenderer
 			if (!m_sErrorsLogFile.empty())
 				m_sErrorsLogFile = private_GetFile(sConfigDir, m_sErrorsLogFile);
 		}
+
+		char* GetVersion()
+		{
+			std::wstring sFile = m_strSdkPath + L"/word/sdk-all-min.js";
+
+			std::string sData;
+			if (!NSFile::CFileBinary::ReadAllTextUtf8A(sFile, sData))
+				return NULL;
+
+			std::string::size_type startPos = sData.find("Version:");
+			if (std::string::npos == startPos)
+				return NULL;
+
+			startPos += 8;
+
+			std::string::size_type endPos = sData.find(')', startPos);
+			if (std::string::npos == endPos)
+				return NULL;
+
+			size_t sSrcLen = endPos - startPos + 1;
+			if (sSrcLen == 0)
+				return NULL;
+
+			char* sRet = new char[sSrcLen + 1];
+			memcpy(sRet, sData.c_str() + startPos, sSrcLen);
+			sRet[sSrcLen] = '\0';
+			return sRet;
+		}
 	};
-} // namespace NSDoctRenderer
+}
 
 #endif // DOC_BUILDER_CONFIG

@@ -27,6 +27,7 @@ core_android:DEFINES += DISABLE_MEMORY_LIMITATION
 
 HEADERS += \
 	config.h \
+	editors.h \
 	doctrenderer.h \
 	docbuilder.h
 

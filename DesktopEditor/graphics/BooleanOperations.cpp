@@ -520,14 +520,7 @@ Curve Curve::DivideAtTime(double time)
 			segment.SetHandles(left.Segment2.HI, left.Segment2.HO);
 			Segment2.SetHandles(right.Segment2.HI, right.Segment2.HO);
 		}
-		// segment.HI = PointD(left.Segment2.HI.X - left.Segment2.P.X,
-		// 					left.Segment2.HI.Y - left.Segment2.P.Y);
-		// segment.HO = PointD(left.Segment2.HO.X - left.Segment2.P.X,
-		// 					 left.Segment2.HO.Y - left.Segment2.P.Y);
-		// Segment2.HI = PointD(right.Segment2.HI.X - right.Segment2.P.X,
-		// 					 right.Segment2.HI.Y - right.Segment2.P.Y);
-		// Segment2.HO = PointD(right.Segment2.HO.X - right.Segment2.P.X,
-		// 					 right.Segment2.HO.Y - right.Segment2.P.Y);
+
 		return Curve(segment, Segment2);
 	}
 	return Curve();
@@ -722,14 +715,13 @@ int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment,
 	}
 	else if (!curve.IsStraight())
 	{
-		std::vector<double> roots = curve.GetCurveLineIntersection(point.X, point.Y,
-																   segment.P.X - point.X,
-																   segment.P.Y - point.Y);
+		std::vector<double> roots = curve.GetCurveLineIntersection(segment.P.X,segment.P.Y, point.X - segment.P.X, point.Y - segment.P.Y);
 		Curve line = Curve(segment, Segment(point, PointD(), PointD()));
 		int count = 0;
 		for (const auto& r : roots)
 			if (line.GetTimeOf(curve.GetPoint(r)) != -1)
 				count++;
+
 		return count;
 	}
 	return 0;
@@ -923,7 +915,7 @@ void CBooleanOperations::InsertSegment(const Segment& segment, const Segment& ha
 			Segments1[i].Index++;
 
 		if (updateHandles)
-			Segments1[index == length ? 0 : index + 1].UpdateHandles(handles.HI, handles.HO);
+			Segments1[segment.Index == length ? 0 : segment.Index + 1].UpdateHandles(handles.HI, handles.HO);
 
 		Curves1.clear();
 		for (int i = 0; i < length + 1; i++)
@@ -946,7 +938,7 @@ void CBooleanOperations::InsertSegment(const Segment& segment, const Segment& ha
 			Segments2[i].Index++;
 
 		if (updateHandles)
-			Segments2[index == length ? 0 : index + 1].UpdateHandles(handles.HI, handles.HO);
+			Segments2[segment.Index == length ? 0 : segment.Index + 1].UpdateHandles(handles.HI, handles.HO);
 
 		Curves2.clear();
 		for (int i = 0; i < length + 1; i++)
@@ -1431,17 +1423,18 @@ int CBooleanOperations::AddCurveIntersection(Curve curve1, Curve curve2, const C
 void CBooleanOperations::DivideLocations()
 {
 	double	tMin = CURVETIME_EPSILON,
-			tMax = 1 - tMin;
+			tMax = 1 - tMin,
+			prevTime = -1.0;
+	Curve	prevCurve;
 
 	for (int i = Locations.size() - 1; i >= 0; i--)
 	{
 		std::shared_ptr<Location> loc = Locations[i];
 		double	origTime = loc->Time,
-				time = origTime,
-				prevTime;
+				time = origTime;
 		Segment segment;
 		Curve	curve = GetCurve(loc->C.Segment1),
-				newCurve, prevCurve;
+				newCurve;
 		bool updateHandles = false;
 
 		if (loc->C != prevCurve)
@@ -1461,12 +1454,19 @@ void CBooleanOperations::DivideLocations()
 		}
 		else
 		{
-			newCurve = curve.Segment1.Id == 1 ?
-					   curve.DivideAtTime(time) :
-					   curve.DivideAtTime(time);
-			segment = newCurve.Segment1;
-			if (!newCurve.IsStraight())
+			if (curve.IsStraight())
+				segment = Segment({loc->C.GetPoint(origTime)},
+								  false,
+								  curve.Segment1.Index + 1,
+								  curve.Segment1.Id,
+								  curve.Segment1.Path);
+			else
+			{
+				newCurve = curve.Segment1.Id == 1 ? curve.DivideAtTime(time)
+												  : curve.DivideAtTime(time);
+				segment = newCurve.Segment1;
 				updateHandles = true;
+			}
 		}
 		std::shared_ptr<Location>	inter = segment.Inters,
 									dest = loc->Inters;

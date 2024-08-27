@@ -62,6 +62,7 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
 
 	JSSmart<CJSObject> global = m_context->GetGlobal();
 	global->set("window", global);
+	global->set("self", global);
 
 	JSSmart<CJSObject> oBuilderJS = CJSContext::createEmbedObject("CBuilderEmbed");
 	global->set("builderJS", oBuilderJS);

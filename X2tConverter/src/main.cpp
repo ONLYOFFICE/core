@@ -161,6 +161,11 @@ int wmain_lib(int argc, wchar_t *argv[])
 			NExtractTools::createJSCaches();
 			return 0;
 		}
+		else if (sArg1 == L"-create-js-snapshots")
+		{
+			NExtractTools::createJSSnapshots();
+			return 0;
+		}
 		else if (sArg1 == L"-create-allfonts")
 		{
 			if (argc > 2)

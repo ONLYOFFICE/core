@@ -576,7 +576,7 @@ namespace NSDoctRenderer
 			LOGGER_SPEED_START();
 
 			bool bIsBreak = false;
-			JSSmart<CJSContext> context = new CJSContext();
+			JSSmart<CJSContext> context = NSDoctRenderer::CreateEditorContext(editorType, this);
 
 			if (true)
 			{
@@ -589,6 +589,7 @@ namespace NSDoctRenderer
 
 				JSSmart<CJSObject> global_js = context->GetGlobal();
 				global_js->set("window", global_js);
+				global_js->set("self", global_js);
 
 				JSSmart<CJSObject> oNativeCtrl = CJSContext::createEmbedObject("CNativeControlEmbed");
 				global_js->set("native", oNativeCtrl);
@@ -598,7 +599,9 @@ namespace NSDoctRenderer
 
 				LOGGER_SPEED_LAP("compile");
 
-				NSDoctRenderer::RunEditor(editorType, context, try_catch, this);
+				if (!context->isSnapshotUsed())
+					NSDoctRenderer::RunEditor(editorType, context, try_catch, this);
+
 				if (try_catch->Check())
 				{
 					strError = L"code=\"run\"";
@@ -1069,6 +1072,7 @@ namespace NSDoctRenderer
 
 				JSSmart<CJSObject> global = context->GetGlobal();
 				global->set("window", global);
+				global->set("self", global);
 				global->set("native", CJSContext::createEmbedObject("CNativeControlEmbed"));
 
 				JSSmart<CJSTryCatch> try_catch = context->GetExceptions();
@@ -1077,6 +1081,26 @@ namespace NSDoctRenderer
 			}
 
 			context->Dispose();
+		}
+#endif
+	}
+
+	void CDoctrenderer::CreateSnapshots()
+	{
+#ifdef V8_VERSION_89_PLUS
+		std::vector<NSDoctRenderer::DoctRendererEditorType> editors;
+		editors.push_back(NSDoctRenderer::DoctRendererEditorType::WORD);
+		editors.push_back(NSDoctRenderer::DoctRendererEditorType::SLIDE);
+		editors.push_back(NSDoctRenderer::DoctRendererEditorType::CELL);
+		editors.push_back(NSDoctRenderer::DoctRendererEditorType::VISIO);
+		editors.push_back(NSDoctRenderer::DoctRendererEditorType::PDF);
+
+		// initialize v8
+		JSSmart<CJSContext> context = new CJSContext();
+
+		for (std::vector<NSDoctRenderer::DoctRendererEditorType>::const_iterator i = editors.begin(); i != editors.end(); i++)
+		{
+			NSDoctRenderer::GenerateEditorSnapshot(*i, m_pInternal);
 		}
 #endif
 	}

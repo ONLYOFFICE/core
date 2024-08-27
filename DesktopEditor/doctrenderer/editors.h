@@ -83,11 +83,11 @@ namespace NSDoctRenderer
 		NSFile::CFileBinary oFile;
 
 		if (!oFile.OpenFile(path))
-			return "";
+			return false;
 
 		int size = (int)oFile.GetFileSize();
 		if (size < 3)
-			return "";
+			return false;
 
 		BYTE* pData = new BYTE[size];
 		DWORD dwReadSize = 0;
@@ -101,10 +101,10 @@ namespace NSDoctRenderer
 		context->runScript(std::string((char*)(pData + nOffset), size - nOffset), try_catch);
 		RELEASEARRAYOBJECTS(pData);
 
-		return try_catch->Check();
+		return !try_catch->Check();
 	}
 
-	static std::wstring GetAllScript(NSStringUtils::CStringBuilderA* builder, const DoctRendererEditorType& type, CDoctRendererConfig* config)
+	static std::wstring GetAllScript(NSStringUtils::CStringBuilderA* builder, const DoctRendererEditorType& type, CDoctRendererConfig* config, const bool& isSnapshot = false)
 	{
 		for (std::vector<std::wstring>::const_iterator i = config->m_arrFiles.cbegin(); i != config->m_arrFiles.cend(); i++)
 			AppendScript(builder, *i);
@@ -116,6 +116,8 @@ namespace NSDoctRenderer
 		sFontsPath += L"/fonts_ie.js";
 #endif
 
+		std::wstring sCachePath = L"";
+
 		switch (type)
 		{
 		case DoctRendererEditorType::WORD:
@@ -123,14 +125,16 @@ namespace NSDoctRenderer
 			AppendScript(builder, config->m_strSdkPath + L"/word/sdk-all-min.js");
 			AppendScript(builder, sFontsPath);
 			AppendScript(builder, config->m_strSdkPath + L"/word/sdk-all.js");
-			return config->m_strSdkPath + L"/word/sdk-all.cache";
+			sCachePath = config->m_strSdkPath + L"/word/sdk-all";
+			break;
 		}
 		case DoctRendererEditorType::SLIDE:
 		{
 			AppendScript(builder, config->m_strSdkPath + L"/slide/sdk-all-min.js");
 			AppendScript(builder, sFontsPath);
 			AppendScript(builder, config->m_strSdkPath + L"/slide/sdk-all.js");
-			return config->m_strSdkPath + L"/slide/sdk-all.cache";
+			sCachePath = config->m_strSdkPath + L"/slide/sdk-all";
+			break;
 		}
 		case DoctRendererEditorType::CELL:
 		{
@@ -138,7 +142,8 @@ namespace NSDoctRenderer
 			AppendScript(builder, sFontsPath);
 			AppendScript(builder, config->m_strSdkPath + L"/cell/sdk-all.js");
 			builder->WriteString("\n$.ready();", 11);
-			return config->m_strSdkPath + L"/cell/sdk-all.cache";
+			sCachePath = config->m_strSdkPath + L"/cell/sdk-all";
+			break;
 		}
 		case DoctRendererEditorType::VISIO:
 		{
@@ -147,7 +152,8 @@ namespace NSDoctRenderer
 			AppendScript(builder, config->m_strSdkPath + L"/draw/sdk-all-min.js");
 			AppendScript(builder, sFontsPath);
 			AppendScript(builder, config->m_strSdkPath + L"/draw/sdk-all.js");
-			return config->m_strSdkPath + L"/draw/sdk-all.cache";
+			sCachePath = config->m_strSdkPath + L"/draw/sdk-all";
+			break;
 		}
 		case DoctRendererEditorType::PDF:
 		{
@@ -155,7 +161,44 @@ namespace NSDoctRenderer
 			AppendScript(builder, sFontsPath);
 			AppendScript(builder, config->m_strSdkPath + L"/word/sdk-all.js");
 			AppendScript(builder, config->m_strSdkPath + L"/pdf/src/engine/drawingfile_native.js");
-			return config->m_strSdkPath + L"/pdf/sdk-all.cache";
+			sCachePath = config->m_strSdkPath + L"/pdf/sdk-all";
+			break;
+		}
+		default:
+			break;
+		}
+
+		if (!sCachePath.empty())
+			sCachePath += (isSnapshot ? L".bin" : L".cache");
+
+		return sCachePath;
+	}
+
+	static std::wstring GetSnapshotPath(const DoctRendererEditorType& type, CDoctRendererConfig* config)
+	{
+		std::wstring sCachePath = L"";
+
+		switch (type)
+		{
+		case DoctRendererEditorType::WORD:
+		{
+			return config->m_strSdkPath + L"/word/sdk-all.bin";
+		}
+		case DoctRendererEditorType::SLIDE:
+		{
+			return config->m_strSdkPath + L"/slide/sdk-all.bin";
+		}
+		case DoctRendererEditorType::CELL:
+		{
+			return config->m_strSdkPath + L"/cell/sdk-all.bin";
+		}
+		case DoctRendererEditorType::VISIO:
+		{
+			return config->m_strSdkPath + L"/draw/sdk-all.bin";
+		}
+		case DoctRendererEditorType::PDF:
+		{
+			return config->m_strSdkPath + L"/pdf/sdk-all.bin";
 		}
 		default:
 			break;
@@ -163,19 +206,98 @@ namespace NSDoctRenderer
 		return L"";
 	}
 
-	static bool RunEditor(const DoctRendererEditorType& type, JSSmart<NSJSBase::CJSContext>& context, JSSmart<NSJSBase::CJSTryCatch>& try_catch, CDoctRendererConfig* config)
+	static bool RunEditorFooter(JSSmart<NSJSBase::CJSContext>& context, JSSmart<NSJSBase::CJSTryCatch>& try_catch, CDoctRendererConfig* config)
 	{
 		if (!RunScript(context, try_catch, config->m_strAllFonts))
 			return false;
 
+		std::string sFooter = "\
+window.InitNativeObject();\
+window.InitNativeTextMeasurer();\
+window.InitNativeZLib();\
+AscFonts.checkAllFonts();\n";
+
+		if (context->isSnapshotUsed())
+		{
+			sFooter += "\
+if (undefined === String.prototype.replaceAll)\
+{\
+String.prototype.replaceAll = function(str, newStr)\
+{\
+  if (Object.prototype.toString.call(str).toLowerCase() === '[object regexp]')\
+	return this.replace(str, newStr);\
+  return this.split(str).join(newStr);\
+};\
+}\n";
+		}
+
+		context->runScript(sFooter, try_catch);
+		return !try_catch->Check();
+	}
+
+	static bool RunEditor(const DoctRendererEditorType& type, JSSmart<NSJSBase::CJSContext>& context, JSSmart<NSJSBase::CJSTryCatch>& try_catch, CDoctRendererConfig* config)
+	{
 		NSStringUtils::CStringBuilderA builder;
 		builder.AddSize(10 * 1024 * 1024);
 		std::wstring sCachePath = GetAllScript(&builder, type, config);
 
 		if (!sCachePath.empty())
+		{
 			context->runScript(builder.GetData(), try_catch, config->m_bIsUseCache ? sCachePath : L"");
+			RunEditorFooter(context, try_catch, config);
+		}
 
-		return try_catch->Check();
+		return !try_catch->Check();
+	}
+
+	static bool GenerateEditorSnapshot(const DoctRendererEditorType& type, CDoctRendererConfig* config)
+	{
+		NSStringUtils::CStringBuilderA builder;
+		builder.AddSize(10 * 1024 * 1024);
+		std::wstring sCachePath = GetAllScript(&builder, type, config, true);
+
+		if (sCachePath.empty())
+			return false;
+
+		return NSJSBase::CJSContext::generateSnapshot(builder.GetData(), sCachePath);
+	}
+
+	static JSSmart<NSJSBase::CJSContext> RunEditorWithSnapshot(const DoctRendererEditorType& type, CDoctRendererConfig* config)
+	{
+#ifndef V8_VERSION_89_PLUS
+		return NULL;
+#endif
+
+#ifndef V8_SUPPORT_SNAPSHOTS
+		return NULL;
+#endif
+
+		std::wstring sCachePath = GetSnapshotPath(type, config);
+		if (!NSFile::CFileBinary::Exists(sCachePath))
+			return NULL;
+
+		if (sCachePath.empty())
+			return NULL;
+
+		JSSmart<NSJSBase::CJSContext> context = new NSJSBase::CJSContext(false);
+		context->Initialize(sCachePath);
+
+		NSJSBase::CJSContextScope scope(context);
+
+		JSSmart<NSJSBase::CJSTryCatch> try_catch = context->GetExceptions();
+
+		if (!RunEditorFooter(context, try_catch, config))
+			return NULL;
+
+		return context;
+	}
+
+	static JSSmart<NSJSBase::CJSContext> CreateEditorContext(const DoctRendererEditorType& type, CDoctRendererConfig* config)
+	{
+		JSSmart<NSJSBase::CJSContext> context = RunEditorWithSnapshot(type, config);
+		if (context.is_init())
+			return context;
+		return new NSJSBase::CJSContext();
 	}
 }
 

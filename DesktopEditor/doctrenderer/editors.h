@@ -256,6 +256,8 @@ String.prototype.replaceAll = function(str, newStr)\
 		builder.AddSize(10 * 1024 * 1024);
 		std::wstring sCachePath = GetAllScript(&builder, type, config, true);
 
+		builder.WriteString("delete String.prototype.replaceAll;");
+
 		if (sCachePath.empty())
 			return false;
 

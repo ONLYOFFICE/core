@@ -157,6 +157,7 @@ namespace Aggplus
 
 		std::vector<std::shared_ptr<Location>> Locations;
 
+		bool AllOverlap;
 		bool IsDeleted;
 	};
 } // namespace Aggplus

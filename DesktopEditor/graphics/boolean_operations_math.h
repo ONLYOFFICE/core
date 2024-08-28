@@ -13,8 +13,6 @@ const double MACHINE_EPSILON = 1.12e-16;
 const double TRIGANOMETRIC_EPSILON = 1e-8;
 const double CURVETIME_EPSILON = 1e-8;
 const double LINE_EPSILON = 1e-9;
-const double WINDING_EPSILON = 1e-9;
-const double QUALITI_EPSILON = 1e-6;
 const std::vector<double> ABSCISSAS[16] = {
 	{0.5773502691896257645091488},
 	{0,0.7745966692414833770358531}, 
@@ -276,8 +274,8 @@ double clipConvexHull(std::vector<Aggplus::PointD> top, std::vector<Aggplus::Poi
 
 int binarySearch(std::vector<std::vector<double>> allBounds, std::vector<int> indices, size_t coord, double value)
 {
-	int lo = 0;
-	size_t hi = indices.size();
+	int lo = 0,
+		hi = indices.size();
 	while(lo < hi)
 	{
 		int mid = (hi + lo) >> 1;
@@ -320,15 +318,19 @@ double getDistance(double px, double py, double vx, double vy, double x, double 
 double getDistance(double px, double py, double vx, double vy, double x, double y)
 {
 	if (vx == 0)
+	{
 		if (vy > 0)
 			return std::abs(x - px);
 		else
 			return std::abs(px - x);
+	}
 	if (vy == 0)
+	{
 		if (vx < 0)
 			return std::abs(y - py);
 		else
 			return std::abs(py -y);
+	}
 
 	bool dir = vy > vx;
 	double dist = (x- px) * vy - (y - py) * vx,
@@ -402,7 +404,7 @@ int solveQuadratic(double a, double b, double c, std::vector<double>& roots,
 			double f = max(abs(a), abs(b), abs(c));
 			if (f < 1e-8 || f < 1e8)
 			{
-				f = powf(2, -roundf(log2(f)));
+				f = pow(2, -roundf(log2(f)));
 				a *= f;
 				b *= f;
 				c *= f;

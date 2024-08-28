@@ -157,7 +157,7 @@ namespace NSDocxRenderer
 		if (m_pExternalStorage)
 			return m_pExternalStorage->GenerateImageID(pImage);
 
-		if (pImage->GetStride() < 0)
+		if (pImage->GetStride() > 0)
 			FlipY(pImage);
 
 		int size = pImage->GetStride() * pImage->GetHeight();

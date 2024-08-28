@@ -415,7 +415,7 @@ public:
 
 public:
 
-	CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder);
+	CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder, const NSDoctRenderer::DoctRendererEditorType& type, NSDoctRenderer::CDoctRendererConfig* config);
 	~CV8RealTimeWorker();
 
 public:
@@ -1226,7 +1226,7 @@ namespace NSDoctRenderer
 		{
 			if (NULL == m_pWorker)
 			{
-				m_pWorker = new CV8RealTimeWorker(m_pParent);
+				m_pWorker = new CV8RealTimeWorker(m_pParent, GetEditorType(), this);
 				m_pWorker->m_sUtf8ArgumentJSON = m_oParams.m_sArgumentJSON;
 				m_pWorker->m_sGlobalVariable = m_sGlobalVariable;
 

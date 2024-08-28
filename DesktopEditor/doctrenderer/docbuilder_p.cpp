@@ -44,11 +44,15 @@ void CV8RealTimeWorker::_LOGGING_ERROR_(const std::wstring& strType, const std::
 
 using namespace NSJSBase;
 
-CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
+CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder, const NSDoctRenderer::DoctRendererEditorType& type, NSDoctRenderer::CDoctRendererConfig* config)
 {
 	m_nFileType = -1;
 
-	m_context = new CJSContext();
+	if (NSDoctRenderer::DoctRendererEditorType::INVALID == type)
+		m_context = new CJSContext();
+	else
+		m_context = NSDoctRenderer::CreateEditorContext(type, config);
+
 	CJSContextScope scope(m_context);
 
 	CJSContext::Embed<CNativeControlEmbed>(false);
@@ -249,7 +253,8 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 
 	LOGGER_SPEED_LAP("compile");
 
-	NSDoctRenderer::RunEditor(editorType, m_context, try_catch, config);
+	if (!m_context->isSnapshotUsed())
+		NSDoctRenderer::RunEditor(editorType, m_context, try_catch, config);
 	if(try_catch->Check())
 		return false;
 

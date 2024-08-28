@@ -426,7 +426,7 @@ namespace NSNativeControl
 				if (NULL != _file)
 				{
 					fprintf(_file, "\"");
-					fprintf(_file, sParam.c_str());
+					fprintf(_file, "%s", sParam.c_str());
 					fprintf(_file, "\",");
 					fclose(_file);
 				}

@@ -40,9 +40,7 @@ namespace NSDocxRenderer
 			if (other.IsMovePoint(idx))
 				MoveTo(point.X, point.Y);
 			else if (other.IsLinePoint(idx))
-				LineTo(point.X, point.Y);
-			else if (other.IsClosePoint(idx))
-				Close();
+				LineTo(point.X, point.Y);	
 			else if (idx < count - 2 &&
 					 other.IsCurvePoint(idx) &&
 					 other.IsCurvePoint(idx + 1) &&
@@ -53,6 +51,7 @@ namespace NSDocxRenderer
 				CurveTo(point.X, point.Y, point1.X, point1.Y, point2.X, point2.Y);
 			}
 		}
+		Close();
 	}
 
 

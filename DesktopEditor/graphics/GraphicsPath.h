@@ -173,9 +173,8 @@ namespace Aggplus
 	{
 		Intersection   = 1,
 		Union          = 0,
-		Subtraction    = 3,
-		Exclusion      = 3,
-		Division       = 4
+		Subtraction    = 2,
+		Exclusion      = 3
 	};
 
 	GRAPHICS_DECL CGraphicsPath* CalcBooleanOperation(CGraphicsPath* path1, CGraphicsPath* path2, BooleanOpType op);

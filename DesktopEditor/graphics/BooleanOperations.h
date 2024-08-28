@@ -136,6 +136,7 @@ namespace Aggplus
 		void DivideLocations();
 		void AddLocation(Curve curve1, Curve curve2, double t1, double t2, bool overlap = false);
 		void InsertLocation(std::shared_ptr<Location> loc, bool overlap);
+		bool AllOverlap() const;
 
 		// Util
 		void SetVisited(const Segment& segment);
@@ -157,7 +158,6 @@ namespace Aggplus
 
 		std::vector<std::shared_ptr<Location>> Locations;
 
-		bool AllOverlap;
 		bool IsDeleted;
 	};
 } // namespace Aggplus

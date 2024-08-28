@@ -677,7 +677,6 @@ CBooleanOperations::CBooleanOperations(CGraphicsPath* path1,
 	Path1(path1),
 	Path2(path2),
 	Result(new CGraphicsPath),
-	AllOverlap(true),
 	IsDeleted(false)
 {
 	TraceBoolean();
@@ -735,13 +734,17 @@ void CBooleanOperations::TraceBoolean()
 
 	GetIntersection();
 
-	if (AllOverlap && Op == Subtraction)
+	if (AllOverlap())
+	{
+		if (Op != Subtraction)
+			Result = Path1;
 		return;
+	}
 
-	if (Locations.empty() || AllOverlap)
+	if (Locations.empty())
 	{
 		int count = 0;
-		PointD minPt = GetMinPoint(Segments1);
+		PointD minPt = GetMinPoint(Segments2);
 		for (const auto& c : Curves2)
 			count += CheckInters(minPt, Segments1[0], c);
 
@@ -1459,7 +1462,6 @@ void CBooleanOperations::DivideLocations()
 
 void CBooleanOperations::InsertLocation(std::shared_ptr<Location> loc, bool overlap)
 {
-	if (!overlap) AllOverlap = false;
 	if (Locations.empty())
 	{
 		Locations.push_back(loc);
@@ -1513,6 +1515,17 @@ void CBooleanOperations::InsertLocation(std::shared_ptr<Location> loc, bool over
 			l = mid + 1;
 	}
 	Locations.insert(Locations.begin() + l, loc);
+}
+
+bool CBooleanOperations::AllOverlap() const
+{
+	if (Locations.empty()) return false;
+
+	bool overlap = true;
+	for (const auto& l : Locations)
+		overlap = l->Overlap;
+
+	return overlap;
 }
 
 void CBooleanOperations::AddLocation(Curve curve1, Curve curve2,

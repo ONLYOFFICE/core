@@ -1447,7 +1447,7 @@ namespace NSDoctRenderer
 			FILE* pFile = oFile.OpenFileNative(sFile, append ? L"a+" : L"a");
 			if (pFile)
 			{
-				fprintf(pFile, sValueA.c_str());
+				fprintf(pFile, "%s", sValueA.c_str());
 				fclose(pFile);
 			}
 		}

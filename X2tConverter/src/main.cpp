@@ -171,13 +171,20 @@ int wmain_lib(int argc, wchar_t *argv[])
 			if (argc > 2)
 			{
 				CApplicationFontsWorker oWorker;
-				oWorker.m_sDirectory = std::wstring(argv[2]);
+				oWorker.m_sDirectory = sArg2;
 				oWorker.m_bIsUseSystemFonts = true;
 				oWorker.m_bIsNeedThumbnails = false;
 				oWorker.m_bIsCleanDirectory = false;
 
 				for (int i = 3; i < argc; ++i)
-					oWorker.m_arAdditionalFolders.push_back(std::wstring(argv[i]));
+				{
+#if !defined(_WIN32) && !defined(_WIN64)
+					std::wstring sFolder = utf8_to_unicode(argv[i]);
+#else
+					std::wstring sFolder(argv[i]);
+#endif
+					oWorker.m_arAdditionalFolders.push_back(sFolder);
+				}
 
 				NSFonts::IApplicationFonts* pFonts = oWorker.Check();
 				RELEASEINTERFACE(pFonts);

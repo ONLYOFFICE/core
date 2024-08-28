@@ -73,6 +73,7 @@ namespace NSDocxRenderer
 		m_arShapes.clear();
 		m_arOutputObjects.clear();
 		m_oCurrVectorGraphics.Clear();
+		m_oClipVectorGraphics.Clear();
 		m_arCompleteObjectsXml.clear();
 	}
 

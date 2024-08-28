@@ -512,7 +512,6 @@ namespace NExtractTools
 		boost::unordered_map<int, std::vector<InputLimit>> m_mapInputLimits;
 		bool* m_bIsPDFA;
 		std::wstring* m_sConvertToOrigin;
-		std::wstring* m_sScriptsCacheDirectory;
 		// output params
 		mutable bool m_bOutputConvertCorrupted;
 		mutable bool m_bMacro;
@@ -547,7 +546,6 @@ namespace NExtractTools
 			m_bIsNoBase64 = NULL;
 			m_bIsPDFA = NULL;
 			m_sConvertToOrigin = NULL;
-			m_sScriptsCacheDirectory = NULL;
 
 			m_bOutputConvertCorrupted = false;
 			m_bMacro = false;
@@ -581,7 +579,6 @@ namespace NExtractTools
 			RELEASEOBJECT(m_bIsNoBase64);
 			RELEASEOBJECT(m_bIsPDFA);
 			RELEASEOBJECT(m_sConvertToOrigin);
-			RELEASEOBJECT(m_sScriptsCacheDirectory);
 		}
 
 		bool FromXmlFile(const std::wstring& sFilename)
@@ -769,11 +766,6 @@ namespace NExtractTools
 								{
 									RELEASEOBJECT(m_sConvertToOrigin);
 									m_sConvertToOrigin = new std::wstring(sValue);
-								}
-								else if (_T("m_sScriptsCacheDirectory") == sName)
-								{
-									RELEASEOBJECT(m_sScriptsCacheDirectory);
-									m_sScriptsCacheDirectory = new std::wstring(sValue);
 								}
 							}
 							else if (_T("m_nCsvDelimiterChar") == sName)

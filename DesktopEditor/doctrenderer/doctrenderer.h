@@ -71,6 +71,7 @@ namespace NSDoctRenderer
 		bool Execute(const std::wstring& strXml, std::wstring& strError);
 		std::vector<std::wstring> GetImagesInChanges();
 		void CreateCache(const std::wstring& sAllFontsPath, const std::wstring& sCacheDir);
+		void CreateSnapshots();
 
 	private:
 		CDoctRenderer_Private* m_pInternal;

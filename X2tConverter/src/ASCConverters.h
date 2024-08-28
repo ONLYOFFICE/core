@@ -296,6 +296,7 @@ namespace NExtractTools
 	_UINT32 detectMacroInFile(InputParams& oInputParams);
 
 	void createJSCaches();
+	void createJSSnapshots();
 
 	X2T_DECL_EXPORT _UINT32 FromFile(const std::wstring& file);
 	X2T_DECL_EXPORT _UINT32 FromXml(const std::wstring& xml);

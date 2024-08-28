@@ -14,7 +14,8 @@ class MainWindow;
 }
 QT_END_NAMESPACE
 
-const double RECTANGLE[4]	= {0.0, 0.0, 200.0, 200.0};
+const double NEGATIVE_OFFSET= 400.0;
+const double RECTANGLE[4]	= {-400.0, -400.0, 200.0, 200.0};
 const double TRIANGLE[6]	= {100.0, 0.0, 200.0, 200.0, 0.0, 100.0};
 
 class CustomLabel : public QLabel
@@ -81,12 +82,9 @@ public:
 private slots:	
 	void CheckMousePress();
 	void Move();
-
 	void SetCommand();
 	void SetFigure();
-
 	void on_horizontalSlider_sliderMoved(int position);
-
 	void on_horizontalSlider_2_sliderMoved(int position);
 
 public:

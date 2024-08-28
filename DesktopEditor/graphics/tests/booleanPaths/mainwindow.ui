@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1124</width>
-    <height>553</height>
+    <width>1441</width>
+    <height>859</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,8 +19,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>500</width>
-      <height>500</height>
+      <width>800</width>
+      <height>800</height>
      </rect>
     </property>
     <property name="text">
@@ -30,7 +30,7 @@
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>520</x>
+      <x>810</x>
       <y>0</y>
       <width>610</width>
       <height>500</height>
@@ -94,7 +94,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>270</y>
+        <y>250</y>
         <width>63</width>
         <height>20</height>
        </rect>
@@ -107,9 +107,9 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>290</y>
+        <y>270</y>
         <width>170</width>
-        <height>180</height>
+        <height>200</height>
        </rect>
       </property>
       <property name="text">
@@ -139,6 +139,19 @@
       </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_8">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>170</y>
+        <width>63</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Scale:</string>
       </property>
      </widget>
     </widget>
@@ -197,7 +210,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>270</y>
+        <y>250</y>
         <width>63</width>
         <height>20</height>
        </rect>
@@ -210,9 +223,9 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>290</y>
+        <y>270</y>
         <width>170</width>
-        <height>180</height>
+        <height>200</height>
        </rect>
       </property>
       <property name="text">
@@ -244,6 +257,19 @@
        <enum>Qt::Horizontal</enum>
       </property>
      </widget>
+     <widget class="QLabel" name="label_9">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>170</y>
+        <width>63</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Scale:</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QGroupBox" name="groupBox_4">
      <property name="geometry">
@@ -251,7 +277,7 @@
        <x>410</x>
        <y>10</y>
        <width>191</width>
-       <height>320</height>
+       <height>480</height>
       </rect>
      </property>
      <property name="title">
@@ -261,7 +287,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>160</y>
+        <y>250</y>
         <width>63</width>
         <height>20</height>
        </rect>
@@ -274,9 +300,9 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>180</y>
+        <y>270</y>
         <width>170</width>
-        <height>130</height>
+        <height>200</height>
        </rect>
       </property>
       <property name="text">
@@ -333,7 +359,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1124</width>
+     <width>1441</width>
      <height>21</height>
     </rect>
    </property>

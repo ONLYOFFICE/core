@@ -94,6 +94,30 @@ MainWindow::MainWindow(QWidget *parent)
 
 	for (std::vector<QObject*>::iterator i = arrBooleanButtons.begin(); i != arrBooleanButtons.end(); i++)
 		connect((QPushButton*)(*i), &QPushButton::clicked, this, &MainWindow::SetCommand);
+
+	// Aggplus::CGraphicsPath *path1 = new Aggplus::CGraphicsPath;
+	// path1->StartFigure();
+	// path1->MoveTo(200.0, 200.0);
+	// path1->LineTo(-200.0, 200.0);
+	// path1->LineTo(-200.0, -200.0);
+	// path1->LineTo(200.0, -200.0);
+	// path1->LineTo(200.0, 200.0);
+	// path1->CloseFigure();
+	// SetCoords(ui->label_4, path1);
+
+	// Aggplus::CGraphicsPath *path2 = new Aggplus::CGraphicsPath;
+	// path2->StartFigure();
+	// path2->MoveTo(-100.0, -100.0);
+	// path2->LineTo(300.0, -100.0);
+	// path2->LineTo(300.0, 300.0);
+	// path2->LineTo(-100.0, 300.0);
+	// path2->LineTo(-100.0, -100.0);
+	// path2->CloseFigure();
+	// SetCoords(ui->label_5, path2);
+
+	// Aggplus::CGraphicsPath *result = Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection);
+	// Draw(result);
+	// SetCoords(ui->label_7, result);
 }
 
 void MainWindow::SetFigure()
@@ -184,20 +208,20 @@ void MainWindow::AddPath(NSGraphics::IGraphicsRenderer* pathRenderer, Aggplus::C
 
 	size_t length = path->GetPointCount();
 	std::vector<Aggplus::PointD> points = path->GetPoints(0, length);
-	pathRenderer->PathCommandMoveTo(points[0].X, points[0].Y);
 
-	for (size_t i = 1; i < length; i++)
+	for (size_t i = 0; i < length; i++)
 	{
 		if (path->IsCurvePoint(i))
 		{
-			pathRenderer->PathCommandCurveTo(points[i].X, points[i].Y, points[i + 1].X,
-											 points[i + 1].Y,points[i + 2].X, points[i + 2].Y);
+			pathRenderer->PathCommandCurveTo(points[i].X + NEGATIVE_OFFSET, points[i].Y + NEGATIVE_OFFSET,
+											 points[i + 1].X + NEGATIVE_OFFSET, points[i + 1].Y + NEGATIVE_OFFSET,
+											 points[i + 2].X + NEGATIVE_OFFSET, points[i + 2].Y + NEGATIVE_OFFSET);
 			i += 2;
 		}
 		else if (path->IsMovePoint(i))
-			pathRenderer->PathCommandMoveTo(points[i].X, points[i].Y);
+			pathRenderer->PathCommandMoveTo(points[i].X + NEGATIVE_OFFSET, points[i].Y + NEGATIVE_OFFSET);
 		else
-			pathRenderer->PathCommandLineTo(points[i].X, points[i].Y);
+			pathRenderer->PathCommandLineTo(points[i].X + NEGATIVE_OFFSET, points[i].Y + NEGATIVE_OFFSET);
 	}
 
 	if (isResult)
@@ -301,12 +325,12 @@ void MainWindow::CheckMousePress()
 		return;
 	}
 
-	QRectF rect1(RECTANGLE[0] + Offsets[0],
-				 RECTANGLE[1] + Offsets[1],
+	QRectF rect1(RECTANGLE[0] + NEGATIVE_OFFSET + Offsets[0],
+				 RECTANGLE[1] + NEGATIVE_OFFSET + Offsets[1],
 				 Scale[0] * RECTANGLE[2],
 				 Scale[0] * RECTANGLE[3]),
-		   rect2(RECTANGLE[0] + Offsets[2],
-				 RECTANGLE[1] + Offsets[3],
+		   rect2(RECTANGLE[0] + NEGATIVE_OFFSET + Offsets[2],
+				 RECTANGLE[1] + NEGATIVE_OFFSET + Offsets[3],
 				 Scale[1] * RECTANGLE[2],
 				 Scale[1] * RECTANGLE[3]);
 

@@ -253,8 +253,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 
 	LOGGER_SPEED_LAP("compile");
 
-	if (!m_context->isSnapshotUsed())
-		NSDoctRenderer::RunEditor(editorType, m_context, try_catch, config);
+	NSDoctRenderer::RunEditor(editorType, m_context, try_catch, config);
 	if(try_catch->Check())
 		return false;
 

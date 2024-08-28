@@ -211,11 +211,7 @@ namespace NSDoctRenderer
 		if (!RunScript(context, try_catch, config->m_strAllFonts))
 			return false;
 
-		std::string sFooter = "\
-window.InitNativeObject();\
-window.InitNativeTextMeasurer();\
-window.InitNativeZLib();\
-AscFonts.checkAllFonts();\n";
+		std::string sFooter = "window.InitNativeEditors();";
 
 		if (context->isSnapshotUsed())
 		{
@@ -237,6 +233,9 @@ String.prototype.replaceAll = function(str, newStr)\
 
 	static bool RunEditor(const DoctRendererEditorType& type, JSSmart<NSJSBase::CJSContext>& context, JSSmart<NSJSBase::CJSTryCatch>& try_catch, CDoctRendererConfig* config)
 	{
+		if (context->isSnapshotUsed())
+			return RunEditorFooter(context, try_catch, config);
+
 		NSStringUtils::CStringBuilderA builder;
 		builder.AddSize(10 * 1024 * 1024);
 		std::wstring sCachePath = GetAllScript(&builder, type, config);
@@ -283,13 +282,6 @@ String.prototype.replaceAll = function(str, newStr)\
 
 		JSSmart<NSJSBase::CJSContext> context = new NSJSBase::CJSContext(false);
 		context->Initialize(sCachePath);
-
-		NSJSBase::CJSContextScope scope(context);
-
-		JSSmart<NSJSBase::CJSTryCatch> try_catch = context->GetExceptions();
-
-		if (!RunEditorFooter(context, try_catch, config))
-			return NULL;
 
 		return context;
 	}

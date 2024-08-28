@@ -599,8 +599,7 @@ namespace NSDoctRenderer
 
 				LOGGER_SPEED_LAP("compile");
 
-				if (!context->isSnapshotUsed())
-					NSDoctRenderer::RunEditor(editorType, context, try_catch, this);
+				NSDoctRenderer::RunEditor(editorType, context, try_catch, this);
 
 				if (try_catch->Check())
 				{

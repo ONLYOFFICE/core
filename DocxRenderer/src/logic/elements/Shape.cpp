@@ -747,17 +747,47 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"\">");
 		oWriter.WriteString(L"<a:alphaModFix/>");
 		oWriter.WriteString(L"</a:blip>");
-//		oWriter.WriteString(L"<a:tile/>");
-		oWriter.WriteString(L"<a:srcRect/>");
-		oWriter.WriteString(L"<a:stretch>");
-		oWriter.WriteString(L"<a:fillRect/>");
-		oWriter.WriteString(L"</a:stretch>");
+		if (m_oBrush.Image != NULL)
+		{
+			oWriter.WriteString(L"<a:tile sx=\"100%\" sy=\"100%\" flip=\"none\" algn=\"tl\"/>");
+		}
+		else
+		{
+			// coeff
+			double offset_left = (m_dRight - m_dImageLeft) / m_dWidth - 1;
+			double offset_right = (m_dImageRight - m_dLeft) / m_dWidth - 1;
+			double offset_top = (m_dBaselinePos - m_dImageTop) / m_dHeight - 1;
+			double offset_bot = (m_dImageBot - m_dTop) / m_dHeight - 1;
+
+			// percentage
+			offset_left *= 100;
+			offset_right *= 100;
+			offset_top *= 100;
+			offset_bot *= 100;
+
+			// ooxml (percentage * 1000)
+			oWriter.WriteString(L"<a:srcRect/>");
+			oWriter.WriteString(L"<a:stretch>");
+			oWriter.WriteString(L"<a:fillRect ");
+			oWriter.WriteString(L"l=\"");
+			oWriter.AddInt(static_cast<int>(-offset_left * 1000));
+			oWriter.WriteString(L"\" ");
+			oWriter.WriteString(L"r=\"");
+			oWriter.AddInt(static_cast<int>(-offset_right * 1000));
+			oWriter.WriteString(L"\" ");
+			oWriter.WriteString(L"t=\"");
+			oWriter.AddInt(static_cast<int>(-offset_top * 1000));
+			oWriter.WriteString(L"\" ");
+			oWriter.WriteString(L"b=\"");
+			oWriter.AddInt(static_cast<int>(-offset_bot * 1000));
+			oWriter.WriteString(L"\"");
+			oWriter.WriteString(L"/>");
+			oWriter.WriteString(L"</a:stretch>");
+		}
 	}
 
 	void CShape::BuildPictureProperties(NSStringUtils::CStringBuilder &oWriter) const
 	{
-		// TODO: Clip path as geometry + tile!!!
-
 		oWriter.WriteString(L"<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
 
 		oWriter.WriteString(L"<pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
@@ -995,7 +1025,6 @@ namespace NSDocxRenderer
 	{
 		if (m_eType == eShapeType::stVectorTexture)
 		{
-			// TODO: Clip path as geometry + tile!!!
 			oWriter.WriteString(L"<p:pic>");
 			oWriter.WriteString(L"<p:nvPicPr>");
 			oWriter.WriteString(L"<p:cNvPr id=\"");

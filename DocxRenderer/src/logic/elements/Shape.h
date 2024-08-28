@@ -1,5 +1,6 @@
 #pragma once
 #include "../../../../DesktopEditor/graphics/structures.h"
+#include "../../../../DesktopEditor/graphics/Image.h"
 
 #include "../../resources/ImageInfo.h"
 #include "../../resources/LinesTable.h"
@@ -47,12 +48,18 @@ namespace NSDocxRenderer
 		bool m_bIsBehindDoc {true};
 		bool m_bIsUseInTable{false};
 
+		std::shared_ptr<CImageInfo> m_pImageInfo{nullptr};
+		double m_dImageTop{};
+		double m_dImageBot{};
+		double m_dImageLeft{};
+		double m_dImageRight{};
+
 		eGraphicsType m_eGraphicsType    {eGraphicsType::gtUnknown};
 		eSimpleLineType m_eSimpleLineType{eSimpleLineType::sltUnknown};
 		eLineType m_eLineType            {eLineType::ltUnknown};
 
 		std::vector<std::shared_ptr<CBaseItem>> m_arOutputObjects;
-		std::shared_ptr<CImageInfo> m_pImageInfo{nullptr};
+
 
 	public:
 		CShape();

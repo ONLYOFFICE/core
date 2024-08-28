@@ -197,6 +197,11 @@ namespace NSDocxRenderer
 		{
 			pShape->m_pImageInfo = pInfo;
 			pShape->m_eType = CShape::eShapeType::stVectorTexture;
+
+			pShape->m_dImageBot = m_oCurrVectorGraphics.GetBottom();
+			pShape->m_dImageTop = m_oCurrVectorGraphics.GetTop();
+			pShape->m_dImageLeft = m_oCurrVectorGraphics.GetLeft();
+			pShape->m_dImageRight = m_oCurrVectorGraphics.GetRight();
 		}
 		else
 		{
@@ -225,6 +230,7 @@ namespace NSDocxRenderer
 
 		double dDeterminant = sqrt(fabs(m_pTransform->Determinant()));
 		pShape->m_oPen.Size *= dDeterminant;
+
 
 		if (!m_oClipVectorGraphics.IsEmpty())
 		{

@@ -16,11 +16,6 @@ DEFINES += DOCTRENDERER_USE_DYNAMIC_LIBRARY_BUILDING
 DEFINES += JSBASE_USE_DYNAMIC_LIBRARY_BUILDING
 ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network)
 
-# drawingfile support
-DEFINES += WASM_SERIALIZER_USE_ALLOCATOR
-ADD_DEPENDENCY(PdfFile, XpsFile, DjVuFile, DocxRenderer)
-SOURCES += ../../HtmlRenderer/src/HTMLRendererText.cpp
-
 #CONFIG += build_xp
 #CONFIG += v8_version_60
 core_android:DEFINES += DISABLE_MEMORY_LIMITATION
@@ -49,8 +44,7 @@ HEADERS += \
 	nativecontrol.h \
 	graphics.h \
 	hash.h \
-	server.h \
-	drawingfile.h
+	server.h
 
 HEADERS += \
 	embed/PointerEmbed.h \
@@ -63,7 +57,6 @@ HEADERS += \
 	embed/TextMeasurerEmbed.h \
 	embed/HashEmbed.h \
 	embed/Default.h \
-	embed/DrawingFileEmbed.h \
 	js_internal/js_base.h
 
 SOURCES += \
@@ -76,8 +69,7 @@ SOURCES += \
 	embed/NativeBuilderDocumentEmbed.cpp \
 	embed/TextMeasurerEmbed.cpp \
 	embed/HashEmbed.cpp \
-	embed/Default.cpp \
-	embed/DrawingFileEmbed.cpp
+	embed/Default.cpp
 
 # Serialize objects to JS
 HEADERS += \
@@ -110,7 +102,6 @@ ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/NativeControlEmbed.h)
 ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/PointerEmbed.h)
 ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/TextMeasurerEmbed.h)
 ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/ZipEmbed.h)
-ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/DrawingFileEmbed.h)
 
 include(../graphics/pro/textshaper.pri)
 include(../../Common/3dParty/openssl/openssl.pri)
@@ -118,3 +109,18 @@ include(../../Common/3dParty/openssl/openssl.pri)
 # downloader
 DEFINES += BUIDLER_OPEN_DOWNLOAD_ENABLED
 DEFINES += BUIDLER_OPEN_BASE64_ENABLED
+
+drawingfile_support {
+	DEFINES += WASM_SERIALIZER_USE_ALLOCATOR
+	ADD_DEPENDENCY(PdfFile, XpsFile, DjVuFile, DocxRenderer)
+
+	HEADERS += \
+		drawingfile.h \
+		embed/DrawingFileEmbed.h
+
+	SOURCES += \
+		../../HtmlRenderer/src/HTMLRendererText.cpp \
+		embed/DrawingFileEmbed.cpp
+
+	ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/DrawingFileEmbed.h)
+}

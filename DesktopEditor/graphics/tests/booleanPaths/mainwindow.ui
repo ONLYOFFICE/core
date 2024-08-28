@@ -123,7 +123,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>190</y>
+        <y>230</y>
         <width>160</width>
         <height>16</height>
        </rect>
@@ -145,13 +145,26 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>170</y>
+        <y>210</y>
         <width>63</width>
         <height>20</height>
        </rect>
       </property>
       <property name="text">
        <string>Scale:</string>
+      </property>
+     </widget>
+     <widget class="CustomButton" name="pushButton_8">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>160</y>
+        <width>83</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Cross</string>
       </property>
      </widget>
     </widget>
@@ -239,7 +252,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>190</y>
+        <y>230</y>
         <width>160</width>
         <height>16</height>
        </rect>
@@ -261,13 +274,26 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>170</y>
+        <y>210</y>
         <width>63</width>
         <height>20</height>
        </rect>
       </property>
       <property name="text">
        <string>Scale:</string>
+      </property>
+     </widget>
+     <widget class="CustomButton" name="pushButton_9">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>160</y>
+        <width>83</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Cross</string>
       </property>
      </widget>
     </widget>

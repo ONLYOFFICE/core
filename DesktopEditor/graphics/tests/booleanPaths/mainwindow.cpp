@@ -94,30 +94,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 	for (std::vector<QObject*>::iterator i = arrBooleanButtons.begin(); i != arrBooleanButtons.end(); i++)
 		connect((QPushButton*)(*i), &QPushButton::clicked, this, &MainWindow::SetCommand);
-
-	// Aggplus::CGraphicsPath *path1 = new Aggplus::CGraphicsPath;
-	// path1->StartFigure();
-	// path1->MoveTo(200.0, 200.0);
-	// path1->LineTo(-200.0, 200.0);
-	// path1->LineTo(-200.0, -200.0);
-	// path1->LineTo(200.0, -200.0);
-	// path1->LineTo(200.0, 200.0);
-	// path1->CloseFigure();
-	// SetCoords(ui->label_4, path1);
-
-	// Aggplus::CGraphicsPath *path2 = new Aggplus::CGraphicsPath;
-	// path2->StartFigure();
-	// path2->MoveTo(-100.0, -100.0);
-	// path2->LineTo(300.0, -100.0);
-	// path2->LineTo(300.0, 300.0);
-	// path2->LineTo(-100.0, 300.0);
-	// path2->LineTo(-100.0, -100.0);
-	// path2->CloseFigure();
-	// SetCoords(ui->label_5, path2);
-
-	// Aggplus::CGraphicsPath *result = Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection);
-	// Draw(result);
-	// SetCoords(ui->label_7, result);
 }
 
 void MainWindow::SetFigure()
@@ -182,16 +158,25 @@ Aggplus::CGraphicsPath* MainWindow::SetPath(double scale, double offsetX, double
 						 scale * RECTANGLE[2],
 						 scale * RECTANGLE[3]);
 	}
-	else
+	else if (Figure == "Triangle")
 	{
 		path->MoveTo(TRIANGLE[0] + offsetX,
 					 TRIANGLE[1] + offsetY);
-		path->LineTo(TRIANGLE[2] + offsetX,
-					 TRIANGLE[3] + offsetY);
-		path->LineTo(TRIANGLE[4] + offsetX,
-					 TRIANGLE[5] + offsetY);
+		for (size_t i = 2; i < std::size(TRIANGLE); i += 2)
+			path->LineTo(TRIANGLE[0] + scale * TRIANGLE[i] + offsetX,
+						 TRIANGLE[1] + scale * TRIANGLE[i + 1] + offsetY);
 		path->LineTo(TRIANGLE[0] + offsetX,
 					 TRIANGLE[1] + offsetY);
+	}
+	else if (Figure == "Cross")
+	{
+		path->MoveTo(CROSS[0] + offsetX,
+					 CROSS[1] + offsetY);
+		for (size_t i = 2; i < std::size(CROSS); i += 2)
+			path->LineTo(CROSS[0] + scale * CROSS[i] + offsetX,
+						 CROSS[1] + scale * CROSS[i + 1] + offsetY);
+		path->LineTo(CROSS[0] + offsetX,
+					 CROSS[1] + offsetY);
 	}
 	path->CloseFigure();
 

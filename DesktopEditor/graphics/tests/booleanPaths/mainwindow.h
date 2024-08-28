@@ -16,7 +16,11 @@ QT_END_NAMESPACE
 
 const double NEGATIVE_OFFSET= 400.0;
 const double RECTANGLE[4]	= {-400.0, -400.0, 200.0, 200.0};
-const double TRIANGLE[6]	= {100.0, 0.0, 200.0, 200.0, 0.0, 100.0};
+const double TRIANGLE[6]	= {-300.0, -400.0, 100.0, 200.0, -100.0, 100.0};
+const double CROSS[24]		= {-375.0, -325.0, 50.0, 0.0, 50.0, -50.0,
+							   100.0, -50.0, 100.0, 0.0, 150.0, 0.0,
+							   150.0, 50.0, 100.0, 50.0, 100.0, 100.0,
+							   50.0, 100.0, 50.0, 50.0, 0.0, 50.0};
 
 class CustomLabel : public QLabel
 {
@@ -28,17 +32,16 @@ public:
 	QPointF GetStartPoint() const noexcept;
 	double GetDifferenceX() const noexcept;
 	double GetDifferenceY() const noexcept;
-
-	bool GetMovable()	const noexcept;
+	bool GetMovable()		const noexcept;
 
 signals:
 	void mousePress();
 	void mouseMove();
 
 protected:
-	void mousePressEvent(QMouseEvent *event) override;
-	void mouseMoveEvent(QMouseEvent *event) override;
-	void mouseReleaseEvent(QMouseEvent *event) override;
+	void mousePressEvent(QMouseEvent *event)	override;
+	void mouseMoveEvent(QMouseEvent *event)		override;
+	void mouseReleaseEvent(QMouseEvent *event)	override;
 
 private:
 	bool Movable	= false;

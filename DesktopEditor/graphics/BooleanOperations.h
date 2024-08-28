@@ -140,6 +140,7 @@ namespace Aggplus
 		// Util
 		void SetVisited(const Segment& segment);
 		void AddOffsets(std::vector<double>& offsets, const Curve& curve, bool end);
+		PointD GetMinPoint(const std::vector<Segment>& segments);
 
 	private:
 		BooleanOpType Op;

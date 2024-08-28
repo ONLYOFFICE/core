@@ -61,7 +61,7 @@ namespace Aggplus
 		Curve  GetPart(double from, double to) const;
 		std::vector<Curve>  GetMonoCurves(bool dir) const;
 		std::vector<double> GetCurveLineIntersection(double px, double py, double vx, double vy) const;
-		std::vector<std::pair<int, int>> GetOverlaps(const Curve& curve) const;
+		std::vector<std::pair<double, double>> GetOverlaps(const Curve& curve) const;
 
 		std::vector<Curve> Subdivide(double t) const;
 		Curve DivideAtTime(double time);
@@ -130,7 +130,7 @@ namespace Aggplus
 		void AddLineIntersection(const Curve& curve1, const Curve& curve2);
 		void AddCurveLineIntersection(const Curve& curve1, const Curve& curve2, bool flip);
 		int  AddCurveIntersection(Curve curve1, Curve curve2, const Curve& startCurve1, const Curve& startCurve2, bool flip, int recursion = 0, int calls = 0, double tMin = 0, double tMax = 1, double uMin = 0, double uMax = 1);
-		int  CheckInters(const PointD& point, const Segment& segment, const Curve& curve) const;
+		int  CheckInters(const PointD& point, const Segment& segment, const Curve& curve, bool dir = false) const;
 
 		// Location
 		void DivideLocations();

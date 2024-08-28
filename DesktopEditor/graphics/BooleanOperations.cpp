@@ -363,7 +363,7 @@ Curve Curve::GetPart(double from, double to) const
 	return result;
 }
 
-std::vector<std::pair<int, int>> Curve::GetOverlaps(const Curve& curve) const
+std::vector<std::pair<double, double>> Curve::GetOverlaps(const Curve& curve) const
 {
 	bool swap = this->GetSquaredLineLength() <
 				curve.GetSquaredLineLength(),
@@ -406,14 +406,14 @@ std::vector<std::pair<int, int>> Curve::GetOverlaps(const Curve& curve) const
 	}
 	else if (straightBoth)
 	{
-		return std::vector<std::pair<int, int>>();
+		return std::vector<std::pair<double, double>>();
 	}
 	if (straight1 ^ straight2)
 	{
-		return std::vector<std::pair<int, int>>();
+		return std::vector<std::pair<double, double>>();
 	}
 
-	std::vector<std::pair<int, int>> pairs;
+	std::vector<std::pair<double, double>> pairs;
 	for (int i = 0; i < 4 && pairs.size() < 2; i++)
 	{
 		int i1 = i & 1,
@@ -422,13 +422,13 @@ std::vector<std::pair<int, int>> Curve::GetOverlaps(const Curve& curve) const
 							: curve.GetTimeOf(t1 == 1 ? Segment2.P : Segment1.P);
 		if (t2 != -1)
 		{
-			std::pair<int, int> pair = i1 == 1 ? std::pair<int, int>(t1, t2)
-											   : std::pair<int, int>(t1, t2);
+			std::pair<double, double> pair = i1 == 1 ? std::pair<double, double>(t1, t2)
+													 : std::pair<double, double>(t2, t1);
 			if (pairs.empty())
 				pairs.push_back(pair);
 			else if (abs(pair.first - pairs[0].first) > TIME_EPSILON &&
 					 abs(pair.second - pairs[0].second) > TIME_EPSILON)
-			pairs.push_back(pair);
+				pairs.push_back(pair);
 		}
 
 		if (i > 2 && pairs.empty())
@@ -694,13 +694,14 @@ CGraphicsPath *CBooleanOperations::GetResult()
 	return Result;
 }
 
-int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment, const Curve& curve) const
+int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment, const Curve& curve, bool dir) const
 {
 	PointD pt = intersect(point.X, point.Y, segment.P.X, segment.P.Y, curve.Segment1.P.X, curve.Segment1.P.Y, curve.Segment2.P.X, curve.Segment2.P.Y);
 	if (curve.Segment1.P.Equals(pt) || curve.Segment2.P.Equals(pt))
 	{
-		PointD newPoint = PointD(point.X + GEOMETRIC_EPSILON, point.Y);
-		return CheckInters(newPoint, segment, curve);
+		PointD newPoint = dir ? PointD(point.X + GEOMETRIC_EPSILON, point.Y)
+							  : PointD(point.X, point.Y + GEOMETRIC_EPSILON);
+		return CheckInters(newPoint, segment, curve, !dir);
 	}
 	else if (!pt.Equals(PointD()) && curve.IsStraight())
 	{
@@ -887,7 +888,7 @@ void CBooleanOperations::InsertSegment(const Segment& segment, const Segment& ha
 			index = segment.Index == length ? 0 : segment.Index;
 		if (getDistance(segment.P, Segments1[index].P) <= GEOMETRIC_EPSILON)
 		{
-			Segments1[length ? 0 : index] = segment;
+			Segments1[index] = segment;
 			return;
 		}
 		Segments1.insert(Segments1.begin() + segment.Index, segment);
@@ -1215,12 +1216,12 @@ void CBooleanOperations::GetCurveIntersection(const Curve& curve1, const Curve& 
 	if (maxX1 + EPSILON > minX2 && minX1 - EPSILON < maxX2 &&
 		maxY1 + EPSILON > minY2 && minY1 - EPSILON < maxY2)
 	{
-		std::vector<std::pair<int, int>> overlaps = curve1.GetOverlaps(curve2);
+		std::vector<std::pair<double, double>> overlaps = curve1.GetOverlaps(curve2);
 		if (!overlaps.empty())
 		{
 			for (int i = 0; i < 2; i++)
 			{
-				std::pair<int, int> overlap = overlaps[i];
+				std::pair<double, double> overlap = overlaps[i];
 				AddLocation(curve1, curve2, overlap.first,
 							overlap.second, true);
 			}

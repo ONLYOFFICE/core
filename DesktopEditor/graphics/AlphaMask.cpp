@@ -67,17 +67,14 @@ namespace Aggplus
 
 
 
-	CSoftMask::CSoftMask() : m_pImageData(NULL), m_pAlphaBufferData(NULL), m_unWidth(0), m_unHeight(0) {}
-	CSoftMask::CSoftMask(BYTE* pBuffer, UINT unWidth, UINT unHeight, EMaskDataType enDataType, bool bExternalBuffer, bool bFlip)
+	CSoftMask::CSoftMask() : m_unWidth(0), m_unHeight(0), m_pImageData(NULL), m_pAlphaBufferData(NULL) {}
+	CSoftMask::CSoftMask(BYTE* pBuffer, UINT unWidth, UINT unHeight, EMaskDataType enDataType, bool bExternalBuffer, bool bFlip) : m_pImageData(NULL), m_pAlphaBufferData(NULL)
 	{
-		m_pImageData = NULL;
-		m_pAlphaBufferData = NULL;
-
 		LoadFromBuffer(pBuffer, unWidth, unHeight, enDataType, bExternalBuffer, bFlip);
 	}
 	CSoftMask::~CSoftMask()
 	{
-		BYTE *pBuffer = m_oRenderingBuffer.buf();
+		BYTE* pBuffer = m_oRenderingBuffer.buf();
 		if (NULL != pBuffer)
 		{
 			if (!m_bExternalBuffer)
@@ -100,14 +97,8 @@ namespace Aggplus
 		case EMaskDataType::Alpha4Buffer: return 4;
 		}
 	}
-	unsigned int CSoftMask::GetWidth() const
-	{
-		return m_unWidth;
-	}
-	unsigned int CSoftMask::GetHeight() const
-	{
-		return m_unHeight;
-	}
+	unsigned int CSoftMask::GetWidth() const { return m_unWidth; }
+	unsigned int CSoftMask::GetHeight() const { return m_unHeight; }
 
 	void CSoftMask::SetType(EMaskDataType enDataType)
 	{

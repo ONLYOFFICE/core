@@ -392,7 +392,7 @@ void OoxConverter::convert_customs(OOX::IFileContainer* container)
 				case PPTX::Logic::vtInt:
 				{
 					if (prop.m_oContent->m_iContent.IsInit())
-						content = std::to_wstring(*prop.m_oContent->m_uContent);
+						content = std::to_wstring(*prop.m_oContent->m_iContent);
 				}break;
 				case PPTX::Logic::vtUi1:
 				case PPTX::Logic::vtUi2:

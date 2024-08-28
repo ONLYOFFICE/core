@@ -615,6 +615,7 @@ void list::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     style_name_			= Attributes->get_val< std::wstring >(L"text:style-name").get_value_or(L"");
     continue_numbering_	= Attributes->get_val< bool >(L"text:continue-numbering");
+	continue_list_		= Attributes->get_val< std::wstring >(L"text:continue-list");
     // TODO
 }
 
@@ -632,7 +633,7 @@ void list::add_child_element( xml::sax * Reader, const std::wstring & Ns, const 
 
 void list::docx_convert(oox::docx_conversion_context & Context)
 {
-    bool continue_ = continue_numbering_.get_value_or(false);
+    bool continue_ = continue_numbering_.get_value_or(false) || !continue_list_.get_value_or(L"").empty();
     Context.start_list(style_name_, continue_);
 
     if (list_header_)

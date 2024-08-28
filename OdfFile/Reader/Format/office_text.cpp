@@ -204,6 +204,23 @@ void office_text::docx_convert(oox::docx_conversion_context & Context)
 					Context.add_page_properties(masterPageNameLayout);
 				}
 			}  
+			else
+			{
+				std::vector<style_master_page*>& masterPages = Context.root()->odf_context().pageLayoutContainer().master_pages();
+				if (!masterPages.empty())
+				{
+					std::wstring masterPageName = masterPages[0]->attlist_.style_name_.get_value_or(L"Standard");
+					std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(masterPageName);
+
+					if (!masterPageNameLayout.empty())
+					{
+						Context.set_master_page_name(masterPageName);
+
+						Context.remove_page_properties();
+						Context.add_page_properties(masterPageNameLayout);
+					}
+				}
+			}
 		}
 		if (content_[i]->next_element_style_name)
 		{
@@ -221,6 +238,11 @@ void office_text::docx_convert(oox::docx_conversion_context & Context)
 					Context.next_dump_page_properties(true);
 					//is_empty = false;
 				}
+			}
+
+			if (!Context.get_master_page_name().empty() && !next_masterPageName)
+			{
+				Context.next_dump_page_properties(true);
 			}
 		} 
 		content_[i]->docx_convert(Context);

@@ -88,6 +88,37 @@ namespace NSDjvu
 			return 0;
 		}
 	}
+	static int ComputeRed(int w, int h, int rw, int rh)
+	{
+	  for (int red = 1; red < 16; ++red)
+		  if ((w + red - 1) / red == rw && (h + red - 1) / red == rh)
+			  return red;
+	  return 1;
+	}
+	static void DrawPixmap(GP<GPixmap> pImage, Aggplus::CImage* pImageRes)
+	{
+		unsigned int unPixmapH = pImage->rows();
+		unsigned int unPixmapW = pImage->columns();
+		BYTE* pBufferDst = new BYTE[4 * unPixmapH * unPixmapW];
+		if (!pBufferDst)
+			return;
+
+		pImageRes->Create(pBufferDst, unPixmapW, unPixmapH, 4 * unPixmapW);
+
+		BYTE* pBuffer = pBufferDst;
+		for (int j = unPixmapH - 1; j >= 0; --j)
+		{
+			GPixel* pLine = pImage->operator [](j);
+
+			for (int i = 0; i < unPixmapW; ++i, pBuffer += 4, ++pLine)
+			{
+				pBuffer[0] = pLine->b;
+				pBuffer[1] = pLine->g;
+				pBuffer[2] = pLine->r;
+				pBuffer[3] = 255;
+			}
+		}
+	}
 }
 
 CDjVuFileImplementation::CDjVuFileImplementation(NSFonts::IApplicationFonts* pFonts)
@@ -423,8 +454,13 @@ BYTE* CDjVuFileImplementation::GetPageLinks(int nPageIndex)
 
 void CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& pPage, int nPage, XmlUtils::CXmlNode& text)
 {
-	int nWidth	= pPage->get_real_width();
-	int nHeight	= pPage->get_real_height();
+	long lRendererType = c_nUnknownRenderer;
+	pRenderer->get_Type(&lRendererType);
+	if (c_nPDFWriter == lRendererType)
+	{
+		CreatePdfFrame(pRenderer, pPage, nPage, text);
+		return;
+	}
 
 	int nDpi = pPage->get_dpi();
 
@@ -454,36 +490,6 @@ void CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& p
 
 	LONG lImageWidth	= (LONG)(dRendDpiX * dRendWidth / dPixToMM);
 	LONG lImageHeight	= (LONG)(dRendDpiY * dRendHeight / dPixToMM);
-
-	long lRendererType = c_nUnknownRenderer;
-	pRenderer->get_Type(&lRendererType);
-	if (c_nPDFWriter == lRendererType)
-	{
-		lImageWidth	 = pPage->get_real_width();
-		lImageHeight = pPage->get_real_height();
-	}
-	else if (c_nHtmlRendrerer == lRendererType)
-	{
-		// TODO: Нужно реализовать функцию
-		// pRenderer->GetMaxImageSize();
-		//VARIANT var;
-		//renderer->GetAdditionalParam(L"MaxImageSize", &var);
-		//LONG lMaxWidth = var.lVal;
-		//if ((lImageWidth > lMaxWidth) || (lImageHeight > lMaxWidth))
-		//{
-		//	double dAspect = (double)(lImageWidth) / lImageHeight;
-		//	if (lImageWidth > lImageHeight)
-		//	{
-		//		lImageWidth  = lMaxWidth;
-		//		lImageHeight = (LONG)(lImageHeight / dAspect);
-		//	}
-		//	else
-		//	{
-		//		lImageHeight = lMaxWidth;
-		//		lImageWidth  = (LONG)(dAspect * lImageHeight);
-		//	}
-		//}
-	}
 
 	BYTE* pBufferDst = new BYTE[4 * lImageHeight * lImageWidth];
 	if (!pBufferDst)
@@ -645,6 +651,14 @@ void CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer, GP<DjVuImage>
 
 	LONG lImageWidth  = pPage->get_real_width();
 	LONG lImageHeight = pPage->get_real_height();
+	double dImageRedW = dWidth  * 72.0 / 25.4 * 2.0;
+	double dImageRedH = dHeight * 72.0 / 25.4 * 2.0;
+	LONG lRed = std::min(lImageWidth / dImageRedW, lImageHeight / dImageRedH);
+	if (lRed > 1)
+	{
+		lImageWidth  /= lRed;
+		lImageHeight /= lRed;
+	}
 
 	CPdfFile* pPdf = (CPdfFile*)pRenderer;
 
@@ -677,68 +691,37 @@ void CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer, GP<DjVuImage>
 	}
 	else if (pPage->is_legal_compound())
 	{
-		GRect oRectAll(0, 0, lImageWidth, lImageHeight);
 		GP<IW44Image> pIW44Image = pPage->get_bg44();
 		if (NULL != pIW44Image)
 		{
-			int nBgWidth  = pIW44Image->get_width();
-			int nBgHeight = pIW44Image->get_height();
-
 			GP<GPixmap> pBgImage = pIW44Image->get_pixmap();
 			if (NULL != pBgImage)
 			{
-				BYTE* pBgBuffer = new BYTE[4 * nBgWidth * nBgHeight];
-				if (!pBgBuffer)
-					return;
-
-				Aggplus::CImage oBgImage;
-				oBgImage.Create(pBgBuffer, nBgWidth, nBgHeight, 4 * nBgWidth);
-
-				BYTE* pBuffer = pBgBuffer;
-				for (int j = nBgHeight - 1; j >= 0; --j)
-				{
-					GPixel* pLine = pBgImage->operator [](j);
-
-					for (int i = 0; i < nBgWidth; ++i, pBuffer += 4, ++pLine)
-					{
-						pBuffer[0] = pLine->b;
-						pBuffer[1] = pLine->g;
-						pBuffer[2] = pLine->r;
-						pBuffer[3] = 255;
-					}
-				}
-				pRenderer->DrawImage((IGrObject*)&oBgImage, 0, 0, dWidth, dHeight);
+				Aggplus::CImage oImage;
+				NSDjvu::DrawPixmap(pBgImage, &oImage);
+				pRenderer->DrawImage((IGrObject*)&oImage, 0, 0, dWidth, dHeight);
+			}
+		}
+		else
+		{
+			GP<GPixmap> pBgImage = pPage->get_bgpm();
+			if (NULL != pBgImage)
+			{
+				Aggplus::CImage oImage;
+				NSDjvu::DrawPixmap(pBgImage, &oImage);
+				pRenderer->DrawImage((IGrObject*)&oImage, 0, 0, dWidth, dHeight);
 			}
 		}
 		
+		GRect oRectAll(0, 0, lImageWidth, lImageHeight);
 		GP<GPixmap> pImage = pPage->get_fgpm();
 		if (NULL == pImage)
-			pImage = pPage->get_fg_pixmap(oRectAll);
+			pImage = pPage->get_fg_pixmap(oRectAll, oRectAll);
 
 		if (NULL != pImage)
 		{
-			unsigned int unPixmapH = pImage->rows();
-			unsigned int unPixmapW = pImage->columns();
-			BYTE* pBufferDst = new BYTE[4 * unPixmapH * unPixmapW];
-			if (!pBufferDst)
-				return;
-
 			Aggplus::CImage oImage;
-			oImage.Create(pBufferDst, unPixmapW, unPixmapH, 4 * unPixmapW);
-
-			BYTE* pBuffer = pBufferDst;
-			for (int j = unPixmapH - 1; j >= 0; --j)
-			{
-				GPixel* pLine = pImage->operator [](j);
-
-				for (int i = 0; i < unPixmapW; ++i, pBuffer += 4, ++pLine)
-				{
-					pBuffer[0] = pLine->b;
-					pBuffer[1] = pLine->g;
-					pBuffer[2] = pLine->r;
-					pBuffer[3] = 255;
-				}
-			}
+			NSDjvu::DrawPixmap(pImage, &oImage);
 
 			GP<GBitmap> pBitmap = pPage->get_bitmap(oRectAll, oRectAll, 4);
 
@@ -789,27 +772,9 @@ void CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer, GP<DjVuImage>
 
 		if (NULL != pImage)
 		{
-			BYTE* pBufferDst = new BYTE[4 * lImageHeight * lImageWidth];
-			if (pBufferDst)
-			{
-				Aggplus::CImage oImage;
-				oImage.Create(pBufferDst, lImageWidth, lImageHeight, 4 * lImageWidth);
-
-				BYTE* pBuffer = pBufferDst;
-				for (int j = lImageHeight - 1; j >= 0; --j)
-				{
-					GPixel* pLine = pImage->operator [](j);
-
-					for (int i = 0; i < lImageWidth; ++i, pBuffer += 4, ++pLine)
-					{
-						pBuffer[0] = pLine->b;
-						pBuffer[1] = pLine->g;
-						pBuffer[2] = pLine->r;
-						pBuffer[3] = 255;
-					}
-				}
-				pRenderer->DrawImage((IGrObject*)&oImage, 0, 0, dWidth, dHeight);
-			}
+			Aggplus::CImage oImage;
+			NSDjvu::DrawPixmap(pImage, &oImage);
+			pRenderer->DrawImage((IGrObject*)&oImage, 0, 0, dWidth, dHeight);
 		}
 		else
 		{

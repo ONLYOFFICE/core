@@ -52,8 +52,7 @@ public:
 		void set_protection(bool val, const std::wstring &key, const std::wstring &algorithm);
     void end_table();
 
-    void start_cell(const std::wstring & formula,
-                    size_t columnsSpanned,
+    void start_cell(size_t columnsSpanned,
                     size_t rowsSpanned);
 
     void end_cell();

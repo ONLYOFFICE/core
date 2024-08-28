@@ -115,7 +115,7 @@ public:
 
 	bool in_table_cell();
 
-    void start_table_cell			(const std::wstring & formula, size_t columnsSpanned, size_t rowsSpanned);
+    void start_table_cell			(size_t columnsSpanned, size_t rowsSpanned);
     void end_table_cell				();
 
     void start_table_covered_cell	();

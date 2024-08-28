@@ -111,6 +111,9 @@ public:
 	
 	void add_view (const std::wstring & name, const std::wstring & value);
 
+	void set_tab_distance(double pt);
+	_CP_OPT(double) get_tab_distance();
+
 private:
     class Impl;
     _CP_SCOPED_PTR(Impl) impl_;

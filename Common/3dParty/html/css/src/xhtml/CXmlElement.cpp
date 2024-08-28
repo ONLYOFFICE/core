@@ -27,7 +27,7 @@ CXmlElement::CXmlElement(const std::wstring& sNameDefaultElement)
 
 bool CXmlElement::Empty() const
 {
-	return m_mPStyleValues.empty() && m_mRStyleValues.empty() && m_mBasicValues.find(CSSProperties::BasicProperties::B_BasedOn) == m_mBasicValues.end();
+	return m_mPStyleValues.empty() && m_mRStyleValues.empty() && GetBasedOn().empty();
 }
 
 void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
@@ -35,7 +35,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 	if (!Empty())
 		Clear();
 
-	if (sNameDefaultElement == L"p")
+/*	if (sNameDefaultElement == L"p")
 	{
 		AddBasicProperties(CSSProperties::BasicProperties::B_Type, L"paragraph");
 		AddBasicProperties(CSSProperties::BasicProperties::B_StyleId, L"p");
@@ -47,7 +47,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 
 //		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
 	}
-	else if (sNameDefaultElement == L"li")
+	else */if (sNameDefaultElement == L"li")
 	{
 		AddBasicProperties(CSSProperties::BasicProperties::B_Type, L"paragraph");
 		AddBasicProperties(CSSProperties::BasicProperties::B_StyleId, L"li");
@@ -203,7 +203,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"15");
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
 	}
-	else if (sNameDefaultElement == L"div-c")
+	/*else if (sNameDefaultElement == L"div-c")
 	{
 		AddBasicProperties(CSSProperties::BasicProperties::B_Type, L"character");
 		AddBasicProperties(CSSProperties::BasicProperties::B_StyleId, L"div-c");
@@ -219,7 +219,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_Name, L"Div paragraph");
 		AddBasicProperties(CSSProperties::BasicProperties::B_BasedOn, L"normal");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"div-c");
-	}
+	}*/
 	else if (sNameDefaultElement == L"a-c")
 	{
 		AddBasicProperties(CSSProperties::BasicProperties::B_Type, L"character");

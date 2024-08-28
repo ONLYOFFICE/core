@@ -173,12 +173,10 @@ void BinaryCommonWriter::WriteBorder(const ComplexTypes::Word::CBorder& border)
 	//Val
 		m_oStream.WriteBYTE(c_oSerBorderType::Value);
 		m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-		switch(border.m_oVal.get().GetValue())
-		{
-		case SimpleTypes::bordervalueNone:
-		case SimpleTypes::bordervalueNil:   m_oStream.WriteBYTE(border_None);   break;
-		default:                            m_oStream.WriteBYTE(border_Single); break;
-		}
+
+		int border_type = border.m_oVal.get().GetValue(); 
+		if (border_type > 0x0ff) border_type = 1;
+		m_oStream.WriteBYTE((BYTE)border_type); // todooo change to long type
 	}
 }
 void BinaryCommonWriter::WriteTblBorders(const OOX::Logic::CTblBorders& Borders)
@@ -1238,6 +1236,18 @@ void Binary_pPrWriter::WriteSpacing(const ComplexTypes::Word::CSpacing& Spacing)
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(Spacing.m_oAfter->ToTwips());
 	}
+	if (false != Spacing.m_oAfterLines.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_pPrType::Spacing_AfterLines);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(Spacing.m_oAfterLines->GetValue());
+	}
+	if (false != Spacing.m_oBeforeLines.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_pPrType::Spacing_BeforeLines);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(Spacing.m_oBeforeLines->GetValue());
+	}	
 }
 void Binary_pPrWriter::WriteTabs(const OOX::Logic::CTabs& Tab, const nullable<ComplexTypes::Word::CInd>& oInd)
 {
@@ -8797,6 +8807,42 @@ void BinarySettingsTableWriter::WriteSettingsContent(OOX::CSettings& oSettings, 
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::ConsecutiveHyphenLimit);
 		m_oBcw.m_oStream.WriteLONG(*oSettings.m_oConsecutiveHyphenLimit->m_oVal);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if ((oSettings.m_oDrawingGridHorizontalOrigin.IsInit()) && (oSettings.m_oDrawingGridHorizontalOrigin->m_oVal.IsInit()))
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::DrawingGridHorizontalOrigin);
+		m_oBcw.m_oStream.WriteLONG(oSettings.m_oDrawingGridHorizontalOrigin->m_oVal->ToTwips());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if ((oSettings.m_oDrawingGridHorizontalSpacing.IsInit()) && (oSettings.m_oDrawingGridHorizontalSpacing->m_oVal.IsInit()))
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::DrawingGridHorizontalSpacing);
+		m_oBcw.m_oStream.WriteLONG(oSettings.m_oDrawingGridHorizontalSpacing->m_oVal->ToTwips());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if ((oSettings.m_oDrawingGridVerticalOrigin.IsInit()) && (oSettings.m_oDrawingGridVerticalOrigin->m_oVal.IsInit()))
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::DrawingGridVerticalOrigin);
+		m_oBcw.m_oStream.WriteLONG(oSettings.m_oDrawingGridVerticalOrigin->m_oVal->ToTwips());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if ((oSettings.m_oDrawingGridVerticalSpacing.IsInit()) && (oSettings.m_oDrawingGridVerticalSpacing->m_oVal.IsInit()))
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::DrawingGridVerticalSpacing);
+		m_oBcw.m_oStream.WriteLONG(oSettings.m_oDrawingGridVerticalSpacing->m_oVal->ToTwips());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if ((oSettings.m_oDisplayHorizontalDrawingGridEvery.IsInit()) && (oSettings.m_oDisplayHorizontalDrawingGridEvery->m_oVal.IsInit()))
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::DisplayHorizontalDrawingGridEvery);
+		m_oBcw.m_oStream.WriteLONG(*oSettings.m_oDisplayHorizontalDrawingGridEvery->m_oVal);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if ((oSettings.m_oDisplayVerticalDrawingGridEvery.IsInit()) && (oSettings.m_oDisplayVerticalDrawingGridEvery->m_oVal.IsInit()))
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::DisplayVerticalDrawingGridEvery);
+		m_oBcw.m_oStream.WriteLONG(*oSettings.m_oDisplayVerticalDrawingGridEvery->m_oVal);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 };

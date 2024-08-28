@@ -32,6 +32,8 @@
 
 #include "PdfAnnot.h"
 #include "RendererOutputDev.h"
+#include "Adaptors.h"
+
 #include "../lib/xpdf/TextString.h"
 #include "../lib/xpdf/Link.h"
 #include "../lib/xpdf/Annot.h"
@@ -1844,7 +1846,10 @@ CAnnotTextMarkup::CAnnotTextMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageI
 	oObj.free();
 
 	if (sType == "Highlight")
+	{
 		m_nSubtype = 8;
+		m_unAFlags &= ~(1 << 6);
+	}
 	else if (sType == "Underline")
 		m_nSubtype = 9;
 	else if (sType == "Squiggly")
@@ -2439,6 +2444,7 @@ void CAnnots::getParents(XRef* xref, Object* oFieldRef)
 			TextString* s = new TextString(oOptJ.getString());
 			pAnnotParent->arrOpt.push_back(NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength()));
 			delete s;
+			oOptJ.free();
 		}
 		if (!pAnnotParent->arrOpt.empty())
 			pAnnotParent->unFlags |= (1 << 6);
@@ -2455,6 +2461,8 @@ void CAnnots::getParents(XRef* xref, Object* oFieldRef)
 		getParents(xref, &oParentRefObj);
 	}
 	oParentRefObj.free();
+
+	oField.free();
 }
 
 //------------------------------------------------------------------------

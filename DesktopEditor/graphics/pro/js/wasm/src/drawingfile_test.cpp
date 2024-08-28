@@ -884,7 +884,6 @@ void ReadInteractiveFormsFonts(CGraphicsFileDrawing* pGrFile, int nType)
 
 int main(int argc, char* argv[])
 {
-
 	// CHECK SYSTEM FONTS
 	CApplicationFontsWorker oWorker;
 	oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
@@ -972,8 +971,6 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	free(pInfo);
-
 	// CMAP
 	BYTE* pCMapData = NULL;
 	if (IsNeedCMap(pGrFile))
@@ -985,23 +982,32 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	// RASTER
-	if (true && nPagesCount > 0)
+	int i = nTestPage;
+	for (int i = 0; i < nPagesCount; ++i)
 	{
-		BYTE* res = NULL;
-		res = GetPixmap(pGrFile, nTestPage, nWidth, nHeight, 0xFFFFFF);
+		// RASTER
+		if (true)
+		{
+			nWidth  = READ_INT(pInfo + i * 16 + 12);
+			nHeight = READ_INT(pInfo + i * 16 + 16);
 
-		CBgraFrame oFrame;
-		oFrame.put_Data(res);
-		oFrame.put_Width(nWidth);
-		oFrame.put_Height(nHeight);
-		oFrame.put_Stride(4 * nWidth);
-		oFrame.put_IsRGBA(true);
-		oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
-		oFrame.ClearNoAttack();
+			BYTE* res = NULL;
+			res = GetPixmap(pGrFile, i, nWidth, nHeight, 0xFFFFFF);
 
-		RELEASEARRAYOBJECTS(res);
+			CBgraFrame oFrame;
+			oFrame.put_Data(res);
+			oFrame.put_Width(nWidth);
+			oFrame.put_Height(nHeight);
+			oFrame.put_Stride(4 * nWidth);
+			oFrame.put_IsRGBA(true);
+			oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res/res" + std::to_wstring(i) + L".png", _CXIMAGE_FORMAT_PNG);
+			oFrame.ClearNoAttack();
+
+			RELEASEARRAYOBJECTS(res);
+		}
 	}
+
+	free(pInfo);
 
 	// LINKS
 	if (false && nPagesCount > 0)
@@ -1078,7 +1084,7 @@ int main(int argc, char* argv[])
 	}
 
 	// INTERACTIVE FORMS
-	if (true)
+	if (false)
 	{
 		ReadInteractiveFormsFonts(pGrFile, 1);
 		ReadInteractiveFormsFonts(pGrFile, 2);
@@ -1193,7 +1199,7 @@ int main(int argc, char* argv[])
 	}
 
 	// ANNOTS
-	if (true)
+	if (false)
 	{
 		BYTE* pAnnots = GetAnnotationsInfo(pGrFile, -1);
 		nLength = READ_INT(pAnnots);
@@ -1796,6 +1802,7 @@ int main(int argc, char* argv[])
 	}
 
 	Close(pGrFile);
+	RELEASEARRAYOBJECTS(pFileData);
 	RELEASEARRAYOBJECTS(pCMapData);
 
 	return 0;

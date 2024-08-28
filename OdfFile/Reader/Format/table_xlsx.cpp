@@ -193,7 +193,9 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 					{
 						//std::wstring str_spans = std::to_wstring(Context.get_table_context().state()->group_row_.count);
 						//str_spans = str_spans + L":";
-						std::wstring str_spans = L"1:" + std::to_wstring(Context.get_table_context().columns_count());
+						int columns = Context.get_table_context().columns_count();
+						if (columns > 0x4000) columns = 0x4000;
+						std::wstring str_spans = L"1:" + std::to_wstring(columns);
 						ht = L"";
 
 						CP_XML_ATTR(L"collapsed", Context.get_table_context().state()->group_rows_.back());
@@ -990,8 +992,8 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	for (unsigned int r = 0; r < attlist_.table_number_columns_repeated_; ++r)
     {
-        Context.start_table_cell (	formula,	attlist_extra_.table_number_columns_spanned_	- 1 ,
-												attlist_extra_.table_number_rows_spanned_		- 1	);
+        Context.start_table_cell (	attlist_extra_.table_number_columns_spanned_	- 1 ,
+									attlist_extra_.table_number_rows_spanned_		- 1	);
 		if (is_style_visible)
 			Context.set_current_cell_style_id(xfId_last_set);
 //---------------------------------------------------------------------------------------------------------	

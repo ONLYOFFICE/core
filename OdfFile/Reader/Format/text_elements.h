@@ -179,6 +179,7 @@ private:
 
     std::wstring				style_name_;
     _CP_OPT(bool)				continue_numbering_;
+    _CP_OPT(std::wstring)		continue_list_;
 
 	office_element_ptr          list_header_;
     office_element_ptr_array    list_items_;

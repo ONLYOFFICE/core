@@ -151,8 +151,8 @@ namespace NSWasm
 			BYTE* pDataUtf8 = NULL;
 			LONG lDataUtf8 = 0;
 			NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sStr.c_str(), (LONG)sStr.length(), pDataUtf8, lDataUtf8);
-
 			WriteString(pDataUtf8, (unsigned int)lDataUtf8);
+			RELEASEARRAYOBJECTS(pDataUtf8);
 		}
 		void Write(BYTE* value, unsigned int len)
 		{

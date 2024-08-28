@@ -36,24 +36,24 @@ namespace DocFileFormat
 {
 	FormattedDiskPageCHPX::~FormattedDiskPageCHPX()
 	{
-		RELEASEARRAYOBJECTS( rgfc );
-		RELEASEARRAYOBJECTS( rgb );
+		RELEASEARRAYOBJECTS(rgfc);
+		RELEASEARRAYOBJECTS(rgb);
 
-		if ( grpchpx != NULL )
+		if (grpchpx != NULL)
 		{
-			for ( unsigned int i = 0; i < grpchpxSize; i++ )
+			for (unsigned int i = 0; i < grpchpxSize; i++)
 			{
-				RELEASEOBJECT( grpchpx[i] );
+				RELEASEOBJECT(grpchpx[i]);
 			}
 
-			RELEASEARRAYOBJECTS( grpchpx );
+			RELEASEARRAYOBJECTS(grpchpx);
 		}
 	}
 
 	/*========================================================================================================*/
 
-	FormattedDiskPageCHPX::FormattedDiskPageCHPX( POLE::Stream* wordStream, int offset, int nWordVersion ):
-																FormattedDiskPage(), rgb(NULL), grpchpxSize(0), grpchpx(NULL) 
+	FormattedDiskPageCHPX::FormattedDiskPageCHPX(POLE::Stream* wordStream, int offset, int nWordVersion) :
+		FormattedDiskPage(), rgb(NULL), grpchpxSize(0), grpchpx(NULL)
 	{
 		Type = Character;
 		WordStream = wordStream;
@@ -62,8 +62,8 @@ namespace DocFileFormat
 		unsigned char* bytes = NULL;
 		bytes = new unsigned char[512];
 
-		WordStream->seek( offset);
-		WordStream->read( bytes, 512 );
+		WordStream->seek(offset);
+		WordStream->read(bytes, 512);
 
 		//get the count first
 		crun = bytes[511];
@@ -74,28 +74,28 @@ namespace DocFileFormat
 
 		int j = 0;
 
-		for ( unsigned int i = 0; i < rgfcSize; i++ )
+		for (unsigned int i = 0; i < rgfcSize; i++)
 		{
-			rgfc[i] = FormatUtils::BytesToInt32( bytes, j, 512 );
+			rgfc[i] = FormatUtils::BytesToInt32(bytes, j, 512);
 			j += 4;
 		}
 
-		grpchpxSize		= crun;
-		rgb				= new unsigned char[crun];
-		grpchpx			= new CharacterPropertyExceptions*[grpchpxSize];
+		grpchpxSize = crun;
+		rgb = new unsigned char[crun];
+		grpchpx = new CharacterPropertyExceptions * [grpchpxSize];
 
-		j = 4 * ( crun + 1 );
+		j = 4 * (crun + 1);
 
 		unsigned char* chpx = NULL;
 
-		for ( int i = 0; i < crun; i++ )
+		for (int i = 0; i < crun; i++)
 		{
 			//fill the rgb array
 			unsigned char wordOffset = bytes[j];
 			rgb[i] = wordOffset;
 			j++;
 
-			if ( wordOffset != 0 )
+			if (wordOffset != 0)
 			{
 				//read first unsigned char of CHPX
 				//it's the count of bytes
@@ -103,12 +103,12 @@ namespace DocFileFormat
 
 				//read the bytes of chpx
 				chpx = new unsigned char[cb];
-				memcpy( chpx, ( bytes + (wordOffset * 2) + 1 ), cb );
+				memcpy(chpx, (bytes + (wordOffset * 2) + 1), cb);
 
 				//parse CHPX and fill grpchpx
-				grpchpx[i] = new CharacterPropertyExceptions( chpx, cb, nWordVersion);
+				grpchpx[i] = new CharacterPropertyExceptions(chpx, cb, nWordVersion);
 
-				RELEASEARRAYOBJECTS( chpx );
+				RELEASEARRAYOBJECTS(chpx);
 			}
 			else
 			{
@@ -117,18 +117,20 @@ namespace DocFileFormat
 			}
 		}
 
-		RELEASEARRAYOBJECTS( bytes );
+		RELEASEARRAYOBJECTS(bytes);
 	}
 
 	/*========================================================================================================*/
 
 	/// Parses the 0Table (or 1Table) for FKP _entries containing CHPX
-	std::vector<FormattedDiskPageCHPX*>* FormattedDiskPageCHPX::GetAllCHPXFKPs( FileInformationBlock* fib, POLE::Stream* wordStream, POLE::Stream* tableStream )
+	std::vector<FormattedDiskPageCHPX*>* FormattedDiskPageCHPX::GetAllCHPXFKPs(FileInformationBlock* fib, POLE::Stream* wordStream, POLE::Stream* tableStream)
 	{
 		std::vector<FormattedDiskPageCHPX*>* CHPXlist = new std::vector<FormattedDiskPageCHPX*>();
 
-		//get bintable for CHPX
-		unsigned char* binTableChpx = new unsigned char[fib->m_FibWord97.lcbPlcfBteChpx];
+		if ((fib->m_FibWord97.lcbPlcfBteChpx < 4 && fib->m_nWordVersion == 0) || fib->m_FibWord97.lcbPlcfBteChpx < 8) return CHPXlist;
+
+	//get bintable for CHPX
+		unsigned char* binTableChpx = new unsigned char[fib->m_FibWord97.lcbPlcfBteChpx + 1]; 
 
 		if (tableStream)
 		{
@@ -139,7 +141,7 @@ namespace DocFileFormat
 
 		if (fib->m_nWordVersion > 0)
 		{
-			int				n		= ( ( (int)fib->m_FibWord97.lcbPlcfBteChpx - 8 ) / 6 ) + 1;
+			int n = ( ( (int)fib->m_FibWord97.lcbPlcfBteChpx - 8 ) / 6 ) + 1;
 	
 			unsigned int	first	= FormatUtils::BytesToInt32(binTableChpx, 0, fib->m_FibWord97.lcbPlcfBteChpx );
 			unsigned int	last	= FormatUtils::BytesToInt32(binTableChpx, 4, fib->m_FibWord97.lcbPlcfBteChpx );

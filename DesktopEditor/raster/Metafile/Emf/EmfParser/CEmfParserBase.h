@@ -11,14 +11,39 @@
 
 #include "../EmfInterpretator/CEmfInterpretatorBase.h"
 
+
+#if defined(DrawText)
+#undef DrawText
+#endif
+
+#define PRINT_LOG(text)     do {} while(false)
+#define GO_DOWN_LEVEL_BELOW do {} while (false)
+#define GO_UP_LEVEL         do {} while (false)
+
 #ifdef _DEBUG
 #include <iostream>
 #include  <algorithm>
 #include <cstdlib>
-#endif
 
-#if defined(DrawText)
-#undef DrawText
+#define LOG_EMF_RECORDS 0
+
+#ifdef LOG_EMF_RECORDS
+	#if 1 == LOG_EMF_RECORDS
+		#define PRINTING_EMF_RECORDS      1
+		#define PRINTING_EMF_PLUS_RECORDS 1
+
+		extern unsigned int unFileLevel;
+
+		#define GO_DOWN_LEVEL_BELOW \
+			std::wcout << L"LEVEL [" << unFileLevel << L"] -> [" << --::unFileLevel << L"]" << std::endl
+
+		#define GO_UP_LEVEL \
+			std::wcout << L"LEVEL [" << unFileLevel << L"] -> [" << ++::unFileLevel << L"]" << std::endl
+
+		#define PRINT_LOG(text) \
+			std::wcout << L"LEVEL [" << unFileLevel << L"] [LOG] " << text << std::endl
+	#endif
+#endif
 #endif
 
 namespace MetaFile
@@ -158,6 +183,9 @@ namespace MetaFile
 		virtual bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) = 0;
 
 		TPointL GetStartPointForArc(const TRectL &oBox, double dStartAngle);
+
+		void SaveDC();
+		void RestoreDC(int nIndex);
 
 		void HANDLE_EMR_HEADER(TEmfHeader& oTEmfHeader);
 		void HANDLE_EMR_ALPHABLEND(TEmfAlphaBlend& oTEmfAlphaBlend);

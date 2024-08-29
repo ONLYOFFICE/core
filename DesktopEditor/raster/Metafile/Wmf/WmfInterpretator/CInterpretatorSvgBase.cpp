@@ -494,6 +494,7 @@ namespace MetaFile
 			                               {L"fill",   CalculateColor(pBuffer[2], pBuffer[1], pBuffer[0], 255)}};
 
 			AddTransform(arAttributes, &oTransform);
+			AddClip();
 
 			WriteNode(L"rect", arAttributes);
 
@@ -548,7 +549,9 @@ namespace MetaFile
 
 	void CInterpretatorSvgBase::ResetClip()
 	{
+		CloseClip();
 		m_oClip.Reset();
+		m_bUpdatedClip = false;
 	}
 
 	void CInterpretatorSvgBase::IntersectClip(const TRectD &oClip)
@@ -562,7 +565,7 @@ namespace MetaFile
 
 		pTransform->Apply(dLeft,  dTop);
 		pTransform->Apply(dRight, dBottom);
-		
+
 		const std::wstring wsId    = L"INTERSECTCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
 		const std::wstring wsValue = L"<rect x=\"" + ConvertToWString(dLeft, 0) + L"\" y=\"" + ConvertToWString(dTop, 0) + L"\" width=\"" + ConvertToWString(dRight - dLeft, 0) + L"\" height=\"" + ConvertToWString(dBottom - dTop, 0) + L"\"/>";
 

@@ -88,75 +88,93 @@
 
 #define MAX_PICTURE_SIZE 2000.
 
+#define PRINT_EMF_PLUS_RECORD(type, size) do {} while(false)
+
+#ifdef _DEBUG
+	#ifdef LOG_EMF_RECORDS
+	#if 1 == LOG_EMF_RECORDS
+	#ifdef PRINTING_EMF_PLUS_RECORDS
+	#if 1 == PRINTING_EMF_PLUS_RECORDS
+		#include <iostream>
+
+		static std::map<unsigned short, std::wstring> mActionNamesEmfPlus =
+		{
+			{0x4035, L"EMRPLUS_OFFSETCLIP"},
+			{0x4031, L"EMRPLUS_RESETCLIP"},
+			{0x4033, L"EMFPLUS_SETCLIPPATH"},
+			{0x4032, L"EMFPLUS_SETCLIPRECT"},
+			{0x4034, L"EMFPLUS_SETCLIPREGION"},
+
+			{0x4003, L"EMFPLUS_COMMENT"},
+
+			{0x4002, L"EMFPLUS_ENDOFFILE"},
+			{0x4004, L"EMFPLUS_GETDC"},
+			{0x4001, L"EMFPLUS_HEADER"},
+
+			{0x4009, L"EMFPLUS_CLEAR"},
+			{0x4012, L"EMFPLUS_DRAWARC"},
+			{0x4019, L"EMFPLUS_DRAWBEZIERS"},
+			{0x4017, L"EMFPLUS_DRAWCLOSEDCURVE"},
+			{0x4018, L"EMFPLUS_DRAWCURVE"},
+			{0x4036, L"EMFPLUS_DRAWDRIVERSTRING"},
+			{0x400F, L"EMFPLUS_DRAWELLIPSE"},
+			{0x401A, L"EMFPLUS_DRAWIMAGE"},
+			{0x401B, L"EMFPLUS_DRAWIMAGEPOINTS"},
+			{0x400D, L"EMFPLUS_DRAWLINES"},
+			{0x4015, L"EMFPLUS_DRAWPATH"},
+			{0x4011, L"EMFPLUS_DRAWPIE"},
+			{0x400B, L"EMFPLUS_DRAWRECTS"},
+			{0x401C, L"EMFPLUS_DRAWSTRING"},
+			{0x4016, L"EMFPLUS_FILLCLOSEDCURVE"},
+			{0x400E, L"EMFPLUS_FILLELLIPSE"},
+			{0x4014, L"EMFPLUS_FILLPATH"},
+			{0x4010, L"EMFPLUS_FILLPIE"},
+			{0x400C, L"EMFPLUS_FILLPOLYGON"},
+			{0x400A, L"EMFPLUS_FILLRECTS"},
+			{0x4013, L"EMFPLUS_FILLREGION"},
+
+			{0x4008, L"EMFPLUS_OBJECT"},
+			{0x4038, L"EMFPLUS_SERIALIZABLEOBJECT"},
+
+			{0x401E, L"EMFPLUS_SETANTIALIASMODE"},
+			{0x4023, L"EMFPLUS_SETCOMPOSITINGMODE"},
+			{0x4024, L"EMFPLUS_SETCOMPOSITINGQUALITY"},
+			{0x4021, L"EMFPLUS_SETINTERPOLATIONMODE"},
+			{0x4022, L"EMFPLUS_SETPIXELOFFSETMODE"},
+			{0x401D, L"EMFPLUS_SETRENDERINGORIGIN"},
+			{0x4020, L"EMFPLUS_SETTEXTCONTRAST"},
+			{0x401F, L"EMFPLUS_SETTEXTRENDERINGHINT"},
+
+			{0x4027, L"EMFPLUS_BEGINCONTAINER"},
+			{0x4028, L"EMFPLUS_BEGINCONTAINERNOPARAMS"},
+			{0x4029, L"EMFPLUS_ENDCONTAINER"},
+			{0x4026, L"EMFPLUS_RESTORE"},
+			{0x4025, L"EMFPLUS_SAVE"},
+
+			{0x403A, L"EMFPLUS_SETTSCLIP"},
+			{0x4039, L"EMFPLUS_SETTSGRAPHICS"},
+
+			{0x402C, L"EMFPLUS_MULTIPLYWORLDTRANSFORM"},
+			{0x402B, L"EMFPLUS_RESETWORLDTRANSFORM"},
+			{0x402F, L"EMFPLUS_ROTATEWORLDTRANSFORM"},
+			{0x402E, L"EMFPLUS_SCALEWORLDTRANSFORM"},
+			{0x4030, L"EMFPLUS_SETPAGETRANSFORM"},
+			{0x402A, L"EMFPLUS_SETWORLDTRANSFORM"},
+			{0x402D, L"EMFPLUS_TRANSLATEWORLDTRANSFORM"}
+		};
+
+		#define PRINT_EMF_PLUS_RECORD(type, size) \
+			std::wcout << L"LEVEL [" << unFileLevel << L"] EMF_PLUS_RECORD: " << mActionNamesEmfPlus[unShType] << L" {DataSize = " << size << L"}" << std::endl
+	#endif
+	#endif
+	#endif
+	#endif
+#endif
+
 namespace MetaFile
-{	static std::map<unsigned short, std::wstring> ActionNamesEmfPlus =
-	{
-		{0x4035, L"EMRPLUS_OFFSETCLIP"},
-		{0x4031, L"EMRPLUS_RESETCLIP"},
-		{0x4033, L"EMFPLUS_SETCLIPPATH"},
-		{0x4032, L"EMFPLUS_SETCLIPRECT"},
-		{0x4034, L"EMFPLUS_SETCLIPREGION"},
-
-		{0x4003, L"EMFPLUS_COMMENT"},
-
-		{0x4002, L"EMFPLUS_ENDOFFILE"},
-		{0x4004, L"EMFPLUS_GETDC"},
-		{0x4001, L"EMFPLUS_HEADER"},
-
-		{0x4009, L"EMFPLUS_CLEAR"},
-		{0x4012, L"EMFPLUS_DRAWARC"},
-		{0x4019, L"EMFPLUS_DRAWBEZIERS"},
-		{0x4017, L"EMFPLUS_DRAWCLOSEDCURVE"},
-		{0x4018, L"EMFPLUS_DRAWCURVE"},
-		{0x4036, L"EMFPLUS_DRAWDRIVERSTRING"},
-		{0x400F, L"EMFPLUS_DRAWELLIPSE"},
-		{0x401A, L"EMFPLUS_DRAWIMAGE"},
-		{0x401B, L"EMFPLUS_DRAWIMAGEPOINTS"},
-		{0x400D, L"EMFPLUS_DRAWLINES"},
-		{0x4015, L"EMFPLUS_DRAWPATH"},
-		{0x4011, L"EMFPLUS_DRAWPIE"},
-		{0x400B, L"EMFPLUS_DRAWRECTS"},
-		{0x401C, L"EMFPLUS_DRAWSTRING"},
-		{0x4016, L"EMFPLUS_FILLCLOSEDCURVE"},
-		{0x400E, L"EMFPLUS_FILLELLIPSE"},
-		{0x4014, L"EMFPLUS_FILLPATH"},
-		{0x4010, L"EMFPLUS_FILLPIE"},
-		{0x400C, L"EMFPLUS_FILLPOLYGON"},
-		{0x400A, L"EMFPLUS_FILLRECTS"},
-		{0x4013, L"EMFPLUS_FILLREGION"},
-
-		{0x4008, L"EMFPLUS_OBJECT"},
-		{0x4038, L"EMFPLUS_SERIALIZABLEOBJECT"},
-
-		{0x401E, L"EMFPLUS_SETANTIALIASMODE"},
-		{0x4023, L"EMFPLUS_SETCOMPOSITINGMODE"},
-		{0x4024, L"EMFPLUS_SETCOMPOSITINGQUALITY"},
-		{0x4021, L"EMFPLUS_SETINTERPOLATIONMODE"},
-		{0x4022, L"EMFPLUS_SETPIXELOFFSETMODE"},
-		{0x401D, L"EMFPLUS_SETRENDERINGORIGIN"},
-		{0x4020, L"EMFPLUS_SETTEXTCONTRAST"},
-		{0x401F, L"EMFPLUS_SETTEXTRENDERINGHINT"},
-
-		{0x4027, L"EMFPLUS_BEGINCONTAINER"},
-		{0x4028, L"EMFPLUS_BEGINCONTAINERNOPARAMS"},
-		{0x4029, L"EMFPLUS_ENDCONTAINER"},
-		{0x4026, L"EMFPLUS_RESTORE"},
-		{0x4025, L"EMFPLUS_SAVE"},
-
-		{0x403A, L"EMFPLUS_SETTSCLIP"},
-		{0x4039, L"EMFPLUS_SETTSGRAPHICS"},
-
-		{0x402C, L"EMFPLUS_MULTIPLYWORLDTRANSFORM"},
-		{0x402B, L"EMFPLUS_RESETWORLDTRANSFORM"},
-		{0x402F, L"EMFPLUS_ROTATEWORLDTRANSFORM"},
-		{0x402E, L"EMFPLUS_SCALEWORLDTRANSFORM"},
-		{0x4030, L"EMFPLUS_SETPAGETRANSFORM"},
-		{0x402A, L"EMFPLUS_SETWORLDTRANSFORM"},
-		{0x402D, L"EMFPLUS_TRANSLATEWORLDTRANSFORM"}
-	};
-
+{
 	CEmfPlusParser::CEmfPlusParser(CEmfInterpretatorBase *pEmfInterpretator, const TEmfHeader& oHeader)
-		: m_bBanEmfProcessing(false),
+		: m_bBanEmfProcessing(true),
 		  m_unLogicalDpiX(96),
 		  m_unLogicalDpiY(96),
 		  m_dUnitKoef(1)
@@ -220,6 +238,9 @@ namespace MetaFile
 		unsigned short unShType, unShFlags;
 		unsigned int unSize;
 
+		if (NULL != m_pInterpretator)
+			GO_UP_LEVEL;
+
 		do
 		{
 			if (m_bEof)
@@ -234,11 +255,17 @@ namespace MetaFile
 			m_oStream >> unSize;
 			m_oStream >> m_ulRecordSize;
 
+			if (unSize < 12 || unSize > m_oStream.CanRead() || m_ulRecordSize > (unSize - 12))
+				break;
+
 			m_oStream.SetCurrentBlockSize(m_ulRecordSize);
 
 			unsigned int unRecordPos = m_oStream.Tell();
 
-			LOGGING(ActionNamesEmfPlus[unShType] << L"  DataSize = " << m_ulRecordSize)
+			if (NULL != m_pInterpretator)
+				PRINT_EMF_PLUS_RECORD(unShType, m_ulRecordSize);
+
+			m_bBanEmfProcessing = true;
 
 			switch (unShType)
 			{
@@ -318,7 +345,8 @@ namespace MetaFile
 			int nNeedSkip = (unRecordPos + m_ulRecordSize) - m_oStream.Tell();
 			m_oStream.Skip(nNeedSkip);
 
-			LOGGING(L"Skip: " << nNeedSkip)
+			if (0 != nNeedSkip && NULL != m_pInterpretator)
+				PRINT_LOG(L"SKIP BYTES: " << nNeedSkip);
 
 			m_oStream.ClearCurrentBlockSize();
 			m_ulRecordSize = 0;
@@ -327,7 +355,8 @@ namespace MetaFile
 		if (!CheckError())
 			m_oStream.SeekToStart();
 
-		LOGGING(L"_____________________________________________________")
+		if (NULL != m_pInterpretator)
+			GO_DOWN_LEVEL_BELOW;
 	}
 
 	void CEmfPlusParser::Scan()
@@ -1005,7 +1034,7 @@ namespace MetaFile
 		else
 		{
 			std::vector<TEmfPlusPointF> arPoints    = ReadPoints<TEmfPlusPointF>(unPathPointCount);
-			std::vector<char> arPointTypes          = ReadPointTypes(unPathPointCount);
+ 			std::vector<char> arPointTypes          = ReadPointTypes(unPathPointCount);
 
 			pPath->MoveTo(arPoints[0].X, arPoints[0].Y);
 
@@ -1343,12 +1372,14 @@ namespace MetaFile
 
 	void CEmfPlusParser::UpdateMatrix(TEmfPlusXForm &oMatrix)
 	{
-		oMatrix.M11 *= m_dUnitKoef;
-		oMatrix.M12 *= m_dUnitKoef;
-		oMatrix.M21 *= m_dUnitKoef;
-		oMatrix.M22 *= m_dUnitKoef;
-		oMatrix.Dx  *= m_dUnitKoef;
-		oMatrix.Dy  *= m_dUnitKoef;
+		const double dKoef{m_dUnitKoef * (m_unLogicalDpiX / 96)};
+
+		oMatrix.M11 *= dKoef;
+		oMatrix.M12 *= dKoef;
+		oMatrix.M21 *= dKoef;
+		oMatrix.M22 *= dKoef;
+		oMatrix.Dx  *= dKoef;
+		oMatrix.Dy  *= dKoef;
 	}
 
 	bool CEmfPlusParser::SaveImage(const CEmfPlusImage &oEmfPlusImage, std::wstring &wsPathToImage)
@@ -1477,7 +1508,7 @@ namespace MetaFile
 		if (NULL == pBuffer || unSizeBuffer == 0 || arPoints.size() != 3)
 			return;
 
-		if (ImageDataTypeBitmap == pImage->GetImageDataType())
+ 		if (ImageDataTypeBitmap == pImage->GetImageDataType())
 		{
 			unsigned int unWidth, unHeigth;
 
@@ -1494,7 +1525,7 @@ namespace MetaFile
 				case MetafileDataTypeEmfPlusDual:
 				{
 					CEmfParser oParser;
-					oParser.SetOnlyEmfPlus(MetafileDataTypeEmfPlusOnly == pImage->GetMetafileType());
+					// oParser.SetOnlyEmf(true);
 					return DrawMetafile(oParser, pBuffer, unSizeBuffer, oSrcRect, arPoints);
 				}
 				case MetafileDataTypeWmf:
@@ -1539,8 +1570,7 @@ namespace MetaFile
 			const double dMaxWidth  = std::max(MAX_PICTURE_SIZE, dParentWidth);
 			const double dMaxHeight = std::max(MAX_PICTURE_SIZE, dParentHeight); 
 
-			if (dFileWidth > dMaxWidth || dFileHeight > dMaxHeight)
-				dScale *= std::min(dMaxWidth / dFileWidth, dMaxHeight / dFileHeight);
+			dScale *= std::min(dMaxWidth / dFileWidth, dMaxHeight / dFileHeight);
 
 			const int nWidth  = dFileWidth  * dScale;
 			const int nHeight = dFileHeight * dScale;
@@ -1685,15 +1715,13 @@ namespace MetaFile
 
 	void CEmfPlusParser::Read_EMFPLUS_HEADER(unsigned short unShFlags)
 	{
-		m_oStream.Skip(4); //Version
+		m_oStream.Skip(4); //Data size
 
 		unsigned int unEmfPlusFlags;
 
 		m_oStream >> unEmfPlusFlags;
 		m_oStream >> m_unLogicalDpiX;
 		m_oStream >> m_unLogicalDpiY;
-
-		m_bBanEmfProcessing = true;
 
 		if (NULL != m_pInterpretator)
 		{
@@ -1711,8 +1739,6 @@ namespace MetaFile
 
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMFPLUS_CLEAR(oARGB);
-
-		m_bBanEmfProcessing = true;
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_DRAWARC(unsigned short unShFlags)
@@ -1721,8 +1747,6 @@ namespace MetaFile
 			Read_EMFPLUS_DRAWARC_BASE<TEmfPlusRect>(unShFlags);
 		else
 			Read_EMFPLUS_DRAWARC_BASE<TEmfPlusRectF>(unShFlags);
-
-		m_bBanEmfProcessing = true;
 	}
 
 	template<typename T>
@@ -1781,8 +1805,6 @@ namespace MetaFile
 			//Оба флага не определены
 			Read_EMFPLUS_DRAWBEZIERS_BASE<TEmfPlusPointF>(unShFlags); // абсолютное расположение
 		}
-
-		m_bBanEmfProcessing = true;
 	}
 
 	template<typename T>
@@ -1842,8 +1864,6 @@ namespace MetaFile
 			//Оба флага не определены
 			Read_EMFPLUS_DRAWCLOSEDCURVE_BASE<TEmfPlusPointF>(unShFlags); // абсолютное расположение с 32-разрядными координатами.
 		}
-
-		m_bBanEmfProcessing = true;
 	}
 
 	template<typename T>
@@ -1896,8 +1916,6 @@ namespace MetaFile
 			Read_EMFPLUS_DRAWCURVE_BASE<TEmfPlusPoint>(unShFlags);
 		else
 			Read_EMFPLUS_DRAWCURVE_BASE<TEmfPlusPointF>(unShFlags);
-
-		m_bBanEmfProcessing = true;
 	}
 
 	template<typename T>
@@ -1974,8 +1992,6 @@ namespace MetaFile
 			TEmfPlusXForm oMatrix;
 
 			m_oStream >> oMatrix;
-
-			m_bBanEmfProcessing = true;
 		}
 		//----------
 		if (NULL == m_pInterpretator || wsString.length() != arGlyphPos.size())
@@ -2039,8 +2055,6 @@ namespace MetaFile
 		}
 
 		m_pDC->RemoveFont(pFont);
-
-		m_bBanEmfProcessing = true;
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_DRAWELLIPSE(unsigned short unShFlags)
@@ -2049,8 +2063,6 @@ namespace MetaFile
 			Read_EMFPLUS_DRAWELLIPSE_BASE<TEmfPlusRect>(unShFlags);
 		else
 			Read_EMFPLUS_DRAWELLIPSE_BASE<TEmfPlusRectF>(unShFlags);
-
-		m_bBanEmfProcessing = true;
 	}
 
 	template<typename T>
@@ -2094,8 +2106,6 @@ namespace MetaFile
 			Read_EMFPLUS_DRAWIMAGE_BASE<TEmfPlusRect>(unShFlags);
 		else
 			Read_EMFPLUS_DRAWIMAGE_BASE<TEmfPlusRectF>(unShFlags);
-
-		m_bBanEmfProcessing = true;
 	}
 
 	template<typename T>
@@ -2142,8 +2152,6 @@ namespace MetaFile
 			//Оба флага не определены
 			Read_EMFPLUS_DRAWIMAGEPOINTS_BASE<TEmfPlusPointF>(unShFlags); // абсолютное расположение с 32-разрядными координатами с плавующей запятой
 		}
-
-		m_bBanEmfProcessing = true;
 	}
 
 	template<typename T>
@@ -2159,7 +2167,7 @@ namespace MetaFile
 		m_oStream >> oSrcRect;
 		m_oStream >> unCount;
 
-		if (nSrcUnit != UnitTypePixel && unCount != 3)
+		if (nSrcUnit != UnitTypePixel || unCount != 3)
 			return;
 
 		std::vector<T> arPoints(unCount);
@@ -2187,8 +2195,6 @@ namespace MetaFile
 			//Оба флага не определены
 			Read_EMFPLUS_DRAWLINES_BASE<TEmfPlusPointF>(unShFlags); // абсолютное расположение с 32-разрядными координатами с плавующей запятой
 		}
-
-		m_bBanEmfProcessing = true;
 	}
 
 	template<typename T>
@@ -2225,8 +2231,6 @@ namespace MetaFile
 			m_pDC->RemoveBrush(pEmfPlusPen->pBrush);
 
 		m_pDC->RemovePen(pEmfPlusPen);
-
-		m_bBanEmfProcessing = true;
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_DRAWPATH(unsigned short unShFlags)
@@ -2265,8 +2269,6 @@ namespace MetaFile
 
 			m_pDC->RemovePen(pEmfPlusPen);
 		}
-
-		m_bBanEmfProcessing = true;
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_DRAWPIE(unsigned short unShFlags)
@@ -2275,8 +2277,6 @@ namespace MetaFile
 			Read_EMFPLUS_DRAWPIE_BASE<TEmfPlusRect>(unShFlags);
 		else
 			Read_EMFPLUS_DRAWPIE_BASE<TEmfPlusRectF>(unShFlags);
-
-		m_bBanEmfProcessing = true;
 	}
 
 	template<typename T>
@@ -2302,8 +2302,6 @@ namespace MetaFile
 			Read_EMFPLUS_DRAWRECTS_BASE<TEmfPlusRect>(unShFlags);
 		else
 			Read_EMFPLUS_DRAWRECTS_BASE<TEmfPlusRectF>(unShFlags);
-
-		m_bBanEmfProcessing = true;
 	}
 
 	template<typename T>
@@ -2467,8 +2465,6 @@ namespace MetaFile
 		m_pDC->SetTextAlign(unOldTextAlign);
 
 		m_pDC->RemoveFont(pFont);
-
-		m_bBanEmfProcessing = true;
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_FILLCLOSEDCURVE(unsigned short unShFlags)
@@ -2488,8 +2484,6 @@ namespace MetaFile
 			//Оба флага не определены
 			Read_EMFPLUS_FILLCLOSEDCURVE_BASE<TEmfPlusPointF>(unShFlags); // абсолютное расположение с 32-разрядными координатами с плавующей запятой
 		}
-
-		m_bBanEmfProcessing = true;
 	}
 
 	template<typename T>
@@ -2518,8 +2512,6 @@ namespace MetaFile
 			Read_EMFPLUS_FILLELLIPSE_BASE<TEmfPlusRect>(unShFlags);
 		else
 			Read_EMFPLUS_FILLELLIPSE_BASE<TEmfPlusRectF>(unShFlags);
-
-		m_bBanEmfProcessing = true;
 	}
 
 	template<typename T>
@@ -2622,8 +2614,6 @@ namespace MetaFile
 
 			m_pDC->RemoveBrush(pBrush);
 		}
-
-		m_bBanEmfProcessing = true;
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_FILLPIE(unsigned short unShFlags)
@@ -2632,8 +2622,6 @@ namespace MetaFile
 			Read_EMFPLUS_FILLPIE_BASE<TEmfPlusRect>(unShFlags);
 		else
 			Read_EMFPLUS_FILLPIE_BASE<TEmfPlusRectF>(unShFlags);
-
-		m_bBanEmfProcessing = true;
 	}
 
 	template<typename T>
@@ -2671,8 +2659,6 @@ namespace MetaFile
 			//Оба флага не определены
 			Read_EMFPLUS_FILLPOLYGON_BASE<TEmfPlusPointF>(unShFlags); // абсолютное расположение с 32-разрядными координатами с плавующей запятой
 		}
-
-		m_bBanEmfProcessing = true;
 	}
 
 	template<typename T>
@@ -2746,8 +2732,6 @@ namespace MetaFile
 			Read_EMFPLUS_FILLRECTS_BASE<TEmfPlusRect>(unShFlags);
 		else
 			Read_EMFPLUS_FILLRECTS_BASE<TEmfPlusRectF>(unShFlags);
-
-		m_bBanEmfProcessing = true;
 	}
 
 	template<typename T>
@@ -2815,7 +2799,6 @@ namespace MetaFile
 		m_oStream >> unBrushId;
 
 		//TODO: реализовать
-		m_bBanEmfProcessing = true;
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_OBJECT(unsigned short unShFlags)
@@ -2828,7 +2811,7 @@ namespace MetaFile
 		case ObjectTypeInvalid: return;
 		case ObjectTypeBrush:
 		{
-			LOGGING(L"Object Brush with index: " << shObjectIndex)
+			PRINT_LOG(L"Object Brush with index: " << shObjectIndex);
 
 			CEmfPlusBrush *pEmfPlusBrush = ReadBrush();
 
@@ -2838,7 +2821,7 @@ namespace MetaFile
 		}
 		case ObjectTypePen:
 		{
-			LOGGING(L"Object Pen with index: " << shObjectIndex)
+			PRINT_LOG(L"Object Pen with index: " << shObjectIndex);
 
 			CEmfPlusPen *pEmfPlusPen = ReadPen();
 
@@ -2848,7 +2831,7 @@ namespace MetaFile
 		}
 		case ObjectTypePath:
 		{
-			LOGGING(L"Object Path with index: " << shObjectIndex)
+			PRINT_LOG(L"Object Path with index: " << shObjectIndex);
 
 			if ((unShFlags >>(15)) & 1)
 			{
@@ -2891,7 +2874,7 @@ namespace MetaFile
 		}
 		case ObjectTypeRegion:
 		{
-			LOGGING(L"Object Region")
+			PRINT_LOG(L"Object Region");
 
 			CEmfPlusRegion *pEmfPlusRegion = ReadRegion();
 
@@ -2901,13 +2884,14 @@ namespace MetaFile
 		}
 		case ObjectTypeImage:
 		{
-			LOGGING(L"Object Image")
+			PRINT_LOG(L"Object Image");
+
 			ReadImage(shObjectIndex, ((unShFlags >>(15)) & 1));
 			break;
 		}
 		case ObjectTypeFont:
 		{
-			LOGGING(L"Object Font with index: " << shObjectIndex)
+			PRINT_LOG(L"Object Font with index: " << shObjectIndex);
 
 			CEmfPlusFont *pFont = ReadFont();
 
@@ -2917,7 +2901,7 @@ namespace MetaFile
 		}
 		case ObjectTypeStringFormat:
 		{
-			LOGGING(L"Object String Format")
+			PRINT_LOG(L"Object String Format");
 
 			CEmfPlusStringFormat *pStringFormat = new CEmfPlusStringFormat;
 
@@ -2929,7 +2913,7 @@ namespace MetaFile
 		}
 		case ObjectTypeImageAttributes:
 		{
-			LOGGING(L"Object Image Attributes")
+			PRINT_LOG(L"Object Image Attributes");
 
 			CEmfPlusImageAttributes *pImageAttributes = new CEmfPlusImageAttributes();
 
@@ -2943,10 +2927,14 @@ namespace MetaFile
 		}
 		case ObjectTypeCustomLineCap:
 		{
-			LOGGING(L"Object Custom Line Cap")
+			PRINT_LOG(L"Object Custom Line Cap");
 			break;
 		}
-		default: return;
+		default:
+		{
+			PRINT_LOG(L"Unknown object type");
+			return;
+		}
 		}
 		//TODO: реализовать
 	}
@@ -3118,26 +3106,28 @@ namespace MetaFile
 
 	void CEmfPlusParser::Read_EMFPLUS_MULTIPLYWORLDTRANSFORM(unsigned short unShFlags)
 	{
+		m_bBanEmfProcessing = true;
+
 		TEmfPlusXForm oMatrix;
 
 		m_oStream >> oMatrix;
 
 		m_pDC->MultiplyTransform(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
 		UpdateOutputDC();
-
-		m_bBanEmfProcessing = true;
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_RESETWORLDTRANSFORM()
 	{
+		m_bBanEmfProcessing = true;
+
 		m_pDC->ResetTransform();
 		UpdateOutputDC();
-
-		m_bBanEmfProcessing = true;
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_ROTATEWORLDTRANSFORM(unsigned short unShFlags)
 	{
+		m_bBanEmfProcessing = true;
+
 		double dAngle;
 
 		m_oStream >> dAngle;
@@ -3151,12 +3141,12 @@ namespace MetaFile
 
 		m_pDC->MultiplyTransform(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
 		UpdateOutputDC();
-
-		m_bBanEmfProcessing = true;
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SCALEWORLDTRANSFORM(unsigned short unShFlags)
 	{
+		m_bBanEmfProcessing = true;
+
 		double dSx, dSy;
 
 		m_oStream >> dSx;
@@ -3166,12 +3156,12 @@ namespace MetaFile
 
 		m_pDC->MultiplyTransform(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
 		UpdateOutputDC();
-
-		m_bBanEmfProcessing = true;
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SETPAGETRANSFORM(unsigned short unShFlags)
 	{
+		m_bBanEmfProcessing = true;
+
 		short shPageUnit = ExpressValue(unShFlags, 0, 7);
 
 		m_oStream >> m_dUnitKoef;
@@ -3192,8 +3182,6 @@ namespace MetaFile
 
 		m_pDC->MultiplyTransform(oMatrix, MWT_LEFTMULTIPLY);
 		UpdateOutputDC();
-
-		m_bBanEmfProcessing = true;
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SETWORLDTRANSFORM()
@@ -3206,8 +3194,6 @@ namespace MetaFile
 
 		m_pDC->MultiplyTransform(oMatrix, MWT_SET);
 		UpdateOutputDC();
-
-		m_bBanEmfProcessing = true;
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_TRANSLATEWORLDTRANSFORM(unsigned short unShFlags)
@@ -3221,8 +3207,6 @@ namespace MetaFile
 
 		m_pDC->MultiplyTransform(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
 		UpdateOutputDC();
-
-		m_bBanEmfProcessing = true;
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_ENDOFFILE()
@@ -3231,7 +3215,6 @@ namespace MetaFile
 			m_pInterpretator->End();
 
 		m_bEof = true;
-		m_bBanEmfProcessing = false;
 
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMFPLUS_ENDOFFILE();
@@ -3247,8 +3230,6 @@ namespace MetaFile
 
 	void CEmfPlusParser::Read_EMRPLUS_OFFSETCLIP()
 	{
-		m_bBanEmfProcessing = true;
-
 		double dX, dY;
 
 		m_oStream >> dX;
@@ -3262,8 +3243,6 @@ namespace MetaFile
 
 	void CEmfPlusParser::Read_EMRPLUS_RESETCLIP()
 	{
-		m_bBanEmfProcessing = true;
-
 		m_pDC->GetClip()->Reset();
 		UpdateOutputDC();
 
@@ -3273,8 +3252,6 @@ namespace MetaFile
 
 	void CEmfPlusParser::Read_EMFPLUS_SETCLIPPATH(unsigned short unShFlags)
 	{
-		m_bBanEmfProcessing = true;
-
 		BYTE uchObjectId = ExpressValue(unShFlags, 0, 7);
 
 		CEmfPlusPath* pPath = GetPath(uchObjectId);
@@ -3293,8 +3270,6 @@ namespace MetaFile
 
 	void CEmfPlusParser::Read_EMFPLUS_SETCLIPRECT(unsigned short unShFlags)
 	{
-		m_bBanEmfProcessing = true;
-
 		short shCM = ExpressValue(unShFlags, 8, 11);
 		TEmfPlusRectF oRect;
 
@@ -3310,8 +3285,6 @@ namespace MetaFile
 
 	void CEmfPlusParser::Read_EMFPLUS_SETCLIPREGION(unsigned short unShFlags)
 	{
-		m_bBanEmfProcessing = true;
-
 		short shObjectIndex = ExpressValue(unShFlags, 0, 7);
 		short shCM = ExpressValue(unShFlags, 8, 11);
 

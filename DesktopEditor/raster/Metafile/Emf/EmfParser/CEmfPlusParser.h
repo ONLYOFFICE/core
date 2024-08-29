@@ -23,7 +23,7 @@ namespace MetaFile
 		void            Scan()                                      override;
 		USHORT          GetDpi()                                    override;
 
-		EmfParserType   GetType()				    override;
+		EmfParserType   GetType()                                   override;
 
 		void   SetStream(BYTE *pBytes, unsigned int unSize);
 		bool   GetBanEMFProcesses();

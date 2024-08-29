@@ -191,6 +191,7 @@ namespace MetaFile
 			case EMF_OBJECT_BRUSH: m_pDC->SetBrush((CEmfLogBrushEx*)pObject); break;
 			case EMF_OBJECT_FONT: m_pDC->SetFont((CEmfLogFont*)pObject); break;
 			case EMF_OBJECT_PEN: m_pDC->SetPen((CEmfLogPen*)pObject); break;
+			default: break;
 			}
 		}
 	}
@@ -222,6 +223,7 @@ namespace MetaFile
 				case EMF_OBJECT_BRUSH: m_pDC->RemoveBrush((CEmfLogBrushEx*)pObject); break;
 				case EMF_OBJECT_FONT: m_pDC->RemoveFont((CEmfLogFont*)pObject); break;
 				case EMF_OBJECT_PEN: m_pDC->RemovePen((CEmfLogPen*)pObject); break;
+				default: break;
 			}
 
 			for (std::pair<int, CEmfDC*> oElement : m_mDCs)
@@ -233,6 +235,7 @@ namespace MetaFile
 					case EMF_OBJECT_BRUSH: pDC->RemoveBrush((CEmfLogBrushEx*)pObject); break;
 					case EMF_OBJECT_FONT: pDC->RemoveFont((CEmfLogFont*)pObject); break;
 					case EMF_OBJECT_PEN: pDC->RemovePen((CEmfLogPen*)pObject); break;
+					default: break;
 				}
 			}
 

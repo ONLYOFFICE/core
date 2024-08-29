@@ -16,6 +16,14 @@
 #define GRADIENT_FILL_OP_FLAG   0x000000ff
 #endif
 
+#ifdef _DEBUG
+#ifdef LOG_EMF_RECORDS
+	#if 1 == LOG_EMF_RECORDS
+		unsigned int unFileLevel = 0;
+#endif
+#endif
+#endif
+
 namespace MetaFile
 {
 	void CEmfParserBase::ImageProcessing(const TEmfAlphaBlend &oTEmfAlphaBlend)
@@ -856,6 +864,25 @@ namespace MetaFile
 		return oStartPoint;
 	}
 
+	void CEmfParserBase::SaveDC()
+	{
+		m_oPlayer.SaveDC();
+		UpdateOutputDC();
+	}
+
+	void CEmfParserBase::RestoreDC(int nIndex)
+	{
+		if (nIndex >= 0)
+		{
+			SetError();
+			return;
+		}
+
+		m_oPlayer.RestoreDC(nIndex);
+		m_pDC = m_oPlayer.GetDC();
+		UpdateOutputDC();
+	}
+
 	void CEmfParserBase::HANDLE_EMR_HEADER(TEmfHeader &oTEmfHeader)
 	{
 		if (ENHMETA_SIGNATURE != m_oHeader.ulSignature || 0x00010000 != m_oHeader.ulVersion)
@@ -952,8 +979,7 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_SAVEDC();
 
-		m_oPlayer.SaveDC();
-		UpdateOutputDC();
+		SaveDC();
 	}
 
 	void CEmfParserBase::HANDLE_EMR_RESTOREDC(int &nIndexDC)
@@ -961,15 +987,7 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_RESTOREDC(nIndexDC);
 
-		if (nIndexDC >= 0)
-		{
-			SetError();
-			return;
-		}
-
-		m_oPlayer.RestoreDC(nIndexDC);
-		m_pDC = m_oPlayer.GetDC();
-		UpdateOutputDC();
+		RestoreDC(nIndexDC);
 	}
 
 	void CEmfParserBase::HANDLE_EMR_MODIFYWORLDTRANSFORM(TXForm &oXForm, unsigned int &unMode)
@@ -1408,9 +1426,9 @@ namespace MetaFile
 		TRectD oClipRect;
 		TranslatePoint(oClip.Left, oClip.Top, oClipRect.Left, oClipRect.Top);
 		TranslatePoint(oClip.Right, oClip.Bottom, oClipRect.Right, oClipRect.Bottom);
-		
+
 		m_pDC->GetClip()->Intersect(oClipRect);
-		
+
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_INTERSECTCLIPRECT(oClip);
 	}

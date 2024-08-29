@@ -221,7 +221,7 @@ namespace MetaFile
 	}
 
 	CEmfLogPen::CEmfLogPen()
-		: unPenStyle(PS_SOLID), unWidth(1), oColor(0, 0, 0), pStyleEntry(NULL)
+		: unPenStyle(PS_SOLID), unWidth(1), oColor(0, 0, 0), unNumStyleEntries(0), pStyleEntry(NULL)
 	{}
 
 	CEmfLogPen::~CEmfLogPen()

@@ -157,7 +157,9 @@ void BinaryCommonWriter::WriteBorder(const ComplexTypes::Word::CBorder& border)
 	{
 		if (border.m_oColor.IsInit())
 			WriteColor(c_oSerBorderType::Color, border.m_oColor.get());
+		
 		WriteThemeColor(c_oSerBorderType::ColorTheme, border.m_oColor, border.m_oThemeColor, border.m_oThemeTint, border.m_oThemeShade);
+		
 		if (border.m_oSpace.IsInit())
 		{
 			m_oStream.WriteBYTE(c_oSerBorderType::SpacePoint);
@@ -174,9 +176,16 @@ void BinaryCommonWriter::WriteBorder(const ComplexTypes::Word::CBorder& border)
 		m_oStream.WriteBYTE(c_oSerBorderType::Value);
 		m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 
-		int border_type = border.m_oVal.get().GetValue(); 
-		if (border_type > 0x0ff) border_type = 1;
-		m_oStream.WriteBYTE((BYTE)border_type); // todooo change to long type
+		switch (border.m_oVal.get().GetValue())
+		{
+			case SimpleTypes::bordervalueNone:
+			case SimpleTypes::bordervalueNil:   m_oStream.WriteBYTE(0); break;
+			default:                            m_oStream.WriteBYTE(1); break;
+		}
+		
+		m_oStream.WriteBYTE(c_oSerBorderType::ValueType);
+		m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oStream.WriteLONG(border.m_oVal.get().GetValue());
 	}
 }
 void BinaryCommonWriter::WriteTblBorders(const OOX::Logic::CTblBorders& Borders)
@@ -9546,7 +9555,10 @@ void BinaryFileWriter::WriteMainTableStart(bool bSigTable)
 	if (bSigTable)
 	{
 		//BinarySigTableWriter
-		int nCurPos = WriteTableStart(c_oSerTableTypes::Signature);
+		memset(m_oBcw.m_oStream.GetBuffer() + m_oBcw.m_oStream.GetPosition(), 0, 5 + nTableCount * nmtItemSize);
+		
+		int nCurPos = WriteTableStart(c_oSerTableTypes::Signature);		
+		
 		BinarySigTableWriter oBinarySigTableWriter(m_oParamsWriter);
 		oBinarySigTableWriter.Write();
 		WriteTableEnd(nCurPos);

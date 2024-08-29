@@ -760,7 +760,8 @@ extern int g_nCurFormatVersion;
 		Value = 3,
 		ColorTheme = 4,
 		SpacePoint = 5,
-		Size8Point = 6
+		Size8Point = 6,
+		ValueType = 7
 	};}
 	namespace c_oSerShdType{enum c_oSerShdType
 	{

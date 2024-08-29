@@ -27,6 +27,7 @@ HEADERS += \
 	docbuilder.h
 
 SOURCES += \
+	editors.cpp \
 	nativecontrol.cpp \
 	doctrenderer.cpp \
 	docbuilder.cpp \

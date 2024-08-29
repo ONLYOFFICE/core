@@ -200,7 +200,7 @@ public:
 					nMaxVirtualMemory);
 #endif
 
-#ifdef V8_VERSION_89_PLUS
+#ifdef V8_SUPPORT_SNAPSHOTS
 		create_params.snapshot_blob = startupData;
 #endif
 

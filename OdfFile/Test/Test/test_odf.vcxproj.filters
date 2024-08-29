@@ -35,6 +35,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Common\3dParty\googletest\googletest\googletest\src\gtest-all.cc" />
+    <ClCompile Include="src\tests\Test61364.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common.h">
@@ -44,5 +47,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\tests\Test57197.h" />
+    <ClInclude Include="src\tests\Test61364.h" />
   </ItemGroup>
 </Project>

@@ -87,11 +87,13 @@
     <ClCompile Include="..\..\..\Common\3dParty\googletest\googletest\googletest\src\gtest-all.cc" />
     <ClCompile Include="src\tests\Test44363.cpp" />
     <ClCompile Include="src\tests\Test57197.cpp" />
+    <ClCompile Include="src\tests\Test61364.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common.h" />
     <ClInclude Include="src\tests\Test44363.h" />
     <ClInclude Include="src\tests\Test57197.h" />
+    <ClInclude Include="src\tests\Test61364.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

@@ -1086,7 +1086,7 @@ namespace NSDoctRenderer
 
 	void CDoctrenderer::CreateSnapshots()
 	{
-#ifdef V8_VERSION_89_PLUS
+#ifdef V8_SUPPORT_SNAPSHOTS
 		std::vector<NSDoctRenderer::DoctRendererEditorType> editors;
 		editors.push_back(NSDoctRenderer::DoctRendererEditorType::WORD);
 		editors.push_back(NSDoctRenderer::DoctRendererEditorType::SLIDE);

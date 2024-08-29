@@ -265,10 +265,6 @@ String.prototype.replaceAll = function(str, newStr)\
 
 	static JSSmart<NSJSBase::CJSContext> RunEditorWithSnapshot(const DoctRendererEditorType& type, CDoctRendererConfig* config)
 	{
-#ifndef V8_VERSION_89_PLUS
-		return NULL;
-#endif
-
 #ifndef V8_SUPPORT_SNAPSHOTS
 		return NULL;
 #endif

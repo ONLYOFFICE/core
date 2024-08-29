@@ -192,7 +192,7 @@ namespace NSJSBase
 	{
 		if (m_internal->m_isolate == NULL)
 		{
-#ifdef V8_VERSION_89_PLUS
+#ifdef V8_SUPPORT_SNAPSHOTS
 			if (!snapshotPath.empty())
 			{
 				BYTE* data = NULL;
@@ -411,9 +411,9 @@ namespace NSJSBase
 
 	bool CJSContext::generateSnapshot(const std::string& script, const std::wstring& snapshotPath)
 	{
-#ifdef V8_VERSION_89_PLUS
+#ifdef V8_SUPPORT_SNAPSHOTS
 		bool result = false;
-		// snapshot creator should be in its own scope, because it handles entering, exiting and disposing the isolate
+		// Snapshot creator should be in its own scope, because it handles entering, exiting and disposing the isolate
 		v8::SnapshotCreator snapshotCreator;
 		v8::Isolate* isolate = snapshotCreator.GetIsolate();
 		{
@@ -422,8 +422,7 @@ namespace NSJSBase
 			v8::Local<v8::Context> context = v8::Context::New(isolate);
 			v8::Context::Scope context_scope(context);
 
-			// Trying to handle compile & run errors:
-			// window
+			// Handle compile & run errors
 			v8::Local<v8::Object> global = context->Global();
 			global->Set(context, v8::String::NewFromUtf8Literal(isolate, "window"), global).Check();
 			global->Set(context, v8::String::NewFromUtf8Literal(isolate, "self"), global).Check();
@@ -433,11 +432,11 @@ namespace NSJSBase
 			v8::Local<v8::String> source = v8::String::NewFromUtf8(isolate, script.c_str()).ToLocalChecked();
 			v8::Local<v8::Script> script = v8::Script::Compile(context, source).ToLocalChecked();
 
-			bool isEmpty = script->Run(context).IsEmpty();
+			script->Run(context).IsEmpty();
 			snapshotCreator.SetDefaultContext(context);
 		}
 		v8::StartupData data = snapshotCreator.CreateBlob(v8::SnapshotCreator::FunctionCodeHandling::kKeep);
-
+		// Save snapshot to file
 		NSFile::CFileBinary snapshotFile;
 		if (data.data && snapshotFile.CreateFile(snapshotPath))
 		{

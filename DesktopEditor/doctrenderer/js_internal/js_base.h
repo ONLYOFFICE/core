@@ -490,7 +490,6 @@ namespace NSJSBase
 		/**
 		 * Generate snapshot by script.
 		 * @param script The script to be executed.
-		 * @param exception The object for handling exceptions.
 		 * @param snapshotPath The path to the snapshot
 		 * @return Returns true whether a snapshot has been created.
 		 */

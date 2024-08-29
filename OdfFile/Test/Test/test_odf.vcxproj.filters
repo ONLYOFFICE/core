@@ -7,10 +7,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D:\ONLYOFFICE\core\Common\3dParty\googletest\googletest\googletest\src\gtest-all.cc">
+    <ClCompile Include="src\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Common.cpp">
@@ -31,10 +28,21 @@
     <ClCompile Include="..\..\..\OOXML\Base\Unit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\tests\Test44363.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tests\Test57197.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\3dParty\googletest\googletest\googletest\src\gtest-all.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\tests\Test44363.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tests\Test57197.h" />
   </ItemGroup>
 </Project>

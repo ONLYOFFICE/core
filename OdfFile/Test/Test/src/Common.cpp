@@ -44,6 +44,13 @@
 #include "..\..\..\..\OdfFile\Common\logging.h"
 #include "..\..\..\..\OOXML\SystemUtility\SystemUtility.h"
 
+#if defined(_WIN32) || defined (_WIN64)
+#include "windows.h"
+#include "windef.h"
+#include <shlobj.h>
+#include <Rpc.h>
+#endif
+
 
 #if defined(_WIN64)
 	#ifdef _DEBUG
@@ -103,6 +110,46 @@ boost::optional<std::wstring> get_conversion_destination_path(const std::wstring
 	}
 }
 
+std::wstring create_unique_name_with_prefix(const std::wstring& strFolderPathRoot, const std::wstring& prefix)
+{
+#if defined(_WIN32) || defined (_WIN64)
+	UUID uuid;
+	RPC_WSTR str_uuid;
+	UuidCreate(&uuid);
+	UuidToStringW(&uuid, &str_uuid);
+	std::wstring pcTemplate = strFolderPathRoot + FILE_SEPARATOR_STR + prefix + L"_";
+	pcTemplate += (wchar_t*)str_uuid;
+	RpcStringFreeW(&str_uuid);
+
+	int attemps = 10;
+	while (!CreateDirectory(pcTemplate.c_str(), nullptr))
+	{
+		UuidCreate(&uuid);
+		UuidToStringW(&uuid, &str_uuid);
+		pcTemplate = strFolderPathRoot + FILE_SEPARATOR_STR;
+		pcTemplate += (wchar_t*)str_uuid;
+		RpcStringFreeW(&str_uuid);
+		attemps--;
+
+		if (0 == attemps)
+		{
+			pcTemplate = L"";
+			break;
+		}
+	}
+	return pcTemplate;
+#else
+	std::string pcTemplate = U_TO_UTF8(strFolderPathRoot) + "/ascXXXXXX";
+	char* pcRes = mkdtemp(const_cast <char*> (pcTemplate.c_str()));
+	if (NULL == pcRes)
+		return L"";
+
+	std::string sRes = pcRes;
+	return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sRes.c_str(), (LONG)sRes.length());
+#endif
+}
+
+
 boost::optional<std::wstring> convert_odf_to_ooxml(std::wstring srcFileName)
 {
 	int nResult = 0;
@@ -115,7 +162,7 @@ boost::optional<std::wstring> convert_odf_to_ooxml(std::wstring srcFileName)
 	COfficeUtils oCOfficeUtils(NULL);
 
 	std::wstring outputDir = NSDirectory::GetFolderPath(*dstPath);
-	std::wstring dstTempPath = NSDirectory::CreateDirectoryWithUniqueName(outputDir);
+	std::wstring dstTempPath = create_unique_name_with_prefix(outputDir, NSFile::GetFileName(srcFileName));
 	std::wstring srcTempPath;
 	std::wstring srcTempPath2 = NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 
@@ -147,7 +194,8 @@ boost::optional<std::wstring> convert_odf_to_ooxml(std::wstring srcFileName)
 }
 
 ODT2DOCX_ConversionEnvironment::ODT2DOCX_ConversionEnvironment(const std::wstring& filename)
-	: mFilename(filename)
+	: mFilename(filename),
+	mDocx(nullptr)
 { }
 
 OOX::CDocx* ODT2DOCX_ConversionEnvironment::GetDocument()

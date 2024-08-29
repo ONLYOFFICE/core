@@ -273,11 +273,17 @@ void static process_list_bullet_style(oox::docx_conversion_context& Context, off
 	std::wstringstream ss;
 	style_text_properties* text_props = span_style_content->get_style_text_properties();
 
-	if (text_props->content_.fo_font_weight_->get_type() == odf_types::font_weight::WBold)
-		ss << "<w:b/>";
-	if (text_props->content_.fo_font_style_->get_type() == odf_types::font_style::Italic)
-		ss << "<w:i/>";
+	if (text_props)
+	{
+		const _CP_OPT(odf_types::font_weight)& font_weight = text_props->content_.fo_font_weight_;
+		const _CP_OPT(odf_types::font_style)& font_style = text_props->content_.fo_font_style_;
 
+		if (font_weight && font_weight->get_type() == odf_types::font_weight::WBold)
+			ss << "<w:b/>";
+		if (font_style && font_style->get_type() == odf_types::font_style::Italic)
+			ss << "<w:i/>";
+	}
+	
 	Context.get_text_tracked_context().dumpRPrInsDel_ = ss.str();
 }
 

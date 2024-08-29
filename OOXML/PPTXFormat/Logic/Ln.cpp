@@ -54,30 +54,30 @@ namespace PPTX
 			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if (_T("bevel") == sName	||
-					_T("miter") == sName  ||
-					_T("round") == sName )
+				if (L"bevel" == sName ||
+					L"miter" == sName ||
+					L"round" == sName )
 				{
-					Join.fromXML(oReader);
+					Join = oReader;
 				}
-				else if ( _T("tailEnd") == sName )
+				else if ( L"tailEnd" == sName )
 					tailEnd = oReader;
-				else if ( _T("headEnd") == sName )
+				else if ( L"headEnd" == sName )
 					headEnd = oReader;
 
-				else if (	_T("gradFill")	== sName ||
-							_T("noFill")	== sName ||
-							_T("pattFill")	== sName ||
-							_T("solidFill")	== sName )
+				else if (	L"gradFill"	== sName ||
+							L"noFill"	== sName ||
+							L"pattFill"	== sName ||
+							L"solidFill"	== sName )
 				{
 					Fill.fromXML(oReader);
 				}
-				else if ( _T("custDash") == sName )
+				else if ( L"custDash" == sName )
 				{
 					//custDash = oReader;
 					//m_eDashType = OOX::Drawing::linedashtypeCustom;
 				}
-				else if ( _T("prstDash") == sName )
+				else if ( L"prstDash" == sName )
 				{
 					prstDash = oReader;
 					//m_eDashType = OOX::Drawing::linedashtypePreset;
@@ -113,20 +113,20 @@ namespace PPTX
 			XmlMacroReadAttributeBase(node, L"w", w);
 
 			Fill.GetFillFrom(node);
-			prstDash = node.ReadNodeNoNS(_T("prstDash"));
-			Join.GetJoinFrom(node);
-			headEnd = node.ReadNodeNoNS(_T("headEnd"));
-			tailEnd = node.ReadNodeNoNS(_T("tailEnd"));
+			prstDash = node.ReadNodeNoNS(L"prstDash");
+			Join.Init(); Join->GetJoinFrom(node);
+			headEnd = node.ReadNodeNoNS(L"headEnd");
+			tailEnd = node.ReadNodeNoNS(L"tailEnd");
 
 			FillParentPointersForChilds();
 		}
 		void Ln::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
-			WritingElement_ReadAttributes_Read_if     ( oReader, _T("algn"), algn )
-			WritingElement_ReadAttributes_Read_else_if( oReader, _T("cap"),  cap )
-			WritingElement_ReadAttributes_Read_else_if( oReader, _T("cmpd"), cmpd )
-			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w"),    w )
+			WritingElement_ReadAttributes_Read_if     ( oReader, L"algn", algn )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"cap",  cap )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"cmpd", cmpd )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"w",    w )
 			WritingElement_ReadAttributes_End_No_NS( oReader )
 
 			Normalize();
@@ -135,23 +135,23 @@ namespace PPTX
 		{
 			std::wstring _name = m_name;
 			if (_name.empty())
-				_name = _T("a:ln");
+				_name = L"a:ln";
 
 			std::wstring sAttrNamespace;
 
 			if (_name == L"w14:textOutline")
-				sAttrNamespace = _T("w14:");
+				sAttrNamespace = L"w14:";
 
 			XmlUtils::CAttribute oAttr;
-			oAttr.Write				(sAttrNamespace + _T("w"),		w);
-			oAttr.WriteLimitNullable(sAttrNamespace + _T("cap"),	cap);
-			oAttr.WriteLimitNullable(sAttrNamespace + _T("cmpd"),	cmpd);
-			oAttr.WriteLimitNullable(sAttrNamespace + _T("algn"),	algn);
+			oAttr.Write				(sAttrNamespace + L"w",		w);
+			oAttr.WriteLimitNullable(sAttrNamespace + L"cap",	cap);
+			oAttr.WriteLimitNullable(sAttrNamespace + L"cmpd",	cmpd);
+			oAttr.WriteLimitNullable(sAttrNamespace + L"algn",	algn);
 
 			XmlUtils::CNodeValue oValue;
 			oValue.Write(Fill);
 			oValue.WriteNullable(prstDash);
-			oValue.Write(Join);
+			oValue.WriteNullable(Join);
 			oValue.WriteNullable(headEnd);
 			oValue.WriteNullable(tailEnd);
 
@@ -161,27 +161,27 @@ namespace PPTX
 		{
 			std::wstring _name = m_name;
 			if (_name.empty())
-				_name = _T("a:ln");
+				_name = L"a:ln";
 
 			std::wstring sAttrNamespace;
 			if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
 			{
-				_name = _T("w14:textOutline");
-				sAttrNamespace = _T("w14:");
+				_name = L"w14:textOutline";
+				sAttrNamespace = L"w14:";
 			}
 
 			pWriter->StartNode(_name);
 
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute(sAttrNamespace + _T("w"), w);
-			pWriter->WriteAttribute(sAttrNamespace + _T("cap"), cap);
-			pWriter->WriteAttribute(sAttrNamespace + _T("cmpd"), cmpd);
-			pWriter->WriteAttribute(sAttrNamespace + _T("algn"), algn);
+			pWriter->WriteAttribute(sAttrNamespace + L"w", w);
+			pWriter->WriteAttribute(sAttrNamespace + L"cap", cap);
+			pWriter->WriteAttribute(sAttrNamespace + L"cmpd", cmpd);
+			pWriter->WriteAttribute(sAttrNamespace + L"algn", algn);
 			pWriter->EndAttributes();
 
 			Fill.toXmlWriter(pWriter);
 			pWriter->Write(prstDash);
-			Join.toXmlWriter(pWriter);
+			pWriter->Write(Join);
 			pWriter->Write(headEnd);
 			pWriter->Write(tailEnd);
 
@@ -198,13 +198,13 @@ namespace PPTX
 
 			pWriter->WriteRecord1(0, Fill);
 			pWriter->WriteRecord2(1, prstDash);
-			pWriter->WriteRecord1(2, Join);
+			pWriter->WriteRecord2(2, Join);
 			pWriter->WriteRecord2(3, headEnd);
 			pWriter->WriteRecord2(4, tailEnd);
 		}
 		void Ln::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
-			m_name = _T("a:ln");
+			m_name = L"a:ln";
 
 			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 			pReader->Skip(1); // start attributes
@@ -260,20 +260,21 @@ namespace PPTX
 					}
 					case 2:
 					{
-						Join.fromPPTY(pReader);
+						Join.Init();
+						Join->fromPPTY(pReader);
 						break;
 					}
 					case 3:
 					{
 						headEnd = new Logic::LineEnd();
-						headEnd->m_name = _T("a:headEnd");
+						headEnd->m_name = L"a:headEnd";
 						headEnd->fromPPTY(pReader);
 						break;
 					}
 					case 4:
 					{
 						tailEnd = new Logic::LineEnd();
-						tailEnd->m_name = _T("a:tailEnd");
+						tailEnd->m_name = L"a:tailEnd";
 						tailEnd->fromPPTY(pReader);
 						break;
 					}
@@ -334,7 +335,8 @@ namespace PPTX
 		void Ln::FillParentPointersForChilds()
 		{
 			Fill.SetParentPointer(this);
-			Join.SetParentPointer(this);
+			if (Join.IsInit())
+				Join->SetParentPointer(this);
 			if(prstDash.IsInit())
 				prstDash->SetParentPointer(this);
 			if(headEnd.IsInit())

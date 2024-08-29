@@ -62,8 +62,7 @@ namespace PPTX
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-		public:
-			eJoin			type;
+			eJoin			type = Logic::JoinEmpty;
 			nullable_int	lim;
 
 		protected:

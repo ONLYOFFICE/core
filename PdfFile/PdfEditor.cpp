@@ -383,9 +383,19 @@ HRESULT _ChangePassword(const std::wstring& wsPath, const std::wstring& wsPasswo
 
 	return bRes ? S_OK : S_FALSE;
 }
-void StreamGetCTM(XRef* pXref, Object* oStream, double* dCTM)
+void GetCTM(XRef* pXref, Object* oPage, double* dCTM)
 {
-	Parser* parser = new Parser(pXref, new Lexer(pXref, oStream), gFalse);
+	if (!oPage || !oPage->isDict())
+		return;
+
+	Object oContents;
+	if (!oPage->dictLookup("Contents", &oContents) || (!oContents.isArray() && !oContents.isStream()))
+	{
+		oContents.free();
+		return;
+	}
+
+	Parser* parser = new Parser(pXref, new Lexer(pXref, &oContents), gFalse);
 
 	int nNumArgs = 0;
 	Object oObj;
@@ -435,32 +445,7 @@ void StreamGetCTM(XRef* pXref, Object* oStream, double* dCTM)
 	for (int i = 0; i < nNumArgs; ++i)
 		pArgs[i].free();
 	RELEASEOBJECT(parser);
-}
-void GetCTM(XRef* pXref, Object* oPage, double* dCTM)
-{
-	if (!oPage || !oPage->isDict())
-		return;
 
-	Object oContents;
-	if (!oPage->dictLookup("Contents", &oContents))
-	{
-		oContents.free();
-		return;
-	}
-
-	if (oContents.isArray())
-	{
-		for (int nIndex = 0; nIndex < oContents.arrayGetLength(); ++nIndex)
-		{
-			Object oTemp;
-			oContents.arrayGet(nIndex, &oTemp);
-			if (oTemp.isStream())
-				StreamGetCTM(pXref, &oTemp, dCTM);
-			oTemp.free();
-		}
-	}
-	else if (oContents.isStream())
-		StreamGetCTM(pXref, &oContents, dCTM);
 	oContents.free();
 }
 

@@ -190,7 +190,7 @@ double findRoot(double& length, double& start, double offset, double ax, double 
 	return clamp(x, a, b);
 }
 
-Aggplus::PointD intersect(double p1x, double p1y, double v1x, double v1y, double p2x, double p2y, double v2x, double v2y)
+bool intersect(double p1x, double p1y, double v1x, double v1y, double p2x, double p2y, double v2x, double v2y, Aggplus::PointD& res)
 {
 	v1x -= p1x;
 	v1y -= p1y;
@@ -210,10 +210,11 @@ Aggplus::PointD intersect(double p1x, double p1y, double v1x, double v1y, double
 		if (uMin < u1 && u1 < uMax && uMin < u2 && u2 < uMax)
 		{
 			u1 = u1 <= 0 ? 0 : u1 >= 1 ? 1 : u1;
-			return Aggplus::PointD(p1x + u1 * v1x, p1y + u1 * v1y);
+			res = Aggplus::PointD(p1x + u1 * v1x, p1y + u1 * v1y);
+			return true;
 		}
 	}
-	return Aggplus::PointD();
+	return false;
 }
 
 std::vector<std::vector<Aggplus::PointD>> getConvexHull(double dq0, double dq1, double dq2, double dq3)

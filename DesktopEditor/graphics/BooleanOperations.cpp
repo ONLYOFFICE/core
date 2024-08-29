@@ -6,8 +6,8 @@ Segment::Segment() :
 	P(PointD()),
 	HI(PointD()),
 	HO(PointD()),
-	Id(0),
 	Index(0),
+	Id(0),
 	Winding(0) {}
 
 Segment::Segment(const std::vector<PointD>& points, bool isCurve,
@@ -660,14 +660,15 @@ bool Location::IsTouching()
 	Curve	c1 = this->C,
 			c2 = this->Inters->C;
 	bool straight = c1.IsStraight() && c2.IsStraight();
-	return !straight || intersect(c1.Segment1.P.X,
+	PointD pt;
+	return !straight || !intersect(c1.Segment1.P.X,
 								  c1.Segment1.P.Y,
 								  c1.Segment2.P.X,
 								  c1.Segment2.P.Y,
 								  c2.Segment1.P.X,
 								  c2.Segment1.P.Y,
 								  c2.Segment2.P.X,
-								  c2.Segment2.P.Y).Equals(PointD());
+								  c2.Segment2.P.Y, pt);
 }
 
 CBooleanOperations::CBooleanOperations(CGraphicsPath* path1,
@@ -696,18 +697,21 @@ CGraphicsPath *CBooleanOperations::GetResult()
 
 int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment, const Curve& curve, bool dir) const
 {
-	PointD pt = intersect(point.X, point.Y, segment.P.X, segment.P.Y, curve.Segment1.P.X, curve.Segment1.P.Y, curve.Segment2.P.X, curve.Segment2.P.Y);
-	if (curve.Segment1.P.Equals(pt) || curve.Segment2.P.Equals(pt))
+	PointD pt;
+	if (intersect(point.X, point.Y, segment.P.X, segment.P.Y, curve.Segment1.P.X, curve.Segment1.P.Y, curve.Segment2.P.X, curve.Segment2.P.Y, pt))
 	{
-		PointD newPoint = dir ? PointD(point.X + GEOMETRIC_EPSILON, point.Y)
-							  : PointD(point.X, point.Y + GEOMETRIC_EPSILON);
-		return CheckInters(newPoint, segment, curve, !dir);
+		if (curve.Segment1.P.Equals(pt) || curve.Segment2.P.Equals(pt))
+		{
+			PointD newPoint = dir ? PointD(point.X + GEOMETRIC_EPSILON, point.Y)
+								  : PointD(point.X, point.Y + GEOMETRIC_EPSILON);
+			return CheckInters(newPoint, segment, curve, !dir);
+		}
+		else if (curve.IsStraight())
+		{
+			return 1;
+		}
 	}
-	else if (!pt.Equals(PointD()) && curve.IsStraight())
-	{
-		return 1;
-	}
-	else if (!curve.IsStraight())
+	if (!curve.IsStraight())
 	{
 		std::vector<double> roots = curve.GetCurveLineIntersection(segment.P.X,segment.P.Y, point.X - segment.P.X, point.Y - segment.P.Y);
 		Curve line = Curve(segment, Segment(point, PointD(), PointD()));
@@ -723,6 +727,11 @@ int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment,
 
 void CBooleanOperations::TraceBoolean()
 {
+	if (!Path1->Is_poly_closed())
+		Path1->CloseFigure();
+	if (!Path2->Is_poly_closed())
+		Path2->CloseFigure();
+
 	bool reverse = false;
 	if ((Op == Subtraction || Op == Exclusion) ^
 		Path1->IsClockwise() ^
@@ -733,13 +742,6 @@ void CBooleanOperations::TraceBoolean()
 	PreparePath(Path2, 2, Segments2, Curves2, reverse);
 
 	GetIntersection();
-
-	if (AllOverlap())
-	{
-		if (Op != Subtraction)
-			Result = Path1;
-		return;
-	}
 
 	if (Locations.empty())
 	{
@@ -769,6 +771,30 @@ void CBooleanOperations::TraceBoolean()
 		}
 
 		DivideLocations();
+
+		if (AllOverlap())
+		{
+			if (Segments1[0].Inters && Segments2[0].Inters)
+			{
+				if (Op != Subtraction)
+					Result = Path1;
+			}
+			else if (Segments1[0].Inters)
+			{
+				if (Op == Intersection)
+					Result = Path1;
+				else if (Op == Union)
+					Result = Path2;
+			}
+			else
+			{
+				if (Op == Intersection)
+					Result = Path2;
+				else if (Op == Union)
+					Result = Path1;
+			}
+			return;
+		}
 
 		for (const auto& l : Locations)
 		{
@@ -1279,8 +1305,8 @@ void CBooleanOperations::AddLineIntersection(const Curve& curve1, const Curve& c
 						y1 = curve1.GetYValues(),
 						x2 = curve2.GetXValues(),
 						y2 = curve2.GetYValues();
-	PointD pt = intersect(x1[0], y1[0], x1[3], y1[3], x2[0], y2[0], x2[3], y2[3]);
-	if (!pt.Equals(PointD()))
+	PointD pt;
+	if (intersect(x1[0], y1[0], x1[3], y1[3], x2[0], y2[0], x2[3], y2[3], pt))
 		AddLocation(curve1, curve2, curve1.GetTimeOf(pt), curve2.GetTimeOf(pt));
 }
 

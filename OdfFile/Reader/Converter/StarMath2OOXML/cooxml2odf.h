@@ -52,12 +52,15 @@ namespace StarMath
 		void ConversionVectorWritingElement(std::vector<OOX::WritingElement*> arWrElements,const bool& bMatrix = false);
 		void ConversionMatrix(OOX::Logic::CMatrix *pMatrix);
 		void ConversionMr(OOX::Logic::CMr* pMr);
+		void ConversionRad(OOX::Logic::CRad* pRad);
+		bool ConversionRadPr(OOX::Logic::CRadPr* pRadPr,bool& bDeg);
+		void ConversionDeg(OOX::Logic::CDeg* pDeg);
 		StValuePr *ConversionRunProperties(OOX::Logic::CRunProperty* pRPr);
 		StValuePr ConversionMdPr(OOX::Logic::CDelimiterPr* pDelPr);
 		StValuePr ConversionNaryPr(OOX::Logic::CNaryPr* pNaryPr);
 		std::wstring ConversionBegBracket(OOX::Logic::CBegChr* pBegChr);
 		std::wstring ConversionEndBracket(OOX::Logic::CEndChr* pEndChr);
-		std::wstring TranslationDiacritSign(std::wstring &wsSymbol);
+		std::wstring TranslationDiacritSign(const std::wstring &wsSymbol);
 		static std::wstring ParsingText(std::wstring::iterator &itStart, std::wstring::iterator &itEnd);
 		std::wstring ConversionChr(OOX::Logic::CChr* pChr);
 		std::wstring ToStringChr(const std::wstring& wsChr);
@@ -67,6 +70,8 @@ namespace StarMath
 		static bool IsSpecialSymbol(const std::wstring& wsSpecial);
 		bool СomparingAttributes(StValuePr* pRight,StValuePr* pLeft);
 		void EndOdf();
+		std::wstring GetOdf();
+		std::wstring GetAnnotation();
 	private:
 		XmlUtils::CXmlWriter* m_pXmlWrite;
 		std::wstring m_wsAnnotationStarMath;

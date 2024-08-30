@@ -35,15 +35,18 @@
 #include <gtest/gtest.h>
 #include <boost/smart_ptr.hpp>
 
-#include "..\..\..\..\OOXML\DocxFormat\Docx.h"
-#include "..\..\..\..\OOXML\DocxFormat\DocxFlat.h"
-#include "..\..\..\..\OOXML\DocxFormat\Document.h"
+#include "../../../../OOXML/DocxFormat/Docx.h"
+#include "../../../../OOXML/DocxFormat/DocxFlat.h"
+#include "../../../../OOXML/DocxFormat/Document.h"
+#include "../../../../OOXML/DocxFormat/Logic/Run.h"
+#include "../../../../OOXML/DocxFormat/Logic/Paragraph.h"
+#include "../../../../OOXML/DocxFormat/Logic/ParagraphProperty.h"
+#include "../../../../OOXML/DocxFormat/Logic/Run.h"
+#include "../../../../OOXML/DocxFormat/Logic/RunProperty.h"
 
-#include "..\..\..\..\OOXML\DocxFormat\Logic\Run.h"
-#include "..\..\..\..\OOXML\DocxFormat\Logic\Paragraph.h"
-#include "..\..\..\..\OOXML\DocxFormat\Logic\ParagraphProperty.h"
-#include "..\..\..\..\OOXML\DocxFormat\Logic\Run.h"
-#include "..\..\..\..\OOXML\DocxFormat\Logic\RunProperty.h"
+#include "../../../../OdfFile/Reader/Format/odf_document.h"
+#include "../../../../OdfFile/Reader/Format/odf_document_impl.h"
+#include "../../../../OdfFile/Reader/Format/office_document.h"
 
 class ODT2DOCX_ConversionEnvironment : public testing::Environment
 {
@@ -58,4 +61,21 @@ public:
 private:
 	std::wstring mFilename;
 	OOX::CDocx* mDocx;
+};
+
+class DOCX2ODT_ConvertsionEnvironment : public testing::Environment
+{
+public:
+	DOCX2ODT_ConvertsionEnvironment(const std::wstring& filename);
+
+	cpdoccore::odf_reader::odf_document*			GetDocument();
+	cpdoccore::odf_reader::office_document_content* GetContent();
+	cpdoccore::odf_reader::office_body*				GetBody();
+
+	virtual void SetUp() override;
+	virtual void TearDown() override;
+
+private:
+	std::wstring mFilename;
+	cpdoccore::odf_reader::odf_document* mOdf;
 };

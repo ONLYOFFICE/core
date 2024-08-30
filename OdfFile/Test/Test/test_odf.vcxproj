@@ -38,7 +38,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)../../../Common\3dParty\googletest\googletest\googletest;$(ProjectDir)../../../Common\3dParty\googletest\googletest\googletest\include;$(ProjectDir)../../../Common\3dParty\boost\build\win_64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)../../../Common\3dParty\googletest\googletest\googletest;$(ProjectDir)../../../Common\3dParty\googletest\googletest\googletest\include;$(ProjectDir)../../../Common\3dParty\boost\build\win_64\include;$(ProjectDir)../../../OdfFile/Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding -Zc:__cplusplus -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>.\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -56,7 +56,7 @@
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(ProjectDir)../../../OdfFile\Projects\Windows\x64\Debug\Common\OdfCommon-static.lib;$(ProjectDir)../../../OdfFile\Projects\Windows\x64\Debug\Reader\OdfFormatReaderLib.lib;$(ProjectDir)../../../OdfFile\Projects\Windows\x64\Debug\Formulas\OdfFormulasConvert.lib;$(ProjectDir)../../../OdfFile\Projects\Windows\x64\Debug\Xml\xml_wrapper.lib;$(ProjectDir)../../../OOXML\Projects\Windows\DocxFormatLib\x64\Debug\DocxFormatLib.lib;$(ProjectDir)../../../OOXML\Projects\Windows\PptxFormatLib\x64\Debug\PptxFormatLib.lib;$(ProjectDir)../../../OOXML\Projects\Windows\XlsbFormatLib\x64\Debug\XlsbFormatLib.lib;$(ProjectDir)../../../OOXML\Projects\Windows\BinaryFormatLib\x64\Debug\BinaryFormatLib.lib;$(ProjectDir)../../../MsBinaryFile\Projects\DocFormatLib\Windows\x64\Debug\DocFormat\DocFormatLib.lib;$(ProjectDir)../../../MsBinaryFile\Projects\PPTFormatLib\Windows\x64\Debug\PPTFormatLib.lib;$(ProjectDir)../../../MsBinaryFile\Projects\VbaFormatLib\Windows\x64\Debug\VbaFormatLib.lib;$(ProjectDir)../../../MsBinaryFile\Projects\XlsFormatLib\Windows\x64\Debug\XlsFormatLib.lib;$(ProjectDir)../../../MsBinaryFile\Projects\XlsFormatLib\Windows\x64\Debug\XlsConvert\XlsXlsxConverter.lib;$(ProjectDir)../../../RtfFile\Projects\Windows\Win32\x64\Debug\RtfFormatLib.lib;$(ProjectDir)../../../Common\cfcpp\x64\Debug\CompoundFileLib.lib;shell32.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)../../../OdfFile\Projects\Windows\x64\Debug\Common\OdfCommon-static.lib;$(ProjectDir)../../../OdfFile\Projects\Windows\x64\Debug\Reader\OdfFormatReaderLib.lib;$(ProjectDir)../../../OdfFile\Projects\Windows\x64\Debug\Writer\OdfFormatWriterLib.lib;$(ProjectDir)../../../OdfFile\Projects\Windows\x64\Debug\Oox2Odf\Oox2OdfConverter.lib;$(ProjectDir)../../../OdfFile\Projects\Windows\x64\Debug\Formulas\OdfFormulasConvert.lib;$(ProjectDir)../../../OdfFile\Projects\Windows\x64\Debug\Xml\xml_wrapper.lib;$(ProjectDir)../../../OOXML\Projects\Windows\DocxFormatLib\x64\Debug\DocxFormatLib.lib;$(ProjectDir)../../../OOXML\Projects\Windows\PptxFormatLib\x64\Debug\PptxFormatLib.lib;$(ProjectDir)../../../OOXML\Projects\Windows\XlsbFormatLib\x64\Debug\XlsbFormatLib.lib;$(ProjectDir)../../../OOXML\Projects\Windows\BinaryFormatLib\x64\Debug\BinaryFormatLib.lib;$(ProjectDir)../../../MsBinaryFile\Projects\DocFormatLib\Windows\x64\Debug\DocFormat\DocFormatLib.lib;$(ProjectDir)../../../MsBinaryFile\Projects\PPTFormatLib\Windows\x64\Debug\PPTFormatLib.lib;$(ProjectDir)../../../MsBinaryFile\Projects\VbaFormatLib\Windows\x64\Debug\VbaFormatLib.lib;$(ProjectDir)../../../MsBinaryFile\Projects\XlsFormatLib\Windows\x64\Debug\XlsFormatLib.lib;$(ProjectDir)../../../MsBinaryFile\Projects\XlsFormatLib\Windows\x64\Debug\XlsConvert\XlsXlsxConverter.lib;$(ProjectDir)../../../RtfFile\Projects\Windows\Win32\x64\Debug\RtfFormatLib.lib;$(ProjectDir)../../../Common\cfcpp\x64\Debug\CompoundFileLib.lib;shell32.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)../../../Common\3dParty\boost\build\win_64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
@@ -87,12 +87,14 @@
     <ClCompile Include="..\..\..\Common\3dParty\googletest\googletest\googletest\src\gtest-all.cc" />
     <ClCompile Include="src\tests\Test44363.cpp" />
     <ClCompile Include="src\tests\Test57197.cpp" />
+    <ClCompile Include="src\tests\Test59708.cpp" />
     <ClCompile Include="src\tests\Test61364.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common.h" />
     <ClInclude Include="src\tests\Test44363.h" />
     <ClInclude Include="src\tests\Test57197.h" />
+    <ClInclude Include="src\tests\Test59708.h" />
     <ClInclude Include="src\tests\Test61364.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

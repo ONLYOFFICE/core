@@ -37,12 +37,14 @@
 #include <stdio.h>
 #include <tchar.h>
 
-#include "..\..\..\..\Common\OfficeFileFormatChecker.h"
-#include "..\..\..\..\OfficeUtils\src\OfficeUtils.h"
-#include "..\..\..\..\DesktopEditor\common\Directory.h"
-#include "..\..\..\..\OdfFile\Reader\Converter\ConvertOO2OOX.h"
-#include "..\..\..\..\OdfFile\Common\logging.h"
-#include "..\..\..\..\OOXML\SystemUtility\SystemUtility.h"
+#include "../../../../Common/OfficeFileFormatChecker.h"
+#include "../../../../OfficeUtils/src/OfficeUtils.h"
+#include "../../../../DesktopEditor/common/Directory.h"
+#include "../../../../OdfFile/Reader/Converter/ConvertOO2OOX.h"
+#include "../../../../OdfFile/Common/logging.h"
+#include "../../../../OOXML/SystemUtility/SystemUtility.h"
+
+#include "../../../../OdfFile/Writer/Converter/Oox2OdfConverter.h"
 
 #if defined(_WIN32) || defined (_WIN64)
 #include "windows.h"
@@ -149,8 +151,7 @@ std::wstring create_unique_name_with_prefix(const std::wstring& strFolderPathRoo
 #endif
 }
 
-
-boost::optional<std::wstring> convert_odf_to_ooxml(std::wstring srcFileName)
+boost::optional<std::wstring> convert_odf_to_ooxml(const std::wstring& srcFileName)
 {
 	int nResult = 0;
 
@@ -219,4 +220,63 @@ void ODT2DOCX_ConversionEnvironment::TearDown()
 	NSDirectory::DeleteDirectory(mDocx->m_sDocumentPath);
 
 	delete mDocx;
+}
+
+DOCX2ODT_ConvertsionEnvironment::DOCX2ODT_ConvertsionEnvironment(const std::wstring& filename)
+	: mFilename(filename),
+	mOdf(nullptr)
+{ }
+
+cpdoccore::odf_reader::odf_document* DOCX2ODT_ConvertsionEnvironment::GetDocument()
+{
+	return mOdf;
+}
+cpdoccore::odf_reader::office_document_content* DOCX2ODT_ConvertsionEnvironment::GetContent()
+{
+	return dynamic_cast<cpdoccore::odf_reader::office_document_content*>(mOdf->get_impl()->get_content());
+}
+
+cpdoccore::odf_reader::office_body* DOCX2ODT_ConvertsionEnvironment::GetBody()
+{
+	cpdoccore::odf_reader::office_document_content* content = GetContent();
+	if (!content)
+		return nullptr;
+
+	return dynamic_cast<cpdoccore::odf_reader::office_body*>(content->office_body_.get());
+}
+
+void DOCX2ODT_ConvertsionEnvironment::SetUp()
+{
+	const std::wstring docxUnpackedPath = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetFolderPath(mFilename));
+
+	COfficeUtils oCOfficeUtils(nullptr);
+	if (S_OK == oCOfficeUtils.ExtractToDirectory(mFilename, docxUnpackedPath, NULL, 0))
+	{
+		const std::wstring dstPath = create_unique_name_with_prefix(NSDirectory::GetFolderPath(mFilename), NSFile::GetFileName(mFilename));
+		std::wstring tempPath = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetFolderPath(mFilename));
+
+		Oox2Odf::Converter converter(docxUnpackedPath, L"text", L"", false, tempPath);
+
+		converter.convert();
+		converter.write(dstPath, tempPath, L"", L"");
+
+		NSDirectory::DeleteDirectory(tempPath);
+
+		tempPath = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetFolderPath(mFilename));
+		mOdf = new cpdoccore::odf_reader::odf_document(dstPath, tempPath, L"");
+
+		NSDirectory::DeleteDirectory(tempPath);
+	}
+
+	NSDirectory::DeleteDirectory(docxUnpackedPath);
+}
+
+void DOCX2ODT_ConvertsionEnvironment::TearDown()
+{
+	if (mOdf)
+	{
+		NSDirectory::DeleteDirectory(mOdf->get_folder());
+
+		delete mOdf;
+	}
 }

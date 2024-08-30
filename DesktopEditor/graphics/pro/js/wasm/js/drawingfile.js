@@ -254,6 +254,7 @@ CFile.prototype["getGlyphs"] = function(pageIndex)
 	{
 		// waiting fonts
 		res = null;
+		return null;
 	}
 
 	if (res && this.onUpdateStatistics)

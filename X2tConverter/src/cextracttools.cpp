@@ -791,12 +791,6 @@ namespace NExtractTools
 			oBuilder.WriteEncodeXmlString(sJsonParams);
 			oBuilder.WriteString(L"</JsonParams>");
 		}
-		if (NULL != params.m_sScriptsCacheDirectory)
-		{
-			oBuilder.WriteString(L"<ScriptsCacheDirectory>");
-			oBuilder.WriteEncodeXmlString(*params.m_sScriptsCacheDirectory);
-			oBuilder.WriteString(L"</ScriptsCacheDirectory>");
-		}
 		oBuilder.WriteString(L"<Changes TopItem=\"");
 		oBuilder.AddInt(nTopIndex);
 		oBuilder.WriteString(L"\">");

@@ -35,6 +35,7 @@
 #include "../../DesktopEditor/common/SystemUtils.h"
 #include "ASCConverters.h"
 #include "cextracttools.h"
+#include "../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 
 #include <iostream>
 
@@ -159,6 +160,35 @@ int wmain_lib(int argc, wchar_t *argv[])
 		{
 			NExtractTools::createJSCaches();
 			return 0;
+		}
+		else if (sArg1 == L"-create-js-snapshots")
+		{
+			NExtractTools::createJSSnapshots();
+			return 0;
+		}
+		else if (sArg1 == L"-create-allfonts")
+		{
+			if (argc > 2)
+			{
+				CApplicationFontsWorker oWorker;
+				oWorker.m_sDirectory = sArg2;
+				oWorker.m_bIsUseSystemFonts = true;
+				oWorker.m_bIsNeedThumbnails = false;
+				oWorker.m_bIsCleanDirectory = false;
+
+				for (int i = 3; i < argc; ++i)
+				{
+#if !defined(_WIN32) && !defined(_WIN64)
+					std::wstring sFolder = utf8_to_unicode(argv[i]);
+#else
+					std::wstring sFolder(argv[i]);
+#endif
+					oWorker.m_arAdditionalFolders.push_back(sFolder);
+				}
+
+				NSFonts::IApplicationFonts* pFonts = oWorker.Check();
+				RELEASEINTERFACE(pFonts);
+			}
 		}
 		else
 		{

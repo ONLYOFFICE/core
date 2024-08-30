@@ -1998,7 +1998,10 @@ namespace OOX
 							else
 							{
 								auto pCellRk = new(XLSB::FmlaNum);
-							
+                                if(m_oFormula->m_oAca.IsInit())
+                                    pCellRk->grbitFlags.fAlwaysCalc = m_oFormula->m_oAca->GetValue();
+                                else
+                                    pCellRk->grbitFlags.fAlwaysCalc = false;
 								pCellRk->value.data.value = intCache;
 								oCell = &pCellRk->cell;
 								pSource = pCellRk;
@@ -2025,6 +2028,10 @@ namespace OOX
 								pCellRk->value.data.value = realCache;
 								oCell = &pCellRk->cell;
 								pSource = pCellRk;
+                                if(m_oFormula->m_oAca.IsInit())
+                                    pCellRk->grbitFlags.fAlwaysCalc = m_oFormula->m_oAca->GetValue();
+                                else
+                                    pCellRk->grbitFlags.fAlwaysCalc = false;
 							}
 						}
 					}
@@ -2225,6 +2232,10 @@ namespace OOX
                             str->value = L"";
                             oCell = &str->cell;
                             pSource = str;
+                            if(m_oFormula->m_oAca.IsInit())
+                                str->grbitFlags.fAlwaysCalc = m_oFormula->m_oAca->GetValue();
+                            else
+                                str->grbitFlags.fAlwaysCalc = false;
 
                         }
                         else
@@ -2247,7 +2258,10 @@ namespace OOX
 								if(m_oValue.IsInit())
 									str->value = m_oValue->m_sText;
 								oCell = &str->cell;
-
+                                if(m_oFormula->m_oAca.IsInit())
+                                    str->grbitFlags.fAlwaysCalc = m_oFormula->m_oAca->GetValue();
+                                else
+                                    str->grbitFlags.fAlwaysCalc = false;
 								pSource = str;
 
 							}
@@ -2268,7 +2282,10 @@ namespace OOX
                                 if(m_oValue.IsInit())
                                     str->value = m_oRichText->ToString();
                                 oCell = &str->cell;
-
+                                if(m_oFormula->m_oAca.IsInit())
+                                    str->grbitFlags.fAlwaysCalc = m_oFormula->m_oAca->GetValue();
+                                else
+                                    str->grbitFlags.fAlwaysCalc = false;
                                 pSource = str;
 
                             }
@@ -2285,6 +2302,10 @@ namespace OOX
 							auto str(new XLSB::FmlaString);
 							str->value = L"";
 							oCell = &str->cell;
+                            if(m_oFormula->m_oAca.IsInit())
+                                str->grbitFlags.fAlwaysCalc = m_oFormula->m_oAca->GetValue();
+                            else
+                                str->grbitFlags.fAlwaysCalc = false;
 							pSource = str;
 						}
 						else
@@ -3088,6 +3109,7 @@ namespace OOX
 
 				if(m_oThickTop.IsInit())
 				hdrPtr->fExAsc = m_oThickTop->GetValue();
+                hdrPtr->ccolspan = 0;
 			}
 
 			//if(m_oDyDescent.IsInit())

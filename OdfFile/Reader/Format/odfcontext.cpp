@@ -629,7 +629,6 @@ namespace cpdoccore {
 			if (!textOutlineStyle) return;
 
 			outline_ = textOutlineStyle;
-			outline_id_ = instances_.size();
 		}
 		text_list_style* list_style_container::list_style_by_name(const std::wstring& Name)
 		{
@@ -644,7 +643,7 @@ namespace cpdoccore {
 		}
 		int list_style_container::id_outline()
 		{
-			return outline_id_ + 1;
+			return instances_.size() + 1;
 		}
 
 		int list_style_container::id_by_name(const std::wstring& Name)

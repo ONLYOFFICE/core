@@ -54,7 +54,6 @@
 #include "../../DesktopEditor/graphics/BaseThread.h"
 #include "../../DesktopEditor/graphics/commands/DocInfo.h"
 #include "../../DesktopEditor/graphics/AlphaMask.h"
-#include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../Resources/BaseFonts.h"
 #include <new>
 
@@ -423,7 +422,6 @@ namespace PdfReader
 		m_pSoftMask = NULL;
 
 		m_bDrawOnlyText = false;
-		m_bClipChanged = true;
 	}
 	RendererOutputDev::~RendererOutputDev()
 	{
@@ -462,6 +460,14 @@ namespace PdfReader
 			m_sStates.back().pSoftMask = m_pSoftMask;
 		}
 
+		// Выходит дольше из-за копирования Clip, Pen, Brush,
+		// но не имеет смысла, т.к. Restore всё равно перенакладывает все Clip с нуля
+		//if (c_nGrRenderer == m_lRendererType)
+		//{
+		//	NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
+		//	GRenderer->Save();
+		//}
+		//else
 		updateAll(pGState);
 	}
 	void RendererOutputDev::restoreState(GfxState* pGState)
@@ -474,9 +480,12 @@ namespace PdfReader
 				GRenderer->SetSoftMask(m_pSoftMask);
 		}
 
-		m_bClipChanged = m_sStates.back().pClip;
+		bool bClipChanged = m_sStates.back().pClip || m_sStates.back().pTextClip;
 		m_sStates.pop_back();
+
 		updateAll(pGState);
+		if (bClipChanged)
+			UpdateAllClip(pGState);
 	}
 	void RendererOutputDev::updateCTM(GfxState* pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32)
 	{
@@ -652,7 +661,6 @@ namespace PdfReader
 	}
 	void RendererOutputDev::updateAll(GfxState* pGState)
 	{
-		updateCTM(pGState, pGState->getCTM()[0], pGState->getCTM()[1], pGState->getCTM()[2], pGState->getCTM()[3], pGState->getCTM()[4], pGState->getCTM()[5]);
 		updateLineDash(pGState);
 		updateFlatness(pGState);
 		updateLineJoin(pGState);
@@ -668,7 +676,6 @@ namespace PdfReader
 		updateFillOpacity(pGState);
 		updateStrokeOpacity(pGState);
 		updateFont(pGState);
-		updateClip(pGState);
 	}
 	void RendererOutputDev::updateRender(GfxState* pGState)
 	{
@@ -2136,7 +2143,7 @@ namespace PdfReader
 		if (m_bDrawOnlyText)
 			return;
 
-		updateClip(pGState);
+		UpdateAllClip(pGState);
 
 		m_pRenderer->BeginCommand(c_nPDFTilingFill);
 
@@ -2182,8 +2189,7 @@ namespace PdfReader
 		if (!m_sStates.back().pClip)
 			m_sStates.back().pClip = new GfxClip();
 		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), false);
-		m_bClipChanged = true;
-		updateClip(pGState);
+		AddClip(pGState, &m_sStates.back(), m_sStates.back().pClip->GetPathNum() - 1);
 	}
 	void RendererOutputDev::eoClip(GfxState* pGState)
 	{
@@ -2193,8 +2199,7 @@ namespace PdfReader
 		if (!m_sStates.back().pClip)
 			m_sStates.back().pClip = new GfxClip();
 		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), true);
-		m_bClipChanged = true;
-		updateClip(pGState);
+		AddClip(pGState, &m_sStates.back(), m_sStates.back().pClip->GetPathNum() - 1);
 	}
 	void RendererOutputDev::clipToStrokePath(GfxState* pGState)
 	{
@@ -2204,8 +2209,7 @@ namespace PdfReader
 		if (!m_sStates.back().pClip)
 			m_sStates.back().pClip = new GfxClip();
 		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), false);
-		m_bClipChanged = true;
-		updateClip(pGState);
+		AddClip(pGState, &m_sStates.back(), m_sStates.back().pClip->GetPathNum() - 1);
 	}
 	void RendererOutputDev::clipToPath(GfxState* pGState, GfxPath* pPath, double* pMatrix, bool bEO)
 	{
@@ -2252,6 +2256,11 @@ namespace PdfReader
 	}
 	void RendererOutputDev::endTextObject(GfxState* pGState)
 	{
+		if (m_sStates.back().pTextClip && 4 <= pGState->getRender())
+		{
+			AddTextClip(pGState, &m_sStates.back());
+			updateFont(pGState);
+		}
 	}
 	void RendererOutputDev::beginStringOp(GfxState* pGState)
 	{
@@ -2351,8 +2360,7 @@ namespace PdfReader
 		if (!m_pFontList->GetFont(pGState->getFont()->getID(), &oEntry))
 			return;
 
-		int   nRenderMode = pGState->getRender();
-
+		int nRenderMode = pGState->getRender();
 		if (3 == nRenderMode && !m_bDrawOnlyText) // Невидимый текст
 		{
 			return;
@@ -2588,9 +2596,7 @@ namespace PdfReader
 			// tmpchange
 			if (!m_sStates.back().pTextClip)
 				m_sStates.back().pTextClip = new GfxTextClip();
-			m_sStates.back().pTextClip->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsClipText, 0 + dShiftX, /*-fabs(pFont->getFontBBox()[3]) * dTfs*/ + dShiftY, 0, 0, 0);
-			m_bClipChanged = true;
-			updateClip(pGState);
+			m_sStates.back().pTextClip->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsClipText, dShiftX, /*-fabs(pFont->getFontBBox()[3]) * dTfs + */ dShiftY, 0, 0, 0);
 		}
 
 		m_pRenderer->put_FontSize(dOldSize);
@@ -2895,7 +2901,7 @@ namespace PdfReader
 		int nComponentsCount = pColorMap->getNumPixelComps();
 
 		// Чтение jpeg через cximage происходит быстрее чем через xpdf на ~40%
-		if (nComponentsCount != 3 || pMaskColors || (nSK != strDCT) || !ReadImage(&oImage, pRef, pStream))
+		if (pMaskColors || (nSK != strDCT || nComponentsCount != 3 || !ReadImage(&oImage, pRef, pStream)))
 		{
 			int nBufferSize = 4 * nWidth * nHeight;
 			if (nBufferSize < 1)
@@ -3130,8 +3136,7 @@ namespace PdfReader
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 		m_pRenderer->DrawImage(&oImage, dShiftX, dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
 	}
-	void RendererOutputDev::drawSoftMaskedImage(GfxState* pGState, Object* pRef, Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, Object* maskRef, Stream* pMaskStream,
-												int nMaskWidth, int nMaskHeight, GfxImageColorMap* pMaskColorMap, double* pMatteColor, GBool interpolate)
+	void RendererOutputDev::drawSoftMaskedImage(GfxState* pGState, Object* pRef, Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, Object* maskRef, Stream* pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap* pMaskColorMap, double* pMatteColor, GBool interpolate)
 	{
 		if (m_bDrawOnlyText)
 			return;
@@ -3442,12 +3447,6 @@ namespace PdfReader
 			return;
 
 		double arrMatrix[6];
-		arrMatrix[0] =  pCTM[0];
-		arrMatrix[1] = -pCTM[1];
-		arrMatrix[2] =  pCTM[2];
-		arrMatrix[3] = -pCTM[3];
-		arrMatrix[4] =  pCTM[4];
-		arrMatrix[5] = -pCTM[5] + dPageHeight;
 		if (pCTM2)
 		{
 			arrMatrix[0] =  pCTM2->dA;
@@ -3456,6 +3455,15 @@ namespace PdfReader
 			arrMatrix[3] = -pCTM2->dD;
 			arrMatrix[4] =  pCTM2->dE;
 			arrMatrix[5] = -pCTM2->dF + dPageHeight;
+		}
+		else
+		{
+			arrMatrix[0] =  pCTM[0];
+			arrMatrix[1] = -pCTM[1];
+			arrMatrix[2] =  pCTM[2];
+			arrMatrix[3] = -pCTM[3];
+			arrMatrix[4] =  pCTM[4];
+			arrMatrix[5] = -pCTM[5] + dPageHeight;
 		}
 
 		double dShiftX = 0, dShiftY = 0;
@@ -3493,9 +3501,80 @@ namespace PdfReader
 			}
 		}
 	}
-	void RendererOutputDev::updateClip(GfxState* pGState)
+	void RendererOutputDev::AddClip(GfxState* pGState, GfxOutputState* pState, int nIndex)
 	{
-		if (m_bDrawOnlyText || m_bTiling || !m_bClipChanged)
+		if (m_bDrawOnlyText || m_bTiling)
+			return;
+
+		GfxClip* pClip = pState->pClip;
+		GfxPath* pPath = pClip->GetPath(nIndex);
+		bool     bFlag = pClip->GetClipEo(nIndex);
+		int  nClipFlag = bFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
+		nClipFlag |= c_nClipRegionIntersect;
+
+		m_pRenderer->BeginCommand(c_nClipType);
+		m_pRenderer->put_ClipMode(nClipFlag);
+		DoPath(pGState, pPath, pGState->getPageHeight(), pGState->getCTM(), &pClip->m_vMatrix[nIndex]);
+		m_pRenderer->EndCommand(c_nClipType);
+		m_pRenderer->PathCommandEnd();
+	}
+	void RendererOutputDev::AddTextClip(GfxState* pGState, GfxOutputState* pState)
+	{
+		if (m_bDrawOnlyText || m_bTiling)
+			return;
+
+		GfxTextClip* pTextClip = pState->pTextClip;
+		m_pRenderer->BeginCommand(c_nClipType);
+		m_pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionIntersect);
+		m_pRenderer->StartConvertCoordsToIdentity();
+
+		for (int nIndex = 0, nTextClipCount = pTextClip->GetTextsCount(); nIndex < nTextClipCount; nIndex++)
+		{
+			wchar_t* wsFontName, *wsFontPath;
+			int lFontStyle;
+			double dFontSize = 10, dX = 0, dY = 0, dWidth = 0, dHeight = 0, dBaseLineOffset = 0;
+			wchar_t* wsText = pTextClip->GetText(nIndex, &dX, &dY, &dWidth, &dHeight, &dBaseLineOffset, &wsFontName, &wsFontPath, &dFontSize, &lFontStyle);
+
+			m_pRenderer->put_FontName(wsFontName);
+			m_pRenderer->put_FontPath(wsFontPath);
+			m_pRenderer->put_FontSize(dFontSize);
+			m_pRenderer->put_FontStyle(lFontStyle);
+
+			double dShiftX = 0, dShiftY = 0;
+			DoTransform(pTextClip->GetMatrix(nIndex), &dShiftX, &dShiftY, true);
+
+			// TODO: нужна нормальная конвертация
+			int nLen = 0;
+			wchar_t* wsTextTmp = wsText;
+			if (wsTextTmp)
+			{
+				while (*wsTextTmp)
+					++wsTextTmp;
+
+				nLen = (int)(wsTextTmp - wsText);
+			}
+
+			if (1 == nLen)
+				m_pRenderer->PathCommandTextExCHAR(0, (LONG)wsText[0], PDFCoordsToMM(dX), PDFCoordsToMM(dY), PDFCoordsToMM(dWidth), PDFCoordsToMM(dHeight));
+			else if (0 != nLen)
+			{
+				unsigned int* pGids = new unsigned int[nLen];
+				for (int nIndex = 0; nIndex < nLen; ++nIndex)
+					pGids[nIndex] = (unsigned int)wsText[nIndex];
+
+				m_pRenderer->PathCommandTextEx(L"", pGids, nLen, PDFCoordsToMM(dX), PDFCoordsToMM(dY), PDFCoordsToMM(dWidth), PDFCoordsToMM(dHeight));
+
+				RELEASEARRAYOBJECTS(pGids);
+			}
+		}
+
+		m_pRenderer->EndCommand(c_nClipType);
+		m_pRenderer->PathCommandEnd();
+		m_pRenderer->EndConvertCoordsToIdentity();
+	}
+	void RendererOutputDev::UpdateAllClip(GfxState* pGState)
+	{
+		if (m_bDrawOnlyText || m_bTiling)
 			return;
 
 		m_pRenderer->BeginCommand(c_nResetClipType);
@@ -3505,83 +3584,14 @@ namespace PdfReader
 		{
 			GfxClip* pClip = m_sStates[i].pClip;
 			if (pClip)
-			{
-			for (int nIndex = 0; nIndex < pClip->GetPathNum(); nIndex++)
-			{
-				GfxPath* pPath = pClip->GetPath(nIndex);
-				bool    bFlag  = pClip->GetClipEo(nIndex);
-				int  nClipFlag = bFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
-				nClipFlag |= c_nClipRegionIntersect;
-
-				m_pRenderer->BeginCommand(c_nClipType);
-				m_pRenderer->put_ClipMode(nClipFlag);
-				DoPath(pGState, pPath, pGState->getPageHeight(), pGState->getCTM(), &pClip->m_vMatrix[nIndex]);
-				m_pRenderer->EndCommand(c_nPathType);
-				m_pRenderer->EndCommand(c_nClipType);
-				m_pRenderer->PathCommandEnd();
-			}
-			}
+				for (int nIndex = 0, nClipCount = pClip->GetPathNum(); nIndex < nClipCount; nIndex++)
+					AddClip(pGState, &m_sStates[i], nIndex);
 
 			GfxTextClip* pTextClip = m_sStates[i].pTextClip;
-			if (!pTextClip)
-				continue;
-
-			int nTextClipCount = pTextClip->GetTextsCount();
-			if (nTextClipCount > 0)
-			{
-				m_pRenderer->BeginCommand(c_nClipType);
-				m_pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionIntersect);
-				m_pRenderer->StartConvertCoordsToIdentity();
-
-				for (int nIndex = 0; nIndex < nTextClipCount; nIndex++)
-				{
-					wchar_t* wsFontName, *wsFontPath;
-					int lFontStyle;
-					double dFontSize = 10, dX = 0, dY = 0, dWidth = 0, dHeight = 0, dBaseLineOffset = 0;
-					wchar_t* wsText = pTextClip->GetText(nIndex, &dX, &dY, &dWidth, &dHeight, &dBaseLineOffset, &wsFontName, &wsFontPath, &dFontSize, &lFontStyle);
-
-					m_pRenderer->put_FontName(wsFontName);
-					m_pRenderer->put_FontPath(wsFontPath);
-					m_pRenderer->put_FontSize(dFontSize);
-					m_pRenderer->put_FontStyle(lFontStyle);
-
-					double dShiftX = 0, dShiftY = 0;
-					DoTransform(pTextClip->GetMatrix(nIndex), &dShiftX, &dShiftY, true);
-
-					// TODO: нужна нормальная конвертация
-					int nLen = 0;
-					wchar_t* wsTextTmp = wsText;
-					if (wsTextTmp)
-					{
-						while (*wsTextTmp)
-							++wsTextTmp;
-
-						nLen = (int)(wsTextTmp - wsText);
-					}
-
-					if (1 == nLen)
-						m_pRenderer->PathCommandTextExCHAR(0, (LONG)wsText[0], PDFCoordsToMM(dX), PDFCoordsToMM(dY), PDFCoordsToMM(dWidth), PDFCoordsToMM(dHeight));
-					else if (0 != nLen)
-					{
-						unsigned int* pGids = new unsigned int[nLen];
-						for (int nIndex = 0; nIndex < nLen; ++nIndex)
-							pGids[nIndex] = (unsigned int)wsText[nIndex];
-
-						m_pRenderer->PathCommandTextEx(L"", pGids, nLen, PDFCoordsToMM(dX), PDFCoordsToMM(dY), PDFCoordsToMM(dWidth), PDFCoordsToMM(dHeight));
-
-						RELEASEARRAYOBJECTS(pGids);
-					}
-
-				}
-
-				m_pRenderer->EndCommand(c_nPathType);
-				m_pRenderer->EndCommand(c_nClipType);
-				m_pRenderer->PathCommandEnd();
-				m_pRenderer->EndConvertCoordsToIdentity();
-			}
+			if (pTextClip)
+				AddTextClip(pGState, &m_sStates[i]);
 		}
 
-		m_bClipChanged = false;
 		updateFont(pGState);
 	}
 	void RendererOutputDev::DoTransform(double* pMatrix, double* pdShiftX, double* pdShiftY, bool bText)

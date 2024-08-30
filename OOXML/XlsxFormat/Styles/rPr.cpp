@@ -479,6 +479,7 @@ namespace OOX
             ptr.bGreen = 0;
             ptr.bRed = 0;
             ptr.fValidRGB = false;
+			ptr.index = 0;
 
 			if(m_oAuto.IsInit())
 			{
@@ -523,9 +524,10 @@ namespace OOX
 			XLS::BaseObjectPtr objectPtr(ptr);
 
             ptr->bAlpha = 0;
-            ptr->bAlpha = 0;
-            ptr->bAlpha = 0;
-            ptr->bAlpha = 0;
+            ptr->bRed = 0;
+            ptr->bGreen = 0;
+            ptr->bBlue = 0;
+            ptr->index = 0;
             ptr->fValidRGB = false;
 
 			if(m_oAuto.IsInit())

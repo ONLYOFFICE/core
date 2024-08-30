@@ -173,12 +173,10 @@ void BinaryCommonWriter::WriteBorder(const ComplexTypes::Word::CBorder& border)
 	//Val
 		m_oStream.WriteBYTE(c_oSerBorderType::Value);
 		m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-		switch(border.m_oVal.get().GetValue())
-		{
-		case SimpleTypes::bordervalueNone:
-		case SimpleTypes::bordervalueNil:   m_oStream.WriteBYTE(border_None);   break;
-		default:                            m_oStream.WriteBYTE(border_Single); break;
-		}
+
+		int border_type = border.m_oVal.get().GetValue(); 
+		if (border_type > 0x0ff) border_type = 1;
+		m_oStream.WriteBYTE((BYTE)border_type); // todooo change to long type
 	}
 }
 void BinaryCommonWriter::WriteTblBorders(const OOX::Logic::CTblBorders& Borders)

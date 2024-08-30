@@ -1107,6 +1107,16 @@ std::wstring  docx_conversion_context::dump_settings_document()
 			{
 				CP_XML_NODE(L"w:mirrorMargins");
 			}
+
+			_CP_OPT(double) tabDistance = root()->odf_context().Settings().get_tab_distance();
+
+			if (tabDistance)
+			{
+				CP_XML_NODE(L"w:defaultTabStop")
+				{
+					CP_XML_ATTR(L"w:val", *tabDistance);
+				}
+			}
 			
 			CP_XML_NODE(L"w:compat")
 			{
@@ -1840,6 +1850,8 @@ void docx_conversion_context::start_list(const std::wstring & StyleName, bool Co
         list_style_stack_.push_back(list_style_stack_.back());
     else
         list_style_stack_.push_back(L"");
+
+	list_styles_occurances_[list_style_stack_.back()]++;
 }
 
 void docx_conversion_context::end_list()
@@ -1855,6 +1867,32 @@ std::wstring docx_conversion_context::current_list_style()
         return L"";
 }
 
+static _CP_PTR(odf_reader::text_list_style) create_restarted_list_style(docx_conversion_context& context, const std::wstring& curStyleName, const std::wstring& newStyleName)
+{
+	odf_reader::list_style_container& lists = context.root()->odf_context().listStyleContainer();
+
+	odf_reader::text_list_style* curStyle = lists.list_style_by_name(curStyleName);
+	_CP_PTR(odf_reader::text_list_style) newStyle = boost::make_shared<odf_reader::text_list_style>(*curStyle);
+
+	newStyle->attr_.style_name_ = newStyleName;
+
+	const std::vector<std::wstring>& style_stack = context.get_list_style_stack();
+
+	for (const std::wstring& s : style_stack)
+	{
+		for (size_t i = 0; i < newStyle->content_.size() && i < style_stack.size() - 1; i++)
+		{
+			odf_reader::text_list_level_style_number* level_style_number =
+				dynamic_cast<odf_reader::text_list_level_style_number*>(newStyle->content_[i].get());
+
+			if (level_style_number)
+				level_style_number->text_list_level_style_number_attr_.text_start_value_ = context.get_list_style_occurances(s) + 1;
+		}
+	}
+
+	return newStyle;
+}
+
 void docx_conversion_context::start_list_item(bool restart)
 {
     first_element_list_item_ = true;
@@ -1867,7 +1905,10 @@ void docx_conversion_context::start_list_item(bool restart)
         odf_reader::list_style_container & lists = root()->odf_context().listStyleContainer();
        
 		odf_reader::text_list_style * curStyle = lists.list_style_by_name(curStyleName);
-        lists.add_list_style(curStyle, newStyleName);
+		_CP_PTR(odf_reader::text_list_style) newStyle = create_restarted_list_style(*this, curStyleName, newStyleName);
+		restarted_list_styles.push_back(newStyle);
+		
+        lists.add_list_style(newStyle.get());
         end_list();
         start_list(newStyleName);
     }

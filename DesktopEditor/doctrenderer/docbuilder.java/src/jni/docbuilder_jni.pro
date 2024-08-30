@@ -18,8 +18,13 @@ ADD_DEPENDENCY(graphics, kernel, kernel_network, UnicodeConverter, doctrenderer)
 
 INCLUDEPATH += ../../..
 
-# Specify JDK path here
-JDK_PATH = "C:/Program Files/Java/jdk-22"
+# get path to JDK from environment variable JAVA_HOME (preferable way) or take the default one
+JDK_PATH = $$(JAVA_HOME)
+isEmpty(JDK_PATH) {
+	core_windows:JDK_PATH = "C:/Program Files/Java/jdk1.8.0_202"
+	core_linux:JDK_PATH = "/usr/lib/jvm/java-8-openjdk-amd64"
+	core_mac:JDK_PATH = "/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home"
+}
 
 INCLUDEPATH += $$JDK_PATH/include
 

@@ -271,7 +271,9 @@ namespace PdfReader
 
 		void DoPath(GfxState *pGState, GfxPath *pPath, double dPageHeight, double *pCTM, GfxClipMatrix* pCTM2 = NULL);
 		void ClipToText(const std::wstring& wsFontName, const std::wstring& wsFontPath, double dFontSize, int nFontStyle, double* pMatrix, const std::wstring& wsText, double dX, double dY, double dWidth = 0, double dHeight = 0, double dBaseLineOffset = 0);
-		void updateClip(GfxState *pGState);
+		void AddClip(GfxState* pGState, GfxOutputState* pState, int nIndex);
+		void AddTextClip(GfxState* pGState, GfxOutputState* pState = NULL);
+		void UpdateAllClip(GfxState *pGState);
 		void DoTransform(double *pMatrix, double *pdShiftX, double *pdShiftY, bool bText = false);
 	private:
 
@@ -287,7 +289,6 @@ namespace PdfReader
 
 		std::deque<GfxOutputCS>       m_sCS;
 		std::deque<GfxOutputState>    m_sStates;
-		bool                          m_bClipChanged;
 
 		Aggplus::CSoftMask*           m_pSoftMask;
 		bool                          m_bTiling;

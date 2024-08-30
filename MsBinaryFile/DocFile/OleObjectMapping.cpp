@@ -45,49 +45,47 @@ namespace DocFileFormat
 
 	void OleObjectMapping::Apply(IVisitable* visited)
 	{
-		OleObject* ole = static_cast<OleObject*>(visited);
+		OleObject* ole = dynamic_cast<OleObject*>(visited);
+		if (!ole) return;
+		
+		if (ole->isEmbedded || ole->isPackage)
+		{
+			if (ole->isEquation) ole->ClipboardFormat = L"Equation";
+			else if (ole->ClipboardFormat.empty()) ole->ClipboardFormat = L"MSWordDocx";
 
-		if ( ole != NULL )
+			ole->Program = L"Word.Document";
+		}
+		m_pXmlWriter->WriteNodeBegin(L"o:OLEObject", TRUE);
+
+		int relID = -1;
+
+		if (ole->isLinked)
+		{
+			relID = m_context->_docx->RegisterExternalOLEObject(_caller, ole->ClipboardFormat, ole->Link);
+
+			m_pXmlWriter->WriteAttribute(L"Type", L"Link");
+			m_pXmlWriter->WriteAttribute(L"UpdateMode", ole->UpdateMode);
+		}
+		else
 		{
 			if (ole->isEmbedded || ole->isPackage)
-			{
-				if (ole->isEquation) ole->ClipboardFormat	= L"Equation";
-				else if (ole->ClipboardFormat.empty()) ole->ClipboardFormat	= L"MSWordDocx";
-
-				ole->Program = L"Word.Document";
-			}
-			m_pXmlWriter->WriteNodeBegin( L"o:OLEObject", TRUE );
-
-			int relID = -1;
-
-			if ( ole->isLinked)
-			{
-				relID = m_context->_docx->RegisterExternalOLEObject(_caller, ole->ClipboardFormat, ole->Link);
-
-				m_pXmlWriter->WriteAttribute( L"Type", L"Link" );
-				m_pXmlWriter->WriteAttribute( L"UpdateMode", ole->UpdateMode);
-			}
+				relID = m_context->_docx->RegisterPackage(_caller, ole->ClipboardFormat);
 			else
-			{
-				if (ole->isEmbedded || ole->isPackage)
-					relID = m_context->_docx->RegisterPackage(_caller, ole->ClipboardFormat);
-				else
-					relID = m_context->_docx->RegisterOLEObject(_caller, ole->ClipboardFormat);
+				relID = m_context->_docx->RegisterOLEObject(_caller, ole->ClipboardFormat);
 
-				m_pXmlWriter->WriteAttribute( L"Type", L"Embed" );
+			m_pXmlWriter->WriteAttribute(L"Type", L"Embed");
 
-				copyEmbeddedObject( ole );
-			}
-
-			m_pXmlWriter->WriteAttribute( L"ProgID", ole->Program);
-			m_pXmlWriter->WriteAttribute( L"ShapeID", _shapeId);
-			m_pXmlWriter->WriteAttribute( L"DrawAspect", L"Content" );
-			m_pXmlWriter->WriteAttribute( L"ObjectID", ole->ObjectId);
-			m_pXmlWriter->WriteAttribute( L"r:id", L"rId"+ FormatUtils::IntToWideString( relID ) );
-			m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
-
-			m_pXmlWriter->WriteNodeEnd( L"o:OLEObject" );
+			copyEmbeddedObject(ole);
 		}
+
+		m_pXmlWriter->WriteAttribute(L"ProgID", ole->Program);
+		m_pXmlWriter->WriteAttribute(L"ShapeID", _shapeId);
+		m_pXmlWriter->WriteAttribute(L"DrawAspect", L"Content");
+		m_pXmlWriter->WriteAttribute(L"ObjectID", ole->ObjectId);
+		m_pXmlWriter->WriteAttribute(L"r:id", L"rId" + FormatUtils::IntToWideString(relID));
+		m_pXmlWriter->WriteNodeEnd(L"", TRUE, FALSE);
+
+		m_pXmlWriter->WriteNodeEnd(L"o:OLEObject");
 	}
 
 	std::wstring OleObjectMapping::GetTargetExt(const std::wstring& objectType)

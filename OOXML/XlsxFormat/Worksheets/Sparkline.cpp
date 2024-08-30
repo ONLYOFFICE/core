@@ -39,6 +39,7 @@
 #include "../../XlsbFormat/Biff12_unions/SPARKLINEGROUP.h"
 #include "../../XlsbFormat/Biff12_records/BeginSparklineGroup.h"
 #include "../../XlsbFormat/Biff12_records/Sparkline.h"
+#include "../../XlsbFormat/Biff12_records/FRTBegin.h"
 
 namespace OOX
 {
@@ -111,6 +112,10 @@ namespace OOX
 			if(m_oSqRef.IsInit())
 			{
 				XLSB::FRTSqref sqref;
+				sqref.fAdjDelete = false;
+				sqref.fDoAdjust = false;
+				sqref.fAdjChange = false;
+				sqref.fEdit = false;
 				sqref.sqrfx.strValue = m_oSqRef.get();
 				ptr->FRTheader.rgSqrefs.array.push_back(sqref);
 				ptr->FRTheader.fSqref = true;
@@ -773,6 +778,10 @@ namespace OOX
 		{
 			auto ptr(new XLSB::SPARKLINEGROUPS);
 			XLS::BaseObjectPtr objectPtr(ptr);
+            auto sparklineVersion(new XLSB::FRTBegin);
+            sparklineVersion->productVersion.product = 0;
+            sparklineVersion->productVersion.version = 0;
+            ptr->m_BrtFRTBegin = XLS::BaseObjectPtr{sparklineVersion};
 			for(auto i:m_arrItems)
 				ptr->m_arSPARKLINEGROUP.push_back(i->toBin());
 			return objectPtr;

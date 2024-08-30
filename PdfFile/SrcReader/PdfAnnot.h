@@ -172,6 +172,7 @@ protected:
 	CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
 	std::string DictLookupString(Object* pObj, const char* sName, int nByte);
 
+	unsigned int m_unAFlags;
 	unsigned int m_unFlags;
 	double m_dHeight; // Высота холста, для Y трансформации
 	double m_dX; // Смещение по X для трансформации
@@ -193,7 +194,6 @@ private:
 	};
 	CBorderType* getBorder(Object* oBorder, bool bBSorBorder);
 
-	unsigned int m_unAFlags;
 	unsigned int m_unAnnotFlag; // Флаг аннотации - F
 	unsigned int m_unRefNum; // Номер ссылки на объект
 	unsigned int m_unPage; // Страница

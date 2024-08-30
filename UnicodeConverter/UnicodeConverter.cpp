@@ -131,7 +131,7 @@ namespace NSUnicodeConverter
 								char *sResCur = sResStart;
 								const char *sResLimit = sResCur + nOutputLen * ucnv_getMaxCharSize(conv);
 
-								ucnv_fromUnicode(conv, &sResCur, sResLimit, &pOutputStart, pOutputLimit, NULL, TRUE, &status);
+								ucnv_fromUnicode(conv, &sResCur, sResLimit, &pOutputStart, pOutputLimit, NULL, true, &status);
 								if (U_SUCCESS(status))
 								{
 									sRes = std::string(sResStart, sResCur - sResStart);
@@ -180,7 +180,7 @@ namespace NSUnicodeConverter
 						char *sResCur = sResStart;
 						const char *sResLimit = sResCur + sRes.size();
 
-						ucnv_fromUnicode(conv, &sResCur, sResLimit, &pUCharStart, pUCharLimit, NULL, TRUE, &status);
+						ucnv_fromUnicode(conv, &sResCur, sResLimit, &pUCharStart, pUCharLimit, NULL, true, &status);
 						if (U_SUCCESS(status))
 						{
 							sRes.resize(sResCur - sResStart);
@@ -223,7 +223,7 @@ namespace NSUnicodeConverter
 						UChar* target = targetStart;
 						UChar* targetLimit = target + uBufSize;
 
-						ucnv_toUnicode(conv, &target, targetLimit, &source, sourceLimit, NULL, TRUE, &status);
+						ucnv_toUnicode(conv, &target, targetLimit, &source, sourceLimit, NULL, true, &status);
 						if (U_SUCCESS(status))
 						{
 							size_t nTargetSize = target - targetStart;
@@ -278,7 +278,7 @@ namespace NSUnicodeConverter
 						UChar* target = targetStart;
 						UChar* targetLimit = target + uBufSize;
 
-						ucnv_toUnicode(conv, &target, targetLimit, &source, sourceLimit, NULL, TRUE, &status);
+						ucnv_toUnicode(conv, &target, targetLimit, &source, sourceLimit, NULL, true, &status);
 						if (U_SUCCESS(status))
 						{
 							size_t nTargetSize = target - targetStart;

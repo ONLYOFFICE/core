@@ -212,6 +212,8 @@ void OOX::Spreadsheet::CXlsb::ReadSheetData()
             continue;
 
         auto m_lStreamLen = (LONG)oFile.GetFileSize();
+        if(dataPosition > m_lStreamLen)
+            continue;
         auto m_pStream = new BYTE[m_lStreamLen];
         DWORD dwRead = 0;
         oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen, dwRead);

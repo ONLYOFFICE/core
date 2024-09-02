@@ -47,8 +47,6 @@ namespace PPTX
 			WritingElement_AdditionMethods(LineJoin)
 			PPTX_LOGIC_BASE2(LineJoin)
 
-			virtual bool is_init() const;
-
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual OOX::EElementType getType () const;
 

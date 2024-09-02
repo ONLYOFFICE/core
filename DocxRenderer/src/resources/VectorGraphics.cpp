@@ -49,6 +49,7 @@ namespace NSDocxRenderer
 				const auto& point1 = points[idx + 1];
 				const auto& point2 = points[idx + 2];
 				CurveTo(point.X, point.Y, point1.X, point1.Y, point2.X, point2.Y);
+				idx += 2;
 			}
 		}
 		Close();

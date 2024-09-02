@@ -3,6 +3,7 @@
 #ifdef JSON_GOOGLE_TEST
 #include "gtest/gtest.h"
 #include <algorithm>
+#include <limits>
 #else
 #include <iostream>
 #endif
@@ -899,6 +900,235 @@ TEST_F(CJSONTest, serialization_with_script)
 	EXPECT_TRUE(compare(obj, args[0]));
 }
 
+// ----------- CValue::ToJSON() tests -----------
+TEST_F(CJSONTest, ToJSON_undefined)
+{
+	CValue val = CValue::CreateUndefined();
+	EXPECT_EQ(val.ToJSON(), "");
+}
+
+TEST_F(CJSONTest, ToJSON_null)
+{
+	CValue val = CValue::CreateNull();
+	EXPECT_EQ(val.ToJSON(), "null");
+}
+
+TEST_F(CJSONTest, ToJSON_bool)
+{
+	CValue val(false);
+	EXPECT_EQ(val.ToJSON(), "false");
+	val = true;
+	EXPECT_EQ(val.ToJSON(), "true");
+}
+
+TEST_F(CJSONTest, ToJSON_int)
+{
+	CValue val = 42;
+	EXPECT_EQ(val.ToJSON(), "42");
+	val = 0;
+	EXPECT_EQ(val.ToJSON(), "0");
+	val = -73;
+	EXPECT_EQ(val.ToJSON(), "-73");
+	val = INT_MIN;
+	EXPECT_EQ(val.ToJSON(), "-2147483648");
+	val = INT_MAX;
+	EXPECT_EQ(val.ToJSON(), "2147483647");
+}
+
+TEST_F(CJSONTest, ToJSON_double)
+{
+	CValue val = 4.2;
+	EXPECT_EQ(val.ToJSON(), "4.2");
+	val = 42.0;
+	EXPECT_EQ(val.ToJSON(), "42");
+	val = 0.0;
+	EXPECT_EQ(val.ToJSON(), "0");
+	val = 3.1415926535;
+	EXPECT_EQ(val.ToJSON(), "3.1415926535");
+	val = (double)INT_MIN;
+	EXPECT_EQ(val.ToJSON(), "-2147483648");
+	val = (double)INT_MAX;
+	EXPECT_EQ(val.ToJSON(), "2147483647");
+}
+
+TEST_F(CJSONTest, ToJSON_double_critical_values)
+{
+	CValue val = 8e30;
+	EXPECT_EQ(val.ToJSON(), "8e+30");
+	val = 8e-30;
+	EXPECT_EQ(val.ToJSON(), "8e-30");
+
+	val = INFINITY;
+	EXPECT_EQ(val.ToJSON(), "null");
+	val = NAN;
+	EXPECT_EQ(val.ToJSON(), "null");
+	val = -INFINITY;
+	EXPECT_EQ(val.ToJSON(), "null");
+
+	val = std::numeric_limits<double>::max();
+	std::string strResult = val.ToJSON();
+	// we cannot expect predefined specified result from this test case so just check if it is not empty
+	EXPECT_TRUE(!strResult.empty());
+	EXPECT_TRUE(strResult != "null");
+
+	val = std::numeric_limits<double>::min();
+	strResult = val.ToJSON();
+	// we cannot expect predefined specified result from this test case so just check if it is not empty
+	EXPECT_TRUE(!strResult.empty());
+	EXPECT_TRUE(strResult != "null");
+}
+
+TEST_F(CJSONTest, ToJSON_string)
+{
+	CValue val = "  test   ";
+	EXPECT_EQ(val.ToJSON(), "\"  test   \"");
+	val = "";
+	EXPECT_EQ(val.ToJSON(), "\"\"");
+	val = L"  test ";
+	EXPECT_EQ(val.ToJSON(), "\"  test \"");
+	// test parsing of special symbols inside strings
+	val = "foo: {bar: 42}[} ,))";
+	EXPECT_EQ(val.ToJSON(), "\"foo: {bar: 42}[} ,))\"");
+}
+
+TEST_F(CJSONTest, ToJSON_string_backslashed_characters)
+{
+	// For this test cases results are quite unusual.
+	// So the results are compared with JSON.stringify() alternative instead of hard-coded expected strings.
+	CValue val = "HEL\"LO";
+	std::string strRes = val.ToJSON();
+	std::string strExpected = m_pContext->JSON_Stringify(CJSContext::createString(val.ToStringA()));
+	// EXPECT_EQ(strRes, "\"HEL\\\"LO\"");
+	EXPECT_EQ(strRes, strExpected);
+
+	val = "HEL\\/LO";
+	strRes = val.ToJSON();
+	strExpected = m_pContext->JSON_Stringify(CJSContext::createString(val.ToStringA()));
+	// EXPECT_EQ(strRes, "\"HEL\\\\/LO\"");
+	EXPECT_EQ(strRes, strExpected);
+
+	val = "\tH\bE\fL\nL\nO\r";
+	strRes = val.ToJSON();
+	strExpected = m_pContext->JSON_Stringify(CJSContext::createString(val.ToStringA()));
+	// EXPECT_EQ(strRes, "\"\\tH\\bE\\fL\\nL\\nO\\r\"");
+	EXPECT_EQ(strRes, strExpected);
+
+	// other symbols
+	std::string spec = "/";
+	for (char ch = 0; ch <= 0x1F; ch++)
+	{
+		spec += ch;
+	}
+	spec += '/';
+
+	val = spec;
+	strRes = val.ToJSON();
+	strExpected = m_pContext->JSON_Stringify(CJSContext::createString(val.ToStringA()));
+	EXPECT_EQ(strRes, strExpected);
+}
+
+TEST_F(CJSONTest, ToJSON_typed_arrays)
+{
+	BYTE* data = CValue::AllocTypedArray(4);
+	data[0] = 0x1A;
+	data[1] = 0x54;
+	data[2] = 0xFE;
+	data[3] = 0xFF;
+	CValue typedArr = CValue::CreateTypedArray(data, 4, false);
+	EXPECT_EQ(typedArr.ToJSON(), "{\"0\":26,\"1\":84,\"2\":254,\"3\":255}");
+}
+
+TEST_F(CJSONTest, ToJSON_arrays)
+{
+	CValue arr = CValue::CreateArray(0);
+	EXPECT_EQ(arr.ToJSON(), "[]");
+
+	arr = CValue::CreateArray(4);
+	arr[0] = 42;
+	arr[1] = "foo";
+	arr[2] = 2.71828;
+	EXPECT_EQ(arr.ToJSON(), "[42,\"foo\",2.71828,null]");
+
+	CValue arrInner = {CValue::CreateNull(), 73.0};
+	arr[3] = arrInner;
+	EXPECT_EQ(arr.ToJSON(), "[42,\"foo\",2.71828,[null,73]]");
+}
+
+TEST_F(CJSONTest, ToJSON_arrays_complex)
+{
+	BYTE* data = CValue::AllocTypedArray(5);
+	data[0] = 0x1A;
+	data[1] = 0x54;
+	data[2] = 0xFE;
+	data[3] = 0xFF;
+	data[0] = 0x00;
+	CValue typedArr = CValue::CreateTypedArray(data, 5, false);
+
+	CValue arrInner = {true, 42, L"test function ToJSON()", 2.71828, CValue(), "abc de f", L"test"};
+	CValue arr = {0, arrInner, arrInner, CValue::CreateNull(), arrInner, CValue::CreateArray(4), typedArr};
+
+	std::string strRes = arr.ToJSON();
+	std::string strExpected = m_pContext->JSON_Stringify(toJS(arr));
+	EXPECT_EQ(strRes, strExpected);
+}
+
+TEST_F(CJSONTest, ToJSON_arrays_circular)
+{
+	// NOTE: BE CAREFULL WHEN CREATING CIRCULAR REFERENCE DEPENDENCY IN YOUR ARRAY OR OBJECT!
+	CValue arr = CValue::CreateArray(2);
+	CValue ref = arr;
+	arr[0] = 3;
+	arr[1] = ref;
+
+	// here you will get stack overflow, because each inner array reference will be recursively converted to JSON-string
+	// arr.ToJSON();
+
+	// remove recursions
+	CValue arrRec = arr[1][1];
+	arrRec[1] = 42;
+
+	EXPECT_EQ(arr.ToJSON(), "[3,42]");
+}
+
+TEST_F(CJSONTest, ToJSON_objects)
+{
+	CValue obj = CValue::CreateObject();
+	EXPECT_EQ(obj.ToJSON(), "{}");
+
+	obj["name"] = "Foo";
+	obj["number"] = 42;
+	EXPECT_EQ(obj.ToJSON(), "{\"name\":\"Foo\",\"number\":42}");
+
+	obj["undef"] = CValue::CreateUndefined();
+	obj["null"] = CValue::CreateNull();
+	EXPECT_EQ(obj.ToJSON(), "{\"name\":\"Foo\",\"number\":42,\"null\":null}");
+}
+
+TEST_F(CJSONTest, ToJSON_objects_complex)
+{
+	CValue obj = CValue::CreateObject();
+
+	obj["name"] = L"Foo";
+	obj["parameters"] = CValue::CreateObject();
+	CValueRef parameters = obj["parameters"];
+	parameters["0"] = 0;
+	parameters["size"] = 42;
+	parameters["arr"] = {CValue::CreateNull(), CValue::CreateArray(1), {42, L"test function ToJSON()", 2.71828}, CValue::CreateObject(), CValue(), "abc de f", L"test"};
+
+	BYTE* data = CValue::AllocTypedArray(4);
+	data[0] = 0x1A;
+	data[1] = 0x54;
+	data[2] = 0xFE;
+	data[3] = 0xFF;
+	CValue typedArr = CValue::CreateTypedArray(data, 4, false);
+	obj["typed"] = typedArr;
+	// property without a name
+	obj[""] = "Bar";
+
+	std::string strRes = obj.ToJSON();
+	std::string strExpected = m_pContext->JSON_Stringify(toJS(obj));
+	EXPECT_EQ(strRes, strExpected);
+}
 #else
 int main()
 {

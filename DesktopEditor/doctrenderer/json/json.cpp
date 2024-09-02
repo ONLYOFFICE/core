@@ -5,6 +5,11 @@
 // for working with typed arrays: Alloc() and Free()
 #include "js_base.h"
 
+// for converting primitive types to JSON-string
+#include <sstream>
+#include <limits>
+#include <iomanip>
+
 namespace NSJSON
 {
 	CTypedValue::CTypedValue() : m_type(vtUndefined)
@@ -173,6 +178,177 @@ namespace NSJSON
 	IValue::operator std::wstring() const
 	{
 		return ToStringW();
+	}
+
+	namespace
+	{
+		std::string doubleToJsonString(double value)
+		{
+			// handle special cases
+			if (std::isnan(value) || std::isinf(value))
+				return "null";
+
+			// convert to string with full precision
+			std::ostringstream oss;
+			oss.precision(std::numeric_limits<double>::digits10);
+			oss << std::noshowpoint << value;
+
+			return oss.str();
+		}
+
+		std::string stringToJsonString(const std::string& value)
+		{
+			std::string result;
+			for (char ch : value)
+			{
+				if (ch <= 0x1F)
+				{
+					result += '\\';
+					if (ch == '\b')
+					{
+						result += 'b';
+					}
+					else if (ch == '\t')
+					{
+						result += 't';
+					}
+					else if (ch == '\n')
+					{
+						result += 'n';
+					}
+					else if (ch == '\f')
+					{
+						result += 'f';
+					}
+					else if (ch == '\r')
+					{
+						result += 'r';
+					}
+					else
+					{
+						result += "u00";
+						std::ostringstream oss;
+						oss << std::setfill('0') << std::setw(2) << std::hex << (int)ch;
+						result += oss.str();
+					}
+				}
+				else if (ch == '\\')
+				{
+					result += "\\\\";
+				}
+				else if (ch == '\"')
+				{
+					result += "\\\"";
+				}
+				else
+				{
+					result += ch;
+				}
+			}
+
+			return result;
+		}
+	}
+
+	std::string IValue::ToJSON()
+	{
+		std::string strRes;
+		CTypedValue::ValueType type = m_internal->m_type;
+		switch (type)
+		{
+		case CTypedValue::vtUndefined:
+		{
+			break;
+		}
+		case CTypedValue::vtNull:
+		{
+			strRes = "null";
+			break;
+		}
+		case CTypedValue::vtPrimitive:
+		{
+			CPrimitive* pPrimitiveValue = static_cast<CPrimitive*>(m_internal->m_value.get());
+			if (pPrimitiveValue->isBool())
+			{
+				strRes = pPrimitiveValue->toBool() ? "true" : "false";
+			}
+			else if (pPrimitiveValue->isInt())
+			{
+				strRes = std::to_string(pPrimitiveValue->toInt());
+			}
+			else if (pPrimitiveValue->isDouble())
+			{
+				strRes = doubleToJsonString(pPrimitiveValue->toDouble());
+			}
+			else
+			{
+				strRes = "\"" + stringToJsonString(pPrimitiveValue->toStringA()) + "\"";
+			}
+			break;
+		}
+		case CTypedValue::vtArray:
+		{
+			CArray* pArrayValue = static_cast<CArray*>(m_internal->m_value.get());
+			strRes = "[";
+			const int len = pArrayValue->getCount();
+			for (int i = 0; i < len; i++)
+			{
+				CValue& value = pArrayValue->get(i);
+				if (value.IsUndefined())
+					strRes += "null";
+				else
+					strRes += value.ToJSON();
+				strRes += ',';
+			}
+			// remove last ','
+			if (strRes.back() == ',')
+				strRes.pop_back();
+			strRes += "]";
+			break;
+		}
+		case CTypedValue::vtTypedArray:
+		{
+			CTypedArray* pTypedArrayValue = static_cast<CTypedArray*>(m_internal->m_value.get());
+			strRes += "{";
+			const int size = pTypedArrayValue->getCount();
+			BYTE* data = pTypedArrayValue->getData();
+			for (int i = 0; i < size; i++)
+			{
+				strRes += "\"" + std::to_string(i) + "\":";
+				strRes += std::to_string((int)data[i]);
+				strRes += ',';
+			}
+			// remove last ','
+			if (strRes.back() == ',')
+				strRes.pop_back();
+			strRes += "}";
+			break;
+		}
+		case CTypedValue::vtObject:
+		{
+			CObject* pObjectValue = static_cast<CObject*>(m_internal->m_value.get());
+			strRes += "{";
+			std::vector<std::string> propertyNames = pObjectValue->getPropertyNames();
+			const int count = propertyNames.size();
+			for (int i = 0; i < count; i++)
+			{
+				CValue& value = pObjectValue->get(propertyNames[i]);
+				if (value.IsUndefined())
+					continue;
+
+				strRes += "\"" + propertyNames[i] + "\":";
+				strRes += value.ToJSON();
+				strRes += ',';
+			}
+			// remove last ','
+			if (strRes.back() == ',')
+				strRes.pop_back();
+			strRes += "}";
+			break;
+		}
+		}
+
+		return strRes;
 	}
 
 	IValue::IValue(bool value) : m_internal(new CTypedValue(new CPrimitive(value), CTypedValue::vtPrimitive))
@@ -428,6 +604,12 @@ namespace NSJSON
 		CValue ret;
 		ret.m_internal->m_type = CTypedValue::vtNull;
 		return ret;
+	}
+
+	CValue CValue::FromJSON(const std::string& jsonString)
+	{
+		// TODO:
+		return CValue();
 	}
 
 	CValueRef::CValueRef(const CValueRef& other) : IValue(other.m_internal)

@@ -474,7 +474,7 @@ namespace OOX
 		{
 			XLSB::Color ptr;
 
-            ptr.bAlpha = 0;
+            ptr.bAlpha = 255;
             ptr.bBlue = 0;
             ptr.bGreen = 0;
             ptr.bRed = 0;

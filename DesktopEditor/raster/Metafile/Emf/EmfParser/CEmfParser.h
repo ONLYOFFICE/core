@@ -20,7 +20,7 @@ namespace MetaFile
 
 		void            ClearFile()                                 override;
 
-		EmfParserType   GetType()                                   override;
+		EmfParserType   GetType()                                   const override;
 		void            SetStream(BYTE* pBuf, unsigned int unSize);
 	private:
 		CEmfPlusParser  *m_pEmfPlusParser;

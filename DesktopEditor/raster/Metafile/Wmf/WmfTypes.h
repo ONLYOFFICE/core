@@ -230,7 +230,7 @@ namespace MetaFile
 			h = 1;
 		}
 
-		void Copy(TWmfWindow& oOther)
+		void Copy(const TWmfWindow& oOther)
 		{
 			x = oOther.x;
 			y = oOther.y;

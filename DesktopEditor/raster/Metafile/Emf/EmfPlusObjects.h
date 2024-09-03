@@ -93,7 +93,7 @@ namespace MetaFile
 		CEmfPlusObject(){};
 		virtual ~CEmfPlusObject(){};
 
-		virtual EEmfPlusObjectType GetObjectType()
+		virtual EEmfPlusObjectType GetObjectType() const
 		{
 			return ObjectTypeInvalid;
 		}
@@ -173,21 +173,21 @@ namespace MetaFile
 	public:
 		CEmfPlusBrush();
 		virtual ~CEmfPlusBrush();
-		virtual EEmfObjectType GetType();
-		virtual EEmfPlusObjectType GetObjectType();
+		virtual EEmfObjectType GetType()           const override;
+		virtual EEmfPlusObjectType GetObjectType() const override;
 
 		// IBrush
-		int          GetColor();
-		int          GetColor2();
-		unsigned int GetStyle();
-		unsigned int GetStyleEx();
-		unsigned int GetHatch();
-		unsigned int GetAlpha();
-		unsigned int GetAlpha2();
-		std::wstring GetDibPatterPath();
-		void         GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight);
-		void         GetCenterPoint(double& dX, double& dY);
-		void         GetBounds(double& left, double& top, double& width, double& height);
+		int          GetColor()         const override;
+		int          GetColor2()        const override;
+		unsigned int GetStyle()         const override;
+		unsigned int GetStyleEx()       const override;
+		unsigned int GetHatch()         const override;
+		unsigned int GetAlpha()         const override;
+		unsigned int GetAlpha2()        const override;
+		std::wstring GetDibPatterPath() const override;
+		void         GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight) const override;
+		void         GetCenterPoint(double& dX, double& dY) const override;
+		void         GetBounds(double& left, double& top, double& width, double& height) const override;
 
 	public:
 		TEmfPlusARGB   oColor;
@@ -205,17 +205,17 @@ namespace MetaFile
 	public:
 		CEmfPlusPen();
 		virtual ~CEmfPlusPen();
-		virtual EEmfObjectType GetType();
-		virtual EEmfPlusObjectType GetObjectType();
+		virtual EEmfObjectType GetType()           const override;
+		virtual EEmfPlusObjectType GetObjectType() const override;
 
 		// IPen
-		int          GetColor();
-		unsigned int GetStyle();
-		double       GetWidth();
-		unsigned int GetAlpha();
-		double       GetMiterLimit();
-		double       GetDashOffset();
-		void         GetDashData(double*& arDatas, unsigned int& unSize);
+		int          GetColor()      const override;
+		unsigned int GetStyle()      const override;
+		double       GetWidth()      const override;
+		unsigned int GetAlpha()      const override;
+		double       GetMiterLimit() const override;
+		double       GetDashOffset() const override;
+		void         GetDashData(double*& arDatas, unsigned int& unSize) const override;
 
 	public:
 		unsigned int   unStyle;
@@ -236,19 +236,19 @@ namespace MetaFile
 	public:
 		CEmfPlusFont();
 		virtual ~CEmfPlusFont();
-		virtual EEmfObjectType GetType();
-		virtual EEmfPlusObjectType GetObjectType();
+		virtual EEmfObjectType GetType()           const override;
+		virtual EEmfPlusObjectType GetObjectType() const override;
 
 		// IFont
-		double       GetHeight();
-		std::wstring GetFaceName();
-		int          GetWeight();
-		bool         IsItalic();
-		bool         IsStrikeOut();
-		bool         IsUnderline();
-		int          GetEscapement();
-		int          GetCharSet();
-		int          GetOrientation();
+		double       GetHeight()      const override;
+		std::wstring GetFaceName()    const override;
+		int          GetWeight()      const override;
+		bool         IsItalic()       const override;
+		bool         IsStrikeOut()    const override;
+		bool         IsUnderline()    const override;
+		int          GetEscapement()  const override;
+		int          GetCharSet()     const override;
+		int          GetOrientation() const override;
 
 	public:
 		double       m_dEmSize;
@@ -272,7 +272,7 @@ namespace MetaFile
 	public:
 		CEmfPlusBuffer();
 		virtual ~CEmfPlusBuffer();
-		virtual EEmfPlusObjectType GetObjectType();
+		virtual EEmfPlusObjectType GetObjectType() const override;
 
 		void         SetSize(unsigned int unSize);
 		unsigned int GetSize() const;
@@ -293,7 +293,7 @@ namespace MetaFile
 		CEmfPlusPath();
 		CEmfPlusPath(CEmfPlusPath* pPath);
 		virtual ~CEmfPlusPath();
-		virtual EEmfPlusObjectType GetObjectType() override;
+		virtual EEmfPlusObjectType GetObjectType() const override;
 
 		TRectD GetBounds() const;
 	};
@@ -311,7 +311,7 @@ namespace MetaFile
 	{
 	public:
 		CEmfPlusImageAttributes();
-		virtual EEmfPlusObjectType GetObjectType() override;
+		virtual EEmfPlusObjectType GetObjectType() const override;
 
 	public:
 		EEmfPlusWrapMode eWrapMode;
@@ -329,7 +329,7 @@ namespace MetaFile
 	{
 	public:
 		CEmfPlusImage();
-		virtual EEmfPlusObjectType GetObjectType() override;
+		virtual EEmfPlusObjectType GetObjectType() const override;
 
 		void                     SetImageDataType(unsigned int unImageDataType);
 		EEmfPlusImageDataType    GetImageDataType() const;
@@ -374,8 +374,8 @@ namespace MetaFile
 		CEmfPlusRegionNode();
 		virtual ~CEmfPlusRegionNode();
 
-		EEmfPlusRegionNodeDataType GetType()     const;
-		EEmfPLusRegionNodeType     GetNodeType() const;
+		virtual EEmfPlusRegionNodeDataType GetType()     const;
+		virtual EEmfPLusRegionNodeType     GetNodeType() const;
 
 	public:
 		EEmfPlusRegionNodeDataType eType;
@@ -387,7 +387,7 @@ namespace MetaFile
 		CEmfPlusRegionNodePath();
 		virtual ~CEmfPlusRegionNodePath();
 
-		EEmfPLusRegionNodeType GetNodeType();
+		EEmfPLusRegionNodeType GetNodeType() const override;
 
 		bool          Empty() const;
 		CEmfPlusPath* GetPath() const;
@@ -402,9 +402,9 @@ namespace MetaFile
 		CEmfPlusRegionNodeRectF();
 		virtual ~CEmfPlusRegionNodeRectF();
 		
-		EEmfPLusRegionNodeType GetNodeType();
+		EEmfPLusRegionNodeType GetNodeType() const override;
 
-		bool           Empty() const;
+		bool           Empty()   const;
 		TEmfPlusRectF* GetRect() const;
 
 	public:
@@ -417,9 +417,9 @@ namespace MetaFile
 		CEmfPlusRegionNodeChild();
 		virtual ~CEmfPlusRegionNodeChild();
 
-		EEmfPLusRegionNodeType GetNodeType();
+		EEmfPLusRegionNodeType GetNodeType() const override;
 		
-		void DrawOnClip(CClip& oClip, const TXForm& oTransform, TRectL *pOutRect = NULL);
+		void DrawOnClip(CClip& oClip, const TXForm& oTransform, const TRectL* pOutRect = NULL);
 	public:
 		CEmfPlusRegionNode *pLeft, *pRigth;
 	};
@@ -430,7 +430,7 @@ namespace MetaFile
 		CEmfPlusRegion();
 		virtual ~CEmfPlusRegion();
 
-		virtual EEmfPlusObjectType GetObjectType() override;
+		virtual EEmfPlusObjectType GetObjectType() const override;
 
 	public:
 		std::vector<CEmfPlusRegionNode*> arNodes;
@@ -465,7 +465,7 @@ namespace MetaFile
 	{
 	public:
 		CEmfPlusStringFormat();
-		virtual EEmfPlusObjectType GetObjectType() override;
+		virtual EEmfPlusObjectType GetObjectType() const override;
 
 		unsigned int unStringFormatFlags;
 		unsigned int unStringAlignment;

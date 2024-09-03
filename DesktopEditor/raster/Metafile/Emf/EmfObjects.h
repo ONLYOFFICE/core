@@ -53,7 +53,7 @@ namespace MetaFile
 	public:
 		CEmfObjectBase();
 		virtual ~CEmfObjectBase();
-		virtual EEmfObjectType GetType();
+		virtual EEmfObjectType GetType() const;
 	};
 
 	class CEmfLogBrushEx : public CEmfObjectBase, public IBrush
@@ -61,22 +61,22 @@ namespace MetaFile
 	public:
 		CEmfLogBrushEx();
 		virtual ~CEmfLogBrushEx();
-		virtual EEmfObjectType GetType();
+		virtual EEmfObjectType GetType() const override;
 		
 		void SetDibPattern(unsigned char* pBuffer, unsigned int ulWidth, unsigned int ulHeight);
 
 		// IBrush
-		int          GetColor();
-		int          GetColor2();
-		unsigned int GetStyle();
-		unsigned int GetStyleEx();
-		unsigned int GetHatch();
-		unsigned int GetAlpha();
-		unsigned int GetAlpha2();
-		std::wstring GetDibPatterPath();
-		void         GetBounds(double& left, double& top, double& width, double& height);
-		void         GetCenterPoint(double& dX, double& dY);
-		void         GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight);
+		int          GetColor()   const override;
+		int          GetColor2()  const override;
+		unsigned int GetStyle()   const override;
+		unsigned int GetStyleEx() const override;
+		unsigned int GetHatch()   const override;
+		unsigned int GetAlpha()   const override;
+		unsigned int GetAlpha2()  const override;
+		std::wstring GetDibPatterPath() const override;
+		void         GetBounds(double& left, double& top, double& width, double& height) const override;
+		void         GetCenterPoint(double& dX, double& dY) const override;
+		void         GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight) const override;
 	public:
 		unsigned int   unBrushStyle;
 		TRGBA          oColor;
@@ -92,19 +92,20 @@ namespace MetaFile
 	public:
 		CEmfLogFont(bool bFixedLength = false);
 		virtual ~CEmfLogFont();
-		virtual EEmfObjectType GetType();
+		virtual EEmfObjectType GetType() const override;
+
+		bool         IsFixedLength()      const;
 
 		// IFont
-		double       GetHeight();
-		std::wstring GetFaceName();
-		int          GetWeight();
-		bool         IsItalic();
-		bool         IsStrikeOut();
-		bool         IsUnderline();
-		int          GetEscapement();
-		int          GetCharSet();
-		bool         IsFixedLength();
-		int          GetOrientation();
+		double       GetHeight()      const override;
+		int          GetWeight()      const override;
+		bool         IsItalic()       const override;
+		bool         IsStrikeOut()    const override;
+		bool         IsUnderline()    const override;
+		int          GetEscapement()  const override;
+		int          GetCharSet()     const override;
+		int          GetOrientation() const override;
+		std::wstring GetFaceName()    const override;
 	public:
 		TEmfLogFontEx    oLogFontEx;
 		TEmfDesignVector oDesignVector;
@@ -118,16 +119,16 @@ namespace MetaFile
 	public:
 		CEmfLogPen();
 		virtual ~CEmfLogPen();
-		virtual EEmfObjectType GetType();
+		virtual EEmfObjectType GetType() const override;
 
 		// IPen
-		int          GetColor();
-		unsigned int GetStyle();
-		double       GetWidth();
-		unsigned int GetAlpha();
-		double       GetMiterLimit();
-		double       GetDashOffset();
-		void         GetDashData(double*& arDatas, unsigned int& unSize);
+		int          GetColor()      const override;
+		unsigned int GetStyle()      const override;
+		double       GetWidth()      const override;
+		unsigned int GetAlpha()      const override;
+		double       GetMiterLimit() const override;
+		double       GetDashOffset() const override;
+		void         GetDashData(double*& arDatas, unsigned int& unSize) const override;
 	public:
 		unsigned int  unPenStyle;
 		unsigned int  unWidth;
@@ -141,7 +142,7 @@ namespace MetaFile
 	public:
 		CEmfLogPalette();
 		virtual ~CEmfLogPalette();
-		virtual EEmfObjectType GetType();
+		virtual EEmfObjectType GetType() const override;
 	public:
 		unsigned short       ushNumberOfEntries;
 		TEmfLogPaletteEntry* pPaletteEntries;

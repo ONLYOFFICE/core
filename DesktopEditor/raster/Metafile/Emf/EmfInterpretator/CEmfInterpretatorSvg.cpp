@@ -200,7 +200,7 @@ namespace MetaFile
 		double dStartAngle = GetEllipseAngle(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, oStart.X, oStart.Y);
 		double dSweepAngle = GetEllipseAngle(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, oEnd.X, oEnd.Y);
 
-		if (NULL != m_pParser && m_pParser->GetTransform()->M22 < 0)
+		if (NULL != m_pParser && m_pParser->GetTransform().M22 < 0)
 		{
 			dStartAngle *= -1;
 			dSweepAngle *= -1;
@@ -263,7 +263,7 @@ namespace MetaFile
 		double dStartAngle = GetEllipseAngle(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, oStart.X, oStart.Y);
 		double dSweepAngle = GetEllipseAngle(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, oEnd.X, oEnd.Y);
 
-		if (NULL != m_pParser && m_pParser->GetTransform()->M22 < 0)
+		if (NULL != m_pParser && m_pParser->GetTransform().M22 < 0)
 		{
 			dStartAngle *= -1;
 			dSweepAngle *= -1;
@@ -1062,7 +1062,7 @@ namespace MetaFile
 	{
 		TRectD oNewRect = oRect.ToRectD();
 
-		if (NULL != m_pParser && m_pParser->GetTransform()->M22 < 0)
+		if (NULL != m_pParser && m_pParser->GetTransform().M22 < 0)
 		{
 			dStartAngle *= -1;
 			dSweepAngle *= -1;
@@ -1140,7 +1140,7 @@ namespace MetaFile
 		if (NULL == m_pParser || wsString.size() != arGlyphPos.size())
 			return;
 
-		IFont *pFont = m_pParser->GetFont();
+		const IFont *pFont = m_pParser->GetFont();
 
 		if (NULL == pFont)
 			return;
@@ -1308,7 +1308,7 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_DRAWSTRING(short shOgjectIndex, unsigned int unBrushId, unsigned int unFormatID, const std::wstring &wsString, const TEmfPlusRectF &oRect)
 	{
-		WriteText(wsString, TPointD(oRect.dX, oRect.dY), oRect.ToRectL(), TPointD(m_pParser->GetTransform()->M11, m_pParser->GetTransform()->M22));
+		WriteText(wsString, TPointD(oRect.dX, oRect.dY), oRect.ToRectL(), TPointD(m_pParser->GetTransform().M11, m_pParser->GetTransform().M22));
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_FILLCLOSEDCURVE(unsigned int unBrushId, double dTension, const std::vector<TEmfPlusRectF> &arPoints)
@@ -1389,8 +1389,8 @@ namespace MetaFile
 		{
 			oTempRect = oRect.ToRectD();
 
-			m_pParser->GetTransform()->Apply(oTempRect.Left,  oTempRect.Top);
-			m_pParser->GetTransform()->Apply(oTempRect.Right, oTempRect.Bottom);
+			m_pParser->GetTransform().Apply(oTempRect.Left,  oTempRect.Top);
+			m_pParser->GetTransform().Apply(oTempRect.Right, oTempRect.Bottom);
 
 			wsValue += L"M "  + ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Top)    +
 			           L" L " + ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Top)    + L' ' +

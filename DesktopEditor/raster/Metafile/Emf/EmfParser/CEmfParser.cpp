@@ -403,7 +403,7 @@ namespace MetaFile
 		CEmfParserBase::ClearFile();
 	}
 
-	EmfParserType CEmfParser::GetType()
+	EmfParserType CEmfParser::GetType() const
 	{
 		return EmfParserType::EmfParser;
 	}
@@ -1644,6 +1644,7 @@ namespace MetaFile
 			{
 				m_pEmfPlusParser = new CEmfPlusParser(m_pInterpretator, m_oHeader);
 				m_pEmfPlusParser->SetFontManager(GetFontManager());
+				m_pEmfPlusParser->SetParent(this);
 			}
 
 			m_pEmfPlusParser->SetStream(m_oStream.GetCurPtr(), m_ulRecordSize - 8);
@@ -1679,6 +1680,7 @@ namespace MetaFile
 
 				oWmfParser.SetFontManager(GetFontManager());
 				oWmfParser.SetStream(m_oStream.GetCurPtr(), unWinMetafileSize);
+				oWmfParser.SetParent(this);
 				oWmfParser.Scan();
 
 				if (oWmfParser.CheckError())
@@ -1701,11 +1703,11 @@ namespace MetaFile
 
 					XmlUtils::CXmlWriter *pXmlWriter = ((CEmfInterpretatorSvg*)m_pInterpretator)->GetXmlWriter();
 
-					TRectL* pWmfRect    = oWmfParser.GetDCBounds();
-					TRectL *pCurentRect = GetDCBounds();
+					const TRectL& oWmfRect{oWmfParser.GetDCBounds()};
+					const TRectL& oCurentRect{GetDCBounds()};
 
-					const double dScaleX = std::abs((double)(pCurentRect->Right  - pCurentRect->Left) / (double)(pWmfRect->Right  - pWmfRect->Left));
-					const double dScaleY = std::abs((double)(pCurentRect->Bottom - pCurentRect->Top)  / (double)(pWmfRect->Bottom - pWmfRect->Top));
+					const double dScaleX = std::abs((double)(oCurentRect.Right  - oCurentRect.Left) / (double)(oWmfRect.Right  - oWmfRect.Left));
+					const double dScaleY = std::abs((double)(oCurentRect.Bottom - oCurentRect.Top)  / (double)(oWmfRect.Bottom - oWmfRect.Top));
 
 					const bool bAddGElement = !Equals(1., dScaleX) || !Equals(1., dScaleY);
 

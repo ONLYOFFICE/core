@@ -183,11 +183,12 @@ namespace MetaFile
 		CWmfInterpretatorBase *pInterpretator = m_pInterpretator;
 		m_pInterpretator = NULL;
 		PlayFile();
+		UpdateDCRect();
 		m_pInterpretator = pInterpretator;
 		this->ClearFile();
 	}
 
-	WmfParserType CWmfParser::GetType()
+	WmfParserType CWmfParser::GetType() const
 	{
 		return WmfParserType::WmfParser;
 	}

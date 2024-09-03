@@ -32,35 +32,35 @@ namespace MetaFile
 		virtual void            PlayFile()                      = 0;
 		virtual void            Scan()                          = 0;
 
-		virtual WmfParserType   GetType()                       = 0;
+		virtual WmfParserType   GetType()                const  = 0;
 
-		void            PlayMetaFile()                   override;
-		void            ClearFile()                      override;
-		TRectL*         GetDCBounds()                    override;
-		CClip*          GetClip()                        override;
-		double          GetPixelHeight()                 override;
-		double          GetPixelWidth()                  override;
-		int             GetTextColor()                   override;
-		IFont*          GetFont()                        override;
-		IBrush*         GetBrush()                       override;
-		IPen*           GetPen()                         override;
-		unsigned int    GetTextAlign()                   override;
-		unsigned int    GetTextBgMode()                  override;
-		int             GetTextBgColor()                 override;
-		unsigned int    GetFillMode()                    override;
-		TPointD         GetCurPos()                      override;
-		TXForm*         GetInverseTransform()            override;
-		TXForm*         GetTransform(int = GM_ADVANCED)  override;
-		unsigned int    GetMiterLimit()                  override;
-		unsigned int    GetRop2Mode()                    override;
-		int             GetCharSpace()                   override;
-		bool            IsWindowFlippedY()               override;
-		bool            IsWindowFlippedX()               override;
-		unsigned int    GetMapMode()                     override;
-		USHORT          GetDpi()                         override;
-		IRegion*        GetRegion()                      override;
-		unsigned int    GetArcDirection()                override;
-		CPath*          GetPath()                        override;
+		void            PlayMetaFile()                         override;
+		void            ClearFile()                            override;
+		const TRectL&   GetDCBounds()                    const override;
+		const CClip*    GetClip()                        const override;
+		double          GetPixelHeight()                 const override;
+		double          GetPixelWidth()                  const override;
+		int             GetTextColor()                   const override;
+		const IFont*    GetFont()                        const override;
+		const IBrush*   GetBrush()                       const override;
+		const IPen*     GetPen()                         const override;
+		unsigned int    GetTextAlign()                   const override;
+		unsigned int    GetTextBgMode()                  const override;
+		int             GetTextBgColor()                 const override;
+		unsigned int    GetFillMode()                    const override;
+		TPointD         GetCurPos()                      const override;
+		const TXForm&   GetInverseTransform()            const override;
+		const TXForm&   GetTransform(int = GM_ADVANCED)        override;
+		unsigned int    GetMiterLimit()                  const override;
+		unsigned int    GetRop2Mode()                    const override;
+		int             GetCharSpace()                   const override;
+		bool            IsWindowFlippedY()               const override;
+		bool            IsWindowFlippedX()               const override;
+		unsigned int    GetMapMode()                     const override;
+		USHORT          GetDpi()                         const override;
+		const IRegion*  GetRegion()                      const override;
+		unsigned int    GetArcDirection()                const override;
+		const CPath*    GetPath()                        const override;
 
 		void SetInterpretator(IOutputDevice* pOutput);
 		void SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
@@ -74,11 +74,11 @@ namespace MetaFile
 
 	private:
 		void    SkipVoid();
-		void    TranslatePoint(short shX, short shY, double& dX, double &dY);
-		TRectL  GetBoundingBox();
-		bool    IsPlaceable();
-		int     GetRecordRemainingBytesCount();
-		inline double GetSweepAngle(const double& dStartAngle, const double& dEndAngle);
+		void    TranslatePoint(short shX, short shY, double& dX, double &dY) const;
+		void    UpdateDCRect();
+		bool    IsPlaceable() const;
+		int     GetRecordRemainingBytesCount() const;
+		inline double GetSweepAngle(const double& dStartAngle, const double& dEndAngle) const;
 
 		void MoveTo(short shX, short shY);
 		void LineTo(short shX, short shY);
@@ -105,7 +105,6 @@ namespace MetaFile
 
 		TWmfPlaceable  m_oPlaceable;
 		TWmfHeader     m_oHeader;
-		TRectL         m_oRect;
 		TRectL         m_oDCRect;
 
 		CWmfPlayer     m_oPlayer;

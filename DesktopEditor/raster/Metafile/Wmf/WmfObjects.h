@@ -57,7 +57,7 @@ namespace MetaFile
 	public:
 		CWmfObjectBase();
 		virtual ~CWmfObjectBase();
-		virtual EWmfObjectType GetType();
+		virtual EWmfObjectType GetType() const;
 	};
 	
 	class CWmfBrush : public CWmfObjectBase, public IBrush
@@ -66,22 +66,22 @@ namespace MetaFile
 		CWmfBrush();
 		CWmfBrush(const TWmfLogBrush &oBrush);
 		virtual ~CWmfBrush();
-		virtual EWmfObjectType GetType();
+		virtual EWmfObjectType GetType() const override;
 		
 		void SetDibPattern(unsigned char* pBuffer, unsigned int unWidth, unsigned int unHeight);
 
 		// IBrush
-		int          GetColor();
-		int          GetColor2();
-		unsigned int GetStyle();
-		unsigned int GetStyleEx();
-		unsigned int GetHatch();
-		unsigned int GetAlpha();
-		unsigned int GetAlpha2();
-		std::wstring GetDibPatterPath();
-		void GetBounds(double& left, double& top, double& width, double& height);
-		void GetCenterPoint(double& dX, double& dY);
-		void GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight);
+		int          GetColor()         const override;
+		int          GetColor2()        const override;
+		unsigned int GetStyle()         const override;
+		unsigned int GetStyleEx()       const override;
+		unsigned int GetHatch()         const override;
+		unsigned int GetAlpha()         const override;
+		unsigned int GetAlpha2()        const override;
+		std::wstring GetDibPatterPath() const override;
+		void GetBounds(double& left, double& top, double& width, double& height) const override;
+		void GetCenterPoint(double& dX, double& dY) const override;
+		void GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight) const override;
 	public:
 
 		unsigned short ushBrushStyle;
@@ -98,18 +98,18 @@ namespace MetaFile
 		CWmfFont();
 		virtual ~CWmfFont();
 
-		virtual EWmfObjectType GetType();
+		virtual EWmfObjectType GetType() const override;
 
 		// IFont
-		double       GetHeight();
-		std::wstring GetFaceName();
-		int          GetWeight();
-		bool         IsItalic();
-		bool         IsStrikeOut();
-		bool         IsUnderline();
-		int          GetEscapement();
-		int          GetCharSet();
-		int          GetOrientation();
+		double       GetHeight()      const override;
+		std::wstring GetFaceName()    const override;
+		int          GetWeight()      const override;
+		bool         IsItalic()       const override;
+		bool         IsStrikeOut()    const override;
+		bool         IsUnderline()    const override;
+		int          GetEscapement()  const override;
+		int          GetCharSet()     const override;
+		int          GetOrientation() const override;
 	public:
 
 		short         shHeight;
@@ -132,7 +132,7 @@ namespace MetaFile
 	public:
 		CWmfPalette();
 		virtual ~CWmfPalette();
-		virtual EWmfObjectType GetType();
+		virtual EWmfObjectType GetType() const override;
 	public:
 		unsigned short    ushStart;
 		unsigned short    ushNumberOfEntries;
@@ -143,16 +143,16 @@ namespace MetaFile
 	public:
 		CWmfPen();
 		virtual ~CWmfPen();
-		virtual EWmfObjectType GetType();
+		virtual EWmfObjectType GetType() const override;
 
 		// IPen
-		int          GetColor();
-		unsigned int GetStyle();
-		double       GetWidth();
-		unsigned int GetAlpha();
-		double       GetMiterLimit();
-		double       GetDashOffset();
-		void         GetDashData(double*& arDatas, unsigned int& unSize);
+		int          GetColor()      const override;
+		unsigned int GetStyle()      const override;
+		double       GetWidth()      const override;
+		unsigned int GetAlpha()      const override;
+		double       GetMiterLimit() const override;
+		double       GetDashOffset() const override;
+		void         GetDashData(double*& arDatas, unsigned int& unSize) const override;
 	public:
 		unsigned short ushPenStyle;
 		TPointS        oWidth;
@@ -163,7 +163,7 @@ namespace MetaFile
 	public:
 		CWmfRegion();
 		virtual ~CWmfRegion();
-		virtual EWmfObjectType GetType();
+		virtual EWmfObjectType GetType() const override;
 	public:
 		short           shNextInChain; // не используется
 		short           shObjectType;  // не используется

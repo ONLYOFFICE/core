@@ -255,7 +255,7 @@ namespace MetaFile
 			m_oStream >> unSize;
 			m_oStream >> m_ulRecordSize;
 
-			if (unSize < 12 || unSize > m_oStream.CanRead() || m_ulRecordSize > (unSize - 12))
+			if (unSize < 12 || m_ulRecordSize > m_oStream.CanRead() || m_ulRecordSize > (unSize - 12))
 				break;
 
 			m_oStream.SetCurrentBlockSize(m_ulRecordSize);
@@ -368,12 +368,12 @@ namespace MetaFile
 		this->ClearFile();
 	}
 
-	USHORT CEmfPlusParser::GetDpi()
+	USHORT CEmfPlusParser::GetDpi() const
 	{
 		return m_unLogicalDpiX;
 	}
 
-	EmfParserType CEmfPlusParser::GetType()
+	EmfParserType CEmfPlusParser::GetType() const
 	{
 		return EmfParserType::EmfPlusParser;
 	}
@@ -736,7 +736,7 @@ namespace MetaFile
 
 			switch (nStartCap)
 			{
-				case 0:	pEmfPlusPen->unStyle |= PS_STARTCAP_MASK & PS_STARTCAP_FLAT;   break;
+				case 0: pEmfPlusPen->unStyle |= PS_STARTCAP_MASK & PS_STARTCAP_FLAT;   break;
 				case 1: pEmfPlusPen->unStyle |= PS_STARTCAP_MASK & PS_STARTCAP_SQUARE; break;
 				case 2: pEmfPlusPen->unStyle |= PS_STARTCAP_MASK & PS_STARTCAP_ROUND;  break;
 			}
@@ -1365,7 +1365,7 @@ namespace MetaFile
 		oPath.LineTo(oClip.Left,  oClip.Bottom);
 		oPath.Close();
 
-		m_pDC->GetClip()->SetPath(oPath, nMode, *GetTransform());
+		m_pDC->GetClip()->SetPath(oPath, nMode, GetTransform());
 
 		UpdateOutputDC();
 	}
@@ -1524,40 +1524,60 @@ namespace MetaFile
 				case MetafileDataTypeEmfPlusOnly:
 				case MetafileDataTypeEmfPlusDual:
 				{
-					CEmfParser oParser;
-					// oParser.SetOnlyEmf(true);
-					return DrawMetafile(oParser, pBuffer, unSizeBuffer, oSrcRect, arPoints);
+					return DrawMetafile<CEmfParser>(pBuffer, unSizeBuffer, oSrcRect, arPoints);
 				}
 				case MetafileDataTypeWmf:
 				case MetafileDataTypeWmfPlaceable:
 				{
-					CWmfParser oParser;
-					return DrawMetafile(oParser, pBuffer, unSizeBuffer, oSrcRect, arPoints);
+					return DrawMetafile<CWmfParser>(pBuffer, unSizeBuffer, oSrcRect, arPoints);
 				}
 			}
 		}
 	}
 
 	template<typename MetafileType>
-	void CEmfPlusParser::DrawMetafile(MetafileType& oParser, BYTE *pBuffer, unsigned int unSize, const TEmfPlusRectF &oSrcRect, const std::vector<TEmfPlusPointF> &arPoints)
+	void CEmfPlusParser::DrawMetafile(BYTE *pBuffer, unsigned int unSize, const TEmfPlusRectF &oSrcRect, const std::vector<TEmfPlusPointF> &arPoints)
 	{
 		if (NULL == pBuffer || 0 == unSize || 3 != arPoints.size())
 			return;
 
+		const TRectL& oOriginalBounds{GetOriginalDCBounds()};
+		const TXForm oCurrentTransform{CalculateCurrentTransform()};
+
+		bool bIsWokspace{false};
+
+		for (TEmfPlusPointF oPoint : arPoints)
+		{
+			oCurrentTransform.Apply(oPoint.X, oPoint.Y);
+
+			if (oPoint.X > oOriginalBounds.Left && oPoint.X < oOriginalBounds.Right &&
+			    oPoint.Y > oOriginalBounds.Top  && oPoint.Y < oOriginalBounds.Bottom)
+			{
+				bIsWokspace = true;
+				break;
+			}
+		}
+
+		if (!bIsWokspace)
+			return;
+
+		MetafileType oParser;
+
 		oParser.SetStream(pBuffer, unSize);
 		oParser.SetFontManager(GetFontManager());
+		oParser.SetParent(this);
 		oParser.Scan();
 
 		if (oParser.CheckError())
 			return;
 
-		const TRectL* pFileBounds = oParser.GetDCBounds();
-		const double dFileWidth  = std::abs(pFileBounds->Right  - pFileBounds->Left);
-		const double dFileHeight = std::abs(pFileBounds->Bottom - pFileBounds->Top);
+		const TRectL& oFileBounds{oParser.GetDCBounds()};
+		const double dFileWidth  = std::abs(oFileBounds.Right  - oFileBounds.Left);
+		const double dFileHeight = std::abs(oFileBounds.Bottom - oFileBounds.Top);
 
-		const TRectL* pParentBounds = GetDCBounds();
-		const double dParentWidth   = std::abs(pParentBounds->Right  - pParentBounds->Left);
-		const double dParentHeight  = std::abs(pParentBounds->Bottom - pParentBounds->Top);
+		const TRectL& oParentBounds{GetDCBounds()};
+		const double dParentWidth   = std::abs(oParentBounds.Right  - oParentBounds.Left);
+		const double dParentHeight  = std::abs(oParentBounds.Bottom - oParentBounds.Top);
 
 		if (InterpretatorType::Render == m_pInterpretator->GetType())
 		{
@@ -1635,7 +1655,7 @@ namespace MetaFile
 
 			oParser.PlayFile();
 
-			TXForm *pXForm = m_pDC->GetTransform();
+			const TXForm& oXForm{m_pDC->GetTransform()};
 
 			TRectD oRect;
 
@@ -1646,14 +1666,14 @@ namespace MetaFile
 
 			TRectD oTempSrcRect;
 
-			oTempSrcRect.Left   = oSrcRect.dX - pFileBounds->Left;
-			oTempSrcRect.Top    = oSrcRect.dY - pFileBounds->Top;
+			oTempSrcRect.Left   = oSrcRect.dX - oFileBounds.Left;
+			oTempSrcRect.Top    = oSrcRect.dY - oFileBounds.Top;
 			oTempSrcRect.Right  = oTempSrcRect.Left + ((dFileWidth  > oSrcRect.dWidth)  ? oSrcRect.dWidth  - GetPixelWidth()  : dFileWidth);
 			oTempSrcRect.Bottom = oTempSrcRect.Top  + ((dFileHeight > oSrcRect.dHeight) ? oSrcRect.dHeight - GetPixelHeight() : dFileHeight);
 
 			TXForm oTransform;
 
-			oTransform.Copy(pXForm);
+			oTransform.Copy(oXForm);
 
 			oTransform.Dx -= m_oHeader.oFramePx.Left;
 			oTransform.Dy -= m_oHeader.oFramePx.Top;
@@ -2020,7 +2040,7 @@ namespace MetaFile
 			oColor.r = (unBrushId >> 16) & 0xFF;
 			oColor.a = (unBrushId >> 24) & 0xFF;
 
-			TRGBA oTextColor = m_pDC->GetTextColor();
+			const TRGBA oTextColor{m_pDC->GetTextColor()};
 
 			m_pDC->SetTextColor(oColor);
 
@@ -2042,7 +2062,7 @@ namespace MetaFile
 			oColor.r = pBrush->oColor.chRed;
 			oColor.a = pBrush->oColor.chAlpha;
 
-			TRGBA oTextColor = m_pDC->GetTextColor();
+			const TRGBA oTextColor{m_pDC->GetTextColor()};
 
 			m_pDC->SetTextColor(oColor);
 
@@ -3261,7 +3281,7 @@ namespace MetaFile
 		BYTE uchCM = ExpressValue(unShFlags, 8, 11);
 
 		m_pDC->GetClip()->Reset();
-		m_pDC->GetClip()->SetPath(*pPath, uchCM, *GetTransform());
+		m_pDC->GetClip()->SetPath(*pPath, uchCM, GetTransform());
 		UpdateOutputDC();
 
 		if (NULL != m_pInterpretator)
@@ -3307,7 +3327,7 @@ namespace MetaFile
 						CEmfPlusRegionNodePath* pNodeRegionPath = (CEmfPlusRegionNodePath*)pNode;
 
 						if (!pNodeRegionPath->Empty())
-							m_pDC->GetClip()->SetPath(*pNodeRegionPath->GetPath(), shCM, *GetTransform());
+							m_pDC->GetClip()->SetPath(*pNodeRegionPath->GetPath(), shCM, GetTransform());
 
 						break;
 					}
@@ -3324,7 +3344,7 @@ namespace MetaFile
 					{
 						CEmfPlusRegionNodeChild* pNodeRegionChild = (CEmfPlusRegionNodeChild*)pNode;
 
-						pNodeRegionChild->DrawOnClip(*m_pDC->GetClip(), *GetTransform(), GetDCBounds());
+						pNodeRegionChild->DrawOnClip(*m_pDC->GetClip(), GetTransform(), &GetDCBounds());
 
 						break;
 					}

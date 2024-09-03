@@ -81,6 +81,7 @@ public:
 
 	_transition								transition_;
 	bool									use_image_replacement_;
+	bool									processing_notes;
 
 	bool header, footer, date_time, slideNum;
 
@@ -127,6 +128,8 @@ public:
 		transition_.Enabled = false;
 		transition_.Speed	= boost::none;
 		transition_.onClick	= true;	
+
+		processing_notes = false;
 	}
 
     size_t next_rId()
@@ -435,6 +438,16 @@ void pptx_slide_context::set_connector_end_glue_point(int gluePoint)
 void pptx_slide_context::set_connector_draw_type(const std::wstring& drawType)
 {
 	impl_->object_description_.draw_type_ = drawType;
+}
+
+void pptx_slide_context::processing_notes(bool processing_notes)
+{
+	impl_->processing_notes = processing_notes;
+}
+
+bool pptx_slide_context::processing_notes()
+{
+	return impl_->processing_notes;
 }
 
 std::wstring pptx_slide_context::add_hyperlink(std::wstring const & href)

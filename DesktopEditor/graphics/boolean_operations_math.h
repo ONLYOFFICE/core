@@ -8,7 +8,7 @@
 
 const double EPSILON = 1e-12;
 const double POINT_EPSILON = 1e-2;
-const double GEOMETRIC_EPSILON = 1e-5;
+const double GEOMETRIC_EPSILON = 1e-7;
 const double TIME_EPSILON = 1e-8;
 const double MACHINE_EPSILON = 1.12e-16;
 const double TRIGANOMETRIC_EPSILON = 1e-8;

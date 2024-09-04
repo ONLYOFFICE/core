@@ -700,10 +700,10 @@ int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment,
 	PointD pt;
 	if (intersect(point.X, point.Y, segment.P.X, segment.P.Y, curve.Segment1.P.X, curve.Segment1.P.Y, curve.Segment2.P.X, curve.Segment2.P.Y, pt))
 	{
-		if (curve.Segment1.P.Equals(pt) || curve.Segment2.P.Equals(pt))
+		if (getDistance(curve.Segment1.P, pt) <= GEOMETRIC_EPSILON || getDistance(curve.Segment2.P, pt) <= GEOMETRIC_EPSILON)
 		{
-			PointD newPoint = dir ? PointD(point.X + GEOMETRIC_EPSILON, point.Y)
-								  : PointD(point.X, point.Y + GEOMETRIC_EPSILON);
+			PointD newPoint = dir ? PointD(point.X + 1.0, point.Y)
+								  : PointD(point.X, point.Y + 1.0);
 			return CheckInters(newPoint, segment, curve, !dir);
 		}
 		else if (curve.IsStraight())
@@ -741,13 +741,16 @@ void CBooleanOperations::TraceBoolean()
 	PreparePath(Path1, 1, Segments1, Curves1);
 	PreparePath(Path2, 2, Segments2, Curves2, reverse);
 
+	OriginCurves1 = Curves1;
+	OriginCurves2 = Curves2;
+
 	GetIntersection();
 
 	if (Locations.empty())
 	{
 		int count = 0;
 		PointD minPt = GetMinPoint(Segments2);
-		for (const auto& c : Curves2)
+		for (const auto& c : OriginCurves2)
 			count += CheckInters(minPt, Segments1[0], c);
 
 		for (auto& s : Segments1)
@@ -806,7 +809,7 @@ void CBooleanOperations::TraceBoolean()
 
 			int count = 0;
 			PointD minPoint = GetMinPoint(s.Id == 1 ? Segments2 : Segments1);
-			for (const auto& c : (s.Id == 1 ? Curves2 : Curves1))
+			for (const auto& c : (s.Id == 1 ? OriginCurves2 : OriginCurves1))
 				count += CheckInters(minPoint, s, c);
 
 			do

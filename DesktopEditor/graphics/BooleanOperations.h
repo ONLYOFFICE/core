@@ -153,6 +153,8 @@ namespace Aggplus
 		std::vector<Segment> Segments1;
 		std::vector<Segment> Segments2;
 
+		std::vector<Curve> OriginCurves1;
+		std::vector<Curve> OriginCurves2;
 		std::vector<Curve> Curves1;
 		std::vector<Curve> Curves2;
 

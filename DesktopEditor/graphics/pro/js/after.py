@@ -7,6 +7,8 @@ base.configure_common_apps()
 base.replaceInFile("../../../../Common/3dParty/icu/icu/source/common/udata.cpp", "\n{\n#ifdef BUILDING_WASM_MODULE\nreturn NULL;\n#endif\n    UDataMemory tData;", "\n{\n    UDataMemory tData;")
 base.replaceInFile("../../../../DesktopEditor/cximage/png/pnglibconf.h", "//#define PNG_CONSOLE_IO_SUPPORTED", "#define PNG_CONSOLE_IO_SUPPORTED")
 
+base.replaceInFile("../../../../Common/3dParty/openssl/openssl/crypto/sha/sha512.c", "const SHA_LONG64 *W = (const SHA_LONG64*)in;", "const SHA_LONG64 *W = in;")
+
 # finalize
 base.replaceInFile("./deploy/drawingfile.js", "function getBinaryPromise(", "function getBinaryPromise2(")
 base.replaceInFile("./deploy/drawingfile.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){window[\"AscViewer\"] && window[\"AscViewer\"][\"onLoadModule\"] && window[\"AscViewer\"][\"onLoadModule\"]();}];")

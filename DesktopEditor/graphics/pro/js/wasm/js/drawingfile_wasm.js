@@ -273,6 +273,8 @@ CFile.prototype._getGlyphs = function(pageIndex)
 		res.result = new Uint8Array(len);
 		res.result.set(textCommandsSrc);
 	}
+	else
+		res.result = [];
 
 	return res;
 };

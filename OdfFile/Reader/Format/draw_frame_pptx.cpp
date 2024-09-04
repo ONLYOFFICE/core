@@ -186,17 +186,25 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 
 		Context.get_slide_context().set_fill(fill);
 
-		const bool is_placeholder = common_presentation_attlist_.presentation_placeholder_.get_value_or(Bool(false)).get();
-		Context.get_slide_context().set_is_placeHolder(is_placeholder);
-		
 		if (common_presentation_attlist_.presentation_class_)
 		{
-			const std::wstring type = common_presentation_attlist_.presentation_class_->get_type_ms();
+			std::wstring type = common_presentation_attlist_.presentation_class_->get_type_ms();
 
+			if (Context.process_masters_ && type.empty())
+			{
+				type = L"body";
+			}
+			
 			Context.get_slide_context().set_placeHolder_type(type);
 
 			if (idx_in_owner >= 0)
 				Context.get_slide_context().set_placeHolder_idx(idx_in_owner);
+
+			if (!Context.get_slide_context().processing_notes())
+			{
+				bool is_placeholder = common_presentation_attlist_.presentation_placeholder_.get_value_or(Bool(false)).get();
+				Context.get_slide_context().set_is_placeHolder(is_placeholder);
+			}
 		}
 
 		if (common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_)

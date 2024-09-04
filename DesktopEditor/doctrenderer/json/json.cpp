@@ -7,8 +7,12 @@
 
 // for converting primitive types to JSON-string
 #include <sstream>
-#include <limits>
 #include <iomanip>
+#include <limits>
+// for strtod()
+#include <cstdlib>
+// for modf()
+#include <cmath>
 
 namespace NSJSON
 {
@@ -606,10 +610,212 @@ namespace NSJSON
 		return ret;
 	}
 
+	namespace
+	{
+		// moves pos to first non-space symbol and returns `true` if pos is still inside the string after moving
+		bool skipWhitespaces(const std::string& str, int& pos)
+		{
+			for (; pos < str.size(); pos++)
+			{
+				char ch = str[pos];
+				if (ch != '\t' && ch != '\n' && ch != '\r' && ch != ' ')
+					break;
+			}
+			return pos < str.size();
+		}
+
+		CValue parseNumberFromJSON(const std::string& str, int& pos)
+		{
+			const char* startPos = str.c_str() + pos;
+			char* newPos;
+			double number = std::strtod(startPos, &newPos);
+			if (newPos == startPos)
+				return CValue();
+
+			CValue value;
+			if (std::isfinite(number))
+			{
+				// check if number can be represented as an integer type without loss of precision
+				double integral;									// integral part
+				double fractional = std::modf(number, &integral);	// fractional part
+				if (fractional == 0.0 && integral >= std::numeric_limits<int>::min() && integral <= std::numeric_limits<int>::max())
+					value = (int)integral;
+				else
+					value = number;
+			}
+			else
+			{
+				value = number;
+			}
+
+			pos += newPos - startPos;
+			return value;
+		}
+
+		CValue parseStringFromJSON(const std::string& str, int& pos)
+		{
+			// skip '\"' cause it has already been checked
+			pos++;
+			std::string result;
+			while (pos < str.size() && str[pos] != '\"')
+			{
+				// any non-escaped control characters are not allowed
+				if (str[pos] < 0x20)
+					return CValue();
+
+				if (str[pos] != '\\')
+				{
+					result += str[pos++];
+				}
+				else
+				{
+					pos++;
+					if (pos >= str.size())
+						return CValue();
+
+					char ch = str[pos++];
+					if (ch == '\\' || ch == '\"' || ch == '/')
+					{
+						result += ch;
+					}
+					else if (ch == 'b')
+					{
+						result += '\b';
+					}
+					else if (ch == 't')
+					{
+						result += '\t';
+					}
+					else if (ch == 'n')
+					{
+						result += '\n';
+					}
+					else if (ch == 'f')
+					{
+						result += '\f';
+					}
+					else if (ch == 'r')
+					{
+						result += '\r';
+					}
+					else if (ch == 'u')
+					{
+						if (str.size() - pos < 4)
+							return CValue();
+						// TODO: support unicode symbols with codes > U+0020
+						if (str[pos] != '0' || str[pos + 1] != '0')
+							return CValue();
+						pos += 2;
+						std::string strHex = str.substr(pos, 2);
+						pos += 2;
+						// std::stoi throws std::invalid_argument if string is invalid
+						try
+						{
+							std::size_t count;
+							char symbol = (char)std::stoi(strHex, &count, 16);
+							if (count < 2)
+								return CValue();
+
+							result += symbol;
+						}
+						catch (std::invalid_argument& e)
+						{
+							return CValue();
+						}
+					}
+					else
+					{
+						return CValue();
+					}
+				}
+			}
+			// if did not encounter closing qoutes, return undefined
+			if (pos == str.size())
+				return CValue();
+
+			pos++;
+			return result;
+		}
+
+		CValue parseArrayFromJSON(const std::string& str, int& pos)
+		{
+			return CValue();
+		}
+
+		CValue parseObjectFromJSON(const std::string& str, int& pos)
+		{
+			return CValue();
+		}
+	}
+
 	CValue CValue::FromJSON(const std::string& jsonString)
 	{
-		// TODO:
-		return CValue();
+		CValue value;
+		int pos = 0;
+		while (skipWhitespaces(jsonString, pos))
+		{
+			// if value has been already parsed on previous iteration and there are still some symbols left,
+			//	the json is considered invalid
+			if (!value.IsUndefined())
+				return CValue();
+
+			char ch = jsonString[pos];
+			if (ch == '\"')
+			{
+				// string
+				value = parseStringFromJSON(jsonString, pos);
+			}
+			else if (ch == '[')
+			{
+				// array
+				value = parseArrayFromJSON(jsonString, pos);
+			}
+			else if (ch == '{')
+			{
+				// object
+				value = parseObjectFromJSON(jsonString, pos);
+			}
+			else if (ch == 'n')
+			{
+				// null
+				if (jsonString.substr(pos, 4) == "null")
+					value = CValue::CreateNull();
+				else
+					return CValue();
+				pos += 4;
+			}
+			else if (ch == 't')
+			{
+				// true (bool)
+				if (jsonString.substr(pos, 4) == "true")
+					value = true;
+				else
+					return CValue();
+				pos += 4;
+			}
+			else if (ch == 'f')
+			{
+				// false (bool)
+				if (jsonString.substr(pos, 5) == "false")
+					value = false;
+				else
+					return CValue();
+				pos += 5;
+			}
+			else if (ch == '-' || std::isdigit(ch))
+			{
+				value = parseNumberFromJSON(jsonString, pos);
+			}
+			else
+			{
+				return CValue();
+			}
+			// if value is still undefined, the json is also invalid
+			if (value.IsUndefined())
+				break;
+		}
+
+		return value;
 	}
 
 	CValueRef::CValueRef(const CValueRef& other) : IValue(other.m_internal)

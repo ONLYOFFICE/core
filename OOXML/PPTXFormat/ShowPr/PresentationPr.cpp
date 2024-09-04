@@ -30,7 +30,7 @@
  *
  */
 
-#include "ShowPr.h"
+#include "PresentationPr.h"
 
 #include "./Browse.h"
 #include "./CustShow.h"
@@ -41,31 +41,31 @@
 
 namespace PPTX
 {
-	namespace nsShowPr
+	namespace nsPresentationPr
 	{
 		void ShowPr::fromXML(XmlUtils::CXmlNode& node)
 		{
-			XmlMacroReadAttributeBase(node, _T("loop"), loop);
-			XmlMacroReadAttributeBase(node, _T("showAnimation"), showAnimation);
-			XmlMacroReadAttributeBase(node, _T("showNarration"), showNarration);
-			XmlMacroReadAttributeBase(node, _T("useTimings"), useTimings);
+			XmlMacroReadAttributeBase(node, L"loop", loop);
+			XmlMacroReadAttributeBase(node, L"showAnimation", showAnimation);
+			XmlMacroReadAttributeBase(node, L"showNarration", showNarration);
+			XmlMacroReadAttributeBase(node, L"useTimings", useTimings);
 
-			Browse = node.ReadNodeNoNS(_T("browse"));
-			CustShow = node.ReadNodeNoNS(_T("custShow"));
-			Kiosk = node.ReadNodeNoNS(_T("kiosk"));
-			XmlUtils::CXmlNode node1 = node.ReadNodeNoNS(_T("penClr"));
+			Browse = node.ReadNodeNoNS(L"browse");
+			CustShow = node.ReadNodeNoNS(L"custShow");
+			Kiosk = node.ReadNodeNoNS(L"kiosk");
+			XmlUtils::CXmlNode node1 = node.ReadNodeNoNS(L"penClr");
 			PenClr.GetColorFrom(node1);
-			Present = node.ReadNodeNoNS(_T("present"));
-			SldAll = node.ReadNodeNoNS(_T("sldAll"));
-			SldRg = node.ReadNodeNoNS(_T("sldRg"));
+			Present = node.ReadNodeNoNS(L"present");
+			SldAll = node.ReadNodeNoNS(L"sldAll");
+			SldRg = node.ReadNodeNoNS(L"sldRg");
 		}
 		std::wstring ShowPr::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
-			oAttr.Write(_T("loop"), loop);
-			oAttr.Write(_T("showAnimation"), showAnimation);
-			oAttr.Write(_T("showNarration"), showNarration);
-			oAttr.Write(_T("useTimings"), useTimings);
+			oAttr.Write(L"loop", loop);
+			oAttr.Write(L"showAnimation", showAnimation);
+			oAttr.Write(L"showNarration", showNarration);
+			oAttr.Write(L"useTimings", useTimings);
 
 			XmlUtils::CNodeValue oValue;
 			oValue.WriteNullable(Present);
@@ -76,7 +76,7 @@ namespace PPTX
 			oValue.WriteNullable(CustShow);
 			oValue.Write(PenClr);
 
-			return XmlUtils::CreateNode(_T("p:ShowPr"), oAttr, oValue);
+			return XmlUtils::CreateNode(L"p:ShowPr", oAttr, oValue);
 		}
 		void ShowPr::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
@@ -97,14 +97,14 @@ namespace PPTX
 		}
 		void ShowPr::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			pWriter->StartNode(_T("p:showPr"));
+			pWriter->StartNode(L"p:showPr");
 
 			pWriter->StartAttributes();
 
-			pWriter->WriteAttribute(_T("loop"), loop);
-			pWriter->WriteAttribute(_T("showAnimation"), showAnimation);
-			pWriter->WriteAttribute(_T("showNarration"), showNarration);
-			pWriter->WriteAttribute(_T("useTimings"), useTimings);
+			pWriter->WriteAttribute(L"loop", loop);
+			pWriter->WriteAttribute(L"showAnimation", showAnimation);
+			pWriter->WriteAttribute(L"showNarration", showNarration);
+			pWriter->WriteAttribute(L"useTimings", useTimings);
 
 			pWriter->EndAttributes();
 
@@ -116,12 +116,12 @@ namespace PPTX
 			pWriter->Write(CustShow);
 			if(PenClr.is_init())
 			{
-				pWriter->WriteString(_T("<p:penClr>"));
+				pWriter->WriteString(L"<p:penClr>");
 				PenClr.toXmlWriter(pWriter);
-				pWriter->WriteString(_T("</p:penClr>"));
+				pWriter->WriteString(L"</p:penClr>");
 			}
 
-			pWriter->EndNode(_T("p:showPr"));
+			pWriter->EndNode(L"p:showPr");
 		}
 		void ShowPr::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
@@ -154,19 +154,19 @@ namespace PPTX
 				{
 					case 0:
 					{
-						Browse = new nsShowPr::Browse();
+						Browse = new nsPresentationPr::Browse();
 						Browse->fromPPTY(pReader);
 						break;
 					}
 					case 1:
 					{
-						CustShow = new nsShowPr::CustShow();
+						CustShow = new nsPresentationPr::CustShow();
 						CustShow->fromPPTY(pReader);
 						break;
 					}
 					case 2:
 					{
-						Kiosk = new nsShowPr::Kiosk();
+						Kiosk = new nsPresentationPr::Kiosk();
 						Kiosk->fromPPTY(pReader);
 						break;
 					}
@@ -177,19 +177,19 @@ namespace PPTX
 					}
 					case 4:
 					{
-						Present = new nsShowPr::Present();
+						Present = new nsPresentationPr::Present();
 						pReader->SkipRecord();
 						break;
 					}
 					case 5:
 					{
-						SldAll = new nsShowPr::SldAll();
+						SldAll = new nsPresentationPr::SldAll();
 						pReader->SkipRecord();
 						break;
 					}
 					case 6:
 					{
-						SldRg = new nsShowPr::SldRg();
+						SldRg = new nsPresentationPr::SldRg();
 						SldRg->fromPPTY(pReader);
 						break;
 					}
@@ -203,5 +203,94 @@ namespace PPTX
 		void ShowPr::FillParentPointersForChilds()
 		{
 		}
-	} // namespace nsShowPr
+//--------------------------------------------------------------------------------------------------------
+		void PrintPr::fromXML(XmlUtils::CXmlNode& node)
+		{
+			XmlMacroReadAttributeBase(node, L"clrMode", clrMode);
+			XmlMacroReadAttributeBase(node, L"prnWhat", prnWhat);
+			XmlMacroReadAttributeBase(node, L"frameSlides", frameSlides);
+			XmlMacroReadAttributeBase(node, L"hiddenSlides", hiddenSlides);
+			XmlMacroReadAttributeBase(node, L"scaleToFitPaper", scaleToFitPaper);
+
+			XmlUtils::CXmlNode list = node.ReadNodeNoNS(L"extLst");
+			if (list.IsValid())
+			{
+				std::vector<XmlUtils::CXmlNode> oNodes;
+				if (list.GetNodes(L"*", oNodes))
+				{
+					size_t nCount = oNodes.size();
+					for (size_t i = 0; i < nCount; ++i)
+					{
+						XmlUtils::CXmlNode& oNode = oNodes[i];
+
+						Logic::Ext element;
+						element.fromXML(oNode);
+
+						ExtLst.push_back(element);
+					}
+				}
+			}
+		}
+		std::wstring PrintPr::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(L"frameSlides", frameSlides);
+			oAttr.Write(L"hiddenSlides", hiddenSlides);
+			oAttr.Write(L"scaleToFitPaper", scaleToFitPaper);
+			oAttr.WriteLimitNullable(L"clrMode", clrMode);
+			oAttr.WriteLimitNullable(L"prnWhat", prnWhat);
+
+			XmlUtils::CNodeValue oValue;
+
+			return XmlUtils::CreateNode(L"p:PrintPr", oAttr, oValue);
+		}
+		void PrintPr::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+				pWriter->WriteBool2(0, frameSlides);
+				pWriter->WriteBool2(1, hiddenSlides);
+				pWriter->WriteBool2(2, scaleToFitPaper);
+				pWriter->WriteLimit2(3, clrMode);
+				pWriter->WriteLimit2(4, prnWhat);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		}
+		void PrintPr::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->WriteString(toXML());
+		}
+		void PrintPr::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+
+			pReader->Skip(1); // start attributes
+
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				switch (_at)
+				{
+					case 0:
+						frameSlides = pReader->GetBool(); break;
+					case 1:
+						hiddenSlides = pReader->GetBool(); break;
+					case 2:
+						scaleToFitPaper = pReader->GetBool(); break;
+					case 3:
+						clrMode = pReader->GetUChar(); break;
+					case 4:
+						prnWhat = pReader->GetUChar(); break;
+					default:
+							break;
+				}
+			}
+
+			pReader->Seek(_end_rec);
+		}
+		void PrintPr::FillParentPointersForChilds()
+		{
+		}
+	} // namespace nsPresentationPr
 } // namespace PPTX

@@ -30,15 +30,15 @@
  *
  */
 #pragma once
-#ifndef PPTX_SHOWPR_FILE_INCLUDE_H_
-#define PPTX_SHOWPR_FILE_INCLUDE_H_
 
-#include "./../WrapperWritingElement.h"
+#include "../WrapperWritingElement.h"
 #include "../Logic/UniColor.h"
+#include "../Limit/BWMode.h"
+#include "../Logic/ExtP.h"
 
 namespace PPTX
 {
-	namespace nsShowPr
+	namespace nsPresentationPr
 	{
 		class Browse;
 		class CustShow;
@@ -52,7 +52,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(ShowPr)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
@@ -60,24 +59,46 @@ namespace PPTX
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-		public:
-			nullable<nsShowPr::Browse> Browse;
-			nullable<nsShowPr::CustShow> CustShow;
-			nullable<nsShowPr::Kiosk> Kiosk;
+			nullable<nsPresentationPr::Browse> Browse;
+			nullable<nsPresentationPr::CustShow> CustShow;
+			nullable<nsPresentationPr::Kiosk> Kiosk;
 			Logic::UniColor PenClr;
-			nullable<nsShowPr::Present> Present;
-			nullable<nsShowPr::SldAll> SldAll;
-			nullable<nsShowPr::SldRg> SldRg;
+			nullable<nsPresentationPr::Present> Present;
+			nullable<nsPresentationPr::SldAll> SldAll;
+			nullable<nsPresentationPr::SldRg> SldRg;
 
-			nullable_bool			loop;
-			nullable_bool			showAnimation;
-			nullable_bool			showNarration;
-			nullable_bool			useTimings;
+			nullable_bool loop;
+			nullable_bool showAnimation;
+			nullable_bool showNarration;
+			nullable_bool useTimings;
 
 		protected:
 			virtual void FillParentPointersForChilds();
 		};
-	} // namespace nsShowPr
+
+		class PrintPr : public WrapperWritingElement
+		{
+		public:
+			PPTX_LOGIC_BASE(PrintPr)
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			nullable_limit<Limit::PrintClrMode> clrMode;
+			nullable_limit<Limit::PrintWhat> prnWhat;
+
+			nullable_bool frameSlides;
+			nullable_bool hiddenSlides;
+			nullable_bool scaleToFitPaper;
+
+			std::vector<Logic::Ext> ExtLst;
+		protected:
+			virtual void FillParentPointersForChilds();
+		};
+	} // namespace nsPresentationPr
 } // namespace PPTX
 
-#endif // PPTX_SHOWPR_FILE_INCLUDE_H_

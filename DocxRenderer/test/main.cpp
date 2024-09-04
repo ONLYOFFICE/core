@@ -88,10 +88,10 @@ int main(int argc, char *argv[])
 	if (!NSDirectory::Exists(sTempDirOut))
 		NSDirectory::CreateDirectory(sTempDirOut);
 
-	std::vector<std::wstring> sSourceFiles = NSDirectory::GetFiles(L"C:\\test-folder");
+	std::vector<std::wstring> sSourceFiles = NSDirectory::GetFiles(L"");
 	//sSourceFiles.push_back(L"");
 
-	std::wstring sTextDirOut = L"C:\\text";
+	std::wstring sTextDirOut = NSFile::GetProcessDirectory() + L"/output";
 	if (!NSDirectory::Exists(sTextDirOut))
 		NSDirectory::CreateDirectory(sTextDirOut);
 
@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
 		oDocxRenderer.SetTextAssociationType(taType);
 		oDocxRenderer.Convert(pReader, sTextDirOut+sDocx);
 
-		std::wstring test_txt_file = L"C:\\text\\shapes.txt";
+//		std::wstring test_txt_file = L"";
 //		std::ofstream fin(test_txt_file);
 //		auto shapes = oDocxRenderer.ScanPagePptx(pReader, 0);
 //		for (auto& s : shapes)

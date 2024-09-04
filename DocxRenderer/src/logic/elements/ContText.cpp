@@ -470,6 +470,20 @@ namespace NSDocxRenderer
 		oWriter.WriteEncodeXmlString(m_oText.ToStdWString());
 		oWriter.WriteString(L"</a:t>");
 		if (m_bIsAddBrEnd) oWriter.WriteString(L"<a:br/>");
+
+		// meta info for pdf-editor
+		oWriter.WriteString(L"<metaorigin:pos");
+		oWriter.WriteString(L" x=\"");
+		oWriter.AddDouble(m_dLeft, 4);
+		oWriter.WriteString(L"\" y=\"");
+		oWriter.AddDouble(m_dBaselinePos, 4);
+		oWriter.WriteString(L"\" widths=\"");
+		for (auto& w : m_arSymWidths)
+		{
+			oWriter.AddDouble(w, 4);
+			oWriter.WriteString(L",");
+		}
+		oWriter.WriteString(L"\" />");
 		oWriter.WriteString(L"</a:r>");
 	}
 

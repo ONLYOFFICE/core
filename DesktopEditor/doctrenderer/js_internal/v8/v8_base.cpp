@@ -188,12 +188,25 @@ namespace NSJSBase
 		return new CV8TryCatch();
 	}
 
-	void CJSContext::Initialize()
+	void CJSContext::Initialize(const std::wstring& snapshotPath)
 	{
 		if (m_internal->m_isolate == NULL)
 		{
+#ifdef V8_SUPPORT_SNAPSHOTS
+			if (!snapshotPath.empty())
+			{
+				BYTE* data = NULL;
+				DWORD dataLength = 0;
+				if (NSFile::CFileBinary::ReadAllBytes(snapshotPath, &data, dataLength))
+				{
+					m_internal->m_startup_data.data = reinterpret_cast<const char*>(data);
+					m_internal->m_startup_data.raw_size = (int)dataLength;
+				}
+			}
+#endif
+
 			// get new isolate
-			v8::Isolate* isolate = CV8Worker::getInitializer().CreateNew();
+			v8::Isolate* isolate = CV8Worker::getInitializer().CreateNew(m_internal->m_startup_data.data ? &m_internal->m_startup_data : nullptr);
 			m_internal->m_isolate = isolate;
 			// get new context
 			v8::Isolate::Scope iscope(isolate);
@@ -217,6 +230,11 @@ namespace NSJSBase
 		m_internal->m_contextPersistent.Reset();
 		m_internal->m_isolate->Dispose();
 		m_internal->m_isolate = NULL;
+	}
+
+	bool CJSContext::isSnapshotUsed()
+	{
+		return m_internal->m_startup_data.data != NULL;
 	}
 
 	JSSmart<CJSObject> CJSContext::GetGlobal()
@@ -389,6 +407,50 @@ namespace NSJSBase
 		LOGGER_LAP("run")
 
 		return _return;
+	}
+
+	bool CJSContext::generateSnapshot(const std::string& script, const std::wstring& snapshotPath)
+	{
+#ifdef V8_SUPPORT_SNAPSHOTS
+		bool result = false;
+		// Snapshot creator should be in its own scope, because it handles entering, exiting and disposing the isolate
+		v8::SnapshotCreator snapshotCreator;
+		v8::Isolate* isolate = snapshotCreator.GetIsolate();
+		{
+			v8::HandleScope handle_scope(isolate);
+			// Create a new context
+			v8::Local<v8::Context> context = v8::Context::New(isolate);
+			v8::Context::Scope context_scope(context);
+
+			// Handle compile & run errors
+			v8::Local<v8::Object> global = context->Global();
+			global->Set(context, v8::String::NewFromUtf8Literal(isolate, "window"), global).Check();
+			global->Set(context, v8::String::NewFromUtf8Literal(isolate, "self"), global).Check();
+			global->Set(context, v8::String::NewFromUtf8Literal(isolate, "native"), v8::Undefined(isolate)).Check();
+
+			// Compile and run
+			v8::Local<v8::String> source = v8::String::NewFromUtf8(isolate, script.c_str()).ToLocalChecked();
+			v8::Local<v8::Script> script = v8::Script::Compile(context, source).ToLocalChecked();
+
+			script->Run(context).IsEmpty();
+			snapshotCreator.SetDefaultContext(context);
+		}
+		v8::StartupData data = snapshotCreator.CreateBlob(v8::SnapshotCreator::FunctionCodeHandling::kKeep);
+		// Save snapshot to file
+		NSFile::CFileBinary snapshotFile;
+		if (data.data && snapshotFile.CreateFile(snapshotPath))
+		{
+			snapshotFile.WriteFile(data.data, (DWORD)data.raw_size);
+			snapshotFile.CloseFile();
+			result = true;
+		}
+
+		delete[] data.data;
+
+		return result;
+#else
+		return false;
+#endif
 	}
 
 	JSSmart<CJSContext> CJSContext::GetCurrent()

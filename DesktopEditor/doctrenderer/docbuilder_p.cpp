@@ -44,11 +44,15 @@ void CV8RealTimeWorker::_LOGGING_ERROR_(const std::wstring& strType, const std::
 
 using namespace NSJSBase;
 
-CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
+CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder, const NSDoctRenderer::DoctRendererEditorType& type, NSDoctRenderer::CDoctRendererConfig* config)
 {
 	m_nFileType = -1;
 
-	m_context = new CJSContext();
+	if (NSDoctRenderer::DoctRendererEditorType::INVALID == type)
+		m_context = new CJSContext();
+	else
+		m_context = NSDoctRenderer::CreateEditorContext(type, config);
+
 	CJSContextScope scope(m_context);
 
 	CJSContext::Embed<CNativeControlEmbed>(false);
@@ -62,6 +66,7 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
 
 	JSSmart<CJSObject> global = m_context->GetGlobal();
 	global->set("window", global);
+	global->set("self", global);
 
 	JSSmart<CJSObject> oBuilderJS = CJSContext::createEmbedObject("CBuilderEmbed");
 	global->set("builderJS", oBuilderJS);
@@ -239,7 +244,7 @@ bool CV8RealTimeWorker::InitVariables()
 	return true;
 }
 
-bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath, CV8Params* pParams)
+bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstring& path, const NSDoctRenderer::DoctRendererEditorType& editorType, NSDoctRenderer::CDoctRendererConfig* config, CV8Params* pParams)
 {
 	LOGGER_SPEED_START();
 
@@ -248,7 +253,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 
 	LOGGER_SPEED_LAP("compile");
 
-	m_context->runScript(sString, try_catch, sCachePath);
+	NSDoctRenderer::RunEditor(editorType, m_context, try_catch, config);
 	if(try_catch->Check())
 		return false;
 
@@ -1249,45 +1254,7 @@ namespace NSDoctRenderer
 	char* CDocBuilder::GetVersion()
 	{
 		m_pInternal->Init();
-
-		if (0 == m_pInternal->m_arDoctSDK.size())
-			return NULL;
-
-		std::wstring sFile;
-		for (std::vector<std::wstring>::iterator i = m_pInternal->m_arDoctSDK.begin(); i != m_pInternal->m_arDoctSDK.end(); i++)
-		{
-			if (std::wstring::npos != i->find(L"sdk-all-min.js"))
-			{
-				sFile = *i;
-				break;
-			}
-		}
-
-		if (sFile.empty())
-			return NULL;
-
-		std::string sData;
-		if (!NSFile::CFileBinary::ReadAllTextUtf8A(sFile, sData))
-			return NULL;
-
-		std::string::size_type startPos = sData.find("Version:");
-		if (std::string::npos == startPos)
-			return NULL;
-
-		startPos += 8;
-
-		std::string::size_type endPos = sData.find(')', startPos);
-		if (std::string::npos == endPos)
-			return NULL;
-
-		size_t sSrcLen = endPos - startPos + 1;
-		if (sSrcLen == 0)
-			return NULL;
-
-		char* sRet = new char[sSrcLen + 1];
-		memcpy(sRet, sData.c_str() + startPos, sSrcLen);
-		sRet[sSrcLen] = '\0';
-		return sRet;
+		return m_pInternal->GetVersion();
 	}
 
 	bool CDocBuilder::Run(const wchar_t* path)
@@ -1521,7 +1488,7 @@ namespace NSDoctRenderer
 		else if (sParam == "--work-directory")
 			m_pInternal->m_oParams.m_sWorkDir = std::wstring(value);
 		else if (sParam == "--cache-scripts")
-			m_pInternal->m_bIsCacheScript = (std::wstring(value) == L"true");
+			m_pInternal->m_bIsUseCache = (std::wstring(value) == L"true");
 		else if (sParam == "--save-use-only-names")
 		{
 			m_pInternal->m_bIsServerSafeVersion = true;

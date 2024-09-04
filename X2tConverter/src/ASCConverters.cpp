@@ -98,6 +98,16 @@ namespace NExtractTools
 		NSDoctRenderer::CDocBuilder::Dispose();
 	}
 
+	void createJSSnapshots()
+	{
+		NSDoctRenderer::CDocBuilder::Initialize();
+
+		NSDoctRenderer::CDoctrenderer oDoctRenderer;
+		oDoctRenderer.CreateSnapshots();
+
+		NSDoctRenderer::CDocBuilder::Dispose();
+	}
+
 	// mailmerge
 	_UINT32 convertmailmerge(const InputParamsMailMerge& oMailMergeSend,
 							 const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)

@@ -153,17 +153,19 @@ namespace OOX
 				if (m_oName.IsInit())
 					ptr->rangeProtectionTitleSDRel.rgchTitle = m_oName.get();
 
-				BYTE * temp = ptr->ipdPasswordData.rgbHash.rgbData.data();
+				BYTE * temp;
 				auto tempSize = 0;
 				NSFile::CBase64Converter::CBase64Converter::Decode(std::string{m_oHashValue.get().begin(),
 					m_oHashValue.get().end()}.c_str(), m_oHashValue.get().size(), temp, tempSize);
 				ptr->ipdPasswordData.rgbHash.cbLength = tempSize;
+				ptr->ipdPasswordData.rgbHash.rgbData = std::vector<BYTE>(temp, temp + tempSize);
+				delete[] temp; 
 
-				BYTE* temp2 = ptr->ipdPasswordData.rgbSalt.rgbData.data();
-				auto tempSize2 = 0;
 				NSFile::CBase64Converter::Decode(std::string{m_oSaltValue.get().begin(),
-					m_oSaltValue.get().end()}.c_str(), m_oSaltValue.get().size(), temp2, tempSize2);
-				ptr->ipdPasswordData.rgbSalt.cbLength = tempSize2;
+					m_oSaltValue.get().end()}.c_str(), m_oSaltValue.get().size(), temp, tempSize);
+				ptr->ipdPasswordData.rgbSalt.cbLength = tempSize;
+				ptr->ipdPasswordData.rgbSalt.rgbData = std::vector<BYTE>(temp, temp + tempSize);
+				delete[] temp; 
 			}
 			else
 			{
@@ -2827,25 +2829,29 @@ namespace OOX
 				auto ptr(new XLSB::SheetProtectionIso);
 				XLS::BaseObjectPtr castedPtr(ptr);
 				if(m_oAlgorithmName.IsInit())
-					ptr->ipdPasswordData.szAlgName = m_oAlgorithmName->GetValue();
+                    ptr->ipdPasswordData.szAlgName = m_oAlgorithmName->ToString();
 				if(m_oSpinCount.IsInit())
 					ptr->dwSpinCount = m_oSpinCount->GetValue();
 				if(m_oHashValue.IsInit())
 				{
-				BYTE * temp = ptr->ipdPasswordData.rgbHash.rgbData.data();
-				auto tempSize = 0;
-				NSFile::CBase64Converter::CBase64Converter::Decode(std::string{m_oHashValue.get().begin(),
-					m_oHashValue.get().end()}.c_str(), m_oHashValue.get().size(), temp, tempSize);
-				ptr->ipdPasswordData.rgbHash.cbLength = tempSize;
+					BYTE * temp;
+					auto tempSize = 0;
+					NSFile::CBase64Converter::CBase64Converter::Decode(std::string{m_oHashValue.get().begin(),
+						m_oHashValue.get().end()}.c_str(), m_oHashValue.get().size(), temp, tempSize);
+					ptr->ipdPasswordData.rgbHash.cbLength = tempSize;
+					ptr->ipdPasswordData.rgbHash.rgbData = std::vector<BYTE>(temp, temp + tempSize);
+					delete[] temp; 
 				}
 
 				if(m_oSaltValue.IsInit())
 				{
-					BYTE * temp2 = ptr->ipdPasswordData.rgbSalt.rgbData.data();
-					auto tempSize2 = 0;
+                    BYTE * temp;
+                    auto tempSize = 0;
 					NSFile::CBase64Converter::Decode(std::string{m_oSaltValue.get().begin(),
-						m_oSaltValue.get().end()}.c_str(), m_oSaltValue.get().size(), temp2, tempSize2);
-					ptr->ipdPasswordData.rgbSalt.cbLength = tempSize2;
+					m_oSaltValue.get().end()}.c_str(), m_oSaltValue.get().size(), temp, tempSize);
+					ptr->ipdPasswordData.rgbSalt.cbLength = tempSize;
+					ptr->ipdPasswordData.rgbSalt.rgbData = std::vector<BYTE>(temp, temp + tempSize);
+					delete[] temp; 
 				}
 
 				if (m_oAutoFilter.IsInit())
@@ -2954,7 +2960,7 @@ namespace OOX
 				objectPtr =  XLS::BaseObjectPtr{ptr};
 				
 				if(m_oAlgorithmName.IsInit())
-					ptr->ipdPasswordData.szAlgName = m_oAlgorithmName->GetValue();
+					ptr->ipdPasswordData.szAlgName = m_oAlgorithmName->ToString();
 				else
 					ptr->ipdPasswordData.szAlgName = false;
 				if(m_oSpinCount.IsInit())
@@ -2964,20 +2970,24 @@ namespace OOX
 					
 				if(m_oHashValue.IsInit())
 				{
-					BYTE * temp = ptr->ipdPasswordData.rgbHash.rgbData.data();
+					BYTE * temp;
 					auto tempSize = 0;
 					NSFile::CBase64Converter::CBase64Converter::Decode(std::string{m_oHashValue.get().begin(),
 						m_oHashValue.get().end()}.c_str(), m_oHashValue.get().size(), temp, tempSize);
 					ptr->ipdPasswordData.rgbHash.cbLength = tempSize;
+					ptr->ipdPasswordData.rgbHash.rgbData = std::vector<BYTE>(temp, temp + tempSize);
+					delete[] temp; 
 				}
 
 				if(m_oSaltValue.IsInit())
 				{
-					BYTE * temp2 = ptr->ipdPasswordData.rgbSalt.rgbData.data();
-					auto tempSize2 = 0;
+					BYTE * temp;
+					auto tempSize = 0;
 					NSFile::CBase64Converter::Decode(std::string{m_oSaltValue.get().begin(),
-						m_oSaltValue.get().end()}.c_str(), m_oSaltValue.get().size(), temp2, tempSize2);
-					ptr->ipdPasswordData.rgbSalt.cbLength = tempSize2;
+					m_oSaltValue.get().end()}.c_str(), m_oSaltValue.get().size(), temp, tempSize);
+					ptr->ipdPasswordData.rgbSalt.cbLength = tempSize;
+					ptr->ipdPasswordData.rgbSalt.rgbData = std::vector<BYTE>(temp, temp + tempSize);
+					delete[] temp; 
 				}
 
 				if(m_oObjects.IsInit())

@@ -215,7 +215,7 @@ namespace NSJSBase
 		return new CJSCTryCatch();
 	}
 
-	void CJSContext::Initialize()
+	void CJSContext::Initialize(const std::wstring& snapshotPath)
 	{
 		m_internal->context = [[JSContext alloc] init];
 
@@ -247,6 +247,11 @@ namespace NSJSBase
 			CGlobalContext::GetInstance().UnregisterContextForId(*i);
 		}
 		m_internal->context = nil;
+	}
+
+	bool CJSContext::isSnapshotUsed()
+	{
+		return false;
 	}
 
 	JSSmart<CJSObject> CJSContext::GetGlobal()
@@ -344,6 +349,11 @@ namespace NSJSBase
 		JSContext* _current = NSJSBase::CJSContextPrivate::GetCurrentContext();
 		CJSTypedArrayJSC* _value = new CJSTypedArrayJSC(_current, data, count, isExternalize);
 		return _value;
+	}
+
+	bool CJSContext::generateSnapshot(const std::string& script, const std::wstring& snapshotPath)
+	{
+		return false;
 	}
 
 	JSSmart<CJSValue> CJSContext::runScript(const std::string& script, JSSmart<CJSTryCatch> exception, const std::wstring& scriptPath)

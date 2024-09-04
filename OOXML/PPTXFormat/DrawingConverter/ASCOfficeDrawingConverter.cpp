@@ -5667,9 +5667,10 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 			if (!pSpPr->ln.is_init())
 				pSpPr->ln = new PPTX::Logic::Ln();
 
-            if		(*sLineJoin == L"bevel")	pSpPr->ln->Join.type = PPTX::Logic::JoinBevel;
-            else if (*sLineJoin == L"miter")	pSpPr->ln->Join.type = PPTX::Logic::JoinMiter;
-            else if (*sLineJoin == L"round")	pSpPr->ln->Join.type = PPTX::Logic::JoinRound;
+			pSpPr->ln->Join.Init();
+            if		(*sLineJoin == L"bevel")	pSpPr->ln->Join->type = PPTX::Logic::JoinBevel;
+            else if (*sLineJoin == L"miter")	pSpPr->ln->Join->type = PPTX::Logic::JoinMiter;
+            else if (*sLineJoin == L"round")	pSpPr->ln->Join->type = PPTX::Logic::JoinRound;
 		}		
 	}
 	nullable_string sStroked;

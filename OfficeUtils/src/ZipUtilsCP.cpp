@@ -206,7 +206,7 @@ namespace ZLibZipUtils
 #endif
 	}
 	static void change_file_date( const wchar_t *filename, uLong dosdate, tm_unz tmu_date );
-	static int do_extract_currentfile( unzFile uf, const wchar_t* unzip_dir, const int* popt_extract_without_path, int* popt_overwrite, const char* password );
+	static int do_extract_currentfile( unzFile uf, const wchar_t* unzip_dir, const int* popt_extract_without_path, int* popt_overwrite, const char* password, bool is_replace_slash = false );
 	static int do_extract( unzFile uf, const wchar_t* unzip_dir, int opt_extract_without_path, int opt_overwrite, const char* password, const OnProgressCallback* progress );
 
 	static bool is_file_in_archive(unzFile uf, const wchar_t *filename);
@@ -237,7 +237,7 @@ namespace ZLibZipUtils
 		}
 	}
 
-	static int do_extract_currentfile( unzFile uf, const wchar_t* unzip_dir, const int* popt_extract_without_path, int* popt_overwrite, const char* password )
+	static int do_extract_currentfile( unzFile uf, const wchar_t* unzip_dir, const int* popt_extract_without_path, int* popt_overwrite, const char* password, bool is_replcace_slash )
 	{
 		char filename_inzipA[4096];
 		int err = UNZ_OK;
@@ -257,6 +257,12 @@ namespace ZLibZipUtils
 		for(std::wstring::size_type i = 0, len = filenameW.length(); i < len; ++i)
 			if(filenameW[i] == L'/')
 				filenameW[i] = L'\\';
+#else
+		if (is_replcace_slash)
+			for (std::wstring::size_type i = 0, len = filenameW.length(); i < len; ++i)
+				if(filenameW[i] == L'\\')
+					filenameW[i] = L'/';
+
 #endif
 
 		std::wstring filenameW_withoutpath = L"";
@@ -399,13 +405,20 @@ namespace ZLibZipUtils
 		int err;
 		FILE* fout=NULL;
 
+		// [Content-Types.xml] check
+		// if found - it is a office file, so we can replace '\' to '/' for non-windows
+		// fixes bad zips
+		const char* content_types = "[Content_Types].xml";
+		bool is_office = UNZ_OK == unzLocateFile(uf, content_types, true);
+		unzGoToFirstFile(uf);
+
 		err = unzGetGlobalInfo (uf,&gi);
 
 		for (i = 0; i < gi.number_entry; i++)
 		{
 			if (do_extract_currentfile(uf, unzip_dir, &opt_extract_without_path,
 									   &opt_overwrite,
-									   password) == UNZ_OK)
+									   password, is_office) == UNZ_OK)
 			{
 				number_extract++;
 			}

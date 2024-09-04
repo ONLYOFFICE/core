@@ -1365,8 +1365,15 @@ int Binary_pPrReader::ReadBorder(BYTE type, long length, void* poResult)
 	{
 		pBorder->m_oVal.Init();
 
-		BYTE border_type = m_oBufferedStream.GetUChar(); // todooo change to int
-		pBorder->m_oVal->SetValueFromByte(border_type);
+		if (0 != m_oBufferedStream.GetUChar())
+			pBorder->m_oVal->SetValue(SimpleTypes::bordervalueSingle);
+		else
+			pBorder->m_oVal->SetValue(SimpleTypes::bordervalueNone);
+	}
+	else if (c_oSerBorderType::ValueType == type)
+	{
+		pBorder->m_oVal.Init();
+		pBorder->m_oVal->SetValue((SimpleTypes::EBorder)m_oBufferedStream.GetLong());
 	}
 	else if ( c_oSerBorderType::ColorTheme == type )
 	{

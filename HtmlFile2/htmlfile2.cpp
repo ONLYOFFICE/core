@@ -4288,7 +4288,7 @@ std::wstring CTableRow::ConvertToOOXML(const CTable& oTable, int nInstruction)
 		oRow.WriteNodeEnd(L"w:trPr");
 	}
 
-	for (UINT unIndex = 0; unIndex < m_arCells.size();)
+	for (UINT unIndex = 0; unIndex < m_arCells.size(); ++unIndex)
 	{
 		int nNewInstruction{nInstruction};
 
@@ -4299,7 +4299,7 @@ std::wstring CTableRow::ConvertToOOXML(const CTable& oTable, int nInstruction)
 		else if (0 != unIndex)
 			nNewInstruction |= MID_ELEMENT;
 
-		oRow += m_arCells[unIndex]->ConvertToOOXML(oTable, ++unIndex, nNewInstruction);
+		oRow += m_arCells[unIndex]->ConvertToOOXML(oTable, unIndex, nNewInstruction);
 	}
 
 	oRow.WriteNodeEnd(L"w:tr");

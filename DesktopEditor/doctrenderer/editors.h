@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,33 +29,34 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#ifndef DOC_BUILDER_EDITORS_CONFIG
+#define DOC_BUILDER_EDITORS_CONFIG
 
-#pragma once
+#include "./config.h"
+#include "../js_internal/js_base.h"
 
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
+#ifdef CreateFile
+#undef CreateFile
+#endif
 
-
-namespace XLSB
+namespace NSDoctRenderer
 {
-    class LPByteBuf : public XLS::BiffStructure
-    {
-        BASE_STRUCTURE_DEFINE_CLASS_NAME(LPByteBuf)
-    public:
-        LPByteBuf();
-        LPByteBuf(XLS::CFRecord& record);
-        ~LPByteBuf();
-		XLS::BiffStructurePtr clone();
+	enum class DoctRendererEditorType
+	{
+		WORD      = 0,
+		CELL      = 1,
+		SLIDE     = 2,
+		VISIO     = 3,
+		PDF       = 4,
 
-        static const XLS::ElementType	type = XLS::typeBiffStructure;
-        virtual void load(XLS::CFRecord& record);
-        virtual void save(XLS::CFRecord& record);
+		INVALID = 255
+	};
 
-		std::wstring GetBase64();
+	bool RunEditor(const DoctRendererEditorType& type, JSSmart<NSJSBase::CJSContext>& context, JSSmart<NSJSBase::CJSTryCatch>& try_catch, CDoctRendererConfig* config);
 
-        _UINT32             cbLength;
-        std::vector<BYTE>   rgbData;
+	bool GenerateEditorSnapshot(const DoctRendererEditorType& type, CDoctRendererConfig* config);
 
-    };
+	JSSmart<NSJSBase::CJSContext> CreateEditorContext(const DoctRendererEditorType& type, CDoctRendererConfig* config);
+}
 
-}   // namespace XLSB
+#endif // DOC_BUILDER_EDITORS_CONFIG

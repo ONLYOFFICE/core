@@ -180,7 +180,7 @@ public:
 		return m_pAllocator;
 	}
 
-	v8::Isolate* CreateNew()
+	v8::Isolate* CreateNew(v8::StartupData* startupData = nullptr)
 	{
 		v8::Isolate::CreateParams create_params;
 #ifndef V8_OS_XP
@@ -198,6 +198,10 @@ public:
 		create_params.constraints.ConfigureDefaults(
 					v8::base::SysInfo::AmountOfPhysicalMemory(),
 					nMaxVirtualMemory);
+#endif
+
+#ifdef V8_SUPPORT_SNAPSHOTS
+		create_params.snapshot_blob = startupData;
 #endif
 
 		return v8::Isolate::New(create_params);
@@ -839,9 +843,13 @@ namespace NSJSBase
 		v8::Persistent<v8::Context>     m_contextPersistent;
 		v8::Local<v8::Context>			m_context;
 
+		v8::StartupData m_startup_data;
+
 	public:
 		CJSContextPrivate() : m_isolate(NULL)
 		{
+			m_startup_data.data = NULL;
+			m_startup_data.raw_size = 0;
 		}
 
 		void InsertToGlobal(const std::string& name, v8::FunctionCallback creator)
@@ -849,6 +857,12 @@ namespace NSJSBase
 			v8::Local<v8::FunctionTemplate> templ = v8::FunctionTemplate::New(m_isolate, creator);
 			v8::MaybeLocal<v8::Function> oFuncMaybeLocal = templ->GetFunction(m_context);
 			m_context->Global()->Set(m_context, CreateV8String(m_isolate, name.c_str()), oFuncMaybeLocal.ToLocalChecked());
+		}
+
+		~CJSContextPrivate()
+		{
+			if (m_startup_data.data)
+				delete [] m_startup_data.data;
 		}
 	};
 

@@ -744,7 +744,8 @@ void TCell::FillLn(PPTX::Logic::Ln &Ln, TCell::eBorderPossition eBP, CElementPtr
     pLineEnd->len = new PPTX::Limit::LineEndSize;
     Ln.tailEnd = pLineEnd;
 
-    Ln.Join.type = PPTX::Logic::eJoin::JoinRound;
+    Ln.Join.Init();
+    Ln.Join->type = PPTX::Logic::eJoin::JoinRound;
 }
 
 void TCell::SetLnName(PPTX::Logic::Ln &Ln, eBorderPossition eBP) const

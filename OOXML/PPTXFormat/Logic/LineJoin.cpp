@@ -36,10 +36,6 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		bool LineJoin::is_init() const
-		{
-			return (type==JoinEmpty);
-		}
 		void LineJoin::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());

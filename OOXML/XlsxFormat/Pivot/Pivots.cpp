@@ -2572,7 +2572,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             ptr->fStdev = false;
 
 		if (m_oSubtotalCaption.IsInit())
-			ptr->irstSub.value() = m_oSubtotalCaption.get();
+			ptr->irstSub = m_oSubtotalCaption.get();
 		else
 			ptr->fDisplaySub = false;
 
@@ -4880,54 +4880,59 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		XLS::BaseObjectPtr  objectPtr(ptr);
 		for(auto i:m_arrItems)
 		{
-			auto boolVal = static_cast<CPivotBooleanValue*>(i);
-			if(boolVal)
-			{
-				auto ptr1(new XLSB::PCDI);
-				ptr1->m_source = boolVal->toBin();
-				ptr->m_arPCDI.push_back(XLS::BaseObjectPtr{ptr1});
-				continue;
-			}
-			auto dataValue = static_cast<CPivotDateTimeValue*>(i);
-			if(dataValue)
-			{
-				auto ptr1(new XLSB::PCDI);
-				ptr1->m_source = dataValue->toBin();
-				ptr->m_arPCDI.push_back(XLS::BaseObjectPtr{ptr1});
-				continue;
-			}
-			auto errorValue = static_cast<CPivotErrorValue*>(i);
-			if(errorValue)
-			{
-				auto ptr1(new XLSB::PCDI);
-				ptr1->m_source = errorValue->toBin();
-				ptr->m_arPCDI.push_back(XLS::BaseObjectPtr{ptr1});
-				continue;
-			}
-			auto noVal = static_cast<CPivotNoValue*>(i);
-			if(noVal)
-			{
-				auto ptr1(new XLSB::PCDI);
-				ptr1->m_source = noVal->toBin();
-				ptr->m_arPCDI.push_back(XLS::BaseObjectPtr{ptr1});
-				continue;
-			}
-            auto numericVal = static_cast<CPivotNumericValue*>(i);
-			if(numericVal)
-			{
-				auto ptr1(new XLSB::PCDI);
-				ptr1->m_source = numericVal->toBin();
-				ptr->m_arPCDI.push_back(XLS::BaseObjectPtr{ptr1});
-				continue;
-			}
-			auto charVal = static_cast<CPivotCharacterValue*>(i);
-			if(charVal)
-			{
-				auto ptr1(new XLSB::PCDI);
-				ptr1->m_source = charVal->toBin();
-				ptr->m_arPCDI.push_back(XLS::BaseObjectPtr{ptr1});
-				continue;
-			}
+            switch(i->getType())
+            {
+                case et_x_PivotBooleanValue:
+                {
+                    auto boolVal = static_cast<CPivotBooleanValue*>(i);
+                    auto ptr1(new XLSB::PCDI);
+                    ptr1->m_source = boolVal->toBin();
+                    ptr->m_arPCDI.push_back(XLS::BaseObjectPtr{ptr1});
+                    break;
+                }
+                case et_x_PivotDateTimeValue:
+                {
+                    auto dataValue = static_cast<CPivotDateTimeValue*>(i);
+                    auto ptr1(new XLSB::PCDI);
+                    ptr1->m_source = dataValue->toBin();
+                    ptr->m_arPCDI.push_back(XLS::BaseObjectPtr{ptr1});
+                    break;
+                }
+                case et_x_PivotErrorValue:
+                {
+                    auto errorValue = static_cast<CPivotErrorValue*>(i);
+                    auto ptr1(new XLSB::PCDI);
+                    ptr1->m_source = errorValue->toBin();
+                    ptr->m_arPCDI.push_back(XLS::BaseObjectPtr{ptr1});
+                    break;
+                }
+                case et_x_PivotNoValue:
+                {
+                    auto noVal = static_cast<CPivotNoValue*>(i);
+                    auto ptr1(new XLSB::PCDI);
+                    ptr1->m_source = noVal->toBin();
+                    ptr->m_arPCDI.push_back(XLS::BaseObjectPtr{ptr1});
+                    break;
+                }
+                case et_x_PivotNumericValue:
+                {
+                    auto numericVal = static_cast<CPivotNumericValue*>(i);
+                    auto ptr1(new XLSB::PCDI);
+                    ptr1->m_source = numericVal->toBin();
+                    ptr->m_arPCDI.push_back(XLS::BaseObjectPtr{ptr1});
+                    break;
+                }
+                case et_x_PivotCharacterValue:
+                {
+                    auto charVal = static_cast<CPivotCharacterValue*>(i);
+                    auto ptr1(new XLSB::PCDI);
+                    ptr1->m_source = charVal->toBin();
+                    ptr->m_arPCDI.push_back(XLS::BaseObjectPtr{ptr1});
+                    break;
+                }
+                default:
+                    break;
+            }
 		}
 		return objectPtr;
 	}
@@ -5083,6 +5088,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			if(m_oEndNum.IsInit())
 				ptr->xnumEnd.data.value = m_oEndNum.get();
 		}
+		ptr->iByType = 0x00;
 		if(m_oGroupBy.IsInit())
 		{
 			if (m_oGroupBy == SimpleTypes::Spreadsheet::EValuesGroupBy::groupByNumericRanges) ptr->iByType = 0x00;
@@ -6784,14 +6790,18 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	{
 		auto ptr(new XLSB::PCDFGROUP);
 		XLS::BaseObjectPtr objectPtr(ptr);
-		if(m_oPar.IsInit() || m_oBase.IsInit())
-		{
-			auto ptr1(new XLSB::BeginPCDFGroup);
-			if(m_oPar.IsInit())
-				ptr1->ifdbParent = m_oPar->GetValue();
-			if(m_oBase.IsInit())
-				ptr1->ifdbBase = m_oBase->GetValue();
-		}
+
+		auto ptr1(new XLSB::BeginPCDFGroup);
+		ptr->m_BrtBeginPCDFGroup = XLS::BaseObjectPtr{ptr1};
+		if(m_oPar.IsInit())
+			ptr1->ifdbParent = m_oPar->GetValue();
+		else
+            ptr1->ifdbParent = -1;
+		if(m_oBase.IsInit())
+			ptr1->ifdbBase = m_oBase->GetValue();
+		else
+			ptr1->ifdbBase = -1;
+
 		if(m_oDiscretePr.IsInit())
 			ptr->m_PCDFGDISCRETE = m_oDiscretePr->toBin();
 		if(m_oRangePr.IsInit())

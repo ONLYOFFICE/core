@@ -612,7 +612,7 @@ namespace NSJSON
 
 	namespace
 	{
-		// moves pos to first non-space symbol and returns `true` if pos is still inside the string after moving
+		// moves pos to first non-space symbol and returns false if end of the string was reached
 		bool skipWhitespaces(const std::string& str, int& pos)
 		{
 			for (; pos < str.size(); pos++)
@@ -732,53 +732,93 @@ namespace NSJSON
 			// if did not encounter closing qoutes, return undefined
 			if (pos == str.size())
 				return CValue();
-
 			pos++;
+
 			return result;
 		}
 
+		// parse one value of JSON-string `str` starting from `pos`
+		CValue valueFromJSON(const std::string& str, int& pos);
+
 		CValue parseArrayFromJSON(const std::string& str, int& pos)
 		{
-			return CValue();
+			// skip opening bracket '[' cause it has already been checked
+			pos++;
+			// handle first element separately to get pattern: [(firstValue)(,value)(,value)...]
+			CValue firstValue = valueFromJSON(str, pos);
+			if (firstValue.IsUndefined())
+			{
+				if (pos < str.size() && str[pos] == ']')
+				{
+					pos++;
+					return CValue::CreateArray(0);
+				}
+				else
+				{
+					return CValue();
+				}
+			}
+
+			std::vector<CValue> values;
+			values.emplace_back(firstValue);
+			while (skipWhitespaces(str, pos) && str[pos] != ']')
+			{
+				// expect ','
+				if (str[pos] != ',')
+					return CValue();
+				pos++;
+				// expect value
+				CValue value = valueFromJSON(str, pos);
+				if (value.IsUndefined())
+					return CValue();
+				values.emplace_back(value);
+			}
+			// if did not encounter closing bracket ']', return undefined
+			if (pos == str.size())
+				return CValue();
+			pos++;
+
+			// copy values from vector to CValue array
+			CValue result = CValue::CreateArray(values.size());
+			for (int i = 0; i < values.size(); i++)
+			{
+				result[i] = values[i];
+			}
+
+			return result;
 		}
 
 		CValue parseObjectFromJSON(const std::string& str, int& pos)
 		{
 			return CValue();
 		}
-	}
 
-	CValue CValue::FromJSON(const std::string& jsonString)
-	{
-		CValue value;
-		int pos = 0;
-		while (skipWhitespaces(jsonString, pos))
+		CValue valueFromJSON(const std::string& str, int& pos)
 		{
-			// if value has been already parsed on previous iteration and there are still some symbols left,
-			//	the json is considered invalid
-			if (!value.IsUndefined())
+			if (!skipWhitespaces(str, pos))
 				return CValue();
 
-			char ch = jsonString[pos];
+			CValue value;
+			char ch = str[pos];
 			if (ch == '\"')
 			{
 				// string
-				value = parseStringFromJSON(jsonString, pos);
+				value = parseStringFromJSON(str, pos);
 			}
 			else if (ch == '[')
 			{
 				// array
-				value = parseArrayFromJSON(jsonString, pos);
+				value = parseArrayFromJSON(str, pos);
 			}
 			else if (ch == '{')
 			{
 				// object
-				value = parseObjectFromJSON(jsonString, pos);
+				value = parseObjectFromJSON(str, pos);
 			}
 			else if (ch == 'n')
 			{
 				// null
-				if (jsonString.substr(pos, 4) == "null")
+				if (str.substr(pos, 4) == "null")
 					value = CValue::CreateNull();
 				else
 					return CValue();
@@ -787,7 +827,7 @@ namespace NSJSON
 			else if (ch == 't')
 			{
 				// true (bool)
-				if (jsonString.substr(pos, 4) == "true")
+				if (str.substr(pos, 4) == "true")
 					value = true;
 				else
 					return CValue();
@@ -796,7 +836,7 @@ namespace NSJSON
 			else if (ch == 'f')
 			{
 				// false (bool)
-				if (jsonString.substr(pos, 5) == "false")
+				if (str.substr(pos, 5) == "false")
 					value = false;
 				else
 					return CValue();
@@ -804,16 +844,25 @@ namespace NSJSON
 			}
 			else if (ch == '-' || std::isdigit(ch))
 			{
-				value = parseNumberFromJSON(jsonString, pos);
+				value = parseNumberFromJSON(str, pos);
 			}
 			else
 			{
 				return CValue();
 			}
-			// if value is still undefined, the json is also invalid
-			if (value.IsUndefined())
-				break;
+
+			return value;
 		}
+	}
+
+	CValue CValue::FromJSON(const std::string& jsonString)
+	{
+		int pos = 0;
+		CValue value = valueFromJSON(jsonString, pos);
+		// if there are still some non-space characters after the value has been parsed,
+		//  the JSON-string is considered invalid
+		if (skipWhitespaces(jsonString, pos))
+			return CValue();
 
 		return value;
 	}

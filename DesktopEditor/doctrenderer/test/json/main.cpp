@@ -1131,6 +1131,34 @@ TEST_F(CJSONTest, FromJSON_null)
 	EXPECT_TRUE(val.IsNull());
 }
 
+TEST_F(CJSONTest, FromJSON_null_invalid)
+{
+	// empty json string is invalid
+	std::string strJson = "";
+	CValue val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+	// there is no undefined in JSON standard
+	strJson = "undefined";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+
+	strJson = "nil";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+
+	strJson = "n";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+
+	strJson = "NULL";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+
+	strJson = "nullptr";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+}
+
 TEST_F(CJSONTest, FromJSON_bool)
 {
 	std::string strJson = "false";
@@ -1138,10 +1166,33 @@ TEST_F(CJSONTest, FromJSON_bool)
 	EXPECT_TRUE(val.IsBool());
 	EXPECT_EQ((bool)val, false);
 
-	strJson = "true";
+	strJson = "true ";
 	val = CValue::FromJSON(strJson);
 	EXPECT_TRUE(val.IsBool());
 	EXPECT_EQ((bool)val, true);
+}
+
+TEST_F(CJSONTest, FromJSON_bool_invalid)
+{
+	std::string strJson = "fals";
+	CValue val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+
+	strJson = "truE";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+
+	strJson = "f";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+
+	strJson = "t";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+
+	strJson = "True";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
 }
 
 TEST_F(CJSONTest, FromJSON_int)
@@ -1164,17 +1215,18 @@ TEST_F(CJSONTest, FromJSON_int)
 	strJson = "-2147483648";
 	val = CValue::FromJSON(strJson);
 	EXPECT_TRUE(val.IsInt());
-	EXPECT_EQ((int)val, -2147483648);
+	EXPECT_EQ((int)val, std::numeric_limits<int>::min());
 
 	strJson = "2147483647";
 	val = CValue::FromJSON(strJson);
 	EXPECT_TRUE(val.IsInt());
-	EXPECT_EQ((int)val, 2147483647);
+	EXPECT_EQ((int)val, std::numeric_limits<int>::max());
 
 	strJson = "2147483648";
 	val = CValue::FromJSON(strJson);
 	// this value does not fit into 32-bit integer limits
 	EXPECT_FALSE(val.IsInt());
+	EXPECT_TRUE(val.IsDouble());
 }
 
 TEST_F(CJSONTest, FromJSON_double)
@@ -1443,7 +1495,158 @@ TEST_F(CJSONTest, FromJSON_whitespace_symbols)
 	EXPECT_TRUE(val.IsUndefined());
 }
 
-// TODO: add incorrects JSONs
+TEST_F(CJSONTest, FromJSON_arrays)
+{
+	std::string strJson = "[]";
+	CValue val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsArray());
+	EXPECT_EQ(val.GetCount(), 0);
+	EXPECT_TRUE(val[0].IsUndefined());
+
+	strJson = "[1, 2, 3]";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsArray());
+	EXPECT_EQ(val.GetCount(), 3);
+	EXPECT_EQ((int)val[0], 1);
+	EXPECT_EQ((int)val[1], 2);
+	EXPECT_EQ((int)val[2], 3);
+
+	strJson = " [ \"][\" ] ";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsArray());
+	EXPECT_EQ(val.GetCount(), 1);
+	EXPECT_EQ(val[0].ToStringA(), "][");
+
+	strJson = " [  73 ,  null\n\t,4.2]";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsArray());
+	EXPECT_EQ(val.GetCount(), 3);
+	EXPECT_EQ((int)val[0], 73);
+	EXPECT_TRUE(val[1].IsNull());
+	EXPECT_DOUBLE_EQ((double)val[2], 4.2);
+
+	strJson = "[1, \"two\", 3.14, true, null]";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsArray());
+	EXPECT_EQ(val.GetCount(), 5);
+	EXPECT_EQ(val[0].ToInt(), 1);
+	EXPECT_EQ(val[1].ToStringA(), "two");
+	EXPECT_DOUBLE_EQ(val[2].ToDouble(), 3.14);
+	EXPECT_TRUE(val[3].ToBool());
+	EXPECT_TRUE(val[4].IsNull());
+}
+
+TEST_F(CJSONTest, FromJSON_arrays_inner)
+{
+	std::string strJson = "[[1, 2, 3]]";
+	CValue val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsArray());
+	EXPECT_EQ(val.GetCount(), 1);
+	EXPECT_TRUE(val[0].IsArray());
+	EXPECT_EQ(val[0].GetCount(), 3);
+	EXPECT_EQ((int)val[0][0], 1);
+	EXPECT_EQ((int)val[0][1], 2);
+	EXPECT_EQ((int)val[0][2], 3);
+
+	strJson = "[1, [2, 3], [4, [5, 6]], 7]";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsArray());
+	EXPECT_EQ(val.GetCount(), 4);
+	EXPECT_EQ((int)val[0], 1);
+	EXPECT_TRUE(val[1].IsArray());
+	EXPECT_EQ(val[1].GetCount(), 2);
+	EXPECT_EQ((int)val[1][0], 2);
+	EXPECT_EQ((int)val[1][1], 3);
+	EXPECT_TRUE(val[2].IsArray());
+	EXPECT_EQ(val[2].GetCount(), 2);
+	EXPECT_EQ((int)val[2][0], 4);
+	EXPECT_TRUE(val[2][1].IsArray());
+	EXPECT_EQ(val[2][1].GetCount(), 2);
+	EXPECT_EQ((int)val[2][1][0], 5);
+	EXPECT_EQ((int)val[2][1][1], 6);
+	EXPECT_EQ((int)val[3], 7);
+
+	strJson = "[[],[[]],[[],[]]]";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsArray());
+	EXPECT_EQ(val.GetCount(), 3);
+	EXPECT_TRUE(val[0].IsArray());
+	EXPECT_EQ(val[0].GetCount(), 0);
+	EXPECT_TRUE(val[1].IsArray());
+	EXPECT_EQ(val[1].GetCount(), 1);
+	EXPECT_TRUE(val[1][0].IsArray());
+	EXPECT_EQ(val[1][0].GetCount(), 0);
+	EXPECT_TRUE(val[2].IsArray());
+	EXPECT_EQ(val[2].GetCount(), 2);
+	EXPECT_TRUE(val[2][0].IsArray());
+	EXPECT_EQ(val[2][0].GetCount(), 0);
+	EXPECT_TRUE(val[2][1].IsArray());
+	EXPECT_EQ(val[2][1].GetCount(), 0);
+}
+
+TEST_F(CJSONTest, FromJSON_arrays_invalid)
+{
+	// no closing bracket
+	std::string strJson = "[";
+	CValue val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+	strJson = "[1,2,3";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+	// trailing comma
+	strJson = "[1,2,]";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+	// leading comma
+	strJson = "[,1]";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+	// missing comma
+	strJson = "[1 2, 3]";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+	// extra commas
+	strJson = "[1,,2,3]";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+	strJson = "[,]";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+	// invalid elements
+	strJson = "[1, 2, undefined, 4]";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+	// non-JSON values as elements
+	strJson = "[1, 2, f(), 4]";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+	// invalid syntax within elements
+	strJson = "[\"foo\", 123, [1, 2, }, 4]";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+	// whitespace issues
+	strJson = "[1,  2  3, 4]";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+	// empty array without brackets
+	strJson = "]";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+	// extra brackets
+	strJson = "[[1, 2, 3]";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+	strJson = "[1, 2, 3]]";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+	// elements outside of the array
+	strJson = "[1, 2, 3], 5";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+	strJson = "[1, 2, 3] 4";
+	val = CValue::FromJSON(strJson);
+	EXPECT_TRUE(val.IsUndefined());
+}
 
 #else
 int main()

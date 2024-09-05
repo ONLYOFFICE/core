@@ -788,9 +788,70 @@ namespace NSJSON
 			return result;
 		}
 
+		std::pair<std::string, CValue> parseKeyValuePair(const std::string& str, int& pos)
+		{
+			std::pair<std::string, CValue> result;
+
+			if (!skipWhitespaces(str, pos) || str[pos] != '\"')
+				return result;
+			// parse key
+			CValue key = parseStringFromJSON(str, pos);
+			if (key.IsUndefined())
+				return result;
+			result.first = key.ToStringA();
+			// expect ':'
+			if (!skipWhitespaces(str, pos) || str[pos] != ':')
+				return result;
+			pos++;
+			// parse value
+			CValue value = valueFromJSON(str, pos);
+			if (value.IsUndefined())
+				return result;
+			result.second = value;
+
+			return result;
+		}
+
 		CValue parseObjectFromJSON(const std::string& str, int& pos)
 		{
-			return CValue();
+			CValue result = CValue::CreateObject();
+			// skip opening curly brace '{' cause it has already been checked
+			pos++;
+			// handle first key-value pair separately to get pattern: [(firstKey:firstValue)(,key:value)(,key:value)...]
+			std::pair<std::string, CValue> keyValue = parseKeyValuePair(str, pos);
+			// if value is undefined, then something went wrong or object is empty
+			if (keyValue.second.IsUndefined())
+			{
+				if (pos < str.size() && str[pos] == '}' && keyValue.first.empty())
+				{
+					pos++;
+					return result;
+				}
+				else
+				{
+					return CValue();
+				}
+			}
+
+			result[keyValue.first.c_str()] = keyValue.second;
+			while (skipWhitespaces(str, pos) && str[pos] != '}')
+			{
+				// expect ','
+				if (str[pos] != ',')
+					return CValue();
+				pos++;
+				// expect key-value pair
+				std::pair<std::string, CValue> keyValue = parseKeyValuePair(str, pos);
+				if (keyValue.second.IsUndefined())
+					return CValue();
+				result[keyValue.first.c_str()] = keyValue.second;
+			}
+			// if did not encounter closing curly brace '}', return undefined
+			if (pos == str.size())
+				return CValue();
+			pos++;
+
+			return result;
 		}
 
 		CValue valueFromJSON(const std::string& str, int& pos)

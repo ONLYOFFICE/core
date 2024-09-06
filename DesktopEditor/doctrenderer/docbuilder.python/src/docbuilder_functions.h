@@ -24,6 +24,7 @@ DOCBUILDER_FUNC_DECL void CDocBuilderValue_Clear(CDocBuilderValue* self);
 
 DOCBUILDER_FUNC_DECL bool CDocBuilderValue_IsNull(CDocBuilderValue* self);
 DOCBUILDER_FUNC_DECL bool CDocBuilderValue_IsUndefined(CDocBuilderValue* self);
+DOCBUILDER_FUNC_DECL bool CDocBuilderValue_IsBool(CDocBuilderValue* self);
 DOCBUILDER_FUNC_DECL bool CDocBuilderValue_IsInt(CDocBuilderValue* self);
 DOCBUILDER_FUNC_DECL bool CDocBuilderValue_IsDouble(CDocBuilderValue* self);
 DOCBUILDER_FUNC_DECL bool CDocBuilderValue_IsString(CDocBuilderValue* self);

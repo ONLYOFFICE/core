@@ -49,6 +49,9 @@ def _loadLibrary(path):
     _lib.CDocBuilderValue_IsUndefined.argtypes = [OBJECT_HANDLE]
     _lib.CDocBuilderValue_IsUndefined.restype = ctypes.c_bool
 
+    _lib.CDocBuilderValue_IsBool.argtypes = [OBJECT_HANDLE]
+    _lib.CDocBuilderValue_IsBool.restype = ctypes.c_bool
+
     _lib.CDocBuilderValue_IsInt.argtypes = [OBJECT_HANDLE]
     _lib.CDocBuilderValue_IsInt.restype = ctypes.c_bool
 
@@ -300,6 +303,9 @@ class CDocBuilderValue:
 
     def IsUndefined(self):
         return _lib.CDocBuilderValue_IsUndefined(self._internal)
+
+    def IsBool(self):
+        return _lib.CDocBuilderValue_IsBool(self._internal)
 
     def IsInt(self):
         return _lib.CDocBuilderValue_IsInt(self._internal)

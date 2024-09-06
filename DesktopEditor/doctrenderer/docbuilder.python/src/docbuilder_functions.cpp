@@ -39,6 +39,11 @@ bool CDocBuilderValue_IsUndefined(CDocBuilderValue* self)
 	return self->IsUndefined();
 }
 
+bool CDocBuilderValue_IsBool(CDocBuilderValue* self)
+{
+	return self->IsBool();
+}
+
 bool CDocBuilderValue_IsInt(CDocBuilderValue* self)
 {
 	return self->IsInt();

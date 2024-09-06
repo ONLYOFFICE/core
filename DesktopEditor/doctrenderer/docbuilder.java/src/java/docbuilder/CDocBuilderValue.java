@@ -38,6 +38,11 @@ public class CDocBuilderValue {
         return c_IsUndefined(c_internal);
     }
 
+    public boolean isBool()
+    {
+        return c_IsBool(c_internal);
+    }
+
     public boolean isInt()
     {
         return c_IsInt(c_internal);
@@ -239,6 +244,7 @@ public class CDocBuilderValue {
 
     private static native boolean c_IsNull(long self);
     private static native boolean c_IsUndefined(long self);
+    private static native boolean c_IsBool(long self);
     private static native boolean c_IsInt(long self);
     private static native boolean c_IsDouble(long self);
     private static native boolean c_IsString(long self);

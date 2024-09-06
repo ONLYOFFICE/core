@@ -175,6 +175,16 @@ namespace Spreadsheet
 	
 	}
 
+	double getExcelTimeFromDate(std::wstring Date)
+	{
+        boost::gregorian::date StartDate(1899, boost::gregorian::Dec, 30);
+		XLSB::PCDIDateTime datetime;
+		datetime.fromString(Date);
+        boost::gregorian::date date(datetime.yr + 1900, datetime.mon + 1, datetime.dom);
+		auto duration = date - StartDate;
+        return duration.days();
+	}
+
     //struct NullDeleter {template<typename T> void operator()(T*) {} };
     void CPivotTableFile::readBin(const CPath& oPath)
     {
@@ -4316,7 +4326,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"uniqueList", m_oUniqueList )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"level", m_oLevel )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"mappingCount", m_oMappingCount )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"uniqueList", m_oNumFmtId )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"numFmtId", m_oNumFmtId )
 		WritingElement_ReadAttributes_End( oReader )
 	}
 //------------------------------------
@@ -4528,8 +4538,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->citems = 0;
 		if(m_oMinDate.IsInit() && m_oMaxDate.IsInit())
 		{
-			ptr->xnumMin.data.value = std::stod(m_oMinDate->GetValue());
-			ptr->xnumMax.data.value =std::stod(m_oMaxDate->GetValue());
+			ptr->xnumMin.data.value = getExcelTimeFromDate(m_oMinDate->GetValue());
+			ptr->xnumMax.data.value = getExcelTimeFromDate(m_oMaxDate->GetValue());
 		}
 		else if(m_oMinValue.IsInit() && m_oMaxValue.IsInit())
 		{
@@ -5076,10 +5086,12 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->fAutoEnd = m_oAutoEnd.get();
 		if(m_oGroupInterval.IsInit())
 			ptr->xnumBy.data.value = m_oGroupInterval.get();
+		else
+			ptr->xnumBy.data.value = 1;
 		if(m_oStartDate.IsInit() && m_oEndDate.IsInit())
 		{
-			ptr->xnumStart.data.value = std::stod(m_oStartDate->GetValue());
-			ptr->xnumEnd.data.value = std::stod(m_oEndDate->GetValue());
+			ptr->xnumStart.data.value = getExcelTimeFromDate(m_oStartDate->GetValue());
+			ptr->xnumEnd.data.value = getExcelTimeFromDate(m_oEndDate->GetValue());
 		}
 		else
 		{
@@ -5100,6 +5112,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			else if (m_oGroupBy == SimpleTypes::Spreadsheet::EValuesGroupBy::groupByQuarters) ptr->iByType = 0x06;
 			else if (m_oGroupBy == SimpleTypes::Spreadsheet::EValuesGroupBy::groupByYears) ptr->iByType = 0x07;
 		}
+		if(ptr->iByType > 0x00)
+			ptr->fDates = true;
 		return objectPtr;
 	}
     void CRangeGroupingProperties::fromBin(XLS::BaseObjectPtr& obj)
@@ -5163,14 +5177,14 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	void CRangeGroupingProperties::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if		( oReader, L"m_oGroupBy", m_oGroupBy )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"m_oAutoStart", m_oAutoStart )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"m_oAutoEnd", m_oAutoEnd )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"m_oStartDate", m_oStartDate )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"m_oEndDate", m_oEndDate )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"m_oStartNum", m_oStartNum )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"m_oEndNum", m_oEndNum )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"m_oGroupInterval", m_oGroupInterval )
+            WritingElement_ReadAttributes_Read_if		( oReader, L"groupBy", m_oGroupBy )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"autoStart", m_oAutoStart )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"autoEnd", m_oAutoEnd )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"startDate", m_oStartDate )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"endDate", m_oEndDate )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"startNum", m_oStartNum )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"endNum", m_oEndNum )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"groupInterval", m_oGroupInterval )
 		WritingElement_ReadAttributes_End( oReader )
 	}
 //------------------------------------
@@ -5781,6 +5795,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				ptr->info.cIMemProps = m_oCount->GetValue();
 			if(m_oValue.IsInit())
 				ptr->datetime.fromString(m_oValue->GetValue());
+            ptr->datetime.yr += 1900;
+            ptr->datetime.mon += 1;
 			for(auto i:m_arrItems)
 				ptr->info.rgIMemProps.push_back(i->m_oV.get());
 			return objectPtr;
@@ -5793,6 +5809,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			XLS::BaseObjectPtr objectPtr(ptr1);
 			if(m_oValue.IsInit())
 				ptr->datetime.fromString(m_oValue->GetValue());
+            ptr->datetime.yr += 1900;
+            ptr->datetime.mon += 1;
 
 			return objectPtr;
 		}
@@ -6281,6 +6299,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->relId.value = m_oRid->GetValue();
 		else
 			ptr->fLoadRelId = false;
+		ptr->fBuiltIn = false;
 		return objectPtr;
 	}
     void CWorksheetSource::fromBin(XLS::BaseObjectPtr& obj)

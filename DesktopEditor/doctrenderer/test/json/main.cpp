@@ -901,6 +901,88 @@ TEST_F(CJSONTest, serialization_with_script)
 }
 
 // ----------- CValue::ToJSON() tests -----------
+namespace
+{
+	// helper function
+	std::string normalizeJSONObject(const std::string& str, int& pos)
+	{
+		// '{' was checked
+		pos++;
+
+		std::vector<std::string> keyValuePairs;
+		std::string keyValue;
+		int nSquareBrackets = 0;
+
+		for (; str[pos] != '}'; pos++)
+		{
+			if (str[pos] == '{')
+			{
+				keyValue += normalizeJSONObject(str, pos);
+			}
+			else if (str[pos] == ',' && nSquareBrackets == 0)
+			{
+				keyValuePairs.emplace_back(std::move(keyValue));
+				keyValue = "";
+			}
+			else
+			{
+				if (str[pos] == '[')
+				{
+					nSquareBrackets++;
+				}
+				else if (str[pos] == ']')
+				{
+					nSquareBrackets--;
+				}
+				keyValue += str[pos];
+			}
+		}
+
+		if (!keyValue.empty())
+			keyValuePairs.emplace_back(std::move(keyValue));
+
+		std::sort(keyValuePairs.begin(), keyValuePairs.end());
+		std::string result = "{";
+		for (const std::string& keyValue : keyValuePairs)
+		{
+			result += keyValue;
+			result += ',';
+		}
+		// pop last ','
+		if (result.back() == ',')
+			result.pop_back();
+		result += '}';
+
+		return result;
+	}
+
+	// test function that sorts key-value pairs for objects in JSON-strings
+	// works only with valid JSONs
+	std::string normalizeJSON(const std::string& str)
+	{
+		const int n = (int)str.size();
+
+		if (str[0] != '{' && str[0] != '[')
+			return str;
+
+		std::string result;
+		for (int pos = 0; pos < n; pos++)
+		{
+			if (str[pos] == '{')
+			{
+				result += normalizeJSONObject(str, pos);
+				// decrement because it will be incremented again
+			}
+			else
+			{
+				result += str[pos];
+			}
+		}
+
+		return result;
+	}
+}
+
 TEST_F(CJSONTest, ToJSON_undefined)
 {
 	CValue val = CValue::CreateUndefined();
@@ -1061,7 +1143,14 @@ TEST_F(CJSONTest, ToJSON_arrays_complex)
 	CValue arr = {0, arrInner, arrInner, CValue::CreateNull(), arrInner, CValue::CreateArray(4), typedArr};
 
 	std::string strRes = arr.ToJSON();
-	std::string strExpected = m_pContext->JSON_Stringify(toJS(arr));
+	std::string strExpected = "[0,"
+							  "[true,42,\"test function ToJSON()\",2.71828,null,\"abc de f\",\"test\"],"
+							  "[true,42,\"test function ToJSON()\",2.71828,null,\"abc de f\",\"test\"],"
+							  "null,"
+							  "[true,42,\"test function ToJSON()\",2.71828,null,\"abc de f\",\"test\"],"
+							  "[null,null,null,null],"
+							  "{\"0\":26,\"1\":84,\"2\":254,\"3\":255,\"4\":0}]";
+
 	EXPECT_EQ(strRes, strExpected);
 }
 
@@ -1090,11 +1179,15 @@ TEST_F(CJSONTest, ToJSON_objects)
 
 	obj["name"] = "Foo";
 	obj["number"] = 42;
-	EXPECT_EQ(obj.ToJSON(), "{\"name\":\"Foo\",\"number\":42}");
+	std::string strRes = normalizeJSON(obj.ToJSON());
+	std::string strExpected = normalizeJSON("{\"name\":\"Foo\",\"number\":42}");
+	EXPECT_EQ(strRes, strExpected);
 
 	obj["undef"] = CValue::CreateUndefined();
 	obj["null"] = CValue::CreateNull();
-	EXPECT_EQ(obj.ToJSON(), "{\"name\":\"Foo\",\"number\":42,\"null\":null}");
+	strRes = normalizeJSON(obj.ToJSON());
+	strExpected = normalizeJSON("{\"name\":\"Foo\",\"number\":42,\"null\":null}");
+	EXPECT_EQ(strRes, strExpected);
 }
 
 TEST_F(CJSONTest, ToJSON_objects_complex)
@@ -1118,8 +1211,15 @@ TEST_F(CJSONTest, ToJSON_objects_complex)
 	// property without a name
 	obj[""] = "Bar";
 
-	std::string strRes = obj.ToJSON();
-	std::string strExpected = m_pContext->JSON_Stringify(toJS(obj));
+	std::string strRes = normalizeJSON(obj.ToJSON());
+	std::string strExpected = normalizeJSON( \
+		"{"
+		"\"name\":\"Foo\","
+		"\"parameters\":{\"arr\":[null,[null],[42,\"test function ToJSON()\",2.71828],{},null,\"abc de f\",\"test\"],\"size\":42,\"0\":0},"
+		"\"typed\":{\"0\":26,\"1\":84,\"2\":254,\"3\":255},"
+		"\"\":\"Bar\""
+		"}");
+
 	EXPECT_EQ(strRes, strExpected);
 }
 

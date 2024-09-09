@@ -537,7 +537,7 @@ namespace NSDocxRenderer
 	void CContText::AddTextBack(const NSStringUtils::CStringUTF32& oText, const std::vector<double>& arSymWidths)
 	{
 		bool is_space_twice = m_oText.at(m_oText.length() - 1) == c_SPACE_SYM &&
-				oText.at(0) == c_SPACE_SYM;
+							  oText.at(0) == c_SPACE_SYM;
 
 		for (size_t i = 0; i < arSymWidths.size(); ++i)
 		{
@@ -638,10 +638,10 @@ namespace NSDocxRenderer
 	}
 
 	bool CContText::CheckFontEffects
-	(std::shared_ptr<CContText>& pFirstCont,
-	 std::shared_ptr<CContText>& pSecondCont,
-	 eVerticalCrossingType eVType,
-	 eHorizontalCrossingType eHType)
+		(std::shared_ptr<CContText>& pFirstCont,
+		 std::shared_ptr<CContText>& pSecondCont,
+		 eVerticalCrossingType eVType,
+		 eHorizontalCrossingType eHType)
 	{
 		//Условие пересечения по вертикали
 		bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext; //текущий cont выше
@@ -721,24 +721,24 @@ namespace NSDocxRenderer
 	}
 
 	bool CContText::CheckVertAlignTypeBetweenConts
-	(std::shared_ptr<CContText> pFirstCont,
-	 std::shared_ptr<CContText> pSecondCont,
-	 eVerticalCrossingType eVType,
-	 eHorizontalCrossingType eHType)
+		(std::shared_ptr<CContText> pFirstCont,
+		 std::shared_ptr<CContText> pSecondCont,
+		 eVerticalCrossingType eVType,
+		 eHorizontalCrossingType eHType)
 	{
 
 		bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext ||
-				eVType == eVerticalCrossingType::vctCurrentInsideNext;
+					eVType == eVerticalCrossingType::vctCurrentInsideNext;
 
 		bool bIf2 = eVType == eVerticalCrossingType::vctCurrentBelowNext;
 
 		bool bIf3 = (eHType == eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext ||
 					 eHType == eHorizontalCrossingType::hctCurrentLeftOfNext) &&
-				fabs(pFirstCont->m_dRight - pSecondCont->m_dLeft) < c_dTHE_STRING_X_PRECISION_MM * 3;
+					fabs(pFirstCont->m_dRight - pSecondCont->m_dLeft) < c_dTHE_STRING_X_PRECISION_MM * 3;
 
 		bool bIf4 = (eHType == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext ||
 					 eHType == eHorizontalCrossingType::hctCurrentRightOfNext) &&
-				fabs(pFirstCont->m_dLeft - pSecondCont->m_dRight) < c_dTHE_STRING_X_PRECISION_MM * 3;
+					fabs(pFirstCont->m_dLeft - pSecondCont->m_dRight) < c_dTHE_STRING_X_PRECISION_MM * 3;
 
 		//Размеры шрифта должны бать разными
 		bool bIf5 = pFirstCont->m_pFontStyle->dFontSize * 0.7 > pSecondCont->m_pFontStyle->dFontSize;

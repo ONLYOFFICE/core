@@ -421,9 +421,6 @@ namespace NSDocxRenderer
 		oFormat.ulCodeRange1 = new UINT(dwCodePage1);
 		oFormat.ulCodeRange2 = new UINT(dwCodePage2);
 
-//		oFormat.shAscent = new SHORT(oFontMetrics.dAscent);
-//		oFormat.shDescent = new SHORT(oFontMetrics.dDescent);
-
 		if (oFormat.bBold && *(oFormat.bBold) == 1 && oFormat.pPanose && oFormat.pPanose[2] < 7)
 			oFormat.pPanose[2] = 7;
 

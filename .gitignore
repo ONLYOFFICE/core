@@ -46,3 +46,5 @@ DesktopEditor/fontengine/js/common/freetype-2.10.4
 
 .qtc_clangd
 Common/3dParty/openssl/openssl/
+
+msvc_make.bat

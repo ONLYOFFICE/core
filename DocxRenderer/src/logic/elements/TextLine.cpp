@@ -63,8 +63,8 @@ namespace NSDocxRenderer
 
 			double avg_space_width = pCurrent->m_pFontStyle->GetAvgSpaceWidth();
 			double space_width = avg_space_width != 0.0 ?
-						avg_space_width * c_dAVERAGE_SPACE_WIDTH_COEF :
-						pCurrent->CalculateSpace() * c_dSPACE_WIDTH_COEF;
+									 avg_space_width * c_dAVERAGE_SPACE_WIDTH_COEF :
+									 pCurrent->CalculateSpace() * c_dSPACE_WIDTH_COEF;
 
 			double dDifference = pCurrent->m_dLeft - pFirst->m_dRight;
 

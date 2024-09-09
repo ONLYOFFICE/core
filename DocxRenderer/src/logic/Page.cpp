@@ -177,7 +177,7 @@ namespace NSDocxRenderer
 			auto& pLastShape = m_arShapes.back();
 
 			if (pLastShape->m_dLeft == left && pLastShape->m_dTop == top &&
-					pLastShape->m_dWidth == right - left && pLastShape->m_dHeight == bot - top)
+				pLastShape->m_dWidth == right - left && pLastShape->m_dHeight == bot - top)
 			{
 				if (0x00 != (lType & 0x01))
 				{
@@ -236,9 +236,9 @@ namespace NSDocxRenderer
 		if (!m_oClipVectorGraphics.IsEmpty())
 		{
 			CVectorGraphics new_vector_graphics = CVectorGraphics::CalcBoolean(
-						m_oCurrVectorGraphics,
-						m_oClipVectorGraphics,
-						m_lClipMode);
+				m_oCurrVectorGraphics,
+				m_oClipVectorGraphics,
+				m_lClipMode);
 			m_oCurrVectorGraphics = std::move(new_vector_graphics);
 		}
 
@@ -247,7 +247,7 @@ namespace NSDocxRenderer
 		// big white shape with page width & height skip
 		if (fabs(pShape->m_dHeight - m_dHeight) <= c_dSHAPE_X_OFFSET * 2 &&
 			fabs(pShape->m_dWidth - m_dWidth) <= c_dSHAPE_X_OFFSET * 2 &&
-				pShape->m_oBrush.Color1 == c_iWhiteColor)
+			pShape->m_oBrush.Color1 == c_iWhiteColor)
 			return;
 
 		pShape->m_nOrder = ++m_nShapeOrder;
@@ -326,9 +326,9 @@ namespace NSDocxRenderer
 
 		// if new text is close to current cont
 		if (m_pCurrCont != nullptr &&
-				fabs(m_pCurrCont->m_dBaselinePos - baseline) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
-				m_oPrevFont.IsEqual2(m_pFont) &&
-				m_oPrevBrush.IsEqual(m_pBrush))
+			fabs(m_pCurrCont->m_dBaselinePos - baseline) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
+			m_oPrevFont.IsEqual2(m_pFont) &&
+			m_oPrevBrush.IsEqual(m_pBrush))
 		{
 
 			double avg_width = width / oText.length();
@@ -338,8 +338,8 @@ namespace NSDocxRenderer
 
 			double avg_space_width = m_pCurrCont->m_pFontStyle->GetAvgSpaceWidth();
 			double space_width = avg_space_width != 0.0 ?
-					avg_space_width * c_dAVERAGE_SPACE_WIDTH_COEF :
-					m_pCurrCont->CalculateSpace() * c_dSPACE_WIDTH_COEF;
+									 avg_space_width * c_dAVERAGE_SPACE_WIDTH_COEF :
+									 m_pCurrCont->CalculateSpace() * c_dSPACE_WIDTH_COEF;
 
 			bool is_added = false;
 
@@ -611,8 +611,8 @@ namespace NSDocxRenderer
 		for (size_t i = 0; i < m_arShapes.size(); ++i)
 		{
 			if (!m_arShapes[i] || m_arShapes[i]->m_dHeight > c_dMAX_LINE_HEIGHT_MM || // рассматриваем только тонкие объекты
-					(m_arShapes[i]->m_eGraphicsType != eGraphicsType::gtRectangle &&
-					 m_arShapes[i]->m_eGraphicsType != eGraphicsType::gtCurve))
+				(m_arShapes[i]->m_eGraphicsType != eGraphicsType::gtRectangle &&
+				 m_arShapes[i]->m_eGraphicsType != eGraphicsType::gtCurve))
 			{
 				continue;
 			}
@@ -801,7 +801,7 @@ namespace NSDocxRenderer
 
 				// берем вторую линию, если символ последний - то начиная со следуюущей, иначе с той же
 				for (size_t uNextLineIndex = uCurrContIndex >= pCurrLine->m_arConts.size() - 1 ?
-					 uCurrLineIndex + 1 : uCurrLineIndex; uNextLineIndex < m_arTextLines.size(); ++uNextLineIndex)
+												 uCurrLineIndex + 1 : uCurrLineIndex; uNextLineIndex < m_arTextLines.size(); ++uNextLineIndex)
 				{
 					auto& pNextLine = m_arTextLines[uNextLineIndex];
 
@@ -831,8 +831,8 @@ namespace NSDocxRenderer
 							pNextLine->SetVertAlignType(pNextCont->m_eVertAlignType);
 							if ((pCurrLine->m_eVertAlignType == eVertAlignType::vatSuperscript &&
 								 pNextLine->m_eVertAlignType == eVertAlignType::vatBase) ||
-									(pCurrLine->m_eVertAlignType == eVertAlignType::vatBase &&
-									 pNextLine->m_eVertAlignType == eVertAlignType::vatSubscript))
+								(pCurrLine->m_eVertAlignType == eVertAlignType::vatBase &&
+								 pNextLine->m_eVertAlignType == eVertAlignType::vatSubscript))
 							{
 								pCurrLine->m_pLine = pNextLine;
 								pNextLine->m_pLine = pCurrLine;
@@ -964,20 +964,20 @@ namespace NSDocxRenderer
 		double dTopBorder = pCont->m_dTop + pCont->m_dHeight / 3;
 
 		bool bIf1 = pShape->m_eGraphicsType == eGraphicsType::gtRectangle &&
-				pShape->m_eLineType != eLineType::ltUnknown;
+					pShape->m_eLineType != eLineType::ltUnknown;
 
 		// Условие пересечения по вертикали
 		bool bIf2 = pShape->m_dTop > dTopBorder && pShape->m_dBaselinePos < pCont->m_dBaselinePos;
 
 		// Условие пересечения по горизонтали
 		bool bIf3 = h_type != eHorizontalCrossingType::hctUnknown &&
-				h_type != eHorizontalCrossingType::hctCurrentLeftOfNext &&
-				h_type != eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext &&
-				h_type != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext;
+					h_type != eHorizontalCrossingType::hctCurrentLeftOfNext &&
+					h_type != eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext &&
+					h_type != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext;
 
 		// Условие для размеров по высоте
 		bool bIf4 = pShape->m_dHeight < pCont->m_dHeight &&
-				pCont->m_dHeight - pShape->m_dHeight > c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM;
+					pCont->m_dHeight - pShape->m_dHeight > c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM;
 
 		return bIf1 && bIf2 && bIf3 && bIf4;
 	}
@@ -987,7 +987,7 @@ namespace NSDocxRenderer
 		auto h_type = pCont->CBaseItem::GetHorizontalCrossingType(pShape.get());
 		bool bIf1 = (pShape->m_eGraphicsType == eGraphicsType::gtRectangle ||
 					 pShape->m_eGraphicsType == eGraphicsType::gtCurve) &&
-				pShape->m_eLineType != eLineType::ltUnknown;
+					pShape->m_eLineType != eLineType::ltUnknown;
 
 		//Условие по вертикали
 		double max_diff = std::min(c_dGRAPHICS_ERROR_MM * 3, pCont->m_dHeight * 0.5);
@@ -995,13 +995,13 @@ namespace NSDocxRenderer
 
 		//Условие пересечения по горизонтали
 		bool bIf3 = h_type != eHorizontalCrossingType::hctUnknown &&
-				h_type != eHorizontalCrossingType::hctCurrentLeftOfNext &&
-				h_type != eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext &&
-				h_type != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext;
+					h_type != eHorizontalCrossingType::hctCurrentLeftOfNext &&
+					h_type != eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext &&
+					h_type != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext;
 
 		//Условие для размеров по высоте
 		bool bIf4 = pShape->m_dHeight < pCont->m_dHeight * 0.5 &&
-				pCont->m_dHeight - pShape->m_dHeight > c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM;
+					pCont->m_dHeight - pShape->m_dHeight > c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM;
 
 		return bIf1 && bIf2 && bIf3 && bIf4;
 	}
@@ -1023,9 +1023,9 @@ namespace NSDocxRenderer
 
 		//Условие пересечения по горизонтали
 		bool bIf3 = h_type != eHorizontalCrossingType::hctUnknown &&
-				h_type != eHorizontalCrossingType::hctCurrentLeftOfNext &&
-				h_type != eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext &&
-				h_type != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext;
+					h_type != eHorizontalCrossingType::hctCurrentLeftOfNext &&
+					h_type != eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext &&
+					h_type != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext;
 
 		//Цвета должны быть разными
 		bool bIf4 = pCont->m_pFontStyle->oBrush.Color1 != pShape->m_oBrush.Color1;
@@ -1078,9 +1078,9 @@ namespace NSDocxRenderer
 					eHorizontalCrossingType eHType = cont->GetHorizontalCrossingType(d_sym.get());
 
 					if (eVType != eVerticalCrossingType::vctNoCrossingCurrentAboveNext &&
-							eVType != eVerticalCrossingType::vctNoCrossingCurrentBelowNext &&
-							eHType != eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext &&
-							eHType != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext)
+						eVType != eVerticalCrossingType::vctNoCrossingCurrentBelowNext &&
+						eHType != eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext &&
+						eHType != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext)
 					{
 						bool bIf1 = eHType == eHorizontalCrossingType::hctCurrentOutsideNext;
 						bool bIf2 = eHType == eHorizontalCrossingType::hctCurrentLeftOfNext;
@@ -1089,7 +1089,7 @@ namespace NSDocxRenderer
 						bool bIf5 = eHType == eHorizontalCrossingType::hctRightBorderMatch;
 
 						bool bIf6 = eVType == eVerticalCrossingType::vctCurrentBelowNext ||
-								eVType == eVerticalCrossingType::vctCurrentAboveNext;
+									eVType == eVerticalCrossingType::vctCurrentAboveNext;
 						bool bIf7 = eVType == eVerticalCrossingType::vctTopAndBottomBordersMatch;
 						bool bIf8 = eVType == eVerticalCrossingType::vctDublicate;
 
@@ -1120,7 +1120,7 @@ namespace NSDocxRenderer
 				continue;
 
 			if (line->m_eVertAlignType == eVertAlignType::vatSuperscript
-					|| line->m_eVertAlignType == eVertAlignType::vatSubscript)
+				|| line->m_eVertAlignType == eVertAlignType::vatSubscript)
 			{
 				std::shared_ptr<CTextLine>& base_line = line->m_pLine;
 				if (base_line)
@@ -1214,11 +1214,11 @@ namespace NSDocxRenderer
 				if (pCont->m_pShape && pCont->m_pShape != pDominantShape)
 				{
 					if (pCont->m_pShape->m_dLeft < pCont->m_dLeft &&
-							pCont->m_pShape->m_dRight > pCont->m_dRight)
+						pCont->m_pShape->m_dRight > pCont->m_dRight)
 					{
 						if (!pDominantShape ||
-								(pCont->m_pShape->m_dLeft < pDominantShape->m_dLeft &&
-								 pCont->m_pShape->m_dRight > pDominantShape->m_dRight))
+							(pCont->m_pShape->m_dLeft < pDominantShape->m_dLeft &&
+							 pCont->m_pShape->m_dRight > pDominantShape->m_dRight))
 						{
 							pDominantShape = pCont->m_pShape;
 						}
@@ -1283,11 +1283,11 @@ namespace NSDocxRenderer
 
 			const double out_of_page_coeff = 1.1;
 			bool is_out_of_page = shape->m_dTop < 0 ||
-					shape->m_dBaselinePos > this->m_dHeight * out_of_page_coeff ||
-					shape->m_dLeft < 0 ||
-					shape->m_dRight > this->m_dWidth * out_of_page_coeff;
+								  shape->m_dBaselinePos > this->m_dHeight * out_of_page_coeff ||
+								  shape->m_dLeft < 0 ||
+								  shape->m_dRight > this->m_dWidth * out_of_page_coeff;
 			bool is_too_big = ((shape->m_dWidth > c_dSHAPE_TROUGH_MAX_MM || shape->m_dHeight > c_dSHAPE_TROUGH_MAX_MM) &&
-					(shape->m_eSimpleLineType == eSimpleLineType::sltUnknown));
+							   (shape->m_eSimpleLineType == eSimpleLineType::sltUnknown));
 
 			if (is_too_big || is_out_of_page)
 				continue;
@@ -1298,14 +1298,14 @@ namespace NSDocxRenderer
 			double& s_bot = shape->m_dBaselinePos;
 
 			bool lines_condition = shape->m_eSimpleLineType != eSimpleLineType::sltUnknown &&
-					!((s_right < left) || (s_left > right)) &&
-					!((s_bot < top) || (s_top > bot));
+								   !((s_right < left) || (s_left > right)) &&
+								   !((s_bot < top) || (s_top > bot));
 
 			bool rectangle_condition = shape->m_eGraphicsType == eGraphicsType::gtRectangle &&
-					shape->m_eSimpleLineType == eSimpleLineType::sltUnknown &&
-					!((s_right < left) || (s_left > right)) &&
-					!((s_bot < top) || (s_top > bot)) &&
-					!(s_top < top && s_bot > bot && s_left < left && s_right > right);
+									   shape->m_eSimpleLineType == eSimpleLineType::sltUnknown &&
+									   !((s_right < left) || (s_left > right)) &&
+									   !((s_bot < top) || (s_top > bot)) &&
+									   !(s_top < top && s_bot > bot && s_left < left && s_right > right);
 
 			if (lines_condition || rectangle_condition)
 			{
@@ -1333,8 +1333,8 @@ namespace NSDocxRenderer
 				bool is_shape_trough = IsShapeBorderTrough(line->m_arConts[i], x_crossing, y_crossing);
 
 				if ((i != line->m_arConts.size() - 1 && line->m_arConts[i + 1]->m_bPossibleSplit && is_space)
-						|| (is_space && is_cont_wide)
-						|| is_shape_trough)
+					|| (is_space && is_cont_wide)
+					|| is_shape_trough)
 				{
 					std::vector<std::shared_ptr<CContText>> line_conts_first;
 					std::vector<std::shared_ptr<CContText>> line_conts_second;
@@ -1455,9 +1455,9 @@ namespace NSDocxRenderer
 	{
 		auto no_crossing = [] (const eHorizontalCrossingType& h_type, const eVerticalCrossingType& v_type) {
 			return h_type == eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext ||
-					h_type == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext ||
-					v_type == eVerticalCrossingType::vctNoCrossingCurrentAboveNext ||
-					v_type == eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
+				   h_type == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext ||
+				   v_type == eVerticalCrossingType::vctNoCrossingCurrentAboveNext ||
+				   v_type == eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
 		};
 
 		// линии из которых сделаем шейпы
@@ -1820,7 +1820,7 @@ namespace NSDocxRenderer
 
 		// 1 строчка в параграфе
 		if (m_eTextAssociationType == TextAssociationType::tatPlainLine ||
-				m_eTextAssociationType == TextAssociationType::tatShapeLine)
+			m_eTextAssociationType == TextAssociationType::tatShapeLine)
 		{
 			auto paragraph = std::make_shared<CParagraph>();
 			for (auto& curr_line : m_arTextLines)
@@ -1843,7 +1843,7 @@ namespace NSDocxRenderer
 		});
 
 		if (m_eTextAssociationType == TextAssociationType::tatPlainParagraph ||
-				m_eTextAssociationType == TextAssociationType::tatPlainLine)
+			m_eTextAssociationType == TextAssociationType::tatPlainLine)
 		{
 			CBaseItem* prev_p = nullptr;
 

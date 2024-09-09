@@ -114,16 +114,16 @@ namespace NSDocxRenderer
 		// check font effect and delete not needed cont
 		// return true if was deleted
 		static bool CheckFontEffects
-		(std::shared_ptr<CContText>& pFirstCont,
-		 std::shared_ptr<CContText>& pSecondCont,
-		 eVerticalCrossingType eVType,
-		 eHorizontalCrossingType eHType);
+			(std::shared_ptr<CContText>& pFirstCont,
+			 std::shared_ptr<CContText>& pSecondCont,
+			 eVerticalCrossingType eVType,
+			 eHorizontalCrossingType eHType);
 
 		static bool CheckVertAlignTypeBetweenConts
-		(std::shared_ptr<CContText> pFirstCont,
-		 std::shared_ptr<CContText> pSecondCont,
-		 eVerticalCrossingType eVType,
-		 eHorizontalCrossingType eHType);
+			(std::shared_ptr<CContText> pFirstCont,
+			 std::shared_ptr<CContText> pSecondCont,
+			 eVerticalCrossingType eVType,
+			 eHorizontalCrossingType eHType);
 
 		double CalculateSpace() const noexcept;
 

@@ -32,8 +32,8 @@ public:
 	JSSmart<CJSValue> GetInfo();
 
 	JSSmart<CJSValue> GetPixmap(JSSmart<CJSValue> nPageIndex, JSSmart<CJSValue> nRasterW, JSSmart<CJSValue> nRasterH, JSSmart<CJSValue> nBackgroundColor);
+	JSSmart<CJSValue> DestroyPixmap(JSSmart<CJSValue> typedArray);
 
-	JSSmart<CJSValue> GetGlyphs(JSSmart<CJSValue> nPageIndex);
 	JSSmart<CJSValue> GetLinks(JSSmart<CJSValue> nPageIndex);
 	JSSmart<CJSValue> GetStructure();
 	JSSmart<CJSValue> GetInteractiveFormsInfo();
@@ -44,11 +44,15 @@ public:
 	JSSmart<CJSValue> GetAnnotationsInfo(JSSmart<CJSValue> nPageIndex);
 	JSSmart<CJSValue> GetAnnotationsAP(JSSmart<CJSValue> nRasterW, JSSmart<CJSValue> nRasterH, JSSmart<CJSValue> nBackgroundColor, JSSmart<CJSValue> nPageIndex, JSSmart<CJSValue> nAnnot, JSSmart<CJSValue> nView);
 
+	JSSmart<CJSValue> GetGlyphs(JSSmart<CJSValue> nPageIndex);
 	JSSmart<CJSValue> DestroyTextInfo();
+
 	JSSmart<CJSValue> IsNeedCMap();
 	JSSmart<CJSValue> ScanPage(JSSmart<CJSValue> nPageIndex, JSSmart<CJSValue> mode);
 
 	JSSmart<CJSValue> GetImageBase64(JSSmart<CJSValue> rId);
+
+	JSSmart<CJSValue> FreeWasmData(JSSmart<CJSValue> typedArray);
 
 	DECLARE_EMBED_METHODS
 };

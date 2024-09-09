@@ -163,9 +163,9 @@ public:
 	virtual HRESULT PenDashPattern(double* pPattern, LONG lCount);
 
 // brush ------------------------------------------------------------------------------------
-    virtual void put_BrushGradInfo(const NSStructures::GradientInfo &_ginfo) override {
-        m_oBrush.m_oGradientInfo = _ginfo;
-    }
+	virtual void put_BrushGradInfo(void* pGradInfo) override {
+		m_oBrush.m_oGradientInfo = *((NSStructures::GradientInfo*)pGradInfo);
+	}
 
 	virtual HRESULT get_BrushType(LONG* lType);
 	virtual HRESULT put_BrushType(const LONG& lType);
@@ -278,7 +278,7 @@ public:
 	{
 		_SetFont();
 	}
-	virtual void put_BlendMode(const unsigned int nBlendMode) override;
+	virtual void put_BlendMode(const unsigned int& nBlendMode) override;
 
 public:
     virtual void CloseFont()

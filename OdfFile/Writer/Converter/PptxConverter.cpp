@@ -2775,10 +2775,17 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 			}
 			
 			int ph_type = 0;
+			bool placeholder_replacing = false;
 			if (pNvPr->ph->type.IsInit())
 			{
 				ph_type = pNvPr->ph->type->GetBYTECode();
 
+				if (type == Slide && ph_type == 0)
+				{
+					placeholder_replacing = true;
+					ph_type = 13; // subtitle
+				}
+				
 				if (type == Layout && (ph_type == 5 || ph_type == 6 || ph_type == 7 || ph_type == 12))
 					continue;
 			}
@@ -2786,6 +2793,7 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 			if (!bPlaceholders)
 				continue;
 
+			odf_context()->drawing_context()->placeholder_replacing(placeholder_replacing);
 			odf_context()->drawing_context()->set_placeholder_type(ph_type);
 			
 			if (pNvPr->ph->idx.IsInit())

@@ -68,6 +68,7 @@
 #include "../Format/odf_drawing_context.h"
 #include "../Format/style_text_properties.h"
 #include "../Format/style_paragraph_properties.h"
+#include "../Format/style_graphic_properties.h"
 #include "../Format/styles_list.h"
 
 #define GETBITS(from, numL, numH) ((from & (((1 << (numH - numL + 1)) - 1) << numL)) >> numL)
@@ -872,6 +873,22 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 	if (type < 0)return;
 //-----------------------------------------------------------------------------
 	odf_context()->drawing_context()->start_shape(type);
+
+	if (odf_context()->drawing_context()->placeholder_replacing())
+	{
+		_CP_PTR(cpdoccore::odf_writer::paragraph_format_properties) paragraph_properties = boost::make_shared<cpdoccore::odf_writer::paragraph_format_properties>();
+		_CP_PTR(cpdoccore::odf_writer::text_format_properties) text_properties = boost::make_shared<cpdoccore::odf_writer::text_format_properties>();
+		_CP_PTR(cpdoccore::odf_writer::graphic_format_properties) graphic_properties = boost::make_shared<cpdoccore::odf_writer::graphic_format_properties>();
+
+		convert(oox_shape->txBody->lstStyle.GetPointer(), 0, paragraph_properties.get(), text_properties.get());
+
+		graphic_properties->draw_textarea_horizontal_align_	= odf_types::text_align(odf_types::text_align::Left);
+		graphic_properties->draw_textarea_vertical_align_	= odf_types::vertical_align(odf_types::vertical_align::Top);
+
+		odf_context()->drawing_context()->set_text_properties(text_properties.get());
+		odf_context()->drawing_context()->set_paragraph_properties(paragraph_properties.get());
+		odf_context()->drawing_context()->set_graphic_properties(graphic_properties.get());
+	}
 	
 	convert(&oox_shape->spPr, oox_shape->style.GetPointer());
 

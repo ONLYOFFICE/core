@@ -728,6 +728,26 @@ namespace Aggplus
         return rasterizer.hit_test((int)x, (int)y);
     }
 
+	size_t CGraphicsPath::GetCompoundPath() const
+	{
+		size_t	countClose = 0,
+				countMove = 0,
+				length = GetPointCount();
+		for (size_t i = 0; i < length; i++)
+		{
+			if (IsClosePoint(i))
+			{
+				countClose++;
+				length++;
+			}
+
+			if (IsMovePoint(i))
+				countMove++;
+		}
+
+		return countClose != 0 ? countClose : countMove - 1;
+	}
+
 	bool CGraphicsPath::IsClockwise() const
 	{
 		return GetArea() >= 0;
@@ -748,6 +768,10 @@ namespace Aggplus
 		return this->m_internal->m_agg_ps.command(idx) == agg::path_cmd_line_to;
 	}
 
+	bool CGraphicsPath::IsClosePoint(size_t idx) const
+	{
+		return this->m_internal->m_agg_ps.command(idx) == (agg::path_cmd_end_poly | agg::path_flags_close);
+	}
 
 	std::vector<PointD> CGraphicsPath::GetPoints(size_t idx, size_t count) const
 	{

@@ -727,11 +727,6 @@ int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment,
 
 void CBooleanOperations::TraceBoolean()
 {
-	if (!Path1->Is_poly_closed())
-		Path1->CloseFigure();
-	if (!Path2->Is_poly_closed())
-		Path2->CloseFigure();
-
 	bool reverse = false;
 	if ((Op == Subtraction || Op == Exclusion) ^
 		Path1->IsClockwise() ^
@@ -1284,9 +1279,9 @@ bool CBooleanOperations::IntersectsBounds()
 	Path2->GetBounds(rect2.X, rect2.Y, rect2.Width, rect2.Height);
 
 	return	(rect2.X + rect2.Width > rect1.X - EPSILON) &&
-		   (rect2.Y + rect2.Height > rect1.Y - EPSILON) &&
-		   (rect2.X < rect1.X + rect1.Width + EPSILON) &&
-		   (rect2.Y < rect1.Y + rect2.Height + EPSILON);
+			(rect2.Y + rect2.Height > rect1.Y - EPSILON) &&
+			(rect2.X < rect1.X + rect1.Width + EPSILON) &&
+			(rect2.Y < rect1.Y + rect1.Height + EPSILON);
 }
 
 void CBooleanOperations::GetIntersection()
@@ -1733,9 +1728,101 @@ PointD CBooleanOperations::GetMinPoint(const std::vector<Segment>& segments)
 	return PointD(minPoint.X - GEOMETRIC_EPSILON, minPoint.Y - GEOMETRIC_EPSILON);
 }
 
+std::vector<CGraphicsPath*> GetSubPaths(CGraphicsPath* path)
+{
+	size_t count = path->GetCompoundPath();
+	std::vector<CGraphicsPath*> result;
+	CGraphicsPath* subPath = new CGraphicsPath;
+	bool close = true;
+	for (size_t i = 0; i < path->GetPointCount() + count + 1; i++)
+	{
+		if (path->IsMovePoint(i))
+		{
+			if (!close)
+			{
+				subPath->CloseFigure();
+				result.push_back(subPath->Clone());
+				subPath->Reset();
+			}
+			subPath->StartFigure();
+			std::vector<PointD> points = path->GetPoints(i, 1);
+			subPath->MoveTo(points[0].X, points[0].Y);
+			close = false;
+		}
+		else if (path->IsCurvePoint(i))
+		{
+			std::vector<PointD> points = path->GetPoints(i, 3);
+			subPath->CurveTo(points[0].X, points[0].Y, points[1].X, points[1].Y, points[2].X, points[2].Y);
+			i += 2;
+		}
+		else if (path->IsLinePoint(i))
+		{
+			std::vector<PointD> points = path->GetPoints(i, 1);
+			subPath->LineTo(points[0].X, points[0].Y);
+		}
+		else if (path->IsClosePoint(i))
+		{
+			subPath->CloseFigure();
+			result.push_back(subPath->Clone());
+			subPath->Reset();
+			close = true;
+		}
+	}
+
+	return result;
+}
+
+CGraphicsPath* CollectPath(std::vector<CGraphicsPath*> paths)
+{
+	CGraphicsPath *result = new CGraphicsPath;
+
+	result->StartFigure();
+	for (size_t i = 0; i < paths.size(); i++)
+	{
+		size_t length = paths[i]->GetPointCount();
+		std::vector<PointD> points = paths[i]->GetPoints(0, length);
+
+		for (size_t j = 0; j < length; j++)
+		{
+			if (paths[i]->IsMovePoint(j))
+				result->MoveTo(points[j].X, points[j].Y);
+			else if (paths[i]->IsLinePoint(j))
+				result->LineTo(points[j].X, points[j].Y);
+			else if (paths[i]->IsCurvePoint(j))
+			{
+				result->CurveTo(points[j].X, points[j].Y, points[j + 1].X, points[j + 1].Y, points[j + 2].X, points[j + 2].Y);
+				j += 2;
+			}
+		}
+		result->CloseFigure();
+		delete paths[i];
+	}
+
+	return result;
+}
+
 CGraphicsPath* CalcBooleanOperation(CGraphicsPath *path1, CGraphicsPath *path2, BooleanOpType op)
 {
-	CBooleanOperations operation(path1, path2, op);
-	return operation.GetResult();
+	if (!path1->Is_poly_closed())
+		path1->CloseFigure();
+	if (!path2->Is_poly_closed())
+		path2->CloseFigure();
+
+
+	std::vector<CGraphicsPath*>	paths1 = GetSubPaths(path1),
+								paths2 = GetSubPaths(path2);
+
+	std::vector<CGraphicsPath*> paths;
+
+	for (size_t i = 0; i < paths1.size(); i++)
+	{
+		for (size_t j = 0; j < paths2.size(); j++)
+		{
+			CBooleanOperations operation(paths1[i], paths2[j], op);
+			paths.push_back(operation.GetResult()->Clone());
+		}
+	}
+
+	return CollectPath(paths);
 }
 }

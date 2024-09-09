@@ -191,10 +191,11 @@ void MainWindow::AddPath(NSGraphics::IGraphicsRenderer* pathRenderer, Aggplus::C
 	pathRenderer->PathCommandStart();
 	pathRenderer->BeginCommand(c_nPathType);
 
-	size_t length = path->GetPointCount();
-	std::vector<Aggplus::PointD> points = path->GetPoints(0, length);
+	size_t	length = path->GetPointCount(),
+			compound = path->GetCompoundPath();
+	std::vector<Aggplus::PointD> points = path->GetPoints(0, length + compound);
 
-	for (size_t i = 0; i < length; i++)
+	for (size_t i = 0; i < length + compound; i++)
 	{
 		if (path->IsCurvePoint(i))
 		{
@@ -205,7 +206,7 @@ void MainWindow::AddPath(NSGraphics::IGraphicsRenderer* pathRenderer, Aggplus::C
 		}
 		else if (path->IsMovePoint(i))
 			pathRenderer->PathCommandMoveTo(points[i].X + NEGATIVE_OFFSET, points[i].Y + NEGATIVE_OFFSET);
-		else
+		else if (path->IsLinePoint(i))
 			pathRenderer->PathCommandLineTo(points[i].X + NEGATIVE_OFFSET, points[i].Y + NEGATIVE_OFFSET);
 	}
 

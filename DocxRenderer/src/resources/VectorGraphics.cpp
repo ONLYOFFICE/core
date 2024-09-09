@@ -32,7 +32,8 @@ namespace NSDocxRenderer
 	CVectorGraphics::CVectorGraphics(const Aggplus::CGraphicsPath& other) noexcept
 		: CVectorGraphics()
 	{
-		size_t count = static_cast<size_t>(other.GetPointCount());
+		size_t close_count = other.GetCompoundPath() + 1;
+		size_t count = static_cast<size_t>(other.GetPointCount()) + close_count;
 		std::vector<Aggplus::PointD> points = other.GetPoints(0, count);
 		for (size_t idx = 0; idx < count; ++idx)
 		{
@@ -51,8 +52,10 @@ namespace NSDocxRenderer
 				CurveTo(point.X, point.Y, point1.X, point1.Y, point2.X, point2.Y);
 				idx += 2;
 			}
+			else if (other.IsClosePoint(idx))
+				Close();
 		}
-		Close();
+		//Close();
 	}
 
 

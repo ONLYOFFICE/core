@@ -1,6 +1,6 @@
 #include "DrawingFileEmbed.h"
 
-JSSmart<CJSValue> MoveMemoryToJS(BYTE* pWasmData)
+JSSmart<CJSValue> MoveMemoryToJS(BYTE* pWasmData, const bool& isFree = true)
 {
 	if (NULL == pWasmData)
 		return CJSContext::createNull();
@@ -13,7 +13,9 @@ JSSmart<CJSValue> MoveMemoryToJS(BYTE* pWasmData)
 	size_t nBufferSize = (size_t)(nLen - 4);
 	BYTE* pMemory = NSJSBase::NSAllocator::Alloc(nBufferSize);
 	memcpy(pMemory, pWasmData + 4, nBufferSize);
-	free(pWasmData);
+
+	if (isFree)
+		free(pWasmData);
 
 	return NSJSBase::CJSContext::createUint8Array(pMemory, (int)nBufferSize, false);
 }
@@ -50,7 +52,7 @@ JSSmart<CJSValue> CDrawingFileEmbed::GetPixmap(JSSmart<CJSValue> nPageIndex, JSS
 
 JSSmart<CJSValue> CDrawingFileEmbed::GetGlyphs(JSSmart<CJSValue> nPageIndex)
 {
-	return MoveMemoryToJS(m_pFile->GetGlyphs(nPageIndex->toInt32()));
+	return MoveMemoryToJS(m_pFile->GetGlyphs(nPageIndex->toInt32()), false);
 }
 JSSmart<CJSValue> CDrawingFileEmbed::GetLinks(JSSmart<CJSValue> nPageIndex)
 {

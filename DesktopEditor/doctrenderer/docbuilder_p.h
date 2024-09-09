@@ -126,16 +126,17 @@ namespace NSDoctRenderer
 	public:
 		CString_Private()
 		{
-			m_data = NULL;
+			m_data = new wchar_t[1];
+			m_data[0] = '\0';
 		}
 		~CString_Private()
 		{
-			if (m_data)
-				delete [] m_data;
+			delete[] m_data;
 		}
 
 		void Attach(wchar_t* data)
 		{
+			delete[] m_data;
 			m_data = data;
 		}
 
@@ -143,7 +144,7 @@ namespace NSDoctRenderer
 		{
 			if (copy->m_data)
 			{
-				delete [] copy->m_data;
+				delete[] copy->m_data;
 				copy->m_data = NULL;
 			}
 

@@ -777,25 +777,88 @@ void CBooleanOperations::TraceBoolean()
 
 		if (AllOverlap())
 		{
-			if (Segments1[0].Inters && Segments2[0].Inters)
+			if (AllInters(Segments1) && AllInters(Segments2))
 			{
 				if (Op != Subtraction)
 					Result = Path1;
 			}
-			else if (Segments1[0].Inters)
+			else if (AllInters(Segments1))
 			{
 				if (Op == Intersection)
 					Result = Path1;
 				else if (Op == Union)
 					Result = Path2;
+			}
+			else if (AllInters(Segments2))
+			{
+				if (Op == Intersection)
+					Result = Path2;
+				else if (Op == Union)
+					Result = Path1;
 			}
 			else
 			{
+				int count = 0;
+				for (const auto& s : Segments1)
+				{
+					if (!s.Inters)
+					{
+						for (const auto& c : OriginCurves2)
+							count += CheckInters(GetMinPoint(Segments2), s, c);
+						break;
+					}
+				}
+
 				if (Op == Intersection)
-					Result = Path2;
+				{
+					if (count % 2 == 0)
+						Result = Path2;
+					else
+						Result = Path1;
+				}
 				else if (Op == Union)
-					Result = Path1;
+				{
+					if (count % 2 == 0)
+						Result = Path1;
+					else
+						Result = Path2;
+				}
+				else
+				{
+					Result->StartFigure();
+					for (const auto& seg : count % 2 == 0 ? Segments1 : Segments2)
+					{
+						if (!seg.Inters && !seg.Visited)
+						{
+							Result->MoveTo(seg.P.X, seg.P.Y);
+							SetVisited(seg);
+
+							Segment s = GetNextSegment(seg);
+							while (s != seg)
+							{
+								if (s.IsCurve)
+									Result->CurveTo(s.HI.X + s.P.X, s.HI.Y + s.P.Y, s.HO.X + s.P.X, s.HO.Y + s.P.Y, s.P.X, s.P.Y);
+								else
+									Result->LineTo(s.P.X, s.P.Y);
+
+								SetVisited(s);
+
+								if (s.Inters)
+									s = GetNextSegment(s.Inters->S);
+								else
+									s = GetNextSegment(s);
+							}
+
+							if (s.IsCurve)
+								Result->CurveTo(s.HI.X + s.P.X, s.HI.Y + s.P.Y, s.HO.X + s.P.X, s.HO.Y + s.P.Y, s.P.X, s.P.Y);
+							else
+								Result->LineTo(s.P.X, s.P.Y);
+						}
+					}
+					Result->CloseFigure();
+				}
 			}
+
 			return;
 		}
 
@@ -1607,11 +1670,20 @@ bool CBooleanOperations::AllOverlap() const
 {
 	if (Locations.empty()) return false;
 
-	bool overlap = true;
 	for (const auto& l : Locations)
-		overlap = l->Overlap;
+		if (!l->Overlap)
+			return false;
 
-	return overlap;
+	return true;
+}
+
+bool CBooleanOperations::AllInters(const std::vector<Segment>& segments) const
+{
+	for (const auto& s : segments)
+		if (!s.Inters)
+			return false;
+
+	return true;
 }
 
 void CBooleanOperations::AddLocation(Curve curve1, Curve curve2,

@@ -109,7 +109,8 @@ namespace XLSB
 		record.reserveNunBytes(4);
 
 		_GUID_  guid_;
-		STR::bstr2guid(guid, guid_);
+        if(fGuid)
+            STR::bstr2guid(guid, guid_);
 
 		record << guid_ << fGuid << strParam;
 	}

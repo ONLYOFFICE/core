@@ -668,10 +668,17 @@ namespace NSDoctRenderer
 		}
 
 		if (IsEmpty() || !m_internal->m_value->isString())
+		{
+			ret.m_internal->MakeEmpty();
 			return ret;
+		}
 		std::wstring sValue = m_internal->m_value->toStringW();
 		if (sValue.empty())
+		{
+			// return valid empty string
+			ret.m_internal->MakeEmpty();
 			return ret;
+		}
 		size_t len = sValue.length();
 		wchar_t* buffer = new wchar_t[len + 1];
 		memcpy(buffer, sValue.c_str(), len * sizeof(wchar_t));

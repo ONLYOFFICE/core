@@ -126,8 +126,7 @@ namespace NSDoctRenderer
 	public:
 		CString_Private()
 		{
-			m_data = new wchar_t[1];
-			m_data[0] = '\0';
+			m_data = NULL;
 		}
 		~CString_Private()
 		{
@@ -154,6 +153,13 @@ namespace NSDoctRenderer
 			size_t len = wcslen(m_data);
 			copy->m_data = new wchar_t[len + 1];
 			memcpy(copy->m_data, m_data, (len + 1) * sizeof(wchar_t));
+		}
+
+		void MakeEmpty()
+		{
+			delete[] m_data;
+			m_data = new wchar_t[1];
+			m_data[0] = '\0';
 		}
 	};
 }

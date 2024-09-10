@@ -62,8 +62,8 @@ namespace XLSB
 			FRTHeader               FRTheader;
             CFType                  iType;
             CFTemp                  iTemplate;
-            _UINT32                 dxfId = 0xFFFFFFFF;
-            _INT32                  iPri = 1;
+            _UINT32                 dxfId = 0;
+            _INT32                  iPri = 0xFFFFFFFF;
             _UINT32                 iParam = 0;
             std::string             sTypeiParam;
             bool                    fStopTrue = false;

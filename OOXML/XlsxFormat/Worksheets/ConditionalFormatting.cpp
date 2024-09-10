@@ -268,8 +268,8 @@ XLS::BaseObjectPtr CConditionalFormatValueObject::toBin(bool isIcon)
     else
         ptr1->iType = XLSB::CFVOtype::CFVONUM;
 
-    //if(m_oVal.IsInit() && ptr1->iType != XLSB::CFVOtype::CFVOFMLA)
-        //ptr1->numParam.data.value = std::stod(m_oVal.get());
+    if(m_oVal.IsInit() && ptr1->iType != XLSB::CFVOtype::CFVOFMLA)
+        ptr1->numParam.data.value = std::stod(m_oVal.get());
     if(ptr1->iType.get_type() == XLSB::CFVOtype::CFVOMIN)
         ptr1->numParam.data.value = 0;
     else if(ptr1->iType.get_type() == XLSB::CFVOtype::CFVOMAX)
@@ -327,7 +327,7 @@ XLS::BaseObjectPtr CConditionalFormatValueObject::toBin14(bool isIcon)
         ptr1->FRTheader.fFormula = true;
         ptr1->cbFmla = 1;
     }
-    else if (static_cast<_UINT32>(ptr1->iType) == XLSB::CFVOtype::CFVOFMLA && !m_oFormula->m_sText.empty())
+    else if (static_cast<_UINT32>(ptr1->iType) == XLSB::CFVOtype::CFVOFMLA && m_oFormula.IsInit() && !m_oFormula->m_sText.empty())
     {
         XLSB::FRTFormula tempFmla;
         tempFmla.formula = m_oFormula->m_sText;
@@ -339,7 +339,7 @@ XLS::BaseObjectPtr CConditionalFormatValueObject::toBin14(bool isIcon)
     {
         ptr1->cbFmla = 0;
     }
-    if(ptr1->cbFmla == 0 && !m_oFormula->m_sText.empty())
+    if(ptr1->cbFmla == 0 && m_oFormula.IsInit() && !m_oFormula->m_sText.empty())
     {
         try
         {
@@ -980,16 +980,12 @@ XLS::BaseObjectPtr CDataBar::toBin()
     ptr->m_BrtBeginDatabar = XLS::BaseObjectPtr{ptr1};
     if(m_oMaxLength.IsInit())
         ptr1->bLenMax = m_oMaxLength->GetValue();
-    else
-        ptr1->bLenMax = 100;
+
     if(m_oMinLength.IsInit())
         ptr1->bLenMin = m_oMinLength->GetValue();
-    else
-        ptr1->bLenMin = 0;
+
     if(m_oShowValue.IsInit())
         ptr1->fShowValue = m_oShowValue->GetValue();
-    else
-        ptr1->fShowValue = false;
 
     for(auto i:m_arrValues)
         ptr->m_arCFVO.push_back(i->toBin());
@@ -1016,8 +1012,18 @@ XLS::BaseObjectPtr CDataBar::toBin14()
         ptr1->bLenMin = 0;
     if(m_oShowValue.IsInit())
         ptr1->fShowValue = m_oShowValue->GetValue();
-    else
-        ptr1->fShowValue = false;
+    if(m_oGradient.IsInit())
+        ptr1->fGradient = m_oGradient->GetValue();
+    if(m_oDirection.IsInit())
+        ptr1->bDirection = m_oDirection->GetValue();
+    if(m_oAxisPosition.IsInit())
+        ptr1->bAxisPosType = m_oAxisPosition->GetValue();
+    if(m_oBorder.IsInit())
+        ptr1->fBorder = m_oBorder->GetValue();
+    if(m_oNegativeBarColorSameAsPositive.IsInit())
+        ptr1->fCustomNegativeFillColor = !m_oNegativeBarColorSameAsPositive->GetValue();
+    if(m_oNegativeBarBorderColorSameAsPositive.IsInit())
+        ptr1->fCustomNegativeBorderColor = !m_oNegativeBarBorderColorSameAsPositive->GetValue();
 
     for(auto i:m_arrValues)
         ptr->m_arCFVO14.push_back(i->toBin14());

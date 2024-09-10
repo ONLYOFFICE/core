@@ -57,6 +57,11 @@ namespace NSDocxRenderer
 
 		if (lType == c_nPathType)
 			PathEnd();
+		else if (lType == c_nResetClipType)
+		{
+			m_oCurrVectorGraphics.Clear();
+			m_oClipVectorGraphics.Clear();
+		}
 		else if (lType == c_nClipType)
 		{
 			if (!m_oClipVectorGraphics.IsEmpty())
@@ -257,7 +262,6 @@ namespace NSDocxRenderer
 			frame->put_Width(width_pix);
 			frame->put_Stride(stride);
 
-
 			g_renderer->CreateFromBgraFrame(frame.get());
 
 			Aggplus::CDoubleRect prev_bounds = m_pBrush->Bounds;
@@ -282,10 +286,10 @@ namespace NSDocxRenderer
 			shape->m_pImageInfo = info;
 			shape->m_eType = CShape::eShapeType::stVectorTexture;
 
-			shape->m_dImageBot = m_oCurrVectorGraphics.GetBottom();
-			shape->m_dImageTop = m_oCurrVectorGraphics.GetTop();
-			shape->m_dImageLeft = m_oCurrVectorGraphics.GetLeft();
-			shape->m_dImageRight = m_oCurrVectorGraphics.GetRight();
+			shape->m_dImageBot = bot;
+			shape->m_dImageTop = top;
+			shape->m_dImageLeft = left;
+			shape->m_dImageRight = right;
 		}
 		else
 			shape->m_eType = CShape::eShapeType::stVectorGraphics;

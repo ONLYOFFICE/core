@@ -222,14 +222,13 @@ namespace NSDocxRenderer
 				break;
 
 			case CVectorGraphics::ePathCommandType::pctClose:
+				oWriter.WriteString(L"<a:close/>");
+				break;
 			default:
 				break;
 			}
-
 		}
-		oWriter.WriteString(L"<a:close/>");
 		oWriter.WriteString(L"</a:path>");
-
 		std::wstring strPath = oWriter.GetData();
 		oWriter.ClearNoAttack();
 		return strPath;

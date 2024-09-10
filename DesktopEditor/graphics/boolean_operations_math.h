@@ -14,6 +14,7 @@ const double MACHINE_EPSILON = 1.12e-16;
 const double TRIGANOMETRIC_EPSILON = 1e-8;
 const double CURVETIME_EPSILON = 1e-8;
 const double LINE_EPSILON = 1e-9;
+
 const std::vector<double> ABSCISSAS[16] = {
 	{0.5773502691896257645091488},
 	{0,0.7745966692414833770358531}, 
@@ -44,7 +45,7 @@ const std::vector<double> ABSCISSAS[16] = {
 		0.9445750230732325760779884,0.9894009349916499325961542}
 };
 
-const std::vector<double> weight[16] {
+const std::vector<double> WEIGHT[16] {
 	{1},
 	{0.8888888888888888888888889,0.5555555555555555555555556},
     {0.6521451548625461426269361,0.3478548451374538573730639},
@@ -119,14 +120,13 @@ double clamp(double value, double mn, double mx)
 
 bool isCollinear(const Aggplus::PointD& p1, const Aggplus::PointD& p2)
 {
-	return abs(p1.X * p2.X + p1.Y * p2.Y) <=
-		   sqrt((p1.X * p1.X + p1.Y * p1.Y) * (p2.X * p2.X + p2.Y * p2.Y))
-												 * TRIGANOMETRIC_EPSILON;
+	return abs(p1.X * p2.X + p1.Y * p2.Y) <= sqrt((p1.X * p1.X + p1.Y * p1.Y) * (p2.X * p2.X + p2.Y * p2.Y)) * TRIGANOMETRIC_EPSILON;
 }
 
 int getIterations(double a, double b)
 {
 	double n1 = 2.0, n2 = 16.0;
+
 	return std::max(n1, std::min(n2, ceil(abs(b - a) * 32)));
 }
 
@@ -134,6 +134,7 @@ double CurveLength(double t, double ax, double bx, double cx, double ay, double 
 {
 	double	dx = ((ax * t) + bx) * t + cx,
 			dy = ((ay * t) + by) * t + cy;
+
 	return sqrt(dx * dx + dy * dy);
 }
 
@@ -141,7 +142,8 @@ double integrate(double ax, double bx, double cx, double ay, double by, double c
 				 double a, double b, size_t n = 16)
 {
 	std::vector<double> x = ABSCISSAS[n - 2],
-		w = weight[n - 2];
+						w = WEIGHT[n - 2];
+
 	double A = (b - a) * 0.5,
 		   B = A + a;
 	double sum = n & 1 ? CurveLength(B, ax, bx, cx, ay, by, cy) : 0;
@@ -152,6 +154,7 @@ double integrate(double ax, double bx, double cx, double ay, double by, double c
 		sum += w[i] * (CurveLength(B + Ax, ax, bx, cx, ay, by, cy) +
 					   CurveLength(B - Ax, ax, bx, cx, ay, by, cy));
 	}
+
 	return A * sum;
 }
 
@@ -160,6 +163,7 @@ double fLength(double t, double& length, double& start, double offset,
 {
 	length += integrate(ax, bx, cx, ay, by, cy, start, t, getIterations(start, t));
 	start = t;
+
 	return length - offset;
 }
 
@@ -168,9 +172,9 @@ double findRoot(double& length, double& start, double offset, double ax, double 
 {
 	for (size_t i = 0; i < 32; i++)
 	{
-		double fx = fLength(x, length, start, offset, ax, bx, cx, ay, by, cy),
-			  dx = fx / CurveLength(x, ax, bx, cx, ay, by, cy),
-			  nx = x - dx;
+		double	fx = fLength(x, length, start, offset, ax, bx, cx, ay, by, cy),
+				dx = fx / CurveLength(x, ax, bx, cx, ay, by, cy),
+				nx = x - dx;
 		
 		if (abs(dx) < EPSILON)
 		{
@@ -188,6 +192,7 @@ double findRoot(double& length, double& start, double offset, double ax, double 
 			x = nx >= b ? (a + b) * 0.5 : nx;
 		}
 	}
+
 	return clamp(x, a, b);
 }
 
@@ -201,20 +206,22 @@ bool intersect(double p1x, double p1y, double v1x, double v1y, double p2x, doubl
 	double cross = v1x * v2y - v1y * v2x;
 	if (!isMachineZero(cross))
 	{
-		double dx = p1x - p2x,
-			  dy = p1y - p2y,
-			  u1 = (v2x * dy - v2y * dx) / cross,
-			  u2 = (v1x * dy - v1y * dx) / cross,
-			  uMin = -EPSILON,
-			  uMax = 1 + EPSILON;
+		double	dx = p1x - p2x,
+				dy = p1y - p2y,
+				u1 = (v2x * dy - v2y * dx) / cross,
+				u2 = (v1x * dy - v1y * dx) / cross,
+				uMin = -EPSILON,
+				uMax = 1 + EPSILON;
 		
 		if (uMin < u1 && u1 < uMax && uMin < u2 && u2 < uMax)
 		{
 			u1 = u1 <= 0 ? 0 : u1 >= 1 ? 1 : u1;
 			res = Aggplus::PointD(p1x + u1 * v1x, p1y + u1 * v1y);
+
 			return true;
 		}
 	}
+
 	return false;
 }
 
@@ -224,8 +231,10 @@ std::vector<std::vector<Aggplus::PointD>> getConvexHull(double dq0, double dq1, 
 					p1 = Aggplus::PointD(1.0 / 3.0, dq1),
 					p2 = Aggplus::PointD(2.0 / 3.0, dq2),
 					p3 = Aggplus::PointD(1.0, dq3);
-	double dist1 = dq1 - (2.0 * dq0 + dq3) / 3.0,
-		  dist2 = dq2 - (dq0 + 2.0 * dq3) / 3.0;
+
+	double	dist1 = dq1 - (2.0 * dq0 + dq3) / 3.0,
+			dist2 = dq2 - (dq0 + 2.0 * dq3) / 3.0;
+
 	std::vector<std::vector<Aggplus::PointD>> hull;
 	
 	if (dist1 * dist2 < 0.0)
@@ -242,8 +251,10 @@ std::vector<std::vector<Aggplus::PointD>> getConvexHull(double dq0, double dq1, 
 		else
 			hull = {{p0, p1, p2, p3}, {p0, p3}};
 	}
+
 	if (dist1 < 0.0 || dist2 < 0.0)
 		std::reverse(hull.begin(), hull.end());
+
 	return hull;
 }
 
@@ -258,9 +269,11 @@ double clipConvexHullPart(std::vector<Aggplus::PointD> part, bool top, double th
 
 		if (top ? qy >= threshold : qy <= threshold)
 			return qy == threshold ? qx : px + (threshold - py) * (qx - px) / (qy - py);
+
 		px = qx;
 		py = qy;
 	}
+
 	return DBL_MIN;
 }
 
@@ -278,6 +291,7 @@ int binarySearch(std::vector<std::vector<double>> allBounds, std::vector<int> in
 {
 	int lo = 0,
 		hi = indices.size();
+
 	while(lo < hi)
 	{
 		int mid = (hi + lo) >> 1;
@@ -286,6 +300,7 @@ int binarySearch(std::vector<std::vector<double>> allBounds, std::vector<int> in
 		else
 			hi = mid;
 	}
+
 	return lo - 1;
 }
 
@@ -303,11 +318,11 @@ double getSignedDistance(double px, double py, double vx, double vy, double x, d
 		 vy0 = vy == 0.0,
 		 vyGvx = vy > vx;
 
-	double distX = vyG ? x - px : px - x,
-		   distY = vxL ? y - py : py - y,
-		   distGY = vy * sqrt(1.0 + (vx * vx) / (vy * vy)),
-		   distGX = vx * sqrt(1.0 + (vy * vy) / (vx * vx)),
-		   distXY = ((x - px) * vy - (y - py) * vx) / (vyGvx ? distGY : distGX);
+	double	distX = vyG ? x - px : px - x,
+			distY = vxL ? y - py : py - y,
+			distGY = vy * sqrt(1.0 + (vx * vx) / (vy * vy)),
+			distGX = vx * sqrt(1.0 + (vy * vy) / (vx * vx)),
+			distXY = ((x - px) * vy - (y - py) * vx) / (vyGvx ? distGY : distGX);
 
 	return vx0 ? distX : vy0 ? distY : distXY;
 }
@@ -335,18 +350,19 @@ double getDistance(double px, double py, double vx, double vy, double x, double 
 	}
 
 	bool dir = vy > vx;
-	double dist = (x- px) * vy - (y - py) * vx,
-		  epsY = vy * sqrt(1 + (vx * vx) / (vy * vy)),
-		  epsX = vx * sqrt(1 + (vy * vy) / (vx * vx));
+	double	dist = (x- px) * vy - (y - py) * vx,
+			epsY = vy * sqrt(1 + (vx * vx) / (vy * vy)),
+			epsX = vx * sqrt(1 + (vy * vy) / (vx * vx));
 
 	return  dist / (dir ? epsY : epsX);
 }
 
 double getDistance(double x1, double y1, double x2, double y2)
 {
-	double x = x2 - x1,
-		  y = y2 - y1,
-		  d = x * x + y * y;
+	double	x = x2 - x1,
+			y = y2 - y1,
+			d = x * x + y * y;
+
 	return sqrt(d);
 }
 
@@ -357,33 +373,38 @@ double getDistance(Aggplus::PointD point1, Aggplus::PointD point2)
 
 std::pair<double, double> split(double v)
 {
-	double x = v * 134217729.0,
-		  y = v - x,
-		  hi = y + x,
-		  lo = v - hi;
+	double	x = v * 134217729.0,
+			y = v - x,
+			hi = y + x,
+			lo = v - hi;
+
 	return std::pair<double, double>(hi, lo);
 }
 
 double getDiscriminant(double a, double b, double c)
 {
-	double D = b * b - a * c,
-		  E = b * b + a * c;
+	double	D = b * b - a * c,
+			E = b * b + a * c;
+
 	if (abs(D) * 3 < E)
 	{
-		std::pair<double, double> ad = split(a),
-								bd = split(b),
-								cd = split(c);
-		double p = b * b,
-			  dp = (bd.first * bd.first - 
-					p + 2 * bd.first * bd.second) + 
-				   bd.second * bd.second,
-			  q = a * c,
-			  dq = (ad.first * cd.first -
-					q + ad.first * cd.second +
-					ad.second * cd.first) +
-				   ad.second * cd.second;
+		std::pair<double, double>	ad = split(a),
+									bd = split(b),
+									cd = split(c);
+
+		double	p = b * b,
+				dp = (bd.first * bd.first -
+					  p + 2 * bd.first * bd.second) +
+					  bd.second * bd.second,
+				q = a * c,
+				dq = (ad.first * cd.first -
+					  q + ad.first * cd.second +
+					  ad.second * cd.first) +
+					 ad.second * cd.second;
+
 		D = (p - q) + (dp - dq);
 	}
+
 	return D;
 }
 
@@ -400,6 +421,7 @@ int solveQuadratic(double a, double b, double c, std::vector<double>& roots,
 	else
 	{
 		b *= -0.5;
+
 		double D = getDiscriminant(a, b, c);
 		if (D != 0 && abs(D) < MACHINE_EPSILON)
 		{
@@ -413,10 +435,11 @@ int solveQuadratic(double a, double b, double c, std::vector<double>& roots,
 				D = getDiscriminant(a, b, c);
 			}
 		}
+
 		if (D >= -MACHINE_EPSILON)
 		{
-			double Q = D < 0 ? 0 : sqrt(D),
-				  R = b + (b < 0 ? -Q : Q);
+			double	Q = D < 0 ? 0 : sqrt(D),
+					R = b + (b < 0 ? -Q : Q);
 			if (R == 0)
 			{
 				x1 = c / a;
@@ -429,19 +452,22 @@ int solveQuadratic(double a, double b, double c, std::vector<double>& roots,
 			}
 		}
 	}
+
 	int count = 0;
-	double minB = mn - EPSILON,
-		  maxB = mx + EPSILON;
+	double	minB = mn - EPSILON,
+			maxB = mx + EPSILON;
 	if (x1 != DBL_MAX && x1 > minB && x1 < maxB)
 	{
 		roots.push_back(clamp(x1, mn, mx));
 		count++;
 	}
+
 	if (x2 != x1 && x2 != DBL_MAX && x2 > minB && x2 < maxB)
 	{
 		roots.push_back(clamp(x2, mn, mx));
 		count++;
 	}
+
 	return count;
 }
 

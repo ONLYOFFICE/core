@@ -84,13 +84,14 @@ namespace Aggplus
 		Segment S;
 		double Time;
 		bool Overlap;
+		bool Ends;
 
 		std::shared_ptr<Location> Inters;
 		std::shared_ptr<Location> Next;
 		std::shared_ptr<Location> Prev;
 
 		Location();
-		Location(const Curve& curve, double time, bool overlap);
+		Location(const Curve& curve, double time, bool overlap, bool ends);
 
 		bool IsTouching();
 		// bool operator==(const Location& other);
@@ -105,20 +106,22 @@ namespace Aggplus
 
 		// BooleanOp
 		void TraceBoolean();
+		void TraceOneInters();
+		void TraceAllOverlap();
 		void TracePaths();
 
 		// Path
-		void PreparePath(CGraphicsPath* path, int id, std::vector<Segment>& segments, std::vector<Curve>& curves, bool reverse = false);
-		void InsertSegment(const Segment& segment, const Segment& handles, bool updateHandles);
-		Curve GetCurve(const Segment& segment) const;
-		Curve GetPreviousCurve(const Curve& curve) const;
-		Curve GetNextCurve(const Curve& curve) const;
+		void	PreparePath(CGraphicsPath* path, int id, std::vector<Segment>& segments, std::vector<Curve>& curves, bool reverse = false);
+		void	InsertSegment(const Segment& segment, const Segment& handles, bool updateHandles);
+		Curve	GetCurve(const Segment& segment) const;
+		Curve	GetPreviousCurve(const Curve& curve) const;
+		Curve	GetNextCurve(const Curve& curve) const;
 		Segment GetNextSegment(const Segment& segment) const;
+		void	SetVisited(const Segment& segment);
 
 		// Bounds
 		std::vector<std::vector<double>> GetBoundsForCurves(const std::vector<Curve>& curves) const;
-		std::vector<std::vector<int>> FindCurveBoundsCollisions();
-		std::vector<std::vector<int>> FindBoundsCollisions(const std::vector<std::vector<double>>& bounds1, const std::vector<std::vector<double>>& bounds2);
+		std::vector<std::vector<int>>	 FindBoundsCollisions();
 
 		// Intersection
 		bool IsCrossing(std::shared_ptr<Location> loc);
@@ -129,18 +132,17 @@ namespace Aggplus
 		void LinkIntersection(std::shared_ptr<Location> form, std::shared_ptr<Location> to);
 		void AddLineIntersection(const Curve& curve1, const Curve& curve2);
 		void AddCurveLineIntersection(const Curve& curve1, const Curve& curve2, bool flip);
-		int  AddCurveIntersection(Curve curve1, Curve curve2, const Curve& startCurve1, const Curve& startCurve2, bool flip, int recursion = 0, int calls = 0, double tMin = 0, double tMax = 1, double uMin = 0, double uMax = 1);
+		int  AddCurveIntersection(Curve curve1, Curve curve2, const Curve& startCurve1, const Curve& startCurve2, bool flip,
+								  int recursion = 0, int calls = 0, double tMin = 0.0, double tMax = 1.0, double uMin = 0.0, double uMax = 1.0);
 		int  CheckInters(const PointD& point, const Segment& segment, const Curve& curve, /*bool dir = false,*/ int& isTouch) const;
+		void SetWinding();
 
 		// Location
 		void DivideLocations();
-		void AddLocation(Curve curve1, Curve curve2, double t1, double t2, bool overlap = false);
+		void AddLocation(Curve curve1, Curve curve2, double t1, double t2, bool overlap = false, bool filter = true, bool bothEnds = false);
 		void InsertLocation(std::shared_ptr<Location> loc, bool overlap);
 		bool AllOverlap() const;
 		bool AllInters(const std::vector<Segment>& segments) const;
-
-		// Util
-		void SetVisited(const Segment& segment);
 		void AddOffsets(std::vector<double>& offsets, const Curve& curve, bool end);
 
 	private:

@@ -154,6 +154,10 @@ namespace NSDocxRenderer
 	{
 		return m_dBottom;
 	}
+	Point CVectorGraphics::GetCenter() const noexcept
+	{
+		return Point((m_dLeft + m_dRight) / 2, (m_dTop + m_dBottom) / 2);
+	}
 	bool CVectorGraphics::IsEmpty() const noexcept
 	{
 		return m_arData.empty();
@@ -182,9 +186,10 @@ namespace NSDocxRenderer
 		CheckPoint(point);
 	}
 
-	void CVectorGraphics::CurveTo(const double &x1, const double &y1,
-								  const double &x2, const double &y2,
-								  const double &x3, const double &y3)
+	void CVectorGraphics::CurveTo(
+		const double &x1, const double &y1,
+		const double &x2, const double &y2,
+		const double &x3, const double &y3)
 	{
 		std::list<Point> points = {{x1, y1}, {x2, y2}, {x3, y3}};
 		ePathCommandType type = ePathCommandType::pctCurve;
@@ -236,18 +241,43 @@ namespace NSDocxRenderer
 	}
 	void CVectorGraphics::Rotate(const double& rotation)
 	{
-		Point center((m_dLeft + m_dRight) / 2, (m_dTop + m_dBottom) / 2);
-		ResetBorders();
-
+		Point center(GetCenter());
 		Aggplus::CMatrix rotate_matrix;
 		rotate_matrix.RotateAt(rotation, center.x, center.y, Aggplus::MatrixOrderAppend);
-
+		Transform(rotate_matrix);
+	}
+	void CVectorGraphics::Transform(const Aggplus::CMatrix& matrix)
+	{
+		ResetBorders();
 		for (auto& command : m_arData)
 			for (auto& point : command.points)
 			{
-				rotate_matrix.TransformPoint(point.x, point.y);
+				matrix.TransformPoint(point.x, point.y);
 				CheckPoint(point);
 			}
+	}
+	void CVectorGraphics::DrawOnRenderer(IRenderer* renderer) const noexcept
+	{
+		for (const auto& path : m_arData)
+		{
+			if (path.type == ePathCommandType::pctMove)
+				renderer->PathCommandMoveTo(path.points.front().x, path.points.front().y);
+			else if (path.type == ePathCommandType::pctLine)
+				renderer->PathCommandLineTo(path.points.front().x, path.points.front().y);
+			else if (path.type == ePathCommandType::pctClose)
+				renderer->PathCommandClose();
+			else if (path.type == ePathCommandType::pctCurve)
+			{
+				std::vector<Point> points;
+				for (const auto& point : path.points)
+					points.push_back(point);
+
+				renderer->PathCommandCurveTo(
+					points[0].x, points[0].y,
+					points[1].x, points[1].y,
+					points[2].x, points[2].y);
+			}
+		}
 	}
 
 	// ClipRegionTypeWinding = 0x0000;
@@ -280,9 +310,11 @@ namespace NSDocxRenderer
 				std::vector<Point> points;
 				for (const auto& point : path.points)
 					points.push_back(point);
-				ret_value->CurveTo(points[0].x, points[0].y,
-						points[1].x, points[1].y,
-						points[2].x, points[2].y);
+
+				ret_value->CurveTo(
+					points[0].x, points[0].y,
+					points[1].x, points[1].y,
+					points[2].x, points[2].y);
 			}
 		}
 		// NRVO things is not working because of no Aggplus::CGraphicsPath(const Aggplus::CGraphicsPath&)

@@ -180,8 +180,6 @@ namespace NSDocxRenderer
 		double right = m_oCurrVectorGraphics.GetRight();
 		double top = m_oCurrVectorGraphics.GetTop();
 		double bot = m_oCurrVectorGraphics.GetBottom();
-		double width = right - left;
-		double height = bot - top;
 
 		if (!m_arShapes.empty())
 		{
@@ -242,16 +240,11 @@ namespace NSDocxRenderer
 		if (!info && m_bIsGradient)
 		{
 			NSGraphics::IGraphicsRenderer* g_renderer = NSGraphics::Create();
-			double dpi_x = 0;
-			double dpi_y = 0;
-			g_renderer->get_DpiX(&dpi_x);
-			g_renderer->get_DpiX(&dpi_y);
-			const double mm_to_pix_x = dpi_x / 25.4;
-			const double mm_to_pix_y = dpi_y / 25.4;
-			const int width_pix = shape->m_dWidth * mm_to_pix_x;
-			const int height_pix = shape->m_dHeight * mm_to_pix_y;
+
+			const int width_pix = shape->m_dWidth * c_dMMToPix;
+			const int height_pix = shape->m_dHeight * c_dMMToPix;
 			const int step = 4;
-			const int stride = step * width;
+			const int stride = step * width_pix;
 
 			std::unique_ptr<CBgraFrame> frame(new CBgraFrame());
 			size_t data_size = width_pix * height_pix * step;
@@ -263,22 +256,32 @@ namespace NSDocxRenderer
 			frame->put_Stride(stride);
 
 			g_renderer->CreateFromBgraFrame(frame.get());
+			g_renderer->SetSwapRGB(false);
+			g_renderer->put_Width(shape->m_dWidth);
+			g_renderer->put_Height(shape->m_dHeight);
+
+			auto shifted_vector = shape->m_oVector;
+			Aggplus::CMatrix transform_matrix;
+			transform_matrix.Translate(-shifted_vector.GetLeft(), -shifted_vector.GetTop());
+			shifted_vector.Transform(transform_matrix);
 
 			Aggplus::CDoubleRect prev_bounds = m_pBrush->Bounds;
-			m_pBrush->Bounds.left = shape->m_dLeft;
-			m_pBrush->Bounds.right = shape->m_dRight;
-			m_pBrush->Bounds.bottom = shape->m_dBaselinePos;
-			m_pBrush->Bounds.top = shape->m_dTop;
+			m_pBrush->Bounds.left = shifted_vector.GetLeft();
+			m_pBrush->Bounds.right = shifted_vector.GetRight();
+			m_pBrush->Bounds.bottom = shifted_vector.GetBottom();
+			m_pBrush->Bounds.top = shifted_vector.GetTop();
 
 			g_renderer->RestoreBrush(*m_pBrush);
-			g_renderer->AddRect(0, 0, shape->m_dWidth, shape->m_dHeight);
+			g_renderer->BeginCommand(c_nPathType);
+			shifted_vector.DrawOnRenderer(g_renderer);
 			g_renderer->DrawPath(c_nWindingFillMode);
-			m_pBrush->Bounds = prev_bounds;
+			g_renderer->EndCommand(c_nPathType);
 
 			Aggplus::CImage img;
 			img.Create(data, width_pix, height_pix, stride, true);
 			info = m_pImageManager->WriteImage(&img, shape->m_dTop, shape->m_dBaselinePos, shape->m_dWidth, shape->m_dHeight);
 			m_bIsGradient = false;
+			m_pBrush->Bounds = prev_bounds;
 		}
 
 		if (info)

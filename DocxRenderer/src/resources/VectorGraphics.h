@@ -54,11 +54,15 @@ namespace NSDocxRenderer
 		double GetTop() const noexcept;
 		double GetRight() const noexcept;
 		double GetBottom() const noexcept;
+		Point GetCenter() const noexcept;
 		bool IsEmpty() const noexcept;
 
 		void MoveTo(const double& x1, const double& y1);
 		void LineTo(const double& x1, const double& y1);
-		void CurveTo(const double& x1, const double& y1, const double& x2, const double& y2, const double& x3, const double& y3);
+		void CurveTo(
+			const double& x1, const double& y1,
+			const double& x2, const double& y2,
+			const double& x3, const double& y3);
 		void Close();
 		void End();
 
@@ -69,6 +73,8 @@ namespace NSDocxRenderer
 		void CheckPoint(const Point& point) noexcept;
 		void CheckPoint(const double& x, const double& y) noexcept;
 		void Rotate(const double& rotation);
+		void Transform(const Aggplus::CMatrix& matrix);
+		void DrawOnRenderer(IRenderer* renderer) const noexcept;
 
 		static CVectorGraphics CalcBoolean(const CVectorGraphics& vg1, const CVectorGraphics& vg2, long clipType);
 

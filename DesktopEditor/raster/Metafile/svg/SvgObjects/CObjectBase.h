@@ -86,7 +86,7 @@ namespace SVG
 		friend class CClipPath;
 
 		NSCSS::CNode       m_oXmlNode;
-		TSvgTransformation m_oTransformtaion;
+		TSvgTransformation m_oTransformation;
 	};
 
 	enum CommandeMode

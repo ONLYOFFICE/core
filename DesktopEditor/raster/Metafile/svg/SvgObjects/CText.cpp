@@ -136,7 +136,7 @@ namespace SVG
 		{
 			double dX, dY;
 			CalculatePosition(dX, dY);
-			m_oTransformtaion.m_oTransform.RotateAt(NSCSS::NS_STATIC_FUNCTIONS::ReadDouble(mAttributes.at(L"rotate")), dX, dY);
+			m_oTransformation.m_oTransform.RotateAt(NSCSS::NS_STATIC_FUNCTIONS::ReadDouble(mAttributes.at(L"rotate")), dX, dY);
 		}
 	}
 
@@ -409,7 +409,7 @@ namespace SVG
 		if (NULL == pRenderer)
 			return;
 
-		Aggplus::CMatrix oCurrentMatrix(m_oTransformtaion.m_oTransform.GetMatrix().GetFinalValue());
+		Aggplus::CMatrix oCurrentMatrix(m_oTransformation.m_oTransform.GetMatrix().GetFinalValue());
 
 		double dXScale = 1., dYScale = 1.;
 

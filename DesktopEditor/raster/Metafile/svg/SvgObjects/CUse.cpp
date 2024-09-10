@@ -27,14 +27,14 @@ namespace SVG
 
 	bool CUse::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles* pOtherStyles) const
 	{
-		if (NULL == pRenderer || !m_oTransformtaion.m_bDraw)
+		if (NULL == pRenderer || !m_oTransformation.m_bDraw)
 			return false;
-		
-		Aggplus::CMatrix oTransform;
-		
-		if (!StartPath(pRenderer, pFile, oTransform))
+
+		Aggplus::CMatrix oOldTransform;
+
+		if (!StartPath(pRenderer, pFile, oOldTransform))
 			return false;
-		
+
 		double dM11, dM12, dM21, dM22, dDx, dDy;
 		pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dDx, &dDy);
 
@@ -56,8 +56,8 @@ namespace SVG
 			else
 				pFoundObj->Draw(pRenderer, pFile, oMode, &m_oStyles);
 		}
-		
-		EndPath(pRenderer, pFile, oTransform);
+
+		EndPath(pRenderer, pFile, oOldTransform);
 
 		return true;
 	}

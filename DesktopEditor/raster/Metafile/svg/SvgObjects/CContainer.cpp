@@ -55,13 +55,13 @@ namespace SVG
 	{
 		Aggplus::CMatrix oOldTransform;
 
-		if (!StartPath(pRenderer, pFile, oOldTransform, oMode))
+		if (!StartPath(pRenderer, pFile, oOldTransform, CommandeModeDraw))
 			return false;
 
 		for (const CRenderedObject* pObject : m_arObjects)
 			pObject->Draw(pRenderer, pFile, oMode, pOtherStyles);
 
-		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles);
+		EndPath(pRenderer, pFile, oOldTransform, CommandeModeDraw, pOtherStyles);
 
 		return true;
 	}

@@ -30,6 +30,8 @@ namespace SVG
 		TRect m_oWindow;
 		TRect m_oViewBox;
 
+		TBounds m_oBounds;
+
 		Aggplus::CImage *m_pImage;
 	};
 }

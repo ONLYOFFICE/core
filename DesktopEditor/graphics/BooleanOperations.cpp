@@ -695,16 +695,16 @@ CGraphicsPath *CBooleanOperations::GetResult()
 	return Result;
 }
 
-int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment, const Curve& curve, bool dir) const
+int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment, const Curve& curve, /*bool dir,*/ int& isTouch) const
 {
 	PointD pt;
 	if (intersect(point.X, point.Y, segment.P.X, segment.P.Y, curve.Segment1.P.X, curve.Segment1.P.Y, curve.Segment2.P.X, curve.Segment2.P.Y, pt))
 	{
 		if (getDistance(curve.Segment1.P, pt) <= GEOMETRIC_EPSILON || getDistance(curve.Segment2.P, pt) <= GEOMETRIC_EPSILON)
 		{
-			PointD newPoint = dir ? PointD(point.X + 1.0, point.Y)
-								  : PointD(point.X, point.Y + 1.0);
-			return CheckInters(newPoint, segment, curve, !dir);
+			int tmp = isTouch % 2;
+			isTouch++;
+			return tmp;
 		}
 		else if (curve.IsStraight())
 		{
@@ -743,10 +743,10 @@ void CBooleanOperations::TraceBoolean()
 
 	if (Locations.empty())
 	{
-		int count = 0;
-		PointD minPt = GetMinPoint(Segments2);
+		int count = 0,
+			IsTouch = 0;
 		for (const auto& c : OriginCurves2)
-			count += CheckInters(minPt, Segments1[0], c);
+			count += CheckInters(PointD(-500.0, -500.0), Segments1[0], c, IsTouch);
 
 		for (auto& s : Segments1)
 			s.Winding = count % 2;
@@ -798,8 +798,9 @@ void CBooleanOperations::TraceBoolean()
 				{
 					if (!s.Inters)
 					{
+						int IsTouch = 0;
 						for (const auto& c : OriginCurves2)
-							count += CheckInters(GetMinPoint(Segments2), s, c);
+							count += CheckInters(PointD(-500.0, -500.0), s, c, IsTouch);
 						break;
 					}
 				}
@@ -865,10 +866,10 @@ void CBooleanOperations::TraceBoolean()
 			if (s == Segment() || (bool)s.Inters || s == start)
 				continue;
 
-			int count = 0;
-			PointD minPoint = GetMinPoint(s.Id == 1 ? Segments2 : Segments1);
+			int count = 0,
+				IsTouch = 0;
 			for (const auto& c : (s.Id == 1 ? OriginCurves2 : OriginCurves1))
-				count += CheckInters(minPoint, s, c);
+				count += CheckInters(PointD(-500.0, -500.0), s, c, IsTouch);
 
 			do
 			{
@@ -1717,17 +1718,6 @@ void CBooleanOperations::AddOffsets(std::vector<double>& offsets,
 	offsets.push_back(count != 0 ? offset : offset / 32);
 }
 
-PointD CBooleanOperations::GetMinPoint(const std::vector<Segment>& segments)
-{
-	PointD minPoint(-500.0, -500.0);
-
-	for (const auto& s : segments)
-		if (s.P.X < minPoint.X || s.P.Y < minPoint.Y)
-			minPoint = s.P;
-
-	return PointD(minPoint.X - GEOMETRIC_EPSILON, minPoint.Y - GEOMETRIC_EPSILON);
-}
-
 std::vector<CGraphicsPath*> GetSubPaths(CGraphicsPath* path)
 {
 	size_t count = path->GetCompoundPath();
@@ -1807,7 +1797,6 @@ CGraphicsPath* CalcBooleanOperation(CGraphicsPath *path1, CGraphicsPath *path2, 
 		path1->CloseFigure();
 	if (!path2->Is_poly_closed())
 		path2->CloseFigure();
-
 
 	std::vector<CGraphicsPath*>	paths1 = GetSubPaths(path1),
 								paths2 = GetSubPaths(path2);

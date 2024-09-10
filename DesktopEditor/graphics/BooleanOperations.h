@@ -130,7 +130,7 @@ namespace Aggplus
 		void AddLineIntersection(const Curve& curve1, const Curve& curve2);
 		void AddCurveLineIntersection(const Curve& curve1, const Curve& curve2, bool flip);
 		int  AddCurveIntersection(Curve curve1, Curve curve2, const Curve& startCurve1, const Curve& startCurve2, bool flip, int recursion = 0, int calls = 0, double tMin = 0, double tMax = 1, double uMin = 0, double uMax = 1);
-		int  CheckInters(const PointD& point, const Segment& segment, const Curve& curve, bool dir = false) const;
+		int  CheckInters(const PointD& point, const Segment& segment, const Curve& curve, /*bool dir = false,*/ int& isTouch) const;
 
 		// Location
 		void DivideLocations();
@@ -142,7 +142,6 @@ namespace Aggplus
 		// Util
 		void SetVisited(const Segment& segment);
 		void AddOffsets(std::vector<double>& offsets, const Curve& curve, bool end);
-		PointD GetMinPoint(const std::vector<Segment>& segments);
 
 	private:
 		BooleanOpType Op;

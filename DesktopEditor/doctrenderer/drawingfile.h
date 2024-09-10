@@ -53,6 +53,8 @@ private:
 	IOfficeDrawingFile* m_pFile;
 	int m_nType = -1;
 
+	bool m_bIsExternalFile;
+
 public:
 	CDrawingFile(NSFonts::IApplicationFonts* pFonts)
 	{
@@ -69,14 +71,39 @@ public:
 		m_pImageStorage = NULL;
 
 		m_pFile = NULL;
+		m_bIsExternalFile = false;
 	}
 	~CDrawingFile()
 	{
-		RELEASEOBJECT(m_pFile);
+		if (!m_bIsExternalFile)
+			RELEASEOBJECT(m_pFile);
 		RELEASEOBJECT(m_pTextRenderer);
 		RELEASEOBJECT(m_pFontManager);
 		RELEASEINTERFACE(m_pApplicationFonts);
 		RELEASEOBJECT(m_pImageStorage);
+	}
+
+	void SetInternalFile(IOfficeDrawingFile* pFile)
+	{
+		m_pFile = pFile;
+		if (!m_pFile)
+			return;
+
+		m_bIsExternalFile = true;
+		switch (m_pFile->GetType())
+		{
+		case odftPDF:
+			m_nType = 0;
+			break;
+		case odftDJVU:
+			m_nType = 1;
+			break;
+		case odftXPS:
+			m_nType = 2;
+			break;
+		default:
+			break;
+		}
 	}
 
 public:

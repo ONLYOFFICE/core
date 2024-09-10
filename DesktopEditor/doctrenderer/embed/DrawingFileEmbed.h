@@ -1,8 +1,10 @@
 #ifndef _BUILD_DRAWING_EMBED_H_
 #define _BUILD_DRAWING_EMBED_H_
 
-#include "../drawingfile.h"
 #include "../js_internal/js_base.h"
+#include "../../graphics/pro/officedrawingfile.h"
+
+class CDrawingFile;
 
 using namespace NSJSBase;
 class JS_DECL CDrawingFileEmbed : public CJSEmbedObject
@@ -11,14 +13,8 @@ public:
 	CDrawingFile* m_pFile;
 
 public:
-	CDrawingFileEmbed()
-	{
-		m_pFile = NULL;
-	}
-	~CDrawingFileEmbed()
-	{
-		RELEASEOBJECT(m_pFile);
-	}
+	CDrawingFileEmbed();
+	~CDrawingFileEmbed();
 
 	virtual void* getObject() override { return (void*)m_pFile; }
 
@@ -56,5 +52,7 @@ public:
 
 	DECLARE_EMBED_METHODS
 };
+
+bool EmbedDrawingFile(JSSmart<NSJSBase::CJSContext>& context, IOfficeDrawingFile* pFile);
 
 #endif // _BUILD_NATIVE_ZIP_EMBED_H_

@@ -385,6 +385,11 @@ namespace NSJSBase
 			_value->value = value;
 			return _value;
 		}
+
+		virtual void Detach()
+		{
+			// None
+		}
 	};
 
 	class CJSFunctionJSC : public CJSValueJSCTemplate<CJSFunction>

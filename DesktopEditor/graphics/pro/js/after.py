@@ -33,6 +33,7 @@ for item in content_native_files:
 	content_native += base.readFile(item)
 content_native += "\n})(window, undefined);"
 content_native = content_native.replace("//file_internal", base.readFile("./wasm/js/drawingfile_native.js"))
+content_native = content_native.replace("//string_utf8", base.readFile("./../../../../Common/js/string_utf8.js"))
 base.writeFile("./deploy/drawingfile_native.js", content_native)
 base.cmd_in_dir("../../../../Common/js", "python", ["./min.py", "./../../DesktopEditor/graphics/pro/js/deploy/drawingfile_native.js", "WHITESPACE_ONLY"])
 

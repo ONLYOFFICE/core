@@ -1,4 +1,5 @@
 #include "DrawingFileEmbed.h"
+#include "../drawingfile.h"
 
 JSSmart<CJSValue> WasmMemoryToJS(BYTE* pWasmData)
 {
@@ -11,6 +12,15 @@ JSSmart<CJSValue> WasmMemoryToJS(BYTE* pWasmData)
 		return CJSContext::createNull();
 
 	return NSJSBase::CJSContext::createUint8Array(pWasmData + 4, nLen - 4, true);
+}
+
+CDrawingFileEmbed::CDrawingFileEmbed()
+{
+	m_pFile = NULL;
+}
+CDrawingFileEmbed::~CDrawingFileEmbed()
+{
+	RELEASEOBJECT(m_pFile);
 }
 
 JSSmart<CJSValue> CDrawingFileEmbed::OpenFile(JSSmart<CJSValue> sFile, JSSmart<CJSValue> sPassword)
@@ -136,7 +146,22 @@ JSSmart<CJSValue> CDrawingFileEmbed::FreeWasmData(JSSmart<CJSValue> typedArray)
 	if (!typedArray->isTypedArray())
 		return NULL;
 	BYTE* data = typedArray->toTypedArray()->getData().Data;
+	typedArray->toTypedArray()->Detach();
 	data -= 4; // sizeof int (length in NSWasm::Data)
 	free(data);
 	return NULL;
+}
+
+bool EmbedDrawingFile(JSSmart<NSJSBase::CJSContext>& context, IOfficeDrawingFile* pFile)
+{
+	CJSContext::Embed<CDrawingFileEmbed>(false);
+
+	JSSmart<CJSObject> oNativeDrawingFile = CJSContext::createEmbedObject("CDrawingFileEmbed");
+	context->GetGlobal()->set("g_native_drawing_file", oNativeDrawingFile);
+
+	CDrawingFile* pDrFile = new CDrawingFile(pFile->GetFonts());
+	pDrFile->SetInternalFile(pFile);
+	((CDrawingFileEmbed*)oNativeDrawingFile->getNative())->m_pFile = pDrFile;
+
+	return true;
 }

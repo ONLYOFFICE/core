@@ -39,6 +39,7 @@
 #include "embed/Default.h"
 #include "embed/NativeControlEmbed.h"
 #include "embed/GraphicsEmbed.h"
+#include "embed/DrawingFileEmbed.h"
 
 #include "./editors.h"
 #include <iostream>
@@ -232,10 +233,13 @@ namespace NSDoctRenderer
 
 		std::vector<std::wstring> m_arImagesInChanges;
 
+		IOfficeDrawingFile* m_pDrawingFile;
+
 	public:
 		CDoctRenderer_Private(const std::wstring& sAllFontsPath = L"") : CDoctRendererConfig()
 		{
 			LoadConfig(NSFile::GetProcessDirectory(), sAllFontsPath);
+			m_pDrawingFile = NULL;
 		}
 		~CDoctRenderer_Private()
 		{
@@ -274,9 +278,9 @@ namespace NSDoctRenderer
 			std::cerr << sT << ": " << sE << std::endl;
 		}
 
-		static bool Doct_renderer_SaveFile(
-			CExecuteParams* pParams, NSNativeControl::CNativeControl* pNative, JSSmart<CJSContext> context, JSSmart<CJSValue>* args, std::wstring& strError, JSSmart<CJSObject>& api_js_maybe_null,
-			bool bIsPdfBase64 = false)
+		static bool Doct_renderer_SaveFile(CExecuteParams* pParams,
+										   NSNativeControl::CNativeControl* pNative, JSSmart<CJSContext> context,
+										   JSSmart<CJSValue>* args, std::wstring& strError, JSSmart<CJSObject>& api_js_maybe_null)
 		{
 			JSSmart<CJSTryCatch> try_catch = context->GetExceptions();
 			JSSmart<CJSObject> global_js = context->GetGlobal();
@@ -446,23 +450,12 @@ namespace NSDoctRenderer
 						JSSmart<CJSTypedArray> typedArray = js_result2->toTypedArray();
 						NSJSBase::CJSDataBuffer oBuffer = typedArray->getData();
 
+						DWORD bufferSize = (pNative->m_nSaveBinaryLen == 0) ? (DWORD)oBuffer.Len : (DWORD)pNative->m_nSaveBinaryLen;
+
 						NSFile::CFileBinary oFile;
 						if (true == oFile.CreateFileW(pParams->m_strDstFilePath))
 						{
-							if (!bIsPdfBase64)
-							{
-								oFile.WriteFile(oBuffer.Data, (DWORD)pNative->m_nSaveBinaryLen);
-							}
-							else
-							{
-								char* pDataDst = NULL;
-								int nDataDst = 0;
-								if (NSFile::CBase64Converter::Encode(oBuffer.Data, pNative->m_nSaveBinaryLen, pDataDst, nDataDst))
-								{
-									oFile.WriteFile((BYTE*)pDataDst, (DWORD)nDataDst);
-									RELEASEARRAYOBJECTS(pDataDst);
-								}
-							}
+							oFile.WriteFile(oBuffer.Data, bufferSize);
 							oFile.CloseFile();
 						}
 
@@ -601,6 +594,9 @@ namespace NSDoctRenderer
 
 				NSDoctRenderer::RunEditor(editorType, context, try_catch, this);
 
+				if (editorType == DoctRendererEditorType::PDF && m_pDrawingFile)
+					EmbedDrawingFile(context, m_pDrawingFile);
+
 				if (try_catch->Check())
 				{
 					strError = L"code=\"run\"";
@@ -662,10 +658,15 @@ namespace NSDoctRenderer
 					if (!bIsWatermark)
 					{
 						CChangesWorker oWorkerLoader;
-						int nVersion = oWorkerLoader.OpenNative(pNative->GetFilePath());
+						int nVersion = 0;
+
+						if (editorType == DoctRendererEditorType::PDF)
+							nVersion = -1;
+						else
+							nVersion = oWorkerLoader.OpenNative(pNative->GetFilePath());
 
 						JSSmart<CJSValue> args_open[4];
-						args_open[0] = oWorkerLoader.GetDataFull()->toValue();
+						args_open[0] = (nVersion != -1) ? oWorkerLoader.GetDataFull()->toValue() : CJSContext::createUndefined();
 						args_open[1] = CJSContext::createInt(nVersion);
 						std::wstring sXlsx = NSFile::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
 						args_open[2] = NSFile::CFileBinary::Exists(sXlsx) ? CJSContext::createString(sXlsx) : CJSContext::createUndefined();
@@ -1103,6 +1104,18 @@ namespace NSDoctRenderer
 		}
 #endif
 	}
+
+	void CDoctrenderer::SetAdditionalParam(const AdditionalParamType& type, void* data)
+	{
+		switch (type)
+		{
+		case AdditionalParamType::DRAWINGFILE:
+			m_pInternal->m_pDrawingFile = (IOfficeDrawingFile*)data;
+			break;
+		default:
+			break;
+		}
+	}
 } // namespace NSDoctRenderer
 
 bool Doct_renderer_SaveFile_ForBuilder(
@@ -1114,5 +1127,5 @@ bool Doct_renderer_SaveFile_ForBuilder(
 	oParams.m_sJsonParams = jsonParams;
 
 	JSSmart<CJSObject> js_objectApi; // empty
-	return NSDoctRenderer::CDoctRenderer_Private::Doct_renderer_SaveFile(&oParams, pNative, context, args, strError, js_objectApi, false);
+	return NSDoctRenderer::CDoctRenderer_Private::Doct_renderer_SaveFile(&oParams, pNative, context, args, strError, js_objectApi);
 }

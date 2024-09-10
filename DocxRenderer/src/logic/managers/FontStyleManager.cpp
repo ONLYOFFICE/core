@@ -26,17 +26,19 @@ namespace NSDocxRenderer
 
 	std::shared_ptr<CFontStyle> CFontStyleManager::GetOrAddFontStyle(const CFontStyle& oFontStyle)
 	{
-		return GetOrAddFontStyle(oFontStyle.oBrush,
-								 oFontStyle.wsFontName,
-								 oFontStyle.dFontSize,
-								 oFontStyle.bItalic,
-								 oFontStyle.bBold);
+		return GetOrAddFontStyle(
+			oFontStyle.oBrush,
+			oFontStyle.wsFontName,
+			oFontStyle.dFontSize,
+			oFontStyle.bItalic,
+			oFontStyle.bBold);
 	}
-	std::shared_ptr<CFontStyle> CFontStyleManager::GetOrAddFontStyle(const NSStructures::CBrush& oBrush,
-																	 const std::wstring& wsFontName,
-																	 double dFontSize,
-																	 bool bItalic,
-																	 bool bBold)
+	std::shared_ptr<CFontStyle> CFontStyleManager::GetOrAddFontStyle(
+		const NSStructures::CBrush& oBrush,
+		const std::wstring& wsFontName,
+		double dFontSize,
+		bool bItalic,
+		bool bBold)
 	{
 		for(auto it = m_arFontStyles.begin(); it != m_arFontStyles.end(); ++it)
 		{

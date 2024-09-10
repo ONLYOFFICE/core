@@ -105,6 +105,8 @@ namespace NSDocxRenderer
 		HRESULT get_BrushLinearAngle(double* dAngle);
 		HRESULT put_BrushLinearAngle(double dAngle);
 		HRESULT BrushRect(bool val, double left, double top, double width, double height);
+		HRESULT BrushBounds(const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight);
+		HRESULT put_BrushGradientColors(LONG* pColors, double* pPositions, LONG lCount);
 		// font -------------------------------------------------------------------------------------
 		HRESULT get_FontName(std::wstring* sName);
 		HRESULT put_FontName(std::wstring sName);

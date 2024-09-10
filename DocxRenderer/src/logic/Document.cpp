@@ -285,6 +285,26 @@ namespace NSDocxRenderer
 
 		return S_OK;
 	}
+	HRESULT CDocument::BrushBounds(const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight)
+	{
+		m_oBrush.Bounds.left = dLeft;
+		m_oBrush.Bounds.top = dTop;
+		m_oBrush.Bounds.right = dLeft + dWidth;
+		m_oBrush.Bounds.bottom = dTop + dHeight;
+		return S_OK;
+	}
+	HRESULT CDocument::put_BrushGradientColors(LONG* pColors, double* pPositions, LONG lCount)
+	{
+		m_oBrush.m_arrSubColors.clear();
+		for (LONG i = 0; i < lCount; ++i)
+		{
+			NSStructures::CBrush::TSubColor color;
+			color.color = pColors[i];
+			color.position = (long)(pPositions[i] * 65536);
+			m_oBrush.m_arrSubColors.push_back(color);
+		}
+		return S_OK;
+	}
 	// font -------------------------------------------------------------------------------------
 	HRESULT CDocument::get_FontName(std::wstring* sName)
 	{
@@ -814,6 +834,7 @@ namespace NSDocxRenderer
 							&m_oEdge,
 							&m_oTransform,
 							&m_oSimpleGraphicsConverter,
+							&m_oImageManager,
 							&m_oFontStyleManager,
 							&m_oFontManager,
 							&m_oFontSelector,

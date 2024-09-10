@@ -1,8 +1,8 @@
 ﻿#pragma once
-#include "../../../DesktopEditor/graphics/GraphicsPath.h"
 
 #include "elements/Paragraph.h"
 #include "elements/Shape.h"
+#include "managers/ImageManager.h"
 #include "managers/FontStyleManager.h"
 #include "managers/ParagraphStyleManager.h"
 #include "convert_params.h"
@@ -17,6 +17,7 @@ namespace NSDocxRenderer
 
 		LONG m_lCurrentCommand{0};
 		LONG m_lClipMode{0};
+		bool m_bIsGradient = false;
 
 		TextAssociationType m_eTextAssociationType {TextAssociationType::tatPlainParagraph};
 
@@ -32,6 +33,7 @@ namespace NSDocxRenderer
 		Aggplus::CMatrix*                      m_pTransform              {nullptr};
 		Aggplus::CGraphicsPathSimpleConverter* m_pSimpleGraphicsConverter{nullptr};
 
+		CImageManager*              m_pImageManager         {nullptr};
 		CFontStyleManager*          m_pFontStyleManager     {nullptr};
 		CParagraphStyleManager*     m_pParagraphStyleManager{nullptr};
 		CFontManager*               m_pFontManager          {nullptr};
@@ -54,17 +56,19 @@ namespace NSDocxRenderer
 		CPage();
 		~CPage();
 
-		void Init(NSStructures::CFont* pFont,
-				  NSStructures::CPen* pPen,
-				  NSStructures::CBrush* pBrush,
-				  NSStructures::CShadow* pShadow,
-				  NSStructures::CEdgeText* pEdge,
-				  Aggplus::CMatrix* pMatrix,
-				  Aggplus::CGraphicsPathSimpleConverter* pSimple,
-				  CFontStyleManager* pStyleManager,
-				  CFontManager *pFontManager,
-				  CFontSelector* pFontSelector,
-				  CParagraphStyleManager* pParagraphStyleManager);
+		void Init(
+			NSStructures::CFont* pFont,
+			NSStructures::CPen* pPen,
+			NSStructures::CBrush* pBrush,
+			NSStructures::CShadow* pShadow,
+			NSStructures::CEdgeText* pEdge,
+			Aggplus::CMatrix* pMatrix,
+			Aggplus::CGraphicsPathSimpleConverter* pSimple,
+			CImageManager* pImageManager,
+			CFontStyleManager* pStyleManager,
+			CFontManager *pFontManager,
+			CFontSelector* pFontSelector,
+			CParagraphStyleManager* pParagraphStyleManager);
 
 		void BeginCommand(DWORD lType);
 		void EndCommand(DWORD lType);
@@ -87,14 +91,15 @@ namespace NSDocxRenderer
 		//набивается содержимым вектор m_arShapes
 		void DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo);
 
-		void CollectTextData(const PUINT pUnicodes,
-							 const PUINT pGids,
-							 const UINT& nCount,
-							 const double& fX,
-							 const double& fY,
-							 const double& fWidth,
-							 const double& fHeight,
-							 const double& fBaseLineOffset);
+		void CollectTextData(
+			const PUINT pUnicodes,
+			const PUINT pGids,
+			const UINT& nCount,
+			const double& fX,
+			const double& fY,
+			const double& fWidth,
+			const double& fHeight,
+			const double& fBaseLineOffset);
 
 		void Analyze();
 		void Record(NSStringUtils::CStringBuilder& oWriter, bool bIsLastPage);
@@ -147,7 +152,6 @@ namespace NSDocxRenderer
 		std::shared_ptr<CContText> m_pCurrCont {nullptr};
 		NSStructures::CFont m_oPrevFont;
 		NSStructures::CBrush m_oPrevBrush;
-
 		size_t m_nShapeOrder = 0;
 	};
 }

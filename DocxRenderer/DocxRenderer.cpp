@@ -458,13 +458,11 @@ HRESULT CDocxRenderer::BrushRect(const INT& nVal, const double& dLeft, const dou
 }
 HRESULT CDocxRenderer::BrushBounds(const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight)
 {
-	// TODO:
-	return S_OK;
+	return m_pInternal->m_oDocument.BrushBounds(dLeft, dTop, dWidth, dHeight);
 }
 HRESULT CDocxRenderer::put_BrushGradientColors(LONG* pColors, double* pPositions, LONG lCount)
 {
-	// TODO:
-	return S_OK;
+	return m_pInternal->m_oDocument.put_BrushGradientColors(pColors, pPositions, lCount);
 }
 HRESULT CDocxRenderer::get_BrushTextureImage(Aggplus::CImage** pImage)
 {
@@ -485,6 +483,11 @@ HRESULT CDocxRenderer::put_BrushTextureImage(Aggplus::CImage* pImage)
 }
 HRESULT CDocxRenderer::get_BrushTransform(Aggplus::CMatrix& oMatrix) { return S_OK; }
 HRESULT CDocxRenderer::put_BrushTransform(const Aggplus::CMatrix& oMatrix) { return S_OK; }
+void CDocxRenderer::put_BrushGradInfo(void* pGradInfo)
+{
+	m_pInternal->m_oDocument.m_oBrush.m_oGradientInfo = *((NSStructures::GradientInfo*)pGradInfo);
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bIsGradient = true;
+}
 //----------------------------------------------------------------------------------------
 // Функции для работы со шрифтами
 //----------------------------------------------------------------------------------------

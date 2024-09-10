@@ -121,6 +121,7 @@ public:
 	virtual HRESULT put_BrushTextureImage(Aggplus::CImage* pImage);
 	virtual HRESULT get_BrushTransform(Aggplus::CMatrix& oMatrix);
 	virtual HRESULT put_BrushTransform(const Aggplus::CMatrix& oMatrix);
+	virtual void put_BrushGradInfo(void* pGradInfo) override;
 	//----------------------------------------------------------------------------------------
 	// Функции для работы со шрифтами
 	//----------------------------------------------------------------------------------------

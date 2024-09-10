@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "../../../DesktopEditor/graphics/GraphicsPath.h"
+#include "../../../DesktopEditor/graphics/pro/Graphics.h"
 
 #include "elements/DropCap.h"
 #include "../resources/Constants.h"
@@ -14,17 +15,19 @@ namespace NSDocxRenderer
 	{
 	}
 
-	void CPage::Init(NSStructures::CFont* pFont,
-					 NSStructures::CPen* pPen,
-					 NSStructures::CBrush* pBrush,
-					 NSStructures::CShadow* pShadow,
-					 NSStructures::CEdgeText* pEdge,
-					 Aggplus::CMatrix* pMatrix,
-					 Aggplus::CGraphicsPathSimpleConverter* pSimple,
-					 CFontStyleManager* pFontStyleManager,
-					 CFontManager *pFontManager,
-					 CFontSelector* pFontSelector,
-					 CParagraphStyleManager* pParagraphStyleManager)
+	void CPage::Init(
+		NSStructures::CFont* pFont,
+		NSStructures::CPen* pPen,
+		NSStructures::CBrush* pBrush,
+		NSStructures::CShadow* pShadow,
+		NSStructures::CEdgeText* pEdge,
+		Aggplus::CMatrix* pMatrix,
+		Aggplus::CGraphicsPathSimpleConverter* pSimple,
+		CImageManager* pImageManager,
+		CFontStyleManager* pFontStyleManager,
+		CFontManager *pFontManager,
+		CFontSelector* pFontSelector,
+		CParagraphStyleManager* pParagraphStyleManager)
 	{
 		m_pFont     = pFont;
 		m_pPen      = pPen;
@@ -35,6 +38,7 @@ namespace NSDocxRenderer
 		m_pTransform               = pMatrix;
 		m_pSimpleGraphicsConverter = pSimple;
 
+		m_pImageManager = pImageManager;
 		m_pFontStyleManager = pFontStyleManager;
 		m_pFontManager = pFontManager;
 		m_pFontSelector = pFontSelector;
@@ -171,6 +175,8 @@ namespace NSDocxRenderer
 		double right = m_oCurrVectorGraphics.GetRight();
 		double top = m_oCurrVectorGraphics.GetTop();
 		double bot = m_oCurrVectorGraphics.GetBottom();
+		double width = right - left;
+		double height = bot - top;
 
 		if (!m_arShapes.empty())
 		{
@@ -193,45 +199,29 @@ namespace NSDocxRenderer
 			}
 		}
 
-		auto pShape = std::make_shared<CShape>();
-		if (pInfo)
-		{
-			pShape->m_pImageInfo = pInfo;
-			pShape->m_eType = CShape::eShapeType::stVectorTexture;
-
-			pShape->m_dImageBot = m_oCurrVectorGraphics.GetBottom();
-			pShape->m_dImageTop = m_oCurrVectorGraphics.GetTop();
-			pShape->m_dImageLeft = m_oCurrVectorGraphics.GetLeft();
-			pShape->m_dImageRight = m_oCurrVectorGraphics.GetRight();
-		}
-		else
-		{
-			pShape->m_eType = CShape::eShapeType::stVectorGraphics;
-		}
-
+		auto shape = std::make_shared<CShape>();
 		if (0x00 != (lType & 0x01))
 		{
-			pShape->m_bIsNoStroke = false;
-			pShape->m_oPen = *m_pPen;
+			shape->m_bIsNoStroke = false;
+			shape->m_oPen = *m_pPen;
 		}
 		if (0x00 != (lType >> 8))
 		{
-			pShape->m_bIsNoFill = false;
-			pShape->m_oBrush = *m_pBrush;
+			shape->m_bIsNoFill = false;
+			shape->m_oBrush = *m_pBrush;
 		}
 
-		if (pShape->m_bIsNoStroke)
+		if (shape->m_bIsNoStroke)
 		{
 			if ((fabs(left - right) < 0.3) || (fabs(top - bot) < 0.3))
 			{
-				pShape->m_oPen.Color = m_pBrush->Color1;
-				pShape->m_oPen.Alpha = m_pBrush->Alpha1;
+				shape->m_oPen.Color = m_pBrush->Color1;
+				shape->m_oPen.Alpha = m_pBrush->Alpha1;
 			}
 		}
 
 		double dDeterminant = sqrt(fabs(m_pTransform->Determinant()));
-		pShape->m_oPen.Size *= dDeterminant;
-
+		shape->m_oPen.Size *= dDeterminant;
 
 		if (!m_oClipVectorGraphics.IsEmpty())
 		{
@@ -241,30 +231,80 @@ namespace NSDocxRenderer
 				m_lClipMode);
 			m_oCurrVectorGraphics = std::move(new_vector_graphics);
 		}
+		shape->SetVector(std::move(m_oCurrVectorGraphics));
 
-		pShape->SetVector(std::move(m_oCurrVectorGraphics));
+		auto info = pInfo;
+		if (!info && m_bIsGradient)
+		{
+			const int width_pix = shape->m_dWidth * c_dMMToPt;
+			const int height_pix = shape->m_dHeight * c_dMMToPt;
+			const int step = 4;
+			const int stride = step * width;
+
+			std::unique_ptr<CBgraFrame> frame(new CBgraFrame());
+			size_t data_size = width_pix * height_pix * step;
+			BYTE* data = new BYTE[data_size] {};
+
+			frame->put_Data(data);
+			frame->put_Height(height_pix);
+			frame->put_Width(width_pix);
+			frame->put_Stride(stride);
+
+			NSGraphics::IGraphicsRenderer* g_renderer = NSGraphics::Create();
+			g_renderer->CreateFromBgraFrame(frame.get());
+
+			Aggplus::CDoubleRect prev_bounds = m_pBrush->Bounds;
+			m_pBrush->Bounds.left = shape->m_dLeft;
+			m_pBrush->Bounds.right = shape->m_dRight;
+			m_pBrush->Bounds.bottom = shape->m_dBaselinePos;
+			m_pBrush->Bounds.top = shape->m_dTop;
+
+			g_renderer->RestoreBrush(*m_pBrush);
+			g_renderer->AddRect(0, 0, shape->m_dWidth, shape->m_dHeight);
+			g_renderer->DrawPath(c_nWindingFillMode);
+			m_pBrush->Bounds = prev_bounds;
+
+			Aggplus::CImage img;
+			img.Create(data, width_pix, height_pix, stride, true);
+			info = m_pImageManager->WriteImage(&img, shape->m_dTop, shape->m_dBaselinePos, shape->m_dWidth, shape->m_dHeight);
+			m_bIsGradient = false;
+		}
+
+		if (info)
+		{
+			shape->m_pImageInfo = info;
+			shape->m_eType = CShape::eShapeType::stVectorTexture;
+
+			shape->m_dImageBot = m_oCurrVectorGraphics.GetBottom();
+			shape->m_dImageTop = m_oCurrVectorGraphics.GetTop();
+			shape->m_dImageLeft = m_oCurrVectorGraphics.GetLeft();
+			shape->m_dImageRight = m_oCurrVectorGraphics.GetRight();
+		}
+		else
+			shape->m_eType = CShape::eShapeType::stVectorGraphics;
 
 		// big white shape with page width & height skip
-		if (fabs(pShape->m_dHeight - m_dHeight) <= c_dSHAPE_X_OFFSET * 2 &&
-			fabs(pShape->m_dWidth - m_dWidth) <= c_dSHAPE_X_OFFSET * 2 &&
-			pShape->m_oBrush.Color1 == c_iWhiteColor)
+		if (fabs(shape->m_dHeight - m_dHeight) <= c_dSHAPE_X_OFFSET * 2 &&
+			fabs(shape->m_dWidth - m_dWidth) <= c_dSHAPE_X_OFFSET * 2 &&
+			shape->m_oBrush.Color1 == c_iWhiteColor)
 			return;
 
-		pShape->m_nOrder = ++m_nShapeOrder;
-		pShape->m_dRotation = rotation;
-		m_arShapes.push_back(pShape);
+		shape->m_nOrder = ++m_nShapeOrder;
+		shape->m_dRotation = rotation;
+		m_arShapes.push_back(shape);
 
 		m_oClipVectorGraphics.Clear();
 	}
 
-	void CPage::CollectTextData(const PUINT pUnicodes,
-								const PUINT pGids,
-								const UINT& nCount,
-								const double& fX,
-								const double& fY,
-								const double& fWidth,
-								const double& fHeight,
-								const double& fBaseLineOffset)
+	void CPage::CollectTextData(
+		const PUINT pUnicodes,
+		const PUINT pGids,
+		const UINT& nCount,
+		const double& fX,
+		const double& fY,
+		const double& fWidth,
+		const double& fHeight,
+		const double& fBaseLineOffset)
 	{
 		// 9 - \t
 		if (*pUnicodes == 9)
@@ -337,9 +377,10 @@ namespace NSDocxRenderer
 					m_pCurrCont->m_pFontStyle->UpdateAvgSpaceWidth(avg_width);
 
 			double avg_space_width = m_pCurrCont->m_pFontStyle->GetAvgSpaceWidth();
-			double space_width = avg_space_width != 0.0 ?
-									 avg_space_width * c_dAVERAGE_SPACE_WIDTH_COEF :
-									 m_pCurrCont->CalculateSpace() * c_dSPACE_WIDTH_COEF;
+			double space_width =
+				avg_space_width != 0.0 ?
+				avg_space_width * c_dAVERAGE_SPACE_WIDTH_COEF :
+				m_pCurrCont->CalculateSpace() * c_dSPACE_WIDTH_COEF;
 
 			bool is_added = false;
 
@@ -394,11 +435,12 @@ namespace NSDocxRenderer
 
 		// первичное получение стиля для текущего символа
 		// при дальнейшем анализе может измениться
-		pCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(*m_pBrush,
-																	 m_pFontSelector->GetSelectedName(),
-																	 m_pFont->Size,
-																	 m_pFontSelector->IsSelectedItalic(),
-																	 m_pFontSelector->IsSelectedBold() || bForcedBold);
+		pCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(
+			*m_pBrush,
+			m_pFontSelector->GetSelectedName(),
+			m_pFont->Size,
+			m_pFontSelector->IsSelectedItalic(),
+			m_pFontSelector->IsSelectedBold() || bForcedBold);
 
 		// just in case if oText contains more than 1 symbol
 		std::vector<double> ar_widths;
@@ -937,11 +979,12 @@ namespace NSDocxRenderer
 							auto oBrush = curr_cont->m_pFontStyle->oBrush;
 							oBrush.Color1 = shape->m_oPen.Color;
 
-							curr_cont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(oBrush,
-																							 curr_cont->m_pFontStyle->wsFontName,
-																							 curr_cont->m_pFontStyle->dFontSize,
-																							 curr_cont->m_pFontStyle->bItalic,
-																							 curr_cont->m_pFontStyle->bBold);
+							curr_cont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(
+								oBrush,
+								curr_cont->m_pFontStyle->wsFontName,
+								curr_cont->m_pFontStyle->dFontSize,
+								curr_cont->m_pFontStyle->bItalic,
+								curr_cont->m_pFontStyle->bBold);
 
 							curr_cont->m_bIsShadowPresent = true;
 							curr_cont->m_bIsOutlinePresent = true;

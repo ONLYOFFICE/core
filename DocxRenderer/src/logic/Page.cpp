@@ -236,8 +236,15 @@ namespace NSDocxRenderer
 		auto info = pInfo;
 		if (!info && m_bIsGradient)
 		{
-			const int width_pix = shape->m_dWidth * c_dMMToPt;
-			const int height_pix = shape->m_dHeight * c_dMMToPt;
+			NSGraphics::IGraphicsRenderer* g_renderer = NSGraphics::Create();
+			double dpi_x = 0;
+			double dpi_y = 0;
+			g_renderer->get_DpiX(&dpi_x);
+			g_renderer->get_DpiX(&dpi_y);
+			const double mm_to_pix_x = dpi_x / 25.4;
+			const double mm_to_pix_y = dpi_y / 25.4;
+			const int width_pix = shape->m_dWidth * mm_to_pix_x;
+			const int height_pix = shape->m_dHeight * mm_to_pix_y;
 			const int step = 4;
 			const int stride = step * width;
 
@@ -250,7 +257,7 @@ namespace NSDocxRenderer
 			frame->put_Width(width_pix);
 			frame->put_Stride(stride);
 
-			NSGraphics::IGraphicsRenderer* g_renderer = NSGraphics::Create();
+
 			g_renderer->CreateFromBgraFrame(frame.get());
 
 			Aggplus::CDoubleRect prev_bounds = m_pBrush->Bounds;
@@ -458,7 +465,7 @@ namespace NSDocxRenderer
 
 		double font_size = m_pFont->Size;
 		double em_height = oMetrics.dEmHeight;
-		double ratio = font_size / em_height * c_dPixToMM;
+		double ratio = font_size / em_height * c_dPtToMM;
 
 		pCont->m_dTopWithAscent = pCont->m_dBaselinePos - (oMetrics.dAscent * ratio) - oMetrics.dBaselineOffset;
 		pCont->m_dBotWithDescent = pCont->m_dBaselinePos + (oMetrics.dDescent * ratio) - oMetrics.dBaselineOffset;

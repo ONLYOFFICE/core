@@ -7,18 +7,19 @@
 #define USING_DELETE_DUPLICATING_CONTS 0 // 0 - все сточки-дубликаты превращаются в shape, 1 - строчки дубликаты удаляются
 // #define USE_DEFAULT_FONT_TO_RECALC
 
-const double c_dDpiX		= 72.0;
-const double c_dDpiY		= 72.0;
+const double c_dDpiX = 72.0;
+const double c_dDpiY = 72.0;
 
-const double c_dInchToMM	= 25.4;
-constexpr double c_dPixToMM	= 25.4 / 72.0;
-constexpr double c_dPtToMM  = 25.4 / 72.0;
-constexpr double c_dMMToPt	= 72.0 / 25.4;
-constexpr double c_dMMToDx	= 72 * 20 / 25.4;
-const double c_dMMToEMU	     = 36000.0;
-const double c_dInchToEMU	= 914400.0;
-const double c_dPtToEMU  	= 12700.0;
-const double c_dDegreeToAngle = 60000.0;
+constexpr double c_dMMToPix       = 72.0 / 25.4;
+constexpr double c_dPixToMM       = 25.4 / 72.0;
+constexpr double c_dMMToPt        = 72.0 / 25.4;
+constexpr double c_dPtToMM        = 25.4 / 72.0;
+constexpr double c_dInchToMM      = 25.4;
+constexpr double c_dMMToDx        = 72 * 20 / 25.4;
+constexpr double c_dMMToEMU       = 36000.0;
+constexpr double c_dInchToEMU     = 914400.0;
+constexpr double c_dPtToEMU       = 12700.0;
+constexpr double c_dDegreeToAngle = 60000.0;
 
 const double c_dSTANDART_STRING_HEIGHT_MM       = 4.2333333333333334;
 const double c_dTHE_SAME_STRING_Y_PRECISION_MM  = 0.02;

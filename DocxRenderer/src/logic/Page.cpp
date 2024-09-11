@@ -239,10 +239,10 @@ namespace NSDocxRenderer
 		auto info = pInfo;
 		if (!info && m_bIsGradient)
 		{
-			const int width_pix = shape->m_dWidth * c_dMMToPix;
-			const int height_pix = shape->m_dHeight * c_dMMToPix;
-			const int step = 4;
-			const int stride = -step * width_pix;
+			const long width_pix = shape->m_dWidth * c_dMMToPix;
+			const long height_pix = shape->m_dHeight * c_dMMToPix;
+			const long step = 4;
+			const long stride = -step * width_pix;
 
 			std::unique_ptr<CBgraFrame> frame(new CBgraFrame());
 			size_t data_size = width_pix * height_pix * step;
@@ -257,24 +257,24 @@ namespace NSDocxRenderer
 			frame->put_Width(width_pix);
 			frame->put_Stride(stride);
 
-			NSGraphics::IGraphicsRenderer* g_renderer = NSGraphics::Create();
-			g_renderer->CreateFromBgraFrame(frame.get());
-			g_renderer->SetSwapRGB(false);
-			g_renderer->put_Width(shape->m_dWidth);
-			g_renderer->put_Height(shape->m_dHeight);
-
 			auto shifted_vector = shape->m_oVector;
 			Aggplus::CMatrix transform_matrix;
 			transform_matrix.Translate(-shifted_vector.GetLeft(), -shifted_vector.GetTop());
 			shifted_vector.Transform(transform_matrix);
 
-			Aggplus::CDoubleRect prev_bounds = m_pBrush->Bounds;
-			m_pBrush->Bounds.left = shifted_vector.GetLeft();
-			m_pBrush->Bounds.right = shifted_vector.GetRight();
-			m_pBrush->Bounds.bottom = shifted_vector.GetBottom();
-			m_pBrush->Bounds.top = shifted_vector.GetTop();
+			NSStructures::CBrush shifted_brush = *m_pBrush;
+			shifted_brush.Bounds.left = shifted_vector.GetLeft();
+			shifted_brush.Bounds.right = shifted_vector.GetRight();
+			shifted_brush.Bounds.bottom = shifted_vector.GetBottom();
+			shifted_brush.Bounds.top = shifted_vector.GetTop();
+			shifted_brush.Transform.Translate(-shifted_vector.GetLeft(), -shifted_vector.GetTop(), Aggplus::MatrixOrderAppend);
 
-			g_renderer->RestoreBrush(*m_pBrush);
+			NSGraphics::IGraphicsRenderer* g_renderer = NSGraphics::Create();
+			g_renderer->CreateFromBgraFrame(frame.get());
+			g_renderer->SetSwapRGB(false);
+			g_renderer->put_Width(shape->m_dWidth);
+			g_renderer->put_Height(shape->m_dHeight);
+			g_renderer->RestoreBrush(shifted_brush);
 			g_renderer->BeginCommand(c_nPathType);
 			shifted_vector.DrawOnRenderer(g_renderer);
 			g_renderer->DrawPath(c_nWindingFillMode);
@@ -284,7 +284,6 @@ namespace NSDocxRenderer
 			img.Create(data, width_pix, height_pix, stride, true);
 			info = m_pImageManager->WriteImage(&img, shape->m_dTop, shape->m_dBaselinePos, shape->m_dWidth, shape->m_dHeight);
 			m_bIsGradient = false;
-			m_pBrush->Bounds = prev_bounds;
 
 			RELEASEINTERFACE(g_renderer)
 		}

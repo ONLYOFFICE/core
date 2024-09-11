@@ -481,12 +481,17 @@ HRESULT CDocxRenderer::put_BrushTextureImage(Aggplus::CImage* pImage)
 
 	return S_OK;
 }
-HRESULT CDocxRenderer::get_BrushTransform(Aggplus::CMatrix& oMatrix) { return S_OK; }
-HRESULT CDocxRenderer::put_BrushTransform(const Aggplus::CMatrix& oMatrix) { return S_OK; }
+HRESULT CDocxRenderer::get_BrushTransform(Aggplus::CMatrix& oMatrix)
+{
+	return S_OK;
+}
+HRESULT CDocxRenderer::put_BrushTransform(const Aggplus::CMatrix& oMatrix)
+{
+	return S_OK;
+}
 void CDocxRenderer::put_BrushGradInfo(void* pGradInfo)
 {
-	m_pInternal->m_oDocument.m_oBrush.m_oGradientInfo = *((NSStructures::GradientInfo*)pGradInfo);
-	m_pInternal->m_oDocument.m_oCurrentPage.m_bIsGradient = true;
+	m_pInternal->m_oDocument.put_BrushGradInfo(pGradInfo);
 }
 //----------------------------------------------------------------------------------------
 // Функции для работы со шрифтами

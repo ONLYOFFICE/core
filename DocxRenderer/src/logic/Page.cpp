@@ -267,7 +267,7 @@ namespace NSDocxRenderer
 			shifted_brush.Bounds.right = shifted_vector.GetRight();
 			shifted_brush.Bounds.bottom = shifted_vector.GetBottom();
 			shifted_brush.Bounds.top = shifted_vector.GetTop();
-			shifted_brush.Transform.Translate(-shifted_vector.GetLeft(), -shifted_vector.GetTop(), Aggplus::MatrixOrderAppend);
+			CVectorGraphics::TransformGradientInfo(shifted_brush.m_oGradientInfo, transform_matrix);
 
 			NSGraphics::IGraphicsRenderer* g_renderer = NSGraphics::Create();
 			g_renderer->CreateFromBgraFrame(frame.get());

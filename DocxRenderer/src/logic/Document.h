@@ -107,6 +107,7 @@ namespace NSDocxRenderer
 		HRESULT BrushRect(bool val, double left, double top, double width, double height);
 		HRESULT BrushBounds(const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight);
 		HRESULT put_BrushGradientColors(LONG* pColors, double* pPositions, LONG lCount);
+		HRESULT put_BrushGradInfo(void* pGradInfo);
 		// font -------------------------------------------------------------------------------------
 		HRESULT get_FontName(std::wstring* sName);
 		HRESULT put_FontName(std::wstring sName);

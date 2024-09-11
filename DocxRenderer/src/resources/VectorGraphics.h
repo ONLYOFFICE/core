@@ -54,6 +54,8 @@ namespace NSDocxRenderer
 		double GetTop() const noexcept;
 		double GetRight() const noexcept;
 		double GetBottom() const noexcept;
+		double GetWidth() const noexcept;
+		double GetHeight() const noexcept;
 		Point GetCenter() const noexcept;
 		bool IsEmpty() const noexcept;
 
@@ -77,6 +79,7 @@ namespace NSDocxRenderer
 		void DrawOnRenderer(IRenderer* renderer) const noexcept;
 
 		static CVectorGraphics CalcBoolean(const CVectorGraphics& vg1, const CVectorGraphics& vg2, long clipType);
+		static void TransformGradientInfo(NSStructures::GradientInfo& oGradientInfo, Aggplus::CMatrix& oTransform);
 
 	private:
 		std::list<PathCommand> m_arData;

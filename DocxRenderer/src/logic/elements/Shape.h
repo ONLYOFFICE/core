@@ -1,6 +1,5 @@
 #pragma once
 #include "../../../../DesktopEditor/graphics/structures.h"
-#include "../../../../DesktopEditor/graphics/Image.h"
 
 #include "../../resources/ImageInfo.h"
 #include "../../resources/LinesTable.h"

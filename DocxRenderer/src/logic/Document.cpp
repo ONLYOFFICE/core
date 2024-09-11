@@ -305,6 +305,13 @@ namespace NSDocxRenderer
 		}
 		return S_OK;
 	}
+	HRESULT CDocument::put_BrushGradInfo(void* pGradInfo)
+	{
+		m_oBrush.m_oGradientInfo = *((NSStructures::GradientInfo*)pGradInfo);
+		CVectorGraphics::TransformGradientInfo(m_oBrush.m_oGradientInfo, m_oTransform);
+		m_oCurrentPage.m_bIsGradient = true;
+		return S_OK;
+	}
 	// font -------------------------------------------------------------------------------------
 	HRESULT CDocument::get_FontName(std::wstring* sName)
 	{

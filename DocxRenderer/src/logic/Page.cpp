@@ -239,22 +239,25 @@ namespace NSDocxRenderer
 		auto info = pInfo;
 		if (!info && m_bIsGradient)
 		{
-			NSGraphics::IGraphicsRenderer* g_renderer = NSGraphics::Create();
-
 			const int width_pix = shape->m_dWidth * c_dMMToPix;
 			const int height_pix = shape->m_dHeight * c_dMMToPix;
 			const int step = 4;
-			const int stride = step * width_pix;
+			const int stride = -step * width_pix;
 
 			std::unique_ptr<CBgraFrame> frame(new CBgraFrame());
 			size_t data_size = width_pix * height_pix * step;
-			BYTE* data = new BYTE[data_size] {};
+			BYTE* data = new BYTE[data_size];
+
+			// white and alpha is min (full transparent)
+			for (size_t i = 0; i < width_pix * height_pix; ++i)
+				reinterpret_cast<unsigned int*>(data)[i] = 0x00ffffff;
 
 			frame->put_Data(data);
 			frame->put_Height(height_pix);
 			frame->put_Width(width_pix);
 			frame->put_Stride(stride);
 
+			NSGraphics::IGraphicsRenderer* g_renderer = NSGraphics::Create();
 			g_renderer->CreateFromBgraFrame(frame.get());
 			g_renderer->SetSwapRGB(false);
 			g_renderer->put_Width(shape->m_dWidth);
@@ -282,6 +285,8 @@ namespace NSDocxRenderer
 			info = m_pImageManager->WriteImage(&img, shape->m_dTop, shape->m_dBaselinePos, shape->m_dWidth, shape->m_dHeight);
 			m_bIsGradient = false;
 			m_pBrush->Bounds = prev_bounds;
+
+			RELEASEINTERFACE(g_renderer)
 		}
 
 		if (info)

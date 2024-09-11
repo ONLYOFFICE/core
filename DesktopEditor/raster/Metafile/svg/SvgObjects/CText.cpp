@@ -18,6 +18,10 @@
 namespace SVG
 {
 	#define DefaultFontFamily L"Times New Roman"
+	#define MIN_FONT_SIZE 5
+	#define MAX_FONT_SIZE 100
+	#define MIN_SCALE     0.05
+	#define MAX_SCALE     100
 
 	CTSpan::CTSpan(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent, NSFonts::IFontManager* pFontManager, bool bCheckText)
 		: CRenderedObject(oNode, pParent), m_pFontManager(pFontManager)
@@ -155,11 +159,13 @@ namespace SVG
 
 		if (!UseExternalFont(pFile, dX, dY, pRenderer, oMode, pOtherStyles))
 		{
-			ApplyFont(pRenderer, dX, dY);
-	
-			pRenderer->CommandDrawText(m_wsText, dX, dY, 0, 0);
-	
-			for (const CRenderedObject* pTSpan : m_arObjects)
+			if (!m_wsText.empty())
+			{
+				ApplyFont(pRenderer, dX, dY);
+				pRenderer->CommandDrawText(m_wsText, dX, dY, 0, 0);
+			}
+
+			for (const CTSpan* pTSpan : m_arObjects)
 				pTSpan->Draw(pRenderer, pFile, oMode, pOtherStyles);
 		}
 
@@ -413,21 +419,35 @@ namespace SVG
 
 		double dXScale = 1., dYScale = 1.;
 
-		double dModuleM11 = std::abs(oCurrentMatrix.sx());
-		double dModuleM22 = std::abs(oCurrentMatrix.sy());
+		const double dModuleM11 = std::abs(oCurrentMatrix.sx());
+		const double dModuleM22 = std::abs(oCurrentMatrix.sy());
 
-		if (!ISZERO(dModuleM11) && (dModuleM11 < 0.05 || dModuleM11 > 100))
+		if (!ISZERO(dModuleM11) && (dModuleM11 < MIN_SCALE || dModuleM11 > MAX_SCALE))
 			dXScale /= dModuleM11;
 
-		if (!ISZERO(dModuleM22) && (dModuleM22 < 0.05 || dModuleM22 > 100))
+		if (!ISZERO(dModuleM22) && (dModuleM22 < MIN_SCALE || dModuleM22 > MAX_SCALE))
 			dYScale /= dModuleM22;
+
+		dFontHeight *= dYScale;
+
+		if (!Equals(0., dFontHeight) && dFontHeight < MIN_FONT_SIZE)
+		{
+			dXScale *= MIN_FONT_SIZE / dFontHeight;
+			dYScale *= MIN_FONT_SIZE / dFontHeight;
+			dFontHeight = MIN_FONT_SIZE;
+		}
+		else if (!Equals(0., dFontHeight) && dFontHeight > MAX_FONT_SIZE)
+		{
+			dXScale *= dFontHeight / MAX_FONT_SIZE;
+			dYScale *= dFontHeight / MAX_FONT_SIZE;
+			dFontHeight = MAX_FONT_SIZE;
+		}
 
 		if (Equals(1., dXScale) && Equals(1., dYScale))
 			return;
 
-		dX          /= dXScale;
-		dY          /= dYScale;
-		dFontHeight /= dYScale;
+		dX /= dXScale;
+		dY /= dYScale;
 
 		double dM11, dM12, dM21, dM22, dDx, dDy;
 
@@ -482,9 +502,6 @@ namespace SVG
 			return false;
 
 		CTSpan::Draw(pRenderer, pFile, oMode, pOtherStyles);
-
-		for (const CRenderedObject* pTSpan : m_arObjects)
-			pTSpan->Draw(pRenderer, pFile, oMode, pOtherStyles);
 
 		return true;
 	}

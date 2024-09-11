@@ -903,7 +903,7 @@ namespace NSJSON
 					return CValue();
 				pos += 5;
 			}
-			else if (ch == '-' || std::isdigit(ch))
+			else if (ch == '-' || (ch >= '0' && ch <= '9'))
 			{
 				value = parseNumberFromJSON(str, pos);
 			}

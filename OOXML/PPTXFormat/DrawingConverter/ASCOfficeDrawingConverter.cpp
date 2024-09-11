@@ -2654,6 +2654,7 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 				std::wstring	sTextInsetMode	= oNodeTextBox.GetAttribute(L"o:insetmode");
 								sTextboxStyle	= oNodeTextBox.GetAttribute(L"style");
 
+				//if (L"" != sTextInset && ((L"" == sTextInsetMode) || (L"custom" == sTextInsetMode)))
 				if (sTextInsetMode.empty() || L"custom" == sTextInsetMode)
 				{
 					if (!sTextInset.empty())
@@ -2674,10 +2675,20 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 					}
 					else
 					{
-						pShape->oTextBoxBodyPr->lIns = 12700;
-						pShape->oTextBoxBodyPr->tIns = 12700;
-						pShape->oTextBoxBodyPr->rIns = 12700;
-						pShape->oTextBoxBodyPr->bIns = 12700;
+						if (pPPTShape->m_eType == PPTShapes::sptCTextBox)
+						{
+							pShape->oTextBoxBodyPr->lIns = 91440;
+							pShape->oTextBoxBodyPr->tIns = 45720;
+							pShape->oTextBoxBodyPr->rIns = 91440;
+							pShape->oTextBoxBodyPr->bIns = 45720;
+						}
+						else
+						{
+							pShape->oTextBoxBodyPr->lIns = 12700;
+							pShape->oTextBoxBodyPr->tIns = 12700;
+							pShape->oTextBoxBodyPr->rIns = 12700;
+							pShape->oTextBoxBodyPr->bIns = 12700;
+						}
 					}
 				}
 
@@ -2998,9 +3009,9 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 		CheckBorderShape(elem, oNodeShape, pPPTShape);
 
 ////test
-		//NSBinPptxRW::CXmlWriter oXml;
-		//elem->toXmlWriter(&oXml);
-		//std::wstring test = oXml.GetXmlString();
+		NSBinPptxRW::CXmlWriter oXml;
+		elem->toXmlWriter(&oXml);
+		std::wstring test = oXml.GetXmlString();
 
 		
 	}

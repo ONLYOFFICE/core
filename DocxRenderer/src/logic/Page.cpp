@@ -267,7 +267,7 @@ namespace NSDocxRenderer
 			shifted_brush.Bounds.right = shifted_vector.GetRight();
 			shifted_brush.Bounds.bottom = shifted_vector.GetBottom();
 			shifted_brush.Bounds.top = shifted_vector.GetTop();
-			CVectorGraphics::TransformGradientInfo(shifted_brush.m_oGradientInfo, transform_matrix);
+			shifted_brush.m_oGradientInfo.transform(transform_matrix);
 
 			NSGraphics::IGraphicsRenderer* g_renderer = NSGraphics::Create();
 			g_renderer->CreateFromBgraFrame(frame.get());
@@ -283,8 +283,13 @@ namespace NSDocxRenderer
 			Aggplus::CImage img;
 			img.Create(data, width_pix, height_pix, stride, true);
 			info = m_pImageManager->WriteImage(&img, shape->m_dTop, shape->m_dBaselinePos, shape->m_dWidth, shape->m_dHeight);
-			m_bIsGradient = false;
+			left = shape->m_dLeft;
+			right = shape->m_dRight;
+			top = shape->m_dTop;
+			bot = shape->m_dBaselinePos;
+			rotation = 0;
 
+			m_bIsGradient = false;
 			RELEASEINTERFACE(g_renderer)
 		}
 

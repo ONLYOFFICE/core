@@ -308,7 +308,7 @@ namespace NSDocxRenderer
 	HRESULT CDocument::put_BrushGradInfo(void* pGradInfo)
 	{
 		m_oBrush.m_oGradientInfo = *((NSStructures::GradientInfo*)pGradInfo);
-		CVectorGraphics::TransformGradientInfo(m_oBrush.m_oGradientInfo, m_oTransform);
+		m_oBrush.m_oGradientInfo.transform(m_oTransform);
 		m_oCurrentPage.m_bIsGradient = true;
 		return S_OK;
 	}

@@ -79,7 +79,6 @@ namespace NSDocxRenderer
 		void DrawOnRenderer(IRenderer* renderer) const noexcept;
 
 		static CVectorGraphics CalcBoolean(const CVectorGraphics& vg1, const CVectorGraphics& vg2, long clipType);
-		static void TransformGradientInfo(NSStructures::GradientInfo& oGradientInfo, Aggplus::CMatrix& oTransform);
 
 	private:
 		std::list<PathCommand> m_arData;

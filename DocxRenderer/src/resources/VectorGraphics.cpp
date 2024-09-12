@@ -301,59 +301,6 @@ namespace NSDocxRenderer
 		auto op = GetOpType(clipType);
 		return CVectorGraphics(*Aggplus::CalcBooleanOperation(path1.get(), path2.get(), op));
 	}
-	void CVectorGraphics::TransformGradientInfo(NSStructures::GradientInfo& oGradientInfo, Aggplus::CMatrix& oTransform)
-	{
-		// shading transform
-		auto& point1 = oGradientInfo.shading.point1;
-		auto& point2 = oGradientInfo.shading.point2;
-
-		double point1_x = static_cast<double>(point1.x);
-		double point1_y = static_cast<double>(point1.y);
-		double point2_x = static_cast<double>(point2.x);
-		double point2_y = static_cast<double>(point2.y);
-
-		oTransform.TransformPoint(point1_x, point1_y);
-		oTransform.TransformPoint(point2_x, point2_y);
-
-		point1.x = static_cast<float>(point1_x);
-		point1.y = static_cast<float>(point1_y);
-		point2.x = static_cast<float>(point2_x);
-		point2.y = static_cast<float>(point2_y);
-
-		// center transform
-		double center_x = static_cast<double>(oGradientInfo.centerX);
-		double center_y = static_cast<double>(oGradientInfo.centerY);
-
-		oTransform.TransformPoint(center_x, center_y);
-
-		oGradientInfo.centerX = static_cast<double>(center_x);
-		oGradientInfo.centerY = static_cast<double>(center_y);
-
-		// p0, p1 transform
-		auto& p0 = oGradientInfo.p0;
-		auto& p1 = oGradientInfo.p1;
-
-		double p0_x = static_cast<double>(p0.x);
-		double p0_y = static_cast<double>(p0.y);
-		double p1_x = static_cast<double>(p1.x);
-		double p1_y = static_cast<double>(p1.y);
-
-		oTransform.TransformPoint(p0_x, p0_y);
-		oTransform.TransformPoint(p1_x, p1_y);
-
-		p0.x = static_cast<float>(p0_x);
-		p0.y = static_cast<float>(p0_y);
-		p1.x = static_cast<float>(p1_x);
-		p1.y = static_cast<float>(p1_y);
-
-		// sizes scale
-		double sqrt_det = sqrt(fabs(oTransform.Determinant()));
-		oGradientInfo.r0 *= sqrt_det;
-		oGradientInfo.r1 *= sqrt_det;
-		oGradientInfo.littleRadius *= sqrt_det;
-		oGradientInfo.largeRadius *= sqrt_det;
-
-	}
 
 	Aggplus::CGraphicsPath* CVectorGraphics::GetGraphicsPath() const noexcept
 	{

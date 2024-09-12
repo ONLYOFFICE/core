@@ -350,7 +350,7 @@ namespace SVG
 
 	double CTSpan::GetWidth() const
 	{
-		if (m_wsText.empty())
+		if (m_wsText.empty() && m_arObjects.empty())
 			return 0.;
 
 		std::wstring wsName = DefaultFontFamily;

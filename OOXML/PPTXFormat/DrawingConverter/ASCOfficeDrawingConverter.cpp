@@ -5011,9 +5011,13 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 
 			pSpPr->Fill.m_type = PPTX::Logic::UniFill::noFill;
 			pSpPr->Fill.Fill = pNoFill;
+
+			pPPTShape->m_bIsFilled = false;
 		}
+		else
+			pPPTShape->m_bIsFilled = true; // change parent ShapeType
 	}
-	else if (!pPPTShape->m_bIsFilled)
+	else if (!pPPTShape->m_bIsFilled) // from parent ShapeType
 	{
 		PPTX::Logic::NoFill* pNoFill = new PPTX::Logic::NoFill();
 		pNoFill->m_namespace = L"a";
@@ -5040,7 +5044,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 	}
 
 	XmlUtils::CXmlNode oNodeFill = oNode.ReadNode(L"v:fill");
-	if (oNodeFill.IsValid() && !pPPTShape->IsWordArt())
+	if (pPPTShape->m_bIsFilled && oNodeFill.IsValid() && !pPPTShape->IsWordArt())
 	{
 		nullable_string sOpacity2;
 		nullable_string sColor2;
@@ -5295,7 +5299,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 			pSpPr->Fill.as<PPTX::Logic::BlipFill>().blip->Effects.push_back(oEff);
 		}
 	}
-	if (true)
+	if (pPPTShape->m_bIsFilled)
 	{
         XmlUtils::CXmlNode oNodeFillID = oNode.ReadNode(L"v:imagedata");
 

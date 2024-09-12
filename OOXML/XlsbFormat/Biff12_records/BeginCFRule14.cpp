@@ -104,6 +104,12 @@ namespace XLSB
 
     	record << flags;
 
+        if(cbFmla1 > 0 && !FRTheader.rgFormulas.array.empty())
+            cbFmla1 = FRTheader.rgFormulas.array.at(0).formula.cce;
+        else if(cbFmla3 > 0 && !FRTheader.rgFormulas.array.empty())
+               cbFmla3 = FRTheader.rgFormulas.array.at(0).formula.cce;
+        if(cbFmla2 > 0 && FRTheader.rgFormulas.array.size() > 1)
+            cbFmla2 = FRTheader.rgFormulas.array.at(1).formula.cce;
 		record << cbFmla1 << cbFmla2 << cbFmla3;
 
 		record.reserveNunBytes(4);

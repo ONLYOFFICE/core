@@ -115,7 +115,6 @@ namespace NSDocxRenderer
 		}
 	}
 
-
 	size_t CContText::GetLength() const noexcept
 	{
 		return m_oText.length();
@@ -225,6 +224,9 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"<w:rPr>");
 		oWriter.WriteString(L"<w:noProof/>");
 
+		if (m_bIsRtl)
+			oWriter.WriteString(L"<w:rtl/> ");
+
 		if (!m_bWriteStyleRaw)
 		{
 			oWriter.WriteString(L"<w:rStyle w:val=\"");
@@ -329,6 +331,8 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"\" w:hAnsi=\"");
 			oWriter.WriteEncodeXmlString(m_pFontStyle->wsFontName);
 			oWriter.WriteString(L"\" w:cs=\"");
+			oWriter.WriteEncodeXmlString(m_pFontStyle->wsFontName);
+			oWriter.WriteString(L"\" w:eastAsia=\"");
 			oWriter.WriteEncodeXmlString(m_pFontStyle->wsFontName);
 			oWriter.WriteString(L"\" w:hint=\"default\"/>");
 
@@ -464,6 +468,8 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"</a:solidFill>");
 		}
 
+		if (m_bIsRtl)
+			oWriter.WriteString(L"<w:rtl/> ");
 
 		oWriter.WriteString(L"</a:rPr>");
 		oWriter.WriteString(L"<a:t>");
@@ -784,6 +790,19 @@ namespace NSDocxRenderer
 			}
 		}
 		return false;
+	}
+	bool CContText::IsUnicodeRtl(uint32_t cSym)
+	{
+		bool is_herbew_arabic = (cSym >= 0x0590 && cSym <= 0x08FF);
+
+		// alphabetic presentation forms
+		bool is_apf = (cSym >= 0xFB00 && cSym <= 0xFDFF);
+		bool is_apf_b = (cSym >= 0xFE70 && cSym <= 0xFEFF);
+
+		bool is_other = (cSym >= 0x10800 && cSym <= 0x108AF);
+
+		// more https://www.unicode.org/Public/UNIDATA/extracted/DerivedBidiClass.txt
+		return is_herbew_arabic || is_apf || is_apf_b || is_other;
 	}
 
 	double CContText::CalculateSpace() const noexcept

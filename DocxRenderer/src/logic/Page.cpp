@@ -351,9 +351,6 @@ namespace NSDocxRenderer
 		}
 		m_pFontManager->LoadFontByFile(*m_pFont);
 
-		//if (fabs(dTextW) < 0.01 || (dTextW > 10))
-		//{
-
 		double _x = 0;
 		double _y = 0;
 		double _w = 0;
@@ -371,7 +368,6 @@ namespace NSDocxRenderer
 			m_pFontManager->MeasureStringGids(pUnicodes, nCount, dTextX, dTextY, _x, _y, _w, _h, CFontManager::mtPosition);
 		}
 
-		//}
 		auto oMetrics = m_pFontManager->GetFontMetrics();
 		_h = m_pFontManager->GetFontHeight();
 
@@ -470,6 +466,7 @@ namespace NSDocxRenderer
 		}
 
 		pCont->SetText(oText, ar_widths);
+		pCont->m_bIsRtl = CContText::IsUnicodeRtl(oText[0]);
 
 		pCont->m_dWidth = width;
 		pCont->m_dRight = right;

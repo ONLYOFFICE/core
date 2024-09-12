@@ -56,6 +56,7 @@ namespace NSDocxRenderer
 		bool m_bIsOutlinePresent  {false};
 		bool m_bIsEmbossPresent   {false};
 		bool m_bIsEngravePresent  {false};
+		bool m_bIsRtl             {false};
 
 		// font to calc selected sizes
 		NSStructures::CFont m_oSelectedFont{};
@@ -124,6 +125,8 @@ namespace NSDocxRenderer
 			 std::shared_ptr<CContText> pSecondCont,
 			 eVerticalCrossingType eVType,
 			 eHorizontalCrossingType eHType);
+
+		static bool IsUnicodeRtl(uint32_t cSym);
 
 		double CalculateSpace() const noexcept;
 

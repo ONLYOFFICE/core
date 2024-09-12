@@ -1869,6 +1869,8 @@ std::vector<CGraphicsPath*> GetSubPaths(CGraphicsPath* path)
 		{
 			if (!close)
 			{
+				PointD firstPoint = subPath->GetPoints(0, 1)[0];
+				subPath->LineTo(firstPoint.X, firstPoint.Y);
 				subPath->CloseFigure();
 				result.push_back(subPath->Clone());
 				subPath->Reset();
@@ -1893,6 +1895,8 @@ std::vector<CGraphicsPath*> GetSubPaths(CGraphicsPath* path)
 		}
 		else if (path->IsClosePoint(i))
 		{
+			PointD firstPoint = subPath->GetPoints(0, 1)[0];
+			subPath->LineTo(firstPoint.X, firstPoint.Y);
 			subPath->CloseFigure();
 			result.push_back(subPath->Clone());
 			subPath->Reset();

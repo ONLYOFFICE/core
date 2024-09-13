@@ -47,7 +47,7 @@ namespace Aggplus
 	{
 	public:
 		CGraphicsPath();
-		~CGraphicsPath();
+		virtual ~CGraphicsPath();
 
 		CGraphicsPath* Clone();
 

@@ -2,21 +2,15 @@
 #include <algorithm>
 
 namespace Aggplus {
-Segment::Segment() :
-	P(PointD()),
-	HI(PointD()),
-	HO(PointD()),
-	Index(0),
-	Id(0),
-	Winding(0) {}
+Segment::Segment()
+{
+}
 
 Segment::Segment(const std::vector<PointD>& points, bool isCurve,
 				 int index, int id, CGraphicsPath* path) :
 	IsCurve(isCurve),
-	Visited(false),
 	Index(index),
 	Id(id),
-	Winding(0),
 	Path(path)
 {
 	if (IsCurve)
@@ -32,8 +26,7 @@ Segment::Segment(const std::vector<PointD>& points, bool isCurve,
 Segment::Segment(const PointD& p, const PointD& hi, const PointD& ho) :
 	P(p),
 	HI(hi),
-	HO(ho),
-	IsCurve(false)
+	HO(ho)
 {
 	if (!hi.Equals(PointD()) || !ho.Equals(PointD()))
 		IsCurve = true;
@@ -80,13 +73,15 @@ bool Segment::operator!=(const Segment& other) const
 	return !operator==(other);
 }
 
-Curve::Curve() :
-	Segment1(Segment()),
-	Segment2(Segment()){}
+Curve::Curve()
+{
+}
 
 Curve::Curve(const Segment& segment1, const Segment& segment2) :
 	Segment1(segment1),
-	Segment2(segment2) {}
+	Segment2(segment2)
+{
+}
 
 Curve::Curve(const std::vector<double>& values)
 {
@@ -672,18 +667,17 @@ bool Curve::operator!=(const Curve& other) const
 	return !operator ==(other);
 }
 
-Location::Location() :
-	C(Curve()),
-	S(Segment()),
-	Inters(nullptr),
-	Next(nullptr),
-	Prev(nullptr) {}
+Location::Location()
+{
+}
 
 Location::Location(const Curve& curve, double time, bool overlap, bool ends) :
 	C(curve),
 	Time(time),
 	Overlap(overlap),
-	Ends(ends) {}
+	Ends(ends)
+{
+}
 
 bool Location::IsTouching()
 {
@@ -1617,7 +1611,7 @@ int CBooleanOperations::AddCurveIntersection(Curve curve1, Curve curve2, const C
 	return calls;
 }
 
-int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment, const Curve& curve, /*bool dir,*/ int& isTouch) const
+int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment, const Curve& curve, int& isTouch) const
 {
 	PointD pt;
 	if (intersect(point.X, point.Y, segment.P.X, segment.P.Y, curve.Segment1.P.X, curve.Segment1.P.Y, curve.Segment2.P.X, curve.Segment2.P.Y, pt))
@@ -1903,6 +1897,7 @@ std::vector<CGraphicsPath*> GetSubPaths(CGraphicsPath* path)
 			close = true;
 		}
 	}
+	delete subPath;
 
 	return result;
 }

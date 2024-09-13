@@ -11,19 +11,19 @@ namespace Aggplus
 
 	struct Segment
 	{
-		PointD P;
-		PointD HI;
-		PointD HO;
+		PointD P{};
+		PointD HI{};
+		PointD HO{};
 
-		bool IsCurve;
-		bool Visited;
+		bool IsCurve = false;
+		bool Visited = false;
 
-		int Index;
-		int Id;
-		int Winding;
+		int Index = -1;
+		int Id = 0;
+		int Winding = 0;
 
-		CGraphicsPath* Path;
-		std::shared_ptr<Location> Inters;
+		CGraphicsPath* Path{nullptr};
+		std::shared_ptr<Location> Inters{nullptr};
 
 		Segment();
 		Segment(const std::vector<PointD>& points, bool isCurve, int index, int id, CGraphicsPath* path);
@@ -39,8 +39,8 @@ namespace Aggplus
 
 	struct Curve
 	{
-		Segment Segment1;
-		Segment Segment2;
+		Segment Segment1{};
+		Segment Segment2{};
 
 		Curve();
 		Curve(const Segment& segment1, const Segment& segment2);
@@ -80,21 +80,20 @@ namespace Aggplus
 
 	struct Location
 	{
-		Curve C;
-		Segment S;
-		double Time;
-		bool Overlap;
-		bool Ends;
+		Curve C{};
+		Segment S{};
+		double Time = -1.0;
+		bool Overlap = false;
+		bool Ends = false;
 
-		std::shared_ptr<Location> Inters;
-		std::shared_ptr<Location> Next;
-		std::shared_ptr<Location> Prev;
+		std::shared_ptr<Location> Inters{nullptr};
+		std::shared_ptr<Location> Next{nullptr};
+		std::shared_ptr<Location> Prev{nullptr};
 
 		Location();
 		Location(const Curve& curve, double time, bool overlap, bool ends);
 
 		bool IsTouching();
-		// bool operator==(const Location& other);
 	};
 
 	class CBooleanOperations
@@ -134,7 +133,7 @@ namespace Aggplus
 		void AddCurveLineIntersection(const Curve& curve1, const Curve& curve2, bool flip);
 		int  AddCurveIntersection(Curve curve1, Curve curve2, const Curve& startCurve1, const Curve& startCurve2, bool flip,
 								  int recursion = 0, int calls = 0, double tMin = 0.0, double tMax = 1.0, double uMin = 0.0, double uMax = 1.0);
-		int  CheckInters(const PointD& point, const Segment& segment, const Curve& curve, /*bool dir = false,*/ int& isTouch) const;
+		int  CheckInters(const PointD& point, const Segment& segment, const Curve& curve, int& isTouch) const;
 		void SetWinding();
 
 		// Location
@@ -146,11 +145,11 @@ namespace Aggplus
 		void AddOffsets(std::vector<double>& offsets, const Curve& curve, bool end);
 
 	private:
-		BooleanOpType Op;
+		BooleanOpType Op = Intersection;
 
-		CGraphicsPath* Path1;
-		CGraphicsPath* Path2;
-		CGraphicsPath* Result;
+		CGraphicsPath* Path1{nullptr};
+		CGraphicsPath* Path2{nullptr};
+		CGraphicsPath* Result{nullptr};
 
 		std::vector<Segment> Segments1;
 		std::vector<Segment> Segments2;
@@ -162,7 +161,7 @@ namespace Aggplus
 
 		std::vector<std::shared_ptr<Location>> Locations;
 
-		bool IsDeleted;
+		bool IsDeleted = false;
 	};
 } // namespace Aggplus
 

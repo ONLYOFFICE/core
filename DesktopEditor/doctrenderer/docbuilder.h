@@ -492,9 +492,10 @@ namespace NSDoctRenderer
 
 		/**
 		 * Returns the current JS context.
+		 * @param enterContext Whether returned context should be entered or not.
 		 * @return The current JS context
 		 */
-		CDocBuilderContext GetContext();
+		CDocBuilderContext GetContext(bool enterContext = true);
 
 	public:
 		/**

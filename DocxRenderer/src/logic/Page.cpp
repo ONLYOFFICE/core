@@ -173,6 +173,9 @@ namespace NSDocxRenderer
 	}
 
 
+	// c_nStroke = 0x0001;
+	// c_nWindingFillMode = 0x0100;
+	// c_nEvenOddFillMode = 0x0200;
 	void CPage::DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo)
 	{
 		double rotation = m_pTransform->z_Rotation();
@@ -181,38 +184,31 @@ namespace NSDocxRenderer
 		double top = m_oCurrVectorGraphics.GetTop();
 		double bot = m_oCurrVectorGraphics.GetBottom();
 
+		auto set_fill_mode = [this, lType] (std::shared_ptr<CShape> s) {
+			if (lType & c_nStroke)
+			{
+				s->m_bIsNoStroke = false;
+				s->m_oPen = *m_pPen;
+			}
+			if (lType & c_nWindingFillMode || lType & c_nEvenOddFillMode)
+			{
+				s->m_bIsNoFill = false;
+				s->m_oBrush = *m_pBrush;
+			}
+		};
+
 		if (!m_arShapes.empty())
 		{
-			auto& pLastShape = m_arShapes.back();
-
-			if (pLastShape->m_dLeft == left && pLastShape->m_dTop == top &&
-				pLastShape->m_dWidth == right - left && pLastShape->m_dHeight == bot - top)
+			auto& last_shape = m_arShapes.back();
+			if (last_shape->IsEqual(top, bot, left, right) && rotation == last_shape->m_dRotation)
 			{
-				if (0x00 != (lType & 0x01))
-				{
-					pLastShape->m_bIsNoStroke = false;
-					pLastShape->m_oPen = *m_pPen;
-				}
-				if (0x00 != (lType >> 8))
-				{
-					pLastShape->m_bIsNoFill = false;
-					pLastShape->m_oBrush = *m_pBrush;
-				}
+				set_fill_mode(last_shape);
 				return;
 			}
 		}
 
 		auto shape = std::make_shared<CShape>();
-		if (0x00 != (lType & 0x01))
-		{
-			shape->m_bIsNoStroke = false;
-			shape->m_oPen = *m_pPen;
-		}
-		if (0x00 != (lType >> 8))
-		{
-			shape->m_bIsNoFill = false;
-			shape->m_oBrush = *m_pBrush;
-		}
+		set_fill_mode(shape);
 
 		if (shape->m_bIsNoStroke)
 		{

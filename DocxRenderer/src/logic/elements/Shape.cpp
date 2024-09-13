@@ -869,7 +869,6 @@ namespace NSDocxRenderer
 
 		if (m_bIsNoFill)
 		{
-			//Нет заливки
 			oWriter.WriteString(L"<a:noFill/>");
 		}
 		else if (m_eType != CShape::eShapeType::stVectorTexture)

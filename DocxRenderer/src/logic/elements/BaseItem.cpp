@@ -20,6 +20,18 @@ namespace NSDocxRenderer
 
 		return *this;
 	}
+	bool CBaseItem::operator==(const CBaseItem& oSrc)
+	{
+		if (this == &oSrc)
+			return true;
+
+		return m_dLeft == oSrc.m_dLeft &&
+			   m_dTop == oSrc.m_dTop &&
+			   m_dWidth == oSrc.m_dWidth &&
+			   m_dHeight == oSrc.m_dHeight &&
+			   m_dBaselinePos == oSrc.m_dBaselinePos &&
+			   m_dRight == oSrc.m_dRight;
+	}
 
 	eVerticalCrossingType CBaseItem::GetVerticalCrossingType(const CBaseItem* oSrc) const
 	{
@@ -137,6 +149,13 @@ namespace NSDocxRenderer
 
 		return (eHType == eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext ||
 				eHType == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext);
+	}
+	bool CBaseItem::IsEqual(double dTop, double dBaselinePos, double dLeft, double dRight) const noexcept
+	{
+		return m_dLeft == dLeft &&
+			   m_dTop == dTop &&
+			   m_dBaselinePos == dBaselinePos &&
+			   m_dRight == dRight;
 	}
 
 	void CBaseItem::RecalcWithNewItem(const CBaseItem* pItem)

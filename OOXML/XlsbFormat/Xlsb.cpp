@@ -194,6 +194,41 @@ void OOX::Spreadsheet::CXlsb::PrepareSi()
         }*/
     }
 }
+
+//подготовка шрифтов в richString для конвертации в xlsb
+void OOX::Spreadsheet::CXlsb::PrepareRichStr()
+{
+    if(m_pStyles && m_pStyles->m_oFonts.IsInit())
+    {
+        auto lambdaSi = [&](OOX::Spreadsheet::CSi* si) 
+        {
+            for(size_t i = 0, length = si->m_arrItems.size(); i < length; ++i)
+            {
+                OOX::Spreadsheet::WritingElement* we = si->m_arrItems[i];
+                if(OOX::et_x_r == we->getType())
+                {
+                    OOX::Spreadsheet::CRun* pRun = static_cast<OOX::Spreadsheet::CRun*>(we);
+                    if(pRun->m_oRPr.IsInit() && !pRun->m_oRPr->m_nFontIndex.IsInit())
+                    {
+                        auto font = pRun->m_oRPr->toFont();
+                        m_pStyles->m_oFonts->AddFont(font);
+                        pRun->m_oRPr->m_nFontIndex.Init();
+                        pRun->m_oRPr->m_nFontIndex = m_pStyles->m_oFonts->m_arrItems.size() - 1;
+
+                    }
+                }
+            }
+        };
+
+        if(m_pSharedStrings)
+        {
+            for(auto &si : m_pSharedStrings->m_arrItems)
+            {
+                lambdaSi(si);
+            }
+        }
+    }
+}
 //отложенный парсинг SheetData
 void OOX::Spreadsheet::CXlsb::ReadSheetData()
 {

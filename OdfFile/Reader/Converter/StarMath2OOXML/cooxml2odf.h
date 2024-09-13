@@ -4,6 +4,7 @@
 #include"../../../../OOXML/DocxFormat/Math/oMathPara.h"
 #include "../../../../DesktopEditor/xml/include/xmlwriter.h"
 #include "../../../../OOXML/Base/Unit.h"
+#include "../../../../OOXML/Common/SimpleTypes_OMath.h"
 #include "typeselements.h"
 #include <vector>
 #include <utility>
@@ -13,12 +14,13 @@ namespace StarMath
 {
 	struct StValuePr
 	{
-		StValuePr():m_wsTypeName(L""),m_wsBegBracket(L""),m_wsEndBracket(L""),m_wsChr(L""),m_wsColor(L""),m_bSupHide(false),m_bSubHide(false)
+		StValuePr():m_wsTypeName(L""),m_wsBegBracket(L""),m_wsEndBracket(L""),m_wsChr(L""),m_wsColor(L""),m_bSupHide(false),m_bSubHide(false),m_enPos(SimpleTypes::ETopBot::tbBot),m_enVert(SimpleTypes::ETopBot::tbBot)
 		{}
 		std::wstring m_wsTypeName,m_wsChr;
 		std::wstring m_wsBegBracket,m_wsEndBracket;
 		std::wstring m_wsColor;
 		bool m_bSupHide,m_bSubHide;
+		SimpleTypes::ETopBot m_enPos,m_enVert;
 	};
 	class COneElement;
 	class COOXml2Odf
@@ -36,6 +38,7 @@ namespace StarMath
 		StValuePr ConversionFpr(OOX::Logic::CFPr* pFpr);
 		std::wstring ConversionType(OOX::Logic::CType* pType);
 		void ConversionMd(OOX::Logic::CDelimiter* pDel);
+		std::wstring BracketForAnnotation(const std::wstring& wsBracket,const bool& bBeg);
 		void ConversionNary(OOX::Logic::CNary* pNary);
 		void ConversionSsub(OOX::Logic::CSSub* pSsub);
 		void ConversionSub(OOX::Logic::CSub* pSub, OOX::Logic::CElement *pElement);
@@ -47,6 +50,7 @@ namespace StarMath
 		std::vector<COneElement *> ConversionMRun(OOX::Logic::CMRun* pMRun);
 		void ConversionAcc(OOX::Logic::CAcc* pAcc);
 		void ConversionFunc(OOX::Logic::CFunc* pFunc);
+		bool ConversionFuncPr(OOX::Logic::CFuncPr* pFuncPr);
 		void ConversionBox(OOX::Logic::CBox* pBox);
 		void ConversionTextVector(std::vector<COneElement*>& arLine,std::vector<COneElement*>& arNewLine,const bool& bMatrix = false);
 		void ConversionVectorWritingElement(std::vector<OOX::WritingElement*> arWrElements,const bool& bMatrix = false);
@@ -55,9 +59,20 @@ namespace StarMath
 		void ConversionRad(OOX::Logic::CRad* pRad);
 		bool ConversionRadPr(OOX::Logic::CRadPr* pRadPr,bool& bDeg);
 		void ConversionDeg(OOX::Logic::CDeg* pDeg);
+		void ConversionGroupChr(OOX::Logic::CGroupChr* pGroup);
+		StValuePr ConversionGroupChrPr(OOX::Logic::CGroupChrPr* pGroupPr);
+		void ConversionBar(OOX::Logic::CBar* pBar);
+		StValuePr ConversionBarPr(OOX::Logic::CBarPr* pBarPr,bool& bStyle);
+		void ConversionSPre(OOX::Logic::CSPre* pSPre);
+		void EmptyBlock();
+		void ConversionLimLow(OOX::Logic::CLimLow* pLimLow);
+		void ConversionLimUpp(OOX::Logic::CLimUpp* pLimUpp);
+		void ConversionLim(OOX::Logic::CLim* pLim);
+		void ConversionEqArr(OOX::Logic::CEqArr* pEqArr);
+		void ConversionSubSup(OOX::Logic::CSSubSup* pSubSup);
 		StValuePr *ConversionRunProperties(OOX::Logic::CRunProperty* pRPr);
-		StValuePr ConversionMdPr(OOX::Logic::CDelimiterPr* pDelPr);
-		StValuePr ConversionNaryPr(OOX::Logic::CNaryPr* pNaryPr);
+		StValuePr ConversionMdPr(OOX::Logic::CDelimiterPr* pDelPr, bool &bStyle);
+		StValuePr ConversionNaryPr(OOX::Logic::CNaryPr* pNaryPr,bool& bStyle);
 		std::wstring ConversionBegBracket(OOX::Logic::CBegChr* pBegChr);
 		std::wstring ConversionEndBracket(OOX::Logic::CEndChr* pEndChr);
 		std::wstring TranslationDiacritSign(const std::wstring &wsSymbol);

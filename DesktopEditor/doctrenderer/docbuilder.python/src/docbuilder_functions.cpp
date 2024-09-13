@@ -164,6 +164,11 @@ CDocBuilderValue* CDocBuilderValue_CreateArray(int length)
 	return new CDocBuilderValue(CDocBuilderValue::CreateArray(length));
 }
 
+CDocBuilderValue* CDocBuilderValue_CreateObject()
+{
+	return new CDocBuilderValue(CDocBuilderValue::CreateObject());
+}
+
 CDocBuilderValue* CDocBuilderValue_Call0(CDocBuilderValue* self, const wchar_t* name)
 {
 	return new CDocBuilderValue(self->Call(name));

@@ -204,6 +204,11 @@ namespace NSDoctRenderer
 		 * Creates an array. This method returns the current context and calls its CreateArray method.
 		 */
 		static CDocBuilderValue CreateArray(const int& length);
+		/**
+		 * Please use CDocBuilderContext::CreateObject
+		 * Creates an object. This method returns the current context and calls its CreateObject method.
+		 */
+		static CDocBuilderValue CreateObject();
 
 	public:
 		/**

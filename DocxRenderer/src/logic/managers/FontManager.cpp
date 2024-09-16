@@ -593,14 +593,15 @@ namespace NSDocxRenderer
 			m_pManager->SetStringGID(lGid);
 	}
 
-	void CFontManager::MeasureString(const std::wstring& wsText,
-									 double x,
-									 double y,
-									 double& dBoxX,
-									 double& dBoxY,
-									 double& dBoxWidth,
-									 double& dBoxHeight,
-									 MeasureType measureType) const
+	void CFontManager::MeasureString(
+		const std::wstring& wsText,
+		double x,
+		double y,
+		double& dBoxX,
+		double& dBoxY,
+		double& dBoxWidth,
+		double& dBoxHeight,
+		MeasureType measureType) const
 	{
 		dBoxX		= 0;
 		dBoxY		= 0;
@@ -627,15 +628,16 @@ namespace NSDocxRenderer
 		dBoxWidth	*= c_dPixToMM;
 		dBoxHeight	*= c_dPixToMM;
 	}
-	void CFontManager::MeasureStringGids(unsigned int* pGids,
-										 unsigned int count,
-										 double x,
-										 double y,
-										 double& dBoxX,
-										 double& dBoxY,
-										 double& dBoxWidth,
-										 double& dBoxHeight,
-										 MeasureType measureType) const
+	void CFontManager::MeasureStringGids(
+		unsigned int* pGids,
+		unsigned int count,
+		double x,
+		double y,
+		double& dBoxX,
+		double& dBoxY,
+		double& dBoxWidth,
+		double& dBoxHeight,
+		MeasureType measureType) const
 	{
 		dBoxX		= 0;
 		dBoxY		= 0;

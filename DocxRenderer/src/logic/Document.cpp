@@ -573,6 +573,8 @@ namespace NSDocxRenderer
 		}
 		else
 			m_oCurrentPage.EndCommand(lType);
+
+		return S_OK;
 	}
 	//-------- Функции для работы с Graphics Path -----------------------------------------------
 	HRESULT CDocument::PathCommandMoveTo(double fX, double fY)

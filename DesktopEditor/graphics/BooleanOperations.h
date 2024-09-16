@@ -4,6 +4,7 @@
 #include "GraphicsPath.h"
 #include "boolean_operations_math.h"
 #include <unordered_map>
+#include <memory>
 
 namespace Aggplus
 {

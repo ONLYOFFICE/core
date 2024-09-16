@@ -10,7 +10,7 @@ namespace SVG
 	public:
 		CSwitch(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
 
-		bool Draw(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pStyles = NULL) const override;
+		bool Draw(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pStyles = NULL, const CRenderedObject* pContexObject = NULL) const override;
 
 		TBounds GetBounds() const override;
 	};

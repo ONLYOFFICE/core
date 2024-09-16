@@ -51,7 +51,7 @@ namespace SVG
 		: CRenderedObject(oNode, pParent), m_oWindow{0, 0, dWidth, dHeight}
 	{}
 
-	bool CGraphicsContainer::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CGraphicsContainer::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
 	{
 		Aggplus::CMatrix oOldTransform;
 
@@ -59,9 +59,9 @@ namespace SVG
 			return false;
 
 		for (const CRenderedObject* pObject : m_arObjects)
-			pObject->Draw(pRenderer, pFile, oMode, pOtherStyles);
+			pObject->Draw(pRenderer, pFile, oMode, pOtherStyles, pContexObject);
 
-		EndPath(pRenderer, pFile, oOldTransform, CommandeModeDraw, pOtherStyles);
+		EndPath(pRenderer, pFile, oOldTransform, CommandeModeDraw, pOtherStyles, pContexObject);
 
 		return true;
 	}

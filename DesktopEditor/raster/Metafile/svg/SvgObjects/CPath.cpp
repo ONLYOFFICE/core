@@ -306,7 +306,7 @@ namespace SVG
 			else
 			{
 				dEndAngle = copysign(ceil(std::abs(dStartAngle) / 90.), dStartAngle) * ((dSweep > 0. || dStartAngle < 0.) ? 90. : -90.);
-			
+
 				if (dStartAngle < 0. && dSweep > 0.)
 					dEndAngle += 90.;
 			}
@@ -358,8 +358,8 @@ namespace SVG
 				return;
 
 		pRenderer->PathCommandCurveTo(m_arPoints[0].dX, m_arPoints[0].dY,
-									  m_arPoints[1].dX, m_arPoints[1].dY,
-				m_arPoints[2].dX, m_arPoints[2].dY);
+		                              m_arPoints[1].dX, m_arPoints[1].dY,
+		                              m_arPoints[2].dX, m_arPoints[2].dY);
 	}
 
 	inline double ClampSinCos(const double& d)
@@ -469,7 +469,7 @@ namespace SVG
 		}
 	}
 
-	bool CPath::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CPath::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
 	{
 		Aggplus::CMatrix oOldTransform;
 
@@ -479,7 +479,7 @@ namespace SVG
 		for (const IPathElement* oElement : m_arElements)
 			oElement->Draw(pRenderer);
 
-		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles);
+		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles, pContexObject);
 
 		DrawMarkers(pRenderer, pFile, oMode);
 
@@ -494,16 +494,16 @@ namespace SVG
 		return m_arElements[(nIndex >= 0) ? nIndex : m_arElements.size() + nIndex];
 	}
 
-	void CPath::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
+	void CPath::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, const CRenderedObject* pContexObject) const
 	{
-		if (ApplyStroke(pRenderer, &pStyles->m_oStroke))
+		if (ApplyStroke(pRenderer, &pStyles->m_oStroke, false, pContexObject))
 			nTypePath += c_nStroke;
 
-		if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true))
+		if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true, pContexObject))
 			nTypePath += (m_bEvenOddRule) ? c_nEvenOddFillMode : c_nWindingFillMode;
 	}
 
-	bool CPath::DrawMarkers(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode) const
+	bool CPath::DrawMarkers(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles* pOtherStyles, const CRenderedObject* pContexObject) const
 	{
 		if (NULL == pRenderer || NULL == pFile || m_arElements.empty() || m_oStyles.m_oStroke.m_oWidth.Zero() ||
 			(m_oMarkers.m_oStart.Empty() && m_oMarkers.m_oMid.Empty() && m_oMarkers.m_oEnd.Empty()))
@@ -522,8 +522,9 @@ namespace SVG
 
 			if (NULL != pStartMarker)
 			{
-				pStartMarker->Update(pFile);
-				pStartMarker->Draw(pRenderer, {(*m_arElements.front())[0]}, dStrokeWidth);
+				const IPathElement* pFirstElement{FindFirstNotEmpty()};
+				if (NULL != pFirstElement)
+					pStartMarker->Draw(pRenderer, pFile, {(*pFirstElement)[0]}, dStrokeWidth, oMode, pOtherStyles, this);
 			}
 		}
 
@@ -534,27 +535,25 @@ namespace SVG
 			std::vector<Point> arPoints(m_arElements.size() - 2);
 
 			for (unsigned int unIndex = 1; unIndex < m_arElements.size() - 1; ++unIndex)
-				arPoints[unIndex - 1] = (*m_arElements[unIndex])[-1];
+			{
+				if (EPathElement::Close != m_arElements[unIndex]->GetType())
+					arPoints[unIndex - 1] = (*m_arElements[unIndex])[-1];
+			}
 
 			if (NULL != pMidMarker)
-			{
-				pMidMarker->Update(pFile);
-				pMidMarker->Draw(pRenderer, arPoints, dStrokeWidth);
-			}
+				pMidMarker->Draw(pRenderer, pFile, arPoints, dStrokeWidth, oMode, pOtherStyles, this);
 		}
 
 		if (!m_oMarkers.m_oEnd.Empty() && NSCSS::NSProperties::ColorType::ColorUrl == m_oMarkers.m_oEnd.GetType())
 		{
 			CMarker *pEndMarker = dynamic_cast<CMarker*>(pFile->GetMarkedObject(m_oMarkers.m_oEnd.ToWString()));
 
-			if (NULL != pEndMarker)
-			{
-				pEndMarker->Update(pFile);
-				pEndMarker->Draw(pRenderer, {(*m_arElements.back())[-1]}, dStrokeWidth);
-			}
+			const IPathElement* pLastElement{FindFirstNotEmpty(true)};
+			if (NULL != pLastElement)
+				pEndMarker->Draw(pRenderer, pFile, {(*pLastElement)[-1]}, dStrokeWidth, oMode, pOtherStyles, this);
 		}
 
-		EndPath(pRenderer, pFile, oOldMatrix, oMode);
+		EndPath(pRenderer, pFile, oOldMatrix, oMode, pOtherStyles, pContexObject);
 
 		return true;
 	}
@@ -569,6 +568,13 @@ namespace SVG
 
 		if (mAttributes.end() != mAttributes.find(L"marker-end"))
 			m_oMarkers.m_oEnd.SetValue(mAttributes.at(L"marker-end"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"marker"))
+		{
+			m_oMarkers.m_oStart.SetValue(mAttributes.at(L"marker"), ushLevel, bHardMode);
+			m_oMarkers.m_oMid  .SetValue(mAttributes.at(L"marker"), ushLevel, bHardMode);
+			m_oMarkers.m_oEnd  .SetValue(mAttributes.at(L"marker"), ushLevel, bHardMode);
+		}
 	}
 
 	TBounds CPath::GetBounds() const
@@ -586,6 +592,24 @@ namespace SVG
 		}
 
 		return oBounds;
+	}
+
+	const IPathElement* CPath::FindFirstNotEmpty(bool bReverseSearch) const
+	{
+		if (!bReverseSearch)
+		{
+			std::vector<IPathElement*>::const_iterator itFound = std::find_if(m_arElements.cbegin(), m_arElements.cend(), [](const IPathElement* pElement){ return EPathElement::Close != pElement->GetType(); });
+			if (m_arElements.cend() != itFound)
+				return *itFound;
+		}
+		else
+		{
+			std::vector<IPathElement*>::const_reverse_iterator itFound = std::find_if(m_arElements.crbegin(), m_arElements.crend(), [](const IPathElement* pElement){ return EPathElement::Close != pElement->GetType(); });
+			if (m_arElements.crend() != itFound)
+				return *itFound;
+		}
+
+		return NULL;
 	}
 
 	void CPath::ReadFromString(const std::wstring &wsValue)
@@ -608,7 +632,7 @@ namespace SVG
 			}
 
 			oSecondPos = std::find_if(oFirstPos + 1, wsValue.end(), [](wchar_t wChar){return ISPATHCOMMAND(wChar);});
-			
+
 			std::vector<double> arValues = StrUtils::ReadDoubleValues(oFirstPos, oSecondPos);
 
 			switch(*oFirstPos)

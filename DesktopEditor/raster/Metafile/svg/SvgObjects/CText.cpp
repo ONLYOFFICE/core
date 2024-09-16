@@ -144,7 +144,7 @@ namespace SVG
 		}
 	}
 
-	bool CTSpan::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CTSpan::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
 	{
 		if (NULL == pRenderer || (m_wsText.empty() && m_arObjects.empty()))
 			return false;
@@ -166,10 +166,10 @@ namespace SVG
 			}
 
 			for (const CTSpan* pTSpan : m_arObjects)
-				pTSpan->Draw(pRenderer, pFile, oMode, pOtherStyles);
+				pTSpan->Draw(pRenderer, pFile, oMode, pOtherStyles, pContexObject);
 		}
 
-		EndPath(pRenderer, pFile, oOldMatrix, oMode, pOtherStyles);
+		EndPath(pRenderer, pFile, oOldMatrix, oMode, pOtherStyles, pContexObject);
 
 		return true;
 	}
@@ -195,12 +195,12 @@ namespace SVG
 		}
 	}
 
-	void CTSpan::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
+	void CTSpan::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, const CRenderedObject* pContexObject) const
 	{
-		if (ApplyStroke(pRenderer, &pStyles->m_oStroke, true))
+		if (ApplyStroke(pRenderer, &pStyles->m_oStroke, true, pContexObject))
 			nTypePath += c_nStroke;
 
-		if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true))
+		if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true, pContexObject))
 			nTypePath += c_nWindingFillMode;
 	}
 
@@ -303,7 +303,7 @@ namespace SVG
 		pRenderer->put_BrushAlpha1(255);
 	}
 	
-	bool CTSpan::UseExternalFont(const CSvgFile *pFile, double dX, double dY, IRenderer *pRenderer, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CTSpan::UseExternalFont(const CSvgFile *pFile, double dX, double dY, IRenderer *pRenderer, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
 	{
 		std::wstring wsFontFamily = DefaultFontFamily;
 
@@ -318,7 +318,7 @@ namespace SVG
 		if (NULL == pFont)
 			return false;
 
-		pFont->Draw(m_wsText, dX, dY, pRenderer, pFile, oMode, pOtherStyles);
+		pFont->Draw(m_wsText, dX, dY, pRenderer, pFile, oMode, pOtherStyles, pContexObject);
 
 		return true;
 	}
@@ -496,12 +496,12 @@ namespace SVG
 		return new CText(oNode, pParent, pFontManager);
 	}
 
-	bool CText::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CText::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
 	{
 		if (NULL == pRenderer || NULL == pRenderer)
 			return false;
 
-		CTSpan::Draw(pRenderer, pFile, oMode, pOtherStyles);
+		CTSpan::Draw(pRenderer, pFile, oMode, pOtherStyles, pContexObject);
 
 		return true;
 	}
@@ -529,7 +529,7 @@ namespace SVG
 		}
 	}
 
-	bool CTextPath::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CTextPath::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
 	{
 		if (NULL == pRenderer || CommandeModeClip == oMode || NULL == m_pPath)
 			return false;
@@ -539,7 +539,7 @@ namespace SVG
 		oMovingPath.Move(m_oX.ToDouble(NSCSS::Pixel));
 
 		for (CTSpan& oTSpan : Split())
-			DrawGlyph(&oTSpan, oMovingPath, pRenderer, pFile, oMode);
+			DrawGlyph(&oTSpan, oMovingPath, pRenderer, pFile, oMode, pContexObject);
 
 		for (const CTSpan* pTSpan : m_arObjects)
 		{
@@ -549,7 +549,7 @@ namespace SVG
 				oMovingPath.Move(pTSpan->m_oX.ToDouble(NSCSS::Pixel));
 			}
 			for (CTSpan& oGlyphs : pTSpan->Split())
-				DrawGlyph(&oGlyphs, oMovingPath, pRenderer, pFile, oMode);
+				DrawGlyph(&oGlyphs, oMovingPath, pRenderer, pFile, oMode, pContexObject);
 		}
 
 		return true;
@@ -566,7 +566,7 @@ namespace SVG
 		return new CTextPath(oNode, pTSpan, pFontManager, pFile);
 	}
 
-	void CTextPath::DrawGlyph(CTSpan* pTSpan, CMovingPath &oMovingPath, IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode) const
+	void CTextPath::DrawGlyph(CTSpan* pTSpan, CMovingPath &oMovingPath, IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const CRenderedObject* pContexObject) const
 	{
 		if (NULL == pTSpan)
 			return;
@@ -583,7 +583,7 @@ namespace SVG
 
 		pTSpan->SetPosition(oPoint);
 		pTSpan->SetTransform({std::make_pair(L"transform", L"rotate(" + std::to_wstring(dAngle) + L',' + std::to_wstring(oPoint.dX) + L',' + std::to_wstring(oPoint.dY) + L')')}, 0, true);
-		pTSpan->Draw(pRenderer, pFile, oMode);
+		pTSpan->Draw(pRenderer, pFile, oMode, NULL, pContexObject);
 
 		oMovingPath.Move(dWidthSpan / 2);
 	}

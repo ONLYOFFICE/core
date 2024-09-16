@@ -702,6 +702,16 @@ namespace NSCSS
 			SetNone();
 			bResult = true;
 		}
+		else if (L"context-stroke" == wsNewValue)
+		{
+			Clear();
+			m_enType = ColorContextStroke;
+		}
+		else if (L"context-fill" == wsNewValue)
+		{
+			Clear();
+			m_enType = ColorContextFill;
+		}
 		else if (10 <= wsNewValue.length() && wsNewValue.substr(0, 3) == L"rgb")
 		{
 			size_t unEnd = wsNewValue.find(L')', 4);

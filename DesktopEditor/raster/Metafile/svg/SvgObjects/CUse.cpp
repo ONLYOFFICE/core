@@ -25,7 +25,7 @@ namespace SVG
 		SetFill(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CUse::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles* pOtherStyles) const
+	bool CUse::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles* pOtherStyles, const CRenderedObject* pContexObject) const
 	{
 		if (NULL == pRenderer || !m_oTransformation.m_bDraw)
 			return false;
@@ -51,10 +51,10 @@ namespace SVG
 			{
 				TSvgStyles oNewStyles(m_oStyles);
 				oNewStyles += *pOtherStyles;
-				pFoundObj->Draw(pRenderer, pFile, oMode, &oNewStyles);
+				pFoundObj->Draw(pRenderer, pFile, oMode, &oNewStyles, this);
 			}
 			else
-				pFoundObj->Draw(pRenderer, pFile, oMode, &m_oStyles);
+				pFoundObj->Draw(pRenderer, pFile, oMode, &m_oStyles, this);
 		}
 
 		EndPath(pRenderer, pFile, oOldTransform);

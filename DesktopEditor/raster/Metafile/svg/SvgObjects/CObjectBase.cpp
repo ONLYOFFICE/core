@@ -139,7 +139,7 @@ namespace SVG
 
 		return ApplyDef(pRenderer, pFile, pMask->ToWString(), oBounds);
 	}
-	
+
 	bool CObject::ApplyDef(IRenderer *pRenderer, const CSvgFile *pFile, const std::wstring &wsUrl, const TBounds &oBounds) const
 	{
 		if (NULL == pRenderer || NULL == pFile || wsUrl.empty())
@@ -238,7 +238,7 @@ namespace SVG
 		m_oStyles.m_oStroke.m_oLineCap = Aggplus::LineJoinMiter;
 
 		m_oStyles.m_oStroke.m_oMiterlimit = 4.;
-		
+
 		m_oTransformation.m_oOpacity = 1.;
 		m_oTransformation.m_bDraw = true;
 	}
@@ -304,7 +304,7 @@ namespace SVG
 		return true;
 	}
 
-	void CRenderedObject::EndPath(IRenderer *pRenderer, const CSvgFile *pFile, const Aggplus::CMatrix& oOldTransform, CommandeMode oMode, const TSvgStyles* pOtherStyles) const
+	void CRenderedObject::EndPath(IRenderer *pRenderer, const CSvgFile *pFile, const Aggplus::CMatrix& oOldTransform, CommandeMode oMode, const TSvgStyles* pOtherStyles, const CRenderedObject* pContextObject) const
 	{
 		if (CommandeModeClip == oMode)
 		{
@@ -320,12 +320,12 @@ namespace SVG
 		int nPathType = 0;
 
 		if (NULL == pOtherStyles)
-			ApplyStyle(pRenderer, &m_oStyles, pFile, nPathType);
+			ApplyStyle(pRenderer, &m_oStyles, pFile, nPathType, pContextObject);
 		else
 		{
 			TSvgStyles oNewStyles(m_oStyles);
 			oNewStyles += *pOtherStyles;
-			ApplyStyle(pRenderer, &oNewStyles, pFile, nPathType);
+			ApplyStyle(pRenderer, &oNewStyles, pFile, nPathType, pContextObject);
 		}
 
 		pRenderer->DrawPath(nPathType);
@@ -352,10 +352,10 @@ namespace SVG
 		                        oOldTransform.tx(),  oOldTransform.ty());
 	}
 
-	void CRenderedObject::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
+	void CRenderedObject::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, const CRenderedObject* pContextObject) const
 	{}
 
-	bool CRenderedObject::ApplyStroke(IRenderer *pRenderer, const TStroke *pStroke, bool bUseDefault) const
+	bool CRenderedObject::ApplyStroke(IRenderer *pRenderer, const TStroke *pStroke, bool bUseDefault, const CRenderedObject* pContextObject) const
 	{
 		if (NULL == pRenderer || NULL == pStroke || NSCSS::NSProperties::ColorType::ColorNone == pStroke->m_oColor.GetType() || (!bUseDefault && ((pStroke->m_oWidth.Empty() || pStroke->m_oWidth.Zero()) && pStroke->m_oColor.Empty())))
 		{
@@ -368,10 +368,14 @@ namespace SVG
 		if (Equals(0., dStrokeWidth))
 			dStrokeWidth = 1.;
 
-		int nColor = (pStroke->m_oColor.Empty() || NSCSS::NSProperties::ColorType::ColorNone == pStroke->m_oColor.GetType()) ? 0 : pStroke->m_oColor.ToInt();
+		if (NSCSS::NSProperties::ColorType::ColorContextFill == pStroke->m_oColor.GetType() && NULL != pContextObject)
+			pRenderer->put_PenColor(pContextObject->m_oStyles.m_oFill.ToInt());
+		else if (NSCSS::NSProperties::ColorType::ColorContextStroke == pStroke->m_oColor.GetType() && NULL != pContextObject)
+			pRenderer->put_PenColor(pContextObject->m_oStyles.m_oStroke.m_oColor.ToInt());
+		else
+			pRenderer->put_PenColor((pStroke->m_oColor.Empty() || NSCSS::NSProperties::ColorType::ColorNone == pStroke->m_oColor.GetType()) ? 0 : pStroke->m_oColor.ToInt());
 
 		pRenderer->put_PenSize(dStrokeWidth);
-		pRenderer->put_PenColor(nColor);
 		pRenderer->put_PenAlpha(255. * pStroke->m_oColor.GetOpacity());
 
 		if (!pStroke->m_arDash.empty())
@@ -394,7 +398,7 @@ namespace SVG
 		return true;
 	}
 
-	bool CRenderedObject::ApplyFill(IRenderer *pRenderer, const NSCSS::NSProperties::CColor *pFill, const CSvgFile *pFile, bool bUseDefault) const
+	bool CRenderedObject::ApplyFill(IRenderer *pRenderer, const NSCSS::NSProperties::CColor *pFill, const CSvgFile *pFile, bool bUseDefault, const CRenderedObject* pContextObject) const
 	{
 		if (NULL == pRenderer || NULL == pFill || NSCSS::NSProperties::ColorType::ColorNone == pFill->GetType() || (!bUseDefault && pFill->Empty()))
 		{
@@ -420,6 +424,10 @@ namespace SVG
 					return false;
 			}
 		}
+		else if (NSCSS::NSProperties::ColorType::ColorContextFill == pFill->GetType() && NULL != pContextObject)
+			pRenderer->put_BrushColor1(pContextObject->m_oStyles.m_oFill.ToInt());
+		else if (NSCSS::NSProperties::ColorType::ColorContextStroke == pFill->GetType() && NULL != pContextObject)
+			pRenderer->put_BrushColor1(pContextObject->m_oStyles.m_oStroke.m_oColor.ToInt());
 		else if (bUseDefault)
 		{
 			pRenderer->put_BrushColor1(0);

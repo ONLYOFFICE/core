@@ -21,9 +21,7 @@ namespace SVG
 
 		void SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode) override;
 
-		void Update(const CSvgFile *pFile);
-
-		void Draw(IRenderer* pRenderer, const std::vector<Point>& arPoints, double dStrokeWidth) const;
+		void Draw(IRenderer* pRenderer, const CSvgFile *pFile, const std::vector<Point>& arPoints, double dStrokeWidth, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContexObject = NULL) const;
 	private:
 		MarkerUnits m_enUnits;
 
@@ -31,8 +29,6 @@ namespace SVG
 		TRect m_oViewBox;
 
 		TBounds m_oBounds;
-
-		Aggplus::CImage *m_pImage;
 	};
 }
 

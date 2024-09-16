@@ -7,7 +7,7 @@
 
 #include "../../../DesktopEditor/graphics/Matrix.h"
 
-#include "Constants.h";
+#include "Constants.h"
 
 namespace NSDocxRenderer
 {

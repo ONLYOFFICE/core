@@ -827,7 +827,6 @@ namespace NSDocxRenderer
 			oFont.Size = static_cast<double>(drop_cap->nFontSize) / 2.0;
 			m_pFontManager->LoadFontByName(oFont);
 
-			auto metrics = m_pFontManager->GetFontMetrics();
 			auto h = m_pFontManager->GetFontHeight();
 
 			shape->m_dTop = drop_cap->m_dTop;
@@ -1453,7 +1452,6 @@ namespace NSDocxRenderer
 		for (auto& line : m_arTextLines)
 		{
 			bool is_found = false;
-			bool is_bad_below = false;
 			bool is_create_new = false;
 			size_t insert_index = 0;
 
@@ -1760,7 +1758,7 @@ namespace NSDocxRenderer
 					}
 
 					// если анализ доп строчек ничего не дал - разбиваем наиболее "вероятным" способом
-					if ((same_double_top == same_double_bot))
+					if (same_double_top == same_double_bot)
 					{
 						if (spacing_top > spacing_bot)
 							ar_delims[index - 1] = true;

@@ -663,7 +663,7 @@ namespace NExtractTools
 				if ('%' == signature[0] && 'P' == signature[1] && 'D' == signature[2] && 'F' == signature[3])
 				{
 					DWORD dwChangesSize = (DWORD)(oFile.GetFileSize() - 4);
-					BYTE* pChangesData = NULL;
+					BYTE* pChangesData = new BYTE[dwChangesSize];
 
 					if (oFile.ReadFile(pChangesData, dwChangesSize))
 					{

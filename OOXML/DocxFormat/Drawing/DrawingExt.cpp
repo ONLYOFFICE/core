@@ -884,12 +884,12 @@ namespace OOX
 			{
 				if(i->m_sUri == L"{78C0D931-6437-407d-A8EE-F0AAD7539E65}")
 				{
-					/*auto formatPtr(new XLSB::CONDITIONALFORMATTINGS);
+					auto formatPtr(new XLSB::CONDITIONALFORMATTINGS);
 					ptr->m_CONDITIONALFORMATTINGS = XLS::BaseObjectPtr{formatPtr};
 					for(auto j:i->m_arrConditionalFormatting)
 					{
-						formatPtr->m_arCONDITIONALFORMATTING14.push_back(j->toBin());
-					}*/
+                        formatPtr->m_arCONDITIONALFORMATTING14.push_back(j->toBin14());
+					}
 				}
 				else if(i->m_sUri == L"{CCE6A557-97BC-4B89-ADB6-D9C93CAAB3DF}")
 				{
@@ -1068,6 +1068,7 @@ namespace OOX
                     {
                         OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
                         oExt->m_sUri = L"{504A1905-F514-4f6f-8877-14C23A59335A}";
+						oExt->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
                         oExt->m_oAltTextTable = ptr->m_BrtList14;
 
                         if (oExt)

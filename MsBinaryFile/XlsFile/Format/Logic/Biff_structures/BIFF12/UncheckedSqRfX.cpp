@@ -60,11 +60,13 @@ namespace XLSB
     {
         record >> crfx;
         UncheckedRfX rfx;
+        bool isXlsb = (record.getGlobalWorkbookInfo()->Version) >= 0x0800;
         for(size_t i = 0; i < crfx; i++)
         {
             record >> rfx;
             rgrfx.push_back(rfx);
-            strValue += std::wstring (rfx.toString(false).c_str()) + ((i == crfx - 1) ? L"" : L" ");
+            strValue += std::wstring (rfx.toString(false, isXlsb).c_str()) + ((i == crfx - 1) ? L"" : L" ");
+            rfx.to_string_cache.clear();
         }
     }
 

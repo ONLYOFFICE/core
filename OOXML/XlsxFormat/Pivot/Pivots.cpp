@@ -3588,8 +3588,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             m_oColPageCount     = ptr->ccolPage;
             m_oFirstDataCol     = ptr->colFirstData;
             m_oFirstHeaderRow   = ptr->rwFirstHead;
-			if(ptr->rwFirstHead < ptr->rwFirstData)
-            	m_oFirstDataRow     = ptr->rwFirstData;
+
+            m_oFirstDataRow     = ptr->rwFirstData;
 
             m_oRowPageCount     = ptr->crwPage;
 

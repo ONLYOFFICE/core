@@ -165,6 +165,7 @@ namespace NExtractTools
 		oXlsb.m_bWriteToXlsb = true;
 		oXlsb.Read(oox_path);
 		oXlsb.LinkTables();
+		oXlsb.PrepareRichStr();
 
 		OOX::CContentTypes oContentTypes;
 		oXlsb.SetPropForWriteSheet(sTo, oContentTypes);

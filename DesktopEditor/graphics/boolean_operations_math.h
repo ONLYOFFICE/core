@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <limits>
 
 const double EPSILON = 1e-12;
 const double POINT_EPSILON = 1e-2;
@@ -14,6 +15,8 @@ const double MACHINE_EPSILON = 1.12e-16;
 const double TRIGANOMETRIC_EPSILON = 1e-8;
 const double CURVETIME_EPSILON = 1e-8;
 const double LINE_EPSILON = 1e-9;
+constexpr double MIN = std::numeric_limits<double>::min();
+constexpr double MAX = std::numeric_limits<double>::max();
 
 const std::vector<double> ABSCISSAS[16] = {
 	{0.5773502691896257645091488},
@@ -274,7 +277,7 @@ double clipConvexHullPart(std::vector<Aggplus::PointD> part, bool top, double th
 		py = qy;
 	}
 
-	return DBL_MIN;
+	return MIN;
 }
 
 double clipConvexHull(std::vector<Aggplus::PointD> top, std::vector<Aggplus::PointD> bottom, double dMin, double dMax)
@@ -411,7 +414,7 @@ double getDiscriminant(double a, double b, double c)
 int solveQuadratic(double a, double b, double c, std::vector<double>& roots,
 				   double mn, double mx)
 {
-	double x1 = DBL_MAX, x2 = DBL_MAX;
+	double x1 = MAX, x2 = MAX;
 	if (abs(a) < EPSILON)
 	{
 		if (abs(b) < EPSILON)
@@ -456,13 +459,13 @@ int solveQuadratic(double a, double b, double c, std::vector<double>& roots,
 	int count = 0;
 	double	minB = mn - EPSILON,
 			maxB = mx + EPSILON;
-	if (x1 != DBL_MAX && x1 > minB && x1 < maxB)
+	if (x1 != MAX && x1 > minB && x1 < maxB)
 	{
 		roots.push_back(clamp(x1, mn, mx));
 		count++;
 	}
 
-	if (x2 != x1 && x2 != DBL_MAX && x2 > minB && x2 < maxB)
+	if (x2 != x1 && x2 != MAX && x2 > minB && x2 < maxB)
 	{
 		roots.push_back(clamp(x2, mn, mx));
 		count++;

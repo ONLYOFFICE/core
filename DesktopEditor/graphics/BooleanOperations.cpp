@@ -242,7 +242,7 @@ double Curve::GetTimeAt(double offset) const
 	if (abs(diff) < EPSILON)
 		return forward ? b : a;
 	else if (diff > EPSILON)
-		return DBL_MIN;
+		return MIN;
 
 	double	guess = offset / rangeLength,
 			length = 0;
@@ -588,7 +588,7 @@ int Curve::SolveCubic(double a, double b, double c, double d,
 		a = b;
 		b1 = c;
 		c2 = d;
-		x = DBL_MAX;
+		x = MAX;
 	}
 	else if (abs(d) <EPSILON)
 	{
@@ -636,7 +636,7 @@ int Curve::SolveCubic(double a, double b, double c, double d,
 	bool xInRoots1 = count > 0 && x != roots[0],
 		 xInRoots2 = count > 1 && x != roots[1],
 		 xInEps = x > mn - EPSILON && x < mx + EPSILON;
-	if (x != DBL_MAX && (count == 0 || xInRoots1 || xInRoots2) && (xInEps))
+	if (x != MAX && (count == 0 || xInRoots1 || xInRoots2) && (xInEps))
 	{
 		roots.push_back(clamp(x, mn, mx));
 		count++;
@@ -768,7 +768,7 @@ void CBooleanOperations::TraceBoolean()
 		for (const auto& l : Locations)
 		{
 			Segment start = l->S,
-				s = GetNextSegment(l->S);
+					s = GetNextSegment(l->S);
 
 			if (s == Segment() || (bool)s.Inters || s == start)
 				continue;
@@ -1329,7 +1329,7 @@ bool CBooleanOperations::IsCrossing(std::shared_ptr<Location> loc)
 	}
 
 	PointD	pt = loc->C.GetPoint(loc->Time);
-	double	offset = DBL_MAX;
+	double	offset = MAX;
 	for (const auto& o : offsets)
 		if (o < offset)
 			offset = o;
@@ -1544,7 +1544,7 @@ int CBooleanOperations::AddCurveIntersection(Curve curve1, Curve curve2, const C
 	double tMaxClip = clipConvexHull(top, bottom, dMin, dMax);
 
 	if ((d1 == 0 && d2 == 0 && dp0 == 0 && dp1 == 0 && dp2 == 0 && dp3 == 0)
-		|| tMinClip == DBL_MIN || tMaxClip == DBL_MIN)
+		|| tMinClip == MIN || tMaxClip == MIN)
 		return calls;
 
 	double	tMinNew = tMin + (tMax - tMin) * tMinClip,
@@ -1613,7 +1613,7 @@ int CBooleanOperations::AddCurveIntersection(Curve curve1, Curve curve2, const C
 
 int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment, const Curve& curve, int& isTouch) const
 {
-	PointD pt;
+	PointD pt{};
 	if (intersect(point.X, point.Y, segment.P.X, segment.P.Y, curve.Segment1.P.X, curve.Segment1.P.Y, curve.Segment2.P.X, curve.Segment2.P.Y, pt))
 	{
 		if (getDistance(curve.Segment1.P, pt) <= GEOMETRIC_EPSILON || getDistance(curve.Segment2.P, pt) <= GEOMETRIC_EPSILON)

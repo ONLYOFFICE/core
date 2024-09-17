@@ -32,6 +32,13 @@
 #pragma once
 #include "PivotCacheHierarchies.h"
 
+#include "../../XlsbFormat/Biff12_unions/PCDHIERARCHIES.h"
+#include "../../XlsbFormat/Biff12_unions/PCDHIERARCHY.h"
+#include "../../XlsbFormat/Biff12_unions/PCDHFIELDSUSAGE.h"
+
+#include "../../XlsbFormat/Biff12_records/BeginPCDHierarchy.h"
+#include "../../XlsbFormat/Biff12_records/BeginPCDHFieldsUsage.h"
+
 namespace OOX
 {
 namespace Spreadsheet
@@ -59,6 +66,14 @@ namespace Spreadsheet
     {
         
     }
+    XLS::BaseObjectPtr CpivotCacheHierarchies::toBin()
+    {
+        auto ptr(new XLSB::PCDHIERARCHIES);
+        XLS::BaseObjectPtr objectPtr(ptr);
+        for(auto i : m_arrItems)
+            ptr->m_arPCDHIERARCHY.push_back(i->toBin());
+        return objectPtr;
+    }
     void CpivotCacheHierarchy::fromXML(XmlUtils::CXmlLiteReader& oReader)
     {
         ReadAttributes( oReader );
@@ -75,7 +90,10 @@ namespace Spreadsheet
     {
         WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_Read_if		( oReader, L"uniqueName", m_oUniqueName )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"caption", m_oCaption )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"hidden", m_oHidden )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"caption", m_oCaption )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"measure", m_oMeasure )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"measureGroup", m_oMeasureGroup )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"attribute", m_oAttribute )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"defaultMemberUniqueName", m_oDefaultMemberUniqueName )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"allUniqueName", m_oAllUniqueName )
@@ -89,6 +107,49 @@ namespace Spreadsheet
     void CpivotCacheHierarchy::toXML(NSStringUtils::CStringBuilder& writer) const
     {
         
+    }
+    XLS::BaseObjectPtr CpivotCacheHierarchy::toBin()
+    {
+        auto ptr1(new XLSB::PCDHIERARCHY);
+        XLS::BaseObjectPtr objectPtr(ptr1);
+        auto ptr(new XLSB::BeginPCDHierarchy);
+        ptr1->m_BrtBeginPCDHierarchy = XLS::BaseObjectPtr(ptr);
+
+        if(m_oMeasure.IsInit())
+            ptr->fMeasure = m_oMeasure.get();
+        if(m_oHidden.IsInit())
+            ptr->fHidden = m_oHidden.get();
+        if(m_oDimensionUniqueName.IsInit())
+        {
+            ptr->stDimUnq = m_oDimensionUniqueName.get();
+            ptr->fLoadDimUnq = true;
+        }
+        if(m_oDefaultMemberUniqueName.IsInit())
+        {
+            ptr->stDefaultUnq = m_oDefaultMemberUniqueName.get();
+            ptr->fLoadDefaultUnq = true;
+        }
+        if(m_oAllUniqueName.IsInit())
+        {
+            ptr->stAllUnq = m_oAllUniqueName.get();
+            ptr->fLoadAllUnq = true;
+        }
+        if(m_oDisplayFolder.IsInit())
+        {
+            ptr->stDispFld = m_oDisplayFolder.get();
+            ptr->fLoadDispFld = false;
+        }
+        if(m_oCaption.IsInit())
+            ptr->stCaption = m_oCaption.get();
+         else
+            ptr->stCaption = L"";
+         if(m_oUniqueName.IsInit())
+            ptr->stUnique = m_oUniqueName.get();
+         else
+            ptr->stUnique = L"";
+        if(m_oFieldsUsage.IsInit())
+            ptr1->m_PCDHFIELDSUSAGE = m_oFieldsUsage->toBin();
+        return objectPtr;
     }
 
      void CfieldsUsage::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -118,6 +179,16 @@ namespace Spreadsheet
     void CfieldsUsage::toXML(NSStringUtils::CStringBuilder& writer) const
     {
         
+    }
+    XLS::BaseObjectPtr CfieldsUsage::toBin()
+    {
+        auto ptr1(new XLSB::PCDHFIELDSUSAGE);
+        XLS::BaseObjectPtr objectPtr(ptr1);
+        auto ptr(new XLSB::BeginPCDHFieldsUsage);
+        ptr1->m_BrtBeginPCDHFieldsUsage = XLS::BaseObjectPtr {ptr};
+        ptr->cItems = m_oCount.get();
+        ptr->rgifdb = m_oFieldUsage;
+        return objectPtr;
     }
 }
 }

@@ -3824,6 +3824,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             ptr->m_PCDFIELDS = m_oCacheFields->toBin();
 		if(m_oCacheSource.IsInit())
 			ptr->m_PCDSOURCE = m_oCacheSource->toBin();
+        if(m_oHierarchies.IsInit())
+            ptr->m_PCDHIERARCHIES = m_oHierarchies->toBin();
 		if(m_oExtLst.IsInit())
 			ptr->m_FRTPIVOTCACHEDEF = m_oExtLst->toBinPivotCache();
 		return objectPtr;

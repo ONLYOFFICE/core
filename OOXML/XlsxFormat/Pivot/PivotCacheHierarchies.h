@@ -86,6 +86,9 @@ namespace Spreadsheet
         void fromBin(XLS::BaseObjectPtr& obj);
         XLS::BaseObjectPtr toBin();
 
+        nullable_bool       m_oMeasure;
+        nullable_bool       m_oHidden;
+        nullable_string		m_oMeasureGroup;
         nullable_string		m_oUniqueName;
         nullable_string		m_oCaption;
         nullable_int		m_oAttribute;

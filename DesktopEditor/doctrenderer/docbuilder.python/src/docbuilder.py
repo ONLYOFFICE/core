@@ -121,6 +121,9 @@ def _loadLibrary(path):
     _lib.CDocBuilderValue_CreateArray.argtypes = [ctypes.c_int]
     _lib.CDocBuilderValue_CreateArray.restype = OBJECT_HANDLE
 
+    _lib.CDocBuilderValue_CreateObject.argtypes = []
+    _lib.CDocBuilderValue_CreateObject.restype = OBJECT_HANDLE
+
     _lib.CDocBuilderValue_Call0.argtypes = [OBJECT_HANDLE, ctypes.c_wchar_p]
     _lib.CDocBuilderValue_Call0.restype = OBJECT_HANDLE
 
@@ -280,6 +283,12 @@ class CDocBuilderValue:
             self._internal = _lib.CDocBuilderValue_CreateArray(length)
             for i in range(length):
                 self.Set(i, value[i])
+        elif isinstance(value, dict):
+            self._internal = _lib.CDocBuilderValue_CreateObject()
+            for key in value.keys():
+                if not isinstance(key, str):
+                    raise TypeError("CDocBuilderValue constructor supports only str keys in dict")
+                self.SetProperty(key, value[key])
         elif isinstance(value, CDocBuilderValue):
             self._internal = _lib.CDocBuilderValue_Copy(value._internal)
         elif isinstance(value, OBJECT_HANDLE):
@@ -384,6 +393,10 @@ class CDocBuilderValue:
     @staticmethod
     def CreateArray(length):
         return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderValue_CreateArray(length)))
+
+    @staticmethod
+    def CreateObject():
+        return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderValue_CreateObject()))
 
     def Call(self, name, *args):
         if len(args) == 0:

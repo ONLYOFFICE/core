@@ -56,6 +56,7 @@ DOCBUILDER_FUNC_DECL CDocBuilderValue* CDocBuilderValue_CreateWithString(const w
 DOCBUILDER_FUNC_DECL CDocBuilderValue* CDocBuilderValue_CreateUndefined();
 DOCBUILDER_FUNC_DECL CDocBuilderValue* CDocBuilderValue_CreateNull();
 DOCBUILDER_FUNC_DECL CDocBuilderValue* CDocBuilderValue_CreateArray(int length);
+DOCBUILDER_FUNC_DECL CDocBuilderValue* CDocBuilderValue_CreateObject();
 
 DOCBUILDER_FUNC_DECL CDocBuilderValue* CDocBuilderValue_Call0(CDocBuilderValue* self, const wchar_t* name);
 DOCBUILDER_FUNC_DECL CDocBuilderValue* CDocBuilderValue_Call1(CDocBuilderValue* self, const wchar_t* name, CDocBuilderValue* p1);

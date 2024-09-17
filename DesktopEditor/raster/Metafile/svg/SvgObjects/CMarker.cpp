@@ -6,7 +6,7 @@
 namespace SVG
 {
 	CMarker::CMarker(XmlUtils::CXmlNode &oNode)
-		: CObject(oNode), m_oBounds{0., 0., 0., 0.}
+		: CObject(oNode), m_dAngle(0.), m_oBounds{0., 0., 0., 0.}
 	{
 		m_oWindow.m_oX     .SetValue(oNode.GetAttribute(L"refX"));
 		m_oWindow.m_oY     .SetValue(oNode.GetAttribute(L"refY"));
@@ -33,9 +33,22 @@ namespace SVG
 		const std::wstring& wsUnits = oNode.GetAttribute(L"markerUnits");
 
 		if (L"userSpaceOnUse" == wsUnits)
-			m_enUnits = Marker_UserSpaceOnUse;
+			m_enUnits = EMarkerUnits::UserSpaceOnUse;
 		else
-			m_enUnits = Marker_StrokeWidth;
+			m_enUnits = EMarkerUnits::StrokeWidth;
+
+		const std::wstring& wsOrient = oNode.GetAttribute(L"orient");
+
+		if (L"auto" == wsOrient)
+			m_enOrient = EMarkerOrient::Auto;
+		else if (L"auto-start-reverse" == wsOrient)
+			m_enOrient = EMarkerOrient::Auto_start_reverse;
+		else
+		{
+			m_enOrient = EMarkerOrient::Angle;
+			if (!StrUtils::ReadAngle(wsOrient, m_dAngle))
+				StrUtils::ReadDoubleValue(wsOrient, m_dAngle);
+		}
 	}
 
 	CMarker::~CMarker()
@@ -50,33 +63,48 @@ namespace SVG
 	void CMarker::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{}
 
-	void CMarker::Draw(IRenderer *pRenderer, const CSvgFile* pFile, const std::vector<Point> &arPoints, double dStrokeWidth, CommandeMode oMode, const TSvgStyles* pOtherStyles, const CRenderedObject* pContexObject) const
+	void CMarker::Draw(IRenderer *pRenderer, const CSvgFile* pFile, const TMarkerExternData& oExternalData, CommandeMode oMode, const TSvgStyles* pOtherStyles, const CRenderedObject* pContexObject) const
 	{
-		if (arPoints.empty() || Equals(0., dStrokeWidth) || m_arObjects.empty())
+		if (NULL == oExternalData.m_pPoints || oExternalData.m_pPoints->empty() || m_arObjects.empty() || (EMarkerUnits::StrokeWidth == m_enUnits && Equals(0., oExternalData.m_dStroke)))
 			return;
 
-		const double dMaxScale = ((Marker_StrokeWidth == m_enUnits) ? dStrokeWidth : 1.) * std::max((m_oWindow.m_oWidth.ToDouble(NSCSS::Pixel) / m_oViewBox.m_oWidth.ToDouble(NSCSS::Pixel)), (m_oWindow.m_oHeight.ToDouble(NSCSS::Pixel) / m_oViewBox.m_oHeight.ToDouble(NSCSS::Pixel)));
+		const double dMaxScale = ((EMarkerUnits::StrokeWidth == m_enUnits) ? oExternalData.m_dStroke : 1.) * std::max((m_oWindow.m_oWidth.ToDouble(NSCSS::Pixel) / m_oViewBox.m_oWidth.ToDouble(NSCSS::Pixel)), (m_oWindow.m_oHeight.ToDouble(NSCSS::Pixel) / m_oViewBox.m_oHeight.ToDouble(NSCSS::Pixel)));
 
 		double dM11, dM12, dM21, dM22, dDx, dDy;
 		pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dDx, &dDy);
 
-		Aggplus::CMatrix oTransform(dM11, dM12, dM21, dM22, dDx, dDy);
-
 		const double dSkipX = m_oWindow.m_oX.ToDouble(NSCSS::Pixel) * dMaxScale;
 		const double dSkipY = m_oWindow.m_oY.ToDouble(NSCSS::Pixel) * dMaxScale;
 
-		oTransform.Translate(-dSkipX, -dSkipY);
-
-		for (Point oPoint : arPoints)
+		for (const TPointData& oPoint : *oExternalData.m_pPoints)
 		{
-			oTransform.TransformPoint(oPoint.dX, oPoint.dY);
+			Aggplus::CMatrix oTransform(dM11, dM12, dM21, dM22, dDx, dDy);
+			oTransform.Translate(oPoint.m_oPoint.dX - dSkipX, oPoint.m_oPoint.dY - dSkipY);
 
-			pRenderer->SetTransform(dM11 * dMaxScale, dM12, dM21, dM22 * dMaxScale, oPoint.dX, oPoint.dY);
+			if (EMarkerOrient::Angle == m_enOrient)
+				oTransform.RotateAt(m_dAngle, -dSkipX, -dSkipY);
+			else if (!Equals(0., oPoint.m_dAngle))
+				oTransform.RotateAt(oPoint.m_dAngle, -dSkipX, -dSkipY);
+
+			Aggplus::CMatrix oTransform2(oTransform);
+			oTransform2.Scale(dMaxScale, dMaxScale);
+
+			pRenderer->SetTransform(oTransform2.sx(), oTransform2.shy(), oTransform2.shx(), oTransform2.sy(), oTransform.tx(), oTransform.ty());
 
 			for (const CRenderedObject* pObject : m_arObjects)
 				pObject->Draw(pRenderer, pFile, oMode, pOtherStyles, pContexObject);
 		}
 
 		pRenderer->SetTransform(dM11, dM12, dM21, dM22, dDx, dDy);
+	}
+
+	bool CMarker::NeedExternalAngle() const
+	{
+		return m_enOrient != EMarkerOrient::Angle;
+	}
+
+	EMarkerOrient CMarker::GetOrientType() const
+	{
+		return m_enOrient;
 	}
 }

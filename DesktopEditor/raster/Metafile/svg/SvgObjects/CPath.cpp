@@ -29,6 +29,11 @@ namespace SVG
 		return oBounds;
 	}
 
+	UINT IPathElement::GetPointCount() const
+	{
+		return m_arPoints.size();
+	}
+
 	Point IPathElement::operator[](int nIndex) const
 	{
 		if (m_arPoints.empty() || (nIndex > 0 && nIndex >= m_arPoints.size()) || (nIndex < 0 && -nIndex > m_arPoints.size()))
@@ -516,15 +521,44 @@ namespace SVG
 
 		const double dStrokeWidth = (m_oStyles.m_oStroke.m_oWidth.Empty()) ? 1. : m_oStyles.m_oStroke.m_oWidth.ToDouble(NSCSS::Pixel);
 
+		#define CALCULATE_ANGLE(firstPoint, secondPoint) std::atan2(secondPoint.dY - firstPoint.dY, secondPoint.dX - firstPoint.dX) * 180. / M_PI
+
 		if (!m_oMarkers.m_oStart.Empty() && NSCSS::NSProperties::ColorType::ColorUrl == m_oMarkers.m_oStart.GetType())
 		{
 			CMarker *pStartMarker = dynamic_cast<CMarker*>(pFile->GetMarkedObject(m_oMarkers.m_oStart.ToWString()));
 
 			if (NULL != pStartMarker)
 			{
-				const IPathElement* pFirstElement{FindFirstNotEmpty()};
-				if (NULL != pFirstElement)
-					pStartMarker->Draw(pRenderer, pFile, {(*pFirstElement)[0]}, dStrokeWidth, oMode, pOtherStyles, this);
+				TMarkerExternData oExternalData;
+				oExternalData.m_dStroke = dStrokeWidth;
+				oExternalData.m_pPoints = new std::vector<TPointData>(1);
+
+				int unIndex = FindIndexFirstNotEmpty();
+
+				if (0 <= unIndex)
+				{
+					const IPathElement* pFirstElement{m_arElements[unIndex]};
+
+					(*oExternalData.m_pPoints)[0].m_oPoint = (*pFirstElement)[0];
+
+					if (pStartMarker->NeedExternalAngle())
+					{
+						Point oCurent{(*pFirstElement)[0]};
+						Point oNext;
+
+						if (pFirstElement->GetPointCount() > 1)
+							oNext = (*pFirstElement)[1];
+						else if (unIndex < m_arElements.size() - 1 && EPathElement::Close != m_arElements[unIndex + 1]->GetType() && EPathElement::Move != m_arElements[unIndex + 1]->GetType())
+							oNext = (*m_arElements[unIndex + 1])[0];
+
+						(*oExternalData.m_pPoints)[0].m_dAngle = CALCULATE_ANGLE(oCurent, oNext);
+
+						if (EMarkerOrient::Auto_start_reverse == pStartMarker->GetOrientType())
+							(*oExternalData.m_pPoints)[0].m_dAngle += 180.;
+					}
+
+					pStartMarker->Draw(pRenderer, pFile, oExternalData, oMode, pOtherStyles, this);
+				}
 			}
 		}
 
@@ -532,25 +566,64 @@ namespace SVG
 		{
 			CMarker *pMidMarker = dynamic_cast<CMarker*>(pFile->GetMarkedObject(m_oMarkers.m_oMid.ToWString()));
 
-			std::vector<Point> arPoints(m_arElements.size() - 2);
-
-			for (unsigned int unIndex = 1; unIndex < m_arElements.size() - 1; ++unIndex)
-			{
-				if (EPathElement::Close != m_arElements[unIndex]->GetType())
-					arPoints[unIndex - 1] = (*m_arElements[unIndex])[-1];
-			}
-
 			if (NULL != pMidMarker)
-				pMidMarker->Draw(pRenderer, pFile, arPoints, dStrokeWidth, oMode, pOtherStyles, this);
+			{
+				TMarkerExternData oExternalData;
+				oExternalData.m_dStroke = dStrokeWidth;
+				oExternalData.m_pPoints = new std::vector<TPointData>(m_arElements.size() - 2);
+
+				for (unsigned int unIndex = 1; unIndex < m_arElements.size() - 1; ++unIndex)
+				{
+					if (EPathElement::Close != m_arElements[unIndex]->GetType())
+						(*oExternalData.m_pPoints)[unIndex - 1].m_oPoint = (*m_arElements[unIndex])[-1];
+
+					if (pMidMarker->NeedExternalAngle())
+					{
+						const Point oCurrent{(*m_arElements[unIndex])[0]};
+						const Point oPrev{(*m_arElements[unIndex + 1])[-1]};
+
+						(*oExternalData.m_pPoints)[unIndex - 1].m_dAngle = CALCULATE_ANGLE(oCurrent, oPrev);
+					}
+				}
+
+				pMidMarker->Draw(pRenderer, pFile, oExternalData, oMode, pOtherStyles, this);
+			}
 		}
 
 		if (!m_oMarkers.m_oEnd.Empty() && NSCSS::NSProperties::ColorType::ColorUrl == m_oMarkers.m_oEnd.GetType())
 		{
 			CMarker *pEndMarker = dynamic_cast<CMarker*>(pFile->GetMarkedObject(m_oMarkers.m_oEnd.ToWString()));
 
-			const IPathElement* pLastElement{FindFirstNotEmpty(true)};
-			if (NULL != pLastElement)
-				pEndMarker->Draw(pRenderer, pFile, {(*pLastElement)[-1]}, dStrokeWidth, oMode, pOtherStyles, this);
+			if (NULL != pEndMarker)
+			{
+				TMarkerExternData oExternalData;
+				oExternalData.m_dStroke = dStrokeWidth;
+				oExternalData.m_pPoints = new std::vector<TPointData>(1);
+
+				int unIndex = FindIndexFirstNotEmpty(true);
+
+				if (0 <= unIndex)
+				{
+					const IPathElement* pLastElement{m_arElements[unIndex]};
+
+					(*oExternalData.m_pPoints)[0].m_oPoint = (*pLastElement)[-1];
+
+					if (pEndMarker->NeedExternalAngle())
+					{
+						Point oCurent{(*pLastElement)[-1]};
+						Point oPrev;
+
+						if (pLastElement->GetPointCount() > 1)
+							oPrev = (*pLastElement)[-2];
+						else if (unIndex > 0 && EPathElement::Close != m_arElements[unIndex - 1]->GetType() && EPathElement::Move != m_arElements[unIndex - 1]->GetType())
+							oPrev = (*m_arElements[unIndex - 1])[0];
+
+						(*oExternalData.m_pPoints)[0].m_dAngle = CALCULATE_ANGLE(oPrev, oCurent);
+					}
+
+					pEndMarker->Draw(pRenderer, pFile, oExternalData, oMode, pOtherStyles, this);
+				}
+			}
 		}
 
 		EndPath(pRenderer, pFile, oOldMatrix, oMode, pOtherStyles, pContexObject);
@@ -594,22 +667,22 @@ namespace SVG
 		return oBounds;
 	}
 
-	const IPathElement* CPath::FindFirstNotEmpty(bool bReverseSearch) const
+	const int CPath::FindIndexFirstNotEmpty(bool bReverseSearch) const
 	{
 		if (!bReverseSearch)
 		{
 			std::vector<IPathElement*>::const_iterator itFound = std::find_if(m_arElements.cbegin(), m_arElements.cend(), [](const IPathElement* pElement){ return EPathElement::Close != pElement->GetType(); });
 			if (m_arElements.cend() != itFound)
-				return *itFound;
+				return itFound - m_arElements.cbegin();
 		}
 		else
 		{
 			std::vector<IPathElement*>::const_reverse_iterator itFound = std::find_if(m_arElements.crbegin(), m_arElements.crend(), [](const IPathElement* pElement){ return EPathElement::Close != pElement->GetType(); });
 			if (m_arElements.crend() != itFound)
-				return *itFound;
+				return itFound.base() - m_arElements.cbegin() - 1;
 		}
 
-		return NULL;
+		return -1;
 	}
 
 	void CPath::ReadFromString(const std::wstring &wsValue)

@@ -35,6 +35,7 @@ namespace SVG
 		virtual void Draw(IRenderer* pRenderer) const = 0;
 
 		TBounds GetBounds() const;
+		UINT    GetPointCount() const;
 		virtual Point operator[](int nIndex) const;
 
 	private:
@@ -121,7 +122,7 @@ namespace SVG
 
 		TBounds GetBounds() const override;
 
-		const IPathElement* FindFirstNotEmpty(bool bReverseSearch = false) const;
+		const int FindIndexFirstNotEmpty(bool bReverseSearch = false) const;
 
 		void ReadFromString(const std::wstring& wsValue);
 		bool AddElement(IPathElement* pElement);

@@ -88,7 +88,7 @@ namespace NSCSS
 			{L"gainsboro",          L"DCDCDC"}, {L"lightgray",             L"D3D3D3"}, {L"silver",        L"C0C0C0"},
 			{L"darkgray",           L"A9A9A9"}, {L"gray",                  L"808080"}, {L"dimgray",       L"696969"},
 			{L"lightslategray",     L"778899"}, {L"slategray",             L"708090"}, {L"darkslategray", L"2F4F4F"},
-			{L"black",              L"000000"},
+			{L"black",              L"000000"}, {L"grey",                  L"808080"},
 			/* Outdated */
 			{L"windowtext",         L"000000"},  {L"transparent",           L"000000"}
 		};

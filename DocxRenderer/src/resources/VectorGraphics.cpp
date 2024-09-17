@@ -299,7 +299,10 @@ namespace NSDocxRenderer
 		std::unique_ptr<Aggplus::CGraphicsPath> path1(vg1.GetGraphicsPath());
 		std::unique_ptr<Aggplus::CGraphicsPath> path2(vg2.GetGraphicsPath());
 		auto op = GetOpType(clipType);
-		return CVectorGraphics(*Aggplus::CalcBooleanOperation(path1.get(), path2.get(), op));
+		Aggplus::CGraphicsPath* result = Aggplus::CalcBooleanOperation(path1.get(), path2.get(), op);
+		auto cvg = CVectorGraphics(*result);
+		delete result;
+		return cvg;
 	}
 
 	Aggplus::CGraphicsPath* CVectorGraphics::GetGraphicsPath() const noexcept

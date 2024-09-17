@@ -407,6 +407,11 @@ public:
 	{
 		m_scopes.push_back(scope);
 	}
+
+	void AddNewScope(NSDoctRenderer::CDocBuilderContextScopeWrap* scope)
+	{
+		m_scopes.emplace_back(scope);
+	}
 };
 
 class CV8RealTimeWorker
@@ -1284,7 +1289,7 @@ namespace NSDoctRenderer
 			return m_pWorker->ExecuteCommand(command, retValue);
 		}
 
-		CDocBuilderContext GetContext()
+		CDocBuilderContext GetContext(bool enterContext)
 		{
 			CDocBuilderContext ctx;
 
@@ -1292,6 +1297,14 @@ namespace NSDoctRenderer
 
 			ctx.m_internal->m_context = m_pWorker->m_context;
 			ctx.m_internal->m_context_data = &m_pWorker->m_oContextData;
+
+			if (enterContext)
+			{
+				CDocBuilderContextScopeWrap* scopeWrap = new CDocBuilderContextScopeWrap();
+				scopeWrap->m_scope = new CJSContextScope(m_pWorker->m_context);
+				m_pWorker->m_oContextData.AddNewScope(scopeWrap);
+			}
+
 			return ctx;
 		}
 

@@ -39,6 +39,7 @@
 
 #include "Matrix.h"
 #include "./pro/Fonts.h"
+#include <memory>
 
 namespace Aggplus
 {
@@ -47,6 +48,9 @@ namespace Aggplus
 	{
 	public:
 		CGraphicsPath();
+		CGraphicsPath(const CGraphicsPath& other) noexcept;
+		CGraphicsPath(CGraphicsPath&& other) noexcept;
+		CGraphicsPath(const std::vector<std::shared_ptr<CGraphicsPath>>& paths) noexcept;
 		virtual ~CGraphicsPath();
 
 		CGraphicsPath* Clone();
@@ -56,7 +60,7 @@ namespace Aggplus
 
 		Status StartFigure();
 		Status CloseFigure();
-		bool Is_poly_closed();
+		bool Is_poly_closed() const;
 		Status MoveTo(double x, double y);
 		Status LineTo(double x, double y);
 		Status CurveTo(double x1, double y1, double x2, double y2, double x3, double y3);
@@ -100,16 +104,19 @@ namespace Aggplus
 		bool IsPointInPath(const double& x, const double& y);
 
 		// Methods for Path Clip
-		size_t	GetCompoundPath() const;
-		bool	IsClockwise()	  const;
-		bool	IsMovePoint(size_t idx)	 const;
-		bool	IsCurvePoint(size_t idx) const;
-		bool	IsLinePoint(size_t idx)	 const;
-		bool	IsClosePoint(size_t idx) const;
-		double	GetArea() const;
-		double	GetArea(size_t idx, bool isCurve) const;
-		std::vector<PointD> GetPoints(size_t idx, size_t count) const;
-		std::vector<CGraphicsPath*> GetSubPaths() const;
+		size_t	GetCloseCount() const noexcept;
+		bool	IsClockwise()	  const noexcept;
+		bool	IsMovePoint(size_t idx)	 const noexcept;
+		bool	IsCurvePoint(size_t idx) const noexcept;
+		bool	IsLinePoint(size_t idx)	 const noexcept;
+		bool	IsClosePoint(size_t idx) const noexcept;
+		double	GetArea() const noexcept;
+		double	GetArea(size_t idx, bool isCurve) const noexcept;
+		std::vector<PointD> GetPoints(size_t idx, size_t count) const noexcept;
+		std::vector<std::shared_ptr<CGraphicsPath>> GetSubPaths() const;
+
+		CGraphicsPath& operator=(const CGraphicsPath& other)	noexcept;
+		CGraphicsPath& operator=(CGraphicsPath&& other)			noexcept;
 
 	public:
 		CGraphicsPath_private* m_internal;
@@ -180,7 +187,7 @@ namespace Aggplus
 		Exclusion      = 3
 	};
 
-	GRAPHICS_DECL CGraphicsPath* CalcBooleanOperation(CGraphicsPath* path1, CGraphicsPath* path2, BooleanOpType op);
+	GRAPHICS_DECL CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1, const CGraphicsPath& path2, BooleanOpType op);
 
 } // namespace Aggplus
 

@@ -2,9 +2,6 @@
 #define BOOLEANOPERATIONS_H
 
 #include "GraphicsPath.h"
-#include "boolean_operations_math.h"
-#include <unordered_map>
-#include <memory>
 
 namespace Aggplus
 {
@@ -18,22 +15,24 @@ namespace Aggplus
 
 		bool IsCurve = false;
 		bool Visited = false;
+		bool PolyClosed = false;
 
 		int Index = -1;
 		int Id = 0;
 		int Winding = 0;
 
-		CGraphicsPath* Path{nullptr};
 		std::shared_ptr<Location> Inters{nullptr};
 
 		Segment();
-		Segment(const std::vector<PointD>& points, bool isCurve, int index, int id, CGraphicsPath* path);
+		Segment(const std::vector<PointD>& points, bool isCurve, int index, int id,
+				bool polyClosed);
 		Segment(const PointD& p, const PointD& hi, const PointD& ho);
 
 		void SetHandles(const PointD& hi, const PointD& ho);
 		void UpdateHandles(const PointD& hi, const PointD& ho);
 
 		bool IsValid(BooleanOpType op) const;
+		bool IsEmpty() const;
 		bool operator==(const Segment& other) const;
 		bool operator!=(const Segment& other) const;
 	};
@@ -100,9 +99,9 @@ namespace Aggplus
 	class CBooleanOperations
 	{
 	public:
-		CBooleanOperations(CGraphicsPath* path1, CGraphicsPath* path2, BooleanOpType op);
+		CBooleanOperations(std::shared_ptr<CGraphicsPath> path1, std::shared_ptr<CGraphicsPath> path2, BooleanOpType op);
 		~CBooleanOperations();
-		CGraphicsPath* GetResult();
+		std::shared_ptr<CGraphicsPath>&& GetResult();
 
 		// BooleanOp
 		void TraceBoolean();
@@ -111,7 +110,8 @@ namespace Aggplus
 		void TracePaths();
 
 		// Path
-		void	PreparePath(CGraphicsPath* path, int id, std::vector<Segment>& segments, std::vector<Curve>& curves, bool reverse = false);
+		void	PreparePath(std::shared_ptr<CGraphicsPath> path, int id, std::vector<Segment>& segments,
+							std::vector<Curve>& curves, bool reverse = false);
 		void	InsertSegment(const Segment& segment, const Segment& handles, bool updateHandles);
 		Curve	GetCurve(const Segment& segment) const;
 		Curve	GetPreviousCurve(const Curve& curve) const;
@@ -134,7 +134,7 @@ namespace Aggplus
 		void AddCurveLineIntersection(const Curve& curve1, const Curve& curve2, bool flip);
 		int  AddCurveIntersection(Curve curve1, Curve curve2, const Curve& startCurve1, const Curve& startCurve2, bool flip,
 								  int recursion = 0, int calls = 0, double tMin = 0.0, double tMax = 1.0, double uMin = 0.0, double uMax = 1.0);
-		int  CheckInters(const PointD& point, const Segment& segment, const Curve& curve, int& isTouch) const;
+		int  CheckInters(const PointD& point, const Segment& segment, const Curve& curve, int& touchCount) const;
 		void SetWinding();
 
 		// Location
@@ -148,9 +148,9 @@ namespace Aggplus
 	private:
 		BooleanOpType Op = Intersection;
 
-		CGraphicsPath* Path1{nullptr};
-		CGraphicsPath* Path2{nullptr};
-		CGraphicsPath* Result{nullptr};
+		std::shared_ptr<CGraphicsPath> Path1{nullptr};
+		std::shared_ptr<CGraphicsPath> Path2{nullptr};
+		std::shared_ptr<CGraphicsPath> Result{nullptr};
 
 		std::vector<Segment> Segments1;
 		std::vector<Segment> Segments2;
@@ -161,8 +161,6 @@ namespace Aggplus
 		std::vector<Curve> Curves2;
 
 		std::vector<std::shared_ptr<Location>> Locations;
-
-		bool IsDeleted = false;
 	};
 } // namespace Aggplus
 

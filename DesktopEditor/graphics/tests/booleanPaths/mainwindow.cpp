@@ -76,8 +76,6 @@ std::vector<QObject*> GetChildsByClassName(QObject* parent, const QString& name)
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
-	, Path1(new Aggplus::CGraphicsPath)
-	, Path2(new Aggplus::CGraphicsPath)
 	, ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
@@ -94,6 +92,30 @@ MainWindow::MainWindow(QWidget *parent)
 
 	for (std::vector<QObject*>::iterator i = arrBooleanButtons.begin(); i != arrBooleanButtons.end(); i++)
 		connect((QPushButton*)(*i), &QPushButton::clicked, this, &MainWindow::SetCommand);
+
+	Path1.StartFigure();
+	Path1.MoveTo(100.0, 100.0);
+	Path1.LineTo(150.0, 150.0);
+	Path1.LineTo(200.0, 150.0);
+	Path1.LineTo(100.0, 100.0);
+	Path1.CloseFigure();
+	Path1.MoveTo(300.0, 300.0);
+	Path1.LineTo(400.0, 300.0);
+	Path1.LineTo(400.0, 400.0);
+	Path1.LineTo(300.0, 400.0);
+	Path1.LineTo(300.0, 300.0);
+	Path1.CloseFigure();
+
+	Path2.StartFigure();
+	Path2.MoveTo(100.0, 125.0);
+	Path2.LineTo(100.0, 350.0);
+	Path2.LineTo(350.0, 350.0);
+	Path2.LineTo(350.0, 125.0);
+	Path2.LineTo(100.0, 125.0);
+	Path2.CloseFigure();
+
+	Result = Aggplus::CalcBooleanOperation(Path1, Path2, Aggplus::Intersection);
+	Draw(true);
 }
 
 void MainWindow::SetFigure()
@@ -128,85 +150,83 @@ void MainWindow::SetCommand()
 
 MainWindow::~MainWindow()
 {
-	delete Path1;
-	delete Path2;
 	delete ui;
 }
 
-Aggplus::CGraphicsPath* MainWindow::SetPath(double scale, double offsetX, double offsetY, QString Figure)
+Aggplus::CGraphicsPath MainWindow::SetPath(double scale, double offsetX, double offsetY, QString Figure)
 {
-	Aggplus::CGraphicsPath *path = new Aggplus::CGraphicsPath;
+	Aggplus::CGraphicsPath path;
 
-	path->StartFigure();
+	path.StartFigure();
 	if (Figure == "Rectangle")
 	{
-		path->MoveTo(RECTANGLE[0] + offsetX,
-					 RECTANGLE[1] + offsetY);
-		path->LineTo(RECTANGLE[0] + scale * RECTANGLE[2] + offsetX,
-					 RECTANGLE[1] + offsetY);
-		path->LineTo(RECTANGLE[0] + scale * RECTANGLE[2] + offsetX,
-					 RECTANGLE[1] + scale * RECTANGLE[3] + offsetY);
-		path->LineTo(RECTANGLE[0] + offsetX,
-					 RECTANGLE[1] + scale * RECTANGLE[3] + offsetY);
-		path->LineTo(RECTANGLE[0] + offsetX,
-					 RECTANGLE[1] + offsetY);
+		path.MoveTo(RECTANGLE[0] + offsetX,
+					RECTANGLE[1] + offsetY);
+		path.LineTo(RECTANGLE[0] + scale * RECTANGLE[2] + offsetX,
+					RECTANGLE[1] + offsetY);
+		path.LineTo(RECTANGLE[0] + scale * RECTANGLE[2] + offsetX,
+					RECTANGLE[1] + scale * RECTANGLE[3] + offsetY);
+		path.LineTo(RECTANGLE[0] + offsetX,
+					RECTANGLE[1] + scale * RECTANGLE[3] + offsetY);
+		path.LineTo(RECTANGLE[0] + offsetX,
+					RECTANGLE[1] + offsetY);
 	}
 	else if (Figure == "Ellipse")
 	{
-		path->AddEllipse(RECTANGLE[0] + offsetX,
-						 RECTANGLE[1] + offsetY,
-						 scale * RECTANGLE[2],
-						 scale * RECTANGLE[3]);
+		path.AddEllipse(RECTANGLE[0] + offsetX,
+						RECTANGLE[1] + offsetY,
+						scale * RECTANGLE[2],
+						scale * RECTANGLE[3]);
 	}
 	else if (Figure == "Triangle")
 	{
-		path->MoveTo(TRIANGLE[0] + offsetX,
-					 TRIANGLE[1] + offsetY);
+		path.MoveTo(TRIANGLE[0] + offsetX,
+					TRIANGLE[1] + offsetY);
 		for (size_t i = 2; i < std::size(TRIANGLE); i += 2)
-			path->LineTo(TRIANGLE[0] + scale * TRIANGLE[i] + offsetX,
-						 TRIANGLE[1] + scale * TRIANGLE[i + 1] + offsetY);
-		path->LineTo(TRIANGLE[0] + offsetX,
-					 TRIANGLE[1] + offsetY);
+			path.LineTo(TRIANGLE[0] + scale * TRIANGLE[i] + offsetX,
+						TRIANGLE[1] + scale * TRIANGLE[i + 1] + offsetY);
+		path.LineTo(TRIANGLE[0] + offsetX,
+					TRIANGLE[1] + offsetY);
 	}
 	else if (Figure == "Cross")
 	{
-		path->MoveTo(CROSS[0] + offsetX,
-					 CROSS[1] + offsetY);
+		path.MoveTo(CROSS[0] + offsetX,
+					CROSS[1] + offsetY);
 		for (size_t i = 2; i < std::size(CROSS); i += 2)
-			path->LineTo(CROSS[0] + scale * CROSS[i] + offsetX,
-						 CROSS[1] + scale * CROSS[i + 1] + offsetY);
-		path->LineTo(CROSS[0] + offsetX,
-					 CROSS[1] + offsetY);
+			path.LineTo(CROSS[0] + scale * CROSS[i] + offsetX,
+						CROSS[1] + scale * CROSS[i + 1] + offsetY);
+		path.LineTo(CROSS[0] + offsetX,
+					CROSS[1] + offsetY);
 	}
-	path->CloseFigure();
+	path.CloseFigure();
 
 	return path;
 }
 
-void MainWindow::AddPath(NSGraphics::IGraphicsRenderer* pathRenderer, Aggplus::CGraphicsPath* path, bool isResult)
+void MainWindow::AddPath(NSGraphics::IGraphicsRenderer* pathRenderer, const Aggplus::CGraphicsPath& path, bool isResult)
 {
-	if (path->GetPointCount() == 0)
+	if (path.GetPointCount() == 0)
 		return;
 
 	pathRenderer->PathCommandStart();
 	pathRenderer->BeginCommand(c_nPathType);
 
-	size_t	length = path->GetPointCount(),
-			compound = path->GetCompoundPath();
-	std::vector<Aggplus::PointD> points = path->GetPoints(0, length + compound);
+	size_t	length = path.GetPointCount(),
+			compound = path.GetCompoundPath();
+	std::vector<Aggplus::PointD> points = path.GetPoints(0, length + compound);
 
 	for (size_t i = 0; i < length + compound; i++)
 	{
-		if (path->IsCurvePoint(i))
+		if (path.IsCurvePoint(i))
 		{
 			pathRenderer->PathCommandCurveTo(points[i].X + NEGATIVE_OFFSET, points[i].Y + NEGATIVE_OFFSET,
 											 points[i + 1].X + NEGATIVE_OFFSET, points[i + 1].Y + NEGATIVE_OFFSET,
 											 points[i + 2].X + NEGATIVE_OFFSET, points[i + 2].Y + NEGATIVE_OFFSET);
 			i += 2;
 		}
-		else if (path->IsMovePoint(i))
+		else if (path.IsMovePoint(i))
 			pathRenderer->PathCommandMoveTo(points[i].X + NEGATIVE_OFFSET, points[i].Y + NEGATIVE_OFFSET);
-		else if (path->IsLinePoint(i))
+		else if (path.IsLinePoint(i))
 			pathRenderer->PathCommandLineTo(points[i].X + NEGATIVE_OFFSET, points[i].Y + NEGATIVE_OFFSET);
 	}
 
@@ -223,7 +243,7 @@ void MainWindow::AddPath(NSGraphics::IGraphicsRenderer* pathRenderer, Aggplus::C
 	pathRenderer->PathCommandEnd();
 }
 
-void MainWindow::Draw(Aggplus::CGraphicsPath *path)
+void MainWindow::Draw(bool drawResult)
 {
 	ui->label->clear();
 
@@ -251,9 +271,9 @@ void MainWindow::Draw(Aggplus::CGraphicsPath *path)
 	AddPath(pathRenderer, Path1);
 	AddPath(pathRenderer, Path2);
 
-	if (path != nullptr)
+	if (drawResult)
 	{
-		AddPath(pathRenderer, path, true);
+		AddPath(pathRenderer, Result, true);
 	}
 
 	QImage img = QImage(pData, nW, nH, QImage::Format_RGBA8888, [](void *data){
@@ -262,10 +282,10 @@ void MainWindow::Draw(Aggplus::CGraphicsPath *path)
 	ui->label->setPixmap(QPixmap::fromImage(img));
 }
 
-void MainWindow::SetCoords(QLabel *label, Aggplus::CGraphicsPath *path)
+void MainWindow::SetCoords(QLabel *label, const Aggplus::CGraphicsPath& path)
 {
-	size_t length = path->GetPointCount();
-	std::vector<Aggplus::PointD> points = path->GetPoints(0, length);
+	size_t length = path.GetPointCount();
+	std::vector<Aggplus::PointD> points = path.GetPoints(0, length);
 	QString text = "";
 
 	for (size_t i = 0; i < length; i++)
@@ -277,7 +297,7 @@ void MainWindow::SetCoords(QLabel *label, Aggplus::CGraphicsPath *path)
 
 void MainWindow::DrawPath1()
 {
-	if (Path1) delete Path1;
+	if (Path1.GetPointCount() > 0) Path1.Reset();
 	Path1 = SetPath(Scale[0], Offsets[0], Offsets[1], Figure1);
 	Draw();
 	SetCoords(ui->label_4, Path1);
@@ -285,7 +305,7 @@ void MainWindow::DrawPath1()
 
 void MainWindow::DrawPath2()
 {
-	if (Path2) delete Path2;
+	if (Path2.GetPointCount() > 0) Path2.Reset();
 	Path2 = SetPath(Scale[1], Offsets[2], Offsets[3], Figure2);
 	Draw();
 	SetCoords(ui->label_5, Path2);
@@ -293,12 +313,12 @@ void MainWindow::DrawPath2()
 
 void MainWindow::BooleanOp()
 {
-	if (Path1->GetPointCount() == 0 || Path2->GetPointCount() == 0)
+	if (Path1.GetPointCount() == 0 || Path2.GetPointCount() == 0)
 		return;
 
-	Aggplus::CGraphicsPath *result = Aggplus::CalcBooleanOperation(Path1, Path2, Op);
-	Draw(result);
-	SetCoords(ui->label_7, result);
+	Result = Aggplus::CalcBooleanOperation(Path1, Path2, Op);
+	Draw(true);
+	SetCoords(ui->label_7, Result);
 }
 
 void MainWindow::CheckMousePress()
@@ -320,8 +340,8 @@ void MainWindow::CheckMousePress()
 				 Scale[1] * RECTANGLE[2],
 				 Scale[1] * RECTANGLE[3]);
 
-	Move1 = rect1.contains(ui->label->GetStartPoint()) && Path1->GetPointCount() != 0;
-	Move2 = rect2.contains(ui->label->GetStartPoint()) && Path2->GetPointCount() != 0;
+	Move1 = rect1.contains(ui->label->GetStartPoint()) && Path1.GetPointCount() != 0;
+	Move2 = rect2.contains(ui->label->GetStartPoint()) && Path2.GetPointCount() != 0;
 	if (Move2)
 		Move1 = false;
 	if (Move1 || Move2)

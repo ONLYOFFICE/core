@@ -15,6 +15,7 @@ const double MACHINE_EPSILON = 1.12e-16;
 const double TRIGANOMETRIC_EPSILON = 1e-8;
 const double CURVETIME_EPSILON = 1e-8;
 const double LINE_EPSILON = 1e-9;
+const Aggplus::PointD MIN_POINT(-500.0, -500.0);
 constexpr double MIN = std::numeric_limits<double>::min();
 constexpr double MAX = std::numeric_limits<double>::max();
 
@@ -199,27 +200,27 @@ double findRoot(double& length, double& start, double offset, double ax, double 
 	return clamp(x, a, b);
 }
 
-bool intersect(double p1x, double p1y, double v1x, double v1y, double p2x, double p2y, double v2x, double v2y, Aggplus::PointD& res)
+bool intersect(std::vector<double> v, Aggplus::PointD& res)
 {
-	v1x -= p1x;
-	v1y -= p1y;
-	v2x -= p2x;
-	v2y -= p2y;
+	v[2] -= v[0];
+	v[3] -= v[1];
+	v[6] -= v[4];
+	v[7] -= v[5];
 
-	double cross = v1x * v2y - v1y * v2x;
+	double cross = v[2] * v[7] - v[3] * v[6];
 	if (!isMachineZero(cross))
 	{
-		double	dx = p1x - p2x,
-				dy = p1y - p2y,
-				u1 = (v2x * dy - v2y * dx) / cross,
-				u2 = (v1x * dy - v1y * dx) / cross,
+		double	dx = v[0] - v[4],
+				dy = v[1] - v[5],
+				u1 = (v[6] * dy - v[7] * dx) / cross,
+				u2 = (v[2] * dy - v[3] * dx) / cross,
 				uMin = -EPSILON,
 				uMax = 1 + EPSILON;
 		
 		if (uMin < u1 && u1 < uMax && uMin < u2 && u2 < uMax)
 		{
 			u1 = u1 <= 0 ? 0 : u1 >= 1 ? 1 : u1;
-			res = Aggplus::PointD(p1x + u1 * v1x, p1y + u1 * v1y);
+			res = Aggplus::PointD(v[0] + u1 * v[2], v[1] + u1 * v[3]);
 
 			return true;
 		}

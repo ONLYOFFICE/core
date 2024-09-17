@@ -32,7 +32,7 @@ namespace NSDocxRenderer
 	CVectorGraphics::CVectorGraphics(const Aggplus::CGraphicsPath& other) noexcept
 		: CVectorGraphics()
 	{
-		size_t close_count = other.GetCompoundPath() + 1;
+		size_t close_count = other.GetCloseCount();
 		size_t count = static_cast<size_t>(other.GetPointCount()) + close_count;
 		std::vector<Aggplus::PointD> points = other.GetPoints(0, count);
 		for (size_t idx = 0; idx < count; ++idx)
@@ -296,40 +296,35 @@ namespace NSDocxRenderer
 	// ClipRegionDiff = 0x0400;
 	CVectorGraphics CVectorGraphics::CalcBoolean(const CVectorGraphics& vg1, const CVectorGraphics& vg2, long clipType)
 	{
-		std::unique_ptr<Aggplus::CGraphicsPath> path1(vg1.GetGraphicsPath());
-		std::unique_ptr<Aggplus::CGraphicsPath> path2(vg2.GetGraphicsPath());
 		auto op = GetOpType(clipType);
-		Aggplus::CGraphicsPath* result = Aggplus::CalcBooleanOperation(path1.get(), path2.get(), op);
-		auto cvg = CVectorGraphics(*result);
-		delete result;
-		return cvg;
+		Aggplus::CGraphicsPath result = Aggplus::CalcBooleanOperation(vg1.GetGraphicsPath(), vg2.GetGraphicsPath(), op);
+		return CVectorGraphics(result);
 	}
 
-	Aggplus::CGraphicsPath* CVectorGraphics::GetGraphicsPath() const noexcept
+	Aggplus::CGraphicsPath CVectorGraphics::GetGraphicsPath() const noexcept
 	{
-		Aggplus::CGraphicsPath* ret_value = new Aggplus::CGraphicsPath();
+		Aggplus::CGraphicsPath ret_value;
 		for (const auto& path : m_arData)
 		{
 			if (path.type == ePathCommandType::pctMove)
-				ret_value->MoveTo(path.points.front().x, path.points.front().y);
+				ret_value.MoveTo(path.points.front().x, path.points.front().y);
 			else if (path.type == ePathCommandType::pctLine)
-				ret_value->LineTo(path.points.front().x, path.points.front().y);
+				ret_value.LineTo(path.points.front().x, path.points.front().y);
 			else if (path.type == ePathCommandType::pctClose)
-				ret_value->CloseFigure();
+				ret_value.CloseFigure();
 			else if (path.type == ePathCommandType::pctCurve)
 			{
 				std::vector<Point> points;
 				for (const auto& point : path.points)
 					points.push_back(point);
 
-				ret_value->CurveTo(
+				ret_value.CurveTo(
 					points[0].x, points[0].y,
 					points[1].x, points[1].y,
 					points[2].x, points[2].y);
 			}
 		}
-		// NRVO things is not working because of no Aggplus::CGraphicsPath(const Aggplus::CGraphicsPath&)
-		// so pointer is used
+
 		return ret_value;
 	}
 	Aggplus::BooleanOpType CVectorGraphics::GetOpType(long nClipType)

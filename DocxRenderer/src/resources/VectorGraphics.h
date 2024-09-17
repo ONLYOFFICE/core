@@ -96,8 +96,7 @@ namespace NSDocxRenderer
 
 		void ResetBorders() noexcept;
 
-		// pointer because of no Aggplus::CGraphicsPath(const Aggplus::CGraphicsPath&)
-		Aggplus::CGraphicsPath* GetGraphicsPath() const noexcept;
+		Aggplus::CGraphicsPath GetGraphicsPath() const noexcept;
 		static Aggplus::BooleanOpType GetOpType(long nClipType);
 	};
 }

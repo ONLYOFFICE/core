@@ -73,10 +73,10 @@ public:
 	MainWindow(QWidget *parent = nullptr);
 	~MainWindow();
 
-	Aggplus::CGraphicsPath* SetPath(double scale, double offsetX, double offsetY, QString Figure);
-	void AddPath(NSGraphics::IGraphicsRenderer* pathRenderer, Aggplus::CGraphicsPath* path, bool isResult = false);
-	void Draw(Aggplus::CGraphicsPath *path = nullptr);
-	void SetCoords(QLabel* label, Aggplus::CGraphicsPath* path);
+	Aggplus::CGraphicsPath SetPath(double scale, double offsetX, double offsetY, QString Figure);
+	void AddPath(NSGraphics::IGraphicsRenderer* pathRenderer, const Aggplus::CGraphicsPath& path, bool isResult = false);
+	void Draw(bool drawResult = false);
+	void SetCoords(QLabel* label, const Aggplus::CGraphicsPath& path);
 
 	void DrawPath1();
 	void DrawPath2();
@@ -102,8 +102,9 @@ public:
 	bool Move1	 = false;
 	bool Move2	 = false;
 
-	Aggplus::CGraphicsPath* Path1;
-	Aggplus::CGraphicsPath* Path2;
+	Aggplus::CGraphicsPath Path1;
+	Aggplus::CGraphicsPath Path2;
+	Aggplus::CGraphicsPath Result;
 
 	Ui::MainWindow *ui;
 };

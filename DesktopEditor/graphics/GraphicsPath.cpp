@@ -40,6 +40,46 @@ namespace Aggplus
         m_internal = new CGraphicsPath_private();
 	}
 
+	CGraphicsPath::CGraphicsPath(const CGraphicsPath& other) noexcept
+	{
+		*this = other;
+	}
+
+	CGraphicsPath::CGraphicsPath(CGraphicsPath&& other) noexcept
+	{
+		*this = other;
+	}
+
+	CGraphicsPath::CGraphicsPath(const std::vector<std::shared_ptr<CGraphicsPath>>& paths) noexcept : CGraphicsPath()
+	{
+		if (paths.size() == 1)
+			*this = *paths[0];
+
+		StartFigure();
+		for (const auto& path : paths)
+		{
+			size_t length = path->GetPointCount();
+			std::vector<PointD> points = path->GetPoints(0, length);
+
+			for (size_t i = 0; i < length; i++)
+			{
+				if (path->IsMovePoint(i))
+					MoveTo(points[i].X, points[i].Y);
+				else if (path->IsLinePoint(i))
+					LineTo(points[i].X, points[i].Y);
+				else if (path->IsCurvePoint(i))
+				{
+					CurveTo(points[i].X, points[i].Y,
+							points[i + 1].X, points[i + 1].Y,
+							points[i + 2].X, points[i + 2].Y);
+					i += 2;
+				}
+			}
+
+			CloseFigure();
+		}
+	}
+
 	CGraphicsPath::~CGraphicsPath()
 	{
         RELEASEOBJECT(m_internal);
@@ -78,7 +118,7 @@ namespace Aggplus
 		return Ok; 
 	}
 
-	bool CGraphicsPath::Is_poly_closed()
+	bool CGraphicsPath::Is_poly_closed() const
 	{
         if (!m_internal->m_agg_ps.total_vertices())
 			return true;
@@ -728,64 +768,60 @@ namespace Aggplus
         return rasterizer.hit_test((int)x, (int)y);
     }
 
-	size_t CGraphicsPath::GetCompoundPath() const
+	size_t CGraphicsPath::GetCloseCount() const noexcept
 	{
-		size_t	countClose = 0,
-				countMove = 0,
-				length = GetPointCount();
-		for (size_t i = 0; i < length; i++)
-		{
+		size_t	countClose = 0;
+		for (size_t i = 0; i < m_internal->m_agg_ps.total_vertices(); i++)
 			if (IsClosePoint(i))
-			{
 				countClose++;
-				length++;
-			}
 
-			if (IsMovePoint(i))
-				countMove++;
-		}
-
-		return countClose != 0 ? countClose : countMove - 1;
+		return countClose;
 	}
 
-	bool CGraphicsPath::IsClockwise() const
+	bool CGraphicsPath::IsClockwise() const noexcept
 	{
 		return GetArea() >= 0;
 	}
 
-	bool CGraphicsPath::IsMovePoint(size_t idx) const
+	bool CGraphicsPath::IsMovePoint(size_t idx) const noexcept
 	{
+		if (idx >= m_internal->m_agg_ps.total_vertices()) return false;
 		return this->m_internal->m_agg_ps.command(idx) == agg::path_cmd_move_to;
 	}
 
-	bool CGraphicsPath::IsCurvePoint(size_t idx) const
+	bool CGraphicsPath::IsCurvePoint(size_t idx) const noexcept
 	{
+		if (idx >= m_internal->m_agg_ps.total_vertices()) return false;
 		return this->m_internal->m_agg_ps.command(idx) == agg::path_cmd_curve4;
 	}
 
-	bool CGraphicsPath::IsLinePoint(size_t idx) const
+	bool CGraphicsPath::IsLinePoint(size_t idx) const noexcept
 	{
+		if (idx >= m_internal->m_agg_ps.total_vertices()) return false;
 		return this->m_internal->m_agg_ps.command(idx) == agg::path_cmd_line_to;
 	}
 
-	bool CGraphicsPath::IsClosePoint(size_t idx) const
+	bool CGraphicsPath::IsClosePoint(size_t idx) const noexcept
 	{
+		if (idx >= m_internal->m_agg_ps.total_vertices()) return false;
 		return this->m_internal->m_agg_ps.command(idx) == (agg::path_cmd_end_poly | agg::path_flags_close);
 	}
 
-	std::vector<PointD> CGraphicsPath::GetPoints(size_t idx, size_t count) const
+	std::vector<PointD> CGraphicsPath::GetPoints(size_t idx, size_t count) const noexcept
 	{
 		std::vector<PointD> points;
+		size_t length = m_internal->m_agg_ps.total_vertices();
 		for (size_t i = 0; i < count; i++)
 		{
 			double x,y;
+			if (idx + i >= length) break;
 			this->m_internal->m_agg_ps.vertex(idx + i, &x, &y);
 			points.push_back(PointD(x, y));
 		}
 		return points;
 	}
 
-	double CGraphicsPath::GetArea() const
+	double CGraphicsPath::GetArea() const noexcept
 	{
 		double area = 0.0;
 		for (size_t i = 0; i < GetPointCount(); i++)
@@ -796,7 +832,7 @@ namespace Aggplus
 		return area;
 	}
 
-	double CGraphicsPath::GetArea(size_t idx, bool isCurve) const
+	double CGraphicsPath::GetArea(size_t idx, bool isCurve) const noexcept
 	{
 		float area;
 		if (isCurve)
@@ -812,6 +848,82 @@ namespace Aggplus
 		std::vector<PointD> points = GetPoints(idx, 2);
 		area = (points[1].Y * points[0].X - points[1].X * points[0].Y) / 20;
 		return area;
+	}
+
+	std::vector<std::shared_ptr<CGraphicsPath>> CGraphicsPath::GetSubPaths() const
+	{
+		std::vector<std::shared_ptr<CGraphicsPath>> result;
+		std::shared_ptr<CGraphicsPath> subPath(new CGraphicsPath);
+		bool close = true;
+
+		for (size_t i = 0; i < m_internal->m_agg_ps.total_vertices(); i++)
+		{
+			if (IsMovePoint(i))
+			{
+				if (!close)
+				{
+					PointD firstPoint = subPath->GetPoints(0, 1)[0];
+					subPath->LineTo(firstPoint.X, firstPoint.Y);
+					subPath->CloseFigure();
+					result.push_back(subPath);
+					subPath.reset(new CGraphicsPath);
+				}
+				subPath->StartFigure();
+				std::vector<PointD> points = GetPoints(i, 1);
+				subPath->MoveTo(points[0].X, points[0].Y);
+				close = false;
+			}
+			else if (IsCurvePoint(i))
+			{
+				std::vector<PointD> points = GetPoints(i, 3);
+				subPath->CurveTo(points[0].X, points[0].Y,
+								 points[1].X, points[1].Y,
+								 points[2].X, points[2].Y);
+				i += 2;
+			}
+			else if (IsLinePoint(i))
+			{
+				std::vector<PointD> points = GetPoints(i, 1);
+				subPath->LineTo(points[0].X, points[0].Y);
+			}
+			else if (IsClosePoint(i))
+			{
+				PointD firstPoint = subPath->GetPoints(0, 1)[0];
+				double x, y;
+				subPath->GetLastPoint(x, y);
+				if (!firstPoint.Equals(PointD(x, y)) || subPath->GetPointCount() == 1) subPath->LineTo(firstPoint.X, firstPoint.Y);
+				subPath->CloseFigure();
+				result.push_back(subPath);
+				subPath.reset(new CGraphicsPath);
+				close = true;
+			}
+		}
+
+		return result;
+	}
+
+	CGraphicsPath& CGraphicsPath::operator=(const CGraphicsPath& other) noexcept
+	{
+		if (&other == this)
+			return *this;
+
+		m_internal = new CGraphicsPath_private;
+		m_internal->m_agg_ps	= other.m_internal->m_agg_ps;
+		m_internal->m_bEvenOdd	= other.m_internal->m_bEvenOdd;
+		m_internal->m_bIsMoveTo	= other.m_internal->m_bIsMoveTo;
+
+		return *this;
+	}
+
+	CGraphicsPath& CGraphicsPath::operator=(CGraphicsPath&& other) noexcept
+	{
+		if (&other == this)
+			return *this;
+
+		m_internal = other.m_internal;
+		other.m_internal = nullptr;
+
+		return *this;
 	}
 }
 

@@ -58,7 +58,7 @@ namespace PPTX
 					L"miter" == sName ||
 					L"round" == sName )
 				{
-					Join = oReader;
+					join = oReader;
 				}
 				else if ( L"tailEnd" == sName )
 					tailEnd = oReader;
@@ -113,10 +113,30 @@ namespace PPTX
 			XmlMacroReadAttributeBase(node, L"w", w);
 
 			Fill.GetFillFrom(node);
-			prstDash = node.ReadNodeNoNS(L"prstDash");
-			Join.Init(); Join->GetJoinFrom(node);
-			headEnd = node.ReadNodeNoNS(L"headEnd");
-			tailEnd = node.ReadNodeNoNS(L"tailEnd");
+			
+			std::vector<XmlUtils::CXmlNode> oNodes;
+			if (node.GetNodes(_T("*"), oNodes))
+			{
+				size_t count = oNodes.size();
+				for (size_t i = 0; i < count; ++i)
+				{
+					XmlUtils::CXmlNode& oNode = oNodes[i];
+
+					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
+					if (_T("headEnd") == strName)
+					{
+						headEnd = oNode;
+					}
+					else if (_T("tailEnd") == strName)
+					{
+						tailEnd = oNode;
+					}
+					else if (_T("round") == strName || _T("bevel") == strName || _T("miter") == strName)
+					{
+						join = oNode;
+					}
+				}
+			}
 
 			FillParentPointersForChilds();
 		}
@@ -151,7 +171,7 @@ namespace PPTX
 			XmlUtils::CNodeValue oValue;
 			oValue.Write(Fill);
 			oValue.WriteNullable(prstDash);
-			oValue.WriteNullable(Join);
+			oValue.WriteNullable(join);
 			oValue.WriteNullable(headEnd);
 			oValue.WriteNullable(tailEnd);
 
@@ -181,7 +201,7 @@ namespace PPTX
 
 			Fill.toXmlWriter(pWriter);
 			pWriter->Write(prstDash);
-			pWriter->Write(Join);
+			pWriter->Write(join);
 			pWriter->Write(headEnd);
 			pWriter->Write(tailEnd);
 
@@ -198,7 +218,7 @@ namespace PPTX
 
 			pWriter->WriteRecord1(0, Fill);
 			pWriter->WriteRecord2(1, prstDash);
-			pWriter->WriteRecord2(2, Join);
+			pWriter->WriteRecord2(2, join);
 			pWriter->WriteRecord2(3, headEnd);
 			pWriter->WriteRecord2(4, tailEnd);
 		}
@@ -260,8 +280,8 @@ namespace PPTX
 					}
 					case 2:
 					{
-						Join.Init();
-						Join->fromPPTY(pReader);
+						join.Init();
+						join->fromPPTY(pReader);
 						break;
 					}
 					case 3:
@@ -294,8 +314,8 @@ namespace PPTX
 				line->Fill = Fill;//.fromXML(Fill.toXML());
 			if(prstDash.is_init())
 				line->prstDash = *prstDash;
-			if(Join.is_init())
-				line->Join = Join;
+			if(join.is_init())
+				line->join = join;
 			if(headEnd.is_init())
 				headEnd->Merge(line->headEnd);
 			if(tailEnd.is_init())
@@ -316,8 +336,8 @@ namespace PPTX
 				line.Fill = Fill;//.fromXML(Fill.toXML());
 			if(prstDash.is_init())
 				line.prstDash = *prstDash;
-			if(Join.is_init())
-				line.Join = Join;
+			if(join.is_init())
+				line.join = join;
 			if(headEnd.is_init())
 				headEnd->Merge(line.headEnd);
 			if(tailEnd.is_init())
@@ -335,8 +355,8 @@ namespace PPTX
 		void Ln::FillParentPointersForChilds()
 		{
 			Fill.SetParentPointer(this);
-			if (Join.IsInit())
-				Join->SetParentPointer(this);
+			if (join.IsInit())
+				join->SetParentPointer(this);
 			if(prstDash.IsInit())
 				prstDash->SetParentPointer(this);
 			if(headEnd.IsInit())

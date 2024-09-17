@@ -58,6 +58,7 @@ namespace PPTX
 		Theme(OOX::Document *pMain, const std::string &contentTheme);
 		Theme(OOX::Document *pMain, const OOX::CPath& filename);
 		Theme(OOX::Document *pMain, const OOX::CPath& filename, FileMap& map);
+		virtual ~Theme();
 
 		void read(const std::string &contentTheme, FileMap& map);
 		virtual void read(const OOX::CPath& filename, FileMap& map);

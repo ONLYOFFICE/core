@@ -89,6 +89,7 @@
 #include "Biff_records/XF.h"
 #include "Biff_records/Format.h"
 #include "Biff_records/Font.h"
+#include "Biff_records/Palette.h"
 
 #include "Biff_structures/ODRAW/OfficeArtDgContainer.h"
 
@@ -618,6 +619,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 			case rt_XF_BIFF2:
 			case rt_XF_BIFF3:
 			case rt_XF_BIFF4:
+			case rt_XF:
 			{
 				size_t cell_xf_current_id = 0;
 				size_t style_xf_current_id = 0;
@@ -637,6 +639,15 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 				{
 					XF_BIFF2 xf(cell_xf_current_id, style_xf_current_id);
 					count = proc.repeated(xf, 0, 0);
+				}
+				else
+				{
+					int store = global_info_->Version;
+					global_info_->Version = 0x0600;
+					XF xf(cell_xf_current_id, style_xf_current_id);
+					count = proc.repeated(xf, 0, 0);
+
+					global_info_->Version = store;
 				}
 				XFS* xfs = new XFS();
 				int ind = 0;
@@ -693,6 +704,16 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					FORMATTING* fmts = dynamic_cast<FORMATTING*>(m_Formating.get());
 					if (fmts)
 						fmts->m_Styles = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
+			case rt_Palette:
+			{
+				if (proc.optional<Palette>())
+				{
+					FORMATTING* fmts = dynamic_cast<FORMATTING*>(m_Formating.get());
+					if (fmts)
+						fmts->m_Palette = elements_.back();
 					elements_.pop_back();
 				}
 			}break;

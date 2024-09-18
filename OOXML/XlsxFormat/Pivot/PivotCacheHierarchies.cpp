@@ -51,20 +51,20 @@ namespace Spreadsheet
 
         auto nCurDepth = oReader.GetDepth();
         while( oReader.ReadNextSiblingNode( nCurDepth ) )
-		{
-			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+        {
+            std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-			if ( L"cacheHierarchy" == sName )
-			{
-				CpivotCacheHierarchy* pPivotCacheHierarchy = new CpivotCacheHierarchy();
-				*pPivotCacheHierarchy = oReader;
-				m_arrItems.push_back(pPivotCacheHierarchy);
-			}
+            if ( L"cacheHierarchy" == sName )
+            {
+                CpivotCacheHierarchy* pPivotCacheHierarchy = new CpivotCacheHierarchy();
+                *pPivotCacheHierarchy = oReader;
+                m_arrItems.push_back(pPivotCacheHierarchy);
+            }
         }
     }
     void CpivotCacheHierarchies::toXML(NSStringUtils::CStringBuilder& writer) const
     {
-        
+
     }
     XLS::BaseObjectPtr CpivotCacheHierarchies::toBin()
     {
@@ -79,23 +79,23 @@ namespace Spreadsheet
         ReadAttributes( oReader );
         auto nCurDepth = oReader.GetDepth();
         while( oReader.ReadNextSiblingNode( nCurDepth ) )
-		{
-			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+        {
+            std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-			if ( L"fieldsUsage" == sName )
-				m_oFieldsUsage = oReader;
-		}
+            if ( L"fieldsUsage" == sName )
+                m_oFieldsUsage = oReader;
+        }
     }
     void CpivotCacheHierarchy::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
     {
         WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if		( oReader, L"uniqueName", m_oUniqueName )
+            WritingElement_ReadAttributes_Read_if		( oReader, L"uniqueName", m_oUniqueName )
             WritingElement_ReadAttributes_Read_else_if	( oReader, L"measureGroup", m_oMeasureGroup )
             WritingElement_ReadAttributes_Read_else_if	( oReader, L"caption", m_oCaption )
             WritingElement_ReadAttributes_Read_else_if	( oReader, L"defaultMemberUniqueName", m_oDefaultMemberUniqueName )
             WritingElement_ReadAttributes_Read_else_if	( oReader, L"allCaption", m_oAllCaption )
             WritingElement_ReadAttributes_Read_else_if	( oReader, L"allUniqueName", m_oAllUniqueName )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"dimensionUniqueName", m_oDimensionUniqueName )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"dimensionUniqueName", m_oDimensionUniqueName )
             WritingElement_ReadAttributes_Read_else_if	( oReader, L"displayFolder", m_oDisplayFolder )
 
             WritingElement_ReadAttributes_Read_else_if	( oReader, L"set", m_oSet )
@@ -104,20 +104,20 @@ namespace Spreadsheet
             WritingElement_ReadAttributes_Read_else_if	( oReader, L"hidden", m_oHidden )
             WritingElement_ReadAttributes_Read_else_if	( oReader, L"measures", m_oMeasure )
             WritingElement_ReadAttributes_Read_else_if	( oReader, L"measure", m_oMeasure )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"attribute", m_oAttribute )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"unbalanced", m_oUnbalanced )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"attribute", m_oAttribute )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"unbalanced", m_oUnbalanced )
             WritingElement_ReadAttributes_Read_else_if	( oReader, L"unbalancedGroup", m_oUnbalancedGroup )
             WritingElement_ReadAttributes_Read_else_if	( oReader, L"keyAttribute", m_oKeyAttribute )
-            
+
             WritingElement_ReadAttributes_Read_else_if	( oReader, L"memberValueDatatype", m_oMemberValueDatatype )
             WritingElement_ReadAttributes_Read_else_if	( oReader, L"iconSet", m_oIconSet )
             WritingElement_ReadAttributes_Read_else_if	( oReader, L"parentSet", m_oParentSet )
             WritingElement_ReadAttributes_Read_else_if	( oReader, L"count", m_oCount )
-		WritingElement_ReadAttributes_End( oReader )
+        WritingElement_ReadAttributes_End( oReader )
     }
     void CpivotCacheHierarchy::toXML(NSStringUtils::CStringBuilder& writer) const
     {
-        
+
     }
     XLS::BaseObjectPtr CpivotCacheHierarchy::toBin()
     {
@@ -167,15 +167,15 @@ namespace Spreadsheet
         return objectPtr;
     }
 
-     void CfieldsUsage::fromXML(XmlUtils::CXmlLiteReader& oReader)
+    void CfieldsUsage::fromXML(XmlUtils::CXmlLiteReader& oReader)
     {
         ReadAttributes( oReader );
         auto nCurDepth = oReader.GetDepth();
         while( oReader.ReadNextSiblingNode( nCurDepth ) )
-		{
-			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+        {
+            std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-			if ( L"fieldUsage" == sName )
+            if ( L"fieldUsage" == sName )
             {
                 std::wstring val;
                 WritingElement_ReadAttributes_Start( oReader )
@@ -183,17 +183,17 @@ namespace Spreadsheet
                 WritingElement_ReadAttributes_End( oReader )
                 m_oFieldUsage.push_back(XmlUtils::GetInteger(val));
             }
-		}
+        }
     }
     void CfieldsUsage::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
     {
         WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if	( oReader, L"count", m_oCount )
-		WritingElement_ReadAttributes_End( oReader )
+            WritingElement_ReadAttributes_Read_if	( oReader, L"count", m_oCount )
+        WritingElement_ReadAttributes_End( oReader )
     }
     void CfieldsUsage::toXML(NSStringUtils::CStringBuilder& writer) const
     {
-        
+
     }
     XLS::BaseObjectPtr CfieldsUsage::toBin()
     {
@@ -204,6 +204,198 @@ namespace Spreadsheet
         ptr->cItems = m_oCount.get();
         ptr->rgifdb = m_oFieldUsage;
         return objectPtr;
+     }
+    void CGroupLevels::fromXML(XmlUtils::CXmlLiteReader& oReader)
+    {
+       ReadAttributes( oReader );
+       auto nCurDepth = oReader.GetDepth();
+       while( oReader.ReadNextSiblingNode( nCurDepth ) )
+       {
+           std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+           if ( L"groupLevel" == sName )
+           {
+               CGroupLevel* pLevel = new CGroupLevel();
+               *pLevel = oReader;
+               m_arrItems.push_back(pLevel);
+           }
+       }
     }
+    void CGroupLevels::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+    {
+       WritingElement_ReadAttributes_Start( oReader )
+           WritingElement_ReadAttributes_Read_if	( oReader, L"count", m_oCount )
+       WritingElement_ReadAttributes_End( oReader )
+    }
+    void CGroupLevels::toXML(NSStringUtils::CStringBuilder& writer) const
+    {
+
+    }
+    XLS::BaseObjectPtr CGroupLevels::toBin()
+    {
+       auto ptr1(new XLSB::PCDHFIELDSUSAGE);
+       XLS::BaseObjectPtr objectPtr(ptr1);
+
+       return objectPtr;
+    }
+
+    void CGroupLevel::fromXML(XmlUtils::CXmlLiteReader& oReader)
+    {
+      ReadAttributes( oReader );
+      auto nCurDepth = oReader.GetDepth();
+      while( oReader.ReadNextSiblingNode( nCurDepth ) )
+      {
+          std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+          if ( L"groups" == sName )
+          {
+              m_oGroups = oReader;
+          }
+
+      }
+    }
+    void CGroupLevel::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+    {
+      WritingElement_ReadAttributes_Start( oReader )
+          WritingElement_ReadAttributes_Read_if	( oReader, L"uniqueName", m_oUniqueName )
+          WritingElement_ReadAttributes_Read_else_if( oReader, L"caption", m_oCaption )
+          WritingElement_ReadAttributes_Read_if	( oReader, L"user", m_oUser )
+          WritingElement_ReadAttributes_Read_else_if( oReader, L"customRollUp", m_oCustomRollUp )
+      WritingElement_ReadAttributes_End( oReader )
+    }
+    void CGroupLevel::toXML(NSStringUtils::CStringBuilder& writer) const
+    {
+
+    }
+    XLS::BaseObjectPtr CGroupLevel::toBin()
+    {
+      auto ptr1(new XLSB::PCDHFIELDSUSAGE);
+      XLS::BaseObjectPtr objectPtr(ptr1);
+
+      return objectPtr;
+    }
+
+    void CGroups::fromXML(XmlUtils::CXmlLiteReader& oReader)
+    {
+     ReadAttributes( oReader );
+     auto nCurDepth = oReader.GetDepth();
+     while( oReader.ReadNextSiblingNode( nCurDepth ) )
+     {
+         std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+         if ( L"group" == sName )
+         {
+             CGroup* pGroup = new CGroup();
+             *pGroup = oReader;
+             m_arrItems.push_back(pGroup);
+         }
+     }
+    }
+    void CGroups::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+    {
+     WritingElement_ReadAttributes_Start( oReader )
+         WritingElement_ReadAttributes_Read_if	( oReader, L"count", m_oCount )
+     WritingElement_ReadAttributes_End( oReader )
+    }
+    void CGroups::toXML(NSStringUtils::CStringBuilder& writer) const
+    {
+
+    }
+    XLS::BaseObjectPtr CGroups::toBin()
+    {
+     auto ptr1(new XLSB::PCDHFIELDSUSAGE);
+     XLS::BaseObjectPtr objectPtr(ptr1);
+
+     return objectPtr;
+    }
+
+    void CGroup::fromXML(XmlUtils::CXmlLiteReader& oReader)
+    {
+        ReadAttributes( oReader );
+        auto nCurDepth = oReader.GetDepth();
+        while( oReader.ReadNextSiblingNode( nCurDepth ) )
+        {
+            std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+            if ( L"groupMembers" == sName )
+            {
+                m_oGroupMembers = oReader;
+            }
+        }
+    }
+    void CGroup::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+    {
+        WritingElement_ReadAttributes_Start( oReader )
+            WritingElement_ReadAttributes_Read_if	( oReader, L"id", m_oId )
+            WritingElement_ReadAttributes_Read_else_if( oReader, L"name", m_oName )
+            WritingElement_ReadAttributes_Read_if	( oReader, L"uniqueName", m_oUniqueName )
+            WritingElement_ReadAttributes_Read_else_if( oReader, L"caption", m_oCaption )
+            WritingElement_ReadAttributes_Read_else_if( oReader, L"uniqueParent", m_oUniqueParent )
+        WritingElement_ReadAttributes_End( oReader )
+    }
+    void CGroup::toXML(NSStringUtils::CStringBuilder& writer) const
+    {
+
+    }
+    XLS::BaseObjectPtr CGroup::toBin()
+    {
+        auto ptr1(new XLSB::PCDHFIELDSUSAGE);
+        XLS::BaseObjectPtr objectPtr(ptr1);
+
+        return objectPtr;
+    }
+
+    void CGroupMembers::fromXML(XmlUtils::CXmlLiteReader& oReader)
+    {
+       ReadAttributes( oReader );
+       auto nCurDepth = oReader.GetDepth();
+       while( oReader.ReadNextSiblingNode( nCurDepth ) )
+       {
+           std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+           if ( L"groupMember" == sName )
+           {
+               CGroupMember* pMember = new CGroupMember();
+               *pMember = oReader;
+               m_arrItems.push_back(pMember);
+           }
+       }
+    }
+    void CGroupMembers::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+    {
+       WritingElement_ReadAttributes_Start( oReader )
+           WritingElement_ReadAttributes_Read_if	( oReader, L"count", m_oCount )
+       WritingElement_ReadAttributes_End( oReader )
+    }
+    void CGroupMembers::toXML(NSStringUtils::CStringBuilder& writer) const
+    {
+
+    }
+    XLS::BaseObjectPtr CGroupMembers::toBin()
+    {
+       auto ptr1(new XLSB::PCDHFIELDSUSAGE);
+       XLS::BaseObjectPtr objectPtr(ptr1);
+
+       return objectPtr;
+    }
+
+    void CGroupMember::fromXML(XmlUtils::CXmlLiteReader& oReader)
+    {
+       ReadAttributes( oReader );
+    }
+    void CGroupMember::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+    {
+       WritingElement_ReadAttributes_Start( oReader )
+           WritingElement_ReadAttributes_Read_if	( oReader, L"group", m_oGroup )
+           WritingElement_ReadAttributes_Read_else_if( oReader, L"uniqueName", m_oUniqueName )
+       WritingElement_ReadAttributes_End( oReader )
+    }
+    void CGroupMember::toXML(NSStringUtils::CStringBuilder& writer) const
+    {
+
+    }
+    XLS::BaseObjectPtr CGroupMember::toBin()
+    {
+       auto ptr1(new XLSB::PCDHFIELDSUSAGE);
+       XLS::BaseObjectPtr objectPtr(ptr1);
+
+       return objectPtr;
+    }
+
 }
 }

@@ -39,6 +39,163 @@ namespace OOX
 {
 namespace Spreadsheet
 {
+    class CGroupMember : public WritingElement
+    {
+    public:
+        WritingElement_AdditionMethods(CGroupMember)
+        WritingElement_XlsbConstructors(CGroupMember)
+        CGroupMember(){}
+        virtual ~CGroupMember() {}
+
+        virtual void fromXML(XmlUtils::CXmlNode& node)
+        {
+        }
+        virtual std::wstring toXML() const
+        {
+            return _T("");
+        }
+        virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+        virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+        void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+        void fromBin(XLS::BaseObjectPtr& obj);
+        XLS::BaseObjectPtr toBin();
+        
+        nullable_bool		m_oGroup;
+        nullable_string		m_oUniqueName;
+    };
+
+    class CGroupMembers : public WritingElementWithChilds<CGroupMember>
+    {
+    public:
+        WritingElement_AdditionMethods(CGroupMembers)
+        WritingElement_XlsbConstructors(CGroupMembers)
+        CGroupMembers(){}
+        virtual ~CGroupMembers() {}
+
+        virtual void fromXML(XmlUtils::CXmlNode& node)
+        {
+        }
+        virtual std::wstring toXML() const
+        {
+            return _T("");
+        }
+        virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+        virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+        void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+        void fromBin(XLS::BaseObjectPtr& obj);
+        XLS::BaseObjectPtr toBin();
+        
+        nullable_int		 m_oCount;
+    };
+
+    class CGroup : public WritingElement
+    {
+    public:
+        WritingElement_AdditionMethods(CGroup)
+        WritingElement_XlsbConstructors(CGroup)
+        CGroup(){}
+        virtual ~CGroup() {}
+
+        virtual void fromXML(XmlUtils::CXmlNode& node)
+        {
+        }
+        virtual std::wstring toXML() const
+        {
+            return _T("");
+        }
+        virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+        virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+        void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+        void fromBin(XLS::BaseObjectPtr& obj);
+        XLS::BaseObjectPtr toBin();
+        
+        nullable_int                m_oId;
+        nullable_string		        m_oName;
+        nullable_string		        m_oUniqueName;
+        nullable_string		        m_oCaption;
+        nullable_string		        m_oUniqueParent;
+
+        nullable<CGroupMembers>     m_oGroupMembers;
+    };
+
+    class CGroups : public WritingElementWithChilds<CGroup>
+    {
+    public:
+        WritingElement_AdditionMethods(CGroups)
+        WritingElement_XlsbConstructors(CGroups)
+        CGroups(){}
+        virtual ~CGroups() {}
+
+        virtual void fromXML(XmlUtils::CXmlNode& node)
+        {
+        }
+        virtual std::wstring toXML() const
+        {
+            return _T("");
+        }
+        virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+        virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+        void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+        void fromBin(XLS::BaseObjectPtr& obj);
+        XLS::BaseObjectPtr toBin();
+        
+        nullable_int		 m_oCount;
+    };
+
+    class CGroupLevel : public WritingElement
+    {
+    public:
+        WritingElement_AdditionMethods(CGroupLevel)
+        WritingElement_XlsbConstructors(CGroupLevel)
+        CGroupLevel(){}
+        virtual ~CGroupLevel() {}
+
+        virtual void fromXML(XmlUtils::CXmlNode& node)
+        {
+        }
+        virtual std::wstring toXML() const
+        {
+            return _T("");
+        }
+        virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+        virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+        void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+        void fromBin(XLS::BaseObjectPtr& obj);
+        XLS::BaseObjectPtr toBin();
+        
+        nullable<CGroups>	m_oGroups;
+
+        nullable_string		m_oUniqueName;
+        nullable_string		m_oCaption;
+        nullable_bool       m_oUser;
+        nullable_bool       m_oCustomRollUp;
+   
+    };
+
+    class CGroupLevels : public WritingElementWithChilds<CGroupLevel>
+    {
+    public:
+        WritingElement_AdditionMethods(CGroupLevels)
+        WritingElement_XlsbConstructors(CGroupLevels)
+        CGroupLevels(){}
+        virtual ~CGroupLevels() {}
+
+        virtual void fromXML(XmlUtils::CXmlNode& node)
+        {
+        }
+        virtual std::wstring toXML() const
+        {
+            return _T("");
+        }
+        virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+        virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+        void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+        void fromBin(XLS::BaseObjectPtr& obj);
+        XLS::BaseObjectPtr toBin();
+        
+        nullable_int		 m_oCount;
+    };
+
     class CfieldsUsage : public WritingElement
     {
     public:
@@ -62,7 +219,7 @@ namespace Spreadsheet
 
         
         nullable_int		 m_oCount;
-        std::vector<_INT32> m_oFieldUsage;
+        std::vector<_INT32>  m_oFieldUsage;
     };
 
     class CpivotCacheHierarchy : public WritingElement
@@ -113,6 +270,7 @@ namespace Spreadsheet
 
 
         nullable<CfieldsUsage>	m_oFieldsUsage;
+        nullable<CGroupLevels>	m_oGroupLevels;
 
     };
     class CpivotCacheHierarchies : public WritingElementWithChilds<CpivotCacheHierarchy>

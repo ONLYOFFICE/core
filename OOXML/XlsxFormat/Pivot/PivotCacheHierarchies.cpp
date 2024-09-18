@@ -90,18 +90,29 @@ namespace Spreadsheet
     {
         WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_Read_if		( oReader, L"uniqueName", m_oUniqueName )
-            WritingElement_ReadAttributes_Read_else_if	( oReader, L"hidden", m_oHidden )
-            WritingElement_ReadAttributes_Read_else_if	( oReader, L"caption", m_oCaption )
-            WritingElement_ReadAttributes_Read_else_if	( oReader, L"measure", m_oMeasure )
             WritingElement_ReadAttributes_Read_else_if	( oReader, L"measureGroup", m_oMeasureGroup )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"attribute", m_oAttribute )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"defaultMemberUniqueName", m_oDefaultMemberUniqueName )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"allUniqueName", m_oAllUniqueName )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"caption", m_oCaption )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"defaultMemberUniqueName", m_oDefaultMemberUniqueName )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"allCaption", m_oAllCaption )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"allUniqueName", m_oAllUniqueName )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"dimensionUniqueName", m_oDimensionUniqueName )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"displayFolder", m_oDisplayFolder )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"count", m_oCount )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"memberValueDatatype", m_oMemberValueDatatype )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"displayFolder", m_oDisplayFolder )
+
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"set", m_oSet )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"time", m_oTime )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"oneField", m_oOneField )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"hidden", m_oHidden )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"measures", m_oMeasure )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"measure", m_oMeasure )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"attribute", m_oAttribute )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"unbalanced", m_oUnbalanced )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"unbalancedGroup", m_oUnbalancedGroup )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"keyAttribute", m_oKeyAttribute )
+            
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"memberValueDatatype", m_oMemberValueDatatype )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"iconSet", m_oIconSet )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"parentSet", m_oParentSet )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"count", m_oCount )
 		WritingElement_ReadAttributes_End( oReader )
     }
     void CpivotCacheHierarchy::toXML(NSStringUtils::CStringBuilder& writer) const
@@ -139,6 +150,10 @@ namespace Spreadsheet
             ptr->stDispFld = m_oDisplayFolder.get();
             ptr->fLoadDispFld = false;
         }
+        if(m_oOneField.IsInit())
+            ptr->fOnlyOneField = m_oOneField.get();
+        if(m_oMemberValueDatatype.IsInit())
+            ptr->wAttributeMemberValueType = m_oMemberValueDatatype.get();
         if(m_oCaption.IsInit())
             ptr->stCaption = m_oCaption.get();
          else

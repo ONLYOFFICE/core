@@ -86,19 +86,31 @@ namespace Spreadsheet
         void fromBin(XLS::BaseObjectPtr& obj);
         XLS::BaseObjectPtr toBin();
 
+        nullable_bool       m_oSet;
+        nullable_bool       m_oTime;
         nullable_bool       m_oMeasure;
+        nullable_bool       m_oMeasures;
+        nullable_bool       m_oOneField;
         nullable_bool       m_oHidden;
+        nullable_bool		m_oAttribute;
+        nullable_bool		m_oUnbalanced;
+        nullable_bool		m_oUnbalancedGroup;
+        nullable_bool		m_oKeyAttribute;
+
         nullable_string		m_oMeasureGroup;
         nullable_string		m_oUniqueName;
         nullable_string		m_oCaption;
-        nullable_int		m_oAttribute;
+        nullable_string		m_oAllCaption;
         nullable_string     m_oDefaultMemberUniqueName;
         nullable_string     m_oAllUniqueName;
         nullable_string     m_oDimensionUniqueName;
         nullable_string     m_oDisplayFolder;
-        nullable_int		m_oCount;
-        nullable_int		m_oMemberValueDatatype;
-        nullable_int		m_oUnbalanced;
+
+        nullable_uint		m_oCount;
+        nullable_uint		m_oParentSet;
+        nullable_uint		m_oMemberValueDatatype;
+        nullable_int		m_oIconSet;
+
 
         nullable<CfieldsUsage>	m_oFieldsUsage;
 

@@ -3943,6 +3943,11 @@ private:
 		CloseR(pXml);
 	}
 
+	#define WRITE_ENCODE_ARGUMENT(ptrStringBuilder, argumentName, argumentValue) \
+	ptrStringBuilder->WriteString(L" " + std::wstring(argumentName) + L"=\""); \
+	ptrStringBuilder->WriteEncodeXmlString(argumentValue); \
+	ptrStringBuilder->WriteString(L"\"")
+
 	void WriteEmptyImage(NSStringUtils::CStringBuilder* pXml, int nWidth, int nHeight, const std::wstring& wsName = L"", const std::wstring& wsDescr = L"")
 	{
 		if (NULL == pXml)
@@ -3951,10 +3956,17 @@ private:
 		OpenR(pXml);
 
 		pXml->WriteString(L"<w:rPr><w:noProof/></w:rPr><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstring(nWidth) + L"\" cy=\"" + std::to_wstring(nHeight) + L"\"/><wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
-		pXml->WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_nId - 7) + L"\" name=\"" + wsName + L"\" descr=\"" + wsDescr + L"\"/>");
+		pXml->WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_nId - 7) + L"\"");
+		WRITE_ENCODE_ARGUMENT(pXml, L"name", wsName);
+		WRITE_ENCODE_ARGUMENT(pXml, L"descr", wsDescr);
+		pXml->WriteString(L"/>");
 		pXml->WriteString(L"<wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/></wp:cNvGraphicFramePr>");
 		pXml->WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
-		pXml->WriteString(L"<pic:nvPicPr><pic:cNvPr id=\"0\" name=\"" + wsName + L"\" descr=\"" + wsDescr + L"\"/><pic:cNvPicPr><a:picLocks noChangeAspect=\"1\" noChangeArrowheads=\"1\"/></pic:cNvPicPr></pic:nvPicPr>");
+		pXml->WriteString(L"<pic:nvPicPr><pic:cNvPr id=\"0\"");
+		WRITE_ENCODE_ARGUMENT(pXml, L"name", wsName);
+		WRITE_ENCODE_ARGUMENT(pXml, L"descr", wsDescr);
+		pXml->WriteString(L"/>");
+		pXml->WriteString(L"<pic:cNvPicPr><a:picLocks noChangeAspect=\"1\" noChangeArrowheads=\"1\"/></pic:cNvPicPr></pic:nvPicPr>");
 		pXml->WriteString(L"<pic:blipFill><a:blip r:link=\"rId" + std::to_wstring(m_nId++) + L"\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:srcRect/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>");
 		pXml->WriteString(L"<pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" + std::to_wstring(nWidth) + L"\" cy=\"" + std::to_wstring(nHeight) + L"\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></pic:spPr>");
 		pXml->WriteString(L"</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing>");

@@ -58,7 +58,26 @@ void pptx_serialize_text(std::wostream & strm, _pptx_drawing & val)
 			{				
 				CP_XML_NODE(L"a:p")//empty a:p
 				{
-					CP_XML_NODE(L"a:endParaRPr");
+					CP_XML_NODE(L"a:endParaRPr")
+					{
+						_CP_OPT(double) font_size;
+						odf_reader::GetProperty(val.additional, L"placeholder-font-size", font_size);
+						if (font_size)
+							CP_XML_ATTR(L"sz", *font_size * 100);
+						
+						_CP_OPT(std::wstring) text_color;
+						odf_reader::GetProperty(val.additional, L"placeholder-text-color", text_color);
+						if (text_color)
+						{
+							CP_XML_NODE(L"a:solidFill")
+							{
+								CP_XML_NODE(L"a:srgbClr")
+								{
+									CP_XML_ATTR_OPT(L"val", text_color);
+								}
+							}
+						}
+					}
 				}
 			}
 		}

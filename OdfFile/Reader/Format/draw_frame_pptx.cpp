@@ -204,6 +204,17 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 				bool is_placeholder = common_presentation_attlist_.presentation_placeholder_.get_value_or(Bool(false)).get();
 				Context.get_slide_context().set_is_placeHolder(is_placeholder);
 			}
+
+			if (!textStyleName.empty())
+			{
+				odf_reader::style_instance* textStyleInst =
+					Context.root()->odf_context().styleContainer().style_by_name(textStyleName, odf_types::style_family::Paragraph, Context.process_masters_);
+
+				paragraph_format_properties paragraph_properties = calc_paragraph_properties_content(textStyleInst);
+				text_format_properties_ptr text_properties = calc_text_properties_content(textStyleInst);
+
+				pptx_convert_placeHolder_styles(Context, &paragraph_properties, text_properties.get());
+			}
 		}
 
 		if (common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_)
@@ -249,6 +260,23 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 	Context.get_text_context().end_base_style();
 
 	Context.get_slide_context().end_frame();
+}
+
+void draw_frame::pptx_convert_placeHolder_styles(oox::pptx_conversion_context& Context, const paragraph_format_properties* paragraph_props, const text_format_properties* text_props)
+{
+	if (text_props)
+	{
+		if (text_props->fo_color_)
+			Context.get_slide_context().set_property(odf_reader::_property(L"placeholder-text-color", text_props->fo_color_->get_hex_value()));
+		if (text_props->fo_font_size_)
+			Context.get_slide_context().set_property(
+				odf_reader::_property(L"placeholder-font-size", text_props->fo_font_size_->get_length().get_value_unit(odf_types::length::pt)));
+	}
+
+	if (paragraph_props)
+	{
+		//if(paragraph_props->fo_text_align_)
+	}
 }
 
 void draw_image::pptx_convert(oox::pptx_conversion_context & Context)
@@ -329,7 +357,6 @@ void draw_text_box::pptx_convert(oox::pptx_conversion_context & Context)
 
 			frame->content_.push_back(elm);
 			frame->pptx_convert(Context);
-
 		}
 		return;
 	}

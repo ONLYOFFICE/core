@@ -2783,7 +2783,7 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 				if (type == Slide && ph_type == 0)
 				{
 					placeholder_replacing = true;
-					ph_type = 13; // subtitle
+					ph_type = 16; // body
 				}
 				
 				if (type == Layout && (ph_type == 5 || ph_type == 6 || ph_type == 7 || ph_type == 12))

@@ -1519,6 +1519,7 @@ void odf_drawing_context::set_placeholder_type (int val)
 		case 13:	impl_->current_drawing_state_.presentation_class_ = presentation_class::subtitle;	break;
 		case 14:	impl_->current_drawing_state_.presentation_class_ = presentation_class::table;		break;
 		case 15:	impl_->current_drawing_state_.presentation_class_ = presentation_class::title;		break;
+		case 16:	impl_->current_drawing_state_.presentation_class_ = presentation_class::body;		break;
 		default:		
 			impl_->current_drawing_state_.presentation_class_ = presentation_class::outline; 			break;
 	}

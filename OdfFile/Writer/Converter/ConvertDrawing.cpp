@@ -874,7 +874,7 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 //-----------------------------------------------------------------------------
 	odf_context()->drawing_context()->start_shape(type);
 
-	if (odf_context()->drawing_context()->placeholder_replacing())
+	if (oox_shape->nvSpPr.nvPr.ph.is_init())
 	{
 		_CP_PTR(cpdoccore::odf_writer::paragraph_format_properties) paragraph_properties = boost::make_shared<cpdoccore::odf_writer::paragraph_format_properties>();
 		_CP_PTR(cpdoccore::odf_writer::text_format_properties) text_properties = boost::make_shared<cpdoccore::odf_writer::text_format_properties>();
@@ -882,12 +882,23 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 
 		convert(oox_shape->txBody->lstStyle.GetPointer(), 0, paragraph_properties.get(), text_properties.get());
 
-		graphic_properties->draw_textarea_horizontal_align_	= odf_types::text_align(odf_types::text_align::Left);
-		graphic_properties->draw_textarea_vertical_align_	= odf_types::vertical_align(odf_types::vertical_align::Top);
+		if (odf_context()->drawing_context()->placeholder_replacing())
+		{
+			graphic_properties->draw_textarea_horizontal_align_ = odf_types::text_align(odf_types::text_align::Left);
+			graphic_properties->draw_textarea_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Top);
+		}
 
 		odf_context()->drawing_context()->set_text_properties(text_properties.get());
 		odf_context()->drawing_context()->set_paragraph_properties(paragraph_properties.get());
 		odf_context()->drawing_context()->set_graphic_properties(graphic_properties.get());
+
+		if (oox_shape->txBody.IsInit())
+		{
+			odf_context()->start_text_context();
+			convert(oox_shape->txBody->bodyPr.GetPointer());
+			odf_context()->drawing_context()->set_text(odf_context()->text_context());
+			odf_context()->end_text_context();
+		}
 	}
 	
 	convert(&oox_shape->spPr, oox_shape->style.GetPointer());

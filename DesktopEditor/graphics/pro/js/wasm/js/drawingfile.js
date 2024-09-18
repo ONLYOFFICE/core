@@ -841,6 +841,8 @@ CFile.prototype["getButtonIcons"] = function(pageIndex, width, height, backgroun
 	let reader = ptr.getReader();
 
 	if (!reader) return {};
+
+	let res = {};
 	
 	res["MK"] = [];
 	res["View"] = [];

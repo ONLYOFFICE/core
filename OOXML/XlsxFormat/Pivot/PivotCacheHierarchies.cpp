@@ -35,9 +35,18 @@
 #include "../../XlsbFormat/Biff12_unions/PCDHIERARCHIES.h"
 #include "../../XlsbFormat/Biff12_unions/PCDHIERARCHY.h"
 #include "../../XlsbFormat/Biff12_unions/PCDHFIELDSUSAGE.h"
+#include "../../XlsbFormat/Biff12_unions/PCDHGLGMEMBER.h"
+#include "../../XlsbFormat/Biff12_unions/PCDHGLGMEMBERS.h"
+#include "../../XlsbFormat/Biff12_unions/PCDHGLGROUP.h"
+#include "../../XlsbFormat/Biff12_unions/PCDHGLGROUPS.h"
+#include "../../XlsbFormat/Biff12_unions/PCDHGLEVEL.h"
+#include "../../XlsbFormat/Biff12_unions/PCDHGLEVELS.h"
 
 #include "../../XlsbFormat/Biff12_records/BeginPCDHierarchy.h"
 #include "../../XlsbFormat/Biff12_records/BeginPCDHFieldsUsage.h"
+#include "../../XlsbFormat/Biff12_records/BeginPCDHGLGMember.h"
+#include "../../XlsbFormat/Biff12_records/BeginPCDHGLGroup.h"
+#include "../../XlsbFormat/Biff12_records/BeginPCDHGLevel.h"
 
 namespace OOX
 {
@@ -162,8 +171,11 @@ namespace Spreadsheet
             ptr->stUnique = m_oUniqueName.get();
          else
             ptr->stUnique = L"";
+
         if(m_oFieldsUsage.IsInit())
             ptr1->m_PCDHFIELDSUSAGE = m_oFieldsUsage->toBin();
+        if(m_oGroupLevels.IsInit())
+            ptr1->m_PCDHGLEVELS = m_oGroupLevels->toBin();
         return objectPtr;
     }
 
@@ -232,9 +244,10 @@ namespace Spreadsheet
     }
     XLS::BaseObjectPtr CGroupLevels::toBin()
     {
-       auto ptr1(new XLSB::PCDHFIELDSUSAGE);
-       XLS::BaseObjectPtr objectPtr(ptr1);
-
+       auto ptr(new XLSB::PCDHGLEVELS);
+       XLS::BaseObjectPtr objectPtr(ptr);
+       for(auto i : m_arrItems)
+           ptr->m_arPCDHGLEVEL.push_back(i->toBin());
        return objectPtr;
     }
 
@@ -267,8 +280,20 @@ namespace Spreadsheet
     }
     XLS::BaseObjectPtr CGroupLevel::toBin()
     {
-      auto ptr1(new XLSB::PCDHFIELDSUSAGE);
+      auto ptr1(new XLSB::PCDHGLEVEL);
       XLS::BaseObjectPtr objectPtr(ptr1);
+      auto ptr(new XLSB::BeginPCDHGLevel);
+      ptr1->m_BrtBeginPCDHGLevel = XLS::BaseObjectPtr{ptr};
+
+      if(m_oUniqueName.IsInit())
+          ptr->stUnique = m_oUniqueName.get();
+      if(m_oUser.IsInit())
+          ptr->fGroupLevel = m_oUser.get();
+      if(m_oCaption.IsInit())
+          ptr->stLevelName = m_oCaption.get();
+
+      if(m_oGroups.IsInit())
+          ptr1->m_PCDHGLGROUPS = m_oGroups->toBin();
 
       return objectPtr;
     }
@@ -300,8 +325,10 @@ namespace Spreadsheet
     }
     XLS::BaseObjectPtr CGroups::toBin()
     {
-     auto ptr1(new XLSB::PCDHFIELDSUSAGE);
-     XLS::BaseObjectPtr objectPtr(ptr1);
+     auto ptr(new XLSB::PCDHGLGROUPS);
+     XLS::BaseObjectPtr objectPtr(ptr);
+     for(auto i:m_arrItems)
+         ptr->m_arPCDHGLGROUP.push_back(i->toBin());
 
      return objectPtr;
     }
@@ -335,8 +362,24 @@ namespace Spreadsheet
     }
     XLS::BaseObjectPtr CGroup::toBin()
     {
-        auto ptr1(new XLSB::PCDHFIELDSUSAGE);
+        auto ptr1(new XLSB::PCDHGLGROUP);
         XLS::BaseObjectPtr objectPtr(ptr1);
+        auto ptr(new XLSB::BeginPCDHGLGroup);
+        ptr1->m_BrtBeginPCDHGLGroup  = XLS::BaseObjectPtr{ptr};
+
+        if(m_oId.IsInit())
+            ptr->iGrpNum = m_oId.get();
+        if(m_oUniqueName.IsInit())
+            ptr->stUniqueName = m_oUniqueName.get();
+        if(m_oName.IsInit())
+            ptr->stName = m_oName.get();
+        if(m_oCaption.IsInit())
+            ptr->stCaption = m_oCaption.get();
+        if(m_oUniqueParent.IsInit())
+            ptr->stParentUniqueName = m_oUniqueParent.get();
+
+        if(m_oGroupMembers.IsInit())
+            ptr1->m_PCDHGLGMEMBERS = m_oGroupMembers->toBin();
 
         return objectPtr;
     }
@@ -368,9 +411,12 @@ namespace Spreadsheet
     }
     XLS::BaseObjectPtr CGroupMembers::toBin()
     {
-       auto ptr1(new XLSB::PCDHFIELDSUSAGE);
-       XLS::BaseObjectPtr objectPtr(ptr1);
-
+       auto ptr(new XLSB::PCDHGLGMEMBERS);
+       XLS::BaseObjectPtr objectPtr(ptr);
+       for(auto i : m_arrItems)
+       {
+           ptr->m_arPCDHGLGMEMBER.push_back(i->toBin());
+       }
        return objectPtr;
     }
 
@@ -391,8 +437,17 @@ namespace Spreadsheet
     }
     XLS::BaseObjectPtr CGroupMember::toBin()
     {
-       auto ptr1(new XLSB::PCDHFIELDSUSAGE);
+       auto ptr1(new XLSB::PCDHGLGMEMBER);
        XLS::BaseObjectPtr objectPtr(ptr1);
+       auto ptr(new XLSB::BeginPCDHGLGMember);
+       ptr1->m_BrtBeginPCDHGLGMember = XLS::BaseObjectPtr{ptr};
+       
+       if(m_oGroup.IsInit())
+           ptr->fGroup = m_oGroup.get();
+       if(m_oUniqueName.IsInit())
+           ptr->stUnique = m_oUniqueName.get();
+       else
+           ptr->stUnique = L"";
 
        return objectPtr;
     }

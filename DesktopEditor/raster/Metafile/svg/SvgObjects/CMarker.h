@@ -5,11 +5,43 @@
 
 namespace SVG
 {
-	typedef enum
+	enum class EMarkerUnits
 	{
-		Marker_StrokeWidth,
-		Marker_UserSpaceOnUse
-	} MarkerUnits;
+		StrokeWidth,
+		UserSpaceOnUse
+	};
+
+	enum class EMarkerOrient
+	{
+		Auto,
+		Auto_start_reverse,
+		Angle
+	};
+
+	struct TPointData
+	{
+		Point  m_oPoint;
+		double m_dAngle;
+
+		TPointData()
+		    : m_dAngle(0.)
+		{}
+	};
+
+	struct TMarkerExternData
+	{
+		std::vector<TPointData>* m_pPoints;
+		double m_dStroke;
+
+		TMarkerExternData()
+		    : m_pPoints(NULL), m_dStroke(0.)
+		{}
+
+		~TMarkerExternData()
+		{
+			RELEASEOBJECT(m_pPoints);
+		}
+	};
 
 	class CMarker : public CObject, public CContainer<CRenderedObject>
 	{
@@ -21,16 +53,21 @@ namespace SVG
 
 		void SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode) override;
 
-		void Update(const CSvgFile *pFile);
+		void Draw(IRenderer* pRenderer, const CSvgFile *pFile, const TMarkerExternData& oExternalData, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContexObject = NULL) const;
 
-		void Draw(IRenderer* pRenderer, const std::vector<Point>& arPoints, double dStrokeWidth) const;
+		bool NeedExternalAngle() const;
+		EMarkerOrient GetOrientType() const;
 	private:
-		MarkerUnits m_enUnits;
+		EMarkerUnits  m_enUnits;
+		EMarkerOrient m_enOrient;
 
-		TRect m_oWindow;
-		TRect m_oViewBox;
+		double       m_dAngle;
 
-		Aggplus::CImage *m_pImage;
+		TRect        m_oWindow;
+		TRect        m_oViewBox;
+
+		TBounds      m_oBounds;
+
 	};
 }
 

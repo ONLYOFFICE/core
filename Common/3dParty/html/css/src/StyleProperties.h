@@ -215,7 +215,9 @@ namespace NSCSS
 		ColorNone,
 		ColorRGB,
 		ColorHEX,
-		ColorUrl
+		ColorUrl,
+		ColorContextStroke,
+		ColorContextFill
 	} ColorType;
 
 	class CColor : public CValue<void*>

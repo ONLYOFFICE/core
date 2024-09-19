@@ -50,28 +50,28 @@ namespace SVG
 	void CObject::SetTransform(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
 		if (mAttributes.end() != mAttributes.find(L"transform"))
-			m_oTransformtaion.m_oTransform.SetMatrix(mAttributes.at(L"transform"), ushLevel, bHardMode);
+			m_oTransformation.m_oTransform.SetMatrix(mAttributes.at(L"transform"), ushLevel, bHardMode);
 		else
-			m_oTransformtaion.m_oTransform.SetMatrix(L"", ushLevel, false);
+			m_oTransformation.m_oTransform.SetMatrix(L"", ushLevel, false);
 	}
 
 	void CObject::SetClip(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
 		if (mAttributes.end() != mAttributes.find(L"clip-path"))
-			m_oTransformtaion.m_oClip.m_oHref.SetValue(mAttributes.at(L"clip-path"), ushLevel, bHardMode);
+			m_oTransformation.m_oClip.m_oHref.SetValue(mAttributes.at(L"clip-path"), ushLevel, bHardMode);
 		else
-			m_oTransformtaion.m_oClip.m_oHref.SetValue(L"", ushLevel, false);
+			m_oTransformation.m_oClip.m_oHref.SetValue(L"", ushLevel, false);
 
 		if (mAttributes.end() != mAttributes.find(L"clip-rule"))
-			m_oTransformtaion.m_oClip.m_oRule.SetValue(mAttributes.at(L"clip-rule"), std::vector<std::wstring>{L"nonzero", L"evenodd"}, ushLevel, bHardMode);
+			m_oTransformation.m_oClip.m_oRule.SetValue(mAttributes.at(L"clip-rule"), std::vector<std::wstring>{L"nonzero", L"evenodd"}, ushLevel, bHardMode);
 	}
 
 	void CObject::SetMask(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
 		if (mAttributes.end() != mAttributes.find(L"mask"))
-			m_oTransformtaion.m_oMask.SetValue(mAttributes.at(L"mask"), ushLevel, bHardMode);
+			m_oTransformation.m_oMask.SetValue(mAttributes.at(L"mask"), ushLevel, bHardMode);
 		else
-			m_oTransformtaion.m_oMask.SetValue(L"", ushLevel, false);
+			m_oTransformation.m_oMask.SetValue(L"", ushLevel, false);
 	}
 
 	void CObject::SetDisplay(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -85,15 +85,15 @@ namespace SVG
 			wsVisibility = mAttributes.at(L"visibility");
 
 		if (L"none" == wsDisplay || L"hidden" == wsVisibility || L"collapse" == wsVisibility)
-			m_oTransformtaion.m_bDraw = false;
+			m_oTransformation.m_bDraw = false;
 		else
-			m_oTransformtaion.m_bDraw = true;
+			m_oTransformation.m_bDraw = true;
 	}
 
 	void CObject::SetOpacity(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
 		if (mAttributes.end() != mAttributes.find(L"opacity"))
-			m_oTransformtaion.m_oOpacity.SetValue(mAttributes.at(L"opacity"), ushLevel, bHardMode);
+			m_oTransformation.m_oOpacity.SetValue(mAttributes.at(L"opacity"), ushLevel, bHardMode);
 	}
 
 	bool CObject::ApplyTransform(IRenderer *pRenderer, const NSCSS::NSProperties::CTransform *pTransform, Aggplus::CMatrix& oOldMatrix) const
@@ -118,11 +118,8 @@ namespace SVG
 
 	bool CObject::ApplyClip(IRenderer *pRenderer, const TClip *pClip, const CSvgFile *pFile, const TBounds &oBounds) const
 	{
-		if (NULL == pRenderer || NULL == pClip || NULL == pFile)
+		if (NULL == pRenderer || NULL == pClip || NULL == pFile || pClip->m_oHref.Empty() || NSCSS::NSProperties::ColorType::ColorUrl != pClip->m_oHref.GetType())
 			return false;
-
-		if (pClip->m_oHref.Empty() || NSCSS::NSProperties::ColorType::ColorUrl != pClip->m_oHref.GetType())
-			return true;
 
 		if (pClip->m_oRule == L"evenodd")
 			pRenderer->put_ClipMode(c_nClipRegionTypeEvenOdd);
@@ -142,7 +139,7 @@ namespace SVG
 
 		return ApplyDef(pRenderer, pFile, pMask->ToWString(), oBounds);
 	}
-	
+
 	bool CObject::ApplyDef(IRenderer *pRenderer, const CSvgFile *pFile, const std::wstring &wsUrl, const TBounds &oBounds) const
 	{
 		if (NULL == pRenderer || NULL == pFile || wsUrl.empty())
@@ -241,9 +238,9 @@ namespace SVG
 		m_oStyles.m_oStroke.m_oLineCap = Aggplus::LineJoinMiter;
 
 		m_oStyles.m_oStroke.m_oMiterlimit = 4.;
-		
-		m_oTransformtaion.m_oOpacity = 1.;
-		m_oTransformtaion.m_bDraw = true;
+
+		m_oTransformation.m_oOpacity = 1.;
+		m_oTransformation.m_bDraw = true;
 	}
 
 	void CRenderedObject::SetStroke(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -282,21 +279,23 @@ namespace SVG
 			m_oStyles.m_oFill.SetOpacity(mAttributes.at(L"fill-opacity"), ushLevel, bHardMode);
 	}
 
-	bool CRenderedObject::StartPath(IRenderer *pRenderer, const CSvgFile *pFile, Aggplus::CMatrix &oOldTransform, CommandeMode oMode) const
+	bool CRenderedObject::StartPath(IRenderer *pRenderer, const CSvgFile *pFile, Aggplus::CMatrix& oOldTransform, CommandeMode oMode) const
 	{
-		if (NULL == pRenderer || !m_oTransformtaion.m_bDraw || Equals(0., m_oTransformtaion.m_oOpacity.ToDouble()))
+		if (NULL == pRenderer || !m_oTransformation.m_bDraw || Equals(0., m_oTransformation.m_oOpacity.ToDouble()))
 			return false;
 
-		ApplyTransform(pRenderer, &m_oTransformtaion.m_oTransform, oOldTransform);
-		ApplyClip(pRenderer, &m_oTransformtaion.m_oClip, pFile, GetBounds());
-		ApplyMask(pRenderer, &m_oTransformtaion.m_oMask, pFile, GetBounds());
+		const TBounds oBounds{GetBounds()};
+
+		ApplyTransform(pRenderer, &m_oTransformation.m_oTransform, oOldTransform);
+		ApplyClip(pRenderer, &m_oTransformation.m_oClip, pFile, oBounds);
+		ApplyMask(pRenderer, &m_oTransformation.m_oMask, pFile, oBounds);
 
 		if (CommandeModeClip == oMode)
 			pRenderer->BeginCommand(c_nClipType);
-		else if (1. != m_oTransformtaion.m_oOpacity.ToDouble())
+		else if (1. != m_oTransformation.m_oOpacity.ToDouble())
 		{
 			pRenderer->BeginCommand(c_nLayerType);
-			pRenderer->put_LayerOpacity(m_oTransformtaion.m_oOpacity.ToDouble());
+			pRenderer->put_LayerOpacity(m_oTransformation.m_oOpacity.ToDouble());
 		}
 
 		pRenderer->BeginCommand(c_nPathType);
@@ -305,54 +304,58 @@ namespace SVG
 		return true;
 	}
 
-	void CRenderedObject::EndPath(IRenderer *pRenderer, const CSvgFile *pFile, const Aggplus::CMatrix &oOldTransform, CommandeMode oMode, const TSvgStyles* pOtherStyles) const
+	void CRenderedObject::EndPath(IRenderer *pRenderer, const CSvgFile *pFile, const Aggplus::CMatrix& oOldTransform, CommandeMode oMode, const TSvgStyles* pOtherStyles, const CRenderedObject* pContextObject) const
 	{
 		if (CommandeModeClip == oMode)
 		{
 			pRenderer->EndCommand(c_nClipType);
 			pRenderer->EndCommand(c_nPathType);
 			pRenderer->PathCommandEnd();
-			pRenderer->SetTransform(oOldTransform.sx(), oOldTransform.shy(), oOldTransform.shx(), oOldTransform.sy(), oOldTransform.tx(), oOldTransform.ty());
+			pRenderer->SetTransform(oOldTransform.sx(),  oOldTransform.shy(),
+			                        oOldTransform.shx(), oOldTransform.sy(),
+			                        oOldTransform.tx(),  oOldTransform.ty());
 			return;
 		}
-		
+
 		int nPathType = 0;
 
 		if (NULL == pOtherStyles)
-			ApplyStyle(pRenderer, &m_oStyles, pFile, nPathType);
+			ApplyStyle(pRenderer, &m_oStyles, pFile, nPathType, pContextObject);
 		else
 		{
 			TSvgStyles oNewStyles(m_oStyles);
 			oNewStyles += *pOtherStyles;
-			ApplyStyle(pRenderer, &oNewStyles, pFile, nPathType);
+			ApplyStyle(pRenderer, &oNewStyles, pFile, nPathType, pContextObject);
 		}
 
 		pRenderer->DrawPath(nPathType);
 		pRenderer->EndCommand(c_nPathType);
 		pRenderer->PathCommandEnd();
 
-		if (!m_oTransformtaion.m_oClip.m_oHref.Empty())
+		if (!m_oTransformation.m_oClip.m_oHref.Empty())
 		{
 			pRenderer->BeginCommand(c_nResetClipType);
 			pRenderer->EndCommand(c_nResetClipType);
 		}
 
-		if (!m_oTransformtaion.m_oMask.Empty())
+		if (!m_oTransformation.m_oMask.Empty())
 		{
 			pRenderer->BeginCommand(c_nResetMaskType);
 			pRenderer->EndCommand(c_nResetMaskType);
 		}
-		
-		if (1. != m_oTransformtaion.m_oOpacity.ToDouble())
+
+		if (1. != m_oTransformation.m_oOpacity.ToDouble())
 			pRenderer->EndCommand(c_nLayerType);
 
-		pRenderer->SetTransform(oOldTransform.sx(), oOldTransform.shy(), oOldTransform.shx(), oOldTransform.sy(), oOldTransform.tx(), oOldTransform.ty());
+		pRenderer->SetTransform(oOldTransform.sx(),  oOldTransform.shy(),
+		                        oOldTransform.shx(), oOldTransform.sy(),
+		                        oOldTransform.tx(),  oOldTransform.ty());
 	}
 
-	void CRenderedObject::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
+	void CRenderedObject::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, const CRenderedObject* pContextObject) const
 	{}
 
-	bool CRenderedObject::ApplyStroke(IRenderer *pRenderer, const TStroke *pStroke, bool bUseDefault) const
+	bool CRenderedObject::ApplyStroke(IRenderer *pRenderer, const TStroke *pStroke, bool bUseDefault, const CRenderedObject* pContextObject) const
 	{
 		if (NULL == pRenderer || NULL == pStroke || NSCSS::NSProperties::ColorType::ColorNone == pStroke->m_oColor.GetType() || (!bUseDefault && ((pStroke->m_oWidth.Empty() || pStroke->m_oWidth.Zero()) && pStroke->m_oColor.Empty())))
 		{
@@ -365,10 +368,14 @@ namespace SVG
 		if (Equals(0., dStrokeWidth))
 			dStrokeWidth = 1.;
 
-		int nColor = (pStroke->m_oColor.Empty() || NSCSS::NSProperties::ColorType::ColorNone == pStroke->m_oColor.GetType()) ? 0 : pStroke->m_oColor.ToInt();
+		if (NSCSS::NSProperties::ColorType::ColorContextFill == pStroke->m_oColor.GetType() && NULL != pContextObject)
+			pRenderer->put_PenColor(pContextObject->m_oStyles.m_oFill.ToInt());
+		else if (NSCSS::NSProperties::ColorType::ColorContextStroke == pStroke->m_oColor.GetType() && NULL != pContextObject)
+			pRenderer->put_PenColor(pContextObject->m_oStyles.m_oStroke.m_oColor.ToInt());
+		else
+			pRenderer->put_PenColor((pStroke->m_oColor.Empty() || NSCSS::NSProperties::ColorType::ColorNone == pStroke->m_oColor.GetType()) ? 0 : pStroke->m_oColor.ToInt());
 
 		pRenderer->put_PenSize(dStrokeWidth);
-		pRenderer->put_PenColor(nColor);
 		pRenderer->put_PenAlpha(255. * pStroke->m_oColor.GetOpacity());
 
 		if (!pStroke->m_arDash.empty())
@@ -391,7 +398,7 @@ namespace SVG
 		return true;
 	}
 
-	bool CRenderedObject::ApplyFill(IRenderer *pRenderer, const NSCSS::NSProperties::CColor *pFill, const CSvgFile *pFile, bool bUseDefault) const
+	bool CRenderedObject::ApplyFill(IRenderer *pRenderer, const NSCSS::NSProperties::CColor *pFill, const CSvgFile *pFile, bool bUseDefault, const CRenderedObject* pContextObject) const
 	{
 		if (NULL == pRenderer || NULL == pFill || NSCSS::NSProperties::ColorType::ColorNone == pFill->GetType() || (!bUseDefault && pFill->Empty()))
 		{
@@ -417,6 +424,10 @@ namespace SVG
 					return false;
 			}
 		}
+		else if (NSCSS::NSProperties::ColorType::ColorContextFill == pFill->GetType() && NULL != pContextObject)
+			pRenderer->put_BrushColor1(pContextObject->m_oStyles.m_oFill.ToInt());
+		else if (NSCSS::NSProperties::ColorType::ColorContextStroke == pFill->GetType() && NULL != pContextObject)
+			pRenderer->put_BrushColor1(pContextObject->m_oStyles.m_oStroke.m_oColor.ToInt());
 		else if (bUseDefault)
 		{
 			pRenderer->put_BrushColor1(0);

@@ -27,9 +27,9 @@ namespace SVG
 		SetMarker(mAttributes, ushLevel, bHardMode);
 	}
 
-	void CLine::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
+	void CLine::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, const CRenderedObject* pContexObject) const
 	{
-            if (ApplyStroke(pRenderer, &pStyles->m_oStroke, true))
+		if (ApplyStroke(pRenderer, &pStyles->m_oStroke, true, pContexObject))
 			nTypePath += c_nStroke;
 	}
 }

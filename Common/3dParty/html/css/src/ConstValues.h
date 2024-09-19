@@ -33,6 +33,8 @@ namespace NSCSS
 		NSCSS::CNode m_oNode;
 		std::vector<CTree> m_arrChild;
 
+		void Clear();
+
 		static void CountingNumberRepetitions(const CTree &oTree, std::map<StatistickElement, unsigned int> &mStatictics);
 	};
 

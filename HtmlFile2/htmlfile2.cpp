@@ -4214,6 +4214,7 @@ HRESULT CHtmlFile2::OpenMht(const std::wstring& sSrc, const std::wstring& sDst, 
 	m_internal->readStyle();
 
 	m_internal->m_oStylesCalculator.SetBodyTree(m_internal->m_oTree);
+	m_internal->m_oTree.Clear();
 
 	// Переходим в начало
 	if(!m_internal->m_oLightReader.MoveToStart())

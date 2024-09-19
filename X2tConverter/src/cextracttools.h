@@ -1042,7 +1042,7 @@ namespace NExtractTools
 				}
 				else
 				{
-					if (!getDontSaveAdditional())
+					if (false/*not used*/ && !getDontSaveAdditional())
 					{
 						int nCodePage = getEncodingByContent();
 						if (nCodePage < 0)
@@ -1056,26 +1056,13 @@ namespace NExtractTools
 						oBuilder.WriteString(_T("}"));
 						std::wstring sFilePath = NSSystemPath::GetDirectoryName(*m_sFileTo) + FILE_SEPARATOR_STR + _T("settings.json");
 						NSFile::CFileBinary::SaveToFile(sFilePath, oBuilder.GetData());
-						copyOrigin(*m_sFileFrom, *m_sFileTo);
-					
-						eRes = TCD_ERROR;
 					}
-					else
-					{
-						if (!m_nCsvTxtEncoding)
-						{
-							m_nCsvTxtEncoding = new int(getEncodingByContent());
 
-							if (*m_nCsvTxtEncoding < 0)
-							{
-								*m_nCsvTxtEncoding = 46; // utf-8
-							}
-						}
-						if (!m_nCsvDelimiter && !m_sCsvDelimiterChar)
-						{
-							m_sCsvDelimiterChar = new std::wstring(L","); // TCSVD_COMMA
-						}
+					if (!getDontSaveAdditional())
+					{
+						copyOrigin(*m_sFileFrom, *m_sFileTo);
 					}
+					eRes = TCD_ERROR;
 				}
 			}
 			return eRes;

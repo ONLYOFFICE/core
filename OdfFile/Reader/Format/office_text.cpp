@@ -39,6 +39,7 @@
 
 #include "serialize_elements.h"
 #include "odfcontext.h"
+#include "style_paragraph_properties.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -240,9 +241,21 @@ void office_text::docx_convert(oox::docx_conversion_context & Context)
 				}
 			}
 
-			if (!Context.get_master_page_name().empty() && !next_masterPageName)
+			style_instance* next_style_instance = Context.root()->odf_context().styleContainer().style_by_name(text___, odf_types::style_family::Paragraph, false);
+			if (next_style_instance)
 			{
-				Context.next_dump_page_properties(true);
+				style_content* next_style_content = next_style_instance->content();
+				if (next_style_content)
+				{
+					style_paragraph_properties* next_para_props = next_style_content->get_style_paragraph_properties();
+					if (next_para_props)
+					{
+						if (next_para_props->content_.fo_break_before_ && next_para_props->content_.fo_break_before_->get_type() == odf_types::fo_break::Page)
+						{
+							Context.next_dump_page_properties(true);
+						}
+					}
+				}
 			}
 		} 
 		content_[i]->docx_convert(Context);

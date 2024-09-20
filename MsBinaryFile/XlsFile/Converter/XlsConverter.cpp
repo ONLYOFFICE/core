@@ -189,7 +189,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 					if (globals)
 					{
 						globals->m_Formating = worksheet->m_Formating;
-						globals->UpdateXFC();
+						globals->UpdateXFC();						
 					}
 				}
 			}

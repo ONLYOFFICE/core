@@ -262,7 +262,7 @@ namespace MetaFile
 	{
 
 	}
-	CWmfDC* CWmfDC::Copy()
+	CWmfDC* CWmfDC::Copy() const
 	{
 		CWmfDC* pNewDC = new CWmfDC();
 		if (!pNewDC)
@@ -296,7 +296,7 @@ namespace MetaFile
 		return pNewDC;
 	}
 	
-	CClip *CWmfDC::GetClip()
+	CClip* CWmfDC::GetClip()
 	{
 		return &m_oClip;
 	}
@@ -309,7 +309,7 @@ namespace MetaFile
 		if (pBrush == m_pBrush)
 			m_pBrush = NULL;
 	}
-	CWmfBrush* CWmfDC::GetBrush()
+	const CWmfBrush* CWmfDC::GetBrush() const
 	{
 		return m_pBrush;
 	}
@@ -322,7 +322,7 @@ namespace MetaFile
 		if (m_pPen == pPen)
 			m_pPen = NULL;
 	}
-	CWmfPen* CWmfDC::GetPen()
+	const CWmfPen* CWmfDC::GetPen() const
 	{
 		return m_pPen;
 	}
@@ -335,7 +335,7 @@ namespace MetaFile
 		if (m_pPalette == pPalette)
 			m_pPalette = NULL;
 	}
-	CWmfPalette* CWmfDC::GetPalette()
+	const CWmfPalette* CWmfDC::GetPalette() const
 	{
 		return m_pPalette;
 	}
@@ -348,7 +348,7 @@ namespace MetaFile
 		if (m_pFont == pFont)
 			m_pFont = NULL;
 	}
-	CWmfFont*  CWmfDC::GetFont()
+	const CWmfFont* CWmfDC::GetFont() const
 	{
 		return m_pFont;
 	}
@@ -361,7 +361,7 @@ namespace MetaFile
 		if (m_pRegion == pRegion)
 			m_pRegion = NULL;
 	}
-	CWmfRegion* CWmfDC::GetRegion()
+	const CWmfRegion* CWmfDC::GetRegion() const
 	{
 		return m_pRegion;
 	}
@@ -421,15 +421,15 @@ namespace MetaFile
 
 		UpdateFinalTransform();
 	}
-	unsigned int CWmfDC::GetMapMode()
+	unsigned int CWmfDC::GetMapMode() const
 	{
 		return m_ushMapMode;
 	}
-	double CWmfDC::GetPixelWidth()
+	double CWmfDC::GetPixelWidth() const
 	{
 		return m_dPixelWidth;
 	}
-	double CWmfDC::GetPixelHeight()
+	double CWmfDC::GetPixelHeight() const
 	{
 		return m_dPixelHeight;
 	}
@@ -441,9 +441,9 @@ namespace MetaFile
 	{
 		m_dPixelHeight = dH;
 	}
-	TWmfWindow* CWmfDC::GetWindow()
+	const TWmfWindow& CWmfDC::GetWindow() const
 	{
-		return &m_oWindow;
+		return m_oWindow;
 	}
 	void CWmfDC::SetWindowOrg(short shX, short shY)
 	{
@@ -490,9 +490,9 @@ namespace MetaFile
 		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
-	TWmfWindow*    CWmfDC::GetViewport()
+	const TWmfWindow& CWmfDC::GetViewport() const
 	{
-		return &m_oViewport;
+		return m_oViewport;
 	}
 	void CWmfDC::SetViewportOrg(short shX, short shY)
 	{
@@ -568,14 +568,14 @@ namespace MetaFile
 	}
 	void CWmfDC::UpdateFinalTransform()
 	{
-		TWmfWindow* pWindow   = GetWindow();
-		TWmfWindow* pViewPort = GetViewport();
+		const TWmfWindow& oWindow{GetWindow()};
+		const TWmfWindow& oViewPort{GetViewport()};
 
-		double dM11 = (pViewPort->w >= 0) ? 1 : -1;
-		double dM22 = (pViewPort->h >= 0) ? 1 : -1;
+		double dM11 = (oViewPort.w >= 0) ? 1 : -1;
+		double dM22 = (oViewPort.h >= 0) ? 1 : -1;
 
-		TEmfXForm oWindowXForm(1, 0, 0, 1, -(pWindow->x * GetPixelWidth() * dM11), -(pWindow->y * GetPixelHeight() * dM22));
-		TEmfXForm oViewportXForm(GetPixelWidth() * dM11, 0, 0, GetPixelHeight() * dM22, pViewPort->x, pViewPort->y);
+		TEmfXForm oWindowXForm(1, 0, 0, 1, -(oWindow.x * GetPixelWidth() * dM11), -(oWindow.y * GetPixelHeight() * dM22));
+		TEmfXForm oViewportXForm(GetPixelWidth() * dM11, 0, 0, GetPixelHeight() * dM22, oViewPort.x, oViewPort.y);
 
 		m_oFinalTransform.Init();
 		m_oFinalTransform.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
@@ -613,7 +613,7 @@ namespace MetaFile
 	{
 		m_oTextColor = oColor;
 	}
-	TRGBA&  CWmfDC::GetTextColor()
+	const TRGBA& CWmfDC::GetTextColor() const
 	{
 		return m_oTextColor;
 	}
@@ -621,11 +621,11 @@ namespace MetaFile
 	{
 		m_oTextBgColor = oColor;
 	}
-	TRGBA& CWmfDC::GetTextBgColor()
+	const TRGBA& CWmfDC::GetTextBgColor() const
 	{
 		return m_oTextBgColor;
 	}
-	TPointS &CWmfDC::GetCurPos()
+	const TPointS& CWmfDC::GetCurPos() const
 	{
 		return m_oCurPos;
 	}
@@ -642,7 +642,7 @@ namespace MetaFile
 	{
 		m_ushTextBgMode = ushMode;
 	}
-	unsigned short CWmfDC::GetTextBgMode()
+	unsigned short CWmfDC::GetTextBgMode() const
 	{
 		return m_ushTextBgMode;
 	}
@@ -650,7 +650,7 @@ namespace MetaFile
 	{
 		m_ushLayout = ushLayout;
 	}
-	unsigned short CWmfDC::GetLayout()
+	unsigned short CWmfDC::GetLayout() const
 	{
 		return m_ushLayout;
 	}
@@ -658,7 +658,7 @@ namespace MetaFile
 	{
 		m_ushPolyFillMode = ushMode;
 	}
-	unsigned short CWmfDC::GetPolyFillMode()
+	unsigned short CWmfDC::GetPolyFillMode() const
 	{
 		return m_ushPolyFillMode;
 	}
@@ -666,7 +666,7 @@ namespace MetaFile
 	{
 		m_ushRop2Mode = ushMode;
 	}
-	unsigned short CWmfDC::GetRop2Mode()
+	unsigned short CWmfDC::GetRop2Mode() const
 	{
 		return m_ushRop2Mode;
 	}
@@ -674,7 +674,7 @@ namespace MetaFile
 	{
 		m_ushStretchBltMode = ushMode;
 	}
-	unsigned short CWmfDC::GetStretchBltMode()
+	unsigned short CWmfDC::GetStretchBltMode() const
 	{
 		return m_ushStretchBltMode;
 	}
@@ -682,7 +682,7 @@ namespace MetaFile
 	{
 		m_ushTextAlign = ushTextAlign;
 	}
-	unsigned short CWmfDC::GetTextAlign()
+	unsigned short CWmfDC::GetTextAlign() const
 	{
 		return m_ushTextAlign;
 	}
@@ -690,26 +690,26 @@ namespace MetaFile
 	{
 		m_ushCharSpacing = ushCharSpacing;
 	}
-	unsigned short CWmfDC::GetCharSpacing()
+	unsigned short CWmfDC::GetCharSpacing() const
 	{
 		return m_ushCharSpacing;
 	}
-	TXForm* CWmfDC::GetTransform()
+	const TXForm& CWmfDC::GetTransform() const
 	{
-		return &m_oTransform;
+		return m_oTransform;
 	}
-	TXForm* CWmfDC::GetInverseTransform()
+	const TXForm& CWmfDC::GetInverseTransform() const
 	{
-		return &m_oTransform;
+		return m_oTransform;
 	}
-	TXForm* CWmfDC::GetFinalTransform(int iGraphicsMode)
+	const TXForm& CWmfDC::GetFinalTransform(int iGraphicsMode) const
 	{
 		if (GM_COMPATIBLE == iGraphicsMode)
-			return &m_oFinalTransform2;
+			return m_oFinalTransform2;
 
-		return &m_oFinalTransform;
+		return m_oFinalTransform;
 	}
-	unsigned int CWmfDC::GetMiterLimit()
+	unsigned int CWmfDC::GetMiterLimit() const
 	{
 		return 0;
 	}

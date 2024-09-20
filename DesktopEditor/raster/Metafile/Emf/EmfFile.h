@@ -117,7 +117,7 @@ namespace MetaFile
 			m_pParser->SetFontManager(pFontManager);
 		}
 
-		bool CheckError()
+		bool CheckError() const
 		{
 			return m_pParser->CheckError();
 		}
@@ -142,7 +142,7 @@ namespace MetaFile
 			m_pParser->SetInterpretator(oInterpretatorType, unWidth, unHeight);
 		}
 
-		TRectL* GetBounds()
+		const TRectL& GetBounds() const
 		{
 			return m_pParser->GetBounds();
 		}

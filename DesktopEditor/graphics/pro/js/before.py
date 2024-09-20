@@ -37,3 +37,5 @@ if not base.is_dir("freetype-2.10.4"):
 
 base.replaceInFile("../../../../Common/3dParty/icu/icu/source/common/udata.cpp", "\n{\n    UDataMemory tData;", "\n{\n#ifdef BUILDING_WASM_MODULE\nreturn NULL;\n#endif\n    UDataMemory tData;")
 base.replaceInFile("../../../../DesktopEditor/cximage/png/pnglibconf.h", "#define PNG_CONSOLE_IO_SUPPORTED", "//#define PNG_CONSOLE_IO_SUPPORTED")
+
+base.replaceInFile("../../../../Common/3dParty/openssl/openssl/crypto/sha/sha512.c", "const SHA_LONG64 *W = in;", "const SHA_LONG64 *W = (const SHA_LONG64*)in;")

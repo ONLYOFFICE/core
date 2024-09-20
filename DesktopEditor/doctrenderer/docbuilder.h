@@ -204,6 +204,11 @@ namespace NSDoctRenderer
 		 * Creates an array. This method returns the current context and calls its CreateArray method.
 		 */
 		static CDocBuilderValue CreateArray(const int& length);
+		/**
+		 * Please use CDocBuilderContext::CreateObject
+		 * Creates an object. This method returns the current context and calls its CreateObject method.
+		 */
+		static CDocBuilderValue CreateObject();
 
 	public:
 		/**
@@ -492,9 +497,10 @@ namespace NSDoctRenderer
 
 		/**
 		 * Returns the current JS context.
+		 * @param enterContext Whether returned context should be entered or not.
 		 * @return The current JS context
 		 */
-		CDocBuilderContext GetContext();
+		CDocBuilderContext GetContext(bool enterContext = true);
 
 	public:
 		/**

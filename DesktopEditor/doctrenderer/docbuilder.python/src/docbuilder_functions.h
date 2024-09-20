@@ -24,6 +24,7 @@ DOCBUILDER_FUNC_DECL void CDocBuilderValue_Clear(CDocBuilderValue* self);
 
 DOCBUILDER_FUNC_DECL bool CDocBuilderValue_IsNull(CDocBuilderValue* self);
 DOCBUILDER_FUNC_DECL bool CDocBuilderValue_IsUndefined(CDocBuilderValue* self);
+DOCBUILDER_FUNC_DECL bool CDocBuilderValue_IsBool(CDocBuilderValue* self);
 DOCBUILDER_FUNC_DECL bool CDocBuilderValue_IsInt(CDocBuilderValue* self);
 DOCBUILDER_FUNC_DECL bool CDocBuilderValue_IsDouble(CDocBuilderValue* self);
 DOCBUILDER_FUNC_DECL bool CDocBuilderValue_IsString(CDocBuilderValue* self);
@@ -55,6 +56,7 @@ DOCBUILDER_FUNC_DECL CDocBuilderValue* CDocBuilderValue_CreateWithString(const w
 DOCBUILDER_FUNC_DECL CDocBuilderValue* CDocBuilderValue_CreateUndefined();
 DOCBUILDER_FUNC_DECL CDocBuilderValue* CDocBuilderValue_CreateNull();
 DOCBUILDER_FUNC_DECL CDocBuilderValue* CDocBuilderValue_CreateArray(int length);
+DOCBUILDER_FUNC_DECL CDocBuilderValue* CDocBuilderValue_CreateObject();
 
 DOCBUILDER_FUNC_DECL CDocBuilderValue* CDocBuilderValue_Call0(CDocBuilderValue* self, const wchar_t* name);
 DOCBUILDER_FUNC_DECL CDocBuilderValue* CDocBuilderValue_Call1(CDocBuilderValue* self, const wchar_t* name, CDocBuilderValue* p1);

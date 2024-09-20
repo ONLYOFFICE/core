@@ -197,14 +197,9 @@ namespace MetaFile
 			if (NULL == m_pFile)
 				return;
 
-			TRectL* pBounds = m_pFile->GetDCBounds();
-			int nL = pBounds->Left;
-			int nR = pBounds->Right;
-			int nT = pBounds->Top;
-			int nB = pBounds->Bottom;
-
-			m_dScaleX = m_dW / std::fabs((double)(nR - nL));
-			m_dScaleY = m_dH / std::fabs((double)(nB - nT));
+			const TRectL& oBounds{m_pFile->GetDCBounds()};
+			m_dScaleX = m_dW / std::fabs((double)(oBounds.Right - oBounds.Left));
+			m_dScaleY = m_dH / std::fabs((double)(oBounds.Bottom - oBounds.Top));
 		}
 
 		double GetHeight() const
@@ -293,7 +288,7 @@ namespace MetaFile
 		}
 		void DrawDriverString(const std::wstring& wsString, const std::vector<TPointD>& arPoints)
 		{
-			IFont *pFont = m_pFile->GetFont();
+			const IFont *pFont = m_pFile->GetFont();
 
 			if (NULL == pFont)
 				return;
@@ -356,7 +351,7 @@ namespace MetaFile
 		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double _dX, double _dY, double* pDx, int iGraphicsMode, double dXScale, double dYScale)
 		{
 			CheckEndPath();
-			IFont* pFont = m_pFile->GetFont();
+			const IFont* pFont = m_pFile->GetFont();
 			if (!pFont)
 				return;
 
@@ -991,7 +986,7 @@ namespace MetaFile
 		}
 		bool UpdateBrush()
 		{
-			IBrush* pBrush = m_pFile->GetBrush();
+			const IBrush* pBrush = m_pFile->GetBrush();
 			if (!pBrush)
 				return false;
 
@@ -1152,7 +1147,7 @@ namespace MetaFile
 			if (m_bUpdatedClip)
 				return;
 			
-			CClip *pClip = m_pFile->GetClip();
+			const CClip *pClip = m_pFile->GetClip();
 			
 			if (NULL == pClip)
 				return;
@@ -1180,7 +1175,7 @@ namespace MetaFile
 		}
 		bool UpdatePen()
 		{
-			IPen* pPen = m_pFile->GetPen();
+			const IPen* pPen = m_pFile->GetPen();
 			if (!pPen)
 				return false;
 

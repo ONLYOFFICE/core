@@ -61,7 +61,7 @@ QImage GenerateImg(std::vector<NSStructures::Point> &points, Info &info, const i
 
 	NSStructures::GradientInfo ginfo = info.ginfo;
 	ginfo.shading.f_type = NSStructures::ShadingInfo::UseNew;
-	pRasterRenderer->put_BrushGradInfo(ginfo);
+	pRasterRenderer->put_BrushGradInfo(&ginfo);
 	auto a		= info.c;
 	auto b		= info.p;
 	LONG *c		= a.data();

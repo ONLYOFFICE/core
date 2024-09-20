@@ -705,6 +705,15 @@ namespace NSJSBase
 			_value->value = value;
 			return _value;
 		}
+
+		virtual void Detach()
+		{
+#ifdef V8_ARRAY_BUFFER_USE_BACKING_STORE
+			value->Buffer()->Detach();
+#else
+			value->Buffer()->Neuter();
+#endif
+		}
 	};
 
 	class CJSFunctionV8 : public CJSValueV8Template<v8::Function, CJSFunction>

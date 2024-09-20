@@ -68,8 +68,8 @@ namespace NSDoctRenderer
 		return m_pInternal->ExecuteCommand(command, retValue);
 	}
 
-	CDocBuilderContext CDocBuilder::GetContext()
+	CDocBuilderContext CDocBuilder::GetContext(bool enterContext)
 	{
-		return m_pInternal->GetContext();
+		return m_pInternal->GetContext(enterContext);
 	}
 }

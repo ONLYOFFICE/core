@@ -14,7 +14,7 @@ namespace NSDrawingFileEmbed
 	FUNCTION_WRAPPER_V8_0(_GetErrorCode, GetErrorCode)
 	FUNCTION_WRAPPER_V8_0(_GetInfo, GetInfo)
 	FUNCTION_WRAPPER_V8_4(_GetPixmap, GetPixmap)
-	FUNCTION_WRAPPER_V8_1(_GetGlyphs, GetGlyphs)
+	FUNCTION_WRAPPER_V8_1(_DestroyPixmap, DestroyPixmap)
 	FUNCTION_WRAPPER_V8_1(_GetLinks, GetLinks)
 	FUNCTION_WRAPPER_V8_0(_GetStructure, GetStructure)
 	FUNCTION_WRAPPER_V8_0(_GetInteractiveFormsInfo, GetInteractiveFormsInfo)
@@ -23,10 +23,12 @@ namespace NSDrawingFileEmbed
 	FUNCTION_WRAPPER_V8_5(_GetButtonIcons, GetButtonIcons)
 	FUNCTION_WRAPPER_V8_1(_GetAnnotationsInfo, GetAnnotationsInfo)
 	FUNCTION_WRAPPER_V8_6(_GetAnnotationsAP, GetAnnotationsAP)
+	FUNCTION_WRAPPER_V8_1(_GetGlyphs, GetGlyphs)
 	FUNCTION_WRAPPER_V8_0(_DestroyTextInfo, DestroyTextInfo)
 	FUNCTION_WRAPPER_V8_0(_IsNeedCMap, IsNeedCMap)
 	FUNCTION_WRAPPER_V8_2(_ScanPage, ScanPage)
 	FUNCTION_WRAPPER_V8_1(_GetImageBase64, GetImageBase64)
+	FUNCTION_WRAPPER_V8_1(_FreeWasmData, FreeWasmData)
 
 	v8::Handle<v8::ObjectTemplate> CreateTemplate(v8::Isolate* isolate)
 	{
@@ -40,7 +42,7 @@ namespace NSDrawingFileEmbed
 		NSV8Objects::Template_Set(result, "GetErrorCode",	_GetErrorCode);
 		NSV8Objects::Template_Set(result, "GetInfo",	_GetInfo);
 		NSV8Objects::Template_Set(result, "GetPixmap",	_GetPixmap);
-		NSV8Objects::Template_Set(result, "GetGlyphs",	_GetGlyphs);
+		NSV8Objects::Template_Set(result, "DestroyPixmap",	_DestroyPixmap);
 		NSV8Objects::Template_Set(result, "GetLinks",	_GetLinks);
 		NSV8Objects::Template_Set(result, "GetStructure",	_GetStructure);
 		NSV8Objects::Template_Set(result, "GetInteractiveFormsInfo",	_GetInteractiveFormsInfo);
@@ -49,10 +51,12 @@ namespace NSDrawingFileEmbed
 		NSV8Objects::Template_Set(result, "GetButtonIcons",	_GetButtonIcons);
 		NSV8Objects::Template_Set(result, "GetAnnotationsInfo",	_GetAnnotationsInfo);
 		NSV8Objects::Template_Set(result, "GetAnnotationsAP",	_GetAnnotationsAP);
+		NSV8Objects::Template_Set(result, "GetGlyphs",	_GetGlyphs);
 		NSV8Objects::Template_Set(result, "DestroyTextInfo",	_DestroyTextInfo);
 		NSV8Objects::Template_Set(result, "IsNeedCMap",	_IsNeedCMap);
 		NSV8Objects::Template_Set(result, "ScanPage",	_ScanPage);
 		NSV8Objects::Template_Set(result, "GetImageBase64",	_GetImageBase64);
+		NSV8Objects::Template_Set(result, "FreeWasmData",	_FreeWasmData);
 
 		return handle_scope.Escape(result);
 	}

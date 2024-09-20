@@ -294,7 +294,9 @@ namespace DocFileFormat
 		boost::optional<double> ShadowOriginY;
         boost::optional<size_t> xCoord;
         boost::optional<size_t> yCoord;
-		
+		boost::optional<size_t> xCoord2;
+		boost::optional<size_t> yCoord2;
+
 		bool bStroked			=	true;
 		bool bFilled			=	true;
 		bool hasTextbox			=	false;
@@ -479,6 +481,14 @@ namespace DocFileFormat
 				{
 					m_pXmlWriter->WriteAttribute(L"wrapcoords", wrapCoords);
 				}
+			}break;
+			case ODRAW::geoLeft:
+			{
+				xCoord2 = iter->op;
+			}break;
+			case ODRAW::geoTop:
+			{
+				yCoord2 = iter->op;
 			}break;
 			case ODRAW::geoRight:
 			{
@@ -1021,7 +1031,15 @@ namespace DocFileFormat
 
 		if ( xCoord && yCoord )
 		{
-            m_pXmlWriter->WriteAttribute( L"coordsize", ( FormatUtils::SizeTToWideString( *xCoord ) + L"," + FormatUtils::SizeTToWideString( *yCoord ) ));
+			if (xCoord2 && yCoord2)
+			{
+				m_pXmlWriter->WriteAttribute(L"coordorigin", (FormatUtils::SizeTToWideString(*xCoord2) + L"," + FormatUtils::SizeTToWideString(*yCoord2)));
+				m_pXmlWriter->WriteAttribute(L"coordsize", (FormatUtils::SizeTToWideString(*xCoord - *xCoord2) + L"," + FormatUtils::SizeTToWideString(*yCoord - *yCoord2)));
+			}
+			else
+			{
+				m_pXmlWriter->WriteAttribute(L"coordsize", (FormatUtils::SizeTToWideString(*xCoord) + L"," + FormatUtils::SizeTToWideString(*yCoord)));
+			}
 		} 
 
 		int nCode =	0;

@@ -183,12 +183,14 @@ namespace NSDocxRenderer
 		double right = m_oCurrVectorGraphics.GetRight();
 		double top = m_oCurrVectorGraphics.GetTop();
 		double bot = m_oCurrVectorGraphics.GetBottom();
+		double transform_det = sqrt(fabs(m_pTransform->Determinant()));
 
-		auto set_fill_mode = [this, lType] (std::shared_ptr<CShape> s) {
+		auto set_fill_mode = [this, lType, &transform_det] (std::shared_ptr<CShape> s) {
 			if (lType & c_nStroke)
 			{
 				s->m_bIsNoStroke = false;
 				s->m_oPen = *m_pPen;
+				s->m_oPen.Size *= transform_det;
 			}
 			if (lType & c_nWindingFillMode || lType & c_nEvenOddFillMode)
 			{
@@ -208,6 +210,7 @@ namespace NSDocxRenderer
 		}
 
 		auto shape = std::make_shared<CShape>();
+		shape->m_oPen.Size *= transform_det;
 		set_fill_mode(shape);
 
 		if (shape->m_bIsNoStroke)
@@ -218,9 +221,6 @@ namespace NSDocxRenderer
 				shape->m_oPen.Alpha = m_pBrush->Alpha1;
 			}
 		}
-
-		double dDeterminant = sqrt(fabs(m_pTransform->Determinant()));
-		shape->m_oPen.Size *= dDeterminant;
 
 		if (!m_oClipVectorGraphics.IsEmpty())
 		{

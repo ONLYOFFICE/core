@@ -7,17 +7,17 @@
 #include <algorithm>
 #include <limits>
 
-const double EPSILON = 1e-12;
-const double POINT_EPSILON = 1e-2;
-const double GEOMETRIC_EPSILON = 1e-7;
-const double TIME_EPSILON = 1e-8;
-const double MACHINE_EPSILON = 1.12e-16;
-const double TRIGANOMETRIC_EPSILON = 1e-8;
-const double CURVETIME_EPSILON = 1e-8;
-const double LINE_EPSILON = 1e-9;
-const Aggplus::PointD MIN_POINT(-500.0, -500.0);
+constexpr double EPSILON = 1e-12;
+constexpr double POINT_EPSILON = 1e-2;
+constexpr double GEOMETRIC_EPSILON = 1e-7;
+constexpr double TIME_EPSILON = 1e-8;
+constexpr double MACHINE_EPSILON = 1.12e-16;
+constexpr double TRIGANOMETRIC_EPSILON = 1e-8;
+constexpr double CURVETIME_EPSILON = 1e-8;
+constexpr double LINE_EPSILON = 1e-9;
 constexpr double MIN = std::numeric_limits<double>::min();
 constexpr double MAX = std::numeric_limits<double>::max();
+const Aggplus::PointD MIN_POINT(-500.0, -500.0);
 
 const std::vector<double> ABSCISSAS[16] = {
 	{0.5773502691896257645091488},
@@ -81,76 +81,73 @@ const std::vector<double> WEIGHT[16] {
 		0.0622535239386478928628438,0.0271524594117540948517806}
 };
 
-double max(double v1, double v2, double v3, double v4)
+inline double max(const double& v1, const double& v2, const double& v3, const double& v4)
 {
 	return std::max(std::max(v1, v2), std::max(v3, v4));
 }
 
-double max(double v1, double v2, double v3)
+inline double max(const double& v1, const double& v2, const double& v3)
 {
 	return std::max(std::max(v1, v2), v3);
 }
 
-double min(double v1, double v2, double v3, double v4)
+inline double min(const double& v1, const double& v2, const double& v3, const double& v4)
 {
 	return std::min(std::min(v1, v2), std::min(v3, v4));
 }
 
-double min(double v1, double v2, double v3)
+inline double min(const double& v1, const double& v2, const double& v3)
 {
 	return std::min(std::min(v1, v2), v3);
 }
 
-bool isZero(double value)
+inline bool isZero(const double& value)
 {
     return value >= -EPSILON && value <= EPSILON;
 }
 
-bool isMachineZero(double value)
+inline bool isMachineZero(const double& value)
 {
 	return value >= -MACHINE_EPSILON && value <= MACHINE_EPSILON;
 }
 
-bool isInRange(double angle, double mn, double mx)
+inline bool isInRange(const double& angle, const double& mn, const double& mx)
 {
-	return (mn < mx) ? (angle > mn && angle < mx)
-					 : (angle > mn || angle < mx);
+	return (mn < mx) ? (angle > mn && angle < mx) : (angle > mn || angle < mx);
 }
 
-double clamp(double value, double mn, double mx)
+inline double clamp(const double& value, const double& mn, const double& mx)
 {
 	return value < mn ? mn : value > mx ? mx : value;
 }
 
-bool isCollinear(const Aggplus::PointD& p1, const Aggplus::PointD& p2)
+inline bool isCollinear(const Aggplus::PointD& p1, const Aggplus::PointD& p2)
 {
 	return abs(p1.X * p2.X + p1.Y * p2.Y) <= sqrt((p1.X * p1.X + p1.Y * p1.Y) * (p2.X * p2.X + p2.Y * p2.Y)) * TRIGANOMETRIC_EPSILON;
 }
 
-int getIterations(double a, double b)
+inline int getIterations(const double& a, const double& b)
 {
 	double n1 = 2.0, n2 = 16.0;
 
 	return std::max(n1, std::min(n2, ceil(abs(b - a) * 32)));
 }
 
-double CurveLength(double t, double ax, double bx, double cx, double ay, double by, double cy)
+inline double CurveLength(const double& t, const double& ax, const double& bx, const double& cx,
+						  const double& ay, const double& by, const double& cy)
 {
-	double	dx = ((ax * t) + bx) * t + cx,
-			dy = ((ay * t) + by) * t + cy;
-
-	return sqrt(dx * dx + dy * dy);
+	return sqrt((((ax * t) + bx) * t + cx) * (((ax * t) + bx) * t + cx) + (((ay * t) + by) * t + cy) * (((ay * t) + by) * t + cy));
 }
 
-double integrate(double ax, double bx, double cx, double ay, double by, double cy,
-				 double a, double b, size_t n = 16)
+inline double integrate(const double& ax, const double& bx, const double& cx, const double& ay,
+						const double& by, const double& cy, const double& a, const double& b, size_t n = 16)
 {
 	std::vector<double> x = ABSCISSAS[n - 2],
 						w = WEIGHT[n - 2];
 
 	double A = (b - a) * 0.5,
 		   B = A + a;
-	double sum = n & 1 ? CurveLength(B, ax, bx, cx, ay, by, cy) : 0;
+	double sum = n & 1 ? CurveLength(B, ax, bx, cx, ay, by, cy) : 0.0;
 
 	for (size_t i = 0; i < (n + 1) >> 1; i++)
 	{
@@ -162,8 +159,9 @@ double integrate(double ax, double bx, double cx, double ay, double by, double c
 	return A * sum;
 }
 
-double fLength(double t, double& length, double& start, double offset,
-			   double ax, double bx, double cx, double ay, double by, double cy)
+double fLength(const double& t, double& length, double& start, const double& offset,
+			   const double& ax, const double& bx, const double& cx, const double& ay,
+			   const double& by, const double& cy)
 {
 	length += integrate(ax, bx, cx, ay, by, cy, start, t, getIterations(start, t));
 	start = t;
@@ -171,8 +169,9 @@ double fLength(double t, double& length, double& start, double offset,
 	return length - offset;
 }
 
-double findRoot(double& length, double& start, double offset, double ax, double bx,
-			   double cx, double ay, double by, double cy, double x, double a, double b)
+double findRoot(double& length, double& start, const double& offset, const double& ax,
+				const double& bx, const double& cx, const double& ay, const double& by,
+				const double& cy, double x, double a, double b)
 {
 	for (size_t i = 0; i < 32; i++)
 	{
@@ -229,7 +228,8 @@ bool intersect(std::vector<double> v, Aggplus::PointD& res)
 	return false;
 }
 
-std::vector<std::vector<Aggplus::PointD>> getConvexHull(double dq0, double dq1, double dq2, double dq3)
+std::vector<std::vector<Aggplus::PointD>> getConvexHull(const double& dq0, const double& dq1,
+														const double& dq2, const double& dq3)
 {
 	Aggplus::PointD p0 = Aggplus::PointD(0.0, dq0),
 					p1 = Aggplus::PointD(1.0 / 3.0, dq1),
@@ -262,7 +262,8 @@ std::vector<std::vector<Aggplus::PointD>> getConvexHull(double dq0, double dq1, 
 	return hull;
 }
 
-double clipConvexHullPart(std::vector<Aggplus::PointD> part, bool top, double threshold)
+double clipConvexHullPart(const std::vector<Aggplus::PointD>& part, const bool& top,
+								 const double& threshold)
 {
 	double	px = part[0].X,
 			py = part[0].Y;
@@ -281,7 +282,9 @@ double clipConvexHullPart(std::vector<Aggplus::PointD> part, bool top, double th
 	return MIN;
 }
 
-double clipConvexHull(std::vector<Aggplus::PointD> top, std::vector<Aggplus::PointD> bottom, double dMin, double dMax)
+inline double clipConvexHull(const std::vector<Aggplus::PointD>& top,
+							 const std::vector<Aggplus::PointD>& bottom,
+							 const double& dMin, const double& dMax)
 {
 	if (top[0].Y < dMin)
 		return clipConvexHullPart(top, true, dMin);
@@ -291,10 +294,11 @@ double clipConvexHull(std::vector<Aggplus::PointD> top, std::vector<Aggplus::Poi
 		return top[0].X;
 }
 
-int binarySearch(std::vector<std::vector<double>> allBounds, std::vector<int> indices, size_t coord, double value)
+inline int binarySearch(const std::vector<std::vector<double>>& allBounds,
+						const std::vector<int>& indices, const size_t& coord, const double& value)
 {
 	int lo = 0,
-		hi = indices.size();
+		hi = static_cast<int>(indices.size());
 
 	while(lo < hi)
 	{
@@ -308,7 +312,8 @@ int binarySearch(std::vector<std::vector<double>> allBounds, std::vector<int> in
 	return lo - 1;
 }
 
-double getSignedDistance(double px, double py, double vx, double vy, double x, double y, bool asVector = false)
+inline double getSignedDistance(const double& px, const double& py, double vx, double vy,
+								const double& x, const double& y, bool asVector = false)
 {
 	if (!asVector)
 	{
@@ -331,12 +336,14 @@ double getSignedDistance(double px, double py, double vx, double vy, double x, d
 	return vx0 ? distX : vy0 ? distY : distXY;
 }
 
-double getDistance(double px, double py, double vx, double vy, double x, double y, bool asVector)
+inline double getDistance(const double& px, const double& py, const double& vx, const double& vy,
+						  const double& x, const double& y, const bool& asVector)
 {
 	return abs(getSignedDistance(px, py, vx, vy, x, y, asVector));
 }
 
-double getDistance(double px, double py, double vx, double vy, double x, double y)
+inline double getDistance(const double& px, const double& py, const double& vx, const double& vy,
+						  const double& x, const double& y)
 {
 	if (vx == 0)
 	{
@@ -361,21 +368,17 @@ double getDistance(double px, double py, double vx, double vy, double x, double 
 	return  dist / (dir ? epsY : epsX);
 }
 
-double getDistance(double x1, double y1, double x2, double y2)
+inline double getDistance(const double& x1, const double& y1, const double& x2, const double& y2)
 {
-	double	x = x2 - x1,
-			y = y2 - y1,
-			d = x * x + y * y;
-
-	return sqrt(d);
+	return sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 }
 
-double getDistance(Aggplus::PointD point1, Aggplus::PointD point2)
+inline double getDistance(const Aggplus::PointD& point1, const Aggplus::PointD& point2)
 {
 	return getDistance(point1.X, point1.Y, point2.X, point2.Y);
 }
 
-std::pair<double, double> split(double v)
+inline std::pair<double, double> split(const double& v)
 {
 	double	x = v * 134217729.0,
 			y = v - x,
@@ -385,7 +388,7 @@ std::pair<double, double> split(double v)
 	return std::pair<double, double>(hi, lo);
 }
 
-double getDiscriminant(double a, double b, double c)
+inline double getDiscriminant(const double& a, const double& b, const double& c)
 {
 	double	D = b * b - a * c,
 			E = b * b + a * c;
@@ -413,7 +416,7 @@ double getDiscriminant(double a, double b, double c)
 }
 
 int solveQuadratic(double a, double b, double c, std::vector<double>& roots,
-				   double mn, double mx)
+				   const double& mn, const double& mx)
 {
 	double x1 = MAX, x2 = MAX;
 	if (abs(a) < EPSILON)
@@ -432,7 +435,7 @@ int solveQuadratic(double a, double b, double c, std::vector<double>& roots,
 			double f = max(abs(a), abs(b), abs(c));
 			if (f < 1e-8 || f < 1e8)
 			{
-				f = pow(2, -roundf(log2(f)));
+				f = pow(2, -round(log2(f)));
 				a *= f;
 				b *= f;
 				c *= f;

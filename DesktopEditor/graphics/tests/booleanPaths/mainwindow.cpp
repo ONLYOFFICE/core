@@ -212,7 +212,7 @@ void MainWindow::AddPath(NSGraphics::IGraphicsRenderer* pathRenderer, const Aggp
 	pathRenderer->BeginCommand(c_nPathType);
 
 	size_t	length = path.GetPointCount(),
-			compound = path.GetCompoundPath();
+			compound = path.GetCloseCount();
 	std::vector<Aggplus::PointD> points = path.GetPoints(0, length + compound);
 
 	for (size_t i = 0; i < length + compound; i++)

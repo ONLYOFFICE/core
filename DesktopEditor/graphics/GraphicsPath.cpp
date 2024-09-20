@@ -899,6 +899,16 @@ namespace Aggplus
 			}
 		}
 
+		if (!close)
+		{
+			PointD firstPoint = subPath->GetPoints(0, 1)[0];
+			double x, y;
+			subPath->GetLastPoint(x, y);
+			if (!firstPoint.Equals(PointD(x, y)) || subPath->GetPointCount() == 1) subPath->LineTo(firstPoint.X, firstPoint.Y);
+			subPath->CloseFigure();
+			result.push_back(subPath);
+		}
+
 		return result;
 	}
 

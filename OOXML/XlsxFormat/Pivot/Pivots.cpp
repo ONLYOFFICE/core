@@ -3789,7 +3789,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			m_oCacheSource->toXML(writer);
 		if(m_oCacheFields.IsInit())
 			m_oCacheFields->toXML(writer);
-
+        if(m_oHierarchies.IsInit())
+            m_oHierarchies->toXML(writer);
 		if(m_oExtLst.IsInit())
 		{
 			writer.WriteString(m_oExtLst->toXMLWithNS(_T("")));

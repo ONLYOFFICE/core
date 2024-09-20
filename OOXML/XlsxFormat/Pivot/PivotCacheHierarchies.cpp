@@ -73,7 +73,18 @@ namespace Spreadsheet
     }
     void CpivotCacheHierarchies::toXML(NSStringUtils::CStringBuilder& writer) const
     {
+        writer.WriteString(L"<cacheHierarchies");
+        WritingStringAttrInt(L"count", (int)m_arrItems.size());
+        writer.WriteString(L">");
 
+        for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+                m_arrItems[i]->toXML(writer);
+            }
+        }
+        writer.WriteString(L"</cacheHierarchies>");
     }
     XLS::BaseObjectPtr CpivotCacheHierarchies::toBin()
     {
@@ -126,7 +137,37 @@ namespace Spreadsheet
     }
     void CpivotCacheHierarchy::toXML(NSStringUtils::CStringBuilder& writer) const
     {
+        writer.WriteString(L"<cacheHierarchy");
+        WritingStringNullableAttrEncodeXmlString2(L"uniqueName", m_oUniqueName);
+        WritingStringNullableAttrEncodeXmlString2(L"caption", m_oCaption);
+        WritingStringNullableAttrBool2(L"measure", m_oMeasure);
+        WritingStringNullableAttrBool2(L"set", m_oSet);
+        WritingStringNullableAttrUInt(L"parentSet", m_oParentSet, m_oParentSet.get());
+        WritingStringNullableAttrInt(L"iconSet", m_oIconSet, m_oIconSet.get());
+        WritingStringNullableAttrBool2(L"attribute", m_oAttribute);
+        WritingStringNullableAttrBool2(L"time", m_oTime);
+        WritingStringNullableAttrBool2(L"keyAttribute", m_oKeyAttribute);
+        WritingStringNullableAttrEncodeXmlString2(L"defaultMemberUniqueName", m_oDefaultMemberUniqueName);
+        WritingStringNullableAttrEncodeXmlString2(L"allUniqueName", m_oAllUniqueName);
+        WritingStringNullableAttrEncodeXmlString2(L"allCaption", m_oAllCaption);
+        WritingStringNullableAttrEncodeXmlString2(L"dimensionUniqueName", m_oDimensionUniqueName);
+        WritingStringNullableAttrEncodeXmlString2(L"displayFolder", m_oDisplayFolder);
+        WritingStringNullableAttrEncodeXmlString2(L"measureGroup", m_oMeasureGroup);
+        WritingStringNullableAttrEncodeXmlString2(L"measureGroup", m_oMeasureGroup);
+        WritingStringNullableAttrBool2(L"measures", m_oMeasures);
+        WritingStringNullableAttrUInt(L"count", m_oCount, m_oCount.get());
+        WritingStringNullableAttrBool2(L"oneField", m_oOneField);
+        WritingStringNullableAttrUInt(L"memberValueDatatype", m_oMemberValueDatatype, m_oMemberValueDatatype.get());
+        WritingStringNullableAttrBool2(L"unbalanced", m_oUnbalanced);
+        WritingStringNullableAttrBool2(L"unbalancedGroup", m_oUnbalancedGroup);
+        WritingStringNullableAttrBool2(L"hidden", m_oHidden);
+        writer.WriteString(L">");
 
+        if(m_oFieldsUsage.IsInit())
+            m_oFieldsUsage->toXML(writer);
+        if(m_oGroupLevels.IsInit())
+            m_oGroupLevels->toXML(writer);
+        writer.WriteString(L"</cacheHierarchy>");
     }
     XLS::BaseObjectPtr CpivotCacheHierarchy::toBin()
     {
@@ -205,7 +246,17 @@ namespace Spreadsheet
     }
     void CfieldsUsage::toXML(NSStringUtils::CStringBuilder& writer) const
     {
+        writer.WriteString(L"<fieldsUsage");
+        WritingStringAttrInt(L"count", (int)m_oFieldUsage.size());
+        writer.WriteString(L">");
 
+        for (auto i:m_oFieldUsage)
+        {
+            writer.WriteString(L"<fieldUsage");
+            WritingStringAttrInt(L"x", i);
+            writer.WriteString(L"/>");
+        }
+        writer.WriteString(L"</fieldsUsage>");
     }
     XLS::BaseObjectPtr CfieldsUsage::toBin()
     {
@@ -240,7 +291,18 @@ namespace Spreadsheet
     }
     void CGroupLevels::toXML(NSStringUtils::CStringBuilder& writer) const
     {
+        writer.WriteString(L"<groupLevels");
+        WritingStringAttrInt(L"count", (int)m_arrItems.size());
+        writer.WriteString(L">");
 
+        for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+                m_arrItems[i]->toXML(writer);
+            }
+        }
+        writer.WriteString(L"</groupLevels>");
     }
     XLS::BaseObjectPtr CGroupLevels::toBin()
     {
@@ -276,7 +338,19 @@ namespace Spreadsheet
     }
     void CGroupLevel::toXML(NSStringUtils::CStringBuilder& writer) const
     {
-
+        writer.WriteString(L"<groupLevel");
+        WritingStringNullableAttrEncodeXmlString2(L"uniqueName", m_oUniqueName);
+        WritingStringNullableAttrEncodeXmlString2(L"caption", m_oCaption);
+        WritingStringNullableAttrBool2(L"user", m_oUser);
+        WritingStringNullableAttrBool2(L"customRollUp", m_oCustomRollUp);
+        if(m_oGroups.IsInit())
+        {
+             writer.WriteString(L">");
+             m_oGroups->toXML();
+             writer.WriteString(L"</groupLevel>");
+        }
+        else
+            writer.WriteString(L"/>");
     }
     XLS::BaseObjectPtr CGroupLevel::toBin()
     {
@@ -321,7 +395,18 @@ namespace Spreadsheet
     }
     void CGroups::toXML(NSStringUtils::CStringBuilder& writer) const
     {
+        writer.WriteString(L"<groups");
+        WritingStringAttrInt(L"count", (int)m_arrItems.size());
+        writer.WriteString(L">");
 
+        for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+                m_arrItems[i]->toXML(writer);
+            }
+        }
+        writer.WriteString(L"</groups>");
     }
     XLS::BaseObjectPtr CGroups::toBin()
     {
@@ -358,7 +443,20 @@ namespace Spreadsheet
     }
     void CGroup::toXML(NSStringUtils::CStringBuilder& writer) const
     {
-
+        writer.WriteString(L"<group");
+        WritingStringNullableAttrEncodeXmlString2(L"name", m_oName);
+        WritingStringNullableAttrEncodeXmlString2(L"uniqueName", m_oUniqueName);
+        WritingStringNullableAttrEncodeXmlString2(L"caption", m_oCaption);
+        WritingStringNullableAttrEncodeXmlString2(L"uniqueParent", m_oUniqueParent);
+        WritingStringNullableAttrInt(L"id", m_oId, m_oId.get());
+        if(m_oGroupMembers.IsInit())
+        {
+             writer.WriteString(L">");
+             m_oGroupMembers->toXML();
+             writer.WriteString(L"</group>");
+        }
+        else
+            writer.WriteString(L"/>");
     }
     XLS::BaseObjectPtr CGroup::toBin()
     {
@@ -407,7 +505,18 @@ namespace Spreadsheet
     }
     void CGroupMembers::toXML(NSStringUtils::CStringBuilder& writer) const
     {
+        writer.WriteString(L"<groupMembers");
+        WritingStringAttrInt(L"count", (int)m_arrItems.size());
+        writer.WriteString(L">");
 
+        for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+                m_arrItems[i]->toXML(writer);
+            }
+        }
+        writer.WriteString(L"</groupMembers>");
     }
     XLS::BaseObjectPtr CGroupMembers::toBin()
     {
@@ -433,7 +542,10 @@ namespace Spreadsheet
     }
     void CGroupMember::toXML(NSStringUtils::CStringBuilder& writer) const
     {
-
+        writer.WriteString(L"<groupMember");
+        WritingStringNullableAttrEncodeXmlString2(L"uniqueName", m_oUniqueName);
+        WritingStringNullableAttrBool2(L"group", m_oGroup);
+        writer.WriteString(L"/>");
     }
     XLS::BaseObjectPtr CGroupMember::toBin()
     {

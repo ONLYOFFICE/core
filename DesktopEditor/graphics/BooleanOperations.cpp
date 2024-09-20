@@ -748,6 +748,7 @@ void CBooleanOperations::TraceBoolean()
 
 		if (Locations.size() == 2 && Locations[0]->Ends)
 		{
+			SetWinding();
 			TraceOneInters();
 			return;
 		}
@@ -788,14 +789,19 @@ void CBooleanOperations::TraceOneInters()
 {
 	if (Op == Intersection)
 	{
-		Result->StartFigure();
-		Result->MoveTo(Locations[0]->S.P.X, Locations[0]->S.P.Y);
-		Result->CloseFigure();
+		if (Segments1[0].Winding == 1)
+			Result = std::move(Path1);
+		else if (Segments2[0].Winding == 1)
+			Result = std::move(Path2);
+		else
+		{
+			Result->StartFigure();
+			Result->MoveTo(Locations[0]->S.P.X, Locations[0]->S.P.Y);
+			Result->CloseFigure();
+		}
 	}
 	else
 	{
-		SetWinding();
-
 		if (Segments1[0].Winding == 1 && Op == Union)
 			Result = std::move(Path2);
 		else if (Segments2[0].Winding == 1 && Op == Union)

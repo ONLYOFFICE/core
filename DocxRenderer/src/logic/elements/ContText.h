@@ -111,6 +111,7 @@ namespace NSDocxRenderer
 		bool IsDuplicate(CContText *pCont, eVerticalCrossingType eVType) const noexcept;
 
 		bool IsOnlySpaces() const;
+		double CalculateSpace() const noexcept;
 
 		// check font effect and delete not needed cont
 		// return true if was deleted
@@ -127,8 +128,10 @@ namespace NSDocxRenderer
 			 eHorizontalCrossingType eHType);
 
 		static bool IsUnicodeRtl(uint32_t cSym);
-
-		double CalculateSpace() const noexcept;
+		static bool IsUnicodeBullet(uint32_t cSym);
+		static bool IsUnicodeSpace(uint32_t c);
+		static bool IsUnicodeSymbol(uint32_t symbol);
+		static bool IsUnicodeDiacriticalMark(uint32_t symbol);
 
 	private:
 		NSStringUtils::CStringUTF32 m_oText{};

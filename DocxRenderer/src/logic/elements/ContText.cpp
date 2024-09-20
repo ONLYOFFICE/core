@@ -10,7 +10,7 @@ namespace NSDocxRenderer
 	{
 		bool only_spaces = true;
 		for (size_t j = 0; j < oText.length(); ++j)
-			if (!IsSpaceUtf32(oText.at(j)))
+			if (!CContText::IsUnicodeSpace(oText.at(j)))
 			{
 				only_spaces = false;
 				break;
@@ -803,6 +803,38 @@ namespace NSDocxRenderer
 
 		// more https://www.unicode.org/Public/UNIDATA/extracted/DerivedBidiClass.txt
 		return is_herbew_arabic || is_apf || is_apf_b || is_other;
+	}
+	bool CContText::IsUnicodeBullet(uint32_t cSym)
+	{
+		// more symbols of delims
+		bool is_bullet =
+			(cSym == 0x2022) || (cSym == 0x2023) || (cSym == 0x2043) || (cSym == 0x204C) ||
+			(cSym == 0x204D) || (cSym == 0x2219) || (cSym == 0x25CB) || (cSym == 0x25CF) ||
+			(cSym == 0x25D8) || (cSym == 0x25E6) || (cSym == 0x2619) || (cSym == 0x2765) ||
+			(cSym == 0x2767) || (cSym == 0x29BE) || (cSym == 0x29BF) || (cSym == 0x25C9);
+
+		bool is_middle_dot = (cSym == 0xB7);
+
+		return is_bullet || is_middle_dot;
+	}
+
+	bool CContText::IsUnicodeSpace(uint32_t cSym)
+	{
+		return (0x20 == cSym || 0xA0 == cSym || 0x2003 == cSym);
+	}
+
+	bool CContText::IsUnicodeSymbol(uint32_t cSym )
+	{
+		bool is_unicode =
+			(( 0x0009 == cSym) || (0x000A == cSym ) || (0x000D == cSym ) ||
+			(( 0x0020 <= cSym) && (0xD7FF >= cSym )) || ((0xE000 <= cSym) && (cSym <= 0xFFFD )) ||
+			(( 0x10000 <= cSym) && cSym));
+
+		return is_unicode;
+	}
+	bool CContText::IsUnicodeDiacriticalMark(uint32_t cSym)
+	{
+		return 0x0300 <= cSym && 0x036F >= cSym;
 	}
 
 	double CContText::CalculateSpace() const noexcept

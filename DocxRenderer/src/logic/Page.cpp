@@ -341,7 +341,7 @@ namespace NSDocxRenderer
 
 		if ((pUnicodes != nullptr) && (pGids != nullptr))
 			for (unsigned int i = 0; i < nCount; ++i)
-				if (!IsUnicodeSymbol(pUnicodes[i]))
+				if (!CContText::IsUnicodeSymbol(pUnicodes[i]))
 					oText[i] = ' ';
 
 		// иногда приходит неверный? размер, нужно перемерить (XPS)
@@ -545,7 +545,7 @@ namespace NSDocxRenderer
 			if (m_arConts[i] && m_arConts[i]->GetText().length() == 1)
 			{
 				const auto& text = m_arConts[i]->GetText();
-				if (IsDiacriticalMark(text.at(0)))
+				if (CContText::IsUnicodeDiacriticalMark(text.at(0)))
 					m_arDiacriticalSymbols.push_back(std::move(m_arConts[i]));
 			}
 		}
@@ -1857,6 +1857,14 @@ namespace NSDocxRenderer
 					curr_max_right = line_bot->m_dRight;
 					curr_min_left = line_bot->m_dLeft;
 				}
+			}
+
+			// first symbol delim check (bullets etc...)
+			for (size_t index = 0; index < text_lines.size() - 1; ++index)
+			{
+				const auto& first_sym = text_lines[index + 1]->m_arConts.front()->GetText().at(0);
+				if (CContText::IsUnicodeBullet(first_sym))
+					ar_delims[index] = true;
 			}
 
 			// если между линий шейп - делим

@@ -813,9 +813,12 @@ namespace NSDocxRenderer
 			(cSym == 0x25D8) || (cSym == 0x25E6) || (cSym == 0x2619) || (cSym == 0x2765) ||
 			(cSym == 0x2767) || (cSym == 0x29BE) || (cSym == 0x29BF) || (cSym == 0x25C9);
 
-		bool is_middle_dot = (cSym == 0xB7);
+		bool is_another =
+			(cSym == 0xB7) || (cSym == 0xA7) || (cSym == 0xF076) || (cSym == 0x2013) ||
+			(cSym == 0x2713) || (cSym == 0x2714) || (cSym == 0x2756) || (cSym == 0x25C6) ||
+			(cSym == 0x25C7) || (cSym == 0x25C8);
 
-		return is_bullet || is_middle_dot;
+		return is_bullet || is_another;
 	}
 
 	bool CContText::IsUnicodeSpace(uint32_t cSym)

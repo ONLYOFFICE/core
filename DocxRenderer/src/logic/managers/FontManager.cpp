@@ -391,6 +391,9 @@ namespace NSDocxRenderer
 		bool bSelectItalic = false;
 		CheckFontNamePDF(sFontNameSelect, bSelectBold, bSelectItalic);
 
+		bSelectBold |= oFontSelectParams.bDefaultBold;
+		bSelectItalic |= oFontSelectParams.bDefaultItalic;
+
 		bool bIsPanosePresent = false;
 		for (int i = 0; i < 10; i++)
 		{
@@ -407,8 +410,8 @@ namespace NSDocxRenderer
 			memcpy(oFormat.pPanose, oFontSelectParams.arPANOSE, 10 * sizeof(BYTE));
 		}
 
-		oFormat.bBold = new INT(oFontSelectParams.bDefaultBold);
-		oFormat.bItalic = new INT(oFontSelectParams.bDefaultItalic);
+		oFormat.bBold = new INT(bSelectBold);
+		oFormat.bItalic = new INT(bSelectItalic);
 		oFormat.bFixedWidth = new INT(oFontSelectParams.bIsFixedWidth ? 1 : 0);
 
 		if (-1 != oFontSelectParams.lAvgWidth)

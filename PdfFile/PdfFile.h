@@ -137,6 +137,7 @@ public:
 	BYTE* GetAPAnnots  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot   = -1, const char* sView  = NULL);
 	BYTE* GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase64 = false, int nBWidget = -1, const char* sIView = NULL);
 	std::wstring GetFontPath(const std::wstring& wsFontName);
+	std::wstring GetEmbeddedFontPath(const std::wstring& wsFontName);
 
 	// --- WRITER ---
 

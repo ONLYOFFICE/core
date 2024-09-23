@@ -856,7 +856,9 @@ std::map<std::wstring, std::wstring> CAnnotFonts::GetFreeTextFont(PDFDoc* pdfDoc
 	std::map<std::wstring, std::wstring> mRes;
 
 	std::map<std::wstring, std::wstring> mFontFreeText = GetAnnotFont(pdfDoc, pFontManager, pFontList, oAnnotRef);
-
+#ifndef BUILDING_WASM_MODULE
+	return mFontFreeText;
+#endif
 	CFontList* pAppFontList = (CFontList*)pFontManager->GetApplication()->GetList();
 	for (int i = 0; i < arrRC.size(); ++i)
 	{
@@ -891,8 +893,10 @@ std::map<std::wstring, std::wstring> CAnnotFonts::GetFreeTextFont(PDFDoc* pdfDoc
 
 			const unsigned char* pData14 = NULL;
 			unsigned int nSize14 = 0;
-			if (!NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(wsFontName) && GetBaseFont(wsFontName, pData14, nSize14))
-				NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFontName, (BYTE*)pData14, nSize14, false);
+			NSFonts::IFontsMemoryStorage* pMemoryStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+			if (pMemoryStorage && !pMemoryStorage->Get(wsFontName) && GetBaseFont(wsFontName, pData14, nSize14))
+				pMemoryStorage->Add(wsFontName, (BYTE*)pData14, nSize14, false);
+
 			std::string sFontNameBefore = arrRC[i]->sFontFamily;
 			arrRC[i]->sFontFamily = sFontName;
 			arrRC[i]->bFind = true;

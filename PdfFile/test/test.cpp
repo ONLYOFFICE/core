@@ -232,6 +232,15 @@ TEST_F(CPdfFileTest, PdfType)
 	RELEASEARRAYOBJECTS(pBuffer);
 }
 
+TEST_F(CPdfFileTest, GetEmbeddedFont)
+{
+	//GTEST_SKIP();
+
+	LoadFromFile();
+
+	std::wcout << pdfFile->GetEmbeddedFontPath(L"Symbol") << std::endl;
+}
+
 TEST_F(CPdfFileTest, ValidMetaData)
 {
 	GTEST_SKIP();
@@ -318,7 +327,7 @@ TEST_F(CPdfFileTest, SetMetaData)
 
 TEST_F(CPdfFileTest, ConvertToRaster)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	LoadFromFile();
 

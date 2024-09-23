@@ -23,6 +23,7 @@ namespace NSDrawingFileEmbed
 	FUNCTION_WRAPPER_V8_5(_GetButtonIcons, GetButtonIcons)
 	FUNCTION_WRAPPER_V8_1(_GetAnnotationsInfo, GetAnnotationsInfo)
 	FUNCTION_WRAPPER_V8_6(_GetAnnotationsAP, GetAnnotationsAP)
+	FUNCTION_WRAPPER_V8_1(_GetFontBinary, GetFontBinary)
 	FUNCTION_WRAPPER_V8_1(_GetGlyphs, GetGlyphs)
 	FUNCTION_WRAPPER_V8_0(_DestroyTextInfo, DestroyTextInfo)
 	FUNCTION_WRAPPER_V8_0(_IsNeedCMap, IsNeedCMap)
@@ -51,6 +52,7 @@ namespace NSDrawingFileEmbed
 		NSV8Objects::Template_Set(result, "GetButtonIcons",	_GetButtonIcons);
 		NSV8Objects::Template_Set(result, "GetAnnotationsInfo",	_GetAnnotationsInfo);
 		NSV8Objects::Template_Set(result, "GetAnnotationsAP",	_GetAnnotationsAP);
+		NSV8Objects::Template_Set(result, "GetFontBinary",	_GetFontBinary);
 		NSV8Objects::Template_Set(result, "GetGlyphs",	_GetGlyphs);
 		NSV8Objects::Template_Set(result, "DestroyTextInfo",	_DestroyTextInfo);
 		NSV8Objects::Template_Set(result, "IsNeedCMap",	_IsNeedCMap);

@@ -40,6 +40,7 @@ public:
 	JSSmart<CJSValue> GetAnnotationsInfo(JSSmart<CJSValue> nPageIndex);
 	JSSmart<CJSValue> GetAnnotationsAP(JSSmart<CJSValue> nRasterW, JSSmart<CJSValue> nRasterH, JSSmart<CJSValue> nBackgroundColor, JSSmart<CJSValue> nPageIndex, JSSmart<CJSValue> nAnnot, JSSmart<CJSValue> nView);
 
+	JSSmart<CJSValue> GetFontBinary(JSSmart<CJSValue> Id);
 	JSSmart<CJSValue> GetGlyphs(JSSmart<CJSValue> nPageIndex);
 	JSSmart<CJSValue> DestroyTextInfo();
 

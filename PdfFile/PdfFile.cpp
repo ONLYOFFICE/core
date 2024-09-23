@@ -425,7 +425,7 @@ BYTE* CPdfFile::GetAnnotStandardFonts()
 		return NULL;
 	return m_pInternal->pReader->GetFonts(true);
 }
-std::wstring CPdfFile::GetFontPath(const std::wstring& wsFontName)
+std::wstring CPdfFile::GetEmbeddedFontPath(const std::wstring& wsFontName)
 {
 	if (!m_pInternal->pReader)
 		return L"";

@@ -398,10 +398,8 @@ bool CPdfReader::LoadFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::
 
 	m_pFontList->Clear();
 
-#ifdef BUILDING_WASM_MODULE
 	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(m_pPDFDocument, m_pFontManager, m_pFontList);
 	m_mFonts.insert(mFonts.begin(), mFonts.end());
-#endif
 
 	return true;
 }
@@ -440,10 +438,8 @@ bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* dat
 
 	m_pFontList->Clear();
 
-#ifdef BUILDING_WASM_MODULE
 	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(m_pPDFDocument, m_pFontManager, m_pFontList);
 	m_mFonts.insert(mFonts.begin(), mFonts.end());
-#endif
 
 	return true;
 }
@@ -752,10 +748,39 @@ std::wstring CPdfReader::GetInfo()
 
 	return sRes;
 }
-std::wstring CPdfReader::GetFontPath(const std::wstring& wsFontName)
+std::wstring CPdfReader::GetFontPath(const std::wstring& wsFontName, bool bSave)
 {
 	std::map<std::wstring, std::wstring>::const_iterator oIter = m_mFonts.find(wsFontName);
-	return oIter != m_mFonts.end() ? oIter->second : L"";
+	if (oIter == m_mFonts.end())
+		return std::wstring();
+
+	if (!bSave)
+		return oIter->second;
+
+	NSFonts::IFontsMemoryStorage* pMemoryStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+	if (pMemoryStorage)
+	{
+		NSFonts::IFontStream* pStream = pMemoryStorage->Get(oIter->second);
+		if (pStream)
+		{
+			BYTE* pData = NULL;
+			LONG lLength = 0;
+			pStream->GetMemory(pData, lLength);
+			if (pData)
+			{
+				NSFile::CFileBinary oFile;
+				std::wstring sFilePath = oFile.CreateTempFileWithUniqueName(m_wsTempFolder, L"EF");
+				if (oFile.WriteFile(pData, lLength))
+				{
+					oFile.CloseFile();
+					return sFilePath;
+				}
+				oFile.CloseFile();
+			}
+		}
+	}
+
+	return std::wstring();
 }
 void getBookmarks(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)
 {

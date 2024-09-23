@@ -265,8 +265,9 @@ namespace NSDocxRenderer
 	}
 	void CVectorGraphics::Transform(const Aggplus::CMatrix& matrix)
 	{
-		ResetBorders();
 		auto data = std::move(m_arData);
+		Clear();
+
 		for (auto& command : data)
 			for (auto& point : command.points)
 				matrix.TransformPoint(point.x, point.y);

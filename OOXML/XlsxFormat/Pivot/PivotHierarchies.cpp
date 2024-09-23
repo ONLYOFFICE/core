@@ -30,7 +30,7 @@
  *
  */
 #pragma once
-#include "PivotCacheHierarchies.h"
+#include "PivotHierarchies.h"
 
 #include "../../XlsbFormat/Biff12_unions/PCDHIERARCHIES.h"
 #include "../../XlsbFormat/Biff12_unions/PCDHIERARCHY.h"
@@ -52,6 +52,8 @@ namespace OOX
 {
 namespace Spreadsheet
 {
+//pivot cache hierarchies
+
     void CpivotCacheHierarchies::fromXML(XmlUtils::CXmlLiteReader& oReader)
     {
         WritingElement_ReadAttributes_Start( oReader )
@@ -97,6 +99,8 @@ namespace Spreadsheet
     void CpivotCacheHierarchy::fromXML(XmlUtils::CXmlLiteReader& oReader)
     {
         ReadAttributes( oReader );
+        if(oReader.IsEmptyNode())
+            return;
         auto nCurDepth = oReader.GetDepth();
         while( oReader.ReadNextSiblingNode( nCurDepth ) )
         {
@@ -212,6 +216,10 @@ namespace Spreadsheet
             ptr->stUnique = m_oUniqueName.get();
          else
             ptr->stUnique = L"";
+         if(m_oIconSet.IsInit())
+             ptr->iconSet.set = m_oIconSet.get();
+         else
+             ptr->iconSet.set = 0;
 
         if(m_oFieldsUsage.IsInit())
             ptr1->m_PCDHFIELDSUSAGE = m_oFieldsUsage->toBin();
@@ -563,6 +571,77 @@ namespace Spreadsheet
 
        return objectPtr;
     }
+//pivot table hierarchies
 
+    void CpivotTableHierarchies::fromXML(XmlUtils::CXmlLiteReader& oReader)
+    {
+        WritingElement_ReadAttributes_Start( oReader )
+            WritingElement_ReadAttributes_Read_if		( oReader, L"count", m_oCount )
+        WritingElement_ReadAttributes_End( oReader )
+
+        auto nCurDepth = oReader.GetDepth();
+        while( oReader.ReadNextSiblingNode( nCurDepth ) )
+        {
+            std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+            if ( L"pivotHierarchy" == sName )
+            {
+                CpivotTableHierarchy* pPivotCacheHierarchy = new CpivotTableHierarchy();
+                *pPivotCacheHierarchy = oReader;
+                m_arrItems.push_back(pPivotCacheHierarchy);
+            }
+        }
+    }
+    void CpivotTableHierarchies::toXML(NSStringUtils::CStringBuilder& writer) const
+    {
+        writer.WriteString(L"<pivotHierarchies");
+        WritingStringAttrInt(L"count", (int)m_arrItems.size());
+        writer.WriteString(L">");
+
+        for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+                m_arrItems[i]->toXML(writer);
+            }
+        }
+        writer.WriteString(L"</pivotHierarchies>");
+    }
+    XLS::BaseObjectPtr CpivotTableHierarchies::toBin()
+    {
+        auto ptr(new XLSB::PCDHIERARCHIES);
+        XLS::BaseObjectPtr objectPtr(ptr);
+        for(auto i : m_arrItems)
+            ptr->m_arPCDHIERARCHY.push_back(i->toBin());
+        return objectPtr;
+    }
+
+    void CpivotTableHierarchy::fromXML(XmlUtils::CXmlLiteReader& oReader)
+    {
+       ReadAttributes( oReader );
+    }
+    void CpivotTableHierarchy::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+    {
+       WritingElement_ReadAttributes_Start( oReader )
+           WritingElement_ReadAttributes_Read_if	( oReader, L"outline", m_oOutline )
+           WritingElement_ReadAttributes_Read_else_if( oReader, L"multipleItemSelectionAllowed", m_oMultipleItemSelectionAllowed )
+       WritingElement_ReadAttributes_End( oReader )
+    }
+    void CpivotTableHierarchy::toXML(NSStringUtils::CStringBuilder& writer) const
+    {
+        writer.WriteString(L"<groupMember");
+
+        writer.WriteString(L"/>");
+    }
+    XLS::BaseObjectPtr CpivotTableHierarchy::toBin()
+    {
+       auto ptr1(new XLSB::PCDHGLGMEMBER);
+       XLS::BaseObjectPtr objectPtr(ptr1);
+       auto ptr(new XLSB::BeginPCDHGLGMember);
+       ptr1->m_BrtBeginPCDHGLGMember = XLS::BaseObjectPtr{ptr};
+
+
+       return objectPtr;
+    }
 }
 }

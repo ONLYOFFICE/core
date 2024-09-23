@@ -162,7 +162,7 @@ SOURCES += \
 	../../../XlsxFormat/SharedStrings/XlsxRun.cpp \
 	../../../XlsxFormat/SharedStrings/SharedStrings.cpp \
 	../../../XlsxFormat/Pivot/Pivots.cpp \
-	../../../XlsxFormat/Pivot/PivotCacheHierarchies.cpp \
+	../../../XlsxFormat/Pivot/PivotHierarchies.cpp \
 	../../../XlsxFormat/Slicer/SlicerCache.cpp \
 	../../../XlsxFormat/Slicer/SlicerCacheExt.cpp \
 	../../../XlsxFormat/Slicer/Slicer.cpp \
@@ -374,7 +374,7 @@ HEADERS += \
 	../../../XlsxFormat/Pivot/PivotCacheDefinition.h \
 	../../../XlsxFormat/Pivot/PivotCacheDefinitionExt.h \
 	../../../XlsxFormat/Pivot/PivotCacheRecords.h \
-        ../../../XlsxFormat/Pivot/PivotCacheHierarchies.h \
+        ../../../XlsxFormat/Pivot/PivotHierarchies.h \
 	../../../XlsxFormat/Slicer/SlicerCache.h \
 	../../../XlsxFormat/Slicer/SlicerCacheExt.h \
 	../../../XlsxFormat/Slicer/Slicer.h \

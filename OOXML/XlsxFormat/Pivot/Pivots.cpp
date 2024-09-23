@@ -409,6 +409,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			else if (L"pivotTableStyleInfo" == sName)	m_oPivotTableStyleInfo = oReader;
 			else if (L"rowFields" == sName)				m_oRowFields = oReader;
 			else if (L"rowItems" == sName)				m_oRowItems = oReader;
+            else if (L"pivotHierarchies" == sName)		m_oPivotHierarchies = oReader;
 			//else if (L"filters" == sName)				m_oFilters = oReader;
 			//else if (L"chartFormats" == sName)		m_oChartFormats = oReader;
 			//else if (L"colHierarchiesUsage" == sName)	m_oColHierarchiesUsage = oReader;

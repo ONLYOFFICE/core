@@ -32,7 +32,7 @@
 #pragma once
 
 #include "PivotTable.h"
-#include "PivotCacheHierarchies.h"
+#include "PivotHierarchies.h"
 
 namespace SimpleTypes
 {

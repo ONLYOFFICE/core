@@ -39,6 +39,7 @@ namespace OOX
 {
 namespace Spreadsheet
 {
+///pivot cache hierarchies
     class CGroupMember : public WritingElement
     {
     public:
@@ -274,28 +275,201 @@ namespace Spreadsheet
 
     };
     class CpivotCacheHierarchies : public WritingElementWithChilds<CpivotCacheHierarchy>
-		{
-		public:
-			WritingElement_AdditionMethods(CpivotCacheHierarchies)
-            WritingElement_XlsbConstructors(CpivotCacheHierarchies)
-			CpivotCacheHierarchies(){}
-			virtual ~CpivotCacheHierarchies() {}
+    {
+    public:
+        WritingElement_AdditionMethods(CpivotCacheHierarchies)
+        WritingElement_XlsbConstructors(CpivotCacheHierarchies)
+        CpivotCacheHierarchies(){}
+        virtual ~CpivotCacheHierarchies() {}
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-            void fromBin(XLS::BaseObjectPtr& obj);
-			XLS::BaseObjectPtr toBin();
+        virtual void fromXML(XmlUtils::CXmlNode& node)
+        {
+        }
+        virtual std::wstring toXML() const
+        {
+            return _T("");
+        }
+        virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+        virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+        void fromBin(XLS::BaseObjectPtr& obj);
+        XLS::BaseObjectPtr toBin();
 
-			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
-			
-		};
+        nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
+
+    };
+///pivot table hierarchies
+    class CMemberProperty : public WritingElement
+    {
+    public:
+        WritingElement_AdditionMethods(CMemberProperty)
+        WritingElement_XlsbConstructors(CMemberProperty)
+        CMemberProperty(){}
+        virtual ~CMemberProperty() {}
+
+        virtual void fromXML(XmlUtils::CXmlNode& node)
+        {
+        }
+        virtual std::wstring toXML() const
+        {
+            return _T("");
+        }
+        virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+        virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+        void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+        void fromBin(XLS::BaseObjectPtr& obj);
+        XLS::BaseObjectPtr toBin();
+
+        nullable_bool       m_oShowCell;
+        nullable_bool       m_oShowTip;
+        nullable_bool       m_oShowAsCaption;
+
+        nullable_string		m_oName;
+
+        nullable_uint		m_oNameLen;
+        nullable_uint		m_oPPos;
+        nullable_uint		m_oPLen;
+        nullable_uint		m_oLevel;
+        nullable_uint		m_oField;
+    };
+
+    class CMemberProperties : public WritingElementWithChilds<CMemberProperty>
+    {
+    public:
+        WritingElement_AdditionMethods(CMemberProperties)
+        WritingElement_XlsbConstructors(CMemberProperties)
+        CMemberProperties(){}
+        virtual ~CMemberProperties() {}
+
+        virtual void fromXML(XmlUtils::CXmlNode& node)
+        {
+        }
+        virtual std::wstring toXML() const
+        {
+            return _T("");
+        }
+        virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+        virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+        void fromBin(XLS::BaseObjectPtr& obj);
+        XLS::BaseObjectPtr toBin();
+
+        nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
+
+    };
+
+    class CMember : public WritingElement
+    {
+    public:
+        WritingElement_AdditionMethods(CMember)
+        WritingElement_XlsbConstructors(CMember)
+        CMember(){}
+        virtual ~CMember() {}
+
+        virtual void fromXML(XmlUtils::CXmlNode& node)
+        {
+        }
+        virtual std::wstring toXML() const
+        {
+            return _T("");
+        }
+        virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+        virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+        void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+        void fromBin(XLS::BaseObjectPtr& obj);
+        XLS::BaseObjectPtr toBin();
+
+        nullable_string		m_oName;
+
+    };
+
+
+    class CMembers : public WritingElementWithChilds<CMember>
+    {
+    public:
+        WritingElement_AdditionMethods(CMembers)
+        WritingElement_XlsbConstructors(CMembers)
+        CMembers(){}
+        virtual ~CMembers() {}
+
+        virtual void fromXML(XmlUtils::CXmlNode& node)
+        {
+        }
+        virtual std::wstring toXML() const
+        {
+            return _T("");
+        }
+        virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+        virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+        void fromBin(XLS::BaseObjectPtr& obj);
+        XLS::BaseObjectPtr toBin();
+
+        nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
+        nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oLevel;
+
+    };
+
+    class CpivotTableHierarchy : public WritingElement
+    {
+    public:
+        WritingElement_AdditionMethods(CpivotTableHierarchy)
+        WritingElement_XlsbConstructors(CpivotTableHierarchy)
+        CpivotTableHierarchy(){}
+        virtual ~CpivotTableHierarchy() {}
+
+        virtual void fromXML(XmlUtils::CXmlNode& node)
+        {
+        }
+        virtual std::wstring toXML() const
+        {
+            return _T("");
+        }
+        virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+        virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+        void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+        void fromBin(XLS::BaseObjectPtr& obj);
+        XLS::BaseObjectPtr toBin();
+
+        nullable_bool       m_oOutline;
+        nullable_bool       m_oMultipleItemSelectionAllowed;
+        nullable_bool       m_oSubtotalTop;
+        nullable_bool       m_oShowInFieldList;
+        nullable_bool       m_oDragToRow;
+        nullable_bool       m_oDragToCol;
+        nullable_bool		m_oDragToPage;
+        nullable_bool		m_oDragToData;
+        nullable_bool		m_oDragOff;
+        nullable_bool		m_oIncludeNewItemsInFilter;
+
+        nullable_string		m_oCaption;
+
+
+        nullable<CMemberProperties>	m_oMemberProperties;
+        nullable<CGroupLevels>	m_oGroupLevels;
+
+    };
+
+    class CpivotTableHierarchies : public WritingElementWithChilds<CpivotTableHierarchy>
+    {
+    public:
+        WritingElement_AdditionMethods(CpivotTableHierarchies)
+        WritingElement_XlsbConstructors(CpivotTableHierarchies)
+        CpivotTableHierarchies(){}
+        virtual ~CpivotTableHierarchies() {}
+
+        virtual void fromXML(XmlUtils::CXmlNode& node)
+        {
+        }
+        virtual std::wstring toXML() const
+        {
+            return _T("");
+        }
+        virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+        virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+        void fromBin(XLS::BaseObjectPtr& obj);
+        XLS::BaseObjectPtr toBin();
+
+        nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
+
+    };
 
 }
 }

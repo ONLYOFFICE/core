@@ -266,12 +266,31 @@ namespace NSDocxRenderer
 	void CVectorGraphics::Transform(const Aggplus::CMatrix& matrix)
 	{
 		ResetBorders();
-		for (auto& command : m_arData)
+		auto data = std::move(m_arData);
+		for (auto& command : data)
 			for (auto& point : command.points)
-			{
 				matrix.TransformPoint(point.x, point.y);
-				CheckPoint(point);
+
+		for (const auto& path : data)
+		{
+			if (path.type == ePathCommandType::pctMove)
+				MoveTo(path.points.front().x, path.points.front().y);
+			else if (path.type == ePathCommandType::pctLine)
+				LineTo(path.points.front().x, path.points.front().y);
+			else if (path.type == ePathCommandType::pctClose)
+				Close();
+			else if (path.type == ePathCommandType::pctCurve)
+			{
+				std::vector<Point> points;
+				for (const auto& point : path.points)
+					points.push_back(point);
+
+				CurveTo(
+					points[0].x, points[0].y,
+					points[1].x, points[1].y,
+					points[2].x, points[2].y);
 			}
+		}
 	}
 	void CVectorGraphics::DrawOnRenderer(IRenderer* renderer) const noexcept
 	{

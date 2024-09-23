@@ -87,8 +87,6 @@ namespace NSDocxRenderer
 
 		m_dBaselinePos = m_dTop + m_dHeight;
 		m_dRight = m_dLeft + m_dWidth;
-
-		CalcNoRotVector();
 	}
 
 	void CShape::CalcNoRotVector()

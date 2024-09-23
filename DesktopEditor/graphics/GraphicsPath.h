@@ -81,7 +81,8 @@ namespace Aggplus
 		Status GetPathPoints(PointF* points, int count) const;
 		Status GetLastPoint(double& x, double& y);
 		Status GetPathPoints(double* points, int count) const;
-		void GetBounds(double& left, double& top, double& width, double& height);
+		void GetBounds(double& left, double& top, double& width, double& height) const;
+		void GetBoundsAccurate(double& left, double& top, double& width, double& height) const;
 
 		Status Transform(const CMatrix* matrix);
 		virtual bool _MoveTo(double x, double y);

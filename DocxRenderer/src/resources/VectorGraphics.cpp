@@ -55,6 +55,12 @@ namespace NSDocxRenderer
 			else if (other.IsClosePoint(idx))
 				Close();
 		}
+
+		// TODO:
+		other.GetBoundsAccurate(m_dLeft, m_dTop, m_dRight, m_dBottom);
+		m_dRight += m_dLeft;
+		m_dBottom += m_dTop;
+
 		//Close();
 	}
 

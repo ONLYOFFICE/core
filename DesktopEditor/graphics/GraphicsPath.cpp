@@ -30,6 +30,7 @@
  *
  */
 #include "GraphicsPath_private.h"
+#include "agg_bounding_rect.h"
 #include <algorithm>
 
 namespace Aggplus
@@ -400,7 +401,7 @@ namespace Aggplus
 		return Ok;
 	}
 
-	void CGraphicsPath::GetBounds(double& left, double& top, double& width, double& height)
+	void CGraphicsPath::GetBounds(double& left, double& top, double& width, double& height) const
 	{
         unsigned int nTotal = m_internal->m_agg_ps.total_vertices();
 		if (nTotal)
@@ -431,6 +432,21 @@ namespace Aggplus
 			width	= 0;
 			height	= 0;
 		}
+	}
+
+	void CGraphicsPath::GetBoundsAccurate(double& left, double& top, double& width, double& height) const
+	{
+		agg::conv_curve<agg::path_storage> storage(m_internal->m_agg_ps);
+		storage.approximation_scale(25.0);
+		storage.approximation_method(agg::curve_inc);
+
+		double r = 0, b = 0;
+		agg::bounding_rect_single(storage, 0,
+								  &left, &top,
+								  &r, &b);
+
+		width = r - left;
+		height = b - top;
 	}
 
 	Status CGraphicsPath::Transform(const CMatrix* matrix)

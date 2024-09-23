@@ -231,6 +231,8 @@ namespace Spreadsheet
     void CfieldsUsage::fromXML(XmlUtils::CXmlLiteReader& oReader)
     {
         ReadAttributes( oReader );
+        if ( oReader.IsEmptyNode() )
+			return;
         auto nCurDepth = oReader.GetDepth();
         while( oReader.ReadNextSiblingNode( nCurDepth ) )
         {
@@ -324,6 +326,8 @@ namespace Spreadsheet
     void CGroupLevel::fromXML(XmlUtils::CXmlLiteReader& oReader)
     {
       ReadAttributes( oReader );
+      if ( oReader.IsEmptyNode() )
+			return;
       auto nCurDepth = oReader.GetDepth();
       while( oReader.ReadNextSiblingNode( nCurDepth ) )
       {
@@ -429,6 +433,8 @@ namespace Spreadsheet
     void CGroup::fromXML(XmlUtils::CXmlLiteReader& oReader)
     {
         ReadAttributes( oReader );
+        if ( oReader.IsEmptyNode() )
+			return;
         auto nCurDepth = oReader.GetDepth();
         while( oReader.ReadNextSiblingNode( nCurDepth ) )
         {
@@ -586,9 +592,9 @@ namespace Spreadsheet
 
             if ( L"pivotHierarchy" == sName )
             {
-                CpivotTableHierarchy* pPivotCacheHierarchy = new CpivotTableHierarchy();
-                *pPivotCacheHierarchy = oReader;
-                m_arrItems.push_back(pPivotCacheHierarchy);
+                CpivotTableHierarchy* pPivotTableHierarchy = new CpivotTableHierarchy();
+                *pPivotTableHierarchy = oReader;
+                m_arrItems.push_back(pPivotTableHierarchy);
             }
         }
     }
@@ -618,13 +624,33 @@ namespace Spreadsheet
 
     void CpivotTableHierarchy::fromXML(XmlUtils::CXmlLiteReader& oReader)
     {
-       ReadAttributes( oReader );
+        ReadAttributes( oReader );
+        if ( oReader.IsEmptyNode() )
+                return;
+        int nCurDepth = oReader.GetDepth();
+        while( oReader.ReadNextSiblingNode( nCurDepth ) )
+        {
+            std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+            if (L"memberProperties" == sName)           m_oMemberProperties = oReader;
+            else if (L"members" == sName)				m_oMembers = oReader;
+            else if (L"extLst" == sName)				m_oExtLst = oReader;
+        }
     }
     void CpivotTableHierarchy::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
     {
        WritingElement_ReadAttributes_Start( oReader )
            WritingElement_ReadAttributes_Read_if	( oReader, L"outline", m_oOutline )
            WritingElement_ReadAttributes_Read_else_if( oReader, L"multipleItemSelectionAllowed", m_oMultipleItemSelectionAllowed )
+           WritingElement_ReadAttributes_Read_else_if	( oReader, L"subtotalTop", m_oSubtotalTop )
+           WritingElement_ReadAttributes_Read_else_if	( oReader, L"showInFieldList", m_oShowInFieldList )
+           WritingElement_ReadAttributes_Read_else_if	( oReader, L"dragToRow", m_oDragToRow  )
+           WritingElement_ReadAttributes_Read_else_if	( oReader, L"dragToCol", m_oDragToCol )
+           WritingElement_ReadAttributes_Read_else_if	( oReader, L"dragToPage", m_oDragToPage )
+           WritingElement_ReadAttributes_Read_else_if	( oReader, L"dragToData", m_oDragToData )
+           WritingElement_ReadAttributes_Read_else_if	( oReader, L"dragOff", m_oDragOff )
+           WritingElement_ReadAttributes_Read_else_if	( oReader, L"includeNewItemsInFilter", m_oIncludeNewItemsInFilter )
+           WritingElement_ReadAttributes_Read_else_if	( oReader, L"caption", m_oCaption )
        WritingElement_ReadAttributes_End( oReader )
     }
     void CpivotTableHierarchy::toXML(NSStringUtils::CStringBuilder& writer) const
@@ -643,5 +669,161 @@ namespace Spreadsheet
 
        return objectPtr;
     }
+
+    void CMembers::fromXML(XmlUtils::CXmlLiteReader& oReader)
+    {
+       ReadAttributes( oReader );
+       auto nCurDepth = oReader.GetDepth();
+       while( oReader.ReadNextSiblingNode( nCurDepth ) )
+       {
+           std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+           if ( L"member" == sName )
+           {
+               CMember* pMember = new CMember();
+               *pMember = oReader;
+               m_arrItems.push_back(pMember);
+           }
+       }
+    }
+    void CMembers::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+    {
+       WritingElement_ReadAttributes_Start( oReader )
+           WritingElement_ReadAttributes_Read_if	( oReader, L"count", m_oCount )
+           WritingElement_ReadAttributes_Read_else_if	( oReader, L"level", m_oLevel )
+       WritingElement_ReadAttributes_End( oReader )
+    }
+    void CMembers::toXML(NSStringUtils::CStringBuilder& writer) const
+    {
+        writer.WriteString(L"<groupMembers");
+        WritingStringAttrInt(L"count", (int)m_arrItems.size());
+        writer.WriteString(L">");
+
+        for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+                m_arrItems[i]->toXML(writer);
+            }
+        }
+        writer.WriteString(L"</groupMembers>");
+    }
+    XLS::BaseObjectPtr CMembers::toBin()
+    {
+       auto ptr(new XLSB::PCDHGLGMEMBERS);
+       XLS::BaseObjectPtr objectPtr(ptr);
+       for(auto i : m_arrItems)
+       {
+           ptr->m_arPCDHGLGMEMBER.push_back(i->toBin());
+       }
+       return objectPtr;
+    }
+    void CMember::fromXML(XmlUtils::CXmlLiteReader& oReader)
+    {
+       ReadAttributes( oReader );
+    }
+    void CMember::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+    {
+       WritingElement_ReadAttributes_Start( oReader )
+           WritingElement_ReadAttributes_Read_if	( oReader, L"name", m_oName)
+       WritingElement_ReadAttributes_End( oReader )
+    }
+    void CMember::toXML(NSStringUtils::CStringBuilder& writer) const
+    {
+        writer.WriteString(L"<groupMember");
+
+        writer.WriteString(L"/>");
+    }
+    XLS::BaseObjectPtr CMember::toBin()
+    {
+       auto ptr1(new XLSB::PCDHGLGMEMBER);
+       XLS::BaseObjectPtr objectPtr(ptr1);
+       auto ptr(new XLSB::BeginPCDHGLGMember);
+       ptr1->m_BrtBeginPCDHGLGMember = XLS::BaseObjectPtr{ptr};
+
+
+       return objectPtr;
+    }
+
+    void CMemberProperties::fromXML(XmlUtils::CXmlLiteReader& oReader)
+    {
+       ReadAttributes( oReader );
+       auto nCurDepth = oReader.GetDepth();
+       while( oReader.ReadNextSiblingNode( nCurDepth ) )
+       {
+           std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+           if ( L"mp" == sName )
+           {
+               CMemberProperty* pProperty = new CMemberProperty();
+               *pProperty = oReader;
+               m_arrItems.push_back(pProperty);
+           }
+       }
+    }
+    void CMemberProperties::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+    {
+       WritingElement_ReadAttributes_Start( oReader )
+           WritingElement_ReadAttributes_Read_if	( oReader, L"count", m_oCount )
+       WritingElement_ReadAttributes_End( oReader )
+    }
+    void CMemberProperties::toXML(NSStringUtils::CStringBuilder& writer) const
+    {
+        writer.WriteString(L"<groupMembers");
+        WritingStringAttrInt(L"count", (int)m_arrItems.size());
+        writer.WriteString(L">");
+
+        for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+                m_arrItems[i]->toXML(writer);
+            }
+        }
+        writer.WriteString(L"</groupMembers>");
+    }
+    XLS::BaseObjectPtr CMemberProperties::toBin()
+    {
+       auto ptr(new XLSB::PCDHGLGMEMBERS);
+       XLS::BaseObjectPtr objectPtr(ptr);
+       for(auto i : m_arrItems)
+       {
+           ptr->m_arPCDHGLGMEMBER.push_back(i->toBin());
+       }
+       return objectPtr;
+    }
+    void CMemberProperty::fromXML(XmlUtils::CXmlLiteReader& oReader)
+    {
+       ReadAttributes( oReader );
+    }
+    void CMemberProperty::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+    {
+       WritingElement_ReadAttributes_Start( oReader )
+           WritingElement_ReadAttributes_Read_if	( oReader, L"name", m_oName)
+           WritingElement_ReadAttributes_Read_else_if	( oReader, L"showCell", m_oShowCell )
+           WritingElement_ReadAttributes_Read_else_if	( oReader, L"showTip", m_oShowTip )
+           WritingElement_ReadAttributes_Read_else_if	( oReader, L"showAsCaption", m_oShowAsCaption )
+           WritingElement_ReadAttributes_Read_else_if	( oReader, L"nameLen", m_oNameLen )
+           WritingElement_ReadAttributes_Read_else_if	( oReader, L"pPos", m_oPPos )
+           WritingElement_ReadAttributes_Read_else_if	( oReader, L"pLen", m_oPLen )
+           WritingElement_ReadAttributes_Read_else_if	( oReader, L"level", m_oLevel )
+           WritingElement_ReadAttributes_Read_else_if	( oReader, L"field", m_oField )
+       WritingElement_ReadAttributes_End( oReader )
+    }
+    void CMemberProperty::toXML(NSStringUtils::CStringBuilder& writer) const
+    {
+        writer.WriteString(L"<groupMember");
+
+        writer.WriteString(L"/>");
+    }
+    XLS::BaseObjectPtr CMemberProperty::toBin()
+    {
+       auto ptr1(new XLSB::PCDHGLGMEMBER);
+       XLS::BaseObjectPtr objectPtr(ptr1);
+       auto ptr(new XLSB::BeginPCDHGLGMember);
+       ptr1->m_BrtBeginPCDHGLGMember = XLS::BaseObjectPtr{ptr};
+
+
+       return objectPtr;
+    }
+
 }
 }

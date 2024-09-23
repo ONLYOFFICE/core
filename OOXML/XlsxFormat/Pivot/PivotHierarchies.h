@@ -30,6 +30,9 @@
  *
  */
 #pragma once
+
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+
 #include "../WritingElement.h"
 #include "../FileTypes_Spreadsheet.h"
 
@@ -349,6 +352,7 @@ namespace Spreadsheet
         }
         virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
         virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+        void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
         void fromBin(XLS::BaseObjectPtr& obj);
         XLS::BaseObjectPtr toBin();
 
@@ -399,6 +403,7 @@ namespace Spreadsheet
         }
         virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
         virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+        void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
         void fromBin(XLS::BaseObjectPtr& obj);
         XLS::BaseObjectPtr toBin();
 
@@ -443,7 +448,8 @@ namespace Spreadsheet
 
 
         nullable<CMemberProperties>	m_oMemberProperties;
-        nullable<CGroupLevels>	m_oGroupLevels;
+        nullable<CMembers>	m_oMembers;
+        nullable<OOX::Drawing::COfficeArtExtensionList>					m_oExtLst;
 
     };
 

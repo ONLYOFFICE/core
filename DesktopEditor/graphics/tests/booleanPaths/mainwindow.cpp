@@ -213,7 +213,7 @@ void MainWindow::AddPath(NSGraphics::IGraphicsRenderer* pathRenderer, const Aggp
 
 	size_t	length = path.GetPointCount(),
 			compound = path.GetCloseCount();
-	std::vector<Aggplus::PointD> points = path.GetPoints(0, length + compound);
+	Aggplus::PointD* points = path.GetPoints(0, length + compound);
 
 	for (size_t i = 0; i < length + compound; i++)
 	{
@@ -229,6 +229,8 @@ void MainWindow::AddPath(NSGraphics::IGraphicsRenderer* pathRenderer, const Aggp
 		else if (path.IsLinePoint(i))
 			pathRenderer->PathCommandLineTo(points[i].X + NEGATIVE_OFFSET, points[i].Y + NEGATIVE_OFFSET);
 	}
+
+	delete[] points;
 
 	if (isResult)
 	{
@@ -285,13 +287,14 @@ void MainWindow::Draw(bool drawResult)
 void MainWindow::SetCoords(QLabel *label, const Aggplus::CGraphicsPath& path)
 {
 	size_t length = path.GetPointCount();
-	std::vector<Aggplus::PointD> points = path.GetPoints(0, length);
+	Aggplus::PointD* points = path.GetPoints(0, length);
 	QString text = "";
 
 	for (size_t i = 0; i < length; i++)
 		text += "(" + QString::number(points[i].X) +
 				"; " + QString::number(points[i].Y) + "); ";
 
+	delete[] points;
 	label->setText(text);
 }
 

@@ -34,7 +34,7 @@ namespace NSDocxRenderer
 	{
 		size_t close_count = other.GetCloseCount();
 		size_t count = static_cast<size_t>(other.GetPointCount()) + close_count;
-		std::vector<Aggplus::PointD> points = other.GetPoints(0, count);
+		Aggplus::PointD* points = other.GetPoints(0, count);
 		for (size_t idx = 0; idx < count; ++idx)
 		{
 			const auto& point = points[idx];
@@ -56,9 +56,7 @@ namespace NSDocxRenderer
 				Close();
 		}
 
-		other.GetBoundsAccurate(m_dLeft, m_dTop, m_dRight, m_dBottom);
-		m_dRight += m_dLeft;
-		m_dBottom += m_dTop;
+		delete[] points;
 	}
 
 

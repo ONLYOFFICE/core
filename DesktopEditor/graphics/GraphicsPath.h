@@ -39,7 +39,6 @@
 
 #include "Matrix.h"
 #include "./pro/Fonts.h"
-#include <memory>
 
 namespace Aggplus
 {
@@ -50,7 +49,7 @@ namespace Aggplus
 		CGraphicsPath();
 		CGraphicsPath(const CGraphicsPath& other) noexcept;
 		CGraphicsPath(CGraphicsPath&& other) noexcept;
-		CGraphicsPath(const std::vector<std::shared_ptr<CGraphicsPath>>& paths) noexcept;
+		CGraphicsPath(CGraphicsPath* paths, const unsigned& pathCount) noexcept;
 		virtual ~CGraphicsPath();
 
 		CGraphicsPath* Clone();
@@ -105,16 +104,17 @@ namespace Aggplus
 		bool IsPointInPath(const double& x, const double& y);
 
 		// Methods for Path Clip
-		size_t	GetCloseCount() const noexcept;
-		bool	IsClockwise()	  const noexcept;
-		bool	IsMovePoint(size_t idx)	 const noexcept;
-		bool	IsCurvePoint(size_t idx) const noexcept;
-		bool	IsLinePoint(size_t idx)	 const noexcept;
-		bool	IsClosePoint(size_t idx) const noexcept;
-		double	GetArea() const noexcept;
-		double	GetArea(size_t idx, bool isCurve) const noexcept;
-		std::vector<PointD> GetPoints(size_t idx, size_t count) const noexcept;
-		std::vector<std::shared_ptr<CGraphicsPath>> GetSubPaths() const;
+		unsigned GetCloseCount() const noexcept;
+		unsigned GetMoveCount()	 const noexcept;
+		bool	 IsClockwise()	 const noexcept;
+		bool	 IsMovePoint(unsigned idx)	const noexcept;
+		bool	 IsCurvePoint(unsigned idx) const noexcept;
+		bool	 IsLinePoint(unsigned idx)	const noexcept;
+		bool	 IsClosePoint(unsigned idx) const noexcept;
+		double	 GetArea() const noexcept;
+		double	 GetArea(unsigned idx, bool isCurve) const noexcept;
+		PointD*  GetPoints(unsigned idx, unsigned count) const noexcept;
+		CGraphicsPath* GetSubPaths() const;
 
 		CGraphicsPath& operator=(const CGraphicsPath& other)	noexcept;
 		CGraphicsPath& operator=(CGraphicsPath&& other)			noexcept;

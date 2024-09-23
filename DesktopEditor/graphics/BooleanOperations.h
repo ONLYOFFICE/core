@@ -24,8 +24,10 @@ namespace Aggplus
 		std::shared_ptr<Location> Inters{nullptr};
 
 		Segment() noexcept;
-		Segment(const std::vector<PointD>& points, const bool& isCurve,
-				const int& index, const int& id, const bool& polyClosed) noexcept;
+		Segment(PointD* points, const bool& isCurve, const int& index,
+				const int& id, const bool& polyClosed) noexcept;
+		Segment(const PointD& point, const bool& isCurve, const int& index,
+				const int& id, const bool& polyClosed) noexcept;
 		Segment(const PointD& p) noexcept;
 		Segment(const PointD& p, const PointD& hi, const PointD& ho) noexcept;
 
@@ -104,9 +106,9 @@ namespace Aggplus
 	class CBooleanOperations
 	{
 	public:
-		CBooleanOperations(std::shared_ptr<CGraphicsPath> path1, std::shared_ptr<CGraphicsPath> path2, BooleanOpType op);
+		CBooleanOperations(const CGraphicsPath& path1, const CGraphicsPath& path2, BooleanOpType op);
 		~CBooleanOperations();
-		std::shared_ptr<CGraphicsPath>&& GetResult();
+		CGraphicsPath&& GetResult();
 
 		// BooleanOp
 		void TraceBoolean();
@@ -115,7 +117,7 @@ namespace Aggplus
 		void TracePaths();
 
 		// Path
-		void	PreparePath(std::shared_ptr<CGraphicsPath> path, int id, std::vector<Segment>& segments,
+		void	PreparePath(const CGraphicsPath& path, int id, std::vector<Segment>& segments,
 							std::vector<Curve>& curves, bool reverse = false);
 		void	InsertSegment(const Segment& segment, const Segment& handles, bool updateHandles);
 		Curve	GetCurve(const Segment& segment) const noexcept;
@@ -153,9 +155,12 @@ namespace Aggplus
 	private:
 		BooleanOpType Op = Intersection;
 
-		std::shared_ptr<CGraphicsPath> Path1{nullptr};
-		std::shared_ptr<CGraphicsPath> Path2{nullptr};
-		std::shared_ptr<CGraphicsPath> Result{nullptr};
+		bool Close1 = true;
+		bool Close2 = true;
+
+		CGraphicsPath Path1;
+		CGraphicsPath Path2;
+		CGraphicsPath Result;
 
 		std::vector<Segment> Segments1;
 		std::vector<Segment> Segments2;

@@ -31,7 +31,6 @@
  */
 #include "GraphicsPath_private.h"
 #include "agg_bounding_rect.h"
-#include <algorithm>
 
 namespace Aggplus
 {
@@ -51,33 +50,36 @@ namespace Aggplus
 		*this = other;
 	}
 
-	CGraphicsPath::CGraphicsPath(const std::vector<std::shared_ptr<CGraphicsPath>>& paths) noexcept : CGraphicsPath()
+	CGraphicsPath::CGraphicsPath(CGraphicsPath* paths, const unsigned& pathCount) noexcept : CGraphicsPath()
 	{
-		if (paths.size() == 1)
-			*this = *paths[0];
-
-		StartFigure();
-		for (const auto& path : paths)
+		if (pathCount == 1)
+			*this = paths[0];
+		else
 		{
-			size_t length = path->GetPointCount();
-			std::vector<PointD> points = path->GetPoints(0, length);
-
-			for (size_t i = 0; i < length; i++)
+			StartFigure();
+			for (unsigned i = 0; i < pathCount; i++)
 			{
-				if (path->IsMovePoint(i))
-					MoveTo(points[i].X, points[i].Y);
-				else if (path->IsLinePoint(i))
-					LineTo(points[i].X, points[i].Y);
-				else if (path->IsCurvePoint(i))
-				{
-					CurveTo(points[i].X, points[i].Y,
-							points[i + 1].X, points[i + 1].Y,
-							points[i + 2].X, points[i + 2].Y);
-					i += 2;
-				}
-			}
+				unsigned length = paths[i].GetPointCount();
+				PointD* points = paths[i].GetPoints(0, length);
 
-			CloseFigure();
+				for (unsigned j = 0; j < length; j++)
+				{
+					if (paths[i].IsMovePoint(j))
+						MoveTo(points[j].X, points[j].Y);
+					else if (paths[i].IsLinePoint(j))
+						LineTo(points[j].X, points[j].Y);
+					else if (paths[i].IsCurvePoint(j))
+					{
+						CurveTo(points[j].X, points[j].Y,
+								points[j + 1].X, points[j + 1].Y,
+								points[j + 2].X, points[j + 2].Y);
+						j += 2;
+					}
+				}
+
+				delete[] points;
+				CloseFigure();
+			}
 		}
 	}
 
@@ -784,14 +786,24 @@ namespace Aggplus
         return rasterizer.hit_test((int)x, (int)y);
     }
 
-	size_t CGraphicsPath::GetCloseCount() const noexcept
+	unsigned CGraphicsPath::GetCloseCount() const noexcept
 	{
-		size_t	countClose = 0;
-		for (size_t i = 0; i < m_internal->m_agg_ps.total_vertices(); i++)
+		unsigned countClose = 0;
+		for (unsigned i = 0; i < m_internal->m_agg_ps.total_vertices(); i++)
 			if (IsClosePoint(i))
 				countClose++;
 
 		return countClose;
+	}
+
+	unsigned CGraphicsPath::GetMoveCount() const noexcept
+	{
+		unsigned countMove = 0;
+		for (unsigned i = 0; i < m_internal->m_agg_ps.total_vertices(); i++)
+			if (IsMovePoint(i))
+				countMove++;
+
+		return countMove;
 	}
 
 	bool CGraphicsPath::IsClockwise() const noexcept
@@ -799,130 +811,162 @@ namespace Aggplus
 		return GetArea() >= 0;
 	}
 
-	bool CGraphicsPath::IsMovePoint(size_t idx) const noexcept
+	bool CGraphicsPath::IsMovePoint(unsigned idx) const noexcept
 	{
 		if (idx >= m_internal->m_agg_ps.total_vertices()) return false;
 		return this->m_internal->m_agg_ps.command(idx) == agg::path_cmd_move_to;
 	}
 
-	bool CGraphicsPath::IsCurvePoint(size_t idx) const noexcept
+	bool CGraphicsPath::IsCurvePoint(unsigned idx) const noexcept
 	{
 		if (idx >= m_internal->m_agg_ps.total_vertices()) return false;
 		return this->m_internal->m_agg_ps.command(idx) == agg::path_cmd_curve4;
 	}
 
-	bool CGraphicsPath::IsLinePoint(size_t idx) const noexcept
+	bool CGraphicsPath::IsLinePoint(unsigned idx) const noexcept
 	{
 		if (idx >= m_internal->m_agg_ps.total_vertices()) return false;
 		return this->m_internal->m_agg_ps.command(idx) == agg::path_cmd_line_to;
 	}
 
-	bool CGraphicsPath::IsClosePoint(size_t idx) const noexcept
+	bool CGraphicsPath::IsClosePoint(unsigned idx) const noexcept
 	{
 		if (idx >= m_internal->m_agg_ps.total_vertices()) return false;
 		return this->m_internal->m_agg_ps.command(idx) == (agg::path_cmd_end_poly | agg::path_flags_close);
 	}
 
-	std::vector<PointD> CGraphicsPath::GetPoints(size_t idx, size_t count) const noexcept
+	PointD* CGraphicsPath::GetPoints(unsigned idx, unsigned count) const noexcept
 	{
-		std::vector<PointD> points;
-		size_t length = m_internal->m_agg_ps.total_vertices();
-		for (size_t i = 0; i < count; i++)
+		PointD* points = new PointD[count];
+		unsigned length = m_internal->m_agg_ps.total_vertices();
+		for (unsigned i = 0; i < count; i++)
 		{
 			double x,y;
 			if (idx + i >= length) break;
 			this->m_internal->m_agg_ps.vertex(idx + i, &x, &y);
-			points.push_back(PointD(x, y));
+			points[i] = PointD(x, y);
 		}
+
 		return points;
 	}
 
 	double CGraphicsPath::GetArea() const noexcept
 	{
 		double area = 0.0;
-		for (size_t i = 0; i < GetPointCount(); i++)
+		for (unsigned i = 0; i < GetPointCount(); i++)
 		{
 			area += GetArea(i, IsCurvePoint(i + 1));
 			if (IsCurvePoint(i + 1)) i += 2;
 		}
+
 		return area;
 	}
 
-	double CGraphicsPath::GetArea(size_t idx, bool isCurve) const noexcept
+	double CGraphicsPath::GetArea(unsigned idx, bool isCurve) const noexcept
 	{
 		float area;
 		if (isCurve)
 		{
-			std::vector<PointD> points = GetPoints(idx, 4);
+			PointD* points = GetPoints(idx, 4);
 			area = 3 * ((points[3].Y - points[0].Y)	* (points[1].X + points[2].X)
 						- (points[3].X - points[0].X) * (points[1].Y * points[2].Y)
 						+ points[1].Y * (points[0].X - points[2].X)
 						- points[1].X * (points[0].Y - points[2].Y)
 						+ points[3].Y * (points[2].X + points[0].X / 3)
 						- points[3].X * (points[2].Y - points[0].Y / 3)) / 20;
+			delete[] points;
 		}
-		std::vector<PointD> points = GetPoints(idx, 2);
+
+		PointD* points = GetPoints(idx, 2);
 		area = (points[1].Y * points[0].X - points[1].X * points[0].Y) / 20;
+		delete[] points;
+
 		return area;
 	}
 
-	std::vector<std::shared_ptr<CGraphicsPath>> CGraphicsPath::GetSubPaths() const
+	CGraphicsPath* CGraphicsPath::GetSubPaths() const
 	{
-		std::vector<std::shared_ptr<CGraphicsPath>> result;
-		std::shared_ptr<CGraphicsPath> subPath(new CGraphicsPath);
+		CGraphicsPath* result = new CGraphicsPath[GetMoveCount()];
+
+		CGraphicsPath subPath;
 		bool close = true;
 
-		for (size_t i = 0; i < m_internal->m_agg_ps.total_vertices(); i++)
+		unsigned pathIdx = 0;
+		for (unsigned i = 0; i < m_internal->m_agg_ps.total_vertices(); i++)
 		{
 			if (IsMovePoint(i))
 			{
 				if (!close)
 				{
-					PointD firstPoint = subPath->GetPoints(0, 1)[0];
-					subPath->LineTo(firstPoint.X, firstPoint.Y);
-					subPath->CloseFigure();
-					result.push_back(subPath);
-					subPath.reset(new CGraphicsPath);
+					PointD* firstPoint = subPath.GetPoints(0, 1);
+					double x, y;
+					subPath.GetLastPoint(x, y);
+					if ((abs(firstPoint[0].X - x) <= 1e-2 && abs(firstPoint[0].Y - y) <= 1e-2) ||
+						subPath.GetPointCount() == 1)
+					{
+						subPath.LineTo(firstPoint[0].X, firstPoint[0].Y);
+						subPath.CloseFigure();
+					}
+
+					result[pathIdx] = subPath;
+					pathIdx++;
+					subPath.Reset();
+					delete[] firstPoint;
 				}
-				subPath->StartFigure();
-				std::vector<PointD> points = GetPoints(i, 1);
-				subPath->MoveTo(points[0].X, points[0].Y);
+				subPath.StartFigure();
+				PointD* points = GetPoints(i, 1);
+				subPath.MoveTo(points[0].X, points[0].Y);
+				delete[] points;
 				close = false;
 			}
 			else if (IsCurvePoint(i))
 			{
-				std::vector<PointD> points = GetPoints(i, 3);
-				subPath->CurveTo(points[0].X, points[0].Y,
+				PointD* points = GetPoints(i, 3);
+				subPath.CurveTo(points[0].X, points[0].Y,
 								 points[1].X, points[1].Y,
 								 points[2].X, points[2].Y);
+				delete[] points;
 				i += 2;
 			}
 			else if (IsLinePoint(i))
 			{
-				std::vector<PointD> points = GetPoints(i, 1);
-				subPath->LineTo(points[0].X, points[0].Y);
+				PointD* points = GetPoints(i, 1);
+				subPath.LineTo(points[0].X, points[0].Y);
+				delete[] points;
 			}
 			else if (IsClosePoint(i))
 			{
-				PointD firstPoint = subPath->GetPoints(0, 1)[0];
+				PointD* firstPoint = subPath.GetPoints(0, 1);
 				double x, y;
-				subPath->GetLastPoint(x, y);
-				if (!firstPoint.Equals(PointD(x, y)) || subPath->GetPointCount() == 1) subPath->LineTo(firstPoint.X, firstPoint.Y);
-				subPath->CloseFigure();
-				result.push_back(subPath);
-				subPath.reset(new CGraphicsPath);
+				subPath.GetLastPoint(x, y);
+
+				if (!firstPoint[0].Equals(PointD(x, y)) || subPath.GetPointCount() == 1)
+					subPath.LineTo(firstPoint[0].X, firstPoint[0].Y);
+
+				subPath.CloseFigure();
+				result[pathIdx] = subPath;
+				pathIdx++;
+				subPath.Reset();
+				delete[] firstPoint;
 				close = true;
 			}
 		}
 
 		if (!close)
 		{
-			PointD firstPoint = subPath->GetPoints(0, 1)[0];
+			PointD* firstPoint = subPath.GetPoints(0, 1);
 			double x, y;
-			subPath->GetLastPoint(x, y);
-			if (!firstPoint.Equals(PointD(x, y)) || subPath->GetPointCount() == 1) subPath->LineTo(firstPoint.X, firstPoint.Y);
-			subPath->CloseFigure();
-			result.push_back(subPath);
+			subPath.GetLastPoint(x, y);
+
+			if ((abs(firstPoint[0].X - x) <= 1e-2 && abs(firstPoint[0].Y - y) <= 1e-2) ||
+				subPath.GetPointCount() == 1)
+			{
+				subPath.LineTo(firstPoint[0].X, firstPoint[0].Y);
+				subPath.CloseFigure();
+			}
+
+			result[pathIdx] = subPath;
+			delete[] firstPoint;
 		}
 
 		return result;

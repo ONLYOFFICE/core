@@ -407,8 +407,8 @@ namespace Spreadsheet
         void fromBin(XLS::BaseObjectPtr& obj);
         XLS::BaseObjectPtr toBin();
 
-        nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
-        nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oLevel;
+        nullable_uint	m_oCount;
+        nullable_uint	m_oLevel;
 
     };
 

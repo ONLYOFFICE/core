@@ -655,9 +655,30 @@ namespace Spreadsheet
     }
     void CpivotTableHierarchy::toXML(NSStringUtils::CStringBuilder& writer) const
     {
-        writer.WriteString(L"<groupMember");
+        writer.WriteString(L"<pivotHierarchy");
+        WritingStringNullableAttrBool2(L"outline", m_oOutline);
+        WritingStringNullableAttrBool2(L"multipleItemSelectionAllowed", m_oMultipleItemSelectionAllowed);
+        WritingStringNullableAttrBool2(L"subtotalTop", m_oSubtotalTop);
+        WritingStringNullableAttrBool2(L"showInFieldList", m_oShowInFieldList);
+        WritingStringNullableAttrBool2(L"dragToRow", m_oDragToRow);
+        WritingStringNullableAttrBool2(L"dragToCol", m_oDragToCol);
+        WritingStringNullableAttrBool2(L"dragToPage", m_oDragToPage);
+        WritingStringNullableAttrBool2(L"dragToData", m_oDragToData);
+        WritingStringNullableAttrBool2(L"dragOff", m_oDragOff);
+        WritingStringNullableAttrBool2(L"includeNewItemsInFilter", m_oIncludeNewItemsInFilter);
+        WritingStringNullableAttrEncodeXmlString2(L"caption", m_oCaption);
 
-        writer.WriteString(L"/>");
+        if(m_oMemberProperties.IsInit() || m_oMembers.IsInit())
+        {
+             writer.WriteString(L">");
+             if(m_oMemberProperties.IsInit())
+                m_oMemberProperties->toXML();
+             if(m_oMembers.IsInit())
+                 m_oMembers->toXML();
+             writer.WriteString(L"</pivotHierarchy>");
+        }
+        else
+            writer.WriteString(L"/>");
     }
     XLS::BaseObjectPtr CpivotTableHierarchy::toBin()
     {
@@ -694,8 +715,9 @@ namespace Spreadsheet
     }
     void CMembers::toXML(NSStringUtils::CStringBuilder& writer) const
     {
-        writer.WriteString(L"<groupMembers");
-        WritingStringAttrInt(L"count", (int)m_arrItems.size());
+        writer.WriteString(L"<members");
+        WritingStringNullableAttrUInt(L"count", m_oCount, m_oCount.get());
+        WritingStringNullableAttrUInt(L"level", m_oLevel, m_oLevel.get());
         writer.WriteString(L">");
 
         for ( size_t i = 0; i < m_arrItems.size(); ++i)
@@ -705,7 +727,7 @@ namespace Spreadsheet
                 m_arrItems[i]->toXML(writer);
             }
         }
-        writer.WriteString(L"</groupMembers>");
+        writer.WriteString(L"</members>");
     }
     XLS::BaseObjectPtr CMembers::toBin()
     {
@@ -729,8 +751,8 @@ namespace Spreadsheet
     }
     void CMember::toXML(NSStringUtils::CStringBuilder& writer) const
     {
-        writer.WriteString(L"<groupMember");
-
+        writer.WriteString(L"<member");
+        WritingStringNullableAttrEncodeXmlString2(L"name", m_oName);
         writer.WriteString(L"/>");
     }
     XLS::BaseObjectPtr CMember::toBin()
@@ -739,7 +761,6 @@ namespace Spreadsheet
        XLS::BaseObjectPtr objectPtr(ptr1);
        auto ptr(new XLSB::BeginPCDHGLGMember);
        ptr1->m_BrtBeginPCDHGLGMember = XLS::BaseObjectPtr{ptr};
-
 
        return objectPtr;
     }
@@ -767,7 +788,7 @@ namespace Spreadsheet
     }
     void CMemberProperties::toXML(NSStringUtils::CStringBuilder& writer) const
     {
-        writer.WriteString(L"<groupMembers");
+        writer.WriteString(L"<mps");
         WritingStringAttrInt(L"count", (int)m_arrItems.size());
         writer.WriteString(L">");
 
@@ -810,9 +831,17 @@ namespace Spreadsheet
     }
     void CMemberProperty::toXML(NSStringUtils::CStringBuilder& writer) const
     {
-        writer.WriteString(L"<groupMember");
-
-        writer.WriteString(L"/>");
+        writer.WriteString(L"<mp");
+                WritingStringNullableAttrEncodeXmlString2(L"name", m_oName);
+                WritingStringNullableAttrBool2(L"showCell", m_oShowCell);
+                WritingStringNullableAttrBool2(L"showTip", m_oShowTip);
+                WritingStringNullableAttrBool2(L"showAsCaption", m_oShowAsCaption);
+                WritingStringNullableAttrUInt(L"nameLen", m_oNameLen, m_oNameLen.get());
+                WritingStringNullableAttrUInt(L"pPos", m_oPPos, m_oPPos.get());
+                WritingStringNullableAttrUInt(L"pLen", m_oPLen, m_oPPos.get());
+                WritingStringNullableAttrUInt(L"level", m_oLevel, m_oLevel.get());
+                WritingStringNullableAttrUInt(L"field", m_oField, m_oField.get());
+                writer.WriteString(L"/>");
     }
     XLS::BaseObjectPtr CMemberProperty::toBin()
     {
@@ -820,7 +849,6 @@ namespace Spreadsheet
        XLS::BaseObjectPtr objectPtr(ptr1);
        auto ptr(new XLSB::BeginPCDHGLGMember);
        ptr1->m_BrtBeginPCDHGLGMember = XLS::BaseObjectPtr{ptr};
-
 
        return objectPtr;
     }

@@ -130,6 +130,7 @@ std::wstring presentation_class::get_type_ms()
 		case notes:
 		case handout:
 		case outline:
+		case body:
 		case text:
 			res = L"body";
 			break;

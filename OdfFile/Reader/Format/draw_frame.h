@@ -159,7 +159,7 @@ public:
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
     virtual void pptx_convert_placeHolder(oox::pptx_conversion_context & Context);
 
-    void pptx_convert_placeHolder_styles(oox::pptx_conversion_context& Context, const paragraph_format_properties* paragraph_props, const text_format_properties* text_props);
+    void pptx_convert_placeHolder_styles(oox::pptx_conversion_context& Context, const graphic_format_properties* graphic_props, const paragraph_format_properties* paragraph_props, const text_format_properties* text_props);
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 

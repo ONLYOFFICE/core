@@ -213,7 +213,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 				paragraph_format_properties paragraph_properties = calc_paragraph_properties_content(textStyleInst);
 				text_format_properties_ptr text_properties = calc_text_properties_content(textStyleInst);
 
-				pptx_convert_placeHolder_styles(Context, &paragraph_properties, text_properties.get());
+				pptx_convert_placeHolder_styles(Context, properties.get(), &paragraph_properties, text_properties.get());
 			}
 		}
 
@@ -262,8 +262,20 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 	Context.get_slide_context().end_frame();
 }
 
-void draw_frame::pptx_convert_placeHolder_styles(oox::pptx_conversion_context& Context, const paragraph_format_properties* paragraph_props, const text_format_properties* text_props)
+void draw_frame::pptx_convert_placeHolder_styles(oox::pptx_conversion_context& Context, const graphic_format_properties* graphic_props, const paragraph_format_properties* paragraph_props, const text_format_properties* text_props)
 {
+	if (graphic_props)
+	{
+		int vert_align;
+
+		if (graphic_props->draw_textarea_vertical_align_)
+			vert_align = (int)graphic_props->draw_textarea_vertical_align_->get_type();
+		else
+			vert_align = (int)odf_types::vertical_align::Auto;
+
+		Context.get_slide_context().set_property(odf_reader::_property(L"textarea-vertical_align", vert_align));
+	}
+
 	if (text_props)
 	{
 		if (text_props->fo_color_)
@@ -271,6 +283,8 @@ void draw_frame::pptx_convert_placeHolder_styles(oox::pptx_conversion_context& C
 		if (text_props->fo_font_size_)
 			Context.get_slide_context().set_property(
 				odf_reader::_property(L"placeholder-font-size", text_props->fo_font_size_->get_length().get_value_unit(odf_types::length::pt)));
+		if(text_props->fo_font_weight_ && text_props->fo_font_weight_->get_type() == odf_types::font_weight::WBold)
+			Context.get_slide_context().set_property(odf_reader::_property(L"placeholder-font-bold", true));
 	}
 
 	if (paragraph_props)

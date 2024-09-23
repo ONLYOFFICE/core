@@ -64,6 +64,11 @@ void pptx_serialize_text(std::wostream & strm, _pptx_drawing & val)
 						odf_reader::GetProperty(val.additional, L"placeholder-font-size", font_size);
 						if (font_size)
 							CP_XML_ATTR(L"sz", *font_size * 100);
+
+						_CP_OPT(bool) bold_text;
+						odf_reader::GetProperty(val.additional, L"placeholder-font-bold", bold_text);
+						if (bold_text && *bold_text)
+							CP_XML_ATTR(L"b", 1);
 						
 						_CP_OPT(std::wstring) text_color;
 						odf_reader::GetProperty(val.additional, L"placeholder-text-color", text_color);

@@ -3,6 +3,7 @@
 
 #include <list>
 #include <memory>
+#include <array>
 
 namespace NSDocxRenderer
 {
@@ -98,5 +99,6 @@ namespace NSDocxRenderer
 
 		Aggplus::CGraphicsPath GetGraphicsPath() const noexcept;
 		static Aggplus::BooleanOpType GetOpType(long nClipType);
+		static std::vector<Point> GetPointsCurve(const std::array<Point, 4>& curve, double step = 0.05);
 	};
 }

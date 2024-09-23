@@ -56,12 +56,9 @@ namespace NSDocxRenderer
 				Close();
 		}
 
-		// TODO:
 		other.GetBoundsAccurate(m_dLeft, m_dTop, m_dRight, m_dBottom);
 		m_dRight += m_dLeft;
 		m_dBottom += m_dTop;
-
-		//Close();
 	}
 
 
@@ -205,11 +202,17 @@ namespace NSDocxRenderer
 		const double &x2, const double &y2,
 		const double &x3, const double &y3)
 	{
+		double x0 = m_arData.back().points.back().x;
+		double y0 = m_arData.back().points.back().y;
+
 		std::list<Point> points = {{x1, y1}, {x2, y2}, {x3, y3}};
 		ePathCommandType type = ePathCommandType::pctCurve;
 		m_arData.push_back({type, points});
 
-		for(auto& point : points)
+		std::vector<Point> curve_points = GetPointsCurve(
+			{Point{x0, y0}, Point{x1, y1}, Point{x2, y2}, Point{x3, y3}}, 0.1);
+
+		for(auto& point : curve_points)
 			CheckPoint(point);
 	}
 
@@ -343,5 +346,30 @@ namespace NSDocxRenderer
 			return Aggplus::BooleanOpType::Subtraction;
 		else
 			return Aggplus::BooleanOpType::Intersection;
+	}
+	std::vector<Point> CVectorGraphics::GetPointsCurve(const std::array<Point, 4>& curve, double step)
+	{
+		std::vector<Point> points;
+		double t = 0;
+		auto calc = [&curve] (double t) -> Point {
+			Point point;
+			point.x = pow(1 - t, 3) * curve[0].x +
+					  3 * pow(1 - t, 2) * t * curve[1].x +
+					  3 * (1 - t) * t * t * curve[2].x +
+					  t * t * t * curve[3].x;
+			point.y = pow(1 - t, 3) * curve[0].y +
+					  3 * pow(1 - t, 2) * t * curve[1].y +
+					  3 * (1 - t) * t * t * curve[2].y +
+					  t * t * t * curve[3].y;
+			return point;
+		};
+
+		while (t <= 1)
+		{
+			points.push_back(calc(t));
+			t += step;
+		}
+
+		return points;
 	}
 }

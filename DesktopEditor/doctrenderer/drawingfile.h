@@ -447,7 +447,7 @@ public:
 
 		std::wstring sFontFile;
 		if (m_nType == 0)
-			sFontFile = ((CPdfFile*)m_pFile)->GetEmbeddedFontPath(sFontName);
+			sFontFile = ((CPdfFile*)m_pFile)->GetFontPath(sFontName);
 
 		if (sFontFile.empty())
 			sFontFile = sFontName;

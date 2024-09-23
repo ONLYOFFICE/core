@@ -127,7 +127,12 @@ public:
 			m_pFile = new CPdfFile(m_pApplicationFonts);
 			if (!m_pFile->LoadFromFile(sFile, L"", sPassword, sPassword))
 			{
-				RELEASEOBJECT(m_pFile);
+				if (4 != ((CPdfFile*)m_pFile)->GetError())
+				{
+					RELEASEOBJECT(m_pFile);
+				}
+				else
+					m_nType = 0;
 			}
 			else
 				m_nType = 0;
@@ -167,7 +172,12 @@ public:
 			m_pFile = new CPdfFile(m_pApplicationFonts);
 			if (!m_pFile->LoadFromMemory(data, size, L"", sPassword, sPassword))
 			{
-				RELEASEOBJECT(m_pFile);
+				if (4 != ((CPdfFile*)m_pFile)->GetError())
+				{
+					RELEASEOBJECT(m_pFile);
+				}
+				else
+					m_nType = 0;
 			}
 			else
 				m_nType = 0;
@@ -482,6 +492,14 @@ public:
 			}
 		}
 		return NULL;
+	}
+
+	std::wstring GetFontBinaryNative(const std::wstring& sName)
+	{
+		if (0 != m_nType)
+			return L"";
+
+		return ((CPdfFile*)m_pFile)->GetEmbeddedFontPath(sName);
 	}
 
 private:

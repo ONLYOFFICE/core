@@ -82,7 +82,7 @@ CFile.prototype._getUint8ClampedArray = function(ptr, len)
 // FILE
 CFile.prototype._openFile = function(buffer, password)
 {
-	if (this.stream && buffer)
+	if (buffer)
 	{
 		let data = new Uint8Array(buffer);
 		this.stream_size = data.length;

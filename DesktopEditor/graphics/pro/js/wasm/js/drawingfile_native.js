@@ -107,7 +107,7 @@ CFile.prototype._setCMap = function(memoryBuffer)
 
 CFile.prototype._getFontByID = function(ID)
 {
-	return null;
+	return g_native_drawing_file["GetFontBinary"](ID);
 };
 
 CFile.prototype._getInteractiveFormsFonts = function(type)

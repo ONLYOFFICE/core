@@ -71,6 +71,19 @@ JSSmart<CJSValue> CDrawingFileEmbed::DestroyPixmap(JSSmart<CJSValue> typedArray)
 	return NULL;
 }
 
+JSSmart<CJSValue> CDrawingFileEmbed::GetFontBinary(JSSmart<CJSValue> Id)
+{
+	if (0 != m_pFile->GetType())
+		return NULL;
+
+	std::wstring sName = Id->toStringW();
+	std::wstring sFile = m_pFile->GetFontBinaryNative(sName);
+	if (sFile.empty())
+		return NULL;
+
+	return CJSContext::createUint8Array(sFile);
+}
+
 JSSmart<CJSValue> CDrawingFileEmbed::GetGlyphs(JSSmart<CJSValue> nPageIndex)
 {
 	return WasmMemoryToJS(m_pFile->GetGlyphs(nPageIndex->toInt32()));

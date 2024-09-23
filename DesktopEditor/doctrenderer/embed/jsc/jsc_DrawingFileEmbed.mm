@@ -20,6 +20,7 @@
 -(JSValue*) GetButtonIcons : (JSValue*)nBackgroundColor : (JSValue*)nPageIndex : (JSValue*)bBase64 : (JSValue*)nButtonWidget : (JSValue*)nIconView;
 -(JSValue*) GetAnnotationsInfo : (JSValue*)nPageIndex;
 -(JSValue*) GetAnnotationsAP : (JSValue*)nRasterW : (JSValue*)nRasterH : (JSValue*)nBackgroundColor : (JSValue*)nPageIndex : (JSValue*)nAnnot : (JSValue*)nView;
+-(JSValue*) GetFontBinary : (JSValue*)Id;
 -(JSValue*) GetGlyphs : (JSValue*)nPageIndex;
 -(JSValue*) DestroyTextInfo;
 -(JSValue*) IsNeedCMap;
@@ -53,6 +54,7 @@ FUNCTION_WRAPPER_JS_7(GetInteractiveFormsAP, GetInteractiveFormsAP)
 FUNCTION_WRAPPER_JS_5(GetButtonIcons, GetButtonIcons)
 FUNCTION_WRAPPER_JS_1(GetAnnotationsInfo, GetAnnotationsInfo)
 FUNCTION_WRAPPER_JS_6(GetAnnotationsAP, GetAnnotationsAP)
+FUNCTION_WRAPPER_JS_1(GetFontBinary, GetFontBinary)
 FUNCTION_WRAPPER_JS_1(GetGlyphs, GetGlyphs)
 FUNCTION_WRAPPER_JS_0(DestroyTextInfo, DestroyTextInfo)
 FUNCTION_WRAPPER_JS_0(IsNeedCMap, IsNeedCMap)

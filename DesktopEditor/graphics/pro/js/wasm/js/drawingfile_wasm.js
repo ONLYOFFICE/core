@@ -94,7 +94,7 @@ CFile.prototype._openFile = function(buffer, password)
 	if (password)
 	{
 		let passwordBuf = password.toUtf8();
-		let passwordPtr = Module["_malloc"](passwordBuf.length);
+		passwordPtr = Module["_malloc"](passwordBuf.length);
 		Module["HEAP8"].set(passwordBuf, passwordPtr);
 	}
 

@@ -1928,4 +1928,31 @@ CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1,
 	delete[] paths;
 	return result;
 }
+
+//For unit-tests
+bool CGraphicsPath::operator==(const CGraphicsPath& other) noexcept
+{
+	unsigned pointsCount = GetPointCount(),
+		otherPointsCount = other.GetPointCount();
+
+	if (pointsCount != otherPointsCount)
+		return false;
+
+	PointD *points = GetPoints(0, pointsCount),
+			*otherPoints = other.GetPoints(0, otherPointsCount);
+
+	for (unsigned i = 0; i < pointsCount; i++)
+	{
+		if (getDistance(points[i], otherPoints[i]) > POINT_EPSILON)
+		{
+			delete[] points;
+			delete[] otherPoints;
+			return false;
+		}
+	}
+
+	delete[] points;
+	delete[] otherPoints;
+	return true;
+}
 }

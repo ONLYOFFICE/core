@@ -118,6 +118,7 @@ namespace Aggplus
 
 		CGraphicsPath& operator=(const CGraphicsPath& other)	noexcept;
 		CGraphicsPath& operator=(CGraphicsPath&& other)			noexcept;
+		bool operator==(const CGraphicsPath& other)	noexcept;
 
 	public:
 		CGraphicsPath_private* m_internal;

@@ -586,58 +586,57 @@ namespace PdfReader
 	}
 	void RendererOutputDev::updateBlendMode(GfxState* pGState)
 	{
-		NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
-		if (((GlobalParamsAdaptor*)globalParams)->getDrawFormField() || !GRenderer)
+		if (((GlobalParamsAdaptor*)globalParams)->getDrawFormField())
 			return;
 
 		switch (pGState->getBlendMode())
 		{
 		case gfxBlendNormal:
-			GRenderer->put_BlendMode(3);
+			m_pRenderer->put_BlendMode(3);
 			// agg::comp_op_src_over
 			break;
 		case gfxBlendMultiply:
-			GRenderer->put_BlendMode(14);
+			m_pRenderer->put_BlendMode(14);
 			// agg::comp_op_multiply
 			break;
 		case gfxBlendScreen:
-			GRenderer->put_BlendMode(15);
+			m_pRenderer->put_BlendMode(15);
 			// agg::comp_op_screen
 			break;
 		case gfxBlendOverlay:
-			GRenderer->put_BlendMode(16);
+			m_pRenderer->put_BlendMode(16);
 			// agg::comp_op_overlay
 			break;
 		case gfxBlendDarken:
-			GRenderer->put_BlendMode(17);
+			m_pRenderer->put_BlendMode(17);
 			// agg::comp_op_darken
 			break;
 		case gfxBlendLighten:
-			GRenderer->put_BlendMode(18);
+			m_pRenderer->put_BlendMode(18);
 			// agg::comp_op_lighten
 			break;
 		case gfxBlendColorDodge:
-			GRenderer->put_BlendMode(19);
+			m_pRenderer->put_BlendMode(19);
 			// agg::comp_op_color_dodge
 			break;
 		case gfxBlendColorBurn:
-			GRenderer->put_BlendMode(20);
+			m_pRenderer->put_BlendMode(20);
 			// agg::comp_op_color_burn
 			break;
 		case gfxBlendHardLight:
-			GRenderer->put_BlendMode(21);
+			m_pRenderer->put_BlendMode(21);
 			// agg::comp_op_hard_light
 			break;
 		case gfxBlendSoftLight:
-			GRenderer->put_BlendMode(22);
+			m_pRenderer->put_BlendMode(22);
 			// agg::comp_op_soft_light
 			break;
 		case gfxBlendDifference:
-			GRenderer->put_BlendMode(23);
+			m_pRenderer->put_BlendMode(23);
 			// agg::comp_op_difference
 			break;
 		case gfxBlendExclusion:
-			GRenderer->put_BlendMode(24);
+			m_pRenderer->put_BlendMode(24);
 			// agg::comp_op_exclusion
 			break;
 		case gfxBlendHue:
@@ -645,7 +644,7 @@ namespace PdfReader
 		case gfxBlendColor:
 		case gfxBlendLuminosity:
 		default:
-			GRenderer->put_BlendMode(3);
+			m_pRenderer->put_BlendMode(3);
 			// agg::comp_op_src_over
 			break;
 		}

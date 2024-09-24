@@ -1613,7 +1613,7 @@ BYTE* CPdfReader::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, 
 			sType = oObj.getName();
 		oObj.free(); oAnnot.free();
 
-		if (sType == "Widget" || sType == "Highlight")
+		if (sType == "Widget")
 		{
 			oAnnotRef.free();
 			continue;

@@ -41,12 +41,22 @@
 #include "../../XlsbFormat/Biff12_unions/PCDHGLGROUPS.h"
 #include "../../XlsbFormat/Biff12_unions/PCDHGLEVEL.h"
 #include "../../XlsbFormat/Biff12_unions/PCDHGLEVELS.h"
+#include "../../XlsbFormat/Biff12_unions/SXTHITEM.h"
+#include "../../XlsbFormat/Biff12_unions/SXTHITEMS.h"
+#include "../../XlsbFormat/Biff12_unions/SXTDMPS.h"
+#include "../../XlsbFormat/Biff12_unions/SXTDMP.h"
+#include "../../XlsbFormat/Biff12_unions/SXTH.h"
+#include "../../XlsbFormat/Biff12_unions/SXTHS.h"
 
 #include "../../XlsbFormat/Biff12_records/BeginPCDHierarchy.h"
 #include "../../XlsbFormat/Biff12_records/BeginPCDHFieldsUsage.h"
 #include "../../XlsbFormat/Biff12_records/BeginPCDHGLGMember.h"
 #include "../../XlsbFormat/Biff12_records/BeginPCDHGLGroup.h"
 #include "../../XlsbFormat/Biff12_records/BeginPCDHGLevel.h"
+#include "../../XlsbFormat/Biff12_records/BeginSXTHItem.h"
+#include "../../XlsbFormat/Biff12_records/BeginSXTHItems.h"
+#include "../../XlsbFormat/Biff12_records/BeginSXTDMP.h"
+#include "../../XlsbFormat/Biff12_records/BeginSXTH.h"
 
 namespace OOX
 {
@@ -615,10 +625,10 @@ namespace Spreadsheet
     }
     XLS::BaseObjectPtr CpivotTableHierarchies::toBin()
     {
-        auto ptr(new XLSB::PCDHIERARCHIES);
+        auto ptr(new XLSB::SXTHS);
         XLS::BaseObjectPtr objectPtr(ptr);
         for(auto i : m_arrItems)
-            ptr->m_arPCDHIERARCHY.push_back(i->toBin());
+            ptr->m_arSXTH.push_back(i->toBin());
         return objectPtr;
     }
 
@@ -633,8 +643,13 @@ namespace Spreadsheet
             std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
             if (L"memberProperties" == sName)           m_oMemberProperties = oReader;
-            else if (L"members" == sName)				m_oMembers = oReader;
             else if (L"extLst" == sName)				m_oExtLst = oReader;
+            else if (L"members" == sName)
+            {
+                CMembers members;
+                members.fromXML(oReader);
+                m_oMembers.push_back(members) ;
+            }
         }
     }
     void CpivotTableHierarchy::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -668,13 +683,14 @@ namespace Spreadsheet
         WritingStringNullableAttrBool2(L"includeNewItemsInFilter", m_oIncludeNewItemsInFilter);
         WritingStringNullableAttrEncodeXmlString2(L"caption", m_oCaption);
 
-        if(m_oMemberProperties.IsInit() || m_oMembers.IsInit())
+        if(m_oMemberProperties.IsInit() || m_oMembers.size() > 0)
         {
              writer.WriteString(L">");
              if(m_oMemberProperties.IsInit())
                 m_oMemberProperties->toXML();
-             if(m_oMembers.IsInit())
-                 m_oMembers->toXML();
+             if(m_oMembers.size() > 0)
+                 for(auto i:m_oMembers)
+                    i.toXML();
              writer.WriteString(L"</pivotHierarchy>");
         }
         else
@@ -682,12 +698,43 @@ namespace Spreadsheet
     }
     XLS::BaseObjectPtr CpivotTableHierarchy::toBin()
     {
-       auto ptr1(new XLSB::PCDHGLGMEMBER);
-       XLS::BaseObjectPtr objectPtr(ptr1);
-       auto ptr(new XLSB::BeginPCDHGLGMember);
-       ptr1->m_BrtBeginPCDHGLGMember = XLS::BaseObjectPtr{ptr};
+        auto ptr1(new XLSB::SXTH);
+        XLS::BaseObjectPtr objectPtr(ptr1);
+        auto ptr(new XLSB::BeginSXTH);
 
+        if(m_oOutline.IsInit())
+            ptr->fOutlineMode = m_oOutline.get();
+        if(m_oMultipleItemSelectionAllowed.IsInit())
+            ptr->fEnableMultiplePageItems = m_oMultipleItemSelectionAllowed.get();
+        if(m_oSubtotalTop.IsInit())
+            ptr->fSubtotalAtTop = m_oSubtotalTop.get();
+        if(m_oShowInFieldList.IsInit())
+            ptr->fDontShowFList = !m_oShowInFieldList.get();
+        if(m_oDragToRow.IsInit())
+            ptr->fDragToRow = m_oDragToRow.get();
+        if(m_oDragToCol.IsInit())
+            ptr->fDragToColumn = m_oDragToCol.get();
+        if(m_oDragToData.IsInit())
+            ptr->fDragToData = m_oDragToData.get();
+        if(m_oDragToPage.IsInit())
+            ptr->fDragToPage = m_oDragToPage.get();
+        if(m_oIncludeNewItemsInFilter.IsInit())
+            ptr->fFilterInclusive = m_oIncludeNewItemsInFilter.get();
+        if(m_oCaption.IsInit())
+        {
+            ptr->irstCaption = m_oCaption.get();
+            ptr->fLoadCap = true;
+        }
 
+        ptr1->m_BrtBeginSXTH = XLS::BaseObjectPtr{ptr};
+
+        for(auto i : m_oMembers)
+        {
+           ptr1->m_arSXTHITEMS.push_back(i.toBin());
+        }
+
+        if(m_oMemberProperties.IsInit())
+            ptr1->m_SXTDMPS = m_oMemberProperties->toBin();
        return objectPtr;
     }
 
@@ -731,11 +778,17 @@ namespace Spreadsheet
     }
     XLS::BaseObjectPtr CMembers::toBin()
     {
-       auto ptr(new XLSB::PCDHGLGMEMBERS);
+       auto ptr(new XLSB::SXTHITEMS);
        XLS::BaseObjectPtr objectPtr(ptr);
+       auto ptr1(new XLSB::BeginSXTHItems);
+       ptr->m_BrtBeginSXTHItems = XLS::BaseObjectPtr{ptr1};
+       if(m_oCount.IsInit())
+           ptr1->csz = m_oCount.get();
+       if(m_oLevel.IsInit())
+           ptr1->iSXTL = m_oLevel.get();
        for(auto i : m_arrItems)
        {
-           ptr->m_arPCDHGLGMEMBER.push_back(i->toBin());
+           ptr->m_arSXTHITEM.push_back(i->toBin());
        }
        return objectPtr;
     }
@@ -757,12 +810,13 @@ namespace Spreadsheet
     }
     XLS::BaseObjectPtr CMember::toBin()
     {
-       auto ptr1(new XLSB::PCDHGLGMEMBER);
-       XLS::BaseObjectPtr objectPtr(ptr1);
-       auto ptr(new XLSB::BeginPCDHGLGMember);
-       ptr1->m_BrtBeginPCDHGLGMember = XLS::BaseObjectPtr{ptr};
-
-       return objectPtr;
+        auto ptr1(new XLSB::SXTHITEM);
+        XLS::BaseObjectPtr objectPtr(ptr1);
+        auto ptr(new XLSB::BeginSXTHItem);
+        ptr1->m_BrtBeginSXTHItem = XLS::BaseObjectPtr{ptr};
+        if(m_oName.IsInit())
+            ptr->irstItem = m_oName.get();
+        return objectPtr;
     }
 
     void CMemberProperties::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -803,11 +857,11 @@ namespace Spreadsheet
     }
     XLS::BaseObjectPtr CMemberProperties::toBin()
     {
-       auto ptr(new XLSB::PCDHGLGMEMBERS);
+       auto ptr(new XLSB::SXTDMPS);
        XLS::BaseObjectPtr objectPtr(ptr);
        for(auto i : m_arrItems)
        {
-           ptr->m_arPCDHGLGMEMBER.push_back(i->toBin());
+           ptr->m_arSXTDMP.push_back(i->toBin());
        }
        return objectPtr;
     }
@@ -845,10 +899,25 @@ namespace Spreadsheet
     }
     XLS::BaseObjectPtr CMemberProperty::toBin()
     {
-       auto ptr1(new XLSB::PCDHGLGMEMBER);
+       auto ptr1(new XLSB::SXTDMP);
        XLS::BaseObjectPtr objectPtr(ptr1);
-       auto ptr(new XLSB::BeginPCDHGLGMember);
-       ptr1->m_BrtBeginPCDHGLGMember = XLS::BaseObjectPtr{ptr};
+       auto ptr(new XLSB::BeginSXTDMP);
+       ptr1->m_BrtBeginSXTDMP = XLS::BaseObjectPtr{ptr};
+
+       if(m_oLevel.IsInit())
+           ptr->isxtl = m_oLevel.get();
+       if(m_oName.IsInit())
+           ptr->irstProperty = m_oName.get();
+       if(m_oNameLen.IsInit())
+           ptr->cchLevelUnq = m_oNameLen.get();
+       if(m_oPLen.IsInit())
+           ptr->cchPropName = m_oPLen.get();
+       if(m_oPPos.IsInit())
+           ptr->ichPropName = m_oPPos.get();
+       if(m_oField.IsInit())
+           ptr->isxvd = m_oField.get();
+       if(m_oShowCell.IsInit())
+           ptr->fDisplayInReport = m_oShowCell.get();
 
        return objectPtr;
     }

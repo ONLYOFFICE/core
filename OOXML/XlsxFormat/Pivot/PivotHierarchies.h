@@ -447,9 +447,9 @@ namespace Spreadsheet
         nullable_string		m_oCaption;
 
 
-        nullable<CMemberProperties>	m_oMemberProperties;
-        nullable<CMembers>	m_oMembers;
-        nullable<OOX::Drawing::COfficeArtExtensionList>					m_oExtLst;
+        nullable<CMemberProperties>                            m_oMemberProperties;
+        std::vector<CMembers>                                  m_oMembers;
+        nullable<OOX::Drawing::COfficeArtExtensionList>		   m_oExtLst;
 
     };
 

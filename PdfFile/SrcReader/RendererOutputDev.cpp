@@ -1621,7 +1621,7 @@ namespace PdfReader
 			return;
 		}
 
-		if (abs(pBBox[2] - pBBox[0] - dXStep) > 0.001 || abs(pBBox[3] - pBBox[1] - dYStep) > 0.001)
+		if (fabs(pBBox[2] - pBBox[0] - dXStep) > 0.001 || fabs(pBBox[3] - pBBox[1] - dYStep) > 0.001)
 			return;
 
 		double dWidth, dHeight, dDpiX, dDpiY;

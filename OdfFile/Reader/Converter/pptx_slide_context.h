@@ -87,6 +87,8 @@ public:
 	void set_is_placeHolder(bool is_placeholder);
 	void set_placeHolder_type	(std::wstring typeHolder);
 	void set_placeHolder_idx	(int idx);
+	void processing_notes		(bool processing_notes);
+	bool processing_notes();
 
 	std::wstring add_hyperlink(std::wstring const & ref);
 

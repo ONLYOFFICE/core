@@ -64,6 +64,10 @@ namespace NSDocxRenderer
 		}
 		else if (lType == c_nClipType)
 		{
+			// closing clip path if non-closed
+			if (m_oCurrVectorGraphics.GetData().back().type != CVectorGraphics::ePathCommandType::pctClose)
+				m_oCurrVectorGraphics.Add({CVectorGraphics::ePathCommandType::pctClose, {}});
+
 			if (!m_oClipVectorGraphics.IsEmpty())
 			{
 				m_oClipVectorGraphics = CVectorGraphics::CalcBoolean(m_oClipVectorGraphics, m_oCurrVectorGraphics, m_lClipMode);

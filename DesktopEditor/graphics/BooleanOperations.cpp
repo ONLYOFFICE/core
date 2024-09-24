@@ -745,13 +745,16 @@ void CBooleanOperations::TraceBoolean()
 		SetWinding();
 	else
 	{
-		int length = static_cast<int>(Locations.size() - 1);
-		for (int i = 0; i <= length; i++)
+		int length = static_cast<int>(Locations.size());
+		for (int i = 0; i < length; i++)
 		{
 			int before = static_cast<int>(Locations.size());
 			InsertLocation(Locations[i]->Inters, Locations[i]->Inters->Overlap);
 			if (before == Locations.size())
+			{
 				Locations.erase(Locations.begin() + i);
+				length--;
+			}
 		}
 
 		DivideLocations();
@@ -797,11 +800,21 @@ void CBooleanOperations::TraceBoolean()
 
 void CBooleanOperations::TraceOneInters()
 {
+	Segment s1, s2;
+
+	for (const auto& s : Segments1)
+		if (!s.Inters)
+			s1 = s;
+
+	for (const auto& s : Segments2)
+		if (!s.Inters)
+			s2 = s;
+
 	if (Op == Intersection)
 	{
-		if (Segments1[0].Winding == 1)
+		if (s1.Winding == 1)
 			Result = std::move(Path1);
-		else if (Segments2[0].Winding == 1)
+		else if (s2.Winding == 1)
 			Result = std::move(Path2);
 		else
 		{
@@ -812,21 +825,18 @@ void CBooleanOperations::TraceOneInters()
 	}
 	else
 	{
-		if (Segments1[0].Winding == 1 && Op == Union)
+		if (Op == Union && s1.Winding == 1)
 			Result = std::move(Path2);
-		else if (Segments2[0].Winding == 1 && Op == Union)
+		else if (Op == Union && s2.Winding == 1)
 			Result = std::move(Path1);
-		else if (Segments1[0].Winding == 0 &&
-				 Segments2[0].Winding == 0 &&
-				 Op == Subtraction)
+		else if (s1.Winding == 0 && s2.Winding == 0 && Op == Subtraction)
 			Result = std::move(Path1);
 		else
 		{
 			bool start = true;
-			for (const auto& s : (Op == Union || Segments2[0].Winding == 1) ? Segments1
-																			: Segments2)
+			for (const auto& s : (Op == Union || s2.Winding == 1) ? Segments1 : Segments2)
 			{
-				if (!s.P.Equals(Locations[(Op == Union || Segments2[0].Winding == 1) ? 0 : 1]->S.P))
+				if (!s.P.Equals(Locations[(Op == Union || s2.Winding == 1) ? 0 : 1]->S.P))
 				{
 					if (start)
 					{
@@ -851,7 +861,7 @@ void CBooleanOperations::TraceOneInters()
 						Result.LineTo(s.P.X, s.P.Y);
 
 					Segment seg = GetNextSegment(Locations[1]->S);
-					while (seg != Locations[(Op == Union || Segments2[0].Winding == 1) ? 1 : 0]->S)
+					while (!seg.IsEmpty() && seg != Locations[(Op == Union || s2.Winding == 1) ? 1 : 0]->S)
 					{
 						if (seg.IsCurve)
 							Result.CurveTo(seg.HI.X + seg.P.X, seg.HI.Y + seg.P.Y,
@@ -871,7 +881,19 @@ void CBooleanOperations::TraceOneInters()
 				}
 			}
 
-			if (Close1 && Close2) Result.CloseFigure();
+			if (Close1 && Close2)
+			{
+				Segment firstS = (Op == Union || s2.Winding == 1) ? Segments1[0] : Segments2[0];
+
+				if (firstS.IsCurve)
+					Result.CurveTo(firstS.HI.X + firstS.P.X, firstS.HI.Y + firstS.P.Y,
+								   firstS.HO.X + firstS.P.X, firstS.HO.Y + firstS.P.Y,
+								   firstS.P.X, firstS.P.Y);
+				else
+					Result.LineTo(firstS.P.X, firstS.P.Y);
+
+				Result.CloseFigure();
+			}
 		}
 	}
 }
@@ -899,36 +921,62 @@ void CBooleanOperations::TraceAllOverlap()
 	}
 	else
 	{
-		int count = 0;
+		int count1 = 0, count2 = 0;
 		for (const auto& s : Segments1)
 		{
 			if (!s.Inters)
 			{
 				int touchCount = 0;
 				for (const auto& c : OriginCurves2)
-					count += CheckInters(MIN_POINT, s, c, touchCount);
+					count1 += CheckInters(MIN_POINT, s, c, touchCount);
+				break;
+			}
+		}
+
+		for (const auto& s : Segments2)
+		{
+			if (!s.Inters)
+			{
+				int touchCount = 0;
+				for (const auto& c : OriginCurves1)
+					count2 += CheckInters(MIN_POINT, s, c, touchCount);
 				break;
 			}
 		}
 
 		if (Op == Intersection)
 		{
-			if (count % 2 == 0)
+			if (count1 % 2 == 0 && count2 % 2 == 0)
+			{
+				Result.StartFigure();
+				for (size_t i = 0; i < Locations.size() / 2; i++)
+				{
+					Result.MoveTo(Locations[i]->S.P.X, Locations[i]->S.P.Y);
+					i++;
+					Result.LineTo(Locations[i]->S.P.X, Locations[i]->S.P.Y);
+				}
+				Result.CloseFigure();
+			}
+			else if (count1 % 2 == 0)
 				Result = std::move(Path2);
 			else
 				Result = std::move(Path1);
 		}
 		else if (Op == Union)
 		{
-			if (count % 2 == 0)
+			if (count1 % 2 == 0 && count2 % 2 == 0)
+				TracePaths();
+			else if (count1 % 2 == 0)
 				Result = std::move(Path1);
 			else
 				Result = std::move(Path2);
 		}
+		else if (count1 % 2 == 0 && count2 % 2 == 0)
+			Result = std::move(Path1);
 		else
 		{
 			Result.StartFigure();
-			for (const auto& seg : count % 2 == 0 ? Segments1 : Segments2)
+			for (const auto& seg : count1 % 2 == 0 ? Segments1 : Segments2)
 			{
 				if (!seg.Inters && !seg.Visited)
 				{
@@ -936,7 +984,7 @@ void CBooleanOperations::TraceAllOverlap()
 					SetVisited(seg);
 
 					Segment s = GetNextSegment(seg);
-					while (s != seg)
+					while (!s.IsEmpty() && s != seg)
 					{
 						if (s.IsCurve)
 							Result.CurveTo(s.HI.X + s.P.X, s.HI.Y + s.P.Y,
@@ -994,11 +1042,13 @@ void CBooleanOperations::TracePaths()
 
 			Segment prev = s;
 			s = GetNextSegment(s);
+			if (s.IsEmpty()) break;
 			valid = s.IsValid(Op);
 
 			if (s.Inters && prev.Inters && (s.Inters->S.Index - prev.Inters->S.Index) != 0)
 			{
 				Segment tmp = GetNextSegment(prev.Inters->S);
+				if (tmp.IsEmpty()) break;
 				if (tmp.IsValid(Op))
 					s = tmp;
 			}
@@ -1038,7 +1088,7 @@ void CBooleanOperations::PreparePath(const CGraphicsPath& path, int id,
 			{
 				if (!segments.empty() && getDistance(segments[0].P, isCurve ? points[2] : points[0]) <= POINT_EPSILON)
 				{
-					if (isCurve && segments[0].HI.Equals(PointD()) && segments[0].HO.Equals(PointD()))
+					if (isCurve && segments[0].HI.IsZero() && segments[0].HO.IsZero())
 						segments[0].SetHandles(points[0], points[1]);
 				}
 				else
@@ -1060,7 +1110,7 @@ void CBooleanOperations::PreparePath(const CGraphicsPath& path, int id,
 			{
 				if (!segments.empty() && getDistance(segments[0].P, isCurve ? points[2] : points[0]) <= POINT_EPSILON)
 				{
-					if (isCurve && segments[0].HI.Equals(PointD()) && segments[0].HO.Equals(PointD()))
+					if (isCurve && segments[0].HI.IsZero() && segments[0].HO.IsZero())
 						segments[0].SetHandles(points[0], points[1]);
 				}
 				else
@@ -1636,10 +1686,20 @@ int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment,
 
 void CBooleanOperations::SetWinding()
 {
+	Segment s1, s2;
+
+	for (const auto& s : Segments1)
+		if (!s.Inters)
+			s1 = s;
+
+	for (const auto& s : Segments2)
+		if (!s.Inters)
+			s2 = s;
+
 	int count = 0,
 		touchCount = 0;
 	for (const auto& c : OriginCurves2)
-		count += CheckInters(MIN_POINT, Segments1[0], c, touchCount);
+		count += CheckInters(MIN_POINT, s1, c, touchCount);
 
 	for (auto& s : Segments1)
 		s.Winding = count % 2;
@@ -1647,7 +1707,7 @@ void CBooleanOperations::SetWinding()
 	count = 0;
 	touchCount = 0;
 	for (const auto& c : OriginCurves1)
-		count += CheckInters(MIN_POINT, Segments2[0], c, touchCount);
+		count += CheckInters(MIN_POINT, s2, c, touchCount);
 
 	for (auto& s : Segments2)
 		s.Winding = count % 2;
@@ -1739,30 +1799,30 @@ void CBooleanOperations::InsertLocation(std::shared_ptr<Location> loc, bool over
 	{
 		int mid = (l + r) >> 1;
 
-		if (getDistance(loc->C.GetPoint(loc->Time), Locations[mid]->C.GetPoint(Locations[mid]->Time)) <= GEOMETRIC_EPSILON
+		if (getDistance(loc->C.GetPoint(loc->Time), Locations[mid]->C.GetPoint(Locations[mid]->Time)) <= LOCATION_EPSILON
 			&& loc->C.Segment1.Id == Locations[mid]->C.Segment1.Id)
 			return;
 
 		if (overlap)
 		{
-			if (getDistance(loc->C.GetPoint(loc->Time), loc->Inters->C.GetPoint(loc->Inters->Time)) > GEOMETRIC_EPSILON)
+			if (getDistance(loc->C.GetPoint(loc->Time), loc->Inters->C.GetPoint(loc->Inters->Time)) > LOCATION_EPSILON)
 				return;
 
 			for (int i = mid - 1; i >= -1; i--)
 			{
 				size_t idx = ((i % length) + length) % length;
-				if (getDistance(loc->C.GetPoint(loc->Time), Locations[idx]->C.GetPoint(Locations[idx]->Time)) > GEOMETRIC_EPSILON)
+				if (getDistance(loc->C.GetPoint(loc->Time), Locations[idx]->C.GetPoint(Locations[idx]->Time)) > LOCATION_EPSILON)
 					break;
-				if (getDistance(loc->C.GetPoint(loc->Time), Locations[idx]->C.GetPoint(Locations[idx]->Time)) <= GEOMETRIC_EPSILON &&
+				if (getDistance(loc->C.GetPoint(loc->Time), Locations[idx]->C.GetPoint(Locations[idx]->Time)) <= LOCATION_EPSILON &&
 					loc->C.Segment1.Id == Locations[idx]->C.Segment1.Id)
 					return;
 			}
 			for (int i = mid + 1; i <= length; i++)
 			{
 				size_t idx = ((i % length) + length) % length;
-				if (getDistance(loc->C.GetPoint(loc->Time), Locations[idx]->C.GetPoint(Locations[idx]->Time)) > GEOMETRIC_EPSILON)
+				if (getDistance(loc->C.GetPoint(loc->Time), Locations[idx]->C.GetPoint(Locations[idx]->Time)) > LOCATION_EPSILON)
 					break;
-				if (getDistance(loc->C.GetPoint(loc->Time), Locations[idx]->C.GetPoint(Locations[idx]->Time)) <= GEOMETRIC_EPSILON &&
+				if (getDistance(loc->C.GetPoint(loc->Time), Locations[idx]->C.GetPoint(Locations[idx]->Time)) <= LOCATION_EPSILON &&
 					loc->C.Segment1.Id == Locations[idx]->C.Segment1.Id)
 					return;
 			}

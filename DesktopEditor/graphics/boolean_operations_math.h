@@ -10,6 +10,7 @@
 constexpr double EPSILON = 1e-12;
 constexpr double POINT_EPSILON = 1e-2;
 constexpr double GEOMETRIC_EPSILON = 1e-7;
+constexpr double LOCATION_EPSILON = 1e-4;
 constexpr double TIME_EPSILON = 1e-8;
 constexpr double MACHINE_EPSILON = 1.12e-16;
 constexpr double TRIGANOMETRIC_EPSILON = 1e-8;

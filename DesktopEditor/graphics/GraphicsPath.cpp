@@ -904,7 +904,8 @@ namespace Aggplus
 					if ((abs(firstPoint[0].X - x) <= 1e-2 && abs(firstPoint[0].Y - y) <= 1e-2) ||
 						subPath.GetPointCount() == 1)
 					{
-						subPath.LineTo(firstPoint[0].X, firstPoint[0].Y);
+						if (!firstPoint[0].Equals(PointD(x, y)) || subPath.GetPointCount() == 1)
+							subPath.LineTo(firstPoint[0].X, firstPoint[0].Y);
 						subPath.CloseFigure();
 					}
 
@@ -961,7 +962,9 @@ namespace Aggplus
 			if ((abs(firstPoint[0].X - x) <= 1e-2 && abs(firstPoint[0].Y - y) <= 1e-2) ||
 				subPath.GetPointCount() == 1)
 			{
-				subPath.LineTo(firstPoint[0].X, firstPoint[0].Y);
+				if (!firstPoint[0].Equals(PointD(x, y)) ||
+					subPath.GetPointCount() == 1)
+					subPath.LineTo(firstPoint[0].X, firstPoint[0].Y);
 				subPath.CloseFigure();
 			}
 

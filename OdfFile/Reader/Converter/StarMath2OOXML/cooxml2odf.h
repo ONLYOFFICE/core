@@ -6,21 +6,39 @@
 #include "../../../../OOXML/Base/Unit.h"
 #include "../../../../OOXML/Common/SimpleTypes_OMath.h"
 #include "typeselements.h"
+#include "fontType.h"
 #include <vector>
 #include <utility>
 #include <cstring>
+#include <sstream>
 
 namespace StarMath
 {
 	struct StValuePr
 	{
-		StValuePr():m_wsTypeName(L""),m_wsBegBracket(L""),m_wsEndBracket(L""),m_wsChr(L""),m_wsColor(L""),m_bSupHide(false),m_bSubHide(false),m_enPos(SimpleTypes::ETopBot::tbBot),m_enVert(SimpleTypes::ETopBot::tbBot)
-		{}
+		StValuePr():m_wsTypeName(L""),m_wsBegBracket(L""),m_wsEndBracket(L""),m_wsChr(L""),m_wsColor(L""),m_bSupHide(false),m_bSubHide(false),m_enStyle(SimpleTypes::EStyle::stylePlain),m_iSize(0),m_enPos(SimpleTypes::ETopBot::tbBot),m_enVert(SimpleTypes::ETopBot::tbBot),m_enFont(StarMath::TypeFont::empty),m_iCount(0)
+		{
+			AddRef();
+		}
 		std::wstring m_wsTypeName,m_wsChr;
 		std::wstring m_wsBegBracket,m_wsEndBracket;
 		std::wstring m_wsColor;
 		bool m_bSupHide,m_bSubHide;
+		SimpleTypes::EStyle m_enStyle;
+		int m_iSize;
 		SimpleTypes::ETopBot m_enPos,m_enVert;
+		StarMath::TypeFont m_enFont;
+		int m_iCount;
+		void AddRef()
+		{
+			m_iCount++;
+		}
+		void Release()
+		{
+			m_iCount--;
+			if(m_iCount == 0)
+				delete this;
+		}
 	};
 	class COneElement;
 	class COOXml2Odf
@@ -31,10 +49,10 @@ namespace StarMath
 		void StartConversion(OOX::Logic::COMathPara* pMathPara);
 		void NodeDefinition(OOX::WritingElement* pNode, const bool &bMatrix = false);
 		void ConversionMath(OOX::Logic::COMath* pMath);
-		std::vector<COneElement *> ConversionMT(OOX::Logic::CMText* pMt);
+		std::vector<COneElement *> ConversionMT(OOX::Logic::CMText* pMt, const StValuePr* pValue);
 		void ConversionMF(OOX::Logic::CFraction* pMf);
-		bool ConversionCtrlPr(OOX::Logic::CCtrlPr* pCtrlPr);
-		bool ConversionCMPr(OOX::Logic::CMPr* pMPr);
+		unsigned int ConversionCtrlPr(OOX::Logic::CCtrlPr* pCtrlPr);
+		unsigned int ConversionCMPr(OOX::Logic::CMPr* pMPr);
 		StValuePr ConversionFpr(OOX::Logic::CFPr* pFpr);
 		std::wstring ConversionType(OOX::Logic::CType* pType);
 		void ConversionMd(OOX::Logic::CDelimiter* pDel);
@@ -57,32 +75,35 @@ namespace StarMath
 		void ConversionMatrix(OOX::Logic::CMatrix *pMatrix);
 		void ConversionMr(OOX::Logic::CMr* pMr);
 		void ConversionRad(OOX::Logic::CRad* pRad);
-		bool ConversionRadPr(OOX::Logic::CRadPr* pRadPr,bool& bDeg);
+		unsigned int ConversionRadPr(OOX::Logic::CRadPr* pRadPr,bool& bDeg);
 		void ConversionDeg(OOX::Logic::CDeg* pDeg);
 		void ConversionGroupChr(OOX::Logic::CGroupChr* pGroup);
 		StValuePr ConversionGroupChrPr(OOX::Logic::CGroupChrPr* pGroupPr);
 		void ConversionBar(OOX::Logic::CBar* pBar);
-		StValuePr ConversionBarPr(OOX::Logic::CBarPr* pBarPr,bool& bStyle);
+		StValuePr ConversionBarPr(OOX::Logic::CBarPr* pBarPr,unsigned int& iStyle);
 		void ConversionSPre(OOX::Logic::CSPre* pSPre);
-		void EmptyBlock();
+		static void EmptyBlock(XmlUtils::CXmlWriter* pXmlWrite, std::wstring& wsAnnotation);
 		void ConversionLimLow(OOX::Logic::CLimLow* pLimLow);
 		void ConversionLimUpp(OOX::Logic::CLimUpp* pLimUpp);
 		void ConversionLim(OOX::Logic::CLim* pLim);
 		void ConversionEqArr(OOX::Logic::CEqArr* pEqArr);
 		void ConversionSubSup(OOX::Logic::CSSubSup* pSubSup);
 		StValuePr *ConversionRunProperties(OOX::Logic::CRunProperty* pRPr);
-		StValuePr ConversionMdPr(OOX::Logic::CDelimiterPr* pDelPr, bool &bStyle);
-		StValuePr ConversionNaryPr(OOX::Logic::CNaryPr* pNaryPr,bool& bStyle);
+		void ConversionMRunProperties(OOX::Logic::CMRPr* pMRpr, StValuePr* pValue);
+		void ConversionARpr(PPTX::Logic::RunProperties* pARpr,StValuePr* pValue);
+		StValuePr ConversionMdPr(OOX::Logic::CDelimiterPr* pDelPr, unsigned int &iStyle);
+		StValuePr ConversionNaryPr(OOX::Logic::CNaryPr* pNaryPr, unsigned int &iStyle);
 		std::wstring ConversionBegBracket(OOX::Logic::CBegChr* pBegChr);
 		std::wstring ConversionEndBracket(OOX::Logic::CEndChr* pEndChr);
 		std::wstring TranslationDiacritSign(const std::wstring &wsSymbol);
 		static std::wstring ParsingText(std::wstring::iterator &itStart, std::wstring::iterator &itEnd);
 		std::wstring ConversionChr(OOX::Logic::CChr* pChr);
 		std::wstring ToStringChr(const std::wstring& wsChr);
+		std::wstring GroupChrForAnnotation(const std::wstring& wsChr);
 		static void RecordingMoNode(const std::wstring& wsSymbol,XmlUtils::CXmlWriter* pXmlWrite);
 		static bool IsDigit(const std::wstring& wsDigit);
 		static bool IsAlpha(const std::wstring& wsAlpha);
-		static bool IsSpecialSymbol(const std::wstring& wsSpecial);
+		static void StyleClosing(const unsigned int &iStyle, XmlUtils::CXmlWriter* pXmlWrite);
 		bool СomparingAttributes(StValuePr* pRight,StValuePr* pLeft);
 		void EndOdf();
 		std::wstring GetOdf();
@@ -97,20 +118,20 @@ namespace StarMath
 		COneElement();
 		COneElement(std::wstring& wsOneElement);
 		virtual ~COneElement();
-		virtual void Parse(std::wstring::iterator& itStart,std::wstring::iterator& itEnd) = 0;
+		virtual void Parse(std::wstring::iterator& itStart,std::wstring::iterator& itEnd,COneElement*& pElement) = 0;
 		virtual void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation) = 0;
 		static COneElement* CreateElement(std::wstring& wsOneElement);
 		void SetType(const TypeElement& enType);
 		TypeElement GetType();
 		void SetAttribute(StValuePr* stAttribute);
 		StValuePr* GetAttribute();
-		static void ConversionAttribute(StValuePr* pAttribute,bool& bStyle,XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation);
+		static void ConversionAttribute(StValuePr* pAttribute,unsigned int & iStyle ,XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation);
 		bool CheckStyle();
-		bool& GetStyle();
+		unsigned int GetStyle();
 	private:
 		TypeElement m_enType;
 		StValuePr* m_stAttribute;
-		bool m_bStyle;
+		unsigned int m_iStyle;
 	};
 	class CNumberOrLetter: public COneElement
 	{
@@ -122,7 +143,7 @@ namespace StarMath
 		CNumberOrLetter(const std::wstring& wsElement,const TypeElement& enType);
 		virtual ~CNumberOrLetter();
 		void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation) override;
-		void Parse(std::wstring::iterator &itStart, std::wstring::iterator &itEnd) override;
+		void Parse(std::wstring::iterator &itStart, std::wstring::iterator &itEnd,COneElement*& pElement) override;
 		const std::wstring& GetString();
 		void AddingStrings(const std::wstring& wsString);
 	private:
@@ -132,24 +153,60 @@ namespace StarMath
 	class CBinOperator:public COneElement
 	{
 	public:
-		CBinOperator(const std::wstring& wsSymbol):m_pLeftArg(nullptr),m_pRightArg(nullptr),m_wsSymbolBinOp(wsSymbol),m_enTypeBinOp(TypeElement::undefine)
+		CBinOperator(const std::wstring& wsSymbol,const std::wstring& wsAnnotation):m_pLeftArg(nullptr),m_pRightArg(nullptr),m_wsSymbolBinOp(wsSymbol),m_wsAnnotation(wsAnnotation),m_enTypeBinOp(TypeElement::undefine)
 		{
 			SetType(TypeElement::BinOperator);
+			if(wsSymbol == L"+")
+				m_enTypeBinOp = TypeElement::plus;
+			else if(wsSymbol == L"-")
+				m_enTypeBinOp = TypeElement::minus;
+			else if(wsSymbol == L"\u00B1")
+				m_enTypeBinOp = TypeElement::plus_minus;
+			else if(wsSymbol == L"\u2213")
+				m_enTypeBinOp = TypeElement::minus_plus;
+			else if(L"\u00AC" == wsSymbol)
+				m_enTypeBinOp = TypeElement::neg;
 		}
 		virtual ~CBinOperator();
-		void Parse(std::wstring::iterator &itStart, std::wstring::iterator &itEnd) override;
+		void Parse(std::wstring::iterator &itStart, std::wstring::iterator &itEnd, COneElement *&pElement) override;
 		void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation) override;
 		bool CheckLeftArg();
 		void SetLeftArg(COneElement* pElement);
 		bool CheckRightArg();
 		void SetRightArg(COneElement* pElement);
+		TypeElement GetTypeBinOp();
 		static bool SetLeftArg(COneElement* pBinOp,COneElement* pLeftArg);
 		static bool SetRightArg(COneElement* pBinOp,COneElement* pRightArg);
+		static bool CheckRightArg(COneElement* pElement);
+		static std::wstring BinOperatorSymbolForAnnotation(const std::wstring& wsSymbol);
+		static bool UnaryCheck(const StValuePr* pValue,const TypeElement& enType);
 	private:
 		COneElement* m_pLeftArg;
 		COneElement* m_pRightArg;
 		std::wstring m_wsSymbolBinOp;
+		std::wstring m_wsAnnotation;
 		TypeElement m_enTypeBinOp;
+	};
+	class CRelationsAndOperationsOnSets: public COneElement
+	{
+	public:
+		CRelationsAndOperationsOnSets(const std::wstring& wsSymbol,const std::wstring& wsAnnotation):m_pLeftArg(nullptr),m_pRightArg(nullptr),m_wsSymbol(wsSymbol),m_wsAnnotationSymbol(wsAnnotation)
+		{
+			SetType(TypeElement::Connection);
+		}
+		virtual ~CRelationsAndOperationsOnSets();
+		void Parse(std::wstring::iterator &itStart, std::wstring::iterator &itEnd,COneElement*& pElement) override;
+		void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation) override;
+		void SetLeftArg(COneElement* pElement);
+		void SetRightArg(COneElement* pElement);
+		bool CheckRightArg();
+		bool CheckLeftArg();
+		static std::wstring TransformationForAnnotation(std::wstring& wsSymbol);
+	private:
+		COneElement* m_pLeftArg;
+		COneElement* m_pRightArg;
+		std::wstring m_wsSymbol;
+		std::wstring m_wsAnnotationSymbol;
 	};
 	class CSpace:public COneElement
 	{
@@ -159,8 +216,22 @@ namespace StarMath
 			SetType(TypeElement::Empty);
 		}
 		virtual ~CSpace();
-		void Parse(std::wstring::iterator&itStart,std::wstring::iterator&itEnd) override;
+		void Parse(std::wstring::iterator&itStart,std::wstring::iterator&itEnd,COneElement*& pElement) override;
 		void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation) override;
+	};
+	class CSpecialChar: public COneElement
+	{
+	public:
+		CSpecialChar(const std::wstring& wsSymbol,const std::wstring& wsAnnotation):m_wsSymbol(wsSymbol),m_wsAnnotation(wsAnnotation)
+		{
+			SetType(TypeElement::SpecialSymbol);
+		}
+		virtual ~CSpecialChar();
+		void Parse(std::wstring::iterator&itStart,std::wstring::iterator&itEnd,COneElement*& pElement) override;
+		void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation) override;
+		static std::wstring DefinitionSpecialChar(const std::wstring& wsSymbol);
+	private:
+		std::wstring m_wsSymbol,m_wsAnnotation;
 	};
 }
 #endif // COOXML2ODF_H

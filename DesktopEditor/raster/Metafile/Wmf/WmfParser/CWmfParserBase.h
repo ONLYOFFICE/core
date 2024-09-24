@@ -11,6 +11,113 @@
 #undef DrawText
 #endif
 
+#define PRINT_WMF_RECORD(type) do {} while(false)
+#define PRINT_WMF_LOG(text)    do {} while(false)
+
+#ifdef _DEBUG
+#define LOG_WMF_RECORDS 1
+
+#ifdef LOG_WMF_RECORDS
+	#if 1 == LOG_WMF_RECORDS
+		#include <iostream>
+
+		#define PRINTING_WMF_RECORDS      1
+
+		#define PRINT_WMF_LOG(text) \
+			std::wcout << L"[LOG] " << text << std::endl
+
+		#ifdef PRINTING_WMF_RECORDS
+		#if 1 == PRINTING_WMF_RECORDS
+			#define AddRecord(name) {name, L#name}
+
+			static const std::map<UINT, std::wstring> mWmfRecords =
+			{
+				AddRecord(META_EOF),
+				AddRecord(META_SETBKCOLOR),
+				AddRecord(META_SETBKMODE),
+				AddRecord(META_SETMAPMODE),
+				AddRecord(META_SETROP2),
+				AddRecord(META_SETRELABS),
+				AddRecord(META_SETPOLYFILLMODE),
+				AddRecord(META_SETSTRETCHBLTMODE),
+				AddRecord(META_SETTEXTCHAREXTRA),
+				AddRecord(META_SETTEXTCOLOR),
+				AddRecord(META_SETTEXTJUSTIFICATION),
+				AddRecord(META_SETWINDOWORG),
+				AddRecord(META_SETWINDOWEXT),
+				AddRecord(META_SETVIEWPORTORG),
+				AddRecord(META_SETVIEWPORTEXT),
+				AddRecord(META_OFFSETWINDOWORG),
+				AddRecord(META_SCALEWINDOWEXT),
+				AddRecord(META_OFFSETVIEWPORTORG),
+				AddRecord(META_SCALEVIEWPORTEXT),
+				AddRecord(META_LINETO),
+				AddRecord(META_MOVETO),
+				AddRecord(META_EXCLUDECLIPRECT),
+				AddRecord(META_INTERSECTCLIPRECT),
+				AddRecord(META_ARC),
+				AddRecord(META_ELLIPSE),
+				AddRecord(META_FLOODFILL),
+				AddRecord(META_PIE),
+				AddRecord(META_RECTANGLE),
+				AddRecord(META_ROUNDRECT),
+				AddRecord(META_PATBLT),
+				AddRecord(META_SAVEDC),
+				AddRecord(META_SETPIXEL),
+				AddRecord(META_OFFSETCLIPRGN),
+				AddRecord(META_TEXTOUT),
+				AddRecord(META_BITBLT),
+				AddRecord(META_STRETCHBLT),
+				AddRecord(META_POLYGON),
+				AddRecord(META_POLYLINE),
+				AddRecord(META_ESCAPE),
+				AddRecord(META_RESTOREDC),
+				AddRecord(META_FILLREGION),
+				AddRecord(META_FRAMEREGION),
+				AddRecord(META_INVERTREGION),
+				AddRecord(META_PAINTREGION),
+				AddRecord(META_SELECTCLIPREGION),
+				AddRecord(META_SELECTOBJECT),
+				AddRecord(META_SETTEXTALIGN),
+				AddRecord(META_CHORD),
+				AddRecord(META_SETMAPPERFLAGS),
+				AddRecord(META_EXTTEXTOUT),
+				AddRecord(META_SETDIBTODEV),
+				AddRecord(META_SELECTPALETTE),
+				AddRecord(META_REALIZEPALETTE),
+				AddRecord(META_ANIMATEPALETTE),
+				AddRecord(META_SETPALENTRIES),
+				AddRecord(META_POLYPOLYGON),
+				AddRecord(META_RESIZEPALETTE),
+				AddRecord(META_DIBBITBLT),
+				AddRecord(META_DIBSTRETCHBLT),
+				AddRecord(META_DIBCREATEPATTERNBRUSH),
+				AddRecord(META_STRETCHDIB),
+				AddRecord(META_EXTFLOODFILL),
+				AddRecord(META_SETLAYOUT),
+				AddRecord(META_DELETEOBJECT),
+				AddRecord(META_CREATEPALETTE),
+				AddRecord(META_CREATEPATTERNBRUSH),
+				AddRecord(META_CREATEPENINDIRECT),
+				AddRecord(META_CREATEFONTINDIRECT),
+				AddRecord(META_CREATEBRUSHINDIRECT),
+				AddRecord(META_CREATEREGION)
+			};
+
+			#define PRINT_WMF_RECORD(type) \
+			{\
+				std::map<UINT, std::wstring>::const_iterator itFound = mWmfRecords.find(type); \
+				if (mWmfRecords.cend() != itFound) \
+					std::wcout << itFound->second << std::endl; \
+				else \
+					std::wcout << L"Unknown record: " << type << std::endl; \
+			}
+		#endif
+		#endif
+	#endif
+#endif
+#endif
+
 namespace MetaFile
 {
 	enum WmfParserType

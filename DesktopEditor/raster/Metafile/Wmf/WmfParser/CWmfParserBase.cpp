@@ -1684,7 +1684,10 @@ namespace MetaFile
 	void CWmfParserBase::HANDLE_META_ESCAPE(unsigned short ushEscapeFunction, unsigned short ushByteCount)
 	{
 		if (NULL != m_pInterpretator)
+		{
 			m_pInterpretator->HANDLE_META_ESCAPE(ushEscapeFunction, ushByteCount);
+			PRINT_WMF_LOG(L"Escape function type: " << ushEscapeFunction << L" size: " << ushByteCount);
+		}
 
 		if (WMF_META_ESCAPE_ENHANCED_METAFILE == ushEscapeFunction)
 		{

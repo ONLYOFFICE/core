@@ -412,7 +412,7 @@ namespace Spreadsheet
 
     };
 
-    class CpivotTableHierarchy : public WritingElement
+    class CpivotTableHierarchy : public WritingElementWithChilds<CMembers>
     {
     public:
         WritingElement_AdditionMethods(CpivotTableHierarchy)
@@ -448,7 +448,6 @@ namespace Spreadsheet
 
 
         nullable<CMemberProperties>                            m_oMemberProperties;
-        std::vector<CMembers>                                  m_oMembers;
         nullable<OOX::Drawing::COfficeArtExtensionList>		   m_oExtLst;
 
     };

@@ -646,9 +646,9 @@ namespace Spreadsheet
             else if (L"extLst" == sName)				m_oExtLst = oReader;
             else if (L"members" == sName)
             {
-                CMembers members;
-                members.fromXML(oReader);
-                m_oMembers.push_back(members) ;
+                CMembers* members = new CMembers();
+                *members = oReader;
+                m_arrItems.push_back(members) ;
             }
         }
     }
@@ -683,14 +683,14 @@ namespace Spreadsheet
         WritingStringNullableAttrBool2(L"includeNewItemsInFilter", m_oIncludeNewItemsInFilter);
         WritingStringNullableAttrEncodeXmlString2(L"caption", m_oCaption);
 
-        if(m_oMemberProperties.IsInit() || m_oMembers.size() > 0)
+        if(m_oMemberProperties.IsInit() || m_arrItems.size() > 0)
         {
              writer.WriteString(L">");
              if(m_oMemberProperties.IsInit())
                 m_oMemberProperties->toXML();
-             if(m_oMembers.size() > 0)
-                 for(auto i:m_oMembers)
-                    i.toXML();
+             if(m_arrItems.size() > 0)
+                 for(auto i:m_arrItems)
+                    i->toXML();
              writer.WriteString(L"</pivotHierarchy>");
         }
         else
@@ -728,9 +728,9 @@ namespace Spreadsheet
 
         ptr1->m_BrtBeginSXTH = XLS::BaseObjectPtr{ptr};
 
-        for(auto i : m_oMembers)
+        for(auto i : m_arrItems)
         {
-           ptr1->m_arSXTHITEMS.push_back(i.toBin());
+           ptr1->m_arSXTHITEMS.push_back(i->toBin());
         }
 
         if(m_oMemberProperties.IsInit())

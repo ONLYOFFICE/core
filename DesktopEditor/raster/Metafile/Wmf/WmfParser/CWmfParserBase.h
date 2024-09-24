@@ -28,9 +28,9 @@
 
 		#ifdef PRINTING_WMF_RECORDS
 		#if 1 == PRINTING_WMF_RECORDS
-			#define AddRecord(name) {name, L#name}
+			#define AddRecord(name) {name, #name}
 
-			static const std::map<UINT, std::wstring> mWmfRecords =
+			static const std::map<UINT, std::string> mWmfRecords =
 			{
 				AddRecord(META_EOF),
 				AddRecord(META_SETBKCOLOR),
@@ -106,11 +106,11 @@
 
 			#define PRINT_WMF_RECORD(type) \
 			{\
-				std::map<UINT, std::wstring>::const_iterator itFound = mWmfRecords.find(type); \
+				std::map<UINT, std::string>::const_iterator itFound = mWmfRecords.find(type); \
 				if (mWmfRecords.cend() != itFound) \
-					std::wcout << itFound->second << std::endl; \
+					std::cout << itFound->second << std::endl; \
 				else \
-					std::wcout << L"Unknown record: " << type << std::endl; \
+					std::cout << "Unknown record: " << type << std::endl; \
 			}
 		#endif
 		#endif

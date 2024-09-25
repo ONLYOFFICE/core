@@ -596,7 +596,22 @@ namespace StarMath
 	}
 	bool COOXml2Odf::СomparingAttributes(StValuePr *pRight, StValuePr *pLeft)
 	{
-		return !(pRight == nullptr || pLeft == nullptr || pRight->m_wsColor != pLeft->m_wsColor);
+		if(pRight == nullptr && pLeft == nullptr)
+			return true;
+		if(pRight != nullptr && pLeft != nullptr)
+		{
+			 if(pRight->m_wsColor != pLeft->m_wsColor)
+				 return false;
+			 else if(pRight->m_iSize != pLeft->m_iSize)
+				 return false;
+			 else if(pRight->m_enStyle != pLeft->m_enStyle)
+				 return false;
+			 else if(pRight->m_enFont != pLeft->m_enFont)
+				 return false;
+			 else return true;
+		}
+		else 
+			return false;
 	}
 	void COOXml2Odf::ConversionAcc(OOX::Logic::CAcc *pAcc)
 	{
@@ -671,12 +686,15 @@ namespace StarMath
 		bool bRpr(false);
 		if(pRPr->m_oColor.GetPointer() != nullptr)
 		{
-			bRpr = true;
 			std::wstring wsColor,wsUpperColor(L"");
 			wsColor =  pRPr->m_oColor.GetPointer()->m_oVal.GetPointer()->ToStringNoAlpha();
 			for(wchar_t chToken: wsColor)
 				wsUpperColor += std::toupper(chToken);
-			stTempPr->m_wsColor = wsUpperColor;
+			if(wsUpperColor != L"000000")
+			{
+				stTempPr->m_wsColor = wsUpperColor;
+				bRpr = true;
+			}
 		}
 		if(pRPr->m_oSz.GetPointer() != nullptr)
 		{
@@ -707,7 +725,6 @@ namespace StarMath
 			return stTempPr;
 		else
 		{
-//			delete stTempPr;
 			stTempPr->Release();
 			return nullptr;
 		}
@@ -1398,6 +1415,19 @@ namespace StarMath
 	void CBinOperator::Conversion(XmlUtils::CXmlWriter *pXmlWrite, std::wstring &wsAnnotation)
 	{
 		unsigned int iStyle(0);
+		if(m_pLeftArg == nullptr && m_pRightArg == nullptr)
+		{
+			if(GetAttribute() != nullptr && m_enTypeBinOp != TypeElement::undefine)
+			{
+				COneElement::ConversionAttribute(GetAttribute(),iStyle,pXmlWrite,wsAnnotation);
+				pXmlWrite->WriteNodeBegin(L"mtext",false);
+				pXmlWrite->WriteString(m_wsAnnotation);
+				pXmlWrite->WriteNodeEnd(L"mtext",false,false);
+				wsAnnotation += L"\u0026quot;" + m_wsAnnotation + L"\u0026quot;";
+				COOXml2Odf::StyleClosing(iStyle,pXmlWrite);
+				return;
+			}
+		}
 		pXmlWrite->WriteNodeBegin(L"mrow",false);
 		if(GetAttribute() != nullptr && m_enTypeBinOp != TypeElement::undefine)
 			COneElement::ConversionAttribute(GetAttribute(),iStyle,pXmlWrite,wsAnnotation);

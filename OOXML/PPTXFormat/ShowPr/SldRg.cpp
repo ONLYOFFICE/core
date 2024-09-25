@@ -34,7 +34,7 @@
 
 namespace PPTX
 {
-	namespace nsShowPr
+	namespace nsPresentationPr
 	{
 		void SldRg::fromXML(XmlUtils::CXmlNode& node)
 		{
@@ -94,5 +94,5 @@ namespace PPTX
 		void SldRg::FillParentPointersForChilds()
 		{
 		}
-	} // namespace nsShowPr
+	} // namespace nsPresentationPr
 } // namespace PPTX

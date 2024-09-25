@@ -19,7 +19,7 @@ namespace MetaFile
 
 		bool GenerateHatch();
 
-		std::wstring GetPatternId();
+		std::wstring GetPatternId() const;
 		std::wstring GetPattern();
 	private:
 		void AddLine(const TPointD& oPoint1, const TPointD& oPoint2);
@@ -120,9 +120,9 @@ namespace MetaFile
 
 		std::wstring CreatePath(const CPath& oPath, const TXForm* pTransform = NULL);
 		std::wstring CreateHatchStyle(unsigned int unHatchStyle, double dWidth, double dHeight);
-		std::wstring CreateDibPatternStyle(IBrush *pBrush);
-		std::wstring CreatePatternStyle(IBrush *pBrush);
-		std::wstring CreateGradient(IBrush *pBrush);
+		std::wstring CreateDibPatternStyle(const IBrush* pBrush);
+		std::wstring CreatePatternStyle(const IBrush* pBrush);
+		std::wstring CreateGradient(const IBrush *pBrush);
 	private:
 		TSvgViewport         m_oViewport;
 		TPointD              m_oSizeWindow;

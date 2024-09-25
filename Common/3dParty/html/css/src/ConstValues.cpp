@@ -7,12 +7,18 @@ namespace NSCSS
 		return sValue < oStatistickElement.sValue;
 	}
 
+	void CTree::Clear()
+	{
+		m_arrChild.clear();
+		m_oNode.Clear();
+	}
+
 	void CTree::CountingNumberRepetitions(const CTree &oTree, std::map<StatistickElement, unsigned int> &mStatictics)
 	{
 		if (!oTree.m_oNode.m_wsId.empty())
 			++mStatictics[StatistickElement{StatistickElement::IsId, L'#' + oTree.m_oNode.m_wsId}];
-                if (!oTree.m_oNode.m_wsStyle.empty())
-                    ++mStatictics[StatistickElement{StatistickElement::IsStyle, oTree.m_oNode.m_wsStyle}];
+				if (!oTree.m_oNode.m_wsStyle.empty())
+					++mStatictics[StatistickElement{StatistickElement::IsStyle, oTree.m_oNode.m_wsStyle}];
 
 		if (!oTree.m_arrChild.empty())
 			for (const CTree& oChildren : oTree.m_arrChild)
@@ -82,7 +88,7 @@ namespace NSCSS
 			{L"gainsboro",          L"DCDCDC"}, {L"lightgray",             L"D3D3D3"}, {L"silver",        L"C0C0C0"},
 			{L"darkgray",           L"A9A9A9"}, {L"gray",                  L"808080"}, {L"dimgray",       L"696969"},
 			{L"lightslategray",     L"778899"}, {L"slategray",             L"708090"}, {L"darkslategray", L"2F4F4F"},
-			{L"black",              L"000000"},
+			{L"black",              L"000000"}, {L"grey",                  L"808080"},
 			/* Outdated */
 			{L"windowtext",         L"000000"},  {L"transparent",           L"000000"}
 		};

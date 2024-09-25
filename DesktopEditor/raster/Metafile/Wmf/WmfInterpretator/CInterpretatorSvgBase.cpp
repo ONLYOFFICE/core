@@ -269,7 +269,7 @@ namespace MetaFile
 		if (0 != nColor)
 			arNodeAttributes.push_back({L"fill", CalculateColor(nColor, 255)});
 
-		IFont *pFont = m_pParser->GetFont();
+		const IFont *pFont = m_pParser->GetFont();
 
 		if (NULL == pFont)
 			return;
@@ -281,23 +281,29 @@ namespace MetaFile
 
 		arNodeAttributes.push_back({L"font-size", ConvertToWString(dFontHeight)});
 
-		std::wstring wsFontName = pFont->GetFaceName();
+		NSStringUtils::CStringBuilder oFontName;
+		oFontName.WriteEncodeXmlString(pFont->GetFaceName());
 
-#ifndef BUILDING_WASM_MODULE
-		if (!wsFontName.empty())
+		if (0 != oFontName.GetSize())
 		{
+			#ifndef BUILDING_WASM_MODULE
 			NSFonts::CFontSelectFormat oFormat;
 			oFormat.wsName = new std::wstring(pFont->GetFaceName());
 
 			NSFonts::CFontInfo *pFontInfo = m_pParser->GetFontManager()->GetFontInfoByParams(oFormat);
 
-			if (NULL != pFontInfo && !StringEquals(wsFontName, pFontInfo->m_wsFontName))
-				wsFontName = L"&apos;" + wsFontName + L"&apos;, &apos;" + pFontInfo->m_wsFontName + L"&apos;";
+			if (NULL != pFontInfo && !StringEquals(*oFormat.wsName, pFontInfo->m_wsFontName))
+			{
+				oFontName.Clear();
+				oFontName.WriteEncodeXmlString(L"\'");
+				oFontName.WriteEncodeXmlString(*oFormat.wsName);
+				oFontName.WriteEncodeXmlString(L"\',\'");
+				oFontName.WriteEncodeXmlString(pFontInfo->m_wsFontName);
+				oFontName.WriteEncodeXmlString(L"\'");
+			}
+			#endif
+			arNodeAttributes.push_back({L"font-family", oFontName.GetData()});
 		}
-#endif
-
-		if (!wsFontName.empty())
-			arNodeAttributes.push_back({L"font-family", wsFontName});
 
 		if (pFont->GetWeight() > 550)
 			arNodeAttributes.push_back({L"font-weight", L"bold"});
@@ -378,7 +384,7 @@ namespace MetaFile
 		{
 			double dEscapement = pFont->GetEscapement() / -10;
 
-			if (m_pParser->GetTransform()->M22 < 0)
+			if (m_pParser->GetTransform().M22 < 0)
 				dEscapement = -dEscapement;
 
 			double dSin = std::sin(dEscapement * M_PI / 180.);
@@ -494,6 +500,7 @@ namespace MetaFile
 			                               {L"fill",   CalculateColor(pBuffer[2], pBuffer[1], pBuffer[0], 255)}};
 
 			AddTransform(arAttributes, &oTransform);
+			AddClip();
 
 			WriteNode(L"rect", arAttributes);
 
@@ -548,21 +555,21 @@ namespace MetaFile
 
 	void CInterpretatorSvgBase::ResetClip()
 	{
+		CloseClip();
 		m_oClip.Reset();
+		m_bUpdatedClip = false;
 	}
 
 	void CInterpretatorSvgBase::IntersectClip(const TRectD &oClip)
 	{
-		TXForm *pTransform = m_pParser->GetTransform();
-		
 		double dLeft   = oClip.Left;
 		double dTop    = oClip.Top;
 		double dRight  = oClip.Right;
 		double dBottom = oClip.Bottom;
 
-		pTransform->Apply(dLeft,  dTop);
-		pTransform->Apply(dRight, dBottom);
-		
+		m_pParser->GetTransform().Apply(dLeft,  dTop);
+		m_pParser->GetTransform().Apply(dRight, dBottom);
+
 		const std::wstring wsId    = L"INTERSECTCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
 		const std::wstring wsValue = L"<rect x=\"" + ConvertToWString(dLeft, 0) + L"\" y=\"" + ConvertToWString(dTop, 0) + L"\" width=\"" + ConvertToWString(dRight - dLeft, 0) + L"\" height=\"" + ConvertToWString(dBottom - dTop, 0) + L"\"/>";
 
@@ -571,23 +578,23 @@ namespace MetaFile
 
 	void CInterpretatorSvgBase::ExcludeClip(const TRectD &oClip, const TRectD &oBB)
 	{
-		TXForm *pTransform = m_pParser->GetTransform();
+		const TXForm &oTransform{m_pParser->GetTransform()};
 		
 		double dClipLeft   = oClip.Left;
 		double dClipTop    = oClip.Top;
 		double dClipRight  = oClip.Right;
 		double dClipBottom = oClip.Bottom;
 
-		pTransform->Apply(dClipLeft, dClipTop);
-		pTransform->Apply(dClipRight, dClipBottom);
-		
+		oTransform.Apply(dClipLeft, dClipTop);
+		oTransform.Apply(dClipRight, dClipBottom);
+
 		double dBBLeft   = oBB.Left;
 		double dBBTop    = oBB.Top;
 		double dBBRight  = oBB.Right;
 		double dBBBottom = oBB.Bottom;
 
-		pTransform->Apply(dBBLeft, dBBTop);
-		pTransform->Apply(dBBRight, dBBBottom);
+		oTransform.Apply(dBBLeft, dBBTop);
+		oTransform.Apply(dBBRight, dBBBottom);
 
 		const std::wstring wsId    = L"EXCLUDECLIP_" + ConvertToWString(++m_unNumberDefs, 0);
 		const std::wstring wsValue = L"<path d=\"M" + ConvertToWString(dBBLeft) + L' ' + ConvertToWString(dBBTop) + L", L" + ConvertToWString(dBBRight) + L' ' + ConvertToWString(dBBTop) + L", " +
@@ -616,7 +623,7 @@ namespace MetaFile
 		if (NULL == m_pParser)
 			return;
 
-		IPen *pPen = m_pParser->GetPen();
+		const IPen *pPen = m_pParser->GetPen();
 
 		if (NULL == pPen || PS_NULL == pPen->GetStyle())
 			return;
@@ -713,11 +720,11 @@ namespace MetaFile
 			return;
 		}
 
-		IBrush *pBrush = NULL;
+		const IBrush *pBrush = NULL;
 
 		if (NULL != m_pParser->GetPen())
 		{
-			CEmfPlusPen *pPen = dynamic_cast<CEmfPlusPen*>(m_pParser->GetPen());
+			const CEmfPlusPen *pPen = dynamic_cast<const CEmfPlusPen*>(m_pParser->GetPen());
 
 			if (NULL != pPen)
 				pBrush = pPen->pBrush;
@@ -861,7 +868,7 @@ namespace MetaFile
 	{
 		CloseClip();
 		
-		CClip *pClip = m_pParser->GetClip();
+		const CClip *pClip = m_pParser->GetClip();
 
 		if (NULL == pClip || pClip->Empty()) 
 			return false;
@@ -1017,7 +1024,7 @@ namespace MetaFile
 		if (NULL == m_pParser || NULL == m_pParser->GetBrush())
 			return std::wstring();
 
-		double dStrokeWidth  = 1. / m_pParser->GetTransform()->M11;
+		double dStrokeWidth  = 1. / m_pParser->GetTransform().M11;
 
 		if (NULL != m_pParser->GetPen())
 		{
@@ -1049,7 +1056,7 @@ namespace MetaFile
 		return std::wstring();
 	}
 
-	std::wstring CInterpretatorSvgBase::CreateDibPatternStyle(IBrush *pBrush)
+	std::wstring CInterpretatorSvgBase::CreateDibPatternStyle(const IBrush *pBrush)
 	{
 		if (NULL == m_pParser || NULL == pBrush)
 			return std::wstring();
@@ -1102,7 +1109,7 @@ namespace MetaFile
 
 		std::wstring wsImageDataW = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pImageData, (LONG)nImageSize);
 
-		double dStrokeWidth  = 1. / m_pParser->GetTransform()->M11;
+		double dStrokeWidth  = 1. / m_pParser->GetTransform().M11;
 
 		if (NULL != m_pParser->GetPen())
 		{
@@ -1125,7 +1132,7 @@ namespace MetaFile
 		return wsStyleId;
 	}
 
-	std::wstring CInterpretatorSvgBase::CreatePatternStyle(IBrush *pBrush)
+	std::wstring CInterpretatorSvgBase::CreatePatternStyle(const IBrush *pBrush)
 	{
 		if (NULL == m_pParser || NULL == pBrush)
 			return std::wstring();
@@ -1175,7 +1182,7 @@ namespace MetaFile
 		return wsStyleId;
 	}
 
-	std::wstring CInterpretatorSvgBase::CreateGradient(IBrush *pBrush)
+	std::wstring CInterpretatorSvgBase::CreateGradient(const IBrush* pBrush)
 	{
 		if (pBrush == NULL)
 			return std::wstring();
@@ -1720,7 +1727,7 @@ namespace MetaFile
 		return true;
 	}
 
-	std::wstring CHatchGenerator::GetPatternId()
+	std::wstring CHatchGenerator::GetPatternId() const
 	{
 		if (mHatchStyles.end() == mHatchStyles.find(m_nHatchStyle))
 			return L"";

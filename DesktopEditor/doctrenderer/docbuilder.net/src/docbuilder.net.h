@@ -72,6 +72,9 @@ namespace docbuilder_net
 		/// <returns> True if this object is undefined. </returns>
 		bool IsUndefined();
 
+		/// <returns> True if this object is a boolean value. </returns>
+		bool IsBool();
+
 		/// <returns> True if this object is an integer. </returns>
 		bool IsInt();
 

@@ -114,9 +114,9 @@ void BOF::readFields(CFRecord& record)
 	}
 	else
 	{
+		short not_used = 0;
 		if (type_id_ == rt_BOF_BIFF3 || type_id_ == rt_BOF_BIFF4)
 		{
-			short not_used;
 			record >> not_used;
 		}
 

@@ -1068,7 +1068,7 @@ namespace MetaFile
 			return false;
 		}
 
-		unsigned int Tell()
+		unsigned int Tell() const
 		{
 			return (unsigned int)(pCur - pBuffer);
 		}
@@ -1092,7 +1092,7 @@ namespace MetaFile
 			ClearCurrentBlockSize();
 		}
 
-		unsigned int CanRead()
+		unsigned int CanRead() const
 		{
 			return (unsigned int)(pEnd - pCur);
 		}

@@ -403,6 +403,15 @@ public:
 		UNUSED_VARIABLE(dValue);
 		return S_FALSE;
 	}
+
+	virtual void put_BrushGradInfo(void* pGradInfo)
+	{
+		UNUSED_VARIABLE(pGradInfo);
+	}
+	virtual void put_BlendMode(const unsigned int& nBlendMode)
+	{
+		UNUSED_VARIABLE(nBlendMode);
+	}
 };
 
 #define PROPERTY_RENDERER(NameBase, Name, Type)    \

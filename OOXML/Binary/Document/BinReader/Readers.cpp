@@ -1365,8 +1365,15 @@ int Binary_pPrReader::ReadBorder(BYTE type, long length, void* poResult)
 	{
 		pBorder->m_oVal.Init();
 
-		BYTE border_type = m_oBufferedStream.GetUChar(); // todooo change to int
-		pBorder->m_oVal->SetValueFromByte(border_type);
+		if (0 != m_oBufferedStream.GetUChar())
+			pBorder->m_oVal->SetValue(SimpleTypes::bordervalueSingle);
+		else
+			pBorder->m_oVal->SetValue(SimpleTypes::bordervalueNone);
+	}
+	else if (c_oSerBorderType::ValueType == type)
+	{
+		pBorder->m_oVal.Init();
+		pBorder->m_oVal->SetValue((SimpleTypes::EBorder)m_oBufferedStream.GetLong());
 	}
 	else if ( c_oSerBorderType::ColorTheme == type )
 	{
@@ -6026,11 +6033,12 @@ int Binary_DocumentTableReader::ReadMathArg(BYTE type, long length, void* poResu
 		OOX::Logic::CMoveToRangeEnd oMoveToRangeEnd;
 		READ1_DEF(length, res, this->ReadMoveToRangeEnd, &oMoveToRangeEnd);
 		GetRunStringWriter().WriteString(oMoveToRangeEnd.toXML());
-	}
+	}	
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+
 int Binary_DocumentTableReader::ReadMathAcc(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
@@ -7509,6 +7517,75 @@ int Binary_DocumentTableReader::ReadMathMRun(BYTE type, long length, void* poRes
 		TrackRevision oTrackRevision;
 		READ1_DEF(length, res, this->ReadMathInsDel, &oTrackRevision);
 		oTrackRevision.Write(&GetRunStringWriter(), _T("w:ins"));
+	}
+	else if (c_oSer_OMathContentType::AnnotationRef == type)
+	{
+		OOX::Logic::CAnnotationRef oAnnotationRef;
+		GetRunStringWriter().WriteString(oAnnotationRef.toXML());
+	}
+	else if (c_oSer_OMathContentType::CommentReference == type)
+	{
+		long nId = 0;
+		READ1_DEF(length, res, this->ReadComment, &nId);
+		if (NULL != m_oFileWriter.m_pComments)
+		{
+			CComment* pComment = m_oFileWriter.m_pComments->get(nId);
+			if (NULL != pComment) // могут быть и без start/end
+			{
+				GetRunStringWriter().WriteString(pComment->writeRef(std::wstring(_T("")), std::wstring(_T("w:commentReference")), std::wstring(_T(""))));
+			}
+		}
+	}
+	else if (c_oSer_OMathContentType::Cr == type)
+	{
+		OOX::Logic::CCr oCr;
+		GetRunStringWriter().WriteString(oCr.toXML());
+	}
+	else if (c_oSer_OMathContentType::EndnoteRef == type)
+	{
+		OOX::Logic::CEndnoteRef oEndnoteRef;
+		GetRunStringWriter().WriteString(oEndnoteRef.toXML());
+	}
+	else if (c_oSer_OMathContentType::FootnoteRef == type)
+	{
+		OOX::Logic::CFootnoteRef oFootnoteRef;
+		GetRunStringWriter().WriteString(oFootnoteRef.toXML());
+	}
+	else if (c_oSer_OMathContentType::EndnoteReference == type)
+	{
+		OOX::Logic::CEndnoteReference oEndnoteReference;
+		READ1_DEF(length, res, this->ReadEndnoteRef, &oEndnoteReference);
+		GetRunStringWriter().WriteString(oEndnoteReference.toXML());
+	}
+	else if (c_oSer_OMathContentType::FootnoteReference == type)
+	{
+		OOX::Logic::CFootnoteReference oFootnoteReference;
+		READ1_DEF(length, res, this->ReadFootnoteRef, &oFootnoteReference);
+		GetRunStringWriter().WriteString(oFootnoteReference.toXML());
+	}
+	else if (c_oSer_OMathContentType::LastRenderedPageBreak == type)
+	{
+		OOX::Logic::CLastRenderedPageBreak oLastRenderedPageBreak;
+		GetRunStringWriter().WriteString(oLastRenderedPageBreak.toXML());
+	}
+	else if (c_oSer_OMathContentType::NoBreakHyphen == type)
+	{
+		OOX::Logic::CNoBreakHyphen oNoBreakHyphen;
+		GetRunStringWriter().WriteString(oNoBreakHyphen.toXML());
+	}
+	else if (c_oSer_OMathContentType::SoftHyphen == type)
+	{
+		OOX::Logic::CSoftHyphen oSoftHyphen;
+		GetRunStringWriter().WriteString(oSoftHyphen.toXML());
+	}
+	else if (c_oSer_OMathContentType::Tab == type)
+	{
+		OOX::Logic::CTab oTab;
+		GetRunStringWriter().WriteString(oTab.toXML());
+	}
+	else if (c_oSer_OMathContentType::Sym == type)
+	{
+		std::wstring sText = m_oBufferedStream.GetString3(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

@@ -1895,11 +1895,8 @@ namespace PdfReader
 			cur_y += delta_y;
 		}
 
-		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
-		{
-			GRenderer->put_BrushGradInfo(info);
-			m_pRenderer->DrawPath(c_nWindingFillMode);
-		}
+		m_pRenderer->put_BrushGradInfo(&info);
+		m_pRenderer->DrawPath(c_nWindingFillMode);
 
 		m_pRenderer->EndCommand(c_nPathType);
 		m_pRenderer->put_BrushType(brush);
@@ -1953,11 +1950,8 @@ namespace PdfReader
 			t+=delta;
 		}
 
-		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
-		{
-			GRenderer->put_BrushGradInfo(info);
-			m_pRenderer->DrawPath(c_nWindingFillMode);
-		}
+		m_pRenderer->put_BrushGradInfo(&info);
+		m_pRenderer->DrawPath(c_nWindingFillMode);
 
 		m_pRenderer->EndCommand(c_nPathType);
 
@@ -2009,11 +2003,9 @@ namespace PdfReader
 			t+=delta;
 		}
 
-		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
-		{
-			GRenderer->put_BrushGradInfo(info);
-			m_pRenderer->DrawPath(c_nWindingFillMode);
-		}
+		m_pRenderer->put_BrushGradInfo(&info);
+		m_pRenderer->DrawPath(c_nWindingFillMode);
+
 		m_pRenderer->EndCommand(c_nPathType);
 		m_pRenderer->put_BrushType(brush);
 		pGState->clearPath();
@@ -2051,11 +2043,9 @@ namespace PdfReader
 
 		NSStructures::GradientInfo info = NSStructures::GInfoConstructor::get_triangle(pixel_points, rgba8_colors, {}, false);
 
-		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
-		{
-			GRenderer->put_BrushGradInfo(info);
-			m_pRenderer->DrawPath(c_nWindingFillMode);
-		}
+		m_pRenderer->put_BrushGradInfo(&info);
+		m_pRenderer->DrawPath(c_nWindingFillMode);
+
 		pGState->clearPath();
 		m_pRenderer->EndCommand(c_nPathType);
 		m_pRenderer->put_BrushType(brush);
@@ -2107,11 +2097,8 @@ namespace PdfReader
 																						   false
 																						   );
 
-		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
-		{
-			GRenderer->put_BrushGradInfo(info);
-			m_pRenderer->DrawPath(c_nWindingFillMode);
-		}
+		m_pRenderer->put_BrushGradInfo(&info);
+		m_pRenderer->DrawPath(c_nWindingFillMode);
 
 		m_pRenderer->EndCommand(c_nPathType);
 		m_pRenderer->put_BrushType(brush);

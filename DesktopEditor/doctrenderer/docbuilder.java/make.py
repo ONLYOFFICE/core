@@ -88,16 +88,20 @@ if __name__ == "__main__":
         print('Error: javac version is not supported')
         exit()
 
+    # BUILD
     release_flags = []
     if jdk_version > 8:
         release_flags = ['--release', '8']
 
-    # BUILD
+    gen_headers_flags = []
+    if args.headers:
+        headers_dir = file_dir + '/src/jni'
+        gen_headers_flags = ['-h', headers_dir]
+
     classes_dir = file_dir + '/build/classes'
     makedirs(classes_dir + '/docbuilder/utils')
-    headers_dir = file_dir + '/src/jni'
     # build all Java classes
-    subprocess.call([javac, '-d', classes_dir] + release_flags + java_files, cwd=os.getcwd(), stderr=subprocess.STDOUT)
+    subprocess.call([javac, '-d', classes_dir] + release_flags + gen_headers_flags + java_files, cwd=os.getcwd(), stderr=subprocess.STDOUT)
 
     # PACKING TO JAR
     if not args.no_jar:

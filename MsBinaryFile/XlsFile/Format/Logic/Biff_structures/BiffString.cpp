@@ -36,329 +36,318 @@
 namespace XLS
 {
 
-BiffString::BiffString()
-:	struct_size(0),
-	bDeleteZero(false)
-{
-}
-
-
-BiffString::BiffString(const size_t size)
-:	struct_size(0),
-	cch_(size),
-	bDeleteZero(false)
-{
-}
-
-
-BiffString::BiffString(const std::wstring & str)
-:	struct_size(0),
-	str_(str),
-	cch_(str.length()),
-	bDeleteZero(false)
-{
-}
-
-
-BiffString::~BiffString() 
-{
-}
-
-
-
-
-BiffString::operator std::wstring  () const
-{
-	return str_;
-}
-
-
-BiffString BiffString::operator=(const std::wstring & str)
-{
-	str_ = str;
-	cch_ = str_.length();
-	return *this;
-}
-
-
-BiffStructurePtr BiffString::clone()
-{
-	return BiffStructurePtr(new BiffString(*this));
-}
-
-void BiffString::load(CFRecord& record)
-{
-	// EXCEPT::LE::WhatIsTheFuck("Wrong usage of BiffString. Stack overflow stopped.", __FUNCTION__);
-	//	record >> *this; // :-)
-}
-void BiffString::load(IBinaryReader* reader)
-{
-}
-
-void BiffString::load(IBinaryReader* reader, const size_t cch1, const bool is_wide1)
-{
-	bool is_wide	= is_wide1;
-	
-	size_t cch = cch1;
-	if ((cch_) && (*cch_ != cch1) && cch1 < 1)
-	{
-		cch =  cch_.get();
-	}
-	size_t raw_length = cch << (is_wide ? 1 : 0);
-	
-	if (reader->GetPosition() + cch > reader->GetSize())
-	{
-		//ОШИБКА - нехватило Continue records - нужно найти место где именно и подзагрузить
-		return;
-	}
-	unsigned char* pData = reader->ReadBytes(cch, true);
-	
-	if(is_wide)
-	{
-#if defined(_WIN32) || defined(_WIN64)
-		str_ = std::wstring((wchar_t*)pData, cch);
-#else
-		str_ = convertUtf16ToWString((UTF16*)pData, cch);
-#endif
-	}
-	else
+	BiffString::BiffString()
+	:	struct_size(0),
+		bDeleteZero(false)
 	{
 	}
-	delete []pData;
-}
 
-void BiffString::load(CFRecord& record, const size_t cch1, const bool is_wide1)
-{
-	bool is_wide	= is_wide1;
-
-	size_t cch = cch1;
-	if ((cch_) && (*cch_ != cch1) && cch1 < 1)
+	BiffString::BiffString(const size_t size)
+	:	struct_size(0),
+		cch_(size),
+		bDeleteZero(false)
 	{
-		cch =  cch_.get();
-	}
-	size_t raw_length = cch << (is_wide ? 1 : 0);
-	
-	if (record.checkFitRead(raw_length)==false)
-	{
-		//ОШИБКА - нехватило Continue records - нужно найти место где именно и подзагрузить
-		return;
 	}
 
-	if(is_wide)
+	BiffString::BiffString(const std::wstring & str)
+	:	struct_size(0),
+		str_(str),
+		cch_(str.length()),
+		bDeleteZero(false)
 	{
-		if (false == bDeleteZero)
-		{
-#if defined(_WIN32) || defined(_WIN64)
-			str_ = std::wstring(record.getCurData<wchar_t>(), cch);
-#else
-			str_= convertUtf16ToWString(record.getCurData<UTF16>(), cch);
-#endif
-			record.skipNunBytes(raw_length);
-		}
-		else
-		{
-			//5804543.xls - font name in dx for table - c a l i 0 0 0 0 b r i - !!!!
-			UTF16 *buf_read = new UTF16[cch];
-
-			for (size_t i = 0; i < cch; i++)
-			{
-				unsigned short val;
-				do
-				{
-					record >> val;
-				}while(val == 0);
-				buf_read[i] = val;
-			}
-	#if defined(_WIN32) || defined(_WIN64)
-			str_ = std::wstring((wchar_t*)buf_read, cch);
-	#else
-			str_= convertUtf16ToWString(buf_read, cch);
-	#endif
-			delete []buf_read;
-		}
-	}
-	else
-	{
-		std::string inp_str(record.getCurData<char>(), cch);
-
-		if (record.getGlobalWorkbookInfo()->CodePage == 1200)
-		{
-			int inp_str_size = inp_str.length();
-            UTF16 *out_str = new UTF16[inp_str_size + 1];
-			char* out_str_char = (char*) out_str;
-			for (int i = 0; i < inp_str_size; i++)
-			{
-				out_str_char[2*i+0] = inp_str.c_str()[i];
-				out_str_char[2*i+1] = 0;
-			}
-			out_str[inp_str_size] = 0;
-
-#if defined(_WIN32) || defined(_WIN64)
-                str_ = std::wstring((wchar_t*)out_str, inp_str_size);
-#else
-                str_ = convertUtf16ToWString(out_str, inp_str_size);
-#endif
-			delete []out_str;
-		}
-		else
-		{
-			str_ = STR::toStdWString(inp_str, record.getGlobalWorkbookInfo()->CodePage).c_str();
-		}
-		record.skipNunBytes(raw_length);
-	}
-}
-
-void BiffString::save(CFRecord& record, const size_t cch1, const bool is_wide1)
-{
-	bool is_wide = is_wide1;
-
-	size_t cch = cch1;
-	if ((cch_) && (*cch_ != cch1) && cch1 < 1)
-	{
-		cch = cch_.get();
 	}
 
-	if (is_wide)
+
+	BiffString::~BiffString() 
 	{
-        unsigned char *out_str = nullptr;
-        int out_size = 0;
-
-#if defined(_WIN32) || defined(_WIN64)
-        record.appendRawDataToStatic(str_.c_str(), str_.size());
-#else            
-        convertWStringToUtf16(str_, out_str, out_size);
-        record.appendRawDataToStatic(out_str, out_size);
-#endif
-
 	}
-	else
-	{
-		//stub
-	}
-}
 
-const size_t BiffString::getSize() const
-{
-	if(!cch_)
-	{
-		// EXCEPT::LE::StructureSizeNotSet("BiffString", __FUNCTION__/*__FUNCDNAME__*/); 
-	}
-	return *cch_;
-}
-
-
-void BiffString::setSize(const size_t size)
-{
-	cch_ = size;
-}
-
-
-const size_t BiffString::getStructSize() const
-{
-	return struct_size;
-}
-
-
-// Set number of unsigned chars read while loading. Must be used by >> operator only
-void BiffString::setStructSize(const size_t size)
-{
-	struct_size = size;
-}
-
-const std::wstring  BiffString::getEscaped_ST_Xstring() const
-{
-	if(!str_.length())
+	BiffString::operator std::wstring  () const
 	{
 		return str_;
 	}
-	std::wstring copy_str(str_);
-	return STR::escape_ST_Xstring(copy_str).c_str();
-}
 
-
-void BiffString::Escape_ST_Xstring()
-{
-	str_ = getEscaped_ST_Xstring();
-}
-
-
-const bool BiffString::getWideRecommendation() const
-{
-	std::wstring str(str_);
-	for(std::wstring::const_iterator it = str.begin(), itEnd = str.end(); it != itEnd; ++it)
+	BiffString BiffString::operator=(const std::wstring & str)
 	{
-		if(0xff00 & *it)
+		str_ = str;
+		cch_ = str_.length();
+		return *this;
+	}
+
+	BiffStructurePtr BiffString::clone()
+	{
+		return BiffStructurePtr(new BiffString(*this));
+	}
+
+	void BiffString::load(CFRecord& record)
+	{
+		// EXCEPT::LE::WhatIsTheFuck("Wrong usage of BiffString. Stack overflow stopped.", __FUNCTION__);
+		//	record >> *this; // :-)
+	}
+	void BiffString::load(IBinaryReader* reader)
+	{
+	}
+
+	void BiffString::load(IBinaryReader* reader, const size_t cch1, const bool is_wide1)
+	{
+		bool is_wide	= is_wide1;
+	
+		size_t cch = cch1;
+		if ((cch_) && (*cch_ != cch1) && cch1 < 1)
 		{
-			return true;
+			cch =  cch_.get();
+		}
+		size_t raw_length = cch << (is_wide ? 1 : 0);
+	
+		if (reader->GetPosition() + cch > reader->GetSize())
+		{
+			//ОШИБКА - нехватило Continue records - нужно найти место где именно и подзагрузить
+			return;
+		}
+		unsigned char* pData = reader->ReadBytes(cch, true);
+	
+		if(is_wide)
+		{
+	#if defined(_WIN32) || defined(_WIN64)
+			str_ = std::wstring((wchar_t*)pData, cch);
+	#else
+			str_ = convertUtf16ToWString((UTF16*)pData, cch);
+	#endif
+		}
+		else
+		{
+		}
+		delete []pData;
+	}
+
+	void BiffString::load(CFRecord& record, const size_t cch1, const bool is_wide1)
+	{
+		bool is_wide	= is_wide1;
+
+		size_t cch = cch1;
+		if ((cch_) && (*cch_ != cch1) && cch1 < 1)
+		{
+			cch =  cch_.get();
+		}
+		size_t raw_length = cch << (is_wide ? 1 : 0);
+	
+		if (record.checkFitRead(raw_length)==false)
+		{
+			//ОШИБКА - нехватило Continue records - нужно найти место где именно и подзагрузить
+			return;
+		}
+
+		if(is_wide)
+		{
+			if (false == bDeleteZero)
+			{
+	#if defined(_WIN32) || defined(_WIN64)
+				str_ = std::wstring(record.getCurData<wchar_t>(), cch);
+	#else
+				str_= convertUtf16ToWString(record.getCurData<UTF16>(), cch);
+	#endif
+				record.skipNunBytes(raw_length);
+			}
+			else
+			{
+				//5804543.xls - font name in dx for table - c a l i 0 0 0 0 b r i - !!!!
+				UTF16 *buf_read = new UTF16[cch];
+
+				for (size_t i = 0; i < cch; i++)
+				{
+					unsigned short val;
+					do
+					{
+						record >> val;
+					}while(val == 0);
+					buf_read[i] = val;
+				}
+		#if defined(_WIN32) || defined(_WIN64)
+				str_ = std::wstring((wchar_t*)buf_read, cch);
+		#else
+				str_= convertUtf16ToWString(buf_read, cch);
+		#endif
+				delete []buf_read;
+			}
+		}
+		else
+		{
+			std::string inp_str(record.getCurData<char>(), cch);
+
+			if (record.getGlobalWorkbookInfo()->CodePage == 1200)
+			{
+				int inp_str_size = inp_str.length();
+				UTF16 *out_str = new UTF16[inp_str_size + 1];
+				char* out_str_char = (char*) out_str;
+				for (int i = 0; i < inp_str_size; i++)
+				{
+					out_str_char[2*i+0] = inp_str.c_str()[i];
+					out_str_char[2*i+1] = 0;
+				}
+				out_str[inp_str_size] = 0;
+
+	#if defined(_WIN32) || defined(_WIN64)
+					str_ = std::wstring((wchar_t*)out_str, inp_str_size);
+	#else
+					str_ = convertUtf16ToWString(out_str, inp_str_size);
+	#endif
+				delete []out_str;
+			}
+			else
+			{
+				str_ = STR::toStdWString(inp_str, record.getGlobalWorkbookInfo()->CodePage).c_str();
+			}
+			record.skipNunBytes(raw_length);
 		}
 	}
-	return false;
-}
-//-----------------------------------------------------------------
-BiffStructurePtr XLUnicodeStringSegmented::clone()
-{
-	return BiffStructurePtr(new XLUnicodeStringSegmented(*this));
-}
-void XLUnicodeStringSegmented::load(CFRecord& record)
-{
-	record >> cchTotal;
 
-	if (cchTotal < 1) return;
+	void BiffString::save(CFRecord& record, const size_t cch1, const bool is_wide1)
+	{
+		bool is_wide = is_wide1;
+
+		size_t cch = cch1;
+		if ((cch_) && (*cch_ != cch1) && cch1 < 1)
+		{
+			cch = cch_.get();
+		}
+
+		if (is_wide)
+		{
+			unsigned char *out_str = nullptr;
+			int out_size = 0;
+
+	#if defined(_WIN32) || defined(_WIN64)
+			record.appendRawDataToStatic(str_.c_str(), str_.size());
+	#else            
+			convertWStringToUtf16(str_, out_str, out_size);
+			record.appendRawDataToStatic(out_str, out_size);
+	#endif
+
+		}
+		else
+		{
+			//stub
+		}
+	}
+
+	const size_t BiffString::getSize() const
+	{
+		if(!cch_)
+		{
+			// EXCEPT::LE::StructureSizeNotSet("BiffString", __FUNCTION__/*__FUNCDNAME__*/); 
+		}
+		return *cch_;
+	}
+
+
+	void BiffString::setSize(const size_t size)
+	{
+		cch_ = size;
+	}
+
+	const size_t BiffString::getStructSize() const
+	{
+		return struct_size;
+	}
+
+	// Set number of unsigned chars read while loading. Must be used by >> operator only
+	void BiffString::setStructSize(const size_t size)
+	{
+		struct_size = size;
+	}
+
+	const std::wstring  BiffString::getEscaped_ST_Xstring() const
+	{
+		if(!str_.length())
+		{
+			return str_;
+		}
+		std::wstring copy_str(str_);
+		return STR::escape_ST_Xstring(copy_str).c_str();
+	}
+
+	void BiffString::Escape_ST_Xstring()
+	{
+		str_ = getEscaped_ST_Xstring();
+	}
+
+	const bool BiffString::getWideRecommendation() const
+	{
+		std::wstring str(str_);
+		for(std::wstring::const_iterator it = str.begin(), itEnd = str.end(); it != itEnd; ++it)
+		{
+			if(0xff00 & *it)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	//-----------------------------------------------------------------
+	BiffStructurePtr XLUnicodeStringSegmented::clone()
+	{
+		return BiffStructurePtr(new XLUnicodeStringSegmented(*this));
+	}
+	void XLUnicodeStringSegmented::load(CFRecord& record)
+	{
+		record >> cchTotal;
+
+		if (cchTotal < 1) return;
 	
-	if (cchTotal > record.getDataSize() - record.getRdPtr())
-	{
-		cchTotal = cchTotal >> 8;
-	}
+		if (cchTotal > record.getDataSize() - record.getRdPtr())
+		{
+			cchTotal = cchTotal >> 8;
+		}
 
-	_UINT32 cchTotal_test = 0;
-	while(true)
-	{
-		if (record.isEOF())
-			break;
+		_UINT32 cchTotal_test = 0;
+		while(true)
+		{
+			if (record.isEOF())
+				break;
 
-		if (cchTotal_test >= cchTotal) 
-			break;
+			if (cchTotal_test >= cchTotal) 
+				break;
 		
-		_UINT32 max_string_size = cchTotal - cchTotal_test;
+			_UINT32 max_string_size = cchTotal - cchTotal_test;
 
-		XLUnicodeString string;
-		record >> string;
+			XLUnicodeString string;
+			record >> string;
 		
-		arStrings.push_back(string.value());
+			arStrings.push_back(string.value());
 
-		cchTotal_test	+= arStrings.back().length();
-		strTotal		+= arStrings.back();
+			cchTotal_test	+= arStrings.back().length();
+			strTotal		+= arStrings.back();
+		}
 	}
-}
-void XLUnicodeStringSegmented::load(IBinaryReader* reader)
-{
-	cchTotal = reader->ReadUInt32();
+	void XLUnicodeStringSegmented::load(IBinaryReader* reader)
+	{
+		cchTotal = reader->ReadUInt32();
 
-	if (cchTotal < 1) return;
+		if (cchTotal < 1) return;
 	
-	if (cchTotal > reader->GetSize() - reader->GetPosition())
-	{
-		cchTotal = cchTotal >> 8;
-	}
+		if (cchTotal > reader->GetSize() - reader->GetPosition())
+		{
+			cchTotal = cchTotal >> 8;
+		}
 
-	_UINT32 cchTotal_test = 0;
-	while(true)
-	{
-		if (reader->GetPosition() >= reader->GetSize())
-			break;
+		_UINT32 cchTotal_test = 0;
+		while(true)
+		{
+			if (reader->GetPosition() >= reader->GetSize())
+				break;
 
-		if (cchTotal_test >= cchTotal) 
-			break;
+			if (cchTotal_test >= cchTotal) 
+				break;
 		
-		_UINT32 max_string_size = cchTotal - cchTotal_test;
+			_UINT32 max_string_size = cchTotal - cchTotal_test;
 
-		XLUnicodeString string;
-		string.load(reader);
+			XLUnicodeString string;
+			string.load(reader);
 		
-		arStrings.push_back(string.value());
+			arStrings.push_back(string.value());
 
-		cchTotal_test	+= arStrings.back().length();
-		strTotal		+= arStrings.back();
+			cchTotal_test	+= arStrings.back().length();
+			strTotal		+= arStrings.back();
+		}
 	}
-}
 } // namespace XLS

@@ -501,6 +501,7 @@
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\FtRboData.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\FtSbs.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\FullColorExt.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\FutureFunctionParser.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\GradStop.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\HiddenMemberSet.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\HideObjEnum.cpp" />
@@ -1315,6 +1316,7 @@
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\FtRboData.h" />
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\FtSbs.h" />
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\FullColorExt.h" />
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\FutureFunctionParser.h" />
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\GradStop.h" />
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\HiddenMemberSet.h" />
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\HideObjEnum.h" />

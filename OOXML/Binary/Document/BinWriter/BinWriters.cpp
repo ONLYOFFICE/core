@@ -157,7 +157,9 @@ void BinaryCommonWriter::WriteBorder(const ComplexTypes::Word::CBorder& border)
 	{
 		if (border.m_oColor.IsInit())
 			WriteColor(c_oSerBorderType::Color, border.m_oColor.get());
+		
 		WriteThemeColor(c_oSerBorderType::ColorTheme, border.m_oColor, border.m_oThemeColor, border.m_oThemeTint, border.m_oThemeShade);
+		
 		if (border.m_oSpace.IsInit())
 		{
 			m_oStream.WriteBYTE(c_oSerBorderType::SpacePoint);
@@ -174,9 +176,16 @@ void BinaryCommonWriter::WriteBorder(const ComplexTypes::Word::CBorder& border)
 		m_oStream.WriteBYTE(c_oSerBorderType::Value);
 		m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 
-		int border_type = border.m_oVal.get().GetValue(); 
-		if (border_type > 0x0ff) border_type = 1;
-		m_oStream.WriteBYTE((BYTE)border_type); // todooo change to long type
+		switch (border.m_oVal.get().GetValue())
+		{
+			case SimpleTypes::bordervalueNone:
+			case SimpleTypes::bordervalueNil:   m_oStream.WriteBYTE(0); break;
+			default:                            m_oStream.WriteBYTE(1); break;
+		}
+		
+		m_oStream.WriteBYTE(c_oSerBorderType::ValueType);
+		m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oStream.WriteLONG(border.m_oVal.get().GetValue());
 	}
 }
 void BinaryCommonWriter::WriteTblBorders(const OOX::Logic::CTblBorders& Borders)
@@ -5106,6 +5115,73 @@ void BinaryDocumentTableWriter::WriteMathRunContent(OOX::Logic::CMRun* pMRun)
 		WriteMathIns(pMRun->m_oIns.get());
 		m_oBcw.WriteItemEnd(nCurPos2);
 	}
+	if (pMRun->m_oNoBreakHyphen.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathContentType::NoBreakHyphen);
+		m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+	}
+	if (pMRun->m_oSoftHyphen.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathContentType::SoftHyphen);
+		m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+	}
+	if (pMRun->m_oTab.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathContentType::Tab);
+		m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+	}
+	if (pMRun->m_oSym.IsInit())
+	{
+		wchar_t ch = 0x0FFF & pMRun->m_oSym->m_oChar->GetValue();
+		std::wstring sText(&ch, 1);
+
+		int nCurPos2 = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Sym);
+		m_oBcw.m_oStream.WriteStringW(sText);
+		m_oBcw.WriteItemEnd(nCurPos2);
+	}
+	if (pMRun->m_oAnnotationRef.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathContentType::AnnotationRef);
+		m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+	}
+	if (pMRun->m_oCommentReference.IsInit())
+	{
+		int nCurPos2 = m_oBcw.WriteItemStart(c_oSer_OMathContentType::CommentReference);
+		WriteComment(OOX::et_w_commentReference, pMRun->m_oCommentReference->m_oId);
+		m_oBcw.WriteItemEnd(nCurPos2);
+	}
+	if (pMRun->m_oCr.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathContentType::Cr);
+		m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+	}
+	if (pMRun->m_oEndnoteRef.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathContentType::EndnoteRef);
+		m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+	}
+	if (pMRun->m_oEndnoteReference.IsInit())
+	{
+		int nCurPos2 = m_oBcw.WriteItemStart(c_oSer_OMathContentType::EndnoteReference);
+		WriteNoteRef(pMRun->m_oEndnoteReference->m_oCustomMarkFollows, pMRun->m_oEndnoteReference->m_oId);
+		m_oBcw.WriteItemEnd(nCurPos2);
+	}	
+	if (pMRun->m_oFootnoteRef.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathContentType::FootnoteRef);
+		m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+	}
+	if (pMRun->m_oFootnoteReference.IsInit())
+	{
+		int nCurPos2 = m_oBcw.WriteItemStart(c_oSer_OMathContentType::FootnoteReference);
+		WriteNoteRef(pMRun->m_oFootnoteReference->m_oCustomMarkFollows, pMRun->m_oFootnoteReference->m_oId);
+		m_oBcw.WriteItemEnd(nCurPos2);
+	}
+	if (pMRun->m_oLastRenderedPageBreak.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathContentType::LastRenderedPageBreak);
+		m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+	}
 }
 void BinaryDocumentTableWriter::WriteMathAccPr(const OOX::Logic::CAccPr &pAccPr)
 {
@@ -9546,7 +9622,10 @@ void BinaryFileWriter::WriteMainTableStart(bool bSigTable)
 	if (bSigTable)
 	{
 		//BinarySigTableWriter
-		int nCurPos = WriteTableStart(c_oSerTableTypes::Signature);
+		memset(m_oBcw.m_oStream.GetBuffer() + m_oBcw.m_oStream.GetPosition(), 0, 5 + nTableCount * nmtItemSize);
+		
+		int nCurPos = WriteTableStart(c_oSerTableTypes::Signature);		
+		
 		BinarySigTableWriter oBinarySigTableWriter(m_oParamsWriter);
 		oBinarySigTableWriter.Write();
 		WriteTableEnd(nCurPos);

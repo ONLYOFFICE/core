@@ -87,6 +87,9 @@ namespace PPTX
 			docx->m_pTheme = this;
 		}
 	}
+	Theme::~Theme()
+	{
+	}
 	void Theme::read(const std::string &contentTheme, FileMap& map)
 	{
 		isThemeOverride = false;

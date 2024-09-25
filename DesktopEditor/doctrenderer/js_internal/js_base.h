@@ -386,6 +386,14 @@ namespace NSJSBase
 		 * Converts the typed array to a value.
 		 */
 		virtual JSSmart<CJSValue> toValue() = 0;
+
+		/**
+		 * Detaches this ArrayBuffer and all its views (typed arrays).
+		 * Detaching sets the byte length of the buffer and all typed arrays to zero,
+		 * preventing JavaScript from ever accessing underlying backing store.
+		 * ArrayBuffer should have been externalized.
+		 */
+		virtual void Detach() = 0;
 	};
 
 	/**
@@ -490,7 +498,6 @@ namespace NSJSBase
 		/**
 		 * Generate snapshot by script.
 		 * @param script The script to be executed.
-		 * @param exception The object for handling exceptions.
 		 * @param snapshotPath The path to the snapshot
 		 * @return Returns true whether a snapshot has been created.
 		 */

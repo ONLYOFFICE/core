@@ -14,6 +14,15 @@ namespace NSCSS
 		return m_wsName.empty() && m_wsClass.empty() && m_wsId.empty() && m_wsStyle.empty();
 	}
 
+	void CNode::Clear()
+	{
+		m_wsName     .clear();
+		m_wsClass    .clear();
+		m_wsId       .clear();
+		m_wsStyle    .clear();
+		m_mAttributes.clear();
+	}
+
 	std::vector<std::wstring> CNode::GetData() const
 	{
 		std::vector<std::wstring> arValues;

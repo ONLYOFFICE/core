@@ -200,7 +200,7 @@ public:
 					nMaxVirtualMemory);
 #endif
 
-#ifdef V8_VERSION_89_PLUS
+#ifdef V8_SUPPORT_SNAPSHOTS
 		create_params.snapshot_blob = startupData;
 #endif
 
@@ -704,6 +704,15 @@ namespace NSJSBase
 			CJSValueV8* _value = new CJSValueV8();
 			_value->value = value;
 			return _value;
+		}
+
+		virtual void Detach()
+		{
+#ifdef V8_ARRAY_BUFFER_USE_BACKING_STORE
+			value->Buffer()->Detach();
+#else
+			value->Buffer()->Neuter();
+#endif
 		}
 	};
 

@@ -1176,8 +1176,11 @@ void anim_transitionFilter::convert_slide_transition_filter(oox::pptx_conversion
 		break;
 	case smil_transition_type::randomBarWipe:
 		type = L"randomBar";
-		if (filter_attlist_.smil_subtype_.get() == L"vertical")	dir = L"vert";
-		else if (filter_attlist_.smil_subtype_.get() == L"horizontal")	dir = L"horz";
+		if (filter_attlist_.smil_subtype_)
+		{
+			if (filter_attlist_.smil_subtype_.get() == L"vertical")	dir = L"vert";
+			else if (filter_attlist_.smil_subtype_.get() == L"horizontal")	dir = L"horz";
+		}
 		break;
 	case smil_transition_type::pushWipe:
 		type = L"push";

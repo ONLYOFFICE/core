@@ -16,6 +16,14 @@
 #define GRADIENT_FILL_OP_FLAG   0x000000ff
 #endif
 
+#ifdef _DEBUG
+#ifdef LOG_EMF_RECORDS
+	#if 1 == LOG_EMF_RECORDS
+		unsigned int unFileLevel = 0;
+#endif
+#endif
+#endif
+
 namespace MetaFile
 {
 	void CEmfParserBase::ImageProcessing(const TEmfAlphaBlend &oTEmfAlphaBlend)
@@ -228,12 +236,12 @@ namespace MetaFile
 		}
 	}
 
-	void CEmfParserBase::TranslatePoint(TPointL &oPoint, double &dX, double &dY)
+	void CEmfParserBase::TranslatePoint(TPointL &oPoint, double &dX, double &dY) const
 	{
 		TranslatePoint(oPoint.X, oPoint.Y, dX, dY);
 	}
 
-	void CEmfParserBase::TranslatePoint(int nX, int nY, double &dX, double &dY)
+	void CEmfParserBase::TranslatePoint(int nX, int nY, double &dX, double &dY) const
 	{
 		dX = (double)nX;
 		dY = (double)nY;
@@ -445,7 +453,7 @@ namespace MetaFile
 		if (!oText.pOutputString)
 			return SetError();
 
-		IFont* pFont = GetFont();
+		const IFont* pFont = GetFont();
 		NSStringExt::CConverter::ESingleByteEncoding eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT;
 		if (pFont)
 		{
@@ -597,12 +605,9 @@ namespace MetaFile
 	}
 
 	CEmfParserBase::CEmfParserBase()
-		: m_oPlayer(this)
+		: m_oPlayer(this), m_pPath(NULL), m_pInterpretator(NULL), m_bEof(false)
 	{
-		m_pPath = NULL;
-		m_pDC   = m_oPlayer.GetDC();
-		m_pInterpretator = NULL;
-		m_bEof = false;
+		m_pDC = m_oPlayer.GetDC();
 	}
 
 	CEmfParserBase::~CEmfParserBase(){}
@@ -617,35 +622,34 @@ namespace MetaFile
 		m_bEof = false;
 	}
 
-	TRectL *CEmfParserBase::GetDCBounds()
+	const TRectL& CEmfParserBase::GetDCBounds() const
 	{
-		return &m_oHeader.oFrameToBounds;
+		return m_oHeader.oFrameToBounds;
 	}
-	
-	CClip *CEmfParserBase::GetClip()
+
+	const CClip *CEmfParserBase::GetClip() const
 	{
 		return m_pDC->GetClip();
 	}
 
-	double CEmfParserBase::GetPixelHeight()
+	double CEmfParserBase::GetPixelHeight() const
 	{
 		return m_pDC->GetPixelHeight();
 	}
 
-	double CEmfParserBase::GetPixelWidth()
+	double CEmfParserBase::GetPixelWidth() const
 	{
 		return m_pDC->GetPixelWidth();
 	}
 
-	int CEmfParserBase::GetTextColor()
+	int CEmfParserBase::GetTextColor() const
 	{
-		TRGBA& oColor = m_pDC->GetTextColor();
-		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b, 0);
+		return m_pDC->GetTextColor().ToInt();
 	}
 
-	IFont *CEmfParserBase::GetFont()
+	const IFont *CEmfParserBase::GetFont() const
 	{
-		IFont* pFont = m_pDC->GetFont();
+		const IFont* pFont = m_pDC->GetFont();
 
 		if (!pFont)
 			return NULL;
@@ -653,46 +657,37 @@ namespace MetaFile
 		return pFont;
 	}
 
-	IBrush *CEmfParserBase::GetBrush()
+	const IBrush *CEmfParserBase::GetBrush() const
 	{
-		IBrush* pBrush = m_pDC->GetBrush();
-		if (!pBrush)
-			return NULL;
-
-		return pBrush;
+		return m_pDC->GetBrush();
 	}
 
-	IPen *CEmfParserBase::GetPen()
+	const IPen *CEmfParserBase::GetPen() const
 	{
-		IPen* pPen = m_pDC->GetPen();
-		if (!pPen)
-			return NULL;
-
-		return pPen;
+		return m_pDC->GetPen();
 	}
 
-	unsigned int CEmfParserBase::GetTextAlign()
+	unsigned int CEmfParserBase::GetTextAlign() const
 	{
 		return m_pDC->GetTextAlign();
 	}
 
-	unsigned int CEmfParserBase::GetTextBgMode()
+	unsigned int CEmfParserBase::GetTextBgMode() const
 	{
 		return m_pDC->GetBgMode();
 	}
 
-	int CEmfParserBase::GetTextBgColor()
+	int CEmfParserBase::GetTextBgColor() const
 	{
-		TRGBA& oColor = m_pDC->GetBgColor();
-		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b, 0);
+		return m_pDC->GetBgColor()->ToInt();
 	}
 
-	unsigned int CEmfParserBase::GetFillMode()
+	unsigned int CEmfParserBase::GetFillMode() const
 	{
 		return m_pDC->GetFillMode();
 	}
 
-	TPointD CEmfParserBase::GetCurPos()
+	TPointD CEmfParserBase::GetCurPos() const
 	{
 		TPointL oPoint = m_pDC->GetCurPos();
 		TPointD oRes;
@@ -700,85 +695,80 @@ namespace MetaFile
 		return oRes;
 	}
 
-	TXForm *CEmfParserBase::GetInverseTransform()
+	const TXForm& CEmfParserBase::GetInverseTransform() const
 	{
 		return m_pDC->GetInverseTransform();
 	}
 
-	TXForm *CEmfParserBase::GetTransform(int iGraphicsMode)
+	const TXForm& CEmfParserBase::GetTransform(int iGraphicsMode)
 	{
-		TRectL* pBounds = GetDCBounds();
-		double dT = pBounds->Top;
-		double dL = pBounds->Left;
+		double dT = GetDCBounds().Top;
+		double dL = GetDCBounds().Left;
 
 		TXForm oShiftXForm(1, 0, 0, 1, -dL, -dT);
-		m_oTransform.Copy(m_pDC->GetFinalTransform(iGraphicsMode));
+		m_oTransform.Copy(&m_pDC->GetFinalTransform(iGraphicsMode));
 		m_oTransform.Multiply(oShiftXForm, MWT_RIGHTMULTIPLY);
-		return &m_oTransform;
+		return m_oTransform;
 	}
 
-	unsigned int CEmfParserBase::GetMiterLimit()
+	unsigned int CEmfParserBase::GetMiterLimit() const
 	{
 		return m_pDC->GetMiterLimit();
 	}
 
-	unsigned int CEmfParserBase::GetRop2Mode()
+	unsigned int CEmfParserBase::GetRop2Mode() const
 	{
 		return m_pDC->GetRop2Mode();
 	}
 
-	int CEmfParserBase::GetCharSpace()
+	int CEmfParserBase::GetCharSpace() const
 	{
 		return 0;
 	}
 
-	bool CEmfParserBase::IsWindowFlippedY()
+	bool CEmfParserBase::IsWindowFlippedY() const
 	{
-		TEmfWindow* pWindow = m_pDC->GetWindow();
-		return (pWindow->ulH < 0);
+		return m_pDC->GetWindow().ulH < 0;
 	}
 
-	bool CEmfParserBase::IsWindowFlippedX()
+	bool CEmfParserBase::IsWindowFlippedX() const
 	{
-		TEmfWindow* pWindow = m_pDC->GetWindow();
-		return (pWindow->ulW < 0);
+		return m_pDC->GetWindow().ulW < 0;
 	}
 
-	unsigned int CEmfParserBase::GetMapMode()
+	unsigned int CEmfParserBase::GetMapMode() const
 	{
 		return m_pDC->GetMapMode();
 	}
 
-	USHORT CEmfParserBase::GetDpi()
+	USHORT CEmfParserBase::GetDpi() const
 	{
 		return 96;
 	}
 
-	IRegion *CEmfParserBase::GetRegion()
+	const IRegion *CEmfParserBase::GetRegion() const
 	{
 		return NULL;
 	}
 
-	unsigned int CEmfParserBase::GetArcDirection()
+	unsigned int CEmfParserBase::GetArcDirection() const
 	{
 		return m_pDC->GetArcDirection();
 	}
 	
-	CPath *CEmfParserBase::GetPath()
+	const CPath *CEmfParserBase::GetPath() const
 	{
 		return m_pPath;
 	}
 
-	bool CEmfParserBase::IsViewportFlippedY()
+	bool CEmfParserBase::IsViewportFlippedY() const
 	{
-		TEmfWindow* pViewport = m_pDC->GetViewport();
-		return (pViewport->ulH < 0);
+		return m_pDC->GetViewport().ulH < 0;
 	}
 
-	bool CEmfParserBase::IsViewportFlippedX()
+	bool CEmfParserBase::IsViewportFlippedX() const
 	{
-		TEmfWindow* pViewport = m_pDC->GetViewport();
-		return (pViewport->ulW < 0);
+		return  m_pDC->GetViewport().ulW < 0;
 	}
 
 	void CEmfParserBase::SetInterpretator(IOutputDevice *pOutput)
@@ -829,17 +819,28 @@ namespace MetaFile
 		return m_pInterpretator;
 	}
 
-	TRectL* CEmfParserBase::GetBounds()
+	TXForm CEmfParserBase::CalculateCurrentTransform() const
 	{
-		return &m_oHeader.oFramePx;
+		if (NULL == m_pParent)
+			return m_pDC->GetTransform();
+
+		TXForm oTransform{m_pParent->CalculateCurrentTransform()};
+		oTransform.Multiply(m_pDC->GetTransform(), MWT_RIGHTMULTIPLY);
+
+		return oTransform;
 	}
 
-	CPath *CEmfParserBase::GetPath() const
+	const TRectL& CEmfParserBase::GetBounds() const
+	{
+		return m_oHeader.oFramePx;
+	}
+
+	CPath *CEmfParserBase::GetPath()
 	{
 		return m_pPath;
 	}
 
-	TPointL CEmfParserBase::GetStartPointForArc(const TRectL &oBox, double dStartAngle)
+	TPointL CEmfParserBase::GetStartPointForArc(const TRectL &oBox, double dStartAngle) const
 	{
 		TPointL oStartPoint;
 
@@ -854,6 +855,25 @@ namespace MetaFile
 		oStartPoint.Y = oBox.Top + dHeight / 2.0 - dHeight / 2 * sin(dTan);
 
 		return oStartPoint;
+	}
+
+	void CEmfParserBase::SaveDC()
+	{
+		m_oPlayer.SaveDC();
+		UpdateOutputDC();
+	}
+
+	void CEmfParserBase::RestoreDC(int nIndex)
+	{
+		if (nIndex >= 0)
+		{
+			SetError();
+			return;
+		}
+
+		m_oPlayer.RestoreDC(nIndex);
+		m_pDC = m_oPlayer.GetDC();
+		UpdateOutputDC();
 	}
 
 	void CEmfParserBase::HANDLE_EMR_HEADER(TEmfHeader &oTEmfHeader)
@@ -952,8 +972,7 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_SAVEDC();
 
-		m_oPlayer.SaveDC();
-		UpdateOutputDC();
+		SaveDC();
 	}
 
 	void CEmfParserBase::HANDLE_EMR_RESTOREDC(int &nIndexDC)
@@ -961,15 +980,7 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_RESTOREDC(nIndexDC);
 
-		if (nIndexDC >= 0)
-		{
-			SetError();
-			return;
-		}
-
-		m_oPlayer.RestoreDC(nIndexDC);
-		m_pDC = m_oPlayer.GetDC();
-		UpdateOutputDC();
+		RestoreDC(nIndexDC);
 	}
 
 	void CEmfParserBase::HANDLE_EMR_MODIFYWORLDTRANSFORM(TXForm &oXForm, unsigned int &unMode)
@@ -1292,7 +1303,7 @@ namespace MetaFile
 		
 		if (NULL != m_pPath)
 		{
-			m_pDC->GetClip()->SetPath(*m_pPath, unRegionMode, *GetDC()->GetFinalTransform(GM_ADVANCED));
+			m_pDC->GetClip()->SetPath(*m_pPath, unRegionMode, m_pDC->GetFinalTransform(GM_ADVANCED));
 			RELEASEOBJECT(m_pPath);
 			UpdateOutputDC();
 		}
@@ -1338,9 +1349,9 @@ namespace MetaFile
 		TranslatePoint(oClip.Left, oClip.Top, oClipRect.Left, oClipRect.Top);
 		TranslatePoint(oClip.Right, oClip.Bottom, oClipRect.Right, oClipRect.Bottom);
 
-		TRectL* pRect = GetDCBounds();
-		TranslatePoint(pRect->Left, pRect->Top, oBB.Left, oBB.Top);
-		TranslatePoint(pRect->Right, pRect->Bottom, oBB.Right, oBB.Bottom);
+		const TRectL& oRect{GetDCBounds()};
+		TranslatePoint(oRect.Left,  oRect.Top,    oBB.Left,  oBB.Top);
+		TranslatePoint(oRect.Right, oRect.Bottom, oBB.Right, oBB.Bottom);
 
 		m_pDC->GetClip()->Exclude(oClipRect, oBB);
 		UpdateOutputDC();
@@ -1408,9 +1419,9 @@ namespace MetaFile
 		TRectD oClipRect;
 		TranslatePoint(oClip.Left, oClip.Top, oClipRect.Left, oClipRect.Top);
 		TranslatePoint(oClip.Right, oClip.Bottom, oClipRect.Right, oClipRect.Bottom);
-		
+
 		m_pDC->GetClip()->Intersect(oClipRect);
-		
+
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_INTERSECTCLIPRECT(oClip);
 	}
@@ -1695,12 +1706,12 @@ namespace MetaFile
 			return;
 
 		CEmfPlusBrush oBrush;
-                oBrush.unStyle = BS_LINEARGRADIENT;
+		oBrush.unStyle = BS_LINEARGRADIENT;
 
-                oBrush.oColor.chRed   = arVertex[0].ushRed   / 255.;
-                oBrush.oColor.chGreen = arVertex[0].ushGreen / 255.;
-                oBrush.oColor.chBlue  = arVertex[0].ushBlue  / 255.;
-                oBrush.oColor.chAlpha = 255;
+		oBrush.oColor.chRed   = arVertex[0].ushRed   / 255.;
+		oBrush.oColor.chGreen = arVertex[0].ushGreen / 255.;
+		oBrush.oColor.chBlue  = arVertex[0].ushBlue  / 255.;
+		oBrush.oColor.chAlpha = 255;
 
 		if (GRADIENT_FILL_RECT_H == unFillMode || GRADIENT_FILL_TRIANGLE == unFillMode)
 		{
@@ -1726,7 +1737,7 @@ namespace MetaFile
 		}
 		oBrush.oColorBack.chAlpha = 255;
 
-		IBrush* pBrush = m_pDC->GetBrush();
+		const IBrush* pBrush = m_pDC->GetBrush();
 		m_pDC->SetBrush(&oBrush);
 
 		MoveTo(arVertex[0].nX, arVertex[0].nY);
@@ -1742,7 +1753,7 @@ namespace MetaFile
 			m_pInterpretator->HANDLE_EMR_GRADIENTFILL(arVertex, arIndexes, unFillMode);
 
 		m_pDC->RemoveBrush(&oBrush);
-		m_pDC->SetBrush(pBrush);
+		m_pDC->SetBrush((IBrush*)pBrush);
 	}
 
 	void CEmfParserBase::HANDLE_EMR_UNKNOWN(const unsigned int& unRecordSize)

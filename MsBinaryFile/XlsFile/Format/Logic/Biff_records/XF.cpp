@@ -221,8 +221,8 @@ void XF::readFields(CFRecord& record)
 
 		fill.fls = static_cast<unsigned char>(GETBITS(flags4, 0, 5));
 
-		fill.icvFore = GETBITS(flags4, 0, 6);
-		fill.icvBack = GETBITS(flags4, 7, 13);
+		fill.icvFore = GETBITS(flags4, 6, 10);
+		fill.icvBack = GETBITS(flags4, 11, 15);
 		
 		border.dgTop = static_cast<unsigned char>(GETBITS(flags5, 0, 2));
 		border.icvTop = (0 != border.dgTop) ? static_cast<unsigned char>(GETBITS(flags5, 3, 7)) : 0;

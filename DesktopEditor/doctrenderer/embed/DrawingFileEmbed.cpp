@@ -1,6 +1,7 @@
 #include "DrawingFileEmbed.h"
+#include "../drawingfile.h"
 
-JSSmart<CJSValue> MoveMemoryToJS(BYTE* pWasmData)
+JSSmart<CJSValue> WasmMemoryToJS(BYTE* pWasmData)
 {
 	if (NULL == pWasmData)
 		return CJSContext::createNull();
@@ -10,12 +11,16 @@ JSSmart<CJSValue> MoveMemoryToJS(BYTE* pWasmData)
 	if (4 >= nLen)
 		return CJSContext::createNull();
 
-	size_t nBufferSize = (size_t)(nLen - 4);
-	BYTE* pMemory = NSJSBase::NSAllocator::Alloc(nBufferSize);
-	memcpy(pMemory, pWasmData + 4, nBufferSize);
-	free(pWasmData);
+	return NSJSBase::CJSContext::createUint8Array(pWasmData + 4, nLen - 4, true);
+}
 
-	return NSJSBase::CJSContext::createUint8Array(pMemory, (int)nBufferSize, false);
+CDrawingFileEmbed::CDrawingFileEmbed()
+{
+	m_pFile = NULL;
+}
+CDrawingFileEmbed::~CDrawingFileEmbed()
+{
+	RELEASEOBJECT(m_pFile);
 }
 
 JSSmart<CJSValue> CDrawingFileEmbed::OpenFile(JSSmart<CJSValue> sFile, JSSmart<CJSValue> sPassword)
@@ -40,58 +45,89 @@ JSSmart<CJSValue> CDrawingFileEmbed::GetErrorCode()
 
 JSSmart<CJSValue> CDrawingFileEmbed::GetInfo()
 {
-	return MoveMemoryToJS(m_pFile->GetInfo());
+	return WasmMemoryToJS(m_pFile->GetInfo());
 }
 
 JSSmart<CJSValue> CDrawingFileEmbed::GetPixmap(JSSmart<CJSValue> nPageIndex, JSSmart<CJSValue> nRasterW, JSSmart<CJSValue> nRasterH, JSSmart<CJSValue> nBackgroundColor)
 {
-	return MoveMemoryToJS(m_pFile->GetPixmap(nPageIndex->toInt32(), nRasterW->toInt32(), nRasterH->toInt32(), nBackgroundColor->toInt32()));
+	int nW = nRasterW->toInt32();
+	int nH = nRasterH->toInt32();
+	BYTE* pData = m_pFile->GetPixmap(nPageIndex->toInt32(), nW, nH, nBackgroundColor->toInt32());
+
+	if (NULL == pData)
+		return CJSContext::createNull();
+
+	return NSJSBase::CJSContext::createUint8Array(pData, 4 * nW * nH, true);
+}
+
+JSSmart<CJSValue> CDrawingFileEmbed::DestroyPixmap(JSSmart<CJSValue> typedArray)
+{
+	if (!typedArray->isTypedArray())
+		return NULL;
+
+	CBgraFrame oFrame;
+	oFrame.put_Data(typedArray->toTypedArray()->getData().Data);
+	// free on destructor
+	return NULL;
+}
+
+JSSmart<CJSValue> CDrawingFileEmbed::GetFontBinary(JSSmart<CJSValue> Id)
+{
+	if (0 != m_pFile->GetType())
+		return NULL;
+
+	std::wstring sName = Id->toStringW();
+	std::wstring sFile = m_pFile->GetFontBinaryNative(sName);
+	if (sFile.empty())
+		return NULL;
+
+	return CJSContext::createUint8Array(sFile);
 }
 
 JSSmart<CJSValue> CDrawingFileEmbed::GetGlyphs(JSSmart<CJSValue> nPageIndex)
 {
-	return MoveMemoryToJS(m_pFile->GetGlyphs(nPageIndex->toInt32()));
+	return WasmMemoryToJS(m_pFile->GetGlyphs(nPageIndex->toInt32()));
 }
 JSSmart<CJSValue> CDrawingFileEmbed::GetLinks(JSSmart<CJSValue> nPageIndex)
 {
-	return MoveMemoryToJS(m_pFile->GetLinks(nPageIndex->toInt32()));
+	return WasmMemoryToJS(m_pFile->GetLinks(nPageIndex->toInt32()));
 }
 JSSmart<CJSValue> CDrawingFileEmbed::GetStructure()
 {
-	return MoveMemoryToJS(m_pFile->GetStructure());
+	return WasmMemoryToJS(m_pFile->GetStructure());
 }
 JSSmart<CJSValue> CDrawingFileEmbed::GetInteractiveFormsInfo()
 {
-	return MoveMemoryToJS(m_pFile->GetInteractiveFormsInfo());
+	return WasmMemoryToJS(m_pFile->GetInteractiveFormsInfo());
 }
 JSSmart<CJSValue> CDrawingFileEmbed::GetInteractiveFormsFonts(JSSmart<CJSValue> nTypeFonts)
 {
-	return MoveMemoryToJS(m_pFile->GetInteractiveFormsFonts(nTypeFonts->toInt32()));
+	return WasmMemoryToJS(m_pFile->GetInteractiveFormsFonts(nTypeFonts->toInt32()));
 }
 
 JSSmart<CJSValue> CDrawingFileEmbed::GetInteractiveFormsAP(JSSmart<CJSValue> nRasterW, JSSmart<CJSValue> nRasterH, JSSmart<CJSValue> nBackgroundColor,
 														   JSSmart<CJSValue> nPageIndex,
 														   JSSmart<CJSValue> nWidget, JSSmart<CJSValue> nView, JSSmart<CJSValue> nButtonView)
 {
-	return MoveMemoryToJS(m_pFile->GetInteractiveFormsAP(nRasterW->toInt32(), nRasterH->toInt32(), nBackgroundColor->toInt32(),
+	return WasmMemoryToJS(m_pFile->GetInteractiveFormsAP(nRasterW->toInt32(), nRasterH->toInt32(), nBackgroundColor->toInt32(),
 														 nPageIndex->toInt32(),
 														 nWidget->toInt32(), nView->toInt32(), nButtonView->toInt32()));
 }
 JSSmart<CJSValue> CDrawingFileEmbed::GetButtonIcons(JSSmart<CJSValue> nBackgroundColor, JSSmart<CJSValue> nPageIndex, JSSmart<CJSValue> bBase64,
 													JSSmart<CJSValue> nButtonWidget, JSSmart<CJSValue> nIconView)
 {
-	return MoveMemoryToJS(m_pFile->GetButtonIcons(nBackgroundColor->toInt32(), nPageIndex->toInt32(), bBase64->toInt32(),
+	return WasmMemoryToJS(m_pFile->GetButtonIcons(nBackgroundColor->toInt32(), nPageIndex->toInt32(), bBase64->toInt32(),
 												  nButtonWidget->toInt32(), nIconView->toInt32()));
 }
 JSSmart<CJSValue> CDrawingFileEmbed::GetAnnotationsInfo(JSSmart<CJSValue> nPageIndex)
 {
-	return MoveMemoryToJS(m_pFile->GetAnnotationsInfo(nPageIndex->toInt32()));
+	return WasmMemoryToJS(m_pFile->GetAnnotationsInfo(nPageIndex->toInt32()));
 }
 JSSmart<CJSValue> CDrawingFileEmbed::GetAnnotationsAP(JSSmart<CJSValue> nRasterW, JSSmart<CJSValue> nRasterH, JSSmart<CJSValue> nBackgroundColor,
 													  JSSmart<CJSValue> nPageIndex, JSSmart<CJSValue> nAnnot, JSSmart<CJSValue> nView)
 {
-	return MoveMemoryToJS(m_pFile->GetAnnotationsAP(nRasterW->toInt32(), nRasterH->toInt32(), nBackgroundColor->toInt32(),
-														 nPageIndex->toInt32(), nAnnot->toInt32(), nView->toInt32()));
+	return WasmMemoryToJS(m_pFile->GetAnnotationsAP(nRasterW->toInt32(), nRasterH->toInt32(), nBackgroundColor->toInt32(),
+													nPageIndex->toInt32(), nAnnot->toInt32(), nView->toInt32()));
 }
 
 JSSmart<CJSValue> CDrawingFileEmbed::DestroyTextInfo()
@@ -105,7 +141,7 @@ JSSmart<CJSValue> CDrawingFileEmbed::IsNeedCMap()
 }
 JSSmart<CJSValue> CDrawingFileEmbed::ScanPage(JSSmart<CJSValue> nPageIndex, JSSmart<CJSValue> mode)
 {
-	return MoveMemoryToJS(m_pFile->ScanPage(nPageIndex->toInt32(), mode->toInt32()));
+	return WasmMemoryToJS(m_pFile->ScanPage(nPageIndex->toInt32(), mode->toInt32()));
 }
 
 JSSmart<CJSValue> CDrawingFileEmbed::GetImageBase64(JSSmart<CJSValue> rId)
@@ -116,4 +152,29 @@ JSSmart<CJSValue> CDrawingFileEmbed::GetImageBase64(JSSmart<CJSValue> rId)
 	JSSmart<CJSValue> ret = CJSContext::createString(*pData);
 	*pData = "";
 	return ret;
+}
+
+JSSmart<CJSValue> CDrawingFileEmbed::FreeWasmData(JSSmart<CJSValue> typedArray)
+{
+	if (!typedArray->isTypedArray())
+		return NULL;
+	BYTE* data = typedArray->toTypedArray()->getData().Data;
+	typedArray->toTypedArray()->Detach();
+	data -= 4; // sizeof int (length in NSWasm::Data)
+	free(data);
+	return NULL;
+}
+
+bool EmbedDrawingFile(JSSmart<NSJSBase::CJSContext>& context, IOfficeDrawingFile* pFile)
+{
+	CJSContext::Embed<CDrawingFileEmbed>(false);
+
+	JSSmart<CJSObject> oNativeDrawingFile = CJSContext::createEmbedObject("CDrawingFileEmbed");
+	context->GetGlobal()->set("g_native_drawing_file", oNativeDrawingFile);
+
+	CDrawingFile* pDrFile = new CDrawingFile(pFile->GetFonts());
+	pDrFile->SetInternalFile(pFile);
+	((CDrawingFileEmbed*)oNativeDrawingFile->getNative())->m_pFile = pDrFile;
+
+	return true;
 }

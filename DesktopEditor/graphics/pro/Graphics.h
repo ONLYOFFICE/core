@@ -131,11 +131,6 @@ namespace NSGraphics
 
 		virtual void drawVerLine(BYTE align, double x, double y, double b, double penW) = 0;
 		virtual void drawHorLineExt(BYTE align, double y, double x, double r, double penW, double leftMW, double rightMW) = 0;
-
-		// test
-
-		virtual void put_BrushGradInfo(const NSStructures::GradientInfo &_ginfo) = 0;
-		virtual void put_BlendMode(const unsigned int nBlendMode) = 0;
 	};
 
 	GRAPHICS_DECL IGraphicsRenderer* Create();

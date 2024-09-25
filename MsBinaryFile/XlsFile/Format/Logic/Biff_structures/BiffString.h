@@ -141,6 +141,7 @@ public:
 			case cch_READ_FROM_RECORD:
                 cchType cch_l; // Just to conform size read.
                 record >> cch_l;
+
                 cch = cch_l;
 				struct_size += sizeof(cchType);
 				break;

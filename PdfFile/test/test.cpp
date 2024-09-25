@@ -196,6 +196,51 @@ TEST_F(CPdfFileTest, GetMetaData)
 	RELEASEARRAYOBJECTS(pMetaData);
 }
 
+TEST_F(CPdfFileTest, PdfType)
+{
+	//GTEST_SKIP();
+
+	NSFile::CFileBinary oFile;
+	ASSERT_TRUE(oFile.OpenFile(wsSrcFile));
+
+	int nSize = 4096;
+	BYTE* pBuffer = new BYTE[nSize];
+	if (!pBuffer)
+	{
+		oFile.CloseFile();
+		return;
+	}
+
+	DWORD dwReadBytes = 0;
+	oFile.ReadFile(pBuffer, nSize, dwReadBytes);
+	oFile.CloseFile();
+
+	char* pData = (char*)pBuffer;
+	bool bPDF = false;
+	for (int i = 0; i < nSize - 5; ++i)
+	{
+		int nPDF = strncmp(&pData[i], "%PDF-", 5);
+		if (!nPDF)
+		{
+			bPDF = true;
+			break;
+		}
+	}
+
+	ASSERT_TRUE(bPDF);
+
+	RELEASEARRAYOBJECTS(pBuffer);
+}
+
+TEST_F(CPdfFileTest, GetEmbeddedFont)
+{
+	//GTEST_SKIP();
+
+	LoadFromFile();
+
+	std::wcout << pdfFile->GetEmbeddedFontPath(L"Symbol") << std::endl;
+}
+
 TEST_F(CPdfFileTest, ValidMetaData)
 {
 	GTEST_SKIP();
@@ -282,7 +327,7 @@ TEST_F(CPdfFileTest, SetMetaData)
 
 TEST_F(CPdfFileTest, ConvertToRaster)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	LoadFromFile();
 

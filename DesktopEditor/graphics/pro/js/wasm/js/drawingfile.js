@@ -115,7 +115,7 @@ CFile.prototype["loadFromDataWithPassword"] = function(password)
 	if (0 != this.nativeFile)
 		this._closeFile();
 
-	let isSuccess = this._openFile(arrayBuffer, password);
+	let isSuccess = this._openFile(undefined, password);
 	let error = this._getError(); // 0 - ok, 4 - password, else: error
 	this.type = this._getType();
 
@@ -841,6 +841,8 @@ CFile.prototype["getButtonIcons"] = function(pageIndex, width, height, backgroun
 	let reader = ptr.getReader();
 
 	if (!reader) return {};
+
+	let res = {};
 	
 	res["MK"] = [];
 	res["View"] = [];

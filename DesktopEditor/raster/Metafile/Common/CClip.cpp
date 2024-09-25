@@ -107,8 +107,8 @@ namespace MetaFile
 	void CClip::Copy(const CClip &oClip)
 	{
 		Clear();
-		
-		for (const CClipCommandBase* pCommand : m_arCommands)
+
+		for (const CClipCommandBase* pCommand : oClip.m_arCommands)
 		{
 			switch(pCommand->GetType())
 			{

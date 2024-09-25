@@ -30,12 +30,16 @@
  *
  */
 
+//string_utf8
+
 function CNativePointer()
 {
 	this.ptr = null;
 }
 CNativePointer.prototype.free = function()
 {
+	if (this.ptr)
+		g_native_drawing_file["FreeWasmData"](this.ptr);
 	this.ptr = null;
 };
 CNativePointer.prototype.getReader = function()
@@ -65,120 +69,159 @@ CFile.prototype._getUint8ClampedArray = function(ptr, len)
 // FILE
 CFile.prototype._openFile = function(buffer, password)
 {
-	// TODO:
+	let res = false;
+	if (!buffer)
+		res = -1 !== g_native_drawing_file["GetType"]();
+
+	if (res)
+		this.nativeFile = 1;
+	return res;
 };
 
 CFile.prototype._closeFile = function()
 {
-	// TODO:
+	g_native_drawing_file["CloseFile"]();
+	this.nativeFile = 0;
 };
 
 CFile.prototype._getType = function()
 {
-	// TODO:
+	return g_native_drawing_file["GetType"]();
 };
 
 CFile.prototype._getError = function()
 {
-	// TODO:
+	return g_native_drawing_file["GetErrorCode"]();
 };
 
 // FONTS
 CFile.prototype._isNeedCMap = function()
 {
-	// TODO:
+	return g_native_drawing_file["IsNeedCMap"]();
 };
 
 CFile.prototype._setCMap = function(memoryBuffer)
 {
-	// TODO:
+	// none
 };
 
 CFile.prototype._getFontByID = function(ID)
 {
-	// TODO:
+	return g_native_drawing_file["GetFontBinary"](ID);
 };
 
 CFile.prototype._getInteractiveFormsFonts = function(type)
 {
-	// TODO:
+	g_module_pointer.ptr = g_native_drawing_file["GetInteractiveFormsFonts"](type);
+	return g_module_pointer;
 };
 
 // INFO DOCUMENT
 CFile.prototype._getInfo = function()
 {
-	// TODO:
+	g_module_pointer.ptr = g_native_drawing_file["GetInfo"]();
+	return g_module_pointer;
 };
 
 CFile.prototype._getStructure = function()
 {
-	// TODO:
+	g_module_pointer.ptr = g_native_drawing_file["GetStructure"]();
+	return g_module_pointer;
 };
 
 CFile.prototype._getLinks = function(pageIndex)
 {
-	// TODO:
+	g_module_pointer.ptr = g_native_drawing_file["GetLinks"](pageIndex);
+	return g_module_pointer;
 };
 
 // WIDGETS & ANNOTATIONS
 CFile.prototype._getInteractiveFormsInfo = function()
 {
-	// TODO:
+	g_module_pointer.ptr = g_native_drawing_file["GetInteractiveFormsInfo"]();
+	return g_module_pointer;
 };
 
 CFile.prototype._getAnnotationsInfo = function(pageIndex)
 {
-	// TODO:
+	g_module_pointer.ptr = g_native_drawing_file["GetAnnotationsInfo"](pageIndex);
+	return g_module_pointer;
 };
 
 CFile.prototype._getButtonIcons = function(backgroundColor, pageIndex, isBase64, nWidget, nView)
 {
-	// TODO:
+	g_module_pointer.ptr = g_native_drawing_file["GetButtonIcons"](
+		backgroundColor === undefined ? 0xFFFFFF : backgroundColor, 
+		pageIndex, 
+		isBase64 ? 1 : 0, 
+		nWidget === undefined ? -1 : nWidget, 
+		nView);
+	return g_module_pointer;
 };
 
 CFile.prototype._getAnnotationsAP = function(width, height, backgroundColor, pageIndex, nAnnot, nView)
 {
-	// TODO:
+	g_module_pointer.ptr = g_native_drawing_file["GetAnnotationsAP"](
+		width, 
+		height,
+		backgroundColor === undefined ? 0xFFFFFF : backgroundColor,
+		pageIndex,
+		nAnnot === undefined ? -1 : nAnnot,
+		nView);
+	return g_module_pointer;
 };
 
 CFile.prototype._getInteractiveFormsAP = function(width, height, backgroundColor, pageIndex, nWidget, nView, nButtonView)
 {
-	// TODO:
+	g_module_pointer.ptr = g_native_drawing_file["GetInteractiveFormsAP"](
+		width, 
+		height,
+		backgroundColor === undefined ? 0xFFFFFF : backgroundColor,
+		pageIndex,
+		nWidget === undefined ? -1 : nWidget,
+		nView, nButtonView);
+	return g_module_pointer;
 };
 
 // SCAN PAGES
 CFile.prototype._scanPage = function(page, mode)
 {
-	// TODO:
+	g_module_pointer.ptr = g_native_drawing_file["ScanPage"](page, (mode === undefined) ? 0 : mode);
+	return g_module_pointer;
 };
 
 CFile.prototype._getImageBase64 = function(rId)
 {
-	// TODO:
+	return g_native_drawing_file["GetImageBase64"](rId);
 };
 
 // TEXT
 CFile.prototype._getGlyphs = function(pageIndex)
 {
-	// TODO:
+	let res = {};
+	res.info = [0, 0, 0, 0];
+	res.result = [];
+	return res;
 };
 
 CFile.prototype._destroyTextInfo = function()
 {
-	// TODO:
+	g_native_drawing_file["DestroyTextInfo"](rId);
 };
 
 // RASTER
 CFile.prototype._getPixmap = function(pageIndex, width, height, backgroundColor)
 {
-	// TODO:
+	return null;
 };
 
 // STATIC FUNCTIONS
 CFile.prototype._InitializeFonts = function(basePath) 
 {
+	// none
 };
 
 CFile.prototype._CheckStreamId = function(data, status) 
 {
+	// none
 };

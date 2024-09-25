@@ -821,7 +821,7 @@ void ReadFileAttachment(BYTE* pAnnots, int& i, int n)
 	RELEASEARRAYOBJECTS(res);
 }
 
-void ReadInteractiveFormsFonts(CGraphicsFileDrawing* pGrFile, int nType)
+void ReadInteractiveFormsFonts(CDrawingFile* pGrFile, int nType)
 {
 	BYTE* pFonts = GetInteractiveFormsFonts(pGrFile, nType);
 	int nLength = READ_INT(pFonts);
@@ -923,7 +923,7 @@ int main(int argc, char* argv[])
 	if (!NSFile::CFileBinary::ReadAllBytes(sFilePath, &pFileData, nFileDataLen))
 		return 1;
 
-	CGraphicsFileDrawing* pGrFile = Open(pFileData, (LONG)nFileDataLen, "");
+	CDrawingFile* pGrFile = Open(pFileData, (LONG)nFileDataLen, "");
 	int nError = GetErrorCode(pGrFile);
 
 	if (nError != 0)
@@ -1084,7 +1084,7 @@ int main(int argc, char* argv[])
 	}
 
 	// INTERACTIVE FORMS
-	if (false)
+	if (true)
 	{
 		ReadInteractiveFormsFonts(pGrFile, 1);
 		ReadInteractiveFormsFonts(pGrFile, 2);
@@ -1199,7 +1199,7 @@ int main(int argc, char* argv[])
 	}
 
 	// ANNOTS
-	if (false)
+	if (true)
 	{
 		BYTE* pAnnots = GetAnnotationsInfo(pGrFile, -1);
 		nLength = READ_INT(pAnnots);

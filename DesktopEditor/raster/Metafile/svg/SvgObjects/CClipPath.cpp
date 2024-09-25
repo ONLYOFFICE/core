@@ -23,8 +23,8 @@ namespace SVG
 		if (NULL == pRenderer || NULL == pFile)
 			return false;
 
-		ApplyClip(pRenderer, &m_oTransformtaion.m_oClip, pFile, oObjectBounds);
-		
+		ApplyClip(pRenderer, &m_oTransformation.m_oClip, pFile, oObjectBounds);
+
 		for (const CRenderedObject* pObject : m_oContainer.m_arObjects)
 			pObject->Draw(pRenderer, pFile, CommandeModeClip);
 

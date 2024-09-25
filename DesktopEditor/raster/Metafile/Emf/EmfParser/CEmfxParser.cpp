@@ -301,7 +301,7 @@ namespace MetaFile
 		m_pOutput->MoveToStart();
 	}
 
-	EmfParserType CEmfxParser::GetType()
+	EmfParserType CEmfxParser::GetType() const
 	{
 		return EmfParserType::EmfxParser;
 	}

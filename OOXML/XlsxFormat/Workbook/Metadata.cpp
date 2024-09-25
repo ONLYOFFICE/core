@@ -1331,9 +1331,13 @@ namespace OOX
 				ptr1->stName = m_oName.get();
 			else
 				ptr1->stName = L"";
-			ptr1->cFmd = m_arrItems.size();
 			for(auto i:m_arrItems)
-				ptr->FMDs.push_back(i->toBin());
+            {
+                auto fmd = i->toBin();
+                if(fmd)
+                    ptr->FMDs.push_back(fmd);
+            }
+            ptr1->cFmd = ptr->FMDs.size();
 			return objectPtr;
 		}
 		void CFutureMetadata::fromBin(XLS::BaseObjectPtr& obj)

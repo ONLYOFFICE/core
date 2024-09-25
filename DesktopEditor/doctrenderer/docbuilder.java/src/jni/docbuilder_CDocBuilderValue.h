@@ -65,6 +65,14 @@ JNIEXPORT jboolean JNICALL Java_docbuilder_CDocBuilderValue_c_1IsUndefined
 
 /*
  * Class:     docbuilder_CDocBuilderValue
+ * Method:    c_IsBool
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_docbuilder_CDocBuilderValue_c_1IsBool
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     docbuilder_CDocBuilderValue
  * Method:    c_IsInt
  * Signature: (J)Z
  */

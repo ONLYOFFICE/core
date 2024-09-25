@@ -152,10 +152,13 @@ public:
 	bool is_wordart();
 	bool is_text_box();
 	bool is_placeholder();
+	void placeholder_replacing(bool replacing);
+	bool placeholder_replacing();
 	
 	graphic_format_properties* get_graphic_properties();
 
 	void set_graphic_properties		(style_graphic_properties *graphic_properties);	
+	void set_graphic_properties		(graphic_format_properties* graphic_properties);
 	void set_paragraph_properties	(paragraph_format_properties *paragraph_properties);
 	void set_text_properties		(style_text_properties *text_properties);
 	void set_text_properties		(text_format_properties* text_properties);

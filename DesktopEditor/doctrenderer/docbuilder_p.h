@@ -63,6 +63,10 @@
 
 #include "../common/ProcessEnv.h"
 
+#ifdef DOCBUILDER_LICENSING
+#include "license_gen/src/common/utils.h"
+#endif
+
 #ifdef CreateFile
 #undef CreateFile
 #endif
@@ -991,8 +995,18 @@ namespace NSDoctRenderer
 		}
 
 		int SaveFile(const int& type, const std::wstring& path, const wchar_t* params = NULL)
-		{
+		{			
 			Init();
+
+#ifdef DOCBUILDER_LICENSING
+			std::wstring licenseFilePath = m_sX2tPath + L"/sdkjs/license.xml";
+			NSLicenseUtils::LicenseData licenseData = NSLicenseUtils::parseLicenseFile(licenseFilePath);
+			if (!NSLicenseUtils::verify(licenseData))
+			{
+				CV8RealTimeWorker::_LOGGING_ERROR_(L"error (save)", L"license is invalid!");
+				return 1;
+			}
+#endif
 
 			if (-1 == m_nFileType)
 			{

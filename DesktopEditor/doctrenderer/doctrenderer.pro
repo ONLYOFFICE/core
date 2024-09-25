@@ -126,3 +126,13 @@ drawingfile_support {
 
 	ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/DrawingFileEmbed.h)
 }
+
+# licensing
+isEqual(OO_BUILD_BRANDING, onlyoffice) {
+	core_windows:LIBS += -lws2_32 -lAdvapi32 -lCrypt32 -lUser32
+
+	SOURCES += $$CORE_ROOT_DIR/../onlyoffice/docbuilder/license_gen/src/common/utils.cpp
+
+	INCLUDEPATH += $$CORE_ROOT_DIR/../onlyoffice/docbuilder
+	DEFINES += DOCBUILDER_LICENSING
+}

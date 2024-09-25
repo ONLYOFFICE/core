@@ -2,6 +2,7 @@
 #define BOOLEANOPERATIONS_H
 
 #include "GraphicsPath.h"
+#include <memory>
 
 namespace Aggplus
 {

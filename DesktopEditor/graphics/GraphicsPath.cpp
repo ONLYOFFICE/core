@@ -839,7 +839,7 @@ namespace Aggplus
 		for (unsigned i = 0; i < count; i++)
 		{
 			double x,y;
-			if (idx + i >= length) break;
+			if (idx + i > length) break;
 			this->m_internal->m_agg_ps.vertex(idx + i, &x, &y);
 			points.push_back(PointD(x, y));
 		}
@@ -850,7 +850,7 @@ namespace Aggplus
 	double CGraphicsPath::GetArea() const noexcept
 	{
 		double area = 0.0;
-		for (unsigned i = 0; i < GetPointCount(); i++)
+		for (unsigned i = 0; i < GetPointCount() - 1; i++)
 		{
 			area += GetArea(i, IsCurvePoint(i + 1));
 			if (IsCurvePoint(i + 1)) i += 2;
@@ -914,8 +914,8 @@ namespace Aggplus
 			{
 				std::vector<PointD> points = GetPoints(i, 3);
 				subPath.CurveTo(points[0].X, points[0].Y,
-								 points[1].X, points[1].Y,
-								 points[2].X, points[2].Y);
+								points[1].X, points[1].Y,
+								points[2].X, points[2].Y);
 				i += 2;
 			}
 			else if (IsLinePoint(i))

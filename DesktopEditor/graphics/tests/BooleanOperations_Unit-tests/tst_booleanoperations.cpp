@@ -311,11 +311,6 @@ TEST(BooleanOperations, OverlapInside)
 	resultSubtract.CloseFigure();
 
 
-	Aggplus::CGraphicsPath p = Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union);
-	Aggplus::PointD* points = p.GetPoints(0, p.GetPointCount());
-	for (int i = 0; i < p.GetPointCount(); i++)
-		Aggplus::PointD pt = points[i];
-	delete[] points;
 	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection) == resultIntersect);
 	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union) == resultUnite);
 	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction) == resultSubtract);

@@ -24,8 +24,8 @@ namespace Aggplus
 		std::shared_ptr<Location> Inters{nullptr};
 
 		Segment() noexcept;
-		Segment(PointD* points, const bool& isCurve, const int& index,
-				const int& id, const bool& polyClosed) noexcept;
+		Segment(const std::vector<PointD>& points, const bool& isCurve,
+				const int& index, const int& id, const bool& polyClosed) noexcept;
 		Segment(const PointD& point, const bool& isCurve, const int& index,
 				const int& id, const bool& polyClosed) noexcept;
 		Segment(const PointD& p) noexcept;

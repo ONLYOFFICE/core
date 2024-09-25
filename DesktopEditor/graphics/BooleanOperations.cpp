@@ -7,8 +7,8 @@ Segment::Segment()  noexcept
 {
 }
 
-Segment::Segment(PointD* points, const bool& isCurve, const int& index,
-				 const int& id, const bool& polyClosed) noexcept :
+Segment::Segment(const std::vector<PointD>& points, const bool& isCurve,
+				 const int& index, const int& id, const bool& polyClosed) noexcept :
 	IsCurve(isCurve),
 	PolyClosed(polyClosed),
 	Index(index),
@@ -949,11 +949,16 @@ void CBooleanOperations::TraceAllOverlap()
 			if (count1 % 2 == 0 && count2 % 2 == 0)
 			{
 				Result.StartFigure();
-				for (size_t i = 0; i < Locations.size() / 2; i++)
+				bool start = true;
+				for (size_t i = 0; i < Locations.size() / 2; i += 2)
 				{
-					Result.MoveTo(Locations[i]->S.P.X, Locations[i]->S.P.Y);
-					i++;
-					Result.LineTo(Locations[i]->S.P.X, Locations[i]->S.P.Y);
+					if (start && !(Locations[i]->C.Segment1.Id == Locations[i + 1]->C.Segment1.Id &&
+								   abs(Locations[i]->C.Segment1.Index - Locations[i + 1]->C.Segment1.Index) == 1))
+						Result.MoveTo(Locations[i]->S.P.X, Locations[i]->S.P.Y);
+					else
+						Result.LineTo(Locations[i]->S.P.X, Locations[i]->S.P.Y);
+
+					Result.LineTo(Locations[i + 1]->S.P.X, Locations[i + 1]->S.P.Y);
 				}
 				Result.CloseFigure();
 			}
@@ -1064,6 +1069,8 @@ void CBooleanOperations::TracePaths()
 			if (start)
 				start = false;
 		}
+
+		if (!start && AllOverlap()) break;
 	}
 
 	if (Close1 && Close2) Result.CloseFigure();
@@ -1082,8 +1089,8 @@ void CBooleanOperations::PreparePath(const CGraphicsPath& path, int id,
 		bool isCurve = false;
 		for (int i = length; i > 0; i--)
 		{
-			PointD* points = path.GetPoints(isCurve ? i - 2 : i, isCurve ? 3 : 1);
-			if (isCurve) std::reverse(points, points + 3);
+			std::vector<PointD> points = path.GetPoints(isCurve ? i - 2 : i, isCurve ? 3 : 1);
+			if (isCurve) std::reverse(points.begin(), points.end());
 			if (segments.empty() || getDistance(segments[segments.size() - 1].P, isCurve ? points[2] : points[0]) > POINT_EPSILON)
 			{
 				if (!segments.empty() && getDistance(segments[0].P, isCurve ? points[2] : points[0]) <= POINT_EPSILON)
@@ -1095,7 +1102,6 @@ void CBooleanOperations::PreparePath(const CGraphicsPath& path, int id,
 					segments.push_back(Segment(points, isCurve, idx++, id, isPolyClosed));
 			}
 
-			delete[] points;
 			if (isCurve) i -= 2;
 			isCurve = path.IsCurvePoint(i);
 		}
@@ -1105,7 +1111,7 @@ void CBooleanOperations::PreparePath(const CGraphicsPath& path, int id,
 		for (int i = 0; i < length; i++)
 		{
 			bool isCurve = path.IsCurvePoint(i);
-			PointD* points = path.GetPoints(i, isCurve ? 3 : 1);
+			std::vector<PointD> points = path.GetPoints(i, isCurve ? 3 : 1);
 			if (segments.empty() || getDistance(segments[segments.size() - 1].P, isCurve ? points[2] : points[0]) > POINT_EPSILON)
 			{
 				if (!segments.empty() && getDistance(segments[0].P, isCurve ? points[2] : points[0]) <= POINT_EPSILON)
@@ -1117,7 +1123,6 @@ void CBooleanOperations::PreparePath(const CGraphicsPath& path, int id,
 					segments.push_back(Segment(points, isCurve, idx++, id, isPolyClosed));
 			}
 
-			delete[] points;
 			if (isCurve) i += 2;
 		}
 	}
@@ -1904,29 +1909,20 @@ CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1,
 								   const CGraphicsPath& path2,
 								   BooleanOpType op)
 {
-	unsigned paths1Count = path1.GetMoveCount(),
-			 paths2Count = path2.GetMoveCount();
+	std::vector<CGraphicsPath>	paths1 = path1.GetSubPaths(),
+								paths2 = path2.GetSubPaths(),
+								paths;
 
-	CGraphicsPath *paths1 = path1.GetSubPaths(),
-				  *paths2 = path2.GetSubPaths(),
-				  *paths  = new CGraphicsPath[paths1Count * paths2Count];
-
-	unsigned pathIdx = 0;
-	for (unsigned i = 0; i < paths1Count; i++)
+	for (const auto& p1 : paths1)
 	{
-		for (unsigned j = 0; j < paths2Count; j++)
+		for (const auto& p2 : paths2)
 		{
-			CBooleanOperations operation(paths1[i], paths2[j], op);
-			paths[pathIdx] = operation.GetResult();
-			pathIdx++;
+			CBooleanOperations operation(p1, p2, op);
+			paths.push_back(operation.GetResult());
 		}
 	}
 
-	delete[] paths1;
-	delete[] paths2;
-	CGraphicsPath result(paths, pathIdx);
-	delete[] paths;
-	return result;
+	return CGraphicsPath(paths);
 }
 
 //For unit-tests
@@ -1938,21 +1934,13 @@ bool CGraphicsPath::operator==(const CGraphicsPath& other) noexcept
 	if (pointsCount != otherPointsCount)
 		return false;
 
-	PointD *points = GetPoints(0, pointsCount),
-			*otherPoints = other.GetPoints(0, otherPointsCount);
+	std::vector<PointD> points = GetPoints(0, pointsCount),
+						otherPoints = other.GetPoints(0, otherPointsCount);
 
 	for (unsigned i = 0; i < pointsCount; i++)
-	{
 		if (getDistance(points[i], otherPoints[i]) > POINT_EPSILON)
-		{
-			delete[] points;
-			delete[] otherPoints;
 			return false;
-		}
-	}
 
-	delete[] points;
-	delete[] otherPoints;
 	return true;
 }
 }

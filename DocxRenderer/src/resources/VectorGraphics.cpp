@@ -34,7 +34,7 @@ namespace NSDocxRenderer
 	{
 		size_t close_count = other.GetCloseCount();
 		size_t count = static_cast<size_t>(other.GetPointCount()) + close_count;
-		Aggplus::PointD* points = other.GetPoints(0, count);
+		std::vector<Aggplus::PointD> points = other.GetPoints(0, count);
 		for (size_t idx = 0; idx < count; ++idx)
 		{
 			const auto& point = points[idx];
@@ -55,8 +55,6 @@ namespace NSDocxRenderer
 			else if (other.IsClosePoint(idx))
 				Close();
 		}
-
-		delete[] points;
 	}
 
 

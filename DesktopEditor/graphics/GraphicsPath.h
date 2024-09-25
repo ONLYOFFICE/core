@@ -49,7 +49,7 @@ namespace Aggplus
 		CGraphicsPath();
 		CGraphicsPath(const CGraphicsPath& other) noexcept;
 		CGraphicsPath(CGraphicsPath&& other) noexcept;
-		CGraphicsPath(CGraphicsPath* paths, const unsigned& pathCount) noexcept;
+		CGraphicsPath(const std::vector<CGraphicsPath>& paths) noexcept;
 		virtual ~CGraphicsPath();
 
 		CGraphicsPath* Clone();
@@ -113,8 +113,8 @@ namespace Aggplus
 		bool	 IsClosePoint(unsigned idx) const noexcept;
 		double	 GetArea() const noexcept;
 		double	 GetArea(unsigned idx, bool isCurve) const noexcept;
-		PointD*  GetPoints(unsigned idx, unsigned count) const noexcept;
-		CGraphicsPath* GetSubPaths() const;
+		std::vector<PointD>  GetPoints(unsigned idx, unsigned count) const noexcept;
+		std::vector<CGraphicsPath> GetSubPaths() const;
 
 		CGraphicsPath& operator=(const CGraphicsPath& other)	noexcept;
 		CGraphicsPath& operator=(CGraphicsPath&& other)			noexcept;

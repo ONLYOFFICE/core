@@ -412,11 +412,21 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             else if (L"pivotHierarchies" == sName)		m_oPivotHierarchies = oReader;
 			//else if (L"filters" == sName)				m_oFilters = oReader;
 			//else if (L"chartFormats" == sName)		m_oChartFormats = oReader;
-			//else if (L"colHierarchiesUsage" == sName)	m_oColHierarchiesUsage = oReader;
+
 			//else if (L"conditionalFormats" == sName)	m_oConditionalFormats = oReader;
-			//else if (L"pivotHierarchies" == sName)	m_oPivotHierarchies = oReader;
-			//else if (L"rowHierarchiesUsage" == sName)	m_oRowHierarchiesUsage = oReader;
 			else if (L"extLst" == sName)				m_oExtLst = oReader;
+            else if (L"colHierarchiesUsage" == sName)
+            {
+                m_oColHierarchiesUsage = oReader;
+                if(m_oColHierarchiesUsage.IsInit())
+                    m_oColHierarchiesUsage->m_oRowHierarchy = false;
+            }
+            else if (L"rowHierarchiesUsage" == sName)
+            {
+                m_oRowHierarchiesUsage = oReader;
+                if(m_oRowHierarchiesUsage.IsInit())
+                    m_oRowHierarchiesUsage->m_oRowHierarchy = true;
+            }
 		}
 	}
 	XLS::BaseObjectPtr CPivotTableDefinition::toBin()

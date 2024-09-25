@@ -921,6 +921,95 @@ namespace Spreadsheet
 
        return objectPtr;
     }
+///pivot hierarhies usage
+    void CHierarchyUsage::fromXML(XmlUtils::CXmlLiteReader& oReader)
+    {
+       ReadAttributes( oReader );
+    }
+    void CHierarchyUsage::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+    {
+       WritingElement_ReadAttributes_Start( oReader )
+           WritingElement_ReadAttributes_Read_if	( oReader, L"hierarchyUsage", m_oHierarchyUsage)
+       WritingElement_ReadAttributes_End( oReader )
+    }
+    void CHierarchyUsage::toXML(NSStringUtils::CStringBuilder& writer) const
+    {
+        if(m_oRowHierarchy)
+            writer.WriteString(L"<rowHierarchyUsage");
+        else
+            writer.WriteString(L"<colHierarchyUsage");
+        WritingStringAttrInt(L"hierarchyUsage", m_oHierarchyUsage.get());
+        writer.WriteString(L"/>");
+    }
+    XLS::BaseObjectPtr CHierarchyUsage::toBin()
+    {
+        auto ptr1(new XLSB::SXTHITEM);
+        XLS::BaseObjectPtr objectPtr(ptr1);
+        auto ptr(new XLSB::BeginSXTHItem);
+        ptr1->m_BrtBeginSXTHItem = XLS::BaseObjectPtr{ptr};
 
+        return objectPtr;
+    }
+
+    void CHierarchiesUsage::fromXML(XmlUtils::CXmlLiteReader& oReader)
+    {
+       ReadAttributes( oReader );
+       auto nCurDepth = oReader.GetDepth();
+       while( oReader.ReadNextSiblingNode( nCurDepth ) )
+       {
+           std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+           if ( L"rowHierarchyUsage" == sName )
+           {
+               CHierarchyUsage* pUsage = new CHierarchyUsage();
+               *pUsage = oReader;
+               pUsage->m_oRowHierarchy = true;
+               m_arrItems.push_back(pUsage);
+           }
+           else if( L"colHierarchyUsage" == sName )
+           {
+               CHierarchyUsage* pUsage = new CHierarchyUsage();
+               *pUsage = oReader;
+               pUsage->m_oRowHierarchy = false;
+               m_arrItems.push_back(pUsage);
+           }
+       }
+    }
+    void CHierarchiesUsage::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+    {
+       WritingElement_ReadAttributes_Start( oReader )
+           WritingElement_ReadAttributes_Read_if	( oReader, L"count", m_oCount )
+       WritingElement_ReadAttributes_End( oReader )
+    }
+    void CHierarchiesUsage::toXML(NSStringUtils::CStringBuilder& writer) const
+    {
+        if(m_oRowHierarchy)
+            writer.WriteString(L"<rowHierarchiesUsage");
+        else
+            writer.WriteString(L"<colHierarchiesUsage");
+        WritingStringAttrInt(L"count", (int)m_arrItems.size());
+        writer.WriteString(L">");
+
+        for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+                m_arrItems[i]->toXML(writer);
+            }
+        }
+        if(m_oRowHierarchy)
+            writer.WriteString(L"</rowHierarchiesUsage>");
+        else
+            writer.WriteString(L"</colHierarchiesUsage>");
+    }
+    XLS::BaseObjectPtr CHierarchiesUsage::toBin()
+    {
+       auto ptr(new XLSB::SXTDMPS);
+       XLS::BaseObjectPtr objectPtr(ptr);
+       for(auto i : m_arrItems)
+       {
+           ptr->m_arSXTDMP.push_back(i->toBin());
+       }
+       return objectPtr;
+    }
 }
 }

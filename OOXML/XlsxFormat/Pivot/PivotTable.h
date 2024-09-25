@@ -924,6 +924,8 @@ namespace OOX
             nullable<CColumnRowItems>           m_oRowItems;
             nullable<CPivotTableStyleInfo>      m_oPivotTableStyleInfo;
             nullable<CpivotTableHierarchies>    m_oPivotHierarchies;
+            nullable<CHierarchiesUsage>    		m_oColHierarchiesUsage;
+            nullable<CHierarchiesUsage>    		m_oRowHierarchiesUsage;
 	//nullable<CPivotTableFilters>					m_oFilters;
 	//nullable<CPivotChartFormats>					m_oChartFormats;
 	//nullable<Pivot Conditional Formats>			m_oConditionalFormats;

@@ -475,6 +475,57 @@ namespace Spreadsheet
         nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
 
     };
+///pivot hierarhies usage
+    class CHierarchyUsage : public WritingElement
+    {
+    public:
+        WritingElement_AdditionMethods(CHierarchyUsage)
+        WritingElement_XlsbConstructors(CHierarchyUsage)
+        CHierarchyUsage(){}
+        virtual ~CHierarchyUsage() {}
 
+        virtual void fromXML(XmlUtils::CXmlNode& node)
+        {
+        }
+        virtual std::wstring toXML() const
+        {
+            return _T("");
+        }
+        virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+        virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+        void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+        void fromBin(XLS::BaseObjectPtr& obj);
+        XLS::BaseObjectPtr toBin();
+
+        nullable_int		m_oHierarchyUsage;
+        bool                m_oRowHierarchy = false;
+
+    };
+
+    class CHierarchiesUsage : public WritingElementWithChilds<CHierarchyUsage>
+    {
+    public:
+        WritingElement_AdditionMethods(CHierarchiesUsage)
+        WritingElement_XlsbConstructors(CHierarchiesUsage)
+        CHierarchiesUsage(){}
+        virtual ~CHierarchiesUsage() {}
+
+        virtual void fromXML(XmlUtils::CXmlNode& node)
+        {
+        }
+        virtual std::wstring toXML() const
+        {
+            return _T("");
+        }
+        virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+        virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+        void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+        void fromBin(XLS::BaseObjectPtr& obj);
+        XLS::BaseObjectPtr toBin();
+
+        nullable_int		m_oCount;
+        bool                m_oRowHierarchy = false;
+
+    };
 }
 }

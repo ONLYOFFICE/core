@@ -170,6 +170,7 @@ namespace NSDoctRenderer
 							else
 							{
 								fclose(pFileNative);
+								NSFile::CFileBinary::Remove(m_strAllFonts);
 							}
 						}
 					}

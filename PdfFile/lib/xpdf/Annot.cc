@@ -78,6 +78,7 @@ AnnotBorderStyle::~AnnotBorderStyle() {
 //------------------------------------------------------------------------
 
 Annot::Annot(PDFDoc *docA, Dict *dict, Ref *refA, const char* AP, const char* AS) {
+  GBool bBorder;
   Object apObj, asObj, obj1, obj2, obj3;
   AnnotBorderType borderType;
   double borderWidth;
@@ -88,6 +89,7 @@ Annot::Annot(PDFDoc *docA, Dict *dict, Ref *refA, const char* AP, const char* AS
   double t;
   int i;
 
+  bBorder = gFalse;
   ok = gTrue;
   doc = docA;
   xref = doc->getXRef();
@@ -189,6 +191,7 @@ Annot::Annot(PDFDoc *docA, Dict *dict, Ref *refA, const char* AP, const char* AS
       }
     }
     obj2.free();
+    bBorder = gTrue;
   } else {
     obj1.free();
     if (dict->lookup("Border", &obj1)->isArray()) {
@@ -197,6 +200,7 @@ Annot::Annot(PDFDoc *docA, Dict *dict, Ref *refA, const char* AP, const char* AS
 	  borderWidth = obj2.getNum();
 	}
 	obj2.free();
+	bBorder = gTrue;
 	if (obj1.arrayGetLength() >= 4) {
 	  if (obj1.arrayGet(3, &obj2)->isArray()) {
 	    borderType = annotBorderDashed;
@@ -214,6 +218,7 @@ Annot::Annot(PDFDoc *docA, Dict *dict, Ref *refA, const char* AP, const char* AS
 	    // Adobe draws no border at all if the last element is of
 	    // the wrong type.
 	    borderWidth = 0;
+	    bBorder = gFalse;
 	  }
 	  obj2.free();
 	}
@@ -237,11 +242,14 @@ Annot::Annot(PDFDoc *docA, Dict *dict, Ref *refA, const char* AP, const char* AS
       }
       obj2.free();
     }
+  } else {
+    bBorder = gFalse;
   }
   obj1.free();
-  borderStyle = new AnnotBorderStyle(borderType, borderWidth,
-				     borderDash, borderDashLength,
-				     borderColor, nBorderColorComps);
+  if (bBorder) {
+    borderStyle = new AnnotBorderStyle(borderType, borderWidth,
+      borderDash, borderDashLength, borderColor, nBorderColorComps);
+  }
 
   //----- get the appearance state
 

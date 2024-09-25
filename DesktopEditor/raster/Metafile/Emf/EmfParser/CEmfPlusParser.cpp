@@ -1640,8 +1640,8 @@ namespace MetaFile
 
 			BYTE* pNewBuffer = GetClipedImage(pPixels, nWidth, nHeight, oClipRect);
 
-			const unsigned int unWidth  = std::min(((unsigned int)fabs(oClipRect.Right - oClipRect.Left)), ((unsigned int)nWidth ));
-			const unsigned int unHeight = std::min(((unsigned int)fabs(oClipRect.Bottom - oClipRect.Top)), ((unsigned int)nHeight));
+			const unsigned int unWidth  = std::min(((unsigned int)abs(oClipRect.Right - oClipRect.Left)), ((unsigned int)nWidth ));
+			const unsigned int unHeight = std::min(((unsigned int)abs(oClipRect.Bottom - oClipRect.Top)), ((unsigned int)nHeight));
 
 			m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X - m_pDC->GetPixelWidth(), arPoints[2].Y - arPoints[0].Y - m_pDC->GetPixelHeight(),
 			                             (NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
@@ -1654,8 +1654,6 @@ namespace MetaFile
 			((MetafileType*)&oParser)->SetInterpretator(InterpretatorType::Svg);
 
 			oParser.PlayFile();
-
-			const TXForm& oXForm{m_pDC->GetTransform()};
 
 			TRectD oRect;
 
@@ -1671,9 +1669,7 @@ namespace MetaFile
 			oTempSrcRect.Right  = oTempSrcRect.Left + ((dFileWidth  > oSrcRect.dWidth)  ? oSrcRect.dWidth  - GetPixelWidth()  : dFileWidth);
 			oTempSrcRect.Bottom = oTempSrcRect.Top  + ((dFileHeight > oSrcRect.dHeight) ? oSrcRect.dHeight - GetPixelHeight() : dFileHeight);
 
-			TXForm oTransform;
-
-			oTransform.Copy(oXForm);
+			TXForm oTransform(m_pDC->GetTransform());
 
 			oTransform.Dx -= m_oHeader.oFramePx.Left;
 			oTransform.Dy -= m_oHeader.oFramePx.Top;
@@ -3209,8 +3205,6 @@ namespace MetaFile
 		TEmfPlusXForm oMatrix;
 
 		m_oStream >> oMatrix;
-
-		UpdateMatrix(oMatrix);
 
 		m_pDC->MultiplyTransform(oMatrix, MWT_SET);
 		UpdateOutputDC();

@@ -455,6 +455,12 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             ptr->m_BrtTableStyleClient = m_oPivotTableStyleInfo->toBin();
         if(m_oPageFields.IsInit())
             ptr->m_SXPIS = m_oPageFields->toBin();
+        if(m_oPivotHierarchies.IsInit())
+            ptr->m_SXTHS = m_oPivotHierarchies->toBin();
+        if(m_oColHierarchiesUsage.IsInit())
+            ptr->m_ISXTHCOLS = m_oColHierarchiesUsage->toBin();
+        if(m_oRowHierarchiesUsage.IsInit())
+            ptr->m_ISXTHRWS = m_oRowHierarchiesUsage->toBin();
 
 		/*auto frt(new XLSB::FRTSXVIEW);
 		auto sxview14(new XLSB::SXVIEW14);

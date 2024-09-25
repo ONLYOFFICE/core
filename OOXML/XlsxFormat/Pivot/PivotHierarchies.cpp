@@ -47,6 +47,8 @@
 #include "../../XlsbFormat/Biff12_unions/SXTDMP.h"
 #include "../../XlsbFormat/Biff12_unions/SXTH.h"
 #include "../../XlsbFormat/Biff12_unions/SXTHS.h"
+#include "../../XlsbFormat/Biff12_unions/ISXTHRWS.h"
+#include "../../XlsbFormat/Biff12_unions/ISXTHCOLS.h"
 
 #include "../../XlsbFormat/Biff12_records/BeginPCDHierarchy.h"
 #include "../../XlsbFormat/Biff12_records/BeginPCDHFieldsUsage.h"
@@ -57,6 +59,8 @@
 #include "../../XlsbFormat/Biff12_records/BeginSXTHItems.h"
 #include "../../XlsbFormat/Biff12_records/BeginSXTDMP.h"
 #include "../../XlsbFormat/Biff12_records/BeginSXTH.h"
+#include "../../XlsbFormat/Biff12_records/BeginISXTHCols.h"
+#include "../../XlsbFormat/Biff12_records/BeginISXTHRws.h"
 
 namespace OOX
 {
@@ -941,15 +945,6 @@ namespace Spreadsheet
         WritingStringAttrInt(L"hierarchyUsage", m_oHierarchyUsage.get());
         writer.WriteString(L"/>");
     }
-    XLS::BaseObjectPtr CHierarchyUsage::toBin()
-    {
-        auto ptr1(new XLSB::SXTHITEM);
-        XLS::BaseObjectPtr objectPtr(ptr1);
-        auto ptr(new XLSB::BeginSXTHItem);
-        ptr1->m_BrtBeginSXTHItem = XLS::BaseObjectPtr{ptr};
-
-        return objectPtr;
-    }
 
     void CHierarchiesUsage::fromXML(XmlUtils::CXmlLiteReader& oReader)
     {
@@ -1003,13 +998,32 @@ namespace Spreadsheet
     }
     XLS::BaseObjectPtr CHierarchiesUsage::toBin()
     {
-       auto ptr(new XLSB::SXTDMPS);
-       XLS::BaseObjectPtr objectPtr(ptr);
-       for(auto i : m_arrItems)
-       {
-           ptr->m_arSXTDMP.push_back(i->toBin());
-       }
-       return objectPtr;
+        XLS::BaseObjectPtr objectPtr;
+        if(m_oRowHierarchy)
+        {
+            auto ptr1(new XLSB::ISXTHRWS);
+            auto ptr(new XLSB::BeginISXTHRws);
+            ptr1->m_BrtBeginISXTHRws = XLS::BaseObjectPtr{ptr};
+            objectPtr = XLS::BaseObjectPtr{ptr1};
+            for(auto i : m_arrItems)
+            {
+                if(i->m_oHierarchyUsage.IsInit())
+                    ptr->rgisxth.push_back(i->m_oHierarchyUsage.get());
+            }
+        }
+        else
+        {
+            auto ptr1(new XLSB::ISXTHCOLS);
+            auto ptr(new XLSB::BeginISXTHCols);
+            ptr1->m_BrtBeginISXTHCols = XLS::BaseObjectPtr{ptr};
+            objectPtr = XLS::BaseObjectPtr{ptr1};
+            for(auto i : m_arrItems)
+            {
+                if(i->m_oHierarchyUsage.IsInit())
+                    ptr->rgisxth.push_back(i->m_oHierarchyUsage.get());
+            }
+        }
+        return objectPtr;
     }
 }
 }

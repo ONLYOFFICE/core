@@ -495,7 +495,6 @@ namespace Spreadsheet
         virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
         void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
         void fromBin(XLS::BaseObjectPtr& obj);
-        XLS::BaseObjectPtr toBin();
 
         nullable_int		m_oHierarchyUsage;
         bool                m_oRowHierarchy = false;

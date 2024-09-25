@@ -11,8 +11,8 @@
 #undef DrawText
 #endif
 
-#define PRINT_WMF_RECORD(type) do {} while(false)
-#define PRINT_WMF_LOG(text)    do {} while(false)
+#define PRINT_WMF_RECORD(type) do {} while(false);
+#define PRINT_WMF_LOG(text)    do {} while(false);
 
 #ifdef _DEBUG
 #define LOG_WMF_RECORDS 1
@@ -24,7 +24,7 @@
 		#define PRINTING_WMF_RECORDS      1
 
 		#define PRINT_WMF_LOG(text) \
-			std::wcout << L"[LOG] " << text << std::endl
+			std::cout << "[LOG] " << text << std::endl
 
 		#ifdef PRINTING_WMF_RECORDS
 		#if 1 == PRINTING_WMF_RECORDS

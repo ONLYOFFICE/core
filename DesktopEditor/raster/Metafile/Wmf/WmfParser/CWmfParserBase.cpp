@@ -1686,7 +1686,7 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 		{
 			m_pInterpretator->HANDLE_META_ESCAPE(ushEscapeFunction, ushByteCount);
-			PRINT_WMF_LOG(L"Escape function type: " << ushEscapeFunction << L" size: " << ushByteCount);
+			PRINT_WMF_LOG("Escape function type: " << ushEscapeFunction << " size: " << ushByteCount);
 		}
 
 		if (WMF_META_ESCAPE_ENHANCED_METAFILE == ushEscapeFunction)

@@ -3643,7 +3643,7 @@ void CPdfWriter::DrawTextWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter
 		double dKoef = dFontSize / pFontTT->m_dUnitsPerEm;
 		double dLineHeight = (pFontTT->m_dAscent + std::abs(pFontTT->m_dDescent)) * dKoef;
 
-		m_oLinesManager.CalculateLines(dFontSize, dWidth);
+		m_oLinesManager.CalculateLines(dFontSize, dWidth - dShiftBorder * 4);
 
 		pTextWidget->StartAP();
 
@@ -3852,7 +3852,7 @@ void CPdfWriter::DrawChoiceWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 
 		m_oLinesManager.Init(pCodes2, pWidths, unLen, ushSpaceCode, ushNewLineCode, pFontTT->GetLineHeight(), pFontTT->GetAscent());
 
-		m_oLinesManager.CalculateLines(dFontSize, dWidth);
+		m_oLinesManager.CalculateLines(dFontSize, dWidth - dShiftBorder * 4);
 
 		double dKoef = dFontSize / pFontTT->m_dUnitsPerEm;
 		double dLineHeight = pFontTT->m_dHeight * dKoef;

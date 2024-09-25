@@ -34,9 +34,9 @@ namespace StarMath
 		m_pXmlWrite->WriteNodeEnd(L"w",true,false);
 		m_pXmlWrite->WriteString(m_wsAnnotationStarMath);
 		EndOdf();
-		NSFile::CFileBinary oOriginal;
-		oOriginal.CreateFile(L"X:/Rabotka/Original.txt");
-		oOriginal.WriteStringUTF8(m_pXmlWrite->GetXmlString());
+		//NSFile::CFileBinary oOriginal;
+		//oOriginal.CreateFile(L"X:/Rabotka/Original.txt");
+		//oOriginal.WriteStringUTF8(m_pXmlWrite->GetXmlString());
 	}
 	void COOXml2Odf::NodeDefinition(OOX::WritingElement *pNode,const bool& bMatrix)
 	{

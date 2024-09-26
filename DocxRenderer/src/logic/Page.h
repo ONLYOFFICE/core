@@ -103,6 +103,7 @@ namespace NSDocxRenderer
 
 		void Analyze();
 		void Record(NSStringUtils::CStringBuilder& oWriter, bool bIsLastPage);
+		void ReorderShapesForPptx();
 
 	private:
 

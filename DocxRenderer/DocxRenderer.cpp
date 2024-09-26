@@ -154,6 +154,9 @@ std::vector<std::wstring> CDocxRenderer::ScanPagePptx(IOfficeDrawingFile* pFile,
 
 	DrawPage(pFile, nPage);
 
+	// for drawingml is no tag behind-doc - so we need to reorder shapes
+	m_pInternal->m_oDocument.m_oCurrentPage.ReorderShapesForPptx();
+
 	std::vector<std::wstring> xml_shapes;
 	for (const auto& shape : m_pInternal->m_oDocument.m_oCurrentPage.m_arShapes)
 	{

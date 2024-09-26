@@ -83,6 +83,7 @@ namespace NSDocxRenderer
 
 		m_oSelectedFont = rCont.m_oSelectedFont;
 		m_bPossibleSplit = rCont.m_bPossibleSplit;
+		m_bWriteStyleRaw = rCont.m_bWriteStyleRaw;
 
 		m_arSymWidths.clear();
 		m_arSymWidths.resize(rCont.m_arSymWidths.size());

@@ -1567,6 +1567,9 @@ namespace NSDocxRenderer
 
 				if (!no_crossing(h_type, v_type))
 				{
+					prev_line->CalcFirstWordWidth();
+					curr_line->CalcFirstWordWidth();
+
 					for (auto& cont : prev_line->m_arConts)
 						cont->CalcSelected();
 
@@ -1981,6 +1984,7 @@ namespace NSDocxRenderer
 		pParagraph->m_dWidth = pLine->m_dWidth + c_dERROR_OF_PARAGRAPH_BORDERS_MM;
 		pParagraph->m_dHeight = pLine->m_dHeight;
 		pParagraph->m_dRight = pLine->m_dRight;
+		pParagraph->m_dLineHeight = pParagraph->m_dHeight;
 
 		if (pLine->m_pDominantShape)
 		{

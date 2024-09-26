@@ -253,8 +253,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 
 	LOGGER_SPEED_LAP("compile");
 
-	if (!m_context->isSnapshotUsed())
-		NSDoctRenderer::RunEditor(editorType, m_context, try_catch, config);
+	NSDoctRenderer::RunEditor(editorType, m_context, try_catch, config);
 	if(try_catch->Check())
 		return false;
 
@@ -669,10 +668,17 @@ namespace NSDoctRenderer
 		}
 
 		if (IsEmpty() || !m_internal->m_value->isString())
+		{
+			ret.m_internal->MakeEmpty();
 			return ret;
+		}
 		std::wstring sValue = m_internal->m_value->toStringW();
 		if (sValue.empty())
+		{
+			// return valid empty string
+			ret.m_internal->MakeEmpty();
 			return ret;
+		}
 		size_t len = sValue.length();
 		wchar_t* buffer = new wchar_t[len + 1];
 		memcpy(buffer, sValue.c_str(), len * sizeof(wchar_t));
@@ -812,6 +818,14 @@ namespace NSDoctRenderer
 		CDocBuilderValue ret;
 		ret.m_internal->m_context = NSJSBase::CJSContext::GetCurrent();
 		ret.m_internal->m_value = NSJSBase::CJSContext::createArray(length);
+		return ret;
+	}
+
+	CDocBuilderValue CDocBuilderValue::CreateObject()
+	{
+		CDocBuilderValue ret;
+		ret.m_internal->m_context = NSJSBase::CJSContext::GetCurrent();
+		ret.m_internal->m_value = NSJSBase::CJSContext::createObject();
 		return ret;
 	}
 

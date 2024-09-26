@@ -926,7 +926,8 @@ namespace OOX
 					ptr->m_DYNAMICARRAYMETADATA = XLS::BaseObjectPtr{ptr1};
 					ptr1->m_EndDynamicArrayPr = i->m_oDynamicArrayProperties->toBin();
 				}
-				else if(i->m_sUri == L"{3E2802C4-A4D2-4D8B-9148-E3BE6C30E623}")
+                else if(i->m_sUri == L"{3E2802C4-A4D2-4D8B-9148-E3BE6C30E623}"
+                        || i->m_sUri == L"{3e2802c4-a4d2-4d8b-9148-e3be6c30e623}")
 				{
 					auto ptr(new XLSB::FMD);
 					objectPtr = XLS::BaseObjectPtr(ptr);

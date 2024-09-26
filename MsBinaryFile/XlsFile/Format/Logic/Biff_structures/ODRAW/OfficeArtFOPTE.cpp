@@ -1275,24 +1275,28 @@ void MSOPATHINFO::load(IBinaryReader* reader)
 	case 0x09:
 		{
 			m_eRuler = ODRAW::rtQuadrBesier;
-			break;
-		}
+			
+		}break;
 	case 0x0A:
 		{
 			m_eRuler = ODRAW::rtNoFill;
-			break;
-		}
+			
+		}break;
 	case 0x0B:
 		{
 			m_eRuler = ODRAW::rtNoStroke;
-			break;
-		}
-	case 0x0C:
-	case 0x10:
+			
+		}break;
+	case 0x0C: //msopathEscapeAutoLine
 		{
 			m_eRuler = ODRAW::rtLineTo;
-			break;
-		}
+			mem = 2;
+		}break;
+	case 0x10: // msopathEscapeSmoothLine
+		{
+			m_eRuler = ODRAW::rtLineTo;
+			
+		}break;
 	case 0x0D:
 	case 0x0E:
 	case 0x0F:
@@ -1301,9 +1305,8 @@ void MSOPATHINFO::load(IBinaryReader* reader)
 	case 0x13:
 	case 0x14:
 		{
-			m_eRuler = ODRAW::rtCurveTo;
-			break;
-		}
+			m_eRuler = ODRAW::rtCurveTo;			
+		}break;
 	case 0x15:
 		{
 			m_eRuler = ODRAW::rtFillColor;

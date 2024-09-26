@@ -655,7 +655,7 @@ namespace Aggplus
 			if (fabs(dDet) < 0.0001)
 			{
 				path_copy.transform_all_paths(m_oFullTransform.m_internal->m_agg_mtx);
-				dWidth *= sqrt(dDet);
+				dWidth *= sqrt(fabs(dDet));
 
 				bIsUseIdentity = true;
 			}

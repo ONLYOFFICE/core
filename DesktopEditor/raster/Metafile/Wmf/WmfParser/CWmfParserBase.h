@@ -11,6 +11,113 @@
 #undef DrawText
 #endif
 
+#define PRINT_WMF_RECORD(type) do {} while(false);
+#define PRINT_WMF_LOG(text)    do {} while(false);
+
+#ifdef _DEBUG
+#define LOG_WMF_RECORDS 1
+
+#ifdef LOG_WMF_RECORDS
+	#if 1 == LOG_WMF_RECORDS
+		#include <iostream>
+
+		#define PRINTING_WMF_RECORDS      1
+
+		#define PRINT_WMF_LOG(text) \
+			std::cout << "[LOG] " << text << std::endl
+
+		#ifdef PRINTING_WMF_RECORDS
+		#if 1 == PRINTING_WMF_RECORDS
+			#define AddRecord(name) {name, #name}
+
+			static const std::map<UINT, std::string> mWmfRecords =
+			{
+				AddRecord(META_EOF),
+				AddRecord(META_SETBKCOLOR),
+				AddRecord(META_SETBKMODE),
+				AddRecord(META_SETMAPMODE),
+				AddRecord(META_SETROP2),
+				AddRecord(META_SETRELABS),
+				AddRecord(META_SETPOLYFILLMODE),
+				AddRecord(META_SETSTRETCHBLTMODE),
+				AddRecord(META_SETTEXTCHAREXTRA),
+				AddRecord(META_SETTEXTCOLOR),
+				AddRecord(META_SETTEXTJUSTIFICATION),
+				AddRecord(META_SETWINDOWORG),
+				AddRecord(META_SETWINDOWEXT),
+				AddRecord(META_SETVIEWPORTORG),
+				AddRecord(META_SETVIEWPORTEXT),
+				AddRecord(META_OFFSETWINDOWORG),
+				AddRecord(META_SCALEWINDOWEXT),
+				AddRecord(META_OFFSETVIEWPORTORG),
+				AddRecord(META_SCALEVIEWPORTEXT),
+				AddRecord(META_LINETO),
+				AddRecord(META_MOVETO),
+				AddRecord(META_EXCLUDECLIPRECT),
+				AddRecord(META_INTERSECTCLIPRECT),
+				AddRecord(META_ARC),
+				AddRecord(META_ELLIPSE),
+				AddRecord(META_FLOODFILL),
+				AddRecord(META_PIE),
+				AddRecord(META_RECTANGLE),
+				AddRecord(META_ROUNDRECT),
+				AddRecord(META_PATBLT),
+				AddRecord(META_SAVEDC),
+				AddRecord(META_SETPIXEL),
+				AddRecord(META_OFFSETCLIPRGN),
+				AddRecord(META_TEXTOUT),
+				AddRecord(META_BITBLT),
+				AddRecord(META_STRETCHBLT),
+				AddRecord(META_POLYGON),
+				AddRecord(META_POLYLINE),
+				AddRecord(META_ESCAPE),
+				AddRecord(META_RESTOREDC),
+				AddRecord(META_FILLREGION),
+				AddRecord(META_FRAMEREGION),
+				AddRecord(META_INVERTREGION),
+				AddRecord(META_PAINTREGION),
+				AddRecord(META_SELECTCLIPREGION),
+				AddRecord(META_SELECTOBJECT),
+				AddRecord(META_SETTEXTALIGN),
+				AddRecord(META_CHORD),
+				AddRecord(META_SETMAPPERFLAGS),
+				AddRecord(META_EXTTEXTOUT),
+				AddRecord(META_SETDIBTODEV),
+				AddRecord(META_SELECTPALETTE),
+				AddRecord(META_REALIZEPALETTE),
+				AddRecord(META_ANIMATEPALETTE),
+				AddRecord(META_SETPALENTRIES),
+				AddRecord(META_POLYPOLYGON),
+				AddRecord(META_RESIZEPALETTE),
+				AddRecord(META_DIBBITBLT),
+				AddRecord(META_DIBSTRETCHBLT),
+				AddRecord(META_DIBCREATEPATTERNBRUSH),
+				AddRecord(META_STRETCHDIB),
+				AddRecord(META_EXTFLOODFILL),
+				AddRecord(META_SETLAYOUT),
+				AddRecord(META_DELETEOBJECT),
+				AddRecord(META_CREATEPALETTE),
+				AddRecord(META_CREATEPATTERNBRUSH),
+				AddRecord(META_CREATEPENINDIRECT),
+				AddRecord(META_CREATEFONTINDIRECT),
+				AddRecord(META_CREATEBRUSHINDIRECT),
+				AddRecord(META_CREATEREGION)
+			};
+
+			#define PRINT_WMF_RECORD(type) \
+			{\
+				std::map<UINT, std::string>::const_iterator itFound = mWmfRecords.find(type); \
+				if (mWmfRecords.cend() != itFound) \
+					std::cout << itFound->second << std::endl; \
+				else \
+					std::cout << "Unknown record: " << type << std::endl; \
+			}
+		#endif
+		#endif
+	#endif
+#endif
+#endif
+
 namespace MetaFile
 {
 	enum WmfParserType
@@ -32,35 +139,35 @@ namespace MetaFile
 		virtual void            PlayFile()                      = 0;
 		virtual void            Scan()                          = 0;
 
-		virtual WmfParserType   GetType()                       = 0;
+		virtual WmfParserType   GetType()                const  = 0;
 
-		void            PlayMetaFile()                   override;
-		void            ClearFile()                      override;
-		TRectL*         GetDCBounds()                    override;
-		CClip*          GetClip()                        override;
-		double          GetPixelHeight()                 override;
-		double          GetPixelWidth()                  override;
-		int             GetTextColor()                   override;
-		IFont*          GetFont()                        override;
-		IBrush*         GetBrush()                       override;
-		IPen*           GetPen()                         override;
-		unsigned int    GetTextAlign()                   override;
-		unsigned int    GetTextBgMode()                  override;
-		int             GetTextBgColor()                 override;
-		unsigned int    GetFillMode()                    override;
-		TPointD         GetCurPos()                      override;
-		TXForm*         GetInverseTransform()            override;
-		TXForm*         GetTransform(int = GM_ADVANCED)  override;
-		unsigned int    GetMiterLimit()                  override;
-		unsigned int    GetRop2Mode()                    override;
-		int             GetCharSpace()                   override;
-		bool            IsWindowFlippedY()               override;
-		bool            IsWindowFlippedX()               override;
-		unsigned int    GetMapMode()                     override;
-		USHORT          GetDpi()                         override;
-		IRegion*        GetRegion()                      override;
-		unsigned int    GetArcDirection()                override;
-		CPath*          GetPath()                        override;
+		void            PlayMetaFile()                         override;
+		void            ClearFile()                            override;
+		const TRectL&   GetDCBounds()                    const override;
+		const CClip*    GetClip()                        const override;
+		double          GetPixelHeight()                 const override;
+		double          GetPixelWidth()                  const override;
+		int             GetTextColor()                   const override;
+		const IFont*    GetFont()                        const override;
+		const IBrush*   GetBrush()                       const override;
+		const IPen*     GetPen()                         const override;
+		unsigned int    GetTextAlign()                   const override;
+		unsigned int    GetTextBgMode()                  const override;
+		int             GetTextBgColor()                 const override;
+		unsigned int    GetFillMode()                    const override;
+		TPointD         GetCurPos()                      const override;
+		const TXForm&   GetInverseTransform()            const override;
+		const TXForm&   GetTransform(int = GM_ADVANCED)        override;
+		unsigned int    GetMiterLimit()                  const override;
+		unsigned int    GetRop2Mode()                    const override;
+		int             GetCharSpace()                   const override;
+		bool            IsWindowFlippedY()               const override;
+		bool            IsWindowFlippedX()               const override;
+		unsigned int    GetMapMode()                     const override;
+		USHORT          GetDpi()                         const override;
+		const IRegion*  GetRegion()                      const override;
+		unsigned int    GetArcDirection()                const override;
+		const CPath*    GetPath()                        const override;
 
 		void SetInterpretator(IOutputDevice* pOutput);
 		void SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
@@ -74,11 +181,11 @@ namespace MetaFile
 
 	private:
 		void    SkipVoid();
-		void    TranslatePoint(short shX, short shY, double& dX, double &dY);
-		TRectL  GetBoundingBox();
-		bool    IsPlaceable();
-		int     GetRecordRemainingBytesCount();
-		inline double GetSweepAngle(const double& dStartAngle, const double& dEndAngle);
+		void    TranslatePoint(short shX, short shY, double& dX, double &dY) const;
+		void    UpdateDCRect();
+		bool    IsPlaceable() const;
+		int     GetRecordRemainingBytesCount() const;
+		inline double GetSweepAngle(const double& dStartAngle, const double& dEndAngle) const;
 
 		void MoveTo(short shX, short shY);
 		void LineTo(short shX, short shY);
@@ -105,7 +212,6 @@ namespace MetaFile
 
 		TWmfPlaceable  m_oPlaceable;
 		TWmfHeader     m_oHeader;
-		TRectL         m_oRect;
 		TRectL         m_oDCRect;
 
 		CWmfPlayer     m_oPlayer;

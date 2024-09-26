@@ -1,8 +1,10 @@
 #ifndef _BUILD_DRAWING_EMBED_H_
 #define _BUILD_DRAWING_EMBED_H_
 
-#include "../drawingfile.h"
 #include "../js_internal/js_base.h"
+#include "../../graphics/pro/officedrawingfile.h"
+
+class CDrawingFile;
 
 using namespace NSJSBase;
 class JS_DECL CDrawingFileEmbed : public CJSEmbedObject
@@ -11,14 +13,8 @@ public:
 	CDrawingFile* m_pFile;
 
 public:
-	CDrawingFileEmbed()
-	{
-		m_pFile = NULL;
-	}
-	~CDrawingFileEmbed()
-	{
-		RELEASEOBJECT(m_pFile);
-	}
+	CDrawingFileEmbed();
+	~CDrawingFileEmbed();
 
 	virtual void* getObject() override { return (void*)m_pFile; }
 
@@ -32,8 +28,8 @@ public:
 	JSSmart<CJSValue> GetInfo();
 
 	JSSmart<CJSValue> GetPixmap(JSSmart<CJSValue> nPageIndex, JSSmart<CJSValue> nRasterW, JSSmart<CJSValue> nRasterH, JSSmart<CJSValue> nBackgroundColor);
+	JSSmart<CJSValue> DestroyPixmap(JSSmart<CJSValue> typedArray);
 
-	JSSmart<CJSValue> GetGlyphs(JSSmart<CJSValue> nPageIndex);
 	JSSmart<CJSValue> GetLinks(JSSmart<CJSValue> nPageIndex);
 	JSSmart<CJSValue> GetStructure();
 	JSSmart<CJSValue> GetInteractiveFormsInfo();
@@ -44,13 +40,20 @@ public:
 	JSSmart<CJSValue> GetAnnotationsInfo(JSSmart<CJSValue> nPageIndex);
 	JSSmart<CJSValue> GetAnnotationsAP(JSSmart<CJSValue> nRasterW, JSSmart<CJSValue> nRasterH, JSSmart<CJSValue> nBackgroundColor, JSSmart<CJSValue> nPageIndex, JSSmart<CJSValue> nAnnot, JSSmart<CJSValue> nView);
 
+	JSSmart<CJSValue> GetFontBinary(JSSmart<CJSValue> Id);
+	JSSmart<CJSValue> GetGlyphs(JSSmart<CJSValue> nPageIndex);
 	JSSmart<CJSValue> DestroyTextInfo();
+
 	JSSmart<CJSValue> IsNeedCMap();
 	JSSmart<CJSValue> ScanPage(JSSmart<CJSValue> nPageIndex, JSSmart<CJSValue> mode);
 
 	JSSmart<CJSValue> GetImageBase64(JSSmart<CJSValue> rId);
 
+	JSSmart<CJSValue> FreeWasmData(JSSmart<CJSValue> typedArray);
+
 	DECLARE_EMBED_METHODS
 };
+
+bool EmbedDrawingFile(JSSmart<NSJSBase::CJSContext>& context, IOfficeDrawingFile* pFile);
 
 #endif // _BUILD_NATIVE_ZIP_EMBED_H_

@@ -614,10 +614,10 @@ namespace NSCSS
 	
 	void CColor::SetHEX(const std::wstring &wsValue)
 	{
-		Clear();
-
 		if (6 != wsValue.length() && 3 != wsValue.length())
 			return;
+
+		Clear();
 
 		if (6 == wsValue.length())
 			m_oValue = new std::wstring(wsValue);
@@ -632,8 +632,6 @@ namespace NSCSS
 	
 	void CColor::SetUrl(const std::wstring &wsValue)
 	{
-		Clear();
-
 		if (wsValue.empty())
 			return;
 
@@ -648,6 +646,8 @@ namespace NSCSS
 			return;
 		}
 
+		Clear();
+
 		m_oValue = pURL;
 		m_enType = ColorUrl;
 	}
@@ -657,6 +657,16 @@ namespace NSCSS
 		Clear();
 
 		m_enType = ColorNone;
+	}
+
+	char NormalizeNegativeColorValue(INT nValue)
+	{
+		if (nValue > 255)
+			return 0xff;
+		else if (nValue < 0)
+			return (char)(std::abs(nValue) % 255);
+
+		return (char)nValue;
 	}
 
 	bool CColor::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -692,6 +702,16 @@ namespace NSCSS
 			SetNone();
 			bResult = true;
 		}
+		else if (L"context-stroke" == wsNewValue)
+		{
+			Clear();
+			m_enType = ColorContextStroke;
+		}
+		else if (L"context-fill" == wsNewValue)
+		{
+			Clear();
+			m_enType = ColorContextFill;
+		}
 		else if (10 <= wsNewValue.length() && wsNewValue.substr(0, 3) == L"rgb")
 		{
 			size_t unEnd = wsNewValue.find(L')', 4);
@@ -704,29 +724,18 @@ namespace NSCSS
 			if (3 > arValues.size())
 				return false;
 
-			INT nRed   = std::ceil(NS_STATIC_FUNCTIONS::CalculatePersentage(arValues[0], 255));
-			INT nGreen = std::ceil(NS_STATIC_FUNCTIONS::CalculatePersentage(arValues[1], 255));
-			INT nBlue  = std::ceil(NS_STATIC_FUNCTIONS::CalculatePersentage(arValues[2], 255));
+			const char chRed   = NormalizeNegativeColorValue(std::ceil(NS_STATIC_FUNCTIONS::CalculatePersentage(arValues[0], 255)));
+			const char chGreen = NormalizeNegativeColorValue(std::ceil(NS_STATIC_FUNCTIONS::CalculatePersentage(arValues[1], 255)));
+			const char chBlue  = NormalizeNegativeColorValue(std::ceil(NS_STATIC_FUNCTIONS::CalculatePersentage(arValues[2], 255)));
 
-			if (nRed < 0 || nGreen < 0 || nBlue < 0)
-			{
-				SetEmpty(unLevel);
-				return false;
-			}
-
-			if (255 < nRed)   nRed   = 255;
-			if (255 < nGreen) nGreen = 255;
-			if (255 < nBlue)  nBlue  = 255;
-
-			SetRGB(nRed, nGreen, nBlue);
+			SetRGB(chRed, chGreen, chBlue);
 
 			if (wsNewValue.substr(0, 4) == L"rgba" && 4 == arValues.size())
 				m_oOpacity.SetValue(arValues[3], unLevel, bHardMode);
 
 			bResult = true;
 		}
-
-		if (5 <= wsNewValue.length())
+		else if (5 <= wsNewValue.length())
 		{
 			SetUrl(wsValue);
 

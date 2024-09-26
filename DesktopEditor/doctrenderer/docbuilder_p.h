@@ -130,12 +130,12 @@ namespace NSDoctRenderer
 		}
 		~CString_Private()
 		{
-			if (m_data)
-				delete [] m_data;
+			delete[] m_data;
 		}
 
 		void Attach(wchar_t* data)
 		{
+			delete[] m_data;
 			m_data = data;
 		}
 
@@ -143,7 +143,7 @@ namespace NSDoctRenderer
 		{
 			if (copy->m_data)
 			{
-				delete [] copy->m_data;
+				delete[] copy->m_data;
 				copy->m_data = NULL;
 			}
 
@@ -153,6 +153,13 @@ namespace NSDoctRenderer
 			size_t len = wcslen(m_data);
 			copy->m_data = new wchar_t[len + 1];
 			memcpy(copy->m_data, m_data, (len + 1) * sizeof(wchar_t));
+		}
+
+		void MakeEmpty()
+		{
+			delete[] m_data;
+			m_data = new wchar_t[1];
+			m_data[0] = '\0';
 		}
 	};
 }
@@ -399,6 +406,11 @@ public:
 	void AddScope(JSSmart<NSDoctRenderer::CDocBuilderContextScopeWrap>& scope)
 	{
 		m_scopes.push_back(scope);
+	}
+
+	void AddNewScope(NSDoctRenderer::CDocBuilderContextScopeWrap* scope)
+	{
+		m_scopes.emplace_back(scope);
 	}
 };
 
@@ -1277,7 +1289,7 @@ namespace NSDoctRenderer
 			return m_pWorker->ExecuteCommand(command, retValue);
 		}
 
-		CDocBuilderContext GetContext()
+		CDocBuilderContext GetContext(bool enterContext)
 		{
 			CDocBuilderContext ctx;
 
@@ -1285,6 +1297,14 @@ namespace NSDoctRenderer
 
 			ctx.m_internal->m_context = m_pWorker->m_context;
 			ctx.m_internal->m_context_data = &m_pWorker->m_oContextData;
+
+			if (enterContext)
+			{
+				CDocBuilderContextScopeWrap* scopeWrap = new CDocBuilderContextScopeWrap();
+				scopeWrap->m_scope = new CJSContextScope(m_pWorker->m_context);
+				m_pWorker->m_oContextData.AddNewScope(scopeWrap);
+			}
+
 			return ctx;
 		}
 

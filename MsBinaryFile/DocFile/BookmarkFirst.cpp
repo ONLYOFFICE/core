@@ -62,7 +62,10 @@ namespace DocFileFormat
 	  {
 		  ProtInfoBookmark *newObject = new ProtInfoBookmark();
 
-		  newObject->id = reader->ReadUInt32(); 
+		  if (length > 8)
+		  {
+			  newObject->id = reader->ReadUInt32();
+		  }
 		  
 		  newObject->uidSel = reader->ReadUInt16();
 		  newObject->iProt = reader->ReadUInt16();

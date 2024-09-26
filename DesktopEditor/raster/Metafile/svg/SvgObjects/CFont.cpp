@@ -52,7 +52,7 @@ namespace SVG
 		return false;
 	}
 
-	bool CFont::Draw(const std::wstring &wsText, double dX, double dY, IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pStyles) const
+	bool CFont::Draw(const std::wstring &wsText, double dX, double dY, IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pStyles, const CRenderedObject* pContexObject) const
 	{
 		if (NULL == pRenderer)
 			return false;
@@ -78,12 +78,12 @@ namespace SVG
 				if (NULL == m_pMissingGlyph)
 					continue;
 
-				m_pMissingGlyph->Draw(pRenderer, pFile, oMode, pStyles);
+				m_pMissingGlyph->Draw(pRenderer, pFile, oMode, pStyles, pContexObject);
 				oMatrix.Translate(m_oHorizAdvX.ToDouble(NSCSS::Pixel), 0);
 			}
 			else
 			{
-				itFound->second->Draw(pRenderer, pFile, oMode, pStyles);
+				itFound->second->Draw(pRenderer, pFile, oMode, pStyles, pContexObject);
 
 				if (!itFound->second->m_oHorizAdvX.Empty())
 					oMatrix.Translate(itFound->second->m_oHorizAdvX.ToDouble(NSCSS::Pixel), 0);

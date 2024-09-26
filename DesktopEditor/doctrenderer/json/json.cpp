@@ -5,6 +5,15 @@
 // for working with typed arrays: Alloc() and Free()
 #include "js_base.h"
 
+// for converting primitive types to JSON-string
+#include <sstream>
+#include <iomanip>
+#include <limits>
+// for strtod()
+#include <cstdlib>
+// for modf()
+#include <cmath>
+
 namespace NSJSON
 {
 	CTypedValue::CTypedValue() : m_type(vtUndefined)
@@ -173,6 +182,177 @@ namespace NSJSON
 	IValue::operator std::wstring() const
 	{
 		return ToStringW();
+	}
+
+	namespace
+	{
+		std::string doubleToJsonString(double value)
+		{
+			// handle special cases
+			if (std::isnan(value) || std::isinf(value))
+				return "null";
+
+			// convert to string with full precision
+			std::ostringstream oss;
+			oss.precision(std::numeric_limits<double>::digits10);
+			oss << std::noshowpoint << value;
+
+			return oss.str();
+		}
+
+		std::string stringToJsonString(const std::string& value)
+		{
+			std::string result;
+			for (char ch : value)
+			{
+				if (ch <= 0x1F)
+				{
+					result += '\\';
+					if (ch == '\b')
+					{
+						result += 'b';
+					}
+					else if (ch == '\t')
+					{
+						result += 't';
+					}
+					else if (ch == '\n')
+					{
+						result += 'n';
+					}
+					else if (ch == '\f')
+					{
+						result += 'f';
+					}
+					else if (ch == '\r')
+					{
+						result += 'r';
+					}
+					else
+					{
+						result += "u00";
+						std::ostringstream oss;
+						oss << std::setfill('0') << std::setw(2) << std::hex << (int)ch;
+						result += oss.str();
+					}
+				}
+				else if (ch == '\\')
+				{
+					result += "\\\\";
+				}
+				else if (ch == '\"')
+				{
+					result += "\\\"";
+				}
+				else
+				{
+					result += ch;
+				}
+			}
+
+			return result;
+		}
+	}
+
+	std::string IValue::ToJSON()
+	{
+		std::string strRes;
+		CTypedValue::ValueType type = m_internal->m_type;
+		switch (type)
+		{
+		case CTypedValue::vtUndefined:
+		{
+			break;
+		}
+		case CTypedValue::vtNull:
+		{
+			strRes = "null";
+			break;
+		}
+		case CTypedValue::vtPrimitive:
+		{
+			CPrimitive* pPrimitiveValue = static_cast<CPrimitive*>(m_internal->m_value.get());
+			if (pPrimitiveValue->isBool())
+			{
+				strRes = pPrimitiveValue->toBool() ? "true" : "false";
+			}
+			else if (pPrimitiveValue->isInt())
+			{
+				strRes = std::to_string(pPrimitiveValue->toInt());
+			}
+			else if (pPrimitiveValue->isDouble())
+			{
+				strRes = doubleToJsonString(pPrimitiveValue->toDouble());
+			}
+			else
+			{
+				strRes = "\"" + stringToJsonString(pPrimitiveValue->toStringA()) + "\"";
+			}
+			break;
+		}
+		case CTypedValue::vtArray:
+		{
+			CArray* pArrayValue = static_cast<CArray*>(m_internal->m_value.get());
+			strRes = "[";
+			const int len = pArrayValue->getCount();
+			for (int i = 0; i < len; i++)
+			{
+				CValue& value = pArrayValue->get(i);
+				if (value.IsUndefined())
+					strRes += "null";
+				else
+					strRes += value.ToJSON();
+				strRes += ',';
+			}
+			// remove last ','
+			if (strRes.back() == ',')
+				strRes.pop_back();
+			strRes += "]";
+			break;
+		}
+		case CTypedValue::vtTypedArray:
+		{
+			CTypedArray* pTypedArrayValue = static_cast<CTypedArray*>(m_internal->m_value.get());
+			strRes += "{";
+			const int size = pTypedArrayValue->getCount();
+			BYTE* data = pTypedArrayValue->getData();
+			for (int i = 0; i < size; i++)
+			{
+				strRes += "\"" + std::to_string(i) + "\":";
+				strRes += std::to_string((int)data[i]);
+				strRes += ',';
+			}
+			// remove last ','
+			if (strRes.back() == ',')
+				strRes.pop_back();
+			strRes += "}";
+			break;
+		}
+		case CTypedValue::vtObject:
+		{
+			CObject* pObjectValue = static_cast<CObject*>(m_internal->m_value.get());
+			strRes += "{";
+			std::vector<std::string> propertyNames = pObjectValue->getPropertyNames();
+			const int count = propertyNames.size();
+			for (int i = 0; i < count; i++)
+			{
+				CValue& value = pObjectValue->get(propertyNames[i]);
+				if (value.IsUndefined())
+					continue;
+
+				strRes += "\"" + propertyNames[i] + "\":";
+				strRes += value.ToJSON();
+				strRes += ',';
+			}
+			// remove last ','
+			if (strRes.back() == ',')
+				strRes.pop_back();
+			strRes += "}";
+			break;
+		}
+		}
+
+		return strRes;
 	}
 
 	IValue::IValue(bool value) : m_internal(new CTypedValue(new CPrimitive(value), CTypedValue::vtPrimitive))
@@ -428,6 +608,324 @@ namespace NSJSON
 		CValue ret;
 		ret.m_internal->m_type = CTypedValue::vtNull;
 		return ret;
+	}
+
+	namespace
+	{
+		// moves pos to first non-space symbol and returns false if end of the string was reached
+		bool skipWhitespaces(const std::string& str, int& pos)
+		{
+			for (; pos < str.size(); pos++)
+			{
+				char ch = str[pos];
+				if (ch != '\t' && ch != '\n' && ch != '\r' && ch != ' ')
+					break;
+			}
+			return pos < str.size();
+		}
+
+		CValue parseNumberFromJSON(const std::string& str, int& pos)
+		{
+			const char* startPos = str.c_str() + pos;
+			char* newPos;
+			double number = std::strtod(startPos, &newPos);
+			if (newPos == startPos)
+				return CValue();
+
+			CValue value;
+			if (std::isfinite(number))
+			{
+				// check if number can be represented as an integer type without loss of precision
+				double integral;									// integral part
+				double fractional = std::modf(number, &integral);	// fractional part
+				if (fractional == 0.0 && integral >= std::numeric_limits<int>::min() && integral <= std::numeric_limits<int>::max())
+					value = (int)integral;
+				else
+					value = number;
+			}
+			else
+			{
+				value = number;
+			}
+
+			pos += newPos - startPos;
+			return value;
+		}
+
+		CValue parseStringFromJSON(const std::string& str, int& pos)
+		{
+			// skip '\"' cause it has already been checked
+			pos++;
+			std::string result;
+			while (pos < str.size() && str[pos] != '\"')
+			{
+				// any non-escaped control characters are not allowed
+				if (str[pos] < 0x20)
+					return CValue();
+
+				if (str[pos] != '\\')
+				{
+					result += str[pos++];
+				}
+				else
+				{
+					pos++;
+					if (pos >= str.size())
+						return CValue();
+
+					char ch = str[pos++];
+					if (ch == '\\' || ch == '\"' || ch == '/')
+					{
+						result += ch;
+					}
+					else if (ch == 'b')
+					{
+						result += '\b';
+					}
+					else if (ch == 't')
+					{
+						result += '\t';
+					}
+					else if (ch == 'n')
+					{
+						result += '\n';
+					}
+					else if (ch == 'f')
+					{
+						result += '\f';
+					}
+					else if (ch == 'r')
+					{
+						result += '\r';
+					}
+					else if (ch == 'u')
+					{
+						if (str.size() - pos < 4)
+							return CValue();
+						// TODO: support unicode symbols with codes > U+0020
+						if (str[pos] != '0' || str[pos + 1] != '0')
+							return CValue();
+						pos += 2;
+						std::string strHex = str.substr(pos, 2);
+						pos += 2;
+						// std::stoi throws std::invalid_argument if string is invalid
+						try
+						{
+							std::size_t count;
+							char symbol = (char)std::stoi(strHex, &count, 16);
+							if (count < 2)
+								return CValue();
+
+							result += symbol;
+						}
+						catch (std::invalid_argument& e)
+						{
+							return CValue();
+						}
+					}
+					else
+					{
+						return CValue();
+					}
+				}
+			}
+			// if did not encounter closing qoutes, return undefined
+			if (pos == str.size())
+				return CValue();
+			pos++;
+
+			return result;
+		}
+
+		// parse one value of JSON-string `str` starting from `pos`
+		CValue valueFromJSON(const std::string& str, int& pos);
+
+		CValue parseArrayFromJSON(const std::string& str, int& pos)
+		{
+			// skip opening bracket '[' cause it has already been checked
+			pos++;
+			// handle first element separately to get pattern: [(firstValue)(,value)(,value)...]
+			CValue firstValue = valueFromJSON(str, pos);
+			if (firstValue.IsUndefined())
+			{
+				if (pos < str.size() && str[pos] == ']')
+				{
+					pos++;
+					return CValue::CreateArray(0);
+				}
+				else
+				{
+					return CValue();
+				}
+			}
+
+			std::vector<CValue> values;
+			values.emplace_back(firstValue);
+			while (skipWhitespaces(str, pos) && str[pos] != ']')
+			{
+				// expect ','
+				if (str[pos] != ',')
+					return CValue();
+				pos++;
+				// expect value
+				CValue value = valueFromJSON(str, pos);
+				if (value.IsUndefined())
+					return CValue();
+				values.emplace_back(value);
+			}
+			// if did not encounter closing bracket ']', return undefined
+			if (pos == str.size())
+				return CValue();
+			pos++;
+
+			// copy values from vector to CValue array
+			CValue result = CValue::CreateArray(values.size());
+			for (int i = 0; i < values.size(); i++)
+			{
+				result[i] = values[i];
+			}
+
+			return result;
+		}
+
+		std::pair<std::string, CValue> parseKeyValuePair(const std::string& str, int& pos)
+		{
+			std::pair<std::string, CValue> result;
+
+			if (!skipWhitespaces(str, pos) || str[pos] != '\"')
+				return result;
+			// parse key
+			CValue key = parseStringFromJSON(str, pos);
+			if (key.IsUndefined())
+				return result;
+			result.first = key.ToStringA();
+			// expect ':'
+			if (!skipWhitespaces(str, pos) || str[pos] != ':')
+				return result;
+			pos++;
+			// parse value
+			CValue value = valueFromJSON(str, pos);
+			if (value.IsUndefined())
+				return result;
+			result.second = value;
+
+			return result;
+		}
+
+		CValue parseObjectFromJSON(const std::string& str, int& pos)
+		{
+			CValue result = CValue::CreateObject();
+			// skip opening curly brace '{' cause it has already been checked
+			pos++;
+			// handle first key-value pair separately to get pattern: [(firstKey:firstValue)(,key:value)(,key:value)...]
+			std::pair<std::string, CValue> keyValue = parseKeyValuePair(str, pos);
+			// if value is undefined, then something went wrong or object is empty
+			if (keyValue.second.IsUndefined())
+			{
+				if (pos < str.size() && str[pos] == '}' && keyValue.first.empty())
+				{
+					pos++;
+					return result;
+				}
+				else
+				{
+					return CValue();
+				}
+			}
+
+			result[keyValue.first.c_str()] = keyValue.second;
+			while (skipWhitespaces(str, pos) && str[pos] != '}')
+			{
+				// expect ','
+				if (str[pos] != ',')
+					return CValue();
+				pos++;
+				// expect key-value pair
+				std::pair<std::string, CValue> keyValue = parseKeyValuePair(str, pos);
+				if (keyValue.second.IsUndefined())
+					return CValue();
+				result[keyValue.first.c_str()] = keyValue.second;
+			}
+			// if did not encounter closing curly brace '}', return undefined
+			if (pos == str.size())
+				return CValue();
+			pos++;
+
+			return result;
+		}
+
+		CValue valueFromJSON(const std::string& str, int& pos)
+		{
+			if (!skipWhitespaces(str, pos))
+				return CValue();
+
+			CValue value;
+			char ch = str[pos];
+			if (ch == '\"')
+			{
+				// string
+				value = parseStringFromJSON(str, pos);
+			}
+			else if (ch == '[')
+			{
+				// array
+				value = parseArrayFromJSON(str, pos);
+			}
+			else if (ch == '{')
+			{
+				// object
+				value = parseObjectFromJSON(str, pos);
+			}
+			else if (ch == 'n')
+			{
+				// null
+				if (str.substr(pos, 4) == "null")
+					value = CValue::CreateNull();
+				else
+					return CValue();
+				pos += 4;
+			}
+			else if (ch == 't')
+			{
+				// true (bool)
+				if (str.substr(pos, 4) == "true")
+					value = true;
+				else
+					return CValue();
+				pos += 4;
+			}
+			else if (ch == 'f')
+			{
+				// false (bool)
+				if (str.substr(pos, 5) == "false")
+					value = false;
+				else
+					return CValue();
+				pos += 5;
+			}
+			else if (ch == '-' || (ch >= '0' && ch <= '9'))
+			{
+				value = parseNumberFromJSON(str, pos);
+			}
+			else
+			{
+				return CValue();
+			}
+
+			return value;
+		}
+	}
+
+	CValue CValue::FromJSON(const std::string& jsonString)
+	{
+		int pos = 0;
+		CValue value = valueFromJSON(jsonString, pos);
+		// if there are still some non-space characters after the value has been parsed,
+		//  the JSON-string is considered invalid
+		if (skipWhitespaces(jsonString, pos))
+			return CValue();
+
+		return value;
 	}
 
 	CValueRef::CValueRef(const CValueRef& other) : IValue(other.m_internal)

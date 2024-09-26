@@ -18,7 +18,7 @@ namespace MetaFile
 		void            PlayFile()                                  override;
 		void            Scan()                                      override;
 
-		EmfParserType   GetType()				                    override;
+		EmfParserType   GetType()                             const override;
 
 	private:
 		bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) override;

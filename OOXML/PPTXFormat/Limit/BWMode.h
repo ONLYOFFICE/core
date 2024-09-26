@@ -38,5 +38,9 @@ namespace PPTX
 	namespace Limit
 	{
 		DEFINE_LIMIT_BASE(BWMode)
+
+		DEFINE_LIMIT_BASE(PrintClrMode)
+
+		DEFINE_LIMIT_BASE(PrintWhat)
 	} // namespace Limit
 } // namespace PPTX

@@ -2256,7 +2256,7 @@ namespace SimpleTypes
 		hierBranch_std = 4
 	};
 
-	DEFINE_SIMPLE_TYPE(CHierBranch, EHierBranch, hierBranch_hang)
+	DEFINE_SIMPLE_TYPE(CHierBranch, EHierBranch, hierBranch_std)
 
 	//--------------------------------------------------------------------------------
 	// ResizeHandles

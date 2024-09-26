@@ -88,7 +88,7 @@ namespace SVG
 
 		void SetData(XmlUtils::CXmlNode& oNode);
 
-		bool Draw(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL) const override;
+		bool Draw(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContexObject = NULL) const override;
 
 		TRect GetWindow() const;
 		TRect GetViewBox() const;

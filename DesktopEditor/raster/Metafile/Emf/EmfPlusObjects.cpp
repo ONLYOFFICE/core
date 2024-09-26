@@ -12,66 +12,66 @@ namespace MetaFile
 			NSFile::CFileBinary::Remove(wsDibPatternPath);
 	}
 
-	EEmfObjectType CEmfPlusBrush::GetType()
+	EEmfObjectType CEmfPlusBrush::GetType() const
 	{
 		return EMF_OBJECT_BRUSH;
 	}
 
-	EEmfPlusObjectType CEmfPlusBrush::GetObjectType()
+	EEmfPlusObjectType CEmfPlusBrush::GetObjectType() const
 	{
 		return ObjectTypeBrush;
 	}
 
-	int CEmfPlusBrush::GetColor()
+	int CEmfPlusBrush::GetColor() const
 	{
 		return METAFILE_RGBA(oColor.chRed, oColor.chGreen, oColor.chBlue, 0);
 	}
 
-	int CEmfPlusBrush::GetColor2()
+	int CEmfPlusBrush::GetColor2() const
 	{
 		return METAFILE_RGBA(oColorBack.chRed, oColorBack.chGreen, oColorBack.chBlue, 0);
 	}
 
-	unsigned int CEmfPlusBrush::GetStyle()
+	unsigned int CEmfPlusBrush::GetStyle() const
 	{
 		return unStyle;
 	}
 
-	unsigned int CEmfPlusBrush::GetStyleEx()
+	unsigned int CEmfPlusBrush::GetStyleEx() const
 	{
 		return unAngle;
 	}
 
-	unsigned int CEmfPlusBrush::GetHatch()
+	unsigned int CEmfPlusBrush::GetHatch() const
 	{
 		return unHatch;
 	}
 
-	unsigned int CEmfPlusBrush::GetAlpha()
+	unsigned int CEmfPlusBrush::GetAlpha() const
 	{
 		return oColor.chAlpha;
 	}
 
-	unsigned int CEmfPlusBrush::GetAlpha2()
+	unsigned int CEmfPlusBrush::GetAlpha2() const
 	{
 		return oColorBack.chAlpha;
 	}
 
-	std::wstring CEmfPlusBrush::GetDibPatterPath()
+	std::wstring CEmfPlusBrush::GetDibPatterPath() const
 	{
 		return wsDibPatternPath;
 	}
 	
-	void CEmfPlusBrush::GetDibPattern(unsigned char **pBuffer, unsigned int &unWidth, unsigned int &unHeight)
+	void CEmfPlusBrush::GetDibPattern(unsigned char **pBuffer, unsigned int &unWidth, unsigned int &unHeight) const
 	{}
 
-	void CEmfPlusBrush::GetCenterPoint(double &dX, double &dY)
+	void CEmfPlusBrush::GetCenterPoint(double &dX, double &dY) const
 	{
 		dX = oCenterPoint.X;
 		dY = oCenterPoint.Y;
 	}
 
-	void CEmfPlusBrush::GetBounds(double &left, double &top, double &width, double &height)
+	void CEmfPlusBrush::GetBounds(double &left, double &top, double &width, double &height) const
 	{
 		left   = oRectF.dX;
 		top    = oRectF.dY;
@@ -93,17 +93,17 @@ namespace MetaFile
 				RELEASEOBJECT(pLineEndCapData)
 	}
 
-	EEmfObjectType CEmfPlusPen::GetType()
+	EEmfObjectType CEmfPlusPen::GetType() const
 	{
 		return EMF_OBJECT_PEN;
 	}
 
-	EEmfPlusObjectType CEmfPlusPen::GetObjectType()
+	EEmfPlusObjectType CEmfPlusPen::GetObjectType() const
 	{
 		return ObjectTypePen;
 	}
 
-	int CEmfPlusPen::GetColor()
+	int CEmfPlusPen::GetColor() const
 	{
 		if (NULL != pBrush)
 			return pBrush->GetColor();
@@ -111,12 +111,12 @@ namespace MetaFile
 		return METAFILE_RGBA(oColor.chRed, oColor.chGreen, oColor.chBlue, 0);
 	}
 
-	unsigned int CEmfPlusPen::GetStyle()
+	unsigned int CEmfPlusPen::GetStyle() const
 	{
 		return unStyle;
 	}
 
-	double CEmfPlusPen::GetWidth()
+	double CEmfPlusPen::GetWidth() const
 	{
 //		if (dWidth < 0)
 //			return 1;
@@ -124,7 +124,7 @@ namespace MetaFile
 		return dWidth;
 	}
 
-	unsigned int CEmfPlusPen::GetAlpha()
+	unsigned int CEmfPlusPen::GetAlpha() const
 	{
 		if (NULL != pBrush)
 			return pBrush->oColor.chAlpha;
@@ -132,17 +132,17 @@ namespace MetaFile
 		return 0xff;
 	}
 
-	double CEmfPlusPen::GetMiterLimit()
+	double CEmfPlusPen::GetMiterLimit() const
 	{
 		return dMiterLimit;
 	}
 
-	double CEmfPlusPen::GetDashOffset()
+	double CEmfPlusPen::GetDashOffset() const
 	{
 		return dDashOffset;
 	}
 
-	void CEmfPlusPen::GetDashData(double *&arDatas, unsigned int &unSize)
+	void CEmfPlusPen::GetDashData(double *&arDatas, unsigned int &unSize) const
 	{
 		arDatas = pDataDash;
 		unSize  = unSizeDash;
@@ -157,57 +157,57 @@ namespace MetaFile
 	CEmfPlusFont::~CEmfPlusFont()
 	{}
 
-	EEmfObjectType CEmfPlusFont::GetType()
+	EEmfObjectType CEmfPlusFont::GetType() const
 	{
 		return EMF_OBJECT_FONT;
 	}
 
-	EEmfPlusObjectType CEmfPlusFont::GetObjectType()
+	EEmfPlusObjectType CEmfPlusFont::GetObjectType() const
 	{
 		return ObjectTypeFont;
 	}
 
-	double CEmfPlusFont::GetHeight()
+	double CEmfPlusFont::GetHeight() const
 	{
 		return m_dEmSize;
 	}
 
-	std::wstring CEmfPlusFont::GetFaceName()
+	std::wstring CEmfPlusFont::GetFaceName() const
 	{
 		return m_wsFamilyName;
 	}
 
-	int CEmfPlusFont::GetWeight()
+	int CEmfPlusFont::GetWeight() const
 	{
 		return (m_bBold) ? 700 : 400;
 	}
 
-	bool CEmfPlusFont::IsItalic()
+	bool CEmfPlusFont::IsItalic() const
 	{
 		return m_bItalic;
 	}
 
-	bool CEmfPlusFont::IsStrikeOut()
+	bool CEmfPlusFont::IsStrikeOut() const
 	{
 		return m_bStrikeout;
 	}
 
-	bool CEmfPlusFont::IsUnderline()
+	bool CEmfPlusFont::IsUnderline() const
 	{
 		return m_bUnderline;
 	}
 
-	int CEmfPlusFont::GetEscapement()
+	int CEmfPlusFont::GetEscapement() const
 	{
 		return 0;
 	}
 
-	int CEmfPlusFont::GetCharSet()
+	int CEmfPlusFont::GetCharSet() const
 	{
 		return 0;
 	}
 
-	int CEmfPlusFont::GetOrientation()
+	int CEmfPlusFont::GetOrientation() const
 	{
 		return 0;
 	}
@@ -221,7 +221,7 @@ namespace MetaFile
 		RELEASEOBJECT(m_pBuffer)
 	}
 
-	EEmfPlusObjectType CEmfPlusBuffer::GetObjectType()
+	EEmfPlusObjectType CEmfPlusBuffer::GetObjectType() const
 	{
 		return ObjectTypeBuffer;
 	}
@@ -276,7 +276,7 @@ namespace MetaFile
 		Clear();
 	}
 
-	EEmfPlusObjectType CEmfPlusPath::GetObjectType()
+	EEmfPlusObjectType CEmfPlusPath::GetObjectType() const
 	{
 		return ObjectTypePath;
 	}
@@ -328,7 +328,7 @@ namespace MetaFile
 	CEmfPlusImageAttributes::CEmfPlusImageAttributes() : CEmfPlusObject()
 	{}
 	
-	EEmfPlusObjectType CEmfPlusImageAttributes::GetObjectType()
+	EEmfPlusObjectType CEmfPlusImageAttributes::GetObjectType() const
 	{
 		return ObjectTypeImageAttributes;
 	}
@@ -339,7 +339,7 @@ namespace MetaFile
 		  m_unWidth(0), m_unHeight(0)
 	{}
 
-	EEmfPlusObjectType CEmfPlusImage::GetObjectType()
+	EEmfPlusObjectType CEmfPlusImage::GetObjectType() const
 	{
 		return ObjectTypeImage;
 	}
@@ -411,7 +411,7 @@ namespace MetaFile
 		RELEASEOBJECT(pPath);
 	}
 
-	EEmfPLusRegionNodeType CEmfPlusRegionNodePath::GetNodeType()
+	EEmfPLusRegionNodeType CEmfPlusRegionNodePath::GetNodeType() const
 	{
 		return EmfPLusRegionNodeTypePath;
 	}
@@ -434,7 +434,7 @@ namespace MetaFile
 		RELEASEOBJECT(pRect);
 	}
 
-	EEmfPLusRegionNodeType CEmfPlusRegionNodeRectF::GetNodeType()
+	EEmfPLusRegionNodeType CEmfPlusRegionNodeRectF::GetNodeType() const
 	{
 		return EmfPLusRegionNodeTypeRectF;
 	}
@@ -458,12 +458,12 @@ namespace MetaFile
 		RELEASEOBJECT(pRigth);
 	}
 
-	EEmfPLusRegionNodeType CEmfPlusRegionNodeChild::GetNodeType()
+	EEmfPLusRegionNodeType CEmfPlusRegionNodeChild::GetNodeType() const
 	{
 		return EmfPLusRegionNodeTypeChild;
 	}
 	
-	void CEmfPlusRegionNodeChild::DrawOnClip(CClip &oClip, const TXForm &oTransform, TRectL *pOutRect)
+	void CEmfPlusRegionNodeChild::DrawOnClip(CClip &oClip, const TXForm &oTransform, const TRectL *pOutRect)
 	{
 		unsigned int unType;
 		
@@ -550,7 +550,7 @@ namespace MetaFile
 		arNodes.clear();
 	}
 
-	EEmfPlusObjectType CEmfPlusRegion::GetObjectType()
+	EEmfPlusObjectType CEmfPlusRegion::GetObjectType() const
 	{
 		return ObjectTypeRegion;
 	}
@@ -558,7 +558,7 @@ namespace MetaFile
 	CEmfPlusStringFormat::CEmfPlusStringFormat() : CEmfPlusObject()
 	{}
 
-	EEmfPlusObjectType CEmfPlusStringFormat::GetObjectType()
+	EEmfPlusObjectType CEmfPlusStringFormat::GetObjectType() const
 	{
 		return ObjectTypeStringFormat;
 	}

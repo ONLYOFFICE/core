@@ -681,6 +681,8 @@
     <ClInclude Include="..\..\Reader\Converter\pptx_text_context.h" />
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\cconversionsmtoooxml.h" />
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\cstarmathpars.h" />
+    <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\fontType.h" />
+    <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\typeConversion.h" />
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\typeselements.h" />
     <ClInclude Include="..\..\Reader\Converter\xlsxconversioncontext.h" />
     <ClInclude Include="..\..\Reader\Converter\xlsx_alignment.h" />

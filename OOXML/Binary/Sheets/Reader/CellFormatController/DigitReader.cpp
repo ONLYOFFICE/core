@@ -116,6 +116,11 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 					format = data_format;
 				}
 			}
+			else
+			{
+				digit = std::to_wstring(dValue);
+				format = data_format;
+			}
 		}
 		else
         {

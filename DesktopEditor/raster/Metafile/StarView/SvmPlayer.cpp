@@ -447,7 +447,7 @@ CSvmDC::CSvmDC()
 CSvmDC::~CSvmDC()
 {
 }
-CSvmDC*         CSvmDC::Copy()
+CSvmDC*         CSvmDC::Copy() const
 {
 	CSvmDC* pNewDC = new CSvmDC();
 	if (!pNewDC)
@@ -482,7 +482,7 @@ CSvmDC*         CSvmDC::Copy()
 
 	return pNewDC;
 }
-ESvmMapUnit CSvmDC::GetMapModeUnit()
+ESvmMapUnit CSvmDC::GetMapModeUnit() const
 {
 	return (ESvmMapUnit)m_oMapMode.unit;
 }
@@ -576,14 +576,14 @@ void CSvmDC::SetMapMode(TSvmMapMode & mapMode, bool prefered )
 	}
 }
 
-TXForm* CSvmDC::GetTransform()
+const TXForm& CSvmDC::GetTransform() const
 {
-	return &m_oTransform;
+	return m_oTransform;
 }
 
-TXForm* CSvmDC::GetInverseTransform()
+const TXForm& CSvmDC::GetInverseTransform() const
 {
-	return &m_oTransform;
+	return m_oTransform;
 }
 
 void CSvmDC::SetTextColor(TSvmColor& oColor)
@@ -591,7 +591,7 @@ void CSvmDC::SetTextColor(TSvmColor& oColor)
 	m_oTextColor.Copy(oColor);
 }
 
-TSvmColor&  CSvmDC::GetTextColor()
+const TSvmColor& CSvmDC::GetTextColor() const
 {
 	return m_oTextColor;
 }
@@ -604,7 +604,7 @@ void CSvmDC::RemoveBrush(CSvmBrush* pBrush)
 	if (pBrush == m_pBrush)
 		m_pBrush = NULL;
 }
-CSvmBrush* CSvmDC::GetBrush()
+const CSvmBrush* CSvmDC::GetBrush() const
 {
 	return m_pBrush;
 }
@@ -617,7 +617,7 @@ void CSvmDC::RemoveFont(CSvmFont* pFont)
 	if (pFont == m_pFont)
 		m_pFont = NULL;
 }
-CSvmFont* CSvmDC::GetFont()
+const CSvmFont* CSvmDC::GetFont() const
 {
 	return m_pFont;
 }
@@ -625,7 +625,7 @@ void CSvmDC::SetTextAlign(unsigned int ulAlign)
 {
 	m_ulTextAlign = ulAlign;
 }
-unsigned int CSvmDC::GetTextAlign()
+unsigned int CSvmDC::GetTextAlign() const
 {
 	return m_ulTextAlign;
 }
@@ -633,7 +633,7 @@ void CSvmDC::SetBgMode(unsigned int ulBgMode)
 {
 	m_ulBgMode = ulBgMode;
 }
-unsigned int CSvmDC::GetBgMode()
+unsigned int CSvmDC::GetBgMode() const
 {
 	return m_ulBgMode;
 }
@@ -645,7 +645,7 @@ void CSvmDC::SetTextBgColor(TSvmColor* oColor)
 {
 	m_oTextBgColor.Copy(*oColor);
 }
-TSvmColor& CSvmDC::GetTextBgColor()
+const TSvmColor& CSvmDC::GetTextBgColor() const
 {
 	return m_oTextBgColor;
 }
@@ -653,7 +653,7 @@ void CSvmDC::SetMiterLimit(unsigned int ulMiter)
 {
 	m_ulMiterLimit = ulMiter;
 }
-unsigned int CSvmDC::GetMiterLimit()
+unsigned int CSvmDC::GetMiterLimit() const
 {
 	return m_ulMiterLimit;
 }
@@ -661,7 +661,7 @@ void CSvmDC::SetFillMode(unsigned int ulFillMode)
 {
 	m_ulFillMode = ulFillMode;
 }
-unsigned int    CSvmDC::GetFillMode()
+unsigned int    CSvmDC::GetFillMode() const
 {
 	return m_ulFillMode;
 }
@@ -674,11 +674,11 @@ void CSvmDC::RemovePen(CSvmPen* pPen)
 	if (pPen == m_pPen)
 		m_pPen = NULL;
 }
-CSvmPen* CSvmDC::GetPen()
+const CSvmPen* CSvmDC::GetPen() const
 {
 	return m_pPen;
 }
-CClip* CSvmDC::GetClip()
+const CClip* CSvmDC::GetClip() const
 {
 	return NULL;;
 	//return &m_oClip;
@@ -687,7 +687,7 @@ void CSvmDC::SetStretchMode(unsigned int& oMode)
 {
 	m_ulStretchMode = oMode;
 }
-unsigned int CSvmDC::GetStretchMode()
+unsigned int CSvmDC::GetStretchMode() const
 {
 	return m_ulStretchMode;
 }
@@ -705,7 +705,7 @@ void CSvmDC::SetRop2Mode(unsigned int& nMode)
 {
 	m_ulRop2Mode = nMode;
 }
-unsigned int CSvmDC::GetRop2Mode()
+unsigned int CSvmDC::GetRop2Mode() const
 {
 	return m_ulRop2Mode;
 }
@@ -731,7 +731,7 @@ void CSvmDC::SetCurPos(int lX, int lY)
 	m_oCurPos.x = lX;
 	m_oCurPos.y = lY;
 }
-TSvmPoint & CSvmDC::GetCurPos()
+const TSvmPoint & CSvmDC::GetCurPos() const
 {
 	return m_oCurPos;
 }
@@ -743,7 +743,7 @@ void CSvmDC::SetArcDirection(unsigned int unDirection)
 {
 	m_unArcDirection = unDirection;
 }
-unsigned int CSvmDC::GetArcDirection()
+unsigned int CSvmDC::GetArcDirection() const
 {
 	return m_unArcDirection;
 }

@@ -47,7 +47,8 @@ namespace SVG
 			return false;
 
 		std::wstring wsXml;
-		NSFile::CFileBinary::ReadAllTextUtf8(wsFile, wsXml);
+		if (!NSFile::CFileBinary::ReadAllTextUtf8(wsFile, wsXml))
+			return false;
 
 		XmlUtils::IXmlDOMDocument::DisableOutput();
 		bool bResult = LoadFromString(wsXml, pContainer, pFile);

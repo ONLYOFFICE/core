@@ -55,9 +55,7 @@ namespace NSDocxRenderer
 	{
 		m_lCurrentCommand = -1;
 
-		if (lType == c_nPathType)
-			PathEnd();
-		else if (lType == c_nResetClipType)
+		if (lType == c_nResetClipType)
 		{
 			m_oCurrVectorGraphics.Clear();
 			m_oClipVectorGraphics.Clear();

@@ -65,7 +65,7 @@ namespace NSDocxRenderer
 		else if (lType == c_nClipType)
 		{
 			// closing clip path if non-closed
-			if (m_oCurrVectorGraphics.GetData().back().type != CVectorGraphics::ePathCommandType::pctClose)
+			if (!m_oCurrVectorGraphics.IsEmpty() && m_oCurrVectorGraphics.GetData().back().type != CVectorGraphics::ePathCommandType::pctClose)
 				m_oCurrVectorGraphics.Add({CVectorGraphics::ePathCommandType::pctClose, {}});
 
 			if (!m_oClipVectorGraphics.IsEmpty())
@@ -1033,12 +1033,13 @@ namespace NSDocxRenderer
 	{
 		auto h_type = pCont->CBaseItem::GetHorizontalCrossingType(pShape.get());
 		double dTopBorder = pCont->m_dTop + pCont->m_dHeight / 3;
+		double dBotBorder = pCont->m_dBaselinePos - pCont->m_dHeight / 6;
 
 		bool bIf1 = pShape->m_eGraphicsType == eGraphicsType::gtRectangle &&
 					pShape->m_eLineType != eLineType::ltUnknown;
 
 		// Условие пересечения по вертикали
-		bool bIf2 = pShape->m_dTop > dTopBorder && pShape->m_dBaselinePos < pCont->m_dBaselinePos;
+		bool bIf2 = pShape->m_dTop > dTopBorder && pShape->m_dBaselinePos < dBotBorder;
 
 		// Условие пересечения по горизонтали
 		bool bIf3 = h_type != eHorizontalCrossingType::hctUnknown &&

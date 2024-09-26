@@ -622,6 +622,10 @@ namespace NSDocxRenderer
 		m_dRight = m_dLeft + m_dWidth;
 		m_arSymWidths.resize(m_arSymWidths.size() - 1);
 	}
+	uint32_t CContText::GetLastSym() const
+	{
+		return m_oText.at(m_oText.length() - 1);
+	}
 
 	const NSStringUtils::CStringUTF32& CContText::GetText() const noexcept
 	{

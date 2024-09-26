@@ -74,6 +74,9 @@ namespace NSDocxRenderer
 
 			if (bIsWideSpaceDelta || (pCurrent->m_bPossibleSplit && bIsSpaceDelta))
 			{
+				if (CContText::IsUnicodeSpace(pFirst->GetLastSym()))
+					pFirst->RemoveLastSym();
+
 				auto wide_space = std::make_shared<CContText>(pFirst->m_pManager);
 
 				// sets all members for wide_space except highlight things
@@ -110,9 +113,15 @@ namespace NSDocxRenderer
 				else
 					set_base();
 
-				m_arConts.insert(m_arConts.begin() + i, wide_space);
+				// pFrist cont contains only 1 space
+				if (pFirst->GetLength() == 0)
+					*pFirst = *wide_space;
+				else
+				{
+					m_arConts.insert(m_arConts.begin() + i, wide_space);
+					i++;
+				}
 
-				i++;
 				while (!m_arConts[i] && i < m_arConts.size()) i++;
 				if (i == m_arConts.size()) break;
 				pFirst = m_arConts[i];

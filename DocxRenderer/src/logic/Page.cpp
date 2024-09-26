@@ -544,6 +544,11 @@ namespace NSDocxRenderer
 	void CPage::ReorderShapesForPptx()
 	{
 		using shape_ptr_t = std::shared_ptr<CShape>;
+
+		// переместим nullptr в конец и удалим
+		auto right = MoveNullptr(m_arShapes.begin(), m_arShapes.end());
+		m_arShapes.erase(right, m_arShapes.end());
+
 		std::sort(m_arShapes.begin(), m_arShapes.end(), [] (const shape_ptr_t& s1, const shape_ptr_t& s2) {
 			if (s1->m_bIsBehindDoc && !s2->m_bIsBehindDoc) return true;
 			if (!s1->m_bIsBehindDoc && s2->m_bIsBehindDoc) return false;

@@ -851,7 +851,8 @@ namespace Aggplus
 	double CGraphicsPath::GetArea() const noexcept
 	{
 		double area = 0.0;
-		for (unsigned i = 0; i < GetPointCount() - 1; i++)
+		unsigned length = GetPointCount() - 1;
+		for (unsigned i = 0; i < length; i++)
 		{
 			area += GetArea(i, IsCurvePoint(i + 1));
 			if (IsCurvePoint(i + 1)) i += 2;

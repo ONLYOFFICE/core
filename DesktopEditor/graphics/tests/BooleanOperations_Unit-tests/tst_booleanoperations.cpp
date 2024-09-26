@@ -234,6 +234,7 @@ TEST(BooleanOperations, OverlapOutside)
 	resultIntersect.StartFigure();
 	resultIntersect.MoveTo(300.0, 300.0);
 	resultIntersect.LineTo(300.0, 200.0);
+	resultIntersect.LineTo(300.0, 300.0);
 	resultIntersect.CloseFigure();
 
 	resultUnite.StartFigure();
@@ -283,11 +284,11 @@ TEST(BooleanOperations, OverlapInside)
 	path2.CloseFigure();
 
 	resultIntersect.StartFigure();
-	resultIntersect.MoveTo(200.0, 200.0);
+	resultIntersect.MoveTo(400.0, 300.0);
 	resultIntersect.LineTo(400.0, 200.0);
-	resultIntersect.LineTo(400.0, 300.0);
-	resultIntersect.LineTo(200.0, 300.0);
 	resultIntersect.LineTo(200.0, 200.0);
+	resultIntersect.LineTo(200.0, 300.0);
+	resultIntersect.LineTo(400.0, 300.0);
 	resultIntersect.CloseFigure();
 
 	resultUnite.StartFigure();

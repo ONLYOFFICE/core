@@ -754,6 +754,7 @@ void CBooleanOperations::TraceBoolean()
 			{
 				Locations.erase(Locations.begin() + i);
 				length--;
+				i--;
 			}
 		}
 
@@ -946,26 +947,8 @@ void CBooleanOperations::TraceAllOverlap()
 
 		if (Op == Intersection)
 		{
-			if (count1 % 2 == 0 && count2 % 2 == 0)
-			{
-				Result.StartFigure();
-				bool start = true;
-				for (size_t i = 0; i < Locations.size() / 2; i += 2)
-				{
-					if (start && !(Locations[i]->C.Segment1.Id == Locations[i + 1]->C.Segment1.Id &&
-								   abs(Locations[i]->C.Segment1.Index - Locations[i + 1]->C.Segment1.Index) == 1))
-						Result.MoveTo(Locations[i]->S.P.X, Locations[i]->S.P.Y);
-					else
-						Result.LineTo(Locations[i]->S.P.X, Locations[i]->S.P.Y);
-
-					Result.LineTo(Locations[i + 1]->S.P.X, Locations[i + 1]->S.P.Y);
-				}
-				Result.CloseFigure();
-			}
-			else if (count1 % 2 == 0)
-				Result = std::move(Path2);
-			else
-				Result = std::move(Path1);
+			SetWinding();
+			TracePaths();
 		}
 		else if (Op == Union)
 		{

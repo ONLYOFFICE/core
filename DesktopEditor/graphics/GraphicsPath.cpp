@@ -31,13 +31,14 @@
  */
 #include "GraphicsPath_private.h"
 #include "agg_bounding_rect.h"
+#include <algorithm>
 
 namespace Aggplus
 {
 	// GraphicsPath
 	CGraphicsPath::CGraphicsPath() : ISimpleGraphicsPath()
 	{
-        m_internal = new CGraphicsPath_private();
+		m_internal = new CGraphicsPath_private();
 	}
 
 	CGraphicsPath::CGraphicsPath(const CGraphicsPath& other) noexcept
@@ -82,51 +83,51 @@ namespace Aggplus
 
 	CGraphicsPath::~CGraphicsPath()
 	{
-        RELEASEOBJECT(m_internal);
+		RELEASEOBJECT(m_internal);
 	}
 
 	CGraphicsPath* CGraphicsPath::Clone()
 	{
 		CGraphicsPath* pNew = new CGraphicsPath();
-        pNew->m_internal->m_agg_ps		= m_internal->m_agg_ps;
-        pNew->m_internal->m_bEvenOdd	= m_internal->m_bEvenOdd;
-        pNew->m_internal->m_bIsMoveTo	= m_internal->m_bIsMoveTo;
+		pNew->m_internal->m_agg_ps		= m_internal->m_agg_ps;
+		pNew->m_internal->m_bEvenOdd	= m_internal->m_bEvenOdd;
+		pNew->m_internal->m_bIsMoveTo	= m_internal->m_bIsMoveTo;
 		return pNew;
 	}
 
 	Status CGraphicsPath::Reset()
 	{
-        m_internal->m_agg_ps.remove_all();
-        m_internal->m_bIsMoveTo = false;
+		m_internal->m_agg_ps.remove_all();
+		m_internal->m_bIsMoveTo = false;
 		return Ok;
 	}
 
 	void CGraphicsPath::SetRuler(bool bEvenOdd)
 	{
-        m_internal->m_bEvenOdd = bEvenOdd;
+		m_internal->m_bEvenOdd = bEvenOdd;
 	}
 
-	Status CGraphicsPath::StartFigure() 
-	{ 
-        m_internal->m_agg_ps.start_new_path();
-		return Ok; 
+	Status CGraphicsPath::StartFigure()
+	{
+		m_internal->m_agg_ps.start_new_path();
+		return Ok;
 	}
 
-	Status CGraphicsPath::CloseFigure() 
-	{ 
-        m_internal->m_agg_ps.close_polygon();
-		return Ok; 
+	Status CGraphicsPath::CloseFigure()
+	{
+		m_internal->m_agg_ps.close_polygon();
+		return Ok;
 	}
 
 	bool CGraphicsPath::Is_poly_closed() const
 	{
-        if (!m_internal->m_agg_ps.total_vertices())
+		if (!m_internal->m_agg_ps.total_vertices())
 			return true;
 
 		double x, y;
-        unsigned int nTip = m_internal->m_agg_ps.last_vertex(&x, &y);
-		
-		if (nTip & agg::path_flags_close) 
+		unsigned int nTip = m_internal->m_agg_ps.last_vertex(&x, &y);
+
+		if (nTip & agg::path_flags_close)
 			return true;
 
 		return false;
@@ -134,33 +135,33 @@ namespace Aggplus
 
 	Status CGraphicsPath::MoveTo(double x, double y)
 	{
-        m_internal->m_bIsMoveTo = true;
-        m_internal->m_agg_ps.move_to(x, y);
+		m_internal->m_bIsMoveTo = true;
+		m_internal->m_agg_ps.move_to(x, y);
 		return Ok;
 	}
 	Status CGraphicsPath::LineTo(double x, double y)
 	{
-        m_internal->m_agg_ps.line_to(x, y);
+		m_internal->m_agg_ps.line_to(x, y);
 		return Ok;
 	}
 	Status CGraphicsPath::CurveTo(double x1, double y1, double x2, double y2, double x3, double y3)
 	{
-        m_internal->m_agg_ps.curve4(x1, y1, x2, y2, x3, y3);
+		m_internal->m_agg_ps.curve4(x1, y1, x2, y2, x3, y3);
 		return Ok;
 	}
 
 	Status CGraphicsPath::AddLine(double x1, double y1, double x2, double y2)
 	{
-		 if (Is_poly_closed()) 
+		 if (Is_poly_closed())
 		 {
-             m_internal->m_agg_ps.move_to(x1, y1);
+			 m_internal->m_agg_ps.move_to(x1, y1);
 		 }
 		 else
 		 {
-             m_internal->m_agg_ps.line_to(x1, y1);
+			 m_internal->m_agg_ps.line_to(x1, y1);
 		 }
 
-         m_internal->m_agg_ps.line_to(x2, y2);
+		 m_internal->m_agg_ps.line_to(x2, y2);
 		 return Ok;
 	}
 
@@ -172,7 +173,7 @@ namespace Aggplus
 		}
 		int nRet = 0;
 
-        if (!m_internal->m_bIsMoveTo)
+		if (!m_internal->m_bIsMoveTo)
 		{
 			MoveTo(pPoints[0], pPoints[1]);
 		}
@@ -191,19 +192,19 @@ namespace Aggplus
 		for (int i = 1; i <= n; ++i)
 		{
 			const double* points = &pPoints[i * 2];
-            m_internal->m_agg_ps.line_to(points[0], points[1]);
+			m_internal->m_agg_ps.line_to(points[0], points[1]);
 		}
 		return Ok;
 	}
 	
 	Status CGraphicsPath::AddBezier(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
 	{
-		if (Is_poly_closed()) 
-            m_internal->m_agg_ps.move_to(x1, y1);
-		else   
-            m_internal->m_agg_ps.line_to(x1, y1);
+		if (Is_poly_closed())
+			m_internal->m_agg_ps.move_to(x1, y1);
+		else
+			m_internal->m_agg_ps.line_to(x1, y1);
 
-        m_internal->m_agg_ps.curve4(x2, y2, x3, y3, x4, y4);
+		m_internal->m_agg_ps.curve4(x2, y2, x3, y3, x4, y4);
 		return Ok;
 	}
 	Status CGraphicsPath::AddBeziers(double* pPoints, int nCount)
@@ -211,7 +212,7 @@ namespace Aggplus
 		if (8 > nCount)
 			return InvalidParameter;
 
-        if (!m_internal->m_bIsMoveTo)
+		if (!m_internal->m_bIsMoveTo)
 		{
 			MoveTo(pPoints[0], pPoints[1]);
 		}
@@ -223,13 +224,13 @@ namespace Aggplus
 		curve.approximation_scale(25.0);
 		curve.init(points[0], points[1], points[2], points[3], points[4], points[5], points[6], points[7]);
 
-		if (Is_poly_closed()) 
+		if (Is_poly_closed())
 		{
-            m_internal->m_agg_ps.concat_path(curve, 0);
+			m_internal->m_agg_ps.concat_path(curve, 0);
 		}
 		else
 		{
-            m_internal->m_agg_ps.join_path(curve, 0);
+			m_internal->m_agg_ps.join_path(curve, 0);
 		}
 
 		int nCountTo = (nCount - 8) / 6;
@@ -252,16 +253,16 @@ namespace Aggplus
 	{
 		agg::bezier_arc arc(x+width/2.0, y+height/2.0, width/2.0, height/2.0, 0.0, agg::pi2);
 		//2.3 m_agg_ps.add_path(arc, 0, true);
-        m_internal->m_agg_ps.join_path(arc, 0);
+		m_internal->m_agg_ps.join_path(arc, 0);
 		return Ok;
 	}
 	Status CGraphicsPath::AddRectangle(double x, double y, double width, double height)
 	{
-        m_internal->m_agg_ps.move_to(x, y);
-        m_internal->m_agg_ps.line_to(x + width, y);
-        m_internal->m_agg_ps.line_to(x + width, y + height);
-        m_internal->m_agg_ps.line_to(x, y + height);
-        m_internal->m_agg_ps.close_polygon();
+		m_internal->m_agg_ps.move_to(x, y);
+		m_internal->m_agg_ps.line_to(x + width, y);
+		m_internal->m_agg_ps.line_to(x + width, y + height);
+		m_internal->m_agg_ps.line_to(x, y + height);
+		m_internal->m_agg_ps.close_polygon();
 		return Ok;
 	}
 	Status CGraphicsPath::AddPolygon(double* pPoints, int nCount)
@@ -272,13 +273,13 @@ namespace Aggplus
 		}
 		int nRet = 0;
 
-		if (Is_poly_closed()) 
+		if (Is_poly_closed())
 		{
-            m_internal->m_agg_ps.move_to(pPoints[0], pPoints[1]);
+			m_internal->m_agg_ps.move_to(pPoints[0], pPoints[1]);
 		}
 		else
 		{
-            m_internal->m_agg_ps.line_to(pPoints[0], pPoints[1]);
+			m_internal->m_agg_ps.line_to(pPoints[0], pPoints[1]);
 		}
 
 		int n = (nCount / 2) - 1;
@@ -286,20 +287,20 @@ namespace Aggplus
 		for (int i = 1; i < n; ++i)
 		{
 			double* points = &pPoints[i * 2];
-            m_internal->m_agg_ps.line_to(points[0], points[1]);
+			m_internal->m_agg_ps.line_to(points[0], points[1]);
 		}
 
-        m_internal->m_agg_ps.close_polygon();
+		m_internal->m_agg_ps.close_polygon();
 		return Ok;
 	}
 	Status CGraphicsPath::AddPath(const CGraphicsPath& oPath)
 	{
 		typedef agg::conv_curve<agg::path_storage> conv_crv_type;
 
-        agg::path_storage p_copy(oPath.m_internal->m_agg_ps);
+		agg::path_storage p_copy(oPath.m_internal->m_agg_ps);
 		conv_crv_type p3(p_copy);
 
-        m_internal->m_agg_ps.join_path(p3, 0);
+		m_internal->m_agg_ps.join_path(p3, 0);
 		return Ok;
 	}
 	Status CGraphicsPath::AddArc(double x, double y, double width, double height, double startAngle, double sweepAngle)
@@ -315,11 +316,11 @@ namespace Aggplus
 
 		if (Is_poly_closed()) 
 		{
-            m_internal->m_agg_ps.concat_path(arc, 0);
+			m_internal->m_agg_ps.concat_path(arc, 0);
 		}
 		else
 		{
-            m_internal->m_agg_ps.join_path(arc, 0);
+			m_internal->m_agg_ps.join_path(arc, 0);
 		}
 
 		return Ok;
@@ -328,13 +329,13 @@ namespace Aggplus
 	ULONG CGraphicsPath::GetPointCount() const
 	{
 		ULONG nPointCount=0;
-        ULONG nTotal = m_internal->m_agg_ps.total_vertices();
+		ULONG nTotal = m_internal->m_agg_ps.total_vertices();
 		
 		double x, y;
 		
 		for(ULONG i = 0; i < nTotal; ++i)
 		{
-            ULONG nTip = m_internal->m_agg_ps.vertex(i, &x, &y);
+			ULONG nTip = m_internal->m_agg_ps.vertex(i, &x, &y);
 			if(nTip)
 			{
 				if (!(nTip & agg::path_flags_close))
@@ -348,13 +349,13 @@ namespace Aggplus
 
 	Status CGraphicsPath::GetPathPoints(PointF* points, int count) const
 	{
-        int nTotal = m_internal->m_agg_ps.total_vertices();
+		int nTotal = m_internal->m_agg_ps.total_vertices();
 		double x, y;
 		int i = 0, k = 0;
 		
 		while (k < count && i < nTotal)
 		{
-            unsigned int nTip = m_internal->m_agg_ps.vertex(i, &x, &y);
+			unsigned int nTip = m_internal->m_agg_ps.vertex(i, &x, &y);
 			if (nTip)
 			{
 				if(!(nTip & agg::path_flags_close))
@@ -372,19 +373,19 @@ namespace Aggplus
 
 	Status CGraphicsPath::GetLastPoint(double& x, double& y)
 	{
-        m_internal->m_agg_ps.last_vertex(&x, &y);
+		m_internal->m_agg_ps.last_vertex(&x, &y);
 		return Ok;
 	}
 
 	Status CGraphicsPath::GetPathPoints(double* points, int count) const
 	{
-        int nTotal = m_internal->m_agg_ps.total_vertices();
+		int nTotal = m_internal->m_agg_ps.total_vertices();
 		double x, y;
 		int i = 0, k = 0;
 		
 		while (k < count && i < nTotal)
 		{
-            unsigned int nTip = m_internal->m_agg_ps.vertex(i, &x, &y);
+			unsigned int nTip = m_internal->m_agg_ps.vertex(i, &x, &y);
 			if (nTip)
 			{
 				if(!(nTip & agg::path_flags_close))
@@ -402,14 +403,14 @@ namespace Aggplus
 
 	void CGraphicsPath::GetBounds(double& left, double& top, double& width, double& height) const
 	{
-        unsigned int nTotal = m_internal->m_agg_ps.total_vertices();
+		unsigned int nTotal = m_internal->m_agg_ps.total_vertices();
 		if (nTotal)
 		{
 			agg::rect_d bounds(1e100, 1e100, -1e100, -1e100);
 			double x, y;
 			for(unsigned int i = 0; i < nTotal; i++)
 			{
-                unsigned int nTip = m_internal->m_agg_ps.vertex(i, &x, &y);
+				unsigned int nTip = m_internal->m_agg_ps.vertex(i, &x, &y);
 				if(agg::is_vertex(nTip))
 				{
 					if(x < bounds.x1) bounds.x1 = x;
@@ -452,38 +453,38 @@ namespace Aggplus
 	{
 		if (NULL != matrix)
 		{
-            agg::path_storage p2(m_internal->m_agg_ps);
-            agg::conv_transform<agg::path_storage> trans(p2, matrix->m_internal->m_agg_mtx);
-            m_internal->m_agg_ps.remove_all();
+			agg::path_storage p2(m_internal->m_agg_ps);
+			agg::conv_transform<agg::path_storage> trans(p2, matrix->m_internal->m_agg_mtx);
+			m_internal->m_agg_ps.remove_all();
 			//2.3 m_agg_ps.add_path(trans, 0, false);
-            m_internal->m_agg_ps.concat_path(trans, 0);
+			m_internal->m_agg_ps.concat_path(trans, 0);
 		}
 		return Ok;
 	}
 
 	bool CGraphicsPath::_MoveTo(double x, double y)
 	{
-        if (NULL != m_internal->m_pTransform)
+		if (NULL != m_internal->m_pTransform)
 		{
-            m_internal->m_pTransform->TransformPoint(x, y);
+			m_internal->m_pTransform->TransformPoint(x, y);
 		}
 		return (Ok == MoveTo(x, y));
 	}
 	bool CGraphicsPath::_LineTo(double x, double y)
 	{
-        if (NULL != m_internal->m_pTransform)
+		if (NULL != m_internal->m_pTransform)
 		{
-            m_internal->m_pTransform->TransformPoint(x, y);
+			m_internal->m_pTransform->TransformPoint(x, y);
 		}
 		return (Ok == LineTo(x, y));
 	}
 	bool CGraphicsPath::_CurveTo(double x1, double y1, double x2, double y2, double x3, double y3)
 	{
-        if (NULL != m_internal->m_pTransform)
+		if (NULL != m_internal->m_pTransform)
 		{
-            m_internal->m_pTransform->TransformPoint(x1, y1);
-            m_internal->m_pTransform->TransformPoint(x2, y2);
-            m_internal->m_pTransform->TransformPoint(x3, y3);
+			m_internal->m_pTransform->TransformPoint(x1, y1);
+			m_internal->m_pTransform->TransformPoint(x2, y2);
+			m_internal->m_pTransform->TransformPoint(x3, y3);
 		}
 		return (Ok == CurveTo(x1, y1, x2, y2, x3, y3));
 	}
@@ -492,26 +493,26 @@ namespace Aggplus
 		return (Ok == CloseFigure());
 	}
 
-    Status CGraphicsPath::AddString(const std::wstring& strText, NSFonts::IFontManager* pFont, double x, double y)
+	Status CGraphicsPath::AddString(const std::wstring& strText, NSFonts::IFontManager* pFont, double x, double y)
 	{
 		if (NULL == pFont)
 			return InvalidParameter;
-		
+
 		pFont->SetTextMatrix(1, 0, 0, 1, 0, 0);
 		pFont->LoadString1(strText, (float)x, (float)y);
 		return (TRUE == pFont->GetStringPath(this)) ? Ok : InvalidParameter;
 	}
-    Status CGraphicsPath::AddString(const unsigned int* pGids, const unsigned int nGidsCount, NSFonts::IFontManager* pFont, double x, double y)
-    {
-        if (NULL == pFont)
-            return InvalidParameter;
+	Status CGraphicsPath::AddString(const unsigned int* pGids, const unsigned int nGidsCount, NSFonts::IFontManager* pFont, double x, double y)
+	{
+		if (NULL == pFont)
+			return InvalidParameter;
 
 		pFont->SetTextMatrix(1, 0, 0, 1, 0, 0);
-        pFont->LoadString1(pGids, nGidsCount, (float)x, (float)y);
-        return (TRUE == pFont->GetStringPath(this)) ? Ok : InvalidParameter;
-    }
+		pFont->LoadString1(pGids, nGidsCount, (float)x, (float)y);
+		return (TRUE == pFont->GetStringPath(this)) ? Ok : InvalidParameter;
+	}
 
-    Status CGraphicsPath::AddStringC(const LONG& lText, NSFonts::IFontManager* pFont, double x, double y)
+	Status CGraphicsPath::AddStringC(const LONG& lText, NSFonts::IFontManager* pFont, double x, double y)
 	{
 		if (NULL == pFont)
 			return InvalidParameter;
@@ -522,45 +523,45 @@ namespace Aggplus
 		return (TRUE == pFont->GetStringPath(this)) ? Ok : InvalidParameter;
 	}
 
-    void CGraphicsPath::z_Stroke(const double& size)
+	void CGraphicsPath::z_Stroke(const double& size)
 	{
 		typedef agg::conv_stroke<agg::path_storage> Path_Conv_Stroke;
-        Path_Conv_Stroke pg(m_internal->m_agg_ps);
+		Path_Conv_Stroke pg(m_internal->m_agg_ps);
 		pg.line_join(agg::round_join);
 		pg.line_cap(agg::round_cap);
 		pg.approximation_scale(25.00);
 		//pg.miter_limit(0.50);
 
-        pg.width(size);
+		pg.width(size);
 		//pg.auto_detect_orientation(true);
 
 		agg::path_storage psNew;
 		//2.3 psNew.add_path(pg, 0, false);
 		psNew.concat_path(pg, 0);
 
-        m_internal->m_agg_ps = psNew;
+		m_internal->m_agg_ps = psNew;
 	}
 
-    void CGraphicsPath::Widen(const double& size, const Aggplus::LineJoin& join, const CMatrix* matrix, float flatness)
+	void CGraphicsPath::Widen(const double& size, const Aggplus::LineJoin& join, const CMatrix* matrix, float flatness)
 	{
-        if (NULL == matrix || 0.0f == flatness)
+		if (NULL == matrix || 0.0f == flatness)
 			return;
 
 		typedef agg::conv_curve<agg::path_storage> conv_crv_type;
 
 		typedef agg::conv_contour<conv_crv_type> Path_Conv_Contour;
 
-        conv_crv_type crv(m_internal->m_agg_ps);
+		conv_crv_type crv(m_internal->m_agg_ps);
 		Path_Conv_Contour pg(crv);
 
 		pg.miter_limit(0.50);
 		//pg.miter_limit_theta(0.05);
 		//pg.approximation_scale(2.00);
 
-        pg.width(size);
+		pg.width(size);
 
 		agg::line_join_e LineJoin;
-        switch (join)
+		switch (join)
 		{
 		case LineJoinMiter       : LineJoin=agg::miter_join; break;
 		case LineJoinBevel       : LineJoin=agg::bevel_join; break;
@@ -575,8 +576,8 @@ namespace Aggplus
 		agg::path_storage psNew;
 		//2.3 psNew.add_path(pg, 0, false);
 		//m_agg_ps.concat_path(pg, 0);
-        m_internal->m_agg_ps.concat_path(pg, 0);
-        m_internal->m_agg_ps = psNew;
+		m_internal->m_agg_ps.concat_path(pg, 0);
+		m_internal->m_agg_ps = psNew;
 	}
 
 	int CGraphicsPath::EllipseArc(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection)
@@ -637,8 +638,8 @@ namespace Aggplus
 		// Выясним в каких четвертях находятся начальная и конечная точки
 		unsigned int nFirstPointQuard  = int(fAngle1) / 90 + 1; 
 		unsigned int nSecondPointQuard = int(fAngle2) / 90 + 1;
-        nSecondPointQuard = std::min( 4, std::max( 1, (int)nSecondPointQuard ) );
-        nFirstPointQuard  = std::min( 4, std::max( 1, (int)nFirstPointQuard ) );
+		nSecondPointQuard = std::min( 4, std::max( 1, (int)nSecondPointQuard ) );
+		nFirstPointQuard  = std::min( 4, std::max( 1, (int)nFirstPointQuard ) );
 		// Проведем линию в начальную точку дуги
 		double fStartX = 0.0, fStartY = 0.0, fEndX = 0.0, fEndY = 0.0;
 
@@ -774,14 +775,14 @@ namespace Aggplus
 		return Ok;
 	}
 
-    bool CGraphicsPath::IsPointInPath(const double& x, const double& y)
-    {
-        agg::rasterizer_scanline_aa<agg::rasterizer_sl_clip_dbl> rasterizer;
-        agg::conv_curve<agg::path_storage> c_c_path(m_internal->m_agg_ps);
-        rasterizer.add_path(c_c_path);
+	bool CGraphicsPath::IsPointInPath(const double& x, const double& y)
+	{
+		agg::rasterizer_scanline_aa<agg::rasterizer_sl_clip_dbl> rasterizer;
+		agg::conv_curve<agg::path_storage> c_c_path(m_internal->m_agg_ps);
+		rasterizer.add_path(c_c_path);
 
-        return rasterizer.hit_test((int)x, (int)y);
-    }
+		return rasterizer.hit_test((int)x, (int)y);
+	}
 
 	unsigned CGraphicsPath::GetCloseCount() const noexcept
 	{
@@ -991,13 +992,13 @@ namespace Aggplus
 	CGraphicsPathSimpleConverter::CGraphicsPathSimpleConverter()
 	{
 		m_pRenderer = NULL;
-        m_internal = new CGraphicsPathSimpleConverter_private();
+		m_internal = new CGraphicsPathSimpleConverter_private();
 	}
 
 	CGraphicsPathSimpleConverter::~CGraphicsPathSimpleConverter()
 	{
 		RELEASEINTERFACE(m_pRenderer);
-        RELEASEOBJECT(m_internal);
+		RELEASEOBJECT(m_internal);
 	}
 
 	void CGraphicsPathSimpleConverter::SetRenderer(IRenderer* pRenderer)
@@ -1043,7 +1044,7 @@ namespace Aggplus
 
 		int nRet = 0;
 
-        if (!m_internal->m_bIsMoveTo)
+		if (!m_internal->m_bIsMoveTo)
 		{
 			_MoveTo(pData[0], pData[1]);
 		}
@@ -1071,7 +1072,7 @@ namespace Aggplus
 		if (8 > lCount)
 			return false;
 
-        if (!m_internal->m_bIsMoveTo)
+		if (!m_internal->m_bIsMoveTo)
 		{
 			_MoveTo(pData[0], pData[1]);
 
@@ -1116,14 +1117,14 @@ namespace Aggplus
 	}
 	bool CGraphicsPathSimpleConverter::PathCommandGetCurrentPoint(double* fX, double* fY)
 	{
-        m_internal->m_agg_ps.last_vertex(fX, fY);
+		m_internal->m_agg_ps.last_vertex(fX, fY);
 		return true;
 	}
-    bool CGraphicsPathSimpleConverter::PathCommandText(const std::wstring& bsText, NSFonts::IFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
+	bool CGraphicsPathSimpleConverter::PathCommandText(const std::wstring& bsText, NSFonts::IFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
 	{
 		return AddString(bsText, pManager, fX, fY + fBaseLineOffset);
 	}
-    bool CGraphicsPathSimpleConverter::PathCommandTextEx(std::wstring& bsText, std::wstring& bsGidText, NSFonts::IFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags)
+	bool CGraphicsPathSimpleConverter::PathCommandTextEx(std::wstring& bsText, std::wstring& bsGidText, NSFonts::IFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags)
 	{
 		if (!bsGidText.empty())
 		{
@@ -1133,49 +1134,49 @@ namespace Aggplus
 		return PathCommandText(bsText, pManager, fX, fY, fWidth, fHeight, fBaseLineOffset);
 	}
 
-    bool CGraphicsPathSimpleConverter::PathCommandText2(const int* pUnicodes, const int* pGids, const int& nCount, NSFonts::IFontManager* pManager,
-                          const double& x, const double& y, const double& w, const double& h)
-    {
-        if (NULL == pGids)
-        {
-            pManager->SetStringGID(FALSE);
-            pManager->LoadString1((const unsigned int*)pUnicodes, (unsigned int)nCount, (float)x, (float)y);
-            return (TRUE == pManager->GetStringPath(this)) ? true : false;
-        }
-        else
-        {
-            pManager->SetStringGID(TRUE);
-            pManager->LoadString1((const unsigned int*)pGids, (unsigned int)nCount, (float)x, (float)y);
-            return (TRUE == pManager->GetStringPath(this)) ? true : false;
-        }
-    }
-    bool CGraphicsPathSimpleConverter::PathCommandText2(const std::wstring& sUnicodes, const int* pGids, const int& nCount, NSFonts::IFontManager* pManager,
-                          const double& x, const double& y, const double& w, const double& h)
-    {
-        if (NULL == pGids)
-        {
-            pManager->SetStringGID(FALSE);
-            pManager->LoadString1(sUnicodes, (float)x, (float)y);
-            return (TRUE == pManager->GetStringPath(this)) ? true : false;
-        }
-        else
-        {
-            pManager->SetStringGID(TRUE);
-            pManager->LoadString1((const unsigned int*)pGids, (unsigned int)nCount, (float)x, (float)y);
-            return (TRUE == pManager->GetStringPath(this)) ? true : false;
-        }
-    }
+	bool CGraphicsPathSimpleConverter::PathCommandText2(const int* pUnicodes, const int* pGids, const int& nCount, NSFonts::IFontManager* pManager,
+					const double& x, const double& y, const double& w, const double& h)
+	{
+		if (NULL == pGids)
+		{
+			pManager->SetStringGID(FALSE);
+			pManager->LoadString1((const unsigned int*)pUnicodes, (unsigned int)nCount, (float)x, (float)y);
+			return (TRUE == pManager->GetStringPath(this)) ? true : false;
+		}
+		else
+		{
+			pManager->SetStringGID(TRUE);
+			pManager->LoadString1((const unsigned int*)pGids, (unsigned int)nCount, (float)x, (float)y);
+			return (TRUE == pManager->GetStringPath(this)) ? true : false;
+		}
+	}
+	bool CGraphicsPathSimpleConverter::PathCommandText2(const std::wstring& sUnicodes, const int* pGids, const int& nCount, NSFonts::IFontManager* pManager,
+					const double& x, const double& y, const double& w, const double& h)
+	{
+		if (NULL == pGids)
+		{
+			pManager->SetStringGID(FALSE);
+			pManager->LoadString1(sUnicodes, (float)x, (float)y);
+			return (TRUE == pManager->GetStringPath(this)) ? true : false;
+		}
+		else
+		{
+			pManager->SetStringGID(TRUE);
+			pManager->LoadString1((const unsigned int*)pGids, (unsigned int)nCount, (float)x, (float)y);
+			return (TRUE == pManager->GetStringPath(this)) ? true : false;
+		}
+	}
 
 	bool CGraphicsPathSimpleConverter::PathCommandGetBounds(double& left, double& top, double& width, double &height)
 	{
-        unsigned int nTotal = m_internal->m_agg_ps.total_vertices();
+		unsigned int nTotal = m_internal->m_agg_ps.total_vertices();
 		if (nTotal)
 		{
 			agg::rect_d bounds(1e100, 1e100, -1e100, -1e100);
 			double x, y;
 			for(unsigned int i = 0; i < nTotal; i++)
 			{
-                unsigned int nTip = m_internal->m_agg_ps.vertex(i, &x, &y);
+				unsigned int nTip = m_internal->m_agg_ps.vertex(i, &x, &y);
 				if(agg::is_vertex(nTip))
 				{
 					if(x < bounds.x1) bounds.x1 = x;
@@ -1202,8 +1203,8 @@ namespace Aggplus
 	
 	bool CGraphicsPathSimpleConverter::_MoveTo(double x, double y)
 	{
-        m_internal->m_bIsMoveTo = true;
-        m_internal->m_agg_ps.move_to(x, y);
+		m_internal->m_bIsMoveTo = true;
+		m_internal->m_agg_ps.move_to(x, y);
 
 		if (NULL != m_pRenderer)
 		{
@@ -1215,12 +1216,12 @@ namespace Aggplus
 	}
 	bool CGraphicsPathSimpleConverter::_LineTo(double x, double y)
 	{
-        if (!m_internal->m_bIsMoveTo)
+		if (!m_internal->m_bIsMoveTo)
 		{
 			_MoveTo(x, y);
-		}		
+		}
 		
-        m_internal->m_agg_ps.line_to(x, y);
+		m_internal->m_agg_ps.line_to(x, y);
 		
 		if (NULL != m_pRenderer)
 		{
@@ -1233,12 +1234,12 @@ namespace Aggplus
 	}
 	bool CGraphicsPathSimpleConverter::_CurveTo(double x1, double y1, double x2, double y2, double x3, double y3)
 	{
-        if (!m_internal->m_bIsMoveTo)
+		if (!m_internal->m_bIsMoveTo)
 		{
 			_MoveTo(x1, y1);
 		}
 		
-        m_internal->m_agg_ps.curve4(x1, y1, x2, y2, x3, y3);
+		m_internal->m_agg_ps.curve4(x1, y1, x2, y2, x3, y3);
 
 		if (NULL != m_pRenderer)
 		{
@@ -1251,8 +1252,8 @@ namespace Aggplus
 	}
 	bool CGraphicsPathSimpleConverter::_Close()
 	{
-        m_internal->m_bIsClosed = true;
-        m_internal->m_agg_ps.close_polygon();
+		m_internal->m_bIsClosed = true;
+		m_internal->m_agg_ps.close_polygon();
 		
 		if (NULL != m_pRenderer)
 		{
@@ -1264,11 +1265,11 @@ namespace Aggplus
 	}
 	bool CGraphicsPathSimpleConverter::_Reset()
 	{
-        m_internal->m_bEvenOdd	= false;
-        m_internal->m_bIsMoveTo	= false;
-        m_internal->m_bIsClosed	= false;
+		m_internal->m_bEvenOdd	= false;
+		m_internal->m_bIsMoveTo	= false;
+		m_internal->m_bIsClosed	= false;
 
-        m_internal->m_agg_ps.remove_all();
+		m_internal->m_agg_ps.remove_all();
 
 		if (NULL != m_pRenderer)
 		{
@@ -1281,7 +1282,7 @@ namespace Aggplus
 	}
 	bool CGraphicsPathSimpleConverter::_Start()
 	{
-        m_internal->m_agg_ps.start_new_path();
+		m_internal->m_agg_ps.start_new_path();
 
 		if (NULL != m_pRenderer)
 		{
@@ -1293,7 +1294,7 @@ namespace Aggplus
 		return true;
 	}
 
-    bool CGraphicsPathSimpleConverter::AddString(const std::wstring& bstrText, NSFonts::IFontManager* pFont, double x, double y)
+	bool CGraphicsPathSimpleConverter::AddString(const std::wstring& bstrText, NSFonts::IFontManager* pFont, double x, double y)
 	{
 		if (NULL == pFont)
 			return false;
@@ -1360,8 +1361,8 @@ namespace Aggplus
 		// Выясним в каких четвертях находятся начальная и конечная точки
 		unsigned int nFirstPointQuard  = int(fAngle1) / 90 + 1; 
 		unsigned int nSecondPointQuard = int(fAngle2) / 90 + 1;
-        nSecondPointQuard = std::min( 4, std::max( 1, (int)nSecondPointQuard ) );
-        nFirstPointQuard  = std::min( 4, std::max( 1, (int)nFirstPointQuard ) );
+		nSecondPointQuard = std::min( 4, std::max( 1, (int)nSecondPointQuard ) );
+		nFirstPointQuard  = std::min( 4, std::max( 1, (int)nFirstPointQuard ) );
 		// Проведем линию в начальную точку дуги
 		double fStartX = 0.0, fStartY = 0.0, fEndX = 0.0, fEndY = 0.0;
 
@@ -1499,15 +1500,15 @@ namespace Aggplus
 
 	bool CGraphicsPathSimpleConverter::Is_poly_closed()
 	{
-        if (!m_internal->m_agg_ps.total_vertices())
+		if (!m_internal->m_agg_ps.total_vertices())
 			return true;
 
 		double x, y;
-        unsigned int nTip = m_internal->m_agg_ps.last_vertex(&x, &y);
+		unsigned int nTip = m_internal->m_agg_ps.last_vertex(&x, &y);
 		
 		if (nTip & agg::path_flags_close) 
 			return true;
 
 		return false;
-	}	
+	}
 }

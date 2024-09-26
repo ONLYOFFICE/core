@@ -151,12 +151,14 @@ public:
 	//slideTiming
     
     void write_to(std::wostream & strm);
+    void set_name(const std::wstring& layout_name);
 
     static pptx_xml_slideLayout_ptr create(int id);
 
 private:
     std::wstringstream  strmData_;
 	std::wstring rId_;
+    std::wstring name;
 
 	rels rels_;
 };

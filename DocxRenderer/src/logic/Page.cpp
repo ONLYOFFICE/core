@@ -541,6 +541,15 @@ namespace NSDocxRenderer
 		ToXml(oWriter);
 		WriteSectionToFile(bIsLastPage, oWriter);
 	}
+	void CPage::ReorderShapesForPptx()
+	{
+		using shape_ptr_t = std::shared_ptr<CShape>;
+		std::sort(m_arShapes.begin(), m_arShapes.end(), [] (const shape_ptr_t& s1, const shape_ptr_t& s2) {
+			if (s1->m_bIsBehindDoc && !s2->m_bIsBehindDoc) return true;
+			if (!s1->m_bIsBehindDoc && s2->m_bIsBehindDoc) return false;
+			return s1->m_nOrder < s2->m_nOrder;
+		});
+	}
 
 	void CPage::BuildDiacriticalSymbols()
 	{

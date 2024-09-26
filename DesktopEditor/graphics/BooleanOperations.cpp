@@ -1117,7 +1117,7 @@ void CBooleanOperations::PreparePath(const CGraphicsPath& path, int id,
 		curves.push_back(Curve(segments[i], i == (length - 1) ? segments[0] : segments[i + 1]));
 }
 
-void CBooleanOperations::InsertSegment(const Segment& segment, const Segment& handles, bool updateHandles)
+void CBooleanOperations::InsertSegment(Segment& segment, const Segment& handles, bool updateHandles)
 {
 	if (segment.Id == 1)
 	{
@@ -1125,6 +1125,7 @@ void CBooleanOperations::InsertSegment(const Segment& segment, const Segment& ha
 			index = segment.Index == length ? 0 : segment.Index;
 		if (getDistance(segment.P, Segments1[index].P) <= GEOMETRIC_EPSILON)
 		{
+			segment.Index = index;
 			Segments1[index] = segment;
 			return;
 		}
@@ -1148,6 +1149,7 @@ void CBooleanOperations::InsertSegment(const Segment& segment, const Segment& ha
 			index = segment.Index == length ? 0 : segment.Index;
 		if (getDistance(segment.P, Segments2[index].P) <= GEOMETRIC_EPSILON)
 		{
+			segment.Index = index;
 			Segments2[index] = segment;
 			return;
 		}

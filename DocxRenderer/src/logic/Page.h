@@ -5,7 +5,7 @@
 #include "managers/ImageManager.h"
 #include "managers/FontStyleManager.h"
 #include "managers/ParagraphStyleManager.h"
-#include "convert_params.h"
+#include "../../convert_params.h"
 
 namespace NSDocxRenderer
 {

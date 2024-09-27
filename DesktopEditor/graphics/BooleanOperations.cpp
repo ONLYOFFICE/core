@@ -1,6 +1,7 @@
 #include "BooleanOperations.h"
 #include "boolean_operations_math.h"
 #include <algorithm>
+#include <iterator>
 
 namespace Aggplus {
 Segment::Segment()  noexcept

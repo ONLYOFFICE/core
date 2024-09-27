@@ -3840,6 +3840,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				 if (L"cacheFields" == sName)	m_oCacheFields = oReader;
 			else if (L"cacheSource" == sName)	m_oCacheSource = oReader;
 			else if (L"cacheHierarchies" == sName)	m_oHierarchies = oReader;
+            else if (L"dimensions" == sName)	m_oDimensions = oReader;
 			else if (L"extLst" == sName)		m_oExtLst = oReader;
 		}
 	}

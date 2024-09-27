@@ -197,6 +197,7 @@ SOURCES += \
 	../../../Base/Unit.cpp \
 	../../../Base/WinColor.cpp \
 	../../../../Common/3dParty/pole/pole.cpp \
+	../../../XlsxFormat/Pivot/PivotCacheChildOther.cpp \
 	docx_format.cpp
 
 
@@ -304,6 +305,7 @@ HEADERS += \
 	../../../XlsxFormat/Drawing/Drawing.h \
 	../../../XlsxFormat/Drawing/FromTo.h \
 	../../../XlsxFormat/Drawing/Pos.h \
+    ../../../XlsxFormat/Pivot/PivotCacheChildOther.h \
 	../../../XlsxFormat/SharedStrings/PhoneticPr.h \
 	../../../XlsxFormat/SharedStrings/Run.h \
 	../../../XlsxFormat/SharedStrings/SharedStrings.h \

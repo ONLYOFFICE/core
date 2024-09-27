@@ -104,7 +104,7 @@ namespace StarMath
 		static bool IsDigit(const std::wstring& wsDigit);
 		static bool IsAlpha(const std::wstring& wsAlpha);
 		static void StyleClosing(const unsigned int &iStyle, XmlUtils::CXmlWriter* pXmlWrite);
-		bool СomparingAttributes(StValuePr* pRight,StValuePr* pLeft);
+		bool ComparingAttributes(StValuePr* pRight, StValuePr* pLeft);
 		void EndOdf();
 		std::wstring GetOdf();
 		std::wstring GetAnnotation();

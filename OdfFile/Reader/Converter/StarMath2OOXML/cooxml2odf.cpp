@@ -594,7 +594,7 @@ namespace StarMath
 			if(!iswalpha(cOneElement)) return false;
 		return true;
 	}
-	bool COOXml2Odf::СomparingAttributes(StValuePr *pRight, StValuePr *pLeft)
+	bool COOXml2Odf::ComparingAttributes(StValuePr *pRight, StValuePr *pLeft)
 	{
 		if(pRight == nullptr && pLeft == nullptr)
 			return true;
@@ -766,7 +766,7 @@ namespace StarMath
 							pTempElement = pElement;
 						}
 					}
-					else if(pElement->GetType() ==TypeElement::String && pTempElement->GetType() == TypeElement::String && СomparingAttributes(pTempElement->GetAttribute(),pElement->GetAttribute()))
+					else if(pElement->GetType() ==TypeElement::String && pTempElement->GetType() == TypeElement::String && ComparingAttributes(pTempElement->GetAttribute(),pElement->GetAttribute()))
 					{
 						CNumberOrLetter* pFirst = dynamic_cast<CNumberOrLetter*>(pTempElement);
 						CNumberOrLetter* pSecond = dynamic_cast<CNumberOrLetter*>(pElement);
@@ -1807,7 +1807,7 @@ namespace StarMath
 		else if(L"\u2203" == wsSymbol) return L"exists";
 		else if(L"\u2204" == wsSymbol) return L"notexists";
 		else if(L"\u2200" == wsSymbol) return L"forall";
-		else if(L"\u012" == wsSymbol) return L"hbar";
+		else if(L"\u0127" == wsSymbol) return L"hbar";
 		else if(L"\u019B" == wsSymbol) return L"lambdabar";
 		else if(L"\u211C" == wsSymbol) return L"Re";
 		else if(L"\u2111" == wsSymbol) return L"Im";

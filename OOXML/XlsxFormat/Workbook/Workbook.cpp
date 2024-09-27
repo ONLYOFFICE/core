@@ -43,12 +43,15 @@
 #include "../../XlsbFormat/Biff12_unions/EXTERNALS.h"
 #include "../../XlsbFormat/Biff12_unions/PIVOTCACHEIDS.h"
 #include "../../XlsbFormat/Biff12_unions/PIVOTCACHEID.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERCACHESPIVOTCACHEIDS.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERCACHESPIVOTCACHEID.h"
 #include "../../XlsbFormat/Biff12_records/FileVersion.h"
 #include "../../XlsbFormat/Biff12_records/BeginPivotCacheID.h"
 #include "../../XlsbFormat/Biff12_unions/SUP.h"
 #include "../../XlsbFormat/Biff12_records/SupSelf.h"
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 #include "../../XlsbFormat/Biff12_records/BundleSh.h"
+#include "../../XlsbFormat/Biff12_records/BeginSlicerCachesPivotCacheID.h"
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalWorkbookInfo.h"
 
@@ -111,6 +114,22 @@ namespace OOX
 				ptr1->irstcacheRelID.value.setSize(0xFFFFFFFF);
 			return objectPtr;
 		}
+        XLS::BaseObjectPtr CWorkbookPivotCache::toBin14()
+        {
+            auto ptr(new XLSB::SLICERCACHESPIVOTCACHEID);
+            XLS::BaseObjectPtr objectPtr(ptr);
+            auto ptr1(new XLSB::BeginSlicerCachesPivotCacheID);
+            ptr->m_BrtBeginSlicerCachesPivotCacheID = XLS::BaseObjectPtr{ptr1};
+
+            if(m_oRid.IsInit())
+            {
+                ptr1->FRTheader.relID.relId = m_oRid->GetValue();
+                ptr1->FRTheader.fRelID = true;
+            }
+            else
+                ptr1->FRTheader.relID.relId.setSize(0xFFFFFFFF);
+            return objectPtr;
+        }
 		EElementType CWorkbookPivotCache::getType() const
 		{
 			return et_x_WorkbookPivotCache;
@@ -202,6 +221,16 @@ namespace OOX
 
 			return objectPtr;
 		}
+        XLS::BaseObjectPtr CWorkbookPivotCaches::toBin14()
+        {
+            auto ptr(new XLSB::SLICERCACHESPIVOTCACHEIDS);
+            XLS::BaseObjectPtr objectPtr(ptr);
+
+            for(auto i:m_arrItems)
+                ptr->m_arSLICERCACHESPIVOTCACHEID.push_back(i->toBin14());
+
+            return objectPtr;
+        }
 		EElementType CWorkbookPivotCaches::getType() const
 		{
 			return et_x_WorkbookPivotCaches;

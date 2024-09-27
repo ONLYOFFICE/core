@@ -1264,7 +1264,8 @@ std::vector<std::vector<int>> CBooleanOperations::FindBoundsCollisions()
 
 	std::vector<std::vector<double>> allBounds(bounds1);
 	if (!self)
-		std::copy(bounds2.begin(), bounds2.end(), std::back_inserter(allBounds));
+		for (auto it = bounds2.begin(); it != bounds2.end(); ++it) // std::copy(bounds2.begin(), bounds2.end(), std::back_inserter(allBounds));
+			allBounds.push_back(*it);
 
 	int	allLength = static_cast<int>(allBounds.size()),
 		length1	  = static_cast<int>(bounds1.size());

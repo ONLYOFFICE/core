@@ -90,11 +90,6 @@ namespace NSDocxRenderer
 		double m_dRight;
 		double m_dBottom;
 
-		const double m_dLeftDefault;
-		const double m_dTopDefault;
-		const double m_dRightDefault;
-		const double m_dBottomDefault;
-
 		void ResetBorders() noexcept;
 
 		Aggplus::CGraphicsPath GetGraphicsPath() const noexcept;

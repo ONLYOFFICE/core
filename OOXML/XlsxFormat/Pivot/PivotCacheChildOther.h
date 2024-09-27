@@ -94,5 +94,103 @@ public:
     nullable_int		 m_oCount;
 };
 
+class CPivotMeasureGroup : public WritingElement
+{
+public:
+    WritingElement_AdditionMethods(CPivotMeasureGroup)
+    WritingElement_XlsbConstructors(CPivotMeasureGroup)
+    CPivotMeasureGroup(){}
+    virtual ~CPivotMeasureGroup() {}
+
+    virtual void fromXML(XmlUtils::CXmlNode& node)
+    {
+    }
+    virtual std::wstring toXML() const
+    {
+        return _T("");
+    }
+    virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+    virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+    void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+    void fromBin(XLS::BaseObjectPtr& obj);
+    XLS::BaseObjectPtr toBin();
+
+    nullable_string		m_oName;
+    nullable_string		m_oCaption;
+};
+
+class CPivotMeasureGroups : public WritingElementWithChilds<CPivotMeasureGroup>
+{
+public:
+    WritingElement_AdditionMethods(CPivotMeasureGroups)
+    WritingElement_XlsbConstructors(CPivotMeasureGroups)
+    CPivotMeasureGroups(){}
+    virtual ~CPivotMeasureGroups() {}
+
+    virtual void fromXML(XmlUtils::CXmlNode& node)
+    {
+    }
+    virtual std::wstring toXML() const
+    {
+        return _T("");
+    }
+    virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+    virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+    void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+    void fromBin(XLS::BaseObjectPtr& obj);
+    XLS::BaseObjectPtr toBin();
+
+    nullable_int		 m_oCount;
+};
+
+class CMeasureDimensionMap : public WritingElement
+{
+public:
+    WritingElement_AdditionMethods(CMeasureDimensionMap)
+    WritingElement_XlsbConstructors(CMeasureDimensionMap)
+    CMeasureDimensionMap(){}
+    virtual ~CMeasureDimensionMap() {}
+
+    virtual void fromXML(XmlUtils::CXmlNode& node)
+    {
+    }
+    virtual std::wstring toXML() const
+    {
+        return _T("");
+    }
+    virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+    virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+    void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+    void fromBin(XLS::BaseObjectPtr& obj);
+    XLS::BaseObjectPtr toBin();
+
+    nullable_uint       m_oMeasureGroup;
+    nullable_uint		m_oDimension;
+};
+
+class CMeasureDimensionMaps: public WritingElementWithChilds<CMeasureDimensionMap>
+{
+public:
+    WritingElement_AdditionMethods(CMeasureDimensionMaps)
+    WritingElement_XlsbConstructors(CMeasureDimensionMaps)
+    CMeasureDimensionMaps(){}
+    virtual ~CMeasureDimensionMaps() {}
+
+    virtual void fromXML(XmlUtils::CXmlNode& node)
+    {
+    }
+    virtual std::wstring toXML() const
+    {
+        return _T("");
+    }
+    virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+    virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+    void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+    void fromBin(XLS::BaseObjectPtr& obj);
+    XLS::BaseObjectPtr toBin();
+
+    nullable_int		 m_oCount;
+};
+
 }
 }

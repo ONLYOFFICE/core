@@ -598,6 +598,8 @@ namespace OOX
             nullable<CPivotCacheSource>                     m_oCacheSource;
             nullable<CpivotCacheHierarchies>                m_oHierarchies;
             nullable<CPivotDimensions>                      m_oDimensions;
+            nullable<CPivotMeasureGroups>                   m_oMeasureGroups;
+            nullable<CMeasureDimensionMaps>                 m_oMaps;
 
 //calculatedItems (Calculated Items) §18.10.1.9
 //calculatedMembers (Calculated Members) §18.10.1.11

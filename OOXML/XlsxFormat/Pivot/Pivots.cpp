@@ -3841,6 +3841,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			else if (L"cacheSource" == sName)	m_oCacheSource = oReader;
 			else if (L"cacheHierarchies" == sName)	m_oHierarchies = oReader;
             else if (L"dimensions" == sName)	m_oDimensions = oReader;
+            else if (L"maps" == sName)          m_oMaps = oReader;
+            else if (L"measureGroups" == sName) m_oMeasureGroups = oReader;
 			else if (L"extLst" == sName)		m_oExtLst = oReader;
 		}
 	}

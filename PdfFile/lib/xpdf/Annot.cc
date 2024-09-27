@@ -358,8 +358,10 @@ void Annot::generateLineAppearance() {
   obj1.free();
 
   //----- set line style, colors
-  setLineStyle(borderStyle, &w);
-  setStrokeColor(borderStyle->getColor(), borderStyle->getNumColorComps());
+  if (borderStyle) {
+    setLineStyle(borderStyle, &w);
+    setStrokeColor(borderStyle->getColor(), borderStyle->getNumColorComps());
+  }
   fill = gFalse;
   if (annotObj.dictLookup("IC", &obj1)->isArray()) {
     if (setFillColor(&obj1)) {
@@ -486,7 +488,7 @@ void Annot::generateLineAppearance() {
   appearBuf->append("S\n");
 
   //----- draw the arrows
-  if (borderStyle->getType() == annotBorderDashed) {
+  if (borderStyle && borderStyle->getType() == annotBorderDashed) {
     appearBuf->append("[] 0 d\n");
   }
   drawLineArrow(lineEnd1, lx1, ly1, dx, dy, w, fill);
@@ -544,8 +546,10 @@ void Annot::generatePolyLineAppearance() {
   obj1.free();
 
   //----- set line style, colors
-  setLineStyle(borderStyle, &w);
-  setStrokeColor(borderStyle->getColor(), borderStyle->getNumColorComps());
+  if (borderStyle) {
+    setLineStyle(borderStyle, &w);
+    setStrokeColor(borderStyle->getColor(), borderStyle->getNumColorComps());
+  }
   // fill = gFalse;
   // if (annotObj.dictLookup("IC", &obj1)->isArray()) {
   //   if (setFillColor(&obj1)) {
@@ -761,7 +765,7 @@ void Annot::generateFreeTextAppearance() {
   delete da;
 
   //----- draw the border
-  if (borderStyle->getWidth() != 0) {
+  if (borderStyle && borderStyle->getWidth() != 0) {
     setLineStyle(borderStyle, &lineWidth);
     appearBuf->appendf("{0:.4f} {1:.4f} {2:.4f} {3:.4f} re s\n",
 		       0.5 * lineWidth, 0.5 * lineWidth,
@@ -809,13 +813,14 @@ void Annot::setLineStyle(AnnotBorderStyle *bs, double *lineWidth) {
   double w;
   int dashLength, i;
 
-  if ((w = borderStyle->getWidth()) <= 0) {
+  w = 0.1;
+  if (borderStyle && (w = borderStyle->getWidth()) <= 0) {
     w = 0.1;
   }
   *lineWidth = w;
   appearBuf->appendf("{0:.4f} w\n", w);
   // this treats beveled/inset/underline as solid
-  if (borderStyle->getType() == annotBorderDashed) {
+  if (borderStyle && borderStyle->getType() == annotBorderDashed) {
     borderStyle->getDash(&dash, &dashLength);
     appearBuf->append("[");
     for (i = 0; i < dashLength; ++i) {

@@ -581,6 +581,17 @@ std::map<std::wstring, std::wstring> CAnnotFonts::GetAllFonts(PDFDoc* pdfDoc, NS
 			Object oObj;
 			if (!oAnnot.dictLookup("RC", &oObj)->isString())
 			{
+				oObj.free();
+				if (oAnnot.dictLookup("AP", &oObj)->isNull() && oAnnot.dictLookup("Contents", &oObj)->isString())
+				{
+					const unsigned char* pData14 = NULL;
+					unsigned int nSize14 = 0;
+					std::wstring wsFontName = L"Helvetica";
+					NSFonts::IFontsMemoryStorage* pMemoryStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+					if (pMemoryStorage && !pMemoryStorage->Get(wsFontName) && GetBaseFont(wsFontName, pData14, nSize14))
+						pMemoryStorage->Add(wsFontName, (BYTE*)pData14, nSize14, false);
+					mFonts[L"Helvetica"] = L"Helvetica";
+				}
 				oAnnot.free(); oObj.free();
 				continue;
 			}
@@ -2097,6 +2108,26 @@ CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex
 		deleteGList(arrColors, double);
 	}
 	oObj.free();
+
+	if (oAnnot.dictLookup("AP", &oObj)->isNull() && oAnnot.dictLookup("RC", &oObj2)->isNull() && oAnnot.dictLookup("Contents", &oObj)->isString())
+	{
+		NSStringUtils::CStringBuilder oRC;
+
+		oRC += L"<?xml version=\"1.0\"?><body xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:xfa=\"http://www.xfa.org/schema/xfa-data/1.0/\" xfa:APIVersion=\"Acrobat:23.8.0\"  xfa:spec=\"2.0.2\"><p dir=\"ltr\"><span style=\"font-size:14.0pt;font-family:Helvetica;text-align:left;color:#000000\">";
+		TextString* s = new TextString(oObj.getString());
+		std::wstring wsContents = NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength());
+		delete s;
+		oRC.WriteEncodeXmlString(wsContents);
+		oRC += L"</span></p></body>";
+
+		std::wstring wsRC = oRC.GetData();
+		m_arrRC = CAnnotMarkup::ReadRC(U_TO_UTF8(wsRC));
+		if (m_arrRC.empty())
+			m_unFlags &= ~(1 << 3);
+		else
+			m_unFlags |= (1 << 3);
+	}
+	oObj.free(); oObj2.free();
 
 	oAnnot.free();
 }

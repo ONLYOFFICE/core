@@ -1435,6 +1435,43 @@ function fontToMemory(file, isCheck)
 	Module["_free"](idPointer);
 }
 
+// FONTS
+CFile.prototype["addPage"] = function(pageIndex, pageObj)
+{
+	this.pages.splice(pageIndex, 0, pageObj);
+	if (this.fontStreams)
+	{
+		for (let i in this.fontStreams)
+		{
+			let pages = this.fontStreams[i].pages;
+			for (let j = 0; j < pages.length; j++)
+			{
+				if (pages[j] >= pageIndex)
+					pages[j] += 1;
+			}
+		}
+	}
+};
+CFile.prototype["removePage"] = function(pageIndex)
+{
+	let result = this.pages.splice(pageIndex, 1);
+	if (this.fontStreams)
+	{
+		for (let i in this.fontStreams)
+		{
+			let pages = this.fontStreams[i].pages;
+			for (let j = 0; j < pages.length; j++)
+			{
+				if (pages[j] > pageIndex)
+					pages[j] -= 1;
+				else if (pages[j] == pageIndex)
+					pages.splice(j, 1);
+			}
+		}
+	}
+	return result;
+};
+
 // ONLY WEB
 self["AscViewer"]["Free"] = function(pointer)
 {

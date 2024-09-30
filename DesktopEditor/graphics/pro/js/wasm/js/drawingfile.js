@@ -492,7 +492,7 @@ function readAnnot(reader, rec)
 	rec["AP"]["have"] = (flags >> 6) & 1;
 	// User ID
 	if (flags & (1 << 7))
-		rec["LastModified"] = reader.readString();
+		rec["OUserID"] = reader.readString();
 }
 function readAnnotAP(reader, AP)
 {

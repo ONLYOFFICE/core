@@ -488,7 +488,11 @@ function readAnnot(reader, rec)
 	// Date of last change - M
 	if (flags & (1 << 5))
 		rec["LastModified"] = reader.readString();
+	// AP
 	rec["AP"]["have"] = (flags >> 6) & 1;
+	// User ID
+	if (flags & (1 << 7))
+		rec["OUserID"] = reader.readString();
 }
 function readAnnotAP(reader, AP)
 {

@@ -221,6 +221,7 @@ BYTE* CAnnotFieldInfo::GetRender(LONG& nLen)
 }
 const std::wstring& CAnnotFieldInfo::GetNM() { return m_wsNM; }
 const std::wstring& CAnnotFieldInfo::GetLM() { return m_wsLM; }
+const std::wstring& CAnnotFieldInfo::GetOUserID() { return m_wsOUserID; }
 const std::wstring& CAnnotFieldInfo::GetContents() { return m_wsContents; }
 const std::vector<double>& CAnnotFieldInfo::GetC() { return m_arrC; }
 
@@ -348,6 +349,8 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 		m_pRender = pReader->GetCurrentBuffer();
 		pReader->Skip(m_nRenderLen);
 	}
+	if (nFlags & (1 << 7))
+		m_wsOUserID = pReader->ReadString();
 
 	if (IsMarkup())
 	{

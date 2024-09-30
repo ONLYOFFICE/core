@@ -202,6 +202,7 @@ private:
 	std::string m_sContents; // Отображаемый текст
 	std::string m_sNM; // Уникальное имя
 	std::string m_sM; // Дата последнего изменения
+	std::string m_sOUserID; // OO User ID
 	std::vector<double> m_arrC; // Специальный цвет
 	CBorderType* m_pBorder; // Граница
 };

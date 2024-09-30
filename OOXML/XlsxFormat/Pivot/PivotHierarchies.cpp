@@ -196,8 +196,31 @@ namespace Spreadsheet
 
         if(m_oMeasure.IsInit())
             ptr->fMeasure = m_oMeasure.get();
+        if(m_oMeasures.IsInit())
+            ptr->fMeasureHierarchy = m_oMeasures.get();
         if(m_oHidden.IsInit())
             ptr->fHidden = m_oHidden.get();
+        if(m_oAttribute.IsInit())
+            ptr->fAttributeHierarchy = m_oAttribute.get();
+        if(m_oKeyAttribute.IsInit())
+            ptr->fKeyAttributeHierarchy = m_oKeyAttribute.get();
+        if(m_oOneField.IsInit())
+            ptr->fOnlyOneField = m_oOneField.get();
+        if(m_oSet.IsInit())
+            ptr->fSet = m_oSet.get();
+        if(m_oTime.IsInit())
+            ptr->fTimeHierarchy = m_oTime.get();
+
+        if(m_oUnbalanced.IsInit())
+        {
+            ptr->fUnbalancedRealKnown = true;
+            ptr->fUnbalancedReal = m_oUnbalanced.get();
+        }
+        if(m_oUnbalancedGroup.IsInit())
+        {
+            ptr->fUnbalancedGroupKnown = true;
+            ptr->fUnbalancedGroup = m_oUnbalancedGroup.get();
+        }
         if(m_oDimensionUniqueName.IsInit())
         {
             ptr->stDimUnq = m_oDimensionUniqueName.get();
@@ -213,15 +236,27 @@ namespace Spreadsheet
             ptr->stAllUnq = m_oAllUniqueName.get();
             ptr->fLoadAllUnq = true;
         }
+        if(m_oAllCaption.IsInit())
+        {
+            ptr->stAllDisp = m_oAllCaption.get();
+            ptr->fLoadAllDisp = true;
+        }
         if(m_oDisplayFolder.IsInit())
         {
             ptr->stDispFld = m_oDisplayFolder.get();
-            ptr->fLoadDispFld = false;
+            ptr->fLoadDispFld = true;
         }
-        if(m_oOneField.IsInit())
-            ptr->fOnlyOneField = m_oOneField.get();
+        if(m_oMeasureGroup.IsInit())
+        {
+            ptr->stMeasGrp = m_oMeasureGroup.get();
+            ptr->fLoadMeasGrp = true;
+        }
         if(m_oMemberValueDatatype.IsInit())
+        {
+            ptr->fAttributeMemberValueTypeKnown = true;
             ptr->wAttributeMemberValueType = m_oMemberValueDatatype.get();
+        }
+
         if(m_oCaption.IsInit())
             ptr->stCaption = m_oCaption.get();
          else

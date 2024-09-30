@@ -75,7 +75,7 @@ namespace XLSB
             bool            fLoadAllDisp = false;
             bool            fLoadDispFld = false;
             bool            fLoadMeasGrp = false;
-            _UINT16         wAttributeMemberValueType;
+            _UINT16         wAttributeMemberValueType = 0;
             XLWideString    stUnique;
             XLWideString    stCaption;
             XLWideString    stDimUnq;

@@ -1677,14 +1677,12 @@ namespace PdfReader
 		oImage->Create(pBgraData, nWidth, nHeight, 4 * nWidth);
 
 		double xMin, yMin, xMax, yMax;
-		Transform(pMatrix, pBBox[0], pBBox[1], &xMin, &yMin);
-		Transform(pMatrix, pBBox[2], pBBox[3], &xMax, &yMax);
-		double dW = xMax - xMin;
-		double dH = yMax - yMin;
-		xMin += (double)nX0 * dW;
-		xMax += (double)nX1 * dW;
-		yMin += (double)nY0 * dH;
-		yMax += (double)nY1 * dH;
+		xMin = nX0 * dXStep;
+		yMin = nY0 * dYStep;
+		xMax = nX1 * dXStep;
+		yMax = nY1 * dYStep;
+		Transform(pMatrix, xMin, yMin, &xMin, &yMin);
+		Transform(pMatrix, xMax, yMax, &xMax, &yMax);
 		pGState->moveTo(xMin, yMin);
 		pGState->lineTo(xMax, yMin);
 		pGState->lineTo(xMax, yMax);

@@ -32,6 +32,17 @@
 #pragma once
 #include "PivotCacheChildOther.h"
 
+#include "../../XlsbFormat/Biff12_unions/DIMS.h"
+#include "../../XlsbFormat/Biff12_unions/DIM.h"
+#include "../../XlsbFormat/Biff12_unions/MGS.h"
+#include "../../XlsbFormat/Biff12_unions/MG.h"
+#include "../../XlsbFormat/Biff12_unions/MGMAPS.h"
+#include "../../XlsbFormat/Biff12_unions/MAP.h"
+
+#include "../../XlsbFormat/Biff12_records/BeginDim.h"
+#include "../../XlsbFormat/Biff12_records/BeginMG.h"
+#include "../../XlsbFormat/Biff12_records/BeginMap.h"
+
 namespace OOX
 {
 namespace Spreadsheet
@@ -72,10 +83,10 @@ void CPivotDimensions::toXML(NSStringUtils::CStringBuilder& writer) const
 }
 XLS::BaseObjectPtr CPivotDimensions::toBin()
 {
-
-    XLS::BaseObjectPtr objectPtr;
-    //for(auto i : m_arrItems)
-        //ptr->m_arPCDHIERARCHY.push_back(i->toBin());
+    auto ptr(new XLSB::DIMS);
+    XLS::BaseObjectPtr objectPtr(ptr);
+    for(auto i : m_arrItems)
+        ptr->m_arDIM.push_back(i->toBin());
     return objectPtr;
 }
 
@@ -103,12 +114,24 @@ void CPivotDimension::toXML(NSStringUtils::CStringBuilder& writer) const
 }
 XLS::BaseObjectPtr CPivotDimension::toBin()
 {
-    //auto ptr1(new XLSB::PCDHIERARCHY);
-    //XLS::BaseObjectPtr objectPtr(ptr1);
-    //auto ptr(new XLSB::BeginPCDHierarchy);
-    //ptr1->m_BrtBeginPCDHierarchy = XLS::BaseObjectPtr(ptr);
-
-    XLS::BaseObjectPtr objectPtr;
+    auto ptr1(new XLSB::DIM);
+    XLS::BaseObjectPtr objectPtr(ptr1);
+    auto ptr(new XLSB::BeginDim);
+    ptr1->m_BrtBeginDim = XLS::BaseObjectPtr(ptr);
+    if(m_oMeasure.IsInit())
+        ptr->fMeasure = m_oMeasure.get();
+    if(m_oName.IsInit())
+        ptr->stName = m_oName.get();
+    else
+        ptr->stName = L"";
+    if(m_oCaption.IsInit())
+        ptr->stDisplay = m_oCaption.get();
+    else
+        ptr->stDisplay = L"";
+    if(m_oUniqueName.IsInit())
+        ptr->stUnique = m_oUniqueName.get();
+    else
+        ptr->stUnique = L"";
     return objectPtr;
 }
 
@@ -148,10 +171,10 @@ void CPivotMeasureGroups::toXML(NSStringUtils::CStringBuilder& writer) const
 }
 XLS::BaseObjectPtr CPivotMeasureGroups::toBin()
 {
-
-    XLS::BaseObjectPtr objectPtr;
-    //for(auto i : m_arrItems)
-        //ptr->m_arPCDHIERARCHY.push_back(i->toBin());
+    auto ptr(new XLSB::MGS);
+    XLS::BaseObjectPtr objectPtr(ptr);
+    for(auto i : m_arrItems)
+        ptr->m_arMG.push_back(i->toBin());
     return objectPtr;
 }
 
@@ -175,12 +198,18 @@ void CPivotMeasureGroup::toXML(NSStringUtils::CStringBuilder& writer) const
 }
 XLS::BaseObjectPtr CPivotMeasureGroup::toBin()
 {
-    //auto ptr1(new XLSB::PCDHIERARCHY);
-    //XLS::BaseObjectPtr objectPtr(ptr1);
-    //auto ptr(new XLSB::BeginPCDHierarchy);
-    //ptr1->m_BrtBeginPCDHierarchy = XLS::BaseObjectPtr(ptr);
-
-    XLS::BaseObjectPtr objectPtr;
+    auto ptr1(new XLSB::MG);
+    XLS::BaseObjectPtr objectPtr(ptr1);
+    auto ptr(new XLSB::BeginMG);
+    ptr1->m_BrtBeginMG = XLS::BaseObjectPtr(ptr);
+    if(m_oName.IsInit())
+        ptr->name = m_oName.get();
+    else
+        ptr->name = L"";
+    if(m_oCaption.IsInit())
+        ptr->caption = m_oCaption.get();
+    else
+        ptr->caption = L"";
     return objectPtr;
 }
 
@@ -220,10 +249,10 @@ void CMeasureDimensionMaps::toXML(NSStringUtils::CStringBuilder& writer) const
 }
 XLS::BaseObjectPtr CMeasureDimensionMaps::toBin()
 {
-
-    XLS::BaseObjectPtr objectPtr;
-    //for(auto i : m_arrItems)
-        //ptr->m_arPCDHIERARCHY.push_back(i->toBin());
+    auto ptr(new XLSB::MGMAPS);
+    XLS::BaseObjectPtr objectPtr(ptr);
+    for(auto i : m_arrItems)
+        ptr->m_arMAP.push_back(i->toBin());
     return objectPtr;
 }
 
@@ -247,12 +276,16 @@ void CMeasureDimensionMap::toXML(NSStringUtils::CStringBuilder& writer) const
 }
 XLS::BaseObjectPtr CMeasureDimensionMap::toBin()
 {
-    //auto ptr1(new XLSB::PCDHIERARCHY);
-    //XLS::BaseObjectPtr objectPtr(ptr1);
-    //auto ptr(new XLSB::BeginPCDHierarchy);
-    //ptr1->m_BrtBeginPCDHierarchy = XLS::BaseObjectPtr(ptr);
+    auto ptr1(new XLSB::MAP);
+    XLS::BaseObjectPtr objectPtr(ptr1);
+    auto ptr(new XLSB::BeginMap);
+    ptr1->m_BrtBeginMap = XLS::BaseObjectPtr(ptr);
 
-    XLS::BaseObjectPtr objectPtr;
+    if(m_oDimension.IsInit())
+        ptr->isxdh = m_oDimension.get();
+    if(m_oMeasureGroup.IsInit())
+        ptr->img = m_oMeasureGroup.get();
+
     return objectPtr;
 }
 

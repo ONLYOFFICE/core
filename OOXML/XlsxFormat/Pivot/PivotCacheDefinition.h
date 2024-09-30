@@ -603,10 +603,7 @@ namespace OOX
 
 //calculatedItems (Calculated Items) §18.10.1.9
 //calculatedMembers (Calculated Members) §18.10.1.11
-//dimensions (OLAP Dimensions) §18.10.1.25
 //kpis (OLAP KPIs) §18.10.1.48
-//maps (OLAP Measure Group) §18.10.1.52
-//measureGroups (OLAP Measure Groups) §18.10.1.54
 //tupleCache (Tuple Cache)
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 		};

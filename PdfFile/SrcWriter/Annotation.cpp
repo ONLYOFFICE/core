@@ -275,6 +275,11 @@ namespace PdfWriter
 		std::string sValue = U_TO_UTF8(wsLM);
 		Add("M", new CStringObject(sValue.c_str()));
 	}
+	void CAnnotation::SetOUserID(const std::wstring& wsLM)
+	{
+		std::string sValue = U_TO_UTF8(wsLM);
+		Add("OUserID", new CStringObject(sValue.c_str()));
+	}
 	void CAnnotation::SetC(const std::vector<double>& arrC)
 	{
 		AddToVectorD(this, "C", arrC);

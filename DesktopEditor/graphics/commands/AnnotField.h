@@ -414,6 +414,7 @@ public:
 	BYTE* GetRender(LONG& nLen);
 	const std::wstring& GetNM();
 	const std::wstring& GetLM();
+	const std::wstring& GetOUserID();
 	const std::wstring& GetContents();
 	const std::vector<double>& GetC();
 
@@ -466,6 +467,7 @@ private:
 	int          m_nPage;
 	std::wstring m_wsNM;
 	std::wstring m_wsLM;
+	std::wstring m_wsOUserID;
 	std::wstring m_wsContents;
 	std::pair<BYTE, double> m_pBE;
 	std::vector<double> m_arrC;

@@ -2847,6 +2847,16 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
 	if (pField->fieldLookup("AP", &oObj)->isDict() && oObj.dictGetLength())
 		m_unAFlags |= (1 << 6);
 	oObj.free();
+
+	// 7 - User ID
+	if (pField->fieldLookup("OUserID", &oObj)->isString())
+	{
+		m_unAFlags |= (1 << 7);
+		TextString* s = new TextString(oObj.getString());
+		m_sOUserID = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+		delete s;
+	}
+	oObj.free();
 }
 CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex)
 {
@@ -2961,6 +2971,16 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex)
 	// 6 - Наличие/Отсутствие внешнего вида
 	if (oAnnot.dictLookup("AP", &oObj)->isDict() && oObj.dictGetLength())
 		m_unAFlags |= (1 << 6);
+	oObj.free();
+
+	// 7 - User ID
+	if (oAnnot.dictLookup("OUserID", &oObj)->isString())
+	{
+		m_unAFlags |= (1 << 7);
+		TextString* s = new TextString(oObj.getString());
+		m_sOUserID = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+		delete s;
+	}
 	oObj.free();
 
 	oAnnot.free();
@@ -3417,6 +3437,8 @@ void CAnnot::ToWASM(NSWasm::CData& oRes)
 		m_pBorder->ToWASM(oRes);
 	if (m_unAFlags & (1 << 5))
 		oRes.WriteString(m_sM);
+	if (m_unAFlags & (1 << 7))
+		oRes.WriteString(m_sOUserID);
 }
 void CAnnot::CBorderType::ToWASM(NSWasm::CData& oRes)
 {

@@ -180,6 +180,7 @@ namespace PdfWriter
 		void SetContents(const std::wstring& wsText);
 		void SetNM(const std::wstring& wsNM);
 		void SetLM(const std::wstring& wsLM);
+		void SetOUserID(const std::wstring& wsOUserID);
 		void SetC(const std::vector<double>& arrC);
 
 		void APFromFakePage(CPage* pFakePage);

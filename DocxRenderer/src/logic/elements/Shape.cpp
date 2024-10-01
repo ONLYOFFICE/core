@@ -591,11 +591,8 @@ namespace NSDocxRenderer
 
 	void CShape::ToXml(NSStringUtils::CStringBuilder &oWriter) const
 	{
-		//todo для уменьшения размера каждого шейпа ипользовавать только то, что необходимо - для графики, текста, графика+текст
-		//todo добавить все возможные параметры/атрибуты
-
 		oWriter.WriteString(L"<w:r>");
-		oWriter.WriteString(L"<w:rPr><w:noProof/></w:rPr>"); //отключение проверки орфографии
+		oWriter.WriteString(L"<w:rPr><w:noProof/></w:rPr>");
 		oWriter.WriteString(L"<w:drawing>");
 		BuildGeneralProperties(oWriter);
 		oWriter.WriteString(L"</w:drawing>");
@@ -679,13 +676,9 @@ namespace NSDocxRenderer
 			break;
 		}
 		oWriter.AddUInt(m_nShapeId);
-		//oWriter.WriteString(L" descr=\"Alt Text!\""); //Коммент к картинке
 		oWriter.WriteString(L"\"/>");
-
 		oWriter.WriteString(L"<wp:cNvGraphicFramePr/>");
-
 		BuildSpecificProperties(oWriter);
-
 		oWriter.WriteString(L"</wp:anchor>");
 	}
 
@@ -794,7 +787,6 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"\" name=\"Picture ");
 		oWriter.AddUInt(m_pImageInfo->m_nId);
 		oWriter.WriteString(L"\"");
-		//oWriter.WriteString(L" descr=\"Alt Text!\""); //Коммент к картинке
 		oWriter.WriteString(L"/>");
 		oWriter.WriteString(L"<pic:cNvPicPr preferRelativeResize=\"0\">");
 		oWriter.WriteString(L"<a:picLocks noChangeArrowheads=\"1\"/>");

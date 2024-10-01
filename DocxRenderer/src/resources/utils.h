@@ -13,6 +13,7 @@ inline LONG ConvertColorBGRToRGB(LONG lBGR)
 template<typename It>
 It MoveNullptr(It start, It end)
 {
+	if (end <= start) return start;
 	It left = start, right = end - 1;
 	for (;;)
 	{

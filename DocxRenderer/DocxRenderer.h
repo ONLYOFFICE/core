@@ -192,6 +192,9 @@ public:
 	virtual HRESULT CommandDouble(const LONG& lType, const double& dCommand);
 	virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
 
+	virtual HRESULT IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedCommandType& type);
+	virtual HRESULT AdvancedCommand(IAdvancedCommand* command);
+
 	// методы, которыми будет пользоваться конвертер
 	HRESULT SetTextAssociationType(const NSDocxRenderer::TextAssociationType& eType);
 	int Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFile, bool bIsOutCompress = true);
@@ -199,10 +202,6 @@ public:
 	std::vector<std::wstring> ScanPagePptx(IOfficeDrawingFile* pFile, size_t nPage);
 
 	void SetExternalImageStorage(NSDocxRenderer::IImageStorage* pStorage);
-
-	virtual HRESULT IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedCommandType& type);
-	virtual HRESULT AdvancedCommand(IAdvancedCommand* command);
-
 private:
 	CDocxRenderer_Private* m_pInternal;
 	void DrawPage(IOfficeDrawingFile* pFile, size_t nPage);

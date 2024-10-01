@@ -42,6 +42,7 @@ class CDocxRenderer_Private
 public:
 	NSDocxRenderer::CDocument m_oDocument;
 	std::wstring m_sTempDirectory;
+	bool m_bIsSupportShapeCommands = false;
 
 public:
 	CDocxRenderer_Private(NSFonts::IApplicationFonts* pFonts, IRenderer* pRenderer) : m_oDocument(pRenderer, pFonts)
@@ -85,6 +86,7 @@ int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDst, 
 
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = false;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = false;
+	m_pInternal->m_bIsSupportShapeCommands = false;
 
 	if (bIsOutCompress)
 		m_pInternal->m_oDocument.m_strTempDirectory = NSDirectory::CreateDirectoryWithUniqueName(m_pInternal->m_sTempDirectory);
@@ -123,6 +125,7 @@ std::vector<std::wstring> CDocxRenderer::ScanPage(IOfficeDrawingFile* pFile, siz
 
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
+	m_pInternal->m_bIsSupportShapeCommands = false;
 
 	DrawPage(pFile, nPage);
 
@@ -151,6 +154,7 @@ std::vector<std::wstring> CDocxRenderer::ScanPagePptx(IOfficeDrawingFile* pFile,
 
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
+	m_pInternal->m_bIsSupportShapeCommands = true;
 
 	DrawPage(pFile, nPage);
 
@@ -216,7 +220,7 @@ HRESULT CDocxRenderer::IsSupportAdvancedCommand(const IAdvancedCommand::Advanced
 	{
 	case IAdvancedCommand::AdvancedCommandType::ShapeStart:
 	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:
-		return S_OK;
+		return m_pInternal->m_bIsSupportShapeCommands ? S_OK: S_FALSE;
 	default:
 		break;
 	}

@@ -2078,7 +2078,7 @@ CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex
 
 		// parse the default appearance string
 		GList* daToks = tokenize(oObj.getString());
-		for (int i = 1; i < daToks->getLength(); ++i) {
+		for (int i = daToks->getLength() - 1; i > 0; --i) {
 
 		  // handle the g operator
 		  if (!((GString *)daToks->get(i))->cmp("g")) {
@@ -2113,7 +2113,15 @@ CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex
 	{
 		NSStringUtils::CStringBuilder oRC;
 
-		oRC += L"<?xml version=\"1.0\"?><body xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:xfa=\"http://www.xfa.org/schema/xfa-data/1.0/\" xfa:APIVersion=\"Acrobat:23.8.0\"  xfa:spec=\"2.0.2\"><p dir=\"ltr\"><span style=\"font-size:14.0pt;font-family:Helvetica;text-align:left;color:#000000\">";
+		oRC += L"<?xml version=\"1.0\"?><body xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:xfa=\"http://www.xfa.org/schema/xfa-data/1.0/\" xfa:APIVersion=\"Acrobat:23.8.0\"  xfa:spec=\"2.0.2\"><p dir=\"ltr\"><span style=\"font-size:14.0pt;font-family:Helvetica;text-align:left;color:";
+		if (m_arrCFromDA.size() == 3)
+			oRC.WriteHexColor3((unsigned char)(m_arrCFromDA[0] * 255.0),
+							   (unsigned char)(m_arrCFromDA[1] * 255.0),
+							   (unsigned char)(m_arrCFromDA[2] * 255.0));
+		else
+			oRC += L"#000000";
+
+		oRC += L"\">";
 		TextString* s = new TextString(oObj.getString());
 		std::wstring wsContents = NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength());
 		delete s;

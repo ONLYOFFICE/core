@@ -190,6 +190,9 @@ namespace NSDocxRenderer
 		double bot = m_oCurrVectorGraphics.GetBottom();
 		double transform_det = sqrt(fabs(m_pTransform->Determinant()));
 
+		// save default image vector before clip to calc blipFill
+		auto image_vector = m_oCurrVectorGraphics;
+
 		auto set_fill_mode = [this, lType, &transform_det] (std::shared_ptr<CShape> s) {
 			if (lType & c_nStroke)
 			{
@@ -284,25 +287,24 @@ namespace NSDocxRenderer
 			Aggplus::CImage img;
 			img.Create(data, width_pix, height_pix, stride, true);
 			info = m_pImageManager->WriteImage(&img, shape->m_dTop, shape->m_dBaselinePos, shape->m_dWidth, shape->m_dHeight);
-			left = shape->m_dLeft;
-			right = shape->m_dRight;
-			top = shape->m_dTop;
-			bot = shape->m_dBaselinePos;
 			rotation = 0;
+			image_vector = shape->m_oVector;
 
 			m_bIsGradient = false;
 			RELEASEINTERFACE(g_renderer)
 		}
+		shape->m_dRotation = rotation;
 
 		if (info)
 		{
 			shape->m_pImageInfo = info;
 			shape->m_eType = CShape::eShapeType::stVectorTexture;
+			image_vector.RotateAt(-shape->m_dRotation, shape->m_oVector.GetCenter());
 
-			shape->m_dImageBot = bot;
-			shape->m_dImageTop = top;
-			shape->m_dImageLeft = left;
-			shape->m_dImageRight = right;
+			shape->m_dImageBot = image_vector.GetBottom();
+			shape->m_dImageTop = image_vector.GetTop();
+			shape->m_dImageLeft = image_vector.GetLeft();
+			shape->m_dImageRight = image_vector.GetRight();
 		}
 		else
 			shape->m_eType = CShape::eShapeType::stVectorGraphics;
@@ -314,9 +316,7 @@ namespace NSDocxRenderer
 			return;
 
 		shape->m_nOrder = ++m_nShapeOrder;
-		shape->m_dRotation = rotation;
 		m_arShapes.push_back(shape);
-
 		m_oClipVectorGraphics.Clear();
 	}
 

@@ -76,6 +76,7 @@ namespace NSDocxRenderer
 		void Clear();
 		void CheckPoint(const Point& point) noexcept;
 		void CheckPoint(const double& x, const double& y) noexcept;
+		void RotateAt(const double& rotation, const Point& point);
 		void Rotate(const double& rotation);
 		void Transform(const Aggplus::CMatrix& matrix);
 		void DrawOnRenderer(IRenderer* renderer) const noexcept;

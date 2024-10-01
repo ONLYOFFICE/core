@@ -255,6 +255,12 @@ namespace NSDocxRenderer
 		rotate_matrix.RotateAt(rotation, center.x, center.y, Aggplus::MatrixOrderAppend);
 		Transform(rotate_matrix);
 	}
+	void CVectorGraphics::RotateAt(const double& rotation, const Point& point)
+	{
+		Aggplus::CMatrix rotate_matrix;
+		rotate_matrix.RotateAt(rotation, point.x, point.y, Aggplus::MatrixOrderAppend);
+		Transform(rotate_matrix);
+	}
 	void CVectorGraphics::Transform(const Aggplus::CMatrix& matrix)
 	{
 		auto data = std::move(m_arData);

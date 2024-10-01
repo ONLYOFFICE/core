@@ -37,6 +37,9 @@ namespace NSDocxRenderer
 		NSStructures::CPen m_oPen    {};
 
 		CVectorGraphics m_oVector     {};
+
+		// vector with rotation 0 (to write ooxml if m_dRotation is > c_dMinRotation)
+		CVectorGraphics m_oNoRotVector{};
 		std::wstring m_strDstMedia    {};
 
 		double m_dRotation {0.0};
@@ -105,7 +108,6 @@ namespace NSDocxRenderer
 		static void CheckLineType(std::shared_ptr<CShape>& pFirstShape, std::shared_ptr<CShape>& pSecondShape, bool bIsLast = false);
 
 	private:
-		CVectorGraphics m_oNoRotVector{};
 
 		UINT m_nShapeId{0};
 		UINT m_nRelativeHeight{0};

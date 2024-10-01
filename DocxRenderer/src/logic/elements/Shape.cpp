@@ -743,11 +743,19 @@ namespace NSDocxRenderer
 		}
 		else
 		{
+			double left = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetLeft() : m_dLeft;
+			double right = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetRight() : m_dRight;
+			double top = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetTop() : m_dTop;
+			double bot = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetBottom() : m_dBaselinePos;
+
+			double height = bot - top;
+			double width = right - left;
+
 			// coeff
-			double offset_left = (m_dRight - m_dImageLeft) / m_dWidth - 1;
-			double offset_right = (m_dImageRight - m_dLeft) / m_dWidth - 1;
-			double offset_top = (m_dBaselinePos - m_dImageTop) / m_dHeight - 1;
-			double offset_bot = (m_dImageBot - m_dTop) / m_dHeight - 1;
+			double offset_left = (right - m_dImageLeft) / width - 1;
+			double offset_right = (m_dImageRight - left) / width - 1;
+			double offset_top = (bot - m_dImageTop) / height - 1;
+			double offset_bot = (m_dImageBot - top) / height - 1;
 
 			// percentage
 			offset_left *= 100;

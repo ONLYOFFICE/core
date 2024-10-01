@@ -102,6 +102,15 @@ namespace Spreadsheet
         }
         writer.WriteString(L"</cacheHierarchies>");
     }
+    void CpivotCacheHierarchies::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::PCDHIERARCHIES*>(obj.get());
+        if(!ptr)
+            return;
+        m_oCount = (_UINT32)ptr->m_arPCDHIERARCHY.size();
+        for(auto i:ptr->m_arPCDHIERARCHY)
+            m_arrItems.push_back(new CpivotCacheHierarchy(i));
+    }
     XLS::BaseObjectPtr CpivotCacheHierarchies::toBin()
     {
         auto ptr(new XLSB::PCDHIERARCHIES);
@@ -187,6 +196,48 @@ namespace Spreadsheet
             m_oGroupLevels->toXML(writer);
         writer.WriteString(L"</cacheHierarchy>");
     }
+    void CpivotCacheHierarchy::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr1 = static_cast<XLSB::PCDHIERARCHY*>(obj.get());
+        auto ptr = static_cast<XLSB::BeginPCDHierarchy*>(ptr1->m_BrtBeginPCDHierarchy.get());
+
+        m_oMeasure = ptr->fMeasure;
+        m_oMeasures = ptr->fMeasureHierarchy;
+        m_oHidden = ptr->fHidden;
+        m_oAttribute = ptr->fAttributeHierarchy;
+        m_oKeyAttribute = ptr->fKeyAttributeHierarchy;
+        m_oOneField = ptr->fOnlyOneField;
+        m_oSet = ptr->fSet;
+        m_oTime = ptr->fTimeHierarchy;
+
+        if(ptr->fUnbalancedRealKnown)
+            m_oUnbalanced = ptr->fUnbalancedReal;
+        if(ptr->fUnbalancedGroupKnown)
+            m_oUnbalancedGroup = ptr->fUnbalancedGroup;
+        if(ptr->fLoadDimUnq)
+            m_oDimensionUniqueName = ptr->stDimUnq;
+        if(ptr->fLoadDefaultUnq)
+            m_oDefaultMemberUniqueName = ptr->stDimUnq;
+        if(ptr->fLoadAllUnq)
+            m_oAllUniqueName = ptr->stAllUnq;
+        if(ptr->fLoadAllDisp)
+            m_oAllCaption = ptr->stAllDisp;
+        if(ptr->fLoadDispFld)
+            m_oDisplayFolder = ptr->stDispFld;
+        if(ptr->fLoadMeasGrp)
+            m_oMeasureGroup = ptr->stMeasGrp;
+        if(ptr->fAttributeMemberValueTypeKnown)
+            m_oMemberValueDatatype = ptr->wAttributeMemberValueType;
+        m_oCaption = ptr->stCaption;
+        m_oUniqueName = ptr->stUnique;
+        m_oIconSet = ptr->iconSet.set;
+
+        if(ptr1->m_PCDHFIELDSUSAGE != nullptr)
+            m_oFieldsUsage = ptr1->m_PCDHFIELDSUSAGE;
+        if(ptr1->m_PCDHGLEVELS != nullptr)
+            m_oGroupLevels = ptr1->m_PCDHGLEVELS;
+    }
+
     XLS::BaseObjectPtr CpivotCacheHierarchy::toBin()
     {
         auto ptr1(new XLSB::PCDHIERARCHY);
@@ -317,6 +368,15 @@ namespace Spreadsheet
         }
         writer.WriteString(L"</fieldsUsage>");
     }
+
+    void CfieldsUsage::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr1 = static_cast<XLSB::PCDHFIELDSUSAGE*>(obj.get());
+        auto ptr = static_cast<XLSB::BeginPCDHFieldsUsage*>(ptr1->m_BrtBeginPCDHFieldsUsage.get());
+        m_oCount = ptr->rgifdb.size();
+        m_oFieldUsage = ptr->rgifdb;
+    }
+
     XLS::BaseObjectPtr CfieldsUsage::toBin()
     {
         auto ptr1(new XLSB::PCDHFIELDSUSAGE);
@@ -363,6 +423,17 @@ namespace Spreadsheet
         }
         writer.WriteString(L"</groupLevels>");
     }
+
+    void CGroupLevels::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::PCDHGLEVELS*>(obj.get());
+        if(!ptr)
+            return;
+        m_oCount = ptr->m_arPCDHGLEVEL.size();
+        for(auto i:ptr->m_arPCDHGLEVEL)
+            m_arrItems.push_back(new CGroupLevel(i));
+    }
+
     XLS::BaseObjectPtr CGroupLevels::toBin()
     {
        auto ptr(new XLSB::PCDHGLEVELS);
@@ -413,6 +484,18 @@ namespace Spreadsheet
         else
             writer.WriteString(L"/>");
     }
+
+    void CGroupLevel::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr1 = static_cast<XLSB::PCDHGLEVEL*>(obj.get());
+        auto ptr = static_cast<XLSB::BeginPCDHGLevel*>(ptr1->m_BrtBeginPCDHGLevel.get());
+        m_oUser = ptr->fGroupLevel;
+        m_oUniqueName = ptr->stUnique;
+        m_oCaption = ptr->stLevelName;
+
+        m_oGroups = ptr1->m_PCDHGLGROUPS;
+    }
+
     XLS::BaseObjectPtr CGroupLevel::toBin()
     {
       auto ptr1(new XLSB::PCDHGLEVEL);
@@ -469,6 +552,17 @@ namespace Spreadsheet
         }
         writer.WriteString(L"</groups>");
     }
+
+    void CGroups::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::PCDHGLGROUPS*>(obj.get());
+        if(!ptr)
+            return;
+        m_oCount = ptr->m_arPCDHGLGROUP.size();
+        for(auto i:ptr->m_arPCDHGLGROUP)
+            m_arrItems.push_back(new CGroup(i));
+    }
+
     XLS::BaseObjectPtr CGroups::toBin()
     {
      auto ptr(new XLSB::PCDHGLGROUPS);
@@ -521,6 +615,19 @@ namespace Spreadsheet
         else
             writer.WriteString(L"/>");
     }
+
+    void CGroup::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr1 = static_cast<XLSB::PCDHGLGROUP*>(obj.get());
+        auto ptr = static_cast<XLSB::BeginPCDHGLGroup*>(ptr1->m_BrtBeginPCDHGLGroup.get());
+        m_oId = ptr->iGrpNum;
+        m_oUniqueName = ptr->stUniqueName;
+        m_oName = ptr->stName;
+        m_oCaption = ptr->stCaption;
+        m_oUniqueParent = ptr->stParentUniqueName;
+        m_oGroupMembers = ptr1->m_PCDHGLGMEMBERS;
+    }
+
     XLS::BaseObjectPtr CGroup::toBin()
     {
         auto ptr1(new XLSB::PCDHGLGROUP);
@@ -592,6 +699,16 @@ namespace Spreadsheet
        return objectPtr;
     }
 
+    void CGroupMembers::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::PCDHGLGMEMBERS*>(obj.get());
+        if(!ptr)
+            return;
+        m_oCount = ptr->m_arPCDHGLGMEMBER.size();
+        for(auto i:ptr->m_arPCDHGLGMEMBER)
+            m_arrItems.push_back(new CGroupMember(i));
+    }
+
     void CGroupMember::fromXML(XmlUtils::CXmlLiteReader& oReader)
     {
        ReadAttributes( oReader );
@@ -626,6 +743,15 @@ namespace Spreadsheet
 
        return objectPtr;
     }
+
+    void CGroupMember::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr1 = static_cast<XLSB::PCDHGLGMEMBER*>(obj.get());
+        auto ptr = static_cast<XLSB::BeginPCDHGLGMember*>(ptr1->m_BrtBeginPCDHGLGMember.get());
+        m_oGroup = (bool)ptr->fGroup;
+        m_oUniqueName = ptr->stUnique;
+    }
+    
 //pivot table hierarchies
 
     void CpivotTableHierarchies::fromXML(XmlUtils::CXmlLiteReader& oReader)

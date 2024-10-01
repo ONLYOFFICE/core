@@ -3966,6 +3966,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
             if(ptr->m_FRTPIVOTCACHEDEF != nullptr)
                 m_oExtLst      = ptr->m_FRTPIVOTCACHEDEF;
+				
+            if(ptr->m_PCDHIERARCHIES != nullptr)
+                m_oHierarchies = ptr->m_PCDHIERARCHIES;
         }
     }
     void CPivotCacheDefinition::ReadAttributes(XLS::BaseObjectPtr& obj)

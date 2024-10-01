@@ -2203,13 +2203,13 @@ namespace StarMath
 		switch(m_enTypeCon)
 		{
 			case TypeElement::equals:
-				pXmlWrite->WriteString(L"=");
+				pXmlWrite->WriteString(L"\u003D");
 				break;
 			case TypeElement::notequals:
 				pXmlWrite->WriteString(L"\u2260");
 				break;
 			case TypeElement::learrow:
-				pXmlWrite->WriteString(L"&lt;");
+				pXmlWrite->WriteString(L"\u0026lt;");
 				break;
 			case TypeElement::learrowequals:
 				pXmlWrite->WriteString(L"\u2264");
@@ -2218,7 +2218,7 @@ namespace StarMath
 				pXmlWrite->WriteString(L"\u2A7D");
 				break;
 			case TypeElement::riarrow:
-				pXmlWrite->WriteString(L"&gt;");
+				pXmlWrite->WriteString(L"\u0026gt;");
 				break;
 			case TypeElement::riarrowequals:
 				pXmlWrite->WriteString(L"\u2265");
@@ -3310,7 +3310,7 @@ namespace StarMath
 				m_itStart++;
 				break;
 			}
-			else if(!m_wsElement.empty() && (CheckTokenForGetElement(*m_itStart) ||  *m_itStart == L'(' || L')' == *m_itStart  || L'%' == *m_itStart||(L'#' == *m_itStart && L'#' != m_wsElement.back()) ||(L'-' == *m_itStart  && L'+' != m_wsElement.back() && L'<' != m_wsElement.back()) || (L'+' == *m_itStart  && L'-' != m_wsElement.back()) || (L'.' == *m_itStart && !iswdigit(m_wsElement.back())) || (iswdigit(*m_itStart) && !iswdigit(m_wsElement.back()) && L'.' != m_wsElement.back()) || (CheckIsalhpaForGetElement(*m_itStart,m_wsElement.back())) || ((m_wsElement.back() != L'<' && m_wsElement.back() != L'>') && (L'<' == *m_itStart || (L'>' == *m_itStart && L'-' !=m_wsElement.back() && L'?' != m_wsElement.back()) || L'=' == *m_itStart))))
+			else if(!m_wsElement.empty() && (CheckTokenForGetElement(*m_itStart)||(m_wsElement.back() == L'<' && (L'-' != *m_itStart && L'?' != *m_itStart && L'=' != *m_itStart && L'<' != *m_itStart && L'>' != *m_itStart)) ||  *m_itStart == L'(' || L')' == *m_itStart  || L'%' == *m_itStart||(L'#' == *m_itStart && L'#' != m_wsElement.back()) ||(L'-' == *m_itStart  && L'+' != m_wsElement.back() && L'<' != m_wsElement.back()) || (L'+' == *m_itStart  && L'-' != m_wsElement.back()) || (L'.' == *m_itStart && !iswdigit(m_wsElement.back())) || (iswdigit(*m_itStart) && !iswdigit(m_wsElement.back()) && L'.' != m_wsElement.back()) || (CheckIsalhpaForGetElement(*m_itStart,m_wsElement.back())) || ((m_wsElement.back() != L'<' && m_wsElement.back() != L'>') && (L'<' == *m_itStart || (L'>' == *m_itStart && L'-' !=m_wsElement.back() && L'?' != m_wsElement.back()) || L'=' == *m_itStart))))
 			{
 				return m_wsElement;
 			}

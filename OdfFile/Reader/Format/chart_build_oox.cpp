@@ -47,6 +47,7 @@
 #include "number_style.h"
 #include "calcs_styles.h"
 #include "chart_build_oox.h"
+#include "../Converter/measuredigits.h"
 
 #include "../../DataTypes/length.h"
 #include "../../DataTypes/borderstyle.h"
@@ -74,6 +75,17 @@ typedef shared_ptr<const office_element>::Type office_element_ptr_const;
                 VAL[ii]->accept(*this); \
         }
 
+static double convert_symbol_size(double val, double metrix, bool add_padding)
+{
+	//if (add_padding)
+	{
+		val = ((int)((val * metrix + 5) / metrix * 256)) / 256.;
+	}
+
+	double pixels = (int)(((256. * val + ((int)(128. / metrix))) / 256.) * metrix); //in pixels
+
+	return pixels * 0.75; //* 9525. * 72.0 / (360000.0 * 2.54);
+}
 
 // Класс для конструирования чартов
 using namespace chart;
@@ -264,6 +276,20 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 		office_math_->oox_convert(Context.get_math_context(), 2);
 		Context.end_math_formula();
 
+		if (Context.get_drawing_context().get_current_frame() && 
+			Context.get_drawing_context().get_current_frame()->oox_drawing_)
+		{
+			std::pair<double, double> maxDigitSize_ = utils::GetMaxDigitSizePixels(baseFontName_, baseFontHeight_, 96., 0, Context.get_mediaitems()->applicationFonts());
+
+			double cx = get_value_emu(convert_symbol_size(1.76 * Context.get_math_context().width, maxDigitSize_.first, false));
+			double cy = get_value_emu(convert_symbol_size(1.76 * Context.get_math_context().height, maxDigitSize_.second, false));
+			
+			if (cx > Context.get_drawing_context().get_current_frame()->oox_drawing_->cx)
+				Context.get_drawing_context().get_current_frame()->oox_drawing_->cx = cx;
+			
+			if (cy > Context.get_drawing_context().get_current_frame()->oox_drawing_->cy)
+				Context.get_drawing_context().get_current_frame()->oox_drawing_->cy = cy;
+		}
 		Context.get_drawing_context().get_text_stream_frame() = temp_stream.str();
 		
 		Context.set_stream_man(prev);

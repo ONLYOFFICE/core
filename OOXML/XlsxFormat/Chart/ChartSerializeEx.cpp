@@ -876,8 +876,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 		writer.WriteString(L"<cx:valScaling");
 			WritingStringNullableAttrString(L"min", m_min, m_min->ToString())
 			WritingStringNullableAttrString(L"max", m_max, m_max->ToString())
-			WritingStringNullableAttrString(L"majorUnit", m_max, m_majorUnit->ToString())
-			WritingStringNullableAttrString(L"minorUnit", m_max, m_minorUnit->ToString())
+			WritingStringNullableAttrString(L"majorUnit", m_majorUnit, m_majorUnit->ToString())
+			WritingStringNullableAttrString(L"minorUnit", m_minorUnit, m_minorUnit->ToString())
 		writer.WriteString(L"/>");
 
 	}
@@ -962,8 +962,11 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			}
 			else if( L"axisId" == sName)
 			{
-				std::wstring s = oReader.GetText3(); 
-				m_arAxisId.push_back(XmlUtils::GetInteger(s));
+				nullableUintVal val = oReader;
+				if (val.IsInit())
+				{
+					m_arAxisId.push_back(*val);
+				}
 			}
 		}
 	}
@@ -1000,11 +1003,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 		}
 		for (size_t i = 0; i < m_arAxisId.size(); i++)
 		{
-			writer.WriteString(L"<cx:axisId>");
-			writer.WriteString(std::to_wstring(m_arAxisId[i]));
-			writer.WriteString(L"</cx:axisId>");
+			writer.WriteString(L"<cx:axisId val=\"" + std::to_wstring(m_arAxisId[i]) + L"\"/>");
 		}
-
 		if (m_spPr.IsInit())
 		{
 			m_spPr->m_namespace = L"cx";

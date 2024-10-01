@@ -180,6 +180,9 @@ namespace NSDocxRenderer
 	// c_nEvenOddFillMode = 0x0200;
 	void CPage::DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo)
 	{
+		if (m_oCurrVectorGraphics.IsEmpty())
+			return;
+
 		double rotation = m_pTransform->z_Rotation();
 		double left = m_oCurrVectorGraphics.GetLeft();
 		double right = m_oCurrVectorGraphics.GetRight();

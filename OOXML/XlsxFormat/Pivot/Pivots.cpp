@@ -378,17 +378,17 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		//	m_oConditionalFormats->toXML(writer);
 		//if(m_oChartFormats.IsInit())
 		//	m_oChartFormats->toXML(writer);
-		//if(m_oPivotHierarchies.IsInit())
-		//	m_oPivotHierarchies->toXML(writer);
+        if(m_oPivotHierarchies.IsInit())
+            m_oPivotHierarchies->toXML(writer);
 		if(m_oPivotTableStyleInfo.IsInit())
 			m_oPivotTableStyleInfo->toXML(writer);
 
 		//if(m_oFilters.IsInit())
 		//	m_oFilters->toXML(writer);
-		//if(m_oRowHierarchiesUsage.IsInit())
-		//	m_oRowHierarchiesUsage->toXML(writer);
-		//if(m_oColHierarchiesUsage.IsInit())
-		//	m_oColHierarchiesUsage->toXML(writer);
+        if(m_oRowHierarchiesUsage.IsInit())
+            m_oRowHierarchiesUsage->toXML(writer);
+        if(m_oColHierarchiesUsage.IsInit())
+            m_oColHierarchiesUsage->toXML(writer);
 
 		if(m_oExtLst.IsInit())
 		{
@@ -784,6 +784,21 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
             if(ptr->m_SXPIS != nullptr)
                 m_oPageFields = ptr->m_SXPIS;
+
+            if(ptr->m_SXTHS != nullptr)
+                m_oPivotHierarchies = ptr->m_SXTHS;
+            if(ptr->m_ISXTHCOLS != nullptr)
+            {
+                m_oColHierarchiesUsage.Init();
+                m_oColHierarchiesUsage->m_oRowHierarchy = false;
+                m_oColHierarchiesUsage->fromBin(ptr->m_ISXTHCOLS);
+            }
+            if(ptr->m_ISXTHRWS != nullptr)
+            {
+                m_oRowHierarchiesUsage.Init();
+                m_oRowHierarchiesUsage->m_oRowHierarchy = true;
+                m_oRowHierarchiesUsage->fromBin(ptr->m_ISXTHRWS);
+            }
 			if(ptr->m_FRTSXVIEW)
 			{
 				auto result = static_cast<XLSB::FRTSXVIEW*>(ptr->m_FRTSXVIEW.get());
@@ -3818,6 +3833,12 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			m_oCacheFields->toXML(writer);
         if(m_oHierarchies.IsInit())
             m_oHierarchies->toXML(writer);
+        if(m_oDimensions.IsInit())
+            m_oDimensions->toXML(writer);
+        if(m_oMeasureGroups.IsInit())
+            m_oMeasureGroups->toXML(writer);
+        if(m_oMaps.IsInit())
+            m_oMaps->toXML(writer);
 		if(m_oExtLst.IsInit())
 		{
 			writer.WriteString(m_oExtLst->toXMLWithNS(_T("")));

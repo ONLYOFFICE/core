@@ -188,6 +188,11 @@ namespace Spreadsheet
         WritingStringNullableAttrBool2(L"unbalanced", m_oUnbalanced);
         WritingStringNullableAttrBool2(L"unbalancedGroup", m_oUnbalancedGroup);
         WritingStringNullableAttrBool2(L"hidden", m_oHidden);
+        if(!m_oFieldsUsage.IsInit() && !m_oGroupLevels.IsInit())
+        {
+            writer.WriteString(L"/>");
+            return;
+        }
         writer.WriteString(L">");
 
         if(m_oFieldsUsage.IsInit())
@@ -788,6 +793,13 @@ namespace Spreadsheet
         }
         writer.WriteString(L"</pivotHierarchies>");
     }
+    void CpivotTableHierarchies::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::SXTHS*>(obj.get());
+        m_oCount = (_UINT32)ptr->m_arSXTH.size();
+        for(auto i:ptr->m_arSXTH)
+            m_arrItems.push_back(new CpivotTableHierarchy(i));
+    }
     XLS::BaseObjectPtr CpivotTableHierarchies::toBin()
     {
         auto ptr(new XLSB::SXTHS);
@@ -860,6 +872,31 @@ namespace Spreadsheet
         }
         else
             writer.WriteString(L"/>");
+    }
+    void CpivotTableHierarchy::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr1 = static_cast<XLSB::SXTH*>(obj.get());
+        auto ptr = static_cast<XLSB::BeginSXTH*>(ptr1->m_BrtBeginSXTH.get());
+        if(ptr == nullptr)
+            return;
+        m_oOutline = ptr->fOutlineMode;
+        m_oMultipleItemSelectionAllowed = ptr->fEnableMultiplePageItems;
+        m_oSubtotalTop = ptr->fSubtotalAtTop;
+        m_oShowInFieldList = ptr->fDontShowFList;
+        m_oDragToRow = ptr->fDragToRow;
+        m_oDragToCol = ptr->fDragToColumn;
+        m_oDragToData = ptr->fDragToData;
+        m_oDragToPage = ptr->fDragToPage;
+        m_oIncludeNewItemsInFilter = ptr->fFilterInclusive;
+
+        if(ptr->fLoadCap)
+            m_oCaption = ptr->irstCaption;
+        if(ptr1->m_SXTDMPS != nullptr)
+            m_oMemberProperties = ptr1->m_SXTDMPS;
+
+        for(auto i:ptr1->m_arSXTHITEMS)
+            m_arrItems.push_back(new CMembers(i));
+
     }
     XLS::BaseObjectPtr CpivotTableHierarchy::toBin()
     {
@@ -941,6 +978,16 @@ namespace Spreadsheet
         }
         writer.WriteString(L"</members>");
     }
+    void CMembers::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::SXTDMPS*>(obj.get());
+
+        auto ptr1 = static_cast<XLSB::BeginSXTHItems*>(ptr->m_BrtBeginSXTDMPs.get());
+        m_oLevel = ptr1->iSXTL;
+        m_oCount = (_UINT32)ptr->m_arSXTDMP.size();
+        for(auto i:ptr->m_arSXTDMP)
+            m_arrItems.push_back(new CMember(i));
+    }
     XLS::BaseObjectPtr CMembers::toBin()
     {
        auto ptr(new XLSB::SXTHITEMS);
@@ -972,6 +1019,14 @@ namespace Spreadsheet
         writer.WriteString(L"<member");
         WritingStringNullableAttrEncodeXmlString2(L"name", m_oName);
         writer.WriteString(L"/>");
+    }
+    void CMember::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr1 = static_cast<XLSB::SXTHITEM*>(obj.get());
+        auto ptr = static_cast<XLSB::BeginSXTHItem*>(ptr1->m_BrtBeginSXTHItem.get());
+        if(ptr == nullptr)
+            return;
+        m_oName = ptr->irstItem;
     }
     XLS::BaseObjectPtr CMember::toBin()
     {
@@ -1020,6 +1075,15 @@ namespace Spreadsheet
         }
         writer.WriteString(L"</groupMembers>");
     }
+    void CMemberProperties::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::SXTDMPS*>(obj.get());
+        if(!ptr)
+            return;
+        m_oCount = (_UINT32)ptr->m_arSXTDMP.size();
+        for(auto i:ptr->m_arSXTDMP)
+            m_arrItems.push_back(new CMemberProperty(i));
+    }
     XLS::BaseObjectPtr CMemberProperties::toBin()
     {
        auto ptr(new XLSB::SXTDMPS);
@@ -1061,6 +1125,19 @@ namespace Spreadsheet
                 WritingStringNullableAttrUInt(L"level", m_oLevel, m_oLevel.get());
                 WritingStringNullableAttrUInt(L"field", m_oField, m_oField.get());
                 writer.WriteString(L"/>");
+    }
+    void CMemberProperty::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr1 = static_cast<XLSB::SXTDMP*>(obj.get());
+        auto ptr = static_cast<XLSB::BeginSXTDMP*>(ptr1->m_BrtBeginSXTDMP.get());
+        if(ptr == nullptr)
+            return;
+        m_oLevel = ptr->irstProperty;
+        m_oNameLen = ptr->cchLevelUnq;
+        m_oPLen = ptr->cchPropName;
+        m_oPPos = ptr->ichPropName;
+        m_oField = ptr->isxvd;
+        m_oShowCell = ptr->fDisplayInReport;
     }
     XLS::BaseObjectPtr CMemberProperty::toBin()
     {
@@ -1156,6 +1233,35 @@ namespace Spreadsheet
             writer.WriteString(L"</rowHierarchiesUsage>");
         else
             writer.WriteString(L"</colHierarchiesUsage>");
+    }
+    void CHierarchiesUsage::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        if(m_oRowHierarchy)
+        {
+            auto ptr1 = static_cast<XLSB::ISXTHRWS*>(obj.get());
+            auto ptr = static_cast<XLSB::BeginISXTHRws*>(ptr1->m_BrtBeginISXTHRws.get());
+            m_oCount = (_UINT32)ptr->rgisxth.size();
+            for(auto i:ptr->rgisxth)
+            {
+                auto usage = new CHierarchyUsage;
+                usage->m_oRowHierarchy = true;
+                usage->m_oHierarchyUsage = i;
+                m_arrItems.push_back(usage);
+            }
+        }
+        else
+        {
+            auto ptr1 = static_cast<XLSB::ISXTHCOLS*>(obj.get());
+            auto ptr = static_cast<XLSB::BeginISXTHCols*>(ptr1->m_BrtBeginISXTHCols.get());
+            m_oCount = (_UINT32)ptr->rgisxth.size();
+            for(auto i:ptr->rgisxth)
+            {
+                auto usage = new CHierarchyUsage;
+                usage->m_oRowHierarchy = false;
+                usage->m_oHierarchyUsage = i;
+                m_arrItems.push_back(usage);
+            }
+        }
     }
     XLS::BaseObjectPtr CHierarchiesUsage::toBin()
     {

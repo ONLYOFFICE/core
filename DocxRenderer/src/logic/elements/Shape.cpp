@@ -875,10 +875,10 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"<a:solidFill>");
 			oWriter.WriteString(L"<a:srgbClr val=\"");
 			oWriter.WriteHexInt3(static_cast<int>(ConvertColorBGRToRGB(m_oBrush.Color1)));
-			if (0xFF != m_oBrush.TextureAlpha)
+			if (0xFF != m_oBrush.Alpha1)
 			{
 				oWriter.WriteString(L"\"><a:alpha val=\"");
-				oWriter.AddInt(static_cast<int>(m_oBrush.TextureAlpha / 255.0 * 100.0));
+				oWriter.AddInt(static_cast<int>(m_oBrush.Alpha1 / 255.0 * 100.0));
 				oWriter.WriteString(L"%\"/></a:srgbClr>");
 			}
 			else

@@ -169,6 +169,14 @@ JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilder_c_1GetContext
 
 /*
  * Class:     docbuilder_CDocBuilder
+ * Method:    c_GetContextWithEnterParam
+ * Signature: (JZ)J
+ */
+JNIEXPORT jlong JNICALL Java_docbuilder_CDocBuilder_c_1GetContextWithEnterParam
+  (JNIEnv *, jclass, jlong, jboolean);
+
+/*
+ * Class:     docbuilder_CDocBuilder
  * Method:    c_Initialize
  * Signature: ()V
  */

@@ -145,13 +145,23 @@ namespace NSDoctRenderer
 					NSHyphen::CEngine::Init(private_GetFile(sConfigDir, oNodeDict.GetText()));
 				}
 
-				bool bIsAbsoluteFontsPath = false;
 				if (!m_bIsNotUseConfigAllFontsDir)
 				{
 					std::wstring sAllFontsPath = oNode.ReadNodeText(L"allfonts");
 					if (!sAllFontsPath.empty())
 					{
-						m_strAllFonts = private_GetFile(sConfigDir, sAllFontsPath);
+						if (NSFile::CFileBinary::Exists(sConfigDir + sAllFontsPath))
+							m_strAllFonts = sConfigDir + sAllFontsPath;
+						else if (NSFile::CFileBinary::Exists(sAllFontsPath))
+							m_strAllFonts = sAllFontsPath;
+						else
+						{
+							std::wstring sAllFontsDir = NSFile::GetDirectoryName(sAllFontsPath);
+							if (NSDirectory::Exists(sConfigDir + sAllFontsDir))
+								m_strAllFonts = sConfigDir + sAllFontsPath;
+							else
+								m_strAllFonts = sAllFontsPath;
+						}
 
 						// на папку может не быть прав
 						if (!NSFile::CFileBinary::Exists(m_strAllFonts))
@@ -163,8 +173,6 @@ namespace NSDoctRenderer
 								if (NSDirectory::CreateDirectory(sAppDir + L"/docbuilder"))
 								{
 									m_strAllFonts = sAppDir + L"/docbuilder/AllFonts.js";
-									// файл может не существовать пока - и тогда private_GetFile не учтет его
-									bIsAbsoluteFontsPath = true;
 								}
 							}
 							else
@@ -175,9 +183,6 @@ namespace NSDoctRenderer
 						}
 					}
 				}
-
-				if (!bIsAbsoluteFontsPath)
-					m_strAllFonts = private_GetFile(sConfigDir, m_strAllFonts);
 			}
 
 			m_strSdkPath = oNode.ReadNodeText(L"sdkjs");

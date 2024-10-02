@@ -236,6 +236,10 @@ namespace NSDocxRenderer
 				m_oCurrVectorGraphics,
 				m_oClipVectorGraphics,
 				m_lClipMode);
+
+			if (new_vector_graphics.IsEmpty())
+				return;
+
 			m_oCurrVectorGraphics = std::move(new_vector_graphics);
 		}
 		shape->SetVector(std::move(m_oCurrVectorGraphics));

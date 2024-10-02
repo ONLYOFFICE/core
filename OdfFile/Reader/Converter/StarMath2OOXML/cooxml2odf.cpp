@@ -12,23 +12,21 @@ namespace StarMath
 	{
 		delete m_pXmlWrite;
 	}
-	void COOXml2Odf::StartConversion(OOX::Logic::COMathPara *pMathPara)
+	void COOXml2Odf::StartConversion(OOX::WritingElement *pNode)
 	{
 		m_pXmlWrite->WriteNodeBegin(L"math",true);
 		m_pXmlWrite->WriteAttribute(L"xmlns",L"http:\/\/www.w3.org/1998/Math/MathML");
 		m_pXmlWrite->WriteAttribute(L"display",L"block");
 		m_pXmlWrite->WriteNodeEnd(L"w",true,false);
 		m_pXmlWrite->WriteNodeBegin(L"semantics",false);
-		if(pMathPara == nullptr)
+		if(pNode == nullptr)
 		{
 			m_pXmlWrite->WriteNodeBegin(L"annotation",false);
 			EndOdf();
 			return;
 		}
-		for(int i = 0; i< pMathPara->m_arrItems.size();i++)
-		{
-			NodeDefinition(pMathPara->m_arrItems[i]);
-		}
+		else
+			NodeDefinition(pNode);
 		m_pXmlWrite->WriteNodeBegin(L"annotation",true);
 		m_pXmlWrite->WriteAttribute(L"encoding",L"StarMath 5.0");
 		m_pXmlWrite->WriteNodeEnd(L"w",true,false);
@@ -71,7 +69,7 @@ namespace StarMath
 		}
 		case OOX::EElementType::et_m_oMathPara:
 		{
-			StartConversion(dynamic_cast<OOX::Logic::COMathPara*>(pNode));
+			ConversionMathPara(dynamic_cast<OOX::Logic::COMathPara*>(pNode));
 			break;
 		}
 		case OOX::EElementType::et_m_acc:
@@ -161,6 +159,13 @@ namespace StarMath
 		ConversionVectorWritingElement(pMath->m_arrItems);
 		if(bMrow == true)
 			m_pXmlWrite->WriteNodeEnd(L"mrow",false,false);
+	}
+	void COOXml2Odf::ConversionMathPara(OOX::Logic::COMathPara *pMathPara)
+	{
+		if(pMathPara == nullptr)
+			return;
+		for(OOX::WritingElement* pNode:pMathPara->m_arrItems)
+			NodeDefinition(pNode);
 	}
 	std::vector<COneElement*> COOXml2Odf::ConversionMT(OOX::Logic::CMText *pMt,const StValuePr* pValue)
 	{

@@ -46,7 +46,8 @@ namespace StarMath
 	public:
 		COOXml2Odf();
 		~COOXml2Odf();
-		void StartConversion(OOX::Logic::COMathPara* pMathPara);
+		void StartConversion(OOX::WritingElement* pNode);
+		void ConversionMathPara(OOX::Logic::COMathPara* pMathPara);
 		void NodeDefinition(OOX::WritingElement* pNode, const bool &bMatrix = false);
 		void ConversionMath(OOX::Logic::COMath* pMath);
 		std::vector<COneElement *> ConversionMT(OOX::Logic::CMText* pMt, const StValuePr* pValue);

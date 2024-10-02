@@ -22,7 +22,7 @@ TEST(OOXml2OdfTest,MathPara)
 	if(oReader.FromString(L"<m:oMathPara><m:oMathParaPr><m:jc m:val=\"center\"/></m:oMathParaPr><m:oMath><m:r><w:rPr><w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/><w:lang w:val=\"en-US\"/></w:rPr><m:t>1</m:t></m:r></m:oMath></m:oMathPara>") && oReader.ReadNextNode())
 		pElement->fromXML(oReader);
 	StarMath::COOXml2Odf oTest;
-	oTest.NodeDefinition(pElement);
+	oTest.StartConversion(pElement);
 	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mn>1</mn><annotation encoding=\"StarMath 5.0\">{1} </annotation></semantics></math>";
 	EXPECT_EQ(oTest.GetOdf(),wsOdf);
 }

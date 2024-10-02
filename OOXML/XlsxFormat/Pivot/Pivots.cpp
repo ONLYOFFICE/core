@@ -3990,6 +3990,15 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				
             if(ptr->m_PCDHIERARCHIES != nullptr)
                 m_oHierarchies = ptr->m_PCDHIERARCHIES;
+
+            if(ptr->m_DIMS != nullptr)
+                m_oDimensions = ptr->m_DIMS;
+
+            if(ptr->m_MGS != nullptr)
+                m_oMeasureGroups = ptr->m_MGS;
+
+            if(ptr->m_MGMAPS != nullptr)
+                m_oMaps = ptr->m_MGMAPS;
         }
     }
     void CPivotCacheDefinition::ReadAttributes(XLS::BaseObjectPtr& obj)

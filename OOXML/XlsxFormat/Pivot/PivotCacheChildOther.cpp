@@ -47,6 +47,7 @@ namespace OOX
 {
 namespace Spreadsheet
 {
+
 void CPivotDimensions::fromXML(XmlUtils::CXmlLiteReader& oReader)
 {
     WritingElement_ReadAttributes_Start( oReader )
@@ -66,6 +67,7 @@ void CPivotDimensions::fromXML(XmlUtils::CXmlLiteReader& oReader)
         }
     }
 }
+
 void CPivotDimensions::toXML(NSStringUtils::CStringBuilder& writer) const
 {
     writer.WriteString(L"<dimensions");
@@ -81,6 +83,17 @@ void CPivotDimensions::toXML(NSStringUtils::CStringBuilder& writer) const
     }
     writer.WriteString(L"</dimensions>");
 }
+
+void CPivotDimensions::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::DIMS*>(obj.get());
+    if(!ptr)
+        return;
+    m_oCount = (_UINT32)ptr->m_arDIM .size();
+    for(auto i:ptr->m_arDIM)
+        m_arrItems.push_back(new CPivotDimension(i));
+}
+
 XLS::BaseObjectPtr CPivotDimensions::toBin()
 {
     auto ptr(new XLSB::DIMS);
@@ -94,6 +107,7 @@ void CPivotDimension::fromXML(XmlUtils::CXmlLiteReader& oReader)
 {
     ReadAttributes( oReader );
 }
+
 void CPivotDimension::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
     WritingElement_ReadAttributes_Start( oReader )
@@ -103,6 +117,7 @@ void CPivotDimension::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
         WritingElement_ReadAttributes_Read_else_if	( oReader, L"caption", m_oCaption )
     WritingElement_ReadAttributes_End( oReader )
 }
+
 void CPivotDimension::toXML(NSStringUtils::CStringBuilder& writer) const
 {
     writer.WriteString(L"<dimension");
@@ -112,6 +127,18 @@ void CPivotDimension::toXML(NSStringUtils::CStringBuilder& writer) const
     WritingStringNullableAttrEncodeXmlString2( L"caption", m_oCaption);
     writer.WriteString(L"/>");
 }
+
+void CPivotDimension::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr1 = static_cast<XLSB::DIM*>(obj.get());
+    auto ptr = static_cast<XLSB::BeginDim*>(ptr1->m_BrtBeginDim.get());
+
+    m_oMeasure = ptr->fMeasure;
+    m_oName = ptr->stName;
+    m_oCaption = ptr->stDisplay;
+    m_oUniqueName = ptr->stUnique;
+}
+
 XLS::BaseObjectPtr CPivotDimension::toBin()
 {
     auto ptr1(new XLSB::DIM);
@@ -154,6 +181,7 @@ void CPivotMeasureGroups::fromXML(XmlUtils::CXmlLiteReader& oReader)
         }
     }
 }
+
 void CPivotMeasureGroups::toXML(NSStringUtils::CStringBuilder& writer) const
 {
     writer.WriteString(L"<measureGroups");
@@ -169,6 +197,17 @@ void CPivotMeasureGroups::toXML(NSStringUtils::CStringBuilder& writer) const
     }
     writer.WriteString(L"</measureGroups>");
 }
+
+void CPivotMeasureGroups::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::MGS*>(obj.get());
+    if(!ptr)
+        return;
+    m_oCount = (_UINT32)ptr->m_arMG .size();
+    for(auto i:ptr->m_arMG)
+        m_arrItems.push_back(new CPivotMeasureGroup(i));
+}
+
 XLS::BaseObjectPtr CPivotMeasureGroups::toBin()
 {
     auto ptr(new XLSB::MGS);
@@ -182,6 +221,7 @@ void CPivotMeasureGroup::fromXML(XmlUtils::CXmlLiteReader& oReader)
 {
     ReadAttributes( oReader );
 }
+
 void CPivotMeasureGroup::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
     WritingElement_ReadAttributes_Start( oReader )
@@ -189,13 +229,24 @@ void CPivotMeasureGroup::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
         WritingElement_ReadAttributes_Read_else_if	( oReader, L"caption", m_oCaption )
     WritingElement_ReadAttributes_End( oReader )
 }
+
 void CPivotMeasureGroup::toXML(NSStringUtils::CStringBuilder& writer) const
 {
-    writer.WriteString(L"<dimension");
+    writer.WriteString(L"<measureGroup");
     WritingStringNullableAttrEncodeXmlString2( L"name", m_oName );
     WritingStringNullableAttrEncodeXmlString2( L"caption", m_oCaption);
     writer.WriteString(L"/>");
 }
+
+void CPivotMeasureGroup::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr1 = static_cast<XLSB::MG*>(obj.get());
+    auto ptr = static_cast<XLSB::BeginMG*>(ptr1->m_BrtBeginMG.get());
+
+    m_oName = ptr->name;
+    m_oCaption = ptr->caption;
+}
+
 XLS::BaseObjectPtr CPivotMeasureGroup::toBin()
 {
     auto ptr1(new XLSB::MG);
@@ -232,6 +283,7 @@ void CMeasureDimensionMaps::fromXML(XmlUtils::CXmlLiteReader& oReader)
         }
     }
 }
+
 void CMeasureDimensionMaps::toXML(NSStringUtils::CStringBuilder& writer) const
 {
     writer.WriteString(L"<maps");
@@ -247,6 +299,17 @@ void CMeasureDimensionMaps::toXML(NSStringUtils::CStringBuilder& writer) const
     }
     writer.WriteString(L"</maps>");
 }
+
+void CMeasureDimensionMaps::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::MGMAPS*>(obj.get());
+    if(!ptr)
+        return;
+    m_oCount = (_UINT32)ptr->m_arMAP.size();
+    for(auto i:ptr->m_arMAP)
+        m_arrItems.push_back(new CMeasureDimensionMap(i));
+}
+
 XLS::BaseObjectPtr CMeasureDimensionMaps::toBin()
 {
     auto ptr(new XLSB::MGMAPS);
@@ -260,6 +323,7 @@ void CMeasureDimensionMap::fromXML(XmlUtils::CXmlLiteReader& oReader)
 {
     ReadAttributes( oReader );
 }
+
 void CMeasureDimensionMap::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
     WritingElement_ReadAttributes_Start( oReader )
@@ -267,6 +331,7 @@ void CMeasureDimensionMap::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
         WritingElement_ReadAttributes_Read_else_if	( oReader, L"dimension", m_oDimension )
     WritingElement_ReadAttributes_End( oReader )
 }
+
 void CMeasureDimensionMap::toXML(NSStringUtils::CStringBuilder& writer) const
 {
     writer.WriteString(L"<map");
@@ -274,6 +339,16 @@ void CMeasureDimensionMap::toXML(NSStringUtils::CStringBuilder& writer) const
     WritingStringNullableAttrUInt( L"dimension", m_oDimension, m_oDimension.get());
     writer.WriteString(L"/>");
 }
+
+void CMeasureDimensionMap::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr1 = static_cast<XLSB::MAP*>(obj.get());
+    auto ptr = static_cast<XLSB::BeginMap*>(ptr1->m_BrtBeginMap.get());
+
+    m_oDimension = ptr->isxdh;
+    m_oMeasureGroup = ptr->img;
+}
+
 XLS::BaseObjectPtr CMeasureDimensionMap::toBin()
 {
     auto ptr1(new XLSB::MAP);

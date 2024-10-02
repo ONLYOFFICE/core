@@ -1476,8 +1476,11 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 			if( L"idx" == sName)
 			{
-				std::wstring s = oReader.GetText3();
-				m_arIdx.push_back(XmlUtils::GetInteger(s));
+				nullableUintVal val = oReader;
+				if (val.IsInit())
+				{
+					m_arIdx.push_back(*val);
+				}
 			}
 		}
 	}
@@ -1487,9 +1490,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 
 		for (size_t i= 0; i < m_arIdx.size(); i++)
 		{
-			writer.WriteString(L"<cx:idx>");
-			writer.WriteString(std::to_wstring(m_arIdx[i]));
-			writer.WriteString(L"</cx:idx>");
+			writer.WriteString(L"<cx:idx val=\"" + std::to_wstring(m_arIdx[i]) + L"\"/>");
 		}
 		writer.WriteString(L"</cx:subtotals>");
 	}

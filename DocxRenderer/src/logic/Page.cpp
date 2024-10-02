@@ -180,8 +180,12 @@ namespace NSDocxRenderer
 	// c_nEvenOddFillMode = 0x0200;
 	void CPage::DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo)
 	{
+		// in case if text comes as a path with unicode 32 (space)
 		if (m_oCurrVectorGraphics.IsEmpty())
+		{
+			m_oClipVectorGraphics.Clear();
 			return;
+		}
 
 		double rotation = m_pTransform->z_Rotation();
 		double left = m_oCurrVectorGraphics.GetLeft();
@@ -238,8 +242,11 @@ namespace NSDocxRenderer
 				m_lClipMode);
 
 			if (new_vector_graphics.IsEmpty())
+			{
+				m_oCurrVectorGraphics.Clear();
+				m_oClipVectorGraphics.Clear();
 				return;
-
+			}
 			m_oCurrVectorGraphics = std::move(new_vector_graphics);
 		}
 		shape->SetVector(std::move(m_oCurrVectorGraphics));

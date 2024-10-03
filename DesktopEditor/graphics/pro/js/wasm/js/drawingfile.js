@@ -73,9 +73,9 @@ CFile.prototype.getOriginPage = function(originIndex)
 	for (let i = 0; i < this.pages.length; ++i)
 	{
 		if (this.pages[i]["originIndex"] == originIndex)
-			return this.pages[i];
+			return [i, this.pages[i]];
 	}
-	return null;
+	return [null, null];
 };
 
 CFile.prototype["getPages"] = function()
@@ -236,14 +236,14 @@ CFile.prototype["getLinks"] = function(pageIndex)
 // TEXT
 CFile.prototype["getGlyphs"] = function(pageIndex)
 {
-	let page = this.getOriginPage(pageIndex);
+	let [i, page] = this.getOriginPage(pageIndex);
 	if (!page || page.fonts.length > 0)
 	{
 		// waiting fonts
 		return null;
 	}
 
-	this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Page);
+	this.lockPageNumForFontsLoader(i, UpdateFontsSource.Page);
 	let res = this._getGlyphs(pageIndex);
 	// there is no need to delete the result; this buffer is used as a text buffer 
 	// for text commands on other pages. After receiving ALL text pages, 
@@ -1374,14 +1374,14 @@ CFile.prototype["free"] = function(pointer)
 // PIXMAP
 CFile.prototype["getPagePixmap"] = function(pageIndex, width, height, backgroundColor)
 {
-	let page = this.getOriginPage(pageIndex);
+	let [i, page] = this.getOriginPage(pageIndex);
 	if (!page || page.fonts.length > 0)
 	{
 		// waiting fonts
 		return null;
 	}
 
-	this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Page);
+	this.lockPageNumForFontsLoader(i, UpdateFontsSource.Page);
 	let ptr = this._getPixmap(pageIndex, width, height, backgroundColor);
 	this.unlockPageNumForFontsLoader();
 

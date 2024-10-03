@@ -73,9 +73,9 @@ CFile.prototype.getOriginPage = function(originIndex)
 	for (let i = 0; i < this.pages.length; ++i)
 	{
 		if (this.pages[i]["originIndex"] == originIndex)
-			return [i, this.pages[i]];
+			return i;
 	}
-	return [null, null];
+	return -1;
 };
 
 CFile.prototype["getPages"] = function()
@@ -236,7 +236,10 @@ CFile.prototype["getLinks"] = function(pageIndex)
 // TEXT
 CFile.prototype["getGlyphs"] = function(pageIndex)
 {
-	let [i, page] = this.getOriginPage(pageIndex);
+	let i = this.getOriginPage(pageIndex);
+	if (i < 0)
+		return null;
+	let page = this.pages[i];
 	if (!page || page.fonts.length > 0)
 	{
 		// waiting fonts
@@ -1374,7 +1377,10 @@ CFile.prototype["free"] = function(pointer)
 // PIXMAP
 CFile.prototype["getPagePixmap"] = function(pageIndex, width, height, backgroundColor)
 {
-	let [i, page] = this.getOriginPage(pageIndex);
+	let i = this.getOriginPage(pageIndex);
+	if (i < 0)
+		return null;
+	let page = this.pages[i];
 	if (!page || page.fonts.length > 0)
 	{
 		// waiting fonts

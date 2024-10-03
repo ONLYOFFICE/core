@@ -969,8 +969,19 @@ namespace NSDocxRenderer
 				xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" \
 				mc:Ignorable=\"w14 w15 w16se w16cid w16 w16cex w16sdtdh\">");
 
-		auto oFonts = m_oFontSelector.GetCache();
-		for (auto& val : oFonts)
+		const auto& cache = m_oFontSelector.GetCache();
+		std::list<CFontSelector::CFontSelectInfo> font_table;
+		std::map<std::wstring, bool> ar_is_written;
+		for (const auto& info : cache)
+		{
+			if (!ar_is_written[info.wsSelectedName])
+			{
+				font_table.push_back(info);
+				ar_is_written[info.wsSelectedName] = true;
+			}
+		}
+
+		for (auto& val : font_table)
 		{
 			if (val.wsSelectedName.empty())
 				continue;

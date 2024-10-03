@@ -18,7 +18,7 @@ constexpr double CURVETIME_EPSILON = 1e-8;
 constexpr double LINE_EPSILON = 1e-9;
 constexpr double MIN = std::numeric_limits<double>::min();
 constexpr double MAX = std::numeric_limits<double>::max();
-const Aggplus::PointD MIN_POINT(-500.0, -500.0);
+const Aggplus::PointD MIN_POINT = Aggplus::PointD(-100000.0, -100000.0);
 
 const std::vector<double> ABSCISSAS[16] = {
 	{0.5773502691896257645091488},

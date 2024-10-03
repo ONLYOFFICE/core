@@ -742,9 +742,7 @@ void CBooleanOperations::TraceBoolean()
 
 	GetIntersection();
 
-	if (Locations.empty())
-		SetWinding();
-	else
+	if (!Locations.empty())
 	{
 		int length = static_cast<int>(Locations.size());
 		for (int i = 0; i < length; i++)
@@ -772,31 +770,9 @@ void CBooleanOperations::TraceBoolean()
 			TraceAllOverlap();
 			return;
 		}
-
-		for (const auto& l : Locations)
-		{
-			Segment start = l->S,
-					s = GetNextSegment(l->S);
-
-			if (s.IsEmpty() || s.Inters || s == start)
-				continue;
-
-			int count = 0,
-				touchCount = 0;
-			for (const auto& c : (s.Id == 1 ? OriginCurves2 : OriginCurves1))
-				count += CheckInters(MIN_POINT, s, c, touchCount);
-
-			do
-			{
-				if (s.Id == 1 )
-					Segments1[s.Index].Winding = count % 2;
-				else
-					Segments2[s.Index].Winding = count % 2;
-				s = GetNextSegment(s);
-			} while (!s.IsEmpty() && !s.Inters && s != start);
-		}
 	}
 
+	SetWinding();
 	TracePaths();
 }
 
@@ -1678,31 +1654,59 @@ int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment,
 
 void CBooleanOperations::SetWinding()
 {
-	Segment s1, s2;
+	if (Locations.empty() || (Locations.size() == 2 && Locations[0]->Ends))
+	{
+		Segment s1, s2;
 
-	for (const auto& s : Segments1)
-		if (!s.Inters)
-			s1 = s;
+		for (const auto& s : Segments1)
+			if (!s.Inters)
+				s1 = s;
 
-	for (const auto& s : Segments2)
-		if (!s.Inters)
-			s2 = s;
+		for (const auto& s : Segments2)
+			if (!s.Inters)
+				s2 = s;
 
-	int count = 0,
+		int count = 0,
+			touchCount = 0;
+		for (const auto& c : OriginCurves2)
+			count += CheckInters(MIN_POINT, s1, c, touchCount);
+
+		for (auto& s : Segments1)
+			s.Winding = count % 2;
+
+		count = 0;
 		touchCount = 0;
-	for (const auto& c : OriginCurves2)
-		count += CheckInters(MIN_POINT, s1, c, touchCount);
+		for (const auto& c : OriginCurves1)
+			count += CheckInters(MIN_POINT, s2, c, touchCount);
 
-	for (auto& s : Segments1)
-		s.Winding = count % 2;
+		for (auto& s : Segments2)
+			s.Winding = count % 2;
+	}
+	else
+	{
+		for (const auto& l : Locations)
+		{
+			Segment start = l->S,
+				s = GetNextSegment(l->S);
 
-	count = 0;
-	touchCount = 0;
-	for (const auto& c : OriginCurves1)
-		count += CheckInters(MIN_POINT, s2, c, touchCount);
+			if (s.IsEmpty() || s.Inters || s == start)
+				continue;
 
-	for (auto& s : Segments2)
-		s.Winding = count % 2;
+			int count = 0,
+				touchCount = 0;
+			for (const auto& c : (s.Id == 1 ? OriginCurves2 : OriginCurves1))
+				count += CheckInters(MIN_POINT, s, c, touchCount);
+
+			do
+			{
+				if (s.Id == 1 )
+					Segments1[s.Index].Winding = count % 2;
+				else
+					Segments2[s.Index].Winding = count % 2;
+				s = GetNextSegment(s);
+			} while (!s.IsEmpty() && !s.Inters && s != start);
+		}
+	}
 }
 
 void CBooleanOperations::DivideLocations()

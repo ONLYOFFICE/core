@@ -76,7 +76,7 @@ namespace Aggplus
 						j += 2;
 					}
 				}
-				CloseFigure();
+				if (p.Is_poly_closed()) CloseFigure();
 			}
 		}
 	}

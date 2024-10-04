@@ -254,8 +254,12 @@ namespace NSDocxRenderer
 		auto info = pInfo;
 		if (!info && m_bIsGradient)
 		{
-			const long width_pix = shape->m_dWidth * c_dMMToPix;
-			const long height_pix = shape->m_dHeight * c_dMMToPix;
+			long width_pix = static_cast<long>(shape->m_dWidth * c_dMMToPix);
+			long height_pix = static_cast<long>(shape->m_dHeight * c_dMMToPix);
+
+			if (width_pix == 0) width_pix = 1;
+			if (height_pix == 0) height_pix = 1;
+
 			const long step = 4;
 			const long stride = -step * width_pix;
 

@@ -294,12 +294,12 @@ namespace PPTX
 			if (chExtX.IsInit() && extX.IsInit())
 				pWriter->m_dCxCurShape = pWriter->m_dCyCurShape * (double)*extX / (double)*chExtX;
 			else if (extX.IsInit())
-				pWriter->m_dCxCurShape = (pWriter->m_bInGroup ? pWriter->m_dCxCurShape : 1) * *extX;
+				pWriter->m_dCxCurShape = ((pWriter->m_bInGroup && pWriter->m_dCxCurShape > 0) ? pWriter->m_dCxCurShape : 1) * *extX;
 			
 			if (chExtY.IsInit() && extY.IsInit())
 				pWriter->m_dCyCurShape = pWriter->m_dCyCurShape * (double)*extY / (double)*chExtY;
 			else if (extY.IsInit())
-				pWriter->m_dCyCurShape = (pWriter->m_bInGroup ? pWriter->m_dCyCurShape : 1) * *extY;
+				pWriter->m_dCyCurShape = ((pWriter->m_bInGroup && pWriter->m_dCyCurShape > 0) ? pWriter->m_dCyCurShape : 1) * *extY;
 
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 			pWriter->WriteInt2(0, offX);

@@ -929,10 +929,16 @@ namespace NSDocxRenderer
 								pNextLine->m_pLine = pCurrLine;
 							}
 						}
-						else if (!is_font_effect && pCurrCont->IsDuplicate(pNextCont.get(), eVType))
+						else if (!is_font_effect && pCurrCont->IsDuplicate(pNextCont.get(), eVType, eHType))
 						{
 							pNextCont = nullptr;
 							pCurrCont->m_iNumDuplicates++;
+							// if (!pCurrCont->m_pFontStyle.get()->bBold)
+							// {
+							// 	CFontStyle font_style = *pCurrCont->m_pFontStyle;
+							// 	font_style.bBold = true;
+							// 	pCurrCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(font_style);
+							// }
 						}
 					}
 					if (pNextLine && pNextLine->IsCanBeDeleted())
@@ -1270,20 +1276,9 @@ namespace NSDocxRenderer
 	{
 		for (size_t i = 0; i < m_arTextLines.size(); ++i)
 		{
-			auto& pCurrLine = m_arTextLines[i];
-			if (!pCurrLine)
-				continue;
-
-			for (size_t j = 0; j < pCurrLine->m_arConts.size(); ++j)
-			{
-				auto& pCurrCont = pCurrLine->m_arConts[j];
-				if (!pCurrCont)
-					continue;
-
-				if (pCurrCont->m_iNumDuplicates > 0)
-					pCurrLine->m_iNumDuplicates = std::max(pCurrLine->m_iNumDuplicates, pCurrCont->m_iNumDuplicates);
-			}
-			pCurrLine->MergeConts();
+			auto& curr_line = m_arTextLines[i];
+			if (!curr_line) continue;
+			curr_line->MergeConts();
 		}
 		DetermineDominantGraphics();
 	}
@@ -1558,19 +1553,6 @@ namespace NSDocxRenderer
 			auto& curr_line = m_arTextLines[index];
 			if (!curr_line)
 				continue;
-
-			// если у текущей линии есть дубликаты, то создаем из них шейпы
-			if (curr_line->m_iNumDuplicates > 0)
-			{
-				size_t duplicates = curr_line->m_iNumDuplicates;
-				m_arShapes.push_back(CreateSingleLineShape(curr_line));
-				while (duplicates > 0)
-				{
-					m_arShapes.push_back(CreateSingleLineShape(curr_line));
-					duplicates--;
-				}
-				continue;
-			}
 
 			// если линия пересекается с предыдущей линией
 			if (index && m_arTextLines[index - 1])

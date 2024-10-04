@@ -469,7 +469,7 @@ namespace NSDocxRenderer
 		//CheckFontNameStyle(wsName, L"light");
 
 		CheckFontNameStyle(wsName, L"condensedbold");
-		CheckFontNameStyle(wsName, L"semibold");
+		if (CheckFontNameStyle(wsName, L"semibold")) bBold = true;
 		if (CheckFontNameStyle(wsName, L"boldmt")) bBold = true;
 		if (CheckFontNameStyle(wsName, L"bold")) bBold = true;
 

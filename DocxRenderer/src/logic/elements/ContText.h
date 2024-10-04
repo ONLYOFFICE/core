@@ -110,7 +110,7 @@ namespace NSDocxRenderer
 		bool IsEqual(const CContText* pCont) const noexcept;
 
 		UINT GetNumberOfFeatures() const noexcept;
-		bool IsDuplicate(CContText *pCont, eVerticalCrossingType eVType) const noexcept;
+		bool IsDuplicate(CContText* pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType) const noexcept;
 
 		bool IsOnlySpaces() const;
 		double CalculateSpace() const noexcept;

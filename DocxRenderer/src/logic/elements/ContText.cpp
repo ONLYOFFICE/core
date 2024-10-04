@@ -195,8 +195,7 @@ namespace NSDocxRenderer
 				 (this_top <= other_bot || fabs(this_top - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
 			return  eVerticalCrossingType::vctCurrentBelowNext;
 
-		else if (this_top == other_top && this_bot == other_bot &&
-				 m_dLeft == pCont->m_dLeft && m_dRight == pCont->m_dRight)
+		else if (this_top == other_top && this_bot == other_bot)
 			return  eVerticalCrossingType::vctDublicate;
 
 		else if (fabs(this_top - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
@@ -529,11 +528,17 @@ namespace NSDocxRenderer
 		return ret;
 	}
 
-	bool CContText::IsDuplicate(CContText* pCont, eVerticalCrossingType eVType) const noexcept
+	bool CContText::IsDuplicate(CContText* pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType) const noexcept
 	{
-		if (eVType == eVerticalCrossingType::vctDublicate && m_oText == pCont->m_oText)
-			return true;
-		return false;
+		return m_oText == pCont->m_oText &&
+			   eVType == eVerticalCrossingType::vctDublicate &&
+			   eHType == eHorizontalCrossingType::hctDublicate;
+
+		// return m_oText == pCont->m_oText &&
+		// 	   eVType == eVerticalCrossingType::vctDublicate &&
+		// 	   (eHType == eHorizontalCrossingType::hctDublicate ||
+		// 		eHType == eHorizontalCrossingType::hctCurrentLeftOfNext ||
+		// 		eHType == eHorizontalCrossingType::hctCurrentRightOfNext);
 	}
 
 	bool CContText::IsOnlySpaces() const

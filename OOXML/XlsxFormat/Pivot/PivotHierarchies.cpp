@@ -180,7 +180,6 @@ namespace Spreadsheet
         WritingStringNullableAttrEncodeXmlString2(L"dimensionUniqueName", m_oDimensionUniqueName);
         WritingStringNullableAttrEncodeXmlString2(L"displayFolder", m_oDisplayFolder);
         WritingStringNullableAttrEncodeXmlString2(L"measureGroup", m_oMeasureGroup);
-        WritingStringNullableAttrEncodeXmlString2(L"measureGroup", m_oMeasureGroup);
         WritingStringNullableAttrBool2(L"measures", m_oMeasures);
         WritingStringNullableAttrUInt(L"count", m_oCount, m_oCount.get());
         WritingStringNullableAttrBool2(L"oneField", m_oOneField);
@@ -206,14 +205,23 @@ namespace Spreadsheet
         auto ptr1 = static_cast<XLSB::PCDHIERARCHY*>(obj.get());
         auto ptr = static_cast<XLSB::BeginPCDHierarchy*>(ptr1->m_BrtBeginPCDHierarchy.get());
 
-        m_oMeasure = ptr->fMeasure;
+        if(ptr->fMeasure)
+            m_oMeasure = ptr->fMeasure;
+        if(ptr->fMeasureHierarchy)
         m_oMeasures = ptr->fMeasureHierarchy;
-        m_oHidden = ptr->fHidden;
-        m_oAttribute = ptr->fAttributeHierarchy;
-        m_oKeyAttribute = ptr->fKeyAttributeHierarchy;
-        m_oOneField = ptr->fOnlyOneField;
-        m_oSet = ptr->fSet;
-        m_oTime = ptr->fTimeHierarchy;
+        if(ptr->fHidden)
+            m_oHidden = ptr->fHidden;
+        if(ptr->fAttributeHierarchy)
+            m_oAttribute = ptr->fAttributeHierarchy;
+        if(ptr->fKeyAttributeHierarchy)
+            m_oKeyAttribute = ptr->fKeyAttributeHierarchy;
+        if(ptr->fOnlyOneField)
+            m_oOneField = ptr->fOnlyOneField;
+        if(ptr->fSet)
+            m_oSet = ptr->fSet;
+        if(ptr->fTimeHierarchy)
+            m_oTime = ptr->fTimeHierarchy;
+        m_oCount = ptr->cLevels;
 
         if(ptr->fUnbalancedRealKnown)
             m_oUnbalanced = ptr->fUnbalancedReal;
@@ -222,7 +230,7 @@ namespace Spreadsheet
         if(ptr->fLoadDimUnq)
             m_oDimensionUniqueName = ptr->stDimUnq;
         if(ptr->fLoadDefaultUnq)
-            m_oDefaultMemberUniqueName = ptr->stDimUnq;
+            m_oDefaultMemberUniqueName = ptr->stDefaultUnq;
         if(ptr->fLoadAllUnq)
             m_oAllUniqueName = ptr->stAllUnq;
         if(ptr->fLoadAllDisp)
@@ -235,7 +243,8 @@ namespace Spreadsheet
             m_oMemberValueDatatype = ptr->wAttributeMemberValueType;
         m_oCaption = ptr->stCaption;
         m_oUniqueName = ptr->stUnique;
-        m_oIconSet = ptr->iconSet.set;
+        if(ptr->iconSet.set > 0)
+            m_oIconSet = ptr->iconSet.set;
 
         if(ptr1->m_PCDHFIELDSUSAGE != nullptr)
             m_oFieldsUsage = ptr1->m_PCDHFIELDSUSAGE;
@@ -325,6 +334,8 @@ namespace Spreadsheet
              ptr->iconSet.set = m_oIconSet.get();
          else
              ptr->iconSet.set = 0;
+         if(m_oCount.IsInit())
+             ptr->cLevels = m_oCount.get();
 
         if(m_oFieldsUsage.IsInit())
             ptr1->m_PCDHFIELDSUSAGE = m_oFieldsUsage->toBin();

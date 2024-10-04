@@ -42,10 +42,14 @@ void CPivotCacheDefinitionExt::toXML(NSStringUtils::CStringBuilder& writer, cons
 {
     writer.StartNode(sName);
     writer.StartAttributes();
+    WritingNullable(m_oSlicerData, writer.WriteAttribute(L"slicerData", *m_oSlicerData););
     WritingNullable(m_oPivotCacheId, writer.WriteAttribute(L"pivotCacheId", *m_oPivotCacheId););
-    writer.EndAttributes();
+    WritingNullable(m_oSrvSupportSubQueryNonVisual, writer.WriteAttribute(L"supportSubqueryNonVisual", *m_oSrvSupportSubQueryNonVisual););
+    WritingNullable(m_oSrvSupportSubQueryCalcMem, writer.WriteAttribute(L"supportSubqueryCalcMem", *m_oSrvSupportSubQueryCalcMem););
+    WritingNullable(m_oSrvSupportAddCalcMems, writer.WriteAttribute(L"supportAddCalcMems", *m_oSrvSupportAddCalcMems););
+    writer.EndAttributesAndNode();
 
-    writer.EndNode(sName);
+
 }
 void CPivotCacheDefinitionExt::fromXML(XmlUtils::CXmlLiteReader& oReader)
 {
@@ -93,6 +97,14 @@ void CPivotCacheDefinitionExt::ReadAttributes(XLS::BaseObjectPtr& obj)
     if(ptr != nullptr)
     {
         m_oPivotCacheId = ptr->icacheId;
+        if(ptr->fSlicerData)
+            m_oSlicerData = true;
+        if(ptr->fSrvSupportAddCalcMems)
+            m_oSrvSupportAddCalcMems = true;
+        if(ptr->fSrvSupportSubQueryCalcMem)
+            m_oSrvSupportSubQueryCalcMem = true;
+        if(ptr->fSrvSupportSubQueryNonVisual)
+            m_oSrvSupportSubQueryNonVisual = true;
     }
 }
 void CPivotCacheDefinitionExt::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)

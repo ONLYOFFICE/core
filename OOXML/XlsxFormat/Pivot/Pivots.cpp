@@ -4085,10 +4085,14 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 //------------------------------------
 	void CPivotCacheFields::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
-		if(m_arrItems.empty()) return;
-
 		writer.WriteString(L"<cacheFields");
 		WritingStringAttrInt(L"count", (int)m_arrItems.size());
+        if(m_arrItems.empty())
+        {
+            writer.WriteString(L"/>");
+            return;
+        }
+
 		writer.WriteString(L">");
 
         for ( size_t i = 0; i < m_arrItems.size(); ++i)
@@ -6215,8 +6219,13 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	void CPivotCacheSource::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		writer.WriteString(L"<cacheSource");
-			WritingStringNullableAttrInt(L"connectionId", m_oConnectionId, m_oConnectionId->GetValue());
 			WritingStringNullableAttrString(L"type", m_oType, m_oType->ToString());
+            WritingStringNullableAttrInt(L"connectionId", m_oConnectionId, m_oConnectionId->GetValue());
+        if(!m_oWorksheetSource.IsInit() && !m_oConsolidation.IsInit())
+        {
+            writer.WriteString(L"/>");
+            return;
+        }
 		writer.WriteString(L">");
 
 		if(m_oWorksheetSource.IsInit())

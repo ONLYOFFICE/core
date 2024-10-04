@@ -885,7 +885,7 @@ public:
 	void last_dump_page_properties			(bool val);
 	bool is_last_dump_page_properties		();
 
-    void set_master_page_name(const std::wstring & MasterPageName);
+    bool set_master_page_name(const std::wstring & MasterPageName);
     const std::wstring & get_master_page_name() const;
 
     void start_text_list_style	(const std::wstring & StyleName);

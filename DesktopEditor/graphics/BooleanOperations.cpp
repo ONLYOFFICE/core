@@ -249,9 +249,9 @@ double Curve::GetTimeAt(const double& offset) const noexcept
 	double	a = forward ? start : 0,
 			b = forward ? 1 : start,
 			rangeLength = GetLength(a, b),
-			diff = abs(offset) - rangeLength;
+			diff = fabs(offset) - rangeLength;
 
-	if (abs(diff) < EPSILON)
+	if (fabs(diff) < EPSILON)
 		return forward ? b : a;
 	else if (diff > EPSILON)
 		return MIN;
@@ -448,8 +448,8 @@ std::vector<std::pair<double, double>> Curve::GetOverlaps(const Curve& curve) co
 													 : std::pair<double, double>(t2, t1);
 			if (pairs.empty())
 				pairs.push_back(pair);
-			else if (abs(pair.first - pairs[0].first) > TIME_EPSILON &&
-					 abs(pair.second - pairs[0].second) > TIME_EPSILON)
+			else if (fabs(pair.first - pairs[0].first) > TIME_EPSILON &&
+					 fabs(pair.second - pairs[0].second) > TIME_EPSILON)
 				pairs.push_back(pair);
 		}
 
@@ -464,10 +464,10 @@ std::vector<std::pair<double, double>> Curve::GetOverlaps(const Curve& curve) co
 		Curve	o1 = GetPart(pairs[0].first, pairs[1].first),
 				o2 = curve.GetPart(pairs[0].second, pairs[1].second);
 
-		double	dox = abs(o2.Segment2.HO.X - o1.Segment2.HO.X),
-				doy = abs(o2.Segment2.HO.Y - o1.Segment2.HO.Y),
-				dix = abs(o2.Segment2.HI.X - o1.Segment2.HI.X),
-				diy = abs(o2.Segment2.HI.Y - o1.Segment2.HI.Y);
+		double	dox = fabs(o2.Segment2.HO.X - o1.Segment2.HO.X),
+				doy = fabs(o2.Segment2.HO.Y - o1.Segment2.HO.Y),
+				dix = fabs(o2.Segment2.HI.X - o1.Segment2.HI.X),
+				diy = fabs(o2.Segment2.HI.Y - o1.Segment2.HI.Y);
 
 		if (dox > GEOMETRIC_EPSILON ||
 			doy > GEOMETRIC_EPSILON ||
@@ -578,9 +578,9 @@ int Curve::SolveCubic(double a, double b, double c, double d,
 					  std::vector<double>& roots, const double& mn, const double& mx) const noexcept
 {
 	int count = 0;
-	double f = max(abs(a), abs(b), abs(c), abs(d));
+	double f = max(fabs(a), fabs(b), fabs(c), fabs(d));
 	double x, b1, c2, qd, q;
-	if (f < 1e-8 || f > 1e8)
+	if (f != 0 && (f < 1e-8 || f > 1e8))
 	{
 		f = pow(2, -round(log2(f)));
 		a *= f;
@@ -589,14 +589,14 @@ int Curve::SolveCubic(double a, double b, double c, double d,
 		d *= f;
 	}
 
-	if (abs(a) < EPSILON)
+	if (fabs(a) < EPSILON)
 	{
 		a = b;
 		b1 = c;
 		c2 = d;
 		x = MAX;
 	}
-	else if (abs(d) <EPSILON)
+	else if (fabs(d) <EPSILON)
 	{
 		b1 = b;
 		c2 = c;
@@ -611,7 +611,7 @@ int Curve::SolveCubic(double a, double b, double c, double d,
 		q = c2 * x + d;
 
 		double	t = q / a,
-				r = pow(abs(t), 1 / 3),
+				r = pow(fabs(t), 1 / 3),
 				s = t < 0 ? -1 : 1,
 				td = -qd / a,
 				rd = td > 0 ? 1.324717957244746 * std::max(r, sqrt(td)) : r,
@@ -629,7 +629,7 @@ int Curve::SolveCubic(double a, double b, double c, double d,
 				x0 = qd == 0 ? x : x - q / qd / (1 + MACHINE_EPSILON);
 			} while (s * x0 > s * x);
 
-			if (abs(a) * x * x > abs(d / x))
+			if (fabs(a) * x * x > fabs(d / x))
 			{
 				c2 = -d / x;
 				b1 = (c2 - c) / x;

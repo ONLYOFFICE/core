@@ -124,14 +124,14 @@ inline double clamp(const double& value, const double& mn, const double& mx)
 
 inline bool isCollinear(const Aggplus::PointD& p1, const Aggplus::PointD& p2)
 {
-	return abs(p1.X * p2.X + p1.Y * p2.Y) <= sqrt((p1.X * p1.X + p1.Y * p1.Y) * (p2.X * p2.X + p2.Y * p2.Y)) * TRIGANOMETRIC_EPSILON;
+	return fabs(p1.X * p2.X + p1.Y * p2.Y) <= sqrt((p1.X * p1.X + p1.Y * p1.Y) * (p2.X * p2.X + p2.Y * p2.Y)) * TRIGANOMETRIC_EPSILON;
 }
 
 inline int getIterations(const double& a, const double& b)
 {
 	double n1 = 2.0, n2 = 16.0;
 
-	return std::max(n1, std::min(n2, ceil(abs(b - a) * 32)));
+	return std::max(n1, std::min(n2, ceil(fabs(b - a) * 32)));
 }
 
 inline double CurveLength(const double& t, const double& ax, const double& bx, const double& cx,
@@ -180,7 +180,7 @@ double findRoot(double& length, double& start, const double& offset, const doubl
 				dx = fx / CurveLength(x, ax, bx, cx, ay, by, cy),
 				nx = x - dx;
 		
-		if (abs(dx) < EPSILON)
+		if (fabs(dx) < EPSILON)
 		{
 			x = nx;
 			break;
@@ -340,7 +340,7 @@ inline double getSignedDistance(const double& px, const double& py, double vx, d
 inline double getDistance(const double& px, const double& py, const double& vx, const double& vy,
 						  const double& x, const double& y, const bool& asVector)
 {
-	return abs(getSignedDistance(px, py, vx, vy, x, y, asVector));
+	return fabs(getSignedDistance(px, py, vx, vy, x, y, asVector));
 }
 
 inline double getDistance(const double& px, const double& py, const double& vx, const double& vy,
@@ -394,7 +394,7 @@ inline double getDiscriminant(const double& a, const double& b, const double& c)
 	double	D = b * b - a * c,
 			E = b * b + a * c;
 
-	if (abs(D) * 3 < E)
+	if (fabs(D) * 3 < E)
 	{
 		std::pair<double, double>	ad = split(a),
 									bd = split(b),
@@ -420,10 +420,10 @@ int solveQuadratic(double a, double b, double c, std::vector<double>& roots,
 				   const double& mn, const double& mx)
 {
 	double x1 = MAX, x2 = MAX;
-	if (abs(a) < EPSILON)
+	if (fabs(a) < EPSILON)
 	{
-		if (abs(b) < EPSILON)
-			return abs(c) < EPSILON ? -1 : 0;
+		if (fabs(b) < EPSILON)
+			return fabs(c) < EPSILON ? -1 : 0;
 		x1 = -c / b;
 	}
 	else
@@ -431,10 +431,10 @@ int solveQuadratic(double a, double b, double c, std::vector<double>& roots,
 		b *= -0.5;
 
 		double D = getDiscriminant(a, b, c);
-		if (D != 0 && abs(D) < MACHINE_EPSILON)
+		if (D != 0 && fabs(D) < MACHINE_EPSILON)
 		{
-			double f = max(abs(a), abs(b), abs(c));
-			if (f < 1e-8 || f < 1e8)
+			double f = max(fabs(a), fabs(b), fabs(c));
+			if ((f != 0) && (f < 1e-8 || f < 1e8))
 			{
 				f = pow(2, -round(log2(f)));
 				a *= f;

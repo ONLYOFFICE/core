@@ -2676,7 +2676,11 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 					else
 					{
 						if (pPPTShape->m_eType == PPTShapes::sptCTextBox || 
-							pPPTShape->m_eType == PPTShapes::sptCRect)
+							pPPTShape->m_eType == PPTShapes::sptCRect ||
+							pPPTShape->m_eType == PPTShapes::sptCRoundRect ||
+							pPPTShape->m_eType == PPTShapes::sptCWedgeRectCallout ||
+							pPPTShape->m_eType == PPTShapes::sptCWedgeRoundRectCallout)
+							// sptCRound1Rect ? 
 						{
 							pShape->oTextBoxBodyPr->lIns = 91440;
 							pShape->oTextBoxBodyPr->tIns = 45720;

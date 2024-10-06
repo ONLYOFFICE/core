@@ -2675,7 +2675,8 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 					}
 					else
 					{
-						if (pPPTShape->m_eType == PPTShapes::sptCTextBox)
+						if (pPPTShape->m_eType == PPTShapes::sptCTextBox || 
+							pPPTShape->m_eType == PPTShapes::sptCRect)
 						{
 							pShape->oTextBoxBodyPr->lIns = 91440;
 							pShape->oTextBoxBodyPr->tIns = 45720;

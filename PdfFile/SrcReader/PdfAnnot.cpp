@@ -867,9 +867,6 @@ std::map<std::wstring, std::wstring> CAnnotFonts::GetFreeTextFont(PDFDoc* pdfDoc
 	std::map<std::wstring, std::wstring> mRes;
 
 	std::map<std::wstring, std::wstring> mFontFreeText = GetAnnotFont(pdfDoc, pFontManager, pFontList, oAnnotRef);
-#ifndef BUILDING_WASM_MODULE
-	return mFontFreeText;
-#endif
 	CFontList* pAppFontList = (CFontList*)pFontManager->GetApplication()->GetList();
 	for (int i = 0; i < arrRC.size(); ++i)
 	{

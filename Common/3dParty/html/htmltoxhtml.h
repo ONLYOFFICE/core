@@ -55,6 +55,11 @@ static void replace_all(std::string& s, const std::string& s1, const std::string
 	}
 }
 
+static bool NodeIsUnprocessed(const std::string& wsTagName)
+{
+	return "xml" == wsTagName;
+}
+
 static bool IsUnckeckedNodes(const std::string& sValue)
 {
 	return unchecked_nodes_new.end() != std::find(unchecked_nodes_new.begin(), unchecked_nodes_new.end(), sValue);
@@ -591,6 +596,9 @@ static void prettyprint(GumboNode* node, NSStringUtils::CStringBuilderA& oBuilde
 	}
 
 	std::string tagname            = get_tag_name(node);
+
+	if (NodeIsUnprocessed(tagname))
+		return;
 
 	if (bCheckValidNode)
 		bCheckValidNode = !IsUnckeckedNodes(tagname);

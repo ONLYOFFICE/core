@@ -513,14 +513,14 @@ namespace PdfReader
 		}
 		else
 		{
+			double* dDash = new double[nSize];
 			for (int nIndex = 0; nIndex < nSize; ++nIndex)
-			{
-				pDash[nIndex] = PDFCoordsToMM(pDash[nIndex]);
-			}
+				dDash[nIndex] = PDFCoordsToMM(pDash[nIndex]);
 
-			m_pRenderer->PenDashPattern(pDash, (long)nSize);
+			m_pRenderer->PenDashPattern(dDash, (long)nSize);
 			m_pRenderer->put_PenDashStyle(Aggplus::DashStyleCustom);
 			m_pRenderer->put_PenDashOffset(PDFCoordsToMM(dStart));
+			RELEASEARRAYOBJECTS(dDash);
 		}
 		if (bOffCopy)
 			delete[] pDash;

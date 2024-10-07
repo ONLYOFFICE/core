@@ -211,6 +211,8 @@ class text_list_level_style_bullet_attr
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
+    void apply_from(const text_list_level_style_bullet_attr& Other);
+
 private:
     _CP_OPT(std::wstring)								text_style_name_;
     _CP_OPT(std::wstring)								text_bullet_char_;
@@ -233,6 +235,9 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextListLevelStyleBullet;
     CPDOCCORE_DEFINE_VISITABLE();
+
+    text_list_level_style_bullet() = default;
+    text_list_level_style_bullet(const text_list_level_style_bullet& other);
 
     void docx_convert(oox::docx_conversion_context & Context) ;
     void pptx_convert(oox::pptx_conversion_context & Context) ;

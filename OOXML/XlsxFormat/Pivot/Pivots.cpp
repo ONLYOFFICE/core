@@ -2345,11 +2345,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingStringNullableAttrString(L"numFmtId",	m_oNumFmtId, m_oNumFmtId->ToString());
 		writer.WriteString(L">");
 
-		if(m_oAutoSortScope.IsInit())
-			m_oAutoSortScope->toXML(writer);
-
 		if(m_oItems.IsInit())
 			m_oItems->toXML(writer);
+
+        if(m_oAutoSortScope.IsInit())
+            m_oAutoSortScope->toXML(writer);
 
 		writer.WriteString(L"</pivotField>");
 	}

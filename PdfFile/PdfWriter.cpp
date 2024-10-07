@@ -1668,7 +1668,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	PdfWriter::CPage* pPage = m_pPage;
 
 	int nID = oInfo.GetID();
-	pAnnot = m_pDocument->GetAnnot(nID);
+	if (nID > 0)
+		pAnnot = m_pDocument->GetAnnot(nID);
 
 	if (pAnnot && pOrigPage && pPage != pOrigPage)
 	{

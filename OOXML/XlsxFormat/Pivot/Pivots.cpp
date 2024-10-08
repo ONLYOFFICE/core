@@ -4182,7 +4182,12 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingStringNullableAttrInt(L"level", m_oLevel, m_oLevel->GetValue());
 			WritingStringNullableAttrInt(L"mappingCount", m_oMappingCount, m_oMappingCount->GetValue());
 			WritingStringNullableAttrInt(L"numFmtId", m_oNumFmtId, m_oNumFmtId->GetValue());
-		writer.WriteString(L">");
+        if(!m_oSharedItems.IsInit() && !m_oFieldGroup.IsInit())
+        {
+            writer.WriteString(L"/>");
+            return;
+        }
+        writer.WriteString(L">");
 
 		if(m_oSharedItems.IsInit())
 		{

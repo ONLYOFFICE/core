@@ -372,6 +372,7 @@ void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::styl
 			if (instances.size() > 0)
 			{
 				odf_reader::style_table_cell_properties_attlist style_cell_attlist = odf_reader::calc_table_cell_properties(instances);
+				odf_reader::graphic_format_properties_ptr graphic_props = odf_reader::calc_graphic_properties_content(instances);
 
 				if (style_cell_attlist.style_vertical_align_)
 				{
@@ -395,6 +396,14 @@ void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::styl
 					CP_XML_ATTR(L"marL", (long)padding);
 					CP_XML_ATTR(L"marR", (long)padding);
 				}
+				else if (graphic_props && graphic_props->common_padding_attlist_.fo_padding_)
+				{
+					double padding = graphic_props->common_padding_attlist_.fo_padding_->get_value_unit(odf_types::length::emu);
+					CP_XML_ATTR(L"marT", (long)padding);
+					CP_XML_ATTR(L"marB", (long)padding);
+					CP_XML_ATTR(L"marL", (long)padding);
+					CP_XML_ATTR(L"marR", (long)padding);
+				}
 				else
 				{
 					if (style_cell_attlist.common_padding_attlist_.fo_padding_top_)
@@ -402,20 +411,43 @@ void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::styl
 						double padding = style_cell_attlist.common_padding_attlist_.fo_padding_top_->get_value_unit(odf_types::length::emu);
 						CP_XML_ATTR(L"marT", (long)padding);            
 					}
+					else if (graphic_props && graphic_props->common_padding_attlist_.fo_padding_top_)
+					{
+						double padding = graphic_props->common_padding_attlist_.fo_padding_top_->get_value_unit(odf_types::length::emu);
+						CP_XML_ATTR(L"marT", (long)padding);
+					}
+
 					if (style_cell_attlist.common_padding_attlist_.fo_padding_bottom_)
 					{
 						double padding = style_cell_attlist.common_padding_attlist_.fo_padding_bottom_->get_value_unit(odf_types::length::emu);
 						CP_XML_ATTR(L"marB", (long)padding);                        
 					}
+					else if (graphic_props && graphic_props->common_padding_attlist_.fo_padding_bottom_)
+					{
+						double padding = graphic_props->common_padding_attlist_.fo_padding_bottom_->get_value_unit(odf_types::length::emu);
+						CP_XML_ATTR(L"marB", (long)padding);
+					}
+
 					if (style_cell_attlist.common_padding_attlist_.fo_padding_left_)
 					{
 						double padding = style_cell_attlist.common_padding_attlist_.fo_padding_left_->get_value_unit(odf_types::length::emu);
 						CP_XML_ATTR(L"marL", (long)padding);
 					}
+					else if (graphic_props && graphic_props->common_padding_attlist_.fo_padding_left_)
+					{
+						double padding = graphic_props->common_padding_attlist_.fo_padding_left_->get_value_unit(odf_types::length::emu);
+						CP_XML_ATTR(L"marL", (long)padding);
+					}
+
 					if (style_cell_attlist.common_padding_attlist_.fo_padding_right_)
 					{
 						double padding = style_cell_attlist.common_padding_attlist_.fo_padding_right_->get_value_unit(odf_types::length::emu);
 						CP_XML_ATTR(L"marR", (long)padding);            
+					}
+					else if (graphic_props && graphic_props->common_padding_attlist_.fo_padding_right_)
+					{
+						double padding = graphic_props->common_padding_attlist_.fo_padding_right_->get_value_unit(odf_types::length::emu);
+						CP_XML_ATTR(L"marR", (long)padding);
 					}
 				}			
 				//vert //
@@ -437,8 +469,6 @@ void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::styl
 				//диагональных в оо нет.
 	////////////////////////////////////////////////////////////////////////////////////////////////			
 				oox::_oox_fill fill;
-
-				odf_reader::graphic_format_properties_ptr graphic_props = odf_reader::calc_graphic_properties_content(instances);
 				
 				if (graphic_props)
 				{

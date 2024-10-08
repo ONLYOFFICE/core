@@ -28,10 +28,10 @@ include($$CORE_ROOT_DIR/Common/3dParty/hunspell/qt/hunspell.pri)
 DEFINES += CUSTOM_TIMELIMITS
 
 # total time limit per word for all cases. (default is CLOCKS_PER_SEC/4)
-DEFINES += "CUSTOM_TIMELIMIT_GLOBAL=(CLOCKS_PER_SEC/2)"
+DEFINES += "CUSTOM_TIMELIMIT_GLOBAL=(CLOCKS_PER_SEC)"
 
 # total time limit per "1 case" - forgotten char, double char, moved char and so on for all candidates. (default is CLOCKS_PER_SEC/10)
-DEFINES += "CUSTOM_TIMELIMIT_SUGGESTION=(CLOCKS_PER_SEC/5)"
+DEFINES += "CUSTOM_TIMELIMIT_SUGGESTION=(4*CLOCKS_PER_SEC/5)"
 
 # time limit per candidate (default is CLOCKS_PER_SEC/20)
 DEFINES += "CUSTOM_TIMELIMIT=(CLOCKS_PER_SEC/20)"

@@ -24,17 +24,17 @@ include($$CORE_ROOT_DIR/Common/3dParty/hunspell/qt/hunspell.pri)
 
 # custom time limits of hunspell in clocks (if before.py was executed)
 # when increasing the limit for each case, it is important to consider that the total time will
-# also increase, so it is good to increase the global limit. this works the same for the candidate limit
+# also increase, so it is good to increase the global limit. this works the same for the candidate limit with suggest limit
 DEFINES += CUSTOM_TIMELIMITS
 
 # total time limit per word for all cases. (default is CLOCKS_PER_SEC/4)
-DEFINES += "CUSTOM_TIMELIMIT_GLOBAL=(CLOCKS_PER_SEC)"
+DEFINES += "CUSTOM_TIMELIMIT_GLOBAL=(20*CLOCKS_PER_SEC)"
 
 # total time limit per "1 case" - forgotten char, double char, moved char and so on for all candidates. (default is CLOCKS_PER_SEC/10)
-DEFINES += "CUSTOM_TIMELIMIT_SUGGESTION=(4*CLOCKS_PER_SEC/5)"
+DEFINES += "CUSTOM_TIMELIMIT_SUGGESTION=(5*CLOCKS_PER_SEC)"
 
 # time limit per candidate (default is CLOCKS_PER_SEC/20)
-DEFINES += "CUSTOM_TIMELIMIT=(CLOCKS_PER_SEC/20)"
+DEFINES += "CUSTOM_TIMELIMIT=(CLOCKS_PER_SEC)"
 
 ADD_DEPENDENCY(UnicodeConverter kernel)
 

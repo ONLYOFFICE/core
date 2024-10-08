@@ -106,7 +106,7 @@ int MemoryStream::ReadInt32()
 {
 	int rdInt = 0;
 
-	if (m_Data && (m_Position + sizeof(int) <= m_Size))
+	if (m_Data && (m_Position + sizeof(_INT32) <= m_Size))
 	{
 		rdInt		=	DocFileFormat::FormatUtils::BytesToInt32 (m_Data, m_Position, m_Size);
 		m_Position	+=	4;

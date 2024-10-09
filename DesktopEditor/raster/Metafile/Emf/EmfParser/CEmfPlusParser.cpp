@@ -177,7 +177,8 @@ namespace MetaFile
 		: m_bBanEmfProcessing(true),
 		  m_unLogicalDpiX(96),
 		  m_unLogicalDpiY(96),
-		  m_dUnitKoef(1)
+		  m_dPageTransformX(1.),
+		  m_dPageTransformY(1.)
 	{
 		m_oHeader = oHeader;
 
@@ -1370,16 +1371,19 @@ namespace MetaFile
 		UpdateOutputDC();
 	}
 
-	void CEmfPlusParser::UpdateMatrix(TEmfPlusXForm &oMatrix)
+	double CEmfPlusParser::GetUnitToPixel(const double& dDpi, EEmfPlusUnitType eUnitType) const
 	{
-		const double dKoef{m_dUnitKoef * (m_unLogicalDpiX / 96)};
-
-		oMatrix.M11 *= dKoef;
-		oMatrix.M12 *= dKoef;
-		oMatrix.M21 *= dKoef;
-		oMatrix.M22 *= dKoef;
-		oMatrix.Dx  *= dKoef;
-		oMatrix.Dy  *= dKoef;
+		switch (eUnitType)
+		{
+			case UnitTypePixel:
+			case UnitTypeWorld:
+			case UnitTypeDisplay:
+			default: return 1.;
+			case UnitTypePoint:      return dDpi / 72.;
+			case UnitTypeInch:       return dDpi;
+			case UnitTypeDocument:   return dDpi / 300.;
+			case UnitTypeMillimeter: return dDpi / 25.4;
+		}
 	}
 
 	bool CEmfPlusParser::SaveImage(const CEmfPlusImage &oEmfPlusImage, std::wstring &wsPathToImage)
@@ -3179,24 +3183,16 @@ namespace MetaFile
 		m_bBanEmfProcessing = true;
 
 		short shPageUnit = ExpressValue(unShFlags, 0, 7);
+		double dUnitKoef;
 
-		m_oStream >> m_dUnitKoef;
+		m_oStream >> dUnitKoef;
 
-		switch (shPageUnit)
-		{
-			case UnitTypePixel:
-			case UnitTypeWorld:
-			case UnitTypeDisplay:
-			default: break;
-			case UnitTypePoint:      m_dUnitKoef *= m_unLogicalDpiX * 72.f;  break;
-			case UnitTypeInch:       m_dUnitKoef *= m_unLogicalDpiX;         break;
-			case UnitTypeDocument:   m_dUnitKoef *= m_unLogicalDpiX / 300.f; break;
-			case UnitTypeMillimeter: m_dUnitKoef *= m_unLogicalDpiX / 25.4f; break;
-		}
+		m_dPageTransformX = dUnitKoef * GetUnitToPixel(m_unLogicalDpiX, static_cast<EEmfPlusUnitType>(shPageUnit));
+		m_dPageTransformY = dUnitKoef * GetUnitToPixel(m_unLogicalDpiY, static_cast<EEmfPlusUnitType>(shPageUnit));
 
-		TXForm oMatrix(m_dUnitKoef, 0, 0, m_dUnitKoef, 0, 0);
+		TEmfPlusXForm oUnitKoefMatrix(m_dPageTransformX, 0, 0, m_dPageTransformY, 0, 0);
+		m_pDC->MultiplyTransform(oUnitKoefMatrix, MWT_LEFTMULTIPLY);
 
-		m_pDC->MultiplyTransform(oMatrix, MWT_LEFTMULTIPLY);
 		UpdateOutputDC();
 	}
 
@@ -3207,6 +3203,10 @@ namespace MetaFile
 		m_oStream >> oMatrix;
 
 		m_pDC->MultiplyTransform(oMatrix, MWT_SET);
+
+		TEmfPlusXForm oUnitKoefMatrix(m_dPageTransformX, 0, 0, m_dPageTransformY, 0, 0);
+		m_pDC->MultiplyTransform(oUnitKoefMatrix, MWT_LEFTMULTIPLY);
+
 		UpdateOutputDC();
 	}
 

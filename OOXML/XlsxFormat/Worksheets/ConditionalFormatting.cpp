@@ -269,7 +269,21 @@ XLS::BaseObjectPtr CConditionalFormatValueObject::toBin(bool isIcon)
         ptr1->iType = XLSB::CFVOtype::CFVONUM;
 
     if(m_oVal.IsInit() && ptr1->iType != XLSB::CFVOtype::CFVOFMLA)
-        ptr1->numParam.data.value = std::stod(m_oVal.get());
+        try
+        {
+            ptr1->numParam.data.value = std::stod(m_oVal.get());
+        }
+        catch (std::exception)
+        {
+            ptr1->formula = m_oVal.get();
+            auto lastValType = GETBITS(ptr1->formula.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6);
+            if(lastValType == 1 || lastValType == 3)
+            {
+                SETBITS(ptr1->formula.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6,2);
+            }
+
+            ptr1->cbFmla = 1;
+        }
     if(ptr1->iType.get_type() == XLSB::CFVOtype::CFVOMIN)
         ptr1->numParam.data.value = 0;
     else if(ptr1->iType.get_type() == XLSB::CFVOtype::CFVOMAX)

@@ -51,17 +51,17 @@ namespace XLSB
 			void readFields(XLS::CFRecord& record) override;
 			void writeFields(XLS::CFRecord& record) override;
 
-            bool            fOutlineMode;
-            bool            fEnableMultiplePageItems;
-            bool            fSubtotalAtTop;
-            bool            fDontShowFList;
-            bool            fDragToRow;
-            bool            fDragToColumn;
-            bool            fDragToPage;
-            bool            fDragToHide;
-            bool            fDragToData;
-            bool            fFilterInclusive;
-            bool            fLoadCap;
+            bool            fOutlineMode = false;
+            bool            fEnableMultiplePageItems = false;
+            bool            fSubtotalAtTop = false;
+            bool            fDontShowFList = false;
+            bool            fDragToRow = false;
+            bool            fDragToColumn = false;
+            bool            fDragToPage =  false;
+            bool            fDragToHide = false;
+            bool            fDragToData = false;
+            bool            fFilterInclusive = false;
+            bool            fLoadCap = false;
             XLWideString    irstCaption;
     };
 

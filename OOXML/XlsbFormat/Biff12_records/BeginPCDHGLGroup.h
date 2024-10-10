@@ -53,8 +53,8 @@ namespace XLSB
 
             //static const XLS::ElementType	type = XLS::typeBeginPCDHGLGroup;
 
-            _INT32          iGrpNum;
-            bool            fLoadParent;
+            _INT32          iGrpNum = 0;
+            bool            fLoadParent = false;
             XLWideString    stName;
             XLWideString    stUniqueName;
             XLWideString    stCaption;

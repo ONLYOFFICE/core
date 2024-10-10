@@ -52,8 +52,8 @@ namespace XLSB
 
             //static const XLS::ElementType	type = XLS::typeBeginMap;
 
-            _UINT32    img;
-            _UINT32    isxdh;
+            _UINT32    img = 0;
+            _UINT32    isxdh = 0;
 
     };
 

@@ -48,6 +48,7 @@
 #include "../../XlsxFormat/Worksheets/WorksheetChildOther.h"
 #include "../../XlsxFormat/Timelines/Timeline.h"
 #include "../../XlsxFormat/Workbook/Metadata.h"
+#include "../../XlsxFormat/Workbook/Workbook.h"
 
 #include "../Comments.h"
 
@@ -231,6 +232,7 @@ namespace OOX
 										*m_sUri == L"{9260A510-F301-46a8-8635-F512D64BE5F5}" ||
 										*m_sUri == L"{3e2802c4-a4d2-4d8b-9148-e3be6c30e623}" ||			
 										*m_sUri == L"{bdbb8cdc-fa1e-496e-a857-3c3f30c029c3}" ||
+                                        *m_sUri == L"{876F7934-8845-4945-9796-88D515C7AA90}" ||
 										*m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))
 			{
 				int nCurDepth = oReader.GetDepth();
@@ -383,6 +385,11 @@ namespace OOX
 					{
 						m_oRichValueBlock = oReader;
 					}
+                    else if (sName == L"pivotCaches")
+                    {
+                        m_oWorkbookPivotCaches = oReader;
+                        m_oWorkbookPivotCaches->pivotCaches14 = true;
+                    }
 				}
 			}
 			else
@@ -617,6 +624,12 @@ namespace OOX
 				m_oRichValueBlock->toXML(writer);
 				sResult += writer.GetData().c_str();
 			}
+            if(m_oWorkbookPivotCaches.IsInit())
+            {
+                NSStringUtils::CStringBuilder writer;
+                m_oWorkbookPivotCaches->toXML(writer);
+                sResult += writer.GetData().c_str();
+            }
 			sResult += L"</" + sNamespace + L"ext>";
 
 			return sResult;
@@ -737,6 +750,12 @@ namespace OOX
 				{
 					ptr->m_SLICERCACHEIDS = i->m_oSlicerCaches->toBin();
 				}
+                else if(i->m_sUri == L"{876F7934-8845-4945-9796-88D515C7AA90}")
+                {
+                    if(i->m_oWorkbookPivotCaches.IsInit())
+                    ptr->m_SLICERCACHESPIVOTCACHEIDS = i->m_oWorkbookPivotCaches->toBin14();
+                }
+
 			}
 			return objectPtr;
 		}
@@ -962,6 +981,19 @@ namespace OOX
                         oExt->m_sUri = L"{BBE1A952-AA13-448e-AADC-164F8A28A991}";
                         oExt->m_oSlicerCaches = ptr->m_SLICERCACHEIDS;
 
+                        if (oExt)
+                            m_arrExt.push_back( oExt );
+                    }
+
+                    if (ptr->m_SLICERCACHESPIVOTCACHEIDS != nullptr)
+                    {
+
+                        OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+                        oExt->m_sUri = L"{876F7934-8845-4945-9796-88D515C7AA90}";
+						oExt->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
+						oExt->m_oWorkbookPivotCaches.Init();
+                        oExt->m_oWorkbookPivotCaches->pivotCaches14 = true;
+                        oExt->m_oWorkbookPivotCaches->fromBin14(ptr->m_SLICERCACHESPIVOTCACHEIDS);
                         if (oExt)
                             m_arrExt.push_back( oExt );
                     }

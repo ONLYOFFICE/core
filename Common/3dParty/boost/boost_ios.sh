@@ -259,20 +259,17 @@ buildBoost()
         echo Building Boost for iPhone
         # Install this one so we can copy the headers for the frameworks...
         ./b2 -j16 --build-dir=iphone-build --stagedir=iphone-build/stage \
-            cxxflags="" \
             --prefix=$PREFIXDIR toolset=darwin architecture=arm target-os=iphone \
             macosx-version=iphone-${IOS_SDK_VERSION} define=_LITTLE_ENDIAN \
             link=static stage
         ./b2 -j16 --build-dir=iphone-build --stagedir=iphone-build/stage \
             --prefix=$PREFIXDIR toolset=darwin architecture=arm \
-            cxxflags="" \
             target-os=iphone macosx-version=iphone-${IOS_SDK_VERSION} \
             define=_LITTLE_ENDIAN link=static install
         doneSection
 
         echo Building Boost for iPhoneSimulator
         ./b2 -j16 --build-dir=iphonesim-build --stagedir=iphonesim-build/stage \
-            cxxflags="" \
             toolset=darwin-${IOS_SDK_VERSION}~iphonesim architecture=x86 \
             target-os=iphone macosx-version=iphonesim-${IOS_SDK_VERSION} \
             link=static stage

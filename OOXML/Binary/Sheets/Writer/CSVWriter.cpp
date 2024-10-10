@@ -74,7 +74,8 @@ private:
 	OOX::Spreadsheet::CXlsx& m_oXlsx;
 	unsigned int m_nCodePage;
 	const std::wstring& m_sDelimiter;
-	bool m_bJSON;
+	bool m_bJSON = false;
+	bool m_bShowFormulas = false;
 
 	MS_LCID_converter m_lcidConverter;
 
@@ -628,6 +629,8 @@ CSVWriter::Impl::Impl(OOX::Spreadsheet::CXlsx &m_oXlsx, unsigned int m_nCodePage
 	m_bStartRow = true;
 	m_bStartCell = true;
 
+	m_bShowFormulas = false;
+
 	m_nColDimension = 1;
 }
 CSVWriter::Impl::~Impl()
@@ -664,6 +667,15 @@ void CSVWriter::Impl::WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet)
 	if (m_bJSON)
 	{
 		WriteFile(&m_oFile, &m_pWriteBuffer, m_nCurrentIndex, g_sBkt, m_nCodePage);
+	}
+	
+	if (pWorksheet && pWorksheet->m_oSheetViews.IsInit() && false == pWorksheet->m_oSheetViews->m_arrItems.empty())
+	{
+		if (pWorksheet->m_oSheetViews->m_arrItems[0]->m_oShowFormulas.IsInit() &&
+			pWorksheet->m_oSheetViews->m_arrItems[0]->m_oShowFormulas->ToBool())
+		{
+			m_bShowFormulas = true;
+		}
 	}
 }
 void CSVWriter::Impl::WriteRowStart(OOX::Spreadsheet::CRow *pRow)
@@ -732,7 +744,11 @@ void CSVWriter::Impl::WriteCell(OOX::Spreadsheet::CCell *pCell)
 	//else
 	bool bString = false;
 	
-	if (pCell->m_oValue.IsInit())
+	if (m_bShowFormulas && pCell->m_oFormula.IsInit())
+	{
+		sCellValue = pCell->m_oFormula->m_sText;
+	}
+	else if (pCell->m_oValue.IsInit())
 	{
 		sCellValue = pCell->m_oValue->ToString();
 

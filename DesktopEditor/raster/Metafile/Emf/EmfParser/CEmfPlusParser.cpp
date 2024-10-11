@@ -1416,47 +1416,46 @@ namespace MetaFile
 		return true;
 	}
 
-	BYTE* GetClipedImage(const BYTE* pBuffer, LONG lWidth, LONG lHeight, TRectL& oNewRect)
+	BYTE* GetClipedImage(const BYTE* pBuffer, LONG lWidth, LONG lHeight, TRectL& oNewRect, unsigned int& nWidth, unsigned int& nHeight)
 	{
-		if (NULL == pBuffer ||
-			oNewRect.Left < 0 || oNewRect.Right  < 0 ||
-			oNewRect.Top  < 0 || oNewRect.Bottom < 0)
+		if (NULL == pBuffer)
 			return NULL;
 
-		if (lHeight < (oNewRect.Bottom - oNewRect.Top))
-			oNewRect.Bottom = oNewRect.Top + lHeight;
+		int nBeginX = (std::min)(oNewRect.Left, oNewRect.Right);
+		int nBeginY = (std::min)(oNewRect.Top,  oNewRect.Bottom);
 
-		if (lWidth < (oNewRect.Right - oNewRect.Left))
-			oNewRect.Right = oNewRect.Left + lWidth;
+		int nEndX   = (std::max)(oNewRect.Left, oNewRect.Right);
+		int nEndY   = (std::max)(oNewRect.Top,  oNewRect.Bottom);
 
-		if (lHeight == (oNewRect.Bottom - oNewRect.Top) &&
-			lWidth  == (oNewRect.Right  - oNewRect.Left))
+		if (nBeginX >= lWidth || nEndX <= 0)
+			return NULL;
+		if (nBeginY >= lHeight || nEndY <= 0)
 			return NULL;
 
-		int nBeginX, nBeginY, nEndX, nEndY;
+		if (nBeginX < 0)
+			nBeginX = 0;
+		if (nBeginY < 0)
+			nBeginY = 0;
 
-		nBeginX = (std::min)(oNewRect.Left, oNewRect.Right);
-		nBeginY = (std::min)(oNewRect.Top,  oNewRect.Bottom);
+		if ((nBeginX + nEndX) > lWidth)
+			nEndX = lWidth - nBeginX;
+		if ((nBeginY + nEndY) > lHeight)
+			nEndY = lHeight - nBeginY;
 
-		nEndX   = (std::max)(oNewRect.Left, oNewRect.Right);
-		nEndY   = (std::max)(oNewRect.Top,  oNewRect.Bottom);
+		if (nEndX <= nBeginX || nEndY <= nBeginY)
+			return NULL;
 
-		int nWidth = nEndX - nBeginX;
-		int nHeight = nEndY - nBeginY;
+		nWidth = nEndX - nBeginX;
+		nHeight = nEndY - nBeginY;
 
 		BYTE* pNewBuffer = new BYTE[nWidth * nHeight * 4];
+		BYTE* pCurrentLine = pNewBuffer;
 
-		ULONG ulPos = 0;
-
-		for (ULONG ulPosY = nBeginY * 4; ulPosY < nEndY * 4; ulPosY += 4)
+		int ulStride = 4 * nWidth;
+		for (int nPosY = nBeginY; nPosY < nEndY; ++nPosY)
 		{
-			for (ULONG ulPosX = nBeginX * 4; ulPosX < nEndX * 4; ulPosX += 4)
-			{
-				pNewBuffer[ulPos++]   = (BYTE)pBuffer[ulPosY * lWidth + ulPosX + 0];
-				pNewBuffer[ulPos++]   = (BYTE)pBuffer[ulPosY * lWidth + ulPosX + 1];
-				pNewBuffer[ulPos++]   = (BYTE)pBuffer[ulPosY * lWidth + ulPosX + 2];
-				pNewBuffer[ulPos++]   = (BYTE)pBuffer[ulPosY * lWidth + ulPosX + 3];
-			}
+			memcpy(pCurrentLine, pBuffer + ulStride * nPosY + 4 * nBeginX, ulStride);
+			pCurrentLine += ulStride;
 		}
 
 		return pNewBuffer;
@@ -1642,13 +1641,15 @@ namespace MetaFile
 			oClipRect.Right  = (oSrcRect.dX + oSrcRect.dWidth)  * dScale;
 			oClipRect.Bottom = (oSrcRect.dY + oSrcRect.dHeight) * dScale;
 
-			BYTE* pNewBuffer = GetClipedImage(pPixels, nWidth, nHeight, oClipRect);
+			unsigned int nW = (unsigned int)nWidth;
+			unsigned int nH = (unsigned int)nHeight;
+			BYTE* pNewBuffer = GetClipedImage(pPixels, nWidth, nHeight, oClipRect, nW, nH);
 
 			const unsigned int unWidth  = std::min(((unsigned int)abs(oClipRect.Right - oClipRect.Left)), ((unsigned int)nWidth ));
 			const unsigned int unHeight = std::min(((unsigned int)abs(oClipRect.Bottom - oClipRect.Top)), ((unsigned int)nHeight));
 
 			m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X - m_pDC->GetPixelWidth(), arPoints[2].Y - arPoints[0].Y - m_pDC->GetPixelHeight(),
-			                             (NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
+										 (NULL != pNewBuffer) ? pNewBuffer : pPixels, nW, nH);
 
 			RELEASEINTERFACE(pGrRenderer);
 			RELEASEARRAYOBJECTS(pNewBuffer);
@@ -1722,10 +1723,12 @@ namespace MetaFile
 		oClipRect.Right  = (oSrcRect.dX + oSrcRect.dWidth);
 		oClipRect.Bottom = (oSrcRect.dY + oSrcRect.dHeight);
 
-		BYTE* pNewBuffer = GetClipedImage(pBytes, unWidth, unHeight, oClipRect);
+		unsigned int nW = (unsigned int)unWidth;
+		unsigned int nH = (unsigned int)unHeight;
+		BYTE* pNewBuffer = GetClipedImage(pBytes, unWidth, unHeight, oClipRect, nW, nH);
 
 		m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X, arPoints[2].Y - arPoints[0].Y,
-				(NULL != pNewBuffer) ? pNewBuffer : pBytes, fabs(oClipRect.Right - oClipRect.Left), fabs(oClipRect.Bottom - oClipRect.Top));
+				(NULL != pNewBuffer) ? pNewBuffer : pBytes, nW, nH);
 
 		if (!bExternalBuffer)
 			RELEASEARRAYOBJECTS(pBytes);

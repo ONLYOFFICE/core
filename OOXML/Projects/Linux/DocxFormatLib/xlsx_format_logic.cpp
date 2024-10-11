@@ -97,3 +97,5 @@
 #include "../../../XlsxFormat/Timelines/Timeline.cpp"
 #include "../../../XlsxFormat/Workbook/Metadata.cpp"
 #include "../../../XlsxFormat/RichData/RdRichValue.cpp"
+#include "../../../XlsxFormat/Pivot/PivotCacheChildOther.cpp"
+#include "../../../XlsxFormat/Pivot/PivotHierarchies.cpp"

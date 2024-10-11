@@ -568,7 +568,7 @@ void GfxDeviceCMYKColorSpace::getGray(GfxColor *color, GfxGray *gray,
 				- 0.11 * color->c[2] + 0.5));
 }
 
-const BYTE g_CMYKSamples[81 * 81 * 3] = {
+const Guchar g_CMYKSamples[81 * 81 * 3] = {
 	255, 255, 255, 225, 226, 228, 199, 200, 202, 173, 174, 178, 147, 149, 152, 123, 125, 128,  99, 99, 102,  69, 70, 71,  34, 30, 31,
 	255, 253, 229, 226, 224, 203, 200, 199, 182, 173, 173, 158, 149, 148, 135, 125, 124, 113,  99, 99, 90,  70, 69, 63,  33, 29, 24,
 	255, 251, 204, 228, 223, 182, 201, 198, 163, 174, 172, 142, 150, 147, 122, 125, 123, 101,  99, 98, 80,  70, 68, 54,  32, 28, 16,
@@ -1305,10 +1305,10 @@ void GfxDeviceCMYKColorSpace::getRGB(GfxColor *color, GfxRGB *rgb,
   // double c, m, y, k, c1, m1, y1, k1, r, g, b, x;
   double r, g, b;
 
-  BYTE c = (BYTE)(colToDbl(color->c[0]) * 255.0 + 0.5);
-  BYTE m = (BYTE)(colToDbl(color->c[1]) * 255.0 + 0.5);
-  BYTE y = (BYTE)(colToDbl(color->c[2]) * 255.0 + 0.5);
-  BYTE k = (BYTE)(colToDbl(color->c[3]) * 255.0 + 0.5);
+  Guchar c = (Guchar)(colToDbl(color->c[0]) * 255.0 + 0.5);
+  Guchar m = (Guchar)(colToDbl(color->c[1]) * 255.0 + 0.5);
+  Guchar y = (Guchar)(colToDbl(color->c[2]) * 255.0 + 0.5);
+  Guchar k = (Guchar)(colToDbl(color->c[3]) * 255.0 + 0.5);
 
 	int fix_c = c << 8;
 	int fix_m = m << 8;

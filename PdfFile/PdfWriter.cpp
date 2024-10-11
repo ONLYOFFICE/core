@@ -2068,6 +2068,13 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			if (nFlags & (1 << 16))
 				pCaretAnnot->SetSy(pPr->GetSy());
 		}
+		else if (oInfo.IsStamp())
+		{
+			CAnnotFieldInfo::CStampAnnotPr* pPr = oInfo.GetStampAnnotPr();
+			PdfWriter::CStampAnnotation* pStampAnnot = (PdfWriter::CStampAnnotation*)pAnnot;
+
+			pStampAnnot->SetName(pPr->GetName());
+		}
 	}
 	else if (oInfo.IsPopup())
 	{

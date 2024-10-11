@@ -1476,7 +1476,7 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, PdfReade
 		}
 		else if (sType == "Stamp")
 		{
-
+			pAnnot = new PdfReader::CAnnotStamp(pdfDoc, &oAnnotRef, nPageIndex);
 		}
 		else if (sType == "Caret")
 		{

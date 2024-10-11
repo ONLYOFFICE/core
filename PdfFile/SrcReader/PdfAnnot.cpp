@@ -2299,6 +2299,26 @@ CAnnotFileAttachment::~CAnnotFileAttachment()
 }
 
 //------------------------------------------------------------------------
+// Stamp
+//------------------------------------------------------------------------
+
+CAnnotStamp::CAnnotStamp(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex)
+{
+	Object oAnnot, oObj;
+	XRef* pXref = pdfDoc->getXRef();
+	oAnnotRef->fetch(pXref, &oAnnot);
+
+	// Иконка - Name
+	if (oAnnot.dictLookup("Name", &oObj)->isName())
+	{
+		m_sName = oObj.getName();
+	}
+	oObj.free();
+
+	oAnnot.free();
+}
+
+//------------------------------------------------------------------------
 // Annots
 //------------------------------------------------------------------------
 
@@ -3974,5 +3994,13 @@ void CAnnotFileAttachment::ToWASM(NSWasm::CData& oRes)
 	if (m_unFlags & (1 << 27))
 	{
 	}
+}
+void CAnnotStamp::ToWASM(NSWasm::CData& oRes)
+{
+	oRes.WriteBYTE(12); // Stamp
+
+	CAnnotMarkup::ToWASM(oRes);
+
+	oRes.WriteString(m_sName);
 }
 }

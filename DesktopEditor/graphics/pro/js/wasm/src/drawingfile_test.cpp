@@ -990,7 +990,7 @@ int main(int argc, char* argv[])
 	}
 
 	int i = nTestPage;
-	for (int i = 0; i < nPagesCount; ++i)
+	//for (int i = 0; i < nPagesCount; ++i)
 	{
 		// RASTER
 		if (true)
@@ -1787,6 +1787,13 @@ int main(int argc, char* argv[])
 					i += nPathLength;
 				}
 			}
+			else if (sType == "Stamp")
+			{
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "Icon " << std::string((char*)(pAnnots + i), nPathLength);
+				i += nPathLength;
+			}
 
 			std::cout << std::endl << std::endl;
 		}
@@ -1808,6 +1815,7 @@ int main(int argc, char* argv[])
 			free(pAnnotAP);
 	}
 
+	// SCAN PAGE
 	if (true)
 	{
 		BYTE* pScan = ScanPage(pGrFile, nTestPage, 1);

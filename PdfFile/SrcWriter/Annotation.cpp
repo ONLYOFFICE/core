@@ -1341,6 +1341,17 @@ namespace PdfWriter
 		Add("IT", sValue.c_str());
 	}
 	//----------------------------------------------------------------------------------------
+	// CStampAnnotation
+	//----------------------------------------------------------------------------------------
+	CStampAnnotation::CStampAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotStamp)
+	{
+	}
+	void CStampAnnotation::SetName(const std::wstring& wsName)
+	{
+		std::string sValue = U_TO_UTF8(wsName);
+		Add("Name", sValue.c_str());
+	}
+	//----------------------------------------------------------------------------------------
 	// CWidgetAnnotation
 	//----------------------------------------------------------------------------------------
 	CWidgetAnnotation::CWidgetAnnotation(CXref* pXref, EAnnotType eType) : CAnnotation(pXref, eType)

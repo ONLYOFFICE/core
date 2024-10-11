@@ -566,6 +566,20 @@ private:
 };
 
 //------------------------------------------------------------------------
+// PdfReader::CAnnotStamp
+//------------------------------------------------------------------------
+
+class CAnnotStamp final : public CAnnotMarkup
+{
+public:
+	CAnnotStamp(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+
+	void ToWASM(NSWasm::CData& oRes) override;
+private:
+	std::string m_sName; // Иконка
+};
+
+//------------------------------------------------------------------------
 // PdfReader::CAnnots
 //------------------------------------------------------------------------
 

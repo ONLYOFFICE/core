@@ -382,6 +382,17 @@ namespace PdfWriter
 		void SetSy(BYTE nSy);
 		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4);
 	};
+	class CStampAnnotation : public CMarkupAnnotation
+	{
+	public:
+		CStampAnnotation(CXref* pXref);
+		EAnnotType GetAnnotationType() const override
+		{
+			return AnnotStamp;
+		}
+
+		void SetName(const std::wstring& wsName);
+	};
 	class CWidgetAnnotation : public CAnnotation
 	{
 	protected:

@@ -1466,28 +1466,17 @@ namespace MetaFile
 		if (NULL == pImageBuffer || lWidth == 0 || lHeight == 0)
 			return S_FALSE;
 
-		BYTE oBuffer[4] = {0, 0, 0, 0};
+		BYTE* pTempLine = (BYTE*)malloc(lWidth * 4);
+		const ULONG ulStride = 4 * lWidth;
 
-		for (ULONG ulPosY = 0; ulPosY < lHeight / 2 * 4; ulPosY += 4)
+		for (UINT nPosY = 0; nPosY < lHeight / 2; ++nPosY)
 		{
-			for (ULONG ulPosX = 0; ulPosX < lWidth * 4; ulPosX += 4)
-			{
-				oBuffer[0] = pImageBuffer[ulPosY * lWidth + ulPosX + 0];
-				oBuffer[1] = pImageBuffer[ulPosY * lWidth + ulPosX + 1];
-				oBuffer[2] = pImageBuffer[ulPosY * lWidth + ulPosX + 2];
-				oBuffer[3] = pImageBuffer[ulPosY * lWidth + ulPosX + 3];
-
-				pImageBuffer[ulPosY * lWidth + ulPosX + 0] = pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 0];
-				pImageBuffer[ulPosY * lWidth + ulPosX + 1] = pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 1];
-				pImageBuffer[ulPosY * lWidth + ulPosX + 2] = pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 2];
-				pImageBuffer[ulPosY * lWidth + ulPosX + 3] = pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 3];
-
-				pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 0] = oBuffer[0];
-				pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 1] = oBuffer[1];
-				pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 2] = oBuffer[2];
-				pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 3] = oBuffer[3];
-			}
+			memcpy(pTempLine, pImageBuffer + nPosY * ulStride, ulStride);
+			memcpy(pImageBuffer + nPosY * ulStride, pImageBuffer + (lHeight - nPosY - 1) * ulStride, ulStride);
+			memcpy(pImageBuffer + (lHeight - nPosY - 1) * ulStride, pTempLine, ulStride);
 		}
+
+		free(pTempLine);
 
 		return S_OK;
 	}

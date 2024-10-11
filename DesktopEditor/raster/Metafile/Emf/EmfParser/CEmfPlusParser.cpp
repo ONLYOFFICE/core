@@ -1437,10 +1437,10 @@ namespace MetaFile
 		if (nBeginY < 0)
 			nBeginY = 0;
 
-		if ((nBeginX + nEndX) > lWidth)
-			nEndX = lWidth - nBeginX;
-		if ((nBeginY + nEndY) > lHeight)
-			nEndY = lHeight - nBeginY;
+		if (nEndX > lWidth)
+			nEndX = lWidth;
+		if (nEndY > lHeight)
+			nEndY = lHeight;
 
 		if (nEndX <= nBeginX || nEndY <= nBeginY)
 			return NULL;
@@ -1454,7 +1454,7 @@ namespace MetaFile
 		int ulStride = 4 * nWidth;
 		for (int nPosY = nBeginY; nPosY < nEndY; ++nPosY)
 		{
-			memcpy(pCurrentLine, pBuffer + ulStride * nPosY + 4 * nBeginX, ulStride);
+			memcpy(pCurrentLine, pBuffer + lWidth * 4 * nPosY + 4 * nBeginX, ulStride);
 			pCurrentLine += ulStride;
 		}
 

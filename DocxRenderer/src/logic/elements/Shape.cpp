@@ -313,6 +313,13 @@ namespace NSDocxRenderer
 	{
 		return m_eSimpleLineType == eSimpleLineType::sltHLongDash || m_eSimpleLineType == eSimpleLineType::sltVLongDash;
 	}
+	bool CShape::IsOoxmlValid() const noexcept
+	{
+		bool is_offset = m_dLeft > c_dST_PositionOffsetMin && m_dTop > c_dST_PositionOffsetMin;
+		bool is_width = m_dWidth > c_dST_PositiveCoordinatetMin && m_dWidth < c_dST_PositiveCoordinatetMax;
+		bool is_height = m_dHeight > c_dST_PositiveCoordinatetMin && m_dHeight < c_dST_PositiveCoordinatetMax;
+		return is_offset && is_width && is_height;
+	}
 
 	void CShape::CheckLineType(std::shared_ptr<CShape>& pFirstShape)
 	{
@@ -631,22 +638,22 @@ namespace NSDocxRenderer
 
 		oWriter.WriteString(L"<wp:positionH relativeFrom=\"page\">");
 		oWriter.WriteString(L"<wp:posOffset>");
-		oWriter.AddInt(static_cast<int>(left * c_dMMToEMU));
+		oWriter.AddInt(static_cast<uint64_t>(left * c_dMMToEMU));
 		oWriter.WriteString(L"</wp:posOffset>");
 		oWriter.WriteString(L"</wp:positionH>");
 
 		oWriter.WriteString(L"<wp:positionV relativeFrom=\"page\">");
 		oWriter.WriteString(L"<wp:posOffset>");
-		oWriter.AddInt(static_cast<int>(top * c_dMMToEMU));
+		oWriter.AddInt(static_cast<uint64_t>(top * c_dMMToEMU));
 		oWriter.WriteString(L"</wp:posOffset>");
 		oWriter.WriteString(L"</wp:positionV>");
 
 		//координаты конца границы шейпа
 		oWriter.WriteString(L"<wp:extent");
 		oWriter.WriteString(L" cx=\"");
-		oWriter.AddInt(static_cast<int>(width * c_dMMToEMU));
+		oWriter.AddInt(static_cast<uint64_t>(width * c_dMMToEMU));
 		oWriter.WriteString(L"\" cy=\"");
-		oWriter.AddInt(static_cast<int>(height * c_dMMToEMU));
+		oWriter.AddInt(static_cast<uint64_t>(height * c_dMMToEMU));
 		oWriter.WriteString(L"\"/>");
 
 		oWriter.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>"); //Этот элемент определяет дополнительное расстояние, которое должно быть добавлено к каждому краю изображения, чтобы компенсировать любые эффекты рисования, применяемые к объекту DrawingML

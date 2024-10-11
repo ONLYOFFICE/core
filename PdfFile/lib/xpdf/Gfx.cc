@@ -5052,11 +5052,12 @@ void Gfx::opBeginMarkedContent(Object args[], int numArgs) {
     }
     obj.free();
   } else if (args[0].isName("OShapes") && numArgs == 2 && args[1].isDict() && res->lookupPropertiesNF("OShapes", &obj)) {
-    Object oMetaOForm, oID, oTID, oID2, oMCID, oMetadata, oMetadataCur;
-    if (obj.fetch(xref, &oMetaOForm)->isDict("OShapes") && oMetaOForm.dictLookup("ID", &oID)->isString() && xref->getTrailerDict()->dictLookup("ID", &oTID)->isArray() &&
+    Object oMetaOForm, oID, oTID, oID2, oIDF, oIDF2, oMCID, oMetadata, oMetadataCur;
+    if (obj.fetch(xref, &oMetaOForm)->isDict("OShapes") && args[1].dictLookup("IDF", &oIDF)->isString() && oMetaOForm.dictLookup("IDF", &oIDF2)->isString() &&
+        oIDF.getString()->cmp(oIDF2.getString()) == 0 && oMetaOForm.dictLookup("ID", &oID)->isString() && xref->getTrailerDict()->dictLookup("ID", &oTID)->isArray() &&
         oTID.arrayGet(1, &oID2)->isString() && oID2.getString()->cmp(oID.getString()) == 0 && args[1].dictLookup("MCID", &oMCID)->isInt() &&
         oMetaOForm.dictLookup("Metadata", &oMetadata)->isArray() && oMetadata.arrayGet(oMCID.getInt(), &oMetadataCur)->isString()) {
-      oID.free(); oTID.free(); oID2.free(); oMCID.free(); oMetadata.free(); obj.free();
+      oID.free(); oTID.free(); oID2.free(); oIDF.free(); oIDF2.free(); oMCID.free(); oMetadata.free(); obj.free();
       Object oImRef, oArrImage;
       if (!oMetaOForm.dictLookup("Image", &oArrImage)->isArray() || !oArrImage.arrayGetNF(oMCID.getInt(), &oImRef)->isRef())
         oImRef.free();
@@ -5073,7 +5074,7 @@ void Gfx::opBeginMarkedContent(Object args[], int numArgs) {
       }
       oImRef.free(); oArrImage.free();
     }
-    oMetaOForm.free(); oID.free(); oTID.free(); oID2.free(); oMCID.free(), oMetadata.free(); oMetadataCur.free(); obj.free();
+    oMetaOForm.free(); oID.free(); oTID.free(); oID2.free(); oIDF.free(); oIDF2.free(); oMCID.free(), oMetadata.free(); oMetadataCur.free(); obj.free();
   }
   mc = new GfxMarkedContent(mcKind, ocState);
   markedContentStack->append(mc);

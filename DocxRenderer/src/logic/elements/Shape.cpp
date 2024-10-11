@@ -167,9 +167,9 @@ namespace NSDocxRenderer
 		NSStringUtils::CStringBuilder oWriter;
 
 		oWriter.WriteString(L"<a:path w=\"");
-		oWriter.AddInt(static_cast<int>(width * c_dMMToEMU));
+		oWriter.AddUInt(static_cast<unsigned int>(width * c_dMMToEMU));
 		oWriter.WriteString(L"\" h=\"");
-		oWriter.AddInt(static_cast<int>(height * c_dMMToEMU));
+		oWriter.AddUInt(static_cast<unsigned int>(height * c_dMMToEMU));
 		oWriter.WriteString(L"\">");
 
 		for(auto& path_command : data)
@@ -638,22 +638,22 @@ namespace NSDocxRenderer
 
 		oWriter.WriteString(L"<wp:positionH relativeFrom=\"page\">");
 		oWriter.WriteString(L"<wp:posOffset>");
-		oWriter.AddInt(static_cast<uint64_t>(left * c_dMMToEMU));
+		oWriter.AddInt64(static_cast<int64_t>(left * c_dMMToEMU));
 		oWriter.WriteString(L"</wp:posOffset>");
 		oWriter.WriteString(L"</wp:positionH>");
 
 		oWriter.WriteString(L"<wp:positionV relativeFrom=\"page\">");
 		oWriter.WriteString(L"<wp:posOffset>");
-		oWriter.AddInt(static_cast<uint64_t>(top * c_dMMToEMU));
+		oWriter.AddInt64(static_cast<int64_t>(top * c_dMMToEMU));
 		oWriter.WriteString(L"</wp:posOffset>");
 		oWriter.WriteString(L"</wp:positionV>");
 
 		//координаты конца границы шейпа
 		oWriter.WriteString(L"<wp:extent");
 		oWriter.WriteString(L" cx=\"");
-		oWriter.AddInt(static_cast<uint64_t>(width * c_dMMToEMU));
+		oWriter.AddUInt(static_cast<unsigned int>(width * c_dMMToEMU));
 		oWriter.WriteString(L"\" cy=\"");
-		oWriter.AddInt(static_cast<uint64_t>(height * c_dMMToEMU));
+		oWriter.AddUInt(static_cast<unsigned int>(height * c_dMMToEMU));
 		oWriter.WriteString(L"\"/>");
 
 		oWriter.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>"); //Этот элемент определяет дополнительное расстояние, которое должно быть добавлено к каждому краю изображения, чтобы компенсировать любые эффекты рисования, применяемые к объекту DrawingML
@@ -955,17 +955,17 @@ namespace NSDocxRenderer
 		else
 		{
 			oWriter.WriteString(L"<a:off x=\"");
-			oWriter.AddInt(static_cast<int>(left * c_dMMToEMU));
+			oWriter.AddInt64(static_cast<int64_t>(left * c_dMMToEMU));
 			oWriter.WriteString(L"\" y=\"");
-			oWriter.AddInt(static_cast<int>(top * c_dMMToEMU));
+			oWriter.AddInt64(static_cast<int64_t>(top * c_dMMToEMU));
 			oWriter.WriteString(L"\"/>");
 		}
 
 		oWriter.WriteString(L"<a:ext");
 		oWriter.WriteString(L" cx=\"");
-		oWriter.AddInt(static_cast<int>(width * c_dMMToEMU));
+		oWriter.AddUInt(static_cast<unsigned int>(width * c_dMMToEMU));
 		oWriter.WriteString(L"\" cy=\"");
-		oWriter.AddInt(static_cast<int>(height * c_dMMToEMU));
+		oWriter.AddUInt(static_cast<unsigned int>(height * c_dMMToEMU));
 		oWriter.WriteString(L"\"/>");
 
 		oWriter.WriteString(L"</a:xfrm>");

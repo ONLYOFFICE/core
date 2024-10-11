@@ -1636,10 +1636,10 @@ namespace MetaFile
 
 			TRectL oClipRect;
 
-			oClipRect.Left   = oSrcRect.dX * dScale;
-			oClipRect.Top    = oSrcRect.dY * dScale;
-			oClipRect.Right  = (oSrcRect.dX + oSrcRect.dWidth)  * dScale;
-			oClipRect.Bottom = (oSrcRect.dY + oSrcRect.dHeight) * dScale;
+			oClipRect.Left   = std::floor(oSrcRect.dX * dScale);
+			oClipRect.Top    = std::floor(oSrcRect.dY * dScale);
+			oClipRect.Right  = std::floor((oSrcRect.dX + oSrcRect.dWidth)  * dScale);
+			oClipRect.Bottom = std::floor((oSrcRect.dY + oSrcRect.dHeight) * dScale);
 
 			unsigned int nW = (unsigned int)nWidth;
 			unsigned int nH = (unsigned int)nHeight;
@@ -1718,10 +1718,10 @@ namespace MetaFile
 
 		TRectL oClipRect;
 
-		oClipRect.Left   = oSrcRect.dX;
-		oClipRect.Top    = oSrcRect.dY;
-		oClipRect.Right  = (oSrcRect.dX + oSrcRect.dWidth);
-		oClipRect.Bottom = (oSrcRect.dY + oSrcRect.dHeight);
+		oClipRect.Left   = std::floor(oSrcRect.dX);
+		oClipRect.Top    = std::floor(oSrcRect.dY);
+		oClipRect.Right  = std::floor((oSrcRect.dX + oSrcRect.dWidth));
+		oClipRect.Bottom = std::floor((oSrcRect.dY + oSrcRect.dHeight));
 
 		unsigned int nW = (unsigned int)unWidth;
 		unsigned int nH = (unsigned int)unHeight;

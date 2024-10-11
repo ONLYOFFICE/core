@@ -65,14 +65,14 @@ namespace StarMath
 		void ConversionSsup(OOX::Logic::CSSup* pSsup);
 		void ConversionSup(OOX::Logic::CSup* pSup,OOX::Logic::CElement* pElement);
 		void ConversionSup(OOX::Logic::CSup* pSup);
-		void ConversionElement(OOX::Logic::CElement* pElement, const bool &bMatrix = false);
+		void ConversionElement(OOX::Logic::CElement* pElement);
 		std::vector<COneElement *> ConversionMRun(OOX::Logic::CMRun* pMRun);
 		void ConversionAcc(OOX::Logic::CAcc* pAcc);
 		void ConversionFunc(OOX::Logic::CFunc* pFunc);
 		bool ConversionFuncPr(OOX::Logic::CFuncPr* pFuncPr);
 		void ConversionBox(OOX::Logic::CBox* pBox);
-		void ConversionTextVector(std::vector<COneElement*>& arLine,std::vector<COneElement*>& arNewLine,const bool& bMatrix = false);
-		void ConversionVectorWritingElement(std::vector<OOX::WritingElement*> arWrElements,const bool& bMatrix = false);
+		void ConversionTextVector(std::vector<COneElement*>& arLine, std::vector<COneElement*>& arNewLine);
+		void ConversionVectorWritingElement(std::vector<OOX::WritingElement*> arWrElements);
 		void ConversionMatrix(OOX::Logic::CMatrix *pMatrix);
 		void ConversionMr(OOX::Logic::CMr* pMr);
 		void ConversionRad(OOX::Logic::CRad* pRad);
@@ -109,9 +109,10 @@ namespace StarMath
 		void EndOdf();
 		std::wstring GetOdf();
 		std::wstring GetAnnotation();
+		std::wstring GetSemantic();
 	private:
 		XmlUtils::CXmlWriter* m_pXmlWrite;
-		std::wstring m_wsAnnotationStarMath;
+		std::wstring m_wsAnnotationStarMath,m_wsSemantic;
 	};
 	class COneElement
 	{

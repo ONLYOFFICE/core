@@ -728,6 +728,11 @@ namespace NExtractTools
 
 				if (NSFile::CFileBinary::Exists(sPdfFileCompiledChanges))
 					bIsCompiledChanges = applyCompiledChangesPdf(&oPdfResult, sPdfFileCompiledChanges, oConvertParams, sTo);
+				else
+				{
+					// changes is exist but compiled file does not changed (compiled changes returns null in js)
+					oPdfResult.EditPdf(sTo);
+				}
 			}
 		}
 

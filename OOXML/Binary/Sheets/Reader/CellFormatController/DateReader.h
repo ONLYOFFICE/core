@@ -40,6 +40,10 @@
 class DateReader
 {
 public:
+    /// @brief создание считывателя с указанным id локали
+    /// @param lcid идентификатор локали в зависимости от которой будет читаться дата
+    DateReader(_INT32 lcid);
+
     /// @brief получение даты в виде числа в формате excel
     /// @param date дата в строковом формате
     /// @param result результат в формате excel
@@ -61,5 +65,7 @@ private:
     /// @param datetime структура с датой
     /// @return дата в формате excel
     _INT32 getNonUnixDate(tm date);
+
+    _INT32 lcid_;
 };
 

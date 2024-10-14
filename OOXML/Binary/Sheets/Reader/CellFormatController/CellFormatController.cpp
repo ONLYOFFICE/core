@@ -59,8 +59,8 @@ std::map<std::wstring, std::uint16_t> defaultDataFormats
     {DefaultTimeFormat, 20}
 };
 
-CellFormatController::CellFormatController(OOX::Spreadsheet::CStyles *styles):
-	m_pStyles{styles}
+CellFormatController::CellFormatController(OOX::Spreadsheet::CStyles *styles, _INT32 lcid):
+    m_pStyles{styles}, lcid_{lcid}
 {
 	// Добавим стили для wrap-а
 	m_pStyles->m_oCellXfs.Init();
@@ -177,7 +177,7 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
 		return;
 	}
 
-	DateReader dateReader = {};
+    DateReader dateReader = {lcid_};
     double digitalDate  = 0;
     bool hasDate = false;
     bool hasTime = false;

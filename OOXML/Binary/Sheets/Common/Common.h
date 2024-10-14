@@ -70,6 +70,6 @@ namespace SerializeCommon
 		~CommentData();
 	};
 
-	void ReadFileType(const std::wstring& sXMLOptions, BYTE& result, UINT& nCodePage, std::wstring& wcDelimiter, BYTE& saveFileType);
+    void ReadFileType(const std::wstring& sXMLOptions, BYTE& result, UINT& nCodePage, std::wstring& wcDelimiter, BYTE& saveFileType, _INT32& Lcid);
 }
 

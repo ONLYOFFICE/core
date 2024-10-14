@@ -49,10 +49,12 @@ namespace NExtractTools
 		UINT nCodePage;
 		std::wstring sDelimiter;
 		BYTE saveFileType;
-		SerializeCommon::ReadFileType(params.getXmlOptions(), fileType, nCodePage, sDelimiter, saveFileType);
+        _INT32 lcid = -1;
+        
+		SerializeCommon::ReadFileType(params.getXmlOptions(), fileType, nCodePage, sDelimiter, saveFileType, lcid);
 
 		CSVReader csvReader;
-		_UINT32 nRes = csvReader.Read(sFrom, oXlsx, nCodePage, sDelimiter);
+        _UINT32 nRes = csvReader.Read(sFrom, oXlsx, nCodePage, sDelimiter, lcid);
 
 		oXlsx.PrepareToWrite();
 

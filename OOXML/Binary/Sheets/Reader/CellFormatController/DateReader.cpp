@@ -41,6 +41,9 @@
 #include <vector>
 #include <cmath>
 
+DateReader::DateReader(_INT32 lcid):lcid_{lcid}
+{}
+
  // Определение основных форматов даты
 std::vector<std::wstring> DateFormats = {
 

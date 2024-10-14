@@ -54,7 +54,7 @@ class CSVReader::Impl
 {
 public:
 	Impl() {}
-	_UINT32 Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, _UINT32 nCodePage, const std::wstring& wcDelimiter);
+    _UINT32 Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, _UINT32 nCodePage, const std::wstring& wcDelimiter, _INT32 lcid);
 private:
 	void AddCell(std::wstring &sText, INT nStartCell, std::stack<INT> &oDeleteChars, OOX::Spreadsheet::CRow &oRow, INT nRow, INT nCol, bool bIsWrap);
 
@@ -205,7 +205,7 @@ void CSVReader::Impl::AddCell(std::wstring &sText, INT nStartCell, std::stack<IN
 	pCell->setRowCol(nRow, nCol);
 	oRow.m_arrItems.push_back(pCell);
 }
-_UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, _UINT32 nCodePage, const std::wstring& sDelimiter)
+_UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, _UINT32 nCodePage, const std::wstring& sDelimiter, _INT32 lcid)
 {
 	NSFile::CFileBinary oFile;
 	if (false == oFile.OpenFile(sFileName)) return AVS_FILEUTILS_ERROR_CONVERT;
@@ -215,7 +215,7 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 	// Создадим стили
 	oXlsx.CreateStyles();
 
-	cellFormatController_ = std::make_shared<CellFormatController>(oXlsx.m_pStyles);
+    cellFormatController_ = std::make_shared<CellFormatController>(oXlsx.m_pStyles, lcid);
 
 	smart_ptr<OOX::Spreadsheet::CWorksheet> pWorksheet(new OOX::Spreadsheet::CWorksheet(NULL));
 	pWorksheet->m_oSheetData.Init();
@@ -464,7 +464,7 @@ CSVReader::CSVReader() : impl_(new CSVReader::Impl())
 CSVReader::~CSVReader()
 {
 }
-_UINT32 CSVReader::Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, _UINT32 nCodePage, const std::wstring& sDelimiter)
+_UINT32 CSVReader::Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, _UINT32 nCodePage, const std::wstring& sDelimiter, _INT32 lcid)
 {
-	return impl_->Read(sFileName, oXlsx, nCodePage, sDelimiter);
+    return impl_->Read(sFileName, oXlsx, nCodePage, sDelimiter, lcid);
 }

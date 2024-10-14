@@ -1519,7 +1519,7 @@ void CBooleanOperations::AddCurveLineIntersection(const Curve& curve1, const Cur
 	}
 }
 
-int CBooleanOperations::AddCurveIntersection(Curve curve1, Curve curve2, const Curve& startCurve1,
+int CBooleanOperations::AddCurveIntersection(const Curve& curve1, const Curve& curve2, const Curve& startCurve1,
 											 const Curve& startCurve2, bool flip,
 											 int recursion, int calls, double tMin,
 											 double tMax, double uMin, double uMax)
@@ -1575,14 +1575,14 @@ int CBooleanOperations::AddCurveIntersection(Curve curve1, Curve curve2, const C
 	}
 	else
 	{
-		curve1 = curve1.GetPart(tMinClip, tMaxClip);
+		Curve newCurve1 = curve1.GetPart(tMinClip, tMaxClip);
 		double uDiff = uMax - uMin;
 
 		if (tMaxClip - tMinClip > 0.8)
 		{
 			if (tMaxNew - tMinNew > uDiff)
 			{
-				std::vector<Curve> parts = curve1.Subdivide(0.5);
+				std::vector<Curve> parts = newCurve1.Subdivide(0.5);
 				double t = (tMinNew + tMaxNew) / 2;
 
 				parts[0].Segment2.SetHandles(parts[0].Segment2.HI, parts[0].Segment2.HO);
@@ -1601,19 +1601,19 @@ int CBooleanOperations::AddCurveIntersection(Curve curve1, Curve curve2, const C
 				parts[0].Segment2.SetHandles(parts[0].Segment2.HI, parts[0].Segment2.HO);
 				parts[1].Segment2.SetHandles(parts[1].Segment2.HI, parts[1].Segment2.HO);
 
-				calls = AddCurveIntersection(parts[0], curve1, startCurve2, startCurve1,
+				calls = AddCurveIntersection(parts[0], newCurve1, startCurve2, startCurve1,
 											 !flip, recursion, calls, uMin, u, tMinNew, tMaxNew);
-				calls = AddCurveIntersection(parts[1], curve1, startCurve2, startCurve1,
+				calls = AddCurveIntersection(parts[1], newCurve1, startCurve2, startCurve1,
 											 !flip, recursion, calls, u, uMax, tMinNew, tMaxNew);
 			}
 		}
 		else
 		{
 			if (uDiff == 0 || uDiff >= LINE_EPSILON)
-				calls = AddCurveIntersection(curve2, curve1, startCurve2, startCurve1,
+				calls = AddCurveIntersection(curve2, newCurve1, startCurve2, startCurve1,
 											 !flip, recursion, calls, uMin, uMax, tMinNew, tMaxNew);
 			else
-				calls = AddCurveIntersection(curve1, curve2, startCurve1, startCurve2,
+				calls = AddCurveIntersection(newCurve1, curve2, startCurve1, startCurve2,
 											 flip, recursion, calls, tMinNew, tMaxNew, uMin, uMax);
 		}
 	}

@@ -1042,18 +1042,18 @@ void CBooleanOperations::PreparePath(const CGraphicsPath& path, int id,
 									 bool reverse)
 {
 	bool isPolyClosed = path.Is_poly_closed();
-	int length = isPolyClosed ? (path.GetPointCount() - 1) : path.GetPointCount();
+	int length = path.GetPointCount();
 	int idx = 0;
 	if (reverse)
 	{
 		bool isCurve = false;
-		for (int i = length; i > 0; i--)
+		for (int i = length - 1; i >= 0; i--)
 		{
 			std::vector<PointD> points = path.GetPoints(isCurve ? i - 2 : i, isCurve ? 3 : 1);
 			if (isCurve) std::reverse(points.begin(), points.end());
 			if (segments.empty() || getDistance(segments[segments.size() - 1].P, isCurve ? points[2] : points[0]) > POINT_EPSILON)
 			{
-				if (!segments.empty() && getDistance(segments[0].P, isCurve ? points[2] : points[0]) <= POINT_EPSILON)
+				if (i == 2 && !segments.empty() && getDistance(segments[0].P, isCurve ? points[2] : points[0]) <= POINT_EPSILON)
 				{
 					if (isCurve && segments[0].HI.IsZero() && segments[0].HO.IsZero())
 						segments[0].SetHandles(points[0], points[1]);
@@ -1074,7 +1074,7 @@ void CBooleanOperations::PreparePath(const CGraphicsPath& path, int id,
 			std::vector<PointD> points = path.GetPoints(i, isCurve ? 3 : 1);
 			if (segments.empty() || getDistance(segments[segments.size() - 1].P, isCurve ? points[2] : points[0]) > POINT_EPSILON)
 			{
-				if (!segments.empty() && getDistance(segments[0].P, isCurve ? points[2] : points[0]) <= POINT_EPSILON)
+				if ((i == length - 2) && !segments.empty() && getDistance(segments[0].P, isCurve ? points[2] : points[0]) <= POINT_EPSILON)
 				{
 					if (isCurve && segments[0].HI.IsZero() && segments[0].HO.IsZero())
 						segments[0].SetHandles(points[0], points[1]);
@@ -1087,10 +1087,10 @@ void CBooleanOperations::PreparePath(const CGraphicsPath& path, int id,
 		}
 	}
 
-	length = segments.size();
+	length = isPolyClosed ? static_cast<int>(segments.size()) : static_cast<int>(segments.size()) - 1;
 
 	for (int i = 0; i < length; i++)
-		curves.push_back(Curve(segments[i], i == (length - 1) ? segments[0] : segments[i + 1]));
+		curves.push_back(Curve(segments[i], isPolyClosed && (i == (length - 1)) ? segments[0] : segments[i + 1]));
 }
 
 void CBooleanOperations::InsertSegment(Segment& segment, const Segment& handles, bool updateHandles)
@@ -1626,6 +1626,7 @@ int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment,
 	PointD pt{};
 	if (intersect({point.X, point.Y, segment.P.X, segment.P.Y, curve.Segment1.P.X, curve.Segment1.P.Y, curve.Segment2.P.X, curve.Segment2.P.Y}, pt))
 	{
+		if (getDistance(segment.P, pt) <= GEOMETRIC_EPSILON) return (touchCount + 1) % 2;
 		if (getDistance(curve.Segment1.P, pt) <= GEOMETRIC_EPSILON || getDistance(curve.Segment2.P, pt) <= GEOMETRIC_EPSILON)
 		{
 			int tmp = touchCount % 2;
@@ -1634,6 +1635,7 @@ int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment,
 		}
 		else if (curve.IsStraight())
 		{
+			touchCount++;
 			return 1;
 		}
 	}

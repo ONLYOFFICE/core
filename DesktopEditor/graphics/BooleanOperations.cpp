@@ -1542,9 +1542,9 @@ int CBooleanOperations::AddCurveIntersection(const Curve& curve1, const Curve& c
 			dp2 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[2], y1[2]),
 			dp3 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[3], y1[3]);
 
-	std::vector<std::vector<PointD>> hull = getConvexHull(dp0, dp1, dp2, dp3);
-	std::vector<PointD>	top = hull[0],
-						bottom = hull[1];
+	std::vector<PointD> top;
+	std::vector<PointD> bottom;
+	getConvexHull(dp0, dp1, dp2, dp3, top, bottom);
 
 	double tMinClip = clipConvexHull(top, bottom, dMin, dMax);
 

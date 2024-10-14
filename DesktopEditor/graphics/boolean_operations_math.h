@@ -229,8 +229,10 @@ bool intersect(std::vector<double> v, Aggplus::PointD& res)
 	return false;
 }
 
-std::vector<std::vector<Aggplus::PointD>> getConvexHull(const double& dq0, const double& dq1,
-														const double& dq2, const double& dq3)
+void getConvexHull(const double& dq0, const double& dq1,
+				   const double& dq2, const double& dq3,
+				   std::vector<Aggplus::PointD>& top,
+				   std::vector<Aggplus::PointD>& bottom)
 {
 	Aggplus::PointD p0 = Aggplus::PointD(0.0, dq0),
 					p1 = Aggplus::PointD(1.0 / 3.0, dq1),
@@ -240,27 +242,64 @@ std::vector<std::vector<Aggplus::PointD>> getConvexHull(const double& dq0, const
 	double	dist1 = dq1 - (2.0 * dq0 + dq3) / 3.0,
 			dist2 = dq2 - (dq0 + 2.0 * dq3) / 3.0;
 
-	std::vector<std::vector<Aggplus::PointD>> hull;
-	
+	std::vector<Aggplus::PointD>& realTop = top;
+	std::vector<Aggplus::PointD>& realBottom = bottom;
+	if (dist1 < 0.0 || dist2 < 0.0)
+	{
+		realTop = bottom;
+		realBottom = top;
+	}
+
 	if (dist1 * dist2 < 0.0)
 	{
-		hull = {{p0, p1, p3}, {p0, p2, p3}};
+		realTop.reserve(3);
+		realTop.push_back(p0);
+		realTop.push_back(p1);
+		realTop.push_back(p3);
+
+		realBottom.reserve(3);
+		realBottom.push_back(p0);
+		realBottom.push_back(p2);
+		realBottom.push_back(p3);
 	}
 	else
 	{
 		double distRatio = dist1 / dist2;
 		if (distRatio >= 2.0)
-			hull = {{p0, p1, p3}, {p0, p3}};
+		{
+			realTop.reserve(3);
+			realTop.push_back(p0);
+			realTop.push_back(p1);
+			realTop.push_back(p3);
+
+			realBottom.reserve(2);
+			realBottom.push_back(p0);
+			realBottom.push_back(p3);
+		}
 		else if (distRatio <= 0.5)
-			hull = {{p0, p2, p3}, {p0, p3}};
+		{
+			realTop.reserve(3);
+			realTop.push_back(p0);
+			realTop.push_back(p2);
+			realTop.push_back(p3);
+
+			realBottom.reserve(2);
+			realBottom.push_back(p0);
+			realBottom.push_back(p3);
+		}
 		else
-			hull = {{p0, p1, p2, p3}, {p0, p3}};
+		{
+			realTop.reserve(4);
+			realTop.push_back(p0);
+			realTop.push_back(p1);
+			realTop.push_back(p2);
+			realTop.push_back(p3);
+
+			realBottom.reserve(2);
+			realBottom.push_back(p0);
+			realBottom.push_back(p3);
+		}
 	}
-
-	if (dist1 < 0.0 || dist2 < 0.0)
-		std::reverse(hull.begin(), hull.end());
-
-	return hull;
 }
 
 double clipConvexHullPart(const std::vector<Aggplus::PointD>& part, const bool& top,

@@ -1053,7 +1053,7 @@ void CBooleanOperations::PreparePath(const CGraphicsPath& path, int id,
 			if (isCurve) std::reverse(points.begin(), points.end());
 			if (segments.empty() || getDistance(segments[segments.size() - 1].P, isCurve ? points[2] : points[0]) > POINT_EPSILON)
 			{
-				if (i == 2 && !segments.empty() && getDistance(segments[0].P, isCurve ? points[2] : points[0]) <= POINT_EPSILON)
+				if (!segments.empty() && getDistance(segments[0].P, isCurve ? points[2] : points[0]) <= POINT_EPSILON)
 				{
 					if (isCurve && segments[0].HI.IsZero() && segments[0].HO.IsZero())
 						segments[0].SetHandles(points[0], points[1]);
@@ -1074,7 +1074,7 @@ void CBooleanOperations::PreparePath(const CGraphicsPath& path, int id,
 			std::vector<PointD> points = path.GetPoints(i, isCurve ? 3 : 1);
 			if (segments.empty() || getDistance(segments[segments.size() - 1].P, isCurve ? points[2] : points[0]) > POINT_EPSILON)
 			{
-				if ((i == length - 2) && !segments.empty() && getDistance(segments[0].P, isCurve ? points[2] : points[0]) <= POINT_EPSILON)
+				if (!segments.empty() && getDistance(segments[0].P, isCurve ? points[2] : points[0]) <= POINT_EPSILON)
 				{
 					if (isCurve && segments[0].HI.IsZero() && segments[0].HO.IsZero())
 						segments[0].SetHandles(points[0], points[1]);
@@ -1628,11 +1628,7 @@ int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment,
 	{
 		if (getDistance(segment.P, pt) <= GEOMETRIC_EPSILON) return (touchCount + 1) % 2;
 		if (getDistance(curve.Segment1.P, pt) <= GEOMETRIC_EPSILON || getDistance(curve.Segment2.P, pt) <= GEOMETRIC_EPSILON)
-		{
-			int tmp = touchCount % 2;
-			touchCount++;
-			return tmp;
-		}
+			return ++touchCount % 2;
 		else if (curve.IsStraight())
 		{
 			touchCount++;

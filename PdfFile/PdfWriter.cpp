@@ -3579,6 +3579,7 @@ void CPdfWriter::DrawAP(PdfWriter::CAnnotation* pAnnot, BYTE* pRender, LONG nLen
 	PdfWriter::CPage* pFakePage = m_pDocument->CreateFakePage();
 	m_pPage = pFakePage;
 	m_pDocument->SetCurPage(pFakePage);
+	m_pPage->StartTransform(1, 0, 0, 1, -pAnnot->GetPageX(), 0);
 
 	IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pRenderer);
 	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);

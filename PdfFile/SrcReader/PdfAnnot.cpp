@@ -130,10 +130,13 @@ CAction* getAction(PDFDoc* pdfDoc, Object* oAction)
 		if (pLinkDest->isPageRef())
 		{
 			Ref pageRef = pLinkDest->getPageRef();
-			ppRes->unPage = pdfDoc->findPage(pageRef.num, pageRef.gen) - 1;
+			ppRes->unPage = pdfDoc->findPage(pageRef.num, pageRef.gen);
 		}
 		else
-			ppRes->unPage = pLinkDest->getPageNum() - 1;
+			ppRes->unPage = pLinkDest->getPageNum();
+
+		if (ppRes->unPage > 0)
+			--ppRes->unPage;
 		ppRes->nKind = pLinkDest->getKind();
 
 		PDFRectangle* pCropBox = pdfDoc->getCatalog()->getPage(ppRes->unPage + 1)->getCropBox();
@@ -2759,7 +2762,9 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
 	oObj.free();
 
 	// Номер страницы - P
-	m_unPage = pField->getPageNum() - 1;
+	m_unPage = pField->getPageNum();
+	if (m_unPage > 0)
+		--m_unPage;
 
 	// Координаты - Rect
 	pField->getBBox(&m_pRect[0], &m_pRect[1], &m_pRect[2], &m_pRect[3]);

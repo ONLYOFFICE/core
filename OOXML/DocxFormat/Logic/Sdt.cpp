@@ -1722,6 +1722,7 @@ namespace OOX
 			XmlMacroReadAttributeBase(oNode, L"w:respectBorders", m_oRespectBorders);
 			XmlMacroReadAttributeBase(oNode, L"w:shiftX", m_oShiftX);
 			XmlMacroReadAttributeBase(oNode, L"w:shiftY", m_oShiftY);
+			XmlMacroReadAttributeBase(oNode, L"w:signature", m_oSignature);
 		}
 		void CSdtPicture::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -1731,6 +1732,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:respectBorders", m_oRespectBorders)
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:shiftX", m_oShiftX)
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:shiftY", m_oShiftY)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:signature", m_oSignature);
 			WritingElement_ReadAttributes_End(oReader)
 		}
 		void CSdtPicture::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -1762,6 +1764,10 @@ namespace OOX
 			if (m_oShiftY.IsInit())
 			{
 				sResult += L" w:shiftY=\"" + std::to_wstring(*m_oShiftY) + L"\"";
+			}
+			if (m_oSignature.IsInit())
+			{
+				sResult += L" w:signature=\"" + std::wstring(*m_oSignature ? L"1" : L"0") + L"\"";
 			}
 			sResult += L"/>";
 			return sResult;

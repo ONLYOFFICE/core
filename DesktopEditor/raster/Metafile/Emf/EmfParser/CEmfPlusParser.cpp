@@ -1416,7 +1416,7 @@ namespace MetaFile
 		return true;
 	}
 
-	BYTE* GetClipedImage(const BYTE* pBuffer, LONG lWidth, LONG lHeight, TRectL& oNewRect, unsigned int& nWidth, unsigned int& nHeight)
+	BYTE* GetClipedImage(const BYTE* pBuffer, LONG lWidth, LONG lHeight, const TRectL& oNewRect, unsigned int& nWidth, unsigned int& nHeight)
 	{
 		if (NULL == pBuffer)
 			return NULL;
@@ -1430,6 +1430,10 @@ namespace MetaFile
 		if (nBeginX >= lWidth || nEndX <= 0)
 			return NULL;
 		if (nBeginY >= lHeight || nEndY <= 0)
+			return NULL;
+
+		if (nBeginX <= 0 && nEndX >= lWidth &&
+		    nBeginY <= 0 && nEndY >= lHeight)
 			return NULL;
 
 		if (nBeginX < 0)
@@ -1625,17 +1629,14 @@ namespace MetaFile
 
 			TRectL oClipRect;
 
-			oClipRect.Left   = std::floor(oSrcRect.dX * dScale);
-			oClipRect.Top    = std::floor(oSrcRect.dY * dScale);
-			oClipRect.Right  = std::floor((oSrcRect.dX + oSrcRect.dWidth)  * dScale);
-			oClipRect.Bottom = std::floor((oSrcRect.dY + oSrcRect.dHeight) * dScale);
+			oClipRect.Left   = std::floor((oSrcRect.dX - oFileBounds.Left) * dScale);
+			oClipRect.Top    = std::floor((oSrcRect.dY - oFileBounds.Top) * dScale);
+			oClipRect.Right  = std::floor((oSrcRect.dX + oSrcRect.dWidth - oFileBounds.Left)  * dScale);
+			oClipRect.Bottom = std::floor((oSrcRect.dY + oSrcRect.dHeight - oFileBounds.Top) * dScale);
 
 			unsigned int nW = (unsigned int)nWidth;
 			unsigned int nH = (unsigned int)nHeight;
 			BYTE* pNewBuffer = GetClipedImage(pPixels, nWidth, nHeight, oClipRect, nW, nH);
-
-			const unsigned int unWidth  = std::min(((unsigned int)abs(oClipRect.Right - oClipRect.Left)), ((unsigned int)nWidth ));
-			const unsigned int unHeight = std::min(((unsigned int)abs(oClipRect.Bottom - oClipRect.Top)), ((unsigned int)nHeight));
 
 			m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X - m_pDC->GetPixelWidth(), arPoints[2].Y - arPoints[0].Y - m_pDC->GetPixelHeight(),
 										 (NULL != pNewBuffer) ? pNewBuffer : pPixels, nW, nH);

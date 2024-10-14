@@ -31,6 +31,7 @@
  */
 
 #include "DateReader.h"
+#include "LocalInfo.h"
 
 #include <iostream>
 #include <string>
@@ -82,6 +83,7 @@ std::vector<std::wstring> DateFormatsShort = {
 
 bool DateReader::GetDigitalDate(const std::wstring &date, double &result, bool &Hasdate, bool &Hastime)
 {
+    auto locInf = lcInfo::getLocalInfo(lcid_);
     //делим форматы на длинные и короткие для уменьшения перебора
     std::vector<std::wstring> * requiredFormats;
     if(date.size() > 10)

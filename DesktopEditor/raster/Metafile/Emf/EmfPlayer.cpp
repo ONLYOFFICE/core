@@ -469,8 +469,8 @@ namespace MetaFile
 
 		// Обновляем обратную матрицу
 		TEmfXForm* pT = &m_oTransform;
-		double dDet = pT->M11 * pT->M22 - pT->M12 * pT->M21;
-		if (dDet < 0.0001 && dDet > 0.0001)
+		const double dDet = pT->M11 * pT->M22 - pT->M12 * pT->M21;
+		if (Equals(0., dDet, 0.0001))
 		{
 			m_oInverseTransform.M11 = 1;
 			m_oInverseTransform.M12 = 0;
@@ -479,13 +479,15 @@ namespace MetaFile
 			m_oInverseTransform.Dx  = 0;
 			m_oInverseTransform.Dy  = 0;
 		}
-
-		m_oInverseTransform.M11 = pT->M22 / dDet;
-		m_oInverseTransform.M12 = -pT->M12 / dDet;
-		m_oInverseTransform.M21 = -pT->M21 / dDet;
-		m_oInverseTransform.M22 = pT->M22 / dDet;
-		m_oInverseTransform.Dx  = pT->Dy * pT->M21 / dDet - pT->Dx * pT->M22 / dDet;
-		m_oInverseTransform.Dy  = pT->Dx * pT->M12 / dDet - pT->Dy * pT->M11 / dDet;
+		else
+		{
+			m_oInverseTransform.M11 = pT->M22 / dDet;
+			m_oInverseTransform.M12 = -pT->M12 / dDet;
+			m_oInverseTransform.M21 = -pT->M21 / dDet;
+			m_oInverseTransform.M22 = pT->M22 / dDet;
+			m_oInverseTransform.Dx  = pT->Dy * pT->M21 / dDet - pT->Dx * pT->M22 / dDet;
+			m_oInverseTransform.Dy  = pT->Dx * pT->M12 / dDet - pT->Dy * pT->M11 / dDet;
+		}
 
 		UpdateFinalTransform();
 	}

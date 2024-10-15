@@ -250,6 +250,8 @@ namespace NSDocxRenderer
 			m_oCurrVectorGraphics = std::move(new_vector_graphics);
 		}
 		shape->SetVector(std::move(m_oCurrVectorGraphics));
+		if (!shape->IsOoxmlValid())
+			return;
 
 		auto info = pInfo;
 		if (!info && m_bIsGradient)

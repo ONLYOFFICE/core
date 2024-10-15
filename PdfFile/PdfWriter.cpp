@@ -108,7 +108,13 @@ Aggplus::CImage* ConvertMetafile(NSFonts::IApplicationFonts* pAppFonts, const st
 		if (NULL == pMeta || !pMeta->LoadFromFile(wsPath.c_str()))
 			return new Aggplus::CImage(wsPath);
 
-		if (0 < dWidth || 0 < dHeight)
+		bool bUseMax = false;
+		if (dWidth > 5000 || dHeight > 5000)
+			bUseMax = true;
+		else if (dWidth <= 0 && dHeight <= 0)
+			bUseMax = true;
+
+		if (!bUseMax)
 			pMeta->ConvertToRaster(wsTempDirectory.c_str(), _CXIMAGE_FORMAT_PNG, MM_2_PT(dWidth), MM_2_PT(dHeight));
 		else
 			MetaFile::ConvertToRasterMaxSize(pMeta, wsTempDirectory.c_str(), _CXIMAGE_FORMAT_PNG, 2000);
@@ -3573,6 +3579,7 @@ void CPdfWriter::DrawAP(PdfWriter::CAnnotation* pAnnot, BYTE* pRender, LONG nLen
 	PdfWriter::CPage* pFakePage = m_pDocument->CreateFakePage();
 	m_pPage = pFakePage;
 	m_pDocument->SetCurPage(pFakePage);
+	m_pPage->StartTransform(1, 0, 0, 1, -pAnnot->GetPageX(), 0);
 
 	IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pRenderer);
 	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);

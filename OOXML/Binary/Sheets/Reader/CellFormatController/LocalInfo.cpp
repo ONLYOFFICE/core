@@ -40,7 +40,9 @@ namespace lcInfo
 std::map<_INT32, LocalInfo> InfoMap
 {
     {-1, LocalInfo{-1, L"default", L".", L":", L"135", L"%d %B %Y"}},
-    {25, LocalInfo{25, L"ru", L".", L":", L"135", L"%d %B %Y г."}}
+    {25, LocalInfo{25, L"ru", L".", L":", L"135", L"%d %B %Y г."}},
+    {9, LocalInfo{9, L"en", L"/", L":", L"205", L"%A, %B %d, %Y"}},
+    {12298, LocalInfo{12298, L"es-EC", L"/", L":", L"025", L"%A, %d de %B de %Y"}}
 };
 
 
@@ -56,13 +58,32 @@ LocalInfo getLocalInfo(const _INT32 lcid)
 //LocalInfo methods
 
 //todo сборка кода формата из сокращенного формата и разделителя
-std::wstring LocalInfo::GetshortYearDateFormat()
+std::wstring LocalInfo::GetshorDateFormat()
 {
-    return L"%d.%m.%Y";
+    std::wstring result;
+    for(auto i = 0; i < ShortDatePattern.size(); i++ )
+    {
+        switch (ShortDatePattern[i])
+        {
+            case L'0':
+            case L'1':
+                result+= L"%d";
+                break;
+            case L'2':
+            case L'3':
+                result+= L"%m";
+                break;
+            case L'4':
+                result+= L"%y";
+                break;
+            case L'5':
+                result+= L"%Y";
+                break;
+        };
+        if (i != ShortDatePattern.size() - 1)
+            result+= DateSeparator;
+    }
+        return result;
 }
 
-std::wstring LocalInfo::GetLongYearDateFormat()
-{
-    return L"%d.%m.%Y";
-}
 }

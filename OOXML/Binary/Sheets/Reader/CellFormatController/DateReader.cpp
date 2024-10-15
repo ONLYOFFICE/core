@@ -91,6 +91,40 @@ bool DateReader::GetDigitalDate(const std::wstring &date, double &result, bool &
     else
         requiredFormats = &DateFormatsShort;
 
+    if(locInf.lcid != -1)
+    {
+        std::wistringstream ss(date);
+
+        // Пытаемся спарсить дату в локальном формате
+        tm time = {};
+        ss >> std::get_time(&time, locInf.LongDatePattern.c_str());
+
+        if (!ss.fail())
+        {
+            if(time.tm_year >= 70)
+                result = getStandartDate(time);
+            else
+              result = getNonUnixDate(time);
+            Hasdate = true;
+            Hastime = false;
+            return true;
+        }
+        ss.clear();
+        ss.seekg(0);
+        auto formatString = locInf.GetshorDateFormat();
+        ss >> std::get_time(&time, formatString.c_str());
+        if (!ss.fail())
+        {
+            if(time.tm_year >= 70)
+                result = getStandartDate(time);
+            else
+              result = getNonUnixDate(time);
+            Hasdate = true;
+            Hastime = false;
+            return true;
+        }
+        return false;
+    }
     // Перебор форматов даты, пока не найдется подходящий
     for (const auto& format : *requiredFormats) {
         std::wistringstream ss(date);

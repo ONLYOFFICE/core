@@ -44,9 +44,9 @@ class LocalInfo
 {
 public:
 
-    std::wstring GetshortYearDateFormat();
+    /// @brief собрать короткий формат даты из шаблона
+    std::wstring GetshorDateFormat();
 
-    std::wstring GetLongYearDateFormat();
 
     /// @brief id локали
     _INT32 lcid;

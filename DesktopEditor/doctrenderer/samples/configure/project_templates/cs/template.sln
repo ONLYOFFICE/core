@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{[SOLUTION_GUID]}") = "[TEST_NAME]", "[TEST_NAME].csproj", "{[PROJECT_GUID]}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{[PROJECT_GUID]}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{[PROJECT_GUID]}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{[PROJECT_GUID]}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{[PROJECT_GUID]}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {[EXT_GLOBALS_GUID]}
+	EndGlobalSection
+EndGlobal

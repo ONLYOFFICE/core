@@ -39,20 +39,30 @@ using CContextScope = docbuilder_net.CDocBuilderContextScope;
 
 namespace Sample
 {
-    public class CommentingErrors
+    public class FillingSpreadsheet
     {
         public static void Main(string[] args)
         {
             string workDirectory = "C:/Program Files/ONLYOFFICE/DocumentBuilder";
             string resultPath = "../../../result.xlsx";
-            string filePath = "../../../../../../resources/docs/spreadsheet_with_errors.xlsx";
-            // add Docbuilder dlls in path
-            System.Environment.SetEnvironmentVariable("PATH", System.Environment.GetEnvironmentVariable("PATH") + ";" + workDirectory);
+            object[,] data = {
+                { "Id", "Product", "Price", "Available"},
+                { 1001, "Item A", 12.2, true },
+                { 1002, "Item B", 18.8, true },
+                { 1003, "Item C", 70.1, false },
+                { 1004, "Item D", 60.6, true },
+                { 1005, "Item E", 32.6, true },
+                { 1006, "Item F", 28.3, false },
+                { 1007, "Item G", 11.1, false },
+                { 1008, "Item H", 41.4, true }
+            };
+        // add Docbuilder dlls in path
+        System.Environment.SetEnvironmentVariable("PATH", System.Environment.GetEnvironmentVariable("PATH") + ";" + workDirectory);
 
-            CommentErrors(workDirectory, resultPath, filePath);
+            FillSpreadsheet(workDirectory, resultPath, data);
         }
 
-        public static void CommentErrors(string workDirectory, string resultPath, string filePath)
+        public static void FillSpreadsheet(string workDirectory, string resultPath, object[,] data)
         {
             var doctype = (int)OfficeFileTypes.Spreadsheet.XLSX;
 
@@ -60,24 +70,21 @@ namespace Sample
             CDocBuilder.Initialize(workDirectory);
             CDocBuilder oBuilder = new CDocBuilder();
 
-            oBuilder.OpenFile(filePath, "xlsx");
+            oBuilder.CreateFile(doctype);
             CContext oContext = oBuilder.GetContext();
             CContextScope oScope = oContext.CreateScope();
             CValue oGlobal = oContext.GetGlobal();
             CValue oApi = oGlobal["Api"];
-
-            // Find and comment formula errors
             CValue oWorksheet = oApi.Call("GetActiveSheet");
-            CValue oRange = oWorksheet.Call("GetUsedRange");
-            var data = oRange.Call("GetValue");
 
-            for (int row = 0; row < data.GetLength(); row++)
-            {
-                for (int col = 0; col < data[0].GetLength(); col++)
-                {
-                    CheckCell(oWorksheet, data[row][col].ToString(), row, col);
-                }
-            }
+            // pass data
+            CValue oArray = TwoDimArrayToCValue(data, oContext);
+            // First cell in the range (A1) is equal to (0,0)
+            CValue startCell = oWorksheet.Call("GetRangeByNumber", 0, 0);
+            // Last cell in the range is equal to array length -1
+            CValue endCell = oWorksheet.Call("GetRangeByNumber", oArray.GetLength() - 1, oArray[0].GetLength() - 1);
+            oWorksheet.Call("GetRange", startCell, endCell).Call("SetValue", oArray);
+
 
             // Save file and close DocBuilder
             oBuilder.SaveFile(doctype, resultPath);
@@ -85,14 +92,23 @@ namespace Sample
             CDocBuilder.Destroy();
         }
 
-        public static void CheckCell(CValue oWorksheet, string cell, int row, int col)
+        public static CValue TwoDimArrayToCValue(object[,] data, CContext oContext)
         {
-            if (cell.Contains("#"))
+            int rowsLen = data.GetLength(0);
+            int colsLen = data.GetLength(1);
+            CValue oArray = oContext.CreateArray(rowsLen);
+
+            for (int row = 0; row < rowsLen; row++)
             {
-                string comment = "Error" + cell;
-                CValue errorCell = oWorksheet.Call("GetRangeByNumber", row, col);
-                errorCell.Call("AddComment", comment);
+                CValue oArrayCol = oContext.CreateArray(colsLen);
+
+                for (int col = 0; col < colsLen; col++)
+                {
+                    oArrayCol[col] = data[row, col].ToString();
+                }
+                oArray[row] = oArrayCol;
             }
+            return oArray;
         }
     }
 }

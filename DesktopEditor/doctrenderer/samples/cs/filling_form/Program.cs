@@ -37,62 +37,79 @@ using CValue = docbuilder_net.CDocBuilderValue;
 using CContext = docbuilder_net.CDocBuilderContext;
 using CContextScope = docbuilder_net.CDocBuilderContextScope;
 
+using System;
+using System.Collections.Generic;
+
 namespace Sample
 {
-    public class CommentingErrors
+    public class FillingForm
     {
         public static void Main(string[] args)
         {
             string workDirectory = "C:/Program Files/ONLYOFFICE/DocumentBuilder";
-            string resultPath = "../../../result.xlsx";
-            string filePath = "../../../../../../resources/docs/spreadsheet_with_errors.xlsx";
+            string filePath = "../../../../../../resources/docs/form.docx";
+            string resultPath = "../../../result.docx";
+
+            IDictionary<string, string> formData = new Dictionary<string, string>() {
+                { "Photo", "https://api.onlyoffice.com/content/img/docbuilder/examples/blue_cloud.png" },
+                { "Serial","A1345" },
+                { "Company Name", "Blue Cloud" },
+                { "Date", "25.12.2023" },
+                { "Recipient", "Space Corporation" },
+                { "Qty1", "25" },
+                { "Description1", "Frame" },
+                { "Qty2", "2" },
+                { "Description2", "Stack" },
+                { "Qty3", "34" },
+                { "Description3", "Shifter" }
+            };
             // add Docbuilder dlls in path
             System.Environment.SetEnvironmentVariable("PATH", System.Environment.GetEnvironmentVariable("PATH") + ";" + workDirectory);
 
-            CommentErrors(workDirectory, resultPath, filePath);
+            FillForm(workDirectory, resultPath, filePath, formData);
         }
 
-        public static void CommentErrors(string workDirectory, string resultPath, string filePath)
+        public static void FillForm(string workDirectory, string resultPath, string filePath, IDictionary<string, string> formData)
         {
-            var doctype = (int)OfficeFileTypes.Spreadsheet.XLSX;
+            var doctype = (int)OfficeFileTypes.Document.DOCX;
 
             // Init DocBuilder
             CDocBuilder.Initialize(workDirectory);
             CDocBuilder oBuilder = new CDocBuilder();
+            oBuilder.OpenFile(filePath, "docxf");
 
-            oBuilder.OpenFile(filePath, "xlsx");
             CContext oContext = oBuilder.GetContext();
             CContextScope oScope = oContext.CreateScope();
             CValue oGlobal = oContext.GetGlobal();
             CValue oApi = oGlobal["Api"];
 
-            // Find and comment formula errors
-            CValue oWorksheet = oApi.Call("GetActiveSheet");
-            CValue oRange = oWorksheet.Call("GetUsedRange");
-            var data = oRange.Call("GetValue");
-
-            for (int row = 0; row < data.GetLength(); row++)
+            // Fill form
+            CValue oDocument = oApi.Call("GetDocument");
+            CValue aForms = oDocument.Call("GetAllForms");
+            int formNum = 0;
+            while (formNum < aForms.GetLength())
             {
-                for (int col = 0; col < data[0].GetLength(); col++)
+                CValue form = aForms[formNum];
+                string type = form.Call("GetFormType").ToString();
+                string value;
+                try
                 {
-                    CheckCell(oWorksheet, data[row][col].ToString(), row, col);
+                    value = formData[form.Call("GetFormKey").ToString()];
                 }
+                catch (Exception e)
+                {
+                    value = "";
+                }
+                if (type == "textForm") form.Call("SetText", value);
+                if (type == "pictureForm") form.Call("SetImage", value);
+                formNum++;
             }
 
             // Save file and close DocBuilder
             oBuilder.SaveFile(doctype, resultPath);
             oBuilder.CloseFile();
-            CDocBuilder.Destroy();
-        }
 
-        public static void CheckCell(CValue oWorksheet, string cell, int row, int col)
-        {
-            if (cell.Contains("#"))
-            {
-                string comment = "Error" + cell;
-                CValue errorCell = oWorksheet.Call("GetRangeByNumber", row, col);
-                errorCell.Call("AddComment", comment);
-            }
+            CDocBuilder.Destroy();
         }
     }
 }

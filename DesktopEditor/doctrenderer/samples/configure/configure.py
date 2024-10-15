@@ -129,6 +129,30 @@ def genVSProjectsCPP(tests, builder_dir):
         }
         replacePlaceholders('configure/project_templates/cpp/template.vcxproj.user', test_dir + '/' + test_name + '.vcxproj.user', replacements)
 
+def genVSProjectsCS(tests, builder_dir):
+    for test in tests:
+        test_dir = 'out/' + test
+        mkdir(test_dir)
+        test_name = test.split('/')[1]
+        if os.path.exists(test_dir + '/' + test_name + '.csproj'):
+            log('info', 'VS .NET project for test "' + test + '" already exists. Skipping.')
+            continue
+        # .csproj
+        project_guid = str(uuid.uuid4())
+        replacements = {
+            '[TEST_NAME]': test_name,
+            '[BUILDER_DIR]': builder_dir,
+        }
+        replacePlaceholders('configure/project_templates/cs/template.csproj', test_dir + '/' + test_name + '.csproj', replacements)
+        # .sln
+        replacements = {
+            '[SOLUTION_GUID]': str(uuid.uuid4()).upper(),
+            '[TEST_NAME]': test_name,
+            '[PROJECT_GUID]': project_guid.upper(),
+            '[EXT_GLOBALS_GUID]': str(uuid.uuid4()).upper()
+        }
+        replacePlaceholders('configure/project_templates/cs/template.sln', test_dir + '/' + test_name + '.sln', replacements)
+
 def genVSProjects(tests_selected, builder_dir):
     if os_name != 'windows':
         log('warning', 'generating Visual Studio projects is only available on Windows')
@@ -140,8 +164,7 @@ def genVSProjects(tests_selected, builder_dir):
         if lang == 'cpp':
             genVSProjectsCPP(tests, builder_dir)
         elif lang == 'cs':
-            # TODO: implement
-            pass
+            genVSProjectsCS(tests, builder_dir)
 
 if __name__ == '__main__':
     # go to root dir

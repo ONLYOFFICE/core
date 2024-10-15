@@ -31,6 +31,7 @@
  */
 
 #include "MemoryStream.h"
+#include "../XlsFile/Format/Logging/Log.h"
 
 MemoryStream::MemoryStream (unsigned char* data, unsigned long size, bool bMemCopy) : m_Data(NULL), m_Size(0), m_Position(0), bMemoryCopy(bMemCopy)
 {
@@ -66,6 +67,10 @@ _UINT64 MemoryStream::ReadUInt64()
 		rdU64 = DocFileFormat::FormatUtils::BytesToUInt64(m_Data, m_Position, m_Size);
 		m_Position += 8;
 	}
+	else
+	{
+		Log::warning(L"MemoryStream: UInt64 read");
+	}
 
 	return rdU64;
 }
@@ -78,7 +83,10 @@ unsigned short MemoryStream::ReadUInt16()
 		rdUShort = DocFileFormat::FormatUtils::BytesToUInt16 (m_Data, m_Position, m_Size);
 		m_Position += 2;
 	}
-
+	else
+	{
+		Log::warning(L"MemoryStream: UInt16 read");
+	}
 	return rdUShort;
 }
 void MemoryStream::WriteUInt16(unsigned short val)
@@ -87,6 +95,10 @@ void MemoryStream::WriteUInt16(unsigned short val)
 	{
 		((unsigned short *)(m_Data + m_Position))[0] = val;
 		m_Position	+=	2;
+	}
+	else
+	{
+		Log::warning(L"MemoryStream: UInt16 write");
 	}
 }
 short MemoryStream::ReadInt16()
@@ -98,7 +110,10 @@ short MemoryStream::ReadInt16()
 		rdShort		=	DocFileFormat::FormatUtils::BytesToInt16 (m_Data, m_Position, m_Size);
 		m_Position	+=	2;
 	}
-
+	else
+	{
+		Log::warning(L"MemoryStream: Int16 read");
+	}
 	return rdShort;
 }
 
@@ -111,7 +126,10 @@ int MemoryStream::ReadInt32()
 		rdInt		=	DocFileFormat::FormatUtils::BytesToInt32 (m_Data, m_Position, m_Size);
 		m_Position	+=	4;
 	}
-
+	else
+	{
+		Log::warning(L"MemoryStream: Int32 read");
+	}
 	return rdInt;
 }
 void MemoryStream::WriteInt32(_INT32 val)
@@ -120,6 +138,10 @@ void MemoryStream::WriteInt32(_INT32 val)
 	{
 		((_INT32 *)(m_Data + m_Position))[0] = val;
 		m_Position	+=	4;
+	}
+	else
+	{
+		Log::warning(L"MemoryStream: Int32 read");
 	}
 }
 void MemoryStream::Align(_UINT32 val)
@@ -139,7 +161,10 @@ unsigned int MemoryStream::ReadUInt32()
 		rdUInt		=	DocFileFormat::FormatUtils::BytesToUInt32 (m_Data, m_Position, m_Size);
 		m_Position	+=	4;
 	}
-
+	else
+	{
+		Log::warning(L"MemoryStream: UInt32 read");
+	}
 	return rdUInt;
 }
 void MemoryStream::WriteByte(unsigned char val)
@@ -157,6 +182,10 @@ void MemoryStream::WriteUInt32(_UINT32 val)
 		((_UINT32 *)(m_Data + m_Position))[0] = val;
 		m_Position	+=	sizeof(_UINT32);
 	}
+	else
+	{
+		Log::warning(L"MemoryStream: UInt32 write");
+	}
 }
 unsigned char MemoryStream::ReadByte()
 {
@@ -167,7 +196,10 @@ unsigned char MemoryStream::ReadByte()
 		rdByte		=	(m_Position < m_Size) ? m_Data[m_Position] : 0;
 		m_Position	+=	sizeof(rdByte);
 	}
-
+	else
+	{
+		Log::warning(L"MemoryStream: UInt8 read");
+	}
 	return rdByte;
 }
 
@@ -193,6 +225,10 @@ void MemoryStream::WriteBytes(unsigned char* pData, int size)
 	{
 		memcpy(m_Data + m_Position, pData, size);
 		m_Position += size;
+	}
+	else
+	{
+		Log::warning(L"MemoryStream: bytes write");
 	}
 }
 

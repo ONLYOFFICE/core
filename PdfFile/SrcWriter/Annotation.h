@@ -194,6 +194,8 @@ namespace PdfWriter
 		std::string GetBorderDash();
 		double GetWidth()  { return abs(m_oRect.fRight - m_oRect.fLeft); }
 		double GetHeight() { return abs(m_oRect.fTop - m_oRect.fBottom); }
+		double GetPageX() { return m_dPageX; }
+		double GetPageH() { return m_dPageH; }
 	};
 	class CPopupAnnotation : public CAnnotation
 	{

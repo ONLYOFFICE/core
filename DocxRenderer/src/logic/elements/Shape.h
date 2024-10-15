@@ -85,6 +85,7 @@ namespace NSDocxRenderer
 
 		bool IsPeak() const noexcept;
 		bool IsSide() const noexcept;
+		bool IsOoxmlValid() const noexcept;
 
 		void BuildGeneralProperties(NSStringUtils::CStringBuilder &oWriter) const;
 		void BuildSpecificProperties(NSStringUtils::CStringBuilder &oWriter) const;

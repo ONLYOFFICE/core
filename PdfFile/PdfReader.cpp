@@ -888,6 +888,9 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 					}
 					else
 						pg = pLinkDest->getPageNum();
+					if (0 == pg)
+						++pg;
+
 					std::string sLink = "#" + std::to_string(pg - 1);
 					str = new GString(sLink.c_str());
 					dy  = m_pPDFDocument->getPageCropHeight(pg) - pLinkDest->getTop();

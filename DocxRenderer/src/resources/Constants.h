@@ -1,5 +1,6 @@
 #pragma once
 #include <type_traits>
+#include <limits>
 
 #include "../../../DesktopEditor/common/Types.h"
 
@@ -58,3 +59,14 @@ const uint32_t c_SPACE_SYM = 0x20;
 const UINT   c_iStartingIdForImages = 6;
 constexpr size_t c_nAntiZero = ~0;
 const UINT   c_iStandartRelativeHeight = 0x0400;
+
+constexpr int32_t c_iST_PositionOffsetMax = std::numeric_limits<int32_t>::max();
+constexpr int32_t c_iST_PositionOffsetMin = std::numeric_limits<int32_t>::min();
+constexpr uint64_t c_iST_PositiveCoordinatetMin = 0;
+constexpr uint64_t c_iST_PositiveCoordinatetMax = 27273042316900;
+
+constexpr double c_dST_PositionOffsetMax = c_iST_PositionOffsetMax / c_dMMToEMU;
+constexpr double c_dST_PositionOffsetMin = c_iST_PositionOffsetMin / c_dMMToEMU;
+constexpr double c_dST_PositiveCoordinatetMin = c_iST_PositiveCoordinatetMin / c_dMMToEMU;
+constexpr double c_dST_PositiveCoordinatetMax = c_iST_PositiveCoordinatetMax / c_dMMToEMU;
+

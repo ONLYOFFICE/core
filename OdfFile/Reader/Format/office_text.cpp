@@ -200,7 +200,7 @@ void office_text::docx_convert(oox::docx_conversion_context & Context)
 			{
 				style_instance* curr_style_instance = Context.root()->odf_context().styleContainer().style_by_name(style_name, odf_types::style_family::Paragraph, false);
 				
-				if (curr_style_instance->content()->get_style_paragraph_properties() &&
+				if (curr_style_instance && curr_style_instance->content()->get_style_paragraph_properties() &&
 					curr_style_instance->content()->get_style_paragraph_properties()->content_.fo_break_before_)
 				{
 					if (curr_style_instance && false == curr_style_instance->parent_name().empty())

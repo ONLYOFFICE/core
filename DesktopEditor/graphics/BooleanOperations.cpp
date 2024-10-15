@@ -1042,12 +1042,12 @@ void CBooleanOperations::PreparePath(const CGraphicsPath& path, int id,
 									 bool reverse)
 {
 	bool isPolyClosed = path.Is_poly_closed();
-	int length = isPolyClosed ? (path.GetPointCount() - 1) : path.GetPointCount();
+	int length = path.GetPointCount();
 	int idx = 0;
 	if (reverse)
 	{
 		bool isCurve = false;
-		for (int i = length; i > 0; i--)
+		for (int i = length - 1; i >= 0; i--)
 		{
 			std::vector<PointD> points = path.GetPoints(isCurve ? i - 2 : i, isCurve ? 3 : 1);
 			if (isCurve) std::reverse(points.begin(), points.end());
@@ -1087,10 +1087,10 @@ void CBooleanOperations::PreparePath(const CGraphicsPath& path, int id,
 		}
 	}
 
-	length = segments.size();
+	length = isPolyClosed ? static_cast<int>(segments.size()) : static_cast<int>(segments.size()) - 1;
 
 	for (int i = 0; i < length; i++)
-		curves.push_back(Curve(segments[i], i == (length - 1) ? segments[0] : segments[i + 1]));
+		curves.push_back(Curve(segments[i], isPolyClosed && (i == (length - 1)) ? segments[0] : segments[i + 1]));
 }
 
 void CBooleanOperations::InsertSegment(Segment& segment, const Segment& handles, bool updateHandles)
@@ -1519,7 +1519,7 @@ void CBooleanOperations::AddCurveLineIntersection(const Curve& curve1, const Cur
 	}
 }
 
-int CBooleanOperations::AddCurveIntersection(Curve curve1, Curve curve2, const Curve& startCurve1,
+int CBooleanOperations::AddCurveIntersection(const Curve& curve1, const Curve& curve2, const Curve& startCurve1,
 											 const Curve& startCurve2, bool flip,
 											 int recursion, int calls, double tMin,
 											 double tMax, double uMin, double uMax)
@@ -1542,9 +1542,9 @@ int CBooleanOperations::AddCurveIntersection(Curve curve1, Curve curve2, const C
 			dp2 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[2], y1[2]),
 			dp3 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[3], y1[3]);
 
-	std::vector<std::vector<PointD>> hull = getConvexHull(dp0, dp1, dp2, dp3);
-	std::vector<PointD>	top = hull[0],
-						bottom = hull[1];
+	std::vector<PointD> top;
+	std::vector<PointD> bottom;
+	getConvexHull(dp0, dp1, dp2, dp3, top, bottom);
 
 	double tMinClip = clipConvexHull(top, bottom, dMin, dMax);
 
@@ -1575,14 +1575,14 @@ int CBooleanOperations::AddCurveIntersection(Curve curve1, Curve curve2, const C
 	}
 	else
 	{
-		curve1 = curve1.GetPart(tMinClip, tMaxClip);
+		Curve newCurve1 = curve1.GetPart(tMinClip, tMaxClip);
 		double uDiff = uMax - uMin;
 
 		if (tMaxClip - tMinClip > 0.8)
 		{
 			if (tMaxNew - tMinNew > uDiff)
 			{
-				std::vector<Curve> parts = curve1.Subdivide(0.5);
+				std::vector<Curve> parts = newCurve1.Subdivide(0.5);
 				double t = (tMinNew + tMaxNew) / 2;
 
 				parts[0].Segment2.SetHandles(parts[0].Segment2.HI, parts[0].Segment2.HO);
@@ -1601,19 +1601,19 @@ int CBooleanOperations::AddCurveIntersection(Curve curve1, Curve curve2, const C
 				parts[0].Segment2.SetHandles(parts[0].Segment2.HI, parts[0].Segment2.HO);
 				parts[1].Segment2.SetHandles(parts[1].Segment2.HI, parts[1].Segment2.HO);
 
-				calls = AddCurveIntersection(parts[0], curve1, startCurve2, startCurve1,
+				calls = AddCurveIntersection(parts[0], newCurve1, startCurve2, startCurve1,
 											 !flip, recursion, calls, uMin, u, tMinNew, tMaxNew);
-				calls = AddCurveIntersection(parts[1], curve1, startCurve2, startCurve1,
+				calls = AddCurveIntersection(parts[1], newCurve1, startCurve2, startCurve1,
 											 !flip, recursion, calls, u, uMax, tMinNew, tMaxNew);
 			}
 		}
 		else
 		{
 			if (uDiff == 0 || uDiff >= LINE_EPSILON)
-				calls = AddCurveIntersection(curve2, curve1, startCurve2, startCurve1,
+				calls = AddCurveIntersection(curve2, newCurve1, startCurve2, startCurve1,
 											 !flip, recursion, calls, uMin, uMax, tMinNew, tMaxNew);
 			else
-				calls = AddCurveIntersection(curve1, curve2, startCurve1, startCurve2,
+				calls = AddCurveIntersection(newCurve1, curve2, startCurve1, startCurve2,
 											 flip, recursion, calls, tMinNew, tMaxNew, uMin, uMax);
 		}
 	}
@@ -1626,14 +1626,12 @@ int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment,
 	PointD pt{};
 	if (intersect({point.X, point.Y, segment.P.X, segment.P.Y, curve.Segment1.P.X, curve.Segment1.P.Y, curve.Segment2.P.X, curve.Segment2.P.Y}, pt))
 	{
+		if (getDistance(segment.P, pt) <= GEOMETRIC_EPSILON) return (touchCount + 1) % 2;
 		if (getDistance(curve.Segment1.P, pt) <= GEOMETRIC_EPSILON || getDistance(curve.Segment2.P, pt) <= GEOMETRIC_EPSILON)
-		{
-			int tmp = touchCount % 2;
-			touchCount++;
-			return tmp;
-		}
+			return ++touchCount % 2;
 		else if (curve.IsStraight())
 		{
+			touchCount++;
 			return 1;
 		}
 	}

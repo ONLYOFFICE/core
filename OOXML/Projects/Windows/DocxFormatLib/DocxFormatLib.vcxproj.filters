@@ -547,6 +547,12 @@
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\Metadata.h">
       <Filter>XlsxFormat\Workbook</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\XlsxFormat\Pivot\PivotCacheChildOther.h">
+      <Filter>XlsxFormat\Pivots</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsxFormat\Pivot\PivotHierarchies.h">
+      <Filter>XlsxFormat\Pivots</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Base\codecvt.cpp">
@@ -962,6 +968,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\Metadata.cpp">
       <Filter>XlsxFormat\Workbook</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsxFormat\Pivot\PivotCacheChildOther.cpp">
+      <Filter>XlsxFormat\Pivots</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsxFormat\Pivot\PivotHierarchies.cpp">
+      <Filter>XlsxFormat\Pivots</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

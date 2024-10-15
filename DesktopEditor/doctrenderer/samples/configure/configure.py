@@ -109,9 +109,10 @@ def genVSProjectsCPP(tests, builder_dir):
         replacePlaceholders('configure/project_templates/cpp/template.vcxproj', test_dir + '/' + test_name + '.vcxproj', replacements)
         # .sln
         replacements = {
-            '[UNIQUE_GUID]': str(uuid.uuid4()).upper(),
+            '[SOLUTION_GUID]': str(uuid.uuid4()).upper(),
             '[TEST_NAME]': test_name,
-            '[PROJECT_GUID]': project_guid.upper()
+            '[PROJECT_GUID]': project_guid.upper(),
+            '[EXT_GLOBALS_GUID]': str(uuid.uuid4()).upper()
         }
         replacePlaceholders('configure/project_templates/cpp/template.sln', test_dir + '/' + test_name + '.sln', replacements)
         # .vcxproj.filters

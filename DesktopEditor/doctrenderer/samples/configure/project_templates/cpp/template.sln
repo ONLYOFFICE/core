@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{[UNIQUE_GUID]}") = "[TEST_NAME]", "[TEST_NAME].vcxproj", "{[PROJECT_GUID]}"
+Project("{[SOLUTION_GUID]}") = "[TEST_NAME]", "[TEST_NAME].vcxproj", "{[PROJECT_GUID]}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,5 +22,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {[EXT_GLOBALS_GUID]}
 	EndGlobalSection
 EndGlobal

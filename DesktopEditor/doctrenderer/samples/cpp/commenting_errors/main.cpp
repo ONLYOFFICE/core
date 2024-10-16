@@ -30,17 +30,16 @@
 *
 */
 
-#include <map>
 #include <string>
-#include <iostream>
 #include "common.h"
 #include "docbuilder.h"
+
+#include "../../../resources/utils/utils.h"
 
 using namespace std;
 using namespace NSDoctRenderer;
 
 const wchar_t* workDir = L"C:\\Program Files\\ONLYOFFICE\\DocumentBuilder";
-const wchar_t* templatePath = L"../../../resources/docs/spreadsheet_with_errors.xlsx";
 const wchar_t* resultPath = L"result.xlsx";
 
 // Helper functions
@@ -71,7 +70,8 @@ int main(int argc, char* argv[])
     oBuilder.SetProperty("--work-directory", workDir);
 
     // Open file and get context
-    oBuilder.OpenFile(templatePath, L"");
+	wstring templatePath = NSUtils::GetResourcesDirectory() + L"/docs/spreadsheet_with_errors.xlsx";
+	oBuilder.OpenFile(templatePath.c_str(), L"");
     CContext oContext = oBuilder.GetContext();
     CContextScope oScope = oContext.CreateScope();
     CValue oGlobal = oContext.GetGlobal();

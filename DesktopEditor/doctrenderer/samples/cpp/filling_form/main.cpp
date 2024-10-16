@@ -32,15 +32,15 @@
 
 #include <map>
 #include <string>
-#include <iostream>
 #include "common.h"
 #include "docbuilder.h"
+
+#include "../../../resources/utils/utils.h"
 
 using namespace std;
 using namespace NSDoctRenderer;
 
 const wchar_t* workDir = L"C:\\Program Files\\ONLYOFFICE\\DocumentBuilder";
-const wchar_t* templatePath = L"../../../resources/docs/form.docx";
 const wchar_t* resultPath = L"result.docx";
 
 // Helper functions
@@ -72,7 +72,8 @@ int main(int argc, char* argv[])
     CDocBuilder::Initialize(workDir);
     CDocBuilder oBuilder;
     oBuilder.SetProperty("--work-directory", workDir);
-    oBuilder.OpenFile(templatePath, L"");
+	wstring templatePath = NSUtils::GetResourcesDirectory() + L"/docs/form.docx";
+	oBuilder.OpenFile(templatePath.c_str(), L"");
 
     CContext oContext = oBuilder.GetContext();
     CContextScope oScope = oContext.CreateScope();

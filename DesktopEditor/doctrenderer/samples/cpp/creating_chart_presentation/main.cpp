@@ -29,18 +29,17 @@
 * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
 *
 */
-#include <map>
 #include <string>
-#include <iostream>
 #include <vector>
 #include "common.h"
 #include "docbuilder.h"
+
+#include "../../../resources/utils/utils.h"
 
 using namespace std;
 using namespace NSDoctRenderer;
 
 const wchar_t* workDir = L"C:\\Program Files\\ONLYOFFICE\\DocumentBuilder";
-const wchar_t* templatePath = L"../../../resources/docs/chart_data.xlsx";
 const wchar_t* resultPath = L"result.pptx";
 
 // Helper functions
@@ -75,9 +74,10 @@ int main(int argc, char* argv[])
     oBuilder.SetProperty("--work-directory", workDir);
 
     // Read chart data from xlsx
-    oBuilder.OpenFile(templatePath, L"");
-    CContext oContext = oBuilder.GetContext();
-    CContextScope oScope = oContext.CreateScope();
+	wstring templatePath = NSUtils::GetResourcesDirectory() + L"/docs/chart_data.xlsx";
+	oBuilder.OpenFile(templatePath.c_str(), L"");
+	CContext oContext = oBuilder.GetContext();
+	CContextScope oScope = oContext.CreateScope();
     CValue oGlobal = oContext.GetGlobal();
     CValue oApi = oGlobal["Api"];
     CValue oWorksheet = oApi.Call("GetActiveSheet");
@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
     // Create chart presentation
     oBuilder.CreateFile(OFFICESTUDIO_FILE_PRESENTATION_PPTX);
     oContext = oBuilder.GetContext();
-    oScope = oContext.CreateScope();
+	oScope = oContext.CreateScope();
     oGlobal = oContext.GetGlobal();
     oApi = oGlobal["Api"];
     CValue oPresentation = oApi.Call("GetPresentation");

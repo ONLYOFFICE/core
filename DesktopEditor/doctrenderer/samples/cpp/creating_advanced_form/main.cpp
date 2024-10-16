@@ -30,9 +30,7 @@
 *
 */
 
-#include <map>
 #include <string>
-#include <iostream>
 #include "common.h"
 #include "docbuilder.h"
 

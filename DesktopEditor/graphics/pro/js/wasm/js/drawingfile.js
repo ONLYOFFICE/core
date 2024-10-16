@@ -1281,6 +1281,10 @@ CFile.prototype["getAnnotationsInfo"] = function(pageIndex)
 			if (flags & (1 << 26))
 				rec["Desc"] = reader.readString();
 		}
+		else if (rec["Type"] == 12)
+		{
+			rec["Icon"] = reader.readString();
+		}
 		res.push(rec);
 	}
 	

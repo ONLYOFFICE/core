@@ -35,7 +35,7 @@
 #include "common.h"
 #include "docbuilder.h"
 
-#include "../../../resources/utils/utils.h"
+#include "resources/utils/utils.h"
 
 using namespace std;
 using namespace NSDoctRenderer;

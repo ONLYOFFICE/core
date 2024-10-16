@@ -105,6 +105,7 @@ def genVSProjectsCPP(tests, builder_dir):
             '[PROJECT_GUID]': project_guid,
             '[TEST_NAME]': test_name,
             '[BUILDER_DIR]': builder_dir,
+            '[ROOT_DIR]': os.getcwd()
         }
         replacePlaceholders('configure/project_templates/cpp/template.vcxproj', test_dir + '/' + test_name + '.vcxproj', replacements)
         # .sln
@@ -171,8 +172,10 @@ def genQtProjects(tests_selected, builder_dir):
     if 'cpp' not in tests_selected:
         return
 
+    root_dir = os.getcwd()
     if os_name == 'windows':
         builder_dir = builder_dir.replace('\\', '/')
+        root_dir = root_dir.replace('\\', '/')
 
     tests = tests_selected['cpp']
     mkdir('out/cpp')
@@ -187,6 +190,7 @@ def genQtProjects(tests_selected, builder_dir):
         replacements = {
             '[TEST_NAME]': test_name,
             '[BUILDER_DIR]': builder_dir,
+            '[ROOT_DIR]': root_dir
         }
         replacePlaceholders('configure/project_templates/cpp/template.pro', test_dir + '/' + test_name + '.pro', replacements)
 

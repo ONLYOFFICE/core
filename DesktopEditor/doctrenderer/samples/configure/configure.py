@@ -135,7 +135,7 @@ def genVSProjectsCS(tests, builder_dir):
         mkdir(test_dir)
         test_name = test.split('/')[1]
         if os.path.exists(test_dir + '/' + test_name + '.csproj'):
-            log('info', 'VS .NET project for test "' + test + '" already exists. Skipping.')
+            log('info', 'VS C# project for test "' + test + '" already exists. Skipping.')
             continue
         # .csproj
         project_guid = str(uuid.uuid4())
@@ -165,6 +165,31 @@ def genVSProjects(tests_selected, builder_dir):
             genVSProjectsCPP(tests, builder_dir)
         elif lang == 'cs':
             genVSProjectsCS(tests, builder_dir)
+
+def genQtProjects(tests_selected, builder_dir):
+    # only for C++ projects
+    if 'cpp' not in tests_selected:
+        return
+
+    if os_name == 'windows':
+        builder_dir = builder_dir.replace('\\', '/')
+
+    tests = tests_selected['cpp']
+    mkdir('out/cpp')
+    for test in tests:
+        test_dir = 'out/' + test
+        mkdir(test_dir)
+        test_name = test.split('/')[1]
+        if os.path.exists(test_dir + '/' + test_name + '.pro'):
+            log('info', 'Qt project for test "' + test + '" already exists. Skipping.')
+            continue
+        # .pro
+        replacements = {
+            '[TEST_NAME]': test_name,
+            '[BUILDER_DIR]': builder_dir,
+        }
+        replacePlaceholders('configure/project_templates/cpp/template.pro', test_dir + '/' + test_name + '.pro', replacements)
+
 
 if __name__ == '__main__':
     # go to root dir
@@ -200,5 +225,12 @@ if __name__ == '__main__':
 
     # generate projects
     mkdir('out')
+    # VS
     if args.vs:
         genVSProjects(tests_selected, args.dir)
+    elif 'cs' in tests_selected:
+        log('warning', 'generating C# projects only available ' + ('on Windows ' if os_name != 'windows' else '') + 'with --vs')
+
+    # Qt
+    if args.qt:
+        genQtProjects(tests_selected, args.dir)

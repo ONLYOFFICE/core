@@ -193,6 +193,33 @@ def genQtProjects(tests_selected, builder_dir):
         }
         replacePlaceholders('configure/project_templates/cpp/template.pro', test_dir + '/' + test_name + '.pro', replacements)
 
+def genMakefile(tests_selected, builder_dir):
+    # only for C++ projects
+    if 'cpp' not in tests_selected:
+        return
+
+    if os_name == 'windows':
+        log('warning', 'generating Makefile is not available on Windows')
+        return
+
+    root_dir = os.getcwd()
+    tests = tests_selected['cpp']
+    mkdir('out/cpp')
+    for test in tests:
+        test_dir = 'out/' + test
+        mkdir(test_dir)
+        test_name = test.split('/')[1]
+        if os.path.exists(test_dir + '/Makefile'):
+            log('info', 'Makefile test "' + test + '" already exists. Skipping.')
+            continue
+        # Makefile
+        replacements = {
+            '[TEST_NAME]': test_name,
+            '[BUILDER_DIR]': builder_dir,
+            '[ROOT_DIR]': root_dir
+        }
+        replacePlaceholders('configure/project_templates/cpp/Makefile', test_dir + '/Makefile', replacements)
+
 
 if __name__ == '__main__':
     # go to root dir
@@ -202,6 +229,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate project files for Document Builder samples')
     parser.add_argument('--vs', action='store_true', help='create Visual Studio (.vcxproj and .csproj) project files')
     parser.add_argument('--qt', action='store_true', help='create Qt (.pro) project files')
+    parser.add_argument('--make', action='store_true', help='create Makefile')
     parser.add_argument('-t', '--test', dest='tests', action='append', help='specifies tests to generate project files', required=True)
     parser.add_argument('-l', '--list', action=PrintTestsList, nargs=0, help='show list of available tests and exit')
 
@@ -218,9 +246,9 @@ if __name__ == '__main__':
         log('error', 'Document Builder directory doesn\'t exist: ' + args.dir)
         exit(1)
 
-    if not (args.vs or args.qt):
+    if not (args.vs or args.qt or args.make):
         parser.print_usage()
-        log('error', 'at least one of --vs or --qt must be provided')
+        log('error', 'at least one of --vs, --qt or --make must be provided')
         exit(1)
 
     # filter tests
@@ -233,7 +261,9 @@ if __name__ == '__main__':
         genVSProjects(tests_selected, args.dir)
     elif 'cs' in tests_selected:
         log('warning', 'generating C# projects only available ' + ('on Windows ' if os_name != 'windows' else '') + 'with --vs')
-
     # Qt
     if args.qt:
         genQtProjects(tests_selected, args.dir)
+    # Makefile
+    if args.make:
+        genMakefile(tests_selected, builder_dir)

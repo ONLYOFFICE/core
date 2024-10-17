@@ -57,9 +57,6 @@ public:
     /// @brief разделитель даты
     std::wstring DateSeparator;
 
-    /// @brief разделитель времени
-    std::wstring TimeSeparator;
-
     /// @brief сокращенная дата
     std::wstring ShortDatePattern;
     

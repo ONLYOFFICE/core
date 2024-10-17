@@ -51,6 +51,14 @@ public:
     bool GetDigitalDate(const std::wstring &date, double &result, bool &Hasdate, bool &Hastime);
 
 private:
+
+    /// @brief парсинг строковой даты с известной локалью
+    /// @param date дата в строковом формате
+    /// @param result в формате tm
+    /// @param return true в случае успешной конвертации, иначе false
+    bool parseLocalDate(const std::wstring &date, tm &result, bool &Hasdate, bool &Hastime);
+
+
     /// @brief получение даты в виде числа в формате excel из дат позднее 1900 года
     /// @param datetime структура с датой
     /// @return дата в формате excel
@@ -65,6 +73,11 @@ private:
     /// @param datetime структура с датой
     /// @return дата в формате excel
     _INT32 getNonUnixDate(tm date);
+
+    /// @brief нормализация года под стандарт excel
+    /// @param year год либо в формате yyyy - 2021 либо в формате yy - 21
+    /// @return количество лет прошедших с 1900 года
+    _INT32 normalizeYear(_INT32 year);
 
     _INT32 lcid_;
 };

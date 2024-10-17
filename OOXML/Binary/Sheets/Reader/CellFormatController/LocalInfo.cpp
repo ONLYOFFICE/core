@@ -39,10 +39,10 @@ namespace lcInfo
 {
 std::map<_INT32, LocalInfo> InfoMap
 {
-    {-1, LocalInfo{-1, L"default", L".", L":", L"135", L"%d %B %Y"}},
-    {25, LocalInfo{25, L"ru", L".", L":", L"135", L"%d %B %Y г."}},
-    {9, LocalInfo{9, L"en", L"/", L":", L"205", L"%A, %B %d, %Y"}},
-    {12298, LocalInfo{12298, L"es-EC", L"/", L":", L"025", L"%A, %d de %B de %Y"}}
+    {-1, LocalInfo{-1, L"default", L".", L"135", L"%d %B %Y"}},
+    {25, LocalInfo{25, L"ru", L".", L"135", L"%d %B %Y г."}},
+    {9, LocalInfo{9, L"en", L"/", L"205", L"%A, %B %d, %Y"}},
+    {12298, LocalInfo{12298, L"es-EC", L"/", L"025", L"%A, %d de %B de %Y"}}
 };
 
 

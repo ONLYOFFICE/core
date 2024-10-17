@@ -34,14 +34,13 @@ def getAllTests():
 
 def printAvailableTests():
     all_tests = getAllTests()
-    print('ALL:')
-    print('  *')
+    print('all')
     for lang in langs:
-        print('\n' + lang.upper() + ':')
-        print('  ' + lang + '/*')
+        print('-----')
+        print(lang)
         tests = all_tests[lang]
         for test in tests:
-            print('  ' + test)
+            print(test)
 
 class PrintTestsList(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
@@ -51,9 +50,9 @@ class PrintTestsList(argparse.Action):
 def getSelectedTests(tests):
     all_tests = getAllTests()
     # make set of all available tests
-    tests_set = {'*'}
+    tests_set = {'all'}
     for lang in langs:
-        tests_set.add(lang + '/*')
+        tests_set.add(lang)
         tests_set.update(all_tests[lang])
     # make dict with set of selected tests
     tests_selected = {lang: set() for lang in langs}
@@ -63,11 +62,11 @@ def getSelectedTests(tests):
             log('warning', 'wrong test "' + test + '". Call script with --list (or -l) to see all available tests')
             continue
 
-        if test == '*':
+        if test == 'all':
             for lang in langs:
                 tests_selected[lang].update(all_tests[lang])
-        elif test.endswith('/*'):
-            lang = test[:-2]
+        elif not '/' in test:
+            lang = test
             tests_selected[lang].update(all_tests[lang])
         else:
             lang = test.split('/')[0]

@@ -12,4 +12,6 @@ INCLUDEPATH += $$BUILDER_DIR/include
 INCLUDEPATH += $$ROOT_DIR
 LIBS += -L$$BUILDER_DIR -ldoctrenderer
 
+linux: QMAKE_LFLAGS += -Wl,--unresolved-symbols=ignore-in-shared-libs
+
 SOURCES += ../../../cpp/[TEST_NAME]/main.cpp

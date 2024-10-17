@@ -53,7 +53,7 @@ string cValueToString(CValue value)
 }
 
 // Main function
-int main(int argc, char* argv[])
+int main()
 {
     std::map<string, string> formData;
     formData["Photo"] = "https://api.onlyoffice.com/content/img/docbuilder/examples/blue_cloud.png";
@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
     CValue aForms = oDocument.Call("GetAllForms");
 
     int formNum = 0;
-    while (formNum < aForms.GetLength())
+    while (formNum < (int)aForms.GetLength())
     {
         CValue form = aForms[formNum];
         string type = cValueToString(aForms[formNum].Call("GetFormType"));

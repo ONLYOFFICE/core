@@ -41,7 +41,7 @@ const wchar_t* workDir = L"C:\\Program Files\\ONLYOFFICE\\DocumentBuilder";
 const wchar_t* resultPath = L"result.xlsx";
 
 // Main function
-int main(int argc, char* argv[])
+int main()
 {
     string data[9][4] = {
         { "Id", "Product", "Price", "Available" },

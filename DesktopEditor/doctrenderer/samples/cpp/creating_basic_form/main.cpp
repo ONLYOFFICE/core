@@ -66,7 +66,7 @@ void setTextFormProperties(CValue oTextForm, std::string key, std::string tip, b
 }
 
 // Main function
-int main(int argc, char* argv[])
+int main()
 {
     // Init DocBuilder
     CDocBuilder::Initialize(workDir);

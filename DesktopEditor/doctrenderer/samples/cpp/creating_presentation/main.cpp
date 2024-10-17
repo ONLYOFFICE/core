@@ -67,7 +67,7 @@ void addTextToSlideShape(CValue oApi, CValue oContent, string text, int fontSize
 }
 
 // Main function
-int main(int argc, char* argv[])
+int main()
 {
     map<string, string>slideImages;
     slideImages["gun"] = "https://api.onlyoffice.com/content/img/docbuilder/examples/presentation_gun.png";

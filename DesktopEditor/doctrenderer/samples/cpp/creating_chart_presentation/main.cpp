@@ -66,7 +66,7 @@ void addText(CValue oApi, int fontSize, string text, CValue oSlide, CValue oShap
 }
 
 // Main function
-int main(int argc, char* argv[])
+int main()
 {
     // Init DocBuilder
     CDocBuilder::Initialize(workDir);

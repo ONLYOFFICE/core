@@ -117,7 +117,7 @@ void addTextFormToParagraph(CValue oParagraph, CValue oTextForm, int fontSize, s
 }
 
 // Main function
-int main(int argc, char* argv[])
+int main()
 {
     // Init DocBuilder
     CDocBuilder::Initialize(workDir);

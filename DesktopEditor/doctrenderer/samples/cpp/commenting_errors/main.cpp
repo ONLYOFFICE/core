@@ -62,7 +62,7 @@ void CheckCell(CValue oWorksheet, string cell, int row, int col)
 }
 
 // Main function
-int main(int argc, char* argv[])
+int main()
 {
     // Init DocBuilder
     CDocBuilder::Initialize(workDir);
@@ -82,9 +82,9 @@ int main(int argc, char* argv[])
     CValue oRange = oWorksheet.Call("GetUsedRange");
     CValue data = oRange.Call("GetValue");
 
-    for (int row = 0; row < data.GetLength(); row++)
+    for (int row = 0; row < (int)data.GetLength(); row++)
     {
-        for (int col = 0; col < data[0].GetLength(); col++)
+        for (int col = 0; col < (int)data[0].GetLength(); col++)
         {
             CheckCell(oWorksheet, cValueToString(data[row][col]), row, col);
         }

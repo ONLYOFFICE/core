@@ -544,7 +544,9 @@ std::wstring convert_equation(const std::wstring& formula)
 			&& pos > 0 && !operator_prev)
 		{
 			if (operators.size() > 1)
+			{
 				return L"";
+			}
 			operator_prev = true;
 			operators += formula[pos++];
 		}
@@ -570,7 +572,16 @@ std::wstring convert_equation(const std::wstring& formula)
 			if (false == operators.empty())
 				return L"";
 			operator_prev = true;
-			operators += L"cos";  pos += 3;
+
+			if (pos + 2 < formula.size() && formula[pos + 1] == L'o')
+			{
+				operators = L"cos"; pos += 3;
+			}
+			else if (pos + 3 < formula.size() && formula[pos + 1] == L'a' && formula[pos + 2] == L't')
+			{
+				operators = L"cat2"; pos += 4;
+			}
+			else pos++;
 		}
 		else if (formula[pos] == L'b')
 		{//bottom
@@ -603,6 +614,11 @@ std::wstring convert_equation(const std::wstring& formula)
 			{
 				operators = L"sqrt"; pos += 4;
 			}
+			else if (pos + 3 < formula.size() && formula[pos + 1] == L'a' && formula[pos + 2] == L't')
+			{
+				operators = L"sat2"; pos += 4;
+			}
+			else pos++;
 		}
 		else if (formula[pos] == L'm')
 		{
@@ -656,16 +672,21 @@ std::wstring convert_equation(const std::wstring& formula)
 			}
 			pos += 2;
 		}
-		else if (formula[pos] >= L'0' && formula[pos] <= L'9' || formula[pos] == L'-')
+		else if (formula[pos] >= L'0' && formula[pos] <= L'9' || formula[pos] == L'-' || formula[pos] == L'w' || formula[pos] == L'h')
 		{
 			operator_prev = false;
 
 			values.emplace_back();
 			size_t pos_start = pos;
-			while (pos < formula.size() && formula[pos] >= L'0' && formula[pos] <= L'9' || (formula[pos] == L'-' && pos_start == pos))
+			while (pos < formula.size() && formula[pos] >= L'0' && formula[pos] <= L'9' || ((formula[pos] == L'-' || formula[pos] == L'w' || formula[pos] == L'h') && pos_start == pos))
 			{
 				values.back() += formula[pos++];
 			}
+		}
+		else if (formula[pos] == L',')
+		{
+			operator_prev = true;
+			pos++;
 		}
 		else pos++;
 	}
@@ -804,18 +825,23 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 				std::wstring value = eq->attlist_.draw_formula_.get_value_or(L"");
 
 				XmlUtils::replace_all(name, L"f", L"gd");
-				value = convert_equation(value);
+				
+				XmlUtils::replace_all(value, L"(bottom-top)", L"h");
+				XmlUtils::replace_all(value, L"(right-left)", L"w");
+				
+				std::wstring value_conv = convert_equation(value);
 
-				if (value.empty())
+				if (value_conv.empty())
 				{
-					if (!draw_type_oox_index_) 
-						set_shape = false;
-					equations.clear();
-					break;
+					equations.push_back(std::make_pair(name, value));
+					//if (!draw_type_oox_index_) 
+					//	set_shape = false;
+					//equations.clear();
+					//break;
 				}
 				else
 				{// 
-					equations.push_back(std::make_pair(name, value));
+					equations.push_back(std::make_pair(name, value_conv));
 				}
 			}
 		}

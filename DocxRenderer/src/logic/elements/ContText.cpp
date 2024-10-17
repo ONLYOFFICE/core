@@ -1,4 +1,5 @@
 #include "ContText.h"
+
 #include "../../resources/ColorTable.h"
 #include "../../resources/SingletonTemplate.h"
 #include "../../resources/utils.h"
@@ -9,7 +10,7 @@ namespace NSDocxRenderer
 	{
 		bool only_spaces = true;
 		for (size_t j = 0; j < oText.length(); ++j)
-			if (!IsSpaceUtf32(oText.at(j)))
+			if (!CContText::IsUnicodeSpace(oText.at(j)))
 			{
 				only_spaces = false;
 				break;
@@ -82,6 +83,7 @@ namespace NSDocxRenderer
 
 		m_oSelectedFont = rCont.m_oSelectedFont;
 		m_bPossibleSplit = rCont.m_bPossibleSplit;
+		m_bWriteStyleRaw = rCont.m_bWriteStyleRaw;
 
 		m_arSymWidths.clear();
 		m_arSymWidths.resize(rCont.m_arSymWidths.size());
@@ -113,7 +115,6 @@ namespace NSDocxRenderer
 			m_oSelectedSizes.dHeight = dBoxHeight;
 		}
 	}
-
 
 	size_t CContText::GetLength() const noexcept
 	{
@@ -194,8 +195,7 @@ namespace NSDocxRenderer
 				 (this_top <= other_bot || fabs(this_top - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
 			return  eVerticalCrossingType::vctCurrentBelowNext;
 
-		else if (this_top == other_top && this_bot == other_bot &&
-				 m_dLeft == pCont->m_dLeft && m_dRight == pCont->m_dRight)
+		else if (this_top == other_top && this_bot == other_bot)
 			return  eVerticalCrossingType::vctDublicate;
 
 		else if (fabs(this_top - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
@@ -223,6 +223,9 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"<w:r>");
 		oWriter.WriteString(L"<w:rPr>");
 		oWriter.WriteString(L"<w:noProof/>");
+
+		if (m_bIsRtl)
+			oWriter.WriteString(L"<w:rtl/> ");
 
 		if (!m_bWriteStyleRaw)
 		{
@@ -328,6 +331,8 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"\" w:hAnsi=\"");
 			oWriter.WriteEncodeXmlString(m_pFontStyle->wsFontName);
 			oWriter.WriteString(L"\" w:cs=\"");
+			oWriter.WriteEncodeXmlString(m_pFontStyle->wsFontName);
+			oWriter.WriteString(L"\" w:eastAsia=\"");
 			oWriter.WriteEncodeXmlString(m_pFontStyle->wsFontName);
 			oWriter.WriteString(L"\" w:hint=\"default\"/>");
 
@@ -463,12 +468,28 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"</a:solidFill>");
 		}
 
+		if (m_bIsRtl)
+			oWriter.WriteString(L"<w:rtl/> ");
 
 		oWriter.WriteString(L"</a:rPr>");
 		oWriter.WriteString(L"<a:t>");
 		oWriter.WriteEncodeXmlString(m_oText.ToStdWString());
 		oWriter.WriteString(L"</a:t>");
 		if (m_bIsAddBrEnd) oWriter.WriteString(L"<a:br/>");
+
+		// meta info for pdf-editor
+		oWriter.WriteString(L"<metaorigin:pos");
+		oWriter.WriteString(L" x=\"");
+		oWriter.AddDouble(m_dLeft, 4);
+		oWriter.WriteString(L"\" y=\"");
+		oWriter.AddDouble(m_dBaselinePos, 4);
+		oWriter.WriteString(L"\" widths=\"");
+		for (auto& w : m_arSymWidths)
+		{
+			oWriter.AddDouble(w, 4);
+			oWriter.WriteString(L",");
+		}
+		oWriter.WriteString(L"\" />");
 		oWriter.WriteString(L"</a:r>");
 	}
 
@@ -507,11 +528,17 @@ namespace NSDocxRenderer
 		return ret;
 	}
 
-	bool CContText::IsDuplicate(CContText* pCont, eVerticalCrossingType eVType) const noexcept
+	bool CContText::IsDuplicate(CContText* pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType) const noexcept
 	{
-		if (eVType == eVerticalCrossingType::vctDublicate && m_oText == pCont->m_oText)
-			return true;
-		return false;
+		return m_oText == pCont->m_oText &&
+			   eVType == eVerticalCrossingType::vctDublicate &&
+			   eHType == eHorizontalCrossingType::hctDublicate;
+
+		// return m_oText == pCont->m_oText &&
+		// 	   eVType == eVerticalCrossingType::vctDublicate &&
+		// 	   (eHType == eHorizontalCrossingType::hctDublicate ||
+		// 		eHType == eHorizontalCrossingType::hctCurrentLeftOfNext ||
+		// 		eHType == eHorizontalCrossingType::hctCurrentRightOfNext);
 	}
 
 	bool CContText::IsOnlySpaces() const
@@ -522,7 +549,7 @@ namespace NSDocxRenderer
 	void CContText::AddTextBack(const NSStringUtils::CStringUTF32& oText, const std::vector<double>& arSymWidths)
 	{
 		bool is_space_twice = m_oText.at(m_oText.length() - 1) == c_SPACE_SYM &&
-				oText.at(0) == c_SPACE_SYM;
+							  oText.at(0) == c_SPACE_SYM;
 
 		for (size_t i = 0; i < arSymWidths.size(); ++i)
 		{
@@ -601,6 +628,10 @@ namespace NSDocxRenderer
 		m_dRight = m_dLeft + m_dWidth;
 		m_arSymWidths.resize(m_arSymWidths.size() - 1);
 	}
+	uint32_t CContText::GetLastSym() const
+	{
+		return m_oText.at(m_oText.length() - 1);
+	}
 
 	const NSStringUtils::CStringUTF32& CContText::GetText() const noexcept
 	{
@@ -623,10 +654,10 @@ namespace NSDocxRenderer
 	}
 
 	bool CContText::CheckFontEffects
-	(std::shared_ptr<CContText>& pFirstCont,
-	 std::shared_ptr<CContText>& pSecondCont,
-	 eVerticalCrossingType eVType,
-	 eHorizontalCrossingType eHType)
+		(std::shared_ptr<CContText>& pFirstCont,
+		 std::shared_ptr<CContText>& pSecondCont,
+		 eVerticalCrossingType eVType,
+		 eHorizontalCrossingType eHType)
 	{
 		//Условие пересечения по вертикали
 		bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext; //текущий cont выше
@@ -706,24 +737,24 @@ namespace NSDocxRenderer
 	}
 
 	bool CContText::CheckVertAlignTypeBetweenConts
-	(std::shared_ptr<CContText> pFirstCont,
-	 std::shared_ptr<CContText> pSecondCont,
-	 eVerticalCrossingType eVType,
-	 eHorizontalCrossingType eHType)
+		(std::shared_ptr<CContText> pFirstCont,
+		 std::shared_ptr<CContText> pSecondCont,
+		 eVerticalCrossingType eVType,
+		 eHorizontalCrossingType eHType)
 	{
 
 		bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext ||
-				eVType == eVerticalCrossingType::vctCurrentInsideNext;
+					eVType == eVerticalCrossingType::vctCurrentInsideNext;
 
 		bool bIf2 = eVType == eVerticalCrossingType::vctCurrentBelowNext;
 
 		bool bIf3 = (eHType == eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext ||
 					 eHType == eHorizontalCrossingType::hctCurrentLeftOfNext) &&
-				fabs(pFirstCont->m_dRight - pSecondCont->m_dLeft) < c_dTHE_STRING_X_PRECISION_MM * 3;
+					fabs(pFirstCont->m_dRight - pSecondCont->m_dLeft) < c_dTHE_STRING_X_PRECISION_MM * 3;
 
 		bool bIf4 = (eHType == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext ||
 					 eHType == eHorizontalCrossingType::hctCurrentRightOfNext) &&
-				fabs(pFirstCont->m_dLeft - pSecondCont->m_dRight) < c_dTHE_STRING_X_PRECISION_MM * 3;
+					fabs(pFirstCont->m_dLeft - pSecondCont->m_dRight) < c_dTHE_STRING_X_PRECISION_MM * 3;
 
 		//Размеры шрифта должны бать разными
 		bool bIf5 = pFirstCont->m_pFontStyle->dFontSize * 0.7 > pSecondCont->m_pFontStyle->dFontSize;
@@ -769,6 +800,54 @@ namespace NSDocxRenderer
 			}
 		}
 		return false;
+	}
+	bool CContText::IsUnicodeRtl(uint32_t cSym)
+	{
+		bool is_herbew_arabic = (cSym >= 0x0590 && cSym <= 0x08FF);
+
+		// alphabetic presentation forms
+		bool is_apf = (cSym >= 0xFB00 && cSym <= 0xFDFF);
+		bool is_apf_b = (cSym >= 0xFE70 && cSym <= 0xFEFF);
+
+		bool is_other = (cSym >= 0x10800 && cSym <= 0x108AF);
+
+		// more https://www.unicode.org/Public/UNIDATA/extracted/DerivedBidiClass.txt
+		return is_herbew_arabic || is_apf || is_apf_b || is_other;
+	}
+	bool CContText::IsUnicodeBullet(uint32_t cSym)
+	{
+		// more symbols of delims
+		bool is_bullet =
+			(cSym == 0x2022) || (cSym == 0x2023) || (cSym == 0x2043) || (cSym == 0x204C) ||
+			(cSym == 0x204D) || (cSym == 0x2219) || (cSym == 0x25CB) || (cSym == 0x25CF) ||
+			(cSym == 0x25D8) || (cSym == 0x25E6) || (cSym == 0x2619) || (cSym == 0x2765) ||
+			(cSym == 0x2767) || (cSym == 0x29BE) || (cSym == 0x29BF) || (cSym == 0x25C9);
+
+		bool is_another =
+			(cSym == 0xB7) || (cSym == 0xA7) || (cSym == 0xF076) || (cSym == 0x2013) ||
+			(cSym == 0x2713) || (cSym == 0x2714) || (cSym == 0x2756) || (cSym == 0x25C6) ||
+			(cSym == 0x25C7) || (cSym == 0x25C8);
+
+		return is_bullet || is_another;
+	}
+
+	bool CContText::IsUnicodeSpace(uint32_t cSym)
+	{
+		return (0x20 == cSym || 0xA0 == cSym || 0x2003 == cSym);
+	}
+
+	bool CContText::IsUnicodeSymbol(uint32_t cSym )
+	{
+		bool is_unicode =
+			(( 0x0009 == cSym) || (0x000A == cSym ) || (0x000D == cSym ) ||
+			(( 0x0020 <= cSym) && (0xD7FF >= cSym )) || ((0xE000 <= cSym) && (cSym <= 0xFFFD )) ||
+			(( 0x10000 <= cSym) && cSym));
+
+		return is_unicode;
+	}
+	bool CContText::IsUnicodeDiacriticalMark(uint32_t cSym)
+	{
+		return 0x0300 <= cSym && 0x036F >= cSym;
 	}
 
 	double CContText::CalculateSpace() const noexcept

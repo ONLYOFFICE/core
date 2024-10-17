@@ -73,9 +73,9 @@ CFile.prototype.getOriginPage = function(originIndex)
 	for (let i = 0; i < this.pages.length; ++i)
 	{
 		if (this.pages[i]["originIndex"] == originIndex)
-			return this.pages[i];
+			return i;
 	}
-	return null;
+	return -1;
 };
 
 CFile.prototype["getPages"] = function()
@@ -236,14 +236,17 @@ CFile.prototype["getLinks"] = function(pageIndex)
 // TEXT
 CFile.prototype["getGlyphs"] = function(pageIndex)
 {
-	let page = this.getOriginPage(pageIndex);
+	let i = this.getOriginPage(pageIndex);
+	if (i < 0)
+		return null;
+	let page = this.pages[i];
 	if (!page || page.fonts.length > 0)
 	{
 		// waiting fonts
 		return null;
 	}
 
-	this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Page);
+	this.lockPageNumForFontsLoader(i, UpdateFontsSource.Page);
 	let res = this._getGlyphs(pageIndex);
 	// there is no need to delete the result; this buffer is used as a text buffer 
 	// for text commands on other pages. After receiving ALL text pages, 
@@ -488,7 +491,11 @@ function readAnnot(reader, rec)
 	// Date of last change - M
 	if (flags & (1 << 5))
 		rec["LastModified"] = reader.readString();
+	// AP
 	rec["AP"]["have"] = (flags >> 6) & 1;
+	// User ID
+	if (flags & (1 << 7))
+		rec["OUserID"] = reader.readString();
 }
 function readAnnotAP(reader, AP)
 {
@@ -1370,14 +1377,17 @@ CFile.prototype["free"] = function(pointer)
 // PIXMAP
 CFile.prototype["getPagePixmap"] = function(pageIndex, width, height, backgroundColor)
 {
-	let page = this.getOriginPage(pageIndex);
+	let i = this.getOriginPage(pageIndex);
+	if (i < 0)
+		return null;
+	let page = this.pages[i];
 	if (!page || page.fonts.length > 0)
 	{
 		// waiting fonts
 		return null;
 	}
 
-	this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Page);
+	this.lockPageNumForFontsLoader(i, UpdateFontsSource.Page);
 	let ptr = this._getPixmap(pageIndex, width, height, backgroundColor);
 	this.unlockPageNumForFontsLoader();
 
@@ -1434,6 +1444,43 @@ function fontToMemory(file, isCheck)
 	Module["_free"](streamPointer);
 	Module["_free"](idPointer);
 }
+
+// FONTS
+CFile.prototype["addPage"] = function(pageIndex, pageObj)
+{
+	this.pages.splice(pageIndex, 0, pageObj);
+	if (this.fontStreams)
+	{
+		for (let i in this.fontStreams)
+		{
+			let pages = this.fontStreams[i].pages;
+			for (let j = 0; j < pages.length; j++)
+			{
+				if (pages[j] >= pageIndex)
+					pages[j] += 1;
+			}
+		}
+	}
+};
+CFile.prototype["removePage"] = function(pageIndex)
+{
+	let result = this.pages.splice(pageIndex, 1);
+	if (this.fontStreams)
+	{
+		for (let i in this.fontStreams)
+		{
+			let pages = this.fontStreams[i].pages;
+			for (let j = 0; j < pages.length; j++)
+			{
+				if (pages[j] > pageIndex)
+					pages[j] -= 1;
+				else if (pages[j] == pageIndex)
+					pages.splice(j, 1);
+			}
+		}
+	}
+	return result;
+};
 
 // ONLY WEB
 self["AscViewer"]["Free"] = function(pointer)

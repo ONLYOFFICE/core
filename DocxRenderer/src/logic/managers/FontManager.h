@@ -5,7 +5,6 @@
 #include "../../../../DesktopEditor/graphics/structures.h"
 #include "../../../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../../../DesktopEditor/common/StringUTF32.h"
-#include "../../../../DesktopEditor/common/StringExt.h"
 
 namespace NSDocxRenderer
 {
@@ -129,24 +128,26 @@ namespace NSDocxRenderer
 
 		void SetStringGid(const LONG& lGid);
 
-		void MeasureString(const std::wstring& wsText,
-						   double x,
-						   double y,
-						   double& dBoxX,
-						   double& dBoxY,
-						   double& dBoxWidth,
-						   double& dBoxHeight,
-						   MeasureType measureType) const;
+		void MeasureString(
+			const std::wstring& wsText,
+			double x,
+			double y,
+			double& dBoxX,
+			double& dBoxY,
+			double& dBoxWidth,
+			double& dBoxHeight,
+			MeasureType measureType) const;
 
-		void MeasureStringGids(unsigned int* pGids,
-							   unsigned int count,
-							   double x,
-							   double y,
-							   double& dBoxX,
-							   double& dBoxY,
-							   double& dBoxWidth,
-							   double& dBoxHeight,
-							   MeasureType measureType) const;
+		void MeasureStringGids(
+			unsigned int* pGids,
+			unsigned int count,
+			double x,
+			double y,
+			double& dBoxX,
+			double& dBoxY,
+			double& dBoxWidth,
+			double& dBoxHeight,
+			MeasureType measureType) const;
 
 		void ClearCache();
 	private:

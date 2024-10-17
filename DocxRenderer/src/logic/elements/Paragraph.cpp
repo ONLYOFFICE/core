@@ -1,5 +1,5 @@
 #include "Paragraph.h"
-#include "../../resources/ColorTable.h"
+
 #include "../../resources/utils.h"
 
 namespace NSDocxRenderer

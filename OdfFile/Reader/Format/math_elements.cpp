@@ -118,8 +118,17 @@ void math_semantics::oox_convert(oox::math_context &Context, int iTypeConversion
         parser.SetBaseItalic(Context.base_font_italic_);
         parser.SetBaseBold(Context.base_font_bold_);
 
-        /*result = */converter.StartConversion(parser.Parse(annotation_text,iTypeConversion),parser.GetAlignment());
+        /*result = */        converter.StartConversion(parser.Parse(annotation_text,iTypeConversion),parser.GetAlignment());
 
+        auto sizes = parser.GetFormulaSize();
+
+        for (;!sizes.empty(); sizes.pop())
+        {
+            if (sizes.front().m_iWidth > Context.width)
+                Context.width = sizes.front().m_iWidth;
+
+            Context.height += sizes.front().m_iHeight;
+        }
         Context.output_stream() << converter.GetOOXML();
     }
 

@@ -651,7 +651,7 @@ namespace NExtractTools
 		return nRes;
 	}
 
-	bool applyCompiledChangesPdf(CPdfFile* pFile, const std::wstring& sCompiledChangesPath, CConvertFromBinParams& oConvertParams)
+	bool applyCompiledChangesPdf(CPdfFile* pFile, const std::wstring& sCompiledChangesPath, CConvertFromBinParams& oConvertParams, const std::wstring& sTo)
 	{
 		bool bRes = false;
 		NSFile::CFileBinary oFile;
@@ -667,6 +667,9 @@ namespace NExtractTools
 
 					if (oFile.ReadFile(pChangesData, dwChangesSize))
 					{
+						if (!pFile->EditPdf(sTo))
+							return false;
+
 						bRes = (S_OK == pFile->AddToPdfFromBinary(pChangesData, (unsigned int)dwChangesSize, &oConvertParams));
 						RELEASEARRAYOBJECTS(pChangesData);
 					}
@@ -696,9 +699,6 @@ namespace NExtractTools
 		if (!oPdfResult.LoadFromFile(sFrom, L"", password, password))
 			return false;
 
-		if (!oPdfResult.EditPdf(sTo))
-			return false;
-
 		CConvertFromBinParams oConvertParams;
 		oConvertParams.m_sInternalMediaDirectory = NSFile::GetDirectoryName(sFrom);
 		oConvertParams.m_sMediaDirectory = oConvertParams.m_sInternalMediaDirectory;
@@ -706,7 +706,7 @@ namespace NExtractTools
 		bool bIsCompiledChanges = false;
 		if (changes.size() > 0)
 		{
-			bIsCompiledChanges = applyCompiledChangesPdf(&oPdfResult, changes[0], oConvertParams);
+			bIsCompiledChanges = applyCompiledChangesPdf(&oPdfResult, changes[0], oConvertParams, sTo);
 
 			if (!bIsCompiledChanges)
 			{
@@ -727,7 +727,12 @@ namespace NExtractTools
 				oDoctRenderer.Execute(sXml, sResult);
 
 				if (NSFile::CFileBinary::Exists(sPdfFileCompiledChanges))
-					bIsCompiledChanges = applyCompiledChangesPdf(&oPdfResult, sPdfFileCompiledChanges, oConvertParams);
+					bIsCompiledChanges = applyCompiledChangesPdf(&oPdfResult, sPdfFileCompiledChanges, oConvertParams, sTo);
+				else
+				{
+					// changes is exist but compiled file does not changed (compiled changes returns null in js)
+					oPdfResult.EditPdf(sTo);
+				}
 			}
 		}
 

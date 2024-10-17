@@ -1227,7 +1227,7 @@ namespace MetaFile
 		                               {L"rx", ConvertToWString((oNewRect.Right  - oNewRect.Left)   / 2)},
 		                               {L"ry", ConvertToWString((oNewRect.Bottom - oNewRect.Top)    / 2)}};
 		AddStroke(arAttributes);
-		AddFill(arAttributes);
+		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 

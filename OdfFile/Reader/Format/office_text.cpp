@@ -166,22 +166,25 @@ void office_text::docx_convert(oox::docx_conversion_context & Context)
 
 	Context.start_office_text();
 
+	_CP_OPT(std::wstring) masterPageName_first;
+
 	if ((first_element_style_name) && (!first_element_style_name->empty()))
 	{
-		std::wstring text___ = *first_element_style_name;
+		std::wstring style_name = *first_element_style_name;
 
-		const _CP_OPT(std::wstring) masterPageName	= Context.root()->odf_context().styleContainer().master_page_name_by_name(text___);
+		masterPageName_first = Context.root()->odf_context().styleContainer().master_page_name_by_name(style_name);
 	   
-		if (masterPageName)
+		if (masterPageName_first)
 		{				
-			std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(*masterPageName);
+			std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(*masterPageName_first);
 
 			if (false == masterPageNameLayout.empty())
 			{
-				Context.set_master_page_name(*masterPageName); //проверка на то что тема действительно существует????
-				
-				Context.remove_page_properties();
-				Context.add_page_properties(masterPageNameLayout);
+				if (true == Context.set_master_page_name(*masterPageName_first))
+				{
+					Context.remove_page_properties();
+					Context.add_page_properties(masterPageNameLayout);
+				}
 			}
 		}  
 	}
@@ -189,34 +192,35 @@ void office_text::docx_convert(oox::docx_conversion_context & Context)
     {
 		if (content_[i]->element_style_name)
 		{
-			std::wstring text___ = *content_[i]->element_style_name;
+			std::wstring style_name = *content_[i]->element_style_name;
 
-			const _CP_OPT(std::wstring) masterPageName	= Context.root()->odf_context().styleContainer().master_page_name_by_name(*content_[i]->element_style_name);
+			_CP_OPT(std::wstring) masterPageName = Context.root()->odf_context().styleContainer().master_page_name_by_name(*content_[i]->element_style_name);
 		   
+			if (!masterPageName)
+			{
+				style_instance* curr_style_instance = Context.root()->odf_context().styleContainer().style_by_name(style_name, odf_types::style_family::Paragraph, false);
+				
+				if (curr_style_instance && curr_style_instance->content()->get_style_paragraph_properties() &&
+					curr_style_instance->content()->get_style_paragraph_properties()->content_.fo_break_before_)
+				{
+					if (curr_style_instance && false == curr_style_instance->parent_name().empty())
+					{
+						masterPageName = Context.root()->odf_context().styleContainer().master_page_name_by_name(curr_style_instance->parent_name());
+					}
+					if (!masterPageName && (style_name == L"Standard" || (curr_style_instance && curr_style_instance->parent_name() == L"Standard")))
+					{
+						masterPageName = L"Standard";
+					}
+				}
+			}
 			if (masterPageName)
-			{				
+			{
 				std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(*masterPageName);
 
 				if (false == masterPageNameLayout.empty())
 				{
-					Context.set_master_page_name(*masterPageName); //проверка на то что тема действительно существует????
-					
-					Context.remove_page_properties();
-					Context.add_page_properties(masterPageNameLayout);
-				}
-			}  
-			else
-			{
-				std::vector<style_master_page*>& masterPages = Context.root()->odf_context().pageLayoutContainer().master_pages();
-				if (!masterPages.empty())
-				{
-					std::wstring masterPageName = masterPages[0]->attlist_.style_name_.get_value_or(L"Standard");
-					std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(masterPageName);
-
-					if (!masterPageNameLayout.empty())
+					if (true == Context.set_master_page_name(*masterPageName))
 					{
-						Context.set_master_page_name(masterPageName);
-
 						Context.remove_page_properties();
 						Context.add_page_properties(masterPageNameLayout);
 					}

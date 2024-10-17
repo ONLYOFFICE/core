@@ -83,6 +83,10 @@ public class CDocBuilder {
         return new CDocBuilderContext(c_GetContext(c_internal));
     }
 
+    public CDocBuilderContext getContext(boolean enterContext) {
+        return new CDocBuilderContext(c_GetContextWithEnterParam(c_internal, enterContext));
+    }
+
     public static void initialize() {
         c_Initialize();
     }
@@ -135,6 +139,7 @@ public class CDocBuilder {
     private static native String c_GetVersion(long self);
 
     private static native long c_GetContext(long self);
+    private static native long c_GetContextWithEnterParam(long self, boolean enterContext);
 
     private static native void c_Initialize();
     private static native void c_InitializeWithDirectory(String directory);

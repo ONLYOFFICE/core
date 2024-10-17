@@ -4371,7 +4371,12 @@ void GfxState::getUserClipBBox(double *xMin, double *yMin,
   double xMin1, yMin1, xMax1, yMax1, det, tx, ty;
 
   // invert the CTM
-  det = 1 / (ctm[0] * ctm[3] - ctm[1] * ctm[2]);
+  det = ctm[0] * ctm[3] - ctm[1] * ctm[2];
+  if (fabs(det) <= 1e-10) {
+    *xMin = *yMin = *xMax = *yMax = 0;
+    return;
+  }
+  det = 1 / det;
   ictm[0] = ctm[3] * det;
   ictm[1] = -ctm[1] * det;
   ictm[2] = -ctm[2] * det;

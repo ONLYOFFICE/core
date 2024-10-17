@@ -123,8 +123,10 @@ public:
 		PointF_T(T x, T y) : X(x), Y(y) { }
 		//~PointF() { }
 		INT Equals(const PointF_T& point) const { return(X==point.X && Y==point.Y); }
+		bool IsZero() const noexcept { return X == 0.0 && Y == 0.0; }
 		PointF_T operator+(const PointF_T& point) const { return PointF_T(X + point.X, Y + point.Y); }
 		PointF_T operator-(const PointF_T& point) const { return PointF_T(X - point.X, Y - point.Y); }
+		PointF_T& operator=(const PointF_T& other) noexcept {X = other.X; Y = other.Y; return *this;}
 public:
 		T X, Y;
 };

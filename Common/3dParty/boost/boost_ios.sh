@@ -27,7 +27,7 @@ CLEAN=
 BOOST_VERSION=1.72.0
 BOOST_VERSION2=1_72_0
 MIN_IOS_VERSION=8.0
-IOS_SDK_VERSION=`xcodebuild BITCODE_GENERATION_MODE="bitcode" ENABLE_BITCODE="YES" OTHER_CFLAGS="-fembed-bitcode" -showsdks | grep iphoneos | \
+IOS_SDK_VERSION=`xcodebuild BITCODE_GENERATION_MODE="bitcode" ENABLE_BITCODE="NO" -showsdks | grep iphoneos | \
     egrep "[[:digit:]]+\.[[:digit:]]+" -o | tail -1`
 OSX_SDK_VERSION=`xcodebuild BITCODE_GENERATION_MODE="bitcode" ENABLE_BITCODE="YES" OTHER_CFLAGS="-fembed-bitcode" -showsdks | grep macosx | \
     egrep "[[:digit:]]+\.[[:digit:]]+" -o | tail -1`
@@ -42,7 +42,7 @@ XCODE_ROOT=`xcode-select -print-path`
 #
 # Should perhaps also consider/use instead: -BOOST_SP_USE_PTHREADS
 EXTRA_CPPFLAGS="-DBOOST_AC_USE_PTHREADS -DBOOST_SP_USE_PTHREADS -g -DNDEBUG \
-    -std=c++11 -stdlib=libc++ -fvisibility=hidden -fvisibility-inlines-hidden -fembed-bitcode"
+    -std=c++11 -stdlib=libc++ -fvisibility=hidden -fvisibility-inlines-hidden"
 EXTRA_IOS_CPPFLAGS="$EXTRA_CPPFLAGS -mios-version-min=$MIN_IOS_VERSION"
 EXTRA_OSX_CPPFLAGS="$EXTRA_CPPFLAGS"
 
@@ -259,20 +259,17 @@ buildBoost()
         echo Building Boost for iPhone
         # Install this one so we can copy the headers for the frameworks...
         ./b2 -j16 --build-dir=iphone-build --stagedir=iphone-build/stage \
-            cxxflags="-fembed-bitcode" \
             --prefix=$PREFIXDIR toolset=darwin architecture=arm target-os=iphone \
             macosx-version=iphone-${IOS_SDK_VERSION} define=_LITTLE_ENDIAN \
             link=static stage
         ./b2 -j16 --build-dir=iphone-build --stagedir=iphone-build/stage \
             --prefix=$PREFIXDIR toolset=darwin architecture=arm \
-            cxxflags="-fembed-bitcode" \
             target-os=iphone macosx-version=iphone-${IOS_SDK_VERSION} \
             define=_LITTLE_ENDIAN link=static install
         doneSection
 
         echo Building Boost for iPhoneSimulator
         ./b2 -j16 --build-dir=iphonesim-build --stagedir=iphonesim-build/stage \
-            cxxflags="-fembed-bitcode" \
             toolset=darwin-${IOS_SDK_VERSION}~iphonesim architecture=x86 \
             target-os=iphone macosx-version=iphonesim-${IOS_SDK_VERSION} \
             link=static stage

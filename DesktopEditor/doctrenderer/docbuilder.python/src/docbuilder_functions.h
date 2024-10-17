@@ -97,7 +97,7 @@ DOCBUILDER_FUNC_DECL bool CDocBuilder_IsSaveWithDoctrendererMode(CDocBuilder* se
 
 DOCBUILDER_FUNC_DECL char* CDocBuilder_GetVersion(CDocBuilder* self);
 
-DOCBUILDER_FUNC_DECL CDocBuilderContext* CDocBuilder_GetContext(CDocBuilder* self);
+DOCBUILDER_FUNC_DECL CDocBuilderContext* CDocBuilder_GetContext(CDocBuilder* self, bool enterContext);
 
 DOCBUILDER_FUNC_DECL void CDocBuilder_Initialize();
 DOCBUILDER_FUNC_DECL void CDocBuilder_InitializeWithDirectory(const wchar_t* directory);

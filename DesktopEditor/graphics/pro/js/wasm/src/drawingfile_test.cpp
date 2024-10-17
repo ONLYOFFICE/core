@@ -267,6 +267,13 @@ void ReadAnnot(BYTE* pWidgets, int& i)
 		std::cout << "YES AP, ";
 	else
 		std::cout << "NO AP, ";
+	if (nFlags & (1 << 7))
+	{
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "User ID " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+		i += nPathLength;
+	}
 }
 
 void ReadInteractiveForms(BYTE* pWidgets, int& i)
@@ -1799,6 +1806,13 @@ int main(int argc, char* argv[])
 
 		if (pAnnotAP)
 			free(pAnnotAP);
+	}
+
+	if (true)
+	{
+		BYTE* pScan = ScanPage(pGrFile, nTestPage, 1);
+		if (pScan)
+			free(pScan);
 	}
 
 	Close(pGrFile);

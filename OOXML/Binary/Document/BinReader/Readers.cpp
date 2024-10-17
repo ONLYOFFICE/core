@@ -9887,6 +9887,10 @@ int Binary_DocumentTableReader::ReadSdtPicture(BYTE type, long length, void* poR
 	{
 		pPicture->m_oShiftY = m_oBufferedStream.GetDoubleReal();
 	}
+	else if (c_oSerSdt::PictureFormPrSignature == type)
+	{
+		pPicture->m_oSignature = m_oBufferedStream.GetBool();
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;

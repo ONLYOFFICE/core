@@ -20,13 +20,12 @@ namespace MetaFile
 
 		void            ClearFile()                                 override;
 
-		EmfParserType   GetType()                                   override;
+		EmfParserType   GetType()                                   const override;
 		void            SetStream(BYTE* pBuf, unsigned int unSize);
-
-		void            SetOnlyEmfPlus(bool bValue);
 	private:
 		CEmfPlusParser  *m_pEmfPlusParser;
-		bool             m_bOnlyEmfPlus;
+
+		bool BanEMFProcesses() const;
 
 		bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) override;
 		void Read_EMR_HEADER();

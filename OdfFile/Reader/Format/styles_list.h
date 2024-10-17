@@ -47,6 +47,7 @@ class text_list_style_attr
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    void apply_from(const text_list_style_attr& Other);
 
     std::wstring					style_name_;
     optional<std::wstring>::Type	style_display_name_;
@@ -58,6 +59,9 @@ public:
 class text_list_style : public office_element_impl<text_list_style>
 {
 public:
+    text_list_style() = default;
+    text_list_style(const text_list_style& other);
+
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
@@ -82,8 +86,9 @@ class text_list_level_style_number_attr
 public:
     text_list_level_style_number_attr() : text_display_levels_(1), text_start_value_(1) {}
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    void apply_from(const text_list_level_style_number_attr& Other);
 
-private:
+public:
     _CP_OPT(std::wstring)								text_style_name_;
     
 	odf_types::common_num_format_attlist				common_num_format_attlist_;
@@ -102,6 +107,8 @@ class text_list_level_style_attr
 public:
     text_list_level_style_attr() : text_level_(0) {}
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    void apply_from(const text_list_level_style_attr& Other);
+
     unsigned int get_text_level() const { return text_level_; }
 
 private:
@@ -180,6 +187,9 @@ public:
     static const ElementType type = typeTextListLevelStyleNumber;
     CPDOCCORE_DEFINE_VISITABLE();
 
+    text_list_level_style_number() = default;
+    text_list_level_style_number(const text_list_level_style_number& other);
+
     void docx_convert(oox::docx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
 
@@ -200,6 +210,8 @@ class text_list_level_style_bullet_attr
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
+
+    void apply_from(const text_list_level_style_bullet_attr& Other);
 
 private:
     _CP_OPT(std::wstring)								text_style_name_;
@@ -223,6 +235,9 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextListLevelStyleBullet;
     CPDOCCORE_DEFINE_VISITABLE();
+
+    text_list_level_style_bullet() = default;
+    text_list_level_style_bullet(const text_list_level_style_bullet& other);
 
     void docx_convert(oox::docx_conversion_context & Context) ;
     void pptx_convert(oox::pptx_conversion_context & Context) ;

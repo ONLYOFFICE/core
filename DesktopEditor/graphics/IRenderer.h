@@ -403,15 +403,14 @@ public:
 		UNUSED_VARIABLE(dValue);
 		return S_FALSE;
 	}
-	virtual HRESULT put_LayerIsolated(bool bIsolated)
+
+	virtual void put_BrushGradInfo(void* pGradInfo)
 	{
-		UNUSED_VARIABLE(bIsolated);
-		return S_FALSE;
+		UNUSED_VARIABLE(pGradInfo);
 	}
-	virtual HRESULT put_AlphaMaskIsolated(bool bIsolated)
+	virtual void put_BlendMode(const unsigned int& nBlendMode)
 	{
-		UNUSED_VARIABLE(bIsolated);
-		return S_FALSE;
+		UNUSED_VARIABLE(nBlendMode);
 	}
 };
 

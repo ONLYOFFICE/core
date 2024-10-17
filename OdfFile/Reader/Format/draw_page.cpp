@@ -212,6 +212,7 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 	{
 		Context.start_page_notes();
 		presentation_notes_->pptx_convert(Context);
+		Context.get_slide_context().process_drawings();
 		Context.end_page_notes();
 	}  
 }
@@ -319,6 +320,8 @@ void presentation_notes::pptx_convert_placeHolder(oox::pptx_conversion_context &
 
 void presentation_notes::pptx_convert(oox::pptx_conversion_context & Context)
 {
+	Context.get_slide_context().processing_notes(true);
+
 	const std::wstring pageStyleName	= attlist_.draw_style_name_.get_value_or(L"");
     const std::wstring layoutName		= attlist_.page_layout_name_.get_value_or(L"");
     const std::wstring masterName		= attlist_.master_page_name_.get_value_or(L"");
@@ -371,6 +374,8 @@ void presentation_notes::pptx_convert(oox::pptx_conversion_context & Context)
 		std::wstring name = L"datetime:" + *attlist_.use_date_time_name_;
 		pptx_convert_placeHolder(Context, name, presentation_class::date_time);
 	}
+
+	Context.get_slide_context().processing_notes(false);
 
 }
 

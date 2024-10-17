@@ -1416,29 +1416,19 @@ void CGraphicsRenderer::SetAlphaMask(Aggplus::CAlphaMask *pAlphaMask)
 	m_pRenderer->SetAlphaMask(pAlphaMask);
 }
 
-Aggplus::CAlphaMask* CGraphicsRenderer::GetAlphaMask()
+Aggplus::CSoftMask* CGraphicsRenderer::CreateSoftMask(bool bAlpha)
 {
-	return m_pRenderer->GetAlphaMask();
+	return m_pRenderer->CreateSoftMask(bAlpha);
+}
+
+void CGraphicsRenderer::SetSoftMask(Aggplus::CSoftMask* pSoftMask)
+{
+	m_pRenderer->SetSoftMask(pSoftMask);
 }
 
 HRESULT CGraphicsRenderer::put_LayerOpacity(double dValue)
 {
 	return m_pRenderer->SetLayerOpacity(dValue);
-}
-
-HRESULT CGraphicsRenderer::put_LayerIsolated(bool bIsolated)
-{
-	return m_pRenderer->SetLayerIsolated(bIsolated);
-}
-
-HRESULT CGraphicsRenderer::put_AlphaMaskIsolated(bool bIsolated)
-{
-	return m_pRenderer->SetAlphaMaskIsolated(bIsolated);
-}
-
-void CGraphicsRenderer::put_AlphaMaskType(Aggplus::EMaskDataType oType)
-{
-	m_pRenderer->SetAlphaMaskType(oType);
 }
 
 void CGraphicsRenderer::put_GlobalAlphaEnabled(const bool& bEnabled, const double& dVal)
@@ -1493,6 +1483,7 @@ public:
     double                          m_dGlobalAlpha;
     bool                            m_bGlobalAlphaEnabled;
     bool                            m_bIntegerGrid;
+    unsigned int                    m_nBlendMode;
 
     Aggplus::CGraphics_ClipState    m_oClipState;
 };
@@ -1513,6 +1504,7 @@ void CGraphicsRenderer::Save()
     pState->m_bGlobalAlphaEnabled   = m_bGlobalAlphaEnabled;
 
     pState->m_bIntegerGrid  = m_pRenderer->m_bIntegerGrid;
+    pState->m_nBlendMode    = m_pRenderer->m_nBlendMode;
 
     m_arStates.push_back(pState);
 }
@@ -1534,6 +1526,7 @@ void CGraphicsRenderer::Restore()
     ApplyTransform(&pState->m_oTransform);
     this->put_IntegerGrid(pState->m_bIntegerGrid);
     this->put_GlobalAlphaEnabled(pState->m_bGlobalAlphaEnabled, pState->m_dGlobalAlpha);
+    this->put_BlendMode(pState->m_nBlendMode);
 
     m_pRenderer->ResetClip();
     for (std::vector<Aggplus::CGraphics_ClipStateRecord*>::iterator i = pState->m_oClipState.Records.begin(); i != pState->m_oClipState.Records.end(); i++)
@@ -1544,7 +1537,7 @@ void CGraphicsRenderer::Restore()
 
     RELEASEOBJECT(pState);
 }
-void CGraphicsRenderer::put_BlendMode(const unsigned int nBlendMode)
+void CGraphicsRenderer::put_BlendMode(const unsigned int& nBlendMode)
 {
     if (NULL != m_pRenderer)
     {

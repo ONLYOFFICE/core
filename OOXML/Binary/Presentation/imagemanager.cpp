@@ -527,12 +527,11 @@ namespace NSShapeImageGen
 				CDirectory::CopyFile(strFileName, pathSaveItem.GetPath());
 
 				::MetaFile::IMetaFile* pMetafile = MetaFile::Create(m_pFontManager->GetApplication());
-				
-				pMetafile->SetImageSize(lWidth, lHeight);
+
 				if (pMetafile->LoadFromFile(strFileName.c_str()))
 				{
 					// пробуем сохранить в svg напрямую из метафайлов
-					std::wstring sInternalSvg = pMetafile->ConvertToSvg(/*lWidth, lHeight*/);
+					std::wstring sInternalSvg = pMetafile->ConvertToSvg(lWidth, lHeight);
 
 					if (!sInternalSvg.empty())
 					{
@@ -546,29 +545,18 @@ namespace NSShapeImageGen
 						return oInfo;
 					}
 
-					double x = 0, y = 0, w = 0, h = 0;
-					pMetafile->GetBounds(&x, &y, &w, &h);
-
-					// ограничиваем размеры
-					int nMaxSize = 1000;
-					int nMinSize = 10;
-					double dKoef = (double)nMaxSize / ((w >= h) ? w : h);
-
-					int nPixW = (int)(dKoef * w + 0.5);
-					int nPixH = (int)(dKoef * h + 0.5);
-
 				#ifdef SUPPORT_OLD_SVG_CONVERTATION
 					// пробуем сохранить в svg. большие/сложные файлы
 					// сохраняем в растр
 					NSHtmlRenderer::CASCSVGWriter oWriterSVG;
 					oWriterSVG.SetFontManager(m_pFontManager);
-					oWriterSVG.put_Width(nPixW);
-					oWriterSVG.put_Height(nPixH);
+					oWriterSVG.put_Width(lWidth);
+					oWriterSVG.put_Height(lHeight);
 
-					bool bRes = true;					
+					bool bRes = true;
 					try
 					{
-						bRes = pMetafile->DrawOnRenderer(&oWriterSVG, 0, 0, nPixW, nPixH);
+						bRes = pMetafile->DrawOnRenderer(&oWriterSVG, 0, 0, dWidth, dHeight);
 					}
 					catch (...)
 					{
@@ -606,20 +594,6 @@ namespace NSShapeImageGen
 
 					// не смогли (или не захотели? (SUPPORT_OLD_SVG_CONVERTATION)) сконвертировать в svg.
 					// пробуем в png
-					if (lWidth <= 0 || lHeight <= 0)
-					{
-						// ограничиваем размеры в растре.
-						if ((nMinSize <= w && w <= nMaxSize) && (nMinSize <= h && h <= nMaxSize))
-						{
-							lWidth = -1;
-							lHeight = -1;
-						}
-						else
-						{
-							lWidth = nPixW;
-							lHeight = nPixH;
-						}
-					}
 
 					std::wstring strSaveItem = strSaveItemWE + L".png";
 					pMetafile->ConvertToRaster(strSaveItem.c_str(), 4 /*CXIMAGE_FORMAT_PNG*/,  lWidth, lHeight);

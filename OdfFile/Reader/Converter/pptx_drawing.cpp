@@ -58,7 +58,31 @@ void pptx_serialize_text(std::wostream & strm, _pptx_drawing & val)
 			{				
 				CP_XML_NODE(L"a:p")//empty a:p
 				{
-					CP_XML_NODE(L"a:endParaRPr");
+					CP_XML_NODE(L"a:endParaRPr")
+					{
+						_CP_OPT(double) font_size;
+						odf_reader::GetProperty(val.additional, L"placeholder-font-size", font_size);
+						if (font_size)
+							CP_XML_ATTR(L"sz", *font_size * 100);
+
+						_CP_OPT(bool) bold_text;
+						odf_reader::GetProperty(val.additional, L"placeholder-font-bold", bold_text);
+						if (bold_text && *bold_text)
+							CP_XML_ATTR(L"b", 1);
+						
+						_CP_OPT(std::wstring) text_color;
+						odf_reader::GetProperty(val.additional, L"placeholder-text-color", text_color);
+						if (text_color)
+						{
+							CP_XML_NODE(L"a:solidFill")
+							{
+								CP_XML_NODE(L"a:srgbClr")
+								{
+									CP_XML_ATTR_OPT(L"val", text_color);
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -226,16 +250,24 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing & val)
 				}
 				CP_XML_NODE(L"p:nvPr")
 				{
-					if (val.place_holder_type_.length()>0)
+					if (val.place_holder_type_.length() > 0)
 					{
 						CP_XML_NODE(L"p:ph")
 						{
 							CP_XML_ATTR(L"type", val.place_holder_type_);
-							if (val.place_holder_idx_ > 0)	CP_XML_ATTR(L"idx", val.place_holder_idx_);
-							
-							if (val.place_holder_type_ == L"dt")	{	CP_XML_ATTR(L"sz", L"half");	}
-							if (val.place_holder_type_ == L"ftr")	{	CP_XML_ATTR(L"sz", L"quarter");	}
-							if (val.place_holder_type_ == L"sldNum"){	CP_XML_ATTR(L"sz", L"quarter");	}
+
+							if (val.place_holder_type_ == L"dt") { CP_XML_ATTR(L"sz", L"half"); }
+							if (val.place_holder_type_ == L"ftr") { CP_XML_ATTR(L"sz", L"quarter"); }
+							if (val.place_holder_type_ == L"sldNum") { CP_XML_ATTR(L"sz", L"quarter"); }
+
+							CP_XML_ATTR(L"idx", (uint32_t)val.place_holder_idx_);
+						}
+					}
+					else if (val.place_holder_)
+					{
+						CP_XML_NODE(L"p:ph")
+						{
+							CP_XML_ATTR(L"idx", (uint32_t)val.place_holder_idx_);
 						}
 					}
 				}

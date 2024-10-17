@@ -25,16 +25,16 @@ namespace SVG
 		SetFill(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CUse::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles* pOtherStyles) const
+	bool CUse::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles* pOtherStyles, const CRenderedObject* pContexObject) const
 	{
-		if (NULL == pRenderer || !m_oTransformtaion.m_bDraw)
+		if (NULL == pRenderer || !m_oTransformation.m_bDraw)
 			return false;
-		
-		Aggplus::CMatrix oTransform;
-		
-		if (!StartPath(pRenderer, pFile, oTransform))
+
+		Aggplus::CMatrix oOldTransform;
+
+		if (!StartPath(pRenderer, pFile, oOldTransform))
 			return false;
-		
+
 		double dM11, dM12, dM21, dM22, dDx, dDy;
 		pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dDx, &dDy);
 
@@ -51,13 +51,13 @@ namespace SVG
 			{
 				TSvgStyles oNewStyles(m_oStyles);
 				oNewStyles += *pOtherStyles;
-				pFoundObj->Draw(pRenderer, pFile, oMode, &oNewStyles);
+				pFoundObj->Draw(pRenderer, pFile, oMode, &oNewStyles, this);
 			}
 			else
-				pFoundObj->Draw(pRenderer, pFile, oMode, &m_oStyles);
+				pFoundObj->Draw(pRenderer, pFile, oMode, &m_oStyles, this);
 		}
-		
-		EndPath(pRenderer, pFile, oTransform);
+
+		EndPath(pRenderer, pFile, oOldTransform);
 
 		return true;
 	}

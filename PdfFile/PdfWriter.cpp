@@ -54,6 +54,7 @@
 #include "../DesktopEditor/common/StringExt.h"
 #include "../DesktopEditor/graphics/GraphicsPath.h"
 #include "../DesktopEditor/graphics/MetafileToRenderer.h"
+#include "../DesktopEditor/raster/Metafile/MetaFileCommon.h"
 
 #include "../UnicodeConverter/UnicodeConverter.h"
 #include "../Common/Network/FileTransporter/include/FileTransporter.h"
@@ -72,6 +73,8 @@
 
 #define MM_2_PT(X) ((X) * 72.0 / 25.4)
 #define PT_2_MM(X) ((X) * 25.4 / 72.0)
+
+#define MM_TO_PT(value) (value * 300.0 / 25.4)
 
 #define LONG_2_BOOL(X) ((X) ? true : false)
 
@@ -92,49 +95,36 @@
 static const long c_BrushTypeLinearGradient = 8001;
 static const long c_BrushTypeRadialGradient = 8002;
 
-void GetMetafileRasterSize(MetaFile::IMetaFile* pMetafile, const double& dWidth, int& nW, int& nH)
+Aggplus::CImage* ConvertMetafile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsPath, const std::wstring& wsTempDirectory, double dWidth = -1, double dHeight = -1)
 {
-	double dNewW = std::max(10.0, dWidth) / 25.4 * 300;
-
-	/* old version:
-	nW = (int)nW;
-	nH = -1;
-	return;
-	*/
-
-
-	double dX, dY, dW, dH;
-	pMetafile->GetBounds(&dX, &dY, &dW, &dH);
-
-	if (dW < 0) dW = -dW;
-	if (dH < 0) dH = -dH;
-
-	if (dW < 0.1) dW = 0.1;
-	if (dH < 0.1) dH = 0.1;
-
-	double dNewH = dNewW * dH / dW;
-
-	double dOneMaxSize = 2000;
-
-	if (dNewW > dOneMaxSize || dNewH > dOneMaxSize)
+	CImageFileFormatChecker oImageFormat(wsPath);
+	if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType ||
+		_CXIMAGE_FORMAT_EMF == oImageFormat.eFileType ||
+		_CXIMAGE_FORMAT_SVM == oImageFormat.eFileType ||
+		_CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
 	{
-		if (dNewW > dNewH)
-		{
-			dNewH *= (dOneMaxSize / dNewW);
-			dNewW = dOneMaxSize;
-		}
+		MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
+
+		if (NULL == pMeta || !pMeta->LoadFromFile(wsPath.c_str()))
+			return new Aggplus::CImage(wsPath);
+
+		bool bUseMax = false;
+		if (dWidth > 5000 || dHeight > 5000)
+			bUseMax = true;
+		else if (dWidth <= 0 && dHeight <= 0)
+			bUseMax = true;
+
+		if (!bUseMax)
+			pMeta->ConvertToRaster(wsTempDirectory.c_str(), _CXIMAGE_FORMAT_PNG, MM_2_PT(dWidth), MM_2_PT(dHeight));
 		else
-		{
-			dW *= (dOneMaxSize / dNewH);
-			dNewH = dOneMaxSize;
-		}
+			MetaFile::ConvertToRasterMaxSize(pMeta, wsTempDirectory.c_str(), _CXIMAGE_FORMAT_PNG, 2000);
+
+		RELEASEOBJECT(pMeta);
+
+		return new Aggplus::CImage(wsTempDirectory);
 	}
 
-	if (dNewW < 1) dNewW = 1;
-	if (dNewH < 1) dNewH = 1;
-
-	nW = (int)dNewW;
-	nH = (int)dNewH;
+	return new Aggplus::CImage(wsPath);
 }
 
 //----------------------------------------------------------------------------------------
@@ -1059,31 +1049,7 @@ HRESULT CPdfWriter::DrawImageFromFile(NSFonts::IApplicationFonts* pAppFonts, con
 	std::wstring sTempImagePath = GetDownloadFile(wsImagePathSrc, wsTempDirectory);
 	std::wstring wsImagePath = sTempImagePath.empty() ? wsImagePathSrc : sTempImagePath;
 
-	Aggplus::CImage* pAggImage = NULL;
-
-	CImageFileFormatChecker oImageFormat(wsImagePath);
-	if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType ||
-			_CXIMAGE_FORMAT_EMF == oImageFormat.eFileType ||
-			_CXIMAGE_FORMAT_SVM == oImageFormat.eFileType ||
-			_CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
-	{
-		// TODO: Реализовать отрисовку метафайлов по-нормальному
-		MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
-		pMeta->LoadFromFile(wsImagePath.c_str());
-
-		std::wstring wsTempFile = GetTempFile(wsTempDirectory);
-		int nW = 0, nH = 0;
-		GetMetafileRasterSize(pMeta, dW, nW, nH);
-		pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, nW, nH);
-
-		RELEASEOBJECT(pMeta);
-
-		pAggImage = new Aggplus::CImage(wsTempFile);
-	}
-	else
-	{
-		pAggImage = new Aggplus::CImage(wsImagePath);
-	}
+	Aggplus::CImage* pAggImage = ConvertMetafile(pAppFonts, wsImagePath, GetTempFile(wsTempDirectory), MM_TO_PT(dW), MM_TO_PT(dH));
 
 	HRESULT hRes = S_OK;
 	PdfWriter::CImageDict* pPdfImage = NULL;
@@ -1190,14 +1156,6 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 			if (!pUncheckedFont)
 				pUncheckedFont = m_pFont;
 		}
-	}
-
-	PdfWriter::CFontTrueType* pFontTT = NULL;
-	if (oInfo.IsTextField() || oInfo.IsDropDownList())
-	{
-		pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
-		if (!pFontTT)
-			return S_OK;
 	}
 
 	double dX, dY, dW, dH;
@@ -1337,6 +1295,7 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 
 		if (!isPlaceHolder)
 			pField->SetTextValue(wsValue);
+		PdfWriter::CFontTrueType* pFontTT = NULL;
 
 		if (!isComb && pPr->IsMultiLine())
 		{
@@ -1356,6 +1315,8 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 				pCodes2[unIndex] = ushCode;
 				pWidths[unIndex] = ppFonts[unIndex]->GetWidth(pCodes[unIndex]);
 			}
+
+			pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
 			
 			m_oLinesManager.Init(pCodes2, pWidths, unLen, ushSpaceCode, ushNewLineCode, pFontTT->GetLineHeight(), pFontTT->GetAscent());
 			
@@ -1459,6 +1420,8 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 		RELEASEARRAYOBJECTS(pCodes);
 		RELEASEARRAYOBJECTS(ppFonts);
 
+		if (pField->GetFont() && pField->GetFont() != m_pFont && pField->GetFont()->GetFontType() == PdfWriter::fontCIDType2)
+			pFontTT = m_pDocument->CreateTrueTypeFont((PdfWriter::CFontCidTrueType*)pField->GetFont());
 		pField->SetDefaultAppearance(pFontTT, m_oFont.GetSize(), PdfWriter::TRgb(oColor.r, oColor.g, oColor.b));
 
 		std::wstring wsPlaceHolder = pPr->GetPlaceHolder();
@@ -1529,6 +1492,11 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 		pField->SetComboFlag(true);
 		pField->SetEditFlag(pPr->IsEditComboBox());
 
+		PdfWriter::CFontTrueType* pFontTT = NULL;
+		if (pField->GetFont() && pField->GetFont() != m_pFont && pField->GetFont()->GetFontType() == PdfWriter::fontCIDType2)
+			pFontTT = m_pDocument->CreateTrueTypeFont((PdfWriter::CFontCidTrueType*)pField->GetFont());
+		else
+			pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
 		pField->SetDefaultAppearance(pFontTT, m_oFont.GetSize(), oInfo.IsPlaceHolder() ? oPlaceHolderColor : oNormalColor);
 
 		if (!pPr->GetPlaceHolder().empty())
@@ -1583,28 +1551,7 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 		PdfWriter::CImageDict* pImage = NULL;
 		if (wsPath.length())
 		{
-			Aggplus::CImage* pCImage = NULL;
-			CImageFileFormatChecker oImageFormat(wsPath);
-			if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType ||
-				_CXIMAGE_FORMAT_EMF == oImageFormat.eFileType ||
-				_CXIMAGE_FORMAT_SVM == oImageFormat.eFileType ||
-				_CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
-			{
-				MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
-				pMeta->LoadFromFile(wsPath.c_str());
-
-				std::wstring wsTempFile = GetTempFile(wsTempDirectory);
-				int nW = 0, nH = 0;
-				GetMetafileRasterSize(pMeta, dW, nW, nH);
-				pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, nW, nH);
-
-				RELEASEOBJECT(pMeta);
-
-				pCImage = new Aggplus::CImage(wsTempFile);
-			}
-			else
-				pCImage = new Aggplus::CImage(wsPath);
-
+			Aggplus::CImage* pCImage = ConvertMetafile(pAppFonts, wsPath, GetTempFile(wsTempDirectory), MM_TO_PT(dW), MM_TO_PT(dH));
 			pImage = LoadImage(pCImage, 255);
 			RELEASEOBJECT(pCImage);
 		}
@@ -1727,7 +1674,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	PdfWriter::CPage* pPage = m_pPage;
 
 	int nID = oInfo.GetID();
-	pAnnot = m_pDocument->GetAnnot(nID);
+	if (nID > 0)
+		pAnnot = m_pDocument->GetAnnot(nID);
 
 	if (pAnnot && pOrigPage && pPage != pOrigPage)
 	{
@@ -1850,6 +1798,9 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	}
 	if (nFlags & (1 << 5))
 		pAnnot->SetLM(oInfo.GetLM());
+	bool bRender = (nFlags >> 6) & 1;
+	if (nFlags & (1 << 7))
+		pAnnot->SetOUserID(oInfo.GetOUserID());
 
 	if (oInfo.IsMarkup())
 	{
@@ -1967,6 +1918,12 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			PdfWriter::CInkAnnotation* pInkAnnot = (PdfWriter::CInkAnnotation*)pAnnot;
 
 			pInkAnnot->SetInkList(pPr->GetInkList());
+			if (bRender)
+			{
+				LONG nLen = 0;
+				BYTE* pRender = oInfo.GetRender(nLen);
+				DrawAP(pAnnot, pRender, nLen);
+			}
 		}
 		else if (oInfo.IsLine())
 		{
@@ -2003,7 +1960,13 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pLineAnnot->SetCO(dCO1, dCO2);
 			}
 
-			pLineAnnot->SetAP();
+			//pLineAnnot->SetAP();
+			if (bRender)
+			{
+				LONG nLen = 0;
+				BYTE* pRender = oInfo.GetRender(nLen);
+				DrawAP(pAnnot, pRender, nLen);
+			}
 		}
 		else if (oInfo.IsTextMarkup())
 		{
@@ -2027,6 +1990,12 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			}
 			if (nFlags & (1 << 16))
 				pSquareCircleAnnot->SetIC(pPr->GetIC());
+			if (bRender)
+			{
+				LONG nLen = 0;
+				BYTE* pRender = oInfo.GetRender(nLen);
+				DrawAP(pAnnot, pRender, nLen);
+			}
 		}
 		else if (oInfo.IsPolygonLine())
 		{
@@ -2045,6 +2014,12 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pPolygonLineAnnot->SetIC(pPr->GetIC());
 			if (nFlags & (1 << 20))
 				pPolygonLineAnnot->SetIT(pPr->GetIT());
+			if (bRender)
+			{
+				LONG nLen = 0;
+				BYTE* pRender = oInfo.GetRender(nLen);
+				DrawAP(pAnnot, pRender, nLen);
+			}
 		}
 		else if (oInfo.IsFreeText())
 		{
@@ -2073,25 +2048,13 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pFreeTextAnnot->SetIT(pFTPr->GetIT());
 			if (nFlags & (1 << 21))
 				pFreeTextAnnot->SetIC(pFTPr->GetIC());
-			if (nFlags & (1 << 22))
+			if (bRender)
 			{
-				PdfWriter::CPage* pCurPage = m_pPage;
-				PdfWriter::CPage* pFakePage = m_pDocument->CreateFakePage();
-				m_pPage = pFakePage;
-				m_pDocument->SetCurPage(pFakePage);
-
 				LONG nLen = 0;
-				BYTE* pRender = pFTPr->GetRender(nLen);
-				IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pRenderer);
-				NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLen, pCorrector);
-				RELEASEOBJECT(pCorrector);
-
-				pFreeTextAnnot->APFromFakePage(pFakePage);
-
-				m_pPage = pCurPage;
-				m_pDocument->SetCurPage(pCurPage);
-				RELEASEOBJECT(pFakePage);
+				BYTE* pRender = oInfo.GetRender(nLen);
+				DrawAP(pAnnot, pRender, nLen);
 			}
+
 			PdfWriter::CFontDict* pFont = m_pFont;
 			if (m_pFont14)
 				pFont = m_pFont14;
@@ -2464,20 +2427,20 @@ HRESULT CPdfWriter::AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, 
 {
 	return m_pDocument->AddMetaData(sMetaName, pMetaData, nMetaLength) ? S_OK : S_FALSE;
 }
-void CreateOutlines(PdfWriter::CDocument* m_pDocument, const std::vector<CHeadings::CHeading>& arrHeadings, PdfWriter::COutline* pParent)
+void CreateOutlines(PdfWriter::CDocument* m_pDocument, const std::vector<CHeadings::CHeading*>& arrHeadings, PdfWriter::COutline* pParent)
 {
 	for (int i = 0; i < arrHeadings.size(); ++i)
 	{
-		std::string sTitle = U_TO_UTF8(arrHeadings[i].wsTitle);
+		std::string sTitle = U_TO_UTF8(arrHeadings[i]->wsTitle);
 		PdfWriter::COutline* pOutline = m_pDocument->CreateOutline(pParent, sTitle.c_str());
-		PdfWriter::CPage* pPageD = m_pDocument->GetPage(arrHeadings[i].nPage);
-		PdfWriter::CDestination* pDest = m_pDocument->CreateDestination(pPageD);
+		PdfWriter::CPage* pPageD = m_pDocument->GetPage(arrHeadings[i]->nPage);
+		PdfWriter::CDestination* pDest = m_pDocument->CreateDestination(pPageD, true);
 		if (pDest)
 		{
 			pOutline->SetDestination(pDest);
-			pDest->SetXYZ(arrHeadings[i].dX, arrHeadings[i].dY, 0);
+			pDest->SetXYZ(MM_2_PT(arrHeadings[i]->dX), pPageD->GetHeight() - MM_2_PT(arrHeadings[i]->dY), 0);
 		}
-		CreateOutlines(m_pDocument, arrHeadings[i].arrHeading, pOutline);
+		CreateOutlines(m_pDocument, arrHeadings[i]->arrHeading, pOutline);
 	}
 }
 void CPdfWriter::SetHeadings(CHeadings* pCommand)
@@ -2666,28 +2629,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		std::wstring sTempImagePath = GetDownloadFile(wsPath, wsTempDirectory);
 		std::wstring wsImagePath = sTempImagePath.empty() ? wsPath : sTempImagePath;
 
-		Aggplus::CImage* pCImage = NULL;
-		CImageFileFormatChecker oImageFormat(wsImagePath);
-		if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType ||
-			_CXIMAGE_FORMAT_EMF == oImageFormat.eFileType ||
-			_CXIMAGE_FORMAT_SVM == oImageFormat.eFileType ||
-			_CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
-		{
-			MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
-			pMeta->LoadFromFile(wsPath.c_str());
-
-			std::wstring wsTempFile = GetTempFile(wsTempDirectory);
-			int nW = 0, nH = 0;
-			GetMetafileRasterSize(pMeta, 10, nW, nH);
-			pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, nW, nH);
-
-			RELEASEOBJECT(pMeta);
-
-			pCImage = new Aggplus::CImage(wsTempFile);
-		}
-		else
-			pCImage = new Aggplus::CImage(wsImagePath);
-
+		Aggplus::CImage* pCImage = ConvertMetafile(pAppFonts, wsImagePath, GetTempFile(wsTempDirectory));
 		PdfWriter::CImageDict* pImage = LoadImage(pCImage, 255);
 		RELEASEOBJECT(pCImage);
 
@@ -3628,6 +3570,27 @@ std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl, const std::ws
 
 	return L"";
 }
+void CPdfWriter::DrawAP(PdfWriter::CAnnotation* pAnnot, BYTE* pRender, LONG nLenRender)
+{
+	if (!pAnnot || !pRender)
+		return;
+
+	PdfWriter::CPage* pCurPage = m_pPage;
+	PdfWriter::CPage* pFakePage = m_pDocument->CreateFakePage();
+	m_pPage = pFakePage;
+	m_pDocument->SetCurPage(pFakePage);
+	m_pPage->StartTransform(1, 0, 0, 1, -pAnnot->GetPageX(), 0);
+
+	IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pRenderer);
+	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);
+	RELEASEOBJECT(pCorrector);
+
+	pAnnot->APFromFakePage(pFakePage);
+
+	m_pPage = pCurPage;
+	m_pDocument->SetCurPage(pCurPage);
+	RELEASEOBJECT(pFakePage);
+}
 void CPdfWriter::DrawTextWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CTextWidget* pTextWidget, const std::wstring& wsValue)
 {
 	if (!pAppFonts || !pTextWidget)
@@ -3690,7 +3653,7 @@ void CPdfWriter::DrawTextWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter
 		double dKoef = dFontSize / pFontTT->m_dUnitsPerEm;
 		double dLineHeight = (pFontTT->m_dAscent + std::abs(pFontTT->m_dDescent)) * dKoef;
 
-		m_oLinesManager.CalculateLines(dFontSize, dWidth);
+		m_oLinesManager.CalculateLines(dFontSize, dWidth - dShiftBorder * 4);
 
 		pTextWidget->StartAP();
 
@@ -3899,7 +3862,7 @@ void CPdfWriter::DrawChoiceWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 
 		m_oLinesManager.Init(pCodes2, pWidths, unLen, ushSpaceCode, ushNewLineCode, pFontTT->GetLineHeight(), pFontTT->GetAscent());
 
-		m_oLinesManager.CalculateLines(dFontSize, dWidth);
+		m_oLinesManager.CalculateLines(dFontSize, dWidth - dShiftBorder * 4);
 
 		double dKoef = dFontSize / pFontTT->m_dUnitsPerEm;
 		double dLineHeight = pFontTT->m_dHeight * dKoef;

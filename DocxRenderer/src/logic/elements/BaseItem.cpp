@@ -1,6 +1,8 @@
 #include "BaseItem.h"
-#include "../../resources/Constants.h"
+
 #include <math.h>
+
+#include "../../resources/Constants.h"
 
 namespace NSDocxRenderer
 {
@@ -17,6 +19,18 @@ namespace NSDocxRenderer
 		m_dRight = oSrc.m_dRight;
 
 		return *this;
+	}
+	bool CBaseItem::operator==(const CBaseItem& oSrc)
+	{
+		if (this == &oSrc)
+			return true;
+
+		return m_dLeft == oSrc.m_dLeft &&
+			   m_dTop == oSrc.m_dTop &&
+			   m_dWidth == oSrc.m_dWidth &&
+			   m_dHeight == oSrc.m_dHeight &&
+			   m_dBaselinePos == oSrc.m_dBaselinePos &&
+			   m_dRight == oSrc.m_dRight;
 	}
 
 	eVerticalCrossingType CBaseItem::GetVerticalCrossingType(const CBaseItem* oSrc) const
@@ -81,12 +95,12 @@ namespace NSDocxRenderer
 			return  eHorizontalCrossingType::hctCurrentOutsideNext;
 		}
 		else if (m_dLeft < oSrc->m_dLeft && m_dRight < oSrc->m_dRight &&
-				 (m_dRight >= oSrc->m_dLeft || fabs(m_dRight - oSrc->m_dLeft) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
+				 (m_dRight >= oSrc->m_dLeft || fabs(m_dRight - oSrc->m_dLeft) < c_dTHE_SAME_STRING_X_PRECISION_MM))
 		{
 			return  eHorizontalCrossingType::hctCurrentLeftOfNext;
 		}
 		else if (m_dLeft > oSrc->m_dLeft && m_dRight > oSrc->m_dRight &&
-				 (m_dLeft <= oSrc->m_dRight || fabs(m_dLeft - oSrc->m_dRight) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
+				 (m_dLeft <= oSrc->m_dRight || fabs(m_dLeft - oSrc->m_dRight) < c_dTHE_SAME_STRING_X_PRECISION_MM))
 		{
 			return  eHorizontalCrossingType::hctCurrentRightOfNext;
 		}
@@ -95,8 +109,8 @@ namespace NSDocxRenderer
 		{
 			return  eHorizontalCrossingType::hctDublicate;
 		}
-		else if (fabs(m_dLeft - oSrc->m_dLeft) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
-				 fabs(m_dRight - oSrc->m_dRight) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
+		else if (fabs(m_dLeft - oSrc->m_dLeft) < c_dTHE_SAME_STRING_X_PRECISION_MM &&
+				 fabs(m_dRight - oSrc->m_dRight) < c_dTHE_SAME_STRING_X_PRECISION_MM)
 		{
 			return  eHorizontalCrossingType::hctLeftAndRightBordersMatch;
 		}
@@ -136,6 +150,13 @@ namespace NSDocxRenderer
 		return (eHType == eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext ||
 				eHType == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext);
 	}
+	bool CBaseItem::IsEqual(double dTop, double dBaselinePos, double dLeft, double dRight) const noexcept
+	{
+		return m_dLeft == dLeft &&
+			   m_dTop == dTop &&
+			   m_dBaselinePos == dBaselinePos &&
+			   m_dRight == dRight;
+	}
 
 	void CBaseItem::RecalcWithNewItem(const CBaseItem* pItem)
 	{
@@ -152,11 +173,5 @@ namespace NSDocxRenderer
 
 		m_dWidth = m_dRight - m_dLeft;
 		m_dHeight = m_dBaselinePos - m_dTop;
-	}
-
-	COutputObject& COutputObject::operator= (const COutputObject& oObj)
-	{
-		m_eType = oObj.m_eType;
-		return *this;
 	}
 }

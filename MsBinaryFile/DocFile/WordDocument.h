@@ -60,6 +60,7 @@
 #include "IVisitable.h"
 
 #include "../../Common/MS-LCID.h"
+#include "../../Common/cfcpp/compoundfile.h"
 
 namespace CRYPT
 {
@@ -68,11 +69,11 @@ namespace CRYPT
 
 namespace DocFileFormat
 {
-	class WordDocument: public IVisitable
+	class WordDocument : public IVisitable
 	{
 		friend class FootnotesMapping;
 		friend class EndnotesMapping;
-        friend class CommentsMapping;
+		friend class CommentsMapping;
 		friend class Converter;
 		friend class CharacterPropertiesMapping;
 		friend class DocumentMapping;
@@ -93,16 +94,16 @@ namespace DocFileFormat
 		friend class WordprocessingDocument;
 	public:
 
-		WordDocument (const std::wstring & tempFolder, const int userLCID);
+		WordDocument(const std::wstring& tempFolder, const int userLCID);
 		virtual ~WordDocument();
 
-		_UINT32 LoadDocument(const std::wstring & fileName, const std::wstring & password);
+		_UINT32 LoadDocument(const std::wstring& fileName, const std::wstring& password);
 
 		int		nWordVersion;
 		int		nDocumentCodePage;
 		bool	bDocumentCodePage;
 		int		nFontsCodePage;
-		
+
 		inline StructuredStorageReader* GetStorage() const
 		{
 			return m_pStorage;
@@ -114,16 +115,16 @@ namespace DocFileFormat
 	private:
 		bool LoadDocumentFlat();
 
-		bool DecryptOfficeFile	(CRYPT::Decryptor* Decryptor);
-		
-		bool DecryptStream		(std::wstring streamName_open, POLE::Storage * storageIn, std::wstring streamName_create, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor, bool bDecrypt);
-		void DecryptStream		(int level, std::wstring streamName, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor);
-		
-		inline OfficeArtContent* GetOfficeArt ()
+		bool DecryptOfficeFile(CRYPT::Decryptor* Decryptor);
+
+		bool DecryptStream(std::wstring streamName_open, POLE::Storage* storageIn, std::wstring streamName_create, std::shared_ptr<CFCPP::CFStorage> storageOut, CRYPT::Decryptor* Decryptor, bool bDecrypt);
+		void DecryptStream(int level, std::wstring streamName, POLE::Storage* storageIn, std::shared_ptr<CFCPP::CFStorage> storageOut, CRYPT::Decryptor* Decryptor);
+
+		inline OfficeArtContent* GetOfficeArt()
 		{
 			return officeArtContent;
 		}
-		
+
 		inline int FindFileCharPos(int cp)
 		{
 			if (FIB->m_FibBase.fComplex)
@@ -137,41 +138,41 @@ namespace DocFileFormat
 			else
 			{
 				int fc = cp + FIB->m_FibBase.fcMin;
-				if (fc > FIB->m_FibBase.fcMac) 
+				if (fc > FIB->m_FibBase.fcMac)
 					return -1;
 				return fc;
 			}
 		}
-		std::vector<wchar_t>* GetEncodingChars	(int fcStart, int fcEnd);
-		std::vector<wchar_t>* GetChars			(int fcStart, int fcEnd, int cp);
-		
-		std::vector<int>*							GetFileCharacterPositions		( int fcMin, int fcMax );
-		std::vector<CharacterPropertyExceptions*>*	GetCharacterPropertyExceptions	( int fcMin, int fcMax );
-		
+		std::vector<wchar_t>* GetEncodingChars(int fcStart, int fcEnd);
+		std::vector<wchar_t>* GetChars(int fcStart, int fcEnd, int cp);
+
+		std::vector<int>* GetFileCharacterPositions(int fcMin, int fcMax);
+		std::vector<CharacterPropertyExceptions*>* GetCharacterPropertyExceptions(int fcMin, int fcMax);
+
 		void Clear();
 
 		MS_LCID_converter		m_lcidConverter;
-		
+
 		std::wstring			m_sFileName;
-		std::wstring			m_sPassword;	
+		std::wstring			m_sPassword;
 		std::wstring			m_sTempFolder;
 		std::wstring			m_sTempDecryptFileName;
 		int						m_nUserLCID;
 		std::wstring			m_sXmlApp;
 		std::wstring			m_sXmlCore;
 
-		POLE::Stream			* WordDocumentStream;	// The stream "WordDocument"		
-		POLE::Stream			* TableStream;			// The stream "0Table" or "1Table"	
-		POLE::Stream			* DataStream;			// The stream called "Data"
-		StructuredStorageReader	* m_pStorage;			//POLE::Storage* Storage
-		
-		std::vector<wchar_t>						* Text;			// All text of the Word document
-		std::vector<FormattedDiskPagePAPX*>			* AllPapxFkps;	// A list of all FKPs that contain PAPX
-		std::vector<FormattedDiskPageCHPX*>			* AllChpxFkps;	// A list of all FKPs that contain CHPX
-		
-		std::map<int, ParagraphPropertyExceptions*>	* AllPapx;		// The value is the PAPX that formats the paragraph.
-		std::map<int, SectionPropertyExceptions*>	* AllSepx;		// The value is the SEPX that formats the section.
-		std::vector<int>							* AllPapxVector;// A vector to quick find in AllPapx
+		POLE::Stream* WordDocumentStream;	// The stream "WordDocument"		
+		POLE::Stream* TableStream;			// The stream "0Table" or "1Table"	
+		POLE::Stream* DataStream;			// The stream called "Data"
+		StructuredStorageReader* m_pStorage;			//POLE::Storage* Storage
+
+		std::vector<wchar_t>* Text;			// All text of the Word document
+		std::vector<FormattedDiskPagePAPX*>* AllPapxFkps;	// A list of all FKPs that contain PAPX
+		std::vector<FormattedDiskPageCHPX*>* AllChpxFkps;	// A list of all FKPs that contain CHPX
+
+		std::map<int, ParagraphPropertyExceptions*>* AllPapx;		// The value is the PAPX that formats the paragraph.
+		std::map<int, SectionPropertyExceptions*>* AllSepx;		// The value is the SEPX that formats the section.
+		std::vector<int>* AllPapxVector;// A vector to quick find in AllPapx
 
 		std::map<int, int> PictureBulletsCPsMap;
 
@@ -180,79 +181,79 @@ namespace DocFileFormat
 		struct _bmkStartEnd
 		{
 			int start;
-			int end;			
+			int end;
 			_UINT32 bookmarkId;
 		};
 		std::vector<_bmkStartEnd> BookmarkStartEndCPs;
 		std::vector<_bmkStartEnd> BookmarkProtStartEndCPs;
 		std::vector<_bmkStartEnd> AnnotStartEndCPs;
-		
+
 		std::map<int, int> mapAnnotBookmarks; //id, index
 		std::map<int, int> mapProtBookmarks;
 
-		FileInformationBlock				* FIB;
-		StyleSheet							* Styles;					// The style sheet of the document
-		PieceTable							* m_PieceTable;				// PieceTable PieceTable;		
-		ListFormatOverrideTable				* listFormatOverrideTable;	//  lists and numberings in the document.
-		HeaderAndFooterTable				* headerAndFooterTable;
-		AnnotationOwnerList					* AnnotationOwners;		
-		ListTable							* listTable;				// list numberings in the document.
-		WordDocumentProperties				* DocProperties;
-		EncryptionHeader					* encryptionHeader;
-		OfficeArtContent					* officeArtContent;		// info about the drawings in the document.
+		FileInformationBlock* FIB;
+		StyleSheet* Styles;					// The style sheet of the document
+		PieceTable* m_PieceTable;				// PieceTable PieceTable;		
+		ListFormatOverrideTable* listFormatOverrideTable;	//  lists and numberings in the document.
+		HeaderAndFooterTable* headerAndFooterTable;
+		AnnotationOwnerList* AnnotationOwners;
+		ListTable* listTable;				// list numberings in the document.
+		WordDocumentProperties* DocProperties;
+		EncryptionHeader* encryptionHeader;
+		OfficeArtContent* officeArtContent;		// info about the drawings in the document.
 
-		StringTable<WideString>				*RevisionAuthorTable;		
-		StringTable<FontFamilyName>			*FontTable;		// A list of all font names, used in the doucument
-		StringTable<WideString>				*BookmarkNames;
-		StringTable<WideString>				*AutoTextNames;
-		StringTable<WideString>				*AssocNames;
-		StringTable<WideString>				*BkmkAnnotNames;
-		StringTable<WideString>				*Captions;
-		StringTable<WideString>				*AutoCaptions;
-		
-		StringTableEx<ProtInfoBookmark>		*BkmkProt;
-		StringTable<WideString>				*BkmkProtUser;
+		StringTable<WideString>* RevisionAuthorTable;
+		StringTable<FontFamilyName>* FontTable;		// A list of all font names, used in the doucument
+		StringTable<WideString>* BookmarkNames;
+		StringTable<WideString>* AutoTextNames;
+		StringTable<WideString>* AssocNames;
+		StringTable<WideString>* BkmkAnnotNames;
+		StringTable<WideString>* Captions;
+		StringTable<WideString>* AutoCaptions;
 
-		Plex<EmptyStructure>				*IndividualFootnotesPlex;			//A plex of locations of individual footnotes		
-		Plex<FootnoteDescriptor>			*FootnoteReferenceCharactersPlex;	//A plex of footnote reference characters
-		
-		Plex<EmptyStructure>				*IndividualEndnotesPlex;			//A plex of locations of individual endnotes
-		Plex<EndnoteDescriptor>				*EndnoteReferenceCharactersPlex;	//A plex of endnote reference characters
-		
-		Plex<EmptyStructure>				*HeaderStoriesPlex;					//A plex of the header document
-		Plex<EmptyStructure>				*IndividualCommentsPlex;			// A plex with all ATRDPre10 structs
-		
-		Plex<FTXBXS>						*TextboxIndividualPlex;	
-		Plex<Tbkd>							*TextboxBreakPlex;					// Describes the breaks inside the textbox subdocument
-		Plex<Tbkd>							*TextboxBreakPlexHeader;			// Describes the breaks inside the header textbox subdocument
-		
-		Plex<OutlineListDescriptor>			*OutlineListDescriptorPlex;
-		Plex<Spa>							*OfficeDrawingPlex;
-		Plex<Spa>							*OfficeDrawingPlexHeader;
-		
-		Plex<SectionDescriptor>				*SectionPlex;	
-	
-		Plex<BookmarkFirst>					*BookmarkStartPlex;
-		Plex<EmptyStructure>				*BookmarkEndPlex;
+		StringTableEx<ProtInfoBookmark>* BkmkProt;
+		StringTable<WideString>* BkmkProtUser;
 
-		Plex<BookmarkFirst>					*AnnotStartPlex;
-		Plex<EmptyStructure>				*AnnotEndPlex;
+		Plex<EmptyStructure>* IndividualFootnotesPlex;			//A plex of locations of individual footnotes		
+		Plex<FootnoteDescriptor>* FootnoteReferenceCharactersPlex;	//A plex of footnote reference characters
 
-		Plex<BookmarkFirst>					*BookmarkProtStartPlex;
-		Plex<EmptyStructure>                *BookmarkProtEndPlex;
+		Plex<EmptyStructure>* IndividualEndnotesPlex;			//A plex of locations of individual endnotes
+		Plex<EndnoteDescriptor>* EndnoteReferenceCharactersPlex;	//A plex of endnote reference characters
 
-		Plex<ListNumCache>					*ListPlex;
-		Plex<FieldCharacter>				*FieldsPlex;
-		Plex<FieldCharacter>				*FootnoteDocumentFieldsPlex;
-		Plex<FieldCharacter>				*EndnoteDocumentFieldsPlex;
-		Plex<FieldCharacter>				*HeadersAndFootersDocumentFieldsPlex;
-		Plex<FieldCharacter>				*AnnotationsFieldsPlex;
-		Plex<AnnotationReferenceDescriptor> *AnnotationsReferencePlex;
-		Plex<EmptyStructure>				*AutoTextPlex;		
-		
+		Plex<EmptyStructure>* HeaderStoriesPlex;					//A plex of the header document
+		Plex<EmptyStructure>* IndividualCommentsPlex;			// A plex with all ATRDPre10 structs
 
-		AnnotationReferenceExDescriptors	*AnnotationsReferencesEx;
-//------------------------------------------------------------------------------
-		void CorrectColor(ODRAW::OfficeArtCOLORREF & color);
+		Plex<FTXBXS>* TextboxIndividualPlex;
+		Plex<Tbkd>* TextboxBreakPlex;					// Describes the breaks inside the textbox subdocument
+		Plex<Tbkd>* TextboxBreakPlexHeader;			// Describes the breaks inside the header textbox subdocument
+
+		Plex<OutlineListDescriptor>* OutlineListDescriptorPlex;
+		Plex<Spa>* OfficeDrawingPlex;
+		Plex<Spa>* OfficeDrawingPlexHeader;
+
+		Plex<SectionDescriptor>* SectionPlex;
+
+		Plex<BookmarkFirst>* BookmarkStartPlex;
+		Plex<EmptyStructure>* BookmarkEndPlex;
+
+		Plex<BookmarkFirst>* AnnotStartPlex;
+		Plex<EmptyStructure>* AnnotEndPlex;
+
+		Plex<BookmarkFirst>* BookmarkProtStartPlex;
+		Plex<EmptyStructure>* BookmarkProtEndPlex;
+
+		Plex<ListNumCache>* ListPlex;
+		Plex<FieldCharacter>* FieldsPlex;
+		Plex<FieldCharacter>* FootnoteDocumentFieldsPlex;
+		Plex<FieldCharacter>* EndnoteDocumentFieldsPlex;
+		Plex<FieldCharacter>* HeadersAndFootersDocumentFieldsPlex;
+		Plex<FieldCharacter>* AnnotationsFieldsPlex;
+		Plex<AnnotationReferenceDescriptor>* AnnotationsReferencePlex;
+		Plex<EmptyStructure>* AutoTextPlex;
+
+
+		AnnotationReferenceExDescriptors* AnnotationsReferencesEx;
+		//------------------------------------------------------------------------------
+		void CorrectColor(ODRAW::OfficeArtCOLORREF& color, int base_color);
 	};
 }

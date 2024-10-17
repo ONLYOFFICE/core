@@ -289,10 +289,8 @@
     <ClInclude Include="..\..\..\Binary\Presentation\imagemanager.h" />
     <ClInclude Include="..\..\..\Binary\Presentation\pptxwriter.h" />
     <ClInclude Include="..\..\..\Binary\Presentation\WMFToImageConverter.h" />
-    <ClInclude Include="..\..\..\PPTXFormat\App.h" />
     <ClInclude Include="..\..\..\PPTXFormat\CommentAuthors.h" />
     <ClInclude Include="..\..\..\PPTXFormat\Comments.h" />
-    <ClInclude Include="..\..\..\PPTXFormat\Core.h" />
     <ClInclude Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficeDrawingConverter.h" />
     <ClInclude Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficePPTXFile.h" />
     <ClInclude Include="..\..\..\PPTXFormat\FileContainer.h" />
@@ -637,7 +635,7 @@
     <ClInclude Include="..\..\..\PPTXFormat\ShowPr\CustShow.h" />
     <ClInclude Include="..\..\..\PPTXFormat\ShowPr\Kiosk.h" />
     <ClInclude Include="..\..\..\PPTXFormat\ShowPr\Present.h" />
-    <ClInclude Include="..\..\..\PPTXFormat\ShowPr\ShowPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ShowPr\PresentationPr.h" />
     <ClInclude Include="..\..\..\PPTXFormat\ShowPr\SldAll.h" />
     <ClInclude Include="..\..\..\PPTXFormat\ShowPr\SldRg.h" />
     <ClInclude Include="..\..\..\PPTXFormat\Slide.h" />
@@ -922,10 +920,8 @@
     <ClCompile Include="..\..\..\Binary\Presentation\FontPicker.cpp" />
     <ClCompile Include="..\..\..\Binary\Presentation\imagemanager.cpp" />
     <ClCompile Include="..\..\..\Binary\Presentation\PPTXWriter.cpp" />
-    <ClCompile Include="..\..\..\PPTXFormat\App.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\CommentAuthors.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Comments.cpp" />
-    <ClCompile Include="..\..\..\PPTXFormat\Core.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficeDrawingConverter.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficePPTXFileRealization.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\FileContainer.cpp" />
@@ -1270,7 +1266,7 @@
     <ClCompile Include="..\..\..\PPTXFormat\ShowPr\CustShow.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\ShowPr\Kiosk.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\ShowPr\Present.cpp" />
-    <ClCompile Include="..\..\..\PPTXFormat\ShowPr\ShowPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ShowPr\PresentationPr.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\ShowPr\SldAll.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\ShowPr\SldRg.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Slide.cpp" />

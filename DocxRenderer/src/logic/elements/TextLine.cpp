@@ -1,4 +1,5 @@
 #include "TextLine.h"
+
 #include "../../logic/elements/Shape.h"
 #include "../../resources/Constants.h"
 #include "../../resources/utils.h"
@@ -14,11 +15,17 @@ namespace NSDocxRenderer
 	void CTextLine::Clear()
 	{
 		m_arConts.clear();
+		m_pLine = nullptr;
 	}
 	void CTextLine::AddCont(std::shared_ptr<CContText> oCont)
 	{
 		RecalcWithNewItem(oCont.get());
 		m_arConts.push_back(oCont);
+	}
+	void CTextLine::AddConts(const std::vector<std::shared_ptr<CContText>>& arConts)
+	{
+		for (auto& cont : arConts)
+			AddCont(cont);
 	}
 
 	bool CTextLine::IsCanBeDeleted() const
@@ -54,19 +61,22 @@ namespace NSDocxRenderer
 			if (!pCurrent)
 				continue;
 
-			double dSpaceDefaultSize = pCurrent->CalculateThinSpace();
-			double dSpaceWideSize = pCurrent->CalculateWideSpace();
-			double dDifference = fabs(pCurrent->m_dLeft - pFirst->m_dRight);
+			double avg_space_width = pCurrent->m_pFontStyle->GetAvgSpaceWidth();
+			double space_width = avg_space_width != 0.0 ?
+									 avg_space_width * c_dAVERAGE_SPACE_WIDTH_COEF :
+									 pCurrent->CalculateSpace() * c_dSPACE_WIDTH_COEF;
+
+			double dDifference = pCurrent->m_dLeft - pFirst->m_dRight;
 
 			bool bIsEqual = pFirst->IsEqual(pCurrent.get());
-			bool bIsBigDelta = dDifference > dSpaceDefaultSize;
-			bool bIsVeryBigDelta = dDifference > dSpaceWideSize;
+			bool bIsSpaceDelta = dDifference > space_width;
+			bool bIsWideSpaceDelta = dDifference > space_width * 3;
 
-			if (bIsBigDelta && pFirst->m_dFirstWordWidth == 0.0)
-				pFirst->m_dFirstWordWidth = pFirst->m_dWidth;
-
-			if (bIsVeryBigDelta)
+			if (bIsWideSpaceDelta || (pCurrent->m_bPossibleSplit && bIsSpaceDelta))
 			{
+				if (CContText::IsUnicodeSpace(pFirst->GetLastSym()))
+					pFirst->RemoveLastSym();
+
 				auto wide_space = std::make_shared<CContText>(pFirst->m_pManager);
 
 				// sets all members for wide_space except highlight things
@@ -74,7 +84,16 @@ namespace NSDocxRenderer
 					wide_space->m_dLeft = pFirst->m_dRight;
 					wide_space->m_dRight = pCurrent->m_dLeft;
 					wide_space->m_dWidth = wide_space->m_dRight - wide_space->m_dLeft;
-					wide_space->m_oText = L" ";
+
+					wide_space->m_dBaselinePos = pCurrent->m_dBaselinePos;
+					wide_space->m_dTop = pCurrent->m_dTop;
+
+					wide_space->m_dTopWithAscent = pCurrent->m_dTopWithAscent;
+					wide_space->m_dBotWithDescent = pCurrent->m_dBotWithDescent;
+
+					wide_space->m_dHeight = pCurrent->m_dHeight;
+
+					wide_space->SetSym(c_SPACE_SYM, wide_space->m_dRight - wide_space->m_dLeft);
 					wide_space->m_pFontStyle = pFirst->m_pFontStyle;
 					wide_space->m_pShape = nullptr;
 					wide_space->m_iNumDuplicates = 0;
@@ -94,26 +113,30 @@ namespace NSDocxRenderer
 				else
 					set_base();
 
-				m_arConts.insert(m_arConts.begin() + i, wide_space);
+				// pFrist cont contains only 1 space
+				if (pFirst->GetLength() == 0)
+					*pFirst = *wide_space;
+				else
+				{
+					m_arConts.insert(m_arConts.begin() + i, wide_space);
+					i++;
+				}
 
-				i++;
-				while (!m_arConts[i]) i++;
+				while (!m_arConts[i] && i < m_arConts.size()) i++;
+				if (i == m_arConts.size()) break;
 				pFirst = m_arConts[i];
 			}
 			else if (bIsEqual)
 			{
-				if (!bIsBigDelta)
+				if (!bIsSpaceDelta)
 				{
-					pFirst->m_oText += pCurrent->m_oText;
+					pFirst->AddTextBack(pCurrent->GetText(), pCurrent->GetSymWidths());
 				}
 				else
 				{
-					pFirst->m_oText += uint32_t(' ');
-					pFirst->m_oText += pCurrent->m_oText;
+					pFirst->AddSymBack(c_SPACE_SYM, pCurrent->m_dLeft - pFirst->m_dRight);
+					pFirst->AddTextBack(pCurrent->GetText(), pCurrent->GetSymWidths());
 				}
-
-				pFirst->m_dWidth = pCurrent->m_dRight - pFirst->m_dLeft;
-				pFirst->m_dRight = pCurrent->m_dRight;
 
 				if (pFirst->m_pCont.expired())
 				{
@@ -124,24 +147,12 @@ namespace NSDocxRenderer
 			}
 			else
 			{
-				if (bIsBigDelta)
+				if (bIsSpaceDelta)
 				{
-					if (!IsSpaceUtf32(pFirst->m_oText[pFirst->m_oText.length()-1]) &&
-							!IsSpaceUtf32(pCurrent->m_oText[0]))
-					{
-						if (pFirst->GetNumberOfFeatures() <= pCurrent->GetNumberOfFeatures())
-						{
-							pFirst->m_oText += L" ";
-							pFirst->m_dWidth += (pCurrent->m_dLeft - pFirst->m_dRight);
-						}
-						else
-						{
-							NSStringUtils::CStringUTF32 oNewText = L" ";
-							oNewText += pCurrent->m_oText;
-							pCurrent->m_oText = oNewText;
-							pCurrent->m_dWidth += (pCurrent->m_dLeft - pFirst->m_dRight);
-						}
-					}
+					if (pFirst->GetNumberOfFeatures() <= pCurrent->GetNumberOfFeatures())
+						pFirst->AddSymBack(c_SPACE_SYM, pCurrent->m_dLeft - pFirst->m_dRight);
+					else
+						pCurrent->AddSymFront(c_SPACE_SYM, pCurrent->m_dLeft - pFirst->m_dRight);
 				}
 				pFirst = pCurrent;
 			}
@@ -156,6 +167,34 @@ namespace NSDocxRenderer
 		});
 	}
 
+	void CTextLine::CalcFirstWordWidth()
+	{
+		bool is_done = false;
+		double width = 0;
+		for (auto& cont : m_arConts)
+		{
+			if (!cont)
+				continue;
+
+			const auto& text = cont->GetText();
+			auto ar_widths = cont->GetSymWidths();
+			for (size_t i = 0; i < text.length(); ++i)
+			{
+				if (text.at(i) == c_SPACE_SYM)
+				{
+					m_dFirstWordWidth = width;
+					is_done = true;
+					break;
+				}
+				width += ar_widths[i];
+			}
+			if (is_done)
+				break;
+		}
+		if (!is_done)
+			m_dFirstWordWidth = m_dWidth;
+	}
+
 	void CTextLine::RecalcSizes()
 	{
 		m_dLeft = 0.0;
@@ -166,7 +205,7 @@ namespace NSDocxRenderer
 		m_dRight = 0.0;
 		m_dHeight = 0.0;
 
-		for(const auto& cont : m_arConts)
+		for (const auto& cont : m_arConts)
 			if(cont)
 				RecalcWithNewItem(cont.get());
 	}
@@ -190,7 +229,7 @@ namespace NSDocxRenderer
 			return  eVerticalCrossingType::vctCurrentAboveNext;
 
 		else if (this_top > other_top && this_bot > other_bot &&
-				(this_top <= other_bot || fabs(this_top - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
+				 (this_top <= other_bot || fabs(this_top - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
 			return  eVerticalCrossingType::vctCurrentBelowNext;
 
 		else if (this_top == other_top && this_bot == other_bot &&
@@ -263,7 +302,7 @@ namespace NSDocxRenderer
 		size_t len = 0;
 		for (const auto& cont : m_arConts)
 			if (cont)
-				len += cont->m_oText.length();
+				len += cont->GetLength();
 
 		return len;
 	}

@@ -153,17 +153,19 @@ namespace OOX
 				if (m_oName.IsInit())
 					ptr->rangeProtectionTitleSDRel.rgchTitle = m_oName.get();
 
-				BYTE * temp = ptr->ipdPasswordData.rgbHash.rgbData.data();
+				BYTE * temp;
 				auto tempSize = 0;
 				NSFile::CBase64Converter::CBase64Converter::Decode(std::string{m_oHashValue.get().begin(),
 					m_oHashValue.get().end()}.c_str(), m_oHashValue.get().size(), temp, tempSize);
 				ptr->ipdPasswordData.rgbHash.cbLength = tempSize;
+				ptr->ipdPasswordData.rgbHash.rgbData = std::vector<BYTE>(temp, temp + tempSize);
+				delete[] temp; 
 
-				BYTE* temp2 = ptr->ipdPasswordData.rgbSalt.rgbData.data();
-				auto tempSize2 = 0;
 				NSFile::CBase64Converter::Decode(std::string{m_oSaltValue.get().begin(),
-					m_oSaltValue.get().end()}.c_str(), m_oSaltValue.get().size(), temp2, tempSize2);
-				ptr->ipdPasswordData.rgbSalt.cbLength = tempSize2;
+					m_oSaltValue.get().end()}.c_str(), m_oSaltValue.get().size(), temp, tempSize);
+				ptr->ipdPasswordData.rgbSalt.cbLength = tempSize;
+				ptr->ipdPasswordData.rgbSalt.rgbData = std::vector<BYTE>(temp, temp + tempSize);
+				delete[] temp; 
 			}
 			else
 			{
@@ -446,22 +448,29 @@ namespace OOX
 
 			if(m_oLeft.IsInit())
                 ptr->xnumLeft.data.value = std::round(m_oLeft->GetValue()) / 100;
+			else
+				ptr->xnumLeft.data.value = 0;
 
 			if(m_oTop.IsInit())
                 ptr->xnumTop.data.value = std::round(m_oTop->GetValue()) / 100;
-
+			else
+				ptr->xnumTop.data.value = 0;
 			if(m_oRight.IsInit())
                 ptr->xnumRight.data.value = std::round(m_oRight->GetValue()) / 100;
-
+			else
+				ptr->xnumRight.data.value = 0;
 			if(m_oBottom.IsInit())
                 ptr->xnumBottom.data.value = std::round(m_oBottom->GetValue()) / 100;
-
+			else
+				ptr->xnumBottom.data.value = 0;
 			if(m_oHeader.IsInit())
                 ptr->xnumHeader.data.value = std::round(m_oHeader->GetValue()) / 100;
-
+			else
+				ptr->xnumHeader.data.value = 0;
 			if(m_oFooter.IsInit())
                 ptr->xnumFooter.data.value = std::round(m_oFooter->GetValue()) / 100;
-
+			else
+				ptr->xnumFooter.data.value = 0;
 			return objPtr;
 		}
 		EElementType CPageMargins::getType() const
@@ -562,6 +571,8 @@ namespace OOX
 			XLS::BaseObjectPtr objectPtr(ptr);
 			if(m_oBlackAndWhite.IsInit())
 				ptr->fNoColor  = m_oBlackAndWhite->m_eValue;
+			else
+				ptr->fNoColor = false;
 			if (ptr->fNoColor && m_oCellComments.IsInit())
 			{
 				if (m_oCellComments == SimpleTypes::Spreadsheet::ECellComments::cellcommentsAtEnd)
@@ -577,9 +588,13 @@ namespace OOX
 
 			if (m_oDraft.IsInit())
 				ptr->fDraft = m_oDraft->m_eValue;
+			else
+				ptr->fDraft = false;
 
 			if (m_oErrors.IsInit())
 				ptr->iErrors = m_oErrors->m_eValue;
+			else
+				ptr->iErrors = 0;
 
 			if (m_oFirstPageNumber.IsInit())
 				ptr->iPageStart = m_oFirstPageNumber->m_eValue;
@@ -643,7 +658,9 @@ namespace OOX
 
 			if (m_oVerticalDpi.IsInit())
 				ptr->iVRes = m_oVerticalDpi->m_eValue;
-
+			else
+				ptr->iVRes = 0;
+			ptr->fEndNotes = false;
 			return objectPtr;
 		}
 		XLS::BaseObjectPtr CPageSetup::toBinCs()
@@ -653,6 +670,8 @@ namespace OOX
 
 			if(m_oBlackAndWhite.IsInit())
 				ptr->fNoColor  = m_oBlackAndWhite->m_eValue;
+			else
+				ptr->fNoColor = false;
 			if (ptr->fNoColor)
 			{
 				if (m_oCellComments == SimpleTypes::Spreadsheet::ECellComments::cellcommentsAtEnd)
@@ -660,19 +679,24 @@ namespace OOX
 				else if(m_oCellComments == SimpleTypes::Spreadsheet::ECellComments::cellcommentsAsDisplayed)
 					ptr->fNotes = false;
 			}
-
+			ptr->fEndNotes = false;
 			if (m_oCopies.IsInit())
 				ptr->iCopies = m_oCopies->m_eValue;
+			else
+				ptr->iCopies = 0;
 
 			if (m_oDraft.IsInit())
 				ptr->fDraft = m_oDraft->m_eValue;
-
+			else
+				ptr->fDraft = 0;
 			if (m_oFirstPageNumber.IsInit())
 				ptr->iPageStart = m_oFirstPageNumber->m_eValue;
-
+			else
+				ptr->iPageStart = 0;
 			if (m_oHorizontalDpi.IsInit())
 				ptr->iRes = m_oHorizontalDpi->m_eValue;
-
+			else
+				ptr->iRes = 0;
 			if (m_oRId.IsInit())
 				ptr->szRelID = m_oRId->GetValue();
 
@@ -686,12 +710,22 @@ namespace OOX
 
 			if (m_oPaperSize.IsInit())
 				ptr->iPaperSize = m_oPaperSize->m_eValue;
+			else
+				ptr->iPaperSize = 9;
+
+			if (m_oScale.IsInit())
+				ptr->iScale = m_oScale->m_eValue;
+			else
+				ptr->iScale = 100;
 
 			if (m_oUseFirstPageNumber.IsInit())
 				ptr->fUsePage = m_oUseFirstPageNumber->m_eValue;
-
+			else
+				ptr->fUsePage = false;
 			if (m_oVerticalDpi.IsInit())
 				ptr->iVRes = m_oVerticalDpi->m_eValue;
+			else
+				ptr->iVRes = 0;
 			return objectPtr;
 		}
 
@@ -846,15 +880,22 @@ namespace OOX
 			XLS::BaseObjectPtr objectPtr(ptr);
 			if(m_oGridLines.IsInit())
 				ptr->fPrintGrid = m_oGridLines->m_eValue;
+			else
+				ptr->fPrintGrid = false;
 			if(m_oGridLinesSet.IsInit())
 				ptr->fPrintGrid = m_oGridLinesSet->m_eValue;
 			if(m_oHeadings.IsInit())
 				ptr->fPrintHeaders = m_oHeadings->m_eValue;
+			else
+				ptr->fPrintHeaders = false;
 			if(m_oHorizontalCentered.IsInit())
 				ptr->fHCenter = m_oHorizontalCentered->m_eValue;
+			else
+				ptr->fHCenter = false;
 			if(m_oVerticalCentered.IsInit())
 				ptr->fVCenter = m_oVerticalCentered->m_eValue;
-
+			else
+				ptr->fVCenter = false;
 			return objectPtr;
 		}
 		EElementType CPrintOptions::getType() const
@@ -1041,9 +1082,12 @@ namespace OOX
 			if (ptr != nullptr)
 			{
 				if (ptr->dxGCol != 0xFFFFFFFF)
-					m_oBaseColWidth = ptr->dxGCol / 256.;
-
-				m_oDefaultColWidth = ptr->cchDefColWidth;
+                {
+					m_oDefaultColWidth =  ptr->dxGCol / 256.;
+					m_oBaseColWidth = m_oDefaultColWidth.get();
+                }
+                else
+                    m_oDefaultColWidth = ptr->cchDefColWidth;
 
 				if (ptr->fUnsynced)
 					m_oDefaultRowHeight = ptr->miyDefRwHeight;
@@ -1469,10 +1513,16 @@ namespace OOX
 			XLS::BaseObjectPtr castedPtr(pWsView);
 			if(m_oTabSelected.IsInit())
 				pWsView->fSelected = m_oTabSelected->m_eValue;
+			else
+				pWsView->fSelected = false;
 			if(m_oWorkbookViewId.IsInit())
 				pWsView->iWbkView = m_oWorkbookViewId->m_eValue;
+			else
+				pWsView->iWbkView = 0;
 			if(m_oZoomScale.IsInit())
 				pWsView->wScale = m_oZoomScale->m_eValue;
+			else
+				pWsView->wScale = 100;
 			return castedPtr;
 		}
 		EElementType CSheetView::getType() const
@@ -1906,10 +1956,16 @@ namespace OOX
 
 			if(m_oCodeName.IsInit())
 				ptr->strName = m_oCodeName.get();
+			else
+                ptr->strName.value.setSize(0xFFFFFFFF);
 			if(m_oPublished.IsInit())
 				ptr->fPublish = m_oPublished->GetValue();
+			else
+				ptr->fPublish = false;
 			if(m_oTabColor.IsInit())
 				ptr->brtcolorTab = m_oTabColor->toColor();
+			else
+				ptr->brtcolorTab = m_oTabColor->GetDefaultColor();
 			return XLS::BaseObjectPtr{ptr};
 		}
 		
@@ -2157,13 +2213,21 @@ namespace OOX
 			ptr->m_BrtBeginHeaderFooter = XLS::BaseObjectPtr{castedBegin};
 
 			if(m_oAlignWithMargins.IsInit())
-			castedBegin->fHFAlignMargins = m_oAlignWithMargins->m_eValue;
+				castedBegin->fHFAlignMargins = m_oAlignWithMargins->m_eValue;
+			else
+				castedBegin->fHFAlignMargins = false;
 			if(m_oDifferentFirst.IsInit())
-			castedBegin->fHFDiffFirst = m_oDifferentFirst->m_eValue;
+				castedBegin->fHFDiffFirst = m_oDifferentFirst->m_eValue;
+			else
+				castedBegin->fHFDiffFirst = false;
 			if(m_oDifferentOddEven.IsInit())
-			castedBegin->fHFDiffOddEven = m_oDifferentOddEven->m_eValue;
+				castedBegin->fHFDiffOddEven = m_oDifferentOddEven->m_eValue;
+			else
+				castedBegin->fHFDiffOddEven = false;
 			if(m_oScaleWithDoc.IsInit())
-			castedBegin->fHFScaleWithDoc = m_oScaleWithDoc->m_eValue;
+				castedBegin->fHFScaleWithDoc = m_oScaleWithDoc->m_eValue;
+			else
+				castedBegin->fHFScaleWithDoc = false;
 
 			if(m_oOddHeader.IsInit())
 				castedBegin->stHeader = m_oOddHeader->m_sText;
@@ -2348,6 +2412,8 @@ namespace OOX
 
 			if(m_oId.IsInit())
 				ptr->rgb.value = m_oId->GetValue();
+			else
+				ptr->rgb.value.setSize(0XFFFFFFFF);
 
 			return objectPtr;
 		}
@@ -2414,12 +2480,20 @@ namespace OOX
 				ptr->unRwCol = m_oId->GetValue();
 			if(m_oMan.IsInit())
 				ptr->fMan = m_oMan->GetValue();
-			if(m_oMax.IsInit())
-				ptr->unColRwStrt = m_oMax->GetValue();
-			if(m_oMin.IsInit())
-				ptr->unColRwEnd = m_oMin->GetValue();
+            else
+                ptr->fMan = false;
+            if(m_oMin.IsInit())
+                ptr->unColRwStrt = m_oMin->GetValue();
+            else
+                ptr->unColRwStrt  = 0;
+            if(m_oMax.IsInit())
+                ptr->unColRwEnd = m_oMax->GetValue();
+            else
+                ptr->unColRwEnd = 0;
 			if(m_oPt.IsInit())
 				ptr->fPivot = m_oPt->GetValue();
+            else
+                ptr->fPivot = false;
 
 			return objectPtr;
 		}
@@ -2517,8 +2591,12 @@ namespace OOX
 			ptr->m_BrtBeginRwBrk = XLS::BaseObjectPtr{rowPtr};
 			if(m_oCount.IsInit())
 				rowPtr->ibrkMac = m_oCount->GetValue();
+			else
+				rowPtr->ibrkMac = m_arrItems.size();
 			if(m_oManualBreakCount.IsInit())
 				rowPtr->ibrkManMac = m_oManualBreakCount->GetValue();
+			else
+				rowPtr->ibrkManMac = rowPtr->ibrkMac;
 			for(auto i:m_arrItems)
 			{
 				ptr->m_arBrtBrk.push_back(i->toBin());
@@ -2751,25 +2829,29 @@ namespace OOX
 				auto ptr(new XLSB::SheetProtectionIso);
 				XLS::BaseObjectPtr castedPtr(ptr);
 				if(m_oAlgorithmName.IsInit())
-					ptr->ipdPasswordData.szAlgName = m_oAlgorithmName->GetValue();
+                    ptr->ipdPasswordData.szAlgName = m_oAlgorithmName->ToString();
 				if(m_oSpinCount.IsInit())
 					ptr->dwSpinCount = m_oSpinCount->GetValue();
 				if(m_oHashValue.IsInit())
 				{
-				BYTE * temp = ptr->ipdPasswordData.rgbHash.rgbData.data();
-				auto tempSize = 0;
-				NSFile::CBase64Converter::CBase64Converter::Decode(std::string{m_oHashValue.get().begin(),
-					m_oHashValue.get().end()}.c_str(), m_oHashValue.get().size(), temp, tempSize);
-				ptr->ipdPasswordData.rgbHash.cbLength = tempSize;
+					BYTE * temp;
+					auto tempSize = 0;
+					NSFile::CBase64Converter::CBase64Converter::Decode(std::string{m_oHashValue.get().begin(),
+						m_oHashValue.get().end()}.c_str(), m_oHashValue.get().size(), temp, tempSize);
+					ptr->ipdPasswordData.rgbHash.cbLength = tempSize;
+					ptr->ipdPasswordData.rgbHash.rgbData = std::vector<BYTE>(temp, temp + tempSize);
+					delete[] temp; 
 				}
 
 				if(m_oSaltValue.IsInit())
 				{
-					BYTE * temp2 = ptr->ipdPasswordData.rgbSalt.rgbData.data();
-					auto tempSize2 = 0;
+                    BYTE * temp;
+                    auto tempSize = 0;
 					NSFile::CBase64Converter::Decode(std::string{m_oSaltValue.get().begin(),
-						m_oSaltValue.get().end()}.c_str(), m_oSaltValue.get().size(), temp2, tempSize2);
-					ptr->ipdPasswordData.rgbSalt.cbLength = tempSize2;
+					m_oSaltValue.get().end()}.c_str(), m_oSaltValue.get().size(), temp, tempSize);
+					ptr->ipdPasswordData.rgbSalt.cbLength = tempSize;
+					ptr->ipdPasswordData.rgbSalt.rgbData = std::vector<BYTE>(temp, temp + tempSize);
+					delete[] temp; 
 				}
 
 				if (m_oAutoFilter.IsInit())
@@ -2878,7 +2960,7 @@ namespace OOX
 				objectPtr =  XLS::BaseObjectPtr{ptr};
 				
 				if(m_oAlgorithmName.IsInit())
-					ptr->ipdPasswordData.szAlgName = m_oAlgorithmName->GetValue();
+					ptr->ipdPasswordData.szAlgName = m_oAlgorithmName->ToString();
 				else
 					ptr->ipdPasswordData.szAlgName = false;
 				if(m_oSpinCount.IsInit())
@@ -2888,20 +2970,24 @@ namespace OOX
 					
 				if(m_oHashValue.IsInit())
 				{
-					BYTE * temp = ptr->ipdPasswordData.rgbHash.rgbData.data();
+					BYTE * temp;
 					auto tempSize = 0;
 					NSFile::CBase64Converter::CBase64Converter::Decode(std::string{m_oHashValue.get().begin(),
 						m_oHashValue.get().end()}.c_str(), m_oHashValue.get().size(), temp, tempSize);
 					ptr->ipdPasswordData.rgbHash.cbLength = tempSize;
+					ptr->ipdPasswordData.rgbHash.rgbData = std::vector<BYTE>(temp, temp + tempSize);
+					delete[] temp; 
 				}
 
 				if(m_oSaltValue.IsInit())
 				{
-					BYTE * temp2 = ptr->ipdPasswordData.rgbSalt.rgbData.data();
-					auto tempSize2 = 0;
+					BYTE * temp;
+					auto tempSize = 0;
 					NSFile::CBase64Converter::Decode(std::string{m_oSaltValue.get().begin(),
-						m_oSaltValue.get().end()}.c_str(), m_oSaltValue.get().size(), temp2, tempSize2);
-					ptr->ipdPasswordData.rgbSalt.cbLength = tempSize2;
+					m_oSaltValue.get().end()}.c_str(), m_oSaltValue.get().size(), temp, tempSize);
+					ptr->ipdPasswordData.rgbSalt.cbLength = tempSize;
+					ptr->ipdPasswordData.rgbSalt.rgbData = std::vector<BYTE>(temp, temp + tempSize);
+					delete[] temp; 
 				}
 
 				if(m_oObjects.IsInit())

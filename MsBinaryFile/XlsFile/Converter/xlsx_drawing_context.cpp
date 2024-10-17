@@ -81,13 +81,7 @@ namespace oox {
 		0x00666666,	0x00C0C0C0,	0x00DDDDDD,	0x00C0C0C0,	
 		0x00888888,	0x00FFFFFF,	0x00CCCCCC,	0x00000000
 	};
-	void _color::SetRGB(unsigned char nR, unsigned char  nG, unsigned char  nB)
-	{
-		nRGB = (nR<<16) | (nG<<8) | nB;
-		sRGB = STR::toRGB(nR, nG, nB);
 
-		index = -1;
-	}
 //-----------------------------------------------------------------------------------------------------
 class xlsx_drawing_context_handle::Impl
 {

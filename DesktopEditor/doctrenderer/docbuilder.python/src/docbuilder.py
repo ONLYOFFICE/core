@@ -49,6 +49,9 @@ def _loadLibrary(path):
     _lib.CDocBuilderValue_IsUndefined.argtypes = [OBJECT_HANDLE]
     _lib.CDocBuilderValue_IsUndefined.restype = ctypes.c_bool
 
+    _lib.CDocBuilderValue_IsBool.argtypes = [OBJECT_HANDLE]
+    _lib.CDocBuilderValue_IsBool.restype = ctypes.c_bool
+
     _lib.CDocBuilderValue_IsInt.argtypes = [OBJECT_HANDLE]
     _lib.CDocBuilderValue_IsInt.restype = ctypes.c_bool
 
@@ -117,6 +120,9 @@ def _loadLibrary(path):
 
     _lib.CDocBuilderValue_CreateArray.argtypes = [ctypes.c_int]
     _lib.CDocBuilderValue_CreateArray.restype = OBJECT_HANDLE
+
+    _lib.CDocBuilderValue_CreateObject.argtypes = []
+    _lib.CDocBuilderValue_CreateObject.restype = OBJECT_HANDLE
 
     _lib.CDocBuilderValue_Call0.argtypes = [OBJECT_HANDLE, ctypes.c_wchar_p]
     _lib.CDocBuilderValue_Call0.restype = OBJECT_HANDLE
@@ -197,7 +203,7 @@ def _loadLibrary(path):
     _lib.CDocBuilder_GetVersion.argtypes = [OBJECT_HANDLE]
     _lib.CDocBuilder_GetVersion.restype = STRING_HANDLE
 
-    _lib.CDocBuilder_GetContext.argtypes = [OBJECT_HANDLE]
+    _lib.CDocBuilder_GetContext.argtypes = [OBJECT_HANDLE, ctypes.c_bool]
     _lib.CDocBuilder_GetContext.restype = OBJECT_HANDLE
 
     _lib.CDocBuilder_Initialize.argtypes = []
@@ -277,6 +283,12 @@ class CDocBuilderValue:
             self._internal = _lib.CDocBuilderValue_CreateArray(length)
             for i in range(length):
                 self.Set(i, value[i])
+        elif isinstance(value, dict):
+            self._internal = _lib.CDocBuilderValue_CreateObject()
+            for key in value.keys():
+                if not isinstance(key, str):
+                    raise TypeError("CDocBuilderValue constructor supports only str keys in dict")
+                self.SetProperty(key, value[key])
         elif isinstance(value, CDocBuilderValue):
             self._internal = _lib.CDocBuilderValue_Copy(value._internal)
         elif isinstance(value, OBJECT_HANDLE):
@@ -300,6 +312,9 @@ class CDocBuilderValue:
 
     def IsUndefined(self):
         return _lib.CDocBuilderValue_IsUndefined(self._internal)
+
+    def IsBool(self):
+        return _lib.CDocBuilderValue_IsBool(self._internal)
 
     def IsInt(self):
         return _lib.CDocBuilderValue_IsInt(self._internal)
@@ -378,6 +393,10 @@ class CDocBuilderValue:
     @staticmethod
     def CreateArray(length):
         return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderValue_CreateArray(length)))
+
+    @staticmethod
+    def CreateObject():
+        return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderValue_CreateObject()))
 
     def Call(self, name, *args):
         if len(args) == 0:
@@ -473,8 +492,8 @@ class CDocBuilder:
         _lib.DeleteCharP(ctypes.cast(strVersion, ctypes.c_char_p))
         return version
 
-    def GetContext(self):
-        return CDocBuilderContext(OBJECT_HANDLE(_lib.CDocBuilder_GetContext(self._internal)))
+    def GetContext(self, enterContext=True):
+        return CDocBuilderContext(OBJECT_HANDLE(_lib.CDocBuilder_GetContext(self._internal, ctypes.c_bool(enterContext))))
 
     @classmethod
     def Initialize(cls, directory=None):

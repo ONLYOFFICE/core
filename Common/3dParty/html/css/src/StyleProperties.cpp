@@ -39,13 +39,17 @@ namespace NSCSS
 
 		std::wstring wsNewValue = wsValue;
 
-		bool bImportant = CutImportant(wsNewValue);
+		const bool bImportant{CutImportant(wsNewValue)};
 
 		if (m_bImportant && !bImportant)
 			return false;
 
+		if (UINT_MAX == unLevel)
+			m_unLevel++;
+		else
+			m_unLevel = unLevel;
+
 		m_oValue     = wsNewValue;
-		m_unLevel    = unLevel;
 		m_bImportant = bImportant;
 
 		return true;
@@ -58,15 +62,19 @@ namespace NSCSS
 
 		std::wstring wsNewValue = wsValue;
 
-		bool bImportant = CutImportant(wsNewValue);
+		const bool bImportant{CutImportant(wsNewValue)};
 
 		if (m_bImportant && !bImportant)
 			return false;
 
 		if (arValiableValues.end() != std::find(arValiableValues.begin(), arValiableValues.end(), wsNewValue))
 		{
+			if (UINT_MAX == unLevel)
+				m_unLevel++;
+			else
+				m_unLevel = unLevel;
+
 			m_oValue     = wsNewValue;
-			m_unLevel    = unLevel;
 			m_bImportant = bImportant;
 
 			return true;
@@ -82,7 +90,7 @@ namespace NSCSS
 
 		std::wstring wsNewValue = wsValue;
 
-		bool bImportant = CutImportant(wsNewValue);
+		const bool bImportant{CutImportant(wsNewValue)};
 
 		if (m_bImportant && !bImportant)
 			return false;
@@ -91,8 +99,12 @@ namespace NSCSS
 
 		if (arValiableValues.end() != oFoundValue)
 		{
+			if (UINT_MAX == unLevel)
+				m_unLevel++;
+			else
+				m_unLevel = unLevel;
+
 			m_oValue     = oFoundValue->second;
-			m_unLevel    = unLevel;
 			m_bImportant = bImportant;
 
 			return true;
@@ -109,7 +121,7 @@ namespace NSCSS
 	void CString::Clear()
 	{
 		m_oValue.clear();
-		m_unLevel    = NULL;
+		m_unLevel    = 0;
 		m_bImportant = false;
 	}
 
@@ -183,7 +195,7 @@ namespace NSCSS
 	void CDigit::Clear()
 	{
 		m_oValue        = DBL_MAX;
-		m_unLevel       = NULL;
+		m_unLevel       = 0;
 		m_enUnitMeasure = None;
 		m_bImportant    = false;
 	}
@@ -375,20 +387,24 @@ namespace NSCSS
 
 	bool CDigit::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (wsValue.empty() || (CHECK_CONDITIONS && !bHardMode) || unLevel < m_unLevel)
+		if (wsValue.empty() || (CHECK_CONDITIONS && !bHardMode))
 			return false;
 
 		std::wstring wsNewValue = wsValue;
 
-		bool bImportant = CutImportant(wsNewValue); //TODO:: иногда мы знаем, что "!important" точно не встретится
-		                                            // возможно стоит добавить ещё метод
+		const bool bImportant{CutImportant(wsNewValue)}; //TODO:: иногда мы знаем, что "!important" точно не встретится
+		                                                 // возможно стоит добавить ещё метод
 		if (m_bImportant && !bImportant)
 			return false;
 
 		if (!CUnitMeasureConverter::GetValue(wsValue, m_oValue, m_enUnitMeasure))
 			return false;
 
-		m_unLevel       = unLevel;
+		if (UINT_MAX == unLevel)
+			m_unLevel++;
+		else
+			m_unLevel = unLevel;
+
 		m_bImportant    = bImportant;
 
 		return true;
@@ -420,6 +436,21 @@ namespace NSCSS
 		return true;
 	}
 
+	bool CDigit::SetValue(const double& dValue, unsigned int unLevel, bool bHardMode)
+	{
+		if (CHECK_CONDITIONS && !bHardMode)
+			return false;
+
+		m_oValue  = dValue;
+
+		if (UINT_MAX == unLevel)
+			m_unLevel++;
+		else
+			m_unLevel = unLevel;
+
+		return true;
+	}
+
 	bool TRGB::Empty() const
 	{
 		return 0 == uchRed && 0 == uchGreen && 0 == uchBlue;
@@ -430,6 +461,13 @@ namespace NSCSS
 		return uchRed   == oRGB.uchRed   &&
 		       uchGreen == oRGB.uchGreen &&
 		       uchBlue  == oRGB.uchBlue;
+	}
+
+	bool TRGB::operator!=(const TRGB& oRGB) const
+	{
+		return uchRed   != oRGB.uchRed   ||
+		       uchGreen != oRGB.uchGreen ||
+		       uchBlue  != oRGB.uchBlue;
 	}
 
 	TRGB CColor::ConvertHEXtoRGB(const std::wstring &wsValue)
@@ -459,37 +497,177 @@ namespace NSCSS
 		return std::wstring(arTemp, 6);
 	}
 
-	std::wstring CColor::CutURL(const std::wstring &wsValue)
+	bool CColor::operator==(const CColor& oColor) const
 	{
-		if (wsValue.length() < 6)
-			return std::wstring();
+		if (m_enType != oColor.m_enType || m_oOpacity != oColor.m_oOpacity)
+			return false;
 
-		size_t unBegin = wsValue.find(L"(#");
-
-		if (std::wstring::npos == unBegin || unBegin < 3 || wsValue.length() - unBegin < 2)
-			return std::wstring();
-
-		std::wstring wsCopyValue(wsValue);
-
-		std::transform(wsCopyValue.begin(), wsCopyValue.begin() + unBegin, wsCopyValue.begin(), std::towlower);
-
-		if (std::wstring::npos == wsCopyValue.find(L"url(#"))
-			return std::wstring();
-
-		return wsCopyValue.substr(unBegin + 2, wsCopyValue.find(L')') - unBegin - 2);
+		switch(m_enType)
+		{
+			case ColorEmpty:
+			case ColorNone:
+				return true;
+			case ColorRGB:
+				return (*static_cast<TRGB*>(m_oValue)) == (*static_cast<TRGB*>(oColor.m_oValue));
+			case ColorHEX:
+				return (*static_cast<std::wstring*>(m_oValue)) == (*static_cast<std::wstring*>(oColor.m_oValue));
+			case ColorUrl:
+				return (*static_cast<CURL*>(m_oValue)) == (*static_cast<CURL*>(oColor.m_oValue));
+		}
 	}
-	
-	void CColor::SetEmpty(unsigned int unLevel)
+
+	bool CColor::operator!=(const CColor& oColor) const
 	{
-		m_oValue.Clear();
-		m_oValue.m_enType = ColorEmpty;
-		m_unLevel    = unLevel;
-		m_bImportant = false;
+		if (m_enType != oColor.m_enType || m_oOpacity != oColor.m_oOpacity)
+			return true;
+
+		switch(m_enType)
+		{
+			case ColorEmpty:
+			case ColorNone:
+				return false;
+			case ColorRGB:
+				return (*static_cast<TRGB*>(m_oValue)) != (*static_cast<TRGB*>(oColor.m_oValue));
+			case ColorHEX:
+				return (*static_cast<std::wstring*>(m_oValue)) != (*static_cast<std::wstring*>(oColor.m_oValue));
+			case ColorUrl:
+				return (*static_cast<CURL*>(m_oValue)) != (*static_cast<CURL*>(oColor.m_oValue));
+		}
+	}
+
+	CColor& CColor::operator =(const CColor& oColor)
+	{
+		m_enType   = oColor.m_enType;
+		m_oOpacity = oColor.m_oOpacity;
+		m_unLevel  = oColor.m_unLevel;
+
+		switch(m_enType)
+		{
+			case ColorEmpty:
+			case ColorNone:
+				break;
+			case ColorRGB:
+			{
+				m_oValue = new TRGB{(*static_cast<TRGB*>(oColor.m_oValue))};
+				break;
+			}
+			case ColorHEX:
+			{
+				m_oValue = new std::wstring(*static_cast<std::wstring*>(oColor.m_oValue));
+				break;
+			}
+			case ColorUrl:
+			{
+				m_oValue = new CURL(*static_cast<CURL*>(oColor.m_oValue));
+				break;
+			}
+		}
+
+		return *this;
+	}
+
+	CColor& CColor::operator+=(const CColor& oColor)
+	{
+		if (m_unLevel > oColor.m_unLevel || (m_bImportant && !oColor.m_bImportant) || oColor.Empty())
+			return *this;
+
+		*this = oColor;
+
+		return *this;
 	}
 
 	CColor::CColor()
-		: CValue({}, 0, false), m_oOpacity(1.)
+		: CValue(NULL, 0, false), m_oOpacity(1.), m_enType(ColorEmpty)
 	{}
+
+	void CColor::SetEmpty(unsigned int unLevel)
+	{
+		Clear();
+		m_enType     = ColorEmpty;
+		m_unLevel    = unLevel;
+		m_bImportant = false;
+	}
+	
+	void CColor::SetRGB(unsigned char uchR, unsigned char uchG, unsigned char uchB)
+	{
+		Clear();
+
+		m_oValue = new TRGB{uchR, uchG, uchB};
+
+		if (NULL == m_oValue)
+			return;
+
+		m_enType = ColorRGB;
+	}
+	
+	void CColor::SetRGB(const TRGB &oRGB)
+	{
+		Clear();
+
+		m_oValue = new TRGB{oRGB};
+
+		if (NULL == m_oValue)
+			return;
+
+		m_enType = ColorRGB;
+	}
+	
+	void CColor::SetHEX(const std::wstring &wsValue)
+	{
+		if (6 != wsValue.length() && 3 != wsValue.length())
+			return;
+
+		Clear();
+
+		if (6 == wsValue.length())
+			m_oValue = new std::wstring(wsValue);
+		else
+			m_oValue = new std::wstring({wsValue[0], wsValue[0], wsValue[1], wsValue[1], wsValue[2], wsValue[2]});
+
+		if (NULL == m_oValue)
+			return;
+
+		m_enType = ColorHEX;
+	}
+	
+	void CColor::SetUrl(const std::wstring &wsValue)
+	{
+		if (wsValue.empty())
+			return;
+
+		CURL *pURL = new CURL();
+
+		if (NULL == pURL)
+			return;
+
+		if (!pURL->SetValue(wsValue))
+		{
+			delete pURL;
+			return;
+		}
+
+		Clear();
+
+		m_oValue = pURL;
+		m_enType = ColorUrl;
+	}
+	
+	void CColor::SetNone()
+	{
+		Clear();
+
+		m_enType = ColorNone;
+	}
+
+	char NormalizeNegativeColorValue(INT nValue)
+	{
+		if (nValue > 255)
+			return 0xff;
+		else if (nValue < 0)
+			return (char)(std::abs(nValue) % 255);
+
+		return (char)nValue;
+	}
 
 	bool CColor::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
@@ -504,33 +682,35 @@ namespace NSCSS
 
 		std::wstring wsNewValue(wsValue);
 
-		bool bImportant = CutImportant(wsNewValue);
+		const bool bImportant = CutImportant(wsNewValue);
 
 		std::transform(wsNewValue.begin(), wsNewValue.end(), wsNewValue.begin(), std::towlower);
+		NS_STATIC_FUNCTIONS::RemoveSpaces(wsNewValue);
 
 		if (m_bImportant && !bImportant)
 			return false;
 
+		bool bResult{false};
+
 		if (wsNewValue[0] == L'#')
 		{
-			m_oValue.SetHEX(wsNewValue.substr(1, wsNewValue.length() - 1));
-			m_unLevel    = unLevel;
-			m_bImportant = bImportant;
-			return true;
+			SetHEX(wsNewValue.substr(1, wsNewValue.length() - 1));
+			bResult = true;
 		}
-		else if (L"none" == wsNewValue)
+		else if (L"none" == wsNewValue || wsNewValue == L"transparent")
 		{
-			m_oValue.SetNone();
-			m_unLevel    = unLevel;
-			m_bImportant = bImportant;
-			return true;
+			SetNone();
+			bResult = true;
 		}
-		else if (wsNewValue == L"transparent")
+		else if (L"context-stroke" == wsNewValue)
 		{
-			m_oValue.SetNone();
-			m_unLevel    = unLevel;
-			m_bImportant = bImportant;
-			return true;
+			Clear();
+			m_enType = ColorContextStroke;
+		}
+		else if (L"context-fill" == wsNewValue)
+		{
+			Clear();
+			m_enType = ColorContextFill;
 		}
 		else if (10 <= wsNewValue.length() && wsNewValue.substr(0, 3) == L"rgb")
 		{
@@ -544,52 +724,46 @@ namespace NSCSS
 			if (3 > arValues.size())
 				return false;
 
-			INT nRed   = std::ceil(NS_STATIC_FUNCTIONS::CalculatePersentage(arValues[0], 255));
-			INT nGreen = std::ceil(NS_STATIC_FUNCTIONS::CalculatePersentage(arValues[1], 255));
-			INT nBlue  = std::ceil(NS_STATIC_FUNCTIONS::CalculatePersentage(arValues[2], 255));
+			const char chRed   = NormalizeNegativeColorValue(std::ceil(NS_STATIC_FUNCTIONS::CalculatePersentage(arValues[0], 255)));
+			const char chGreen = NormalizeNegativeColorValue(std::ceil(NS_STATIC_FUNCTIONS::CalculatePersentage(arValues[1], 255)));
+			const char chBlue  = NormalizeNegativeColorValue(std::ceil(NS_STATIC_FUNCTIONS::CalculatePersentage(arValues[2], 255)));
 
-			if (nRed < 0 || nGreen < 0 || nBlue < 0)
-			{
-				SetEmpty(unLevel);
-				return false;
-			}
-
-			if (255 < nRed)   nRed   = 255;
-			if (255 < nGreen) nGreen = 255;
-			if (255 < nBlue)  nBlue  = 255;
-
-			m_oValue.SetRGB(nRed, nGreen, nBlue);
+			SetRGB(chRed, chGreen, chBlue);
 
 			if (wsNewValue.substr(0, 4) == L"rgba" && 4 == arValues.size())
 				m_oOpacity.SetValue(arValues[3], unLevel, bHardMode);
 
-			m_unLevel    = unLevel;
-			m_bImportant = bImportant;
-			return true;
+			bResult = true;
+		}
+		else if (5 <= wsNewValue.length())
+		{
+			SetUrl(wsValue);
+
+			if (m_enType == ColorUrl)
+				bResult = true;
 		}
 
-		if (5 <= wsNewValue.length())
+		if (!bResult)
 		{
-			m_oValue.SetUrl(CutURL(wsValue));
-
-			if (m_oValue.m_enType == ColorUrl)
+			const std::map<std::wstring, std::wstring>::const_iterator oHEX = NSConstValues::COLORS.find(wsNewValue);
+			if (oHEX != NSConstValues::COLORS.end())
 			{
-				m_unLevel    = unLevel;
-				m_bImportant = bImportant;;
-				return true;
+				SetHEX(oHEX->second);
+				bResult = true;
 			}
 		}
 
-		const std::map<std::wstring, std::wstring>::const_iterator oHEX = NSConstValues::COLORS.find(wsNewValue);
-		if (oHEX != NSConstValues::COLORS.end())
-		{
-			m_oValue.SetHEX(oHEX->second);
-			m_unLevel    = unLevel;
-			m_bImportant = bImportant;
-			return true;
-		}
+		if (!bResult)
+			return false;
 
-		return false;
+		m_bImportant = bImportant;
+
+		if (UINT_MAX == unLevel)
+			m_unLevel++;
+		else
+			m_unLevel = unLevel;
+
+		return true;
 	}
 
 	bool CColor::SetOpacity(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -602,29 +776,53 @@ namespace NSCSS
 
 	bool CColor::Empty() const
 	{
-		return m_oValue.Empty();
+		return ColorEmpty == m_enType;
 	}
 
 	bool CColor::None() const
 	{
-		return ColorNone == m_oValue.m_enType;
+		return ColorNone == m_enType;
 	}
 
 	bool CColor::Url() const
 	{
-		return ColorUrl == m_oValue.m_enType;
+		return ColorUrl == m_enType;
 	}
 
 	void CColor::Clear()
 	{
-		m_oValue.Clear();
+		switch (m_enType)
+		{
+			case ColorRGB:
+			{
+				TRGB *pRGB = static_cast<TRGB*>(m_oValue);
+				RELEASEOBJECT(pRGB);
+				break;
+			}
+			case ColorHEX:
+			{
+				std::wstring* pValue = static_cast<std::wstring*>(m_oValue);
+				RELEASEOBJECT(pValue);
+				break;
+			}
+			case ColorUrl:
+			{
+				CURL *pURL = static_cast<CURL*>(m_oValue);
+				RELEASEOBJECT(pURL);
+				break;
+			}
+			default:
+			break;
+		}
+
+		m_enType = ColorEmpty;
 		m_unLevel    = NULL;
 		m_bImportant = false;
 	}
 
 	ColorType CColor::GetType() const
 	{
-		return m_oValue.m_enType;
+		return m_enType;
 	}
 
 	double CColor::GetOpacity() const
@@ -643,16 +841,16 @@ namespace NSCSS
 
 	int CColor::ToInt() const
 	{
-		switch(m_oValue.m_enType)
+		switch(m_enType)
 		{
 			case ColorRGB:
 			{
-				TRGB* pRGB = static_cast<TRGB*>(m_oValue.m_pColor);
+				TRGB* pRGB = static_cast<TRGB*>(m_oValue);
 				return RGB_TO_INT(pRGB->uchRed, pRGB->uchGreen, pRGB->uchBlue);
 			}
 			case ColorHEX:
 			{
-				std::wstring *pValue = static_cast<std::wstring*>(m_oValue.m_pColor);
+				std::wstring *pValue = static_cast<std::wstring*>(m_oValue);
 				TRGB oRGB = ConvertHEXtoRGB(*pValue);
 				return RGB_TO_INT(oRGB.uchRed, oRGB.uchGreen, oRGB.uchBlue);
 			}
@@ -668,10 +866,11 @@ namespace NSCSS
 
 	std::wstring CColor::ToWString() const
 	{
-		switch(m_oValue.m_enType)
+		switch(m_enType)
 		{
-			case ColorRGB: return ConvertRGBtoHEX(*static_cast<TRGB*>(m_oValue.m_pColor));
-			case ColorHEX: case ColorUrl: return *static_cast<std::wstring*>(m_oValue.m_pColor);
+			case ColorRGB: return ConvertRGBtoHEX(*static_cast<TRGB*>(m_oValue));
+			case ColorHEX: return *static_cast<std::wstring*>(m_oValue);
+			case ColorUrl: return static_cast<CURL*>(m_oValue)->GetValue();
 			default: return std::wstring();
 		}
 	}
@@ -683,10 +882,10 @@ namespace NSCSS
 
 		TRGB oCurrentColor;
 
-		switch(m_oValue.m_enType)
+		switch(m_enType)
 		{
-			case ColorRGB: oCurrentColor = *static_cast<TRGB*>(m_oValue.m_pColor); break;
-			case ColorHEX: oCurrentColor = ConvertHEXtoRGB(*static_cast<std::wstring*>(m_oValue.m_pColor)); break;
+			case ColorRGB: oCurrentColor = *static_cast<TRGB*>(m_oValue); break;
+			case ColorHEX: oCurrentColor = ConvertHEXtoRGB(*static_cast<std::wstring*>(m_oValue)); break;
 			default: return L"none";
 		}
 
@@ -710,10 +909,10 @@ namespace NSCSS
 
 	TRGB CColor::ToRGB() const
 	{
-		switch(m_oValue.m_enType)
+		switch(m_enType)
 		{
-			case ColorRGB: return *static_cast<TRGB*>(m_oValue.m_pColor);
-			case ColorHEX: return ConvertHEXtoRGB(*static_cast<std::wstring*>(m_oValue.m_pColor));
+			case ColorRGB: return *static_cast<TRGB*>(m_oValue);
+			case ColorHEX: return ConvertHEXtoRGB(*static_cast<std::wstring*>(m_oValue));
 			default: return TRGB();
 		}
 	}
@@ -1397,6 +1596,10 @@ namespace NSCSS
 		: m_bBlock(false)
 	{}
 
+	CBorderSide::CBorderSide(const CBorderSide& oBorderSide)
+		: m_oWidth(oBorderSide.m_oWidth), m_oStyle(oBorderSide.m_oStyle), m_oColor(oBorderSide.m_oColor), m_bBlock(oBorderSide.m_bBlock)
+	{}
+
 	void CBorderSide::Clear()
 	{
 		m_oWidth.Clear();
@@ -1418,9 +1621,7 @@ namespace NSCSS
 
 		if (L"none" == wsValue)
 		{
-			SetColor(L"#ffffff", unLevel, bHardMode);
-			SetStyle(L"solid", unLevel, bHardMode);
-			SetWidth(L"0",unLevel,bHardMode);
+			SetNone(unLevel, bHardMode);
 			return true;
 		}
 
@@ -1460,6 +1661,11 @@ namespace NSCSS
 		return m_oWidth.SetValue(wsNewValue, unLevel, bHardMode);
 	}
 
+	bool CBorderSide::SetWidth(const double& dValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oWidth.SetValue(dValue, unLevel, bHardMode);
+	}
+
 	bool CBorderSide::SetStyle(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oStyle.SetValue(wsValue, {std::make_pair(L"dotted", L"dotted"), std::make_pair(L"dashed", L"dashed"), std::make_pair(L"solid", L"single"),
@@ -1470,6 +1676,13 @@ namespace NSCSS
 	bool CBorderSide::SetColor(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oColor.SetValue(wsValue, unLevel, bHardMode);
+	}
+
+	void CBorderSide::SetNone(unsigned int unLevel, bool bHardMode)
+	{
+		SetColor(L"#ffffff", unLevel, bHardMode);
+		SetStyle(L"solid", unLevel, bHardMode);
+		SetWidth(L"0",unLevel,bHardMode);
 	}
 
 	void CBorderSide::Block()
@@ -1544,6 +1757,13 @@ namespace NSCSS
 		       m_oColor == oBorderSide.m_oColor;
 	}
 
+	bool CBorderSide::operator!=(const CBorderSide& oBorderSide) const
+	{
+		return m_oWidth != oBorderSide.m_oWidth ||
+		       m_oStyle != oBorderSide.m_oStyle ||
+		       m_oColor != oBorderSide.m_oColor;
+	}
+
 	CBorderSide &CBorderSide::operator =(const CBorderSide &oBorderSide)
 	{
 		m_oWidth = oBorderSide.m_oWidth;
@@ -1561,9 +1781,29 @@ namespace NSCSS
 
 	void CBorder::Clear()
 	{
-		m_oLeft  .Clear();
-		m_oTop   .Clear();
-		m_oRight .Clear();
+		ClearLeftSide();
+		ClearTopSide();
+		ClearRightSide();
+		ClearBottomSide();
+	}
+
+	void CBorder::ClearLeftSide()
+	{
+		m_oLeft.Clear();
+	}
+
+	void CBorder::ClearTopSide()
+	{
+		m_oTop.Clear();
+	}
+
+	void CBorder::ClearRightSide()
+	{
+		m_oRight.Clear();
+	}
+
+	void CBorder::ClearBottomSide()
+	{
 		m_oBottom.Clear();
 	}
 
@@ -1595,6 +1835,18 @@ namespace NSCSS
 		if (m_oTop   .SetWidth(wsValue, unLevel, bHardMode)) bResult = true;
 		if (m_oRight .SetWidth(wsValue, unLevel, bHardMode)) bResult = true;
 		if (m_oBottom.SetWidth(wsValue, unLevel, bHardMode)) bResult = true;
+
+		return bResult;
+	}
+
+	bool CBorder::SetWidth(const double& dValue, unsigned int unLevel, bool bHardMode)
+	{
+		bool bResult = false;
+
+		if (m_oLeft  .SetWidth(dValue, unLevel, bHardMode)) bResult = true;
+		if (m_oTop   .SetWidth(dValue, unLevel, bHardMode)) bResult = true;
+		if (m_oRight .SetWidth(dValue, unLevel, bHardMode)) bResult = true;
+		if (m_oBottom.SetWidth(dValue, unLevel, bHardMode)) bResult = true;
 
 		return bResult;
 	}
@@ -1638,6 +1890,11 @@ namespace NSCSS
 		return m_oLeft.SetWidth(wsValue, unLevel, bHardMode);
 	}
 
+	bool CBorder::SetWidthLeftSide(const double& dValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oLeft.SetWidth(dValue, unLevel, bHardMode);
+	}
+
 	bool CBorder::SetStyleLeftSide(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oLeft.SetStyle(wsValue, unLevel, bHardMode);
@@ -1656,6 +1913,11 @@ namespace NSCSS
 	bool CBorder::SetWidthTopSide(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oTop.SetWidth(wsValue, unLevel, bHardMode);
+	}
+
+	bool CBorder::SetWidthTopSide(const double& dValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oTop.SetWidth(dValue, unLevel, bHardMode);
 	}
 
 	bool CBorder::SetStyleTopSide(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -1678,6 +1940,11 @@ namespace NSCSS
 		return m_oRight.SetWidth(wsValue, unLevel, bHardMode);
 	}
 
+	bool CBorder::SetWidthRightSide(const double& dValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oRight.SetWidth(dValue, unLevel, bHardMode);
+	}
+
 	bool CBorder::SetStyleRightSide(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oRight.SetStyle(wsValue, unLevel, bHardMode);
@@ -1698,6 +1965,11 @@ namespace NSCSS
 		return m_oBottom.SetWidth(wsValue, unLevel, bHardMode);
 	}
 
+	bool CBorder::SetWidthBottomSide(const double& dValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oBottom.SetWidth(dValue, unLevel, bHardMode);
+	}
+
 	bool CBorder::SetStyleBottomSide(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oBottom.SetStyle(wsValue, unLevel, bHardMode);
@@ -1706,6 +1978,14 @@ namespace NSCSS
 	bool CBorder::SetColorBottomSide(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oBottom.SetColor(wsValue, unLevel, bHardMode);
+	}
+
+	void CBorder::SetNone(unsigned int unLevel, bool bHardMode)
+	{
+		m_oLeft  .SetNone(unLevel, bHardMode);
+		m_oTop   .SetNone(unLevel, bHardMode);
+		m_oRight .SetNone(unLevel, bHardMode);
+		m_oBottom.SetNone(unLevel, bHardMode);
 	}
 
 	void CBorder::Block()
@@ -1789,6 +2069,14 @@ namespace NSCSS
 		       m_oBottom == oBorder.m_oBottom;
 	}
 
+	bool CBorder::operator!=(const CBorder& oBorder) const
+	{
+		return m_oLeft   != oBorder.m_oLeft  ||
+		       m_oTop    != oBorder.m_oTop   ||
+		       m_oRight  != oBorder.m_oRight ||
+		       m_oBottom != oBorder.m_oBottom;
+	}
+
 	CBorder &CBorder::operator =(const CBorder &oBorder)
 	{
 		m_oLeft   = oBorder.m_oLeft;
@@ -1811,6 +2099,7 @@ namespace NSCSS
 		CString::Equation(oFirstText.m_oAlign,      oSecondText.m_oAlign);
 //		CString::Equation(oFirstText.m_oDecoration, oSecondText.m_oDecoration);
 		CColor ::Equation(oFirstText.m_oColor,      oSecondText.m_oColor);
+		CColor ::Equation(oFirstText.m_oHighlight,  oSecondText.m_oHighlight);
 	}
 
 	bool CText::SetIndent(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -1846,6 +2135,11 @@ namespace NSCSS
 		return m_oColor.SetValue(wsValue, unLevel, bHardMode);
 	}
 
+	bool CText::SetHighlight(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oHighlight.SetValue(wsValue, unLevel, bHardMode);
+	}
+
 	const CDigit& CText::GetIndent() const
 	{
 		return m_oIndent;
@@ -1864,6 +2158,11 @@ namespace NSCSS
 	const CColor& CText::GetColor() const
 	{
 		return m_oColor;
+	}
+
+	const CColor& CText::GetHighlight() const
+	{
+		return m_oHighlight;
 	}
 
 	bool CText::Empty() const
@@ -1893,6 +2192,7 @@ namespace NSCSS
 		m_oAlign      += oText.m_oAlign;
 		m_oDecoration += oText.m_oDecoration;
 		m_oColor      += oText.m_oColor;
+		m_oHighlight  += oText.m_oHighlight;
 
 		return *this;
 	}
@@ -1902,7 +2202,8 @@ namespace NSCSS
 		return m_oIndent     == oText.m_oIndent     &&
 		       m_oAlign      == oText.m_oAlign      &&
 		       m_oDecoration == oText.m_oDecoration &&
-		       m_oColor      == oText.m_oColor;
+		       m_oColor      == oText.m_oColor      &&
+		       m_oHighlight  == oText.m_oHighlight;
 	}
 
 	// MARGIN
@@ -1965,9 +2266,19 @@ namespace NSCSS
 		return m_oTop.SetValue(wsValue, unLevel, bHardMode);
 	}
 
+	bool CIndent::SetTop(const double& dValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oTop.SetValue(dValue, unLevel, bHardMode);
+	}
+
 	bool CIndent::SetRight(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oRight.SetValue(wsValue, unLevel, bHardMode);
+	}
+
+	bool CIndent::SetRight(const double& dValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oRight.SetValue(dValue, unLevel, bHardMode);
 	}
 
 	bool CIndent::SetBottom(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -1975,9 +2286,19 @@ namespace NSCSS
 		return m_oBottom.SetValue(wsValue, unLevel, bHardMode);
 	}
 
+	bool CIndent::SetBottom(const double& dValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oBottom.SetValue(dValue, unLevel, bHardMode);
+	}
+
 	bool CIndent::SetLeft(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oLeft.SetValue(wsValue, unLevel, bHardMode);
+	}
+
+	bool CIndent::SetLeft(const double& dValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oLeft.SetValue(dValue, unLevel, bHardMode);
 	}
 
 	void CIndent::UpdateAll(double dFontSize)
@@ -2249,10 +2570,10 @@ namespace NSCSS
 	bool CFont::SetSize(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		const std::vector<std::pair<std::wstring, std::wstring>> arAbsoluteFontValues =
-			{{L"xx-small", L"7.5pt"}, {L"xx-large", L"36pt" },
-			 {L"x-small", L"10pt"  }, {L"x-large", L"24pt"  },
-			 {L"small",    L"12pt" }, {L"medium",  L"13.5pt"},
-			 {L"large",    L"18pt" }}; 
+		    {{L"xx-small", L"7.5pt"}, {L"xx-large", L"36pt" },
+		     {L"x-small",  L"10pt" }, {L"x-large",  L"24pt"  },
+		     {L"small",    L"12pt" }, {L"medium",   L"13.5pt"},
+		     {L"large",    L"18pt" }};
 
 		size_t unFoundPos = std::wstring::npos;
 		std::wstring wsNewValue(wsValue);
@@ -2267,6 +2588,11 @@ namespace NSCSS
 		return m_oSize.SetValue(wsNewValue, unLevel, bHardMode);
 	}
 
+	bool CFont:: SetSize(const double& dValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oSize.SetValue(dValue, unLevel, bHardMode);
+	}
+
 	bool CFont::SetLineHeight(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oLineHeight.SetValue(wsValue, unLevel, bHardMode);
@@ -2274,13 +2600,13 @@ namespace NSCSS
 
 	bool CFont::SetFamily(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		std::wstring wsNewFamily(wsValue);
+		// std::wstring wsNewFamily(wsValue);
 
 //		if (wsNewFamily.end() == wsNewFamily.erase(std::remove(wsNewFamily.begin(), wsNewFamily.end(), L'\''), wsNewFamily.end()) &&
 //		    wsNewFamily.end() == wsNewFamily.erase(std::remove(wsNewFamily.begin(), wsNewFamily.end(), L'"'),  wsNewFamily.end()))
 //			return false;
 
-		std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsW(wsNewFamily, false, L"\"\',");
+		std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsW(wsValue, false, L"\"\',");
 
 		for (std::vector<std::wstring>::iterator iWord = arWords.begin(); iWord != arWords.end(); ++iWord)
 		{
@@ -2421,175 +2747,58 @@ namespace NSCSS
 		       m_oWeight     == oFont.m_oWeight;
 	}
 
-	CColorValue::CColorValue()
-	    : m_enType(ColorEmpty), m_pColor(NULL)
+	CURL::CURL() 
 	{}
 
-	CColorValue::CColorValue(const CColorValue &oColorValue)
-	    : m_enType()
+	bool CURL::Empty() const
 	{
-		switch(oColorValue.m_enType)
-		{
-			case ColorRGB: SetRGB(*static_cast<TRGB*>(oColorValue.m_pColor)); break;
-			case ColorHEX: SetHEX(*static_cast<std::wstring*>(oColorValue.m_pColor)); break;
-			case ColorUrl: SetUrl(*static_cast<std::wstring*>(oColorValue.m_pColor)); break;
-			default: m_enType = oColorValue.m_enType; break;
-		}
-
+		return m_wsValue.empty();
 	}
 
-	CColorValue::~CColorValue()
+	bool CURL::LinkToId() const
 	{
-		Clear();
+		return m_wsValue.length() > 1 && L'#' == m_wsValue.front();
+	}
+	
+	void CURL::Clear()
+	{
+		m_wsValue.clear();
 	}
 
-	void CColorValue::SetRGB(unsigned char uchR, unsigned char uchG, unsigned char uchB)
+	bool CURL::SetValue(const std::wstring &wsValue)
 	{
-		Clear();
-
-		m_pColor = new TRGB{uchR, uchG, uchB};
-
-		if (NULL == m_pColor)
-		{
-			m_enType = ColorEmpty;
-			return;
-		}
-
-		m_enType = ColorRGB;
-	}
-
-	void CColorValue::SetRGB(const TRGB &oRGB)
-	{
-		Clear();
-
-		m_pColor = new TRGB{oRGB};
-
-		if (NULL == m_pColor)
-		{
-			m_enType = ColorEmpty;
-			return;
-		}
-
-		m_enType = ColorRGB;
-	}
-
-	void CColorValue::SetHEX(const std::wstring &wsValue)
-	{
-		Clear();
-
-		if (6 != wsValue.length() && 3 != wsValue.length())
-		{
-			m_enType = ColorEmpty;
-			return;
-		}
-
-		if (6 == wsValue.length())
-			m_pColor = new std::wstring(wsValue);
-		else
-			m_pColor = new std::wstring({wsValue[0], wsValue[0], wsValue[1], wsValue[1], wsValue[2], wsValue[2]});
-
-		if (NULL == m_pColor)
-		{
-			m_enType = ColorEmpty;
-			return;
-		}
-
-		m_enType = ColorHEX;
-	}
-
-	void CColorValue::SetUrl(const std::wstring &wsValue)
-	{
-		Clear();
-
-		m_pColor = new std::wstring(wsValue);
-
-		if (NULL == m_pColor || ((std::wstring*)m_pColor)->empty())
-		{
-			m_enType = ColorEmpty;
-			return;
-		}
-
-		m_enType = ColorUrl;
-	}
-
-	void CColorValue::SetNone()
-	{
-		Clear();
-
-		m_enType = ColorNone;
-	}
-
-	bool CColorValue::Empty() const
-	{
-		return ColorEmpty == m_enType;
-	}
-
-	std::wstring CColorValue::GetColor() const
-	{
-		return *(std::wstring*)m_pColor;
-	}
-
-	bool CColorValue::operator==(const CColorValue &oColorValue) const
-	{
-		if (m_enType != oColorValue.m_enType)
+		if (wsValue.empty())
 			return false;
 
-		if (ColorEmpty == m_enType ||
-		    ColorNone == m_enType)
-			return true;
+		std::wregex oRegex(L"url\\s*\\(\\s*(?:'|\"|)([#]?[^'\"()]+)(?:'|\"|)\\s*\\)");
+		std::wsmatch oMatch;
 
-		switch (m_enType)
-		{
-		case ColorRGB:
-			return *static_cast<TRGB*>(m_pColor) == *static_cast<TRGB*>(oColorValue.m_pColor);
-		case ColorHEX:
-		case ColorUrl:
-			return *static_cast<std::wstring*>(m_pColor) == *static_cast<std::wstring*>(oColorValue.m_pColor);
-		default:
-			break;
-		}
+		if (!std::regex_search(wsValue.cbegin(), wsValue.cend(), oMatch, oRegex) || oMatch[1].str().empty())
+			return false;
 
-		return false;
+		m_wsValue = oMatch[1].str();
+		NS_STATIC_FUNCTIONS::RemoveSpaces(m_wsValue);
+
+		return true;
+	}
+	
+	std::wstring CURL::GetValue() const
+	{
+		return m_wsValue;
 	}
 
-	CColorValue &CColorValue::operator=(const CColorValue &oColorValue)
+	bool CURL::operator==(const CURL& oValue) const
 	{
-		switch(oColorValue.m_enType)
-		{
-			case ColorRGB: SetRGB(*static_cast<TRGB*>(oColorValue.m_pColor)); break;
-			case ColorHEX: SetHEX(*static_cast<std::wstring*>(oColorValue.m_pColor)); break;
-			case ColorUrl: SetUrl(*static_cast<std::wstring*>(oColorValue.m_pColor)); break;
-			default: m_enType = oColorValue.m_enType; break;
-		}
-
-		return *this;
+		return m_wsValue == oValue.m_wsValue;
 	}
 
-	void CColorValue::Clear()
+	bool CURL::operator!=(const CURL& oValue) const
 	{
-		switch (m_enType)
-		{
-			case ColorRGB:
-			{
-				TRGB *pRGB = static_cast<TRGB*>(m_pColor);
-				RELEASEOBJECT(pRGB);
-				break;
-			}
-			case ColorHEX: case ColorUrl:
-			{
-				std::wstring* pValue = static_cast<std::wstring*>(m_pColor);
-				RELEASEOBJECT(pValue);
-				break;
-			}
-			default:
-			break;
-		}
-		
-		m_enType = ColorEmpty;
+		return m_wsValue != oValue.m_wsValue;
 	}
 
 	CEnum::CEnum()
-	    : CValue(INT_MAX, 0, false){}
+		: CValue(INT_MAX, 0, false){}
 
 	bool CEnum::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
@@ -2726,5 +2935,6 @@ namespace NSCSS
 	{
 		return m_oHeader;
 	}
+
 	}
 }

@@ -7,11 +7,11 @@ namespace SVG
 	{
 	}
 
-	bool CSwitch::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pStyles) const
+	bool CSwitch::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pStyles, const CRenderedObject* pContexObject) const
 	{
 		for (const CRenderedObject* pObject : m_arObjects)
 		{
-			if (NULL != pObject && pObject->Draw(pRenderer, pFile, oMode, pStyles))
+			if (NULL != pObject && pObject->Draw(pRenderer, pFile, oMode, pStyles, pContexObject))
 				return true;
 		}
 

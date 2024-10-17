@@ -61,7 +61,7 @@ _UINT64 MemoryStream::ReadUInt64()
 {
 	_UINT64 rdU64 = 0;
 
-	if (m_Data)
+	if (m_Data && (m_Position + 8 <= m_Size))
 	{
 		rdU64 = DocFileFormat::FormatUtils::BytesToUInt64(m_Data, m_Position, m_Size);
 		m_Position += 8;
@@ -73,7 +73,7 @@ unsigned short MemoryStream::ReadUInt16()
 {
 	unsigned short rdUShort = 0;
 
-	if (m_Data)
+	if (m_Data && (m_Position + sizeof(unsigned short) <= m_Size))
 	{
 		rdUShort = DocFileFormat::FormatUtils::BytesToUInt16 (m_Data, m_Position, m_Size);
 		m_Position += 2;
@@ -93,7 +93,7 @@ short MemoryStream::ReadInt16()
 {
 	short rdShort = 0;
 
-	if (m_Data)
+	if (m_Data && (m_Position + sizeof(short) <= m_Size))
 	{
 		rdShort		=	DocFileFormat::FormatUtils::BytesToInt16 (m_Data, m_Position, m_Size);
 		m_Position	+=	2;
@@ -106,7 +106,7 @@ int MemoryStream::ReadInt32()
 {
 	int rdInt = 0;
 
-	if (m_Data)
+	if (m_Data && (m_Position + sizeof(_INT32) <= m_Size))
 	{
 		rdInt		=	DocFileFormat::FormatUtils::BytesToInt32 (m_Data, m_Position, m_Size);
 		m_Position	+=	4;

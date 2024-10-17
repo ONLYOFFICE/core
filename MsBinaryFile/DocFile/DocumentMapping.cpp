@@ -668,7 +668,7 @@ namespace DocFileFormat
 				_skipRuns = 5; //with separator
 			}
 		}
-		else if ( bEMBED ||	(bLINK && !bHYPERLINK)|| bQUOTE)						
+		else if ( bEMBED ||	(bLINK && !bHYPERLINK)/*|| bQUOTE*/)						
 		{
 			int cpPic		=	searchNextTextMark(m_document->Text, cpFieldStart,	TextMark::Picture);
 			int cpFieldSep	=	searchNextTextMark(m_document->Text, cpFieldStart,	TextMark::FieldSeparator);

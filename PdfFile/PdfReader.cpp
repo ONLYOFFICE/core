@@ -398,10 +398,8 @@ bool CPdfReader::LoadFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::
 
 	m_pFontList->Clear();
 
-#ifdef BUILDING_WASM_MODULE
 	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(m_pPDFDocument, m_pFontManager, m_pFontList);
 	m_mFonts.insert(mFonts.begin(), mFonts.end());
-#endif
 
 	return true;
 }
@@ -440,10 +438,8 @@ bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* dat
 
 	m_pFontList->Clear();
 
-#ifdef BUILDING_WASM_MODULE
 	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(m_pPDFDocument, m_pFontManager, m_pFontList);
 	m_mFonts.insert(mFonts.begin(), mFonts.end());
-#endif
 
 	return true;
 }
@@ -518,7 +514,7 @@ bool CPdfReader::ValidMetaData()
 
 	Object oTID, oID2;
 	Object* pTrailerDict = xref->getTrailerDict();
-	if (!pTrailerDict || !pTrailerDict->dictLookup("ID", &oTID)->isArray() || !oTID.arrayGet(1, &oID2)->isString())
+	if (!pTrailerDict->dictLookup("ID", &oTID)->isArray() || !oTID.arrayGet(1, &oID2)->isString())
 	{
 		oID.free(); oTID.free(); oID2.free();
 		return false;
@@ -614,7 +610,6 @@ std::wstring CPdfReader::GetInfo()
 	std::wstring sRes = L"{";
 
 	Object oInfo;
-	m_pPDFDocument->getDocInfo(&oInfo);
 	if (m_pPDFDocument->getDocInfo(&oInfo)->isDict())
 	{
 		auto fDictLookup = [&oInfo](const char* sName, const wchar_t* wsName)
@@ -753,18 +748,17 @@ std::wstring CPdfReader::GetInfo()
 
 	return sRes;
 }
-std::wstring CPdfReader::GetFontPath(const std::wstring& wsFontName)
+std::wstring CPdfReader::GetFontPath(const std::wstring& wsFontName, bool bSave)
 {
 	std::map<std::wstring, std::wstring>::const_iterator oIter = m_mFonts.find(wsFontName);
-	return oIter != m_mFonts.end() ? oIter->second : L"";
+	return oIter == m_mFonts.end() ? std::wstring() : oIter->second;
 }
 void getBookmarks(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)
 {
 	LinkAction* pLinkAction = pOutlineItem->getAction();
 	if (!pLinkAction)
 		return;
-	LinkActionKind kind = pLinkAction->getKind();
-	if (kind != actionGoTo)
+	if (pLinkAction->getKind() != actionGoTo)
 		return;
 
 	GString* str = ((LinkGoTo*)pLinkAction)->getNamedDest();
@@ -894,6 +888,9 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 					}
 					else
 						pg = pLinkDest->getPageNum();
+					if (0 == pg)
+						++pg;
+
 					std::string sLink = "#" + std::to_string(pg - 1);
 					str = new GString(sLink.c_str());
 					dy  = m_pPDFDocument->getPageCropHeight(pg) - pLinkDest->getTop();
@@ -954,6 +951,7 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 		if (!sLink)
 			continue;
 		std::string link(sLink->getCString(), sLink->getLength());
+		RELEASEOBJECT(sLink);
 		size_t find = link.find("http://");
 		if (find == std::string::npos)
 			find = link.find("https://");
@@ -967,6 +965,7 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 			oLinks.m_arLinks.push_back({link, 0, x1, y1, x2 - x1, y2 - y1});
 		}
 	}
+	RELEASEOBJECT(pWordList);
 	RELEASEOBJECT(pTextOut);
 
 	return oLinks.Serialize();
@@ -1000,7 +999,7 @@ BYTE* CPdfReader::GetFonts(bool bStandart)
 	int nFontsPos = oRes.GetSize();
 	oRes.AddInt(nFonts);
 
-	for (std::map<std::wstring, std::wstring>::iterator it = m_mFonts.begin(); it != m_mFonts.end(); it++)
+	for (std::map<std::wstring, std::wstring>::iterator it = m_mFonts.begin(); it != m_mFonts.end(); ++it)
 	{
 		if (PdfReader::CAnnotFonts::IsBaseFont(it->second))
 		{
@@ -1546,7 +1545,7 @@ BYTE* CPdfReader::GetShapes(int nPageIndex)
 
 	Object oTID, oID2;
 	Object* pTrailerDict = xref->getTrailerDict();
-	if (!pTrailerDict || !pTrailerDict->dictLookup("ID", &oTID)->isArray() || !oTID.arrayGet(1, &oID2)->isString() || oID2.getString()->cmp(oID.getString()) != 0)
+	if (!pTrailerDict->dictLookup("ID", &oTID)->isArray() || !oTID.arrayGet(1, &oID2)->isString() || oID2.getString()->cmp(oID.getString()) != 0)
 	{
 		oMetaOForm.free(); oID.free(); oTID.free(); oID2.free();
 		return NULL;

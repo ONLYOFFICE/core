@@ -102,7 +102,7 @@ public:
     void start_span		(const std::wstring & styleName);
     void end_span		();
 
-    bool start_table	(std::wstring tableName, std::wstring tableStyleName);
+    bool start_table	(const std::wstring& tableName, const std::wstring& tableStyleName, const std::wstring& externalRef);
     void end_table		();
 
 	int find_sheet_by_name(std::wstring tableName);
@@ -115,7 +115,7 @@ public:
 
 	bool in_table_cell();
 
-    void start_table_cell			(const std::wstring & formula, size_t columnsSpanned, size_t rowsSpanned);
+    void start_table_cell			(size_t columnsSpanned, size_t rowsSpanned);
     void end_table_cell				();
 
     void start_table_covered_cell	();
@@ -200,6 +200,7 @@ private:
 
 	bool								table_structure_protected_ = false;
 
+    std::vector<xlsx_xml_worksheet_ptr> external_sheets_;
     std::vector<xlsx_xml_worksheet_ptr> sheets_;
     std::vector<oox_chart_context_ptr>  charts_;
 	std::vector<std::wstring>			table_parts_;

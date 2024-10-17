@@ -4689,16 +4689,17 @@ namespace SimpleTypes
 
 	ECryptAlgoritmName CCryptAlgoritmName::FromString(const std::wstring &sValue)
 	{
-		if       ( L"MD2"        == sValue || L"1"	== sValue ) this->m_eValue = cryptalgoritmnameMD2;
-		else if  ( L"MD4"        == sValue || L"2"	== sValue ) this->m_eValue = cryptalgoritmnameMD4;
-		else if  ( L"MD5"        == sValue || L"3"	== sValue ) this->m_eValue = cryptalgoritmnameMD5;
-		else if  ( L"RIPEMD-128" == sValue || L"6"	== sValue ) this->m_eValue = cryptalgoritmnameRIPEMD128;
-		else if  ( L"RIPEMD-160" == sValue || L"7"	== sValue ) this->m_eValue = cryptalgoritmnameRIPEMD160;
-		else if  ( L"SHA-1"      == sValue || L"4"	== sValue ) this->m_eValue = cryptalgoritmnameSHA1;
-		else if  ( L"SHA-256"    == sValue || L"12"	== sValue ) this->m_eValue = cryptalgoritmnameSHA256;
-		else if  ( L"SHA-384"    == sValue || L"13"	== sValue ) this->m_eValue = cryptalgoritmnameSHA384;
-		else if  ( L"SHA-512"    == sValue || L"14"	== sValue ) this->m_eValue = cryptalgoritmnameSHA512;
-		else if  ( L"WHIRLPOOL"  == sValue ) this->m_eValue = cryptalgoritmnameWHIRLPOOL;
+		if (L"MD2" == sValue || L"1" == sValue) this->m_eValue = cryptalgoritmnameMD2;
+		else if (L"MD4" == sValue || L"2" == sValue) this->m_eValue = cryptalgoritmnameMD4;
+		else if (L"MD5" == sValue || L"3" == sValue) this->m_eValue = cryptalgoritmnameMD5;
+		else if (L"RIPEMD-128" == sValue || L"6" == sValue) this->m_eValue = cryptalgoritmnameRIPEMD128;
+		else if (L"RIPEMD-160" == sValue || L"7" == sValue) this->m_eValue = cryptalgoritmnameRIPEMD160;
+		else if (L"SHA-1" == sValue || L"4" == sValue) this->m_eValue = cryptalgoritmnameSHA1;
+		else if (L"SHA-256" == sValue || L"12" == sValue) this->m_eValue = cryptalgoritmnameSHA256;
+		else if (L"SHA-384" == sValue || L"13" == sValue) this->m_eValue = cryptalgoritmnameSHA384;
+		else if (L"SHA-512" == sValue || L"14" == sValue) this->m_eValue = cryptalgoritmnameSHA512;
+		else if (L"WHIRLPOOL" == sValue) this->m_eValue = cryptalgoritmnameWHIRLPOOL;
+		else if (L"PBKDF2" == sValue) this->m_eValue = cryptalgoritmnamePBKDF2;
 		else
 			this->m_eValue = cryptalgoritmnameUnknown;
 
@@ -4719,6 +4720,7 @@ namespace SimpleTypes
 		case cryptalgoritmnameSHA384    : return (L"SHA-384");
 		case cryptalgoritmnameSHA512    : return (L"SHA-512");
 		case cryptalgoritmnameWHIRLPOOL : return (L"WHIRLPOOL");
+		case cryptalgoritmnamePBKDF2	: return (L"PBKDF2");
 		default                         : return (L"");
 		}
 	}

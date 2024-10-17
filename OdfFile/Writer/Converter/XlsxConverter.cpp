@@ -170,6 +170,7 @@ bool XlsxConverter::convertDocument()
 	ods_context->start_document();
 
 	convert_meta(xlsx_document->m_pApp, xlsx_document->m_pCore);
+	convert_customs(xlsx_document);
 	convert_styles();
 
 	convert_sheets();
@@ -1724,7 +1725,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFileSharing *oox_file_sharing)
 		if (oox_file_sharing->m_oHashValue.IsInit() && oox_file_sharing->m_oAlgorithmName.IsInit() &&
 			oox_file_sharing->m_oSaltValue.IsInit() && oox_file_sharing->m_oSpinCount.IsInit())
 		{
-			ods_context->settings_context()->set_modify_info(oox_file_sharing->m_oAlgorithmName->ToString(), *oox_file_sharing->m_oSaltValue, *oox_file_sharing->m_oHashValue, oox_file_sharing->m_oSpinCount->GetValue());
+			ods_context->settings_context()->set_modify_info(L"", oox_file_sharing->m_oAlgorithmName->ToString(), *oox_file_sharing->m_oSaltValue, *oox_file_sharing->m_oHashValue, oox_file_sharing->m_oSpinCount->GetValue());
 		}
 	}
 }
@@ -2680,7 +2681,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf_types::
 		}
 		else
 		{
-			result = OOX::Spreadsheet::CIndexedColors::GetDefaultRGBAByIndex(ind, ucR, ucG, ucB, ucA);
+			result = ind < 64 ? OOX::Spreadsheet::CIndexedColors::GetDefaultRGBAByIndex(ind, ucR, ucG, ucB, ucA) : false;
 		}
 	}
 	if (result == true)

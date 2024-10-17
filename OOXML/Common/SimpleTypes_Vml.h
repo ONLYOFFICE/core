@@ -1503,9 +1503,8 @@ namespace SimpleTypes
 
 		SimpleTypes_DefaultString(CVml_Vector2D_Units)
 
-		private:
-
-			double m_dX; // В пунктах
+	private:
+		double m_dX; // В пунктах
 		double m_dY; // В пунктах
 	};
 
@@ -1529,8 +1528,8 @@ namespace SimpleTypes
 
 		SimpleTypes_DefaultString(CVml_Vector2D_Percentage)
 
-		private:
-			double m_dX; //
+	private:
+		double m_dX; //
 		double m_dY; //
 	};
 
@@ -1554,8 +1553,8 @@ namespace SimpleTypes
 
 		SimpleTypes_DefaultString(CVml_Vector2D_1_65536)
 
-		private:
-			double m_dX; //
+	private:
+		double m_dX; //
 		double m_dY; //
 	};
 
@@ -1639,8 +1638,8 @@ namespace SimpleTypes
 		std::wstring m_sIdX;  // Значение для типа Formula иди AdjValue
 		std::wstring m_sIdY;  //
 
-		double					m_dX;    // Значение для типа Constant
-		double					m_dY;    //
+		double m_dX;    // Значение для типа Constant
+		double m_dY;    //
 	};
 
 	//--------------------------------------------------------------------------------
@@ -1698,12 +1697,11 @@ namespace SimpleTypes
 		void   SetPercentage(double dValue);
 
 		virtual double FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
+		virtual std::wstring ToString() const;
 
 		SimpleTypes_DefaultD(CVml_1_65536_Or_Percentage)
 
-		private:
-			double m_dValue;
+		double m_dValue;
 	};
 
 	//--------------------------------------------------------------------------------
@@ -1789,8 +1787,8 @@ namespace SimpleTypes
 
 		SimpleTypes_DefaultString(CVml_TextBoxInset)
 
-		private:
-			double m_dLeft;
+	private:
+		double m_dLeft;
 		double m_dTop;
 		double m_dRight;
 		double m_dBottom;

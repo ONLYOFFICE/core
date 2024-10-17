@@ -181,7 +181,7 @@ namespace OOX
 
 	void Diagram::CAnimLvl::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
-		WriteByteToPPTY(m_oVal.IsInit() ? (BYTE)m_oVal->GetValue() : 0, pWriter);
+		WriteByteToPPTY(m_oVal.IsInit() ? (BYTE)m_oVal->GetValue() : SimpleTypes::EAnimLvlStr::animLvlStr_none, pWriter);
 	}
 
 //------------------------------------------------------------------------------------------------------
@@ -211,7 +211,7 @@ namespace OOX
 
 	void Diagram::CAnimOne::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
-		WriteByteToPPTY(m_oVal.IsInit() ? (BYTE)m_oVal->GetValue() : 0, pWriter);
+		WriteByteToPPTY(m_oVal.IsInit() ? (BYTE)m_oVal->GetValue() : SimpleTypes::EAnimOneStr::animOneStr_none, pWriter);
 	}
 
 //------------------------------------------------------------------------------------------------------
@@ -241,7 +241,7 @@ namespace OOX
 
 	void Diagram::CBulletEnabled::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
-		WriteByteToPPTY(m_oVal.IsInit() ? (BYTE)m_oVal->GetValue() : 0, pWriter);
+		WriteByteToPPTY(m_oVal.IsInit() ? (BYTE)m_oVal->GetValue() : SimpleTypes::onoffFalse, pWriter);
 	}
 
 //------------------------------------------------------------------------------------------------------
@@ -331,7 +331,7 @@ namespace OOX
 
 	void Diagram::CDirection::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
-		WriteByteToPPTY(m_oVal.IsInit() ? (BYTE)m_oVal->GetValue() : 0, pWriter);
+		WriteByteToPPTY(m_oVal.IsInit() ? (BYTE)m_oVal->GetValue() : SimpleTypes::EDirectionDraw::direction_norm, pWriter);
 	}
 
 //------------------------------------------------------------------------------------------------------
@@ -360,7 +360,7 @@ namespace OOX
 
 	void Diagram::CHierBranch::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
-		WriteByteToPPTY(m_oVal.IsInit() ? (BYTE)m_oVal->GetValue() : 0, pWriter);
+		WriteByteToPPTY(m_oVal.IsInit() ? (BYTE)m_oVal->GetValue() : SimpleTypes::EHierBranch::hierBranch_std, pWriter);
 	}
 
 //------------------------------------------------------------------------------------------------------
@@ -390,7 +390,7 @@ namespace OOX
 
 	void Diagram::COrgChart::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
-		WriteByteToPPTY(m_oVal.IsInit() ? (BYTE)m_oVal->GetValue() : 0, pWriter);
+		WriteByteToPPTY(m_oVal.IsInit() ? (BYTE)m_oVal->GetValue() : SimpleTypes::EOnOff::onoffFalse, pWriter);
 	}
 
 //------------------------------------------------------------------------------------------------------
@@ -420,7 +420,7 @@ namespace OOX
 
 	void Diagram::CResizeHandles::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
-		WriteByteToPPTY(m_oVal.IsInit() ? (BYTE)m_oVal->GetValue() : 0, pWriter);
+		WriteByteToPPTY(m_oVal.IsInit() ? (BYTE)m_oVal->GetValue() : SimpleTypes::EResizeHandles::resizeHandles_exact, pWriter);
 	}
 
 //------------------------------------------------------------------------------------------------------

@@ -155,6 +155,7 @@ namespace PdfWriter
 		double m_dPageH = 0;
 		double m_dPageX = 0;
 		CDocument* m_pDocument;
+		CAnnotAppearance* m_pAppearance;
 
 	public:
 		EDictType GetDictType() const
@@ -179,8 +180,10 @@ namespace PdfWriter
 		void SetContents(const std::wstring& wsText);
 		void SetNM(const std::wstring& wsNM);
 		void SetLM(const std::wstring& wsLM);
+		void SetOUserID(const std::wstring& wsOUserID);
 		void SetC(const std::vector<double>& arrC);
 
+		void APFromFakePage(CPage* pFakePage);
 		TRect& GetRect() { return m_oRect; }
 		void SetXref(CXref* pXref) { m_pXref = pXref; }
 		void SetDocument(CDocument* pDocument);
@@ -191,6 +194,8 @@ namespace PdfWriter
 		std::string GetBorderDash();
 		double GetWidth()  { return abs(m_oRect.fRight - m_oRect.fLeft); }
 		double GetHeight() { return abs(m_oRect.fTop - m_oRect.fBottom); }
+		double GetPageX() { return m_dPageX; }
+		double GetPageH() { return m_dPageH; }
 	};
 	class CPopupAnnotation : public CAnnotation
 	{
@@ -349,9 +354,6 @@ namespace PdfWriter
 	};
 	class CFreeTextAnnotation : public CMarkupAnnotation
 	{
-	private:
-		CAnnotAppearance* m_pAppearance;
-
 	public:
 		CFreeTextAnnotation(CXref* pXref);
 		EAnnotType GetAnnotationType() const override
@@ -359,7 +361,6 @@ namespace PdfWriter
 			return AnnotFreeText;
 		}
 
-		void APFromFakePage(CPage* pFakePage);
 		void SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrC);
 
 		void SetQ(BYTE nQ);

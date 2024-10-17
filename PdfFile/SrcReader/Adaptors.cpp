@@ -34,7 +34,6 @@
 #include "../lib/xpdf/TextString.h"
 #include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 
-
 void GlobalParamsAdaptor::SetFontManager(NSFonts::IFontManager *pFontManager)
 {
     m_pFontManager = pFontManager;

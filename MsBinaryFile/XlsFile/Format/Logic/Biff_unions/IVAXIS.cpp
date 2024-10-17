@@ -188,6 +188,21 @@ int IVAXIS::serialize(std::wostream & _stream)
 				if (cat_ser_range->fMaxCross == true)	CP_XML_ATTR(L"val", L"max");
 				else									CP_XML_ATTR(L"val", L"autoZero");
 			}
+
+			if (cat_ser_range->catLabel > 1 && cat_ser_range->catLabel < 32000)
+			{
+				CP_XML_NODE(L"c:tickLblSkip")
+				{
+					CP_XML_ATTR(L"val", cat_ser_range->catLabel);
+				}
+			}
+			if (cat_ser_range->catMark > 1 && cat_ser_range->catMark < 32000)
+			{
+				CP_XML_NODE(L"c:tickMarkSkip")
+				{
+					CP_XML_ATTR(L"val", cat_ser_range->catMark);
+				}
+			}
 		}
 		CatLab* label = m_CatLab ? dynamic_cast<CatLab*>(m_CatLab.get()) : NULL;
 		if (label)

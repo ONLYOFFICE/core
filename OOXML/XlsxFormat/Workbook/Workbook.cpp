@@ -32,6 +32,8 @@
 #pragma once
 
 #include "Workbook.h"
+#include "../Worksheets/Worksheet.h"
+
 #include "../../XlsbFormat/Xlsb.h"
 
 #include "../../XlsbFormat/WorkBookStream.h"
@@ -101,8 +103,12 @@ namespace OOX
 
 			if(m_oCacheId.IsInit())
 				ptr1->idSx = m_oCacheId->GetValue();
+			else
+				ptr1->idSx = 0;
 			if(m_oRid.IsInit())
 				ptr1->irstcacheRelID.value = m_oRid->GetValue();
+			else
+				ptr1->irstcacheRelID.value.setSize(0xFFFFFFFF);
 			return objectPtr;
 		}
 		EElementType CWorkbookPivotCache::getType() const
@@ -306,6 +312,10 @@ namespace OOX
 			{
                 workBookStream->m_arBrtName = m_oDefinedNames->toBin();
 			}
+			else
+			{
+				workBookStream->m_arBrtName = m_oDefinedNames->AddFutureFunctions(0);
+			}
 			if (m_oWorkbookProtection.IsInit())
 				workBookStream->m_BrtBookProtection = m_oWorkbookProtection->toBin();
 
@@ -381,10 +391,28 @@ namespace OOX
 			IFileContainer::Read(oRootPath, oPath); //в данном случае порядок считывания важен для xlsb
 
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
-			if ((xlsx) && (xlsx->m_pVbaProject))
+			if (xlsx)
 			{
-				m_bMacroEnabled = true;
+				if (xlsx->m_pVbaProject)
+				{
+					m_bMacroEnabled = true;
+				}
+				//дубли листов
+				for (auto elm : this->m_mapContainer)
+				{
+					if (elm.second->type() == OOX::Spreadsheet::FileTypes::Chartsheets || elm.second->type() == OOX::Spreadsheet::FileTypes::Worksheet)
+					{
+						if (xlsx->m_mapWorksheets.end() == xlsx->m_mapWorksheets.find(elm.first))
+						{
+							CWorksheet* sheet = dynamic_cast<CWorksheet*>(elm.second.GetPointer());
+							xlsx->m_arWorksheets.push_back(sheet);
+							xlsx->m_mapWorksheets.insert(std::make_pair(elm.first, sheet));
+						}
+
+					}
+				}
 			}
+
 		}
 		void CWorkbook::toXML(NSStringUtils::CStringBuilder& writer) const
 		{

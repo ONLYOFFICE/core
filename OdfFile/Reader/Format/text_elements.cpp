@@ -252,6 +252,41 @@ size_t paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 	}
 	return index;
 }
+
+void static process_list_bullet_style(oox::docx_conversion_context& Context, office_element_ptr_array& content)
+{
+	if (content.size() <= 0)
+		return;
+
+	span* first_span = dynamic_cast<span*>(content[0].get());
+	if (!first_span)
+		return;
+
+	style_instance* span_style = Context.root()->odf_context().styleContainer().style_by_name(first_span->text_style_name_, style_family::Text, false);
+	if (!span_style)
+		return;
+
+	style_content* span_style_content = span_style->content();
+	if (!span_style_content)
+		return;
+
+	std::wstringstream ss;
+	style_text_properties* text_props = span_style_content->get_style_text_properties();
+
+	if (text_props)
+	{
+		const _CP_OPT(odf_types::font_weight)& font_weight = text_props->content_.fo_font_weight_;
+		const _CP_OPT(odf_types::font_style)& font_style = text_props->content_.fo_font_style_;
+
+		if (font_weight && font_weight->get_type() == odf_types::font_weight::WBold)
+			ss << "<w:b/>";
+		if (font_style && font_style->get_type() == odf_types::font_style::Italic)
+			ss << "<w:i/>";
+	}
+	
+	Context.get_text_tracked_context().dumpRPrInsDel_ = ss.str();
+}
+
 void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std::wstring) next_element_style_name)
 {
     std::wstring styleName = attrs_.text_style_name_;
@@ -347,6 +382,8 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std
 
 	}
 	Context.start_paragraph_style(styleName);
+	
+	process_list_bullet_style(Context, content_);
 
     int textStyle = Context.process_paragraph_attr(&attrs_);
 
@@ -439,13 +476,15 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std
 
 	if (next_masterPageName)
 	{
-		Context.set_master_page_name(*next_masterPageName);
-		std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(*next_masterPageName);
-
-		if (false == masterPageNameLayout.empty())
+		if (true == Context.set_master_page_name(*next_masterPageName))
 		{
-			Context.remove_page_properties();
-			Context.add_page_properties(masterPageNameLayout);
+			std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(*next_masterPageName);
+
+			if (false == masterPageNameLayout.empty())
+			{
+				Context.remove_page_properties();
+				Context.add_page_properties(masterPageNameLayout);
+			}
 		}
 	}
 }
@@ -615,6 +654,7 @@ void list::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     style_name_			= Attributes->get_val< std::wstring >(L"text:style-name").get_value_or(L"");
     continue_numbering_	= Attributes->get_val< bool >(L"text:continue-numbering");
+	continue_list_		= Attributes->get_val< std::wstring >(L"text:continue-list");
     // TODO
 }
 
@@ -632,7 +672,7 @@ void list::add_child_element( xml::sax * Reader, const std::wstring & Ns, const 
 
 void list::docx_convert(oox::docx_conversion_context & Context)
 {
-    bool continue_ = continue_numbering_.get_value_or(false);
+    bool continue_ = continue_numbering_.get_value_or(false) || !continue_list_.get_value_or(L"").empty();
     Context.start_list(style_name_, continue_);
 
     if (list_header_)

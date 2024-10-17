@@ -22,10 +22,12 @@ core_android:DEFINES += DISABLE_MEMORY_LIMITATION
 
 HEADERS += \
 	config.h \
+	editors.h \
 	doctrenderer.h \
 	docbuilder.h
 
 SOURCES += \
+	editors.cpp \
 	nativecontrol.cpp \
 	doctrenderer.cpp \
 	docbuilder.cpp \
@@ -108,3 +110,19 @@ include(../../Common/3dParty/openssl/openssl.pri)
 # downloader
 DEFINES += BUIDLER_OPEN_DOWNLOAD_ENABLED
 DEFINES += BUIDLER_OPEN_BASE64_ENABLED
+
+CONFIG += drawingfile_support
+drawingfile_support {
+	DEFINES += WASM_SERIALIZER_USE_ALLOCATOR
+	ADD_DEPENDENCY(PdfFile, XpsFile, DjVuFile, DocxRenderer)
+
+	HEADERS += \
+		drawingfile.h \
+		embed/DrawingFileEmbed.h
+
+	SOURCES += \
+		../../HtmlRenderer/src/HTMLRendererText.cpp \
+		embed/DrawingFileEmbed.cpp
+
+	ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/DrawingFileEmbed.h)
+}

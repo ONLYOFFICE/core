@@ -380,7 +380,6 @@ private:
     instances_array							instances_;
 
 	text_outline_style						*outline_ = NULL;
-	int										outline_id_ = 0;
 };
 
 class notes_configuration

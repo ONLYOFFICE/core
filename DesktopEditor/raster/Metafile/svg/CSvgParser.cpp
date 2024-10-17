@@ -6,7 +6,6 @@
 
 #include "CSvgFile.h"
 
-#include "SvgObjects/CContainer.h"
 #include "SvgObjects/CPolyline.h"
 #include "SvgObjects/CGradient.h"
 #include "SvgObjects/CClipPath.h"
@@ -21,6 +20,7 @@
 #include "SvgObjects/CRect.h"
 #include "SvgObjects/CLine.h"
 #include "SvgObjects/CPath.h"
+#include "SvgObjects/CFont.h"
 #include "SvgObjects/CText.h"
 #include "SvgObjects/CMask.h"
 #include "SvgObjects/CUse.h"
@@ -47,7 +47,8 @@ namespace SVG
 			return false;
 
 		std::wstring wsXml;
-		NSFile::CFileBinary::ReadAllTextUtf8(wsFile, wsXml);
+		if (!NSFile::CFileBinary::ReadAllTextUtf8(wsFile, wsXml))
+			return false;
 
 		XmlUtils::IXmlDOMDocument::DisableOutput();
 		bool bResult = LoadFromString(wsXml, pContainer, pFile);
@@ -95,7 +96,7 @@ namespace SVG
 
 		if (L"style" == wsElementName)
 		{
-			pFile->AddStyles(oElement.GetText());
+			ParseStyles(oElement.GetText(), pFile);
 			return true;
 		}
 
@@ -115,6 +116,61 @@ namespace SVG
 		}
 
 		return bScanResult;
+	}
+	
+	void CSvgParser::ParseStyles(const std::wstring &wsStyles, CSvgFile *pFile) const
+	{
+		if (NULL == pFile)
+			return;
+
+		pFile->AddStyles(wsStyles);
+
+		std::wregex oRegex(L"@font-face\\s*(\\{[^}]*\\})");
+		std::wsmatch oMatch;
+		std::wstring::const_iterator oSearchStart(wsStyles.cbegin());
+		
+		while (std::regex_search(oSearchStart, wsStyles.cend(), oMatch, oRegex))
+		{
+			if (oMatch[1].str().empty())
+				continue;
+
+			std::wstring wsValue{oMatch[1].str()};
+
+			std::wstring::const_iterator itStart = std::find_if(wsValue.cbegin(), wsValue.cend(), [](const wchar_t& wChar) { return !std::iswspace(wChar) && L'{' != wChar; });
+			std::wstring::const_reverse_iterator itEnd = std::find_if(wsValue.crbegin(), wsValue.crend(), [](const wchar_t& wChar) { return !std::iswspace(wChar) && L'}' != wChar; });
+
+			if (wsValue.cend() != itStart && wsValue.crend() != itEnd)
+				wsValue = std::wstring(itStart, itEnd.base());
+
+			const std::vector<std::wstring> arWords{NSCSS::NS_STATIC_FUNCTIONS::GetWordsW(wsValue, true, L":;")};
+
+			SvgURL oURL;
+			TFontArguments m_oArguments;
+
+			for (unsigned int unIndex = 0; unIndex < arWords.size(); ++unIndex)
+			{
+				if (arWords[unIndex].length() > 3 && L"src" == arWords[unIndex].substr(0, 3) && L':' == arWords[unIndex].back() && 
+				    unIndex + 1 < arWords.size() && oURL.SetValue(arWords[++unIndex]))
+				{
+					continue;
+				}
+				else if (arWords[unIndex].length() > 11 && L"font-family" == arWords[unIndex].substr(0, 11) && L':' == arWords[unIndex].back() &&
+				         unIndex + 1 < arWords.size())
+				{
+					const std::vector<std::wstring> arFontFamily{NSCSS::NS_STATIC_FUNCTIONS::GetWordsW(arWords[++unIndex], false, L"\"\',;")};
+
+					if (arFontFamily.empty())
+						continue;
+
+					m_oArguments.m_wsFontFamily = arFontFamily.back();
+				}
+			}
+
+			if (!oURL.Empty() && !m_oArguments.m_wsFontFamily.empty())
+				pFile->AddFontFace(m_oArguments, oURL.GetValue());
+
+			oSearchStart = oMatch.suffix().first;
+		}
 	}
 
 	template <class ObjectType>
@@ -228,6 +284,10 @@ namespace SVG
 				return true;
 			else
 				RELEASEOBJECT(pObject);
+		}
+		else if (L"font" == wsElementName)
+		{
+			pObject = new CFont(oElement);
 		}
 
 		if (NULL != pObject)

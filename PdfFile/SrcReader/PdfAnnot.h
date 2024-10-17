@@ -172,6 +172,7 @@ protected:
 	CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
 	std::string DictLookupString(Object* pObj, const char* sName, int nByte);
 
+	unsigned int m_unAFlags;
 	unsigned int m_unFlags;
 	double m_dHeight; // Высота холста, для Y трансформации
 	double m_dX; // Смещение по X для трансформации
@@ -193,7 +194,6 @@ private:
 	};
 	CBorderType* getBorder(Object* oBorder, bool bBSorBorder);
 
-	unsigned int m_unAFlags;
 	unsigned int m_unAnnotFlag; // Флаг аннотации - F
 	unsigned int m_unRefNum; // Номер ссылки на объект
 	unsigned int m_unPage; // Страница
@@ -202,6 +202,7 @@ private:
 	std::string m_sContents; // Отображаемый текст
 	std::string m_sNM; // Уникальное имя
 	std::string m_sM; // Дата последнего изменения
+	std::string m_sOUserID; // OO User ID
 	std::vector<double> m_arrC; // Специальный цвет
 	CBorderType* m_pBorder; // Граница
 };
@@ -350,6 +351,8 @@ protected:
 
 	virtual void ToWASM(NSWasm::CData& oRes) override;
 
+	std::vector<CFontData*> m_arrRC; // Форматированный текст
+
 private:
 	BYTE m_nRT; // Тип аннотации-ответа
 	unsigned int m_unRefNumPopup; // Номер ссылки на всплывающую аннотацию
@@ -358,7 +361,6 @@ private:
 	std::string m_sT; // Текстовая метка, пользователь добавивший аннотацию
 	std::string m_sCreationDate; // Дата создания
 	std::string m_sSubj; // Краткое описание
-	std::vector<CFontData*> m_arrRC; // Форматированный текст
 };
 
 //------------------------------------------------------------------------

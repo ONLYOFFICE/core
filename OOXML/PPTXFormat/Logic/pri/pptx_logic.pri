@@ -268,8 +268,6 @@ SOURCES +=  \
 	../../../PPTXFormat/Namespaces.cpp \
 	../../../PPTXFormat/LegacyDiagramText.cpp \
 	../../../PPTXFormat/HandoutMaster.cpp \
-	../../../PPTXFormat/Core.cpp \
-	../../../PPTXFormat/App.cpp \
 	../../../PPTXFormat/WrapperWritingElement.cpp \
 	../../../PPTXFormat/Comments.cpp \
 	../../../PPTXFormat/CommentAuthors.cpp
@@ -515,11 +513,9 @@ HEADERS += \
 	$$LOGIC_DIR/Xfrm.h \
 	$$LOGIC_DIR/XmlId.h \
 	\
-	../../../PPTXFormat/App.h \
 	../../../PPTXFormat/CommentAuthors.h \
 	../../../PPTXFormat/Comments.h \
 	../../../PPTXFormat/LegacyDiagramText.h \
-	../../../PPTXFormat/Core.h \
 	../../../PPTXFormat/FileContainer.h \
 	../../../PPTXFormat/FileFactory.h \
 	../../../PPTXFormat/FileMap.h \

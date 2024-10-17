@@ -66,7 +66,7 @@ public:
 	void set_scale		(double cx_pt, double cy_pt);
 	void set_rotate		(double angle, bool translate = false);
 
-	void set_name		(std::wstring const & name);
+	void set_name		(std::wstring name);
 	void set_id			(std::wstring const & id);
 	void set_anchor		(std::wstring anchor, double x_pt, double y_pt);
 	void set_property	(odf_reader::_property p);
@@ -84,8 +84,11 @@ public:
 	void set_connector_end_glue_point		(int gluePoint);
 	void set_connector_draw_type			(const std::wstring& drawType);
 
+	void set_is_placeHolder(bool is_placeholder);
 	void set_placeHolder_type	(std::wstring typeHolder);
 	void set_placeHolder_idx	(int idx);
+	void processing_notes		(bool processing_notes);
+	bool processing_notes();
 
 	std::wstring add_hyperlink(std::wstring const & ref);
 

@@ -36,8 +36,9 @@
 #include "../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 #include "../../DesktopEditor/xmlsec/src/include/CertificateCommon.h"
 #include "../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h"
-#include "../PdfFile.h"
+#include "../../DesktopEditor/raster/BgraFrame.h"
 #include "../../DjVuFile/DjVu.h"
+#include "../PdfFile.h"
 
 class CPdfFileTest : public testing::Test
 {
@@ -45,11 +46,15 @@ protected:
 	static CApplicationFontsWorker* oWorker;
 	static NSFonts::IApplicationFonts* pApplicationFonts;
 	static std::wstring wsTempDir;
+	static std::wstring wsSrcFile;
+	static std::wstring wsDstFile;
+
+	static std::wstring strDirIn;
+	static std::wstring strDirOut;
+	static std::wstring strDiffs;
 
 public:
 	CPdfFile* pdfFile;
-	std::wstring wsSrcFile;
-	std::wstring wsDstFile;
 
 public:
 	static void SetUpTestSuite()
@@ -65,9 +70,25 @@ public:
 		pApplicationFonts = oWorker->Check();
 
 		wsTempDir = NSFile::GetProcessDirectory() + L"/pdftemp";
+		wsSrcFile = NSFile::GetProcessDirectory() + L"/test.pdf";
+		wsDstFile = NSFile::GetProcessDirectory() + L"/test2.pdf";
 
-		if (!NSDirectory::Exists(wsTempDir))
-			NSDirectory::CreateDirectory(wsTempDir);
+		strDirIn  = NSFile::GetProcessDirectory() + L"/resI";
+		strDirOut = NSFile::GetProcessDirectory() + L"/resO";
+		strDiffs  = NSFile::GetProcessDirectory() + L"/resD";
+
+		if (NSDirectory::Exists(wsTempDir))
+			NSDirectory::DeleteDirectory(wsTempDir);
+		NSDirectory::CreateDirectory(wsTempDir);
+		if (NSDirectory::Exists(strDirIn))
+			NSDirectory::DeleteDirectory(strDirIn);
+		NSDirectory::CreateDirectory(strDirIn);
+		if (NSDirectory::Exists(strDirOut))
+			NSDirectory::DeleteDirectory(strDirOut);
+		NSDirectory::CreateDirectory(strDirOut);
+		if (NSDirectory::Exists(strDiffs))
+			NSDirectory::DeleteDirectory(strDiffs);
+		NSDirectory::CreateDirectory(strDiffs);
 	}
 	static void TearDownTestSuite()
 	{
@@ -127,9 +148,6 @@ public:
 
 	virtual void SetUp() override
 	{
-		wsSrcFile = NSFile::GetProcessDirectory() + L"/test.pdf";
-		wsDstFile = NSFile::GetProcessDirectory() + L"/test2.pdf";
-
 		pdfFile = new CPdfFile(pApplicationFonts);
 		pdfFile->SetTempDirectory(wsTempDir);
 	}
@@ -142,41 +160,21 @@ public:
 CApplicationFontsWorker* CPdfFileTest::oWorker = NULL;
 NSFonts::IApplicationFonts* CPdfFileTest::pApplicationFonts = NULL;
 std::wstring CPdfFileTest::wsTempDir;
+std::wstring CPdfFileTest::wsSrcFile;
+std::wstring CPdfFileTest::wsDstFile;
+std::wstring CPdfFileTest::strDirIn;
+std::wstring CPdfFileTest::strDirOut;
+std::wstring CPdfFileTest::strDiffs;
 
 TEST_F(CPdfFileTest, DjVuToPdf)
 {
 	GTEST_SKIP();
 
-	CDjVuFile* pFile = new CDjVuFile(pApplicationFonts);
+	CDjVuFile* pDjVu = new CDjVuFile(pApplicationFonts);
+	pDjVu->LoadFromFile(NSFile::GetProcessDirectory() + L"/test.djvu");
+	pDjVu->ConvertToPdf(wsDstFile);
 
-	ASSERT_TRUE(pFile->LoadFromFile(NSFile::GetProcessDirectory() + L"/test.djvu"));
-
-	pdfFile->CreatePdf();
-
-	int nPagesCount = pFile->GetPagesCount();
-	for (int i = 0; i < nPagesCount; ++i)
-	{
-		pdfFile->NewPage();
-		pdfFile->BeginCommand(c_nPageType);
-
-		double dPageDpiX, dPageDpiY;
-		double dWidth, dHeight;
-		pFile->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-
-		dWidth *= 25.4 / dPageDpiX;
-		dHeight *= 25.4 / dPageDpiY;
-
-		pdfFile->put_Width(dWidth);
-		pdfFile->put_Height(dHeight);
-
-		pFile->DrawPageOnRenderer(pdfFile, i, NULL);
-
-		pdfFile->EndCommand(c_nPageType);
-	}
-
-	pdfFile->SaveToFile(wsDstFile);
-
-	RELEASEOBJECT(pFile);
+	RELEASEOBJECT(pDjVu);
 }
 
 TEST_F(CPdfFileTest, GetMetaData)
@@ -196,6 +194,51 @@ TEST_F(CPdfFileTest, GetMetaData)
 		EXPECT_TRUE(pMetaData);
 	}
 	RELEASEARRAYOBJECTS(pMetaData);
+}
+
+TEST_F(CPdfFileTest, PdfType)
+{
+	GTEST_SKIP();
+
+	NSFile::CFileBinary oFile;
+	ASSERT_TRUE(oFile.OpenFile(wsSrcFile));
+
+	int nSize = 4096;
+	BYTE* pBuffer = new BYTE[nSize];
+	if (!pBuffer)
+	{
+		oFile.CloseFile();
+		return;
+	}
+
+	DWORD dwReadBytes = 0;
+	oFile.ReadFile(pBuffer, nSize, dwReadBytes);
+	oFile.CloseFile();
+
+	char* pData = (char*)pBuffer;
+	bool bPDF = false;
+	for (int i = 0; i < nSize - 5; ++i)
+	{
+		int nPDF = strncmp(&pData[i], "%PDF-", 5);
+		if (!nPDF)
+		{
+			bPDF = true;
+			break;
+		}
+	}
+
+	ASSERT_TRUE(bPDF);
+
+	RELEASEARRAYOBJECTS(pBuffer);
+}
+
+TEST_F(CPdfFileTest, GetEmbeddedFont)
+{
+	GTEST_SKIP();
+
+	LoadFromFile();
+
+	std::wcout << pdfFile->GetEmbeddedFontPath(L"Symbol") << std::endl;
 }
 
 TEST_F(CPdfFileTest, ValidMetaData)
@@ -242,6 +285,14 @@ TEST_F(CPdfFileTest, PdfFromBin)
 	EXPECT_HRESULT_SUCCEEDED(pdfFile->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile));
 }
 
+TEST_F(CPdfFileTest, PdfFromBase64)
+{
+	GTEST_SKIP();
+
+	pdfFile->CreatePdf();
+	EXPECT_HRESULT_SUCCEEDED(pdfFile->OnlineWordToPdf(NSFile::GetProcessDirectory() + L"/base64.txt", wsDstFile));
+}
+
 TEST_F(CPdfFileTest, PdfToPdf)
 {
 	GTEST_SKIP();
@@ -285,7 +336,7 @@ TEST_F(CPdfFileTest, ConvertToRaster)
 	for (i = 0; i < pdfFile->GetPagesCount(); i++)
 	{
 		pdfFile->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-		pdfFile->ConvertToRaster(i, NSFile::GetProcessDirectory() + L"/res" + std::to_wstring(i) + L".png", 4, dWidth, dHeight, true, pdfFile->GetFontManager());
+		pdfFile->ConvertToRaster(i, NSFile::GetProcessDirectory() + L"/resO/res" + std::to_wstring(i) + L".png", 4, dWidth, dHeight, true, pdfFile->GetFontManager());
 	}
 }
 
@@ -359,7 +410,7 @@ TEST_F(CPdfFileTest, EditPdfFromBase64)
 	EXPECT_TRUE(NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, pBuffer, &nBufferLen));
 	CConvertFromBinParams* pParams = new CConvertFromBinParams();
 	pParams->m_sMediaDirectory = NSFile::GetProcessDirectory();
-	pdfFile->AddToPdfFromBinary(pBuffer, nBufferLen, pParams);
+	pdfFile->AddToPdfFromBinary(pBuffer + 4, nBufferLen - 4, pParams);
 
 	RELEASEOBJECT(pParams);
 	RELEASEARRAYOBJECTS(pBuffer);
@@ -435,4 +486,192 @@ TEST_F(CPdfFileTest, ChangePasswordToPassword)
 
 	LoadFromFile();
 	EXPECT_HRESULT_SUCCEEDED(pdfFile->ChangePassword(wsDstFile, L"123456"));
+}
+
+TEST_F(CPdfFileTest, ImgDiff)
+{
+	GTEST_SKIP();
+
+	LoadFromFile();
+
+	int nCountInPages = pdfFile->GetPagesCount();
+	for (int nPage = 0; nPage < nCountInPages; ++nPage)
+	{
+		std::wstring sPageI = strDirIn + L"/res" + std::to_wstring(nPage) + L".png";
+		std::wstring sPageO = strDirOut + L"/res" + std::to_wstring(nPage) + L".png";
+		std::wstring sPageDiff = strDiffs + L"/res" + std::to_wstring(nPage) + L".png";
+
+		CBgraFrame frameI;
+		frameI.OpenFile(sPageI);
+
+		CBgraFrame frameO;
+		frameO.OpenFile(sPageO);
+
+		int nW_I = frameI.get_Width();
+		int nH_I = frameI.get_Height();
+
+		int nW_O = frameO.get_Width();
+		int nH_O = frameO.get_Height();
+
+		if (nW_I != nW_O || nH_I != nH_O)
+		{
+			if (!NSDirectory::Exists(strDiffs))
+				NSDirectory::CreateDirectories(CorrectPathW(strDiffs));
+
+			std::wstring sFilePagesDiff = sPageDiff;
+			NSFile::CFileBinary oFile;
+			oFile.CreateFileW(sPageDiff);
+			oFile.WriteStringUTF8(L"sizes!");
+			oFile.CloseFile();
+			continue;
+		}
+
+		BYTE* pDataI = frameI.get_Data();
+		BYTE* pDataO = frameO.get_Data();
+		size_t sizeMemory = 4 * nW_I * nH_I;
+
+		if (0 == memcmp(pDataI, pDataO, sizeMemory))
+			continue;
+
+		int nEpsilonEps = 3;
+		int nEpsilonNatural = 5;
+
+		int nDivExist = 0;
+		for (int indexPixH = 0; indexPixH < nH_I; indexPixH++)
+		{
+			for (int indexPixW = 0; indexPixW < nW_I; indexPixW++)
+			{
+				if (pDataI[0] != pDataO[0] || pDataI[1] != pDataO[1] || pDataI[2] != pDataO[2])
+				{
+					// test epsilon natural
+					if ((abs(pDataI[0] - pDataO[0]) < nEpsilonNatural) &&
+							(abs(pDataI[1] - pDataO[1]) < nEpsilonNatural) &&
+							(abs(pDataI[2] - pDataO[2]) < nEpsilonNatural))
+					{
+						pDataI += 4;
+						pDataO += 4;
+						continue;
+					}
+
+					// test epsilon left, right, top, bottom
+					int nEpsUp = nEpsilonEps;
+					if (indexPixH > 0)
+					{
+						BYTE* pByteI = frameI.get_Data() + 4 * (indexPixH - 1) * nW_I + 4 * indexPixW;
+
+						if ((abs(pByteI[0] - pDataO[0]) < nEpsilonEps) &&
+								(abs(pByteI[1] - pDataO[1]) < nEpsilonEps) &&
+								(abs(pByteI[2] - pDataO[2]) < nEpsilonEps))
+						{
+							nEpsUp = nEpsilonEps - 1;
+						}
+					}
+
+					int nEpsDown = nEpsilonEps;
+					if (indexPixH < (nH_I - 1))
+					{
+						BYTE* pByteI = frameI.get_Data() + 4 * (indexPixH + 1) * nW_I + 4 * indexPixW;
+
+						if ((abs(pByteI[0] - pDataO[0]) < nEpsilonEps) &&
+								(abs(pByteI[1] - pDataO[1]) < nEpsilonEps) &&
+								(abs(pByteI[2] - pDataO[2]) < nEpsilonEps))
+						{
+							nEpsDown = nEpsilonEps - 1;
+						}
+					}
+
+					int nEpsLeft = nEpsilonEps;
+					if (indexPixW > 0)
+					{
+						BYTE* pByteI = pDataI - 4;
+
+						if ((abs(pByteI[0] - pDataO[0]) < nEpsilonEps) &&
+								(abs(pByteI[1] - pDataO[1]) < nEpsilonEps) &&
+								(abs(pByteI[2] - pDataO[2]) < nEpsilonEps))
+						{
+							nEpsLeft = nEpsilonEps - 1;
+						}
+					}
+
+					int nEpsRight = nEpsilonEps;
+					if (indexPixW < (nW_I - 1))
+					{
+						BYTE* pByteI = pDataI + 4;
+
+						if ((abs(pByteI[0] - pDataO[0]) < nEpsilonEps) &&
+								(abs(pByteI[1] - pDataO[1]) < nEpsilonEps) &&
+								(abs(pByteI[2] - pDataO[2]) < nEpsilonEps))
+						{
+							nEpsRight = nEpsilonEps - 1;
+						}
+					}
+
+					if ((nEpsLeft < nEpsilonEps) ||
+							(nEpsRight < nEpsilonEps) ||
+							(nEpsUp < nEpsilonEps) ||
+							(nEpsDown < nEpsilonEps))
+					{
+						pDataI += 4;
+						pDataO += 4;
+						continue;
+					}
+
+					++nDivExist;
+
+					if (pDataO[0] == 0x00 && pDataO[1] == 0x00 && pDataO[2] == 0xFF)
+					{
+						pDataO[0] = 0xFF;
+						pDataO[1] = 0x00;
+						pDataO[2] = 0x00;
+					}
+					else
+					{
+						pDataO[0] = 0x00;
+						pDataO[1] = 0x00;
+						pDataO[2] = 0xFF;
+					}
+				}
+				pDataI += 4;
+				pDataO += 4;
+			}
+		}
+
+		if (nDivExist > 7)
+		{
+			if (!NSDirectory::Exists(strDiffs))
+				NSDirectory::CreateDirectories(CorrectPathW(strDiffs));
+
+			CBgraFrame frameOSrc;
+			frameOSrc.OpenFile(sPageO);
+
+			BYTE* pData1 = frameI.get_Data();
+			BYTE* pData2 = frameOSrc.get_Data();
+			BYTE* pData3 = frameO.get_Data();
+
+			int nRowW = 4 * nW_I;
+			BYTE* pDataAll = new BYTE[3 * nRowW * nH_I];
+			BYTE* pDataAllSrc = pDataAll;
+			for (int j = 0; j < nH_I; j++)
+			{
+				memcpy(pDataAll, pData1, nRowW);
+				pDataAll += nRowW;
+				pData1 += nRowW;
+
+				memcpy(pDataAll, pData2, nRowW);
+				pDataAll += nRowW;
+				pData2 += nRowW;
+
+				memcpy(pDataAll, pData3, nRowW);
+				pDataAll += nRowW;
+				pData3 += nRowW;
+			}
+
+			CBgraFrame oFrameAll;
+			oFrameAll.put_Data(pDataAllSrc);
+			oFrameAll.put_Width(3 * nW_I);
+			oFrameAll.put_Height(nH_I);
+			oFrameAll.put_Stride(-3 * nRowW);
+			oFrameAll.SaveFile(sPageDiff, 4);
+		}
+	}
 }

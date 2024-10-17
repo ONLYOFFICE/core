@@ -726,6 +726,12 @@ unsigned short sheetsnames2ixti(std::wstring name)
      return newXti.iSup;
  }
 
+ unsigned int AddDefinedName(const std::wstring& name)
+ {
+	XLS::GlobalWorkbookInfo::arDefineNames_static.push_back(name);
+	return (XLS::GlobalWorkbookInfo::arDefineNames_static.size());
+ }
+
 unsigned int definenames2index(std::wstring name)
 {
 	unsigned int index;
@@ -759,10 +765,13 @@ bool isColumn(const std::wstring& columnName, _UINT32 listIndex, _UINT16& indexC
 	if(arrColumn != XLS::GlobalWorkbookInfo::mapTableColumnNames_static.end())
 	{
 		indexColumn = -1;
+        auto unqotedName = columnName;
+        if(!unqotedName.empty() && unqotedName.at(0) == '\'')
+            unqotedName = unqotedName.substr(1, unqotedName.size() - 1);
 		for (const auto& itemColumn : arrColumn->second)
 		{
 			++indexColumn;
-			if (columnName == itemColumn)
+            if (unqotedName == itemColumn)
 			{
 				return true;
 			}

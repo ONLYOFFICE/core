@@ -138,6 +138,7 @@ XlsConverter::XlsConverter()
 	is_older_version	= false;
 	is_encrypted		= false;
 }
+
 XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring & xlsxFilePath, const std::wstring & password, const std::wstring & fontsPath, const std::wstring & tempPath, const int lcid_user, bool & bMacros) 
 {
 	xlsx_path			= xlsxFilePath;
@@ -188,7 +189,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 					if (globals)
 					{
 						globals->m_Formating = worksheet->m_Formating;
-						globals->UpdateXFC();
+						globals->UpdateXFC();						
 					}
 				}
 			}
@@ -224,8 +225,38 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 			XLS::StreamCacheReaderPtr workbook_stream(new XLS::CFStreamCacheReader(xls_file->getWorkbookStream(), xls_global_info));
 			xls_document = boost::shared_ptr<XLS::WorkbookStreamObject>(new XLS::WorkbookStreamObject(workbook_code_page));		
 			
-			XLS::BinReaderProcessor proc(workbook_stream, xls_document.get() , true);
-			proc.mandatory(*xls_document.get());
+			XLS::BinReaderProcessor workbook_proc(workbook_stream, xls_document.get() , true);
+			if (false == workbook_proc.mandatory(*xls_document.get()))
+			{
+				// test open list
+				xls_file->getWorkbookStream()->seekFromBegin(0);
+				XLS::StreamCacheReaderPtr worksheet_stream(new XLS::CFStreamCacheReader(xls_file->getWorkbookStream(), xls_global_info));
+				
+				XLS::BaseObjectPtr worksheet_object = XLS::BaseObjectPtr(new XLS::WorksheetSubstream(0));				
+				XLS::BinReaderProcessor worksheet_proc(worksheet_stream, xls_document.get(), true);
+				if (worksheet_proc.mandatory(*worksheet_object.get()))
+				{
+					XLS::WorksheetSubstream* worksheet = dynamic_cast<XLS::WorksheetSubstream*>(worksheet_object.get());
+					XLS::WorkbookStreamObject* workbook = dynamic_cast<XLS::WorkbookStreamObject*>(xls_document.get());
+					if (workbook)
+					{
+						workbook->m_arWorksheetSubstream.push_back(worksheet_object);
+
+						workbook->m_GlobalsSubstream = XLS::BaseObjectPtr(new XLS::GlobalsSubstream(0));
+
+						XLS::GlobalsSubstream* globals = dynamic_cast<XLS::GlobalsSubstream*>(workbook->m_GlobalsSubstream.get());
+						if (globals)
+						{
+							globals->m_Formating = worksheet->m_Formating;
+							globals->UpdateXFC();
+						}
+					}
+				}
+				else
+				{
+					return; //error
+				}
+			}
 
 			if (xls_global_info->decryptor)
 			{
@@ -608,7 +639,8 @@ void XlsConverter::convert_common (XLS::CommonSubstream* sheet)
 void XlsConverter::convert (XLS::WorksheetSubstream* sheet)
 {
 	if (sheet == NULL) return;
-	
+	if (xls_global_info->sheets_info.empty()) return;
+
 	std::wstring name = xls_global_info->sheets_info[sheet->ws_index_].name;
 	if (name.empty()) 
 		name = L"Sheet_" + std::to_wstring(sheet->ws_index_ + 1);

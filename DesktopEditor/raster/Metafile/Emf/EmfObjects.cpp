@@ -46,7 +46,7 @@ namespace MetaFile
 	CEmfObjectBase::~CEmfObjectBase()
 	{}
 
-	EEmfObjectType CEmfObjectBase::GetType()
+	EEmfObjectType CEmfObjectBase::GetType() const
 	{
 		return EMF_OBJECT_UNKNOWN;
 	}
@@ -63,7 +63,7 @@ namespace MetaFile
 		RELEASEOBJECT(pDibBuffer);
 	}
 	
-	EEmfObjectType CEmfLogBrushEx::GetType()
+	EEmfObjectType CEmfLogBrushEx::GetType() const
 	{
 		return EMF_OBJECT_BRUSH;
 	}
@@ -102,57 +102,57 @@ namespace MetaFile
 	#endif
 	}
 
-	int CEmfLogBrushEx::GetColor()
+	int CEmfLogBrushEx::GetColor() const
 	{
 		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b, 0);
 	}
 
-	int CEmfLogBrushEx::GetColor2()
+	int CEmfLogBrushEx::GetColor2() const
 	{
 		return 0;
 	}
 
-	unsigned int CEmfLogBrushEx::GetStyle()
+	unsigned int CEmfLogBrushEx::GetStyle() const
 	{
 		return unBrushStyle;
 	}
 
-	unsigned int CEmfLogBrushEx::GetStyleEx()
+	unsigned int CEmfLogBrushEx::GetStyleEx() const
 	{
 		return 0;
 	}
 
-	unsigned int CEmfLogBrushEx::GetHatch()
+	unsigned int CEmfLogBrushEx::GetHatch() const
 	{
 		return unBrushHatch;
 	}
 
-	unsigned int CEmfLogBrushEx::GetAlpha()
+	unsigned int CEmfLogBrushEx::GetAlpha() const
 	{
 		return 0xff;
 	}
 
-	unsigned int CEmfLogBrushEx::GetAlpha2()
+	unsigned int CEmfLogBrushEx::GetAlpha2() const
 	{
 		return 0xff;
 	}
 
-	std::wstring CEmfLogBrushEx::GetDibPatterPath()
+	std::wstring CEmfLogBrushEx::GetDibPatterPath() const
 	{
 		return wsDibPatternPath;
 	}
 
-	void CEmfLogBrushEx::GetBounds(double &left, double &top, double &width, double &height)
+	void CEmfLogBrushEx::GetBounds(double &left, double &top, double &width, double &height) const
 	{}
 
-	void CEmfLogBrushEx::GetCenterPoint(double &dX, double &dY)
+	void CEmfLogBrushEx::GetCenterPoint(double &dX, double &dY) const
 	{}
 
-	void CEmfLogBrushEx::GetDibPattern(unsigned char **pBuffer, unsigned int &unWidth, unsigned int &unHeight)
+	void CEmfLogBrushEx::GetDibPattern(unsigned char **pBuffer, unsigned int &unWidth, unsigned int &unHeight) const
 	{
-		*pBuffer	= pDibBuffer;
-		unWidth		= unDibWidth;
-		unHeight	= unDibHeigth;
+		*pBuffer = pDibBuffer;
+		unWidth  = unDibWidth;
+		unHeight = unDibHeigth;
 	}
 
 	CEmfLogFont::CEmfLogFont(bool bFixedLength) : m_bFixedLength(bFixedLength)
@@ -165,63 +165,64 @@ namespace MetaFile
 		RELEASEOBJECT(oDesignVector.pValues);
 	}
 
-	EEmfObjectType CEmfLogFont::GetType()
+	EEmfObjectType CEmfLogFont::GetType() const
 	{
 		return EMF_OBJECT_FONT;
 	}
 
-	double CEmfLogFont::GetHeight()
+	double CEmfLogFont::GetHeight() const
 	{
 		return (double)oLogFontEx.oLogFont.nHeight;
 	}
 
-	std::wstring CEmfLogFont::GetFaceName()
+	std::wstring CEmfLogFont::GetFaceName() const
 	{
-		return std::wstring(NSFile::CUtf8Converter::GetWStringFromUTF16(oLogFontEx.oLogFont.ushFaceName, 32).c_str());
+		const std::wstring wsFaceName{NSFile::CUtf8Converter::GetWStringFromUTF16(oLogFontEx.oLogFont.ushFaceName, 32)};
+		return wsFaceName.substr(0, wsFaceName.find(L'\0'));
 	}
 	
-	int CEmfLogFont::GetWeight()
+	int CEmfLogFont::GetWeight() const
 	{
 		return oLogFontEx.oLogFont.nWeight;
 	}
 
-	bool CEmfLogFont::IsItalic()
+	bool CEmfLogFont::IsItalic() const
 	{
-		return (0x01 == oLogFontEx.oLogFont.uchItalic ? true : false);
+		return 0x01 == oLogFontEx.oLogFont.uchItalic;
 	}
 
-	bool CEmfLogFont::IsStrikeOut()
+	bool CEmfLogFont::IsStrikeOut() const
 	{
-		return (0x01 == oLogFontEx.oLogFont.uchStrikeOut ? true : false);
+		return 0x01 == oLogFontEx.oLogFont.uchStrikeOut;
 	}
 
-	bool CEmfLogFont::IsUnderline()
+	bool CEmfLogFont::IsUnderline() const
 	{
-		return (0x01 == oLogFontEx.oLogFont.uchUnderline ? true : false);
+		return 0x01 == oLogFontEx.oLogFont.uchUnderline ;
 	}
 
-	int CEmfLogFont::GetEscapement()
+	int CEmfLogFont::GetEscapement() const
 	{
 		return oLogFontEx.oLogFont.nEscapement;
 	}
 
-	int CEmfLogFont::GetCharSet()
+	int CEmfLogFont::GetCharSet() const
 	{
 		return oLogFontEx.oLogFont.uchCharSet;
 	}
 
-	bool CEmfLogFont::IsFixedLength()
+	bool CEmfLogFont::IsFixedLength() const
 	{
 		return m_bFixedLength;
 	}
 
-	int CEmfLogFont::GetOrientation()
+	int CEmfLogFont::GetOrientation() const
 	{
 		return oLogFontEx.oLogFont.nOrientation;
 	}
 
 	CEmfLogPen::CEmfLogPen()
-		: unPenStyle(PS_SOLID), unWidth(1), oColor(0, 0, 0), pStyleEntry(NULL)
+		: unPenStyle(PS_SOLID), unWidth(1), oColor(0, 0, 0), unNumStyleEntries(0), pStyleEntry(NULL)
 	{}
 
 	CEmfLogPen::~CEmfLogPen()
@@ -229,42 +230,42 @@ namespace MetaFile
 		RELEASEOBJECT(pStyleEntry);
 	}
 
-	EEmfObjectType CEmfLogPen::GetType()
+	EEmfObjectType CEmfLogPen::GetType() const
 	{
 		return EMF_OBJECT_PEN;
 	}
 
-	int  CEmfLogPen::GetColor()
+	int  CEmfLogPen::GetColor() const
 	{
 		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b, oColor.a);
 	}
 
-	unsigned int CEmfLogPen::GetStyle()
+	unsigned int CEmfLogPen::GetStyle() const
 	{
 		return unPenStyle;
 	}
 
-	double CEmfLogPen::GetWidth()
+	double CEmfLogPen::GetWidth() const
 	{
 		return (double)unWidth;
 	}
 
-	unsigned int CEmfLogPen::GetAlpha()
+	unsigned int CEmfLogPen::GetAlpha() const
 	{
 		return 0xff;
 	}
 
-	double CEmfLogPen::GetMiterLimit()
+	double CEmfLogPen::GetMiterLimit() const
 	{
 		return 0;
 	}
 
-	double CEmfLogPen::GetDashOffset()
+	double CEmfLogPen::GetDashOffset() const
 	{
 		return 0;
 	}
 
-	void CEmfLogPen::GetDashData(double *&arDatas, unsigned int &unSize)
+	void CEmfLogPen::GetDashData(double *&arDatas, unsigned int &unSize) const
 	{
 		arDatas = NULL;
 		unSize  = 0;
@@ -278,7 +279,7 @@ namespace MetaFile
 		RELEASEOBJECT(pPaletteEntries);
 	}
 
-	EEmfObjectType CEmfLogPalette::GetType()
+	EEmfObjectType CEmfLogPalette::GetType() const
 	{
 		return EMF_OBJECT_PALETTE;
 	}

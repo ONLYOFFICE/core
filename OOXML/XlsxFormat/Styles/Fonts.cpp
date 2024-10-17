@@ -224,7 +224,10 @@ namespace OOX
 				if(m_oBold->ToBool())
 					ptr->bls = 0x02BC;
 			}
-
+			else
+			{
+				ptr->bls = 0x0190;
+			}
 			if(m_oUnderline.IsInit())
 			{
 				if(m_oUnderline->m_oUnderline.IsInit())
@@ -520,7 +523,7 @@ namespace OOX
 		{
 			auto ptr(new XLSB::FONTS);
 			auto ptr1(new XLSB::BeginFonts);
-			ptr->m_BrtBeginFonts = XLS::BaseObjectPtr{ptr1}; 
+			ptr->m_BrtBeginFonts = XLS::BaseObjectPtr{ptr1};
 			XLS::BaseObjectPtr objectPtr(ptr);
 
 			for(auto i:m_arrItems)

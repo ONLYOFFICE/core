@@ -386,6 +386,14 @@ namespace NSJSBase
 		 * Converts the typed array to a value.
 		 */
 		virtual JSSmart<CJSValue> toValue() = 0;
+
+		/**
+		 * Detaches this ArrayBuffer and all its views (typed arrays).
+		 * Detaching sets the byte length of the buffer and all typed arrays to zero,
+		 * preventing JavaScript from ever accessing underlying backing store.
+		 * ArrayBuffer should have been externalized.
+		 */
+		virtual void Detach() = 0;
 	};
 
 	/**
@@ -440,13 +448,20 @@ namespace NSJSBase
 		/**
 		 * Initializes the JS context.
 		 * By default it happens automatically when creating a CJSConext instance.
+		 * @param snapshotPath Path to snapshot file.
 		 */
-		void Initialize();
+		void Initialize(const std::wstring& snapshotPath = L"");
 		/**
 		 * Releases any resources taken by the JS context.
 		 * Generally there is no need to call it manually, cause this method called when CJSConext is being destructed.
 		 */
 		void Dispose();
+
+		/**
+		 * Get information about snapshot
+		 * @return Returns true if snapshot was used on Initialize method
+		 */
+		bool isSnapshotUsed();
 
 		/**
 		 * Creates and returns the pointer to an object for tracking exceptions during code execution in current JS context.
@@ -479,6 +494,14 @@ namespace NSJSBase
 		{
 			AddEmbedCreator(T::getName(), T::getCreator, isAllowedInJS);
 		}
+
+		/**
+		 * Generate snapshot by script.
+		 * @param script The script to be executed.
+		 * @param snapshotPath The path to the snapshot
+		 * @return Returns true whether a snapshot has been created.
+		 */
+		static bool generateSnapshot(const std::string& script, const std::wstring& snapshotPath);
 
 		/**
 		 * Run the script in the current JS context.

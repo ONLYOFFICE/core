@@ -124,8 +124,8 @@ public:
     virtual void SetSwapRGB(bool bValue){ if (m_pRenderer) m_pRenderer->m_bSwapRGB = bValue; }
     virtual void SetTileImageDpi(const double& dDpi) { if (m_pRenderer) m_pRenderer->m_dDpiTile = dDpi; }
 
-    void Save();
-    void Restore();
+    virtual void Save();
+    virtual void Restore();
 
 public:
 // тип рендерера-----------------------------------------------------------------------------
@@ -163,9 +163,9 @@ public:
 	virtual HRESULT PenDashPattern(double* pPattern, LONG lCount);
 
 // brush ------------------------------------------------------------------------------------
-    virtual void put_BrushGradInfo(const NSStructures::GradientInfo &_ginfo) override {
-        m_oBrush.m_oGradientInfo = _ginfo;
-    }
+	virtual void put_BrushGradInfo(void* pGradInfo) override {
+		m_oBrush.m_oGradientInfo = *((NSStructures::GradientInfo*)pGradInfo);
+	}
 
 	virtual HRESULT get_BrushType(LONG* lType);
 	virtual HRESULT put_BrushType(const LONG& lType);
@@ -278,7 +278,7 @@ public:
 	{
 		_SetFont();
 	}
-	virtual void put_BlendMode(const unsigned int nBlendMode) override;
+	virtual void put_BlendMode(const unsigned int& nBlendMode) override;
 
 public:
     virtual void CloseFont()
@@ -348,18 +348,14 @@ public:
 
 	inline double GetPixW() { return m_pRenderer->GetPixW(); }
 	inline double GetPixH() { return m_pRenderer->GetPixH(); }
-	inline unsigned int GetLayerW() override { return m_pRenderer->GetLayerW(); }
-	inline unsigned int GetLayerH() override { return m_pRenderer->GetLayerH(); }
 
 	// alpha mask methods
 	void SetAlphaMask(Aggplus::CAlphaMask* pAlphaMask);
-	Aggplus::CAlphaMask* GetAlphaMask();
+	virtual Aggplus::CSoftMask* CreateSoftMask(bool bAlpha) override;
+	virtual void SetSoftMask(Aggplus::CSoftMask* pSoftMask) override;
 
 	// layer methods
 	virtual HRESULT put_LayerOpacity(double dValue) override;
-	virtual HRESULT put_LayerIsolated(bool bIsolated) override;
-	virtual HRESULT put_AlphaMaskIsolated(bool bIsolated) override;
-	virtual void put_AlphaMaskType(Aggplus::EMaskDataType oType) override;
 
 	// smart methods
 	void drawHorLine(BYTE align, double y, double x, double r, double penW)

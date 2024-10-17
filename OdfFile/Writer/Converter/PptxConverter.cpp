@@ -40,8 +40,6 @@
 #include "../../../OOXML/PPTXFormat/NotesMaster.h"
 #include "../../../OOXML/PPTXFormat/NotesSlide.h"
 #include "../../../OOXML/PPTXFormat/TableStyles.h"
-#include "../../../OOXML/PPTXFormat/App.h"
-#include "../../../OOXML/PPTXFormat/Core.h"
 
 #include "../../../OOXML/PPTXFormat/Logic/Table/Table.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/Par.h"
@@ -78,6 +76,8 @@
 
 #include "../../../OOXML/PPTXFormat/Presentation/SldSz.h"
 #include "../../../OOXML/PPTXFormat/Presentation/NotesSz.h"
+#include "../../../OOXML/DocxFormat/Core.h"
+#include "../../../OOXML/DocxFormat/App.h"
 
 #include "../Format/odp_conversion_context.h"
 
@@ -212,10 +212,11 @@ bool PptxConverter::convertDocument()
 	convert_styles();
 	convert_settings(); 
 	
-	smart_ptr<PPTX::App> app_ptr = pptx_document->Get(OOX::FileTypes::App).smart_dynamic_cast<PPTX::App>();
-	smart_ptr<PPTX::Core> core_ptr = pptx_document->Get(OOX::FileTypes::Core).smart_dynamic_cast<PPTX::Core>();
+	smart_ptr<OOX::CApp> app_ptr = pptx_document->Get(OOX::FileTypes::App).smart_dynamic_cast<OOX::CApp>();
+	smart_ptr<OOX::CCore> core_ptr = pptx_document->Get(OOX::FileTypes::Core).smart_dynamic_cast<OOX::CCore>();
 
-	//convert_meta(app_ptr.GetPointer(), core_ptr.GetPointer()); -> привести к OOX::...
+	convert_meta(app_ptr.GetPointer(), core_ptr.GetPointer()); 
+	convert_customs(pptx_document);
 
 	convert_masters_and_layouts();
 	convert_slides();
@@ -2774,10 +2775,17 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 			}
 			
 			int ph_type = 0;
+			bool placeholder_replacing = false;
 			if (pNvPr->ph->type.IsInit())
 			{
 				ph_type = pNvPr->ph->type->GetBYTECode();
 
+				if (type == Slide && ph_type == 0)
+				{
+					placeholder_replacing = true;
+					ph_type = 16; // body
+				}
+				
 				if (type == Layout && (ph_type == 5 || ph_type == 6 || ph_type == 7 || ph_type == 12))
 					continue;
 			}
@@ -2785,6 +2793,7 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 			if (!bPlaceholders)
 				continue;
 
+			odf_context()->drawing_context()->placeholder_replacing(placeholder_replacing);
 			odf_context()->drawing_context()->set_placeholder_type(ph_type);
 			
 			if (pNvPr->ph->idx.IsInit())

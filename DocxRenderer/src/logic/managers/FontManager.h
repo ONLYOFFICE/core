@@ -128,7 +128,8 @@ namespace NSDocxRenderer
 
 		void SetStringGid(const LONG& lGid);
 
-		void MeasureString(const std::wstring& wsText,
+		void MeasureString(
+			const std::wstring& wsText,
 			double x,
 			double y,
 			double& dBoxX,
@@ -137,7 +138,8 @@ namespace NSDocxRenderer
 			double& dBoxHeight,
 			MeasureType measureType) const;
 
-		void MeasureStringGids(unsigned int* pGids,
+		void MeasureStringGids(
+			unsigned int* pGids,
 			unsigned int count,
 			double x,
 			double y,

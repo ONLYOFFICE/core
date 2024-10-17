@@ -27,14 +27,11 @@ namespace MetaFile
 
 		unsigned int unSize;
 		unsigned short ushType;
-		unsigned int ulNumber = 0;
 
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->Begin();
 
 		Read_META_HEADER();
-
-		unsigned int unRecordIndex = 1;
 
 		while (!CheckError())
 		{
@@ -53,6 +50,9 @@ namespace MetaFile
 			m_unRecordSize = unSize * 2; // Размер указан в WORD
 
 			m_oStream.SetCurrentBlockSize(m_unRecordSize);
+
+			if (NULL != m_pInterpretator)
+				PRINT_WMF_RECORD(ushType)
 
 			switch (ushType)
 			{
@@ -149,13 +149,10 @@ namespace MetaFile
 				//-----------------------------------------------------------
 				default:
 				{
-					//std::cout << ushType << " ";
 					Read_META_UNKNOWN();
 					break;
 				}
 			}
-
-			unRecordIndex++;
 
 			if (m_bEof)
 				break;
@@ -183,11 +180,12 @@ namespace MetaFile
 		CWmfInterpretatorBase *pInterpretator = m_pInterpretator;
 		m_pInterpretator = NULL;
 		PlayFile();
+		UpdateDCRect();
 		m_pInterpretator = pInterpretator;
 		this->ClearFile();
 	}
 
-	WmfParserType CWmfParser::GetType()
+	WmfParserType CWmfParser::GetType() const
 	{
 		return WmfParserType::WmfParser;
 	}

@@ -39,6 +39,11 @@ bool CDocBuilderValue_IsUndefined(CDocBuilderValue* self)
 	return self->IsUndefined();
 }
 
+bool CDocBuilderValue_IsBool(CDocBuilderValue* self)
+{
+	return self->IsBool();
+}
+
 bool CDocBuilderValue_IsInt(CDocBuilderValue* self)
 {
 	return self->IsInt();
@@ -95,7 +100,7 @@ const wchar_t* CDocBuilderValue_ToString(CDocBuilderValue* self)
 	CString strValue = self->ToString();
 	size_t len = wcslen(strValue.c_str());
 	wchar_t* strRes = new wchar_t[len + 1];
-	memcpy(strRes, strValue.c_str(), (len + 1) + sizeof(wchar_t));
+	memcpy(strRes, strValue.c_str(), (len + 1) * sizeof(wchar_t));
 	return strRes;
 }
 
@@ -157,6 +162,11 @@ CDocBuilderValue* CDocBuilderValue_CreateNull()
 CDocBuilderValue* CDocBuilderValue_CreateArray(int length)
 {
 	return new CDocBuilderValue(CDocBuilderValue::CreateArray(length));
+}
+
+CDocBuilderValue* CDocBuilderValue_CreateObject()
+{
+	return new CDocBuilderValue(CDocBuilderValue::CreateObject());
 }
 
 CDocBuilderValue* CDocBuilderValue_Call0(CDocBuilderValue* self, const wchar_t* name)
@@ -291,9 +301,9 @@ char* CDocBuilder_GetVersion(CDocBuilder* self)
 	return self->GetVersion();
 }
 
-CDocBuilderContext* CDocBuilder_GetContext(CDocBuilder* self)
+CDocBuilderContext* CDocBuilder_GetContext(CDocBuilder* self, bool enterContext)
 {
-	return new CDocBuilderContext(self->GetContext());
+	return new CDocBuilderContext(self->GetContext(enterContext));
 }
 
 void CDocBuilder_Initialize()

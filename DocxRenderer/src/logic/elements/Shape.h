@@ -1,9 +1,10 @@
 #pragma once
-#include "Paragraph.h"
-#include "TextLine.h"
+#include "../../../../DesktopEditor/graphics/structures.h"
+
 #include "../../resources/ImageInfo.h"
 #include "../../resources/LinesTable.h"
 #include "../../resources/VectorGraphics.h"
+#include "BaseItem.h"
 
 namespace NSDocxRenderer
 {
@@ -16,14 +17,13 @@ namespace NSDocxRenderer
 		gtNoGraphics,
 	};
 
-	class CShape : public COutputObject
+	class CShape : public CBaseItem
 	{
 	public:
 		enum class eShapeType
 		{
 			stUnknown,
 			stTextBox,
-			stPicture,
 			stVectorGraphics,
 			stVectorTexture,
 			stGroup,
@@ -36,24 +36,31 @@ namespace NSDocxRenderer
 		NSStructures::CBrush m_oBrush{};
 		NSStructures::CPen m_oPen    {};
 
-		CVectorGraphics m_oVector    {};
-		std::wstring m_strDstMedia   {};
+		CVectorGraphics m_oVector     {};
 
-		double m_dRotate {0.0};
+		// vector with rotation 0 (to write ooxml if m_dRotation is > c_dMinRotation)
+		CVectorGraphics m_oNoRotVector{};
+		std::wstring m_strDstMedia    {};
+
+		double m_dRotation {0.0};
+		size_t m_nOrder  {0};
 
 		bool m_bIsNoFill    {true};
 		bool m_bIsNoStroke  {true};
 		bool m_bIsBehindDoc {true};
 		bool m_bIsUseInTable{false};
 
+		std::shared_ptr<CImageInfo> m_pImageInfo{nullptr};
+		double m_dImageTop{};
+		double m_dImageBot{};
+		double m_dImageLeft{};
+		double m_dImageRight{};
+
 		eGraphicsType m_eGraphicsType    {eGraphicsType::gtUnknown};
 		eSimpleLineType m_eSimpleLineType{eSimpleLineType::sltUnknown};
 		eLineType m_eLineType            {eLineType::ltUnknown};
 
-		std::vector<std::shared_ptr<COutputObject>> m_arOutputObjects;
-		std::shared_ptr<CImageInfo> m_pImageInfo{nullptr};
-
-	private:
+		std::vector<std::shared_ptr<CBaseItem>> m_arOutputObjects;
 
 
 	public:
@@ -65,6 +72,7 @@ namespace NSDocxRenderer
 		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter)const override final;
 
 		void SetVector(CVectorGraphics&& oVector);
+		void CalcNoRotVector();
 
 		// tries merge shape, return true if ok and pShape was deleted
 		bool TryMergeShape(std::shared_ptr<CShape>& pShape);
@@ -77,6 +85,7 @@ namespace NSDocxRenderer
 
 		bool IsPeak() const noexcept;
 		bool IsSide() const noexcept;
+		bool IsOoxmlValid() const noexcept;
 
 		void BuildGeneralProperties(NSStringUtils::CStringBuilder &oWriter) const;
 		void BuildSpecificProperties(NSStringUtils::CStringBuilder &oWriter) const;
@@ -88,6 +97,7 @@ namespace NSDocxRenderer
 		void BuildTextBox(NSStringUtils::CStringBuilder &oWriter) const;
 		void BuildTextBoxParams(NSStringUtils::CStringBuilder &oWriter) const;
 		void BuildForm(NSStringUtils::CStringBuilder &oWriter, const bool& bIsLT = false) const;
+		void BuildBlipFill(NSStringUtils::CStringBuilder &oWriter) const;
 
 		static void ResetRelativeHeight();
 
@@ -99,6 +109,7 @@ namespace NSDocxRenderer
 		static void CheckLineType(std::shared_ptr<CShape>& pFirstShape, std::shared_ptr<CShape>& pSecondShape, bool bIsLast = false);
 
 	private:
+
 		UINT m_nShapeId{0};
 		UINT m_nRelativeHeight{0};
 

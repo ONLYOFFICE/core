@@ -731,6 +731,7 @@ void CSVWriter::Impl::WriteCell(OOX::Spreadsheet::CCell *pCell)
 	//}
 	//else
 	bool bString = false;
+	
 	if (pCell->m_oValue.IsInit())
 	{
 		sCellValue = pCell->m_oValue->ToString();
@@ -793,8 +794,11 @@ void CSVWriter::Impl::WriteCell(OOX::Spreadsheet::CCell *pCell)
 				}
 			}
 			sCellValue = ConvertValueCellToString(sCellValue, format_type, format_code);
-
 		}
+	}
+	if (pCell->m_oFormula.IsInit() && sCellValue.empty())
+	{
+		sCellValue = pCell->m_oFormula->m_sText;
 	}
 
 	// Escape cell value

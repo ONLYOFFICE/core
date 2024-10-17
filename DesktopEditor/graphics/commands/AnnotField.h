@@ -372,7 +372,6 @@ public:
 		void GetRD(double& dRD1, double& dRD2, double& dRD3, double& dRD4);
 		const std::vector<double>& GetCL();
 		const std::vector<double>& GetIC();
-		BYTE* GetRender(LONG& nLen);
 
 		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
 
@@ -385,8 +384,6 @@ public:
 		double m_dRD[4]{};
 		std::vector<double> m_arrCL;
 		std::vector<double> m_arrIC;
-		LONG m_nRenderLen;
-		BYTE* m_pRender;
 	};
 
 	class GRAPHICS_DECL CCaretAnnotPr
@@ -414,8 +411,10 @@ public:
 	int   GetAnnotFlag() const;
 	int   GetPage()      const;
 	void  GetBE(BYTE& nS, double& dI);
+	BYTE* GetRender(LONG& nLen);
 	const std::wstring& GetNM();
 	const std::wstring& GetLM();
+	const std::wstring& GetOUserID();
 	const std::wstring& GetContents();
 	const std::vector<double>& GetC();
 
@@ -468,10 +467,13 @@ private:
 	int          m_nPage;
 	std::wstring m_wsNM;
 	std::wstring m_wsLM;
+	std::wstring m_wsOUserID;
 	std::wstring m_wsContents;
 	std::pair<BYTE, double> m_pBE;
 	std::vector<double> m_arrC;
 	CBorder      m_oBorder;
+	LONG         m_nRenderLen;
+	BYTE*        m_pRender;
 
 	CMarkupAnnotPr*       m_pMarkupPr;
 	CTextAnnotPr*         m_pTextPr;

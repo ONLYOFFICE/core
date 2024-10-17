@@ -42,6 +42,7 @@ class CDocxRenderer_Private
 public:
 	NSDocxRenderer::CDocument m_oDocument;
 	std::wstring m_sTempDirectory;
+	bool m_bIsSupportShapeCommands = false;
 
 public:
 	CDocxRenderer_Private(NSFonts::IApplicationFonts* pFonts, IRenderer* pRenderer) : m_oDocument(pRenderer, pFonts)
@@ -78,15 +79,25 @@ HRESULT CDocxRenderer::SetTextAssociationType(const NSDocxRenderer::TextAssociat
 	return S_OK;
 }
 
-int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFile, bool bIsOutCompress)
+int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDst, bool bIsOutCompress)
 {
 #ifndef DISABLE_FULL_DOCUMENT_CREATION
-	m_pInternal->m_oDocument.m_strDstFilePath = sDstFile;
+	m_pInternal->m_oDocument.m_strDstFilePath = sDst;
+
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = false;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = false;
+	m_pInternal->m_bIsSupportShapeCommands = false;
 
 	if (bIsOutCompress)
 		m_pInternal->m_oDocument.m_strTempDirectory = NSDirectory::CreateDirectoryWithUniqueName(m_pInternal->m_sTempDirectory);
 	else
-		m_pInternal->m_oDocument.m_strTempDirectory= m_pInternal->m_sTempDirectory;
+	{
+		if (NSDirectory::Exists(sDst))
+			NSDirectory::DeleteDirectory(sDst);
+
+		NSDirectory::CreateDirectories(sDst);
+		m_pInternal->m_oDocument.m_strTempDirectory = sDst;
+	}
 
 	m_pInternal->m_oDocument.Init();
 	m_pInternal->m_oDocument.CreateTemplates();
@@ -114,19 +125,12 @@ std::vector<std::wstring> CDocxRenderer::ScanPage(IOfficeDrawingFile* pFile, siz
 
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
+	m_pInternal->m_bIsSupportShapeCommands = false;
 
 	DrawPage(pFile, nPage);
 
 	std::vector<std::wstring> xml_shapes;
 	for (const auto& shape : m_pInternal->m_oDocument.m_oCurrentPage.m_arShapes)
-	{
-		if (!shape) continue;
-		auto writer = new NSStringUtils::CStringBuilder();
-		shape->ToXml(*writer);
-		xml_shapes.push_back(writer->GetData());
-		delete writer;
-	}
-	for (const auto& shape : m_pInternal->m_oDocument.m_oCurrentPage.m_arImages)
 	{
 		if (!shape) continue;
 		auto writer = new NSStringUtils::CStringBuilder();
@@ -150,19 +154,15 @@ std::vector<std::wstring> CDocxRenderer::ScanPagePptx(IOfficeDrawingFile* pFile,
 
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
+	m_pInternal->m_bIsSupportShapeCommands = true;
 
 	DrawPage(pFile, nPage);
 
+	// for drawingml is no tag behind-doc - so we need to reorder shapes
+	m_pInternal->m_oDocument.m_oCurrentPage.ReorderShapesForPptx();
+
 	std::vector<std::wstring> xml_shapes;
 	for (const auto& shape : m_pInternal->m_oDocument.m_oCurrentPage.m_arShapes)
-	{
-		if (!shape) continue;
-		auto writer = new NSStringUtils::CStringBuilder();
-		shape->ToXmlPptx(*writer);
-		xml_shapes.push_back(writer->GetData());
-		delete writer;
-	}
-	for (const auto& shape : m_pInternal->m_oDocument.m_oCurrentPage.m_arImages)
 	{
 		if (!shape) continue;
 		auto writer = new NSStringUtils::CStringBuilder();
@@ -220,7 +220,7 @@ HRESULT CDocxRenderer::IsSupportAdvancedCommand(const IAdvancedCommand::Advanced
 	{
 	case IAdvancedCommand::AdvancedCommandType::ShapeStart:
 	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:
-		return S_OK;
+		return m_pInternal->m_bIsSupportShapeCommands ? S_OK: S_FALSE;
 	default:
 		break;
 	}
@@ -465,13 +465,11 @@ HRESULT CDocxRenderer::BrushRect(const INT& nVal, const double& dLeft, const dou
 }
 HRESULT CDocxRenderer::BrushBounds(const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight)
 {
-	// TODO:
-	return S_OK;
+	return m_pInternal->m_oDocument.BrushBounds(dLeft, dTop, dWidth, dHeight);
 }
 HRESULT CDocxRenderer::put_BrushGradientColors(LONG* pColors, double* pPositions, LONG lCount)
 {
-	// TODO:
-	return S_OK;
+	return m_pInternal->m_oDocument.put_BrushGradientColors(pColors, pPositions, lCount);
 }
 HRESULT CDocxRenderer::get_BrushTextureImage(Aggplus::CImage** pImage)
 {
@@ -490,8 +488,18 @@ HRESULT CDocxRenderer::put_BrushTextureImage(Aggplus::CImage* pImage)
 
 	return S_OK;
 }
-HRESULT CDocxRenderer::get_BrushTransform(Aggplus::CMatrix& oMatrix) { return S_OK; }
-HRESULT CDocxRenderer::put_BrushTransform(const Aggplus::CMatrix& oMatrix) { return S_OK; }
+HRESULT CDocxRenderer::get_BrushTransform(Aggplus::CMatrix& oMatrix)
+{
+	return S_OK;
+}
+HRESULT CDocxRenderer::put_BrushTransform(const Aggplus::CMatrix& oMatrix)
+{
+	return S_OK;
+}
+void CDocxRenderer::put_BrushGradInfo(void* pGradInfo)
+{
+	m_pInternal->m_oDocument.put_BrushGradInfo(pGradInfo);
+}
 //----------------------------------------------------------------------------------------
 // Функции для работы со шрифтами
 //----------------------------------------------------------------------------------------

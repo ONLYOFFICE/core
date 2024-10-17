@@ -644,17 +644,12 @@ namespace DocFileFormat
 		}
 		m_sTempDecryptFileName	= m_sTempFolder + FILE_SEPARATOR_STR + L"~tempFile.doc";
 		
-		POLE::Storage *storageIn	= m_pStorage->GetStorage();
-		POLE::Storage *storageOut	= new POLE::Storage(m_sTempDecryptFileName.c_str());
+		POLE::Storage *storageIn = m_pStorage->GetStorage();
+		CFCPP::CompoundFile* storageOut = new CFCPP::CompoundFile(CFCPP::Ver_3, CFCPP::Default);
 
 		if (!storageOut || !storageIn) return false;
 		
-		if (!storageOut->open(true, true))
-		{
-			delete storageOut;
-			return false;
-		}
-		DecryptStream( 0, L"/", storageIn, storageOut, Decryptor);
+		DecryptStream( 0, L"/", storageIn, storageOut->RootStorage(), Decryptor);
 
 		//std::list<std::string> listStream = storageIn->entries();
 
@@ -676,7 +671,8 @@ namespace DocFileFormat
 
 		//}
 
-		storageOut->close();
+		bool result = storageOut->Save(m_sTempDecryptFileName);
+		storageOut->Close();
 		delete storageOut;
 
 //reset streams
@@ -695,10 +691,10 @@ namespace DocFileFormat
 		{
 			if (!m_pStorage->GetStream (L"0Table", &TableStream))	m_pStorage->GetStream (L"1Table", &TableStream);
 		}
-		return true;
+		return result;
 	}
 
-	void WordDocument::DecryptStream( int level, std::wstring path, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor)
+	void WordDocument::DecryptStream( int level, std::wstring path, POLE::Storage* storageIn, std::shared_ptr<CFCPP::CFStorage> storageOut, CRYPT::Decryptor* Decryptor)
 	{
 		std::list<std::wstring> entries, entries_files, entries_dir;
 		entries = storageIn->entries_with_prefix( path );
@@ -721,7 +717,8 @@ namespace DocFileFormat
 		{
 			std::wstring fullname = path + *it;
 	       
-			DecryptStream( level + 1, fullname + L"/", storageIn, storageOut, Decryptor );
+			std::shared_ptr<CFCPP::CFStorage> storageOutNew = storageOut->AddStorage(*it);
+			DecryptStream( level + 1, fullname + L"/", storageIn, storageOutNew, Decryptor );
 
 		}    
 	//if (bSortFiles)
@@ -729,8 +726,6 @@ namespace DocFileFormat
 
 		for( std::list<std::wstring>::iterator it = entries_files.begin(); it != entries_files.end(); ++it )
 		{
-			std::wstring fullname_create = path + *it;
-
 			if (it->at(0) < 32)
 			{
 				*it = it->substr(1);  // without prefix
@@ -748,10 +743,10 @@ namespace DocFileFormat
 			{
 				bDecrypt = true;
 			}	
-			DecryptStream(fullname_open, storageIn, fullname_create, storageOut, Decryptor, bDecrypt);
+			DecryptStream(fullname_open, storageIn, *it, storageOut, Decryptor, bDecrypt);
 		}  
 	}
-	bool WordDocument::DecryptStream(std::wstring streamName_open, POLE::Storage * storageIn, std::wstring streamName_create, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor, bool bDecrypt)
+	bool WordDocument::DecryptStream(std::wstring streamName_open, POLE::Storage* storageIn, std::wstring streamName_create, std::shared_ptr<CFCPP::CFStorage> storageOut, CRYPT::Decryptor* Decryptor, bool bDecrypt)
 	{
 		POLE::Stream *stream = new POLE::Stream(storageIn, streamName_open);
 		if (!stream) return false;
@@ -759,7 +754,7 @@ namespace DocFileFormat
 		stream->seek(0);
 		POLE::uint64 size_stream = stream->size();
 		
-		POLE::Stream *streamNew = new POLE::Stream(storageOut, streamName_create, true, size_stream);
+		std::shared_ptr<CFCPP::CFStream> streamNew = storageOut->AddStream(streamName_create);
 		if (!streamNew) return false;
 
 		unsigned char* data_stream = new unsigned char[size_stream];
@@ -794,14 +789,11 @@ namespace DocFileFormat
 		if (data_store)
 			memcpy(data_stream, data_store, size_data_store);
 
-		streamNew->write(data_stream, size_stream);
+		streamNew->Write((char*)data_stream, 0, size_stream);
 
 		RELEASEARRAYOBJECTS(data_store);
 		RELEASEARRAYOBJECTS(data_stream);
 
-		streamNew->flush();
-				
-		delete streamNew;
 		delete stream;
 		
 		return true;
@@ -1037,14 +1029,40 @@ namespace DocFileFormat
 			return encodingChars;
 		}
 	}
-	void WordDocument::CorrectColor(ODRAW::OfficeArtCOLORREF & color)
+	void WordDocument::CorrectColor(ODRAW::OfficeArtCOLORREF & color, int base_color)
 	{
-#if 0
+		struct _color
+		{
+			_color(unsigned char nR, unsigned char  nG, unsigned char  nB)
+			{
+				SetRGB(nR, nG, nB);
+			}
+			_color() {}
+			int				nRGB = 0;
+			std::wstring	sRGB;
+			int				index = -1;
+			bool			bScheme = false;
+
+			void SetRGB(unsigned char nR, unsigned char  nG, unsigned char  nB)
+			{
+				nRGB = (nR << 16) | (nG << 8) | nB;
+				sRGB = STR::toRGB(nR, nG, nB);
+
+				index = -1;
+			}
+
+			unsigned char  GetB() { return (unsigned char)(nRGB); }
+			unsigned char  GetG() { return (unsigned char)(nRGB >> 8); }
+			unsigned char  GetR() { return (unsigned char)(nRGB >> 16); }
+
+			double			opacity = 0;
+		};
+
 		if (false == color.sColorRGB.empty()) return;
 
 		if (color.fSysIndex)
 		{
-			oox::_color sys_color;
+			_color sys_color;
 			_UINT32 nColorCode = color.index;
 
 			unsigned short nParameter = (unsigned short)((nColorCode >> 16) & 0x00ff);  // the HiByte of nParameter is not zero, an exclusive AND is helping :o
@@ -1053,17 +1071,20 @@ namespace DocFileFormat
 			unsigned short nColorIndex = (unsigned short)(nColorCode & 0x00ff);
 			unsigned short nPropColor = 0;
 
-			_UINT32 systemColors[25] = 
+			_UINT32 systemColors[25] =
 			{
 				0xc0c0c0, 0x008080, 0x000080, 0x808080, 0xc0c0c0, 0xffffff, 0x000000,
 				0x000000, 0x000000, 0xffffff, 0xc0c0c0, 0xc0c0c0, 0x808080, 0x000080,
 				0xffffff, 0xc0c0c0, 0x808080, 0x808080, 0x000000, 0xc0c0c0, 0xffffff,
 				0x000000, 0xc0c0c0, 0x000000, 0xffffc0
 			};
-
-			if (nColorIndex < 25)
+			if (nColorIndex == 0xf0)
 			{
-				sys_color.SetRGB((unsigned char)(systemColors[nColorIndex]>>16), (unsigned char)(systemColors[nColorIndex]>>8), (unsigned char)(systemColors[nColorIndex]));
+				sys_color.SetRGB((unsigned char)(base_color), (unsigned char)(base_color >> 8), (unsigned char)(base_color >> 16));
+			}
+			else if (nColorIndex < 25)
+			{
+				sys_color.SetRGB((unsigned char)(systemColors[nColorIndex] >> 16), (unsigned char)(systemColors[nColorIndex] >> 8), (unsigned char)(systemColors[nColorIndex]));
 			}
 			else return;
 
@@ -1091,7 +1112,7 @@ namespace DocFileFormat
 				BYTE B = static_cast<BYTE>((nInvParameter + (nParameter * sys_color.GetB())) >> 8);
 
 				sys_color.SetRGB(R, G, B);
-			}break;			
+			}break;
 			case 0x03:     // add grey level RGB(p,p,p)
 			{
 				short nR = (short)sys_color.GetR() + (short)nParameter;
@@ -1103,7 +1124,7 @@ namespace DocFileFormat
 				if (nB > 0x00ff)	nB = 0x00ff;
 
 				sys_color.SetRGB((BYTE)nR, (BYTE)nG, (BYTE)nB);
-			}break;		
+			}break;
 			case 0x04:     // substract grey level RGB(p,p,p)
 			{
 				short nR = (short)sys_color.GetR() - (short)nParameter;
@@ -1113,7 +1134,7 @@ namespace DocFileFormat
 				if (nG < 0) nG = 0;
 				if (nB < 0) nB = 0;
 				sys_color.SetRGB((BYTE)nR, (BYTE)nG, (BYTE)nB);
-			}	break;		
+			}	break;
 			case 0x05:     // substract from gray level RGB(p,p,p)
 			{
 				short nR = (short)nParameter - (short)sys_color.GetR();
@@ -1123,7 +1144,7 @@ namespace DocFileFormat
 				if (nG < 0) nG = 0;
 				if (nB < 0) nB = 0;
 				sys_color.SetRGB((BYTE)nR, (BYTE)nG, (BYTE)nB);
-			}break;			
+			}break;
 			case 0x06:     // per component: black if < p, white if >= p
 			{
 				BYTE R = sys_color.GetR() < nParameter ? 0x00 : 0xff;
@@ -1131,7 +1152,7 @@ namespace DocFileFormat
 				BYTE B = sys_color.GetB() < nParameter ? 0x00 : 0xff;
 
 				sys_color.SetRGB(R, G, B);
-			}break;			
+			}break;
 			}
 			if (nAdditionalFlags & 0x40)                  // top-bit invert
 				sys_color.SetRGB(sys_color.GetR() ^ 0x80, sys_color.GetG() ^ 0x80, sys_color.GetB() ^ 0x80);
@@ -1149,7 +1170,6 @@ namespace DocFileFormat
 		//		color.sColorRGB = it->second;
 		//	}
 		//}
-#endif
 	}
 
 }

@@ -267,6 +267,13 @@ void ReadAnnot(BYTE* pWidgets, int& i)
 		std::cout << "YES AP, ";
 	else
 		std::cout << "NO AP, ";
+	if (nFlags & (1 << 7))
+	{
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "User ID " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+		i += nPathLength;
+	}
 }
 
 void ReadInteractiveForms(BYTE* pWidgets, int& i)
@@ -821,7 +828,7 @@ void ReadFileAttachment(BYTE* pAnnots, int& i, int n)
 	RELEASEARRAYOBJECTS(res);
 }
 
-void ReadInteractiveFormsFonts(CGraphicsFileDrawing* pGrFile, int nType)
+void ReadInteractiveFormsFonts(CDrawingFile* pGrFile, int nType)
 {
 	BYTE* pFonts = GetInteractiveFormsFonts(pGrFile, nType);
 	int nLength = READ_INT(pFonts);
@@ -884,7 +891,6 @@ void ReadInteractiveFormsFonts(CGraphicsFileDrawing* pGrFile, int nType)
 
 int main(int argc, char* argv[])
 {
-
 	// CHECK SYSTEM FONTS
 	CApplicationFontsWorker oWorker;
 	oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
@@ -924,7 +930,7 @@ int main(int argc, char* argv[])
 	if (!NSFile::CFileBinary::ReadAllBytes(sFilePath, &pFileData, nFileDataLen))
 		return 1;
 
-	CGraphicsFileDrawing* pGrFile = Open(pFileData, (LONG)nFileDataLen, "");
+	CDrawingFile* pGrFile = Open(pFileData, (LONG)nFileDataLen, "");
 	int nError = GetErrorCode(pGrFile);
 
 	if (nError != 0)
@@ -972,8 +978,6 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	free(pInfo);
-
 	// CMAP
 	BYTE* pCMapData = NULL;
 	if (IsNeedCMap(pGrFile))
@@ -985,23 +989,32 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	// RASTER
-	if (true && nPagesCount > 0)
+	int i = nTestPage;
+	for (int i = 0; i < nPagesCount; ++i)
 	{
-		BYTE* res = NULL;
-		res = GetPixmap(pGrFile, nTestPage, nWidth, nHeight, 0xFFFFFF);
+		// RASTER
+		if (true)
+		{
+			nWidth  = READ_INT(pInfo + i * 16 + 12);
+			nHeight = READ_INT(pInfo + i * 16 + 16);
 
-		CBgraFrame oFrame;
-		oFrame.put_Data(res);
-		oFrame.put_Width(nWidth);
-		oFrame.put_Height(nHeight);
-		oFrame.put_Stride(4 * nWidth);
-		oFrame.put_IsRGBA(true);
-		oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
-		oFrame.ClearNoAttack();
+			BYTE* res = NULL;
+			res = GetPixmap(pGrFile, i, nWidth, nHeight, 0xFFFFFF);
 
-		RELEASEARRAYOBJECTS(res);
+			CBgraFrame oFrame;
+			oFrame.put_Data(res);
+			oFrame.put_Width(nWidth);
+			oFrame.put_Height(nHeight);
+			oFrame.put_Stride(4 * nWidth);
+			oFrame.put_IsRGBA(true);
+			oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res/res" + std::to_wstring(i) + L".png", _CXIMAGE_FORMAT_PNG);
+			oFrame.ClearNoAttack();
+
+			RELEASEARRAYOBJECTS(res);
+		}
 	}
+
+	free(pInfo);
 
 	// LINKS
 	if (false && nPagesCount > 0)
@@ -1795,7 +1808,15 @@ int main(int argc, char* argv[])
 			free(pAnnotAP);
 	}
 
+	if (true)
+	{
+		BYTE* pScan = ScanPage(pGrFile, nTestPage, 1);
+		if (pScan)
+			free(pScan);
+	}
+
 	Close(pGrFile);
+	RELEASEARRAYOBJECTS(pFileData);
 	RELEASEARRAYOBJECTS(pCMapData);
 
 	return 0;

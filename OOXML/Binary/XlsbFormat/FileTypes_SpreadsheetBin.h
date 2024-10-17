@@ -112,6 +112,10 @@ namespace OOX
 													L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheRecords",
 													L"pivotCache/pivotCacheRecords", true, true);
 
+			const FileType MetadataBin	(L"", L"metadata.bin",
+													L"application/vnd.ms-excel.sheetMetadata",
+													L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/sheetMetadata");
+
 		} // namespace FileTypes
 	}
 } // namespace OOX

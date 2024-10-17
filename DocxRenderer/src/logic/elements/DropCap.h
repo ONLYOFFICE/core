@@ -1,11 +1,9 @@
-#ifndef DROPCAP_H
-#define DROPCAP_H
-
+#pragma once
 #include "BaseItem.h"
 
 namespace NSDocxRenderer
 {
-	class CDropCap : public COutputObject
+	class CDropCap : public CBaseItem
 	{
 	public:
 		size_t nLines;
@@ -26,5 +24,3 @@ namespace NSDocxRenderer
 		void BuildXml(NSStringUtils::CStringBuilder& oWriter, const std::wstring& wsTag) const;
 	};
 }
-
-#endif // DROPCAP_H

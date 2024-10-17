@@ -81,10 +81,6 @@ namespace MetaFile
 		Close();
 		RELEASEINTERFACE(m_pFontManager);
 	}
-	void CMetaFile::SetImageSize(int nWidth, int nHeight)
-	{
-		// for meta with empty size
-	}
 
 	std::wstring CMetaFile::ConvertToSvg(unsigned int unWidth, unsigned int unHeight)
 	{
@@ -527,31 +523,31 @@ namespace MetaFile
 		#ifdef METAFILE_SUPPORT_WMF_EMF
 			case c_lMetaWmf:
 			{
-				TRectL* pRect = m_oWmfFile.GetBounds();
-				*pdX = pRect->Left;
-				*pdY = pRect->Top;
-				*pdW = pRect->Right - pRect->Left;
-				*pdH = pRect->Bottom - pRect->Top;
+				const TRectL& oRect{m_oWmfFile.GetBounds()};
+				*pdX = oRect.Left;
+				*pdY = oRect.Top;
+				*pdW = oRect.Right  - oRect.Left;
+				*pdH = oRect.Bottom - oRect.Top;
 				break;
 			}
 			case c_lMetaEmf:
 			{
-				TRectL* pRect = m_oEmfFile.GetBounds();
-				*pdX = pRect->Left;
-				*pdY = pRect->Top;
-				*pdW = pRect->Right - pRect->Left;
-				*pdH = pRect->Bottom - pRect->Top;
+				const TRectL& oRect{m_oEmfFile.GetBounds()};
+				*pdX = oRect.Left;
+				*pdY = oRect.Top;
+				*pdW = oRect.Right  - oRect.Left;
+				*pdH = oRect.Bottom - oRect.Top;
 				break;
 			}
 		#endif
 		#ifdef METAFILE_SUPPORT_SVM
 			case c_lMetaSvm:
 			{
-				TRectL* pRect = m_oSvmFile.GetBounds();
-				*pdX = pRect->Left;
-				*pdY = pRect->Top;
-				*pdW = pRect->Right - pRect->Left;
-				*pdH = pRect->Bottom - pRect->Top;
+				const TRectL& oRect{m_oSvmFile.GetBounds()};
+				*pdX = oRect.Left;
+				*pdY = oRect.Top;
+				*pdW = oRect.Right  - oRect.Left;
+				*pdH = oRect.Bottom - oRect.Top;
 
 				if (*pdW > 10000 || *pdH > 10000)
 				{

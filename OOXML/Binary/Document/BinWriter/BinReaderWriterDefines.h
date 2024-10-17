@@ -35,9 +35,6 @@ namespace BinDocxRW
 {
 const double eps     = 0.001;
 
-const int border_None   = 0x0000;
-const int border_Single = 0x0001;
-
 const int align_Right   = 0;
 const int align_Left    = 1;
 const int align_Center  = 2;
@@ -358,7 +355,9 @@ extern int g_nCurFormatVersion;
 		SuppressLineNumbers = 44,
 		CnfStyle = 45,
 		SnapToGrid = 46,
-		Bidi = 47
+		Bidi = 47,
+		Spacing_AfterLines = 48,
+		Spacing_BeforeLines = 49
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{
@@ -479,7 +478,8 @@ extern int g_nCurFormatVersion;
 		footnotePr = 10,
 		endnotePr = 11,
 		rtlGutter = 12,
-		lnNumType = 13
+		lnNumType = 13,
+		docGrid = 14
 	};}
 	namespace c_oSerProp_secPrSettingsType{enum c_oSerProp_secPrSettingsType
 	{
@@ -760,7 +760,8 @@ extern int g_nCurFormatVersion;
 		Value = 3,
 		ColorTheme = 4,
 		SpacePoint = 5,
-		Size8Point = 6
+		Size8Point = 6,
+		ValueType = 7
 	};}
 	namespace c_oSerShdType{enum c_oSerShdType
 	{
@@ -883,7 +884,13 @@ extern int g_nCurFormatVersion;
 		AutoHyphenation = 21,
 		HyphenationZone = 22,
 		DoNotHyphenateCaps = 23,
-		ConsecutiveHyphenLimit = 24
+		ConsecutiveHyphenLimit = 24,
+		DrawingGridHorizontalOrigin = 25,
+		DrawingGridHorizontalSpacing = 26,
+		DrawingGridVerticalOrigin = 27,
+		DrawingGridVerticalSpacing = 28,
+		DisplayHorizontalDrawingGridEvery = 29,
+		DisplayVerticalDrawingGridEvery = 30
 	};}
 	namespace c_oSer_MathPrType{enum c_oSer_SettingsType
 	{
@@ -1054,7 +1061,20 @@ extern int g_nCurFormatVersion;
 		MoveFromRangeStart = 68,
 		MoveFromRangeEnd = 69,
 		MoveToRangeStart = 70,
-		MoveToRangeEnd = 71
+		MoveToRangeEnd = 71,
+		AnnotationRef = 72,
+		CommentReference = 73,
+		ContentPart = 74,
+		Cr = 75,
+		EndnoteRef = 76,
+		EndnoteReference = 77,
+		FootnoteRef = 78,
+		FootnoteReference = 79,
+		LastRenderedPageBreak = 80,
+		NoBreakHyphen = 81,
+		SoftHyphen = 82,
+		Sym = 83,
+		Tab = 84
 	};}
 	namespace c_oSer_FramePrType{ enum c_oSer_FramePrType
 	{		
@@ -1126,6 +1146,12 @@ extern int g_nCurFormatVersion;
 		ColumnSpace = 5,
 		ColumnW = 6
 	};}
+	namespace c_oSerProp_DocGrid {enum c_oSerProp_DocGrid
+	{
+		Type = 0,
+		CharSpace = 1,
+		LinePitch = 2
+	};}	
 	namespace c_oSerPageBorders{enum c_oSerPageBorders
 	{
 		Display = 0,
@@ -1264,6 +1290,7 @@ extern int g_nCurFormatVersion;
 		PictureFormPrRespectBorders = 63,
 		PictureFormPrShiftX = 64,
 		PictureFormPrShiftY = 65,
+		PictureFormPrSignature = 66,
 		FormPrBorder = 70,
 		FormPrShd = 71,
 		TextFormPrCombWRule = 72,

@@ -222,6 +222,7 @@ bool DocxConverter::convertDocument()
 
 	convert_settings(); 
 	convert_meta(app, core);
+	convert_customs(docx_document);
 
 	convert_document();
 
@@ -872,6 +873,9 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 				list_style_name = odt_context->styles_context()->lists_styles().get_style_name(list_style_id); 
 				odt_context->styles_context()->last_state()->set_list_style_name(list_style_name);
 			}
+			
+			if(oox_paragraph->m_oParagraphProperty)
+				convert(oox_paragraph->m_oParagraphProperty->m_oRPr.GetPointer(), text_properties);
 		}
 		if (odt_context->in_drop_cap())
 		{
@@ -1952,7 +1956,14 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty* oox_section_pr, bool b
 		}
 		if (top)
 		{
-			double length_cm = top->get_value_unit(length::cm) - (header ? header->get_value_unit(length::cm) : 0);
+			double length_cm = top->get_value_unit(length::cm);
+			
+			if (header)
+			{
+				double header_length_cm = header->get_value_unit(length::cm);
+				if (abs(length_cm - header_length_cm) > 0.001)
+					length_cm -= header_length_cm;
+			}
 
 			if (length_cm > 2.4)
 			{
@@ -1963,6 +1974,15 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty* oox_section_pr, bool b
 			{
 				header_min = length(-length_cm, length::cm);
 				header.reset();
+			}
+			else if (length_cm < 0.)
+			{
+				header_min = length(-length_cm, length::cm);
+				header.reset();
+			}
+			else
+			{
+				top = length(length_cm, length::cm);
 			}
 		}
 		else
@@ -3570,6 +3590,57 @@ void DocxConverter::convert_settings()
 
 	if (settings->m_oWriteProtection.IsInit())
 	{
+		std::wstring algorithm, crypt;
+
+		if (settings->m_oWriteProtection->m_oAlgorithmName.IsInit()) algorithm = settings->m_oWriteProtection->m_oAlgorithmName->ToString();
+		else if (settings->m_oWriteProtection->m_oCryptAlgorithmSid.IsInit())
+		{
+			switch (*settings->m_oWriteProtection->m_oCryptAlgorithmSid)
+			{
+			case 1: algorithm = L"MD2"; break;
+			case 2: algorithm = L"MD4"; break;
+			case 3: algorithm = L"MD5"; break;
+			case 4: algorithm = L"SHA-1"; break;
+			case 5: algorithm = L"MAC"; break;
+			case 6: algorithm = L"RIPEMD"; break;
+			case 7: algorithm = L"RIPEMD-160"; break;
+			case 9: algorithm = L"HMAC"; break;
+			case 12: algorithm = L"SHA-256"; break;
+			case 13: algorithm = L"SHA-386"; break;
+			case 14: algorithm = L"SHA-512"; break;
+			}
+		}
+		if (settings->m_oWriteProtection->m_oCryptProviderType.IsInit()) crypt = settings->m_oWriteProtection->m_oCryptProviderType->ToString();
+
+		odt_context->settings_context()->set_modify_info(crypt, algorithm, settings->m_oWriteProtection->m_sSaltValue.get_value_or(L""),
+			settings->m_oWriteProtection->m_sHashValue.get_value_or(L""), settings->m_oWriteProtection->m_oSpinCount.get_value_or(1));
+	}
+	if (settings->m_oDocumentProtection.IsInit())
+	{
+		std::wstring algorithm, crypt;
+
+		if (settings->m_oDocumentProtection->m_oAlgorithmName.IsInit()) algorithm = settings->m_oDocumentProtection->m_oAlgorithmName->ToString();
+		else if (settings->m_oDocumentProtection->m_oCryptAlgorithmSid.IsInit())
+		{
+			switch (*settings->m_oDocumentProtection->m_oCryptAlgorithmSid)
+			{
+			case 1: algorithm = L"MD2"; break;
+			case 2: algorithm = L"MD4"; break;
+			case 3: algorithm = L"MD5"; break;
+			case 4: algorithm = L"SHA-1"; break;
+			case 5: algorithm = L"MAC"; break;
+			case 6: algorithm = L"RIPEMD"; break;
+			case 7: algorithm = L"RIPEMD-160"; break;
+			case 9: algorithm = L"HMAC"; break;
+			case 12: algorithm = L"SHA-256"; break;
+			case 13: algorithm = L"SHA-386"; break;
+			case 14: algorithm = L"SHA-512"; break;
+			}
+		}		
+		if (settings->m_oDocumentProtection->m_oCryptProviderType.IsInit()) crypt = settings->m_oDocumentProtection->m_oCryptProviderType->ToString();
+
+		odt_context->settings_context()->set_modify_info(crypt, algorithm, settings->m_oDocumentProtection->m_sSaltValue.get_value_or(L""),
+			settings->m_oDocumentProtection->m_sHashValue.get_value_or(L""), settings->m_oDocumentProtection->m_oSpinCount.get_value_or(1));
 	}
 	if (settings->m_oZoom.IsInit())
 	{

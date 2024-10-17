@@ -516,6 +516,7 @@ namespace OOX
 			nullable_bool m_oRespectBorders;
 			nullable_double m_oShiftX;
 			nullable_double m_oShiftY;
+			nullable_bool m_oSignature;
 		};
 
 		//--------------------------------------------------------------------------------

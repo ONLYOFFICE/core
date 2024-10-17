@@ -193,7 +193,9 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 					{
 						//std::wstring str_spans = std::to_wstring(Context.get_table_context().state()->group_row_.count);
 						//str_spans = str_spans + L":";
-						std::wstring str_spans = L"1:" + std::to_wstring(Context.get_table_context().columns_count());
+						int columns = Context.get_table_context().columns_count();
+						if (columns > 0x4000) columns = 0x4000;
+						std::wstring str_spans = L"1:" + std::to_wstring(columns);
 						ht = L"";
 
 						CP_XML_ATTR(L"collapsed", Context.get_table_context().state()->group_rows_.back());
@@ -333,8 +335,8 @@ void table_table_row_group::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    const std::wstring tableStyleName	= attlist_.table_style_name_.get_value_or(L"");
-    const std::wstring tableName		= attlist_.table_name_.get_value_or(L"");
+    std::wstring tableStyleName	= attlist_.table_style_name_.get_value_or(L"");
+    std::wstring tableName		= attlist_.table_name_.get_value_or(L"");
 
     _CP_LOG << L"[info][xlsx] process table \"" << tableName << L"\"\n" << std::endl;
 
@@ -343,16 +345,30 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 		office_forms_->xlsx_convert(Context);
 	}
 
+	std::wstring externalRef;
+	std::wstring externalRef2;
+
 	if (table_table_source_)
 	{
 		table_table_source* table_source = dynamic_cast<table_table_source*>( table_table_source_.get() );
 		if ( table_source)
 		{
-			if (table_source->table_linked_source_attlist_.xlink_attlist_.href_)return;
-		} 
+			if (table_source->table_linked_source_attlist_.xlink_attlist_.href_)
+			{
+				externalRef = *table_source->table_linked_source_attlist_.xlink_attlist_.href_;
+			}
+			if (table_source->attlist_.table_table_name_)
+			{
+				externalRef2 = tableName; // - used in formula 
+				tableName = *table_source->attlist_.table_table_name_;  // - only link to file
 
+				size_t pos = externalRef2.find(L"#");
+				if (pos != std::wstring::npos) externalRef2 = externalRef2.substr(0, pos);
+				XmlUtils::replace_all(externalRef2, L"'", L"");
+			}
+		}
 	}
-    Context.start_table(tableName, tableStyleName);
+    Context.start_table(tableName, tableStyleName, externalRef2);
 
 	if (attlist_.table_protected_)
 	{
@@ -697,7 +713,9 @@ std::wstring CalcCellDataStyle(oox::xlsx_conversion_context & Context,
 
 void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    std::wostream & strm = Context.current_sheet().sheetData();
+	bool bExternalTable = !Context.current_sheet().external_ref().empty();
+	
+	std::wostream & strm = Context.current_sheet().sheetData();
     
 	const common_value_and_type_attlist & attr	= attlist_.common_value_and_type_attlist_;
 	std::wstring formula = attlist_.table_formula_.get_value_or(L"");
@@ -922,30 +940,34 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 		num_format.clear();
 		num_format_type = office_value_type::String;
    }
-//----------------------------------------------------------------------------------------------------------------------------------
-    oox::xlsx_cell_format cellFormat;
-    
-	cellFormat.set_cell_type(xlsx_value_type);
-    cellFormat.set_num_format(oox::odf_string_to_build_in(odf_value_type));
-    
+ //----------------------------------------------------------------------------------------------------------------------------------
 	bool is_style_visible = (!cellStyleName.empty() || defaultColumnCellStyle || !num_format.empty()) ? true : false;
+
+	if (is_AligmentWrap_)
+	{
+	   is_style_visible = true;
+	   cellFormatProperties.fo_wrap_option_ = odf_types::wrap_option::Wrap;
+	}
+	if (bExternalTable)
+	{
+		is_style_visible = false;
+		xlsx_value_type = oox::XlsxCellType::str;
+	}
+	oox::xlsx_cell_format cellFormat;    
+	cellFormat.set_cell_type(xlsx_value_type);
+    cellFormat.set_num_format(oox::odf_string_to_build_in(odf_value_type));    
 
 	bool is_data_visible = ( false == content_.elements_.empty() ||
 		attlist_.table_content_validation_name_ || !formula.empty() || !number_val.empty() || str_val || bool_val );
 
-	if (attlist_.table_number_columns_repeated_ < 199 && last_cell_)	last_cell_ = false;
+	if (attlist_.table_number_columns_repeated_ < 199 && last_cell_) last_cell_ = false;
 	
-	int cell_repeated_max = Context.current_table_column() + attlist_.table_number_columns_repeated_ + 1;
+	unsigned int cell_repeated_max = Context.current_table_column() + attlist_.table_number_columns_repeated_ + 1;
 
 	if (cell_repeated_max >= 1024 && cellStyleName.empty() && last_cell_ && !is_data_visible)
 	{//Book 24.ods
 		return;
 	}  
-	if (is_AligmentWrap_)
-	{
-		is_style_visible = true;
-		cellFormatProperties.fo_wrap_option_ = odf_types::wrap_option::Wrap;
-	}
 	size_t	xfId_last_set = 0;
 	if (is_style_visible)
 	{
@@ -970,12 +992,22 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	for (unsigned int r = 0; r < attlist_.table_number_columns_repeated_; ++r)
     {
-        Context.start_table_cell (	formula,	attlist_extra_.table_number_columns_spanned_	- 1 ,
-												attlist_extra_.table_number_rows_spanned_		- 1	);
+        Context.start_table_cell (	attlist_extra_.table_number_columns_spanned_	- 1 ,
+									attlist_extra_.table_number_rows_spanned_		- 1	);
 		if (is_style_visible)
 			Context.set_current_cell_style_id(xfId_last_set);
 //---------------------------------------------------------------------------------------------------------	
-		sharedStringId = content_.xlsx_convert(Context, textFormatProperties, need_cache_convert);
+		if (bExternalTable)
+		{
+			std::wstringstream str;
+			content_.text_to_stream(str);
+			str_val = str.str();
+		}
+		else
+		{
+			sharedStringId = content_.xlsx_convert(Context, textFormatProperties, need_cache_convert);
+		}
+
 
 		if (xlsx_value_type == oox::XlsxCellType::str || xlsx_value_type == oox::XlsxCellType::inlineStr)
 		{
@@ -1013,16 +1045,19 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 			}   
 			CP_XML_WRITER(strm)
             {
-                CP_XML_NODE(L"c")
+                CP_XML_NODE(bExternalTable ? L"cell" : L"c")
                 {
                     CP_XML_ATTR(L"r", ref);
 					
-					CP_XML_ATTR(L"s", xfId_last_set);
+					if (false == bExternalTable)
+					{
+						CP_XML_ATTR(L"s", xfId_last_set);
+					}
 
 					std::wstring type = oox::cellType2Str(xlsx_value_type);
                     if (false == type.empty()) CP_XML_ATTR(L"t", type);                    
 
-                    if (!formula.empty())
+                    if (false == bExternalTable && false == formula.empty())
                     {
                         const std::wstring xlsxFormula = formulas_converter.convert(formula);
                         if (!xlsxFormula.empty())
@@ -1090,6 +1125,8 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
+	bool bExternalTable = !Context.current_sheet().external_ref().empty();
+
     std::wostream & strm = Context.current_sheet().sheetData();
     
 	const common_value_and_type_attlist & attr	= attlist_.common_value_and_type_attlist_;
@@ -1159,9 +1196,9 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
             instances.push_back(cellStyle);
     }
 
-    text_format_properties_ptr	textFormatProperties	= calc_text_properties_content		(instances);          
-	paragraph_format_properties			parFormatProperties		= calc_paragraph_properties_content	(instances);
-    style_table_cell_properties_attlist cellFormatProperties	= calc_table_cell_properties		(instances);
+    text_format_properties_ptr textFormatProperties	= calc_text_properties_content (instances);          
+	paragraph_format_properties parFormatProperties = calc_paragraph_properties_content	(instances);
+    style_table_cell_properties_attlist cellFormatProperties = calc_table_cell_properties (instances);
 
 	if (attr.office_value_type_)
 		odf_value_type = attr.office_value_type_->get_type();
@@ -1264,14 +1301,18 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
 			}
 		}
     }
-
-    oox::xlsx_cell_format cellFormat;
+	is_style_visible = (!cellStyleName.empty() || defaultColumnCellStyle) ? true : false;
     
+	if (bExternalTable)
+	{
+		is_style_visible = false;
+		xlsx_value_type = oox::XlsxCellType::inlineStr;
+	}	
+	
+    oox::xlsx_cell_format cellFormat;
 	cellFormat.set_cell_type(xlsx_value_type);
     cellFormat.set_num_format(oox::odf_string_to_build_in(odf_value_type));
-    
-	is_style_visible = (!cellStyleName.empty() || defaultColumnCellStyle) ? true : false;
-
+	
 	if ( content_.elements_.size() > 0	|| attlist_.table_content_validation_name_ || 
 		!formula.empty()	||
 		(	xlsx_value_type == oox::XlsxCellType::n										&& !number_val.empty()) || 
@@ -1308,7 +1349,7 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
 		if (xlsx_value_type == oox::XlsxCellType::str && sharedStringId >= 0)
 			xlsx_value_type = oox::XlsxCellType::s;//в случае текста, если он есть берем кэшированное значение
 			
-		if (skip_next_cell)break;
+		if (skip_next_cell) break;
 
         // пустые ячейки пропускаем.
         if ( is_data_visible || ((cellStyle || defaultColumnCellStyle) && is_style_visible))

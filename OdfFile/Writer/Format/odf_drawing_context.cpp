@@ -201,6 +201,7 @@ struct odf_drawing_state
 		
 		presentation_class_ = boost::none;
 		presentation_placeholder_id_ = boost::none;
+		placeholder_replacing = false;
 
 		rotateAngle_		= boost::none;
 		text_rotateAngle_	= boost::none;
@@ -249,6 +250,7 @@ struct odf_drawing_state
 	
 	_CP_OPT(presentation_class)	presentation_class_;
 	_CP_OPT(std::wstring)		presentation_placeholder_id_;
+	bool						placeholder_replacing;
 
 	std::wstring				program_;
 	std::wstring				replacement_;
@@ -294,6 +296,7 @@ public:
 		is_header_		= false;
 		is_footer_		= false;
 		is_background_	= false;
+		placeholder_replacing = false;
 	  //некоторые свойства для объектов графики не поддерживаюися в редакторах Libre && OpenOffice.net
 									//в MS Office и в нашем - проблем таких нет.
 	} 
@@ -309,6 +312,7 @@ public:
 	bool			is_footer_;
 	bool			is_header_;
 	bool			is_background_;
+	bool			placeholder_replacing;
 	_CP_OPT(int)	is_presentation_;
 
 	void				create_draw_base(eOdfDrawElements type);
@@ -1515,6 +1519,7 @@ void odf_drawing_context::set_placeholder_type (int val)
 		case 13:	impl_->current_drawing_state_.presentation_class_ = presentation_class::subtitle;	break;
 		case 14:	impl_->current_drawing_state_.presentation_class_ = presentation_class::table;		break;
 		case 15:	impl_->current_drawing_state_.presentation_class_ = presentation_class::title;		break;
+		case 16:	impl_->current_drawing_state_.presentation_class_ = presentation_class::body;		break;
 		default:		
 			impl_->current_drawing_state_.presentation_class_ = presentation_class::outline; 			break;
 	}
@@ -1642,6 +1647,13 @@ void odf_drawing_context::set_z_order(int id)
 	//}
 
 	impl_->current_drawing_state_.z_order_ = id + 1;
+}
+int odf_drawing_context::get_formulas_count()
+{
+	if (!impl_->current_drawing_state_.oox_shape_)
+		return 0;
+
+	return impl_->current_drawing_state_.oox_shape_->equations.size();
 }
 void odf_drawing_context::set_path(std::wstring path_string)
 {
@@ -2585,18 +2597,47 @@ void odf_drawing_context::set_paragraph_properties(paragraph_format_properties *
 			}
 			else
 			{
-				//??? find by name
+				/// find by name
+				if (!draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_->empty())
+				{
+					style* found_style;
+
+					impl_->styles_context_->find_odf_style(
+						*draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_,
+						odf_types::style_family::Paragraph,
+						found_style);
+
+					if (found_style)
+						impl_->current_paragraph_properties = found_style->content_.add_get_style_paragraph_properties();
+				}
 			}
 		}
 	}
 	if (impl_->current_paragraph_properties && paragraph_properties)
-		impl_->current_paragraph_properties ->apply_from(*paragraph_properties);
+		impl_->current_paragraph_properties->apply_from(*paragraph_properties);
 }
 void odf_drawing_context::set_graphic_properties(style_graphic_properties *graphic_properties)
 {
 	if (impl_->current_graphic_properties && graphic_properties)
 		impl_->current_graphic_properties->apply_from(graphic_properties->content_);
 }
+
+void odf_drawing_context::set_graphic_properties(graphic_format_properties* graphic_properties)
+{
+	if (impl_->current_graphic_properties && graphic_properties)
+		impl_->current_graphic_properties->apply_from(*graphic_properties);
+}
+
+void odf_drawing_context::placeholder_replacing(bool replacing)
+{
+	impl_->current_drawing_state_.placeholder_replacing = replacing;
+}
+
+bool odf_drawing_context::placeholder_replacing()
+{
+	return impl_->current_drawing_state_.placeholder_replacing;
+}
+
 graphic_format_properties* odf_drawing_context::get_graphic_properties()
 {
 	return impl_->current_graphic_properties;

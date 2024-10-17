@@ -246,6 +246,7 @@ public:
 
 	std::wstring meta_name_;
  	std::wstring content_;
+	_CP_OPT(odf_types::office_value_type) meta_value_type_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );

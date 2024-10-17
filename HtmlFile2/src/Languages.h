@@ -81,4 +81,11 @@ static std::wstring IndentifyLanguage(std::wstring wsLanguage)
 	return std::wstring();
 }
 
+static bool ConsistsChineseCharacters(std::wstring wsLanguage)
+{
+	std::transform(wsLanguage.begin(), wsLanguage.end(), wsLanguage.begin(), towlower);
+
+	return L"zh" == wsLanguage || L"ja" == wsLanguage || L"ko" == wsLanguage;
+}
+
 #endif // LANGUAGES_LIST_H

@@ -138,16 +138,41 @@ void xlsx_conversion_context::end_document()
 
 	if (sheets_.empty())
 	{ // owncloud new document  ... oO
-		start_table(L"Sheet1", L"");
+		start_table(L"Sheet1", L"", L"");
 		current_sheet().cols() << L"<col min=\"1\" max=\"1024\" width=\"11.6\" customWidth=\"0\"/>";
 		end_table();
 	}
 
+	std::map<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>> map_external_sheets;
+
+	int sheet_id = 1;
 	for (size_t i = 0; i < sheets_.size(); i++)
     {
 		xlsx_xml_worksheet_ptr& sheet = sheets_[i];
+
+		std::wstring external_ref = sheet->external_ref();
+
+		if (false == external_ref.empty())
+		{
+			std::wstringstream external_content;
+			sheet->write_external_to(external_content);
+
+			std::map<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>::iterator pFind = map_external_sheets.find(external_ref);
+			if (pFind != map_external_sheets.end())
+			{
+
+				pFind->second.push_back(std::make_pair(sheet->name(), external_content.str()));
+			}
+			else
+			{
+				std::vector<std::pair<std::wstring, std::wstring>> ext_sheet;
+				ext_sheet.push_back(std::make_pair(sheet->name(), external_content.str()));
+				map_external_sheets.insert(std::make_pair(sheet->external_ref(), ext_sheet));
+			}
+			continue;
+		}
 		
-		const std::wstring id = std::wstring(L"sId") + std::to_wstring(i + 1);
+		const std::wstring id = std::wstring(L"sId") + std::to_wstring(sheet_id++);
 
         package::sheet_content_ptr content = package::sheet_content::create();
  ////////////////////////////////////////////////////////////////////////////////////////////       
@@ -299,10 +324,39 @@ void xlsx_conversion_context::end_document()
 									CP_XML_NODE(L"externalLink")
 									{
 										CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+										CP_XML_ATTR(L"xmlns:mc", L"http://schemas.openxmlformats.org/markup-compatibility/2006");
+										
 										CP_XML_NODE(L"externalBook")
 										{
 											CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 											CP_XML_ATTR(L"r:id", L"rId1");
+											
+											std::map<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>::iterator pFind = map_external_sheets.find(it->first);
+
+											if (pFind != map_external_sheets.end())
+											{
+												CP_XML_NODE(L"sheetNames")
+												{
+													for (auto ex : pFind->second)
+													{
+														CP_XML_NODE(L"sheetName")
+														{
+															CP_XML_ATTR(L"val", ex.first);
+														}
+													}
+												}
+												CP_XML_NODE(L"sheetDataSet")
+												{
+													for (size_t x = 0; x < pFind->second.size(); ++x)
+													{
+														CP_XML_NODE(L"sheetData")
+														{
+															CP_XML_ATTR(L"sheetId", x);
+															CP_XML_STREAM() << pFind->second[x].second;
+														}
+													}
+												}
+											}
 										}
 									}
 								}
@@ -409,7 +463,7 @@ void xlsx_conversion_context::serialize_bookViews(std::wostream & strm)
 					{
 						for (size_t i = 0; i < sheets_.size(); i++)
 						{
-							if (sheets_[i]->name() == *sActiveTable)
+							if (false == sheets_[i]->external_ref().empty() && sheets_[i]->name() == *sActiveTable)
 							{
 								CP_XML_ATTR(L"activeTab", i);
 							}
@@ -474,23 +528,31 @@ int xlsx_conversion_context::find_sheet_by_name(std::wstring tableName)
 	}
 	for (size_t i = 0; i < sheets_.size(); i++)
 	{
-		if (sheets_[i]->name() == tableName)
+		if (false == sheets_[i]->external_ref().empty() && sheets_[i]->name() == tableName)
 			return i;
 	}
 	return -1;
 }
 
-bool xlsx_conversion_context::start_table(std::wstring tableName, std::wstring tableStyleName)
+bool xlsx_conversion_context::start_table(const std::wstring& tableName, const std::wstring& tableStyleName, const std::wstring& externalRef)
 {
-	get_table_context().start_table(tableName, tableStyleName, sheets_.size() - 1);
+	get_table_context().start_table(tableName, tableStyleName, sheets_.size());
 
-    sheets_.push_back(xlsx_xml_worksheet::create(tableName, get_table_context().state()->get_table_hidden()));
+    sheets_.push_back(xlsx_xml_worksheet::create(tableName, get_table_context().state()->get_table_hidden(), externalRef));
 	current_sheet().cols() << L"<cols>";
-    return true;
+
+	return true;
 }
 
 void xlsx_conversion_context::end_table()
 {
+	const std::wstring external_ref = current_sheet().external_ref();
+
+	if (false == external_ref.empty())
+	{
+		return;
+	}
+
     const double lastWidht = table_column_last_width();
     if (lastWidht > 0.0)
     {
@@ -587,20 +649,7 @@ void xlsx_conversion_context::end_table()
     }    
     get_table_context().end_table();
 }
-//int xlsx_conversion_context::add_external_link(const std::wstring & external)
-//{
-//	std::unordered_map<std::wstring, int>::iterator pFind = mapExternalLink_.find(external);
-//	if ( pFind == mapExternalLink_.end())
-//	{
-//		int id = (int)mapExternalLink_.size() + 1;
-//		mapExternalLink_.insert(std::make_pair(external, id));
-//		return id;
-//	}
-//	else
-//	{
-//		return pFind->second;
-//	}
-//}
+
 void xlsx_conversion_context::add_control_props(const std::wstring & rid, const std::wstring & target, const std::wstring & props)
 {
 	if (rid.empty()) return;
@@ -691,9 +740,9 @@ void xlsx_conversion_context::end_span()
 	get_text_context()->end_span();
 }
 
-void xlsx_conversion_context::start_table_cell(const std::wstring & formula, size_t columnsSpanned, size_t rowsSpanned)
+void xlsx_conversion_context::start_table_cell(size_t columnsSpanned, size_t rowsSpanned)
 {
-    get_table_context().start_cell(formula, columnsSpanned, rowsSpanned);
+    get_table_context().start_cell(columnsSpanned, rowsSpanned);
 }
 
 bool xlsx_conversion_context::in_table_cell()

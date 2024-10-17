@@ -258,8 +258,8 @@ int CELLTABLE::serialize(std::wostream & stream)
 							if (xf < global_info_->cellXfs_count && xf >= 0)
 							{
 								CP_XML_ATTR(L"s", xf);
-								CP_XML_ATTR(L"customFormat", true);
 							}
+							CP_XML_ATTR(L"customFormat", true);
 						}
 						if (row->miyRw > 0 && row->miyRw < 0x8000 && row->bValid &&
 							((row->fUnsynced && row->fGhostDirty) || !row->fGhostDirty))

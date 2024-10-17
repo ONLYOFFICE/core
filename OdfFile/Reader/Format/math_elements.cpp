@@ -112,13 +112,6 @@ void math_semantics::oox_convert(oox::math_context &Context, int iTypeConversion
         StarMath::CParserStarMathString parser;
         StarMath::CConversionSMtoOOXML converter;
        
-        // базовые свойства шрифта для математики
-        /*parser.set*/ /*?*/ /*converter.set*/ Context.base_font_name_;
-        /*parser.set*/ /*?*/ /*converter.set*/ Context.base_font_size_;
-        /*parser.set*/ /*?*/ /*converter.set*/ Context.base_alignment_;
-        /*parser.set*/ /*?*/ /*converter.set*/ Context.base_font_italic_;
-        /*parser.set*/ /*?*/ /*converter.set*/ Context.base_font_bold_;
-
         parser.SetBaseFont(Context.base_font_name_);
         parser.SetBaseSize(Context.base_font_size_);
         parser.SetBaseAlignment(Context.base_alignment_);
@@ -127,7 +120,15 @@ void math_semantics::oox_convert(oox::math_context &Context, int iTypeConversion
 
         /*result = */converter.StartConversion(parser.Parse(annotation_text,iTypeConversion),parser.GetAlignment());
 
+        auto sizes = parser.GetFormulaSize();
 
+        for (;!sizes.empty(); sizes.pop())
+        {
+            if (sizes.front().m_iWidth > Context.width)
+                Context.width = sizes.front().m_iWidth;
+
+            Context.height += sizes.front().m_iHeight;
+        }
         Context.output_stream() << converter.GetOOXML();
     }
 

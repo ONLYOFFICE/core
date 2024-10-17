@@ -1,5 +1,7 @@
 #include "Document.h"
 
+#include "../../../DesktopEditor/common/StringExt.h"
+
 #ifndef DISABLE_FULL_DOCUMENT_CREATION
 #include "./../resources/resources.h"
 #endif
@@ -7,7 +9,7 @@
 namespace NSDocxRenderer
 {
 	CDocument::CDocument(IRenderer* pRenderer, NSFonts::IApplicationFonts* pFonts) :
-		m_pAppFonts(pFonts), m_oCurrentPage(pFonts), m_oFontManager(pFonts), m_oFontSelector(pFonts)
+		m_pAppFonts(pFonts), m_oCurrentPage(), m_oFontManager(pFonts), m_oFontSelector(pFonts)
 	{
 		m_oSimpleGraphicsConverter.SetRenderer(pRenderer);
 	}
@@ -283,6 +285,33 @@ namespace NSDocxRenderer
 
 		return S_OK;
 	}
+	HRESULT CDocument::BrushBounds(const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight)
+	{
+		m_oBrush.Bounds.left = dLeft;
+		m_oBrush.Bounds.top = dTop;
+		m_oBrush.Bounds.right = dLeft + dWidth;
+		m_oBrush.Bounds.bottom = dTop + dHeight;
+		return S_OK;
+	}
+	HRESULT CDocument::put_BrushGradientColors(LONG* pColors, double* pPositions, LONG lCount)
+	{
+		m_oBrush.m_arrSubColors.clear();
+		for (LONG i = 0; i < lCount; ++i)
+		{
+			NSStructures::CBrush::TSubColor color;
+			color.color = pColors[i];
+			color.position = (long)(pPositions[i] * 65536);
+			m_oBrush.m_arrSubColors.push_back(color);
+		}
+		return S_OK;
+	}
+	HRESULT CDocument::put_BrushGradInfo(void* pGradInfo)
+	{
+		m_oBrush.m_oGradientInfo = *((NSStructures::GradientInfo*)pGradInfo);
+		m_oBrush.m_oGradientInfo.transform(m_oTransform);
+		m_oCurrentPage.m_bIsGradient = true;
+		return S_OK;
+	}
 	// font -------------------------------------------------------------------------------------
 	HRESULT CDocument::get_FontName(std::wstring* sName)
 	{
@@ -521,31 +550,29 @@ namespace NSDocxRenderer
 		if (c_nPageType == lType && m_bIsDisablePageCommand)
 			return S_OK;
 
-		m_lCurrentCommandType = (LONG)lType;
+		m_lCurrentCommandType = static_cast<LONG>(lType);
 		m_oCurrentPage.BeginCommand(lType);
 
 		return S_OK;
 	}
 	HRESULT CDocument::EndCommand(DWORD lType)
 	{
-		if (c_nPageType == lType && m_bIsDisablePageCommand)
-			return S_OK;
-
-		m_lCurrentCommandType = -1;
-		m_oCurrentPage.m_lCurrentCommand = m_lCurrentCommandType;
-
-		if (c_nPageType == lType)
+		if (lType == c_nPageType)
 		{
+			if (m_bIsDisablePageCommand)
+				return S_OK;
+
+			m_lCurrentCommandType = -1;
+			m_oCurrentPage.m_lCurrentCommand = m_lCurrentCommandType;
+
 			auto pWriter = new NSStringUtils::CStringBuilder();
 			pWriter->AddSize(100000);
 			m_oCurrentPage.Analyze();
 			m_oCurrentPage.Record(*pWriter, m_lPageNum >= m_lNumberPages - 1);
 			m_mapXmlString[m_lPageNum] = pWriter;
 		}
-		else if (c_nPathType == lType)
-		{
-			m_oCurrentPage.PathEnd();
-		}
+		else
+			m_oCurrentPage.EndCommand(lType);
 
 		return S_OK;
 	}
@@ -628,19 +655,14 @@ namespace NSDocxRenderer
 	HRESULT CDocument::DrawPath(long nType)
 	{
 		std::shared_ptr<CImageInfo> pInfo = nullptr;
-
 		if ((nType > 0xFF) && (c_BrushTypeTexture == m_oBrush.Type))
 		{
-			double x = 0;
-			double y = 0;
-			double w = 0;
-			double h = 0;
+			double x = 0, y = 0, w = 0, h = 0;
 			if (m_oBrush.Image)
 				pInfo = m_oImageManager.WriteImage(m_oBrush.Image, x, y, w, h);
 			else
 				pInfo = m_oImageManager.WriteImage(m_oBrush.TexturePath, x, y, w, h);
 		}
-
 		m_oCurrentPage.DrawPath(nType, pInfo);
 		return S_OK;
 	}
@@ -724,12 +746,12 @@ namespace NSDocxRenderer
 	}
 	HRESULT CDocument::get_ClipMode(LONG* plMode)
 	{
-		*plMode = m_lClipMode;
+		*plMode = m_oCurrentPage.m_lClipMode;
 		return S_OK;
 	}
 	HRESULT CDocument::put_ClipMode(LONG lMode)
 	{
-		m_lClipMode = lMode;
+		m_oCurrentPage.m_lClipMode = lMode;
 		return S_OK;
 	}
 
@@ -756,12 +778,10 @@ namespace NSDocxRenderer
 			double dCentreX = (dLeft + dWidth / 2.0);
 			double dCentreY = (dTop + dHeight / 2.0);
 
-			oMatrix.Translate(-dCentreX, -dCentreY	, Aggplus::MatrixOrderAppend);
-
-			oMatrix.Rotate(dAngle			, Aggplus::MatrixOrderAppend);
-			oMatrix.Scale(m11, m22					, Aggplus::MatrixOrderAppend);
-
-			oMatrix.Translate(dCentreX, dCentreY	, Aggplus::MatrixOrderAppend);
+			oMatrix.Translate(-dCentreX, -dCentreY, Aggplus::MatrixOrderAppend);
+			oMatrix.Rotate(dAngle, Aggplus::MatrixOrderAppend);
+			oMatrix.Scale(m11, m22, Aggplus::MatrixOrderAppend);
+			oMatrix.Translate(dCentreX, dCentreY, Aggplus::MatrixOrderAppend);
 		}
 
 		m_oTransform = oMatrix;
@@ -817,16 +837,17 @@ namespace NSDocxRenderer
 		m_lCurrentCommandType = 0;
 
 		m_oCurrentPage.Init(&m_oFont,
-			&m_oPen,
-			&m_oBrush,
-			&m_oShadow,
-			&m_oEdge,
-			&m_oTransform,
-			&m_oSimpleGraphicsConverter,
-			&m_oFontStyleManager,
-			&m_oFontManager,
-			&m_oFontSelector,
-			&m_oParagraphStyleManager);
+							&m_oPen,
+							&m_oBrush,
+							&m_oShadow,
+							&m_oEdge,
+							&m_oTransform,
+							&m_oSimpleGraphicsConverter,
+							&m_oImageManager,
+							&m_oFontStyleManager,
+							&m_oFontManager,
+							&m_oFontSelector,
+							&m_oParagraphStyleManager);
 
 		m_oImageManager.Clear();
 		m_oFontStyleManager.Clear();
@@ -925,17 +946,6 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"\"/>");
 		}
 
-		for (const auto& pImage : m_oImageManager.m_mapImagesFile)
-		{
-			auto pInfo = pImage.second;;
-
-			oWriter.WriteString(L"<Relationship Id=\"rId");
-			oWriter.AddInt(c_iStartingIdForImages + pInfo->m_nId);
-			oWriter.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/");
-			oWriter.WriteString(pInfo->m_strFileName);
-			oWriter.WriteString(L"\"/>");
-		}
-
 		oWriter.WriteString(L"</Relationships>");
 
 		NSFile::CFileBinary::SaveToFile(m_strTempDirectory + L"/word/_rels/document.xml.rels", oWriter.GetData());
@@ -959,8 +969,19 @@ namespace NSDocxRenderer
 				xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" \
 				mc:Ignorable=\"w14 w15 w16se w16cid w16 w16cex w16sdtdh\">");
 
-		auto oFonts = m_oFontSelector.GetCache();
-		for (auto& val : oFonts)
+		const auto& cache = m_oFontSelector.GetCache();
+		std::list<CFontSelector::CFontSelectInfo> font_table;
+		std::map<std::wstring, bool> ar_is_written;
+		for (const auto& info : cache)
+		{
+			if (!ar_is_written[info.wsSelectedName])
+			{
+				font_table.push_back(info);
+				ar_is_written[info.wsSelectedName] = true;
+			}
+		}
+
+		for (auto& val : font_table)
 		{
 			if (val.wsSelectedName.empty())
 				continue;

@@ -141,6 +141,7 @@ public:
 	int ReadPageBorders(BYTE type, long length, void* poResult);
 	int ReadPageBorder(BYTE type, long length, void* poResult);
 	int ReadCnfStyle(BYTE type, long length, void* poResult);
+	int ReadDocGrid(BYTE type, long length, void* poResult);
 };
 class Binary_tblPrReader : public Binary_CommonReader
 {

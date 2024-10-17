@@ -1,134 +1,293 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
 #include <QLabel>
-#include <cmath>
-#include <QListWidgetItem>
-#include "../../../../DesktopEditor/graphics/pro/Graphics.h"
+#include <QList>
+#include <QMainWindow>
+#include <QLineEdit>
+#include <QCheckBox>
+#include <QPixmap>
+#include <QMouseEvent>
+#include <QColorDialog>
+#include <QPainter>
+#include "../../../../DesktopEditor/graphics/structures.h"
+
+#define COORD_SIZE_MM 100
+#define MM_TO_COORD(size) (size / COORD_SIZE_MM)
+
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+namespace Ui
+{
+	class MainWindow;
+}
 QT_END_NAMESPACE
 
-struct Point {
-    Point(double _x = 0, double _y = 0) : x(_x), y(_y){}
-    double x, y;
-};
-struct Color {
-    uint r,g,b;
-    Color() {
-        r = b = g = 0;
-    }
-    Color(uint rgb) {
-        b = rgb % 0x100;
-        g = (rgb / 0x100) % 0x100;
-        r = rgb / 0x100 / 0x100;
-    }
-    uint get_color() {
-        return b + g * 0x100 + r * 0x10000;
-    }
-};
-
-struct Info {
-    // Для теста адаптора все вынес в инфо.
-    float r0, r1;
-    NSStructures::Point c0, c1;
-    NSStructures::Point p0, p1;
-    bool cont_b, cont_f;
-    std::vector<NSStructures::Point> triangle ={{100, 100}, {300, 200}, {200, 350}};
-
-
-    NSStructures::GradientInfo ginfo;
-    int gradient_type;
-    std::vector<LONG> c;
-    std::vector<double> p;
-    int n_colors;
-    Info() : gradient_type(c_BrushTypePathNewLinearGradient) {
-        c = {(LONG)0xFFff0000, (LONG)0xFFffa500, (LONG)0xFFffff00, (LONG)0xFF008000, (LONG)0xFF0000ff, (LONG)0xFFFF00FF};
-        p = {0.0,0.2,0.4,0.6,0.8,1};
-        n_colors = 6;
-        ginfo.shading.shading_type = NSStructures::ShadingInfo::Parametric;
-
-
-
-        r0 = 0;
-        r1 = 100;
-        c0 = {200, 200};
-        c1 = {200, 200};
-        p0 = {0, 0};
-        p1 = {400, 400};
-        cont_b = cont_f = false;
-    };
-    ~Info() {
-    }
-};
-
-void GenerateImg(QImage &img, int grad = 1,double angle = 0,std::vector<Point> points = {});
-std::vector<Point> drawCircle1(int n, double cx, double cy, double r);
-class MainWindow : public QMainWindow
+class CustomLineEdit : public QLineEdit
 {
-    Q_OBJECT
-
+	Q_OBJECT
 public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
-    QImage img;
-    QLabel *lable;
-    std::vector<Point> points;
-    Info info;
+	CustomLineEdit(QWidget *parent = nullptr) : QLineEdit(parent)
+	{
+		connect(this, &QLineEdit::editingFinished, this, &CustomLineEdit::onEditingFinished);
+	}
+	~CustomLineEdit() {}
+public slots:
+	void onEditingFinished()
+	{
+		if (this->text() == "")
+			this->setText(this->placeholderText());
+		if (this->text().toInt() < 0)
+			this->setText("0");
+		if (this->text().toInt() > COORD_SIZE_MM)
+			this->setText(QString::number(COORD_SIZE_MM));
+	}
+};
 
-private slots:
-    void on_RenderPic_clicked();
+class CustomParametrLineEdit : public QLineEdit
+{
+	Q_OBJECT
+public:
+	CustomParametrLineEdit(QWidget *parent = nullptr) : QLineEdit(parent)
+	{
+		connect(this, &QLineEdit::editingFinished, this, &CustomParametrLineEdit::onEditingFinished);
+	}
+	~CustomParametrLineEdit() {}
+public slots:
+	void onEditingFinished()
+	{
+		if (this->text() == "")
+			this->setText(this->placeholderText());
+		if (this->text().toDouble() < 0)
+			this->setText("0");
+		if (this->text().toDouble() > 1)
+			this->setText("1");
+	}
+};
 
-    void on_GradientType_itemDoubleClicked(QListWidgetItem *item);
+class CustomLabel : public QLabel
+{
+	Q_OBJECT
+public:
+	CustomLabel(QWidget *parent = nullptr) : QLabel(parent)
+	{
+		movable = false;
+		setMouseTracking(true);
+	}
 
-    void on_GradientType_itemClicked(QListWidgetItem *item);
+	~CustomLabel() {}
 
-    void on_ColorSpaces_itemClicked(QListWidgetItem *item);
+	void setPoints(const std::vector<NSStructures::Point>& points)
+	{
+		m_points = points;
+	}
 
-    void on_ColorSpaces_itemDoubleClicked(QListWidgetItem *item);
+	NSStructures::Point getMovePoint() const
+	{
+		return movePoint;
+	}
 
-    void on_Point1X_sliderMoved(int position);
+	size_t getIndex() const
+	{
+		return index;
+	}
 
-    void on_Point1Y_sliderMoved(int position);
+	bool getMovable() const
+	{
+		return movable;
+	}
 
-    void on_Point2X_sliderMoved(int position);
+	void resetMovable()
+	{
+		movable = !movable;
+	}
 
-    void on_Point2Y_sliderMoved(int position);
+	void setIndex(size_t _index)
+	{
+		index = _index;
+	}
 
-    void on_CenterX0_valueChanged(int value);
+	bool checkPointArea()
+	{
+		for (int i = 0; i < m_points.size(); i++)
+		{
+			QRect rect(m_points[i].x - 5, m_points[i].y - 5, 10, 10);
+			if (rect.contains(checkPoint.x, checkPoint.y))
+			{
+				index = i;
+				return true;
+			}
+		}
+		return false;
+	}
 
-    void on_CenterY0_valueChanged(int value);
+signals:
+	void mousePressed();
+	void mouseMoved();
 
-    void on_CenterX1_valueChanged(int value);
+protected:
+	void mousePressEvent(QMouseEvent *event) override
+	{
+		checkPoint = {event->pos().x(), event->pos().y()};
+		emit mousePressed();
+	}
 
-    void on_CenterY1_valueChanged(int value);
-
-    void on_r0slider_valueChanged(int value);
-
-    void on_r1slider_valueChanged(int value);
-
-    void on_ContinueForvard_clicked(bool checked);
-
-    void on_ContinueBack_clicked(bool checked);
-
-    void on_TrianglePoint1X_sliderMoved(int position);
-
-    void on_TrianglePoint1Y_sliderMoved(int position);
-
-    void on_TrianglePoint2X_sliderMoved(int position);
-
-    void on_TrianglePoint2Y_sliderMoved(int position);
-
-    void on_TrianglePoint3X_sliderMoved(int position);
-
-    void on_TrianglePoint3Y_sliderMoved(int position);
-
-    void on_LeftButton_clicked();
-
-    void on_RightButton_clicked();
+	void mouseMoveEvent(QMouseEvent *event) override
+	{
+		movePoint = {event->pos().x(), event->pos().y()};
+		emit mouseMoved();
+	}
 
 private:
-    Ui::MainWindow *ui;
+	bool	movable;
+	size_t  index;
+
+	NSStructures::Point				 movePoint;
+	NSStructures::Point 			 checkPoint;
+	std::vector<NSStructures::Point> m_points;
+};
+
+class CustomColorLabel : public QLabel
+{
+	Q_OBJECT
+public:
+	CustomColorLabel(QWidget *parent = nullptr) : QLabel(parent)
+	{
+		connect(this, &CustomColorLabel::mousePressed, this, &CustomColorLabel::onMousePressed);
+	}
+
+	~CustomColorLabel() {}
+
+	void setColor(QColor color)
+	{
+		m_color = color;
+		this->setStyleSheet("QLabel { background-color : " + m_color.name() + "; border: 1px solid black; padding 10px;}");
+	}
+
+	QColor getColor() const
+	{
+		return m_color;
+	}
+signals:
+	void mousePressed();
+protected:
+	void mousePressEvent(QMouseEvent *event) override
+	{
+		emit mousePressed();
+	}
+public slots:
+	void onMousePressed()
+	{
+		QColorDialog colorDialog;
+		QColor color = colorDialog.getColor();
+
+		if (color.isValid())
+		{
+			setColor(color);
+		}
+	}
+private:
+	QColor m_color;
+};
+
+typedef enum
+{
+	Linear,
+	Radial,
+	Triangle,
+	TriangleParametric,
+	CoonsPatch,
+	CoonsPatchParametric,
+	TensorCoonsPatch,
+	TensorCoonsPatchParametric
+} GradientType;
+
+typedef enum
+{
+	LinearOffset			= 68,
+	RadialOffset			= 62,
+	TriangleOffset			= 56,
+	CoonsPatchOffset		= 32,
+	TensorCoonsPatchOffset  = 0
+} GradientOffse;
+
+struct Info
+{
+	GradientType	gradient;
+	GradientOffse	offset;
+
+	NSStructures::Point p0, p1;
+	NSStructures::Point c0, c1;
+	float				r0, r1;
+	std::vector<NSStructures::Point>				triangle	= std::vector<NSStructures::Point>(3);
+	std::vector<NSStructures::Point>				curve		= std::vector<NSStructures::Point>(12);
+	std::vector<std::vector<NSStructures::Point>>	tensorcurve = std::vector<std::vector<NSStructures::Point>>(4, std::vector<NSStructures::Point>(4));
+
+	std::vector<float>				triangle_parametrs		= std::vector<float>(3);
+	std::vector<float>				curve_parametrs			= std::vector<float>(4);
+	std::vector<std::vector<float>> tensor_curve_parametrs	= std::vector<std::vector<float>>(2, std::vector<float>(2));
+
+	bool cont_b, cont_f;
+
+	NSStructures::GradientInfo ginfo;
+	std::vector<LONG>	c;
+	std::vector<double>	p;
+	int gradient_type;
+	int n_colors;
+};
+
+class MainWindow : public QMainWindow
+{
+	Q_OBJECT
+
+public:
+	MainWindow(QWidget *parent = nullptr);
+	~MainWindow();
+
+	void initializeColors(bool triangle);
+	std::vector<agg::rgba8> qColor2rgba(bool triangle);
+	std::vector<std::vector<agg::rgba8>> qColor2rgbaMatrix();
+
+	void setPoints(QImage *image);
+	NSStructures::Point scaleCoord(NSStructures::Point p);
+
+	void lineEdits2Points();
+	void lineEdits2Parametrs();
+	void checkBox2Continue();
+
+private slots:
+
+	void on_label_test_clicked();
+
+	void on_label_test_mouse_move();
+
+	void on_actionLinear_Gradient_triggered();
+
+	void on_actionRadial_Gradient_triggered();
+
+	void on_pushButton_clicked();
+
+	void on_actionTriangle_Gradient_triggered();
+
+	void on_actionTriangle_Parametric_Gradient_triggered();
+
+	void on_actionCoons_Patch_Gradient_triggered();
+
+	void on_actionCoons_Patch_Parametric_triggered();
+
+	void on_actionTensor_Coons_Patch_Gradient_triggered();
+
+	void on_actionTensor_Coons_Patch_Parametric_triggered();
+
+private:
+	QImage	img;
+	Info	info;
+	std::vector<NSStructures::Point> points;
+
+	QList<QCheckBox *>				listOfCheckBox;
+	QList<CustomLineEdit *>			listOfLines;
+	QList<CustomColorLabel *>		listOfColorLabels;
+	QList<CustomParametrLineEdit *> listOfParametricLines;
+
+	Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H

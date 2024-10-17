@@ -47,6 +47,7 @@
 
 #include "../../XlsbFormat/Biff12_records/BeginConditionalFormatting.h"
 #include "../../XlsbFormat/Biff12_records/BeginConditionalFormatting14.h"
+#include "../../XlsbFormat/Biff12_records/FRTBegin.h"
 #include "../../XlsbFormat/Biff12_records/BeginCFRule.h"
 #include "../../XlsbFormat/Biff12_records/BeginCFRule14.h"
 #include "../../XlsbFormat/Biff12_records/BeginDatabar.h"
@@ -1823,6 +1824,10 @@ XLS::BaseObjectPtr CConditionalFormattingRule::toBin(const  XLS::CellRef &cellRe
         ptr->m_FRTCFRULE = XLS::BaseObjectPtr{extPtr};
 
         beginExt->guid = m_oExtId.get();
+        auto ruleBegin(new XLSB::FRTBegin);
+        ruleBegin->productVersion.product = 0;
+        ruleBegin->productVersion.version = 0;
+        extPtr->m_BrtFRTBegin = XLS::BaseObjectPtr{ruleBegin};
     }
     return objPtr;
 }
@@ -1841,6 +1846,8 @@ XLS::BaseObjectPtr CConditionalFormattingRule::WriteAttributes(const  XLS::CellR
         ptr->dxfId = 0;
     if(m_oPriority.IsInit())
         ptr->iPri = m_oPriority->GetValue();
+    else
+        ptr->iPri = 1;
     if(m_oStopIfTrue.IsInit())
         ptr->fStopTrue = m_oStopIfTrue->GetValue();
     else

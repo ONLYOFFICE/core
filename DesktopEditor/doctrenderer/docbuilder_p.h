@@ -32,7 +32,7 @@
 #ifndef DOC_BUILDER_PRIVATE
 #define DOC_BUILDER_PRIVATE
 
-#include "./config.h"
+#include "./editors.h"
 #include "docbuilder.h"
 #include "doctrenderer.h"
 
@@ -130,12 +130,12 @@ namespace NSDoctRenderer
 		}
 		~CString_Private()
 		{
-			if (m_data)
-				delete [] m_data;
+			delete[] m_data;
 		}
 
 		void Attach(wchar_t* data)
 		{
+			delete[] m_data;
 			m_data = data;
 		}
 
@@ -143,7 +143,7 @@ namespace NSDoctRenderer
 		{
 			if (copy->m_data)
 			{
-				delete [] copy->m_data;
+				delete[] copy->m_data;
 				copy->m_data = NULL;
 			}
 
@@ -153,6 +153,13 @@ namespace NSDoctRenderer
 			size_t len = wcslen(m_data);
 			copy->m_data = new wchar_t[len + 1];
 			memcpy(copy->m_data, m_data, (len + 1) * sizeof(wchar_t));
+		}
+
+		void MakeEmpty()
+		{
+			delete[] m_data;
+			m_data = new wchar_t[1];
+			m_data[0] = '\0';
 		}
 	};
 }
@@ -400,6 +407,11 @@ public:
 	{
 		m_scopes.push_back(scope);
 	}
+
+	void AddNewScope(NSDoctRenderer::CDocBuilderContextScopeWrap* scope)
+	{
+		m_scopes.emplace_back(scope);
+	}
 };
 
 class CV8RealTimeWorker
@@ -415,7 +427,7 @@ public:
 
 public:
 
-	CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder);
+	CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder, const NSDoctRenderer::DoctRendererEditorType& type, NSDoctRenderer::CDoctRendererConfig* config);
 	~CV8RealTimeWorker();
 
 public:
@@ -427,36 +439,13 @@ public:
 	std::string GetGlobalVariable();
 	std::wstring GetJSVariable(std::wstring sParam);
 
-	bool OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath, CV8Params* pParams = NULL);
+	bool OpenFile(const std::wstring& sBasePath, const std::wstring& path, const NSDoctRenderer::DoctRendererEditorType& editorType, NSDoctRenderer::CDoctRendererConfig* config, CV8Params* pParams = NULL);
 	bool SaveFileWithChanges(int type, const std::wstring& _path, const std::wstring& sJsonParams = L"");
 	bool InitVariables();
 };
 
 namespace NSDoctRenderer
 {
-	class CAdditionalData
-	{
-	public:
-		CAdditionalData() {}
-		virtual ~CAdditionalData() {}
-		virtual std::string getParam(const std::wstring& name) { return ""; }
-	};
-
-	class CDocBuilderParams
-	{
-	public:
-		CDocBuilderParams() : m_bCheckFonts(false), m_sWorkDir(L""), m_bSaveWithDoctrendererMode(false), m_sArgumentJSON(""), m_bIsSystemFonts(true) {}
-
-	public:
-		bool m_bCheckFonts;
-		std::wstring m_sWorkDir;
-		bool m_bSaveWithDoctrendererMode;
-		std::string m_sArgumentJSON;
-
-		bool m_bIsSystemFonts;
-		std::vector<std::wstring> m_arFontDirs;
-	};
-
 	class CDocBuilder_Private : public CDoctRendererConfig
 	{
 	public:
@@ -477,8 +466,6 @@ namespace NSDoctRenderer
 		CDocBuilderParams m_oParams;
 		bool m_bIsInit;
 
-		bool m_bIsCacheScript;
-
 		bool m_bIsServerSafeVersion;
 		std::wstring m_sFolderForSaveOnlyUseNames;
 
@@ -490,7 +477,7 @@ namespace NSDoctRenderer
 		static std::wstring m_sExternalDirectory;
 	public:
 		CDocBuilder_Private() : CDoctRendererConfig(), m_sTmpFolder(NSFile::CFileBinary::GetTempPath()), m_nFileType(-1),
-			m_pWorker(NULL), m_pAdditionalData(NULL), m_bIsInit(false), m_bIsCacheScript(true), m_bIsServerSafeVersion(false),
+			m_pWorker(NULL), m_pAdditionalData(NULL), m_bIsInit(false), m_bIsServerSafeVersion(false),
 			m_sGlobalVariable(""), m_bIsGlobalVariableUse(false), m_pParent(NULL), m_bJavascriptBeforeEditor(false)
 		{
 		}
@@ -1251,7 +1238,7 @@ namespace NSDoctRenderer
 		{
 			if (NULL == m_pWorker)
 			{
-				m_pWorker = new CV8RealTimeWorker(m_pParent);
+				m_pWorker = new CV8RealTimeWorker(m_pParent, GetEditorType(), this);
 				m_pWorker->m_sUtf8ArgumentJSON = m_oParams.m_sArgumentJSON;
 				m_pWorker->m_sGlobalVariable = m_sGlobalVariable;
 
@@ -1273,15 +1260,12 @@ namespace NSDoctRenderer
 			}
 
 			m_bJavascriptBeforeEditor = false;
-			std::wstring sCachePath = L"";
-			if (m_bIsCacheScript)
-				sCachePath = GetScriptCache();
 
 			CV8Params oParams;
 			oParams.IsServerSaveVersion = m_bIsServerSafeVersion;
 			oParams.DocumentDirectory = m_sFileDir;
 
-			return m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, GetScript(), sCachePath, &oParams);
+			return m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, GetEditorType(), this, &oParams);
 		}
 
 		int SaveFile(const std::wstring& ext, const std::wstring& path, const wchar_t* params = NULL)
@@ -1305,7 +1289,7 @@ namespace NSDoctRenderer
 			return m_pWorker->ExecuteCommand(command, retValue);
 		}
 
-		CDocBuilderContext GetContext()
+		CDocBuilderContext GetContext(bool enterContext)
 		{
 			CDocBuilderContext ctx;
 
@@ -1313,122 +1297,33 @@ namespace NSDoctRenderer
 
 			ctx.m_internal->m_context = m_pWorker->m_context;
 			ctx.m_internal->m_context_data = &m_pWorker->m_oContextData;
+
+			if (enterContext)
+			{
+				CDocBuilderContextScopeWrap* scopeWrap = new CDocBuilderContextScopeWrap();
+				scopeWrap->m_scope = new CJSContextScope(m_pWorker->m_context);
+				m_pWorker->m_oContextData.AddNewScope(scopeWrap);
+			}
+
 			return ctx;
 		}
 
-		std::string GetScript()
+		NSDoctRenderer::DoctRendererEditorType GetEditorType()
 		{
-			std::vector<std::wstring>* arSdkFiles = NULL;
-
 			switch (m_nFileType)
 			{
 			case 0:
-			{
-				arSdkFiles = &m_arDoctSDK;
-				break;
-			}
+				return NSDoctRenderer::DoctRendererEditorType::WORD;
 			case 1:
-			{
-				arSdkFiles = &m_arPpttSDK;
-				break;
-			}
+				return NSDoctRenderer::DoctRendererEditorType::SLIDE;
 			case 2:
-			{
-				arSdkFiles = &m_arXlstSDK;
-				break;
-			}
+				return NSDoctRenderer::DoctRendererEditorType::CELL;
 			case 7:
-			{
-				arSdkFiles = &m_arVsdtSDK;
-				break;
-			}
+				return NSDoctRenderer::DoctRendererEditorType::VISIO;
 			default:
-				return "";
-			}
-
-			std::string strScript = "";
-			for (size_t i = 0; i < m_arrFiles.size(); ++i)
-			{
-				strScript += ReadScriptFile(m_arrFiles[i]);
-				strScript += "\n\n";
-			}
-
-			if (NULL != arSdkFiles)
-			{
-				for (const std::wstring& i : *arSdkFiles)
-				{
-					strScript += ReadScriptFile(i);
-					strScript += "\n\n";
-				}
-			}
-
-			if (m_nFileType == 2)
-				strScript += "\n$.ready();";
-
-			return strScript;
-		}
-
-		std::wstring GetScriptCache()
-		{
-			std::vector<std::wstring>* arSdkFiles = NULL;
-			switch (m_nFileType)
-			{
-			case 0:
-			{
-				arSdkFiles = &m_arDoctSDK;
 				break;
 			}
-			case 1:
-			{
-				arSdkFiles = &m_arPpttSDK;
-				break;
-			}
-			case 2:
-			{
-				arSdkFiles = &m_arXlstSDK;
-				break;
-			}
-			case 7:
-			{
-				arSdkFiles = &m_arVsdtSDK;
-				break;
-			}
-			default:
-				return L"";
-			}
-
-			if (0 < arSdkFiles->size())
-			{
-				return NSFile::GetDirectoryName(*arSdkFiles->begin()) + L"/sdk-all.cache";
-			}
-			return L"";
-		}
-
-		std::string ReadScriptFile(const std::wstring& strFile)
-		{
-			NSFile::CFileBinary oFile;
-
-			if (!oFile.OpenFile(strFile))
-				return "";
-
-			int nSize = (int)oFile.GetFileSize();
-			if (nSize < 3)
-				return "";
-
-			BYTE* pData = new BYTE[nSize];
-			DWORD dwReadSize = 0;
-			oFile.ReadFile(pData, (DWORD)nSize, dwReadSize);
-
-			int nOffset = 0;
-			if (pData[0] == 0xEF && pData[1] == 0xBB && pData[2] == 0xBF)
-			{
-				nOffset = 3;
-			}
-
-			std::string sReturn((char*)(pData + nOffset), nSize - nOffset);
-
-			RELEASEARRAYOBJECTS(pData);
-			return sReturn;
+			return NSDoctRenderer::DoctRendererEditorType::INVALID;
 		}
 
 		void WriteData(const wchar_t* path, const wchar_t* value, const bool& append)

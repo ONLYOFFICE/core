@@ -62,6 +62,7 @@
 #include "styles.h"
 #include "style_regions.h"
 #include "style_presentation.h"
+#include "style_paragraph_properties.h"
 
 #include "templates.h"
 
@@ -618,9 +619,24 @@ void odf_document::Impl::parse_settings(office_element *element)
 				{
 					if (conf_item_set->config_name_ == L"ModifyPasswordInfo")
 					{
+						context_->Settings().add(L"modifyPasswordInfo", L"");
+
 						for (auto info_elm = conf_item_set->content_.begin(); info_elm != conf_item_set->content_.end(); ++info_elm)
 						{
 							settings_config_item *info = dynamic_cast<settings_config_item *>(info_elm->get());
+							if (info)
+							{
+								context_->Settings().add(L"modify:" + info->config_name_, info->content_);
+							}
+						}
+					}
+					else if (conf_item_set->config_name_ == L"OOXMLModifyPasswordInfo")
+					{
+						context_->Settings().add(L"modifyPasswordInfo", L"");
+
+						for (auto info_elm = conf_item_set->content_.begin(); info_elm != conf_item_set->content_.end(); ++info_elm)
+						{
+							settings_config_item* info = dynamic_cast<settings_config_item*>(info_elm->get());
 							if (info)
 							{
 								context_->Settings().add(L"modify:" + info->config_name_, info->content_);
@@ -889,6 +905,16 @@ void odf_document::Impl::parse_styles(office_element *element)
                     _CP_LOG << L"[warning] error reading default style\n";
                     continue;
                 }
+
+				if (styleInst->content_.style_family_.get_type() == odf_types::style_family::Paragraph)
+				{
+					style_paragraph_properties* para_props = styleInst->content_.get_style_paragraph_properties();
+
+					if (para_props && para_props->content_.style_tab_stop_distance_)
+					{
+						context_->Settings().set_tab_distance(para_props->content_.style_tab_stop_distance_->get_value_unit(odf_types::length::pt));
+					}
+				}
 
                 context_->styleContainer().add_style(L"",
 					L"",

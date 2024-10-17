@@ -46,7 +46,7 @@ namespace MetaFile
 	CWmfObjectBase::~CWmfObjectBase()
 	{}
 
-	EWmfObjectType CWmfObjectBase::GetType()
+	EWmfObjectType CWmfObjectBase::GetType() const
 	{
 		return WMF_OBJECT_UNKNOWN;
 	}
@@ -67,7 +67,7 @@ namespace MetaFile
 		RELEASEOBJECT(pDibBuffer);
 	}
 
-	EWmfObjectType CWmfBrush::GetType()
+	EWmfObjectType CWmfBrush::GetType() const
 	{
 		return WMF_OBJECT_BRUSH;
 	}
@@ -109,61 +109,57 @@ namespace MetaFile
 #endif
 	}
 
-	int CWmfBrush::GetColor()
+	int CWmfBrush::GetColor() const
 	{
 		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b, oColor.a);
 	}
 
-	int CWmfBrush::GetColor2()
+	int CWmfBrush::GetColor2() const
 	{
 		return 0;
 	}
 
-	unsigned int CWmfBrush::GetStyle()
+	unsigned int CWmfBrush::GetStyle() const
 	{
 		return ushBrushStyle;
 	}
 
-	unsigned int CWmfBrush::GetStyleEx()
+	unsigned int CWmfBrush::GetStyleEx() const
 	{
 		return 0;
 	}
 
-	unsigned int CWmfBrush::GetHatch()
+	unsigned int CWmfBrush::GetHatch() const
 	{
 		return ushBrushHatch;
 	}
 
-	unsigned int CWmfBrush::GetAlpha()
-	{
-		return 255;
-	}
-
-	unsigned int CWmfBrush::GetAlpha2()
+	unsigned int CWmfBrush::GetAlpha() const
 	{
 		return 0xff;
 	}
 
-	std::wstring CWmfBrush::GetDibPatterPath()
+	unsigned int CWmfBrush::GetAlpha2() const
+	{
+		return 0xff;
+	}
+
+	std::wstring CWmfBrush::GetDibPatterPath() const
 	{
 		return wsDibPatternPath;
 	}
 
-	void CWmfBrush::GetBounds(double &left, double &top, double &width, double &height)
-	{
-		
-	}
+	void CWmfBrush::GetBounds(double &left, double &top, double &width, double &height) const
+	{}
 
-	void CWmfBrush::GetCenterPoint(double &dX, double &dY)
-	{
-		
-	}
+	void CWmfBrush::GetCenterPoint(double &dX, double &dY) const
+	{}
 
-	void CWmfBrush::GetDibPattern(unsigned char **pBuffer, unsigned int &unWidth, unsigned int &unHeight)
+	void CWmfBrush::GetDibPattern(unsigned char **pBuffer, unsigned int &unWidth, unsigned int &unHeight) const
 	{
-		*pBuffer	= pDibBuffer;
-		unWidth		= unDibWidth;
-		unHeight	= unDibHeigth;
+		*pBuffer = pDibBuffer;
+		unWidth  = unDibWidth;
+		unHeight = unDibHeigth;
 	}
 
 	CWmfFont::CWmfFont()
@@ -174,52 +170,52 @@ namespace MetaFile
 	CWmfFont::~CWmfFont()
 	{}
 
-	EWmfObjectType CWmfFont::GetType()
+	EWmfObjectType CWmfFont::GetType() const
 	{
 		return WMF_OBJECT_FONT;
 	}
 
-	double CWmfFont::GetHeight()
+	double CWmfFont::GetHeight() const
 	{
 		return (double)shHeight;
 	}
 
-	std::wstring CWmfFont::GetFaceName()
+	std::wstring CWmfFont::GetFaceName() const
 	{
 		return std::wstring(NSStringExt::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)uchFacename, 32).c_str());
 	}
 
-	int CWmfFont::GetWeight()
+	int CWmfFont::GetWeight() const
 	{
 		return (int)shWidth;
 	}
 
-	bool CWmfFont::IsItalic()
+	bool CWmfFont::IsItalic() const
 	{
-		return (0x01 == uchItalic ? true : false);
+		return 0x01 == uchItalic;
 	}
 
-	bool CWmfFont::IsStrikeOut()
+	bool CWmfFont::IsStrikeOut() const
 	{
-		return (0x01 == uchStrikeOut ? true : false);
+		return 0x01 == uchStrikeOut;
 	}
 
-	bool CWmfFont::IsUnderline()
+	bool CWmfFont::IsUnderline() const
 	{
-		return (0x01 == uchUnderline ? true : false);
+		return 0x01 == uchUnderline;
 	}
 
-	int CWmfFont::GetEscapement()
+	int CWmfFont::GetEscapement() const
 	{
 		return (int)shEscapement;
 	}
 
-	int CWmfFont::GetCharSet()
+	int CWmfFont::GetCharSet() const
 	{
 		return (int)uchCharSet;
 	}
 
-	int CWmfFont::GetOrientation()
+	int CWmfFont::GetOrientation() const
 	{
 		return (int)shOrientation;
 	}
@@ -232,7 +228,7 @@ namespace MetaFile
 		RELEASEOBJECT(pPaletteEntries);
 	}
 
-	EWmfObjectType CWmfPalette::GetType()
+	EWmfObjectType CWmfPalette::GetType() const
 	{
 		return WMF_OBJECT_PALETTE;
 	}
@@ -243,42 +239,42 @@ namespace MetaFile
 	CWmfPen::~CWmfPen()
 	{}
 
-	EWmfObjectType CWmfPen::GetType()
+	EWmfObjectType CWmfPen::GetType() const
 	{
 		return WMF_OBJECT_PEN;
 	}
 
-	int CWmfPen::GetColor()
+	int CWmfPen::GetColor() const
 	{
 		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b, oColor.a);
 	}
 
-	unsigned int CWmfPen::GetStyle()
+	unsigned int CWmfPen::GetStyle() const
 	{
 		return (unsigned int)ushPenStyle;
 	}
 
-	double CWmfPen::GetWidth()
+	double CWmfPen::GetWidth() const
 	{
 		return (double)oWidth.X;
 	}
 
-	unsigned int CWmfPen::GetAlpha()
+	unsigned int CWmfPen::GetAlpha() const
 	{
 		return 0xff;
 	}
 
-	double CWmfPen::GetMiterLimit()
+	double CWmfPen::GetMiterLimit() const
 	{
 		return 0;
 	}
 
-	double CWmfPen::GetDashOffset()
+	double CWmfPen::GetDashOffset() const
 	{
 		return 0;
 	}
 
-	void CWmfPen::GetDashData(double *&arDatas, unsigned int &unSize)
+	void CWmfPen::GetDashData(double *&arDatas, unsigned int &unSize) const
 	{
 		arDatas = NULL;
 		unSize  = 0;
@@ -292,7 +288,7 @@ namespace MetaFile
 		RELEASEOBJECT(pScans);
 	}
 
-	EWmfObjectType CWmfRegion::GetType()
+	EWmfObjectType CWmfRegion::GetType() const
 	{
 		return WMF_OBJECT_REGION;
 	}

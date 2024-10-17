@@ -81,6 +81,7 @@ public:
 
 	_transition								transition_;
 	bool									use_image_replacement_;
+	bool									processing_notes;
 
 	bool header, footer, date_time, slideNum;
 
@@ -127,6 +128,8 @@ public:
 		transition_.Enabled = false;
 		transition_.Speed	= boost::none;
 		transition_.onClick	= true;	
+
+		processing_notes = false;
 	}
 
     size_t next_rId()
@@ -318,6 +321,11 @@ void pptx_slide_context::set_use_image_replacement()
 	impl_->use_image_replacement_ = true;
 }
 
+void pptx_slide_context::set_is_placeHolder(bool is_placeholder)
+{
+	impl_->object_description_.additional_.push_back(odf_reader::_property(L"IsPlaceholder", is_placeholder));
+}
+
 void pptx_slide_context::set_placeHolder_type(std::wstring typeHolder)
 {
 	if (typeHolder == L"ftr")	impl_->footer		= true;
@@ -432,6 +440,16 @@ void pptx_slide_context::set_connector_draw_type(const std::wstring& drawType)
 	impl_->object_description_.draw_type_ = drawType;
 }
 
+void pptx_slide_context::processing_notes(bool processing_notes)
+{
+	impl_->processing_notes = processing_notes;
+}
+
+bool pptx_slide_context::processing_notes()
+{
+	return impl_->processing_notes;
+}
+
 std::wstring pptx_slide_context::add_hyperlink(std::wstring const & href)
 {
 	++hlinks_size_;
@@ -459,8 +477,10 @@ void pptx_slide_context::add_background(_oox_fill & fill)
 	impl_->background_fill_ = fill;
 }
 
-void pptx_slide_context::set_name(std::wstring const & name)
+void pptx_slide_context::set_name(std::wstring name)
 {
+	boost::replace_all(name, L"&", L"&amp;");
+
 	impl_->object_description_.name_ = name;
 }
 
@@ -772,6 +792,10 @@ void pptx_slide_context::Impl::process_shape(drawing_object_description & obj, _
 		GetProperty(obj.additional_, L"PlaceHolderIdx", iPlaceHolderIdx);
 		if (iPlaceHolderIdx) drawing.place_holder_idx_ = *iPlaceHolderIdx;
 	}
+
+	_CP_OPT(bool) is_placeholder;
+	GetProperty(obj.additional_, L"IsPlaceholder", is_placeholder);
+	drawing.place_holder_ = is_placeholder.get_value_or(false);
 
 	drawing.sub_type = obj.shape_type_;
 

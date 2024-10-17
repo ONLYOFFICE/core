@@ -99,9 +99,12 @@ namespace OOX
                 ptr->iLevel = 0;
 			if (m_oName.IsInit())
 				ptr->stName = m_oName.get();
+			else
+				ptr->stName = L"";
 			if (m_oXfId.IsInit())
 				ptr->ixf = m_oXfId->GetValue();
-
+			else
+				ptr->ixf = 0;
 			return objectPtr;
 		}
 		EElementType CCellStyle::getType () const
@@ -196,7 +199,7 @@ namespace OOX
 		{
 			auto ptr(new XLSB::STYLES);
 			auto ptr1(new XLSB::BeginStyles);
-			ptr->m_BrtBeginStyles = XLS::BaseObjectPtr{ptr1}; 
+			ptr->m_BrtBeginStyles = XLS::BaseObjectPtr{ptr1};
 			XLS::BaseObjectPtr objectPtr(ptr);
 
 			for(auto i:m_arrItems)

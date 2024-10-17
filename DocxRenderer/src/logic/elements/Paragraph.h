@@ -1,11 +1,10 @@
 ﻿#pragma once
 #include "BaseItem.h"
 #include "TextLine.h"
-#include "../../../convert_params.h"
 
 namespace NSDocxRenderer
 {
-	class CParagraph : public COutputObject
+	class CParagraph : public CBaseItem
 	{
 	public:
 		enum TextAlignmentType
@@ -36,7 +35,7 @@ namespace NSDocxRenderer
 		std::wstring m_wsStyleId;
 
 	public:
-		CParagraph() : COutputObject(COutputObject::eOutputType::etParagraph) {}
+		CParagraph() : CBaseItem() {}
 		virtual ~CParagraph();
 		virtual void Clear() override final;
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;

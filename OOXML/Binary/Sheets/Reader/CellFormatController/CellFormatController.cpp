@@ -110,12 +110,43 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
 	DigitReader digits = {};
 	std::wstring digitFormat = {};
 	std::wstring digitValue = {};
-	if(digits.ReadDigit(value, digitValue, digitFormat))
+	if(digits.ReadScientific(value, digitValue, digitFormat))
 	{
 		if(!pCell_->m_oValue.IsInit())
 		{
 			pCell_->m_oValue.Init();
+        }//
+		pCell_->m_oValue->m_sText = digitValue;
+		std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(digitFormat);
+		if (pFind != mapDataNumber_.end())
+		{
+			pCell_->m_oStyle = pFind->second;
 		}
+		else
+		{
+
+			if (!m_pStyles->m_oNumFmts.IsInit())
+			{
+				m_pStyles->m_oNumFmts.Init();
+			}
+			if(!digitFormat.empty())
+			{
+				createFormatStyle(digitFormat);
+				pCell_->m_oStyle = mapDataNumber_.at(digitFormat);
+			}
+		}
+		if (bIsWrap)
+		{
+			pCell_->m_oStyle = 1;
+		}
+		return;
+	}
+	else if(digits.ReadDigit(value, digitValue, digitFormat))
+	{
+		if(!pCell_->m_oValue.IsInit())
+		{
+			pCell_->m_oValue.Init();
+        }//
 		pCell_->m_oValue->m_sText = digitValue;
 		std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(digitFormat);
 		if (pFind != mapDataNumber_.end())

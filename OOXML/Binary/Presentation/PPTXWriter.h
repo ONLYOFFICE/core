@@ -72,8 +72,8 @@ namespace NSBinPptxRW
 		PPTX::Presentation					m_oPresentation;
 		PPTX::TableStyles					m_oTableStyles;
 		OOX::CVmlDrawing					m_oVmlDrawing;
-		PPTX::App							m_oApp;
-		PPTX::Core							m_oCore;
+		OOX::CApp							m_oApp;
+		OOX::CCore							m_oCore;
 		nullable<PPTX::CustomProperties>	m_oCustomProperties;
 		PPTX::ViewProps						m_oViewProps;
 		PPTX::PresProps						m_oPresProps;

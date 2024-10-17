@@ -45,6 +45,7 @@ class _pptx_drawing : public _oox_drawing
 public:
 	_pptx_drawing(): _oox_drawing(), place_holder_idx_(-1) {}
 	
+	bool			place_holder_;
 	std::wstring	place_holder_type_;
 	int				place_holder_idx_;
 

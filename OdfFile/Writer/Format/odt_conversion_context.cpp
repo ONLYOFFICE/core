@@ -134,6 +134,14 @@ void odt_conversion_context::end_document()
 		}
 		root_document_->add_child_element(seq_decls);
 	}
+	if (false == mapUserDefineds.empty())
+	{
+		office_element_ptr elm;
+		for (std::map<std::wstring, std::wstring>::iterator it = mapUserDefineds.begin(); it != mapUserDefineds.end(); ++it)
+		{
+			add_meta_user_define(it->first, it->second);
+		}
+	}
 	if (controls_context()->is_exist_content())
 	{
 		office_element_ptr forms_root_elm;
@@ -620,10 +628,9 @@ void odt_conversion_context::end_hyperlink()
 }
 void odt_conversion_context::start_drop_down()
 {
-	office_element_ptr elm_drop_down;
-	create_element(L"text", L"drop-down", elm_drop_down, this);
+	create_element(L"text", L"drop-down", current_fields.back().elm, this);
 
-	text_drop_down* drop_down = dynamic_cast<text_drop_down*>(elm_drop_down.get());
+	text_drop_down* drop_down = dynamic_cast<text_drop_down*>(current_fields.back().elm.get());
 	if (drop_down)
 		drop_down->text_name_ = current_fields.back().name;
 
@@ -638,13 +645,35 @@ void odt_conversion_context::start_drop_down()
 			label->text_value_ = current_fields.back().items[i].first;
 		}
 
-		elm_drop_down->add_child_element(elm);
+		current_fields.back().elm->add_child_element(elm);
 	}
-	text_context()->start_element(elm_drop_down);
+	text_context()->start_element(current_fields.back().elm);
 }
 void odt_conversion_context::end_drop_down()
 {
 	text_context()->end_element();
+}
+void odt_conversion_context::start_user_defined()
+{
+	mapUserDefineds.insert(std::make_pair(current_fields.back().value, L""));
+
+	current_fields.back().elm = text_context()->start_field(current_fields.back().type, current_fields.back().value, current_fields.back().format);
+}
+void odt_conversion_context::end_user_defined()
+{
+	text_user_defined* user_defined = dynamic_cast<text_user_defined*>(current_fields.back().elm.get());
+
+	if (user_defined)
+	{
+		std::map<std::wstring, std::wstring>::iterator pFind = mapUserDefineds.find(current_fields.back().value);
+
+		if (pFind != mapUserDefineds.end())
+		{
+			pFind->second = user_defined->get_text_content();
+		}
+	}
+	
+	text_context()->end_field();
 }
 void odt_conversion_context::start_sequence()
 {
@@ -659,10 +688,9 @@ void odt_conversion_context::start_sequence()
 	{
 		index = ++pFind->second;
 	}
-	office_element_ptr seq_elm;
-	create_element(L"text", L"sequence", seq_elm, this);
+	create_element(L"text", L"sequence", current_fields.back().elm, this);
 
-	text_sequence* sequence = dynamic_cast<text_sequence*>(seq_elm.get());
+	text_sequence* sequence = dynamic_cast<text_sequence*>(current_fields.back().elm.get());
 	if (sequence)
 	{
 		sequence->name_	= current_fields.back().value;
@@ -670,7 +698,7 @@ void odt_conversion_context::start_sequence()
 		sequence->formula_ = L"ooow:" + current_fields.back().value + L"+1";
 		sequence->style_num_format_	= style_numformat(style_numformat::arabic);
 		
-		text_context()->start_element(seq_elm);
+		text_context()->start_element(current_fields.back().elm);
 	}
 }	
 void odt_conversion_context::end_sequence()
@@ -870,6 +898,20 @@ void odt_conversion_context::set_field_instr()
 		current_fields.back().type = fieldIndex;
 		current_fields.back().in_span = false;
 	}
+	res1 = instr.find(L"DOCPROPERTY");
+	if (std::wstring::npos != res1 && current_fields.back().type == 0)
+	{
+		current_fields.back().type = fieldUserDefined;
+		current_fields.back().in_span = false;
+		
+		std::map<std::wstring, std::wstring> options = parse_instr_options(instr.substr(11));
+		
+		std::map<std::wstring, std::wstring>::iterator pFind = options.find(L" ");
+		if (pFind != options.end())
+		{
+			current_fields.back().value = pFind->second;
+		}
+	}
 	res1 = instr.find(L"TOC");
 	if (std::wstring::npos != res1 && current_fields.back().type == 0)
 	{
@@ -928,24 +970,24 @@ void odt_conversion_context::set_field_instr()
 			current_fields.back().bHidePageNumbers = true; 
 		}
 	}
-	////////////////////////////////////////// 
+
+////////////////////////////////////////// 
 	res1 = instr.find(L" ");
 	if (std::wstring::npos != res1)
 	{
+		if (current_fields.back().type == 0)
+		{
+			current_fields.back().name = instr.substr(0, res1);
+		}
+
+		std::map<std::wstring, std::wstring> options = parse_instr_options(instr.substr(res1 + 1));		
 		if (current_fields.back().format.empty())
 		{
-			std::map<std::wstring, std::wstring> options = parse_instr_options(instr.substr(res1 + 1));
-
 			std::map<std::wstring, std::wstring>::iterator pFind = options.find(L"@");
 			if (pFind != options.end())
 			{
 				current_fields.back().format = pFind->second;
 			}
-		}
-
-		if (current_fields.back().type == 0)
-		{
-			current_fields.back().name = instr.substr(0, res1);
 		}
 	}
 }
@@ -1161,8 +1203,9 @@ void odt_conversion_context::end_field()
 		}
 		else if (current_fields.back().type == fieldSeq)		start_sequence();
 		else if (current_fields.back().type == fieldDropDown)	start_drop_down();
+		else if (current_fields.back().type == fieldUserDefined)start_user_defined();
 		else
-			text_context()->start_field(current_fields.back().type, current_fields.back().value, current_fields.back().format);
+			current_fields.back().elm = text_context()->start_field(current_fields.back().type, current_fields.back().value, current_fields.back().format);
 	}
 	if (current_fields.back().status == 2)
 	{
@@ -1173,6 +1216,7 @@ void odt_conversion_context::end_field()
 			if (current_fields.back().type == fieldHyperlink)		end_hyperlink();
 			else if (current_fields.back().type == fieldSeq)		end_sequence();
 			else if (current_fields.back().type == fieldDropDown)	end_drop_down();
+			else if (current_fields.back().type == fieldUserDefined)end_user_defined();
 			else text_context()->end_field();
 		
 			current_fields.pop_back();
@@ -1320,8 +1364,9 @@ void odt_conversion_context::start_run(bool styled)
 		}
 		else if (current_fields.back().type == fieldSeq)		start_sequence();
 		else if (current_fields.back().type == fieldDropDown)	start_drop_down();
-		else												
-			text_context()->start_field(current_fields.back().type, current_fields.back().value, current_fields.back().format);
+		else if (current_fields.back().type == fieldUserDefined)start_user_defined();
+		else
+			current_fields.back().elm = text_context()->start_field(current_fields.back().type, current_fields.back().value, current_fields.back().format);
 	}	
 	
 	text_context()->start_span(styled);
@@ -1336,7 +1381,7 @@ void odt_conversion_context::start_run(bool styled)
 	if (!current_fields.empty() && current_fields.back().status == 1 && current_fields.back().in_span)//поле стартуется в span - нужно для сохранения стиля
 	{
 		current_fields.back().status = 2;
-		text_context()->start_field(current_fields.back().type, current_fields.back().value, current_fields.back().format);
+		current_fields.back().elm = text_context()->start_field(current_fields.back().type, current_fields.back().value, current_fields.back().format);
 	}	
 }
 void odt_conversion_context::end_run()

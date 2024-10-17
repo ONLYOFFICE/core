@@ -574,6 +574,11 @@ int ComputeMarginX(const style_page_layout_properties				* pagePropertiesNode,
                 svgX = *attlists_.position_.svg_x_;
         }
     }
+	else
+	{
+		if (attlists_.position_.svg_x_)
+			svgX = *attlists_.position_.svg_x_;
+	}
 	return get_value_emu (svgX);
 }
 
@@ -955,9 +960,11 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 	{
 		if (graphicProperties->common_border_attlist_.fo_border_->is_none() == false)
 		{
-			drawing->additional.push_back(_property(L"stroke-color",	graphicProperties->common_border_attlist_.fo_border_->get_color().get_hex_value() ));
-			drawing->additional.push_back(_property(L"stroke-width",	graphicProperties->common_border_attlist_.fo_border_->get_length().get_value_unit(odf_types::length::pt) ));
+			drawing->additional.push_back(_property(L"stroke-color", graphicProperties->common_border_attlist_.fo_border_->get_color().get_hex_value() ));
+			drawing->additional.push_back(_property(L"stroke-width", graphicProperties->common_border_attlist_.fo_border_->get_length().get_value_unit(odf_types::length::pt) ));
+			drawing->additional.push_back(_property(L"stroke", graphicProperties->common_border_attlist_.fo_border_->get_style()));
 
+			drawing->inFrame = true;
 		}
 	}
 //----------------------------------------------------
@@ -1648,10 +1655,10 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 	oox::_docx_drawing *drawing =  dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get());
 	try
 	{
-        std::wstring href		= xlink_attlist_.href_.get_value_or(L"");
-		std::wstring odfPath	= Context.root()->get_folder();
-		std::wstring tempPath	= Context.root()->get_temp_folder();
-		
+		std::wstring href = xlink_attlist_.href_.get_value_or(L"");
+		std::wstring odfPath = Context.root()->get_folder();
+		std::wstring tempPath = Context.root()->get_temp_folder();
+
 		if (!odf_document_ && false == href.empty())
 		{
 			if (href[0] == L'#') href = href.substr(1);
@@ -1665,35 +1672,35 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				odf_document_ = odf_document_ptr(new odf_document(objectPath, tempPath, L""));
 			}
 		}
-//---------------------------------------------------------------------------------------------------------------------
-		office_element* contentSubDoc	= odf_document_ ? odf_document_->get_impl()->get_content() : NULL;
-		
-		object_odf_context	objectBuild (href);
+		//---------------------------------------------------------------------------------------------------------------------
+		office_element* contentSubDoc = odf_document_ ? odf_document_->get_impl()->get_content() : NULL;
+
+		object_odf_context	objectBuild(href);
 		if (contentSubDoc)
 		{
 			process_build_object process_build_object_(objectBuild, odf_document_.get());
-			contentSubDoc->accept(process_build_object_); 
+			contentSubDoc->accept(process_build_object_);
 
 			if (objectBuild.table_table_)
 			{
 				oox::xlsx_conversion_context xlsx_context(odf_document_.get());
 				cpdoccore::oox::package::xlsx_document outputXlsx;
-	
-				xlsx_context.set_output_document (&outputXlsx);
+
+				xlsx_context.set_output_document(&outputXlsx);
 
 				xlsx_context.start_document();
-					objectBuild.table_table_->xlsx_convert(xlsx_context);
+				objectBuild.table_table_->xlsx_convert(xlsx_context);
 				xlsx_context.end_document();
-				
+
 				std::wstring href_folder = tempPath + FILE_SEPARATOR_STR + L"temp_xlsx";
 				NSDirectory::CreateDirectory(href_folder);
 				outputXlsx.write(href_folder);
 
 				std::wstring href = L"Microsoft_Excel_Worksheet_" + std::to_wstring(Context.get_mediaitems()->count_object + 1) + L".xlsx";
-				
+
 				COfficeUtils oCOfficeUtils(NULL);
 				if (S_OK == oCOfficeUtils.CompressFileOrDirectory(href_folder, odfPath + FILE_SEPARATOR_STR + href, true))
-				{				
+				{
 					objectBuild.embeddedData = href;
 				}
 			}
@@ -1715,40 +1722,40 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				xlsx_context.get_table_context().end_table();
 
 				xlsx_context.get_drawing_context().process_objects(xlsx_context.get_table_metrics());
-				
+
 				std::wstringstream strm;
 				xlsx_context.get_drawing_context().serialize(strm, L"cdr");
-		        
+
 				const std::pair<std::wstring, std::wstring> drawingName =
-					xlsx_context.get_drawing_context_handle()->add_drawing_xml(strm.str(), xlsx_context.get_drawing_context().get_drawings(), oox::typeChartUserShapes );
+					xlsx_context.get_drawing_context_handle()->add_drawing_xml(strm.str(), xlsx_context.get_drawing_context().get_drawings(), oox::typeChartUserShapes);
 
 				objectBuild.userShapes = drawingName;
 			}
 
-			objectBuild.docx_convert(Context);		
-		}		
-//------------------------------------------------------------------------------------------------------------
+			objectBuild.docx_convert(Context);
+		}
+		//------------------------------------------------------------------------------------------------------------
 		if (!frame || !drawing)
 		{
 			objectBuild.object_type_ = 0;
 		}
 
 		if (objectBuild.object_type_ == 1) //диаграмма
-		{	
+		{
 			drawing->type = oox::typeChart;
-			
-			bool isMediaInternal = true;        
+
+			bool isMediaInternal = true;
 			drawing->objectId = Context.get_mediaitems()->add_or_find(href, drawing->type, isMediaInternal, href, Context.get_type_place());
 		}
-		else if (objectBuild.object_type_ == 2 ) //embedded text
-		{	
+		else if (objectBuild.object_type_ == 2) //embedded text
+		{
 			//text in text not support
 		}
 		else if (objectBuild.object_type_ == 3) //мат формулы
 		{
-			const std::wstring & content = Context.get_drawing_context().get_text_stream_frame();
+			const std::wstring& content = Context.get_drawing_context().get_text_stream_frame();
 
-			bool in_frame	= !drawing->isInline;
+			bool in_frame = !drawing->isInline || drawing->inFrame;
 			
 			bool runState	= Context.get_run_state();
 			bool pState		= Context.get_paragraph_state();

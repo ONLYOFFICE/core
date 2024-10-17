@@ -5,13 +5,22 @@ namespace NSCSS
 	CNode::CNode()
 	{}
 
-	CNode::CNode(std::wstring wsName, std::wstring wsClass, std::wstring wsId)
+	CNode::CNode(const std::wstring& wsName, const std::wstring& wsClass, const std::wstring& wsId)
 		: m_wsName(wsName), m_wsClass(wsClass), m_wsId(wsId)
 	{}
 
 	bool CNode::Empty() const
 	{
 		return m_wsName.empty() && m_wsClass.empty() && m_wsId.empty() && m_wsStyle.empty();
+	}
+
+	void CNode::Clear()
+	{
+		m_wsName     .clear();
+		m_wsClass    .clear();
+		m_wsId       .clear();
+		m_wsStyle    .clear();
+		m_mAttributes.clear();
 	}
 
 	std::vector<std::wstring> CNode::GetData() const

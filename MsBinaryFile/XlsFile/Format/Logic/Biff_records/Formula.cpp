@@ -61,8 +61,14 @@ void Formula::readFields(CFRecord& record)
 	fShrFmla		= GETBIT(flags, 3);
 	fClearErrors	= GETBIT(flags, 5);
 	
-	_UINT32 chn = 0;
-	record >> chn; // cache
+	if (bBiff_3_4 && record.getGlobalWorkbookInfo()->Version < 0x0600)
+	{
+	}
+	else
+	{
+		_UINT32 chn = 0;
+		record >> chn; // cache
+	}
 	
 	formula.load(record);
 }

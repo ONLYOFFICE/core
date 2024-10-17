@@ -14,8 +14,9 @@ namespace NSDocxRenderer
 		void Clear();
 		void ToXml(NSStringUtils::CStringBuilder& oWriter);
 
-		std::shared_ptr<const CFontStyle> GetOrAddFontStyle(const CFontStyle& oFontStyle);
-		std::shared_ptr<const CFontStyle> GetOrAddFontStyle(const NSStructures::CBrush& oBrush,
+		std::shared_ptr<CFontStyle> GetOrAddFontStyle(const CFontStyle& oFontStyle);
+		std::shared_ptr<CFontStyle> GetOrAddFontStyle(
+			const NSStructures::CBrush& oBrush,
 			const std::wstring& wsFontName,
 			double dFontSize,
 			bool bItalic,

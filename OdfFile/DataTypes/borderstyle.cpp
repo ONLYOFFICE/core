@@ -47,15 +47,14 @@ std::wostream & operator << (std::wostream & _Wostream, const border_style & bor
 
     switch (borderStyle.get_style())
     {
-        case border_style::none:        _Wostream << L" none "; break;
-        case border_style::double_:     _Wostream << L" double "; break;
-        case border_style::dotted:      _Wostream << L" dotted "; break;
-        case border_style::dashed:      _Wostream << L" dashed "; break;
-        case border_style::dot_dashed:  _Wostream << L" dot-dashed "; break;
-        case border_style::dash_dot:    _Wostream << L" dash-dot "; break;
-        case border_style::dash_dot_dot:  _Wostream << L" dash-dot-dot "; break;
-        case border_style::fine_dashed:  _Wostream << L" fine-dashed "; break;
-        case border_style::double_thin:  _Wostream << L" double-thin "; break;
+        case border_style::none:            _Wostream << L" none "; break;
+        case border_style::double_:         _Wostream << L" double "; break;
+        case border_style::dotted:          _Wostream << L" dotted "; break;
+        case border_style::dash:            _Wostream << L" dashed "; break;
+        case border_style::dot_dash:        _Wostream << L" dash-dot "; break;
+        case border_style::dot_dot_dash:    _Wostream << L" dash-dot-dot "; break;
+        case border_style::fine_dashed:     _Wostream << L" fine-dashed "; break;
+        case border_style::double_thin:     _Wostream << L" double-thin "; break;
         case border_style::solid:
         default:
             _Wostream <<  L" solid "; break;
@@ -99,7 +98,11 @@ border_style& border_style::operator =(const border_style& Value)
 
     return *this;
 }
-border_style::border_style(const std::wstring & Value) : initialized_(false), none_(false)
+border_style::border_style() : initialized_(false), none_(true), style_(none)
+{
+}
+
+border_style::border_style(const std::wstring & Value) : initialized_(false), none_(false), style_(none)
 {
     if (Value.empty()) return;
 
@@ -128,10 +131,10 @@ border_style::border_style(const std::wstring & Value) : initialized_(false), no
                 if (splitted[1] == L"solid")        style_ = solid;
                 if (splitted[1] == L"double")       style_ = double_;
                 if (splitted[1] == L"dotted")       style_ = dotted;
-                if (splitted[1] == L"dashed")       style_ = dashed;
-                if (splitted[1] == L"dot-dashed")   style_ = dot_dashed;
-                if (splitted[1] == L"dash-dot")     style_ = dash_dot;
-                if (splitted[1] == L"dash-dot-dot") style_ = dash_dot_dot;
+                if (splitted[1] == L"dashed")       style_ = dash;
+                if (splitted[1] == L"dot-dashed")   style_ = dot_dash;
+                if (splitted[1] == L"dash-dot")     style_ = dot_dash;
+                if (splitted[1] == L"dash-dot-dot") style_ = dot_dot_dash;
                 if (splitted[1] == L"fine-dashed")  style_ = fine_dashed;
                 if (splitted[1] == L"double-thin")  style_ = double_thin;                
             }
@@ -164,6 +167,21 @@ border_style::border_style(const color & color_,  const type & style_, const len
 		none_ = false;
 
     initialized_ = true;
+}
+bool border_style::initialized() const    { return initialized_; }
+bool border_style::is_none()     const    { return none_; }
+
+const length& border_style::get_length()const
+{
+    return length_;
+}
+const border_style::type& border_style::get_style() const
+{
+    return style_;
+}
+const color& border_style::get_color() const
+{
+    return color_;
 }
 
 

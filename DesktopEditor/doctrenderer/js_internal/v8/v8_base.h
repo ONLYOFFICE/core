@@ -180,7 +180,7 @@ public:
 		return m_pAllocator;
 	}
 
-	v8::Isolate* CreateNew()
+	v8::Isolate* CreateNew(v8::StartupData* startupData = nullptr)
 	{
 		v8::Isolate::CreateParams create_params;
 #ifndef V8_OS_XP
@@ -198,6 +198,10 @@ public:
 		create_params.constraints.ConfigureDefaults(
 					v8::base::SysInfo::AmountOfPhysicalMemory(),
 					nMaxVirtualMemory);
+#endif
+
+#ifdef V8_SUPPORT_SNAPSHOTS
+		create_params.snapshot_blob = startupData;
 #endif
 
 		return v8::Isolate::New(create_params);
@@ -701,6 +705,15 @@ namespace NSJSBase
 			_value->value = value;
 			return _value;
 		}
+
+		virtual void Detach()
+		{
+#ifdef V8_ARRAY_BUFFER_USE_BACKING_STORE
+			value->Buffer()->Detach();
+#else
+			value->Buffer()->Neuter();
+#endif
+		}
 	};
 
 	class CJSFunctionV8 : public CJSValueV8Template<v8::Function, CJSFunction>
@@ -839,9 +852,13 @@ namespace NSJSBase
 		v8::Persistent<v8::Context>     m_contextPersistent;
 		v8::Local<v8::Context>			m_context;
 
+		v8::StartupData m_startup_data;
+
 	public:
 		CJSContextPrivate() : m_isolate(NULL)
 		{
+			m_startup_data.data = NULL;
+			m_startup_data.raw_size = 0;
 		}
 
 		void InsertToGlobal(const std::string& name, v8::FunctionCallback creator)
@@ -849,6 +866,12 @@ namespace NSJSBase
 			v8::Local<v8::FunctionTemplate> templ = v8::FunctionTemplate::New(m_isolate, creator);
 			v8::MaybeLocal<v8::Function> oFuncMaybeLocal = templ->GetFunction(m_context);
 			m_context->Global()->Set(m_context, CreateV8String(m_isolate, name.c_str()), oFuncMaybeLocal.ToLocalChecked());
+		}
+
+		~CJSContextPrivate()
+		{
+			if (m_startup_data.data)
+				delete [] m_startup_data.data;
 		}
 	};
 
@@ -968,67 +991,76 @@ inline void js_return(const v8::PropertyCallbackInfo<v8::Value>& info, JSSmart<N
 #define PROPERTY_GET(NAME, NAME_EMBED)                                                      \
 	void NAME(v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info) \
 {                                                                                           \
-	CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(info.Holder());                  \
+	CURRENTWRAPPER* _this = dynamic_cast<CURRENTWRAPPER*>(unwrap_native(info.Holder()));    \
+	if (!_this) return;                                                                     \
 	JSSmart<CJSValue> ret = _this->NAME_EMBED();                                            \
 	js_return(info, ret);                                                                   \
 	}
 
-#define FUNCTION_WRAPPER_V8_0(NAME, NAME_EMBED)										\
-	void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                      \
-{                                                                                   \
-	CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(args.Holder());          \
-	JSSmart<CJSValue> ret = _this->NAME_EMBED();                                    \
-	js_return(args, ret);                                                           \
+#define FUNCTION_WRAPPER_V8_0(NAME, NAME_EMBED)                                             \
+	void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                              \
+{                                                                                           \
+	CURRENTWRAPPER* _this = dynamic_cast<CURRENTWRAPPER*>(unwrap_native(args.Holder()));    \
+	if (!_this) return;                                                                     \
+	JSSmart<CJSValue> ret = _this->NAME_EMBED();                                            \
+	js_return(args, ret);                                                                   \
 	}
 
 #define FUNCTION_WRAPPER_V8(NAME, NAME_EMBED) FUNCTION_WRAPPER_V8_0(NAME, NAME_EMBED)
 
-#define FUNCTION_WRAPPER_V8_1(NAME, NAME_EMBED)                                     \
-	void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                      \
-{                                                                                   \
-	CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(args.Holder());          \
-	JSSmart<CJSValue> ret = _this->NAME_EMBED(js_value(args[0]));                   \
-	js_return(args, ret);                                                           \
+#define FUNCTION_WRAPPER_V8_1(NAME, NAME_EMBED)                                             \
+	void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                              \
+{                                                                                           \
+	CURRENTWRAPPER* _this = dynamic_cast<CURRENTWRAPPER*>(unwrap_native(args.Holder()));    \
+	if (!_this) return;                                                                     \
+	JSSmart<CJSValue> ret = _this->NAME_EMBED(js_value(args[0]));                           \
+	js_return(args, ret);                                                                   \
 	}
-#define FUNCTION_WRAPPER_V8_2(NAME, NAME_EMBED)                                         \
-	void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                          \
-{                                                                                       \
-	CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(args.Holder());              \
-	JSSmart<CJSValue> ret = _this->NAME_EMBED(js_value(args[0]), js_value(args[1]));    \
-	js_return(args, ret);                                                               \
+#define FUNCTION_WRAPPER_V8_2(NAME, NAME_EMBED)                                             \
+	void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                              \
+{                                                                                           \
+	CURRENTWRAPPER* _this = dynamic_cast<CURRENTWRAPPER*>(unwrap_native(args.Holder()));    \
+	if (!_this) return;                                                                     \
+	JSSmart<CJSValue> ret = _this->NAME_EMBED(js_value(args[0]), js_value(args[1]));        \
+	js_return(args, ret);                                                                   \
 	}
 #define FUNCTION_WRAPPER_V8_3(NAME, NAME_EMBED)                                                             \
 	void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                                              \
 {                                                                                                           \
-	CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(args.Holder());                                  \
+	CURRENTWRAPPER* _this = dynamic_cast<CURRENTWRAPPER*>(unwrap_native(args.Holder()));                    \
+	if (!_this) return;                                                                                     \
 	JSSmart<CJSValue> ret = _this->NAME_EMBED(js_value(args[0]), js_value(args[1]), js_value(args[2]));     \
 	js_return(args, ret);                                                                                   \
 	}
 #define FUNCTION_WRAPPER_V8_4(NAME, NAME_EMBED)                                                                             \
 	void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                                                              \
 {                                                                                                                           \
-	CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(args.Holder());                                                  \
+	CURRENTWRAPPER* _this = dynamic_cast<CURRENTWRAPPER*>(unwrap_native(args.Holder()));                                    \
+	if (!_this) return;                                                                                                     \
 	JSSmart<CJSValue> ret = _this->NAME_EMBED(js_value(args[0]), js_value(args[1]), js_value(args[2]), js_value(args[3]));  \
 	js_return(args, ret);                                                                                                   \
 	}
 #define FUNCTION_WRAPPER_V8_5(NAME, NAME_EMBED)                                                                                                 \
 	void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                                                                                  \
 {                                                                                                                                               \
-	CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(args.Holder());                                                                      \
+	CURRENTWRAPPER* _this = dynamic_cast<CURRENTWRAPPER*>(unwrap_native(args.Holder()));                                                        \
+	if (!_this) return;                                                                                                                         \
 	JSSmart<CJSValue> ret = _this->NAME_EMBED(js_value(args[0]), js_value(args[1]), js_value(args[2]), js_value(args[3]), js_value(args[4]));   \
 	js_return(args, ret);                                                                                                                       \
 	}
 #define FUNCTION_WRAPPER_V8_6(NAME, NAME_EMBED)                                                                                                                    \
 	void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                                                                                                     \
 {                                                                                                                                                                  \
-	CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(args.Holder());                                                                                         \
+	CURRENTWRAPPER* _this = dynamic_cast<CURRENTWRAPPER*>(unwrap_native(args.Holder()));                                                                           \
+	if (!_this) return;                                                                                                                                            \
 	JSSmart<CJSValue> ret = _this->NAME_EMBED(js_value(args[0]), js_value(args[1]), js_value(args[2]), js_value(args[3]), js_value(args[4]), js_value(args[5]));   \
 	js_return(args, ret);                                                                                                                                          \
 	}
 #define FUNCTION_WRAPPER_V8_7(NAME, NAME_EMBED)                                                                                                 \
 	void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                                                                                  \
 {                                                                                                                                               \
-	CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(args.Holder());                                                                      \
+	CURRENTWRAPPER* _this = dynamic_cast<CURRENTWRAPPER*>(unwrap_native(args.Holder()));                                                        \
+	if (!_this) return;                                                                                                                         \
 	JSSmart<CJSValue> ret = _this->NAME_EMBED(js_value(args[0]), js_value(args[1]), js_value(args[2]), js_value(args[3]), js_value(args[4]),    \
 	js_value(args[5]), js_value(args[6]));                                                                                                      \
 	js_return(args, ret);                                                                                                                       \
@@ -1036,7 +1068,8 @@ inline void js_return(const v8::PropertyCallbackInfo<v8::Value>& info, JSSmart<N
 #define FUNCTION_WRAPPER_V8_8(NAME, NAME_EMBED)                                                                                                 \
 	void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                                                                                  \
 {                                                                                                                                               \
-	CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(args.Holder());                                                                      \
+	CURRENTWRAPPER* _this = dynamic_cast<CURRENTWRAPPER*>(unwrap_native(args.Holder()));                                                        \
+	if (!_this) return;                                                                                                                         \
 	JSSmart<CJSValue> ret = _this->NAME_EMBED(js_value(args[0]), js_value(args[1]), js_value(args[2]), js_value(args[3]), js_value(args[4]),    \
 	js_value(args[5]), js_value(args[6]), js_value(args[7]));                                                                                   \
 	js_return(args, ret);                                                                                                                       \
@@ -1044,7 +1077,8 @@ inline void js_return(const v8::PropertyCallbackInfo<v8::Value>& info, JSSmart<N
 #define FUNCTION_WRAPPER_V8_9(NAME, NAME_EMBED)                                                                                                 \
 	void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                                                                                  \
 {                                                                                                                                               \
-	CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(args.Holder());                                                                      \
+	CURRENTWRAPPER* _this = dynamic_cast<CURRENTWRAPPER*>(unwrap_native(args.Holder()));                                                        \
+	if (!_this) return;                                                                                                                         \
 	JSSmart<CJSValue> ret = _this->NAME_EMBED(js_value(args[0]), js_value(args[1]), js_value(args[2]), js_value(args[3]), js_value(args[4]),    \
 	js_value(args[5]), js_value(args[6]), js_value(args[7]), js_value(args[8]));                                                                \
 	js_return(args, ret);                                                                                                                       \
@@ -1052,7 +1086,8 @@ inline void js_return(const v8::PropertyCallbackInfo<v8::Value>& info, JSSmart<N
 #define FUNCTION_WRAPPER_V8_10(NAME, NAME_EMBED)                                                                                                                \
 	void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                                                                                                  \
 {                                                                                                                                                               \
-	CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(args.Holder());                                                                                      \
+	CURRENTWRAPPER* _this = dynamic_cast<CURRENTWRAPPER*>(unwrap_native(args.Holder()));                                                                        \
+	if (!_this) return;                                                                                                                                         \
 	JSSmart<CJSValue> ret = _this->NAME_EMBED(js_value(args[0]), js_value(args[1]), js_value(args[2]), js_value(args[3]), js_value(args[4]), js_value(args[5]), \
 	js_value(args[6]), js_value(args[7]), js_value(args[8]), js_value(args[9]));                                                                                \
 	js_return(args, ret);                                                                                                                                       \
@@ -1060,7 +1095,8 @@ inline void js_return(const v8::PropertyCallbackInfo<v8::Value>& info, JSSmart<N
 #define FUNCTION_WRAPPER_V8_13(NAME, NAME_EMBED)                                                                                                                \
 	void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                                                                                                  \
 {                                                                                                                                                               \
-	CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(args.Holder());                                                                                      \
+	CURRENTWRAPPER* _this = dynamic_cast<CURRENTWRAPPER*>(unwrap_native(args.Holder()));                                                                        \
+	if (!_this) return;                                                                                                                                         \
 	JSSmart<CJSValue> ret = _this->NAME_EMBED(js_value(args[0]), js_value(args[1]), js_value(args[2]), js_value(args[3]), js_value(args[4]), js_value(args[5]), \
 	js_value(args[6]), js_value(args[7]), js_value(args[8]), js_value(args[9]), js_value(args[10]), js_value(args[11]),                                         \
 	js_value(args[12]));                                                                                                                                        \

@@ -77,7 +77,7 @@ namespace PPTX
 
 			nullable<PrstDash>			prstDash;
 			//custDash (Custom Dash)  ยง20.1.8.21 
-			LineJoin					Join;
+			nullable<LineJoin>			join;
 			nullable<LineEnd>			headEnd;
 			nullable<LineEnd>			tailEnd;
 

@@ -69,6 +69,9 @@
 #include "../../XlsbFormat/Biff12_unions/TABLESLICERSEX.h"
 #include "../../XlsbFormat/Biff12_unions/FRTWORKBOOK.h"
 #include "../../XlsbFormat/Biff12_unions/FRTPIVOTCACHEDEF.h"
+#include "../../XlsbFormat/Biff12_unions/FMD.h"
+#include "../../XlsbFormat/Biff12_unions/DYNAMICARRAYMETADATA.h"
+#include "../../XlsbFormat/Biff12_unions/RICHDATAMETADATA.h"
 #include "../../XlsbFormat/Biff12_records/FRTBegin.h"
 
 namespace OOX
@@ -908,6 +911,32 @@ namespace OOX
 			}
             return objectPtr;
 		}
+		XLS::BaseObjectPtr COfficeArtExtensionList::toBinMetadata()
+		{
+			XLS::BaseObjectPtr objectPtr;
+			if(m_arrExt.empty())
+				return objectPtr;
+			for(auto i:m_arrExt)
+			{
+                if(i->m_sUri == L"{bdbb8cdc-fa1e-496e-a857-3c3f30c029c3}")
+				{
+					auto ptr(new XLSB::FMD);
+					objectPtr = XLS::BaseObjectPtr(ptr);
+					auto ptr1(new XLSB::DYNAMICARRAYMETADATA);
+					ptr->m_DYNAMICARRAYMETADATA = XLS::BaseObjectPtr{ptr1};
+					ptr1->m_EndDynamicArrayPr = i->m_oDynamicArrayProperties->toBin();
+				}
+                else if(i->m_sUri == L"{3E2802C4-A4D2-4D8B-9148-E3BE6C30E623}"
+                        || i->m_sUri == L"{3e2802c4-a4d2-4d8b-9148-e3be6c30e623}")
+				{
+					auto ptr(new XLSB::FMD);
+					objectPtr = XLS::BaseObjectPtr(ptr);
+					auto ptr1(new XLSB::RICHDATAMETADATA);
+					ptr1->m_BeginRichValueBlock = i->m_oRichValueBlock->toBin();
+				}
+			}
+			return objectPtr;
+		}
 		void COfficeArtExtensionList::fromBin(XLS::BaseObjectPtr& obj)
         {
             if (obj->get_type() == XLS::typeFRTWORKBOOK)
@@ -1156,6 +1185,32 @@ namespace OOX
                         if (oExt)
                             m_arrExt.push_back( oExt );
                     }
+                }
+            }
+			else if (obj->get_type() == XLS::typeFMD)
+            {
+                auto ptr = static_cast<XLSB::FMD*>(obj.get());
+
+                if (ptr != nullptr)
+                {
+                    if (ptr->m_DYNAMICARRAYMETADATA != nullptr)
+                    {
+                        OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+                        oExt->m_sUri = L"{bdbb8cdc-fa1e-496e-a857-3c3f30c029c3}";
+                        oExt->m_sAdditionalNamespace = L"xmlns:xda=\"http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray\"";
+						oExt->m_oDynamicArrayProperties = ptr->m_DYNAMICARRAYMETADATA;
+                        if (oExt)
+                            m_arrExt.push_back( oExt );
+                    }
+					else if(ptr->m_RICHDATAMETADATA != nullptr)
+					{
+						OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+                        oExt->m_sUri = L"{3E2802C4-A4D2-4D8B-9148-E3BE6C30E623}";
+                        oExt->m_sAdditionalNamespace = L"xmlns:xlrd=\"http://schemas.microsoft.com/office/spreadsheetml/2017/richdata\"";
+						oExt->m_oRichValueBlock = ptr->m_RICHDATAMETADATA;
+                        if (oExt)
+                            m_arrExt.push_back( oExt );
+					}
                 }
             }
         }

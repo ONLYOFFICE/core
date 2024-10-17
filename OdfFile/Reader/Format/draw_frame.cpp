@@ -313,7 +313,6 @@ void draw_frame::add_child_element( xml::sax * Reader, const std::wstring & Ns, 
     }
 }
 
-
 ///////////////////////
 
 void draw_text_box_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )

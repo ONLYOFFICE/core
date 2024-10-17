@@ -35,8 +35,6 @@
 #include "../BinWriter/BinReaderWriterDefines.h"
 #include "../../Sheets/Writer/BinaryReader.h"
 
-#include "../../../PPTXFormat/App.h"
-#include "../../../PPTXFormat/Core.h"
 #include "../../../PPTXFormat/Logic/HeadingVariant.h"
 
 #include "../../../DocxFormat/Settings/Settings.h"
@@ -1194,6 +1192,16 @@ int Binary_pPrReader::ReadSpacing(BYTE type, long length, void* poResult)
 		pSpacing->m_oAfterAutospacing.Init();
 		pSpacing->m_oAfterAutospacing->FromBool(m_oBufferedStream.GetBool());
 		break;
+	case c_oSerProp_pPrType::Spacing_AfterLines:
+	{
+		pSpacing->m_oAfterLines.Init();
+		pSpacing->m_oAfterLines->SetValue(m_oBufferedStream.GetLong());
+	}break;
+	case c_oSerProp_pPrType::Spacing_BeforeLines:
+	{
+		pSpacing->m_oBeforeLines.Init();
+		pSpacing->m_oBeforeLines->SetValue(m_oBufferedStream.GetLong());
+	}break;
 	default:
 		res = c_oSerConstants::ReadUnknown;
 		break;
@@ -1356,10 +1364,16 @@ int Binary_pPrReader::ReadBorder(BYTE type, long length, void* poResult)
 	else if ( c_oSerBorderType::Value == type )
 	{
 		pBorder->m_oVal.Init();
-		if (border_Single == m_oBufferedStream.GetUChar())
+
+		if (0 != m_oBufferedStream.GetUChar())
 			pBorder->m_oVal->SetValue(SimpleTypes::bordervalueSingle);
 		else
 			pBorder->m_oVal->SetValue(SimpleTypes::bordervalueNone);
+	}
+	else if (c_oSerBorderType::ValueType == type)
+	{
+		pBorder->m_oVal.Init();
+		pBorder->m_oVal->SetValue((SimpleTypes::EBorder)m_oBufferedStream.GetLong());
 	}
 	else if ( c_oSerBorderType::ColorTheme == type )
 	{
@@ -1544,6 +1558,11 @@ int Binary_pPrReader::Read_SecPr(BYTE type, long length, void* poResult)
 		pSectPr->m_oRtlGutter.Init();
 		pSectPr->m_oRtlGutter->m_oVal.FromBool(m_oBufferedStream.GetBool());
 	}
+	else if (c_oSerProp_secPrType::docGrid == type)
+	{
+		pSectPr->m_oDocGrid.Init();
+		READ1_DEF(length, res, this->ReadDocGrid, pSectPr->m_oDocGrid.GetPointer());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -1573,6 +1592,30 @@ int Binary_pPrReader::ReadFootnotePr(BYTE type, long length, void* poResult)
 		pFtnProps->m_oPos.Init();
 		pFtnProps->m_oPos->m_oVal.Init();
 		pFtnProps->m_oPos->m_oVal->SetValue((SimpleTypes::EFtnPos)m_oBufferedStream.GetUChar());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int Binary_pPrReader::ReadDocGrid(BYTE type, long length, void* poResult)
+{
+	ComplexTypes::Word::CDocGrid* pDocGrid = static_cast<ComplexTypes::Word::CDocGrid*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	
+	if (c_oSerProp_DocGrid::Type == type)
+	{
+		pDocGrid->m_oType.Init();
+		pDocGrid->m_oType->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else if (c_oSerProp_DocGrid::CharSpace == type)
+	{
+		pDocGrid->m_oCharSpace.Init();
+		pDocGrid->m_oCharSpace->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSerProp_DocGrid::LinePitch == type)
+	{
+		pDocGrid->m_oLinePitch.Init();
+		pDocGrid->m_oLinePitch->SetValue(m_oBufferedStream.GetLong());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -4026,6 +4069,40 @@ int Binary_SettingsTableReader::ReadSettings(BYTE type, long length, void* poRes
 		pSettings->m_oConsecutiveHyphenLimit.Init();
 		pSettings->m_oConsecutiveHyphenLimit->m_oVal = m_oBufferedStream.GetLong();
 	}
+	else if (c_oSer_SettingsType::DrawingGridHorizontalOrigin == type)
+	{
+		pSettings->m_oDrawingGridHorizontalOrigin.Init();
+		pSettings->m_oDrawingGridHorizontalOrigin->m_oVal.Init();
+		pSettings->m_oDrawingGridHorizontalOrigin->m_oVal->FromTwips(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSer_SettingsType::DrawingGridHorizontalSpacing == type)
+	{
+		pSettings->m_oDrawingGridHorizontalSpacing.Init();
+		pSettings->m_oDrawingGridHorizontalSpacing->m_oVal.Init();
+		pSettings->m_oDrawingGridHorizontalSpacing->m_oVal->FromTwips(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSer_SettingsType::DrawingGridVerticalOrigin == type)
+	{
+		pSettings->m_oDrawingGridVerticalOrigin.Init();
+		pSettings->m_oDrawingGridVerticalOrigin->m_oVal.Init();
+		pSettings->m_oDrawingGridVerticalOrigin->m_oVal->FromTwips(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSer_SettingsType::DrawingGridVerticalSpacing == type)
+	{
+		pSettings->m_oDrawingGridVerticalSpacing.Init();
+		pSettings->m_oDrawingGridVerticalSpacing->m_oVal.Init();
+		pSettings->m_oDrawingGridVerticalSpacing->m_oVal->FromTwips(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSer_SettingsType::DisplayHorizontalDrawingGridEvery == type)
+	{
+		pSettings->m_oDisplayHorizontalDrawingGridEvery.Init();
+		pSettings->m_oDisplayHorizontalDrawingGridEvery->m_oVal = m_oBufferedStream.GetLong();
+	}
+	else if (c_oSer_SettingsType::DisplayVerticalDrawingGridEvery == type)
+	{
+		pSettings->m_oDisplayVerticalDrawingGridEvery.Init();
+		pSettings->m_oDisplayVerticalDrawingGridEvery->m_oVal = m_oBufferedStream.GetLong();
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -5956,11 +6033,12 @@ int Binary_DocumentTableReader::ReadMathArg(BYTE type, long length, void* poResu
 		OOX::Logic::CMoveToRangeEnd oMoveToRangeEnd;
 		READ1_DEF(length, res, this->ReadMoveToRangeEnd, &oMoveToRangeEnd);
 		GetRunStringWriter().WriteString(oMoveToRangeEnd.toXML());
-	}
+	}	
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+
 int Binary_DocumentTableReader::ReadMathAcc(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
@@ -7439,6 +7517,75 @@ int Binary_DocumentTableReader::ReadMathMRun(BYTE type, long length, void* poRes
 		TrackRevision oTrackRevision;
 		READ1_DEF(length, res, this->ReadMathInsDel, &oTrackRevision);
 		oTrackRevision.Write(&GetRunStringWriter(), _T("w:ins"));
+	}
+	else if (c_oSer_OMathContentType::AnnotationRef == type)
+	{
+		OOX::Logic::CAnnotationRef oAnnotationRef;
+		GetRunStringWriter().WriteString(oAnnotationRef.toXML());
+	}
+	else if (c_oSer_OMathContentType::CommentReference == type)
+	{
+		long nId = 0;
+		READ1_DEF(length, res, this->ReadComment, &nId);
+		if (NULL != m_oFileWriter.m_pComments)
+		{
+			CComment* pComment = m_oFileWriter.m_pComments->get(nId);
+			if (NULL != pComment) // могут быть и без start/end
+			{
+				GetRunStringWriter().WriteString(pComment->writeRef(std::wstring(_T("")), std::wstring(_T("w:commentReference")), std::wstring(_T(""))));
+			}
+		}
+	}
+	else if (c_oSer_OMathContentType::Cr == type)
+	{
+		OOX::Logic::CCr oCr;
+		GetRunStringWriter().WriteString(oCr.toXML());
+	}
+	else if (c_oSer_OMathContentType::EndnoteRef == type)
+	{
+		OOX::Logic::CEndnoteRef oEndnoteRef;
+		GetRunStringWriter().WriteString(oEndnoteRef.toXML());
+	}
+	else if (c_oSer_OMathContentType::FootnoteRef == type)
+	{
+		OOX::Logic::CFootnoteRef oFootnoteRef;
+		GetRunStringWriter().WriteString(oFootnoteRef.toXML());
+	}
+	else if (c_oSer_OMathContentType::EndnoteReference == type)
+	{
+		OOX::Logic::CEndnoteReference oEndnoteReference;
+		READ1_DEF(length, res, this->ReadEndnoteRef, &oEndnoteReference);
+		GetRunStringWriter().WriteString(oEndnoteReference.toXML());
+	}
+	else if (c_oSer_OMathContentType::FootnoteReference == type)
+	{
+		OOX::Logic::CFootnoteReference oFootnoteReference;
+		READ1_DEF(length, res, this->ReadFootnoteRef, &oFootnoteReference);
+		GetRunStringWriter().WriteString(oFootnoteReference.toXML());
+	}
+	else if (c_oSer_OMathContentType::LastRenderedPageBreak == type)
+	{
+		OOX::Logic::CLastRenderedPageBreak oLastRenderedPageBreak;
+		GetRunStringWriter().WriteString(oLastRenderedPageBreak.toXML());
+	}
+	else if (c_oSer_OMathContentType::NoBreakHyphen == type)
+	{
+		OOX::Logic::CNoBreakHyphen oNoBreakHyphen;
+		GetRunStringWriter().WriteString(oNoBreakHyphen.toXML());
+	}
+	else if (c_oSer_OMathContentType::SoftHyphen == type)
+	{
+		OOX::Logic::CSoftHyphen oSoftHyphen;
+		GetRunStringWriter().WriteString(oSoftHyphen.toXML());
+	}
+	else if (c_oSer_OMathContentType::Tab == type)
+	{
+		OOX::Logic::CTab oTab;
+		GetRunStringWriter().WriteString(oTab.toXML());
+	}
+	else if (c_oSer_OMathContentType::Sym == type)
+	{
+		std::wstring sText = m_oBufferedStream.GetString3(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -9740,6 +9887,10 @@ int Binary_DocumentTableReader::ReadSdtPicture(BYTE type, long length, void* poR
 	{
 		pPicture->m_oShiftY = m_oBufferedStream.GetDoubleReal();
 	}
+	else if (c_oSerSdt::PictureFormPrSignature == type)
+	{
+		pPicture->m_oSignature = m_oBufferedStream.GetBool();
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -10171,20 +10322,16 @@ int BinaryFileReader::ReadMainTable()
 			//	break;
 		case c_oSerTableTypes::App:
 		{
-			PPTX::App oApp(NULL);
-			oApp.fromPPTY(&m_oBufferedStream);
 			OOX::CApp* pApp = new OOX::CApp(NULL);
-			pApp->FromPptxApp(&oApp);
+			pApp->fromPPTY(&m_oBufferedStream);
 			pApp->SetRequiredDefaults();
 			m_oFileWriter.m_pApp = pApp;
 		}
 		break;
 		case c_oSerTableTypes::Core:
 		{
-			PPTX::Core oCore(NULL);
-			oCore.fromPPTY(&m_oBufferedStream);
 			OOX::CCore* pCore = new OOX::CCore(NULL);
-			pCore->FromPptxCore(&oCore);
+			pCore->fromPPTY(&m_oBufferedStream);
 			pCore->SetRequiredDefaults();
 			m_oFileWriter.m_pCore = pCore;
 		}

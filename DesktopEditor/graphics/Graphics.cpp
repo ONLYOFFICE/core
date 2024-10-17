@@ -68,6 +68,7 @@ namespace Aggplus
 		m_dDpiTile = -1;
 
 		m_pAlphaMask = NULL;
+		m_pSoftMask  = NULL;
 
 		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
 		m_nBlendMode = agg::comp_op_src_over;
@@ -106,6 +107,7 @@ namespace Aggplus
 		m_dDpiTile = -1;
 
 		m_pAlphaMask = NULL;
+		m_pSoftMask  = NULL;
 
 		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
 		m_nBlendMode = agg::comp_op_src_over;
@@ -149,6 +151,7 @@ namespace Aggplus
 		m_dDpiTile = -1;
 
 		m_pAlphaMask = NULL;
+		m_pSoftMask  = NULL;
 
 		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
 		m_nBlendMode = agg::comp_op_src_over;
@@ -164,6 +167,7 @@ namespace Aggplus
 #endif
 
 		RELEASEINTERFACE(m_pAlphaMask);
+		RELEASEINTERFACE(m_pSoftMask);
 
 		while (!m_arLayers.empty())
 		{
@@ -651,7 +655,7 @@ namespace Aggplus
 			if (fabs(dDet) < 0.0001)
 			{
 				path_copy.transform_all_paths(m_oFullTransform.m_internal->m_agg_mtx);
-				dWidth *= sqrt(dDet);
+				dWidth *= sqrt(fabs(dDet));
 
 				bIsUseIdentity = true;
 			}
@@ -1236,9 +1240,7 @@ namespace Aggplus
 		if (m_pAlphaMask)
 			m_pAlphaMask->AddRef();
 
-		return Ok;
-
-		//return CreateLayer();
+		return CreateLayer();
 	}
 
 	Status CGraphics::StartCreatingAlphaMask()
@@ -1275,6 +1277,54 @@ namespace Aggplus
 		return Ok;
 	}
 
+	CSoftMask* CGraphics::CreateSoftMask(bool bAlpha)
+	{
+		if (m_arLayers.empty())
+			return NULL;
+
+		CGraphicsLayer *pCurrentGraphicsLayer = m_arLayers.top();
+		m_arLayers.pop();
+
+		if (pCurrentGraphicsLayer->Empty())
+		{
+			RELEASEINTERFACE(pCurrentGraphicsLayer);
+			return NULL;
+		}
+
+		BYTE* pBuffer = pCurrentGraphicsLayer->GetBuffer();
+		pCurrentGraphicsLayer->ClearBuffer(false);
+
+		RELEASEINTERFACE(pCurrentGraphicsLayer);
+		RELEASEINTERFACE(m_pSoftMask);
+
+		m_pSoftMask = new CSoftMask(pBuffer, m_frame_buffer.ren_buf().width(), m_frame_buffer.ren_buf().height(), bAlpha ? EMaskDataType::Alpha4Buffer : EMaskDataType::ImageBuffer, false, m_frame_buffer.ren_buf().stride() < 0);
+
+		pBuffer = m_arLayers.empty() ? m_pPixels : m_arLayers.top()->GetBuffer();
+		if (!pBuffer)
+		{
+			RELEASEINTERFACE(pCurrentGraphicsLayer);
+			return NULL;
+		}
+
+		m_frame_buffer.ren_buf().attach(pBuffer, m_frame_buffer.ren_buf().width(), m_frame_buffer.ren_buf().height(), m_frame_buffer.ren_buf().stride());
+
+		return m_pSoftMask;
+	}
+
+	Status CGraphics::SetSoftMask(CSoftMask* pSoftMask)
+	{
+		if (m_pSoftMask == pSoftMask)
+			return Ok;
+
+		RELEASEINTERFACE(m_pSoftMask);
+		m_pSoftMask = pSoftMask;
+
+		if (m_pSoftMask)
+			m_pSoftMask->AddRef();
+
+		return Ok;
+	}
+
 	Status CGraphics::AddLayer(CGraphicsLayer *pGraphicsLayer)
 	{
 		if (NULL == pGraphicsLayer || pGraphicsLayer->Empty())
@@ -1287,7 +1337,7 @@ namespace Aggplus
 		const unsigned int unWidth  = m_frame_buffer.ren_buf().width();
 		const unsigned int unHeight = m_frame_buffer.ren_buf().height();
 
-		m_frame_buffer.create(unWidth, unHeight, false, nStride, pGraphicsLayer->GetBuffer());
+		m_frame_buffer.create(unWidth, unHeight, nStride < 0, nStride, pGraphicsLayer->GetBuffer());
 
 		return Ok;
 	}
@@ -1304,7 +1354,7 @@ namespace Aggplus
 
 		memset(pBuffer, 0x00, unSize);
 
-		m_frame_buffer.create(unWidth, unHeight, false, nStride, pBuffer);
+		m_frame_buffer.create(unWidth, unHeight, nStride < 0, nStride, pBuffer);
 
 		m_arLayers.push(new CGraphicsLayer(pBuffer, false));
 		return Ok;
@@ -1333,36 +1383,47 @@ namespace Aggplus
 
 		m_frame_buffer.ren_buf().attach(pBuffer, m_frame_buffer.ren_buf().width(), m_frame_buffer.ren_buf().height(), m_frame_buffer.ren_buf().stride());
 
-		if (NULL == m_pAlphaMask)
+		if (m_pAlphaMask)
 		{
-			if (m_nBlendMode != agg::comp_op_src_over)// && m_nBlendMode != agg::comp_op_multiply && m_nBlendMode != agg::comp_op_screen && m_nBlendMode != agg::comp_op_darken)
+			switch(m_pAlphaMask->GetDataType())
+			{
+			case EMaskDataType::ImageBuffer:
+			{
+				Aggplus::BlendTo<agg::rgb_to_gray_mask_u8<2, 1, 0>>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pAlphaMask->GetBuffer(), m_pAlphaMask->GetStep());
+				break;
+			}
+			case EMaskDataType::AlphaBuffer:
+			{
+				Aggplus::BlendTo<agg::one_component_mask_u8>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pAlphaMask->GetBuffer(), m_pAlphaMask->GetStep());
+				break;
+			}
+			}
+		}
+		else if (m_pSoftMask)
+		{
+			switch(m_pSoftMask->GetDataType())
+			{
+			case EMaskDataType::ImageBuffer:
+			{
+				Aggplus::BlendTo<agg::rgb_to_gray_mask_u8<2, 1, 0>>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pSoftMask->GetBuffer(), m_pSoftMask->GetStep());
+				break;
+			}
+			case EMaskDataType::Alpha4Buffer:
+			{
+				Aggplus::BlendTo<agg::one_component_mask_u8>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pSoftMask->GetBuffer() + 3, m_pSoftMask->GetStep());
+				break;
+			}
+			}
+		}
+		else
+		{
+			if (m_nBlendMode != agg::comp_op_src_over)
 			{
 				pixfmt_type_comp pixfmt(m_frame_buffer.ren_buf(), m_nBlendMode);
 				Aggplus::BlendTo(pCurrentGraphicsLayer, pixfmt, m_nBlendMode);
 			}
 			else
 				Aggplus::BlendTo(pCurrentGraphicsLayer, m_frame_buffer.pixfmt());
-		}
-		else
-		{
-			switch(m_pAlphaMask->GetDataType())
-			{
-				case EMaskDataType::ImageBuffer:
-				{
-					Aggplus::BlendTo<agg::rgb_to_gray_mask_u8<2, 1, 0>>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pAlphaMask->GetBuffer(), m_pAlphaMask->GetStep());
-					break;
-				}
-				case EMaskDataType::AlphaBuffer:
-				{
-					Aggplus::BlendTo<agg::one_component_mask_u8>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pAlphaMask->GetBuffer(), m_pAlphaMask->GetStep());
-					break;
-				}
-				case EMaskDataType::Alpha4Buffer:
-				{
-				Aggplus::BlendTo<agg::four_component_mask_u8>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pAlphaMask->GetBuffer(), m_pAlphaMask->GetStep());
-				break;
-				}
-			}
 		}
 
 		RELEASEINTERFACE(pCurrentGraphicsLayer);
@@ -1376,6 +1437,21 @@ namespace Aggplus
 
 		CGraphicsLayer *pCurrentGraphicsLayer = m_arLayers.top();
 		m_arLayers.pop();
+
+		BYTE* pBuffer = NULL;
+
+		if (!m_arLayers.empty())
+			pBuffer = m_arLayers.top()->GetBuffer();
+		else
+			pBuffer = m_pPixels;
+
+		if (NULL == pBuffer)
+		{
+			RELEASEINTERFACE(pCurrentGraphicsLayer);
+			return WrongState;
+		}
+
+		m_frame_buffer.ren_buf().attach(pBuffer, m_frame_buffer.ren_buf().width(), m_frame_buffer.ren_buf().height(), m_frame_buffer.ren_buf().stride());
 
 		RELEASEINTERFACE(pCurrentGraphicsLayer);
 		return Ok;
@@ -1404,54 +1480,6 @@ namespace Aggplus
 		return Ok;
 	}
 
-	Status CGraphics::SetLayerIsolated(bool bIsolated)
-	{
-		if (m_arLayers.empty())
-			return WrongState;
-
-		UINT unSize = m_frame_buffer.ren_buf().width() * m_frame_buffer.ren_buf().height() * m_frame_buffer.pix_size;
-		if (bIsolated)
-			memset(m_arLayers.top()->GetBuffer(), 0x00, unSize);
-		else
-			memcpy(m_arLayers.top()->GetBuffer(), m_pPixels, unSize);
-
-		return Ok;
-	}
-
-	Status CGraphics::SetAlphaMaskIsolated(bool bIsolated)
-	{
-		if (m_arLayers.empty())
-			return WrongState;
-
-		UINT unSize = m_frame_buffer.ren_buf().width() * m_frame_buffer.ren_buf().height() * m_frame_buffer.pix_size;
-		if (bIsolated)
-		{
-			memset(m_arLayers.top()->GetBuffer(), 0x00, unSize);
-		}
-		else
-		{
-			BYTE* pBuffer = m_arLayers.top()->GetBuffer();
-			for (unsigned int i = 0; i < unSize; i = i + 4)
-			{
-				pBuffer[i + 0] = 0x00;
-				pBuffer[i + 1] = 0x00;
-				pBuffer[i + 2] = 0x00;
-				pBuffer[i + 3] = 0xFF;
-			}
-		}
-
-		return Ok;
-	}
-
-	Status CGraphics::SetAlphaMaskType(EMaskDataType oType)
-	{
-		if (!m_pAlphaMask)
-			return WrongState;
-
-		m_pAlphaMask->SetDataType(oType);
-		return Ok;
-	}
-
 	void CGraphics::CalculateFullTransform()
 	{
 		m_oFullTransform = m_oCoordTransform;
@@ -1463,50 +1491,41 @@ namespace Aggplus
 		return m_oClip.IsClip();
 	}
 
-	unsigned int CGraphics::GetLayerW()
-	{
-		return m_frame_buffer.ren_buf().width();
-	}
-
-	unsigned int CGraphics::GetLayerH()
-	{
-		return m_frame_buffer.ren_buf().height();
-	}
-
-	template<class Renderer>
-	void CGraphics::render_scanlines(Renderer& ren)
+	template<class Rasterizer, class Renderer, class Scanline>
+	void CGraphics::render_scanlines_3(Rasterizer& ras, Renderer& ren, Scanline& sl)
 	{
 		if (!m_oClip.IsClip())
 		{
-			agg::render_scanlines(m_rasterizer.get_rasterizer(), m_rasterizer.get_scanline(), ren);
+			agg::render_scanlines(ras, sl, ren);
 		}
 		else
 		{
 			if (!m_oClip.IsClip2())
 			{
-				typedef agg::scanline_p8                               sbool_scanline_type;
+				typedef agg::scanline_p8 sbool_scanline_type;
 
-				sbool_scanline_type sl_result;
 				sbool_scanline_type sl1;
 				sbool_scanline_type sl2;
 
-				agg::sbool_combine_shapes_aa(agg::sbool_and, m_rasterizer.get_rasterizer(), m_oClip.m_rasterizer,
-											 sl1, sl2, sl_result, ren);
+				agg::sbool_combine_shapes_aa(agg::sbool_and, ras, m_oClip.m_rasterizer, sl1, sl2, sl, ren);
 			}
 			else
 			{
-				typedef agg::scanline_p8                               sbool_scanline_type;
 
-				sbool_scanline_type sl_result;
+				typedef agg::scanline_p8 sbool_scanline_type;
+
 				sbool_scanline_type sl1;
 				sbool_scanline_type sl2;
 
-				sbool_scanline_type sl;
-
-				agg::sbool_combine_shapes_aa(agg::sbool_and, m_rasterizer.get_rasterizer(),
-											 (1 == m_oClip.m_lCurStorage) ? m_oClip.m_storage1 :	m_oClip.m_storage2,	sl1, sl2, sl_result, ren);
+				agg::sbool_combine_shapes_aa(agg::sbool_and, ras, (1 == m_oClip.m_lCurStorage) ? m_oClip.m_storage1 : m_oClip.m_storage2, sl1, sl2, sl, ren);
 			}
 		}
+	}
+
+	template<class Renderer>
+	void CGraphics::render_scanlines(Renderer& ren)
+	{
+		render_scanlines_2(m_rasterizer.get_rasterizer(), ren);
 	}
 
 	template<class Renderer>
@@ -1526,47 +1545,16 @@ namespace Aggplus
 	}
 
 	template<class Rasterizer, class Renderer>
-	void CGraphics::render_scanlines(Rasterizer& ras, Renderer& ren)
+	void CGraphics::render_scanlines_2(Rasterizer& ras, Renderer& ren)
 	{
-		if (!m_oClip.IsClip())
+		if (m_pSoftMask)
 		{
-//			if (m_pAlphaMask && ApplyingAlphaMask == m_pAlphaMask->GetStatus())
-//			{
-//				if (ImageBuffer == m_pAlphaMask->GetDataType())
-//					return agg::render_scanlines(ras, m_pAlphaMask->m_internal->GetScanlineImage(), ren);
-//				else if (AlphaBuffer == m_pAlphaMask->GetDataType())
-//					return agg::render_scanlines(ras, m_pAlphaMask->m_internal->GetScanlineABuffer(), ren);
-//			}
-
-			return agg::render_scanlines(ras, m_rasterizer.get_scanline(), ren);
+			if (m_pSoftMask->GetDataType() == EMaskDataType::ImageBuffer)
+				return render_scanlines_3(ras, ren, m_pSoftMask->GetScanlineImage());
+			if (m_pSoftMask->GetDataType() == EMaskDataType::Alpha4Buffer)
+				return render_scanlines_3(ras, ren, m_pSoftMask->GetScanlineABuffer());
 		}
-		else
-		{
-			if (!m_oClip.IsClip2())
-			{
-				typedef agg::scanline_p8                               sbool_scanline_type;
-
-				sbool_scanline_type sl_result;
-				sbool_scanline_type sl1;
-				sbool_scanline_type sl2;
-
-				agg::sbool_combine_shapes_aa(agg::sbool_and, ras, m_oClip.m_rasterizer,
-											 sl1, sl2, sl_result, ren);
-			}
-			else
-			{
-				typedef agg::scanline_p8                               sbool_scanline_type;
-
-				sbool_scanline_type sl_result;
-				sbool_scanline_type sl1;
-				sbool_scanline_type sl2;
-
-				sbool_scanline_type sl;
-
-				agg::sbool_combine_shapes_aa(agg::sbool_and, ras,
-											 (1 == m_oClip.m_lCurStorage) ? m_oClip.m_storage1 :	m_oClip.m_storage2,	sl1, sl2, sl_result, ren);
-			}
-		}
+		render_scanlines_3(ras, ren, m_rasterizer.get_scanline());
 	}
 
 	void CGraphics::DoFillPathSolid(CColor dwColor)
@@ -2304,7 +2292,7 @@ namespace Aggplus
 			ren_fine.color(clr.GetAggColor());
 
 			//agg::render_scanlines(storage, m_rasterizer.get_scanline(), ren_fine);
-			render_scanlines(storage, ren_fine);
+			render_scanlines_2(storage, ren_fine);
 		}
 		
 		return 0;

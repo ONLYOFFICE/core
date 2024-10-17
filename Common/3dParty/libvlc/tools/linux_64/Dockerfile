@@ -45,6 +45,17 @@ RUN cd /build && \
     sed -i.orig 's,#ifdef _MSC_VER,#if 1,' "src/google/protobuf/repeated_field.h" && \
     cmake  -S cmake -B build -DBUILD_SHARED_LIBS=OFF -Dprotobuf_BUILD_TESTS=OFF -Dprotobuf_BUILD_EXAMPLES=OFF && \
     cmake --build build --parallel $CORES && cmake --install build --prefix /opt/protobuf
+# LIBVA
+RUN apt-get purge --autoremove -y libva-dev && \
+    cd /build && \
+    LIBVA_VERSION=2.21.0 && \
+    wget -q https://github.com/intel/libva/archive/refs/tags/$LIBVA_VERSION.tar.gz && \
+    tar -xzf $LIBVA_VERSION.tar.gz && \
+    cd libva-$LIBVA_VERSION && \
+# change 'private-code' to 'code' for older versions of `wayland-scanner`
+    sed -i 's/$(AM_V_GEN)$(WAYLAND_SCANNER) private-code < $< > $@/$(AM_V_GEN)$(WAYLAND_SCANNER) code < $< > $@/' va/wayland/Makefile.am && \
+    ./autogen.sh --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu && \
+    make && make install
 
 ENV PATH=/opt/protobuf/bin:$PATH
 
@@ -69,9 +80,16 @@ CMD cd /vlc && \
     make -j$CORES install-strip && \
 # correct build files
     cd build/linux_64 && \
+# change rpaths
+    echo "CHANGING RPATHS..." && \
+    /vlc/change-rpaths.sh && \
+# copy libva libraries
+    (for f in $(find /usr/lib/x86_64-linux-gnu/ -name 'libva*.so*'); do cp $f lib; done;) && \
 # convert all symlinks to files
+    echo "CONVERTING SYMLINKS..." && \
     (for f in $(find . -type l); do cp --remove-destination $(readlink -f $f) $f; done;) && \
 # delete all .la files
     find lib -name "*.la" -type f -delete && \
 # generate plugins.dat
+    echo "GENERATING plugins.dat..." && \
     lib/vlc/vlc-cache-gen lib/vlc/plugins

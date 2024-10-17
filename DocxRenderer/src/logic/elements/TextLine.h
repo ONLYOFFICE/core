@@ -2,7 +2,6 @@
 #include "ContText.h"
 #include "BaseItem.h"
 
-
 namespace NSDocxRenderer
 {
 	class CTextLine : public CBaseItem
@@ -30,6 +29,8 @@ namespace NSDocxRenderer
 		double m_dTopWithMaxAscent{0};
 		double m_dBotWithMaxDescent{0};
 
+		double m_dFirstWordWidth{0.0};
+
 	public:
 		CTextLine() = default;
 		virtual ~CTextLine();
@@ -40,7 +41,9 @@ namespace NSDocxRenderer
 		virtual eVerticalCrossingType GetVerticalCrossingType(const CTextLine* pLine) const noexcept;
 
 		void AddCont(std::shared_ptr<CContText> pCont);
+		void AddConts(const std::vector<std::shared_ptr<CContText>>& arConts);
 		void MergeConts();
+		void CalcFirstWordWidth();
 		void RecalcSizes();
 		void SetVertAlignType(const eVertAlignType& oType);
 

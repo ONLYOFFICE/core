@@ -31,6 +31,36 @@
  */
 #include "Metadata.h"
 
+#include "../../XlsbFormat/Xlsb.h"
+#include "../../XlsbFormat/MetadataStream.h"
+#include "../../XlsbFormat/Biff12_unions/ESSTR.h"
+#include "../../XlsbFormat/Biff12_unions/ESMDTINFO.h"
+#include "../../XlsbFormat/Biff12_unions/ESMDB.h"
+#include "../../XlsbFormat/Biff12_unions/ESFMD.h"
+#include "../../XlsbFormat/Biff12_unions/FMD.h"
+#include "../../XlsbFormat/Biff12_unions/ESMDX.h"
+#include "../../XlsbFormat/Biff12_unions/MDX.h"
+#include "../../XlsbFormat/Biff12_unions/MDXKPI.h"
+#include "../../XlsbFormat/Biff12_unions/MDXMBRPROP.h"
+#include "../../XlsbFormat/Biff12_unions/MDXSET.h"
+#include "../../XlsbFormat/Biff12_unions/MDXTUPLE.h"
+#include "../../XlsbFormat/Biff12_unions/DYNAMICARRAYMETADATA.h"
+#include "../../XlsbFormat/Biff12_unions/RICHDATAMETADATA.h"
+
+#include "../../XlsbFormat/Biff12_records/Str.h"
+#include "../../XlsbFormat/Biff12_records/Mdtinfo.h"
+#include "../../XlsbFormat/Biff12_records/Mdb.h"
+#include "../../XlsbFormat/Biff12_records/BeginEsmdb.h"
+#include "../../XlsbFormat/Biff12_records/BeginEsfmd.h"
+#include "../../XlsbFormat/Biff12_records/EndDynamicArrayPr.h"
+#include "../../XlsbFormat/Biff12_records/BeginRichValueBlock.h"
+#include "../../XlsbFormat/Biff12_records/BeginMdx.h"
+#include "../../XlsbFormat/Biff12_records/BeginMdxKpi.h"
+#include "../../XlsbFormat/Biff12_records/BeginMdxMbrProp.h"
+#include "../../XlsbFormat/Biff12_records/BeginMdxSet.h"
+#include "../../XlsbFormat/Biff12_records/BeginMdxTuple.h"
+#include "../../XlsbFormat/Biff12_records/MdxMbrIstr.h"
+
 #include "../FileTypes_Spreadsheet.h"
 
 #include "../../Common/SimpleTypes_Shared.h"
@@ -41,6 +71,8 @@
 
 #include "../../Binary/Presentation/XmlWriter.h"
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
+
+#include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 
 namespace OOX
 {
@@ -82,6 +114,39 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"p", m_oP)
 				WritingElement_ReadAttributes_End(oReader)
 		}
+		XLS::BaseObjectPtr CMdxKPI::toBin() const
+		{
+			auto ptr(new XLSB::MDXKPI);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::BeginMdxKpi);
+			ptr->m_BrtBeginMdxKpi = XLS::BaseObjectPtr{ptr1};
+			ptr1->istrKPIName = 0;
+			ptr1->istrMbrKPI = 0;
+			ptr1->kpiprop = XLSB::KPIProp::KPIPROPVALUE;
+			if(m_oN.IsInit())
+				ptr1->istrKPIName = m_oN.get();
+			if(m_oNp.IsInit())
+				ptr1->istrMbrKPI = m_oNp.get();
+			if(m_oP.IsInit())
+			{
+				auto numProp = static_cast<_UINT32>(m_oP.get().GetValue()) + 1;
+				if(numProp > 0 && numProp <= 6)
+					ptr1->kpiprop = static_cast<XLSB::KPIProp>(numProp);
+			}
+			return objectPtr;
+		}
+		void CMdxKPI::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::MDXKPI*>(obj.get());
+			if(ptr->m_BrtBeginMdxKpi == nullptr)
+				return;
+			auto beginPtr = static_cast<XLSB::BeginMdxKpi*>(ptr->m_BrtBeginMdxKpi.get());
+			m_oN = beginPtr->istrKPIName;
+			m_oNp = beginPtr->istrMbrKPI;
+			auto numProp = static_cast<_INT32>(beginPtr->kpiprop) - 1;
+			m_oP.Init();
+			m_oP->SetValueFromByte(numProp);
+		}
 		//--------------------------------------------------------------------------------------------------------
 		CMdxMemeberProp::CMdxMemeberProp() {}
 		CMdxMemeberProp::~CMdxMemeberProp() {}
@@ -116,6 +181,29 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_if(oReader, L"n", m_oN)
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"np", m_oNp)
 				WritingElement_ReadAttributes_End(oReader)
+		}
+		XLS::BaseObjectPtr CMdxMemeberProp::toBin() const
+		{
+			auto ptr(new XLSB::MDXMBRPROP);
+			auto ptr1(new XLSB::BeginMdxMbrProp);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			ptr->m_BrtBeginMdxMbrProp = XLS::BaseObjectPtr(ptr1);
+			ptr1->istrMbr = 0;
+			ptr1->istrProp = 0;
+			if(m_oN.IsInit())
+				ptr1->istrMbr = m_oN.get();
+			if(m_oNp.IsInit())
+				ptr1->istrProp = m_oNp.get();
+			return objectPtr;
+		}
+		void CMdxMemeberProp::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::MDXMBRPROP*>(obj.get());
+			if(ptr->m_BrtBeginMdxMbrProp == nullptr)
+				return;
+			auto ptr1 = static_cast<XLSB::BeginMdxMbrProp*>(ptr->m_BrtBeginMdxMbrProp.get());
+			m_oN = ptr1->istrMbr;
+			m_oNp = ptr1->istrProp;
 		}
 		//--------------------------------------------------------------------------------------------------------
 		CMdxSet::CMdxSet() {}
@@ -175,6 +263,46 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"o", m_oO)
 				WritingElement_ReadAttributes_End(oReader)
 		}
+		XLS::BaseObjectPtr CMdxSet::toBin() const
+		{
+			auto ptr(new XLSB::MDXSET);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::BeginMdxSet);
+			ptr->m_BrtBeginMdxSet = XLS::BaseObjectPtr{ptr1};
+
+			ptr1->istrSetDef = 0;
+			ptr1->cMbrsSortBy = 0;
+			ptr1->sso = XLSB::SdSetSortOrderMdx::SSONONE;
+			
+			if(m_oNs.IsInit())
+				ptr1->istrSetDef = m_oNs.get();
+			if(m_oC.IsInit())
+				ptr1->cMbrsSortBy = m_oC.get();
+			if(m_oO.IsInit())
+			{
+				auto orderNum = static_cast<_UINT32>(m_oO->GetValue());
+				if(orderNum >= 0 && orderNum <=6)
+					ptr1->sso = static_cast<XLSB::SdSetSortOrderMdx>(orderNum);
+			}
+			for(auto i:m_arrItems)
+				ptr->MdxMbrIstrs.push_back(i->toBin());
+			return objectPtr;
+		}
+		void CMdxSet::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::MDXSET*>(obj.get());
+			if(ptr->m_BrtBeginMdxSet != nullptr)
+			{
+				auto ptr1 = static_cast<XLSB::BeginMdxSet*>(ptr->m_BrtBeginMdxSet.get());
+				m_oNs = ptr1->istrSetDef;
+				m_oC = ptr1->cMbrsSortBy;
+				auto orderNum = static_cast<_INT32>(ptr1->sso);
+				m_oO.Init();
+				m_oO->SetValueFromByte(orderNum);
+			}
+			for(auto i : ptr->MdxMbrIstrs)
+				m_arrItems.push_back(new CMetadataStringIndex(i));
+		}
 		//--------------------------------------------------------------------------------------------------------
 		CMetadataStringIndex::CMetadataStringIndex() {}
 		CMetadataStringIndex::~CMetadataStringIndex() {}
@@ -209,6 +337,22 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_if(oReader, L"x", m_oX)
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"s", m_oS)
 				WritingElement_ReadAttributes_End(oReader)
+		}
+		XLS::BaseObjectPtr CMetadataStringIndex::toBin() const
+		{
+			auto ptr(new XLSB::MdxMbrIstr);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_oX.IsInit())
+				ptr->istr = m_oX.get();
+			if(m_oS.IsInit())
+				ptr->fCubeSet = m_oS.get();
+			return objectPtr;
+		}
+		void CMetadataStringIndex::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::MdxMbrIstr*>(obj.get());
+			m_oX = ptr->istr;
+			m_oS = ptr->fCubeSet;
 		}
 		//--------------------------------------------------------------------------------------------------------
 		CMdxTuple::CMdxTuple() {}
@@ -282,6 +426,66 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"b", m_oB)
 			WritingElement_ReadAttributes_End(oReader)
 		}
+		XLS::BaseObjectPtr CMdxTuple::toBin() const
+		{
+			auto ptr(new XLSB::MDXTUPLE);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::BeginMdxTuple);
+			ptr->m_BrtBeginMdxTuple = XLS::BaseObjectPtr{ptr1};
+			
+			if(m_oC.IsInit())
+				ptr1->cMbrs = m_oC.get();
+			if(m_oI.IsInit())
+				ptr1->fSrvFmtItalic = m_oI.get();
+			if(m_oB.IsInit())
+				ptr1->fSrvFmtBold = m_oB.get();
+			if(m_oU.IsInit())
+				ptr1->fSrvFmtUnderline = m_oU.get();
+			if(m_oSt.IsInit())
+				ptr1->fSrvFmtStrikethrough = m_oSt.get();
+			
+			if(m_oBc.IsInit())
+			{
+				ptr1->fSrvFmtBack = true;
+				ptr1->dwSrvFmtBack.fromHex(m_oBc.get());
+			}
+			if(m_oFc.IsInit())
+			{
+				ptr1->fSrvFmtFore = true;
+				ptr1->dwSrvFmtFore.fromHex(m_oFc.get());
+			}
+			if(m_oCt.IsInit())
+			{
+				ptr1->fSrvFmtNum = true;
+				ptr1->fSrvFmtNumCurrency = true;
+				ptr1->stSfnum = m_oCt.get();
+			}
+
+			for(auto i : m_arrItems)
+				ptr->MdxMbrIstrs.push_back(i->toBin());
+			return objectPtr;
+		}
+		void CMdxTuple::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::MDXTUPLE*>(obj.get());
+			if(ptr->m_BrtBeginMdxTuple != nullptr)
+			{
+				auto ptr1 = static_cast<XLSB::BeginMdxTuple*>(ptr->m_BrtBeginMdxTuple.get());
+				m_oC = ptr1->cMbrs;
+				m_oI = ptr1->fSrvFmtItalic;
+				m_oB = ptr1->fSrvFmtBold;
+				m_oU = ptr1->fSrvFmtUnderline;
+				m_oSt = ptr1->fSrvFmtStrikethrough;
+				if(ptr1->fSrvFmtBack)
+					m_oBc = ptr1->dwSrvFmtBack.toHex();
+				if(ptr1->fSrvFmtFore)
+					m_oFc = ptr1->dwSrvFmtFore.toHex();
+				if(ptr1->fSrvFmtNum && ptr1->fSrvFmtNumCurrency)
+					m_oCt = ptr1->stSfnum;
+			}
+			for(auto i : ptr->MdxMbrIstrs)
+				m_arrItems.push_back(new CMetadataStringIndex(i));
+		}
 		//--------------------------------------------------------------------------------------------------------
 		CMdx::CMdx() {}
 		CMdx::~CMdx() {}
@@ -348,6 +552,63 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"f", m_oF)
 				WritingElement_ReadAttributes_End(oReader)
 		}
+		XLS::BaseObjectPtr CMdx::toBin() const
+		{
+			auto ptr(new XLSB::MDX);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::BeginMdx);
+			ptr->m_BrtBeginMdx = XLS::BaseObjectPtr{ptr1};
+			ptr1->istrConnName = 0;
+			ptr1->tfnSrc = XLSB::TagFnMdx::CUBEKPIMEMBER;
+			if(m_oN.IsInit())
+				ptr1->istrConnName = m_oN.get();
+			if(m_oF.IsInit())
+			{
+				auto funcNum = static_cast<_UINT32>(m_oF.get().GetValue()) + 1;
+				if(funcNum > 0 && funcNum <= 7)
+					ptr1->tfnSrc = static_cast<XLSB::TagFnMdx>(funcNum);
+			}
+			if(m_oCMdxKPI.IsInit())
+			{
+				ptr->m_MDXKPI = m_oCMdxKPI->toBin();
+			}
+			if(m_oMdxMemeberProp.IsInit())
+			{
+				ptr->m_MDXMBRPROP = m_oMdxMemeberProp->toBin();
+			}
+			if(m_oMdxSet.IsInit())
+			{
+				ptr->m_MDXSET = m_oMdxSet->toBin();
+			}
+			if(m_oMdxTuple.IsInit())
+			{
+				ptr->m_MDXTUPLE = m_oMdxTuple->toBin();
+			}
+			return objectPtr;
+		}
+		void CMdx::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::MDX*>(obj.get());
+			if(ptr->m_BrtBeginMdx != nullptr)
+			{
+				auto beginPtr = static_cast<XLSB::BeginMdx*>(ptr->m_BrtBeginMdx.get());
+				m_oN = beginPtr->istrConnName;
+				auto numFunc = static_cast<_INT32>(beginPtr->tfnSrc) - 1;
+				m_oF.Init();
+				m_oF->SetValueFromByte(numFunc);
+			}
+			if(ptr->m_MDXKPI != nullptr)
+				m_oCMdxKPI = ptr->m_MDXKPI;
+			
+			if(ptr->m_MDXMBRPROP != nullptr)
+				m_oMdxMemeberProp = ptr->m_MDXMBRPROP;
+
+			if(ptr->m_MDXSET != nullptr)
+				m_oMdxSet = ptr->m_MDXSET;
+
+			if(ptr->m_MDXTUPLE != nullptr)
+				m_oMdxTuple = ptr->m_MDXTUPLE;
+		}
 		//-------------------------------------------------------------------------------------
 		CMdxMetadata::CMdxMetadata() {}
 		CMdxMetadata::~CMdxMetadata() {}
@@ -394,6 +655,21 @@ namespace OOX
 				}
 			}
 			writer.WriteString(L"</mdxMetadata>");
+		}
+		XLS::BaseObjectPtr CMdxMetadata::toBin() const
+		{
+			auto ptr(new XLSB::ESMDX);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			for(auto i:m_arrItems)
+				ptr->MDXs.push_back(i->toBin());
+			return objectPtr;
+		}
+		void CMdxMetadata::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::ESMDX*>(obj.get());
+			for(auto i : ptr->MDXs)
+				m_arrItems.push_back(new CMdx(i));
+			m_oCount = m_arrItems.size();
 		}
 		//-------------------------------------------------------------------------------------
 		CMetadataStrings::CMetadataStrings() {}
@@ -442,6 +718,21 @@ namespace OOX
 			}
 			writer.WriteString(L"</metadataStrings>");
 		}
+		XLS::BaseObjectPtr CMetadataStrings::toBin() const
+		{
+			auto ptr(new XLSB::ESSTR);
+			for(auto str:m_arrItems)
+				ptr->m_BrtStrs.push_back(str->toBin());
+			XLS::BaseObjectPtr objectPtr(ptr);
+			return objectPtr;
+		}
+		void CMetadataStrings::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::ESSTR*>(obj.get());
+			m_oCount = ptr->m_BrtStrs.size();
+			for(auto i:ptr->m_BrtStrs)
+				m_arrItems.push_back(new CMetadataString(i));
+		}
 		//--------------------------------------------------------------------------------------------------------
 		CMetadataString::CMetadataString() {}
 		CMetadataString::~CMetadataString() {}
@@ -455,6 +746,23 @@ namespace OOX
 		EElementType CMetadataString::getType() const
 		{
 			return et_x_MetadataString;
+		}
+		XLS::BaseObjectPtr CMetadataString::toBin() const
+		{
+			auto ptr(new XLSB::Str);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_oV.IsInit())
+				ptr->stText = m_oV.get();
+			else
+				ptr->stText = L"";
+			return objectPtr;
+		}
+		void CMetadataString::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			if(obj == nullptr)
+				return;
+			auto ptr = static_cast<XLSB::Str*>(obj.get());
+			m_oV =  ptr->stText;
 		}
 		void CMetadataString::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
@@ -557,6 +865,37 @@ namespace OOX
 			}
 			writer.WriteString(L"</bk>");
 		}
+		XLS::BaseObjectPtr CMetadataBlock::toBin() const
+		{
+			auto ptr(new XLSB::Mdb);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			ptr->cMdir = m_arrItems.size();
+			for(auto item : m_arrItems)
+			{
+				XLSB::Mdir dir;
+				if(item->m_oT.IsInit())
+					dir.imdt = item->m_oT.get();
+				else
+					dir.imdt = 0;
+				if(item->m_oV.IsInit())
+					dir.mdd = item->m_oV.get();
+				else
+					dir.mdd = 0;
+				ptr->rgMdir.push_back(dir);
+			}
+			return objectPtr;
+		}
+		void CMetadataBlock::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::Mdb*>(obj.get());
+			for(auto i : ptr->rgMdir)
+			{
+				auto  record(new CMetadataRecord);
+				record->m_oT = i.imdt;
+				record->m_oV = i.mdd;
+				m_arrItems.push_back(record);
+			}
+		}
 		//-------------------------------------------------------------------------------------
 		CMetadataBlocks::CMetadataBlocks() {}
 		CMetadataBlocks::~CMetadataBlocks() {}
@@ -581,7 +920,7 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nCurDepth))
 			{
-				std::wstring  sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if (L"bk" == sName)
 				{
@@ -605,6 +944,27 @@ namespace OOX
 				}
 			}
 			writer.WriteString(L"</" + m_sName + L">");
+		}
+		XLS::BaseObjectPtr CMetadataBlocks::toBin(const bool cellMeta) const
+		{
+			auto ptr(new XLSB::ESMDB);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::BeginEsmdb);
+			ptr->m_BrtBeginEsmdb = XLS::BaseObjectPtr(ptr1);
+			ptr1->fCellMeta = cellMeta;
+
+			for(auto i:m_arrItems)
+				ptr->m_BrtMdbs.push_back(i->toBin());
+			ptr1->CMdb = ptr->m_BrtMdbs.size();
+
+			return objectPtr;
+		}
+		void CMetadataBlocks::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::ESMDB*>(obj.get());
+			m_oCount = ptr->m_BrtMdbs.size();
+			for(auto i: ptr->m_BrtMdbs)
+				m_arrItems.push_back(new CMetadataBlock(i));
 		}
 		//-------------------------------------------------------------------------------------
 		CMetadataTypes::CMetadataTypes() {}
@@ -652,6 +1012,26 @@ namespace OOX
 				}
 			}
 			writer.WriteString(L"</metadataTypes>");
+		}
+		XLS::BaseObjectPtr CMetadataTypes::toBin() const
+		{
+			auto ptr(new XLSB::ESMDTINFO);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			for(auto i :m_arrItems)
+			{
+				ptr->BrtMdtinfos.push_back(i->toBin());
+			}
+			return objectPtr;
+		}
+		void CMetadataTypes::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::ESMDTINFO*>(obj.get());
+			m_oCount = ptr->BrtMdtinfos.size();
+
+			for(auto i : ptr->BrtMdtinfos)
+			{
+				m_arrItems.push_back(new CMetadataType(i));
+			}
 		}
 		//--------------------------------------------------------------------------------------------------------
 		CMetadataType::CMetadataType() {}
@@ -738,6 +1118,102 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"cellMeta", m_oCellMeta)
 			WritingElement_ReadAttributes_End(oReader)
 		}
+		XLS::BaseObjectPtr CMetadataType::toBin() const
+		{
+			auto ptr(new XLSB::Mdtinfo);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_oMinSupportedVersion.IsInit())
+				ptr->metadataID = m_oMinSupportedVersion.get();
+			else
+				ptr->metadataID = 0;
+			if(m_oName.IsInit())
+				ptr->stName = m_oName.get();
+			else
+				ptr->stName = L"";
+
+			if(m_oGhostRow.IsInit())
+				ptr->fGhostRw = m_oGhostRow.get();
+			if(m_oGhostCol.IsInit())
+				ptr->fGhostCol = m_oGhostCol.get();
+			if(m_oEdit.IsInit())
+				ptr->fEdit = m_oEdit.get();
+			if(m_oDelete.IsInit())
+				ptr->fDelete = m_oDelete.get();
+			if(m_oCopy.IsInit())
+				ptr->fCopy = m_oCopy.get();
+			if(m_oPasteAll.IsInit())
+				ptr->fPasteAll = m_oPasteAll.get();
+			if(m_oPasteFormulas.IsInit())
+				ptr->fPasteFmlas = m_oPasteFormulas.get();
+			if(m_oPasteValues.IsInit())
+				ptr->fPasteValues = m_oPasteValues.get();
+			if(m_oPasteFormats.IsInit())
+				ptr->fPasteFmts = m_oPasteFormats.get();
+			if(m_oPasteComments.IsInit())
+				ptr->fPasteComments = m_oPasteComments.get();
+			if(m_oPasteDataValidation.IsInit())
+				ptr->fPasteDv = m_oPasteDataValidation.get();
+			if(m_oPasteBorders.IsInit())
+				ptr->fPasteBorders = m_oPasteBorders.get();
+			if(m_oPasteColWidths.IsInit())
+				ptr->fPasteColWidths = m_oPasteColWidths.get();
+			if(m_oPasteNumberFormats.IsInit())
+				ptr->fPasteNumFmts = m_oPasteNumberFormats.get();
+			if(m_oMerge.IsInit())
+				ptr->fMerge = m_oMerge.get();
+			if(m_oSplitFirst.IsInit())
+				ptr->fSplitFirst = m_oSplitFirst.get();
+			if(m_oSplitAll.IsInit())
+				ptr->fSplitAll = m_oSplitAll.get();
+			if(m_oRowColShift.IsInit())
+				ptr->fRwColShift = m_oRowColShift.get();
+			if(m_oClearAll.IsInit())
+				ptr->fClearAll = m_oClearAll.get();
+			if(m_oClearFormats.IsInit())
+				ptr->fClearFmts = m_oClearFormats.get();
+			if(m_oClearContents.IsInit())
+				ptr->fClearContents = m_oClearContents.get();
+			if(m_oClearComments.IsInit())
+				ptr->fClearComments = m_oClearComments.get();
+			if(m_oAssign.IsInit())
+				ptr->fAssign = m_oAssign.get();
+			if(m_oCoerce.IsInit())
+				ptr->fCanCoerce = m_oCoerce.get();
+			if(m_oCellMeta.IsInit())
+				ptr->fCellMeta = m_oCellMeta.get();
+			return objectPtr;
+		}
+		void CMetadataType::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::Mdtinfo*>(obj.get());
+			m_oName = ptr->stName;
+			m_oMinSupportedVersion = ptr->metadataID;
+			m_oGhostRow = ptr->fGhostRw;
+			m_oGhostCol = ptr->fGhostCol;
+			m_oEdit = ptr->fEdit;
+			m_oDelete = ptr->fDelete;
+			m_oCopy = ptr->fCopy;
+			m_oPasteAll = ptr->fPasteAll;
+			m_oPasteFormulas = ptr->fPasteFmlas;
+			m_oPasteValues = ptr->fPasteValues;
+			m_oPasteFormats = ptr->fPasteFmts;
+			m_oPasteComments = ptr->fPasteComments;
+			m_oPasteDataValidation = ptr->fPasteDv;
+			m_oPasteBorders = ptr->fPasteBorders;
+			m_oPasteColWidths = ptr->fPasteColWidths;
+			m_oPasteNumberFormats = ptr->fPasteNumFmts;
+			m_oMerge = ptr->fMerge;
+			m_oSplitFirst = ptr->fSplitFirst;
+			m_oSplitAll = ptr->fSplitAll;
+			m_oRowColShift = ptr->fRwColShift;
+			m_oClearAll = ptr->fClearAll;
+			m_oClearFormats = ptr->fClearFmts;
+			m_oClearContents = ptr->fClearContents;
+			m_oClearComments = ptr->fClearComments;
+			m_oAssign = ptr->fAssign;
+			m_oCoerce = ptr->fCanCoerce;
+			m_oCellMeta = ptr->fCellMeta;
+		}
 		//--------------------------------------------------------------------------------------------------------
 		CFutureMetadataBlock::CFutureMetadataBlock() {}
 		CFutureMetadataBlock::~CFutureMetadataBlock() {}
@@ -775,6 +1251,15 @@ namespace OOX
 				if (L"extLst" == sName)
 					m_oExtLst = oReader;
 			}
+		}
+		XLS::BaseObjectPtr CFutureMetadataBlock::toBin() const
+		{
+			return m_oExtLst->toBinMetadata();
+		}
+		void CFutureMetadataBlock::fromBin(XLS::BaseObjectPtr& obj)
+		{
+            m_oExtLst = OOX::Drawing::COfficeArtExtensionList();
+			m_oExtLst->fromBin(obj);
 		}
 		//-------------------------------------------------------------------------------------
 		CFutureMetadata::CFutureMetadata() {}
@@ -836,6 +1321,39 @@ namespace OOX
 			}
 			writer.WriteString(L"</futureMetadata>");
 		}
+		XLS::BaseObjectPtr CFutureMetadata::toBin() const
+		{
+			auto ptr(new XLSB::ESFMD);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::BeginEsfmd);
+			ptr->m_BrtBeginEsfmd = XLS::BaseObjectPtr(ptr1);
+			if(m_oName.IsInit())
+				ptr1->stName = m_oName.get();
+			else
+				ptr1->stName = L"";
+			for(auto i:m_arrItems)
+            {
+                auto fmd = i->toBin();
+                if(fmd)
+                    ptr->FMDs.push_back(fmd);
+            }
+            ptr1->cFmd = ptr->FMDs.size();
+			return objectPtr;
+		}
+		void CFutureMetadata::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::ESFMD*>(obj.get());
+			if(ptr->m_BrtBeginEsfmd != nullptr)
+			{
+				auto beginPtr = static_cast<XLSB::BeginEsfmd*>(ptr->m_BrtBeginEsfmd.get());
+				m_oName = beginPtr->stName;
+			}
+			for(auto i : ptr->FMDs)
+			{
+				m_arrItems.push_back(new CFutureMetadataBlock(i));
+			}
+			m_oCount = m_arrItems.size();
+		}
 		//--------------------------------------------------------------------------------------------------------
 		CMetadata::CMetadata() {}
 		CMetadata::~CMetadata()
@@ -856,6 +1374,42 @@ namespace OOX
 		EElementType CMetadata::getType() const
 		{
 			return et_x_Metadata;
+		}
+		void CMetadata::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto streamPtr = static_cast<XLSB::MetadataStream*>(obj.get());
+			if(streamPtr->m_ESSTR != nullptr)
+				m_oMetadataStrings = streamPtr->m_ESSTR;
+			if(streamPtr->m_ESMDTINFO != nullptr)
+				m_oMetadataTypes = streamPtr->m_ESMDTINFO;
+            if(streamPtr->m_ValueMetadataBlocks != nullptr)
+                m_oValueMetadata = streamPtr->m_ValueMetadataBlocks;
+            if(streamPtr->m_CellMetadataBlocks != nullptr)
+                m_oCellMetadata = streamPtr->m_CellMetadataBlocks;
+			if(streamPtr->m_ESMDX != nullptr)
+				m_oMdxMetadata = streamPtr->m_ESMDX;
+			for(auto i : streamPtr->m_ESFMDs)
+				m_arFutureMetadata.push_back(new CFutureMetadata(i));
+		}
+		XLS::BaseObjectPtr CMetadata::toBin() const
+		{
+			XLSB::MetadataStreamPtr streamPtr(new XLSB::MetadataStream);
+
+			if(m_oMetadataStrings.IsInit())
+				streamPtr->m_ESSTR = m_oMetadataStrings->toBin();
+			if(m_oMetadataTypes.IsInit())
+				streamPtr->m_ESMDTINFO = m_oMetadataTypes->toBin();
+			if(m_oCellMetadata.IsInit())
+				streamPtr->m_CellMetadataBlocks = m_oCellMetadata->toBin(true);
+			if(m_oValueMetadata.IsInit())
+				streamPtr->m_ValueMetadataBlocks = m_oValueMetadata->toBin(false);
+			for(auto i : m_arFutureMetadata)
+			{
+				streamPtr->m_ESFMDs.push_back(i->toBin());
+			}
+			if(m_oMdxMetadata.IsInit())
+				streamPtr->m_ESMDX = m_oMdxMetadata->toBin();
+			return streamPtr;
 		}
 		void CMetadata::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
@@ -948,6 +1502,11 @@ xmlns:xda=\"http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray\
 		}
 		const OOX::FileType CMetadataFile::type() const
 		{
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if ((xlsb) && (xlsb->m_bWriteToXlsb))
+			{
+				return OOX::SpreadsheetBin::FileTypes::MetadataBin;
+			}
 			return OOX::Spreadsheet::FileTypes::Metadata;
 		}
 		const CPath CMetadataFile::DefaultDirectory() const
@@ -956,7 +1515,17 @@ xmlns:xda=\"http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray\
 		}
 		const CPath CMetadataFile::DefaultFileName() const
 		{
-			return type().DefaultFileName();
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if ((xlsb) && (xlsb->m_bWriteToXlsb))
+			{
+				CPath name = type().DefaultFileName();
+				name.SetExtention(L"bin");
+				return name;
+			}
+			else
+			{
+				return type().DefaultFileName();
+			}
 		}
 		const CPath& CMetadataFile::GetReadPath()
 		{
@@ -966,27 +1535,60 @@ xmlns:xda=\"http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray\
 		{
 			m_oReadPath = oPath;
 
-			XmlUtils::CXmlLiteReader oReader;
+			if (m_oReadPath.GetExtention() == _T(".bin"))
+			{
+				readBin(m_oReadPath);
+			}
+			else
+			{
+				XmlUtils::CXmlLiteReader oReader;
 
-			if (!oReader.FromFile(oPath.GetPath()))
-				return;
+				if (!oReader.FromFile(oPath.GetPath()))
+					return;
 
-			if (!oReader.ReadNextNode())
-				return;
+				if (!oReader.ReadNextNode())
+					return;
 
-			m_oMetadata = oReader;
+				m_oMetadata = oReader;
+			}
+		}
+		void CMetadataFile::readBin(const CPath& oPath)
+		{
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if (xlsb)
+			{
+				XLSB::MetadataStreamPtr streamPtr(new XLSB::MetadataStream);
+
+				xlsb->ReadBin(oPath, streamPtr.get());
+				XLS::BaseObjectPtr objectPtr(streamPtr);
+                m_oMetadata = CMetadata();
+				m_oMetadata->fromBin(objectPtr);
+			}
+		}
+		XLS::BaseObjectPtr CMetadataFile::WriteBin() const
+		{
+			return m_oMetadata->toBin();
 		}
 		void CMetadataFile::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
 			if (false == m_oMetadata.IsInit()) return;
 
-			NSStringUtils::CStringBuilder sXml;
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if ((xlsb) && (xlsb->m_bWriteToXlsb))
+			{
+				auto object = WriteBin();
+				xlsb->WriteBin(oPath, object.get());
+			}
+			else
+			{
+				NSStringUtils::CStringBuilder sXml;
 
-			sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
-			m_oMetadata->toXML(sXml);
+				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+				m_oMetadata->toXML(sXml);
 
-			std::wstring sPath = oPath.GetPath();
-			NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
+				std::wstring sPath = oPath.GetPath();
+				NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
+			}
 
 			oContent.Registration(type().OverrideType(), oDirectory, oPath.GetFilename());
 		}
@@ -1025,6 +1627,25 @@ xmlns:xda=\"http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray\
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"fCollapsed", m_oFCollapsed)
 			WritingElement_ReadAttributes_End(oReader)
 		}
+		XLS::BaseObjectPtr CDynamicArrayProperties::toBin()
+		{
+			auto ptr(new XLSB::EndDynamicArrayPr);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			ptr->fDynamic = false;
+			ptr->fCollapsed = false;
+			if(m_oFDynamic.IsInit())
+				ptr->fDynamic = m_oFDynamic.get();
+			if(m_oFCollapsed.IsInit())
+				ptr->fCollapsed = m_oFCollapsed.get();
+			return objectPtr;
+		}
+		void CDynamicArrayProperties::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::DYNAMICARRAYMETADATA*>(obj.get());
+			auto endPtr = static_cast<XLSB::EndDynamicArrayPr*>(ptr->m_EndDynamicArrayPr.get());
+			m_oFDynamic = endPtr->fDynamic;
+			m_oFCollapsed = endPtr->fCollapsed;
+		}
 //-------------------------------------------------------------------------------------------------------------------------------------
 		CRichValueBlock::CRichValueBlock() {}
 		CRichValueBlock::~CRichValueBlock() {}
@@ -1057,6 +1678,24 @@ xmlns:xda=\"http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray\
 			WritingElement_ReadAttributes_Start(oReader)
 				WritingElement_ReadAttributes_Read_if(oReader, L"i", m_oI)
 			WritingElement_ReadAttributes_End(oReader)
+		}
+		XLS::BaseObjectPtr CRichValueBlock::toBin()
+		{
+			auto ptr(new XLSB::BeginRichValueBlock);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_oI.IsInit())
+				ptr->irv = m_oI.get();
+			else
+				ptr->irv = 0;
+			return objectPtr;
+		}
+		void CRichValueBlock::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::RICHDATAMETADATA*>(obj.get());
+			if(ptr->m_BeginRichValueBlock == nullptr)
+				return;
+			auto ptr1 = static_cast<XLSB::BeginRichValueBlock*>(ptr->m_BeginRichValueBlock.get());
+			m_oI = ptr1->irv;
 		}
 	}
 

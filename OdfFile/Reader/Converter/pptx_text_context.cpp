@@ -487,7 +487,6 @@ std::wstring pptx_text_context::Impl::dump_paragraph(/*bool last*/)
 						int sz = last_run_font_size_->get_value_unit(odf_types::length::pt) * 100;
 						
 						CP_XML_ATTR(L"sz", sz);
-
 					}
 
 					last_run_font_size_ = boost::none;

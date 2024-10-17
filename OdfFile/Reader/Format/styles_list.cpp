@@ -56,10 +56,39 @@ void text_list_style_attr::add_attributes( const xml::attributes_wc_ptr & Attrib
     CP_APPLY_ATTR(L"text:consecutive-numbering", text_consecutive_numbering_);
 }
 
+void text_list_style_attr::apply_from(const text_list_style_attr& Other)
+{
+	style_name_					= Other.style_name_;
+	style_display_name_			= Other.style_display_name_;
+	text_consecutive_numbering_ = Other.text_consecutive_numbering_;
+}
+
 // text:list-style
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * text_list_style::ns = L"text";
 const wchar_t * text_list_style::name = L"list-style";
+
+text_list_style::text_list_style(const text_list_style& other)
+{
+	attr_.apply_from(other.attr_);
+
+	for (auto& val : other.content_)
+	{
+		text_list_level_style_number* style_number_ptr = dynamic_cast<text_list_level_style_number*>(val.get());
+		text_list_level_style_bullet* style_bullet_ptr = dynamic_cast<text_list_level_style_bullet*>(val.get());
+
+		if (style_number_ptr)
+		{
+			boost::shared_ptr<text_list_level_style_number> style_number = boost::make_shared<text_list_level_style_number>(*style_number_ptr);
+			content_.push_back(style_number);
+		}
+		else if (style_bullet_ptr)
+		{
+			boost::shared_ptr<text_list_level_style_bullet> style_bullet = boost::make_shared<text_list_level_style_bullet>(*style_bullet_ptr);
+			content_.push_back(style_bullet);
+		}
+	}
+}
 
 void text_list_style::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -94,6 +123,11 @@ void text_list_level_style_attr::add_attributes( const xml::attributes_wc_ptr & 
     CP_APPLY_ATTR(L"text:level", text_level_, (unsigned int)0);
 }
 
+void text_list_level_style_attr::apply_from(const text_list_level_style_attr& Other)
+{
+	text_level_ = Other.text_level_;
+}
+
 //  text_list_level_style_number_attr
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -106,6 +140,17 @@ void text_list_level_style_number_attr::add_attributes( const xml::attributes_wc
     CP_APPLY_ATTR(L"text:start-value", text_start_value_, (unsigned int)1);    
 }
 
+void text_list_level_style_number_attr::apply_from(const text_list_level_style_number_attr& Other)
+{
+	_CP_APPLY_PROP(text_style_name_, Other.text_style_name_);
+
+	common_num_format_attlist_.apply_from(Other.common_num_format_attlist_);
+	common_num_format_prefix_suffix_attlist_.apply_from(Other.common_num_format_prefix_suffix_attlist_);
+
+	text_display_levels_	= Other.text_display_levels_;
+	text_start_value_		= Other.text_start_value_;
+}
+
 //  text_list_level_style_bullet_attr
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -115,6 +160,14 @@ void text_list_level_style_bullet_attr::add_attributes( const xml::attributes_wc
     CP_APPLY_ATTR(L"text:bullet-char", text_bullet_char_);
     common_num_format_prefix_suffix_attlist_.add_attributes(Attributes);
     CP_APPLY_ATTR(L"text:bullet-relative-size", text_bullet_relative_size_);
+}
+
+void text_list_level_style_bullet_attr::apply_from(const text_list_level_style_bullet_attr& Other)
+{
+	_CP_APPLY_PROP2(text_style_name_);
+	_CP_APPLY_PROP2(text_bullet_char_);
+	common_num_format_prefix_suffix_attlist_.apply_from(Other.common_num_format_prefix_suffix_attlist_);
+	_CP_APPLY_PROP2(text_bullet_relative_size_);
 }
 
 //  text_list_level_style_image_attr
@@ -130,6 +183,15 @@ void text_list_level_style_image_attr::add_attributes( const xml::attributes_wc_
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * text_list_level_style_number::ns = L"text";
 const wchar_t * text_list_level_style_number::name = L"list-level-style-number";
+
+text_list_level_style_number::text_list_level_style_number(const text_list_level_style_number& other)
+{
+	text_list_level_style_attr_.apply_from(other.text_list_level_style_attr_);
+	text_list_level_style_number_attr_.apply_from(other.text_list_level_style_number_attr_);
+
+	list_level_properties_ = other.list_level_properties_;
+	style_text_properties_ = other.style_text_properties_;
+}
 
 void text_list_level_style_number::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -242,6 +304,12 @@ void style_list_level_label_alignment::add_child_element( xml::sax * Reader, con
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * text_list_level_style_bullet::ns = L"text";
 const wchar_t * text_list_level_style_bullet::name = L"list-level-style-bullet";
+
+text_list_level_style_bullet::text_list_level_style_bullet(const text_list_level_style_bullet& other)
+{
+	text_list_level_style_attr_.apply_from(other.text_list_level_style_attr_);
+	text_list_level_style_bullet_attr_.apply_from(other.text_list_level_style_bullet_attr_);
+}
 
 void text_list_level_style_bullet::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -743,8 +811,6 @@ void text_list_level_style_bullet::pptx_convert(oox::pptx_conversion_context & C
 		}
 	}
 }
-
-
 
 void text_list_level_style_image::docx_convert(oox::docx_conversion_context & Context) 
 {    

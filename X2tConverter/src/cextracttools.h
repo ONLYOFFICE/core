@@ -512,7 +512,6 @@ namespace NExtractTools
 		boost::unordered_map<int, std::vector<InputLimit>> m_mapInputLimits;
 		bool* m_bIsPDFA;
 		std::wstring* m_sConvertToOrigin;
-		std::wstring* m_sScriptsCacheDirectory;
 		// output params
 		mutable bool m_bOutputConvertCorrupted;
 		mutable bool m_bMacro;
@@ -547,7 +546,6 @@ namespace NExtractTools
 			m_bIsNoBase64 = NULL;
 			m_bIsPDFA = NULL;
 			m_sConvertToOrigin = NULL;
-			m_sScriptsCacheDirectory = NULL;
 
 			m_bOutputConvertCorrupted = false;
 			m_bMacro = false;
@@ -581,7 +579,6 @@ namespace NExtractTools
 			RELEASEOBJECT(m_bIsNoBase64);
 			RELEASEOBJECT(m_bIsPDFA);
 			RELEASEOBJECT(m_sConvertToOrigin);
-			RELEASEOBJECT(m_sScriptsCacheDirectory);
 		}
 
 		bool FromXmlFile(const std::wstring& sFilename)
@@ -769,11 +766,6 @@ namespace NExtractTools
 								{
 									RELEASEOBJECT(m_sConvertToOrigin);
 									m_sConvertToOrigin = new std::wstring(sValue);
-								}
-								else if (_T("m_sScriptsCacheDirectory") == sName)
-								{
-									RELEASEOBJECT(m_sScriptsCacheDirectory);
-									m_sScriptsCacheDirectory = new std::wstring(sValue);
 								}
 							}
 							else if (_T("m_nCsvDelimiterChar") == sName)
@@ -1038,12 +1030,19 @@ namespace NExtractTools
 			{
 				if (isEmptyFile())
 				{
-					m_nCsvTxtEncoding = new int(getEncodingByContent());
-					m_sCsvDelimiterChar = new std::wstring(L",");
+					if (!m_nCsvTxtEncoding)
+					{
+						m_nCsvTxtEncoding = new int(getEncodingByContent()); //-1 ???
+					}
+					if (!m_nCsvDelimiter && !m_sCsvDelimiterChar)
+					{
+						m_sCsvDelimiterChar = new std::wstring(L",");
+					}
+					eRes = TCD_ERROR; // ???
 				}
 				else
 				{
-					if (!getDontSaveAdditional())
+					if (false/*not used*/ && !getDontSaveAdditional())
 					{
 						int nCodePage = getEncodingByContent();
 						if (nCodePage < 0)
@@ -1057,6 +1056,10 @@ namespace NExtractTools
 						oBuilder.WriteString(_T("}"));
 						std::wstring sFilePath = NSSystemPath::GetDirectoryName(*m_sFileTo) + FILE_SEPARATOR_STR + _T("settings.json");
 						NSFile::CFileBinary::SaveToFile(sFilePath, oBuilder.GetData());
+					}
+
+					if (!getDontSaveAdditional())
+					{
 						copyOrigin(*m_sFileFrom, *m_sFileTo);
 					}
 					eRes = TCD_ERROR;

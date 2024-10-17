@@ -1,4 +1,5 @@
 #include "FontStyle.h"
+
 #include "../../resources/Constants.h"
 #include "../../resources/utils.h"
 
@@ -114,5 +115,14 @@ namespace NSDocxRenderer
 
 		oWriter.WriteString(L"</w:rPr>");
 		oWriter.WriteString(L"</w:style>");
+	}
+	void CFontStyle::UpdateAvgSpaceWidth(double dWidth)
+	{
+		dAvgSpaceWidth = (dAvgSpaceWidth / (m_nN + 1)) * m_nN + (dWidth / (m_nN + 1));
+		m_nN++;
+	}
+	double CFontStyle::GetAvgSpaceWidth() const
+	{
+		return dAvgSpaceWidth;
 	}
 }

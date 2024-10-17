@@ -77,6 +77,7 @@ namespace PdfWriter
 		m_pAppearance = NULL;
 		m_pFocus      = NULL;
 		m_pBlur       = NULL;
+		m_pFont       = NULL;
 	}
 	void CFieldBase::SetReadOnlyFlag(bool isReadOnly)
 	{
@@ -268,6 +269,7 @@ namespace PdfWriter
 		}
 
 		pNormal->DrawSimpleText(wsValue, pCodes, unCount, pFont, dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), ppFonts, pShifts);
+		m_pFont = pNormal->GetFont();
 	}
 	void CFieldBase::StartTextAppearance(CFontDict* pFont, const double& dFontSize, const TRgb& oColor, const double& dAlpha)
 	{
@@ -288,6 +290,7 @@ namespace PdfWriter
 		}
 
 		pNormal->StartDrawText(pFont, dFontSize, oColor.r, oColor.g, oColor.b, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
+		m_pFont = pNormal->GetFont();
 	}
 	void CFieldBase::AddLineToTextAppearance(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts, const double* pShifts)
 	{
@@ -296,6 +299,7 @@ namespace PdfWriter
 
 		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
 		pNormal->DrawTextLine(dX, dY, pCodes, unCodesCount, ppFonts, pShifts);
+		m_pFont = pNormal->GetFont();
 	}
 	void CFieldBase::EndTextAppearance()
 	{
@@ -697,6 +701,10 @@ namespace PdfWriter
 			scriptV = prefix + scriptF + postfix;
 			AddScriptToAA("F", scriptF, pAA);
 		}
+	}
+	CFontDict* CFieldBase::GetFont()
+	{
+		return m_pFont;
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextField
@@ -2757,7 +2765,7 @@ namespace PdfWriter
 	void CAnnotAppearanceObject::DrawTextNote(const std::string& sColor)
 	{
 		m_pStream->WriteStr(sColor.c_str());
-		m_pStream->WriteStr("0 G 0 i 0.61 w 4 M 0 j 0 J [] 0 d q 1 0 0 1 16.959 1.3672 cm 0 0 m 0 -0.434 -0.352 -0.785 -0.784 -0.785 c -14.911 -0.785 l");
+		m_pStream->WriteStr(" 0 G 0 i 0.61 w 4 M 0 j 0 J [] 0 d q 1 0 0 1 16.959 1.3672 cm 0 0 m 0 -0.434 -0.352 -0.785 -0.784 -0.785 c -14.911 -0.785 l ");
 		m_pStream->WriteStr("-15.345 -0.785 -15.696 -0.434 -15.696 0 c -15.696 17.266 l -15.696 17.699 -15.345 18.051 -14.911 18.051 c -0.784 18.051 l -0.352 18.051 0 17.699 0 17.266 c ");
 		m_pStream->WriteStr("h b Q q 1 0 0 1 4.4023 13.9243 cm 0 0 m 9.418 0 l S Q q 1 0 0 1 4.4019 11.2207 cm 0 0 m 9.418 0 l S Q q 1 0 0 1 4.4023 8.5176 cm 0 0 m 9.418 0 l S Q q ");
 		m_pStream->WriteStr("1 0 0 1 4.4023 5.8135 cm 0 0 m 9.418 0 l S Q");
@@ -2796,7 +2804,7 @@ namespace PdfWriter
 		m_pStream->WriteStr("1 0 0 1 3.7856 11.1963 cm 6.214 -10.655 m 11.438 -10.655 15.673 -6.42 15.673 -1.196 c 15.673 4.027 11.438 8.262 6.214 8.262 c ");
 		m_pStream->WriteStr("0.991 8.262 -3.244 4.027 -3.244 -1.196 c -3.244 -6.42 0.991 -10.655 6.214 -10.655 c h f Q ");
 		m_pStream->WriteStr(sColor.c_str());
-		m_pStream->WriteStr(" 0 G 0 i 0.59 w 4 M 0 j 0 J [] 0 d 1 0 0 1 3.7856 11.1963 cm 0 0 m 8.554 0 l 6.045 2.51 l 7.236 3.702 l 12.135 -1.197 l 7.236 -6.096 l 6.088 -4.949 l");
+		m_pStream->WriteStr(" 0 G 0 i 0.59 w 4 M 0 j 0 J [] 0 d 1 0 0 1 3.7856 11.1963 cm 0 0 m 8.554 0 l 6.045 2.51 l 7.236 3.702 l 12.135 -1.197 l 7.236 -6.096 l 6.088 -4.949 l ");
 		m_pStream->WriteStr("8.644 -2.394 l 0 -2.394 l h 6.214 -10.655 m 11.438 -10.655 15.673 -6.42 15.673 -1.196 c 15.673 4.027 11.438 8.262 6.214 8.262 c ");
 		m_pStream->WriteStr("0.991 8.262 -3.244 4.027 -3.244 -1.196 c -3.244 -6.42 0.991 -10.655 6.214 -10.655 c b");
 	}

@@ -1042,6 +1042,52 @@ std::wstring  docx_conversion_context::dump_settings_document()
             _CP_OPT(std::wstring)  strVal;
             _CP_OPT(int)   intVal;
 
+			strVal = root()->odf_context().Settings().find_by_name(L"modifyPasswordInfo");
+			if (strVal)
+			{
+				CP_XML_NODE(L"w:writeProtection")
+				{
+					strVal = root()->odf_context().Settings().find_by_name(L"modify:crypt-name");
+					if (strVal)
+					{
+						CP_XML_ATTR(L"w:cryptProviderType", *strVal);
+						CP_XML_ATTR(L"w:cryptAlgorithmClass", L"hash");
+						CP_XML_ATTR(L"w:cryptAlgorithmType", L"typeAny");
+
+						strVal = root()->odf_context().Settings().find_by_name(L"modify:algorithm-name");
+						if (strVal)
+						{
+							if (*strVal == L"SHA-512")	CP_XML_ATTR(L"w:cryptAlgorithmSid", L"14");
+							if (*strVal == L"SHA-386")	CP_XML_ATTR(L"w:cryptAlgorithmSid", L"13");
+							if (*strVal == L"SHA-256")	CP_XML_ATTR(L"w:cryptAlgorithmSid", L"12");
+							if (*strVal == L"SHA-1")	CP_XML_ATTR(L"w:cryptAlgorithmSid", L"4");
+						}
+
+						strVal = root()->odf_context().Settings().find_by_name(L"modify:iteration-count");
+						if (strVal) CP_XML_ATTR(L"w:cryptSpinCount", *strVal);
+
+						strVal = root()->odf_context().Settings().find_by_name(L"modify:hash");
+						if (strVal) CP_XML_ATTR(L"w:hash", *strVal);
+
+						strVal = root()->odf_context().Settings().find_by_name(L"modify:salt");
+						if (strVal) CP_XML_ATTR(L"w:salt", *strVal);
+					}
+					else
+					{
+						strVal = root()->odf_context().Settings().find_by_name(L"modify:algorithm-name");
+						if (strVal) CP_XML_ATTR(L"w:algorithmName", *strVal);
+
+						strVal = root()->odf_context().Settings().find_by_name(L"modify:hash");
+						if (strVal) CP_XML_ATTR(L"w:hashValue", *strVal);
+
+						strVal = root()->odf_context().Settings().find_by_name(L"modify:salt");
+						if (strVal) CP_XML_ATTR(L"w:saltValue", *strVal);
+
+						strVal = root()->odf_context().Settings().find_by_name(L"modify:iteration-count");
+						if (strVal) CP_XML_ATTR(L"w:spinCount", *strVal);
+					}
+				}
+			}
 			if (odf_reader::GetProperty(settings_properties_,L"evenAndOddHeaders", boolVal))
 			{
 				CP_XML_NODE(L"w:evenAndOddHeaders");
@@ -1060,6 +1106,16 @@ std::wstring  docx_conversion_context::dump_settings_document()
 			if (odf_reader::GetProperty(settings_properties_,L"mirrorMargins", boolVal))
 			{
 				CP_XML_NODE(L"w:mirrorMargins");
+			}
+
+			_CP_OPT(double) tabDistance = root()->odf_context().Settings().get_tab_distance();
+
+			if (tabDistance)
+			{
+				CP_XML_NODE(L"w:defaultTabStop")
+				{
+					CP_XML_ATTR(L"w:val", *tabDistance);
+				}
 			}
 			
 			CP_XML_NODE(L"w:compat")
@@ -1794,6 +1850,8 @@ void docx_conversion_context::start_list(const std::wstring & StyleName, bool Co
         list_style_stack_.push_back(list_style_stack_.back());
     else
         list_style_stack_.push_back(L"");
+
+	list_styles_occurances_[list_style_stack_.back()]++;
 }
 
 void docx_conversion_context::end_list()
@@ -1809,6 +1867,32 @@ std::wstring docx_conversion_context::current_list_style()
         return L"";
 }
 
+static _CP_PTR(odf_reader::text_list_style) create_restarted_list_style(docx_conversion_context& context, const std::wstring& curStyleName, const std::wstring& newStyleName)
+{
+	odf_reader::list_style_container& lists = context.root()->odf_context().listStyleContainer();
+
+	odf_reader::text_list_style* curStyle = lists.list_style_by_name(curStyleName);
+	_CP_PTR(odf_reader::text_list_style) newStyle = boost::make_shared<odf_reader::text_list_style>(*curStyle);
+
+	newStyle->attr_.style_name_ = newStyleName;
+
+	const std::vector<std::wstring>& style_stack = context.get_list_style_stack();
+
+	for (const std::wstring& s : style_stack)
+	{
+		for (size_t i = 0; i < newStyle->content_.size() && i < style_stack.size() - 1; i++)
+		{
+			odf_reader::text_list_level_style_number* level_style_number =
+				dynamic_cast<odf_reader::text_list_level_style_number*>(newStyle->content_[i].get());
+
+			if (level_style_number)
+				level_style_number->text_list_level_style_number_attr_.text_start_value_ = context.get_list_style_occurances(s) + 1;
+		}
+	}
+
+	return newStyle;
+}
+
 void docx_conversion_context::start_list_item(bool restart)
 {
     first_element_list_item_ = true;
@@ -1821,7 +1905,10 @@ void docx_conversion_context::start_list_item(bool restart)
         odf_reader::list_style_container & lists = root()->odf_context().listStyleContainer();
        
 		odf_reader::text_list_style * curStyle = lists.list_style_by_name(curStyleName);
-        lists.add_list_style(curStyle, newStyleName);
+		_CP_PTR(odf_reader::text_list_style) newStyle = create_restarted_list_style(*this, curStyleName, newStyleName);
+		restarted_list_styles.push_back(newStyle);
+		
+        lists.add_list_style(newStyle.get());
         end_list();
         start_list(newStyleName);
     }
@@ -2339,9 +2426,12 @@ void docx_conversion_context::process_headers_footers()
     process_headers_footers_ = false;
 }
 
-void docx_conversion_context::set_master_page_name(const std::wstring & MasterPageName)
+bool docx_conversion_context::set_master_page_name(const std::wstring & MasterPageName)
 {
+	if (current_master_page_name_ == MasterPageName) return false;
+
     current_master_page_name_ = MasterPageName;
+	return true;
 }
 
 const std::wstring & docx_conversion_context::get_master_page_name() const

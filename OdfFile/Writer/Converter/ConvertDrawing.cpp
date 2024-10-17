@@ -68,6 +68,7 @@
 #include "../Format/odf_drawing_context.h"
 #include "../Format/style_text_properties.h"
 #include "../Format/style_paragraph_properties.h"
+#include "../Format/style_graphic_properties.h"
 #include "../Format/styles_list.h"
 
 #define GETBITS(from, numL, numH) ((from & (((1 << (numH - numL + 1)) - 1) << numL)) >> numL)
@@ -872,6 +873,34 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 	if (type < 0)return;
 //-----------------------------------------------------------------------------
 	odf_context()->drawing_context()->start_shape(type);
+
+	if (oox_shape->nvSpPr.nvPr.ph.is_init())
+	{
+		_CP_PTR(cpdoccore::odf_writer::paragraph_format_properties) paragraph_properties = boost::make_shared<cpdoccore::odf_writer::paragraph_format_properties>();
+		_CP_PTR(cpdoccore::odf_writer::text_format_properties) text_properties = boost::make_shared<cpdoccore::odf_writer::text_format_properties>();
+		_CP_PTR(cpdoccore::odf_writer::graphic_format_properties) graphic_properties = boost::make_shared<cpdoccore::odf_writer::graphic_format_properties>();
+
+		if(oox_shape->txBody.is_init())
+			convert(oox_shape->txBody->lstStyle.GetPointer(), 0, paragraph_properties.get(), text_properties.get());
+
+		if (odf_context()->drawing_context()->placeholder_replacing())
+		{
+			graphic_properties->draw_textarea_horizontal_align_ = odf_types::text_align(odf_types::text_align::Left);
+			graphic_properties->draw_textarea_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Top);
+		}
+
+		odf_context()->drawing_context()->set_text_properties(text_properties.get());
+		odf_context()->drawing_context()->set_paragraph_properties(paragraph_properties.get());
+		odf_context()->drawing_context()->set_graphic_properties(graphic_properties.get());
+
+		if (oox_shape->txBody.IsInit())
+		{
+			odf_context()->start_text_context();
+			convert(oox_shape->txBody->bodyPr.GetPointer());
+			odf_context()->drawing_context()->set_text(odf_context()->text_context());
+			odf_context()->end_text_context();
+		}
+	}
 	
 	convert(&oox_shape->spPr, oox_shape->style.GetPointer());
 
@@ -2828,14 +2857,32 @@ void OoxConverter::convert(PPTX::Logic::TxBody *oox_txBody, PPTX::Logic::ShapeSt
 	
 	odf_context()->end_text_context();	
 }
+
+static std::wstring convert_arc_angle(const std::wstring& angle, odf_writer::odf_drawing_context* dc)
+{
+	std::wstring result = L"0";
+
+	int angleInt = XmlUtils::GetInteger(angle);
+
+	if (angleInt == 0 && angle != L"0")
+	{
+		result = std::wstring(L"gd") + std::to_wstring(dc->get_formulas_count());
+		dc->add_formula(result, L"*/ 1 " + angle + L" 60000");
+	}
+	else
+		result = std::to_wstring(angleInt / 60000);
+
+	return result;
+}
+
 void OoxConverter::convert(PPTX::Logic::ArcTo *oox_geom_path)
 {
 	if (!oox_geom_path) return;
 
-	int stAng = XmlUtils::GetInteger(oox_geom_path->stAng);
-	int swAng = XmlUtils::GetInteger(oox_geom_path->swAng);
+	const std::wstring stAng = convert_arc_angle(oox_geom_path->stAng, odf_context()->drawing_context());
+	const std::wstring swAng = convert_arc_angle(oox_geom_path->swAng, odf_context()->drawing_context());
 	
-	std::wstring path_elm = oox_geom_path->wR + L" " + oox_geom_path->hR + L" " + std::to_wstring(stAng/60000) + L" " + std::to_wstring(swAng /60000);
+	std::wstring path_elm = oox_geom_path->wR + L" " + oox_geom_path->hR + L" " + stAng + L" " + swAng;
 	
 	odf_context()->drawing_context()->add_path_element(std::wstring(L"G"), path_elm);
 }

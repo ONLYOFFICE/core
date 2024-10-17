@@ -200,7 +200,7 @@ if __name__ == '__main__':
     os.chdir(file_dir + '/..')
     # initialize argument parser
     parser = argparse.ArgumentParser(description='Generate project files for Document Builder samples')
-    parser.add_argument('--vs', action='store_true', help='create Visual Studio (.vcxproj) project files')
+    parser.add_argument('--vs', action='store_true', help='create Visual Studio (.vcxproj and .csproj) project files')
     parser.add_argument('--qt', action='store_true', help='create Qt (.pro) project files')
     parser.add_argument('-t', '--test', dest='tests', action='append', help='specifies tests to generate project files', required=True)
     parser.add_argument('-l', '--list', action=PrintTestsList, nargs=0, help='show list of available tests and exit')

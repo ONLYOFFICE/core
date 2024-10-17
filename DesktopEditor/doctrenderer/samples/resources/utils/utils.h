@@ -30,7 +30,7 @@
  *
  */
 
-// convinient macro definitions
+// convenient macro definitions
 #if defined(__linux__) || defined(__linux)
 #define _LINUX
 #elif defined(__APPLE__) || defined(__MACH__)
@@ -44,7 +44,7 @@
 #include <windows.h>
 #endif
 
-#ifdef _LINUX
+#if defined(_LINUX) || defined(_MAC)
 #include <unistd.h>
 #include <string.h>
 #include <sys/stat.h>

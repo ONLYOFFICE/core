@@ -266,4 +266,4 @@ if __name__ == '__main__':
         genQtProjects(tests_selected, args.dir)
     # Makefile
     if args.make:
-        genMakefile(tests_selected, builder_dir)
+        genMakefile(tests_selected, args.dir)

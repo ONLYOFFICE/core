@@ -172,9 +172,58 @@ enum class ParsingElem
     date,
     time
 };
+
+
+void SetDateElem(tm &result, _INT32 value, const std::wstring datePattern,  bool &day, bool &month, bool &year, bool &Berror)
+{
+    for(auto dateFmtPart : datePattern)
+    {
+        if((dateFmtPart == L'0' || dateFmtPart == L'1') && !day)
+        {
+            day = true;
+            result.tm_mday = value;
+            return;
+        }
+        else if((dateFmtPart == L'2' || dateFmtPart == L'3') && !month)
+        {
+            month = true;
+            result.tm_mon = value;
+            return;
+        }
+        else if((dateFmtPart == L'4' || dateFmtPart == L'5') && !year)
+        {
+            year = true;
+            result.tm_year = value;
+            return;
+        }
+    }
+    Berror = true;
+}
+
+void SetTimeElem(tm &result, _INT32 value, bool &BHour, bool &bMin,  bool &bSec, bool &Berror)
+{
+    if(!BHour)
+    {
+        result.tm_hour = value;
+        BHour = true;
+    }
+    else if (!bMin)
+    {
+        result.tm_min = value;
+        bMin = true;
+    }
+    else if (!bSec)
+    {
+        result.tm_sec = value;
+        bSec = true;
+    }
+    else
+        Berror = true;
+}
+
 bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasdate, bool &Hastime)
 {
-    bool berror = false;
+    bool bError = false;
     auto locInf = lcInfo::getLocalInfo(lcid_);
     ParsingElem parsingNow = ParsingElem::none;
 
@@ -229,11 +278,10 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
                 }
                 else if(elementType == DateElemTypes::space)
                 {
-
                 }
                 else
                 {
-                    berror = true;
+                    bError = true;
                 }
             }
             else
@@ -249,55 +297,17 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
                         {
                             Hasdate = true;
                             parsingNow = ParsingElem::date;
-                            for(auto dateFmtPart : locInf.ShortDatePattern)
-                            {
-                                if((dateFmtPart == L'0' || dateFmtPart == L'1') && !BDay)
-                                {
-                                    BDay = true;
-                                    result.tm_mday = datePart;
-                                    break;
-                                }
-                                else if((dateFmtPart == L'2' || dateFmtPart == L'3') && !Bmonth)
-                                {
-                                    Bmonth = true;
-                                    result.tm_mon = datePart - 1;
-                                    break;
-                                }
-                                else if((dateFmtPart == L'4' || dateFmtPart == L'5') && !Byear)
-                                {
-                                    Byear = true;
-                                    result.tm_year = datePart;
-                                    break;
-                                }
-                            }
+                            SetDateElem(result, datePart, locInf.ShortDatePattern, BDay, Bmonth, Byear, bError);
                         }
                         else if(charElement == timeSeparator)
                         {
                             Hastime = true;
                             parsingNow = ParsingElem::time;
-                            if(!bHour)
-                            {
-                                result.tm_hour = datePart;
-                                bHour = true;
-                            }
-                            else if (!bMin)
-                            {
-                                result.tm_min = datePart;
-                                bMin = true;
-                            }
-                            else if (!bSec)
-                            {
-                                result.tm_sec = datePart;
-                                bSec = true;
-                            }
-                            else
-                            {
-                                berror = true;
-                            }
+                            SetTimeElem(result, datePart, bHour, bMin, bSec, bError);
                         }
                         else
                         {
-                            berror = true;
+                            bError = true;
                         }
                     }
                 }
@@ -306,13 +316,27 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
                     //просто добавляем в буфер то что было за разделителем
                     StringBuf.push_back(charElement);
                 }
+                if(CurrentElementType == DateElemTypes::space)
+                {
+                    if(PrevType == DateElemTypes::digit)
+                    {
+                        _INT32 datePart  = std::stoi(std::wstring(StringBuf.begin(), StringBuf.end()));
+                        StringBuf.clear();
+                        if(parsingNow == ParsingElem::date)
+                            SetDateElem(result, datePart, locInf.ShortDatePattern, BDay, Bmonth, Byear, bError);
+                        else if (parsingNow == ParsingElem::time)
+                            SetTimeElem(result, datePart, bHour, bMin, bSec, bError);
+                     }
+                    if(elementType == DateElemTypes::letter || elementType == DateElemTypes::digit)
+                        StringBuf.push_back(charElement);
+                }
                 //анализируем собранный элемент
                 PrevType = CurrentElementType;
             }
         }
         CurrentElementType = elementType;
 
-        if(berror)
+        if(bError)
             return false;
     }
     //анализируем последний элемент в буфере
@@ -321,32 +345,20 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
         if(CurrentElementType == DateElemTypes::digit)
         {
             _INT32 datePart  = std::stoi(std::wstring(StringBuf.begin(), StringBuf.end()));
-            auto lastDateFmtPart = locInf.ShortDatePattern.at(locInf.ShortDatePattern.size() - 1);
-             switch (lastDateFmtPart)
-            {
-                case L'1':
-                case L'0':
-                    result.tm_mday = datePart;
-                    break;
-                case L'2':
-                case L'3':
-                    result.tm_mon = datePart - 1;
-                    break;
-                case L'4':
-                case L'5':
-                    result.tm_year = datePart;
-                    break;
-            }
+           SetDateElem(result, datePart, locInf.ShortDatePattern, BDay, Bmonth, Byear, bError);
         }
     }
     else if(parsingNow == ParsingElem::time)
     {
         _INT32 datePart  = std::stoi(std::wstring(StringBuf.begin(), StringBuf.end()));
-        result.tm_sec = datePart;
+        SetTimeElem(result, datePart, bHour, bMin, bSec, bError);
     }
     //нормализуем год если он есть
     if(Hasdate)
+    {
+        result.tm_mon--;
         result.tm_year = normalizeYear(result.tm_year);
+    }
     return true;
 }
 

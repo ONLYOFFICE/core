@@ -220,10 +220,6 @@ namespace NSDocxRenderer
 		ResetBorders();
 	}
 
-	void CVectorGraphics::End()
-	{
-		Clear();
-	}
 	void CVectorGraphics::Add(const PathCommand& command)
 	{
 		m_arData.push_back(command);

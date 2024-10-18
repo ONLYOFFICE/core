@@ -57,7 +57,6 @@ namespace NSDocxRenderer
 
 		if (lType == c_nResetClipType)
 		{
-			m_oCurrVectorGraphics.Clear();
 			m_oClipVectorGraphics.Clear();
 		}
 		else if (lType == c_nClipType)
@@ -162,11 +161,12 @@ namespace NSDocxRenderer
 
 	void CPage::PathStart()
 	{
+		m_oCurrVectorGraphics.Clear();
 	}
 
 	void CPage::PathEnd()
 	{
-		m_oCurrVectorGraphics.End();
+		m_oCurrVectorGraphics.Clear();
 	}
 
 	void CPage::PathClose()
@@ -250,8 +250,6 @@ namespace NSDocxRenderer
 			m_oCurrVectorGraphics = std::move(new_vector_graphics);
 		}
 		shape->SetVector(std::move(m_oCurrVectorGraphics));
-		if (!shape->IsOoxmlValid())
-			return;
 
 		auto info = pInfo;
 		if (!info && m_bIsGradient)
@@ -326,6 +324,9 @@ namespace NSDocxRenderer
 		else
 			shape->m_eType = CShape::eShapeType::stVectorGraphics;
 
+		if (!shape->IsOoxmlValid())
+			return;
+
 		// big white shape with page width & height skip
 		if (fabs(shape->m_dHeight - m_dHeight) <= c_dSHAPE_X_OFFSET * 2 &&
 			fabs(shape->m_dWidth - m_dWidth) <= c_dSHAPE_X_OFFSET * 2 &&
@@ -334,7 +335,6 @@ namespace NSDocxRenderer
 
 		shape->m_nOrder = ++m_nShapeOrder;
 		m_arShapes.push_back(shape);
-		m_oClipVectorGraphics.Clear();
 	}
 
 	void CPage::CollectTextData(

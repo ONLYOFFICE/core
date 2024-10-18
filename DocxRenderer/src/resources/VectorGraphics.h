@@ -68,7 +68,6 @@ namespace NSDocxRenderer
 			const double& x2, const double& y2,
 			const double& x3, const double& y3);
 		void Close();
-		void End();
 
 		void Add(const PathCommand& command);
 		void Join(CVectorGraphics&& other);

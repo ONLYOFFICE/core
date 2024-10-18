@@ -1,8 +1,8 @@
-CXX 		= g++
+CXX 		= [COMPILER]
 CXXFLAGS	= -std=gnu++11 -Wall -W -fPIC
 INCPATH		= -I[BUILDER_DIR]/include -I[ROOT_DIR]
-LINK		= g++
-LFLAGS		= -Wl,--unresolved-symbols=ignore-in-shared-libs -Wl,-rpath,[BUILDER_DIR]
+LINK		= [COMPILER]
+LFLAGS		= [LFLAGS]
 LIBS		= -L[BUILDER_DIR] -ldoctrenderer
 
 BUILD_DIR 	= build
@@ -23,7 +23,7 @@ $(OBJ): $(SRC)
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $(OBJ) $(SRC)
 
 run: $(TARGET)
-	./$(TARGET)
+	[ENV_LIB_PATH]="[BUILDER_DIR]" ./$(TARGET)
 
 clean:
 	@rm -rf $(BUILD_DIR)

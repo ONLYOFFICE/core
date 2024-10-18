@@ -202,6 +202,17 @@ def genMakefile(tests_selected, builder_dir):
         log('warning', 'generating Makefile is not available on Windows')
         return
 
+    # initialize variables
+    compiler = ''
+    lflags = ''
+    env_lib_path = ''
+    if os_name == 'linux':
+        compiler = 'g++'
+        lflags = '-Wl,--unresolved-symbols=ignore-in-shared-libs'
+        env_lib_path = 'LD_LIBRARY_PATH'
+    elif os_name == 'darwin':
+        compiler = 'clang++'
+        env_lib_path = 'DYLD_LIBRARY_PATH'
     root_dir = os.getcwd()
     tests = tests_selected['cpp']
     mkdir('out/cpp')
@@ -216,7 +227,10 @@ def genMakefile(tests_selected, builder_dir):
         replacements = {
             '[TEST_NAME]': test_name,
             '[BUILDER_DIR]': builder_dir,
-            '[ROOT_DIR]': root_dir
+            '[ROOT_DIR]': root_dir,
+            '[COMPILER]': compiler,
+            '[LFLAGS]': lflags,
+            '[ENV_LIB_PATH]': env_lib_path
         }
         replacePlaceholders('configure/project_templates/cpp/Makefile', test_dir + '/Makefile', replacements)
 

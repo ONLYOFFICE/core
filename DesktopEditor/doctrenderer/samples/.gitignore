@@ -2,3 +2,7 @@
 !Makefile
 
 out/
+
+*.docx
+*.pptx
+*.xlsx

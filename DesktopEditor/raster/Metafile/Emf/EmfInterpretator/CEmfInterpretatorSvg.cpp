@@ -1167,23 +1167,29 @@ namespace MetaFile
 
 		arNodeAttributes.push_back({L"font-size", ConvertToWString(dFontHeight)});
 
-		std::wstring wsFontName = pFont->GetFaceName();
+		NSStringUtils::CStringBuilder oFontName;
+		oFontName.WriteEncodeXmlString(pFont->GetFaceName());
 
-#ifndef BUILDING_WASM_MODULE
-		if (!wsFontName.empty())
+		if (0 != oFontName.GetSize())
 		{
+			#ifndef BUILDING_WASM_MODULE
 			NSFonts::CFontSelectFormat oFormat;
 			oFormat.wsName = new std::wstring(pFont->GetFaceName());
 
 			NSFonts::CFontInfo *pFontInfo = m_pParser->GetFontManager()->GetFontInfoByParams(oFormat);
 
-			if (NULL != pFontInfo && !StringEquals(wsFontName, pFontInfo->m_wsFontName))
-				wsFontName = L"&apos;" + wsFontName + L"&apos;, &apos;" + pFontInfo->m_wsFontName + L"&apos;";
+			if (NULL != pFontInfo && !StringEquals(*oFormat.wsName, pFontInfo->m_wsFontName))
+			{
+				oFontName.Clear();
+				oFontName.WriteEncodeXmlString(L"\'");
+				oFontName.WriteEncodeXmlString(*oFormat.wsName);
+				oFontName.WriteEncodeXmlString(L"\',\'");
+				oFontName.WriteEncodeXmlString(pFontInfo->m_wsFontName);
+				oFontName.WriteEncodeXmlString(L"\'");
+			}
+			#endif
+			arNodeAttributes.push_back({L"font-family", oFontName.GetData()});
 		}
-#endif
-
-		if (!wsFontName.empty())
-			arNodeAttributes.push_back({L"font-family", wsFontName});
 
 		if (pFont->GetWeight() > 550)
 			arNodeAttributes.push_back({L"font-weight", L"bold"});

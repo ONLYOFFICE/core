@@ -707,12 +707,14 @@ bool Location::IsTouching() noexcept
 
 CBooleanOperations::CBooleanOperations(const CGraphicsPath& path1,
 									   const CGraphicsPath& path2,
-									   BooleanOpType op) :
+									   BooleanOpType op,
+									   long fillType) :
 	Op(op),
 	Close1(path1.Is_poly_closed()),
 	Close2(path2.Is_poly_closed()),
 	Path1(path1),
-	Path2(path2)
+	Path2(path2),
+	FillType(fillType)
 {
 	TraceBoolean();
 }
@@ -1705,6 +1707,10 @@ void CBooleanOperations::SetWinding()
 			} while (!s.IsEmpty() && !s.Inters && s != start);
 		}
 	}
+
+	if (FillType & c_nStroke)
+		for (auto& s : Segments2)
+			s.Winding = 0;
 }
 
 void CBooleanOperations::DivideLocations()
@@ -1896,7 +1902,8 @@ void CBooleanOperations::AddOffsets(std::vector<double>& offsets,
 
 CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1,
 								   const CGraphicsPath& path2,
-								   BooleanOpType op)
+								   BooleanOpType op,
+								   long fillType)
 {
 	std::vector<CGraphicsPath>	paths1 = path1.GetSubPaths(),
 								paths2 = path2.GetSubPaths(),
@@ -1906,7 +1913,7 @@ CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1,
 	{
 		for (const auto& p2 : paths2)
 		{
-			CBooleanOperations operation(p1, p2, op);
+			CBooleanOperations operation(p1, p2, op, fillType);
 			paths.push_back(operation.GetResult());
 		}
 	}

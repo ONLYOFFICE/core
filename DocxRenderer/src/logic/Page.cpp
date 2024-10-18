@@ -174,7 +174,6 @@ namespace NSDocxRenderer
 		m_oCurrVectorGraphics.Close();
 	}
 
-
 	// c_nStroke = 0x0001;
 	// c_nWindingFillMode = 0x0100;
 	// c_nEvenOddFillMode = 0x0200;
@@ -182,10 +181,7 @@ namespace NSDocxRenderer
 	{
 		// in case if text comes as a path with unicode 32 (space)
 		if (m_oCurrVectorGraphics.IsEmpty())
-		{
-			m_oClipVectorGraphics.Clear();
 			return;
-		}
 
 		double rotation = m_pTransform->z_Rotation();
 		double left = m_oCurrVectorGraphics.GetLeft();
@@ -239,12 +235,12 @@ namespace NSDocxRenderer
 			CVectorGraphics new_vector_graphics = CVectorGraphics::CalcBoolean(
 				m_oCurrVectorGraphics,
 				m_oClipVectorGraphics,
-				m_lClipMode);
+				m_lClipMode,
+				lType);
 
 			if (new_vector_graphics.IsEmpty())
 			{
 				m_oCurrVectorGraphics.Clear();
-				m_oClipVectorGraphics.Clear();
 				return;
 			}
 			m_oCurrVectorGraphics = std::move(new_vector_graphics);

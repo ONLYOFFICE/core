@@ -813,17 +813,17 @@ namespace NSDocxRenderer
 					continue;
 
 				// если совпадает строка по высоте - берем ее и выходим
-				if (fabs(line->m_dBaselinePos - drop_cap_cont->m_dBaselinePos) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
+				if (fabs(line->m_dBotWithMaxDescent - drop_cap_cont->m_dBotWithDescent) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
 				{
 					num_of_lines++;
 					break;
 				}
 
-				if (line->m_dBaselinePos > drop_cap_cont->m_dBaselinePos)
-					break;
-
-				if (fabs(line->m_dTop - drop_cap_cont->m_dTop) > c_dTHE_SAME_STRING_Y_PRECISION_MM && line->m_dTop < drop_cap_cont->m_dTop)
+				if (line->m_dBotWithMaxDescent < drop_cap_cont->m_dTopWithAscent)
 					continue;
+
+				if (line->m_dTopWithMaxAscent > drop_cap_cont->m_dBotWithDescent)
+					break;
 
 				num_of_lines++;
 			}

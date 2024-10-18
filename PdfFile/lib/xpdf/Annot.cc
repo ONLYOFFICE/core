@@ -242,7 +242,7 @@ Annot::Annot(PDFDoc *docA, Dict *dict, Ref *refA, const char* AP, const char* AS
       }
       obj2.free();
     }
-  } else {
+  } else if (type && type->cmp("FreeText")) {
     bBorder = gFalse;
   }
   obj1.free();
@@ -735,6 +735,15 @@ void Annot::generateFreeTextAppearance() {
   }
   obj1.free();
 
+  //----- draw the border
+  lineWidth = 0;
+  if (borderStyle && borderStyle->getWidth() != 0) {
+    setLineStyle(borderStyle, &lineWidth);
+    appearBuf->appendf("{0:.4f} {1:.4f} {2:.4f} {3:.4f} re s\n",
+        0.5 * lineWidth, 0.5 * lineWidth,
+        xMax - xMin - lineWidth, yMax - yMin - lineWidth);
+  }
+
   //----- draw the text
   if (annotObj.dictLookup("Contents", &obj1)->isString()) {
     text = obj1.getString()->copy();
@@ -748,12 +757,12 @@ void Annot::generateFreeTextAppearance() {
     quadding = 0;
   }
   obj1.free();
-  if (annotObj.dictLookup("DA", &obj1)->isString()) {
+  if (annotObj.dictLookup("RC", &appearDict)->isString() && annotObj.dictLookup("DA", &obj1)->isString()) {
     da = obj1.getString()->copy();
   } else {
     da = new GString();
   }
-  obj1.free();
+  appearDict.free(); obj1.free();
   // the "Rotate" field is not defined in the PDF spec, but Acrobat
   // looks at it
   if (annotObj.dictLookup("Rotate", &obj1)->isInt()) {
@@ -762,17 +771,9 @@ void Annot::generateFreeTextAppearance() {
     rot = 0;
   }
   obj1.free();
-  drawText(text, da, quadding, 0, rot);
+  drawText(text, da, quadding, lineWidth, rot);
   delete text;
   delete da;
-
-  //----- draw the border
-  if (borderStyle && borderStyle->getWidth() != 0) {
-    setLineStyle(borderStyle, &lineWidth);
-    appearBuf->appendf("{0:.4f} {1:.4f} {2:.4f} {3:.4f} re s\n",
-		       0.5 * lineWidth, 0.5 * lineWidth,
-		       xMax - xMin - lineWidth, yMax - yMin - lineWidth);
-  }
 
   //----- build the appearance stream dictionary
   appearDict.initDict(doc->getXRef());
@@ -1422,7 +1423,7 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
       }
     }
   } else {
-    daToks = NULL;
+    daToks = new GList();
   }
 
   // get the font and font size
@@ -1438,8 +1439,9 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
     error(errSyntaxError, -1,
 	  "Missing 'Tf' operator in annotation's DA string");
     daToks->append(new GString("/xpdf_default_font"));
-    daToks->append(new GString("10"));
+    daToks->append(new GString("14"));
     daToks->append(new GString("Tf"));
+    fontSize = 14;
   }
 
   // setup
@@ -1495,16 +1497,16 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
   switch (quadding) {
   case 0:
   default:
-    x = margin + 2;
+    x = margin * 2;
     break;
   case 1:
     x = (dx - w) / 2;
     break;
   case 2:
-    x = dx - margin - 2 - w;
+    x = dx - margin * 2 - w;
     break;
   }
-  y = 0.5 * dy - 0.4 * fontSize;
+  y = dy - margin - 2 - 0.789571 * fontSize;
 
   // set the font matrix
   if (tmPos >= 0) {
@@ -1525,7 +1527,7 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
 
   // write the font matrix (if not part of the DA string)
   if (tmPos < 0) {
-    appearBuf->appendf("1 0 0 1 {0:.4f} {1:.4f} Tm\n", x, y);
+    appearBuf->appendf("{0:.4f} {1:.4f} Td\n", x, y);
   }
 
   // write the text string
@@ -1572,6 +1574,13 @@ void Annot::draw(Gfx *gfx, GBool printing) {
 
   // draw the appearance stream
   isLink = type && !type->cmp("Link");
+#ifdef BUILDING_WASM_MODULE
+  if (type && !type->cmp("Stamp"))
+  {
+    gfx->drawStamp(&appearance);
+    return;
+  }
+#endif
   gfx->drawAnnot(&appearance, isLink ? borderStyle : (AnnotBorderStyle *)NULL,
 		 xMin, yMin, xMax, yMax);
 }

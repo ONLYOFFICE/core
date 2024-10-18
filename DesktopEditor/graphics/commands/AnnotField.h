@@ -399,6 +399,17 @@ public:
 		double m_dRD[4]{};
 	};
 
+	class GRAPHICS_DECL CStampAnnotPr
+	{
+	public:
+		const std::wstring& GetName();
+
+		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
+
+	private:
+		std::wstring m_wsName;
+	};
+
 	CAnnotFieldInfo();
 	virtual ~CAnnotFieldInfo();
 
@@ -433,6 +444,7 @@ public:
 	bool IsPopup()           const;
 	bool IsFreeText()        const;
 	bool IsCaret()           const;
+	bool IsStamp()           const;
 
 	CMarkupAnnotPr*       GetMarkupAnnotPr();
 	CTextAnnotPr*         GetTextAnnotPr();
@@ -444,6 +456,7 @@ public:
 	CPopupAnnotPr*        GetPopupAnnotPr();
 	CFreeTextAnnotPr*     GetFreeTextAnnotPr();
 	CCaretAnnotPr*        GetCaretAnnotPr();
+	CStampAnnotPr*        GetStampAnnotPr();
 	CWidgetAnnotPr*       GetWidgetAnnotPr();
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
@@ -485,6 +498,7 @@ private:
 	CPopupAnnotPr*        m_pPopupPr;
 	CFreeTextAnnotPr*     m_pFreeTextPr;
 	CCaretAnnotPr*        m_pCaretPr;
+	CStampAnnotPr*        m_pStampPr;
 	CWidgetAnnotPr*       m_pWidgetPr;
 };
 

@@ -734,6 +734,10 @@ namespace MetaFile
 				if (oDestRect != oSrcRect)
 				{
 					TRectL oClip = oSrcRect;
+
+					oClip.Right  = oClip.Left + (std::min)(oClip.Right  - oClip.Left, (int)unWidth ) - 1;
+					oClip.Bottom = oClip.Top  + (std::min)(oClip.Bottom - oClip.Top,  (int)unHeight) - 1;
+
 					BYTE* pNewBuffer = ClipBuffer(pBgra, unWidth, unHeight, oClip);
 
 					if (NULL != pNewBuffer)

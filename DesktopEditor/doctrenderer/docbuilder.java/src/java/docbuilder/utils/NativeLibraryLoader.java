@@ -40,7 +40,7 @@ public class NativeLibraryLoader {
                 throw new RuntimeException("Unsupported OS");
             }
 
-            String[] libs = {"UnicodeConverter", "kernel", "kernel_network", "graphics", "doctrenderer", "docbuilder.jni"};
+            String[] libs = {"UnicodeConverter", "kernel", "kernel_network", "graphics", "PdfFile", "XpsFile", "DjVuFile", "DocxRenderer", "doctrenderer", "docbuilder.jni"};
 
             String prefix = "";
             if (OSChecker.isMac() || OSChecker.isLinux()) {

@@ -8098,6 +8098,12 @@ void BinaryDocumentTableWriter::WriteSdtPicture(const OOX::Logic::CSdtPicture& o
 		m_oBcw.m_oStream.WriteDoubleReal(*oSdtPicture.m_oShiftY);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (oSdtPicture.m_oSignature.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::PictureFormPrSignature);
+		m_oBcw.m_oStream.WriteBOOL(*oSdtPicture.m_oSignature);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void BinaryDocumentTableWriter::WriteSdtComplexFormPr(const OOX::Logic::CComplexFormPr& oComplexFormPr)
 {

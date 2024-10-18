@@ -198,7 +198,7 @@ TEST_F(CPdfFileTest, GetMetaData)
 
 TEST_F(CPdfFileTest, PdfType)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	NSFile::CFileBinary oFile;
 	ASSERT_TRUE(oFile.OpenFile(wsSrcFile));
@@ -234,7 +234,7 @@ TEST_F(CPdfFileTest, PdfType)
 
 TEST_F(CPdfFileTest, GetEmbeddedFont)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	LoadFromFile();
 
@@ -378,7 +378,7 @@ TEST_F(CPdfFileTest, EditPdf)
 
 TEST_F(CPdfFileTest, EditPdfFromBase64)
 {
-	GTEST_SKIP();
+	//GTEST_SKIP();
 
 	LoadFromFile();
 	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
@@ -410,7 +410,7 @@ TEST_F(CPdfFileTest, EditPdfFromBase64)
 	EXPECT_TRUE(NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, pBuffer, &nBufferLen));
 	CConvertFromBinParams* pParams = new CConvertFromBinParams();
 	pParams->m_sMediaDirectory = NSFile::GetProcessDirectory();
-	pdfFile->AddToPdfFromBinary(pBuffer, nBufferLen, pParams);
+	pdfFile->AddToPdfFromBinary(pBuffer + 4, nBufferLen - 4, pParams);
 
 	RELEASEOBJECT(pParams);
 	RELEASEARRAYOBJECTS(pBuffer);

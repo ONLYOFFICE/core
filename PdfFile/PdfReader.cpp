@@ -888,6 +888,9 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 					}
 					else
 						pg = pLinkDest->getPageNum();
+					if (0 == pg)
+						++pg;
+
 					std::string sLink = "#" + std::to_string(pg - 1);
 					str = new GString(sLink.c_str());
 					dy  = m_pPDFDocument->getPageCropHeight(pg) - pLinkDest->getTop();
@@ -1613,7 +1616,7 @@ BYTE* CPdfReader::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, 
 			sType = oObj.getName();
 		oObj.free(); oAnnot.free();
 
-		if (sType == "Widget" || sType == "Highlight")
+		if (sType == "Widget")
 		{
 			oAnnotRef.free();
 			continue;

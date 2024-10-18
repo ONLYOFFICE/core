@@ -34,6 +34,7 @@ HEADERS += \
 	src/logic/elements/Paragraph.h \
 	src/logic/elements/Shape.h \
 	src/logic/elements/TextLine.h \
+	src/logic/managers/ExternalImageStorage.h \
 	src/logic/managers/FontStyleManager.h \
 	src/logic/managers/ImageManager.h \
 	src/logic/managers/FontManager.h \

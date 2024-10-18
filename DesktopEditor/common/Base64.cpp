@@ -250,3 +250,123 @@ namespace NSBase64
 		return Base64DecodeBase(szSrc, nSrcLen, pbDest, pnDestLen);
 	}
 }
+
+#include <cstring>
+namespace NSBase32
+{
+	const unsigned char PADDING_CHAR_32 = '=';
+
+	inline void pad(unsigned char* buf, int len)
+	{
+		for (int i = 0; i < len; i++)
+			buf[i] = PADDING_CHAR_32;
+	}
+	inline unsigned char shift_right(unsigned char byte, signed char offset)
+	{
+		if (offset > 0)
+			return byte >>  offset;
+		else
+			return byte << -offset;
+	}
+	inline unsigned char shift_left(unsigned char byte, signed char offset)
+	{
+		return shift_right(byte, - offset);
+	}
+
+	unsigned char encode_char(unsigned char c)
+	{
+		static unsigned char base32[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+		return base32[c & 0x1F];
+	}
+
+	int decode_char(unsigned char c)
+	{
+		char retval = -2;
+
+		if (c >= 'A' && c <= 'Z')
+			retval = c - 'A';
+		else if (c >= '2' && c <= '7')
+			retval = c - '2' + 26;
+		else if (c == PADDING_CHAR_32)
+			retval = -1;
+
+		return  retval;
+	}
+
+	int decode_sequence(const unsigned char* coded, unsigned char* plain)
+	{
+		plain[0] = 0;
+		for (int block = 0; block < 8; block++)
+		{
+			int offset = (8 - 5 - (5*block) % 8);
+			int octet = (block*5) / 8;
+
+			int c = decode_char(coded[block]);
+			if (c < 0)
+				return c;
+
+			plain[octet] |= shift_left(c, offset);
+			if (offset < 0)
+			{  // does this block overflows to next octet?
+				plain[octet+1] = shift_left(c, 8 + offset);
+			}
+		}
+		return 5;
+	}
+
+	bool Decode(unsigned char* in, int inLen, unsigned char* out)
+	{
+		for (size_t i = 0, j = 0; (i + 8) <= inLen; i += 8, j += 5)
+		{
+			int n = decode_sequence(&in[i], &out[j]);
+			if (n == -2)
+				return false;
+			if (n < 5)
+				break;
+		}
+		return true;
+	}
+
+	void encode_sequence(const unsigned char* plain, int len, unsigned char* coded)
+	{
+		for (int block = 0; block < 8; block++)
+		{
+			int octet = (block*5) / 8;
+			int junk = (8 - 5 - (5*block) % 8);
+
+			if (octet >= len)
+			{
+				pad(&coded[block], 8 - block);
+				return;
+			}
+
+			unsigned char c = shift_right(plain[octet], junk);  // first part
+
+			if (junk < 0  // is there a second part?
+				&&  octet < len - 1)  // is there still something to read?
+			{
+				c |= shift_right(plain[octet+1], 8 + junk);
+			}
+			coded[block] = encode_char(c);
+		}
+	}
+
+	bool Encode(unsigned char* src, int len, unsigned char* dst)
+	{
+		for (int i = 0, j = 0; i < len; i += 5, j += 8)
+		{
+			int tmpLen = len - i;
+			encode_sequence(&src[i], tmpLen > 5 ? 5 : tmpLen, &dst[j]);
+		}
+		return true;
+	}
+
+	int  DecodeGetRequiredLength(int bytes)
+	{
+		return (((bytes)/8)*5);
+	}
+	int  EncodeGetRequiredLength(int bytes)
+	{
+		return (((bytes)/5)*8 + ((bytes) % 5 ? 8 : 0));
+	}
+}

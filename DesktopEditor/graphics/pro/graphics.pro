@@ -49,10 +49,13 @@ SOURCES += \
 # paths
 HEADERS += \
 	./../GraphicsPath_private.h \
-	./../GraphicsPath.h
+	./../GraphicsPath.h \
+	./../BooleanOperations.h \
+	./../boolean_operations_math.h
 
 SOURCES += \
-	./../GraphicsPath.cpp
+	./../GraphicsPath.cpp \
+	./../BooleanOperations.cpp
 
 # alpha mask
 HEADERS += \

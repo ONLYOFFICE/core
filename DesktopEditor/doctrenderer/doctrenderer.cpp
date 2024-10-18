@@ -445,7 +445,7 @@ namespace NSDoctRenderer
 						strError = L"code=\"save\"";
 						bIsBreak = true;
 					}
-					else
+					else if (!js_result2->isNull())
 					{
 						JSSmart<CJSTypedArray> typedArray = js_result2->toTypedArray();
 						NSJSBase::CJSDataBuffer oBuffer = typedArray->getData();

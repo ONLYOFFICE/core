@@ -2426,9 +2426,12 @@ void docx_conversion_context::process_headers_footers()
     process_headers_footers_ = false;
 }
 
-void docx_conversion_context::set_master_page_name(const std::wstring & MasterPageName)
+bool docx_conversion_context::set_master_page_name(const std::wstring & MasterPageName)
 {
+	if (current_master_page_name_ == MasterPageName) return false;
+
     current_master_page_name_ = MasterPageName;
+	return true;
 }
 
 const std::wstring & docx_conversion_context::get_master_page_name() const

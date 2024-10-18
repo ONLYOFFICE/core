@@ -53,6 +53,8 @@ HEADERS += \
 	../../../Matrix.h \
 	../../../Matrix_private.h \
 	../../../GraphicsPath.h \
+	../../../BooleanOperations.h \
+	../../../boolean_operations_math.h \
 	../../../GraphicsPath_private.h \
 	../../../AlphaMask.h \
 	\
@@ -105,6 +107,7 @@ HEADERS += \
 SOURCES += \
 	../../../Matrix.cpp \
 	../../../GraphicsPath.cpp \
+	../../../BooleanOperations.cpp \
 	../../../AlphaMask.cpp \
 	../../../../raster/BgraFrame.cpp \
 	../../../../raster/ImageFileFormatChecker.cpp \
@@ -680,6 +683,7 @@ HEADERS += \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/Paragraph.h \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/Shape.h \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/TextLine.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/managers/ExternalImageStorage.h \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/managers/FontStyleManager.h \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/managers/ImageManager.h \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/managers/FontManager.h \

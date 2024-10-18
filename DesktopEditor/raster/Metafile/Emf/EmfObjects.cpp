@@ -177,7 +177,8 @@ namespace MetaFile
 
 	std::wstring CEmfLogFont::GetFaceName() const
 	{
-		return NSFile::CUtf8Converter::GetWStringFromUTF16(oLogFontEx.oLogFont.ushFaceName, 32);
+		const std::wstring wsFaceName{NSFile::CUtf8Converter::GetWStringFromUTF16(oLogFontEx.oLogFont.ushFaceName, 32)};
+		return wsFaceName.substr(0, wsFaceName.find(L'\0'));
 	}
 	
 	int CEmfLogFont::GetWeight() const

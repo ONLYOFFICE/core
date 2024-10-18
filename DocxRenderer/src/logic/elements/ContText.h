@@ -1,8 +1,9 @@
 #pragma once
-#include "BaseItem.h"
 #include "../../../../DesktopEditor/common/StringBuilder.h"
+
+#include "BaseItem.h"
 #include "../managers/FontManager.h"
-#include "../managers/FontStyleManager.h"
+#include "../styles/FontStyle.h"
 #include "../../resources/Constants.h"
 #include "../../resources/LinesTable.h"
 
@@ -55,6 +56,7 @@ namespace NSDocxRenderer
 		bool m_bIsOutlinePresent  {false};
 		bool m_bIsEmbossPresent   {false};
 		bool m_bIsEngravePresent  {false};
+		bool m_bIsRtl             {false};
 
 		// font to calc selected sizes
 		NSStructures::CFont m_oSelectedFont{};
@@ -95,6 +97,8 @@ namespace NSDocxRenderer
 		void SetSym(uint32_t cSym, double dWidth);
 		void RemoveLastSym();
 
+		uint32_t GetLastSym() const;
+
 		const NSStringUtils::CStringUTF32& GetText() const noexcept;
 		const std::vector<double>& GetSymWidths() const noexcept;
 		const std::vector<double> GetSymLefts() const noexcept;
@@ -106,25 +110,30 @@ namespace NSDocxRenderer
 		bool IsEqual(const CContText* pCont) const noexcept;
 
 		UINT GetNumberOfFeatures() const noexcept;
-		bool IsDuplicate(CContText *pCont, eVerticalCrossingType eVType) const noexcept;
+		bool IsDuplicate(CContText* pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType) const noexcept;
 
 		bool IsOnlySpaces() const;
+		double CalculateSpace() const noexcept;
 
 		// check font effect and delete not needed cont
 		// return true if was deleted
 		static bool CheckFontEffects
-		(std::shared_ptr<CContText>& pFirstCont,
-		 std::shared_ptr<CContText>& pSecondCont,
-		 eVerticalCrossingType eVType,
-		 eHorizontalCrossingType eHType);
+			(std::shared_ptr<CContText>& pFirstCont,
+			 std::shared_ptr<CContText>& pSecondCont,
+			 eVerticalCrossingType eVType,
+			 eHorizontalCrossingType eHType);
 
 		static bool CheckVertAlignTypeBetweenConts
-		(std::shared_ptr<CContText> pFirstCont,
-		 std::shared_ptr<CContText> pSecondCont,
-		 eVerticalCrossingType eVType,
-		 eHorizontalCrossingType eHType);
+			(std::shared_ptr<CContText> pFirstCont,
+			 std::shared_ptr<CContText> pSecondCont,
+			 eVerticalCrossingType eVType,
+			 eHorizontalCrossingType eHType);
 
-		double CalculateSpace() const noexcept;
+		static bool IsUnicodeRtl(uint32_t cSym);
+		static bool IsUnicodeBullet(uint32_t cSym);
+		static bool IsUnicodeSpace(uint32_t c);
+		static bool IsUnicodeSymbol(uint32_t symbol);
+		static bool IsUnicodeDiacriticalMark(uint32_t symbol);
 
 	private:
 		NSStringUtils::CStringUTF32 m_oText{};

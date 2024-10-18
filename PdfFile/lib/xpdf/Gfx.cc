@@ -2190,7 +2190,7 @@ void Gfx::doTilingPatternFill(GfxTilingPattern *tPat,
   for (i = 0; i < 4; ++i) {
     m1[i] = m[i];
   }
-  if (out->useTilingPatternFill()) {
+  if (out->useTilingPatternFill() && fabs(bbox[2] - bbox[0] - xstep) < 0.001 && fabs(bbox[3] - bbox[1] - ystep) < 0.001) {
     m1[4] = m[4];
     m1[5] = m[5];
     out->tilingPatternFill(state, this, tPat->getContentStreamRef(),

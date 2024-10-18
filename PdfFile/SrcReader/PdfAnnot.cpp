@@ -130,10 +130,13 @@ CAction* getAction(PDFDoc* pdfDoc, Object* oAction)
 		if (pLinkDest->isPageRef())
 		{
 			Ref pageRef = pLinkDest->getPageRef();
-			ppRes->unPage = pdfDoc->findPage(pageRef.num, pageRef.gen) - 1;
+			ppRes->unPage = pdfDoc->findPage(pageRef.num, pageRef.gen);
 		}
 		else
-			ppRes->unPage = pLinkDest->getPageNum() - 1;
+			ppRes->unPage = pLinkDest->getPageNum();
+
+		if (ppRes->unPage > 0)
+			--ppRes->unPage;
 		ppRes->nKind = pLinkDest->getKind();
 
 		PDFRectangle* pCropBox = pdfDoc->getCatalog()->getPage(ppRes->unPage + 1)->getCropBox();
@@ -581,6 +584,17 @@ std::map<std::wstring, std::wstring> CAnnotFonts::GetAllFonts(PDFDoc* pdfDoc, NS
 			Object oObj;
 			if (!oAnnot.dictLookup("RC", &oObj)->isString())
 			{
+				oObj.free();
+				if (oAnnot.dictLookup("AP", &oObj)->isNull() && oAnnot.dictLookup("Contents", &oObj)->isString() && oObj.getString()->getLength())
+				{
+					const unsigned char* pData14 = NULL;
+					unsigned int nSize14 = 0;
+					std::wstring wsFontName = L"Helvetica";
+					NSFonts::IFontsMemoryStorage* pMemoryStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+					if (pMemoryStorage && !pMemoryStorage->Get(wsFontName) && GetBaseFont(wsFontName, pData14, nSize14))
+						pMemoryStorage->Add(wsFontName, (BYTE*)pData14, nSize14, false);
+					mFonts[L"Helvetica"] = L"Helvetica";
+				}
 				oAnnot.free(); oObj.free();
 				continue;
 			}
@@ -856,9 +870,6 @@ std::map<std::wstring, std::wstring> CAnnotFonts::GetFreeTextFont(PDFDoc* pdfDoc
 	std::map<std::wstring, std::wstring> mRes;
 
 	std::map<std::wstring, std::wstring> mFontFreeText = GetAnnotFont(pdfDoc, pFontManager, pFontList, oAnnotRef);
-#ifndef BUILDING_WASM_MODULE
-	return mFontFreeText;
-#endif
 	CFontList* pAppFontList = (CFontList*)pFontManager->GetApplication()->GetList();
 	for (int i = 0; i < arrRC.size(); ++i)
 	{
@@ -1850,10 +1861,7 @@ CAnnotTextMarkup::CAnnotTextMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageI
 	oObj.free();
 
 	if (sType == "Highlight")
-	{
 		m_nSubtype = 8;
-		m_unAFlags &= ~(1 << 6);
-	}
 	else if (sType == "Underline")
 		m_nSubtype = 9;
 	else if (sType == "Squiggly")
@@ -2070,7 +2078,7 @@ CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex
 
 		// parse the default appearance string
 		GList* daToks = tokenize(oObj.getString());
-		for (int i = 1; i < daToks->getLength(); ++i) {
+		for (int i = daToks->getLength() - 1; i > 0; --i) {
 
 		  // handle the g operator
 		  if (!((GString *)daToks->get(i))->cmp("g")) {
@@ -2100,6 +2108,34 @@ CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex
 		deleteGList(arrColors, double);
 	}
 	oObj.free();
+
+	if (oAnnot.dictLookup("AP", &oObj)->isNull() && oAnnot.dictLookup("RC", &oObj2)->isNull() && oAnnot.dictLookup("Contents", &oObj)->isString() && oObj.getString()->getLength())
+	{
+		NSStringUtils::CStringBuilder oRC;
+
+		oRC += L"<?xml version=\"1.0\"?><body xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:xfa=\"http://www.xfa.org/schema/xfa-data/1.0/\" xfa:APIVersion=\"Acrobat:23.8.0\"  xfa:spec=\"2.0.2\"><p dir=\"ltr\"><span style=\"font-size:14.0pt;font-family:Helvetica;text-align:left;color:";
+		if (m_arrCFromDA.size() == 3)
+			oRC.WriteHexColor3((unsigned char)(m_arrCFromDA[0] * 255.0),
+							   (unsigned char)(m_arrCFromDA[1] * 255.0),
+							   (unsigned char)(m_arrCFromDA[2] * 255.0));
+		else
+			oRC += L"#000000";
+
+		oRC += L"\">";
+		TextString* s = new TextString(oObj.getString());
+		std::wstring wsContents = NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength());
+		delete s;
+		oRC.WriteEncodeXmlString(wsContents);
+		oRC += L"</span></p></body>";
+
+		std::wstring wsRC = oRC.GetData();
+		m_arrRC = CAnnotMarkup::ReadRC(U_TO_UTF8(wsRC));
+		if (m_arrRC.empty())
+			m_unFlags &= ~(1 << 3);
+		else
+			m_unFlags |= (1 << 3);
+	}
+	oObj.free(); oObj2.free();
 
 	oAnnot.free();
 }
@@ -2726,7 +2762,9 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
 	oObj.free();
 
 	// Номер страницы - P
-	m_unPage = pField->getPageNum() - 1;
+	m_unPage = pField->getPageNum();
+	if (m_unPage > 0)
+		--m_unPage;
 
 	// Координаты - Rect
 	pField->getBBox(&m_pRect[0], &m_pRect[1], &m_pRect[2], &m_pRect[3]);
@@ -2818,6 +2856,16 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
 	// 6 - Наличие/Отсутствие внешнего вида
 	if (pField->fieldLookup("AP", &oObj)->isDict() && oObj.dictGetLength())
 		m_unAFlags |= (1 << 6);
+	oObj.free();
+
+	// 7 - User ID
+	if (pField->fieldLookup("OUserID", &oObj)->isString())
+	{
+		m_unAFlags |= (1 << 7);
+		TextString* s = new TextString(oObj.getString());
+		m_sOUserID = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+		delete s;
+	}
 	oObj.free();
 }
 CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex)
@@ -2933,6 +2981,16 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex)
 	// 6 - Наличие/Отсутствие внешнего вида
 	if (oAnnot.dictLookup("AP", &oObj)->isDict() && oObj.dictGetLength())
 		m_unAFlags |= (1 << 6);
+	oObj.free();
+
+	// 7 - User ID
+	if (oAnnot.dictLookup("OUserID", &oObj)->isString())
+	{
+		m_unAFlags |= (1 << 7);
+		TextString* s = new TextString(oObj.getString());
+		m_sOUserID = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+		delete s;
+	}
 	oObj.free();
 
 	oAnnot.free();
@@ -3389,6 +3447,8 @@ void CAnnot::ToWASM(NSWasm::CData& oRes)
 		m_pBorder->ToWASM(oRes);
 	if (m_unAFlags & (1 << 5))
 		oRes.WriteString(m_sM);
+	if (m_unAFlags & (1 << 7))
+		oRes.WriteString(m_sOUserID);
 }
 void CAnnot::CBorderType::ToWASM(NSWasm::CData& oRes)
 {

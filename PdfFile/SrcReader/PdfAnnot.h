@@ -202,6 +202,7 @@ private:
 	std::string m_sContents; // Отображаемый текст
 	std::string m_sNM; // Уникальное имя
 	std::string m_sM; // Дата последнего изменения
+	std::string m_sOUserID; // OO User ID
 	std::vector<double> m_arrC; // Специальный цвет
 	CBorderType* m_pBorder; // Граница
 };
@@ -350,6 +351,8 @@ protected:
 
 	virtual void ToWASM(NSWasm::CData& oRes) override;
 
+	std::vector<CFontData*> m_arrRC; // Форматированный текст
+
 private:
 	BYTE m_nRT; // Тип аннотации-ответа
 	unsigned int m_unRefNumPopup; // Номер ссылки на всплывающую аннотацию
@@ -358,7 +361,6 @@ private:
 	std::string m_sT; // Текстовая метка, пользователь добавивший аннотацию
 	std::string m_sCreationDate; // Дата создания
 	std::string m_sSubj; // Краткое описание
-	std::vector<CFontData*> m_arrRC; // Форматированный текст
 };
 
 //------------------------------------------------------------------------

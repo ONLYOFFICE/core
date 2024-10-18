@@ -43,7 +43,7 @@ namespace SVG
 		void SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode) override;
 
 		bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) override;
-		bool Draw(const std::wstring& wsText, double dX, double dY, IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pStyles = NULL, const CRenderedObject* pContexObject = NULL) const;
+		bool Draw(const std::wstring& wsText, const double& dX, const double& dY, const double& dFontHeight, IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pStyles = NULL, const CRenderedObject* pContexObject = NULL) const;
 	private:
 		void ParseGlyphs(XmlUtils::CXmlNode& oNode);
 

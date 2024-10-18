@@ -476,13 +476,15 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std
 
 	if (next_masterPageName)
 	{
-		Context.set_master_page_name(*next_masterPageName);
-		std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(*next_masterPageName);
-
-		if (false == masterPageNameLayout.empty())
+		if (true == Context.set_master_page_name(*next_masterPageName))
 		{
-			Context.remove_page_properties();
-			Context.add_page_properties(masterPageNameLayout);
+			std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(*next_masterPageName);
+
+			if (false == masterPageNameLayout.empty())
+			{
+				Context.remove_page_properties();
+				Context.add_page_properties(masterPageNameLayout);
+			}
 		}
 	}
 }

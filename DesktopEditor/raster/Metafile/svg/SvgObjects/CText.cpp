@@ -45,6 +45,8 @@ namespace SVG
 			if (NULL == pTSpan)
 				return;
 
+			m_oStyles = pTSpan->m_oStyles;
+
 			if (m_oX.Empty())
 			{
 				if (!pTSpan->m_arObjects.empty())
@@ -157,17 +159,17 @@ namespace SVG
 		double dX, dY;
 		CalculatePosition(dX, dY);
 
-		if (!UseExternalFont(pFile, dX, dY, pRenderer, oMode, pOtherStyles))
+		if (!UseExternalFont(pFile, dX, dY, pRenderer, oMode, pOtherStyles, pContexObject))
 		{
 			if (!m_wsText.empty())
 			{
 				ApplyFont(pRenderer, dX, dY);
 				pRenderer->CommandDrawText(m_wsText, dX, dY, 0, 0);
 			}
-
-			for (const CTSpan* pTSpan : m_arObjects)
-				pTSpan->Draw(pRenderer, pFile, oMode, pOtherStyles, pContexObject);
 		}
+
+		for (const CTSpan* pTSpan : m_arObjects)
+			pTSpan->Draw(pRenderer, pFile, oMode, pOtherStyles, pContexObject);
 
 		EndPath(pRenderer, pFile, oOldMatrix, oMode, pOtherStyles, pContexObject);
 
@@ -318,7 +320,14 @@ namespace SVG
 		if (NULL == pFont)
 			return false;
 
-		pFont->Draw(m_wsText, dX, dY, pRenderer, pFile, oMode, pOtherStyles, pContexObject);
+		TSvgStyles oStyle;
+
+		if (NULL != pOtherStyles)
+			oStyle = *pOtherStyles;
+
+		oStyle += m_oStyles;
+
+		pFont->Draw(m_wsText, dX, dY, m_oFont.GetSize().ToDouble(NSCSS::Pixel), pRenderer, pFile, oMode, &oStyle, pContexObject);
 
 		return true;
 	}

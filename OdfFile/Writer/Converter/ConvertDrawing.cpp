@@ -880,7 +880,8 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 		_CP_PTR(cpdoccore::odf_writer::text_format_properties) text_properties = boost::make_shared<cpdoccore::odf_writer::text_format_properties>();
 		_CP_PTR(cpdoccore::odf_writer::graphic_format_properties) graphic_properties = boost::make_shared<cpdoccore::odf_writer::graphic_format_properties>();
 
-		convert(oox_shape->txBody->lstStyle.GetPointer(), 0, paragraph_properties.get(), text_properties.get());
+		if(oox_shape->txBody.is_init())
+			convert(oox_shape->txBody->lstStyle.GetPointer(), 0, paragraph_properties.get(), text_properties.get());
 
 		if (odf_context()->drawing_context()->placeholder_replacing())
 		{

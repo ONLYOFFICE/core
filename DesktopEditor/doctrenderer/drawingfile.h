@@ -42,6 +42,8 @@
 #include "../../HtmlRenderer/include/HTMLRendererText.h"
 #include "../../DocxRenderer/DocxRenderer.h"
 
+#define CHECKER_FILE_BUFFER_LEN 4096
+
 class CDrawingFile
 {
 private:
@@ -122,7 +124,11 @@ public:
 	{
 		CloseFile();
 
-		if (NULL == m_pFile)
+		int nType = DetectFormat(sFile);
+
+		switch (nType)
+		{
+		case 0:
 		{
 			m_pFile = new CPdfFile(m_pApplicationFonts);
 			if (!m_pFile->LoadFromFile(sFile, L"", sPassword, sPassword))
@@ -136,9 +142,20 @@ public:
 			}
 			else
 				m_nType = 0;
+			break;
 		}
-
-		if (NULL == m_pFile)
+		case 1:
+		{
+			m_pFile = new CDjVuFile(m_pApplicationFonts);
+			if (!m_pFile->LoadFromFile(sFile, L"", sPassword, sPassword))
+			{
+				RELEASEOBJECT(m_pFile);
+			}
+			else
+				m_nType = 1;
+			break;
+		}
+		case 2:
 		{
 			m_pFile = new CXpsFile(m_pApplicationFonts);
 			if (!m_pFile->LoadFromFile(sFile, L"", sPassword, sPassword))
@@ -148,16 +165,8 @@ public:
 			else
 				m_nType = 2;
 		}
-
-		if (NULL == m_pFile)
-		{
-			m_pFile = new CDjVuFile(m_pApplicationFonts);
-			if (!m_pFile->LoadFromFile(sFile, L"", sPassword, sPassword))
-			{
-				RELEASEOBJECT(m_pFile);
-			}
-			else
-				m_nType = 1;
+		default:
+			break;
 		}
 
 		return m_pFile ? true : false;
@@ -167,42 +176,48 @@ public:
 	{
 		CloseFile();
 
-		if (NULL == m_pFile)
+		int nType = DetectFormat(data, size);
+		switch (nType)
 		{
-			m_pFile = new CPdfFile(m_pApplicationFonts);
-			if (!m_pFile->LoadFromMemory(data, size, L"", sPassword, sPassword))
+			case 0:
 			{
-				if (4 != ((CPdfFile*)m_pFile)->GetError())
+				m_pFile = new CPdfFile(m_pApplicationFonts);
+				if (!m_pFile->LoadFromMemory(data, size, L"", sPassword, sPassword))
+				{
+					if (4 != ((CPdfFile*)m_pFile)->GetError())
+					{
+						RELEASEOBJECT(m_pFile);
+					}
+					else
+						m_nType = 0;
+				}
+				else
+					m_nType = 0;
+				break;
+			}
+			case 1:
+			{
+				m_pFile = new CDjVuFile(m_pApplicationFonts);
+				if (!m_pFile->LoadFromMemory(data, size, L"", sPassword, sPassword))
 				{
 					RELEASEOBJECT(m_pFile);
 				}
 				else
-					m_nType = 0;
+					m_nType = 1;
+				break;
 			}
-			else
-				m_nType = 0;
-		}
-
-		if (NULL == m_pFile)
-		{
-			m_pFile = new CXpsFile(m_pApplicationFonts);
-			if (!m_pFile->LoadFromMemory(data, size, L"", sPassword, sPassword))
+			case 2:
 			{
-				RELEASEOBJECT(m_pFile);
+				m_pFile = new CXpsFile(m_pApplicationFonts);
+				if (!m_pFile->LoadFromMemory(data, size, L"", sPassword, sPassword))
+				{
+					RELEASEOBJECT(m_pFile);
+				}
+				else
+					m_nType = 2;
 			}
-			else
-				m_nType = 2;
-		}
-
-		if (NULL == m_pFile)
-		{
-			m_pFile = new CDjVuFile(m_pApplicationFonts);
-			if (!m_pFile->LoadFromMemory(data, size, L"", sPassword, sPassword))
-			{
-				RELEASEOBJECT(m_pFile);
-			}
-			else
-				m_nType = 1;
+			default:
+				break;
 		}
 
 		return m_pFile ? true : false;
@@ -532,7 +547,44 @@ private:
 		nPageDpiX = dPageDpiX;
 	}
 
+	int DetectFormat(const std::wstring& sFile)
+	{
+		NSFile::CFileBinary oFile;
+		if (oFile.OpenFile(sFile))
+		{
+			LONG size = oFile.GetFileSize();
+			if (size > CHECKER_FILE_BUFFER_LEN)
+				size = CHECKER_FILE_BUFFER_LEN;
 
+			BYTE* data = new BYTE[size];
+			oFile.ReadFile(data, size);
+
+			int nType = DetectFormat(data, size);
+
+			RELEASEARRAYOBJECTS(data);
+			return nType;
+		}
+		return -1;
+	}
+
+	int DetectFormat(BYTE* data, LONG size)
+	{
+		// 0 - PDF
+		// 1 - DJVU
+		// 2 - XPS
+		LONG nSize = size < CHECKER_FILE_BUFFER_LEN ? size : CHECKER_FILE_BUFFER_LEN;
+		char* pData = (char*)data;
+		for (int i = 0; i < nSize - 5; ++i)
+		{
+			int nPDF = strncmp(&pData[i], "%PDF-", 5);
+			if (!nPDF)
+				return 0;
+		}
+		if ( (8 <= size) && (0x41 == data[0] && 0x54 == data[1] && 0x26 == data[2] && 0x54 == data[3] &&
+							0x46 == data[4] && 0x4f == data[5] && 0x52 == data[6] && 0x4d == data[7]))
+			return 1;
+		return 2;
+	}
 };
 
 #endif // DRAWINGFILE_H

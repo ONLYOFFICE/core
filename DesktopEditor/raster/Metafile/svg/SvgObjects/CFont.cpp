@@ -52,9 +52,9 @@ namespace SVG
 		return false;
 	}
 
-	bool CFont::Draw(const std::wstring &wsText, double dX, double dY, IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pStyles, const CRenderedObject* pContexObject) const
+	bool CFont::Draw(const std::wstring &wsText, const double& dX, const double& dY, const double& dFontHeight, IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pStyles, const CRenderedObject* pContexObject) const
 	{
-		if (NULL == pRenderer)
+		if (NULL == pRenderer || wsText.empty())
 			return false;
 		
 		double dM11, dM12, dM21, dM22, dRx, dRy;
@@ -64,10 +64,25 @@ namespace SVG
 		Aggplus::CMatrix oMatrix(dM11, dM12, dM21, dM22, dRx, dRy);
 		oMatrix.Translate(dX, dY);
 
-		pRenderer->SetTransform(dM11, dM12, dM21, -dM22, oMatrix.tx(), oMatrix.ty());
-
 		MGlyphsMap::const_iterator itFound;
-		TBounds oGlyphBounds;
+		double dGlyphScale = 1.;
+
+		#define DrawGlyph(glyphPtr, function) \
+		const TBounds oGlyphBound{glyphPtr->GetBounds()};\
+		if (Equals(0., dFontHeight) || Equals(oGlyphBound.m_dBottom, oGlyphBound.m_dTop) || Equals(oGlyphBound.m_dRight, oGlyphBound.m_dLeft)) \
+			continue; \
+		dGlyphScale = dFontHeight / 1000.; \
+		if (!Equals(1., dGlyphScale)) \
+		{ \
+			oMatrix.Scale(dGlyphScale, -dGlyphScale); \
+			pRenderer->SetTransform(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), oMatrix.sy(), oMatrix.tx(), oMatrix.ty()); \
+		} \
+		function; \
+		if (!Equals(1., dGlyphScale)) \
+		{ \
+			oMatrix.Scale(1. / dGlyphScale, -1. / dGlyphScale); \
+			pRenderer->SetTransform(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), oMatrix.sy(), oMatrix.tx(), oMatrix.ty()); \
+		} \
 
 		for (wchar_t wchGlyph : wsText)
 		{
@@ -78,12 +93,13 @@ namespace SVG
 				if (NULL == m_pMissingGlyph)
 					continue;
 
-				m_pMissingGlyph->Draw(pRenderer, pFile, oMode, pStyles, pContexObject);
+				DrawGlyph(m_pMissingGlyph, m_pMissingGlyph->Draw(pRenderer, pFile, oMode, pStyles, pContexObject))
+
 				oMatrix.Translate(m_oHorizAdvX.ToDouble(NSCSS::Pixel), 0);
 			}
 			else
 			{
-				itFound->second->Draw(pRenderer, pFile, oMode, pStyles, pContexObject);
+				DrawGlyph(itFound->second, itFound->second->Draw(pRenderer, pFile, oMode, pStyles, pContexObject))
 
 				if (!itFound->second->m_oHorizAdvX.Empty())
 					oMatrix.Translate(itFound->second->m_oHorizAdvX.ToDouble(NSCSS::Pixel), 0);
@@ -91,9 +107,7 @@ namespace SVG
 					oMatrix.Translate(m_oHorizAdvX.ToDouble(NSCSS::Pixel), 0);
 			}
 
-			oMatrix.Translate(std::abs(oGlyphBounds.m_dRight - oGlyphBounds.m_dLeft), 0);
-
-			pRenderer->SetTransform(dM11, dM12, dM21, -dM22, oMatrix.tx(), oMatrix.ty());
+			pRenderer->SetTransform(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), -oMatrix.sy(), oMatrix.tx(), oMatrix.ty());
 		}
 
 		pRenderer->SetTransform(dM11, dM12, dM21, dM22, dRx, dRy);

@@ -1281,9 +1281,14 @@ CFile.prototype["getAnnotationsInfo"] = function(pageIndex)
 			if (flags & (1 << 26))
 				rec["Desc"] = reader.readString();
 		}
+		// Stamp
 		else if (rec["Type"] == 12)
 		{
 			rec["Icon"] = reader.readString();
+			rec["Rotate"] = reader.readInt();
+			rec["InRect"] = [];
+			for (let i = 0; i < 8; ++i)
+				rec["InRect"].push(reader.readDouble2());
 		}
 		res.push(rec);
 	}

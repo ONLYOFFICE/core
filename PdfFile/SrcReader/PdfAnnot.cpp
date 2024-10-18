@@ -2318,6 +2318,106 @@ CAnnotStamp::CAnnotStamp(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CA
 	}
 	oObj.free();
 
+	m_nRotate = 0;
+	if (oAnnot.dictLookup("Rotate", &oObj)->isInt())
+		m_nRotate = oObj.getInt();
+	oObj.free();
+
+	double m[6] = { 1, 0, 0, 1, 0, 0 }, bbox[4] = { 0, 0, 0, 0 };
+
+	Object oAP, oObj2;
+	if (oAnnot.dictLookup("AP", &oAP)->isDict() && oAP.dictLookup("N", &oObj2)->isStream())
+	{
+		Object oObj1;
+		if (oObj2.streamGetDict()->lookup("BBox", &oObj)->isArray() && oObj.arrayGetLength() == 4)
+		{
+			for (int i = 0; i < 4; ++i)
+			{
+				oObj.arrayGet(i, &oObj1);
+				bbox[i] = oObj1.isNum() ? oObj1.getNum() : 0;
+				oObj1.free();
+			}
+		}
+
+		oObj.free();
+		if (oObj2.streamGetDict()->lookup("Matrix", &oObj)->isArray() && oObj.arrayGetLength() == 6)
+		{
+			for (int i = 0; i < 6; ++i)
+			{
+				oObj.arrayGet(i, &oObj1);
+				m[i] = oObj1.getNum();
+				oObj1.free();
+			}
+		}
+	}
+	oAP.free(); oObj2.free(); oObj.free();
+
+	double formXMin, formYMin, formXMax, formYMax, x, y, sx, sy;
+	x = bbox[0] * m[0] + bbox[1] * m[2] + m[4];
+	y = bbox[0] * m[1] + bbox[1] * m[3] + m[5];
+	formXMin = formXMax = x;
+	formYMin = formYMax = y;
+	x = bbox[0] * m[0] + bbox[3] * m[2] + m[4];
+	y = bbox[0] * m[1] + bbox[3] * m[3] + m[5];
+	if (x < formXMin)
+		formXMin = x;
+	else if (x > formXMax)
+		formXMax = x;
+	if (y < formYMin)
+		formYMin = y;
+	else if (y > formYMax)
+		formYMax = y;
+	x = bbox[2] * m[0] + bbox[1] * m[2] + m[4];
+	y = bbox[2] * m[1] + bbox[1] * m[3] + m[5];
+	if (x < formXMin)
+		formXMin = x;
+	else if (x > formXMax)
+		formXMax = x;
+	if (y < formYMin)
+		formYMin = y;
+	else if (y > formYMax)
+		formYMax = y;
+	x = bbox[2] * m[0] + bbox[3] * m[2] + m[4];
+	y = bbox[2] * m[1] + bbox[3] * m[3] + m[5];
+	if (x < formXMin)
+		formXMin = x;
+	else if (x > formXMax)
+		formXMax = x;
+	if (y < formYMin)
+		formYMin = y;
+	else if (y > formYMax)
+		formYMax = y;
+
+	if (formXMin == formXMax)
+		sx = 1;
+	else
+		sx = (m_pRect[2] - m_pRect[0]) / (formXMax - formXMin);
+	if (formYMin == formYMax)
+		sy = 1;
+	else
+		sy = (m_pRect[3] - m_pRect[1]) / (formYMax - formYMin);
+	double tx = -formXMin * sx + m_pRect[0];
+	double ty = -formYMin * sy + m_pRect[1];
+
+	m[0] *= sx;
+	m[1] *= sy;
+	m[2] *= sx;
+	m[3] *= sy;
+	m[4] = m[4] * sx + tx;
+	m[5] = m[5] * sy + ty;
+
+	m_dX1 = bbox[0] * m[0] + bbox[1] * m[2] + m[4];
+	m_dY1 = bbox[0] * m[1] + bbox[1] * m[3] + m[5];
+
+	m_dX2 = bbox[0] * m[0] + bbox[3] * m[2] + m[4];
+	m_dY2 = bbox[0] * m[1] + bbox[3] * m[3] + m[5];
+
+	m_dX3 = bbox[2] * m[0] + bbox[3] * m[2] + m[4];
+	m_dY3 = bbox[2] * m[1] + bbox[3] * m[3] + m[5];
+
+	m_dX4 = bbox[2] * m[0] + bbox[1] * m[2] + m[4];
+	m_dY4 = bbox[2] * m[1] + bbox[1] * m[3] + m[5];
+
 	oAnnot.free();
 }
 
@@ -2354,6 +2454,16 @@ CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontLi
 			oField.free(); oFieldRef.free();
 			continue;
 		}
+
+		if (pField->getPageNum() < 1)
+		{
+			oField.free(); oFieldRef.free();
+			std::vector<int>::iterator it = std::find(m_arrCO.begin(), m_arrCO.end(), oFieldRef.getRefNum());
+			if (it != m_arrCO.end())
+				m_arrCO.erase(it);
+			continue;
+		}
+
 		// Родители
 		Object oParentRefObj;
 		if (oField.dictLookupNF("Parent", &oParentRefObj)->isRef())
@@ -3127,18 +3237,19 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFont
 	m_pRendererOut = NULL;
 	m_pRenderer = NULL;
 
-	Object oAnnot, oAP;
+	Object oAnnot, oAP, oSubtype;
 	XRef* xref = pdfDoc->getXRef();
 	oAnnotRef->fetch(xref, &oAnnot);
+	bIsStamp = oAnnot.dictLookup("Subtype", &oSubtype)->isName("Stamp");
 	if (oAnnot.dictLookup("AP", &oAP)->isDict())
 	{
 		m_unRefNum = oAnnotRef->getRefNum();
 
-		Init(&oAnnot);
-		Init(pdfDoc, pFontManager, pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex);
-		Draw(pdfDoc, &oAP, nRasterH, nBackgroundColor, oAnnotRef, sView);
+		double dScale = Init(&oAnnot);
+		Init(pdfDoc, pFontManager, pFontList, nRasterW * dScale, nRasterH * dScale, nBackgroundColor, nPageIndex);
+		Draw(pdfDoc, &oAP, nRasterH * dScale, nBackgroundColor, oAnnotRef, sView);
 	}
-	oAP.free(); oAnnot.free();
+	oAP.free(); oAnnot.free(); oSubtype.free();
 
 	Clear();
 }
@@ -3229,8 +3340,9 @@ void CAnnotAP::Init(AcroFormField* pField)
 	// Координаты - BBox
 	pField->getBBox(&m_dx1, &m_dy1, &m_dx2, &m_dy2);
 }
-void CAnnotAP::Init(Object* oAnnot)
+double CAnnotAP::Init(Object* oAnnot)
 {
+	double dScale = 1.0;
 	Object oObj, oObj2;
 	if (oAnnot->dictLookup("Rect", &oObj)->isArray() && oObj.arrayGetLength() == 4)
 	{
@@ -3238,6 +3350,90 @@ void CAnnotAP::Init(Object* oAnnot)
 		m_dy1 = ArrGetNum(&oObj, 1);
 		m_dx2 = ArrGetNum(&oObj, 2);
 		m_dy2 = ArrGetNum(&oObj, 3);
+
+		if (bIsStamp)
+		{
+			double m[6] = { 1, 0, 0, 1, 0, 0 }, bbox[4] = { m_dx1, m_dy1, m_dx2, m_dy2 };
+
+			oObj.free();
+			Object oAP;
+			if (oAnnot->dictLookup("AP", &oAP)->isDict() && oAP.dictLookup("N", &oObj2)->isStream())
+			{
+				Object oObj1;
+				if (oObj2.streamGetDict()->lookup("BBox", &oObj)->isArray() && oObj.arrayGetLength() == 4)
+				{
+					for (int i = 0; i < 4; ++i)
+					{
+						oObj.arrayGet(i, &oObj1);
+						bbox[i] = oObj1.isNum() ? oObj1.getNum() : 0;
+						oObj1.free();
+					}
+				}
+
+				oObj.free();
+				if (oObj2.streamGetDict()->lookup("Matrix", &oObj)->isArray() && oObj.arrayGetLength() == 6)
+				{
+					for (int i = 0; i < 6; ++i)
+					{
+						oObj.arrayGet(i, &oObj1);
+						m[i] = oObj1.getNum();
+						oObj1.free();
+					}
+				}
+			}
+			oAP.free(); oObj2.free();
+
+			double formXMin, formYMin, formXMax, formYMax, x, y, sx, sy;
+			x = bbox[0] * m[0] + bbox[1] * m[2] + m[4];
+			y = bbox[0] * m[1] + bbox[1] * m[3] + m[5];
+			formXMin = formXMax = x;
+			formYMin = formYMax = y;
+			x = bbox[0] * m[0] + bbox[3] * m[2] + m[4];
+			y = bbox[0] * m[1] + bbox[3] * m[3] + m[5];
+			if (x < formXMin)
+				formXMin = x;
+			else if (x > formXMax)
+				formXMax = x;
+			if (y < formYMin)
+				formYMin = y;
+			else if (y > formYMax)
+				formYMax = y;
+			x = bbox[2] * m[0] + bbox[1] * m[2] + m[4];
+			y = bbox[2] * m[1] + bbox[1] * m[3] + m[5];
+			if (x < formXMin)
+				formXMin = x;
+			else if (x > formXMax)
+				formXMax = x;
+			if (y < formYMin)
+				formYMin = y;
+			else if (y > formYMax)
+				formYMax = y;
+			x = bbox[2] * m[0] + bbox[3] * m[2] + m[4];
+			y = bbox[2] * m[1] + bbox[3] * m[3] + m[5];
+			if (x < formXMin)
+				formXMin = x;
+			else if (x > formXMax)
+				formXMax = x;
+			if (y < formYMin)
+				formYMin = y;
+			else if (y > formYMax)
+				formYMax = y;
+
+			if (formXMin == formXMax)
+				sx = 1;
+			else
+				sx = (m_dx2 - m_dx1) / (formXMax - formXMin);
+			if (formYMin == formYMax)
+				sy = 1;
+			else
+				sy = (m_dy2 - m_dy1) / (formYMax - formYMin);
+
+			m_dx1 = bbox[0];
+			m_dy1 = bbox[1];
+			m_dx2 = bbox[2];
+			m_dy2 = bbox[3];
+			dScale = std::max(sx, sy);
+		}
 
 		double dTemp;
 		if (m_dx1 > m_dx2)
@@ -3250,6 +3446,7 @@ void CAnnotAP::Init(Object* oAnnot)
 		}
 	}
 	oObj.free();
+	return dScale;
 }
 void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, int nPageIndex, AcroFormField* pField, const char* sView, const char* sButtonView)
 {
@@ -4007,5 +4204,14 @@ void CAnnotStamp::ToWASM(NSWasm::CData& oRes)
 	CAnnotMarkup::ToWASM(oRes);
 
 	oRes.WriteString(m_sName);
+	oRes.AddInt(m_nRotate);
+	oRes.WriteDouble(m_dX1);
+	oRes.WriteDouble(m_dY1);
+	oRes.WriteDouble(m_dX2);
+	oRes.WriteDouble(m_dY2);
+	oRes.WriteDouble(m_dX3);
+	oRes.WriteDouble(m_dY3);
+	oRes.WriteDouble(m_dX4);
+	oRes.WriteDouble(m_dY4);
 }
 }

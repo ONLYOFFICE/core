@@ -5318,6 +5318,54 @@ void Gfx::drawAnnot(Object *strRef, AnnotBorderStyle *borderStyle,
   }
 }
 
+void Gfx::drawStamp(Object *strRef)
+{
+  Dict *dict, *resDict;
+  Object str, bboxObj, resObj, obj1;
+  double m[6], bbox[4];
+  int i;
+
+  // draw the appearance stream (if there is one)
+  strRef->fetch(xref, &str);
+  if (str.isStream()) {
+    // get stream dict
+    dict = str.streamGetDict();
+
+    // get the form bounding box
+    dict->lookup("BBox", &bboxObj);
+    if (!bboxObj.isArray() || bboxObj.arrayGetLength() != 4) {
+      error(errSyntaxError, getPos(), "Bad form bounding box");
+      bboxObj.free();
+      str.free();
+      return;
+    }
+    for (i = 0; i < 4; ++i) {
+      bboxObj.arrayGet(i, &obj1);
+      if (obj1.isNum()) {
+        bbox[i] = obj1.getNum();
+      } else {
+        bbox[i] = 0;
+      }
+      obj1.free();
+    }
+    bboxObj.free();
+
+    m[0] = 1; m[1] = 0;
+    m[2] = 0; m[3] = 1;
+    m[4] = 0; m[5] = 0;
+
+    // get the resources
+    dict->lookup("Resources", &resObj);
+    resDict = resObj.isDict() ? resObj.getDict() : (Dict *)NULL;
+
+    // draw it
+    drawForm(strRef, resDict, m, bbox);
+
+    resObj.free();
+  }
+  str.free();
+}
+
 void Gfx::saveState() {
   out->saveState(state);
   state = state->save();

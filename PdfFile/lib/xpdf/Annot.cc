@@ -1574,6 +1574,13 @@ void Annot::draw(Gfx *gfx, GBool printing) {
 
   // draw the appearance stream
   isLink = type && !type->cmp("Link");
+#ifdef BUILDING_WASM_MODULE
+  if (type && !type->cmp("Stamp"))
+  {
+    gfx->drawStamp(&appearance);
+    return;
+  }
+#endif
   gfx->drawAnnot(&appearance, isLink ? borderStyle : (AnnotBorderStyle *)NULL,
 		 xMin, yMin, xMax, yMax);
 }

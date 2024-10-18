@@ -136,7 +136,7 @@ private:
 	BYTE GetBlendMode();
 	void Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex);
 	void Init(AcroFormField* pField);
-	void Init(Object* oAnnot);
+	double Init(Object* oAnnot);
 	void Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, int nPageIndex, AcroFormField* pField, const char* sView, const char* sButtonView);
 	void Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, Object* oAnnotRef, const char* sView);
 	void Clear();
@@ -149,6 +149,7 @@ private:
 	double m_dHTale;
 	int m_nRx1, m_nRy1, m_nWidth, m_nHeight;
 	std::vector<CAnnotAPView*> m_arrAP;
+	bool bIsStamp;
 
 	Gfx* m_gfx;
 	CBgraFrame* m_pFrame;
@@ -176,6 +177,7 @@ protected:
 	unsigned int m_unFlags;
 	double m_dHeight; // Высота холста, для Y трансформации
 	double m_dX; // Смещение по X для трансформации
+	double m_pRect[4]; // Координаты
 
 private:
 	struct CBorderType final
@@ -197,7 +199,6 @@ private:
 	unsigned int m_unAnnotFlag; // Флаг аннотации - F
 	unsigned int m_unRefNum; // Номер ссылки на объект
 	unsigned int m_unPage; // Страница
-	double m_pRect[4]; // Координаты
 	std::pair<BYTE, double> m_pBE; // Эффекты границы
 	std::string m_sContents; // Отображаемый текст
 	std::string m_sNM; // Уникальное имя
@@ -577,6 +578,8 @@ public:
 	void ToWASM(NSWasm::CData& oRes) override;
 private:
 	std::string m_sName; // Иконка
+	int m_nRotate;
+	double m_dX1, m_dY1, m_dX2, m_dY2, m_dX3, m_dY3, m_dX4, m_dY4;
 };
 
 //------------------------------------------------------------------------

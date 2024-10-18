@@ -52,9 +52,9 @@ namespace XLSB
 
             static const XLS::ElementType	type = XLS::typeBeginDatabar;
 
-            BYTE                        bLenMin;
-            BYTE                        bLenMax;
-            XLS::Boolean<BYTE>			fShowValue;
+            BYTE                        bLenMin = 0;
+            BYTE                        bLenMax = 100;
+            XLS::Boolean<BYTE>			fShowValue = true;
     };
 
 } // namespace XLSB

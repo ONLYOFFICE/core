@@ -62,6 +62,7 @@ namespace OOX
 		class CTimelineStyles;
 		class CDynamicArrayProperties;
 		class CRichValueBlock;
+        class CWorkbookPivotCaches;
 	}
 
 	namespace Drawing
@@ -155,6 +156,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CTimelineStyles>				m_oTimelineStyles;
 
             nullable<OOX::Spreadsheet::CPivotCacheDefinitionExt>    m_oPivotCacheDefinitionExt;
+            nullable<OOX::Spreadsheet::CWorkbookPivotCaches>        m_oWorkbookPivotCaches;
 
 			std::vector<OOX::Spreadsheet::CSlicerCachePivotTable*>	m_oSlicerCachePivotTables;
             nullable<OOX::Spreadsheet::CTableSlicerCache>           m_oTableSlicerCache;

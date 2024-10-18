@@ -368,6 +368,9 @@ enum class TypeElement{
 	underbrace,
 	//grade
 	evaluate,
+	//string
+	letter,
+	number,
 };
 }
 #endif // TYPESELEMENTS_H

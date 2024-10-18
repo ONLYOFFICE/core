@@ -55,10 +55,10 @@ namespace XLSB
         void load(XLS::CFRecord& record) override;
 		void save(XLS::CFRecord& record) override;
 
-        bool        fRef;
-        bool        fSqref;
-        bool        fFormula;
-        bool        fRelID;
+        bool        fRef = false;
+        bool        fSqref = false;
+        bool        fFormula = false;
+        bool        fRelID = false;
 
         FRTRefs     rgRefs;
         FRTSqrefs   rgSqrefs;

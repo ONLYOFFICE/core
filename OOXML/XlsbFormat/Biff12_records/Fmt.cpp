@@ -53,6 +53,7 @@ namespace XLSB
     void Fmt::readFields(XLS::CFRecord& record)
     {
         record >> ifmt >> stFmtCode;
+        ifmt = record.getGlobalWorkbookInfo()->RegisterNumFormat(ifmt, stFmtCode);
     }
 
 	void Fmt::writeFields(XLS::CFRecord& record)

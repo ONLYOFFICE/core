@@ -350,9 +350,11 @@
     <ClInclude Include="..\..\..\XlsxFormat\FileTypes_Spreadsheet.h" />
     <ClInclude Include="..\..\..\XlsxFormat\NamedSheetViews\NamedSheetViews.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Ole\OleObjects.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Pivot\PivotCacheChildOther.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Pivot\PivotCacheDefinition.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Pivot\PivotCacheDefinitionExt.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Pivot\PivotCacheRecords.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Pivot\PivotHierarchies.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Pivot\PivotTable.h" />
     <ClInclude Include="..\..\..\XlsxFormat\RichData\RdRichValue.h" />
     <ClInclude Include="..\..\..\XlsxFormat\SharedStrings\PhoneticPr.h" />
@@ -513,7 +515,9 @@
     <ClCompile Include="..\..\..\XlsxFormat\FileTypes_Spreadsheet.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\NamedSheetViews\NamedSheetViews.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Ole\OleObjects.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Pivot\PivotCacheChildOther.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Pivot\PivotCacheDefinitionExt.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Pivot\PivotHierarchies.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Pivot\Pivots.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\RichData\RdRichValue.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\PhoneticPr.cpp" />

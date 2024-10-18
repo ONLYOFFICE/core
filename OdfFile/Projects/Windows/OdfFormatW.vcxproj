@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\cooxml2odf.cpp" />
     <ClCompile Include="..\..\Writer\Format\abstract_xml.cpp" />
     <ClCompile Include="..\..\Writer\Format\anim_elements.cpp" />
     <ClCompile Include="..\..\Writer\Format\calcext_elements.cpp" />
@@ -101,6 +102,7 @@
     <ClCompile Include="..\..\Writer\Format\text_elements.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\cooxml2odf.h" />
     <ClInclude Include="..\..\Writer\Format\abstract_xml.h" />
     <ClInclude Include="..\..\Writer\Format\anim_elements.h" />
     <ClInclude Include="..\..\Writer\Format\calcext_elements.h" />

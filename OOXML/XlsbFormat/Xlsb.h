@@ -72,6 +72,7 @@ namespace OOX
             void LinkTables();
             void ReadSheetData();
             void WriteSheetData();
+            void PrepareRichStr();
             void SetPropForWriteSheet(const std::wstring &sPath, OOX::CContentTypes& oContentTypes);
             void WriteSheet(CWorksheet* worksheet);
 

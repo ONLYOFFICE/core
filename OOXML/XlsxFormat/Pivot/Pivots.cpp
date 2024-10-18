@@ -378,17 +378,17 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		//	m_oConditionalFormats->toXML(writer);
 		//if(m_oChartFormats.IsInit())
 		//	m_oChartFormats->toXML(writer);
-		//if(m_oPivotHierarchies.IsInit())
-		//	m_oPivotHierarchies->toXML(writer);
+        if(m_oPivotHierarchies.IsInit())
+            m_oPivotHierarchies->toXML(writer);
 		if(m_oPivotTableStyleInfo.IsInit())
 			m_oPivotTableStyleInfo->toXML(writer);
 
 		//if(m_oFilters.IsInit())
 		//	m_oFilters->toXML(writer);
-		//if(m_oRowHierarchiesUsage.IsInit())
-		//	m_oRowHierarchiesUsage->toXML(writer);
-		//if(m_oColHierarchiesUsage.IsInit())
-		//	m_oColHierarchiesUsage->toXML(writer);
+        if(m_oRowHierarchiesUsage.IsInit())
+            m_oRowHierarchiesUsage->toXML(writer);
+        if(m_oColHierarchiesUsage.IsInit())
+            m_oColHierarchiesUsage->toXML(writer);
 
 		if(m_oExtLst.IsInit())
 		{
@@ -419,13 +419,24 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			else if (L"pivotTableStyleInfo" == sName)	m_oPivotTableStyleInfo = oReader;
 			else if (L"rowFields" == sName)				m_oRowFields = oReader;
 			else if (L"rowItems" == sName)				m_oRowItems = oReader;
+            else if (L"pivotHierarchies" == sName)		m_oPivotHierarchies = oReader;
 			//else if (L"filters" == sName)				m_oFilters = oReader;
 			//else if (L"chartFormats" == sName)		m_oChartFormats = oReader;
-			//else if (L"colHierarchiesUsage" == sName)	m_oColHierarchiesUsage = oReader;
+
 			//else if (L"conditionalFormats" == sName)	m_oConditionalFormats = oReader;
-			//else if (L"pivotHierarchies" == sName)	m_oPivotHierarchies = oReader;
-			//else if (L"rowHierarchiesUsage" == sName)	m_oRowHierarchiesUsage = oReader;
 			else if (L"extLst" == sName)				m_oExtLst = oReader;
+            else if (L"colHierarchiesUsage" == sName)
+            {
+                m_oColHierarchiesUsage = oReader;
+                if(m_oColHierarchiesUsage.IsInit())
+                    m_oColHierarchiesUsage->m_oRowHierarchy = false;
+            }
+            else if (L"rowHierarchiesUsage" == sName)
+            {
+                m_oRowHierarchiesUsage = oReader;
+                if(m_oRowHierarchiesUsage.IsInit())
+                    m_oRowHierarchiesUsage->m_oRowHierarchy = true;
+            }
 		}
 	}
 	XLS::BaseObjectPtr CPivotTableDefinition::toBin()
@@ -454,6 +465,12 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             ptr->m_BrtTableStyleClient = m_oPivotTableStyleInfo->toBin();
         if(m_oPageFields.IsInit())
             ptr->m_SXPIS = m_oPageFields->toBin();
+        if(m_oPivotHierarchies.IsInit())
+            ptr->m_SXTHS = m_oPivotHierarchies->toBin();
+        if(m_oColHierarchiesUsage.IsInit())
+            ptr->m_ISXTHCOLS = m_oColHierarchiesUsage->toBin();
+        if(m_oRowHierarchiesUsage.IsInit())
+            ptr->m_ISXTHRWS = m_oRowHierarchiesUsage->toBin();
 
 		/*auto frt(new XLSB::FRTSXVIEW);
 		auto sxview14(new XLSB::SXVIEW14);
@@ -767,6 +784,21 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
             if(ptr->m_SXPIS != nullptr)
                 m_oPageFields = ptr->m_SXPIS;
+
+            if(ptr->m_SXTHS != nullptr)
+                m_oPivotHierarchies = ptr->m_SXTHS;
+            if(ptr->m_ISXTHCOLS != nullptr)
+            {
+                m_oColHierarchiesUsage.Init();
+                m_oColHierarchiesUsage->m_oRowHierarchy = false;
+                m_oColHierarchiesUsage->fromBin(ptr->m_ISXTHCOLS);
+            }
+            if(ptr->m_ISXTHRWS != nullptr)
+            {
+                m_oRowHierarchiesUsage.Init();
+                m_oRowHierarchiesUsage->m_oRowHierarchy = true;
+                m_oRowHierarchiesUsage->fromBin(ptr->m_ISXTHRWS);
+            }
 			if(ptr->m_FRTSXVIEW)
 			{
 				auto result = static_cast<XLSB::FRTSXVIEW*>(ptr->m_FRTSXVIEW.get());
@@ -2313,11 +2345,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingStringNullableAttrString(L"numFmtId",	m_oNumFmtId, m_oNumFmtId->ToString());
 		writer.WriteString(L">");
 
-		if(m_oAutoSortScope.IsInit())
-			m_oAutoSortScope->toXML(writer);
-
 		if(m_oItems.IsInit())
 			m_oItems->toXML(writer);
+
+        if(m_oAutoSortScope.IsInit())
+            m_oAutoSortScope->toXML(writer);
 
 		writer.WriteString(L"</pivotField>");
 	}
@@ -3598,8 +3630,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             m_oColPageCount     = ptr->ccolPage;
             m_oFirstDataCol     = ptr->colFirstData;
             m_oFirstHeaderRow   = ptr->rwFirstHead;
-			if(ptr->rwFirstHead < ptr->rwFirstData)
-            	m_oFirstDataRow     = ptr->rwFirstData;
+
+            m_oFirstDataRow     = ptr->rwFirstData;
 
             m_oRowPageCount     = ptr->crwPage;
 
@@ -3799,7 +3831,14 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			m_oCacheSource->toXML(writer);
 		if(m_oCacheFields.IsInit())
 			m_oCacheFields->toXML(writer);
-
+        if(m_oHierarchies.IsInit())
+            m_oHierarchies->toXML(writer);
+        if(m_oDimensions.IsInit())
+            m_oDimensions->toXML(writer);
+        if(m_oMeasureGroups.IsInit())
+            m_oMeasureGroups->toXML(writer);
+        if(m_oMaps.IsInit())
+            m_oMaps->toXML(writer);
 		if(m_oExtLst.IsInit())
 		{
 			writer.WriteString(m_oExtLst->toXMLWithNS(_T("")));
@@ -3821,6 +3860,10 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 				 if (L"cacheFields" == sName)	m_oCacheFields = oReader;
 			else if (L"cacheSource" == sName)	m_oCacheSource = oReader;
+			else if (L"cacheHierarchies" == sName)	m_oHierarchies = oReader;
+            else if (L"dimensions" == sName)	m_oDimensions = oReader;
+            else if (L"maps" == sName)          m_oMaps = oReader;
+            else if (L"measureGroups" == sName) m_oMeasureGroups = oReader;
 			else if (L"extLst" == sName)		m_oExtLst = oReader;
 		}
 	}
@@ -3833,6 +3876,14 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             ptr->m_PCDFIELDS = m_oCacheFields->toBin();
 		if(m_oCacheSource.IsInit())
 			ptr->m_PCDSOURCE = m_oCacheSource->toBin();
+        if(m_oHierarchies.IsInit())
+            ptr->m_PCDHIERARCHIES = m_oHierarchies->toBin();
+        if(m_oDimensions.IsInit())
+            ptr->m_DIMS = m_oDimensions->toBin();
+        if(m_oMeasureGroups.IsInit())
+            ptr->m_MGS = m_oMeasureGroups->toBin();
+        if(m_oMaps.IsInit())
+            ptr->m_MGMAPS = m_oMaps->toBin();
 		if(m_oExtLst.IsInit())
 			ptr->m_FRTPIVOTCACHEDEF = m_oExtLst->toBinPivotCache();
 		return objectPtr;
@@ -3936,6 +3987,18 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
             if(ptr->m_FRTPIVOTCACHEDEF != nullptr)
                 m_oExtLst      = ptr->m_FRTPIVOTCACHEDEF;
+				
+            if(ptr->m_PCDHIERARCHIES != nullptr)
+                m_oHierarchies = ptr->m_PCDHIERARCHIES;
+
+            if(ptr->m_DIMS != nullptr)
+                m_oDimensions = ptr->m_DIMS;
+
+            if(ptr->m_MGS != nullptr)
+                m_oMeasureGroups = ptr->m_MGS;
+
+            if(ptr->m_MGMAPS != nullptr)
+                m_oMaps = ptr->m_MGMAPS;
         }
     }
     void CPivotCacheDefinition::ReadAttributes(XLS::BaseObjectPtr& obj)
@@ -4022,10 +4085,14 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 //------------------------------------
 	void CPivotCacheFields::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
-		if(m_arrItems.empty()) return;
-
 		writer.WriteString(L"<cacheFields");
 		WritingStringAttrInt(L"count", (int)m_arrItems.size());
+        if(m_arrItems.empty())
+        {
+            writer.WriteString(L"/>");
+            return;
+        }
+
 		writer.WriteString(L">");
 
         for ( size_t i = 0; i < m_arrItems.size(); ++i)
@@ -4115,7 +4182,12 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingStringNullableAttrInt(L"level", m_oLevel, m_oLevel->GetValue());
 			WritingStringNullableAttrInt(L"mappingCount", m_oMappingCount, m_oMappingCount->GetValue());
 			WritingStringNullableAttrInt(L"numFmtId", m_oNumFmtId, m_oNumFmtId->GetValue());
-		writer.WriteString(L">");
+        if(!m_oSharedItems.IsInit() && !m_oFieldGroup.IsInit())
+        {
+            writer.WriteString(L"/>");
+            return;
+        }
+        writer.WriteString(L">");
 
 		if(m_oSharedItems.IsInit())
 		{
@@ -6152,8 +6224,13 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	void CPivotCacheSource::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		writer.WriteString(L"<cacheSource");
-			WritingStringNullableAttrInt(L"connectionId", m_oConnectionId, m_oConnectionId->GetValue());
 			WritingStringNullableAttrString(L"type", m_oType, m_oType->ToString());
+            WritingStringNullableAttrInt(L"connectionId", m_oConnectionId, m_oConnectionId->GetValue());
+        if(!m_oWorksheetSource.IsInit() && !m_oConsolidation.IsInit())
+        {
+            writer.WriteString(L"/>");
+            return;
+        }
 		writer.WriteString(L">");
 
 		if(m_oWorksheetSource.IsInit())

@@ -32,6 +32,8 @@
 #pragma once
 
 #include "PivotTable.h"
+#include "PivotHierarchies.h"
+#include "PivotCacheChildOther.h"
 
 namespace SimpleTypes
 {
@@ -592,15 +594,16 @@ namespace OOX
 			nullable_bool									m_oTupleCache;
 			nullable_bool									m_oUpgradeOnRefresh;
 
-			nullable<CPivotCacheFields>		m_oCacheFields;
-			nullable<CPivotCacheSource>		m_oCacheSource;
+            nullable<CPivotCacheFields>                     m_oCacheFields;
+            nullable<CPivotCacheSource>                     m_oCacheSource;
+            nullable<CpivotCacheHierarchies>                m_oHierarchies;
+            nullable<CPivotDimensions>                      m_oDimensions;
+            nullable<CPivotMeasureGroups>                   m_oMeasureGroups;
+            nullable<CMeasureDimensionMaps>                 m_oMaps;
+
 //calculatedItems (Calculated Items) §18.10.1.9
 //calculatedMembers (Calculated Members) §18.10.1.11
-//cacheHierarchies (PivotCache Hierarchies) §18.10.1.5
-//dimensions (OLAP Dimensions) §18.10.1.25
 //kpis (OLAP KPIs) §18.10.1.48
-//maps (OLAP Measure Group) §18.10.1.52
-//measureGroups (OLAP Measure Groups) §18.10.1.54
 //tupleCache (Tuple Cache)
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 		};

@@ -41,6 +41,7 @@
 #include <iomanip>
 #include <vector>
 #include <cmath>
+#include <cwctype>
 
 DateReader::DateReader(_INT32 lcid):lcid_{lcid}
 {}
@@ -327,6 +328,11 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
                         else if (parsingNow == ParsingElem::time)
                             SetTimeElem(result, datePart, bHour, bMin, bSec, bError);
                      }
+                    if(PrevType == DateElemTypes::letter)
+                    {
+                       parseAmPm(StringBuf, result);
+                       StringBuf.clear();
+                    }
                     if(elementType == DateElemTypes::letter || elementType == DateElemTypes::digit)
                         StringBuf.push_back(charElement);
                 }
@@ -350,8 +356,16 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
     }
     else if(parsingNow == ParsingElem::time)
     {
-        _INT32 datePart  = std::stoi(std::wstring(StringBuf.begin(), StringBuf.end()));
-        SetTimeElem(result, datePart, bHour, bMin, bSec, bError);
+        if(CurrentElementType == DateElemTypes::digit)
+        {
+            _INT32 datePart  = std::stoi(std::wstring(StringBuf.begin(), StringBuf.end()));
+            SetTimeElem(result, datePart, bHour, bMin, bSec, bError);
+        }
+        else if(CurrentElementType == DateElemTypes::letter)
+        {
+            parseAmPm(StringBuf, result);
+            StringBuf.clear();
+        }
     }
     //нормализуем год если он есть
     if(Hasdate)
@@ -359,6 +373,7 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
         result.tm_mon--;
         result.tm_year = normalizeYear(result.tm_year);
     }
+
     return true;
 }
 
@@ -429,4 +444,15 @@ _INT32 DateReader::normalizeYear(_INT32 year)
         return 100 + year;
     else
         return year;
+}
+
+void DateReader::parseAmPm(std::vector<wchar_t> &stringBuf, tm &date)
+{
+    for(auto bufelemPos = 0; bufelemPos < stringBuf.size(); bufelemPos++)
+        stringBuf[bufelemPos] = std::towlower(stringBuf[bufelemPos]);
+    std::wstring timePostfix(stringBuf.begin(), stringBuf.end());
+    if(timePostfix == L"pm")
+    {
+        date.tm_hour += 12;
+    }
 }

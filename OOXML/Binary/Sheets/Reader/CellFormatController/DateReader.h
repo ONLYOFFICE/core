@@ -79,6 +79,11 @@ private:
     /// @return количество лет прошедших с 1900 года
     _INT32 normalizeYear(_INT32 year);
 
+    /// @brief парсинг am и pm частей времени
+    /// @param буфер с символами
+    /// @param date структура с датой
+    void parseAmPm(std::vector<wchar_t> &stringBuf, tm &date);
+
     _INT32 lcid_;
 };
 

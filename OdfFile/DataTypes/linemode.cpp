@@ -41,10 +41,10 @@ std::wostream & operator << (std::wostream & _Wostream, const line_mode & _Val)
     switch(_Val.get_type())
     {
     case line_mode::Continuous:
-        _Wostream << "continuous";
+        _Wostream << L"continuous";
         break;
     case line_mode::SkipWhiteSpace:
-        _Wostream << "skip-white-space";
+        _Wostream << L"skip-white-space";
         break;
     default:
         break;

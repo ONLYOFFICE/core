@@ -136,7 +136,7 @@ private:
 	BYTE GetBlendMode();
 	void Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex);
 	void Init(AcroFormField* pField);
-	double Init(Object* oAnnot);
+	void Init(Object* oAnnot);
 	void Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, int nPageIndex, AcroFormField* pField, const char* sView, const char* sButtonView);
 	void Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, Object* oAnnotRef, const char* sView);
 	void Clear();
@@ -145,11 +145,11 @@ private:
 	double m_dx1, m_dy1, m_dx2, m_dy2;
 	double m_dCropX, m_dCropY;
 	double m_dWScale, m_dHScale;
-	double m_dWTale;
-	double m_dHTale;
+	double m_dRWScale, m_dRHScale;
+	double m_dWTale, m_dHTale;
 	int m_nRx1, m_nRy1, m_nWidth, m_nHeight;
 	std::vector<CAnnotAPView*> m_arrAP;
-	bool bIsStamp;
+	bool m_bIsStamp;
 
 	Gfx* m_gfx;
 	CBgraFrame* m_pFrame;
@@ -168,18 +168,6 @@ public:
 
 	virtual void ToWASM(NSWasm::CData& oRes);
 
-protected:
-	CAnnot(PDFDoc* pdfDoc, AcroFormField* pField);
-	CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
-	std::string DictLookupString(Object* pObj, const char* sName, int nByte);
-
-	unsigned int m_unAFlags;
-	unsigned int m_unFlags;
-	double m_dHeight; // Высота холста, для Y трансформации
-	double m_dX; // Смещение по X для трансформации
-	double m_pRect[4]; // Координаты
-
-private:
 	struct CBorderType final
 	{
 		CBorderType()
@@ -194,8 +182,19 @@ private:
 		double dWidth;
 		std::vector<double> arrDash;
 	};
-	CBorderType* getBorder(Object* oBorder, bool bBSorBorder);
 
+protected:
+	CAnnot(PDFDoc* pdfDoc, AcroFormField* pField);
+	CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+	std::string DictLookupString(Object* pObj, const char* sName, int nByte);
+
+	unsigned int m_unAFlags;
+	unsigned int m_unFlags;
+	double m_dHeight; // Высота холста, для Y трансформации
+	double m_dX; // Смещение по X для трансформации
+	double m_pRect[4]; // Координаты
+
+private:
 	unsigned int m_unAnnotFlag; // Флаг аннотации - F
 	unsigned int m_unRefNum; // Номер ссылки на объект
 	unsigned int m_unPage; // Страница
@@ -340,7 +339,8 @@ public:
 		std::string sText;
 
 		CFontData() : bFind(false), nAlign(0), unFontFlags(4), dFontSise(10), dVAlign(0), dColor{0, 0, 0} {}
-		CFontData(const CFontData& oFont);
+		CFontData(const CFontData& oFont) : bFind(oFont.bFind), nAlign(oFont.nAlign), unFontFlags(oFont.unFontFlags), dFontSise(oFont.dFontSise), dVAlign(oFont.dVAlign),
+			dColor{oFont.dColor[0], oFont.dColor[1], oFont.dColor[2]}, sFontFamily(oFont.sFontFamily), sActualFont(oFont.sActualFont), sText(oFont.sText) {}
 	};
 
 	void SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList);

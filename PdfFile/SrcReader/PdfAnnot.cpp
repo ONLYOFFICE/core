@@ -458,6 +458,69 @@ GList* tokenize(GString *s)
   }
   return toks;
 }
+CAnnot::CBorderType* getBorder(Object* oBorder, bool bBSorBorder)
+{
+	// Границы и Dash Pattern - Border/BS
+	CAnnot::CBorderType* pBorderType = new CAnnot::CBorderType();
+	if (!oBorder)
+		return pBorderType;
+	if (bBSorBorder)
+	{
+		pBorderType->nType = annotBorderSolid;
+		Object oV;
+		if (oBorder->dictLookup("S", &oV)->isName())
+		{
+			if (oV.isName("S"))
+				pBorderType->nType = annotBorderSolid;
+			else if (oV.isName("D"))
+				pBorderType->nType = annotBorderDashed;
+			else if (oV.isName("B"))
+				pBorderType->nType = annotBorderBeveled;
+			else if (oV.isName("I"))
+				pBorderType->nType = annotBorderInset;
+			else if (oV.isName("U"))
+				pBorderType->nType = annotBorderUnderlined;
+		}
+		oV.free();
+		if (oBorder->dictLookup("W", &oV)->isNum())
+			pBorderType->dWidth = oV.getNum();
+		oV.free();
+		if (oBorder->dictLookup("D", &oV)->isArray())
+		{
+			for (int j = 0; j < oV.arrayGetLength(); ++j)
+			{
+				Object oObj2;
+				if (oV.arrayGet(j, &oObj2)->isNum())
+					pBorderType->arrDash.push_back(oObj2.getNum());
+				oObj2.free();
+			}
+		}
+		oV.free();
+	}
+	else
+	{
+		pBorderType->nType = annotBorderSolid;
+		pBorderType->dWidth = ArrGetNum(oBorder, 2);
+		if (!pBorderType->dWidth)
+			pBorderType->dWidth = 1.0;
+
+		Object oObj;
+		if (oBorder->arrayGetLength() > 3 && oBorder->arrayGet(3, &oObj)->isArray() && oObj.arrayGetLength() > 1)
+		{
+			pBorderType->nType = annotBorderDashed;
+			for (int j = 0; j < oObj.arrayGetLength(); ++j)
+			{
+				Object oObj2;
+				if (oObj.arrayGet(j, &oObj2)->isNum())
+					pBorderType->arrDash.push_back(oObj2.getNum());
+				oObj2.free();
+			}
+		}
+		oObj.free();
+	}
+
+	return pBorderType;
+}
 
 //------------------------------------------------------------------------
 // Fonts
@@ -473,11 +536,11 @@ bool CAnnotFonts::IsBaseFont(const std::wstring& wsName)
 std::map<std::wstring, std::wstring> CAnnotFonts::GetAllFonts(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList)
 {
 	std::map<std::wstring, std::wstring> mFonts;
-	std::vector<int> arrUniqueFontsRef;
 
 	AcroForm* pAcroForms = pdfDoc->getCatalog()->getForm();
 	if (pAcroForms)
 	{
+		std::vector<int> arrUniqueFontsRef;
 		for (int nField = 0, nNum = pAcroForms->getNumFields(); nField < nNum; ++nField)
 		{
 			AcroFormField* pField = pAcroForms->getField(nField);
@@ -536,7 +599,6 @@ std::map<std::wstring, std::wstring> CAnnotFonts::GetAllFonts(PDFDoc* pdfDoc, NS
 				std::string sFontKey;
 				if (GetFontFromAP(pdfDoc, pField, &oFontRef, sFontKey) && std::find(arrUniqueFontsRef.begin(), arrUniqueFontsRef.end(), oFontRef.getRefNum()) == arrUniqueFontsRef.end())
 				{
-					bool bBold = false, bItalic = false;
 					wsFileName = GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef, sFontName, sActualFontName, bBold, bItalic);
 
 					std::wstring wsFontName = UTF8_TO_U(sFontName);
@@ -712,7 +774,6 @@ bool CAnnotFonts::GetFontFromAP(PDFDoc* pdfDoc, AcroFormField* pField, Object* o
 					break;
 				if (oObj2.isNum())
 				{
-					Object oObj3;
 					parser->getObj(&oObj3);
 					if (oObj3.isEOF())
 						break;
@@ -936,7 +997,7 @@ std::map<std::wstring, std::wstring> CAnnotFonts::GetFreeTextFont(PDFDoc* pdfDoc
 			{
 				std::wstring sFontPath = pFontInfo->m_wsFontPath;
 				bool bFindFreeText = false;
-				for (std::map<std::wstring, std::wstring>::iterator it = mFontFreeText.begin(); it != mFontFreeText.end(); it++)
+				for (std::map<std::wstring, std::wstring>::iterator it = mFontFreeText.begin(); it != mFontFreeText.end(); ++it)
 				{
 					if (it->second == sFontPath)
 					{
@@ -1359,9 +1420,6 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 	// Флаг - Ff
 	m_unFieldFlag = pField->getFlags();
 
-	// Исходное значение флага данных
-	m_unFlags = 0;
-
 	// 0 - Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
 	m_sTU = FieldLookupString(pField, "TU", 0);
 
@@ -1559,9 +1617,8 @@ void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFont
 	else
 		oFontRef.initRef(fontID.num, fontID.gen);
 
-	std::wstring wsFileName;
 	bool bBold = false, bItalic = false;
-	wsFileName = CAnnotFonts::GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef, m_sFontName, m_sActualFontName, bBold, bItalic);
+	CAnnotFonts::GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef, m_sFontName, m_sActualFontName, bBold, bItalic);
 	oFontRef.free();
 
 	// 2 - Актуальный шрифт
@@ -2008,11 +2065,7 @@ CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex
 	// Выравнивание текста - Q
 	m_nQ = 0;
 	if (oAnnot.dictLookup("Q", &oObj)->isInt())
-	{
 		m_nQ = oObj.getInt();
-		if (m_nQ < 0 || m_nQ > 2)
-			m_nQ = 0;
-	}
 	oObj.free();
 
 	m_nRotate = 0;
@@ -2433,7 +2486,7 @@ CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontLi
 
 	// Порядок вычислений - CO
 	Object* oAcroForm = pAcroForms->getAcroFormObj();
-	if (oAcroForm && oAcroForm->dictLookup("CO", &oObj1)->isArray())
+	if (oAcroForm->dictLookup("CO", &oObj1)->isArray())
 	{
 		for (int j = 0; j < oObj1.arrayGetLength(); ++j)
 		{
@@ -2856,20 +2909,6 @@ void CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontMana
 {
 	CAnnotFonts::GetFreeTextFont(pdfDoc, pFontManager, pFontList, oAnnotRef, m_arrRC);
 }
-CAnnotMarkup::CFontData::CFontData(const CFontData& oFont)
-{
-	bFind       = oFont.bFind;
-	nAlign      = oFont.nAlign;
-	unFontFlags = oFont.unFontFlags;
-	dFontSise   = oFont.dFontSise;
-	dVAlign     = oFont.dVAlign;
-	dColor[0]   = oFont.dColor[0];
-	dColor[1]   = oFont.dColor[1];
-	dColor[2]   = oFont.dColor[2];
-	sFontFamily = oFont.sFontFamily;
-	sActualFont = oFont.sActualFont;
-	sText       = oFont.sText;
-}
 
 //------------------------------------------------------------------------
 // Annot
@@ -2880,6 +2919,7 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
 	m_pBorder = NULL;
 	m_unAnnotFlag = 0;
 	m_unAFlags = 0;
+	m_unFlags = 0;
 
 	Object oObj;
 	pField->getFieldRef(&oObj);
@@ -3003,6 +3043,7 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex)
 	m_pBorder = NULL;
 	m_unAnnotFlag = 0;
 	m_unAFlags = 0;
+	m_unFlags = 0;
 
 	Object oAnnot, oObj, oObj2;
 	XRef* pXref = pdfDoc->getXRef();
@@ -3143,70 +3184,6 @@ std::string CAnnot::DictLookupString(Object* pObj, const char* sName, int nByte)
 	oObj.free();
 	return sRes;
 }
-CAnnot::CBorderType* CAnnot::getBorder(Object* oBorder, bool bBSorBorder)
-{
-	// Границы и Dash Pattern - Border/BS
-	CBorderType* pBorderType = new CBorderType();
-	if (!oBorder)
-		return pBorderType;
-	if (bBSorBorder)
-	{
-		pBorderType->nType = annotBorderSolid;
-		Object oV;
-		if (oBorder->dictLookup("S", &oV)->isName())
-		{
-			if (oV.isName("S"))
-				pBorderType->nType = annotBorderSolid;
-			else if (oV.isName("D"))
-				pBorderType->nType = annotBorderDashed;
-			else if (oV.isName("B"))
-				pBorderType->nType = annotBorderBeveled;
-			else if (oV.isName("I"))
-				pBorderType->nType = annotBorderInset;
-			else if (oV.isName("U"))
-				pBorderType->nType = annotBorderUnderlined;
-		}
-		oV.free();
-		if (oBorder->dictLookup("W", &oV)->isNum())
-			pBorderType->dWidth = oV.getNum();
-		oV.free();
-		if (oBorder->dictLookup("D", &oV)->isArray())
-		{
-			for (int j = 0; j < oV.arrayGetLength(); ++j)
-			{
-				Object oObj2;
-				if (oV.arrayGet(j, &oObj2)->isNum())
-					pBorderType->arrDash.push_back(oObj2.getNum());
-				oObj2.free();
-			}
-		}
-		oV.free();
-	}
-	else
-	{
-		pBorderType->nType = annotBorderSolid;
-		Object oObj2;
-		pBorderType->dWidth = ArrGetNum(oBorder, 2);
-		if (!pBorderType->dWidth)
-			pBorderType->dWidth = 1.0;
-
-		Object oObj;
-		if (oBorder->arrayGetLength() > 3 && oBorder->arrayGet(3, &oObj)->isArray() && oObj.arrayGetLength() > 1)
-		{
-			pBorderType->nType = annotBorderDashed;
-			for (int j = 0; j < oObj.arrayGetLength(); ++j)
-			{
-				Object oObj2;
-				if (oObj.arrayGet(j, &oObj2)->isNum())
-					pBorderType->arrDash.push_back(oObj2.getNum());
-				oObj2.free();
-			}
-		}
-		oObj.free();
-	}
-
-	return pBorderType;
-}
 
 //------------------------------------------------------------------------
 // AP
@@ -3218,6 +3195,9 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFont
 	m_pFrame = NULL;
 	m_pRendererOut = NULL;
 	m_pRenderer = NULL;
+	m_dRWScale = 1;
+	m_dRHScale = 1;
+	m_bIsStamp = false;
 
 	Object oAP;
 	if (pField->fieldLookup("AP", &oAP)->isDict() && oAP.dictGetLength())
@@ -3236,18 +3216,20 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFont
 	m_pFrame = NULL;
 	m_pRendererOut = NULL;
 	m_pRenderer = NULL;
+	m_dRWScale = 1;
+	m_dRHScale = 1;
 
 	Object oAnnot, oAP, oSubtype;
 	XRef* xref = pdfDoc->getXRef();
 	oAnnotRef->fetch(xref, &oAnnot);
-	bIsStamp = oAnnot.dictLookup("Subtype", &oSubtype)->isName("Stamp");
+	m_bIsStamp = oAnnot.dictLookup("Subtype", &oSubtype)->isName("Stamp") == gTrue;
 	if (oAnnot.dictLookup("AP", &oAP)->isDict())
 	{
 		m_unRefNum = oAnnotRef->getRefNum();
 
-		double dScale = Init(&oAnnot);
-		Init(pdfDoc, pFontManager, pFontList, nRasterW * dScale, nRasterH * dScale, nBackgroundColor, nPageIndex);
-		Draw(pdfDoc, &oAP, nRasterH * dScale, nBackgroundColor, oAnnotRef, sView);
+		Init(&oAnnot);
+		Init(pdfDoc, pFontManager, pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex);
+		Draw(pdfDoc, &oAP, nRasterH, nBackgroundColor, oAnnotRef, sView);
 	}
 	oAP.free(); oAnnot.free(); oSubtype.free();
 
@@ -3278,9 +3260,11 @@ void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFon
 
 	double dWidth  = pdfDoc->getPageCropWidth(nPageIndex + 1);
 	double dHeight = pdfDoc->getPageCropHeight(nPageIndex + 1);
+	double dRasterW = (double)nRasterW * m_dRWScale;
+	double dRasterH = (double)nRasterH * m_dRHScale;
 
-	m_dWScale = (double)nRasterW / dWidth;
-	m_dHScale = (double)nRasterH / dHeight;
+	m_dWScale = dRasterW / dWidth;
+	m_dHScale = dRasterH / dHeight;
 	m_nWidth  = (int)round((m_dx2 - m_dx1) * m_dWScale);
 	m_nHeight = (int)round((m_dy2 - m_dy1) * m_dHScale);
 	m_dWTale = m_nWidth  - (m_dx2 - m_dx1) * m_dWScale;
@@ -3307,8 +3291,8 @@ void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFon
 	m_pRenderer->SetFontManager(pFontManager);
 	m_pRenderer->CreateFromBgraFrame(m_pFrame);
 	m_pRenderer->SetSwapRGB(true);
-	m_pRenderer->put_Width ((m_dx2 - m_dx1 + (2 + m_dWTale) * dWidth  / (double)nRasterW) * 25.4 / 72.0);
-	m_pRenderer->put_Height((m_dy2 - m_dy1 + (2 + m_dHTale) * dHeight / (double)nRasterH) * 25.4 / 72.0);
+	m_pRenderer->put_Width ((m_dx2 - m_dx1 + (2 + m_dWTale) * dWidth  / dRasterW) * 25.4 / 72.0);
+	m_pRenderer->put_Height((m_dy2 - m_dy1 + (2 + m_dHTale) * dHeight / dRasterH) * 25.4 / 72.0);
 	if (nBackgroundColor != 0xFFFFFF)
 		m_pRenderer->CommandLong(c_nDarkMode, 1);
 	m_pRenderer->CommandLong(c_nPenWidth0As1px, 1);
@@ -3327,7 +3311,7 @@ void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFon
 
 	// Координаты внешнего вида
 	m_nRx1 = (int)round((m_dx1 - m_dCropX) * m_dWScale) - 1;
-	m_nRy1 = nRasterH - (int)round((m_dy2 - m_dCropY) * m_dHScale) - 1;
+	m_nRy1 = dRasterH - (int)round((m_dy2 - m_dCropY) * m_dHScale) - 1;
 }
 void CAnnotAP::Init(AcroFormField* pField)
 {
@@ -3340,9 +3324,8 @@ void CAnnotAP::Init(AcroFormField* pField)
 	// Координаты - BBox
 	pField->getBBox(&m_dx1, &m_dy1, &m_dx2, &m_dy2);
 }
-double CAnnotAP::Init(Object* oAnnot)
+void CAnnotAP::Init(Object* oAnnot)
 {
-	double dScale = 1.0;
 	Object oObj, oObj2;
 	if (oAnnot->dictLookup("Rect", &oObj)->isArray() && oObj.arrayGetLength() == 4)
 	{
@@ -3351,7 +3334,7 @@ double CAnnotAP::Init(Object* oAnnot)
 		m_dx2 = ArrGetNum(&oObj, 2);
 		m_dy2 = ArrGetNum(&oObj, 3);
 
-		if (bIsStamp)
+		if (m_bIsStamp)
 		{
 			double m[6] = { 1, 0, 0, 1, 0, 0 }, bbox[4] = { m_dx1, m_dy1, m_dx2, m_dy2 };
 
@@ -3432,7 +3415,8 @@ double CAnnotAP::Init(Object* oAnnot)
 			m_dy1 = bbox[1];
 			m_dx2 = bbox[2];
 			m_dy2 = bbox[3];
-			dScale = std::max(sx, sy);
+			m_dRWScale = sx;
+			m_dRHScale = sy;
 		}
 
 		double dTemp;
@@ -3446,7 +3430,6 @@ double CAnnotAP::Init(Object* oAnnot)
 		}
 	}
 	oObj.free();
-	return dScale;
 }
 void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, int nPageIndex, AcroFormField* pField, const char* sView, const char* sButtonView)
 {
@@ -3512,14 +3495,13 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 	{
 		if (sView && strcmp(sView, arrAPName[j]) != 0)
 			continue;
-		CAnnotAPView* pView = NULL;
 		Object oObj;
 		if (oAP->dictLookup(arrAPName[j], &oObj)->isStream())
 		{
-			pView = new CAnnotAPView();
+			CAnnotAPView* pView = new CAnnotAPView();
 			pView->sAPName = arrAPName[j];
 
-			m_pRenderer->SetCoordTransformOffset(-(m_dx1 - m_dCropX) * m_dWScale + 1 + m_dWTale / 2, (m_dy2 - m_dCropY) * m_dHScale - nRasterH + 1 + m_dHTale / 2);
+			m_pRenderer->SetCoordTransformOffset(-(m_dx1 - m_dCropX) * m_dWScale + 1 + m_dWTale / 2, (m_dy2 - m_dCropY) * m_dHScale - (double)nRasterH * m_dRHScale + 1 + m_dHTale / 2);
 
 			Ref ref = oAnnotRef->getRef();
 			Annot* annot = new Annot(pdfDoc, oAnnot.getDict(), &ref, arrAPName[j]);

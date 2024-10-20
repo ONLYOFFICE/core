@@ -543,63 +543,6 @@ namespace PPTX
 				xml_object_vml = GetVmlXmlBySpid(xml_object_rels);
 			}
 
-			//if (smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !slicer.is_init() && !slicerExt.is_init() && !vmlSpid.is_init())
-			//{
-			//	smartArt->LoadDrawing(pWriter);
-			//	
-			//	if (smartArt->m_diag.is_init())
-			//	{
-			//		if (nvGraphicFramePr.IsInit())
-			//		{
-			//			smartArt->m_diag->nvGrpSpPr.cNvPr = nvGraphicFramePr->cNvPr;
-			//			smartArt->m_diag->nvGrpSpPr.nvPr = nvGraphicFramePr->nvPr;
-			//		}
-
-			//		bool bIsInitCoords = false;
-			//		if (smartArt->m_diag->grpSpPr.xfrm.IsInit())
-			//		{
-			//			bIsInitCoords = true;
-			//		}
-			//		else if (xfrm.IsInit())
-			//		{
-			//			smartArt->m_diag->grpSpPr.xfrm = new PPTX::Logic::Xfrm();
-			//		}
-
-			//		PPTX::Logic::Xfrm*	dst = smartArt->m_diag->grpSpPr.xfrm.GetPointer();
-			//		PPTX::Logic::Xfrm*	src = xfrm.GetPointer();
-
-			//		if (dst && src)
-			//		{
-			//			dst->offX = src->offX;
-			//			dst->offY = src->offY;
-			//			dst->extX = src->extX;
-			//			dst->extY = src->extY;
-			//			
-			//			if (!bIsInitCoords || !dst->chOffX.is_init() || !dst->chOffY.is_init() || !dst->chExtX.is_init() || !dst->chExtY.is_init())
-			//			{
-			//				dst->chOffX = 0;
-			//				dst->chOffY = 0;
-			//				dst->chExtX = src->extX;
-			//				dst->chExtY = src->extY;
-			//			}
-			//			
-			//			dst->flipH = src->flipH;
-			//			dst->flipV = src->flipV;
-			//			dst->rot = src->rot;
-			//		}
-			//		//удалим индекс плейсхолдера если он есть(p:nvPr) - он будет лишний так как будет имплементация объекта
-			//		if (smartArt->m_diag->nvGrpSpPr.nvPr.ph.IsInit())
-			//		{
-			//			if(smartArt->m_diag->nvGrpSpPr.nvPr.ph->idx.IsInit())
-			//			{
-			//				smartArt->m_diag->nvGrpSpPr.nvPr.ph.reset();
-			//			}
-			//		}
-			//		smartArt->toPPTY(pWriter);
-			//	}			
-			//	return;
-			//}
-
 			if (false == xml_object_vml.empty() && !table.IsInit() && !chartRec.IsInit() && !slicer.IsInit() && !slicerExt.IsInit() && !smartArt.IsInit())
 			{
 				std::wstring temp = L"<v:object>";

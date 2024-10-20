@@ -609,7 +609,8 @@ extern int g_nCurFormatVersion;
 		delInstrText = 31,
 		linebreakClearAll = 32,
 		linebreakClearLeft = 33,
-		linebreakClearRight = 34
+		linebreakClearRight = 34,
+		pptxDrawingAlternative = 0x99
 	};}
 	namespace c_oSerVbaProjectTypes{enum c_oSerVbaProjectType
 	{

@@ -402,11 +402,13 @@ public:
 	class GRAPHICS_DECL CStampAnnotPr
 	{
 	public:
+		int GetRotate();
 		const std::wstring& GetName();
 
 		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
 
 	private:
+		int m_nRotate;
 		std::wstring m_wsName;
 	};
 

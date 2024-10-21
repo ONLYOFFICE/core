@@ -132,7 +132,7 @@ namespace PdfWriter
 
 		return sKey;
 	}
-	const char* CResourcesDict::GetXObjectName(CXObject* pObject)
+	const char* CResourcesDict::GetXObjectName(CObjectBase* pObject)
 	{
 		if (!m_pXObjects)
 		{

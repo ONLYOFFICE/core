@@ -1111,6 +1111,44 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 	}
 	else if (oType.isName("Caret"))
 		pAnnot = new PdfWriter::CCaretAnnotation(pXref);
+	else if (oType.isName("Stamp"))
+	{
+		pAnnot = new PdfWriter::CStampAnnotation(pXref);
+
+		Object oAP, oAPN;
+		if (oAnnot.dictLookup("AP", &oAP)->isDict() && oAP.dictLookup("N", &oAPN)->isStream())
+		{
+			Object oObj;
+			Dict* pAPN = oAPN.streamGetDict();
+			if (pAPN->lookup("BBox", &oObj)->isArray() && oObj.arrayGetLength() == 4)
+			{
+				double d[4];
+				for (int i = 0; i < 4; ++i)
+				{
+					Object oObj2;
+					oObj.arrayGet(i, &oObj2);
+					d[i] = oObj2.getNum();
+					oObj2.free();
+				}
+				((PdfWriter::CStampAnnotation*)pAnnot)->SetBBox({ d[0], d[1], d[2], d[3] });
+			}
+			oObj.free();
+			if (pAPN->lookup("Matrix", &oObj)->isArray() && oObj.arrayGetLength() == 6)
+			{
+				double d[6];
+				for (int i = 0; i < 6; ++i)
+				{
+					Object oObj2;
+					oObj.arrayGet(i, &oObj2);
+					d[i] = oObj2.getNum();
+					oObj2.free();
+				}
+				((PdfWriter::CStampAnnotation*)pAnnot)->SetMatrix({ d[0], d[1], d[2], d[3], d[4], d[5] });
+			}
+			oObj.free();
+		}
+		oAP.free(); oAPN.free();
+	}
 	else if (oType.isName("Popup"))
 		pAnnot = new PdfWriter::CPopupAnnotation(pXref);
 	else if (oType.isName("Widget"))

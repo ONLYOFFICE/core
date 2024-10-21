@@ -1343,13 +1343,134 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CStampAnnotation
 	//----------------------------------------------------------------------------------------
-	CStampAnnotation::CStampAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotStamp)
+	CStampAnnotation::CStampAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotStamp), m_oBeforeRect(0, 0, 0, 0), m_nDiffRotate(0)
 	{
+	}
+	void CStampAnnotation::SetRect(const TRect& oRect)
+	{
+		CObjectBase* pObj = Get("Rect");
+		if (pObj->GetType() != object_type_ARRAY)
+			return;
+		CArrayObject* pRect = (CArrayObject*)pObj;
+		pObj = pRect->Get(0);
+		m_oBeforeRect.fLeft = pObj->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pObj)->Get() : ((PdfWriter::CRealObject*)pObj)->Get();
+		pObj = pRect->Get(1);
+		m_oBeforeRect.fBottom = pObj->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pObj)->Get() : ((PdfWriter::CRealObject*)pObj)->Get();
+		pObj = pRect->Get(2);
+		m_oBeforeRect.fRight = pObj->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pObj)->Get() : ((PdfWriter::CRealObject*)pObj)->Get();
+		pObj = pRect->Get(3);
+		m_oBeforeRect.fTop = pObj->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pObj)->Get() : ((PdfWriter::CRealObject*)pObj)->Get();
+
+		CAnnotation::SetRect(oRect);
+	}
+	void CStampAnnotation::SetRotate(int nRotate)
+	{
+		CObjectBase* pObj = Get("Rotate");
+		if (pObj->GetType() == object_type_NUMBER)
+			m_nDiffRotate = nRotate - ((CNumberObject*)pObj)->Get();
+		//m_nDiffRotate = nRotate;
+
+		Add("Rotate", nRotate);
 	}
 	void CStampAnnotation::SetName(const std::wstring& wsName)
 	{
 		std::string sValue = U_TO_UTF8(wsName);
 		Add("Name", sValue.c_str());
+	}
+	void CStampAnnotation::SetBBox(const TRect& oRect)
+	{
+		m_oBBox = oRect;
+	}
+	void CStampAnnotation::SetMatrix(const CMatrix& oMatrix)
+	{
+		m_oMatrix = oMatrix;
+	}
+	void CStampAnnotation::SetAP()
+	{
+		CObjectBase* pAPN = ((CDictObject*)Get("AP"))->Get("N");
+		CObjectBase* pN = new CObjectBase();
+		pN->SetRef(pAPN->GetObjId(), pAPN->GetGenNo());
+		pN->SetIndirect();
+
+		CAnnotAppearance* pAppearance = new CAnnotAppearance(m_pXref, this);
+		Add("AP", pAppearance);
+		CAnnotAppearanceObject* pNormal = pAppearance->GetNormal();
+		CStream* pStream = pNormal->GetStream();
+
+		CResourcesDict* pResources = (CResourcesDict*)pNormal->Get("Resources");
+		const char* sXObjectName = pResources->GetXObjectName(pN);
+		if (!sXObjectName)
+			return;
+
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+		pNormal->Add("BBox", pArray);
+
+		double x, y, formXMin, formYMin, formXMax, formYMax;
+		x = m_oBBox.fLeft;
+		y = m_oBBox.fBottom;
+		m_oMatrix.Apply(x, y);
+		formXMin = formXMax = x;
+		formYMin = formYMax = y;
+
+		x = m_oBBox.fLeft;
+		y = m_oBBox.fTop;
+		m_oMatrix.Apply(x, y);
+		if (x < formXMin)
+			formXMin = x;
+		else if (x > formXMax)
+			formXMax = x;
+		if (y < formYMin)
+			formYMin = y;
+		else if (y > formYMax)
+			formYMax = y;
+
+		x = m_oBBox.fRight;
+		y = m_oBBox.fBottom;
+		m_oMatrix.Apply(x, y);
+		if (x < formXMin)
+			formXMin = x;
+		else if (x > formXMax)
+			formXMax = x;
+		if (y < formYMin)
+			formYMin = y;
+		else if (y > formYMax)
+			formYMax = y;
+
+		x = m_oBBox.fRight;
+		y = m_oBBox.fTop;
+		m_oMatrix.Apply(x, y);
+		if (x < formXMin)
+			formXMin = x;
+		else if (x > formXMax)
+			formXMax = x;
+		if (y < formYMin)
+			formYMin = y;
+		else if (y > formYMax)
+			formYMax = y;
+
+		pArray->Add(formXMin);
+		pArray->Add(formYMin);
+		pArray->Add(formXMax);
+		pArray->Add(formYMax);
+
+		pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		double ca = cos(m_nDiffRotate / 180.0 * M_PI);
+		double sa = sin(m_nDiffRotate / 180.0 * M_PI);
+		pNormal->Add("Matrix", pArray);
+		pArray->Add(ca);
+		pArray->Add(sa);
+		pArray->Add(-sa);
+		pArray->Add(ca);
+		pArray->Add(0);
+		pArray->Add(0);
+
+		pStream->WriteEscapeName(sXObjectName);
+		pStream->WriteStr(" Do\012");
 	}
 	//----------------------------------------------------------------------------------------
 	// CWidgetAnnotation

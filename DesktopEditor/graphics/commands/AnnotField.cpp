@@ -645,10 +645,12 @@ void CAnnotFieldInfo::CCaretAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader*
 		m_nSy = pReader->ReadByte();
 }
 
+int CAnnotFieldInfo::CStampAnnotPr::GetRotate() { return m_nRotate; }
 const std::wstring& CAnnotFieldInfo::CStampAnnotPr::GetName() { return m_wsName; }
 void CAnnotFieldInfo::CStampAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags)
 {
 	m_wsName = pReader->ReadString();
+	m_nRotate = pReader->ReadInt();
 }
 
 bool CAnnotFieldInfo::CPopupAnnotPr::IsOpen()      const { return m_bOpen; }

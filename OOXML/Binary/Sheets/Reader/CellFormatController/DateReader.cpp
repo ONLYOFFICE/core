@@ -323,10 +323,19 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
                     {
                         _INT32 datePart  = std::stoi(std::wstring(StringBuf.begin(), StringBuf.end()));
                         StringBuf.clear();
-                        if(parsingNow == ParsingElem::date)
-                            SetDateElem(result, datePart, locInf.ShortDatePattern, BDay, Bmonth, Byear, bError);
-                        else if (parsingNow == ParsingElem::time)
+                        if(parsingNow == ParsingElem::time)
+                        {
                             SetTimeElem(result, datePart, bHour, bMin, bSec, bError);
+                            parsingNow = ParsingElem::none;
+                        }
+                        else if (parsingNow == ParsingElem::date)
+                            SetDateElem(result, datePart, locInf.ShortDatePattern, BDay, Bmonth, Byear, bError);
+                        else
+                        {
+                            Hasdate = true;
+                            parsingNow = ParsingElem::date;
+                            SetDateElem(result, datePart, locInf.ShortDatePattern, BDay, Bmonth, Byear, bError);
+                        }
                      }
                     if(PrevType == DateElemTypes::letter)
                     {
@@ -354,7 +363,7 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
            SetDateElem(result, datePart, locInf.ShortDatePattern, BDay, Bmonth, Byear, bError);
         }
     }
-    else if(parsingNow == ParsingElem::time)
+    else
     {
         if(CurrentElementType == DateElemTypes::digit)
         {

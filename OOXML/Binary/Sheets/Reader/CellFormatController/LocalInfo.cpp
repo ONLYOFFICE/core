@@ -37,12 +37,22 @@
 
 namespace lcInfo
 {
+
+
+std::vector<std::vector<std::wstring>> MonthNames
+{
+    {L"january", L"jebruary", L"march", L"april", L"may", L"june", L"july", L"august", L"september", L"october", L"november", L"december"},
+    {L"январь", L"февраль", L"март", L"апрель", L"май", L"июнь", L"июль", L"август", L"сентябрь", L"октябрь", L"ноябрь", L"декабрь"},
+    {L"enero", L"febrero", L"marzo", L"abril", L"mayo", L"junio", L"julio", L"agosto", L"septiembre", L"octubre", L"noviembre", L"diciembre"}
+};
+
+
 std::map<_INT32, LocalInfo> InfoMap
 {
-    {-1, LocalInfo{-1, L"default", L".", L"135", L"%d %B %Y"}},
-    {25, LocalInfo{25, L"ru", L".", L"135", L"%d %B %Y г."}},
-    {9, LocalInfo{9, L"en", L"/", L"205", L"%A, %B %d, %Y"}},
-    {12298, LocalInfo{12298, L"es-EC", L"/", L"025", L"%A, %d de %B de %Y"}}
+    {-1, LocalInfo{-1, L"default", L".", L"135", L"%d %B %Y", 0}},
+    {25, LocalInfo{25, L"ru", L".", L"135", L"%d %B %Y г.", 1}},
+    {9, LocalInfo{9, L"en", L"/", L"205", L"%A, %B %d, %Y", 0}},
+    {12298, LocalInfo{12298, L"es-EC", L"/", L"025", L"%A, %d de %B de %Y", 2}}
 };
 
 
@@ -86,4 +96,19 @@ std::wstring LocalInfo::GetshorDateFormat()
         return result;
 }
 
+std::vector<std::wstring> LocalInfo::GetMonthNames(const _INT16 &index)
+{
+    if(index < MonthNames.size() && index >= 0)
+        return MonthNames.at(index);
+    return std::vector<std::wstring>{};
+}
+
+_INT16 LocalInfo::GetsMonthNumber(const std::wstring &monthName)
+{
+    auto months = GetMonthNames(MonthNamesIndex);
+    for(auto i = 0; i < months.size(); i++)
+        if(months.at(i) == monthName)
+            return i;
+    return -1;
+}
 }

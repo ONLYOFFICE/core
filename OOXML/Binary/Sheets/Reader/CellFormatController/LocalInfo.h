@@ -35,6 +35,7 @@
 #include "../../../../Base/Base.h"
 
 #include <string>
+#include <vector>
 
 namespace lcInfo
 {
@@ -45,8 +46,16 @@ class LocalInfo
 public:
 
     /// @brief собрать короткий формат даты из шаблона
+    /// @return шаблон из номеров определяющих порядок элементов даты где 0-1 дни 2-3 месяцы 4-5 годы
     std::wstring GetshorDateFormat();
 
+    /// @brief получить имена месяцев в этой локали
+    /// @return вектор имен месяцев начинающихся с января
+    std::vector<std::wstring> GetMonthNames(const _INT16 &index);
+
+    /// @brief собрать короткий формат даты из шаблона
+    /// @return номер месяца начиная от нуля, в случае успеха, отрицательное число в случае неудачи
+    _INT16 GetsMonthNumber(const std::wstring &monthName);
 
     /// @brief id локали
     _INT32 lcid;
@@ -63,6 +72,8 @@ public:
     /// @brief полное представление даты
     std::wstring LongDatePattern;
 
+    /// @brief локальные имена месяцев
+    _INT16 MonthNamesIndex;
 };
 
 /// @brief получение информации о локали по её id

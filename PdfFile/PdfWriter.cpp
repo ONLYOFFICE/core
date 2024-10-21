@@ -190,6 +190,13 @@ int CPdfWriter::SaveToFile(const std::wstring& wsPath)
 	if (!IsValid())
 		return 1;
 
+	if (!m_pFont && !m_pFont14)
+	{
+		m_bNeedUpdateTextFont = false;
+		m_pFont14 = m_pDocument->CreateFont14(L"Helvetica", 0, PdfWriter::EStandard14Fonts::standard14fonts_Helvetica);
+		CommandDrawTextCHAR(32, 0, 0, 0, 0);
+	}
+
 	m_oCommandManager.Flush();
 
 	if (!m_pDocument->SaveToFile(wsPath))
@@ -2073,6 +2080,13 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			}
 			if (nFlags & (1 << 16))
 				pCaretAnnot->SetSy(pPr->GetSy());
+		}
+		else if (oInfo.IsStamp())
+		{
+			CAnnotFieldInfo::CStampAnnotPr* pPr = oInfo.GetStampAnnotPr();
+			PdfWriter::CStampAnnotation* pStampAnnot = (PdfWriter::CStampAnnotation*)pAnnot;
+
+			pStampAnnot->SetName(pPr->GetName());
 		}
 	}
 	else if (oInfo.IsPopup())

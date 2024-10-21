@@ -990,13 +990,16 @@ int main(int argc, char* argv[])
 	}
 
 	int i = nTestPage;
-	for (int i = 0; i < nPagesCount; ++i)
+	//for (int i = 0; i < nPagesCount; ++i)
 	{
 		// RASTER
 		if (true)
 		{
 			nWidth  = READ_INT(pInfo + i * 16 + 12);
 			nHeight = READ_INT(pInfo + i * 16 + 16);
+
+			//nWidth  *= 3;
+			//nHeight *= 3;
 
 			BYTE* res = NULL;
 			res = GetPixmap(pGrFile, i, nWidth, nHeight, 0xFFFFFF);
@@ -1787,6 +1790,49 @@ int main(int argc, char* argv[])
 					i += nPathLength;
 				}
 			}
+			else if (sType == "Stamp")
+			{
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "Icon " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+				i += nPathLength;
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "Rotate " << nPathLength << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "X1 " << (double)nPathLength / 10000.0 << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "Y1 " << (double)nPathLength / 10000.0 << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "X2 " << (double)nPathLength / 10000.0 << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "Y2 " << (double)nPathLength / 10000.0 << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "X3 " << (double)nPathLength / 10000.0 << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "Y3 " << (double)nPathLength / 10000.0 << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "X4 " << (double)nPathLength / 10000.0 << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "Y4 " << (double)nPathLength / 10000.0 << ", ";
+			}
 
 			std::cout << std::endl << std::endl;
 		}
@@ -1808,6 +1854,7 @@ int main(int argc, char* argv[])
 			free(pAnnotAP);
 	}
 
+	// SCAN PAGE
 	if (true)
 	{
 		BYTE* pScan = ScanPage(pGrFile, nTestPage, 1);

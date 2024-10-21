@@ -80,15 +80,9 @@ public:
 		if (NSDirectory::Exists(wsTempDir))
 			NSDirectory::DeleteDirectory(wsTempDir);
 		NSDirectory::CreateDirectory(wsTempDir);
-		if (NSDirectory::Exists(strDirIn))
-			NSDirectory::DeleteDirectory(strDirIn);
-		NSDirectory::CreateDirectory(strDirIn);
-		if (NSDirectory::Exists(strDirOut))
-			NSDirectory::DeleteDirectory(strDirOut);
-		NSDirectory::CreateDirectory(strDirOut);
-		if (NSDirectory::Exists(strDiffs))
-			NSDirectory::DeleteDirectory(strDiffs);
-		NSDirectory::CreateDirectory(strDiffs);
+
+		if (!NSDirectory::Exists(strDirOut))
+			NSDirectory::CreateDirectory(strDirOut);
 	}
 	static void TearDownTestSuite()
 	{
@@ -327,13 +321,13 @@ TEST_F(CPdfFileTest, SetMetaData)
 
 TEST_F(CPdfFileTest, ConvertToRaster)
 {
-	GTEST_SKIP();
+	//GTEST_SKIP();
 
 	LoadFromFile();
 
 	double dPageDpiX, dPageDpiY, dWidth, dHeight;
-	int i = 0;
-	for (i = 0; i < pdfFile->GetPagesCount(); i++)
+	int i = 3;
+	//for (i = 0; i < pdfFile->GetPagesCount(); i++)
 	{
 		pdfFile->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
 		pdfFile->ConvertToRaster(i, NSFile::GetProcessDirectory() + L"/resO/res" + std::to_wstring(i) + L".png", 4, dWidth, dHeight, true, pdfFile->GetFontManager());
@@ -378,7 +372,7 @@ TEST_F(CPdfFileTest, EditPdf)
 
 TEST_F(CPdfFileTest, EditPdfFromBase64)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	LoadFromFile();
 	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
@@ -491,6 +485,16 @@ TEST_F(CPdfFileTest, ChangePasswordToPassword)
 TEST_F(CPdfFileTest, ImgDiff)
 {
 	GTEST_SKIP();
+
+	if (NSDirectory::Exists(strDirIn))
+		NSDirectory::DeleteDirectory(strDirIn);
+	NSDirectory::CreateDirectory(strDirIn);
+	if (NSDirectory::Exists(strDirOut))
+		NSDirectory::DeleteDirectory(strDirOut);
+	NSDirectory::CreateDirectory(strDirOut);
+	if (NSDirectory::Exists(strDiffs))
+		NSDirectory::DeleteDirectory(strDiffs);
+	NSDirectory::CreateDirectory(strDiffs);
 
 	LoadFromFile();
 

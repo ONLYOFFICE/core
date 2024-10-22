@@ -144,9 +144,7 @@ int main()
     oChart.Call("SetSize", 180 * 36000, 100 * 36000);
     oChart.Call("SetPosition", 20 * 36000, 50 * 36000);
     oChart.Call("ApplyChartStyle", 24);
-    oChart.Call("SetVertAxisLabelsFontSize", 16);
-    oChart.Call("SetHorAxisLabelsFontSize", 16);
-    oChart.Call("SetLegendFontSize", 16);
+    oChart.Call("SetLegendFontSize", 12);
     oChart.Call("SetLegendPos", "top");
     oSlide.Call("AddObject", oChart);
 

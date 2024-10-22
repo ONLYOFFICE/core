@@ -45,11 +45,11 @@ const wchar_t* resultPath = L"result.xlsx";
 // Helper functions
 void CheckCell(CValue oWorksheet, wstring cell, int row, int col)
 {
-	if (cell.find('#') != std::wstring::npos)
+    if (cell.find('#') != std::wstring::npos)
     {
-		wstring commentMsg = L"Error: " + cell;
+        wstring commentMsg = L"Error: " + cell;
         CValue errorCell = oWorksheet.Call("GetRangeByNumber", row, col);
-		errorCell.Call("AddComment", commentMsg.c_str());
+        errorCell.Call("AddComment", commentMsg.c_str());
     }
 }
 
@@ -62,8 +62,8 @@ int main()
     oBuilder.SetProperty("--work-directory", workDir);
 
     // Open file and get context
-	wstring templatePath = NSUtils::GetResourcesDirectory() + L"/docs/spreadsheet_with_errors.xlsx";
-	oBuilder.OpenFile(templatePath.c_str(), L"");
+    wstring templatePath = NSUtils::GetResourcesDirectory() + L"/docs/spreadsheet_with_errors.xlsx";
+    oBuilder.OpenFile(templatePath.c_str(), L"");
     CContext oContext = oBuilder.GetContext();
     CContextScope oScope = oContext.CreateScope();
     CValue oGlobal = oContext.GetGlobal();
@@ -78,7 +78,7 @@ int main()
     {
         for (int col = 0; col < (int)data[0].GetLength(); col++)
         {
-			CheckCell(oWorksheet, data[row][col].ToString().c_str(), row, col);
+            CheckCell(oWorksheet, data[row][col].ToString().c_str(), row, col);
         }
     }
 

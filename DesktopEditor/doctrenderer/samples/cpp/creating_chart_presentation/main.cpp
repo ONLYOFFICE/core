@@ -65,10 +65,10 @@ int main()
     oBuilder.SetProperty("--work-directory", workDir);
 
     // Read chart data from xlsx
-	wstring templatePath = NSUtils::GetResourcesDirectory() + L"/docs/chart_data.xlsx";
-	oBuilder.OpenFile(templatePath.c_str(), L"");
-	CContext oContext = oBuilder.GetContext();
-	CContextScope oScope = oContext.CreateScope();
+    wstring templatePath = NSUtils::GetResourcesDirectory() + L"/docs/chart_data.xlsx";
+    oBuilder.OpenFile(templatePath.c_str(), L"");
+    CContext oContext = oBuilder.GetContext();
+    CContextScope oScope = oContext.CreateScope();
     CValue oGlobal = oContext.GetGlobal();
     CValue oApi = oGlobal["Api"];
     CValue oWorksheet = oApi.Call("GetActiveSheet");
@@ -76,12 +76,12 @@ int main()
 
     int sizeX = values.GetLength();
     int sizeY = values[0].GetLength();
-	vector<vector<wstring>> data(sizeX, vector<wstring>(sizeY));
+    vector<vector<wstring>> data(sizeX, vector<wstring>(sizeY));
     for (int i = 0; i < sizeX; i++)
     {
         for (int j = 0; j < sizeY; j++)
         {
-			data[i][j] = values[i][j].ToString().c_str();
+            data[i][j] = values[i][j].ToString().c_str();
         }
     }
     oBuilder.CloseFile();
@@ -89,7 +89,7 @@ int main()
     // Create chart presentation
     oBuilder.CreateFile(OFFICESTUDIO_FILE_PRESENTATION_PPTX);
     oContext = oBuilder.GetContext();
-	oScope = oContext.CreateScope();
+    oScope = oContext.CreateScope();
     oGlobal = oContext.GetGlobal();
     oApi = oGlobal["Api"];
     CValue oPresentation = oApi.Call("GetPresentation");

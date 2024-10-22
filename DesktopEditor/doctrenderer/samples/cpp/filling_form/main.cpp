@@ -46,25 +46,25 @@ const wchar_t* resultPath = L"result.docx";
 // Main function
 int main()
 {
-	std::map<wstring, wstring> formData;
-	formData[L"Photo"] = L"https://api.onlyoffice.com/content/img/docbuilder/examples/blue_cloud.png";
-	formData[L"Serial"] = L"A1345";
-	formData[L"Company Name"] = L"Blue Cloud";
-	formData[L"Date"] = L"25.12.2023";
-	formData[L"Recipient"] = L"Space Corporation";
-	formData[L"Qty1"] = L"25";
-	formData[L"Description1"] = L"Frame";
-	formData[L"Qty2"] = L"2";
-	formData[L"Description2"] = L"Stack";
-	formData[L"Qty3"] = L"34";
-	formData[L"Description3"] = L"Shifter";
+    std::map<wstring, wstring> formData;
+    formData[L"Photo"] = L"https://api.onlyoffice.com/content/img/docbuilder/examples/blue_cloud.png";
+    formData[L"Serial"] = L"A1345";
+    formData[L"Company Name"] = L"Blue Cloud";
+    formData[L"Date"] = L"25.12.2023";
+    formData[L"Recipient"] = L"Space Corporation";
+    formData[L"Qty1"] = L"25";
+    formData[L"Description1"] = L"Frame";
+    formData[L"Qty2"] = L"2";
+    formData[L"Description2"] = L"Stack";
+    formData[L"Qty3"] = L"34";
+    formData[L"Description3"] = L"Shifter";
 
     // Init DocBuilder
     CDocBuilder::Initialize(workDir);
     CDocBuilder oBuilder;
     oBuilder.SetProperty("--work-directory", workDir);
-	wstring templatePath = NSUtils::GetResourcesDirectory() + L"/docs/form.docx";
-	oBuilder.OpenFile(templatePath.c_str(), L"");
+    wstring templatePath = NSUtils::GetResourcesDirectory() + L"/docs/form.docx";
+    oBuilder.OpenFile(templatePath.c_str(), L"");
 
     CContext oContext = oBuilder.GetContext();
     CContextScope oScope = oContext.CreateScope();
@@ -79,10 +79,10 @@ int main()
     while (formNum < (int)aForms.GetLength())
     {
         CValue form = aForms[formNum];
-		wstring type = aForms[formNum].Call("GetFormType").ToString().c_str();
-		wstring value = formData[aForms[formNum].Call("GetFormKey").ToString().c_str()];
-		if (type == L"textForm") form.Call("SetText", value.c_str());
-		if (type == L"pictureForm") form.Call("SetImage", value.c_str());
+        wstring type = aForms[formNum].Call("GetFormType").ToString().c_str();
+        wstring value = formData[aForms[formNum].Call("GetFormKey").ToString().c_str()];
+        if (type == L"textForm") form.Call("SetText", value.c_str());
+        if (type == L"pictureForm") form.Call("SetImage", value.c_str());
         formNum++;
     }
 

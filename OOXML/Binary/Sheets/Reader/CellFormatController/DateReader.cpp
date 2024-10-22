@@ -179,13 +179,13 @@ void SetDateElem(tm &result, _INT32 value, const std::wstring datePattern,  bool
 {
     for(auto dateFmtPart : datePattern)
     {
-        if((dateFmtPart == L'0' || dateFmtPart == L'1') && !day)
+        if((dateFmtPart == L'0' || dateFmtPart == L'1') && !day && value <= 31)
         {
             day = true;
             result.tm_mday = value;
             return;
         }
-        else if((dateFmtPart == L'2' || dateFmtPart == L'3') && !month)
+        else if((dateFmtPart == L'2' || dateFmtPart == L'3') && !month && value <= 12)
         {
             month = true;
             result.tm_mon = value;
@@ -240,8 +240,6 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
     bool BDay = false;
     bool Bmonth = false;
     bool Byear = false;
-    bool bAmPm = false;
-
 
     DateElemTypes CurrentElementType = DateElemTypes::none;
     DateElemTypes PrevType = DateElemTypes::none;
@@ -339,7 +337,12 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
                      }
                     if(PrevType == DateElemTypes::letter)
                     {
-                       parseAmPm(StringBuf, result);
+                        // если это не am pm то в дате может быть буквенным только имя месяца
+                        if(!parseAmPm(StringBuf, result))
+                        {
+                            if(parseMonthName(StringBuf, result))
+                                Bmonth = true;
+                        }
                        StringBuf.clear();
                     }
                     if(elementType == DateElemTypes::letter || elementType == DateElemTypes::digit)
@@ -372,7 +375,11 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
         }
         else if(CurrentElementType == DateElemTypes::letter)
         {
-            parseAmPm(StringBuf, result);
+            if(!parseAmPm(StringBuf, result))
+            {
+                if(parseMonthName(StringBuf, result))
+                    Bmonth = true;
+            }
             StringBuf.clear();
         }
     }
@@ -455,7 +462,7 @@ _INT32 DateReader::normalizeYear(_INT32 year)
         return year;
 }
 
-void DateReader::parseAmPm(std::vector<wchar_t> &stringBuf, tm &date)
+bool DateReader::parseAmPm(std::vector<wchar_t> &stringBuf, tm &date)
 {
     for(auto bufelemPos = 0; bufelemPos < stringBuf.size(); bufelemPos++)
         stringBuf[bufelemPos] = std::towlower(stringBuf[bufelemPos]);
@@ -464,4 +471,21 @@ void DateReader::parseAmPm(std::vector<wchar_t> &stringBuf, tm &date)
     {
         date.tm_hour += 12;
     }
+    if(timePostfix== L"am" || timePostfix == L"pm")
+        return true;
+    return false;
+}
+
+bool DateReader::parseMonthName(std::vector<wchar_t> &stringBuf, tm &date)
+{
+    auto locInf = lcInfo::getLocalInfo(lcid_);
+    std::wstring monthName(stringBuf.begin(), stringBuf.end());
+
+    auto monthindex = locInf.GetsMonthNumber(monthName)+ 1;
+    if(monthindex <= 0)
+        return false;
+    if(date.tm_mon != 0 && date.tm_mday == 0)
+        date.tm_mday = date.tm_mon;
+    date.tm_mon = monthindex;
+    return true;
 }

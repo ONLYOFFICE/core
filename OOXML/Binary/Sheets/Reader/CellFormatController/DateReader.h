@@ -82,7 +82,14 @@ private:
     /// @brief парсинг am и pm частей времени
     /// @param буфер с символами
     /// @param date структура с датой
-    void parseAmPm(std::vector<wchar_t> &stringBuf, tm &date);
+    /// @return true если строка является частью am или pm
+    bool parseAmPm(std::vector<wchar_t> &stringBuf, tm &date);
+
+    /// @brief парсинг имени месяца и внесение его в дату
+    /// @param буфер с символами
+    /// @param date структура с датой
+    /// @return true если строка является именем месяца
+    bool parseMonthName(std::vector<wchar_t> &stringBuf, tm &date);
 
     _INT32 lcid_;
 };

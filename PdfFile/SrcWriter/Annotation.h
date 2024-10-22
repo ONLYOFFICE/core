@@ -172,7 +172,7 @@ namespace PdfWriter
 			return false;
 		}
 
-		virtual void SetRect(const TRect& oRect);
+		void SetRect(const TRect& oRect);
 		void SetBorder(BYTE nType, double dWidth, const std::vector<double>& arrDash);
 		void SetAnnotFlag(const int& nAnnotFlag);
 		void SetPage(CPage* pPage, double dW = 0, double dH = 0, double dX = 0);
@@ -387,10 +387,7 @@ namespace PdfWriter
 	class CStampAnnotation : public CMarkupAnnotation
 	{
 	private:
-		TRect m_oBeforeRect;
-		TRect m_oBBox;
-		CMatrix m_oMatrix;
-		double m_nDiffRotate;
+		CDictObject* m_pAPStream;
 	public:
 		CStampAnnotation(CXref* pXref);
 		EAnnotType GetAnnotationType() const override
@@ -398,13 +395,9 @@ namespace PdfWriter
 			return AnnotStamp;
 		}
 
-		virtual void SetRect(const TRect& oRect) override;
 		void SetRotate(int nRotate);
 		void SetName(const std::wstring& wsName);
-		void SetBBox(const TRect& oRect);
-		void SetMatrix(const CMatrix& oMatrix);
-
-		void SetAP();
+		void SetAPStream(CDictObject* pStream);
 	};
 	class CWidgetAnnotation : public CAnnotation
 	{

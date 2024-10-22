@@ -209,6 +209,7 @@ namespace PdfWriter
 		void              AddShapeXML(const std::string& sXML);
 		void              EndShapeXML();
 		void              ClearPage();
+		bool              EditXref(CXref* pXref);
 	private:		  
 					  
 		char*             GetTTFontTag();
@@ -224,7 +225,6 @@ namespace PdfWriter
 		bool              CheckAcroForm();
 		CRadioGroupField* FindRadioGroupField(const std::wstring& wsGroupName);
 		void              Sign(const std::wstring& wsPath, unsigned int nSizeXRef, bool bNeedStreamXRef = false);
-		bool              EditXref(CXref* pXref);
 
 	private:
 

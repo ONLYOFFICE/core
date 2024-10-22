@@ -2102,8 +2102,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 			pStampAnnot->SetName(pPr->GetName());
 			pStampAnnot->SetRotate(pPr->GetRotate());
-
-			pStampAnnot->SetAP();
 		}
 	}
 	else if (oInfo.IsPopup())

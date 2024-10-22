@@ -1112,43 +1112,7 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 	else if (oType.isName("Caret"))
 		pAnnot = new PdfWriter::CCaretAnnotation(pXref);
 	else if (oType.isName("Stamp"))
-	{
 		pAnnot = new PdfWriter::CStampAnnotation(pXref);
-
-		Object oAP, oAPN;
-		if (oAnnot.dictLookup("AP", &oAP)->isDict() && oAP.dictLookup("N", &oAPN)->isStream())
-		{
-			Object oObj;
-			Dict* pAPN = oAPN.streamGetDict();
-			if (pAPN->lookup("BBox", &oObj)->isArray() && oObj.arrayGetLength() == 4)
-			{
-				double d[4];
-				for (int i = 0; i < 4; ++i)
-				{
-					Object oObj2;
-					oObj.arrayGet(i, &oObj2);
-					d[i] = oObj2.getNum();
-					oObj2.free();
-				}
-				((PdfWriter::CStampAnnotation*)pAnnot)->SetBBox({ d[0], d[1], d[2], d[3] });
-			}
-			oObj.free();
-			if (pAPN->lookup("Matrix", &oObj)->isArray() && oObj.arrayGetLength() == 6)
-			{
-				double d[6];
-				for (int i = 0; i < 6; ++i)
-				{
-					Object oObj2;
-					oObj.arrayGet(i, &oObj2);
-					d[i] = oObj2.getNum();
-					oObj2.free();
-				}
-				((PdfWriter::CStampAnnotation*)pAnnot)->SetMatrix({ d[0], d[1], d[2], d[3], d[4], d[5] });
-			}
-			oObj.free();
-		}
-		oAP.free(); oAPN.free();
-	}
 	else if (oType.isName("Popup"))
 		pAnnot = new PdfWriter::CPopupAnnotation(pXref);
 	else if (oType.isName("Widget"))
@@ -1223,11 +1187,10 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 		}
 		oFT.free();
 	}
-	oType.free();
 
 	if (!pAnnot)
 	{
-		oAnnotRef.free(); oAnnot.free();
+		oAnnotRef.free(); oAnnot.free(); oType.free();
 		RELEASEOBJECT(pXref);
 		return false;
 	}
@@ -1286,7 +1249,44 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 		DictToCDictObject(&oTemp, pAnnot, false, chKey);
 		oTemp.free();
 	}
-	oAnnotRef.free(); oAnnot.free();
+
+	if (oType.isName("Stamp"))
+	{
+		Object oAP, oAPN;
+		if (oAnnot.dictLookup("AP", &oAP)->isDict() && oAP.dictLookup("N", &oAPN)->isStream())
+		{
+			Object oAPNRef;
+			oAP.dictLookupNF("N", &oAPNRef);
+			PdfWriter::CXref* pXRef = new PdfWriter::CXref(pDoc, oAPNRef.getRefNum());
+			pDoc->EditXref(pXRef);
+
+			PdfWriter::CDictObject* pAPN = new PdfWriter::CDictObject();
+			pXRef->Add(pAPN, oAPNRef.getRefGen());
+			((PdfWriter::CStampAnnotation*)pAnnot)->SetAPStream(pAPN);
+			oAPNRef.free();
+
+			Object oTemp;
+			Dict* pODict = oAPN.streamGetDict();
+			for (int nIndex = 0; nIndex < pODict->getLength(); ++nIndex)
+			{
+				char* chKey = pODict->getKey(nIndex);
+				pODict->getValNF(nIndex, &oTemp);
+				DictToCDictObject(&oTemp, pAPN, false, chKey);
+				oTemp.free();
+			}
+			int nLength = 0;
+			if (pODict->lookup("Length", &oTemp)->isInt())
+				nLength = oTemp.getInt();
+			PdfWriter::CStream* pStream = new PdfWriter::CMemoryStream(nLength);
+			pAPN->SetStream(pStream);
+			Stream* pOStream = oAPN.getStream()->getUndecodedStream();
+			pOStream->reset();
+			for (int nI = 0; nI < nLength; ++nI)
+				pStream->WriteChar(pOStream->getChar());
+		}
+		oAP.free(); oAPN.free();
+	}
+	oAnnotRef.free(); oAnnot.free(); oType.free();
 
 	if (pDoc->EditAnnot(pXref, pAnnot, nID))
 		return true;

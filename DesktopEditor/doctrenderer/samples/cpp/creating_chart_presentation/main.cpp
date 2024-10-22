@@ -42,15 +42,6 @@ using namespace NSDoctRenderer;
 const wchar_t* workDir = L"C:\\Program Files\\ONLYOFFICE\\DocumentBuilder";
 const wchar_t* resultPath = L"result.pptx";
 
-// Helper functions
-string cValueToString(CValue value)
-{
-    wchar_t* txt = value.ToString().c_str();
-    wstring ws(txt);
-    string str(ws.begin(), ws.end());
-    return str;
-}
-
 void addText(CValue oApi, int fontSize, string text, CValue oSlide, CValue oShape, CValue oParagraph, CValue oFill, string jc)
 {
     CValue oRun = oApi.Call("CreateRun");
@@ -85,12 +76,12 @@ int main()
 
     int sizeX = values.GetLength();
     int sizeY = values[0].GetLength();
-    vector<vector<string>> data(sizeX, vector<string>(sizeY, ""));
+	vector<vector<wstring>> data(sizeX, vector<wstring>(sizeY));
     for (int i = 0; i < sizeX; i++)
     {
         for (int j = 0; j < sizeY; j++)
         {
-            data[i][j] = cValueToString(values[i][j]);
+			data[i][j] = values[i][j].ToString().c_str();
         }
     }
     oBuilder.CloseFile();

@@ -43,21 +43,13 @@ const wchar_t* workDir = L"C:\\Program Files\\ONLYOFFICE\\DocumentBuilder";
 const wchar_t* resultPath = L"result.xlsx";
 
 // Helper functions
-string cValueToString(CValue value)
+void CheckCell(CValue oWorksheet, wstring cell, int row, int col)
 {
-    wchar_t* txt = value.ToString().c_str();
-    wstring ws(txt);
-    string str(ws.begin(), ws.end());
-    return str;
-}
-
-void CheckCell(CValue oWorksheet, string cell, int row, int col)
-{
-    if (cell.find("#") != std::string::npos)
+	if (cell.find('#') != std::wstring::npos)
     {
-        string comment = "Error" + cell;
+		wstring commentMsg = L"Error: " + cell;
         CValue errorCell = oWorksheet.Call("GetRangeByNumber", row, col);
-        errorCell.Call("AddComment", comment.c_str());
+		errorCell.Call("AddComment", commentMsg.c_str());
     }
 }
 
@@ -86,7 +78,7 @@ int main()
     {
         for (int col = 0; col < (int)data[0].GetLength(); col++)
         {
-            CheckCell(oWorksheet, cValueToString(data[row][col]), row, col);
+			CheckCell(oWorksheet, data[row][col].ToString().c_str(), row, col);
         }
     }
 

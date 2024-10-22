@@ -48,7 +48,7 @@ namespace OOX
     class CDiagramDrawing : public OOX::IFileContainer, public OOX::FileGlobalEnumerated
     {
     public:
-		CDiagramDrawing(OOX::Document* pMain);
+		CDiagramDrawing(OOX::Document* pMain, bool bDocument = true);
 		CDiagramDrawing(OOX::Document* pMain, const CPath& uri);
 		CDiagramDrawing(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
 
@@ -73,6 +73,7 @@ namespace OOX
 		CPath m_oReadPath;
 
 		nullable<PPTX::Logic::SpTree>	m_oShapeTree;
-
+	private:
+		bool m_bDocument = true; //for upper/lower level rels (defaultDirectory)
     };
 } // namespace OOX

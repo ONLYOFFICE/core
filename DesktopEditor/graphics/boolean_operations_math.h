@@ -242,64 +242,59 @@ void getConvexHull(const double& dq0, const double& dq1,
 	double	dist1 = dq1 - (2.0 * dq0 + dq3) / 3.0,
 			dist2 = dq2 - (dq0 + 2.0 * dq3) / 3.0;
 
-	std::vector<Aggplus::PointD>& realTop = top;
-	std::vector<Aggplus::PointD>& realBottom = bottom;
-	if (dist1 < 0.0 || dist2 < 0.0)
-	{
-		realTop = bottom;
-		realBottom = top;
-	}
-
 	if (dist1 * dist2 < 0.0)
 	{
-		realTop.reserve(3);
-		realTop.push_back(p0);
-		realTop.push_back(p1);
-		realTop.push_back(p3);
+		top.reserve(3);
+		top.push_back(p0);
+		top.push_back(p1);
+		top.push_back(p3);
 
-		realBottom.reserve(3);
-		realBottom.push_back(p0);
-		realBottom.push_back(p2);
-		realBottom.push_back(p3);
+		bottom.reserve(3);
+		bottom.push_back(p0);
+		bottom.push_back(p2);
+		bottom.push_back(p3);
 	}
 	else
 	{
 		double distRatio = dist1 / dist2;
 		if (distRatio >= 2.0)
 		{
-			realTop.reserve(3);
-			realTop.push_back(p0);
-			realTop.push_back(p1);
-			realTop.push_back(p3);
+			top.reserve(3);
+			top.push_back(p0);
+			top.push_back(p1);
+			top.push_back(p3);
 
-			realBottom.reserve(2);
-			realBottom.push_back(p0);
-			realBottom.push_back(p3);
+			bottom.reserve(2);
+			bottom.push_back(p0);
+			bottom.push_back(p3);
 		}
 		else if (distRatio <= 0.5)
 		{
-			realTop.reserve(3);
-			realTop.push_back(p0);
-			realTop.push_back(p2);
-			realTop.push_back(p3);
+			top.reserve(3);
+			top.push_back(p0);
+			top.push_back(p2);
+			top.push_back(p3);
 
-			realBottom.reserve(2);
-			realBottom.push_back(p0);
-			realBottom.push_back(p3);
+			bottom.reserve(2);
+			bottom.push_back(p0);
+			bottom.push_back(p3);
 		}
 		else
 		{
-			realTop.reserve(4);
-			realTop.push_back(p0);
-			realTop.push_back(p1);
-			realTop.push_back(p2);
-			realTop.push_back(p3);
+			top.reserve(4);
+			top.push_back(p0);
+			top.push_back(p1);
+			top.push_back(p2);
+			top.push_back(p3);
 
-			realBottom.reserve(2);
-			realBottom.push_back(p0);
-			realBottom.push_back(p3);
+			bottom.reserve(2);
+			bottom.push_back(p0);
+			bottom.push_back(p3);
 		}
 	}
+
+	if (dist1 < 0.0 || dist2 < 0.0)
+		std::swap(top, bottom);
 }
 
 double clipConvexHullPart(const std::vector<Aggplus::PointD>& part, const bool& top,

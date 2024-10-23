@@ -746,7 +746,7 @@ void CSVWriter::Impl::WriteCell(OOX::Spreadsheet::CCell *pCell)
 	
 	if (m_bShowFormulas && pCell->m_oFormula.IsInit())
 	{
-		sCellValue = pCell->m_oFormula->m_sText;
+		sCellValue = L"=" + pCell->m_oFormula->m_sText;
 	}
 	else if (pCell->m_oValue.IsInit())
 	{
@@ -814,7 +814,7 @@ void CSVWriter::Impl::WriteCell(OOX::Spreadsheet::CCell *pCell)
 	}
 	if (pCell->m_oFormula.IsInit() && sCellValue.empty())
 	{
-		sCellValue = pCell->m_oFormula->m_sText;
+		sCellValue = L"=" + pCell->m_oFormula->m_sText;
 	}
 
 	// Escape cell value

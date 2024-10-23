@@ -38,6 +38,9 @@ To use `configure.py` you need to specify following options:
 Generated files will be located in the `out` directory inside of the corresponding test folders.
 
 ## Running C++ samples
+
+If Document Builder is not installed in `C:/Program Files/ONLYOFFICE/DocumentBuilder`, for every C++ sample you should change the `workDir` variable at the beginning of *main.cpp* to actual location of Document Builder directory.
+
 ### Visual Studio
 
 > **NOTE:** Only available on Windows
@@ -88,6 +91,8 @@ Generated files will be located in the `out` directory inside of the correspondi
 ## Running C# samples
 
 > **NOTE:** Only available on Windows with Visual Studio and .NET SDK installed
+
+If Document Builder is not installed in `C:/Program Files/ONLYOFFICE/DocumentBuilder`, for every C# sample you should change the `workDirectory` variable at the beginning of `Main` function to actual location of Document Builder directory.
 
 ### Visual Studio
  1. Use `configure.py` to generate VS project files. For example:

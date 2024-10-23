@@ -250,6 +250,10 @@ namespace NSDocxRenderer
 		auto info = pInfo;
 		if (!info && m_bIsGradient)
 		{
+			// image with gradient must be closed
+			if (!shape->m_oVector.IsEmpty() && shape->m_oVector.GetData().back().type != CVectorGraphics::ePathCommandType::pctClose)
+				shape->m_oVector.Add({CVectorGraphics::ePathCommandType::pctClose, {}});
+
 			long width_pix = static_cast<long>(shape->m_dWidth * c_dMMToPix);
 			long height_pix = static_cast<long>(shape->m_dHeight * c_dMMToPix);
 
@@ -290,6 +294,7 @@ namespace NSDocxRenderer
 			g_renderer->put_Width(shape->m_dWidth);
 			g_renderer->put_Height(shape->m_dHeight);
 			g_renderer->RestoreBrush(shifted_brush);
+			g_renderer->RestorePen(*m_pPen);
 			g_renderer->BeginCommand(c_nPathType);
 			shifted_vector.DrawOnRenderer(g_renderer);
 			g_renderer->DrawPath(c_nWindingFillMode);

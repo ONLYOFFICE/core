@@ -243,4 +243,9 @@ namespace NSJSON
 	{
 		return m_format;
 	}
+
+	void CImage::externalize()
+	{
+		m_isExternalize = true;
+	}
 }

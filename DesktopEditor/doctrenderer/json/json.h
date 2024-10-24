@@ -228,6 +228,11 @@ namespace NSJSON
 		 */
 		ImageFormat GetImageFormat() const;
 
+		/**
+		 * Make image bits external.
+		 */
+		void Externalize();
+
 	protected:
 		std::shared_ptr<CTypedValue> m_internal;
 	};
@@ -296,7 +301,7 @@ namespace NSJSON
 		 * @param isExternalize If true the memory will not be reclaimed when the created image is destroyed.
 		 * If this parameter is false then the memory will be released using FreeImageBits() during the image object destruction.
 		 */
-		static CValue CreateImage(BYTE* bits, int width, int height, ImageFormat format, bool isExternalize = true);
+		static CValue CreateImage(BYTE* bits, int width, int height, ImageFormat format = ifBGRA, bool isExternalize = true);
 		/**
 		 * Allocates the memory for an image.
 		 * @param width The width of the image.

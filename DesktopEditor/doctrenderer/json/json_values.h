@@ -125,6 +125,7 @@ namespace NSJSON
 		int getWidth();
 		int getHeight();
 		ImageFormat getFormat();
+		void externalize();
 
 	private:
 		BYTE* m_bits;

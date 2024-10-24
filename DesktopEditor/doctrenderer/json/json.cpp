@@ -560,6 +560,18 @@ namespace NSJSON
 		return static_cast<CImage*>(m_internal->m_value.get())->getFormat();
 	}
 
+	void IValue::Externalize()
+	{
+		if (m_internal->m_type != CTypedValue::vtImage)
+		{
+#ifdef JSON_DEBUG
+			throw std::bad_cast();
+#endif
+			return;
+		}
+		static_cast<CImage*>(m_internal->m_value.get())->externalize();
+	}
+
 	CValue::CValue() : IValue()
 	{
 	}

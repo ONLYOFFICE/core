@@ -1131,7 +1131,7 @@ CFile.prototype["getAnnotationsInfo"] = function(pageIndex)
 		// FreeText
 		else if (rec["Type"] == 2)
 		{
-			// Bachground color - C->IC
+			// Background color - C->IC
 			if (rec["C"])
 			{
 				rec["IC"] = rec["C"];

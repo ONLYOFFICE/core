@@ -14,14 +14,36 @@ namespace NSGraphics
 {
 	void CGraphics::init(NSNativeControl::CNativeControl* oNative, double width_px, double height_px, double width_mm, double height_mm)
 	{
-		m_sApplicationImagesDirectory = oNative->m_strImagesDirectory;
-		m_sApplicationFontsDirectory  = oNative->m_strFontsDirectory;
+		NSFonts::IFontManager* pManager = NULL;
+
+		if (NULL != oNative)
+		{
+			m_sApplicationImagesDirectory = oNative->m_strImagesDirectory;
+			m_sApplicationFontsDirectory  = oNative->m_strFontsDirectory;
+		}
+		else if (m_pAppImage)
+		{
+			m_sApplicationImagesDirectory = m_pAppImage->GetImagesDirectory();
+			m_sApplicationThemesDirectory = m_pAppImage->GetThemesDirectory();
+			m_pApplicationFonts = m_pAppImage->GetFonts();
+
+			if (m_pApplicationFonts)
+			{
+				m_pApplicationFonts->AddRef();
+				pManager = m_pApplicationFonts->GenerateFontManager();
+			}
+		}
+
+		if (!pManager)
+		{
+			m_pApplicationFonts = NSFonts::NSApplication::Create();
+			m_pApplicationFonts->InitializeFromFolder(m_sApplicationFontsDirectory.empty() ? NSFile::GetProcessDirectory() : m_sApplicationFontsDirectory);
+			pManager = m_pApplicationFonts->GenerateFontManager();
+		}
+
 #ifdef _DEBUG
 		std::wcout << L"init "<< m_sApplicationImagesDirectory << L"  " << m_sApplicationFontsDirectory << L"  " << width_px << L"  " << height_px << L"  " << width_mm << L"  " << height_mm << std::endl;
 #endif
-		m_pApplicationFonts = NSFonts::NSApplication::Create();
-		m_pApplicationFonts->InitializeFromFolder(m_sApplicationFontsDirectory.empty() ? NSFile::GetProcessDirectory() : m_sApplicationFontsDirectory);
-		NSFonts::IFontManager* pManager = m_pApplicationFonts->GenerateFontManager();
 
 		m_pRenderer = NSGraphics::Create();
 		m_pRenderer->SetFontManager(pManager);
@@ -42,7 +64,7 @@ namespace NSGraphics
 			if (nRasterH < 1) nRasterH = 0;
 		}
 
-		BYTE* pData = new BYTE[4 * nRasterW * nRasterH];
+		BYTE* pData = m_pAppImage ? m_pAppImage->AllocImage(nRasterW, nRasterH) : new BYTE[4 * nRasterW * nRasterH];
 		unsigned int back = 0xffffff;
 		unsigned int* pData32 = (unsigned int*)pData;
 		unsigned int* pData32End = pData32 + nRasterW * nRasterH;
@@ -55,7 +77,7 @@ namespace NSGraphics
 		m_oFrame.put_Stride(4 * nRasterW);
 
 		m_pRenderer->CreateFromBgraFrame(&m_oFrame);
-		m_pRenderer->SetSwapRGB(false);
+		m_pRenderer->SetSwapRGB(m_pAppImage ? m_pAppImage->IsRgba() : false);
 
 		m_pRenderer->put_Width(width_mm);
 		m_pRenderer->put_Height(height_mm);

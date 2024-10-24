@@ -1,20 +1,41 @@
 #ifndef _BUILD_NATIVE_GRAPHICS_EMBED_H_
 #define _BUILD_NATIVE_GRAPHICS_EMBED_H_
 
-#include "../graphics.h"
+#include "../../graphics/pro/Fonts.h"
 #include "../js_internal/js_base.h"
 
+class JS_DECL CGraphicsAppImage
+{
+public:
+	CGraphicsAppImage();
+	virtual ~CGraphicsAppImage();
+public:
+	virtual std::wstring GetFontsDirectory() = 0;
+	virtual NSFonts::IApplicationFonts* GetFonts() = 0;
+
+	virtual std::wstring GetImagesDirectory() = 0;
+	virtual std::wstring GetThemesDirectory() = 0;
+
+	virtual unsigned char* AllocImage(const int& w, const int& h) = 0;
+	virtual bool IsRgba() = 0;
+};
+
+namespace NSGraphics { class CGraphics; }
+
 using namespace NSJSBase;
-class CGraphicsEmbed : public CJSEmbedObject
+class JS_DECL CGraphicsEmbed : public CJSEmbedObject
 {
 public:
 	NSGraphics::CGraphics* m_pInternal;
 
 public:
-	CGraphicsEmbed() : m_pInternal(new NSGraphics::CGraphics()) {}
-	~CGraphicsEmbed() { RELEASEOBJECT(m_pInternal); }
+	CGraphicsEmbed();
+	~CGraphicsEmbed();
 
 	virtual void* getObject() override { return (void*)m_pInternal; }
+
+	void SetAppImage(CGraphicsAppImage* appImage);
+	void ExternalizeImage();
 
 public:
 	JSSmart<CJSValue> create(JSSmart<CJSValue> Native, JSSmart<CJSValue> width_px, JSSmart<CJSValue> height_px, JSSmart<CJSValue> width_mm, JSSmart<CJSValue> height_mm);

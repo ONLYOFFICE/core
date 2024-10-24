@@ -1,8 +1,32 @@
-#include "GraphicsEmbed.h"
+#include "../graphics.h"
+
+CGraphicsAppImage::CGraphicsAppImage(){}
+CGraphicsAppImage::~CGraphicsAppImage(){}
+
+CGraphicsEmbed::CGraphicsEmbed() : m_pInternal(new NSGraphics::CGraphics())
+{
+}
+CGraphicsEmbed::~CGraphicsEmbed()
+{
+	RELEASEOBJECT(m_pInternal);
+}
+
+void CGraphicsEmbed::SetAppImage(CGraphicsAppImage* appImage)
+{
+	m_pInternal->m_pAppImage = appImage;
+}
+
+void CGraphicsEmbed::ExternalizeImage()
+{
+	m_pInternal->m_oFrame.put_Data(NULL);
+}
 
 JSSmart<CJSValue> CGraphicsEmbed::create(JSSmart<CJSValue> Native, JSSmart<CJSValue> width_px, JSSmart<CJSValue> height_px, JSSmart<CJSValue> width_mm, JSSmart<CJSValue> height_mm)
 {
-	m_pInternal->init((NSNativeControl::CNativeControl*)Native->toObject()->getNative()->getObject(), width_px->toDouble(), height_px->toDouble(), width_mm->toDouble(), height_mm->toDouble());
+	NSNativeControl::CNativeControl* pControl = NULL;
+	if (!Native->isNull())
+		pControl = (NSNativeControl::CNativeControl*)Native->toObject()->getNative()->getObject();
+	m_pInternal->init(pControl, width_px->toDouble(), height_px->toDouble(), width_mm->toDouble(), height_mm->toDouble());
 	return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::Destroy()

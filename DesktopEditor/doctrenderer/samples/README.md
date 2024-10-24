@@ -25,7 +25,7 @@ For running C++ and C# code samples use python script `configure/configure.py` w
  + Makefile
 
 To use `configure.py` you need to specify following options:
- 1. Which project files to generate: `--vs`, `--qt` or `--make`. Several options are available at the same time, but some of them are not supported on all platforms.
+ 1. Which project files to generate: `--vs`, `--qt` or `--make`. Several options are available at the same time, but some of them are not supported on all platforms. In case you provide none of these options, all available projects will be generated.
  2. Test samples with `--test TEST`. Some available options:
     - `--test all` – generate projects for both C++ and C#.
     - `--test cpp` – generate projects only for C++ samples

@@ -269,9 +269,11 @@ if __name__ == '__main__':
         exit(1)
 
     if not (args.vs or args.qt or args.make):
-        parser.print_usage()
-        log('error', 'at least one of --vs, --qt or --make must be provided')
-        exit(1)
+        if os_name == 'windows':
+            args.vs = True
+        args.qt = True
+        if os_name != 'windows':
+            args.make = True
 
     # filter tests
     tests_selected = getSelectedTests(args.tests)

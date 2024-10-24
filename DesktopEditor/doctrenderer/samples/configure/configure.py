@@ -96,8 +96,10 @@ def genVSProjectsCPP(tests, builder_dir):
         mkdir(test_dir)
         test_name = test.split('/')[1]
         if os.path.exists(test_dir + '/' + test_name + '.vcxproj'):
-            log('info', 'VS C++ project for test "' + test + '" already exists. Skipping.')
+            log('info', 'VS C++ project for sample "' + test + '" already exists. Skipping.')
             continue
+        else:
+            log('info', 'generating VS C++ project for sample "' + test + '"...')
         # .vcxproj
         project_guid = str(uuid.uuid4())
         replacements = {
@@ -135,8 +137,10 @@ def genVSProjectsCS(tests, builder_dir):
         mkdir(test_dir)
         test_name = test.split('/')[1]
         if os.path.exists(test_dir + '/' + test_name + '.csproj'):
-            log('info', 'VS C# project for test "' + test + '" already exists. Skipping.')
+            log('info', 'VS C# project for sample "' + test + '" already exists. Skipping.')
             continue
+        else:
+            log('info', 'generating VS C# project for sample "' + test + '"...')
         # .csproj
         project_guid = str(uuid.uuid4())
         replacements = {
@@ -183,8 +187,10 @@ def genQtProjects(tests_selected, builder_dir):
         mkdir(test_dir)
         test_name = test.split('/')[1]
         if os.path.exists(test_dir + '/' + test_name + '.pro'):
-            log('info', 'Qt project for test "' + test + '" already exists. Skipping.')
+            log('info', 'Qt project for sample "' + test + '" already exists. Skipping.')
             continue
+        else:
+            log('info', 'generating Qt C++ project for sample "' + test + '"...')
         # .pro
         replacements = {
             '[TEST_NAME]': test_name,
@@ -221,7 +227,9 @@ def genMakefile(tests_selected, builder_dir):
         mkdir(test_dir)
         test_name = test.split('/')[1]
         if os.path.exists(test_dir + '/Makefile'):
-            log('info', 'Makefile test "' + test + '" already exists. Skipping.')
+            log('info', 'Makefile for sample "' + test + '" already exists. Skipping.')
+        else:
+            log('info', 'generating Makefile for C++ sample "' + test + '"...')
             continue
         # Makefile
         replacements = {

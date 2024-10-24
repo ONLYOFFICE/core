@@ -67,13 +67,15 @@ namespace PPTX
 			return OOX::et_p_ShapeTree;
 		}
 		void SpTree::FillParentPointersForChilds()
-	{
-		nvGrpSpPr.SetParentPointer(this);
-		grpSpPr.SetParentPointer(this);
+		{
+			nvGrpSpPr.SetParentPointer(this);
+			grpSpPr.SetParentPointer(this);
 
-		for (size_t i = 0; i < SpTreeElems.size(); ++i)
-			SpTreeElems[i].SetParentPointer(this);
-	}
+			for (size_t i = 0; i < SpTreeElems.size(); ++i)
+			{
+				SpTreeElems[i].SetParentPointer(this);
+			}
+		}
 		void SpTree::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			m_namespace = XmlUtils::GetNamespace(oReader.GetName());

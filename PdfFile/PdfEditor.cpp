@@ -113,7 +113,7 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, 
 		for (int nIndex = 0; nIndex < obj->arrayGetLength(); ++nIndex)
 		{
 			obj->arrayGetNF(nIndex, &oTemp);
-			DictToCDictObject(&oTemp, pArray, bBinary, "");
+			DictToCDictObject(&oTemp, pArray, bBinary, "", bUnicode);
 			oTemp.free();
 		}
 		break;
@@ -126,7 +126,7 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, 
 		{
 			char* chKey = obj->dictGetKey(nIndex);
 			obj->dictGetValNF(nIndex, &oTemp);
-			DictToCDictObject(&oTemp, pDict, bBinary, chKey);
+			DictToCDictObject(&oTemp, pDict, bBinary, chKey, bUnicode);
 			oTemp.free();
 		}
 		break;
@@ -1197,8 +1197,9 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 
 	for (int nIndex = 0; nIndex < oAnnot.dictGetLength(); ++nIndex)
 	{
+		bool bUnicode = false;
 		char* chKey = oAnnot.dictGetKey(nIndex);
-		if (strcmp("Popup", chKey) == 0)
+		if (!strcmp("Popup", chKey))
 		{
 			Object oPopupRef;
 			if (oAnnot.dictGetValNF(nIndex, &oPopupRef)->isRef() && EditAnnot(nPageIndex, oPopupRef.getRefNum()))
@@ -1212,7 +1213,7 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 			}
 			continue;
 		}
-		if (strcmp("Parent", chKey) == 0 && bIsWidget)
+		else if (!strcmp("Parent", chKey) && bIsWidget)
 		{
 			Object oParentRef;
 			oAnnot.dictGetValNF(nIndex, &oParentRef);
@@ -1243,9 +1244,11 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 			}
 			oParentRef.free();
 		}
+		else if (!strcmp("Opt", chKey))
+			bUnicode = true;
 		Object oTemp;
 		oAnnot.dictGetValNF(nIndex, &oTemp);
-		DictToCDictObject(&oTemp, pAnnot, false, chKey);
+		DictToCDictObject(&oTemp, pAnnot, false, chKey, bUnicode);
 		oTemp.free();
 	}
 	oAnnotRef.free(); oAnnot.free();

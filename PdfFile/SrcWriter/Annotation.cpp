@@ -1988,10 +1988,35 @@ namespace PdfWriter
 	void CCheckBoxWidget::SwitchAP(const std::string& sV)
 	{
 		CObjectBase* pAP, *pAPN;
-		if ((pAP = Get("AP")) && pAP->GetType() == object_type_DICT && (pAPN = ((CDictObject*)pAP)->Get("N")) && pAPN->GetType() == object_type_DICT && ((CDictObject*)pAPN)->Get(sV))
+		Add("AS", "Off");
+		if (!m_sAP_N_Yes.empty())
+		{
+			CObjectBase* pObj = GetObjValue("Opt");
+			if (pObj && pObj->GetType() == object_type_ARRAY)
+			{
+				CArrayObject* pArr = (CArrayObject*)pObj;
+				for (int i = 0; i < pArr->GetCount(); ++i)
+				{
+					pObj = pArr->Get(i);
+					if (pObj->GetType() == object_type_ARRAY && ((CArrayObject*)pObj)->GetCount() > 0)
+						pObj = ((CArrayObject*)pObj)->Get(0);
+					if (pObj->GetType() == object_type_STRING)
+					{
+						CStringObject* pStr = (CStringObject*)pObj;
+						const BYTE* pBinary = pStr->GetString();
+						if (pStr->GetLength() == m_sAP_N_Yes.length() && !StrCmp((const char*)pBinary, m_sAP_N_Yes.c_str()))
+						{
+							m_sAP_N_Yes = std::to_string(i);
+							SetV(UTF8_TO_U(m_sAP_N_Yes));
+							break;
+						}
+					}
+				}
+			}
+			Add("AS", m_sAP_N_Yes.c_str());
+		}
+		else if ((pAP = Get("AP")) && pAP->GetType() == object_type_DICT && (pAPN = ((CDictObject*)pAP)->Get("N")) && pAPN->GetType() == object_type_DICT && ((CDictObject*)pAPN)->Get(sV))
 			Add("AS", sV.c_str());
-		else
-			Add("AS", "Off");
 	}
 	void CCheckBoxWidget::SetFlag(const int& nFlag)
 	{

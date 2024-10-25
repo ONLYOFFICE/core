@@ -155,7 +155,18 @@ bool DateReader::GetDigitalDate(const std::wstring &date, double &result, bool &
             return true;
         }
     }
-
+bool tryGetInt(std::vector<wchar_t> &data, _INT32 &value)
+{
+    try
+    {
+        value  = std::stoi(std::wstring(data.begin(), data.end()));
+        return true;
+    }
+     catch (std::exception)
+    {
+        return false;
+    }
+}
 
 
 enum class DateElemTypes
@@ -222,11 +233,20 @@ void SetTimeElem(tm &result, _INT32 value, bool &BHour, bool &bMin,  bool &bSec,
         Berror = true;
 }
 
+std::wstring spaceCut(const std::wstring &str)
+{
+        auto first = str.find_first_not_of(L' ');
+        if (first == std::wstring::npos) return L"";
+        auto last = str.find_last_not_of(' ');
+        return str.substr(first, last - first + 1);
+}
+
 bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasdate, bool &Hastime)
 {
     bool bError = false;
     auto locInf = lcInfo::getLocalInfo(lcid_);
     ParsingElem parsingNow = ParsingElem::none;
+    auto cutteddateStr =  spaceCut(date);
 
     //разделитель времени отличается только в нескольких локалях
     wchar_t timeSeparator = L':';
@@ -246,9 +266,9 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
     std::vector<wchar_t> StringBuf;
 
     //посимвольно парсим дату
-    for(auto i = 0; i < date.length(); i++)
+    for(auto i = 0; i < cutteddateStr.length(); i++)
     {
-        auto charElement = date.at(i);
+        auto charElement = cutteddateStr.at(i);
         DateElemTypes elementType;
         if(charElement == L' ')
             elementType = DateElemTypes::space;
@@ -290,7 +310,11 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
                     if(timeSeparator != locInf.DateSeparator[0])
                     {
                         //парсим часть даты
-                        _INT32 datePart  = std::stoi(std::wstring(StringBuf.begin(), StringBuf.end()));
+                        _INT32 datePart;
+                        if(!tryGetInt(StringBuf, datePart))
+                        {
+                            return false;
+                        }
                         StringBuf.clear();
                         if(charElement == locInf.DateSeparator.at(0))
                         {
@@ -319,7 +343,11 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
                 {
                     if(PrevType == DateElemTypes::digit)
                     {
-                        _INT32 datePart  = std::stoi(std::wstring(StringBuf.begin(), StringBuf.end()));
+                        _INT32 datePart;
+                        if(!tryGetInt(StringBuf, datePart))
+                        {
+                            return false;
+                        }
                         StringBuf.clear();
                         if(parsingNow == ParsingElem::time)
                         {
@@ -362,7 +390,11 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
     {
         if(CurrentElementType == DateElemTypes::digit)
         {
-            _INT32 datePart  = std::stoi(std::wstring(StringBuf.begin(), StringBuf.end()));
+            _INT32 datePart;
+            if(!tryGetInt(StringBuf, datePart))
+            {
+                return false;
+            }
            SetDateElem(result, datePart, locInf.ShortDatePattern, BDay, Bmonth, Byear, bError);
         }
     }
@@ -370,7 +402,11 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
     {
         if(CurrentElementType == DateElemTypes::digit)
         {
-            _INT32 datePart  = std::stoi(std::wstring(StringBuf.begin(), StringBuf.end()));
+            _INT32 datePart;
+            if(!tryGetInt(StringBuf, datePart))
+            {
+                return false;
+            }
             SetTimeElem(result, datePart, bHour, bMin, bSec, bError);
         }
         else if(CurrentElementType == DateElemTypes::letter)

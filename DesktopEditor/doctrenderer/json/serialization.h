@@ -10,7 +10,7 @@ namespace NSJSON
 {
 	static JSSmart<NSJSBase::CJSValue> toJS(const CValue& value)
 	{
-		if (value.IsUndefined())
+		if (value.IsUndefined() || value.IsImage())
 			return NSJSBase::CJSContext::createUndefined();
 		if (value.IsNull())
 			return NSJSBase::CJSContext::createNull();

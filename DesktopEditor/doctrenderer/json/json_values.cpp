@@ -211,4 +211,41 @@ namespace NSJSON
 		}
 		return ret;
 	}
+
+	CImage::CImage(BYTE* bits, int width, int height, ImageFormat format, bool isExternalize) : m_bits(bits), m_width(width), m_height(height), m_format(format), m_isExternalize(isExternalize)
+	{
+	}
+
+	CImage::~CImage()
+	{
+		if (!m_isExternalize)
+		{
+			CValue::FreeImageBits(m_bits);
+		}
+	}
+
+	BYTE* CImage::getBits()
+	{
+		return m_bits;
+	}
+
+	int CImage::getWidth()
+	{
+		return m_width;
+	}
+
+	int CImage::getHeight()
+	{
+		return m_height;
+	}
+
+	ImageFormat CImage::getFormat()
+	{
+		return m_format;
+	}
+
+	void CImage::externalize()
+	{
+		m_isExternalize = true;
+	}
 }

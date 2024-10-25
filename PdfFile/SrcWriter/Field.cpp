@@ -1930,7 +1930,7 @@ namespace PdfWriter
 	void CAnnotAppearanceObject::StartDrawText(CFontDict* pFont, const double& dFontSize, const double& dR, const double& dG, const double& dB, const char* sExtGStateName, const double& dWidth, const double& dHeight)
 	{
 		CResourcesDict* pResources = dynamic_cast<CResourcesDict*>(Get("Resources"));
-		if (!m_pStream || !pFont || !pResources)
+		if (!m_pStream || !pResources)
 			return;
 
 		CWidgetAnnotation* pAnnot = NULL;
@@ -2221,7 +2221,7 @@ namespace PdfWriter
 			m_pStream->WriteReal(m_dFontSize);
 			m_pStream->WriteStr(" Tf\012");
 		}
-		else
+		else if (pFont)
 			m_pStream->WriteStr(pAnnot->GetDAforAP(pFont).c_str());
 
 		m_bStart = true;
@@ -2288,7 +2288,8 @@ namespace PdfWriter
 		m_bStart = true;
 
 		m_pStream->WriteStr("BT\012");
-		m_pStream->WriteStr(pAnnot->GetDAforAP(pFont).c_str());
+		if (pFont)
+			m_pStream->WriteStr(pAnnot->GetDAforAP(pFont).c_str());
 	}
 	void CAnnotAppearanceObject::DrawPictureInline(const char* sImageName, const double& dX, const double& dY, const double& dW, const double& dH, const bool& bRespectBorder)
 	{

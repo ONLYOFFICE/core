@@ -459,9 +459,10 @@ namespace PdfWriter
 		bool HaveBC();
 		BYTE GetQ() { return m_nQ; }
 
+		void APFromFakePage(CPage* pFakePage);
 		void SetEmptyAP();
 		void SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts);
-		void StartAP();
+		CAnnotAppearanceObject* StartAP();
 		void AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts = NULL, const double* pShifts = NULL);
 		void EndAP();
 	};

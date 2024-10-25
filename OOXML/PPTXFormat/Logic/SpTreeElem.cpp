@@ -751,8 +751,11 @@ namespace PPTX
 		}
 		void SpTreeElem::SetParentPointer(const WrapperWritingElement* pParent)
 		{
-			if (is_init())
+			if (m_elem.is_init())
 				m_elem->SetParentPointer(pParent);
+
+			if (m_elem_alternative.is_init())
+				m_elem_alternative->SetParentPointer(pParent);
 		}
 		void SpTreeElem::FillParentPointersForChilds(){}
 	} // namespace Logic

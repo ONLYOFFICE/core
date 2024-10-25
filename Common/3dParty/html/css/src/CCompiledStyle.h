@@ -22,6 +22,7 @@ namespace NSCSS
 		unsigned short int m_nDpi;
 		UnitMeasure m_UnitMeasure;
 
+		double m_dCoreFontSize;
 	public:
 		NSProperties::CFont       m_oFont;
 		NSProperties::CIndent     m_oMargin;

@@ -33,9 +33,9 @@ namespace StarMath
 		m_pXmlWrite->WriteNodeEnd(L"w",true,false);
 		m_pXmlWrite->WriteString(m_wsAnnotationStarMath);
 		EndOdf();
-		//NSFile::CFileBinary oOriginal;
-		//oOriginal.CreateFile(L"X:/Rabotka/Original.txt");
-		//oOriginal.WriteStringUTF8(m_pXmlWrite->GetXmlString());
+		NSFile::CFileBinary oOriginal;
+		oOriginal.CreateFile(L"X:/Rabotka/Original.txt");
+		oOriginal.WriteStringUTF8(m_pXmlWrite->GetXmlString());
 	}
 	void COOXml2Odf::NodeDefinition(OOX::WritingElement *pNode,const bool& bMatrix)
 	{
@@ -381,6 +381,11 @@ namespace StarMath
 		m_wsAnnotationStarMath += L"right " + BracketForAnnotation(stDelPr.m_wsEndBracket,false) + L" ";
 		m_pXmlWrite->WriteNodeEnd(L"mrow",false,false);
 		StyleClosing(iStyle,m_pXmlWrite);
+		if(iStyle && !m_stAttribute.empty())
+		{
+			m_stAttribute.top()->Release();
+			m_stAttribute.pop();
+		}
 	}
 	std::wstring COOXml2Odf::BracketForAnnotation(const std::wstring &wsBracket, const bool &bBeg)
 	{
@@ -502,12 +507,16 @@ namespace StarMath
 		if(pMRun == nullptr) return arLine;
 		if(pMRun->m_oRPr.GetPointer() != nullptr)
 			stRpr = ConversionRunProperties(pMRun->m_oRPr.GetPointer());
+		else if (pMRun->m_oARPr.GetPointer() != nullptr)
+			ConversionARpr(pMRun->m_oARPr.GetPointer(),stRpr);
 		if(pMRun->m_oMRPr.GetPointer() != nullptr)
 			ConversionMRunProperties(pMRun->m_oMRPr.GetPointer(),stRpr);
 		if(pMRun->m_oMText.GetPointer() != nullptr)
 			arLine = ConversionMT(pMRun->m_oMText.GetPointer(),stRpr);
 		if(stRpr != nullptr && !arLine.empty())
 		{
+			if(!m_stAttribute.empty())
+				AttributeCheck(m_stAttribute.top(),stRpr);
 			for(int i = 0; i<arLine.size();i++)
 			{
 				if(i != 0 )
@@ -526,7 +535,7 @@ namespace StarMath
 		StValuePr pMdPr;
 		if(pDelPr == nullptr)
 			return pMdPr;
-		iStyle = ConversionCtrlPr(pDelPr->m_oCtrlPr.GetPointer());
+		iStyle = ConversionCtrlPr(pDelPr->m_oCtrlPr.GetPointer(),true);
 		pMdPr.m_wsBegBracket = ConversionBegBracket(dynamic_cast<OOX::Logic::CBegChr*>(pDelPr->m_oBegChr.GetPointer()));
 		pMdPr.m_wsEndBracket = ConversionEndBracket(dynamic_cast<OOX::Logic::CEndChr*>(pDelPr->m_oEndChr.GetPointer()));
 		return pMdPr;
@@ -616,6 +625,22 @@ namespace StarMath
 		}
 		else 
 			return false;
+	}
+	void COOXml2Odf::AttributeCheck(StValuePr *&pParent, StValuePr *&pChild)
+	{
+		if(pParent == nullptr || pChild == nullptr)
+			return;
+		else
+		{
+			if(pParent->m_wsColor == pChild->m_wsColor)
+				pChild->m_wsColor.clear();
+			if(pParent->m_iSize == pChild->m_iSize)
+				pChild->m_iSize = 0;
+			if(pParent->m_enStyle == pChild->m_enStyle)
+				pChild->m_enStyle = SimpleTypes::EStyle::stylePlain;
+			if(pParent->m_enFont == pChild->m_enFont)
+				pChild->m_enFont = StarMath::TypeFont::empty;
+		}
 	}
 	void COOXml2Odf::ConversionAcc(OOX::Logic::CAcc *pAcc)
 	{
@@ -879,6 +904,11 @@ namespace StarMath
 		}
 		m_pXmlWrite->WriteNodeEnd(L"mtable",false,false);
 		StyleClosing(iStyle,m_pXmlWrite);
+		if(iStyle != 0 && !m_stAttribute.empty())
+		{
+			m_stAttribute.top()->Release();
+			m_stAttribute.pop();
+		}
 		m_wsAnnotationStarMath += L"} ";
 	}
 	void COOXml2Odf::ConversionMr(OOX::Logic::CMr *pMr)
@@ -899,15 +929,23 @@ namespace StarMath
 		}
 		m_pXmlWrite->WriteNodeEnd(L"mtr",false,false);
 	}
-	unsigned int COOXml2Odf::ConversionCtrlPr(OOX::Logic::CCtrlPr *pCtrlPr)
+	unsigned int COOXml2Odf::ConversionCtrlPr(OOX::Logic::CCtrlPr *pCtrlPr, const bool &bDelimiter)
 	{
 		if(pCtrlPr == nullptr)
 			return 0;
+		StValuePr* pValue;
+		unsigned int iStyle(0);
 		if(pCtrlPr->m_oRPr.GetPointer() != nullptr)
+			pValue = ConversionRunProperties(pCtrlPr->m_oRPr.GetPointer());
+		else if(pCtrlPr->m_oARPr.GetPointer() != nullptr)
+			ConversionARpr(pCtrlPr->m_oARPr.GetPointer(),pValue);
+		if(pValue != nullptr)
 		{
-			unsigned int iStyle(0);
-			StValuePr* pValue = ConversionRunProperties(dynamic_cast<OOX::Logic::CRunProperty*>(pCtrlPr->m_oRPr.GetPointer()));
-			COneElement::ConversionAttribute(pValue,iStyle,m_pXmlWrite,m_wsAnnotationStarMath);
+			if(!m_stAttribute.empty())
+				AttributeCheck(m_stAttribute.top(),pValue);
+			COneElement::ConversionAttribute(pValue,iStyle,m_pXmlWrite,m_wsAnnotationStarMath,bDelimiter);
+			if(bDelimiter)
+				m_stAttribute.push(pValue);
 			return iStyle;
 		}
 		return 0;
@@ -916,7 +954,7 @@ namespace StarMath
 	{
 		if(pMPr == nullptr)
 			return 0;
-		return ConversionCtrlPr(dynamic_cast<OOX::Logic::CCtrlPr*>(pMPr->m_oCtrlPr.GetPointer()));
+		return ConversionCtrlPr(dynamic_cast<OOX::Logic::CCtrlPr*>(pMPr->m_oCtrlPr.GetPointer()),true);
 	}
 	std::wstring COOXml2Odf::GetOdf()
 	{
@@ -978,7 +1016,7 @@ namespace StarMath
 			return;
 		ConversionVectorWritingElement(pDeg->m_arrItems);
 	}
-	void COOXml2Odf::ConversionGroupChr(OOX::Logic::CGroupChr *pGroup)
+	void COOXml2Odf::ConversionGroupChr(OOX::Logic::CGroupChr *pGroup, const bool &bElement)
 	{
 		if(pGroup == nullptr)
 			return;
@@ -1005,27 +1043,43 @@ namespace StarMath
 			}
 			}
 		}
-		m_pXmlWrite->WriteNodeBegin(wsNode,false);
 		if(!wsAnnotation.empty())
 		{
-			m_pXmlWrite->WriteNodeBegin(wsNode,false);
-			ConversionElement(pGroup->m_oElement.GetPointer());
-			RecordingMoNode(stGroupPr.m_wsChr,m_pXmlWrite);
-			m_wsAnnotationStarMath += wsAnnotation;
-			m_pXmlWrite->WriteNodeEnd(wsNode,false,false);
-			m_pXmlWrite->WriteNodeBegin(L"mspace",true);
-			m_pXmlWrite->WriteNodeEnd(L"w",true,true);
-			m_wsAnnotationStarMath += L"` ";
+			if(bElement)
+			{
+				WritingbBracketsFromTopBottom(wsNode,stGroupPr.m_wsChr,wsAnnotation,pGroup->m_oElement.GetPointer());
+			}
+			else
+			{
+				m_pXmlWrite->WriteNodeBegin(wsNode,false);
+				WritingbBracketsFromTopBottom(wsNode,stGroupPr.m_wsChr,wsAnnotation,pGroup->m_oElement.GetPointer());
+				m_pXmlWrite->WriteNodeBegin(L"mspace",true);
+				m_pXmlWrite->WriteNodeEnd(L"w",true,true);
+				m_wsAnnotationStarMath += L"` ";
+				m_pXmlWrite->WriteNodeEnd(wsNode,false,false);
+			}
 		}
 		else
 		{
+			m_pXmlWrite->WriteNodeBegin(wsNode,false);
 			ConversionElement(pGroup->m_oElement.GetPointer());
 			m_pXmlWrite->WriteNodeBegin(L"mtext",false);
 			m_pXmlWrite->WriteString(stGroupPr.m_wsChr);
 			m_pXmlWrite->WriteNodeEnd(L"mtext",false,false);
 			m_wsAnnotationStarMath += wsNode == L"mover"? L"csup ":L"csub ";
 			m_wsAnnotationStarMath += L"\u0026quot;" + stGroupPr.m_wsChr + L"\u0026quot; ";
+			m_pXmlWrite->WriteNodeEnd(wsNode,false,false);
 		}
+	}
+	void COOXml2Odf::WritingbBracketsFromTopBottom(const std::wstring &wsNode, const std::wstring &wsChr, const std::wstring &wsAnnotation, OOX::Logic::CElement *pElement)
+	{
+		m_pXmlWrite->WriteNodeBegin(wsNode,false);
+		ConversionElement(pElement);
+		if(!wsChr.empty())
+			RecordingMoNode(wsChr,m_pXmlWrite);
+		else
+			RecordingMoNode(L"\u23DF",m_pXmlWrite);
+		m_wsAnnotationStarMath += wsAnnotation;
 		m_pXmlWrite->WriteNodeEnd(wsNode,false,false);
 	}
 	StValuePr COOXml2Odf::ConversionGroupChrPr(OOX::Logic::CGroupChrPr *pGroupPr)
@@ -1140,8 +1194,13 @@ namespace StarMath
 		if(pLimLow == nullptr)
 			return;
 		m_pXmlWrite->WriteNodeBegin(L"munder",false);
-		ConversionElement(pLimLow->m_oElement.GetPointer());
-		m_wsAnnotationStarMath += L"csub ";
+		if(pLimLow->m_oElement.GetPointer()->m_arrItems.size() == 1 && pLimLow->m_oElement.GetPointer()->m_arrItems[0]->getType() == OOX::EElementType::et_m_groupChr)
+			ConversionGroupChr(dynamic_cast<OOX::Logic::CGroupChr*>(pLimLow->m_oElement.GetPointer()->m_arrItems[0]),true);
+		else
+		{
+			ConversionElement(pLimLow->m_oElement.GetPointer());
+			m_wsAnnotationStarMath += L"csub ";
+		}
 		ConversionLim(pLimLow->m_oLim.GetPointer());
 		m_pXmlWrite->WriteNodeEnd(L"munder",false,false);
 	}
@@ -1150,8 +1209,13 @@ namespace StarMath
 		if(pLimUpp == nullptr)
 			return;
 		m_pXmlWrite->WriteNodeBegin(L"mover",false);
-		ConversionElement(pLimUpp->m_oElement.GetPointer());
-		m_wsAnnotationStarMath += L"csup ";
+		if(pLimUpp->m_oElement.GetPointer()->m_arrItems.size() == 1 && pLimUpp->m_oElement.GetPointer()->m_arrItems[0]->getType() == OOX::EElementType::et_m_groupChr)
+			ConversionGroupChr(dynamic_cast<OOX::Logic::CGroupChr*>(pLimUpp->m_oElement.GetPointer()->m_arrItems[0]),true);
+		else
+		{
+			ConversionElement(pLimUpp->m_oElement.GetPointer());
+			m_wsAnnotationStarMath += L"csup ";
+		}
 		ConversionLim(pLimUpp->m_oLim.GetPointer());
 		m_pXmlWrite->WriteNodeEnd(L"mover",false,false);
 	}
@@ -1253,7 +1317,7 @@ namespace StarMath
 	{
 		return m_stAttribute;
 	}
-	void COneElement::ConversionAttribute(StValuePr* pAttribute, unsigned int &iStyle, XmlUtils::CXmlWriter *pXmlWrite, std::wstring &wsAnnotation)
+	void COneElement::ConversionAttribute(StValuePr* pAttribute, unsigned int &iStyle, XmlUtils::CXmlWriter *pXmlWrite, std::wstring &wsAnnotation,const bool& bDelimiter)
 	{
 		if(pAttribute == nullptr)
 			return;
@@ -1330,8 +1394,8 @@ namespace StarMath
 			pXmlWrite->WriteNodeEnd(L"w",true,false);
 			iStyle++;
 		}
-//		delete pAttribute;
-		pAttribute->Release();
+		if(!bDelimiter)
+			pAttribute->Release();
 	}
 	bool COneElement::CheckStyle()
 	{
@@ -1825,6 +1889,60 @@ namespace StarMath
 		else if(L"\u22EE" == wsSymbol) return L"dotsvert";
 		else if(L"\u22F0" == wsSymbol) return L"dotsup";
 		else if(L"\u22F1" == wsSymbol) return L"dotsdown";
+		else if(L"\u0391" == wsSymbol) return L"%ALPHA";
+		else if(L"\u03B1" == wsSymbol) return L"%alpha";
+		else if(L"\u0396" == wsSymbol) return L"%ZETA";
+		else if(L"\u03B6" == wsSymbol) return L"%zeta";
+		else if(L"\u039B" == wsSymbol) return L"%LAMBDA";
+		else if(L"\u03BB" == wsSymbol) return L"%lambda";
+		else if(L"\u03A0" == wsSymbol) return L"%PI";
+		else if(L"\u03C0" == wsSymbol) return L"%pi";
+		else if(L"\u03A6" == wsSymbol) return L"%PHI";
+		else if(L"\u03C6" == wsSymbol) return L"%phi";
+		else if(L"\u03B5" == wsSymbol) return L"%varepsilon";
+		else if(L"\u03B9" == wsSymbol) return L"%iota";
+		else if(L"\u0399" == wsSymbol) return L"%IOTA";
+		else if(L"\u03BE" == wsSymbol) return L"%xi";
+		else if(L"\u039E" == wsSymbol) return L"%XI";
+		else if(L"\u03F1" == wsSymbol) return L"%varrho";
+		else if(L"\u0392" == wsSymbol) return L"%BETA";
+		else if(L"\u03B2" == wsSymbol) return L"%beta";
+		else if(L"\u0397" == wsSymbol) return L"%ETA";
+		else if(L"\u03B7" == wsSymbol) return L"%eta";
+		else if(L"\u039C" == wsSymbol) return L"%MU";
+		else if(L"\u03BC" == wsSymbol) return L"%mu";
+		else if(L"\u03A1" == wsSymbol) return L"%RHO";
+		else if(L"\u03C1" == wsSymbol) return L"%rho";
+		else if(L"\u03A7" == wsSymbol) return L"%CHI";
+		else if( L"\u03C7" == wsSymbol) return L"%chi";
+		else if(L"\u03BA" == wsSymbol) return L"%kappa";
+		else if(L"\u039A" == wsSymbol) return L"%KAPPA";
+		else if(L"\u039F" == wsSymbol) return L"%OMICRON";
+		else if(L"\u03BF" == wsSymbol) return L"%omicron";
+		else if(L"\u03A3" == wsSymbol) return L"%SIGMA";
+		else if(L"\u03C3" == wsSymbol) return L"%sigma";
+		else if(L"\u03C6" == wsSymbol) return L"%varphi";
+		else if(L"\u0393" == wsSymbol) return L"%GAMMA";
+		else if(L"\u03B3" == wsSymbol) return L"%gamma";
+		else if(L"\u0398" == wsSymbol) return L"%THETA";
+		else if(L"\u03B8" == wsSymbol) return L"%theta";
+		else if(L"\u039D" == wsSymbol) return L"%NU";
+		else if(L"\u03BD" == wsSymbol) return L"%nu";
+		else if(L"\u03A8" == wsSymbol) return L"%PSI";
+		else if(L"\u03C8" == wsSymbol) return L"%psi";
+		else if(L"\u03DB" == wsSymbol) return L"%varsigma";
+		else if(L"\u0394" == wsSymbol) return L"%DELTA";
+		else if(L"\u03B4" == wsSymbol) return L"%delta";
+		else if(L"\u03A4" == wsSymbol) return L"%TAU";
+		else if(L"\u03C4" == wsSymbol) return L"%tau";
+		else if(L"\u03A9" == wsSymbol) return L"%OMEGA";
+		else if(L"\u03C9" == wsSymbol) return L"%omega";
+		else if(L"\u03D6" == wsSymbol) return L"%varphi";
+		else if(L"\u0395" == wsSymbol) return L"%EPSILON";
+		else if(L"\u03B5" == wsSymbol) return L"%epsilon";
+		else if(L"\u03A5" == wsSymbol) return L"%UPSILON";
+		else if(L"\u03C5" == wsSymbol) return L"%upsilon";
+		else if(L"\u03D1" == wsSymbol) return L"%vartheta";
 		else return L"";
 	}
 }

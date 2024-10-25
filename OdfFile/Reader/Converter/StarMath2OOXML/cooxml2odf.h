@@ -11,6 +11,7 @@
 #include <utility>
 #include <cstring>
 #include <sstream>
+#include <stack>
 
 namespace StarMath
 {
@@ -52,7 +53,7 @@ namespace StarMath
 		void ConversionMath(OOX::Logic::COMath* pMath);
 		std::vector<COneElement *> ConversionMT(OOX::Logic::CMText* pMt, const StValuePr* pValue);
 		void ConversionMF(OOX::Logic::CFraction* pMf);
-		unsigned int ConversionCtrlPr(OOX::Logic::CCtrlPr* pCtrlPr);
+		unsigned int ConversionCtrlPr(OOX::Logic::CCtrlPr* pCtrlPr, const bool& bDelimiter = false);
 		unsigned int ConversionCMPr(OOX::Logic::CMPr* pMPr);
 		StValuePr ConversionFpr(OOX::Logic::CFPr* pFpr);
 		std::wstring ConversionType(OOX::Logic::CType* pType);
@@ -78,8 +79,9 @@ namespace StarMath
 		void ConversionRad(OOX::Logic::CRad* pRad);
 		unsigned int ConversionRadPr(OOX::Logic::CRadPr* pRadPr,bool& bDeg);
 		void ConversionDeg(OOX::Logic::CDeg* pDeg);
-		void ConversionGroupChr(OOX::Logic::CGroupChr* pGroup);
+		void ConversionGroupChr(OOX::Logic::CGroupChr* pGroup,const bool& bElement = false);
 		StValuePr ConversionGroupChrPr(OOX::Logic::CGroupChrPr* pGroupPr);
+		void WritingbBracketsFromTopBottom(const std::wstring& wsNode,const std::wstring& wsChr,const std::wstring& wsAnnotation,OOX::Logic::CElement* pElement);
 		void ConversionBar(OOX::Logic::CBar* pBar);
 		StValuePr ConversionBarPr(OOX::Logic::CBarPr* pBarPr,unsigned int& iStyle);
 		void ConversionSPre(OOX::Logic::CSPre* pSPre);
@@ -106,6 +108,7 @@ namespace StarMath
 		static bool IsAlpha(const std::wstring& wsAlpha);
 		static void StyleClosing(const unsigned int &iStyle, XmlUtils::CXmlWriter* pXmlWrite);
 		bool ComparingAttributes(StValuePr* pRight, StValuePr* pLeft);
+		void AttributeCheck(StValuePr*& pParent, StValuePr*& pChild);
 		void EndOdf();
 		std::wstring GetOdf();
 		std::wstring GetAnnotation();
@@ -113,6 +116,7 @@ namespace StarMath
 	private:
 		XmlUtils::CXmlWriter* m_pXmlWrite;
 		std::wstring m_wsAnnotationStarMath,m_wsSemantic;
+		std::stack<StValuePr*> m_stAttribute;
 	};
 	class COneElement
 	{
@@ -127,7 +131,7 @@ namespace StarMath
 		TypeElement GetType();
 		void SetAttribute(StValuePr* stAttribute);
 		StValuePr* GetAttribute();
-		static void ConversionAttribute(StValuePr* pAttribute,unsigned int & iStyle ,XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation);
+		static void ConversionAttribute(StValuePr* pAttribute, unsigned int & iStyle , XmlUtils::CXmlWriter* pXmlWrite, std::wstring& wsAnnotation, const bool &bDelimiter = false);
 		bool CheckStyle();
 		unsigned int GetStyle();
 	private:

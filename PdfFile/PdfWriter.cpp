@@ -2376,13 +2376,14 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			if (nFlags & (1 << 12))
 			{
 				bAPValue = true;
-				wsValue = pPr->GetAPV();
 				pTextWidget->SetAPV();
 			}
 
 			// ВНЕШНИЙ ВИД
 			pTextWidget->SetFont(m_pFont, dFontSize, isBold, isItalic);
-			if ((bValue && pTextWidget->Get("T")) || bAPValue)
+			if (bAPValue)
+				DrawTextWidget(pAppFonts, pTextWidget, pPr->GetGID(), pPr->GetUnicode());
+			else if (bValue && pTextWidget->Get("T"))
 				DrawTextWidget(pAppFonts, pTextWidget, wsValue);
 		}
 		else if (oInfo.IsChoiceWidget())
@@ -3590,6 +3591,199 @@ void CPdfWriter::DrawAP(PdfWriter::CAnnotation* pAnnot, BYTE* pRender, LONG nLen
 	m_pPage = pCurPage;
 	m_pDocument->SetCurPage(pCurPage);
 	RELEASEOBJECT(pFakePage);
+}
+void CPdfWriter::DrawTextWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CTextWidget* pTextWidget, const std::vector<int>& arrGID, const std::vector< std::pair<int, unsigned int*> >& arrUnicode)
+{
+	if (!pAppFonts || !pTextWidget)
+		return;
+	PdfWriter::CFontCidTrueType* pFont = pTextWidget->GetFont();
+	if (!pFont)
+		return;
+	PdfWriter::CFontTrueType* pFontTT = m_pDocument->CreateTrueTypeFont(pFont);
+	double dFontSize = pTextWidget->GetFontSize();
+	bool isBold      = pTextWidget->GetFontIsBold();
+	bool isItalic    = pTextWidget->GetFontIsItalic();
+	bool isComb      = pTextWidget->IsCombFlag();
+	double dWidth    = pTextWidget->GetWidth();
+	double dHeight   = pTextWidget->GetHeight();
+	BYTE nAlign      = pTextWidget->GetQ();
+
+	if (!pTextWidget->HaveBorder() && pTextWidget->HaveBC())
+		pTextWidget->SetBorder(0, 1, {});
+	double dShiftBorder = pTextWidget->GetBorderWidth();
+	BYTE nType = pTextWidget->GetBorderType();
+	if (nType == 1 || nType == 3)
+		dShiftBorder *= 2;
+
+	// Коды, шрифты, количество
+	unsigned int unLen = arrGID.size();
+	unsigned int* pUnicodes = new unsigned int[unLen];
+	unsigned short* pCodes  = new unsigned short[unLen];
+	PdfWriter::CFontCidTrueType** ppFonts = new PdfWriter::CFontCidTrueType*[unLen];
+
+	for (unsigned int i = 0; i < unLen; ++i)
+	{
+		//unsigned char* pCodes = new unsigned char[2];
+		unsigned short ushCode = pFont->EncodeGID(arrGID[i], arrUnicode[i].second, arrUnicode[i].first);
+		//pCodes[0] = (ushCode >> 8) & 0xFF;
+		//pCodes[1] = ushCode & 0xFF;
+
+		//unsigned char* pCodes = EncodeGID(arrGID->at(i).first, pUnicodes, unUnicodeCount);
+
+		/*
+		unsigned int unUnicode = pUnicodes[unIndex];
+
+		if (!pFont->HaveChar(unUnicode))
+		{
+			std::wstring wsFontFamily = pAppFonts->GetFontBySymbol(unUnicode);
+			PdfWriter::CFontCidTrueType* pTempFont = GetFont(wsFontFamily, bBold, bItalic);
+			if (pTempFont)
+			{
+				pCodes[unIndex]  = pTempFont->EncodeUnicode(unUnicode);
+				ppFonts[unIndex] = pTempFont;
+				continue;
+			}
+		}
+		*/
+		pCodes[i]  = ushCode;
+		ppFonts[i] = pFont;
+
+		pUnicodes[i] = arrUnicode[i].second[0];
+	}
+
+	bool bFont = true;
+	//GetFontData(pAppFonts, wsValue, pFont, isBold, isItalic, pUnicodes, unLen, pCodes, ppFonts);
+	if (!bFont)
+	{
+		pTextWidget->SetEmptyAP();
+		RELEASEARRAYOBJECTS(pUnicodes);
+		RELEASEARRAYOBJECTS(pCodes);
+		RELEASEARRAYOBJECTS(ppFonts);
+		return;
+	}
+
+	if (!isComb && pTextWidget->IsMultiLine() && pFontTT)
+	{
+		unsigned short* pCodes2 = new unsigned short[unLen];
+		unsigned int* pWidths   = new unsigned int[unLen];
+
+		unsigned short ushSpaceCode   = 0xFFFF;
+		unsigned short ushNewLineCode = 0xFFFE;
+		for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
+		{
+			unsigned short ushCode = 0;
+			if (0x0020 == pUnicodes[unIndex])
+				ushCode = ushSpaceCode;
+			else if (0x000D == pUnicodes[unIndex] || 0x000A == pUnicodes[unIndex])
+				ushCode = ushNewLineCode;
+
+			pCodes2[unIndex] = ushCode;
+			pWidths[unIndex] = ppFonts[unIndex]->GetWidth(pCodes[unIndex]);
+		}
+
+		m_oLinesManager.Init(pCodes2, pWidths, unLen, ushSpaceCode, ushNewLineCode, pFontTT->GetLineHeight(), pFontTT->GetAscent());
+
+		double dKoef = dFontSize / pFontTT->m_dUnitsPerEm;
+		double dLineHeight = (pFontTT->m_dAscent + std::abs(pFontTT->m_dDescent)) * dKoef;
+
+		m_oLinesManager.CalculateLines(dFontSize, dWidth - dShiftBorder * 4);
+
+		pTextWidget->StartAP();
+
+		unsigned int unLinesCount = m_oLinesManager.GetLinesCount();
+		double dLineShiftY = dHeight - dShiftBorder * 2 - dLineHeight;
+		for (unsigned int unIndex = 0; unIndex < unLinesCount; ++unIndex)
+		{
+			unsigned int unLineStart = m_oLinesManager.GetLineStartPos(unIndex);
+			double dLineShiftX = dShiftBorder * 2;
+			double dLineWidth = m_oLinesManager.GetLineWidth(unIndex, dFontSize);
+			if (2 == nAlign)
+				dLineShiftX = dWidth - dLineWidth - dShiftBorder * 2;
+			else if (1 == nAlign)
+				dLineShiftX = (dWidth - dLineWidth) / 2;
+
+			int nInLineCount = m_oLinesManager.GetLineEndPos(unIndex) - m_oLinesManager.GetLineStartPos(unIndex);
+			if (nInLineCount > 0)
+				pTextWidget->AddLineToAP(dLineShiftX, dLineShiftY, pCodes + unLineStart, nInLineCount, ppFonts + unLineStart, NULL);
+
+			dLineShiftY -= dLineHeight;
+		}
+
+		pTextWidget->EndAP();
+
+		m_oLinesManager.Clear();
+
+		RELEASEARRAYOBJECTS(pCodes2);
+		RELEASEARRAYOBJECTS(pWidths);
+	}
+	else
+	{
+		double* pShifts = NULL;
+		unsigned int unShiftsCount = 0;
+		double dShiftX = dShiftBorder * 2;
+		if (dShiftX == 0)
+			dShiftX = 2;
+
+		if (isComb)
+		{
+			unShiftsCount = unLen;
+			pShifts = new double[unShiftsCount];
+			if (pShifts && unShiftsCount)
+			{
+				dShiftX = 0;
+				unsigned int unCellsCount = std::max(unShiftsCount, pTextWidget->GetMaxLen());
+				double dPrevW = 0;
+				double dCellW = dWidth / unCellsCount;
+
+				if (1 == nAlign)
+				{
+					unsigned int unCells = (unCellsCount - unShiftsCount) / 2;
+					dPrevW = unCells * dCellW;
+				}
+				if (2 == nAlign)
+					dPrevW = (unCellsCount - unShiftsCount) * dCellW;
+
+				for (unsigned int unIndex = 0; unIndex < unShiftsCount; ++unIndex)
+				{
+					unsigned short ushCode = pCodes[unIndex];
+					double dGlyphWidth = ppFonts[unIndex]->GetGlyphWidth(ushCode) / 1000.0 * dFontSize;
+					double dTempShift = (dCellW - dGlyphWidth) / 2;
+					pShifts[unIndex] = dPrevW + dTempShift;
+					dPrevW = dCellW - dTempShift;
+				}
+			}
+		}
+		else if (1 == nAlign || 2 == nAlign)
+		{
+			double dLineWidth = 0;
+			for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
+			{
+				unsigned short ushCode = pCodes[unIndex];
+				double dLetterWidth    = ppFonts[unIndex]->GetWidth(ushCode) / 1000.0 * dFontSize;
+				dLineWidth += dLetterWidth;
+			}
+
+			if (2 == nAlign)
+				dShiftX = dWidth - dLineWidth - dShiftBorder * 2;
+			else if (1 == nAlign)
+				dShiftX = (dWidth - dLineWidth) / 2;
+		}
+
+		double dBaseLine = (dHeight - dFontSize) / 2.0 - dShiftBorder;
+		if (pFontTT)
+		{
+			double dKoef = dFontSize / pFontTT->m_dUnitsPerEm;
+			double dLineHeight = (pFontTT->m_dAscent + std::abs(pFontTT->m_dDescent)) * dKoef;;
+			dBaseLine = (dHeight - dLineHeight) / 2.0 + std::abs(pFontTT->m_dDescent * dKoef);
+		}
+
+		pTextWidget->SetAP(L"", pCodes, unLen, dShiftX, dBaseLine, ppFonts, pShifts);
+		RELEASEARRAYOBJECTS(pShifts);
+	}
+
+	RELEASEARRAYOBJECTS(pUnicodes);
+	RELEASEARRAYOBJECTS(pCodes);
+	RELEASEARRAYOBJECTS(ppFonts);
 }
 void CPdfWriter::DrawTextWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter::CTextWidget* pTextWidget, const std::wstring& wsValue)
 {

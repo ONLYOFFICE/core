@@ -933,7 +933,8 @@ void CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr::Read(NSOnlineOfficeBinToP
 int CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::GetMaxLen() const { return m_nMaxLen; }
 const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::GetV()   { return m_wsV; }
 const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::GetRV()  { return m_wsRV; }
-const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::GetAPV() { return m_wsAPV; }
+const std::vector<int>& CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::GetGID() { return m_arrGID; }
+const std::vector< std::pair<int, unsigned int*> >& CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::GetUnicode() { return m_arrUnicode; }
 void CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags, int nWidgetFlag)
 {
 	if (nFlags & (1 << 9))
@@ -943,7 +944,18 @@ void CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::Read(NSOnlineOfficeBinToPdf
 	if (nWidgetFlag & (1 << 25))
 		m_wsRV = pReader->ReadString();
 	if (nFlags & (1 << 12))
-		m_wsAPV = pReader->ReadString();
+	{
+		int nLen = pReader->ReadInt();
+		for (int i = 0; i < nLen; ++i)
+		{
+			int nGID = pReader->ReadInt();
+			m_arrGID.push_back(nGID);
+			int nLen2 = pReader->ReadInt();
+			m_arrUnicode.push_back(std::make_pair(nLen2, new unsigned int[nLen2]));
+			for (int j = 0; j < nLen2; ++j)
+				m_arrUnicode.back().second[j] = pReader->ReadInt();
+		}
+	}
 }
 
 int CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr::GetTI() const { return m_nTI; }

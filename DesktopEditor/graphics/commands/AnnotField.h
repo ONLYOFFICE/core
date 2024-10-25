@@ -85,7 +85,8 @@ public:
 			int GetMaxLen() const;
 			const std::wstring& GetV();
 			const std::wstring& GetRV();
-			const std::wstring& GetAPV();
+			const std::vector<int>& GetGID();
+			const std::vector< std::pair<int, unsigned int*> >& GetUnicode();
 
 			void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags, int nWidgetFlag);
 
@@ -93,7 +94,8 @@ public:
 			int m_nMaxLen;
 			std::wstring m_wsV;
 			std::wstring m_wsRV;
-			std::wstring m_wsAPV;
+			std::vector<int> m_arrGID;
+			std::vector< std::pair<int, unsigned int*> > m_arrUnicode;
 		};
 
 		class GRAPHICS_DECL CChoiceWidgetPr

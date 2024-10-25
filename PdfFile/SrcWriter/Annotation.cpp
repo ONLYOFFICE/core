@@ -1618,6 +1618,22 @@ namespace PdfWriter
 		CObjectBase* pObj = m_pMK->Get("BC");
 		return pObj && pObj->GetType() == object_type_ARRAY;
 	}
+	void CWidgetAnnotation::APFromFakePage(CPage* pFakePage)
+	{
+		if (!m_pAppearance)
+			return;
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
+
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+		pNormal->Add("BBox", pArray);
+
+		pArray->Add(0);
+		pArray->Add(0);
+		pArray->Add(GetWidth());
+		pArray->Add(GetHeight());
+	}
 	void CWidgetAnnotation::SetEmptyAP()
 	{
 		if (!m_pAppearance)
@@ -1639,14 +1655,15 @@ namespace PdfWriter
 		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
 		pNormal->DrawSimpleText(wsValue, pCodes, unCount, m_pFont, m_dFontSize, dX, dY, 0, 0, 0, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), ppFonts, pShifts);
 	}
-	void CWidgetAnnotation::StartAP()
+	CAnnotAppearanceObject* CWidgetAnnotation::StartAP()
 	{
 		m_pAppearance = new CAnnotAppearance(m_pXref, this);
 		if (!m_pAppearance)
-			return;
+			return NULL;
 		Add("AP", m_pAppearance);
 		CAnnotAppearanceObject* pNormal  = m_pAppearance->GetNormal();
 		pNormal->StartDrawText(m_pFont, m_dFontSize, 0, 0, 0, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
+		return pNormal;
 	}
 	void CWidgetAnnotation::AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts, const double* pShifts)
 	{

@@ -4,20 +4,33 @@
 #include "../../graphics/pro/Fonts.h"
 #include "../js_internal/js_base.h"
 
+class CGraphicsAppImage_private;
 class JS_DECL CGraphicsAppImage
 {
 public:
 	CGraphicsAppImage();
 	virtual ~CGraphicsAppImage();
 public:
-	virtual std::wstring GetFontsDirectory() = 0;
-	virtual NSFonts::IApplicationFonts* GetFonts() = 0;
+	void SetFontsDirectory(const std::wstring& dir);
+	std::wstring GetFontsDirectory();
 
-	virtual std::wstring GetImagesDirectory() = 0;
-	virtual std::wstring GetThemesDirectory() = 0;
+	void SetImagesDirectory(const std::wstring& dir);
+	std::wstring GetImagesDirectory();
 
-	virtual unsigned char* AllocImage(const int& w, const int& h) = 0;
-	virtual bool IsRgba() = 0;
+	void SetThemesDirectory(const std::wstring& dir);
+	std::wstring GetThemesDirectory();
+
+	void SetFonts(NSFonts::IApplicationFonts* fonts);
+	NSFonts::IApplicationFonts* GetFonts();
+
+	void SetRgba(const bool& isRgba);
+	bool GetRgba();
+
+	virtual unsigned char* GetBits(int& w, int& h);
+	virtual unsigned char* AllocBits(const int& w, const int& h);
+
+private:
+	CGraphicsAppImage_private* m_internal;
 };
 
 namespace NSGraphics { class CGraphics; }
@@ -34,8 +47,8 @@ public:
 
 	virtual void* getObject() override { return (void*)m_pInternal; }
 
+	CGraphicsAppImage* GetAppImage();
 	void SetAppImage(CGraphicsAppImage* appImage);
-	void ExternalizeImage();
 
 public:
 	JSSmart<CJSValue> create(JSSmart<CJSValue> Native, JSSmart<CJSValue> width_px, JSSmart<CJSValue> height_px, JSSmart<CJSValue> width_mm, JSSmart<CJSValue> height_mm);

@@ -115,11 +115,6 @@ namespace NSGraphics
 	class CGraphics
 	{
 	public:
-		std::wstring m_sApplicationFontsDirectory;
-		std::wstring m_sApplicationImagesDirectory;
-		std::wstring m_sApplicationThemesDirectory;
-
-	public:
 		CGraphicsAppImage* m_pAppImage;
 		CBgraFrame m_oFrame;
 
@@ -138,9 +133,13 @@ namespace NSGraphics
 			Destroy();
 		}
 
-		void init(NSNativeControl::CNativeControl* oNative, double width_px, double height_px, double width_mm, double height_mm);
+		void init(double width_px, double height_px, double width_mm, double height_mm);
 		void Destroy()
 		{
+			int w, h;
+			if (m_pAppImage->GetBits(w, h))
+				m_oFrame.put_Data(NULL);
+
 			RELEASEINTERFACE(m_pRenderer);
 			RELEASEINTERFACE(m_pApplicationFonts);
 

@@ -1,7 +1,94 @@
 #include "../graphics.h"
 
-CGraphicsAppImage::CGraphicsAppImage(){}
-CGraphicsAppImage::~CGraphicsAppImage(){}
+// APPLICATION INFO
+class CGraphicsAppImage_private
+{
+public:
+	NSFonts::IApplicationFonts* m_pFonts;
+	std::wstring m_sFontsDirectory;
+	std::wstring m_sImagesDirectory;
+	std::wstring m_sThemesDirectory;
+	bool m_bIsRgba;
+
+	CGraphicsAppImage_private()
+	{
+		m_pFonts = NULL;
+		m_sFontsDirectory = L"";
+		m_sImagesDirectory = L"";
+		m_sThemesDirectory = L"";
+		m_bIsRgba = false;
+	}
+	~CGraphicsAppImage_private()
+	{
+		RELEASEINTERFACE(m_pFonts);
+	}
+};
+
+CGraphicsAppImage::CGraphicsAppImage()
+{
+	m_internal = new CGraphicsAppImage_private();
+}
+CGraphicsAppImage::~CGraphicsAppImage()
+{
+	delete m_internal;
+}
+
+void CGraphicsAppImage::SetFontsDirectory(const std::wstring& dir)
+{
+	m_internal->m_sFontsDirectory = dir;
+}
+std::wstring CGraphicsAppImage::GetFontsDirectory()
+{
+	return m_internal->m_sFontsDirectory;
+}
+
+void CGraphicsAppImage::SetImagesDirectory(const std::wstring& dir)
+{
+	m_internal->m_sImagesDirectory = dir;
+}
+std::wstring CGraphicsAppImage::GetImagesDirectory()
+{
+	return m_internal->m_sImagesDirectory;
+}
+
+void CGraphicsAppImage::SetThemesDirectory(const std::wstring& dir)
+{
+	m_internal->m_sThemesDirectory = dir;
+}
+std::wstring CGraphicsAppImage::GetThemesDirectory()
+{
+	return m_internal->m_sThemesDirectory;
+}
+
+void CGraphicsAppImage::SetFonts(NSFonts::IApplicationFonts* fonts)
+{
+	m_internal->m_pFonts = fonts;
+	ADDREFINTERFACE(fonts);
+}
+NSFonts::IApplicationFonts* CGraphicsAppImage::GetFonts()
+{
+	return m_internal->m_pFonts;
+}
+
+void CGraphicsAppImage::SetRgba(const bool& isRgba)
+{
+	m_internal->m_bIsRgba = isRgba;
+}
+bool CGraphicsAppImage::GetRgba()
+{
+	return m_internal->m_bIsRgba;
+}
+
+unsigned char* CGraphicsAppImage::GetBits(int& w, int& h)
+{
+	return NULL;
+}
+unsigned char* CGraphicsAppImage::AllocBits(const int& w, const int& h)
+{
+	return new unsigned char[4 * w * h];
+}
+
+// APPLICATION INFO END
 
 CGraphicsEmbed::CGraphicsEmbed() : m_pInternal(new NSGraphics::CGraphics())
 {
@@ -11,22 +98,31 @@ CGraphicsEmbed::~CGraphicsEmbed()
 	RELEASEOBJECT(m_pInternal);
 }
 
+CGraphicsAppImage* CGraphicsEmbed::GetAppImage()
+{
+	return m_pInternal->m_pAppImage;
+}
+
 void CGraphicsEmbed::SetAppImage(CGraphicsAppImage* appImage)
 {
 	m_pInternal->m_pAppImage = appImage;
-}
-
-void CGraphicsEmbed::ExternalizeImage()
-{
-	m_pInternal->m_oFrame.put_Data(NULL);
 }
 
 JSSmart<CJSValue> CGraphicsEmbed::create(JSSmart<CJSValue> Native, JSSmart<CJSValue> width_px, JSSmart<CJSValue> height_px, JSSmart<CJSValue> width_mm, JSSmart<CJSValue> height_mm)
 {
 	NSNativeControl::CNativeControl* pControl = NULL;
 	if (!Native->isNull())
+	{
 		pControl = (NSNativeControl::CNativeControl*)Native->toObject()->getNative()->getObject();
-	m_pInternal->init(pControl, width_px->toDouble(), height_px->toDouble(), width_mm->toDouble(), height_mm->toDouble());
+
+		if (m_pInternal->m_pAppImage)
+			delete m_pInternal->m_pAppImage;
+		m_pInternal->m_pAppImage = new CGraphicsAppImage();
+		m_pInternal->m_pAppImage->SetFontsDirectory(pControl->m_strFontsDirectory);
+		m_pInternal->m_pAppImage->SetImagesDirectory(pControl->m_strImagesDirectory);
+	}
+
+	m_pInternal->init(width_px->toDouble(), height_px->toDouble(), width_mm->toDouble(), height_mm->toDouble());
 	return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::Destroy()

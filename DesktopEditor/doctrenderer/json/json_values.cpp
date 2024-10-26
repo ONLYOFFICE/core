@@ -212,7 +212,8 @@ namespace NSJSON
 		return ret;
 	}
 
-	CImage::CImage(BYTE* bits, int width, int height, ImageFormat format, bool isExternalize) : m_bits(bits), m_width(width), m_height(height), m_format(format), m_isExternalize(isExternalize)
+	CImage::CImage(BYTE* bits, const int& width, const int& height, const ImageFormat& format, const bool& isExternalize) :
+		m_bits(bits), m_width(width), m_height(height), m_format(format), m_isExternalize(isExternalize)
 	{
 	}
 
@@ -222,6 +223,20 @@ namespace NSJSON
 		{
 			CValue::FreeImageBits(m_bits);
 		}
+	}
+
+	void CImage::alloc(const int& width, const int& height, const ImageFormat& format)
+	{
+		if (!m_isExternalize && m_bits)
+		{
+			CValue::FreeImageBits(m_bits);
+		}
+
+		m_bits = CValue::AllocImageBits(width, height);
+		m_width = width;
+		m_height = height;
+		m_format = format;
+		m_isExternalize = false;
 	}
 
 	BYTE* CImage::getBits()

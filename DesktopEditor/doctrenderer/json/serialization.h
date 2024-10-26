@@ -3,14 +3,49 @@
 
 #include "json.h"
 #include "../js_internal/js_base.h"
+#include "../embed/GraphicsEmbed.h"
 
 #include <cmath>
+
+class CAppImage : public CGraphicsAppImage
+{
+private:
+	NSJSON::CValueRef* m_image;
+
+public:
+	CAppImage(const NSJSON::CValue& image) : CGraphicsAppImage()
+	{
+		m_image = new NSJSON::CValueRef(image);
+	}
+	virtual ~CAppImage()
+	{
+		if (m_image)
+			delete m_image;
+	}
+
+public:
+	virtual unsigned char* GetBits(int& w, int& h)
+	{
+		unsigned char* bits = m_image->GetImageBits();
+		if (NULL != bits)
+		{
+			w = m_image->GetImageWidth();
+			h = m_image->GetImageHeight();
+		}
+		return bits;
+	}
+	virtual unsigned char* AllocBits(const int& w, const int& h)
+	{
+		m_image->ImageAlloc(w, h, GetRgba() ? NSJSON::ImageFormat::ifRGBA : NSJSON::ImageFormat::ifBGRA);
+		return m_image->GetImageBits();
+	}
+};
 
 namespace NSJSON
 {
 	static JSSmart<NSJSBase::CJSValue> toJS(const CValue& value)
 	{
-		if (value.IsUndefined() || value.IsImage())
+		if (value.IsUndefined())
 			return NSJSBase::CJSContext::createUndefined();
 		if (value.IsNull())
 			return NSJSBase::CJSContext::createNull();
@@ -49,6 +84,12 @@ namespace NSJSON
 		{
 			JSSmart<NSJSBase::CJSTypedArray> jsTypedArr = NSJSBase::CJSContext::createUint8Array(const_cast<BYTE*>(value.GetData()), value.GetCount());
 			ret = jsTypedArr->toValue();
+		}
+		else if (value.IsImage())
+		{
+			JSSmart<CJSObject> wrap = CJSContext::createEmbedObject("CGraphicsEmbed");
+			((CGraphicsEmbed*)wrap->getNative())->SetAppImage(new CAppImage(value));
+			ret = wrap->toValue();
 		}
 		// objects (there is no need for IsObject())
 		else

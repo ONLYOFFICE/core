@@ -30,7 +30,7 @@ namespace NSJSON
 {
 	typedef unsigned char BYTE;
 
-	enum ImageFormat
+	enum class ImageFormat
 	{
 		ifRGBA,
 		ifBGRA,
@@ -231,7 +231,12 @@ namespace NSJSON
 		/**
 		 * Make image bits external.
 		 */
-		void Externalize();
+		void ImageExternalize();
+
+		/**
+		 * Alloc image bits as internal.
+		 */
+		void ImageAlloc(const int& width, const int& height, const ImageFormat& format);
 
 	protected:
 		std::shared_ptr<CTypedValue> m_internal;
@@ -301,7 +306,8 @@ namespace NSJSON
 		 * @param isExternalize If true the memory will not be reclaimed when the created image is destroyed.
 		 * If this parameter is false then the memory will be released using FreeImageBits() during the image object destruction.
 		 */
-		static CValue CreateImage(BYTE* bits, int width, int height, ImageFormat format = ifBGRA, bool isExternalize = true);
+		static CValue CreateImage(BYTE* bits, int width, int height, ImageFormat format = ImageFormat::ifBGRA, bool isExternalize = true);
+		static CValue CreateEmptyImage(ImageFormat format = ImageFormat::ifBGRA);
 		/**
 		 * Allocates the memory for an image.
 		 * @param width The width of the image.

@@ -575,7 +575,6 @@ namespace NSDoctRenderer
 			{
 				CJSContextScope scope(context);
 				CJSContext::Embed<CNativeControlEmbed>(false);
-				CJSContext::Embed<CGraphicsEmbed>();
 				NSJSBase::CreateDefaults();
 
 				JSSmart<CJSTryCatch> try_catch = context->GetExceptions();
@@ -1067,7 +1066,6 @@ namespace NSDoctRenderer
 			{
 				CJSContextScope scope(context);
 				CJSContext::Embed<CNativeControlEmbed>();
-				CJSContext::Embed<CGraphicsEmbed>();
 				NSJSBase::CreateDefaults();
 
 				JSSmart<CJSObject> global = context->GetGlobal();

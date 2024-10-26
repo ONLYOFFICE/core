@@ -12,16 +12,29 @@
 
 namespace NSGraphics
 {
-	void CGraphics::init(NSNativeControl::CNativeControl* oNative, double width_px, double height_px, double width_mm, double height_mm)
+	void CGraphics::init(double width_px, double height_px, double width_mm, double height_mm)
 	{
-		m_sApplicationImagesDirectory = oNative->m_strImagesDirectory;
-		m_sApplicationFontsDirectory  = oNative->m_strFontsDirectory;
+		if (!m_pAppImage)
+			return;
+
+		if (NULL == m_pAppImage->GetFonts())
+		{
+			NSFonts::IApplicationFonts* pFonts = NSFonts::NSApplication::Create();
+			std::wstring sFontsDir = m_pAppImage->GetFontsDirectory();
+			pFonts->InitializeFromFolder(sFontsDir.empty() ? NSFile::GetProcessDirectory() : sFontsDir);
+			m_pAppImage->SetFonts(pFonts);
+			RELEASEINTERFACE(pFonts);
+		}
+
+		NSFonts::IFontManager* pManager = m_pAppImage->GetFonts()->GenerateFontManager();
+
 #ifdef _DEBUG
-		std::wcout << L"init "<< m_sApplicationImagesDirectory << L"  " << m_sApplicationFontsDirectory << L"  " << width_px << L"  " << height_px << L"  " << width_mm << L"  " << height_mm << std::endl;
+		std::wcout << L"init "<<
+			m_pAppImage->GetImagesDirectory() << L"  " <<
+			m_pAppImage->GetFontsDirectory() << L"  " <<
+			width_px << L"  " << height_px << L"  " <<
+			width_mm << L"  " << height_mm << std::endl;
 #endif
-		m_pApplicationFonts = NSFonts::NSApplication::Create();
-		m_pApplicationFonts->InitializeFromFolder(m_sApplicationFontsDirectory.empty() ? NSFile::GetProcessDirectory() : m_sApplicationFontsDirectory);
-		NSFonts::IFontManager* pManager = m_pApplicationFonts->GenerateFontManager();
 
 		m_pRenderer = NSGraphics::Create();
 		m_pRenderer->SetFontManager(pManager);
@@ -42,7 +55,19 @@ namespace NSGraphics
 			if (nRasterH < 1) nRasterH = 0;
 		}
 
-		BYTE* pData = new BYTE[4 * nRasterW * nRasterH];
+		int nExistW = 0;
+		int nExistH = 0;
+		BYTE* pData =  m_pAppImage->GetBits(nExistW, nExistH);
+		if (pData != NULL)
+		{
+			nRasterW = nExistW;
+			nRasterH = nExistH;
+		}
+		else
+		{
+			pData = m_pAppImage->AllocBits(nRasterW, nRasterH);
+		}
+
 		unsigned int back = 0xffffff;
 		unsigned int* pData32 = (unsigned int*)pData;
 		unsigned int* pData32End = pData32 + nRasterW * nRasterH;
@@ -55,7 +80,7 @@ namespace NSGraphics
 		m_oFrame.put_Stride(4 * nRasterW);
 
 		m_pRenderer->CreateFromBgraFrame(&m_oFrame);
-		m_pRenderer->SetSwapRGB(false);
+		m_pRenderer->SetSwapRGB(m_pAppImage->GetRgba());
 
 		m_pRenderer->put_Width(width_mm);
 		m_pRenderer->put_Height(height_mm);
@@ -243,7 +268,7 @@ namespace NSGraphics
 #ifdef _DEBUG
 		std::cout << "save " << std::endl;
 #endif
-		m_oFrame.SaveFile(m_sApplicationImagesDirectory + L"/img.png", _CXIMAGE_FORMAT_PNG);
+		m_oFrame.SaveFile(m_pAppImage->GetImagesDirectory() + L"/img.png", _CXIMAGE_FORMAT_PNG);
 	}
 	void CGraphics::restore()
 	{
@@ -284,7 +309,7 @@ namespace NSGraphics
 	}
 	void CGraphics::drawImage(const std::wstring& img, double x, double y, double w, double h, BYTE alpha)
 	{
-		std::wstring strImage = (0 == img.find(L"theme") ? m_sApplicationThemesDirectory : m_sApplicationImagesDirectory) + L'/' + img;
+		std::wstring strImage = (0 == img.find(L"theme") ? m_pAppImage->GetThemesDirectory() : m_pAppImage->GetImagesDirectory()) + L'/' + img;
 #ifdef _DEBUG
 		std::wcout << L"drawImage " << strImage << L"  " << x << "  " << y << L"  " << w << L"  " << h << L"  " << alpha << std::endl;
 #endif
@@ -1178,7 +1203,7 @@ namespace NSGraphics
 	{
 		if (src.find(L"data:") == 0)
 		{
-			std::wstring strImage = m_sApplicationImagesDirectory + L"/texture.png";
+			std::wstring strImage = m_pAppImage->GetImagesDirectory() + L"/texture.png";
 			bool bIsOnlyOfficeHatch = false;
 			if(src.find(L"onlyoffice_hatch") != std::wstring::npos)
 				bIsOnlyOfficeHatch = true;
@@ -1221,7 +1246,7 @@ namespace NSGraphics
 		}
 		else
 		{
-			std::wstring strImage = (0 == src.find(L"theme") ? m_sApplicationThemesDirectory : m_sApplicationImagesDirectory) + L'/' + src;
+			std::wstring strImage = (0 == src.find(L"theme") ? m_pAppImage->GetThemesDirectory() : m_pAppImage->GetImagesDirectory()) + L'/' + src;
 			std::wstring sName = strImage.substr(0, strImage.rfind(L'.') + 1);
 			std::wstring sExt = src.substr(src.rfind(L'.') + 1);
 			if (sExt == L"svg")

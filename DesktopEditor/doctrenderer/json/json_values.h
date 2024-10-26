@@ -117,7 +117,7 @@ namespace NSJSON
 	class CImage : public IBaseValue
 	{
 	public:
-		CImage(BYTE* bits, int width, int height, ImageFormat format, bool isExternalize = true);
+		CImage(BYTE* bits, const int& width, const int& height, const ImageFormat& format, const bool& isExternalize = true);
 		~CImage();
 
 	public:
@@ -126,6 +126,7 @@ namespace NSJSON
 		int getHeight();
 		ImageFormat getFormat();
 		void externalize();
+		void alloc(const int& width, const int& height, const ImageFormat& format);
 
 	private:
 		BYTE* m_bits;

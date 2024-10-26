@@ -98,7 +98,7 @@ const bool SUPBOOK::loadContent(BinProcessor& proc)
 	
 	while(true)
 	{
-		ExternName extern_name(supbook.cch, supbook.bOleLink);
+		ExternName extern_name(supbook.cch, !supbook.bOleLink);
 		if(!proc.optional(extern_name))
 		{
 			break;
@@ -198,7 +198,7 @@ int SUPBOOK::serialize(std::wostream & strm)
 		return 0;
 	}
 
-	if (book->bOleLink)
+	if (false == book->bOleLink)
 	{
 		serialize_dde(strm);
 	}

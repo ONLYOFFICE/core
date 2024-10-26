@@ -507,7 +507,7 @@ namespace MetaFile
 		std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromSingleByteString((unsigned char*)oText.pOutputString, oText.unChars, eCharSet);
 
 		int* pDx = NULL;
-		if (oText.pOutputDx)
+		if (oText.pOutputDx && oText.unChars == wsText.length())
 		{
 			pDx = new int[oText.unChars];
 			if (pDx)
@@ -538,7 +538,7 @@ namespace MetaFile
 
 		unsigned int unLen = 0;
 		int* pDx = NULL;
-		if (oText.pOutputDx && oText.unChars)
+		if (oText.pOutputDx && oText.unChars && oText.unChars == wsText.length())
 		{
 			// Здесь мы эмулируем конвертацию Utf16 в Utf32, чтобы правильно получить массив pDx
 			pDx = new int[oText.unChars];

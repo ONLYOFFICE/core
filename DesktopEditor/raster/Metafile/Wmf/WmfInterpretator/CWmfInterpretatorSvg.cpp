@@ -205,7 +205,7 @@ namespace MetaFile
 
 		std::vector<double> arDx(0);
 
-		if (NULL != pDx)
+		if (NULL != pDx && shStringLength == wsText.length())
 			arDx = std::vector<double>(pDx, pDx + wsText.length());
 
 		WriteText(wsText, TPointD(shX, shY), oRectangle, oScale, arDx);

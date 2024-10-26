@@ -7,17 +7,17 @@
 
 #include <cmath>
 
-class CAppImage : public CGraphicsAppImage
+class CAppImageTo : public CGraphicsAppImage
 {
 private:
 	NSJSON::CValueRef* m_image;
 
 public:
-	CAppImage(const NSJSON::CValue& image) : CGraphicsAppImage()
+	CAppImageTo(const NSJSON::CValue& image) : CGraphicsAppImage()
 	{
 		m_image = new NSJSON::CValueRef(image);
 	}
-	virtual ~CAppImage()
+	virtual ~CAppImageTo()
 	{
 		if (m_image)
 			delete m_image;
@@ -38,6 +38,37 @@ public:
 	{
 		m_image->ImageAlloc(w, h, GetRgba() ? NSJSON::ImageFormat::ifRGBA : NSJSON::ImageFormat::ifBGRA);
 		return m_image->GetImageBits();
+	}
+};
+
+class CAppImageFrom : public CGraphicsAppImage
+{
+public:
+	unsigned char* m_pData;
+	int m_nW;
+	int m_nH;
+public:
+	CAppImageFrom() : CGraphicsAppImage()
+	{
+		m_pData = NULL;
+		m_nW = 0;
+		m_nH = 0;
+	}
+	virtual ~CAppImageFrom()
+	{
+	}
+
+public:
+	virtual unsigned char* GetBits(int& w, int& h)
+	{
+		return m_pData;
+	}
+	virtual unsigned char* AllocBits(const int& w, const int& h)
+	{
+		m_nW = w;
+		m_nH = h;
+		m_pData = NSJSON::CValue::AllocImageBits(w, h);
+		return m_pData;
 	}
 };
 
@@ -88,7 +119,7 @@ namespace NSJSON
 		else if (value.IsImage())
 		{
 			JSSmart<CJSObject> wrap = CJSContext::createEmbedObject("CGraphicsEmbed");
-			((CGraphicsEmbed*)wrap->getNative())->SetAppImage(new CAppImage(value));
+			((CGraphicsEmbed*)wrap->getNative())->SetAppImage(new CAppImageTo(value));
 			ret = wrap->toValue();
 		}
 		// objects (there is no need for IsObject())
@@ -171,6 +202,25 @@ namespace NSJSON
 		else if (jsValue->isObject())
 		{
 			JSSmart<NSJSBase::CJSObject> jsObj = jsValue->toObject();
+
+			CJSEmbedObject* pNative = jsObj->getNative();
+			if (pNative != NULL)
+			{
+				CGraphicsEmbed* pGrEmbed = dynamic_cast<CGraphicsEmbed*>(pNative);
+				if (pGrEmbed)
+				{
+					CAppImageFrom* pAppImage = dynamic_cast<CAppImageFrom*>(pGrEmbed->GetAppImage());
+					if (pAppImage)
+					{
+						return NSJSON::CValue::CreateImage(pAppImage->m_pData,
+														   pAppImage->m_nW,
+														   pAppImage->m_nH,
+														   pAppImage->GetRgba() ? ImageFormat::ifRGBA : ImageFormat::ifBGRA,
+														   false);
+					}
+				}
+			}
+
 			std::vector<std::string> properties = jsObj->getPropertyNames();
 			ret = CValue::CreateObject();
 			for (const std::string& name : properties)

@@ -2437,25 +2437,31 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pChoiceWidget->SetOpt(pPr->GetOpt());
 			if (nFlags & (1 << 11))
 				pChoiceWidget->SetTI(pPr->GetTI());
-			bool bAPValue = false;
-			if (nFlags & (1 << 12))
-			{
-				bAPValue = true;
-				LONG nLen = 0;
-				BYTE* pRender = pPr->GetRender(nLen);
-				DrawWidgetAP(pAnnot, pRender, nLen);
-			}
 			if (nFlags & (1 << 13))
 				pChoiceWidget->SetV(pPr->GetArrV());
 			if (nFlags & (1 << 13))
 				pChoiceWidget->SetI(pPr->GetI());
 			else
 				pChoiceWidget->Remove("I");
+			if (nFlags & (1 << 12))
+			{
+				LONG nLen = 0;
+				BYTE* pRender = pPr->GetRender(nLen);
+				DrawWidgetAP(pAnnot, pRender, nLen);
 
-			// ВНЕШНИЙ ВИД
-			pChoiceWidget->SetFont(m_pFont, dFontSize, isBold, isItalic);
-			if (!bAPValue && !arrValue.empty())
+				PdfWriter::CFontDict* pFont = NULL;
+				if (m_pFont14)
+					pFont = m_pFont14;
+				else if (m_pFont)
+					pFont = m_pDocument->CreateTrueTypeFont(m_pFont);
+				if (pFont)
+					pWidgetAnnot->SetDA(pFont, oInfo.GetWidgetAnnotPr()->GetFontSize(), dFontSize, oInfo.GetWidgetAnnotPr()->GetTC());
+			}
+			else if (!arrValue.empty())
+			{
+				pChoiceWidget->SetFont(m_pFont, dFontSize, isBold, isItalic);
 				DrawChoiceWidget(pAppFonts, pChoiceWidget, arrValue);
+			}
 		}
 		else if (oInfo.IsSignatureWidget())
 		{
@@ -2595,8 +2601,8 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 					}
 					if (nType == PdfWriter::WidgetCombobox || nType == PdfWriter::WidgetListbox)
 					{
-						PdfWriter::CChoiceWidget* pKid = dynamic_cast<PdfWriter::CChoiceWidget*>(pObj);
-						DrawChoiceWidget(pAppFonts, pKid, {pParent->sV});
+						//PdfWriter::CChoiceWidget* pKid = dynamic_cast<PdfWriter::CChoiceWidget*>(pObj);
+						//DrawChoiceWidget(pAppFonts, pKid, {pParent->sV});
 						bName = false;
 					}
 					if (nType == PdfWriter::WidgetText)
@@ -2651,8 +2657,8 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 					PdfWriter::EWidgetType nType = ((PdfWriter::CWidgetAnnotation*)pObj)->GetWidgetType();
 					if (nType == PdfWriter::WidgetCombobox || nType == PdfWriter::WidgetListbox)
 					{
-						PdfWriter::CChoiceWidget* pKid = dynamic_cast<PdfWriter::CChoiceWidget*>(pObj);
-						DrawChoiceWidget(pAppFonts, pKid, pParent->arrV);
+						//PdfWriter::CChoiceWidget* pKid = dynamic_cast<PdfWriter::CChoiceWidget*>(pObj);
+						//DrawChoiceWidget(pAppFonts, pKid, pParent->arrV);
 					}
 				}
 			}
@@ -3653,12 +3659,13 @@ void CPdfWriter::DrawWidgetAP(PdfWriter::CAnnotation* pA, BYTE* pRender, LONG nL
 	pFakePage->SetStream(pAP->GetStream());
 	pFakePage->Add("Resources", (PdfWriter::CObjectBase*)m_pDocument->GetFieldsResources());
 
+	pFakePage->SetStrokeColor(0, 0, 0);
+	pFakePage->SetFillColor(0, 0, 0);
+
 	IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pRenderer);
 	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);
 	RELEASEOBJECT(pCorrector);
 
-	pFakePage->SetStrokeColor(0, 0, 0);
-	pFakePage->SetFillColor(0, 0, 0);
 	m_oCommandManager.Flush();
 	pAP->EndDraw();
 	pFakePage->EndMarkedContent();

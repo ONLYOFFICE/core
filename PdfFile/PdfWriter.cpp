@@ -2371,7 +2371,14 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pTextWidget->SetMaxLen(pPr->GetMaxLen());
 			if (nWidgetFlag & (1 << 25))
 				pTextWidget->SetRV(pPr->GetRV());
+			bool bAPValue = false;
 			if (nFlags & (1 << 12))
+			{
+				bAPValue = true;
+				wsValue = pPr->GetAPV();
+				pTextWidget->SetAPV();
+			}
+			if (nFlags & (1 << 13))
 			{
 				pTextWidget->SetAPV();
 
@@ -2387,7 +2394,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				if (pFont)
 					pWidgetAnnot->SetDA(pFont, oInfo.GetWidgetAnnotPr()->GetFontSize(), dFontSize, oInfo.GetWidgetAnnotPr()->GetTC());
 			}
-			else if (bValue && pTextWidget->Get("T"))
+			else if ((bValue && pTextWidget->Get("T")) || bAPValue)
 			{
 				pTextWidget->SetFont(m_pFont, dFontSize, isBold, isItalic);
 				DrawTextWidget(pAppFonts, pTextWidget, wsValue);
@@ -2408,14 +2415,18 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pChoiceWidget->SetOpt(pPr->GetOpt());
 			if (nFlags & (1 << 11))
 				pChoiceWidget->SetTI(pPr->GetTI());
+			if (nFlags & (1 << 12))
+				arrValue[arrValue.size()] = pPr->GetAPV();
 			if (nFlags & (1 << 13))
 				pChoiceWidget->SetV(pPr->GetArrV());
-			if (nFlags & (1 << 13))
+			if (nFlags & (1 << 14))
 				pChoiceWidget->SetI(pPr->GetI());
 			else
 				pChoiceWidget->Remove("I");
-			if (nFlags & (1 << 12))
+			if (nFlags & (1 << 15))
 			{
+				pChoiceWidget->SetAPV();
+
 				LONG nLen = 0;
 				BYTE* pRender = pPr->GetRender(nLen);
 				DrawWidgetAP(pAnnot, pRender, nLen);
@@ -2572,8 +2583,9 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 					}
 					if (nType == PdfWriter::WidgetCombobox || nType == PdfWriter::WidgetListbox)
 					{
-						//PdfWriter::CChoiceWidget* pKid = dynamic_cast<PdfWriter::CChoiceWidget*>(pObj);
-						//DrawChoiceWidget(pAppFonts, pKid, {pParent->sV});
+						PdfWriter::CChoiceWidget* pKid = dynamic_cast<PdfWriter::CChoiceWidget*>(pObj);
+						if (!pKid->HaveAPV())
+							DrawChoiceWidget(pAppFonts, pKid, {pParent->sV});
 						bName = false;
 					}
 					if (nType == PdfWriter::WidgetText)
@@ -2628,8 +2640,9 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 					PdfWriter::EWidgetType nType = ((PdfWriter::CWidgetAnnotation*)pObj)->GetWidgetType();
 					if (nType == PdfWriter::WidgetCombobox || nType == PdfWriter::WidgetListbox)
 					{
-						//PdfWriter::CChoiceWidget* pKid = dynamic_cast<PdfWriter::CChoiceWidget*>(pObj);
-						//DrawChoiceWidget(pAppFonts, pKid, pParent->arrV);
+						PdfWriter::CChoiceWidget* pKid = dynamic_cast<PdfWriter::CChoiceWidget*>(pObj);
+						if (!pKid->HaveAPV())
+							DrawChoiceWidget(pAppFonts, pKid, pParent->arrV);
 					}
 				}
 			}

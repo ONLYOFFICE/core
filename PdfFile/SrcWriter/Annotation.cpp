@@ -2097,6 +2097,7 @@ namespace PdfWriter
 	{
 		m_dHeight = 0;
 		m_nTI = -1;
+		m_bAPV = false;
 	}
 	void CChoiceWidget::SetFlag(const int& nFlag)
 	{

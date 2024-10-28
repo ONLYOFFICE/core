@@ -1343,13 +1343,38 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CStampAnnotation
 	//----------------------------------------------------------------------------------------
-	CStampAnnotation::CStampAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotStamp)
+	CStampAnnotation::CStampAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotStamp), m_pAPStream(NULL)
 	{
+	}
+	void CStampAnnotation::SetRotate(int nRotate)
+	{
+		Add("Rotate", nRotate);
+
+		if (!m_pAPStream)
+			return;
+
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		double ca = cos(nRotate / 180.0 * M_PI);
+		double sa = sin(nRotate / 180.0 * M_PI);
+		m_pAPStream->Add("Matrix", pArray);
+		pArray->Add(ca);
+		pArray->Add(sa);
+		pArray->Add(-sa);
+		pArray->Add(ca);
+		pArray->Add(0);
+		pArray->Add(0);
 	}
 	void CStampAnnotation::SetName(const std::wstring& wsName)
 	{
 		std::string sValue = U_TO_UTF8(wsName);
 		Add("Name", sValue.c_str());
+	}
+	void CStampAnnotation::SetAPStream(CDictObject* pStream)
+	{
+		m_pAPStream = pStream;
 	}
 	//----------------------------------------------------------------------------------------
 	// CWidgetAnnotation
@@ -1629,6 +1654,22 @@ namespace PdfWriter
 		CObjectBase* pObj = m_pMK->Get("BC");
 		return pObj && pObj->GetType() == object_type_ARRAY;
 	}
+	void CWidgetAnnotation::APFromFakePage(CPage* pFakePage)
+	{
+		if (!m_pAppearance)
+			return;
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
+
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+		pNormal->Add("BBox", pArray);
+
+		pArray->Add(0);
+		pArray->Add(0);
+		pArray->Add(GetWidth());
+		pArray->Add(GetHeight());
+	}
 	void CWidgetAnnotation::SetEmptyAP()
 	{
 		if (!m_pAppearance)
@@ -1650,14 +1691,15 @@ namespace PdfWriter
 		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
 		pNormal->DrawSimpleText(wsValue, pCodes, unCount, m_pFont, m_dFontSize, dX, dY, 0, 0, 0, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), ppFonts, pShifts);
 	}
-	void CWidgetAnnotation::StartAP()
+	CAnnotAppearanceObject* CWidgetAnnotation::StartAP()
 	{
 		m_pAppearance = new CAnnotAppearance(m_pXref, this);
 		if (!m_pAppearance)
-			return;
+			return NULL;
 		Add("AP", m_pAppearance);
 		CAnnotAppearanceObject* pNormal  = m_pAppearance->GetNormal();
 		pNormal->StartDrawText(m_pFont, m_dFontSize, 0, 0, 0, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
+		return pNormal;
 	}
 	void CWidgetAnnotation::AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts, const double* pShifts)
 	{

@@ -386,6 +386,8 @@ namespace PdfWriter
 	};
 	class CStampAnnotation : public CMarkupAnnotation
 	{
+	private:
+		CDictObject* m_pAPStream;
 	public:
 		CStampAnnotation(CXref* pXref);
 		EAnnotType GetAnnotationType() const override
@@ -393,7 +395,9 @@ namespace PdfWriter
 			return AnnotStamp;
 		}
 
+		void SetRotate(int nRotate);
 		void SetName(const std::wstring& wsName);
+		void SetAPStream(CDictObject* pStream);
 	};
 	class CWidgetAnnotation : public CAnnotation
 	{
@@ -455,9 +459,10 @@ namespace PdfWriter
 		bool HaveBC();
 		BYTE GetQ() { return m_nQ; }
 
+		void APFromFakePage(CPage* pFakePage);
 		void SetEmptyAP();
 		void SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts);
-		void StartAP();
+		CAnnotAppearanceObject* StartAP();
 		void AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts = NULL, const double* pShifts = NULL);
 		void EndAP();
 	};

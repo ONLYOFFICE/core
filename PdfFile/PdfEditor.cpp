@@ -1111,6 +1111,8 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 	}
 	else if (oType.isName("Caret"))
 		pAnnot = new PdfWriter::CCaretAnnotation(pXref);
+	else if (oType.isName("Stamp"))
+		pAnnot = new PdfWriter::CStampAnnotation(pXref);
 	else if (oType.isName("Popup"))
 		pAnnot = new PdfWriter::CPopupAnnotation(pXref);
 	else if (oType.isName("Widget"))
@@ -1185,11 +1187,10 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 		}
 		oFT.free();
 	}
-	oType.free();
 
 	if (!pAnnot)
 	{
-		oAnnotRef.free(); oAnnot.free();
+		oAnnotRef.free(); oAnnot.free(); oType.free();
 		RELEASEOBJECT(pXref);
 		return false;
 	}
@@ -1248,7 +1249,44 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 		DictToCDictObject(&oTemp, pAnnot, false, chKey);
 		oTemp.free();
 	}
-	oAnnotRef.free(); oAnnot.free();
+
+	if (oType.isName("Stamp"))
+	{
+		Object oAP, oAPN;
+		if (oAnnot.dictLookup("AP", &oAP)->isDict() && oAP.dictLookup("N", &oAPN)->isStream())
+		{
+			Object oAPNRef;
+			oAP.dictLookupNF("N", &oAPNRef);
+			PdfWriter::CXref* pXRef = new PdfWriter::CXref(pDoc, oAPNRef.getRefNum());
+			pDoc->EditXref(pXRef);
+
+			PdfWriter::CDictObject* pAPN = new PdfWriter::CDictObject();
+			pXRef->Add(pAPN, oAPNRef.getRefGen());
+			((PdfWriter::CStampAnnotation*)pAnnot)->SetAPStream(pAPN);
+			oAPNRef.free();
+
+			Object oTemp;
+			Dict* pODict = oAPN.streamGetDict();
+			for (int nIndex = 0; nIndex < pODict->getLength(); ++nIndex)
+			{
+				char* chKey = pODict->getKey(nIndex);
+				pODict->getValNF(nIndex, &oTemp);
+				DictToCDictObject(&oTemp, pAPN, false, chKey);
+				oTemp.free();
+			}
+			int nLength = 0;
+			if (pODict->lookup("Length", &oTemp)->isInt())
+				nLength = oTemp.getInt();
+			PdfWriter::CStream* pStream = new PdfWriter::CMemoryStream(nLength);
+			pAPN->SetStream(pStream);
+			Stream* pOStream = oAPN.getStream()->getUndecodedStream();
+			pOStream->reset();
+			for (int nI = 0; nI < nLength; ++nI)
+				pStream->WriteChar(pOStream->getChar());
+		}
+		oAP.free(); oAPN.free();
+	}
+	oAnnotRef.free(); oAnnot.free(); oType.free();
 
 	if (pDoc->EditAnnot(pXref, pAnnot, nID))
 		return true;
@@ -1424,9 +1462,14 @@ void CPdfEditor::EndMarkedContent()
 bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath)
 {
 	std::map<std::wstring, std::wstring>::iterator it = m_mFonts.find(wsFontName);
-	if (it == m_mFonts.end())
+	if (it != m_mFonts.end())
+		wsFontPath = it->second;
+	std::map<std::wstring, std::wstring> mFonts = pReader->GetFonts();
+	std::map<std::wstring, std::wstring>::iterator it2 = mFonts.find(wsFontName);
+	if (it2 != mFonts.end())
+		wsFontPath = it2->second;
+	if (wsFontPath.empty())
 		return false;
-	wsFontPath = it->second;
 	if (wsFontName == L"Helvetica")
 		return true;
 	if (wsFontName == L"Helvetica-Bold")
@@ -1463,7 +1506,7 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 		bItalic = true;
 		return true;
 	}
-	if (wsFontName == L"Times")
+	if (wsFontName == L"Times" || wsFontName == L"Times-Roman")
 		return true;
 	if (wsFontName == L"Times-Bold")
 	{

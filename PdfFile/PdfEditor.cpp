@@ -1462,9 +1462,14 @@ void CPdfEditor::EndMarkedContent()
 bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath)
 {
 	std::map<std::wstring, std::wstring>::iterator it = m_mFonts.find(wsFontName);
-	if (it == m_mFonts.end())
+	if (it != m_mFonts.end())
+		wsFontPath = it->second;
+	std::map<std::wstring, std::wstring> mFonts = pReader->GetFonts();
+	std::map<std::wstring, std::wstring>::iterator it2 = mFonts.find(wsFontName);
+	if (it2 != mFonts.end())
+		wsFontPath = it2->second;
+	if (wsFontPath.empty())
 		return false;
-	wsFontPath = it->second;
 	if (wsFontName == L"Helvetica")
 		return true;
 	if (wsFontName == L"Helvetica-Bold")
@@ -1501,7 +1506,7 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 		bItalic = true;
 		return true;
 	}
-	if (wsFontName == L"Times")
+	if (wsFontName == L"Times" || wsFontName == L"Times-Roman")
 		return true;
 	if (wsFontName == L"Times-Bold")
 	{

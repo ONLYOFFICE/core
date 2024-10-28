@@ -149,57 +149,7 @@ namespace MetaFile
 		if (NULL != m_pParser)
 			pFont = m_pParser->GetFont();
 
-		NSStringExt::CConverter::ESingleByteEncoding eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT;;
-		if (pFont)
-		{
-			// Соответствие Charset -> Codepage: http://support.microsoft.com/kb/165478
-			// http://msdn.microsoft.com/en-us/library/cc194829.aspx
-			//  Charset Name       Charset Value(hex)  Codepage number
-			//  ------------------------------------------------------
-			//
-			//  DEFAULT_CHARSET           1 (x01)
-			//  SYMBOL_CHARSET            2 (x02)
-			//  OEM_CHARSET             255 (xFF)
-			//  ANSI_CHARSET              0 (x00)            1252
-			//  RUSSIAN_CHARSET         204 (xCC)            1251
-			//  EASTEUROPE_CHARSET      238 (xEE)            1250
-			//  GREEK_CHARSET           161 (xA1)            1253
-			//  TURKISH_CHARSET         162 (xA2)            1254
-			//  BALTIC_CHARSET          186 (xBA)            1257
-			//  HEBREW_CHARSET          177 (xB1)            1255
-			//  ARABIC _CHARSET         178 (xB2)            1256
-			//  SHIFTJIS_CHARSET        128 (x80)             932
-			//  HANGEUL_CHARSET         129 (x81)             949
-			//  GB2313_CHARSET          134 (x86)             936
-			//  CHINESEBIG5_CHARSET     136 (x88)             950
-			//  THAI_CHARSET            222 (xDE)             874
-			//  JOHAB_CHARSET	        130 (x82)            1361
-			//  VIETNAMESE_CHARSET      163 (xA3)            1258
-
-			switch (pFont->GetCharSet())
-			{
-			default:
-			case DEFAULT_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
-			case SYMBOL_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
-			case ANSI_CHARSET:          eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1252; break;
-			case RUSSIAN_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1251; break;
-			case EASTEUROPE_CHARSET:    eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1250; break;
-			case GREEK_CHARSET:         eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1253; break;
-			case TURKISH_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1254; break;
-			case BALTIC_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1257; break;
-			case HEBREW_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1255; break;
-			case ARABIC_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1256; break;
-			case SHIFTJIS_CHARSET:      eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP932; break;
-			case HANGEUL_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP949; break;
-			case 134/*GB2313_CHARSET*/: eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP936; break;
-			case CHINESEBIG5_CHARSET:   eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP950; break;
-			case THAI_CHARSET:          eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP874; break;
-			case JOHAB_CHARSET:         eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1361; break;
-			case VIETNAMESE_CHARSET:    eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1258; break;
-			}
-		}
-
-		std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)pString, (long)shStringLength, eCharSet);
+		const std::wstring wsText{ConvertToUnicode(pString, (long)shStringLength, (NULL != pFont) ? pFont->GetCharSet() : DEFAULT_CHARSET)};
 
 		TPointD oScale((m_pParser->IsWindowFlippedX()) ? -1 : 1, (m_pParser->IsWindowFlippedY()) ? -1 : 1);
 

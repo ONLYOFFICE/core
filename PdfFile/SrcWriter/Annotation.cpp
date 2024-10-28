@@ -303,16 +303,19 @@ namespace PdfWriter
 		sRes.append(" ] 0 d\012");
 		return sRes;
 	}
+	CAnnotAppearanceObject* CAnnotation::StartAP()
+	{
+		m_pAppearance = new CAnnotAppearance(m_pXref, this);
+		if (!m_pAppearance)
+			return NULL;
+		Add("AP", m_pAppearance);
+		return m_pAppearance->GetNormal();
+	}
 	void CAnnotation::APFromFakePage(CPage* pFakePage)
 	{
-		// xref NULL - тогда у CAnnotAppearanceObject не будет создан stream
-		m_pAppearance = new CAnnotAppearance(NULL, this);
 		if (!m_pAppearance)
 			return;
-		Add("AP", m_pAppearance);
-		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal((CResourcesDict*)pFakePage->Get("Resources"));
-		m_pXref->Add(pNormal);
-		m_pAppearance->Add("N", pNormal);
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
 
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
@@ -335,15 +338,6 @@ namespace PdfWriter
 		pArray->Add(1);
 		pArray->Add(-GetRect().fLeft);
 		pArray->Add(-GetRect().fBottom);
-
-		CDictObject* pFPStream = pFakePage->GetContent();
-		pNormal->SetStream(m_pXref, pFPStream->GetStream(), false);
-#ifndef FILTER_FLATE_DECODE_DISABLED
-		if (m_pDocument->GetCompressionMode() & COMP_TEXT)
-			pNormal->SetFilter(STREAM_FILTER_FLATE_DECODE);
-#endif
-		pFPStream->SetStream(NULL);
-		// RELEASEOBJECT(pFPStream); Нельзя удалять - это объект стрима, он уже в xref
 	}
 	//----------------------------------------------------------------------------------------
 	// CMarkupAnnotation

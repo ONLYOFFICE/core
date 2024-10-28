@@ -184,6 +184,7 @@ namespace PdfWriter
 		void SetC(const std::vector<double>& arrC);
 
 		void APFromFakePage(CPage* pFakePage);
+		CAnnotAppearanceObject* StartAP();
 		TRect& GetRect() { return m_oRect; }
 		void SetXref(CXref* pXref) { m_pXref = pXref; }
 		void SetDocument(CDocument* pDocument);

@@ -2100,17 +2100,16 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			wsFontKey = pPr->GetFontKey();
 
 		std::wstring wsFontName = pPr->GetFontName();
-		if (wsFontName == L"Times-Roman" || wsFontName == L"Times-Bold" || wsFontName == L"Times-BoldItalic" || wsFontName == L"Times-Italic")
-			wsFontName = L"Times New Roman";
 		int nStyle = pPr->GetFontStyle();
 		double dFontSize = pPr->GetFontSizeAP();
-		put_FontName(wsFontName);
-		put_FontStyle(nStyle);
-		put_FontSize(dFontSize);
 		PdfWriter::CFontTrueType* pFontTT = NULL;
 
-		if (nWidgetType != 28 && nWidgetType != 29)
+		if (nWidgetType == 27)
 		{
+			put_FontName(wsFontName);
+			put_FontStyle(nStyle);
+			put_FontSize(dFontSize);
+
 			if (m_bNeedUpdateTextFont)
 				UpdateFont();
 			if (m_pFont)
@@ -2372,13 +2371,9 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pTextWidget->SetMaxLen(pPr->GetMaxLen());
 			if (nWidgetFlag & (1 << 25))
 				pTextWidget->SetRV(pPr->GetRV());
-			bool bAPValue = false;
 			if (nFlags & (1 << 12))
 			{
-				bAPValue = true;
 				pTextWidget->SetAPV();
-
-				PdfWriter::CFontCidTrueType* pWasFont = m_pFont;
 
 				LONG nLen = 0;
 				BYTE* pRender = pPr->GetRender(nLen);
@@ -2387,16 +2382,16 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				PdfWriter::CFontDict* pFont = NULL;
 				if (m_pFont14)
 					pFont = m_pFont14;
-				else if (m_pFont && m_pFont != pWasFont)
+				else if (m_pFont)
 					pFont = m_pDocument->CreateTrueTypeFont(m_pFont);
 				if (pFont)
 					pWidgetAnnot->SetDA(pFont, oInfo.GetWidgetAnnotPr()->GetFontSize(), dFontSize, oInfo.GetWidgetAnnotPr()->GetTC());
 			}
-
-			// ВНЕШНИЙ ВИД
-			pTextWidget->SetFont(m_pFont, dFontSize, isBold, isItalic);
-			if (!bAPValue && bValue && pTextWidget->Get("T"))
+			else if (bValue && pTextWidget->Get("T"))
+			{
+				pTextWidget->SetFont(m_pFont, dFontSize, isBold, isItalic);
 				DrawTextWidget(pAppFonts, pTextWidget, wsValue);
+			}
 		}
 		else if (oInfo.IsChoiceWidget())
 		{
@@ -3633,10 +3628,11 @@ void CPdfWriter::DrawWidgetAP(PdfWriter::CAnnotation* pA, BYTE* pRender, LONG nL
 	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);
 	RELEASEOBJECT(pCorrector);
 
+	pFakePage->SetStrokeColor(0, 0, 0);
+	pFakePage->SetFillColor(0, 0, 0);
 	m_oCommandManager.Flush();
-
-	pAP->StartText(NULL, 10);
-	pAnnot->EndAP();
+	pAP->EndDraw();
+	pFakePage->EndMarkedContent();
 
 	pAnnot->APFromFakePage(pFakePage);
 

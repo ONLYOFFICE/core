@@ -303,16 +303,19 @@ namespace PdfWriter
 		sRes.append(" ] 0 d\012");
 		return sRes;
 	}
+	CAnnotAppearanceObject* CAnnotation::StartAP()
+	{
+		m_pAppearance = new CAnnotAppearance(m_pXref, this);
+		if (!m_pAppearance)
+			return NULL;
+		Add("AP", m_pAppearance);
+		return m_pAppearance->GetNormal();
+	}
 	void CAnnotation::APFromFakePage(CPage* pFakePage)
 	{
-		// xref NULL - тогда у CAnnotAppearanceObject не будет создан stream
-		m_pAppearance = new CAnnotAppearance(NULL, this);
 		if (!m_pAppearance)
 			return;
-		Add("AP", m_pAppearance);
-		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal((CResourcesDict*)pFakePage->Get("Resources"));
-		m_pXref->Add(pNormal);
-		m_pAppearance->Add("N", pNormal);
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
 
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
@@ -335,15 +338,6 @@ namespace PdfWriter
 		pArray->Add(1);
 		pArray->Add(-GetRect().fLeft);
 		pArray->Add(-GetRect().fBottom);
-
-		CDictObject* pFPStream = pFakePage->GetContent();
-		pNormal->SetStream(m_pXref, pFPStream->GetStream(), false);
-#ifndef FILTER_FLATE_DECODE_DISABLED
-		if (m_pDocument->GetCompressionMode() & COMP_TEXT)
-			pNormal->SetFilter(STREAM_FILTER_FLATE_DECODE);
-#endif
-		pFPStream->SetStream(NULL);
-		// RELEASEOBJECT(pFPStream); Нельзя удалять - это объект стрима, он уже в xref
 	}
 	//----------------------------------------------------------------------------------------
 	// CMarkupAnnotation
@@ -1618,6 +1612,22 @@ namespace PdfWriter
 		CObjectBase* pObj = m_pMK->Get("BC");
 		return pObj && pObj->GetType() == object_type_ARRAY;
 	}
+	void CWidgetAnnotation::APFromFakePage(CPage* pFakePage)
+	{
+		if (!m_pAppearance)
+			return;
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
+
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+		pNormal->Add("BBox", pArray);
+
+		pArray->Add(0);
+		pArray->Add(0);
+		pArray->Add(GetWidth());
+		pArray->Add(GetHeight());
+	}
 	void CWidgetAnnotation::SetEmptyAP()
 	{
 		if (!m_pAppearance)
@@ -1639,14 +1649,15 @@ namespace PdfWriter
 		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
 		pNormal->DrawSimpleText(wsValue, pCodes, unCount, m_pFont, m_dFontSize, dX, dY, 0, 0, 0, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), ppFonts, pShifts);
 	}
-	void CWidgetAnnotation::StartAP()
+	CAnnotAppearanceObject* CWidgetAnnotation::StartAP()
 	{
 		m_pAppearance = new CAnnotAppearance(m_pXref, this);
 		if (!m_pAppearance)
-			return;
+			return NULL;
 		Add("AP", m_pAppearance);
 		CAnnotAppearanceObject* pNormal  = m_pAppearance->GetNormal();
 		pNormal->StartDrawText(m_pFont, m_dFontSize, 0, 0, 0, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
+		return pNormal;
 	}
 	void CWidgetAnnotation::AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts, const double* pShifts)
 	{
@@ -2080,6 +2091,7 @@ namespace PdfWriter
 	{
 		m_dHeight = 0;
 		m_nTI = -1;
+		m_bAPV = false;
 	}
 	void CChoiceWidget::SetFlag(const int& nFlag)
 	{

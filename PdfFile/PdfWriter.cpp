@@ -2100,23 +2100,9 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			wsFontKey = pPr->GetFontKey();
 
 		std::wstring wsFontName = pPr->GetFontName();
-		if (wsFontName == L"Times-Roman" || wsFontName == L"Times-Bold" || wsFontName == L"Times-BoldItalic" || wsFontName == L"Times-Italic")
-			wsFontName = L"Times New Roman";
 		int nStyle = pPr->GetFontStyle();
 		double dFontSize = pPr->GetFontSizeAP();
-		put_FontName(wsFontName);
-		put_FontStyle(nStyle);
-		put_FontSize(dFontSize);
 		PdfWriter::CFontTrueType* pFontTT = NULL;
-
-		if (nWidgetType != 28 && nWidgetType != 29)
-		{
-			if (m_bNeedUpdateTextFont)
-				UpdateFont();
-			if (m_pFont)
-				pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
-			pWidgetAnnot->SetDA(pFontTT, pPr->GetFontSize(), dFontSize, pPr->GetTC());
-		}
 
 		BYTE nAlign = pPr->GetQ();
 		if (nWidgetType != 27 && nWidgetType != 28 && nWidgetType != 29)
@@ -2293,6 +2279,16 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				if (nIFFlags & (1 << 7))
 					pButtonWidget->SetIX(pPr->GetIX());
 
+				put_FontName(wsFontName);
+				put_FontStyle(nStyle);
+				put_FontSize(dFontSize);
+
+				if (m_bNeedUpdateTextFont)
+					UpdateFont();
+				if (m_pFont)
+					pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
+				pWidgetAnnot->SetDA(pFontTT, oInfo.GetWidgetAnnotPr()->GetFontSize(), dFontSize, oInfo.GetWidgetAnnotPr()->GetTC());
+
 				// ВНЕШНИЙ ВИД
 				pButtonWidget->SetFont(m_pFont, dFontSize, isBold, isItalic);
 				if (nFlags & (1 << 10))
@@ -2339,9 +2335,12 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 					return S_OK;
 				}
 
+				put_FontName(wsFontName);
+				put_FontStyle(nStyle);
+				put_FontSize(dFontSize);
+
 				if (m_bNeedUpdateTextFont)
 					UpdateFont();
-
 				if (m_pFont)
 					pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
 				pWidgetAnnot->SetDA(pFontTT, pPr->GetFontSize(), dFontSize, pPr->GetTC());
@@ -2379,11 +2378,37 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				wsValue = pPr->GetAPV();
 				pTextWidget->SetAPV();
 			}
+			if (nFlags & (1 << 13))
+			{
+				pTextWidget->SetAPV();
 
-			// ВНЕШНИЙ ВИД
-			pTextWidget->SetFont(m_pFont, dFontSize, isBold, isItalic);
-			if ((bValue && pTextWidget->Get("T")) || bAPValue)
+				LONG nLen = 0;
+				BYTE* pRender = pPr->GetRender(nLen);
+				DrawWidgetAP(pAnnot, pRender, nLen);
+
+				PdfWriter::CFontDict* pFont = NULL;
+				if (m_pFont14)
+					pFont = m_pFont14;
+				else if (m_pFont)
+					pFont = m_pDocument->CreateTrueTypeFont(m_pFont);
+				if (pFont)
+					pWidgetAnnot->SetDA(pFont, oInfo.GetWidgetAnnotPr()->GetFontSize(), dFontSize, oInfo.GetWidgetAnnotPr()->GetTC());
+			}
+			else if ((bValue && pTextWidget->Get("T")) || bAPValue)
+			{
+				put_FontName(wsFontName);
+				put_FontStyle(nStyle);
+				put_FontSize(dFontSize);
+
+				if (m_bNeedUpdateTextFont)
+					UpdateFont();
+				if (m_pFont)
+					pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
+				pWidgetAnnot->SetDA(pFontTT, oInfo.GetWidgetAnnotPr()->GetFontSize(), dFontSize, oInfo.GetWidgetAnnotPr()->GetTC());
+
+				pTextWidget->SetFont(m_pFont, dFontSize, isBold, isItalic);
 				DrawTextWidget(pAppFonts, pTextWidget, wsValue);
+			}
 		}
 		else if (oInfo.IsChoiceWidget())
 		{
@@ -2404,15 +2429,41 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				arrValue[arrValue.size()] = pPr->GetAPV();
 			if (nFlags & (1 << 13))
 				pChoiceWidget->SetV(pPr->GetArrV());
-			if (nFlags & (1 << 13))
+			if (nFlags & (1 << 14))
 				pChoiceWidget->SetI(pPr->GetI());
 			else
 				pChoiceWidget->Remove("I");
+			if (nFlags & (1 << 15))
+			{
+				pChoiceWidget->SetAPV();
 
-			// ВНЕШНИЙ ВИД
-			pChoiceWidget->SetFont(m_pFont, dFontSize, isBold, isItalic);
-			if (!arrValue.empty())
+				LONG nLen = 0;
+				BYTE* pRender = pPr->GetRender(nLen);
+				DrawWidgetAP(pAnnot, pRender, nLen);
+
+				PdfWriter::CFontDict* pFont = NULL;
+				if (m_pFont14)
+					pFont = m_pFont14;
+				else if (m_pFont)
+					pFont = m_pDocument->CreateTrueTypeFont(m_pFont);
+				if (pFont)
+					pWidgetAnnot->SetDA(pFont, oInfo.GetWidgetAnnotPr()->GetFontSize(), dFontSize, oInfo.GetWidgetAnnotPr()->GetTC());
+			}
+			else if (!arrValue.empty())
+			{
+				put_FontName(wsFontName);
+				put_FontStyle(nStyle);
+				put_FontSize(dFontSize);
+
+				if (m_bNeedUpdateTextFont)
+					UpdateFont();
+				if (m_pFont)
+					pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
+				pWidgetAnnot->SetDA(pFontTT, oInfo.GetWidgetAnnotPr()->GetFontSize(), dFontSize, oInfo.GetWidgetAnnotPr()->GetTC());
+
+				pChoiceWidget->SetFont(m_pFont, dFontSize, isBold, isItalic);
 				DrawChoiceWidget(pAppFonts, pChoiceWidget, arrValue);
+			}
 		}
 		else if (oInfo.IsSignatureWidget())
 		{
@@ -2553,7 +2604,8 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 					if (nType == PdfWriter::WidgetCombobox || nType == PdfWriter::WidgetListbox)
 					{
 						PdfWriter::CChoiceWidget* pKid = dynamic_cast<PdfWriter::CChoiceWidget*>(pObj);
-						DrawChoiceWidget(pAppFonts, pKid, {pParent->sV});
+						if (!pKid->HaveAPV())
+							DrawChoiceWidget(pAppFonts, pKid, {pParent->sV});
 						bName = false;
 					}
 					if (nType == PdfWriter::WidgetText)
@@ -2609,7 +2661,8 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 					if (nType == PdfWriter::WidgetCombobox || nType == PdfWriter::WidgetListbox)
 					{
 						PdfWriter::CChoiceWidget* pKid = dynamic_cast<PdfWriter::CChoiceWidget*>(pObj);
-						DrawChoiceWidget(pAppFonts, pKid, pParent->arrV);
+						if (!pKid->HaveAPV())
+							DrawChoiceWidget(pAppFonts, pKid, pParent->arrV);
 					}
 				}
 			}
@@ -2936,7 +2989,7 @@ int CPdfWriter::IsEmbeddedBase14(const std::wstring& wsName)
 		return 6;
 	if (sSub == L"Courier-BoldOblique")
 		return 7;
-	if (sSub == L"Times")
+	if (sSub == L"Times" || sSub == L"Times-Roman")
 		return 8;
 	if (sSub == L"Times-Bold")
 		return 9;
@@ -3581,9 +3634,51 @@ void CPdfWriter::DrawAP(PdfWriter::CAnnotation* pAnnot, BYTE* pRender, LONG nLen
 	m_pDocument->SetCurPage(pFakePage);
 	m_pPage->StartTransform(1, 0, 0, 1, -pAnnot->GetPageX(), 0);
 
+	PdfWriter::CAnnotAppearanceObject* pAP = pAnnot->StartAP();
+	pAP->EndText();
+
+	pFakePage->SetStream(pAP->GetStream());
+	pFakePage->Add("Resources", (PdfWriter::CObjectBase*)m_pDocument->GetFieldsResources());
+
 	IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pRenderer);
 	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);
 	RELEASEOBJECT(pCorrector);
+
+	pAnnot->APFromFakePage(pFakePage);
+
+	m_pPage = pCurPage;
+	m_pDocument->SetCurPage(pCurPage);
+	RELEASEOBJECT(pFakePage);
+}
+void CPdfWriter::DrawWidgetAP(PdfWriter::CAnnotation* pA, BYTE* pRender, LONG nLenRender)
+{
+	if (!pA || !pRender)
+		return;
+
+	PdfWriter::CWidgetAnnotation* pAnnot = (PdfWriter::CWidgetAnnotation*)pA;
+
+	PdfWriter::CPage* pCurPage = m_pPage;
+	PdfWriter::CPage* pFakePage = m_pDocument->CreateFakePage();
+	m_pPage = pFakePage;
+	m_pDocument->SetCurPage(pFakePage);
+	m_oTransform.Set(1, 0, 0, 1, PT_2_MM(-pAnnot->GetPageX() - pAnnot->GetRect().fLeft), PT_2_MM(pAnnot->GetRect().fBottom));
+
+	PdfWriter::CAnnotAppearanceObject* pAP = pAnnot->StartAP();
+	pAP->EndText();
+
+	pFakePage->SetStream(pAP->GetStream());
+	pFakePage->Add("Resources", (PdfWriter::CObjectBase*)m_pDocument->GetFieldsResources());
+
+	pFakePage->SetStrokeColor(0, 0, 0);
+	pFakePage->SetFillColor(0, 0, 0);
+
+	IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pRenderer);
+	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);
+	RELEASEOBJECT(pCorrector);
+
+	m_oCommandManager.Flush();
+	pAP->EndDraw();
+	pFakePage->EndMarkedContent();
 
 	pAnnot->APFromFakePage(pFakePage);
 

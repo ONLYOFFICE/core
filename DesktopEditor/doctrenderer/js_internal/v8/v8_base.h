@@ -488,7 +488,11 @@ namespace NSJSBase
 
 		virtual CJSEmbedObject* getNative()
 		{
+			if (0 == value->InternalFieldCount())
+				return NULL;
 			v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(value->GetInternalField(0));
+			if (field.IsEmpty())
+				return NULL;
 			return (CJSEmbedObject*)field->Value();
 		}
 

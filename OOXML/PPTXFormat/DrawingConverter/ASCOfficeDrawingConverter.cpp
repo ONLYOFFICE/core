@@ -2683,7 +2683,8 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 							pPPTShape->m_eType == PPTShapes::sptCWedgeRoundRectCallout ||
 							pPPTShape->m_eType == PPTShapes::sptCWedgeEllipseCallout ||
 							pPPTShape->m_eType == PPTShapes::sptCCloudCallout ||
-							pPPTShape->m_eType == PPTShapes::sptCFlowChartConnector)
+							pPPTShape->m_eType == PPTShapes::sptCFlowChartConnector ||
+							pPPTShape->m_eType == PPTShapes::sptCFlowChartProcess)
 						{
 							pShape->oTextBoxBodyPr->lIns = 91440;
 							pShape->oTextBoxBodyPr->tIns = 45720;

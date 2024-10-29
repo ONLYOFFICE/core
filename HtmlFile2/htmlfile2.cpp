@@ -1400,10 +1400,16 @@ bool GetStatusUsingExternalLocalFiles()
 	return true;
 }
 
-bool CanUseThisPath(const std::wstring& wsPath, bool bIsAllowExternalLocalFiles)
+bool CanUseThisPath(const std::wstring& wsPath, const std::wstring& wsSrcPath, const std::wstring& wsCorePath, bool bIsAllowExternalLocalFiles)
 {
 	if (bIsAllowExternalLocalFiles)
 		return true;
+
+	if (!wsCorePath.empty())
+	{
+		const std::wstring wsFullPath = NSSystemPath::ShortenPath(NSSystemPath::Combine(wsSrcPath, wsPath));
+		return boost::starts_with(wsFullPath, wsCorePath);
+	}
 
 	if (wsPath.length() >= 3 && L"../" == wsPath.substr(0, 3))
 		return false;
@@ -1424,6 +1430,7 @@ public:
 	std::wstring m_sSrc;  // Директория источника
 	std::wstring m_sDst;  // Директория назначения
 	std::wstring m_sBase; // Полный базовый адрес
+	std::wstring m_sCore; // Путь до корневого файла (используется для работы с Epub)
 
 	NSCSS::CTree m_oTree; // Дерево body html-файла
 
@@ -4205,7 +4212,7 @@ private:
 		{
 			sSrcM = NSSystemPath::ShortenPath(sSrcM);
 
-			if (!CanUseThisPath(sSrcM, bIsAllowExternalLocalFiles))
+			if (!CanUseThisPath(sSrcM, m_sSrc, m_sCore, bIsAllowExternalLocalFiles))
 				return true;
 		}
 
@@ -4683,7 +4690,12 @@ bool CHtmlFile2::IsMhtFile(const std::wstring& sFile)
 
 void CHtmlFile2::SetTmpDirectory(const std::wstring& sFolder)
 {
-	m_internal->m_sTmp = sFolder;
+	m_internal->m_sTmp = NSSystemPath::NormalizePath(sFolder);
+}
+
+void CHtmlFile2::SetCoreDirectory(const std::wstring& wsFolder)
+{
+	m_internal->m_sCore = NSSystemPath::NormalizePath(wsFolder);
 }
 
 HRESULT CHtmlFile2::OpenHtml(const std::wstring& sSrc, const std::wstring& sDst, CHtmlParams* oParams)

@@ -4156,19 +4156,19 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		READ1_DEF(length, res, this->ReadSheetPr, &oSheetPr);
 	SEEK_TO_POS_END(oSheetPr);
 //-------------------------------------------------------------------------------------------------------------
-	OOX::Spreadsheet::CSheetViews oSheetViews;
+	m_pCurWorksheet->m_oSheetViews.Init();
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetViews);
-		READ1_DEF(length, res, this->ReadSheetViews, &oSheetViews);
+		READ1_DEF(length, res, this->ReadSheetViews, m_pCurWorksheet->m_oSheetViews.GetPointer());
 	SEEK_TO_POS_END2();
-	if (oSheetViews.m_arrItems.empty())
-		oSheetViews.m_arrItems.push_back(new OOX::Spreadsheet::CSheetView());
-	OOX::Spreadsheet::CSheetView* pSheetView = oSheetViews.m_arrItems.front();
+	if (m_pCurWorksheet->m_oSheetViews->m_arrItems.empty())
+		m_pCurWorksheet->m_oSheetViews->m_arrItems.push_back(new OOX::Spreadsheet::CSheetView());
+	OOX::Spreadsheet::CSheetView* pSheetView = m_pCurWorksheet->m_oSheetViews->m_arrItems.front();
 	if (false == pSheetView->m_oWorkbookViewId.IsInit())
 	{
 		pSheetView->m_oWorkbookViewId.Init();
 		pSheetView->m_oWorkbookViewId->SetValue(0);
 	}
-	oSheetViews.toXML(oStreamWriter);
+	m_pCurWorksheet->m_oSheetViews->toXML(oStreamWriter);
 //-------------------------------------------------------------------------------------------------------------
 	OOX::Spreadsheet::CSheetFormatPr oSheetFormatPr;
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetFormatPr);

@@ -312,8 +312,8 @@ PointD Curve::Get(const double& t, const int& type) const noexcept
 		}
 		else if (t > tMax)
 		{
-			x0 = 3 * (x[3] - y[2]);
-			y0 = 3 * (y[3] - x[2]);
+			x0 = 3 * (x[3] - x[2]);
+			y0 = 3 * (y[3] - y[2]);
 		}
 		else
 		{
@@ -369,7 +369,7 @@ Curve Curve::GetPart(double from, double to) const noexcept
 		result.Segment2.HO.X -= result.Segment2.P.X;
 		result.Segment2.HO.Y -= result.Segment2.P.Y;
 	}
-	else if (to < 1)
+	if (to < 1)
 	{
 		result = result.Subdivide((to - from) / (1 - from))[0];
 		result.Segment2.HI.X -= result.Segment2.P.X;
@@ -653,8 +653,11 @@ int Curve::SolveCubic(double a, double b, double c, double d,
 
 void Curve::Flip() noexcept
 {
+	PointD tmpHI = Segment2.P + Segment2.HI;
+	PointD tmpHO = Segment2.P + Segment2.HO;
 	std::swap(Segment1.P, Segment2.P);
-	std::swap(Segment1.HI, Segment1.HO);
+	Segment2.HI	= tmpHI - Segment2.P;
+	Segment2.HO	= tmpHO - Segment2.P;
 }
 
 bool Curve::IsStraight() const noexcept
@@ -707,12 +710,14 @@ bool Location::IsTouching() noexcept
 
 CBooleanOperations::CBooleanOperations(const CGraphicsPath& path1,
 									   const CGraphicsPath& path2,
-									   BooleanOpType op) :
+									   BooleanOpType op,
+									   long fillType) :
 	Op(op),
 	Close1(path1.Is_poly_closed()),
 	Close2(path2.Is_poly_closed()),
 	Path1(path1),
-	Path2(path2)
+	Path2(path2),
+	FillType(fillType)
 {
 	TraceBoolean();
 }
@@ -1705,6 +1710,10 @@ void CBooleanOperations::SetWinding()
 			} while (!s.IsEmpty() && !s.Inters && s != start);
 		}
 	}
+
+	if (FillType & c_nStroke)
+		for (auto& s : Segments2)
+			s.Winding = 0;
 }
 
 void CBooleanOperations::DivideLocations()
@@ -1896,7 +1905,8 @@ void CBooleanOperations::AddOffsets(std::vector<double>& offsets,
 
 CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1,
 								   const CGraphicsPath& path2,
-								   BooleanOpType op)
+								   BooleanOpType op,
+								   long fillType)
 {
 	std::vector<CGraphicsPath>	paths1 = path1.GetSubPaths(),
 								paths2 = path2.GetSubPaths(),
@@ -1906,7 +1916,7 @@ CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1,
 	{
 		for (const auto& p2 : paths2)
 		{
-			CBooleanOperations operation(p1, p2, op);
+			CBooleanOperations operation(p1, p2, op, fillType);
 			paths.push_back(operation.GetResult());
 		}
 	}

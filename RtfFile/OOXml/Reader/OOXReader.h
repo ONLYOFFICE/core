@@ -63,7 +63,8 @@ public:
     RtfConvertationManager*							m_convertationManager;
 	std::wstring									m_sPath;
 
-	int												m_nCurItap;			//для определение вложенности таблицы
+	int												m_nCurItap = 0;			//для определение вложенности таблицы
+	bool											m_bInTable = false;
 
 	int												m_nCurOleChartId;
 	int												m_nCurFittextId;

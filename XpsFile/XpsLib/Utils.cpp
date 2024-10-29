@@ -47,21 +47,21 @@
 #define IsNumber(X) \
 		('0' == (X)\
 	  || '1' == (X)\
-      || '2' == (X)\
-      || '3' == (X)\
-      || '4' == (X)\
-      || '5' == (X)\
-      || '6' == (X)\
-      || '7' == (X)\
-      || '8' == (X)\
-      || '9' == (X)\
-      || '-' == (X)\
+	  || '2' == (X)\
+	  || '3' == (X)\
+	  || '4' == (X)\
+	  || '5' == (X)\
+	  || '6' == (X)\
+	  || '7' == (X)\
+	  || '8' == (X)\
+	  || '9' == (X)\
+	  || '-' == (X)\
 	  || '.' == (X)\
-      || 'e' == (X)\
+	  || 'e' == (X)\
 	  || 'E' == (X))
 
-#define GetChar(STRING, POS) STRING[POS++] 
-#define LookChar(STRING, POS) STRING[POS] 
+#define GetChar(STRING, POS) STRING[POS++]
+#define LookChar(STRING, POS) STRING[POS]
 
 #ifndef SQR
 #define SQR(X) ((X)*(X))
@@ -143,8 +143,8 @@ namespace XPSEllipse
 		// Выясним в каких четвертях находятся начальная и конечная точки
 		unsigned int nFirstPointQuard  = int(fAngle1) / 90 + 1;
 		unsigned int nSecondPointQuard = int(fAngle2) / 90 + 1;
-        nSecondPointQuard = std::min((unsigned int)4, std::max((unsigned int)1, nSecondPointQuard));
-        nFirstPointQuard  = std::min((unsigned int)4, std::max((unsigned int)1, nFirstPointQuard));
+		nSecondPointQuard = std::min((unsigned int)4, std::max((unsigned int)1, nSecondPointQuard));
+		nFirstPointQuard  = std::min((unsigned int)4, std::max((unsigned int)1, nFirstPointQuard));
 		// Проведем линию в начальную точку дуги
 		double fStartX = 0.0, fStartY = 0.0, fEndX = 0.0, fEndY = 0.0;
 
@@ -251,7 +251,7 @@ namespace XPSEllipse
 	}
 	inline void GetEllipseKoefs        (const double& dX1, const double& dY1, const double& dRadX, const double& dRadY, double& dA1, double& dB1, double& dA2, double& dB2, double& dC2, double& dRoot)
 	{
-		// Y = A1 * X + B1 
+		// Y = A1 * X + B1
 		dA1 = -dX1 / dY1 * SQR(dRadY) / SQR(dRadX);
 		dB1 = (SQR(dX1) / SQR(dRadX) + SQR(dY1) / SQR(dRadY)) * SQR(dRadY) / (2 * dY1);
 
@@ -286,7 +286,7 @@ namespace XPSEllipse
 		}
 
 		if (dRoot < -0.001)
-		{			
+		{
 			// Такого быть не должно
 			return false;
 		}
@@ -310,7 +310,7 @@ namespace XPSEllipse
 		if (abs(dX1) < 0.001)
 			return false;
 
-		// Центры искомых эллипсов лежат на вертикальной прямой			
+		// Центры искомых эллипсов лежат на вертикальной прямой
 		dCx1 = dX1 / 2;
 		dCx2 = dCx1;
 
@@ -326,7 +326,7 @@ namespace XPSEllipse
 				dRoot = SQR(dRadY) - SQR(dRadY) / SQR(dRadX) * SQR(dCx1);
 			}
 		}
-		
+
 		if (dRoot < -0.001)
 		{
 			// Такого быть не должно
@@ -527,7 +527,7 @@ namespace XPS
 			}
 
 			dFloat = (bNegative ? (double)(-dFloat) : (double)dFloat);
-            nExp = std::max(20, std::min(0, nExp));
+			nExp = std::max(20, std::min(0, nExp));
 
 			while (nExp)
 			{
@@ -539,7 +539,7 @@ namespace XPS
 				nExp--;
 			}
 
-			return dFloat;			
+			return dFloat;
 		}
 
 		return 0.0;
@@ -578,7 +578,7 @@ namespace XPS
 				}
 			}
 
-			return (bNegative ? -nInt : nInt);		
+			return (bNegative ? -nInt : nInt);
 		}
 
 		return 0;
@@ -667,7 +667,7 @@ namespace XPS
 		//double dTest3 = SQR(dCx2) / SQR(dRadX) + SQR(dCy2) / SQR(dRadY);
 		//double dTest4 = SQR(dCx2 - dX1) / SQR(dRadX) + SQR(dCy2 - dY1) / SQR(dRadY);
 
-		// Теперь у нас есть 2 эллипса, нужно определить дугу, которую нам и надо отрисовать. 
+		// Теперь у нас есть 2 эллипса, нужно определить дугу, которую нам и надо отрисовать.
 		// Для начала найдем углы начальной и конечной точек для обоих эллипсов.
 		double dAngleStart1 = GetEllipseAngle(dCx1, dCy1, dRadX, dRadY, 0, 0);
 		double dAngleEnd1   = GetEllipseAngle(dCx1, dCy1, dRadX, dRadY, dX1, dY1);
@@ -706,7 +706,7 @@ namespace XPS
 }
 
 namespace XPS
-{	
+{
 	int    GetDigit(wchar_t wChar)
 	{
 		if (wChar >= '0' && wChar <= '9')
@@ -729,11 +729,11 @@ namespace XPS
 	}
 	double GetDouble(const std::wstring& wsString)
 	{
-        return std::stod(wsString.c_str());
+		return std::stod(wsString.c_str());
 	}
 	int    GetInteger(const std::wstring& wsString)
 	{
-        return std::stoi(wsString.c_str());
+		return std::stoi(wsString.c_str());
 	}
 	bool   GetBool(const std::wstring& wsString)
 	{
@@ -780,45 +780,45 @@ namespace XPS
 			if (3 == arrElements.size())
 			{
 				nAlpha = 255;
-                nBgr = (((int)(std::min(GetDouble(arrElements[2]), 1.0) * 255)) << 16) + (((int)(std::min(GetDouble(arrElements[1]), 1.0) * 255)) << 8) + ((int)(std::min(GetDouble(arrElements[0]), 1.0) * 255));
+				nBgr = (((int)(std::min(GetDouble(arrElements[2]), 1.0) * 255)) << 16) + (((int)(std::min(GetDouble(arrElements[1]), 1.0) * 255)) << 8) + ((int)(std::min(GetDouble(arrElements[0]), 1.0) * 255));
 			}
 			else if (4 == arrElements.size())
 			{
 				nAlpha = GetDouble(arrElements[0]) * 255;
-                nBgr = (((int)(std::min(GetDouble(arrElements[3]), 1.0) * 255)) << 16) + (((int)(std::min(GetDouble(arrElements[2]), 1.0) * 255)) << 8) + ((int)(std::min(GetDouble(arrElements[1]), 1.0) * 255));
+				nBgr = (((int)(std::min(GetDouble(arrElements[3]), 1.0) * 255)) << 16) + (((int)(std::min(GetDouble(arrElements[2]), 1.0) * 255)) << 8) + ((int)(std::min(GetDouble(arrElements[1]), 1.0) * 255));
 			}
 		}
 		else
 			return;
 	}
-    unsigned char GetCapStyle(const std::string& wsCapStyle)
+	unsigned char GetCapStyle(const std::string& wsCapStyle)
 	{
 		BYTE nCapStyle = Aggplus::LineCapFlat;
-        if (wsCapStyle == "Flat")
+		if (wsCapStyle == "Flat")
 			nCapStyle = Aggplus::LineCapFlat;
-        else if (wsCapStyle == "Round")
+		else if (wsCapStyle == "Round")
 			nCapStyle = Aggplus::LineCapRound;
-        else if (wsCapStyle == "Square")
+		else if (wsCapStyle == "Square")
 			nCapStyle = Aggplus::LineCapSquare;
-        else if (wsCapStyle == "Triangle")
+		else if (wsCapStyle == "Triangle")
 			nCapStyle = Aggplus::LineCapTriangle;
 
 		return nCapStyle;
 	}
 	std::wstring NormalizePath(const std::wstring& wsPath)
-	{		
+	{
 #ifdef WIN32
 		std::wstring wsResult = wsPath;
 		NSStringExt::Replace(wsResult, L"/", L"\\");
 		while (std::wstring::npos != wsResult.find(L"\\\\"))
-		{			
+		{
 			NSStringExt::Replace(wsResult, L"\\\\", L"\\");
 		}
 		return wsResult;
 #else
 		std::wstring wsResult = wsPath;
 		NSStringExt::Replace(wsResult, L"//", L"/");
-        NSStringExt::Replace(wsResult, L"//", L"/");
+		NSStringExt::Replace(wsResult, L"//", L"/");
 		return wsResult;
 #endif
 	}
@@ -1259,11 +1259,11 @@ namespace XPS
 		if (nCodeUnitCount > 0 && nGlyphCount > 0)
 		{
 			oEntry.vRemainUnicodes.clear();
-			// Нам нужно прочитать сколько реальных юникодных значений лежит в 
+			// Нам нужно прочитать сколько реальных юникодных значений лежит в
 			// промежутке [pUnicode + nUnicodePos, pUnicode + nUnicodePos + nCodeUnitCount]
 			int nUnicodesCount = 0;
 			unsigned int* pUnicodes = NULL;
-            nCodeUnitCount = std::min(nUtf16Len - nUtf16Pos, nCodeUnitCount);
+			nCodeUnitCount = std::min(nUtf16Len - nUtf16Pos, nCodeUnitCount);
 			if (nCodeUnitCount)
 			{
 				pUnicodes = new unsigned int[nCodeUnitCount];
@@ -1307,7 +1307,7 @@ namespace XPS
 
 			// Равномерно распределяем юникоды по глифам, в идеале их количество должно совпадать.
 			// Если юникодов больше, то лишние удаляем, если их меньше, то недостающие заполняем пробелами.
-            nUnicodesCount = std::min(nUnicodesCount, nGlyphCount);
+			nUnicodesCount = std::min(nUnicodesCount, nGlyphCount);
 			for (int nIndex = 0; nIndex < nGlyphCount; nIndex++)
 			{
 				if (nIndex < nUnicodesCount)
@@ -1598,7 +1598,7 @@ namespace XPS
 		{
 			wsNodeName = oReader.GetNameNoNS();
 			if (wsNodeName == L"GradientStop")
-			{				
+			{
 				double dPos = 0;
 				LONG lColor = 0;
 				if (oReader.MoveToFirstAttribute())
@@ -1673,6 +1673,8 @@ namespace XPS
 	}
 	void ReadSTColor(const CWString& wsString, int& nBgr, int& nAlpha)
 	{
+		nBgr = 0;
+		nAlpha = 255;
 		int nLen = wsString.size();
 		if (nLen <= 0)
 			return;
@@ -1722,12 +1724,12 @@ namespace XPS
 			if (3 == vElements.size())
 			{
 				nAlpha = 255;
-                nBgr   = (((int)(std::min(GetDouble(vElements[2]), 1.0) * 255)) << 16) + (((int)(std::min(GetDouble(vElements[1]), 1.0) * 255)) << 8) + ((int)(std::min(GetDouble(vElements[0]), 1.0) * 255));
+				nBgr   = (((int)(std::min(GetDouble(vElements[2]), 1.0) * 255)) << 16) + (((int)(std::min(GetDouble(vElements[1]), 1.0) * 255)) << 8) + ((int)(std::min(GetDouble(vElements[0]), 1.0) * 255));
 			}
 			else if (4 == vElements.size())
 			{
-                nAlpha = (int)(std::min(GetDouble(vElements[0]), 1.0) * 255);
-                nBgr   = (((int)(std::min(GetDouble(vElements[3]), 1.0) * 255)) << 16) + (((int)(std::min(GetDouble(vElements[2]), 1.0) * 255)) << 8) + ((int)(std::min(GetDouble(vElements[1]), 1.0) * 255));
+				nAlpha = (int)(std::min(GetDouble(vElements[0]), 1.0) * 255);
+				nBgr   = (((int)(std::min(GetDouble(vElements[3]), 1.0) * 255)) << 16) + (((int)(std::min(GetDouble(vElements[2]), 1.0) * 255)) << 8) + ((int)(std::min(GetDouble(vElements[1]), 1.0) * 255));
 			}
 		}
 	}

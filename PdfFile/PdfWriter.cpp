@@ -3664,7 +3664,6 @@ void CPdfWriter::DrawAP(PdfWriter::CAnnotation* pAnnot, BYTE* pRender, LONG nLen
 	m_pPage->StartTransform(1, 0, 0, 1, -pAnnot->GetPageX(), 0);
 
 	PdfWriter::CAnnotAppearanceObject* pAP = pAnnot->StartAP();
-	pAP->EndText();
 
 	pFakePage->SetStream(pAP->GetStream());
 	pFakePage->Add("Resources", (PdfWriter::CObjectBase*)m_pDocument->GetFieldsResources());

@@ -303,6 +303,7 @@ namespace NSDocxRenderer
 			color.position = (long)(pPositions[i] * 65536);
 			m_oBrush.m_arrSubColors.push_back(color);
 		}
+		m_oCurrentPage.m_bIsGradient = true;
 		return S_OK;
 	}
 	HRESULT CDocument::put_BrushGradInfo(void* pGradInfo)

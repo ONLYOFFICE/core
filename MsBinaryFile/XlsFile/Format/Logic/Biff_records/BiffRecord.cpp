@@ -84,6 +84,17 @@ const bool BiffRecord::read(StreamCacheReaderPtr reader, BaseObject* parent, con
 
 	return true; // Record reading OK
 }
+const bool BiffRecord::quickread(StreamCacheReaderPtr reader, BaseObject* parent, BaseObjectPtr memory, const bool mandatory)
+{
+    CFRecordPtr record = reader->getNextRecord(getTypeId(), false);
+    if(!record)
+    {
+        return false; // Required record hasn't been found
+    }
+    readFields(*record);
+    parent->add_child(memory);
+    return true;
+}
 const bool BiffRecord::write(StreamCacheWriterPtr writer, BaseObject* parent)
 {
 	parent_ = parent;

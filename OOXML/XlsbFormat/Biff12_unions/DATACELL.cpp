@@ -59,16 +59,18 @@ namespace XLSB
         {
             case rt_CellBlank:
             {
-                CellBlank   cellBlank;
-                proc.optional(cellBlank);
-                m_Col = cellBlank.cell.column;
+                CellBlank* cellBlankRaw(new CellBlank);
+                BaseObjectPtr cellptr(cellBlankRaw);
+                proc.quick(cellptr);
+                m_Col = cellBlankRaw->cell.column;
                 break;
             }
             case rt_CellRk:
             {
-                CellRk		cellRk;
-                proc.optional(cellRk);
-                m_Col = cellRk.cell.column;
+                CellRk* cellBlankRaw(new CellRk);
+                BaseObjectPtr cellptr(cellBlankRaw);
+                proc.quick(cellptr);
+                m_Col = cellBlankRaw->cell.column;
                 break;
             }
             case rt_CellError:
@@ -87,23 +89,26 @@ namespace XLSB
             }
             case rt_CellReal:
             {
-                CellReal	cellReal;
-                proc.optional(cellReal);
-                m_Col = cellReal.cell.column;
+                CellReal* cellBlankRaw(new CellReal);
+                BaseObjectPtr cellptr(cellBlankRaw);
+                proc.quick(cellptr);
+                m_Col = cellBlankRaw->cell.column;
                 break;
             }
             case rt_CellSt:
             {
-                CellSt		cellSt;
-                proc.optional(cellSt);
-                m_Col = cellSt.cell.column;
+                CellSt* cellBlankRaw(new CellSt);
+                BaseObjectPtr cellptr(cellBlankRaw);
+                proc.quick(cellptr);
+                m_Col = cellBlankRaw->cell.column;
                 break;
             }
             case rt_CellIsst:
             {
-                CellIsst    cellIsst;
-                proc.optional(cellIsst);
-                m_Col = cellIsst.cell.column;
+                CellIsst* cellBlankRaw(new CellIsst);
+                BaseObjectPtr cellptr(cellBlankRaw);
+                proc.quick(cellptr);
+                m_Col = cellBlankRaw->cell.column;
                 break;
             }
             default:

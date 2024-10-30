@@ -48,6 +48,8 @@ public:
 
 	virtual const bool read(StreamCacheReaderPtr reader, BaseObject* parent, const bool is_mandatory); // Read self and children
 
+    virtual const bool quickread(StreamCacheReaderPtr reader, BaseObject* parent, BaseObjectPtr memory, const bool mandatory);
+
 	virtual const bool write(StreamCacheWriterPtr writer, BaseObject* parent); // Write self and children
 	
 	virtual void readFields(CFRecord& record) {}//= 0;

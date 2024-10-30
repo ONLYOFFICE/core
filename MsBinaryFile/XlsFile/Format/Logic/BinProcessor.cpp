@@ -35,7 +35,8 @@
 #include "../Binary/CFStreamCacheReader.h"
 #include "../Binary/CFStreamCacheWriter.h"
 #include "../Logic/Biff_structures/BiffString.h"
-
+#include "../Logic/CompositeObject.h"
+#include "../Logic/Biff_records/BiffRecord.h"
 
 namespace XLS
 {;
@@ -140,6 +141,18 @@ const bool BinReaderProcessor::mandatory(BaseObject& object)
 	}
 }
 
+const bool BinReaderProcessor::quick(BaseObjectPtr& object)
+{
+    try
+    {
+        auto result = object->quickread(reader_, parent_, object, false);
+        return result;
+    }
+    catch(...)
+    {
+    }
+    return false;
+}
 
 // object_copy is necessary in case we haven't found the desired record and have to put it to the queue
 const bool BinReaderProcessor::readChild(BaseObject& object, const bool is_mandatory)
@@ -280,6 +293,12 @@ const bool BinWriterProcessor::mandatory(BaseObject& object)
 {
 	return writeChild(object, true);
 }
+///todo develop this method in case slow binary writing 
+ const bool BinWriterProcessor::quick(BaseObjectPtr& object)
+ {
+     bool ret_val = false;
+     return ret_val;
+ }
 
 // object_copy is necessary in case we haven't found the desired record and have to put it to the queue
 const bool BinWriterProcessor::writeChild(BaseObject& object, const bool is_mandatory)

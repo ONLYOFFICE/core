@@ -75,6 +75,7 @@ public:
     const int           repeated	(BaseObject& object, const int fromN, const int toN);
     virtual const bool  optional	(BaseObject& object) = 0;
     virtual const bool  mandatory	(BaseObject& object) = 0;
+    virtual const bool  quick       (BaseObjectPtr& object) = 0;
 
 	// Universal check if the we have the specified record in our processing plans (in binary it is not more than 'num_records_to_check' records forward)
 	virtual const bool checkNextRecord(const CFRecordType::TypeId desirable_type, const size_t num_records_to_check) = 0;
@@ -103,6 +104,7 @@ public:
 
 	virtual const bool	optional	(BaseObject& object);
 	virtual const bool	mandatory	(BaseObject& object);
+    const bool  quick (BaseObjectPtr& object) override;
 
 	const bool checkNextRecord(const CFRecordType::TypeId desirable_type, const size_t num_records_to_check);
 
@@ -129,6 +131,7 @@ public:
 
 	const bool	optional(BaseObject& object) override;
 	const bool	mandatory(BaseObject& object) override;
+    const bool  quick (BaseObjectPtr& object) override;
 
 	virtual const bool checkNextRecord(const CFRecordType::TypeId desirable_type, const size_t num_records_to_check) override { return false; }
 	virtual const CFRecordType::TypeId getNextRecordType() override { return CFRecordType::ANY_TYPE; }

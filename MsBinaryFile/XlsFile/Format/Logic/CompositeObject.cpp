@@ -56,7 +56,17 @@ const bool CompositeObject::read(StreamCacheReaderPtr reader, BaseObject* parent
 
 	return false;
 }
+const bool CompositeObject::quickread(StreamCacheReaderPtr reader, BaseObject* parent, BaseObjectPtr memory, const bool mandatory)
+{
+    BinReaderProcessor reader_proc(reader, this, mandatory);
+    if(loadContentRead(reader_proc))
+    {
+        parent->add_child(memory);
+        return true;
+    }
 
+    return false;
+}
 const bool CompositeObject::write(StreamCacheWriterPtr writer, BaseObject* parent)
 {
 	BinWriterProcessor writer_proc(writer, this);

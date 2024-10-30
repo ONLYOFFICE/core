@@ -25,7 +25,7 @@
 #include  <algorithm>
 #include <cstdlib>
 
-#define LOG_EMF_RECORDS 0
+#define LOG_EMF_RECORDS 1
 
 #ifdef LOG_EMF_RECORDS
 	#if 1 == LOG_EMF_RECORDS

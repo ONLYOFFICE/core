@@ -1295,11 +1295,11 @@ namespace MetaFile
 		{
 			oTempRect = oRect.ToRectD();
 
-			wsValue +=	L"M "  + ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Top) +
-			            L" L " + ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Top) + L' ' +
-			                     ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Bottom) + L' ' +
-			                     ConvertToWString(oTempRect.Left)	+ L',' + ConvertToWString(oTempRect.Bottom) + L' ' +
-			                     ConvertToWString(oTempRect.Left)	+ L',' + ConvertToWString(oTempRect.Top) + L' ';
+			wsValue += L"M "  + ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Top)    +
+			           L" L " + ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Top)    + L' ' +
+			                    ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Bottom) + L' ' +
+			                    ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Bottom) + L' ' +
+			                    ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Top)    + L' ';
 		}
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
@@ -1387,16 +1387,17 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_FILLRECTS(unsigned int unBrushId, const std::vector<TEmfPlusRectF> &arRects)
 	{
+		if (arRects.empty())
+			return;
+
 		std::wstring wsValue;
 
 		TRectD oTempRect;
+		TXForm oFileTransform(m_pParser->GetTransform());
 
 		for (const TEmfPlusRectF& oRect : arRects)
 		{
 			oTempRect = oRect.ToRectD();
-
-			m_pParser->GetTransform().Apply(oTempRect.Left,  oTempRect.Top);
-			m_pParser->GetTransform().Apply(oTempRect.Right, oTempRect.Bottom);
 
 			wsValue += L"M "  + ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Top)    +
 			           L" L " + ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Top)    + L' ' +
@@ -1405,8 +1406,11 @@ namespace MetaFile
 			                    ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Top)    + L' ';
 		}
 
+		wsValue.pop_back();
+
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
+		AddTransform(arAttributes);
 		AddFill(arAttributes);
 		AddClip();
 

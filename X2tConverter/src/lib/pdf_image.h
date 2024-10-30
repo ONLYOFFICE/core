@@ -697,7 +697,17 @@ namespace NExtractTools
 
 		std::wstring password = params.getPassword();
 		if (!oPdfResult.LoadFromFile(sFrom, L"", password, password))
-			return false;
+		{
+			if (oPdfResult.GetError() == 4)
+			{
+				// if password does not changed - old password may be not sended
+				password = params.getSavePassword();
+				if (!oPdfResult.LoadFromFile(sFrom, L"", password, password))
+					return false;
+			}
+			else
+				return false;
+		}
 
 		CConvertFromBinParams oConvertParams;
 		oConvertParams.m_sInternalMediaDirectory = NSFile::GetDirectoryName(sFrom);

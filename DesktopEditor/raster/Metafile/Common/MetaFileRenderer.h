@@ -1246,10 +1246,16 @@ namespace MetaFile
 			{
 				m_pRenderer->put_PenDashOffset(pPen->GetDashOffset());
 
+				double dM11, dTemp;
+				m_pRenderer->GetTransform(&dM11, &dTemp, &dTemp, &dTemp, &dTemp, &dTemp);
+				double dDpi;
+				m_pRenderer->get_DpiX(&dDpi);
+				const double dNewWidth{dWidth * dM11 * dDpi / 25.4};
+
 				std::vector<double> arDashes(unSizeDash);
 
 				for (unsigned int unIndex = 0; unIndex < unSizeDash; ++unIndex)
-						arDashes[unIndex] = pDataDash[unIndex] * dWidth;
+					arDashes[unIndex] = pDataDash[unIndex] * dNewWidth;
 
 				m_pRenderer->PenDashPattern(arDashes.data(), unSizeDash);
 
@@ -1259,39 +1265,45 @@ namespace MetaFile
 			{
 				std::vector<double> arDashPattern;
 
+				double dM11, dTemp;
+				m_pRenderer->GetTransform(&dM11, &dTemp, &dTemp, &dTemp, &dTemp, &dTemp);
+				double dDpi;
+				m_pRenderer->get_DpiX(&dDpi);
+				const double dNewWidth{dWidth * dM11 * dDpi / 25.4};
+
 				switch (ulPenStyle)
 				{
 					case PS_DASH:
 					{
-						arDashPattern.push_back(9 * dWidth);
-						arDashPattern.push_back(3 * dWidth);
+						arDashPattern.push_back(9 * dNewWidth);
+						arDashPattern.push_back(3 * dNewWidth);
 
 						break;
 					}
 					case PS_DOT:
 					{
-						arDashPattern.push_back(3 * dWidth);
-						arDashPattern.push_back(3 * dWidth);
+						arDashPattern.push_back(3 * dNewWidth);
+						arDashPattern.push_back(3 * dNewWidth);
 
 						break;
 					}
 					case PS_DASHDOT:
 					{
-						arDashPattern.push_back(9 * dWidth);
-						arDashPattern.push_back(3 * dWidth);
-						arDashPattern.push_back(3 * dWidth);
-						arDashPattern.push_back(3 * dWidth);
+						arDashPattern.push_back(9 * dNewWidth);
+						arDashPattern.push_back(3 * dNewWidth);
+						arDashPattern.push_back(3 * dNewWidth);
+						arDashPattern.push_back(3 * dNewWidth);
 
 						break;
 					}
 					case PS_DASHDOTDOT:
 					{
-						arDashPattern.push_back(9 * dWidth);
-						arDashPattern.push_back(3 * dWidth);
-						arDashPattern.push_back(3 * dWidth);
-						arDashPattern.push_back(3 * dWidth);
-						arDashPattern.push_back(3 * dWidth);
-						arDashPattern.push_back(3 * dWidth);
+						arDashPattern.push_back(9 * dNewWidth);
+						arDashPattern.push_back(3 * dNewWidth);
+						arDashPattern.push_back(3 * dNewWidth);
+						arDashPattern.push_back(3 * dNewWidth);
+						arDashPattern.push_back(3 * dNewWidth);
+						arDashPattern.push_back(3 * dNewWidth);
 
 						break;
 					}

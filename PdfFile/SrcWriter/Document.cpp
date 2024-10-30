@@ -1861,5 +1861,6 @@ namespace PdfWriter
 	void CDocument::ClearPage()
 	{
 		m_pCurPage->ClearContent(m_pXref);
+		m_pCurPage->StartTransform(1, 0, 0, 1, 0, 0);
 	}
 }

@@ -24,11 +24,15 @@ DESTDIR = $$CORE_BUILDS_BINARY_PATH
 HEADERS += \
     $$PWD/../source/ECMACryptFile.h \
     $$PWD/../source/CryptTransform.h \
-    $$PWD/../source/simple_xml_writer.h
+    $$PWD/../source/simple_xml_writer.h \
+    ../../MsBinaryFile/XlsFile/Format/Logging/Log.h \
+    ../../MsBinaryFile/XlsFile/Format/Logging/Logger.h
 
 SOURCES += \
     $$PWD/../source/ECMACryptFile.cpp \
-    $$PWD/../source/CryptTransform.cpp
+    $$PWD/../source/CryptTransform.cpp \
+    ../../MsBinaryFile/XlsFile/Format/Logging/Log.cpp \
+    ../../MsBinaryFile/XlsFile/Format/Logging/Logger.cpp
 
 SOURCES += \
     $$CORE_ROOT_DIR/Common/OfficeFileFormatChecker2.cpp \

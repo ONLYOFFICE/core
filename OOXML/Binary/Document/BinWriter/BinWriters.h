@@ -98,6 +98,8 @@ namespace BinDocxRW
 					 NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager);
 
 		std::wstring AddEmbeddedStyle(const std::wstring & styleId);
+
+		bool bWriteAlternative = false;
 	};
 	class ParamsDocumentWriter
 	{

@@ -18,12 +18,12 @@ namespace NSCSS
 {
 	typedef std::map<std::wstring, std::wstring>::const_iterator styles_iterator;
 
-	CCompiledStyle::CCompiledStyle() : m_nDpi(96), m_UnitMeasure(Point)
+	CCompiledStyle::CCompiledStyle() : m_nDpi(96), m_UnitMeasure(Point), m_dCoreFontSize(DEFAULT_FONT_SIZE)
 	{}
 
 	CCompiledStyle::CCompiledStyle(const CCompiledStyle& oStyle) :
 		m_arParentsStyles(oStyle.m_arParentsStyles), m_sId(oStyle.m_sId),
-		m_nDpi(oStyle.m_nDpi), m_UnitMeasure(oStyle.m_UnitMeasure),
+		m_nDpi(oStyle.m_nDpi), m_UnitMeasure(oStyle.m_UnitMeasure), m_dCoreFontSize(oStyle.m_dCoreFontSize),
 		m_oFont(oStyle.m_oFont), m_oMargin(oStyle.m_oMargin), m_oPadding(oStyle.m_oPadding), m_oBackground(oStyle.m_oBackground),
 		m_oText(oStyle.m_oText), m_oBorder(oStyle.m_oBorder), m_oDisplay(oStyle.m_oDisplay){}
 
@@ -116,7 +116,10 @@ namespace NSCSS
 	void CCompiledStyle::AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const unsigned int unLevel, const bool& bHardMode)
 	{
 		const bool bIsThereBorder = (m_oBorder.Empty()) ? false : true;
-		const double dFontSize = (!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Point) : DEFAULT_FONT_SIZE;
+		const double dParentFontSize = (!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Point) : DEFAULT_FONT_SIZE;
+
+		if (0 == unLevel)
+			m_dCoreFontSize = dParentFontSize;
 
 		for (std::pair<std::wstring, std::wstring> pPropertie : mStyle)
 		{
@@ -128,15 +131,15 @@ namespace NSCSS
 				CASE(L"font"):
 				{
 					m_oFont.SetValue(pPropertie.second, unLevel, bHardMode);
-					m_oFont.UpdateSize(dFontSize);
-					m_oFont.UpdateLineHeight(dFontSize);
+					m_oFont.UpdateSize(dParentFontSize, m_dCoreFontSize);
+					m_oFont.UpdateLineHeight(dParentFontSize, m_dCoreFontSize);
 					break;
 				}
 				CASE(L"font-size"):
 				CASE(L"font-size-adjust"):
 				{
 					m_oFont.SetSize(pPropertie.second, unLevel, bHardMode);
-					m_oFont.UpdateSize(dFontSize);
+					m_oFont.UpdateSize(dParentFontSize, m_dCoreFontSize);
 					break;
 				}
 				CASE(L"font-stretch"):
@@ -176,7 +179,7 @@ namespace NSCSS
 						break;
 
 					m_oMargin.SetValues(pPropertie.second, unLevel, bHardMode);
-					m_oMargin.UpdateAll(dFontSize);
+					m_oMargin.UpdateAll(dParentFontSize, m_dCoreFontSize);
 					break;
 				}
 				CASE(L"margin-top"):
@@ -196,7 +199,7 @@ namespace NSCSS
 						break;
 
 					m_oMargin.SetRight(pPropertie.second, unLevel, bHardMode);
-					m_oMargin.UpdateRight(dFontSize);
+					m_oMargin.UpdateRight(dParentFontSize, m_dCoreFontSize);
 					break;
 				}
 				CASE(L"margin-bottom"):
@@ -206,7 +209,7 @@ namespace NSCSS
 						break;
 
 					m_oMargin.SetBottom(pPropertie.second, unLevel, bHardMode);
-					m_oMargin.UpdateBottom(dFontSize);
+					m_oMargin.UpdateBottom(dParentFontSize, m_dCoreFontSize);
 					break;
 				}
 				CASE(L"margin-left"):
@@ -217,7 +220,7 @@ namespace NSCSS
 						break;
 
 					m_oMargin.SetLeft(pPropertie.second, unLevel, bHardMode);
-					m_oMargin.UpdateLeft(dFontSize);
+					m_oMargin.UpdateLeft(dParentFontSize, m_dCoreFontSize);
 					break;
 				}
 				//PADDING
@@ -225,35 +228,35 @@ namespace NSCSS
 				CASE(L"mso-padding-alt"):
 				{
 					m_oPadding.SetValues(pPropertie.second, unLevel, bHardMode);
-					m_oPadding.UpdateAll(dFontSize);
+					m_oPadding.UpdateAll(dParentFontSize, m_dCoreFontSize);
 					break;
 				}
 				CASE(L"padding-top"):
 				CASE(L"mso-padding-top-alt"):
 				{
 					m_oPadding.SetTop(pPropertie.second, unLevel, bHardMode);
-					m_oPadding.UpdateTop(dFontSize);
+					m_oPadding.UpdateTop(dParentFontSize, m_dCoreFontSize);
 					break;
 				}
 				CASE(L"padding-right"):
 				CASE(L"mso-padding-right-alt"):
 				{
 					m_oPadding.SetRight(pPropertie.second, unLevel, bHardMode);
-					m_oPadding.UpdateRight(dFontSize);
+					m_oPadding.UpdateRight(dParentFontSize, m_dCoreFontSize);
 					break;
 				}
 				CASE(L"padding-bottom"):
 				CASE(L"mso-padding-bottom-alt"):
 				{
 					m_oPadding.SetBottom(pPropertie.second, unLevel, bHardMode);
-					m_oPadding.UpdateBottom(dFontSize);
+					m_oPadding.UpdateBottom(dParentFontSize, m_dCoreFontSize);
 					break;
 				}
 				CASE(L"padding-left"):
 				CASE(L"mso-padding-left-alt"):
 				{
 					m_oPadding.SetLeft(pPropertie.second, unLevel, bHardMode);
-					m_oPadding.UpdateLeft(dFontSize);
+					m_oPadding.UpdateLeft(dParentFontSize, m_dCoreFontSize);
 					break;
 				}
 				// TEXT

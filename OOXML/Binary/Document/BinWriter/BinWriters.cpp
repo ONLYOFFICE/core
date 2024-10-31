@@ -6705,7 +6705,7 @@ bool BinaryDocumentTableWriter::WriteDrawingPptx(OOX::WritingElement* item)
 			}
 			res = WriteDrawingPptx(we);
 
-			if (res == false || we == NULL)
+			if (res == false || we == NULL || m_oParamsWriter.bWriteAlternative)
 			{
 				if (false == pAlternateContent->m_arrFallbackItems.empty())
 				{
@@ -6750,7 +6750,8 @@ bool BinaryDocumentTableWriter::WriteDrawingPptx(OOX::WritingElement* item)
 		}
 		else
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::pptxDrawing);
+			int nCurPos = m_oBcw.WriteItemStart(m_oParamsWriter.bWriteAlternative ? c_oSerRunType::pptxDrawingAlternative : c_oSerRunType::pptxDrawing);
+			m_oParamsWriter.bWriteAlternative = false;
 			WriteDrawing(NULL, pGraphicDrawing, pGraphic);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -6833,6 +6834,11 @@ void BinaryDocumentTableWriter::WriteDrawing(std::wstring* pXml, OOX::Logic::CDr
 			pGraphic->chartRec->toPPTY(&m_oBcw.m_oStream);
 
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
+
+			if (pGraphic->chartRec->m_bChartEx)
+			{
+				m_oParamsWriter.bWriteAlternative = true;
+			}
 		}
 		else
 		{
@@ -6848,11 +6854,6 @@ void BinaryDocumentTableWriter::WriteDrawing(std::wstring* pXml, OOX::Logic::CDr
 			{
 				pGraphic->olePic->toPPTY(&m_oBcw.m_oStream);
 			}
-			//else if (pGraphic->smartArt.is_init())
-			//{
-			//	pGraphic->smartArt->LoadDrawing(&m_oBcw.m_oStream);
-			//	pGraphic->smartArt->toPPTY(&m_oBcw.m_oStream);
-			//}
 			else if (pGraphic->element.is_init())
 			{
 				pGraphic->element.toPPTY(&m_oBcw.m_oStream);

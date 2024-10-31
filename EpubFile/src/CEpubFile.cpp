@@ -155,6 +155,7 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     std::wstring sDocxFileTempDir = m_sTempDir + L"/tmp";
     NSDirectory::CreateDirectory(sDocxFileTempDir);
     oFile.SetTmpDirectory(sDocxFileTempDir);
+    oFile.SetCoreDirectory(NSFile::GetDirectoryName(sContent));
 
     std::vector<std::wstring> arFiles;
     for (const CBookContentItem& oContent : m_arContents)

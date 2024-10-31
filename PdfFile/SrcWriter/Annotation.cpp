@@ -303,16 +303,19 @@ namespace PdfWriter
 		sRes.append(" ] 0 d\012");
 		return sRes;
 	}
+	CAnnotAppearanceObject* CAnnotation::StartAP()
+	{
+		m_pAppearance = new CAnnotAppearance(m_pXref, this);
+		if (!m_pAppearance)
+			return NULL;
+		Add("AP", m_pAppearance);
+		return m_pAppearance->GetNormal();
+	}
 	void CAnnotation::APFromFakePage(CPage* pFakePage)
 	{
-		// xref NULL - тогда у CAnnotAppearanceObject не будет создан stream
-		m_pAppearance = new CAnnotAppearance(NULL, this);
 		if (!m_pAppearance)
 			return;
-		Add("AP", m_pAppearance);
-		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal((CResourcesDict*)pFakePage->Get("Resources"));
-		m_pXref->Add(pNormal);
-		m_pAppearance->Add("N", pNormal);
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
 
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
@@ -335,15 +338,6 @@ namespace PdfWriter
 		pArray->Add(1);
 		pArray->Add(-GetRect().fLeft);
 		pArray->Add(-GetRect().fBottom);
-
-		CDictObject* pFPStream = pFakePage->GetContent();
-		pNormal->SetStream(m_pXref, pFPStream->GetStream(), false);
-#ifndef FILTER_FLATE_DECODE_DISABLED
-		if (m_pDocument->GetCompressionMode() & COMP_TEXT)
-			pNormal->SetFilter(STREAM_FILTER_FLATE_DECODE);
-#endif
-		pFPStream->SetStream(NULL);
-		// RELEASEOBJECT(pFPStream); Нельзя удалять - это объект стрима, он уже в xref
 	}
 	//----------------------------------------------------------------------------------------
 	// CMarkupAnnotation
@@ -2041,10 +2035,35 @@ namespace PdfWriter
 	void CCheckBoxWidget::SwitchAP(const std::string& sV)
 	{
 		CObjectBase* pAP, *pAPN;
-		if ((pAP = Get("AP")) && pAP->GetType() == object_type_DICT && (pAPN = ((CDictObject*)pAP)->Get("N")) && pAPN->GetType() == object_type_DICT && ((CDictObject*)pAPN)->Get(sV))
+		Add("AS", "Off");
+		if (!m_sAP_N_Yes.empty())
+		{
+			CObjectBase* pObj = GetObjValue("Opt");
+			if (pObj && pObj->GetType() == object_type_ARRAY)
+			{
+				CArrayObject* pArr = (CArrayObject*)pObj;
+				for (int i = 0; i < pArr->GetCount(); ++i)
+				{
+					pObj = pArr->Get(i);
+					if (pObj->GetType() == object_type_ARRAY && ((CArrayObject*)pObj)->GetCount() > 0)
+						pObj = ((CArrayObject*)pObj)->Get(0);
+					if (pObj->GetType() == object_type_STRING)
+					{
+						CStringObject* pStr = (CStringObject*)pObj;
+						const BYTE* pBinary = pStr->GetString();
+						if (pStr->GetLength() == m_sAP_N_Yes.length() && !StrCmp((const char*)pBinary, m_sAP_N_Yes.c_str()))
+						{
+							m_sAP_N_Yes = std::to_string(i);
+							SetV(UTF8_TO_U(m_sAP_N_Yes));
+							break;
+						}
+					}
+				}
+			}
+			Add("AS", m_sAP_N_Yes.c_str());
+		}
+		else if ((pAP = Get("AP")) && pAP->GetType() == object_type_DICT && (pAPN = ((CDictObject*)pAP)->Get("N")) && pAPN->GetType() == object_type_DICT && ((CDictObject*)pAPN)->Get(sV))
 			Add("AS", sV.c_str());
-		else
-			Add("AS", "Off");
 	}
 	void CCheckBoxWidget::SetFlag(const int& nFlag)
 	{
@@ -2108,6 +2127,7 @@ namespace PdfWriter
 	{
 		m_dHeight = 0;
 		m_nTI = -1;
+		m_bAPV = false;
 	}
 	void CChoiceWidget::SetFlag(const int& nFlag)
 	{

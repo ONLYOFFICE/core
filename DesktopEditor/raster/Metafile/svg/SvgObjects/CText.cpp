@@ -17,6 +17,7 @@
 
 namespace SVG
 {
+	#define DEFAULT_TSPAN_FONT_SIZE 16
 	#define DefaultFontFamily L"Times New Roman"
 	#define MIN_FONT_SIZE 5
 	#define MAX_FONT_SIZE 100
@@ -26,7 +27,7 @@ namespace SVG
 	CTSpan::CTSpan(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent, NSFonts::IFontManager* pFontManager, bool bCheckText)
 		: CRenderedObject(oNode, pParent), m_pFontManager(pFontManager)
 	{
-		m_oFont.UpdateSize(16);
+		m_oFont.UpdateSize(DEFAULT_TSPAN_FONT_SIZE,DEFAULT_TSPAN_FONT_SIZE);
 
 		if (bCheckText)
 			m_wsText = StrUtils::TrimExtraEnding(oNode.GetText());
@@ -63,7 +64,7 @@ namespace SVG
 	CTSpan::CTSpan(const std::wstring &wsText, const Point &oPosition, CRenderedObject *pParent, NSFonts::IFontManager *pFontManager, bool bCheckText)
 		: CRenderedObject(NSCSS::CNode(L"tspan", L"", L""), pParent), m_pFontManager(pFontManager), m_wsText(wsText)
 	{
-		m_oFont.UpdateSize(16);
+		m_oFont.UpdateSize(DEFAULT_TSPAN_FONT_SIZE, DEFAULT_TSPAN_FONT_SIZE);
 
 		if (bCheckText)
 			m_wsText = StrUtils::TrimExtraEnding(m_wsText);
@@ -304,7 +305,7 @@ namespace SVG
 		pRenderer->put_BrushColor1(m_oStyles.m_oFill.ToInt());
 		pRenderer->put_BrushAlpha1(255);
 	}
-	
+
 	bool CTSpan::UseExternalFont(const CSvgFile *pFile, double dX, double dY, IRenderer *pRenderer, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
 	{
 		std::wstring wsFontFamily = DefaultFontFamily;

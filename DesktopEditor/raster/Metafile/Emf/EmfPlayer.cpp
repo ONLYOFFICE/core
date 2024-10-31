@@ -716,21 +716,21 @@ namespace MetaFile
 		const TEmfWindow& oWindow{GetWindow()};
 		const TEmfWindow& oViewPort{GetViewport()};
 
-		double dM11 = (oViewPort.ulW >= 0) ? 1 : -1;
-		double dM22 = (oViewPort.ulH >= 0) ? 1 : -1;
+		double dM11 = ((oViewPort.ulW >= 0) ? 1. : -1.) * GetPixelWidth();
+		double dM22 = ((oViewPort.ulH >= 0) ? 1. : -1.) * GetPixelHeight();
 
-		TEmfXForm oWindowXForm(1, 0, 0, 1, -(oWindow.lX * GetPixelWidth() * dM11), -(oWindow.lY * GetPixelHeight() * dM22));
-		TEmfXForm oViewportXForm(GetPixelWidth() * dM11, 0, 0, GetPixelHeight() * dM22, oViewPort.lX, oViewPort.lY);
+		TEmfXForm oWindowXForm(1, 0, 0, 1, -(oWindow.lX *  dM11), -(oWindow.lY * dM22));
+		TEmfXForm oViewportXForm(dM11, 0, 0, dM22, oViewPort.lX, oViewPort.lY);
 
 		m_oFinalTransform.Init();
-		m_oFinalTransform.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
+		m_oFinalTransform.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
 
 		m_oFinalTransform2.Init();
-		m_oFinalTransform2.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform2.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform2.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
+		m_oFinalTransform2.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
 	}
 
 	void CEmfDC::FixIsotropic()

@@ -959,6 +959,7 @@ void CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr::Read(NSOnlineOfficeBinToP
 int CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::GetMaxLen() const { return m_nMaxLen; }
 const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::GetV()   { return m_wsV; }
 const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::GetRV()  { return m_wsRV; }
+const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::GetAPV() { return m_wsAPV; }
 BYTE* CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::GetRender(LONG& nLen)
 {
 	nLen = m_nRenderLen;
@@ -973,6 +974,8 @@ void CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::Read(NSOnlineOfficeBinToPdf
 	if (nWidgetFlag & (1 << 25))
 		m_wsRV = pReader->ReadString();
 	if (nFlags & (1 << 12))
+		m_wsAPV = pReader->ReadString();
+	if (nFlags & (1 << 13))
 	{
 		m_nRenderLen = pReader->ReadInt() - 4;
 		m_pRender = pReader->GetCurrentBuffer();
@@ -982,6 +985,7 @@ void CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::Read(NSOnlineOfficeBinToPdf
 
 int CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr::GetTI() const { return m_nTI; }
 const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr::GetV() { return m_wsV; }
+const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr::GetAPV() { return m_wsAPV; }
 const std::vector<int>& CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr::GetI() { return m_arrI; }
 const std::vector<std::wstring>& CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr::GetArrV() { return m_arrV; }
 const std::vector< std::pair<std::wstring, std::wstring> >& CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr::GetOpt() { return m_arrOpt; }
@@ -1007,11 +1011,7 @@ void CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr::Read(NSOnlineOfficeBinToP
 	if (nFlags & (1 << 11))
 		m_nTI = pReader->ReadInt();
 	if (nFlags & (1 << 12))
-	{
-		m_nRenderLen = pReader->ReadInt() - 4;
-		m_pRender = pReader->GetCurrentBuffer();
-		pReader->Skip(m_nRenderLen);
-	}
+		m_wsAPV = pReader->ReadString();
 	if (nFlags & (1 << 13))
 	{
 		int n = pReader->ReadInt();
@@ -1023,6 +1023,12 @@ void CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr::Read(NSOnlineOfficeBinToP
 		int n = pReader->ReadInt();
 		for (int i = 0; i < n; ++i)
 			m_arrI.push_back(pReader->ReadInt());
+	}
+	if (nFlags & (1 << 15))
+	{
+		m_nRenderLen = pReader->ReadInt() - 4;
+		m_pRender = pReader->GetCurrentBuffer();
+		pReader->Skip(m_nRenderLen);
 	}
 }
 

@@ -1840,6 +1840,9 @@ void odf_drawing_context::add_formula (std::wstring name, std::wstring fmla)
 		case 4:
 			odf_fmla = L"abs(" + val[0] + L")";
 			break;
+		case 5:
+			odf_fmla = L"(10800000 * atan2(" + val[1] + L", " + val[0] + L"))/pi";
+			break;
 		case 7:
 			odf_fmla = val[0] + L"*cos(pi*(" + val[1] + L")/10800000)";
 			break;

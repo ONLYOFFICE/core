@@ -78,8 +78,8 @@ namespace MetaFile
 		unsigned int ulWidth, ulHeight;
 
 		if (ReadImage(oTEmfStretchDIBITS.unOffBmiSrc, oTEmfStretchDIBITS.unCbBmiSrc,
-					  oTEmfStretchDIBITS.unOffBitsSrc, oTEmfStretchDIBITS.unCbBitsSrc,
-					  sizeof(TEmfStretchDIBITS) + 8, &pBgraBuffer, &ulWidth, &ulHeight))
+		              oTEmfStretchDIBITS.unOffBitsSrc, oTEmfStretchDIBITS.unCbBitsSrc,
+		              sizeof(TEmfStretchDIBITS) + 8, &pBgraBuffer, &ulWidth, &ulHeight))
 		{
 			if (m_pInterpretator)
 			{

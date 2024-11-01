@@ -1180,7 +1180,6 @@ namespace MetaFile
 				return false;
 
 			unsigned int unMetaPenStyle = pPen->GetStyle();
-
 			unsigned int ulPenStyle     = unMetaPenStyle & PS_STYLE_MASK;
 
 			if (PS_NULL == ulPenStyle)

@@ -48,6 +48,8 @@ namespace MetaFile
 {
 	bool Equals(double dFirst, double dSecond, double dEpsilon = DBL_EPSILON);
 	std::wstring ConvertToUnicode(const unsigned char* pText, unsigned long unLength, unsigned short uchCharSet);
+	std::wstring ConvertToWString(double dValue, int nAccuracy = -1);
+	std::wstring ConvertToWString(const std::vector<double>& arValues, int nAccuracy = -1);
 
 	struct TRgbQuad
 	{
@@ -88,13 +90,34 @@ namespace MetaFile
 	};
 
 	typedef std::pair<const std::wstring, std::wstring>     NodeAttribute;
-	typedef std::vector<NodeAttribute>                      NodeAttributes;
+	// typedef std::vector<NodeAttribute>                      NodeAttributes;
+
+	class NodeAttributes : public std::vector<NodeAttribute>
+	{
+	public:
+		using std::vector<NodeAttribute>::vector;
+
+		void Add(const std::wstring& wsNameArgument, const std::wstring& wsValueArgument)
+		{
+			emplace_back(NodeAttribute{wsNameArgument, wsValueArgument});
+		}
+
+		void Add(const std::wstring& wsNameArgument, const double& dValueArgument, int nAccuracy = -1)
+		{
+			emplace_back(NodeAttribute{wsNameArgument, ConvertToWString(dValueArgument, nAccuracy)});
+		}
+
+		void Add(const std::wstring& wsNameArgument, const int& nValueArgument)
+		{
+			emplace_back(NodeAttribute{wsNameArgument, std::to_wstring(nValueArgument)});
+		}
+	};
 
 	class CDataStream
 	{
 	public:
 
-		CDataStream() : pBuffer(NULL), pBufferEnd(NULL), pEnd(NULL), pCur(NULL)
+		CDataStream() : pBuffer(NULL), pBufferEnd(NULL), pCur(NULL), pEnd(NULL)
 		{
 		}
 
@@ -1159,8 +1182,5 @@ namespace MetaFile
 
 	std::wstring StringNormalization(const std::wstring& wsString);
 	bool StringEquals(const std::wstring& wsFirstString, const std::wstring& wsSecondString);
-
-	std::wstring ConvertToWString(double dValue, int nAccuracy = -1);
-	std::wstring ConvertToWString(const std::vector<double>& arValues, int nAccuracy = -1);
 };
 #endif // _METAFILE_COMMON_METAFILEUTILS_H

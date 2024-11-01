@@ -107,7 +107,7 @@ namespace MetaFile
 		
 		if (NULL == pPath)
 			return;
-		
+
 		const std::wstring wsValue = CreatePath(*pPath);
 
 		if (wsValue.empty())
@@ -409,9 +409,9 @@ namespace MetaFile
 		std::wstring wsValue = L"M " + ConvertToWString(arPoints[0].X) + L' ' + ConvertToWString(arPoints[0].Y) + L" C ";
 
 		for (unsigned int unIndex = 1; unIndex + 2 < arPoints.size(); unIndex += 3)
-			wsValue +=	ConvertToWString(arPoints[unIndex].X)     + L' ' + ConvertToWString(arPoints[unIndex].Y)     + L' ' +
-			            ConvertToWString(arPoints[unIndex + 1].X) + L' ' + ConvertToWString(arPoints[unIndex + 1].Y) + L' ' +
-			            ConvertToWString(arPoints[unIndex + 2].X) + L' ' + ConvertToWString(arPoints[unIndex + 2].Y) + L' ';
+			wsValue += ConvertToWString(arPoints[unIndex].X)     + L' ' + ConvertToWString(arPoints[unIndex].Y)     + L' ' +
+			           ConvertToWString(arPoints[unIndex + 1].X) + L' ' + ConvertToWString(arPoints[unIndex + 1].Y) + L' ' +
+			           ConvertToWString(arPoints[unIndex + 2].X) + L' ' + ConvertToWString(arPoints[unIndex + 2].Y) + L' ';
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
@@ -432,9 +432,9 @@ namespace MetaFile
 		std::wstring wsValue = L"M " + ConvertToWString(arPoints[0].X) + L' ' + ConvertToWString(arPoints[0].Y) + L" C ";
 
 		for (unsigned int unIndex = 1; unIndex + 2 < arPoints.size(); unIndex += 3)
-			wsValue +=	ConvertToWString(arPoints[unIndex].X)     + L' ' + ConvertToWString(arPoints[unIndex].Y)     + L' ' +
-			            ConvertToWString(arPoints[unIndex + 1].X) + L' ' + ConvertToWString(arPoints[unIndex + 1].Y) + L' ' +
-			            ConvertToWString(arPoints[unIndex + 2].X) + L' ' + ConvertToWString(arPoints[unIndex + 2].Y) + L' ';
+			wsValue += ConvertToWString(arPoints[unIndex].X)     + L' ' + ConvertToWString(arPoints[unIndex].Y)     + L' ' +
+			           ConvertToWString(arPoints[unIndex + 1].X) + L' ' + ConvertToWString(arPoints[unIndex + 1].Y) + L' ' +
+			           ConvertToWString(arPoints[unIndex + 2].X) + L' ' + ConvertToWString(arPoints[unIndex + 2].Y) + L' ';
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
@@ -455,9 +455,9 @@ namespace MetaFile
 		std::wstring wsValue = L"M " + ConvertToWString(arPoints[0].X) + L' ' + ConvertToWString(arPoints[0].Y) + L" C ";
 
 		for (unsigned int unIndex = 1; unIndex + 2 < arPoints.size(); unIndex += 3)
-			wsValue +=	ConvertToWString(arPoints[unIndex].X)     + L' ' + ConvertToWString(arPoints[unIndex].Y)     + L' ' +
-			            ConvertToWString(arPoints[unIndex + 1].X) + L' ' + ConvertToWString(arPoints[unIndex + 1].Y) + L' ' +
-			            ConvertToWString(arPoints[unIndex + 2].X) + L' ' + ConvertToWString(arPoints[unIndex + 2].Y) + L' ';
+			wsValue += ConvertToWString(arPoints[unIndex].X)     + L' ' + ConvertToWString(arPoints[unIndex].Y)     + L' ' +
+			           ConvertToWString(arPoints[unIndex + 1].X) + L' ' + ConvertToWString(arPoints[unIndex + 1].Y) + L' ' +
+			           ConvertToWString(arPoints[unIndex + 2].X) + L' ' + ConvertToWString(arPoints[unIndex + 2].Y) + L' ';
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
@@ -478,9 +478,9 @@ namespace MetaFile
 		std::wstring wsValue = L"M " + ConvertToWString(arPoints[0].X) + L' ' + ConvertToWString(arPoints[0].Y) + L" C ";
 
 		for (unsigned int unIndex = 1; unIndex + 2 < arPoints.size(); unIndex += 3)
-			wsValue +=	ConvertToWString(arPoints[unIndex].X)     + L' ' + ConvertToWString(arPoints[unIndex].Y)     + L' ' +
-			            ConvertToWString(arPoints[unIndex + 1].X) + L' ' + ConvertToWString(arPoints[unIndex + 1].Y) + L' ' +
-			            ConvertToWString(arPoints[unIndex + 2].X) + L' ' + ConvertToWString(arPoints[unIndex + 2].Y) + L' ';
+			wsValue += ConvertToWString(arPoints[unIndex].X)     + L' ' + ConvertToWString(arPoints[unIndex].Y)     + L' ' +
+			           ConvertToWString(arPoints[unIndex + 1].X) + L' ' + ConvertToWString(arPoints[unIndex + 1].Y) + L' ' +
+			           ConvertToWString(arPoints[unIndex + 2].X) + L' ' + ConvertToWString(arPoints[unIndex + 2].Y) + L' ';
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
@@ -520,9 +520,9 @@ namespace MetaFile
 					wsValue += L" C ";
 					oLastType = 0x04;
 				}
-				wsValue +=	ConvertToWString(arPoints[unIndex].X)     + L',' + ConvertToWString(arPoints[unIndex].Y)     + L' ' +
-				            ConvertToWString(arPoints[unIndex + 1].X) + L',' + ConvertToWString(arPoints[unIndex + 1].Y) + L' ' +
-				            ConvertToWString(arPoints[unIndex + 2].X) + L',' + ConvertToWString(arPoints[unIndex + 2].Y) + L' ';
+				wsValue += ConvertToWString(arPoints[unIndex].X)     + L',' + ConvertToWString(arPoints[unIndex].Y)     + L' ' +
+				           ConvertToWString(arPoints[unIndex + 1].X) + L',' + ConvertToWString(arPoints[unIndex + 1].Y) + L' ' +
+				           ConvertToWString(arPoints[unIndex + 2].X) + L',' + ConvertToWString(arPoints[unIndex + 2].Y) + L' ';
 
 				unIndex += 3;
 			}
@@ -571,9 +571,9 @@ namespace MetaFile
 					wsValue += L" C ";
 					oLastType = 0x04;
 				}
-				wsValue +=	ConvertToWString(arPoints[unIndex].X)     + L',' + ConvertToWString(arPoints[unIndex].Y)     + L' ' +
-				            ConvertToWString(arPoints[unIndex + 1].X) + L',' + ConvertToWString(arPoints[unIndex + 1].Y) + L' ' +
-				            ConvertToWString(arPoints[unIndex + 2].X) + L',' + ConvertToWString(arPoints[unIndex + 2].Y) + L' ';
+				wsValue += ConvertToWString(arPoints[unIndex].X)     + L',' + ConvertToWString(arPoints[unIndex].Y)     + L' ' +
+				           ConvertToWString(arPoints[unIndex + 1].X) + L',' + ConvertToWString(arPoints[unIndex + 1].Y) + L' ' +
+				           ConvertToWString(arPoints[unIndex + 2].X) + L',' + ConvertToWString(arPoints[unIndex + 2].Y) + L' ';
 
 				unIndex += 3;
 			}
@@ -752,7 +752,7 @@ namespace MetaFile
 		AddTransform(arAttributes);
 		AddClip();
 
-		arAttributes.push_back({L"fill-rule", L"evenodd"});
+		arAttributes.Add(L"fill-rule", L"evenodd");
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -782,7 +782,7 @@ namespace MetaFile
 		AddTransform(arAttributes);
 		AddClip();
 
-		arAttributes.push_back({L"fill-rule", L"evenodd"});
+		arAttributes.Add(L"fill-rule", L"evenodd");
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -812,7 +812,7 @@ namespace MetaFile
 		AddTransform(arAttributes);
 		AddClip();
 
-		arAttributes.push_back({L"fill-rule", L"evenodd"});
+		arAttributes.Add(L"fill-rule", L"evenodd");
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -842,7 +842,7 @@ namespace MetaFile
 		AddTransform(arAttributes);
 		AddClip();
 
-		arAttributes.push_back({L"fill-rule", L"evenodd"});
+		arAttributes.Add(L"fill-rule", L"evenodd");
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -851,10 +851,10 @@ namespace MetaFile
 	{
 		TRectD oNewRect = TranslateRect(oBox);
 
-		NodeAttributes arAttributes = {{L"x",		ConvertToWString(oNewRect.Left)},
-		                               {L"y",		ConvertToWString(oNewRect.Top)},
-		                               {L"width",	ConvertToWString(oNewRect.Right - oNewRect.Left)},
-		                               {L"height",	ConvertToWString(oNewRect.Bottom - oNewRect.Top)}};
+		NodeAttributes arAttributes = {{L"x",      ConvertToWString(oNewRect.Left)},
+		                               {L"y",      ConvertToWString(oNewRect.Top)},
+		                               {L"width",  ConvertToWString(oNewRect.Right - oNewRect.Left)},
+		                               {L"height", ConvertToWString(oNewRect.Bottom - oNewRect.Top)}};
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes, oNewRect.Right - oNewRect.Left, oNewRect.Bottom - oNewRect.Top);
@@ -869,12 +869,12 @@ namespace MetaFile
 	{
 		TRectD oNewRect = TranslateRect(oBox);
 
-		NodeAttributes arAttributes = {{L"x",		ConvertToWString(oNewRect.Left)},
-		                               {L"y",		ConvertToWString(oNewRect.Top)},
-		                               {L"width",	ConvertToWString(oNewRect.Right - oNewRect.Left)},
-		                               {L"height",	ConvertToWString(oNewRect.Bottom - oNewRect.Top)},
-		                               {L"rx",		ConvertToWString((double)oCorner.X / 2.)},
-		                               {L"ry",		ConvertToWString((double)oCorner.Y / 2.)}};
+		NodeAttributes arAttributes = {{L"x",      ConvertToWString(oNewRect.Left)},
+		                               {L"y",      ConvertToWString(oNewRect.Top)},
+		                               {L"width",  ConvertToWString(oNewRect.Right - oNewRect.Left)},
+		                               {L"height", ConvertToWString(oNewRect.Bottom - oNewRect.Top)},
+		                               {L"rx",     ConvertToWString((double)oCorner.X / 2.)},
+		                               {L"ry",     ConvertToWString((double)oCorner.Y / 2.)}};
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
@@ -961,10 +961,10 @@ namespace MetaFile
 
 		if (4 == arVertex.size())
 		{
-			arAttributes.push_back({L"x",      ConvertToWString(std::min(arVertex[0].nX, arVertex[1].nX))});
-			arAttributes.push_back({L"y",      ConvertToWString(std::min(arVertex[0].nY, arVertex[2].nY))});
-			arAttributes.push_back({L"width",  ConvertToWString(std::abs(arVertex[1].nX - arVertex[0].nX))});
-			arAttributes.push_back({L"height", ConvertToWString(std::abs(arVertex[2].nY - arVertex[0].nY))});
+			arAttributes.Add(L"x",      std::min(arVertex[0].nX, arVertex[1].nX));
+			arAttributes.Add(L"y",      std::min(arVertex[0].nY, arVertex[2].nY));
+			arAttributes.Add(L"width",  std::abs(arVertex[1].nX - arVertex[0].nX));
+			arAttributes.Add(L"height", std::abs(arVertex[2].nY - arVertex[0].nY));
 			WriteNode(L"rect" , arAttributes);
 		}
 		else if (3 == arVertex.size())
@@ -978,7 +978,7 @@ namespace MetaFile
 			std::wstring wsValue = CreatePath(oPath);
 
 			if (!wsValue.empty())
-				arAttributes.push_back({L"d", wsValue});
+				arAttributes.Add(L"d", wsValue);
 
 			WriteNode(L"path" , arAttributes);
 		}
@@ -997,11 +997,11 @@ namespace MetaFile
 		{
 			oTempRect = TranslateRect(oRect);
 
-			wsValue +=	L"M " + ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Top) + L' ' +
-			            L"L " + ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Top) + L' ' +
-			                    ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Bottom) + L' ' +
-			                    ConvertToWString(oTempRect.Left)	+ L',' + ConvertToWString(oTempRect.Bottom) + L' ' +
-			                    ConvertToWString(oTempRect.Left)	+ L',' + ConvertToWString(oTempRect.Top) + L' ';
+			wsValue += L"M " + ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Top) + L' ' +
+			           L"L " + ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Top) + L' ' +
+			                   ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Bottom) + L' ' +
+			                   ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Bottom) + L' ' +
+			                   ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Top) + L' ';
 		}
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
@@ -1027,11 +1027,11 @@ namespace MetaFile
 		{
 			oTempRect = TranslateRect(oRect);
 
-			wsValue +=	L"M " + ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Top) + L' ' +
-			            L"L " + ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Top) + L' ' +
-			                    ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Bottom) + L' ' +
-			                    ConvertToWString(oTempRect.Left)	+ L',' + ConvertToWString(oTempRect.Bottom) + L' ' +
-			                    ConvertToWString(oTempRect.Left)	+ L',' + ConvertToWString(oTempRect.Top) + L' ';
+			wsValue += L"M " + ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Top)    + L' ' +
+			           L"L " + ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Top)    + L' ' +
+			                   ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Bottom) + L' ' +
+			                   ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Bottom) + L' ' +
+			                   ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Top)    + L' ';
 		}
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
@@ -1190,14 +1190,14 @@ namespace MetaFile
 		int nColor = m_pParser->GetTextColor();
 
 		if (0 != nColor)
-			arNodeAttributes.push_back({L"fill", CalculateColor(nColor, 255)});
+			arNodeAttributes.Add(L"fill", CalculateColor(nColor, 255));
 
 		double dFontHeight = std::fabs(pFont->GetHeight());
 
 		if (dFontHeight < 0.01)
 			dFontHeight = 18;
 
-		arNodeAttributes.push_back({L"font-size", ConvertToWString(dFontHeight)});
+		arNodeAttributes.Add(L"font-size", dFontHeight);
 
 		NSStringUtils::CStringBuilder oFontName;
 		oFontName.WriteEncodeXmlString(pFont->GetFaceName());
@@ -1220,21 +1220,21 @@ namespace MetaFile
 				oFontName.WriteEncodeXmlString(L"\'");
 			}
 			#endif
-			arNodeAttributes.push_back({L"font-family", oFontName.GetData()});
+			arNodeAttributes.Add(L"font-family", oFontName.GetData());
 		}
 
 		if (pFont->GetWeight() > 550)
-			arNodeAttributes.push_back({L"font-weight", L"bold"});
+			arNodeAttributes.Add(L"font-weight", L"bold");
 
 		if (pFont->IsItalic())
-			arNodeAttributes.push_back({L"font-style", L"italic"});
+			arNodeAttributes.Add(L"font-style", L"italic");
 
 		if (pFont->IsUnderline() && pFont->IsStrikeOut())
-			arNodeAttributes.push_back({L"text-decoration", L"underline line-through"});
+			arNodeAttributes.Add(L"text-decoration", L"underline line-through");
 		else if (pFont->IsUnderline())
-			arNodeAttributes.push_back({L"text-decoration", L"underline"});
+			arNodeAttributes.Add(L"text-decoration", L"underline");
 		else if (pFont->IsStrikeOut())
-			arNodeAttributes.push_back({L"text-decoration", L"line-through"});
+			arNodeAttributes.Add(L"text-decoration", L"line-through");
 
 		AddTransform(arNodeAttributes);
 		AddClip();
@@ -1250,8 +1250,8 @@ namespace MetaFile
 		wsX.pop_back();
 		wsY.pop_back();
 
-		arNodeAttributes.push_back({L"x", wsX});
-		arNodeAttributes.push_back({L"y", wsY});
+		arNodeAttributes.Add(L"x", wsX);
+		arNodeAttributes.Add(L"y", wsY);
 
 		WriteNode(L"text", arNodeAttributes, wsText);
 	}

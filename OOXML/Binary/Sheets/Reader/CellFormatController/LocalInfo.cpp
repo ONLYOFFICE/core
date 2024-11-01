@@ -76,18 +76,22 @@ std::wstring LocalInfo::GetshorDateFormat()
         switch (ShortDatePattern[i])
         {
             case L'0':
+                result+= L"d";
+                break;
             case L'1':
-                result+= L"%d";
+                result+= L"dd";
                 break;
             case L'2':
+                result+= L"mm";
+                break;
             case L'3':
-                result+= L"%m";
+                result+= L"mmm";
                 break;
             case L'4':
-                result+= L"%y";
+                result+= L"yy";
                 break;
             case L'5':
-                result+= L"%Y";
+                result+= L"yyyy";
                 break;
         };
         if (i != ShortDatePattern.size() - 1)

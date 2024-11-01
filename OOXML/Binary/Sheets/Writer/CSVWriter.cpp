@@ -30,6 +30,7 @@
  *
  */
 #include "CSVWriter.h"
+#include "../Reader/CellFormatController/LocalInfo.h"
 #include "../../../../UnicodeConverter/UnicodeConverter.h"
 #include "../../../../UnicodeConverter/UnicodeConverter_Encodings.h"
 #include "../../../../DesktopEditor/common/StringBuilder.h"
@@ -413,8 +414,8 @@ std::wstring CSVWriter::Impl::convert_date_time(const std::wstring & sValue, std
 
 				switch (format_code[i])
 				{
-				case L'\\': continue;
-				case L'/': output += L"."; break;
+                case L'\\': continue;//
+                //case L'/': output += L"."; break;
 				case L'a': output += sAferTime; break;
 				case L'd':
 				case L'D':
@@ -891,7 +892,16 @@ void CSVWriter::Impl::GetDefaultFormatCode(int numFmt, std::wstring & format_cod
 	case 12:	format_code = L"# ?/?";				format_type = SimpleTypes::Spreadsheet::celltypeFraction; break;
 	case 13:	format_code = L"# ??/??";			format_type = SimpleTypes::Spreadsheet::celltypeFraction; break;
 
-	case 14:	format_code = L"mm-dd-yy";			format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
+    case 14:
+        if(m_nLcid <= 0)
+            format_code = L"mm-dd-yy";
+        else
+        {
+            auto locInf = lcInfo::getLocalInfo(m_nLcid);
+            format_code = locInf.GetshorDateFormat();
+        }
+        format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
+
 	case 15:	format_code = L"d-mmm-yy";			format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
 	case 16:	format_code = L"d-mmm";				format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
 	case 17:	format_code = L"mmm-yy";			format_type = SimpleTypes::Spreadsheet::celltypeDate; break;

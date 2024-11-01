@@ -626,7 +626,7 @@ bool convert_equation(const std::wstring& formula, std::wstring &result)
 		}
 		else if (formula[pos] == L'l')
 		{
-			if (pos + 8 < formula.size() && formula[pos + 1] == L'o' && formula[pos + 2] == L'g')
+			if (pos + 8 <= formula.size() && formula[pos + 1] == L'o' && formula[pos + 2] == L'g')
 			{
 				if (formula[pos + 3] == L'w')
 				{
@@ -811,7 +811,6 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 				std::wstring value_conv;
 				if (convert_equation(value, value_conv))
 				{
-					equations.push_back(std::make_pair(name, value));
 					equations.push_back(std::make_pair(name, value_conv.empty() ? value : value_conv));
 				}
 				else

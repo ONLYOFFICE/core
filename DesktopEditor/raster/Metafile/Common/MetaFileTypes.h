@@ -349,6 +349,8 @@ typedef unsigned char BYTE;
 
 namespace MetaFile
 {
+	#define DEFAULT_FONT_SIZE 14
+
 	enum InterpretatorType
 	{
 			Emf,

@@ -236,8 +236,8 @@ namespace MetaFile
 	{
 		m_pBrush       = &m_oDefaultBrush;
 		m_pPen         = &m_oDefaultPen;
+		m_pFont        = &m_oDefaultFont;
 		m_pPalette     = NULL;
-		m_pFont        = NULL;
 		m_pRegion      = NULL;
 		m_ushMapMode   = MM_TEXT;
 		m_dPixelWidth  = 1;
@@ -350,7 +350,7 @@ namespace MetaFile
 	}
 	const CWmfFont* CWmfDC::GetFont() const
 	{
-		return m_pFont;
+		return (NULL != m_pFont) ? m_pFont : &m_oDefaultFont;
 	}
 	void CWmfDC::SetRegion(CWmfRegion* pRegion)
 	{
@@ -609,6 +609,7 @@ namespace MetaFile
 			if (!m_oViewport.h) m_oViewport.h = nMinCy;
 		}
 	}
+
 	void CWmfDC::SetTextColor(TRGBA& oColor)
 	{
 		m_oTextColor = oColor;

@@ -271,13 +271,10 @@ namespace MetaFile
 
 		const IFont *pFont = m_pParser->GetFont();
 
-		if (NULL == pFont)
-			return;
-
 		double dFontHeight = std::fabs(pFont->GetHeight());
 
 		if (dFontHeight < 0.01)
-			dFontHeight = 18;
+			dFontHeight = DEFAULT_FONT_SIZE;
 
 		arNodeAttributes.Add(L"font-size", dFontHeight);
 

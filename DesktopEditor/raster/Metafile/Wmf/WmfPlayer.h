@@ -147,6 +147,7 @@ namespace MetaFile
 
 		CClip          m_oClip;
 		CWmfBrush      m_oDefaultBrush;
+		CWmfFont       m_oDefaultFont;
 		CWmfPen        m_oDefaultPen;
 		CWmfBrush*     m_pBrush;
 		CWmfPen*       m_pPen;

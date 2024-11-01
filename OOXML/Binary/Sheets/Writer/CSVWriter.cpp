@@ -57,7 +57,7 @@
 class CSVWriter::Impl
 {
 public:
-	Impl(OOX::Spreadsheet::CXlsx &oXlsx, unsigned int m_nCodePage, const std::wstring& sDelimiter, bool m_bJSON);
+    Impl(OOX::Spreadsheet::CXlsx &oXlsx, unsigned int m_nCodePage, const std::wstring& sDelimiter, int Lcid, bool m_bJSON);
 	~Impl();
 
 	bool Start(const std::wstring &sFileDst);
@@ -73,6 +73,7 @@ private:
 	NSFile::CFileBinary m_oFile;
 	OOX::Spreadsheet::CXlsx& m_oXlsx;
 	unsigned int m_nCodePage;
+    int m_nLcid;
 	const std::wstring& m_sDelimiter;
 	bool m_bJSON = false;
 	bool m_bShowFormulas = false;
@@ -121,13 +122,13 @@ CSVWriter::CSVWriter()
 CSVWriter::~CSVWriter()
 {
 }
-void CSVWriter::Init(OOX::Spreadsheet::CXlsx &oXlsx, unsigned int nCodePage, const std::wstring& sDelimiter, bool bJSON)
+void CSVWriter::Init(OOX::Spreadsheet::CXlsx &oXlsx, unsigned int nCodePage, const std::wstring& sDelimiter, int Lcid, bool bJSON)
 {
-	impl_ = boost::shared_ptr<Impl>(new CSVWriter::Impl(oXlsx, nCodePage, sDelimiter, bJSON));
+    impl_ = boost::shared_ptr<Impl>(new CSVWriter::Impl(oXlsx, nCodePage, sDelimiter, Lcid, bJSON));
 }
-void CSVWriter::Xlsx2Csv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, unsigned int nCodePage, const std::wstring& sDelimiter, bool bJSON)
+void CSVWriter::Xlsx2Csv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, unsigned int nCodePage, const std::wstring& sDelimiter, int Lcid, bool bJSON)
 {
-	Init(oXlsx, nCodePage, sDelimiter, bJSON);
+    Init(oXlsx, nCodePage, sDelimiter, Lcid, bJSON);
 
 	impl_->Start(sFileDst);
 
@@ -617,7 +618,7 @@ void WriteFile(NSFile::CFileBinary *pFile, wchar_t **pWriteBuffer, int &nCurrent
 		nCurrentIndex += (int)nCountChars;
 	}
 }
-CSVWriter::Impl::Impl(OOX::Spreadsheet::CXlsx &m_oXlsx, unsigned int m_nCodePage, const std::wstring& m_sDelimiter, bool m_bJSON) : m_oXlsx(m_oXlsx), m_nCodePage(m_nCodePage), m_sDelimiter(m_sDelimiter), m_bJSON(m_bJSON), loc_("")
+CSVWriter::Impl::Impl(OOX::Spreadsheet::CXlsx &m_oXlsx, unsigned int m_nCodePage, const std::wstring& m_sDelimiter, int Lcid,  bool m_bJSON) : m_oXlsx(m_oXlsx), m_nCodePage(m_nCodePage), m_sDelimiter(m_sDelimiter), m_bJSON(m_bJSON), loc_(""), m_nLcid(Lcid)
 {
 	m_pWriteBuffer = NULL;
 	m_nCurrentIndex = 0;

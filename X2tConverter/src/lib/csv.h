@@ -81,8 +81,12 @@ namespace NExtractTools
 		{
 			std::wstring sMediaPath;
 			std::wstring sEmbedPath;
-
-			sXMLOptions = _T("<XmlOptions><fileOptions fileType=\"2\"/></XmlOptions>");
+            if(!params.m_nFormatTo)
+            {
+                    params.m_nFormatTo = new int;
+                    *params.m_nFormatTo = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
+            }
+            sXMLOptions = params.getXmlOptions();//_T("<XmlOptions><fileOptions fileType=\"2\"/></XmlOptions>");
 
 			nRes = oCXlsxSerializer.loadFromFile(sResultXlstFileEditor, sTo, sXMLOptions, sMediaPath, sEmbedPath);
 		}

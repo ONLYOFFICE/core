@@ -8661,7 +8661,7 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 //todo 46 временно CP_UTF8
 		
 		CSVWriter oCSVWriter;
-		oCSVWriter.Xlsx2Csv(sFileDst, *pXlsx, 46, std::wstring(L","), true);
+		oCSVWriter.Xlsx2Csv(sFileDst, *pXlsx, 46, std::wstring(L","), Lcid, true);
 	}
 	else
 	{

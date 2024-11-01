@@ -8737,7 +8737,7 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 				OOX::Spreadsheet::CXlsx oXlsx;
 				CSVWriter oCSVWriter;
 				
-				oCSVWriter.Init(oXlsx, nCodePage, sDelimiter, false);
+                oCSVWriter.Init(oXlsx, nCodePage, sDelimiter, Lcid, false);
 				
 				bResultOk = oCSVWriter.Start(sDstPathCSV);
 				if (!bResultOk) return AVS_FILEUTILS_ERROR_CONVERT;

@@ -113,6 +113,28 @@ namespace NSJSON
 	private:
 		storage_t m_values;
 	};
-}
+
+	class CImage : public IBaseValue
+	{
+	public:
+		CImage(BYTE* bits, const int& width, const int& height, const ImageFormat& format, const bool& isExternalize = true);
+		~CImage();
+
+	public:
+		BYTE* getBits();
+		int getWidth();
+		int getHeight();
+		ImageFormat getFormat();
+		void externalize();
+		void alloc(const int& width, const int& height, const ImageFormat& format);
+
+	private:
+		BYTE* m_bits;
+		int m_width;
+		int m_height;
+		ImageFormat m_format;
+		bool m_isExternalize;
+	};
+} // namespace
 
 #endif	// JSON_VALUES_H_

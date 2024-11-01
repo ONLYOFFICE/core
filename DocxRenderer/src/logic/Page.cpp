@@ -57,7 +57,6 @@ namespace NSDocxRenderer
 
 		if (lType == c_nResetClipType)
 		{
-			m_oCurrVectorGraphics.Clear();
 			m_oClipVectorGraphics.Clear();
 		}
 		else if (lType == c_nClipType)
@@ -162,18 +161,18 @@ namespace NSDocxRenderer
 
 	void CPage::PathStart()
 	{
+		m_oCurrVectorGraphics.Clear();
 	}
 
 	void CPage::PathEnd()
 	{
-		m_oCurrVectorGraphics.End();
+		m_oCurrVectorGraphics.Clear();
 	}
 
 	void CPage::PathClose()
 	{
 		m_oCurrVectorGraphics.Close();
 	}
-
 
 	// c_nStroke = 0x0001;
 	// c_nWindingFillMode = 0x0100;
@@ -182,10 +181,7 @@ namespace NSDocxRenderer
 	{
 		// in case if text comes as a path with unicode 32 (space)
 		if (m_oCurrVectorGraphics.IsEmpty())
-		{
-			m_oClipVectorGraphics.Clear();
 			return;
-		}
 
 		double rotation = m_pTransform->z_Rotation();
 		double left = m_oCurrVectorGraphics.GetLeft();
@@ -239,23 +235,25 @@ namespace NSDocxRenderer
 			CVectorGraphics new_vector_graphics = CVectorGraphics::CalcBoolean(
 				m_oCurrVectorGraphics,
 				m_oClipVectorGraphics,
-				m_lClipMode);
+				m_lClipMode,
+				lType);
 
 			if (new_vector_graphics.IsEmpty())
 			{
 				m_oCurrVectorGraphics.Clear();
-				m_oClipVectorGraphics.Clear();
 				return;
 			}
 			m_oCurrVectorGraphics = std::move(new_vector_graphics);
 		}
 		shape->SetVector(std::move(m_oCurrVectorGraphics));
-		if (!shape->IsOoxmlValid())
-			return;
 
 		auto info = pInfo;
 		if (!info && m_bIsGradient)
 		{
+			// image with gradient must be closed
+			if (!shape->m_oVector.IsEmpty() && shape->m_oVector.GetData().back().type != CVectorGraphics::ePathCommandType::pctClose)
+				shape->m_oVector.Add({CVectorGraphics::ePathCommandType::pctClose, {}});
+
 			long width_pix = static_cast<long>(shape->m_dWidth * c_dMMToPix);
 			long height_pix = static_cast<long>(shape->m_dHeight * c_dMMToPix);
 
@@ -296,6 +294,7 @@ namespace NSDocxRenderer
 			g_renderer->put_Width(shape->m_dWidth);
 			g_renderer->put_Height(shape->m_dHeight);
 			g_renderer->RestoreBrush(shifted_brush);
+			g_renderer->RestorePen(*m_pPen);
 			g_renderer->BeginCommand(c_nPathType);
 			shifted_vector.DrawOnRenderer(g_renderer);
 			g_renderer->DrawPath(c_nWindingFillMode);
@@ -326,6 +325,9 @@ namespace NSDocxRenderer
 		else
 			shape->m_eType = CShape::eShapeType::stVectorGraphics;
 
+		if (!shape->IsOoxmlValid())
+			return;
+
 		// big white shape with page width & height skip
 		if (fabs(shape->m_dHeight - m_dHeight) <= c_dSHAPE_X_OFFSET * 2 &&
 			fabs(shape->m_dWidth - m_dWidth) <= c_dSHAPE_X_OFFSET * 2 &&
@@ -334,7 +336,6 @@ namespace NSDocxRenderer
 
 		shape->m_nOrder = ++m_nShapeOrder;
 		m_arShapes.push_back(shape);
-		m_oClipVectorGraphics.Clear();
 	}
 
 	void CPage::CollectTextData(
@@ -817,17 +818,17 @@ namespace NSDocxRenderer
 					continue;
 
 				// если совпадает строка по высоте - берем ее и выходим
-				if (fabs(line->m_dBaselinePos - drop_cap_cont->m_dBaselinePos) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
+				if (fabs(line->m_dBotWithMaxDescent - drop_cap_cont->m_dBotWithDescent) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
 				{
 					num_of_lines++;
 					break;
 				}
 
-				if (line->m_dBaselinePos > drop_cap_cont->m_dBaselinePos)
-					break;
-
-				if (fabs(line->m_dTop - drop_cap_cont->m_dTop) > c_dTHE_SAME_STRING_Y_PRECISION_MM && line->m_dTop < drop_cap_cont->m_dTop)
+				if (line->m_dBotWithMaxDescent < drop_cap_cont->m_dTopWithAscent)
 					continue;
+
+				if (line->m_dTopWithMaxAscent > drop_cap_cont->m_dBotWithDescent)
+					break;
 
 				num_of_lines++;
 			}

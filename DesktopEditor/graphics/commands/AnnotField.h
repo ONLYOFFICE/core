@@ -85,6 +85,7 @@ public:
 			int GetMaxLen() const;
 			const std::wstring& GetV();
 			const std::wstring& GetRV();
+			const std::wstring& GetAPV();
 			BYTE* GetRender(LONG& nLen);
 
 			void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags, int nWidgetFlag);
@@ -93,6 +94,7 @@ public:
 			int m_nMaxLen;
 			std::wstring m_wsV;
 			std::wstring m_wsRV;
+			std::wstring m_wsAPV;
 			LONG         m_nRenderLen;
 			BYTE*        m_pRender;
 		};
@@ -102,6 +104,7 @@ public:
 		public:
 			int GetTI() const;
 			const std::wstring& GetV();
+			const std::wstring& GetAPV();
 			const std::vector<int>& GetI();
 			const std::vector<std::wstring>& GetArrV();
 			const std::vector< std::pair<std::wstring, std::wstring> >& GetOpt();
@@ -112,6 +115,7 @@ public:
 		private:
 			int m_nTI;
 			std::wstring m_wsV;
+			std::wstring m_wsAPV;
 			std::vector<int> m_arrI;
 			std::vector<std::wstring> m_arrV;
 			std::vector< std::pair<std::wstring, std::wstring> > m_arrOpt;

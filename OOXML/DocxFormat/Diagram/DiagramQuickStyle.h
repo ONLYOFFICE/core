@@ -74,7 +74,7 @@ namespace OOX
 	class CDiagramQuickStyle : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 	{
 	public:
-		CDiagramQuickStyle(OOX::Document* pMain);
+		CDiagramQuickStyle(OOX::Document* pMain, bool bDocument = true);
 		CDiagramQuickStyle(OOX::Document* pMain, const CPath& uri);
 		CDiagramQuickStyle(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
 
@@ -107,6 +107,7 @@ namespace OOX
 
 	private:
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		bool m_bDocument = true; //for upper/lower level rels (defaultDirectory)
 	};
 
 } // namespace OOX

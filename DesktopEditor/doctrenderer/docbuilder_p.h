@@ -728,22 +728,13 @@ namespace NSDoctRenderer
 			oBuilder.WriteEncodeXmlString(sFolder);
 			oBuilder.WriteString(L"/Editor.bin</m_sFileTo><m_nFormatTo>8192</m_nFormatTo>");
 
-			if (!m_bIsNotUseConfigAllFontsDir)
-			{
-				oBuilder.WriteString(L"<m_sFontDir>");
-				oBuilder.WriteEncodeXmlString(m_sX2tPath + L"/sdkjs/common");
-				oBuilder.WriteString(L"</m_sFontDir>");
-			}
-			else
-			{
-				oBuilder.WriteString(L"<m_sFontDir>");
-				oBuilder.WriteEncodeXmlString(NSFile::GetDirectoryName(m_strAllFonts));
-				oBuilder.WriteString(L"</m_sFontDir>");
+			oBuilder.WriteString(L"<m_sFontDir>");
+			oBuilder.WriteEncodeXmlString(NSFile::GetDirectoryName(m_strAllFonts));
+			oBuilder.WriteString(L"</m_sFontDir>");
 
-				oBuilder.WriteString(L"<m_sAllFontsPath>");
-				oBuilder.WriteEncodeXmlString(m_strAllFonts);
-				oBuilder.WriteString(L"</m_sAllFontsPath>");
-			}
+			oBuilder.WriteString(L"<m_sAllFontsPath>");
+			oBuilder.WriteEncodeXmlString(m_strAllFonts);
+			oBuilder.WriteString(L"</m_sAllFontsPath>");
 
 			oBuilder.WriteString(L"<m_bIsNoBase64>true</m_bIsNoBase64>");
 			oBuilder.WriteString(L"<m_sThemeDir>./sdkjs/slide/themes</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
@@ -1054,22 +1045,13 @@ namespace NSDoctRenderer
 				oBuilder.WriteString(L"</m_sThemeDir><m_bFromChanges>true</m_bFromChanges><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
 			oBuilder.WriteString(L"<m_nCsvTxtEncoding>46</m_nCsvTxtEncoding><m_nCsvDelimiter>4</m_nCsvDelimiter>");
 
-			if (!m_bIsNotUseConfigAllFontsDir)
-			{
-				oBuilder.WriteString(L"<m_sFontDir>");
-				oBuilder.WriteEncodeXmlString(m_sX2tPath + L"/sdkjs/common");
-				oBuilder.WriteString(L"</m_sFontDir>");
-			}
-			else
-			{
-				oBuilder.WriteString(L"<m_sFontDir>");
-				oBuilder.WriteEncodeXmlString(NSFile::GetDirectoryName(m_strAllFonts));
-				oBuilder.WriteString(L"</m_sFontDir>");
+			oBuilder.WriteString(L"<m_sFontDir>");
+			oBuilder.WriteEncodeXmlString(NSFile::GetDirectoryName(m_strAllFonts));
+			oBuilder.WriteString(L"</m_sFontDir>");
 
-				oBuilder.WriteString(L"<m_sAllFontsPath>");
-				oBuilder.WriteEncodeXmlString(m_strAllFonts);
-				oBuilder.WriteString(L"</m_sAllFontsPath>");
-			}
+			oBuilder.WriteString(L"<m_sAllFontsPath>");
+			oBuilder.WriteEncodeXmlString(m_strAllFonts);
+			oBuilder.WriteString(L"</m_sAllFontsPath>");
 
 			if (!sConvertionParams.empty())
 			{

@@ -99,6 +99,11 @@ namespace NSJSON
 		return m_internal->m_type == CTypedValue::vtObject;
 	}
 
+	bool IValue::IsImage() const
+	{
+		return m_internal->m_type == CTypedValue::vtImage;
+	}
+
 	bool IValue::ToBool() const
 	{
 		if (m_internal->m_type != CTypedValue::vtPrimitive)
@@ -350,6 +355,11 @@ namespace NSJSON
 			strRes += "}";
 			break;
 		}
+		case CTypedValue::vtImage:
+		{
+			// TODO: implement like typed array?
+			break;
+		}
 		}
 
 		return strRes;
@@ -497,6 +507,82 @@ namespace NSJSON
 		return static_cast<CObject*>(m_internal->m_value.get())->getPropertyNames();
 	}
 
+	const BYTE* IValue::GetImageBits() const
+	{
+		if (m_internal->m_type != CTypedValue::vtImage)
+		{
+#ifdef JSON_DEBUG
+			throw std::bad_cast();
+#endif
+			return nullptr;
+		}
+		return static_cast<CImage*>(m_internal->m_value.get())->getBits();
+	}
+
+	BYTE* IValue::GetImageBits()
+	{
+		return const_cast<BYTE*>(static_cast<const CValue&>(*this).GetImageBits());
+	}
+
+	int IValue::GetImageWidth() const
+	{
+		if (m_internal->m_type != CTypedValue::vtImage)
+		{
+#ifdef JSON_DEBUG
+			throw std::bad_cast();
+#endif
+			return 0;
+		}
+		return static_cast<CImage*>(m_internal->m_value.get())->getWidth();
+	}
+
+	int IValue::GetImageHeight() const
+	{
+		if (m_internal->m_type != CTypedValue::vtImage)
+		{
+#ifdef JSON_DEBUG
+			throw std::bad_cast();
+#endif
+			return 0;
+		}
+		return static_cast<CImage*>(m_internal->m_value.get())->getHeight();
+	}
+
+	ImageFormat IValue::GetImageFormat() const
+	{
+		if (m_internal->m_type != CTypedValue::vtImage)
+		{
+#ifdef JSON_DEBUG
+			throw std::bad_cast();
+#endif
+			return ImageFormat::ifInvalid;
+		}
+		return static_cast<CImage*>(m_internal->m_value.get())->getFormat();
+	}
+
+	void IValue::ImageExternalize()
+	{
+		if (m_internal->m_type != CTypedValue::vtImage)
+		{
+#ifdef JSON_DEBUG
+			throw std::bad_cast();
+#endif
+			return;
+		}
+		static_cast<CImage*>(m_internal->m_value.get())->externalize();
+	}
+
+	void IValue::ImageAlloc(const int& width, const int& height, const ImageFormat& format)
+	{
+		if (m_internal->m_type != CTypedValue::vtImage)
+		{
+#ifdef JSON_DEBUG
+			throw std::bad_cast();
+#endif
+			return;
+		}
+		static_cast<CImage*>(m_internal->m_value.get())->alloc(width, height, format);
+	}
 
 	CValue::CValue() : IValue()
 	{
@@ -588,6 +674,35 @@ namespace NSJSON
 	void CValue::FreeTypedArray(BYTE* data, size_t size)
 	{
 		NSJSBase::NSAllocator::Free(data, size);
+	}
+
+	CValue CValue::CreateImage(BYTE* bits, int width, int height, ImageFormat format, bool isExternalize)
+	{
+		CValue ret;
+		if (width <= 0 || height <= 0)
+			return ret;
+
+		ret.m_internal->m_value = std::make_shared<CImage>(bits, width, height, format, isExternalize);
+		ret.m_internal->m_type = CTypedValue::vtImage;
+		return ret;
+	}
+
+	CValue CValue::CreateEmptyImage(ImageFormat format)
+	{
+		CValue ret;
+		ret.m_internal->m_value = std::make_shared<CImage>((BYTE*)NULL, 0, 0, format, false);
+		ret.m_internal->m_type = CTypedValue::vtImage;
+		return ret;
+	}
+
+	BYTE* CValue::AllocImageBits(int width, int height)
+	{
+		return new BYTE[4 * width * height];
+	}
+
+	void CValue::FreeImageBits(BYTE* bits)
+	{
+		delete[] bits;
 	}
 
 	CValue CValue::CreateObject()

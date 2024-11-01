@@ -530,34 +530,31 @@ void draw_enhanced_geometry::add_child_element( xml::sax * Reader, const std::ws
     }
 
 }
-std::wstring convert_equation(const std::wstring& formula)
+bool convert_equation(const std::wstring& formula, std::wstring &result)
 {
-	std::wstring result;
 	std::wstring operators;
+	std::wstring function;
 	std::vector<std::wstring> values;
 
 	size_t pos = 0;
-	bool operator_prev = false;
 	while (pos < formula.size())
 	{
-		if ((formula[pos] == L'+' || formula[pos] == L'/' || formula[pos] == L'*' || formula[pos] == L'-') 
-			&& pos > 0 && !operator_prev)
+		if ((formula[pos] == L'+' || formula[pos] == L'/' || formula[pos] == L'*' || formula[pos] == L'-') && pos > 0)
 		{
-			if (operators.size() > 1)
-				return L"";
-			operator_prev = true;
+			if (operators.size() > 1 && !function.empty())
+			{
+				return false; // ? todooo
+			}
 			operators += formula[pos++];
 		}
 		else if (formula[pos] == L'i' && formula[pos + 1] == L'f')
 		{
 			if (false == operators.empty())
-				return L"";
-			operator_prev = true;
-			operators += L"?:"; pos += 2;
+				return false;
+			function += L"?:"; pos += 2;
 		}
 		else if (formula[pos] == L'?')
 		{
-			operator_prev = false;
 			values.emplace_back();
 			values.back() = L"gd"; pos += 2;
 			while (pos < formula.size() && formula[pos] >= L'0' && formula[pos] <= L'9')
@@ -568,60 +565,67 @@ std::wstring convert_equation(const std::wstring& formula)
 		else if (formula[pos] == L'c')
 		{
 			if (false == operators.empty())
-				return L"";
-			operator_prev = true;
-			operators += L"cos";  pos += 3;
+				return false;
+
+			if (pos + 2 < formula.size() && formula[pos + 1] == L'o')
+			{
+				function = L"cos"; pos += 3;
+			}
+			else if (pos + 3 < formula.size() && formula[pos + 1] == L'a' && formula[pos + 2] == L't')
+			{
+				function = L"cat2"; pos += 4;
+			}
+			else pos++;
 		}
 		else if (formula[pos] == L'b')
 		{//bottom
-			operator_prev = false;
 			values.emplace_back();
 			values.back() = L"h";  pos += 6;
 		}
 		else if (formula[pos] == L't')
 		{//top
-			operator_prev = false;
 			values.emplace_back();
 			values.back() = L"0";  pos += 3;
 		}
 		else if (formula[pos] == L'r')
 		{//right
-			operator_prev = false;
 			values.emplace_back();
 			values.back() = L"w";  pos += 5;
 		}
 		else if (formula[pos] == L's')
 		{
 			if (false == operators.empty())
-				return L"";
-			operator_prev = true;
+				return false;
 			if (pos + 2 < formula.size() && formula[pos + 1] == L'i')
 			{
-				operators = L"sin"; pos += 3;
+				function = L"sin"; pos += 3;
 			}
 			else if (pos + 3 < formula.size() && formula[pos + 1] == L'q')
 			{
-				operators = L"sqrt"; pos += 4;
+				function = L"sqrt"; pos += 4;
 			}
+			else if (pos + 3 < formula.size() && formula[pos + 1] == L'a' && formula[pos + 2] == L't')
+			{
+				function = L"sat2"; pos += 4;
+			}
+			else pos++;
 		}
 		else if (formula[pos] == L'm')
 		{
 			if (false == operators.empty())
-				return L"";
-			operator_prev = true;
+				return false;
 			if (pos + 2 < formula.size() && formula[pos + 1] == L'a')
 			{
-				operators = L"max"; pos += 3;
+				function = L"max"; pos += 3;
 			}
 			else if (pos + 2 < formula.size() && formula[pos + 1] == L'i')
 			{
-				operators = L"min"; pos += 3;
+				function = L"min"; pos += 3;
 			}
 			else pos++;			
 		}
 		else if (formula[pos] == L'l')
 		{
-			operator_prev = false;
 			if (pos + 8 < formula.size() && formula[pos + 1] == L'o' && formula[pos + 2] == L'g')
 			{
 				if (formula[pos + 3] == L'w')
@@ -644,8 +648,6 @@ std::wstring convert_equation(const std::wstring& formula)
 		}
 		else if (formula[pos] == L'$')
 		{
-			operator_prev = false;
-
 			if (pos + 1 < formula.size() && formula[pos + 1] >= L'0' && formula[pos + 1] <= L'9')
 			{
 				std::wstring strVal = formula.substr(pos + 1, 1);
@@ -656,39 +658,37 @@ std::wstring convert_equation(const std::wstring& formula)
 			}
 			pos += 2;
 		}
-		else if (formula[pos] >= L'0' && formula[pos] <= L'9' || formula[pos] == L'-')
+		else if (formula[pos] >= L'0' && formula[pos] <= L'9' || formula[pos] == L'-' || formula[pos] == L'w' || formula[pos] == L'h')
 		{
-			operator_prev = false;
-
 			values.emplace_back();
 			size_t pos_start = pos;
-			while (pos < formula.size() && formula[pos] >= L'0' && formula[pos] <= L'9' || (formula[pos] == L'-' && pos_start == pos))
+			while (pos < formula.size() && formula[pos] >= L'0' && formula[pos] <= L'9' || ((formula[pos] == L'-' || formula[pos] == L'w' || formula[pos] == L'h') && pos_start == pos))
 			{
 				values.back() += formula[pos++];
 			}
+		}
+		else if (formula[pos] == L',')
+		{
+			pos++;
 		}
 		else pos++;
 	}
 
 	
-	if (operators.empty())
+	if (operators.empty() && function.empty())
 	{
 		result = L"val";
 	}
-	else if (operators.size() < 2)
-	{
-		return L"";
-	}
 	else
 	{
-		result = operators;
+		result = function.empty() ? operators : function;
 	}
 
 	for (int i = 0; i < values.size(); ++i)
 	{
 		result += L" " + values[i];
 	}
-	return result;
+	return true;
 }
 void draw_enhanced_geometry::find_draw_type_oox()
 {
@@ -804,18 +804,22 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 				std::wstring value = eq->attlist_.draw_formula_.get_value_or(L"");
 
 				XmlUtils::replace_all(name, L"f", L"gd");
-				value = convert_equation(value);
+				
+				XmlUtils::replace_all(value, L"(bottom-top)", L"h");
+				XmlUtils::replace_all(value, L"(right-left)", L"w");				;
 
-				if (value.empty())
+				std::wstring value_conv;
+				if (convert_equation(value, value_conv))
 				{
+					equations.push_back(std::make_pair(name, value));
+					equations.push_back(std::make_pair(name, value_conv.empty() ? value : value_conv));
+				}
+				else
+				{// 
 					if (!draw_type_oox_index_) 
 						set_shape = false;
 					equations.clear();
 					break;
-				}
-				else
-				{// 
-					equations.push_back(std::make_pair(name, value));
 				}
 			}
 		}

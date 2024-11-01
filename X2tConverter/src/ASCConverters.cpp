@@ -1488,10 +1488,16 @@ namespace NExtractTools
 			return AVS_FILEUTILS_ERROR_UNKNOWN;
 		}
 
+		std::wstring sGlobalTempDir = L"";
+		if (NSFile::CFileBinary::IsGlobalTempPathUse())
+			sGlobalTempDir = NSFile::CFileBinary::GetTempPath();
+
 		NSFile::CFileBinary::SetTempPath(oConvertParams.m_sTempDir);
 
 		if (!oInputParams.checkInputLimits())
 		{
+			if (!sGlobalTempDir.empty())
+				NSFile::CFileBinary::SetTempPath(sGlobalTempDir);
 			return AVS_FILEUTILS_ERROR_CONVERT_LIMITS;
 		}
 
@@ -2115,6 +2121,9 @@ namespace NExtractTools
 		{
 			NSDirectory::DeleteDirectory(oConvertParams.m_sTempDir);
 		}
+
+		if (!sGlobalTempDir.empty())
+			NSFile::CFileBinary::SetTempPath(sGlobalTempDir);
 
 		// clean up v8
 #ifndef BUILD_X2T_AS_LIBRARY_DYLIB
